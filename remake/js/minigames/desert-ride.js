@@ -7,10 +7,23 @@
 // 本番はスタートの合図のあと、ヌール（rivalRun）が横で滑る。
 import { el } from "../core/util.js";
 import { SE, unlockAudio, createDesertRideSe, currentBgm, playBgm } from "../core/audio.js";
-import { EDGE, SPEED, COURSE_PACKS, generateCourse, practiceCourse, pickCourse, buildCourse, createGame, step, press, boost, chargeBoost, summary, curveAt, headingAt, lateralAt, upcomingCurve, botControl,
+import { EDGE, SPEED, COURSE_PACKS, generateCourse, practiceCourse, pickCourse, buildCourse, createGame, step, press, boost, chargeBoost, canRecover, summary, curveAt, headingAt, lateralAt, upcomingCurve, botControl,
   rivalRun, rivalAt, RULES_VERSION, jumpHeight } from "./desert-ride-model.js";
 import { DESERT_ART, loadDesertArt, riderPose } from "./desert-ride-art.js";
 import { imgFileUrl } from "../core/img-file.js";
+
+// ブーストのオーラ・爆発・火花（生成画像）。読み込み前は Canvas の光で代用する。
+const BOOST_FX = { aura: null, burst: null, spark: null, started: false };
+function loadBoostFx() {
+  if (BOOST_FX.started || typeof Image === "undefined") return;
+  BOOST_FX.started = true;
+  for (const name of ["aura", "burst", "spark"]) {
+    const image = new Image();
+    image.decoding = "async";
+    image.onload = () => { (image.decode ? image.decode().catch(() => {}) : Promise.resolve()).then(() => { BOOST_FX[name] = image; }); };
+    image.src = imgFileUrl(`ui/desert_ride_hud/boost-${name}.webp`);
+  }
+}
 
 const BOT_STEP = 1 / 60; // 自動操縦の判断と物理の刻み（モデルの検査と同じ）
 
@@ -142,6 +155,7 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
   let rideBgm = null;
   const restoreBgm = () => { if (rideBgm && currentBgm() === rideBgm) playBgm(bgmBefore); };
   const art = loadDesertArt();
+  loadBoostFx();
   const promise = new Promise(resolve => {
     const rideSe = createDesertRideSe();
     const results = [];
@@ -170,7 +184,7 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
     let game = null, mode = null, bot = null, botMemo = {}, botLag = 0, last = 0, world = null, particles = [], shakeT = 0, flashT = 0, popT = 0, popText = "", popKind = "";
     let rival = null, raceWith = "noor", countdown = 0, countShown = "", slowT = 0, rings = [], floaters = [], halfShown = 0;
     const view = { depth: CAM.depth, back: CAM.back, roll: 0, kick: 0 }; // 速さで広がる視界。back を depth に比例させ、人物の大きさは変えない
-    const streaks = Array.from({ length: 56 }, (_, i) => ({ angle: (i / 56) * Math.PI * 2 + Math.random() * 0.1, phase: Math.random(), len: 0.6 + Math.random() * 0.8, w: 1 + Math.random() * 2 }));
+    const streaks = Array.from({ length: 80 }, (_, i) => ({ angle: (i / 80) * Math.PI * 2 + Math.random() * 0.1, phase: Math.random(), len: 0.6 + Math.random() * 0.8, w: 1 + Math.random() * 2 }));
     let tut = null;
     const finish = () => {
       if (done) return;
@@ -227,6 +241,7 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
         holdButton("ジャンプ／着地", "dr-jump", "desert-jump", act, () => {}),
       ]),
     );
+    root.append(el("span.dr-recover-hint", { text: "立て直せる！" }));
     // 画面の上の方をタップしてもジャンプ（ボタンの外に指が出ても続けられる）
     canvas.addEventListener("pointerdown", event => { if (mode) { event.preventDefault(); unlockAudio(); act(); } });
     quit.addEventListener("click", () => { if (!mode) return; stopRun(); showMenu(mode === "practice" ? "練習をやめた。" : "途中でやめた。記録は残らない。"); });
@@ -275,10 +290,12 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
     function onBoostEvent(kind) {
       if (kind === "recover") {
         rideSe.play("boost", 0.7); showPop("リカバリー", "recover"); burst(28, 1.8); floater("リカバリー", "recover");
-        if (!reducedMotion) { shakeT = Math.max(shakeT, 0.28); flashT = Math.max(flashT, 0.16); view.kick = Math.max(view.kick, 1.2); }
+        rings.push({ age: 0, life: 0.7, power: 1.35, burst: true });
+        if (!reducedMotion) { shakeT = Math.max(shakeT, 0.28); flashT = Math.max(flashT, 0.12); view.kick = Math.max(view.kick, 1.2); }
       } else if (kind === "boost") {
         rideSe.play("boost", 0.6); showPop("BOOST!!", "boost"); burst(24, 1.6);
-        if (!reducedMotion) { shakeT = 0.3; flashT = 0.1; view.kick = 1.4; }
+        rings.push({ age: 0, life: 0.62, power: 1.2, burst: true });
+        if (!reducedMotion) { shakeT = 0.3; flashT = 0.08; view.kick = 1.4; }
       }
     }
     function startRun(kind, who = raceWith) {
@@ -392,7 +409,7 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
         ]),
         el("div.dr-hud-right", [
           hudNodes.speedo,
-          el("div.dr-boost-meter", [el("b.dr-bolt", { text: "⚡" }), hudNodes.gaugeBox]),
+          el("div.dr-boost-meter", [el("b.dr-bolt", { "aria-hidden": "true" }), hudNodes.gaugeBox]),
           el("div.dr-clock", [el("small", { text: "TIME" }), hudNodes.time]),
         ]),
       );
@@ -418,6 +435,7 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       hudNodes.gaugeBox.dataset.state = boosting ? "boost" : ready ? "full" : "";
       root.dataset.gauge = boosting ? "boost" : ready ? "full" : "";
       root.dataset.boost = boosting ? "on" : "";
+      root.dataset.recover = canRecover(game) ? "ready" : "";
       if (hudNodes.course) {
         hudNodes.course.textContent = mode === "practice" ? "" : (game.course.name || "");
         hudNodes.course.hidden = mode === "practice" || !game.course.name;
@@ -639,6 +657,10 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
         const feel = view.boost || 0;
         const rate = (reducedMotion ? 6 : 26) * k * (Math.abs(game.x) > EDGE ? 2.2 : 1) * (1 + 2.4 * feel);
         for (let i = 0; i < rate * dt * 4; i++) particles.push({ x: (Math.random() - 0.5) * 50 + game.vx * 30, y: 0, vx: (Math.random() - 0.5) * 80 - game.vx * 60, vy: -(20 + Math.random() * (70 + 120 * feel)), r: 4 + Math.random() * (9 + 12 * feel), life: 0.4 + Math.random() * (0.4 + 0.25 * feel), age: 0, trail: feel > 0.4 && Math.random() < 0.35 });
+        if (boosting && !reducedMotion) {
+          const sparks = 16 * dt * 4 * (0.45 + feel);
+          for (let i = 0; i < sparks; i++) particles.push({ spark: true, x: (Math.random() - 0.5) * 70, y: -8 - Math.random() * 46, vx: (Math.random() - 0.5) * 280, vy: -(80 + Math.random() * 220), r: 8 + Math.random() * 16, life: 0.28 + Math.random() * 0.28, age: 0, rot: Math.random() * Math.PI * 2 });
+        }
         // 曲がると板の外側へ砂しぶき（曲がる向きと反対へ高く飛ぶ）
         const carve = Math.abs(game.vx);
         if (carve > 0.25) {
@@ -646,9 +668,9 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
           for (let i = 0; i < spray * dt * 4; i++) particles.push({ x: side * (20 + Math.random() * 30), y: -6, vx: side * (120 + Math.random() * 260) * Math.min(1.5, carve), vy: -(90 + Math.random() * 200), r: 3 + Math.random() * 8, life: 0.45 + Math.random() * 0.35, age: 0 });
         }
       }
-      for (const p of particles) { p.age += dt; p.x += p.vx * dt; p.y += p.vy * dt; p.vy += (p.chip ? 900 : 90) * dt; if (!p.chip) p.r += 18 * dt; }
+      for (const p of particles) { p.age += dt; p.x += p.vx * dt; p.y += p.vy * dt; p.vy += (p.chip ? 900 : p.spark ? 140 : 90) * dt; if (!p.chip && !p.spark) p.r += 18 * dt; }
       particles = particles.filter(p => p.age < p.life);
-      if (particles.length > 320) particles.splice(0, particles.length - 320);
+      if (particles.length > 360) particles.splice(0, particles.length - 360);
       for (const r of rings) r.age += dt;
       rings = rings.filter(r => r.age < r.life);
       for (const f of floaters) f.age += dt;
@@ -701,7 +723,33 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       ctx.restore();
       drawSpeedLines();
       drawVignette(fast);
-      if (flashT > 0) { ctx.fillStyle = game.boostT > 0 ? `rgba(255,190,110,${flashT * 2})` : `rgba(255,240,220,${flashT * 1.6})`; ctx.fillRect(0, 0, W, H); }
+      if (flashT > 0) { ctx.fillStyle = game.boostT > 0 ? `rgba(255,190,110,${flashT * 1.05})` : `rgba(255,240,220,${flashT * 1.6})`; ctx.fillRect(0, 0, W, H); }
+      drawRecoverHint();
+    }
+    /** 岩に当たった直後、BOOST で立て直せることをキャンバス上に出す（DOM の重ねが環境によって描画されない場合がある）。 */
+    function drawRecoverHint() {
+      if (!game || !canRecover(game)) return;
+      const text = "立て直せる！";
+      ctx.save();
+      ctx.font = `900 18px ${fontFamily()}`;
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      const x = W - 310, y = H - 200, w = ctx.measureText(text).width + 32, h = 36, r = h / 2;
+      ctx.beginPath();
+      ctx.moveTo(x - w / 2 + r, y - h / 2);
+      ctx.arcTo(x + w / 2, y - h / 2, x + w / 2, y + h / 2, r);
+      ctx.arcTo(x + w / 2, y + h / 2, x - w / 2, y + h / 2, r);
+      ctx.arcTo(x - w / 2, y + h / 2, x - w / 2, y - h / 2, r);
+      ctx.arcTo(x - w / 2, y - h / 2, x + w / 2, y - h / 2, r);
+      ctx.closePath();
+      ctx.fillStyle = "rgba(40, 26, 18, 0.92)";
+      ctx.fill();
+      ctx.strokeStyle = "rgba(255, 230, 180, 0.55)";
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+      ctx.fillStyle = "#fff8ee";
+      ctx.fillText(text, x, y);
+      ctx.restore();
     }
     /** 絵の遠景（空・太陽・陸）。絵がまだ無ければ false（図形の空と砂丘で描く）。 */
     const BACKDROP_SCALE = 0.95;
@@ -1044,6 +1092,35 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       ctx.fillStyle = `rgba(255,255,255,${0.75})`;
       ctx.fillRect(p.x - p.w * 1.02, p.y - poleH, p.w * 2.04, Math.max(2, poleH * 0.06));
     }
+    /** ブースト中の大袈裟なオーラ。人物の後ろに加算合成で脈打たせる。絵が未読込なら光の円で代用。 */
+    function drawBoostAura(cx, baseY, unit, lean) {
+      const feel = view.boost || 0;
+      if (feel < 0.04 || reducedMotion) return;
+      const aura = BOOST_FX.aura;
+      const pulse = 0.92 + 0.14 * Math.sin(game.t * 14);
+      const scale = unit * (4.6 + 1.15 * feel) * pulse;
+      ctx.save();
+      ctx.globalCompositeOperation = "lighter";
+      ctx.translate(cx, baseY - unit * 0.85);
+      ctx.rotate(lean * 0.2);
+      if (aura) {
+        const aspect = aura.naturalHeight / aura.naturalWidth || 1;
+        const w = scale, h = scale * aspect;
+        ctx.globalAlpha = Math.min(0.95, 0.4 + 0.55 * feel);
+        ctx.drawImage(aura, -w / 2, -h * 0.62, w, h);
+        const pulse2 = 0.96 + 0.16 * Math.sin(game.t * 9 + 1.2);
+        ctx.globalAlpha = 0.28 * feel;
+        ctx.drawImage(aura, -w * pulse2 / 2, -h * pulse2 * 0.62, w * pulse2, h * pulse2);
+      } else {
+        const g = ctx.createRadialGradient(0, 0, unit * 0.2, 0, 0, scale * 0.55);
+        g.addColorStop(0, `rgba(255,230,140,${0.55 * feel})`);
+        g.addColorStop(0.4, `rgba(255,120,40,${0.35 * feel})`);
+        g.addColorStop(1, "rgba(255,60,0,0)");
+        ctx.fillStyle = g;
+        ctx.beginPath(); ctx.arc(0, 0, scale * 0.55, 0, Math.PI * 2); ctx.fill();
+      }
+      ctx.restore();
+    }
     function drawPlayer(dusk) {
       const p = placeAt(game.z, game.x);
       if (!p) return;
@@ -1073,6 +1150,7 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
         }
         ctx.restore();
       }
+      drawBoostAura(cx, baseY, unit, lean);
       if (poseArt && baseArt) {
         const def = DESERT_ART[pose];
         // 大きさは背面Bの高さ（unit×2.45）に対する比。どの姿勢も同じ縮尺で描かれている
@@ -1090,8 +1168,8 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
           ctx.drawImage(poseArt, -def.anchor.x * dw, -def.anchor.y * dh, dw, dh);
           ctx.restore();
         };
-        // ブースト中は手前に残像（動き軽減では出さない）
-        if (game.boostT > 0 && !reducedMotion) for (let i = 3; i >= 1; i--) sprite(0.22 - i * 0.05, unit * 0.32 * i, 1 + 0.06 * i);
+        // ブースト中は手前に残像を多めに（動き軽減では出さない）
+        if (game.boostT > 0 && !reducedMotion) for (let i = 5; i >= 1; i--) sprite(0.28 - i * 0.04, unit * 0.28 * i, 1 + 0.07 * i);
         sprite(1, 0, 1);
         return;
       }
@@ -1142,6 +1220,28 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
     function drawParticles() {
       const p = placeAt(game.z, game.x);
       if (!p) return;
+      const sparkArt = BOOST_FX.spark;
+      const sparks = particles.filter(s => s.spark);
+      if (sparks.length) {
+        ctx.save();
+        ctx.globalCompositeOperation = "lighter";
+        for (const s of sparks) {
+          const a = Math.min(1, 1.15 * (1 - s.age / s.life));
+          ctx.globalAlpha = a;
+          ctx.save();
+          ctx.translate(p.x + s.x, p.y + s.y);
+          ctx.rotate((s.rot || 0) + s.age * 6);
+          if (sparkArt) {
+            const w = s.r * 2.2;
+            ctx.drawImage(sparkArt, -w / 2, -w / 2, w, w);
+          } else {
+            ctx.fillStyle = "rgba(255,210,110,0.9)";
+            ctx.beginPath(); ctx.ellipse(0, 0, s.r * 0.45, s.r * 0.9, 0, 0, Math.PI * 2); ctx.fill();
+          }
+          ctx.restore();
+        }
+        ctx.restore();
+      }
       for (const s of particles) {
         if (!s.chip) continue;
         ctx.save(); ctx.translate(p.x + s.x, p.y + s.y); ctx.rotate(s.age * s.spin);
@@ -1154,7 +1254,7 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       if (puff) {
         const aspect = puff.naturalHeight / puff.naturalWidth;
         for (const s of particles) {
-          if (s.chip) continue;
+          if (s.chip || s.spark) continue;
           const w = s.r * 2.8, h = w * aspect;
           ctx.globalAlpha = Math.min(1, 0.75 * (1 - s.age / s.life));
           ctx.drawImage(puff, p.x + s.x - w / 2, p.y + s.y - h / 2, w, h);
@@ -1163,7 +1263,7 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
         return;
       }
       for (const s of particles) {
-        if (s.chip) continue;
+        if (s.chip || s.spark) continue;
         const a = 0.55 * (1 - s.age / s.life);
         ctx.fillStyle = `rgba(242,220,178,${a})`;
         ctx.beginPath(); ctx.arc(p.x + s.x, p.y + s.y, s.r, 0, Math.PI * 2); ctx.fill();
@@ -1176,7 +1276,7 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       const feel = view.boost || 0;
       if (k < 0.3 && feel < 0.05) return;
       const amount = Math.min(1.15, (k < 0.3 ? 0 : (k - 0.3) / 0.7) + 0.85 * feel);
-      const n = Math.round(14 + 48 * amount), cx = W / 2, cy = HORIZON + 40, reach = Math.hypot(W, H) * 0.66;
+      const n = Math.min(streaks.length, Math.round(14 + 48 * amount)), cx = W / 2, cy = HORIZON + 40, reach = Math.hypot(W, H) * 0.66;
       ctx.save();
       ctx.lineCap = "round";
       for (let i = 0; i < n; i++) {
@@ -1220,6 +1320,16 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       const unit = p.scale * (H / 2);
       for (const r of rings) {
         const k = r.age / r.life;
+        if (r.burst && BOOST_FX.burst && !reducedMotion) {
+          ctx.save();
+          ctx.globalCompositeOperation = "lighter";
+          ctx.globalAlpha = 0.8 * (1 - k);
+          const bur = BOOST_FX.burst;
+          const s = unit * (1.5 + 2.8 * k) * r.power;
+          const aspect = bur.naturalHeight / bur.naturalWidth || 1;
+          ctx.drawImage(bur, p.x - s / 2, p.y - s * aspect * 0.68, s, s * aspect);
+          ctx.restore();
+        }
         ctx.strokeStyle = `rgba(255,248,230,${0.8 * (1 - k)})`;
         ctx.lineWidth = Math.max(2, unit * 0.12 * (1 - k)) * r.power;
         ctx.beginPath(); ctx.ellipse(p.x, p.y, unit * (0.5 + 2.4 * k) * r.power, unit * (0.12 + 0.5 * k) * r.power, 0, 0, Math.PI * 2); ctx.stroke();

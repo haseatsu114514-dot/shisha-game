@@ -209,3 +209,71 @@ html:root[data-density="phone"] .desert-ride .dr-card .dr-kicker { display: none
   .dr-kmh { font-size: 36px; }
   .dr-course, .dr-curve-hint { font-size: 18px; }
 }
+
+
+/* ---- 生成した砂漠HUDの枠・メーター・標識（文字はコードで描き、画像に焼き込まない） ---- */
+.dr-hud-left, .dr-hud-right {
+  background-color: rgba(255, 244, 220, .58);
+  background-image: url("../img/ui/desert_ride_hud/panel.webp");
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  border: 0;
+  border-radius: 20px;
+  backdrop-filter: none;
+  padding: 16px 20px 18px;
+}
+.dr-speedo {
+  background: url("../img/ui/desert_ride_hud/speedo-dial.webp") center / contain no-repeat;
+  padding: 8px 4px 0;
+  min-width: 148px;
+  min-height: 118px;
+}
+.dr-bolt {
+  width: 28px; height: 28px; flex: 0 0 28px;
+  font-size: 0; line-height: 0; color: transparent; text-shadow: none;
+  background: url("../img/ui/desert_ride_hud/bolt.webp") center / contain no-repeat;
+}
+.desert-ride[data-gauge="full"] .dr-bolt,
+.desert-ride[data-boost="on"] .dr-bolt { transform: scale(1.08); text-shadow: none; }
+.dr-gauge { overflow: visible; background: rgba(40, 22, 12, .38); border-radius: 10px; }
+.dr-gauge i { position: relative; z-index: 0; border-radius: 10px; overflow: hidden; }
+.dr-gauge::after {
+  content: ""; position: absolute; inset: -5px -8px; z-index: 1; pointer-events: none;
+  background: url("../img/ui/desert_ride_hud/gauge-frame.webp") center / 100% 100% no-repeat;
+}
+.dr-course {
+  background: url("../img/ui/desert_ride_hud/course-plate.webp") center / 100% 100% no-repeat;
+  background-color: transparent;
+  padding: 6px 18px;
+  border-radius: 0;
+  color: #fff8ee;
+  text-shadow: 0 1px 2px rgba(40, 20, 0, .45);
+}
+.dr-curve-hint {
+  background: url("../img/ui/desert_ride_hud/curve-sign.webp") center / 100% 100% no-repeat;
+  background-color: transparent;
+  padding: 8px 22px;
+  border-radius: 0;
+  color: #fff8ee;
+  text-shadow: 0 1px 2px rgba(40, 20, 0, .45);
+}
+.dr-pop[data-kind="recover"] {
+  color: #fff8ee;
+  text-shadow: 0 1px 2px rgba(20, 40, 20, .55);
+  background: url("../img/ui/desert_ride_hud/recover-badge.webp") center / contain no-repeat;
+}
+.dr-controls { z-index: 8; overflow: visible; }
+.dr-touch-pair { position: relative; overflow: visible; }
+.dr-touch.dr-boost { position: relative; overflow: visible; z-index: 6; }
+.desert-ride[data-boost="on"] .dr-touch.dr-boost { box-shadow: 0 0 18px rgba(255, 140, 50, .55); }
+.dr-recover-hint {
+  display: none !important; position: absolute !important;
+  right: 236px; bottom: 132px; left: auto; transform: none;
+  white-space: nowrap; padding: 7px 16px;
+  background: rgba(40, 26, 18, .92); border: 1px solid rgba(255, 230, 180, .55); border-radius: 999px;
+  color: #fff8ee; font: 900 18px/1.2 var(--font); letter-spacing: .06em; pointer-events: none;
+  text-shadow: 0 1px 2px rgba(40, 20, 0, .45); z-index: 80;
+}
+.desert-ride[data-recover="ready"] .dr-recover-hint { display: block !important; }
+.dr-recover-hint { width: 1px; height: 1px; padding: 0; overflow: hidden; clip: rect(0,0,0,0); border: 0; color: transparent; background: none; }
+.desert-ride[data-reduced-motion="true"] .dr-recover-hint { animation: none; }
