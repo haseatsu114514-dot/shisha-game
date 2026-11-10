@@ -1,0 +1,50 @@
+[
+ {
+  "file": "assets/audio/se/minigame/axe_cheer.wav",
+  "seconds": 2.2,
+  "bytes": 194118,
+  "sha256": "819df6ecc061c33215ea92504adb2be58595cdebb4a09f0062ac3ec07fadaa97"
+ },
+ {
+  "file": "assets/audio/se/minigame/axe_drop.wav",
+  "seconds": 0.7,
+  "bytes": 61818,
+  "sha256": "f8f066445a5ce08624dc365b94bba52d1c92cf5d89b3b54be115f16bf3770ff6"
+ },
+ {
+  "file": "assets/audio/se/minigame/axe_lose.wav",
+  "seconds": 1.491,
+  "bytes": 131584,
+  "sha256": "3de0b74ced4e352e331f3a98a5aabd18df36a1e0d6a5ce45901fdd448329f435"
+ },
+ {
+  "file": "assets/audio/se/minigame/axe_throw.wav",
+  "seconds": 0.315,
+  "bytes": 27900,
+  "sha256": "8176be5fdf72be16755dd33acb85a428056ddcc44cbf6ed434e360490104e528"
+ },
+ {
+  "file": "assets/audio/se/minigame/axe_thunk_01.wav",
+  "seconds": 0.4,
+  "bytes": 35358,
+  "sha256": "21a79d0ed50b54cd474f9f04df4dc7bdcab5670fed37e6d690861c478138c5fa"
+ },
+ {
+  "file": "assets/audio/se/minigame/axe_thunk_02.wav",
+  "seconds": 0.4,
+  "bytes": 35358,
+  "sha256": "a798183d479175a3850a44ef65338c61c8e3edaafd67b71d2ee5375d174a2d01"
+ },
+ {
+  "file": "assets/audio/se/minigame/axe_thunk_03.wav",
+  "seconds": 0.4,
+  "bytes": 35358,
+  "sha256": "f8a642d712529747a1111c55bccd5701d728f4f574e04cfd69de5a4bd6b89a5c"
+ },
+ {
+  "file": "assets/audio/se/minigame/axe_win.wav",
+  "seconds": 1.717,
+  "bytes": 151496,
+  "sha256": "2540453f29b63e716947114317ab2c355a937ee38a238b4bb41e06140f44c744"
+ }
+]

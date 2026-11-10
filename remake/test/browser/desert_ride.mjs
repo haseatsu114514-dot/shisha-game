@@ -381,6 +381,9 @@ await suite("desert-ride", async check => {
     value = await get(page);
     assert.equal(value.money, cafeBefore.money - 3000, "a shisha at the café costs 3,000円");
     assert(value.affinity.noor > cafeBefore.affinity.noor, "talking at the café raises Noor's affinity");
+    assert(value.flags._noor_story_seat_edge && value.flags._noor_story_second_cup && value.flags._noor_story_map_corner,
+      "three unread Noor café stories are read and saved after the staged talk");
+    assert.equal(value.flags._noor_story_water_glass, undefined, "the remaining stories wait for another visit");
     await page.locator(t("pin-ch4_dubai_dunes")).waitFor();
     assert.equal(await page.locator(t("pin-ch4_dubai_tour_desk")).count(), 1, "the café stays on the map");
     // 砂丘は昼だけ。宿で夜を越して翌日の昼に出かける
@@ -537,6 +540,7 @@ await suite("desert-ride", async check => {
     assert.equal(value.money, before.money, "Noor's invitation: no tour fee");
     assert.deepEqual(value.lovers, ["noor"]);
     assert.equal(value.loveLevel.noor, 1);
+    assert(value.loverEventsSeen.includes("lover_noor_lv1"), "the first dunes milestone follows the accepted confession");
     assert(value.flags._lime_contact_noor && value.contacts.includes("noor"), "they exchange LIME when they start dating");
     assert.equal(value.flags._noor_confession_other_lover, undefined, "the temporary flag is cleared");
     assert((await page.evaluate(() => window.__bgs)).some(url => /bg_dubai_dunes_dusk/.test(url)), "the confession is on the sunset dunes");

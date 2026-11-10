@@ -599,6 +599,41 @@ for (const [id, sender, chapter, flag] of [
   assert.equal(phone.deliverMorning(), 1, `${id}: later chapters still deliver`);
 }
 
+// #3081: ヌールは砂丘の告白に応えた時だけ連絡先を交換する。交換前・断った時は届かない。
+{
+  const id = "lime_noor_after_sunset";
+  const message = allMessages.find(m => m.id === id);
+  assert(message, id);
+  const setup = (overrides = {}) => {
+    reset({ chapter: 4, day: 11, contacts: ["noor"], flags: { _lime_contact_noor: true }, ...overrides });
+    db.lime = [message];
+  };
+  setup({ flags: {} });
+  assert.equal(phone.deliverMorning(), 0, `${id}: accepted confession required`);
+  setup({ contacts: [] });
+  assert.equal(phone.deliverMorning(), 0, `${id}: exchanged contact required`);
+  setup();
+  assert.equal(phone.deliverMorning(), 1, `${id}: delivered after exchange`);
+  assert.equal(state.inbox[0].id, id);
+  assert.equal(phone.deliverMorning(), 0, `${id}: unread is not stacked`);
+  setup({ chapter: 5, day: 61 });
+  assert.equal(phone.deliverMorning(), 1, `${id}: a late chapter 5 confession also delivers`);
+}
+
+// ヌールの砂丘の節目は既存の恋人Lvと既読判定を使い、飛ばし読み・再読をしない。
+{
+  reset({ chapter: 4, lovers: ["noor"], loveLevel: { noor: 1 }, lovePts: { noor: 9 } });
+  const events = JSON.parse(await fs.readFile(new URL("data/dialogue/lover_events.json", dataRoot), "utf8"));
+  db.dialogues = Object.fromEntries(events.dialogues.filter(scene => scene.dialogue_id.startsWith("lover_noor_")).map(scene => [scene.dialogue_id, scene]));
+  assert.equal(romance.loverMilestoneDue("noor", { home: false }), "lover_noor_lv1");
+  assert.equal(await romance.playLoverMilestone("noor", { home: false }), true);
+  assert.deepEqual(clone(state.loverEventsSeen), ["lover_noor_lv1"]);
+  assert.equal(romance.loverMilestoneDue("noor", { home: false }), null);
+  state.loveLevel.noor = 2;
+  assert.equal(romance.loverMilestoneDue("noor", { home: false }), "lover_noor_lv2");
+  assert.equal(actualStats.bond.private, false);
+}
+
 // #3081: 水が減るまでいた夜のあと、章を問わず一度だけ届く。
 {
   const id = "lime_tsumugi_low_water";

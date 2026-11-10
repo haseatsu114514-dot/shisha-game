@@ -173,6 +173,7 @@ export const FLAG_EXACT_RULES = [
   ["_ch2_read_ch2_rei_sixth", "person"],
   ["_ch2_read_ch2_slump_taste", "progression"],
   ["_ch2_read_ch2_sofa_burn", "progression"],
+  ["_ch2_read_ch2_strawberry_sample", "progression"],
   ["_ch2_read_ch2_tournament_ageha_heart", "person"],
   ["_ch2_read_ch2_tsumugi_color", "person"],
   ["_ch2_read_remake_ch2_ageha_tasting", "progression"],
@@ -429,6 +430,7 @@ export const FLAG_EXACT_RULES = [
   ["_noor_ch5_promise", "person"], // 第5章の砂丘の再会で、告白を待つ約束の続きを出す一時の印（chapters/ch5-dubai.js。再生の前に立て、後で消す）
   ["_noor_confession_other_lover", "person"], // DSR20 告白の場面の一時の印（再生の前に立て、後で消す）
   ["_noor_confession_visit", "person"], // 第5章で締めくくりを迎えた人の告白の言い方を出す一時の印（chapters/ch4-desert.js。再生の前に立て、後で消す）
+  ["_noor_story_seat_edge", "person"], // #3081 の人物別既読。周回ではリセット
   ["_oneesan_id_checked", "progression"],
   ["_op_praise_report", "progression"],
   ["_op_praise_talent", "progression"],
@@ -606,6 +608,7 @@ export const FLAG_FAMILY_RULES = [
   ["_cafe_recall_*", "progression"],
   ["_city_guest_seen_*", "progression"],
   ["_roam_seen_*", "person"],
+  ["_trpg_topic_*", "person"], // 部活の話は周回ごとに対面し直す
   ["_date_inv_*", "person"],
   ["_delivery_*", "progression"],
   ["_fortune_*", "progression"],
@@ -619,6 +622,7 @@ export const FLAG_FAMILY_RULES = [
   ["_lover_*", "person"],
   ["_mastery_practice_*", "progression"],
   ["_met_*", "person"],
+  ["_noor_story_*", "person"], // #3081 カフェ・オアシスの物語。未読を周回へ持ち越さない
   ["_morning_*", "progression"],
   ["_note_*", "progression"],
   ["_outing_done_*", "person"],

@@ -5,6 +5,7 @@
 //        詩を連ごとの「場面」に分け、1場面ずつ読ませる。暗い面に縦書きの明朝で、右の行から1行ずつ、ぼかしが晴れて浮かぶ。
 //        読み終えた場面は消え、次の連が浮かぶ。最後の連を読み終えたら全体が暗く閉じ、続けて章タイトルが出る。
 //        漢字には「漢字《よみ》」のふりがな。タップ／Enter／Space で、読んでいる途中なら その場面の残りを出し、読み終えていれば次の場面へ。
+import { silenceBgm } from "../core/audio.js";
 import { DB } from "../core/data.js";
 import { el, nextFrame, sleep } from "../core/util.js";
 import { layers, clearScreen, imageReady } from "../core/ui.js";
@@ -74,7 +75,16 @@ const holdFor = (group, last) => (last ? HOLD_LAST : HOLD_MID) + HOLD_PER_CHAR *
  * - current(owner) が false になった場合は読了扱いにせず false。呼び出し元は titleSeen を立てずに戻る。
  * 読了の保存は呼び出し元が行う（章タイトルと同じ titleSeen の判定に乗せ、再開時に繰り返さない）。
  */
-export async function playChapterPoem(key, { owner = null, current = () => true } = {}) {
+export async function playChapterPoem(key, options = {}) {
+  const releaseBgm = silenceBgm();
+  try {
+    return await showChapterPoem(key, options);
+  } finally {
+    releaseBgm();
+  }
+}
+
+async function showChapterPoem(key, { owner = null, current = () => true } = {}) {
   const id = CHAPTER_POEM_IDS[key];
   if (!id) throw new Error(`巻頭ポエムの指定が不正です: ${key}`);
   const poem = DB.dialogues[id];

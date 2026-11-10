@@ -29,6 +29,17 @@ export const NOOR_OTHER_LOVER_FLAG = "_noor_confession_other_lover";
 export const NOOR_VISIT_CONFESSION_FLAG = "_noor_confession_visit";
 /** 段階の会話が無い日の、店での雑談（順に巡回）。 */
 export const DESERT_CAFE_CHATS = Object.freeze(["ch4_noor_cafe_chat_a", "ch4_noor_cafe_chat_b", "ch4_noor_cafe_chat_c"]);
+// #3081。段階会話に続くカフェ・オアシスの物語。♥や大会の日付で先取りせず、読了だけを一度ずつ保存する。
+// 同じ来店で2〜3本ずつ読む。第5章で遅れて店に通う場合も同じ順で読める。
+export const NOOR_STORY_EXTRAS = Object.freeze([
+  ...["seat_edge", "second_cup"].map(name => ({ id: `ch4_noor_story_${name}`, afterTalks: 1 })),
+  ...["map_corner", "water_glass"].map(name => ({ id: `ch4_noor_story_${name}`, afterTalks: 2 })),
+  ...["tray_order", "quiet_counter", "empty_chair"].map(name => ({ id: `ch4_noor_story_${name}`, afterTalks: 3 })),
+  ...["board_angle", "pencil_line", "waiting_wind"].map(name => ({ id: `ch4_noor_story_${name}`, afterTalks: 4 })),
+  ...["pinky_gap", "father_seat", "return_mark"].map(name => ({ id: `ch4_noor_story_${name}`, afterTalks: 5 })),
+  ...["table_edge", "unsaid_question", "doorway"].map(name => ({ id: `ch4_noor_story_${name}`, afterTalks: 6 })),
+].map(entry => Object.freeze(entry)));
+export const noorStoryFlag = id => `_noor_story_${id.slice("ch4_noor_story_".length)}`;
 export const DESERT_CAFE_PRICE = 3000; // ドバイのカフェの一台（ch4-dubai-daily.js の中心地・路地裏のカフェと同じ）
 export const DESERT_RIDE_PRICE = 6000; // 2回目以降のサンドボード（2026-11-02 オーナー「6,000円」）
 // 好感度の段階の境目（core/stats.js の AFFINITY_RANK_PTS と同じ。このファイルは単体で読み込めるよう import しない）
@@ -39,8 +50,11 @@ export const DESERT_SCENES = Object.freeze({ arrive: "ch4_desert_arrive", again:
 export const DESERT_RACE_WIN_LINE = "venue_noor_race_win";
 /** なる（裏の相手）との競走のひとこと。 */
 export const DESERT_NARU_LINES = Object.freeze({ win: "venue_naru_race_win", lose: "venue_naru_race_lose" });
+export const NOOR_STORY_FILE = "noor";
+export const NOOR_STORY_DIALOGUE_IDS = Object.freeze(NOOR_STORY_EXTRAS.map(entry => entry.id));
+export const NOOR_CONFESSION_DIALOGUE_IDS = Object.freeze([NOOR_CONFESSION, `${NOOR_CONFESSION}_accept`, `${NOOR_CONFESSION}_reject`]);
 export const DESERT_DIALOGUE_IDS = Object.freeze([...DESERT_TALKS, ...DESERT_CAFE_CHATS, ...Object.values(DESERT_SCENES), ...RANK_ORDER.map(rank => `venue_noor_result_${rank}`), DESERT_RACE_WIN_LINE,
-  ...Object.values(DESERT_NARU_LINES), NOOR_FINALE, NOOR_CONFESSION, `${NOOR_CONFESSION}_accept`, `${NOOR_CONFESSION}_reject`]);
+  ...Object.values(DESERT_NARU_LINES), NOOR_FINALE]);
 export const DESERT_DIALOGUE_FILE = "ch4_desert";
 // 地図の位置（百分率）。ドバイの地図で HUD・案内の枠・ほかの行き先と重ならない所（デスクは宿・FESTA・店の間、砂丘は左下＝街の外）。
 export const DESERT_PLACES = Object.freeze({
@@ -88,6 +102,18 @@ export const noorFinaleWaiting = value => noorStoriesDone(value) && !value?.fina
 /** 締めくくりで恋愛を選び、まだ告白の返事をしていない（次の砂丘はツアー代なしで、夕日で告白）。 */
 export const noorConfessionWaiting = value => value?.finales?.[DESERT_GUIDE]?.route === "romance"
   && !(value.lovers || []).includes(DESERT_GUIDE) && !value.flags?.[`_friend_${DESERT_GUIDE}`];
+
+/** 読める物語の先頭。締めくくりの後に過去の恋愛の前振りを再生しない。告白の日数条件にはしない。 */
+export function noorStoryDue(value) {
+  if (value?.finales?.[DESERT_GUIDE]) return null;
+  const { talks } = desertProgress(value);
+  return NOOR_STORY_EXTRAS.find(entry => talks >= entry.afterTalks && !value?.flags?.[noorStoryFlag(entry.id)])?.id || null;
+}
+export function completeNoorStory(value, id) {
+  if (!value?.flags || noorStoryDue(value) !== id) return false;
+  value.flags[noorStoryFlag(id)] = true;
+  return true;
+}
 
 // 旧カードの地図（版2より前の5日の保存）は日数が少ないので、以前と同じ3つ（名乗り・地図・誘い）で誘う。店の3つ目は飛ばす
 const LEGACY_SKIP = "ch4_noor_cafe_3";
