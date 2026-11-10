@@ -162,6 +162,20 @@
         "affinity": 5
       },
       {
+        "id": "shop_charm",
+        "dialogue": "hiyori_shop_charm",
+        "chapters": [
+          1,
+          2
+        ],
+        "flag": "_hiyori_charm_done",
+        "requires": [
+          "_hiyori_tonari_return_done"
+        ],
+        "met": true,
+        "affinity": 5
+      },
+      {
         "id": "peach_talk",
         "dialogue": "hiyori_peach_talk",
         "chapters": [
@@ -996,7 +1010,7 @@
         },
         {
           "speaker": "hajime",
-          "text": "今日、スミさんに教わった組合せがあって"
+          "text": "今日、スミさんに教わった組み合わせがあって"
         },
         {
           "speaker": "hiyori",
@@ -1304,6 +1318,199 @@
         {
           "speaker": "hajime",
           "text": "近くにありますよ。のんびり吸ってから、行きましょう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "hiyori_shop_charm",
+      "comment": "tonari再会のあと、他店の相席で一度だけ（#3081）。大会にも章にも触れない。斧投げの前後どちらでも成立する。",
+      "metadata": {
+        "private_scene": true
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "text": "別の店の席で、ひよりがメニューを開かずに紅茶の文字だけ見ていた"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "……ここも、悪くない。でも私の席は、あっちのままだと思う",
+          "face": "sad"
+        },
+        {
+          "speaker": "hajime",
+          "text": "tonari、ですか"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "うん。この前、何も聞かれなかったのが、まだ残ってる",
+          "face": "normal",
+          "inner": "スミさんも、はじめくんも、涙の理由を聞かなかった"
+        },
+        {
+          "speaker": "hajime",
+          "text": "聞かなかったことには、しません。あの席は、ひよりさんのままでした"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "……そういうの、会社だと来ないんだよね",
+          "face": "normal"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "問い合わせは減ってない。でも、席があるって分かると、少し違う",
+          "face": "serious"
+        },
+        {
+          "speaker": "hajime",
+          "text": "今日はここも、急がなくていい席にしましょう"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "じゃあ、紅茶。火は急がないで",
+          "face": "smile",
+          "inner": "バイトの頃の口癖。今は、そのまま言えた"
+        },
+        {
+          "speaker": "hajime",
+          "text": "待ちます。ひよりさんの合図まで"
+        },
+        {
+          "speaker": "",
+          "text": "煙を待つあいだ、ひよりはスマホを鞄の奥へしまった"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "通知は、明日の私に回した",
+          "face": "normal",
+          "inner": "総務のグループだけ、ちゃんとミュートです"
+        },
+        {
+          "speaker": "hajime",
+          "text": "お疲れさまです。今日は、この煙だけでいいです"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "甘いのも好きだけど、今日はこっち",
+          "face": "smile"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "桃の日は、また別に取っておく。今日は、落ち着きたい日",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "じゃあ、香りが残るまで待ちます"
+        },
+        {
+          "speaker": "",
+          "text": "ひと口吸ったひよりは、肩を少しだけ落とした"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "……ふうん。今日の分は、これで少し軽い",
+          "face": "smile"
+        },
+        {
+          "speaker": "hajime",
+          "text": "全部終わらなくても、ここまで来たんですから"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "うん。残りは明日の私。今は、この席の私",
+          "face": "normal"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "本当は、今日も儚い女でいたかったの",
+          "face": "sad"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "泣いたあとに、また煙みたいなこと言うの、自分でも難しい",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "言いたければ、言ってください。俺は、どっちも聞きます"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "……じゃあ、半分だけ",
+          "face": "smile"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "今日の私は、紅茶の湯気で半分ほどけてる",
+          "face": "smile",
+          "inner": "ほどけてる、は演出。中身は普通に美味しい"
+        },
+        {
+          "speaker": "hajime",
+          "text": "半分でも、ちゃんと見えてます"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "見えてるなら、いいや。隠すの、今日はここまで",
+          "face": "normal"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "会社では、ちゃんとした私に戻る。それはそれで、嫌いじゃない",
+          "face": "serious"
+        },
+        {
+          "speaker": "hajime",
+          "text": "両方あるのが、ひよりさんですよね"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "さらっと言うね、それ",
+          "face": "surprise",
+          "inner": "その言い方、ずるい。でも、今日は受け取っておく"
+        },
+        {
+          "speaker": "",
+          "text": "湯気が、二人のあいだでゆっくり広がった"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "この待ち時間、嫌いじゃない。急かされないと、香りが残る",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "香り、残ってますね"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "うん。このひと口で、この前の涙は鞄にしまった",
+          "face": "smile",
+          "inner": "しまったつもり。まだ少し、残ってる"
+        },
+        {
+          "speaker": "",
+          "text": "ひよりはカップを両手で包んで、もうひと口だけ待った"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "……ねえ。はじめくんの隣だと、消えなくていい気がする",
+          "face": "smile",
+          "inner": "ちょっと本音。儚く言えたから、セーフ"
+        },
+        {
+          "speaker": "hajime",
+          "text": "消えなくていいです。今日のひよりさんで、ここにいてください"
+        },
+        {
+          "speaker": "hiyori",
+          "text": "……うん。もう少しだけ、この煙で",
+          "face": "smile"
+        },
+        {
+          "speaker": "",
+          "text": "ひよりはホースを静かに引き寄せて、次のひと口を待った"
         }
       ]
     },

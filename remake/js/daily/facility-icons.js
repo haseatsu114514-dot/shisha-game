@@ -18,7 +18,8 @@ export const FACILITY_ICONS = Object.freeze({
   axe_bar: Object.freeze({ badge: Object.freeze([688, 153]), label: '斧投げBar', extra: true, rect: Object.freeze([56, 14, 655, 495]) }),
   choizap: Object.freeze({ badge: Object.freeze([1466, 178]), label: 'CHOI-ZAP', extra: true, rect: Object.freeze([844, 49, 633, 459]) }),
   trpg_bar: Object.freeze({ badge: Object.freeze([1425, 650]), label: 'ボドゲカフェ', extra: true, rect: Object.freeze([821, 512, 664, 494]) }),
-  fortune: single('map-facilities-fortune-stall.webp', '路上占い', [384, 383], [347, 144]),
+  // 路上占いは水晶玉だけのシール風アイコンに作り直し（2026-11-10 オーナー採用C案。旧出店アイコンは廃止）。
+  fortune: single('map-facilities-fortune-crystal.webp', '路上占い', [384, 384], [285, 150]),
   tokyo_park: single('map-facilities-tokyo-park.webp', '東京の公園', [384, 347], [361, 120]),
   mukai_back_room: single('map-facilities-mukai-back-room.webp', 'mukaiの奥の部屋', [384, 327], [368, 82]),
   mukai_attic: single('map-facilities-mukai-attic.webp', 'mukaiの屋根裏', [384, 377], [379, 134]),
@@ -34,6 +35,8 @@ export const FACILITY_ICONS = Object.freeze({
   desert_tour_desk: single('map-facilities-desert-tour-desk.webp', '砂漠ツアーのデスク', [384, 333], [376, 136]),
   desert_dunes: single('map-facilities-desert-dunes.webp', '砂丘', [384, 259], [343, 128]),
   camel_race_track: single('map-facilities-camel-race-track.webp', 'ラクダレース場', [384, 276], [372, 109]),
+  // #3022（2026-11-10 オーナー採用）: Dr.fookah の配送便。銀箱＋水色キャブのトラック（Grok 生成・清書済み）
+  delivery_truck: single('map-facilities-delivery-truck.webp', '配送便', [384, 334], [346, 130]),
 });
 export const FACILITY_ICON_SIZES = Object.freeze([32, 48, 64, 80, 96, 128]);
 const SPOT_ICONS = Object.freeze({ kannon: 'kannondo', rest: 'home', cafe: 'kohaku',
@@ -44,8 +47,9 @@ const SPOT_ICONS = Object.freeze({ kannon: 'kannondo', rest: 'home', cafe: 'koha
   // MPI: 東京・ドバイ・第5章の行き先。路地裏の神社は場所の決定待ち（#2166）
   ch3_tokyo_park: 'tokyo_park', ch5_tokyo_park: 'tokyo_park', ch3_tokyo_room: 'mukai_back_room', ch5_tokyo_attic: 'mukai_attic',
   ch5_call: 'smartphone', // 第3章の「地元と連絡」は地図から外し、右上の LIME の一番上の行に（オーナー決定 2026-11-02）
-  // 第5章の東京への行き来は Dr.fookah の配送便になった（FIN13）ので、新幹線の駅の絵は使わず文字の盾（「便」）にする。
-  // 絵（shinkansen_station）は FACILITY_ICONS に残す。店のロゴも付けない（同じ地図の Dr.fookah の店と見分けるため）。
+  // 第5章の東京への行き来は Dr.fookah の配送便（FIN13）。当初は文字の盾（「便」）だったが、配送便専用の絵を #3022 で制作し
+  // 2026-11-10 にオーナーが採用したので、行きも帰りもトラックのアイコンにする。新幹線の駅の絵は使わない（FACILITY_ICONS には残す）。
+  ch5_to_tokyo: 'delivery_truck', ch5_tokyo_home: 'delivery_truck',
   // MPI07: 砂漠ツアーのデスク・砂丘・ラクダレース場（ラクダは誘われた後のレース場だけ。店先の段階は facilityIcon: false）
   ch4_dubai_tour_desk: 'desert_tour_desk', ch4_dubai_dunes: 'desert_dunes', ch4_dubai_camel: 'camel_race_track',
   ch4_dubai_souq: 'dubai_souq', ch4_dubai_creek: 'dubai_creek', ch4_dubai_mosque: 'dubai_mosque', ch4_dubai_inn: 'dubai_inn',

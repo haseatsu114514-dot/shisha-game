@@ -335,6 +335,8 @@ async function drive(owner) {
       // 1回目の票の後は、提供前の4人の心の声（第2章だけ）。
       const interlude = p.step === 8 ? "interlude_pull" : p.step === 9 ? "interlude1" : p.step === 10 ? "interlude2" : null;
       if (interlude && !await commentary(owner, interlude)) return;
+      // 心の声の後、審査員への提供開始を声に出す掛け合い（#3060）。
+      if (p.step === 8 && !await commentary(owner, "serve")) return;
       const event = TOURNAMENT_STORY_STEPS.get(p.step);
       if (event && !await commentary(owner, event)) return;
       hud(owner); openBench(cs, { steps: CRAFT_STEPS }); await waitBenchReady(cs);
@@ -366,6 +368,8 @@ async function drive(owner) {
       // 講評の前に、手を離した4人の待ち時間（第1章の interlude3 に対応）。
       if (!await commentary(owner, "interlude3")) return;
       if (!await commentary(owner, "tasting")) return;
+      // 結果発表前の掛け合い（#3060）。開始前は stations が受け持つ。
+      if (!await commentary(owner, "preresult")) return;
       // 優勝のときだけ、結果カードの前に決着の間を置く。歓声より先に、口の中の空白を見せる。
       if (p.result?.rank === 1 && !await read(owner, "verdict")) return;
       checkpoint("result");

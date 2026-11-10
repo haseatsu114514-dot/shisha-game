@@ -303,6 +303,12 @@ await check('ageha lover content reaches chapter 4 at home, and a companion abro
   same(f.entry.loverMilestonesDue(), ['ageha']);
   assert.equal(await f.entry.readLoverMilestone('ageha'), true);
   same(f.plays, ['lover_ageha_lv1']);
+  s.loveLevel.ageha = 2;
+  s.loverEventsSeen.push('lover_ageha_lv2');
+  assert.equal(f.romance.loverMilestoneDue('ageha'), 'lover_ageha_lv2_b');
+  assert.equal(await f.entry.readLoverMilestone('ageha'), true);
+  same(f.plays, ['lover_ageha_lv1', 'lover_ageha_lv2_b']);
+  assert.equal(f.romance.loverMilestoneDue('ageha'), null, 'lv3 waits for the next bond level');
 });
 
 await check('chapter 3 tournament morning: one cheer per lover, from far away or from Tokyo, read once (IR19)', async f => {
@@ -557,8 +563,8 @@ await check('apart mornings mix in morning_away: not at home, not in Tokyo for M
 });
 
 await check('a hometown milestone waits while hajime is in Tokyo/Dubai and is read once he is home; others are not skipped (#2024)', async f => {
-  const tagged = Object.values(f.db.dialogues).filter(d => /^lover_\w+_lv\d$/.test(d.dialogue_id) && d.metadata?.hometown).map(d => d.dialogue_id).sort();
-  same(tagged, ['lover_hiyori_lv1', 'lover_hiyori_lv2', 'lover_hiyori_lv5', 'lover_minto_lv2', 'lover_minto_lv3', 'lover_minto_lv4',
+  const tagged = Object.values(f.db.dialogues).filter(d => /^lover_\w+_lv\d(?:_b)?$/.test(d.dialogue_id) && d.metadata?.hometown).map(d => d.dialogue_id).sort();
+  same(tagged, ['lover_hiyori_lv1', 'lover_hiyori_lv1_b', 'lover_hiyori_lv2', 'lover_hiyori_lv5', 'lover_minto_lv2', 'lover_minto_lv3', 'lover_minto_lv4',
     'lover_minto_lv5', 'lover_rio_lv1', 'lover_tsumugi_lv2', 'lover_tsumugi_lv3']);
   // ましろの節目は東京（mukai）が舞台。東京では同じ街なので印を付けない（第5章は tonari で思い出す形・#2024 A2）。
   assert(!tagged.some(id => id.includes('mashiro')));

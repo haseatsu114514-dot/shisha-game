@@ -53,7 +53,7 @@ html:root:is([data-ui-theme="cut-paper"],[data-ui-theme="amber"],[data-ui-theme=
   font-family:"Suien Blue Mincho",serif; font-weight:400; letter-spacing:.04em;
 }
 html:root[data-ui-theme] body:not(.game-ds) .vn-box.has-inner .vn-text { min-height:44px; }
-html:root[data-ui-theme] body:not(.game-ds) .vn-inner { font-size:22px; line-height:31px; margin-top:10px; }
+html:root[data-ui-theme] body:not(.game-ds) .vn-inner { font-size:28px; line-height:44px; margin-top:2px; white-space:nowrap; }
 /* 名前札を上辺へ重ねる。操作札は紙・金枠では少し離し、煙では低い輪郭へ接続する。 */
 html:root[data-ui-theme] body:not(.game-ds) .vn-box .vn-name {
   left:var(--vn-name-inset); top:var(--vn-caption-top); width:max-content; min-width:168px; max-width:272px; height:50px;
@@ -84,7 +84,7 @@ html:root[data-ui-theme] body:not(.game-ds) .vn-controls {
 html:root[data-ui-theme] body:not(.game-ds) .vn-controls::after { content:none; }
 html:root[data-ui-theme] body:not(.game-ds) .vn-controls .vn-ctl {
   position:relative; min-width:0; min-height:44px; height:44px; padding:0 6px;
-  border:0; border-radius:8px; font-family:var(--font); font-size:17px; font-weight:500;
+  border:0; border-radius:8px; font-family:var(--font); font-size:19px; font-weight:500;
   line-height:1.2; letter-spacing:.035em; background:none; box-shadow:none; color:var(--vn-tab-text);
 }
 html:root[data-ui-theme] body:not(.game-ds) .vn-controls .vn-ctl + .vn-ctl::before {

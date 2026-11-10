@@ -240,6 +240,96 @@
         341
       ],
       "selection": "採用（2026-11-10、Issue #3053、SELECTION.md）"
+    },
+    {
+      "original": "rank-plate-A.png",
+      "spec": "CR-UI01",
+      "sha256": "dc5af3f12be25f3e7e2ae7b0fa1b4f9a3dfc3a4ef16cd324129905041a820f9e",
+      "bytes": 108863,
+      "size": [
+        512,
+        160
+      ],
+      "mode": "RGBA",
+      "source_package": "cr08-3055-redo-20261110",
+      "source_raw": "asset_sources/ch4-camel-race/ui/records/3055-raw/rank-plate-A.png",
+      "derivative": "assets/ui/camel_race/ui/rank-plate.png + remake/img/ui/camel_race/ui/rank-plate.webp",
+      "selection": "合格見込み・ミューズ最終検品待ち"
+    },
+    {
+      "original": "rank-plate-player-A.png",
+      "spec": "CR-UI02",
+      "sha256": "b9b2b9d9be04976673ba0f9280cf53807415179e2cac55c15ce38635856bc6b7",
+      "bytes": 124228,
+      "size": [
+        512,
+        160
+      ],
+      "mode": "RGBA",
+      "source_package": "cr08-3055-redo-20261110",
+      "source_raw": "asset_sources/ch4-camel-race/ui/records/3055-raw/rank-plate-player-A.png",
+      "derivative": "assets/ui/camel_race/ui/rank-plate-player.png + remake/img/ui/camel_race/ui/rank-plate-player.webp",
+      "selection": "合格見込み・ミューズ最終検品待ち"
+    },
+    {
+      "original": "medal-gold-A.png",
+      "spec": "CR-UI03",
+      "sha256": "973ef6b99634d66daf9174a567b6be42fc18815ac2d88eab25f0a2c477c7585f",
+      "bytes": 97376,
+      "size": [
+        256,
+        256
+      ],
+      "mode": "RGBA",
+      "source_package": "cr08-3055-redo-20261110",
+      "source_raw": "asset_sources/ch4-camel-race/ui/records/3055-raw/medal-gold-A.png",
+      "derivative": "assets/ui/camel_race/ui/medal-gold.png + remake/img/ui/camel_race/ui/medal-gold.webp",
+      "selection": "合格見込み・ミューズ最終検品待ち"
+    },
+    {
+      "original": "gauge-frame-A.png",
+      "spec": "CR-UI05",
+      "sha256": "427f7615569e65486efe42e82865ec0233d4b0d6de7c65d71c0333f680fc7d2c",
+      "bytes": 73025,
+      "size": [
+        800,
+        96
+      ],
+      "mode": "RGBA",
+      "source_package": "cr08-3055-redo-20261110",
+      "source_raw": "asset_sources/ch4-camel-race/ui/records/3055-raw/gauge-frame-A.png",
+      "derivative": "assets/ui/camel_race/ui/gauge-frame.png + remake/img/ui/camel_race/ui/gauge-frame.webp",
+      "selection": "合格見込み・ミューズ最終検品待ち"
+    },
+    {
+      "original": "gauge-fill-A.png",
+      "spec": "CR-UI05",
+      "sha256": "2af2f42ea1396ef435ffba958eb42853345bb0b92f4de9e35a006198240ea88f",
+      "bytes": 40968,
+      "size": [
+        800,
+        64
+      ],
+      "mode": "RGBA",
+      "source_package": "cr08-3055-redo-20261110",
+      "source_raw": "asset_sources/ch4-camel-race/ui/records/3055-raw/gauge-fill-A.png",
+      "derivative": "assets/ui/camel_race/ui/gauge-fill.png + remake/img/ui/camel_race/ui/gauge-fill.webp",
+      "selection": "合格見込み・ミューズ最終検品待ち"
+    },
+    {
+      "original": "call-plate-A.png",
+      "spec": "CR-UI12",
+      "sha256": "5e0ce0a261afc6145f52da9d81051a3dbcc56135e8bc21aa06e8a673df058ab8",
+      "bytes": 128149,
+      "size": [
+        720,
+        160
+      ],
+      "mode": "RGBA",
+      "source_package": "cr08-3055-redo-20261110",
+      "source_raw": "asset_sources/ch4-camel-race/ui/records/3055-raw/call-plate-A.png",
+      "derivative": "assets/ui/camel_race/ui/call-plate.png + remake/img/ui/camel_race/ui/call-plate.webp",
+      "selection": "合格見込み・ミューズ最終検品待ち"
     }
   ],
   "remaining41_received": "2026-11-10、41枚の原画を受領。採用8枚のみこの台帳に追記。既存6件は維持。詳細は Issue #3053 / work/codex-a-cr08-41-1110/SELECTION.md。"

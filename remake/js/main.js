@@ -3,6 +3,7 @@ import { installNoZoom } from "./core/no-zoom.js";
 import { installDoubleTapGuard } from "./core/double-tap-guard.js";
 import { TOURNAMENT_DAY } from "./core/rules.js";
 import { $, sleep } from "./core/util.js";
+import { initStageFit } from "./core/stage-fit.js";
 import { loadAll, loadDeferredDialogues, loadCinemaDialogue, loadTournamentCraftDialogue, DB, bgUrl, portraitInfo, makingUrl } from "./core/data.js";
 import { loadVnFonts } from "./core/vn-fonts.js";
 import { initLayers, imageReady, FRAME_ART, warmUiArt } from "./core/ui.js";
@@ -30,36 +31,8 @@ enableSeenLinePersistence(); // 既読SKIPの記録は本編でだけ端末に�
 // リリース前に、この1行と remake/js/dev/ のフォルダを消す（remake/README.md「デバッグ用の道具」）
 try { const q = new URLSearchParams(location.search).get("debug"); if (q !== null) localStorage.setItem("suien_debug", q === "1" ? "1" : "0"); if (localStorage.getItem("suien_debug") === "1") import("./dev/debug-panel.js").then(m => m.mountDebugPanel()).catch(e => console.error(e)); } catch {}
 
-const PHONE_DENSITY_K = 0.62;
-function fitStage() {
-  const stage = $("#stage");
-  const viewport = window.visualViewport;
-  // Browser zoom shrinks visualViewport in CSS pixels. Normalize that zoom out
-  // of the game fit so it does not also change --k (or cancel accessible zoom).
-  // Keep following the visible height when browser chrome / the keyboard moves.
-  const zoom = viewport?.scale || 1;
-  const w = viewport ? viewport.width * zoom : window.innerWidth;
-  const h = viewport ? viewport.height * zoom : window.innerHeight;
-  const k = Math.min(w / 1280, h / 720);
-  stage.style.setProperty("--k", String(k));
-  // スマホ規格（#2851）: 横持ちスマホ（Plus/Pro Max の 0.60 も含む）で共通部品の文字・タップ部品を大きくする。css/phone-density.css
-  // 横長の画面だけ（PC の縦長ウィンドウや縦持ちは対象外。縦持ちのスマホは横向きの案内になる）
-  if (k < PHONE_DENSITY_K && w > h) document.documentElement.dataset.density = "phone";
-  else delete document.documentElement.dataset.density;
-  // 画面方針（2026-11-09 オーナー決定・#3035）: ブラウザアドベンチャー式。ステージは常に
-  // 1280×720 の固定構図をそのまま拡大縮小し、画面に余った分は余白として扱う。
-  // 余白は場面の背景をぼかして埋める（#backdrop・base.css／差し替えは core/ui.js の setBg）。
-  // ワイド拡張（#2861: ステージを最大1600まで広げる方式）は廃止した。
-  stage.style.removeProperty("--stage-w");
-  stage.style.removeProperty("--stage-bar");
-  delete stage.dataset.wide;
-}
-
 export async function boot() {
-  fitStage();
-  window.addEventListener("resize", fitStage);
-  window.addEventListener("orientationchange", () => setTimeout(fitStage, 200));
-  window.visualViewport?.addEventListener("resize", fitStage);
+  initStageFit($("#stage")); // 画面の当て方は共通部品（core/stage-fit.js・#3076）
   installRotateGuard(); // 縦持ちの回転ガード中は、制作の時計と音を止める（#2941）
   initLayers();
   initGameLayout();

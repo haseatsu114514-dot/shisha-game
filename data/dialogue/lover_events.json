@@ -503,7 +503,7 @@
         {
           "speaker": "minto",
           "face": "ura_smile",
-          "text": "ん、……ふたりで作ろ。ミントの量は、私が決めるからね"
+          "text": "ん、……ふたりで作ろう。ミントの量は、私が決めるからね"
         }
       ]
     },
@@ -972,6 +972,85 @@
       ]
     },
     {
+      "dialogue_id": "lover_ageha_lv2_b",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_street_day.png",
+        "private_scene": true
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "食事のあと、あげはは店員の手元から、目を離さなかった"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "見て、今の、お冷の置き方"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "音、させてないな"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "そ！ 客が話してるとき、グラスを静かに置く人"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "うち、ああいうの見ると、この店好きってなる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "席を選んだ理由、それだったのか"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "半分ね、もう半分は、ハジメっちと見たいから"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "……一個、言っていい？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "うん"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "この席、また予約しよ"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "ハジメっちと、見たいの"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "じゃあ、またこの席にしよう"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "うん、うちが選ぶから、ハジメっちは座ってて"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "グラスが静かに置かれる音だけが、テーブルに残った"
+        }
+      ]
+    },
+    {
       "dialogue_id": "lover_ageha_lv3",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_street_night.png",
@@ -1084,7 +1163,7 @@
         {
           "speaker": "ageha",
           "face": "normal",
-          "text": "うちのしてほしいこと、前より口に出せるようになった"
+          "text": "うちがしてほしいこと、前より口に出せるようになった"
         },
         {
           "speaker": "ageha",
@@ -1511,6 +1590,229 @@
       ]
     },
     {
+      "dialogue_id": "lover_hiyori_lv1_b",
+      "comment": "恋人Lv1の続き（#3081）。斧投げの帰り道。大会には触れない。地元で読む。",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_street_night.png",
+        "private_scene": true,
+        "hometown": true
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "斧投げの店を出て、夜の道を並んで歩く"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ひよりさんのお腹が、小さく鳴った"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "sad",
+          "text": "……今のは、夜風。か細い、夜風なの",
+          "inner": "恋人の前でも、一回は儚さで誤魔化したくなる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "窓、ないですよ。外です"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "surprise",
+          "text": "外にも、夜風はあるでしょ！"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "あります。でも、お腹の音のほうが大きく聞こえました"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "love_blush",
+          "text": "……もう、隠すのやめる"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "お腹、すいた。斧で、声と一緒に体力も使った",
+          "inner": "言えた。普通に、言えた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ラーメン、寄りますか"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "smile",
+          "text": "今日は座って食べる元気が、的に全部持っていかれた"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "小さいのでいい。あったかい紅茶があれば、それで"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "自販機の明かりの前で、ひよりさんが足を止めた"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "これ。甘くないほう"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "serious",
+          "text": "桃は、煙で吸いたいから。缶で先に使いたくないの"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "俺が買います。ひよりさんは、その缶で"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "smile",
+          "text": "うん。おそろいにして"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "ひとりで選ぶと、また夜風のふりしちゃうから",
+          "inner": "おそろい、って自分から言った。照れる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "熱い紅茶、二つですね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "缶を二つ受け取って、また歩き出す"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ひよりさんの肩が、こちらの腕に軽く触れた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "手、痛くないですか。俺も、何投か握ってました"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "serious",
+          "text": "見せて。うん、赤くなってる。私より正直",
+          "inner": "触りたい。でも缶があるから、今日はこれで我慢"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ひよりさんのほうは、大丈夫ですか"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "smile",
+          "text": "大丈夫。声を出した分、肩の力が抜けた"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "会社だと、この抜け方はできないから。ここまでの道で、やっと"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "smile",
+          "text": "斧、今日も楽しかった"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "声、大きくなってない？ 店の中、静かだったし"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "なってました。いい声でしたよ"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "smile",
+          "text": "……じゃあ、次も連れてって"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "儚い女の、夜の運動ってことにする",
+          "inner": "運動って言うと、総務の自分が出る。まあいいか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい。お腹が鳴る前に、何か食べられるところも探します"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "smile",
+          "text": "約束ね。ラーメンは、ちゃんと座れる日に"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "smile",
+          "text": "味玉つきで。今日は、紅茶だけで許して",
+          "inner": "味玉は先に言っちゃった。隠し味にするつもりだったのに"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "許します。今日は、このままもう少し歩きましょう"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "love_blush",
+          "text": "……うん。帰りたくない、までは言わない"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "love_blush",
+          "text": "でも、この角までは一緒がいい",
+          "inner": "本当は角の先だ。今日は、これで十分"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "缶、あったかい。手は、これで十分"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "冷えてきたら、言ってください"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "smile",
+          "text": "言う。夜風のふりは、もう一回で打ち止め"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "夜の道に、紅茶の湯気が小さく立った"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ひよりさんは缶を両手で包んだまま、隣を離れなかった"
+        }
+      ]
+    },
+    {
       "dialogue_id": "lover_hiyori_lv2",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_street_night.png",
@@ -1783,7 +2085,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "卓上台で、桃と紅茶の一台を作りますね"
+          "text": "卓上で、桃と紅茶の一台を作りますね"
         },
         {
           "speaker": "hiyori",

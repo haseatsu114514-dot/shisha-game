@@ -33,7 +33,8 @@ console.log("OK: all seven romance dates have complete data and Mashiro's voice 
 
 // 恋人の節目は台詞中のキューも能力の加算元になる。入れ子の分岐を含めて残さない。
 const milestones = JSON.parse(readFileSync(new URL("../../data/dialogue/lover_events.json", import.meta.url), "utf8")).dialogues;
-assert.equal(milestones.length, 35);
+// main は 36（#3088 の lover_hiyori_lv1_b 込み）。このPRの lover_ageha_lv2_b で 37。
+assert.equal(milestones.length, 37);
 for (const id of ["tsumugi", "minto", "rio", "ageha", "mashiro", "samechan", "hiyori"]) {
   for (let level = 1; level <= 5; level++) {
     const scene = milestones.find(scene => scene.dialogue_id === `lover_${id}_lv${level}`);
@@ -49,7 +50,7 @@ function checkMilestone(value, id) {
   }
 }
 for (const scene of milestones) checkMilestone(scene, scene.dialogue_id);
-console.log("OK: all 35 lover milestones contain no ability rewards or cues");
+console.log("OK: all 37 lover milestones contain no ability rewards or cues");
 
 // ひよりの恋人Lv1〜5（#1498 オーナー決定: 斧投げ・ラーメン・総務の区切り・儚い女の演技 → epilogue_hiyori）。
 const { existsSync } = await import("node:fs");
