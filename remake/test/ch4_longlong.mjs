@@ -27,7 +27,9 @@ assert.deepEqual(LONGLONG_VISIT_STORIES.map(e => [e.scene, e.heart]), [
 assert.deepEqual([...LONGLONG_IDS], [...LONGLONG_VISIT_STORIES.map(e => e.scene), ...LONGLONG_TALKS]);
 assert.deepEqual([...LONGLONG_LOAD_IDS], [...LONGLONG_IDS, LONGLONG_FINALE]);
 assert.equal(LONGLONG_CHAR, "master_hookah");
-assert(manifest.backgrounds.includes(`${LONGLONG_BG}.png`), "the placeholder background exists");
+assert.equal(LONGLONG_BG, "bg_longlong_shop", "Longlong visits use the adopted shop interior");
+assert(manifest.backgrounds.includes(`${LONGLONG_BG}.png`), "shop background is registered");
+assert(manifest.webp.includes(`backgrounds/${LONGLONG_BG}.png`), "shop background uses the display WebP");
 const value = { day: 50, flags: {} };
 assert.deepEqual(longlongRecord(value), { read: {}, talks: 0 });
 assert.deepEqual(nextLonglongVisit(value, 0), { id: "ch4_longlong_first", kind: "story" });
