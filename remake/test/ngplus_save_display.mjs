@@ -3,6 +3,7 @@
 // および手動セーブ時の別周回上書き確認に添える注意文の判定。
 // 表示は生データを相手にするため、ここでは移行・保存が起きないことも確認する。
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 
 const store = new Map();
 globalThis.localStorage = {
@@ -77,4 +78,130 @@ assert.equal(overwriteCycleNote({ cycle: 3, cycleId: "run-A" }, {}), null);
   assert.equal(store.size, 0); // localStorage にも触らない
 }
 
+// ---------------------------------------------------------------- 保存済みの心得の盤（#3120）
+const { saveGrowthSummary } = await import("../js/core/save-growth-display.js");
+const { BOARD_VERSION, MAX_LEVEL } = await import("../js/core/growth.js");
+const { BOARD_KEYS, NODES, statCount, statTotal } = await import("../js/core/growth-board.js");
+const freeze = value => {
+  if (value && typeof value === "object") { Object.values(value).forEach(freeze); Object.freeze(value); }
+  return value;
+};
+const saved = freeze({ schema: 27, day: 2, stats: { technique: 10 }, growth: {
+  boardVersion: BOARD_VERSION, level: 7, xp: 99999, settledXp: 0,
+  hidane: { any: 4, body: 2, sense: 1, wisdom: 3 },
+  nodes: ["B1", "B1", "S1", "W1", "BG1", "K01", "missing", "__proto__", null],
+  paid: { B1: { any: 1 } }, target: "B2",
+} });
+const beforeGrowth = JSON.stringify(saved), beforeStorage = [...store];
+const summary = saveGrowthSummary(saved, true);
+assert.equal(summary.level, 7); // XP から再精算しない
+assert.equal(summary.hidane, 10);
+assert.equal(summary.hidaneText, "白火 4・紅火 2・蒼火 1・翠火 3");
+assert.deepEqual(summary.boards.map(b => [b.name, b.count, b.total]), [
+  ["才能", 1, 27], ["感覚", 1, 26], ["理論", 1, 26],
+]);
+assert.equal(summary.note, null);
+assert.equal(saveGrowthSummary(saved, false), null);
+for (const value of [null, {}, { growth: null }, { growth: [] }, { growth: "old" }]) {
+  assert.equal(saveGrowthSummary(value, true), null);
+}
+// 版が違う盤の ID を現行として再解釈したり、返金して表示したりしない。
+for (const boardVersion of [undefined, BOARD_VERSION - 1, BOARD_VERSION + 1]) {
+  const old = freeze({ ...saved, growth: { ...saved.growth, boardVersion } });
+  const oldBefore = JSON.stringify(old), view = saveGrowthSummary(old, true);
+  assert.equal(view.boards, null);
+  assert.match(view.note, /別の版/);
+  assert.equal(view.hidane, 10);
+  assert.equal(JSON.stringify(old), oldBefore);
+}
+// 完成した盤も MENU と同じ分母。重複・未知 ID は増やさない。
+const full = saveGrowthSummary({ growth: { boardVersion: BOARD_VERSION, level: MAX_LEVEL,
+  nodes: [...NODES.map(n => n.id), ...NODES.map(n => n.id), "unknown"] } }, true);
+for (const [i, key] of BOARD_KEYS.entries()) {
+  assert.equal(full.boards[i].total, statTotal(key));
+  assert.equal(full.boards[i].count, statCount(key, new Set(NODES.map(n => n.id))));
+}
+const malformed = saveGrowthSummary({ growth: { boardVersion: BOARD_VERSION, level: Infinity,
+  nodes: {}, hidane: { any: -3, body: "4", sense: Infinity, wisdom: NaN } } }, true);
+assert.equal(malformed.level, 1);
+assert.equal(malformed.hidane, 0);
+assert(malformed.boards.every(b => b.count === 0));
+store.set("suien_growth_preview", "0");
+assert.equal(saveGrowthSummary(saved), null);
+store.delete("suien_growth_preview");
+assert.equal(saveGrowthSummary(saved).level, 7);
+assert.equal(JSON.stringify(saved), beforeGrowth);
+assert.deepEqual([...store], beforeStorage);
+
+// 実際の saves.js を小さなDOMホストで動かす。音とモーダル基盤だけ差し替える。
+class Element {
+  constructor(tag) {
+    this.tagName = tag; this.children = []; this.attrs = {}; this.dataset = {}; this.listeners = {};
+    this.className = ""; this.style = { setProperty(k, v) { this[k] = v; } };
+    this.classList = {
+      add: (...names) => { this.className = [...new Set([...this.className.split(" ").filter(Boolean), ...names])].join(" "); },
+      remove: (...names) => { this.className = this.className.split(" ").filter(n => !names.includes(n)).join(" "); },
+      contains: name => this.className.split(" ").includes(name),
+    };
+  }
+  append(node) { this.children.push(node); }
+  replaceChildren(...nodes) { this.children = nodes; }
+  setAttribute(key, value) { this.attrs[key] = String(value); }
+  addEventListener(key, fn) { this.listeners[key] = fn; }
+  set textContent(value) { this.text = String(value); this.children = []; }
+  get textContent() { return (this.text || "") + this.children.map(n => n.textContent).join(""); }
+  click() { if (!("disabled" in this.attrs)) this.listeners.click?.({}); }
+}
+globalThis.Node = Element;
+globalThis.document = { createElement: tag => new Element(tag), createTextNode: text => {
+  const node = new Element("#text"); node.textContent = text; return node;
+} };
+const modalRoot = new Element("div"), warnings = [];
+globalThis.__saveDisplayTest = { layers: { modal: modalRoot }, modal: async () => false,
+  toast: message => warnings.push(message), SE: { select() {}, cancel() {}, money() {} } };
+const asModule = text => `data:text/javascript;base64,${Buffer.from(text).toString("base64")}`;
+const savesUrl = new URL("../js/scenes/saves.js", import.meta.url);
+const source = readFileSync(savesUrl, "utf8").replace(/from "([^"]+)"/g, (_, path) => {
+  const stub = path === "../core/ui.js" ? "export const {layers,modal,toast}=globalThis.__saveDisplayTest;"
+    : path === "../core/audio.js" ? "export const {SE}=globalThis.__saveDisplayTest;" : null;
+  return `from ${JSON.stringify(stub ? asModule(stub) : new URL(path, savesUrl).href)}`;
+});
+const saves = await import(asModule(source));
+const core = await import("../js/core/state.js");
+const descendants = root => root.children.flatMap(n => [n, ...descendants(n)]);
+const byClass = (root, name) => descendants(root).filter(n => n.classList.contains(name));
+const row = i => descendants(modalRoot).find(n => n.dataset.test === `slot-${i}`);
+const cancel = () => descendants(modalRoot).find(n => n.dataset.test === "slot-cancel").click();
+const legacy = { day: 2, stats: { technique: 10 } };
+const future = { ...saved, schema: core.SCHEMA + 1 };
+for (const [i, slot] of core.SAVE_SLOTS.entries()) store.set(slot.key, JSON.stringify([saved, saved, legacy, future][i]));
+const slotSnapshot = [...store], stateSnapshot = JSON.stringify(core.state);
+for (const mode of ["title-load", "save", "game-load", "save", "title-load"]) {
+  const pending = mode === "save" ? saves.saveFlow() : saves.loadFlow({ inGame: mode === "game-load" });
+  for (const i of [0, 1]) {
+    assert.match(row(i).textContent, /Lv\.7.*火種 10/);
+    assert.deepEqual(byClass(row(i), "ss-stat").map(n => n.children[0].textContent), ["才能 1/27", "感覚 1/26", "理論 1/26"]);
+  }
+  assert.equal(byClass(row(2), "ss-stat").length, 5);
+  assert.equal(byClass(row(2), "ss-growth").length, 0);
+  assert.match(row(3).textContent, /新しいバージョンのセーブです/);
+  assert.equal(byClass(row(3), "ss-growth").length, 0);
+  assert.equal("disabled" in row(0).attrs, mode === "save");
+  if (mode !== "save") { row(3).click(); assert.equal(modalRoot.classList.contains("show"), true); }
+  assert.deepEqual([...store], slotSnapshot);
+  assert.equal(JSON.stringify(core.state), stateSnapshot);
+  cancel();
+  assert.equal(await pending, mode === "save" ? false : null);
+  assert.equal(modalRoot.children.length, 0);
+}
+assert.equal(warnings.length, 3);
+store.set("suien_growth_preview", "0");
+const oldMode = saves.loadFlow();
+assert.equal(byClass(modalRoot, "ss-growth").length, 0);
+assert.equal(byClass(row(0), "ss-stat").length, 5);
+cancel(); await oldMode;
+store.delete("suien_growth_preview");
+delete globalThis.__saveDisplayTest;
+
 console.log("ngplus_save_display: all assertions passed");
+

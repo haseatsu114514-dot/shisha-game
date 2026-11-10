@@ -7,6 +7,7 @@ import { cycleBadgeText, overwriteCycleNote } from "../core/cycle-display.js";
 import { chapterDay } from "../core/chapter-clock.js";
 import { SE } from "../core/audio.js";
 import { stepOfValue } from "../core/stat-progress.js";
+import { saveGrowthSummary } from "../core/save-growth-display.js";
 
 const PHASE_LABEL = { opening: "プロローグ", daily: "日常", tournament: "大会当日", aftermath: "大会後" };
 const MAX_FACES = 8;
@@ -42,6 +43,22 @@ function statGauges(stats) {
   }));
 }
 
+/** タイトル・ゲーム内、AUTO・手動枠とも保存済みの盤を同じ基準で示す。 */
+function growthGauges(data) {
+  const summary = saveGrowthSummary(data);
+  if (!summary) return [statGauges(data.stats)];
+  return [
+    el("small.ss-growth", { text: `Lv.${summary.level}　火種 ${summary.hidane}`, title: summary.hidaneText,
+      "aria-label": `Lv.${summary.level}、未使用の火種 ${summary.hidane}（${summary.hidaneText}）` }),
+    summary.boards ? el("span.ss-stats.ss-board-stats", { style: { gridTemplateColumns: "repeat(3, minmax(0, 1fr))" } },
+      summary.boards.map(board => el("span.ss-stat", { title: `${board.name}の能力マス ${board.count}/${board.total}`,
+        "aria-label": `${board.name}の能力マス ${board.count}/${board.total}` }, [
+        el("small", { text: `${board.name} ${board.count}/${board.total}` }),
+        el("i", { style: { "--v": `${board.count / board.total * 100}%` } }),
+      ]))) : el("small", { text: summary.note }),
+  ];
+}
+
 /** 出会ったキャラの顔アイコン。アイコンが無いキャラ・重複・ネタバレになる private 顔（oneesan）は出さない */
 function metFaces(data) {
   const seen = new Set();
@@ -70,7 +87,7 @@ function slotBody(data) {
   return [
     el("span.ss-info", [
       el("b", [el("em.ss-chapter", { text: info.chapter }), el("span", { text: info.day }), info.phase ? el("em.ss-phase", { text: info.phase }) : null]),
-      statGauges(data.stats),
+      ...growthGauges(data),
       el("small", { text: `${info.money}${info.when ? `　${info.when}` : ""}` }),
     ]),
     metFaces(data),
@@ -174,3 +191,4 @@ export async function loadWithRecovery({ inGame = false } = {}) {
     if (!retry) return false;
   }
 }
+

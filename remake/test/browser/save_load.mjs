@@ -34,6 +34,54 @@ async function prepare(page) {
 }
 
 await suite("save-load", async check => {
+  await check("growth-summary-shared-by-title-and-game-save-load", async page => {
+    await prepare(page);
+    const saved = await page.evaluate(async () => {
+      const { core } = QA;
+      const { newGrowth } = await import("./js/core/growth.js");
+      const base = { ...core.newGame(), phase: "daily", day: 2, growth: { ...newGrowth(), level: 7,
+        hidane: { any: 4, body: 2, sense: 1, wisdom: 3 }, nodes: ["B1", "S1", "W1"] } };
+      const legacy = { ...base }; delete legacy.growth;
+      const future = { ...base, schema: core.SCHEMA + 1 };
+      for (const [i, slot] of core.SAVE_SLOTS.entries()) {
+        localStorage.setItem(slot.key, JSON.stringify([base, base, legacy, future][i]));
+      }
+      (await import("./js/scenes/title.js")).showTitle();
+      return core.SAVE_SLOTS.map(slot => localStorage.getItem(slot.key));
+    });
+    const assertSummary = async () => {
+      for (const i of [0, 1]) {
+        const row = page.locator(`[data-test="slot-${i}"]`);
+        assert.match(await row.locator(".ss-growth").textContent(), /Lv\.7.*火種 10/);
+        assert.deepEqual(await row.locator(".ss-board-stats small").allTextContents(), ["才能 1/27", "感覚 1/26", "理論 1/26"]);
+        assert.match(await row.locator(".ss-growth").getAttribute("aria-label"), /白火 4・紅火 2・蒼火 1・翠火 3/);
+      }
+      assert.equal(await page.locator('[data-test="slot-2"] .ss-stat').count(), 5);
+      assert.equal(await page.locator('[data-test="slot-2"] .ss-growth').count(), 0);
+      assert.match(await page.locator('[data-test="slot-3"]').textContent(), /新しいバージョンのセーブです/);
+      assert.equal(await page.locator('[data-test="slot-3"] .ss-growth').count(), 0);
+      const now = await page.evaluate(() => QA.core.SAVE_SLOTS.map(slot => localStorage.getItem(slot.key)));
+      assert.deepEqual(now, saved); // 閲覧で旧保存・盤・AUTOを移行や再保存しない
+    };
+    await page.locator('[data-test="title-load"]').click();
+    await assertSummary();
+    await page.locator('[data-test="slot-3"]').click(); // 未来schemaの拒否を維持
+    await assertSummary();
+    await page.locator('[data-test="slot-cancel"]').click();
+    for (const mode of ["save", "load", "save", "load"]) {
+      await page.evaluate(mode => { QA.pending = mode === "save" ? QA.saves.saveFlow() : QA.saves.loadFlow({ inGame: true }); }, mode);
+      await assertSummary();
+      assert.equal(await page.locator('[data-test="slot-0"]').isDisabled(), mode === "save");
+      await page.locator('[data-test="slot-cancel"]').click();
+      assert.equal(await page.evaluate(() => QA.pending), mode === "save" ? false : null);
+    }
+    await page.evaluate(() => { localStorage.setItem("suien_growth_preview", "0"); QA.pending = QA.saves.loadFlow(); });
+    assert.equal(await page.locator(".ss-growth").count(), 0);
+    assert.equal(await page.locator('[data-test="slot-0"] .ss-stat').count(), 5);
+    await page.locator('[data-test="slot-cancel"]').click();
+    await page.evaluate(() => localStorage.removeItem("suien_growth_preview"));
+  });
+
   await check("chapter-two-first-day-slot-labels-survive-reopen", async page => {
     await prepare(page);
     const oldRaw = await page.evaluate(async () => {
@@ -504,3 +552,4 @@ await suite("save-load", async check => {
     assert.deepEqual(await storageSnapshot(page), before);
   }, { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
 });
+
