@@ -8,7 +8,7 @@
 import { el } from "../core/util.js";
 import { SE, unlockAudio, createDesertRideSe, currentBgm, playBgm } from "../core/audio.js";
 import { COURSE, EDGE, SPEED, SPIN, DEFAULT_SEED, generateCourse, practiceCourse, createGame, step, press, boost, chargeBoost, summary, curveAt, botControl,
-  rivalRun, rivalAt, RULES_VERSION } from "./desert-ride-model.js";
+  rivalRun, rivalAt, RULES_VERSION, jumpHeight } from "./desert-ride-model.js";
 import { DESERT_ART, loadDesertArt, riderPose } from "./desert-ride-art.js";
 import { imgFileUrl } from "../core/img-file.js";
 
@@ -151,12 +151,14 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
     const hud = el("div.dr-hud", { "aria-hidden": "true" });
     const caption = el("p.dr-caption", { role: "status", dataset: { test: "desert-caption" } });
     const pop = el("div.dr-pop", { "aria-hidden": "true" });
-    // トリックを決めた時のカットイン（斜めの帯に、跳んでいる背面の絵と大きな角度）
+    // 判定は左上のスコア欄に固定し、走路と人物を覆わない。開始合図だけ中央。
     const cutin = el("div.dr-cutin", { "aria-hidden": "true", dataset: { test: "desert-cutin" } });
+    const startPop = el("div.dr-start-pop", { "aria-hidden": "true" });
+    const feedback = el("div.dr-feedback", { dataset: { test: "desert-feedback" } }, [cutin, pop]);
     const panel = el("div.dr-panel");
     const controls = el("div.dr-controls", { hidden: true });
     const quit = el("button.dr-quit", { type: "button", text: "✕", title: "やめる", "aria-label": "やめる", dataset: { test: "desert-quit" }, hidden: true });
-    root.append(canvas, hud, cutin, pop, caption, controls, quit, panel);
+    root.append(canvas, hud, startPop, caption, controls, quit, panel);
     host.append(root);
     root.focus({ preventScroll: true });
 
@@ -234,6 +236,7 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       rideSe.stop();
       mode = null; game = null; tut = null; bot = null;
       controls.hidden = true; quit.hidden = true; caption.textContent = ""; hud.replaceChildren();
+      startPop.classList.remove("show");
       setPhase("menu");
       const start = el("button.btn.primary.dr-button", { type: "button", text: results.length ? "もう一度滑る" : "滑る", dataset: { test: "desert-start" }, onclick: () => startRun("run", "noor") });
       const naruButton = rivals.includes("naru") ? el("button.btn.dr-button", { type: "button", text: "★ なると勝負（裏）", dataset: { test: "desert-start-naru" }, onclick: () => startRun("run", "naru") }) : null;
@@ -277,6 +280,7 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       root.dataset.countdown = countdown > 0 ? "on" : "";
       root.dataset.rival = rival ? raceWith : "";
       tut = kind === "practice" ? { step: "move", moved: false, bumpTries: 0, said: new Set() } : null;
+      pop.classList.remove("show"); startPop.classList.remove("show");
       controls.hidden = false; quit.hidden = false;
       setPhase(kind);
       caption.textContent = kind === "practice" ? tutorialText("move") : "";
@@ -298,15 +302,13 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
     let font = null;
     const fontFamily = () => (font ??= getComputedStyle(root).fontFamily || "sans-serif");
     let cutinTimer = 0;
-    /** トリックのカットイン。360 以上で出す。gradeは着地の出来（perfect／good／plain）。 */
+    /** 360 以上の着地結果。最新の一件だけをスコア欄に表示する。 */
     function showCutin(trick, grade) {
-      const sub = grade === "perfect" ? "PERFECT LANDING!" : grade === "good" ? "NICE LANDING" : "LANDED";
+      const sub = grade === "perfect" ? "PERFECT" : grade === "good" ? "GOOD" : "LANDED";
       cutin.replaceChildren(el("div.dr-cutin-band", { dataset: { grade, dir: trick.dir > 0 ? "right" : "left" } }, [
-        el("i.dr-cutin-lines"),
-        el("img.dr-cutin-rider", { src: imgFileUrl(DESERT_ART.riderJump.file), alt: "" }),
-        el("div.dr-cutin-words", [el("b", { text: String(trick.degrees) }), el("span", { text: sub })]),
+        el("div.dr-cutin-words", [el("b", { text: `${trick.degrees}°` }), el("span", { text: sub })]),
       ]));
-      pop.classList.remove("show"); // 回転中の角度の表示は帯に任せて消す
+      pop.classList.remove("show"); // 回転中の角度を着地結果で置き換える
       cutin.classList.remove("show"); void cutin.offsetWidth; cutin.classList.add("show");
       cutin.dataset.degrees = String(trick.degrees);
       clearTimeout(cutinTimer);
@@ -316,8 +318,12 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
     function floater(text, kind = "") { floaters.push({ text, kind, age: 0, life: 0.95, dx: (Math.random() - 0.5) * 60 }); if (floaters.length > 8) floaters.shift(); }
     function showPop(text, kind = "") {
       popText = text; popKind = kind; popT = 1;
-      pop.textContent = text; pop.dataset.kind = kind; pop.classList.remove("show");
-      void pop.offsetWidth; pop.classList.add("show");
+      // 着地直後の自動ブースト等で角度が一瞬で消えない。転倒は優先して知らせる。
+      if (cutin.classList.contains("show") && ["boost", "combo", "jump"].includes(kind)) return;
+      const node = kind === "count" || kind === "go" ? startPop : pop;
+      if (node === pop) { clearTimeout(cutinTimer); cutin.classList.remove("show"); cutin.replaceChildren(); }
+      node.textContent = text; node.dataset.kind = kind; node.classList.remove("show");
+      void node.offsetWidth; node.classList.add("show");
     }
 
     // ---- HUD ---------------------------------------------------------------------------
@@ -331,7 +337,7 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       // BOOST は ⚡ とゲージだけ（% の文字は出さない。#2838）
       hudNodes.gaugeBox = el("div.dr-gauge", { dataset: { test: "desert-gauge" }, title: "BOOST" }, [hudNodes.gauge]);
       hud.replaceChildren(
-        el("div.dr-hud-left", [el("small", { text: mode === "practice" ? "PRACTICE" : "SCORE" }), hudNodes.score, hudNodes.combo]),
+        el("div.dr-hud-left", [el("small", { text: mode === "practice" ? "PRACTICE" : "SCORE" }), hudNodes.score, hudNodes.combo, feedback]),
         el("div.dr-hud-center", [
           el("div.dr-progress", [hudNodes.progress, el("b.dr-progress-sun"), rival ? hudNodes.noor : null, hudNodes.you]),
           rival ? hudNodes.race : null,
@@ -457,7 +463,7 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
         if (event.kind === "land") {
           rideSe.play("land", 0.55);
           const big = event.grade !== "bounce" && event.grade !== "hop";
-          const big360 = trick && trick.half >= 2; // 360 以上はカットイン（真ん中の文字は出さない）
+          const big360 = trick && trick.half >= 2; // 360 以上は角度と着地を一つの結果にまとめる
           if (big360) showCutin(trick, event.grade);
           if (event.grade === "perfect") { SE.perfect(); if (!big360) showPop(trick ? `${trick.degrees} PERFECT!` : "PERFECT", trick ? "trick" : "perfect"); burst(30, 1.5); }
           else if (event.grade === "good") { SE.good(); if (!big360) showPop(trick ? `${trick.degrees}! GOOD` : "GOOD", trick ? "trick" : "good"); burst(18, 1.1); }
@@ -467,7 +473,7 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
           else if (event.points) floater(`+${event.points}`, event.grade);
           if (big) { rings.push({ age: 0, life: 0.55, power: event.grade === "perfect" ? 1.3 : 1 }); if (!reducedMotion) shakeT = Math.max(shakeT, event.grade === "perfect" ? 0.2 : 0.12); }
         } else if (event.kind === "trick") {
-          SE.reelWin(); floater(`${event.degrees} +${event.points}`, "trick");
+          SE.reelWin(); // 角度は HUD の一か所だけ。人物の横に重複表示しない。
           if (event.half >= 2) { SE.just(); if (!reducedMotion) slowT = 0.5; } // カットインの間はゆっくり
         } else if (event.kind === "fall") {
           rideSe.play("fall", 0.7); showPop(event.reason === "spin" ? "回り切れず…" : "転倒…", "fall"); burst(34, 1.6);
@@ -484,7 +490,7 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       }
       // 回転中は半回転ごとに角度を見せる（180 → 360 → …）
       const half = game.spinDir !== 0 ? Math.floor(Math.abs(game.rot) * 2 + 1e-6) : 0;
-      if (half > halfShown && half > 0) { SE.tick(); showPop(String(half * 180), "spin"); }
+      if (half > halfShown && half > 0) { SE.tick(); showPop(`${half * 180}°`, "spin"); }
       halfShown = half;
     }
     function onFinished() {
@@ -961,7 +967,7 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       const p = placeAt(game.z, game.x);
       if (!p) return;
       const airT = game.air > 0 ? 1 - game.air / game.airTotal : 0;
-      const height = game.air > 0 ? Math.sin(airT * Math.PI) * (game.airKind === "big" ? 1.9 : game.airKind === "hop" ? 0.9 : 0.5) : 0;
+      const height = jumpHeight(game);
       const bob = game.air <= 0 && game.fallT <= 0 ? Math.sin(game.t * 14) * 2 * (game.speed / SPEED.max) : 0;
       const unit = p.scale * (H / 2); // 1m の高さに相当する画素
       const groundY = p.y, cx = p.x;
@@ -1154,12 +1160,10 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       const p = placeAt(noor.z, noor.x);
       if (!p) return;
       const unit = p.scale * (H / 2);
-      const airT = noor.air > 0 && noor.airTotal ? 1 - noor.air / noor.airTotal : 0;
-      const height = noor.air > 0 ? Math.sin(airT * Math.PI) * (noor.airKind === "big" ? 1.9 : noor.airKind === "hop" ? 0.9 : 0.5) : 0;
+      const height = jumpHeight(noor);
       const player = placeAt(game.z, game.x);
       const playerUnit = player?.scale * (H / 2);
-      const playerAirT = game.air > 0 ? 1 - game.air / game.airTotal : 0;
-      const playerHeight = game.air > 0 ? Math.sin(playerAirT * Math.PI) * (game.airKind === "big" ? 1.9 : game.airKind === "hop" ? 0.9 : 0.5) : 0;
+      const playerHeight = jumpHeight(game);
       const rivalBaseY = p.y - height * unit * 0.9;
       const playerBaseY = player?.y - playerHeight * playerUnit * 0.9;
       const overlapsPlayer = player && Math.abs(p.x - player.x) < (unit + playerUnit) * 0.7
@@ -1283,4 +1287,5 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
   promise.finally(() => active.delete(host));
   return promise;
 }
+
 
