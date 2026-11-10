@@ -565,7 +565,7 @@
       "title": "DESERT RIDE on PC and touch, reduced motion, and the chapter 4 outing with save/load and interruption",
       "kind": "browser",
       "weight": 1.5,
-      "timeout": 10,
+      "timeout": 5,
       "paths": [
         "remake/js/core/stage-fit.js",
         "remake/js/minigames/desert-ride.js",
