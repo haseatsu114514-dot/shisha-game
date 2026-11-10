@@ -37,6 +37,20 @@ config.bgmVolume = .4; audio.applyVolumes();
 audio.duckBgm(1, 400); step(450); assert(Math.abs(elements[2].volume - .22) < 1e-9, "duck released");
 audio.duckBgm(.5); audio.playBgm("tonari"); step(1500);
 assert.equal(audio.bgmDuckLevel(), 1); assert.equal(elements[3].volume, .4, "a new track starts unducked");
+// 詩の無音は切替中の旧曲・新曲、音量変更、重複した区間をまたぐ。
+const release = audio.silenceBgm();
+assert.equal(elements[3].muted, true);
+audio.playBgm("another");
+assert.equal(elements[3].muted, true);
+assert.equal(elements[4].muted, true);
+config.bgmVolume = .3; audio.applyVolumes(); step(1500);
+assert.equal(elements[4].muted, true);
+const releaseNested = audio.silenceBgm();
+release(); release();
+assert.equal(elements[4].muted, true);
+releaseNested();
+assert.equal(elements[4].muted, false);
+assert.equal(elements[4].volume, .3);
 console.log("[BGM gain] PASS: shark track lowered, settings/fades retain gain, other tracks retain their setting, dialogue duck keeps both");
 
 // The board borrows a real media-backed track without losing its gain/duck or reviving retiring media.
