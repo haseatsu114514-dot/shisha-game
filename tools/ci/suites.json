@@ -1066,7 +1066,7 @@
       "title": "Axe throw on PC and touch",
       "kind": "browser",
       "weight": 10.5,
-      "timeout": 15,
+      "timeout": 25,
       "paths": [
         "remake/js/core/stage-fit.js",
         "remake/js/minigames/**",
@@ -1088,7 +1088,8 @@
         "assets/ui/axe_throw/**",
         "remake/img/ui/axe_throw/**",
         "remake/img/backgrounds/bg_axe_lounge_night.webp",
-        "remake/test/browser/axe_bgm_788.mjs"
+        "remake/test/browser/axe_bgm_788.mjs",
+        "remake/test/browser/axe_audio_performance.mjs"
       ],
       "run": [
         "COMPARISON_DIR=.codex/artifacts/remake-browser/axe-poses node remake/test/browser/axe_throw.mjs",
@@ -1096,7 +1097,8 @@
         "COMPARISON_DIR=.codex/artifacts/remake-browser/axe-polish-poses node remake/test/browser/axe_polish.mjs",
         "COMPARISON_DIR=.codex/artifacts/remake-browser/axe-lesson-poses node remake/test/browser/axe_lesson.mjs",
         "node remake/test/browser/axe_menu_decor.mjs",
-        "node remake/test/browser/axe_bgm_788.mjs"
+        "node remake/test/browser/axe_bgm_788.mjs",
+        "node remake/test/browser/axe_audio_performance.mjs"
       ]
     },
     {
