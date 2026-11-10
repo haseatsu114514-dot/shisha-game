@@ -7,6 +7,8 @@ TRPGの効果音・シナリオ別BGM（CC0・2026-11-10の仮採用）は [trpg
 
 ミニゲーム（斧投げ）の仮SE（CC0・2026-11-10・オーナー試聴待ち）は [minigame-se/README.md](minigame-se/README.md)。
 
+本編の仮BGM・UI効果音（CC0・2026-11-10。あとで差し替えやすい中央対応表）は [main-placeholder-audio/README.md](main-placeholder-audio/README.md)。
+
 | ファイル | 曲名 | 出典 | 使用先 |
 |---|---|---|---|
 | `kansetsu_shomei_to_black_coffee.mp3` | 間接照明とブラックコーヒー | フリーBGM（配布元・作曲者は未記入） | 日常パート（`assets/audio/bgm/kansetsu_shomei_to_black_coffee.mp3`） |

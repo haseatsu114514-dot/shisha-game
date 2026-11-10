@@ -542,7 +542,7 @@ export async function visitRival(spot) {
   refreshPlaceCue(spot.id);
   addMoney(-(spot.cost || 0));
   addStamina(spot.stamina || -16);
-  playBgm("tonari");
+  playBgm("bgm_rival_shop");
   // 相席予定の日には「一人占め」の昼挨拶を出さない。台詞正本・実遭遇の処理は維持する。
   const welcome = spot.charId === "minto" && state.slot === 0 && hiyoriShopEncounterDue(spot)
     ? null : `venue_${spot.charId}_${state.slot === 0 ? "day" : "night"}`;
