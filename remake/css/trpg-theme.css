@@ -396,8 +396,8 @@ html:root .trpg-root.trpg-cinematic .trpg-seat-face {
   border: 2px solid #ebd9a8b3; background: #2c4a4a;
 }
 html:root .trpg-root.trpg-cinematic .trpg-table-person.active .trpg-seat-face { border-color: #fff2bd; }
-/* 顔の切り抜きは view.js の portraitFrame(id, 160, 6) と同じ幅（手引きの顔 64px／150px と同じ倍率で、頭が丸に収まる）。 */
-html:root .trpg-root.trpg-cinematic .trpg-seat-face img { position: absolute; left: 50%; width: 160px; max-width: none; }
+/* 顔の切り抜きは view.js の circleStyle（頬の幅と目の高さを揃えた枠）。幅と位置はインラインで指定する。 */
+html:root .trpg-root.trpg-cinematic .trpg-seat-face img { position: absolute; left: 50%; max-width: none; }
 html:root .trpg-root.trpg-cinematic .trpg-seat-head { min-width: 0; }
 html:root .trpg-root.trpg-cinematic .trpg-seat-head .trpg-seat-name,
 html:root .trpg-root.trpg-cinematic .trpg-table-person[data-part="gm"] .trpg-seat-name { font-size: max(24px, var(--tt-min)); font-weight: 700; white-space: nowrap; color: #fff4d6; text-shadow: 0 1px 2px #000, 0 0 6px #000a; }

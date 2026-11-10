@@ -17,13 +17,13 @@ export const HELP = Object.freeze([
   ]) }),
   Object.freeze({ title: "上の道具", rows: Object.freeze([
     Object.freeze({ icon: "decor", name: "もようがえ", text: "物を選んで、光った場所をタップ。置いた物はタップで片付く。" }),
-    Object.freeze({ icon: "book", name: "てつこ手帳", text: "見つけたしぐさと写真が残る。" }),
+    Object.freeze({ icon: "book", name: "てつこ手帳", text: "しぐさと写真が残る。探すしぐさも選べる。" }),
     Object.freeze({ icon: "photo", name: "写真", text: "しぐさが見えている時だけ撮れる。" }),
     Object.freeze({ icon: "back", name: "帰る", text: "いつでも帰れる。" }),
   ]) }),
 ]);
 
-export const HELP_NOTE = "点数も失敗もない。いろいろ試すと、新しいしぐさが見つかる。";
+export const HELP_NOTE = "しぐさを見つけて、写真と手帳に残そう。点数も失敗もない。";
 
 /**
  * 「？」の中身を作る（DOM は呼び出し側の el で作る）。
@@ -46,3 +46,4 @@ export function helpCard({ el, icon, mood = "", onClose }) {
     el("button.btn.small.tt-help-close", { type: "button", text: "閉じる", dataset: { test: "tetsuko-panel-close" }, onclick: onClose }),
   ]);
 }
+

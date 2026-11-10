@@ -320,7 +320,7 @@ export async function explainStepOnce(cs, id, panelId = id) {
   const seen = state.flags.seenStepIntro ||= {};
   if (seen[id]) return true;
   if (b.pendingIntro?.id === id) return (await b.pendingIntro.promise) && current();
-  const text = TUTORIAL_STEP_HELP[id]?.detail || b.guide.note.textContent;
+  const text = cs.lessonHelp?.[id]?.detail || TUTORIAL_STEP_HELP[id]?.detail || b.guide.note.textContent;
   if (!text) { seen[id] = true; return true; }
   const pending = waitGuideRead(b, current, panelId, text);
   b.pendingIntro = { id, promise: pending };

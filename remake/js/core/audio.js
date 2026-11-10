@@ -158,6 +158,7 @@ export function createDesertRideSe() {
 // 2026-11-10 オーナー依頼「ミニゲーム全般に合う効果音を探して一旦入れて」の仮置き（grok/minigame-audio）。
 // 出典・ライセンス（すべてCC0）・加工は asset_sources/music/minigame-se/。差し替えはこの表のファイル名だけ変える。
 // 共通のSE音量・ミュート・非表示停止（recordedVoice）に乗せ、未読込・取得失敗の間は既存の合成SE（fallback）で鳴らす。
+// 斧投げの実プレイは #3176 の playAxeSe を使う。以下の録音キューは出典台帳付きの既存素材として保持する。
 // TRPGの音（grok/trpg-audio）とは別の表にしてある。
 export const MINIGAME_SE = Object.freeze({
   axeThrow: { files: ["minigame/axe_throw.wav"], gain: .7, fallback: "whoosh" },
@@ -535,6 +536,42 @@ export const SE = {
   // 日付カードなど短いUI音（録音が無ければ短いクリック）。
   card: () => tone({ freq: 880, to: 660, type: "triangle", dur: 0.08, vol: 0.1 }),
 };
+
+// 斧投げ専用の合成音。共通の音量・ミュート・非表示停止を通し、外部音源は使わない。
+// 風切り→木への衝突→割れ・軋みを別の帯域にして、短い録音SEより重さを出す。
+export function playAxeSe(id, { scored = true } = {}) {
+  if (!seEnabled()) return;
+  if (id === "throw") {
+    noise({ dur: .43, vol: .19, filter: 380, sweepTo: 3100, q: .55 });
+    noise({ dur: .19, vol: .07, delay: .13, filter: 4200, sweepTo: 1800, q: .6 });
+    tone({ freq: 155, to: 82, type: "triangle", dur: .27, vol: .12 });
+  } else if (id === "stick") {
+    const weight = scored ? 1 : .72;
+    tone({ freq: 118, to: 44, dur: .32, vol: .36 * weight });
+    noise({ dur: .18, vol: .21 * weight, filter: 620, q: .5, type: "lowpass" });
+    noise({ dur: .09, vol: .14 * weight, filter: 2900, q: 1.2, delay: .014 });
+    // A few separated splinters and a falling wooden creak follow the initial hit.
+    [0.07, 0.12, 0.19].forEach((delay, i) => noise({ dur: .035 + i * .012, vol: .065 * weight,
+      filter: 3400 - i * 650, q: 1.5, delay }));
+    tone({ freq: 360, to: 125, type: "sawtooth", dur: .31, vol: .035 * weight, delay: .08 });
+  } else if (id === "drop") {
+    tone({ freq: 102, to: 47, dur: .18, vol: .22, delay: .035 });
+    noise({ dur: .13, vol: .13, filter: 950, type: "lowpass", delay: .035 });
+    noise({ dur: .1, vol: .11, filter: 3700, delay: .1 });
+    tone({ freq: 430, to: 180, type: "triangle", dur: .13, vol: .06, delay: .13 });
+  } else if (id === "miss") {
+    tone({ freq: 205, to: 105, type: "triangle", dur: .25, vol: .11, delay: .12 });
+  } else if (id === "cheer") {
+    noise({ dur: .7, vol: .11, filter: 850, q: .45 });
+    noise({ dur: .54, vol: .065, filter: 1900, q: .6, delay: .1 });
+    [523, 659, 784].forEach((freq, i) => tone({ freq, type: "triangle", dur: .2, vol: .065, delay: i * .075 }));
+  } else if (id === "win") {
+    SE.fanfare(); SE.crowd(1.2);
+  } else if (id === "lose") {
+    noise({ dur: .4, vol: .075, filter: 560, q: .5 });
+    [260, 205, 155].forEach((freq, i) => tone({ freq, to: freq * .7, type: "triangle", dur: .22, vol: .08, delay: i * .13 }));
+  }
+}
 
 for (const id of Object.keys(RECORDED_SE)) {
   const fallback = SE[id];
@@ -928,7 +965,8 @@ export function preloadBgm(key) {
 }
 
 export function playBgm(key) {
-  if (key === currentKey && !preparedBgm.has(bgmUrl(key))) return;
+  // 取得・復号の失敗で要素を手放した曲は、同じキーでも次の要求で再試行する。
+  if (key === currentKey && currentEl && !preparedBgm.has(bgmUrl(key))) return;
   stopBgm(0.6);
   currentKey = key;
   if (!key) return;
@@ -964,7 +1002,14 @@ export function playBgm(key) {
       if (SYNTH_FALLBACK[key]) synthStop = startSynth(SYNTH_FALLBACK[key]);
       return true;
     };
-    a.addEventListener("error", fallBackContinue, { once: true });
+    const retryOnGesture = () => {
+      if (currentEl !== a) return;
+      currentEl = null;
+      a.pause();
+      releasePacked(a.src);
+      pendingBgm = key;
+    };
+    a.addEventListener("error", () => { if (!fallBackContinue()) retryOnGesture(); }, { once: true });
     const start = () => {
       if (currentEl !== a) return; // 読み込み中に別曲へ移った場合、古い曲を鳴らさない。
       if (rotateHeld) { a.volume = bgmLevel(key); return; } // 回転ガード中に替わった曲は、横に戻した時に鳴らし始める
@@ -981,8 +1026,7 @@ export function playBgm(key) {
         if (currentEl !== a) { discardPrepared(cached); return; }
         if (ready) start();
         else {
-          currentEl = null;
-          a.pause();
+          retryOnGesture();
           if (SYNTH_FALLBACK[key]) synthStop = startSynth(SYNTH_FALLBACK[key]);
         }
       });
@@ -995,8 +1039,7 @@ export function playBgm(key) {
         start();
       }, (error) => {
         if (currentEl !== a) return;
-        currentEl = null;
-        a.pause();
+        retryOnGesture();
         if (SYNTH_FALLBACK[key]) synthStop = startSynth(SYNTH_FALLBACK[key]);
         console.warn("[BGM] Could not load game audio", key, error);
       });

@@ -379,6 +379,9 @@ export function bgmUrl(key) {
   const files = DB.manifest.bgm || [];
   const file = [`${key}.bgm`, `${key}.mp3`].find((name) => files.includes(name));
   if (file) return `${ROOT}assets/audio/bgm/${file}`;
+  // 単独の試遊ページは全データを読まない。そこで使う既知の4曲だけ解決する。
+  if (["bgm_camel_race", "bgm_ethnic05", "bgm_ethnic08", "bgm_ethnic12"].includes(key))
+    return `${ROOT}assets/audio/bgm/${key}.bgm`;
   return null;
 }
 

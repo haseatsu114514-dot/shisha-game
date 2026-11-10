@@ -3,6 +3,8 @@ import assert from "node:assert/strict";
 import { suite } from "./support.mjs";
 const t = id => `[data-test="${id}"]`;
 const bgm = page => page.evaluate(() => A.audio.currentBgm());
+const waitPlaying = (page, key) => page.waitForFunction(key => window.__axeMedia?.some(({ track, audio }) =>
+  track === key && audio.src.startsWith("blob:") && !audio.paused && audio.currentTime > .05), key);
 
 async function setup(page) {
   await page.mouse.click(4, 4); // 実ブラウザの自動再生制限を、プレイヤーの操作と同じく解除する
@@ -14,6 +16,12 @@ async function setup(page) {
     A.audio.unlockAudio();
     await new Promise(r => setTimeout(r, 100));
     A.core.config.bgmVolume = 0;
+    window.__axeMedia = [];
+    const play = HTMLMediaElement.prototype.play;
+    HTMLMediaElement.prototype.play = function (...args) {
+      window.__axeMedia.push({ track: A.audio.currentBgm(), audio: this });
+      return play.apply(this, args);
+    };
   });
 }
 async function waitBgm(page, key) {
@@ -32,6 +40,7 @@ await suite("axe-bgm-788", async check => {
     await page.evaluate(() => { A.flow = A.bar.visitAxeBar(); });
     await page.locator(t("axe-bar-back")).waitFor();
     assert.equal(await bgm(page), "bgm_axe");
+    await waitPlaying(page, "bgm_axe");
     assert.equal(await page.evaluate(() => A.bar.visitAxeBar()), false, "re-entry while open is refused");
     assert.equal(await bgm(page), "bgm_axe");
     await page.locator(t("axe-bar-back")).click();
@@ -63,6 +72,7 @@ await suite("axe-bgm-788", async check => {
     await page.evaluate(() => { A.run = A.daily.playHiyoriEvent("axe_reveal"); });
     await phase(page, "choice");
     assert.equal(await bgm(page), "bgm_axe");
+    await waitPlaying(page, "bgm_axe");
     assert.equal(await page.evaluate(() => A.daily.playHiyoriEvent("axe_reveal")), false, "second start must not overlap");
     assert.equal(await bgm(page), "bgm_axe");
     for (let n = 0; n < 3; n++) for (const p of ["choice", "horizontal", "vertical", "power", "result"]) {

@@ -19,7 +19,11 @@ function menu(message = "狙いは、S。") {
     app.hidden = true;
     // ヌールに一度勝つと、なる（裏の相手）とも勝負できる
     const rivals = best?.beatNoor ? ["noor", "naru"] : ["noor"];
-    const { results } = await runDesertRide({ host: stage, tutorial, best, legacyBest: best?.legacyBest, rivals, reducedMotion: reduce, onResult: result => {
+    const params = new URLSearchParams(location.search);
+    const courseId = params.get("course") || undefined;
+    const seedParam = params.get("seed");
+    const seed = seedParam != null && seedParam !== "" && Number.isFinite(Number(seedParam)) ? Number(seedParam) : undefined;
+    const { results } = await runDesertRide({ host: stage, tutorial, best, legacyBest: best?.legacyBest, rivals, reducedMotion: reduce, courseId, seed, onResult: result => {
       const prev = readBest();
       const beatNoor = !!prev?.beatNoor || (result.race?.who === "noor" && result.race.won);
       const sameRules = prev?.rulesVersion === RULES_VERSION;
