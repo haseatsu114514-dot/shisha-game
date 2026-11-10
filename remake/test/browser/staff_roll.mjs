@@ -289,9 +289,12 @@ await suite("staff-roll", async check => {
       ["作曲 秋山裕和（H/MIX GALLERY）", "作曲 shimtone（OpenTracks）", "作曲 Napi（M-ART）",
         "作曲 魔王魂（魔王魂）", "作曲 魔王魂（魔王魂）", "作曲 魔王魂（魔王魂）", "作曲 魔王魂（魔王魂）", "作曲 甘茶（甘茶の音楽工房）",
         "作曲 Kevin MacLeod（incompetech.com・CC BY 4.0）",
-        ...["Eldritch Grim", "Aureolus_Omicron", "congusbongus", "TAD", "controllerhead", "yd", "Kistol", "northivanastan", "Bobjt", "Aureolus_Omicron"]
+        ...["Eldritch Grim", "Aureolus_Omicron", "congusbongus", "TAD", "controllerhead", "yd", "Kistol", "northivanastan", "Bobjt", "Aureolus_Omicron",
+            "omfgdude", "Umplix", "Kistol", "MintoDog", "DJ CrisP", "Spring Spring", "Centurion_of_war", "tebruno99"]
           .map(name => `作曲 ${name}（OpenGameArt・CC0）`)]);
     assert.equal(await page.locator(".staff-roll-sound").textContent(), "効果音：ポケットサウンド – https://pocket-se.info/");
+    assert.deepEqual(await page.locator(".staff-roll-sound-main p").allTextContents(),
+      ["効果音（本編UI・場面転換）：Kenney – Interface Sounds / Music Jingles（CC0） – https://kenney.nl/"]);
     assert.deepEqual((await page.locator(".staff-roll-sound-axe p").allTextContents()).map(t => t.split("：")[1].split(" – ")[0]),
       ["Kenney", "Freesound"]);
     for (const name of ["Jofae", "craigsmith", "qubodup", "plasterbrain", "IndyArts"]) assert(text.includes(name), name + " is credited");
@@ -392,4 +395,5 @@ await suite("staff-roll", async check => {
     }, { viewport, ...(label === "pc" ? {} : { hasTouch: true, isMobile: true }) });
   }
 });
+
 

@@ -13,6 +13,7 @@ import { MAX_MONEY } from "../core/rules.js";
 import { DEPARTURE_PREP_DAYS } from "../core/chapter-clock.js";
 import { resetChapterFourCraft } from "./ch4-tournament-state.js";
 import { OVERSEAS_HEROINES, overseasCompanion } from "../core/overseas-companion.js";
+import { STORY_BGM } from "../core/story-audio.js";
 
 // 大会賞金（2026-10-30 決定の階段式: 第1章30,000円／第2章50,000円／第3章100,000円／第4章200,000円／第5章は賞金なし）。
 export const CH4_PRIZE = 200000;
@@ -73,16 +74,22 @@ export const CH4_SCENE_BG = Object.freeze({
   ch4_hiyori_dubai_evening: "bg_dubai_inn_night",
 });
 
-// ---- BGM の対応表（演出の山だけ切り替える。無い場面は tonari）-------------------------
-// ドバイ専用曲が無いので既存曲の流用。#1177 / 専用曲が入ったらこの表だけ直す。
-export const CH4_DEFAULT_BGM = "tonari";
+// ---- BGM の対応表（差し替えは remake/js/core/story-audio.js の STORY_BGM）--------------
+// ドバイの既定は仮の街の曲。日本の4場面は店の曲のまま。専用曲が届いたら STORY_BGM だけ直す。
+export const CH4_DEFAULT_BGM = STORY_BGM.dubai;
 export const CH4_SCENE_BGM = Object.freeze({
-  ch4_tournament_start: "bgm_tournament_wait",
-  ch4_final: "bgm_tournament_craft",
-  ch4_defeat: "bgm_aftermath",
-  ch4_result: "bgm_judging",
-  ch4_sui_old_rival: "bgm_aftermath",
-  ch4_ending: "bgm_aftermath",
+  ch4_sumi_training: STORY_BGM.shopHome,
+  ch4_strategy: STORY_BGM.shopHome,
+  ch4_sumi_return: STORY_BGM.shopHome,
+  ch4_two_tables: STORY_BGM.shopHome,
+  ch4_tournament_start: STORY_BGM.worldStage,
+  ch4_wang_reception: STORY_BGM.worldStage,
+  ch4_festa: STORY_BGM.worldStage,
+  ch4_final: STORY_BGM.tournamentCraft,
+  ch4_defeat: STORY_BGM.aftermath,
+  ch4_result: STORY_BGM.judging,
+  ch4_sui_old_rival: STORY_BGM.aftermath,
+  ch4_ending: STORY_BGM.aftermath,
 });
 
 // ---- 日数・解放条件 -----------------------------------------------------------------

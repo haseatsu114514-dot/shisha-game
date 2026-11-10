@@ -53,6 +53,7 @@
 .staff-roll-sound-axe p, .staff-roll-sound-camel p, .staff-roll-sound-desert p { font-size: 24px; font-weight: 700; letter-spacing: 0.02em; color: var(--text-dim); overflow-wrap: anywhere; }
 .staff-roll-sound p { font-size: 24px; font-weight: 700; letter-spacing: 0.02em; color: var(--text-dim); overflow-wrap: anywhere; }
 .staff-roll-sound-trpg p { font-size: 24px; font-weight: 700; letter-spacing: 0.02em; color: var(--text-dim); overflow-wrap: anywhere; }
+.staff-roll-sound-main p { font-size: 24px; font-weight: 700; letter-spacing: 0.02em; color: var(--text-dim); overflow-wrap: anywhere; }
 .staff-roll-closing p {
   font-size: 40px;
   font-weight: 700;

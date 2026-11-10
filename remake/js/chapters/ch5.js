@@ -468,6 +468,7 @@ async function renderSecondCupReady(owner) {
 /** U1 の制作開始境界。入場後、二本目だけ実制作する。U5: セッション途中は保存・工程 rollback しない。 */
 async function craftSecondCup(owner) {
   // 途中離脱・再読込では secondCup が null のままなので、二本目の前から丸ごと作り直す。
+  playBgm("bgm_ch5_duel");
   const cs = newSession("tournament");
   cs.eventTitle = "EXHIBITION MATCH";
   cs.eventNote = "SHISHA-9000 戦・二台目";
