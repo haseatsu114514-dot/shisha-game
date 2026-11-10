@@ -88,7 +88,7 @@ await suite("ch3-trials", async check => {
     }, auto);
     const before = await get(page);
     await page.locator(t("ch3-intro-continue")).click();
-    await page.waitForFunction(() => window.__remake.state.flags._ch3_intro.work?.service?.feedbackRead, { timeout: 60000 });
+    await page.waitForFunction(() => window.__remake.state.flags._ch3_intro.work?.service?.feedbackRead, null, { timeout: 60000 });
     const after = await get(page);
     assert.equal(after.flags._ch3_intro.work.service.order, "pace");
     assert.equal(after.flags._ch3_intro.work.service.careDone, true);
@@ -112,7 +112,7 @@ await suite("ch3-trials", async check => {
       };
     });
     await page.locator(t("ch3-intro-continue")).click();
-    await page.waitForFunction(() => window.__remake.state.flags._ch3_intro.work?.service?.careDone, { timeout: 60000 });
+    await page.waitForFunction(() => window.__remake.state.flags._ch3_intro.work?.service?.careDone, null, { timeout: 60000 });
     const before = await get(page);
     assert.equal(before.flags._ch3_intro.work.service.feedbackRead, undefined);
     await page.evaluate(async () => {
