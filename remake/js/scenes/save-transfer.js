@@ -10,6 +10,8 @@ const PREFIX = "SUIEN-SAVE2:";
 const LEGACY_PREFIX = "SUIEN-SAVE1:";
 const FORMAT = "suien-save";
 const FILE_NAME = "suien-save.txt";
+// 旧版の引っ越し文字列に含まれる枠。端末内のデータは消さず、取り込み対象からだけ外す。
+const RETIRED_SLOTS = new Set(["suien_remake_slot2", "suien_remake_slot3"]);
 
 
 // ---------------------------------------------------------------- 重ねて開く小窓
@@ -73,7 +75,8 @@ export function parseSaveText(text) {
     const known = new Set(SAVE_SLOTS.map((s) => s.key));
     const slots = [];
     for (const [key, raw] of Object.entries(pack.slots)) {
-      if (!known.has(key) || typeof raw !== "string") return null;
+      if ((!known.has(key) && !RETIRED_SLOTS.has(key)) || typeof raw !== "string") return null;
+      if (RETIRED_SLOTS.has(key)) continue;
       const s = JSON.parse(raw);
       if (!s || typeof s !== "object" || !s.day || !isLoadableSave(s)) return null;
       slots.push({ key, raw, s });

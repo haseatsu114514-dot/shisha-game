@@ -104,27 +104,18 @@ body:not(.game-ds):not([data-screen="title"][data-game-layout="ds"]) #stage[data
 body:not(.game-ds):not([data-screen="title"][data-game-layout="ds"]) #stage[data-wide] .cfg-modal .ui-theme-select { font-size: max(24px, calc(17px / var(--k, 1))); min-height: max(60px, var(--wide-tap)); }
 body:not(.game-ds):not([data-screen="title"][data-game-layout="ds"]) #stage[data-wide] .cfg-modal .modal-actions .btn { min-height: max(76px, var(--wide-tap)); font-size: max(26px, calc(13px / var(--k, 1))); }
 
-/* セーブ／ロード: 12〜16px だった枠の文字を 16〜24px に（スマホでは実寸 12.5px 以上）、顔は 28→40px */
-body:not(.game-ds):not([data-screen="title"][data-game-layout="ds"]) #stage[data-wide] .saveload-modal { max-height: 680px; }
-body:not(.game-ds):not([data-screen="title"][data-game-layout="ds"]) #stage[data-wide] .saveload-modal h3 { font-size: max(28px, calc(13px / var(--k, 1))); }
-body:not(.game-ds):not([data-screen="title"][data-game-layout="ds"]) #stage[data-wide] .saveload-modal .ss-note { margin-bottom: 10px; font-size: max(18px, var(--wide-min)); }
-body:not(.game-ds):not([data-screen="title"][data-game-layout="ds"]) #stage[data-wide] .saveload-modal { padding-block: 22px; }
-body:not(.game-ds):not([data-screen="title"][data-game-layout="ds"]) #stage[data-wide] .saveload-modal h3 { margin-bottom: 8px; }
-body:not(.game-ds):not([data-screen="title"][data-game-layout="ds"]) #stage[data-wide] .saveload-modal .ss-list { gap: 8px; }
-body:not(.game-ds):not([data-screen="title"][data-game-layout="ds"]) #stage[data-wide] .saveload-modal .save-slot { min-height: max(80px, calc(40px / var(--k, 1))); gap: 18px; padding: 8px 18px; font-size: max(18px, var(--wide-min)); }
-/* 「やめる」は枠の右上の端へ（MENU の「閉じる」と同じ位置）。4つの枠が縦に収まり、Safari のバーで低くなっても下が切れない */
-body:not(.game-ds):not([data-screen="title"][data-game-layout="ds"]) #stage[data-wide] .saveload-modal .modal-actions { position: absolute; top: 14px; right: 24px; margin: 0; }
-body:not(.game-ds):not([data-screen="title"][data-game-layout="ds"]) #stage[data-wide] .saveload-modal .modal-actions .btn { min-width: 160px; }
-body:not(.game-ds):not([data-screen="title"][data-game-layout="ds"]) #stage[data-wide] .saveload-modal .ss-label { width: 176px; font-size: max(22px, var(--wide-min)); }
-body:not(.game-ds):not([data-screen="title"][data-game-layout="ds"]) #stage[data-wide] .saveload-modal .ss-label small,
-body:not(.game-ds):not([data-screen="title"][data-game-layout="ds"]) #stage[data-wide] .saveload-modal :is(.ss-chapter, .ss-phase, .ss-more) { font-size: max(16px, var(--wide-min)); }
-body:not(.game-ds):not([data-screen="title"][data-game-layout="ds"]) #stage[data-wide] .saveload-modal .ss-info b { font-size: max(24px, var(--wide-min)); }
-body:not(.game-ds):not([data-screen="title"][data-game-layout="ds"]) #stage[data-wide] .saveload-modal .ss-info small { font-size: max(18px, var(--wide-min)); }
-body:not(.game-ds):not([data-screen="title"][data-game-layout="ds"]) #stage[data-wide] .saveload-modal .ss-stat small { font-size: max(16px, var(--wide-min)); }
-body:not(.game-ds):not([data-screen="title"][data-game-layout="ds"]) #stage[data-wide] .saveload-modal .ss-stat i { height: 6px; border-radius: 3px; }
-body:not(.game-ds):not([data-screen="title"][data-game-layout="ds"]) #stage[data-wide] .saveload-modal .ss-stats { gap: 6px 14px; }
-body:not(.game-ds):not([data-screen="title"][data-game-layout="ds"]) #stage[data-wide] .saveload-modal .ss-faces { width: 188px; gap: 6px; }
-body:not(.game-ds):not([data-screen="title"][data-game-layout="ds"]) #stage[data-wide] .saveload-modal .ss-face { width: 40px; height: 40px; }
+/* セーブ／ロード: 固定1280×720内で2枚を広く使う。縮小後も文字を読める寸法にする。 */
+body:not(.game-ds):not([data-screen="title"][data-game-layout="ds"]) #stage[data-wide] .saveload-modal { max-height: 660px; }
+body:not(.game-ds):not([data-screen="title"][data-game-layout="ds"]) #stage[data-wide] .saveload-modal h3 { font-size: max(32px, var(--wide-min)); }
+body:not(.game-ds):not([data-screen="title"][data-game-layout="ds"]) #stage[data-wide] .saveload-modal .ss-note { font-size: max(24px, var(--wide-min)); }
+body:not(.game-ds):not([data-screen="title"][data-game-layout="ds"]) #stage[data-wide] .saveload-modal .save-slot { min-height: 390px; }
+body:not(.game-ds):not([data-screen="title"][data-game-layout="ds"]) #stage[data-wide] .saveload-modal .ss-label { font-size: max(30px, var(--wide-min)); }
+body:not(.game-ds):not([data-screen="title"][data-game-layout="ds"]) #stage[data-wide] .saveload-modal .ss-label small { font-size: max(24px, var(--wide-min)); }
+body:not(.game-ds):not([data-screen="title"][data-game-layout="ds"]) #stage[data-wide] .saveload-modal .ss-info b { font-size: max(28px, var(--wide-min)); }
+body:not(.game-ds):not([data-screen="title"][data-game-layout="ds"]) #stage[data-wide] .saveload-modal :is(.ss-chapter, .ss-phase, .ss-info small) { font-size: max(24px, var(--wide-min)); }
+body:not(.game-ds):not([data-screen="title"][data-game-layout="ds"]) #stage[data-wide] .saveload-modal .ss-stat small { font-size: max(24px, var(--wide-min)); }
+body:not(.game-ds):not([data-screen="title"][data-game-layout="ds"]) #stage[data-wide] .saveload-modal .ss-stat i { height: 8px; }
+body:not(.game-ds):not([data-screen="title"][data-game-layout="ds"]) #stage[data-wide] .saveload-modal .modal-actions .btn { min-height: max(54px, var(--wide-tap)); font-size: max(20px, var(--wide-min)); }
 
 /* ギャラリー: 見出し・収集率・種類のタブ・閉じるを一段大きく、タブと閉じるは押しやすい高さに */
 body:not(.game-ds):not([data-screen="title"][data-game-layout="ds"]) #stage[data-wide] .gal-overlay > .gal { max-height: 672px; }
