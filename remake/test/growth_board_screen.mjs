@@ -49,6 +49,7 @@ const s = core.newGame(); Object.assign(s, { phase: "daily", chapter: 1, day: 3,
 const g = growth.ensureGrowth(); g.seenRing = 1; g.hidane.any = 30;
 const fx = new Element(); fx.host = true;
 const sounds = [], releases = [];
+let routeLookups = 0;
 let musicStarts = 0, ownerChanged = () => {}, stateModule;
 const modules = {
   "../core/util.js": { ...util, sleep: async () => {} },
@@ -64,7 +65,7 @@ const modules = {
   "../core/growth-effects.js": { LESSON_TUNING: {} },
   "../core/data.js": { displayName: id => id, faceIconUrl: () => null, portraitInfo: () => null, faceFrame: () => null },
   "../core/portrait-style.js": { portraitStyle: () => "classic" },
-  "../core/stats.js": { affinityLevel: () => 0 }, "../core/growth.js": growth, "../core/growth-board.js": board,
+  "../core/stats.js": { affinityLevel: () => 0 }, "../core/growth.js": growth, "../core/growth-board.js": { ...board, pathTo: (...args) => { routeLookups++; return board.pathTo(...args); } },
 };
 const context = vm.createContext({ document, Node: Element, console, setTimeout, requestAnimationFrame: fn => fn(),
   Image: class { set src(_) { queueMicrotask(() => this.onerror()); } } });
@@ -204,6 +205,20 @@ assert.equal(button("B3").dataset.status, "available");
 assert.match(stateLine(), /蒼火1で払う/, "Capped payment may use another board's unreserved color");
 await closeScenario(scenario);
 console.log("PASS board reservation display: no negative shortage, target color/stop reason, undo/paid route, chapter/lesson locks, capped exceptions");
+
+// 経路は同じ replay 結果だけで共有し、次の描き直しには持ち越さない。
+Object.assign(g, { nodes: [], paid: {}, hidane: { any: 100, body: 10, sense: 10, wisdom: 10 }, earned: 130, target: "K03", ringsOpen: 5, seenRing: 5 });
+s.chapter = 5;
+const lookupsBefore = routeLookups;
+scenario = await openScenario();
+assert.equal(button("K03").dataset.status, "far");
+assert.equal(routeLookups, lookupsBefore + 1, "Target line and selected detail share the same route");
+for (let i = 0; i < 10; i++) button("K03").click();
+assert.equal(routeLookups, lookupsBefore + 1, "Repeated inspection reuses the rendered view's route");
+root.querySelector('[data-test="board-target"]').click();
+assert.equal(routeLookups, lookupsBefore + 2, "A fresh replay must recompute, even for the same destination");
+await closeScenario(scenario);
+console.log("PASS board route cache: shared target/detail, repeated selection and new-view invalidation");
 
 // The board's eye coordinates come from the same per-style face measurements as the face icons (manifest faceFrames, 2026-11-06).
 // The lesson cards and the right panel follow the VN portrait setting; people without new artwork keep the classic art and coordinates.
