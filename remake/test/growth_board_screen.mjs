@@ -111,6 +111,83 @@ fx.children[0].querySelector('[data-test="board-close"]').click();
 await committedDone;
 console.log(`PASS board screen: ${originalNodes.length} selections preserve DOM; pending/undo/commit/check badge; no full-board filters`);
 
+// #3119: the detail and target use the same reservation, pending, chapter and cap rules as paymentFor.
+const openScenario = async () => {
+  const done = screen.namespace.openBoard({ place: "kannon" });
+  await new Promise(r => setImmediate(r));
+  root = fx.children[0];
+  return { done };
+};
+const closeScenario = async done => {
+  root.querySelector('[data-test="board-reset"]')?.click();
+  root.querySelector('[data-test="board-close"]').click();
+  await done;
+};
+const targetLine = () => root.querySelector('[data-test="board-target-line"]').textContent;
+const stateLine = () => root.querySelector(".gb-p-state").textContent;
+const whiteFire = () => Number(root.querySelector('[data-test="board-wallet"]').querySelector(".k-any").querySelector("b").textContent);
+
+Object.assign(g, { nodes: [], paid: {}, hidane: { any: 0, body: 2, sense: 0, wisdom: 0 }, earned: 2, target: null, ringsOpen: 1 });
+s.chapter = 1;
+let scenario = (await openScenario()).done;
+button("B3").click();
+assert.equal(button("B3").dataset.status, "short");
+assert.match(stateLine(), /あと1つ要る（所持2／このマスに使える0）/);
+assert.match(stateLine(), /色火は台座用に確保中/);
+assert.doesNotMatch(stateLine(), /あと-/);
+await closeScenario(scenario);
+
+Object.assign(g, { nodes: [], paid: {}, hidane: { any: 20, body: 0, sense: 0, wisdom: 0 }, earned: 20, target: "K07" });
+s.chapter = 2;
+scenario = (await openScenario()).done;
+assert.match(targetLine(), /火種11・色の台座1（色火あと1）/);
+root.querySelector('[data-test="board-towards"]').click();
+assert.deepEqual(["B3", "B6", "B9"].map(id => button(id).dataset.status), ["pending", "pending", "pending"]);
+assert.equal(whiteFire(), 17);
+assert.match(targetLine(), /火種8・色の台座1（色火あと1）・次は色火が足りない/);
+button("B9").click(); root.querySelector('[data-test="board-undo"]').click();
+assert.equal(whiteFire(), 18, "Undo returns the provisional payment");
+button("K07").click();
+assert.match(targetLine(), /火種9・色の台座1（色火あと1）/);
+root.querySelector('[data-test="board-towards"]').click();
+root.querySelector('[data-test="board-decide"]').click(); await scenario;
+assert.deepEqual(g.nodes, ["B3", "B6", "B9"], "The already-paid path stays committed");
+scenario = (await openScenario()).done;
+assert.equal(whiteFire(), 17);
+assert.match(targetLine(), /火種8・色の台座1（色火あと1）/);
+await closeScenario(scenario);
+
+s.chapter = 1; g.ringsOpen = 1;
+scenario = (await openScenario()).done;
+assert.match(targetLine(), /火種8・色の台座1（色火あと1）・次は結界の先/);
+await closeScenario(scenario);
+
+Object.assign(g, { nodes: [], paid: {}, hidane: { any: 20, body: 0, sense: 2, wisdom: 0 }, earned: 20, target: "M-S2" });
+s.chapter = 2; s.met.adam = true; s.affinity.adam = 0;
+scenario = (await openScenario()).done;
+root.querySelector('[data-test="board-towards"]').click();
+assert.match(targetLine(), /次は授業の錠/);
+await closeScenario(scenario);
+
+Object.assign(g, { nodes: ["B3", "B6", "B9"], paid: { B3: { any: 1 }, B6: { any: 1 }, B9: { any: 1 } },
+  hidane: { any: 17, body: 0, sense: 0, wisdom: 0 }, earned: 198, target: "K07" });
+scenario = (await openScenario()).done;
+assert.match(targetLine(), /色の台座1（白火も可）/);
+button("BG1").click();
+assert.match(root.querySelector(".gb-p-sub").textContent, /上限に届いた後は白火でもはまる/);
+assert.equal(root.querySelector('[data-test="board-light"]').textContent, "はめる（白火1）");
+button("K07").click(); root.querySelector('[data-test="board-towards"]').click();
+assert.equal(button("K07").dataset.status, "pending", "The capped white fire crosses the gate");
+await closeScenario(scenario);
+
+Object.assign(g, { nodes: [], paid: {}, hidane: { any: 0, body: 0, sense: 13, wisdom: 0 }, earned: 198, target: null });
+scenario = (await openScenario()).done;
+button("B3").click();
+assert.equal(button("B3").dataset.status, "available");
+assert.match(stateLine(), /蒼火1で払う/, "Capped payment may use another board's unreserved color");
+await closeScenario(scenario);
+console.log("PASS board reservation display: no negative shortage, target color/stop reason, undo/paid route, chapter/lesson locks, capped exceptions");
+
 // The board's eye coordinates come from the same per-style face measurements as the face icons (manifest faceFrames, 2026-11-06).
 // The lesson cards and the right panel follow the VN portrait setting; people without new artwork keep the classic art and coordinates.
 const data = await import("../js/core/data.js");
