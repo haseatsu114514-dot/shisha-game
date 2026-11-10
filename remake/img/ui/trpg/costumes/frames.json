@@ -2416,5 +2416,101 @@
       "figtop": 61,
       "figbot": 1140
     }
+  },
+  {
+    "scenario": "regular-mail",
+    "character": "sumi",
+    "role_id": "yura",
+    "file": "costumes/regular-mail/sumi_yura.webp",
+    "box": [
+      258,
+      33,
+      558,
+      333
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 408.5,
+      "cy": 183.0,
+      "w": 92.0,
+      "h": 162.0,
+      "top": 102,
+      "chin": 264,
+      "figtop": 62,
+      "figbot": 1140,
+      "eye_l": [
+        386.33,
+        179.67
+      ],
+      "eye_r": [
+        431.5,
+        170.5
+      ],
+      "eye_y": 175.08,
+      "cheeks": [
+        362,
+        454,
+        201
+      ],
+      "scale_crop": [
+        308.5,
+        91.08,
+        508.5,
+        291.08
+      ],
+      "face_frac": 0.46,
+      "eye_y_frac": 0.42
+    }
+  },
+  {
+    "scenario": "regular-mail",
+    "character": "sumi",
+    "role_id": "neri",
+    "file": "costumes/regular-mail/sumi_neri.webp",
+    "box": [
+      244,
+      32,
+      544,
+      332
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 394.5,
+      "cy": 182.0,
+      "w": 92.0,
+      "h": 158.0,
+      "top": 103,
+      "chin": 261,
+      "figtop": 61,
+      "figbot": 1140,
+      "eye_l": [
+        368.0,
+        174.6
+      ],
+      "eye_r": [
+        421.64,
+        166.0
+      ],
+      "eye_y": 170.3,
+      "cheeks": [
+        348,
+        440,
+        196
+      ],
+      "scale_crop": [
+        294.5,
+        86.3,
+        494.5,
+        286.3
+      ],
+      "face_frac": 0.46,
+      "eye_y_frac": 0.42
+    }
   }
 ]
