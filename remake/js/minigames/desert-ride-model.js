@@ -8,7 +8,7 @@ export const COURSE = Object.freeze({ length: 1700, practiceLength: 640, laneHal
 export const PLAYER = Object.freeze({ half: 0.1 });
 export const EDGE = 0.86;
 export const SPEED = Object.freeze({ start: 15, min: 8, max: 34, boost: 46, boostAccel: 26, overDecay: 12, accel: 1.5, fallFactor: 0.42, edgeDrag: 7, landingBoost: 3.5, plainLanding: 0.94, bounceLoss: 0.9 });
-export const JUMP = Object.freeze({ bigAir: 1.22, hopAir: 0.53, bounceAir: 0.26, landingWindow: 0.3, goodWindow: 0.6, bumpWindow: 0.36, bumpGrace: 0.14, steerInAir: 0.55 });
+export const JUMP = Object.freeze({ bigAir: 1.22, hopAir: 0.53, bounceAir: 0.26, landingWindow: 0.3, goodWindow: 0.6, bumpWindow: 0.36, bumpGrace: 0.14, steerInAir: 0.55, bigHeight: 1.25, speedHeight: 1.1 });
 export const FALL = Object.freeze({ recover: 1.1, points: -150 });
 export const STEER = Object.freeze({ accel: 4.6, damping: 4.0, curveDrift: 0.28 });
 export const SCORE = Object.freeze({ finish: 1200, timePar: 72, timeBonusPerSec: 30, perfect: 250, good: 120, nearMiss: 60, comboStep: 0.15, comboMax: 3,
@@ -121,7 +121,7 @@ export function curveAt(course, z) {
 export function createGame(course, { rival = null } = {}) {
   return {
     course, rival, t: 0, z: 0, x: 0, vx: 0, speed: SPEED.start,
-    air: 0, airTotal: 0, airKind: null, landingPress: null, lastJumpT: -9,
+    air: 0, airTotal: 0, airPeak: 0, airKind: null, landingPress: null, lastJumpT: -9,
     rot: 0, spinDir: 0, spinHold: false, spinArmed: null, lastTrick: null,
     gauge: 0, boostT: 0,
     fallT: 0, falls: 0, combo: 0, maxCombo: 0, score: 0,
@@ -192,10 +192,25 @@ export function press(game) {
   return "hop";
 }
 
+/** 離陸時の速さで高さを固定。空中のブースト開始・終了では軌道を飛ばさない。
+ * 滞空時間・岩の回避・着地判定は従来通り。高さのために着地帯の外へ滞空を延ばさない。 */
+export function jumpPeak(speed, kind = "big") {
+  const fast = Math.min(1, Math.max(0, Number.isFinite(speed) ? speed / SPEED.boost : 0));
+  return kind === "big" ? JUMP.bigHeight + JUMP.speedHeight * fast : kind === "hop" ? 0.65 + 0.35 * fast : 0.5;
+}
+
+/** 現在の地面からの高さ。描画・相手の走行サンプルで共通の軌道を使う。 */
+export function jumpHeight(game) {
+  if (!(game.air > 0) || !(game.airTotal > 0)) return 0;
+  const progress = Math.min(1, Math.max(0, 1 - game.air / game.airTotal));
+  return Math.sin(progress * Math.PI) * game.airPeak;
+}
+
 function startAir(game, kind) {
-  const scale = 0.85 + 0.3 * Math.min(1, game.speed / SPEED.max); // ブースト中も飛距離は最高速と同じ（着地帯の外へ飛ばない）
+  const scale = 0.85 + 0.3 * Math.min(1, game.speed / SPEED.max); // 滞空時間は通常最高速で頭打ち（ブーストの高さは airPeak で伸ばす）
   game.air = game.airTotal = kind === "big" ? JUMP.bigAir * scale : kind === "hop" ? JUMP.hopAir : JUMP.bounceAir;
   game.airKind = kind;
+  game.airPeak = jumpPeak(game.speed, kind);
   game.landingPress = null;
   game.lastJumpT = game.t;
   game.rot = 0; game.spinDir = 0; game.spinHold = false; game.spinArmed = null;
@@ -481,7 +496,7 @@ export function rivalRun(course, { who = "noor", maxTime = 200 } = {}) {
   const { skill, startX, only360 } = RIVALS[who] || RIVALS.noor;
   const game = createGame(course), memo = { lane: startX, only360 }, samples = [];
   game.x = startX;
-  const snap = () => samples.push({ t: game.t, z: game.z, x: game.x, vx: game.vx, air: game.air, airTotal: game.airTotal, airKind: game.airKind,
+  const snap = () => samples.push({ t: game.t, z: game.z, x: game.x, vx: game.vx, air: game.air, airTotal: game.airTotal, airPeak: game.airPeak, airKind: game.airKind,
     landingPress: game.landingPress, fallT: game.fallT, landedAt: game.landedAt, rot: game.rot });
   snap();
   let next = RIVAL_SAMPLE;
@@ -505,4 +520,5 @@ export function rivalAt(rival, t) {
   const k = b.t > a.t ? Math.min(1, Math.max(0, (t - a.t) / (b.t - a.t))) : 1;
   return { ...a, z: a.z + (b.z - a.z) * k, x: a.x + (b.x - a.x) * k, rot: a.rot + (b.rot - a.rot) * k, t, finished: false };
 }
+
 
