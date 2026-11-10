@@ -32,7 +32,7 @@ export async function maybeRecruitTrpgMember(personId) {
     try { resources = await loadTrpgClubResources({ signal: abort.signal }); }
     catch { if (!abort.signal.aborted && state === owner) toast("部活の話を準備できませんでした。次に会った時に、もう一度。"); return false; }
     if (state !== owner || abort.signal.aborted
-      || !recruitmentStatus(owner, resources.catalog.participants.find(p => p.id === personId), resources.catalog).ok) return false;
+      || !recruitmentStatus(owner, resources.catalog.participants.find(p => p.id === personId), resources.catalog, { allowUnheard: true }).ok) return false;
     if (!offered.has(owner)) offered.set(owner, new Set());
     offered.get(owner).add(stamp);
     const conversation = mountTrpgRecruitment(document.getElementById("stage"), {
