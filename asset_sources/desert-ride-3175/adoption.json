@@ -3,7 +3,8 @@
   "selection": "https://github.com/haseatsu114514-dot/shisha-game/issues/3175",
   "selected_family": "A",
   "originals_from": "work/codex-a-sandassets-1111/presentation",
-  "derivative": "WebP quality 88, exact alpha, Lanczos downsample to 400px square controls and 512x560px signs; original selected PNGs retained",
+  "derivative": "WebP quality 88, exact alpha, Lanczos downsample to 400px square controls and 512x560px signs; final knob cropped to its visible ball before downsample; original selected PNGs retained",
+  "stick_final_approval": "2026-11-11 02:08 owner approval: それでいい. Knob follows the owner's direct top-view instruction.",
   "files": {
     "sign_left_a": {
       "source": "sign_left_a.png",
@@ -40,6 +41,18 @@
     "stick_knob_a": {
       "source": "stick_knob_a.png",
       "runtime": "remake/img/ui/desert_ride_controls/stick_knob.webp"
+    },
+    "stick_final_base": {
+      "source": "stick_final_base.png",
+      "original": "work/codex-a-stick-1111/presentation/design1_base.png",
+      "runtime": "remake/img/ui/desert_ride_controls/stick_base.webp",
+      "status": "adopted; supersedes stick_base_a"
+    },
+    "stick_final_knob": {
+      "source": "stick_final_knob.png",
+      "original": "work/codex-a-sticktop-1111/presentation/design1_knob_top.png",
+      "runtime": "remake/img/ui/desert_ride_controls/stick_knob.webp",
+      "status": "adopted; supersedes stick_knob_a"
     }
   }
 }

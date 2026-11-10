@@ -1,5 +1,11 @@
 # サンドボード専用グラフィック候補（Issue #3175）
 
+## スティック最終版（2026-11-11）
+
+- 台座 `stick_final_base.png` は `work/codex-a-stick-1111/presentation/design1_base.png` から採用。アーケード型の革と真鍮リング。
+- つまみ `stick_final_knob.png` は `work/codex-a-sticktop-1111/presentation/design1_knob_top.png` から採用。オーナーの「真上ビュー」指示に合わせた橙ボールで、2026-11-11 02:08 に「それでいい」と承認された。
+- 旧 `stick_base_a.png` と `stick_knob_a.png` は履歴として保持。実行用 `stick_base.webp` / `stick_knob.webp` は最終版から作り直した。台座は1254px四方から400px四方へ縮小。つまみは原画の透明余白を除くため `(300, 300, 950, 950)` を切り出してから400px四方へ縮小した。いずれも Lanczos、WebP quality 88、透過色保持。表示は既存の台座144px、つまみ74px。
+
 2026-11-11。素材候補のみ。ゲームへの組み込み、コード変更、PR は行っていない。
 
 ## 事前確認
