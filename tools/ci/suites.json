@@ -1522,6 +1522,19 @@
       ]
     },
     {
+      "id": "ch4-camel-feedback",
+      "title": "ラクダレースの声かけ判定で説明がない場合の表示と既存説明",
+      "kind": "browser",
+      "weight": 1,
+      "timeout": 5,
+      "paths": [
+        "remake/js/minigames/camel-race.js",
+        "remake/camel-race.html",
+        "remake/test/browser/camel_judge_feedback.mjs"
+      ],
+      "run": ["node remake/test/browser/camel_judge_feedback.mjs"]
+    },
+    {
       "id": "ch4-camel-race",
       "title": "Chapter 4 camel race in the real UI (legacy 5-day map and the 14-day daily map): meet, invite, watch, race, record, save/load, replay, one daytime slot; hold-to-whip controls on the standalone page",
       "kind": "browser",

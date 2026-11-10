@@ -343,7 +343,9 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
   };
   const announce = text => { live.textContent = text; };
   const showFeedback = (text, kind, sub = "") => {
-    feedback.replaceChildren(el("b", { text }), sub ? el("small", { text: sub }) : null);
+    const detail = typeof sub === "string" ? sub.trim() : "";
+    const subNodes = detail && detail !== "null" && detail !== "undefined" ? [el("small", { text: sub })] : [];
+    feedback.replaceChildren(el("b", { text }), ...subNodes);
     feedback.dataset.kind = kind; feedback.classList.remove("show");
     void feedback.offsetWidth; feedback.classList.add("show"); feedbackTimer = 0.75;
   };
