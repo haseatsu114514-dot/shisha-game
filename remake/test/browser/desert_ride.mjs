@@ -16,7 +16,7 @@ const resultText = async page => (await page.locator(t("desert-result")).innerTe
 
 await suite("desert-ride", async check => {
   await check("practice-captions-fit-between-hud-and-idle-finish-is-neutral", async page => {
-    await page.goto(new URL("desert-ride.html", page.url()).href);
+    await page.goto(new URL("desert-ride.html?course=ridge", page.url()).href);
     await page.locator(t("desert-page-tutorial")).click();
     await phase(page, "practice");
     // 長いキーボード・タッチ用の案内も、左右の HUD と重ならず帯の中で折り返す。
@@ -46,7 +46,7 @@ await suite("desert-ride", async check => {
   });
 
   await check("standalone-page-keyboard-run-result-best-and-quit", async page => {
-    await page.goto(new URL("desert-ride.html", page.url()).href);
+    await page.goto(new URL("desert-ride.html?course=ridge", page.url()).href);
     await page.locator(t("desert-page-start")).click();
     await page.locator(t("desert-menu")).waitFor();
     assert.match(await page.locator(t("desert-menu")).innerText(), /DESERT RIDE/);
@@ -129,7 +129,7 @@ await suite("desert-ride", async check => {
   });
 
   await check("phone-touch-buttons-reduced-motion-and-tutorial", async page => {
-    await page.goto(new URL("desert-ride.html", page.url()).href);
+    await page.goto(new URL("desert-ride.html?course=ridge", page.url()).href);
     await page.locator(t("desert-page-reduce")).check();
     await page.locator(t("desert-page-tutorial")).tap();
     await phase(page, "practice");
@@ -419,7 +419,7 @@ await suite("desert-ride", async check => {
   });
   await check("legacy-preview-best-is-separate-from-the-new-landing-rules", async page => {
     await page.evaluate(() => localStorage.setItem("suien_desert_ride_preview", JSON.stringify({ score: 99999, rank: "S", beatNoor: true })));
-    await page.goto(new URL("desert-ride.html", page.url()).href);
+    await page.goto(new URL("desert-ride.html?course=ridge", page.url()).href);
     assert.match(await page.locator(t("desert-page-legacy-best")).innerText(), /旧ルール.*99,999/);
     assert.equal(await page.locator(t("desert-page-best")).count(), 0);
     await page.locator(t("desert-page-start")).click();

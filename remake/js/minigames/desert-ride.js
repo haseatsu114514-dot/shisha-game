@@ -7,7 +7,7 @@
 // 本番はスタートの合図のあと、ヌール（rivalRun）が横で滑る。
 import { el } from "../core/util.js";
 import { SE, unlockAudio, createDesertRideSe, currentBgm, playBgm } from "../core/audio.js";
-import { COURSE, EDGE, SPEED, SPIN, DEFAULT_SEED, generateCourse, practiceCourse, createGame, step, press, boost, chargeBoost, summary, curveAt, botControl,
+import { EDGE, SPEED, COURSE_PACKS, generateCourse, practiceCourse, pickCourse, buildCourse, createGame, step, press, boost, chargeBoost, summary, curveAt, headingAt, lateralAt, upcomingCurve, botControl,
   rivalRun, rivalAt, RULES_VERSION, jumpHeight } from "./desert-ride-model.js";
 import { DESERT_ART, loadDesertArt, riderPose } from "./desert-ride-art.js";
 import { imgFileUrl } from "../core/img-file.js";
@@ -114,12 +114,14 @@ const HOWTO = {
     "起伏の手前で Space で大ジャンプ。着地でブースト回復、直前にもう一度押すと加速",
     "空中で ← → を押し続けると回転。回りかけで着地すると転ぶ",
     "ゲージが満タンで ↓（BOOST）。超加速して、岩も砕く",
+    "岩に当たった直後にブーストを押すと、ゲージを使って立て直せる",
   ],
   touch: [
     "「左へ」「右へ」で左右。砂の上なので、少し遅れてついてくる",
     "起伏の手前で「ジャンプ」で大ジャンプ。着地でブースト回復、直前にもう一度押すと加速",
     "空中で「左へ」「右へ」を押し続けると回転。回りかけで着地すると転ぶ",
     "ゲージが溜まったら「BOOST」。超加速して、岩も砕く",
+    "岩に当たった直後に「BOOST」を押すと、ゲージを使って立て直せる",
   ],
 };
 
@@ -132,7 +134,7 @@ const HOWTO = {
  * @param opts.guide 練習と結果のひとことを言う人の名前（無ければ地の文）
  * @param opts.rivals 本番で競える相手（"noor"、ヌールに勝った後は "naru" も）
  */
-export function runDesertRide({ host = document.getElementById("stage"), signal = null, tutorial = false, best = null, legacyBest = null, seed = DEFAULT_SEED, rivals = ["noor"],
+export function runDesertRide({ host = document.getElementById("stage"), signal = null, tutorial = false, best = null, legacyBest = null, seed, courseId, rivals = ["noor"],
   reducedMotion = typeof matchMedia === "function" && matchMedia("(prefers-reduced-motion: reduce)").matches, onResult = null, guide = null, speedUp = 1 } = {}) {
   if (!host?.isConnected) return Promise.reject(new Error("Connected game host required"));
   if (active.has(host)) return active.get(host);
@@ -164,6 +166,7 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
 
     const input = { left: false, right: false };
     let pose = "rider";
+    let paused = false;
     let game = null, mode = null, bot = null, botMemo = {}, botLag = 0, last = 0, world = null, particles = [], shakeT = 0, flashT = 0, popT = 0, popText = "", popKind = "";
     let rival = null, raceWith = "noor", countdown = 0, countShown = "", slowT = 0, rings = [], floaters = [], halfShown = 0;
     const view = { depth: CAM.depth, back: CAM.back, roll: 0, kick: 0 }; // 速さで広がる視界。back を depth に比例させ、人物の大きさは変えない
@@ -188,7 +191,7 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
 
     // ---- 入力 -------------------------------------------------------------------------
     const act = () => { if (game && !game.finished && mode && countdown <= 0) { const kind = press(game); if (kind) onPress(kind); } };
-    const doBoost = () => { if (game && !game.finished && mode && countdown <= 0) boost(game); };
+    const doBoost = () => { if (game && !game.finished && mode && countdown <= 0) onBoostEvent(boost(game)); };
     const onKey = event => {
       if (!root.isConnected) return;
       if (["ArrowLeft", "a", "A"].includes(event.key)) { input.left = true; event.preventDefault(); }
@@ -261,6 +264,23 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       ]));
       (tutorial && !practiced ? practice : start).focus();
     }
+    function pickRunCourse() {
+      if (courseId) return buildCourse({ id: courseId });
+      if (seed != null && Number.isFinite(Number(seed))) {
+        const n = Number(seed);
+        return COURSE_PACKS.some(p => p.seed === n) ? buildCourse({ seed: n }) : generateCourse(n);
+      }
+      return pickCourse((Math.random() * 0xFFFFFFFF) >>> 0);
+    }
+    function onBoostEvent(kind) {
+      if (kind === "recover") {
+        rideSe.play("boost", 0.7); showPop("リカバリー", "recover"); burst(28, 1.8); floater("リカバリー", "recover");
+        if (!reducedMotion) { shakeT = Math.max(shakeT, 0.28); flashT = Math.max(flashT, 0.16); view.kick = Math.max(view.kick, 1.2); }
+      } else if (kind === "boost") {
+        rideSe.play("boost", 0.6); showPop("BOOST!!", "boost"); burst(24, 1.6);
+        if (!reducedMotion) { shakeT = 0.3; flashT = 0.1; view.kick = 1.4; }
+      }
+    }
     function startRun(kind, who = raceWith) {
       const thisRun = ++runId;
       unlockAudio();
@@ -270,12 +290,13 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       playBgm(rideBgm);
       mode = kind;
       panel.replaceChildren();
-      const course = kind === "practice" ? practiceCourse() : generateCourse(seed);
+      const course = kind === "practice" ? practiceCourse() : pickRunCourse();
       rival = kind === "practice" ? null : rivalRun(course, { who: raceWith });
       game = createGame(course, { rival });
       world = { sky: 0, yaw: 0, sunPulse: 0 };
       particles = []; rings = []; floaters = []; clearTimeout(cutinTimer); cutin.classList.remove("show"); cutin.replaceChildren(); shakeT = 0; flashT = 0; popT = 0; slowT = 0; halfShown = 0; bot = null; botMemo = {}; botLag = 0;
-      Object.assign(view, { depth: CAM.depth, back: CAM.back, roll: 0, kick: 0 });
+      Object.assign(view, { depth: CAM.depth, back: CAM.back, roll: 0, kick: 0, boost: 0 });
+      shownKmh = SPEED.start * 3.6;
       countdown = kind === "practice" ? 0 : COUNTDOWN; countShown = "";
       root.dataset.countdown = countdown > 0 ? "on" : "";
       root.dataset.rival = rival ? raceWith : "";
@@ -327,23 +348,50 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
     }
 
     // ---- HUD ---------------------------------------------------------------------------
-    let hudNodes = null;
+    let hudNodes = null, shownKmh = SPEED.start * 3.6;
+    const SPEEDO_ARC = 157.08; // 半円（r=50）の長さ
+    const SPEEDO_MAX = SPEED.boost * 3.6; // 表示の上限（ブースト最高速＝約166 km/h）
+    function makeSpeedoArc() {
+      const ns = "http://www.w3.org/2000/svg";
+      const svg = document.createElementNS(ns, "svg");
+      svg.setAttribute("class", "dr-speedo-arc");
+      svg.setAttribute("viewBox", "0 0 120 72");
+      svg.setAttribute("aria-hidden", "true");
+      const track = document.createElementNS(ns, "path");
+      track.setAttribute("class", "dr-speedo-track");
+      track.setAttribute("d", "M14 62 A 46 46 0 0 1 106 62");
+      track.setAttribute("fill", "none");
+      const fill = document.createElementNS(ns, "path");
+      fill.setAttribute("class", "dr-speedo-fill");
+      fill.setAttribute("d", "M14 62 A 46 46 0 0 1 106 62");
+      fill.setAttribute("fill", "none");
+      fill.setAttribute("stroke-dasharray", String(SPEEDO_ARC));
+      fill.setAttribute("stroke-dashoffset", String(SPEEDO_ARC));
+      svg.append(track, fill);
+      return { svg, fill };
+    }
     function buildHud() {
+      const arc = makeSpeedoArc();
       hudNodes = {
         score: el("strong.dr-score", { text: "0" }), combo: el("span.dr-combo", { text: "" }),
-        time: el("span.dr-time", { text: "0.0" }), kmh: el("strong.dr-kmh", { text: "0" }), gauge: el("i"), gaugeBox: null, progress: el("i"),
+        time: el("span.dr-time", { text: "0.0" }), kmh: el("strong.dr-kmh", { text: "0", dataset: { test: "desert-kmh" } }), gauge: el("i"), gaugeBox: null, progress: el("i"),
         you: el("b.dr-mark.dr-mark-you", { title: "あなた" }), noor: el(`b.dr-mark.dr-mark-${raceWith}`, { title: RIVAL_NAMES[raceWith] }), race: el("span.dr-race", { dataset: { test: "desert-race-gap" } }),
+        course: el("span.dr-course", { dataset: { test: "desert-course" } }), hint: el("span.dr-curve-hint", { dataset: { test: "desert-curve-hint" } }),
+        speedo: el("div.dr-speedo", { dataset: { test: "desert-speedo" } }), speedFill: arc.fill,
       };
       // BOOST は ⚡ とゲージだけ（% の文字は出さない。#2838）
       hudNodes.gaugeBox = el("div.dr-gauge", { dataset: { test: "desert-gauge" }, title: "BOOST" }, [hudNodes.gauge]);
+      hudNodes.speedo.append(arc.svg, el("div.dr-speedo-read", [hudNodes.kmh, el("small", { text: "km/h" })]));
       hud.replaceChildren(
         el("div.dr-hud-left", [el("small", { text: mode === "practice" ? "PRACTICE" : "SCORE" }), hudNodes.score, hudNodes.combo, feedback]),
         el("div.dr-hud-center", [
           el("div.dr-progress", [hudNodes.progress, el("b.dr-progress-sun"), rival ? hudNodes.noor : null, hudNodes.you]),
           rival ? hudNodes.race : null,
+          hudNodes.course,
+          hudNodes.hint,
         ]),
         el("div.dr-hud-right", [
-          el("div.dr-speedo", [hudNodes.kmh, el("small", { text: "km/h" })]),
+          hudNodes.speedo,
           el("div.dr-boost-meter", [el("b.dr-bolt", { text: "⚡" }), hudNodes.gaugeBox]),
           el("div.dr-clock", [el("small", { text: "TIME" }), hudNodes.time]),
         ]),
@@ -355,12 +403,30 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       hudNodes.combo.textContent = game.combo >= 2 ? `${game.combo} COMBO ×${(Math.min(3, 1 + 0.15 * game.combo)).toFixed(2).replace(/0$/, "")}` : "";
       hudNodes.combo.dataset.hot = game.combo >= 10 ? "2" : game.combo >= 5 ? "1" : "";
       hudNodes.time.textContent = game.t.toFixed(1);
-      hudNodes.kmh.textContent = String(Math.round(game.speed * 3.6));
-      hudNodes.kmh.dataset.fast = game.boostT > 0 ? "boost" : game.speed > SPEED.max * 0.85 ? "fast" : "";
-      const ready = game.gauge > 0, boosting = game.boostT > 0;
+      const targetKmh = game.speed * 3.6;
+      shownKmh += (targetKmh - shownKmh) * (countdown > 0 ? 1 : 0.22);
+      hudNodes.kmh.textContent = String(Math.round(shownKmh));
+      const boosting = game.boostT > 0;
+      hudNodes.kmh.dataset.fast = boosting ? "boost" : shownKmh > SPEED.max * 3.6 * 0.85 ? "fast" : "";
+      hudNodes.speedo.dataset.fast = hudNodes.kmh.dataset.fast;
+      if (hudNodes.speedFill) {
+        const t = Math.max(0, Math.min(1, shownKmh / SPEEDO_MAX));
+        hudNodes.speedFill.setAttribute("stroke-dashoffset", String(SPEEDO_ARC * (1 - t)));
+      }
+      const ready = game.gauge > 0;
       hudNodes.gauge.style.width = `${Math.round(100 * (boosting ? game.boostT / 3 : game.gauge))}%`;
       hudNodes.gaugeBox.dataset.state = boosting ? "boost" : ready ? "full" : "";
       root.dataset.gauge = boosting ? "boost" : ready ? "full" : "";
+      root.dataset.boost = boosting ? "on" : "";
+      if (hudNodes.course) {
+        hudNodes.course.textContent = mode === "practice" ? "" : (game.course.name || "");
+        hudNodes.course.hidden = mode === "practice" || !game.course.name;
+      }
+      if (hudNodes.hint) {
+        const hint = upcomingCurve(game.course, game.z);
+        hudNodes.hint.textContent = hint < 0 ? "↩ カーブ" : hint > 0 ? "カーブ ↪" : "";
+        hudNodes.hint.hidden = !hint;
+      }
       const progress = z => `${(100 * Math.min(1, z / game.course.length)).toFixed(1)}%`;
       hudNodes.progress.style.width = progress(game.z);
       hudNodes.you.style.left = progress(game.z);
@@ -414,6 +480,7 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
     // ---- ループ -------------------------------------------------------------------------
     function tick(now) {
       if (done || !mode) return;
+      if (paused) { last = now; frame = requestAnimationFrame(tick); return; }
       const real = Math.min(0.05, (now - last) / 1000) * speedUp;
       last = now;
       if (countdown > 0) {
@@ -449,7 +516,7 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       }
       const events = game.events.slice(before);
       react(events);
-      rideSe.motion({ speed: game.speed / SPEED.max, carve: Math.abs(game.vx), grounded: game.air <= 0 && game.fallT <= 0 });
+      rideSe.motion({ speed: (game.speed / SPEED.max) * (game.boostT > 0 ? 1.35 : 1), carve: Math.abs(game.vx), grounded: game.air <= 0 && game.fallT <= 0 });
       updateTutorial(events);
       updateHud();
       simulateParticles(dt);
@@ -481,10 +548,9 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
         } else if (event.kind === "near") { SE.tick(); floater(`かすめ +${event.points}`, "near"); if (game.combo >= 2) showPop(`${game.combo} COMBO`, "combo"); }
         else if (event.kind === "smash") { SE.crack(); floater(`粉砕 +${event.points}`, "smash"); chips(event.size); if (!reducedMotion) shakeT = Math.max(shakeT, 0.22); }
         else if (event.kind === "gaugeFull") { SE.slotBonus(); floater(touchUi() ? "BOOST OK" : "BOOST OK ↓", "gauge"); }
-        else if (event.kind === "boost") {
-          rideSe.play("boost", 0.6); showPop("BOOST!!", "boost"); burst(24, 1.6);
-          if (!reducedMotion) { shakeT = 0.3; flashT = 0.1; view.kick = 1.4; }
-        } else if (event.kind === "race") {
+        else if (event.kind === "boost") onBoostEvent("boost");
+        else if (event.kind === "recover") onBoostEvent("recover");
+        else if (event.kind === "race") {
           if (event.won) { floater(`${RIVAL_NAMES[event.who] || "ヌール"}に勝利 +${event.points}`, "race"); }
         } else if (event.kind === "finish") { rideSe.play("goal", 0.7); }
       }
@@ -540,6 +606,8 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
           row("岩をかすめた", `${result.nearMiss} 回`, "desert-near"),
           row("トリック", result.tricks ? `${result.tricks} 回（最高 ${result.bestTrick}）` : "0 回", "desert-tricks"),
           row("ブースト", `${result.boosts} 回${result.smashed ? `（岩を ${result.smashed} 個粉砕）` : ""}`, "desert-boosts"),
+          result.recoveries ? row("リカバリー", `${result.recoveries} 回`, "desert-recoveries") : null,
+          result.courseName ? row("コース", result.courseName, "desert-result-course") : null,
         ]),
         el("p.dr-best", { text: newBest ? "自己ベスト更新！" : `自己ベスト ${currentBest.score.toLocaleString("ja-JP")}点 ／ ${currentBest.rank}`, dataset: { test: "desert-best" } }),
         el("div.dr-actions", [
@@ -568,8 +636,9 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       // 滑走中は板の後ろから細かな砂が舞う。速いほど多く、端の深い砂ではさらに多く。ブースト中は太い砂の尾
       if (running && game.air <= 0 && game.fallT <= 0) {
         const k = game.speed / SPEED.max, boosting = game.boostT > 0;
-        const rate = (reducedMotion ? 6 : 26) * k * (Math.abs(game.x) > EDGE ? 2.2 : 1) * (boosting ? 2.2 : 1);
-        for (let i = 0; i < rate * dt * 4; i++) particles.push({ x: (Math.random() - 0.5) * 50 + game.vx * 30, y: 0, vx: (Math.random() - 0.5) * 80 - game.vx * 60, vy: -(20 + Math.random() * (boosting ? 140 : 70)), r: 4 + Math.random() * (boosting ? 16 : 9), life: 0.4 + Math.random() * 0.4, age: 0 });
+        const feel = view.boost || 0;
+        const rate = (reducedMotion ? 6 : 26) * k * (Math.abs(game.x) > EDGE ? 2.2 : 1) * (1 + 2.4 * feel);
+        for (let i = 0; i < rate * dt * 4; i++) particles.push({ x: (Math.random() - 0.5) * 50 + game.vx * 30, y: 0, vx: (Math.random() - 0.5) * 80 - game.vx * 60, vy: -(20 + Math.random() * (70 + 120 * feel)), r: 4 + Math.random() * (9 + 12 * feel), life: 0.4 + Math.random() * (0.4 + 0.25 * feel), age: 0, trail: feel > 0.4 && Math.random() < 0.35 });
         // 曲がると板の外側へ砂しぶき（曲がる向きと反対へ高く飛ぶ）
         const carve = Math.abs(game.vx);
         if (carve > 0.25) {
@@ -586,6 +655,8 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       floaters = floaters.filter(f => f.age < f.life);
       shakeT = Math.max(0, shakeT - dt); flashT = Math.max(0, flashT - dt); popT = Math.max(0, popT - dt * 1.4);
       view.kick = Math.max(0, view.kick - dt * 1.6);
+      const boostTarget = game.boostT > 0.28 ? 1 : game.boostT > 0 ? game.boostT / 0.28 : 0;
+      view.boost += (boostTarget - (view.boost || 0)) * Math.min(1, dt * 6);
     }
 
     // ---- 描画 ---------------------------------------------------------------------------
@@ -598,16 +669,18 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
     function draw(dt) {
       const progress = Math.min(1, game.z / game.course.length);
       const dusk = mode === "practice" ? 0.1 : progress * progress; // ゴールへ近づくほど夕方
-      // カメラの向き: 今のカーブに少し遅れてついていく（遠くの砂丘がゆっくり流れる）
+      // カメラの向き: コースの向きに少し遅れてついていく（遠くの砂丘が横へ流れる）
       const curve = curveAt(game.course, game.z);
-      world.yaw += (curve - world.yaw) * Math.min(1, dt * 2.5);
+      const head = headingAt(game.course, game.z);
+      world.yaw += (head - world.yaw) * Math.min(1, dt * 3.2);
       // 速いほど視界が広がる（遠くが小さく流れる）。カメラの距離も同じ割合で縮め、人物の大きさは変えない。
-      // GO とブーストの瞬間は一度ぐっと広がる。動き軽減では固定
+      // GO とブーストの瞬間は一度ぐっと広がる。ブースト中はさらに少し引く。動き軽減では固定
       const fast = Math.min(1, Math.max(0, (game.speed - SPEED.min) / (SPEED_FULL - SPEED.min)));
-      const targetDepth = reducedMotion ? CAM.depth : CAM.depth * (1 - 0.24 * fast - 0.12 * Math.min(1, view.kick));
+      const feel = view.boost || 0;
+      const targetDepth = reducedMotion ? CAM.depth : CAM.depth * (1 - 0.24 * fast - 0.12 * Math.min(1, view.kick) - 0.16 * feel);
       view.depth += (targetDepth - view.depth) * Math.min(1, dt * 4);
       view.back = CAM.back * view.depth / CAM.depth;
-      const targetRoll = reducedMotion || countdown > 0 ? 0 : Math.max(-0.05, Math.min(0.05, -game.vx * 0.035 - curve * 0.02));
+      const targetRoll = reducedMotion || countdown > 0 ? 0 : Math.max(-0.07, Math.min(0.07, -game.vx * 0.04 - curve * 0.045 - head * 0.02));
       view.roll += (targetRoll - view.roll) * Math.min(1, dt * 5);
       ctx.save();
       if (view.roll) { ctx.translate(W / 2, H * 0.62); ctx.rotate(view.roll); ctx.scale(1.06, 1.06); ctx.translate(-W / 2, -H * 0.62); }
@@ -637,12 +710,13 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       if (!sky || !land) return false;
       const B = DESERT_ART.backdrop, k = BACKDROP_SCALE, dw = B.width * k, baseX = (W - dw) / 2;
       // 空はゆっくり、陸は速く横へ流れる（カーブに合わせたパララックス）。絵の地平線の行を HORIZON に合わせる
-      ctx.drawImage(sky, baseX - world.yaw * 90, HORIZON - B.horizon * k, dw, sky.naturalHeight * k);
+      const yawPx = world.yaw * 160 * (1 + 0.55 * (view.boost || 0));
+      ctx.drawImage(sky, baseX - yawPx * 0.55, HORIZON - B.horizon * k, dw, sky.naturalHeight * k);
       const duskSky = art.get("duskSky"), duskLand = art.get("duskLand");
       if (dusk > 0 && duskSky && duskLand) {
         // 同じ構図の夕方の絵を、ゴールへ近づくほど濃く重ねる
         ctx.globalAlpha = dusk;
-        ctx.drawImage(duskSky, baseX - world.yaw * 90, HORIZON - B.horizon * k, dw, duskSky.naturalHeight * k);
+        ctx.drawImage(duskSky, baseX - yawPx * 0.55, HORIZON - B.horizon * k, dw, duskSky.naturalHeight * k);
         ctx.globalAlpha = 1;
       } else if (dusk > 0) {
         const g = ctx.createLinearGradient(0, 0, 0, HORIZON + 10);
@@ -650,19 +724,27 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
         ctx.fillStyle = g; ctx.fillRect(0, 0, W, HORIZON + 10);
       }
       // 太陽: 進むほど大きく低く。ゴールの手前では砂丘の稜線の後ろへ沈みかける
-      const sunX = W * 0.5 - world.yaw * 120 + 180 * (1 - progress), sunY = lerp(70, HORIZON - 34, Math.min(1, progress * 1.05)), r = lerp(30, 72, progress);
+      const sunX = W * 0.5 - world.yaw * 180 * (1 + 0.4 * (view.boost || 0)) + 180 * (1 - progress), sunY = lerp(70, HORIZON - 34, Math.min(1, progress * 1.05)), r = lerp(30, 72, progress);
       const glow = ctx.createRadialGradient(sunX, sunY, r * 0.4, sunX, sunY, r * 3.2);
       glow.addColorStop(0, `rgba(255,230,170,${0.55 + 0.3 * dusk})`); glow.addColorStop(1, "rgba(255,200,120,0)");
       ctx.fillStyle = glow; ctx.fillRect(sunX - r * 3.2, sunY - r * 3.2, r * 6.4, r * 6.4);
       ctx.fillStyle = mixColor([255, 248, 220], [255, 170, 90], dusk);
       ctx.beginPath(); ctx.arc(sunX, sunY, r, 0, Math.PI * 2); ctx.fill();
       // 陸: 稜線〜地平線は空と同じ倍率、地平線より下（平らな砂）は画面の下端まで伸ばす
-      const landX = baseX - world.yaw * 200, above = B.horizon - DESERT_ART.land.top, below = B.height - B.horizon;
+      const landX = baseX - yawPx, above = B.horizon - DESERT_ART.land.top, below = B.height - B.horizon;
+      const smear = !reducedMotion && (view.boost || 0) > 0.2 ? yawPx * 0.04 * (view.boost || 0) : 0;
       for (const [image, alpha] of [[land, 1], [dusk > 0 ? duskLand : null, dusk]]) {
         if (!image) continue;
         ctx.globalAlpha = alpha;
         ctx.drawImage(image, 0, 0, B.width, above, landX, HORIZON - above * k, dw, above * k);
         ctx.drawImage(image, 0, above, B.width, below, landX, HORIZON, dw, H - HORIZON);
+        if (smear) {
+          ctx.globalAlpha = alpha * 0.28;
+          ctx.drawImage(image, 0, 0, B.width, above, landX + smear, HORIZON - above * k, dw, above * k);
+          ctx.drawImage(image, 0, above, B.width, below, landX + smear, HORIZON, dw, H - HORIZON);
+          ctx.drawImage(image, 0, 0, B.width, above, landX - smear, HORIZON - above * k, dw, above * k);
+          ctx.drawImage(image, 0, above, B.width, below, landX - smear, HORIZON, dw, H - HORIZON);
+        }
       }
       ctx.globalAlpha = 1;
       return true;
@@ -673,7 +755,7 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       sky.addColorStop(0, top); sky.addColorStop(0.62, mid); sky.addColorStop(1, bottom);
       ctx.fillStyle = sky; ctx.fillRect(0, 0, W, HORIZON + 20);
       // 太陽: 進むほど大きく低く。ゴールの手前では地平線に触れる
-      const sunX = W * 0.5 - world.yaw * 160 + 180 * (1 - progress), sunY = lerp(70, HORIZON - 14, Math.min(1, progress * 1.05)), r = lerp(30, 72, progress);
+      const sunX = W * 0.5 - world.yaw * 200 * (1 + 0.4 * (view.boost || 0)) + 180 * (1 - progress), sunY = lerp(70, HORIZON - 14, Math.min(1, progress * 1.05)), r = lerp(30, 72, progress);
       const glow = ctx.createRadialGradient(sunX, sunY, r * 0.4, sunX, sunY, r * 3.2);
       glow.addColorStop(0, `rgba(255,230,170,${0.55 + 0.3 * dusk})`); glow.addColorStop(1, "rgba(255,200,120,0)");
       ctx.fillStyle = glow; ctx.fillRect(sunX - r * 3.2, sunY - r * 3.2, r * 6.4, r * 6.4);
@@ -688,7 +770,7 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
         { amp: 54, freq: 0.0068, speed: 0.3, base: HORIZON + 10, color: mixColor([240, 216, 168], [236, 168, 118], dusk) },
       ];
       for (const [i, layer] of layers.entries()) {
-        const shift = world.yaw * 220 * (i + 1) + game.z * layer.speed * 6;
+        const shift = world.yaw * 280 * (i + 1) * (1 + 0.5 * (view.boost || 0)) + game.z * layer.speed * 6 * (1 + 0.7 * (view.boost || 0));
         ctx.fillStyle = layer.color;
         ctx.beginPath(); ctx.moveTo(0, H);
         for (let x = 0; x <= W; x += 16) {
@@ -711,14 +793,13 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       const flagArt = art.get("flag");
       // 区間の境目を手前から並べる。最初の点は画面の下端のすぐ外（dz 0.5m）に置く
       const points = [];
-      let x = 0, dx = 0;
-      const firstZ = Math.floor(camZ / SEG) * SEG;
-      points.push({ z: camZ + 0.5, dz: 0.5, x: 0, p: project(-camX, 0, 0.5) });
+      const zRef = game.z, firstZ = Math.floor(camZ / SEG) * SEG;
+      const x0 = lateralAt(game.course, camZ + 0.5, zRef);
+      points.push({ z: camZ + 0.5, dz: 0.5, x: x0, p: project(x0 - camX, 0, 0.5) });
       for (let z = firstZ + SEG; z < camZ + DRAW_DIST; z += SEG) {
-        dx += curveAt(game.course, z) * 0.00042 * SEG * SEG;
-        x += dx;
         const dz = z - camZ;
         if (dz <= 0.5) continue;
+        const x = lateralAt(game.course, z, zRef);
         points.push({ z, dz, x, p: project(x - camX, 0, dz) });
       }
       segmentsDrawn = points;
@@ -1092,32 +1173,44 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
     function drawSpeedLines() {
       if (reducedMotion || !game || countdown > 0) return;
       const k = Math.min(1, Math.max(0, (game.speed - SPEED.min) / (SPEED_FULL - SPEED.min)));
-      const boosting = game.boostT > 0;
-      if (k < 0.3 && !boosting) return;
-      const amount = boosting ? 1 : (k - 0.3) / 0.7;
-      const n = Math.round(14 + 42 * amount), cx = W / 2, cy = HORIZON + 40, reach = Math.hypot(W, H) * 0.62;
+      const feel = view.boost || 0;
+      if (k < 0.3 && feel < 0.05) return;
+      const amount = Math.min(1.15, (k < 0.3 ? 0 : (k - 0.3) / 0.7) + 0.85 * feel);
+      const n = Math.round(14 + 48 * amount), cx = W / 2, cy = HORIZON + 40, reach = Math.hypot(W, H) * 0.66;
       ctx.save();
       ctx.lineCap = "round";
       for (let i = 0; i < n; i++) {
         const s = streaks[i];
-        const travel = (s.phase + game.t * (0.9 + 1.6 * k)) % 1;
-        const r0 = 240 + travel * reach, r1 = r0 + (60 + 220 * amount) * s.len * (0.4 + travel);
-        const alpha = (boosting ? 0.6 : 0.42) * amount * Math.sin(travel * Math.PI);
-        ctx.strokeStyle = boosting ? `rgba(255,${190 + Math.round(50 * s.len) % 60},120,${alpha})` : `rgba(255,255,255,${alpha})`;
-        ctx.lineWidth = s.w * (0.6 + travel * 1.6);
+        const travel = (s.phase + game.t * (0.9 + 1.6 * k + 1.8 * feel)) % 1;
+        const r0 = (feel > 0.3 ? 160 : 240) + travel * reach, r1 = r0 + (60 + 220 * amount + 80 * feel) * s.len * (0.4 + travel);
+        const alpha = (0.42 + 0.32 * feel) * amount * Math.sin(travel * Math.PI);
+        ctx.strokeStyle = feel > 0.15 ? `rgba(255,${190 + Math.round(50 * s.len) % 60},120,${alpha})` : `rgba(255,255,255,${alpha})`;
+        ctx.lineWidth = s.w * (0.6 + travel * 1.6 + feel);
         const ca = Math.cos(s.angle), sa = Math.sin(s.angle) * 0.62;
         ctx.beginPath(); ctx.moveTo(cx + ca * r0, cy + sa * r0); ctx.lineTo(cx + ca * r1, cy + sa * r1); ctx.stroke();
+      }
+      // 画面端からの流れ（ブースト中だけ。中央の走路は空けたまま）
+      if (feel > 0.12) {
+        for (let i = 0; i < 10; i++) {
+          const side = i < 5 ? -1 : 1, u = ((game.t * (2.4 + feel) + i * 0.17) % 1);
+          const y = 80 + (H - 100) * ((i % 5) / 4);
+          const len = 70 + 160 * feel * (0.4 + u);
+          const x0 = side < 0 ? 0 : W;
+          ctx.strokeStyle = `rgba(255,210,140,${0.22 * feel * (1 - u)})`;
+          ctx.lineWidth = 2 + 3 * feel;
+          ctx.beginPath(); ctx.moveTo(x0, y); ctx.lineTo(x0 - side * len, y + (y - H * 0.55) * 0.08); ctx.stroke();
+        }
       }
       ctx.restore();
     }
     /** 速いほど画面の縁を暗く（ブースト中は暖色）。 */
     function drawVignette(fast) {
-      const boosting = game.boostT > 0;
-      const a = (reducedMotion ? 0.12 : 0.34) * fast + (boosting ? 0.2 : 0);
+      const feel = view.boost || 0;
+      const a = (reducedMotion ? 0.12 : 0.34) * fast + 0.28 * feel;
       if (a < 0.02) return;
-      const g = ctx.createRadialGradient(W / 2, H * 0.55, H * 0.42, W / 2, H * 0.55, H * 1.05);
+      const g = ctx.createRadialGradient(W / 2, H * 0.55, H * (0.42 - 0.08 * feel), W / 2, H * 0.55, H * 1.05);
       g.addColorStop(0, "rgba(0,0,0,0)");
-      g.addColorStop(1, boosting ? `rgba(160,60,20,${a})` : `rgba(40,20,10,${a})`);
+      g.addColorStop(1, feel > 0.08 ? `rgba(160,60,20,${a})` : `rgba(40,20,10,${a})`);
       ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
     }
     /** 着地の衝撃の輪（砂の上に広がる楕円）。 */
@@ -1139,7 +1232,7 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       const unit = p.scale * (H / 2);
       ctx.save();
       ctx.textBaseline = "middle"; ctx.lineJoin = "round";
-      const colors = { trick: "#ffe27a", perfect: "#fff1a8", good: "#c6f0ff", near: "#ffd4a8", smash: "#ffb07a", gauge: "#ffcf5a", race: "#ffe27a", jump: "#ffffff" };
+      const colors = { trick: "#ffe27a", perfect: "#fff1a8", good: "#c6f0ff", near: "#ffd4a8", smash: "#ffb07a", gauge: "#ffcf5a", race: "#ffe27a", jump: "#ffffff", recover: "#9dffb0" };
       // 人物の右上に、新しいものほど下へ積む（真ん中の大きな文字と HUD に重ねない）
       const left = p.x > W * 0.62;
       ctx.textAlign = left ? "right" : "left";
@@ -1274,11 +1367,20 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
 
     // 検証・デモ用の手がかり（保存に触れない）
     window.__desertRide = {
-      get game() { return game; }, get mode() { return mode; }, get results() { return results; },
+      get game() { return game; }, get mode() { return mode; }, get results() { return results; }, get course() { return game?.course ?? null; },
       press: act, setInput(left, right) { input.left = !!left; input.right = !!right; },
       autoplay(skill = "expert") { bot = skill; }, boost: doBoost, get rival() { return rival; }, get countdown() { return countdown; }, get raceWith() { return raceWith; },
       setSpeedUp(value) { speedUp = Math.max(1, Number(value) || 1); },
+      skipCountdown() { countdown = 0; root.dataset.countdown = ""; countShown = "GO!"; startPop.classList.remove("show"); },
+      advance(seconds, input = {}) {
+        if (!game || game.finished) return;
+        const dt = 1 / 60, n = Math.max(1, Math.round(Math.max(0, seconds) / dt));
+        for (let i = 0; i < n && !game.finished; i++) step(game, input, dt);
+      },
       start(kind = "run", who = "noor") { if (!mode) startRun(kind, who); }, leave: finish,
+      pause(value) { paused = !!value; if (!paused) { last = performance.now(); } },
+      redraw() { if (game) { updateHud(); simulateParticles(0); draw(1 / 60); } },
+      rawBoost() { return boost(game); },
     };
     showMenu();
     if (tutorial) startRun("practice");
