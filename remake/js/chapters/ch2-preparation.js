@@ -19,7 +19,7 @@ import { MAP, STOPS, ROOMS } from "./ch2-city-data.js";
 import { dayOneProgress, recordCityVisit } from "./ch2-progress.js";
 import { chapterTwoNights, storyVisitDue, readStoryVisit } from "./ch2-story.js";
 import { craftPrepDue, offerCraftPrep } from "./ch2-craft-prep.js";
-import { agehaStoryScene, syncAgehaVibes } from "./ch2-story-data.js";
+import { agehaStoryScene, agehaLaterScene, AGEHA_LATER_SCENES, syncAgehaVibes } from "./ch2-story-data.js";
 import { CH2_VISIT_STORIES, ch2VisitDone, ch2VisitReady } from "../core/affinity-stages.js";
 import { BOND_QUESTIONS, BOND_FINALES, playQuestionVisit, questionVisitDue, finaleAtVisit, playFinale } from "../daily/bonds.js";
 import { consultLessons } from "../core/growth.js";
@@ -182,9 +182,12 @@ export async function visitPreparationSpot(spot, { staminaGuard }) {
   const story = id === "ageha" && !first && !pendingFollowup ? agehaStoryScene(state, chapterDayNow, DB.dialogues) : null;
   // あげは: 店に通う回と♥3の質問を読み終えた♥5の次の来店は、いつもの会話の代わりに締めくくり（#2023・一度だけ）。
   if (!finale && id === "ageha" && !first && !pendingFollowup && !story) finale = finaleAtVisit("ageha");
-  const repeat = !first && !followup && !story && !stage && !finale;
+  // 締めくくりの次の来店から、グミと店の言葉を一度ずつ。小品の前に割り込む（#3081）
+  const later = id === "ageha" && !first && !pendingFollowup && !story && !stage && !finale
+    ? agehaLaterScene(state, DB.dialogues) : null;
+  const repeat = !first && !followup && !story && !stage && !finale && !later;
   const scene = story || stage?.scene || (finale ? BOND_FINALES[id].dialogue
-    : first ? `remake_ch2_${id}_chat` : followup ? `remake_ch2_${id}_followup` : repeatScene(id));
+    : first ? `remake_ch2_${id}_chat` : followup ? `remake_ch2_${id}_followup` : later || repeatScene(id));
   const dialogue = DB.dialogues[scene];
   if (!dialogue?.lines?.length || (followup || stage?.done) && !dialogue.lines.every(line => line && !line.type
     && typeof line.text === "string" && line.text.length > 0 && typeof line.speaker === "string" && typeof line.face === "string")) {
@@ -242,6 +245,10 @@ export async function visitPreparationSpot(spot, { staminaGuard }) {
   if (stage?.done) (state.flags[stage.done] ||= {})[id] = true;
   else if (stage) state.flags[`_ch2_read_${stage.scene}`] = true;
   if (story) { state.flags[`_ch2_read_${story}`] = true; syncAgehaVibes(state.flags); }
+  if (later) {
+    const extra = AGEHA_LATER_SCENES.find(item => item.id === later);
+    if (extra) state.flags[extra.flag] = true;
+  }
   const talks = state.flags._ch2_talks ||= {};
   talks[id] = (talks[id] || 0) + 1;
   state.visits[id] = (state.visits[id] || 0) + 1;
@@ -252,7 +259,7 @@ export async function visitPreparationSpot(spot, { staminaGuard }) {
   if (id === "ageha" && state.flags._lime_contact_ageha) state.flags._ch2_ageha_contact = true;
   // 神崎・レヰの長い段階会話・あげはの店に通う回（VOL06）・締めくくりは、第1章の固有会話と同じ（#2027）。
   // 値は core/stats.js の visitAffinity（段階 +16・いつもの会話 +8。第5章は +10／+5。AFB01）。
-  gainAffinity(id, visitAffinity(first || finale || story || stages && stage?.file ? "story" : "talk")); earnStat(stat[id], 4);
+  gainAffinity(id, visitAffinity(first || finale || story || later || stages && stage?.file ? "story" : "talk")); earnStat(stat[id], 4);
   // 心得の盤で灯した授業があれば、その店で相談して習う（SBD61: 会った時だけ）
   if (state === owner) await consultLessons(id, { bg: ROOMS[id] });
   // 部活の勧誘（レヰ・あげは）も地元の訪問と同じく、会えた後にだけ。入部は暦の精算と一緒に保存する。

@@ -110,6 +110,8 @@ export const FLAG_EXACT_RULES = [
   ["_adam_arcade_done", "person"],
   ["_ageha_aquarium_introduced", "person"],
   ["_ageha_first_purikura", "person"],
+  ["_ageha_floor_words_done", "person"],
+  ["_ageha_gummy_share_done", "person"],
   ["_ageha_purikura_history", "person"],
   ["_ageha_purikura_offer", "person"],
   ["_axe_bar_legacy_access", "unlock"],
