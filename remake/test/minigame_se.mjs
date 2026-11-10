@@ -3,6 +3,8 @@
 import assert from "node:assert/strict";
 import fs from "node:fs/promises";
 import { createHash } from "node:crypto";
+import { execFileSync } from "node:child_process";
+import { fileURLToPath } from "node:url";
 import vm from "node:vm";
 
 const ROOT = new URL("../../", import.meta.url);
@@ -76,7 +78,13 @@ assert(sources.originals.length > 0);
 for (const original of sources.originals) {
   assert.equal(original.license, "CC0-1.0", original.file);
   assert.match(original.source_url, /^https:\/\//, original.file);
-  await fs.access(new URL(original.repository_original, ROOT));
+  assert(original.repository_original.startsWith("asset_sources/music/minigame-se/"), original.file);
+  // Quick CI uses sparse checkout: read the committed source blob without checking out the whole source tree.
+  const committed = execFileSync("git", ["show", `HEAD:${original.repository_original}`], {
+    cwd: fileURLToPath(ROOT), maxBuffer: 2 * 1024 * 1024,
+  });
+  assert.equal(committed.length, original.bytes, `${original.file} bytes`);
+  assert.equal(createHash("sha256").update(committed).digest("hex"), original.sha256, `${original.file} hash`);
 }
 // 3) Every playMinigameSe("…") call in the game names a registered cue.
 const calls = [];
