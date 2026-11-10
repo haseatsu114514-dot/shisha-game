@@ -1,0 +1,210 @@
+/* 一台勝負 ルールブック（提案・未採用）の組版。PDFは build_pdf.mjs で作る。 */
+@page { size: A4; margin: 0; }
+:root {
+  --paper: #f7f0e3;
+  --paper2: #efe4d0;
+  --ink: #2b2420;
+  --ink2: #5d5148;
+  --coal: #1f1b19;
+  --ember: #e2591f;
+  --ember2: #f39a3c;
+  --brass: #a8802f;
+  --line: #cdbda2;
+  --fruit: #e98222;  --fruit-l: #fde3c2;
+  --cool: #2795bb;   --cool-l: #d3edf6;
+  --spice: #a3442b;  --spice-l: #f2d6ca;
+  --floral: #7d52ad; --floral-l: #e7daf3;
+  --sweet: #b2823f;  --sweet-l: #f5e7cb;
+  --z-cold: #c5d0d8; --z-off: #efd879; --z-band: #7fbd66; --z-just: #f5ad14; --z-scorch: #b5302a;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: 'Noto Sans JP', 'IPAPGothic', sans-serif;
+  font-size: 9.4pt; line-height: 1.66; color: var(--ink);
+  -webkit-print-color-adjust: exact; print-color-adjust: exact;
+  font-feature-settings: 'palt' 0;
+}
+.disp { font-family: 'Zen Antique', 'Noto Sans JP', serif; font-weight: 400; }
+.page {
+  width: 210mm; height: 297mm; position: relative; overflow: hidden;
+  page-break-after: always; break-after: page;
+  background: var(--paper); padding: 19mm 15mm 17mm;
+}
+.page.dense { font-size: 8.4pt; line-height: 1.55; }
+.page:last-child { page-break-after: auto; break-after: auto; }
+.run { position: absolute; top: 8.5mm; left: 15mm; right: 15mm; display: flex; justify-content: space-between;
+  font-size: 7pt; color: var(--ink2); letter-spacing: .08em; border-bottom: .3mm solid var(--line); padding-bottom: 1.6mm; }
+.run b { color: var(--ember); font-weight: 700; }
+.pno { position: absolute; bottom: 7mm; left: 50%; transform: translateX(-50%); width: 8mm; height: 8mm; border-radius: 50%;
+  background: var(--coal); color: #fff; font-size: 7.5pt; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+.pno::before, .pno::after { content: ''; position: absolute; top: 50%; width: 26mm; height: .3mm; background: var(--line); }
+.pno::before { right: 11mm; } .pno::after { left: 11mm; }
+
+h1 { font-family: 'Zen Antique', serif; font-weight: 400; font-size: 22pt; line-height: 1.2; margin: 0 0 4mm; color: var(--coal);
+  display: flex; align-items: baseline; gap: 3mm; }
+h1 .no { font-size: 11pt; color: #fff; background: var(--ember); border-radius: 50%; width: 8.5mm; height: 8.5mm; display: inline-flex;
+  align-items: center; justify-content: center; transform: translateY(-1.2mm); font-family: 'Noto Sans JP', sans-serif; font-weight: 900; flex: none; }
+h1 small { font-family: 'Noto Sans JP', sans-serif; font-size: 8pt; color: var(--ink2); font-weight: 400; letter-spacing: .06em; }
+h2 { font-family: 'Zen Antique', serif; font-weight: 400; font-size: 13.5pt; margin: 4.5mm 0 1.8mm; color: var(--coal);
+  border-bottom: .5mm solid var(--ember); padding-bottom: .8mm; line-height: 1.3; }
+h2:first-child { margin-top: 0; }
+h3 { font-size: 1.07em; font-weight: 900; margin: 3mm 0 1mm; padding-left: 2.2mm; border-left: 1.2mm solid var(--ember); line-height: 1.35; }
+h3:first-child { margin-top: 0; }
+p { margin: 0 0 1.8mm; text-align: justify; }
+ul, ol { margin: 0 0 1.8mm; padding-left: 4.6mm; }
+li { margin-bottom: .6mm; }
+b, strong { font-weight: 700; }
+em { font-style: normal; font-weight: 700; color: var(--ember); }
+.lead { font-size: 1.08em; line-height: 1.8; }
+.small { font-size: .84em; line-height: 1.5; color: var(--ink2); }
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 6mm; }
+.cols.w64 { grid-template-columns: 1.45fr 1fr; }
+.cols.w46 { grid-template-columns: 1fr 1.45fr; }
+.cols3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4mm; }
+
+.box { background: var(--paper2); border-radius: 2.2mm; padding: 3mm 3.6mm; margin: 0 0 2.6mm; border: .3mm solid var(--line); }
+.box > :last-child { margin-bottom: 0; }
+.box.dark { background: var(--coal); color: #f6ecdd; border: none; }
+.box.dark em { color: var(--ember2); }
+.box.dark h3 { border-color: var(--ember2); }
+.box.ember { background: #fbe3cf; border-color: #eab58d; }
+.tag { display: inline-block; font-size: 7pt; font-weight: 900; color: #fff; background: var(--ember); border-radius: 1mm; padding: 0 1.8mm; margin-right: 1.5mm; letter-spacing: .08em; white-space: nowrap; }
+.tag.k { background: var(--coal); } .tag.g { background: #4f8f3b; } .tag.b { background: var(--brass); }
+
+ol.steps { list-style: none; padding: 0; counter-reset: s; }
+ol.steps > li { counter-increment: s; position: relative; padding-left: 8mm; margin-bottom: 1.6mm; }
+ol.steps > li::before { content: counter(s); position: absolute; left: 0; top: .2mm; width: 5.4mm; height: 5.4mm; border-radius: 50%;
+  background: var(--coal); color: #fff; font-weight: 900; font-size: 8pt; display: flex; align-items: center; justify-content: center; }
+ol.steps > li b:first-child { color: var(--ember); }
+
+table { border-collapse: collapse; width: 100%; margin: 0 0 2.4mm; font-size: .92em; line-height: 1.45; }
+th { background: var(--coal); color: #fff; font-weight: 700; padding: 1.2mm 1.6mm; text-align: left; font-size: .92em; letter-spacing: .04em; white-space: nowrap; }
+td { padding: 1.15mm 1.6mm; border-bottom: .25mm solid var(--line); vertical-align: middle; }
+tr:nth-child(even) td { background: rgba(255,255,255,.35); }
+td.c, th.c { text-align: center; }
+td.nw { white-space: nowrap; }
+
+/* 温度の帯 */
+.strip { display: grid; grid-template-columns: repeat(11, 1fr); gap: .35mm; }
+.strip i { font-style: normal; height: 4.6mm; display: flex; align-items: center; justify-content: center; font-size: 6.6pt; font-weight: 900; border-radius: .7mm; color: rgba(0,0,0,.62); }
+.strip.big i { height: 7mm; font-size: 8.6pt; }
+.strip.mini i { height: 3.6mm; font-size: 5.6pt; }
+.z-cold { background: var(--z-cold); } .z-off { background: var(--z-off); } .z-band { background: var(--z-band); }
+.z-just { background: var(--z-just); } .z-scorch { background: var(--z-scorch); color: #fff !important; }
+.strip i.now { outline: .7mm solid var(--coal); outline-offset: .2mm; position: relative; z-index: 2; }
+.zchip { display: inline-flex; align-items: center; justify-content: center; min-width: 11mm; height: 4.6mm; border-radius: .8mm; font-size: 7.2pt; font-weight: 900; padding: 0 1.4mm; color: rgba(0,0,0,.7); }
+.zchip.z-scorch { color: #fff; }
+
+/* 系統のしるし */
+.kind { display: inline-flex; align-items: center; justify-content: center; width: 4.6mm; height: 4.6mm; border-radius: 50%; color: #fff; font-size: 6.8pt; font-weight: 900; vertical-align: -0.9mm; flex: none; }
+.kind.fruit { background: var(--fruit); } .kind.cool { background: var(--cool); } .kind.spice { background: var(--spice); }
+.kind.floral { background: var(--floral); } .kind.sweet { background: var(--sweet); } .kind.none { background: #9a9086; }
+.fire { display: inline-flex; align-items: center; justify-content: center; width: 4.8mm; height: 4.8mm; border-radius: 50%; background: var(--coal); color: var(--ember2); font-weight: 900; font-size: 7.4pt; vertical-align: -1mm; border: .35mm solid var(--ember); flex: none; }
+.fire.burn { background: var(--ember); color: #fff; border-color: var(--coal); }
+
+/* カード */
+.card { width: 45mm; height: 63mm; border-radius: 2.6mm; background: #fff; border: .7mm solid var(--coal); position: relative; overflow: hidden; flex: none;
+  box-shadow: .6mm .8mm 0 rgba(0,0,0,.16); font-size: 6.6pt; line-height: 1.42; }
+.card .top { height: 9.5mm; display: flex; align-items: center; gap: 1.6mm; padding: 0 2mm; color: #fff; }
+.card .nm { font-family: 'Zen Antique', serif; font-size: 9.6pt; line-height: 1.1; flex: 1; }
+.card .nm small { display: block; font-family: 'Noto Sans JP', sans-serif; font-size: 5pt; opacity: .9; letter-spacing: .05em; margin-bottom: .3mm; }
+.card .gram { width: 6.4mm; height: 6.4mm; border-radius: 50%; background: #fff; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 6.6pt; flex: none; }
+.card .art { height: 17.5mm; margin: 1.6mm 2mm 0; border-radius: 1.4mm; position: relative; overflow: hidden; display: flex; align-items: center; justify-content: center; }
+.card .art .taste { position: absolute; right: 1.4mm; bottom: 1.2mm; width: 9mm; height: 9mm; border-radius: 50%; background: var(--coal); color: #fff;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: 900; font-size: 11pt; line-height: 1; border: .5mm solid #fff; }
+.card .art .taste small { font-size: 4.2pt; font-weight: 700; letter-spacing: .05em; margin-bottom: .2mm; }
+.card .art .glyph { font-family: 'Zen Antique', serif; font-size: 27pt; color: rgba(255,255,255,.9); line-height: 1; }
+.card .body { padding: 1.4mm 2mm 0; }
+.card .lbl { font-size: 4.8pt; font-weight: 700; color: var(--ink2); letter-spacing: .08em; margin: .7mm 0 .3mm; }
+.card .pair { display: flex; align-items: center; gap: 1mm; font-size: 6pt; font-weight: 700; margin-top: 1mm; }
+.card .txt { margin-top: 1mm; padding-top: 1mm; border-top: .25mm dashed var(--line); font-size: 6pt; line-height: 1.4; }
+.card.fruit .top { background: var(--fruit); } .card.fruit .art { background: linear-gradient(135deg, #f6a94c, var(--fruit)); } .card.fruit .gram { color: var(--fruit); }
+.card.cool .top { background: var(--cool); } .card.cool .art { background: linear-gradient(135deg, #63c2df, var(--cool)); } .card.cool .gram { color: var(--cool); }
+.card.spice .top { background: var(--spice); } .card.spice .art { background: linear-gradient(135deg, #cd6b4c, var(--spice)); } .card.spice .gram { color: var(--spice); }
+.card.floral .top { background: var(--floral); } .card.floral .art { background: linear-gradient(135deg, #a985d2, var(--floral)); } .card.floral .gram { color: var(--floral); }
+.card.sweet .top { background: var(--sweet); } .card.sweet .art { background: linear-gradient(135deg, #d9b274, var(--sweet)); } .card.sweet .gram { color: var(--sweet); }
+.card.sup .top { background: var(--coal); }
+.card.sup .cost { width: 7mm; height: 7mm; border-radius: 50%; background: var(--ember); color: #fff; font-weight: 900; font-size: 10pt; display: flex; align-items: center; justify-content: center; flex: none; border: .4mm solid #fff; }
+.card.sup .art { background: repeating-linear-gradient(45deg, #3a322d 0 1.4mm, #2d2622 1.4mm 2.8mm); }
+.card.sup .type { display: inline-block; font-size: 5.6pt; font-weight: 900; background: var(--brass); color: #fff; border-radius: .8mm; padding: 0 1.5mm; letter-spacing: .1em; }
+.card.sup .when { font-size: 5.6pt; color: var(--ink2); font-weight: 700; margin-left: 1mm; }
+.card.sup .txt { border: none; padding-top: 0; font-size: 6.6pt; line-height: 1.5; }
+.card.set .top { background: var(--brass); }
+.card.back { background: radial-gradient(circle at 50% 45%, #5a2a16 0, #2a1c16 55%, #1b1614 100%); border-color: #000; }
+.card.back::after { content: ''; position: absolute; inset: 3mm; border: .4mm solid rgba(243,154,60,.55); border-radius: 1.6mm; }
+.card.back .emb { position: absolute; left: 50%; top: 50%; transform: translate(-50%,-50%); width: 20mm; height: 20mm; border-radius: 50%;
+  background: radial-gradient(circle at 40% 35%, #ffd27a, #f08a2b 45%, #a8321a 80%); box-shadow: 0 0 6mm rgba(240,120,40,.75); }
+
+/* 図の吹き出し番号 */
+.call { display: inline-flex; width: 4.4mm; height: 4.4mm; border-radius: 50%; background: var(--ember); color: #fff; font-size: 7pt; font-weight: 900; align-items: center; justify-content: center; vertical-align: -0.8mm; flex: none; }
+.pin { position: absolute; z-index: 5; }
+
+/* 流れ図 */
+.flow { display: flex; align-items: stretch; gap: 0; margin: 0 0 3mm; }
+.flow .st.w { flex: 1.25; }
+.flow .st { flex: 1; background: var(--coal); color: #fff; padding: 2.4mm 2mm 2.4mm 5mm; position: relative; font-size: 7.6pt; line-height: 1.4;
+  clip-path: polygon(0 0, calc(100% - 3mm) 0, 100% 50%, calc(100% - 3mm) 100%, 0 100%, 3mm 50%); margin-right: -1.6mm; }
+.flow .st:first-child { clip-path: polygon(0 0, calc(100% - 3mm) 0, 100% 50%, calc(100% - 3mm) 100%, 0 100%); padding-left: 3mm; border-radius: 1.5mm 0 0 1.5mm; }
+.flow .st b { display: block; font-size: 9pt; font-family: 'Zen Antique', serif; font-weight: 400; }
+.flow .st.e { background: var(--ember); } .flow .st.b { background: var(--brass); } .flow .st.g { background: #6d6258; }
+
+/* 卓の図 */
+.mat { background: #2b2420; border-radius: 3mm; padding: 3mm; color: #f6ecdd; font-size: 6.8pt; line-height: 1.35; }
+.mat .zone { border: .35mm dashed rgba(255,255,255,.45); border-radius: 1.6mm; padding: 1.4mm 1.8mm; position: relative; }
+.mat .zone b { color: var(--ember2); font-size: 7.4pt; display: block; }
+.coals { display: grid; grid-template-columns: repeat(10, 1fr); gap: 1mm; margin-top: 1mm; }
+.coals i { font-style: normal; height: 8.5mm; border-radius: 1.2mm; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 7.4pt; color: rgba(255,255,255,.5); border: .3mm dashed rgba(255,255,255,.3); }
+.coals i.on { background: radial-gradient(circle at 45% 40%, #ffbf66, #e2591f 55%, #7a2412); border: .3mm solid #000; color: #fff; box-shadow: 0 0 2mm rgba(240,120,40,.6); }
+.coals i.tap { background: #5a4a41; border: .3mm solid #000; color: #d9c9b6; }
+
+.kv { display: grid; grid-template-columns: auto 1fr; gap: .6mm 3mm; margin: 0 0 2mm; }
+.kv dt { font-weight: 900; white-space: nowrap; } .kv dd { margin: 0; }
+.formula { font-family: 'Zen Antique', serif; font-size: 11.5pt; text-align: center; background: #fff; border: .4mm solid var(--coal); border-radius: 2mm; padding: 2mm 2mm; margin: 0 0 2.4mm; line-height: 1.5; }
+.formula small { font-family: 'Noto Sans JP', sans-serif; font-size: 7pt; display: block; color: var(--ink2); }
+.qa dt { font-weight: 900; margin-top: 1.4mm; } .qa dt::before { content: 'Q'; color: var(--ember); margin-right: 1.4mm; font-family: 'Zen Antique', serif; font-size: 10pt; }
+.qa dd { margin: 0 0 0 4.6mm; }
+.deck { columns: 2; column-gap: 5mm; font-size: 7.8pt; line-height: 1.55; margin: 0; padding: 0; list-style: none; }
+.deck li { margin: 0; display: flex; justify-content: space-between; border-bottom: .2mm dotted var(--line); break-inside: avoid; }
+.deck li span { font-weight: 900; color: var(--ember); }
+
+/* 表紙 */
+.cover { background: radial-gradient(ellipse at 50% 62%, #5b2613 0, #2a1a14 46%, #171311 100%); color: #f7ead6; padding: 0; }
+.cover .ring { position: absolute; left: 50%; top: 61%; transform: translate(-50%, -50%); width: 150mm; height: 150mm; border-radius: 50%; border: .5mm solid rgba(243,154,60,.35); }
+.cover .ring.r2 { width: 118mm; height: 118mm; border-style: dashed; border-color: rgba(243,154,60,.25); }
+.cover .smoke { position: absolute; left: 0; right: 0; top: 0; height: 120mm; background: radial-gradient(ellipse at 30% 0, rgba(255,255,255,.10), transparent 60%), radial-gradient(ellipse at 75% 10%, rgba(255,255,255,.07), transparent 55%); }
+.cover .ttl { position: absolute; top: 34mm; left: 0; right: 0; text-align: center; }
+.cover .ttl .kari { display: inline-block; font-size: 8pt; letter-spacing: .4em; border: .3mm solid rgba(247,234,214,.6); border-radius: 10mm; padding: .6mm 4mm .6mm 5mm; margin-bottom: 5mm; }
+.cover .ttl .main { font-family: 'Zen Antique', serif; font-size: 76pt; line-height: 1; letter-spacing: .08em; text-shadow: 0 0 10mm rgba(240,120,40,.55), 0 1mm 0 #000; }
+.cover .ttl .ruby { font-size: 10pt; letter-spacing: 1.1em; margin: 4mm 0 0 1.1em; color: var(--ember2); }
+.cover .ttl .sub { font-size: 12pt; letter-spacing: .3em; margin-top: 5mm; }
+.cover .fan { position: absolute; left: 50%; top: 61%; width: 0; height: 0; }
+.cover .fan .card { position: absolute; left: -22.5mm; top: -31.5mm; transform-origin: 50% 150%; box-shadow: 0 2mm 5mm rgba(0,0,0,.55); }
+.cover .catch { position: absolute; left: 0; right: 0; bottom: 37mm; text-align: center; font-family: 'Zen Antique', serif; font-size: 15pt; letter-spacing: .12em; }
+.cover .meta { position: absolute; left: 0; right: 0; bottom: 20mm; display: flex; justify-content: center; gap: 5mm; font-size: 8.4pt; }
+.cover .meta span { border: .3mm solid rgba(247,234,214,.5); border-radius: 1.4mm; padding: 1mm 3.2mm; }
+.cover .ver { position: absolute; left: 0; right: 0; bottom: 10mm; text-align: center; font-size: 7pt; letter-spacing: .14em; color: rgba(247,234,214,.7); }
+
+/* 一覧ページの詰めた表 */
+table.tight td { padding: .3mm 1.4mm; line-height: 1.3; }
+table.tight .tag, table.tight .fire, table.tight .kind { vertical-align: middle; }
+table.tight .tag { font-size: 6.4pt; padding: 0 1.4mm; line-height: 1.5; }
+table.tight .fire { width: 4.2mm; height: 4.2mm; font-size: 6.8pt; vertical-align: -0.9mm; }
+table.tight th { padding: .9mm 1.4mm; }
+/* ボウルの図 */
+.bowlfig { display: flex; gap: 2mm; align-items: flex-end; justify-content: center; margin: 1mm 0 1.6mm; }
+.bowlfig .lf { border-radius: 1.2mm; color: #fff; font-weight: 900; text-align: center; padding: 1.2mm 2.4mm; font-size: .88em; line-height: 1.3; position: relative; min-width: 19mm; }
+.bowlfig .lf small { display: block; font-weight: 700; font-size: .82em; opacity: .95; }
+.bowlfig .lf.main { outline: .6mm solid var(--coal); outline-offset: .4mm; }
+.bowlfig .arrow { font-size: 14pt; color: var(--ember); align-self: center; font-weight: 900; padding: 0 1mm; }
+.lf.fruit { background: var(--fruit); } .lf.cool { background: var(--cool); } .lf.spice { background: var(--spice); } .lf.floral { background: var(--floral); } .lf.sweet { background: var(--sweet); }
+.cardrow { display: flex; justify-content: space-between; height: 43.5mm; margin-bottom: 1mm; padding: 0 6mm; }
+.cardrow .card { transform: scale(.68); transform-origin: 0 0; margin-right: -14.4mm; }
+
+.heatfig { background: #fff; border: .3mm solid var(--line); border-radius: 2mm; padding: 2mm 2.4mm 1mm; margin-bottom: 2.4mm; }
+.heatfig svg { display: block; width: 100%; height: auto; }
+table.roomy td { padding: 1.05mm 1.4mm; line-height: 1.3; }
+table.roomy .kind { vertical-align: middle; }
+table.mid td { padding: .75mm 1.4mm; line-height: 1.32; }
+table.mid .tag, table.mid .fire, table.mid .kind { vertical-align: middle; }
+table.mid .tag { font-size: 6.6pt; padding: 0 1.4mm; line-height: 1.5; }
