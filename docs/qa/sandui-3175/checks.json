@@ -21,7 +21,8 @@
     "normal_meter": "normal_meter.webp",
     "debug_meter": "debug_meter.webp",
     "stick_input": "stick_input.webp",
-    "phone": "phone.webp"
+    "phone": "phone.webp",
+    "stick_center_final": "stick_center_final.webp"
   },
   "meter_layout": {
     "normal": {
@@ -135,5 +136,14 @@
     "half_release": 0,
     "full_release": 0
   },
-  "page_errors": []
+  "page_errors": [],
+  "stick_final_visual": {
+    "source": "final runtime WebP with production desert-ride.css",
+    "base_css_px": 144,
+    "knob_css_px": 74,
+    "center": "ball centered inside base",
+    "deflected": "42px right; no visible breakage",
+    "phone": "844x390 real game, right full deflection, data-value=100",
+    "page_errors": []
+  }
 }
