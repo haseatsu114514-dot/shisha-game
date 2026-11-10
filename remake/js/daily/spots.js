@@ -178,6 +178,15 @@ export const rioStoryExtraDue = () => {
   if (storyCount("rio") < 6 || !state.flags[RIO_PROTOTYPE_SEEN] || !state.flags[RIO_BLUEBERRY_SEEN]) return null;
   return RIO_STORY_EXTRAS.find((id) => !state.flags[`_spot_seen_${id}`] && DB.dialogues[id]?.lines?.length) || null;
 };
+/** #3081 物語系の一度きり。締めくくりのあと、tonariの来店で一本ずつ。繰り返しの小品には入れない。 */
+export const TSUMUGI_STORY_EXTRAS = Object.freeze([
+  "ch1_tsumugi_one_ear",
+  "ch1_tsumugi_short_tail",
+]);
+export const tsumugiStoryExtraDue = () => {
+  if (!state.finales?.tsumugi || storyCount("tsumugi") < (VISIT_SEQ.tsumugi?.length || 0)) return null;
+  return TSUMUGI_STORY_EXTRAS.find((id) => !state.flags[`_spot_seen_${id}`] && DB.dialogues[id]?.lines?.length) || null;
+};
 /**
  * 章が明けて最初の来店で一度だけ読む後日談（#2026）。第1章で実際に通った店主だけ（regulars は
  * 章の切り替え時の記録。ch2-progress.js）。既読は台本末尾の set_flag。第2章の地元の地図だけが入口。
@@ -252,6 +261,7 @@ export function hasNewStory(charId) {
   if (charId === "rio" && rioPrototypeDue()) return true;
   if (charId === "rio" && rioBlueberryDue()) return true;
   if (charId === "rio" && rioStoryExtraDue()) return true;
+  if (charId === "tsumugi" && tsumugiStoryExtraDue()) return true;
   const id = (VISIT_SEQ[charId] || [])[storyCount(charId)];
   if (id && !visitStorySkipped(state, charId, id)) return storyAvailable(id);
   return questionVisitDue(charId) || finaleAtVisit(charId);
@@ -460,6 +470,11 @@ export async function visitChar(charId, { welcome = null, signal = null } = {}) 
     } else if (charId === "rio" && rioStoryExtraDue()) {
       const scene = rioStoryExtraDue();
       if (!await read(scene, {})) return false;
+      state.flags[`_spot_seen_${scene}`] = true;
+      gainAffinity(charId, visitAffinity("talk"), affinityOptions);
+    } else if (charId === "tsumugi" && tsumugiStoryExtraDue()) {
+      const scene = tsumugiStoryExtraDue();
+      if (!await read(scene, { bg })) return false;
       state.flags[`_spot_seen_${scene}`] = true;
       gainAffinity(charId, visitAffinity("talk"), affinityOptions);
     } else {

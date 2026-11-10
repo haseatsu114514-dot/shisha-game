@@ -1927,6 +1927,168 @@
           }
         ]
       }
+    },
+    {
+      "dialogue_id": "ch1_tsumugi_one_ear",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "窓の席のつむぎは、ヘッドフォンを片耳だけずらしていた。",
+          "portrait": "tsumugi"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ボトルの水が鳴るたび、空いた耳が、わずかに動く。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……今の音、小さいです"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "水の音？"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……はい。描く前に、一度だけ聞きたくて"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "彼女はヘッドフォンを戻しかけて、また片耳だけ開けた。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "店の音まで入ると、線が太くなるので"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "片耳だけなら、大丈夫？"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……今日は、これでいいです"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ペンは、テーブルの端に置いたままだ。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "音は、聞いたら、もうここに残るので"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "描かなくても、聞いてていいよ"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "smile",
+          "text": "……はい。ヘッドフォンは、片耳だけ外します"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "俺は、ラベンダーのホースを、彼女の手の近くへ戻した。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……ありがとうございます。次も、この席で"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch1_tsumugi_short_tail",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "つむぎが開いたのは、いつもの猫の、次のページだった。",
+          "portrait": "tsumugi"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "葉っぱの耳だけが先にあり、煙の尾はまだ短い。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……続きです。別の子には、しません"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "耳から描くんだ"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "耳があると、この子だと分かるので"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "彼女は尾の先でペンを止め、画面をこちらへ向けた。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……今日は、ここまでです"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "短い尾も、その子だね"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "smile",
+          "text": "……はい。足す日は、また来ます"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ラベンダーの煙が、短い尾の上を横切った。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "煙の方が、先に長くなってます"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "絵が追いつかなくても、いいよ"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……追いつかせなくていい日も、あるので"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "彼女は画面を伏せずに、タブレットを膝へ戻した。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（同じ猫のまま、ここに置いておけばいい）"
+        }
+      ]
     }
   ]
 }
