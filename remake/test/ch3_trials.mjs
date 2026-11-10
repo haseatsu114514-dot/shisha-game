@@ -118,3 +118,7 @@ for (const legacy of [false, true]) {
 }
 
 console.log("ch3 trials: ok");
+
+// 同じノートへ戻る必須の仕事もこの quick 入口で実行する。
+const { execFileSync } = await import("node:child_process");
+execFileSync(process.execPath, ["--experimental-vm-modules", new URL("./ch3_mandatory_work.mjs", import.meta.url).pathname], { stdio: "inherit" });

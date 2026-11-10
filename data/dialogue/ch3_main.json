@@ -179,7 +179,10 @@
     {
       "dialogue_id": "ch3_naru_contact_before_tournament",
       "metadata": {
-        "lime_history": { "sender": "naru", "call": "通話：戻ったら会う約束をした" }
+        "lime_history": {
+          "sender": "naru",
+          "call": "通話：戻ったら会う約束をした"
+        }
       },
       "lines": [
         {
@@ -319,6 +322,16 @@
             "speaker": "naru",
             "face": "normal",
             "text": "聞くよ。今日は俺も、急いでない"
+          }
+        ],
+        "work_phone_echo": [
+          {
+            "speaker": "",
+            "text": "水差しを戻し、手を拭いた。分からない味は、今日もましろに頼んだ。"
+          },
+          {
+            "speaker": "",
+            "text": "味が戻った報告ではない。それでも今なら、自分から声を聞きたかった。"
           }
         ]
       }
@@ -822,7 +835,30 @@
           "face": "",
           "text": "答えてから、炭を一つ外へ寄せた。最初の煙が、客席へ届く。"
         }
-      ]
+      ],
+      "branches": {
+        "strategy_aroma": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（ノートには最初の香りと書いた。いまの一口も、急がず確かめよう）"
+          }
+        ],
+        "strategy_light": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（二口目以降の熱を見る。いま吸っている人が、休む間も見ておこう）"
+          }
+        ],
+        "strategy_sweet": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（残る香りを見る。ノートの予想と違っても、こっちの一台を確かめよう）"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "ch3_national_adjustment",
@@ -1979,18 +2015,40 @@
       "lines": [
         {
           "speaker": "",
-          "face": "",
           "text": "全国大会のノートを開いた。ましろは、俺の書いた材料の横へ水を置く。"
+        },
+        {
+          "speaker": "",
+          "text": "チョコを四グラム以上。まず、課題の条件を一番上へ書いた。"
         },
         {
           "speaker": "mashiro",
           "face": "normal",
-          "text": "チョコは焦げると、すぐ苦くなるからねぇ。全部見せようとすると、忙しいよぉ"
+          "text": "チョコは焦げると、すぐ苦くなるからねぇ"
+        },
+        {
+          "speaker": "",
+          "text": "ページには、店で見た手つきと、自分で触った炭の記録が並んでいる。",
+          "id": "ch3_work_notes"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "どこを一番、残したいか……かな"
+          "text": "全部、一台に入れようとしてた"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "読むのと、同時にやるのは違うからねぇ"
+        },
+        {
+          "speaker": "",
+          "text": "ましろはペンを渡した。どの行にも、代わりに丸は付けない。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "まず、自分で確かめるところを一つ決める"
         },
         {
           "type": "choice",
@@ -2011,6 +2069,10 @@
           ]
         },
         {
+          "speaker": "",
+          "text": "一行を丸で囲んだ。残りのメモも消さず、ページを折っておく。"
+        },
+        {
           "speaker": "mashiro",
           "face": "normal",
           "text": "明日、違うと思ったら変えていいよ"
@@ -2018,29 +2080,122 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "うん。まず一台作って、確かめたい"
+          "text": "うん。今の人と、自分の一台を見て決める"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "それなら、ノートは持っていけるねぇ"
+        },
+        {
+          "speaker": "",
+          "text": "水を一口飲み、チョコの欄へ戻った。次に手を動かす時、最初に見るところは決まった。"
         }
       ],
       "branches": {
         "aroma": [
           {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "最初の立ち上がりを見る。強く吸わなくても、香りが届くところを探す"
+          },
+          {
             "speaker": "mashiro",
             "face": "normal",
-            "text": "じゃあ、強く吸わなくても分かるところから"
+            "text": "うん。じゃあ、最初の一口もゆっくりねぇ"
           }
         ],
         "light": [
           {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "二口目以降の熱を見る。休んだあとも、吸いやすい一台にしたい"
+          },
+          {
             "speaker": "mashiro",
             "face": "normal",
-            "text": "休みながら吸って、途中も確かめよっか"
+            "text": "うん。途中でホースを置く時間も見よう"
           }
         ],
         "sweet": [
           {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "残る香りを見る。甘さを足す前に、今ある葉がどう変わるか確かめる"
+          },
+          {
             "speaker": "mashiro",
             "face": "normal",
-            "text": "甘いのが続く時間、二人で見てみよ"
+            "text": "うん。最後も一口、確かめよっか"
+          }
+        ],
+        "service_gentle_echo": [
+          {
+            "speaker": "",
+            "text": "綾取には、軽さの希望から聞いた。紅茶の香りは残してほしい、と返ってきた。"
+          }
+        ],
+        "service_pace_echo": [
+          {
+            "speaker": "",
+            "text": "綾取には、吸う時間から聞いた。話しながらゆっくり、と返ってきた。"
+          }
+        ],
+        "service_good_echo": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "あの時は、調整したあとに吸いやすいって言ってもらえた"
+          }
+        ],
+        "service_rough_echo": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "あの一台は、戻したあとも整わなかった。ましろちゃんと、もう一度確かめた"
+          }
+        ],
+        "service_failed_echo": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "あの時は傷めて、作り直しを頼んだ。次は熱を決めた理由も残したい"
+          }
+        ],
+        "trial_saku_good": [
+          {
+            "speaker": "",
+            "text": "炭の順番を試したページには、うまく仕上がった手順が残っていた。"
+          }
+        ],
+        "trial_saku_rough": [
+          {
+            "speaker": "",
+            "text": "炭の順番を試したページには、仕上がりが粗かったところも書いてある。"
+          }
+        ],
+        "trial_saku_failed": [
+          {
+            "speaker": "",
+            "text": "炭の順番を試して傷めた一台も、ノートから消さなかった。"
+          }
+        ],
+        "trial_steve_good": [
+          {
+            "speaker": "",
+            "text": "待つ調整を試した時のページには、落ち着いた熱の記録があった。"
+          }
+        ],
+        "trial_steve_rough": [
+          {
+            "speaker": "",
+            "text": "待つ調整を試した時のページには、まだ整わなかったところが残る。"
+          }
+        ],
+        "trial_steve_failed": [
+          {
+            "speaker": "",
+            "text": "待つ調整を試して傷めた一台も、次に確かめる場所として残した。"
           }
         ]
       }
