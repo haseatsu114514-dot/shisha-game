@@ -863,6 +863,12 @@
       "run": ["node --experimental-vm-modules remake/test/minto_story_visits.mjs"]
     },
     {
+      "id": "minto-later-visits",
+      "title": "Minto timer handoff and unposted cheki, once each after her visit sequence (#3081)",
+      "kind": "quick",
+      "run": ["node --experimental-vm-modules remake/test/minto_later_visits.mjs"]
+    },
+    {
       "id": "game-logic",
       "title": "Game logic without a browser",
       "kind": "quick",
