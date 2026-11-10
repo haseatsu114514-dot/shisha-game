@@ -48,18 +48,24 @@ const util = await import("../js/core/util.js");
 const s = core.newGame(); Object.assign(s, { phase: "daily", chapter: 1, day: 3, slot: 1 });
 const g = growth.ensureGrowth(); g.seenRing = 1; g.hidane.any = 30;
 const fx = new Element(); fx.host = true;
+const sounds = [], releases = [];
+let routeLookups = 0;
+let musicStarts = 0, ownerChanged = () => {}, stateModule;
 const modules = {
   "../core/util.js": { ...util, sleep: async () => {} },
   "../core/ui.js": { layers: { fx }, modal: async () => null, gainCard() {} },
-  "../core/audio.js": { SE: {} }, "../core/bus.js": { emit() {}, on: () => () => {} },
+  "../core/audio.js": { SE: { boardLight: () => sounds.push("light"), boardCommit: () => sounds.push("commit") },
+    createGrowthBoardAudio: () => { musicStarts++; return restore => releases.push(restore); } },
+  "../core/bus.js": { emit() {}, on: (_event, fn) => { ownerChanged = fn; return () => {}; } },
   "../core/state.js": { state: s, save() {} },
   "../core/growth-respec.js": { canRespec: () => false, prepareRespec: () => null, commitRespec: () => false },
   "../core/growth-mode.js": { growthEnabled: () => true },
-  "./growth-board-tutorial.js": { grantStarterHidane() {}, tutorialPending: () => false, startBoardTutorial() {}, TUTORIAL_FLAG: "_tutorial" },
+  "./growth-board-tutorial.js": { grantStarterHidane() {}, tutorialPending: () => false, startBoardTutorial() {},
+    STARTER_HIDANE: 6, STARTER_FLAG: "_board_starter_given", TUTORIAL_FLAG: "_tutorial" },
   "../core/growth-effects.js": { LESSON_TUNING: {} },
   "../core/data.js": { displayName: id => id, faceIconUrl: () => null, portraitInfo: () => null, faceFrame: () => null },
   "../core/portrait-style.js": { portraitStyle: () => "classic" },
-  "../core/stats.js": { affinityLevel: () => 0 }, "../core/growth.js": growth, "../core/growth-board.js": board,
+  "../core/stats.js": { affinityLevel: () => 0 }, "../core/growth.js": growth, "../core/growth-board.js": { ...board, pathTo: (...args) => { routeLookups++; return board.pathTo(...args); } },
 };
 const context = vm.createContext({ document, Node: Element, console, setTimeout, requestAnimationFrame: fn => fn(),
   Image: class { set src(_) { queueMicrotask(() => this.onerror()); } } });
@@ -68,10 +74,14 @@ const screen = new vm.SourceTextModule(source, { context });
 await screen.link(async name => {
   assert(modules[name], `Unexpected import ${name}`);
   const exports = modules[name];
-  return new vm.SyntheticModule(Object.keys(exports), function () { for (const [k, v] of Object.entries(exports)) this.setExport(k, v); }, { context });
+  const mod = new vm.SyntheticModule(Object.keys(exports), function () { for (const [k, v] of Object.entries(exports)) this.setExport(k, v); }, { context });
+  if (name === "../core/state.js") stateModule = mod;
+  return mod;
 });
 await screen.evaluate();
 const done = screen.namespace.openBoard({ place: "kannon" });
+assert.equal(screen.namespace.openBoard(), done, "Repeated open shares one board and music session");
+assert.equal(musicStarts, 1);
 await new Promise(r => setImmediate(r));
 let root = fx.children[0];
 const nodes = root.querySelector(".gb-nodes"), svg = root.querySelector(".gb-svg");
@@ -91,6 +101,7 @@ const available = nodes.children.find(n => n.dataset.status === "available");
 assert(available, "Fixture has an affordable node");
 const id = available.dataset.test.replace("board-node-", "");
 available.click(); root.querySelector('[data-test="board-light"]').click();
+assert.deepEqual(sounds, ["light"], "Inspecting nodes is silent; only accepted placement uses its cue");
 assert.equal(button(id).dataset.status, "pending");
 assert.equal(button(id).querySelector(".gb-node-state").textContent, "+");
 assert(button(id).classList.contains("lit-now"), "Auto-selection must not erase the light animation");
@@ -109,7 +120,105 @@ assert.equal(button(id).dataset.status, "unlocked");
 assert.equal(button(id).querySelector(".gb-node-state").textContent, "✓");
 fx.children[0].querySelector('[data-test="board-close"]').click();
 await committedDone;
+assert.deepEqual(sounds, ["light", "light", "commit"], "Undo/reopen do not replay the commit cue");
+assert.deepEqual(releases, [true, true], "Commit and ordinary close both restore music once");
+// Replacing the save closes the old board without restoring its previous scene's music.
+const interrupted = screen.namespace.openBoard({ place: "kannon" });
+stateModule.setExport("state", { ...s }); ownerChanged(); await interrupted;
+assert.deepEqual(releases, [true, true, false]);
+stateModule.setExport("state", s);
 console.log(`PASS board screen: ${originalNodes.length} selections preserve DOM; pending/undo/commit/check badge; no full-board filters`);
+
+// #3119: the detail and target use the same reservation, pending, chapter and cap rules as paymentFor.
+const openScenario = async () => {
+  const done = screen.namespace.openBoard({ place: "kannon" });
+  await new Promise(r => setImmediate(r));
+  root = fx.children[0];
+  return { done };
+};
+const closeScenario = async done => {
+  root.querySelector('[data-test="board-reset"]')?.click();
+  root.querySelector('[data-test="board-close"]').click();
+  await done;
+};
+const targetLine = () => root.querySelector('[data-test="board-target-line"]').textContent;
+const stateLine = () => root.querySelector(".gb-p-state").textContent;
+const whiteFire = () => Number(root.querySelector('[data-test="board-wallet"]').querySelector(".k-any").querySelector("b").textContent);
+
+Object.assign(g, { nodes: [], paid: {}, hidane: { any: 0, body: 2, sense: 0, wisdom: 0 }, earned: 2, target: null, ringsOpen: 1 });
+s.chapter = 1;
+let scenario = (await openScenario()).done;
+button("B3").click();
+assert.equal(button("B3").dataset.status, "short");
+assert.match(stateLine(), /あと1つ要る（所持2／このマスに使える0）/);
+assert.match(stateLine(), /色火は台座用に確保中/);
+assert.doesNotMatch(stateLine(), /あと-/);
+await closeScenario(scenario);
+
+Object.assign(g, { nodes: [], paid: {}, hidane: { any: 20, body: 0, sense: 0, wisdom: 0 }, earned: 20, target: "K07" });
+s.chapter = 2;
+scenario = (await openScenario()).done;
+assert.match(targetLine(), /火種11・色の台座1（色火あと1）/);
+root.querySelector('[data-test="board-towards"]').click();
+assert.deepEqual(["B3", "B6", "B9"].map(id => button(id).dataset.status), ["pending", "pending", "pending"]);
+assert.equal(whiteFire(), 17);
+assert.match(targetLine(), /火種8・色の台座1（色火あと1）・次は色火が足りない/);
+button("B9").click(); root.querySelector('[data-test="board-undo"]').click();
+assert.equal(whiteFire(), 18, "Undo returns the provisional payment");
+button("K07").click();
+assert.match(targetLine(), /火種9・色の台座1（色火あと1）/);
+root.querySelector('[data-test="board-towards"]').click();
+root.querySelector('[data-test="board-decide"]').click(); await scenario;
+assert.deepEqual(g.nodes, ["B3", "B6", "B9"], "The already-paid path stays committed");
+scenario = (await openScenario()).done;
+assert.equal(whiteFire(), 17);
+assert.match(targetLine(), /火種8・色の台座1（色火あと1）/);
+await closeScenario(scenario);
+
+s.chapter = 1; g.ringsOpen = 1;
+scenario = (await openScenario()).done;
+assert.match(targetLine(), /火種8・色の台座1（色火あと1）・次は結界の先/);
+await closeScenario(scenario);
+
+Object.assign(g, { nodes: [], paid: {}, hidane: { any: 20, body: 0, sense: 2, wisdom: 0 }, earned: 20, target: "M-S2" });
+s.chapter = 2; s.met.adam = true; s.affinity.adam = 0;
+scenario = (await openScenario()).done;
+root.querySelector('[data-test="board-towards"]').click();
+assert.match(targetLine(), /次は授業の錠/);
+await closeScenario(scenario);
+
+Object.assign(g, { nodes: ["B3", "B6", "B9"], paid: { B3: { any: 1 }, B6: { any: 1 }, B9: { any: 1 } },
+  hidane: { any: 17, body: 0, sense: 0, wisdom: 0 }, earned: 198, target: "K07" });
+scenario = (await openScenario()).done;
+assert.match(targetLine(), /色の台座1（白火も可）/);
+button("BG1").click();
+assert.match(root.querySelector(".gb-p-sub").textContent, /上限に届いた後は白火でもはまる/);
+assert.equal(root.querySelector('[data-test="board-light"]').textContent, "はめる（白火1）");
+button("K07").click(); root.querySelector('[data-test="board-towards"]').click();
+assert.equal(button("K07").dataset.status, "pending", "The capped white fire crosses the gate");
+await closeScenario(scenario);
+
+Object.assign(g, { nodes: [], paid: {}, hidane: { any: 0, body: 0, sense: 13, wisdom: 0 }, earned: 198, target: null });
+scenario = (await openScenario()).done;
+button("B3").click();
+assert.equal(button("B3").dataset.status, "available");
+assert.match(stateLine(), /蒼火1で払う/, "Capped payment may use another board's unreserved color");
+await closeScenario(scenario);
+console.log("PASS board reservation display: no negative shortage, target color/stop reason, undo/paid route, chapter/lesson locks, capped exceptions");
+
+// 経路は同じ replay 結果だけで共有し、次の描き直しには持ち越さない。
+Object.assign(g, { nodes: [], paid: {}, hidane: { any: 100, body: 10, sense: 10, wisdom: 10 }, earned: 130, target: "K03", ringsOpen: 5, seenRing: 5 });
+s.chapter = 5;
+const lookupsBefore = routeLookups;
+scenario = await openScenario();
+assert.equal(button("K03").dataset.status, "far");
+assert.equal(routeLookups, lookupsBefore + 1, "Target line and selected detail share the same route");
+for (let i = 0; i < 10; i++) button("K03").click();
+assert.equal(routeLookups, lookupsBefore + 1, "Repeated inspection reuses the rendered view's route");
+root.querySelector('[data-test="board-target"]').click();
+assert.equal(routeLookups, lookupsBefore + 2, "A fresh replay must recompute, even for the same destination");
+await closeScenario(scenario);
+console.log("PASS board route cache: shared target/detail, repeated selection and new-view invalidation");
 
 // The board's eye coordinates come from the same per-style face measurements as the face icons (manifest faceFrames, 2026-11-06).
 // The lesson cards and the right panel follow the VN portrait setting; people without new artwork keep the classic art and coordinates.
@@ -164,4 +273,5 @@ assert.equal(rioPanel.style.top, `${Math.round(64 - frames.new.rio.eye[1] * 82 /
 assert.equal(panelContext.boardFaceUrl("pakki"), null, "people without a card face use the face icon");
 core.config.portraitStyle = previousStyle;
 console.log("PASS board portraits: lesson cards and the panel use the selected style's art + that style's measured eye coordinates (classic for people without new art)");
+
 

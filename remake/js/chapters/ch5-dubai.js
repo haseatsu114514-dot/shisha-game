@@ -295,6 +295,7 @@ async function visitCamelTrack(owner) {
   if (state !== owner) return unused;
   const result = await keepDailyHud(() => race.visitCamelRace({
     read: id => readCamelScene(id, owner),
+    replayIntro: !owner.flags[CAMEL_AGAIN.flag],
     isCurrent: () => state === owner,
     beforeRace: () => showHud(false),
   }));

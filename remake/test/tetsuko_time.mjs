@@ -13,7 +13,7 @@ import { TETSUKO_TIME, TETSUKO_STAMINA, TETSUKO_CAMERA, tetsukoCameraFor, settle
 import {
   TETSUKO_TIME_FLAG, MOODS, MOMENTS, PROPS, SLOTS, ALBUM_LIMIT, PET_REST_STREAK, PLAY_AUTO_CATCH, AUTO_DELAY,
   moodOf, moodLabel, relationStage, sessionStage, readTetsukoRecord, createSession, openingReaction, act, canAct,
-  autonomous, autoDelay, placeProp, takePhoto, farewell, sessionResult, unlockedProps,
+  autonomous, autoDelay, placeProp, takePhoto, farewell, sessionResult, unlockedProps, discoveryGuide,
 } from "../js/minigames/tetsuko-model.js";
 
 const CAT = TOKYO_OUTINGS.find(item => item.id === "tetsuko");
@@ -447,4 +447,39 @@ assert.equal(classifyFlag(OUTINGS_FLAG), "progression");
   }
 }
 
+// 見守る初回だけの発見を、膝に乗る日や見守った後に案内しない。
+{
+  for (const count of [0, 1, 4]) for (const mood of MOODS) for (const watches of [0, 1, 2]) {
+    const session = createSession(save({ count }));
+    session.mood = mood.id;
+    session.watches = watches;
+    session.found = MOMENTS.filter(moment => moment.id !== "paws_together").map(moment => moment.id);
+    const reachable = watches === 0 && !(session.stage >= 3 && session.mood === "clingy");
+    assert.equal(discoveryGuide(session, "paws_together").id === "paws_together", reachable,
+      `前足をそろえる案内は今できる時だけ: ${count}/${mood.id}/${watches}`);
+    if (reachable) assert.equal(act(session, "watch").moment, "paws_together");
+  }
+}
+
+// 次の一手・模様替えの反応・撤去の回帰。旧セーブの確定点は変えない。
+{
+for(let count=0;count<5;count++) {
+ const s=createSession(save({ count }));
+ assert.equal(discoveryGuide(s).kind,'play');
+ act(s,'play');act(s,'play');assert.match(discoveryGuide(s).text,/もうひと振り/);
+ act(s,'play');assert(s.found.includes('first_paw'));
+ assert.notEqual(discoveryGuide(s).id,'first_paw');
+ if(count>0){assert.equal(discoveryGuide(s).kind,'catch');act(s,'catch');assert(s.found.includes('hug_toy'));}
+ placeProp(s,'floor','box');const a=autonomous(s);assert.equal(a.id,'box_peek');
+ assert.equal(s.cat.inside,'box');placeProp(s,'floor',null);assert.equal(s.cat.inside,null);
+ assert.equal(s.curiousProp,null);
+ placeProp(s,'floor','ball');assert.equal(autonomous(s).id,'ball_watch');
+ assert(!('curiousProp' in sessionResult(s)));
+}
+const s=createSession(save({ count: 0 }));assert.notEqual(discoveryGuide(s,'lap_nap').id,'lap_nap');
+assert.equal(discoveryGuide(s,'box_peek').kind,'decor');
+console.log('discovery loop / immediate prop curiosity / removal / stage gates: PASS');
+
+}
 console.log("tetsuko time model and settle: ok");
+

@@ -87,5 +87,13 @@ const a = elements.find(el => el.src === "/a.mp3"); assert.equal(a, undefined);
 for (const el of elements.filter(el => ["/b.mp3", "/c.mp3", "/d.mp3"].includes(el.src))) ready(el);
 assert.deepEqual(await Promise.all(waits.slice(1)), [true, true, true]);
 assert.equal(await audio.preloadBgm(null), false);
+// A media decode error after playBgm must not leave the same key permanently silent.
+audio.playBgm("media-error");
+const mediaError = elements.at(-1);
+mediaError.emit("error");
+audio.unlockAudio();
+const mediaRetry = elements.at(-1);
+assert.notEqual(mediaRetry, mediaError);
+assert.equal(mediaRetry.plays, 1, "the next gesture retries the failed music");
 assert.equal(timers.size, 0);
 console.log("[BGM readiness] PASS: MP3 canplay gate, no autoplay, reuse, active request, failure/retry, timeout and bounded cache");

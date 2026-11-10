@@ -89,6 +89,18 @@ assert(!canReadOptionalStory(routes, {}, mintoCall, heard));
 assert(canReadOptionalStory(routes, {contacts: ['minto']}, mintoCall, heard));
 assert(!canReadOptionalStory(routes, {}, 'ch3_cigarman_trace', {completedScenes: ['ch3_cigarman_rumor']}));
 assert(!canReadOptionalStory(routes, {}, 'unknown'));
+// #3081: 第4章のヌールの物語は既存カフェに登録し、該当する段階を読む前に公開しない。
+{
+  const ids = routes.chapters['4'].optional.filter(id => id.startsWith('ch4_noor_story_'));
+  assert.equal(ids.length, 16);
+  for (const id of ids) {
+    assert(scenes.has(id), id);
+    const [stage] = routes.optional_requirements[id]?.seen || [];
+    assert(stage?.startsWith('ch4_noor_'), id);
+    assert(!canReadOptionalStory(routes, {}, id));
+    assert(canReadOptionalStory(routes, {}, id, {completedScenes: [stage]}));
+  }
+}
 
 // --- #1176 GAP 3-B: 第3章の任意場面・前夜の配線（ch3-story-wiring.js）。ブラウザ不要の純粋ロジック。
 const wiring = await import(new URL('remake/js/chapters/ch3-story-wiring.js', root));
@@ -310,9 +322,10 @@ const offered = (value) => wiring.availableOptionalScenes(routes, value).map(sce
   }
 }
 {
-  // #3081: 残り2本は約束・練習・ブラックティーのあと、mukaiで一本ずつ。大会の言葉は足さない。
+  // #3081: ましろの物語系は約束・練習・ブラックティーのあと、mukaiで一本ずつ。大会の言葉は足さない。
   const extras = [...wiring.MASHIRO_STORY_EXTRAS];
-  assert.deepEqual(extras, ['ch3_mashiro_leaf_rest', 'ch3_mashiro_bench_tea']);
+  assert.deepEqual(extras, ['ch3_mashiro_timer_side', 'ch3_mashiro_cup_warm', 'ch3_mashiro_glass_cloth',
+    'ch3_mashiro_leaf_rest', 'ch3_mashiro_bench_tea']);
   const value = tokyo();
   assert(!extras.some(id => offered(value).includes(id)), 'the existing visits stay ahead');
   for (const id of ['ch3_mashiro_play_3', 'ch3_mashiro_practice', 'ch3_mashiro_black_tea']) wiring.commitOptionalRead(value, id);

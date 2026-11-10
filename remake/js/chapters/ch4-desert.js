@@ -13,17 +13,23 @@ import { play } from "../vn/engine.js";
 import { awardActionExp } from "../core/growth.js";
 
 export * from "./ch4-desert-progress.js";
-import { addMoney, gainAffinity, visitAffinity } from "../core/stats.js";
+import { addMoney, gainAffinity, visitAffinity, privateBondScope } from "../core/stats.js";
 import { spendableMoney } from "../core/travel-budget.js";
 import { questionDoneKey } from "../core/affinity-stages.js";
-import { DESERT_TALKS, DESERT_INVITE_STAGE, NOOR_QUESTION_CHOICE, NOOR_CONFESSION, NOOR_OTHER_LOVER_FLAG, NOOR_VISIT_CONFESSION_FLAG, noorConfessionWaiting, DESERT_SCENES, DESERT_CAFE_PRICE, desertCafeVisit, completeDesertCafeVisit, DESERT_RACE_WIN_LINE, DESERT_NARU_LINES, DESERT_DIALOGUE_IDS, desertRivals, markNaruMet, DESERT_DIALOGUE_FILE, DESERT_GUIDE, desertTalkScene, completeDesertTalk,
+import { DESERT_TALKS, DESERT_INVITE_STAGE, NOOR_QUESTION_CHOICE, NOOR_CONFESSION, NOOR_OTHER_LOVER_FLAG, NOOR_VISIT_CONFESSION_FLAG, noorConfessionWaiting, noorStoryDue, completeNoorStory, DESERT_SCENES, DESERT_CAFE_PRICE, desertCafeVisit, completeDesertCafeVisit, DESERT_RACE_WIN_LINE, DESERT_NARU_LINES, DESERT_DIALOGUE_IDS, NOOR_STORY_FILE, NOOR_STORY_DIALOGUE_IDS, NOOR_CONFESSION_DIALOGUE_IDS, desertRivals, markNaruMet, DESERT_DIALOGUE_FILE, DESERT_GUIDE, desertTalkScene, completeDesertTalk,
   desertOutingStatus, beginDesertOuting, desertRecords, recordDesertResult, desertProgress } from "./ch4-desert-progress.js";
 
 let dialogueTask = null;
 export function loadDesertDialogues() {
-  if (!dialogueTask) dialogueTask = readDialogues(DESERT_DIALOGUE_FILE, DESERT_DIALOGUE_IDS).then(dialogues => {
+  if (!dialogueTask) dialogueTask = Promise.all([
+    readDialogues(DESERT_DIALOGUE_FILE, DESERT_DIALOGUE_IDS),
+    readDialogues(NOOR_STORY_FILE, NOOR_STORY_DIALOGUE_IDS),
+    readDialogues("confession", NOOR_CONFESSION_DIALOGUE_IDS),
+  ]).then(([dialogues, stories, confession]) => {
     for (const id of DESERT_DIALOGUE_IDS) DB.dialogues[id] = dialogues[id];
-    return dialogues;
+    for (const id of NOOR_STORY_DIALOGUE_IDS) DB.dialogues[id] = stories[id];
+    for (const id of NOOR_CONFESSION_DIALOGUE_IDS) DB.dialogues[id] = confession[id];
+    return { ...dialogues, ...stories, ...confession };
   }).catch(error => { dialogueTask = null; throw error; });
   return dialogueTask;
 }
@@ -59,6 +65,16 @@ export async function visitDesert(destination, { day, isCurrent = () => true, si
     await loadDesertDialogues();
     if (!current()) return false;
     const { bgUrl } = await import("../core/data.js");
+    // 一台の来店の続きとして、段階に合う物語を順に読む。中断した場面だけ未読のまま残す。
+    const readStories = async (limit = 3) => {
+      for (let count = 0; count < limit; count++) {
+        const id = noorStoryDue(owner);
+        if (!id) return true;
+        if (!await read(id, bgUrl("bg_dubai_cafe_salim_day")) || !completeNoorStory(owner, id)) return false;
+        save();
+      }
+      return true;
+    };
     if (destination.kind === "desert_talk") {
       const legacy = destination.legacy === true;
       const visit = desertCafeVisit(owner, day, { legacy });
@@ -67,6 +83,8 @@ export async function visitDesert(destination, { day, isCurrent = () => true, si
       // ♥5の締めくくり（DSR20）: 再生・ルートの記録・専用ハガルは bonds.js の playFinale。読み終えたら今日の来店として確定する
       if (visit.kind === "finale") {
         const { finaleDue, playFinale } = await import("../daily/bonds.js");
+        // この物語を読み始めた進行なら、読み残しを締めくくりの前に読む。旧セーブは新しい前振りで告白を待たせない。
+        if (owner.flags._noor_story_seat_edge && !await readStories(Infinity)) return false;
         if (!current() || !finaleDue(DESERT_GUIDE) || !await prepare(bgUrl("bg_dubai_cafe_salim_day"))) return false;
         if (!await playFinale(DESERT_GUIDE, { bg: bgUrl("bg_dubai_cafe_salim_day"), signal, deferSave: true }) || !current()) return false;
         if (!completeDesertCafeVisit(owner, visit, day, { legacy })) return false;
@@ -89,6 +107,7 @@ export async function visitDesert(destination, { day, isCurrent = () => true, si
         if (current()) await playIntro(DESERT_GUIDE);
       }
       if (id === DESERT_TALKS[DESERT_INVITE_STAGE - 1] && current()) toast("昼の行き先に「ヌールと砂丘へ」が加わった", { kind: "good" });
+      await readStories();
       return changed;
     }
     if (destination.kind !== "desert") return false;
@@ -103,7 +122,8 @@ export async function visitDesert(destination, { day, isCurrent = () => true, si
     if (!beginDesertOuting(owner, day)) return false;
     if (status.price) addMoney(-status.price);
     // ヌールと一緒に過ごす外出なので、好感度も少し上がる（雑談と同じ +8）
-    gainAffinity(DESERT_GUIDE, visitAffinity("talk"));
+    const restorePrivate = (owner.lovers || []).includes(DESERT_GUIDE) ? privateBondScope() : null;
+    try { gainAffinity(DESERT_GUIDE, visitAffinity("talk")); } finally { restorePrivate?.(); }
     save(); changed = true;
     showScreen("none", null);
     const before = desertRecords(owner);
@@ -151,15 +171,24 @@ export async function visitDesert(destination, { day, isCurrent = () => true, si
         owner.flags[NOOR_OTHER_LOVER_FLAG] = (owner.lovers || []).length > 0;
         // 第5章で締めくくりを迎えた人（遊びに来ている間の告白・2026-11-07 オーナー決定）は「また日本に帰る」の言い方（台本の visiting）
         owner.flags[NOOR_VISIT_CONFESSION_FLAG] = (owner.finales?.[DESERT_GUIDE]?.chapter || 0) >= 5;
-        try { await read(NOOR_CONFESSION, bgUrl(DESERT_DUSK_BG)); }
+        let completed = false;
+        try { completed = await read(NOOR_CONFESSION, bgUrl(DESERT_DUSK_BG)); }
         finally { delete owner.flags[NOOR_OTHER_LOVER_FLAG]; delete owner.flags[NOOR_VISIT_CONFESSION_FLAG]; }
-        // 付き合うと LIME を交換する（台本の _lime_contact_noor）。以後、離れていても朝のLIMEが届く（remake/data/lover.json）
+        // 付き合うか、友だちで着地すると LIME を交換する（台本の _lime_contact_noor）。以後、離れていても朝のLIMEが届く
         if (owner.flags[`_lime_contact_${DESERT_GUIDE}`] && !(owner.contacts || []).includes(DESERT_GUIDE)) (owner.contacts ||= []).push(DESERT_GUIDE);
         if (state === owner) save();
+        if (completed && current() && (owner.lovers || []).includes(DESERT_GUIDE)) {
+          const { playLoverMilestone } = await import("../daily/romance.js");
+          if (current()) await playLoverMilestone(DESERT_GUIDE, { signal, home: false });
+        }
         return changed;
       }
     }
-    await read(scene(status.first ? DESERT_SCENES.sunsetFirst : DESERT_SCENES.sunsetAgain), bgUrl(DESERT_DUSK_BG));
+    const sunsetRead = await read(scene(status.first ? DESERT_SCENES.sunsetFirst : DESERT_SCENES.sunsetAgain), bgUrl(DESERT_DUSK_BG));
+    if (sunsetRead && current() && (owner.lovers || []).includes(DESERT_GUIDE)) {
+      const { playLoverMilestone } = await import("../daily/romance.js");
+      if (current()) await playLoverMilestone(DESERT_GUIDE, { signal, home: false });
+    }
     return changed;
   } finally { active = false; }
 }

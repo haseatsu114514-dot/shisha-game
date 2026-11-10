@@ -89,6 +89,16 @@ for (const ev of ch2Events) {
   reset({ slot }); unlock(); db.baito = [ev]; await tonari.doBaito(); assert.equal(selected(), undefined, `${ev.id} が第1章に出た`);
   reset({ chapter: 2, slot }); unlock(); db.baito = [ev]; await tonari.doBaito(); assert.equal(selected(), `baito_${ev.id}`, `${ev.id} が第2章に出ない`);
 }
+// 新作の苺はDAY9の試煙会と試供品受領を読み終えてから接客に出す。
+const strawberryFan = byid.baito_ch2_strawberry_fan;
+reset({ chapter: 2, day: 1 }); db.baito = [strawberryFan]; await tonari.doBaito();
+assert.equal(selected(), undefined, "DAY1に新作苺の接客が出た");
+reset({ chapter: 2, day: 9 }); state.flags._ch2_read_remake_ch2_ageha_tasting = true;
+db.baito = [strawberryFan]; await tonari.doBaito();
+assert.equal(selected(), undefined, "試煙会の後、試供品受領前に新作苺の接客が出た");
+reset({ chapter: 2, day: 10 }); state.flags._ch2_read_ch2_strawberry_sample = true;
+db.baito = [strawberryFan]; await tonari.doBaito();
+assert.equal(selected(), "baito_baito_ch2_strawberry_fan", "試供品受領後に新作苺の接客が出ない");
 // #2032: 第2章の味の不調中は、自分で吸って味を確かめる閉店後の一服を出さない。不調の記録が残る第4章では出す。
 // 第3章の東京へ発つ前の3日も不調のまま（ch3_prep_opening「無理に吸って確かめるな」。味が戻るのは東京）。
 for (const [chapter, distant, shown, prep] of [[2, true, false], [2, false, true], [4, true, true],
@@ -115,6 +125,12 @@ db.baito = [byid.baito_regular_01, staffMeal]; await tonari.doBaito(); assert.eq
 assert.deepEqual(state.usedBaito, ["baito_ch2_staff_meal"]);
 reset({ chapter: 2, usedBaito: ["baito_ch2_staff_meal"] }); state.flags._ch2_read_ch2_lingering_smell = true;
 db.baito = [byid.baito_regular_01, staffMeal]; await tonari.doBaito(); assert.equal(selected(), "baito_baito_regular_01", "読んだ後も飯が優先され続けた");
+// 旧セーブの既読記録でも一度きり。通常回まで既読で未読候補が尽きても飯へ戻さない。
+reset({ chapter: 2, usedBaito: ["baito_ch2_staff_meal"] }); state.flags._ch2_read_ch2_lingering_smell = true;
+db.baito = [staffMeal]; await tonari.doBaito(); assert.equal(selected(), undefined, "既読セーブで飯が再選出された");
+reset({ chapter: 2, usedBaito: ["baito_ch2_staff_meal", "baito_regular_01"] }); state.flags._ch2_read_ch2_lingering_smell = true;
+db.baito = [byid.baito_regular_01, staffMeal]; await tonari.doBaito();
+assert.equal(selected(), "baito_baito_regular_01", "未読候補が尽きた際に飯が再選出された");
 reset({ chapter: 2 }); db.baito = [byid.baito_mysterious_customer, byid.baito_regular_03]; await tonari.doBaito(); assert.equal(selected(), "baito_baito_regular_03");
 reset(); db.baito = [custom("locked", { trigger_flag: "needs_contact" })]; await tonari.doBaito(); assert.equal(selected(), undefined);
 state.flags.needs_contact = true; await tonari.doBaito(); assert.equal(selected(), "baito_locked");

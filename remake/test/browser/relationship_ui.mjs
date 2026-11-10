@@ -346,7 +346,7 @@ await suite("relationship-ui", async check => {
         Object.assign(R.data.DB.dialogues, await city.readDialogues("ch3_rivals", ["ch3_steve_bond_finale"]));
         const s = R.fresh(); s.chapter = 3;
         s.met.steve = true; s.affinity.steve = 66; s.contacts.push("steve");
-        Object.assign(s.flags, { _lime_contact_steve: true, _ch3_read_ch3_steve_lime: true, _ch3_outings: { steve_timer: 1 } });
+        Object.assign(s.flags, { _lime_contact_steve: true, _ch3_read_ch3_steve_lime: true, _ch3_read_ch3_steve_two_timers: true, _ch3_read_ch3_steve_empty_seat: true, _ch3_read_ch3_steve_tongs: true, _ch3_read_ch3_steve_watch: true, _ch3_outings: { steve_timer: 1 } });
         R.core.save();
       });
       await status(page);
@@ -388,9 +388,9 @@ await suite("relationship-ui", async check => {
           await city.readDialogues("ch3_volk", ["ch3_volk_bond_finale"]));
         const s = R.fresh(); s.chapter = 3;
         for (const id of ["saku", "volk"]) { s.met[id] = true; s.affinity[id] = 66; s.contacts.push(id); }
-        Object.assign(s.flags, { _lime_contact_saku: true, _ch3_read_ch3_saku_lime: true, _ch3_outings: { enmaku_answer: 1 },
+        Object.assign(s.flags, { _lime_contact_saku: true, _ch3_read_ch3_saku_lime: true, _ch3_read_ch3_saku_missed: true, _ch3_read_ch3_saku_cleanup: true, _ch3_read_ch3_saku_liar: true, _ch3_read_ch3_saku_first_reply: true, _ch3_outings: { enmaku_answer: 1 },
           _lime_contact_volk: true, _ch3_read_ch3_volk_lime: true, _ch3_read_ch3_volk_second: true,
-          _ch3_read_ch3_volk_third: true, _ch3_read_ch3_volk_fourth: true });
+          _ch3_read_ch3_volk_third: true, _ch3_read_ch3_volk_fourth: true, _ch3_read_ch3_volk_fifth: true, _ch3_read_ch3_volk_revisit: true });
         R.core.save();
       });
       const next = async id => {

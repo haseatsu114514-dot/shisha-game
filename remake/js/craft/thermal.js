@@ -4,7 +4,7 @@
 // 温度計の一番上で爆発して焦げる（TH06・TH12・TH13）。炎はイメージなので台やボウルには付けない（TH04）。
 // 見た目は温度に沿って連続的に移り、温度帯は呼び名・陽炎・照らしの段階にだけ使う。
 import { el, clamp } from "../core/util.js";
-import { IDEAL, DANGER_TEMP, temperatureBands, isIdealTemperature, isOptimalTemperature, visualTemperature } from "./temperature-model.js";
+import { IDEAL, DANGER_TEMP, temperatureBands, isIdealTemperature, isRainbowTemperature, visualTemperature } from "./temperature-model.js";
 
 // 倍率1での演出位置。判定/補間するときに一台の温度帯へ写し、危険.90以降は固定する。
 // glow=作業風景を照らす色と強さ、haze=作業風景のゆらぎ(px)、smoke=台の上の煙の色と濃さ。
@@ -27,8 +27,8 @@ const RUINED_BG = { burnt: ["#3a1d10", "#0b0503"], cold: ["#5d7487", "#18232e"],
 const fullExpression = bands => (bands.expressionWeight || 0) >= .999;
 export function thermalBand(temp, bands = temperatureBands()) {
   const t = clamp(Number.isFinite(temp) ? temp : 0, 0, 1);
+  if (isRainbowTemperature(t, bands)) return { id: "optimal", label: fullExpression(bands) ? "おいしく作れる範囲" : "最適温", ink: "#ffe9ff", glow: ["#d3b9ff", .2], haze: 0, smoke: ["#ffffff", 0] };
   if (fullExpression(bands) && isIdealTemperature(t, bands)) return { ...BANDS.find(b => b.id === "ready"), label: "おいしく作れる範囲" };
-  if (isOptimalTemperature(t, bands)) return { id: "optimal", label: "最適温", ink: "#ffe9ff", glow: ["#d3b9ff", .2], haze: 0, smoke: ["#ffffff", 0] };
   return BANDS.find(b => t < visualTemperature(b.until, bands) || (b.id === "ready" && t === bands.ideal[1]));
 }
 
@@ -68,8 +68,10 @@ export function envAt(temp, bands = temperatureBands()) {
   const env = { bg: a.bg.map((c, i) => mixColor(c, b.bg[i], k)), flame: fa.flame.map((c, i) => mixColor(c, fb.flame[i], fk)) };
   for (const key of ["frost", "warmth", "rainbow", "halo", "fire", "reach", "dark", "soft", "sparks"]) env[key] = a[key] + (b[key] - a[key]) * k;
   // 虹は温度計の虹と同じ範囲だけ。緑の適温帯には炎・陽炎を出さない。
-  if (fullExpression(bands) || !isOptimalTemperature(temp, bands)) { env.rainbow = 0; env.halo = 0; }
-  if (fullExpression(bands) && isIdealTemperature(temp, bands)) env.bg = ["rgb(33,68,62)", "rgb(16,30,36)"];
+  // 虹は温度計の虹と同じ範囲だけ。範囲の端でも見えるよう、虹の中では弱くても必ず出す。
+  if (!isRainbowTemperature(temp, bands)) { env.rainbow = 0; env.halo = 0; }
+  else { env.rainbow = Math.max(env.rainbow, .35); env.halo = Math.max(env.halo, .05); }
+  if (fullExpression(bands) && isIdealTemperature(temp, bands) && !isRainbowTemperature(temp, bands)) env.bg = ["rgb(33,68,62)", "rgb(16,30,36)"];
   if (isIdealTemperature(temp, bands)) { env.fire = 0; env.sparks = 0; }
   return env;
 }
@@ -331,7 +333,7 @@ export function buildThermalAtmosphere(host, worker, cs) {
     if (burnt) { explosion(t, w, h); return; }
     if (ruined) { spoiled(ruined, t, w, h); return; }
     squares(env, band.ink, t, w, h);
-    aurora(env, t, w, h, isOptimalTemperature(temp, bands));
+    aurora(env, t, w, h, isRainbowTemperature(temp, bands));
     if (env.soft > .01) smoke(softPuff, t, w, h, env.soft);
     if (env.dark > .01) smoke(darkPuff, t, w, h, env.dark * .5);
     if (env.halo > .01 && env.rainbow > .02) halo(env, t, w, h);

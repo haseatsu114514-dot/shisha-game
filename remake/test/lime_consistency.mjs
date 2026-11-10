@@ -83,7 +83,7 @@ const values = {
   "story-knowledge.js": { syncMintoKnowledge: () => {} },
   // サメちゃんのデート（samechan-date.js）が読む心得の盤。LIMEの検査なので旧しくみ（盤は無効）の代役にする
   "growth.js": { growthEnabled: () => false, awardActionExp: () => 0 },
-  "gallery-progress.js": { recordRouteLover: noop }, // コレクションの「恋人成立」は remake/test/gallery_route_records.mjs
+  "gallery-progress.js": { recordRouteLover: noop, recordRouteEvent: noop }, // コレクションのルート記録（恋人成立・閲覧した段階）は remake/test/gallery_route_records.mjs
 };
 // 同じVM stateに実statsを接続。新しいexportを空の成功stubで埋めない。
 const coreFiles = { "stat-step-tables.js": "stat-step-tables.js", "production-stats.js": "stats.js", "condition.js": "condition.js", "affinity-stages.js": "affinity-stages.js", "travel-budget.js": "travel-budget.js" };
@@ -599,6 +599,41 @@ for (const [id, sender, chapter, flag] of [
   assert.equal(phone.deliverMorning(), 1, `${id}: later chapters still deliver`);
 }
 
+// #3081: ヌールは砂丘の告白に応えた時だけ連絡先を交換する。交換前・断った時は届かない。
+{
+  const id = "lime_noor_after_sunset";
+  const message = allMessages.find(m => m.id === id);
+  assert(message, id);
+  const setup = (overrides = {}) => {
+    reset({ chapter: 4, day: 11, contacts: ["noor"], flags: { _lime_contact_noor: true }, ...overrides });
+    db.lime = [message];
+  };
+  setup({ flags: {} });
+  assert.equal(phone.deliverMorning(), 0, `${id}: accepted confession required`);
+  setup({ contacts: [] });
+  assert.equal(phone.deliverMorning(), 0, `${id}: exchanged contact required`);
+  setup();
+  assert.equal(phone.deliverMorning(), 1, `${id}: delivered after exchange`);
+  assert.equal(state.inbox[0].id, id);
+  assert.equal(phone.deliverMorning(), 0, `${id}: unread is not stacked`);
+  setup({ chapter: 5, day: 61 });
+  assert.equal(phone.deliverMorning(), 1, `${id}: a late chapter 5 confession also delivers`);
+}
+
+// ヌールの砂丘の節目は既存の恋人Lvと既読判定を使い、飛ばし読み・再読をしない。
+{
+  reset({ chapter: 4, lovers: ["noor"], loveLevel: { noor: 1 }, lovePts: { noor: 9 } });
+  const events = JSON.parse(await fs.readFile(new URL("data/dialogue/lover_events.json", dataRoot), "utf8"));
+  db.dialogues = Object.fromEntries(events.dialogues.filter(scene => scene.dialogue_id.startsWith("lover_noor_")).map(scene => [scene.dialogue_id, scene]));
+  assert.equal(romance.loverMilestoneDue("noor", { home: false }), "lover_noor_lv1");
+  assert.equal(await romance.playLoverMilestone("noor", { home: false }), true);
+  assert.deepEqual(clone(state.loverEventsSeen), ["lover_noor_lv1"]);
+  assert.equal(romance.loverMilestoneDue("noor", { home: false }), null);
+  state.loveLevel.noor = 2;
+  assert.equal(romance.loverMilestoneDue("noor", { home: false }), "lover_noor_lv2");
+  assert.equal(actualStats.bond.private, false);
+}
+
 // #3081: 水が減るまでいた夜のあと、章を問わず一度だけ届く。
 {
   const id = "lime_tsumugi_low_water";
@@ -1026,3 +1061,59 @@ for (const chapter of [1, 2, 3, 4, 5, 6, "1", "2", undefined, null, 0, false, Na
     }
 }
 console.log("PASS #2035 phone chapter features", { chapterGateCases });
+
+// L01–L43 / ヌールの友情着地でも LIME を交換する。恋愛稿は友情ルートに届かない。
+{
+  const afterSunset = allMessages.find(m => m.id === "lime_noor_after_sunset");
+  const firstFriend = allMessages.find(m => m.id === "L29");
+  const romanceChat = allMessages.find(m => m.id === "L26");
+  const firstVolk = allMessages.find(m => m.id === "L01");
+  const volkHeart = allMessages.find(m => m.id === "L04");
+  assert(firstFriend && romanceChat && firstVolk && volkHeart);
+  assert.equal(afterSunset.route, "romance");
+  assert.equal(firstFriend.route, "friend");
+  assert.equal(romanceChat.route, "romance");
+  for (let n = 1; n <= 43; n++) {
+    const id = `L${String(n).padStart(2, "0")}`;
+    assert(allMessages.some(m => m.id === id), id);
+  }
+
+  const setup = (id, overrides = {}) => {
+    const message = allMessages.find(m => m.id === id);
+    reset({ chapter: 4, day: 12, contacts: [message.sender], flags: {}, finales: {}, levels: {}, ...overrides });
+    db.lime = [message];
+    return message;
+  };
+
+  setup("lime_noor_after_sunset", { contacts: ["noor"], flags: { _lime_contact_noor: true } });
+  assert.equal(phone.deliverMorning(), 1, "after_sunset: romance exchange still delivers");
+
+  setup("lime_noor_after_sunset", { contacts: ["noor"], flags: { _lime_contact_noor: true, _friend_noor: true } });
+  assert.equal(phone.deliverMorning(), 0, "after_sunset: friend landing does not deliver the romance thread");
+
+  setup("lime_noor_after_sunset", { contacts: ["noor"], flags: { _lime_contact_noor: true }, finales: { noor: { route: "friend" } } });
+  assert.equal(phone.deliverMorning(), 0, "after_sunset: finale friend route does not deliver the romance thread");
+
+  setup("L26", { contacts: ["noor"], flags: { _lime_contact_noor: true } });
+  assert.equal(phone.deliverMorning(), 1, "L26: romance chat after accepted confession");
+  setup("L26", { contacts: ["noor"], flags: { _lime_contact_noor: true, _friend_noor: true } });
+  assert.equal(phone.deliverMorning(), 0, "L26: hidden on the friend route");
+
+  setup("L29", { contacts: ["noor"], flags: { _lime_contact_noor: true, _friend_noor: true } });
+  assert.equal(phone.deliverMorning(), 1, "L29: friend chat after friend landing and exchange");
+  assert.equal(state.inbox[0].id, "L29");
+  setup("L29", { contacts: ["noor"], flags: { _lime_contact_noor: true } });
+  assert.equal(phone.deliverMorning(), 0, "L29: not delivered on the romance path");
+  setup("L29", { contacts: [], flags: { _friend_noor: true } });
+  assert.equal(phone.deliverMorning(), 0, "L29: contact still required");
+  setup("L29", { contacts: ["noor"], flags: { _lime_contact_noor: true, _friend_noor: true }, lovers: ["noor"] });
+  assert.equal(phone.deliverMorning(), 0, "L29: not delivered to a lover");
+
+  setup("L01", { contacts: ["volk"], flags: { _lime_contact_volk: true } });
+  assert.equal(phone.deliverMorning(), 1, "L01: delivers after volk exchange");
+  setup("L01", { contacts: [], flags: { _lime_contact_volk: true } });
+  assert.equal(phone.deliverMorning(), 0, "L01: contact required");
+  assert.equal(volkHeart.trigger_condition, "affinity_level");
+  assert.equal(volkHeart.trigger_value, 3);
+}
+console.log("PASS L01-L43 noor friend lime hook");

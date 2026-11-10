@@ -15,6 +15,7 @@ let rainBuffer = null;
 let noiseBuffer = null;
 let bgmDuck = 1;
 let bgmPaused = false;
+let bgmSilences = 0;
 const seBuffers = new Map();
 const seLoads = new Map();
 const seRetryAt = new Map();
@@ -26,6 +27,9 @@ const RECORDED_SE = {
   click: { files: ["ui_click.wav"], gain: .3 },
   select: { files: ["ui_select.wav"], gain: .3 },
   cancel: { files: ["ui_back.wav"], gain: .3 },
+  whoosh: { files: ["ui_whoosh.wav"], gain: .35 },
+  jingle: { files: ["ui_jingle.wav"], gain: .4 },
+  card: { files: ["ui_card.wav"], gain: .35 },
   phone: { files: ["lime_glass.wav"], gain: .4 },
   doorbell: { files: ["shop_bell.wav"], gain: 1 },
   coalSnip: { files: ["coal_grab_01.wav", "coal_grab_02.wav"], gain: 1 },
@@ -108,10 +112,11 @@ function recordedSe(id) {
 
 // 砂漠ライド専用の採用音。共通の SE 音量・ミュート・表示状態を使い、画面を閉じたらループを止める。
 const DESERT_SE = Object.freeze({
-  slide: "slide_snowboard_pocket", wind: "wind_hyoo_lab", jump: "jump_anime_lab",
-  land: "landing_soft_lab", boost: "boost_dash_lab", carve: "carve_sand-dash_lab",
-  countdown: "countdown_electronic_lab", goal: "goal_fanfare_lab", fall: "fall_thud_lab",
-  decide: "ui_decide1_lab", cursor: "ui_cursor1_lab",
+  slide: "slide_sand", wind: "wind_ambience", jump: "jump_videogame",
+  land: "drop_soft", boost: "boost_whoosh", carve: "carve_sand",
+  countdown: "countdown_bleeps", goal: "goal_fanfare", fall: "drop_soft",
+  decide: "ui_confirm", cursor: "ui_pluck",
+  smash: "smash_pot", near: "ui_pluck", gaugeFull: "gauge_powerup",
 });
 export function createDesertRideSe() {
   let alive = true;
@@ -149,6 +154,72 @@ export function createDesertRideSe() {
   return { ready, play, motion, stop, dispose };
 }
 
+// ---------------------------------------------------------------- ミニゲームの仮SE
+// 2026-11-10 オーナー依頼「ミニゲーム全般に合う効果音を探して一旦入れて」の仮置き（grok/minigame-audio）。
+// 出典・ライセンス（すべてCC0）・加工は asset_sources/music/minigame-se/。差し替えはこの表のファイル名だけ変える。
+// 共通のSE音量・ミュート・非表示停止（recordedVoice）に乗せ、未読込・取得失敗の間は既存の合成SE（fallback）で鳴らす。
+// 斧投げの実プレイは #3176 の playAxeSe を使う。以下の録音キューは出典台帳付きの既存素材として保持する。
+// TRPGの音（grok/trpg-audio）とは別の表にしてある。
+export const MINIGAME_SE = Object.freeze({
+  axeThrow: { files: ["minigame/axe_throw.wav"], gain: .7, fallback: "whoosh" },
+  axeThunk: { files: ["minigame/axe_thunk_01.wav", "minigame/axe_thunk_02.wav", "minigame/axe_thunk_03.wav"], gain: .85, fallback: "hit" },
+  axeDrop: { files: ["minigame/axe_drop.wav"], gain: .75, fallback: null }, // 失敗音は呼び出し側が別に鳴らす
+  axeCheer: { files: ["minigame/axe_cheer.wav"], gain: .8, fallback: "perfect" },
+  axeWin: { files: ["minigame/axe_win.wav"], gain: .7, fallback: "fanfare" },
+  axeLose: { files: ["minigame/axe_lose.wav"], gain: .7, fallback: "miss" },
+});
+/** あるミニゲームの仮SEを先に読み込む（prefix は "axe" など）。初回操作の後に呼ぶ。 */
+export function preloadMinigameSe(prefix = "") {
+  if (!audioUnlocked) return Promise.resolve(false);
+  const files = Object.entries(MINIGAME_SE).filter(([id]) => id.startsWith(prefix)).flatMap(([, cue]) => cue.files);
+  return Promise.all(files.map(loadSeBuffer)).then(buffers => buffers.every(Boolean));
+}
+/** ミニゲームの仮SEを1回鳴らす。録音が未読込なら読み込みを始め、今回は合成の代用音を鳴らす。 */
+export function playMinigameSe(id) {
+  const cue = MINIGAME_SE[id];
+  if (!cue || !seEnabled()) return;
+  const ready = cue.files.filter(file => seBuffers.has(file));
+  if (!ready.length) { cue.files.forEach(loadSeBuffer); if (cue.fallback) SE[cue.fallback]?.(); return; }
+  const choices = ready.filter(file => file !== lastVariant.get(id));
+  const file = (choices.length ? choices : ready)[Math.floor(Math.random() * (choices.length || ready.length))];
+  lastVariant.set(id, file);
+  recordedVoice(file, { gain: cue.gain });
+}
+
+// ラクダレースの採用SE（grok/minigame-sfx-swap）。既存の sfx("hoof") 等の ID は維持し、スロットなど他場面の合成SEは変えない。
+// 出典は asset_sources/music/minigame-sfx-swap/。未読込・取得失敗時は従来の合成へ戻す。斧投げの MINIGAME_SE とは別表。
+export const CAMEL_RACE_SE = Object.freeze({
+  count: { files: ["camel_race/count_bleep.bgm"], gain: .5, fallback: "count" },
+  reelLever: { files: ["camel_race/start_cracker.wav"], gain: .7, fallback: "reelLever" },
+  hoof: { files: ["camel_race/hoof_gallop.wav"], gain: .5, fallback: "hoof" },
+  whoosh: { files: ["camel_race/whip_complete.wav"], gain: .62, fallback: "whoosh" },
+  perfect: { files: ["camel_race/perfect_confirm.wav"], gain: .5, fallback: "perfect" },
+  good: { files: ["camel_race/good_confirm.wav"], gain: .42, fallback: "good" },
+  miss: { files: ["camel_race/miss_error.wav"], gain: .5, fallback: "miss" },
+  slotBonus: { files: ["camel_race/spurt_horn.wav"], gain: .55, fallback: "slotBonus" },
+  reelWin: { files: ["camel_race/overtake_whoosh.wav"], gain: .55, fallback: "reelWin" },
+  fanfare: { files: ["camel_race/fanfare_trumpet.bgm"], gain: .55, fallback: "fanfare" },
+  jingle: { files: ["camel_race/place_jingle.wav"], gain: .5, fallback: "jingle" },
+  crowd: { files: ["camel_race/crowd_applause.wav"], gain: .5, fallback: "crowd" },
+  stamp: { files: ["camel_race/stamp_drop.wav"], gain: .6, fallback: "stamp" },
+  grunt: { files: ["camel_race/grunt_camel.wav"], gain: .45, fallback: null },
+});
+export function preloadCamelRaceSe() {
+  if (!audioUnlocked) return Promise.resolve(false);
+  const files = Object.values(CAMEL_RACE_SE).flatMap(cue => cue.files);
+  return Promise.all(files.map(loadSeBuffer)).then(buffers => buffers.every(Boolean));
+}
+export function playCamelRaceSe(id) {
+  const cue = CAMEL_RACE_SE[id];
+  if (!cue || !seEnabled()) return;
+  const ready = cue.files.filter(file => seBuffers.has(file));
+  if (!ready.length) { cue.files.forEach(loadSeBuffer); if (cue.fallback) SE[cue.fallback]?.(); return; }
+  const choices = ready.filter(file => file !== lastVariant.get("camel:" + id));
+  const file = (choices.length ? choices : ready)[Math.floor(Math.random() * (choices.length || ready.length))];
+  lastVariant.set("camel:" + id, file);
+  recordedVoice(file, { gain: cue.gain });
+}
+
 function syncPulls() { activePulls.forEach(pull => pull.sync()); }
 function stopRecordedVoices() { seVoices.forEach(voice => voice.stop()); }
 document.addEventListener?.("visibilitychange", () => {
@@ -162,7 +233,7 @@ let rotateHeld = false;
 document.addEventListener?.("rotateguardchange", () => {
   rotateHeld = document.documentElement?.dataset?.rotateGuard === "true";
   if (master) master.gain.value = rotateHeld ? 0 : 1;
-  if (rotateHeld) { stopRecordedVoices(); currentEl?.pause(); }
+  if (rotateHeld) { stopRecordedVoices(); currentEl?.pause(); resetBgmTempo(); }
   else if (currentEl && !bgmPaused) currentEl.play().catch(() => {});
 });
 
@@ -179,7 +250,7 @@ function ensureCtx() {
   seBus.gain.value = config.mute || config.muted ? 0 : config.seVolume;
   seBus.connect(master);
   bgmBus = ctx.createGain();
-  bgmBus.gain.value = config.mute || config.muted || bgmPaused ? 0 : config.bgmVolume * bgmDuck;
+  bgmBus.gain.value = config.mute || config.muted || bgmPaused || bgmSilences ? 0 : config.bgmVolume * bgmDuck;
   bgmBus.connect(master);
   return ctx;
 }
@@ -204,7 +275,7 @@ export function applyVolumes() {
   const muted = config.mute || config.muted;
   if (seBus) seBus.gain.value = muted ? 0 : config.seVolume;
   bgmBus?.gain.cancelScheduledValues?.(ctx.currentTime);
-  if (bgmBus) bgmBus.gain.value = muted || bgmPaused ? 0 : config.bgmVolume * bgmDuck;
+  if (bgmBus) bgmBus.gain.value = muted || bgmPaused || bgmSilences ? 0 : config.bgmVolume * bgmDuck;
   if (currentEl) currentEl.volume = bgmLevel(currentKey);
   // 曲の切替後もフェード中の旧曲は鳴っている。無音設定を即座に反映し、
   // 予約済みのフレームが音量を戻さないようフェードごと終了する。
@@ -434,6 +505,15 @@ export const SE = {
   reelWin: () => { tone({ freq: 1175, type: "triangle", dur: 0.08, vol: 0.12 }); tone({ freq: 1568, type: "triangle", dur: 0.12, vol: 0.1, delay: 0.07 }); },
   // 能力ボーナスの通知に合わせた短い上昇音。通常の通知音より控えめにする。
   slotBonus: () => [784, 1175, 1568].forEach((freq, i) => tone({ freq, type: "triangle", dur: i === 2 ? 0.18 : 0.1, vol: 0.08, delay: i * 0.07 })),
+  // 心得の盤: 仮置きは短い火の音、確定は柔らかい和音。いずれもオリジナル合成音。
+  boardLight: () => {
+    if (!seEnabled()) return;
+    [659, 988].forEach((freq, i) => tone({ freq, type: "sine", dur: .18, vol: .09, delay: i * .045 }));
+  },
+  boardCommit: () => {
+    if (!seEnabled()) return;
+    [523, 659, 784, 1047].forEach((freq, i) => tone({ freq, type: "sine", dur: .32, vol: .07, delay: i * .065 }));
+  },
   puka: () => { tone({ freq: 880, to: 1760, type: "sine", dur: 0.16, vol: 0.2 }); tone({ freq: 1760, type: "sine", dur: 0.28, vol: 0.12, delay: 0.14 }); },
   pugo: () => { tone({ freq: 140, to: 70, type: "sine", dur: 0.22, vol: 0.3 }); noise({ dur: 0.08, vol: 0.12, filter: 500 }); },
   glitch: () => { for (let i = 0; i < 8; i++) tone({ freq: 200 + Math.random() * 2400, type: "square", dur: 0.03, vol: 0.05, delay: i * 0.05 }); },
@@ -453,7 +533,45 @@ export const SE = {
   // てつこといっしょ（#2454）: 喉を鳴らす低いゴロゴロ（約1.2秒。録音なし・合成）と、写真のシャッター。
   purr: () => { for (let i = 0; i < 26; i++) noise({ dur: 0.04, vol: 0.05 * Math.min(1, (i + 1) / 4, (26 - i) / 4), filter: 160 + Math.random() * 50, q: 1.1, type: "lowpass", delay: i * 0.046 }); },
   shutter: () => { noise({ dur: 0.04, vol: 0.12, filter: 3200 }); tone({ freq: 1800, to: 900, type: "square", dur: 0.03, vol: 0.03, delay: 0.01 }); noise({ dur: 0.05, vol: 0.09, filter: 2200, delay: 0.09 }); },
+  // 日付カードなど短いUI音（録音が無ければ短いクリック）。
+  card: () => tone({ freq: 880, to: 660, type: "triangle", dur: 0.08, vol: 0.1 }),
 };
+
+// 斧投げ専用の合成音。共通の音量・ミュート・非表示停止を通し、外部音源は使わない。
+// 風切り→木への衝突→割れ・軋みを別の帯域にして、短い録音SEより重さを出す。
+export function playAxeSe(id, { scored = true } = {}) {
+  if (!seEnabled()) return;
+  if (id === "throw") {
+    noise({ dur: .43, vol: .19, filter: 380, sweepTo: 3100, q: .55 });
+    noise({ dur: .19, vol: .07, delay: .13, filter: 4200, sweepTo: 1800, q: .6 });
+    tone({ freq: 155, to: 82, type: "triangle", dur: .27, vol: .12 });
+  } else if (id === "stick") {
+    const weight = scored ? 1 : .72;
+    tone({ freq: 118, to: 44, dur: .32, vol: .36 * weight });
+    noise({ dur: .18, vol: .21 * weight, filter: 620, q: .5, type: "lowpass" });
+    noise({ dur: .09, vol: .14 * weight, filter: 2900, q: 1.2, delay: .014 });
+    // A few separated splinters and a falling wooden creak follow the initial hit.
+    [0.07, 0.12, 0.19].forEach((delay, i) => noise({ dur: .035 + i * .012, vol: .065 * weight,
+      filter: 3400 - i * 650, q: 1.5, delay }));
+    tone({ freq: 360, to: 125, type: "sawtooth", dur: .31, vol: .035 * weight, delay: .08 });
+  } else if (id === "drop") {
+    tone({ freq: 102, to: 47, dur: .18, vol: .22, delay: .035 });
+    noise({ dur: .13, vol: .13, filter: 950, type: "lowpass", delay: .035 });
+    noise({ dur: .1, vol: .11, filter: 3700, delay: .1 });
+    tone({ freq: 430, to: 180, type: "triangle", dur: .13, vol: .06, delay: .13 });
+  } else if (id === "miss") {
+    tone({ freq: 205, to: 105, type: "triangle", dur: .25, vol: .11, delay: .12 });
+  } else if (id === "cheer") {
+    noise({ dur: .7, vol: .11, filter: 850, q: .45 });
+    noise({ dur: .54, vol: .065, filter: 1900, q: .6, delay: .1 });
+    [523, 659, 784].forEach((freq, i) => tone({ freq, type: "triangle", dur: .2, vol: .065, delay: i * .075 }));
+  } else if (id === "win") {
+    SE.fanfare(); SE.crowd(1.2);
+  } else if (id === "lose") {
+    noise({ dur: .4, vol: .075, filter: 560, q: .5 });
+    [260, 205, 155].forEach((freq, i) => tone({ freq, to: freq * .7, type: "triangle", dur: .22, vol: .08, delay: i * .13 }));
+  }
+}
 
 for (const id of Object.keys(RECORDED_SE)) {
   const fallback = SE[id];
@@ -513,7 +631,7 @@ export function createContinueAudio({ enabled = true } = {}) {
     if (currentEl) fadeEl(currentEl, () => bgmLevel("bgm_continue_urgent"), ms);
     if (bgmBus) {
       bgmBus.gain.cancelScheduledValues?.(ctx.currentTime);
-      const target = config.mute || config.muted || bgmPaused ? 0 : config.bgmVolume * level;
+      const target = config.mute || config.muted || bgmPaused || bgmSilences ? 0 : config.bgmVolume * level;
       if (bgmBus.gain.setTargetAtTime) bgmBus.gain.setTargetAtTime(target, ctx.currentTime, Math.max(.01, ms / 3000));
       else bgmBus.gain.value = target;
     }
@@ -563,7 +681,7 @@ export function createContinueAudio({ enabled = true } = {}) {
       paused = true;
       silence(); clearTimeout(restore);
       if (!ownsMusic()) return;
-      bgmPaused = true; currentEl?.pause(); mix(holdMix);
+      bgmPaused = true; currentEl?.pause(); resetBgmTempo(); mix(holdMix);
     },
     resume() {
       if (!alive) return;
@@ -592,6 +710,7 @@ let pendingBgm = null;
 
 // 実ファイルが無い曲の代用: key → 合成パターン
 const SYNTH_FALLBACK = {
+  bgm_growth_board: "board", // 静かな内省用。新しい音源の取得なしで鳴る専用ループ。
   bgm_tournament_edm: "battle",
   bgm_tournament_craft: "battle",
   bgm_tournament_wait: "tension",
@@ -603,6 +722,23 @@ const SYNTH_FALLBACK = {
 
 /** 今鳴っている曲のキー（自動再生待ちの間は null） */
 export const currentBgm = () => currentKey;
+
+/** 盤の間だけ曲を借りる。LOADや別場面の新しい曲を、閉じる処理で上書きしない。 */
+export function createGrowthBoardAudio() {
+  const previous = currentKey || pendingBgm;
+  const previousDuck = bgmDuck;
+  let alive = true;
+  playBgm("bgm_growth_board");
+  return (restore = true) => {
+    if (!alive) return;
+    alive = false;
+    if ((currentKey || pendingBgm) !== "bgm_growth_board") return;
+    if (restore && previous) {
+      playBgm(previous);
+      duckBgm(previousDuck, 0);
+    } else stopBgm(.25);
+  };
+}
 /** 今のBGMの寄せ（1＝そのまま。会話の duck 中は0.5）。テスト・診断用 */
 export const bgmDuckLevel = () => bgmDuck;
 
@@ -610,6 +746,48 @@ export const bgmDuckLevel = () => bgmDuck;
 const BGM_GAIN = { sweets_or_sweets: 0.55, bgm_tournament_edm: 0.51, bgm_tournament_craft: 0.67, bgm_continue_urgent: 0.68, bgm_axe: 0.79 };
 const bgmLevel = (key) => config.mute || config.muted || bgmPaused ? 0
   : config.bgmVolume * (BGM_GAIN[key] ?? 1) * bgmDuck;
+
+// ラクダレース中だけ、プレイヤー速度に合わせて再生速度を緩やかに変える。
+// ピッチは保つ（HTMLAudioElement の既定 / preservesPitch=true。continue 曲と同じ）。
+let bgmTempo = 1, bgmTempoTarget = 1;
+const TEMPO_EASE = 0.22;
+
+function applyBgmPlaybackRate() {
+  if (!currentEl || currentKey === "bgm_continue_urgent") return;
+  currentEl.playbackRate = currentKey === "bgm_camel_race" ? bgmTempo : 1;
+  currentEl.preservesPitch = true;
+}
+
+/** 今の曲の目標再生倍率。1.00〜1.15。immediate ならその場で反映。 */
+export function setBgmPlaybackRate(rate, { immediate = false } = {}) {
+  const next = Math.max(1, Math.min(1.15, Number(rate) || 1));
+  bgmTempoTarget = next;
+  if (immediate) {
+    bgmTempo = next;
+    applyBgmPlaybackRate();
+  }
+}
+
+/** 再生倍率を 1.0 に戻す（レース終了・中断・退出、曲の切替）。 */
+export function resetBgmTempo() {
+  bgmTempo = 1;
+  bgmTempoTarget = 1;
+  applyBgmPlaybackRate();
+}
+
+/** 目標倍率へ時定数約0.22秒で寄せる。1フレームごとに dt（秒）を渡す。 */
+export function tickBgmPlaybackRate(dt) {
+  const t = Math.max(0, Number(dt) || 0);
+  if (t > 0) {
+    const k = 1 - Math.exp(-t / TEMPO_EASE);
+    bgmTempo += (bgmTempoTarget - bgmTempo) * k;
+    if (Math.abs(bgmTempo - bgmTempoTarget) < 0.001) bgmTempo = bgmTempoTarget;
+  }
+  applyBgmPlaybackRate();
+  return bgmTempo;
+}
+
+export const bgmPlaybackRate = () => bgmTempo;
 
 // 単体MP3の再配布を避けるゲーム専用形式（pack_bgm.py と対応）。HTTPS/localhostで復元する。
 const PACKED_MAGIC = "SUIENBGM1";
@@ -787,7 +965,8 @@ export function preloadBgm(key) {
 }
 
 export function playBgm(key) {
-  if (key === currentKey && !preparedBgm.has(bgmUrl(key))) return;
+  // 取得・復号の失敗で要素を手放した曲は、同じキーでも次の要求で再試行する。
+  if (key === currentKey && currentEl && !preparedBgm.has(bgmUrl(key))) return;
   stopBgm(0.6);
   currentKey = key;
   if (!key) return;
@@ -808,12 +987,12 @@ export function playBgm(key) {
     }
     const a = prepared?.audio || (packed ? new Audio() : new Audio(url));
     a.preload = "auto";
+    a.muted = bgmSilences > 0;
     a.loop = true;
     a.volume = 0;
-    if (key === "bgm_continue_urgent") {
-      a.playbackRate = 1.08; // EMGコール(BPM115)を少しだけ高速化
-      a.preservesPitch = true;
-    }
+    resetBgmTempo();
+    a.playbackRate = key === "bgm_continue_urgent" ? 1.08 : 1; // EMGコール(BPM115)を少しだけ高速化
+    a.preservesPitch = true;
     currentEl = a;
     const fallBackContinue = () => {
       if (currentEl !== a || key !== "bgm_continue_urgent") return false;
@@ -823,7 +1002,14 @@ export function playBgm(key) {
       if (SYNTH_FALLBACK[key]) synthStop = startSynth(SYNTH_FALLBACK[key]);
       return true;
     };
-    a.addEventListener("error", fallBackContinue, { once: true });
+    const retryOnGesture = () => {
+      if (currentEl !== a) return;
+      currentEl = null;
+      a.pause();
+      releasePacked(a.src);
+      pendingBgm = key;
+    };
+    a.addEventListener("error", () => { if (!fallBackContinue()) retryOnGesture(); }, { once: true });
     const start = () => {
       if (currentEl !== a) return; // 読み込み中に別曲へ移った場合、古い曲を鳴らさない。
       if (rotateHeld) { a.volume = bgmLevel(key); return; } // 回転ガード中に替わった曲は、横に戻した時に鳴らし始める
@@ -840,8 +1026,7 @@ export function playBgm(key) {
         if (currentEl !== a) { discardPrepared(cached); return; }
         if (ready) start();
         else {
-          currentEl = null;
-          a.pause();
+          retryOnGesture();
           if (SYNTH_FALLBACK[key]) synthStop = startSynth(SYNTH_FALLBACK[key]);
         }
       });
@@ -854,8 +1039,7 @@ export function playBgm(key) {
         start();
       }, (error) => {
         if (currentEl !== a) return;
-        currentEl = null;
-        a.pause();
+        retryOnGesture();
         if (SYNTH_FALLBACK[key]) synthStop = startSynth(SYNTH_FALLBACK[key]);
         console.warn("[BGM] Could not load game audio", key, error);
       });
@@ -863,6 +1047,25 @@ export function playBgm(key) {
   } else if (SYNTH_FALLBACK[key]) {
     synthStop = startSynth(SYNTH_FALLBACK[key]);
   }
+}
+
+/** 一時的に BGM だけを無音にする。曲切替や音声解禁をまたぎ、解除関数は一度だけ有効。 */
+export function silenceBgm() {
+  bgmSilences++;
+  if (currentEl) currentEl.muted = true;
+  for (const a of retiringBgm) a.muted = true;
+  bgmBus?.gain.cancelScheduledValues?.(ctx.currentTime);
+  if (bgmBus) bgmBus.gain.value = 0;
+  let released = false;
+  return () => {
+    if (released) return;
+    released = true;
+    if (--bgmSilences) return;
+    if (currentEl) currentEl.muted = false;
+    for (const a of retiringBgm) a.muted = false;
+    bgmBus?.gain.cancelScheduledValues?.(ctx.currentTime);
+    if (bgmBus) bgmBus.gain.value = config.mute || config.muted || bgmPaused ? 0 : config.bgmVolume * bgmDuck;
+  };
 }
 
 /**
@@ -874,7 +1077,7 @@ export function duckBgm(level = 1, ms = 150) {
   bgmDuck = level;
   if (currentEl) fadeEl(currentEl, () => bgmLevel(currentKey), ms);
   if (bgmBus) {
-    const target = config.mute || config.muted || bgmPaused ? 0 : config.bgmVolume * level;
+    const target = config.mute || config.muted || bgmPaused || bgmSilences ? 0 : config.bgmVolume * level;
     bgmBus.gain.cancelScheduledValues?.(ctx.currentTime);
     if (bgmBus.gain.setTargetAtTime) bgmBus.gain.setTargetAtTime(target, ctx.currentTime, Math.max(.01, ms / 3000));
     else bgmBus.gain.value = target;
@@ -896,8 +1099,9 @@ export function stopBgm(fadeSec = 0.8) {
   if (synthStop) { synthStop(fadeSec); synthStop = null; }
   bgmDuck = 1;
   bgmPaused = false;
+  resetBgmTempo();
   bgmBus?.gain.cancelScheduledValues?.(ctx.currentTime);
-  if (bgmBus) bgmBus.gain.value = config.mute || config.muted ? 0 : config.bgmVolume;
+  if (bgmBus) bgmBus.gain.value = config.mute || config.muted || bgmSilences ? 0 : config.bgmVolume;
 }
 
 const elFades = new WeakMap();
@@ -998,6 +1202,12 @@ function startSynth(kind) {
         const n = [40,0,40,0,43,0,40,0,38,0,38,0,35,0,38,0][s];
         if (n) voice(mtof(n), next, stepDur * 1.6, "triangle", 0.042);
         if (s === 0 && step % 32 === 0) voice(mtof(52), next, stepDur * 26, "sine", 0.023);
+      } else if (kind === "board") {
+        // 4小節で戻る暖かなパッドと、火種を思わせる疎らな高音。打楽器は置かない。
+        const chords = [[48, 55, 62, 64], [45, 52, 59, 60], [41, 48, 55, 57], [43, 50, 57, 59]];
+        const chord = chords[Math.floor(step / 16) % chords.length];
+        if (s === 0) chord.forEach(m => voice(mtof(m), next, stepDur * 18, "sine", .018));
+        if (s === 4 || s === 12) voice(mtof(chord[s === 4 ? 2 : 3] + 12), next, stepDur * 5, "sine", .022);
       } else if (kind === "tension") {
         if (s === 0 || s === 3) kick(next, s === 0 ? 0.35 : 0.22);
         if (s === 0 && step % 32 === 0) [57, 60, 64].forEach((m) => voice(mtof(m), next, stepDur * 30, "sine", 0.025));
@@ -1021,4 +1231,7 @@ function startSynth(kind) {
     setTimeout(() => out.disconnect(), fadeSec * 1000 + 200);
   };
 }
+
+
+
 

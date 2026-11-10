@@ -284,12 +284,27 @@ await suite("staff-roll", async check => {
     assert(roles.length >= 6 && !roles.some(role => role.includes("作曲")), `No 作曲 role for あつき: ${roles}`);
     assert.deepEqual(await page.locator(".staff-roll-credit .staff-roll-name").allTextContents(), roles.map(() => "あつき"));
     assert.equal(await page.locator(".staff-roll-music .staff-roll-role").textContent(), "使用楽曲");
-    assert.deepEqual(await page.locator(".staff-roll-source").allTextContents(), ["音楽：魔王魂", "音楽：甘茶の音楽工房"]);
+    assert.deepEqual(await page.locator(".staff-roll-source").allTextContents(), ["音楽：魔王魂", "音楽：甘茶の音楽工房", "音楽：OpenGameArt.org（CC0）", "音楽：Kevin MacLeod（incompetech.com）– Licensed under Creative Commons: By Attribution 4.0 License http://creativecommons.org/licenses/by/4.0/"]);
     assert.deepEqual(await page.locator(".staff-roll-song-credit").allTextContents(),
       ["作曲 秋山裕和（H/MIX GALLERY）", "作曲 shimtone（OpenTracks）", "作曲 Napi（M-ART）",
-        "作曲 魔王魂（魔王魂）", "作曲 魔王魂（魔王魂）", "作曲 魔王魂（魔王魂）", "作曲 魔王魂（魔王魂）", "作曲 甘茶（甘茶の音楽工房）"]);
+        "作曲 魔王魂（魔王魂）", "作曲 魔王魂（魔王魂）", "作曲 魔王魂（魔王魂）", "作曲 魔王魂（魔王魂）", "作曲 甘茶（甘茶の音楽工房）",
+        "作曲 Kevin MacLeod（incompetech.com・CC BY 4.0）",
+        ...["Eldritch Grim", "Aureolus_Omicron", "congusbongus", "TAD", "controllerhead", "yd", "Kistol", "northivanastan", "Bobjt", "Aureolus_Omicron",
+            "omfgdude", "Umplix", "Kistol", "MintoDog", "DJ CrisP", "Spring Spring", "Centurion_of_war", "tebruno99"]
+          .map(name => `作曲 ${name}（OpenGameArt・CC0）`)]);
     assert.equal(await page.locator(".staff-roll-sound").textContent(), "効果音：ポケットサウンド – https://pocket-se.info/");
+    assert.deepEqual(await page.locator(".staff-roll-sound-main p").allTextContents(),
+      ["効果音（本編UI・場面転換）：Kenney – Interface Sounds / Music Jingles（CC0） – https://kenney.nl/"]);
+    assert.deepEqual((await page.locator(".staff-roll-sound-axe p").allTextContents()).map(t => t.split("：")[1].split(" – ")[0]),
+      ["Kenney", "Freesound"]);
+    for (const name of ["Jofae", "craigsmith", "qubodup", "plasterbrain", "IndyArts"]) assert(text.includes(name), name + " is credited");
+    assert.deepEqual((await page.locator(".staff-roll-sound-camel p").allTextContents()).map(t => t.split("：")[1].split(" – ")[0]),
+      ["Mixkit Sound Effects（Free License）", "Kenney", "Joseph Sardin（BigSoundBank / La Sonothèque）（CC0）", "AntumDeluge（原音 craigsmith / Freesound 437937）（CC0）"]);
+    assert.deepEqual((await page.locator(".staff-roll-sound-desert p").allTextContents()).map(t => t.split("：")[1].split(" – ")[0]),
+      ["Mixkit Sound Effects（Free License）", "Kenney", "Joseph Sardin（BigSoundBank / La Sonothèque）（CC0）"]);
     assert(!text.includes("間接照明とブラックコーヒー"), "A song without a recorded source is not credited yet");
+    assert.deepEqual(await page.locator(".staff-roll-sound-trpg p").allTextContents(),
+      ["効果音（TRPG）：Kenney – Casino Audio / RPG Audio / Music Jingles（CC0） – https://kenney.nl/"]);
     for (const key of ["Escape", "Enter", " "]) await page.keyboard.press(key);
     await page.locator(dt("staff-roll")).click({ position: { x: 640, y: 360 } });
     await page.waitForTimeout(1500);
@@ -380,3 +395,5 @@ await suite("staff-roll", async check => {
     }, { viewport, ...(label === "pc" ? {} : { hasTouch: true, isMobile: true }) });
   }
 });
+
+

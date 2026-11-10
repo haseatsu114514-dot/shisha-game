@@ -72,7 +72,7 @@ loaded.audio.unlockAudio();
 assert.equal(await loaded.audio.preloadSe(), true);
 assert.equal(loaded.requests.length, new Set(loaded.requests).size, "concurrent warmups fetch each file once");
 assert.equal(loaded.timers.size, 0, "load timeout timers are cleaned up");
-for (const id of ["click", "select", "cancel", "phone", "doorbell", "coalSnip", "coalPlace", "foilPunch", "bubbling"]) loaded.audio.SE[id]();
+for (const id of ["click", "select", "cancel", "whoosh", "jingle", "card", "phone", "doorbell", "coalSnip", "coalPlace", "foilPunch", "bubbling"]) loaded.audio.SE[id]();
 assert.equal(loaded.oscillators(), 0, "loaded effects use decoded recordings");
 assert(loaded.sources.every(source => source.buffer.file), "all effect files are present");
 const firstGrab = loaded.sources.find(s => s.buffer.file.startsWith("coal_grab"));

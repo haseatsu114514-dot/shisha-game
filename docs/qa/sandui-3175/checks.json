@@ -1,0 +1,149 @@
+{
+  "issue": 3175,
+  "capture": {
+    "desktop": [
+      1280,
+      720
+    ],
+    "phone": [
+      844,
+      390
+    ],
+    "course_sign_z": 250,
+    "course_curve_z": 600
+  },
+  "screenshots": {
+    "left_sign": "left_sign.webp",
+    "right_sign": "right_sign.webp",
+    "left_curve": "left_curve.webp",
+    "right_curve": "right_curve.webp",
+    "boost_aura": "boost_aura.webp",
+    "normal_meter": "normal_meter.webp",
+    "debug_meter": "debug_meter.webp",
+    "stick_input": "stick_input.webp",
+    "phone": "phone.webp",
+    "stick_center_final": "stick_center_final.webp"
+  },
+  "meter_layout": {
+    "normal": {
+      "right": {
+        "left": 998,
+        "top": 14,
+        "right": 1258,
+        "bottom": 230
+      },
+      "speedo": {
+        "left": 1018,
+        "top": 30,
+        "right": 1238,
+        "bottom": 148
+      },
+      "boost": {
+        "left": 1018,
+        "top": 153,
+        "right": 1238,
+        "bottom": 181
+      },
+      "clock": {
+        "left": 1018,
+        "top": 186,
+        "right": 1238,
+        "bottom": 212
+      },
+      "quit": {
+        "left": 1194,
+        "top": 242,
+        "right": 1258,
+        "bottom": 306
+      },
+      "debugClose": null
+    },
+    "debug": {
+      "right": {
+        "left": 998,
+        "top": 14,
+        "right": 1258,
+        "bottom": 230
+      },
+      "speedo": {
+        "left": 1018,
+        "top": 30,
+        "right": 1238,
+        "bottom": 148
+      },
+      "boost": {
+        "left": 1018,
+        "top": 153,
+        "right": 1238,
+        "bottom": 181
+      },
+      "clock": {
+        "left": 1018,
+        "top": 186,
+        "right": 1238,
+        "bottom": 212
+      },
+      "quit": {
+        "left": 1194,
+        "top": 242,
+        "right": 1258,
+        "bottom": 306
+      },
+      "debugClose": {
+        "left": 20,
+        "top": 280,
+        "right": 182,
+        "bottom": 322
+      }
+    },
+    "phone": {
+      "right": {
+        "left": 615.9166870117188,
+        "top": 7.583333492279053,
+        "right": 756.75,
+        "bottom": 124.58333349227905
+      },
+      "speedo": {
+        "left": 626.75,
+        "top": 16.25,
+        "right": 745.9166870117188,
+        "bottom": 80.16667175292969
+      },
+      "boost": {
+        "left": 626.75,
+        "top": 82.875,
+        "right": 745.9166870117188,
+        "bottom": 98.04167175292969
+      },
+      "clock": {
+        "left": 626.75,
+        "top": 100.75,
+        "right": 745.9166870117188,
+        "bottom": 114.83333587646484
+      },
+      "quit": {
+        "left": 711.25,
+        "top": 131.08334350585938,
+        "right": 756.75,
+        "bottom": 176.58334350585938
+      },
+      "debugClose": null
+    }
+  },
+  "stick": {
+    "half_value": 50,
+    "full_value": 100,
+    "half_release": 0,
+    "full_release": 0
+  },
+  "page_errors": [],
+  "stick_final_visual": {
+    "source": "final runtime WebP with production desert-ride.css",
+    "base_css_px": 144,
+    "knob_css_px": 74,
+    "center": "ball centered inside base",
+    "deflected": "42px right; no visible breakage",
+    "phone": "844x390 real game, right full deflection, data-value=100",
+    "page_errors": []
+  }
+}

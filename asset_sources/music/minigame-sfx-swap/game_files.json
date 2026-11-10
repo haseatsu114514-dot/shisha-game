@@ -1,0 +1,158 @@
+[
+ {
+  "file": "assets/audio/se/camel_race/count_bleep.bgm",
+  "seconds": 0.18,
+  "bytes": 1800,
+  "sha256": "773da21763041eebb2047fc344a24dbf8ea5c93c12a39641c354bbc5e75912be"
+ },
+ {
+  "file": "assets/audio/se/camel_race/crowd_applause.wav",
+  "seconds": 3.05,
+  "bytes": 269138,
+  "sha256": "4c7704754d0bc6b074ca7b5358e42fb82b0db23a27a62ada4782dcbb5be26b95"
+ },
+ {
+  "file": "assets/audio/se/camel_race/fanfare_trumpet.bgm",
+  "seconds": 3.2,
+  "bytes": 30623,
+  "sha256": "d5ec4f0c22e169a2179c8cc6b718adf7fab950693e8b0e5b2cbaf8bed3bb0309"
+ },
+ {
+  "file": "assets/audio/se/camel_race/good_confirm.wav",
+  "seconds": 0.29,
+  "bytes": 25642,
+  "sha256": "84c4a687414773d3e3583871d459432ed15ee41b65d9707a9ea4f3a197a89792"
+ },
+ {
+  "file": "assets/audio/se/camel_race/grunt_camel.wav",
+  "seconds": 1.2,
+  "bytes": 105918,
+  "sha256": "d05d7e82a48fc00cbd0560af5a5bfd722aed6e0d4cc8c7f037ae312c2f1c6f8e"
+ },
+ {
+  "file": "assets/audio/se/camel_race/hoof_gallop.wav",
+  "seconds": 0.36,
+  "bytes": 31844,
+  "sha256": "29d1a5c94956fd6387add339cedad9c50efa71276bef4416bbe185ca9a7ada46"
+ },
+ {
+  "file": "assets/audio/se/camel_race/miss_error.wav",
+  "seconds": 0.162,
+  "bytes": 14336,
+  "sha256": "af9b0e20054e2579cb488920c375c6671aebbc23b743cfe077b17b018b07f950"
+ },
+ {
+  "file": "assets/audio/se/camel_race/overtake_whoosh.wav",
+  "seconds": 0.72,
+  "bytes": 63634,
+  "sha256": "b1d4852465496f2f56b09ea2d29195caf18a156aad01025bb84d375c946aa26b"
+ },
+ {
+  "file": "assets/audio/se/camel_race/perfect_confirm.wav",
+  "seconds": 0.5,
+  "bytes": 44178,
+  "sha256": "7d68ab43091d4621f817c0aa6916d19935f3c86a05ca32dc6afcc9bd666bc8f4"
+ },
+ {
+  "file": "assets/audio/se/camel_race/place_jingle.wav",
+  "seconds": 0.746,
+  "bytes": 65852,
+  "sha256": "0ed5fca23d9603381b676397c87b3e4fcf07783ebac04329e1c90125e171cd65"
+ },
+ {
+  "file": "assets/audio/se/camel_race/spurt_horn.wav",
+  "seconds": 2.45,
+  "bytes": 216220,
+  "sha256": "508d15645ea111a85427b6996b1d698eb0e0107490b57e97e341fc1203ffeb26"
+ },
+ {
+  "file": "assets/audio/se/camel_race/stamp_drop.wav",
+  "seconds": 0.284,
+  "bytes": 25108,
+  "sha256": "1255d315be3f2f53cd962b64055f78e484064c1d63c3503af16bb0cf9f40bbdb"
+ },
+ {
+  "file": "assets/audio/se/camel_race/start_cracker.wav",
+  "seconds": 0.336,
+  "bytes": 29740,
+  "sha256": "48c8c815005c8b3953157b18555144a31c007580d8b7140a50fdb5206f67fba0"
+ },
+ {
+  "file": "assets/audio/se/camel_race/whip_complete.wav",
+  "seconds": 0.85,
+  "bytes": 75154,
+  "sha256": "f62b3ca88428aec99604092fe11977257fd1e0a689c834cf97dcd9ddb0342f34"
+ },
+ {
+  "file": "assets/audio/se/desert_ride/boost_whoosh.bgm",
+  "seconds": 0.72,
+  "bytes": 5813,
+  "sha256": "e76b82a4418b9b364304fb573ecbc10ba20aee61f99be56d1ca191a652e41b89"
+ },
+ {
+  "file": "assets/audio/se/desert_ride/carve_sand.bgm",
+  "seconds": 0.7,
+  "bytes": 7954,
+  "sha256": "6f0a36b5767c34466cb6fe75a7fd8a0855a4bae7628269ef8d40836738c19e0a"
+ },
+ {
+  "file": "assets/audio/se/desert_ride/countdown_bleeps.bgm",
+  "seconds": 1.78,
+  "bytes": 8743,
+  "sha256": "1a927ad0ae822520773ec3f9d4a367c1ad9f11c3a66ce4325f4ff04dd0239656"
+ },
+ {
+  "file": "assets/audio/se/desert_ride/drop_soft.bgm",
+  "seconds": 0.284,
+  "bytes": 2085,
+  "sha256": "1cd8978bbd162937846ede42402f38cb5a550f96c6779cb3c179e734faa39058"
+ },
+ {
+  "file": "assets/audio/se/desert_ride/gauge_powerup.bgm",
+  "seconds": 0.42,
+  "bytes": 4777,
+  "sha256": "0e20336641835c54cd83609739e56afce89ee4c4280645dda864b4c641bec8e5"
+ },
+ {
+  "file": "assets/audio/se/desert_ride/goal_fanfare.bgm",
+  "seconds": 3.2,
+  "bytes": 30623,
+  "sha256": "718e047cfa346696a4129addf900f91bc2cb4f33c33f192dcd85078d672449d1"
+ },
+ {
+  "file": "assets/audio/se/desert_ride/jump_videogame.bgm",
+  "seconds": 0.4,
+  "bytes": 3728,
+  "sha256": "002304ab7f4720b707cc688b9477422c0e22e8c730d41d64c549822ae76e4f32"
+ },
+ {
+  "file": "assets/audio/se/desert_ride/slide_sand.bgm",
+  "seconds": 2.4,
+  "bytes": 31253,
+  "sha256": "cb5ac6db83e07044ebc8670ae0f8d19fd6d2605b911d823dc99318383eb55cda"
+ },
+ {
+  "file": "assets/audio/se/desert_ride/smash_pot.bgm",
+  "seconds": 0.85,
+  "bytes": 9415,
+  "sha256": "023a7e85eef8a32a0511f5df454a3e21fe121844361e9ef3fb0ccc23d3a299f4"
+ },
+ {
+  "file": "assets/audio/se/desert_ride/ui_confirm.bgm",
+  "seconds": 0.29,
+  "bytes": 2293,
+  "sha256": "8cc7067d38e9bf932be8e3dd7ecbc361d71d0f0a402e238a9691cf67d53bc0e8"
+ },
+ {
+  "file": "assets/audio/se/desert_ride/ui_pluck.bgm",
+  "seconds": 0.1,
+  "bytes": 1801,
+  "sha256": "10d764bd6227ad61c2583d8d1b6f90d08cd6243fad754e9946a25fe1c51c2c63"
+ },
+ {
+  "file": "assets/audio/se/desert_ride/wind_ambience.bgm",
+  "seconds": 8.0,
+  "bytes": 52500,
+  "sha256": "9f41ea4d782286b3225ae2cb0294d9d109031dfd730b843a0d8f7e2c28778798"
+ }
+]

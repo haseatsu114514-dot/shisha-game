@@ -1,0 +1,1546 @@
+{
+  "comment": "#3081 ヌールの好感度・絆の物語。カフェ・オアシスの段階会話に続いて一度ずつ読む。告白3本は confession.json、恋人の節目は lover_events.json。",
+  "dialogues": [
+    {
+      "dialogue_id": "ch4_noor_story_seat_edge",
+      "comment": "#3081 ヌールの物語系。カフェ・オアシスで段階会話の後に一度。席の端。大会の前後・第5章でも同じ会話。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "カフェ・オアシスで一台が届くと、ヌールさんは向かいの椅子を少し引いた。"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "ここ、いつも空いてる。車の写真が見える席だから、つい案内したくなるの"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "写真を見てたの、気づいてたんですか"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "もちろん。店に入る前、表のデスクでも立ち止まってたでしょ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "言われてみれば、車の前でずいぶん長く足を止めていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "砂丘の上に道があるみたいに見えて、不思議で"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "道はないよ。今日の砂を見て、私が決める線だけ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "それを毎日、知らない人に教えるんですね"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "知らない人だから、先に怖いって言ってほしいの。平気な顔をされると、私も困る"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "彼女は椅子を戻さず、俺の返事を待った。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……写真だけでも、少し怖いです"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "よし。そういう顔が見られたら、安心して案内できる"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "その席からは入口も見えた。誰かが出入りするたび、ヌールさんは顔を上げていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "目の前の煙が薄くなるころ、椅子の脚が静かに床を鳴らした。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ここから入口まで見えるなら、俺が来る時も分かりますね"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "うん。今日は写真を見てる横顔を先に見つけた"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "彼女の声に返事をしながら、俺は次にこの席へ来た時、入口から自分がどう見えるのかを考えた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_noor_story_second_cup",
+      "comment": "#3081 ヌールの物語系。カフェ・オアシスで段階会話の後に一度。二つ目のカップ。大会の前後・第5章でも同じ会話。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ヌールさんが飲み物のカップを置き、俺の手元の空いたカップを見た。"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "もう一杯いる？ 一台の途中、話しすぎると喉が乾くでしょ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "俺よりヌールさんのほうが、ずっと話してます"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "それはそう。お客さんが静かだと、私が二人分しゃべっちゃう"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "笑いながら、彼女は自分のカップを手のひらで包んだ。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "でも、うるさいとは思いません"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "ほんと？ 今の顔、遠慮してない？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "してません。さっきの、砂の道の続きが聞きたいです"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "だったら急いで飲まなくていい。カップが空でも、話はまだ終わらないよ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "カウンターから聞こえる小さな物音のあいだ、二人ともカップに手を添えたままだった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……次は、俺も何か話します"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "彼女はまだ空のカップを下げず、片方の持ち手を俺のほうへ向けた。"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "約束。聞くほうも、ちゃんとできるから"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "彼女は新しい飲み物を注がず、空いたカップを二人の間に残した。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "聞くほうが得意なら、今日は俺の失敗も聞いてください"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "いいよ。笑うのは、ハジメが先に笑った時だけ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "何を話すか決めていないのに、次の言葉を待ってもらえるのがうれしかった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_noor_story_map_corner",
+      "comment": "#3081 ヌールの物語系。カフェ・オアシスで段階会話の後に一度。地図の角。大会の前後・第5章でも同じ会話。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "カウンターの地図の角がめくれていた。ヌールさんは指で押さえ、俺を呼んだ。"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "ハジメ、ここ。昨日と今日で、線が違うの、分かる？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "こっちが細い……ですか"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "うん。風が変わったから、車の向きを少し変える"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "毎日書き直すなら、大変ですね"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "大変。でも同じ線をなぞるほうが怖いかな"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "鉛筆の跡は重なっていたが、一本ずつ少しずつ離れていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "前の日の線も消さないんですか"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "消したら、どうして変えたか忘れちゃう。失敗した線も残すよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "失敗も、見せてくれるんですね"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "ハジメにはね。まだ砂に出てないから、紙の上だけ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "彼女は指を離す。角はまた浮いたが、線はまっすぐ見えた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "今度は、外で教えてください"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "指先が鉛筆の線に触れる。昨日の跡は薄くても、ちゃんと残っていた。"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "その時は、紙より先に足元を見ること"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "足元を見ても分からなかったら、聞いていいですか"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "もちろん。そのために私がいる。分からないまま進むより、何度でも聞いて"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "地図の角がまた浮くと、彼女は今度は俺の手を借りず、自分で押さえた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_noor_story_water_glass",
+      "comment": "#3081 ヌールの物語系。カフェ・オアシスで段階会話の後に一度。水の高さ。大会の前後・第5章でも同じ会話。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一台の横に置かれた水のグラスを、ヌールさんが俺のほうへ寄せた。"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "ハジメ、水。煙ばかり追ってると忘れるよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "あ、ありがとうございます"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "さっきから同じところを見てた。何を考えてたの？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "煙の向こうで、ヌールさんが地図を直してるのを"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "私？ 地図はそこにあるのに"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "線を引く前に、少し止まってたから"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ヌールさんは自分のグラスを持ち、俺の隣へ並べた。"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "迷ってる時は、手が止まる。よく見てるね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "毎日決めるなら、迷う日もありますよね"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "うん。だから、迷ったら水を飲む。答えは急に出ないけど、喉は楽になる"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "二人で水を飲んだ。グラスの高さが揃うと、彼女はようやく地図へ戻った。"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "今日は、こっちの線にする"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "決まったんですね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "地図へ戻った彼女の横顔は、さっきより少し落ち着いて見えた。"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "ハジメのおかげ、とはまだ言わないでおく"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "俺は何もしてません。飲み物を先に受け取っただけです"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "じゃあ、お互いさま。ハジメが喉のことを忘れたら、また言うね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "彼女は水をひと口飲んでから鉛筆を取り、今度は途中で手を止めなかった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_noor_story_tray_order",
+      "comment": "#3081 ヌールの物語系。カフェ・オアシスで段階会話の後に一度。お盆の順番。大会の前後・第5章でも同じ会話。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ヌールさんは空いたお盆を持ち、俺の席で足を止めた。"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "片付ける前に聞くね。今日の一台、どうだった？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "最初は強いと思ったけど、途中から落ち着きました"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "うん。最初の顔はちょっとびっくりしてた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "また顔を見てたんですか"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "注文を運んだ人の顔は見るよ。……ハジメのは、つい長く"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "お盆の端で、空いたカップがかすかに鳴った。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "それ、仕事の確認ですか"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "半分は。もう半分は、聞かないで"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……じゃあ、俺も半分だけ答えます"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "なに？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "次に来た時も、感想を聞いてほしいです"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ヌールさんはカップを一つずつお盆へ移し、最後に俺のほうを見た。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "お盆を持つ腕を入れ替える間だけ、彼女の視線が外れた。"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "それなら、次もちゃんと見る。長いほうの半分でね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "長いほうの半分、聞かなかったことにします"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "それは困る。次に来た時、ちゃんと覚えていて"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "お盆の上でカップがもう一度鳴る。彼女は仕事に戻る前に、俺の席の向きを直した。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_noor_story_quiet_counter",
+      "comment": "#3081 ヌールの物語系。カフェ・オアシスで段階会話の後に一度。静かなカウンター。大会の前後・第5章でも同じ会話。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "店の話し声が引いたころ、ヌールさんはカウンター越しに小さく手を振った。"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "今日は静か。私が黙ってると、もっと静かだね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "試してみますか"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "私にできると思う？"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "彼女は口を閉じ、指で五つ数えた。三つ目で笑ってしまう。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "三秒でした"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "五秒のつもりだったのに。ハジメが見てるから"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "見てなくても、途中で話したと思います"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "うん。……でも、黙ってても嫌じゃなかった"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "もう一度、カウンター越しに並んで煙を見た。次は指を折らなかった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "何秒ですか"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "数えなかった。もったいない気がして"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "静かなのが？"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "ハジメと一緒の、今の時間が"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "数えない沈黙は思ったより長かった。店の音が、二人の間に入ってこない。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "彼女は照れたようにカップを持ち上げ、俺も遅れて水を飲んだ。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "静かでも、ヌールさんがいるのは分かりました"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "私も。話しかけたくなったけど、今は少し我慢した"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "次の客の声がして、彼女は立ち上がる。別れ際、指を三本立ててさっきの秒数を笑った。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_noor_story_empty_chair",
+      "comment": "#3081 ヌールの物語系。カフェ・オアシスで段階会話の後に一度。空いた椅子。大会の前後・第5章でも同じ会話。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "いつもの席の向かいに、空いた椅子が一脚あった。"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "今日もそこ？ まだ動かしてないよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "指定席みたいですね"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "指定なんてしてない。座りたい人がいたら、譲るよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "じゃあ、俺が先に来た日は"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "ハジメが座る。簡単でしょ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ヌールさんは椅子の背を拭き、置く向きを少し変えた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "何か違いますか"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "話す時、こっちの顔が見えやすい"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……それは、俺のためですか"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "私のためでもあるよ。話してる相手の顔を見たいから"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "煙が上がる。椅子の向きは、ほんの少ししか変わっていない。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "こんなに近くても、見え方が変わるんですね"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "うん。ハジメが来た日は、ちゃんと分かる"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "椅子の位置はほとんど同じなのに、彼女がこちらを向いたのが分かった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "彼女は笑い、空いた席をもう一度確かめてから仕事に戻った。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "明日は俺が先に来て、向きを決めてもいいですか"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "いいよ。でも私の顔が見えない向きなら、すぐ直しちゃうかも"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "椅子の背に残った彼女の手の跡を見て、俺は明日も同じ席を選ぶ気がした。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_noor_story_board_angle",
+      "comment": "#3081 ヌールの物語系。カフェ・オアシスで段階会話の後に一度。板の置き方。大会の前後・第5章でも同じ会話。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ツアーデスクの板が、店の壁に立てかけてあった。ヌールさんが先端を押さえる。"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "乗る前に、これだけ見て。足はここ、肩は力を抜く"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "まだ店の中ですよ"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "だからいいの。砂の上だと、説明より先に走りたくなるでしょ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "俺は、たぶん立つので精いっぱいです"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "だったら、今日は立ち方だけ覚えて帰って"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "彼女は板の角度を変え、俺の足元を指した。"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "怖くなったら、私を見る。板を見つめると余計に固まるから"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ヌールさんを見てたら、別の意味で固まりそうです"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "え？ ……ああ、またそういう顔"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "軽く笑ったあと、彼女は板から手を離さなかった。"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "転ぶ時は、ちゃんと声をかけて。私、近くにいるよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "それなら、少し安心です"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "彼女の指が板の端を押さえるたび、写真の中の砂丘が少し近く感じる。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "板は倒れず、俺の足もその場から動かなかった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "転んだところまで見られるのは、ちょっと恥ずかしいです"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "私も最初は転んだよ。砂の上なら、笑うより先に手を出せる"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "店の床に置かれた板にはまだ砂がついていない。それでも手を伸ばす先が少し見えた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_noor_story_pencil_line",
+      "comment": "#3081 ヌールの物語系。カフェ・オアシスで段階会話の後に一度。鉛筆の線。大会の前後・第5章でも同じ会話。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "地図に新しい線を引くヌールさんの鉛筆が、途中で止まった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "今日は、こっちじゃないんですか"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "よく見てる。朝はそう思ったけど、風が違う"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "俺には、写真の砂は全部同じに見えます"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "私だって、分からない日がある。そういう日は、無理に速く走らない"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "彼女は一本目の線を消さず、少し離れたところへ二本目を引く。"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "ハジメを乗せるなら、こっち。景色は少し遠いけど、足元が見える"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "俺のことまで地図に入ってるんですね"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "ガイドだからね。それだけ、って言いたいけど"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "違うんですか"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "……ハジメが笑って帰る線を選びたい。それは、仕事だけじゃないかも"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "二本の線のあいだに、鉛筆の芯の小さな粉が残った。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "じゃあ、俺もちゃんと足元を見ます"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "芯の粉を払うと、二本目の線のほうがゆっくり曲がっていた。"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "うん。そこから一緒に決めよう"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "同じ地図でも、俺がいると線が変わるんですね"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "うん。でも無理に変えないよ。ハジメが帰りたいと言ったら、その線も描く"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "鉛筆の先が紙から離れた。彼女は俺の返事を待ち、地図を丸めずに置いた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_noor_story_waiting_wind",
+      "comment": "#3081 ヌールの物語系。カフェ・オアシスで段階会話の後に一度。風を待つ。大会の前後・第5章でも同じ会話。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "店の表のデスクから戻ったヌールさんが、髪を押さえながら座った。"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "風が強い。今日は写真の時と、砂の形が違うよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "明日になったら、また変わりますか"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "たぶんね。待てば戻る日もあるし、戻らない日もある"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "待つのは、苦手そうに見えます"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "ばれた？ 走るほうが得意。でも、待たないと見えないこともある"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "彼女は笑い、窓の外ではなく俺の顔を見た。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "例えば？"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "ハジメが話し始める前の、ちょっとした間"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "そんなところまで見られてると、何も言えなくなります"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "それなら待つ。急がせないよ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "俺がカップを置くまで、彼女は本当に待った。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……また、ここへ来ます"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "表の写真が風で小さく揺れた。彼女は一度だけそちらを見て、また俺に戻る。"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "うん。今のは、ちゃんと聞こえた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "言いかけてやめることも、分かってしまいますか"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "全部は分からない。だから、話してくれたらうれしい"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "彼女はデスクへ戻る前に、風でめくれた写真の端を直した。俺の言葉はそのまま残った。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_noor_story_pinky_gap",
+      "comment": "#3081 ヌールの物語系。カフェ・オアシスで段階会話の後に一度。小指の距離。大会の前後・第5章でも同じ会話。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "お盆を受け取る時、ヌールさんの小指が俺の指の近くで止まった。"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "あ、ごめん。ぶつかるところだった"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "大丈夫です。まだ、当たってません"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "仕事中は急ぐから、こういう時にぶつけそうになる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "俺のほうこそ、手元を見てませんでした"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ヌールさんはお盆を置き、指先を自分のほうへ引いた。"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "……ハジメが困った顔をすると、ついからかってしまう。でも今はやめるね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "嫌ではないです。ただ、急に近づくと少し驚くんです"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "そういう時は、言って。私も手を止めるから"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "彼女は少し離れた椅子に座り、返事を待つ。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "じゃあ、今は……もう少し話していたいです"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "うん。それなら、ここにいる"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "お盆の縁に残った熱が冷めるまで、俺たちは互いの指を見なかった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "小指の距離は戻らなかった。けれど、その間の空気はさっきより温かかった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "触れてないのに、さっきより近いですね"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "うん。急に近づかないで、ここで待つことならできる"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "店の音が戻ってくる。彼女が仕事に立つまで、俺たちはその距離を変えなかった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_noor_story_father_seat",
+      "comment": "#3081 ヌールの物語系。カフェ・オアシスで段階会話の後に一度。父の席。大会の前後・第5章でも同じ会話。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "店の奥の席が空いている。ヌールさんはそこを見て、カップを揃えた。"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "父が夜に吸う席。昼は空いてることが多いの"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "毎晩、ここで？"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "うん。私が小さい頃から、同じように一台をゆっくり吸う"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ヌールさんも、ここで話してたんですか"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "よく話した。でも、聞いてもらうほうが多かったかな"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "彼女は奥へは行かず、俺の席に戻ってきた。"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "ハジメと話すと、あの頃みたいに何でも言いそうになる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "言ってもいいですよ"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "そう言われると、急に言葉を選んじゃう。不思議"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "俺も同じです。聞きたいのに、急かしたくない"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ヌールさんは空いた席へ一度うなずき、俺の向かいに座った。"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "今日は、ここで話す。続きを選ぶのは、次でもいい？"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "奥の席では、まだ誰も吸っていない。空いた椅子だけがいつもの形でそこにある。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい。俺も、そのほうがいいです"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "父は、答えを急がせない人だった。私が黙ると、カップをもう一つ置いて待ってた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "それなら俺も、今日はここで待ちます"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "彼女は奥の席を振り返らなかった。代わりに、目の前のカップを両手で包んだ。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_noor_story_return_mark",
+      "comment": "#3081 ヌールの物語系。カフェ・オアシスで段階会話の後に一度。戻る印。大会の前後・第5章でも同じ会話。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "地図の端に小さな丸がついている。ヌールさんが鉛筆でその輪をなぞった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "そこは、砂丘ですか"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "カフェ。出発する線は毎日違っても、戻るところは同じ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "地図に店まで書くんですね"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "戻ってきたら、まず水を飲む。それを忘れないため"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "彼女は丸の横へ、もう一つ小さな点を打ちかけて止めた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "それは？"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "……誰かが待ってる時の印。今日は、まだ書かない"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "じゃあ、俺が来たら？"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "ハジメは、もうここにいるじゃない"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "言い終えてから、ヌールさんは自分の言葉に少し驚いた顔をした。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "俺も、戻る場所を覚えておきます"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "うん。迷ったら、写真の車と、この店を探して"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "鉛筆の先が丸をもう一度なぞる。紙の上では、戻る場所が少し濃くなった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "地図の丸は小さいまま、消されずに残った。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "戻る場所が分かっていれば、遠くまで行けそうです"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "そうだね。私も、帰ってくる人がいると思うと安心する"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "彼女は打ちかけた点を描かなかった。鉛筆を置く音だけが、二人の間に残った。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_noor_story_table_edge",
+      "comment": "#3081 ヌールの物語系。カフェ・オアシスで段階会話の後に一度。テーブルの端。大会の前後・第5章でも同じ会話。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "二人で座ったテーブルの端に、ヌールさんがカップを並べた。"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "カップを離すと、話してる声が少し遠くなる気がするね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "カップの距離で声は変わりませんよ"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "分かってる。ハジメは、そういうところをすぐ直す"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "彼女はカップを少し近づけ、今度は手を引っ込めた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "近づけても、いいですよ。話しやすいので"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "カップのこと？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "席のことです。ここなら声が届くから"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ヌールさんは笑いかけたが、すぐに真顔へ戻った。"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "ハジメがそう言うなら、私もうれしい。でも座る場所は毎回決めていいよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "俺も、話したいことをその日ごとに決めます"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "うん。私もそうする"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "カップの影が重なりかけて、すぐに離れた。彼女はそれを見て小さく笑う。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "煙の向こうで、二つのカップが同じくらいの距離に落ち着いた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "明日もこの席に座れたら、今日の続きが話せますね"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "座れなくても話せるよ。立ったままでも、店の入口でも"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "彼女はカップを持ち上げた。残った丸い跡を見て、俺も自分のカップを同じ位置へ戻した。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_noor_story_unsaid_question",
+      "comment": "#3081 ヌールの物語系。カフェ・オアシスで段階会話の後に一度。聞かなかったこと。大会の前後・第5章でも同じ会話。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ヌールさんが口を開きかけ、カウンターへ目を戻した。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "今、何か聞こうとしました？"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "聞いても答えに困るかな、と思って"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "聞く前から、決めないでください"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "……そうだね。ハジメは、この店に来る時、何を楽しみにしてる？"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一台の煙がまだ残っている。答えを急ぐほど簡単な質問ではなかった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "最初は煙と、砂丘の話でした"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "今は？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ヌールさんが、今日は何を話すのか"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "彼女は視線を戻し、握っていた布をゆるめた。"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "……私も、ハジメが何を話すか待ってる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "それなら、聞いてよかったです"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "うん。聞かなかったままだったら、きっと少し損してた"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "彼女が布をたたむ間、俺は答えた言葉がどう届いたのかを考えていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "彼女はその言葉のあとも席を立たず、俺の返事をもう一度待った。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "俺も、聞く前にやめたことがあります"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "今は聞いてもいい？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい。次に来た時、ここにいてくれますか"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "うん。仕事で外へ出る日なら、戻ってから声をかける"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "大げさな約束ではない。その返事だけで、次の来店が少し近く感じた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_noor_story_doorway",
+      "comment": "#3081 ヌールの物語系。カフェ・オアシスで段階会話の後に一度。扉の前。大会の前後・第5章でも同じ会話。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "カフェ・オアシスの扉の前で、ヌールさんが俺の足を止めた。"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "忘れ物、ない？ カップも地図も、今日はもう片づけたよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "持ってきた物は、全部あります"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "そう。……じゃあ、私のほうの忘れ物"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "何か預かりましたっけ"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "次に来た時の話。何を話すか、決めてなかった"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "店の中から、片づける小さな音が聞こえる。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "決めなくていいです。会ってからで"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "ハジメらしい答え。でも、私は先に考えてしまう"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "じゃあ、一つだけ。俺が来たら、声をかけてください"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "それは毎回してるよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……これからも、という意味です"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ヌールさんは扉を押さえたまま、まっすぐ俺を見た。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "扉の向こうの熱が足元に届く。それでも、どちらも先に歩き出さなかった。"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "うん。何回でも、最初にハジメを呼ぶ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "俺も、先に見つけたら呼びます"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "約束ね。どちらが先でも、聞こえる声で"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "扉を開けると、彼女の声が背中に届いた。振り返る前に、俺も彼女の名前を呼んだ。"
+        }
+      ]
+    }
+  ]
+}

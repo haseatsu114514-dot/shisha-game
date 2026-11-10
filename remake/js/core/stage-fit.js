@@ -9,13 +9,11 @@ const PHONE_DENSITY_K = 0.62;
 export function fitStage(stage, region = null) {
   if (!stage) return 1;
   const viewport = window.visualViewport;
-  // Browser zoom shrinks visualViewport in CSS pixels. Normalize that zoom out
-  // of the game fit so it does not also change --k (or cancel accessible zoom).
-  // Keep following the visible height when browser chrome / the keyboard moves.
-  const zoom = viewport?.scale || 1;
+  // URL バーなどを除いた実表示領域を使う。scale を掛け戻すと、ブラウザ側の
+  // 拡大やツールバーの変化を打ち消し、実際に見えている範囲からはみ出す。
   let w, h;
-  if (region) { w = region.clientWidth * zoom; h = region.clientHeight * zoom; }
-  else if (viewport) { w = viewport.width * zoom; h = viewport.height * zoom; }
+  if (region) { w = region.clientWidth; h = region.clientHeight; }
+  else if (viewport?.width > 0 && viewport?.height > 0) { w = viewport.width; h = viewport.height; }
   else { w = window.innerWidth; h = window.innerHeight; }
   const k = Math.min(w / 1280, h / 720);
   stage.style.setProperty("--k", String(k));
@@ -37,6 +35,9 @@ export function initStageFit(stage, region = null) {
   window.addEventListener("resize", fit);
   window.addEventListener("orientationchange", () => setTimeout(fit, 200));
   window.visualViewport?.addEventListener("resize", fit);
+  window.visualViewport?.addEventListener("scroll", fit);
+  // iOS のブラウザ chrome は起動直後、イベントより遅れて表示領域が確定することがある。
+  for (const delay of [100, 500, 1000]) setTimeout(fit, delay);
   return fit;
 }
 

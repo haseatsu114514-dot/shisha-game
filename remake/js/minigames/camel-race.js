@@ -7,11 +7,14 @@
 // ラクダ・ロボット騎手・SUV・車輪は Codex の絵（assets/ui/camel_race・2026-11-02 採用。原画は asset_sources/ch4-camel-race）。
 // 絵が読めない環境では Canvas の描画に戻す。砂漠・柵・砂煙・合図の輪・HUD は Canvas で描く。
 import { el } from "../core/util.js";
-import { SE, currentBgm, playBgm } from "../core/audio.js";
+import { SE, currentBgm, playBgm, preloadBgm, unlockAudio, playCamelRaceSe, preloadCamelRaceSe, setBgmPlaybackRate, resetBgmTempo, tickBgmPlaybackRate } from "../core/audio.js";
 import { imgFileUrl } from "../core/img-file.js";
 import { faceIconUrl } from "../core/data.js";
 import { RACE, CUE, PLAYER, WHIP, CAMEL_CUPS, camelCup, camelCupQualified, camelMastered, camelExpert, rng, createRace, stepRace, pressVoice, setWhip, whipReady, activeCue, inSpurt, standings, scoreRace,
   POLICIES, PLAYER_CAMEL, RIVAL_PROFILES } from "./camel-race-model.js";
+import { CAMEL_RACE_BGM, camelRaceBgmRate } from "./camel-race-bgm.js";
+
+import { camelStaminaReadout, SPURT_RESERVE } from "./camel-race-feedback.js";
 
 export const CAMEL_RACE_TITLE = "CAMEL RACE";
 const CUP_TIME_NOTE = "この訪問中の再挑戦は日付を進めません。完走して戻ると従来どおり昼の1行動を使います。";
@@ -34,7 +37,7 @@ const BLANKET = Object.freeze({ corners: [[126, 136], [298, 64], [314, 222], [14
 const SKIN_SCALE = 0.5;           // 幕を塗ったラクダの絵を半分の大きさで作り置く（描く大きさは 0.23〜0.32 倍）
 // SUV の車体絵（v6・#3044）にはじめと運転手は焼き込み済み。コードで重ねるのは
 // リモコンの状態ランプと吹き出しだけ。位置は絵の画素: アンテナ先端と、吹き出しの付け根（頭の上）。
-const HAJIME_AT = Object.freeze({ antenna: [308, 90], balloon: [250, 72] });
+const HAJIME_AT = Object.freeze({ antenna: [308, 90], balloon: [200, 96] });
 // 声かけの輪は自分のラクダの背のロボット騎手（声はその小さなスピーカーへ届く）を囲む。
 // 奥の列のラクダと重なっても、どのラクダの輪か迷わない位置（列の y からの差）。
 const CUE_AT = Object.freeze({ dx: -22, dy: -64 });
@@ -49,7 +52,7 @@ const CALLS = Object.freeze({
   passed: name => `${name}が来た！ 声、声！`,
   leader: name => `${name}が前に出た。まだ焦るなよ`,
   half: "半分！ スパートの分の息は残しとけよ",
-  spurt: "ここからだ！ ムチ、押しっぱなし！",
+  spurt: "ここからだ！ 残した息でムチを使え！",
   last100: "あと100！ いけいけいけ！",
   tired: "ハビーバがバテてる……ムチを離して声で整えろ",
   combo: "その声だ、ハビーバが乗ってきた！",
@@ -63,10 +66,12 @@ const ICONS = Object.freeze({
 const TUTORIAL = [
   // 3ページとも短く（#2836）。キーは kbd で添え、タッチ端末では CSS で隠す。結果・大会選びの「？」から読み直せる。
   { icon: "camel", art: "howto-camel", title: "ラクダは、自分で走る", body: "手前を走る金のゼッケン（★）がハビーバ。操縦はしない。背中のロボット騎手へ「声」と「ムチ」を送るだけ。" },
-  { icon: "voice", art: "howto-voice", title: "声をかける ── 左のボタン", key: "Space", body: "騎手のまわりの金の輪が縮む。内側の輪と重なった瞬間に押すと PERFECT で、ぐっと伸びる。外したり連打したりすると、スタミナが減る。" },
-  { icon: "signal", art: "howto-whip", title: "ムチ ── 右のボタンを押し続ける", key: "X", body: "押している間だけラクダが伸び、スタミナが減る。空になるとしばらく使えない。残り250mの LAST SPURT でいちばん効く。" },
+  { icon: "voice", art: "howto-voice", title: "声をかける ── 左のボタン", key: "Space", body: "騎手のまわりの金の輪が縮む。内側の輪と重なった瞬間に押すと PERFECT で、ぐっと伸びる。輪の縮む速さは毎回ちがうので、よく見て押す。外したり連打したりすると、スタミナが減る。" },
+  { icon: "signal", art: "howto-whip", title: "ムチ ── 右のボタンを押し続ける", key: "X", body: "押している間は加速して息が減り、離すと調子に応じて回復。40以下で注意、30未満は減速。空になる前に離し、輪に合わせた声で整える。ゲージの白い印は終盤3秒ぶんの目安。最後の4分の1の LAST SPURT はムチがよく効く。" },
 ];
-const sfx = name => { try { SE[name]?.(); } catch { /* 音は無くても遊べる */ } };
+// レース中の SE ID は従来どおり（sfx("hoof") など）。録音はラクダ専用で、他ミニゲームの合成SEは置き換えない。
+const sfx = name => { try { if (name === "select" || name === "click" || name === "cancel") SE[name]?.(); else playCamelRaceSe(name); } catch { /* 音は無くても遊べる */ } };
+const armCamelAudio = () => { unlockAudio(); preloadCamelRaceSe(); };
 
 // ---- 絵（Codex・2026-11-02 採用）。寸法は絵の画素で、asset_sources/ch4-camel-race/README.md で測った値。
 // ラクダは4コマ（512×384・右向き）。背の線は4コマとも1px以内で、ground の線に足元をそろえる。
@@ -211,6 +216,7 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
   if (!host?.isConnected) return Promise.reject(new Error("Connected game host required"));
   if (active.has(host)) return active.get(host);
   const bgmBefore = currentBgm();
+  void preloadBgm(CAMEL_RACE_BGM);
   const runs = [];
   const unlocked = new Set(cups || ["practice", "rookie"]);
   let selectedCup = "practice";
@@ -254,7 +260,7 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
   const staminaValue = el("b", { text: "100" });
   const staminaFill = el("i");
   const staminaNode = el("span.camel-stamina", { "aria-hidden": "true", dataset: { state: "ok" } }, [
-    el("span.camel-stamina-bar", [staminaFill, el("span.camel-stamina-mark", { style: { "--x": PLAYER.tired / 100 } })]), staminaValue]);
+    el("span.camel-stamina-bar", [staminaFill, el("span.camel-stamina-mark", { style: { "--x": PLAYER.tired / 100 } }), el("span.camel-stamina-reserve", { title: "終盤3秒ぶんの目安", style: { left: `${SPURT_RESERVE}%` } })]), staminaValue]);
   const hudNode = el("div.camel-hud", { hidden: true }, [progressNode, clockNode, standingsNode]);
   const signalCost = el("small.camel-signal-note", { text: "押している間" });
   // スマホ横持ちでは名前の文字を隠してアイコン（🔊・⚡）とゲージだけにするので、読み上げ名は aria-label に持たせる（#2836）。
@@ -275,11 +281,18 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
   const callIcon = el("img.camel-call-icon", { src: faceIconUrl("faris") || FARIS_ICON, alt: "", onerror: event => { event.currentTarget.hidden = true; } });
   const callNode = el("div.camel-call", { "aria-hidden": "true", dataset: { test: "camel-call" } }, [callIcon, el("span.camel-call-body", [el("b", { text: "ファーリス" }), callText])]);
   const flashNode = el("div.camel-flash", { "aria-hidden": "true" });
-  const stageNode = el("div.camel-stage", [canvas, flashNode, hudNode, callNode, feedback, banner, countdownNode, controls, closeButton]);
+  const pacingText = el("span"), reserveText = el("small");
+  const pacingNode = el("div.camel-pacing", { hidden: true, dataset: { test: "camel-pacing" } }, [pacingText, reserveText]);
+  const boostLabel = el("div.camel-boost-label", { hidden: true, text: "≫ WIND BOOST", dataset: { test: "camel-boost-label" }, "aria-hidden": "true" });
+  const stageNode = el("div.camel-stage", [canvas, flashNode, hudNode, callNode, feedback, banner, countdownNode, boostLabel, controls, pacingNode, closeButton]);
   const sheet = el("div.camel-sheet", { hidden: true });
   const root = el("section.camel-game", { role: "dialog", "aria-modal": "true", "aria-label": CAMEL_RACE_TITLE, tabindex: "-1",
     dataset: { test: "camel-game", phase: "loading", reducedMotion: String(reducedMotion) } }, [stageNode, live, sheet]);
   host.append(root);
+  // 音の解禁はユーザー操作が起点（自動再生制限）。本編は main.js が全体で受けているが、
+  // 試遊ページ等の単独表示でも BGM・SE が鳴るよう、レース画面自身の操作でも解禁する（#3065）。
+  root.addEventListener("pointerdown", armCamelAudio);
+  root.addEventListener("keydown", armCamelAudio);
   // 部品ごとに読込成否を判定し、欠けた画像だけ CSS 表示へ戻す。
   for (const [cls, rel] of [
     ["cr-card", "ui/camel_race/ui/program-card.webp"],
@@ -312,6 +325,7 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     if (phase === "tutorial" || phase === "loading") draw();
   });
   let race = null, phase = "loading", raf = 0, last = null, goalAt = 0, feedbackTimer = 0, bannerTimer = 0, countdownLeft = 0, countdownShown = -1;
+  let lastStaminaNotice = -99;
   let standingsStamp = 0, whip = 0, done = false, spurtShown = false, settleTimer = 0;
   // 演出: 画面の揺れ・ゴールのスロー・GO の柵・連続成功・ファーリスの声・抜いた／抜かれた。
   let shake = 0, slow = 0, goTime = -1, combo = 0, callTimer = 0, lastCallAt = -9, spurtTint = 0;
@@ -340,10 +354,14 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     phase = next; root.dataset.phase = next;
     controls.hidden = next !== "race" && next !== "countdown";
     hudNode.hidden = !["countdown", "race", "goal"].includes(next);
+    pacingNode.hidden = !["countdown", "race"].includes(next);
+    if (next !== "race") boostLabel.hidden = true;
   };
   const announce = text => { live.textContent = text; };
   const showFeedback = (text, kind, sub = "") => {
-    feedback.replaceChildren(el("b", { text }), sub ? el("small", { text: sub }) : null);
+    const detail = typeof sub === "string" ? sub.trim() : "";
+    const subNodes = detail && detail !== "null" && detail !== "undefined" ? [el("small", { text: sub })] : [];
+    feedback.replaceChildren(el("b", { text }), ...subNodes);
     feedback.dataset.kind = kind; feedback.classList.remove("show");
     void feedback.offsetWidth; feedback.classList.add("show"); feedbackTimer = 0.75;
   };
@@ -392,7 +410,7 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     signalButton.classList.toggle("held", !!on);
     if (!result) return;
     if (result.type === "release") return;
-    if (result.type === "spent") { flashButton(signalButton, "miss"); showFeedback("息が切れてる", "miss", "離して声で整える"); hajime("くっ……", "surprise"); return; }
+    if (result.type === "spent") { flashButton(signalButton, "miss"); sfx("miss"); showFeedback("息が切れてる", "miss", "離して声で整える"); hajime("くっ……", "surprise"); return; }
     flashButton(signalButton, "boost");
     sfx("whoosh");
     hajime(result.type === "spurt" ? "ラストだ、いけーっ！" : "いけっ！", "excited");
@@ -402,7 +420,7 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
       const lane = laneOf("player");
       for (let i = 0; i < 14; i++) dust.push({ x: playerX() - 40 + Math.random() * 30, y: lane.y + 24, r: 10 + Math.random() * 14, a: 0.55, vx: -(120 + Math.random() * 160), vy: -(30 + Math.random() * 60), s: lane.scale });
     }
-    if (result.type === "spurt") showFeedback("スパート！", "spurt", "押し続けろ");
+    if (result.type === "spurt") showFeedback("スパート！", "spurt", "残した息を使おう");
   };
   const flashButton = (button, kind) => {
     button.dataset.hit = kind; button.classList.remove("hit"); void button.offsetWidth; button.classList.add("hit");
@@ -434,7 +452,7 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
   // （以前は止めるだけで、レースの中のキー処理まで届いていなかった）。カードのボタンの Space は既定の動作のまま。
   const ours = event => (event.code === "Space" || event.key === " " || isWhipKey(event))
     && (root.contains(document.activeElement) || phase === "race" || phase === "countdown");
-  const windowKey = event => { if (!ours(event)) return; onKey(event); event.stopImmediatePropagation(); };
+  const windowKey = event => { if (!ours(event)) return; armCamelAudio(); onKey(event); event.stopImmediatePropagation(); };
   const windowKeyUp = event => {
     if (!isWhipKey(event)) return;
     onWhip(false);
@@ -455,13 +473,14 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     signal?.removeEventListener("abort", abort);
     root.remove();
     active.delete(host);
-    if (currentBgm() === "bgm_ethnic12") playBgm(bgmBefore);
+    resetBgmTempo();
+    if (currentBgm() === CAMEL_RACE_BGM) playBgm(bgmBefore);
     try { previousFocus?.focus?.(); } catch { /* 元の要素が無い */ }
     finish(summary(completed));
   };
   const abort = () => cleanup(runs.length > 0);
   signal?.addEventListener("abort", abort, { once: true });
-  closeButton.addEventListener("click", () => cleanup(runs.length > 0));
+  closeButton.addEventListener("click", () => { sfx("cancel"); cleanup(runs.length > 0); });
 
   // ---- 進行 -----------------------------------------------------------------------------------------
   /** 遊び方。back があれば「？」から開いた読み直しで、最後のページと「閉じる」で元のカードへ戻る（レースは始めない）。 */
@@ -470,9 +489,9 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     const step = TUTORIAL[page];
     const lastPage = page === TUTORIAL.length - 1;
     const next = el("button.btn.primary", { type: "button", text: lastPage ? back ? "閉じる" : "スタート" : "次へ", dataset: { test: "camel-tutorial-next" },
-      onclick: () => lastPage ? back ? back() : startRace() : openTutorial(page + 1, back) });
-    const skip = back ? el("button.btn.ghost", { type: "button", text: "閉じる", dataset: { test: "camel-tutorial-close" }, onclick: () => back() })
-      : el("button.btn.ghost", { type: "button", text: "とばしてスタート", dataset: { test: "camel-tutorial-skip" }, onclick: () => startRace() });
+      onclick: () => { sfx(lastPage && !back ? "select" : "click"); lastPage ? back ? back() : startRace() : openTutorial(page + 1, back); } });
+    const skip = back ? el("button.btn.ghost", { type: "button", text: "閉じる", dataset: { test: "camel-tutorial-close" }, onclick: () => { sfx("cancel"); back(); } })
+      : el("button.btn.ghost", { type: "button", text: "とばしてスタート", dataset: { test: "camel-tutorial-skip" }, onclick: () => { sfx("select"); startRace(); } });
     sheet.replaceChildren(el("div.camel-card.camel-tutorial", { dataset: { test: "camel-tutorial", page: String(page) } }, [
       // 遊び方の絵（CR-UI11・#3046）。読めなければアイコンに戻す。
       el("div.camel-tutorial-visual", [
@@ -492,7 +511,7 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
   }
   /** カードの右上の「？」: 遊び方を読み直し、閉じると back で元のカードへ戻る。 */
   const helpButton = back => el("button.camel-help", { type: "button", text: "？", "aria-label": "遊び方を見る", dataset: { test: "camel-help" },
-    onclick: () => openTutorial(0, back) });
+    onclick: () => { sfx("click"); openTutorial(0, back); } });
   function openCups() {
     setPhase("cups");
     hudNode.hidden = true;
@@ -505,7 +524,7 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
         const enabled = unlocked.has(cup.id);
         const mastered = cupRecords[cup.id]?.mastered || runs.some(run => cup.id === "standard" ? camelMastered(run) : cup.id === "expert" && camelExpert(run));
         return el("button.camel-cup", { type: "button", disabled: !enabled,
-          dataset: { test: "camel-cup", cup: cup.id }, onclick: () => { selectedCup = cup.id; startRace(); } }, [
+          dataset: { test: "camel-cup", cup: cup.id }, onclick: () => { sfx("select"); selectedCup = cup.id; startRace(); } }, [
           el("small", { text: index ? `CUP 0${index}` : "PRACTICE" }),
           el("strong", { text: cup.name }), el("span", { text: `${cup.length.toLocaleString("ja-JP")}m ・ 4頭` }),
           el("span", { text: enabled ? cup.note : cup.id === "standard" ? "入門大会3位以内で解放" : "標準大会の中級認定で解放" }),
@@ -519,11 +538,15 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     sheet.querySelector(".camel-cup:not(:disabled)")?.focus();
   }
   function startRace() {
-    playBgm("bgm_ethnic12");
+    armCamelAudio();
+    playBgm(CAMEL_RACE_BGM);
+    resetBgmTempo();
+    preloadCamelRaceSe();
     sheet.hidden = true; sheet.replaceChildren();
     race = createRace({ seed: rivalSeed(), cup: selectedCup });
     clockNode.querySelector(".camel-clock-sub").textContent = `${camelCup(selectedCup).name} ${race.length.toLocaleString("ja-JP")}m・4頭`;
     dust.length = 0; confetti.length = 0; sparks.length = 0; waves.length = 0; floaters.length = 0;
+    lastStaminaNotice = -99;
     whip = 0; spurtShown = false; goalAt = 0; settleTimer = 0;
     shake = 0; slow = 0; goTime = -1; combo = 0; spurtTint = 0; lastCallAt = -9; lastPosition = 0; leaderId = null; marks = new Set();
     camShift = 0; lastStride = -1; hajimeTextTimer = 0;
@@ -602,15 +625,21 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
       goalAt += dt * rate;
       if (goalAt > 2.3) openResult();
     }
+    if (phase === "race" && race && !race.finished) {
+      setBgmPlaybackRate(camelRaceBgmRate(race.player.speed));
+      tickBgmPlaybackRate(dt);
+    } else {
+      resetBgmTempo();
+    }
     animate(dt);
     draw();
   }
   function consumeEvents() {
     for (const event of race.events) {
-      if (event.kind === "voice" && event.type === "lost") { combo = 0; showFeedback("見送った……", "lost"); }
+      if (event.kind === "voice" && event.type === "lost") { combo = 0; sfx("miss"); showFeedback("見送った……", "lost"); }
       else if (event.kind === "spurt" && !spurtShown) {
         spurtShown = true; showBanner("LAST SPURT", "spurt"); announce("ラストスパート。ムチを押し続けるなら今。");
-        say(CALLS.spurt, true); sfx("slotBonus");
+        say(CALLS.spurt, true); sfx("slotBonus"); if (Math.random() < 0.3) playCamelRaceSe("grunt");
         if (!reducedMotion) { spurtTint = 1; shake = Math.max(shake, 0.25); }
       }
       else if (event.kind === "stamina" && event.type === "exhausted") { showBanner("息が切れた", "tired", 1.2); say(CALLS.tired, true); }
@@ -760,6 +789,7 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
       }
       drawDust(1);
       drawSpeedLines(1);
+      drawWhipWind();
       drawLight();
       drawCue();
       drawEffects();
@@ -922,7 +952,7 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     // 騎手: 鞍の底を背に合わせ、ムチの間は腕を回して前後に揺らす（自分のラクダ）。
     const jk = k * JOCKEY_ART.scale;
     const sx = dx + CAMEL_ART.seatX * k, sy = dy + CAMEL_ART.seatY * k;
-    const swing = me ? (race?.player.whipping ? Math.sin(t * 22) * 0.3 : Math.sin(whip * Math.PI * 3) * whip * 0.28) : Math.sin(t * 6 + x) * 0.04;
+    const swing = me ? (race?.player.whipping ? Math.sin(t * 22) * 0.3 : Math.sin(whip * Math.PI * 3) * whip * 0.28) : (camel.whipping ? Math.sin(t * 22) * 0.3 : Math.sin(t * 6 + x) * 0.04);
     ctx.translate(sx, sy); ctx.rotate(-swing);
     ctx.drawImage(art.jockey, -JOCKEY_ART.cx * jk, -JOCKEY_ART.bottom * jk, art.jockey.width * jk, art.jockey.height * jk);
     ctx.restore();
@@ -1009,8 +1039,8 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     ctx.fillStyle = "#c9d2da"; ctx.beginPath(); ctx.arc(-21, -42, 5, Math.PI, 0); ctx.fill(); // 丸い頭
     ctx.strokeStyle = "#34404a"; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(-17, -42); ctx.lineTo(-15, -58); ctx.stroke();
     ctx.fillStyle = Math.sin(t * 8 + x) > 0 ? "#ff5a5a" : "#5a1a1a"; ctx.beginPath(); ctx.arc(-15, -59, 2.4, 0, Math.PI * 2); ctx.fill();
-    // 腕（ムチで振る）。自分のラクダだけ whip が動く。
-    const swing = camel.id === "player" ? (race?.player.whipping ? Math.sin(t * 22) : Math.sin(whip * Math.PI * 3) * whip) : Math.sin(t * 3 + x) * 0.1;
+    // 腕（ムチで振る）。ムチを振っている間は、ライバルの騎手も大きく回す。
+    const swing = camel.id === "player" ? (race?.player.whipping ? Math.sin(t * 22) : Math.sin(whip * Math.PI * 3) * whip) : (camel.whipping ? Math.sin(t * 22) : Math.sin(t * 3 + x) * 0.1);
     ctx.save(); ctx.translate(-30, -32); ctx.rotate(-0.6 - swing * 1.4);
     ctx.strokeStyle = "#34404a"; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(-18, 0); ctx.stroke();
     ctx.strokeStyle = "#f0c060"; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(-18, 0); ctx.lineTo(-30, 2); ctx.stroke();
@@ -1063,11 +1093,13 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
       ctx.translate(dx + HAJIME_AT.balloon[0] * k, dy + HAJIME_AT.balloon[1] * k); ctx.scale(textScale, textScale);
       ctx.font = "900 17px sans-serif"; ctx.textAlign = "center"; ctx.textBaseline = "middle";
       const balloonImage = art?.balloon;
+      // 箱は尻尾（左下）基準で置く: 原点＝はじめの頭の真上。尻尾の先が原点に来て、箱は右上へ伸びる。
+      // （中央基準だと長い掛け声ほど尻尾が車の後ろへ流れてしまう。）
       if (balloonImage) {
-        const bw = Math.max(ctx.measureText(hajimeText).width + 34, 104), bh = 42, by = -bh - 10;
+        const bw = Math.max(ctx.measureText(hajimeText).width + 34, 104), bh = 42;
         // 九分割: 原画 384×192・帯48px。尻尾は左下の角の中にある。
         const S = 48, iw = balloonImage.width, ih = balloonImage.height, cs = 21;
-        const x0 = -bw / 2, y0 = by, x1 = x0 + cs, x2 = x0 + bw - cs, y1 = y0 + cs, y2 = y0 + bh - cs;
+        const x0 = -14, y0 = -bh - 6, x1 = x0 + cs, x2 = x0 + bw - cs, y1 = y0 + cs, y2 = y0 + bh - cs;
         ctx.drawImage(balloonImage, 0, 0, S, S, x0, y0, cs, cs);
         ctx.drawImage(balloonImage, iw - S, 0, S, S, x2, y0, cs, cs);
         ctx.drawImage(balloonImage, 0, ih - S, S, S, x0, y2, cs, cs);
@@ -1077,14 +1109,14 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
         ctx.drawImage(balloonImage, 0, S, S, ih - 2 * S, x0, y1, cs, bh - 2 * cs);
         ctx.drawImage(balloonImage, iw - S, S, S, ih - 2 * S, x2, y1, cs, bh - 2 * cs);
         ctx.drawImage(balloonImage, S, S, iw - 2 * S, ih - 2 * S, x1, y1, bw - 2 * cs, bh - 2 * cs);
-        ctx.fillStyle = "#2a1a0e"; ctx.fillText(hajimeText, 0, by + bh / 2);
+        ctx.fillStyle = "#2a1a0e"; ctx.fillText(hajimeText, x0 + bw / 2, y0 + bh / 2);
       } else {
-        const bw = ctx.measureText(hajimeText).width + 24, bh = 30, by = -bh - 10;
+        const bw = ctx.measureText(hajimeText).width + 24, bh = 30;
+        const x0 = -18, y0 = -bh - 12;
         ctx.fillStyle = "#fffaf0"; ctx.strokeStyle = "#2a1a0e"; ctx.lineWidth = 2.5;
-        ctx.beginPath(); ctx.roundRect(-bw / 2, by, bw, bh, 15); ctx.fill(); ctx.stroke();
-        ctx.beginPath(); ctx.moveTo(-6, by + bh - 1); ctx.lineTo(4, by + bh + 9); ctx.lineTo(8, by + bh - 1); ctx.closePath(); ctx.fill();
-        ctx.beginPath(); ctx.moveTo(-6, by + bh); ctx.lineTo(4, by + bh + 9); ctx.lineTo(8, by + bh); ctx.stroke();
-        ctx.fillStyle = "#2a1a0e"; ctx.fillText(hajimeText, 0, by + bh / 2 + 1);
+        ctx.beginPath(); ctx.roundRect(x0, y0, bw, bh, 15); ctx.fill(); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(x0 + 8, y0 + bh - 1); ctx.lineTo(x0 + 16, y0 + bh + 10); ctx.lineTo(x0 + 24, y0 + bh - 1); ctx.closePath(); ctx.fill(); ctx.stroke();
+        ctx.fillStyle = "#2a1a0e"; ctx.fillText(hajimeText, x0 + bw / 2, y0 + bh / 2 + 1);
       }
       ctx.restore();
     }
@@ -1195,6 +1227,23 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     });
     ctx.restore();
   }
+  /** 自機の上下を走る白青の風。声の輪・名札・ラクダ本体は空ける。 */
+  function drawWhipWind() {
+    if (reducedMotion || phase !== "race" || !race?.player.whipping) return;
+    const x = playerX(), y = laneOf("player").y;
+    ctx.save(); ctx.lineCap = "round";
+    for (let i = 0; i < 12; i++) {
+      const offset = 350 - ((race.t * (420 + i * 21) + i * 91) % 700);
+      const sx = x + offset, sy = y + (i % 2 ? 39 + (i % 3) * 9 : -119 - (i % 3) * 8);
+      const len = (inSpurt(race) ? 130 : 85) + (i % 4) * 19;
+      const gradient = ctx.createLinearGradient(sx, sy, sx + len, sy);
+      gradient.addColorStop(0, "rgba(110,226,255,0)"); gradient.addColorStop(.7, "rgba(173,240,255,.7)"); gradient.addColorStop(1, "rgba(255,255,255,.95)");
+      ctx.strokeStyle = "rgba(21,68,82,.35)"; ctx.lineWidth = 6;
+      ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(sx + len, sy - 3); ctx.stroke();
+      ctx.strokeStyle = gradient; ctx.lineWidth = 3; ctx.stroke();
+    }
+    ctx.restore();
+  }
   /** 火花・波紋・「抜いた」の文字・スパートの色。 */
   function drawEffects() {
     ctx.save();
@@ -1277,7 +1326,17 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     const stamina = Math.round(race.player.stamina);
     setOnce("stamina", stamina, v => { staminaValue.textContent = String(v); staminaFill.style.setProperty("--v", String(v / 100)); });
     const locked = !whipReady(race);
-    setOnce("staminaState", locked ? "spent" : stamina < PLAYER.tired ? "tired" : "ok", state => { staminaNode.dataset.state = state; signalButton.dataset.stamina = state; });
+    const readout = camelStaminaReadout(race);
+    setOnce("staminaState", readout.state, state => {
+      staminaNode.dataset.state = state; signalButton.dataset.stamina = state; pacingNode.dataset.state = state;
+      if (phase === "race" && ["low", "tired", "spent"].includes(state)) {
+        announce(readout.message);
+        if (race.t - lastStaminaNotice >= 6) { sfx("miss"); lastStaminaNotice = race.t; }
+      }
+    });
+    setOnce("pacing", readout.message, text => { pacingText.textContent = text; });
+    setOnce("reserve", readout.reserveText, text => { reserveText.textContent = text; });
+    boostLabel.hidden = phase !== "race" || !readout.accelerating;
     const spurt = inSpurt(race);
     const state = locked ? "spent" : race.player.whipping ? "whipping" : spurt ? "spurt" : "ready";
     setOnce("signal", state, value => { signalButton.dataset.state = value; });
@@ -1319,9 +1378,9 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     }
     if (run.cup === "rookie" && camelCupQualified(run)) unlocked.add("standard");
     if (camelMastered(run)) unlocked.add("expert");
-    const again = el("button.btn.primary", { type: "button", text: "もう一度", dataset: { test: "camel-retry" }, onclick: () => startRace() });
-    const choose = el("button.btn", { type: "button", text: "大会を選ぶ", dataset: { test: "camel-choose-cup" }, onclick: openCups });
-    const leave = el("button.btn", { type: "button", text: "終える", dataset: { test: "camel-finish" }, onclick: () => cleanup(true) });
+    const again = el("button.btn.primary", { type: "button", text: "もう一度", dataset: { test: "camel-retry" }, onclick: () => { sfx("select"); startRace(); } });
+    const choose = el("button.btn", { type: "button", text: "大会を選ぶ", dataset: { test: "camel-choose-cup" }, onclick: () => { sfx("click"); openCups(); } });
+    const leave = el("button.btn", { type: "button", text: "終える", dataset: { test: "camel-finish" }, onclick: () => { sfx("click"); cleanup(true); } });
     const card = el("div.camel-card.camel-result", { dataset: { test: "camel-result", rank: String(score.rank), grade: score.grade, total: String(score.total) } }, [
       el("p.camel-eyebrow", { text: `${camelCup(run.cup).name} / RESULT` }),
       el("div.camel-result-head", [
@@ -1346,7 +1405,9 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
       setPhase("result");
       sheet.replaceChildren(card);
       sheet.hidden = false;
-      (allowRetry ? again : leave).focus();
+      // 低い画面ではカードが内側スクロールになる。素の focus() だとボタンへ勝手にスクロールして
+      // メダルや見出しが上に切れるので、スクロールさせずに頭から見せる。
+      (allowRetry ? again : leave).focus({ preventScroll: true });
     };
     card.append(helpButton(() => { totalNode.textContent = String(score.total); showResult(); }));
     showResult();
@@ -1366,4 +1427,5 @@ function shade(hex, amount) {
 }
 
 export { PLAYER_CAMEL, RIVAL_PROFILES };
+
 

@@ -16,7 +16,7 @@ async function setup(page) {
       Object.assign(s, { phase: 'daily', day: 9, slot: 1, seed: 131, money: 30000, stamina: 100, lastBaitoDay: 9 });
       Object.assign(s.flags, { _morning_9: true, _morning_10: true, _delivery_minto_done: true,
         _delivery_adam_done: true, _errand_scout_done: true, _lime_tut: 1, _hiyori_meeting_done: true,
-        _hiyori_sumi_message_done: true, _hiyori_message_delivered: true, _hiyori_cracks_done: true,
+        _hiyori_sumi_message_done: true, _hiyori_message_delivered: true, _hiyori_cracks_done: true, _hiyori_clockout_done: true,
         _intro_hiyori: true, known_name_hiyori: true });
       s.met.hiyori = s.met.naru = s.met.adam = s.met.minto = true;
       s.contacts = ['hiyori']; s.affinity.hiyori = 33;
