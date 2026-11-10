@@ -91,6 +91,21 @@ html:root[data-ui-theme="paper"] body:not(.game-ds) .vn-controls .vn-ctl:is(:hov
   box-shadow: none; text-decoration: underline 2px var(--lavender); text-underline-offset: 4px;
 }
 html:root[data-ui-theme="paper"] body:not(.game-ds) .vn-controls .vn-ctl.on { color: var(--amber-ink); background: none; box-shadow: none; }
+/* スマホの枠はホームバーを避けて上がる。操作列も同じ下端を参照しないと本文へ残ってしまう。
+   大きいタップ領域は上へ伸ばし、文字と区切り線は下端に寄せて紙の見出し帯に収める。 */
+html:root[data-ui-theme="paper"][data-density="phone"] body:not(.game-ds) #stage {
+  --vn-dialogue-bottom: max(30px, calc((env(safe-area-inset-bottom, 0px) + 8px) / var(--k, 1)));
+}
+html:root[data-ui-theme="paper"][data-density="phone"] body:not(.game-ds) .vn-controls .vn-ctl {
+  display: flex; align-items: flex-end; justify-content: center;
+  background-position: center bottom;
+}
+html:root[data-ui-theme="paper"][data-density="phone"] body:not(.game-ds) #stage .vn-controls .vn-ctl + .vn-ctl::before {
+  top: auto; bottom: 10px; height: 20px;
+}
+html:root[data-ui-theme="paper"][data-density="phone"] body:not(.game-ds) .vn-controls .vn-ctl.on::after {
+  top: auto; bottom: 0; transform: none;
+}
 html:root[data-ui-theme="paper"] .vn-text { color: var(--paper-ink); text-shadow: none; }
 html:root[data-ui-theme="paper"] .vn-box.narration .vn-text { color: #4a3d52; }
 html:root[data-ui-theme="paper"] .vn-box.thought .vn-text { color: #46578a; }
