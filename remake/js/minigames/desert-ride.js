@@ -10,21 +10,8 @@ import { SE, unlockAudio, createDesertRideSe, currentBgm, playBgm } from "../cor
 import { EDGE, SPEED, COURSE_PACKS, generateCourse, practiceCourse, pickCourse, buildCourse, createGame, step, press, boost, chargeBoost, canRecover, summary, curveAt, headingAt, lateralAt, upcomingCurve, botControl,
   rivalRun, rivalAt, RULES_VERSION, jumpHeight } from "./desert-ride-model.js";
 import { DESERT_ART, loadDesertArt, riderPose } from "./desert-ride-art.js";
-import { imgFileUrl } from "../core/img-file.js";
 
-// ブーストのオーラ・爆発・火花（生成画像）。読み込み前は Canvas の光で代用する。
-const BOOST_FX = { aura: null, burst: null, spark: null, started: false };
-function loadBoostFx() {
-  if (BOOST_FX.started || typeof Image === "undefined") return;
-  BOOST_FX.started = true;
-  for (const name of ["aura", "burst", "spark"]) {
-    const image = new Image();
-    image.decoding = "async";
-    image.onload = () => { (image.decode ? image.decode().catch(() => {}) : Promise.resolve()).then(() => { BOOST_FX[name] = image; }); };
-    image.src = imgFileUrl(`ui/desert_ride_hud/boost-${name}.webp`);
-  }
-}
-
+// ブーストは周辺の速度線・視野・短い残像で表し、走路を覆う炎の画像は読み込まない。
 const BOT_STEP = 1 / 60; // 自動操縦の判断と物理の刻み（モデルの検査と同じ）
 
 const W = 1280, H = 720;
@@ -155,7 +142,6 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
   let rideBgm = null;
   const restoreBgm = () => { if (rideBgm && currentBgm() === rideBgm) playBgm(bgmBefore); };
   const art = loadDesertArt();
-  loadBoostFx();
   const promise = new Promise(resolve => {
     const rideSe = createDesertRideSe();
     const results = [];
@@ -293,9 +279,9 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
         rings.push({ age: 0, life: 0.7, power: 1.35, burst: true });
         if (!reducedMotion) { shakeT = Math.max(shakeT, 0.28); flashT = Math.max(flashT, 0.12); view.kick = Math.max(view.kick, 1.2); }
       } else if (kind === "boost") {
-        rideSe.play("boost", 0.6); showPop("BOOST!!", "boost"); burst(24, 1.6);
+        rideSe.play("boost", 0.6); showPop("BOOST!!", "boost"); burst(10, 0.8);
         rings.push({ age: 0, life: 0.62, power: 1.2, burst: true });
-        if (!reducedMotion) { shakeT = 0.3; flashT = 0.08; view.kick = 1.4; }
+        if (!reducedMotion) { shakeT = 0.1; view.kick = 0.7; }
       }
     }
     function startRun(kind, who = raceWith) {
@@ -366,7 +352,7 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
 
     // ---- HUD ---------------------------------------------------------------------------
     let hudNodes = null, shownKmh = SPEED.start * 3.6;
-    const SPEEDO_ARC = 157.08; // 半円（r=50）の長さ
+    const SPEEDO_ARC = Math.PI * 46; // SVG の半円（r=46）と同じ長さ
     const SPEEDO_MAX = SPEED.boost * 3.6; // 表示の上限（ブースト最高速＝約166 km/h）
     function makeSpeedoArc() {
       const ns = "http://www.w3.org/2000/svg";
@@ -651,16 +637,12 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
     function simulateParticles(dt) {
       if (!game) return;
       const running = mode && countdown <= 0;
-      // 滑走中は板の後ろから細かな砂が舞う。速いほど多く、端の深い砂ではさらに多く。ブースト中は太い砂の尾
+      // 滑走中は板の後ろから細かな砂が舞う。速いほど多く、端の深い砂ではさらに多く。ブースト中も砂の尾は控えめ
       if (running && game.air <= 0 && game.fallT <= 0) {
         const k = game.speed / SPEED.max, boosting = game.boostT > 0;
         const feel = view.boost || 0;
-        const rate = (reducedMotion ? 6 : 26) * k * (Math.abs(game.x) > EDGE ? 2.2 : 1) * (1 + 2.4 * feel);
-        for (let i = 0; i < rate * dt * 4; i++) particles.push({ x: (Math.random() - 0.5) * 50 + game.vx * 30, y: 0, vx: (Math.random() - 0.5) * 80 - game.vx * 60, vy: -(20 + Math.random() * (70 + 120 * feel)), r: 4 + Math.random() * (9 + 12 * feel), life: 0.4 + Math.random() * (0.4 + 0.25 * feel), age: 0, trail: feel > 0.4 && Math.random() < 0.35 });
-        if (boosting && !reducedMotion) {
-          const sparks = 16 * dt * 4 * (0.45 + feel);
-          for (let i = 0; i < sparks; i++) particles.push({ spark: true, x: (Math.random() - 0.5) * 70, y: -8 - Math.random() * 46, vx: (Math.random() - 0.5) * 280, vy: -(80 + Math.random() * 220), r: 8 + Math.random() * 16, life: 0.28 + Math.random() * 0.28, age: 0, rot: Math.random() * Math.PI * 2 });
-        }
+        const rate = (reducedMotion ? 6 : 26) * k * (Math.abs(game.x) > EDGE ? 2.2 : 1) * (1 + 0.6 * feel);
+        for (let i = 0; i < rate * dt * 4; i++) particles.push({ x: (Math.random() - 0.5) * 50 + game.vx * 30, y: 0, vx: (Math.random() - 0.5) * 80 - game.vx * 60, vy: -(20 + Math.random() * (70 + 30 * feel)), r: 4 + Math.random() * (9 + 3 * feel), life: 0.4 + Math.random() * (0.4 + 0.08 * feel), age: 0, trail: feel > 0.4 && Math.random() < 0.35 });
         // 曲がると板の外側へ砂しぶき（曲がる向きと反対へ高く飛ぶ）
         const carve = Math.abs(game.vx);
         if (carve > 0.25) {
@@ -668,7 +650,7 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
           for (let i = 0; i < spray * dt * 4; i++) particles.push({ x: side * (20 + Math.random() * 30), y: -6, vx: side * (120 + Math.random() * 260) * Math.min(1.5, carve), vy: -(90 + Math.random() * 200), r: 3 + Math.random() * 8, life: 0.45 + Math.random() * 0.35, age: 0 });
         }
       }
-      for (const p of particles) { p.age += dt; p.x += p.vx * dt; p.y += p.vy * dt; p.vy += (p.chip ? 900 : p.spark ? 140 : 90) * dt; if (!p.chip && !p.spark) p.r += 18 * dt; }
+      for (const p of particles) { p.age += dt; p.x += p.vx * dt; p.y += p.vy * dt; p.vy += (p.chip ? 900 : 90) * dt; if (!p.chip) p.r += 18 * dt; }
       particles = particles.filter(p => p.age < p.life);
       if (particles.length > 360) particles.splice(0, particles.length - 360);
       for (const r of rings) r.age += dt;
@@ -1092,35 +1074,6 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       ctx.fillStyle = `rgba(255,255,255,${0.75})`;
       ctx.fillRect(p.x - p.w * 1.02, p.y - poleH, p.w * 2.04, Math.max(2, poleH * 0.06));
     }
-    /** ブースト中の大袈裟なオーラ。人物の後ろに加算合成で脈打たせる。絵が未読込なら光の円で代用。 */
-    function drawBoostAura(cx, baseY, unit, lean) {
-      const feel = view.boost || 0;
-      if (feel < 0.04 || reducedMotion) return;
-      const aura = BOOST_FX.aura;
-      const pulse = 0.92 + 0.14 * Math.sin(game.t * 14);
-      const scale = unit * (4.6 + 1.15 * feel) * pulse;
-      ctx.save();
-      ctx.globalCompositeOperation = "lighter";
-      ctx.translate(cx, baseY - unit * 0.85);
-      ctx.rotate(lean * 0.2);
-      if (aura) {
-        const aspect = aura.naturalHeight / aura.naturalWidth || 1;
-        const w = scale, h = scale * aspect;
-        ctx.globalAlpha = Math.min(0.95, 0.4 + 0.55 * feel);
-        ctx.drawImage(aura, -w / 2, -h * 0.62, w, h);
-        const pulse2 = 0.96 + 0.16 * Math.sin(game.t * 9 + 1.2);
-        ctx.globalAlpha = 0.28 * feel;
-        ctx.drawImage(aura, -w * pulse2 / 2, -h * pulse2 * 0.62, w * pulse2, h * pulse2);
-      } else {
-        const g = ctx.createRadialGradient(0, 0, unit * 0.2, 0, 0, scale * 0.55);
-        g.addColorStop(0, `rgba(255,230,140,${0.55 * feel})`);
-        g.addColorStop(0.4, `rgba(255,120,40,${0.35 * feel})`);
-        g.addColorStop(1, "rgba(255,60,0,0)");
-        ctx.fillStyle = g;
-        ctx.beginPath(); ctx.arc(0, 0, scale * 0.55, 0, Math.PI * 2); ctx.fill();
-      }
-      ctx.restore();
-    }
     function drawPlayer(dusk) {
       const p = placeAt(game.z, game.x);
       if (!p) return;
@@ -1150,7 +1103,6 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
         }
         ctx.restore();
       }
-      drawBoostAura(cx, baseY, unit, lean);
       if (poseArt && baseArt) {
         const def = DESERT_ART[pose];
         // 大きさは背面Bの高さ（unit×2.45）に対する比。どの姿勢も同じ縮尺で描かれている
@@ -1168,8 +1120,8 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
           ctx.drawImage(poseArt, -def.anchor.x * dw, -def.anchor.y * dh, dw, dh);
           ctx.restore();
         };
-        // ブースト中は手前に残像を多めに（動き軽減では出さない）
-        if (game.boostT > 0 && !reducedMotion) for (let i = 5; i >= 1; i--) sprite(0.28 - i * 0.04, unit * 0.28 * i, 1 + 0.07 * i);
+        // 短く薄い残像だけを手前に置き、人物や前方の岩を隠さない。
+        if (game.boostT > 0 && !reducedMotion) for (let i = 2; i >= 1; i--) sprite(0.12 - i * 0.03, unit * 0.16 * i, 1 + 0.025 * i);
         sprite(1, 0, 1);
         return;
       }
@@ -1220,28 +1172,6 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
     function drawParticles() {
       const p = placeAt(game.z, game.x);
       if (!p) return;
-      const sparkArt = BOOST_FX.spark;
-      const sparks = particles.filter(s => s.spark);
-      if (sparks.length) {
-        ctx.save();
-        ctx.globalCompositeOperation = "lighter";
-        for (const s of sparks) {
-          const a = Math.min(1, 1.15 * (1 - s.age / s.life));
-          ctx.globalAlpha = a;
-          ctx.save();
-          ctx.translate(p.x + s.x, p.y + s.y);
-          ctx.rotate((s.rot || 0) + s.age * 6);
-          if (sparkArt) {
-            const w = s.r * 2.2;
-            ctx.drawImage(sparkArt, -w / 2, -w / 2, w, w);
-          } else {
-            ctx.fillStyle = "rgba(255,210,110,0.9)";
-            ctx.beginPath(); ctx.ellipse(0, 0, s.r * 0.45, s.r * 0.9, 0, 0, Math.PI * 2); ctx.fill();
-          }
-          ctx.restore();
-        }
-        ctx.restore();
-      }
       for (const s of particles) {
         if (!s.chip) continue;
         ctx.save(); ctx.translate(p.x + s.x, p.y + s.y); ctx.rotate(s.age * s.spin);
@@ -1254,7 +1184,7 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       if (puff) {
         const aspect = puff.naturalHeight / puff.naturalWidth;
         for (const s of particles) {
-          if (s.chip || s.spark) continue;
+          if (s.chip) continue;
           const w = s.r * 2.8, h = w * aspect;
           ctx.globalAlpha = Math.min(1, 0.75 * (1 - s.age / s.life));
           ctx.drawImage(puff, p.x + s.x - w / 2, p.y + s.y - h / 2, w, h);
@@ -1263,13 +1193,13 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
         return;
       }
       for (const s of particles) {
-        if (s.chip || s.spark) continue;
+        if (s.chip) continue;
         const a = 0.55 * (1 - s.age / s.life);
         ctx.fillStyle = `rgba(242,220,178,${a})`;
         ctx.beginPath(); ctx.arc(p.x + s.x, p.y + s.y, s.r, 0, Math.PI * 2); ctx.fill();
       }
     }
-    /** スピード線: 消失点から外へ流れる白い線。速いほど多く長く、ブースト中は橙。中央（コースと人物）は空ける。 */
+    /** スピード線: 消失点から外へ流れる白い線。速いほど多く長く、ブースト中も白い風の線。中央（コースと人物）は常に空ける。 */
     function drawSpeedLines() {
       if (reducedMotion || !game || countdown > 0) return;
       const k = Math.min(1, Math.max(0, (game.speed - SPEED.min) / (SPEED_FULL - SPEED.min)));
@@ -1278,13 +1208,15 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       const amount = Math.min(1.15, (k < 0.3 ? 0 : (k - 0.3) / 0.7) + 0.85 * feel);
       const n = Math.min(streaks.length, Math.round(14 + 48 * amount)), cx = W / 2, cy = HORIZON + 40, reach = Math.hypot(W, H) * 0.66;
       ctx.save();
+      // 横幅の中央56%には速度線を描かず、先の岩と着地点を見せる。
+      ctx.beginPath(); ctx.rect(0, 0, W * 0.22, H); ctx.rect(W * 0.78, 0, W * 0.22, H); ctx.clip();
       ctx.lineCap = "round";
       for (let i = 0; i < n; i++) {
         const s = streaks[i];
         const travel = (s.phase + game.t * (0.9 + 1.6 * k + 1.8 * feel)) % 1;
         const r0 = (feel > 0.3 ? 160 : 240) + travel * reach, r1 = r0 + (60 + 220 * amount + 80 * feel) * s.len * (0.4 + travel);
-        const alpha = (0.42 + 0.32 * feel) * amount * Math.sin(travel * Math.PI);
-        ctx.strokeStyle = feel > 0.15 ? `rgba(255,${190 + Math.round(50 * s.len) % 60},120,${alpha})` : `rgba(255,255,255,${alpha})`;
+        const alpha = (0.3 + 0.1 * feel) * amount * Math.sin(travel * Math.PI);
+        ctx.strokeStyle = `rgba(240,250,255,${alpha})`;
         ctx.lineWidth = s.w * (0.6 + travel * 1.6 + feel);
         const ca = Math.cos(s.angle), sa = Math.sin(s.angle) * 0.62;
         ctx.beginPath(); ctx.moveTo(cx + ca * r0, cy + sa * r0); ctx.lineTo(cx + ca * r1, cy + sa * r1); ctx.stroke();
@@ -1296,21 +1228,21 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
           const y = 80 + (H - 100) * ((i % 5) / 4);
           const len = 70 + 160 * feel * (0.4 + u);
           const x0 = side < 0 ? 0 : W;
-          ctx.strokeStyle = `rgba(255,210,140,${0.22 * feel * (1 - u)})`;
+          ctx.strokeStyle = `rgba(240,250,255,${0.18 * feel * (1 - u)})`;
           ctx.lineWidth = 2 + 3 * feel;
           ctx.beginPath(); ctx.moveTo(x0, y); ctx.lineTo(x0 - side * len, y + (y - H * 0.55) * 0.08); ctx.stroke();
         }
       }
       ctx.restore();
     }
-    /** 速いほど画面の縁を暗く（ブースト中は暖色）。 */
+    /** 速いほど画面の縁を少し暗く。ブーストでも炎色にしない。 */
     function drawVignette(fast) {
       const feel = view.boost || 0;
-      const a = (reducedMotion ? 0.12 : 0.34) * fast + 0.28 * feel;
+      const a = (reducedMotion ? 0.12 : 0.34) * fast + 0.06 * feel;
       if (a < 0.02) return;
       const g = ctx.createRadialGradient(W / 2, H * 0.55, H * (0.42 - 0.08 * feel), W / 2, H * 0.55, H * 1.05);
       g.addColorStop(0, "rgba(0,0,0,0)");
-      g.addColorStop(1, feel > 0.08 ? `rgba(160,60,20,${a})` : `rgba(40,20,10,${a})`);
+      g.addColorStop(1, `rgba(40,30,25,${a})`);
       ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
     }
     /** 着地の衝撃の輪（砂の上に広がる楕円）。 */
@@ -1320,16 +1252,6 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       const unit = p.scale * (H / 2);
       for (const r of rings) {
         const k = r.age / r.life;
-        if (r.burst && BOOST_FX.burst && !reducedMotion) {
-          ctx.save();
-          ctx.globalCompositeOperation = "lighter";
-          ctx.globalAlpha = 0.8 * (1 - k);
-          const bur = BOOST_FX.burst;
-          const s = unit * (1.5 + 2.8 * k) * r.power;
-          const aspect = bur.naturalHeight / bur.naturalWidth || 1;
-          ctx.drawImage(bur, p.x - s / 2, p.y - s * aspect * 0.68, s, s * aspect);
-          ctx.restore();
-        }
         ctx.strokeStyle = `rgba(255,248,230,${0.8 * (1 - k)})`;
         ctx.lineWidth = Math.max(2, unit * 0.12 * (1 - k)) * r.power;
         ctx.beginPath(); ctx.ellipse(p.x, p.y, unit * (0.5 + 2.4 * k) * r.power, unit * (0.12 + 0.5 * k) * r.power, 0, 0, Math.PI * 2); ctx.stroke();

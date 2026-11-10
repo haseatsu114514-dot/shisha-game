@@ -190,8 +190,8 @@ html:root[data-density="phone"] .desert-ride .dr-card .dr-kicker { display: none
 
 
 /* ---- 速度メーター（弧＋数字）とコース名、リカバリー／ブーストの強調（2026-11-10） ---- */
-.dr-speedo { position: relative; display: flex; flex-direction: column; align-items: flex-end; justify-content: flex-start; min-width: 132px; }
-.dr-speedo-arc { width: 124px; height: 74px; margin: -4px -8px -10px 0; overflow: visible; }
+.dr-speedo { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; min-width: 132px; }
+.dr-speedo-arc { width: 124px; height: 74px; margin: -4px 0 -10px; overflow: visible; }
 .dr-speedo-track { stroke: rgba(90,60,40,.28); stroke-width: 8; stroke-linecap: round; }
 .dr-speedo-fill { stroke: #d4521f; stroke-width: 8; stroke-linecap: round; transition: stroke .12s linear; }
 .dr-speedo[data-fast="fast"] .dr-speedo-fill { stroke: #e36a14; }
