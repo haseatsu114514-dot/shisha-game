@@ -972,6 +972,85 @@
       ]
     },
     {
+      "dialogue_id": "lover_ageha_lv2_b",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_street_day.png",
+        "private_scene": true
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "食事のあと、あげはは店員の手元から、目を離さなかった"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "見て、今の、お冷の置き方"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "音、させてないな"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "そ！ 客が話してるとき、グラスを静かに置く人"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "うち、ああいうの見ると、この店好きってなる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "席を選んだ理由、それだったのか"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "半分ね、もう半分は、ハジメっちと見たいから"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "……一個、言っていい？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "うん"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "この席、また予約しよ"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "ハジメっちと、見たいの"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "じゃあ、またこの席にしよう"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "うん、うちが選ぶから、ハジメっちは座ってて"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "グラスが静かに置かれる音だけが、テーブルに残った"
+        }
+      ]
+    },
+    {
       "dialogue_id": "lover_ageha_lv3",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_street_night.png",

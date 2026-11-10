@@ -1897,6 +1897,84 @@
       ]
     },
     {
+      "id": "lime_tsumugi_low_water",
+      "sender": "tsumugi",
+      "trigger_condition": "flag",
+      "trigger_flag": "_spot_seen_ch1_tsumugi_low_water",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "tsumugi",
+          "text": "おはようございます"
+        },
+        {
+          "sender": "tsumugi",
+          "text": "……昨日は、水が少なくなるまで、窓の席にいました"
+        },
+        {
+          "sender": "tsumugi",
+          "text": "ペンは、吸ってからにしました"
+        },
+        {
+          "sender": "tsumugi",
+          "text": "描きながらだと、煙が少し強かったので"
+        },
+        {
+          "sender": "tsumugi",
+          "text": "ひびの線は、直していません"
+        },
+        {
+          "sender": "tsumugi",
+          "text": "今日の尾は、その線より細く引きました"
+        },
+        {
+          "sender": "tsumugi",
+          "text": "葉っぱの耳は、昨日のままです"
+        },
+        {
+          "sender": "tsumugi",
+          "text": "席は、また空けてあります"
+        },
+        {
+          "sender": "tsumugi",
+          "text": "……また、同じ席で待っています"
+        },
+        {
+          "sender": "tsumugi",
+          "text": "ラベンダーは、いつもの色でした。縁だけ、細かったです"
+        },
+        {
+          "sender": "tsumugi",
+          "text": "はじめさんの煙を見てから、線を一本だけ足します"
+        },
+        {
+          "sender": "tsumugi",
+          "text": "描かない日も、来ます。水が減ったら、帰ります"
+        },
+        {
+          "sender": "tsumugi",
+          "text": "……画面のひびは、今日も、同じ場所にありました"
+        }
+      ],
+      "replies": [
+        {
+          "text": "席は空けておくね",
+          "response": "……はい。描かない日も、そこにいます",
+          "affinity": 1
+        },
+        {
+          "text": "線は、そのままで",
+          "response": "……ひびも、尾も、今日のままにします",
+          "affinity": 1
+        },
+        {
+          "text": "水が減るまでいるね",
+          "response": "……少なくなったら、帰ります。また同じ席で",
+          "affinity": 1
+        }
+      ]
+    },
+    {
       "id": "lime_naru_day10",
       "sender": "naru",
       "trigger_day": 10,
@@ -2161,6 +2239,39 @@
       ]
     },
     {
+      "id": "lime_ageha_bear_seat",
+      "sender": "ageha",
+      "type": "chat",
+      "trigger_condition": "flag",
+      "trigger_flag": "_ageha_bear_seat_done",
+      "messages": [
+        {
+          "sender": "ageha",
+          "text": "ハジメっち、白いクマの隣、今日も空けておいたよ"
+        },
+        {
+          "sender": "ageha",
+          "text": "朝に指を確かめたあと、その席だと落ち着くよ"
+        },
+        {
+          "sender": "ageha",
+          "text": "次もそこに、座ってほしいな"
+        }
+      ],
+      "replies": [
+        {
+          "text": "またその席に座ります",
+          "response": "おっけー、ある日の煙、用意しとく",
+          "affinity": 1
+        },
+        {
+          "text": "ある日も、ない日も行きます",
+          "response": "……ない日は、席だけ空けとくね",
+          "affinity": 2
+        }
+      ]
+    },
+    {
       "id": "lime_ageha_ch2_goodday",
       "sender": "ageha",
       "chapter": 2,
@@ -2353,6 +2464,47 @@
           "text": "今度、話しに行きます",
           "response": "いつでも来い。水を注いだグラスを、置いて待っている",
           "affinity": 0
+        }
+      ]
+    },
+    {
+      "id": "lime_samechan_after_seat",
+      "sender": "samechan",
+      "trigger_condition": "flag",
+      "trigger_flag": "_samechan_look_away_done",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "samechan",
+          "text": "昨夜は、隣に座ってくれてありがとうなのじゃ"
+        },
+        {
+          "sender": "samechan",
+          "text": "水が空くまで、わしは立たなかった。久しぶりに、店の音がよく聞こえたのじゃ"
+        },
+        {
+          "sender": "samechan",
+          "text": "サメの話は、次にお主が来たときの続きじゃ。歯の場面は、まだ飛ばすのじゃぞ"
+        },
+        {
+          "sender": "samechan",
+          "text": "通り道は、お主の肩が通れた幅のまま残しておく。また、その席で待つぞ"
+        },
+        {
+          "sender": "samechan",
+          "text": "次も、隣の席を空けて待っておくのじゃ。コロちゃんが何度もしつこく申しておるのじゃ"
+        }
+      ],
+      "replies": [
+        {
+          "text": "また隣に座ります",
+          "response": "うむ。その席は、空けておくのじゃ",
+          "affinity": 2
+        },
+        {
+          "text": "続き、聞きに行きます",
+          "response": "歯のところは、まだ飛ばすぞ",
+          "affinity": 1
         }
       ]
     },

@@ -173,6 +173,10 @@ export const RIO_STORY_EXTRAS = Object.freeze([
   "ch1_rio_lot_return",
   "ch1_rio_name_blank",
   "ch1_rio_unsigned",
+  "ch1_rio_practice_note",
+  "ch1_rio_strip_spill",
+  "ch1_rio_tired_nose",
+  "ch1_rio_recheck",
 ]);
 export const rioStoryExtraDue = () => {
   if (storyCount("rio") < 6 || !state.flags[RIO_PROTOTYPE_SEEN] || !state.flags[RIO_BLUEBERRY_SEEN]) return null;
@@ -182,11 +186,28 @@ export const rioStoryExtraDue = () => {
 export const TSUMUGI_STORY_EXTRAS = Object.freeze([
   "ch1_tsumugi_one_ear",
   "ch1_tsumugi_short_tail",
+  "ch1_tsumugi_window_line",
+  "ch1_tsumugi_pen_down",
+  "ch1_tsumugi_low_water",
 ]);
 export const tsumugiStoryExtraDue = () => {
   if (!state.finales?.tsumugi || storyCount("tsumugi") < (VISIT_SEQ.tsumugi?.length || 0)) return null;
   return TSUMUGI_STORY_EXTRAS.find((id) => !state.flags[`_spot_seen_${id}`] && DB.dialogues[id]?.lines?.length) || null;
 };
+/** 端の席（#3081）。固有会話を読み終え、店で正体がつながったあと、新しい話が無い来店で一度。
+ * 正面の映え席と、カウンター横の席。大会の前後どちらでも、今の店の話だけにする。 */
+const MINTO_SIDE_SEAT = "ch1_minto_side_seat";
+const MINTO_SIDE_SEAT_SEEN = "_minto_side_seat_done";
+const MINTO_QUIET_HELLO = "ch1_minto_quiet_hello";
+const MINTO_QUIET_HELLO_SEEN = "_minto_quiet_hello_done";
+export const mintoSideSeatDue = () => !state.flags[MINTO_SIDE_SEAT_SEEN]
+  && storyCount("minto") >= VISIT_SEQ.minto.length
+  && !!state.flags._minto_identity_revealed
+  && !!DB.dialogues[MINTO_SIDE_SEAT]?.lines?.length;
+/** 端の席の次の来店で、店の声と小さい声を一度だけ聞き分ける（#3081）。 */
+export const mintoQuietHelloDue = () => !state.flags[MINTO_QUIET_HELLO_SEEN]
+  && !!state.flags[MINTO_SIDE_SEAT_SEEN]
+  && !!DB.dialogues[MINTO_QUIET_HELLO]?.lines?.length;
 /**
  * 章が明けて最初の来店で一度だけ読む後日談（#2026）。第1章で実際に通った店主だけ（regulars は
  * 章の切り替え時の記録。ch2-progress.js）。既読は台本末尾の set_flag。第2章の地元の地図だけが入口。
@@ -262,6 +283,7 @@ export function hasNewStory(charId) {
   if (charId === "rio" && rioBlueberryDue()) return true;
   if (charId === "rio" && rioStoryExtraDue()) return true;
   if (charId === "tsumugi" && tsumugiStoryExtraDue()) return true;
+  if (charId === "minto" && (mintoSideSeatDue() || mintoQuietHelloDue())) return true;
   const id = (VISIT_SEQ[charId] || [])[storyCount(charId)];
   if (id && !visitStorySkipped(state, charId, id)) return storyAvailable(id);
   return questionVisitDue(charId) || finaleAtVisit(charId);
@@ -477,6 +499,15 @@ export async function visitChar(charId, { welcome = null, signal = null } = {}) 
       if (!await read(scene, { bg })) return false;
       state.flags[`_spot_seen_${scene}`] = true;
       gainAffinity(charId, visitAffinity("talk"), affinityOptions);
+    } else if (charId === "minto" && mintoSideSeatDue()) {
+      // 完読してから既読。中断では旗を残さず、次の来店で読み直せる。
+      if (!await read(MINTO_SIDE_SEAT, DB.dialogues[MINTO_SIDE_SEAT].metadata?.bg ? {} : { bg })) return false;
+      state.flags[MINTO_SIDE_SEAT_SEEN] = true;
+      gainAffinity(charId, visitAffinity("story"), affinityOptions);
+    } else if (charId === "minto" && mintoQuietHelloDue()) {
+      if (!await read(MINTO_QUIET_HELLO, DB.dialogues[MINTO_QUIET_HELLO].metadata?.bg ? {} : { bg })) return false;
+      state.flags[MINTO_QUIET_HELLO_SEEN] = true;
+      gainAffinity(charId, visitAffinity("story"), affinityOptions);
     } else {
       const rainy = isRainy();
       const id = repeatVisitDialogue(charId);

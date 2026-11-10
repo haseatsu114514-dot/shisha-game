@@ -140,7 +140,9 @@
         "ch3_volk_lime",
         "ch3_mashiro_timer_side",
         "ch3_mashiro_cup_warm",
-        "ch3_mashiro_glass_cloth"
+        "ch3_mashiro_glass_cloth",
+        "ch3_mashiro_leaf_rest",
+        "ch3_mashiro_bench_tea"
       ],
       "after_eve": [
         "ch3_tournament_day",
@@ -283,6 +285,17 @@
     "ch3_mashiro_glass_cloth": {
       "seen": [
         "ch3_mashiro_cup_warm"
+      ]
+    },
+    "ch3_mashiro_leaf_rest": {
+      "seen": [
+        "ch3_mashiro_glass_cloth"
+      ],
+      "comment": "#3081。約束・練習・ブラックティーのあと、mukaiで一度。3本側の glass_cloth の次。"
+    },
+    "ch3_mashiro_bench_tea": {
+      "seen": [
+        "ch3_mashiro_leaf_rest"
       ]
     },
     "ch3_saku_mashiro_tea_tin": {

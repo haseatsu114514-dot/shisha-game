@@ -1935,6 +1935,405 @@
           }
         }
       ]
+    },
+    {
+      "dialogue_id": "ch1_rio_practice_note",
+      "comment": "#3081 物語系の一度きり。アールグレイ試作を練習で吸った自分の口の記録を持ち帰る。場所は夜の2階。固有会話6本と試作回とブルーベリーの土産話のあと、spots.js が一度だけ再生する。",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_fookah_showroom.png",
+        "topic": "練習の記録"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "夜の2階。凛想さんはクリップボードを閉じかけて、こちらを見た"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "ん、モルモットくん。例の袋、練習で開けた？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい。店には出してません"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "自分の口だけで、吸いました"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "ふうん。で、どうだった"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "一口目は、紅茶の香りが先に来ました"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "二口目で甘さが下がって、喉が楽でした"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "凛想さんはペンを持ったまま、まだ紙には書いていない"
+        },
+        {
+          "speaker": "rio",
+          "face": "serious",
+          "text": "……楽、ね。熱を上げすぎなかった、ってことだよ"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "私の好きな味に、寄せなくていいって言ったでしょ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "寄せてません。練習のまま、持ってきました"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "凛想さんは新しい紙を一枚、クリップボードの手前に挟んだ"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "これは売り上げの欄じゃない。練習の記録"
+        },
+        {
+          "speaker": "rio",
+          "face": "serious",
+          "text": "君の口が、袋の先でどう変わったか"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "それだけ、書いておく"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（お客さんの顔じゃなくて、自分の口の話でよかった）"
+        },
+        {
+          "speaker": "rio",
+          "face": "smile",
+          "text": "……十分。次も、盛らずに持ってきて"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ペンが短く走って、紙がクリップの下に入った"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "sense": 1
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch1_rio_strip_spill",
+      "comment": "#3081 物語系の一度きり。試香紙が開いた袋に落ち、その袋は今日は判断しない。場所は夜の2階。練習の記録の次の来店で一度だけ。",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_fookah_showroom.png",
+        "topic": "落ちた試香紙"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "クリップボードから、細い試香紙が一枚滑った"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "開いていた袋の葉の上に、紙が落ちる"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "伸ばした指を、凛想さんが目で止めた"
+        },
+        {
+          "speaker": "rio",
+          "face": "serious",
+          "text": "……見た？"
+        },
+        {
+          "speaker": "rio",
+          "face": "serious",
+          "text": "今の、紙の匂いが葉に移る"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "移る前に、どかせば"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "だめ。落ちた時点で、今日の鼻には分からない"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "凛想さんは袋の口を閉じ、落ちた紙も脇へ置いた"
+        },
+        {
+          "speaker": "rio",
+          "face": "serious",
+          "text": "葉の匂いなのか、紙の匂いなのか"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "混ざったものは、判断しない"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "胸につけておけば、落ちなかったんじゃ"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "つけないの。シャツに残ると、次の袋まで連れて歩く"
+        },
+        {
+          "speaker": "rio",
+          "face": "smile",
+          "text": "紙は、この板の上だけ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（試香紙は、クリップボードに挟むものだった）"
+        },
+        {
+          "speaker": "rio",
+          "face": "serious",
+          "text": "今日のこの袋は、無し"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "次に嗅ぐとき、別の一口にする"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "閉じた袋は棚に戻さず、デスクの端へ寄せられた"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "sense": 1
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch1_rio_tired_nose",
+      "comment": "#3081 物語系の一度きり。豆で鼻を戻したあと、残った袋には印をつけない。場所は夜の2階。落ちた試香紙の次の来店で一度だけ。",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_fookah_showroom.png",
+        "topic": "鼻の限界"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "作業台の端に、小さな瓶があった。蓋を開けると、豆の匂いがする"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "凛想さんは袋を三つ吸ったあと、その瓶に鼻を寄せた"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "鼻を瓶に寄せたまま、少しのあいだ動かなかった"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "……ここで、今日は終わり"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "まだ袋、残ってますけど"
+        },
+        {
+          "speaker": "rio",
+          "face": "serious",
+          "text": "残ってる。だから、印はつけない"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "同じ匂いに慣れたままじゃ、通したのか止めたのか、私にも分からない"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "豆を一回嗅いで、まだ甘いのが残るなら"
+        },
+        {
+          "speaker": "rio",
+          "face": "serious",
+          "text": "今日の判断は、信用しないの"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（試香の合間に、豆で鼻を戻す人なんだ）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "最後の袋は、印のないままデスクへ戻された"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "印をつけないのは、止めるのとは違うんですか"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "違う。止めるのは、吸ってダメだと分かったとき"
+        },
+        {
+          "speaker": "rio",
+          "face": "smile",
+          "text": "今日のは、吸う鼻の方が先に限界だっただけ"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "……君も、鼻が疲れたら席を立っていい"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "無理に最後まで吸わなくていいから"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "sense": 1
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch1_rio_recheck",
+      "comment": "#3081 物語系の一度きり。朝に通した袋を夜に吸い直し、急いだ字を消す。場所は夜の2階。鼻の限界の次の来店で一度だけ。",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_fookah_showroom.png",
+        "topic": "急いだ字"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "朝に通した、と書いた袋を、凛想さんはもう一度開けていた"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "ん、モルモットくん。今朝の私、少し急いでた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "通したあとで、開け直すんですか"
+        },
+        {
+          "speaker": "rio",
+          "face": "serious",
+          "text": "通したつもり、ね。三口まで待たずに、字を書いてた"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "二口吸って、ホースを置いた。喉のあたりを、一度押さえる"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "今吸い直したら、二口目で喉が残る"
+        },
+        {
+          "speaker": "rio",
+          "face": "serious",
+          "text": "……朝の字は、消す"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "待ってから書けばよかった、ってことですか"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "そういうこと。先に肺、あとからペン"
+        },
+        {
+          "speaker": "rio",
+          "face": "smile",
+          "text": "順番を逆にしたのは、私の方"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "消したあとは、どうするんですか"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "今夜は書かない"
+        },
+        {
+          "speaker": "rio",
+          "face": "serious",
+          "text": "まだ決めない、という印にしておく"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "凛想さんは朝の字を一本線で消して、ペンに蓋をした"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "……急いだ自分も、残しておく"
+        },
+        {
+          "speaker": "rio",
+          "face": "smile",
+          "text": "消した線が見えるようにね"
+        },
+        {
+          "type": "apply",
+          "stats": {
+            "sense": 1
+          }
+        }
+      ]
     }
   ]
 }
