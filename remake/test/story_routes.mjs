@@ -322,9 +322,10 @@ const offered = (value) => wiring.availableOptionalScenes(routes, value).map(sce
   }
 }
 {
-  // #3081: 残り2本は約束・練習・ブラックティーのあと、mukaiで一本ずつ。大会の言葉は足さない。
+  // #3081: ましろの物語系は約束・練習・ブラックティーのあと、mukaiで一本ずつ。大会の言葉は足さない。
   const extras = [...wiring.MASHIRO_STORY_EXTRAS];
-  assert.deepEqual(extras, ['ch3_mashiro_leaf_rest', 'ch3_mashiro_bench_tea']);
+  assert.deepEqual(extras, ['ch3_mashiro_timer_side', 'ch3_mashiro_cup_warm', 'ch3_mashiro_glass_cloth',
+    'ch3_mashiro_leaf_rest', 'ch3_mashiro_bench_tea']);
   const value = tokyo();
   assert(!extras.some(id => offered(value).includes(id)), 'the existing visits stay ahead');
   for (const id of ['ch3_mashiro_play_3', 'ch3_mashiro_practice', 'ch3_mashiro_black_tea']) wiring.commitOptionalRead(value, id);
