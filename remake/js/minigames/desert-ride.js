@@ -6,7 +6,7 @@
 // 着地の輪・得点の浮き出し・トリックのスロー・ブーストの残像。動き軽減ではカメラの動き・揺れ・スロー・閃光・速度線を止める。
 // 本番はスタートの合図のあと、ヌール（rivalRun）が横で滑る。
 import { el } from "../core/util.js";
-import { SE, unlockAudio, createDesertRideSe, currentBgm, playBgm } from "../core/audio.js";
+import { SE, unlockAudio, createDesertRideSe, currentBgm, playBgm, preloadBgm } from "../core/audio.js";
 import { EDGE, SPEED, COURSE_PACKS, generateCourse, practiceCourse, pickCourse, buildCourse, createGame, step, press, boost, chargeBoost, canRecover, summary, curveAt, headingAt, lateralAt, upcomingCurve, botControl,
   rivalRun, rivalAt, RULES_VERSION, jumpHeight } from "./desert-ride-model.js";
 import { DESERT_ART, loadDesertArt, riderPose } from "./desert-ride-art.js";
@@ -141,6 +141,8 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
   const bgmBefore = currentBgm();
   let rideBgm = null;
   const restoreBgm = () => { if (rideBgm && currentBgm() === rideBgm) playBgm(bgmBefore); };
+  // メニューで選んでいる間にパック曲の取得・復号を済ませる。
+  for (const key of Object.values(RIDE_BGM)) void preloadBgm(key);
   const art = loadDesertArt();
   const promise = new Promise(resolve => {
     const rideSe = createDesertRideSe();
@@ -165,6 +167,11 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
     root.focus({ preventScroll: true });
 
     const input = { left: false, right: false };
+    const releaseButtons = [];
+    const resetInput = () => {
+      input.left = input.right = false;
+      for (const release of releaseButtons) release();
+    };
     let pose = "rider";
     let paused = false;
     let game = null, mode = null, bot = null, botMemo = {}, botLag = 0, last = 0, world = null, particles = [], shakeT = 0, flashT = 0, popT = 0, popText = "", popKind = "";
@@ -212,6 +219,7 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       const pointers = new Set();
       const down = event => { event.preventDefault(); unlockAudio(); pointers.add(event.pointerId); button.setPointerCapture?.(event.pointerId); button.classList.add("on"); on(); };
       const up = event => { pointers.delete(event.pointerId); if (!pointers.size) { button.classList.remove("on"); off(); } };
+      releaseButtons.push(() => { pointers.clear(); button.classList.remove("on"); });
       button.addEventListener("pointerdown", down);
       for (const type of ["pointerup", "pointercancel", "lostpointercapture"]) button.addEventListener(type, up);
       button.addEventListener("contextmenu", event => event.preventDefault());
@@ -286,6 +294,7 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
     }
     function startRun(kind, who = raceWith) {
       const thisRun = ++runId;
+      resetInput();
       unlockAudio();
       rideSe.stop();
       raceWith = rivals.includes(who) ? who : "noor";

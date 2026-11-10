@@ -928,7 +928,8 @@ export function preloadBgm(key) {
 }
 
 export function playBgm(key) {
-  if (key === currentKey && !preparedBgm.has(bgmUrl(key))) return;
+  // 取得・復号の失敗で要素を手放した曲は、同じキーでも次の要求で再試行する。
+  if (key === currentKey && currentEl && !preparedBgm.has(bgmUrl(key))) return;
   stopBgm(0.6);
   currentKey = key;
   if (!key) return;
@@ -964,7 +965,14 @@ export function playBgm(key) {
       if (SYNTH_FALLBACK[key]) synthStop = startSynth(SYNTH_FALLBACK[key]);
       return true;
     };
-    a.addEventListener("error", fallBackContinue, { once: true });
+    const retryOnGesture = () => {
+      if (currentEl !== a) return;
+      currentEl = null;
+      a.pause();
+      releasePacked(a.src);
+      pendingBgm = key;
+    };
+    a.addEventListener("error", () => { if (!fallBackContinue()) retryOnGesture(); }, { once: true });
     const start = () => {
       if (currentEl !== a) return; // 読み込み中に別曲へ移った場合、古い曲を鳴らさない。
       if (rotateHeld) { a.volume = bgmLevel(key); return; } // 回転ガード中に替わった曲は、横に戻した時に鳴らし始める
@@ -981,8 +989,7 @@ export function playBgm(key) {
         if (currentEl !== a) { discardPrepared(cached); return; }
         if (ready) start();
         else {
-          currentEl = null;
-          a.pause();
+          retryOnGesture();
           if (SYNTH_FALLBACK[key]) synthStop = startSynth(SYNTH_FALLBACK[key]);
         }
       });
@@ -995,8 +1002,7 @@ export function playBgm(key) {
         start();
       }, (error) => {
         if (currentEl !== a) return;
-        currentEl = null;
-        a.pause();
+        retryOnGesture();
         if (SYNTH_FALLBACK[key]) synthStop = startSynth(SYNTH_FALLBACK[key]);
         console.warn("[BGM] Could not load game audio", key, error);
       });
