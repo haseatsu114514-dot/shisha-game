@@ -18,7 +18,8 @@ export const FACILITY_ICONS = Object.freeze({
   axe_bar: Object.freeze({ badge: Object.freeze([688, 153]), label: '斧投げBar', extra: true, rect: Object.freeze([56, 14, 655, 495]) }),
   choizap: Object.freeze({ badge: Object.freeze([1466, 178]), label: 'CHOI-ZAP', extra: true, rect: Object.freeze([844, 49, 633, 459]) }),
   trpg_bar: Object.freeze({ badge: Object.freeze([1425, 650]), label: 'ボドゲカフェ', extra: true, rect: Object.freeze([821, 512, 664, 494]) }),
-  fortune: single('map-facilities-fortune-stall.webp', '路上占い', [384, 383], [347, 144]),
+  // 路上占いは水晶玉だけのシール風アイコンに作り直し（2026-11-10 オーナー採用C案。旧出店アイコンは廃止）。
+  fortune: single('map-facilities-fortune-crystal.webp', '路上占い', [384, 384], [285, 150]),
   tokyo_park: single('map-facilities-tokyo-park.webp', '東京の公園', [384, 347], [361, 120]),
   mukai_back_room: single('map-facilities-mukai-back-room.webp', 'mukaiの奥の部屋', [384, 327], [368, 82]),
   mukai_attic: single('map-facilities-mukai-attic.webp', 'mukaiの屋根裏', [384, 377], [379, 134]),
