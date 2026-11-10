@@ -1,6 +1,7 @@
 import { el } from "../core/util.js";
 import { TrpgSession, HEAT, heatTier, DICE, STATS, PLAYER_SEAT, approachesOf, approachBase, buildPc, randomPc, phasesOf, checkKindsOf } from "./session.js";
 import { displayName, portraitUrl, portraitAx, portraitTop as topFor, sceneUrl } from "./presentation.js";
+import { costumeUrl } from "./costumes.js";
 import { createTrpgAudio } from "./audio.js";
 import { checkForecast, rerollOdds } from "./feedback.js";
 import { playTrpgEntrance } from "./entrance.js";
@@ -154,6 +155,15 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
   function portraitFrame(id, width, headY) {
     return { top: topFor(manifest, id, width, headY), transform: `translateX(-${portraitAx(manifest, id) * 100}%)` };
   }
+  // The seat's chosen origin wears the role costume when we have one. The crop
+  // matches the character's standing-portrait metrics (same head height / centre).
+  function roleIdOf(id) {
+    const sheet = session.sheets[id];
+    return sheet?.archetype || sheet?.option || null;
+  }
+  function speakerPortrait(id, face = "normal") {
+    return costumeUrl(scenario.id, id, roleIdOf(id)) || portrait(id, face);
+  }
   // The same seat mark follows a participant from the table to a spent ability.
   function seatMark(id) {
     return el("span.trpg-seat-mark", { text: String(scenario.cast.findIndex(c => c.id === id) + 1),
@@ -284,7 +294,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     const frame = frames[cursor];
     if (!frame) { finishTalk(); return; }
     const person = cast[frame.speaker];
-    art.replaceChildren(el("img", { src: portrait(frame.speaker, frame.face), alt: name(frame.speaker),
+    art.replaceChildren(el("img", { src: speakerPortrait(frame.speaker, frame.face), alt: name(frame.speaker),
       style: portraitFrame(frame.speaker, 410, 16) }));
     art.style.backgroundColor = person?.color || "#566053";
     speaker.textContent = name(frame.speaker);
@@ -313,7 +323,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
   }
   function idle(text) {
     if (busy) return;
-    art.replaceChildren(el("img", { src: portrait(gm), alt: name(gm),
+    art.replaceChildren(el("img", { src: speakerPortrait(gm), alt: name(gm),
       style: portraitFrame(gm, 410, 16) }));
     art.style.backgroundColor = cast[gm].color;
     speaker.textContent = name(gm); role.textContent = ""; speech.textContent = text;
