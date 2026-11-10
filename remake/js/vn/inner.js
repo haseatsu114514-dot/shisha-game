@@ -8,11 +8,9 @@ export function playerInner(line) {
   return value.startsWith("（") && value.endsWith("）") ? value : `（${value}）`;
 }
 
-/** 心の声は本文と同じ大きさで1行に収める（#3099/#3100）。実測では全件（最長30字）が1行に収まる。
- * 測って1行に収まらない本心だけ、従来どおり折り返して送る（各ページで括弧を閉じる）。 */
+/** 長い本心も layout.maxLines 行ごとに送り、各ページで括弧を閉じる。括弧の2字ぶんも確保する。本編は1行ごとに送る（#3099）。 */
 export function paginateInner(text, layout = {}) {
-  if (!layout.measure || !layout.maxWidth || layout.measure(text) <= layout.maxWidth) return [text];
   const content = text.slice(1, -1);
-  const innerLayout = { ...layout, measure: (value) => layout.measure(`（${value}）`) };
+  const innerLayout = layout.measure ? { ...layout, measure: (value) => layout.measure(`（${value}）`) } : layout;
   return paginate(autoWrap(content, WRAP_LIMIT - 2, innerLayout), innerLayout).map((page) => `（${page}）`);
 }

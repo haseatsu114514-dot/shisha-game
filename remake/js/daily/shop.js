@@ -160,7 +160,7 @@ export async function openShop(opts = {}) {
     if (state.chapter < 2) return null;
     return openCounter({ flavorIds: WIDEHANGA_FLAVORS, stockChapter: 2, shopName: WIDEHANGA_SHOP_NAME, background: CITY_BACKGROUNDS.shop });
   }
-  if (!opts.errand) {
+  if (!opts.errand && !opts.direct) {
     const destination = await chooseShopFloor();
     if (destination !== "shop") return destination;
   }
@@ -212,6 +212,9 @@ function openCounter({ errand = null, expense = false, minStock = 1, expenseFlag
       kujiBgmBefore = null; kujiBgmActive = false;
     };
     const cart = new Map();
+    // 買い出しはフレーバーID（文字列）の時だけ。真偽値などの誤用は「指定なし」として扱い、
+    // 在庫の無いIDへの退出条件で店を出られなくなる事故を防ぐ。
+    if (typeof errand !== "string") errand = null;
     const firstErrand = ["mint", "lemon"].includes(errand) && expense && ["_errand_mint_expensed", "_errand_lemon_expensed"].includes(expenseFlag) && !session.flags._errand_shop_done;
     setBg(background || bgUrl("bg_shop"), { fast: true, ready: [FLAVOR_ART, ...Object.values(SHOP_ART).map(art => art.url), ...new Set(Object.values(CHARACTER_FLAVOR_ART).map(art => art.url))] });
     playBgm("kansetsu_shomei_to_black_coffee");
