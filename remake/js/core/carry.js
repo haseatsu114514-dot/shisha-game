@@ -335,6 +335,7 @@ export const FLAG_EXACT_RULES = [
   ["_gym_member", "unlock"],
   ["_hiyori_bond_finale_done", "person"],
   ["_hiyori_bond_question_done", "person"],
+  ["_hiyori_charm_done", "person"],
   ["_hiyori_cracks_done", "person"],
   ["_hiyori_encounter_day", "person"],
   ["_hiyori_feelings_spoken", "person"],

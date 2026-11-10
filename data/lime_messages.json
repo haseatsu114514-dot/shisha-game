@@ -2642,6 +2642,80 @@
       ]
     },
     {
+      "id": "lime_hiyori_charm",
+      "sender": "hiyori",
+      "trigger_condition": "flag",
+      "trigger_flag": "_hiyori_charm_done",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "hiyori",
+          "text": "おはよう、はじめくん。この前の席、悪くなかった"
+        },
+        {
+          "sender": "hiyori",
+          "text": "紅茶、急がせてもらえなくて助かった。通知は、今日の私に回してある"
+        },
+        {
+          "sender": "hiyori",
+          "text": "……隣だと、消えなくていい気がする。また席、分けて"
+        },
+        {
+          "sender": "hiyori",
+          "text": "会社では、ちゃんとした顔に戻ってるよ"
+        },
+        {
+          "sender": "hiyori",
+          "text": "それでも、あの席のことは覚えてるから"
+        }
+      ],
+      "replies": [
+        {
+          "text": "また席、分けます",
+          "response": "……うん。急がない席で、待ってる",
+          "affinity": 2
+        },
+        {
+          "text": "今日もおつかれさまです",
+          "response": "ありがとう。消えずに、定時で帰るね",
+          "affinity": 1
+        }
+      ]
+    },
+    {
+      "id": "lime_hiyori_peach",
+      "sender": "hiyori",
+      "trigger_condition": "flag",
+      "trigger_flag": "_hiyori_peach_talk_done",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "hiyori",
+          "text": "おはよう。この前の桃、まだ指に残ってる気がする"
+        },
+        {
+          "sender": "hiyori",
+          "text": "しぶとい果物、って自分で言っちゃった。でも、あれが本音"
+        },
+        {
+          "sender": "hiyori",
+          "text": "今日は紅茶でもいいかな。甘い日と、そうじゃない日と、両方ほしい"
+        }
+      ],
+      "replies": [
+        {
+          "text": "桃、覚えてます",
+          "response": "……覚えててくれたんだ。次は、またあの待ち方で",
+          "affinity": 2
+        },
+        {
+          "text": "紅茶の日も、いいです",
+          "response": "ふふ。どっちの日も、隣は君がいい",
+          "affinity": 1
+        }
+      ]
+    },
+    {
       "id": "lime_ch3_sumi_tokyo_settle",
       "sender": "sumi",
       "chapter": 3,
