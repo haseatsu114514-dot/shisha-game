@@ -297,6 +297,10 @@ await suite("staff-roll", async check => {
     assert.deepEqual((await page.locator(".staff-roll-sound-axe p").allTextContents()).map(t => t.split("：")[1].split(" – ")[0]),
       ["Kenney", "Freesound"]);
     for (const name of ["Jofae", "craigsmith", "qubodup", "plasterbrain", "IndyArts"]) assert(text.includes(name), name + " is credited");
+    assert.deepEqual((await page.locator(".staff-roll-sound-camel p").allTextContents()).map(t => t.split("：")[1].split(" – ")[0]),
+      ["Mixkit Sound Effects（Free License）", "Kenney", "Joseph Sardin（BigSoundBank / La Sonothèque）（CC0）", "AntumDeluge（原音 craigsmith / Freesound 437937）（CC0）"]);
+    assert.deepEqual((await page.locator(".staff-roll-sound-desert p").allTextContents()).map(t => t.split("：")[1].split(" – ")[0]),
+      ["Mixkit Sound Effects（Free License）", "Kenney", "Joseph Sardin（BigSoundBank / La Sonothèque）（CC0）"]);
     assert(!text.includes("間接照明とブラックコーヒー"), "A song without a recorded source is not credited yet");
     assert.deepEqual(await page.locator(".staff-roll-sound-trpg p").allTextContents(),
       ["効果音（TRPG）：Kenney – Casino Audio / RPG Audio / Music Jingles（CC0） – https://kenney.nl/"]);

@@ -112,10 +112,11 @@ function recordedSe(id) {
 
 // 砂漠ライド専用の採用音。共通の SE 音量・ミュート・表示状態を使い、画面を閉じたらループを止める。
 const DESERT_SE = Object.freeze({
-  slide: "slide_snowboard_pocket", wind: "wind_hyoo_lab", jump: "jump_anime_lab",
-  land: "landing_soft_lab", boost: "boost_dash_lab", carve: "carve_sand-dash_lab",
-  countdown: "countdown_electronic_lab", goal: "goal_fanfare_lab", fall: "fall_thud_lab",
-  decide: "ui_decide1_lab", cursor: "ui_cursor1_lab",
+  slide: "slide_sand", wind: "wind_ambience", jump: "jump_videogame",
+  land: "drop_soft", boost: "boost_whoosh", carve: "carve_sand",
+  countdown: "countdown_bleeps", goal: "goal_fanfare", fall: "drop_soft",
+  decide: "ui_confirm", cursor: "ui_pluck",
+  smash: "smash_pot", near: "ui_pluck", gaugeFull: "gauge_powerup",
 });
 export function createDesertRideSe() {
   let alive = true;
@@ -181,6 +182,40 @@ export function playMinigameSe(id) {
   const choices = ready.filter(file => file !== lastVariant.get(id));
   const file = (choices.length ? choices : ready)[Math.floor(Math.random() * (choices.length || ready.length))];
   lastVariant.set(id, file);
+  recordedVoice(file, { gain: cue.gain });
+}
+
+// ラクダレースの採用SE（grok/minigame-sfx-swap）。既存の sfx("hoof") 等の ID は維持し、スロットなど他場面の合成SEは変えない。
+// 出典は asset_sources/music/minigame-sfx-swap/。未読込・取得失敗時は従来の合成へ戻す。斧投げの MINIGAME_SE とは別表。
+export const CAMEL_RACE_SE = Object.freeze({
+  count: { files: ["camel_race/count_bleep.bgm"], gain: .5, fallback: "count" },
+  reelLever: { files: ["camel_race/start_cracker.wav"], gain: .7, fallback: "reelLever" },
+  hoof: { files: ["camel_race/hoof_gallop.wav"], gain: .5, fallback: "hoof" },
+  whoosh: { files: ["camel_race/whip_complete.wav"], gain: .62, fallback: "whoosh" },
+  perfect: { files: ["camel_race/perfect_confirm.wav"], gain: .5, fallback: "perfect" },
+  good: { files: ["camel_race/good_confirm.wav"], gain: .42, fallback: "good" },
+  miss: { files: ["camel_race/miss_error.wav"], gain: .5, fallback: "miss" },
+  slotBonus: { files: ["camel_race/spurt_horn.wav"], gain: .55, fallback: "slotBonus" },
+  reelWin: { files: ["camel_race/overtake_whoosh.wav"], gain: .55, fallback: "reelWin" },
+  fanfare: { files: ["camel_race/fanfare_trumpet.bgm"], gain: .55, fallback: "fanfare" },
+  jingle: { files: ["camel_race/place_jingle.wav"], gain: .5, fallback: "jingle" },
+  crowd: { files: ["camel_race/crowd_applause.wav"], gain: .5, fallback: "crowd" },
+  stamp: { files: ["camel_race/stamp_drop.wav"], gain: .6, fallback: "stamp" },
+  grunt: { files: ["camel_race/grunt_camel.wav"], gain: .45, fallback: null },
+});
+export function preloadCamelRaceSe() {
+  if (!audioUnlocked) return Promise.resolve(false);
+  const files = Object.values(CAMEL_RACE_SE).flatMap(cue => cue.files);
+  return Promise.all(files.map(loadSeBuffer)).then(buffers => buffers.every(Boolean));
+}
+export function playCamelRaceSe(id) {
+  const cue = CAMEL_RACE_SE[id];
+  if (!cue || !seEnabled()) return;
+  const ready = cue.files.filter(file => seBuffers.has(file));
+  if (!ready.length) { cue.files.forEach(loadSeBuffer); if (cue.fallback) SE[cue.fallback]?.(); return; }
+  const choices = ready.filter(file => file !== lastVariant.get("camel:" + id));
+  const file = (choices.length ? choices : ready)[Math.floor(Math.random() * (choices.length || ready.length))];
+  lastVariant.set("camel:" + id, file);
   recordedVoice(file, { gain: cue.gain });
 }
 

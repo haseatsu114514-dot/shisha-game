@@ -3331,6 +3331,16 @@
       "chrome": "playwright"
     },
     {
+      "id": "phone-layout-1110",
+      "title": "横持ち Safari のマップと制作共通殻の重なり・文字・操作域",
+      "kind": "browser",
+      "weight": 1,
+      "timeout": 3,
+      "paths": ["remake/css/phone-layout.css", "remake/index.html", "remake/craft-preview.html", "remake/test/browser/phone_layout_1110.mjs"],
+      "run": ["node remake/test/browser/phone_layout_1110.mjs"],
+      "chrome": "playwright"
+    },
+    {
       "id": "phone-density",
       "title": "Phone density standard on landscape touch: common parts keep real text >= 11px and taps >= 38px; edge parts stay outside a simulated notch; desktop unchanged (#2851, #3001)",
       "kind": "browser",
