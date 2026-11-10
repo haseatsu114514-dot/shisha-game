@@ -1,0 +1,201 @@
+{
+  "issue": 3055,
+  "date": "2026-11-10",
+  "method": "Codex built-in image_gen, 6 separate calls; attached references labelled by role and style lock in each prompt",
+  "source_spec": "asset_sources/ch4-camel-race/ui-request.md",
+  "processing": "Preserved raw output; cropped transparent canvas, uniformly reduced to target ratio and dimensions, binarized alpha at 128 to make material opaque and outside transparent. No aspect distortion or color adjustment. Call plate translated 3px left to keep the rightmost speaker mesh inside x<160; no scaling change.",
+  "files": [
+    {
+      "name": "rank-plate-A",
+      "raw_size": [
+        2172,
+        724
+      ],
+      "crop": [
+        0,
+        22,
+        2172,
+        701
+      ],
+      "size": [
+        512,
+        160
+      ],
+      "paint_bbox": [
+        6,
+        3,
+        506,
+        156
+      ],
+      "alpha_values": [
+        0,
+        255
+      ],
+      "edge_opaque": 0,
+      "opaque": 74835,
+      "transparent": 7085,
+      "sha256": "dc5af3f12be25f3e7e2ae7b0fa1b4f9a3dfc3a4ef16cd324129905041a820f9e",
+      "raw_sha256": "55edd27cecbe0dcfdb6197949074cfc71f57cda67f9168d9663a1b5395721391"
+    },
+    {
+      "name": "rank-plate-player-A",
+      "raw_size": [
+        2172,
+        724
+      ],
+      "crop": [
+        0,
+        22,
+        2172,
+        701
+      ],
+      "size": [
+        512,
+        160
+      ],
+      "paint_bbox": [
+        4,
+        2,
+        508,
+        158
+      ],
+      "alpha_values": [
+        0,
+        255
+      ],
+      "edge_opaque": 0,
+      "opaque": 77394,
+      "transparent": 4526,
+      "sha256": "b9b2b9d9be04976673ba0f9280cf53807415179e2cac55c15ce38635856bc6b7",
+      "raw_sha256": "41d2d0948870fe789166f77059048b2b29ac3b1f35c90e1fdd0802b3d95411e1"
+    },
+    {
+      "name": "medal-gold-A",
+      "raw_size": [
+        1254,
+        1254
+      ],
+      "crop": [
+        7,
+        7,
+        1247,
+        1247
+      ],
+      "size": [
+        256,
+        256
+      ],
+      "paint_bbox": [
+        2,
+        1,
+        252,
+        254
+      ],
+      "alpha_values": [
+        0,
+        255
+      ],
+      "edge_opaque": 0,
+      "opaque": 49201,
+      "transparent": 16335,
+      "sha256": "973ef6b99634d66daf9174a567b6be42fc18815ac2d88eab25f0a2c477c7585f",
+      "raw_sha256": "d4106f41fdaacb79b90650d7b682ab5fdf4721198b8be1c735f259c1d8a8cf95"
+    },
+    {
+      "name": "gauge-frame-A",
+      "raw_size": [
+        2172,
+        724
+      ],
+      "crop": [
+        0,
+        230,
+        2172,
+        491
+      ],
+      "size": [
+        800,
+        96
+      ],
+      "paint_bbox": [
+        13,
+        14,
+        786,
+        82
+      ],
+      "alpha_values": [
+        0,
+        255
+      ],
+      "edge_opaque": 0,
+      "opaque": 51744,
+      "transparent": 25056,
+      "sha256": "427f7615569e65486efe42e82865ec0233d4b0d6de7c65d71c0333f680fc7d2c",
+      "raw_sha256": "d58e456cddeabf91b23eaff09d8bc9608ad93da4ece3fcd56bc89f071708ce19"
+    },
+    {
+      "name": "gauge-fill-A",
+      "raw_size": [
+        1402,
+        1122
+      ],
+      "crop": [
+        0,
+        504,
+        1402,
+        616
+      ],
+      "size": [
+        800,
+        64
+      ],
+      "paint_bbox": [
+        3,
+        10,
+        797,
+        55
+      ],
+      "alpha_values": [
+        0,
+        255
+      ],
+      "edge_opaque": 0,
+      "opaque": 35728,
+      "transparent": 15472,
+      "sha256": "2af2f42ea1396ef435ffba958eb42853345bb0b92f4de9e35a006198240ea88f",
+      "raw_sha256": "c33e9fa6d60837e56d661e0a93f665331b0ca523746ee8b171e3f385f20947d0"
+    },
+    {
+      "name": "call-plate-A",
+      "raw_size": [
+        2172,
+        724
+      ],
+      "crop": [
+        0,
+        120,
+        2172,
+        603
+      ],
+      "size": [
+        720,
+        160
+      ],
+      "paint_bbox": [
+        2,
+        5,
+        712,
+        150
+      ],
+      "alpha_values": [
+        0,
+        255
+      ],
+      "edge_opaque": 0,
+      "opaque": 102697,
+      "transparent": 12503,
+      "sha256": "5e0ce0a261afc6145f52da9d81051a3dbcc56135e8bc21aa06e8a673df058ab8",
+      "raw_sha256": "2eca83a1902776822744fb8deae8c27ad1d252ed0f99403243c0d518db24c79c"
+    }
+  ]
+}
