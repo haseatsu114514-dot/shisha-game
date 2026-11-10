@@ -783,6 +783,7 @@
         "node --experimental-vm-modules remake/test/ch4_progress.mjs",
         "node --experimental-vm-modules remake/test/ch4_rewards.mjs",
         "node remake/test/camel_race_model.mjs",
+        "node remake/test/camel_race_feedback.mjs",
         "node remake/test/ch4_camel_race.mjs",
         "node remake/test/ch4_dubai_cafe.mjs",
         "node --experimental-vm-modules remake/test/ch4_dubai_new_talks.mjs",
@@ -1544,16 +1545,20 @@
     },
     {
       "id": "ch4-camel-feedback",
-      "title": "ラクダレースの声かけ判定で説明がない場合の表示と既存説明",
+      "title": "ラクダレースの判定表示・スタミナ予告・加速・観客席",
       "kind": "browser",
       "weight": 1,
       "timeout": 5,
       "paths": [
         "remake/js/minigames/camel-race.js",
         "remake/camel-race.html",
+        "remake/js/minigames/camel-race-feedback.js",
+        "remake/js/minigames/camel-race-model.js",
+        "remake/css/camel-race.css",
+        "remake/test/browser/camel_stamina_feedback.mjs",
         "remake/test/browser/camel_judge_feedback.mjs"
       ],
-      "run": ["node remake/test/browser/camel_judge_feedback.mjs"]
+      "run": ["node remake/test/browser/camel_judge_feedback.mjs", "node remake/test/browser/camel_stamina_feedback.mjs"]
     },
     {
       "id": "ch4-camel-race",
