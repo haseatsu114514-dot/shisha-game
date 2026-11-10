@@ -83,7 +83,7 @@ export const STATE_KEY_RULES = {
 // 分類網羅テストが data 側と一致するか照合する。
 export const GIFT_EQUIPMENT_IDS = [
   "suyaki_adam", "suyaki_ageha", "suyaki_hiyori", "suyaki_kumicho", "suyaki_saku", "suyaki_mashiro", "suyaki_minto", "suyaki_naru", "suyaki_noor",
-  "suyaki_rei", "suyaki_rio", "suyaki_samechan", "suyaki_steve", "suyaki_sumi", "suyaki_tsumugi", "suyaki_volk",
+  "suyaki_rei", "suyaki_rio", "suyaki_samechan", "suyaki_steve", "suyaki_sumi", "suyaki_tsumugi", "suyaki_volk", "suyaki_master_hookah",
 ];
 
 // 記念品の由来分類（core/keepsakes.js の KEEPSAKES と対応）。
