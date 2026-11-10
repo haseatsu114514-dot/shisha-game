@@ -4,7 +4,6 @@
 @font-face { font-family: "Suien Gothic"; src: url("../../fonts/ZenKakuGothicNew-Medium.woff2") format("woff2"); font-weight: 100 599; font-display: block; }
 @font-face { font-family: "Suien Gothic"; src: url("../../fonts/ZenKakuGothicNew-Bold.woff2") format("woff2"); font-weight: 600 799; font-display: block; }
 @font-face { font-family: "Suien Gothic"; src: url("../../fonts/ZenKakuGothicNew-Black.woff2") format("woff2"); font-weight: 800 900; font-display: block; }
-@font-face { font-family: "Suien Dot"; src: url("../../../assets/fonts/DotGothic16-Regular.ttf") format("truetype"); font-display: block; }
 
 :root {
   --ink: #150d22; --board: #221534; --card: #2e1d45; --line: #5a4475;
@@ -26,7 +25,7 @@ button { font: inherit; color: inherit; }
   linear-gradient(180deg, #0b0614d9 0, #0b061400 96px, #0b061400 520px, #0b0614e6 100%); }
 .aura { position: absolute; left: 150px; top: 0; width: 560px; height: 720px; pointer-events: none; opacity: .5; mix-blend-mode: screen;
   background: radial-gradient(60% 55% at 38% 52%, var(--heat), transparent 70%); animation: aura 3.6s ease-in-out infinite; }
-#stage[data-heat="standby"] .aura { opacity: .12; animation: none; }
+#stage:is([data-heat="standby"], [data-heat="forecast"], [data-heat="band"]) .aura { opacity: .1; animation: none; }
 @keyframes aura { 50% { opacity: .34; } }
 
 /* ---------- はじめ: 枠なしの切り抜き。左端から舞台へ溶ける ---------- */
@@ -62,9 +61,11 @@ button { font: inherit; color: inherit; }
 .rival span b { width: 7px; height: 7px; border-radius: 50%; background: #4b3a63; }
 .rival span b.on { background: #f0994a; box-shadow: 0 0 6px #f0994a; }
 .rival span b.shine { background: #ffe29a; box-shadow: 0 0 8px #ffd98a; }
-.rank { display: flex; align-items: baseline; gap: 8px; padding: 4px 14px 5px; border-radius: 12px; border: 1.5px solid #e3bd6e88; background: #1b112acc; }
+.rank { position: relative; display: flex; align-items: baseline; gap: 8px; padding: 2px 14px 9px; border-radius: 12px; border: 1.5px solid #e3bd6e88; background: #1b112acc; }
 .rank small { font-size: 22px; font-weight: 700; letter-spacing: .1em; color: #cdb98f; }
 .rank b { font-size: 34px; line-height: 1; font-weight: 900; color: var(--gold-hi); text-shadow: 0 0 12px #e3bd6e88; }
+.rank-meter { position: absolute; left: 12px; right: 12px; bottom: 4px; height: 4px; border-radius: 2px; background: #352841; overflow: hidden; }
+.rank-meter u { display: block; height: 100%; background: var(--gold); }
 .help { position: absolute; right: 12px; top: 6px; width: 68px; height: 68px; border-radius: 50%; border: 2px solid #8f78ab; background: #2e1d45e6; font-size: 30px; font-weight: 800; color: var(--lav); display: grid; place-items: center; }
 .look { height: 48px; padding: 0 16px; border-radius: 12px; border: 1.5px solid #8f78ab; background: #2e1d45e6; font-size: 22px; font-weight: 700; }
 
@@ -87,9 +88,9 @@ button { font: inherit; color: inherit; }
 @keyframes bob { 50% { transform: translateY(calc(50% - 10px)); } }
 .spine-ghost-note { position: absolute; left: 62px; transform: translateY(50%); white-space: nowrap; padding: 4px 12px; border-radius: 8px; border: 1.5px dashed #e8c27acc; background: #151024f2; font-size: 22px; font-weight: 700; color: #fff2c5; }
 .spine-state { position: absolute; left: 50%; top: 0; z-index: 2; transform: translateX(-50%); min-width: 124px; height: 42px; padding: 0 14px; display: grid; place-items: center; border-radius: 21px; font-size: 23px; font-weight: 900; letter-spacing: .06em; white-space: nowrap; color: #10241b; background: var(--heat); box-shadow: 0 0 18px color-mix(in srgb, var(--heat) 70%, transparent), 0 4px 10px #0009; }
-#stage[data-heat="standby"] .spine-body { border-color: #6d5a86; box-shadow: 0 0 0 2px #0b0614, 0 10px 26px #000a; }
+#stage:is([data-heat="standby"], [data-heat="forecast"]) .spine-body { border-color: #6d5a86; box-shadow: 0 0 0 2px #0b0614, 0 10px 26px #000a; }
+#stage[data-heat="forecast"] .scale { filter: saturate(.55) brightness(.72); }
 #stage[data-heat="standby"] .scale { filter: grayscale(.85) brightness(.5); }
-#stage[data-heat="standby"] .spine-state { background: #3a2a52; color: #cdbfe0; box-shadow: 0 4px 10px #0009; border: 1.5px solid #6d5a86; }
 #stage[data-heat="band"] .spine-state { background: #2e1d45; color: var(--mint); border: 1.5px solid var(--mint); box-shadow: 0 4px 10px #0009; }
 
 /* ---------- 見守る人の一言: 左下。蒸らしでは無言なので、同じ場所を左親指の操作に使う ---------- */
@@ -133,10 +134,11 @@ button { font: inherit; color: inherit; }
 .taste i::after { content: ""; position: absolute; top: 0; bottom: 0; left: var(--a); right: calc(100% - var(--b)); border-radius: 6px; background: repeating-linear-gradient(115deg, #e3bd6e 0 5px, #b98f3e 5px 9px); }
 .mix-keep { display: grid; justify-items: center; gap: 2px; font-size: 22px; font-weight: 700; color: #cdbfe0; margin-top: 4px; white-space: nowrap; }
 .mix-list { display: grid; gap: 12px; align-content: start; }
-.fl { height: 122px; display: grid; grid-template-columns: 62px minmax(0, 1fr) auto; align-items: center; gap: 14px; padding: 0 14px 0 16px; }
+.fl { height: 122px; display: grid; grid-template-columns: 88px minmax(0, 1fr) auto; align-items: center; gap: 12px; padding: 0 12px 0 10px; }
 .fl.on { border-color: var(--lav); background: #2b1b42e6; }
-.fl-ico { width: 62px; height: 62px; border-radius: 14px; display: grid; place-items: center; font-size: 30px; background: var(--c); box-shadow: inset 0 0 0 2px #fff3, 0 4px 10px #0008; }
-.fl h3 { margin: 0; font-size: 24px; font-weight: 800; letter-spacing: .02em; white-space: nowrap; }
+.fl-pack { position: relative; width: 88px; height: 112px; overflow: hidden; }
+.fl-pack img { position: absolute; left: 50%; top: 50%; width: 142px; height: 142px; max-width: none; transform: translate(-50%, -50%); filter: drop-shadow(0 6px 8px #000a); }
+.fl h3 { margin: 0; font-size: 23px; font-weight: 800; letter-spacing: .02em; white-space: nowrap; }
 .fl p { margin: 4px 0 0; font-size: 22px; font-weight: 600; color: #cdbfe0; white-space: nowrap; } .fl p b { color: var(--gold-hi); }
 .step { display: flex; align-items: center; gap: 4px; }
 .step button { width: 74px; height: 74px; border-radius: 50%; border: 2px solid #8f78ab; background: #2e1d45; font-size: 40px; font-weight: 500; line-height: 1; display: grid; place-items: center; }
@@ -175,29 +177,38 @@ button { font: inherit; color: inherit; }
 .time i { height: 12px; border-radius: 6px; background: #3a2a52; overflow: hidden; } .time i b { display: block; width: 72%; height: 100%; background: linear-gradient(90deg, #e3bd6e, #c9a7e6); }
 
 /* ---------- 炭焼き ---------- */
-.heat { position: relative; height: 100%; }
-.stove { position: absolute; left: -30px; top: -6px; width: 700px; filter: drop-shadow(0 24px 30px #000c); }
-.coal { position: absolute; width: 164px; filter: drop-shadow(0 8px 10px #000a); }
-.coal.ready { animation: ready 1.1s ease-in-out infinite; }
-@keyframes ready { 50% { filter: drop-shadow(0 0 22px #ffd98a) brightness(1.25); } }
-.pot { position: absolute; right: 0; top: 150px; width: 206px; padding: 12px 10px 4px; text-align: center; }
-.pot img { width: 168px; margin-top: 2px; }
-.pot h3 { margin: 0; font-size: 23px; font-weight: 800; color: var(--lav); display: flex; justify-content: space-between; padding: 0 10px; } .pot h3 b { color: var(--white); font-size: 26px; }
+.heat { position: relative; height: 628px; }
+.art { position: absolute; background-repeat: no-repeat; }
+.heat .stove { filter: drop-shadow(0 26px 30px #000c); }
+.heat .coal { filter: drop-shadow(0 10px 12px #000a); }
+.heat .coal.ready { animation: ready 1.1s ease-in-out infinite; }
+@keyframes ready { 50% { filter: drop-shadow(0 0 26px #ffd98a) brightness(1.25); } }
+.heat-brief { position: absolute; left: 0; top: 6px; }
+.heat-brief em { font-style: normal; color: var(--gold-hi); }
+.pot { position: absolute; right: 0; top: 0; width: 196px; height: 128px; padding: 8px 12px; display: grid; grid-template-columns: 1fr 104px; align-items: center; }
+.pot h3 { margin: 0; display: grid; gap: 2px; font-size: 22px; font-weight: 800; color: var(--lav); } .pot h3 b { color: var(--white); font-size: 28px; white-space: nowrap; }
+.pot .art { position: static; }
 
 /* ---------- 蒸らし時間 ---------- */
 .timer { position: relative; height: 100%; }
-.clock { position: absolute; left: 196px; top: -14px; width: 650px; height: 433px; }
-.clock img { width: 100%; filter: drop-shadow(0 22px 30px #000c); }
-.lcd { position: absolute; left: 14%; right: 14%; top: 15%; height: 37%; display: grid; place-items: center; font-family: "Suien Dot", monospace; font-size: 150px; line-height: 1; letter-spacing: .04em; color: #1d2b25; }
-.keys { position: absolute; left: 11.5%; right: 11.5%; top: 63%; height: 19%; display: grid; grid-template-columns: 1fr 1fr 1.75fr 1fr; gap: 3.2%; font-size: 22px; font-weight: 800; color: #3d3f3c; white-space: nowrap; }
-.keys span { display: grid; place-items: center; text-align: center; line-height: 1.12; padding-bottom: 6px; }
-.keys span:last-child { letter-spacing: -.08em; }
-.timer-notes { position: absolute; left: 196px; width: 650px; bottom: 24px; display: flex; justify-content: center; gap: 12px; }
+.clock { position: absolute; left: 232px; top: 8px; width: 600px; height: 402px; filter: drop-shadow(0 22px 30px #000c); }
+.clock > .art { left: 0; top: 0; }
+/* 液晶と4つのボタンの位置は本編（craft.css の .timer-display / .timer-button）と同じ割合 */
+.lcd { position: absolute; left: 12%; width: 76%; top: 17%; height: 38%; display: grid; place-items: center; color: #192e28; }
+.lcd .seven { width: 92%; height: 96%; }
+.seven .seg { fill: currentColor; stroke: currentColor; stroke-width: 1; stroke-linejoin: bevel; opacity: .1; }
+.seven .seg.on { opacity: .94; }
+.key { position: absolute; top: 75%; width: 18%; height: 16%; transform: translate(-50%, -50%); display: grid; place-items: center; text-align: center; font-size: 22px; font-weight: 800; line-height: 1.15; color: #27342e; white-space: nowrap; }
+.key.small { width: 15%; letter-spacing: -.1em; }
+.timer-notes { position: absolute; left: 232px; width: 600px; bottom: 24px; display: flex; justify-content: center; gap: 12px; }
 
 /* ---------- 蒸らし（雑念よけ）: 場は本編と同じ比率のまま、舞台の幅いっぱいへ ---------- */
 .steam { position: relative; height: 100%; }
 .field { position: absolute; left: 0; top: -8px; width: 854px; height: 457px; border-radius: 16px; overflow: hidden; border: 1.5px solid #5a4475; background: #0b0a18 center / cover no-repeat; box-shadow: inset 0 0 60px #000a; }
-.field .digits { position: absolute; inset: 0; display: grid; place-items: center; font-family: "Suien Dot", monospace; font-size: 250px; letter-spacing: .06em; color: #8fb4b81f; }
+.field .digits { position: absolute; inset: 0; display: grid; place-items: center; color: #8fb4b8; }
+.field .digits .seven { width: 66%; }
+.field .digits .seg { opacity: .025; }
+.field .digits .seg.on { opacity: .13; }
 .field .ecg { position: absolute; left: 0; right: 0; top: 50%; height: 1.5px; background: #8fb4b83d; }
 .field .heart { position: absolute; left: 50%; top: 50%; width: 30px; height: 30px; margin: -15px; fill: #7fe6f5; filter: drop-shadow(0 0 10px #7fe6f5); }
 .field .halo { position: absolute; left: 50%; top: 50%; width: 250px; height: 110px; margin: -55px -125px; border-radius: 50%; border: 1.5px solid #8fb4b82b; }
@@ -207,13 +218,12 @@ button { font: inherit; color: inherit; }
 .steam-hud { position: absolute; left: 34px; top: 8px; right: 16px; display: flex; justify-content: space-between; font-size: 22px; font-weight: 800; color: #dfe6ee; text-shadow: 0 2px 6px #000; }
 .steam-hud i { font-style: normal; color: #ff8fa0; }
 .steam-bar { position: absolute; left: 0; width: 854px; top: 458px; height: 8px; border-radius: 4px; background: #3a2a52; overflow: hidden; } .steam-bar b { display: block; height: 100%; width: 38%; background: linear-gradient(90deg, #7fe6f5, #c9a7e6); }
-.pad { position: absolute; display: grid; justify-items: center; gap: 0; }
-.pad img { width: 104px; height: 104px; } .pad b { margin-top: -6px; font-size: 22px; font-weight: 800; text-shadow: 0 2px 6px #000; white-space: nowrap; }
+.steam-ctrl { position: absolute; right: 10px; bottom: 6px; display: flex; align-items: flex-end; gap: 18px; }
+.pad { display: grid; justify-items: center; width: 132px; padding: 8px 0 6px; border-radius: 16px; background: #1f1330d9; border: 1.5px solid #5a4475; }
+.pad img { width: 108px; height: 108px; } .pad b { margin-top: -2px; font-size: 22px; font-weight: 800; white-space: nowrap; }
 .pad.locked img { filter: grayscale(1) brightness(.45); } .pad.locked b { color: #8f84a3; }
-.stick { position: absolute; right: 8px; bottom: 4px; width: 164px; height: 164px; }
+.stick { position: relative; width: 168px; height: 168px; margin-left: 4px; }
 .stick img { width: 100%; } .stick i { position: absolute; left: 50%; top: 50%; width: 76px; height: 76px; margin: -44px -30px; border-radius: 50%; background: radial-gradient(circle at 40% 35%, #fff, #d8c9ef 60%, #9d86bd); box-shadow: 0 6px 12px #000a; }
-.thumbs-left { position: absolute; left: 24px; bottom: 8px; display: flex; gap: 14px; }
-.thumbs-left .pad { position: static; }
 
 /* ---------- 吸い出し ---------- */
 .pull { position: relative; height: 100%; }
@@ -237,6 +247,8 @@ button { font: inherit; color: inherit; }
 .swap .coals { height: 92px; display: flex; align-items: center; justify-content: center; }
 .swap .coals img { width: 62px; margin: 0 -4px; }
 
+#stage[data-step="steam"] .dock { right: 700px; }
+
 /* ---------- 配置の考え方（?zones=1）: 画面を暗くして、6つの置き場所だけを色で示す ---------- */
 .zones { position: absolute; inset: 0; z-index: 6; pointer-events: none; background: #0b0614d1; }
 .zones div { position: absolute; display: grid; place-content: center; text-align: center; border: 3px solid var(--c); border-radius: 16px; background: color-mix(in srgb, var(--c) 26%, #150d22); color: #fff; font-size: 27px; font-weight: 900; line-height: 1.3; }
@@ -246,7 +258,7 @@ button { font: inherit; color: inherit; }
 .z-hero { --c: #ff8fb8; left: 8px; top: 82px; width: 320px; height: 520px; }
 .z-spine { --c: #74e0b0; left: 336px; top: 82px; width: 66px; height: 520px; writing-mode: vertical-rl; letter-spacing: .12em; }
 .z-play { --c: #7fb6ff; left: 410px; top: 82px; width: 862px; height: 520px; }
-.z-left { --c: #e3bd6e; left: 8px; top: 610px; width: 394px; height: 102px; }
+.z-left { --c: #b9a6cf; left: 8px; top: 610px; width: 394px; height: 102px; }
 .z-mid { --c: #b9a6cf; left: 410px; top: 610px; width: 548px; height: 102px; }
 .z-right { --c: #e3bd6e; left: 966px; top: 610px; width: 306px; height: 102px; }
 

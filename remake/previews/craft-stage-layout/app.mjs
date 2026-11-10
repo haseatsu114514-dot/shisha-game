@@ -4,6 +4,7 @@
 const IMG = "../../img/";
 const M = `${IMG}ui/making/`;
 const FACE = `${IMG}ui/face_icons/new/`;
+const SHOP = `${IMG}shop/`;
 
 const STEPS = ["mix", "pack", "holes", "heat", "timer", "steam", "pull", "care"];
 const NAMES = { mix: "配合", pack: "詰め方", holes: "穴あけ", heat: "炭焼き", timer: "蒸らし時間", steam: "蒸らし", pull: "吸い出し", care: "調整" };
@@ -16,11 +17,38 @@ const SNOW = `<svg class="ico snow" viewBox="0 0 16 16"><path d="M8 1.5v13M2.4 4
 const ARROW = `<path d="M2.5 15 27 3.5 21.5 15 27 26.5Z" stroke="#120a10" stroke-width="3" stroke-linejoin="round"/>`;
 const TUBE_H = 450, TUBE_BOTTOM = 9; // 柱の管の高さと、柱の下端から管の底まで
 
+// 絵は本編（craft/art.js の artImg）と同じく、中身の範囲（manifest の makingBox）で切り出して置く。
+const BOX = {
+  "heat_stove": [0.0983, 0.125, 1.0, 0.8867, 1.5],
+  "heat_flat_cold": [0.2111, 0.2611, 0.7911, 0.8218, 1.2],
+  "heat_flat_lit": [0.2103, 0.2638, 0.7911, 0.8218, 1.2],
+  "heat_carrier": [0.1258, 0.0434, 0.8766, 0.9502, 1.0161],
+  "kitchen_timer": [0.056, 0.1104, 0.9447, 0.9014, 1.5],
+};
+function art(name, w, { cls = "", style = "", h = null } = {}) {
+  const [l, t, r, b, aspect] = BOX[name];
+  const fullW = w / (r - l), natural = (fullW / aspect) * (b - t);
+  const fullH = (fullW / aspect) * (h ? h / natural : 1); // h を渡すと本編と同じく縦を合わせる
+  h ??= natural;
+  return `<div class="art ${cls}" style="width:${w}px;height:${h.toFixed(1)}px;background-image:url(${M}${name}.webp);background-size:${fullW.toFixed(1)}px ${fullH.toFixed(1)}px;background-position:${(-l * fullW).toFixed(1)}px ${(-t * fullH).toFixed(1)}px;${style}"></div>`;
+}
+
+// 液晶の数字は本編と同じ7セグ（remake/js/craft/digital-clock.js と同じ形）。フォントの数字は使わない。
+const SEG_ON = ["abcdef", "bc", "abdeg", "abcdg", "bcfg", "acdfg", "acdefg", "abc", "abcdefg", "abcdfg"];
+const SEG_PATH = {
+  a: "M6 2h28l4 4-4 4H6L2 6Z", b: "m38 8 4 4v20l-4 4-4-4V12Z", c: "m38 38 4 4v20l-4 4-4-4V42Z", d: "M6 64h28l4 4-4 4H6l-4-4Z",
+  e: "m2 38 4 4v20l-4 4-4-4V42Z", f: "m2 8 4 4v20l-4 4-4-4V12Z", g: "M6 33h28l4 4-4 4H6l-4-4Z",
+};
+const sevenSeg = (mmss) => `<svg class="seven" viewBox="-2 0 219 76" aria-hidden="true">${[...mmss.replace(":", "")].map((digit, i) =>
+  `<g transform="translate(${[2, 52, 122, 172][i]} 0)">${Object.entries(SEG_PATH).map(([id, d]) => `<path class="seg${SEG_ON[Number(digit)].includes(id) ? " on" : ""}" d="${d}"/>`).join("")}</g>`).join("")}<circle class="seg on" cx="108" cy="25" r="3"/><circle class="seg on" cx="108" cy="50" r="3"/></svg>`;
+
 const leaves = (left = 5) => `<span class="leaves">${Array.from({ length: 5 }, (_, i) => `<img src="${M}ui_mockup_flavor_leaf.webp" alt=""${i >= left ? ' class="gone"' : ""}>`).join("")}</span>`;
 const pips = (on, total = 5) => `<span class="pips">${Array.from({ length: total }, (_, i) => `<i${i < on ? ' class="on"' : ""}></i>`).join("")}</span>`;
 
-// ---- 熱の柱。kind: live（今の温度）/ band（配合の温度帯の予想）/ standby（火を入れる前）
-function spine({ kind, state, at = null, ghost = null, cold = false, color = "#74e0b0", bob = false }) {
+// ---- 熱の柱。全工程で同じ場所に立つ。
+// kind: band＝配合の温度帯の予想 / standby＝消灯（火を入れる前） / forecast＝蒸らし時間の目安の点線 / rising＝蒸らし中（札なし） / live＝吸い出し以降（状態の札つき）
+// 状態の札（ぬるい・適温…）は吸い出し以降だけ出す（2026-11-10 オーナー指示）。
+function spine({ kind, state = "", at = null, ghost = null, cold = false, color = "#74e0b0", bob = false }) {
   const y = (f) => `${TUBE_BOTTOM + f * TUBE_H}px`;
   return { kind, color, html: `
     <div class="spine" aria-label="熱ゲージ">
@@ -34,7 +62,7 @@ function spine({ kind, state, at = null, ghost = null, cold = false, color = "#7
       </div></div>
       ${at === null ? "" : `<svg class="spine-arrow${bob ? " bob" : ""}" viewBox="0 0 30 30" style="bottom:${y(at)}">${ARROW}</svg>`}
       ${ghost === null ? "" : `<span class="spine-ghost-note" style="bottom:${y(ghost)}">蒸らし後の目安</span>`}
-      <span class="spine-state">${state}</span>
+      ${state ? `<span class="spine-state">${state}</span>` : ""}
     </div>` };
 }
 
@@ -78,8 +106,9 @@ const hookah = `<div class="hookah">
   <i class="puff" style="left:196px;top:70px"></i><i class="puff" style="left:214px;top:100px;animation-delay:2.1s"></i>
 </div>`;
 
-const flavor = (ico, color, name, sub, grams, on) => `<div class="fl glass${on ? " on" : ""}">
-  <span class="fl-ico" style="--c:${color}">${ico}</span>
+// 葉の行: 商品パッケージ（ショップと同じ絵）を左に大きく出す
+const flavor = (pack, name, sub, grams, on) => `<div class="fl glass${on ? " on" : ""}">
+  <span class="fl-pack"><img src="${SHOP}${pack}.webp" alt=""></span>
   <div><h3>${name}</h3><p>${sub}</p></div>
   <div class="step"><button>−</button><span>${grams}<small>g</small></span><button class="plus">＋</button></div>
 </div>`;
@@ -100,10 +129,10 @@ const SCENES = {
         <div class="mix-keep">フレーバーの持ち${leaves(5)}</div>
       </div>
       <div class="mix-list">
-        ${flavor("🍋", "linear-gradient(135deg,#f4d24a,#c98f1a)", "AF レモン", "<b>課題</b>・酸味　比率 50%", 6, true)}
-        ${flavor("🌿", "linear-gradient(135deg,#59c98a,#1f7a55)", "AF ミント", "清涼　比率 50%", 6, true)}
-        ${flavor("🍎", "linear-gradient(135deg,#d9584a,#7a1f2a)", "AF ダブルアップル", "スパイス", 0, false)}
-        ${flavor("🍑", "linear-gradient(135deg,#f0a07a,#b85a3a)", "AF ピーチ", "甘み", 0, false)}
+        ${flavor("heaven10/lemon", "AF レモン", "<b>課題</b>・酸味　比率 50%", 6, true)}
+        ${flavor("heaven10/mint", "AF ミント", "清涼　比率 50%", 6, true)}
+        ${flavor("heaven10/double_apple", "AF ダブルアップル", "スパイス", 0, false)}
+        ${flavor("packages/peach", "ピーチ", "甘み", 0, false)}
       </div>
     </div>`,
     dock: `<div class="grow"><span class="chip ok">✓ 課題「レモン」2g以上</span></div><button class="btn gold">この配合で詰める</button>`,
@@ -126,7 +155,7 @@ const SCENES = {
   }),
   holes: () => ({
     hero: `<img src="${M}hajime_craft_holes.webp" alt="" style="left:-120px;top:226px;width:640px"><img src="${M}hajime_craft_holes_hover.webp" alt="" style="left:-173px;top:276px;width:640px">`,
-    spine: spine({ kind: "standby", state: "火入れ前" }),
+    spine: spine({ kind: "standby" }),
     play: `<div class="holes">${foil()}
       <div class="holes-side">
         <span class="cap">外周12穴＋中周12穴</span>
@@ -137,36 +166,39 @@ const SCENES = {
     dock: `<div class="grow"><button class="btn side" style="height:100%" disabled>次のリングへ</button><button class="btn side" style="height:100%;width:230px" disabled>終えて結果へ</button></div><button class="btn gold">穴を開ける<small>押し込んで離す</small></button>`,
     voice: ["sumi", "スミさん", "その間隔だ。いい手つきだな"],
   }),
+  // 炭焼き: 決定ボタンが無い工程なので、下の列まで使ってコンロと炭を大きく置く（2026-11-10 オーナー指示）
   heat: () => ({
     hero: `<img src="${M}hajime_craft_heat.webp" alt="" style="left:-170px;bottom:0;width:720px">`,
-    spine: spine({ kind: "standby", state: "火入れ前" }),
+    spine: spine({ kind: "standby" }),
     play: `<div class="heat">
-      <img class="stove" src="${M}heat_stove.webp" alt="">
-      <img class="coal" src="${M}heat_flat_cold.webp" alt="" style="left:233px;top:18px">
-      <img class="coal" src="${M}heat_flat_lit.webp" alt="" style="left:112px;top:152px;filter:brightness(.8) saturate(.8) drop-shadow(0 8px 10px #000a)">
-      <img class="coal ready" src="${M}heat_flat_lit.webp" alt="" style="left:344px;top:143px">
-      <div class="pot glass"><h3>炭壺<b>0 / 3</b></h3><img src="${M}heat_carrier.webp" alt=""></div>
+      <span class="chip heat-brief">全面が赤くなった炭を<em>タップして取る</em></span>
+      ${art("heat_stove", 850, { cls: "stove", style: "left:6px;top:118px" })}
+      ${art("heat_flat_cold", 176, { cls: "coal", style: "left:290px;top:112px" })}
+      ${art("heat_flat_lit", 176, { cls: "coal", style: "left:122px;top:296px;filter:brightness(.8) saturate(.8)" })}
+      ${art("heat_flat_lit", 176, { cls: "coal ready", style: "left:446px;top:282px" })}
+      <div class="pot glass"><h3>炭壺<b>0 / 3</b></h3>${art("heat_carrier", 104)}</div>
     </div>`,
-    dock: `<div class="grow"><span class="brief">全面が赤くなった炭を<em>タップして取る</em></span></div>`,
+    dock: "",
     voice: ["sumi", "スミさん", "黒い面が消えたら合図だ"],
   }),
   timer: () => ({
     hero: `<img src="${M}hajime_steam_wait.webp" alt="" style="left:-206px;top:0;height:1000px">`,
-    spine: spine({ kind: "live", state: "ぬるい", at: .09, ghost: .5, color: "#ffedb0" }),
+    spine: spine({ kind: "forecast", ghost: .5 }),
     play: `<div class="timer">
-      <div class="clock"><img src="${M}kitchen_timer.webp" alt=""><div class="lcd">08:00</div>
-        <div class="keys"><span>分</span><span>秒</span><span>スタート<br>＆ストップ</span><span>リセット</span></div></div>
+      <div class="clock">${art("kitchen_timer", 600, { h: 402 })}<div class="lcd" role="img" aria-label="8分0秒">${sevenSeg("08:00")}</div>
+        <span class="key" style="left:15%">分</span><span class="key" style="left:34%">秒</span><span class="key" style="left:60%">スタート<br>＆ストップ</span><span class="key small" style="left:85%">リセット</span></div>
       <div class="timer-notes"><span class="chip">☀ 晴れ・28℃</span><span class="chip">雑念よけは 約40秒</span></div>
     </div>`,
     dock: `<div class="grow"><span class="brief">柱の<em>点線</em>を見ながら、蒸らす時間を決める</span></div>`,
     voice: ["sumi", "スミさん", "熱の目安を見て、決めろ"],
   }),
+  // 蒸らし: スティックと補助ボタンは今と同じく近くにまとめる（押しやすさのための配置。2026-11-10 オーナー指示）
   steam: () => ({
     hero: `<img src="${M}hajime_steam_wait.webp" alt="" style="left:-206px;top:0;height:1000px">`,
-    spine: spine({ kind: "live", state: "ぬるい", at: .31, color: "#ffe270", bob: true }),
+    spine: spine({ kind: "rising", at: .31, color: "#ffe270", bob: true }),
     play: `<div class="steam">
       <div class="field" style="background-image:url(${M}steam_mind_world.webp)">
-        <div class="digits">07:25</div><i class="ecg"></i><i class="halo"></i>
+        <div class="digits">${sevenSeg("07:25")}</div><i class="ecg"></i><i class="halo"></i>
         <svg class="heart" viewBox="0 0 24 24"><path d="M12 21C5 15.5 2 12 2 8.2 2 5.3 4.2 3 7 3c1.9 0 3.6 1 5 2.8C13.400 4 15.100 3 17 3c2.800 0 5 2.300 5 5.200 0 3.800-3 7.300-10 12.800Z"/></svg>
         <span class="word" style="left:30px;top:120px">味、大丈夫か</span>
         <span class="word" style="right:60px;top:300px;--dx:-140px">失敗したら</span>
@@ -176,14 +208,14 @@ const SCENES = {
       </div>
       <i class="steam-bar"><b></b></i>
     </div>`,
-    dock: `<div class="grow"><span class="brief">ハートを動かして<em>雑念をよける</em></span></div>`,
+    dock: `<div class="grow"><span class="brief">ハートを動かして<br><em>雑念をよける</em></span></div>`,
     voice: null,
-    extra: `<div class="thumbs-left">
+    extra: `<div class="steam-ctrl">
         <div class="pad"><img src="${M}steam_refresh_simple.webp" alt=""><b>リフレッシュ</b></div>
         <div class="pad locked"><img src="${M}steam_precision_simple.webp" alt=""><b>アタック</b></div>
         <div class="pad"><img src="${M}steam_precision_simple.webp" alt=""><b>精密</b></div>
-      </div>
-      <div class="stick"><img src="${M}steam_stick_simple_base.webp" alt=""><i></i></div>`,
+        <div class="stick"><img src="${M}steam_stick_simple_base.webp" alt=""><i></i></div>
+      </div>`,
   }),
   pull: (mode) => ({
     hero: `<img src="${M}hajime_craft_pull_rest.webp" alt="" style="left:-214px;bottom:0;width:700px">${hookah}`,
@@ -227,10 +259,12 @@ function rail(step, mode) {
     <div class="rival"><img src="${FACE}face_naru.webp" alt="">${lamps(now, 1)}</div>
     <div class="rival"><img src="${FACE}face_adam.webp" alt="">${lamps(Math.max(0, now - 1), -1)}</div>
     <div class="rival"><img src="${FACE}face_minto.webp" alt="">${lamps(now, 0)}</div></div>` : "";
+  // ランク: 制作中は文字だけの略形（D〜SSS）と次のランクまでの進み。全文の絵（細かい文字入り）は結果の画面で大きく見せる。
+  const grade = now >= 3 ? "A" : now >= 1 ? "B" : "";
   return `<header class="rail">
     <div class="mode">${mode === "tournament" ? "SMOKE CROWN CUP" : "REHEARSAL"}</div>
     <div class="phases">${phases}</div>
-    <div class="rail-right">${rivals}<div class="rank"><small>RANK</small><b>${now >= 3 ? "A" : now >= 1 ? "B" : "–"}</b></div></div>
+    <div class="rail-right">${rivals}<div class="rank"><small>RANK</small><b>${grade || "—"}</b>${grade ? `<i class="rank-meter"><u style="width:${grade === "A" ? 60 : 35}%"></u></i>` : ""}</div></div>
     <button class="help" aria-label="操作の説明">?</button>
   </header>`;
 }
@@ -251,7 +285,7 @@ function render() {
     ${rail(step, mode)}
     ${scene.spine.html}
     <main class="play">${scene.play}</main>
-    <footer class="dock">${scene.dock}</footer>
+    ${scene.dock ? `<footer class="dock">${scene.dock}</footer>` : ""}
     ${voice ? `<div class="voice"><img src="${FACE}face_${voice[0]}.webp" alt=""><div><b>${voice[1]}</b><p>${voice[2]}</p></div></div>` : ""}
     ${scene.extra || ""}
     ${query.get("zones") ? `<div class="zones">
@@ -260,7 +294,7 @@ function render() {
       <div class="z-hero">はじめ<small>枠なしの切り抜き<br>表情・汗・手元の動き</small></div>
       <div class="z-spine">熱の柱</div>
       <div class="z-play">舞台<small>今の作業ひとつだけを、画面でいちばん大きく</small></div>
-      <div class="z-left">左親指<small>見守る人の一言／蒸らしは補助ボタン</small></div>
+      <div class="z-left">左下<small>見守る人の一言</small></div>
       <div class="z-mid">状態の札<small>持ち・回数・ひとことの案内</small></div>
       <div class="z-right">右親指<small>金の決定ボタンは常にここ</small></div></div>` : ""}`;
 
