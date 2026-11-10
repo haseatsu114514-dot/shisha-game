@@ -108,8 +108,13 @@ await suite("issue508-theme", async checkAll => {
         assert(Number.isFinite(beforePlay) && Number.isFinite(currentPlay) && currentPlay >= 0, "play time stays a valid count");
         assert.equal(currentGame.flags._salaryman_service_order, opts.choice === 0);
         assert.equal(currentGame.flags._salaryman_service_water, opts.choice === 1);
+        // E案の立ち絵を見た時点で面識と紹介済みを記録する。
+        assert.equal(currentGame.met.salaryman, true);
+        assert.equal(currentGame.flags._intro_salaryman, true);
         delete currentGame.flags._salaryman_service_order;
         delete currentGame.flags._salaryman_service_water;
+        delete currentGame.flags._intro_salaryman;
+        delete currentGame.met.salaryman;
         assert.deepEqual(currentGame, beforeGame, `Changed state effect: ${JSON.stringify(opts)}`);
       } else if (opts.id === "ch1_tsumugi_work_in_progress") {
         // #452 saves the actual answer immediately. Compare every game field,
