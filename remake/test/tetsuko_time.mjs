@@ -447,6 +447,20 @@ assert.equal(classifyFlag(OUTINGS_FLAG), "progression");
   }
 }
 
+// 見守る初回だけの発見を、膝に乗る日や見守った後に案内しない。
+{
+  for (const count of [0, 1, 4]) for (const mood of MOODS) for (const watches of [0, 1, 2]) {
+    const session = createSession(save({ count }));
+    session.mood = mood.id;
+    session.watches = watches;
+    session.found = MOMENTS.filter(moment => moment.id !== "paws_together").map(moment => moment.id);
+    const reachable = watches === 0 && !(session.stage >= 3 && session.mood === "clingy");
+    assert.equal(discoveryGuide(session, "paws_together").id === "paws_together", reachable,
+      `前足をそろえる案内は今できる時だけ: ${count}/${mood.id}/${watches}`);
+    if (reachable) assert.equal(act(session, "watch").moment, "paws_together");
+  }
+}
+
 // 次の一手・模様替えの反応・撤去の回帰。旧セーブの確定点は変えない。
 {
 for(let count=0;count<5;count++) {

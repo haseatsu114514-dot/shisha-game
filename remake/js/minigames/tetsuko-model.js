@@ -435,7 +435,7 @@ export function discoveryGuide(session, preferred = null) {
     { id: "first_paw", kind: "play", text: session.swings < 2 ? "じゃらしを振ると、目で追って……" : "狙っている。もうひと振り。" },
     { id: "hug_toy", when: session.stage >= 1, kind: toyOut(session) ? "catch" : "play", text: toyOut(session) ? "じゃらしを止めて、捕まえさせてみよう。" : "じゃらしを振ってから、止めてみよう。" },
     { id: "brush_bliss", when: canBrush(session), kind: "brush", text: "ブラシで、背中をゆっくり。" },
-    { id: "paws_together", kind: "watch", text: "そっと見守ると、どんな顔をするかな。" },
+    { id: "paws_together", when: session.watches === 0 && !(session.stage >= 3 && session.mood === "clingy"), kind: "watch", text: "そっと見守ると、どんな顔をするかな。" },
     { id: "box_peek", kind: has(session, "box") ? "watch" : "decor", prop: "box", text: has(session, "box") ? "箱のそばで、そっと見守ろう。" : "もようがえで箱を置いてみよう。" },
     { id: "ball_watch", kind: has(session, "ball") ? "watch" : "decor", prop: "ball", text: has(session, "ball") ? "ボールをどうするか、見守ってみよう。" : "もようがえで床にボールを置こう。" },
     { id: "first_rub", when: session.stage >= 3, kind: "pet", text: "近くに来たら、そっとなでてみよう。" },
