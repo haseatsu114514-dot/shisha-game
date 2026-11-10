@@ -340,7 +340,13 @@ export function toast(text, { ms = 2600, kind = "" } = {}) {
  */
 export function loadingNotice(label = "読み込んでいます…") {
   const notice = el("div.vn-loading", { role: "status", "aria-live": "polite", text: label, dataset: { test: "module-loading" } });
-  return { onShow: () => layers.fx.append(notice), onHide: () => notice.remove() };
+  let hideComic, closed = false;
+  return { onShow: () => {
+    layers.fx.append(notice);
+    if (typeof window !== "undefined") void import("./loading-comic-notice.js").then(({ attachLoadingComic }) => {
+      if (!closed && notice.isConnected) hideComic = attachLoadingComic(notice);
+    }).catch(() => { /* The plain notice remains available if the comic module fails. */ });
+  }, onHide: () => { closed = true; hideComic?.(); notice.remove(); } };
 }
 
 /** VN開始前などの画像待ちにだけ添える通知。play()自体は包まない。 */
