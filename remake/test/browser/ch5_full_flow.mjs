@@ -357,9 +357,19 @@ await suite("ch5-full-flow", async check => {
     });
     await loadSlot(page, 0);
     await mapReady(page, { day: 51, slot: 0 });
-    // 地元の地図の「東京へ（配送便）」: 文字の盾（新幹線の駅の絵・店のロゴは付けない）。説明に決まりを書く。
+    // #3022 の配送便アイコンは、行きも帰りも店のロゴではなくシール風のトラックを使う。
+    const assertVanSticker = async id => {
+      const pin = page.locator(dt(`pin-${id}`));
+      const sticker = pin.locator('.facility-icon.sticker[data-facility="delivery_truck"]');
+      assert.equal(await sticker.count(), 1, `${id} uses the delivery-truck sticker`);
+      assert.equal(await pin.locator('.store-logo').count(), 0, `${id} does not use a store logo`);
+      const image = sticker.locator('.facility-icon-crop > img');
+      await image.evaluate(img => img.decode());
+      assert.match(await image.getAttribute('src'), /\/assets\/ui\/map-facilities-delivery-truck\.webp$/);
+      assert.match(await sticker.locator('.facility-icon-crop').evaluate(crop => getComputedStyle(crop).filter), /facility-sticker-outline/);
+    };
     const toTokyo = dt("pin-ch5_to_tokyo");
-    assert.equal(await page.locator(`${toTokyo} .facility-icon, ${toTokyo} .store-logo`).count(), 0, "The van pin is a plain shield");
+    await assertVanSticker("ch5_to_tokyo");
     await page.locator(toTokyo).click();
     assert.equal(await page.locator(".map-info .mi-desc").count(), 0);
     assert(await page.locator(dt("map-go")).isVisible());
@@ -371,6 +381,7 @@ await suite("ch5-full-flow", async check => {
         && !document.querySelector("#modal.show");
     }, [day, slot], { timeout: 60000 });
     await tokyoMap(52, 0);
+    await assertVanSticker("ch5_tokyo_home");
     let state = await get(page);
     assert.equal(state.flags._ch2_region, "tokyo", "The night of the ride is spent in the attic");
     assert.equal(state.flags._ch5_tokyo_van, true, "A Dr.fookah clerk offers the ride the first time");
