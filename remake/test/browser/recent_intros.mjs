@@ -82,12 +82,12 @@ try {
   // 会話VNを通らない案内役も、本当の入店経路で一度だけ表示。無料入店の収支は維持する。
   await page.setViewportSize({ width: 1280, height: 720 });
   for (const id of ["maki", "sai"]) {
-    await page.evaluate(async id => {
+    await page.evaluate(id => {
       const s = T.core.newGame();
       Object.assign(s, { chapter: 2, day: 16, slot: id === "maki" ? 1 : 0, phase: "daily", money: 15000, stamina: 80 });
       Object.assign(s.flags, { _axe_bar_rumor_done: true, _axe_bar_sighting_done: true, _rei_trpg_introduced: true });
-      // 初登場だけを検査する。部活結成会話は別のテストで扱う。
-      if (id === "sai") (await import("./js/trpg/campaign.js")).foundTrpgClub(s, { unlockChapter: 2 });
+      // 入店後の紹介検査。部活設立の会話は #3135 / trpg_main の範囲なので、既に設立済みとして棚と店主を出す。
+      if (id === "sai") s.trpg.club.founded = { chapter: 2, day: 16 };
       T.before = [s.money, s.stamina, s.slot, s.day];
       T.open = async () => id === "maki"
         ? (await import("./js/daily/axe-bar.js")).visitAxeBar()

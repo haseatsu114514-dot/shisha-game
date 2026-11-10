@@ -576,7 +576,15 @@
     "visual_concepts": [
       "41s japanese salaryman, tired and expressionless face, wearing a slightly loosened necktie and a wrinkled grey suit, sitting alone looking at his smartphone, office worker relaxing after hours",
       "middle-aged corporate worker, short neat but exhausted hair, wearing a business suit without the jacket, blowing a slow cloud of smoke with a heavy sigh, realistic dim moody cafe lighting"
-    ]
+    ],
+    "intro_cutin": {
+      "title": "tonariの寡黙な常連",
+      "display_name": "鉄仮面《てっかめん》さん",
+      "line": "……ごちそうさん",
+      "face": "normal",
+      "color": "#a49b8e",
+      "motion": "soft"
+    }
   },
   {
     "id": "kumicho",

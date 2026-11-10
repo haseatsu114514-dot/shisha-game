@@ -694,6 +694,7 @@ export async function dayCard(title, sub, { ms = 1900, weather = null, forecast 
   const card = el("div.day-card", [el("div.dc-title", { text: title }), sub ? el("div.dc-sub", [sub, wx?.badge]) : null]);
   if (forecast) card.append(el("small.dc-sub", { text: `明日は${forecast}`, dataset: { test: "day-forecast" } }));
   layers.fx.append(card);
+  SE.card();
   await nextFrame();
   card.classList.add("show");
   await sleep(ms);
@@ -719,4 +720,5 @@ export async function roundCut(text, sub = "") {
 export function dayTurn(mid) {
   return nightToMorning(layers.fx, mid);
 }
+
 

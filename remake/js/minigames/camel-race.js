@@ -7,11 +7,14 @@
 // ラクダ・ロボット騎手・SUV・車輪は Codex の絵（assets/ui/camel_race・2026-11-02 採用。原画は asset_sources/ch4-camel-race）。
 // 絵が読めない環境では Canvas の描画に戻す。砂漠・柵・砂煙・合図の輪・HUD は Canvas で描く。
 import { el } from "../core/util.js";
-import { SE, currentBgm, playBgm, unlockAudio, playCamelRaceSe, preloadCamelRaceSe } from "../core/audio.js";
+import { SE, currentBgm, playBgm, unlockAudio, playCamelRaceSe, preloadCamelRaceSe, setBgmPlaybackRate, resetBgmTempo, tickBgmPlaybackRate } from "../core/audio.js";
 import { imgFileUrl } from "../core/img-file.js";
 import { faceIconUrl } from "../core/data.js";
 import { RACE, CUE, PLAYER, WHIP, CAMEL_CUPS, camelCup, camelCupQualified, camelMastered, camelExpert, rng, createRace, stepRace, pressVoice, setWhip, whipReady, activeCue, inSpurt, standings, scoreRace,
   POLICIES, PLAYER_CAMEL, RIVAL_PROFILES } from "./camel-race-model.js";
+import { CAMEL_RACE_BGM, camelRaceBgmRate } from "./camel-race-bgm.js";
+
+import { camelStaminaReadout, camelSpectatorComment, SPURT_RESERVE } from "./camel-race-feedback.js";
 
 export const CAMEL_RACE_TITLE = "CAMEL RACE";
 const CUP_TIME_NOTE = "この訪問中の再挑戦は日付を進めません。完走して戻ると従来どおり昼の1行動を使います。";
@@ -49,7 +52,7 @@ const CALLS = Object.freeze({
   passed: name => `${name}が来た！ 声、声！`,
   leader: name => `${name}が前に出た。まだ焦るなよ`,
   half: "半分！ スパートの分の息は残しとけよ",
-  spurt: "ここからだ！ ムチ、押しっぱなし！",
+  spurt: "ここからだ！ 残した息でムチを使え！",
   last100: "あと100！ いけいけいけ！",
   tired: "ハビーバがバテてる……ムチを離して声で整えろ",
   combo: "その声だ、ハビーバが乗ってきた！",
@@ -64,7 +67,7 @@ const TUTORIAL = [
   // 3ページとも短く（#2836）。キーは kbd で添え、タッチ端末では CSS で隠す。結果・大会選びの「？」から読み直せる。
   { icon: "camel", art: "howto-camel", title: "ラクダは、自分で走る", body: "手前を走る金のゼッケン（★）がハビーバ。操縦はしない。背中のロボット騎手へ「声」と「ムチ」を送るだけ。" },
   { icon: "voice", art: "howto-voice", title: "声をかける ── 左のボタン", key: "Space", body: "騎手のまわりの金の輪が縮む。内側の輪と重なった瞬間に押すと PERFECT で、ぐっと伸びる。輪の縮む速さは毎回ちがうので、よく見て押す。外したり連打したりすると、スタミナが減る。" },
-  { icon: "signal", art: "howto-whip", title: "ムチ ── 右のボタンを押し続ける", key: "X", body: "押している間だけラクダが伸び、スタミナが減る。離している間は息が戻る（調子が良いほど早く戻る）ので、途中で小刻みに使うと無駄がない。空になるとしばらく使えない。残り250mの LAST SPURT でいちばん効くので、少しは残しておく。" },
+  { icon: "signal", art: "howto-whip", title: "ムチ ── 右のボタンを押し続ける", key: "X", body: "押している間は加速して息が減り、離すと調子に応じて回復。40以下で注意、30未満は減速。空になる前に離し、輪に合わせた声で整える。ゲージの白い印は終盤3秒ぶんの目安。最後の4分の1の LAST SPURT はムチがよく効く。" },
 ];
 // レース中の SE ID は従来どおり（sfx("hoof") など）。録音はラクダ専用で、他ミニゲームの合成SEは置き換えない。
 const sfx = name => { try { if (name === "select" || name === "click" || name === "cancel") SE[name]?.(); else playCamelRaceSe(name); } catch { /* 音は無くても遊べる */ } };
@@ -256,7 +259,7 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
   const staminaValue = el("b", { text: "100" });
   const staminaFill = el("i");
   const staminaNode = el("span.camel-stamina", { "aria-hidden": "true", dataset: { state: "ok" } }, [
-    el("span.camel-stamina-bar", [staminaFill, el("span.camel-stamina-mark", { style: { "--x": PLAYER.tired / 100 } })]), staminaValue]);
+    el("span.camel-stamina-bar", [staminaFill, el("span.camel-stamina-mark", { style: { "--x": PLAYER.tired / 100 } }), el("span.camel-stamina-reserve", { title: "終盤3秒ぶんの目安", style: { left: `${SPURT_RESERVE}%` } })]), staminaValue]);
   const hudNode = el("div.camel-hud", { hidden: true }, [progressNode, clockNode, standingsNode]);
   const signalCost = el("small.camel-signal-note", { text: "押している間" });
   // スマホ横持ちでは名前の文字を隠してアイコン（🔊・⚡）とゲージだけにするので、読み上げ名は aria-label に持たせる（#2836）。
@@ -277,7 +280,13 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
   const callIcon = el("img.camel-call-icon", { src: faceIconUrl("faris") || FARIS_ICON, alt: "", onerror: event => { event.currentTarget.hidden = true; } });
   const callNode = el("div.camel-call", { "aria-hidden": "true", dataset: { test: "camel-call" } }, [callIcon, el("span.camel-call-body", [el("b", { text: "ファーリス" }), callText])]);
   const flashNode = el("div.camel-flash", { "aria-hidden": "true" });
-  const stageNode = el("div.camel-stage", [canvas, flashNode, hudNode, callNode, feedback, banner, countdownNode, controls, closeButton]);
+  const pacingText = el("span"), reserveText = el("small");
+  const pacingNode = el("div.camel-pacing", { hidden: true, dataset: { test: "camel-pacing" } }, [pacingText, reserveText]);
+  const boostLabel = el("div.camel-boost-label", { hidden: true, text: "≫ WIND BOOST", dataset: { test: "camel-boost-label" }, "aria-hidden": "true" });
+  const spectatorText = el("span.camel-spectator-text");
+  const spectators = el("div.camel-spectators", { hidden: true, dataset: { test: "camel-spectators" }, "aria-label": "架空の観客の応援コメント" }, [
+    el("b.camel-spectator-tag", { text: "架空応援席" }), el("span.camel-spectator-window", [spectatorText])]);
+  const stageNode = el("div.camel-stage", [canvas, flashNode, hudNode, callNode, feedback, banner, countdownNode, boostLabel, spectators, controls, pacingNode, closeButton]);
   const sheet = el("div.camel-sheet", { hidden: true });
   const root = el("section.camel-game", { role: "dialog", "aria-modal": "true", "aria-label": CAMEL_RACE_TITLE, tabindex: "-1",
     dataset: { test: "camel-game", phase: "loading", reducedMotion: String(reducedMotion) } }, [stageNode, live, sheet]);
@@ -318,6 +327,7 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     if (phase === "tutorial" || phase === "loading") draw();
   });
   let race = null, phase = "loading", raf = 0, last = null, goalAt = 0, feedbackTimer = 0, bannerTimer = 0, countdownLeft = 0, countdownShown = -1;
+  let lastStaminaNotice = -99;
   let standingsStamp = 0, whip = 0, done = false, spurtShown = false, settleTimer = 0;
   // 演出: 画面の揺れ・ゴールのスロー・GO の柵・連続成功・ファーリスの声・抜いた／抜かれた。
   let shake = 0, slow = 0, goTime = -1, combo = 0, callTimer = 0, lastCallAt = -9, spurtTint = 0;
@@ -346,6 +356,9 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     phase = next; root.dataset.phase = next;
     controls.hidden = next !== "race" && next !== "countdown";
     hudNode.hidden = !["countdown", "race", "goal"].includes(next);
+    pacingNode.hidden = !["countdown", "race"].includes(next);
+    spectators.hidden = !["countdown", "race", "goal"].includes(next);
+    if (next !== "race") boostLabel.hidden = true;
   };
   const announce = text => { live.textContent = text; };
   const showFeedback = (text, kind, sub = "") => {
@@ -410,7 +423,7 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
       const lane = laneOf("player");
       for (let i = 0; i < 14; i++) dust.push({ x: playerX() - 40 + Math.random() * 30, y: lane.y + 24, r: 10 + Math.random() * 14, a: 0.55, vx: -(120 + Math.random() * 160), vy: -(30 + Math.random() * 60), s: lane.scale });
     }
-    if (result.type === "spurt") showFeedback("スパート！", "spurt", "押し続けろ");
+    if (result.type === "spurt") showFeedback("スパート！", "spurt", "残した息を使おう");
   };
   const flashButton = (button, kind) => {
     button.dataset.hit = kind; button.classList.remove("hit"); void button.offsetWidth; button.classList.add("hit");
@@ -463,7 +476,8 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     signal?.removeEventListener("abort", abort);
     root.remove();
     active.delete(host);
-    if (currentBgm() === "bgm_ethnic12") playBgm(bgmBefore);
+    resetBgmTempo();
+    if (currentBgm() === CAMEL_RACE_BGM) playBgm(bgmBefore);
     try { previousFocus?.focus?.(); } catch { /* 元の要素が無い */ }
     finish(summary(completed));
   };
@@ -527,12 +541,14 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     sheet.querySelector(".camel-cup:not(:disabled)")?.focus();
   }
   function startRace() {
-    playBgm("bgm_ethnic12");
+    playBgm(CAMEL_RACE_BGM);
+    resetBgmTempo();
     preloadCamelRaceSe();
     sheet.hidden = true; sheet.replaceChildren();
     race = createRace({ seed: rivalSeed(), cup: selectedCup });
     clockNode.querySelector(".camel-clock-sub").textContent = `${camelCup(selectedCup).name} ${race.length.toLocaleString("ja-JP")}m・4頭`;
     dust.length = 0; confetti.length = 0; sparks.length = 0; waves.length = 0; floaters.length = 0;
+    lastStaminaNotice = -99;
     whip = 0; spurtShown = false; goalAt = 0; settleTimer = 0;
     shake = 0; slow = 0; goTime = -1; combo = 0; spurtTint = 0; lastCallAt = -9; lastPosition = 0; leaderId = null; marks = new Set();
     camShift = 0; lastStride = -1; hajimeTextTimer = 0;
@@ -610,6 +626,12 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
       if (slow > 0) slow -= dt;
       goalAt += dt * rate;
       if (goalAt > 2.3) openResult();
+    }
+    if (phase === "race" && race && !race.finished) {
+      setBgmPlaybackRate(camelRaceBgmRate(race.player.speed));
+      tickBgmPlaybackRate(dt);
+    } else {
+      resetBgmTempo();
     }
     animate(dt);
     draw();
@@ -769,6 +791,7 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
       }
       drawDust(1);
       drawSpeedLines(1);
+      drawWhipWind();
       drawLight();
       drawCue();
       drawEffects();
@@ -1206,6 +1229,23 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     });
     ctx.restore();
   }
+  /** 自機の上下を走る白青の風。声の輪・名札・ラクダ本体は空ける。 */
+  function drawWhipWind() {
+    if (reducedMotion || phase !== "race" || !race?.player.whipping) return;
+    const x = playerX(), y = laneOf("player").y;
+    ctx.save(); ctx.lineCap = "round";
+    for (let i = 0; i < 12; i++) {
+      const offset = 350 - ((race.t * (420 + i * 21) + i * 91) % 700);
+      const sx = x + offset, sy = y + (i % 2 ? 39 + (i % 3) * 9 : -119 - (i % 3) * 8);
+      const len = (inSpurt(race) ? 130 : 85) + (i % 4) * 19;
+      const gradient = ctx.createLinearGradient(sx, sy, sx + len, sy);
+      gradient.addColorStop(0, "rgba(110,226,255,0)"); gradient.addColorStop(.7, "rgba(173,240,255,.7)"); gradient.addColorStop(1, "rgba(255,255,255,.95)");
+      ctx.strokeStyle = "rgba(21,68,82,.35)"; ctx.lineWidth = 6;
+      ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(sx + len, sy - 3); ctx.stroke();
+      ctx.strokeStyle = gradient; ctx.lineWidth = 3; ctx.stroke();
+    }
+    ctx.restore();
+  }
   /** 火花・波紋・「抜いた」の文字・スパートの色。 */
   function drawEffects() {
     ctx.save();
@@ -1288,7 +1328,24 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     const stamina = Math.round(race.player.stamina);
     setOnce("stamina", stamina, v => { staminaValue.textContent = String(v); staminaFill.style.setProperty("--v", String(v / 100)); });
     const locked = !whipReady(race);
-    setOnce("staminaState", locked ? "spent" : stamina < PLAYER.tired ? "tired" : "ok", state => { staminaNode.dataset.state = state; signalButton.dataset.stamina = state; });
+    const readout = camelStaminaReadout(race);
+    setOnce("staminaState", readout.state, state => {
+      staminaNode.dataset.state = state; signalButton.dataset.stamina = state; pacingNode.dataset.state = state;
+      if (phase === "race" && ["low", "tired", "spent"].includes(state)) {
+        announce(readout.message);
+        if (race.t - lastStaminaNotice >= 6) { sfx("miss"); lastStaminaNotice = race.t; }
+      }
+    });
+    setOnce("pacing", readout.message, text => { pacingText.textContent = text; });
+    setOnce("reserve", readout.reserveText, text => { reserveText.textContent = text; });
+    boostLabel.hidden = phase !== "race" || !readout.accelerating;
+    // コメントは14秒の区切りか出来事が変わった時だけ。毎フレームDOMを作り直さない。
+    const comment = camelSpectatorComment(race, phase);
+    setOnce("spectator", comment.key, () => {
+      spectatorText.textContent = comment.text;
+      spectatorText.style.animation = "none"; void spectatorText.offsetWidth; spectatorText.style.animation = "";
+      spectators.title = comment.text;
+    });
     const spurt = inSpurt(race);
     const state = locked ? "spent" : race.player.whipping ? "whipping" : spurt ? "spurt" : "ready";
     setOnce("signal", state, value => { signalButton.dataset.state = value; });
@@ -1379,4 +1436,5 @@ function shade(hex, amount) {
 }
 
 export { PLAYER_CAMEL, RIVAL_PROFILES };
+
 

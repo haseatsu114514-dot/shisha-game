@@ -53,19 +53,24 @@ function invalidateProgressCache() {
   progressCacheValue = null;
 }
 
-export function readGalleryProgress() {
-  let raw = null;
-  try { raw = localStorage.getItem(GALLERY_PROGRESS_KEY); } catch { /* 初回・保存不可 */ }
-  if (progressCacheValue && progressCacheRaw === raw) return progressCacheValue;
-  let value;
-  try { value = JSON.parse(raw || "null"); } catch { /* 初回・保存不可 */ }
-  const result = {
+/** 保存済みの累積記録だけを正規化する。state からの実績推測は行わない。 */
+export function normalizeGalleryProgress(value) {
+  return {
     completeAnnounced: value?.completeAnnounced === true,
     clearedChapters: unique(list(value?.clearedChapters).filter(chapter)).sort(),
     keepsakes: unique(list(value?.keepsakes).filter(id => Object.hasOwn(PHOTO_KEEPSAKES, id))),
     purikura: [...new Map(list(value?.purikura).map(photo).filter(Boolean).map(p => [purikuraId(p), p])).values()],
     routeRecords: routeRecords(value?.routeRecords),
   };
+}
+
+export function readGalleryProgress() {
+  let raw = null;
+  try { raw = localStorage.getItem(GALLERY_PROGRESS_KEY); } catch { /* 初回・保存不可 */ }
+  if (progressCacheValue && progressCacheRaw === raw) return progressCacheValue;
+  let value;
+  try { value = JSON.parse(raw || "null"); } catch { /* 初回・保存不可 */ }
+  const result = normalizeGalleryProgress(value);
   progressCacheRaw = raw;
   progressCacheValue = result;
   return result;
@@ -151,3 +156,4 @@ export function recordRouteTrueEnd(loversAtEnd) {
   const next = { ...before, clearedChapters: unique([...before.clearedChapters, 5]).sort(), routeRecords: records };
   saveRouteProgress(before, next);
 }
+

@@ -40,8 +40,9 @@ assert.deepEqual(night(10).steps.map((s) => s.id), ["remake_ch2_ageha_slump", "c
   const silence = read("data/dialogue/ch2_main.json").dialogues.find((d) => d.dialogue_id === "ch2_sumi_silence");
   assert.match(story.remake_ch2_ageha_slump.lines[0].text, /閉店間際のtonari/);
   assert.doesNotMatch(story.remake_ch2_ageha_slump.lines.map((l) => l.text).join("\n"), /家に着いても|引き返した/);
-  assert.match(silence.lines[0].text, /あげはを駅まで送った。終電には、まだ間に合った/);
-  assert.match(silence.lines[1].text, /^店へ戻ると/);
+  const spokenLines = silence.lines.filter((line) => typeof line.text === "string");
+  assert.match(spokenLines[0].text, /あげはを駅まで送った。終電には、まだ間に合った/);
+  assert.match(spokenLines[1].text, /^店へ戻ると/);
 }
 assert(!night(8), "8日目はサメのTRPG参加日");
 for (const step of CH2_NIGHTS.flatMap((n) => n.steps).filter((s) => s.file === "ch2_ageha_story")) assert(story[step.id], step.id);

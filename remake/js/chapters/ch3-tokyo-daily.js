@@ -44,7 +44,7 @@ const CALL_NIGHT_FLAG = "_ch3_tokyo_call_night"; // 遠くからの電話を受�
 // 任意の場面の location を、東京の地図の行き先へ。電話の場面は夜の予定として届く（行動を使わない）。
 const PLACE_OF_LOCATION = Object.freeze({
   mukai: "mukai", "東京の問屋": "mukai", "ましろの部屋": "mukai",
-  "煙幕": "enmaku", "鉄の煙": "volk",
+  "煙幕": "enmaku", "鉄の煙": "volk", "Smoke & Glory": "steve",
 });
 const CALL_SCENES = Object.freeze(["ch3_minto_small_lies", "ch3_tsumugi_slump", "hiyori_tokyo_contact"]);
 const isCall = id => CALL_SCENES.includes(id);
@@ -115,7 +115,7 @@ export const CH3_TOKYO_SPOTS = Object.freeze([
 } : {}))));
 
 function spotHasNew(entry) {
-  if (["mukai", "enmaku", "volk"].includes(entry.place) && optionalAt(entry.place).length) return true;
+  if (["mukai", "enmaku", "steve", "volk"].includes(entry.place) && optionalAt(entry.place).length) return true;
   if (rivalFinaleAt(entry.place)) return true; // 綾取・スティーブ・ヴォルクの締めくくり（IR22・#2028）
   if (entry.place === "mukai") return mukaiBondDue() || outingsAt("mukai").some(outing => !outing.repeat);
   return outingsAt(entry.place).some(outing => !outing.repeat);
@@ -407,7 +407,7 @@ const unused = { used: false, exerted: false };
 const personExp = id => id ? Object.freeze({ key: id, person: id }) : null;
 const MUKAI_SHIFT_EXP = Object.freeze({ key: "tokyo:mukai_help", place: "tokyo:mukai_help" });
 const GYM_EXP = Object.freeze({ key: "tokyo:gym", place: "tokyo:gym" });
-const OPTIONAL_HOST = Object.freeze({ mukai: "mashiro", enmaku: "saku", volk: "volk" });
+const OPTIONAL_HOST = Object.freeze({ mukai: "mashiro", enmaku: "saku", steve: "steve", volk: "volk" });
 
 async function performTokyoSpot(entry, io, { staminaGuard }) {
   if (entry.region !== TOKYO) return null;

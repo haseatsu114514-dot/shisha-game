@@ -349,6 +349,11 @@ test("Noor's finale, confession and gift data line up with bonds.js / romance.js
   const ask = finale.branches.ask.find(line => line.type === "choice");
   assert.deepEqual([ask.id, ask.romance_char, ask.choices.map(c => c.romance)], ["bond_q2_noor", "noor", [1, 0]]);
   for (const key of ["lover", "check", "ask", "close", "ask_friend", "friend"]) assert(finale.branches[key]?.length, key);
+  const limeFlag = lines => (lines || []).some(line => line.type === "set_flag" && line.flag === "_lime_contact_noor");
+  assert(limeFlag(scene(`${NOOR_CONFESSION}_accept`).lines), "accepting the confession exchanges LIME");
+  assert(limeFlag(scene(`${NOOR_CONFESSION}_reject`).lines), "choosing friendship at the confession also exchanges LIME");
+  assert(limeFlag(finale.branches.friend), "the friend finale branch exchanges LIME");
+  assert(limeFlag(finale.branches.ask_friend), "choosing friendship at the last question also exchanges LIME");
   const choice = scene(NOOR_CONFESSION).lines.find(line => line.type === "choice");
   assert.deepEqual(choice.choices.map(c => c.next_id), [`${NOOR_CONFESSION}_accept`, `${NOOR_CONFESSION}_reject`]);
   assert.equal(scene(`${NOOR_CONFESSION}_accept`).metadata.set_romance, "noor");
@@ -364,6 +369,8 @@ test("Noor's finale, confession and gift data line up with bonds.js / romance.js
   assert.deepEqual([gear.type, gear.art, gear.gift.from, gear.gift.flavor, gear.not_for_sale], ["bowl", "suyaki_hagal", "noor", "double_apple", true]);
   const bonds = readFileSync(new URL("../js/daily/bonds.js", import.meta.url), "utf8");
   assert.match(bonds, /noor: \{ dialogue: "ch4_noor_bond_finale", gift: "suyaki_noor", question: "bond_q2_noor", ownConfession: true \}/);
+  assert.match(bonds, /id === "noor" && route === "friend"/);
+  assert.match(bonds, /state\.flags\._friend_noor = true/);
   const desert = readFileSync(new URL("../js/chapters/ch4-desert.js", import.meta.url), "utf8");
   assert.match(desert, /playFinale\(DESERT_GUIDE/);
   assert.match(desert, /romanceRouteOpen\(DESERT_GUIDE\)/);

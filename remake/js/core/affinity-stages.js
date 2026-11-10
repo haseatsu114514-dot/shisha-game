@@ -109,7 +109,10 @@ export function pendingAffinityStage(s, id, db = {}) {
     };
     (route.storyEvents || []).forEach(id => include(events.find(e => e.id === id)));
     // ♥4・♥5（untilFinale）は締めくくり前の段階。着地済みの関係では残件にしない。
-    for (const e of required) stages.push({ level: levelOf(e), scene: e.dialogue, done: !!flags[e.flag] || !!e.untilFinale && settled(s, id) });
+    for (const e of required) {
+      const skipped = !!e.lateAdded && ((e.skipIf || []).some(flag => !!flags[flag]) || settled(s, id));
+      stages.push({ level: levelOf(e), scene: e.dialogue, done: !!flags[e.flag] || !!e.untilFinale && settled(s, id) || skipped });
+    }
     if (route.question?.flag) stages.push({ level: Math.max(3, levelOf(events.find(e => e.dialogue === route.question.host))), scene: route.question.dialogue, done: settled(s, id) || !!flags[route.question.flag] });
   }
   if (id === "master_hookah") LONGLONG_VISIT_STORIES.forEach(entry => stages.push({ level: entry.heart, scene: entry.scene, done: longlongStoryRead(flags, entry.scene) }));

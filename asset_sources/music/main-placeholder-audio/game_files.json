@@ -1,0 +1,50 @@
+{
+  "bgm/bgm_map.mp3": {
+    "sha256": "6bd33f8c14bd2358314ea8851e8d5c409488d859e4746b213c28ba12be01bf66",
+    "bytes": 1232390
+  },
+  "bgm/bgm_tournament_wait.mp3": {
+    "sha256": "630ea267e103b861e927c1691a507ae1c870beb1a5ad14e755a95ce46dc54521",
+    "bytes": 431206
+  },
+  "bgm/bgm_result_emotional.mp3": {
+    "sha256": "7c1a44a5bf35f0c5de4cb2c7fa739dd40253a9a85571be8d9531f5209f39de16",
+    "bytes": 1280737
+  },
+  "bgm/bgm_rival_shop.mp3": {
+    "sha256": "b6a4c78626d51ab32cf4f0a57ada58d50c39b0fc3cf60bd6485053ac2104d31d",
+    "bytes": 1084788
+  },
+  "bgm/bgm_dubai.mp3": {
+    "sha256": "fd4aa8bc23243a2c0b12fa135a9b1f9ad36a897b95d8201aa19df9d0b717ab5a",
+    "bytes": 275264
+  },
+  "bgm/bgm_world_stage.mp3": {
+    "sha256": "fe54359a446226da9230acf3b0b5907ad5924ba93efcc9059481a85573e1ddbd",
+    "bytes": 1214111
+  },
+  "bgm/bgm_smoke_lab.mp3": {
+    "sha256": "2772194a03cdaf979e488be44f4cef0c4bb4b5abe1cb16d41dc80cc972b5bd95",
+    "bytes": 768715
+  },
+  "bgm/bgm_ch5_duel.mp3": {
+    "sha256": "6507f0f6647d2bc7993abc8f8af43a9729559372be4fa3ad46a68d9906fe4b07",
+    "bytes": 1398145
+  },
+  "bgm/bgm_ending.mp3": {
+    "sha256": "ecbca94409ea28e26eb03b8b806be4db96daf0114fa708a558a78e860400038d",
+    "bytes": 1280744
+  },
+  "se/ui_whoosh.wav": {
+    "sha256": "e677cc08c2e665bfbfc823b8f7e040a66ebba1cc42d0c44a9d57bd5855b8b1c8",
+    "bytes": 22858
+  },
+  "se/ui_jingle.wav": {
+    "sha256": "2bc23d0531667256753d5c9abd0190832ab28341e487b6b4c11dd65707fc7265",
+    "bytes": 82352
+  },
+  "se/ui_card.wav": {
+    "sha256": "af3b19bee62ad61611dc6c7e3f1eef20272334c5700edf192e0847511e68e23f",
+    "bytes": 13112
+  }
+}

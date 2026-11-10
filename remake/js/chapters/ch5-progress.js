@@ -22,6 +22,7 @@
 //   ch5_dream_in / ch5_dream_out は挿入位置が未決のため接続しない（対象外）。
 //   ch5_reflection_placeholder はテスト専用なので接続しない。
 import { selectPostEndingConflict } from "../core/story-routes.js";
+import { STORY_BGM } from "../core/story-audio.js";
 
 // ---- 背景の対応表（1か所に集約）----------------------------------------------------
 // 第5章の勝負会場は SMOKE LAB。その他は既存 bg を使用する。
@@ -107,24 +108,31 @@ export const CH5_SCENE_BG = Object.freeze({
   shuraba_talk_noor: "bg_home_night",                // 部屋からドバイへのテレビ電話
 });
 
-// ---- BGM の対応表（節目だけ切り替える。無い場面は tonari）---------------------------
-// 第5章専用曲が無いので既存曲の流用（#1668 2-7）。専用曲が入ったらこの表だけ直す。
-export const CH5_DEFAULT_BGM = "tonari";
+// ---- BGM の対応表（差し替えは remake/js/core/story-audio.js の STORY_BGM）------------
+// 店と自由行動の既定は tonari。SMOKE LAB・9000戦・エンディングは仮曲。専用曲が届いたら STORY_BGM だけ直す。
+export const CH5_DEFAULT_BGM = STORY_BGM.shopHome;
 export const CH5_SCENE_BGM = Object.freeze({
-  ch5_match_day_arrival: "bgm_tournament_wait",
-  ch5_copy_first_cup: "bgm_tournament_craft",
-  ch5_relationship_before_second_cup: "bgm_tournament_wait",
-  ch5_second_cup_result: "bgm_judging",
-  ch5_second_cup_result_afterglow: "bgm_aftermath",
-  ch5_second_cup_defeat: "bgm_aftermath",
-  ch5_doctor_after_match: "bgm_aftermath",
+  ch5_match_day_arrival: STORY_BGM.smokeLab,
+  ch5_copy_first_cup: STORY_BGM.ch5Duel,
+  ch5_relationship_before_second_cup: STORY_BGM.smokeLab,
+  ch5_second_cup_result: STORY_BGM.judging,
+  ch5_second_cup_result_afterglow: STORY_BGM.aftermath,
+  ch5_second_cup_defeat: STORY_BGM.aftermath,
+  ch5_doctor_after_match: STORY_BGM.aftermath,
+  // エンディングの会話（スタッフロール前）。修羅場は沈んだ既存曲のまま。
+  ...Object.fromEntries([
+    "ending_start", "ending_normal",
+    "epilogue_tsumugi", "epilogue_minto", "epilogue_rio", "epilogue_ageha",
+    "epilogue_mashiro", "epilogue_samechan", "epilogue_hiyori", "epilogue_noor",
+    "ending_daily_smoke", "ending_salaryman_name",
+  ].map(id => [id, STORY_BGM.ending])),
   // スタッフロールの後の修羅場と話し直し（IR32）は、店の曲を流さず沈んだ既存曲（仮置き）。
   ...Object.fromEntries([
     "shuraba_noor_call", "shuraba_open", "shuraba_tsumugi", "shuraba_minto", "shuraba_rio", "shuraba_ageha", "shuraba_mashiro",
     "shuraba_samechan", "shuraba_hiyori", "shuraba_noor", "shuraba_accountability", "ending_relationship_pending",
     "shuraba_talk_tsumugi", "shuraba_talk_minto", "shuraba_talk_rio", "shuraba_talk_ageha", "shuraba_talk_mashiro",
     "shuraba_talk_samechan", "shuraba_talk_hiyori", "shuraba_talk_noor",
-  ].map(id => [id, "bgm_taste_distant"])),
+  ].map(id => [id, STORY_BGM.tasteDistant])),
 });
 
 // ---- 場面表 -------------------------------------------------------------------------

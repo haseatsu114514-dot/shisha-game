@@ -200,7 +200,7 @@ export function makerMixProfile(cs, flavorById = DB.flavorById) {
 export const EQUIP_CATEGORY_GUIDE = Object.freeze({
   bowl: "ボウル（ハガル）：フレーバー（葉）を詰める器。容量と材質で「適温の広さ・味の濃さ・温まる速さ」が変わる。",
   hms: "HMD（ヒートマネジメント）：ボウルの上に載せて炭を入れる金属製の蓋。熱の当たり方と安定感が変わる。",
-  charcoal: "炭（チャコール）：熱源の形状。フラット（平型）は熱が穏やかで扱いやすく、キューブ（角型）は高火力で煙が厚くなる。",
+  charcoal: "炭（チャコール）：熱源の形状。フラット（平型）とキューブ（角型）は大きさの違いで、熱の持ちと燃焼時間が変わる。",
 });
 
 export const EQUIP_THERMAL_SPECS = Object.freeze({
