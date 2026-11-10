@@ -17,6 +17,13 @@ export const TOKYO_RESIDENT_IDS = Object.freeze(["steve", "mashiro"]);
 export const EVENING_WINDOW = "d13-night";
 export const optionalReadFlag = id => `_ch3_read_${id}`;
 
+/** #3081 物語系の一度きり。既存5本の段階のあと、mukaiでこの順に一本ずつ。繰り返しには入れない。 */
+export const MASHIRO_STORY_EXTRAS = Object.freeze([
+  "ch3_mashiro_timer_side",
+  "ch3_mashiro_cup_warm",
+  "ch3_mashiro_glass_cloth",
+]);
+
 // 任意場面の置き場。file=台詞ファイル、after=この必須/既読場面を読み終えてから、met=面識がある人物だけ。
 // afterとmetは story_routes.json の optional_requirements に足す、この章のカード上の置き方（台本は変えない）。
 // away=その人物が東京に来ている間は出さない（遠くからの連絡の場面）。
@@ -43,6 +50,15 @@ export const CH3_OPTIONAL_SCENES = Object.freeze({
     after: ["ch3_tokyo_shop_gap"] },
   // 味の会話（#2022）。味を確かめる場面なので、味覚が戻った後（routes の seen）。
   ch3_mashiro_black_tea: { file: "ch3_mashiro", label: "ブラックティーを一割", location: "mukai", bg: "bg_mukai_shop" },
+  // #3081 物語系。既存の段階（約束・練習・ブラックティー）のあと、mukaiで一本ずつ。
+  // 大会の前後で同じ店の話なので、台本は大会に触れない。既読は _ch3_read_<id>。
+  // 対になるPRの2本は、この配列のうしろへ glass_cloth の次としてつなぐ。
+  ch3_mashiro_timer_side: { file: "ch3_mashiro", label: "タイマーの隣", location: "mukai", bg: "bg_mukai_shop",
+    after: ["ch3_mashiro_play_3", "ch3_mashiro_practice", "ch3_mashiro_black_tea"] },
+  ch3_mashiro_cup_warm: { file: "ch3_mashiro", label: "カップの底", location: "mukai", bg: "bg_mukai_shop",
+    after: ["ch3_mashiro_timer_side"] },
+  ch3_mashiro_glass_cloth: { file: "ch3_mashiro", label: "布巾のまま", location: "mukai", bg: "bg_mukai_shop",
+    after: ["ch3_mashiro_cup_warm"] },
   // 綾取とましろの過去。ましろ側はレモンケーキの客を見た煙幕の初訪問後、綾取側はmukaiへ客として来た後。
   ch3_saku_mashiro_tea_tin: { file: "ch3_saku_mashiro", label: "茶缶の半分", location: "mukai", bg: "bg_mukai_shop",
     after: ["ch3_saku_first"] },
@@ -85,7 +101,8 @@ export const CH3_STORY_DIALOGUE_FILES = Object.freeze({
   ch3_rivals: ["ch3_emil_workshop", "ch3_saku_lime", "ch3_saku_bond_finale", "ch3_steve_lime", "ch3_steve_bond_finale"],
   // ♥3の質問と締めくくりは寄り道ではなく、場面カードの「ましろちゃんと話す」から（daily/bonds.js の条件）。
   ch3_mashiro: ["ch3_mashiro_play_1", "ch3_mashiro_play_2", "ch3_mashiro_play_3", "ch3_mashiro_practice",
-    "ch3_mashiro_black_tea", "ch3_mashiro_bond_question", "ch3_mashiro_bond_finale"],
+    "ch3_mashiro_black_tea", "ch3_mashiro_timer_side", "ch3_mashiro_cup_warm", "ch3_mashiro_glass_cloth",
+    "ch3_mashiro_bond_question", "ch3_mashiro_bond_finale"],
   ch3_saku_mashiro: ["ch3_saku_mashiro_tea_tin", "ch3_saku_mashiro_soon_back"],
   hiyori: ["hiyori_tokyo_contact"],
   ch3_tsumugi: ["ch3_tsumugi_slump"],

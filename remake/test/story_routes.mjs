@@ -310,6 +310,29 @@ const offered = (value) => wiring.availableOptionalScenes(routes, value).map(sce
   }
 }
 {
+  // #3081: ましろの物語系は約束・練習・ブラックティーのあと、mukaiで一本ずつ。大会の言葉は足さない。
+  const extras = [...wiring.MASHIRO_STORY_EXTRAS];
+  assert.deepEqual(extras, ['ch3_mashiro_timer_side', 'ch3_mashiro_cup_warm', 'ch3_mashiro_glass_cloth']);
+  const value = tokyo();
+  assert(!extras.some(id => offered(value).includes(id)), 'the existing visits stay ahead');
+  for (const id of ['ch3_mashiro_play_3', 'ch3_mashiro_practice', 'ch3_mashiro_black_tea']) wiring.commitOptionalRead(value, id);
+  assert.deepEqual(offered(value).filter(id => extras.includes(id)), [extras[0]]);
+  for (const id of extras) {
+    const place = wiring.CH3_OPTIONAL_SCENES[id];
+    assert.equal(place.location, 'mukai', id);
+    assert.equal(place.bg, 'bg_mukai_shop', id);
+    assert.equal(place.file, 'ch3_mashiro', id);
+    const text = sceneData.get(id).lines.map(row => row.text || '').join('');
+    assert(!/大会|本番|いよいよ|明日|ましろさん/.test(text), id);
+    assert(sceneData.get(id).lines.some(row => row.type === 'apply' && row.affinity?.mashiro > 0), id);
+    assert.deepEqual(offered(value).filter(item => extras.includes(item)), [id]);
+    wiring.commitOptionalRead(value, id);
+    assert.equal(value.flags[wiring.optionalReadFlag(id)], true);
+    assert(!offered(value).includes(id), 'read once');
+  }
+  assert(!extras.some(id => offered(value).includes(id)));
+}
+{
   // 綾取とましろの任意場面: 煙幕の初訪問の後にましろ側、mukaiの客として来た後に綾取側。
   const value = tokyo();
   readUntil(value, 'ch3_saku_first');

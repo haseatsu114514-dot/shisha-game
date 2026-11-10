@@ -117,8 +117,9 @@ assert.deepEqual(availableAftermathDetours(value), [], "no detours once chapter 
 // #2028 残件3: 大会後の寄り道（ムカイさん・エミルの体験会・ヴォルクの後日談）。東京にいる間だけ、一度ずつ。
 // IR23: 大会前に読めなかった鉄の煙の再訪（二度目→七年分→頷く順番）も、大会後に順に読める。
 const VOLK_VISITS = ["ch3_volk_second", "ch3_volk_third", "ch3_volk_fourth"];
+const MASHIRO_EXTRAS = ["ch3_mashiro_timer_side", "ch3_mashiro_cup_warm", "ch3_mashiro_glass_cloth"];
 const detourIds = ["ch3_mukai_after_tournament", "ch3_cigarman_trace", "ch3_emil_workshop", ...VOLK_VISITS, "ch3_volk_after_ch3",
-  "ch3_volk_lime"];
+  "ch3_volk_lime", ...MASHIRO_EXTRAS];
 const openFirst = ["ch3_mukai_after_tournament", "ch3_emil_workshop", "ch3_volk_second", "ch3_volk_after_ch3"];
 assert.deepEqual(CH3_AFTERMATH_DETOURS.map(scene => scene.id), detourIds);
 for (const scene of CH3_AFTERMATH_DETOURS) {
@@ -192,6 +193,25 @@ assert(!mukaiAfter.lines.some(line => /屋根裏|鍵/.test(line.text || "")), "t
   beginChapterThreeAftermath(readBefore);
   completeChapterThreeAftermathScene(readBefore, "ch3_abyss_hotel");
   assert(!availableAftermathDetours(readBefore).some(scene => scene.id === "ch3_emil_workshop"));
+}
+{
+  // #3081: 段階を読み終えた保存は、大会後のmukaiでもタイマー→カップ→布巾の順に一度ずつ。未読の先は出さない。
+  const late = winningSave();
+  for (const id of ["ch3_mashiro_play_3", "ch3_mashiro_practice", "ch3_mashiro_black_tea"]) late.flags[`_ch3_read_${id}`] = true;
+  beginChapterThreeAftermath(late);
+  assert(!availableAftermathDetours(late).some(scene => MASHIRO_EXTRAS.includes(scene.id)), "victory night waits");
+  completeChapterThreeAftermathScene(late, "ch3_abyss_hotel");
+  assert.deepEqual(availableAftermathDetours(late).map(scene => scene.id).filter(id => MASHIRO_EXTRAS.includes(id)), [MASHIRO_EXTRAS[0]]);
+  assert.equal(completeAftermathDetour(late, MASHIRO_EXTRAS[2]), false, "the queue cannot be skipped");
+  assert.equal(late.flags[`_ch3_read_${MASHIRO_EXTRAS[2]}`], undefined);
+  const progress = structuredClone(late.flags._ch3_aftermath);
+  assert.equal(completeAftermathDetour(late, MASHIRO_EXTRAS[0]), true);
+  assert.deepEqual(late.flags._ch3_aftermath, progress, "a mashiro detour does not advance the chapter");
+  assert.deepEqual(availableAftermathDetours(late).map(scene => scene.id).filter(id => MASHIRO_EXTRAS.includes(id)), [MASHIRO_EXTRAS[1]]);
+  assert.equal(completeAftermathDetour(late, MASHIRO_EXTRAS[1]), true);
+  assert.deepEqual(availableAftermathDetours(late).map(scene => scene.id).filter(id => MASHIRO_EXTRAS.includes(id)), [MASHIRO_EXTRAS[2]]);
+  const loaded = JSON.parse(JSON.stringify(late));
+  assert(!availableAftermathDetours(loaded).some(scene => scene.id === MASHIRO_EXTRAS[0]), "LOAD keeps the read flag");
 }
 // IR23: 鉄の煙の再訪は大会後も順に一つずつ。大会前に読んだ分（同じ既読フラグ）は飛ばす。好感度は任意の場面の台本の報酬だけ。
 {
@@ -371,6 +391,7 @@ console.log("PASS: Chapter 3 aftermath offers Volk's LIME (after the fourth visi
   lessonSave.met = { ...lessonSave.met, emil: true, volk: true };
   lessonSave.flags._ch3_read_ch3_cigarman_rumor = true;
   lessonSave.affinity.volk = AFFINITY_RANK_PTS[2]; // ヴォルクのLIME交換は♥2から
+  for (const id of ["ch3_mashiro_play_3", "ch3_mashiro_practice", "ch3_mashiro_black_tea"]) lessonSave.flags[`_ch3_read_${id}`] = true;
   for (const id of detourIds) assert.equal(completeAftermathDetour(lessonSave, id), true, id);
   assert.deepEqual(availableAftermathDetours(lessonSave), []);
   assert.deepEqual(who(lessonSave), ["volk"], "lessons stay open after every detour is read");

@@ -32,6 +32,14 @@ export const CH3_AFTERMATH_DETOURS = Object.freeze([
   // ヴォルクとLIMEを交換する（#2028）。大会前の寄り道と同じく、四度目の来店の後・♥2で（ヴォルクの締めくくりの条件）。
   { id: "ch3_volk_lime", file: "ch3_volk", label: "持ってきたメモ", location: "鉄の煙", bg: "bg_volk_shop", met: ["volk"],
     after: ["ch3_volk_fourth"], heart: { volk: 2 } },
+  // #3081。大会前に読めなかったましろの段階の続き。台本は大会に触れないので、前後どちらの読了でも同じ。
+  // 既読は大会前の寄り道と同じ _ch3_read_<id>。対になるPRの2本は glass_cloth の次へつなぐ。
+  { id: "ch3_mashiro_timer_side", file: "ch3_mashiro", label: "タイマーの隣", location: "mukai", bg: "bg_mukai_shop",
+    after: ["ch3_mashiro_play_3", "ch3_mashiro_practice", "ch3_mashiro_black_tea"] },
+  { id: "ch3_mashiro_cup_warm", file: "ch3_mashiro", label: "カップの底", location: "mukai", bg: "bg_mukai_shop",
+    after: ["ch3_mashiro_timer_side"] },
+  { id: "ch3_mashiro_glass_cloth", file: "ch3_mashiro", label: "布巾のまま", location: "mukai", bg: "bg_mukai_shop",
+    after: ["ch3_mashiro_cup_warm"] },
 ]);
 /**
  * 好感度の段階（♥）の下限。core/stats.js の AFFINITY_RANK_PTS の写し（vm で読む試験の依存を増やさない。ch3_aftermath.mjs で照合）。

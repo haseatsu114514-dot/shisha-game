@@ -137,7 +137,10 @@
         "ch3_volk_second",
         "ch3_volk_third",
         "ch3_volk_fourth",
-        "ch3_volk_lime"
+        "ch3_volk_lime",
+        "ch3_mashiro_timer_side",
+        "ch3_mashiro_cup_warm",
+        "ch3_mashiro_glass_cloth"
       ],
       "after_eve": [
         "ch3_tournament_day",
@@ -263,6 +266,24 @@
         "ch3_taste_return"
       ],
       "comment": "味の会話（#2022）。味覚が戻った後、休みの日の配合メモの続きとして。"
+    },
+    "ch3_mashiro_timer_side": {
+      "seen": [
+        "ch3_mashiro_play_3",
+        "ch3_mashiro_practice",
+        "ch3_mashiro_black_tea"
+      ],
+      "comment": "#3081。約束・練習・ブラックティーのあと、mukaiで一度。大会の前後で同じ店の話。"
+    },
+    "ch3_mashiro_cup_warm": {
+      "seen": [
+        "ch3_mashiro_timer_side"
+      ]
+    },
+    "ch3_mashiro_glass_cloth": {
+      "seen": [
+        "ch3_mashiro_cup_warm"
+      ]
     },
     "ch3_saku_mashiro_tea_tin": {
       "seen": [
