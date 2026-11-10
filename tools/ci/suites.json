@@ -10,6 +10,12 @@
   ],
   "suites": [
     {
+      "id": "stage-fit-3173",
+      "title": "Visual viewport stage fit updates after browser chrome and rotation",
+      "kind": "quick",
+      "run": ["node remake/test/stage_fit_3173.mjs"]
+    },
+    {
       "id": "chapter-poems",
       "title": "巻頭ポエムの台本・仕様・章タイトル直前の接続",
       "kind": "quick",
