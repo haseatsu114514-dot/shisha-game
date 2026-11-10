@@ -15,6 +15,7 @@ let rainBuffer = null;
 let noiseBuffer = null;
 let bgmDuck = 1;
 let bgmPaused = false;
+let bgmSilences = 0;
 const seBuffers = new Map();
 const seLoads = new Map();
 const seRetryAt = new Map();
@@ -179,7 +180,7 @@ function ensureCtx() {
   seBus.gain.value = config.mute || config.muted ? 0 : config.seVolume;
   seBus.connect(master);
   bgmBus = ctx.createGain();
-  bgmBus.gain.value = config.mute || config.muted || bgmPaused ? 0 : config.bgmVolume * bgmDuck;
+  bgmBus.gain.value = config.mute || config.muted || bgmPaused || bgmSilences ? 0 : config.bgmVolume * bgmDuck;
   bgmBus.connect(master);
   return ctx;
 }
@@ -204,7 +205,7 @@ export function applyVolumes() {
   const muted = config.mute || config.muted;
   if (seBus) seBus.gain.value = muted ? 0 : config.seVolume;
   bgmBus?.gain.cancelScheduledValues?.(ctx.currentTime);
-  if (bgmBus) bgmBus.gain.value = muted || bgmPaused ? 0 : config.bgmVolume * bgmDuck;
+  if (bgmBus) bgmBus.gain.value = muted || bgmPaused || bgmSilences ? 0 : config.bgmVolume * bgmDuck;
   if (currentEl) currentEl.volume = bgmLevel(currentKey);
   // 曲の切替後もフェード中の旧曲は鳴っている。無音設定を即座に反映し、
   // 予約済みのフレームが音量を戻さないようフェードごと終了する。
@@ -513,7 +514,7 @@ export function createContinueAudio({ enabled = true } = {}) {
     if (currentEl) fadeEl(currentEl, () => bgmLevel("bgm_continue_urgent"), ms);
     if (bgmBus) {
       bgmBus.gain.cancelScheduledValues?.(ctx.currentTime);
-      const target = config.mute || config.muted || bgmPaused ? 0 : config.bgmVolume * level;
+      const target = config.mute || config.muted || bgmPaused || bgmSilences ? 0 : config.bgmVolume * level;
       if (bgmBus.gain.setTargetAtTime) bgmBus.gain.setTargetAtTime(target, ctx.currentTime, Math.max(.01, ms / 3000));
       else bgmBus.gain.value = target;
     }
@@ -808,6 +809,7 @@ export function playBgm(key) {
     }
     const a = prepared?.audio || (packed ? new Audio() : new Audio(url));
     a.preload = "auto";
+    a.muted = bgmSilences > 0;
     a.loop = true;
     a.volume = 0;
     if (key === "bgm_continue_urgent") {
@@ -865,6 +867,25 @@ export function playBgm(key) {
   }
 }
 
+/** 一時的に BGM だけを無音にする。曲切替や音声解禁をまたぎ、解除関数は一度だけ有効。 */
+export function silenceBgm() {
+  bgmSilences++;
+  if (currentEl) currentEl.muted = true;
+  for (const a of retiringBgm) a.muted = true;
+  bgmBus?.gain.cancelScheduledValues?.(ctx.currentTime);
+  if (bgmBus) bgmBus.gain.value = 0;
+  let released = false;
+  return () => {
+    if (released) return;
+    released = true;
+    if (--bgmSilences) return;
+    if (currentEl) currentEl.muted = false;
+    for (const a of retiringBgm) a.muted = false;
+    bgmBus?.gain.cancelScheduledValues?.(ctx.currentTime);
+    if (bgmBus) bgmBus.gain.value = config.mute || config.muted || bgmPaused ? 0 : config.bgmVolume * bgmDuck;
+  };
+}
+
 /**
  * 会話の「BGMの息継ぎ」（#2828）: 今の曲だけを level 倍へ ms かけて寄せる（0.5 ≒ −6dB、1 で戻す）。
  * 音量設定・曲ごとの補正は保ち、曲を替えると stopBgm が元の音量へ戻す。
@@ -874,7 +895,7 @@ export function duckBgm(level = 1, ms = 150) {
   bgmDuck = level;
   if (currentEl) fadeEl(currentEl, () => bgmLevel(currentKey), ms);
   if (bgmBus) {
-    const target = config.mute || config.muted || bgmPaused ? 0 : config.bgmVolume * level;
+    const target = config.mute || config.muted || bgmPaused || bgmSilences ? 0 : config.bgmVolume * level;
     bgmBus.gain.cancelScheduledValues?.(ctx.currentTime);
     if (bgmBus.gain.setTargetAtTime) bgmBus.gain.setTargetAtTime(target, ctx.currentTime, Math.max(.01, ms / 3000));
     else bgmBus.gain.value = target;
@@ -897,7 +918,7 @@ export function stopBgm(fadeSec = 0.8) {
   bgmDuck = 1;
   bgmPaused = false;
   bgmBus?.gain.cancelScheduledValues?.(ctx.currentTime);
-  if (bgmBus) bgmBus.gain.value = config.mute || config.muted ? 0 : config.bgmVolume;
+  if (bgmBus) bgmBus.gain.value = config.mute || config.muted || bgmSilences ? 0 : config.bgmVolume;
 }
 
 const elFades = new WeakMap();
