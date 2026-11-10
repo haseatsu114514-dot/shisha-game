@@ -4,10 +4,88 @@
 import { el } from "../core/util.js";
 import { layers, toast } from "../core/ui.js";
 import { SAVE_SLOTS, readSlot, isLoadableSave } from "../core/state.js";
+import { GALLERY_PROGRESS_KEY, normalizeGalleryProgress, purikuraId } from "../core/gallery-progress.js";
+import { CYCLE_META_KEY, CYCLE_META_VERSION, normalizeCycleMeta } from "../core/cycle-meta.js";
 
 const PREFIX = "SUIEN-SAVE1:";
 const FORMAT = "suien-save";
 const FILE_NAME = "suien-save.txt";
+const GALLERY_KEY = "suien_remake_gallery";
+const PROGRESS_KEYS = [GALLERY_KEY, GALLERY_PROGRESS_KEY, CYCLE_META_KEY];
+
+const union = (a, b) => [...new Set([...a, ...b])];
+const cgIds = value => [...new Set((Array.isArray(value) ? value : []).filter(id => typeof id === "string"))];
+const object = value => value && typeof value === "object" && !Array.isArray(value);
+
+function mergeGalleryProgress(a, b) {
+  const left = normalizeGalleryProgress(a), right = normalizeGalleryProgress(b);
+  const photos = new Map(left.purikura.map(p => [purikuraId(p), p]));
+  for (const photo of right.purikura) {
+    const old = photos.get(purikuraId(photo));
+    photos.set(purikuraId(photo), { ...old, ...photo,
+      ...(old?.chapterDay && !photo.chapterDay ? { chapterDay: old.chapterDay } : {}) });
+  }
+  const routeRecords = { ...left.routeRecords };
+  for (const [id, record] of Object.entries(right.routeRecords)) {
+    const old = routeRecords[id];
+    routeRecords[id] = old ? {
+      becameLover: old.becameLover || record.becameLover,
+      eventsSeen: union(old.eventsSeen, record.eventsSeen),
+      trueEndAsLover: old.trueEndAsLover || record.trueEndAsLover,
+    } : record;
+  }
+  return {
+    completeAnnounced: left.completeAnnounced || right.completeAnnounced,
+    clearedChapters: union(left.clearedChapters, right.clearedChapters).sort(),
+    keepsakes: union(left.keepsakes, right.keepsakes),
+    purikura: [...photos.values()], routeRecords,
+  };
+}
+
+function mergeCycleMeta(a, b) {
+  const left = normalizeCycleMeta(a), right = normalizeCycleMeta(b);
+  const trueEnds = new Map(left.trueEnds.map(e => [e.cycleId, e]));
+  for (const entry of right.trueEnds) {
+    const old = trueEnds.get(entry.cycleId);
+    trueEnds.set(entry.cycleId, old ? {
+      ...old, cycle: Math.max(old.cycle, entry.cycle),
+      at: old.at || entry.at,
+      loversAtEnd: union(old.loversAtEnd, entry.loversAtEnd),
+    } : entry);
+  }
+  const carryPackage = !left.carryPackage ? right.carryPackage : !right.carryPackage ? left.carryPackage
+    : (right.carryPackage.at || "") > (left.carryPackage.at || "") ? right.carryPackage : left.carryPackage;
+  return {
+    version: CYCLE_META_VERSION,
+    unlocked: left.unlocked || right.unlocked,
+    trueEnds: [...trueEnds.values()],
+    highestCycleStarted: Math.max(left.highestCycleStarted, right.highestCycleStarted),
+    carryPackage,
+    // 同じ周回が両側に含まれ得るため加算せず、記録済みの大きい値を残す。
+    lifetime: {
+      tournamentWins: Math.max(left.lifetime.tournamentWins, right.lifetime.tournamentWins),
+      tournamentAttempts: Math.max(left.lifetime.tournamentAttempts, right.lifetime.tournamentAttempts),
+    },
+  };
+}
+
+function readProgress(raw, key) {
+  const value = JSON.parse(raw);
+  if (key === GALLERY_KEY) {
+    if (!Array.isArray(value)) throw new Error("Invalid gallery");
+    return cgIds(value);
+  }
+  if (!object(value) || key === CYCLE_META_KEY && value.version !== CYCLE_META_VERSION) {
+    throw new Error("Invalid progress");
+  }
+  return key === GALLERY_PROGRESS_KEY ? normalizeGalleryProgress(value) : normalizeCycleMeta(value);
+}
+
+function mergedProgress(key, source, destination) {
+  if (key === GALLERY_KEY) return union(cgIds(destination), source);
+  if (key === GALLERY_PROGRESS_KEY) return mergeGalleryProgress(destination, source);
+  return mergeCycleMeta(destination, source);
+}
 
 
 // ---------------------------------------------------------------- 重ねて開く小窓
@@ -56,7 +134,14 @@ export function exportSaveText() {
     try { slots[key] = localStorage.getItem(key); } catch { /* 読めない枠は含めない */ }
   }
   if (!Object.keys(slots).length) return null;
-  return PREFIX + toBase64(JSON.stringify({ format: FORMAT, version: 1, exportedAt: Date.now(), slots }));
+  const progress = {};
+  try {
+    for (const key of PROGRESS_KEYS) {
+      const raw = localStorage.getItem(key);
+      if (raw !== null) progress[key] = readProgress(raw, key);
+    }
+  } catch { return null; }
+  return PREFIX + toBase64(JSON.stringify({ format: FORMAT, version: 1, exportedAt: Date.now(), slots, progress }));
 }
 
 /** 書き出し文字列を検証し、書き込む枠を返す。壊れていれば null（何も書かない） */
@@ -74,15 +159,28 @@ export function parseSaveText(text) {
       if (!s || typeof s !== "object" || !s.day || !isLoadableSave(s)) return null;
       slots.push({ key, raw, s });
     }
-    return slots.length ? slots : null;
+    if (pack.progress !== undefined && !object(pack.progress)) return null;
+    const progress = {};
+    for (const [key, value] of Object.entries(pack.progress || {})) {
+      if (!PROGRESS_KEYS.includes(key)) return null;
+      progress[key] = readProgress(JSON.stringify(value), key);
+    }
+    return slots.length ? { slots, progress } : null;
   } catch { return null; }
 }
 
 /** 検証済みの枠を書き込む。途中で失敗したら元に戻す。成功なら true */
-export function applySlots(slots) {
-  const before = slots.map(({ key }) => [key, localStorage.getItem(key)]);
+export function applySlots({ slots, progress = {} }) {
+  const keys = [...new Set([...slots.map(({ key }) => key), ...Object.keys(progress)])];
+  const before = [];
   try {
+    for (const key of keys) before.push([key, localStorage.getItem(key)]);
+    const merged = Object.fromEntries(Object.entries(progress).map(([key, source]) => {
+      const old = localStorage.getItem(key);
+      return [key, JSON.stringify(mergedProgress(key, source, old === null ? null : readProgress(old, key)))];
+    }));
     for (const { key, raw } of slots) localStorage.setItem(key, raw);
+    for (const [key, raw] of Object.entries(merged)) localStorage.setItem(key, raw);
     return true;
   } catch {
     for (const [key, old] of before) {
@@ -194,14 +292,14 @@ async function openImport() {
 }
 
 async function openImportWith(text) {
-  const slots = parseSaveText(text);
-  if (!slots) { await modal({ title: "読み込めません", body: "セーブの文字列が壊れているか、この形式ではありません。今のセーブはそのままです。", options: [{ label: "閉じる", value: true, primary: true, test: "import-error-ok" }] }); return; }
-  const names = slots.map(({ key, s }) => `${SAVE_SLOTS.find((x) => x.key === key).label}：${s.day}日目`).join("\n");
+  const pack = parseSaveText(text);
+  if (!pack) { await modal({ title: "読み込めません", body: "セーブの文字列が壊れているか、この形式ではありません。今のセーブはそのままです。", options: [{ label: "閉じる", value: true, primary: true, test: "import-error-ok" }] }); return; }
+  const names = pack.slots.map(({ key, s }) => `${SAVE_SLOTS.find((x) => x.key === key).label}：${s.day}日目`).join("\n");
   const ok = await modal({ title: "読み込みの確認", className: "xfer-modal",
-    body: el("div.xfer-help", [el("p", { text: "今のセーブを次の内容で上書きします。" }), el("pre.xfer-slots", { text: names })]),
+    body: el("div.xfer-help", [el("p", { text: "同じ枠のセーブは上書きし、ギャラリーと周回記録は今の記録と統合します。" }), el("pre.xfer-slots", { text: names })]),
     options: [{ label: "上書きして読み込む", value: true, primary: true, test: "import-confirm" }, { label: "やめる", value: false, test: "import-abort" }] });
   if (!ok) return;
-  if (!applySlots(slots)) { toast("保存できませんでした。今のセーブはそのままです"); return; }
+  if (!applySlots(pack)) { toast("保存できませんでした。今のセーブはそのままです"); return; }
   toast("読み込みました。最初から読み直します");
   setTimeout(() => location.reload(), 600);
 }
