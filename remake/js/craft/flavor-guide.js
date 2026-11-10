@@ -40,7 +40,7 @@ export function actualExpressionCard(cs, temp) {
   return el("section.flavor-actual", { dataset: { test: "actual-flavor", zone: expression.zone } }, [
     el("b", { text: `今回の仕上がり · ${expression.label}` }),
     layers.length?el("p.flavor-guide-caption",{dataset:{test:"floral-layer"},text:round===2?"重なった花の余韻が立つ":`${layers[round%layers.length].name}の層が立つ`}):null,
-    flavorAxes([["sweetness", "甘い印象"], ["cooling", "清涼感"], ["body", "煙の厚み"]].map(([key, label]) =>
+    flavorAxes([["sweetness", "甘い印象"], ["cooling", "清涼感"], ["body", "煙の量"]].map(([key, label]) =>
       ({ key, label, value: expression.values[key] }))),
     el("small.flavor-guide-caption", { text: "提供時の味の傾向。強さと品質は別です。" }),
   ]);

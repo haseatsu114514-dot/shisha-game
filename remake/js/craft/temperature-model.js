@@ -273,7 +273,7 @@ export const EQUIP_THERMAL_SPECS = Object.freeze({
   cube_charcoal: Object.freeze({
     id: "cube_charcoal", type: "charcoal", widthFactor: 0.94, power: 1.13, response: 1.12, burnRisk: 10.5, smokeBonus: 6,
     warmup: "強い（火力×1.13・煙量+6）", responseLabel: "強め（吸引で熱が上がりやすい）",
-    summary: "角型の高火力炭。煙の厚み（+6）と立ち上がりに優れる反面、適温帯が狭まり（×0.94）焦げリスク（+10.5）も上がるため温度管理が重要。",
+    summary: "角型の高火力炭。煙の量（+6）と立ち上がりに優れる反面、適温帯が狭まり（×0.94）焦げリスク（+10.5）も上がるため温度管理が重要。",
   }),
 });
 
@@ -347,7 +347,7 @@ export function compareEquipment(targetId, currentId) {
     const riskDiff = target.burnRisk - (current?.burnRisk || 0);
     const smokeDiff = target.smokeBonus - (current?.smokeBonus || 0);
     rows.push({
-      label: "煙の厚み・焦げリスク",
+      label: "煙の量・焦げリスク",
       value: same
         ? `煙量補正 +${target.smokeBonus} ／ 焦げリスク +${target.burnRisk}`
         : `煙量 ${smokeDiff >= 0 ? `+${smokeDiff}` : smokeDiff} ／ 焦げリスク ${riskDiff >= 0 ? `+${riskDiff}` : riskDiff}（${riskDiff > 0 ? "太い煙が出るが過熱に注意" : "焦げにくく香りを保ちやすい"}）`,

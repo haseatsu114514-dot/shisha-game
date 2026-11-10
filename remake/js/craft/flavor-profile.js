@@ -7,7 +7,7 @@ const KEYS = ["sweetness", "cooling", "body", "naturalAroma", "confection", "sou
 const AXES = [
   { key: "sweetness", label: "甘い印象" },
   { key: "cooling", label: "清涼感" },
-  { key: "body", label: "煙の厚み" },
+  { key: "body", label: "煙の量" },
 ];
 const clamp = (n, min = 0, max = 10) => Math.max(min, Math.min(max, Number.isFinite(n) ? n : min));
 const stat = (f, key) => clamp(f?.stats?.[key]);
