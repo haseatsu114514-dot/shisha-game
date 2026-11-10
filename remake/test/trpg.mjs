@@ -503,3 +503,31 @@ test("a full session talks to the story's character, survives a twist and reads 
     assert(total >= 95, s.id + " reads only " + total + " lines on a typical path");
   }
 });
+
+test("role costumes: 93 origin outfits are keyed, and a built sheet resolves to that character's art", async () => {
+  const { COSTUME_KEYS, hasCostume, costumeUrl, costumeKey } = await import("../js/trpg/costumes.js");
+  const retired = ["リラ", "りら", "かこ", "ナンディ", "チャド", "焚口ショウ", "mystery_girl", "カフカ", "lira", "kako", "nandi", "chad", "takiguchi", "kafka"];
+  assert.equal(COSTUME_KEYS.size, 93);
+  for (const key of COSTUME_KEYS) {
+    const [scenarioId, characterId, roleId] = key.split("/");
+    assert(scenarioId && characterId && roleId, key);
+    assert(!retired.some(n => key.toLowerCase().includes(n.toLowerCase())), "retired character in " + key);
+  }
+  assert(hasCostume("apple-thief", "hajime", "bellboy"));
+  assert(hasCostume("moonflower-encore", "ageha", "kirara"));
+  assert(hasCostume("moonflower-encore", "adam", "ziek"));
+  assert(hasCostume("doll-requiem", "hiyori", "cecilia"));
+  assert(!hasCostume("apple-thief", "hajime", "nope"));
+  const url = costumeUrl("apple-thief", "hajime", "bellboy");
+  assert.match(url, /\/img\/ui\/trpg\/costumes\/apple-thief\/hajime_bellboy\.webp$/);
+  assert.equal(costumeUrl("apple-thief", "hajime", "nope"), null);
+
+  const apple = JSON.parse(await readFile(new URL("../../data/dialogue/trpg_apple_thief.json", import.meta.url), "utf8"));
+  const built = new TrpgSession(apple, { profileId: apple.profiles[0].id, seed: 1, pc: { archetype: "bellboy", name: "ルイ" } });
+  assert.equal(built.pc.archetype, "bellboy");
+  assert.equal(built.sheets.hajime.archetype, "bellboy");
+  assert.equal(costumeKey(apple.id, "hajime", built.sheets.hajime.archetype), "apple-thief/hajime/bellboy");
+  for (const [seat, option] of Object.entries(built.companions || {})) {
+    assert(hasCostume(apple.id, seat, option.id), apple.id + " " + seat + " " + option.id);
+  }
+});

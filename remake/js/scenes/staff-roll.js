@@ -61,6 +61,18 @@ export const STAFF_SOUND_AXE = Object.freeze([
   "効果音（斧投げ）：Kenney – Impact Sounds（CC0） – https://kenney.nl/",
   "効果音（斧投げ）：Freesound – Jofae「Swing Woosh」/ craigsmith「R15-11-Axe Thuds」/ qubodup「Short Crowd Cheer」/ plasterbrain「Tada Fanfare A」/ IndyArts「Sad, Downwards Jingle (Tremolo Version)」（CC0）",
 ]);
+// ラクダレース・サンドボードの効果音（2026-11-10 採用。出典は asset_sources/music/minigame-sfx-swap/）。CC0 も含めて載せる。
+export const STAFF_SOUND_CAMEL = Object.freeze([
+  "効果音（ラクダレース）：Mixkit Sound Effects（Free License） – https://mixkit.co/",
+  "効果音（ラクダレース）：Kenney – Interface Sounds / Music Jingles（CC0） – https://kenney.nl/",
+  "効果音（ラクダレース）：Joseph Sardin（BigSoundBank / La Sonothèque）（CC0） – https://bigsoundbank.com/",
+  "効果音（ラクダレース）：AntumDeluge（原音 craigsmith / Freesound 437937）（CC0） – https://opengameart.org/content/camel-groan",
+]);
+export const STAFF_SOUND_DESERT = Object.freeze([
+  "効果音（サンドボード）：Mixkit Sound Effects（Free License） – https://mixkit.co/",
+  "効果音（サンドボード）：Kenney – Interface Sounds / RPG Sound Effects / Digital Sound Effects（CC0） – https://kenney.nl/",
+  "効果音（サンドボード）：Joseph Sardin（BigSoundBank / La Sonothèque）（CC0） – https://bigsoundbank.com/",
+]);
 
 const reducedMotion = () => !!window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
 
@@ -87,6 +99,8 @@ function sections() {
     ]) : null,
     el("section.staff-roll-sound-trpg", STAFF_SOUND_TRPG.map(text => el("p", { text }))),
     el("section.staff-roll-sound", [el("p", { text: STAFF_SOUND_CREDIT })]),
+    el("section.staff-roll-sound-camel", STAFF_SOUND_CAMEL.map(text => el("p", { text }))),
+    el("section.staff-roll-sound-desert", STAFF_SOUND_DESERT.map(text => el("p", { text }))),
     el("section.staff-roll-sound-axe", STAFF_SOUND_AXE.map(text => el("p", { text }))),
     el("section.staff-roll-closing", [el("p", { text: STAFF_ROLL_CLOSING })]),
   ].filter(Boolean);
@@ -157,3 +171,4 @@ async function showPages(parts, durationMs, keep) {
     if (index < parts.length - 1) await new Promise(resolve => keep({ id: setTimeout(resolve, each) }));
   }
 }
+

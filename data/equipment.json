@@ -93,7 +93,7 @@
       "sell_price": 300,
       "price": 600,
       "value": "flat_charcoal",
-      "description": "安定して熱を入れやすい。有効範囲が広く扱いやすい。"
+      "description": "平たい分、キューブより小さい。熱の持ちは短めで、燃焼時間も短い。"
     },
     {
       "id": "cube_charcoal",
@@ -104,7 +104,7 @@
       "sell_price": 500,
       "price": 1000,
       "value": "cube_charcoal",
-      "description": "火力を上げる時に有効。重たい煙が好きな層に刺さるが有効範囲は狭い。"
+      "description": "角型でフラットより大きい。熱の持ちが長く、燃焼時間も長い。"
     },
     {
       "id": "harry_the_moon",

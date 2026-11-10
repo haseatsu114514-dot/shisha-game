@@ -631,6 +631,407 @@
       }
     },
     {
+      "dialogue_id": "ch3_mashiro_timer_side",
+      "comment": "#3081。休みの日のタイマー（配合メモの続き）。大会には触れない。場所はmukai。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "休みの日のmukai。ましろはタイマーを二つ、カウンターの端と端に置いていた。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "はじめくんのタイマー、僕の隣だと、つい見ちゃうから"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "見ると、急いじゃう？"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "うん。早い方に合わせたくなるの。葉は、急がなくていいのに"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "彼女は自分のタイマーを、右手の奥へずらした。数字は、こちらから読めない。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "僕の時間は、僕が見るね。はじめくんのは、はじめくんの横で"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "終わった方から、お茶をいれるんだっけ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "そう。競争にしない約束、まだ覚えてる？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "覚えてる。ましろちゃんが先でも、俺が先でも"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "……どっちでも、待つ時間がおいしい日がいいなぁ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ブラックティーの缶は、メモの横で蓋をしたまま。今日は足し算をしない。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "今日は、いつもの葉だけで。足すのは、また今度でいいよぉ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "じゃあ、このタイマーだけ並べとく"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "うん。端と端で。音が鳴ったら、顔を上げてね"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "はじめくんの葉、今日も軽いままだね。お水みたい、って言った日のまま"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "あの言い方、まだ覚えてるんだ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "覚えてるよぉ。軽いのも、重いのも、隣で待てるのが好きなの"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "俺も、ましろちゃんの重いやつ、横で待ってる"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "……うん。今日は吸わなくていい。待つだけで、ここにいるから"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "二つのタイマーが、少しずれて鳴った。先に鳴った方が、カップへ手を伸ばす。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "……ねぇ。鳴るまで、話してていい？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "いいよ。ましろちゃんの話、聞きながら待ってる"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "ふふ。僕、待つのは好きだよぉ。はじめくんの隣なら、なおさら"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "音が鳴っても、話の途中なら、葉は置いたままでいいから"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "置いたまま、最後まで聞くよ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "……ありがとう。それだと、タイマーが鳴っても焦らないね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "湯気の向こうで、ましろは急がずに、葉の山を見ていた。"
+        },
+        {
+          "type": "apply",
+          "affinity": {
+            "mashiro": 2
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_mashiro_cup_warm",
+      "comment": "#3081。問屋で別々にしたカップを、mukaiの棚で温める。新しい店には行かない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "問屋で別々にしたティーカップが、mukaiの棚の手前に並んでいた。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "はじめくんの、持ちやすい方。底、冷えてるね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "洗ったばかりだからかな"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "うん。僕のと形が違うから、乾く速さも違うの"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ましろは自分のカップの残りを、はじめのカップの底へ薄く回した。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "お湯を注ぐ前に、底だけ温めると、味が驚かないの"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "味が、驚く？"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "冷たい器だと、最初の一口だけ、ちょっと逃げるの"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "葉のせいじゃないよぉ。器が、まだ起きてないだけ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ましろちゃんのは、もう温かいね"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "僕は先に紅茶をいれてたから。はじめくんの分は、今から"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "別々の形のまま、二つのカップが湯気を上げる。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "お揃いにしなくて、よかった。手が覚える形は、人の数だけあるねぇ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ましろちゃんの形、俺には持ちにくかったし"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "ふふ。だから、別々。となりに置くのは、形じゃなくて、人だよぉ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "となり、でいい"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "……うん。底が温かくなったら、座って。急がなくていいから"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ましろは自分のカップを、はじめのカップから指一本ぶんだけ離して置いた。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "近すぎると、湯気が混ざるの。味は、混ざらなくていい"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "混ざらなくても、同じ棚でいいんだ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "うん。同じ棚の、別の席。僕は、それが好きだよぉ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "じゃあ、この距離で飲む"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "……そうしよ。冷えたら、また底から温めるね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "棚の手前で、二つの湯気が並んだまま、しばらく消えなかった。"
+        },
+        {
+          "type": "apply",
+          "affinity": {
+            "mashiro": 2
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_mashiro_glass_cloth",
+      "comment": "#3081。閉店後、布巾を畳むまで一緒にいる。大会には触れない。場所はmukai。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "閉店後のmukai。ましろは布巾を指に巻いたまま、グラスを一つずつ拭いていた。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "はじめくん、まだいるんだ。明かり、消す前だと思ってた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ましろちゃんが残ってるなら、もう少しいるよ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "……そっか。じゃあ、この列が終わるまで、一緒に拭こ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "彼女は乾いたグラスを奥へ、濡れたグラスを手前へ分けた。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "奥から消すと、手前が暗くて見えなくなるの。僕、それ嫌い"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "手前から、一個ずつでいいんだ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "うん。一個終わったら、次。葉を置くのと、同じだよぉ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "布巾の端が、ましろの指にかかったまま、ほどけない。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "ほどかなくていいや。次のグラスも、この手で持てるから"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "手が冷たくない？"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "冷たいよぉ。でも、はじめくんがいると、拭く手が止まらないの"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "止まったっていいよ。今日の分は、もう十分"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "……じゃあ、最後の一個だけ。あとは、次に来た日の僕がやる"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "最後のグラスを棚へ戻すと、ましろは布巾をカウンターに畳んだ。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "畳んでおくね。朝、まだ少し湿ってたら、僕が先にいた印"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "見たら、ましろちゃんに会いに来る"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "ふふ。湿ってなくても、来ていいよぉ。席は、空けておくから"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "グラスが全部乾いても、話は残るでしょ。僕は、その方が好き"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "乾いた朝も、この席に座るよ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "……うん。布巾は、ここに置いとく。はじめくんの印も、一緒に"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "カウンターの端で、畳んだ布巾だけが、店の明かりを少し受けていた。"
+        },
+        {
+          "type": "apply",
+          "affinity": {
+            "mashiro": 2
+          }
+        }
+      ]
+    },
+    {
       "dialogue_id": "ch3_mashiro_leaf_rest",
       "comment": "#3081。閉店後の練習の続き。葉は押さない。大会には触れない。場所はmukai。",
       "lines": [

@@ -375,3 +375,24 @@ console.log("[#2024] PASS Dubai story LIME: once each in its Dubai window, none 
   console.log("[#2024] PASS chapter 5 congratulations arrive once at home, wait while away, kumicho skips after the in-person talk");
 }
 console.log("[lime balance] PASS");
+
+// #3081: 布巾の場面を読み、連絡先がある朝に一度。旗が無い・連絡先が無い・既読の重ね配信はしない。
+{
+  const id = "lime_mashiro_glass_cloth";
+  const due = (overrides) => {
+    reset(overrides);
+    return phone.morningMessages({ fixedNight: () => false }).some((m) => m.id === id);
+  };
+  assert.equal(due({ chapter: 3, day: 50, contacts: ["mashiro"], flags: { _ch3_intro: { startDay: 40, routeVersion: 3 }, _ch2_region: "tokyo" } }), false, "unread scene");
+  assert.equal(due({ chapter: 3, day: 50, contacts: [], flags: { _ch3_read_ch3_mashiro_glass_cloth: true, _ch2_region: "tokyo" } }), false, "no contact");
+  reset({ chapter: 3, day: 50, contacts: ["mashiro"], flags: { _ch3_read_ch3_mashiro_glass_cloth: true, _ch3_intro: { startDay: 40, routeVersion: 3 }, _ch2_region: "tokyo" } });
+  const hit = phone.morningMessages({ fixedNight: () => false }).find((m) => m.id === id);
+  assert(hit, "arrives the morning after the cloth scene");
+  assert.equal(hit.sender, "mashiro");
+  deliver([hit]);
+  state.day += 1;
+  assert(!phone.morningMessages({ fixedNight: () => false }).some((m) => m.id === id), "once");
+  reset({ chapter: 4, day: 60, contacts: ["mashiro"], flags: { _ch3_read_ch3_mashiro_glass_cloth: true, _ch2_region: "dubai" } });
+  assert(phone.morningMessages({ fixedNight: () => false }).some((m) => m.id === id), "still arrives if the morning has moved on");
+  console.log("[#3081] PASS mashiro cloth LIME once after the scene flag");
+}
