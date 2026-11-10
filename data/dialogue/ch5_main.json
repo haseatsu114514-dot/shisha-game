@@ -816,7 +816,7 @@
         },
         {
           "speaker": "tsumugi",
-          "face": "normal",
+          "face": "baito_normal",
           "text": "三番さん、見てきました。炭、足しますか"
         },
         {
@@ -831,7 +831,7 @@
         },
         {
           "speaker": "tsumugi",
-          "face": "smile",
+          "face": "baito_smile",
           "text": "……はい。スミさんと、同じ言い方です"
         },
         {
@@ -1917,7 +1917,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "缶の蓋を閉める。量りの上に、葉のかけらが少し残っていた。"
+          "text": "缶の蓋を閉める。秤の上に、葉のかけらが少し残っていた。"
         }
       ]
     },

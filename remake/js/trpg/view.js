@@ -166,8 +166,12 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
       node.querySelector(".trpg-seat-speaking").textContent = active ? "話者" : "";
     });
   }
+  let chromePhase = null;
   function syncChrome() {
     const state = session.snapshot();
+    // 場面が進んだらページをめくる音（開幕は "open"、結末はジングルが鳴るので除く）。
+    if (chromePhase && chromePhase !== "cover" && state.phase !== chromePhase && state.phase !== "ending" && state.phase !== "cover") audio.play("page");
+    chromePhase = state.phase;
     root.dataset.phase = state.phase;
     root.dataset.risk = state.pressure >= 5 ? "high" : "calm";
     root.style.setProperty("--risk-level", state.pressure / session.rules.pressureMax);
@@ -794,7 +798,8 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
         el("i", { style: { "--angle": i * 137.5 + "deg", "--distance": 90 + i % 5 * 22 + "px", "--delay": i % 3 * 20 + "ms" } })));
       pop.box.append(fx);
     }
-    audio.play(result.grade);
+    // クリティカル（20-20）とファンブル（1-1）は専用のジングル。判定の結果そのものは変えない。
+    audio.play(result.special === "critical" || result.special === "fumble" ? result.special : result.grade);
     if (result.hypothesisBonus) body.append(el("p.trpg-roll-insight", { text: "見立てが合っていた · 仕掛けに ＋" + result.hypothesisBonus }));
     if (session.rules.inspectionPressure) body.append(el("p.trpg-roll-consequence", { text: result.grade === "success" ? RISK + "を進めず、次の場面へ" : RISK + " ＋" + session.rules.checkPressure[result.grade] + " · 全員で次の場面へ" }));
     if (result.special === "critical") body.append(el("p.trpg-roll-trump", { text: "最高の出目。切り札は温存しよう" }));

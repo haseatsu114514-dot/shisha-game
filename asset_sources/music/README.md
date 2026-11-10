@@ -3,6 +3,7 @@
 ゲームで鳴らす最終ファイルはBGMが `assets/audio/bgm/`、SEが `assets/audio/se/`。ここは受け取った元データと出典の控え。
 
 制作・吸引・UIのCC0録音SEは [shisha-se/README.md](shisha-se/README.md) に出典・加工・原音と代用の区別を記録する。
+TRPGの効果音・シナリオ別BGM（CC0・2026-11-10の仮採用）は [trpg-audio/README.md](trpg-audio/README.md)。
 
 | ファイル | 曲名 | 出典 | 使用先 |
 |---|---|---|---|
@@ -13,6 +14,7 @@
 | `assets/audio/bgm/bgm_tournament_craft.bgm` | Mind Duel | OpenTracks（旧DOVA-SYNDROME）・作曲 shimtone | 大会のシーシャ制作（ROUND 1〜3） |
 | `assets/audio/bgm/bgm_trpg.bgm` | Shared Discovery | ユーザー添付・2026-10-20採用（配布元・作者は未記入） | ボドゲカフェ（TRPG） |
 | `assets/audio/bgm/bgm_axe.bgm` | Aiming groove | ユーザー添付・2026-10-20採用（配布元・作者は未記入） | 斧投げBAR・ひよりとの斧投げ |
+| `assets/audio/bgm/bgm_trpg_*.mp3`（10曲） | TRPGのシナリオ別BGM（仮） | OpenGameArt・CC0（作者は各曲） | TRPGの卓（シナリオのテーマ別） |
 
 大会の2曲は公式配布元から取得し、単体音源を公開しないゲーム専用形式で保存。
 [出典・利用条件・音量測定・再変換手順](confirmed-tournament-bgm-20261009.md)を参照。

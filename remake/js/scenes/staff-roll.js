@@ -39,7 +39,20 @@ export const STAFF_MUSIC = Object.freeze([
   { title: "民族05", composer: "魔王魂", source: "魔王魂" },
   { title: "民族09 揺れる提灯", composer: "魔王魂", source: "魔王魂" },
   { title: "月明かりの灯台", composer: "甘茶", source: "甘茶の音楽工房" },
+  // TRPGのシナリオ別BGM（OpenGameArt・CC0。オーナー「クレジットは載せる」2026-11-10。出典は asset_sources/music/trpg-audio/）
+  { title: "Chest of Adventure", composer: "Eldritch Grim", source: "OpenGameArt・CC0" },
+  { title: "musicbox2_cute_tune", composer: "Aureolus_Omicron", source: "OpenGameArt・CC0" },
+  { title: "Covert Action", composer: "congusbongus", source: "OpenGameArt・CC0" },
+  { title: "Treasure Hunter", composer: "TAD", source: "OpenGameArt・CC0" },
+  { title: "Magic Town", composer: "controllerhead", source: "OpenGameArt・CC0" },
+  { title: "Space Music: Out There", composer: "yd", source: "OpenGameArt・CC0" },
+  { title: "Hot Springs Town", composer: "Kistol", source: "OpenGameArt・CC0" },
+  { title: "Death Waltz", composer: "northivanastan", source: "OpenGameArt・CC0" },
+  { title: "Apparitions Ball", composer: "Bobjt", source: "OpenGameArt・CC0" },
+  { title: "musicbox1_spooky_waltz", composer: "Aureolus_Omicron", source: "OpenGameArt・CC0" },
 ].map(song => Object.freeze(song)));
+// TRPGの卓の効果音（CC0・asset_sources/music/trpg-audio/）。
+export const STAFF_SOUND_TRPG = Object.freeze(["効果音（TRPG）：Kenney – Casino Audio / RPG Audio / Music Jingles（CC0） – https://kenney.nl/"]);
 export const STAFF_SOUND_CREDIT = "効果音：ポケットサウンド – https://pocket-se.info/";
 export const STAFF_ROLL_CLOSING = "Thank you for playing";
 
@@ -59,11 +72,13 @@ function sections() {
       el("p.staff-roll-role", { text: "使用楽曲" }),
       el("p.staff-roll-source", { text: "音楽：魔王魂" }),
       el("p.staff-roll-source", { text: "音楽：甘茶の音楽工房" }),
+      el("p.staff-roll-source", { text: "音楽：OpenGameArt.org（CC0）" }),
       ...STAFF_MUSIC.map(({ title, composer, source }) => el("div.staff-roll-song", [
         el("p.staff-roll-song-title", { text: `「${title}」` }),
         el("p.staff-roll-song-credit", { text: `作曲 ${composer}（${source}）` }),
       ])),
     ]) : null,
+    el("section.staff-roll-sound-trpg", STAFF_SOUND_TRPG.map(text => el("p", { text }))),
     el("section.staff-roll-sound", [el("p", { text: STAFF_SOUND_CREDIT })]),
     el("section.staff-roll-closing", [el("p", { text: STAFF_ROLL_CLOSING })]),
   ].filter(Boolean);

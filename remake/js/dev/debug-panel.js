@@ -19,6 +19,7 @@ import { emit } from "../core/bus.js";
 import { refreshPortraits } from "../vn/engine.js";
 import { installTimeWarp, setSpeed, getSpeed, SPEEDS, realTime } from "./time-warp.js";
 import { createBackgroundPreview } from "./background-preview.js";
+import { mountMiniGameDebug } from "./minigame-launcher.js";
 
 const SPEED_KEY = "suien_debug_speed";
 const CRAFT_KEY = "suien_debug_craft";
@@ -172,6 +173,7 @@ export function mountDebugPanel() {
   syncPortraitStyle();
   const portraitRow = el("div", { className: "dbg-row" }, [portraitSelect]);
   const backgroundPreview = createBackgroundPreview();
+  const miniGames = mountMiniGameDebug();
   const action = (label, test, run) => el("button", { type: "button", textContent: label, dataset: { test },
     onclick: () => { if (!state) return; run(); emit("hud"); status.textContent = stateText(); } });
   const tools = el("div", { className: "dbg-row" }, [
@@ -253,6 +255,7 @@ export function mountDebugPanel() {
     el("h4", { textContent: "背景プレビュー" }), backgroundPreview.row,
     el("div", { className: "dbg-note", textContent: "一覧には既存の時間帯・状態差分も含む。表示だけを重ね、進行とセーブは変えない。" }),
     el("h4", { textContent: "便利" }), tools,
+    el("h4", { textContent: "ミニゲーム（セーブに記録しない）" }), miniGames,
     el("h4", { textContent: "日付・時間帯" }), warpRow,
     el("h4", { textContent: "章・場面ジャンプ" }), chapterRow,
     el("h4", { textContent: "好感度・恋人" }), relationshipRow,
