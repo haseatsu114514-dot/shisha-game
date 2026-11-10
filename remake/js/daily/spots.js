@@ -186,6 +186,9 @@ export const rioStoryExtraDue = () => {
 export const TSUMUGI_STORY_EXTRAS = Object.freeze([
   "ch1_tsumugi_one_ear",
   "ch1_tsumugi_short_tail",
+  "ch1_tsumugi_window_line",
+  "ch1_tsumugi_pen_down",
+  "ch1_tsumugi_low_water",
 ]);
 export const tsumugiStoryExtraDue = () => {
   if (!state.finales?.tsumugi || storyCount("tsumugi") < (VISIT_SEQ.tsumugi?.length || 0)) return null;
