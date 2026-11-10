@@ -8,6 +8,7 @@ import { suite, baseURL } from './support.mjs';
 
 async function launch(page, { reduced = false } = {}) {
   await page.evaluate(async ({ reduced }) => {
+    await document.fonts.load('16px "Suien Dot"');
     const { runCamelRace } = await import('./js/minigames/camel-race.js');
     const { activeCue } = await import('./js/minigames/camel-race-model.js');
     window.__whipTest = true;
@@ -33,6 +34,8 @@ await suite('camel-stamina-feedback', async check => {
     await capture(page, mobile ? 'touch-boost' : 'desktop-boost');
     const ticker = page.locator('[data-test="camel-spectators"]');
     assert.equal(await ticker.evaluate(n => getComputedStyle(n).whiteSpace), 'nowrap');
+    assert.ok(await ticker.evaluate(n => getComputedStyle(n).fontFamily.includes('Suien Dot')), '同梱の日本語ドット書体を使う');
+    assert.equal(await page.evaluate(() => document.fonts.check('16px "Suien Dot"')), true);
     assert.ok((await ticker.textContent()).includes('架空応援席'));
     await page.waitForFunction(() => window.__warningStates.includes('spent'));
     assert.ok(await page.evaluate(() => window.__warningStates.includes('low') && window.__warningStates.includes('tired')));
