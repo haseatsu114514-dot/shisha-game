@@ -179,3 +179,89 @@ console.log("PASS: explicit route records, strict stage identity, normalization,
   failWrites = false;
   console.log("PASS: 恋人成立 is recorded once when a confession succeeds, never from declines, re-reads or save imports");
 }
+
+// 「閲覧した段階・派生」は、節目イベントの完読が確定した経路（romance.js の playLoverMilestone と
+// サメちゃん専用の playSamechanMilestone）からだけ記録する（#3164 B）。API の直接呼び出しではなく、
+// 実際の再生→完読確定→保存→ギャラリー読込（readGalleryProgress）までをつないで確認する。
+// 中断・キャンセルでは記録せず、再読しても増殖しない。旧セーブの読み込みでは記録しない（上の節で確認済み）。
+{
+  failWrites = false; storage.clear(); writes = 0;
+  const milestoneState = {
+    chapter: 2, day: 10, slot: 2, phase: "daily", lovers: ["tsumugi", "minto", "samechan"],
+    loveLevel: { tsumugi: 1, minto: 1, samechan: 1 }, lovePts: {}, loverSince: {},
+    loverEventsSeen: [], flags: {}, guilt: 0, romanceChoices: {}, finales: {}, inbox: [], limeRead: [], lastDate: {},
+  };
+  const scene = { lines: [{ speaker: "", text: "x" }] };
+  const milestoneDb = { dialogues: {
+    lover_tsumugi_lv1: scene, lover_tsumugi_lv1_b: scene, lover_minto_lv1: scene, lover_samechan_lv1: scene,
+  }, lover: {} };
+  let playResult = {};
+  const playedIds = [];
+  const stubValues = {
+    "../core/data.js": { DB: milestoneDb, callName: () => "相手" },
+    "../core/state.js": { state: milestoneState, save() {} },
+    "../core/stats.js": {
+      gainAffinity() {}, releaseLoveAffinity() {}, privateBondScope: () => () => {},
+      addStamina() {}, bond: { private: false }, AFFINITY_RANK_PTS: [0, 9, 20, 33, 48, 66],
+    },
+    "../core/chapter-clock.js": { chapterDay: () => 1, departurePrep: () => false },
+    "../core/bus.js": { emit() {} },
+    "../core/hiyori-route.js": { hiyoriRoute: () => ({}), hiyoriFinaleReady: () => false },
+    "../vn/engine.js": {
+      play: async (id) => { playedIds.push(typeof id === "string" ? id : id?.dialogue_id); return playResult; },
+      isPlaying: () => false,
+    },
+    "./date-scene.js": { dateScene() {}, dateVenue() {}, relationshipDayTotal: () => 10 },
+    "./samechan-date.js": { playSamechanDate: async () => {}, samechanDateGap: () => 99, samechanDateReady: () => false },
+    "../core/affinity-stages.js": { questionDoneKey: (id) => `_question_${id}` },
+  };
+  const loadLinked = async (file, identifier, extra = {}) => {
+    const source = fs.readFileSync(new URL(file, root), "utf8");
+    const imports = new Map([...source.matchAll(/import\s*\{([^}]+)\}\s*from\s*"([^"]+)"/g)]
+      .map(([, names, spec]) => [spec, names.split(",").map(name => name.trim()).filter(Boolean)]));
+    const module = new vm.SourceTextModule(source, { context, identifier });
+    await module.link(spec => {
+      if (spec === "../core/gallery-progress.js") return mod;
+      if (Object.hasOwn(extra, spec)) return extra[spec];
+      return new vm.SyntheticModule(imports.get(spec), function () {
+        for (const name of imports.get(spec)) this.setExport(name, Object.hasOwn(stubValues[spec] || {}, name)
+          ? stubValues[spec][name] : () => { throw Error(`Unexpected port ${spec}:${name}`); });
+      }, { context, identifier: spec });
+    });
+    await module.evaluate();
+    return module;
+  };
+  const samechanModule = await loadLinked("../daily/samechan-bonds.js", "samechan-bonds-milestone.js");
+  const romanceModule2 = await loadLinked("../daily/romance.js", "romance-milestone.js",
+    { "./samechan-bonds.js": samechanModule });
+  const romance2 = romanceModule2.namespace;
+
+  // 通常ルート: Lv1 の完読で段階 1、続く _b 派生の完読で "1b" が、段階と派生を区別して残る。
+  assert.equal(await romance2.playLoverMilestone("tsumugi"), true);
+  assert.deepEqual(playedIds, ["lover_tsumugi_lv1"]);
+  assert.deepEqual(copy(milestoneState.loverEventsSeen), ["lover_tsumugi_lv1"]);
+  assert.deepEqual(routes(), { tsumugi: record({ eventsSeen: [1] }) });
+  assert.equal(await romance2.playLoverMilestone("tsumugi"), true);
+  assert.deepEqual(routes(), { tsumugi: record({ eventsSeen: [1, "1b"] }) });
+  // 未読が無ければ再生も記録もしない（保存への書き込みも無い）。
+  {
+    const before = storage.get(g.GALLERY_PROGRESS_KEY), count = writes;
+    assert.equal(await romance2.playLoverMilestone("tsumugi"), false);
+    assert.equal(storage.get(g.GALLERY_PROGRESS_KEY), before);
+    assert.equal(writes, count);
+  }
+  // キャンセルした再生では、既読にも閲覧記録にも残らない。
+  playResult = { cancelled: true };
+  assert.equal(await romance2.playLoverMilestone("minto"), false);
+  assert(!milestoneState.loverEventsSeen.includes("lover_minto_lv1"));
+  assert.equal(routes().minto, undefined);
+  // サメちゃん専用ルート: キャンセルでは記録せず、完読で段階 1 が残る。再読では増殖しない。
+  assert.equal(await romance2.playLoverMilestone("samechan"), false);
+  assert.equal(routes().samechan, undefined);
+  playResult = {};
+  assert.equal(await romance2.playLoverMilestone("samechan"), true);
+  assert.deepEqual(routes().samechan, record({ eventsSeen: [1] }));
+  assert.equal(await romance2.playLoverMilestone("samechan"), false);
+  assert.deepEqual(routes().samechan, record({ eventsSeen: [1] }));
+  console.log("PASS: 恋人節目の完読だけが閲覧した段階・派生を記録し、キャンセル・再読では増えない");
+}
