@@ -1,7 +1,7 @@
 // 通常のマス・色の台座の実効値。仮置きは含めず、確定した有効なIDを一度だけ数える。
 import { growthEnabled } from "./growth-mode.js";
 import { NODE_BY_ID } from "./growth-board-layout.js";
-import { SQUARE_PERKS, PERK_TIERS, GATE_TIER, NOTABLES, SKILLS, LESSONS } from "./growth-board-data.js";
+import { SQUARE_PERKS, PERK_TIERS, GATE_TIER, NOTABLES, SKILLS, LESSONS, FEATURES } from "./growth-board-data.js";
 import { STAMINA_CONDITIONS } from "./condition.js";
 
 /** 調整用の初期値。通常マスの百分率とは別に重ねる（SPEC 2.5）。 */
@@ -71,6 +71,8 @@ export function boardPerks(nodes = []) {
     if (typeof id !== "string" || !Object.hasOwn(NODE_BY_ID, id)) continue;
     const node = NODE_BY_ID[id];
     if (!node || !["stat", "gate"].includes(node.kind)) continue;
+    // 舞台映えの✦は人柄とは別の加点。既存の華マスの加点・人柄を置き換えない。
+    if (node.feature === "stage") sums.stage += FEATURES.stage.bonus;
     const def = SQUARE_PERKS[node.board], perk = !node.peak && def.perks[node.perk];
     if (perk) {
       const unit = Number(/\{([\d.]+)\}/.exec(perk.text)?.[1] || 0);
@@ -130,3 +132,4 @@ export function floralLayers(s,cs,flavors) {
   }
   return flowers.size>=2?[...flowers.values()].sort((a,b)=>b.grams-a.grams||a.id.localeCompare(b.id)):[];
 }
+

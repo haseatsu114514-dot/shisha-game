@@ -479,8 +479,21 @@ export function maxStamina({ forCondition = false } = {}) {
 export function addStamina(n, { sleep = false } = {}) {
   const before = state.stamina;
   const maximum = maxStamina();
-  const amount = sleep && n > 0 ? n * (1 + (growthPerks(state)?.sleep || 0) / 100)
-    * (expHooks?.enabled?.() ? expHooks.sleepMultiplier?.(state) || 1 : 1) : n;
+  let amount = n;
+  if (sleep && n > 0) {
+    // 基礎回復とK03・ラベンダーは従来どおり四捨五入。盤の上乗せだけを貯め、1未満も捨てない。
+    const base = n * (expHooks?.enabled?.() ? expHooks.sleepMultiplier?.(state) || 1 : 1);
+    const rate = (growthPerks(state)?.sleep || 0) / 100;
+    amount = base;
+    if (rate > 0 && state.growth) {
+      const carry = state.growth.sleepCarry;
+      const bonus = base * rate + (Number.isFinite(carry) && carry >= 0 && carry < 1 ? carry : 0);
+      const whole = Math.floor(bonus + 1e-9);
+      amount = Math.round(base) + whole;
+      // 満タンで余った回復を次の日へ貯めない。最大体力や体調の基準は変更しない。
+      state.growth.sleepCarry = before + amount >= maximum ? 0 : Math.max(0, bonus - whole);
+    }
+  }
   state.stamina = staminaAfter(amount);
   if (earningAction?.owner === state && state.stamina < before) earningAction.spent += before - state.stamina;
   if (state.stamina !== before) emit("stamina-change", { before, after: state.stamina, maximum });
@@ -509,3 +522,4 @@ export function addMoney(n) {
   emit("money", { delta: state.money - before });
   emit("hud");
 }
+
