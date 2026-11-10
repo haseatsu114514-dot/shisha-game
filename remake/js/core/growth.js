@@ -78,6 +78,7 @@ export function newGrowth() {
     settledXp: 0,          // 最後に寝た時点の累計（ゲージの濃い金）
     hidane: Object.fromEntries(HIDANE_KEYS.map((k) => [k, 0])), // 未使用の火種（万能と系統限定）
     earned: 0,             // これまでに受け取った火種の総数
+    starterAccounted: false, // 初回の白火を earned に計上済みか（旧SAVEの一度だけの補正）
     milestones: [],        // 2つ目を渡した節目のレベル（重複防止）
     fresh: { chapter: 1, counts: {} }, // 新鮮さの鍵 -> その章の回数
     firsts: { people: [], places: [] }, // 周回内の「はじめて」

@@ -2,6 +2,76 @@ import assert from "node:assert/strict";
 import { suite, baseURL, storageSnapshot } from "./support.mjs";
 
 await suite("conversation-ui", async check => {
+  await check("paper-safe-area-and-work-costume", async page => {
+    // The preview omits phone-density.css. Exercise the real game with a home-bar inset.
+    await page.goto(baseURL);
+    await page.locator('[data-test="title-new"]').waitFor({ timeout: 30000 });
+    await page.locator("#boot").waitFor({ state: "detached" });
+    await page.evaluate(async () => {
+      const core = await import("./js/core/state.js");
+      core.newGame(); core.state.chapter = 5; core.config.textSpeed = 4; core.config.portraitStyle = "new";
+      document.documentElement.dataset.uiTheme = "paper";
+      const { DB } = await import("./js/core/data.js");
+      for (const file of ["ch5_main", "ch1_tsumugi"]) {
+        const data = await (await fetch(`../data/dialogue/${file}.json`)).json();
+        for (const dialogue of data.dialogues) DB.dialogues[dialogue.dialogue_id] = dialogue;
+      }
+      (await import("./js/core/ui.js")).clearScreen();
+    });
+    const playLine = async (id, fromLine) => {
+      await page.evaluate(async ({ id, fromLine }) => {
+        void (await import("./js/vn/engine.js")).play(id, {
+          fromLine, bg: "res://assets/backgrounds/bg_tonari_inside_night.png",
+        });
+      }, { id, fromLine });
+      await page.locator(".vn-next.show").waitFor();
+    };
+    const cdp = await page.context().newCDPSession(page);
+    for (const [width, height, bottom] of [[1280, 720, 0], [844, 390, 0], [844, 340, 21], [780, 301, 21], [780, 301, 34]]) {
+      await page.setViewportSize({ width, height });
+      await cdp.send("Emulation.setSafeAreaInsetsOverride", { insets: { bottom } });
+      // The owner's first line and the longer narration two lines later, unchanged from the script.
+      for (const fromLine of [0, 2]) {
+        await playLine("ch5_bridge_after_return", fromLine);
+        const layout = await page.evaluate(() => {
+          const boxEl = document.querySelector(".vn-box");
+          const box = boxEl.getBoundingClientRect();
+          const frameTop = parseFloat(getComputedStyle(boxEl, "::before").top);
+          const text = document.querySelector(".vn-text");
+          const range = document.createRange(); range.selectNodeContents(text);
+          const rows = [...range.getClientRects()];
+          const buttons = [...document.querySelectorAll(".vn-ctl")];
+          const intersects = (a, b) => a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
+          const scale = box.width / document.querySelector(".vn-box").offsetWidth;
+          const labels = buttons.map(button => {
+            const r = document.createRange(); r.selectNodeContents(button); return r.getBoundingClientRect();
+          });
+          return {
+            // Check hit targets, not only their labels: tapping the text must still advance it.
+            clear: rows.every(row => buttons.every(button => !intersects(row, button.getBoundingClientRect()))),
+            contained: rows.every(row => row.left >= box.left && row.right <= box.right && row.top >= box.top && row.bottom <= box.bottom),
+            // The baked-in horizontal rule lies about 45 stage px below the box top.
+            header: labels.every(r => r.top >= box.top + frameTop * scale && r.bottom <= box.top + 45 * scale),
+            taps: buttons.every(b => b.getBoundingClientRect().height >= 38),
+          };
+        });
+        assert(layout.clear && layout.contained && layout.header && layout.taps,
+          `${width}x${height}, safe-bottom=${bottom}, line=${fromLine}: ${JSON.stringify(layout)}`);
+      }
+    }
+    for (const [id, line, face] of [
+      ["ch5_bridge_after_return", 8, "baito_normal"],
+      ["ch5_bridge_after_return", 11, "baito_smile"],
+      ["ch5_tsumugi_serving", 4, "baito_smile"],
+      ["ch1_tsumugi_first", 17, "normal"],
+    ]) {
+      await playLine(id, line);
+      const portrait = page.locator('.portrait.active');
+      await portrait.waitFor();
+      assert((await portrait.getAttribute("src")).endsWith(`/tsumugi/chr_tsumugi_${face}.webp`), `${id}: ${face}`);
+      await page.waitForFunction(() => [...document.querySelectorAll(".portrait.active")].every(img => img.complete && img.naturalWidth > 0));
+    }
+  });
   await check("money-choice-reason", async page => {
     const originalMoney = await page.evaluate(async () => (await import("./js/core/state.js")).state.money);
     const show = async (money, theme, text, hinted = null) => {
