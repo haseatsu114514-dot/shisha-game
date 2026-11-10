@@ -3,7 +3,7 @@
   "date": "2026-11-10",
   "method": "Codex built-in image_gen, 6 separate calls; attached references labelled by role and style lock in each prompt",
   "source_spec": "asset_sources/ch4-camel-race/ui-request.md",
-  "processing": "Preserved raw output; cropped transparent canvas, uniformly reduced to target ratio and dimensions, binarized alpha at 128 to make material opaque and outside transparent. No aspect distortion or color adjustment.",
+  "processing": "Preserved raw output; cropped transparent canvas, uniformly reduced to target ratio and dimensions, binarized alpha at 128 to make material opaque and outside transparent. No aspect distortion or color adjustment. Call plate translated 3px left to keep the rightmost speaker mesh inside x<160; no scaling change.",
   "files": [
     {
       "name": "rank-plate-A",
@@ -182,9 +182,9 @@
         160
       ],
       "paint_bbox": [
+        2,
         5,
-        5,
-        715,
+        712,
         150
       ],
       "alpha_values": [
@@ -194,7 +194,7 @@
       "edge_opaque": 0,
       "opaque": 102697,
       "transparent": 12503,
-      "sha256": "74398a19f511db19a2575fae1a5af2e129c34e40ade40601b9fcc90cffa5ca26",
+      "sha256": "5e0ce0a261afc6145f52da9d81051a3dbcc56135e8bc21aa06e8a673df058ab8",
       "raw_sha256": "2eca83a1902776822744fb8deae8c27ad1d252ed0f99403243c0d518db24c79c"
     }
   ]
