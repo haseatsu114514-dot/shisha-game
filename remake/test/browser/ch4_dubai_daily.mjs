@@ -207,7 +207,7 @@ await suite("ch4-dubai-daily", async check => {
       p.firstDay = 1;
       value.day = p.startDay + 2; value.slot = 0; p.day = 3;
       value.money = 50000;
-      value.flags._ch4_dubai_talks = { alley_cafe: 2 }; // 次の路地裏の再訪は、素焼きのボウルの話（吸いながら聞く）
+      value.flags._ch4_dubai_talks = { alley_cafe: 1 }; // 次の路地裏の再訪は、素焼きのボウルの話（吸いながら聞く）
     });
     await loadSlot(page, 0);
     await dubaiMap(page, { day: 51, slot: 0 });
@@ -228,7 +228,7 @@ await suite("ch4-dubai-daily", async check => {
     await dubaiMap(page, { day: 52, slot: 0 });
     state = await get(page);
     assert.deepEqual(state.flags._ch4_cafe_orders, { grape_mint: 1, mint: 1 });
-    assert.equal(state.flags._ch4_dubai_talks.alley_cafe, 3, "The clay bowl talk was read");
+    assert.equal(state.flags._ch4_dubai_talks.alley_cafe, 2, "The clay bowl talk was read");
     assert.equal(state.money, money - 6000, "One shisha at the alley cafe is 3,000 yen too");
     // 翌日の昼: もう一度中心地のカフェ。再訪の会話（窓際の席）の後に、おまかせ → まだ頼んでいないダブルアップル。
     await go(page, "ch4_dubai_cafe");

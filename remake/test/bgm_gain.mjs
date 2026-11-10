@@ -67,3 +67,17 @@ assert(Math.abs(elements.at(-1).volume - .11) < 1e-9, "media restore retains tra
 assert(elements.slice(0, -1).every(a => a.volume === 0), "retiring board/previous media stay silent");
 console.log("[BGM gain] PASS: media-backed board music restoration and retiring media");
 
+// 本編の仮BGMは BGM_GAIN 未登録（倍率 1）。設定変更後も既定倍率が保たれること。
+audio.duckBgm(1, 0);
+config.bgmVolume = .4;
+audio.applyVolumes();
+for (const key of [
+  "bgm_map", "bgm_tournament_wait", "bgm_result_emotional", "bgm_ending",
+  "bgm_rival_shop", "bgm_dubai", "bgm_world_stage", "bgm_smoke_lab", "bgm_ch5_duel",
+]) {
+  audio.playBgm(key); step(1500);
+  assert.equal(audio.currentBgm(), key, key);
+  assert(Math.abs(elements.at(-1).volume - .4) < 1e-9, `${key} keeps default gain and volume setting`);
+}
+console.log("[BGM gain] PASS: story placeholder tracks use default gain");
+

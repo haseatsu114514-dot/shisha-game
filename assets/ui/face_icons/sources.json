@@ -121,8 +121,8 @@
  },
  "face_salaryman.png": {
   "sprite": "assets/sprites/characters/salaryman/chr_salaryman_normal.png",
-  "blob": "d10bd4ab59c9b2ec7b768002a15df24e0a7023d7",
-  "webp": "1abef387c1a0b4f1139902cb5146803f66d57b16"
+  "blob": "ab7dbc8613099611744edf39b09e65b8d9ad8955",
+  "webp": "19b60151891dca4ca5f89e920fa3e5454c45beca"
  },
  "face_samechan.png": {
   "sprite": "assets/sprites/characters/samechan/chr_samechan_normal.png",
@@ -296,8 +296,8 @@
  },
  "new/face_salaryman.png": {
   "sprite": "assets/sprites/character_variants/new/salaryman/chr_salaryman_normal.png",
-  "blob": "7a6ead94f475b24f820eaaa93bf763e2e9524d06",
-  "webp": "a28f22977a4a8071810610f2816862d183da900e"
+  "blob": "8501f396a0c201cdbb0b22d4ecaf210c11b9726a",
+  "webp": "19b60151891dca4ca5f89e920fa3e5454c45beca"
  },
  "new/face_samechan.png": {
   "sprite": "assets/sprites/character_variants/new/samechan/chr_samechan_normal.png",

@@ -3,6 +3,7 @@
 import { DB } from "../core/data.js";
 import { state, save } from "../core/state.js";
 import { gainAffinity, releaseLoveAffinity, privateBondScope, bond } from "../core/stats.js";
+import { recordRouteEvent } from "../core/gallery-progress.js";
 import { play, isPlaying } from "../vn/engine.js";
 
 let playing = false;
@@ -32,6 +33,12 @@ export async function playSamechanMilestone({ signal = null } = {}) {
     const result = await play(id, { signal });
     if (state !== owner || signal?.aborted || (!result || result.cancelled)) return false;
     state.loverEventsSeen.push(id);
+    // ギャラリーのルート記録「閲覧した段階」へも通知する（#3164 B。完読が確定したここでだけ通知するので、
+    // 中断・キャンセルでは記録されない。recordRouteEvent 側で重複は排除される）
+    try {
+      const stage = stages.find(entry => entry.id === id);
+      if (stage) recordRouteEvent("samechan", stage.level);
+    } catch { /* 記録の失敗で節目の読了を妨げない */ }
     releaseLoveAffinity("samechan");
     const rewardKey = `_${id}_reward_done`;
     if (!state.flags[rewardKey]) {

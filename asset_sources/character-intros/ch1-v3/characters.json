@@ -457,5 +457,15 @@
         "sha256": "1b82afc91d5e70e00c2910e627a23070c7f92e4970ebdc5e997f87cdb4339774"
       }
     }
+  },
+  {
+    "id": "salaryman",
+    "name": "鉄仮面さん",
+    "color": "#a49b8e",
+    "secondary": "#f0d6a5",
+    "shadow": "#101722",
+    "motif": "straight lines and arcs",
+    "motif_label": "七三分けと太眉の直線・弧",
+    "expression": "normal"
   }
 ]

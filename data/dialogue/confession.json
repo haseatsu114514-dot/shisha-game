@@ -1706,7 +1706,7 @@
     },
     {
       "dialogue_id": "confession_noor_reject",
-      "comment": "DSR20 告白に友だちで答える（以後、告白は出ない。romance.js が _friend_noor を付ける）。",
+      "comment": "DSR20 告白に友だちで答える（以後、告白は出ない。romance.js が _friend_noor を付ける）。ここで LIME を交換する（_lime_contact_noor。恋人のときと同じ入口）。",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_dubai_dunes_dusk.png",
         "private_scene": true
@@ -1736,6 +1736,30 @@
           "speaker": "noor",
           "face": "smile",
           "text": "帰りの運転は、ガイドにお任せ。友だち価格で、ね"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "……あ。その前に、LIMEの交換。まだだった"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_lime_contact_noor"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "車に乗る前、二人のスマホが小さく鳴った。"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "ガイドの用件だけじゃないよ。友だちの連絡として。……ハジメが日本に帰っても、送っていい？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "もちろん。俺からも送ります"
         },
         {
           "speaker": "",

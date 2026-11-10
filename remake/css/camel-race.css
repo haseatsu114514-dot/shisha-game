@@ -463,3 +463,17 @@ html:root[data-density="phone"] .camel-game .camel-cup strong { font-size: max(2
 @media (min-height: 481px) {
   .camel-game:is(.cr-rank, .cr-rank-player) .camel-standings { width: 15.5em; }
 }
+
+
+/* 息の予告は声の輪を隠さず、中央下の空きへ。色に加えて常に言葉でも示す。 */
+.camel-pacing { position: absolute; left: 34%; right: 34%; bottom: 2%; display: grid; gap: .2em; padding: .5em .7em; border: 1px solid #8dccb6; border-radius: .7em; background: rgba(10,24,27,.92); color: #c7fff0; text-align: center; font-size: max(clamp(11px, 1.08cqw, 14px), var(--cr-min, 11px)); font-weight: 800; pointer-events: none; }
+.camel-pacing[hidden] { display: none; }
+.camel-pacing small { font-size: max(.85em, var(--cr-min, 11px)); color: #e9debe; }
+.camel-pacing[data-state="low"] { border-color: #ffd06a; color: #ffe2a3; background: rgba(57,34,7,.94); }
+.camel-pacing[data-state="tired"], .camel-pacing[data-state="spent"] { border: 2px solid #ff9a85; color: #ffc3b4; background: rgba(58,16,12,.94); }
+.camel-stamina[data-state="low"] .camel-stamina-bar i { background: linear-gradient(90deg, #e08a2c, #ffcf5c); }
+.camel-stamina-reserve { position: absolute; left: 39%; top: 0; bottom: 0; width: 2px; background: #fff7c5; box-shadow: 0 0 3px #241a12; }
+.camel-signal[data-stamina="low"] { border-color: #ffd06a; }
+.camel-boost-label { position: absolute; left: 1.6cqw; top: 30%; padding: .2em .4em; border-left: 3px solid #a6f0ff; background: #173b47d9; color: #e6ffff; font-size: max(clamp(13px, 1.5cqw, 20px), var(--cr-min, 13px)); font-weight: 900; letter-spacing: .12em; text-shadow: 0 2px 2px #173b47, 1px 0 3px #173b47, -1px 0 3px #173b47; pointer-events: none; }
+.camel-boost-label[hidden] { display: none; }
+@media (max-height: 480px) { .camel-pacing { left: 36%; right: 36%; bottom: 1%; padding: .25em .4em; } .camel-pacing small { display: none; } }

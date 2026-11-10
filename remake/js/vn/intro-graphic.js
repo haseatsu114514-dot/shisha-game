@@ -6,7 +6,7 @@ const ROOT = "img/ui/character_intros/graphic/";
 // SHISHA-9000 は正式 normal の独立したシアン／紫の眼を優先し、専用人物絵へ差し替えない。
 const PORTRAITS = new Set([
   "adam", "ageha", "dr_kemuri", "hajime", "hiyori", "kumicho", "saku", "maezono", "maki", "mashiro", "minto", "sui",
-  "naru", "oneesan", "pakki", "rei", "rio", "sai", "samechan", "steve", "sumi", "tsumugi", "uranaishi", "volk", "yoru",
+  "naru", "oneesan", "pakki", "rei", "rio", "sai", "samechan", "salaryman", "steve", "sumi", "tsumugi", "uranaishi", "volk", "yoru",
   "master_hookah", "sheikh", "da_silva", "emil", "mukai_master", "noor",
 ]);
 // 背景も新しい絵柄に合わせて描き直した（2026-10-31 全24人）。無い人物は旧背景を使う
@@ -40,6 +40,7 @@ const FRAME_OVERRIDES = {
   sai: {width: 819, left: -142, top: 4, right: 95.4},
   saku: {width: 699, left: -93, top: -4, fade: 14},
   samechan: {width: 765, left: -126, top: -51, fade: 14},
+  salaryman: {width: 1078, left: -121, top: 3, right: 70.6},
   sheikh: {width: 1638, left: -540, top: -182, right: 72.0},
   shisha_9000: {width: 869, left: -180, top: -43, right: 94.4},
   steve: {width: 989, left: -273, top: -13, right: 92.3},

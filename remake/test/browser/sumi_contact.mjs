@@ -18,7 +18,7 @@ await suite('sumi-contact', async check => {
               story: { sumi: 0 }, met: { hiyori: true, sumi: true },
               flags: { _intro_hiyori: true, _lime_contact_hiyori: true,
                 _hiyori_meeting_done: true, _hiyori_sumi_message_done: true,
-                _hiyori_message_delivered: true, _hiyori_cracks_done: true, _hiyori_affinity_waiting_pts: 9 } };
+                _hiyori_message_delivered: true, _hiyori_cracks_done: true, _hiyori_clockout_done: true, _hiyori_affinity_waiting_pts: 9 } };
             const source = JSON.stringify(raw);
             localStorage.setItem(core.SAVE_KEY, source);
             localStorage.setItem('suien_remake_slot1', source);
