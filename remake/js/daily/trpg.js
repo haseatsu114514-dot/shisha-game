@@ -68,7 +68,8 @@ export async function openTrpgBar({ nightBusy = () => false } = {}) {
     showHud(false);
     await enterScene(CITY_BACKGROUNDS.trpg);
     if (!currentVisit() || abort.signal.aborted) return { completed: false };
-    showScreen("trpg", host); observer.observe(layers.screen, { childList: true }); playBgm("bgm_trpg"); // #788 採用曲。倍率は既定1.0（asset_sources/music/adopted-minigame-bgm-20261020.md）
+    showScreen("trpg", host); playBgm("bgm_trpg"); // #788 採用曲。倍率は既定1.0（asset_sources/music/adopted-minigame-bgm-20261020.md）
+    observer.observe(layers.screen, { childList: true });
     if (!owner.flags._intro_sai) {
       const { playIntro } = await import("../vn/intro.js");
       if (!currentVisit() || abort.signal.aborted || !host.isConnected) return { completed: false };
