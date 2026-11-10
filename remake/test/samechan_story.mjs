@@ -126,6 +126,14 @@ delete state.flags._samechan_heart4_done;delete state.flags._samechan_heart5_don
 assert(!/samechan_shop_heart/.test(k.samechanVisitDialogue()),'締めくくり後は出さない');delete state.finales;
 state.lovers=['samechan'];assert(!/samechan_shop_heart/.test(k.samechanVisitDialogue()),'恋人には出さない');delete state.lovers;
 state.flags._samechan_heart4_done=true;state.flags._samechan_heart5_done=true;heart=0;
+// 片付けの夜のあと、優先イベントが無い来店で一度ずつ（#3081）。
+assert.equal(k.samechanVisitDialogue(),'samechan_shop_own_seat');
+state.day++;await k.visitSamechan(open);assert.equal(played.at(-1),'samechan_shop_own_seat');
+assert.equal(state.flags._samechan_own_seat_done,true);
+assert.equal(k.samechanVisitDialogue(),'samechan_shop_look_away');
+state.day++;await k.visitSamechan(open);assert.equal(played.at(-1),'samechan_shop_look_away');
+assert.equal(state.flags._samechan_look_away_done,true);
+assert.match(k.samechanVisitDialogue(),/^samechan_shop_repeat_/);
 for(const id of ['samechan_shop_heart4','samechan_shop_heart5']){const scene=story.dialogues.find(d=>d.dialogue_id===id);
  assert(scene.lines.some(l=>l.condition_type==='romance_open'&&l.char_id==='samechan'),`${id}: ♥3の答えで恋愛/友人の分岐`);
  assert(scene.branches.romance&&scene.branches.friend,id);

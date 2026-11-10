@@ -104,7 +104,7 @@ assert.deepEqual(Array.from(all.DB.lime.slice(-10), m => m.id), [
   "lime_ch5_rei_title",
 ]);
 assert.deepEqual(JSON.parse(JSON.stringify(all.DB.limeTemplates)), realJSON("../data/lime_messages.json").templates);
-assert.equal(all.DB.lime.length, 91);
+assert.equal(all.DB.lime.length, 92);
 assert(!all.DB.lime.some(m => m.accept_event === "__hiyori_shop__"));
 assert.equal(all.DB.samechan.lime, undefined);
 assert.equal(all.DB.characters.tsumugi.id, "tsumugi");
