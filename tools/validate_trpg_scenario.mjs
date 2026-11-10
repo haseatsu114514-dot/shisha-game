@@ -40,7 +40,7 @@ function validate(rel) {
   const gms = s.cast.filter(c => c.part === "GM");
   need(gms.length === 1, "GMはちょうど1人");
   const gm = gms[0]?.id;
-  need(MEMBERS.has(gm), "GM '" + gm + "' は部員（catalog.participants）から選ぶ");
+  need(MEMBERS.has(gm) || s.zeroMemberCast?.includes(gm), "GM '" + gm + "' は部員か常連卓の配役から選ぶ");
   const player = s.cast.find(c => c.id === "hajime");
   need(player?.sheet && player.abilityType === "reroll", "はじめ（PL・切り札は振り直し）が必要");
   const seats = s.cast.filter(c => c.part !== "GM" && c.id !== "hajime");
@@ -82,7 +82,8 @@ function validate(rel) {
   // Campaign seats.
   const cs = s.campaign.seats;
   need(cs.find(x => x.actor === gm)?.required === true && cs.find(x => x.actor === "hajime")?.required === true, "campaign.seats: GMとはじめは required");
-  for (const x of cs) need(x.candidates.every(id => MEMBERS.has(id) || id === "hajime") && !x.candidates.some(id => ["sumi", "naru"].includes(id)), "seat " + x.actor + " の候補は部員だけ");
+  for (const x of cs) need(x.candidates.every(id => MEMBERS.has(id) || id === "hajime" || s.zeroMemberCast?.includes(id))
+    && !x.candidates.some(id => id === "naru" || id === "sumi" && !s.zeroMemberCast?.includes(id)), "seat " + x.actor + " の候補は部員か常連卓の配役だけ");
   need(cs.length === s.cast.length, "campaign.seats は cast と同じ席数");
   // Flow and checks.
   need(JSON.stringify(Object.keys(s.flow).sort()) === JSON.stringify(["prepare", "serve", "twist"]) && s.flow.prepare.length === 2 && s.flow.serve.length === 1 && s.flow.twist.length === 1,
@@ -226,7 +227,8 @@ function validate(rel) {
   if (entry) {
     need(entry.id === s.id, "catalog の id と scenario.id が違う");
     need(Number.isInteger(entry.price) && entry.price >= 300 && entry.price <= 1500, "catalog.price は300〜1500円");
-    need(entry.stockRequires?.includes(gm) && entry.stockRequires.every(id => MEMBERS.has(id)), "catalog.stockRequires にGMを含める");
+    need(s.zeroMemberCast ? entry.zeroMemberCast?.includes(gm) && entry.stockRequires?.length === 0
+      : entry.stockRequires?.includes(gm) && entry.stockRequires.every(id => MEMBERS.has(id)), "catalog の入荷条件とGM");
   } else warn("catalog に未登録");
   return { errors, warns, total };
 }

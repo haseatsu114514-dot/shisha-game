@@ -607,6 +607,7 @@ export const FLAG_FAMILY_RULES = [
   ["_cafe_recall_*", "progression"],
   ["_city_guest_seen_*", "progression"],
   ["_roam_seen_*", "person"],
+  ["_trpg_topic_*", "person"], // 部活の話は周回ごとに対面し直す
   ["_date_inv_*", "person"],
   ["_delivery_*", "progression"],
   ["_fortune_*", "progression"],
