@@ -2,7 +2,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { COURSE, SPEED, JUMP, FALL, SCORE, SPIN, BOOST, RULES_VERSION, RANKS, DEFAULT_SEED, generateCourse, practiceCourse, curveAt, createGame, step, press, boost, chargeBoost,
-  summary, rankOf, readResult, botControl, botStep, nextBumpDistance, comboMultiplier, rivalRun, rivalAt, smashing, RIVALS } from "../js/minigames/desert-ride-model.js";
+  summary, rankOf, readResult, botControl, botStep, nextBumpDistance, comboMultiplier, rivalRun, rivalAt, smashing, RIVALS, jumpPeak, jumpHeight } from "../js/minigames/desert-ride-model.js";
 
 const DT = 1 / 60;
 function play(course, skill, { maxTime = 200, race = false } = {}) {
@@ -464,4 +464,50 @@ test("360-only clean runs keep S without making a no-spin run S", () => {
   while (!game.finished && game.t < 200) botStep(game, "expert", memo, DT);
   assert.equal(summary(game).bestTrick, 360); assert.equal(summary(game).rank, "S");
   assert.equal(summary(play(course, "perfect", { race: true })).rank, "A");
+});
+
+
+
+test("take-off speed raises big jumps and hops through boost speed, without moving the landing window", () => {
+  const course = { length: 500, features: [{ kind: "bump", z: 0, x: 0, w: 1 }], curves: [{ z: 0, c: 0 }, { z: 1000, c: 0 }] };
+  for (const kind of ["big", "hop"]) {
+    let previous = 0;
+    for (const speed of [0, SPEED.min, SPEED.start, 24, SPEED.max, 40, SPEED.boost]) {
+      const game = createGame(kind === "big" ? course : { ...course, features: [] });
+      game.speed = speed;
+      assert.equal(press(game), kind);
+      assert(game.airPeak > previous, `${kind} gets higher at ${speed}m/s`);
+      previous = game.airPeak;
+      const expectedTime = kind === "big" ? JUMP.bigAir * (0.85 + 0.3 * Math.min(1, speed / SPEED.max)) : JUMP.hopAir;
+      assert.equal(game.airTotal, expectedTime, "existing airtime and landing timing are preserved");
+      assert.equal(jumpHeight(game), 0, "starts on the ground");
+      game.air = game.airTotal / 2;
+      assert.equal(jumpHeight(game), game.airPeak, "the model trajectory reaches the take-off peak");
+      const height = jumpHeight(game);
+      game.speed = SPEED.min; game.boostT = 0;
+      assert.equal(jumpHeight(game), height, "boost ending cannot lower an airborne rider abruptly");
+      chargeBoost(game, 1); boost(game);
+      assert.equal(jumpHeight(game), height, "midair boost cannot teleport the rider up");
+      game.air = 0;
+      assert.equal(jumpHeight(game), 0, "ends on the ground");
+    }
+  }
+  assert.equal(jumpPeak(-100), jumpPeak(0));
+  assert.equal(jumpPeak(NaN), jumpPeak(0));
+  assert.equal(jumpPeak(SPEED.boost * 100), jumpPeak(SPEED.boost));
+  assert(jumpPeak(0) > 0, "zero-speed jump stays finite and nonzero");
+  assert.equal(jumpPeak(0, "bounce"), jumpPeak(SPEED.boost, "bounce"), "unrequested bump bounce stays small");
+});
+
+test("rival playback preserves the same speed-based jump height", () => {
+  for (const who of ["noor", "naru"]) {
+    const run = rivalRun(generateCourse(DEFAULT_SEED), { who });
+    const airborne = run.samples.filter(s => s.airKind === "big" && s.air > 0);
+    assert(airborne.length > 0);
+    assert(airborne.every(s => Number.isFinite(jumpHeight(s)) && jumpHeight(s) >= 0 && jumpHeight(s) <= jumpPeak(SPEED.boost)));
+    const sample = airborne[Math.floor(airborne.length / 2)];
+    const replay = rivalAt(run, sample.t);
+    assert(Number.isFinite(replay.airPeak) && Number.isFinite(jumpHeight(replay)));
+    assert.equal(jumpHeight(rivalAt(run, run.finishTime + 1)), 0);
+  }
 });
