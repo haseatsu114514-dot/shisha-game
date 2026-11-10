@@ -274,7 +274,12 @@ export async function openTetsukoTime({ value = null, visitKey = null, bg = null
     }
     const aimWhenShown = () => { if (done) return; if (host.isConnected) aimCamera({ cut: true }); else requestAnimationFrame(aimWhenShown); };
     // 舞台の座標 → 画面（1280×720）の座標（手帳へ飛ぶ写真など、舞台の外に出す物の位置）
-    const onScreen = point => ({ x: cam.x + cam.k * point.x, y: cam.y + cam.k * point.y });
+    const onScreen = point => {
+      const rect = camPlay.getBoundingClientRect(), frame = host.getBoundingClientRect();
+      const stageScale = frame.width / 1280 || 1, cameraScale = rect.width / 1280;
+      return { x: (rect.left - frame.left + cameraScale * point.x) / stageScale,
+        y: (rect.top - frame.top + cameraScale * point.y) / stageScale };
+    };
     // しぐさの絵（届いた物だけ）。歩いている間は歩きの絵、届いていなければ表情の絵と CSS の姿勢。
     function renderPose() {
       const walking = !!cat.dataset.walk && hasPose(walkFrame);
