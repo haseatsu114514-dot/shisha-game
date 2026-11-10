@@ -14,7 +14,7 @@ import { RACE, CUE, PLAYER, WHIP, CAMEL_CUPS, camelCup, camelCupQualified, camel
   POLICIES, PLAYER_CAMEL, RIVAL_PROFILES } from "./camel-race-model.js";
 import { CAMEL_RACE_BGM, camelRaceBgmRate } from "./camel-race-bgm.js";
 
-import { camelStaminaReadout, camelSpectatorComment, SPURT_RESERVE } from "./camel-race-feedback.js";
+import { camelStaminaReadout, SPURT_RESERVE } from "./camel-race-feedback.js";
 
 export const CAMEL_RACE_TITLE = "CAMEL RACE";
 const CUP_TIME_NOTE = "この訪問中の再挑戦は日付を進めません。完走して戻ると従来どおり昼の1行動を使います。";
@@ -283,10 +283,7 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
   const pacingText = el("span"), reserveText = el("small");
   const pacingNode = el("div.camel-pacing", { hidden: true, dataset: { test: "camel-pacing" } }, [pacingText, reserveText]);
   const boostLabel = el("div.camel-boost-label", { hidden: true, text: "≫ WIND BOOST", dataset: { test: "camel-boost-label" }, "aria-hidden": "true" });
-  const spectatorText = el("span.camel-spectator-text");
-  const spectators = el("div.camel-spectators", { hidden: true, dataset: { test: "camel-spectators" }, "aria-label": "架空の観客の応援コメント" }, [
-    el("b.camel-spectator-tag", { text: "架空応援席" }), el("span.camel-spectator-window", [spectatorText])]);
-  const stageNode = el("div.camel-stage", [canvas, flashNode, hudNode, callNode, feedback, banner, countdownNode, boostLabel, spectators, controls, pacingNode, closeButton]);
+  const stageNode = el("div.camel-stage", [canvas, flashNode, hudNode, callNode, feedback, banner, countdownNode, boostLabel, controls, pacingNode, closeButton]);
   const sheet = el("div.camel-sheet", { hidden: true });
   const root = el("section.camel-game", { role: "dialog", "aria-modal": "true", "aria-label": CAMEL_RACE_TITLE, tabindex: "-1",
     dataset: { test: "camel-game", phase: "loading", reducedMotion: String(reducedMotion) } }, [stageNode, live, sheet]);
@@ -357,7 +354,6 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     controls.hidden = next !== "race" && next !== "countdown";
     hudNode.hidden = !["countdown", "race", "goal"].includes(next);
     pacingNode.hidden = !["countdown", "race"].includes(next);
-    spectators.hidden = !["countdown", "race", "goal"].includes(next);
     if (next !== "race") boostLabel.hidden = true;
   };
   const announce = text => { live.textContent = text; };
@@ -1339,13 +1335,6 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     setOnce("pacing", readout.message, text => { pacingText.textContent = text; });
     setOnce("reserve", readout.reserveText, text => { reserveText.textContent = text; });
     boostLabel.hidden = phase !== "race" || !readout.accelerating;
-    // コメントは14秒の区切りか出来事が変わった時だけ。毎フレームDOMを作り直さない。
-    const comment = camelSpectatorComment(race, phase);
-    setOnce("spectator", comment.key, () => {
-      spectatorText.textContent = comment.text;
-      spectatorText.style.animation = "none"; void spectatorText.offsetWidth; spectatorText.style.animation = "";
-      spectators.title = comment.text;
-    });
     const spurt = inSpurt(race);
     const state = locked ? "spent" : race.player.whipping ? "whipping" : spurt ? "spurt" : "ready";
     setOnce("signal", state, value => { signalButton.dataset.state = value; });
