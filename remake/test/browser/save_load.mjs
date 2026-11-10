@@ -172,7 +172,7 @@ await suite("save-load", async check => {
       const { core } = QA;
       const future = {
         schema: core.SCHEMA + 1, chapter: 1, phase: "daily",
-        day: 6, slot: 1, money: 45678,
+        day: 6, slot: 1, money: 45678, growth: { level: 2, nodes: ["B7"] },
       };
       localStorage.setItem(core.SAVE_SLOTS[1].key, JSON.stringify(future));
       (await import("./js/scenes/title.js")).showTitle();
@@ -190,6 +190,74 @@ await suite("save-load", async check => {
     assert.deepEqual(await storageSnapshot(page), before);
     await page.locator('[data-test="slot-cancel"]').click();
   });
+
+  for (const [device, options] of [
+    ["desktop", { viewport: { width: 1280, height: 720 } }],
+    ["mobile", { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }],
+  ]) await check(`growth-board-slot-summary-${device}`, async page => {
+    await prepare(page);
+    const originals = await page.evaluate(async () => {
+      const { core } = QA;
+      const { ensureGrowth } = await import("./js/core/growth.js");
+      const g = ensureGrowth(core.state);
+      Object.assign(g, { level: 2, xp: 205, settledXp: 205, nodes: ["B7", "S7", "W7"], earned: 5 });
+      g.hidane.any = 2;
+      core.state.stats = { technique: 10, sense: 10, guts: 10, charm: 10, insight: 10 };
+      core.saveToSlot(core.SAVE_SLOTS[1].key); // 同じ盤を AUTO と手動枠へ
+      localStorage.setItem(core.SAVE_SLOTS[2].key, JSON.stringify({
+        schema: 5, chapter: 1, phase: "daily", day: 6, slot: 1,
+        stats: { ...core.state.stats },
+      }));
+      (await import("./js/scenes/title.js")).showTitle();
+      return core.SAVE_SLOTS.slice(0, 3).map(slot => localStorage.getItem(slot.key));
+    });
+    const summary = slot => page.locator(`[data-test="slot-${slot}"] .ss-growth .ss-stat`)
+      .evaluateAll(nodes => nodes.map(node => node.textContent));
+    const expected = ["Lv.2", "火種2", "才能1/27", "感覚1/26", "理論1/26"];
+    const legacyLabels = () => page.locator('[data-test="slot-2"] .ss-stat small')
+      .allTextContents();
+    const assertGrowthFits = async () => assert.deepEqual(await page.locator(".ss-growth .ss-stat")
+      .evaluateAll(nodes => nodes.filter(node => node.scrollWidth > node.clientWidth + 1).map(node => node.textContent)), []);
+    await page.locator('[data-test="title-load"]').click();
+    assert.deepEqual(await summary(0), expected);
+    assert.deepEqual(await summary(1), expected);
+    assert.deepEqual(await legacyLabels(), ["技術", "センス", "根性", "魅力", "洞察"]);
+    await assertGrowthFits();
+    await assertFits(page, ".save-slot, [data-test='slot-cancel']");
+    await page.locator('[data-test="slot-cancel"]').click();
+    assert.deepEqual(await page.evaluate(() => QA.core.SAVE_SLOTS.slice(0, 3).map(slot => localStorage.getItem(slot.key))), originals);
+
+    // タイトルから AUTO を読み、ゲーム中の SAVE と LOAD でも同じ枠表示を見る。
+    await page.locator('[data-test="title-load"]').click();
+    await page.locator('[data-test="slot-0"]').click();
+    await page.locator("#screen .map:not(.done)").waitFor({ timeout: 30000 });
+    const afterLoad = await page.evaluate(() => QA.core.SAVE_SLOTS.slice(0, 3).map(slot => localStorage.getItem(slot.key)));
+    for (const menu of ["save", "load"]) {
+      await page.locator('[data-test="hud-menu"]').click();
+      await page.locator('[data-test="menu-tab-system"]').click();
+      await page.locator(`[data-test="menu-${menu}"]`).click();
+      assert.deepEqual(await summary(0), expected);
+      assert.deepEqual(await summary(1), expected);
+      assert.deepEqual(await legacyLabels(), ["技術", "センス", "根性", "魅力", "洞察"]);
+      await assertGrowthFits();
+      await assertFits(page, ".save-slot, [data-test='slot-cancel']");
+      await page.locator('[data-test="slot-cancel"]').click();
+    }
+    assert.deepEqual(await page.evaluate(() => QA.core.SAVE_SLOTS.slice(0, 3).map(slot => localStorage.getItem(slot.key))), afterLoad);
+    assert.deepEqual(await page.evaluate(() => QA.core.state.stats), {
+      technique: 10, sense: 10, guts: 10, charm: 10, insight: 10,
+    });
+
+    // 旧方式に切り替えた端末では、盤のある枠も従来の5能力を表示する。
+    await page.evaluate(() => localStorage.setItem("suien_growth_preview", "0"));
+    await page.locator('[data-test="hud-menu"]').click();
+    await page.locator('[data-test="menu-tab-system"]').click();
+    await page.locator('[data-test="menu-load"]').click();
+    assert.equal(await page.locator('[data-test="slot-0"] .ss-growth').count(), 0);
+    assert.deepEqual(await page.locator('[data-test="slot-0"] .ss-stat small').allTextContents(),
+      ["技術", "センス", "根性", "魅力", "洞察"]);
+    await page.locator('[data-test="slot-cancel"]').click();
+  }, options);
 
   for (const [label, options] of [
     ["desktop-ui", { viewport: { width: 1280, height: 720 } }],

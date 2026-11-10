@@ -383,9 +383,15 @@ try {
     }
   });
   await run("audio-and-check-cancellation", { scenario: "shark-last-order", traveler: "light", seed: 3 }, {}, async page => {
-    assert.equal((await page.evaluate(() => __trpg.audio())).state, "idle");
+    // 音は既定でON（最初の操作まで AudioContext は作らない）。テーマ別BGMと録音SE（CC0・仮）を使う。
+    const initial = await page.evaluate(() => __trpg.audio());
+    assert.equal(initial.state, "idle"); assert.equal(initial.enabled, true); assert.equal(initial.bgm, "bgm_trpg_shark");
+    await hit(page, '[data-test="trpg-audio"]');
+    await page.waitForFunction(() => !__trpg.audio().enabled);
     await hit(page, '[data-test="trpg-audio"]');
     await page.waitForFunction(() => __trpg.audio().enabled && __trpg.audio().state === "running");
+    await page.waitForFunction(() => __trpg.audio().samples >= 19); // 録音SEが全部読めた
+    assert.equal((await page.evaluate(() => __trpg.audio())).ambience, 0); // BGMがあるテーマでは合成の環境音を重ねない
     await hit(page, '[data-test="trpg-start"]'); await nextLines(page);
     await hit(page, '[data-test="trpg-declare-back"]');
     assert.equal((await page.evaluate(() => __trpg.snapshot())).pending, null);

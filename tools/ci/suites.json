@@ -262,6 +262,12 @@
       "run": ["node remake/test/growth_levelup.mjs", "node remake/test/growth_board.mjs", "node --experimental-vm-modules remake/test/slot_exp.mjs", "node --experimental-vm-modules remake/test/kannon_growth.mjs", "node remake/test/growth_effects.mjs", "node --experimental-vm-modules remake/test/growth_chapter_rewards.mjs", "node --experimental-vm-modules remake/test/growth_board_screen.mjs", "node remake/test/growth_chapter_notice.mjs", "node remake/test/proto_hmd_mw9.mjs"]
     },
     {
+      "id": "growth-starter-accounting",
+      "title": "Starter fire accounting, cap, legacy saves, full board and NG+ (#3118)",
+      "kind": "quick",
+      "run": ["node remake/test/growth_starter_accounting.mjs"]
+    },
+    {
       "id": "vent-lid",
       "title": "Lotos lid vent heat and eligibility",
       "kind": "quick",
@@ -464,6 +470,7 @@
         "remake/js/daily/growth-board-screen.js",
         "remake/js/daily/reflection.js",
         "remake/js/core/growth.js",
+        "remake/js/core/growth-starter.js",
         "remake/test/browser/board_tutorial.mjs",
         "remake/test/browser/support.mjs",
         "remake/css/wide-screens.css"
@@ -918,6 +925,8 @@
         "node --test remake/test/trpg_feedback.mjs",
         "node --test remake/test/trpg_d20.mjs",
         "node --experimental-vm-modules --test remake/test/trpg_table_view.mjs",
+        "node remake/test/trpg_audio_cues.mjs",
+        "node --experimental-vm-modules remake/test/trpg_audio_bgm.mjs",
         "node --test remake/test/trpg_campaign.mjs",
         "node --experimental-vm-modules remake/test/trpg_campaign_save.mjs",
         "node tools/validate_trpg_scenario.mjs",
@@ -1520,6 +1529,19 @@
       "sparse": [
         "/asset_sources/shisha-hardware-reference/skin-candidates-issue374/candidates.json"
       ]
+    },
+    {
+      "id": "ch4-camel-feedback",
+      "title": "ラクダレースの声かけ判定で説明がない場合の表示と既存説明",
+      "kind": "browser",
+      "weight": 1,
+      "timeout": 5,
+      "paths": [
+        "remake/js/minigames/camel-race.js",
+        "remake/camel-race.html",
+        "remake/test/browser/camel_judge_feedback.mjs"
+      ],
+      "run": ["node remake/test/browser/camel_judge_feedback.mjs"]
     },
     {
       "id": "ch4-camel-race",
@@ -2475,6 +2497,18 @@
         "/asset_sources/heroine-title-candidates-20261009/minto/title_art_minto_02_opening_prep.png"
       ],
       "pillow": true
+    },
+    {
+      "id": "newgame-font-wait",
+      "title": "New game opens while conversation font is stalled",
+      "kind": "browser",
+      "weight": 0.3,
+      "timeout": 5,
+      "paths": [
+        "remake/js/core/vn-fonts.js",
+        "remake/test/browser/newgame_font_wait.mjs"
+      ],
+      "run": ["node remake/test/browser/newgame_font_wait.mjs"]
     },
     {
       "id": "ch1-loading",

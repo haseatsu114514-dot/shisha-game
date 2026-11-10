@@ -1,3 +1,36 @@
+# 「はじめから」の読み込み待ち調査（2026-11-10）
+
+## 原因
+
+タイトル表示後に始める会話用フォントの先読み `loadVnFonts()` は、`document.fonts.load()` 2件を `Promise.all()` で待ち、時間上限がなかった。最初の会話 `play()` もその Promise を `assetsReady` に含めるため、フォント応答が遅いと `vn-loading` の「場面を準備しています…」が残り、最初の台詞へ進めない。画像は15秒、音声は8秒、JSONは15秒の待ち上限がある。台詞や画像の404が原因ではなかった。
+
+`origin/main` の会話用フォントローダーは 2026-11-06 の会話UI更新で入った。直近の 11-10 の会話UI調整は主にレイアウトで、この無制限待ちを導入した変更ではない。
+
+## 再現と所要時間
+
+ローカルの sparse checkout に `remake/`、`data/`、`assets/` を含め、専用のプレビューサーバー（8124）と Chromium で確認した。タイトルの初期表示後、同じフォント応答をブラウザの通信ルートで保留し、タイトルの「はじめから」を押してから最初の台詞まで計測した。修正前は同じサーバー上で HEAD の元コードを返した。
+
+| 条件 | 修正前 | 修正後 |
+| --- | ---: | ---: |
+| `ZenOldMincho-Blue-Regular.woff2` の応答を保留 | 14.7秒時点で台詞なし、読み込み表示あり | 7.5秒で最初の台詞、読み込み表示なし（フォントは未着） |
+| 通常の「はじめから」 | ― | 7.4秒 |
+| 「つづきから」（冒頭オートセーブ） | ― | 3.7秒 |
+| `?debug=1` の「はじめから」 | ― | 4.1秒 |
+
+元コードで保留を20秒続けた別の再現でも読み込み表示が残り、応答解放後約2秒で台詞が出た。保留時のコンソールエラー・404・失敗リクエストは0件。通常・続き・デバッグ開始でもエラーと404は0件（タイトル曲の場面切替による `ERR_ABORTED` は除外）。
+
+## 修正
+
+フォント先読みを最大4秒で打ち切り、未着の場合は既存の代替書体で会話を開始する。フォントの通信は続き、到着すればブラウザが適用する。即時失敗時の再試行は維持。台詞・シナリオは変更なし。
+
+## 検証
+
+- `node --experimental-vm-modules remake/test/warmup_defer.mjs`: PASS（保留したフォントが時間内に代替へ進む回帰ケースを追加）。
+- `BASE_URL=http://127.0.0.1:8124/remake/ node remake/test/browser/newgame_font_wait.mjs`: PASS。実タイトルから開始し、フォント未着のまま3.8秒で最初の台詞を確認。CI の独立した短いブラウザ群に登録した。
+- 既存の `ch1_loading.mjs` 全件は参考として実行。先読み対象の LFS 実体不足を補った後、新規開始に近い PC・タッチの会話読み込みケースは通過した。既存の作業台キャッシュケース2件はタイトルの並行画像先読みを拾って失敗し、連続走行中に Chromium のタブが2件クラッシュした。単独の `touch-warm-scene` は PASS。今回の回帰は独立群で判定する。
+- `node tools/ci/run.mjs --kind quick`: 初回は sparse checkout で検査用資料・JSON・LFS画像・試遊コードを省いたため、`desert-ride-rules`、`loading-comics-spec`、`slim-deploy`、`docs`、`game-logic`、`tools` が失敗。欠けたファイルだけ追加後、各失敗コマンドを個別再実行しすべて PASS。quick 全体の初回終了コードは 1 のままと記録する。PR の CI では同じ quick 全体を確認する。
+
+
 # PWA 仕上げの検証（2026-11-10）
 
 ## 公開経路
@@ -56,3 +89,10 @@ SW は有効のまま、鮮度制御を HTML/JS/CSS/JSON に限定した。既�
 元 CI は https://github.com/haseatsu114514-dot/shisha-game/actions/runs/42767560522 （quick SUCCESS、browser 1/2/3・result FAILURE）。失敗21ケースはいずれも画像/JSONの注入・観測を含む。局所再実行以外を成功扱いせず、push 後の同一 head の quick・browser・result を同じ PR に追記する。未解決の表示署名が CI にも出たら、その実ログで次の切り分けを行う。
 
 新規テストの suites.json 登録は #3073/#3074/#3078 の変更と重なるため**登録待ち**。現時点の入口は `node remake/test/browser/pwa_network_regression.mjs` の単独コマンドで、CI 登録済みとは扱わない。sweeper は現 head の必須 `CI / result` と残る検証を確認する。この単元ではマージ・新規 Issue/PR 作成はしない。
+
+
+## main 取り込みと追加検証（D1110-1）
+
+最初の修正 head `4ad2f58b9accd78bdba400a000e8ce86dbe3271d` は push 済みだったが、その時点の main `4e368556edb5dda69b9934b8325a6bd769ab7e3e` と RESULT.md が add/add 競合し、PR の CI が起動しなかった。この競合解消のためだけに main を取り込み、main 側の「はじめから」調査と PWA 側の記録を両方保持した。ゲームコードの手動競合解消は無い。#3078 の index 差分は title-ds/game-ds の CSS link 削除であることを再確認し、その領域には触れていない。
+
+取り込み前の追加単独実行: `craft_readiness.mjs` 全3ケース PASS（元CIの next-step-prefetch-does-not-block を含む）。`worker_scenes.mjs` の broken-scene-real-mix-fallback / timeout-then-late-image-stays-fallback / broken-focus-uses-approved-face も CASE_FILTER で個別に PASS。先の関連スイート全体の timeout 記録は取り消さない。固定 base/head 比較ログは main 取り込み前の不変スナップショットとして保持する。取り込み後の必須 CI と局所再検証は同じPRの結果コメント・単元RESULTに追記する。
