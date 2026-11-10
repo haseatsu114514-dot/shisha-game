@@ -22,11 +22,17 @@ export const stageSvg = (kids = []) => svg("svg", { viewBox: `0 0 ${W} ${H}`, cl
 export function move(node, frames, ms, opt = {}) {
   const duration = opt.duration ?? ms;
   const anim = node.animate(frames, { duration: ms, easing: EASE.snap, fill: "both", ...opt });
-  // 偽時計やアニメーション未完了で covered が永久に待たない（ch2-tournament の defeat 入場）
-  return Promise.race([
-    anim.finished.catch(() => {}),
-    new Promise((resolve) => setTimeout(resolve, duration + 80)),
-  ]);
+  // 偽時計では WAAPI の finished が終わらないことがある。タイマーがあれば上限を置き、
+  // Node の VM 検査（setTimeout が無い／即死するモック）では finished だけを待つ。
+  const finished = Promise.resolve(anim.finished).catch(() => {});
+  const timer = globalThis.setTimeout;
+  const clear = globalThis.clearTimeout;
+  if (typeof timer !== "function") return finished;
+  let id;
+  const timeout = new Promise((resolve) => { id = timer(resolve, duration + 80); });
+  return Promise.race([finished, timeout]).finally(() => {
+    if (id != null && typeof clear === "function") clear(id);
+  });
 }
 
 // 画面を覆っているあいだは Enter・Space で下の会話や画面が進まないようにする
