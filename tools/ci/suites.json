@@ -262,6 +262,12 @@
       "run": ["node remake/test/growth_levelup.mjs", "node remake/test/growth_board.mjs", "node --experimental-vm-modules remake/test/slot_exp.mjs", "node --experimental-vm-modules remake/test/kannon_growth.mjs", "node remake/test/growth_effects.mjs", "node --experimental-vm-modules remake/test/growth_chapter_rewards.mjs", "node --experimental-vm-modules remake/test/growth_board_screen.mjs", "node remake/test/growth_chapter_notice.mjs", "node remake/test/proto_hmd_mw9.mjs"]
     },
     {
+      "id": "growth-starter-accounting",
+      "title": "Starter fire accounting, cap, legacy saves, full board and NG+ (#3118)",
+      "kind": "quick",
+      "run": ["node remake/test/growth_starter_accounting.mjs"]
+    },
+    {
       "id": "vent-lid",
       "title": "Lotos lid vent heat and eligibility",
       "kind": "quick",
@@ -464,6 +470,7 @@
         "remake/js/daily/growth-board-screen.js",
         "remake/js/daily/reflection.js",
         "remake/js/core/growth.js",
+        "remake/js/core/growth-starter.js",
         "remake/test/browser/board_tutorial.mjs",
         "remake/test/browser/support.mjs",
         "remake/css/wide-screens.css"
