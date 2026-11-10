@@ -24,6 +24,7 @@ import { isLover, romanceRouteOpen } from "./romance.js";
 import { VISIT_SEQ, storyCount, hasContact } from "./spots.js";
 import { hiyoriRoute, hiyoriStoriesDone, hiyoriFinaleReady } from "../core/hiyori-route.js";
 import { noorStoriesDone } from "../chapters/ch4-desert-progress.js";
+import { longlongStoriesDone } from "../chapters/ch4-longlong.js";
 // #2090: 第2章の対峙（決裂・休業）以降か。spots.js / core/fortune-effects.js の naruRiftActive と同じ条件（試験の依存を増やさないため写し）
 const naruRiftActive = (save) => (save?.chapter || 1) >= 2 && !!(save?.flags?._ch2_read_ch2_naru_confrontation
   || save?.flags?._ch2_night_11_done || save?.flags?._ch2_naru_listened || save?.flags?._ch2_naru_hurt);
@@ -66,6 +67,8 @@ export const BOND_FINALES = {
   // 第5章の東京の鉄の煙でも届け直せる（2026-11-07 オーナー指示「スティーブと揃える」）。スティーブと同じく第3章で見逃した人用の
   // 書き出し（tokyoDialogue）で、第3章で見た人は finales.volk があるので二度は出ない。
   volk: { dialogue: "ch3_volk_bond_finale", tokyoDialogue: "ch5_volk_bond_finale", gift: "suyaki_volk" },
+  // 王煙楼: 第4章ドバイの龍龍水煙所で、段階5本を読み終えた♥5の次の来店で一度だけ。恋愛対象外なので友情の着地だけ。
+  master_hookah: { dialogue: "ch4_longlong_bond_finale", gift: "suyaki_master_hookah" },
   hiyori: {
     get dialogue() { return hiyoriRoute().finale?.dialogue || ""; },
     get gift() { return hiyoriRoute().finale?.gift || null; },
@@ -243,7 +246,7 @@ const finaleDialogue = (id) => BOND_FINALES[id]?.tokyoDialogue && (state.chapter
 /** 締めくくりに要る好感度の段階（既定は♥5＝MAX。heart を持つ相手だけ別） */
 export const finaleHeart = (id) => BOND_FINALES[id]?.heart || 5;
 /** 鉄の煙の再訪三つ（chapters/ch3-story-wiring.js の任意場面。既読は _ch3_read_<id>）。 */
-const VOLK_VISITS = Object.freeze(["ch3_volk_second", "ch3_volk_third", "ch3_volk_fourth"]);
+const VOLK_VISITS = Object.freeze(["ch3_volk_second", "ch3_volk_third", "ch3_volk_fourth", "ch3_volk_fifth", "ch3_volk_revisit"]);
 const storiesDone = (id) => id === "hiyori" ? hiyoriStoriesDone()
   : id === "mashiro" ? mashiroScenesRead(state.flags) && questionComplete(state, id)
   : id === "samechan"
@@ -254,15 +257,20 @@ const storiesDone = (id) => id === "hiyori" ? hiyoriStoriesDone()
   // 綾取: LIME交換の寄り道と、助言の後の「答えを返しに行く」外出の両方（ch3-story-wiring.js / ch3-outing-progress.js の保存キーの写し）
   : id === "saku" ? !!state.flags._ch3_read_ch3_saku_lime && !!state.flags._lime_contact_saku
     && (state.flags._ch3_outings?.enmaku_answer || 0) > 0
+    && (["ch3_saku_missed", "ch3_saku_cleanup", "ch3_saku_liar", "ch3_saku_first_reply"].every((scene) => !!state.flags[`_ch3_read_${scene}`])
+      || !!state.finales?.saku)
   : id === "noor" ? noorStoriesDone(state) && questionComplete(state, id)
   // スティーブ: LIME交換の寄り道と、味の会話（予備のタイマーを借りる外出）の両方。締めくくりはそのタイマーを受ける
   // 第5章の東京では、第3章の寄り道（LIME交換・予備のタイマー）はもう受けられないので、♥5だけで始める（#2705）
   : id === "steve" ? (state.chapter || 1) >= 5 || !!state.flags._ch3_read_ch3_steve_lime && !!state.flags._lime_contact_steve
     && (state.flags._ch3_outings?.steve_timer || 0) > 0
+    && (["ch3_steve_two_timers", "ch3_steve_empty_seat", "ch3_steve_tongs", "ch3_steve_watch"].every((scene) => !!state.flags[`_ch3_read_${scene}`])
+      || !!state.finales?.steve)
   // ヴォルク: 鉄の煙の再訪三つ（味の会話・七年分の記録・頷く順番）と、その後のLIME交換の寄り道。締めくくりは三つすべてを受ける
   // 第5章の東京では、第3章の再訪・LIME交換の寄り道はもう読めないので、スティーブと同じく♥5だけで始める（2026-11-07 オーナー指示）
   : id === "volk" ? (state.chapter || 1) >= 5 || VOLK_VISITS.every((scene) => !!state.flags[`_ch3_read_${scene}`])
     && !!state.flags._ch3_read_ch3_volk_lime && !!state.flags._lime_contact_volk
+  : id === "master_hookah" ? longlongStoriesDone(state)
   : id === "ageha" ? AGEHA_AFFINITY_VISITS.every((scene) => !!state.flags[`_ch2_read_${scene}`]) && questionComplete(state, id)
   : CH2_VISIT_STORIES[id] ? ch2VisitStoriesDone(state.flags, id)
   : storyCount(id) >= (VISIT_SEQ[id] || []).length
@@ -313,6 +321,7 @@ export function finaleDue(id) {
   if (id === "noor" && ![4, 5].includes(state.chapter)) return false; // カフェ・オアシスは第4章と第5章のドバイ（第5章は 2026-11-07 オーナー決定）
   if (id === "steve" && !TOKYO_SHOP_REACH.steve()) return false;
   if (id === "volk" && !TOKYO_SHOP_REACH.volk()) return false;
+  if (id === "master_hookah" && (state.chapter || 1) !== 4) return false; // 龍龍水煙所は第4章ドバイの日常だけ
   const def = BOND_FINALES[id];
   if (!def || finaleSeen(id) || !DB.dialogues[finaleDialogue(id)] || !storiesDone(id)) return false;
   if (affinityLevel(id) < finaleHeart(id) || questionVisitDue(id)) return false;
@@ -329,7 +338,7 @@ export const isFinaleEvent = (dialogueId) => Object.values(BOND_FINALES).some((d
 
 /** 締めくくりを再生し、ルート（恋人／恋愛／友情）を記録して専用ハガルを渡す。一度だけ */
 export async function playFinale(id, { bg = null, deferSave = false, signal = null } = {}) {
-  if (["hiyori", "samechan", "mashiro", "saku", "noor", "steve", "volk"].includes(id) && !finaleDue(id)) return false;
+  if (["hiyori", "samechan", "mashiro", "saku", "noor", "steve", "volk", "master_hookah"].includes(id) && !finaleDue(id)) return false;
   const def = BOND_FINALES[id];
   if (!def || finaleSeen(id) || !DB.dialogues[finaleDialogue(id)]) return false;
   const owner = state;
@@ -355,6 +364,11 @@ export async function playFinale(id, { bg = null, deferSave = false, signal = nu
   state.finales ||= {};
   state.finales[id] = { day: state.day, chapter: state.chapter, route };
   if (def.flag) state.flags[def.flag] = true;
+  // ヌールの友情着地でも LIME を交換する（台本の _lime_contact_noor。告白承諾時と同じ入口）
+  if (id === "noor" && route === "friend") {
+    state.flags._friend_noor = true;
+    if (state.flags._lime_contact_noor && !(state.contacts || []).includes("noor")) (state.contacts ||= []).push("noor");
+  }
   grantGift(def.gift);
   // 恋愛ルート: 告白を予約（一日の終わりに、再生前にもう一度ルートを確かめる）
   if (route === "romance" && !def.laterConfession && !def.ownConfession && romanceRouteOpen(id) && !state.flags._confession_due) state.flags._confession_due = id;

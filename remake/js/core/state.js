@@ -298,6 +298,13 @@ function migrate(s) {
   }
   if (!s.flags || typeof s.flags !== "object" || Array.isArray(s.flags)) s.flags = {};
   delete s.notes; // 常連ノートは廃止。旧セーブの残存キーを捨てる
+  // ヌールの友情着地でも LIME を交換する。告白で断った旧セーブと、締めくくりで友情に着地した旧セーブに連絡先を補う。
+  if ((s.flags._friend_noor || s.finales?.noor?.route === "friend") && !(s.lovers || []).includes("noor")) {
+    s.flags._friend_noor = true;
+    s.flags._lime_contact_noor = true;
+    if (!Array.isArray(s.contacts)) s.contacts = [];
+    if (!s.contacts.includes("noor")) s.contacts.push("noor");
+  }
   // #577: 旧保存は未訪問でもBAR利用と従来の初対面を維持する。噂・目撃・面識は補わない。
   // 現行schemaで再保存してもこの許可を保持し、新規ゲームには付けない。
   if (oldSchema < 16) s.flags._axe_bar_legacy_access = true;

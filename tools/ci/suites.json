@@ -790,6 +790,7 @@
         "node remake/test/ch4_dubai_local.mjs",
         "node remake/test/ch4_inn_trial.mjs",
         "node remake/test/ch4_longlong.mjs",
+        "node remake/test/affection_fill.mjs",
         "node --experimental-vm-modules remake/test/ch5_progress.mjs",
         "node remake/test/ch5_party.mjs",
         "node remake/test/ch5_travel.mjs",
@@ -862,6 +863,12 @@
       "title": "Minto side seat and quiet hello, once each after her visit sequence (#3081)",
       "kind": "quick",
       "run": ["node --experimental-vm-modules remake/test/minto_story_visits.mjs"]
+    },
+    {
+      "id": "minto-later-visits",
+      "title": "Minto timer handoff and unposted cheki, once each after her visit sequence (#3081)",
+      "kind": "quick",
+      "run": ["node --experimental-vm-modules remake/test/minto_later_visits.mjs"]
     },
     {
       "id": "game-logic",
@@ -964,6 +971,7 @@
       "run": [
         "node --experimental-vm-modules remake/test/recorded_se.mjs",
         "node --experimental-vm-modules remake/test/minigame_se.mjs",
+        "node --experimental-vm-modules remake/test/story_audio.mjs",
         "node --experimental-vm-modules remake/test/entry_phone_audio.mjs",
         "node --experimental-vm-modules remake/test/growth_board_audio.mjs",
         "node --experimental-vm-modules remake/test/continue_audio.mjs",

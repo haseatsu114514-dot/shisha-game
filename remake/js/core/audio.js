@@ -27,6 +27,9 @@ const RECORDED_SE = {
   click: { files: ["ui_click.wav"], gain: .3 },
   select: { files: ["ui_select.wav"], gain: .3 },
   cancel: { files: ["ui_back.wav"], gain: .3 },
+  whoosh: { files: ["ui_whoosh.wav"], gain: .35 },
+  jingle: { files: ["ui_jingle.wav"], gain: .4 },
+  card: { files: ["ui_card.wav"], gain: .35 },
   phone: { files: ["lime_glass.wav"], gain: .4 },
   doorbell: { files: ["shop_bell.wav"], gain: 1 },
   coalSnip: { files: ["coal_grab_01.wav", "coal_grab_02.wav"], gain: 1 },
@@ -529,6 +532,8 @@ export const SE = {
   // てつこといっしょ（#2454）: 喉を鳴らす低いゴロゴロ（約1.2秒。録音なし・合成）と、写真のシャッター。
   purr: () => { for (let i = 0; i < 26; i++) noise({ dur: 0.04, vol: 0.05 * Math.min(1, (i + 1) / 4, (26 - i) / 4), filter: 160 + Math.random() * 50, q: 1.1, type: "lowpass", delay: i * 0.046 }); },
   shutter: () => { noise({ dur: 0.04, vol: 0.12, filter: 3200 }); tone({ freq: 1800, to: 900, type: "square", dur: 0.03, vol: 0.03, delay: 0.01 }); noise({ dur: 0.05, vol: 0.09, filter: 2200, delay: 0.09 }); },
+  // 日付カードなど短いUI音（録音が無ければ短いクリック）。
+  card: () => tone({ freq: 880, to: 660, type: "triangle", dur: 0.08, vol: 0.1 }),
 };
 
 for (const id of Object.keys(RECORDED_SE)) {
@@ -1183,6 +1188,7 @@ function startSynth(kind) {
     setTimeout(() => out.disconnect(), fadeSec * 1000 + 200);
   };
 }
+
 
 
 

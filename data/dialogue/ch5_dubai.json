@@ -300,18 +300,163 @@
     },
     {
       "dialogue_id": "ch5_noor_cafe_4",
-      "comment": "第5章のドバイで読む ch4_noor_cafe_4（DSR20 の♥4）。流れは第4章と同じで、はじめが遊びに来ている間の言い方だけ替える（「いつか日本に帰っちゃう」→「また日本に帰っちゃう」。chapters/ch5-dubai.js が差し替える。段階の数え方は ch4_noor_cafe_4 のまま）。大会に触れない。",
+      "comment": "第5章のドバイで読む ch4_noor_cafe_4（DSR20 の♥4）。流れは第4章と同じで、はじめが遊びに来ている間の言い方だけ替える（帰りを「いつか」ではなく「また」にする。chapters/ch5-dubai.js が差し替える。段階の数え方は ch4_noor_cafe_4 のまま）。大会に触れない。段階2で第4章稿に合わせて増補。",
       "lines": [
-        { "speaker": "", "face": "", "text": "カフェ・オアシスの奥の席。ヌールさんが、スマホの写真を見せてくれた。" },
-        { "speaker": "noor", "face": "smile", "text": "見て。日本のアニメの、舞台になった町。いつか行きたい場所リスト" },
-        { "speaker": "hajime", "face": "smile", "text": "聖地巡礼ですね" },
-        { "speaker": "noor", "face": "surprise", "text": "それ！ そこに行って、写真と同じ景色を見てみたいの" },
-        { "speaker": "noor", "face": "normal", "text": "……ハジメは、また日本に帰っちゃうんだよね" },
-        { "speaker": "hajime", "face": "normal", "text": "……そうですね。向こうに、帰る店があるので" },
-        { "speaker": "noor", "face": "smile", "text": "じゃあ、私が日本に行ったら、今度はハジメがガイドね" },
-        { "speaker": "noor", "face": "smile", "text": "砂の代わりに、ハジメの好きな場所を見せて。約束ね" },
-        { "speaker": "", "face": "", "text": "ヌールさんが差し出した小指に、俺も自分の指を重ねた。" },
-        { "speaker": "hajime", "face": "smile", "text": "はい。今度は俺が、好きな場所を案内します" }
+        {
+          "speaker": "",
+          "text": "カフェ・オアシスの奥の席。ヌールさんが、スマホの写真を見せてくれた。",
+          "face": ""
+        },
+        {
+          "speaker": "noor",
+          "text": "見て。日本のアニメの、舞台になった町。いつか行きたい場所リスト",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "聖地巡礼ですね",
+          "face": "normal"
+        },
+        {
+          "speaker": "noor",
+          "text": "それ！ そこに行って、写真と同じ景色を見てみたいの",
+          "face": "smile"
+        },
+        {
+          "speaker": "",
+          "text": "画面には、駅前の坂と、赤い看板の並ぶ通りが、何枚も保存されていた。",
+          "face": ""
+        },
+        {
+          "speaker": "hajime",
+          "text": "ここ、行きたい場所のいちばん上ですか",
+          "face": "normal"
+        },
+        {
+          "speaker": "noor",
+          "text": "いちばん上は、まだ決められてない。写真が似てる場所が、多すぎて",
+          "face": "normal"
+        },
+        {
+          "speaker": "noor",
+          "text": "砂丘は、どこも似てるのに、案内すると道が分かる。日本は、逆で迷うと思う",
+          "face": "normal"
+        },
+        {
+          "speaker": "noor",
+          "text": "……ハジメは、また日本に帰っちゃうんだよね",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "……そうですね。向こうに、帰る店があるので",
+          "face": "normal"
+        },
+        {
+          "speaker": "noor",
+          "text": "じゃあ、私が日本に行ったら、今度はハジメがガイドね",
+          "face": "normal"
+        },
+        {
+          "speaker": "noor",
+          "text": "砂の代わりに、ハジメの好きな場所を見せて。約束ね",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "好きな場所、ですか。観光の名所、じゃなくて？",
+          "face": "normal"
+        },
+        {
+          "speaker": "noor",
+          "text": "名所でもいい。でも、ハジメが「ここ」って指す場所がいい。砂丘でも、私はそうしてる",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "俺は、朝のまだ客の少ない通りと、使い込んだ店の暖簾を思い浮かべた。",
+          "face": ""
+        },
+        {
+          "speaker": "hajime",
+          "text": "なら、俺の店の近くの通りから案内します。朝は、静かで、煙の匂いが少し残ってます",
+          "face": "normal"
+        },
+        {
+          "speaker": "noor",
+          "text": "それ、聞きたい。写真にない方の日本",
+          "face": "smile"
+        },
+        {
+          "speaker": "noor",
+          "text": "リストの町も連れてって。そのあとで、ハジメの通り。順番は、当日決めでいい",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "ヌールさんが差し出した小指に、俺も自分の指を重ねた。",
+          "face": ""
+        },
+        {
+          "speaker": "hajime",
+          "text": "はい。今度は俺が、好きな場所を案内します",
+          "face": "normal"
+        },
+        {
+          "speaker": "noor",
+          "text": "ガイド料は、あとで考える。最初の一回は、お礼のつもりでいいから",
+          "face": "smile"
+        },
+        {
+          "speaker": "hajime",
+          "text": "……今度は、俺が商売上手にならないようにします",
+          "face": "normal"
+        },
+        {
+          "speaker": "noor",
+          "text": "ならないで。ハジメの案内は、商売じゃなくていい",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "画面のリストは閉じられた。約束の方が、写真より先に残った。",
+          "face": ""
+        },
+        {
+          "speaker": "hajime",
+          "text": "リストの町は、駅の名前、覚えておきます。また帰ってから、道を確認するので",
+          "face": "normal"
+        },
+        {
+          "speaker": "noor",
+          "text": "覚えてくれるの？ ……ありがとう。写真だけだと、実際の曲がり角が分からなくて",
+          "face": "normal"
+        },
+        {
+          "speaker": "noor",
+          "text": "ハジメが先に歩いて、私が写真を見る。ガイドって、そういうのでしょ",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "そうです。迷ったら、俺が先に迷います",
+          "face": "normal"
+        },
+        {
+          "speaker": "noor",
+          "text": "先に迷うガイド、いいね。砂丘でも、私、ときどきやる",
+          "face": "smile"
+        },
+        {
+          "speaker": "",
+          "text": "小指を離したあと、ヌールさんはリストの一番上に、小さな星を一つ付けた。",
+          "face": ""
+        },
+        {
+          "speaker": "noor",
+          "text": "これは、ハジメの通り。名前は、まだ空欄。当日、教えて",
+          "face": "normal"
+        }
       ]
     },
     {
