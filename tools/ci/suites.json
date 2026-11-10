@@ -2497,6 +2497,18 @@
       "pillow": true
     },
     {
+      "id": "newgame-font-wait",
+      "title": "New game opens while conversation font is stalled",
+      "kind": "browser",
+      "weight": 0.3,
+      "timeout": 5,
+      "paths": [
+        "remake/js/core/vn-fonts.js",
+        "remake/test/browser/newgame_font_wait.mjs"
+      ],
+      "run": ["node remake/test/browser/newgame_font_wait.mjs"]
+    },
+    {
       "id": "ch1-loading",
       "title": "Chapter 1 loading, playtest fixes and early contacts",
       "kind": "browser",
