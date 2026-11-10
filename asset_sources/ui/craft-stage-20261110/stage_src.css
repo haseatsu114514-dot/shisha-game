@@ -19,7 +19,7 @@
 /* ---------- 上のレール ---------- */
 & .bench-top {
   position: absolute; left: 0; right: 0; top: 0; height: 76px; z-index: 6; display: flex; align-items: center; gap: 16px;
-  padding: 0 92px 0 22px !important; border: 0 !important; background: none !important; box-shadow: none !important;
+  padding: 0 108px 0 22px !important; border: 0 !important; background: none !important; box-shadow: none !important;
 }
 & .bench-top .bench-mode { width: auto !important; flex: none; font-size: 21px; font-weight: 800; letter-spacing: .12em; color: #e3bd6e; text-shadow: 0 2px 8px #000; white-space: nowrap; }
 & .bench-top .bench-mode small { margin-left: 10px; padding-left: 10px; font-size: 18px; letter-spacing: .04em; color: #e7dbf3; border-left-color: #c9a7e666; }
@@ -56,7 +56,7 @@
 
 /* ---------- はじめ: 作業風景を枠から出し、ひとまとまりのまま拡大する（中の位置合わせは今のまま） ---------- */
 & .bench-left {
-  position: absolute; left: 0 !important; top: 0 !important; bottom: 0 !important; width: 520px !important; z-index: 1; display: block;
+  position: absolute; left: 0 !important; top: 0 !important; bottom: 0 !important; width: 338px !important; z-index: 1; display: block;
   padding: 0 !important; gap: 0; border: 0 !important; border-radius: 0; background: none !important; box-shadow: none !important; pointer-events: none;
 }
 & .bench-left .bench-worker { position: absolute; inset: 0; overflow: visible; border: 0 !important; border-radius: 0; background: none !important; box-shadow: none !important; }
@@ -92,7 +92,7 @@
 
 /* ---------- 舞台: 枠なしで右側いっぱい ---------- */
 & .bench-right {
-  position: absolute; left: 410px !important; right: 16px !important; top: 80px !important; bottom: 12px !important; z-index: 2;
+  position: absolute; left: 410px !important; right: 16px !important; top: 96px !important; bottom: 12px !important; z-index: 2;
   padding: 0 !important; border: 0 !important; border-radius: 0; background: none !important; box-shadow: none !important; border-image: none !important;
 }
 & .bench-right > .panel-smoke { display: none; }
@@ -237,8 +237,6 @@
 
 /* ---------- はみ出しで画面が流れないように: はじめの絵が下へ出ても作業台はスクロールさせない ---------- */
 & { overflow: clip !important; }
-& .bench-left, & .bench-right { overflow: clip; overflow-clip-margin: 0; }
-& .bench-right { overflow: visible; }
 & .mix-amount { min-width: 0; display: flex !important; flex-direction: column; justify-content: center; gap: 2px; overflow: hidden; }
 & .mix-amount .reg-line { font-size: 18px !important; line-height: 1.3 !important; }
 & .fr-name .fr-mastery { display: none !important; }
@@ -260,3 +258,13 @@
 & .bench-top > .rig-record { gap: 4px !important; }
 & .bench-top > .rig-record .rig-lamp { width: 26px !important; height: 26px !important; }
 & .bench-top > .rig-record .rig-lamp b { font-size: 13px !important; }
+
+/* ---------- 上のレールの箱は押せない（右上の「？」を覆わない）。レールの中の部品だけ押せる ---------- */
+& .bench-top { pointer-events: none; }
+& .bench-top > * { pointer-events: auto; }
+
+/* ---------- 「？」はスマホでも押しやすい大きさ（実寸38px以上）。熱の柱の矢印は管の目盛りと同じ基準 ---------- */
+& .bench-guide summary { width: 84px !important; height: 84px !important; }
+& .bench-panel .thermo { --thermo-inset: 9px !important; }
+/* 炭焼きの炭壺の帯は「？」の手前で終える */
+& .heat-info { right: 104px !important; }
