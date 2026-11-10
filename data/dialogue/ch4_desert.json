@@ -711,7 +711,7 @@
     },
     {
       "dialogue_id": "ch4_noor_bond_finale",
-      "comment": "DSR20 交友の締めくくり（♥5）。店の段階の会話（ch4_noor_*）と♥3の問いを読んだ後、カフェ・オアシスで一度だけ。終わりに専用ハガル suyaki_noor（ダブルアップル）。恋人／恋愛の答えを重ねた相手（最後の問い bond_q2_noor）／友人で分岐する。恋愛寄りなら次の砂丘（ツアー代なし）の夕日で告白 confession_noor。大会に触れない。",
+      "comment": "DSR20 交友の締めくくり（♥5）。店の段階の会話（ch4_noor_*）と♥3の問いを読んだ後、カフェ・オアシスで一度だけ。終わりに専用ハガル suyaki_noor（ダブルアップル）。恋人／恋愛の答えを重ねた相手（最後の問い bond_q2_noor）／友人で分岐する。友情で着地したときは、ここで LIME を交換する（_lime_contact_noor。告白承諾時と同じ入口）。恋愛寄りなら次の砂丘（ツアー代なし）の夕日で告白 confession_noor。大会に触れない。",
       "metadata": {
         "bond_finale": "noor"
       },
@@ -903,6 +903,30 @@
             "speaker": "",
             "face": "",
             "text": "ヌールさんは笑って、ツアーデスクの予約表に「ハジメ 特等席」と書き足した。"
+          },
+          {
+            "speaker": "noor",
+            "face": "normal",
+            "text": "……あ。その前に、LIMEの交換。まだだった"
+          },
+          {
+            "type": "set_flag",
+            "flag": "_lime_contact_noor"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "二人のスマホが、小さく鳴った。"
+          },
+          {
+            "speaker": "noor",
+            "face": "smile",
+            "text": "ガイドの用件だけじゃないよ。友だちの連絡として。……ハジメが日本に帰っても、送っていい？"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "もちろん。俺からも送ります"
           }
         ],
         "friend": [
@@ -920,6 +944,30 @@
             "speaker": "",
             "face": "",
             "text": "ヌールさんは笑って、空いたカップを二つ重ねた。"
+          },
+          {
+            "speaker": "noor",
+            "face": "normal",
+            "text": "……あ。その前に、LIMEの交換。まだだった"
+          },
+          {
+            "type": "set_flag",
+            "flag": "_lime_contact_noor"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "二人のスマホが、小さく鳴った。"
+          },
+          {
+            "speaker": "noor",
+            "face": "smile",
+            "text": "ガイドの用件だけじゃないよ。友だちの連絡として。……ハジメが日本に帰っても、送っていい？"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "もちろん。俺からも送ります"
           }
         ]
       }
