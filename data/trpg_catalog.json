@@ -6,6 +6,28 @@
   ],
   "scenarios": [
     {
+      "id": "regular-harbor",
+      "file": "dialogue/trpg_regular_harbor.json",
+      "price": 300,
+      "stockRequires": [],
+      "zeroMemberCast": [
+        "sumi",
+        "tsumugi",
+        "salaryman"
+      ]
+    },
+    {
+      "id": "regular-mail",
+      "file": "dialogue/trpg_regular_mail.json",
+      "price": 300,
+      "stockRequires": [],
+      "zeroMemberCast": [
+        "sumi",
+        "tsumugi",
+        "salaryman"
+      ]
+    },
+    {
       "id": "ordinary-cup",
       "file": "dialogue/trpg_ordinary.json",
       "price": 500,
@@ -115,7 +137,6 @@
   "participants": [
     {
       "id": "hiyori",
-      "maxAffinity": 66,
       "workLabel": "仕事の時間",
       "shifts": [
         {
@@ -134,7 +155,6 @@
     },
     {
       "id": "samechan",
-      "maxAffinity": 66,
       "workLabel": "店のシフト中",
       "shifts": [
         {
@@ -163,7 +183,6 @@
     },
     {
       "id": "tsumugi",
-      "maxAffinity": 66,
       "workLabel": "大学の制作時間",
       "shifts": [
         {
@@ -180,7 +199,6 @@
     },
     {
       "id": "adam",
-      "maxAffinity": 66,
       "workLabel": "店のシフト中",
       "shifts": [
         {
@@ -211,7 +229,6 @@
     },
     {
       "id": "rei",
-      "maxAffinity": 66,
       "workLabel": "零-ZERO-の営業中",
       "shifts": [
         {
@@ -231,7 +248,6 @@
     },
     {
       "id": "ageha",
-      "maxAffinity": 66,
       "workLabel": "MELTY PUFFの営業中",
       "shifts": [
         {

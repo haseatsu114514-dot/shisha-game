@@ -12,16 +12,15 @@ export function foundTrpgClub(state, catalog) {
 }
 
 /** Recruitment requires a real conversation; work schedules only affect the later table. */
-export function recruitmentStatus(state, person, catalog) {
+export function recruitmentStatus(state, person, catalog, { allowUnheard = false } = {}) {
   if (!state || state.chapter < catalog.unlockChapter) return { ok: false, reason: "第2章から勧誘できる" };
   if (state.phase !== "daily") return { ok: false, reason: "街で会った時に誘おう" };
   if (!state.trpg?.club?.founded) return { ok: false, reason: "バーで部活を作ろう" };
   if (!person || excluded.has(person.id) || person.interested !== true) return { ok: false, reason: "参加対象外" };
   if (state.trpg.club.members?.[person.id]) return { ok: false, reason: "入部済み" };
   if (!state.met?.[person.id]) return { ok: false, reason: "まだ知り合っていない" };
-  if (!(state.lovers || []).includes(person.id) && (state.affinity?.[person.id] || 0) < person.maxAffinity) {
-    return { ok: false, reason: "好感度MAXになったら誘おう" };
-  }
+  if (!allowUnheard && !state.flags?.[`_trpg_topic_${person.id}`]
+    && !(person.id === "rei" && state.flags?._rei_trpg_introduced)) return { ok: false, reason: "会って部活の話を聞こう" };
   return { ok: true, reason: "会った時に、部活へ誘える" };
 }
 
@@ -58,7 +57,8 @@ export function tableStatus(state, catalog, { nightBusy = false } = {}) {
     return { ok: false, reason: "今夜は先に決まった予定がある" };
   }
   // #1045 B03: 卓は開けるが、仲間か本が欠けていると遊べない。今の不足と次の目標を一行で示す。
-  const hasCompanion = (catalog?.participants || []).some(p => participantStatus(state, p).ok);
+  const hasCompanion = (catalog?.participants || []).some(p => participantStatus(state, p).ok)
+    || (catalog?.scenarios || []).some(b => b.zeroMemberCast && (state.trpg.owned?.includes(b.id) || state.trpg.stock?.includes(b.id)));
   const hasBook = (catalog?.scenarios || []).some(b => !state.trpg.cleared?.[b.id]
     && (state.trpg.owned?.includes(b.id) || state.trpg.stock?.includes(b.id)));
   if (!hasCompanion && !hasBook) return { ok: true, reason: "今は招集できる仲間／遊べる本がない。知り合いとの交流を深めよう" };
@@ -98,11 +98,14 @@ export function castTrpgTable(state, catalog, scenario, options = {}) {
   if (state.trpg?.cleared?.[scenario.id]) return { ok: false, reason: "遊び終えた物語" };
   if (!state.trpg?.owned?.includes(scenario.id)) return { ok: false, reason: "本棚に加えると遊べる" };
   const available = new Set(catalog.participants.filter(p => participantStatus(state, p).ok).map(p => p.id));
+  const book = catalog.scenarios.find(b => b.id === scenario.id);
+  if (book?.zeroMemberCast) for (const id of book.zeroMemberCast) available.add(id);
   available.add("hajime");
   const used = new Set();
   const assignments = {};
   for (const seat of scenario.campaign.seats) {
-    const id = seat.candidates.find(id => available.has(id) && !used.has(id) && !excluded.has(id));
+    const id = seat.candidates.find(id => available.has(id) && !used.has(id)
+      && (!excluded.has(id) || book?.zeroMemberCast?.includes(id)));
     if (!id && seat.required) return { ok: false, reason: "今夜はGMの都合がつかない" };
     assignments[seat.actor] = id || null;
     if (id) used.add(id);
@@ -115,7 +118,7 @@ export function materializeTrpgCast(scenario, assignments) {
   const table = clone(scenario);
   const gm = scenario.cast.find(c => c.part === "GM").id;
   if (!assignments[gm] || assignments.hajime !== "hajime") throw new Error("Missing required TRPG participant");
-  if (Object.values(assignments).some(id => excluded.has(id))) throw new Error("Excluded TRPG participant");
+  if (Object.values(assignments).some(id => excluded.has(id) && !scenario.zeroMemberCast?.includes(id))) throw new Error("Excluded TRPG participant");
   // PC sheets stay keyed by the authored seat: the character exists even when the GM plays an empty seat.
   table.sheets = Object.fromEntries(scenario.cast.filter(c => c.sheet).map(c => [c.id, c.sheet]));
   table.cast = table.cast.filter(c => assignments[c.id]).map(c => {

@@ -41,7 +41,8 @@ export const PLAYER = Object.freeze({
 });
 
 export const CUE = Object.freeze({
-  lead: 1.25,            // 合図の輪が現れてから「ぴたり」の瞬間までの秒数
+  lead: 1.25,            // 合図の輪の標準の縮み時間（秒）。実際の輪は1つごとに leadMin〜leadMax で変わる
+  leadMin: 0.7, leadMax: 1.4, // 輪が現れてから「ぴたり」までの秒数の幅（seedで決まる。速い輪ほど難しい）
   perfect: 0.13,         // ±この範囲なら PERFECT
   good: 0.36,            // ±この範囲なら GOOD（外は無駄な声）
   gapMin: 2.4, gapMax: 3.4, // 次の輪までの間隔（seedで決まる）
@@ -67,11 +68,15 @@ export const gradeOf = score => GRADES.find(([, min]) => score >= min)[0];
 
 // ライバルの走り方（先行・追い込み・安定）。区間ごとの目安速度 m/s。seed で ±0.4 の個体差と細かな揺れ。
 // color はゼッケン・順位の札・名札・進み具合の点で共通（自分は金、AI は緑・青・紫で見分けやすく）。
+// whip は各ライバルのムチの使い方（使う進み具合の区間・間隔 span 秒ごとに burst 秒だけ振る）。
 export const RIVAL_PROFILES = Object.freeze([
-  { id: "front", name: "ナジュム", color: "#4fae6a", speeds: [19.9, 18.4, 17.6], note: "先行型。前半で前に出る" },
-  { id: "closer", name: "リーフ", color: "#4b8ee0", speeds: [17.7, 18.3, 20.6], note: "追い込み型。最後に伸びる" },
-  { id: "steady", name: "サブール", color: "#a46ad8", speeds: [18.6, 18.6, 18.7], note: "安定型。一定の足で走る" },
+  { id: "front", name: "ナジュム", color: "#4fae6a", speeds: [19.9, 18.4, 17.6], note: "先行型。前半で前に出る", whip: { from: 0, to: 0.35, span: 6.5, burst: 1.5 } },
+  { id: "closer", name: "リーフ", color: "#4b8ee0", speeds: [17.7, 18.3, 20.6], note: "追い込み型。最後に伸びる", whip: { from: 0.6, to: 1, span: 6.5, burst: 1.5 } },
+  { id: "steady", name: "サブール", color: "#a46ad8", speeds: [18.6, 18.6, 18.7], note: "安定型。一定の足で走る", whip: { from: 0.1, to: 0.9, span: 8, burst: 1 } },
 ].map(profile => Object.freeze(profile)));
+
+/** ライバルのムチ: 振っている間だけ少し伸びる（プレイヤーのムチより弱く、見た目が主）。 */
+export const RIVAL_WHIP = Object.freeze({ boost: 0.8 });
 
 export const PLAYER_CAMEL = Object.freeze({ id: "player", name: "ハビーバ", color: "#ffb52e", note: "はじめが声をかけるラクダ" });
 
@@ -89,12 +94,13 @@ export function rng(seed) {
 
 const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
 
-/** 合図の輪の予定表を作る（コースを走り切るのに足りる長さ）。 */
+/** 合図の輪の予定表を作る（コースを走り切るのに足りる長さ）。縮む速さは輪ごとに変える。 */
 function scheduleCues(random) {
   const cues = [];
   let at = CUE.firstAt;
   while (at < RACE.maxTime) {
-    cues.push({ at, state: "pending", presses: 0 });
+    const lead = CUE.leadMin + (CUE.leadMax - CUE.leadMin) * random();
+    cues.push({ at, state: "pending", presses: 0, lead });
     at += CUE.gapMin + (CUE.gapMax - CUE.gapMin) * random();
   }
   return cues;
@@ -106,7 +112,7 @@ export function createRace({ seed = 1, cup = "practice", length = camelCup(cup).
   const rivals = RIVAL_PROFILES.map((profile, index) => {
     const offset = (random() - 0.5) * 0.8 + event.rivalBoost;
     return { id: profile.id, name: profile.name, color: profile.color, index: index + 1, distance: 0, speed: profile.speeds[0] + offset,
-      offset, wobble: random() * Math.PI * 2, finishedAt: null };
+      offset, wobble: random() * Math.PI * 2, finishedAt: null, whipping: false };
   });
   return {
     seed, cup: event.id, length, t: 0, finished: false, finishedAt: null, rank: null,
@@ -124,15 +130,15 @@ export function createRace({ seed = 1, cup = "practice", length = camelCup(cup).
 
 /** 今見せるべき合図の輪。輪が出ていない時は null。progress は 0（出現）→1（ぴたり）→1超（遅れ）。 */
 export function activeCue(state) {
-  const cue = state.cues.find(c => c.state === "pending" && state.t >= c.at - CUE.lead);
+  const cue = state.cues.find(c => c.state === "pending" && state.t >= c.at - c.lead);
   if (!cue) return null;
-  return { at: cue.at, progress: (state.t - (cue.at - CUE.lead)) / CUE.lead, dt: state.t - cue.at };
+  return { at: cue.at, lead: cue.lead, progress: (state.t - (cue.at - cue.lead)) / cue.lead, dt: state.t - cue.at };
 }
 
 /** 次の合図までの秒数（輪が出ていない時の案内用）。 */
 export const nextCueIn = state => {
   const cue = state.cues.find(c => c.state === "pending");
-  return cue ? Math.max(0, cue.at - CUE.lead - state.t) : Infinity;
+  return cue ? Math.max(0, cue.at - cue.lead - state.t) : Infinity;
 };
 
 export const inSpurt = state => state.player.distance / state.length >= RACE.spurtFrom;
@@ -256,7 +262,13 @@ export function stepRace(state, dt) {
   // ライバル。
   for (const rival of state.rivals) {
     if (rival.finishedAt !== null) continue;
-    const target = rivalTarget(rival, rival.distance / state.length, state.t);
+    const progress = rival.distance / state.length;
+    let target = rivalTarget(rival, progress, state.t);
+    // ムチ: 型ごとの区間で、間隔ごとに短く振る。振っている間は少し伸び、騎手の腕も回る。
+    const whip = RIVAL_PROFILES[rival.index - 1].whip;
+    rival.whipping = !!whip && progress >= whip.from && progress <= whip.to
+      && ((state.t + rival.wobble * 2.7) % whip.span) < whip.burst;
+    if (rival.whipping) target += RIVAL_WHIP.boost;
     rival.speed += (target - rival.speed) * Math.min(1, dt / 0.9);
     rival.distance += rival.speed * dt;
     if (rival.distance >= state.length) {

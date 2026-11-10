@@ -122,8 +122,21 @@ export function lessonLock(node, unlocked, s = state) {
  * - 関門は色つきの火種1つ。その盤の色を先に、無ければほかの色でもよい。受け取りが上限に届いて
  *   もう色が来ない時（ctx.capped）だけ、万能1つでも越えられる（総量は増やさない）。
  */
+const spareColor = (hidane, ctx) => Math.max(0, BOARD_KEYS.reduce((n, b) => n + (hidane[b] || 0), 0) - (ctx.reserve || 0));
+
+/** このマスに今使える火種の数。通常マスは未点灯の台座ぶんを引き、上限後は他盤の色も数える。 */
+export function spendableHidane(node, hidane, ctx = {}) {
+  if (!node.cost) return 0;
+  if (node.kind === "gate") return Math.max(
+    ...BOARD_KEYS.map((b) => hidane[b] || 0), ctx.capped ? hidane.any || 0 : 0,
+  );
+  const free = spareColor(hidane, ctx);
+  return (hidane.any || 0) + (ctx.capped ? free : Math.min(hidane[node.board] || 0, free));
+}
+
 export function paymentFor(node, hidane, ctx = {}) {
   if (!node.cost) return {};
+  if (spendableHidane(node, hidane, ctx) < node.cost) return null;
   if (node.kind === "gate") {
     const color = [node.board, ...BOARD_KEYS.filter((b) => b !== node.board)].find((b) => (hidane[b] || 0) >= node.cost);
     if (color) return { [color]: node.cost };
@@ -133,9 +146,7 @@ export function paymentFor(node, hidane, ctx = {}) {
   let left = node.cost;
   const any = Math.min(left, hidane.any || 0);
   if (any) { pay.any = any; left -= any; }
-  const colored = BOARD_KEYS.reduce((n, b) => n + (hidane[b] || 0), 0);
-  const spare = Math.max(0, colored - (ctx.reserve || 0));
-  let free = spare;
+  let free = spareColor(hidane, ctx);
   const own = Math.min(left, hidane[node.board] || 0, free);
   if (own) { pay[node.board] = own; left -= own; free -= own; }
   // もう火種が来ない時だけ、ほかの盤の色でも払える（色の行き違いで最後のマスが取れなくならないように）

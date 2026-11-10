@@ -78,9 +78,12 @@ html:root[data-ui-theme="paper"] body:not(.game-ds) .vn-controls {
   right: calc((1280px - var(--vn-dialogue-width)) / 2 + 24px);
   width: 372px; height: 44px; padding: 0;
   background: none; border: 0; border-radius: 0; box-shadow: none;
+  /* 等幅の列＋中央寄せだと、文字幅の広い AUTO だけ区切り線に寄って見える（オーナー指摘 2026-11-10）。
+     列を文字幅に合わせ右端へ詰めると、各ボタンの padding（左右10px）がそのまま線との距離になり全て均等になる。 */
+  grid-template-columns: repeat(5, auto); justify-content: end;
 }
 html:root[data-ui-theme="paper"] body:not(.game-ds) .vn-controls::before { display: none; }
-html:root[data-ui-theme="paper"] body:not(.game-ds) .vn-controls .vn-ctl { height: 44px; min-height: 44px; padding: 0 10px; color: var(--lavender); font-size: 22px; font-weight: 700; border-radius: 4px; }
+html:root[data-ui-theme="paper"] body:not(.game-ds) .vn-controls .vn-ctl { height: 44px; min-height: 44px; padding: 0 10px; color: var(--lavender); font-size: 22px; font-weight: 700; border-radius: 4px; transform: translateY(-2px); }
 html:root[data-ui-theme="paper"] body:not(.game-ds) .vn-controls .vn-ctl + .vn-ctl::before { top: 12px; bottom: 12px; background: var(--paper-line); opacity: 1; }
 /* 押せる範囲（44px）は帯より広いので、塗りではなく帯の高さの淡い面と下線で示す。AUTO・SKIP中は琥珀色。 */
 html:root[data-ui-theme="paper"] body:not(.game-ds) .vn-controls .vn-ctl:is(:hover, :focus-visible) {
@@ -88,6 +91,21 @@ html:root[data-ui-theme="paper"] body:not(.game-ds) .vn-controls .vn-ctl:is(:hov
   box-shadow: none; text-decoration: underline 2px var(--lavender); text-underline-offset: 4px;
 }
 html:root[data-ui-theme="paper"] body:not(.game-ds) .vn-controls .vn-ctl.on { color: var(--amber-ink); background: none; box-shadow: none; }
+/* スマホの枠はホームバーを避けて上がる。操作列も同じ下端を参照しないと本文へ残ってしまう。
+   大きいタップ領域は上へ伸ばし、文字と区切り線は下端に寄せて紙の見出し帯に収める。 */
+html:root[data-ui-theme="paper"][data-density="phone"] body:not(.game-ds) #stage {
+  --vn-dialogue-bottom: max(30px, calc((env(safe-area-inset-bottom, 0px) + 8px) / var(--k, 1)));
+}
+html:root[data-ui-theme="paper"][data-density="phone"] body:not(.game-ds) .vn-controls .vn-ctl {
+  display: flex; align-items: flex-end; justify-content: center;
+  background-position: center bottom;
+}
+html:root[data-ui-theme="paper"][data-density="phone"] body:not(.game-ds) #stage .vn-controls .vn-ctl + .vn-ctl::before {
+  top: auto; bottom: 10px; height: 20px;
+}
+html:root[data-ui-theme="paper"][data-density="phone"] body:not(.game-ds) .vn-controls .vn-ctl.on::after {
+  top: auto; bottom: 0; transform: none;
+}
 html:root[data-ui-theme="paper"] .vn-text { color: var(--paper-ink); text-shadow: none; }
 html:root[data-ui-theme="paper"] .vn-box.narration .vn-text { color: #4a3d52; }
 html:root[data-ui-theme="paper"] .vn-box.thought .vn-text { color: #46578a; }

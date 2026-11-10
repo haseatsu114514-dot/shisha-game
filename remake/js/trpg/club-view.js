@@ -29,7 +29,7 @@ export function mountTrpgRecruitment(host, { getState, personId, catalog, charac
       event.preventDefault(); buttons[(index + (event.shiftKey ? -1 : 1) + buttons.length) % buttons.length]?.focus();
     }
   };
-  if (signal?.aborted || !recruitmentStatus(owner, person, catalog).ok) { close(); return { finished, destroy: cancel }; }
+  if (signal?.aborted || !recruitmentStatus(owner, person, catalog, { allowUnheard: true }).ok) { close(); return { finished, destroy: cancel }; }
   const name = displayName(characters, personId), lines = club.branches[personId];
   const button = (text, test, action) => el("button.trpg-button", { type: "button", text, dataset: { test }, onclick: () => {
     if (!current()) { cancel(); return; }
@@ -37,19 +37,25 @@ export function mountTrpgRecruitment(host, { getState, personId, catalog, charac
   } });
   root = el("section.trpg-club-dialog", { role: "dialog", "aria-modal": "true", "aria-label": name + "を部活に誘う" });
   function render() {
-    const line = step < 0 ? (club.branches["invite_" + personId] || club.branches.invite)[0].text : lines[step].text;
+    const unheard = !owner.flags?.[`_trpg_topic_${personId}`]
+      && !(personId === "rei" && owner.flags?._rei_trpg_introduced);
+    const line = unheard ? club.branches["topic_" + personId][0].text
+      : step < 0 ? (club.branches["invite_" + personId] || club.branches.invite)[0].text : lines[step].text;
     const content = el("div.trpg-club-dialog-card", [
       el("span.trpg-kicker", { text: catalog.club.name + " / 仲間に声をかける" }),
-      el("h2", { text: step < 0 ? name + "を部活に誘う？" : name }),
+      el("h2", { text: unheard ? name + "の部活の話" : step < 0 ? name + "を部活に誘う？" : name }),
       el("div.trpg-club-conversation", [
         el("div.trpg-club-portrait", el("img", { src: portraitUrl(manifest, personId), alt: name,
           style: { top: portraitTop(manifest, personId, 300, 4), transform: "translateX(-" + portraitAx(manifest, personId) * 100 + "%)" } })),
-        el("div", [el("small", { text: step < 0 ? "はじめ" : name }),
+        el("div", [el("small", { text: unheard ? name : step < 0 ? "はじめ" : name }),
           el("p", { text: line, dataset: { test: "trpg-recruit-line" } })]),
       ]),
     ]);
     const actions = el("div.trpg-club-actions");
-    if (step < 0) actions.append(button("部活に誘う", "trpg-recruit-invite", () => { step = 0; render(); }),
+    if (unheard) actions.append(button("話を聞く", "trpg-topic-hear", () => {
+      owner.flags ||= {}; owner.flags[`_trpg_topic_${personId}`] = true; save(); render();
+    }), button("また今度", "trpg-recruit-later", cancel));
+    else if (step < 0) actions.append(button("部活に誘う", "trpg-recruit-invite", () => { step = 0; render(); }),
       button("今日は誘わない", "trpg-recruit-later", cancel));
     else actions.append(button(step < lines.length - 1 ? "話を聞く" : "また店で会おう", "trpg-recruit-next", () => {
       if (step < lines.length - 1) { step++; render(); return; }

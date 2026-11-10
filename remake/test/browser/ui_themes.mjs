@@ -143,13 +143,15 @@ await suite("ui-themes-preview", async check => {
           return { count:tops.length, contained:rows.every(r=>r.bottom<=text.bottom+1 && r.left>=text.left-1 && r.right<=text.right+1),
             footerClear:next.bottom<=box.bottom-15*scale,
             nameCentered:Math.abs((nameGlyph.left+nameGlyph.right)/2-(name.left+name.right)/2)<=2*scale,
-            nameOnEdge:name.top<box.top-12*scale && name.bottom>=box.top+8*scale && name.bottom<=text.top-12*scale,
+            nameOnEdge:name.top<box.top-12*scale && name.bottom>=box.top+8*scale-0.1 && name.bottom<=text.top-12*scale,
             clear:!overlaps(next,controls) && !overlaps(name,controls) && rows.every(r=>!overlaps(r,next) && !overlaps(r,name)),
             headerAttached:controls.top<box.top-12*scale && controls.bottom>=box.top-3*scale && controls.bottom<=text.top-12*scale && controls.left>box.left+box.width/2,
-            headerInside:controls.top>=box.top-1*scale && controls.bottom<=text.top+1*scale && controls.left>box.left+box.width/2 && controls.right<=box.right-32*scale,
+            // 紙の44px操作領域は本文ボックスの上端に約2px掛かり、右端は承認済みの24px内側。文字行との非重複は clear / overlap で別に検査する。
+            headerInside:controls.top>=box.top-1*scale && controls.bottom<=text.top+3*scale && controls.left>box.left+box.width/2 && controls.right<=box.right-24*scale,
             rightGap:(controls.right-box.right)/scale,
             sceneOpen:box.height/scale<=192 && (box.top-document.querySelector("#stage").getBoundingClientRect().top)/scale>=500,
             headerOffset:((name.top+name.height/2)-(controls.top+controls.height/2))/scale,
+            typeSizes:[parseFloat(getComputedStyle(el).fontSize),...Array.from(document.querySelectorAll(".vn-ctl"),button=>parseFloat(getComputedStyle(button).fontSize))],
             typeRatios:[parseFloat(getComputedStyle(nameEl).fontSize)/parseFloat(getComputedStyle(el).fontSize),parseFloat(getComputedStyle(document.querySelector(".vn-ctl")).fontSize)/parseFloat(getComputedStyle(el).fontSize)],
             margins:[(text.left-box.left)/scale,(box.right-text.right)/scale],
             overlap:rows.some(r=>r.right>controls.left && r.left<controls.right && r.bottom>controls.top && r.top<controls.bottom) };
@@ -171,7 +173,8 @@ await suite("ui-themes-preview", async check => {
           assert(twoLines.rightGap<=-32,"toolbar stays inside the frame header");
         }
         assert(twoLines.typeRatios[0]>=.7 && twoLines.typeRatios[0]<=.9,"name text stays subordinate to the dialogue");
-        assert(twoLines.typeRatios[1]>=.45 && twoLines.typeRatios[1]<=.65,"command text is a quieter third level");
+        // #3100 / #3103: 本文28px、紙の操作文字22px、他テーマ19px（比率の緩和でなく承認寸法を固定）。
+        assert.deepEqual(twoLines.typeSizes,[28,...Array(5).fill(id==="paper"?22:19)],"dialogue and every command retain the approved font sizes");
         assert(twoLines.margins[0]>=95.9 && twoLines.margins[1]>=95.9,"reserve space for visible folds and smoke, beyond glyph bounds");
         await page.selectOption("#preview-scene","narration");
         await page.locator(".vn-box.narration").waitFor();

@@ -5,9 +5,9 @@
 // - 「説明を閉じる」でいつでも飛ばせる。済んだら二度と出さない（くわしい決まりは「？」の見方）。
 // 盤の画面（growth-board-screen.js）は data-test と部品のクラスで見るだけで、中の処理には触れない。
 
-/** はじめて盤で灯せる時に渡す白火（3レベル分）。 */
-export const STARTER_HIDANE = 6;
-export const STARTER_FLAG = "_board_starter_given";
+import { giveColored } from "../core/growth.js";
+import { STARTER_HIDANE, STARTER_FLAG } from "../core/growth-starter.js";
+export { STARTER_HIDANE, STARTER_FLAG } from "../core/growth-starter.js";
 export const TUTORIAL_FLAG = "_board_tutorial_done";
 
 // 検査用: 盤を開く他の検査で火種の数と操作を変えないよう、browser の support.mjs が既定で "off" にする。
@@ -21,9 +21,10 @@ export const starterPending = (s) => !switchedOff() && !!s?.flags && !s.flags[ST
 /** 最初の火種を一度だけ渡す。戻り値＝渡した数（渡し済みなら0）。 */
 export function grantStarterHidane(s, growth) {
   if (!starterPending(s) || !growth?.hidane) return 0;
-  growth.hidane.any = (growth.hidane.any || 0) + STARTER_HIDANE;
+  const given = giveColored(growth, "any", STARTER_HIDANE).n;
+  growth.starterAccounted = true;
   s.flags[STARTER_FLAG] = true;
-  return STARTER_HIDANE;
+  return given;
 }
 export const tutorialPending = (s) => !switchedOff() && !!s?.flags && !s.flags[TUTORIAL_FLAG];
 
@@ -75,7 +76,7 @@ function ensureStyle(doc) {
  * 盤の画面（root）に案内を重ねる。onDone は完了・飛ばした時に一度だけ呼ばれる（済んだ印を立てる）。
  * 戻り値＝止める関数（盤を閉じた時に呼ぶ）。
  */
-export function startBoardTutorial(root, { onDone = () => {} } = {}) {
+export function startBoardTutorial(root, { onDone = () => {}, starterAmount = STARTER_HIDANE } = {}) {
   const doc = root.ownerDocument;
   ensureStyle(doc);
   const layer = doc.createElement("div");
@@ -90,7 +91,11 @@ export function startBoardTutorial(root, { onDone = () => {} } = {}) {
   root.append(layer);
 
   let index = 0, finished = false;
-  const step = () => TUTORIAL_STEPS[index];
+  // 上限到達後に初めて開いた場合、火種を使う操作はできないので説明だけにする。
+  const steps = starterAmount === 0
+    ? TUTORIAL_STEPS.filter((s) => !["pick", "light", "more", "decide"].includes(s.id))
+    : TUTORIAL_STEPS;
+  const step = () => steps[index];
   const targetOf = (s) => root.querySelector(s.target) || root.querySelector('[data-test="board-viewport"]');
   const satisfied = (s) => s.wait === "selected" ? !!root.querySelector(".gb-light")
     : s.wait === "pending" ? !!root.querySelector('[data-status="pending"]') : false;
@@ -128,12 +133,15 @@ export function startBoardTutorial(root, { onDone = () => {} } = {}) {
     bubble.replaceChildren();
     const title = doc.createElement("h3");
     title.textContent = s.title;
-    bubble.append(title, ...s.text.map((line) => { const p = doc.createElement("p"); p.textContent = line; return p; }));
+    const lines = s.id === "wallet" && starterAmount !== STARTER_HIDANE
+      ? [s.text[0], starterAmount > 0 ? `はじめての今回は、白火を${starterAmount}つ渡しておく。` : "火種の獲得は上限に届いている。", s.text[2]]
+      : s.text;
+    bubble.append(title, ...lines.map((line) => { const p = doc.createElement("p"); p.textContent = line; return p; }));
     const row = doc.createElement("div");
     row.className = "gb-tutorial-row";
     const count = doc.createElement("span");
     count.className = "gb-tutorial-count";
-    count.textContent = `${index + 1} / ${TUTORIAL_STEPS.length}`;
+    count.textContent = `${index + 1} / ${steps.length}`;
     row.append(count);
     const skip = button("説明を閉じる", "board-tutorial-skip", () => finish());
     if (s.wait) {
@@ -142,7 +150,7 @@ export function startBoardTutorial(root, { onDone = () => {} } = {}) {
       hint.textContent = s.wait === "selected" ? "光っているマスを押す" : "「灯す」を押す";
       row.append(skip, hint);
     } else {
-      const last = index === TUTORIAL_STEPS.length - 1;
+      const last = index === steps.length - 1;
       row.append(skip, button(last ? "灯しはじめる" : "次へ", last ? "board-tutorial-done" : "board-tutorial-next", () => next(), true));
     }
     bubble.append(row);
@@ -157,7 +165,7 @@ export function startBoardTutorial(root, { onDone = () => {} } = {}) {
     return b;
   }
   function next() {
-    if (index >= TUTORIAL_STEPS.length - 1) return finish();
+    if (index >= steps.length - 1) return finish();
     index += 1;
     draw();
   }

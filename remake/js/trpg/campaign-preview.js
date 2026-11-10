@@ -6,7 +6,9 @@ import { mountTrpgRecruitment } from "./club-view.js";
 const host = document.getElementById("trpg-app"), stage = document.getElementById("stage");
 const state = newState();
 Object.assign(state, { chapter: 2, phase: "daily", day: 3, slot: 1, money: 3000 });
-for (const id of ["hiyori", "samechan", "tsumugi", "adam"]) { state.met[id] = true; state.affinity[id] = 66; }
+for (const id of ["hiyori", "samechan", "tsumugi", "adam"]) {
+  state.met[id] = true; state.flags[`_trpg_topic_${id}`] = true; state.affinity[id] = 66;
+}
 let controller, saves = 0, nightBusy = false;
 function fit() { stage.style.setProperty("--k", Math.min(innerWidth / 1280, innerHeight / 720)); }
 fit(); window.addEventListener("resize", fit);

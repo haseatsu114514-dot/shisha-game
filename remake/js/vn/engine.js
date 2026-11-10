@@ -28,6 +28,7 @@ import { buyKeepsake } from "../core/keepsakes.js";
 import { chekiShot, tarotFlip, limeExchange, purikuraShot, sceneMoment } from "../core/scene-motions.js";
 import { showShishaDiagram, hideShishaDiagram } from "./shisha-diagram.js";
 import { reducedMotion } from "../core/transition-kit.js";
+import { attachLoadingComic } from "../core/loading-comic-notice.js";
 
 // 立ち絵を出さない話者（主人公は一人称視点）
 const NO_PORTRAIT = new Set(["hajime", "hazime", "", "everyone", "customer", "shop_clerk", "old_man", "traveler"]);
@@ -221,14 +222,15 @@ function kickAuto() {
 
 /** 同じ背景へ続く会話でも、長い素材待ちには案内を出す。既存のreadyガードで操作を保護する。 */
 function waitSceneAssets(task, owner = running, assets = task.assetsReady || task) {
-  let notice = null;
+  let notice = null, hideComic;
   const timer = setTimeout(() => {
     if (running !== owner) return;
     notice = el("div.vn-loading", { role: "status", "aria-live": "polite",
       text: "場面を準備しています…", dataset: { test: "vn-loading" } });
     layers.fx.append(notice);
+    if (typeof attachLoadingComic === "function") hideComic = attachLoadingComic(notice);
   }, 500);
-  const loaded = Promise.resolve(assets).finally(() => { clearTimeout(timer); notice?.remove(); });
+  const loaded = Promise.resolve(assets).finally(() => { clearTimeout(timer); hideComic?.(); notice?.remove(); });
   // 場面転換の演出は最後まで待つが、取得・デコード済みなら読み込み表示を延長しない。
   return Promise.all([task, loaded]).then(([value]) => value);
 }
