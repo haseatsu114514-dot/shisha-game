@@ -251,7 +251,7 @@ await suite("desert-ride", async check => {
     assert.equal(value.desert, undefined);
     await page.evaluate(() => { window.__desertRide.autoplay("perfect"); window.__desertRide.setSpeedUp(8); });
     await phase(page, "practiced");
-    assert.match(await page.locator(t("desert-practiced")).innerText(), /ヌール「上手！/);
+    assert.match(await page.locator(t("desert-practiced")).innerText(), /ヌール「もう一度練習してもいいし、本番へ進んでもいいよ」/);
     await page.locator(t("desert-start")).click();
     // 1本目は着地が遅い滑り: B。ヌールと同じ滑りなので競走は負け
     await autoplayToResult(page, "good");
