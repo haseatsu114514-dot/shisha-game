@@ -62,6 +62,8 @@ export function mountWaterPour(panel, {
 
   const bottle = new Image();
   bottle.decoding = "async";
+  let needsDraw = true;
+  bottle.onload = () => { needsDraw = true; };
   bottle.src = bottleSrc;
 
   // ---- 状態（この画面だけの寿命）
@@ -71,6 +73,7 @@ export function mountWaterPour(panel, {
   const colX = i => VIEW.x + (i + .5) * VIEW.w / COLS;
   const colOf = x => Math.max(0, Math.min(COLS - 1, Math.floor((x - VIEW.x) / VIEW.w * COLS)));
   function reset() {
+    needsDraw = true;
     target = pickTarget(random);
     volume = 0; tilt = 0; tiltVel = 0; slosh = 0; sloshVel = 0; valve = 0;
     stream = []; spill = []; drops = []; puddle = []; spilledArea = 0; pours = 0;
@@ -226,8 +229,10 @@ export function mountWaterPour(panel, {
     spill = spill.filter(s => !s.landed);
     for (const d of drops) { d.vy += GRAVITY * .6 * dt; d.x += d.vx * dt; d.y += d.vy * dt; d.life -= dt; }
     drops = drops.filter(d => d.life > 0 && d.y < TABLE_Y + 30);
-    spilledOut.textContent = `${Math.round(toMl(spilledArea))}ml`;
-    root.dataset.tiltDeg = String(Math.round(tilt / DEG));
+    const spilledText = `${Math.round(toMl(spilledArea))}ml`;
+    if (spilledOut.textContent !== spilledText) spilledOut.textContent = spilledText;
+    const tiltText = String(Math.round(tilt / DEG));
+    if (root.dataset.tiltDeg !== tiltText) root.dataset.tiltDeg = tiltText;
     return { points, base };
   }
   function addPuddle(x, amount) {
@@ -246,6 +251,7 @@ export function mountWaterPour(panel, {
     const shown = stage.getBoundingClientRect().width / w || 1;
     dpr = Math.min(3, (globalThis.devicePixelRatio || 1) * shown);
     canvas.width = Math.round(w * dpr); canvas.height = Math.round(ht * dpr);
+    needsDraw = true;
     canvas.style.width = `${w}px`; canvas.style.height = `${ht}px`;
     scale = Math.min(w / VIEW.w, ht / VIEW.h);
     ox = (w - VIEW.w * scale) / 2 - VIEW.x * scale;
@@ -410,6 +416,7 @@ export function mountWaterPour(panel, {
       ml: Math.round(toMl(volume)), targetMl: Math.round(toMl(areaBelow(interior, target))),
       spilledMl: Math.round(toMl(spilledArea)), pours,
     };
+    needsDraw = true;
     status.textContent = "";
     const stampText = timingLabel(grade.kind);
     result.replaceChildren(
@@ -436,8 +443,16 @@ export function mountWaterPour(panel, {
     if (!active) return;
     if (!root.isConnected) { cancel(); return; }
     const dt = Math.min(1 / 30, Math.max(0, (now - last) / 1000)); last = now;
-    const { points, base } = step(dt, now);
-    draw(points, base);
+    // 水と瓶が静止している間は同じ canvas を再描画しない。入力・画像の読込・寸法変更・判定で再開する。
+    const still = !holdingPour && !holdingTilt && !valve && !tilt && !tiltVel
+      && !stream.length && !spill.length && !drops.length
+      && Math.abs(slosh) < .00001 && Math.abs(sloshVel) < .0001
+      && wave.every(v => Math.abs(v) < .02) && waveVel.every(v => Math.abs(v) < .02);
+    if (!still || needsDraw) {
+      const { points, base } = step(dt, now);
+      draw(points, base);
+      needsDraw = false;
+    }
     raf = requestAnimationFrame(frame);
   }
   raf = requestAnimationFrame(frame);
@@ -455,8 +470,8 @@ export function mountWaterPour(panel, {
   }
   // テスト・確認用の読み取り口（判定値には影響しない）
   const debug = {
-    get volume() { return volume; }, set volume(v) { volume = Math.max(0, Math.min(capacityArea, v)); },
-    get target() { return target; }, set target(y) { target = y; },
+    get volume() { return volume; }, set volume(v) { volume = Math.max(0, Math.min(capacityArea, v)); needsDraw = true; },
+    get target() { return target; }, set target(y) { target = y; needsDraw = true; },
     get tilt() { return tilt; }, get spilledArea() { return spilledArea; },
     get waveAmp() { let m = 0; for (const v of wave) m = Math.max(m, Math.abs(v)); return m + Math.abs(slosh) * 300; },
   };
