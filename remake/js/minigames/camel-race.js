@@ -7,7 +7,7 @@
 // ラクダ・ロボット騎手・SUV・車輪は Codex の絵（assets/ui/camel_race・2026-11-02 採用。原画は asset_sources/ch4-camel-race）。
 // 絵が読めない環境では Canvas の描画に戻す。砂漠・柵・砂煙・合図の輪・HUD は Canvas で描く。
 import { el } from "../core/util.js";
-import { SE, currentBgm, playBgm, unlockAudio, playCamelRaceSe, preloadCamelRaceSe, setBgmPlaybackRate, resetBgmTempo, tickBgmPlaybackRate } from "../core/audio.js";
+import { SE, currentBgm, playBgm, preloadBgm, unlockAudio, playCamelRaceSe, preloadCamelRaceSe, setBgmPlaybackRate, resetBgmTempo, tickBgmPlaybackRate } from "../core/audio.js";
 import { imgFileUrl } from "../core/img-file.js";
 import { faceIconUrl } from "../core/data.js";
 import { RACE, CUE, PLAYER, WHIP, CAMEL_CUPS, camelCup, camelCupQualified, camelMastered, camelExpert, rng, createRace, stepRace, pressVoice, setWhip, whipReady, activeCue, inSpurt, standings, scoreRace,
@@ -216,6 +216,7 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
   if (!host?.isConnected) return Promise.reject(new Error("Connected game host required"));
   if (active.has(host)) return active.get(host);
   const bgmBefore = currentBgm();
+  void preloadBgm(CAMEL_RACE_BGM);
   const runs = [];
   const unlocked = new Set(cups || ["practice", "rookie"]);
   let selectedCup = "practice";
@@ -451,7 +452,7 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
   // （以前は止めるだけで、レースの中のキー処理まで届いていなかった）。カードのボタンの Space は既定の動作のまま。
   const ours = event => (event.code === "Space" || event.key === " " || isWhipKey(event))
     && (root.contains(document.activeElement) || phase === "race" || phase === "countdown");
-  const windowKey = event => { if (!ours(event)) return; onKey(event); event.stopImmediatePropagation(); };
+  const windowKey = event => { if (!ours(event)) return; armCamelAudio(); onKey(event); event.stopImmediatePropagation(); };
   const windowKeyUp = event => {
     if (!isWhipKey(event)) return;
     onWhip(false);
@@ -537,6 +538,7 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     sheet.querySelector(".camel-cup:not(:disabled)")?.focus();
   }
   function startRace() {
+    armCamelAudio();
     playBgm(CAMEL_RACE_BGM);
     resetBgmTempo();
     preloadCamelRaceSe();

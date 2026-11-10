@@ -592,6 +592,21 @@
       "run": ["node remake/test/browser/desert_ride.mjs"]
     },
     {
+      "id": "minigame-bgm-input",
+      "title": "DESERT RIDE practice-to-run steering and standalone minigame BGM startup/retry",
+      "kind": "browser",
+      "weight": 0.3,
+      "timeout": 3,
+      "paths": [
+        "remake/js/core/audio.js",
+        "remake/js/core/data.js",
+        "remake/js/minigames/desert-ride.js",
+        "remake/js/minigames/camel-race.js",
+        "remake/test/browser/minigame_bgm_input.mjs"
+      ],
+      "run": ["node remake/test/browser/minigame_bgm_input.mjs"]
+    },
+    {
       "id": "title-art-met",
       "title": "Title art unlocks by characters met in the latest save",
       "kind": "quick",
