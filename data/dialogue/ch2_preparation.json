@@ -1196,6 +1196,229 @@
           "face": ""
         }
       ]
+    },
+    {
+      "dialogue_id": "remake_ch2_ageha_repeat_e",
+      "comment": "#3097 大会進行・恋愛関係に依存しない通いの日常。既存の訪問精算で読む。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "あげはさんが、テーブルのメニューを一枚ずつ拭いていた。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "あ、ここのシール、また浮いてる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "端だけ剥がして、貼り直しますか"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "待って。この角、爪に引っかかんの。上から透明のやつ貼る"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "引き出しから出てきたのは、細いテープと、小さなはさみだった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "シール用の道具まであるんですね"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "かわいくしたら終わり、じゃないもん。毎日触るし、拭くし"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……拭いても平気なように、してあるんだ"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "そ。あと角を丸く切ると、服に引っかかんない。はい、触ってみ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "指でなぞる。さっきの、かすかに尖った感触がなくなっていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "ほんとだ。言われないと、気づかなかったです"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "気づかないで使えたら勝ちっしょ。はい、そっちの一枚もお願い"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "メニューを裏返して拭く。表には見えない透明なテープが、何か所も貼ってあった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_ch2_kumicho_repeat_e",
+      "comment": "#3097 大会進行・恋愛関係に依存しない通いの日常。既存の訪問精算で読む。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "神崎さんが、引き出しから出前の献立表を取り出した。"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "あんちゃん、飯は済んだかい"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "今日は食べてきました。神崎さんは、これからですか"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "おう。忙しくなる前に頼んじまおうと思ってな"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "赤い鉛筆を持ったまま、献立表の上で手が止まる。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "いつもは、何を頼むんですか"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "生姜焼きだな。だが、たまには違うもんも食いてえ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "じゃあ、今日がその日ですね"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "そう急かすな。今、最後の二つまで絞ったところだ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "二つのうち片方は、やっぱり生姜焼きだった。"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "……もしもし。神崎です。いつもの、一つお願いします"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "決まるのは早かったですね"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "声を聞いたら腹が決まりやしてね。あそこの親父、これがうめえんだ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "献立表を畳む顔が、さっきより少し楽しそうだった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_ch2_rei_repeat_e",
+      "comment": "#3097 大会進行・恋愛関係に依存しない通いの日常。既存の訪問精算で読む。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "レヰが棚のCDを一枚抜いて、空いたところに別のジャケットを差した。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ここ、入れ替えるんですね"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "ずっと同じだと、置いてあるのに見なくなるから"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "俺も、今まで下の段ばかり見てました"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "背表紙だけのやつも、たまに表に出す。好きなの、多いし"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一枚を持ち上げかけて、レヰの指が止まった。"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "これ、見たことある？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ないです。どんな曲ですか"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "最初、静かで。急に音が入る。初めて聴いた時、音量間違えたと思った"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "じゃあ、ここで流す時は気をつけないと"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "うん。お客さんのカップ、揺らしたくないから"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "レヰは小さく笑って、その一枚を目の高さに飾った。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "今日はジャケットから、覚えて帰ります"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……次に来た時も、見つけてやって"
+        }
+      ]
     }
   ]
 }
