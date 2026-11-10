@@ -17,7 +17,9 @@ TRPGの効果音・シナリオ別BGM（CC0・2026-11-10の仮採用）は [trpg
 | `assets/audio/bgm/bgm_trpg.bgm` | Shared Discovery | ユーザー添付・2026-10-20採用（配布元・作者は未記入） | ボドゲカフェ（TRPG） |
 | `assets/audio/bgm/bgm_axe.bgm` | Aiming groove | ユーザー添付・2026-10-20採用（配布元・作者は未記入） | 斧投げBAR・ひよりとの斧投げ |
 | `assets/audio/bgm/bgm_trpg_*.mp3`（10曲） | TRPGのシナリオ別BGM（仮） | OpenGameArt・CC0（作者は各曲） | TRPGの卓（シナリオのテーマ別） |
+| `assets/audio/bgm/bgm_camel_race.bgm` | Firebrand | incompetech.com・作曲 Kevin MacLeod・CC BY 4.0 | ラクダレース（出走〜リザルト）。砂漠ライド練習の `bgm_ethnic12` はそのまま |
 
 大会の2曲は公式配布元から取得し、単体音源を公開しないゲーム専用形式で保存。
 [出典・利用条件・音量測定・再変換手順](confirmed-tournament-bgm-20261009.md)を参照。
 TRPG・斧投げの2曲は [採用記録・音量測定・再変換手順](adopted-minigame-bgm-20261020.md)。
+ラクダレースの Firebrand は [採用記録・切り出し・音量測定](camel-race-firebrand.md)。

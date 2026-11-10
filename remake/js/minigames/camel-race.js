@@ -7,11 +7,12 @@
 // ラクダ・ロボット騎手・SUV・車輪は Codex の絵（assets/ui/camel_race・2026-11-02 採用。原画は asset_sources/ch4-camel-race）。
 // 絵が読めない環境では Canvas の描画に戻す。砂漠・柵・砂煙・合図の輪・HUD は Canvas で描く。
 import { el } from "../core/util.js";
-import { SE, currentBgm, playBgm, unlockAudio } from "../core/audio.js";
+import { SE, currentBgm, playBgm, unlockAudio, setBgmPlaybackRate, resetBgmTempo, tickBgmPlaybackRate } from "../core/audio.js";
 import { imgFileUrl } from "../core/img-file.js";
 import { faceIconUrl } from "../core/data.js";
 import { RACE, CUE, PLAYER, WHIP, CAMEL_CUPS, camelCup, camelCupQualified, camelMastered, camelExpert, rng, createRace, stepRace, pressVoice, setWhip, whipReady, activeCue, inSpurt, standings, scoreRace,
   POLICIES, PLAYER_CAMEL, RIVAL_PROFILES } from "./camel-race-model.js";
+import { CAMEL_RACE_BGM, camelRaceBgmRate } from "./camel-race-bgm.js";
 
 export const CAMEL_RACE_TITLE = "CAMEL RACE";
 const CUP_TIME_NOTE = "この訪問中の再挑戦は日付を進めません。完走して戻ると従来どおり昼の1行動を使います。";
@@ -461,7 +462,8 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     signal?.removeEventListener("abort", abort);
     root.remove();
     active.delete(host);
-    if (currentBgm() === "bgm_ethnic12") playBgm(bgmBefore);
+    resetBgmTempo();
+    if (currentBgm() === CAMEL_RACE_BGM) playBgm(bgmBefore);
     try { previousFocus?.focus?.(); } catch { /* 元の要素が無い */ }
     finish(summary(completed));
   };
@@ -525,7 +527,8 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     sheet.querySelector(".camel-cup:not(:disabled)")?.focus();
   }
   function startRace() {
-    playBgm("bgm_ethnic12");
+    playBgm(CAMEL_RACE_BGM);
+    resetBgmTempo();
     sheet.hidden = true; sheet.replaceChildren();
     race = createRace({ seed: rivalSeed(), cup: selectedCup });
     clockNode.querySelector(".camel-clock-sub").textContent = `${camelCup(selectedCup).name} ${race.length.toLocaleString("ja-JP")}m・4頭`;
@@ -607,6 +610,12 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
       if (slow > 0) slow -= dt;
       goalAt += dt * rate;
       if (goalAt > 2.3) openResult();
+    }
+    if (phase === "race" && race && !race.finished) {
+      setBgmPlaybackRate(camelRaceBgmRate(race.player.speed));
+      tickBgmPlaybackRate(dt);
+    } else {
+      resetBgmTempo();
     }
     animate(dt);
     draw();
