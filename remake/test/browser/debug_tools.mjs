@@ -358,7 +358,7 @@ await suite("debug-tools", async check => {
     await page.locator("#boot").waitFor({ state: "detached" });
     const saved = await page.evaluate(() => JSON.parse(localStorage.getItem("suien_remake_save")));
     assert.equal(saved.chapter, 2);
-    assert.equal(saved.schema, 27);
+    assert.equal(saved.schema, 28);
     assert.equal(saved.money, 16666);
     assert.equal(saved.flags._ch2_day1.startDay, 15);
     assert.equal(saved.flags._ch2_day1.stage, "departure");
