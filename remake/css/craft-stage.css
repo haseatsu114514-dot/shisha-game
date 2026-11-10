@@ -1,3 +1,4 @@
+/* 生成ファイル。直すときは asset_sources/ui/craft-stage-20261110/stage_src.css を直し、同じフォルダの build_stage_css.py で作り直す。 */
 /* シーシャ作りの新しい配置「一枚の舞台」（CSL・docs/design/craft-stage-layout.md）。
    body.craft-stage のときだけ効く（js/craft/stage-layout.js。全工程がそろうまでは ?craftStage=1 で入）。
    作業台（.bench）の置き場所と枠だけを替える。寸法の座標系・判定・工程の中身は変えない。
@@ -242,3 +243,21 @@ html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-right { overflow: v
 html body.craft-stage:not(.game-ds) .bench[data-mode] .mix-amount { min-width: 0; display: flex !important; flex-direction: column; justify-content: center; gap: 2px; overflow: hidden; }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .mix-amount .reg-line { font-size: 18px !important; line-height: 1.3 !important; }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .fr-name .fr-mastery { display: none !important; }
+
+/* ---------- ランク（CSL10）: 帯には絵を1枚だけ。大きな文字が読める高さに ---------- */
+html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-top > .craft-rank { flex: 0 0 120px !important; width: 120px !important; height: 66px !important; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-top > .craft-rank .craft-rank-caption { display: none !important; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-top > .craft-rank .craft-rank-compact { display: none !important; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-top > .craft-rank .craft-rank-wide { display: block !important; inset: 0 0 6px !important; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-top > .craft-rank :is(.craft-rank-wide, .craft-rank-compact) > img { object-position: center; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-top > .craft-rank .craft-rank-grade { font-size: 40px; }
+
+/* ---------- 上のレールを詰める（大会はライバルの顔も並ぶ） ---------- */
+html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-top { gap: 12px !important; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-top .bench-mode small { display: none !important; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-progress { flex: none !important; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-progress-track { gap: 18px !important; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-phase:not(:last-child)::after { width: 18px !important; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-top > .rig-record { gap: 4px !important; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-top > .rig-record .rig-lamp { width: 26px !important; height: 26px !important; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-top > .rig-record .rig-lamp b { font-size: 13px !important; }
