@@ -55,8 +55,13 @@ async function geometry(p) {
     return { windowX:scrollX, viewportWidth:innerWidth, pane:{ ...rect(pane), clientWidth:pane.clientWidth, scrollWidth:pane.scrollWidth, scrollLeft:pane.scrollLeft, scrollTop:pane.scrollTop, clientHeight:pane.clientHeight, scrollHeight:pane.scrollHeight },
       nodes:selectors.flatMap(selector => [...document.querySelectorAll(selector)].filter(n => n.getClientRects().length).map(n => {
         const range = document.createRange(); range.selectNodeContents(n);
-        return { selector, test:n.dataset.test, ...rect(n), text:n.textContent,
-          textRects:[...range.getClientRects()].map(r => ({x:r.x,right:r.right})) };
+        // .bench-panel's selectNodeContents includes the packing temperature gauge
+        // (#3070), which is deliberately parked in the left gutter (left:-140px)
+        // and is not part of the right-hand control column. Its children
+        // (.pack-aroma, .pack-choice, …) are still measured below.
+        const textRects = [...range.getClientRects()].map(r => ({x:r.x,right:r.right}))
+          .filter(r => selector !== ".bench-panel" || (r.x >= n.getBoundingClientRect().x - 1 && r.right <= n.getBoundingClientRect().right + 1));
+        return { selector, test:n.dataset.test, ...rect(n), text:n.textContent, textRects };
       })) };
   });
 }
