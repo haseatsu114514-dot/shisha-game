@@ -8,7 +8,7 @@ export const COURSE = Object.freeze({ length: 1700, practiceLength: 640, laneHal
 export const PLAYER = Object.freeze({ half: 0.1 });
 export const EDGE = 0.86;
 export const SPEED = Object.freeze({ start: 15, min: 8, max: 34, boost: 46, boostAccel: 26, overDecay: 12, accel: 1.5, fallFactor: 0.42, edgeDrag: 7, landingBoost: 3.5, plainLanding: 0.94, bounceLoss: 0.9 });
-export const JUMP = Object.freeze({ bigAir: 1.22, hopAir: 0.53, bounceAir: 0.26, landingWindow: 0.3, goodWindow: 0.6, bumpWindow: 0.36, bumpGrace: 0.14, steerInAir: 0.55, bigHeight: 1.25, speedHeight: 1.1 });
+export const JUMP = Object.freeze({ bigAir: 1.27, hopAir: 0.56, bounceAir: 0.26, landingWindow: 0.3, goodWindow: 0.6, bumpWindow: 0.36, bumpGrace: 0.14, steerInAir: 0.55, bigHeight: 1.7, speedHeight: 1.3, hopHeight: 0.85, hopSpeedHeight: 0.45 });
 export const FALL = Object.freeze({ recover: 1.1, points: -150 });
 export const STEER = Object.freeze({ accel: 4.6, damping: 4.0, curveDrift: 0.28 });
 export const SCORE = Object.freeze({ finish: 1200, timePar: 72, timeBonusPerSec: 30, perfect: 250, good: 120, nearMiss: 60, comboStep: 0.15, comboMax: 3,
@@ -312,10 +312,10 @@ export function press(game) {
 }
 
 /** 離陸時の速さで高さを固定。空中のブースト開始・終了では軌道を飛ばさない。
- * 滞空時間・岩の回避・着地判定は従来通り。高さのために着地帯の外へ滞空を延ばさない。 */
+ * 滞空と高さを少し伸ばし、岩越えの手応えを強める。着地判定の幅は変えない。 */
 export function jumpPeak(speed, kind = "big") {
   const fast = Math.min(1, Math.max(0, Number.isFinite(speed) ? speed / SPEED.boost : 0));
-  return kind === "big" ? JUMP.bigHeight + JUMP.speedHeight * fast : kind === "hop" ? 0.65 + 0.35 * fast : 0.5;
+  return kind === "big" ? JUMP.bigHeight + JUMP.speedHeight * fast : kind === "hop" ? JUMP.hopHeight + JUMP.hopSpeedHeight * fast : 0.5;
 }
 
 /** 現在の地面からの高さ。描画・相手の走行サンプルで共通の軌道を使う。 */
@@ -441,10 +441,13 @@ export function step(game, input, dt) {
     game.stats.edgeTime += dt;
   }
   // 横移動: 入力で加速、砂の抵抗で減衰。空中は効きが弱い。カーブでは外へ流れる。
-  const steer = falling ? 0 : ((input?.right ? 1 : 0) - (input?.left ? 1 : 0));
+  // タッチスティックは倒し量をそのまま使う。鍵盤・ボタン・ボットの二値入力も従来どおり受ける。
+  const steer = falling ? 0 : Number.isFinite(input?.steer)
+    ? Math.max(-1, Math.min(1, input.steer))
+    : ((input?.right ? 1 : 0) - (input?.left ? 1 : 0));
   let grip = game.air > 0 ? JUMP.steerInAir : 1;
   if (game.air > 0 && game.airKind === "big") {
-    spinStep(game, steer, dt);
+    spinStep(game, Math.sign(steer), dt);
     if (game.spinDir !== 0) grip = 0; // 回っている間は横へ動かない
   }
   game.vx += steer * STEER.accel * grip * dt;
