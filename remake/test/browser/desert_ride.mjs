@@ -15,6 +15,36 @@ const autoplayToResult = async (page, skill = "expert") => {
 const resultText = async page => (await page.locator(t("desert-result")).innerText()).replace(/\s+/g, " ");
 
 await suite("desert-ride", async check => {
+  await check("practice-captions-fit-between-hud-and-idle-finish-is-neutral", async page => {
+    await page.goto(new URL("desert-ride.html", page.url()).href);
+    await page.locator(t("desert-page-tutorial")).click();
+    await phase(page, "practice");
+    // 長いキーボード・タッチ用の案内も、左右の HUD と重ならず帯の中で折り返す。
+    for (const text of ["← → で左右に動こう","岩に当たると転ぶ。先を見て、早めによけよう","起伏の手前で Space ── 大きく跳べる","着地の直前にもう一度 Space ── 姿勢を整える","惜しい。次の起伏で、もう一度跳んでみよう","次は、跳んだら空中で ← か → を押し続けて回ろう","離すと回り切る。着地より前に離そう","回った！ 回るほど点が大きい","回りかけで着地すると転ぶ。もう少し早く離そう","溜まったゲージで↓（BOOST）を押すと超加速 ── 岩も砕ける","そのまま、岩へ突っ込め！","いい感じ。あとは、滑るだけ","「左へ」「右へ」で動こう","起伏の手前で「ジャンプ」── 大きく跳べる","着地の直前にもう一度「ジャンプ」── 姿勢を整える","次は、跳んだら空中で「左へ」か「右へ」を押し続けて回ろう","溜まったゲージで「BOOST」を押すと超加速 ── 岩も砕ける"]) {
+      const fits = await page.locator(t("desert-caption")).evaluate((node, text) => {
+        node.textContent = text;
+        const box = node.getBoundingClientRect();
+        const left = document.querySelector(".dr-hud-left").getBoundingClientRect();
+        const right = document.querySelector(".dr-hud-right").getBoundingClientRect();
+        return box.left >= left.right && box.right <= right.left
+          && node.scrollWidth <= node.clientWidth && node.scrollHeight <= node.clientHeight;
+      }, text);
+      assert(fits, `caption stays between the HUD panels: ${text}`);
+    }
+    // 何も操作せず終わっても習得・成功とは断定しない。再練習と本番の両方を選べる。
+    await page.evaluate(() => window.__desertRide.setSpeedUp(8));
+    await phase(page, "practiced");
+    const end = await page.locator(t("desert-practiced")).innerText();
+    assert.match(end, /もう一度練習するか、本番へ進もう/);
+    assert.doesNotMatch(end, /体が動きを覚えた|上手！/);
+    assert(await page.locator(t("desert-start")).isVisible());
+    await page.locator(t("desert-practice")).click();
+    await phase(page, "practice");
+    await page.keyboard.press("Escape");
+    await phase(page, "menu");
+    await page.locator(t("desert-leave")).click();
+  });
+
   await check("standalone-page-keyboard-run-result-best-and-quit", async page => {
     await page.goto(new URL("desert-ride.html", page.url()).href);
     await page.locator(t("desert-page-start")).click();
@@ -221,7 +251,7 @@ await suite("desert-ride", async check => {
     assert.equal(value.desert, undefined);
     await page.evaluate(() => { window.__desertRide.autoplay("perfect"); window.__desertRide.setSpeedUp(8); });
     await phase(page, "practiced");
-    assert.match(await page.locator(t("desert-practiced")).innerText(), /ヌール「上手！/);
+    assert.match(await page.locator(t("desert-practiced")).innerText(), /ヌール「もう一度練習してもいいし、本番へ進んでもいいよ」/);
     await page.locator(t("desert-start")).click();
     // 1本目は着地が遅い滑り: B。ヌールと同じ滑りなので競走は負け
     await autoplayToResult(page, "good");

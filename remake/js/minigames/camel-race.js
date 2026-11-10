@@ -290,6 +290,12 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     ["cr-btn", "ui/camel_race/ui/button-primary.webp"],
     ["cr-btn-secondary", "ui/camel_race/ui/button-secondary.webp"],
     ["cr-dash", "ui/camel_race/ui/dash-panel.webp"],
+    ["cr-rank", "ui/camel_race/ui/rank-plate.webp"],
+    ["cr-rank-player", "ui/camel_race/ui/rank-plate-player.webp"],
+    ["cr-medal-gold", "ui/camel_race/ui/medal-gold.webp"],
+    ["cr-gauge-frame", "ui/camel_race/ui/gauge-frame.webp"],
+    ["cr-gauge-fill", "ui/camel_race/ui/gauge-fill.webp"],
+    ["cr-call", "ui/camel_race/ui/call-plate.webp"],
     ["cr-finish", "ui/camel_race/ui/finish-post.webp"],
     ["cr-stamp-s", "ui/camel_race/ui/stamp-s.webp"],
     ["cr-stamp-a", "ui/camel_race/ui/stamp-a.webp"],
@@ -341,7 +347,9 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
   };
   const announce = text => { live.textContent = text; };
   const showFeedback = (text, kind, sub = "") => {
-    feedback.replaceChildren(el("b", { text }), sub ? el("small", { text: sub }) : null);
+    const detail = typeof sub === "string" ? sub.trim() : "";
+    const subNodes = detail && detail !== "null" && detail !== "undefined" ? [el("small", { text: sub })] : [];
+    feedback.replaceChildren(el("b", { text }), ...subNodes);
     feedback.dataset.kind = kind; feedback.classList.remove("show");
     void feedback.offsetWidth; feedback.classList.add("show"); feedbackTimer = 0.75;
   };

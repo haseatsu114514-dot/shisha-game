@@ -488,6 +488,7 @@ export const FLAG_EXACT_RULES = [
   ["_spot_seen_cafe_maezono_break", "person"],
   ["_spot_seen_cafe_master_quiz", "progression"],
   ["_spot_seen_cafe_naru_break", "person"],
+  ["_spot_seen_ch1_tsumugi_low_water", "person"],
   ["_spot_seen_choizap_ch2_numbers", "progression"],
   ["_spot_seen_choizap_minto", "person"],
   ["_spot_seen_choizap_naru", "person"],
