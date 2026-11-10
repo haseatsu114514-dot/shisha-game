@@ -1123,6 +1123,51 @@ await check('Rio #3081: three story scenes follow the blueberry report, once eac
 });
 
 
+await check('Tsumugi #3081: two story scenes follow the finale, once each, at tonari', async f => {
+  const scenes = f.spots.TSUMUGI_STORY_EXTRAS;
+  assert.deepEqual([...scenes], ['ch1_tsumugi_one_ear', 'ch1_tsumugi_short_tail']);
+  const early = f.fresh();
+  early.met.tsumugi = true;
+  early.story.tsumugi = 6;
+  early.affinity.tsumugi = 90;
+  early.day = 12;
+  early.slot = 0;
+  early.flags._tsumugi_contest_submitted = true;
+  early.flags[f.stages.questionDoneKey('tsumugi')] = true;
+  assert.equal(f.spots.tsumugiStoryExtraDue(), null, 'the finale stays ahead of the new scenes');
+  assert.equal(f.bonds.finaleAtVisit('tsumugi'), false, 'the finale stays a night visit');
+  assert.equal(f.spots.hasNewStory('tsumugi'), false, 'noon before the finale does not offer the extras');
+  early.slot = 1;
+  assert.equal(f.spots.hasNewStory('tsumugi'), true, 'night still offers the finale first');
+  assert.equal(f.spots.tsumugiStoryExtraDue(), null);
+  early.finales.tsumugi = { day: 12, chapter: 1, route: 'friend' };
+  early.flags._friend_tsumugi = true;
+  assert.equal(f.spots.tsumugiStoryExtraDue(), scenes[0]);
+  assert.equal(f.spots.hasNewStory('tsumugi'), true);
+  for (const id of scenes) {
+    f.plays.length = 0;
+    assert.equal(await f.spots.visitChar('tsumugi'), true);
+    assert.deepEqual(sceneIds(f), [id]);
+    assert.equal(String(f.plays[0][1]?.bg || '').includes('bg_tonari_inside'), true);
+    assert.equal(early.flags[`_spot_seen_${id}`], true);
+    assert.equal(f.db.dialogues[id].lines.some(line => line.speaker === 'tsumugi'), true);
+  }
+  f.plays.length = 0;
+  assert.equal(f.spots.tsumugiStoryExtraDue(), null);
+  assert.equal(f.spots.hasNewStory('tsumugi'), false);
+  assert.equal(await f.spots.visitChar('tsumugi'), true);
+  assert.equal(sceneIds(f)[0], 'remake_repeat_tsumugi_2');
+  const cancelled = f.fresh();
+  cancelled.met.tsumugi = true;
+  cancelled.story.tsumugi = 6;
+  cancelled.finales.tsumugi = { day: 12, chapter: 1, route: 'friend' };
+  f.plays.length = 0;
+  f.setPlay(async () => ({ cancelled: true }));
+  assert.equal(await f.spots.visitChar('tsumugi'), false);
+  assert.equal(cancelled.flags._spot_seen_ch1_tsumugi_one_ear, undefined);
+  assert.equal(f.spots.tsumugiStoryExtraDue(), scenes[0]);
+});
+
 await check('Issue #2750: known characters begin at ♥1 and excluded characters never earn hearts', async f => {
   const s = f.core.newGame();
   for (const id of ['sumi', 'tsumugi']) {
