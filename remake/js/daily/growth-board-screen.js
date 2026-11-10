@@ -479,7 +479,7 @@ export function openBoard({ place = null } = {}) {
       }
       if (node.feature) lines.push(el("p.gb-p-quality", { dataset: { test: "board-feature" }, text: `✦ 灯すと「${FEATURES[node.feature].text}」` }));
       if (node.peak) lines.push(el("p.gb-p-next", { text: statsFilled(node.board, v.unlocked) ? "盤の能力のマスを全部灯した。極みを灯せる" : "この盤の能力のマスを全部灯すと灯せる（盤を埋めたご褒美）" }));
-      lines.push(el("p.gb-p-sub", { text: `効く場面：${BOARD_WHERE[node.board]}` }));
+      lines.push(el("p.gb-p-sub", { text: `${BOARD_JA[node.board]}盤全体が効く場面：${BOARD_WHERE[node.board]}` }));
     } else if (node.kind === "gate") {
       // 色の台座（SBD89）: 色の火をはめると先へ進めて、台座の能力も手に入る
       const perk = perkOf(node);
@@ -528,7 +528,7 @@ export function openBoard({ place = null } = {}) {
       el("h3.gb-p-title", { text: `${BOARD_JA[board]}盤 ${count}/${statTotal(board)}` }),
       el("div.gb-bars", { dataset: { test: "board-bars" } }, bars),
       feats.length ? el("p.gb-p-quality", { text: feats.map((f) => `${f.on ? "✦" : "・"}${f.name}`).join("　") }) : null,
-      el("p.gb-p-sub", { text: `効く場面：${BOARD_WHERE[board]}` }),
+      el("p.gb-p-sub", { text: `${BOARD_JA[board]}盤全体が効く場面：${BOARD_WHERE[board]}` }),
     ];
     if (g.target) {
       out.push(el("p.gb-p-target", { dataset: { test: "board-target-line" }, text: targetText(g.target, v) }));
