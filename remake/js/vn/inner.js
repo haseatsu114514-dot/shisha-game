@@ -8,7 +8,7 @@ export function playerInner(line) {
   return value.startsWith("（") && value.endsWith("）") ? value : `（${value}）`;
 }
 
-/** 長い本心も2行ごとに送り、各ページで括弧を閉じる。括弧の2字ぶんも確保する。 */
+/** 長い本心も layout.maxLines 行ごとに送り、各ページで括弧を閉じる。括弧の2字ぶんも確保する。本編は1行ごとに送る（#3099）。 */
 export function paginateInner(text, layout = {}) {
   const content = text.slice(1, -1);
   const innerLayout = layout.measure ? { ...layout, measure: (value) => layout.measure(`（${value}）`) } : layout;
