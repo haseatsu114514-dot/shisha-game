@@ -147,6 +147,8 @@ export const FLAG_EXACT_RULES = [
   ["_ch2_city_visit_kumicho", "person"],
   ["_ch2_city_visit_rei", "person"],
   ["_ch2_cleared", "progression"],
+  ["_ch2_coal_role_coals", "progression"],
+  ["_ch2_coal_role_plate", "progression"],
   ["_ch2_commute_v1", "progression"],
   ["_ch2_day1", "progression"],
   ["_ch2_deliveries", "progression"],
@@ -157,15 +159,19 @@ export const FLAG_EXACT_RULES = [
   ["_ch2_morning_departed", "progression"],
   ["_ch2_naru_hurt", "person"],
   ["_ch2_naru_listened", "person"],
+  ["_ch2_naru_warm_customers", "person"],
   ["_ch2_naru_warm_done", "person"],
+  ["_ch2_naru_warm_flavor", "person"],
   ["_ch2_no_audience", "progression"],
   ["_ch2_prep_rehearsal_result", "progression"], // 第2章の最後の通しの講評（chapters/ch2-craft-prep.js）。大会の加点にはしない
   ["_ch2_preparation_started", "progression"],
   ["_ch2_preview_seen", "progression"],
+  ["_ch2_read_ch2_coal_together", "progression"],
   ["_ch2_read_ch2_kumicho_fifth", "person"],
   ["_ch2_read_ch2_kumicho_sixth", "person"],
   ["_ch2_read_ch2_kumicho_third", "person"],
   ["_ch2_read_ch2_lingering_smell", "progression"], // スミさんの飯の接客回（baito_ch2_staff_meal）の条件
+  ["_ch2_read_ch2_naru_warm", "person"],
   ["_ch2_read_ch2_naru_window", "person"], // 前夜の振り返りで、休みの店の前に送ったLIMEの返事を待つか（#2720）
   ["_ch2_read_ch2_pre_tournament_realisation", "progression"],
   ["_ch2_read_ch2_rei_fifth", "person"],
