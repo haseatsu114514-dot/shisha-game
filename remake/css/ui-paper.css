@@ -97,9 +97,16 @@ html:root[data-ui-theme="paper"] body:not(:root) .vn-controls .vn-ctl.on { color
 html:root[data-ui-theme="paper"][data-density="phone"] body:not(:root) #stage {
   --vn-dialogue-bottom: max(30px, calc((env(safe-area-inset-bottom, 0px) + 8px) / var(--k, 1)));
 }
+html:root[data-ui-theme="paper"][data-density="phone"] body:not(:root) .vn-controls {
+  /* 下端寄せの文字＋1px枠が phone-tap の中で 2px はみ出し、touch の AUTO が assertFits に落ちるのを防ぐ */
+  height: calc(var(--phone-tap) + 10px);
+}
 html:root[data-ui-theme="paper"][data-density="phone"] body:not(:root) .vn-controls .vn-ctl {
   display: flex; align-items: flex-end; justify-content: center;
   background-position: center bottom;
+  padding-bottom: 4px;
+  height: calc(var(--phone-tap) + 4px);
+  min-height: calc(var(--phone-tap) + 4px);
 }
 html:root[data-ui-theme="paper"][data-density="phone"] body:not(:root) #stage .vn-controls .vn-ctl + .vn-ctl::before {
   top: auto; bottom: 10px; height: 20px;

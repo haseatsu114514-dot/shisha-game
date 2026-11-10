@@ -20,7 +20,13 @@ export function svg(tag, attrs = {}, kids = []) {
 export const stageSvg = (kids = []) => svg("svg", { viewBox: `0 0 ${W} ${H}`, class: "tr-svg" }, kids);
 
 export function move(node, frames, ms, opt = {}) {
-  return node.animate(frames, { duration: ms, easing: EASE.snap, fill: "both", ...opt }).finished.catch(() => {});
+  const duration = opt.duration ?? ms;
+  const anim = node.animate(frames, { duration: ms, easing: EASE.snap, fill: "both", ...opt });
+  // 偽時計やアニメーション未完了で covered が永久に待たない（ch2-tournament の defeat 入場）
+  return Promise.race([
+    anim.finished.catch(() => {}),
+    new Promise((resolve) => setTimeout(resolve, duration + 80)),
+  ]);
 }
 
 // 画面を覆っているあいだは Enter・Space で下の会話や画面が進まないようにする
