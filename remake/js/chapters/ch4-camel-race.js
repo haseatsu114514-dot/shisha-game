@@ -12,11 +12,12 @@ export * from "./ch4-camel-progress.js";
 /**
  * 地図からの訪問。段階に応じて会話→レース→結果の会話を進め、確定ごとに保存する。
  * @param read 会話を再生して読了なら true を返す関数（ch4.js の readScene）
+ * @param replayIntro 第5章の未読の再会だけをレース前に読む（通常の再訪では false）
  * @param beforeRace レースを開く直前に呼ぶ（呼び出し側が中断用の controller を立てる）
  * 戻り値: { used, exerted, slotsUsed }（performSpot と同じ形。used は昼の行動を使ったか）。
  * 昼の枠はここで進めて記録と一緒に保存するので、日常ループには slotsUsed: 0 を返す（二重に進めない）。
  */
-export async function visitCamelRace({ read, signal = null, isCurrent = () => true, beforeRace = () => {}, host = document.getElementById("stage"), options = null } = {}) {
+export async function visitCamelRace({ read, signal = null, isCurrent = () => true, beforeRace = () => {}, replayIntro = false, host = document.getElementById("stage"), options = null } = {}) {
   const value = state;
   const destination = camelRaceDestination(value);
   if (!destination || destination.ok === false) return { used: false, exerted: false };
@@ -34,7 +35,11 @@ export async function visitCamelRace({ read, signal = null, isCurrent = () => tr
       if (!await read(CAMEL_SCENES.watch) || !isCurrent() || state !== value) return { used: false, exerted: false };
       if (advanceCamelRaceStage(value, CAMEL_SCENES.watch)) save();
     }
-  } else if (!await read(CAMEL_SCENES.replay) || !isCurrent() || state !== value) return { used: false, exerted: false };
+  } else if (replayIntro) {
+    // 第5章で初めて会い直す時だけ、呼び出し側の再会場面を読む。通常の再訪は直接レースへ。
+    if (!await read(CAMEL_SCENES.replay) || !isCurrent() || state !== value) return { used: false, exerted: false };
+  }
+  if (signal?.aborted || !isCurrent() || state !== value) return { used: false, exerted: false };
   beforeRace();
   const test = typeof window !== "undefined" ? window.__remake?.camelTest : null;
   const { value: outcome } = await paidAction(async () => {

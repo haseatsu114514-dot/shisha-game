@@ -1897,6 +1897,84 @@
       ]
     },
     {
+      "id": "lime_tsumugi_low_water",
+      "sender": "tsumugi",
+      "trigger_condition": "flag",
+      "trigger_flag": "_spot_seen_ch1_tsumugi_low_water",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "tsumugi",
+          "text": "おはようございます"
+        },
+        {
+          "sender": "tsumugi",
+          "text": "……昨日は、水が少なくなるまで、窓の席にいました"
+        },
+        {
+          "sender": "tsumugi",
+          "text": "ペンは、吸ってからにしました"
+        },
+        {
+          "sender": "tsumugi",
+          "text": "描きながらだと、煙が少し強かったので"
+        },
+        {
+          "sender": "tsumugi",
+          "text": "ひびの線は、直していません"
+        },
+        {
+          "sender": "tsumugi",
+          "text": "今日の尾は、その線より細く引きました"
+        },
+        {
+          "sender": "tsumugi",
+          "text": "葉っぱの耳は、昨日のままです"
+        },
+        {
+          "sender": "tsumugi",
+          "text": "席は、また空けてあります"
+        },
+        {
+          "sender": "tsumugi",
+          "text": "……また、同じ席で待っています"
+        },
+        {
+          "sender": "tsumugi",
+          "text": "ラベンダーは、いつもの色でした。縁だけ、細かったです"
+        },
+        {
+          "sender": "tsumugi",
+          "text": "はじめさんの煙を見てから、線を一本だけ足します"
+        },
+        {
+          "sender": "tsumugi",
+          "text": "描かない日も、来ます。水が減ったら、帰ります"
+        },
+        {
+          "sender": "tsumugi",
+          "text": "……画面のひびは、今日も、同じ場所にありました"
+        }
+      ],
+      "replies": [
+        {
+          "text": "席は空けておくね",
+          "response": "……はい。描かない日も、そこにいます",
+          "affinity": 1
+        },
+        {
+          "text": "線は、そのままで",
+          "response": "……ひびも、尾も、今日のままにします",
+          "affinity": 1
+        },
+        {
+          "text": "水が減るまでいるね",
+          "response": "……少なくなったら、帰ります。また同じ席で",
+          "affinity": 1
+        }
+      ]
+    },
+    {
       "id": "lime_naru_day10",
       "sender": "naru",
       "trigger_day": 10,
@@ -2398,7 +2476,7 @@
       "messages": [
         {
           "sender": "samechan",
-          "text": "昨夜は、隣に座ってくれてありがとうなのじゃ"
+          "text": "この前は、隣に座ってくれてありがとうなのじゃ"
         },
         {
           "sender": "samechan",

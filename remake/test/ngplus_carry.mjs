@@ -34,9 +34,9 @@ assert.equal(carry.flagVerdict("seenDemo"), "carry");
 const root = new URL("../../", import.meta.url);
 const copy = (v) => JSON.parse(JSON.stringify(v));
 
-// ---------------------------------------------------------------- A. SCHEMA 27 と後方互換
+// ---------------------------------------------------------------- A. SCHEMA 28 と後方互換
 {
-  assert.equal(SCHEMA, 27);
+  assert.equal(SCHEMA, 28);
   const fresh = newState();
   assert.equal(fresh.cycle, 1);
   assert.equal(typeof fresh.cycleId, "string");

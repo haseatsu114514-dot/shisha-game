@@ -1188,6 +1188,7 @@
       "customers": [
         "baito_ch2_strawberry_fan"
       ],
+      "trigger_flag": "_ch2_read_ch2_strawberry_sample",
       "once": true
     },
     {
@@ -1295,6 +1296,7 @@
       },
       "customers": [],
       "trigger_flag": "_ch2_read_ch2_lingering_smell",
+      "once": true,
       "priority": true
     }
   ],

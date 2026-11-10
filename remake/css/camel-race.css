@@ -163,7 +163,7 @@
 .camel-card h2 { margin: 2px 0 10px; font-size: 24px; color: #ffe9b8; }
 .camel-card p { margin: 0 0 8px; line-height: 1.75; }
 .camel-eyebrow { color: var(--cr-gold); font-size: 14px; font-weight: 800; letter-spacing: .16em; }
-.camel-card-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
+.camel-card-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; justify-content: center; }
 .camel-game .camel-sheet .camel-card .camel-card-actions .btn { min-height: 48px; padding-inline: 24px; border-radius: 12px; border: 1px solid rgba(255,215,122,.5); background: rgba(0,0,0,.3); color: var(--cr-sand); font-weight: 800; letter-spacing: .06em; box-shadow: none; }
 .camel-game .camel-sheet .camel-card .camel-card-actions .btn:hover, .camel-game .camel-sheet .camel-card .camel-card-actions .btn:focus-visible { background: rgba(255,215,122,.14); border-color: var(--cr-gold); color: #fff; }
 .camel-game .camel-sheet .camel-card .camel-card-actions .btn.primary { border-color: transparent; color: var(--cr-ink); background: linear-gradient(180deg, #fff1b8, var(--cr-gold) 45%, var(--cr-gold-deep)); box-shadow: inset 0 -3px 0 rgba(0,0,0,.2), 0 6px 18px rgba(224,164,60,.35); }
@@ -190,7 +190,7 @@
 @keyframes camel-stamp { from { opacity: 0; transform: scale(2.6) rotate(-14deg); } to { opacity: 1; transform: scale(1) rotate(-4deg); } }
 @keyframes camel-bar { from { width: 0; } }
 .camel-medal span { font-size: 18px; font-weight: 900; }
-.camel-result-score { display: grid; gap: 4px; }
+.camel-result-score { display: grid; gap: 4px; justify-items: center; text-align: center; }
 .camel-time { margin: 0; color: var(--cr-dim); font-size: 14px; font-weight: 800; letter-spacing: .08em; font-variant-numeric: tabular-nums; }
 .camel-total { display: flex; align-items: baseline; gap: 8px; margin: 0; }
 .camel-total small { font-size: 13px; font-weight: 800; color: var(--cr-dim); letter-spacing: .02em; }
@@ -208,8 +208,8 @@
 .camel-score-bar i { display: block; height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--cr-gold-deep), var(--cr-gold), #fff1b8); }
 .camel-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; margin: 14px 0 0; padding: 0; list-style: none; }
 .camel-stats li { display: flex; align-items: baseline; justify-content: space-between; gap: 6px; padding: 6px 10px; border-radius: 10px; background: rgba(0,0,0,.25); }
-.camel-stats small { font-size: 12px; font-weight: 800; color: var(--cr-dim); }
-.camel-stats b { font-size: 15px; font-weight: 900; font-variant-numeric: tabular-nums; }
+.camel-stats small { font-size: 12px; font-weight: 800; color: var(--cr-dim); white-space: nowrap; flex: none; }
+.camel-stats b { font-size: 15px; font-weight: 900; font-variant-numeric: tabular-nums; text-align: right; }
 .camel-best { margin-top: 10px; color: #ffe27a; font-weight: 900; letter-spacing: .1em; }
 /* 結果・大会選びの右上の「？」: 遊び方を読み直す（#2836） */
 .camel-game .camel-sheet .camel-card .camel-help { position: absolute; right: 14px; top: 14px; display: grid; place-items: center; width: 40px; height: 40px; padding: 0;
@@ -391,3 +391,75 @@ html:root[data-density="phone"] .camel-game .camel-cup strong { font-size: max(2
 .camel-game.cr-word-perfect .camel-feedback[data-kind="perfect"] b { display: block; width: 5em; height: 1.1em;
   color: transparent; -webkit-text-stroke-color: transparent; text-shadow: none;
   background: url("../img/ui/camel_race/ui/word-perfect.webp") center / contain no-repeat; }
+
+/* CR08 #3055: 再制作した札・メダル・計器・無線。各クラスは画像ロード成功時だけ付く。 */
+.camel-game.cr-rank .camel-standings li:not([data-who="player"]),
+.camel-game.cr-rank-player .camel-standings li[data-who="player"] {
+  display: flex; gap: .35em; padding: 0 .55em 0 54px; border: 0; border-radius: 0;
+  background: none; box-shadow: none; color: #241608;
+}
+.camel-game.cr-rank .camel-standings li:not([data-who="player"])::before,
+.camel-game.cr-rank-player .camel-standings li[data-who="player"]::before {
+  content: ""; position: absolute; inset: 0; z-index: 0; pointer-events: none;
+  border: 10px solid transparent; border-left-width: 48px; border-right-width: 18px;
+  border-image: url("../img/ui/camel_race/ui/rank-plate.webp") 40 48 40 48 fill / 10px 18px 10px 48px / 0 stretch;
+}
+.camel-game.cr-rank-player .camel-standings li[data-who="player"]::before {
+  border-image-source: url("../img/ui/camel_race/ui/rank-plate-player.webp");
+}
+.camel-game.cr-rank .camel-standings li:not([data-who="player"]) > *,
+.camel-game.cr-rank-player .camel-standings li[data-who="player"] > * { position: relative; z-index: 1; }
+.camel-game.cr-rank .camel-standings li:not([data-who="player"]) .camel-rank-badge,
+.camel-game.cr-rank-player .camel-standings li[data-who="player"] .camel-rank-badge {
+  position: absolute; left: 30px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px;
+  background: none; box-shadow: none; color: #38200b; font-size: .8em;
+}
+.camel-game.cr-rank .camel-standings li:not([data-who="player"]) .camel-chip-name,
+.camel-game.cr-rank-player .camel-standings li[data-who="player"] .camel-chip-name { flex: 1; min-width: 0; color: #241608; }
+.camel-game.cr-rank .camel-standings li:not([data-who="player"]) .camel-chip-gap,
+.camel-game.cr-rank-player .camel-standings li[data-who="player"] .camel-chip-gap { color: #59452c; }
+
+.camel-game.cr-medal-gold .camel-medal[data-rank="1"] {
+  position: relative; border-radius: 0; box-shadow: none; background: url("../img/ui/camel_race/ui/medal-gold.webp") center / contain no-repeat;
+}
+.camel-game.cr-medal-gold .camel-medal[data-rank="1"] strong,
+.camel-game.cr-medal-gold .camel-medal[data-rank="1"] span { position: absolute; top: 5%; color: #2b1808; line-height: 1; text-shadow: 0 1px #f8d276; }
+.camel-game.cr-medal-gold .camel-medal[data-rank="1"] strong { left: 42%; font-size: clamp(14px, 1.6cqw, 20px); }
+.camel-game.cr-medal-gold .camel-medal[data-rank="1"] span { left: 55%; font-size: clamp(11px, 1.1cqw, 14px); }
+
+.camel-game.cr-gauge-frame :is(.camel-speed-bar, .camel-stamina-bar) {
+  height: 1em; border: 3px solid transparent; border-radius: 0; box-sizing: border-box; overflow: hidden; background: none;
+  border-image: url("../img/ui/camel_race/ui/gauge-frame.webp") 24 48 fill / 3px 9px / 0 stretch;
+}
+.camel-game.cr-gauge-fill :is(.camel-speed-bar, .camel-stamina-bar) i {
+  top: 2px; bottom: 2px; border-radius: 0; background: url("../img/ui/camel_race/ui/gauge-fill.webp") left center / 100% 100% no-repeat;
+}
+.camel-game.cr-gauge-fill .camel-speed-bar i { filter: hue-rotate(100deg); }
+.camel-game.cr-gauge-fill .camel-speed[data-state="whip"] .camel-speed-bar i,
+.camel-game.cr-gauge-fill .camel-stamina[data-state="spent"] .camel-stamina-bar i { filter: hue-rotate(-115deg); }
+.camel-game.cr-gauge-fill .camel-stamina[data-state="tired"] .camel-stamina-bar i { filter: hue-rotate(-55deg); }
+
+.camel-game.cr-call .camel-call {
+  box-sizing: border-box; width: 42cqw; max-width: 52%; min-height: 4.3em; padding: .35em .8em .35em 105px;
+  border: 0; border-radius: 0; background: none; box-shadow: none;
+}
+.camel-game.cr-call .camel-call::before {
+  content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  border: 12px solid transparent; border-left-width: 95px; border-right-width: 18px;
+  border-image: url("../img/ui/camel_race/ui/call-plate.webp") 48 160 48 160 fill / 12px 18px 12px 95px / 0 stretch;
+}
+.camel-game.cr-call .camel-call-icon {
+  position: absolute; left: 18px; top: 50%; transform: translateY(-50%);
+  width: 3em; height: 3em; border: 0; background: none;
+}
+.camel-game.cr-call .camel-call-body { min-width: 0; }
+.camel-game.cr-call .camel-call-text { overflow: hidden; text-overflow: ellipsis; }
+
+.camel-game.cr-rank .camel-standings li:not([data-who="player"])::after,
+.camel-game.cr-rank-player .camel-standings li[data-who="player"]::after {
+  content: ""; position: absolute; left: 24px; top: 20%; height: 60%; width: 3px; z-index: 1;
+  border-radius: 2px; background: var(--camel-color); pointer-events: none;
+}
+@media (min-height: 481px) {
+  .camel-game:is(.cr-rank, .cr-rank-player) .camel-standings { width: 15.5em; }
+}

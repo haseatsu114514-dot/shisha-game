@@ -131,6 +131,55 @@ await suite("loading-gate", async check => {
     await page.getByText('準備完了。次の場面を開始できます。', { exact: true }).waitFor();
     assert.equal(await page.locator('.loading-gate').count(), 0);
   });
+  await check("scene-notice-comic-lifecycle", async page => {
+    await page.addStyleTag({ url: new URL('css/vn.css', baseURL).href });
+    const setup = await page.evaluate(async () => {
+      const { withLoadingNotice } = await import('./js/core/module-loading.js');
+      const { attachLoadingComic } = await import('./js/core/loading-comic-notice.js');
+      const src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="300" height="200"/>';
+      const comic = { id: 'scene-test', title: 'Scene comic', minChapter: 1, contexts: ['scene'],
+        cast: ['sumi'], panels: [{ src, alt: 'first' }, { src, alt: 'second' }] };
+      const run = (duration, comics = [comic], chapter = 1) => {
+        const notice = document.createElement('div');
+        notice.className = 'vn-loading';
+        notice.textContent = '場面を準備しています…';
+        let hide;
+        return withLoadingNotice(new Promise(resolve => setTimeout(resolve, duration)), {
+          delayMs: 500,
+          onShow() { document.body.append(notice); hide = attachLoadingComic(notice, {
+            comics, chapter, isMet: id => id === 'sumi',
+          }); },
+          onHide() { hide?.(); },
+        });
+      };
+      const seen = [];
+      new MutationObserver(records => { for (const record of records) for (const node of record.addedNodes) {
+        if (node.matches?.('.vn-loading')) seen.push('notice');
+        if (node.matches?.('.vn-loading-comic')) seen.push('comic');
+      } }).observe(document.body, { subtree: true, childList: true });
+      await run(50);
+      const fast = seen.length === 0;
+      window.__finishSceneNotice = run(2000);
+      return { fast, seen };
+    });
+    assert.equal(setup.fast, true, 'A short wait must not show a notice or comic');
+    await page.locator('.vn-loading-comic-panels img').first().waitFor();
+    assert.equal(await page.locator('.vn-loading-comic-panels img').count(), 2);
+    await page.evaluate(() => window.__finishSceneNotice);
+    assert.equal(await page.locator('.vn-loading').count(), 0, 'The comic closes as soon as preparation ends');
+    const fallback = await page.evaluate(async () => {
+      const { attachLoadingComic } = await import('./js/core/loading-comic-notice.js');
+      const { LOADING_COMICS } = await import('./js/core/loading-comics.js');
+      const notice = document.createElement('div');
+      document.body.append(notice);
+      const hide = attachLoadingComic(notice, { comics: LOADING_COMICS, context: 'scene', chapter: 1 });
+      await new Promise(resolve => setTimeout(resolve, 50));
+      const plain = notice.isConnected && !notice.querySelector('.vn-loading-comic');
+      hide();
+      return plain;
+    });
+    assert.equal(fallback, true, 'A context without registered comics keeps the plain notice');
+  });
   await check("slow-comic-does-not-delay", async page => {
     await page.route('**/slow-panel.svg', async route => {
       await new Promise(resolve => setTimeout(resolve, 1000));
