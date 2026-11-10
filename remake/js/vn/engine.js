@@ -228,7 +228,7 @@ function waitSceneAssets(task, owner = running, assets = task.assetsReady || tas
     notice = el("div.vn-loading", { role: "status", "aria-live": "polite",
       text: "場面を準備しています…", dataset: { test: "vn-loading" } });
     layers.fx.append(notice);
-    hideComic = attachLoadingComic(notice);
+    if (typeof attachLoadingComic === "function") hideComic = attachLoadingComic(notice);
   }, 500);
   const loaded = Promise.resolve(assets).finally(() => { clearTimeout(timer); hideComic?.(); notice?.remove(); });
   // 場面転換の演出は最後まで待つが、取得・デコード済みなら読み込み表示を延長しない。

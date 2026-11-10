@@ -16,7 +16,6 @@ import { allStoreLogoUrls } from "./store-logos.js";
 import { chapterTitleArt } from "./chapter-title-art.js";
 import { uiThemeFrame } from "./ui-theme.js";
 import { withLoadingNotice } from "./module-loading.js";
-import { attachLoadingComic } from "./loading-comic-notice.js";
 import { loadingPrefetch, prepareImage } from "./loading-prefetch.js";
 
 export const layers = {};
@@ -341,9 +340,13 @@ export function toast(text, { ms = 2600, kind = "" } = {}) {
  */
 export function loadingNotice(label = "読み込んでいます…") {
   const notice = el("div.vn-loading", { role: "status", "aria-live": "polite", text: label, dataset: { test: "module-loading" } });
-  let hideComic;
-  return { onShow: () => { layers.fx.append(notice); hideComic = attachLoadingComic(notice); },
-    onHide: () => { hideComic?.(); notice.remove(); } };
+  let hideComic, closed = false;
+  return { onShow: () => {
+    layers.fx.append(notice);
+    if (typeof window !== "undefined") void import("./loading-comic-notice.js").then(({ attachLoadingComic }) => {
+      if (!closed && notice.isConnected) hideComic = attachLoadingComic(notice);
+    }).catch(() => { /* The plain notice remains available if the comic module fails. */ });
+  }, onHide: () => { closed = true; hideComic?.(); notice.remove(); } };
 }
 
 /** VN開始前などの画像待ちにだけ添える通知。play()自体は包まない。 */
