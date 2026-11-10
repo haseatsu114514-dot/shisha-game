@@ -173,6 +173,7 @@ export const FLAG_EXACT_RULES = [
   ["_ch2_read_ch2_rei_sixth", "person"],
   ["_ch2_read_ch2_slump_taste", "progression"],
   ["_ch2_read_ch2_sofa_burn", "progression"],
+  ["_ch2_read_ch2_strawberry_sample", "progression"],
   ["_ch2_read_ch2_tournament_ageha_heart", "person"],
   ["_ch2_read_ch2_tsumugi_color", "person"],
   ["_ch2_read_remake_ch2_ageha_tasting", "progression"],
