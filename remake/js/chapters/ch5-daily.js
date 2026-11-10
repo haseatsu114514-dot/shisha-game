@@ -233,7 +233,8 @@ async function performChapterFiveSpot(spot, io, options = {}) {
   }
   if (spot.kind === "shop") {
     // 第5章は1階の買い物だけ（2階の相談＝凛想の場面は出さない）。時間は使わない。
-    await openShop({ errand: true });
+    // 階の選択を飛ばす指定は direct（errand は買い出し対象のフレーバーID専用）。
+    await openShop({ direct: true });
     return { used: false, exerted: false };
   }
   if (spot.id === CH5_CALL_SPOT.id) return contactDoctor(io);
