@@ -105,7 +105,7 @@ export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy =
       root.append(panel);
       if (trial) { host.replaceChildren(root); root.focus({ preventScroll: true }); return; }
     }
-    if (!readOnly && !state?.trpg?.club?.founded && state?.chapter >= catalog.unlockChapter) {
+    if (!readOnly && !state?.trpg?.club?.founded && state?.chapter >= catalog.unlockChapter && visitMember) {
       root.append(el("section.trpg-club-proposal", { dataset: { test: "trpg-club-proposal" } }, [
         el("span.trpg-kicker", { text: "六角サイからの提案" }),
         el("h2", { text: "ここで、部活を作ってみませんか？" }),
@@ -265,3 +265,4 @@ export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy =
   if (!disposed) entrance = playTrpgEntrance(host, { foot: readOnly ? "みんなと遊んだ本棚へ" : "ボドゲカフェの本棚へ" });
   return { ready, finished, destroy: close, get disposed() { return disposed; } };
 }
+

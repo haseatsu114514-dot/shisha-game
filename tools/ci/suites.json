@@ -928,6 +928,7 @@
         "node remake/test/trpg_audio_cues.mjs",
         "node --experimental-vm-modules remake/test/trpg_audio_bgm.mjs",
         "node --test remake/test/trpg_campaign.mjs",
+        "node --test remake/test/trpg_club_event.mjs",
         "node --experimental-vm-modules remake/test/trpg_campaign_save.mjs",
         "node tools/validate_trpg_scenario.mjs",
         "node --test remake/test/playthrough-plan.test.mjs remake/test/playthrough-shopping.test.mjs",
