@@ -33,7 +33,7 @@ const context = vm.createContext({ Audio, window: { AudioContext }, document: { 
 });
 const module = new vm.SourceTextModule(await fs.readFile(new URL("../js/core/audio.js", import.meta.url), "utf8"), { context });
 const PACKED = new Set(["bgm_tournament_edm", "bgm_tournament_craft", "bgm_trpg", "bgm_axe", "bgm_purikura", "bgm_purikura_b", "bgm_purikura_d",
-  "bgm_ethnic05", "bgm_ethnic08", "bgm_ethnic09", "bgm_ethnic12", "bgm_tetsuko_time"]);
+  "bgm_ethnic05", "bgm_ethnic08", "bgm_ethnic09", "bgm_ethnic12", "bgm_tetsuko_time", "bgm_camel_race"]);
 const urlFor = (key) => `/assets/audio/bgm/${key}.${PACKED.has(key) ? "bgm" : "mp3"}`;
 await module.link((s) => {
   const exports = s.endsWith("state.js") ? { config } : { bgmUrl: urlFor };
@@ -97,6 +97,8 @@ const adopted = [
   ["bgm_ethnic09", 1, "606275a23856d2a5f06623a8582e67faefe4ed4f2790cc4652bab17b67c84bc1"],
   ["bgm_ethnic12", 1, "9f19dd609e993f3c53834e6d7b3d12b1fc0f262e797a71fe12a83fd789fd88c6"],
   ["bgm_tetsuko_time", 1, "918781b114652c043c1180ed3cb84ab05f46684dca9b28597e08eb911e200bff"],
+  // ラクダレース（Firebrand / Kevin MacLeod / CC BY 4.0）。倍率は既定1.0（約 −14 LUFS）。
+  ["bgm_camel_race", 1, "a93af4ddbf2e85aa7519fa55a4135dab50f3ffbdfc83828691e284a07be2904d"],
 ];
 for (const [key, gain, expectedHash] of adopted) {
   assert(await audio.preloadBgm(key));

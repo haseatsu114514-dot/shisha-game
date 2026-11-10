@@ -980,6 +980,7 @@
         "node --experimental-vm-modules remake/test/bgm_readiness.mjs",
         "node --experimental-vm-modules remake/test/bgm_tournament_wait.mjs",
         "node --experimental-vm-modules remake/test/bgm_packaged.mjs",
+    "node --experimental-vm-modules remake/test/camel_race_bgm.mjs",
         "node --experimental-vm-modules remake/test/bgm_packed_cache.mjs",
         "node --experimental-vm-modules remake/test/lime_lifecycle_833.mjs",
         "node --experimental-vm-modules remake/test/lime_fit_774.mjs",
@@ -4352,6 +4353,8 @@
     }
   ]
 }
+
+
 
 
 

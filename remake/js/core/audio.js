@@ -232,7 +232,7 @@ let rotateHeld = false;
 document.addEventListener?.("rotateguardchange", () => {
   rotateHeld = document.documentElement?.dataset?.rotateGuard === "true";
   if (master) master.gain.value = rotateHeld ? 0 : 1;
-  if (rotateHeld) { stopRecordedVoices(); currentEl?.pause(); }
+  if (rotateHeld) { stopRecordedVoices(); currentEl?.pause(); resetBgmTempo(); }
   else if (currentEl && !bgmPaused) currentEl.play().catch(() => {});
 });
 
@@ -644,7 +644,7 @@ export function createContinueAudio({ enabled = true } = {}) {
       paused = true;
       silence(); clearTimeout(restore);
       if (!ownsMusic()) return;
-      bgmPaused = true; currentEl?.pause(); mix(holdMix);
+      bgmPaused = true; currentEl?.pause(); resetBgmTempo(); mix(holdMix);
     },
     resume() {
       if (!alive) return;
@@ -709,6 +709,48 @@ export const bgmDuckLevel = () => bgmDuck;
 const BGM_GAIN = { sweets_or_sweets: 0.55, bgm_tournament_edm: 0.51, bgm_tournament_craft: 0.67, bgm_continue_urgent: 0.68, bgm_axe: 0.79 };
 const bgmLevel = (key) => config.mute || config.muted || bgmPaused ? 0
   : config.bgmVolume * (BGM_GAIN[key] ?? 1) * bgmDuck;
+
+// ラクダレース中だけ、プレイヤー速度に合わせて再生速度を緩やかに変える。
+// ピッチは保つ（HTMLAudioElement の既定 / preservesPitch=true。continue 曲と同じ）。
+let bgmTempo = 1, bgmTempoTarget = 1;
+const TEMPO_EASE = 0.22;
+
+function applyBgmPlaybackRate() {
+  if (!currentEl || currentKey === "bgm_continue_urgent") return;
+  currentEl.playbackRate = currentKey === "bgm_camel_race" ? bgmTempo : 1;
+  currentEl.preservesPitch = true;
+}
+
+/** 今の曲の目標再生倍率。1.00〜1.15。immediate ならその場で反映。 */
+export function setBgmPlaybackRate(rate, { immediate = false } = {}) {
+  const next = Math.max(1, Math.min(1.15, Number(rate) || 1));
+  bgmTempoTarget = next;
+  if (immediate) {
+    bgmTempo = next;
+    applyBgmPlaybackRate();
+  }
+}
+
+/** 再生倍率を 1.0 に戻す（レース終了・中断・退出、曲の切替）。 */
+export function resetBgmTempo() {
+  bgmTempo = 1;
+  bgmTempoTarget = 1;
+  applyBgmPlaybackRate();
+}
+
+/** 目標倍率へ時定数約0.22秒で寄せる。1フレームごとに dt（秒）を渡す。 */
+export function tickBgmPlaybackRate(dt) {
+  const t = Math.max(0, Number(dt) || 0);
+  if (t > 0) {
+    const k = 1 - Math.exp(-t / TEMPO_EASE);
+    bgmTempo += (bgmTempoTarget - bgmTempo) * k;
+    if (Math.abs(bgmTempo - bgmTempoTarget) < 0.001) bgmTempo = bgmTempoTarget;
+  }
+  applyBgmPlaybackRate();
+  return bgmTempo;
+}
+
+export const bgmPlaybackRate = () => bgmTempo;
 
 // 単体MP3の再配布を避けるゲーム専用形式（pack_bgm.py と対応）。HTTPS/localhostで復元する。
 const PACKED_MAGIC = "SUIENBGM1";
@@ -910,10 +952,9 @@ export function playBgm(key) {
     a.muted = bgmSilences > 0;
     a.loop = true;
     a.volume = 0;
-    if (key === "bgm_continue_urgent") {
-      a.playbackRate = 1.08; // EMGコール(BPM115)を少しだけ高速化
-      a.preservesPitch = true;
-    }
+    resetBgmTempo();
+    a.playbackRate = key === "bgm_continue_urgent" ? 1.08 : 1; // EMGコール(BPM115)を少しだけ高速化
+    a.preservesPitch = true;
     currentEl = a;
     const fallBackContinue = () => {
       if (currentEl !== a || key !== "bgm_continue_urgent") return false;
@@ -1015,6 +1056,7 @@ export function stopBgm(fadeSec = 0.8) {
   if (synthStop) { synthStop(fadeSec); synthStop = null; }
   bgmDuck = 1;
   bgmPaused = false;
+  resetBgmTempo();
   bgmBus?.gain.cancelScheduledValues?.(ctx.currentTime);
   if (bgmBus) bgmBus.gain.value = config.mute || config.muted || bgmSilences ? 0 : config.bgmVolume;
 }
@@ -1146,5 +1188,7 @@ function startSynth(kind) {
     setTimeout(() => out.disconnect(), fadeSec * 1000 + 200);
   };
 }
+
+
 
 
