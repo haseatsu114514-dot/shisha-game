@@ -50,10 +50,22 @@ export const STAFF_MUSIC = Object.freeze([
   { title: "Death Waltz", composer: "northivanastan", source: "OpenGameArt・CC0" },
   { title: "Apparitions Ball", composer: "Bobjt", source: "OpenGameArt・CC0" },
   { title: "musicbox1_spooky_waltz", composer: "Aureolus_Omicron", source: "OpenGameArt・CC0" },
+  // 本編の仮BGM（OpenGameArt・CC0。2026-11-10。差し替えしやすいよう中央対応表に載せる。出典は asset_sources/music/main-placeholder-audio/）
+  { title: "Chill lofi inspired", composer: "omfgdude", source: "OpenGameArt・CC0" },
+  { title: "Tension Theme", composer: "Umplix", source: "OpenGameArt・CC0" },
+  { title: "Daisy", composer: "Kistol", source: "OpenGameArt・CC0" },
+  { title: "Cool City", composer: "MintoDog", source: "OpenGameArt・CC0" },
+  { title: "Desert Travel (Loop)", composer: "DJ CrisP", source: "OpenGameArt・CC0" },
+  { title: "Dare The Bustloro Way", composer: "Spring Spring", source: "OpenGameArt・CC0" },
+  { title: "Dark Horse", composer: "Centurion_of_war", source: "OpenGameArt・CC0" },
+  { title: "The Rush", composer: "tebruno99", source: "OpenGameArt・CC0" },
 ].map(song => Object.freeze(song)));
 // TRPGの卓の効果音（CC0・asset_sources/music/trpg-audio/）。
 export const STAFF_SOUND_TRPG = Object.freeze(["効果音（TRPG）：Kenney – Casino Audio / RPG Audio / Music Jingles（CC0） – https://kenney.nl/"]);
 export const STAFF_SOUND_CREDIT = "効果音：ポケットサウンド – https://pocket-se.info/";
+export const STAFF_SOUND_MAIN = Object.freeze([
+  "効果音（本編UI・場面転換）：Kenney – Interface Sounds / Music Jingles（CC0） – https://kenney.nl/",
+]);
 export const STAFF_ROLL_CLOSING = "Thank you for playing";
 // 斧投げの効果音（CC0・asset_sources/music/minigame-se/）。オーナー「クレジットは載せる」2026-11-10。
 export const STAFF_SOUND_AXE = Object.freeze([
@@ -97,6 +109,7 @@ function sections() {
     ]) : null,
     el("section.staff-roll-sound-trpg", STAFF_SOUND_TRPG.map(text => el("p", { text }))),
     el("section.staff-roll-sound", [el("p", { text: STAFF_SOUND_CREDIT })]),
+    el("section.staff-roll-sound-main", STAFF_SOUND_MAIN.map(text => el("p", { text }))),
     el("section.staff-roll-sound-camel", STAFF_SOUND_CAMEL.map(text => el("p", { text }))),
     el("section.staff-roll-sound-desert", STAFF_SOUND_DESERT.map(text => el("p", { text }))),
     el("section.staff-roll-sound-axe", STAFF_SOUND_AXE.map(text => el("p", { text }))),

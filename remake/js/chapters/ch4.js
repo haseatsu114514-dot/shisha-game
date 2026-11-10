@@ -107,7 +107,8 @@ async function openChapter(advance) {
     }
     if (!current(owner)) return;
     const progress = chapterFourProgress(state);
-    playBgm("tonari"); // 仮置き: ドバイ専用BGMが無いので既存曲を流用（#1177 で差し替え）
+    // 到着前（日本のプロローグ）は店の曲。到着済み・本編はドバイの仮曲（CH4_DEFAULT_BGM）。
+    playBgm((progress.part !== "prologue" || chapterFourRead(state, "ch4_opening")) ? CH4_DEFAULT_BGM : "tonari");
     if (progress.part === "prologue" && !progress.titleSeen) {
       await setBg(bgUrl(CH4_SCENE_BG[CH4_PROLOGUE[0].id]), { instant: true });
       if (!current(owner)) return;
