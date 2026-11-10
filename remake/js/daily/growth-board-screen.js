@@ -207,6 +207,14 @@ export function openBoard({ place = null } = {}) {
   }
   const view = () => replay(g, pending);
   const status = (node, v) => nodeStatus(node, g, v);
+  // replayごとの仮置き結果に紐づける。選択だけの説明更新でも同じ道を再計算しない。
+  const routesByView = new WeakMap();
+  function routeTo(id, v) {
+    let routes = routesByView.get(v);
+    if (!routes) { routes = new Map(); routesByView.set(v, routes); }
+    if (!routes.has(id)) routes.set(id, pathTo(id, v.unlocked));
+    return routes.get(id);
+  }
 
   function renderHeader() {
     const info = gaugeInfo(g);
@@ -250,7 +258,7 @@ export function openBoard({ place = null } = {}) {
     const nodes = boardNodes(board);
     const open = ringsOpen();
     const lit = (id) => id === HUB || v.unlocked.has(id);
-    const goal = g.target && NODE_BY_ID[g.target]?.board === board ? new Set(pathTo(g.target, v.unlocked).path) : new Set();
+    const goal = g.target && NODE_BY_ID[g.target]?.board === board ? new Set(routeTo(g.target, v).path) : new Set();
     const walls = [];
     // 広い盤全体へのノイズ・ぼかしフィルターは避け、光と曇りは静的な線・グラデーションで重ねる。
     const parts = [svg("defs", {}, [
@@ -433,7 +441,7 @@ export function openBoard({ place = null } = {}) {
   function targetText(id, v) {
     const target = NODE_BY_ID[id];
     if (v.pending.includes(id)) return `目標：${nodeTitle(target)} 仮置き中`;
-    const route = pathTo(id, v.unlocked);
+    const route = routeTo(id, v);
     const gates = route.path.filter((step) => NODE_BY_ID[step].kind === "gate").length;
     const colors = BOARD_KEYS.reduce((sum, key) => sum + (v.hidane[key] || 0), 0);
     const missingColors = Math.max(0, gates - colors);
@@ -553,7 +561,7 @@ export function openBoard({ place = null } = {}) {
       return `能力のマスを全部灯すと灯せる（あと${left}マス）`;
     }
     if (st === "far") {
-      const route = pathTo(node.id, v.unlocked);
+      const route = routeTo(node.id, v);
       return `まだ道がつながっていない（ここまで 火種${route.cost}）`;
     }
     if (st === "short" && node.kind === "gate") return v.ctx.capped ? "色の火か白火が要る。台座に使える火種がない" : "色の火（紅火・蒼火・翠火）が要る。節目のレベル・大会・♥5の人・遊びのご褒美でもらえる";

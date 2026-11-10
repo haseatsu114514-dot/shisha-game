@@ -237,13 +237,21 @@ export function pathTo(id, unlocked) {
     for (;;) {
       const rest = boardNodes(goal.board).filter((n) => n.kind === "stat" && !n.peak && !have.has(n.id));
       if (!rest.length) break;
-      const next = rest.map((n) => pathTo(n.id, have)).sort((a, b) => a.cost - b.cost)[0];
+      // 同じ盤・同じ灯した集合の探索は1回で全マス分を得る。
+      // 同額なら元のマス順を保ち、これまでと同じ道を選ぶ。
+      const routes = pathsFrom(goal.board, have);
+      const next = rest.map((n) => routes(n.id)).sort((a, b) => a.cost - b.cost)[0];
       for (const step of next.path) { have.add(step); path.push(step); }
     }
     if (!unlocked.has(id)) path.push(id);
     return { cost: path.reduce((n, step) => n + NODE_BY_ID[step].cost, 0), path };
   }
-  const nodes = boardNodes(goal.board);
+  return pathsFrom(goal.board, unlocked)(id);
+}
+
+/** 紋から盤全体への最短経路。探索結果はこの灯した集合でだけ使う。 */
+function pathsFrom(board, unlocked) {
+  const nodes = boardNodes(board);
   const dist = { [HUB]: 0 }, prev = {}, done = new Set(), queue = [HUB];
   const linksOf = (u) => u === HUB ? nodes.filter((n) => n.links.includes(HUB)).map((n) => n.id) : NODE_BY_ID[u].links;
   while (queue.length) {
@@ -257,9 +265,11 @@ export function pathTo(id, unlocked) {
       if (dist[u] + w < (dist[v] ?? Infinity)) { dist[v] = dist[u] + w; prev[v] = u; queue.push(v); }
     }
   }
-  const path = [];
-  for (let c = id; c && c !== HUB; c = prev[c]) if (!unlocked.has(c)) path.unshift(c);
-  return { cost: dist[id] ?? 0, path };
+  return (id) => {
+    const path = [];
+    for (let c = id; c && c !== HUB; c = prev[c]) if (!unlocked.has(c)) path.unshift(c);
+    return { cost: dist[id] ?? 0, path };
+  };
 }
 
 /** 「目標まで灯す」: 道の手前から、火種と章と錠が許すところまで仮置きに足す */
