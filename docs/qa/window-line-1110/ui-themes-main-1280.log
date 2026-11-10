@@ -1,0 +1,26 @@
+[ui-themes-preview] FAIL: 1280
+AssertionError [ERR_ASSERTION]: command text is a quieter third level
+    at check.viewport.viewport (file:///home/hatch/workspace/shisha-game/work/codex-a-window-line-1110/wt/remake/test/browser/ui_themes.mjs:174:9)
+    at async check (file:///home/hatch/workspace/shisha-game/work/codex-a-window-line-1110/wt/remake/test/browser/support.mjs:64:7)
+    at async suite.entry (file:///home/hatch/workspace/shisha-game/work/codex-a-window-line-1110/wt/remake/test/browser/ui_themes.mjs:101:5)
+    at async suite (file:///home/hatch/workspace/shisha-game/work/codex-a-window-line-1110/wt/remake/test/browser/support.mjs:79:5)
+    at async file:///home/hatch/workspace/shisha-game/work/codex-a-window-line-1110/wt/remake/test/browser/ui_themes.mjs:41:1
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: ui-themes-preview: failed browser cases
+
+1 !== 0
+
+    at suite (file:///home/hatch/workspace/shisha-game/work/codex-a-window-line-1110/wt/remake/test/browser/support.mjs:87:10)
+    at async file:///home/hatch/workspace/shisha-game/work/codex-a-window-line-1110/wt/remake/test/browser/ui_themes.mjs:41:1 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: 1,
+  expected: 0,
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.22.1

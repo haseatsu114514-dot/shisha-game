@@ -1,0 +1,33 @@
+[conversation-ui] FAIL: paper-safe-area-and-work-costume
+page.goto: Timeout 10000ms exceeded.
+Call log:
+[2m  - navigating to "http://127.0.0.1:8149/remake/conversation-preview.html?theme=classic", waiting until "load"[22m
+
+    at check (/home/hatch/workspace/shisha-game/work/codex-a-window-line-1110/wt/remake/test/browser/support.mjs:60:18)
+    at async suite.entry (/home/hatch/workspace/shisha-game/work/codex-a-window-line-1110/wt/remake/test/browser/conversation_ui.mjs:5:3)
+    at async suite (/home/hatch/workspace/shisha-game/work/codex-a-window-line-1110/wt/remake/test/browser/support.mjs:79:5)
+    at async file:///home/hatch/workspace/shisha-game/work/codex-a-window-line-1110/wt/remake/test/browser/conversation_ui.mjs:4:1
+[conversation-ui] PASS: money-choice-reason
+[conversation-ui] PASS: choice-modal-log-keyboard
+[conversation-ui] PASS: keyboard-controls
+[conversation-ui] PASS: desktop
+[conversation-ui] PASS: landscape
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: conversation-ui: failed browser cases
+
+1 !== 0
+
+    at suite (file:///home/hatch/workspace/shisha-game/work/codex-a-window-line-1110/wt/remake/test/browser/support.mjs:87:10)
+    at async file:///home/hatch/workspace/shisha-game/work/codex-a-window-line-1110/wt/remake/test/browser/conversation_ui.mjs:4:1 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: 1,
+  expected: 0,
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.22.1

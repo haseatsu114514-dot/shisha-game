@@ -1,0 +1,39 @@
+[ui-themes-preview] PASS: wide-two-choices-conventional-center
+[ui-themes-preview] PASS: wide-dialogue-frame-conventional-width
+[ui-themes-preview] FAIL: 1280
+locator.waitFor: Timeout 30000ms exceeded.
+Call log:
+[2m  - waiting for locator('.vn-box') to be visible[22m
+[2m    53 × locator resolved to hidden <div class="vn-box">…</div>[22m
+
+    at check (/home/hatch/workspace/shisha-game/work/codex-a-window-line-1110/wt/remake/test/browser/support.mjs:62:41)
+    at async suite.entry (/home/hatch/workspace/shisha-game/work/codex-a-window-line-1110/wt/remake/test/browser/ui_themes.mjs:101:5)
+    at async suite (/home/hatch/workspace/shisha-game/work/codex-a-window-line-1110/wt/remake/test/browser/support.mjs:79:5)
+    at async file:///home/hatch/workspace/shisha-game/work/codex-a-window-line-1110/wt/remake/test/browser/ui_themes.mjs:41:1
+[ui-themes-preview] FAIL: 844
+AssertionError [ERR_ASSERTION]: command text is a quieter third level
+    at check.viewport.viewport (file:///home/hatch/workspace/shisha-game/work/codex-a-window-line-1110/wt/remake/test/browser/ui_themes.mjs:174:9)
+    at async check (file:///home/hatch/workspace/shisha-game/work/codex-a-window-line-1110/wt/remake/test/browser/support.mjs:64:7)
+    at async suite.entry (file:///home/hatch/workspace/shisha-game/work/codex-a-window-line-1110/wt/remake/test/browser/ui_themes.mjs:101:5)
+    at async suite (file:///home/hatch/workspace/shisha-game/work/codex-a-window-line-1110/wt/remake/test/browser/support.mjs:79:5)
+    at async file:///home/hatch/workspace/shisha-game/work/codex-a-window-line-1110/wt/remake/test/browser/ui_themes.mjs:41:1
+[ui-themes-preview] PASS: font-and-background-preview
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: ui-themes-preview: failed browser cases
+
+2 !== 0
+
+    at suite (file:///home/hatch/workspace/shisha-game/work/codex-a-window-line-1110/wt/remake/test/browser/support.mjs:87:10)
+    at async file:///home/hatch/workspace/shisha-game/work/codex-a-window-line-1110/wt/remake/test/browser/ui_themes.mjs:41:1 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: 2,
+  expected: 0,
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.22.1

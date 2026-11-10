@@ -1,0 +1,32 @@
+[phone-density] FAIL: desktop-unchanged
+AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
++ actual - expected
+
++ '44px 22px 254px'
+- '44px 16px 254px'
+        ^
+
+    at check.viewport.width (file:///home/hatch/workspace/shisha-game/work/codex-a-window-line-1110/wt/remake/test/browser/phone_density.mjs:265:12)
+    at async check (file:///home/hatch/workspace/shisha-game/work/codex-a-window-line-1110/wt/remake/test/browser/support.mjs:64:7)
+    at async file:///home/hatch/workspace/shisha-game/work/codex-a-window-line-1110/wt/remake/test/browser/phone_density.mjs:244:3
+    at async suite (file:///home/hatch/workspace/shisha-game/work/codex-a-window-line-1110/wt/remake/test/browser/support.mjs:79:5)
+    at async file:///home/hatch/workspace/shisha-game/work/codex-a-window-line-1110/wt/remake/test/browser/phone_density.mjs:178:1
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: phone-density: failed browser cases
+
+1 !== 0
+
+    at suite (file:///home/hatch/workspace/shisha-game/work/codex-a-window-line-1110/wt/remake/test/browser/support.mjs:87:10)
+    at async file:///home/hatch/workspace/shisha-game/work/codex-a-window-line-1110/wt/remake/test/browser/phone_density.mjs:178:1 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: 1,
+  expected: 0,
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.22.1

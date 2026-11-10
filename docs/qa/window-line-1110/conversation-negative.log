@@ -1,0 +1,26 @@
+[conversation-ui] FAIL: paper-safe-area-and-work-costume
+AssertionError [ERR_ASSERTION]: 844x340, safe=21/0, ch1_cold_open:0: {"clear":false,"contained":true,"header":false,"bodyBelowRule":true,"separators":false,"taps":true}
+    at check.deviceScaleFactor (file:///home/hatch/workspace/shisha-game/work/codex-a-window-line-1110/wt/remake/test/browser/conversation_ui.mjs:98:9)
+    at async check (file:///home/hatch/workspace/shisha-game/work/codex-a-window-line-1110/wt/remake/test/browser/support.mjs:64:7)
+    at async suite.entry (file:///home/hatch/workspace/shisha-game/work/codex-a-window-line-1110/wt/remake/test/browser/conversation_ui.mjs:5:3)
+    at async suite (file:///home/hatch/workspace/shisha-game/work/codex-a-window-line-1110/wt/remake/test/browser/support.mjs:79:5)
+    at async file:///home/hatch/workspace/shisha-game/work/codex-a-window-line-1110/wt/remake/test/browser/conversation_ui.mjs:4:1
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: conversation-ui: failed browser cases
+
+1 !== 0
+
+    at suite (file:///home/hatch/workspace/shisha-game/work/codex-a-window-line-1110/wt/remake/test/browser/support.mjs:87:10)
+    at async file:///home/hatch/workspace/shisha-game/work/codex-a-window-line-1110/wt/remake/test/browser/conversation_ui.mjs:4:1 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: 1,
+  expected: 0,
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.22.1

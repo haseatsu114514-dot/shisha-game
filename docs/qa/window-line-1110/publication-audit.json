@@ -1,0 +1,29 @@
+{
+  "initial": {
+    "build": "f5dd257",
+    "builtAt": "2026-11-10 15:11"
+  },
+  "updated": {
+    "build": "819c3d2",
+    "builtAt": "2026-11-10 16:14"
+  },
+  "files": {
+    "css/ui-paper.css": {
+      "initialPublishedSha256": "d099686da90fe72e9bc55e8c0d2b033c879dbe84e7dd580bb9725446b2b08379",
+      "mainSha256": "de9ebd4f397f0694fa43b39317a7e6b38be6833353349ae355528b6358e5d7da",
+      "updatedPublishedSha256": "de9ebd4f397f0694fa43b39317a7e6b38be6833353349ae355528b6358e5d7da"
+    },
+    "css/phone-density.css": {
+      "initialPublishedSha256": "6885e153d305d720de47c329afdaf9138d2eff26f95e019ee2ad83ad0ae31e70",
+      "mainSha256": "6885e153d305d720de47c329afdaf9138d2eff26f95e019ee2ad83ad0ae31e70"
+    },
+    "css/vn-lounge.css": {
+      "initialPublishedSha256": "6e6da9b6cb9b9a253fa296647d2cc10278e95f3ffc81f6d31e54146fdc68b189",
+      "mainSha256": "6e6da9b6cb9b9a253fa296647d2cc10278e95f3ffc81f6d31e54146fdc68b189"
+    },
+    "img/ui/paper/dialogue.webp": {
+      "initialPublishedSha256": "899628e8286ac4b4d7b089d8ebb98989d09856b5fd43ffef91181a403ac9e55e",
+      "mainSha256": "899628e8286ac4b4d7b089d8ebb98989d09856b5fd43ffef91181a403ac9e55e"
+    }
+  }
+}

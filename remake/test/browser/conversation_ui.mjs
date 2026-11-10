@@ -12,7 +12,7 @@ await suite("conversation-ui", async check => {
       core.newGame(); core.state.chapter = 5; core.config.textSpeed = 4; core.config.portraitStyle = "new";
       document.documentElement.dataset.uiTheme = "paper";
       const { DB } = await import("./js/core/data.js");
-      for (const file of ["ch5_main", "ch1_tsumugi"]) {
+      for (const file of ["ch1_main", "ch5_main", "ch1_tsumugi"]) {
         const data = await (await fetch(`../data/dialogue/${file}.json`)).json();
         for (const dialogue of data.dialogues) DB.dialogues[dialogue.dialogue_id] = dialogue;
       }
@@ -27,22 +27,57 @@ await suite("conversation-ui", async check => {
       await page.locator(".vn-next.show").waitFor();
     };
     const cdp = await page.context().newCDPSession(page);
-    for (const [width, height, bottom] of [[1280, 720, 0], [844, 390, 0], [844, 340, 21], [780, 301, 21], [780, 301, 34]]) {
+    for (const [width, height, bottom, side = 0] of [
+      [1280, 720, 0], [844, 390, 0], [844, 340, 21],
+      [852, 393, 0], [852, 393, 21, 47], [932, 430, 0], [932, 430, 21, 47],
+      [780, 301, 0], [780, 301, 21, 47], [780, 301, 34],
+    ]) {
       await page.setViewportSize({ width, height });
-      await cdp.send("Emulation.setSafeAreaInsetsOverride", { insets: { bottom } });
-      // The owner's first line and the longer narration two lines later, unchanged from the script.
-      for (const fromLine of [0, 2]) {
-        await playLine("ch5_bridge_after_return", fromLine);
-        const layout = await page.evaluate(() => {
+      await cdp.send("Emulation.setSafeAreaInsetsOverride", { insets: { bottom, left: side, right: side } });
+      // The owner's screenshot is ch1_cold_open, not ch5_bridge_after_return.
+      // Keep both the actual scene and the chapter-five regression from #3108.
+      for (const [id, fromLine] of [["ch1_cold_open", 0], ["ch5_bridge_after_return", 0], ["ch5_bridge_after_return", 2]]) {
+        await playLine(id, fromLine);
+        const layout = await page.evaluate(async () => {
           const boxEl = document.querySelector(".vn-box");
           const box = boxEl.getBoundingClientRect();
-          const frameTop = parseFloat(getComputedStyle(boxEl, "::before").top);
+          const frame = getComputedStyle(boxEl, "::before");
+          const frameTop = parseFloat(frame.top);
+          // Read the rule from the actual artwork, rather than assuming box.top + 45.
+          const image = new Image();
+          image.src = frame.backgroundImage.match(/url\(["']?([^"')]+)/)[1];
+          await image.decode();
+          const canvas = document.createElement("canvas");
+          canvas.width = image.naturalWidth; canvas.height = image.naturalHeight;
+          const ctx = canvas.getContext("2d"); ctx.drawImage(image, 0, 0);
+          const pixels = ctx.getImageData(Math.floor(canvas.width / 2), 0, 1, canvas.height).data;
+          const ruleRows = [];
+          for (let y = Math.floor(canvas.height * .2); y < canvas.height * .36; y++) {
+            const [r, g, b, a] = pixels.slice(y * 4, y * 4 + 4);
+            if (a > 128 && r < 220 && g < 210 && b < 225) ruleRows.push(y);
+          }
+          if (!ruleRows.length) throw new Error("Paper dialogue rule was not found in the loaded artwork");
           const text = document.querySelector(".vn-text");
           const range = document.createRange(); range.selectNodeContents(text);
           const rows = [...range.getClientRects()];
           const buttons = [...document.querySelectorAll(".vn-ctl")];
           const intersects = (a, b) => a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
           const scale = box.width / document.querySelector(".vn-box").offsetWidth;
+          const imageScale = parseFloat(frame.height) / image.naturalHeight;
+          const ruleTop = box.top + (frameTop + ruleRows[0] * imageScale) * scale;
+          const ruleBottom = box.top + (frameTop + (ruleRows.at(-1) + 1) * imageScale) * scale;
+          // A Range includes the font's empty ascender space, which can cross the rule
+          // even when the ink does not. Measure the first line's real glyph ascent
+          // from its DOM baseline; the zero-size marker does not change wrapping.
+          const marker = document.createElement("span");
+          marker.style.cssText = "display:inline-block;width:0;height:0;padding:0;margin:0;vertical-align:baseline";
+          text.prepend(marker);
+          const baseline = marker.getBoundingClientRect().top;
+          marker.remove();
+          const style = getComputedStyle(text);
+          ctx.font = `${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
+          const firstText = document.createTreeWalker(text, NodeFilter.SHOW_TEXT).nextNode().textContent;
+          const inkTop = baseline - ctx.measureText(firstText).actualBoundingBoxAscent * scale;
           const labels = buttons.map(button => {
             const r = document.createRange(); r.selectNodeContents(button); return r.getBoundingClientRect();
           });
@@ -50,13 +85,18 @@ await suite("conversation-ui", async check => {
             // Check hit targets, not only their labels: tapping the text must still advance it.
             clear: rows.every(row => buttons.every(button => !intersects(row, button.getBoundingClientRect()))),
             contained: rows.every(row => row.left >= box.left && row.right <= box.right && row.top >= box.top && row.bottom <= box.bottom),
-            // The baked-in horizontal rule lies about 45 stage px below the box top.
-            header: labels.every(r => r.top >= box.top + frameTop * scale && r.bottom <= box.top + 45 * scale),
+            header: labels.every(r => r.top >= box.top + frameTop * scale && r.bottom < ruleTop),
+            bodyBelowRule: inkTop > ruleBottom,
+            separators: buttons.slice(1).every(button => {
+              const r = button.getBoundingClientRect(), s = getComputedStyle(button, "::before");
+              return r.top + parseFloat(s.top) * scale >= box.top + frameTop * scale
+                && r.bottom - parseFloat(s.bottom) * scale < ruleTop;
+            }),
             taps: buttons.every(b => b.getBoundingClientRect().height >= 38),
           };
         });
-        assert(layout.clear && layout.contained && layout.header && layout.taps,
-          `${width}x${height}, safe-bottom=${bottom}, line=${fromLine}: ${JSON.stringify(layout)}`);
+        assert(layout.clear && layout.contained && layout.header && layout.bodyBelowRule && layout.separators && layout.taps,
+          `${width}x${height}, safe=${bottom}/${side}, ${id}:${fromLine}: ${JSON.stringify(layout)}`);
       }
     }
     for (const [id, line, face] of [
@@ -71,7 +111,7 @@ await suite("conversation-ui", async check => {
       assert((await portrait.getAttribute("src")).endsWith(`/tsumugi/chr_tsumugi_${face}.webp`), `${id}: ${face}`);
       await page.waitForFunction(() => [...document.querySelectorAll(".portrait.active")].every(img => img.complete && img.naturalWidth > 0));
     }
-  });
+  }, { deviceScaleFactor: 3, isMobile: true, hasTouch: true });
   await check("money-choice-reason", async page => {
     const originalMoney = await page.evaluate(async () => (await import("./js/core/state.js")).state.money);
     const show = async (money, theme, text, hinted = null) => {
