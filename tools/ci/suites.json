@@ -1546,7 +1546,7 @@
     },
     {
       "id": "ch4-camel-feedback",
-      "title": "ラクダレースの判定表示・スタミナ予告・加速・観客席",
+      "title": "ラクダレースの判定表示・スタミナ予告・加速（観客ティッカーなし）",
       "kind": "browser",
       "weight": 1,
       "timeout": 5,
