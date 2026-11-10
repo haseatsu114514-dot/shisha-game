@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { suite } from "./support.mjs";
 
 const SAVED = { day: 9, money: 31415, phase: "daily", slot: 1 };
-const KEYS = ["suien_remake_save", "suien_remake_slot1"];
+const KEYS = ["suien_remake_save", "suien_remake_slot1", "suien_remake_gallery", "suien_remake_gallery_progress", "suien_remake_cycle"];
 
 async function seed(page) {
   await page.evaluate(async (v) => {
@@ -11,6 +11,14 @@ async function seed(page) {
     const s = core.newGame();
     Object.assign(s, { phase: v.phase, day: v.day, slot: v.slot, money: v.money, seed: 77 });
     core.saveToSlot(core.SAVE_SLOTS[1].key);
+    localStorage.setItem("suien_remake_gallery", JSON.stringify(["cg_previous_cycle"]));
+    localStorage.setItem("suien_remake_gallery_progress", JSON.stringify({ completeAnnounced: false, clearedChapters: [1, 5],
+      keepsakes: ["minto_first_cheki"], purikura: [], routeRecords: {
+        tsumugi: { becameLover: true, eventsSeen: [1, "2b"], trueEndAsLover: true } } }));
+    localStorage.setItem("suien_remake_cycle", JSON.stringify({ version: 1, unlocked: true,
+      trueEnds: [{ cycleId: "previous", cycle: 1, at: "2026-11-10", loversAtEnd: ["tsumugi"] }],
+      highestCycleStarted: 2, carryPackage: { fromCycleId: "previous", fromCycle: 1, at: "2026-11-10", data: { money: 50000 } },
+      lifetime: { tournamentWins: 1, tournamentAttempts: 3 } }));
   }, SAVED);
 }
 const openConfig = async (page) => {
@@ -39,7 +47,7 @@ await suite("save-transfer", async check => {
       await page.locator('[data-test="save-export"]').click();
       await assertSizes(page, ".xfer-box .modal-actions button");
       const text = await page.locator('[data-test="export-text"]').inputValue();
-      assert.match(text, /^SUIEN-SAVE1:/);
+      assert.match(text, /^SUIEN-SAVE2:/);
       // 往復: 保存を空にしたプロファイルへ読み込むと、同じ内容で再開できる
       await page.locator('[data-test="export-close"]').click();
       await page.evaluate((keys) => keys.forEach(k => localStorage.removeItem(k)), KEYS);
@@ -139,3 +147,4 @@ await suite("save-transfer", async check => {
     assert.equal(await page.locator('link[rel="apple-touch-icon"]').count(), 1);
   });
 });
+
