@@ -75,6 +75,20 @@ async function advanceSaiIntro(page) {
   await page.locator('.cutin.in[data-char="sai"]').waitFor();
   await page.locator(".cutin").waitFor({ state: "detached" });
 }
+// 本編の設立は本棚の操作ではなく、入店時の通常会話で最後まで読む。
+async function finishClubFounding(page, choice = 0) {
+  await page.evaluate(async choice => {
+    const { vnTest } = await import("./js/vn/engine.js");
+    vnTest.choose = () => choice; vnTest.turbo = true;
+    const auto = document.querySelector('[data-test="vn-auto"]');
+    if (auto?.getAttribute("aria-pressed") !== "true") auto?.click();
+  }, choice);
+  await button(page, "trpg-campaign-notice").waitFor();
+  await page.evaluate(async () => { const { vnTest } = await import("./js/vn/engine.js"); vnTest.turbo = false; vnTest.choose = null;
+    const auto = document.querySelector('[data-test="vn-auto"]');
+    if (auto?.getAttribute("aria-pressed") === "true") auto.click();
+  });
+}
 async function open(page, { nightBusy = false } = {}) {
   await page.evaluate(async nightBusy => {
     const { openTrpgBar } = await import("./js/daily/trpg.js");
@@ -138,13 +152,67 @@ await suite("trpg-main", async check => {
     assert.equal(await button(page, "trpg-person-adam").getAttribute("data-available"), "true");
     await assertShelfControls(page); assert.deepEqual(await storageSnapshot(page), before);
   }, options);
+  for (const [label, options, slot, choice] of [
+    ["entry-founding-pc-day", { viewport: { width: 1280, height: 720 } }, 0, 0],
+    ["entry-founding-touch-night", { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }, 1, 1],
+  ]) await check(label, async page => {
+    await prepare(page, { club: false, slot });
+    const before = await snapshot(page);
+    await page.evaluate(async () => { const { openTrpgBar } = await import("./js/daily/trpg.js"); openTrpgBar(); });
+    await advanceSaiIntro(page);
+    await page.locator("#vn.active .vn-box").waitFor();
+    assert.equal(await page.locator(".trpg-campaign").count(), 0, "The shelf waits for the ordinary conversation");
+    assert.equal((await snapshot(page)).trpg.club.founded, null);
+    // Read the proposal using the same tap/click box as every other daily conversation.
+    for (let i = 0; i < 12 && !await button(page, "choice-0").isVisible(); i++) {
+      await page.waitForTimeout(360);
+      const box = page.locator("#vn.active .vn-box");
+      if (options.hasTouch) await box.tap(); else await box.click();
+    }
+    await button(page, "choice-0").waitFor();
+    assert.match(await button(page, "choice-0").textContent(), /店の仕事/);
+    assert.match(await button(page, "choice-1").textContent(), /知り合い/);
+    assert.equal((await snapshot(page)).trpg.club.founded, null, "Merely reaching the choice does not found");
+    await hit(page, "choice-" + choice);
+    assert.equal((await snapshot(page)).trpg.club.founded, null, "The chosen branch must also finish first");
+    await finishClubFounding(page, choice);
+    const after = await snapshot(page);
+    assert.deepEqual(after.trpg.club.founded, { chapter: 2, day: before.day });
+    assert.deepEqual(after.trpg.club.members, {});
+    assert.equal(after.slot, before.slot); assert.equal(after.money, before.money); assert.equal(after.stamina, before.stamina);
+    assert.equal(await button(page, "trpg-club-choice-time").count(), 0, "No founding card remains in the real shelf");
+    await hit(page, "trpg-campaign-close");
+    await page.evaluate(async () => { const core = await import("./js/core/state.js"); core.load(); });
+    assert.deepEqual((await snapshot(page)).trpg.club.founded, after.trpg.club.founded);
+    await open(page);
+    assert.equal(await page.locator("#vn.active").count(), 0, "Founded saves do not repeat the visit event");
+    await hit(page, "trpg-campaign-close");
+  }, options);
+  await check("entry-founding-cancel-and-retry", async page => {
+    await prepare(page, { club: false });
+    await page.evaluate(async () => {
+      __remake.state.flags._intro_sai = true;
+      const { openTrpgBar } = await import("./js/daily/trpg.js");
+      window.__trpgBarResult = null;
+      openTrpgBar().then(result => { window.__trpgBarResult = result; });
+    });
+    await page.locator("#vn.active .vn-box").waitFor();
+    await page.evaluate(() => window.dispatchEvent(new Event("pagehide")));
+    await page.waitForFunction(() => window.__trpgBarResult !== null);
+    assert.equal((await snapshot(page)).trpg.club.founded, null);
+    assert.equal(await page.locator(".trpg-campaign").count(), 0);
+    await page.evaluate(async () => { const { openTrpgBar } = await import("./js/daily/trpg.js"); openTrpgBar(); });
+    await finishClubFounding(page);
+    assert((await snapshot(page)).trpg.club.founded);
+    await hit(page, "trpg-campaign-close");
+  });
   await check("actual-visits-recruit-and-save-members", async page => {
     await prepare(page, { club: false, money: 30000 });
     await page.evaluate(async () => {
       const { openTrpgBar } = await import("./js/daily/trpg.js"); openTrpgBar();
     });
     await advanceSaiIntro(page);
-    await hit(page, "trpg-club-choice-people"); await hit(page, "trpg-campaign-close");
+    await finishClubFounding(page, 1); await hit(page, "trpg-campaign-close");
     assert.equal(await button(page, "trpg-demo-meet-samechan").count(), 0, "Real bar has no remote recruitment");
     await page.evaluate(async () => {
       const { vnTest } = await import("./js/vn/engine.js"); vnTest.turbo = true;
@@ -334,3 +402,4 @@ await suite("trpg-main", async check => {
     assert.deepEqual(await storageSnapshot(page), before);
   });
 });
+
