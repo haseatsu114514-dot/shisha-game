@@ -255,6 +255,9 @@ assert.deepEqual(board.paymentFor(N.K03, { any: 2, body: 3 }, { reserve: 1 }), {
 assert.equal(board.paymentFor(N.K03, { any: 2, body: 3 }, { reserve: 2 }), null, "色3のうち2を残すと4に足りない");
 assert.deepEqual(board.paymentFor(N.K03, { any: 0, body: 4 }, { reserve: 0 }), { body: 4 });
 assert.equal(board.paymentFor(N.B1, { any: 0, body: 1, sense: 1 }, { reserve: 2 }), null, "色は全部関門の予約");
+assert.equal(board.spendableHidane(N.B3, { any: 0, body: 2, sense: 0, wisdom: 0 }, { reserve: 12 }), 0, "不足表示にも使う数は予約後の0");
+assert.equal(board.spendableHidane(N.B3, { any: 0, body: 0, sense: 13, wisdom: 0 }, { reserve: 12, capped: true }), 1, "上限後は予約を越えた他盤の色が使える");
+assert.deepEqual(board.paymentFor(N.B3, { any: 0, body: 0, sense: 13, wisdom: 0 }, { reserve: 12, capped: true }), { sense: 1 });
 // 関門: 色つきの火種でだけ越える。その盤の色が先、無ければほかの色（SBD53）
 assert.deepEqual(board.paymentFor(N.BG1, { any: 9, body: 1, sense: 1 }), { body: 1 });
 assert.deepEqual(board.paymentFor(N.BG1, { any: 9, sense: 1 }), { sense: 1 }, "ほかの色でも越えられる");
