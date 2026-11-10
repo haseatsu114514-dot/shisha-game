@@ -430,6 +430,7 @@ export const FLAG_EXACT_RULES = [
   ["_noor_ch5_promise", "person"], // 第5章の砂丘の再会で、告白を待つ約束の続きを出す一時の印（chapters/ch5-dubai.js。再生の前に立て、後で消す）
   ["_noor_confession_other_lover", "person"], // DSR20 告白の場面の一時の印（再生の前に立て、後で消す）
   ["_noor_confession_visit", "person"], // 第5章で締めくくりを迎えた人の告白の言い方を出す一時の印（chapters/ch4-desert.js。再生の前に立て、後で消す）
+  ["_noor_story_seat_edge", "person"], // #3081 の人物別既読。周回ではリセット
   ["_oneesan_id_checked", "progression"],
   ["_op_praise_report", "progression"],
   ["_op_praise_talent", "progression"],
@@ -621,6 +622,7 @@ export const FLAG_FAMILY_RULES = [
   ["_lover_*", "person"],
   ["_mastery_practice_*", "progression"],
   ["_met_*", "person"],
+  ["_noor_story_*", "person"], // #3081 カフェ・オアシスの物語。未読を周回へ持ち越さない
   ["_morning_*", "progression"],
   ["_note_*", "progression"],
   ["_outing_done_*", "person"],

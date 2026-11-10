@@ -186,7 +186,23 @@
         "ch4_defeat"
       ],
       "optional": [
-        "ch4_mashiro_dubai_friend"
+        "ch4_mashiro_dubai_friend",
+        "ch4_noor_story_seat_edge",
+        "ch4_noor_story_second_cup",
+        "ch4_noor_story_map_corner",
+        "ch4_noor_story_water_glass",
+        "ch4_noor_story_tray_order",
+        "ch4_noor_story_quiet_counter",
+        "ch4_noor_story_empty_chair",
+        "ch4_noor_story_board_angle",
+        "ch4_noor_story_pencil_line",
+        "ch4_noor_story_waiting_wind",
+        "ch4_noor_story_pinky_gap",
+        "ch4_noor_story_father_seat",
+        "ch4_noor_story_return_mark",
+        "ch4_noor_story_table_edge",
+        "ch4_noor_story_unsaid_question",
+        "ch4_noor_story_doorway"
       ]
     },
     "5": {
@@ -355,6 +371,102 @@
         "ch3_volk_fourth"
       ],
       "comment": "#2028: ヴォルクとLIMEを交換する。四度目の来店の「次は、俺のメモも持ってきます」を受ける。面識と♥2の条件は場面カードの置き方（ch3-story-wiring.js の met・heart）。大会後は ch3-aftermath-progress.js の寄り道から。"
+    },
+    "ch4_noor_story_seat_edge": {
+      "seen": [
+        "ch4_noor_meet"
+      ],
+      "comment": "#3081。カフェ・オアシスの段階会話を読んだ後。実行時は ch4-desert-progress.js の既読順で判定。"
+    },
+    "ch4_noor_story_second_cup": {
+      "seen": [
+        "ch4_noor_meet"
+      ],
+      "comment": "#3081。カフェ・オアシスの段階会話を読んだ後。実行時は ch4-desert-progress.js の既読順で判定。"
+    },
+    "ch4_noor_story_map_corner": {
+      "seen": [
+        "ch4_noor_talk2"
+      ],
+      "comment": "#3081。カフェ・オアシスの段階会話を読んだ後。実行時は ch4-desert-progress.js の既読順で判定。"
+    },
+    "ch4_noor_story_water_glass": {
+      "seen": [
+        "ch4_noor_talk2"
+      ],
+      "comment": "#3081。カフェ・オアシスの段階会話を読んだ後。実行時は ch4-desert-progress.js の既読順で判定。"
+    },
+    "ch4_noor_story_tray_order": {
+      "seen": [
+        "ch4_noor_cafe_3"
+      ],
+      "comment": "#3081。カフェ・オアシスの段階会話を読んだ後。実行時は ch4-desert-progress.js の既読順で判定。"
+    },
+    "ch4_noor_story_quiet_counter": {
+      "seen": [
+        "ch4_noor_cafe_3"
+      ],
+      "comment": "#3081。カフェ・オアシスの段階会話を読んだ後。実行時は ch4-desert-progress.js の既読順で判定。"
+    },
+    "ch4_noor_story_empty_chair": {
+      "seen": [
+        "ch4_noor_cafe_3"
+      ],
+      "comment": "#3081。カフェ・オアシスの段階会話を読んだ後。実行時は ch4-desert-progress.js の既読順で判定。"
+    },
+    "ch4_noor_story_board_angle": {
+      "seen": [
+        "ch4_noor_invite"
+      ],
+      "comment": "#3081。カフェ・オアシスの段階会話を読んだ後。実行時は ch4-desert-progress.js の既読順で判定。"
+    },
+    "ch4_noor_story_pencil_line": {
+      "seen": [
+        "ch4_noor_invite"
+      ],
+      "comment": "#3081。カフェ・オアシスの段階会話を読んだ後。実行時は ch4-desert-progress.js の既読順で判定。"
+    },
+    "ch4_noor_story_waiting_wind": {
+      "seen": [
+        "ch4_noor_invite"
+      ],
+      "comment": "#3081。カフェ・オアシスの段階会話を読んだ後。実行時は ch4-desert-progress.js の既読順で判定。"
+    },
+    "ch4_noor_story_pinky_gap": {
+      "seen": [
+        "ch4_noor_bond_question"
+      ],
+      "comment": "#3081。カフェ・オアシスの段階会話を読んだ後。実行時は ch4-desert-progress.js の既読順で判定。"
+    },
+    "ch4_noor_story_father_seat": {
+      "seen": [
+        "ch4_noor_bond_question"
+      ],
+      "comment": "#3081。カフェ・オアシスの段階会話を読んだ後。実行時は ch4-desert-progress.js の既読順で判定。"
+    },
+    "ch4_noor_story_return_mark": {
+      "seen": [
+        "ch4_noor_bond_question"
+      ],
+      "comment": "#3081。カフェ・オアシスの段階会話を読んだ後。実行時は ch4-desert-progress.js の既読順で判定。"
+    },
+    "ch4_noor_story_table_edge": {
+      "seen": [
+        "ch4_noor_cafe_4"
+      ],
+      "comment": "#3081。カフェ・オアシスの段階会話を読んだ後。実行時は ch4-desert-progress.js の既読順で判定。"
+    },
+    "ch4_noor_story_unsaid_question": {
+      "seen": [
+        "ch4_noor_cafe_4"
+      ],
+      "comment": "#3081。カフェ・オアシスの段階会話を読んだ後。実行時は ch4-desert-progress.js の既読順で判定。"
+    },
+    "ch4_noor_story_doorway": {
+      "seen": [
+        "ch4_noor_cafe_4"
+      ],
+      "comment": "#3081。カフェ・オアシスの段階会話を読んだ後。実行時は ch4-desert-progress.js の既読順で判定。"
     }
   },
   "near_conflict": {
