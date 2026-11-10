@@ -105,10 +105,11 @@ export function agehaStoryScene(save, day, dialogues) {
 }
 
 // 通う回とダメな日のあと、MELTY PUFFで一度ずつ（#3081）。小品の巡回には混ぜない。
-// #3089 の白いクマの席とは別の来店。両方が入るときは、rebase で一度きりの列を一つにまとめる。
+// #3091 のグミ・店の言葉のあとに、#3089 の白いクマの席。
 export const AGEHA_LATER_SCENES = Object.freeze([
   { id: "ch1_ageha_gummy_share", flag: "_ageha_gummy_share_done" },
   { id: "ch1_ageha_floor_words", flag: "_ageha_floor_words_done" },
+  { id: "ch1_ageha_bear_seat", flag: "_ageha_bear_seat_done" },
 ]);
 export function agehaLaterScene(save, dialogues) {
   const needed = [...AGEHA_VISITS, AGEHA_BADDAY.id];

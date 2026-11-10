@@ -182,7 +182,7 @@ export async function visitPreparationSpot(spot, { staminaGuard }) {
   const story = id === "ageha" && !first && !pendingFollowup ? agehaStoryScene(state, chapterDayNow, DB.dialogues) : null;
   // あげは: 店に通う回と♥3の質問を読み終えた♥5の次の来店は、いつもの会話の代わりに締めくくり（#2023・一度だけ）。
   if (!finale && id === "ageha" && !first && !pendingFollowup && !story) finale = finaleAtVisit("ageha");
-  // 締めくくりの次の来店から、グミと店の言葉を一度ずつ。小品の前に割り込む（#3081）
+  // 締めくくりの次の来店から、グミ・店の言葉・白いクマの席を一度ずつ。小品の前に割り込む（#3081）
   const later = id === "ageha" && !first && !pendingFollowup && !story && !stage && !finale
     ? agehaLaterScene(state, DB.dialogues) : null;
   const repeat = !first && !followup && !story && !stage && !finale && !later;

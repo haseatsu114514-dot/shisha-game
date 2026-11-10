@@ -390,6 +390,136 @@
           "text": "客の肩の力が抜けたほうへ、もう一度煙を向けた"
         }
       ]
+    },
+    {
+      "dialogue_id": "ch1_ageha_bear_seat",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "昼のMELTY PUFFは、白いクマの隣だけ席が空いていた"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "あげはがカウンターから、手を振った"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "ハジメっち、そこ！ 白いクマの隣、今日は空けといた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "俺が来るの、分かってたんですか"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "分かってないけど、来るかもって思うと、先に空けちゃう"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "あの席、ぼーっとしたい子の席でもあるんだけど"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "今日は、俺が座っていいんですね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "隣に座ると、白いクマの頭が、肩に少し当たった"
+        },
+        {
+          "speaker": "ageha",
+          "face": "serious",
+          "text": "……ねえ、朝、指の感覚、確かめた"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "今日は、ある日"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "ない日は、炭を触る前に分かる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "（震えていた手を、今日は自分から出している）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ある日なら、隣で待ってます"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ない日も、来ます"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "……ハジメっち、ずるい"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "そういうの、断れないじゃん"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "隠すの、もう遅いし、あの日、見られちゃったし"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "座ってるだけでも、いいですか"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "いいよ、言葉になんない日は、座ってて"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "うちの「なんか」、ハジメっちがいると、ちょっとだけ言葉になる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ならない日は、煙のほうを見ます"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "それでいい"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "今日は、ある日の一台、吸ってって"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "白いクマは、そのまま隣に残った"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "あげはは、その席を戻さなかった"
+        }
+      ]
     }
   ]
 }

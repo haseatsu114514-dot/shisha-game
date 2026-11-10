@@ -56,7 +56,7 @@ for (const id of [AGEHA_BADDAY.id, ...AGEHA_VISITS]) {
 }
 assert.equal(agehaStoryScene(save, 9, story), null);
 assert.equal(agehaStoryScene({ flags: {} }, 9, {}), null, "台本が無ければいつもの会話");
-// 通う回とダメな日のあと、グミ→店の言葉の順で一度ずつ（#3081）
+// 通う回とダメな日のあと、グミ→店の言葉→白いクマの席の順で一度ずつ（#3081）
 {
   const later = Object.fromEntries(AGEHA_LATER_SCENES.map((extra) => [extra.id, { lines: [{ speaker: "ageha", text: "a" }] }]));
   assert.equal(agehaLaterScene(save, story), null, "台本が無ければいつもの会話");
@@ -64,10 +64,13 @@ assert.equal(agehaStoryScene({ flags: {} }, 9, {}), null, "台本が無ければ
   const unread = { ...save.flags };
   delete unread[`_ch2_read_${AGEHA_BADDAY.id}`];
   assert.equal(agehaLaterScene({ flags: unread }, later), null, "ダメな日の前には出さない");
-  const afterGummy = { ...save.flags, [AGEHA_LATER_SCENES[0].flag]: true };
-  assert.equal(agehaLaterScene({ flags: afterGummy }, later), AGEHA_LATER_SCENES[1].id);
-  const both = { ...afterGummy, [AGEHA_LATER_SCENES[1].flag]: true };
-  assert.equal(agehaLaterScene({ flags: both }, later), null);
+  let progressed = { ...save.flags };
+  for (const [index, extra] of AGEHA_LATER_SCENES.entries()) {
+    assert.equal(agehaLaterScene({ flags: progressed }, later), extra.id);
+    progressed = { ...progressed, [extra.flag]: true };
+    const next = AGEHA_LATER_SCENES[index + 1];
+    assert.equal(agehaLaterScene({ flags: progressed }, later), next ? next.id : null);
+  }
   const agehaFile = read("data/dialogue/ch1_ageha.json").dialogues;
   for (const extra of AGEHA_LATER_SCENES) {
     const scene = agehaFile.find((d) => d.dialogue_id === extra.id);
