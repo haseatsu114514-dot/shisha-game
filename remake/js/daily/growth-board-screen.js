@@ -4,7 +4,7 @@
 // 参拝の場所で内省した時（place あり）だけ灯せる。メニュー・寝る前から開いた時は見るだけで、目標は決められる（2.8）。
 import { el, sleep } from "../core/util.js";
 import { layers, modal, gainCard } from "../core/ui.js";
-import { SE } from "../core/audio.js";
+import { SE, createGrowthBoardAudio } from "../core/audio.js";
 import { emit, on } from "../core/bus.js";
 import { state, save } from "../core/state.js";
 import { canRespec, prepareRespec, commitRespec } from "../core/growth-respec.js";
@@ -619,8 +619,10 @@ export function openBoard({ place = null } = {}) {
   }
   function light(id) {
     if (!canLight) return;
-    pending = [...pending, id];
-    SE.select?.();
+    const nextPending = replay(g, [...pending, id]).pending;
+    if (pending.includes(id) || !nextPending.includes(id)) return;
+    pending = nextPending;
+    SE.boardLight?.();
     // 仮置きで隣へ自動で進む（6.2 スマホ横の基本操作）: 今取れる隣が1つだけならそれを選ぶ
     const v = view();
     const nexts = NODE_BY_ID[id].links.filter((n) => n !== HUB && status(NODE_BY_ID[n], v) === "available");
@@ -640,8 +642,9 @@ export function openBoard({ place = null } = {}) {
     render();
   }
   function towards(id) {
+    const before = pending.length;
     pending = pendingTowards(g, pending, id);
-    SE.select?.();
+    if (pending.length > before) SE.boardLight?.();
     render();
   }
   async function help() {
@@ -687,6 +690,9 @@ export function openBoard({ place = null } = {}) {
     const before = new Set(original.nodes);
     const committed = commit ? commitPending(pending, owner) : [];
     if (owner === state && (reset || committed.length)) save();
+    if (owner === state && committed.length) SE.boardCommit?.();
+    // 授業の会話が次の曲を選ぶ前に戻す。LOAD中は以前のセーブの曲を復活させない。
+    releaseAudio(owner === state && growthEnabled());
     document.removeEventListener("keydown", onKey, true);
     root.classList.remove("show");
     await sleep(200);
@@ -727,6 +733,7 @@ export function openBoard({ place = null } = {}) {
     setTimeout(() => { fresh.clear(); if (current?.owner === owner && root.isConnected) render(); }, 3200);
   }
   current = { done, owner };
+  const releaseAudio = createGrowthBoardAudio();
   offOwner = on("hud", () => { if (owner !== state || !growthEnabled()) void finish(false); });
   layers.fx.append(root);
   document.addEventListener("keydown", onKey, true);
@@ -772,4 +779,5 @@ async function presentLesson(node) {
   const who = node.who === "sumi" ? "スミさん" : displayName(node.who, state);
   gainCard({ kind: "info", badge: "授", top: "LESSON", main: `${who}に相談できる`, sub: `「${node.name}」。次に${who}に会った時に話を聞こう` });
 }
+
 
