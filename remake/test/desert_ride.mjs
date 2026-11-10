@@ -65,6 +65,19 @@ test("steering has inertia and sand drag; the edge slows the board; dt is capped
   assert(game.z - before < SPEED.max * 0.06);
 });
 
+test("analog steering follows stick deflection while button steering stays at full strength", () => {
+  const course = practiceCourse();
+  const travel = input => {
+    const game = createGame(course);
+    for (let i = 0; i < 18; i++) step(game, input, DT);
+    return game.x;
+  };
+  const half = travel({ steer: 0.5 }), full = travel({ steer: 1 });
+  assert(half > 0 && half < full * 0.6, `half tilt ${half} stays below full tilt ${full}`);
+  assert(Math.abs(full - travel({ right: true })) < 1e-9, "the right button still gives full steering");
+  assert(Math.abs(travel({ steer: -0.5 }) + half) < 1e-9, "left tilt mirrors right tilt");
+});
+
 test("pressing near a bump is a big jump, pressing in the air braces the landing, perfect landings boost", () => {
   const course = generateCourse(DEFAULT_SEED);
   const game = createGame(course);
@@ -479,7 +492,7 @@ test("take-off speed raises big jumps and hops through boost speed, without movi
       assert(game.airPeak > previous, `${kind} gets higher at ${speed}m/s`);
       previous = game.airPeak;
       const expectedTime = kind === "big" ? JUMP.bigAir * (0.85 + 0.3 * Math.min(1, speed / SPEED.max)) : JUMP.hopAir;
-      assert.equal(game.airTotal, expectedTime, "existing airtime and landing timing are preserved");
+      assert.equal(game.airTotal, expectedTime, "the configured airtime applies at take-off");
       assert.equal(jumpHeight(game), 0, "starts on the ground");
       game.air = game.airTotal / 2;
       assert.equal(jumpHeight(game), game.airPeak, "the model trajectory reaches the take-off peak");
@@ -497,6 +510,8 @@ test("take-off speed raises big jumps and hops through boost speed, without movi
   assert.equal(jumpPeak(SPEED.boost * 100), jumpPeak(SPEED.boost));
   assert(jumpPeak(0) > 0, "zero-speed jump stays finite and nonzero");
   assert.equal(jumpPeak(0, "bounce"), jumpPeak(SPEED.boost, "bounce"), "unrequested bump bounce stays small");
+  assert(JUMP.bigAir > 1.22 && JUMP.hopAir > 0.53, "both deliberate jumps stay airborne longer");
+  assert(jumpPeak(SPEED.start) > 2 && jumpPeak(SPEED.start, "hop") > 0.9, "both leave the ground with a stronger arc");
 });
 
 test("rival playback preserves the same speed-based jump height", () => {

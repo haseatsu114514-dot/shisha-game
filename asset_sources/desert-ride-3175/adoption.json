@@ -1,0 +1,45 @@
+{
+  "issue": 3175,
+  "selection": "https://github.com/haseatsu114514-dot/shisha-game/issues/3175",
+  "selected_family": "A",
+  "originals_from": "work/codex-a-sandassets-1111/presentation",
+  "derivative": "WebP quality 88, exact alpha, Lanczos downsample to 400px square controls and 512x560px signs; original selected PNGs retained",
+  "files": {
+    "sign_left_a": {
+      "source": "sign_left_a.png",
+      "runtime": "remake/img/ui/desert_ride_controls/curve_left.webp"
+    },
+    "sign_right_a": {
+      "source": "sign_right_a.png",
+      "runtime": "remake/img/ui/desert_ride_controls/curve_right.webp"
+    },
+    "button_left_a": {
+      "source": "button_left_a.png",
+      "runtime": "remake/img/ui/desert_ride_controls/steer_left.webp"
+    },
+    "button_right_a": {
+      "source": "button_right_a.png",
+      "runtime": "remake/img/ui/desert_ride_controls/steer_right.webp"
+    },
+    "boost_a": {
+      "source": "boost_a.png",
+      "runtime": "remake/img/ui/desert_ride_controls/boost.webp"
+    },
+    "jump_a": {
+      "source": "jump_a.png",
+      "runtime": "remake/img/ui/desert_ride_controls/jump.webp"
+    },
+    "land_a": {
+      "source": "land_a.png",
+      "runtime": "remake/img/ui/desert_ride_controls/land.webp"
+    },
+    "stick_base_a": {
+      "source": "stick_base_a.png",
+      "runtime": "remake/img/ui/desert_ride_controls/stick_base.webp"
+    },
+    "stick_knob_a": {
+      "source": "stick_knob_a.png",
+      "runtime": "remake/img/ui/desert_ride_controls/stick_knob.webp"
+    }
+  }
+}

@@ -33,6 +33,12 @@ const assertSpeedoAligned = async page => {
   assert(Math.abs(boxes.arc - boxes.center) < 1, "arc is centered on the dial background");
   assert(Math.abs(boxes.read - boxes.center) < 1, "speed readout is centered on the dial background");
   assert(Math.abs(boxes.length - boxes.dash) < 0.2, "full gauge uses the actual semicircle length");
+  const rows = await page.evaluate(() => {
+    const rect = selector => document.querySelector(selector).getBoundingClientRect();
+    return { dial: rect(".dr-speedo"), bar: rect(".dr-boost-meter"), clock: rect(".dr-clock"), panel: rect(".dr-hud-right"), quit: rect(".dr-quit") };
+  });
+  assert(rows.dial.bottom <= rows.bar.top && rows.bar.bottom <= rows.clock.top, "dial, boost bar and clock have separate rows");
+  assert(rows.clock.bottom <= rows.panel.bottom && rows.panel.bottom <= rows.quit.top, "clock and quit stay outside each other's bounds");
   const flameLoads = await page.evaluate(() => performance.getEntriesByType("resource").filter(entry => /boost-(aura|burst|spark)\\.webp/.test(entry.name)).length);
   assert.equal(flameLoads, 0, "boost does not load the screen-obscuring flame effects");
 };
@@ -175,6 +181,18 @@ await suite("desert-ride", async check => {
     assert.equal(await page.locator(t("desert-quit")).innerText(), "✕");
     assert(quitBox.width >= 38 && quitBox.height >= 38, `quit is big enough (${quitBox.width}x${quitBox.height})`);
     assert(quitBox.y >= hudRight.y + hudRight.height && quitBox.y + quitBox.height <= jump.y, "quit sits between the HUD and the touch buttons");
+    await page.waitForFunction(() => [...document.querySelectorAll(".dr-touch")].every(button => button.classList.contains("art-ready")));
+    assert.equal(await page.locator(".dr-stick img").count(), 2, "selected stick base and knob are present");
+    const stick = await page.locator(".dr-stick").boundingBox();
+    const cx = stick.x + stick.width / 2, cy = stick.y + stick.height / 2;
+    await page.mouse.move(cx, cy); await page.mouse.down();
+    await page.mouse.move(cx + stick.width * 0.14, cy);
+    const half = Number(await page.locator(".dr-stick").getAttribute("data-value"));
+    await page.mouse.move(cx + stick.width * 0.28, cy);
+    const full = Number(await page.locator(".dr-stick").getAttribute("data-value"));
+    await page.mouse.up();
+    assert(half >= 35 && half <= 65 && full >= 85, `stick gives analog deflection (${half}, ${full})`);
+    assert.equal(await page.locator(".dr-stick").getAttribute("data-value"), "0", "stick centers on release");
     // 右を押している間だけ右へ。離すと入力が消える
     const press = async (box, hold) => {
       await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
