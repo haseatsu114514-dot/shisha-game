@@ -545,6 +545,26 @@ export async function stepPack(cs) {
   const confirm = el("button.btn.primary.pack-confirm", { dataset: { test: "pack-confirm" } }, [
     el("span.btn-label", { text: "この詰め方で決める" }),
   ]);
+  // 詰め込み時も配合で決まった適温帯を見せる（実温度は炭・蒸らし前なので帯のみ。採点は変えない）。
+  // 詰め方は温まり速度だけを変えるので、帯の位置は動かさず、注記で熱の入り方を伝える。
+  const PACK_HEAT = {
+    fluffy: { rate: "熱が早い", note: "過熱に注意" },
+    normal: { rate: "熱は標準", note: "帯は配合どおり" },
+    firm: { rate: "熱が遅い", note: "蒸らし長め" },
+  };
+  const thermometer = buildMixTemperatureGauge(cs, { vertical: true });
+  const idealLine = el("span.mix-ideal");
+  const optimalLine = el("span.mix-optimal");
+  const temperatureHint = el("small", { dataset: { test: "pack-heat-hint" } });
+  const temperaturePreview = el("div.mix-temperature-preview", {
+    hidden: cs.mode === "tutorial",
+    dataset: { test: "pack-temperature-preview" },
+  }, [
+    el("b", { text: "温度帯" }),
+    thermometer.root,
+    el("div.mix-temperature-legend", { "aria-live": "polite" }, [idealLine, optimalLine]),
+    temperatureHint,
+  ]);
   const choices = options.map(option => el("button.pack-choice", {
     type: "button", disabled: !!option.locked, dataset: { test: `opt-${option.value}` },
     onclick: () => { if (option.locked) return; selected = option; SE.select(); draw(); },
@@ -555,12 +575,23 @@ export async function stepPack(cs) {
     vessel.replaceChildren(packingBowlPreview(cs, selected.value));
     caption.replaceChildren(el("b", { text: selected.label }), el("p", { text: selected.desc }));
     choices.forEach((button, i) => button.setAttribute("aria-pressed", String(options[i] === selected)));
+    const bands = thermometer.updateBands();
+    const expressive = bands.expressionWeight >= .999;
+    idealLine.textContent = bands.selected ? expressive ? "おいしい範囲" : "適温の目安" : "未選択";
+    optimalLine.textContent = bands.selected ? expressive ? "低め／高め" : "合わせやすい" : "葉を加えると表示";
+    const heat = PACK_HEAT[selected.value] || PACK_HEAT.normal;
+    temperatureHint.textContent = bands.selected ? `${heat.rate}／${heat.note}` : "上が高温";
+    temperaturePreview.title = bands.selected
+      ? `配合の適温帯。詰め方は温まりの速さだけを変える（${heat.rate}）。炭・蒸らしのあとで実温度を見る`
+      : "配合の適温帯";
+    temperaturePreview.dataset.pack = selected.value;
   }
   panel.append(el("div.packing", [
     el("p.pack-aroma", { dataset: { test: "mix-confirmed-taste" }, text: mixTaste(cs.mix).detail }),
     vessel, caption,
     el("div.pack-choices", { role: "group", "aria-label": "詰め方を見比べる" }, choices),
     el("div.pack-footer", [el("small", { text: "葉の量はそのまま。詰め方を見比べよう" }), confirm]),
+    temperaturePreview,
   ]));
   draw();
   cs.pack = await new Promise(resolve => {

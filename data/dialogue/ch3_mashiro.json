@@ -136,7 +136,7 @@
     {
       "dialogue_id": "ch3_mashiro_practice",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+        "bg": "res://assets/backgrounds/bg_mukai_shop.png"
       },
       "lines": [
         {
@@ -629,6 +629,325 @@
           }
         ]
       }
+    },
+    {
+      "dialogue_id": "ch3_mashiro_leaf_rest",
+      "comment": "#3081。閉店後の練習の続き。葉は押さない。大会には触れない。場所はmukai。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "閉店後のmukai。ましろはボウルの前で、葉を指でつまんだまま止めていた。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "はじめくん。今日は、僕が置くところまで見てて"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "押さないやつ、だよね"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "うん。ふわって、落とすだけ。ぎゅってしないの"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "葉はボウルの縁に触れて、音もなく真ん中へ落ちた。ましろの指は、追わない。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "落ちた形が、今日の形。直すと、息ができなくなるの"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "俺も、やってみる"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "はじめは葉をつまみ、一度力を入れて、またゆるめた。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "……肩、今ゆるんだね。それでいいよぉ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "量は、このままでいい？"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "量は直さない。今日見るのは、落とすときの息だけ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "二枚目も、同じように落ちた。山は低い。押さえの跡はない。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "なんか、軽い"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "軽いのは悪くないよ。はじめくんの葉は、もともとお水みたいだし"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "またそれ言うんだ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "だって、ほんとだもん。重いのが好きなのは、僕の方"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ましろは自分のダークを、別のボウルへ同じ手つきで落とした。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "僕のは重いけど、押し方は同じ。ふわって、で息をするの"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "重くても、押さえないんだ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "うん。押さえた分だけ、煙が細くなる。僕、それ嫌い"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "じゃあ、今日はこの山のまま火を付ける"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "付けていいよぉ。足りなかったら、足すのはそれから"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "炭を置くまでのあいだ、ましろはボウルに手を添えなかった。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "触りたくなるけど、待つ。はじめくんが落とした形を、僕が消さない"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "消さなくていい。このままで吸うよ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "……うん。ふわって置けた日は、それだけで、ちゃんと練習だよぉ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "火を付ける前に、もう一回だけ見るね。形が崩れてないか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "崩れてない。このままでいい"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ましろは頷いて、トングを炭の方へ向けた。はじめは、落とした葉をもう触らなかった。"
+        },
+        {
+          "type": "apply",
+          "affinity": {
+            "mashiro": 2
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_mashiro_bench_tea",
+      "comment": "#3081。mukaiの裏口のベンチ。てつことは既存の看板猫。大会には触れない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "mukaiの裏口。ましろはベンチの端で、紅茶のカップを両手で持っていた。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "はじめくん、こっち。店の中は、もう明かり落としたから"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "てつこ、ましろちゃんの膝だ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "てつこはましろの膝で丸くなり、ムカイさんの方は見ない。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "てつこちゃんは、僕がしゃがむと来るの。それだけ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "俺が座っても、大丈夫？"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "端ならいいよ。真ん中は、てつこちゃんの場所"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "はじめは空いている端に腰を下ろした。ベンチが、小さく鳴る。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "鳴っても、起きない日もある。今日は、耳だけ動かしたね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "お茶、一口もらっていい？"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "うん。煙のあとの口に、紅茶がちょうどいいの"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "カップを渡すとき、ましろは底を自分の掌で一度温めた。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "冷たいまま渡すと、びっくりするから。底だけ、ね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ましろちゃんのと、同じ味？"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "同じ。今日は足さない。ブラックティーの缶は、棚のまま"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "足さない日も、あるんだ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "うん。毎日足したら、足す意味がなくなるでしょ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "てつこが尾を一度だけ動かし、また丸くなった。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "話さなくていい時間も、ここにはあるの。僕、それが好き"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "じゃあ、このまま座ってる"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "……そうしよ。てつこちゃんが降りたら、店に戻ろ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "降りなくても、いいよ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "ふふ。降りない日は、膝が温かいまま。それも、閉店のあと"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "裏口の明かりは、ベンチとカップと、丸まった猫だけを照らしていた。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "はじめくん。次も、この端でいい？　新しい席は、要らないよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "この端でいい。ましろちゃんの隣なら"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "……うん。隣は、もうここにあるから"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "膝の上で丸いままなら、店じまいも、急がなくていい"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "てつこが起きるまで、ここで待とう"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "カップの湯気だけが、二人のあいだで細く立っていた。"
+        },
+        {
+          "type": "apply",
+          "affinity": {
+            "mashiro": 2
+          }
+        }
+      ]
     }
   ]
 }

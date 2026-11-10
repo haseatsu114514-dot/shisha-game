@@ -87,7 +87,10 @@ await suite("ch3-tournament", async check => {
     assert.equal(after.day, before.day);
     assert.equal(after.slot, before.slot);
     assert.deepEqual(p.votes, before.flags._ch3_tournament.votes);
-    assert.deepEqual(p.craft, before.flags._ch3_tournament.craft);
+    // 吸い出しの前の掛け合い（#3060）は読み終えた分だけ制作保存に残る。それ以外の制作記録は変わらない。
+    const beforeStory = before.flags._ch3_tournament.craft.tournamentStory;
+    assert.deepEqual(p.craft.tournamentStory.seen, [...beforeStory.seen, "serve"]);
+    assert.deepEqual({ ...p.craft, tournamentStory: beforeStory }, before.flags._ch3_tournament.craft);
     assert.equal(p.rollback, null);
     assert.equal(after.stamina, before.stamina);
     assert.deepEqual(after.flavorStock, before.flavorStock);

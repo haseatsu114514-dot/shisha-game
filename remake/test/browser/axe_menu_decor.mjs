@@ -59,6 +59,11 @@ await suite("axe-menu-decor", async check => {
   for (const [w, h, touch] of [[1280,720,false],[800,600,false],[390,844,true],[844,390,true],[812,375,true]]) {
     await check(`${w}x${h}-live-controls`, async page => {
       await entrance(page);
+      if (w === 390) {
+        // 縦持ちスマホは本編と同じく横向き案内で止める（2026-11-09 オーナー決定・#3035／試遊ページ共通化 #3076）
+        assert.equal(await page.locator("#rotate-hint").isVisible(), true);
+        return;
+      }
       const before = await storageSnapshot(page);
       const images = await page.evaluate(async () => Promise.all(["menu-walnut-panel", "menu-crossed-axes"].map(async name => {
         const image = new Image(); image.src = `./img/ui/axe_throw/${name}.webp`;

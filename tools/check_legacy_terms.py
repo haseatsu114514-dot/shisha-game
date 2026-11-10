@@ -72,9 +72,6 @@ LEGACY_ERROR_CURRENT = {
     "葉子": "あげはの本名は夜長 千代子（よなが ちよこ）に統一",
     "須井": "千須 豪（せんす ごう）に統一",
     "修二": "会長の本名は千須 豪（せんす ごう）に統一",
-    "伏見": "会長の姓は千須 豪（せんす ごう）に統一（2026-11-10改名）",
-    "伏見豪": "会長の本名は千須 豪（せんす ごう）に統一（2026-11-10改名）",
-    "ふしみ": "せんす（千須 豪）に統一（2026-11-10改名）",
     "ライマン": "スティーブの旧姓。スティーブ・A・アッシュに統一",
     "Steve Lyman": "Steve A. Ash に統一",
     "蒸野": "逢縁 はじめ（あいえん はじめ）に統一",
@@ -131,14 +128,16 @@ IDENTITY_TEXT_EXTENSIONS = EXTENSIONS | {".mjs", ".cjs", ".html", ".css", ".yml"
 # 2026-11-04 追加（#2528）: kuyuri の姓「匂坂（さぎさか）」→「香坂（こうさか）」、suhail の「サイーフ」→「スハイル」。同じく全追跡ファイルで禁止。
 # 同日追加: saku / rei / hiyori の改名。店名「零-ZERO-」と国名「朝霧の王国」、小文字の内部ID・保存キーは維持する。
 # 2026-11-10 追加（オーナー指示「あげはの苗字を夜長に書き換えて」）: ageha の本名の姓「宵永」→「夜長（よなが）」。読み・ローマ字（Yonaga）は同じなので漢字表記だけ禁止する。
+# 2026-11-10 追加（オーナー指示「伏見会長の名前を千須にして　苗字を　せんす　と読む」・#3058 の続き）: sui の姓「伏見（ふしみ）」→「千須（せんす）」。
+#   remake/README.md など走査対象外にも残っていたので全追跡ファイルで禁止する。地名（伏見稲荷・伏見区・伏見桃山など）は許す。
 # 2026-11-07 追加（#2792）: samechan の姓「熱海」→「暑海（あつみ）」。リポジトリ内の出現は全て苗字としての用例だったため、全追跡ファイルでの禁止に含める。
-RENAMED_CHARACTER_RE = re.compile(r"久世|熱海|くぜ さく|朝霧 ?ひより|あさぎり ひより|零-REI-|匂坂|さぎさか|サギサカ|\bSagisaka\b|サイーフ|\bSaif\b|凛(?!とし|々|然|冽|想)|水瀬|白木 ?つむぎ|さぎさか りん|南雲|なぐも しゅうじ|デイビス|Steve Davis|波多野|ラシード|\bRashid\b|アゲハ(?!蝶|チョウ)|路上占い師|\bPak(?:i|ie)\b|サラリーマンさん|宵永")
+RENAMED_CHARACTER_RE = re.compile(r"久世|熱海|くぜ さく|朝霧 ?ひより|あさぎり ひより|零-REI-|匂坂|さぎさか|サギサカ|\bSagisaka\b|サイーフ|\bSaif\b|凛(?!とし|々|然|冽|想)|水瀬|白木 ?つむぎ|さぎさか りん|南雲|なぐも しゅうじ|デイビス|Steve Davis|波多野|ラシード|\bRashid\b|アゲハ(?!蝶|チョウ)|路上占い師|\bPak(?:i|ie)\b|サラリーマンさん|宵永|伏見(?!稲荷|区|桃山|城|港|駅|大社|の酒)|ふしみ|フシミ")
 RENAMED_CHARACTER_FIX = "旧キャラ名 → 綾取 陣（saku）／鴉葬レヰ（rei・本名と店名は維持）／泡沫ひより（hiyori・国名の朝霧は維持）／円頓寺 凛想（rio）／猫洞 つむぎ（tsumugi）／黒葉 ましろ（mashiro）／千須 豪（sui）／スティーブ・A・アッシュ（steve）／暑海 なぎさ（samechan）／ハリール（khalil）／あげは（ageha・本名 夜長 千代子）／辻占のオババ（uranaishi）／Packy（pakki）／鉄仮面さん（salaryman）／ファーリス（faris）に統一（#2474・#2528）"
 MINTO_HAIR_RE = re.compile(r"(?:mint|light)[ -]green (?:hair|twin)|black twin[ -]?tails|ミント(?:グリーン|色)のツイン|黒髪ツインテール|角ツインテール", re.IGNORECASE)
 # 2026-11-04 追加（#2528 残骸チェック）: 改名済みキャラの旧ローマ字。英字は前後が英数字でない時だけ検出する
 # （内部ID kuyuri / sui / maezono / samechan / dr_kemuri の小文字表記・ファイル名は対象外）。
-RENAMED_ROMAJI_RE = re.compile(r"(?<![A-Za-z0-9_])(?:Kuze|KUZE|Asagiri|ASAGIRI|REI|Rin|RIN|Nagumo|NAGUMO|Maezono|MAEZONO|Hatano|HATANO)(?![A-Za-z0-9_])|Dr\.? ?Kemuri")
-RENAMED_ROMAJI_FIX = "旧キャラ名（英字・旧表記） → Ayatori（saku）／Usuba（hiyori）／鴉葬レヰ（rei）／Rio（rio）／Sui（sui）／Uezono（maezono）／Shiomi（samechan）／Dr. Charcoal（dr_kemuri）に統一（#2528）"
+RENAMED_ROMAJI_RE = re.compile(r"(?<![A-Za-z0-9_])(?:Kuze|KUZE|Asagiri|ASAGIRI|REI|Rin|RIN|Nagumo|NAGUMO|Maezono|MAEZONO|Hatano|HATANO|Fushimi|FUSHIMI)(?![A-Za-z0-9_])|Dr\.? ?Kemuri")
+RENAMED_ROMAJI_FIX = "旧キャラ名（英字・旧表記） → Ayatori（saku）／Usuba（hiyori）／鴉葬レヰ（rei）／Rio（rio）／Sui・姓は Sensu（sui）／Uezono（maezono）／Shiomi（samechan）／Dr. Charcoal（dr_kemuri）に統一（#2528）"
 
 
 JSON_STRING_RE = re.compile(r'"(?:[^"\\]|\\.)*"')

@@ -435,7 +435,8 @@ async function drive(owner) {
       const cs = owner.cs;
       playBgm("bgm_tournament_craft");
       // 投票の後、調整に入る合間の掛け合い（#1290）。見た目は commentary と同じ経路で一度だけ。
-      const interlude = p.step === 9 ? "interlude1" : p.step === 10 ? "interlude2" : null;
+      // 作り始める直前（開始前）と吸い出しの前（審査員への提供開始）の掛け合い（#3060）。
+      const interlude = p.step === 0 ? "prestart" : p.step === 8 ? "serve" : p.step === 9 ? "interlude1" : p.step === 10 ? "interlude2" : null;
       if (interlude && !await commentary(owner, interlude)) return;
       const event = TOURNAMENT_STORY_STEPS.get(p.step);
       if (event && !await commentary(owner, event)) return;
@@ -483,6 +484,8 @@ async function drive(owner) {
       owner.cs ||= clone(p.craft);
       playBgm("bgm_judging");
       if (!await commentary(owner, "tasting")) return;
+      // 結果発表前の掛け合い（#3060）。
+      if (!await commentary(owner, "preresult")) return;
       checkpoint("result");
     } else if (p.stage === "votes") { renderVotes(owner); return; }
     else if (p.stage === "result") {

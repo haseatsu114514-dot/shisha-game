@@ -15,6 +15,8 @@ html:root[data-ui-theme="paper"] {
   --vn-lounge-frame: url("../img/ui/paper/dialogue.webp");
   --vn-lounge-narration: url("../img/ui/paper/dialogue.webp");
   --vn-lounge-name: #fff;
+  /* 名前札は左上へ寄せて枠へ自然に接続し、送りマークは右下の煙の装飾から離す（#3100）。 */
+  --vn-name-inset: 58px; --vn-caption-top: -42px; --vn-next-right: 120px;
   --vn-tab-face: var(--lavender-art) center / 256px repeat, #69497e;
   --vn-tab-edge: #69497e; --vn-tab-inner: #c3a9d566; --vn-tab-text: #fff;
   --vn-tab-radius: 8px 8px 3px 3px; --vn-tab-shadow: 0 3px 8px #2a1a3a40;
@@ -73,14 +75,14 @@ html:root[data-ui-theme="paper"] body:not(:root) .vn-box .vn-name {
    名前札と左右で釣り合う位置へ文字だけで並べる。場面の上には何も出さない。
    押せる範囲は44pxのまま、帯の高さ（約30px）の中央に文字を置く。本文は罫線より下から始まるので重ならない。 */
 html:root[data-ui-theme="paper"] body:not(:root) .vn-controls {
-  bottom: calc(var(--vn-dialogue-bottom) + var(--vn-dialogue-height) - 44px);
-  right: calc((1280px - var(--vn-dialogue-width)) / 2 + 44px);
-  width: 300px; height: 44px; padding: 0;
+  bottom: calc(var(--vn-dialogue-bottom) + var(--vn-dialogue-height) - 46px);
+  right: calc((1280px - var(--vn-dialogue-width)) / 2 + 24px);
+  width: 372px; height: 44px; padding: 0;
   background: none; border: 0; border-radius: 0; box-shadow: none;
 }
 html:root[data-ui-theme="paper"] body:not(:root) .vn-controls::before { display: none; }
-html:root[data-ui-theme="paper"] body:not(:root) .vn-controls .vn-ctl { height: 44px; min-height: 44px; color: var(--lavender); font-size: 16px; font-weight: 700; border-radius: 4px; }
-html:root[data-ui-theme="paper"] body:not(:root) .vn-controls .vn-ctl + .vn-ctl::before { top: 16px; bottom: 16px; background: var(--paper-line); opacity: 1; }
+html:root[data-ui-theme="paper"] body:not(:root) .vn-controls .vn-ctl { height: 44px; min-height: 44px; padding: 0 10px; color: var(--lavender); font-size: 22px; font-weight: 700; border-radius: 4px; }
+html:root[data-ui-theme="paper"] body:not(:root) .vn-controls .vn-ctl + .vn-ctl::before { top: 12px; bottom: 12px; background: var(--paper-line); opacity: 1; }
 /* 押せる範囲（44px）は帯より広いので、塗りではなく帯の高さの淡い面と下線で示す。AUTO・SKIP中は琥珀色。 */
 html:root[data-ui-theme="paper"] body:not(:root) .vn-controls .vn-ctl:is(:hover, :focus-visible) {
   color: var(--paper-ink); background: linear-gradient(var(--lavender-soft), var(--lavender-soft)) center / 100% 26px no-repeat;

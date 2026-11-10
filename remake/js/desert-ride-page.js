@@ -2,16 +2,13 @@
 // 自己ベストはこのページだけの localStorage（suien_desert_ride_preview）に残す。
 import { RULES_VERSION } from "./minigames/desert-ride-model.js";
 import { el } from "./core/util.js";
+import { initStageFit } from "./core/stage-fit.js";
 import { runDesertRide } from "./minigames/desert-ride.js";
 
 const KEY = "suien_desert_ride_preview";
 const stage = document.getElementById("stage");
 const app = document.getElementById("desert-app");
-function fit() {
-  const w = window.innerWidth, h = window.innerHeight;
-  stage.style.setProperty("--k", String(Math.min(w / 1280, h / 720)));
-}
-fit(); window.addEventListener("resize", fit);
+initStageFit(stage); // 画面の当て方は本編と同じ共通部品（core/stage-fit.js・#3076）
 const readBest = () => { try { const v = JSON.parse(localStorage.getItem(KEY) || "null"); return v && Number.isFinite(v.score) ? v : null; } catch { return null; } };
 let reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
 function menu(message = "狙いは、S。") {

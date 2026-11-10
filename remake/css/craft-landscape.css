@@ -40,6 +40,14 @@
   body:not(:root) .bench:is([data-step="setup"]:has(> .bench-right > .bench-panel > .opt-grid), [data-step="pack"], [data-step="place"]) .pack-footer > * { flex: 1; min-width: 0; }
   body:not(:root) .bench:is([data-step="setup"]:has(> .bench-right > .bench-panel > .opt-grid), [data-step="pack"], [data-step="place"]) .pack-footer .pack-confirm { min-width: 0; min-height: var(--landscape-target); font-size: calc(16px / var(--k, 1)); }
   body:not(:root) .bench:is([data-step="setup"]:has(> .bench-right > .bench-panel > .opt-grid), [data-step="pack"], [data-step="place"]) :is(.opt,.fr-btn,.pack-choice,.pack-confirm,.mix-footer > .btn,.bench-guide summary):focus-visible { outline: 3px solid var(--gold-hi, #ffe3a7); outline-offset: 2px; }
+
+  /* パッキングの温度帯ゲージは配合と同じくパネル左へはみ出すので、外枠の overflow を外す */
+  body:not(:root) .bench[data-step="pack"] .bench-panel { overflow: visible; }
+  body:not(:root) .bench[data-step="pack"] .packing { overflow: visible; }
+  body:not(:root) .bench[data-step="pack"] .mix-temperature-preview { left: -140px; top: 0; height: min(420px, 100%); padding-bottom: 60px; }
+  body:not(:root) .bench[data-step="pack"] .pack-choices,
+  body:not(:root) .bench[data-step="pack"] .pack-caption { overflow-y: auto; }
+
   /* #2862 詰め方: 選択肢の副文と下の注記は「?」の中へ（ボタンは名前だけで大きく）。 */
   body:not(:root) .bench[data-step="pack"] :is(.pack-choice small, .pack-footer > small) { display: none; }
   body:not(:root) .bench[data-step="pack"] .pack-choice { display: grid; place-items: center; }

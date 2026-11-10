@@ -559,6 +559,7 @@
       "weight": 1.5,
       "timeout": 5,
       "paths": [
+        "remake/js/core/stage-fit.js",
         "remake/js/minigames/desert-ride.js",
         "remake/js/minigames/desert-ride-model.js",
         "remake/js/minigames/desert-ride-art.js",
@@ -848,6 +849,12 @@
       ]
     },
     {
+      "id": "minto-story-visits",
+      "title": "Minto side seat and quiet hello, once each after her visit sequence (#3081)",
+      "kind": "quick",
+      "run": ["node --experimental-vm-modules remake/test/minto_story_visits.mjs"]
+    },
+    {
       "id": "game-logic",
       "title": "Game logic without a browser",
       "kind": "quick",
@@ -880,6 +887,7 @@
         "node --experimental-vm-modules remake/test/craft_fx.mjs",
         "node --experimental-vm-modules remake/test/craft_rival_windows.mjs",
         "node remake/test/mix_temperature.mjs",
+        "node remake/test/packing_temperature.mjs",
         "node remake/test/steam_temperature.mjs",
         "node remake/test/flavor_life.mjs",
         "node remake/test/leaf_carry.mjs",
@@ -1015,6 +1023,7 @@
       "weight": 10.5,
       "timeout": 15,
       "paths": [
+        "remake/js/core/stage-fit.js",
         "remake/js/minigames/**",
         "remake/js/axe-throw-page.js",
         "remake/axe-throw.html",
@@ -1158,6 +1167,7 @@
       "weight": 1,
       "timeout": 15,
       "paths": [
+        "remake/js/core/stage-fit.js",
         "remake/js/craft/water-pour*.js",
         "remake/css/craft-water-pour.css",
         "remake/js/craft/preview.js",
@@ -1517,6 +1527,7 @@
       "weight": 2,
       "timeout": 8,
       "paths": [
+        "remake/js/core/stage-fit.js",
         "remake/js/minigames/camel-race.js",
         "remake/js/minigames/camel-race-model.js",
         "remake/js/chapters/ch4-camel-race.js",
@@ -2598,9 +2609,13 @@
         "remake/test/thermal_background.mjs",
         "remake/test/pull_draw.mjs",
         "remake/test/craft_focus.mjs",
-        "remake/test/browser/mix_temperature.mjs"
+        "remake/test/browser/mix_temperature.mjs",
+        "remake/css/craft-landscape.css",
+        "remake/test/packing_temperature.mjs",
+        "remake/test/browser/packing_temperature.mjs"
       ],
       "run": [
+        "node remake/test/browser/packing_temperature.mjs",
         "node remake/test/browser/mix_temperature.mjs",
         "SHOTS=.codex/artifacts/remake-browser/temperature-regressions node remake/test/thermal_background.mjs",
         "SHOTS=.codex/artifacts/remake-browser/temperature-regressions node remake/test/pull_draw.mjs",
@@ -3875,8 +3890,17 @@
       "kind": "browser",
       "weight": 0.5,
       "timeout": 3,
-      "paths": ["remake/js/main.js", "remake/js/core/ui.js", "remake/css/base.css", "remake/test/browser/stage_fit.mjs"],
+      "paths": ["remake/js/core/stage-fit.js", "remake/js/main.js", "remake/js/core/ui.js", "remake/css/base.css", "remake/test/browser/stage_fit.mjs"],
       "run": ["node remake/test/browser/stage_fit.mjs"]
+    },
+    {
+      "id": "trial-stage-fit-3076",
+      "title": "Trial pages (camel race, axe throw, desert ride, craft preview) use the fixed 1280x720 stage fit with blurred backdrop",
+      "kind": "browser",
+      "weight": 1,
+      "timeout": 5,
+      "paths": ["remake/js/core/stage-fit.js", "remake/js/main.js", "remake/js/core/ui.js", "remake/camel-race.html", "remake/js/camel-race-page.js", "remake/css/camel-race.css", "remake/axe-throw.html", "remake/js/axe-throw-page.js", "remake/css/axe-throw.css", "remake/js/minigames/axe.js", "remake/desert-ride.html", "remake/js/desert-ride-page.js", "remake/craft-preview.html", "remake/js/craft/preview.js", "remake/test/browser/trial_stage_fit.mjs"],
+      "run": ["node remake/test/browser/trial_stage_fit.mjs"]
     },
     {
       "id": "recent-intros",

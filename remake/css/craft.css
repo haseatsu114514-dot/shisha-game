@@ -1,3 +1,4 @@
+/* body:not(:root) は、DS風の廃止（横画面一本化）で外した :not(.game-ds) と同じ詳細度を保つための置き換え。 */
 /* ============================================================
    作業台（シーシャ作り）と大会の演出
    大会中（data-mode="tournament"）は黒×ネオンの「スタイリッシュ職人バトル」。
@@ -1330,6 +1331,13 @@
 
 .bench:is([data-step="pull"], [data-step="care"], [data-step="serve"]) .worker-equipment { right: 104px; bottom: 140px; width: 102px; height: 260px; }
 .mix-temperature-preview:has([data-selected="false"]) > small { display: none; }
+/* パッキングでも配合と同じ左の温度帯ゲージを出す（横画面）。実温度針はまだ無いので帯のみ。 */
+body:not(:root) .bench[data-step="pack"] .packing { position: relative; }
+body:not(:root) .bench[data-step="pack"] .bench-panel { overflow: visible; }
+body:not(:root) .bench[data-step="pack"] .mix-temperature-preview {
+  left: -140px; height: 480px; padding-bottom: 78px; overflow: hidden;
+}
+
 
 /* #2359 CUI08: 入場札と実況を夜紫の面へ。 */
 .entrance { background: #150d22e8; }

@@ -29,7 +29,7 @@ export function dialoguePages(text, inner, textTarget, innerTarget) {
     .map(value => ({ text: value, inner: "" }));
   if (inner) {
     innerTarget.hidden = false;
-    const thoughts = paginateForBox(inner, innerTarget, paginateInner);
+    const thoughts = paginateForBox(inner, innerTarget, paginateInner, 1);
     const last = pages.at(-1);
     last.inner = thoughts[0];
     pages.push(...thoughts.slice(1).map(value => ({ text: last.text, inner: value, continuation: true })));

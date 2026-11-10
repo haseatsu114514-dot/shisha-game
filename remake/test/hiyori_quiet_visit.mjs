@@ -187,6 +187,21 @@ await check('repeat pool rotates four scenes; double entry and deferred completi
   assert.deepEqual(f.plays.map(p=>p[0]),[0,1,2,3].map(n=>`hiyori_shop_repeat_${n}`));
   assert.equal(s.flags._hiyori_repeat_count,4);assert(s.affinity.hiyori>=earned);
 });
+await check('after tonari return, the charm visit plays once and repeats resume',async f=>{
+  const s=f.core.state,p=f.spots.spotById('naru'),story=s.story.hiyori||0;
+  s.flags._hiyori_tonari_return_done=true;
+  f.setPlay(async()=>done);
+  assert.equal(await f.hiyori.visitHiyoriAtShop(p,{scheduledSpot:'naru'}),true);
+  assert.equal(f.plays.at(-1)[0],'hiyori_shop_charm');
+  assert.equal(s.flags._hiyori_charm_done,true);
+  assert.equal(s.flags._hiyori_repeat_count,undefined);
+  assert.equal(s.story.hiyori||0,story);
+  s.day++;delete s.flags._hiyori_encounter_day;
+  assert.equal(await f.hiyori.visitHiyoriAtShop(p,{scheduledSpot:'naru'}),true);
+  assert.equal(f.plays.at(-1)[0],'hiyori_shop_repeat_0');
+  assert.equal(s.flags._hiyori_repeat_count,1);
+  assert.equal(await f.hiyori.visitHiyoriAtShop(p,{scheduledSpot:'naru'}),false);
+});
 await check('multiple host repeats and rain use the same existing scripts in preview and actual visit',async f=>{
   const s=f.core.state,p=host(f,'naru',{read:3,points:20});
   const scripts=[];

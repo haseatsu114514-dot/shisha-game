@@ -93,9 +93,9 @@ const limeMessages = realJSON("../data/lime_messages.json").messages;
 assert.deepEqual(JSON.parse(JSON.stringify(all.DB.lime)), limeMessages);
 assert.equal(new Set(all.DB.lime.map(m => m.id)).size, all.DB.lime.length);
 assert.deepEqual(Array.from(all.DB.lime.slice(-19, -10), m => m.id), [
-  "lime_naru_samechan_nickname", "lime_samechan_preparing_thanks", "lime_samechan_opening",
+  "lime_samechan_opening",
   "lime_outing_samechan_1", "lime_after_outing_samechan", "lime_outing_rio_1", "lime_after_outing_rio",
-  "lime_outing_hiyori_1", "lime_after_outing_hiyori",
+  "lime_outing_hiyori_1", "lime_after_outing_hiyori", "lime_hiyori_charm", "lime_hiyori_peach",
 ]);
 // 第3〜5章の物語のLIME（東京・ドバイ・帰郷後。#2024）は末尾に足した
 assert.deepEqual(Array.from(all.DB.lime.slice(-10), m => m.id), [
@@ -104,7 +104,7 @@ assert.deepEqual(Array.from(all.DB.lime.slice(-10), m => m.id), [
   "lime_ch5_rei_title",
 ]);
 assert.deepEqual(JSON.parse(JSON.stringify(all.DB.limeTemplates)), realJSON("../data/lime_messages.json").templates);
-assert.equal(all.DB.lime.length, 89);
+assert.equal(all.DB.lime.length, 94);
 assert(!all.DB.lime.some(m => m.accept_event === "__hiyori_shop__"));
 assert.equal(all.DB.samechan.lime, undefined);
 assert.equal(all.DB.characters.tsumugi.id, "tsumugi");

@@ -402,7 +402,12 @@ await check('hiyori lover Lv1-5 use the common ladder; the preview is not a stag
   f.stats.bond.private=true;f.stats.gainAffinity('hiyori',30);f.stats.bond.private=false;
   assert.equal(s.loveLevel.hiyori,1,'unread Lv1 must hold the bond');
   f.setPlay(async()=>done);assert.equal(await f.romance.playLoverMilestone('hiyori'),true);
-  assert.equal(s.loverEventsSeen.join(),'lover_hiyori_lv1');assert.equal(s.loveLevel.hiyori,2);
+  assert.equal(s.loverEventsSeen.join(),'lover_hiyori_lv1');
+  assert.equal(s.loveLevel.hiyori,1,'unread lv1_b holds the bond');
+  assert.equal(f.romance.loverMilestoneDue('hiyori'),'lover_hiyori_lv1_b');
+  assert.equal(await f.romance.playLoverMilestone('hiyori'),true);
+  assert.equal(s.loverEventsSeen.join(),'lover_hiyori_lv1,lover_hiyori_lv1_b');
+  assert.equal(s.loveLevel.hiyori,2);
   assert.ok(f.plays.every(([scene])=>!/preview/.test(typeof scene==='string'?scene:scene?.dialogue_id)));
 });
 await check('LOAD during old private scope cannot leak into new public gain or close new private scope',async f=>{
@@ -1084,6 +1089,90 @@ await check('Rio #2025: heart4/5 branch on the ♥3 answer and carry no new roma
   }
 });
 
+await check('Rio #3081: seven story scenes follow the blueberry report, once each, at the showroom', async f => {
+  const scenes = f.spots.RIO_STORY_EXTRAS;
+  assert.deepEqual([...scenes], [
+    'ch1_rio_lot_return', 'ch1_rio_name_blank', 'ch1_rio_unsigned',
+    'ch1_rio_practice_note', 'ch1_rio_strip_spill', 'ch1_rio_tired_nose', 'ch1_rio_recheck',
+  ]);
+  const early = rioAt(f, 6);
+  assert.equal(f.spots.rioStoryExtraDue(), null, 'the blueberry report stays ahead of the new scenes');
+  assert.equal(f.spots.rioBlueberryDue(), true);
+  early.flags._spot_seen_ch1_rio_blueberry_report = true;
+  early.finales.rio = { day: 9, chapter: 1, route: 'friend' };
+  early.flags._friend_rio = true;
+  assert.equal(f.spots.rioStoryExtraDue(), scenes[0]);
+  assert.equal(f.spots.hasNewStory('rio'), true);
+  for (const id of scenes) {
+    f.plays.length = 0;
+    assert.equal(await f.spots.visitChar('rio'), true);
+    assert.deepEqual(sceneIds(f), [id]);
+    assert.equal(f.db.dialogues[id].metadata.bg.includes('bg_fookah_showroom'), true);
+    assert.equal(early.flags[`_spot_seen_${id}`], true);
+  }
+  f.plays.length = 0;
+  assert.equal(f.spots.rioStoryExtraDue(), null);
+  assert.equal(f.spots.hasNewStory('rio'), false);
+  assert.equal(await f.spots.visitChar('rio'), true);
+  assert.equal(sceneIds(f)[0], 'ch1_rio_repeat_b');
+  const cancelled = rioAt(f, 6);
+  cancelled.flags._spot_seen_ch1_rio_blueberry_report = true;
+  cancelled.finales.rio = { day: 9, chapter: 1, route: 'friend' };
+  f.plays.length = 0;
+  f.setPlay(async () => ({ cancelled: true }));
+  assert.equal(await f.spots.visitChar('rio'), false);
+  assert.equal(cancelled.flags._spot_seen_ch1_rio_lot_return, undefined);
+  assert.equal(f.spots.rioStoryExtraDue(), scenes[0]);
+});
+
+
+await check('Tsumugi #3081: five story scenes follow the finale, once each, at tonari', async f => {
+  const scenes = f.spots.TSUMUGI_STORY_EXTRAS;
+  assert.deepEqual([...scenes], [
+    'ch1_tsumugi_one_ear', 'ch1_tsumugi_short_tail',
+    'ch1_tsumugi_window_line', 'ch1_tsumugi_pen_down', 'ch1_tsumugi_low_water',
+  ]);
+  const early = f.fresh();
+  early.met.tsumugi = true;
+  early.story.tsumugi = 6;
+  early.affinity.tsumugi = 90;
+  early.day = 12;
+  early.slot = 0;
+  early.flags._tsumugi_contest_submitted = true;
+  early.flags[f.stages.questionDoneKey('tsumugi')] = true;
+  assert.equal(f.spots.tsumugiStoryExtraDue(), null, 'the finale stays ahead of the new scenes');
+  assert.equal(f.bonds.finaleAtVisit('tsumugi'), false, 'the finale stays a night visit');
+  assert.equal(f.spots.hasNewStory('tsumugi'), false, 'noon before the finale does not offer the extras');
+  early.slot = 1;
+  assert.equal(f.spots.hasNewStory('tsumugi'), true, 'night still offers the finale first');
+  assert.equal(f.spots.tsumugiStoryExtraDue(), null);
+  early.finales.tsumugi = { day: 12, chapter: 1, route: 'friend' };
+  early.flags._friend_tsumugi = true;
+  assert.equal(f.spots.tsumugiStoryExtraDue(), scenes[0]);
+  assert.equal(f.spots.hasNewStory('tsumugi'), true);
+  for (const id of scenes) {
+    f.plays.length = 0;
+    assert.equal(await f.spots.visitChar('tsumugi'), true);
+    assert.deepEqual(sceneIds(f), [id]);
+    assert.equal(String(f.plays[0][1]?.bg || '').includes('bg_tonari_inside'), true);
+    assert.equal(early.flags[`_spot_seen_${id}`], true);
+    assert.equal(f.db.dialogues[id].lines.some(line => line.speaker === 'tsumugi'), true);
+  }
+  f.plays.length = 0;
+  assert.equal(f.spots.tsumugiStoryExtraDue(), null);
+  assert.equal(f.spots.hasNewStory('tsumugi'), false);
+  assert.equal(await f.spots.visitChar('tsumugi'), true);
+  assert.equal(sceneIds(f)[0], 'remake_repeat_tsumugi_1');
+  const cancelled = f.fresh();
+  cancelled.met.tsumugi = true;
+  cancelled.story.tsumugi = 6;
+  cancelled.finales.tsumugi = { day: 12, chapter: 1, route: 'friend' };
+  f.plays.length = 0;
+  f.setPlay(async () => ({ cancelled: true }));
+  assert.equal(await f.spots.visitChar('tsumugi'), false);
+  assert.equal(cancelled.flags._spot_seen_ch1_tsumugi_one_ear, undefined);
+  assert.equal(f.spots.tsumugiStoryExtraDue(), scenes[0]);
+});
 
 await check('Issue #2750: known characters begin at ♥1 and excluded characters never earn hearts', async f => {
   const s = f.core.newGame();
