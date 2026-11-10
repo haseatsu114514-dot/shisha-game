@@ -5,6 +5,11 @@ import { suite } from "./support.mjs";
 const gap = (a, b) => Math.max(b.left - a.right, a.left - b.right, b.top - a.bottom, a.top - b.bottom);
 const within = (child, parent) => child.left >= parent.left - 1 && child.right <= parent.right + 1
   && child.top >= parent.top - 1 && child.bottom <= parent.bottom + 1;
+const safeArea = async (page, device) => {
+  if (device === "desktop") return;
+  const cdp = await page.context().newCDPSession(page);
+  await cdp.send("Emulation.setSafeAreaInsetsOverride", { insets: { left: 59, right: 59, bottom: 21 } });
+};
 
 await suite("phone-layout-1110", async check => {
   for (const [device, viewport] of [
@@ -16,10 +21,7 @@ await suite("phone-layout-1110", async check => {
   ]) {
     const options = { viewport, isMobile: device !== "desktop", hasTouch: device !== "desktop", reducedMotion: "reduce" };
     await check(`${device}-map`, async page => {
-      if (device !== "desktop") {
-        const cdp = await page.context().newCDPSession(page);
-        await cdp.send("Emulation.setSafeAreaInsetsOverride", { insets: { left: 59, right: 59, bottom: 21 } });
-      }
+      await safeArea(page, device);
       await page.evaluate(async () => {
         const core = await import("./js/core/state.js"); core.newGame();
         const hud = await import("./js/daily/hud.js"); hud.initHud({ menu: () => {}, phone: () => {} }); hud.showHud(true);
@@ -41,6 +43,7 @@ await suite("phone-layout-1110", async check => {
     }, options);
 
     if (device.endsWith("bar")) await check(`${device}-options`, async page => {
+      await safeArea(page, device);
       await page.evaluate(async () => {
         localStorage.setItem("suien_step_intro", "off");
         const core = await import("./js/core/state.js"); const state = core.newGame();
@@ -73,6 +76,7 @@ await suite("phone-layout-1110", async check => {
     }, options);
 
     await check(`${device}-craft`, async page => {
+      await safeArea(page, device);
       await page.evaluate(async () => {
         localStorage.setItem("suien_step_intro", "off");
         const core = await import("./js/core/state.js"); core.newGame();

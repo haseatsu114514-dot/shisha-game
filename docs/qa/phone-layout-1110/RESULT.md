@@ -2,7 +2,7 @@
 
 ## Scope and evidence
 
-Base: `origin/main` at `819c3d2ee`, branch `codex/phone-layout-1110`. Chromium/Playwright emulated landscape touch viewports at CSS 852×393 and 932×430, plus 852×340 and 932×377 for Safari chrome reducing visible height. The map cases also emulated 59px left/right and 21px bottom safe insets. Desktop was checked at 1280×720. The 1280×720 stage and blurred side backdrop remain unchanged.
+Reproduced on `origin/main` at `819c3d2ee`; updated onto `origin/main` at `e5fbb838a`, branch `codex/phone-layout-1110`. Chromium/Playwright emulated landscape touch viewports at CSS 852×393 and 932×430, plus 852×340 and 932×377 for Safari chrome reducing visible height. Phone map and craft cases also emulated 59px left/right and 21px bottom safe insets. Desktop was checked at 1280×720. The 1280×720 stage and blurred side backdrop remain unchanged.
 
 Owner photographs: [map](evidence-1-map.jpg), [steam](evidence-2-steaming.jpg), [heat](evidence-3-charcoal.jpg), [packing](evidence-4-packing.jpg). Reproduction was run on current main before changes; the screenshot links below show the fixed version at the tightest 852×340 case. These are browser renderings, not a physical iPhone Safari capture.
 
@@ -23,8 +23,8 @@ The code changes are in one phone layout stylesheet loaded after the existing de
 
 - `phone_layout_1110.mjs`: all 12 map/craft/options cases passed, including 852×340, 932×377, safe area, and desktop. Geometry assertions check card/guide separation, panel containment, text fit, help/control separation, and 38px tap targets.
 - Existing `craft_layout_703.mjs` `layout-touch`, `craft_materials.mjs` `touch-packing` and `touch-foil`: passed.
-- Existing `phone_density.mjs`: 17 phone and goal cases passed. `desktop-unchanged` expects `44px 16px 254px`; current main gives `44px 22px 254px`. Open PR #3107 already corrects this unrelated stale expectation.
-- Existing `conversation_ui.mjs`: `money-choice-reason`, `choice-modal-log-keyboard`, and `keyboard-controls` passed; `paper-safe-area-and-work-costume` timed out waiting for `.portrait.active`, while `desktop` and `landscape` timed out at line 321. No conversation CSS or logic was edited here. These failures need separate follow-up if they persist on main.
+- Existing `phone_density.mjs`: 18/18 passed on the updated main, including `desktop-unchanged` after #3107 merged.
+- Existing `conversation_ui.mjs`: `money-choice-reason` and `choice-modal-log-keyboard` passed. `paper-safe-area-and-work-costume` timed out waiting for `.portrait.active`; `desktop` and `landscape` timed out at line 321. The same three failures occurred with this new CSS emptied, confirming they are outside this change. `keyboard-controls` passed in the CSS-disabled run but failed once in the full CSS-enabled run at line 251; it passed on an isolated retry with the CSS enabled. No conversation CSS or logic was edited.
 - `git diff --check` and browser test syntax/CI suite JSON checked.
 
 No production deployment or physical-device test was performed. The linked captures and automated geometry checks cover the specified Safari-like visible areas; owner verification on the published build remains the final device check.
