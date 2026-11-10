@@ -357,9 +357,22 @@ await suite("ch5-full-flow", async check => {
     });
     await loadSlot(page, 0);
     await mapReady(page, { day: 51, slot: 0 });
-    // 地元の地図の「東京へ（配送便）」: 文字の盾（新幹線の駅の絵・店のロゴは付けない）。説明に決まりを書く。
+    // #3022 のオーナー採用: 行きも帰りも配送便のトラック。新幹線の駅・店のロゴで代用しない。
+    const assertDeliveryPin = async pin => {
+      const target = dt(`pin-${pin}`);
+      const icon = page.locator(`${target} .facility-icon`);
+      assert.equal(await icon.count(), 1, `${pin}: one delivery icon`);
+      assert.equal(await icon.getAttribute("data-facility"), "delivery_truck", `${pin}: not the station icon`);
+      assert.equal(await page.locator(`${target} .store-logo`).count(), 0, `${pin}: not a store logo`);
+      const image = await icon.locator("img").evaluate(async img => {
+        await img.decode();
+        return { src: new URL(img.currentSrc || img.src).pathname, loaded: img.complete && img.naturalWidth > 0 };
+      });
+      assert.match(image.src, /\/assets\/ui\/map-facilities-delivery-truck\.webp$/, `${pin}: the adopted truck art`);
+      assert(image.loaded, `${pin}: the delivery icon decoded`);
+    };
     const toTokyo = dt("pin-ch5_to_tokyo");
-    assert.equal(await page.locator(`${toTokyo} .facility-icon, ${toTokyo} .store-logo`).count(), 0, "The van pin is a plain shield");
+    await assertDeliveryPin("ch5_to_tokyo");
     await page.locator(toTokyo).click();
     assert.equal(await page.locator(".map-info .mi-desc").count(), 0);
     assert(await page.locator(dt("map-go")).isVisible());
@@ -394,6 +407,7 @@ await suite("ch5-full-flow", async check => {
     assert.equal(await club.count(), 1, "Club SEAM is on the night map");
     assert.match(await club.innerText(), /地下の店/); assert.doesNotMatch(await club.innerText(), /SEAM/);
     // 夜: 帰りの配送便は昼だけ（押せない）→ 屋根裏で休んで、翌朝も東京。
+    await assertDeliveryPin("ch5_tokyo_home");
     await page.locator(dt("pin-ch5_tokyo_home")).click();
     assert.match(await page.locator(".map-info").getAttribute("aria-label"), /配送便は昼に出る/);
     assert.equal(await page.locator(dt("map-go")).count(), 0, "No van at night");
@@ -402,6 +416,7 @@ await suite("ch5-full-flow", async check => {
     state = await get(page);
     assert.equal(state.flags._ch2_region, "tokyo", "The night is spent in the attic");
     // 昼: 帰りの配送便 → 夜に地元へ着いて寝る → 翌朝は地元。
+    await assertDeliveryPin("ch5_tokyo_home");
     await go(page, "ch5_tokyo_home");
     await mapReady(page, { day: 54, slot: 0 });
     state = await get(page);
