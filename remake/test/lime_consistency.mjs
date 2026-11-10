@@ -599,6 +599,29 @@ for (const [id, sender, chapter, flag] of [
   assert.equal(phone.deliverMorning(), 1, `${id}: later chapters still deliver`);
 }
 
+// #3081: 水が減るまでいた夜のあと、章を問わず一度だけ届く。
+{
+  const id = "lime_tsumugi_low_water";
+  const message = allMessages.find(m => m.id === id);
+  assert(message, id);
+  const setup = (overrides = {}) => {
+    reset({ chapter: 2, day: 9, contacts: ["tsumugi"], flags: { _spot_seen_ch1_tsumugi_low_water: true }, ...overrides });
+    db.lime = [message];
+  };
+  setup({ flags: {} });
+  assert.equal(phone.deliverMorning(), 0, `${id}: flag required`);
+  setup({ contacts: [] });
+  assert.equal(phone.deliverMorning(), 0, `${id}: contact required`);
+  setup();
+  assert.equal(phone.deliverMorning(), 1, `${id}: deliver when eligible`);
+  assert.equal(state.inbox[0].id, id);
+  assert.equal(phone.deliverMorning(), 0, `${id}: unread is not stacked`);
+  setup({ chapter: 1 });
+  assert.equal(phone.deliverMorning(), 1, `${id}: chapter 1 still delivers`);
+  setup({ chapter: 4 });
+  assert.equal(phone.deliverMorning(), 1, `${id}: later chapters still deliver`);
+}
+
 // #1178 CH2-TF-02/03: 実データの日数指定LIMEを章内日で配信する。
 for (const [id, sender, due] of [
   ["lime_ageha_day3", "ageha", 3],

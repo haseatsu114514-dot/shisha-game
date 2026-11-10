@@ -1126,9 +1126,12 @@ await check('Rio #3081: seven story scenes follow the blueberry report, once eac
 });
 
 
-await check('Tsumugi #3081: two story scenes follow the finale, once each, at tonari', async f => {
+await check('Tsumugi #3081: five story scenes follow the finale, once each, at tonari', async f => {
   const scenes = f.spots.TSUMUGI_STORY_EXTRAS;
-  assert.deepEqual([...scenes], ['ch1_tsumugi_one_ear', 'ch1_tsumugi_short_tail']);
+  assert.deepEqual([...scenes], [
+    'ch1_tsumugi_one_ear', 'ch1_tsumugi_short_tail',
+    'ch1_tsumugi_window_line', 'ch1_tsumugi_pen_down', 'ch1_tsumugi_low_water',
+  ]);
   const early = f.fresh();
   early.met.tsumugi = true;
   early.story.tsumugi = 6;
@@ -1159,7 +1162,7 @@ await check('Tsumugi #3081: two story scenes follow the finale, once each, at to
   assert.equal(f.spots.tsumugiStoryExtraDue(), null);
   assert.equal(f.spots.hasNewStory('tsumugi'), false);
   assert.equal(await f.spots.visitChar('tsumugi'), true);
-  assert.equal(sceneIds(f)[0], 'remake_repeat_tsumugi_2');
+  assert.equal(sceneIds(f)[0], 'remake_repeat_tsumugi_1');
   const cancelled = f.fresh();
   cancelled.met.tsumugi = true;
   cancelled.story.tsumugi = 6;
