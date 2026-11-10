@@ -74,7 +74,7 @@ html:root[data-ui-theme="paper"] body:not(.game-ds) .vn-box .vn-name {
    名前札と左右で釣り合う位置へ文字だけで並べる。場面の上には何も出さない。
    押せる範囲は44pxのまま、帯の高さ（約30px）の中央に文字を置く。本文は罫線より下から始まるので重ならない。 */
 html:root[data-ui-theme="paper"] body:not(.game-ds) .vn-controls {
-  bottom: calc(var(--vn-dialogue-bottom) + var(--vn-dialogue-height) - 38px);
+  bottom: calc(var(--vn-dialogue-bottom) + var(--vn-dialogue-height) - 34px);
   right: calc((1280px - var(--vn-dialogue-width)) / 2 + 36px);
   width: 372px; height: 44px; padding: 0;
   background: none; border: 0; border-radius: 0; box-shadow: none;
