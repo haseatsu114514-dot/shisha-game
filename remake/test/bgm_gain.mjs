@@ -57,8 +57,6 @@ audio.applyVolumes();
 console.log("[BGM gain] PASS: shark track lowered, settings/fades retain gain, other tracks retain their setting, dialogue duck keeps both");
 
 // The board borrows a real media-backed track without losing its gain/duck or reviving retiring media.
-// Poem-silence above leaves bgmVolume at .3; restore the .4 setting the .11 assertion documents (0.4 * 0.55 gain * 0.5 duck).
-config.bgmVolume = .4; audio.applyVolumes();
 audio.playBgm("sweets_or_sweets"); step(1500); audio.duckBgm(.5, 0);
 const releaseBoard = audio.createGrowthBoardAudio(); step(1500);
 assert.equal(audio.currentBgm(), "bgm_growth_board");
