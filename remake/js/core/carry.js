@@ -387,6 +387,7 @@ export const FLAG_EXACT_RULES = [
   ["_lime_contact_kumicho", "person"],
   ["_lime_contact_saku", "person"],
   ["_lime_contact_mashiro", "person"],
+  ["_lime_contact_master_hookah", "person"], // 王煙楼。龍龍水煙所の段階会話で交換する（第4章ドバイ）
   ["_lime_contact_minto", "person"],
   ["_lime_contact_naru", "person"],
   ["_lime_contact_noor", "person"],
