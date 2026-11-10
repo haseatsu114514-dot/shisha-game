@@ -51,6 +51,9 @@ assert.equal(elements[4].muted, true);
 releaseNested();
 assert.equal(elements[4].muted, false);
 assert.equal(elements[4].volume, .3);
+// 詩の無音テストは音量設定を .3 にする。以降の盤BGM復元検査は、直前までの .4 を前提にしている。
+config.bgmVolume = .4;
+audio.applyVolumes();
 console.log("[BGM gain] PASS: shark track lowered, settings/fades retain gain, other tracks retain their setting, dialogue duck keeps both");
 
 // The board borrows a real media-backed track without losing its gain/duck or reviving retiring media.
