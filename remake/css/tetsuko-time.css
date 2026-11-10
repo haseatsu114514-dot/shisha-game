@@ -417,3 +417,22 @@
 @media (prefers-reduced-motion: reduce) {
   .tetsuko-time *, .tetsuko-time::after { animation: none !important; transition: none !important; }
 }
+
+
+/* 触る→気づく→発見の一行。説明書を増やさず、反応の帯で次の一歩を伝える。 */
+.tetsuko-time .tt-trail { margin: 8px 0 0; padding-top: 7px; border-top: 1px dashed var(--tt-amber); color: var(--tt-ink); font-size: max(18px, calc(11.2px / var(--k, 1))); line-height: 1.35; }
+.tetsuko-time .tt-trail[data-photo="true"] { color: var(--tk-tabby-text, #a24a12); font-weight: 800; }
+.tetsuko-time .tt-act.suggested .tt-act-token, .tetsuko-time .tt-tool.suggested { outline: 3px dashed var(--tk-tabby, #f08a2e); outline-offset: 5px; }
+.tetsuko-time .tt-tool.ready { background: var(--tk-cream-2, #fbe7c8); box-shadow: 0 0 0 4px var(--tk-tabby, #f08a2e), var(--tk-drop); }
+.tetsuko-time .tt-seek { font-size: max(22px, calc(11.5px / var(--k, 1))); min-height: max(72px, calc(40px / var(--k, 1))); margin-top: 10px; }
+.tt-yard, .tt-cat { touch-action: none; }
+.tt-cat { transition-duration: var(--travel-ms, 900ms); transition-timing-function: cubic-bezier(.25,.1,.25,1); }
+.tt-cam { transition-duration: var(--travel-ms, 900ms); transition-timing-function: cubic-bezier(.25,.1,.25,1); }
+/* 呼吸の animation が歩行を上書きしない。大きな跳ねではなく、足運びに合わせて小さく揺れる。 */
+.tetsuko-time .tt-cat[data-walk] .tt-cat-frame, .tetsuko-time .tt-cat[data-walk] .tt-cat-pose { animation: tt-soft-step .28s ease-in-out infinite; }
+@keyframes tt-soft-step { 0%, 100% { translate: 0 0; } 50% { translate: 0 -4px; } }
+.tetsuko-time[data-reduced="true"] .tt-cat, .tetsuko-time[data-reduced="true"] .tt-cam { transition: none; }
+.tetsuko-time[data-reduced="true"] .tt-cat-frame, .tetsuko-time[data-reduced="true"] .tt-cat-pose { animation: none; }
+:root .tetsuko-time .tt-seek { padding: 10px 22px; border: 3px solid var(--tk-ink); border-radius: 14px; background: var(--tk-cream); color: var(--tk-ink); box-shadow: var(--tk-drop); }
+.tetsuko-time .tt-detail:has(.tt-seek) .tt-polaroid { width: 150px; padding: 8px 8px 20px; }
+.tetsuko-time .tt-detail:has(.tt-seek) .tt-polaroid .tt-thumb { width: 134px; height: 134px; }
