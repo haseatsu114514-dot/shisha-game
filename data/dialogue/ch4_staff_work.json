@@ -1,0 +1,830 @@
+{
+  "comment": "第4章DAY3予告・DAY4会場準備・DAY9一人への接客と一度の調整・DAY14回収。既存の任意日常、謎の男、恋人の夕方、宿試作とリハーサルは変更しない。現地のスタッフと成人客の言葉は通訳アプリを介した日本語表示。報酬・行動・体力・費用・在庫消費なし。",
+  "dialogues": [
+    {
+      "dialogue_id": "ch4_staff_notice",
+      "comment": "DAY3の既存行動後。翌日の受け渡しを予告し、自由行動を追加消費させない。なるとの通信は場面内の連絡で、LIMEの面識・既読を変更しない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "宿へ戻ると、会場から短い連絡が届いていた。借りる道具の受け渡しについてだ。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "通訳アプリを開き、一行ずつ確かめる。"
+        },
+        {
+          "speaker": "shop_clerk",
+          "face": "",
+          "text": "明日、用事を終えてから共用ブースへ。借りる器具を一緒に確認しましょう"
+        },
+        {
+          "speaker": "shop_clerk",
+          "face": "",
+          "text": "試合で使う台とは別のものです。受け取る前に、継ぎ目を確かめてください"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（番号と、つながる部品。ノートを持っていこう）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "同じ連絡を見たなるからも、短く返事が来ていた。"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "俺も自分の道具を受け取りに行く。向こうで会おう"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "うん。外の用事を済ませてから向かうよ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "受け渡しの場所に印を付け、スマホを充電につないだ。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch4_staff_preparation",
+      "comment": "DAY4の受け渡し。shop_clerkは共用ブースの準備スタッフであり、FESTAや既存カフェの固有人物とは同定しない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "夕方からの用事を終えて、会場の共用ブースへ向かった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "受付の横に、道具の箱が二つ。なるは自分の箱を開け、部品を順番に並べていた。"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "来たな。先に、ちゃんと全部つながるか見てる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "持ってきたのと、口の形が少し違うな"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "輪っか一枚で合う。予備も借りとくよ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スタッフが、薄い輪の入った袋と、貸出用の札を渡してくれた。"
+        },
+        {
+          "speaker": "shop_clerk",
+          "face": "",
+          "text": "使えたら終わりではなく、戻す時にも数を見ます。こちらに名前を"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "言葉は通訳アプリに通した。短い文にすると、スタッフも頷きやすそうだった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "この欄で合ってますか。……はい、受け取りました"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "箱を閉じる横で、スタッフが空の椅子を引いていた。足元の水の箱は、まだ開いていない。"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "もう客を入れる準備もするんですか"
+        },
+        {
+          "speaker": "shop_clerk",
+          "face": "",
+          "text": "はい。この席は、ブースを回る人にも使ってもらいます"
+        },
+        {
+          "speaker": "shop_clerk",
+          "face": "",
+          "text": "座る人が来てからだと、道具と水を一緒に運ぶことになるので"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "受け取るついでに、一つ手伝えます。何を先に確かめましょう"
+        },
+        {
+          "speaker": "shop_clerk",
+          "face": "",
+          "text": "器具の受け渡しか、席と水の段取り。どちらも、確認する人がもう一人いると助かります"
+        },
+        {
+          "type": "choice",
+          "id": "ch4_staff_prep_choice",
+          "text": "先に、どちらを確かめる？",
+          "choices": [
+            {
+              "text": "器具の受け渡しを確かめる",
+              "next": "tools"
+            },
+            {
+              "text": "客席と水の段取りを確かめる",
+              "next": "seats"
+            }
+          ]
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "はじめは借りた箱を棚へ寄せ、邪魔にならない場所に立った。"
+        }
+      ],
+      "branches": {
+        "tools": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "俺は器具の番号を見る。なる、札を読んでもらえる？"
+          },
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "いいよ。合わせ終わったら、俺は水の方へ回る"
+          },
+          {
+            "speaker": "shop_clerk",
+            "face": "",
+            "text": "では、組にした部品が分かるよう、空のトレーを使いましょう"
+          }
+        ],
+        "seats": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "俺は席と水を見る。なる、器具の方をお願い"
+          },
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "分かった。こっちは番号を合わせておく"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "水は、この通路から持ってくるので合ってますか"
+          },
+          {
+            "speaker": "shop_clerk",
+            "face": "",
+            "text": "はい。椅子を一つ引いたままでも、通れる幅を残してください"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "ch4_staff_prepared",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "",
+          "id": "ch4_staff_do_preparation"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スタッフが最後に一周して、札と席を見直した。"
+        },
+        {
+          "speaker": "shop_clerk",
+          "face": "",
+          "text": "これで、来た人を待たせずに始められます"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "俺の店でも、開ける直前はだいたいこんな感じです"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "なる、帰ったらまた店の準備だな"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "そうだな。大会の荷物をほどいたら、店で使う分を戻さないと"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "こっちの予備の置き方は、持って帰りたいな"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スタッフが空のトレーを重ねた。最初より、机の上が広く見える。"
+        }
+      ],
+      "branches": {
+        "tools": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "箱の番号を呼び、なるに札を読んでもらう。似た継ぎ目が一つ、別の組に入っていた。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "これだけ、向こうの組ですね。つながるけど、札が違う"
+          },
+          {
+            "speaker": "shop_clerk",
+            "face": "",
+            "text": "気づいてよかった。戻す時にも、同じ組にしておきましょう"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "部品を入れ替え、輪の予備を小袋にまとめた。なるは水の箱を開けに行った。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "使う分と予備、分け終わりました。札も合っています"
+          }
+        ],
+        "seats": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "椅子を引いたまま、空の盆を持って通路を歩いた。角の席で、少し体を横にする。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "ここだけ狭いですね。椅子を、半分ずらしてもいいですか"
+          },
+          {
+            "speaker": "shop_clerk",
+            "face": "",
+            "text": "お願いします。水を置く台は、手前へ寄せましょう"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "水とグラスを置き、もう一度通った。なるの机では、番号の合った器具が一組ずつ並ぶ。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "今なら、座っている人を立たせずに通れます"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "ch4_staff_notebook",
+      "comment": "作業済みと、このノートを読み終えたことを別checkpointにする。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "借りた道具を抱え直す前に、ノートを開いた。配合の欄の次に、空白がある。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "",
+          "id": "ch4_staff_notebook_entry"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（これは、帰ってからも使う）"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "配合以外も書くようになったな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "忘れると、開ける直前に困りそうなんで"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "ああ。俺も書いた。違う所、帰ったら見せ合おう"
+        },
+        {
+          "speaker": "shop_clerk",
+          "face": "",
+          "text": "またここへ来る時は、声をかけてください。道具はこの棚です"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "棚の札を一度見直してから、なると二人でスタッフに頭を下げた。"
+        }
+      ],
+      "branches": {
+        "tools": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "「使う組と、戻す組を同じに。予備は別の袋」。小さな輪の形も横に描いた。"
+          }
+        ],
+        "seats": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "「椅子を引いたまま、水の盆を持って歩く」。通れなかった角に、小さく印を付けた。"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "ch4_staff_order",
+      "comment": "DAY9。なるやヌールの交流・宿試作・リハーサルを条件にしない。客の注文と調整は自分で選ぶ。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "道具の様子を見に、共用ブースへ寄った。スタッフが、あの棚から一組を取り出している。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "",
+          "id": "ch4_staff_prep_memory"
+        },
+        {
+          "speaker": "shop_clerk",
+          "face": "",
+          "text": "ちょうどよかった。ここで一台、注文を聞いてもらえますか"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "仕事帰りらしい成人の客が、一人で座っていた。スタッフがメニューの説明をしている。"
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "日本から来た人ですか。「和の一台」というのを、頼めますか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい。……どんな味が好きですか"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "通訳アプリの画面を見せると、客が少し考え込んだ。"
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "お茶のような香りを、想像していたんです"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（名前だけだと、同じものを思い浮かべているか分からないな）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "なるは、自分の搬入の確認に出ている。スマホを持ち直し、一つの質問を打った。"
+        },
+        {
+          "type": "choice",
+          "id": "ch4_staff_order_choice",
+          "text": "まず、一つ確かめるなら？",
+          "choices": [
+            {
+              "text": "甘さの好みを聞く",
+              "next": "sweetness"
+            },
+            {
+              "text": "吸い心地の強さを聞く",
+              "next": "strength"
+            }
+          ]
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "お茶の香りを、軽く。甘さは控えめですね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "客が頷いたのを見て、スタッフにも同じ画面を見せた。"
+        },
+        {
+          "speaker": "shop_clerk",
+          "face": "",
+          "text": "ここにある葉と道具を使ってください。まずは、こちらで立ち上げましょう"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "持ってきた配合のノートを開き、茶の葉の欄を指した。店の葉から、客に合う分を量る。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スタッフと仕込んだ一台を客の前に置いた。客は一口吸い、グラスに手を伸ばした。"
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "こういう香りだったんですね。少し、座っていきます"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "しばらくして、空いたグラスを下げに行く。客がホースを置き、アプリの画面を指した。"
+        },
+        {
+          "speaker": "customer",
+          "face": "",
+          "text": "さっきより、香りが細くなった気がします。少し戻せますか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい。一度、炭と吸い心地を確かめます"
+        },
+        {
+          "speaker": "shop_clerk",
+          "face": "",
+          "text": "替えの炭はこちらです。戻したら、同じ質問でもう一度聞いてみてください"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "台を作業机へ戻した。選ぶのは、今の一台に戻す熱だ。"
+        }
+      ],
+      "branches": {
+        "prep_tools": [
+          {
+            "speaker": "shop_clerk",
+            "face": "",
+            "text": "この前、番号を揃えてくれた組です。予備も、あの袋に残っています"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "はい。返す場所も、分かります"
+          }
+        ],
+        "prep_seats": [
+          {
+            "speaker": "shop_clerk",
+            "face": "",
+            "text": "椅子をずらした角の席、今もこのままにしています"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "水の盆を持ったスタッフが、座っている客の後ろを無理なく通った。"
+          }
+        ],
+        "sweetness": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "甘い香りと、甘さ控えめ。どちらが好みですか"
+          },
+          {
+            "speaker": "customer",
+            "face": "",
+            "text": "甘さは控えめがいいです。軽く吸えて、お茶が香ると嬉しい"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "「控えめ」を指で示してもらい、聞き取った内容を短く読み返した。"
+          }
+        ],
+        "strength": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "強い吸い心地と、軽い吸い心地。どちらが好みですか"
+          },
+          {
+            "speaker": "customer",
+            "face": "",
+            "text": "軽い方です。甘すぎず、お茶の香りが分かるくらい"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "「軽い」を指で示してもらい、聞き取った内容を短く読み返した。"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "ch4_staff_returned",
+      "comment": "調整が良い・粗い・失敗のいずれでも、客とスタッフへの引き継ぎまで終えられる。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "",
+          "id": "ch4_staff_service_result"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "空いた道具をスタッフと洗い、部品をそれぞれのトレーへ戻した。"
+        },
+        {
+          "speaker": "shop_clerk",
+          "face": "",
+          "text": "最初の希望と、戻したあとの返事。両方、聞けましたね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい。でも、一回聞けば分かるわけじゃなかったです"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "同じ言葉で、もう一度聞いてよかった"
+        },
+        {
+          "speaker": "shop_clerk",
+          "face": "",
+          "text": "その方が、こちらも手伝えます"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ノートには配合だけでなく、客が指した短い言葉も書いた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（帰ったら、この聞き方も試してみよう）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "部品の数を確認し、最後に空のグラスを棚へ戻した。"
+        }
+      ],
+      "branches": {
+        "good": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "調整した台を戻し、最初に確かめた言葉をもう一度、画面に出した。"
+          },
+          {
+            "speaker": "customer",
+            "face": "",
+            "text": "今は、香りが分かります。これなら、ゆっくり吸えそう"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "客は頷き、ホースを持ち直した。水を足してから、作業机へ戻った。"
+          }
+        ],
+        "rough": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "調整した台を戻し、最初に確かめた言葉をもう一度、画面に出した。"
+          },
+          {
+            "speaker": "customer",
+            "face": "",
+            "text": "さっきとは変わったけど、まだ少し吸いづらいです"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "分かりました。ここからは、スタッフの方にも見てもらいます"
+          },
+          {
+            "speaker": "shop_clerk",
+            "face": "",
+            "text": "はい。仕上げはこちらで。お水を足してもらえますか"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "客の返事をスタッフへ伝え、水を注いだ。整いきらなかった手順も、ノートに残す。"
+          }
+        ],
+        "failed": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "台を戻す前に確かめると、うまく吸える状態ではなくなっていた。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "すみません。作り直しをお願いしてもいいですか"
+          },
+          {
+            "speaker": "shop_clerk",
+            "face": "",
+            "text": "こちらで引き継ぎます。お客さんに、お水をお願いできますか"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "作り直す間の水を運び、客に事情を伝えた。客はグラスを受け取り、椅子に座り直す。"
+          },
+          {
+            "speaker": "customer",
+            "face": "",
+            "text": "待っています。できたら、教えてください"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "下げた台の片づけを引き受けた。ノートのその欄は、できた印にせず残した。"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "ch4_staff_match_echo",
+      "comment": "DAY14の制作中に一度だけ。実際の注文確認と炭操作だけを返し、成績・票・能力は補正しない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "",
+          "id": "ch4_staff_order_memory"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "",
+          "id": "ch4_staff_care_memory"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "",
+          "id": "ch4_staff_rehearsal_memory"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（この一台も、出してから確かめよう）"
+        }
+      ],
+      "branches": {
+        "sweetness": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（共用ブースでは、先に甘さの好みを聞いた）"
+          }
+        ],
+        "strength": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（共用ブースでは、先に吸い心地の強さを聞いた）"
+          }
+        ],
+        "coal_changed": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（あの時は、炭を{coals}個、{coalPlace}に替えた）"
+          }
+        ],
+        "coal_kept": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（あの時は、炭を替えずに整えようとした）"
+          }
+        ],
+        "good": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（戻してからの返事まで、聞いてよかった）"
+          }
+        ],
+        "rough": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（一度戻しても、整いきらなかった。返事を待とう）"
+          }
+        ],
+        "failed": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（あの時は作り直しを頼んだ。分からないまま出さない）"
+          }
+        ],
+        "rehearsal": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（リハーサルでも通した。今日は、今の一台を見よう）"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "ch4_staff_cleanup",
+      "comment": "結果後の短い片づけ。勝敗や審査員への贈り物にしない。旧保存には未体験の面識を足さない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "競技の手を止め、借りた道具を共用ブースへ戻した。あのスタッフが、空のトレーを並べている。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "",
+          "id": "ch4_staff_prep_memory"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "借りた分、ここで合っていますか"
+        },
+        {
+          "speaker": "shop_clerk",
+          "face": "",
+          "text": "はい。数も揃っています。ありがとうございました"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "札を外し、洗って乾かす方の棚へ置いた。ノートに、返した印を一つ付ける。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "帰ったら、店の準備でも使ってみます"
+        },
+        {
+          "speaker": "shop_clerk",
+          "face": "",
+          "text": "そちらの店でも。お元気で"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スタッフに頭を下げ、空いた手でノートを閉じた。"
+        }
+      ],
+      "branches": {
+        "prep_tools": [
+          {
+            "speaker": "shop_clerk",
+            "face": "",
+            "text": "この前みたいに、使った組が分かると助かります"
+          }
+        ],
+        "prep_seats": [
+          {
+            "speaker": "shop_clerk",
+            "face": "",
+            "text": "椅子は、あの幅で最後まで使えました。水も運びやすかったです"
+          }
+        ]
+      }
+    }
+  ]
+}
