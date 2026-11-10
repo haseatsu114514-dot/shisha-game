@@ -3264,6 +3264,71 @@
           "affinity": 1
         }
       ]
+    },
+    {
+      "id": "lime_mashiro_glass_cloth",
+      "sender": "mashiro",
+      "trigger_condition": "flag",
+      "trigger_flag": "_ch3_read_ch3_mashiro_glass_cloth",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "mashiro",
+          "text": "はじめくん。閉店のあと、布巾をカウンターに畳んでおいたよ"
+        },
+        {
+          "sender": "mashiro",
+          "text": "朝、まだ少し湿ってたら、僕が先にいた印だと思って"
+        },
+        {
+          "sender": "mashiro",
+          "text": "乾いてても席は空けてあるから、来た日にお茶をいれるね"
+        },
+        {
+          "sender": "mashiro",
+          "text": "タイマーは端と端。僕の時間は僕が見て、はじめくんのは横で鳴る"
+        },
+        {
+          "sender": "mashiro",
+          "text": "音が鳴っても、話の途中なら葉は置いたままでいいから"
+        },
+        {
+          "sender": "mashiro",
+          "text": "カップの底が冷えてたら、注ぐ前に温めておくね"
+        },
+        {
+          "sender": "mashiro",
+          "text": "味が驚かないように。同じ棚の、別の席のままで"
+        },
+        {
+          "sender": "mashiro",
+          "text": "湯気は混ざらなくていいよ。となりにいるのは、人の方だから"
+        },
+        {
+          "sender": "mashiro",
+          "text": "……急がなくていい。軽い葉も、重いやつも、隣で待ってる"
+        },
+        {
+          "sender": "mashiro",
+          "text": "布巾の横に、はじめくんの印も置いといたよ"
+        },
+        {
+          "sender": "mashiro",
+          "text": "来たときに見つけてね。席は、空けたまま"
+        }
+      ],
+      "replies": [
+        {
+          "text": "湿ってたら、会いに行く",
+          "response": "うん。湿ってる方が、僕は少しうれしいかも",
+          "affinity": 2
+        },
+        {
+          "text": "乾いてても、行くよ",
+          "response": "ふふ。乾いてても、席はあるよ",
+          "affinity": 1
+        }
+      ]
     }
   ]
 }
