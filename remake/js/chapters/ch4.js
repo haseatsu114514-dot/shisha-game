@@ -41,6 +41,8 @@ import { readDialogues, loadStoryRoutes } from "../core/chapter-data.js";
 import { CH4_EVENING_DIALOGUE_FILES, CH4_EVENING_BG, selectChapterFourEvening, chapterFourEveningPartner,
   chapterFourEveningRecord } from "./ch4-story-wiring.js";
 import { CH4_CAMEL_SCENE_FILES, camelSceneBg, visitCamelRace } from "./ch4-camel-race.js";
+import { readChapterFourStaffCheckpoint } from "./ch4-staff-work.js";
+import { CH4_STAFF_IDS } from "./ch4-staff-work-progress.js";
 
 let session = null;
 const current = owner => session === owner && owner.active && owner.state === state;
@@ -107,7 +109,8 @@ async function openChapter(advance) {
     }
     if (!current(owner)) return;
     const progress = chapterFourProgress(state);
-    playBgm("tonari"); // 仮置き: ドバイ専用BGMが無いので既存曲を流用（#1177 で差し替え）
+    // 到着前（日本のプロローグ）は店の曲。到着済み・本編はドバイの仮曲（CH4_DEFAULT_BGM）。
+    playBgm((progress.part !== "prologue" || chapterFourRead(state, "ch4_opening")) ? CH4_DEFAULT_BGM : "tonari");
     if (progress.part === "prologue" && !progress.titleSeen) {
       await setBg(bgUrl(CH4_SCENE_BG[CH4_PROLOGUE[0].id]), { instant: true });
       if (!current(owner)) return;
@@ -522,6 +525,8 @@ async function runTournament(owner) {
   if (!result) { await renderTournament(owner); return; }
   // 最終票は result.rows / result.votes から表示する。勝敗の台本はこの後に読む。
   await showChapterFourCommittedResult(result);
+  if (!current(owner)) return;
+  if (!await readChapterFourStaffCheckpoint(CH4_STAFF_IDS.cleanup, { isCurrent: () => current(owner) })) return;
   if (!current(owner)) return;
   if (chapterFourTournamentOutcome(state) === "win") {
     clearContinueHistory(state);

@@ -272,6 +272,7 @@ function statusTab(choose) {
   // 行をタップした時だけ、何に効くかをここに出す（タップの案内は「?」へ）
   const note = el("p.dm-note", { hidden: true });
   const select = (row, text) => {
+    SE.click();
     row.parentNode.querySelectorAll(".dm-row").forEach((r) => r.classList.toggle("sel", r === row));
     note.textContent = text;
     note.hidden = false;

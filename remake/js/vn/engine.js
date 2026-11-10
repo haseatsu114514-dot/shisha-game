@@ -504,7 +504,7 @@ function next() {
     if (line === undefined) return introThenShow();
     const type = line.type || "";
     if (!type) return introThenShow(line);
-    if (type === "choice") return showChoices(line);
+    if (type === "choice") return introThenShow(line, showChoices);
     if (type === "game_over") return finish();
     if (type === "condition") { if (handleCondition(line)) return; continue; }
     if (type === "jump") { if (!line.next_id) warnVn("jump-missing-next-id", r.currentId || r.id); else if (jumpTo(line.next_id)) return; continue; }
@@ -736,21 +736,21 @@ function queueIntro(cue) {
 }
 
 // 読み進めた時点で、本人の立ち絵と発話を見た紹介だけを出す。
-function introThenShow(line) {
+function introThenShow(line, show = showLine) {
   const r = running;
   const due = r.pendingIntros.filter(({ id, variant }) => r.spoken.has(id) && !state.flags[introSeenKey(id, variant || "")]);
   r.pendingIntros = r.pendingIntros.filter((cue) => !due.includes(cue));
-  if (!due.length) return line ? showLine(line) : finish();
+  if (!due.length) return line ? show(line) : finish();
   if (vnTest.turbo) {
     due.forEach(({ id, variant }) => markIntroSeen(id, variant || ""));
-    return line ? showLine(line) : finish();
+    return line ? show(line) : finish();
   }
   r.ready = false;
   (async () => {
     for (const { id, variant, override } of due) await playIntro(id, { variant, override, onAppear: () => speakerBgm(id) });
     if (running !== r) return;
     r.ready = true;
-    if (line) showLine(line); else finish();
+    if (line) show(line); else finish();
   })();
 }
 
@@ -843,6 +843,11 @@ async function showLine(line) {
   if (!NO_PORTRAIT.has(speaker) && Object.hasOwn(r.slots, speaker)) {
     r.spoken.add(speaker);
     if (needsIntro(speaker)) queueIntro({ id: speaker });
+  }
+  if (line.intro_on_portrait && line.portrait && Object.hasOwn(r.slots, line.portrait)) {
+    markMet(line.portrait);
+    r.spoken.add(line.portrait);
+    if (needsIntro(line.portrait)) queueIntro({ id: line.portrait });
   }
   if (cutinSrc) showCutin(r, cutinCue, cutinSrc);
   renderPage();

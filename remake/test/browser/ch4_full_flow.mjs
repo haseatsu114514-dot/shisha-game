@@ -45,6 +45,7 @@ async function seed(page) {
     // 予告2の自動再生は chapter_preview.mjs が専任で検証する。ここでは既読にして第4章本体に集中する。
     value.flags = { _elapsed_calendar: true, _ch1_cleared: true, _ch2_cleared: true, _ch3_cleared: true,
       _ch3_preview_seen: true, _friend_ageha: true, // あげはの告白（#1930）は友達のままで着地済み
+      _lime_tut: 1, _lime_opened: true, // 第3章クリア済みなら初回LIME案内は済んでいる（ch5_full_flow と同じ）
       _ch3_tournament_won: true, _ch3_japan_first_representative: true,
       _ch3_intro: { startDay: 29, stage: 18, titleSeen: true, routeVersion: 2 },
       _ch3_tournament: { stage: "complete", attempts: 1, voted: 4, history: [{ rank: 1, total: 88 }],
@@ -389,3 +390,6 @@ await suite("ch4-full-flow", async check => {
     assert.equal((await get(page)).money, before.money + 200000, "LOAD must not pay the prize twice");
   }, { reducedMotion: "reduce" });
 });
+
+// ドバイ14日ルートの必須の仕事も、同じCI入口から確認する。
+await import("./ch4_staff_work.mjs");

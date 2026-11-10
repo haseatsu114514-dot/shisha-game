@@ -12,6 +12,9 @@ export const LONGLONG_CHAR = "master_hookah";
 /** 段階を読み終えた後の通い（小会話）。順に巡回する。 */
 export const LONGLONG_TALKS = Object.freeze(["ch4_longlong_visit_b", "ch4_longlong_visit_c"]);
 export const LONGLONG_IDS = Object.freeze([...LONGLONG_VISIT_STORIES.map(entry => entry.scene), ...LONGLONG_TALKS]);
+/** 締めくくり（♥5の次の来店。段階列には入れず、daily/bonds.js から読む）。 */
+export const LONGLONG_FINALE = "ch4_longlong_bond_finale";
+export const LONGLONG_LOAD_IDS = Object.freeze([...LONGLONG_IDS, LONGLONG_FINALE]);
 /** 店の背景は仮置き（龍龍水煙所のドバイの店の絵が無い。届いたらここだけ直す）。 */
 export const LONGLONG_BG = "bg_hideaway";
 

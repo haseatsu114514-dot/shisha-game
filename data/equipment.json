@@ -571,6 +571,30 @@
       }
     },
     {
+      "id": "suyaki_master_hookah",
+      "type": "bowl",
+      "name": "王煙楼が育てたブラックティー専用ハガル",
+      "chapter_min": 99,
+      "buy_price": 0,
+      "sell_price": 0,
+      "price": 0,
+      "value": "suyaki_master_hookah",
+      "description": "王煙楼が旅先の店で、見せるための器ではなく静かな一台を渡すために使い込んだ素焼き。紅茶の葉と少しの木の香りが土まで染み付いている。容量20g。",
+      "capacity": 20,
+      "art": "suyaki_hagal",
+      "not_for_sale": true,
+      "unsellable": true,
+      "gift": {
+        "from": "master_hookah",
+        "reason": "見せ物ではない一台を、残る息に",
+        "flavor": "black_tea",
+        "leaf_grams": 50,
+        "min_grams": 3,
+        "aroma": 4,
+        "bonus": 1
+      }
+    },
+    {
       "id": "kumogama_phunnel",
       "type": "bowl",
       "name": "雲窯ファンネルハガル",
