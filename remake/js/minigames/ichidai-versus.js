@@ -24,17 +24,23 @@ export const VS_LAYOUT = Object.freeze({
 // 登場カットインの人物絵は、頭の高さ280px・顔の中心 (268, 156) にそろえて置かれる（tools/intro_graphic_frames.py）
 const HEAD = [268, 156];
 
-/** ギザギザの折れ線（電撃）。両端は動かさず、あいだの点を線の左右へ振る */
-function jag(x1, y1, x2, y2, amp = 28, step = 46) {
-  const len = Math.hypot(x2 - x1, y2 - y1) || 1, n = Math.max(2, Math.round(len / step)), nx = -(y2 - y1) / len, ny = (x2 - x1) / len;
-  const pts = [];
-  for (let i = 0; i <= n; i++) {
-    const t = i / n, off = i === 0 || i === n ? 0 : (Math.random() * 2 - 1) * amp;
-    pts.push([x1 + (x2 - x1) * t + nx * off, y1 + (y2 - y1) * t + ny * off]);
-  }
-  return pts;
+/**
+ * 稲妻の折れ線。両端は動かさず、あいだを半分に割るたびに中点を線の左右へ振る（割るほど振れ幅を半分に）。
+ * 大きな曲がりと細かいギザギザが両方出て、本物の稲妻らしくなる。disp＝最初の振れ幅、minLen＝これより短くなったら割らない
+ */
+export function bolt(x1, y1, x2, y2, disp = 60, minLen = 12) {
+  const out = [[x1, y1]];
+  const split = (ax, ay, bx, by, d) => {
+    const len = Math.hypot(bx - ax, by - ay);
+    if (len < minLen) { out.push([bx, by]); return; }
+    const off = (Math.random() * 2 - 1) * d, mx = (ax + bx) / 2 - ((by - ay) / len) * off, my = (ay + by) / 2 + ((bx - ax) / len) * off;
+    split(ax, ay, mx, my, d / 2); split(mx, my, bx, by, d / 2);
+  };
+  split(x1, y1, x2, y2, disp);
+  return out;
 }
 const points = (pts) => pts.map(([x, y]) => `${x.toFixed(1)},${y.toFixed(1)}`).join(" ");
+const pick = (list) => list[Math.floor(Math.random() * list.length)];
 
 /**
  * @param host 重ねる要素（1280×720 の物差し）
@@ -63,18 +69,46 @@ export function playVersus({ host, players, speed = 1, signal = null } = {}) {
     ]);
   };
   const bolts = svg("svg", { class: "ichi-vs-bolts", viewBox: "0 0 1280 720", "aria-hidden": "true" });
-  // 1本の電撃＝太い光と細い芯。枝は主の線の途中から短く出る
-  const lines = layout.bolts.map(() => ({ glow: svg("polyline", { class: "is-glow" }), core: svg("polyline", { class: "is-core" }), twigs: [0, 1, 2].map(() => svg("polyline", { class: "is-twig" })) }));
-  for (const l of lines) bolts.append(l.glow, ...l.twigs, l.core);
+  // 1本の電撃＝太い光と細い芯の「主の筋」と、少しずれて走る「副の筋」。枝は主の筋の途中から斜めに分かれる。
+  // まわりに火花が散り、「VS」の文字のまわりにも小さな放電がまとわりつく（2026-11-11 オーナー「稲妻をビリビリさせたい」）
+  const strand = (cls) => ({ glow: svg("polyline", { class: `is-glow ${cls}` }), core: svg("polyline", { class: `is-core ${cls}` }) });
+  const lines = layout.bolts.map(() => ({ main: strand("is-main"), sub: strand("is-sub"), twigs: Array.from({ length: 5 }, () => svg("polyline", { class: "is-twig" })) }));
+  const sparks = Array.from({ length: 18 }, () => svg("line", { class: "is-spark" }));
+  const arcs = layout.mark.map(() => Array.from({ length: 4 }, () => svg("polyline", { class: "is-arc" })));
+  for (const l of lines) bolts.append(l.sub.glow, l.main.glow, ...l.twigs, l.sub.core, l.main.core);
+  bolts.append(...arcs.flat(), ...sparks);
+  const markSize = { 2: 260, 3: 136, 4: 210 }[n] || 200;
   const strike = () => {
+    const along = [];
     layout.bolts.forEach(([x1, y1, x2, y2], k) => {
-      const pts = jag(x1, y1, x2, y2), l = lines[k];
-      l.glow.setAttribute("points", points(pts)); l.core.setAttribute("points", points(pts));
+      const l = lines[k], len = Math.hypot(x2 - x1, y2 - y1), dir = Math.atan2(y2 - y1, x2 - x1);
+      const main = bolt(x1, y1, x2, y2, len * 0.09), sub = bolt(x1 + (Math.random() - 0.5) * 60, y1, x2 + (Math.random() - 0.5) * 60, y2, len * 0.12, 16);
+      l.main.glow.setAttribute("points", points(main)); l.main.core.setAttribute("points", points(main));
+      l.sub.glow.setAttribute("points", points(sub)); l.sub.core.setAttribute("points", points(sub));
+      // 副の筋はときどき消える（明滅）
+      const showSub = Math.random() < 0.7;
+      l.sub.glow.style.opacity = showSub ? "" : "0"; l.sub.core.style.opacity = showSub ? "" : "0";
       for (const twig of l.twigs) {
-        const [sx, sy] = pts[1 + Math.floor(Math.random() * (pts.length - 2))], a = Math.random() * Math.PI * 2, r = 50 + Math.random() * 70;
-        twig.setAttribute("points", points(jag(sx, sy, sx + Math.cos(a) * r, sy + Math.sin(a) * r, 12, 24)));
+        const [sx, sy] = main[1 + Math.floor(Math.random() * (main.length - 2))], a = dir + (Math.random() < 0.5 ? -1 : 1) * (0.35 + Math.random() * 0.9), r = 40 + Math.random() * 150;
+        twig.setAttribute("points", points(bolt(sx, sy, sx + Math.cos(a) * r, sy + Math.sin(a) * r, r * 0.3, 8)));
+        twig.style.opacity = Math.random() < 0.8 ? "" : "0";
+      }
+      along.push(...main);
+    });
+    for (const sp of sparks) {
+      const [x, y] = pick(along), a = Math.random() * Math.PI * 2, r1 = 6 + Math.random() * 18, r2 = r1 + 8 + Math.random() * 26;
+      sp.setAttribute("x1", (x + Math.cos(a) * r1).toFixed(1)); sp.setAttribute("y1", (y + Math.sin(a) * r1).toFixed(1));
+      sp.setAttribute("x2", (x + Math.cos(a) * r2).toFixed(1)); sp.setAttribute("y2", (y + Math.sin(a) * r2).toFixed(1));
+    }
+    layout.mark.forEach(([cx, cy], m) => {
+      for (const arc of arcs[m]) {
+        const a = Math.random() * Math.PI * 2, b = a + (Math.random() < 0.5 ? -1 : 1) * (0.5 + Math.random() * 0.9), rx = markSize * 0.62, ry = markSize * 0.42;
+        arc.setAttribute("points", points(bolt(cx + Math.cos(a) * rx, cy + Math.sin(a) * ry, cx + Math.cos(b) * rx, cy + Math.sin(b) * ry, markSize * 0.18, 7)));
+        arc.style.opacity = Math.random() < 0.75 ? "" : "0";
       }
     });
+    // 全体の明るさも、ちらつかせる（たまに一瞬消える）
+    bolts.style.setProperty("--zap", Math.random() < 0.08 ? "0.15" : (0.72 + Math.random() * 0.28).toFixed(2));
   };
   strike();
   const node = el(`div.ichi-vs.n-${n}${reduced ? ".is-still" : ""}`, { role: "img", "aria-label": `対戦：${list.map((p) => p.name).join(" 対 ")}`, tabindex: "-1", dataset: { test: "ichi-vs", count: String(n) } }, [
@@ -93,11 +127,13 @@ export function playVersus({ host, players, speed = 1, signal = null } = {}) {
     const at = (ms, fn) => timers.push(setTimeout(fn, ms / speed));
     const finish = () => {
       if (done) return; done = true;
-      timers.forEach(clearTimeout); clearInterval(flicker);
+      timers.forEach(clearTimeout); clearTimeout(flicker);
       node.remove(); resolve();
     };
-    // ビリビリ: 電撃の形を短い間隔で引き直す
-    const flicker = reduced ? null : setInterval(strike, 70);
+    // ビリビリ: 電撃の形を、短くて不ぞろいな間隔で引き直す
+    let flicker = 0;
+    const buzz = () => { strike(); flicker = setTimeout(buzz, (28 + Math.random() * 46) / Math.max(1, speed)); };
+    if (!reduced) flicker = setTimeout(buzz, 40);
     node.addEventListener("pointerdown", (e) => { e.preventDefault(); finish(); });
     node.addEventListener("keydown", (e) => { if (["Enter", " ", "Escape"].includes(e.key)) { e.preventDefault(); e.stopPropagation(); finish(); } });
     signal?.addEventListener("abort", finish, { once: true });
@@ -105,7 +141,7 @@ export function playVersus({ host, players, speed = 1, signal = null } = {}) {
     if (reduced) { at(1400, finish); return; }
     sfx("whoosh");
     at(340, () => { node.classList.add("is-clash"); sfx("hit"); sfx("crackle"); });
-    at(700, () => sfx("crackle")); at(1080, () => sfx("crackle")); at(1450, () => sfx("crackle"));
+    for (const t of [620, 900, 1180, 1460, 1720]) at(t, () => { sfx("crackle"); node.classList.remove("is-spark"); void node.offsetWidth; node.classList.add("is-spark"); });
     at(1950, () => node.classList.add("is-out"));
     at(2250, finish);
   });
