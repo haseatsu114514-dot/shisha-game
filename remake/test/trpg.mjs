@@ -514,10 +514,10 @@ test("a full session talks to the story's character, survives a twist and reads 
   }
 });
 
-test("role costumes: 93 origin outfits are keyed, and a built sheet resolves to that character's art", async () => {
+test("role costumes: 95 origin outfits are keyed, and a built sheet resolves to that character's art", async () => {
   const { COSTUME_KEYS, hasCostume, costumeUrl, costumeKey } = await import("../js/trpg/costumes.js");
   const retired = ["リラ", "りら", "かこ", "ナンディ", "チャド", "焚口ショウ", "mystery_girl", "カフカ", "lira", "kako", "nandi", "chad", "takiguchi", "kafka"];
-  assert.equal(COSTUME_KEYS.size, 93);
+  assert.equal(COSTUME_KEYS.size, 95);
   for (const key of COSTUME_KEYS) {
     const [scenarioId, characterId, roleId] = key.split("/");
     assert(scenarioId && characterId && roleId, key);
@@ -540,4 +540,17 @@ test("role costumes: 93 origin outfits are keyed, and a built sheet resolves to 
   for (const [seat, option] of Object.entries(built.companions || {})) {
     assert(hasCostume(apple.id, seat, option.id), apple.id + " " + seat + " " + option.id);
   }
+
+  assert(hasCostume("regular-mail", "sumi", "yura"));
+  assert(hasCostume("regular-mail", "sumi", "neri"));
+  assert.match(costumeUrl("regular-mail", "sumi", "yura"), /\/img\/ui\/trpg\/costumes\/regular-mail\/sumi_yura\.webp$/);
+  // Regular tables restage leaf-mail / ordinary-cup, so those books' costumes still resolve.
+  assert(hasCostume("regular-mail", "hajime", "watch"));
+  assert.match(costumeUrl("regular-mail", "hajime", "watch"), /\/img\/ui\/trpg\/costumes\/leaf-mail\/hajime_watch\.webp$/);
+  assert(hasCostume("regular-harbor", "hajime", "sailor"));
+  assert.match(costumeUrl("regular-harbor", "hajime", "sailor"), /\/img\/ui\/trpg\/costumes\/ordinary-cup\/hajime_sailor\.webp$/);
+
+  const mail = JSON.parse(await readFile(new URL("../../data/dialogue/trpg_regular_mail.json", import.meta.url), "utf8"));
+  const table = new TrpgSession(mail, { profileId: mail.profiles[0].id, seed: 1 });
+  assert(hasCostume(mail.id, "sumi", table.sheets.sumi.option), "regular-mail sumi " + table.sheets.sumi.option);
 });
