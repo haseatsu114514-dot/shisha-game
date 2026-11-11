@@ -4408,6 +4408,12 @@
       "run": ["node remake/test/dubai_bonds.mjs"]
     },
     {
+      "id": "mashiro-time",
+      "title": "Mashiro lover time at mukai: once a day, rotating scenes, date-sized bond, milestones lv1-lv5 reachable (BLC03)",
+      "kind": "quick",
+      "run": ["node remake/test/mashiro_time.mjs"]
+    },
+    {
       "id": "board-notification-visibility-browser",
       "title": "Paper mastery/purchase notices and stable board selection, undo and saved lit markers",
       "kind": "browser",

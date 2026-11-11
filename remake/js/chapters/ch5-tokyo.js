@@ -5,7 +5,9 @@
 // 最初に乗る日は、Dr.fookah の裏口で店員に乗せてもらう話になる（ch5_tokyo_van_first）。
 // 行き先: mukai（手伝い）・Smoke & Glory（スティーブ）・鉄の煙（ヴォルク）・公園・裏口のてつこ・東京の店・屋根裏・地元へ帰る。
 // 第3章の東京と同じく、CHOI-ZAP（会員の時だけ）とクラブSEAM（夜だけ・時間は使わない）にも寄れる（#2033）。
-// ましろ（ヒロイン）は第5章の会話に出さない。綾取は第3章の後に福岡へ戻ったので煙幕は出さない。
+// ましろ（ヒロイン）は第5章の店の会話に出さない。恋人の時だけ、mukai で「ましろちゃんと過ごす（恋人）」を選べる
+// （BLC03・chapters/mashiro-time.js。地元の恋人のデートにあたり、恋人の節目の続きをここで読む）。
+// 綾取は第3章の後に福岡へ戻ったので煙幕は出さない。
 // 台詞は data/dialogue/ch5_tokyo.json（てつこと夜の公園は第3章の場面を使う）。現在地は flags._ch2_region = "tokyo"。
 import { state, save, timeOfDay, markMet } from "../core/state.js";
 import { DB, sceneBg } from "../core/data.js";
@@ -19,18 +21,21 @@ import { tokyoVanBlock, TOKYO_VAN_SLOTS } from "./ch5-travel.js";
 import { openShop } from "../daily/shop.js";
 import { TOKYO_VISIT_COST } from "../daily/spots.js";
 import { modal } from "../core/ui.js";
-import { runMukaiShift, loadMukaiShift, MUKAI_SHIFT_STAMINA } from "./tokyo-mukai.js";
+import { runMukaiShift, loadMukaiShift, MUKAI_SHIFT_STAMINA, MUKAI_PAY } from "./tokyo-mukai.js";
+import { loverMilestonesDue, readLoverMilestone } from "./lover-entry.js";
 import { reflectAt } from "../daily/reflection.js";
 import { TOKYO_OUTINGS, outingDialogueId, outingCounts, OUTINGS_FLAG } from "./ch3-outing-progress.js";
 import { consultLessons } from "../core/growth.js";
 import { keepDailyHud } from "../daily/hud.js";
 import { finaleAtVisit, playFinale } from "../daily/bonds.js";
+import { mashiroTimeOpen, spendMashiroTime, MASHIRO_TIME_FILE, MASHIRO_TIME_SCENES } from "./mashiro-time.js";
 
 export const TOKYO = "tokyo";
 const ATTIC_FLAG = "_ch5_tokyo_attic"; // ムカイさんに屋根裏を貸してもらった（最初の到着の場面を読んだ）
 const VAN_FLAG = "_ch5_tokyo_van"; // Dr.fookah の配送便に乗せてもらう話を読んだ（最初に「東京へ」を選んだ日）
 const HOME_ID = "ch5_tokyo_home";
 const TALKS_FLAG = "_ch5_tokyo_talks"; // 小会話の巡回の回数（人ごと）
+const MASHIRO_TIME_STAMINA = -10; // 第3章の mukai で過ごす時間と同じ（ch3-tokyo-daily.js の readMashiroBond）
 const ATTIC_BG = "bg_mukai_attic"; // ムカイさんの店の上の屋根裏（2026-11-02 採用）。夜は既存の夜の暗転を共用する
 
 // 座標は東京の地図（bg_tokyo_map_*）に対する百分率。第3章の TOKYO_MAP_PLACES と同じ位置。
@@ -111,9 +116,10 @@ async function careForTetsuko(owner) {
 
 let loading = null;
 async function loadTokyoScenes() {
-  if ([...SCENES, ...CH3_SCENES].every(id => DB.dialogues[id]?.lines?.length)) return loadMukaiShift();
-  loading ||= Promise.all([readDialogues("ch5_tokyo", SCENES), readDialogues("ch3_outings", CH3_SCENES), loadMukaiShift().then(() => ({}))])
-    .then(([tokyo, ch3]) => { Object.assign(DB.dialogues, tokyo, ch3); })
+  if ([...SCENES, ...CH3_SCENES, ...MASHIRO_TIME_SCENES].every(id => DB.dialogues[id]?.lines?.length)) return loadMukaiShift();
+  loading ||= Promise.all([readDialogues("ch5_tokyo", SCENES), readDialogues("ch3_outings", CH3_SCENES),
+    readDialogues(MASHIRO_TIME_FILE, MASHIRO_TIME_SCENES), loadMukaiShift().then(() => ({}))])
+    .then(([tokyo, ch3, mashiro]) => { Object.assign(DB.dialogues, tokyo, ch3, mashiro); })
     .catch(error => { loading = null; throw error; });
   await loading;
 }
@@ -199,6 +205,22 @@ export async function performTokyoSpot(spot, { staminaGuard } = {}) {
   }
   if (!spot.talks) return null;
   if (spot.shift) {
+    // 恋人のましろがいる時は、シフトに入るか、二人で過ごすかを選ぶ（BLC03）。恋人でなければ今までどおりシフトだけ。
+    const mashiroMilestoneDue = () => loverMilestonesDue(["mashiro"]).length > 0;
+    if (mashiroTimeOpen(state, { milestoneDue: mashiroMilestoneDue() })) {
+      const pick = await modal({ title: "mukai", className: "tokyo-visit-choice", body: "何をしよう。", options: [
+        { label: "ましろちゃんと過ごす（恋人）", value: "lover", test: "tokyo-mukai-lover", primary: true },
+        { label: `シフトに入る（バイト・日当 ${MUKAI_PAY.toLocaleString("ja-JP")}円）`, value: "shift", test: "tokyo-mukai-shift" },
+        { label: "やめておく", value: null, test: "tokyo-visit-cancel" }] });
+      if (!pick || state !== owner) return { used: false, exerted: false };
+      if (pick === "lover") {
+        if (staminaGuard && !(await staminaGuard(MASHIRO_TIME_STAMINA))) return { used: false, exerted: false };
+        if (!await spendMashiroTime({ read: scene => read(scene, spot.preview, owner), milestoneDue: mashiroMilestoneDue,
+          readMilestone: () => readLoverMilestone("mashiro") }) || state !== owner) return { used: false, exerted: false };
+        addStamina(MASHIRO_TIME_STAMINA);
+        return { used: true, exerted: true };
+      }
+    }
     if (staminaGuard && !(await staminaGuard(spot.stamina))) return { used: false, exerted: false };
     if (!await chapterFiveMukaiShift(owner)) return { used: false, exerted: false };
     await offerTetsuko(owner);
