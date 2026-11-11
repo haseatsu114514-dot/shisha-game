@@ -110,6 +110,8 @@
         { "speaker": "", "face": "", "text": "SHISHARK。水槽の青い光の中で、サメちゃんがグラスを磨いていた。" },
         { "speaker": "samechan", "face": "smile", "text": "おお、お主。世界から戻ったのじゃな" },
         { "speaker": "hajime", "face": "smile", "text": "戻りました。しばらくは、こっちにいます" },
+        { "speaker": "samechan", "face": "normal", "text": "世界一の席の座り心地は、どうじゃ" },
+        { "speaker": "hajime", "face": "normal", "text": "まだ実感がないです。朝になると、いつもの店の掃除をしているので" },
         { "speaker": "samechan", "face": "ventriloquism", "text": "側近も、土産話を待っていたのである" },
         { "speaker": "samechan", "face": "smile", "text": "座るがよい。今日は、海の一台を出そう" }
       ]
@@ -121,6 +123,8 @@
         { "speaker": "samechan", "face": "excited", "text": "来週、路地裏シネマでサメ映画の二本立てなのじゃ！" },
         { "speaker": "hajime", "face": "normal", "text": "二本とも、サメですか" },
         { "speaker": "samechan", "face": "smile", "text": "当然じゃ。一本目で泣いて、二本目で笑うのが通の見方よ" },
+        { "speaker": "hajime", "face": "normal", "text": "二本目は、どんなサメなんですか。笑うほうだと聞きましたけど" },
+        { "speaker": "samechan", "face": "excited", "text": "空を飛ぶのじゃ。理屈は考えてはならぬ、心で観るものよ" },
         { "speaker": "samechan", "face": "ventriloquism", "text": "側近は、一本目で寝るのである" }
       ]
     },
@@ -130,6 +134,9 @@
         { "speaker": "", "face": "", "text": "客の引いたSHISHARK。サメちゃんが、水槽の前でゆっくり煙を吐いていた。" },
         { "speaker": "samechan", "face": "normal", "text": "……世界一になっても、お主は変わらぬのう" },
         { "speaker": "hajime", "face": "normal", "text": "そうですか？" },
+        { "speaker": "samechan", "face": "normal", "text": "ここの客は、肩書きでは座らぬ。お主は、初めて来た日の顔のままじゃ" },
+        { "speaker": "hajime", "face": "smile", "text": "ここの水槽を見ると、落ち着くので" },
+        { "speaker": "samechan", "face": "smile", "text": "魚も毎日同じ水を泳ぐが、飽きぬ。水が澄んでおるからじゃ" },
         { "speaker": "samechan", "face": "smile", "text": "変わらぬのが、よい。この店も、変わらぬように続けるつもりじゃ" }
       ]
     },
