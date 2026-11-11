@@ -6,7 +6,7 @@
 import assert from "node:assert/strict";
 import { createRequire } from "node:module";
 import { FLAVORS, FLAVOR, CARDS, CARD, BOWLS, HMDS, JUDGES, PUFFS, TOURNAMENTS, KITS, TYPE_LABEL, WHEN_LABEL, RARITIES, SERIES_SIZE, numberOf, rarityOf, expandDeck } from "../js/minigames/ichidai-data.js";
-import { RULES, createGame, act, heatOf, coalHeat, leavesOf, firepower, coolStepsOf, slotsOf, scorePuff, judgedHeat, roundsOf, canPlay, impressionOf } from "../js/minigames/ichidai-rules.js";
+import { RULES, createGame, act, heatOf, coalHeat, coalMaxOf, leavesOf, firepower, coolStepsOf, slotsOf, scorePuff, judgedHeat, roundsOf, canPlay, impressionOf } from "../js/minigames/ichidai-rules.js";
 import { aiAct } from "../js/minigames/ichidai-ai.js";
 
 const DOC = createRequire(import.meta.url)("../../docs/design/card_game/cards.js");
@@ -207,7 +207,37 @@ const fake = (over = {}) => ({ bowl: { mango: 6, vanilla: 3 }, main: "mango", bo
   // チャージ＆ドロー: そのターン最初のチャージだけ1枚引く（置かずに引くことはできない）。2回目からのチャージは引かない
   p.zone = [{ id: "flat", up: true }]; p.hand = ["read", "read", "read"]; p.turn.charges = 0;
   ok({ type: "charge", hand: 0 }); assert.deepEqual([heatOf(p), p.hand.length], [3, 3], "1枚置いて1枚引く");
-  ok({ type: "charge", hand: 0 }); assert.deepEqual([heatOf(p), p.hand.length], [4, 2], "2回目のチャージは引かない");
+  assert.deepEqual(act(G, { type: "charge", hand: 0 }), { ok: false, reason: "チャージ＆ドローは1ターンに1回" });
+  // 引かずに置くことはできない: 山札も灰も空なら、チャージできない
+  { const keep = [p.deck, p.ash]; p.turn.charges = 0; p.deck = []; p.ash = [];
+    assert.deepEqual(act(G, { type: "charge", hand: 0 }), { ok: false, reason: "引く札が無いので置けない" }); [p.deck, p.ash] = keep; }
+  // ワンコールリッド（炭1個で回す低温用のHMD）: 置ける炭は2つまで。炭が1つだけのあいだ、冷めない
+  { const hmd = p.hmd; p.hmd = "one_coal"; p.turn.charges = 0;
+    p.zone = [{ id: "cube", up: true }, { id: "flat", up: true }]; p.stove = [{ id: "flat", stage: 2 }];
+    assert.deepEqual([coalMaxOf(p), act(G, { type: "puton", stove: 0 }).reason, act(G, { type: "charge", hand: 0 }).reason], [2, "炭は2つまで", "炭は2つまで"]);
+    p.hmd = hmd; p.stove = []; }
+}
+// 一式d「一つ火の低温型」（ワンコールリッド）: 立ち上げは2枚まで。炭が1つだけなら、自分のターンのはじめに冷めない
+{
+  const G = createGame({ seed: 5, tournament: "open_cloud", first: 0, players: [{ kit: "d" }, { kit: "a", ai: true, level: 1 }] });
+  const p = G.P[0];
+  assert.deepEqual([p.hmd, coalMaxOf(p), coalMaxOf(G.P[1])], ["one_coal", 2, 4]);
+  assert.equal(act(G, { type: "embers", picks: [0, 1, 2] }).ok, false, "ワンコールリッドは、立ち上げの炭も2つまで");
+  assert.equal(act(G, { type: "embers", picks: [0, 1] }).ok, true);
+  for (let n = 0; n < 900 && !(G.phase === "serve" && G.wait.player === 0 && G.wait.type === "main"); n++) assert.ok(act(G, aiAct(G, G.wait.player)).ok);
+  p.zone = [{ id: "cube", up: true }]; p.wind = 0; p.noCool = false;
+  const round = G.round;
+  assert.ok(act(G, { type: "end" }).ok);
+  if (G.wait.type === "discard") assert.ok(act(G, { type: "discard", picks: Array.from({ length: p.hand.length - RULES.handMax }, (_, i) => i) }).ok);
+  for (let n = 0; n < 400 && !G.over && !(G.wait.player === 0 && G.round > round); n++) assert.ok(act(G, aiAct(G, G.wait.player)).ok);
+  assert.deepEqual([G.wait.type, heatOf(p), p.zone.length], ["main", 3, 1], "炭が1つだけなので冷めない（火3のまま、すぐ自分の手番）");
+  assert.ok(G.log.some((l) => /ワンコールリッド：炭が1つだけなので冷めない/.test(l.text)));
+  p.zone.push({ id: "flat", up: true });
+  const r2 = G.round;
+  assert.ok(act(G, { type: "end" }).ok);
+  if (G.wait.type === "discard") assert.ok(act(G, { type: "discard", picks: Array.from({ length: p.hand.length - RULES.handMax }, (_, i) => i) }).ok);
+  for (let n = 0; n < 400 && !G.over && !(G.wait.player === 0 && G.round > r2); n++) assert.ok(act(G, aiAct(G, G.wait.player)).ok);
+  if (!G.over) assert.deepEqual([G.wait.type, G.wait.left], ["cool", 2], "炭が2つあれば、ふつうに冷める");
 }
 // 熱を入れる吸い（帯に入れば印象+1）・内寄せ（このセッションの印象+1）・ブロー（焦げを適温として採点）
 {

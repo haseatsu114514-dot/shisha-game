@@ -12,6 +12,23 @@ import { HIDANE_NAME } from "../core/growth-board-data.js";
 import { hidaneIcon, igniteOn, flyHidane, HIDANE_COLOR, reducedMotion } from "./growth-fx.js";
 
 const KINDS = Object.keys(HIDANE_COLOR);
+
+/**
+ * 札の板と後ろの光の絵（GB04・SBD123）。両方読めた時だけ札に has-art を付ける。読めない時は CSS の形のまま出る。
+ * はじめの一度だけ読み込みを少し待つ（待つのは最大 300ms。その後は読めていれば待たない）。
+ */
+const ART = ["img/ui/growth_board/levelup_plate.webp", "img/ui/growth_board/burst_rays.webp"];
+let art = null, artOk = false;
+function loadArt() {
+  if (typeof Image !== "function") return Promise.resolve(false);
+  art ||= Promise.all(ART.map((src) => new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => resolve(true);
+    img.onerror = () => resolve(false);
+    img.src = src;
+  }))).then((ok) => (artOk = ok.every(Boolean))).catch(() => false);
+  return art;
+}
 const colorName = (kind) => HIDANE_NAME[kind] || HIDANE_NAME.any;
 
 /** 火種の内訳を種類ごとの合計にする（白火・紅火・蒼火・翠火の順）。 */
@@ -92,12 +109,14 @@ function giftBadge(gift) {
 
 async function present(item) {
   const level = item.type === "level", still = reducedMotion();
+  if (!artOk) await Promise.race([loadArt(), sleep(300)]);
+  if (item.owner !== state) return;
   const fires = bigFires(item.parts), got = fireText(item.parts);
   // 火種が増えないレベルアップ（盤の全部のぶんを受け取った後・SBD105）は、理由を一言で
   const none = level && !fires.length ? (item.capped ? "火種は受け取り済み" : "") : "";
   const line = level ? [`LEVEL UP Lv.${item.to}`, got || none].filter(Boolean).join("　") : `${giftFrom(item)}　${got}`;
   const lv = level ? el("strong.lvup-lv", [item.to - item.from > 1 ? el("small", { text: `Lv.${item.from} →` }) : null, el("b", { text: `Lv.${item.to}` })]) : el("strong.lvup-lv", [giftBadge(item)]);
-  const node = el(`div.lvup${level ? "" : ".gift"}${item.milestone ? ".milestone" : ""}${still ? ".still" : ""}`, {
+  const node = el(`div.lvup${level ? "" : ".gift"}${item.milestone ? ".milestone" : ""}${still ? ".still" : ""}${artOk ? ".has-art" : ""}`, {
     role: "status", "aria-label": line,
     dataset: { test: "levelup", kind: item.type, line, ...(level ? { from: String(item.from), to: String(item.to) } : {}) },
   }, [

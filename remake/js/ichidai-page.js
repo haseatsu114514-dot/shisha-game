@@ -24,7 +24,7 @@ function menu(outcome = null) {
     const config = params.has("kit") ? { kit: params.get("kit"), tournament: params.get("tournament") || "practice", level: Number(params.get("level") ?? 1), opponentKit: params.get("foe") || undefined } : null;
     try {
       const result = await runIchidai({ host, config, tutorial, pilot: params.get("pilot"), speed: Number(params.get("speed")) || 1,
-        seed: params.has("seed") ? Number(params.get("seed")) : null, skin, opponent: { id: params.get("face") || "sumi", name: params.get("name") || "スミさん" } });
+        seed: params.has("seed") ? Number(params.get("seed")) : null, skin, opponentKit: params.get("foe"), opponent: { id: params.get("face") || "sumi", name: params.get("name") || "スミさん" } });
       menu(result);
     } catch (error) { console.error(error); menu(null); }
   };
