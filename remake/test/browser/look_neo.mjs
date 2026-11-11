@@ -17,6 +17,9 @@
 //      現行に無い看板の重なりを作らないことを見る。「出発まで」「勝負の日まで」は板の下の札、横持ちスマホは体力と Lv を上下2段。
 //      章ごとに増える MENU の上の帯。第3〜5章の場面カード（行程の札・東京の街の地図を含む）は夜紫の面と金の罫線で、文とボタンは現行と同じ。
 //      現行へ戻すと、場面カードと残り日数の札の計算済みスタイルが最初から現行の時と一致する。
+//  12. ショップ（入口・売り場・問い）・LIME（一覧・トーク・朝の通知）・レベルアップ（全面の札・短い帯）・ギャラリー（一覧・閲覧の帯）:
+//      夜紫の面と金の罫線で、文字（値段・所持・名前・未読・誘いの札・収集率）と押せる大きさは現行と同じ。実際に買える・返信できる・開閉できる。
+//      現行へ戻すと計算済みスタイルが最初から現行の時と一致する。
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import { suite, baseURL } from "./support.mjs";
@@ -1484,6 +1487,364 @@ const GOAL_MAP_PARTS = [["#hud .hud-card", ALL], ["#hud .dc-main", [""]], ["#hud
   ["#hud .hud-stamina", ALL], ["#hud .hud-stamina .hud-bar", [""]], ["#hud .hud-exp", [""]], ["#hud .hx-lv", [""]], ["#hud .hx-bar", ALL],
   ['[data-test="pin-c_station"] .sub-label', [""]], ['[data-test="pin-c_station"] .pin-cost', [""]], ['[data-test="pin-ch5_to_dubai"]', [""]], ['[data-test="pin-ch5_to_dubai"] .shield', ALL]];
 
+// ---------------------------------------------------------------- ショップ・LIME・レベルアップ・ギャラリー（LK05 の残り）
+
+/** 1F ショップを開く（店の入口を経ずに売り場へ）。所持の葉と装備中の機材がある状態。 */
+async function openShopCounter(page, opts = { direct: true }) {
+  await page.evaluate(async (opts) => {
+    const core = await import("./js/core/state.js"), ui = await import("./js/core/ui.js"), hud = await import("./js/daily/hud.js");
+    const s = core.newGame();
+    Object.assign(s, { phase: "daily", chapter: 1, day: 5, slot: 0, money: 12800, stamina: 100 });
+    s.flavorStock = { mint: 15, double_apple: 50, vanilla: 20 }; s.flavors = Object.keys(s.flavorStock);
+    ui.clearScreen(); hud.initHud({}); hud.showHud();
+    window.lookNeoShop = (await import("./js/daily/shop.js")).openShop(opts);
+  }, opts);
+  await page.locator(opts.direct ? ".shop .shop-tabs" : '[data-test="shop-enter"]').waitFor();
+  await page.mouse.move(2, 2);
+  await page.waitForTimeout(400);
+}
+
+/** 売り場を測る（面・タブ・行・数量・下の帯）。 */
+const measureShop = (page) => page.evaluate((helpers) => {
+  const { px, shown, text, rgb } = (0, eval)(helpers);
+  const root = document.querySelector("#screen .shop-paper"), style = getComputedStyle(root);
+  const look = (node) => { const cs = getComputedStyle(node); return { ...px(node), face: cs.backgroundImage, fill: rgb(cs.backgroundColor), ink: rgb(cs.color), frame: cs.borderImageSource }; };
+  const rows = [...root.querySelectorAll(".shop-body .shop-row.product")].filter((row) => row.getBoundingClientRect().top < root.querySelector(".shop-body").getBoundingClientRect().bottom - 30).slice(0, 4);
+  return { look: document.documentElement.dataset.look, rect: px(root), face: style.backgroundImage, ink: rgb(style.color), frame: style.borderImageSource,
+    head: rgb(getComputedStyle(root.querySelector(".shop-head h2")).color), rule: getComputedStyle(root.querySelector(".shop-head")).backgroundImage,
+    money: text(root.querySelector(".shop-money")),
+    tabs: [...root.querySelectorAll(".shop-tab")].map((node) => ({ id: node.dataset.tab, on: node.classList.contains("on"), ...look(node) })),
+    rows: rows.map((row) => ({ name: text(row.querySelector(".shop-main b")), price: text(row.querySelector(".shop-price")), stock: text(row.querySelector(".shop-stock")),
+      art: look(row.querySelector(".shop-product-art")), img: shown(row.querySelector(".shop-product-art img")), name_ink: rgb(getComputedStyle(row.querySelector(".shop-main b")).color),
+      price_ink: rgb(getComputedStyle(row.querySelector(".shop-price")).color), rect: px(row),
+      steps: [...row.querySelectorAll(".shop-step")].map((node) => ({ test: node.dataset.test, ...look(node) })) })),
+    back: look(root.querySelector(".shop-back")), summary: text(root.querySelector(".shop-summary")), checkout: { ...look(root.querySelector(".shop-checkout")), disabled: root.querySelector(".shop-checkout").disabled, label: text(root.querySelector(".shop-checkout")) } };
+}, STAGE_PX);
+
+async function shopScreen(page, { phone }) {
+  await openShopCounter(page);
+  const m = await measureShop(page);
+  // 現行の売り場（紙）と比べるために、同じ状態を現行で測り直す。
+  await setLook(page, "classic");
+  await page.waitForTimeout(300);
+  const classic = await measureShop(page);
+  await setLook(page, "neo");
+  await page.waitForTimeout(300);
+  assert.equal(m.look, "neo");
+  assert(inside(m.rect, STAGE) && m.frame === "none" && m.face.includes("linear-gradient") && m.face.includes("rgba(36, 22, 55"), `ショップは夜紫の面 ${m.face}`);
+  assert(light(m.ink) && light(m.head) && m.rule.includes("227, 189, 110"), "店名は白、見出しの下に金の罫線");
+  assert(!classic.face.includes("rgba(36, 22, 55"), "現行は紙のまま");
+  // 情報（所持金・タブ・商品名・値段・所持数・購入の札）は現行と同じ。
+  assert.equal(m.money, classic.money);
+  assert.deepEqual(m.tabs.map((tab) => tab.id), classic.tabs.map((tab) => tab.id));
+  assert.deepEqual(m.rows.map(({ name, price, stock }) => [name, price, stock]), classic.rows.map(({ name, price, stock }) => [name, price, stock]), "商品名・値段・所持数が現行と同じ");
+  assert.equal(m.summary, classic.summary);
+  // 押せる大きさ（タブ・− ＋・店を出る・購入）は現行以上で、ステージの中。
+  for (const [index, tab] of m.tabs.entries()) {
+    assert(inside(tab, m.rect, 1) && tab.width >= classic.tabs[index].width - 1 && tab.height >= classic.tabs[index].height - 1 && tab.real >= 38, `タブ ${tab.id} の大きさ ${JSON.stringify(tab)}`);
+    assert(tab.on ? !light(tab.ink) && tab.face.includes("linear-gradient") : light(tab.ink), `タブ ${tab.id}: 選んだ売り場は金、ほかは白い字`);
+  }
+  assert(m.rows.length >= 3);
+  for (const [index, row] of m.rows.entries()) {
+    const before = classic.rows[index];
+    assert(light(row.name_ink) && light(row.price_ink), `${row.name}: 商品名と値段は白`);
+    // 商品の絵は生成りの札に載る（明るい台紙向けの絵が暗い面で沈まない）。絵そのものは出ている。
+    assert(light(row.art.fill) && row.img, `${row.name}: 商品の絵の札 ${JSON.stringify(row.art)}`);
+    assert(Math.abs(row.rect.height - before.rect.height) < 1, `${row.name}: 行の高さは現行と同じ`);
+    for (const [k, step] of row.steps.entries()) {
+      assert(step.width >= before.steps[k].width - .5 && step.height >= before.steps[k].height - .5 && step.real >= 38, `${row.name}: ${step.test} の押せる大きさ ${JSON.stringify([step, before.steps[k]])}`);
+      assert(dark(step.fill) || step.fill.slice(0, 3).reduce((a, b) => a + b, 0) < 420, `${row.name}: ${step.test} は夜紫の札 ${step.fill}`);
+    }
+  }
+  for (const key of ["back", "checkout"]) {
+    assert(inside(m[key], m.rect, 1) && m[key].height >= classic[key].height - .5 && m[key].width >= classic[key].width - .5 && m[key].real >= 38, `${key} の押せる大きさ ${JSON.stringify([m[key], classic[key]])}`);
+  }
+  assert(light(m.back.ink) && m.checkout.disabled, "店を出るは白い字、選ぶまで購入は押せない");
+
+  // 実際に選んで買える（＋ → 合計 → 購入）。購入の札は金。
+  const before = await page.evaluate(async () => (await import("./js/core/state.js")).state.money);
+  await press(page, page.locator('[data-test="buy-mint"]'));
+  await press(page, page.locator('[data-test="buy-mint"]'));
+  await page.mouse.move(2, 2);
+  let after = await measureShop(page);
+  assert(!after.checkout.disabled && after.checkout.face.includes("linear-gradient") && !light(after.checkout.ink), `購入の札は金に墨の字 ${JSON.stringify(after.checkout)}`);
+  assert.match(after.checkout.label, /^2箱を購入する/);
+  // 選んだ品の確認（.shop-dialog）もモーダルと同じ夜紫の面。
+  await press(page, page.locator('[data-test="shop-summary"]'));
+  await page.locator("#modal.show .shop-dialog").waitFor();
+  await page.waitForTimeout(350);
+  assertModal(await measureModal(page), "選択した商品", { phone });
+  await press(page, page.locator("#modal .modal-actions button").last());
+  await page.locator("#modal.show").waitFor({ state: "hidden" });
+  // 商品の詳細: 葉の特徴の字と棒が暗い面の上で読める。
+  await press(page, page.locator('[data-test="detail-mint"]'));
+  await page.locator("#modal.show .shop-dialog").waitFor();
+  await page.waitForTimeout(350);
+  assertModal(await measureModal(page), "商品の詳細", { phone });
+  const guide = await page.evaluate(() => {
+    const label = document.querySelector("#modal .flavor-axis-label"), bar = document.querySelector("#modal .flavor-axis-track i"), art = document.querySelector("#modal .shop-detail .shop-product-art");
+    const rgb = (value) => value.match(/[\d.]+/g).slice(0, 3).map(Number);
+    return { label: rgb(getComputedStyle(label).color), bar: rgb(getComputedStyle(bar).backgroundColor), art: rgb(getComputedStyle(art).backgroundColor) };
+  });
+  assert(light(guide.label) && gold(guide.bar) && light(guide.art), `葉の特徴は白い字に金の棒、絵は生成りの札 ${JSON.stringify(guide)}`);
+  await press(page, page.locator('[data-test="shop-detail-close"]'));
+  await page.locator("#modal.show").waitFor({ state: "hidden" });
+  await press(page, page.locator('[data-test="shop-checkout"]'));
+  await page.waitForFunction((before) => window.__remake.state.money < before, before);
+  after = await measureShop(page);
+  assert.equal(after.rows.find((row) => row.name.includes("ミント")).stock, "所持115g", "買った分が所持に入る");
+  // 売り場を移っても同じ面（機材・くじ・売却）。くじの景品の札も夜紫。
+  for (const tab of ["equip", "kuji", "sell"]) {
+    await press(page, page.locator(`.shop-tab[data-tab="${tab}"]`));
+    await page.waitForTimeout(250);
+    const on = await page.locator(`.shop-tab[data-tab="${tab}"]`).evaluate((node) => node.classList.contains("on") && getComputedStyle(node).backgroundImage.includes("linear-gradient"));
+    assert(on, `${tab} の売り場へ移れる`);
+  }
+  await press(page, page.locator('.shop-tab[data-tab="kuji"]'));
+  const lineup = await page.locator(".kuji-lineup-item").first().evaluate((node) => ({ fill: getComputedStyle(node).backgroundColor, ink: getComputedStyle(node.querySelector(".kuji-lineup-name")).color }));
+  assert(light(lineup.ink.match(/[\d.]+/g).slice(0, 3).map(Number)), `くじの景品の名前は白 ${JSON.stringify(lineup)}`);
+  // 店を出る。
+  await press(page, page.locator('[data-test="shop-leave"]'));
+  await page.waitForFunction(() => !document.querySelector("#screen .shop-paper") || document.querySelector("#screen .shop-paper.done"));
+  assert.equal(await page.evaluate(() => window.lookNeoShop.then((r) => r ?? "left")), "left");
+}
+
+/** 店の入口（1F・2F）。写真はそのまま、名前の帯と階の札が夜紫と金。 */
+async function shopEntry(page, { phone }) {
+  await openShopCounter(page, {});
+  const entry = await page.evaluate((helpers) => {
+    const { px, rgb } = (0, eval)(helpers);
+    const root = document.querySelector("#screen .shop-entry");
+    return { face: getComputedStyle(root).backgroundImage, floors: [...root.querySelectorAll(".shop-floor")].map((node) => ({ ...px(node), disabled: node.disabled,
+      caption: rgb(getComputedStyle(node.querySelector(".shop-floor-caption b")).color), photo: px(node.querySelector(".shop-floor-picture img")) })),
+    back: px(root.querySelector(".shop-back")) };
+  }, STAGE_PX);
+  assert(entry.face.includes("rgba(36, 22, 55"), "店の入口も夜紫の面");
+  assert.equal(entry.floors.length, 2);
+  for (const floor of entry.floors) assert(inside(floor, STAGE) && floor.real >= 38 && light(floor.caption) && floor.photo.height > 100, `階の札 ${JSON.stringify(floor)}`);
+  assert(entry.back.real >= 38, "街に戻るが押せる");
+  await press(page, page.locator('[data-test="shop-enter"]'));
+  await page.locator(".shop .shop-tabs").waitFor();
+  await press(page, page.locator('[data-test="shop-leave"]'));
+}
+
+/** LIME: 端末の枠・トーク一覧・トーク・返信の札。 */
+const measureLime = (page) => page.evaluate((helpers) => {
+  const { px, shown, text, rgb } = (0, eval)(helpers);
+  const phone = document.querySelector(".phone"), chat = phone.querySelector(".lime-chat");
+  const look = (node) => node && { ...px(node), fill: rgb(getComputedStyle(node).backgroundColor), face: getComputedStyle(node).backgroundImage, ink: rgb(getComputedStyle(node).color), text: text(node) };
+  return { look: document.documentElement.dataset.look, phone: look(phone), header: look(phone.querySelector(".lime-header")), headerLine: getComputedStyle(phone.querySelector(".lime-header")).borderBottomColor,
+    screen: rgb(getComputedStyle(chat).backgroundColor), screenFace: getComputedStyle(chat).backgroundImage, list: chat.classList.contains("list"),
+    rows: [...chat.querySelectorAll(".lime-chat-row")].map((node) => ({ ...look(node), name: text(node.querySelector(".lcr-name")), nameInk: rgb(getComputedStyle(node.querySelector(".lcr-name")).color), dot: shown(node.querySelector(".lcr-dot")), tag: text(node.querySelector(".lcr-tag")) })),
+    peer: [...chat.querySelectorAll(".lime-row.peer:not(.typing) .lime-bubble")].map(look), me: [...chat.querySelectorAll(".lime-row.me .lime-bubble")].map(look),
+    replies: [...phone.querySelectorAll(".lime-actions .lime-reply")].filter(shown).map((node) => ({ ...look(node), ghost: node.classList.contains("ghost") })) };
+}, STAGE_PX);
+
+/** 地図の状態に、トークを2件（返事を選べる雑談・ふつうの連絡）入れておく。 */
+const seedLime = (page) => page.evaluate(async () => {
+  const core = await import("./js/core/state.js");
+  const item = (id, sender, messages, replies = null) => ({ id, originId: id, day: core.state.day, chapter: core.state.chapter, read: false, done: false,
+    replyState: replies ? "waiting" : "none", log: [], msg: { id, sender, type: "message", messages, ...(replies ? { replies } : {}) } });
+  core.state.inbox.push(
+    item("qa_neo_lime_chat", "tsumugi", ["……昨日の絵、少し描き足しました。", "見てもらえますか。"],
+      [{ text: "もちろん、見たい", response: "……ありがとうございます。" }, { text: "また今度ね", response: "はい。" }]),
+    item("qa_neo_lime_note", "minto", ["今日は新作のフレーバー入ってるよ〜！"]));
+  core.save();
+});
+
+async function limeScreen(page, { phone }) {
+  await openDaily(page);
+  await seedLime(page);
+  await press(page, page.locator('[data-test="hud-phone"]'));
+  await page.locator(".phone-overlay.show .lime-chat.list .lime-chat-row").first().waitFor();
+  await page.waitForTimeout(500);
+  const list = await measureLime(page);
+  await setLook(page, "classic");
+  await page.waitForTimeout(300);
+  const classic = await measureLime(page);
+  await setLook(page, "neo");
+  await page.waitForTimeout(300);
+  assert.equal(list.look, "neo");
+  // 端末とトーク一覧: 夜紫の画面に白い名前。行の並び・未読の点・誘いの札は現行と同じ。
+  assert(inside(list.phone, STAGE) && list.list && dark(list.screen), `トーク一覧の画面は夜紫 ${list.screen}`);
+  assert(list.header.face.includes("46, 29, 69") && light(list.header.ink), `ヘッダーは夜紫に白い字 ${list.header.face}`);
+  assert.equal(list.headerLine, "rgb(33, 178, 78)", "ヘッダーの下の線に LIME の緑を残す");
+  assert.deepEqual(list.rows.map(({ name, dot, tag }) => [name, dot, tag]), classic.rows.map(({ name, dot, tag }) => [name, dot, tag]), "名前・未読の点・誘いの札が現行と同じ");
+  for (const [index, row] of list.rows.entries()) {
+    assert(light(row.nameInk) && dark(row.fill), `${row.name}: 夜紫の行に白い名前`);
+    assert(row.height >= classic.rows[index].height - .5 && row.width >= classic.rows[index].width - .5 && inside(row, list.phone, 1), `${row.name}: 押せる大きさは現行以上 ${JSON.stringify(row)}`);
+  }
+  for (const [index, reply] of list.replies.entries()) assert(reply.height >= classic.replies[index].height - .5 && reply.width >= classic.replies[index].width - .5, `閉じるの大きさは現行以上 ${JSON.stringify(reply)}`);
+  assert(list.replies.some((reply) => reply.ghost && reply.face.includes("linear-gradient")), "スマホを閉じるは LIME の緑のまま");
+
+  // トーク: 相手の吹き出しは夜紫に白い字。返信の札も夜紫（押せる大きさは現行以上）。
+  await press(page, page.locator(".phone-overlay .lime-chat-row", { hasText: "つむぎ" }));
+  await page.locator(".phone-overlay .lime-actions .lime-reply").first().waitFor({ timeout: 15000 });
+  await page.waitForTimeout(600);
+  const talk = await measureLime(page);
+  assert(!talk.list && talk.screenFace.includes("linear-gradient") && talk.peer.length >= 1, "トークの画面");
+  for (const bubble of talk.peer) assert(dark(bubble.fill) && light(bubble.ink) && inside(bubble, talk.phone, 1), `相手の吹き出しは夜紫に白い字 ${JSON.stringify(bubble)}`);
+  const plain = talk.replies.filter((reply) => !reply.ghost);
+  assert(plain.length >= 1);
+  for (const reply of plain) assert(dark(reply.fill) && light(reply.ink) && inside(reply, talk.phone, 1), `返信の札 ${JSON.stringify(reply)}`);
+  await setLook(page, "classic");
+  await page.waitForTimeout(300);
+  const talkClassic = await measureLime(page);
+  await setLook(page, "neo");
+  await page.waitForTimeout(300);
+  assert.deepEqual(talk.peer.map((bubble) => bubble.text), talkClassic.peer.map((bubble) => bubble.text), "吹き出しの文は現行と同じ");
+  assert.deepEqual(talk.replies.map((reply) => reply.text), talkClassic.replies.map((reply) => reply.text), "返信の札は現行と同じ");
+  for (const [index, reply] of talk.replies.entries()) assert(reply.height >= talkClassic.replies[index].height - .5 && reply.width >= talkClassic.replies[index].width - .5, `返信の札の大きさは現行以上 ${JSON.stringify([reply, talkClassic.replies[index]])}`);
+  // 返信して自分の吹き出しが出る（ラベンダーに墨の字）。
+  await press(page, page.locator(".phone-overlay .lime-reply:not(.ghost)", { hasText: "もちろん、見たい" }));
+  await page.locator(".phone-overlay .lime-row.me .lime-bubble, .phone-overlay .lime-note").first().waitFor({ timeout: 15000 });
+  await page.waitForTimeout(800);
+  const replied = await measureLime(page);
+  assert(replied.me.length >= 1, "自分の吹き出しが出る");
+  for (const bubble of replied.me) assert(!light(bubble.ink) && light(bubble.fill), `自分の吹き出しはラベンダーに墨の字 ${JSON.stringify(bubble)}`);
+  await press(page, page.locator(".phone-overlay .lime-back").first()).catch(() => {});
+  await page.locator(".phone-overlay .lime-chat.list").waitFor({ timeout: 15000 });
+  await press(page, page.locator('[data-test="phone-close"]'));
+  await page.locator(".phone-overlay").waitFor({ state: "detached" });
+
+  // 朝の通知の札も夜紫に白い字（LIME の印は緑）。
+  await page.evaluate(async () => {
+    const core = await import("./js/core/state.js");
+    core.state.inbox.push({ id: "qa_neo_push", originId: "qa_neo_push", day: core.state.day, read: false, done: false, replyState: "none", log: [], msg: { sender: "minto", type: "message", messages: ["おはよ！"] } });
+    (await import("./js/daily/phone.js")).pushNotice(1, { onOpen: () => {} });
+  });
+  await page.locator("#toasts .lime-push.show").waitFor();
+  await page.waitForTimeout(500);
+  const push = await page.locator("#toasts .lime-push").evaluate((node, helpers) => {
+    const { px, rgb } = (0, eval)(helpers);
+    return { ...px(node), face: getComputedStyle(node).backgroundImage, ink: rgb(getComputedStyle(node.querySelector(".lp-text")).color), icon: getComputedStyle(node.querySelector(".lp-icon")).backgroundImage };
+  }, STAGE_PX);
+  assert(inside(push, STAGE) && push.face.includes("rgba(36, 22, 55") && light(push.ink) && push.icon.includes("linear-gradient"), `朝の通知の札 ${JSON.stringify(push)}`);
+  assert.equal(await page.evaluate(() => window.lookNeoDailyError || ""), "");
+}
+
+/** レベルアップ（寝る前の全面の札・ふだんの短い帯）。 */
+async function levelUp(page, { phone }) {
+  await page.evaluate(async () => {
+    const core = await import("./js/core/state.js"), ui = await import("./js/core/ui.js"), data = await import("./js/core/data.js"), hud = await import("./js/daily/hud.js");
+    const s = core.newGame();
+    Object.assign(s, { phase: "daily", day: 3, slot: 1, stamina: 90 });
+    ui.showScreen("map", document.createElement("div"));
+    await ui.setBg(data.bgUrl("bg_home", "night"), { fast: true });
+    hud.initHud({ phone() {}, status() {}, menu() {} });
+    hud.showHud(true);
+    const g = await import("./js/core/growth.js");
+    g.setGrowthPreview(true);
+    g.gainExp(g.totalExpFor(3) + 10);
+    window.lookNeoNight = null;
+    void (await import("./js/daily/levelup.js")).presentNightGrowth().then((r) => { window.lookNeoNight = r; });
+  });
+  await page.locator('[data-test="levelup"]').waitFor();
+  // 検査の共通の仕掛け（growth_ack.mjs）が出そろった札の OK をすぐ押すので、出そろった瞬間（クラスが付いた時）に測っておく。
+  await page.evaluate((helpers) => {
+    const { px, rgb } = (0, eval)(helpers);
+    const look = (node) => ({ ...px(node), face: getComputedStyle(node).backgroundImage, ink: rgb(getComputedStyle(node).color) });
+    const take = () => {
+      const panel = document.querySelector(".levelup.lu-settled-state");
+      if (!panel || window.lookNeoLevelup) return;
+      window.lookNeoLevelup = { panel: look(panel), text: panel.innerText, lv: getComputedStyle(panel.querySelector(".lu-lv")).backgroundImage,
+        ok: look(panel.querySelector('[data-test="levelup-ok"]')), board: look(panel.querySelector('[data-test="levelup-board"]')) };
+    };
+    window.lookNeoLevelup = null;
+    new MutationObserver(take).observe(document.getElementById("fx"), { subtree: true, attributes: true, attributeFilter: ["class"] });
+    take();
+  }, STAGE_PX);
+  await page.locator(".levelup-backdrop").click({ position: { x: 5, y: 5 } });
+  await page.waitForFunction(() => window.lookNeoLevelup);
+  const full = await page.evaluate(() => window.lookNeoLevelup);
+  assert(inside(full.panel, STAGE) && full.panel.face.includes("rgba(36, 22, 55") && light(full.panel.ink), `レベルアップの札は夜紫の面 ${JSON.stringify(full.panel)}`);
+  assert(full.lv.includes("227, 189, 110"), "レベルの下に金の罫線");
+  assert.match(full.text, /Lv\.1 → Lv\.3/);
+  assert(full.ok.face.includes("linear-gradient") && !light(full.ok.ink) && light(full.board.ink), "OK は金、心得の盤は夜紫の札");
+  for (const button of [full.ok, full.board]) assert(inside(button, full.panel, 1) && button.height >= 44 - .5 && button.real >= (phone ? 30 : 38), `ボタンの押せる大きさ ${JSON.stringify(button)}`);
+  // OK で閉じる（共通の仕掛けが押す）。
+  await page.waitForFunction(() => window.lookNeoNight?.to === 3);
+  // ふだんの1レベルは短い帯。
+  await page.evaluate(async () => {
+    const g = await import("./js/core/growth.js"), core = await import("./js/core/state.js");
+    g.gainExp(g.totalExpFor(core.state.growth.level + 1) - core.state.growth.xp + 5);
+    window.lookNeoNight = null;
+    void (await import("./js/daily/levelup.js")).presentNightGrowth().then((r) => { window.lookNeoNight = r; });
+  });
+  await page.locator(".levelup-band.show").waitFor();
+  await page.waitForTimeout(260);
+  const band = await page.locator(".levelup-band").evaluate((node, helpers) => {
+    const { px, rgb } = (0, eval)(helpers);
+    return { ...px(node), face: getComputedStyle(node).backgroundImage, ink: rgb(getComputedStyle(node.querySelector(".lb-lv")).color), text: node.innerText };
+  }, STAGE_PX);
+  assert(inside(band, STAGE) && band.face.includes("227, 189, 110") && band.face.includes("rgba(36, 22, 55") && light(band.ink), `短い帯は夜紫に金の罫線 ${JSON.stringify(band)}`);
+  assert.match(band.text, /LEVEL UP/);
+  await page.waitForFunction(() => window.lookNeoNight?.to === 4, null, { timeout: 8000 });
+}
+
+/** ギャラリー（タイトルから）。一覧の面・タブ・閉じる・閲覧の帯。 */
+const measureGallery = (page) => page.evaluate((helpers) => {
+  const { px, rgb, text } = (0, eval)(helpers);
+  const box = document.querySelector(".gal"), look = (node) => ({ ...px(node), face: getComputedStyle(node).backgroundImage, fill: rgb(getComputedStyle(node).backgroundColor), ink: rgb(getComputedStyle(node).color), text: text(node) });
+  return { look: document.documentElement.dataset.look, box: look(box), frame: getComputedStyle(box).borderImageSource, title: rgb(getComputedStyle(box.querySelector("h2")).color),
+    rule: getComputedStyle(box.querySelector(".gal-head")).backgroundImage, rate: text(box.querySelector(".gal-rate")),
+    tabs: [...box.querySelectorAll(".gal-tab")].map((node) => ({ ...look(node), selected: node.getAttribute("aria-selected") === "true" })), close: look(box.querySelector(".gal-close")),
+    cells: [...box.querySelectorAll(".gal-cell")].slice(0, 8).map((node) => ({ ...px(node), locked: node.classList.contains("locked"), text: text(node) })) };
+}, STAGE_PX);
+
+async function galleryScreen(page, { phone }) {
+  await page.evaluate(() => localStorage.setItem("suien_remake_gallery", JSON.stringify(["cg_ch1_sumi_training"])));
+  await press(page, page.locator('[data-test="title-gallery"]'));
+  await page.locator(".gal").waitFor();
+  await page.waitForTimeout(500);
+  const m = await measureGallery(page);
+  await setLook(page, "classic");
+  await page.waitForTimeout(300);
+  const classic = await measureGallery(page);
+  await setLook(page, "neo");
+  await page.waitForTimeout(300);
+  assert.equal(m.look, "neo");
+  assert(inside(m.box, STAGE) && m.frame === "none" && m.box.face.includes("rgba(36, 22, 55") && light(m.box.ink) && light(m.title), `ギャラリーは夜紫の面 ${JSON.stringify(m.box)}`);
+  assert(m.rule.includes("227, 189, 110"), "見出しの下に金の罫線");
+  // 収集率・タブ・枠の中身は現行と同じ。押せる大きさも同じ。
+  assert.equal(m.rate, classic.rate);
+  assert.deepEqual(m.tabs.map((tab) => tab.text), classic.tabs.map((tab) => tab.text));
+  assert.deepEqual(m.cells.map(({ locked, text }) => [locked, text]), classic.cells.map(({ locked, text }) => [locked, text]));
+  for (const [index, tab] of m.tabs.entries()) {
+    assert(tab.width >= classic.tabs[index].width - .5 && tab.height >= classic.tabs[index].height - .5 && inside(tab, m.box, 1), `タブ ${tab.text} の大きさは現行以上`);
+    assert(tab.selected ? tab.face.includes("linear-gradient") && !light(tab.ink) : dark(tab.fill) && light(tab.ink), `タブ ${tab.text}: 選んだ札は金、ほかは夜紫に白い字`);
+  }
+  assert(m.close.height >= classic.close.height - .5 && light(m.close.ink), "閉じるの大きさと色");
+  for (const [index, cell] of m.cells.entries()) assert(Math.abs(cell.width - classic.cells[index].width) < 1 && Math.abs(cell.height - classic.cells[index].height) < 1, "枠の大きさは現行と同じ");
+  // タブが押せる。見た絵を開くと閲覧の帯（夜紫）、絵はそのまま。
+  await press(page, page.locator('[data-test="gallery-tab-cheki"]'));
+  assert(await page.locator('[data-test="gallery-tab-cheki"]').evaluate((node) => node.getAttribute("aria-selected") === "true"));
+  await press(page, page.locator('[data-test="gallery-tab-all"]'));
+  await press(page, page.locator(".gal button.gal-cell").first());
+  await page.locator(".gal-viewer.show").waitFor();
+  await page.waitForTimeout(400);
+  const viewer = await page.evaluate((helpers) => {
+    const { px, rgb } = (0, eval)(helpers);
+    const tools = document.querySelector(".gal-viewer-tools"), button = tools.querySelector(".btn");
+    return { tools: { ...px(tools), face: getComputedStyle(tools).backgroundImage }, button: { ...px(button), ink: rgb(getComputedStyle(button).color), fill: rgb(getComputedStyle(button).backgroundColor) },
+      content: getComputedStyle(document.querySelector(".gal-viewer")).backgroundColor };
+  }, STAGE_PX);
+  assert(viewer.tools.face.includes("227, 189, 110") && light(viewer.button.ink) && dark(viewer.button.fill) && viewer.button.real >= (phone ? 30 : 30), `閲覧の帯 ${JSON.stringify(viewer)}`);
+  await press(page, page.locator(".gal-viewer-tools .btn").last());
+  await page.locator(".gal-viewer.show").waitFor({ state: "hidden" });
+  await press(page, page.locator('[data-test="gallery-close"]'));
+  await page.locator(".gal-overlay").waitFor({ state: "detached" });
+}
+
+const SHOP_PARTS = [["#screen .shop-paper", ALL], ["#screen .shop-head", ALL], ["#screen .shop-head h2", [""]], ["#screen .shop-money", [""]], ['#screen .shop-tab[data-tab="flavor"]', ALL],
+  ['#screen .shop-tab[data-tab="equip"]', [""]], ["#screen .shop-filter.on", [""]], ["#screen .shop-row.product", ALL], ["#screen .shop-row.product .shop-product-art", [""]],
+  ["#screen .shop-row.product .shop-main b", [""]], ["#screen .shop-row.product .shop-price", [""]], ["#screen .shop-row.product .shop-step.plus", ALL], ["#screen .shop-foot", [""]],
+  ["#screen .shop-back", [""]], ["#screen .shop-checkout", [""]]];
+const LIME_PARTS = [[".phone", ALL], [".phone-status", [""]], [".lime-header", [""]], [".lime-logo", [""]], [".lime-chat", [""]], [".lime-chat-row", [""]], [".lcr-name", [""]], [".lcr-preview", [""]],
+  [".lime-actions", [""]], [".lime-reply", [""]]];
+const GALLERY_PARTS = [[".gal-overlay", [""]], [".gal", ALL], [".gal-head", [""]], [".gal-head h2", [""]], [".gal-tab[aria-selected=\"true\"]", [""]], [".gal-tab[aria-selected=\"false\"]", [""]],
+  [".gal-close", [""]], [".gal-cell.locked", [""]], [".gal-cell.locked span", [""]]];
+
 const MENU_PARTS = [["#modal > .dmenu", [""]], [".dmenu .dm-backdrop", [""]], [".dmenu .dm-sheet", ALL], [".dmenu .dm-side", [""]], [".dmenu .dm-title", [""]], [".dmenu .dm-tabs", [""]],
   [".dmenu .dm-tab.on", ALL], [".dmenu .dm-tab:not(.on)", ALL], [".dmenu .dm-tab .dm-icon", [""]], [".dmenu .dm-tab .dm-label", [""]], [".dmenu .dm-head", [""]], [".dmenu .dm-summary", [""]],
   [".dmenu .dm-sum > small", [""]], [".dmenu .dm-sum > b", [""]], [".dmenu .dm-health > b", [""]], [".dmenu .dm-help", ALL], [".dmenu .dm-close", [""]], [".dmenu .dm-panel", [""]],
@@ -1699,6 +2060,53 @@ await suite("look-neo", async (check) => {
     await CHAPTER_MAPS.ch5.open(page);
     await roundTrip(GOAL_MAP_PARTS, ["#hud .hud-card", "#hud .dc-meta", "#hud .dc-row.goal", '[data-test="pin-c_station"] .sub-label']);
   }, { pageEntry: `${baseURL}?look=classic`, ...PHONE });
+
+  // ---- ショップ・LIME・レベルアップ・ギャラリー（LK05 の残り）
+  await check("shop-desktop", (page) => shopScreen(page, { phone: false }), { pageEntry: NEO });
+  await check("shop-phone", onPhone(shopScreen), { pageEntry: NEO, ...PHONE });
+  await check("shop-entry-desktop", (page) => shopEntry(page, { phone: false }), { pageEntry: NEO });
+  await check("shop-entry-phone", onPhone(shopEntry), { pageEntry: NEO, ...PHONE });
+  await check("lime-desktop", (page) => limeScreen(page, { phone: false }), { pageEntry: NEO });
+  await check("lime-phone", onPhone(limeScreen), { pageEntry: NEO, ...PHONE });
+  await check("levelup-desktop", (page) => levelUp(page, { phone: false }), { pageEntry: NEO });
+  await check("levelup-phone", onPhone(levelUp), { pageEntry: NEO, ...PHONE });
+  await check("gallery-desktop", (page) => galleryScreen(page, { phone: false }), { pageEntry: NEO });
+  await check("gallery-phone", onPhone(galleryScreen), { pageEntry: NEO, ...PHONE });
+  await check("restore-classic-extras", async (page) => {
+    // 最初から現行で、ショップ・LIME・ギャラリーを開いて基準を取り、新版→現行と往復しても計算済みスタイルと痕跡が戻ること。
+    const roundTrip = async (parts, changed) => {
+      await page.mouse.move(2, 2);
+      await page.waitForTimeout(300);
+      assert.equal(await page.evaluate(() => document.documentElement.dataset.look), "classic");
+      assert.deepEqual(await neoTraces(page), []);
+      const before = await stylesOf(page, parts);
+      for (const [selector] of parts) assert(before[selector] !== null, `基準の部品がある: ${selector}`);
+      await setLook(page, "neo");
+      await page.waitForTimeout(500);
+      const neo = await stylesOf(page, parts);
+      for (const key of changed) assert.notDeepEqual(neo[key], before[key], `新版では ${key} が変わる`);
+      await setLook(page, "classic");
+      await page.waitForTimeout(500);
+      assert.deepEqual(await neoTraces(page), [], "現行へ戻したら、足した要素・クラス・style を残さない");
+      const after = await stylesOf(page, parts);
+      for (const key of Object.keys(before)) assert.deepEqual(after[key], before[key], `${key} の計算済みスタイルが最初から現行の時と一致する`);
+    };
+    await page.evaluate(() => localStorage.setItem("suien_remake_gallery", JSON.stringify(["cg_ch1_sumi_training"])));
+    await page.locator('[data-test="title-gallery"]').click();
+    await page.locator(".gal").waitFor();
+    await roundTrip(GALLERY_PARTS, [".gal", ".gal-tab[aria-selected=\"true\"]", ".gal-close"]);
+    await page.locator('[data-test="gallery-close"]').click();
+    await page.locator(".gal-overlay").waitFor({ state: "detached" });
+    await openShopCounter(page);
+    await roundTrip(SHOP_PARTS, ["#screen .shop-paper", '#screen .shop-tab[data-tab="flavor"]', "#screen .shop-row.product .shop-step.plus", "#screen .shop-checkout"]);
+    await page.locator('[data-test="shop-leave"]').click();
+    await openDaily(page);
+    await seedLime(page);
+    await page.locator('[data-test="hud-phone"]').click();
+    await page.locator(".phone-overlay.show .lime-chat-row").first().waitFor();
+    await page.waitForTimeout(500);
+    await roundTrip(LIME_PARTS, [".phone", ".lime-header", ".lime-chat-row", ".lcr-name"]);
+  }, { pageEntry: `${baseURL}?look=classic` });
 
   await check("restore-classic-daily", async (page) => {
     // 最初から現行（neo.js をまだ読んでいない）で地図と MENU を出し、基準を取る。

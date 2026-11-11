@@ -4,14 +4,15 @@
 //   "cover" … 見るだけの覆い（場面転換・日付の札・章タイトル・詩・登場カットイン・読み込みの一言）。外枠のまま暗くして、
 //             見えている文字と絵だけを写す（retro/cover.js）。pressable は、覆いがステージ中央でタップを受ける状態かどうか。
 //   "gap"   … 場面と場面のあいだの、何も出ていない短い間。外枠のまま少し待つ。
-//   "none"  … 未対応（シーシャ作り・店・ミニゲームなど）。現行の画面をそのまま見せる（新版の縦持ちは回転案内）。
-// MENU・LIME・小窓（設定・用語集・セーブ／ロード・規則の紙・確認）・会話の LOG は "scene"（name: "sheet"）として
+//   "none"  … 未対応（シーシャ作り・大会・ミニゲームなど）。現行の画面をそのまま見せる（新版の縦持ちは回転案内）。
+// MENU・LIME・小窓（設定・用語集・セーブ／ロード・セーブの引っ越し・規則の紙・確認）・会話の LOG・店・
+// 夜のレベルアップ・LIME の初回の案内・章のクリアの画面は "scene"（name: "sheet"）として
 // 下画面や縦長のシート（retro/sheet.js）へ写す。
 const byId = (id) => document.getElementById(id);
 const media = (query) => typeof window.matchMedia === "function" && window.matchMedia(query).matches;
 
 // 場面ごとに、現行ステージの一番上に来ていてよい層（#stage の直下の id）。
-const EXPECTED_LAYERS = { vn: ["vn", "bg"], map: ["screen", "hud"], title: ["screen"], menu: ["screen", "hud"], dialog: ["modal"], sheet: ["modal"], log: ["vn"] };
+const EXPECTED_LAYERS = { vn: ["vn", "bg"], map: ["screen", "hud"], title: ["screen"], menu: ["screen", "hud"], dialog: ["modal"], sheet: ["modal"], log: ["vn"], shop: ["screen", "hud"] };
 // 場面ごとの確認点（ステージの幅・高さに対する割合）。HUD のボタンがある隅は避ける。
 const PROBES = {
   vn: [[0.5, 0.42], [0.3, 0.5], [0.7, 0.5], [0.5, 0.86]],
@@ -21,6 +22,7 @@ const PROBES = {
   dialog: [[0.5, 0.5]],
   sheet: [[0.5, 0.5]],
   log: [[0.5, 0.5]],
+  shop: [[0.5, 0.5], [0.3, 0.6], [0.7, 0.4]],
 };
 // 演出の層（#fx）にあっても場面を止めない、短い効果。
 const FX_HARMLESS = ".flash, .stat-flight";
@@ -115,20 +117,23 @@ function simpleDialog(modal) {
   return [...box.children].every((node) => node.matches("h3, .modal-body, .modal-actions"));
 }
 
-// シートに写せない部品（自由入力・描画・動画・ドラッグの操作）。これがある小窓は回転案内のまま（セーブの引っ越しなど）。
-const SHEET_BLOCKERS = "canvas, video, iframe, textarea, [contenteditable], [draggable='true'], input:not([type='range']):not([type='checkbox'])";
+// シートに写せない部品（描画・動画・ドラッグの操作・自由入力の欄など）。これがある小窓は回転案内のまま。
+// 複数行の入力欄（セーブの引っ越しの文字列）と、隠したファイル選び（ボタンから開く）は写せる。
+const SHEET_BLOCKERS = "canvas, video, iframe, [contenteditable], [draggable='true'], input:not([type='range']):not([type='checkbox']):not([type='file'])";
 /**
  * #modal に出ている物のうち、シート（retro/sheet.js）に写せる種類。写せなければ ""。
  *   "menu": 全画面 MENU（daily/menu.js の .dmenu。チェキの拡大を含む）
  *   "lime": LIME（daily/phone.js の .phone-overlay）
- *   "modal": core/ui.js の modal とセーブ／ロードの枠（.modal-box。設定・用語集・規則の紙・確認の問いなど）
+ *   "modal": core/ui.js の modal とセーブ／ロードの枠（.modal-box。設定・用語集・規則の紙・確認の問いなど）。
+ *            設定の上に重ねるセーブの引っ越し（.xfer-layer）は、一番上の小窓を写す
  */
 function sheetKind(modal) {
   const kids = [...modal.children];
   if (modal.querySelector(":scope > .dmenu")) return kids.every((node) => node.matches(".dmenu, .keepsake-viewer")) ? "menu" : "";
   if (kids.length === 1 && kids[0].matches(".phone-overlay")) return kids[0].querySelector(SHEET_BLOCKERS) ? "" : "lime";
-  const box = modal.querySelector(":scope > .modal-box");
-  if (!box || kids.length !== 2 || !modal.querySelector(":scope > .modal-backdrop")) return "";
+  const box = [...modal.querySelectorAll(":scope > .xfer-layer > .modal-box")].pop() || modal.querySelector(":scope > .modal-box");
+  if (!box || !modal.querySelector(":scope > .modal-backdrop") || !kids.every((node) => node.matches(".modal-backdrop, .modal-box, .xfer-layer"))) return "";
+  if (modal.querySelectorAll(":scope > .modal-box").length !== 1) return "";
   return box.querySelector(SHEET_BLOCKERS) ? "" : "modal";
 }
 
@@ -138,7 +143,7 @@ function knownBase(extended) {
   if (body.classList.contains("in-vn") || body.classList.contains("vn-open")) return true;
   const live = byId("screen")?.querySelector(":scope > :not(.done)");
   if (!live || !live.childElementCount && !live.textContent.trim()) return true;
-  return live.matches(".map, .title, .sub-menu") || (extended && simpleCard(live));
+  return live.matches(".map, .title, .sub-menu, section.shop-paper, .end-screen") || (extended && simpleCard(live));
 }
 
 /**
@@ -161,6 +166,12 @@ export function detectState(own = [], { extended = false } = {}) {
     if (extended && simpleDialog(modal)) return { kind: "scene", name: "menu", variant: "dialog" };
     const kind = sheetKind(modal);
     return kind ? { kind: "scene", name: "sheet", variant: kind } : NONE;
+  }
+
+  // 演出の層の、ボタンで閉じるだけの画面（夜のレベルアップ・LIME の初回の案内）はシートで写す
+  const fxSheet = byId("fx")?.querySelector(":scope > .levelup-backdrop, :scope > .lime-coach");
+  if (fxSheet && !byId("fx").querySelector(":scope > :is(.gboard, .reel-intro, .kuji-overlay)")) {
+    return { kind: "scene", name: "sheet", variant: fxSheet.matches(".lime-coach") ? "coach" : "levelup" };
   }
 
   // 覆い: 演出の層に何か出ている・煙や暗転で覆っている・読み込みの一言が出ている
@@ -200,14 +211,19 @@ export function detectState(own = [], { extended = false } = {}) {
       scene = "menu"; // tonari の行動選びなど、ボタンが並ぶだけの画面（daily/tonari.js の .sub-menu）
     } else if (extended && simpleCard(live)) {
       scene = "menu"; variant = live.matches("main.ch2-stop") ? "stop" : "card";
+    } else if (live.matches("section.shop-paper") && !live.querySelector(SHEET_BLOCKERS)) {
+      scene = "sheet"; variant = "shop"; // 店（daily/shop.js の入口と1階の売り場）はシートで写す
+    } else if (live.matches(".end-screen") && !live.querySelector(SHEET_BLOCKERS)) {
+      scene = "sheet"; variant = "end"; // 章のクリア・続きを読めなかった時の画面（文とボタン。成長のグラフは絵で写す）
     }
   }
   if (!scene) return NONE;
 
   // 安全網: ステージの数点で一番上の要素を取り、その場面で想定する層でなければ未対応とする。
-  for (const [px, py] of PROBES[scene]) {
+  const probe = variant === "shop" || variant === "end" ? "shop" : scene;
+  for (const [px, py] of PROBES[probe]) {
     const layer = topLayer(stage, rect, px, py, own);
-    if (layer && !EXPECTED_LAYERS[scene].includes(layer)) return NONE;
+    if (layer && !EXPECTED_LAYERS[probe].includes(layer)) return NONE;
   }
   return { kind: "scene", name: scene, variant };
 }

@@ -4536,10 +4536,10 @@
     },
     {
       "id": "look-neo",
-      "title": "新版: 第1〜5章の会話の帯と操作の札・地図とHUD・MENU・場面カード・モーダル・タイトルの収まりと、旧版へ戻した時に痕跡が残らないこと",
+      "title": "新版: 第1〜5章の会話の帯と操作の札・地図とHUD・MENU・場面カード・モーダル・タイトル・ショップ・LIME・レベルアップ・ギャラリーの収まりと、旧版へ戻した時に痕跡が残らないこと",
       "kind": "browser",
-      "weight": 5.5,
-      "timeout": 14,
+      "weight": 7,
+      "timeout": 16,
       "paths": [
         "remake/css/look-neo.css",
         "remake/js/looks/**",
@@ -4564,6 +4564,12 @@
         "remake/js/core/chapter-card.js",
         "remake/js/chapters/ch3-map.js",
         "remake/js/chapters/ch3-wayfinding.js",
+        "remake/css/shop.css",
+        "remake/js/daily/shop.js",
+        "remake/js/daily/shop-display.js",
+        "remake/js/daily/phone.js",
+        "remake/js/daily/levelup.js",
+        "remake/js/scenes/gallery.js",
         "remake/test/browser/look_neo.mjs"
       ],
       "run": [
@@ -4572,10 +4578,10 @@
     },
     {
       "id": "look-neo-portrait",
-      "title": "新版の縦持ち: DS風の外枠と操作に高解像度の上画面・第1〜5章の会話と地図とカード・MENU・LIME・設定・LOG をシートで・写せない画面では回転案内・横長は今のまま",
+      "title": "新版の縦持ち: DS風の外枠と操作に高解像度の上画面・第1〜5章の会話と地図とカード・MENU・LIME・設定・LOG・ショップ・セーブの引っ越し・レベルアップ・章のクリアをシートで・写せない画面では回転案内・横長は今のまま",
       "kind": "browser",
-      "weight": 3.8,
-      "timeout": 10,
+      "weight": 4.6,
+      "timeout": 12,
       "paths": [
         "remake/js/looks/**",
         "remake/css/look-retro.css",
@@ -4590,6 +4596,10 @@
         "remake/js/daily/menu.js",
         "remake/js/daily/phone.js",
         "remake/js/scenes/saves.js",
+        "remake/js/daily/shop.js",
+        "remake/js/daily/shop-display.js",
+        "remake/js/daily/levelup.js",
+        "remake/js/scenes/save-transfer.js",
         "remake/js/chapters/ch2.js",
         "remake/js/chapters/ch2-deliveries.js",
         "remake/js/chapters/ch2-commute.js",
