@@ -161,6 +161,20 @@ CRAFT_STAGE_OUT = ROOT / "remake/img/ui/craft-stage"
 CRAFT_STAGE_PARTS = {
     # 舞台の天板（石）: 炭焼き・調整。枠なしの全面。
     "counter-stone": {"source_size": (1536, 1024), "width": 1280, "alpha": False},
+    # 舞台の天板（作業マット）: 配合・詰め方・穴あけ・蒸らし時間。石と同じ構図。
+    "counter-mat": {"source_size": (1536, 1024), "width": 1280, "alpha": False},
+    # 熱の柱の外枠: 幅74で縦を九分割で伸ばす（2倍密度）。中央の窓は透明。
+    "spine-housing": {"source_size": (205, 1442), "width": 148, "alpha": True},
+    # 工程の灯5種: 同じ切り出し枠（光彩ごと）。輪は枠の73.6%。
+    **{name: {"source_size": (780, 780), "width": 128, "alpha": True}
+       for name in ("lamp-off", "lamp-faint", "lamp-fair", "lamp-good", "lamp-shine")},
+    # 見守る人の一言の板（388×96 を2倍密度）。
+    "voice-plate": {"source_size": (1382, 346), "width": 776, "alpha": True},
+    # 吸い出しの半円ダイヤルの台座（中の帯・針はコード）。
+    "dial-bezel": {"source_size": (1421, 718), "width": 1024, "alpha": True},
+    # 熱の柱の上の状態の札の縁（中は透明）と、上のレールの今の工程の札。
+    "spine-plate": {"source_size": (1229, 385), "width": 320, "alpha": True},
+    "rail-now": {"source_size": (1328, 406), "width": 400, "alpha": True},
 }
 
 

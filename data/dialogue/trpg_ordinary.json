@@ -42,22 +42,22 @@
     {
       "id": "adam",
       "part": "PLAYER",
-      "role": "{pc:adam}／香りの案内役",
+      "role": "{pc:adam}／小声の案内役",
       "color": "#c8a375",
       "ability": "舞台の支度",
       "abilityText": "一台を準備するとき、判定に一度だけ＋7",
       "abilityType": "prepare",
       "sheet": {
         "name": "ニコ",
-        "title": "香りの案内役",
+        "title": "小声の案内役",
         "stats": {
           "eye": 2,
           "hand": 5,
           "talk": 3,
           "nerve": 1
         },
-        "trait": "香りと炭の支度なら店一番。怖い話は苦手",
-        "likes": "林檎の香り。原点の味"
+        "trait": "香りと炭の支度は店一番。声が小さく、すぐ謝る",
+        "likes": "閉店後の片づけ。客の『ごちそうさま』"
       }
     },
     {
@@ -737,7 +737,7 @@
         },
         {
           "speaker": "adam",
-          "text": "三つの香り、三つの可能性。原点に帰る時間だな",
+          "text": "三つの香り、三つの可能性。旅人の顔を思い出して選ぼう",
           "face": "normal"
         },
         {
@@ -2042,19 +2042,55 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "俺の役はニコ。客を香りへ導く、茶房の案内役だ"
+          "text": "俺の役はニコ。茶房の案内役だ。……ただし、声がとても小さい"
         },
         {
           "speaker": "adam",
-          "role": "PL／卓の会話",
+          "role": "{pc:adam}／物語",
           "face": "normal",
-          "text": "弱点も決めた。腕は店一番だが、怖い話が苦手だ"
+          "text": "……い、いらっしゃいませ。あ、すみません、お席はこちらです……"
         },
         {
           "speaker": "hiyori",
           "role": "GM／卓の会話",
+          "face": "surprise",
+          "text": "アダムさんが、謝ってる……！"
+        },
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
           "face": "smile",
-          "text": "弱点まで用意してくるの、えらいね"
+          "text": "今夜の俺は、頭を下げる側だ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_ordinary_aside_adam_adam_nico",
+      "metadata": {
+        "preview_only": true,
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "{pc:adam}／物語",
+          "face": "normal",
+          "text": "……あの、オルさん。僕、本当は毎晩、何を勧めたらいいか迷ってるんです。内緒ですよ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_ordinary_after_adam_adam_nico",
+      "metadata": {
+        "preview_only": true,
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "ニコは毎晩迷うらしい。……俺は迷わない。たぶん、明日も"
         }
       ]
     },
@@ -2990,16 +3026,18 @@
         {
           "id": "nico",
           "name": "ニコ",
-          "title": "香りの案内役",
-          "trait": "香りと炭の支度なら店一番。怖い話は苦手",
-          "likes": "林檎の香り。原点の味",
+          "title": "小声の案内役",
+          "trait": "香りと炭の支度は店一番。声が小さく、すぐ謝る",
+          "likes": "閉店後の片づけ。客の『ごちそうさま』",
           "stats": {
             "eye": 2,
             "hand": 5,
             "talk": 3,
             "nerve": 1
           },
-          "making": "trpg_ordinary_make_adam_adam_nico"
+          "making": "trpg_ordinary_make_adam_adam_nico",
+          "aside": "trpg_ordinary_aside_adam_adam_nico",
+          "after": "trpg_ordinary_after_adam_adam_nico"
         },
         {
           "id": "pippin",

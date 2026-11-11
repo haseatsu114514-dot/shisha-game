@@ -117,8 +117,8 @@
           "actor": "adam",
           "sheet": "adam",
           "stat": "talk",
-          "label": "林檎を配って、場を和ませる",
-          "detail": "{pc:adam}が錬成したての林檎を配り、気楽な話から入る",
+          "label": "夜食を配って、場を和ませる",
+          "detail": "{pc:adam}が台所の夜食を配り、気楽な話から入る",
           "declare": "trpg_fading_familiar_declare_listen_apple"
         }
       ]
@@ -155,7 +155,7 @@
           "sheet": "adam",
           "stat": "talk",
           "label": "先生に頼んで、道具をそろえる",
-          "detail": "{pc:adam}が寮監室へ。名言を添えて、道具を借りてくる",
+          "detail": "{pc:adam}が寮監室へ。夜食を添えて、道具を借りてくる",
           "declare": "trpg_fading_familiar_declare_prepare_borrow"
         }
       ]
@@ -191,8 +191,8 @@
           "actor": "adam",
           "sheet": "adam",
           "stat": "talk",
-          "label": "林檎を差し出して、語りかける",
-          "detail": "{pc:adam}が林檎を一つ差し出し、宇宙の始まりから語る",
+          "label": "夜食を差し出して、語りかける",
+          "detail": "{pc:adam}が夜食を一つ差し出し、ゆっくり語りかける",
           "declare": "trpg_fading_familiar_declare_serve_apple"
         }
       ]
@@ -227,8 +227,8 @@
           "actor": "adam",
           "sheet": "adam",
           "stat": "hand",
-          "label": "林檎を錬成して、本の気を引く",
-          "detail": "{pc:adam}が林檎を次々に錬成し、本の群れの前に転がす",
+          "label": "夜食を転がして、本の気を引く",
+          "detail": "{pc:adam}が鞄の夜食を次々に、本の群れの前へ転がす",
           "declare": "trpg_fading_familiar_declare_twist_apple"
         }
       ]
@@ -767,26 +767,56 @@
         {
           "speaker": "adam",
           "role": "PL／卓の会話",
-          "face": "smile",
-          "text": "俺はノクス。季節外れにやって来た、仮面の転校生だ"
+          "face": "normal",
+          "text": "俺の役はノクス。仮面の転校生だ。……中身は、ただの人見知りでな"
         },
         {
           "speaker": "adam",
-          "role": "PL／卓の会話",
-          "face": "intense",
-          "text": "正体は誰にも明かさない。現れるたび、林檎の香りがするだけだ"
+          "role": "{pc:adam}／物語",
+          "face": "normal",
+          "text": "……ノクスです、……よろしく"
         },
         {
           "speaker": "hiyori",
           "role": "GM／卓の会話",
-          "face": "smile",
-          "text": "……それ、正体ほとんど言ってるわね"
+          "face": "surprise",
+          "text": "自己紹介、それだけ！？ ……こほん。謎めいていて、いいわね"
         },
         {
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "謎は、少し透けているくらいが美しい"
+          "text": "仮面は、目を合わせないためにある。今夜の俺は、目を伏せる側だ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fading_familiar_aside_adam_adam_nox",
+      "metadata": {
+        "preview_only": true,
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "{pc:adam}／物語",
+          "face": "normal",
+          "text": "……僕も来たばかりで、誰にも名前を呼ばれなかった。だから呼ぶよ。モヤ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fading_familiar_after_adam_adam_nox",
+      "metadata": {
+        "preview_only": true,
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "ノクスの仮面、借りたままにしておきたい夜も、ありそうだ"
         }
       ]
     },
@@ -844,7 +874,7 @@
           "speaker": "hiyori",
           "role": "GM／場面",
           "face": "normal",
-          "text": "{pc:adam}は寮の台所で夜食を錬成中。できあがるのは、もちろん林檎ね"
+          "text": "{pc:adam}は寮の台所で、ひとり夜食をこしらえている"
         },
         {
           "speaker": "hiyori",
@@ -1236,13 +1266,13 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "{pc:adam}は林檎を配る。不安な夜には、原点の甘さが要る"
+          "text": "{pc:adam}は夜食を配る。不安な夜には、甘いものが要る"
         },
         {
           "speaker": "hiyori",
           "role": "GM／卓の会話",
           "face": "smile",
-          "text": "話術で判定ね。林檎、私ももらっておくわ。目標は30"
+          "text": "話術で判定ね。夜食、私ももらっておくわ。目標は30"
         }
       ]
     },
@@ -1296,13 +1326,13 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "intense",
-          "text": "{pc:adam}は林檎を錬成する。本も、原点の香りには逆らえない"
+          "text": "{pc:adam}は夜食を転がす。本だって、甘い匂いには逆らえない"
         },
         {
           "speaker": "hiyori",
           "role": "GM／卓の会話",
           "face": "normal",
-          "text": "手際で判定ね。本って、林檎が好きなのかしら。目標は30"
+          "text": "手際で判定ね。本って、甘いものが好きなのかしら。目標は30"
         }
       ]
     },
@@ -1356,13 +1386,13 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "{pc:adam}は寮監室へ。『先生、林檎と交換で道具を』"
+          "text": "{pc:adam}は寮監室へ。『先生、夜食と交換で道具を』"
         },
         {
           "speaker": "hiyori",
           "role": "GM／卓の会話",
           "face": "smile",
-          "text": "話術で判定ね。先生、林檎はもう三つ目よ。目標は30"
+          "text": "話術で判定ね。先生、夜食はもう三つ目よ。目標は30"
         }
       ]
     },
@@ -1416,13 +1446,13 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "intense",
-          "text": "{pc:adam}は林檎を差し出す。『宇宙は、一つの林檎から始まった』"
+          "text": "{pc:adam}は夜食を差し出す。『朝まで、ここにいていい』"
         },
         {
           "speaker": "hiyori",
           "role": "GM／卓の会話",
           "face": "smile",
-          "text": "話術で判定ね。壮大な前置きだわ。目標は30"
+          "text": "話術で判定ね。やさしい前置きだわ。目標は30"
         }
       ]
     },
@@ -1486,7 +1516,7 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "そう。林檎を知るには、まず木を見るものだ"
+          "text": "そう。実を知るには、まず木を見るものだ"
         }
       ]
     },
@@ -3322,16 +3352,18 @@
         {
           "id": "nox",
           "name": "ノクス",
-          "title": "仮面の転校生",
-          "trait": "正体不明の謎の転校生。仮面の下は、だいたいみんな知っている",
-          "likes": "林檎と、登場の効果音",
+          "title": "人見知りの転校生",
+          "trait": "仮面は、目を合わせないため。自己紹介は名前だけで終わる",
+          "likes": "図書室のいちばん奥の席",
           "stats": {
             "eye": 2,
             "hand": 3,
             "talk": 4,
             "nerve": 2
           },
-          "making": "trpg_fading_familiar_make_adam_adam_nox"
+          "making": "trpg_fading_familiar_make_adam_adam_nox",
+          "aside": "trpg_fading_familiar_aside_adam_adam_nox",
+          "after": "trpg_fading_familiar_after_adam_adam_nox"
         }
       ]
     }

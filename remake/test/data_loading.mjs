@@ -58,7 +58,7 @@ assert.equal(vanilla.maker, "af");
 assert.equal(vanilla.name, "アルファーヘブン バニラ");
 assert.equal(vanilla.short_name, "AF バニラ");
 assert.equal(vanilla.price, 1750);
-const vanillaReward = realJSON("../data/kuji.json").grades.g500.prizes.find(item => item.flavorId === "vanilla");
+const vanillaReward = Object.values(realJSON("../data/kuji.json").grades).flatMap(grade => grade.prizes).find(item => item.flavorId === "vanilla");
 assert(vanillaReward.name.startsWith(vanilla.short_name));
 for (const id of ["minto", "ageha"]) {
   for (const face of all.DB.manifest.portraits[id].faces) {

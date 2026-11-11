@@ -245,7 +245,7 @@ td .when { margin-left: 0; }
 .pchip { display: inline-block; font-size: .86em; border-radius: 1mm; padding: 0 1.4mm; background: #e7dcc7; margin: .3mm .6mm .3mm 0; white-space: nowrap; line-height: 1.6; }
 .pchip.up { background: #fbd3b6; } .pchip.down { background: #cfe7f2; }
 .deck li.coal { font-weight: 900; }
-/* 炭ゾーンと炭焼き場の図 */
+/* 火力ゾーンと炭焼き場の図 */
 .cz { display: flex; gap: 1mm; align-items: flex-end; flex-wrap: wrap; }
 .cz i { font-style: normal; width: 9.4mm; height: 12.6mm; border-radius: 1.1mm; display: flex; flex-direction: column; align-items: center; justify-content: center; font-weight: 900; font-size: 6.2pt; line-height: 1.15; text-align: center; flex: none; }
 .cz i.em { background: radial-gradient(circle at 50% 45%, #5a2a16 0, #2a1c16 60%, #1b1614 100%); border: .3mm solid #000; color: #e9b27a; }
