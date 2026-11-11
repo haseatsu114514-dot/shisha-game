@@ -21,8 +21,11 @@ def main():
     premium_items = json.loads((PREMIUM_RECORDS / 'sources.json').read_text())['items']
     if [item['id'] for item in original_items] != ['lotos_hagal', 'flat_charcoal', 'cube_charcoal']:
         raise ValueError('Unexpected original shop illustration IDs')
-    if [item['id'] for item in premium_items] != ['kumogama_phunnel', 'lotos_plus', 'stand_walnut', 'stand_custom']:
-        raise ValueError('Only the four approved premium illustrations are selected')
+    # 2026-11-11 オーナー採用: 高密度フラット炭C（#3335）・くじ限定台3種（#3336）・アマバースト（#3337）
+    if [item['id'] for item in premium_items] != ['kumogama_phunnel', 'lotos_plus', 'stand_walnut', 'stand_custom',
+                                                  'dense_flat_charcoal', 'stand_custom_melty', 'stand_custom_tosu',
+                                                  'stand_custom_engraved', 'amaburst_hms']:
+        raise ValueError('Only the approved premium illustrations are selected')
     items = original_items + premium_items
     mappings, report = [], []
     for item in items:
