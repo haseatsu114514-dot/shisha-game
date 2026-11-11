@@ -62,6 +62,7 @@ export function initLayers() {
 // ---------------------------------------------------------------- 背景（クロスフェード）
 
 let bgNow = "";
+let bgShown = ""; // 実際に #bg へ出した背景（読めずに見送った指定は含まない）
 let bgTask = Promise.resolve();
 let bgAssetsReady = Promise.resolve();
 let activeCurtain = null;
@@ -191,17 +192,27 @@ export function setBg(url, { instant = false, tint = null, fast = false, brief =
   if (curtain) activeCurtain = curtain;
   bgNow = key;
   bgAssetsReady = Promise.all([...sceneArtUrls(url, art), ...ready].map((u) => imageReady(u, 15000)));
-  bgTask = Promise.all([curtain?.covered, bgAssetsReady]).then(() => {
+  bgTask = Promise.all([curtain?.covered, bgAssetsReady]).then(([, loaded]) => {
     if (bgNow !== key) return; // 待っている間に別の背景が指定された
-    const next = el("div.bg-img");
-    renderSceneArt(next, url, art);
-    if (!url) next.classList.add("black");
-    if (fast) next.classList.add("fast");
-    if (tint) next.dataset.tint = tint;
-    host.append(next);
-    syncBackdrop(url, tint, instant);
+    // 背景の絵そのもの（先頭）が読めなかった（通信失敗・時間切れ）ときは、前の背景を残す。読めない絵の層を重ねて
+    // 前の背景を片付けると、黒一色の画面になる（#3203）。同じ背景をもう一度指定したら読み直すよう、記録は今出ている背景に戻す。
+    // 背景を消す指定（url なし＝暗転）と、まだ何も出ていない最初の背景は、これまでどおり差し替える。
+    const keep = !!url && loaded[0] === false && host.children.length > 0;
+    const next = keep ? null : el("div.bg-img");
+    if (keep) bgNow = bgShown;
+    else {
+      bgShown = key;
+      renderSceneArt(next, url, art);
+      if (!url) next.classList.add("black");
+      if (fast) next.classList.add("fast");
+      if (tint) next.dataset.tint = tint;
+      host.append(next);
+      syncBackdrop(url, tint, instant);
+    }
+    // 場面はここで確定する。絵が読めず前の背景を残したときも、入店の合図は落とさない（進行は止めない）。
     curtain?.commitArrival?.(url);
     if (!curtain) sceneArrival.commitArrival(url);
+    if (keep) return; // 背景・余白のぼかし・雨は前の場面のまま
     weatherBg = url || "";
     weatherTint = tint || "";
     refreshWeather();
