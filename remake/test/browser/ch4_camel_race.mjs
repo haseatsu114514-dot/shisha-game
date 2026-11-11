@@ -102,7 +102,7 @@ await suite("ch4-camel-race", async check => {
     const enteredBefore = (await entered(page)).length;
     await page.locator(dt("camel-tutorial")).waitFor({ timeout: 20000 });
     assert.equal((await entered(page)).length, enteredBefore, "the watched scene must not replay");
-    for (let i = 0; i < 3; i++) await page.locator(dt("camel-tutorial-next")).click();
+    assert.equal(await readTutorial(page), 4, "the how-to has four pages (the fourth is the tactics page)");
     await page.locator(dt("camel-result")).waitFor({ timeout: 120000 });
     const result = await page.locator(dt("camel-result")).evaluate(node => ({ ...node.dataset }));
     assert.equal(result.rank, "1"); assert.equal(result.grade, "S");
@@ -234,7 +234,7 @@ await suite("ch4-camel-race-daily", async check => {
     await camelTest(page, { pilot: "perfect", timeScale: 8 });
     await go(page, "ch4_dubai_camel");
     await page.locator(dt("camel-tutorial")).waitFor({ timeout: 60000 });
-    for (let i = 0; i < 3; i++) await page.locator(dt("camel-tutorial-next")).click();
+    await readTutorial(page);
     await page.locator(dt("camel-result")).waitFor({ timeout: 120000 });
     await page.locator(dt("camel-finish")).click();
     // 昼の枠は一度だけ使い、同じ日の夜の地図へ（日常ループと二重に進めない）。
@@ -295,6 +295,21 @@ await suite("ch4-camel-cups", async check => {
     assert.deepEqual((await get(page)).flags._camel_cups, completed.flags._camel_cups);
   });
 });
+
+// 遊び方を最後のページまで「次へ」で読み、閉じたらページ数を返す。どのページの絵も読めている（4ページ目は駆け引きの絵 CR-WD07）。
+async function readTutorial(page) {
+  let pages = 0;
+  while (await page.locator(dt("camel-tutorial")).count()) {
+    assert(pages < 8, "the how-to ends");
+    await page.waitForFunction(() => {
+      const art = document.querySelector('[data-test="camel-tutorial-art"]');
+      return art?.complete && art.naturalWidth > 0;
+    });
+    pages += 1;
+    await page.locator(dt("camel-tutorial-next")).click();
+  }
+  return pages;
+}
 
 async function expectLabel(locator, pattern) {
   await locator.waitFor();

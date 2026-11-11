@@ -11,7 +11,7 @@ Issue: [#3217](https://github.com/haseatsu114514-dot/shisha-game/issues/3217)（
 |---|---|---|
 | スタートとゴールの門 | 木の柱と布の幕を四角と三角で描いた図形。背景の絵の隣で浮く | CR-WD01 |
 | 100mごとの距離板 | 四角3枚 | CR-WD02 |
-| 走路の砂・車の道 | 乱数で打った点と線のタイル。広い面積が単調 | CR-WD04 |
+| 走路の砂・車の道 | 乱数で打った点と線のタイル。広い面積が単調 | CR-WD04（走路の砂は**2026-11-11 採用・組み込み済み**。道は再依頼） |
 | 砂煙 | 丸いぼかしの円 | CR-WD03（**2026-11-11 採用・組み込み済み**） |
 | 下の2つの操作ボタン | CSS の黒い角丸に SVG の記号 | CR-UI07（[ui-request.md](ui-request.md)。未生成） |
 | GO!・3・2・1・LAST SPURT・GOAL・GOOD・MISS | 画面の書体に縁取り（PERFECT だけ手描きの字） | CR-UI14 の残り9語（**2026-11-11 採用・組み込み済み**） |
@@ -138,6 +138,28 @@ Codex がオーナー経由で渡した `3217-dust-A-production.zip`（SHA-256 `
 | `cup-expert-A.png` | 1254×1254 | `9ecf8b7fbbae40fd3f2aecb4e2b0b7796cb60860f7b338e13e5ec83216bb5450` |
 | `fg-flagpole-A.png` | 748×2103 | `23016a56879ef0cd317375419bd1158e4bb910de07f1097424915eff428edbe8` |
 
+### 2026-11-11 遊び方の絵（CR-WD07）・走路の砂（CR-WD04）を採用
+
+`3217-tactics-and-production-QA.zip`（SHA-256 `a9af4a8c…`）。同梱の `generation-latest.json`（リポジトリでは `world/generation-tactics-track-A.json`）の SHA-256 と、原画・候補の8ファイルがすべて一致した。原画は Codex の `*-raw.png` を `*-A.png` の名前で保存した。
+
+| 部品 | 判定 | 理由 | 使う所 |
+|---|---|---|---|
+| 遊び方の絵（風よけと競り合い） | **A を採用** | 青い幕のラクダのすぐ後ろに金の幕（赤い★）のハビーバ、前のラクダで割れた風が後ろの背を流れる、で指定どおり。既存の遊び方の絵（howto-camel）と同じ手。小さくしても読める | 遊び方の4ページ目「前のラクダを使う」（新設。1ページ目は元の短い文に戻した） |
+| 走路の砂 | **A を採用（加工なし）** | 背景の絵と同じ手の、ならした砂と蹄の跡。Codex の判定は「継ぎ目の修正が必要」（継ぎ目の段差 6.9、中の段差 3.9）だったが、ゲームで描く大きさ（640×226、半分）にすると継ぎ目の段差 6.6 が中の段差（最大 6.9）の範囲に収まり、拡大しても走行中の画面でも見えなかった。手は加えていない | 走路の砂（`groundTiles()` の砂のタイル）。道はコードのまま |
+| 道（ground-road） | 不合格（Codex の判定と同じ） | 1402×1122 で上下に白い余白があり、1280×152 にできない | 再依頼 |
+| リモコン（声・通常） | 不合格（Codex の判定と同じ） | 3:1 で、指定の 4:1 にできない | 再依頼 |
+| VS（B） | 不合格（Codex の判定と同じ） | 字の後ろに四角い背景と光が残る（2回目） | 再依頼 |
+| 門（スタート・B） | 不合格（Codex の判定と同じ） | 改訂前の指定（1枚の門）で作られていた。奥の柱の根元が 52% | 改訂した指定（柱を別の絵に）で再依頼 |
+
+- ゲーム用は Codex の正寸の候補（均一の縮小だけ）: `ui/howto-tactics.png`（640×480）・`world/ground-track.png`（1280×452）。WebP は、遊び方の絵が 640×480（約95KB）、走路の砂は Canvas で描く大きさの 640×226 に均一に縮めて作った（約45KB）。
+- 画面の `data-sand` が `sprites`／`canvas`（読めなければコードで描く砂）。
+- 不合格の4枚は、縮小図だけ `world/review/rejected-gate-road-remote-vs-B.jpg` に残した。Codex の比較図は `world/review/track-tile-A-comparison.jpg`・`words-perfect-reference-comparison.jpg`。
+
+| 原画 | 寸法 | SHA-256 |
+|---|---|---|
+| `howto-tactics-A.png` | 1448×1086 | `1154d66fd023cb213fd364a595bb2f7adf05213fcbbcda1de9ec51bdada02578` |
+| `ground-track-A.png` | 2109×745 | `bb1f9c35a8a10943fdd4e08264ca3f8eb49a3ffce980093d2bc1e436e3c4645f` |
+
 ### 2026-11-11 CR-WD01 門（2案とも不合格 → 指定を改訂）
 
 同じ ZIP の `rejected/gate-start-attempt-{A,B}.png`（971×1619）。Codex の判定は「奥の柱の根元が高さの54%で、指定の47%に届かない。ゴールの門が無い」。確認して同意し、もう一つ理由を足した:
@@ -150,5 +172,5 @@ Codex がオーナー経由で渡した `3217-dust-A-production.zip`（SHA-256 `
 
 1. 原画の SHA-256・寸法・アルファを確かめ、部品ごとに選ぶ（理由をこのファイルに追記）。CR-WD04 は左右のつなぎ目を、CR-WD05 は車輪の位置を測る。
 2. 縮小だけで `assets/ui/camel_race/world/` へ置き、WebP を `remake/img/ui/camel_race/world/` に作る（Git LFS）。
-3. `remake/js/minigames/camel-race.js` の `drawGates`・`drawMarkers`・`groundTiles` を、絵が読めた時だけ絵に替える（読めなければ今の描画。`drawDust`・門の字・旗の柱・紋章・手描きの字は 2026-11-11 に済み）。CR-WD01 は奥の柱を奥の柵、手前の柱を手前の柵に同じ横位置で立てる。CR-WD05 は奥の柵の向こうに、群れと同じ速さで2〜3台を走らせる。
+3. `remake/js/minigames/camel-race.js` の `drawGates`・`drawMarkers`・`groundTiles` を、絵が読めた時だけ絵に替える（読めなければ今の描画。`drawDust`・門の字・旗の柱・紋章・手描きの字・走路の砂・遊び方の絵は 2026-11-11 に済み）。CR-WD01 は奥の柱を奥の柵、手前の柱を手前の柵に同じ横位置で立てる。CR-WD05 は奥の柵の向こうに、群れと同じ速さで2〜3台を走らせる。
 4. PC（1280×720）とスマホ横（844×390）で、スタート・中盤・スパート・ゴールを目視し、`node remake/test/browser/ch4_camel_race.mjs` を通す。

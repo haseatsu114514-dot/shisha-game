@@ -76,10 +76,12 @@ const ICONS = Object.freeze({
   camel: '<svg viewBox="0 0 48 32" aria-hidden="true"><path d="M5 30l3-9c-2-1-3-3-3-6 0-4 3-7 7-7 2-4 6-6 10-3 3 2 5 2 7 0l4-6c2-1 5 0 6 2l2 4-4 1-4 7c-1 4-4 7-8 8l1 9h-3l-2-8h-6l-3 8H9l2-8-3-1-1 9z" fill="currentColor"/></svg>',
 });
 const TUTORIAL = [
-  // 3ページとも短く（#2836）。キーは kbd で添え、タッチ端末では CSS で隠す。結果・大会選びの「？」から読み直せる。
-  { icon: "camel", art: "howto-camel", title: "ラクダは、自分で走る", body: "手前を走る金のゼッケン（★）がハビーバ。操縦はしない。背中のロボット騎手へ「声」と「ムチ」を送るだけ。前のラクダのすぐ後ろは風よけで息が戻る。並びかけると相手が粘るので、声かムチで抜き切る。" },
+  // どのページも短く（#2836）。4ページ目は駆け引き（風よけと競り合い・2026-11-11）。キーは kbd で添え、タッチ端末では CSS で隠す。結果・大会選びの「？」から読み直せる。
+  { icon: "camel", art: "howto-camel", title: "ラクダは、自分で走る", body: "手前を走る金のゼッケン（★）がハビーバ。操縦はしない。背中のロボット騎手へ「声」と「ムチ」を送るだけ。" },
   { icon: "voice", art: "howto-voice", title: "声をかける ── 左のボタン", key: "Space", body: "騎手のまわりの金の輪が縮む。内側の輪と重なった瞬間に押すと PERFECT で、ぐっと伸びる。輪の縮む速さは毎回ちがうので、よく見て押す。外したり連打したりすると、スタミナが減る。" },
   { icon: "signal", art: "howto-whip", title: "ムチ ── 右のボタンを押し続ける", key: "X", body: "押している間は加速して息が減り、離すと調子に応じて回復。40以下で注意、30未満は減速。空になる前に離し、輪に合わせた声で整える。ゲージの白い印は終盤3秒ぶんの目安。最後の4分の1の LAST SPURT はムチがよく効く。" },
+  // 駆け引き（2026-11-11）。絵は CR-WD07（#3217）。
+  { icon: "camel", art: "howto-tactics", title: "前のラクダを使う", body: "前のラクダのすぐ後ろは風よけ。息が戻り、ムチも軽くなる。並びかけると相手が粘るので、声を当てるかムチで抜き切る。競り負けた相手は気落ちして遅くなる。" },
 ];
 // レース中の SE ID は従来どおり（sfx("hoof") など）。録音はラクダ専用で、他ミニゲームの合成SEは置き換えない。
 const sfx = name => { try { if (name === "select" || name === "click" || name === "cancel") SE[name]?.(); else playCamelRaceSe(name); } catch { /* 音は無くても遊べる */ } };
@@ -99,6 +101,8 @@ const ART_FILES = Object.freeze({
   // 門の幕の字（CR-WD09）と、手前を流れる旗の柱（CR-WD06）。#3217・2026-11-11 採用。
   words: { START: "ui/camel_race/world/word-start.webp", FINISH: "ui/camel_race/world/word-finish.webp" },
   flag: "ui/camel_race/world/fg-flagpole.webp",
+  // 走路の砂（CR-WD04・#3217・2026-11-11 採用）。640×226 で横につながるタイル。読めなければコードで描く砂。
+  sand: "ui/camel_race/world/ground-track.webp",
 });
 // 旗の柱（256×720・柱の中心 x=43）: 手前の地面より前を、走路より速く（parallax 倍）流れる。スタートの少し手前とゴールの先に立てる。
 const FLAG_ART = Object.freeze({ poleX: 43, scale: 0.62, ground: 744, parallax: 1.35, at: [-14, 26] });
@@ -130,9 +134,10 @@ export function loadCamelArt() {
   const words = Promise.all(Object.entries(ART_FILES.words).map(([word, rel]) => load(rel).then(image => [word, image], () => [word, null])))
     .then(entries => Object.fromEntries(entries.filter(([, image]) => image)));
   const flag = load(ART_FILES.flag).catch(() => null);
-  artTask ||= Promise.all([Promise.all(ART_FILES.camel.map(load)), load(ART_FILES.jockey), load(ART_FILES.suv), load(ART_FILES.wheel), load(ART_FILES.track), balloon, dust, words, flag])
-    .then(([camel, jockey, suv, wheel, track, balloonImage, dustImages, wordImages, flagImage]) => ({ camel, jockey, suv, wheel, track, balloon: balloonImage, dust: dustImages,
-      words: wordImages, flag: flagImage, ground: groundTiles(), skins: camelSkins(camel) }))
+  const sand = load(ART_FILES.sand).catch(() => null);
+  artTask ||= Promise.all([Promise.all(ART_FILES.camel.map(load)), load(ART_FILES.jockey), load(ART_FILES.suv), load(ART_FILES.wheel), load(ART_FILES.track), balloon, dust, words, flag, sand])
+    .then(([camel, jockey, suv, wheel, track, balloonImage, dustImages, wordImages, flagImage, sandImage]) => ({ camel, jockey, suv, wheel, track, balloon: balloonImage, dust: dustImages,
+      words: wordImages, flag: flagImage, ground: groundTiles(sandImage), skins: camelSkins(camel) }))
     .catch(() => null);
   return artTask;
 }
@@ -178,8 +183,11 @@ function camelSkins(frames) {
   return skins;
 }
 
-/** 走路の砂地と、SUV が走る道のタイル（横幅 TILE_W で左右がつながる）。蹄の跡・まだらの砂・轍を描き込む。 */
-function groundTiles() {
+/**
+ * 走路の砂地と、SUV が走る道のタイル（横幅 TILE_W で左右がつながる）。蹄の跡・まだらの砂・轍を描き込む。
+ * sandImage（CR-WD04 の絵）があれば、走路の砂はその絵を使う（道はコードのまま）。
+ */
+function groundTiles(sandImage = null) {
   const random = rng(20261102);
   const tile = (height, top, bottom, paint) => {
     const canvas = document.createElement("canvas");
@@ -193,7 +201,15 @@ function groundTiles() {
     paint(g, height, wrap);
     return canvas;
   };
-  const sand = tile(TRACK_BOTTOM - TRACK_TOP, "#d9b47c", "#c2894f", (g, h, wrap) => {
+  const painted = sandImage ? (() => {
+    const canvas = document.createElement("canvas");
+    canvas.width = TILE_W; canvas.height = TRACK_BOTTOM - TRACK_TOP;
+    const g = canvas.getContext("2d");
+    g.imageSmoothingQuality = "high";
+    g.drawImage(sandImage, 0, 0, canvas.width, canvas.height);
+    return canvas;
+  })() : null;
+  const sand = painted || tile(TRACK_BOTTOM - TRACK_TOP, "#d9b47c", "#c2894f", (g, h, wrap) => {
     // ならした砂の筋（横）。
     for (let i = 0; i < 70; i++) {
       const y = random() * h, x = random() * TILE_W, w = 60 + random() * 220, light = random() < 0.5;
@@ -227,7 +243,7 @@ function groundTiles() {
       for (let x = 0; x < TILE_W; x += 7) { g.fillStyle = "rgba(50,30,12,0.25)"; g.fillRect(x, y - 4, 3, 8); }
     }
   });
-  return { sand, road };
+  return { sand, road, painted: !!painted };
 }
 const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
 const fmtTime = seconds => `${Math.floor(seconds / 60)}:${(seconds % 60).toFixed(2).padStart(5, "0")}`;
@@ -356,6 +372,7 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     if (done) return;
     root.dataset.art = value ? "sprites" : "canvas";
     root.dataset.dust = value?.dust ? "sprites" : "canvas";
+    root.dataset.sand = value?.ground.painted ? "sprites" : "canvas";
     if (phase === "tutorial" || phase === "loading") draw();
   });
   let race = null, phase = "loading", raf = 0, last = null, goalAt = 0, feedbackTimer = 0, bannerTimer = 0, countdownLeft = 0, countdownShown = -1;
