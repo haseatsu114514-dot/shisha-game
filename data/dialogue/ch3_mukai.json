@@ -128,9 +128,19 @@
           "text": "え、熱いよ。トング使ってほしいなぁ"
         },
         {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "こないだ聞いたときは三つだったんだけどね。回ってるうちに増えてる"
+        },
+        {
           "speaker": "hajime",
           "face": "normal",
           "text": "ましろちゃん、それ真面目に心配してる？"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "うん。火傷したら、煙どころじゃないでしょ。僕、そういう話だけは落ち着かないんだ"
         },
         {
           "speaker": "",
@@ -158,9 +168,19 @@
           "text": "僕は、前に来たお客さんに教わっただけなんだけどなぁ"
         },
         {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "へえ。炭の角を、そうやって内側に向けるんだ。手が覚えてる感じだね"
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "ムカイさんと目が合った。彼は肩をすくめるだけだった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……あの置き方を、ましろちゃんに教えた人がいる）"
         },
         {
           "speaker": "hajime",
