@@ -803,10 +803,18 @@ let bgmTempo = 1, bgmTempoTarget = 1;
 const TEMPO_EASE = 0.22;
 const TEMPO_BGM = new Set(["bgm_camel_race", "bgm_ethnic05", "bgm_ethnic08", "bgm_ethnic12"]);
 
+// 2026-11-11 オーナー「ブーストするとBGM止まったりもバグ」: iPhone の Safari は、再生倍率や preservesPitch を書くたびに
+// 音の処理を作り直し、短い間に何度も変えると曲が途切れたり止まったりする。毎フレーム書き直していたのをやめ、
+// 0.01 刻みで値が変わった時だけ書く。変えた拍子に止まっていたら、同じ所から続ける。
 function applyBgmPlaybackRate() {
   if (!currentEl || currentKey === "bgm_continue_urgent") return;
-  currentEl.playbackRate = TEMPO_BGM.has(currentKey) ? bgmTempo : 1;
-  currentEl.preservesPitch = true;
+  const el = currentEl;
+  const rate = TEMPO_BGM.has(currentKey) ? Math.round(bgmTempo * 100) / 100 : 1;
+  if (el.preservesPitch !== true) el.preservesPitch = true;
+  if (Math.abs(el.playbackRate - rate) < 0.001) return;
+  const wasPlaying = !el.paused;
+  el.playbackRate = rate;
+  if (wasPlaying) setTimeout(() => { if (currentEl === el && el.paused && !bgmPaused && !rotateHeld && !document.hidden) el.play().catch(() => {}); }, 150);
 }
 
 /** 今の曲の目標再生倍率。1.00〜1.25。immediate ならその場で反映。 */

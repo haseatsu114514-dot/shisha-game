@@ -120,7 +120,7 @@ test("a bump taken without pressing only bounces (slower, no score); a flat pres
   assert.equal(game.airTotal, JUMP.hopAir);
 });
 
-test("hitting a rock is a fall: slower, combo reset, recoverable, never game over; a big jump clears any rock, a hop only small ones", () => {
+test("hitting a rock is a fall: slower, combo reset, recoverable, never game over; a big jump clears any rock, a hop small ones and big ones near its top", () => {
   const course = generateCourse(DEFAULT_SEED);
   const rock = course.features.find(f => f.kind === "rock");
   let game = createGame(course);
@@ -142,11 +142,20 @@ test("hitting a rock is a fall: slower, combo reset, recoverable, never game ove
   game.x = rock.x; game.air = 1; game.airTotal = 1; game.airKind = "big";
   while (!game.passed.has(rock)) { game.x = rock.x; step(game, {}, DT); }
   assert.equal(game.falls, 0, "a big jump clears the rock");
-  game = createGame(course);
-  while (game.z < rock.z - 8) step(game, {}, DT);
-  game.x = rock.x; game.air = 0.5; game.airTotal = 0.5; game.airKind = "hop";
-  while (!game.passed.has(rock)) { game.x = rock.x; step(game, {}, DT); }
-  assert.equal(game.falls, rock.size === "small" ? 0 : 1, "a hop only clears small rocks");
+  // ホップ（2026-11-11 オーナー「ブースト溜まってない時のジャンプが弱すぎて難しい」）: 小さい岩はいつでも、
+  // 大きい岩は跳んだ高い所（JUMP.hopClearsBig 以上）で越える。低い所（跳び始め・着地際）では大きい岩に当たる
+  const big = course.features.find(f => f.kind === "rock" && f.size !== "small"), small = course.features.find(f => f.kind === "rock" && f.size === "small");
+  const hopOver = (target, height) => {
+    const g = createGame(course);
+    while (g.z < target.z - 1) step(g, {}, DT);
+    g.x = target.x; g.airKind = "hop"; g.airTotal = 1; g.air = 0.5; g.airPeak = height; // 弧の頂上で岩の上を通る
+    while (!g.passed.has(target)) { g.x = target.x; g.air = 0.5; step(g, {}, DT); }
+    return g.falls;
+  };
+  assert.equal(hopOver(small, 0.2), 0, "a hop clears a small rock even low");
+  assert.equal(hopOver(big, JUMP.hopClearsBig + 0.05), 0, "a hop clears a big rock near its top");
+  assert.equal(hopOver(big, JUMP.hopClearsBig - 0.2), 1, "but not a big rock while still low");
+  assert(jumpPeak(SPEED.start, "hop") > JUMP.hopClearsBig + 0.2, "a hop from the start speed is high enough to clear a big rock at its top");
 });
 
 test("passing close to a rock scores a near miss and extends the combo", () => {
@@ -491,7 +500,7 @@ test("take-off speed raises big jumps and hops through boost speed, without movi
       assert.equal(press(game), kind);
       assert(game.airPeak > previous, `${kind} gets higher at ${speed}m/s`);
       previous = game.airPeak;
-      const expectedTime = kind === "big" ? JUMP.bigAir * (0.85 + 0.3 * Math.min(1, speed / SPEED.max)) : JUMP.hopAir;
+      const expectedTime = kind === "big" ? JUMP.bigAir * (JUMP.airFloor + JUMP.airGain * Math.min(1, speed / SPEED.max)) : JUMP.hopAir;
       assert.equal(game.airTotal, expectedTime, "the configured airtime applies at take-off");
       assert.equal(jumpHeight(game), 0, "starts on the ground");
       game.air = game.airTotal / 2;

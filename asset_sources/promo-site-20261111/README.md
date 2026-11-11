@@ -5,7 +5,7 @@
 | フォルダ | 中身 |
 |---|---|
 | `textures/` | 紙と木目の原本（ambientCG・CC0 1.0・2026-11-11 取得）。`python3 promo/tools/build_parts.py --textures asset_sources/promo-site-20261111/textures` で `promo/img/tex/`・`promo/img/parts/` を作り直す |
-| `keyvisual/` | （未着）横長キービジュアルの原画。依頼は #3232 |
+| `keyvisual/` | 横長キービジュアルの原画6枚（#3232。2026-11-11 オーナーが全採用）。サイトでの使い分けは `promo/README.md`「サイトのために描いたキービジュアル」 |
 | `parts/` | （未着・任意）ちぎった紙の縁・テープの差し替え候補。依頼は #3232 |
 
 ## テクスチャの出典
@@ -22,4 +22,4 @@ Paper001 は右端に継ぎ合わせの乱れがあるので、`build_parts.py` 
 ## 画像生成について
 
 2026-11-11 に画像生成API（`gpt-image-2.5-sunburst`）で質感パーツを作ろうとしたが、残高切れ（`credit_balance_exhausted`）で1枚も生成していない。
-サイトの絵はすべてゲームの採用済み素材で、ちぎった紙の縁とテープは上の紙の地からスクリプトで形を付けた物。
+ちぎった紙の縁とテープは上の紙の地からスクリプトで形を付けた物。横長のキービジュアルは、その後 Codex の内蔵画像生成で描いた（`GENERATION.md`）。
