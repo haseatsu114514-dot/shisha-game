@@ -38,11 +38,12 @@ const NAME = { master_hookah: "王 煙楼" };
 
 // 第1章: 前夜の過ごし方（ch1_day7_last_night の4択）を、はじめの入場カードのスミの一言で受ける（#2091）。
 // 旧セーブや未選択は ENTRANCE_CARDS の一言のまま。
+// どの一言も、正本の入場メッセージ「目の前の一人に届けてこい」で締める（優勝の場面 ch1_tournament_reveal がこの言葉を回収する）。
 export const CH1_EVE_NOTES = Object.freeze({
-  practice: "昨日の最後の一台どおりにやれ。手はもう覚えてる",
-  talk_sumi: "決められるのは、どういう煙を出すかだけだ。行ってこい",
-  sleep_early: "いい顔だ。よく眠れたみたいだな。行ってこい",
-  drill: "昨夜さらった工程、焦るなよ。あとは目の前の一人だ",
+  practice: "手はもう覚えてる。目の前の一人に届けてこい",
+  talk_sumi: "決められるのは、出す煙だけだ。目の前の一人に届けてこい",
+  sleep_early: "いい顔だ。よく眠れたな。目の前の一人に届けてこい",
+  drill: "昨夜さらった工程、焦るなよ。目の前の一人に届けてこい",
 });
 
 function faceOf(card) {

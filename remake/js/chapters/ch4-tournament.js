@@ -24,6 +24,8 @@ import { showChapterFourStandings } from "./ch4-standings.js";
 import { chapterFourMatch, startChapterFourCraft, recoverChapterFourStep, chapterFourRetryContext,
   beginChapterFourStep, finishChapterFourStep, chapterFourStandings } from "./ch4-tournament-state.js";
 import { chapterFourCraftAdvice, chapterFourCustomerLines } from "./ch4-verdict.js";
+import { readChapterFourStaffCheckpoint } from "./ch4-staff-work.js";
+import { CH4_STAFF_IDS } from "./ch4-staff-work-progress.js";
 
 const setup = async cs => { await stepSetup(cs); await stepWater(cs); };
 const STEPS = [setup, stepMix, stepPack, runHoles, stepPlace, runHeat, stepSteamTime, runSteamDodge,
@@ -69,6 +71,11 @@ export async function runChapterFourCraft({ isCurrent, menuButton }) {
       requireCurrent();
       if (!told) return false;
       save();
+    }
+    if (p.step === 1) {
+      const told = await readChapterFourStaffCheckpoint(CH4_STAFF_IDS.echo, { isCurrent: live });
+      requireCurrent();
+      if (!told) return false;
     }
     // 助言の読了も工程前に保存し、再開で同じ問いを繰り返さない。
     const adviceKey = `step${p.step}`;

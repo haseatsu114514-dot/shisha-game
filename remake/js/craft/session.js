@@ -528,12 +528,35 @@ export async function failBench(cs, kind) {
 }
 
 /** 採点状態から表示だけを更新する。 */
+// ランクの絵（D〜SSS・CSL10）。帯の中では大きな文字だけが読める大きさなので、
+// ランクが変わった瞬間に舞台へ大きく出して補助名（Smokin' など）まで読ませ、帯の定位置へ縮めて収める。
+const rankArt = grade => `img/ui/craft-rank/rank-${grade}.webp`;
+function burstRank(b, grade) {
+  const root = b.root, hud = b.rankHud?.root;
+  if (!hud || !root.isConnected || craftTest.auto || document.hidden) return;
+  if (globalThis.matchMedia?.("(prefers-reduced-motion: reduce)").matches) return;
+  root.querySelector(":scope > .craft-rank-burst")?.remove();
+  const box = root.getBoundingClientRect(), k = box.width / 1280 || 1, target = hud.getBoundingClientRect();
+  const burst = el("img.craft-rank-burst", { src: rankArt(grade), alt: "", draggable: false, dataset: { grade } });
+  // 着地点（帯のランク）の中心と大きさを、作業台の座標で渡す。
+  burst.style.setProperty("--to-x", `${((target.left + target.width / 2) - box.left) / k}px`);
+  burst.style.setProperty("--to-y", `${((target.top + target.height / 2) - box.top) / k}px`);
+  burst.style.setProperty("--to-s", String(Math.max(.08, (target.height / k) / 300)));
+  root.append(burst);
+  burst.addEventListener("animationend", () => burst.remove(), { once: true });
+  setTimeout(() => burst.remove(), 2600);
+}
+
 function updateBenchRank() {
   if (!bench?.rankHud) return;
   const cs = bench.cs;
   const final = !!cs.parts && Number.isFinite(cs.total);
   const score = final ? cs.total : provisionalCraftScore(cs);
-  bench.rankHud.update(score === null ? null : craftRankProgress(score, CRAFT_RANK_THRESHOLDS));
+  const progress = score === null ? null : craftRankProgress(score, CRAFT_RANK_THRESHOLDS);
+  const before = bench.rankGrade ?? null;
+  bench.rankHud.update(progress && { ...progress, artwork: { wide: rankArt(progress.grade), compact: rankArt(progress.grade) } });
+  bench.rankGrade = progress?.grade ?? null;
+  if (progress?.grade && progress.grade !== before) burstRank(bench, progress.grade);
   bench.rankHud.root.dataset.provisional = String(!final);
   bench.rankHud.root.setAttribute("aria-label", final ? "制作ランク" : "制作ランク（暫定）");
   bench.rankHud.root.querySelector(".craft-rank-caption").textContent = final ? "RANK" : "RANK（暫定）";

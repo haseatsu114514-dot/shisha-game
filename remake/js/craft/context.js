@@ -1,5 +1,7 @@
 // 制作の表示だけ。練習・レッスン・リハーサルに架空の客や審査員を置かない。
 export function craftContext(cs) {
+  if (cs.serviceRecipient) return { title: "提供", summary: `${cs.serviceRecipient}へ戻し、吸った様子を確かめよう`,
+    recipient: cs.serviceRecipient, returned: `${cs.serviceRecipient}へ戻せた`, waiting: "お客さんが吸ううちに" };
   const practice=cs.mode==="drill"||cs.mode==="rehearsal"||!!cs.practiceKind;
   if(cs.mode==="tournament")return {title:"提供",summary:"審査員へシーシャを提供した。しばらく吸ってもらおう",recipient:"審査員",returned:"審査員へ戻せた",waiting:"審査員が吸ううちに"};
   if(cs.mode==="tutorial")return {title:"仕上がりの確認",summary:"スミさんと仕上がりを確かめよう",recipient:"スミさん",returned:"スミさんと確かめられた",waiting:"試し吸いをするうちに"};

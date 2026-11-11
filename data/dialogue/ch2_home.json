@@ -48,6 +48,31 @@
           "text": "（顔に出てたのか……）"
         },
         {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "今日は、隣町に行かないんです。なのに、いつもの時間が気になって"
+        },
+        {
+          "speaker": "master_cafe",
+          "face": "",
+          "text": "体の方が、時刻表を覚えたんですね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "乗らない日まで、乗り遅れそうになってました"
+        },
+        {
+          "speaker": "master_cafe",
+          "face": "",
+          "text": "ここで一本、見送りましょう。お席は空いてますから"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "カップを両手で持ち直すと、ちょうどいい温かさだった。"
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "時計は見ないで、最後の一口まで飲んだ。"

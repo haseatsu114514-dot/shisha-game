@@ -46,7 +46,7 @@ const g = kuji.grades.g20000;
 const shopTop = Math.max(...Object.values(kuji.grades).filter(x => !x.limited).map(x => x.price));
 assert.equal(g.chapterMin, 5, "第5章から");
 assert(g.price > shopTop, `いちばん高いくじ（${g.price} > ${shopTop}）`);
-assert.equal(g.label, "限定台くじ（1回20,000円）");
+assert.equal(g.label, "限定台くじ（1回10,000円）"); // 値段は1ランク下げた（KJ15）
 assert(g.boxSize >= 20 && g.boxSize <= 50, "箱の枚数は既存の箱と同じ幅");
 assert.equal(g.prizes.reduce((n, p) => n + p.count, 0), g.boxSize);
 assert.equal(g.lastOne.secret, true);
@@ -195,7 +195,7 @@ assert.equal(otherBox.drawn, 0);
 assert.equal(t.state.kujiTickets, 1, "使えないくじでは減らない");
 got = t.takeTicket(g, box);
 assert(got, "お金で引ける");
-assert.equal(t.state.money, 30000, "1回20,000円");
+assert.equal(t.state.money, 40000, "1回10,000円");
 assert.equal(t.state.kujiTickets, 1, "お金で引いてもくじ券は減らない");
 // 引き切った箱にはくじ券を使わない。
 box.drawn = box.order.length;

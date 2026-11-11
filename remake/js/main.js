@@ -5,12 +5,15 @@ import { TOURNAMENT_DAY } from "./core/rules.js";
 import { $, sleep } from "./core/util.js";
 import { initStageFit } from "./core/stage-fit.js";
 import { initCraftStage } from "./craft/stage-layout.js";
+import { initIchidaiSwitch } from "./daily/ichidai-table.js";
 import { loadAll, loadDeferredDialogues, loadCinemaDialogue, loadTournamentCraftDialogue, DB, bgUrl, portraitInfo, makingUrl } from "./core/data.js";
 import { loadVnFonts } from "./core/vn-fonts.js";
 import { initLayers, imageReady, FRAME_ART, warmUiArt } from "./core/ui.js";
-import { loadConfig, state, load, consumeResumeOnBoot, tickPlayTime } from "./core/state.js";
+import { loadConfig, saveConfig, state, load, consumeResumeOnBoot, tickPlayTime } from "./core/state.js";
 import { unlockAudio, preloadBgm } from "./core/audio.js";
 import { applyUiTheme } from "./core/ui-theme.js";
+import { initLook, normalizeLook } from "./core/look.js";
+import { installLooks } from "./looks/index.js";
 import { installRotateGuard } from "./core/rotate-guard.js";
 import { imgFileUrl } from "./core/img-file.js";
 import { withLoading } from "./core/loading.js";
@@ -38,8 +41,14 @@ export async function boot() {
   initLayers();
   initGameLayout();
   initCraftStage(); // シーシャ作りの新しい配置（?craftStage=1 で入・CSL）
+  initIchidaiSwitch(); // カードゲーム「一台勝負」の入口（?ichidai=1 で入・ICG）
   const cfg = loadConfig();
   applyUiTheme(cfg.uiTheme);
+  // 見た目の様式（現行／新版／DS風・LK01）。?look=neo などで端末の設定ごと切り替えられる。
+  const lookParam = new URLSearchParams(location.search).get("look");
+  if (lookParam !== null && normalizeLook(lookParam) === lookParam) { cfg.look = lookParam; saveConfig(); }
+  initLook({ look: cfg.look, chapter: () => (document.body.dataset.screen === "title" ? 1 : state?.chapter || 1) });
+  installLooks();
   // 設定「揺れ・閃光を減らす」を CSS からも見えるようにする（場面の演出の閃光を省く・#2688 F11）
   document.body.classList.toggle("reduce-shake", !!cfg.reduceShake);
   const growthParam = new URLSearchParams(location.search).get("growth");
@@ -151,7 +160,7 @@ window.__remake = {
       return Object.fromEntries(Object.keys(kit.ADOPTED_VARIANT).map((k) => [k, kit.motionVariant(k)]));
     },
     // 場面ごとのモーショングラフィックスを本来の背景・会話つきで見る（cheki / tarot / gift / shift / shark / sketch）。
-    // 夜明けの天気は dawn-sun / dawn-cloud / dawn-rain / dawn-sick（DAY3→4）。くじのガラガラは garagara-S / -A / -B / -C、ラストワン賞は garagara-LAST（C賞のあとに続けて見るなら garagara-C+LAST）。章題は chapter-1 / -2 / -4 / -5。※今のセーブを上書きする
+    // 夜明けの天気は dawn-sun / dawn-cloud / dawn-rain / dawn-sick（DAY3→4）。くじのガラガラは garagara-S / -A / -B / -C、ラストワン賞は garagara-LAST（C賞のあとに続けて見るなら garagara-C+LAST）。連続は garagara-10 / -10A / -10S / -10LAST（5回なら garagara-5S）。章題は chapter-1 / -2 / -4 / -5。※今のセーブを上書きする
     async motion(name = "cheki") {
       const core = await import("./core/state.js");
       const { play } = await import("./vn/engine.js");

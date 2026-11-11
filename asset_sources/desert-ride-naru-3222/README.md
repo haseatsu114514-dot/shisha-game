@@ -1,33 +1,42 @@
-# Issue #3222 なるのサンドボードライダー
+# Issue #3222 なる（裏ボス）のサンドボードライダー
 
-Codex 内蔵 image_gen で、1回につき1ポーズを生成した透過 PNG 原画。ゲーム用 WebP は `remake/img/ui/desert_ride/rider_naru_*.webp`。2026-11-11 作成。
+Codex の画像生成で作った透過 PNG 原画（6ポーズ）。ゲーム用 WebP は `remake/img/ui/desert_ride/rider_naru_*.webp`。
+2026-11-11 にオーナーが ZIP で受け渡し（`naru-sandboard-3222-candidates.zip`）。同梱の `SHA256.json` と 25 ファイルすべて一致を確認した。
 
-## 参照画像と役割
+## 採用したもの
 
-- **人物**: `assets/sprites/characters/naru/chr_naru_normal.png`。なる本人の銀灰色の短髪、日焼け肌、白い切り替えのある黒いボンバージャケット、黒いカーゴパンツと腰のチェーン、白いスニーカーを固定。
-- **構図と縮尺**: 各ポーズに対応する `remake/img/ui/desert_ride/rider_<pose>.webp`。背面の視点、姿勢、画面内の縮尺、板の遠近、板の基準点を合わせる。
-- **同一人物**: 2枚目以降は最初に生成した `rider_naru_ride.png`。人物・服・クリーム色の板を統一。
-- **画風固定**: 既存 `rider_*` の日本アニメ調、明瞭な輪郭線、柔らかいセル調の陰影、背面視点、板の遠近を合わせる。
+| 原画 | ポーズ | WebP の寸法 | 基準点（板の中心） | 原画→WebP の倍率 |
+| --- | --- | --- | --- | --- |
+| `rider_naru_ride.png` | 通常の滑走 | 517×796 | 0.5954, 0.8026 | 0.5932 |
+| `rider_naru_lean_left.png` | 画面の左へ傾けて旋回 | 581×752 | 0.588, 0.7849 | 0.5699 |
+| `rider_naru_lean_right.png` | 画面の右へ傾けて旋回 | 591×810 | 0.486, 0.7764 | 0.6513 |
+| `rider_naru_jump.png` | 空中で膝を曲げる | 560×696 | 0.5779, 0.8011 | 0.554 |
+| `rider_naru_brace.png` | 着地に備えて深くしゃがむ | 600×656 | 0.5384, 0.8029 | 0.5348 |
+| `rider_naru_fall.png` | 板が離れた転倒 | 541×652 | 0.5265, 0.9582 | 0.5062 |
 
-## 生成指示
+正確な値と原画の SHA-256 は `adoption.json`（`build.py` が書き出す）。`desert-ride-art.js` の `naruRider…` は同じ値で、`remake/test/desert_ride.mjs` が照合する。
 
-通常滑走は Issue #3222 の「コピペ用プロンプト」を使用し、参照画像に上記の役割ラベルを付けた。2枚目以降は同 Issue の差し替え文に従い、人物・画風・禁止事項を維持してポーズと寸法のみ差し替えた。共通指示は次の通り。
+## 作り直しの手順（`build.py`）
 
-> Game sprite, back view of a 23-year-old Japanese man riding a cream-colored sandboard down a dune. Same character as the attached portrait (chr_naru_normal.png): short spiky silver-gray hair, tanned skin, a black bomber jacket with white panels from the shoulders down the sleeves, collar up, black cargo pants with a silver wallet chain at the hip, white chunky sneakers strapped to the board. Camera from behind and slightly above, his face not visible. Match the attached rider_<pose>.webp exactly for camera angle, pose framing, character scale and board perspective, so the two sprites can stand side by side in the same game: clean Japanese anime style, clear outlines, soft cel shading. Fully transparent background. No ground, no sand, no dust, no ground shadow, no text, no logos, no other people, no hookah equipment.
+Codex が同梱した `canvas-candidates/`（主人公と同じキャンバスへ中央に縮めただけ）は、板が基準点から最大29px（約4%）ずれ、背丈も主人公の約94%だったので採用しなかった。代わりに原画から作り直した。
 
-| 原画 | ポーズ指示 | WebP寸法 | anchor（比率） |
-| --- | --- | --- | --- |
-| `rider_naru_ride.png` | 安定した通常滑走、膝を軽く曲げ両腕でバランス | 489×768 | 0.6125, 0.833 |
-| `rider_naru_lean_left.png` | 画面左へ強く傾けて旋回 | 536×724 | 0.6294, 0.8209 |
-| `rider_naru_lean_right.png` | 画面右へ強く傾けて旋回 | 542×771 | 0.5103, 0.8261 |
-| `rider_naru_jump.png` | 空中で膝を曲げ、板を傾ける | 537×670 | 0.5761, 0.8388 |
-| `rider_naru_brace.png` | 着地に備えて深くしゃがむ | 561×644 | 0.558, 0.8198 |
-| `rider_naru_fall.png` | 横へ転倒し、板が離れる | 554×655 | 0.5256, 0.9569 |
+1. 透明部分の薄いノイズを消す（不透明度10未満で、人物から6px以上離れた点）。
+2. 縮尺: 主人公の同じポーズ（`rider_<pose>.webp`）と「絵の上端（頭）から板の中心まで」の長さが同じになる倍率。転倒だけは板が離れるので絵の高さをそろえる。
+3. 基準点: 板の中心（クリーム色の画素の重心）。転倒は、主人公の転倒の基準点が絵の範囲のどこにあるかを写す。
+4. キャンバスは絵の範囲＋2px。乗算済みアルファで縮小し、WebP（品質90）で保存。
 
-WebP は原画を表のキャンバス寸法へ Lanczos で縮小し、透過を保持して品質92で保存した。`anchor` は現行の主人公・ヌールと同じ値。転倒のみ体の中心と下端が基準。
+身長の差（なる176cm・主人公172cm・ヌール168cm）は絵ではなく、描く時の倍率 `RIVAL_ART_SCALE`（`desert-ride.js`。`data/characters.json` の `spriteScale` と同じ値）で付ける。
+別の原画に替えるときは、原画を置き換えて `python3 asset_sources/desert-ride-naru-3222/build.py` を実行し、出力された寸法・基準点を `DESERT_ART` に写す。
 
-## 検品
+## 保存しなかったもの
 
-- 6枚の原画・WebP は RGBA 透過で四隅の alpha がすべて 0。WebP の寸法は表と一致。
-- 主人公・ヌールの6ポーズと並べて確認し、背面の人物の高さと板の位置、銀灰色の髪、白い袖、クリーム色の板を目視確認。
-- ゲーム内でのヌール勝利後の対戦と 360 回転は、受け口 PR #3231 が未マージのため未確認。
+- Codex の `canvas-candidates/` と同梱の WebP（上の理由で不採用）。
+- `rejected/` の2枚（最初の生成で頭・指先が切れた通常と右旋回。作り直し済み）。LFS の容量を使わないため保存しない。
+
+## 別案（PR #3234・未採用）
+
+Codex が別に作った6ポーズの原画を `alt-pr3234/` に保存した（ゲームには入れていない）。出来は同等だが、#3234 のゲーム用 WebP は板が基準点から 4〜39px ずれていたため使っていない。差し替える手順は `alt-pr3234/README.md`。
+
+## Codex の生成記録
+
+`GENERATION.txt`（生成指示の要約）、`references.json`（参照画像のパスと SHA-256）、`codex-notes.txt`（Codex の受け渡しメモ）。

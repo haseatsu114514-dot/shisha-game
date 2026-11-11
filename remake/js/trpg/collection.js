@@ -52,7 +52,7 @@ export function mountTrpgCollection(host, {
     const ticket = ++generation;
     controller?.destroy(); phase = "session"; onScenarioChange(id);
     const mounted = mountTrpg(host, { scenario, characters: resources.characters, manifest: resources.manifest, tableTalk: resources.tableTalk, audio,
-      tutorialLines: resources.tutorialLines, tutorial,
+      tutorialLines: resources.tutorialLines, tutorial, costumeFrames: resources.costumeFrames,
       seed: seed ?? Date.now(), profileId: scenario.profiles.some(p => p.id === profileId) ? profileId : null,
       closeLabel: "本棚へ戻る" });
     controller = mounted;

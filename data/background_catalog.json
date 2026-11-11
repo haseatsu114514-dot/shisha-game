@@ -655,6 +655,30 @@
    "blob": "acfc5ba998f79b122a4bee38094b2529a6f2c45a",
    "accepted": "2026-11-02 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
   },
+  "bg_mukai_backdoor_day.png": {
+   "place": "mukai_backdoor",
+   "time": "day",
+   "weather": "",
+   "size": [
+    1672,
+    941
+   ],
+   "luma": 112,
+   "blob": "4de57efec2fbd310bbc150c81722d6ea3602e1ba",
+   "accepted": "2026-11-11 オーナー承認: てつこといっしょの画面専用。Codex の生成機能が 1672×941 までで規格に届かない（#2689・PR #2695 の案02）"
+  },
+  "bg_mukai_backdoor_night.png": {
+   "place": "mukai_backdoor",
+   "time": "night",
+   "weather": "",
+   "size": [
+    1672,
+    941
+   ],
+   "luma": 67,
+   "blob": "272477389391a0b09f8c535aff30b04a9b66556b",
+   "accepted": "2026-11-11 オーナー承認: てつこといっしょの画面専用。Codex の生成機能が 1672×941 までで規格に届かない（#2689・PR #2695 の案02）"
+  },
   "bg_mukai_shop.png": {
    "place": "mukai_shop",
    "time": "",

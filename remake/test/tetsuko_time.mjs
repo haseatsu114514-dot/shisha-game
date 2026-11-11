@@ -494,6 +494,23 @@ assert.equal(classifyFlag(OUTINGS_FLAG), "progression");
   assert.equal(record.album.length, ALBUM_LIMIT);
   assert(record.album.every(entry => !("png" in entry)), "画像データは記録に残さない");
   assert.equal(record.album.find(entry => entry.moment === "first_paw").day, 0, "重複は先の1件だけ");
+  // 夜に撮った写真は night を残す（手帳で夜の裏口を背にして見せる）。昼の写真と旧い記録には付けない。壊れた値は昼。
+  const night = createSession(save({ count: 4, slot: 1 }));
+  keep(act(night, "pet"));
+  assert(takePhoto(night));
+  assert.equal(night.album[0].night, true);
+  const day = createSession(save({ count: 4, slot: 0 }));
+  keep(act(day, "pet"));
+  assert(takePhoto(day));
+  assert.equal("night" in day.album[0], false);
+  const kept = readTetsukoRecord(save({ record: { album: [{ moment: "first_rub", day: 3, props: {}, night: true }, { moment: "hug_toy", day: 4, props: {}, night: "yes" }] } }));
+  assert.equal(kept.album[0].night, true);
+  assert.equal("night" in kept.album[1], false, "true 以外は昼として読む");
+  const nightValue = save({ count: 4, slot: 1 });
+  const nightSession = createSession(nightValue, { visitKey: tetsukoVisitKey(nightValue) });
+  keep(act(nightSession, "pet")); takePhoto(nightSession);
+  assert(settleTetsukoTime(nightValue, sessionResult(nightSession)).committed);
+  assert.equal(nightValue.flags[TETSUKO_TIME_FLAG].album[0].night, true, "確定しても夜の写真のまま");
 }
 
 // 確定点: 意味のあるふれあいでない／訪問キーが無い／同じキーの2回目は保存に触らない。
@@ -639,7 +656,8 @@ assert.equal(classifyFlag(OUTINGS_FLAG), "progression");
     assert(/。$/.test(moment.memo) && [...moment.memo].length <= 48, `てつこメモは地の文・48字以内: ${moment.memo}`);
     assert(!/テツコ|ヤニネコ/.test(moment.memo));
   }
-  const POSES = ["loaf", "crouch", "reach", "hug", "groom", "yawn", "belly", "rub", "walk_a", "walk_b", "lookback", "stretch"];
+  // #2690 の12枚と、#3214（TKT26）の跳ぶ・空振り・鳴く・つつく
+  const POSES = ["loaf", "crouch", "reach", "hug", "groom", "yawn", "belly", "rub", "walk_a", "walk_b", "lookback", "stretch", "leap", "flop", "mew", "poke"];
   const hints = new Set(MOMENTS.map(moment => moment.art).filter(Boolean));
   for (const kind of ["pet", "play", "play", "play", "catch", "brush", "brush", "treat", "watch"]) {
     const reaction = act(createSession(save({ count: 4 })), kind);
@@ -658,7 +676,7 @@ assert.equal(classifyFlag(OUTINGS_FLAG), "progression");
   // 小物は、CSS が読むファイルが全部そろっていること（箱とベッドは手前の層も・おやつは前後2枚・じゃらしは先と棒・ブラシはカーソルも）。
   const PROP_FILES = { box: ["prop_box.webp", "prop_box_front.webp"], bed: ["prop_bed.webp", "prop_bed_front.webp"],
     plate: ["prop_plate_full.webp", "prop_plate_empty.webp"], teaser: ["prop_teaser_tip.webp", "prop_teaser_stick.webp"],
-    brush: ["prop_brush.webp", "prop_brush_cursor.png"], lap: ["prop_lap.webp"] };
+    brush: ["prop_brush.webp", "prop_brush_cursor.png"], lap: ["prop_lap.webp"], tunnel_tail: ["prop_tunnel_tail.webp"] };
   for (const prop of ART_READY.props) {
     assert(PROPS.some(item => item.id === prop) || PROP_FILES[prop], `小物の名前は依頼した物: ${prop}`);
     for (const file of PROP_FILES[prop] || [`prop_${prop}.webp`]) assert(exists(file), `届いた小物の絵がある: ${file}`);
@@ -666,7 +684,28 @@ assert.equal(classifyFlag(OUTINGS_FLAG), "progression");
   const css = fs.readFileSync(new URL("../css/tetsuko-time.css", import.meta.url), "utf8");
   for (const prop of ART_READY.props.filter(id => PROPS.some(item => item.id === id)))
     assert(css.includes(`[data-art-props~="${prop}"] .tt-prop[data-prop="${prop}"] > .tt-prop-back`), `小物の絵を出す CSS がある: ${prop}`);
-  for (const part of ART_READY.ui) assert(exists(`ui_${part}.webp`), `届いたUIの絵がある: ui_${part}.webp`);
+  // UI: 組の部品は全部の状態、シートは1つずつ切り出した絵が全部そろっていること（#3213）。
+  const { TK_ICONS } = await import("../js/minigames/tetsuko-art.js");
+  const UI_FILES = {
+    tk_icons: TK_ICONS.map(name => `ui_tk_icon_${name}.webp`),
+    tk_fx: ["heart", "spark", "note", "sweat", "fur", "paw", "purr", "puff"].map(name => `ui_tk_fx_${name}.webp`),
+    tk_token: ["ui_tk_token.webp", "ui_tk_token_pressed.webp", "ui_tk_token_active.webp"],
+    tk_tab: ["ui_tk_tab.webp", "ui_tk_tab_pressed.webp", "ui_tk_tab_door.webp"],
+    tk_heart: ["ui_tk_heart.webp", "ui_tk_heart_empty.webp"],
+    tk_book: ["ui_tk_book.webp", "ui_tk_book_spine.webp"],
+    tk_flap: ["ui_tk_flap.webp", "ui_tk_packtape.webp"],
+  };
+  for (const part of ART_READY.ui) for (const file of UI_FILES[part] || [`ui_${part}.webp`]) assert(exists(file), `届いたUIの絵がある: ${file}`);
+  // CSS が読む小物・しぐさ・専用テーマの絵は、どれも登録済み（名前の書き間違いで 404 にしない）。
+  // 紙×ラベンダーの ui_*（#2691・採用しない）の規則は ART_READY に名前が無いので読まれない。ここでは数えない。
+  for (const file of ["../css/tetsuko-time.css", "../css/tetsuko-theme.css"]) {
+    const text = fs.readFileSync(new URL(file, import.meta.url), "utf8");
+    for (const [, name] of text.matchAll(/url\("\.\.\/img\/ui\/tetsuko\/((?:ui_tk_|cat_|prop_)[^"]+)"\)/g)) assert(exists(name), `${file} が読む絵がある: ${name}`);
+  }
+  // 新しい理由の書いてある素材は、CSS の描画を絵に替えている（膝・しっぽ・札・ハートなど）。
+  const themeCss = fs.readFileSync(new URL("../css/tetsuko-theme.css", import.meta.url), "utf8");
+  for (const part of ART_READY.ui.filter(name => name.startsWith("tk_"))) assert(themeCss.includes(`[data-art-ui~="${part}"]`), `専用テーマの絵を使う CSS がある: ${part}`);
+  assert(css.includes('[data-art-props~="tunnel_tail"]') && css.includes('[data-art-props~="lap"]'), "膝としっぽの絵を使う CSS がある");
   if (ART_READY.background) assert(tracked.has("remake/img/backgrounds/bg_mukai_backdoor_day.webp"), "裏口の絵がある");
   assert.deepEqual(Object.keys(artAttrs()).sort(), ["artBg", "artProps", "artUi"]);
 }
@@ -696,12 +735,14 @@ assert.equal(classifyFlag(OUTINGS_FLAG), "progression");
   assert.equal(cam.k, TETSUKO_TOY_VIEW.zoom);
   assert(cam.k > 1 && cam.k < TETSUKO_CAMERA.zoom, "寄せすぎず、全体よりは近い");
   assert(cam.x <= 0 && cam.x >= 1280 * (1 - cam.k) && cam.y <= 0 && cam.y >= 720 * (1 - cam.k), "舞台の外は映さない");
-  // 飛びついた先（TETSUKO_LEAP）のどこでも、てつこの枠（270×280）が外枠（20px）の内側に映る（端で体が切れない）。
+  // 飛びついた先（TETSUKO_LEAP）のどこでも、いちばん横に長いしぐさの絵（跳ぶ・空振り）まで外枠（20px）の内側に映る（端で体が切れない）。
+  // しぐさの絵は 1024×768 の画面を 0.754 倍で出す（CSS の .tt-cat-pose）。絵の中の猫の幅を測って halfWidth と比べる。
   for (const x of [TETSUKO_LEAP.min, 640, TETSUKO_LEAP.max]) {
-    const box = { l: cam.x + cam.k * (x - 135), r: cam.x + cam.k * (x + 135), t: cam.y + cam.k * (TETSUKO_LEAP.y - TETSUKO_CAMERA.catHeight), b: cam.y + cam.k * TETSUKO_LEAP.y };
+    const box = { l: cam.x + cam.k * (x - TETSUKO_LEAP.halfWidth), r: cam.x + cam.k * (x + TETSUKO_LEAP.halfWidth),
+      t: cam.y + cam.k * (TETSUKO_LEAP.y - TETSUKO_CAMERA.catHeight), b: cam.y + cam.k * TETSUKO_LEAP.y };
     assert(box.l >= 20 && box.r <= 1260 && box.t >= 20 && box.b <= 700, `飛びついた先 x=${x} で、てつこが画面に収まる ${JSON.stringify(box)}`);
   }
-  assert(TETSUKO_LEAP.max - TETSUKO_LEAP.min >= 700, "飛びまわれる幅は十分にある");
+  assert(TETSUKO_LEAP.max - TETSUKO_LEAP.min >= 600, "飛びまわれる幅は十分にある");
 }
 
 // 見守る初回だけの発見を、膝に乗る日や見守った後に案内しない。

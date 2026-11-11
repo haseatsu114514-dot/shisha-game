@@ -390,3 +390,6 @@ await suite("ch4-full-flow", async check => {
     assert.equal((await get(page)).money, before.money + 200000, "LOAD must not pay the prize twice");
   }, { reducedMotion: "reduce" });
 });
+
+// ドバイ14日ルートの必須の仕事も、同じCI入口から確認する。
+await import("./ch4_staff_work.mjs");
