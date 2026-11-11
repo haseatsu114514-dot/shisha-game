@@ -7,7 +7,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "ましろから到着の連絡が来た。"
+          "text": "ましろちゃんから到着の連絡が来て、宿のロビーで落ち合った。"
         },
         {
           "speaker": "mashiro",
@@ -26,13 +26,33 @@
         },
         {
           "speaker": "mashiro",
+          "face": "surprise",
+          "text": "僕も？ ……ふふ。じゃあ、はじめくんも一緒に写ってねぇ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "ひとりで写ると、迷子の記念写真みたいになるから"
+        },
+        {
+          "speaker": "mashiro",
           "face": "smile",
           "text": "陣も、福岡から見てるって。月曜の電話、はじめくんの試合の話ばっかり"
         },
         {
           "speaker": "mashiro",
           "face": "normal",
-          "text": "ん、明日のはじめくんも、見届けるねぇ"
+          "text": "紅茶の葉も持ってきたの。眠れない夜があったら、言ってねぇ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "ありがとう。そのときは、お湯を沸かして待ってる"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "ん、大会のはじめくんも、ちゃんと見届けるねぇ"
         }
       ]
     },
@@ -42,12 +62,57 @@
         {
           "speaker": "",
           "face": "",
-          "text": "到着の連絡をもらって、ましろを迎えた。"
+          "text": "到着の連絡をもらって、宿のロビーへ下りた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ソファの端で、ましろちゃんがスーツケースに寄りかかって、うとうとしていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ましろちゃん、……寝てる？"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "yawn",
+          "text": "……ん。寝てないよぉ。目を閉じて、着いたのを確かめてただけ"
         },
         {
           "speaker": "mashiro",
           "face": "normal",
-          "text": "視察のお仕事。……それと、会いたくて来た"
+          "text": "視察のお仕事。ムカイさんに、お店を見ておいでって"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "……それと、会いたくて来た。こっちが、本当の半分"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "どっちの半分も、来てくれてうれしい"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "立ち上がったましろちゃんが、ふらっと一歩よろけて、俺の胸に額をつけた。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "sleep",
+          "text": "……飛行機、長かったぁ。はじめくんの匂いで、やっと着いた気がする"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……ここ、ロビーだよ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "うん。だから、ちょっとだけねぇ"
         },
         {
           "speaker": "hajime",
@@ -63,6 +128,21 @@
           "speaker": "hajime",
           "face": "normal",
           "text": "うん。ましろちゃんと一緒なら、ちゃんと食べられそう"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "ふふ。はじめくん、自分のご飯、すぐ後回しにするから"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "大会の日までは、僕が見張ってるねぇ。お茶の時間も、ご飯の時間も"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スーツケースの持ち手を引き受けると、空いたほうの手を、ましろちゃんが自然に握った。"
         }
       ]
     }
