@@ -1126,7 +1126,8 @@
         "node --experimental-vm-modules remake/test/lime_fit_774.mjs",
         "node --experimental-vm-modules remake/test/lime_save_774.mjs",
         "node --experimental-vm-modules remake/test/purikura_motion.mjs",
-        "node remake/test/text_wrap.mjs --fixed-only",
+        "node remake/test/text_wrap.mjs",
+        "node remake/test/css_wrap_guard.mjs",
         "node remake/test/natural_wrap.mjs",
         "node remake/test/conversation_effects_marks.mjs",
         "node remake/test/conversation_cutin.mjs"
