@@ -282,3 +282,10 @@ table.nwrap td:first-child, table.nwrap td:nth-child(2) { white-space: nowrap; }
 .extratag { background: #fff; color: #3f7a2c; border: .25mm solid #7fbd66; }
 td .paytag, td .extratag { font-size: 5.6pt; padding: 0 .8mm; margin-left: .8mm; vertical-align: middle; }
 .card.sup .paytag, .card.sup .extratag { font-size: 5.2pt; padding: 0 .9mm; }
+
+/* ───────── 第0.4版で足したもの（炭は4つまで・炭の火） ───────── */
+.cz i b, .mat .zone .cz i b, .stove .cz i b { display: block; margin: 0; font-size: 7pt; font-weight: 900; line-height: 1.2; color: var(--ember2); }
+.cz i.cu b, .mat .zone .cz i.cu b { color: #ffd27a; }
+.cz i.worn { box-shadow: none; opacity: .78; }
+.cz i.slot { background: none; border: .3mm dashed #8c8073; color: #8c8073; box-shadow: none; }
+.mat .cz i.slot { border-color: rgba(255,255,255,.4); color: rgba(255,255,255,.55); }

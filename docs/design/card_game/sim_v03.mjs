@@ -1,9 +1,11 @@
 // 一台勝負 第0.3版の規則案を、ゲーム内の規則（remake/js/minigames/ichidai-rules.js）とCPU（ichidai-ai.js）で比べる。
 // node docs/design/card_game/sim_v03.mjs [--games 120] [--only A,G]   … 規則の案を比べる
 // node docs/design/card_game/sim_v03.mjs --cards [--games 300]           … いまの規則で、カードごとの使われ方
+// node docs/design/card_game/sim_v03.mjs --coals [--games 240]           … いまの規則で、審査の時点の炭の数・熱・帯（第0.4版の確かめ）
 // 比べるのは「一口のカードをいつ使うか」「チャージ・灰にするを1ターンに何回まで許すか」「印象の付け方」「一票の点」。
 // 結果の読み方と決めたことは v0.3_design.md。
 import { createGame, act, heatOf } from "../../../remake/js/minigames/ichidai-rules.js";
+import { FLAVOR } from "../../../remake/js/minigames/ichidai-data.js";
 import { aiAct } from "../../../remake/js/minigames/ichidai-ai.js";
 import { CARD, TOURNAMENTS, KITS } from "../../../remake/js/minigames/ichidai-data.js";
 
@@ -103,7 +105,43 @@ function cardStats(games) {
     console.log([CARD[id].name, CARD[id].need || 0, s.held, s.played, s.held ? `${Math.round((100 * s.played) / s.held)}%` : "-", s.played ? (s.heatSum / s.played).toFixed(1) : "-"].join("\t"));
   }
 }
+/** 炭の数（--coals）: 審査カードをめくった時点の火力ゾーンを数える。炭の数・うち種火・熱、葉の温度帯ごとの炭の数、提供の1ターンの手数 */
+function coalStats(games) {
+  const hist = { n: {}, ember: {}, heat: {}, first: {} }, byTemp = {}, z = { just: 0, band: 0, off: 0, cold: 0, scorch: 0 };
+  let snaps = 0, firsts = 0, turns = 0; const moves = { charge: 0, puton: 0, ash: 0 };
+  const inc = (o, k) => { o[k] = (o[k] || 0) + 1; };
+  for (let g = 0; g < games; g++) {
+    const tour = TOURNAMENTS[1 + (g % (TOURNAMENTS.length - 1))].id, ka = KITS[g % 3].id, kb = KITS[(g + 1 + (g >> 2) % 2) % 3].id;
+    const G = createGame({ seed: 1000 + g, tournament: tour, players: [{ name: "A", kit: ka, ai: true, level: 2 }, { name: "B", kit: kb, ai: true, level: 2 }] });
+    let reveals = 0;
+    while (!G.over) {
+      const w = G.wait, a = aiAct(G, w.player), before = G.events.length;
+      if (G.phase === "serve" && w.type === "main") { if (a.type in moves) moves[a.type]++; if (a.type === "end") turns++; }
+      const r = act(G, a); if (!r.ok) throw new Error(r.reason);
+      for (const ev of G.events.slice(before)) {
+        if (ev.t === "score") for (const x of ev.res) z[x.zone]++;
+        if (ev.t !== "reveal") continue;
+        reveals++;
+        for (const p of G.P) {
+          const n = p.zone.length; inc(hist.n, n); inc(hist.ember, p.zone.filter((c) => !c.up).length); inc(hist.heat, heatOf(p)); snaps++;
+          if (reveals === 1) { inc(hist.first, n); firsts++; }
+          const f = FLAVOR[p.main]; if (f) { const k = f.hi <= 5 ? "低温の葉" : f.lo >= 6 ? "高温の葉" : "中温の葉"; inc((byTemp[k] ||= { total: 0 }), n); byTemp[k].total++; }
+        }
+      }
+    }
+  }
+  const row = (o, d) => Object.keys(o).filter((k) => k !== "total").map(Number).sort((a, b) => a - b).map((k) => `${k}:${Math.round((100 * o[k]) / d)}%`).join(" ");
+  const puffs = Object.values(z).reduce((a, b) => a + b, 0);
+  console.log(`審査の時点の炭の数   ${row(hist.n, snaps)}`);
+  console.log(`  うち種火           ${row(hist.ember, snaps)}`);
+  console.log(`最初の審査の炭の数   ${row(hist.first, firsts)}`);
+  for (const [k, o] of Object.entries(byTemp)) console.log(`  ${k}の炭の数     ${row(o, o.total)}`);
+  console.log(`審査の時点の熱       ${row(hist.heat, snaps)}`);
+  console.log(`帯                   ${Object.entries(z).map(([k, n]) => `${k}:${Math.round((100 * n) / puffs)}%`).join(" ")}`);
+  console.log(`提供の1ターンあたり  のせる${(moves.puton / turns).toFixed(2)}・チャージ${(moves.charge / turns).toFixed(2)}・灰にする${(moves.ash / turns).toFixed(2)}`);
+}
 if (process.argv.includes("--cards")) { cardStats(GAMES); process.exit(0); }
+if (process.argv.includes("--coals")) { coalStats(GAMES); process.exit(0); }
 
 for (const v of VARIANTS.filter((x) => !ONLY || ONLY.includes(x.name[0]))) {
   const r = run(v);

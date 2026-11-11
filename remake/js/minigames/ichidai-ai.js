@@ -1,4 +1,4 @@
-// カードゲーム「一台勝負」のCPU（第0.3版）。規則（ichidai-rules.js）の act に渡す入力を、1つずつ返す。
+// カードゲーム「一台勝負」のCPU（第0.4版）。規則（ichidai-rules.js）の act に渡す入力を、1つずつ返す。
 // 相手の手札と山札の順は見ない。見るのは自分の手札・場に出ているもの・めくられた審査カードだけ。
 // level: 0=やさしい（審査カードを数えない・一口のために取っておかない・揺さぶらない） 1=ふつう 2=つよい（残りの審査カードを数えて期待値で決める）
 //
@@ -6,7 +6,7 @@
 // （審査カードは見ずに、残りの吸い方の期待値）を比べて良いほうを使う。熱の狙いは「その熱で使える一口のカード（必要火力）」まで
 // 含めた期待点で決める。rules.reactAfterReveal のときは、めくったあとに一口のカードを選ぶ（取っておく値打ちと比べる）。
 import { CARD, FLAVOR, FLAVORS, BOWL, JUDGE, PUFFS } from "./ichidai-data.js";
-import { RANK, heatOf, leavesOf, coolStepsOf, judgedHeat, scorePuff, impressionOf, unseenPuffs,
+import { RANK, heatOf, coalHeat, coalRoom, leavesOf, coolStepsOf, judgedHeat, scorePuff, impressionOf, unseenPuffs,
   canPlay, canCharge, canPlace, canAsh, canPack, canSteam, packLimit, roundsOf, isLastSession, isLastOfSession, puffPreview } from "./ichidai-rules.js";
 
 const cnt = (p, id) => p.hand.filter((x) => x === id).length;
@@ -125,25 +125,27 @@ function wear(G, p, w) {
   }
   return { type: "wear", picks };
 }
+/** 火のいちばん小さい炭（同じなら種火）の位置。only＝選べる炭だけに絞る条件。無ければ -1 */
+function weakestCoal(p, only = () => true) {
+  let bi = -1;
+  p.zone.forEach((c, i) => {
+    if (!only(c)) return;
+    const b = bi < 0 ? null : p.zone[bi];
+    if (!b || coalHeat(c) < coalHeat(b) || (coalHeat(c) === coalHeat(b) && !c.up && b.up)) bi = i;
+  });
+  return bi;
+}
 function weaken(G, p) {
-  let i = p.zone.findIndex((c) => c.up && CARD[c.id].heat === 1);
-  if (i < 0) i = p.zone.findIndex((c) => !c.up);
-  if (i < 0) i = 0;
-  return { type: "weaken", zone: i };
+  return { type: "weaken", zone: Math.max(0, weakestCoal(p)) };
 }
 
-// 冷める: 狙いより熱ければ熱が下がる受け方、そうでなければ下がらない受け方
+// 冷める: 炭の火を1下げる。狙いより熱くなければ、まず風防で受ける。下げるのは火の小さい炭から
+// （種火や弱った炭は先に灰にして枠を空け、火の大きい炭を残す。同じ炭は1ターンに1段階まで）
 function cool(G, p) {
   const tgt = bestHeat(G, p);
-  const iEmber = p.zone.findIndex((c) => !c.up), iFlat = p.zone.findIndex((c) => c.up && CARD[c.id].heat === 1), iCube = p.zone.findIndex((c) => c.up && CARD[c.id].heat === 2);
-  if (heatOf(p) <= tgt) {
-    if (p.wind > 0) return { type: "cool", wind: true };
-    if (iFlat >= 0) return { type: "cool", zone: iFlat };
-  }
-  if (iEmber >= 0) return { type: "cool", zone: iEmber };
-  if (iFlat >= 0) return { type: "cool", zone: iFlat };
-  if (iCube >= 0) return { type: "cool", zone: iCube };
-  return { type: "cool", wind: true };
+  if (heatOf(p) <= tgt && p.wind > 0) return { type: "cool", wind: true };
+  const i = weakestCoal(p, (c) => !c.cooled);
+  return i >= 0 ? { type: "cool", zone: i } : { type: "cool", wind: true };
 }
 
 // 準備: 予定の葉を詰め、詰め終えたら蒸らして炭を育てる
@@ -185,58 +187,66 @@ function packPicks(G, p, want) {
   return picks;
 }
 
-/** 炭まわりの次の一手（置く・のせる・チャージ・灰にする）。無ければ null */
+/**
+ * 炭まわりの次の一手（置く・のせる・チャージ・灰にする）。無ければ null。
+ * 第0.4版: 炭は4つまでで、熱＝炭の火の合計。火は下がるだけなので、熱を上げるには空いた枠に新しい炭（焼けた炭＝火2か3、
+ * 種火＝火1）を足す。枠が無ければ、弱った炭を1つ灰にして入れ替える。いまの手（灰にする0〜1・のせる炭の組・チャージの数）を
+ * 総当たりして、この一口の期待点と、次の自分のターンに狙いの熱へ届くかで選び、1手ずつ進める
+ */
 function coalMove(G, p, { prep = false, turnsLeft = 0 } = {}) {
   // 1. 炭カードは、枠があれば置く
   const ci = p.hand.findIndex((id) => isCoal(id) && canPlace(G, p, id).ok);
   if (ci >= 0) return { type: "place", hand: ci };
-  const h0 = heatOf(p), ready = p.stove.map((c, i) => ({ c, i })).filter((x) => x.c.stage === 2);
-  const chargesLeft = Math.max(0, G.R.chargePerTurn - (p.turn.charges || 0));
-  if (prep) {
-    // 準備: 提供の最初のターンに冷めるぶんを見込んで、狙いより少し上まで
-    const want1 = bestHeat(G, p), target = Math.min(G.R.heatMax, want1 + (p.hmd === "big_tanukish" ? 0 : coolStepsOf(p)));
-    const on = ready.find((x) => h0 + CARD[x.c.id].heat <= target);
-    if (on) return { type: "puton", stove: on.i };
-    const coming = p.stove.reduce((a, c) => a + (2 - c.stage <= turnsLeft ? CARD[c.id].heat : 0), 0);
-    if (h0 < target && h0 + coming + turnsLeft < target && canCharge(G, p).ok) return { type: "charge", hand: worstIndex(G, p) };
-    return null;
-  }
-  // 提供: 蓄えた熱の変化 d を総当たりし、期待値がいちばん高いところへ1手ずつ寄せる
   if (p.turn.ai?.heatDone) return null;
-  const guess = puffGuess(G, p), slot = slotFree(G, p);
-  const rF = ready.filter((x) => CARD[x.c.id].heat === 1), rC = ready.filter((x) => CARD[x.c.id].heat === 2);
-  const upF = p.zone.filter((c) => c.up && CARD[c.id].heat === 1).length;
-  const lastRound = G.round === roundsOf(G) - 1;
-  const ashLeft = canAsh(G, p).ok ? Math.max(0, G.R.ashPerTurn - (p.turn.ashes || 0)) : 0;
+  const h0 = heatOf(p), ready = p.stove.map((c, i) => ({ f: CARD[c.id].heat, i })).filter((x) => p.stove[x.i].stage === 2);
+  const later = p.stove.filter((c) => c.stage === 1).map((c) => CARD[c.id].heat); // 次の自分のターンに焼ける炭
+  const canAshNow = canAsh(G, p).ok, canChargeNow = canCharge(G, p).ok || (!coalRoom(p) && p.hand.length > 0 && canAshNow);
+  const guess = prep ? null : puffGuess(G, p), slot = slotFree(G, p);
+  const lastRound = !prep && G.round === roundsOf(G) - 1;
+  const want = bestHeat(G, p, prep ? undefined : (p.level >= 1 ? puffGuess(G, { ...p, peek: null }) : normalGuess));
+  // 灰にする候補: しない／火の小さい炭から、火の違うものを1つずつ
+  const ashOpts = [-1];
+  if (canAshNow) { const seen = new Set(); p.zone.map((c, i) => ({ f: coalHeat(c), i, up: c.up })).sort((a, b) => a.f - b.f || a.up - b.up).forEach((x) => { if (!seen.has(x.f)) { seen.add(x.f); ashOpts.push(x.i); } }); }
   let best = null;
-  for (let d = -3; d <= 5; d++) {
-    const step = { onF: 0, onC: 0, charge: 0, ash: 0 }; let cost = 0, r = d;
-    if (d > 0) {
-      step.onF = Math.min(rF.length, r); r -= step.onF; cost += 0.05 * step.onF;
-      while (r >= 2 && step.onC < rC.length) { step.onC++; r -= 2; cost += 0.05; }
-      while (r >= 1 && step.charge < Math.min(chargesLeft, p.hand.length)) { step.charge++; r--; cost += 0.6 + 0.3 * step.charge; }
-      if (r !== 0) continue;
-    } else if (d < 0) { step.ash = -d; if (step.ash > Math.min(ashLeft, p.zone.length)) continue; cost += 0.9 * step.ash; }
-    const h1 = h0 + d; if (h1 < 0 || h1 > G.R.heatMax) continue;
-    let v = expected(G, p, h1, guess, slot) - cost;
-    if (!lastRound) { // 次の自分のターンに、狙いの熱へ届くか
-      const want = bestHeat(G, p, p.level >= 1 ? puffGuess(G, { ...p, peek: null }) : normalGuess);
-      const cube = step.onC || p.zone.some((c) => c.up && CARD[c.id].heat === 2);
-      const cs = Math.max(1, G.R.cool - (cube ? 1 : 0)), loss = Math.max(0, cs - (upF + step.onF + p.wind));
-      const up = p.stove.filter((c) => c.stage >= 1).reduce((a, c) => a + CARD[c.id].heat, 0) - step.onF - 2 * step.onC + Math.min(G.R.chargePerTurn, p.hand.length);
-      v -= 1.4 * Math.max(0, want - (h1 - loss + Math.max(0, up))) + 0.5 * Math.max(0, h1 - cs - 2 - want);
+  for (const ai of ashOpts) {
+    const fires = p.zone.map((c) => coalHeat(c)); let ashCost = 0;
+    if (ai >= 0) { ashCost = 0.25 + 0.3 * fires[ai]; fires.splice(ai, 1); }
+    for (let mask = 0; mask < (1 << ready.length); mask++) {
+      const on = ready.filter((_, k) => mask & (1 << k));
+      if (fires.length + on.length > G.R.coalMax) continue;
+      const room = G.R.coalMax - fires.length - on.length;
+      for (let ch = 0; ch <= Math.min(canChargeNow ? room : 0, p.hand.length, 3); ch++) {
+        const now = [...fires, ...on.map((x) => x.f), ...Array(ch).fill(1)], h1 = now.reduce((a, b) => a + b, 0);
+        if (h1 > G.R.heatMax) continue;
+        // チャージの値段: 手札1枚ぶん。そのターン最初のチャージは1枚引ける（チャージ＆ドロー）ので、ほぼただ
+        const cdFree = ch > 0 && !(p.turn.charges > 0) && G.R.chargeDraw > 0 ? 0.55 : 0;
+        let v = -ashCost - 0.05 * on.length - ch * 0.6 - 0.15 * ch * (ch - 1) + cdFree;
+        if (!prep) v += expected(G, p, h1, guess, slot);
+        if (!lastRound) {
+          // 次の自分のターン: 冷めて（炭を2つまで・1つにつき1段階）、空いた枠に残りの炭と種火を足す。狙いに届くか・熱すぎないか
+          const skipCool = prep && p.hmd === "big_tanukish";
+          const steps = skipCool ? 0 : Math.max(0, Math.min(G.R.cool, now.length) - p.wind);
+          const after = [...now].sort((a, b) => a - b); let lost = 0;
+          for (let k = 0; k < steps && k < after.length; k++) { after[k]--; lost++; }
+          const left = after.filter((f) => f > 0), hNext = h1 - lost;
+          const stock = [...ready.filter((x) => !on.includes(x)).map((x) => x.f), ...later].sort((a, b) => b - a);
+          let roomNext = G.R.coalMax - left.length, reach = hNext;
+          for (const f of stock) if (roomNext > 0) { reach += f; roomNext--; }
+          reach += Math.min(roomNext, Math.max(0, p.hand.length - ch)) * 0.8;
+          const big = left.length ? Math.max(...left) : 0;
+          v -= 1.4 * Math.max(0, want - reach) + 0.5 * Math.max(0, hNext - big - want);
+          if (prep) v -= 0.35 * Math.abs(hNext - want) + (turnsLeft > 0 ? 0.3 * ch : 0); // 準備: 提供の最初のターンにちょうど合う熱へ。種火は急がない
+        }
+        if (!best || v > best.v + 1e-9) best = { v, ai, on, ch };
+      }
     }
-    if (!best || v > best.v + 1e-9) best = { v, d, step };
   }
-  const s = best?.step;
-  if (!s || best.d === 0) { (p.turn.ai ||= {}).heatDone = true; return null; }
-  if (s.onF) return { type: "puton", stove: rF[0].i };
-  if (s.onC) return { type: "puton", stove: rC[0].i };
+  if (!best || (best.ai < 0 && !best.on.length && !best.ch)) { (p.turn.ai ||= {}).heatDone = true; return null; }
+  if (best.ai >= 0) return { type: "ash", zone: best.ai };
+  if (best.on.length) return { type: "puton", stove: best.on[0].i };
   // 追い炭（山札から種火2枚・枠を返す）が使えるなら、手札を2枚チャージするかわりにそれを使う
-  if (s.charge >= 2 && cnt(p, "add_coal") && canPlay(G, p, "add_coal").ok) { (p.turn.ai ||= {}).heatDone = false; return { type: "play", hand: idx(p, "add_coal") }; }
-  if (s.charge) return { type: "charge", hand: worstIndex(G, p) };
-  if (s.ash) { const i = p.zone.findIndex((c) => !c.up); return { type: "ash", zone: i >= 0 ? i : 0 }; }
-  return null;
+  if (best.ch >= 2 && cnt(p, "add_coal") && canPlay(G, p, "add_coal").ok) return { type: "play", hand: idx(p, "add_coal") };
+  return { type: "charge", hand: worstIndex(G, p) };
 }
 /** 器具・人物を出す手と、その値打ち（残りのラウンドが多いほど高い） */
 function permanent(G, p) {
@@ -274,8 +284,7 @@ function turnCard(G, p) {
   if (!p.peek && G.pile.length) add("read", p.level >= 1 ? (hasReact ? 1.1 : 0.6) : 0.3);
   if (!lastRound) {
     const want = bestHeat(G, p, p.level >= 1 ? puffGuess(G, { ...p, peek: null }) : normalGuess), cs = coolStepsOf(p);
-    const cushion = p.zone.filter((c) => c.up && CARD[c.id].heat === 1).length + p.wind;
-    const loss = Math.max(0, cs - cushion);
+    const loss = Math.max(0, cs - p.wind);
     // 灰落とし: 次のターンに冷めて足りなくなる熱を、チャージせずに済む
     if (!p.noCool) add("ash_tap", CARDV * Math.min(loss, Math.max(0, want - (hNow - loss))) + 0.2);
     const notReady = p.stove.filter((c) => c.stage < 2).length;
