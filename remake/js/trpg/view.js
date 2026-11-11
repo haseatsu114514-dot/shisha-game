@@ -933,8 +933,11 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
           talk(scenario.serving, () => renderBody());
         } else {
           const result = session.result(), ending = scenario.endings[result.ending];
+          // A companion who brought a role against type (S17) says one line in that role before the ending,
+          // and one line as themselves after the epilogue. Other roles have neither, so nothing is added.
+          const own = key => Object.values(session.companions).map(o => o[key]);
           audio.play("ending");
-          talk(sequence(ending.dialogue, scenario.debrief?.[result.variant], scenario.epilogue), () => {
+          talk(sequence(...own("aside"), ending.dialogue, scenario.debrief?.[result.variant], scenario.epilogue, ...own("after")), () => {
             completed = result;
             onComplete(result);
             renderBody();

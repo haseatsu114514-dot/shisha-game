@@ -638,20 +638,56 @@
         {
           "speaker": "hiyori",
           "role": "PL／卓の会話",
-          "face": "normal",
-          "text": "……私はクロエ。館の夜を、静かに支える執事よ"
+          "face": "smile",
+          "text": "私はクロエ。館の執事よ。……真夜中でも、声がよく通るの"
         },
         {
           "speaker": "hiyori",
-          "role": "PL／卓の会話",
-          "face": "smile",
-          "text": "夜食は湯気の立つ一杯と決めているの。とんこつの……あ、儚い一杯ね"
+          "role": "{pc:hiyori}／物語",
+          "face": "surprise",
+          "text": "お嬢さまー！ ただいま、零時の十分前でございまーす！"
         },
         {
           "speaker": "rei",
           "role": "GM／卓の会話",
+          "face": "surprise",
+          "text": "……今の声で、棚の人形が全員こっちを向いた"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "人形より先に、俺が目を覚ましました……"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_doll_requiem_aside_hiyori_hiyori_chloe",
+      "metadata": {
+        "preview_only": true,
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "{pc:hiyori}／物語",
           "face": "smile",
-          "text": "……真夜中の執事に、ラーメン。館の夜が、少し明るくなる"
+          "text": "お嬢さまー！ 怖いときは、怖いって大声で言っていいんですよー！ 私も、言いたいです！"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_doll_requiem_after_hiyori_hiyori_chloe",
+      "metadata": {
+        "preview_only": true,
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "……人形たち、クロエの声で全員こっちを向いたわね。ちょっと、癖になりそう"
         }
       ]
     },
@@ -1060,7 +1096,7 @@
           "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "serious",
-          "text": "{pc:hiyori}が、人形師の静かな声で、人形たちに語りかけるわ"
+          "text": "{pc:hiyori}が、やさしい声で、人形たちに語りかけるわ"
         },
         {
           "speaker": "rei",
@@ -2726,7 +2762,7 @@
           "sheet": "hiyori",
           "stat": "talk",
           "label": "人形たちに語りかける",
-          "detail": "{pc:hiyori}が人形師の静かな声で、人形たちに語りかける",
+          "detail": "{pc:hiyori}がやさしい声で、人形たちに語りかける",
           "declare": "trpg_doll_requiem_declare_serve_voice"
         },
         {
@@ -2926,16 +2962,18 @@
         {
           "id": "chloe",
           "name": "クロエ",
-          "title": "ラーメン好きの執事",
-          "trait": "館の夜を静かに支える執事。夜食は必ず、湯気の立つ一杯",
-          "likes": "真夜中のラーメンと、ゆるいキャラのしおり",
+          "title": "声の通る執事",
+          "trait": "真夜中でも、館じゅうに聞こえる声で時刻を告げる",
+          "likes": "厨房のつまみ食い。焼きたてのパン",
           "stats": {
             "eye": 3,
             "hand": 2,
             "talk": 3,
             "nerve": 3
           },
-          "making": "trpg_doll_requiem_make_hiyori_hiyori_chloe"
+          "making": "trpg_doll_requiem_make_hiyori_hiyori_chloe",
+          "aside": "trpg_doll_requiem_aside_hiyori_hiyori_chloe",
+          "after": "trpg_doll_requiem_after_hiyori_hiyori_chloe"
         }
       ]
     }

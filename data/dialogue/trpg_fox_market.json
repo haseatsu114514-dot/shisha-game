@@ -43,22 +43,22 @@
     {
       "id": "hiyori",
       "part": "PLAYER",
-      "role": "{pc:hiyori}／霞の灯り番",
+      "role": "{pc:hiyori}／呼び込みの灯り番",
       "color": "#dab978",
       "ability": "屋台の段取り",
       "abilityText": "道すじを準備するとき、判定に一度だけ＋7",
       "abilityType": "prepare",
       "sheet": {
         "name": "カスミ",
-        "title": "霞の灯り番",
+        "title": "呼び込みの灯り番",
         "stats": {
           "eye": 3,
           "hand": 4,
           "talk": 2,
           "nerve": 2
         },
-        "trait": "夜風にも消えそうな灯り番……のはず。ラーメンの匂いには負けない",
-        "likes": "屋台のラーメン。湯気の向こうの提灯"
+        "trait": "『灯りが通りまーす』が口ぐせ。人波も、声でかき分ける",
+        "likes": "屋台のはしご。たこ焼きは二舟"
       }
     },
     {
@@ -665,26 +665,56 @@
         {
           "speaker": "hiyori",
           "role": "PL／卓の会話",
-          "face": "normal",
-          "text": "……私はカスミ。夜風ひとつで消えてしまいそうな、灯り番よ"
+          "face": "smile",
+          "text": "私はカスミ。灯り番よ。……夜市でいちばん、声が大きいの"
         },
         {
           "speaker": "hiyori",
-          "role": "PL／卓の会話",
-          "face": "sad",
-          "text": "好きなものは、屋台のラーメン。湯気の向こうなら、消えずにいられるの"
+          "role": "{pc:hiyori}／物語",
+          "face": "surprise",
+          "text": "灯りが通りまーす！ 道あけてー！ あ、たこ焼き二舟くださーい！"
         },
         {
           "speaker": "tsumugi",
           "role": "GM／卓の会話",
           "face": "smile",
-          "text": "……儚いのに、ラーメンには強いんですね"
+          "text": "……灯りより先に、声が届きそうです"
         },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "見回りのついでに、買い食いしてる……"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fox_market_aside_hiyori_hiyori_kasumi",
+      "metadata": {
+        "preview_only": true,
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "{pc:hiyori}／物語",
+          "face": "smile",
+          "text": "コン！ 迷子は恥ずかしくないよー！ 私なんて、毎日ちょっと迷子なんだから！"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_fox_market_after_hiyori_hiyori_kasumi",
+      "metadata": {
+        "preview_only": true,
+        "making": true
+      },
+      "lines": [
         {
           "speaker": "hiyori",
           "role": "PL／卓の会話",
-          "face": "surprise",
-          "text": "替え玉までが一杯よ！ ……あ、いえ、儚いの"
+          "face": "normal",
+          "text": "……カスミの声、夜市が終わっても、まだお腹の底で鳴ってるわ"
         }
       ]
     },
@@ -841,7 +871,7 @@
           "speaker": "tsumugi",
           "role": "GM／場面",
           "face": "normal",
-          "text": "{pc:hiyori}は灯りの見回り……のはずが、ラーメンの屋台の前にいる"
+          "text": "{pc:hiyori}は灯りの見回り……のはずが、屋台の前で立ち止まっている"
         },
         {
           "speaker": "tsumugi",
@@ -1439,7 +1469,7 @@
           "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "surprise",
-          "text": "入ってないの！？ ……い、いいの。儚く諦めるわ"
+          "text": "入ってないの！？ ……い、いいの。帰りに寄るわ"
         }
       ]
     },
@@ -2145,7 +2175,7 @@
           "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "……綿あめ、気になるのね。わかるわ。私もラーメンの前だとそうなるもの"
+          "text": "……綿あめ、気になるのね。わかるわ。甘い匂いって、足が止まるもの"
         }
       ]
     },
@@ -2459,19 +2489,19 @@
           "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "灯りを一つと、寄る屋台を一つ……。ラーメンは、寄る屋台に入るかしら"
+          "text": "灯りを一つと、寄る屋台を一つ……。一つだけって、決めなきゃだめかしら"
         },
         {
           "speaker": "samechan",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "入らんじゃろ。それは、食べたいだけじゃ"
+          "text": "だめじゃろ。全部寄ったら、朝になるのじゃ"
         },
         {
           "speaker": "tsumugi",
           "role": "GM／卓の会話",
           "face": "evil",
-          "text": "……入りません"
+          "text": "……一つです"
         }
       ]
     },
@@ -2541,7 +2571,7 @@
           "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "綿あめに寄るのね。……ついでにラーメンも、だめ？"
+          "text": "綿あめに寄るのね。……あの子より先に、私がはしゃぎそう"
         }
       ]
     },
@@ -2552,7 +2582,7 @@
           "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "金魚すくい……。ラーメンの屋台の隣だから、ちょうどいいわ"
+          "text": "金魚すくい……。おきくさんの屋台ね。あそこは、いつもにぎやかだわ"
         }
       ]
     },
@@ -2898,7 +2928,7 @@
           "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……私の役、ほとんどラーメンの屋台の前にいた気がするわ"
+          "text": "……私の役、気づいたら屋台を全部のぞいてた気がするわ"
         },
         {
           "speaker": "samechan",
@@ -3150,16 +3180,18 @@
         {
           "id": "kasumi",
           "name": "カスミ",
-          "title": "霞の灯り番",
-          "trait": "夜風にも消えそうな灯り番……のはず。ラーメンの匂いには負けない",
-          "likes": "屋台のラーメン。湯気の向こうの提灯",
+          "title": "呼び込みの灯り番",
+          "trait": "『灯りが通りまーす』が口ぐせ。人波も、声でかき分ける",
+          "likes": "屋台のはしご。たこ焼きは二舟",
           "stats": {
             "eye": 3,
             "hand": 4,
             "talk": 2,
             "nerve": 2
           },
-          "making": "trpg_fox_market_make_hiyori_hiyori_kasumi"
+          "making": "trpg_fox_market_make_hiyori_hiyori_kasumi",
+          "aside": "trpg_fox_market_aside_hiyori_hiyori_kasumi",
+          "after": "trpg_fox_market_after_hiyori_hiyori_kasumi"
         },
         {
           "id": "shizuku",
