@@ -105,7 +105,7 @@ Image ②: asset_sources/hagal-bond-concepts-issue504/v1/01_sumi_naru.png. Extra
 Image ②: asset_sources/hagal-bond-concepts-issue504/v1/02_adam_rin.png. Extract the B option in the TOP RIGHT quadrant, labeled 双香の誓い for アダム: reddish-brown streaked clay, a row of short vertical notches below the rim, a star-anise relief on the cup, and two crossing raised bands spiraling down the stem. Keep the rim complete and continuous.
 
 --- 4/23: assets/ui/making/bowl_empty_rio.png ---
-Image ②: asset_sources/hagal-bond-concepts-issue504/v1/02_adam_rin.png. Extract the A option in the BOTTOM LEFT quadrant, labeled 夜の私物 for 凛: dusky indigo / navy-purple clay outside with a pale grey interior, one thin line around the cup below the rim, and a wide hourglass stem.
+Image ②: asset_sources/hagal-bond-concepts-issue504/v1/02_adam_rin.png. Extract the A option in the BOTTOM LEFT quadrant, labeled 夜の私物 for 凛想 (rio): dusky indigo / navy-purple clay outside with a pale grey interior, one thin line around the cup below the rim, and a wide hourglass stem.
 
 --- 5/23: assets/ui/making/bowl_empty_tsumugi.png ---
 Image ②: asset_sources/hagal-bond-concepts-issue504/v1/03_tsumugi_minto.png. Extract the B option in the TOP RIGHT quadrant, labeled 今日の色 for つむぎ: marbled pale clay with soft lavender, sage-green and cream swirls running down the cup and stem, a tiny cat silhouette and a small leaf sprig on the cup.
