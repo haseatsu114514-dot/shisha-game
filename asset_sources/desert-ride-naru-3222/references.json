@@ -1,0 +1,50 @@
+[
+  {
+    "path": "assets/sprites/characters/naru/chr_naru_normal.png",
+    "local": "naru-rider-work/chr_naru_normal.png",
+    "bytes": 501246,
+    "sha256": "60fbb3008e2ca60f78ca414620857e13ae368ff32c4f771b0f24cf18ab67e577"
+  },
+  {
+    "path": "remake/img/ui/desert_ride/rider_ride.webp",
+    "local": "naru-rider-work/rider_ride.webp",
+    "bytes": 52864,
+    "sha256": "72e80bc9e80fe5ea839b9a520c2a4a333d8217eef1c80fd2977122acd2674ded"
+  },
+  {
+    "path": "remake/img/ui/desert_ride/rider_lean_left.webp",
+    "local": "naru-rider-work/rider_lean_left.webp",
+    "bytes": 53712,
+    "sha256": "c9cbc240ae3f8f51a10d6285029407b3f74a0ff50ffd6e66d6009c5e7d6a6ba6"
+  },
+  {
+    "path": "remake/img/ui/desert_ride/rider_lean_right.webp",
+    "local": "naru-rider-work/rider_lean_right.webp",
+    "bytes": 57710,
+    "sha256": "5554fcb92484f4fb7fa376699491116c9e56a90dea253506e9487a93dd0976b1"
+  },
+  {
+    "path": "remake/img/ui/desert_ride/rider_jump.webp",
+    "local": "naru-rider-work/rider_jump.webp",
+    "bytes": 56150,
+    "sha256": "b76c851c38d332d5d643a64e1f041f8722d0d7050eed6f55475580b443f6ba04"
+  },
+  {
+    "path": "remake/img/ui/desert_ride/rider_brace.webp",
+    "local": "naru-rider-work/rider_brace.webp",
+    "bytes": 65038,
+    "sha256": "5b1ed5d16002a78a880ed6b4c54c09e46d60291a5a6d1f69447a1beddf46b986"
+  },
+  {
+    "path": "remake/img/ui/desert_ride/rider_fall.webp",
+    "local": "naru-rider-work/rider_fall.webp",
+    "bytes": 61142,
+    "sha256": "62ecba99ab2231516703ec17cd057b60731ffe52a810f20100992c60f4171080"
+  },
+  {
+    "path": "remake/img/ui/desert_ride/rider_noor_ride.webp",
+    "local": "naru-rider-work/rider_noor_ride.webp",
+    "bytes": 74068,
+    "sha256": "d8afa1a26ee4cd32534ab66fa8295027b779cf4b6f9e97043b8580deccbe3c38"
+  }
+]
