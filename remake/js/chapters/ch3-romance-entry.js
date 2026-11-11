@@ -14,8 +14,8 @@ export const CH3_CONFESSION_IDS = Object.freeze(["ageha", "mashiro"]);
 export const AGEHA_CONFESSION_SCENES = Object.freeze(["confession_ageha", "confession_ageha_accept", "confession_ageha_reject"]);
 /** あげはの♥3の分岐の選択肢 id（data/dialogue/ch2_ageha_story.json・core/stats.js AFFINITY_GATE_CHOICES と同じ）。 */
 export const AGEHA_ROUTE_CHOICE = "bond_q1_ageha";
-/** 告白は再会（dayAfterWin 3）の翌日の昼。再会と同じ日には起こさない（#1988）。 */
-export const AGEHA_CONFESSION_DAY_AFTER_WIN = 4;
+/** 告白は再会（帰郷した夜・dayAfterWin 2。STK23）の翌日の昼。再会と同じ日には起こさない（#1988）。 */
+export const AGEHA_CONFESSION_DAY_AFTER_WIN = 3;
 /** ♥5の下限ポイント（core/stats.js の AFFINITY_RANK_PTS[5] と同じ値。ch3_aftermath.mjs が一致を確認する）。 */
 export const AGEHA_HEART_MAX_PTS = 66;
 
