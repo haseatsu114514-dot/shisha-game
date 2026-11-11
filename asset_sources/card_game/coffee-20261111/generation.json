@@ -1,0 +1,77 @@
+{
+  "date": "2026-11-11",
+  "issue": 3221,
+  "generator": "Codex built-in image_gen",
+  "prompt": "Create ONE isolated upright rectangular shisha tobacco carton for a fictional game manufacturer.\nMatch the attached reference carton exactly in packaging design system: the same 3/4 perspective,\ncompact proportions, softly rendered matte paper, gentle studio light, emblem placement, layout and\nillustration style. Truly transparent background, square canvas (1024x1024 or larger), the whole\ncarton fully inside the frame with generous margins, no cast shadow on the background.\nNo words, letters, numerals, readable labels or watermark. No people, no hookah, no other products.\nThis is an original fictional game asset, not a reproduction of a real product.\nKeep the cream-white carton of the reference with the black vertical band on the left of the front and the black right side panel, the same small white stylized emblem on both black areas, and the flowing swoosh ribbon. Change the swoosh ribbon colors to dark roasted-coffee brown and warm cream, and replace the mango illustration with a small plain white ceramic cup filled with BLACK COFFEE, dark roasted coffee beans and a small curl of coffee steam, drawn in the same flat illustrated style. This flavor is COFFEE, not cappuccino: black liquid with NO milk, foam, latte art, whipped cream or chocolate. The cup and beans are printed illustrations ON the carton only, no real props outside the carton. No text or letters. File: coffee.png.",
+  "reference": {
+    "path": "remake/img/shop/remaining8/mango.webp",
+    "sha256": "187f7ee8fcc1e83982e1ca6cca2b52e4e6108baa2ff9e495edb9eb1f29b4e974",
+    "bytes": 21098
+  },
+  "raw": {
+    "size": [
+      1254,
+      1254
+    ],
+    "mode": "RGBA",
+    "bytes": 1036475,
+    "sha256": "0671b9d9206af7740c74ff023810a70557cb04ac4331c18ec006a0d276dc8ed7",
+    "alpha_range": [
+      0,
+      255
+    ],
+    "alpha_bbox": [
+      0,
+      0,
+      1222,
+      1254
+    ],
+    "alpha16_bbox": [
+      267,
+      107,
+      990,
+      1159
+    ],
+    "corner_alpha": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "fully_opaque_pixels": 502
+  },
+  "candidate": {
+    "size": [
+      512,
+      512
+    ],
+    "mode": "RGBA",
+    "bytes": 147160,
+    "sha256": "fcb76736fcc9364535548a4b8fed638f1289a4eef7f0a66223ffea618356e83b",
+    "alpha_range": [
+      0,
+      254
+    ],
+    "alpha_bbox": [
+      35,
+      0,
+      458,
+      475
+    ],
+    "alpha16_bbox": [
+      109,
+      43,
+      404,
+      474
+    ],
+    "corner_alpha": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "fully_opaque_pixels": 0
+  },
+  "processing": "Raw unmodified. Candidate is proportional downsample to 512x512 only; no alpha edits.",
+  "check": "One carton, fully in frame, fictional emblem and package layout match reference; black coffee, beans, no milk or cappuccino foam, no text/digits/real logo. True RGBA with zero corner alpha. Low alpha debris remains; strict alpha cleanup may be needed before adoption."
+}

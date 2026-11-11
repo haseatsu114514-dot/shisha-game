@@ -9,4 +9,5 @@ export const FLAVOR_CARTONS_3287_ART = {
   "jasmine": { url: new URL("../../img/shop/flavor-cartons-3287/jasmine.webp", import.meta.url).href, size: [512, 512], box: [106, 29, 312, 464] },
   "kiwi": { url: new URL("../../img/shop/flavor-cartons-3287/kiwi.webp", import.meta.url).href, size: [512, 512], box: [103, 52, 306, 407] },
   "sakura": { url: new URL("../../img/shop/flavor-cartons-3287/sakura.webp", import.meta.url).href, size: [512, 512], box: [104, 52, 306, 407] },
+  "coffee": { url: new URL("../../img/shop/flavor-cartons-3287/coffee.webp", import.meta.url).href, size: [512, 512], box: [107, 41, 299, 434] },
 };
