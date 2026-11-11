@@ -244,16 +244,17 @@ const previewStorage = new Map();
 globalThis.localStorage = {getItem:key=>previewStorage.get(key)??null,setItem:(key,value)=>previewStorage.set(key,String(value))};
 growth.setGrowthPreview(true);
 const grown=await run(); assert.equal(grown.error,undefined);
-assert.equal(grown.value.growth.xp,525);assert.equal(grown.value.growth.earned,2);
+// 経験値はその場でレベルと火種になる（SBD108・SBD122）: 大会の学びの色の火2＋Lv.3までの白火4＋優勝の白火3（SBD110）
+assert.equal(grown.value.growth.xp,525);assert.equal(grown.value.growth.earned,9);
 const grownReload=await run({resume:structuredClone(grown.value)});
-assert.equal(grownReload.value.growth.xp,525);assert.equal(grownReload.value.growth.earned,2);
+assert.equal(grownReload.value.growth.xp,525);assert.equal(grownReload.value.growth.earned,9,"保存から再開しても二重に渡さない");
 const grownLoss=await run({failure:"pull"});
-assert.equal(grownLoss.value.growth.xp,245);assert.equal(grownLoss.value.growth.earned,0);
+assert.equal(grownLoss.value.growth.xp,245);assert.equal(grownLoss.value.growth.earned,2,"敗北では Lv.2 の白火2だけ。色の火・優勝の白火は無い");
 assert(match.resetChapterFourCraft(grownLoss.value));
 const grownRetry=await run({resume:structuredClone(grownLoss.value)});
 assert.equal(grownRetry.error,undefined);assert.equal(grownRetry.value.growth.xp,525);
 assert(grownRetry.trace.includes("story:opening:1"),"再挑戦は大会の最初からなので、開幕の掛け合いも読み直す");
-assert.equal(grownRetry.value.growth.earned,2,"再挑戦は順位の差分だけ。色の火種は完成後に一度");
+assert.equal(grownRetry.value.growth.earned,9,"再挑戦は順位の差分だけ。色の火種は完成後に一度、優勝の白火も一度");
 previewStorage.clear();
 // 版2の強化と同時に既存の操作補助を接続。明示的な3敗からだけ、次の一台に適用する。
 {

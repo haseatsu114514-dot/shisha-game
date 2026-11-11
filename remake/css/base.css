@@ -143,7 +143,6 @@ body:not(:root) #stage[data-wide] .map-weather { left: calc(-1 * var(--stage-gut
    位置や大きさは変えない（中の部品を左からの px で置いているものがあるため）。box-shadow の広がりで外側だけ塗る。 */
 #stage[data-wide] .kuji-overlay { box-shadow: 0 0 0 var(--stage-gutter) rgba(5, 4, 10, .72); }
 #stage[data-wide] .gal-overlay { box-shadow: 0 0 0 var(--stage-gutter) rgba(5, 4, 10, .78); }
-#stage[data-wide] .levelup-backdrop { box-shadow: 0 0 0 var(--stage-gutter) rgba(6, 3, 12, .6); }
 #stage[data-wide] .reel-intro { box-shadow: 0 0 0 var(--stage-gutter) rgba(6, 4, 10, .72); }
 #stage[data-wide] .trpg-overlay { box-shadow: 0 0 0 var(--stage-gutter) #081414c9; }
 #stage[data-wide] .fx-dim { box-shadow: 0 0 0 var(--stage-gutter) rgba(0, 0, 0, .72); }

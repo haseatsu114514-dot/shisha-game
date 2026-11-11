@@ -292,7 +292,7 @@ function growthCards(choose, select) {
   const gauge = g ? gaugeAt(g.level, g.settledXp, g.xp) : gaugeAt(1, 0, 0);
   const hidane = hidaneTotal(g);
   const lit = new Set(Array.isArray(g?.nodes) ? g.nodes : []);
-  const left = gauge.max ? "MAX" : gauge.pending > 0 ? `今夜 Lv UP${gauge.pending > 1 ? ` ×${gauge.pending}` : ""}` : `次のレベルまで EXP ${gauge.left}`;
+  const left = gauge.max ? "MAX" : `次のレベルまで EXP ${gauge.left}`;
   return [
     el("div.dm-grid.dm-grid-2", [
       el("section.dm-card.dm-level", { dataset: { test: "menu-level" } }, [

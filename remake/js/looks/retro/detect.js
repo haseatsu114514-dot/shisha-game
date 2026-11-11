@@ -6,7 +6,7 @@
 //   "gap"   … 場面と場面のあいだの、何も出ていない短い間。外枠のまま少し待つ。
 //   "none"  … 未対応（シーシャ作り・大会・ミニゲームなど）。現行の画面をそのまま見せる（新版の縦持ちは回転案内）。
 // MENU・LIME・小窓（設定・用語集・セーブ／ロード・セーブの引っ越し・規則の紙・確認）・会話の LOG・店・
-// 夜のレベルアップ・LIME の初回の案内・章のクリアの画面は "scene"（name: "sheet"）として
+// LIME の初回の案内・章のクリアの画面は "scene"（name: "sheet"）として
 // 下画面や縦長のシート（retro/sheet.js）へ写す。
 const byId = (id) => document.getElementById(id);
 const media = (query) => typeof window.matchMedia === "function" && window.matchMedia(query).matches;
@@ -24,10 +24,10 @@ const PROBES = {
   log: [[0.5, 0.5]],
   shop: [[0.5, 0.5], [0.3, 0.6], [0.7, 0.4]],
 };
-// 演出の層（#fx）にあっても場面を止めない、短い効果。
-const FX_HARMLESS = ".flash, .stat-flight";
-// 演出の層にあって、自分で操作する画面（心得の盤・レベルアップ・スロットの説明・LIME の案内・くじ）。現行の画面で見せる。
-const FX_INTERACTIVE = ".gboard, .levelup-backdrop, .reel-intro, .lime-coach, .kuji-overlay";
+// 演出の層（#fx）にあっても場面を止めない、短い効果。その場のレベルアップの札（.lvup・SBD122）と火種の粒・光も、押せない飾り。
+const FX_HARMLESS = ".flash, .stat-flight, .lvup, .gfx-fly, .gfx-ring, .gfx-spark";
+// 演出の層にあって、自分で操作する画面（心得の盤・スロットの説明・LIME の案内・くじ）。現行の画面で見せる。
+const FX_INTERACTIVE = ".gboard, .reel-intro, .lime-coach, .kuji-overlay";
 const CONTROLS = "button, input, select, textarea, a[href]";
 // 会話の層（#vn）に元からある部品。これ以外（図解など）が足されている間は未対応として扱う。
 const VN_PARTS = ".vn-effect, .vn-cg, .vn-portraits, .vn-cutin-layer, .vn-box, .vn-choices, .vn-controls, .vn-log";
@@ -168,10 +168,10 @@ export function detectState(own = [], { extended = false } = {}) {
     return kind ? { kind: "scene", name: "sheet", variant: kind } : NONE;
   }
 
-  // 演出の層の、ボタンで閉じるだけの画面（夜のレベルアップ・LIME の初回の案内）はシートで写す
-  const fxSheet = byId("fx")?.querySelector(":scope > .levelup-backdrop, :scope > .lime-coach");
+  // 演出の層の、ボタンで閉じるだけの画面（LIME の初回の案内）はシートで写す
+  const fxSheet = byId("fx")?.querySelector(":scope > .lime-coach");
   if (fxSheet && !byId("fx").querySelector(":scope > :is(.gboard, .reel-intro, .kuji-overlay)")) {
-    return { kind: "scene", name: "sheet", variant: fxSheet.matches(".lime-coach") ? "coach" : "levelup" };
+    return { kind: "scene", name: "sheet", variant: "coach" };
   }
 
   // 覆い: 演出の層に何か出ている・煙や暗転で覆っている・読み込みの一言が出ている

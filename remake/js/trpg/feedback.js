@@ -1,12 +1,13 @@
 // Public roll information only: never inspect the hidden traveler profile.
 const grades = ["success", "mixed", "trouble"];
-import { DICE, gradeOf, approachBase } from "./session.js";
+import { DICE, outcomeOf, approachBase } from "./session.js";
 
-function percentages(totals) {
+/** Every pair of faces is graded by the table's own rule, so a 20 counts as the success it always is. */
+function percentages(rolls, bonus) {
   const counts = { success: 0, mixed: 0, trouble: 0 };
-  for (const total of totals) counts[gradeOf(total)]++;
+  for (const dice of rolls) counts[outcomeOf(dice, bonus).grade]++;
   // Each percentage is approximate; independent rounding may not sum to 100.
-  return Object.fromEntries(grades.map(grade => [grade, Math.round(counts[grade] * 100 / totals.length)]));
+  return Object.fromEntries(grades.map(grade => [grade, Math.round(counts[grade] * 100 / rolls.length)]));
 }
 
 function requireBonus(bonus) {
@@ -15,11 +16,11 @@ function requireBonus(bonus) {
 
 export function rollOdds(bonus) {
   requireBonus(bonus);
-  const totals = [];
+  const rolls = [];
   for (let first = 1; first <= DICE.sides; first++) {
-    for (let second = 1; second <= DICE.sides; second++) totals.push(first + second + bonus);
+    for (let second = 1; second <= DICE.sides; second++) rolls.push([first, second]);
   }
-  return percentages(totals);
+  return percentages(rolls, bonus);
 }
 
 export function checkForecast(scenario, state, kind, { support = false, approach = null, sheets = null } = {}) {
@@ -47,6 +48,6 @@ export function rerollOdds(dice, bonus, index) {
     throw new RangeError("Choose one of two twenty-sided dice to reroll");
   }
   const kept = dice[1 - index];
-  return percentages(Array.from({ length: DICE.sides }, (_, face) => kept + face + 1 + bonus));
+  return percentages(Array.from({ length: DICE.sides }, (_, face) => [kept, face + 1]), bonus);
 }
 

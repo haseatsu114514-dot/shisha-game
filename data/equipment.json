@@ -71,6 +71,7 @@
       "sell_price": 1000,
       "price": 2000,
       "value": "tanukish_lid",
+      "art": "tanukish_lid",
       "description": "使いやすく癖が少ない。素焼きサイズには使えない。"
     },
     {
@@ -82,6 +83,7 @@
       "sell_price": 750,
       "price": 1500,
       "value": "amaburst",
+      "art": "amaburst_hms",
       "description": "素焼きハガルにも装着可能。温度が上がりやすく、直炭に近い高火力を出しやすい。"
     },
     {
@@ -167,6 +169,7 @@
       "sell_price": 1500,
       "price": 3000,
       "value": "winkwink_hagal",
+      "art": "winkwink_hagal",
       "description": "素焼きなど大きいハガル向け。熱持ちは良いが熱が入りづらい。"
     },
     {
@@ -689,7 +692,7 @@
       "sell_price": 1200,
       "price": 2400,
       "value": "dense_flat_charcoal",
-      "art": "flat_charcoal",
+      "art": "dense_flat_charcoal",
       "description": "ココナッツ殻を固く詰めて焼いた上位のフラット炭。灰が少なく、熱の入り方が揺れにくい。"
     },
     {
@@ -743,6 +746,7 @@
       "kuji_only": true,
       "base": "stand_custom",
       "value": "stand_custom_melty",
+      "art": "stand_custom_melty",
       "home_xp": 9,
       "description": "職人仕立ての特注台を、柚ヶ谷のMELTY PUFFと同じピンクとレオパード柄に塗った台。Dr.fookahの限定台くじだけで当たる。仕立てと煙の通りは特注台と同じ。"
     },
@@ -759,6 +763,7 @@
       "kuji_only": true,
       "base": "stand_custom",
       "value": "stand_custom_tosu",
+      "art": "stand_custom_tosu",
       "home_xp": 9,
       "description": "地元・橙須の「橙」の色を、手吹きガラスのベースに溶かし込んだ限定色の特注台。Dr.fookahの限定台くじだけで当たる。仕立てと煙の通りは特注台と同じ。"
     },
@@ -775,6 +780,7 @@
       "kuji_only": true,
       "base": "stand_custom",
       "value": "stand_custom_engraved",
+      "art": "stand_custom_engraved",
       "home_xp": 9,
       "description": "当たった人の名前を真鍮のステムに彫って渡す、名入れの特注台。はじめの台には「逢縁」と小さく入っている。Dr.fookahの限定台くじだけで当たる。仕立てと煙の通りは特注台と同じ。"
     }

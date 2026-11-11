@@ -15,6 +15,7 @@ import { loadWithRecovery } from "./saves.js";
 import { pickTitleArt, prepareTitleArt } from "./title-art.js";
 import { createUiThemeSelect } from "../core/ui-theme.js";
 import { LOOKS, normalizeLook, setLook } from "../core/look.js";
+import { refreshSideArea } from "../core/side-area.js";
 import { fullscreenButton, saveTransferRow } from "./save-transfer.js";
 
 let titleRevision = 0;
@@ -325,6 +326,9 @@ export async function openConfig(opts = {}) {
   // 立ち絵から登場カットインへの「変身」（2026-11-02 オーナー採用。グラフィック絵柄のときだけ効く）
   const introTransition = segRow("登場カットインへの変身", "cfg-intro-transition", [["none", "なし"], ["morph", "変身"]],
     config.introTransition === "none" ? "none" : "morph", (v) => setConfig("introTransition", v));
+  // 左右の余白（横長のスマホでステージの外に余る所・YHK）。余白が無い画面では何も変わらない。
+  const sideArea = segRow("左右の余白", "cfg-side-area", [["full", "帯とボタン"], ["plain", "ぼかしだけ"]],
+    config.sideArea === "plain" ? "plain" : "full", (v) => { setConfig("sideArea", v); refreshSideArea(); });
   const reduceShake = el("input", {
     type: "checkbox", dataset: { test: "cfg-reduce-shake" },
     onchange: (e) => { config.reduceShake = e.target.checked; document.body.classList.toggle("reduce-shake", config.reduceShake); persist(); opts.onChange?.("reduceShake", config.reduceShake); },
@@ -373,6 +377,7 @@ export async function openConfig(opts = {}) {
       portraits,
       introArt,
       introTransition,
+      sideArea,
       row("揺れ・閃光を減らす", reduceShake),
       row("文字送りの声", blip),
       row("見た演出を短く", shortSeen),

@@ -63,6 +63,8 @@ const modules = {
   "./growth-board-tutorial.js": { grantStarterHidane() {}, tutorialPending: () => false, startBoardTutorial() {},
     STARTER_HIDANE: 6, STARTER_FLAG: "_board_starter_given", TUTORIAL_FLAG: "_tutorial" },
   "../core/growth-effects.js": { LESSON_TUNING: {} },
+  // 絵つきの見方（SBD116）は別画面。この検査では開かない
+  "./growth-board-help.js": { openBoardHelp: async () => {} },
   // 演出の部品（SBD104）は飾りだけ。この検査では動きを減らす設定と同じ扱いにして、規則と表示だけを見る
   "./growth-fx.js": { reducedMotion: () => true, igniteAt() {}, runAlongPath() {}, flyHidane: async () => {}, bump() {}, commitCutIn: async () => {},
     emberField: () => new Element(), HIDANE_COLOR: { any: "#fff1d0", body: "#ef8a5e", sense: "#58a6ff", wisdom: "#7bd36d" } },

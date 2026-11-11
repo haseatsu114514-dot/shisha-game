@@ -713,6 +713,8 @@ export const config = {
   introArtStyle: "graphic", // 登場カットインの絵柄。"classic" で旧（立ち絵）に戻す（2026-10-31）
   introTransition: "morph", // 立ち絵からカットインへの変身のつなぎ: morph（2026-11-02 オーナー採用）/ none。card / slash は比較用に残す
   staffRollSeen: false, // スタッフロールを一度最後まで見たか。見た端末では2回目から飛ばせる（#517）
+  // 左右の余白（横長のスマホでステージの外に余る所・YHK）。"full"＝煙と縁・縦書きの帯・親指ボタン／"plain"＝これまでどおり、ぼかしだけ
+  sideArea: "full",
 };
 
 setPortraitStyleSource(() => config.portraitStyle);

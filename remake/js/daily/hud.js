@@ -1,4 +1,4 @@
-import { CH2_CITY_EN, CH2_CITY_NAME, HOME_CITY_EN, HOME_CITY_NAME } from "../core/city-locations.js";
+import { HOME_CITY_EN, currentCity } from "../core/city-locations.js";
 // 日常パートの常時表示（日付・時間帯・所持金・体力・スマホ・MENU）。
 // 「次の大会まで あと◯日」は左上カードに出さない（#3033・オーナー指示 2026-11-09。ラベルが印に
 // 置き換わって何の日数か分からない、とのプレイテスト指摘）。出発前の「出発まで」・第5章の
@@ -7,14 +7,13 @@ import { CH2_CITY_EN, CH2_CITY_NAME, HOME_CITY_EN, HOME_CITY_NAME } from "../cor
 // 左上に DAY カード、右上に LIME と MENU。ステータスは全画面MENU（daily/menu.js）のタブへ移し、
 // 五角形のステータスボタンは廃止した（DUI05）。未使用の火種の印は MENU の右上に出す。
 import { el, yen, sleep } from "../core/util.js";
-import { layers, toast } from "../core/ui.js";
+import { layers, toast, gainCard } from "../core/ui.js";
 import { on } from "../core/bus.js";
 import { state } from "../core/state.js";
 import { staminaRatio, currentCondition, maxStamina } from "../core/stats.js";
 import { conditionForRatio } from "../core/condition.js";
 import { isRainy } from "./weather.js";
 import { chapterDay, chapterDaysLeft, chapterFinalDay, chapterGoalLabel, departurePrep } from "../core/chapter-clock.js";
-import { travelsBetweenCities } from "../core/travel-budget.js";
 import { growthEnabled, growthView, gaugeInfo, hidaneTotal } from "../core/growth.js";
 import { NODE_BY_ID, pathTo } from "../core/growth-board.js";
 
@@ -79,7 +78,7 @@ function installMenuKey() {
     const body = document.body;
     if (!dom || !layers.hud.classList.contains("show") || body.dataset.screen !== "map" || !document.querySelector("#screen .map:not(.done)")) return;
     if (layers.modal.classList.contains("show") || body.classList.contains("vn-open") || body.classList.contains("in-vn")
-      || document.querySelector(".phone-overlay") || layers.fx.querySelector(".gboard, .levelup-backdrop")) return;
+      || document.querySelector(".phone-overlay") || layers.fx.querySelector(".gboard")) return;
     const button = layers.hud.querySelector(".hud-menu");
     if (!button) return;
     e.preventDefault();
@@ -133,6 +132,8 @@ export function initHud(h) {
     setTimeout(() => pop.remove(), 1400);
   });
   on("exp-gain", showExpChip);
+  on("level-up", (info) => announceGrowth("level", info));
+  on("hidane-gift", (gift) => announceGrowth("gift", gift));
   installMenuKey();
 }
 
@@ -148,6 +149,20 @@ function showExpChip({ total, tags = [], publicReward = false }) {
   ]);
   dom.exp.append(chip);
   setTimeout(() => chip.remove(), 2200);
+}
+
+/**
+ * レベルが上がった・ご褒美の火種が届いた、その場の演出（SBD122。daily/levelup.js の短い札。操作は止めない）。
+ * はじめて火種が入った時だけ、灯せる場所を一度カードで伝える。
+ */
+function announceGrowth(type, info = {}) {
+  if (!growthEnabled()) return;
+  const owner = state;
+  void import("./levelup.js").then((m) => { if (state === owner) (type === "level" ? m.showLevelUp : m.showHidaneGift)(info); });
+  if (state?.flags && !state.flags._hidane_stock_notice && info.parts?.some((part) => part?.n > 0)) {
+    state.flags._hidane_stock_notice = true;
+    gainCard({ kind: "info", badge: "火", top: "HIDANE", main: "火種を手に入れた", sub: "観音堂で振り返ると、心得の盤に灯せる（時間は使わない）" });
+  }
 }
 
 function updateGrowth() {
@@ -166,14 +181,13 @@ function updateGrowth() {
   dom.exp.querySelector(".hx-today").style.width = `${Math.round(g.now * 100)}%`;
   const left = dom.exp.querySelector(".hx-left");
   // 「あと○」の数字は出さない（オーナー指示 2026-11-08「ゲージでわかる」）。数字は title / aria-label に残す。
-  // 状態を伝える「今夜 Lv UP」「MAX」だけ文字で出す。
-  left.textContent = g.max ? "MAX" : g.pending > 0 ? `今夜 Lv UP${g.pending > 1 ? ` ×${g.pending}` : ""}` : "";
+  // 上限の「MAX」だけ文字で出す（レベルはその場で上がるので「Lv UP」の待ちは無い。SBD122）
+  left.textContent = g.max ? "MAX" : "";
   left.hidden = !left.textContent;
-  dom.exp.classList.toggle("ready", g.pending > 0);
   dom.exp.dataset.milestone = g.nextMilestone && !g.max ? "true" : "false";
   renderTarget(view);
-  dom.exp.title = g.max ? `Lv.${g.level} MAX` : g.pending > 0
-    ? `今夜レベルアップ（あふれた分 +${g.overflow}）` : `次のレベルまで EXP ${g.left}${g.nextMilestone ? "（次は火種が2つ）" : ""}`;
+  const leftText = g.max ? `Lv.${g.level} MAX` : `次のレベルまで EXP ${g.left}${g.nextMilestone ? "（次は節目。色の火ももらえる）" : ""}`;
+  dom.exp.title = leftText;
   dom.exp.setAttribute("aria-label", dom.exp.title);
 }
 
@@ -212,10 +226,7 @@ export async function keepDailyHud(task) {
 export function updateHud() {
   if (!dom || !state) return;
   // 今いる街（第2章・第5章は flags._ch2_region。第5章は東京にも泊まれる・#2033。第3章の東京も同じ印・VOL03）
-  const region = travelsBetweenCities(state) || [3, 4].includes(state.chapter) ? state.flags._ch2_region : "home";
-  const [areaId, areaEn, areaName] = region === "widehanga" ? ["widehanga", CH2_CITY_EN, CH2_CITY_NAME]
-    : region === "tokyo" && [3, 5].includes(state.chapter) ? ["tokyo", "TOKYO", "東京"]
-    : region === "dubai" && [4, 5].includes(state.chapter) ? ["dubai", "DUBAI", "ドバイ"] : ["sakae", HOME_CITY_EN, HOME_CITY_NAME];
+  const { id: areaId, en: areaEn, name: areaName } = currentCity(state);
   dom.area.dataset.region = areaId;
   dom.area.setAttribute("aria-label", areaEn);
   dom.area.replaceChildren(

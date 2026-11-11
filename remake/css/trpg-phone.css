@@ -104,3 +104,13 @@ html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-sheet[data-costu
 html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-sheet[data-costume="true"] > :is(p, small) { grid-column: 3; }
 html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-builder-origin:has(.trpg-builder-origin-art) { padding-left: 104px; min-height: 104px; }
 html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-builder-origin-art { width: 82px; }
+
+/* ---- 判定に賭けるもの（TRF02）: 成功のごほうびの札は1行。右の列で切り札の札を押し下げない ---- */
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-stake { margin: 0 auto 4px; padding-block: 2px; white-space: nowrap; }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-reward { margin: 4px auto; padding-block: 2px; }
+/* 判定の決まりの一文は題の行の右へ。本文の先頭の一文は出さない（Safari のバーが出ている 844×340 でも、切り札の札の2行目まで見える）。 */
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage > h2 { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 0 20px; }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage > h2 .trpg-roll-rule {
+  display: inline; font-size: var(--phone-sub); font-weight: 400; letter-spacing: 0; color: #c6d4cb; white-space: nowrap;
+}
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-modal-body > div > p.trpg-roll-instruction { display: none; }

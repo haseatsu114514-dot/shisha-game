@@ -1,0 +1,320 @@
+{
+  "issue": 3331,
+  "approved_A_PR": 3350,
+  "approved_A": {
+    "repo_path": "asset_sources/portraits/ageha-new-v2-20261112/normal-untouched.png",
+    "ref": "f39a9dfca66ce0deebf248977ef8ae1fe4f611ae",
+    "bytes": 983651,
+    "sha256": "d02f63ec34452381f771446d222dda14b280ff3459ee22ae75cb29357661d92c"
+  },
+  "created_utc": "2026-11-11",
+  "scope": "Ageha G2-G5 only. Mashiro H1-H3 not included.",
+  "selected_outputs": {
+    "smile": {
+      "generator": "OpenAI image generation tool in ChatGPT; no model identifier exposed",
+      "transparent_background": true,
+      "original_generator_file": "exec-4dcaf781-8417-438d-be06-de0b8144db63.png",
+      "source_file": "smile-untouched.png",
+      "source_bytes_unmodified": true,
+      "measurements": {
+        "size": [
+          1084,
+          1451
+        ],
+        "mode": "RGBA",
+        "bytes": 1026027,
+        "sha256": "13820d89f4d1c055d2feef46be1fc82dfd59346e810df355772c86396d2c7d22",
+        "alpha_range": [
+          0,
+          255
+        ],
+        "corner_alpha": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "alpha16_bbox": [
+          272,
+          13,
+          885,
+          1449
+        ],
+        "visible_height_alpha16": 1436,
+        "native_figure_height_at_least_1300": true,
+        "alpha_gt0_bbox": [
+          0,
+          9,
+          1074,
+          1451
+        ]
+      },
+      "prompt_key": "expressions-prompts.json#smile",
+      "references_in_order": [
+        {
+          "repo_path": "assets/sprites/characters/ageha/chr_ageha_smile.png",
+          "ref": "main",
+          "bytes": 496993,
+          "sha256": "fd0b09bc80802616dfb44c1f70def0c4791748080b4904c6f9a22e7528e2513b"
+        },
+        {
+          "repo_path": "asset_sources/portraits/ageha-new-v2-20261112/normal-untouched.png",
+          "ref": "f39a9dfca66ce0deebf248977ef8ae1fe4f611ae",
+          "bytes": 983651,
+          "sha256": "d02f63ec34452381f771446d222dda14b280ff3459ee22ae75cb29357661d92c"
+        },
+        {
+          "repo_path": "assets/sprites/character_variants/new/tsumugi/chr_tsumugi_normal.png",
+          "ref": "main",
+          "bytes": 290813,
+          "sha256": "a3e91848b0bc501eb483d713fe68059717d5f676b45648c49a23cf5086e91fbd"
+        }
+      ]
+    },
+    "surprise": {
+      "generator": "OpenAI image generation tool in ChatGPT; no model identifier exposed",
+      "transparent_background": true,
+      "original_generator_file": "exec-ed3b248e-8152-4da4-a71a-40904cd42220.png",
+      "source_file": "surprise-untouched.png",
+      "source_bytes_unmodified": true,
+      "measurements": {
+        "size": [
+          1084,
+          1451
+        ],
+        "mode": "RGBA",
+        "bytes": 970854,
+        "sha256": "75e065e8dca8404aa2247150a08be22847f95fda15d6114bb5bcafe76eeef29e",
+        "alpha_range": [
+          0,
+          255
+        ],
+        "corner_alpha": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "alpha16_bbox": [
+          268,
+          12,
+          869,
+          1440
+        ],
+        "visible_height_alpha16": 1428,
+        "native_figure_height_at_least_1300": true,
+        "alpha_gt0_bbox": [
+          41,
+          8,
+          1064,
+          1451
+        ]
+      },
+      "prompt_key": "expressions-prompts.json#surprise",
+      "references_in_order": [
+        {
+          "repo_path": "assets/sprites/characters/ageha/chr_ageha_surprise.png",
+          "ref": "main",
+          "bytes": 464614,
+          "sha256": "2a05eae860312c29c6d0052501e29428f3a21d6f07235736268e26654a35c774"
+        },
+        {
+          "repo_path": "asset_sources/portraits/ageha-new-v2-20261112/normal-untouched.png",
+          "ref": "f39a9dfca66ce0deebf248977ef8ae1fe4f611ae",
+          "bytes": 983651,
+          "sha256": "d02f63ec34452381f771446d222dda14b280ff3459ee22ae75cb29357661d92c"
+        },
+        {
+          "repo_path": "assets/sprites/character_variants/new/tsumugi/chr_tsumugi_normal.png",
+          "ref": "main",
+          "bytes": 290813,
+          "sha256": "a3e91848b0bc501eb483d713fe68059717d5f676b45648c49a23cf5086e91fbd"
+        }
+      ]
+    },
+    "serious": {
+      "generator": "OpenAI image generation tool in ChatGPT; no model identifier exposed",
+      "transparent_background": true,
+      "original_generator_file": "exec-1b35ff57-eab5-4098-b390-04935c98bd0a.png",
+      "source_file": "serious-untouched.png",
+      "source_bytes_unmodified": true,
+      "measurements": {
+        "size": [
+          1054,
+          1493
+        ],
+        "mode": "RGBA",
+        "bytes": 997875,
+        "sha256": "5e5e325f283b9f2be3bb9519705933aabf70452ec8156862a22548d7c962d2cf",
+        "alpha_range": [
+          0,
+          255
+        ],
+        "corner_alpha": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "alpha16_bbox": [
+          244,
+          12,
+          879,
+          1488
+        ],
+        "visible_height_alpha16": 1476,
+        "native_figure_height_at_least_1300": true,
+        "alpha_gt0_bbox": [
+          25,
+          10,
+          1040,
+          1493
+        ]
+      },
+      "prompt_key": "expressions-prompts.json#serious",
+      "references_in_order": [
+        {
+          "repo_path": "assets/sprites/characters/ageha/chr_ageha_serious.png",
+          "ref": "main",
+          "bytes": 474731,
+          "sha256": "87f44e4fe7033a4af9b32cea84f716dac6731f4aaaa30b8eada2c61b794798f5"
+        },
+        {
+          "repo_path": "asset_sources/portraits/ageha-new-v2-20261112/normal-untouched.png",
+          "ref": "f39a9dfca66ce0deebf248977ef8ae1fe4f611ae",
+          "bytes": 983651,
+          "sha256": "d02f63ec34452381f771446d222dda14b280ff3459ee22ae75cb29357661d92c"
+        },
+        {
+          "repo_path": "assets/sprites/character_variants/new/tsumugi/chr_tsumugi_normal.png",
+          "ref": "main",
+          "bytes": 290813,
+          "sha256": "a3e91848b0bc501eb483d713fe68059717d5f676b45648c49a23cf5086e91fbd"
+        }
+      ]
+    },
+    "sad": {
+      "generator": "OpenAI image generation tool in ChatGPT; no model identifier exposed",
+      "transparent_background": true,
+      "original_generator_file": "exec-38af9eee-6636-4727-beff-adcd682b2785.png",
+      "source_file": "sad-untouched.png",
+      "source_bytes_unmodified": true,
+      "measurements": {
+        "size": [
+          1084,
+          1451
+        ],
+        "mode": "RGBA",
+        "bytes": 970852,
+        "sha256": "4264ff3a88b3bf0a048a48d443c7a8031ef5b0b529efb4afcff0354990aa4268",
+        "alpha_range": [
+          0,
+          255
+        ],
+        "corner_alpha": [
+          0,
+          0,
+          1,
+          0
+        ],
+        "alpha16_bbox": [
+          298,
+          12,
+          881,
+          1445
+        ],
+        "visible_height_alpha16": 1433,
+        "native_figure_height_at_least_1300": true,
+        "alpha_gt0_bbox": [
+          0,
+          10,
+          1064,
+          1451
+        ]
+      },
+      "prompt_key": "expressions-prompts.json#sad",
+      "references_in_order": [
+        {
+          "repo_path": "assets/sprites/characters/ageha/chr_ageha_sad.png",
+          "ref": "main",
+          "bytes": 479694,
+          "sha256": "65502dd68c9de1518d9f32369f68b38d3e9f9d0c4d664d78a06f5df94ccbd383"
+        },
+        {
+          "repo_path": "asset_sources/portraits/ageha-new-v2-20261112/normal-untouched.png",
+          "ref": "f39a9dfca66ce0deebf248977ef8ae1fe4f611ae",
+          "bytes": 983651,
+          "sha256": "d02f63ec34452381f771446d222dda14b280ff3459ee22ae75cb29357661d92c"
+        },
+        {
+          "repo_path": "assets/sprites/character_variants/new/tsumugi/chr_tsumugi_normal.png",
+          "ref": "main",
+          "bytes": 290813,
+          "sha256": "a3e91848b0bc501eb483d713fe68059717d5f676b45648c49a23cf5086e91fbd"
+        }
+      ]
+    }
+  },
+  "unselected_serious_attempts": [
+    {
+      "file_not_delivered": "serious-first-chin-and-foot-review.png",
+      "sha256": "0175422a3f3973f4532e55f446cfaeeaa67815a839e0904b82f121904bad84fc",
+      "size": [
+        1084,
+        1451
+      ],
+      "prompt": "Expression variant of the SAME character. Reference roles IN ORDER: image 1 is Ageha's current sprite of this expression: copy ONLY the facial expression and the arm/hand gesture, and keep its cuteness. Image 2 is the APPROVED new-version Ageha normal sprite: keep exactly this person's face design, big round eyes, soft cheeks, short chin, hair, outfit, accessories, colors, line weight, shading, head size, figure height and foot position, so that image 2 and this sprite can switch in the game without the head changing size or the feet moving. Image 3 (new-version Tsumugi) is rendering-style context only; never copy her face, hair, body or clothes. She must stay as cute and youthful as image 1: no heavy makeup, no narrow cold eyes, no long chin.\nSTYLE STANDARD (shisha-game cast): draw this character in the same artist's hand as the approved Minto, Ageha and Rio sprites. Japanese 2D visual-novel game art; confident dark outlines, slightly heavier on the outer silhouette and thinner inside; flat local colors with two to three clearly shaped cel-shadow steps; highlights only as a few deliberate bands on the hair and small catchlights in the eyes. No skin gloss, no airbrush gradients, no rim light or glow, no photographic texture, no pore or fabric micro-detail, no dense ornamental noise, no hundreds of thin hair strands. Limited palette: hair and skin plus three or four main colors. Keep this character's own eye, brow, nose and mouth shapes and natural age and gender differences; do not drift toward a generic AI pretty face.\nOutput: one PNG with true alpha transparency, portrait orientation, the figure at least 1300 px tall, the same framing and feet position as image 2 so the two images overlay. No background, floor, shadow on the ground, text, logo, frame or watermark.\nExpression: SERIOUS: brows drawn together, mouth closed firmly, steady eyes; a competitive, focused look that is still cute, not angry; copy the gesture of image 1.\nIDENTITY LOCK: image 2 (the owner-approved A) is the absolute face master. Preserve A's ROUND face outline, LARGE ROUND eyes, soft rounded cheeks and SHORT gentle chin in every expression. Do not narrow the face, shrink the eyes, sharpen the jaw or change the age. When eyes close, preserve the same eyelid span, socket placement and round cheek contour; change only expression and the specified arm/hand gesture. Match A's entire figure scale, hair-top and shoe-sole positions on the same tall canvas. The head shape and proportions must never change with emotion.",
+      "reference_order": [
+        "classic-serious.png",
+        "normal-A.png",
+        "tsumugi-new.png"
+      ],
+      "not_selected_reason": "chin looked slightly longer than A; bottom sole touched canvas edge"
+    },
+    {
+      "file_not_delivered": "serious-second-canvas-review.png",
+      "sha256": "74ba978c844453c8eafae2f031da9dc9f2663d521380130cfa85fe243de8ed93",
+      "size": [
+        1054,
+        1493
+      ],
+      "prompt": "Edit image 1 (the serious-expression candidate), using image 2 (the OWNER-APPROVED A normal) as the absolute identity and geometry master. Correct ONLY these two issues: (1) the serious candidate's chin is slightly longer and more pointed than A. Restore A's exact SHORT gentle chin and softly rounded cheek/jaw outline, same face width and head size, while retaining the focused brow and small firm closed mouth. Keep A's large ROUND eye design and iris size; show concentration through the brows and mouth only, not narrowed cold eyes or an adult sharp face. Make the brow slightly less severe: focused and competitive, not angry. (2) both shoes must be COMPLETE with transparent space under the soles: place their bottom at the same y-position as A (about y1446 on a 1084x1451 canvas), never clipped at the bottom edge. Preserve A's head/figure scale and position, candidate's intended hand gestures, same outfit, hair, jewelry, cel shadows and colors. Do not redesign anything. One full-body transparent PNG, same 1084x1451 portrait canvas, figure over 1300px tall. No background, ground, cast shadow, text or other objects.\n",
+      "reference_order": [
+        "serious-first-chin-and-foot-review.png",
+        "normal-A.png"
+      ],
+      "not_selected_reason": "different canvas; face still more severe than desired"
+    },
+    {
+      "file_not_delivered": "serious-fourth-expression-review.png",
+      "sha256": "8ddb2e412f63fa3619e7c0dc8e24217c860671906480ed9879ff573c04162636",
+      "size": [
+        1054,
+        1493
+      ],
+      "prompt": "Edit image 1, the approved A full-body transparent sprite of Ageha. Keep image 1's 1084 x 1451 canvas, exact figure size, head size, face silhouette, short rounded chin, cheek fullness, eye and iris size, hair, clothing, jewelry, leg positions and foot positions. Preserve every part except the minimum changes for a determined facial expression and a single arm gesture. Facial change: remove her small smile and make a small firm neutral closed mouth; move eyebrows only a little inward for gentle concentration. Keep her large ROUND eyes open with the exact same shape as A. Keep the lower face as short as A. She is focused and cute, not angry. Arm change: the hand on the left side of image remains resting on her hip; bend the arm on the right side of image so that hand holds the open jacket near the waist, as shown in image 2. Image 2 is the old serious sprite for this arm gesture ONLY, never for face, anatomy, canvas or size. Image 3 (Tsumugi) is cel-shading style context ONLY. Do not redraw or reinterpret the rest of A. Entire hair and both shoes remain completely inside image 1's original canvas. Output one true transparent RGBA PNG, portrait 1084x1451, full figure above 1300px, with a few transparent pixels below the complete soles as in A. No floor, cast shadow, text, logo, decorations or background. Main priority: it must be unmistakably the SAME face as A, with exactly the same round cheeks, large round eyes and short chin.\n",
+      "reference_order": [
+        "normal-A.png",
+        "classic-serious.png",
+        "tsumugi-new.png"
+      ],
+      "not_selected_reason": "expression less clearly competitive; different canvas remained"
+    }
+  ],
+  "visual_QA": {
+    "identity": "A and all four expressions viewed side by side as full figures and enlarged faces. All selected candidates read as the same character in self-review. This is not owner acceptance.",
+    "checks": [
+      "round face and full soft cheeks",
+      "large round open eyes; same eyelid span for closed-eye smile",
+      "short gentle chin, no long angular adult jaw",
+      "same honey twin ponytails, bear clips, outfit and accessories",
+      "expression and gesture against the corresponding classic sprite",
+      "full figure and complete shoes, alpha PNG and native figure height >=1300"
+    ],
+    "limitations": [
+      "raw pixel geometry is not identical; serious needs scale/placement alignment during integration",
+      "untouched raw alpha contains low-opacity specks; perform usual edge/alpha QA on integration",
+      "no runtime overlay or spriteScale test was run; no runtime files were changed"
+    ]
+  }
+}

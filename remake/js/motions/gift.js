@@ -33,8 +33,8 @@ const bowlFile = gear => gear?.art ? bowlArtFiles({ equip: { bowl: gear.id } })[
 function bowlArt(w = BOWL_W, gear = null, file = bowlFile(gear)) {
   const url = makingUrl(file);
   const [l, t, r, b, aspect] = DB.manifest?.makingBox?.[file] || BOWL_BOX;
-  // 背の高い専用ハガルも、縦横比を保って文字より上へ収める。
-  const maxHeight = gear?.id === "suyaki_hiyori" ? 380 : 440;
+  // 背の高い（脚のある）専用ハガルも、縦横比を保って文字より上へ収める。
+  const maxHeight = String(gear?.id || "").startsWith("suyaki_") ? 380 : 440;
   w = Math.min(w, maxHeight * (r - l) * aspect / (b - t));
   const fullW = w / (r - l), fullH = fullW / aspect;
   const h = Math.round(fullH * (b - t));
@@ -323,7 +323,7 @@ async function loadImage(url) {
 /**
  * 贈り物の専用ハガルの絵（assets/ui/making/bowl_empty_<贈り主>.png。suyaki_hiyori → bowl_empty_hiyori.png）。
  * 専用の絵がまだ無い贈り物は null で、品の絵を出さずに絵柄と名前の帯だけで見せる。
- * 台（脚）の無い素焼きの皿（bowl_empty_clay）は生成ミスなので、贈り物には出さない（2026-11-11 オーナー）。
+ * 素焼きの標準の器（bowl_empty_clay）は贈り物の品にしない（2026-11-11 オーナー。脚の無い皿だった。今は脚のある絵に差し替え済み）。
  * 専用ハガルの生成依頼は asset_sources/hagal-bond-gifts-20261111/prompts.md。
  */
 function giftBowlFile(gear) {

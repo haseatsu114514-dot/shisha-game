@@ -1,5 +1,5 @@
 // シート: 全画面 MENU・LIME・小窓（設定・用語集・セーブ／ロード・セーブの引っ越し・規則の紙・確認の問い）・会話の LOG・
-// 店（daily/shop.js の入口と1階の売り場）・夜のレベルアップ・LIME の初回の案内・章のクリアの画面を、外枠の中へ写す。
+// 店（daily/shop.js の入口と1階の売り場）・LIME の初回の案内・章のクリアの画面を、外枠の中へ写す。
 // 画面ごとに作り込まず、現行の DOM を読んで、ドット調の部品（見出し・文・一覧・ボタン・入力・絵）へ置き換える汎用の写し。
 //   - 元の要素と写しの要素を対で覚え（cache）、中身が変わったら同じ写しの要素を使い回して書き直す
 //     （押している途中のボタンを作り直さない。スクロールの位置も保つ）
@@ -13,7 +13,7 @@
 //   LIME・小窓・LOG … 上画面と下画面をつないだ1枚の縦長のシート（見出し・中身（送れる）・下のボタン）。
 //   店 … 縦長のシート（見出しに店名・所持金・種類の絞り込み、中身に商品の一覧、下に「店を出る」・合計・購入）。
 //          本体のボタンは売り場のタブ（フレーバー・機材・くじ・売却）。商品の絵は元の切り抜きの窓のまま写す。
-//   夜のレベルアップ・章のクリア … 縦長のシート。LIME の初回の案内 … 下画面に吹き出し（上画面はその場の絵を暗く）。
+//   章のクリア … 縦長のシート。LIME の初回の案内 … 下画面に吹き出し（上画面はその場の絵を暗く）。
 // 写さない物: くじを引く演出（ガラガラ）・心得の盤（動かして見る盤）・シーシャ作り・大会・ミニゲームは回転案内のまま。
 import { el } from "../../core/util.js";
 import { portraitInfo, realName } from "../../core/data.js";
@@ -34,7 +34,7 @@ const shown = (node) => !!node && node.getClientRects().length > 0;
 // 写しに引き継ぐ状態（押している・選んでいる・開いている）
 const STATE_ATTRS = ["aria-pressed", "aria-checked", "aria-selected", "aria-expanded", "aria-current", "data-errand-target"];
 
-/** いま写す物。kind: "menu" | "lime" | "modal" | "levelup" | "coach" | "log" | "shop" | "end"。 */
+/** いま写す物。kind: "menu" | "lime" | "modal" | "coach" | "log" | "shop" | "end"。 */
 function liveSheet() {
   const modal = document.getElementById("modal");
   if (modal?.classList.contains("show")) {
@@ -46,8 +46,6 @@ function liveSheet() {
     const box = [...modal.querySelectorAll(":scope > .xfer-layer > .modal-box")].pop() || modal.querySelector(":scope > .modal-box");
     if (box) return { kind: "modal", root: box };
   }
-  const levelup = document.querySelector("#fx > .levelup-backdrop > .levelup");
-  if (levelup) return { kind: "levelup", root: levelup };
   const coach = document.querySelector("#fx > .lime-coach");
   if (coach) return { kind: "coach", root: coach };
   const log = document.querySelector("#vn .vn-log.show");
@@ -495,16 +493,6 @@ export function createSheetScene(shell, painter) {
         head: src(node(".log-head")), body: src(node(".log-list")), foot: [],
         identity: root, stick: true,
         keys: close ? [{ id: "close", label: "閉じる", run: () => liveSheet()?.root.querySelector(".log-head button")?.click() }] : [],
-      };
-    }
-    if (sheet.kind === "levelup") {
-      // 夜のレベルアップ: Lv の数字・ゲージ・火種とご褒美の行、「心得の盤を見る」「OK」
-      return {
-        tall: true, status: ["LEVEL UP", ""],
-        head: src(node(".lu-lv"), true),
-        body: [...src(node(".lu-gauge"), true), ...src(node(".lu-details"), true)],
-        foot: src(node(".lu-actions")),
-        identity: root, keys: [],
       };
     }
     if (sheet.kind === "coach") {

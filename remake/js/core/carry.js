@@ -611,6 +611,7 @@ export const FLAG_EXACT_RULES = [
   ["seenDemo", "ui"],
   ["seenStepIntro", "ui"],
   ["_kannon_growth_intro_done", "ui"],
+  ["_hidane_stock_notice", "ui"], // はじめて火種を手に入れた時の案内カード（SBD108）。一度見たら周回しても出さない
   ["spot_cafe_naru_done", "person"],
   ["spot_choizap_minto_done", "person"],
   ["spot_kannon_adam_done", "person"],

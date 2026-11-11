@@ -175,6 +175,19 @@ function buildDom() {
   window.addEventListener("keyup", (e) => { if (e.key === "Control") setSkip(false); });
 }
 
+/**
+ * 左右の余白の「次へ」（core/side-area.js・YHK）。会話の面を押した時と同じ送りをする。送れたら true。
+ * 面を押せない間（用語・設定などのモーダル、LOG、会話を開いた直後の誤送り防止の間）は何もしない。
+ */
+export function tapAdvance() {
+  if (!running || !dom || !layers.vn.classList.contains("active")) return false;
+  if (layers.modal.classList.contains("show") || dom.log.classList.contains("show")) return false;
+  if (performance.now() < running.openLockUntil) return false;
+  if (autoMode || skipMode) { setAuto(false); setSkip(false); }
+  advance();
+  return true;
+}
+
 function setAuto(v) {
   if (v) setSkip(false);
   autoMode = v;

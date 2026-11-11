@@ -35,10 +35,10 @@ try {
   const board = await page.evaluate(async () => (await import("./js/core/growth-mode.js")).growthEnabled());
   await page.evaluate(async (board) => {
     if (!board) { T.core.state.stats.guts = 20; T.stats.gainStat("guts", 1); return; }
-    const g = (await import("./js/core/growth.js")).ensureGrowth(); g.nodes.push("B1"); // 最大体力 ＋4（100→104）
+    const g = (await import("./js/core/growth.js")).ensureGrowth(); g.nodes.push("B1"); // 最大体力 ＋8（100→108。近くの帯×2・SBD111）
     (await import("./js/core/bus.js")).emit("hud");
   }, board);
-  const grownHud = board ? "29%" : "27%";
+  const grownHud = board ? "28%" : "27%";
   value = await levels(); assert.equal(value.hud, grownHud); assert.equal(value.cards, 0);
   await page.evaluate(() => { T.core.save(); T.core.newGame(); });
   assert.equal((await levels()).cards, 0, "New game kept the old recovery notice");
