@@ -638,6 +638,11 @@ async function performSpotAction(spot) {
     const sub = await tonariMenu();
     if (!sub) return { used: false, exerted };
     exp = TONARI_EXP[sub] || null;
+    if (sub === "ichidai") {
+      const { visitIchidaiTable } = await import("./ichidai-table.js");
+      await visitIchidaiTable({ isCurrent: () => state === actionOwner });
+      return { used: false, exerted };
+    }
     if (sub === "hiyori_axe") {
       if (!(await staminaGuard(-10))) return { used: false, exerted };
       const completed = await playHiyoriEvent("axe_reveal");

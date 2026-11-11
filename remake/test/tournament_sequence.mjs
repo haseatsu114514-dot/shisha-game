@@ -47,6 +47,13 @@ if(!process.argv.includes('--baseline')){
  assert(success.trace.indexOf('ch1_tournament_served')<success.trace.indexOf('ch1_tournament_r2_end'));
  const retry=await run();assert.equal(retry.trace.filter(x=>x==='ch1_tournament_served').length,1,'a fresh successful retry completes once');
  assert(!JSON.stringify(dialogues.ch1_tournament_match).match(/パッキングに入ります|炭をコンロに乗せる|炭を置く。蒸らす/));
+ // 全体講評 S14（2026-11-11）: KEMURIKUSAでの声かけと、なぞった手つきに触れる行は、偵察（ch1_naru_first）を読んだ保存だけに出す。
+ for(const id of ['ch1_tournament_r1_end','ch1_tournament_r2_end']){
+  const d=dialogues[id],guards=d.lines.filter(l=>l.type==='condition'&&l.condition_type==='story_seen'&&l.dialogue==='ch1_naru_first');
+  assert.equal(guards.length,1,id);assert(d.branches[guards[0].next_true]?.length,id);assert(!guards[0].next_false,id);
+  assert(!d.lines.some(l=>/KEMURIKUSA|店では/.test(l.text||'')),id+': unseen scouting must not be known');
+ }
+ assert(dialogues.ch1_tournament_r2_end.lines.some(l=>l.speaker===''&&/審査員の顔へは、一度も上がらない/.test(l.text||'')));
 }else{assert.equal(early.length,2);assert.equal(failedCompletion.length,2);}
 
 // Exact false means screen detachment / draw abandonment in the real runPull contract.
