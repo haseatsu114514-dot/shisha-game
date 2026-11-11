@@ -16,7 +16,11 @@ export const DISPLAY = Object.freeze({ scale: 0.55, dialMax: 100, redFrom: 70 })
 export const toKmh = speed => speed * 3.6 * DISPLAY.scale;
 /** 内部の距離 → 画面の m（相手との差など）。速さと同じ縮尺にして、数字どうしの釣り合いを保つ。 */
 export const toMeters = units => units * DISPLAY.scale;
-export const JUMP = Object.freeze({ bigAir: 1.27, hopAir: 0.56, bounceAir: 0.26, landingWindow: 0.3, goodWindow: 0.6, bumpWindow: 0.36, bumpGrace: 0.14, steerInAir: 0.55, bigHeight: 1.7, speedHeight: 1.3, hopHeight: 0.85, hopSpeedHeight: 0.45 });
+// 2026-11-11 オーナー「ブースト溜まってない時のジャンプが弱すぎて難しい。少し強化して」: 大ジャンプの高さの土台 1.7→2.0（速さの上乗せ 1.3→1.0。
+// ブーストの最高速での高さは 3.0m のまま＝画面の上で頭が切れない。出だしの速さでは 2.1→2.3m、通常最高速では 2.66→2.74m）、
+// ホップは滞空 0.56→0.66 秒・高さ 0.85→1.05 にし、跳んだ高い所（hopClearsBig m 以上）なら大きい岩も越えられる（小さい岩は今までどおり）。
+// 大ジャンプの滞空は、遅い時も伸びるよう下限を上げた（airFloor 0.85→0.92。通常最高速での長さ airFloor＋airGain は 1.15 のまま）。
+export const JUMP = Object.freeze({ bigAir: 1.27, hopAir: 0.66, bounceAir: 0.26, landingWindow: 0.3, goodWindow: 0.6, bumpWindow: 0.36, bumpGrace: 0.14, steerInAir: 0.55, bigHeight: 2.0, speedHeight: 1.0, hopHeight: 1.05, hopSpeedHeight: 0.45, hopClearsBig: 0.8, airFloor: 0.92, airGain: 0.23 });
 export const FALL = Object.freeze({ recover: 1.1, points: -150 });
 // curveDrift: カーブの外へ流す力（c=1・通常最高速で、何もしないと毎秒 約0.25 レーン外へ流れる）。曲がる向きへ切っている間は流されない。
 export const STEER = Object.freeze({ accel: 4.6, damping: 4.0, curveDrift: 1 });
@@ -52,16 +56,16 @@ export const RULES_VERSION = 2; // 離陸加点なし・着地回復。旧記録
 export const DEFAULT_SEED = 7;
 export const CURVE_STEP = 2; // heading/offset の焼きテーブル間隔（m）
 export const CURVE_SCALE = 0.0045; // c=1 のとき、1m あたりの向きの変化（レーン単位）。見た目の曲がりだけに使う（横へ流す力は STEER.curveDrift）
-// 本番のコース。seed は配置、curves があればカーブだけ差し替える（稜線は従来の seed 7 のまま）。
+// 本番のコース。seed は配置、curves があればカーブだけ差し替える（コースA＝ridge は従来の seed 7 のまま）。
 export const COURSE_PACKS = Object.freeze([
-  Object.freeze({ id: "ridge", name: "稜線", seed: 7 }),
-  Object.freeze({ id: "left-bowl", name: "左のボウル", seed: 19, curves: Object.freeze([
+  Object.freeze({ id: "ridge", name: "コースA", seed: 7 }),
+  Object.freeze({ id: "left-bowl", name: "コースB", seed: 19, curves: Object.freeze([
     { z: 0, c: 0 }, { z: 240, c: 0 }, { z: 480, c: -0.9 }, { z: 820, c: -1 }, { z: 1100, c: -0.35 }, { z: 1380, c: 0.45 },
   ]) }),
-  Object.freeze({ id: "right-crest", name: "右の稜", seed: 23, curves: Object.freeze([
+  Object.freeze({ id: "right-crest", name: "コースC", seed: 23, curves: Object.freeze([
     { z: 0, c: 0 }, { z: 240, c: 0 }, { z: 480, c: 0.9 }, { z: 820, c: 1 }, { z: 1100, c: 0.35 }, { z: 1380, c: -0.45 },
   ]) }),
-  Object.freeze({ id: "switchback", name: "切り替え", seed: 11, curves: Object.freeze([
+  Object.freeze({ id: "switchback", name: "コースD", seed: 11, curves: Object.freeze([
     { z: 0, c: 0 }, { z: 200, c: 0 }, { z: 400, c: 0.95 }, { z: 620, c: 0 }, { z: 900, c: -0.95 }, { z: 1120, c: 0 }, { z: 1360, c: 0.85 },
   ]) }),
 ]);
@@ -346,7 +350,7 @@ export function jumpHeight(game) {
 }
 
 function startAir(game, kind) {
-  const scale = 0.85 + 0.3 * Math.min(1, game.speed / SPEED.max); // 滞空時間は通常最高速で頭打ち（ブーストの高さは airPeak で伸ばす）
+  const scale = JUMP.airFloor + JUMP.airGain * Math.min(1, game.speed / SPEED.max); // 滞空時間は通常最高速で頭打ち（ブーストの高さは airPeak で伸ばす）
   game.air = game.airTotal = kind === "big" ? JUMP.bigAir * scale : kind === "hop" ? JUMP.hopAir : JUMP.bounceAir;
   game.airKind = kind;
   game.airPeak = jumpPeak(game.speed, kind);
@@ -516,7 +520,9 @@ export function step(game, input, dt) {
       continue;
     }
     const dx = Math.abs(game.x - feature.x);
-    const cleared = game.air > 0 && (game.airKind === "big" || feature.size === "small") && game.airKind !== "bounce";
+    // 大ジャンプはどの岩も越える。ホップは小さい岩ならいつでも、大きい岩は跳んだ高い所で（JUMP.hopClearsBig）
+    const cleared = game.air > 0 && game.airKind !== "bounce"
+      && (game.airKind === "big" || feature.size === "small" || jumpHeight(game) >= JUMP.hopClearsBig);
     if (dx < feature.w + PLAYER.half && !cleared) {
       if (smashing(game) && !falling) {
         // ブースト中（と、その勢いが残る間）は岩を砕いて進む
