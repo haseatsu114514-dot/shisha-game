@@ -2834,7 +2834,10 @@
         "remake/test/natural_wrap*",
         "remake/test/browser/natural_wrap.mjs",
         "tools/check_changed_dialogue_layout.mjs",
-        "remake/test/choice_oneline.mjs"
+        "remake/test/choice_oneline.mjs",
+        "data/lime_messages.json",
+        "remake/data/lover.json",
+        "remake/data/friends.json"
       ],
       "run": [
         "PLAYWRIGHT_MODULE=\"$PWD/remake/test/browser/node_modules/playwright\" node remake/test/browser/natural_wrap.mjs",
