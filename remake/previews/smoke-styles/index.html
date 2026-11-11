@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#120a1c">
+<link rel="icon" href="../../../icon.svg">
+<!--
+  煙の描き方くらべ（2026-11-11〜12・docs/owner_requests.md の KMR）。提案用の見本で、本編のコードは読まず、本編にも接続していない。
+  開き方: リポジトリのルートで python3 remake/tools/serve_preview.py --port 8123 → http://127.0.0.1:8123/remake/previews/smoke-styles/
+  「いま」は本編の煙の数値の写し（legacy.mjs）、ほかは新しい描き方の試作（fluid.mjs＝流体、puffs.mjs＝もこもこの房）。背景と立ち絵はゲームの絵（remake/img）をその場で読む。
+  絵柄「ドット絵」の背景と立ち絵は、ゲームの絵を make_pixel_art.py で細かいドット絵に変換した見本用の絵（img/）。
+  page・fonts・body・script の印は、同じ内容を非公開ページ（アーティファクト）へ出すときの切り出し位置。
+-->
+<!--page-->
+<title>煙の描き方くらべ</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<!--fonts-->
+<style>
+@font-face { font-family: "Zen Old Mincho"; src: url("../../fonts/ZenOldMincho-Name-Bold.woff2") format("woff2"); font-weight: 600 900; font-display: swap; }
+@font-face { font-family: "Zen Kaku Gothic New"; src: url("../../fonts/ZenKakuGothicNew-Medium.woff2") format("woff2"); font-weight: 100 599; font-display: swap; }
+@font-face { font-family: "Zen Kaku Gothic New"; src: url("../../fonts/ZenKakuGothicNew-Bold.woff2") format("woff2"); font-weight: 600 900; font-display: swap; }
+</style>
+<!--/fonts-->
+<style>
+/* 配置: 左にゲーム画面と同じ16:9の見本、右に切り替えの操作。狭い画面では見本を上に貼り付けて、操作を下で流す。色はタイトル画面（茄子紺・生成り・くすんだ金）から。暗い1配色に固定。 */
+:root {
+  color-scheme: dark;
+  --ink: #120a1c;      /* 地: 茄子紺の黒 */
+  --panel: #1b1128;    /* 一段上の面 */
+  --line: #3b2a4e;     /* 罫 */
+  --paper: #f3ead8;    /* 生成りの文字 */
+  --dim: #b5a6c4;      /* 補足の文字 */
+  --gold: #d9b26a;     /* 差し色: くすんだ金 */
+  --lav: #b79be8;      /* 2番目の差し色: ラベンダー */
+  --display: "Zen Old Mincho", "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif JP", serif;
+  --body: "Zen Kaku Gothic New", "Hiragino Kaku Gothic ProN", "Yu Gothic", "Noto Sans JP", sans-serif;
+}
+* { box-sizing: border-box; }
+html { background: var(--ink); }
+body {
+  margin: 0; background: var(--ink); color: var(--paper);
+  font-family: var(--body); font-size: 15px; line-height: 1.8; font-weight: 500;
+  -webkit-font-smoothing: antialiased;
+}
+.wrap { max-width: 1240px; margin: 0 auto; padding-block: 28px 80px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 28px; }
+h1, h2, h3 { font-family: var(--display); font-weight: 700; line-height: 1.35; margin: 0; text-wrap: balance; letter-spacing: .02em; }
+h1 { font-size: clamp(26px, 5vw, 40px); }
+h2 { font-size: clamp(20px, 3.2vw, 26px); }
+p { margin: 0; }
+.eyebrow { font-size: 12px; letter-spacing: .16em; color: var(--gold); }
+.lead { max-width: 44em; color: var(--paper); }
+.dim { color: var(--dim); }
+strong { color: var(--gold); font-weight: 700; }
+header { display: grid; gap: 8px; }
+
+/* ---- 見本と操作 */
+.lab { display: grid; gap: 18px; min-width: 0; grid-template-areas: "view" "panel" "notes"; }
+.view { grid-area: view; display: grid; gap: 10px; min-width: 0; position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--ink); padding-block: 8px; }
+.stage {
+  position: relative; aspect-ratio: 16 / 9; width: 100%; max-width: 100%; max-height: 62vh; margin-inline: auto; overflow: hidden;
+  border-radius: 4px; background: #0b0710; outline: 1px solid var(--line);
+  touch-action: manipulation; user-select: none; -webkit-user-select: none; cursor: crosshair;
+}
+/* 寄り: 絵と煙の層だけを、口元を中心に2倍にする（札・つまみは動かさない） */
+.world { position: absolute; inset: 0; transform-origin: var(--zx, 50%) var(--zy, 50%); transition: transform .35s ease; }
+.stage.zoom .world { transform: scale(2); }
+.stage .bg { position: absolute; inset: 0; background: center / cover no-repeat; }
+.stage.dotworld .bg, .stage.dotworld .chara { image-rendering: pixelated; }
+#bgB { opacity: 0; transition: opacity .25s; }
+#bgB.show { opacity: 1; }
+.stage .chara { position: absolute; left: 50%; top: 3%; height: 150%; width: auto; max-width: none; transform: translateX(-50%); pointer-events: none; }
+#fluid, .side, .side canvas.puff { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.side canvas.dots { image-rendering: pixelated; }
+.legacy { position: absolute; left: 0; top: 0; width: 1280px; height: 720px; overflow: hidden; transform-origin: 0 0; transform: scale(var(--k, 1)); pointer-events: none; }
+.tag {
+  position: absolute; top: 8px; padding: 1px 10px; font-size: 12px; line-height: 1.7; letter-spacing: .04em; pointer-events: none;
+  background: rgba(18, 10, 28, .8); border: 1px solid var(--line); border-radius: 999px; color: var(--paper);
+}
+.tag-l { left: 8px; }
+.tag-r { right: 8px; border-color: var(--gold); color: var(--gold); }
+.divider { position: absolute; top: 0; bottom: 0; width: 44px; margin-left: -22px; cursor: ew-resize; touch-action: none; }
+.divider::before { content: ""; position: absolute; left: 50%; top: 0; bottom: 0; width: 2px; margin-left: -1px; background: var(--paper); box-shadow: 0 0 0 1px rgba(18, 10, 28, .5); }
+.divider span {
+  position: absolute; left: 50%; top: 50%; width: 30px; height: 30px; margin: -15px 0 0 -15px; border-radius: 50%;
+  background: var(--paper); color: var(--ink); display: grid; place-items: center; font-size: 13px; line-height: 1; box-shadow: 0 2px 8px rgba(0, 0, 0, .5);
+}
+.divider:focus-visible span { outline: 2px solid var(--gold); outline-offset: 2px; }
+.hint {
+  position: absolute; left: 50%; bottom: 8px; transform: translateX(-50%); white-space: nowrap; padding: 1px 12px; font-size: 12px; pointer-events: none;
+  background: rgba(18, 10, 28, .72); border-radius: 999px; color: var(--dim); transition: opacity .5s;
+}
+.hint.seen { opacity: 0; }
+.nogl { position: absolute; inset: auto 8px 36px; padding: 8px 12px; font-size: 13px; line-height: 1.6; background: rgba(18, 10, 28, .9); border: 1px solid var(--gold); border-radius: 4px; }
+.bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+.bar .fps { margin-left: auto; font-size: 12px; color: var(--dim); font-variant-numeric: tabular-nums; }
+.btn {
+  font: inherit; font-size: 14px; font-weight: 700; color: var(--ink); background: var(--gold); border: 0; border-radius: 4px; padding: 6px 16px; cursor: pointer;
+}
+.btn.ghost { background: transparent; color: var(--paper); box-shadow: inset 0 0 0 1px var(--line); }
+.btn:focus-visible, .chip:focus-visible { outline: 2px solid var(--lav); outline-offset: 2px; }
+
+.panel { grid-area: panel; display: grid; gap: 18px; align-content: start; min-width: 0; }
+.group { display: grid; gap: 8px; min-width: 0; }
+.group h3 { font-family: var(--body); font-size: 12px; font-weight: 700; letter-spacing: .14em; color: var(--gold); }
+.group .sub { font-size: 13px; color: var(--dim); line-height: 1.6; }
+.group.off { opacity: .38; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chips.col { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); }
+.chip {
+  font: inherit; font-size: 14px; line-height: 1.5; color: var(--paper); background: var(--panel); border: 0; box-shadow: inset 0 0 0 1px var(--line);
+  border-radius: 4px; padding: 6px 12px; cursor: pointer; text-align: left; display: inline-flex; align-items: center; gap: 8px; min-width: 0;
+}
+.chips.col .chip { display: grid; gap: 0; padding: 8px 12px; }
+.chip[aria-pressed="true"] { background: #2a1a3d; box-shadow: inset 0 0 0 2px var(--gold); color: #fff; }
+.chip-name { font-weight: 700; }
+.chip-note { font-size: 12px; color: var(--dim); line-height: 1.5; }
+.swatch { width: 14px; height: 14px; border-radius: 50%; flex: none; box-shadow: 0 0 0 1px rgba(255, 255, 255, .25); }
+
+@media (min-width: 900px) {
+  .lab { grid-template-columns: minmax(0, 1fr) 300px; grid-template-areas: "view panel" "notes panel"; gap: 28px; align-items: start; }
+  .view { position: static; padding-block: 0; }
+  .chips.col { grid-template-columns: 1fr; }
+}
+/* 横向きのスマホ: 見本を画面の高さに収め、操作を横に並べる */
+@media (min-width: 620px) and (max-width: 899px) and (max-height: 520px) {
+  .lab { grid-template-columns: minmax(0, 1fr) 240px; grid-template-areas: "view panel" "notes notes"; gap: 16px; align-items: start; }
+  .stage { max-height: calc(100vh - 80px); }
+  .chips.col { grid-template-columns: 1fr; }
+}
+
+/* ---- 向き・不向き */
+.notes { grid-area: notes; display: grid; gap: 16px; min-width: 0; margin-top: 12px; }
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); gap: 0 28px; }
+.cards article { display: grid; gap: 6px; align-content: start; padding-block: 16px; border-top: 1px solid var(--line); min-width: 0; }
+.cards h3 { font-size: 18px; }
+.cards p { font-size: 14px; line-height: 1.7; color: var(--dim); }
+.cards b { color: var(--paper); font-weight: 700; }
+.cards dl { margin: 0; display: grid; gap: 4px; font-size: 13px; line-height: 1.65; }
+.cards dt { font-size: 11px; font-weight: 700; letter-spacing: .12em; color: var(--gold); margin-top: 4px; }
+.cards dd { margin: 0; color: var(--dim); }
+.foot { font-size: 13px; color: var(--dim); max-width: 46em; }
+@media (prefers-reduced-motion: reduce) { #bgB, .hint, .world { transition: none; } }
+</style>
+<!--/page-->
+</head>
+<body>
+<!--body-->
+<div class="wrap">
+  <header>
+    <p class="eyebrow">煙の見本 ／ 2026-11-12</p>
+    <h1>煙の描き方くらべ</h1>
+    <p class="lead">吐く煙を、細かい升目と白に近い数色で描く「繊細ドット」にしました。背景と立ち絵も細かいドット絵に切り替えて、ドット絵の画面ぜんたいの見え方を試せます。ほかの描き方も残してあり、「くらべる相手」を選ぶと左右に並べて見比べられます。</p>
+  </header>
+
+  <div class="lab">
+    <div class="view">
+      <div class="stage" id="stage">
+        <div class="world" id="world">
+          <div class="bg" id="bgA"></div>
+          <div class="bg" id="bgB"></div>
+          <img class="chara" id="chara" alt="" hidden>
+          <canvas id="fluid"></canvas>
+          <div class="side" id="sideL"></div>
+          <div class="side" id="sideR"></div>
+        </div>
+        <div class="tag tag-l" id="tagL"></div>
+        <div class="tag tag-r" id="tagR"></div>
+        <div class="divider" id="divider" role="slider" tabindex="0" aria-label="左右の境目" aria-orientation="horizontal"><span aria-hidden="true">⇔</span></div>
+        <div class="hint" id="hint">画面を押すと、そこから煙を吐きます</div>
+        <div class="nogl" id="nogl" hidden>この端末では、流体の描き方（リアル・ドット×リアル・セル画）を動かせません。「いま」と「もくもく」は見られます。</div>
+      </div>
+      <div class="bar">
+        <button class="btn" type="button" id="again">もう一度</button>
+        <button class="btn ghost" type="button" id="pause">止める</button>
+        <span class="fps" id="fps"></span>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="group"><h3>場面</h3><div class="chips" id="scenes"></div><p class="sub" id="sceneSub"></p></div>
+      <div class="group"><h3>絵柄（背景と立ち絵）</h3><div class="chips" id="worlds"></div></div>
+      <div class="group" id="charaRow"><h3>会話の相手</h3><div class="chips" id="charas"></div></div>
+      <div class="group" id="zoomRow"><h3>見え方</h3><div class="chips" id="zooms"></div></div>
+      <div class="group"><h3>描き方（右側）</h3><div class="chips col" id="styles"></div></div>
+      <div class="group"><h3>くらべる相手（左側）</h3><div class="chips" id="compare"></div></div>
+      <div class="group"><h3>煙の色</h3><div class="chips" id="tints"></div></div>
+      <div class="group" id="dotRow"><h3>ドットの大きさ</h3><div class="chips" id="dots"></div></div>
+      <div class="group" id="fpsRow"><h3>コマ数</h3><div class="chips" id="fpsChips"></div></div>
+    </div>
+
+    <section class="notes">
+      <h2>それぞれの向き・不向き</h2>
+      <div class="cards">
+        <article>
+          <h3>繊細ドット</h3>
+          <p><b>もこもこした房の集まりを、細かい升目と白に近い4色で。</b>網点を使わず、全体が少し透ける。房の境目が淡い色の違いとして中に出て、縮みながら薄くなって消える。</p>
+          <dl><dt>合う場面</dt><dd>吐く煙（会話中の一服、吸い出しの山場）。ドット絵の立ち絵・背景と升目がそろう</dd>
+          <dt>気になる点</dt><dd>手描きの形に寄せたぶん、渦や筋のような流れの細かさは出ない</dd></dl>
+        </article>
+        <article>
+          <h3>リアル</h3>
+          <p><b>渦を巻いて、筋を引いて、ほどける。</b>煙の厚いところに影が落ち、ランタンの近くは暖色に染まる。</p>
+          <dl><dt>合う場面</dt><dd>いまの絵（なめらかな背景）のまま使う場合。店に漂う煙までこれ1つで通せる</dd>
+          <dt>気になる点</dt><dd>毎コマ計算するので、古いスマホではコマ落ちの可能性。見本の下の「コマ/秒」で確かめられる</dd></dl>
+        </article>
+        <article>
+          <h3>ドット×リアル</h3>
+          <p>動きはリアルのまま、<b>升目・白に近い数色・4段の透け</b>で描く（網点はやめた）。コマ打ちで手描きの間になる。</p>
+          <dl><dt>合う場面</dt><dd>繊細ドットより流れを見せたいとき。店に漂う煙、2色の煙</dd>
+          <dt>気になる点</dt><dd>形が流れまかせなので、手描きのような「もこもこ」の輪郭にはならない</dd></dl>
+        </article>
+        <article>
+          <h3>セル画</h3>
+          <p>同じ動きを、<b>影・中間・明るい面の3色</b>と縁の細い線で塗り分ける。アニメの作画の煙。</p>
+          <dl><dt>合う場面</dt><dd>いまの絵の立ち絵のそば、カットイン</dd>
+          <dt>気になる点</dt><dd>薄く漂う煙は苦手（塗りが面になる）。濃い煙のかたまり向き</dd></dl>
+        </article>
+        <article>
+          <h3>ドット絵もくもく</h3>
+          <p>繊細ドットと同じ房の煙を、<b>はっきりした色と濃い輪郭線</b>で。透けない。</p>
+          <dl><dt>合う場面</dt><dd>記号としての煙（合図、ミニゲーム、レトロ表示）、画面を覆う切り替え</dd>
+          <dt>気になる点</dt><dd>存在感が強く、量が多いと画面をふさぐ</dd></dl>
+        </article>
+        <article>
+          <h3>アニメもくもく</h3>
+          <p>もこもこの房を、いまの絵と同じなめらかな線で。</p>
+          <dl><dt>合う場面</dt><dd>いまの絵のまま、画面を覆う切り替えやポップな演出に</dd>
+          <dt>気になる点</dt><dd>ゆっくり漂う煙には向かない</dd></dl>
+        </article>
+      </div>
+      <p class="foot">煙はどれもその場で計算して描いています（画像・動画は使っていません）。「いま」は本編の煙の数値を写したものです。絵柄「ドット絵」の背景と立ち絵は、本編の絵を 640×360 の升目へ自動で変換した見本で、描き直したものではありません。この見本は本編には未接続です。</p>
+    </section>
+  </div>
+
+</div>
+<!--/body-->
+<!--script-->
+<script type="module" src="./app.mjs"></script>
+<!--/script-->
+</body>
+</html>

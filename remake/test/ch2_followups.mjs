@@ -16,7 +16,7 @@ const AGEHA_LATER_SCENES = [
   { id: "ch1_ageha_gummy_share", flag: "_ageha_gummy_share_done" },
   { id: "ch1_ageha_bear_seat", flag: "_ageha_bear_seat_done" },
 ];
-const isRepeat = (id, scene) => id === "ageha" ? scene === "remake_ch2_ageha_repeat" : /^remake_ch2_(kumicho|rei)_repeat(_[bcd])?$/.test(scene) && scene.includes(id);
+const isRepeat = (id, scene) => /^remake_ch2_(ageha|kumicho|rei)_repeat(_[bcde])?$/.test(scene) && scene.includes(id);
 const ids = ["ageha", "kumicho", "rei"];
 const DB = { dialogues: { ...all } };
 const states = new vm.SyntheticModule(["state", "save", "markMet", "timeOfDay"], function () {
@@ -271,7 +271,9 @@ await loader.link(async spec => spec.includes("chapter-data") ? new vm.SourceTex
   else { this.setExport("CH2_NIGHTS", []); this.setExport("AGEHA_VISITS", []); this.setExport("AGEHA_BADDAY", null); this.setExport("STRAWBERRY_TRIAL_IDS", []); }
 }, { context: loaderContext }));
 await loader.evaluate();
-const validatedIds = [...ids.map(id => `remake_ch2_${id}_followup`), ...["kumicho", "rei"].map(id => `remake_ch2_${id}_revisit`)];
+const validatedIds = [
+  ...ids.map(id => `remake_ch2_${id}_repeat_e`),
+  ...ids.map(id => `remake_ch2_${id}_followup`), ...["kumicho", "rei"].map(id => `remake_ch2_${id}_revisit`)];
 for (const id of validatedIds) {
   fixture = { dialogues: preparation.dialogues.filter(d => d.dialogue_id !== id) };
   await assert.rejects(loader.namespace.loadPreparationDialogues(), /台本が不足/);
@@ -284,8 +286,9 @@ for (const id of validatedIds) {
 }
 fixture = preparation; await loader.namespace.loadPreparationDialogues();
 // 31 本 + あげはの♥3の質問（#1988）＋あげは♥5の締めくくり（#2023）+ 神崎・レヰの小会話6本と締めくくり2本（#2027）
+// + 今回の日常3本（#3097）+ レヰのライブの夜（RVE07）
 // + あげはの小会話3本と地元の第2章の会話7本、tonariの大会準備9本（VOL13）＋中間の確認4本（#2032）
-assert.equal(Object.keys(loaderDB.dialogues).length, 64 +Object.values(CH2_VISIT_STORIES).flat().filter(entry => entry.file).length);
+assert.equal(Object.keys(loaderDB.dialogues).length, 68 +Object.values(CH2_VISIT_STORIES).flat().filter(entry => entry.file).length);
 for (const suffix of ["b", "c", "d"]) assert(loaderDB.dialogues[`remake_ch2_ageha_repeat_${suffix}`], `ageha small talk ${suffix}`);
 for (const id of ["cafe_ch2_commute", "cafe_ch2_taste", "kannon_ch2_wish", "choizap_ch2_numbers", "cs_ch2_haze", "ch2_rio_taste", "ch2_rio_strawberry"]) assert(loaderDB.dialogues[id], id);
 for (const id of ["ch2_prep_basics_intro", "ch2_prep_basics_end", "ch2_prep_basics_failed", "ch2_prep_rehearsal_intro",
@@ -345,21 +348,21 @@ console.log("PASS: actual preparation/loader, three owners, old saves, once-only
     else assert.equal(played.at(-1), expected, `DAY${chapterDay}`);
   }
 }
-// #2027: 神崎・レヰの小会話は4種を巡回し、その前だけ昼夜の店のあいさつ。訪問列を読み終えた♥5で締めくくり、定休日は入れない。
+// #2027: 神崎・レヰの小会話は5種を巡回し、その前だけ昼夜の店のあいさつ。訪問列を読み終えた♥5で締めくくり、定休日は入れない。
 const allStoriesRead = id => { for (const entry of CH2_VISIT_STORIES[id]) {
   if (entry.done) (state.flags[entry.done] ||= {})[id] = true; else state.flags[`_ch2_read_${entry.scene}`] = true;
 } };
 for (const id of ["kumicho", "rei"]) {
   await setup(); allStoriesRead(id); heartLevel = 5; state.money += 60000;
   const repeats = [];
-  for (let n = 0; n < 4; n++) {
+  for (let n = 0; n < 5; n++) {
     const before = played.length;
     assert.equal((await visit(id)).used, true);
     const scenes = played.slice(before);
     assert.deepEqual(scenes, [`venue_${id}_day`, scenes[1]], "greeting first, then one small talk");
     assert(isRepeat(id, scenes[1])); repeats.push(scenes[1]);
   }
-  assert.equal(new Set(repeats).size, 4, `${id}: four distinct small talks rotate`);
+  assert.equal(new Set(repeats).size, 5, `${id}: five distinct small talks rotate`);
   // 締めくくり: 室内の背景で再生し、完読で+16。中断では請求・交流回数・好感度を残さない。
   finaleOpen.add(id); mode = "cancel";
   const before = structuredClone(state);
@@ -408,3 +411,77 @@ for (const shifts of [undefined, [], [{ id: "samechan", chapter: 2, day: 22, slo
   }
 }
 console.log("PASS: preparation preserves every resource/relationship and all TRPG members and explicit shifts (legacy/empty/existing)");
+
+// #3097: added everyday talks run through the real published pool, with ordinary settlement only.
+for (const id of ids) {
+  const scene = `remake_ch2_${id}_repeat_e`;
+  assert(loaderDB.dialogues[scene], `${scene} is published by the real preparation loader`);
+  assert(loaderDB.dialogues[scene].lines.length >= 12);
+  assert(loaderDB.dialogues[scene].lines.every(line => !line.type && typeof line.text === "string"));
+  for (const outcome of ["ok", "cancel", "undefined", "throw"]) {
+    await setup(4); DB.dialogues = { ...loaderDB.dialogues };
+    if (CH2_VISIT_STORIES[id]) allStoriesRead(id);
+    state.flags._ch2_followup_done = { [id]: true };
+    const before = structuredClone(state); mode = outcome;
+    if (outcome === "throw") await assert.rejects(visit(id), /injected play failure/);
+    else {
+      const result = await visit(id);
+      assert.equal(result.used, outcome === "ok");
+    }
+    if (outcome !== "ok") {
+      assert.deepEqual(state, before, `${scene}: ${outcome} does not settle any resource or relation`);
+      continue;
+    }
+    assert.equal(played.at(-1), scene);
+    assert.equal(state.money, before.money - 3000);
+    assert.equal(state.stamina, before.stamina - 16);
+    assert.equal(state.flags._ch2_talks[id], 5);
+    assert.deepEqual(state.affinity, [[id, 8]]);
+    assert.deepEqual(state.growth, [[{ ageha: "sense", kumicho: "guts", rei: "charm" }[id], 4]]);
+    assert.deepEqual(state.lovers, before.lovers);
+    assert.deepEqual(state.relationshipMemories, before.relationshipMemories);
+    await visit(id);
+    assert.equal(played.at(-1), `remake_ch2_${id}_repeat`, "the next ordinary talk wraps to the existing pool");
+  }
+}
+console.log("PASS: three everyday talks are loaded, rotate, retain normal fees/rewards, and leave no settlement on interruption");
+
+// RVE07: レヰのライブの夜。第2章で余りチケットを受け取った人が、第3章の東京へ発つ前の準備期間にレヰの店へ来たら、
+// いつもの会話・段階より先に一度だけ。終演後の場面なので夜だけ。チケットが無い・第2章・出発後は出さない。中断では既読にしない。
+{
+  const live = "ch3_prep_rei_live";
+  const homeScript = JSON.parse(fs.readFileSync(new URL("data/dialogue/ch2_rei.json", root), "utf8")).dialogues
+    .find(d => d.dialogue_id === live);
+  assert(homeScript?.lines?.length, "the live night script exists in ch2_rei.json");
+  assert(loaderDB.dialogues[live], "the preparation loader publishes it with Rei's scripts");
+  assert(homeScript.lines.some(line => line.type === "set_flag" && line.flag === `_talk_seen_${live}`), "the script marks itself read");
+  const prepSave = (extra = {}) => {
+    state.chapter = 3; state.slot = 1; state.flags._ch3_prep = { startDay: 1, days: 3, departed: false }; Object.assign(state.flags, extra);
+  };
+  await setup(2); DB.dialogues[live] = homeScript; prepSave({ _ch2_rei_ticket: true });
+  assert.equal(module.namespace.reiLiveDue(state), true);
+  mode = "cancel"; const before = structuredClone(state);
+  assert.equal((await visit("rei")).used, false);
+  assert.equal(played.at(-1), live);
+  assert.deepEqual(state, before, "an interrupted live night leaves no fee, read mark or affinity");
+  mode = "ok";
+  assert.equal((await visit("rei")).used, true);
+  assert.equal(played.at(-1), live, "the live night comes before the ordinary talk");
+  assert.equal(state.flags[`_talk_seen_${live}`], true);
+  assert.equal(module.namespace.reiLiveDue(state), false, "only once");
+  await visit("rei"); assert.notEqual(played.at(-1), live, "the next visit is an ordinary one");
+  for (const [label, prepare] of [
+    ["no ticket", () => prepSave()],
+    ["daytime (the scene is after the show)", () => { prepSave({ _ch2_rei_ticket: true }); state.slot = 0; }],
+    ["chapter 2", () => { state.flags._ch2_rei_ticket = true; }],
+    ["after departure", () => { prepSave({ _ch2_rei_ticket: true }); state.flags._ch3_prep.departed = true; }],
+    ["script not loaded", () => { prepSave({ _ch2_rei_ticket: true }); delete DB.dialogues[live]; }],
+  ]) {
+    await setup(2); DB.dialogues[live] = homeScript; prepare();
+    assert.equal(module.namespace.reiLiveDue(state), false, label);
+  }
+  // 神崎の店には出ない
+  await setup(2); DB.dialogues[live] = homeScript; prepSave({ _ch2_rei_ticket: true });
+  await visit("kumicho"); assert.notEqual(played.at(-1), live);
+}
+console.log("PASS: Rei's live night appears once during the chapter 3 departure prep for ticket holders");

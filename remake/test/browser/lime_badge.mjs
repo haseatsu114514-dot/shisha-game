@@ -17,12 +17,11 @@ try {
     ['pc', { width: 1280, height: 900 }, false],
     ['landscape', { width: 844, height: 390 }, true],
     ['portrait', { width: 390, height: 844 }, true],
-  ]) for (const layout of ['normal', 'ds']) {
+  ]) for (const layout of ['normal']) { // DS風は廃止（横画面一本化）。ログと画像名の layout は従来どおり
     const context = await browser.newContext({ viewport, hasTouch: touch, isMobile: touch, reducedMotion: 'reduce' });
     const page = await context.newPage(), errors = [];
     page.setDefaultTimeout(10000);
     page.on('pageerror', e => errors.push(e.message));
-    await page.addInitScript(layout => localStorage.setItem('suien_title_layout', layout), layout);
     await page.goto(process.env.BASE_URL || 'http://127.0.0.1:8123/remake/');
     await page.locator('[data-test="title-new"]').waitFor({ timeout: 45000 });
     await page.locator('#boot').waitFor({ state: 'detached' });
@@ -59,10 +58,9 @@ try {
       assert.equal(geometry.label, count ? `LIME（未読${count}件）` : 'LIME');
       if (count && !baseline) {
         const { badge: b, icon: i, textRect: t } = geometry;
-        // DSレイアウトではHUD右側が下部タッチバーの横長ボタンになる（game-ds.css）ため、正方形アイコンの前提は通常レイアウトのみ。
-        if (layout !== 'ds') assert(Math.abs(i.width - i.height) < .1, 'app icon must stay square');
+        assert(Math.abs(i.width - i.height) < .1, 'app icon must stay square');
         assert(Math.abs(b.width - b.height) < .1, 'badge must remain circular at 99+');
-        if (layout !== 'ds') assert(Math.abs(b.width / i.width - .4) < .025, 'badge diameter follows reference icon ratio');
+        assert(Math.abs(b.width / i.width - .4) < .025, 'badge diameter follows reference icon ratio');
         assert.equal(geometry.radius, '50%');
         assert(b.x + b.width > i.x + i.width && b.x + b.width / 2 > i.x + i.width / 2 && b.y < i.y, 'upper-right overlap');
         const n = geometry.numberRect;
@@ -74,7 +72,7 @@ try {
         } else assert.equal(geometry.plusRect, null);
         assert(t.x >= b.x && t.y >= b.y && t.x + t.width <= b.x + b.width && t.y + t.height <= b.y + b.height, 'text fits circle');
         assert(b.x >= 0 && b.y >= 0 && b.x + b.width <= viewport.width && b.y + b.height <= viewport.height, 'badge fits viewport');
-        if (layout !== 'ds') assert(geometry.adjacent.every(a => b.x + b.width <= a.x + .1 || a.x + a.width <= b.x + .1 || b.y + b.height <= a.y + .1 || a.y + a.height <= b.y + .1), 'badge overlaps adjacent control');
+        assert(geometry.adjacent.every(a => b.x + b.width <= a.x + .1 || a.x + a.width <= b.x + .1 || b.y + b.height <= a.y + .1 || a.y + a.height <= b.y + .1), 'badge overlaps adjacent control');
       }
       states.push(geometry);
       if (count === 1 && !baseline && device === 'pc' && layout === 'normal') {
@@ -111,7 +109,7 @@ try {
     });
     assert.deepEqual(counts, { unread: 1, read: 0, before: true, after: false });
     await page.evaluate(() => badgeQA.hud.setPhoneBadge(10));
-    // スマホの縦持ちは通常版もDS風も回転ガードで止める（#2789・#2794）。LIME・MENU を押しても届かず、
+    // スマホの縦持ちは回転ガードで止める（#2789・#2794）。LIME・MENU を押しても届かず、
     // 横（844×390）へ戻すと同じ地図で押せる。
     const rotateHint = touch && device === 'portrait';
     if (rotateHint) {

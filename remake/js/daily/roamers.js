@@ -54,6 +54,9 @@ export const ROAMERS = Object.freeze([
   { id: "volk", chapters: [3], at: spot => tokyoShop(spot) && spot.place !== "volk", ready: metStory("volk"), bond: true },
   { id: "mashiro", chapters: [3], at: spot => tokyoShop(spot) && spot.place !== "mukai", ready: metStory("mashiro"), bond: true },
   { id: "emil", chapters: [3], at: tokyoShop, ready: () => true },
+  // 第5章の地元。ひよりは自分の店を持たないので、仕事帰りによその店に居合わせる（BLC08。第1・2章の相席 daily/hiyori.js の続き）。
+  // tonari での再会（_hiyori_tonari_return_done）を読んだ後だけ。恋人でも友人でも読める会話にしてある。
+  { id: "hiyori", chapters: [5], at: shishaShop, ready: value => metStory("hiyori")(value) && !!value.flags?._hiyori_tonari_return_done, bond: true },
   // mukai の看板猫。裏口で一度構った後は、公園やよその店の帰り道で見かけることがある（2026-11-02 オーナー「てつこは作って」）
   { id: "tetsuko", chapters: [3], at: spot => spot.region === "tokyo" && (spot.place === "park" || tokyoShop(spot) && spot.place !== "mukai"),
     ready: value => (value.flags?._ch3_outings?.tetsuko || 0) >= 1 },

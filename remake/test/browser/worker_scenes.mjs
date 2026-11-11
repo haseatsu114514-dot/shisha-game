@@ -67,7 +67,15 @@ await suite("worker-scenes", async check => {
         assert.equal(await worker(page).getAttribute("data-scene"), step === "care" ? "pull" : step);
         assert.equal(await page.locator(".worker-action:visible").count(), 1);
         assert(await page.locator(".worker-action:visible").evaluate(img => img.complete && img.naturalWidth > 0));
-        await assertFits(page, ".worker-action:visible");
+        if (await page.evaluate(() => document.body.matches(".craft-stage:not(.game-ds)"))) {
+          // 新しい配置（一枚の舞台・既定）は、はじめを枠なしで左下へ切り抜く。絵は左端・下端で切れてよいが、
+          // 上端（頭）が画面の外へ出たり、熱の柱より右へはみ出したりしない。
+          const box = await page.locator(".worker-action:visible").evaluate(img => {
+            const r = img.getBoundingClientRect(), stage = document.getElementById("stage").getBoundingClientRect(), k = stage.width / 1280;
+            return { top: (r.top - stage.top) / k, right: (r.right - stage.left) / k };
+          });
+          assert(box.top >= -40 && box.right <= 580, `Hero art placement: ${JSON.stringify(box)}`);
+        } else await assertFits(page, ".worker-action:visible");
         await capture(page, `${name}-${step}`);
       }
       await page.evaluate(async () => await T.show("steam", "蒸らし"));

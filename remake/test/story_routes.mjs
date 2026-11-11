@@ -18,8 +18,13 @@ for (const id of all) {
   assert.equal(selectStoryEvening(routes, state, {...ctx, accepted: []}).kind, 'rest');
   assert.equal(selectStoryEvening(routes, state, {...ctx, unresolved: [id]}).kind, 'rest');
   assert.equal(selectStoryEvening(routes, {...state, flags: {_story_shuraba_unresolved: true}}, ctx).kind, 'rest');
-  assert.equal(selectStoryEnding(routes, state, ctx)[1], routes.romance[id].epilogue);
-  assert.equal(selectStoryEnding(routes, state, {...ctx, present: []})[1], routes.ending.normal);
+  // 共通の賄い（ending.normal）は置き換えず、読んでからその人の後日談へ進む（全体講評 S11・STK11）。
+  assert.deepEqual(selectStoryEnding(routes, state, ctx),
+    [routes.ending.start, routes.ending.normal, routes.romance[id].epilogue, routes.ending.daily]);
+  assert.deepEqual(selectStoryEnding(routes, state, {...ctx, present: []}),
+    [routes.ending.start, routes.ending.normal, routes.ending.daily]);
+  assert.deepEqual(selectStoryEnding(routes, {...state, flags: {_story_shuraba_unresolved: true}}, ctx),
+    [routes.ending.start, routes.ending.normal, routes.ending.daily]);
   assert.equal(selectPostEndingConflict(routes, state, ctx).kind, 'none');
 }
 assert.equal(selectStoryEvening(routes, {chapter: 3, lovers: ['ageha']}, {...context, selected: 'ageha'}).kind, 'rest');
@@ -35,7 +40,7 @@ for (let n = 2; n <= all.length; n++) {
   assert.deepEqual(result.talks, lovers.map(id => routes.romance[id].talk), 'one talk per hurt lover, in order');
   result.scenes.forEach(id => assert.ok(scenes.has(id), id));
   assert.equal(selectStoryEvening(routes, state, {present: [lovers[0]]}).kind, 'rest');
-  assert.equal(selectStoryEnding(routes, state, context)[1], routes.ending.normal);
+  assert.deepEqual(selectStoryEnding(routes, state, context), [routes.ending.start, routes.ending.normal, routes.ending.daily]);
   assert.equal(selectPostEndingConflict(routes, state, {present: [lovers[0]]}).kind, 'pending');
 
   const tokyo = {chapter: 3, lovers};
@@ -213,8 +218,9 @@ const offered = (value) => wiring.availableOptionalScenes(routes, value).map(sce
   assert(!offered(value).includes('confession_mashiro'), 'read once only');
   // あげは（#1988）: 第3章の後日談を読み終え、♥3の分岐で恋愛寄り・♥5の保存だけ。未回答・友情・♥4・着地済み・第4章では出さない。
   const romance = {bond_q1_ageha: {char: 'ageha', value: 1, day: 20}};
-  const cleared = {chapter: 3, lovers: [], flags: {_ch3_cleared: true, _ch3_aftermath: {version: 3, winDay: 42, stage: 7}},
-    romanceChoices: romance, affinity: {ageha: 66}, day: 45, slot: 0};
+  // STK23: 再会は帰郷した夜（優勝2日後）。第3章はその夜で終わる。
+  const cleared = {chapter: 3, lovers: [], flags: {_ch3_cleared: true, _ch3_aftermath: {version: 4, winDay: 42, stage: 7}},
+    romanceChoices: romance, affinity: {ageha: 66}, day: 44, slot: 1};
   assert.equal(entry.agehaConfessionDue(cleared), true);
   assert.equal(entry.agehaConfessionDue({...cleared, flags: {}}), false, 'not before the reunion');
   assert.equal(entry.agehaConfessionDue({...cleared, romanceChoices: {}}), false, 'no ♥3 answer: no confession');
@@ -226,17 +232,17 @@ const offered = (value) => wiring.availableOptionalScenes(routes, value).map(sce
   assert.equal(entry.agehaConfessionDue({...cleared, flags: {...cleared.flags, _friend_ageha: true}}), false);
   assert.equal(entry.agehaConfessionDue({...cleared, chapter: 4}), false);
   assert.equal(entry.AGEHA_ROUTE_CHOICE, 'bond_q1_ageha');
-  // 告白は再会（優勝3日後）の翌日。進んだ時計は戻さず、条件を満たさない保存の時計には触れない。
+  // 告白は再会（帰郷した夜）の翌日の昼。進んだ時計は戻さず、条件を満たさない保存の時計には触れない。
   const timed = structuredClone(cleared);
   assert.equal(entry.beginAgehaConfessionDay(timed), true);
-  assert.deepEqual([timed.day, timed.slot], [46, 0]);
+  assert.deepEqual([timed.day, timed.slot], [45, 0]);
   assert.equal(entry.beginAgehaConfessionDay(timed), false, 'idempotent');
   const late = {...structuredClone(cleared), day: 47, slot: 1};
   assert.equal(entry.beginAgehaConfessionDay(late), false);
   assert.deepEqual([late.day, late.slot], [47, 1], 'never rewinds');
   const friend = {...structuredClone(cleared), romanceChoices: {}};
   assert.equal(entry.beginAgehaConfessionDay(friend), false);
-  assert.equal(friend.day, 45);
+  assert.equal(friend.day, 44);
   assert.equal(sceneData.get('confession_ageha_accept').metadata.set_romance, 'ageha');
   for (const id of entry.AGEHA_CONFESSION_SCENES) assert(sceneData.get(id)?.lines?.length, id);
 }

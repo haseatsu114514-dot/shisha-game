@@ -11,15 +11,17 @@ import { canRespec, prepareRespec, commitRespec } from "../core/growth-respec.js
 import { growthEnabled } from "../core/growth-mode.js";
 import { grantStarterHidane, tutorialPending, startBoardTutorial, STARTER_HIDANE, STARTER_FLAG, TUTORIAL_FLAG } from "./growth-board-tutorial.js";
 import { LESSON_TUNING } from "../core/growth-effects.js";
+import { reducedMotion, igniteAt, runAlongPath, flyHidane, bump, commitCutIn, emberField, HIDANE_COLOR } from "./growth-fx.js";
+import { openBoardHelp } from "./growth-board-help.js";
 import { displayName, faceIconUrl, portraitInfo, faceFrame } from "../core/data.js";
 import { portraitStyle } from "../core/portrait-style.js";
 import { affinityLevel } from "../core/stats.js";
 import { ensureGrowth, gaugeInfo, HIDANE_KEYS, lessonLearned, readyLessons } from "../core/growth.js";
 import {
-  BOARD_KEYS, BOARD_JA, BOARD_HEAD, BOARD_WHERE, REWARD_JA, FEATURES,
+  BOARD_KEYS, BOARD_JA, BOARD_HEAD, REWARD_JA, FEATURES,
   HUB, NODES, NODE_BY_ID, boardNodes, ringsOpen, statCount, statTotal, replay, nodeStatus, commitPending,
   pathTo, pendingTowards, lessonLock, hasMet, availableCount, paymentFor, spendableHidane,
-  GRID, lessonKnown, perkOf, HIDANE_NAME, perkTotals, featuresOf, statsFilled, HUB_AT, statRatio,
+  GRID, lessonKnown, perkOf, HIDANE_NAME, perkTotals, featuresOf, statsFilled, HUB_AT, statRatio, boardRoutes, NOTABLES,
 } from "../core/growth-board.js";
 
 // ---------------------------------------------------------------- 配置（盤の領域 760×488。紋は下の端 380,452。横13×縦9 の方眼で上へ育つ。SBD62）
@@ -83,7 +85,9 @@ const PANEL_FACE = {
   K09: "smile", K18: "serious", K19: "smile", K21: "smug", K22: "normal", K23: "smug", K24: "serious",
 };
 const ART_FILES = ["board_glass", "screen_backdrop", "hub_body", "hub_sense", "hub_wisdom", "frame_skill", "frame_lesson", "frame_gate", "frame_peak", "frame_seal",
-  "hidane_any", "hidane_body", "hidane_sense", "hidane_wisdom", "panel_frame", "wall_seal", "silhouette_unknown"];
+  "hidane_any", "hidane_body", "hidane_sense", "hidane_wisdom", "panel_frame", "wall_seal", "silhouette_unknown",
+  // GB04（SBD121・SBD123）: 火種の受け皿・盤の札・マスの印の台・丸いボタン・紙の札・飾り罫
+  "socket", "tab_on", "tab_dim", "tab_off", "badge_cost", "badge_check", "badge_unknown", "round_btn", "card", "title_rule"];
 let artReady = null;
 export function loadBoardArt() {
   if (artReady) return artReady;
@@ -126,11 +130,15 @@ export function openBoard({ place = null } = {}) {
   // 盤は拡大して始め、ドラッグ・スクロールで動かし、Ctrl＋ホイール・つまむ・＋−で倍率を変える（2026-10-31 オーナー「もう少し拡大したところから始めたい。
   // 移動は好きにできるしスクロールで先のも見れる」SBD77）。拡大すると札が重なってずれて見えたので（SBD78）、マスの間隔を広げた世界（W×H）を
   // 等倍で始め、縮める方向だけ scale する。「全体」は盤がのぞき窓に収まる倍率
-  const stage = el("div.gb-stage", { style: { width: `${W}px`, height: `${H}px` } }, [reveal, boardSvg, nodeLayer]);
+  // 演出の層（SBD104）: 火の粉・光の輪は盤の座標に置くので、拡大・移動に付いてくる。描き直しでは消さない
+  const fxLayer = el("div.gb-fx", { "aria-hidden": "true" });
+  const stage = el("div.gb-stage", { style: { width: `${W}px`, height: `${H}px` } }, [reveal, boardSvg, nodeLayer, fxLayer]);
   const world = el("div.gb-world", [stage]);
   const viewport = el("div.gb-board", { dataset: { test: "board-viewport" } }, [world]);
   const zoomBar = el("div.gb-zoom", { "aria-label": "盤の倍率" });
-  const boardWrap = el("div.gb-board-wrap", [viewport, zoomBar]);
+  // 盤の上をゆっくり昇る火の粉（飾り）。灯すほど増える（data-level 0〜3）。のぞき窓に重ねるだけで、押す操作は通す
+  const embers = Object.assign(emberField(14), { className: "gfx-embers gb-embers" });
+  const boardWrap = el("div.gb-board-wrap", [viewport, embers, zoomBar]);
   const ZOOM_MIN = Math.min(VIEW_W / W, VIEW_H / H), ZOOM_START = 1, ZOOM_MAX = 1.5;
   let zoom = ZOOM_START;
   const side = el("div.gb-side", { dataset: { test: "board-preview" }, "aria-live": "polite" });
@@ -205,6 +213,9 @@ export function openBoard({ place = null } = {}) {
     viewport.addEventListener("touchend", () => { pinch = null; });
     const dist = (ts) => Math.hypot(ts[0].clientX - ts[1].clientX, ts[0].clientY - ts[1].clientY);
   }
+  // 演出用の覚え（SBD104）: 横棒の前の長さ・財布の前の数。規則や保存には関わらない
+  const barSeen = new Map(), walletSeen = {};
+  let barOpen = null;
   const view = () => replay(g, pending);
   const status = (node, v) => nodeStatus(node, g, v);
   // replayごとの仮置き結果に紐づける。選択だけの説明更新でも同じ道を再計算しない。
@@ -223,11 +234,17 @@ export function openBoard({ place = null } = {}) {
       el("div.gb-level", [
         el("b", { text: `Lv.${info.level}` }),
         el("i.gb-gauge", [el("b", { style: { width: `${Math.round(info.now * 100)}%` } })]),
-        el("small", { text: info.max ? "MAX" : info.pending ? "今夜 Lv UP" : `あと${info.left}` }),
+        el("small", { text: info.max ? "MAX" : `あと${info.left}` }),
       ]),
-      el("p.gb-place", { dataset: { test: "board-place" }, text: rebuilding ? "組み直し中（確定まで保存内容は変わらない）"
-        : canRespec(original, owner) ? "組み直しは最初の自由行動または日付変更まで"
-        : canLight ? `${PLACE_JA[place] || "静かな場所"}で内省している（時間は進まない）` : "見るだけ。灯すのは観音堂などで内省した時" }),
+      // 場所の一文は短い札にする（SBD116「文字が多い」）。全文は説明（title）と読み上げに残す
+      (() => {
+        const full = rebuilding ? "組み直し中（確定まで保存内容は変わらない）"
+          : canRespec(original, owner) ? "組み直しは最初の自由行動または日付変更まで"
+          : canLight ? `${PLACE_JA[place] || "静かな場所"}で内省している（時間は進まない）` : "見るだけ。灯すのは観音堂などで内省した時";
+        const short = rebuilding ? "組み直し中" : canRespec(original, owner) ? "組み直せる" : canLight ? "灯せる" : "見るだけ";
+        return el("p.gb-place", { dataset: { test: "board-place" }, title: full }, [
+          el("span.gb-place-chip", { "aria-hidden": "true", text: short }), el("span.gb-sr", { text: full })]);
+      })(),
       el("button.gb-icon", { text: "？", title: "見方", "aria-label": "盤の見方", dataset: { test: "board-help" }, onclick: help }),
       el("button.gb-icon", { text: "×", title: "閉じる", "aria-label": "閉じる", dataset: { test: "board-close" }, onclick: close }),
     );
@@ -277,6 +294,7 @@ export function openBoard({ place = null } = {}) {
     reveal.style.setProperty("--fill", fill.toFixed(3));
     reveal.dataset.test = "board-reveal";
     reveal.dataset.fill = String(Math.round(fill * 100));
+    embers.dataset.level = String(fill >= 0.66 ? 3 : fill >= 0.33 ? 2 : fill > 0 ? 1 : 0);
     // 方眼のうすい点（横13×縦9）
     const [hx, hy] = hubAt();
     for (let gx = -GRID.w; gx <= GRID.w; gx++) for (let gy = -GRID.h; gy <= 0; gy++) { const p = at(gx - hx, gy - hy); parts.push(svg("circle", { cx: p.x, cy: p.y, r: 1.5, class: "gb-dot" })); }
@@ -487,7 +505,6 @@ export function openBoard({ place = null } = {}) {
       }
       if (node.feature) lines.push(el("p.gb-p-quality", { dataset: { test: "board-feature" }, text: `✦ 灯すと「${FEATURES[node.feature].text}」` }));
       if (node.peak) lines.push(el("p.gb-p-next", { text: statsFilled(node.board, v.unlocked) ? "盤の能力のマスを全部灯した。極みを灯せる" : "この盤の能力のマスを全部灯すと灯せる（盤を埋めたご褒美）" }));
-      lines.push(el("p.gb-p-sub", { text: `${BOARD_JA[node.board]}盤全体が効く場面：${BOARD_WHERE[node.board]}` }));
     } else if (node.kind === "gate") {
       // 色の台座（SBD89）: 色の火をはめると先へ進めて、台座の能力も手に入る
       const perk = perkOf(node);
@@ -526,23 +543,104 @@ export function openBoard({ place = null } = {}) {
   /** 何も選んでいない時（SBD63「段の概念は無くす。盤の伸びをグラフに」）: 恩恵ごとの合計の横棒と、✦のできること */
   function boardSummary(v) {
     const count = statCount(board, v.unlocked);
-    const bars = perkTotals(board, v.unlocked).map((p) => el("div.gb-bar", { dataset: { test: `board-bar-${p.key}` } }, [
-      el("span.gb-bar-name", { text: p.name }),
-      el("i.gb-bar-line", { "aria-hidden": "true" }, [el("b", { style: { width: `${p.max ? Math.round((p.sum / p.max) * 100) : 0}%` } })]),
-      el("span.gb-bar-sum", { text: p.text }),
-    ]));
+    const totals = perkTotals(board, v.unlocked);
+    const bars = totals.map((p) => {
+      // 横棒は前に見た長さから伸びる（仮置き・決定で増えた分が目で分かる。SBD104）
+      const width = p.max ? Math.round((p.sum / p.max) * 100) : 0, key = `${board}:${p.key}`, was = barSeen.get(key);
+      const fill = el("b", { style: { width: `${was ?? width}%` } });
+      if (was != null && was !== width) requestAnimationFrame(() => { fill.style.width = `${width}%`; });
+      barSeen.set(key, width);
+      // 名前と長い文は出さず、アイコン・棒・数字だけ（SBD116）。文は押さえた時の説明（title）と読み上げに残す
+      const icon = el("img.gb-bar-icon", { src: `${ART_DIR}icons/perk_${p.key}.webp`, alt: "", draggable: "false", loading: "lazy" });
+      icon.addEventListener("error", () => icon.replaceWith(el("span.gb-bar-glyph", { text: p.glyph })));
+      // 押すと、その能力の名前と今の合計が一行で出る（もう一度押すと閉じる）。アイコンの意味は「？」の「能力」のページにもある
+      return el(`button.gb-bar${was != null && was < width ? ".grew" : ""}${barOpen === key ? ".open" : ""}`, { type: "button", title: `${p.name}：${p.text}`, "aria-expanded": String(barOpen === key),
+        dataset: { test: `board-bar-${p.key}` }, onclick: () => { barOpen = barOpen === key ? null : key; SE.click?.(); renderSide(view()); } }, [
+        el("span.gb-bar-name", [icon, el("span.gb-sr", { text: `${p.name}：${p.text}` })]),
+        el("i.gb-bar-line", { "aria-hidden": "true" }, [fill]),
+        el(`span.gb-bar-sum${p.sum ? "" : ".zero"}`, { "aria-hidden": "true", text: shortSum(p) }),
+      ]);
+    });
+    const opened = totals.find((p) => `${board}:${p.key}` === barOpen);
     const feats = featuresOf(board, v.unlocked);
+    const goals = nearGoals(v);
     const out = [
       el("h3.gb-p-title", { text: `${BOARD_JA[board]}盤 ${count}/${statTotal(board)}` }),
       el("div.gb-bars", { dataset: { test: "board-bars" } }, bars),
-      feats.length ? el("p.gb-p-quality", { text: feats.map((f) => `${f.on ? "✦" : "・"}${f.name}`).join("　") }) : null,
-      el("p.gb-p-sub", { text: `${BOARD_JA[board]}盤全体が効く場面：${BOARD_WHERE[board]}` }),
+      opened ? el("p.gb-bar-note", { dataset: { test: "board-bar-note" }, "aria-live": "polite" }, [el("b", { text: opened.name }), el("span", { text: opened.text.replace(/（端数[^）]*）/, "") })]) : null,
+      feats.length ? el("p.gb-feats", { title: feats.map((f) => `${f.on ? "✦" : "・"}${f.name}`).join("　") },
+        feats.map((f) => el(`span.gb-feat${f.on ? ".on" : ""}`, { text: `✦ ${f.name}` }))) : null,
+      // 次の目的地（SBD104）: 近い順に3つ。押すとそのマスへ動いて中身が出る（どこへ伸ばすかの手がかり）
+      goals.length ? el("div.gb-goals", { dataset: { test: "board-goals" } }, [
+        el("h4.gb-goals-head", { text: "近い目的地" }),
+        ...goals.map(({ n, st, cost, gates }) => el(`button.gb-goal.k-${n.kind}${st === "available" ? ".ready" : ""}`, {
+          type: "button", dataset: { test: `board-goal-${n.id}` }, onclick: () => { select(n.id, true); scrollToNode(n.id); },
+          title: `${goalName(n)}　${goalCost(n, st, cost, gates)}`,
+        }, [
+          goalIcon(n),
+          el("span.gb-goal-name", { text: n.kind === "gate" ? perkOf(n)?.name || "" : n.feature ? FEATURES[n.feature].name : n.notable ? NOTABLES[n.notable]?.name || "" : n.name }),
+          goalFires(n, st, cost, gates),
+          el("span.gb-sr", { text: goalCost(n, st, cost, gates) }),
+        ])),
+      ]) : null,
     ];
     if (g.target) {
       out.push(el("p.gb-p-target", { dataset: { test: "board-target-line" }, text: targetText(g.target, v) }));
     }
     // 操作の案内（光っているマス・マスを押す・目標にする）は右上の「？」（盤の見方）へ寄せた（2026-11-08 オーナー指示「説明の分量を減らす」）
     return out.filter(Boolean);
+  }
+
+  /**
+   * 近い目的地（SBD104）: まだ灯していないスキル・授業・✦・要のマス・色の台座を、紋からの火種が少ない順に。
+   * 結界の先と、まだ分からない授業・現れていないスキルは出さない（伏せている中身を一覧で明かさない）。
+   */
+  function nearGoals(v, limit = 3) {
+    const route = boardRoutes(board, v.unlocked), goals = [];
+    for (const n of boardNodes(board)) {
+      if (v.unlocked.has(n.id) || n.peak || !(n.kind === "skill" || n.kind === "lesson" || n.kind === "gate" || n.feature || n.notable)) continue;
+      const st = status(n, v);
+      if (st === "locked" || (n.kind === "lesson" && !lessonKnown(n, g)) || (n.kind === "skill" && revealOf(n) !== "open")) continue;
+      const r = route(n.id);
+      goals.push({ n, st, cost: r.cost, gates: r.path.filter((id) => NODE_BY_ID[id].kind === "gate").length });
+    }
+    return goals.sort((a, b) => a.cost - b.cost || a.n.ring - b.n.ring).slice(0, limit);
+  }
+  const goalName = (n) => n.kind === "skill" ? `スキル「${n.name}」` : n.kind === "lesson" ? `${whoName(n.who)}の授業「${n.name}」`
+    : n.kind === "gate" ? `色の台座（${perkOf(n)?.name || ""}）` : n.feature ? `✦ ${FEATURES[n.feature].name}` : `要のマス「${NOTABLES[n.notable]?.name || ""}」`;
+  /** 横棒の右の短い数字（「＋12」「＋6%」「−2%」）。文は title に残す */
+  const shortSum = (p) => /[＋−][\d.]+%?/.exec(p.text)?.[0] || "";
+  /** 近い目的地の絵: スキルのアイコン・授業の顔・台座の色の火・能力のアイコン */
+  function goalIcon(n) {
+    const src = n.kind === "lesson" ? boardFaceUrl(n.who) || faceIconUrl(n.who, state)
+      : n.kind === "gate" ? `${ART_DIR}hidane_${n.board}.webp` : iconOf(n) ? `${ART_DIR}icons/${iconOf(n)}.webp` : null;
+    const box = el(`span.gb-goal-icon.k-${n.kind}`, { "aria-hidden": "true" }, [el("b", { text: n.kind === "lesson" ? "授" : n.kind === "gate" ? "◆" : n.feature ? "✦" : n.glyph || "要" })]);
+    if (src) { const img = el("img", { src, alt: "", draggable: "false", loading: "lazy" }); img.addEventListener("error", () => img.remove()); box.append(img); }
+    return box;
+  }
+  /** 近い目的地までの火種を、粒の絵と数で（白火＝道のり、色の火＝台座の数）。錠は♥ */
+  function goalFires(n, st, cost, gates) {
+    const dot = (kind, count) => el(`span.gb-goal-fire.k-${kind}`, [el("i"), el("b", { text: String(count) })]);
+    const parts = [];
+    if (cost - gates > 0) parts.push(dot("any", cost - gates));
+    if (gates > 0) parts.push(dot(n.board, gates));
+    if (st === "sealed") parts.push(el("span.gb-goal-lock", { text: `♥${n.need || ""}` }));
+    if (!parts.length) parts.push(el("span.gb-goal-now", { text: "今" }));
+    return el("span.gb-goal-cost", { "aria-hidden": "true" }, parts);
+  }
+  function goalCost(n, st, cost, gates) {
+    const lock = st === "sealed" ? `・♥${n.need || ""}で開く` : "";
+    if (!cost) return n.kind === "lesson" ? `火種いらず${lock || "・今教われる"}` : "今灯せる";
+    return `あと火種${cost}${gates ? `（うち色の火${gates}）` : ""}${lock}`;
+  }
+  /** そのマスが真ん中に来るよう、盤を動かす */
+  function scrollToNode(id) {
+    const n = NODE_BY_ID[id];
+    if (!n || n.board !== board) return;
+    const p = at(n.gx, n.gy), vw = viewport.clientWidth || VIEW_W, vh = viewport.clientHeight || VIEW_H;
+    const left = p.x * zoom - vw / 2, top = p.y * zoom - vh / 2;
+    if (typeof viewport.scrollTo === "function") viewport.scrollTo({ left, top, behavior: reducedMotion() ? "auto" : "smooth" });
+    else { viewport.scrollLeft = left; viewport.scrollTop = top; }
   }
 
   function stateText(node, st, v) {
@@ -578,7 +676,13 @@ export function openBoard({ place = null } = {}) {
     const wallet = el("div.gb-wallet", { dataset: { test: "board-wallet" } }, HIDANE_KEYS.map((k) => el(`span.gb-hidane.k-${k}${v.hidane[k] ? "" : ".zero"}`, {
       title: k === "any" ? `白火（どの盤の通常マスにも${v.ctx.capped ? "。色の台座にも" : ""}）`
         : `${HIDANE_NAME[k]}（${v.ctx.capped ? "どの盤" : `${BOARD_JA[k]}盤`}のマスと、色の台座）`,
-    }, [el("i", { "aria-hidden": "true" }), el("span", { text: HIDANE_NAME[k] }), el("b", { text: String(v.hidane[k] || 0) })])));
+    }, [el("i", { "aria-hidden": "true" }), el("span.gb-sr", { text: HIDANE_NAME[k] }), el("b", { text: String(v.hidane[k] || 0) })])));
+    // 数が変わった火種は一度弾む（払った・戻った が目で分かる）
+    for (const [i, k] of HIDANE_KEYS.entries()) {
+      const now = v.hidane[k] || 0;
+      if (walletSeen[k] != null && walletSeen[k] !== now) bump(wallet.children[i]?.querySelector("b"));
+      walletSeen[k] = now;
+    }
     const actions = [];
     if (rebuilding) actions.push(el("button.btn", { text: "前の形に戻す", dataset: { test: "board-respec-restore" }, onclick: restoreRespec }));
     else if (canRespec(original, owner)) actions.push(el("button.btn", { text: "組み直す", dataset: { test: "board-respec" }, onclick: startRespec }));
@@ -586,11 +690,9 @@ export function openBoard({ place = null } = {}) {
     actions.push(el("button.btn.primary.gb-decide", {
       text: rebuilding ? "組み直しを決定" : pending.length ? `決定（${pending.length}）` : "閉じる", dataset: { test: "board-decide" }, onclick: () => (pending.length || rebuilding ? finish(true) : close()),
     }));
-    footer.replaceChildren(wallet, el("p.gb-legend", [
-      legend("unlocked", "✓ 灯した"), legend("pending", "+ 仮置き"), legend("available", "今灯せる"), legend("far", "道がまだ"), el("span", { text: `◆ 色の台座（色の火${v.ctx.capped ? "・白火" : ""}）` }), legend("sealed", "授業の錠"), legend("locked", "結界の先"), el("span", { text: "✦ できることが増える" }),
-    ]), el("div.gb-actions", actions));
+    // 凡例（マスの状態・種類）は「？」の絵つきの見方へ移した（SBD116）
+    footer.replaceChildren(wallet, el("span.gb-footer-gap"), el("div.gb-actions", actions));
   }
-  function legend(st, text) { return el("span.gb-legend-item", [el(`i.s-${st}`), el("span", { text })]); }
 
   function render() {
     const v = view();
@@ -629,6 +731,7 @@ export function openBoard({ place = null } = {}) {
     if (!canLight) return;
     const nextPending = replay(g, [...pending, id]).pending;
     if (pending.includes(id) || !nextPending.includes(id)) return;
+    const was = renderedView?.unlocked || new Set(g.nodes), added = nextPending.filter((p) => !pending.includes(p));
     pending = nextPending;
     SE.boardLight?.();
     // 仮置きで隣へ自動で進む（6.2 スマホ横の基本操作）: 今取れる隣が1つだけならそれを選ぶ
@@ -636,7 +739,39 @@ export function openBoard({ place = null } = {}) {
     const nexts = NODE_BY_ID[id].links.filter((n) => n !== HUB && status(NODE_BY_ID[n], v) === "available");
     render();
     nodeLayer.querySelector(`[data-test="board-node-${id}"]`)?.classList.add("lit-now");
+    lightFx(added, v, was);
     if (nexts.length === 1) select(nexts[0], false);
+  }
+  function inViewport(node) {
+    if (!node) return false;
+    const r = node.getBoundingClientRect(), w = viewport.getBoundingClientRect();
+    const x = r.left + r.width / 2, y = r.top + r.height / 2;
+    return x >= w.left && x <= w.left + w.width && y >= w.top && y <= w.top + w.height;
+  }
+  /**
+   * 仮置きの演出（SBD104）: 財布の火種がマスへ飛び、灯っていた隣から道を光が走って、マスに火が入る。
+   * 飾りだけ。仮置きそのものは先に済んでいて、動きを減らす設定では何も出さない。
+   */
+  function lightFx(ids, v, was) {
+    if (reducedMotion() || !ids.length) return;
+    const have = new Set(was);
+    ids.forEach((id, i) => {
+      const node = NODE_BY_ID[id], source = node.links.find((l) => l === HUB || have.has(l));
+      have.add(id);
+      if (node.board !== board) return;
+      const pay = v.pays[id] || {}, kind = HIDANE_KEYS.find((k) => pay[k] > 0) || "any";
+      const color = node.kind === "gate" ? HIDANE_COLOR[node.board] : node.kind === "lesson" ? "#f4d27a" : HIDANE_COLOR[kind];
+      const p = at(node.gx, node.gy), from = source === HUB ? at(0, 0) : source ? at(NODE_BY_ID[source].gx, NODE_BY_ID[source].gy) : null;
+      const to = nodeLayer.querySelector(`[data-test="board-node-${id}"]`);
+      // 火種が飛ぶのは、マスがのぞき窓の中に見えている時だけ（見えない先へは飛ばさず、盤の中の光だけ）
+      const coin = node.cost && inViewport(to) ? footer.querySelector(`.gb-hidane.k-${kind} i`) : null;
+      const delay = Math.min(i, 8) * 80;
+      (coin ? flyHidane(root, coin, to, { kind, delay }) : new Promise((r) => setTimeout(r, delay))).then(() => {
+        if (!root.isConnected || finishing) return;
+        if (from) runAlongPath(boardSvg, from, p, { color });
+        igniteAt(fxLayer, p.x, p.y, { color, big: node.kind !== "stat" || !!node.notable || !!node.feature });
+      });
+    });
   }
   function unlight(id) {
     pending = pending.filter((p) => p !== id); // つながらなくなった先の仮置きは replay で外れる
@@ -650,25 +785,16 @@ export function openBoard({ place = null } = {}) {
     render();
   }
   function towards(id) {
-    const before = pending.length;
+    const before = pending.length, was = renderedView?.unlocked || new Set(g.nodes), old = pending;
     pending = pendingTowards(g, pending, id);
     if (pending.length > before) SE.boardLight?.();
     render();
+    lightFx(pending.filter((p) => !old.includes(p)), renderedView, was);
   }
+  /** 「？」: 絵つきの見方（growth-board-help.js。SBD116）。選んでいるマスに合うページから開く */
   async function help() {
-    await modal({
-      title: "心得の盤の見方", className: "gboard-help",
-      body: el("div", [
-        el("p", { text: "マスを押すと、灯すと何が変わるかが右に出る。光っているマスが今灯せる。紋から道をたどって、欲しいスキルや授業の方へ。欲しいマスは「目標にする」で印をつけておける。" }),
-        el("p", { text: "盤は能力ごとに3枚（才能・感覚・理論）。下の紋から左・右・上へ道がのびていて、線でつながった隣のマスだけ灯せる。どの道から進んでもいい。" }),
-        el("p", { text: "丸いマスは能力（主に火種1、人柄の追加マスは2）。灯すたびに少し伸びる。紋から遠いマスほど恩恵が大きい（近く×1・中ほど×2・台座の先×3）。✦のマスは灯すと、できることが1つ増える。六角形はスキル（火種2〜7）。いちばん上の極みは、その盤の能力のマスを全部灯すと灯せる。" }),
-        el("p", { text: "ひし形は色の台座。色の火（紅火・蒼火・翠火）を1つはめると、その先の道が開き、台座の能力（台座の先のマスより大きい）も手に入る。台座の先には強いスキルと授業がある。火種の獲得が上限に届いた後は白火でもはまる。" }),
-        el("p", { text: "金の札は授業（火種いらず）。教えてくれる人に出会うと盤に現れる。灯したら、次にその人に会った時に相談して習う（LIME では習えない）。" }),
-        el("p", { text: "白火はどの盤の通常マスにも使える。色の火はその色の盤のマスと色の台座に使える。払うときは白火が先。未点灯の台座ぶんの色火は残しておく。火種の獲得が上限に届いた後は、ほかの盤の色火も使える。" }),
-        el("p", { text: "火種を灯せるのは、観音堂などの静かな場所で内省した時（時間は進まない）。メニューでは閲覧と目標設定ができる。章・周回はじめの組み直しが開いている間は、メニューからも組み直して振り直せる。授業は忘れない。" }),
-      ]),
-      options: [{ label: "閉じる", value: true, primary: true }],
-    });
+    const node = selected ? NODE_BY_ID[selected] : null;
+    await openBoardHelp({ page: node ? (node.kind === "gate" ? "fire" : "kinds") : "flow" });
   }
   async function close() {
     if (pending.length || rebuilding) {
@@ -699,6 +825,8 @@ export function openBoard({ place = null } = {}) {
     const committed = commit ? commitPending(pending, owner) : [];
     if (owner === state && (reset || committed.length)) save();
     if (owner === state && committed.length) SE.boardCommit?.();
+    // 決定の演出（SBD104）: 保存を済ませてから、灯したマスに順に火が入り、スキルなどはカットインで名前を出す
+    if (owner === state && committed.length && growthEnabled()) await commitFx(committed);
     // 授業の会話が次の曲を選ぶ前に戻す。LOAD中は以前のセーブの曲を復活させない。
     releaseAudio(owner === state && growthEnabled());
     document.removeEventListener("keydown", onKey, true);
@@ -719,6 +847,43 @@ export function openBoard({ place = null } = {}) {
       for (const node of committed) if (node.kind === "lesson") await presentLesson(node);
     }
     resolveDone(committed);
+  }
+  /**
+   * 決定の演出（SBD104）。確定と保存の後に流す飾りで、途中でセーブが入れ替わっても盤の中身は変わらない。
+   * 動きを減らす設定では何もしない（待たない）。カットインは押すと次へ進む。
+   */
+  async function commitFx(committed) {
+    if (reducedMotion() || !root.isConnected) return;
+    root.classList.add("committing");
+    // 決定した姿（✓）に描き直す。いちばん多く灯した盤を見せる
+    const counts = {};
+    for (const n of committed) counts[n.board] = (counts[n.board] || 0) + 1;
+    g = original; rebuilding = null; pending = []; selected = null;
+    board = BOARD_KEYS.reduce((best, k) => (counts[k] || 0) > (counts[best] || 0) ? k : best, counts[board] ? board : committed[0].board);
+    render();
+    const mine = committed.filter((n) => n.board === board), step = Math.min(90, 520 / Math.max(1, mine.length));
+    mine.forEach((n, i) => setTimeout(() => {
+      if (!root.isConnected) return;
+      const p = at(n.gx, n.gy);
+      igniteAt(fxLayer, p.x, p.y, { color: n.kind === "lesson" ? "#f4d27a" : HIDANE_COLOR[n.board], big: n.kind !== "stat" || !!n.notable || !!n.feature });
+      nodeLayer.querySelector(`[data-test="board-node-${n.id}"]`)?.classList.add("lit-now");
+    }, i * step));
+    await sleep(Math.min(760, mine.length * step + 400));
+    if (owner !== state || !root.isConnected) return;
+    await commitCutIn(root, cutInItems(committed));
+  }
+  /** カットインに出すもの（大きい順に3つまで。長く待たせない）: 極み・スキル・✦・色の台座・要のマス・授業 */
+  function cutInItems(committed) {
+    const items = [];
+    for (const n of committed) {
+      if (n.peak) items.push({ rank: 0, tone: "peak", board: n.board, head: "COMPLETE", name: `${BOARD_JA[n.board]}を極めた`, text: "盤の能力のマスを全部灯した", icon: `${ART_DIR}icons/peak.webp`, glyph: "極" });
+      else if (n.kind === "skill") items.push({ rank: 1, tone: "skill", board: n.board, head: "SKILL　スキルを覚えた", name: n.name, text: n.text, icon: `${ART_DIR}icons/skill_${n.id}.webp`, glyph: n.glyph });
+      else if (n.kind === "gate") items.push({ rank: 3, tone: "gate", board: n.board, head: "BREAK　色の台座", name: `${HIDANE_NAME[n.board]}がはまった`, text: `${perkOf(n)?.text || ""}・この先の道が開いた`, icon: `${ART_DIR}hidane_${n.board}.webp`, glyph: "◆" });
+      else if (n.kind === "lesson") items.push({ rank: 5, tone: "lesson", board: n.board, head: "LESSON　授業", name: `${whoName(n.who)}に相談できる`, text: `「${n.name}」。次に会った時に話を聞こう`, icon: boardFaceUrl(n.who) || faceIconUrl(n.who, state), glyph: "授" });
+      if (n.feature) items.push({ rank: 2, tone: "feature", board: n.board, head: "NEW　できることが増えた", name: FEATURES[n.feature].name, text: FEATURES[n.feature].text, icon: iconOf(n) ? `${ART_DIR}icons/${iconOf(n)}.webp` : null, glyph: "✦" });
+      else if (n.notable) items.push({ rank: 4, tone: "notable", board: n.board, head: "KEY　要のマス", name: NOTABLES[n.notable]?.name || "", text: perkOf(n)?.text || "", icon: iconOf(n) ? `${ART_DIR}icons/${iconOf(n)}.webp` : null, glyph: perkOf(n)?.glyph || "要" });
+    }
+    return items.sort((a, b) => a.rank - b.rank).slice(0, 3);
   }
   function onKey(e) {
     if (e.key !== "Escape" || document.querySelector("#modal.show")) return;

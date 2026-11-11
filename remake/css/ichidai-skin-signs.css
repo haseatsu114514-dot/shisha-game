@@ -1,0 +1,27 @@
+/* 両案共通の意味を持つ SVG しるし。文字と数値は元の DOM を使う。 */
+.ichi-game:is([data-skin="a"], [data-skin="b"]) .ichi-card.s-big { gap: 4px; padding: 10px; }
+.ichi-game:is([data-skin="a"], [data-skin="b"]) .ichi-card.s-big:not(.t-flavor) { grid-template-rows: auto 112px auto minmax(0, 1fr) auto; }
+.ichi-game:is([data-skin="a"], [data-skin="b"]) .ichi-card.s-big.t-flavor { grid-template-rows: auto 112px auto 12px minmax(0, 1fr) auto; }
+.ichi-game:is([data-skin="a"], [data-skin="b"]) .ichi-card.s-big .ichi-card-text { min-height: 0; font-size: 14px; line-height: 1.36; padding: 6px 8px; }
+.ichi-game:is([data-skin="a"], [data-skin="b"]) .ichi-card.s-big.t-person .ichi-card-art .m-face { object-fit: contain; }
+.ichi-game:is([data-skin="a"], [data-skin="b"]) .ichi-gem { position: relative; }
+.ichi-game:is([data-skin="a"], [data-skin="b"]) .ichi-gem::before { content: ""; position: absolute; right: 1px; top: 1px; width: 8px; height: 8px; background: currentColor; opacity: .95; mask: var(--sign) center / contain no-repeat; pointer-events: none; }
+.ichi-game:is([data-skin="a"], [data-skin="b"]) .ichi-gem.is-cost { --sign: url("../img/ui/ichidai/signs/firepower.svg"); }
+.ichi-game:is([data-skin="a"], [data-skin="b"]) .ichi-gem.is-heat { --sign: url("../img/ui/ichidai/signs/heat.svg"); }
+.ichi-game:is([data-skin="a"], [data-skin="b"]) .ichi-gem.is-taste { --sign: url("../img/ui/ichidai/signs/taste.svg"); }
+.ichi-game:is([data-skin="a"], [data-skin="b"]) .ichi-gem.is-cap { --sign: url("../img/ui/ichidai/signs/capacity.svg"); }
+.ichi-game:is([data-skin="a"], [data-skin="b"]) .ichi-card.s-tiny .ichi-gem::before { display: none; }
+.ichi-game:is([data-skin="a"], [data-skin="b"]) .ichi-card.s-big .ichi-line-sub::before,
+.ichi-game:is([data-skin="a"], [data-skin="b"]) .ichi-card.s-big.t-flavor .ichi-line-type::before { content: ""; display: inline-block; width: 13px; height: 13px; margin-right: 4px; vertical-align: -2px; background: currentColor; mask: var(--sign) center / contain no-repeat; }
+.ichi-game:is([data-skin="a"], [data-skin="b"]) .ichi-card.w-turn { --sign: url("../img/ui/ichidai/signs/turn.svg"); }
+.ichi-game:is([data-skin="a"], [data-skin="b"]) .ichi-card.w-puff { --sign: url("../img/ui/ichidai/signs/puff.svg"); }
+.ichi-game:is([data-skin="a"], [data-skin="b"]) .ichi-card.w-prep { --sign: url("../img/ui/ichidai/signs/prep.svg"); }
+.ichi-game:is([data-skin="a"], [data-skin="b"]) .ichi-card.w-any { --sign: url("../img/ui/ichidai/signs/any.svg"); }
+.ichi-game:is([data-skin="a"], [data-skin="b"]) .ichi-card.t-coal { --sign: url("../img/ui/ichidai/signs/ignite.svg"); }
+.ichi-game:is([data-skin="a"], [data-skin="b"]) .ichi-card.k-fruit { --sign: url("../img/ui/ichidai/signs/fruit.svg"); }
+.ichi-game:is([data-skin="a"], [data-skin="b"]) .ichi-card.k-cool { --sign: url("../img/ui/ichidai/signs/cool.svg"); }
+.ichi-game:is([data-skin="a"], [data-skin="b"]) .ichi-card.k-spice { --sign: url("../img/ui/ichidai/signs/spice.svg"); }
+.ichi-game:is([data-skin="a"], [data-skin="b"]) .ichi-card.k-floral { --sign: url("../img/ui/ichidai/signs/floral.svg"); }
+.ichi-game:is([data-skin="a"], [data-skin="b"]) .ichi-card.k-sweet { --sign: url("../img/ui/ichidai/signs/sweet.svg"); }
+.ichi-game:is([data-skin="a"], [data-skin="b"]) .ichi-card.s-big .ichi-rar::before { content: ""; display: inline-block; width: 12px; height: 12px; margin-right: 2px; vertical-align: -2px; background: currentColor; mask: url("../img/ui/ichidai/signs/rarity.svg") center / contain no-repeat; }
+.ichi-game:is([data-skin="a"], [data-skin="b"]) .ichi-result-vote::before { content: ""; display: inline-block; width: 15px; height: 15px; margin-right: 4px; vertical-align: -2px; background: currentColor; mask: url("../img/ui/ichidai/signs/vote.svg") center / contain no-repeat; }

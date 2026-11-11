@@ -42,43 +42,43 @@
     {
       "id": "hiyori",
       "part": "PLAYER",
-      "role": "{pc:hiyori}／灯りともし",
+      "role": "{pc:hiyori}／早口の灯りともし",
       "color": "#dab978",
       "ability": "灯りの段取り",
       "abilityText": "配達の支度をするとき、判定に一度だけ＋7",
       "abilityType": "prepare",
       "sheet": {
         "name": "ユラ",
-        "title": "灯りともし",
+        "title": "早口の灯りともし",
         "stats": {
           "eye": 3,
           "hand": 4,
           "talk": 2,
           "nerve": 2
         },
-        "trait": "か細い声の灯りともし。梯子をのぼるのは町一番速い",
-        "likes": "屋台の夜鳴きラーメン"
+        "trait": "梯子をのぼりながら、町の噂を全部しゃべる。口も足も町一番速い",
+        "likes": "焼きいもの屋台。両手に一本ずつ"
       }
     },
     {
       "id": "adam",
       "part": "PLAYER",
-      "role": "{pc:adam}／鐘つき",
+      "role": "{pc:adam}／無口な鐘つき",
       "color": "#c9463a",
       "ability": "鐘の口上",
       "abilityText": "手紙を渡すとき、判定に一度だけ＋7",
       "abilityType": "serve",
       "sheet": {
         "name": "レオン",
-        "title": "鐘つき",
+        "title": "無口な鐘つき",
         "stats": {
           "eye": 2,
           "hand": 2,
           "talk": 4,
           "nerve": 3
         },
-        "trait": "時計塔の鐘をつく。鐘の音と同じくらい、言葉も大きい",
-        "likes": "林檎の砂糖煮。甘さの原点"
+        "trait": "鐘の数でしか返事をしない。たまの一言は、よく通る",
+        "likes": "町が眠ったあとの鐘楼。鐘の掃除"
       }
     }
   ],
@@ -115,7 +115,7 @@
           "actor": "adam",
           "sheet": "adam",
           "stat": "talk",
-          "label": "大げさに、郵便猫を歓迎する",
+          "label": "帽子を取って、郵便猫を迎える",
           "detail": "{pc:adam}が帽子を取り、ミトンを詰所へ迎え入れる",
           "declare": "trpg_leaf_mail_declare_listen_greet"
         }
@@ -664,26 +664,56 @@
         {
           "speaker": "hiyori",
           "role": "PL／卓の会話",
-          "face": "normal",
-          "text": "……私はユラ。町の灯りをともして回る、か弱い夜番よ"
-        },
-        {
-          "speaker": "hiyori",
-          "role": "PL／卓の会話",
-          "face": "sad",
-          "text": "夜風に吹かれたら、灯りと一緒に消えてしまいそうで……"
-        },
-        {
-          "speaker": "hiyori",
-          "role": "PL／卓の会話",
           "face": "smile",
-          "text": "でも、屋台のラーメンの湯気が見えたら走るわ。全力で"
+          "text": "私はユラ。灯りをともして回る夜番よ。……とにかく、すっごく早口なの"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "{pc:hiyori}／物語",
+          "face": "surprise",
+          "text": "はい点いた！ 次！ パン屋のおばあちゃん、腰どう？ 橋の猫、また太った？"
         },
         {
           "speaker": "tsumugi",
           "role": "GM／卓の会話",
+          "face": "surprise",
+          "text": "……ひよりさん、息、続いてますか"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
           "face": "smile",
-          "text": "……ラーメンで元気になる夜番さん。いいと思います"
+          "text": "灯りより先に、噂が町を回りそうだな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_leaf_mail_aside_hiyori_hiyori_yura",
+      "metadata": {
+        "preview_only": true,
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "{pc:hiyori}／物語",
+          "face": "surprise",
+          "text": "毎晩点けてる灯りに『ありがとう』なんて、言われたことないよ！ 言われたら泣くよ！？"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_leaf_mail_after_hiyori_hiyori_yura",
+      "metadata": {
+        "preview_only": true,
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "ユラの『泣くよ！？』、半分くらい本気だったかも、……秘密よ"
         }
       ]
     },
@@ -731,25 +761,55 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "俺の役はレオン。時計塔で鐘をつく夜番だ"
+          "text": "俺の役はレオン。時計塔の鐘つきだ。……ただし、ひどく無口でな"
         },
         {
           "speaker": "adam",
           "role": "PL／卓の会話",
-          "face": "intense",
-          "text": "鐘は一つ。だが、その響きは町じゅうの窓に届く"
+          "face": "normal",
+          "text": "返事は鐘の数で決めた。一つは『はい』、二つは『いいえ』だ"
         },
         {
           "speaker": "hajime",
           "role": "PL／卓の会話",
-          "face": "smile",
-          "text": "鐘の音みたいに、声も大きそうだな"
+          "face": "surprise",
+          "text": "アダムさんの役が、しゃべらない……！"
         },
         {
           "speaker": "tsumugi",
           "role": "GM／卓の会話",
           "face": "smile",
-          "text": "……頼もしいです。夜の町に、ぴったり"
+          "text": "……鐘の数、ちゃんと数えておきます"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_leaf_mail_aside_adam_adam_leon",
+      "metadata": {
+        "preview_only": true,
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "{pc:adam}／物語",
+          "face": "normal",
+          "text": "……鐘、毎晩ついてる。誰も聞いてないと、思ってた"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_leaf_mail_after_adam_adam_leon",
+      "metadata": {
+        "preview_only": true,
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "レオンの鐘、俺の店にも一つ欲しくなった。……鳴らすのは、たまにでいい"
         }
       ]
     },
@@ -1238,7 +1298,7 @@
           "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "surprise",
-          "text": "えっ、暗い！？ ……あ、ううん。闇も儚くて素敵ね"
+          "text": "えっ、暗い！？ ……あ、ううん。月明かりで、十分よ"
         },
         {
           "speaker": "tsumugi",
@@ -1554,7 +1614,7 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "intense",
-          "text": "描かれた者から、描いた者へ。まさに、原点への手紙だ"
+          "text": "描かれた者から、描いた者へ。……物語が、作者に礼を言うのか"
         },
         {
           "speaker": "tsumugi",
@@ -2856,7 +2916,7 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "林檎パイの隣に、同じ猫。……林檎と猫、どちらが原点か悩ましいな"
+          "text": "パン屋の看板にも、同じ猫。この町は、あの絵描きの線でつながっているな"
         }
       ]
     },
@@ -3110,16 +3170,18 @@
         {
           "id": "yura",
           "name": "ユラ",
-          "title": "灯りともし",
-          "trait": "か細い声の灯りともし。梯子をのぼるのは町一番速い",
-          "likes": "屋台の夜鳴きラーメン",
+          "title": "早口の灯りともし",
+          "trait": "梯子をのぼりながら、町の噂を全部しゃべる。口も足も町一番速い",
+          "likes": "焼きいもの屋台。両手に一本ずつ",
           "stats": {
             "eye": 3,
             "hand": 4,
             "talk": 2,
             "nerve": 2
           },
-          "making": "trpg_leaf_mail_make_hiyori_hiyori_yura"
+          "making": "trpg_leaf_mail_make_hiyori_hiyori_yura",
+          "aside": "trpg_leaf_mail_aside_hiyori_hiyori_yura",
+          "after": "trpg_leaf_mail_after_hiyori_hiyori_yura"
         },
         {
           "id": "neri",
@@ -3142,16 +3204,18 @@
         {
           "id": "leon",
           "name": "レオン",
-          "title": "鐘つき",
-          "trait": "時計塔の鐘をつく。鐘の音と同じくらい、言葉も大きい",
-          "likes": "林檎の砂糖煮。甘さの原点",
+          "title": "無口な鐘つき",
+          "trait": "鐘の数でしか返事をしない。たまの一言は、よく通る",
+          "likes": "町が眠ったあとの鐘楼。鐘の掃除",
           "stats": {
             "eye": 2,
             "hand": 2,
             "talk": 4,
             "nerve": 3
           },
-          "making": "trpg_leaf_mail_make_adam_adam_leon"
+          "making": "trpg_leaf_mail_make_adam_adam_leon",
+          "aside": "trpg_leaf_mail_aside_adam_adam_leon",
+          "after": "trpg_leaf_mail_after_adam_adam_leon"
         },
         {
           "id": "gran",

@@ -29,6 +29,17 @@ if [ -f remake/test/chapter_poems.mjs ] \
   GIT_LFS_SKIP_SMUDGE=1 git sparse-checkout add '/remake/img/ui/poems/'
 fi
 
+# The limited-kuji quick test checks these three stand images. Include them in
+# sparse CI checkouts before hashing and fetching their LFS objects.
+if [ -f remake/test/kuji_limited.mjs ] \
+  && [ ! -f remake/img/shop/equipment-v2/stand_custom_melty.webp ] \
+  && [ "$(git config --bool core.sparseCheckout || true)" = true ]; then
+  GIT_LFS_SKIP_SMUDGE=1 git sparse-checkout add \
+    '/remake/img/shop/equipment-v2/stand_custom_melty.webp' \
+    '/remake/img/shop/equipment-v2/stand_custom_tosu.webp' \
+    '/remake/img/shop/equipment-v2/stand_custom_engraved.webp'
+fi
+
 pointers() {
   find "${dirs[@]}" -type f -size -2k \
     \( -iname '*.png' -o -iname '*.webp' -o -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.gif' -o -path 'assets/audio/dj/*.mp3' \) \

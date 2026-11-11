@@ -77,8 +77,8 @@ await suite("craft-cues-2190", async check => {
       const feedback = await page.locator('[data-test="craft-feedback"]').textContent();
       // #2444 item1: tutorial pull の提供ボタンは「確かめる」。案内文は実ボタン名と一致しなければならない。
       const serveLabel = (await page.locator('[data-test="pull-serve"] .btn-label').textContent()).trim();
-      assert.equal(serveLabel, "確かめる", "tutorial の吸い出しでは提供ボタンは「確かめる」と表示される");
-      assert.match(feedback, /吸うのはここまで.*「確かめる」/);
+      assert.equal(serveLabel, "吸い出しをする", "tutorial の吸い出しでは提供ボタンは「吸い出しをする」と表示される");
+      assert.match(feedback, /吸うのはここまで.*「吸い出しをする」/);
       assert(feedback.includes(`「${serveLabel}」`), "吸い切りの案内文は実際のボタン名を指す");
       assert(!/まだ合わせられる|キープ左|右で微増/.test(feedback));
       assert(await page.locator('[data-test="pull-stop"]').isDisabled());

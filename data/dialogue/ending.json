@@ -62,9 +62,24 @@
           "text": "裏返して、店の名前を書きかけたところで、ペンを止めた。"
         },
         {
+          "speaker": "",
+          "face": "",
+          "text": "三ヶ月目に決めた名前は、もう書けなかった。あれは、俺ひとりの城の名前だった。"
+        },
+        {
           "speaker": "sumi",
           "face": "smile",
           "text": "店はもう、お前が回してる。俺が言うことも、だいぶ減ったな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "スミさん。tonariって、どうしてこの名前なんですか"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "客の隣に座れる店にしたかった、……それだけだ"
         },
         {
           "speaker": "sumi",
@@ -110,7 +125,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "別の日。閉店後、ミントさんの部屋で遅い夕飯を作った。"
+          "text": "別の日。閉店後、栞さんの部屋で遅い夕飯を作った。"
         },
         {
           "speaker": "minto",
@@ -141,6 +156,36 @@
           "speaker": "minto",
           "face": "ura_smile",
           "text": "じゃあ、まず今日のお客さんの話からね"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_normal",
+          "text": "三番の席の人、初めての来店で、ずっとメニューを見てたの"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_normal",
+          "text": "ミントが苦手かもって顔だったから、ピーチを薄く足して出した"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "その人、最後まで吸えた？"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_smile",
+          "text": "うん。帰りに、次は友達を連れてくるって。……はじめくんの今日は？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "鉄仮面さんが、二口目でホースを置かなかった"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_smile",
+          "text": "……ふふ。じゃあ二人とも、今日はいい日だったね"
         }
       ],
       "metadata": {
@@ -154,6 +199,21 @@
           "speaker": "",
           "face": "",
           "text": "シフト明け。つむぎのスケッチブックに、新しい猫が増えていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "店先のメニュー板には、つむぎの描いた猫が、今日もおすすめの横に座っていた。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "smile",
+          "text": "……消されてませんでした。スミさん、毎朝見てるって"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "消さないよ。常連さんも、あの猫で注文決めてるから"
         },
         {
           "speaker": "hajime",
@@ -252,6 +312,21 @@
           "speaker": "",
           "face": "",
           "text": "彼女は頷いて、俺の肩に頭を預けた。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "……明日、手の調子がよかったら、店で一台作る。ハジメっち、客で来て"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "行く。開店前から並ぶ"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "並ばなくていいって。……いちばん奥の席、空けとくから"
         }
       ],
       "metadata": {
@@ -305,6 +380,16 @@
           "speaker": "",
           "face": "",
           "text": "伸びてきた手を握った。どちらも道具を持っていない手だった。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "……手、あったかいねぇ。今日は、これだけで十分"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "マグカップの紅茶が冷めるまで、二人とも、その手を離さなかった。"
         }
       ],
       "metadata": {
@@ -363,6 +448,21 @@
           "speaker": "rio",
           "face": "normal",
           "text": "……うん。楽しみにしてる"
+        },
+        {
+          "speaker": "rio",
+          "face": "smug",
+          "text": "あ、それと。指輪のお店、香りの強いところはやめてね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "どうしてですか"
+        },
+        {
+          "speaker": "rio",
+          "face": "smile",
+          "text": "君の匂いが、分からなくなるから"
         }
       ],
       "metadata": {
@@ -417,6 +517,32 @@
           "speaker": "samechan",
           "face": "normal",
           "text": "見ておらぬなら、喋らぬのじゃ！"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "映画が終わっても、札は「店主休憩中」のままだった。"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "次の休みは、わしがお主の店へ行くのじゃ。客としてな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "いちばんいい席、空けておきます"
+        },
+        {
+          "speaker": "samechan",
+          "face": "ventriloquism",
+          "text": "側近は、通路の幅を測りに行くつもりだ",
+          "voice": "korochan"
+        },
+        {
+          "speaker": "samechan",
+          "face": "surprise",
+          "text": "コロちゃん！　……それは、言わぬ約束じゃ"
         }
       ],
       "metadata": {
@@ -476,6 +602,23 @@
           "speaker": "",
           "face": "",
           "text": "顔を見合わせて笑う。彼女はもう少しだけ、肩の上に残った。"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "……来週、締め日なの。私、たぶん半透明になってる",
+          "inner": "ちゃんと言えた。前の私なら、黙って消えてた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "じゃあ、迎えに行きます。ラーメン屋の前で待ってますね"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "smile",
+          "text": "……味玉、二つね",
+          "inner": "恋人の約束、ラーメンばっかり。でも、それがいい"
         }
       ],
       "metadata": {

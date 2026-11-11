@@ -33,15 +33,19 @@ await suite("board-tutorial", async (check) => {
     assert.equal(await hidane(page), 6);
     assert.equal(await earned(page), 6);
     assert.deepEqual(await flags(page), { starter: true, done: false });
-    for (let n = 0; n < 3; n++) await page.locator(t("board-tutorial-next")).click(); // 盤・火種・3枚の盤
+    assert.match(await page.locator(t("board-tutorial")).textContent(), /1 \/ 10/, "案内は10手順（マスの形・右のパネルを足した。SBD116）");
+    for (let n = 0; n < 4; n++) await page.locator(t("board-tutorial-next")).click(); // 盤・火種・3枚の盤・マスの形
     // 光っているマスを押す → 「灯す」を押す（どちらも押すと次へ進む）
     const target = await page.locator(".gb-node.s-available").first().getAttribute("data-test");
     await page.locator(t(target)).click();
     await page.locator(".gb-light").click();
     await page.locator(`${t(target)}[data-status="pending"]`).waitFor();
     await page.locator(t("board-tutorial-next")).click(); // 続けて灯す
+    assert.match(await page.locator(t("board-tutorial")).textContent(), /近い目的地/, "右のパネルの案内");
+    await page.locator(t("board-tutorial-next")).click(); // 右のパネル
     await page.locator(t("board-tutorial-next")).click(); // 決定
-    await page.locator(t("board-tutorial-done")).click(); // くわしい決まり → 灯しはじめる
+    assert.match(await page.locator(t("board-tutorial")).textContent(), /絵つきの見方/);
+    await page.locator(t("board-tutorial-done")).click(); // 絵つきの見方 → 灯しはじめる
     assert.equal(await page.locator(t("board-tutorial")).count(), 0);
     assert.deepEqual(await flags(page), { starter: true, done: true });
     await page.locator(t("board-decide")).click();
@@ -86,7 +90,9 @@ await suite("board-tutorial", async (check) => {
     await page.locator(t("board-tutorial-next")).click();
     assert.match(await page.locator(t("board-tutorial")).textContent(), /火種の獲得は上限に届いている/);
     await page.locator(t("board-tutorial-next")).click(); // 3枚の盤
-    await page.locator(t("board-tutorial-next")).click(); // 操作待ちは挟まず「？」へ
+    await page.locator(t("board-tutorial-next")).click(); // マスの形
+    await page.locator(t("board-tutorial-next")).click(); // 操作待ちは挟まず、右のパネル
+    await page.locator(t("board-tutorial-next")).click(); // 絵つきの見方（「？」）
     await page.locator(t("board-tutorial-done")).click();
     assert.equal(await page.locator(t("board-tutorial")).count(), 0);
     assert.equal(await earned(page), 198);

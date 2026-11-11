@@ -1,0 +1,977 @@
+/* DS風（上下2画面・256×192 のレトロな様式・LK03）。すべての規則を :root[data-look="retro"] か、
+   DS風の部品（js/looks/retro.js）が body へ足す外枠（.retro-shell / .retro-note）の中に書き、現行の見た目を変えない。
+   寸法は 1ドット = --dpx（外枠の幅 ÷ 268。retro/shell.js が置く）の単位で組む。
+   角丸・ぼかし・半透明の影・グラデーションは使わない（影は 1〜3 ドットずらしたベタ）。 */
+
+/* 外枠を出している間、現行の画面はレイアウトを生かしたまま見えなくする（会話の折り返しが .vn-text の実幅を測るため display は変えない）。
+   新版の縦持ち（LK11）も同じ外枠を使う。 */
+:root:is([data-look="retro"], [data-look="neo"])[data-retro-shell="on"] #viewport { opacity: 0; }
+/* DS風が使える向き・端末では、縦持ちの回転案内を出さない（未対応の場面は現行の画面を小さく見せる）。 */
+:root[data-look="retro"][data-retro="on"] #rotate-hint { display: none; }
+
+/* ---- 新版の縦持ち（LK11・data-retro-paint="hd"）: 上画面は新版と同じ高解像度の絵、下画面と本体のボタンはドット調のまま。
+   外枠を出している間（と、未対応の場面になってから少し待つ間）は回転案内を隠す。待っても未対応なら案内を出す
+   （タッチ端末の縦持ちだけ。base.css の条件）。案内の文は差し替え、元の文は隠すだけにする。 */
+:root[data-look="neo"][data-retro-paint="hd"][data-retro-hint="hold"] #rotate-hint { display: none; }
+:root[data-retro-paint="hd"] #rotate-hint > :not(.retro-hint) { display: none; }
+#rotate-hint > .retro-hint {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  color: #f6f1fa;
+  font-family: var(--font-dot);
+  font-weight: 400;
+  letter-spacing: .04em;
+}
+.retro-hint p { margin: 0; }
+.retro-hint-main { font-size: 18px; }
+.retro-hint-sub { color: #c9a7e6; font-size: 14px; }
+/* 端末を横にする印（絵文字は使わない）: 縦長の枠が横へ倒れる */
+.retro-hint-device {
+  position: relative;
+  width: 26px;
+  height: 44px;
+  margin-bottom: 8px;
+  border: 3px solid #c9a7e6;
+  box-sizing: border-box;
+  animation: retro-hint-turn 2.4s steps(1) infinite;
+}
+.retro-hint-device::after { content: ""; position: absolute; left: 50%; bottom: 3px; width: 6px; height: 3px; margin-left: -3px; background: #c9a7e6; }
+@keyframes retro-hint-turn { 0%, 45% { transform: none; } 50%, 95% { transform: rotate(-90deg); } }
+@media (prefers-reduced-motion: reduce) { .retro-hint-device { animation: none; transform: rotate(-90deg); } }
+/* 外枠を出している間は、隠れている現行の立ち絵の呼吸（新版の .vn-portraits の伸び縮み）を止める。
+   見えない所の動きで、上画面を毎フレーム描き直さないため（見た目は変わらない）。 */
+:root[data-look="neo"][data-retro-shell="on"] body:not(:root) #stage #vn .vn-portraits { animation: none; }
+/* 高解像度の絵は、拡大の補間をふつうに（ドット絵の pixelated にしない） */
+.retro-shell[data-paint="hd"] .retro-canvas,
+.retro-shell[data-paint="hd"] .retro-face canvas { image-rendering: auto; }
+
+.retro-shell {
+  --dpx: 1px;
+  --d: var(--dpx);
+  --r-body: #1b1230;
+  --r-ink: #2a1d3a;
+  --r-deep: #120a1e;
+  --r-black: #0a0612;
+  --r-edge: #4a3863;
+  --r-line: #5a4475;
+  --r-panel: #221534;
+  --r-key: #2e1d45;
+  --r-paper: #fbf7ea;
+  --r-text: #f6f1fa;
+  --r-lilac: #c9a7e6;
+  --r-violet: #6b4a8f;
+  --r-gold: #e3bd6e;
+  --r-dim: #8a7f96;
+  position: fixed;
+  inset: 0;
+  z-index: 990;
+  box-sizing: border-box;
+  padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px) env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px);
+  overflow: hidden;
+  background: var(--r-body);
+  color: var(--r-text);
+  font-family: var(--font-dot);
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: 0;
+  word-break: normal;
+  -webkit-font-smoothing: none;
+  font-synthesis: none;
+  touch-action: manipulation;
+}
+.retro-shell[hidden], .retro-note[hidden], .retro-shell [hidden] { display: none !important; }
+.retro-shell *, .retro-shell *::before, .retro-shell *::after { box-sizing: border-box; }
+.retro-shell button {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  text-align: inherit;
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+}
+.retro-shell button:focus-visible { outline: calc(var(--d) * 2) solid #ffffff; outline-offset: calc(var(--d) * 1); }
+
+/* 位置（left / top）と行の間（--gap-*・整数ドット）は retro/shell.js が、実機の画素の境目に合わせて置く。 */
+.retro-device {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: calc(var(--d) * 268);
+}
+
+/* ---- 状態の細い行 */
+.retro-status {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: calc(var(--d) * 8);
+  width: calc(var(--d) * 252);
+  height: calc(var(--d) * 13);
+  margin-bottom: calc(var(--d) * var(--gap-status, 5));
+  color: var(--r-lilac);
+  font-size: calc(var(--d) * 10);
+  letter-spacing: .08em;
+  white-space: nowrap;
+}
+.retro-status span { overflow: hidden; text-overflow: clip; }
+.retro-status-r { flex: none; text-align: right; }
+
+/* ---- 2つの画面（どちらも 256×192） */
+.retro-screen {
+  position: relative;
+  flex: none;
+  width: calc(var(--d) * 256);
+  height: calc(var(--d) * 192);
+  overflow: hidden;
+  background: #000;
+  box-shadow: 0 0 0 calc(var(--d) * 1.6) var(--r-black), 0 0 0 calc(var(--d) * 3) var(--r-edge);
+}
+.retro-canvas {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  image-rendering: pixelated;
+}
+.retro-top-ui { position: absolute; inset: 0; pointer-events: none; }
+.retro-top-ui > * { pointer-events: auto; }
+
+.retro-hinge {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: calc(var(--d) * 5);
+  height: calc(var(--d) * var(--gap-hinge, 13));
+}
+.retro-hinge i { width: calc(var(--d) * 3); height: calc(var(--d) * 3); background: var(--r-edge); }
+
+.retro-bottom {
+  background-color: #2b1c44;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4' shape-rendering='crispEdges'%3E%3Crect width='4' height='4' fill='%232b1c44'/%3E%3Crect width='2' height='2' fill='%2333224f'/%3E%3Crect x='2' y='2' width='2' height='2' fill='%2333224f'/%3E%3C/svg%3E");
+  background-size: calc(var(--d) * 4) calc(var(--d) * 4);
+  image-rendering: pixelated;
+}
+.retro-pane { position: absolute; inset: 0; }
+
+/* ---- 本体のボタン */
+.retro-keys {
+  flex: none;
+  display: flex;
+  gap: calc(var(--d) * 6);
+  width: calc(var(--d) * 256);
+  height: calc(var(--d) * var(--gap-keys, 27));
+  margin-top: calc(var(--d) * var(--gap-keys-gap, 9));
+  margin-bottom: calc(var(--d) * 3);
+}
+.retro-shell .retro-key {
+  position: relative;
+  flex: 1 1 0;
+  min-width: 0;
+  display: grid;
+  place-items: center;
+  background: var(--r-key);
+  color: var(--r-text);
+  border: calc(var(--d) * 1.4) solid var(--r-black);
+  box-shadow: 0 calc(var(--d) * 3) 0 var(--r-black), inset 0 calc(var(--d) * 1.4) 0 var(--r-edge);
+  font-size: calc(var(--d) * 10);
+  letter-spacing: .06em;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.retro-shell .retro-key:active { transform: translateY(calc(var(--d) * 2)); box-shadow: 0 calc(var(--d) * 1) 0 var(--r-black), inset 0 calc(var(--d) * 1.4) 0 var(--r-edge); }
+.retro-shell .retro-key[aria-pressed="true"] { background: var(--r-gold); color: var(--r-ink); box-shadow: 0 calc(var(--d) * 3) 0 var(--r-black), inset 0 calc(var(--d) * 1.4) 0 #f4dfa8; }
+.retro-shell .retro-key[disabled] { color: var(--r-dim); cursor: default; }
+.retro-key-badge {
+  position: absolute;
+  right: calc(var(--d) * 2);
+  top: calc(var(--d) * 2);
+  min-width: calc(var(--d) * 11);
+  padding: calc(var(--d) * 1) calc(var(--d) * 2);
+  background: var(--r-gold);
+  color: var(--r-ink);
+  font-size: calc(var(--d) * 8);
+  letter-spacing: 0;
+  text-align: center;
+}
+
+.retro-brand {
+  flex: none;
+  height: calc(var(--d) * 8);
+  margin-top: calc(var(--d) * var(--gap-brand-gap, 5));
+  color: #6f5a8e;
+  font-size: calc(var(--d) * 8);
+  letter-spacing: .3em;
+  white-space: nowrap;
+}
+
+/* ---- 上画面に重ねる知らせ（トースト・報酬）と、地図の一言 */
+.retro-notices {
+  position: absolute;
+  left: calc(var(--d) * 4);
+  right: calc(var(--d) * 4);
+  top: calc(var(--d) * 4);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: calc(var(--d) * 2);
+  pointer-events: none;
+}
+.retro-shell[data-scene="map"] .retro-notices { top: calc(var(--d) * 20); }
+.retro-notice {
+  max-width: 100%;
+  padding: calc(var(--d) * 3) calc(var(--d) * 5);
+  background: var(--r-deep);
+  border: calc(var(--d) * 1) solid var(--r-gold);
+  box-shadow: calc(var(--d) * 2) calc(var(--d) * 2) 0 var(--r-black);
+  color: var(--r-text);
+  font-size: calc(var(--d) * 12);
+  line-height: calc(var(--d) * 15);
+}
+.retro-caption {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: calc(var(--d) * 4) calc(var(--d) * 6) calc(var(--d) * 4);
+  background: var(--r-deep);
+  border-top: calc(var(--d) * 1) solid var(--r-lilac);
+  color: var(--r-text);
+  font-size: calc(var(--d) * 12);
+  line-height: calc(var(--d) * 15);
+  pointer-events: none;
+}
+.retro-caption { max-height: calc(var(--d) * 124); overflow: hidden; }
+.retro-caption b { margin-right: calc(var(--d) * 6); color: var(--r-gold); font-weight: 400; }
+
+/* ---- 会話（下画面） */
+.retro-vn { display: flex; flex-direction: column; padding: calc(var(--d) * 9) calc(var(--d) * 7) calc(var(--d) * 6); cursor: pointer; }
+.retro-vn-name {
+  position: relative;
+  z-index: 1;
+  flex: none;
+  align-self: flex-start;
+  max-width: calc(var(--d) * 200);
+  height: calc(var(--d) * 22);
+  margin-bottom: calc(var(--d) * -2);
+  padding: 0 calc(var(--d) * 8);
+  background: var(--r-violet);
+  border: calc(var(--d) * 2) solid var(--r-ink);
+  color: #ffffff;
+  font-size: calc(var(--d) * 16);
+  line-height: calc(var(--d) * 18);
+  white-space: nowrap;
+  overflow: hidden;
+}
+.retro-vn-name[hidden] + .retro-vn-win { margin-top: calc(var(--d) * 20); }
+.retro-vn-win {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: calc(var(--d) * 44);
+  margin-right: calc(var(--d) * 2);
+  padding: calc(var(--d) * 9) calc(var(--d) * 3) calc(var(--d) * 4) calc(var(--d) * 9);
+  background: var(--r-paper);
+  border: calc(var(--d) * 2) solid var(--r-ink);
+  box-shadow: calc(var(--d) * 4) calc(var(--d) * 4) 0 var(--r-deep);
+  color: var(--r-ink);
+  overflow: hidden;
+}
+.retro-vn-text, .retro-vn-inner {
+  font-size: calc(var(--d) * 16);
+  line-height: calc(var(--d) * 22);
+  white-space: normal;
+  word-break: normal;
+  overflow-wrap: anywhere;
+  line-break: strict;
+}
+.retro-vn-inner { margin-top: calc(var(--d) * 2); color: #b03a6c; }
+.retro-gap { display: none; }
+.retro-vn[data-size="small"] :is(.retro-vn-text, .retro-vn-inner) { font-size: calc(var(--d) * 12); line-height: calc(var(--d) * 16); }
+.retro-vn[data-kind="thought"] .retro-vn-text { color: #3d4a7c; }
+.retro-vn[data-kind="reward"] .retro-vn-text { color: #8a5a10; }
+.retro-shell .tx-imp { color: #a8691a; font-weight: 400; text-shadow: none; }
+.retro-shell :is(.tx-warn, .tx-red) { color: #b3261e; font-weight: 400; }
+.retro-shell :is(.tx-hint, .tx-blue) { color: #2456a6; }
+.retro-shell .tx-sub { color: #6b5a80; font-size: .75em; }
+.retro-shell .tx-voice { color: #6b5a80; font-size: 1em; text-shadow: none; }
+.retro-vn-next {
+  position: absolute;
+  right: calc(var(--d) * 6);
+  bottom: calc(var(--d) * 6);
+  width: 0;
+  height: 0;
+  border-left: calc(var(--d) * 6) solid transparent;
+  border-right: calc(var(--d) * 6) solid transparent;
+  border-top: calc(var(--d) * 8) solid #a8691a;
+  animation: retro-blink 1s steps(1) infinite;
+}
+@keyframes retro-blink { 50% { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .retro-vn-next { animation: none; } }
+.retro-vn-tip {
+  flex: none;
+  height: calc(var(--d) * 27);
+  padding-top: calc(var(--d) * 12);
+  color: var(--r-lilac);
+  font-size: calc(var(--d) * 12);
+  text-align: center;
+  white-space: nowrap;
+}
+.retro-vn-choices {
+  flex: 0 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--d) * 4);
+  min-height: 0;
+  max-height: calc(var(--d) * 124);
+  margin-top: calc(var(--d) * 8);
+  padding: 0 calc(var(--d) * 3) calc(var(--d) * 3) 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+  scrollbar-width: none;
+}
+.retro-vn-choices::-webkit-scrollbar { display: none; }
+.retro-shell .retro-choice {
+  flex: none;
+  display: block;
+  width: 100%;
+  min-height: calc(var(--d) * 24);
+  padding: calc(var(--d) * 4) calc(var(--d) * 8);
+  background: var(--r-gold);
+  border: calc(var(--d) * 2) solid var(--r-ink);
+  box-shadow: calc(var(--d) * 3) calc(var(--d) * 3) 0 var(--r-deep);
+  color: var(--r-ink);
+  font-size: calc(var(--d) * 12);
+  line-height: calc(var(--d) * 15);
+  text-align: left;
+  overflow-wrap: anywhere;
+  line-break: strict;
+}
+.retro-shell .retro-choice:active { transform: translate(calc(var(--d) * 2), calc(var(--d) * 2)); box-shadow: calc(var(--d) * 1) calc(var(--d) * 1) 0 var(--r-deep); }
+.retro-shell .retro-choice[aria-disabled="true"] { background: var(--r-panel); border-color: var(--r-line); color: var(--r-dim); box-shadow: none; cursor: default; }
+.retro-shell .retro-choice[data-hint]::before { content: "◆ "; color: var(--r-violet); }
+.retro-choice .vn-choice-reason { display: block; position: static; margin: 0; padding: 0; background: none; border: 0; color: #b3261e; font-size: 1em; }
+.retro-vn[data-choosing="true"] .retro-vn-tip { display: none; }
+.retro-vn[data-choosing="true"] .retro-vn-win { flex: 1 1 0; }
+.retro-vn[data-choosing="true"] .retro-vn-next { display: none; }
+
+/* ---- 地図（上画面の帯と目印） */
+.retro-maphead {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: calc(var(--d) * 6);
+  height: calc(var(--d) * 16);
+  padding: 0 calc(var(--d) * 6);
+  background: var(--r-deep);
+  color: var(--r-text);
+  font-size: calc(var(--d) * 12);
+  white-space: nowrap;
+}
+.retro-maphead-slot { color: var(--r-lilac); }
+.retro-maphead-money { color: var(--r-gold); }
+.retro-gauge { display: flex; align-items: center; gap: calc(var(--d) * 3); color: #e56b8c; }
+.retro-gauge svg { display: block; width: calc(var(--d) * 7); height: calc(var(--d) * 6); }
+.retro-gauge i { position: relative; display: block; width: calc(var(--d) * 34); height: calc(var(--d) * 6); background: var(--r-black); border: calc(var(--d) * 1) solid var(--r-lilac); }
+.retro-gauge i b { position: absolute; left: 0; top: 0; bottom: 0; background: #57c79a; }
+.retro-gauge[data-health="yellow"] i b { background: #f6c93b; }
+.retro-gauge[data-health="red"] i b { background: #d9342b; }
+.retro-markers { position: absolute; inset: 0; pointer-events: none; }
+.retro-shell .retro-marker {
+  position: absolute;
+  width: calc(var(--d) * 20);
+  height: calc(var(--d) * 20);
+  margin: calc(var(--d) * -10) 0 0 calc(var(--d) * -10);
+  pointer-events: auto;
+}
+.retro-marker::before {
+  content: "";
+  position: absolute;
+  left: calc(var(--d) * 5);
+  top: calc(var(--d) * 5);
+  width: calc(var(--d) * 10);
+  height: calc(var(--d) * 10);
+  background: var(--r-paper);
+  border: calc(var(--d) * 2) solid var(--r-ink);
+}
+.retro-marker[data-off="true"]::before { background: var(--r-dim); }
+.retro-marker[data-sel="true"] { z-index: 2; }
+.retro-marker[data-sel="true"]::before {
+  left: calc(var(--d) * 2);
+  top: calc(var(--d) * 2);
+  width: calc(var(--d) * 16);
+  height: calc(var(--d) * 16);
+  background: var(--r-gold);
+  border: calc(var(--d) * 2) solid var(--r-ink);
+  outline: calc(var(--d) * 2) solid #ffffff;
+  box-shadow: inset 0 0 0 calc(var(--d) * 1) var(--r-ink);
+}
+.retro-maplabel {
+  position: absolute;
+  z-index: 3;
+  height: calc(var(--d) * 18);
+  padding: 0 calc(var(--d) * 5);
+  background: var(--r-gold);
+  border: calc(var(--d) * 2) solid var(--r-ink);
+  color: var(--r-ink);
+  font-size: calc(var(--d) * 12);
+  line-height: calc(var(--d) * 14);
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+/* ---- 地図（下画面の一覧と決定ボタン） */
+.retro-map { display: flex; flex-direction: column; padding: calc(var(--d) * 6) calc(var(--d) * 6) calc(var(--d) * 5); }
+.retro-list {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--d) * 2);
+  min-height: 0;
+  padding-right: calc(var(--d) * 3);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+  scrollbar-width: none;
+}
+.retro-list::-webkit-scrollbar { display: none; }
+.retro-shell .retro-row {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: calc(var(--d) * 5);
+  width: 100%;
+  height: calc(var(--d) * 26);
+  padding: 0 calc(var(--d) * 4) 0 calc(var(--d) * 1);
+  background: var(--r-panel);
+  border: calc(var(--d) * 1) solid var(--r-line);
+  color: var(--r-text);
+  white-space: nowrap;
+  overflow: hidden;
+}
+.retro-shell .retro-row[aria-pressed="true"] { background: var(--r-paper); border: calc(var(--d) * 2) solid var(--r-ink); box-shadow: calc(var(--d) * 3) calc(var(--d) * 3) 0 var(--r-deep); padding-left: 0; color: var(--r-ink); }
+.retro-row-faces { flex: none; display: flex; gap: calc(var(--d) * 1); min-width: calc(var(--d) * 24); height: calc(var(--d) * 24); }
+.retro-face { flex: none; display: grid; place-items: center; width: calc(var(--d) * 24); height: calc(var(--d) * 24); background: var(--r-deep); color: var(--r-lilac); font-size: calc(var(--d) * 12); }
+.retro-face canvas { display: block; width: 100%; height: 100%; image-rendering: pixelated; }
+.retro-row-name { flex: 1 1 auto; min-width: 0; overflow: hidden; font-size: calc(var(--d) * 16); line-height: calc(var(--d) * 22); }
+.retro-row-sub { flex: none; color: var(--r-lilac); font-size: calc(var(--d) * 12); }
+.retro-row[aria-pressed="true"] .retro-row-sub { color: var(--r-violet); }
+.retro-row-badge { flex: none; display: grid; place-items: center; min-width: calc(var(--d) * 14); height: calc(var(--d) * 14); padding: 0 calc(var(--d) * 2); background: var(--r-gold); border: calc(var(--d) * 1) solid var(--r-ink); color: var(--r-ink); font-size: calc(var(--d) * 12); font-style: normal; }
+.retro-row[data-off="true"] :is(.retro-row-name, .retro-row-sub) { color: var(--r-dim); }
+.retro-row[data-off="true"] .retro-row-faces { opacity: .55; }
+.retro-more {
+  position: absolute;
+  right: calc(var(--d) * 1);
+  width: 0;
+  height: 0;
+  border-left: calc(var(--d) * 4) solid transparent;
+  border-right: calc(var(--d) * 4) solid transparent;
+  pointer-events: none;
+  animation: retro-blink 1s steps(1) infinite;
+}
+.retro-more-up { top: calc(var(--d) * 1); border-bottom: calc(var(--d) * 5) solid var(--r-gold); }
+.retro-more-down { bottom: calc(var(--d) * 44); border-top: calc(var(--d) * 5) solid var(--r-gold); }
+@media (prefers-reduced-motion: reduce) { .retro-more { animation: none; } }
+.retro-shell .retro-go {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: calc(100% - var(--d) * 3);
+  height: calc(var(--d) * 30);
+  margin-top: calc(var(--d) * 6);
+  margin-bottom: calc(var(--d) * 3);
+  background: var(--r-gold);
+  border: calc(var(--d) * 2) solid var(--r-ink);
+  box-shadow: calc(var(--d) * 3) calc(var(--d) * 3) 0 var(--r-deep);
+  color: var(--r-ink);
+  font-size: calc(var(--d) * 16);
+  white-space: nowrap;
+  overflow: hidden;
+}
+.retro-shell .retro-go:active { transform: translate(calc(var(--d) * 2), calc(var(--d) * 2)); box-shadow: calc(var(--d) * 1) calc(var(--d) * 1) 0 var(--r-deep); }
+.retro-shell .retro-go[aria-disabled="true"] { background: var(--r-panel); border-color: var(--r-line); box-shadow: none; color: var(--r-dim); font-size: calc(var(--d) * 12); cursor: default; transform: none; }
+
+/* ---- タイトル（下画面） */
+.retro-title { display: flex; flex-direction: column; justify-content: center; gap: calc(var(--d) * 6); padding: calc(var(--d) * 8) calc(var(--d) * 10) calc(var(--d) * 10) calc(var(--d) * 7); }
+.retro-shell .retro-menu {
+  flex: 0 1 calc(var(--d) * 34);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: calc(var(--d) * 6);
+  min-height: calc(var(--d) * 24);
+  padding: 0 calc(var(--d) * 10);
+  background: var(--r-paper);
+  border: calc(var(--d) * 2) solid var(--r-ink);
+  box-shadow: calc(var(--d) * 3) calc(var(--d) * 3) 0 var(--r-deep);
+  color: var(--r-ink);
+  white-space: nowrap;
+  overflow: hidden;
+}
+.retro-menu b { font-weight: 400; font-size: calc(var(--d) * 16); letter-spacing: .06em; }
+.retro-menu small { color: var(--r-violet); font-size: calc(var(--d) * 12); }
+.retro-shell .retro-menu:active { transform: translate(calc(var(--d) * 2), calc(var(--d) * 2)); box-shadow: calc(var(--d) * 1) calc(var(--d) * 1) 0 var(--r-deep); }
+.retro-shell .retro-menu[disabled] { background: var(--r-panel); border: calc(var(--d) * 1) solid var(--r-line); box-shadow: none; color: var(--r-dim); cursor: default; transform: none; }
+.retro-menu[disabled] small { color: var(--r-dim); }
+
+.retro-toptext {
+  position: absolute;
+  left: calc(var(--d) * 8);
+  top: calc(var(--d) * 78);
+  padding: calc(var(--d) * 4) calc(var(--d) * 6);
+  background: var(--r-deep);
+  border: calc(var(--d) * 1) solid var(--r-lilac);
+  color: var(--r-text);
+  font-size: calc(var(--d) * 16);
+  line-height: calc(var(--d) * 20);
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+/* ---- 覆い（場面転換・日付の札・章タイトル・詩・登場カットイン）: 上画面は暗くして、読み取った文字だけを出す */
+.retro-covertext, .retro-cover-lines {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: calc(var(--d) * 4);
+  padding: calc(var(--d) * 8);
+  text-align: center;
+  pointer-events: none;
+}
+.retro-covertext { position: absolute; inset: 0; }
+.retro-cover-lines { width: 100%; }
+.retro-cover-line { max-width: 100%; color: var(--r-lilac); font-size: calc(var(--d) * 12); line-height: calc(var(--d) * 16); overflow-wrap: anywhere; }
+.retro-cover-line.big { color: var(--r-text); font-size: calc(var(--d) * 16); line-height: calc(var(--d) * 22); }
+.retro-cover { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: calc(var(--d) * 8); cursor: pointer; }
+.retro-cover .retro-vn-tip { position: absolute; left: 0; right: 0; bottom: calc(var(--d) * 4); }
+.retro-wait { display: flex; gap: calc(var(--d) * 6); }
+.retro-wait i { width: calc(var(--d) * 4); height: calc(var(--d) * 4); background: var(--r-line); animation: retro-wait 1.2s steps(1) infinite; }
+.retro-wait i:nth-child(2) { animation-delay: .4s; }
+.retro-wait i:nth-child(3) { animation-delay: .8s; }
+@keyframes retro-wait { 0%, 33% { background: #c9a7e6; } 34%, 100% { background: #5a4475; } }
+@media (prefers-reduced-motion: reduce) { .retro-wait i { animation: none; } }
+/* 登場カットインの言葉（名前・ふりがな・肩書き・ひと言・好きなフレーバー） */
+.retro-profile { display: flex; flex-direction: column; align-items: flex-start; width: 100%; }
+.retro-profile-ruby { margin: 0 0 calc(var(--d) * 2) calc(var(--d) * 9); color: var(--r-lilac); font-size: calc(var(--d) * 8); letter-spacing: .1em; }
+.retro-profile-name {
+  max-width: 100%;
+  padding: calc(var(--d) * 1) calc(var(--d) * 8) calc(var(--d) * 3);
+  background: var(--r-violet);
+  border: calc(var(--d) * 2) solid var(--r-ink);
+  color: #ffffff;
+  font-size: calc(var(--d) * 16);
+  line-height: calc(var(--d) * 20);
+}
+.retro-profile-title { margin: calc(var(--d) * 5) 0 0 calc(var(--d) * 2); color: var(--r-gold); font-size: calc(var(--d) * 12); line-height: calc(var(--d) * 15); }
+.retro-profile-line {
+  align-self: stretch;
+  margin: calc(var(--d) * 6) calc(var(--d) * 4) 0 0;
+  padding: calc(var(--d) * 6) calc(var(--d) * 8);
+  background: var(--r-paper);
+  border: calc(var(--d) * 2) solid var(--r-ink);
+  box-shadow: calc(var(--d) * 4) calc(var(--d) * 4) 0 var(--r-deep);
+  color: var(--r-ink);
+  font-size: calc(var(--d) * 12);
+  line-height: calc(var(--d) * 16);
+  overflow-wrap: anywhere;
+}
+.retro-profile-flavor { display: flex; gap: calc(var(--d) * 6); margin: calc(var(--d) * 9) 0 0 calc(var(--d) * 2); color: var(--r-lilac); font-size: calc(var(--d) * 12); }
+.retro-profile-flavor b { color: var(--r-text); font-weight: 400; }
+
+/* ---- ボタンが並ぶだけの画面（tonari の行動選びなど） */
+.retro-shell .retro-option {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: calc(var(--d) * 2);
+  width: calc(100% - var(--d) * 3);
+  min-height: calc(var(--d) * 40);
+  margin-bottom: calc(var(--d) * 4);
+  padding: calc(var(--d) * 4) calc(var(--d) * 8);
+  background: var(--r-paper);
+  border: calc(var(--d) * 2) solid var(--r-ink);
+  box-shadow: calc(var(--d) * 3) calc(var(--d) * 3) 0 var(--r-deep);
+  color: var(--r-ink);
+  text-align: left;
+}
+.retro-option b { font-weight: 400; font-size: calc(var(--d) * 16); line-height: calc(var(--d) * 18); }
+.retro-option small { color: var(--r-violet); font-size: calc(var(--d) * 12); line-height: calc(var(--d) * 14); overflow-wrap: anywhere; }
+.retro-shell .retro-option:active { transform: translate(calc(var(--d) * 2), calc(var(--d) * 2)); box-shadow: calc(var(--d) * 1) calc(var(--d) * 1) 0 var(--r-deep); }
+.retro-shell .retro-option[disabled] { background: var(--r-panel); border: calc(var(--d) * 1) solid var(--r-line); box-shadow: none; color: var(--r-dim); cursor: default; transform: none; }
+.retro-option[disabled] small { color: var(--r-dim); }
+
+/* ---- 新版の縦持ち: 地図の案内の箱のボタン（駅の行き先・配達メモなど）と、場面カード・確かめの小窓の主なボタン */
+.retro-shell .retro-row.retro-row-action { justify-content: center; background: var(--r-gold); border: calc(var(--d) * 2) solid var(--r-ink); color: var(--r-ink); }
+.retro-shell .retro-row.retro-row-action.alt { background: var(--r-panel); border: calc(var(--d) * 1) solid var(--r-line); color: var(--r-text); }
+.retro-shell .retro-row.retro-row-action[disabled] { background: var(--r-panel); border-color: var(--r-line); color: var(--r-dim); cursor: default; }
+.retro-row-action .retro-row-name { flex: 0 1 auto; text-align: center; font-size: calc(var(--d) * 12); }
+.retro-shell .retro-option.primary { background: var(--r-gold); }
+.retro-submenu[data-dense="true"] .retro-option { min-height: calc(var(--d) * 26); margin-bottom: calc(var(--d) * 3); padding: calc(var(--d) * 3) calc(var(--d) * 8); }
+.retro-submenu[data-dense="true"] .retro-option b { font-size: calc(var(--d) * 12); line-height: calc(var(--d) * 15); }
+.retro-shell .retro-option.primary small { color: var(--r-ink); }
+.retro-menu-lead {
+  flex: none;
+  width: calc(100% - var(--d) * 3);
+  margin: 0 0 calc(var(--d) * 4);
+  padding: calc(var(--d) * 4) calc(var(--d) * 6);
+  background: var(--r-deep);
+  border: calc(var(--d) * 1) solid var(--r-lilac);
+  color: var(--r-text);
+  font-size: calc(var(--d) * 12);
+  line-height: calc(var(--d) * 15);
+  overflow-wrap: anywhere;
+}
+
+/* ---- シート（全画面 MENU・LIME・小窓・会話の LOG。retro/sheet.js が現行の DOM をドット調の部品へ写す）
+   写しの部品は rs-*、元のクラスは s-元の名前。字は 12 ドット以上、押せる物は 22 ドット以上。 */
+.retro-sheet {
+  display: flex;
+  flex-direction: column;
+  color: var(--r-text);
+  font-size: calc(var(--d) * 12);
+  line-height: calc(var(--d) * 15);
+  overflow-wrap: anywhere;
+}
+/* 上画面と下画面をつないだ縦長のシート（LIME・小窓・LOG）。位置と大きさは sheet.js が画面の位置から置く */
+.retro-sheet[data-tall="true"] {
+  z-index: 2;
+  background-color: #2b1c44;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4' shape-rendering='crispEdges'%3E%3Crect width='4' height='4' fill='%232b1c44'/%3E%3Crect width='2' height='2' fill='%2333224f'/%3E%3Crect x='2' y='2' width='2' height='2' fill='%2333224f'/%3E%3C/svg%3E");
+  background-size: calc(var(--d) * 4) calc(var(--d) * 4);
+  box-shadow: 0 0 0 calc(var(--d) * 1.6) var(--r-black), 0 0 0 calc(var(--d) * 3) var(--r-edge);
+}
+/* 知らせ（セーブした・報酬など）は縦長のシートの上にも出す */
+.retro-shell[data-scene="sheet"] .retro-notices { z-index: 3; top: auto; bottom: calc(var(--d) * 4); }
+.retro-shell[data-scene="sheet"] .retro-key { flex: 1 1 auto; padding: 0 calc(var(--d) * 3); letter-spacing: 0; }
+.retro-sheet .rs-region { flex: none; }
+.retro-sheet .rs-head {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--d) * 6);
+  min-height: calc(var(--d) * 26);
+  padding: calc(var(--d) * 3) calc(var(--d) * 6);
+  background: var(--r-deep);
+  border-bottom: calc(var(--d) * 1) solid var(--r-lilac);
+}
+.retro-sheet .rs-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--d) * 4);
+  padding: calc(var(--d) * 5) calc(var(--d) * 6) calc(var(--d) * 8);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+  scrollbar-width: none;
+}
+.retro-sheet .rs-body::-webkit-scrollbar { display: none; }
+.retro-sheet .rs-foot {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(var(--d) * 4);
+  padding: calc(var(--d) * 4) calc(var(--d) * 6) calc(var(--d) * 5);
+  background: var(--r-deep);
+  border-top: calc(var(--d) * 1) solid var(--r-line);
+}
+.retro-sheet .rs-foot > * { flex: 1 1 100%; }
+.retro-shell .retro-sheet .rs-foot > .rs-btn { flex: 1 1 0; justify-content: center; align-items: center; text-align: center; }
+.retro-shell .retro-sheet[data-kind="lime"] .rs-foot > .rs-btn { flex: 1 1 100%; justify-content: flex-start; align-items: flex-start; text-align: left; }
+.retro-sheet .rs-row { display: flex; flex-wrap: wrap; align-items: center; gap: calc(var(--d) * 3) calc(var(--d) * 6); }
+.retro-sheet .rs-col { display: flex; flex-direction: column; gap: calc(var(--d) * 3); }
+.retro-sheet .rs-inline { display: inline-flex; }
+.retro-sheet .rs-row > .rs-inl { flex: 0 1 auto; min-width: 0; }
+.retro-sheet .rs-h { color: var(--r-gold); }
+.retro-sheet .rs-h1, .retro-sheet .rs-h2 { font-size: calc(var(--d) * 16); line-height: calc(var(--d) * 19); }
+.retro-sheet .rs-h3, .retro-sheet .rs-h4 { font-size: calc(var(--d) * 12); line-height: calc(var(--d) * 15); }
+.retro-sheet img { display: block; max-width: 100%; height: auto; }
+.retro-shell[data-paint="dot"] .retro-sheet img { image-rendering: pixelated; }
+/* ボタン（元のボタン・タブ・行） */
+.retro-shell .retro-sheet .rs-btn,
+.retro-shell .retro-sheet .rs-check {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: calc(var(--d) * 3) calc(var(--d) * 6);
+  min-height: calc(var(--d) * 22);
+  padding: calc(var(--d) * 3) calc(var(--d) * 6);
+  background: var(--r-panel);
+  border: calc(var(--d) * 1) solid var(--r-line);
+  box-shadow: calc(var(--d) * 2) calc(var(--d) * 2) 0 var(--r-black);
+  color: var(--r-text);
+  text-align: left;
+}
+.retro-shell .retro-sheet .rs-btn.rs-row { flex-wrap: wrap; }
+.retro-shell .retro-sheet .rs-btn.rs-col { flex-direction: column; align-items: stretch; }
+.retro-shell .retro-sheet .rs-btn:active:not([disabled]),
+.retro-shell .retro-sheet .rs-check:active:not([disabled]) { transform: translate(calc(var(--d) * 1), calc(var(--d) * 1)); box-shadow: calc(var(--d) * 1) calc(var(--d) * 1) 0 var(--r-black); }
+.retro-shell .retro-sheet .rs-btn.s-primary { background: var(--r-gold); border: calc(var(--d) * 2) solid var(--r-ink); color: var(--r-ink); }
+.retro-shell .retro-sheet .rs-btn:is([aria-pressed="true"], [aria-checked="true"], [aria-selected="true"], .s-on),
+.retro-shell .retro-sheet .rs-check[aria-checked="true"] { background: var(--r-gold); border-color: var(--r-ink); color: var(--r-ink); }
+.retro-shell .retro-sheet .rs-btn[aria-expanded="true"] { border: calc(var(--d) * 2) solid var(--r-gold); }
+.retro-shell .retro-sheet :is(.rs-btn, .rs-check)[disabled] { background: var(--r-deep); border-color: var(--r-line); box-shadow: none; color: var(--r-dim); cursor: default; }
+.retro-shell .retro-sheet .rs-check { justify-content: center; min-width: calc(var(--d) * 44); }
+.retro-sheet .rs-select { display: flex; flex-wrap: wrap; gap: calc(var(--d) * 3); }
+.retro-sheet .rs-range { width: 100%; height: calc(var(--d) * 22); margin: 0; accent-color: var(--r-gold); }
+/* 量の帯・段の印・ハート */
+.retro-sheet .rs-gauge { position: relative; display: block; flex: 1 1 calc(var(--d) * 60); min-width: calc(var(--d) * 40); height: calc(var(--d) * 6); background: var(--r-black); border: calc(var(--d) * 1) solid var(--r-line); }
+.retro-sheet .rs-col > .rs-gauge { flex: none; width: 100%; }
+.retro-sheet .rs-meter { position: relative; display: block; flex: 1 1 calc(var(--d) * 60); min-width: calc(var(--d) * 40); height: calc(var(--d) * 6); background: var(--r-black); border: calc(var(--d) * 1) solid var(--r-line); }
+.retro-sheet .s-flavor-axis { display: grid; grid-template-columns: calc(var(--d) * 60) 1fr; align-items: center; gap: calc(var(--d) * 6); }
+.retro-sheet .s-flavor-guide-tags { gap: calc(var(--d) * 3); }
+.retro-sheet .s-flavor-guide-tags > .rs-inl { padding: 0 calc(var(--d) * 3); border: calc(var(--d) * 1) solid var(--r-line); color: var(--r-lilac); }
+.retro-sheet .s-flavor-guide-caption { color: var(--r-dim); }
+.retro-sheet .rs-fill { position: absolute; left: 0; top: 0; bottom: 0; background: var(--r-lilac); }
+.retro-sheet .rs-fill.s-today { background: var(--r-violet); }
+.retro-sheet .rs-pips { display: inline-flex; align-items: center; gap: calc(var(--d) * 1); }
+.retro-sheet .rs-pip { display: block; width: calc(var(--d) * 4); height: calc(var(--d) * 4); background: var(--r-line); }
+.retro-sheet .rs-pip.on { background: var(--r-gold); }
+.retro-sheet .rs-pip.heart { width: auto; height: auto; background: none; font-style: normal; }
+.retro-sheet .rs-pip.heart::before { content: "\2661"; color: var(--r-dim); }
+.retro-sheet .rs-pip.heart.on::before { content: "\2665"; color: #ff8fb4; }
+
+/* MENU（下画面）: 上の帯の要約・見出し・札・行 */
+.retro-sheet[data-kind="menu"] .rs-body { padding: calc(var(--d) * 4) calc(var(--d) * 5) calc(var(--d) * 8); }
+.retro-sheet .s-dm-summary { padding: calc(var(--d) * 3) calc(var(--d) * 5); background: var(--r-deep); border: calc(var(--d) * 1) solid var(--r-line); gap: calc(var(--d) * 2) calc(var(--d) * 8); }
+.retro-sheet .s-dm-sum { display: inline-flex; gap: calc(var(--d) * 3); align-items: center; }
+.retro-sheet .s-dm-sum :is(.rs-blk, .rs-inl) { display: inline; }
+.retro-sheet .s-dm-sum > .rs-inl:first-child { color: var(--r-lilac); }
+.retro-sheet .s-dm-amber { color: var(--r-gold); }
+.retro-sheet .s-dm-heading { justify-content: space-between; }
+.retro-shell .retro-sheet .rs-btn.s-dm-help { min-width: calc(var(--d) * 22); justify-content: center; padding: calc(var(--d) * 3) 0; }
+.retro-sheet .s-dm-tab-help, .retro-sheet .s-dm-health-tip, .retro-sheet .s-dm-note { padding: calc(var(--d) * 3) calc(var(--d) * 5); background: var(--r-deep); border: calc(var(--d) * 1) solid var(--r-lilac); }
+.retro-sheet .s-dm-card { padding: calc(var(--d) * 4); background: rgba(10, 6, 18, 0.55); border: calc(var(--d) * 1) solid var(--r-line); }
+.retro-sheet .s-dm-card-head, .retro-sheet .s-dm-strong { color: var(--r-gold); }
+.retro-sheet .s-dm-chip { padding: 0 calc(var(--d) * 3); border: calc(var(--d) * 1) solid var(--r-line); color: var(--r-lilac); }
+.retro-sheet .s-dm-chip.s-on { border-color: var(--r-gold); color: var(--r-gold); }
+.retro-sheet .s-dm-face, .retro-sheet .s-ss-face { flex: none; width: calc(var(--d) * 24); height: calc(var(--d) * 24); object-fit: cover; }
+.retro-sheet .s-dm-face.s-ph { display: grid; place-items: center; background: var(--r-ink); color: var(--r-lilac); }
+.retro-shell .retro-sheet .rs-btn.s-dm-person { width: 100%; }
+.retro-sheet .s-dm-person-item { gap: calc(var(--d) * 2); }
+.retro-sheet .s-dm-person-detail { padding: calc(var(--d) * 3) calc(var(--d) * 6); background: var(--r-deep); border-left: calc(var(--d) * 2) solid var(--r-gold); }
+.retro-sheet .s-dm-system { display: flex; flex-direction: column; align-items: stretch; gap: calc(var(--d) * 4); }
+.retro-shell .retro-sheet .s-dm-system > .rs-btn { justify-content: center; align-items: center; text-align: center; }
+.retro-sheet .s-dm-keepsake img { width: calc(var(--d) * 48); }
+.retro-shell .retro-sheet .rs-btn.s-keepsake-viewer { flex-direction: column; align-items: center; justify-content: center; width: 100%; }
+/* チェキの拡大: 絵は上画面に大きく出すので、下画面は「タップで閉じる」だけ */
+.retro-sheet .s-keepsake-viewer img { display: none; }
+.retro-sheet .s-dm-lv { display: inline-flex; flex-direction: row; gap: calc(var(--d) * 3); align-items: baseline; }
+.retro-sheet .s-dm-big, .retro-sheet .s-dm-lv > b { font-size: calc(var(--d) * 16); }
+
+/* LIME（縦長のシート）: 見出し・トーク一覧・吹き出し・返信の選択肢 */
+.retro-sheet[data-kind="lime"] .rs-head { color: var(--r-text); }
+.retro-sheet .s-lime-logo { color: #8fe3a8; }
+.retro-shell .retro-sheet .rs-btn.s-lime-back { min-width: calc(var(--d) * 26); justify-content: center; }
+.retro-sheet .s-lime-face { flex: none; width: calc(var(--d) * 22); height: calc(var(--d) * 22); object-fit: cover; }
+.retro-sheet .s-lime-face.s-blank { display: grid; place-items: center; background: var(--r-ink); color: var(--r-lilac); }
+.retro-sheet[data-kind="lime"] .rs-body { gap: calc(var(--d) * 5); }
+.retro-shell .retro-sheet .rs-btn.s-lime-chat-row { flex-wrap: nowrap; width: 100%; }
+.retro-sheet .s-lcr-face { position: relative; flex: none; }
+.retro-sheet .s-lcr-dot { position: absolute; right: calc(var(--d) * -2); top: calc(var(--d) * -2); width: calc(var(--d) * 6); height: calc(var(--d) * 6); background: #ff5a6e; border: calc(var(--d) * 1) solid var(--r-black); }
+.retro-sheet .s-lcr-main { flex: 1 1 auto; min-width: 0; }
+.retro-sheet .s-lcr-name { color: var(--r-gold); }
+.retro-sheet .s-lcr-preview { color: var(--r-lilac); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.retro-sheet .s-lcr-side { flex: none; align-items: flex-end; color: var(--r-dim); }
+.retro-sheet .s-lcr-tag { padding: 0 calc(var(--d) * 2); background: var(--r-gold); color: var(--r-ink); }
+.retro-sheet .s-lime-row { flex-wrap: nowrap; align-items: flex-start; gap: calc(var(--d) * 4); }
+.retro-sheet .s-lime-row.s-me { flex-direction: row-reverse; }
+.retro-sheet .s-lime-bubble, .retro-sheet .s-lime-media {
+  max-width: 78%;
+  padding: calc(var(--d) * 4) calc(var(--d) * 6);
+  background: var(--r-paper);
+  border: calc(var(--d) * 1) solid var(--r-ink);
+  box-shadow: calc(var(--d) * 2) calc(var(--d) * 2) 0 var(--r-black);
+  color: var(--r-ink);
+}
+.retro-sheet .s-lime-row.s-me .s-lime-bubble { background: #bfe8b0; }
+.retro-sheet .s-typing .s-lime-bubble::after { content: "…"; }
+.retro-sheet .s-lime-note { align-self: center; color: var(--r-dim); text-align: center; }
+.retro-sheet .s-lime-note.s-day { padding: 0 calc(var(--d) * 6); border: calc(var(--d) * 1) solid var(--r-line); }
+.retro-sheet .s-lime-tip, .retro-sheet .s-lime-hint { padding: calc(var(--d) * 3) calc(var(--d) * 5); background: var(--r-deep); border: calc(var(--d) * 1) solid var(--r-lilac); }
+.retro-sheet .s-lime-empty { color: var(--r-dim); text-align: center; }
+.retro-sheet .s-lime-actions { gap: calc(var(--d) * 4); }
+.retro-shell .retro-sheet .rs-btn.s-lime-reply { width: 100%; background: var(--r-paper); border: calc(var(--d) * 2) solid var(--r-ink); color: var(--r-ink); }
+.retro-shell .retro-sheet .rs-btn.s-lime-reply.s-ghost { background: var(--r-panel); border: calc(var(--d) * 1) solid var(--r-line); color: var(--r-text); justify-content: center; }
+/* LIME は実際のスマホのメッセージアプリをまねた見た目（台帳 DUI06・LK20）。わざと紫にしない画面なので、ドット調のまま
+   緑の見出し・白いトーク一覧・青みがかった灰のトーク・緑の自分の吹き出しにする（横長の画面の LIME と同じ色の役割）。 */
+.retro-sheet[data-kind="lime"][data-tall="true"] {
+  background-color: #8fa6c5;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4' shape-rendering='crispEdges'%3E%3Crect width='4' height='4' fill='%238fa6c5'/%3E%3Crect width='2' height='2' fill='%23889fbf'/%3E%3Crect x='2' y='2' width='2' height='2' fill='%23889fbf'/%3E%3C/svg%3E");
+}
+.retro-sheet[data-kind="lime"][data-tall="true"]:has(.s-lime-chat-row, .s-lime-empty) { background-color: #fbf9f4; background-image: none; }
+.retro-sheet[data-kind="lime"] .rs-head { color: #fff; background: #1fa64a; border-bottom-color: #14803a; }
+.retro-sheet[data-kind="lime"] .rs-head .s-lime-logo { padding: 0 calc(var(--d) * 3); color: #1fa64a; background: #fff; }
+.retro-shell .retro-sheet[data-kind="lime"] .rs-head .rs-btn { color: #fff; background: #178a3c; border-color: #bfe8c9; box-shadow: none; }
+.retro-shell .retro-sheet[data-kind="lime"] .rs-btn.s-lime-chat-row { color: #2a1d3a; background: #fff; border: 0; border-bottom: calc(var(--d) * 1) solid #d9d3e0; box-shadow: none; }
+.retro-sheet[data-kind="lime"] .s-lcr-name { color: #2a1d3a; }
+.retro-sheet[data-kind="lime"] .s-lcr-preview { color: #6f6580; }
+.retro-sheet[data-kind="lime"] .s-lcr-side { color: #8a7f96; }
+.retro-sheet[data-kind="lime"] .s-lcr-dot { border-color: #fff; }
+.retro-sheet[data-kind="lime"] .s-lime-bubble, .retro-sheet[data-kind="lime"] .s-lime-media { background: #fff; border-color: #5b6f8c; box-shadow: calc(var(--d) * 2) calc(var(--d) * 2) 0 #6f86a6; }
+.retro-sheet[data-kind="lime"] .s-lime-row.s-me .s-lime-bubble { background: #8fe26a; border-color: #3f8a2c; }
+.retro-sheet[data-kind="lime"] .s-lime-note { padding: 0 calc(var(--d) * 6); color: #fff; background: #6f86a6; }
+.retro-sheet[data-kind="lime"] .s-lime-note.s-day { border: 0; }
+.retro-sheet[data-kind="lime"] .s-lime-tip, .retro-sheet[data-kind="lime"] .s-lime-hint { color: #2a1d3a; background: #eaf7ee; border-color: #1fa64a; }
+.retro-sheet[data-kind="lime"] .s-lime-empty { color: #8a7f96; }
+.retro-sheet[data-kind="lime"] .rs-foot { background: #fff; border-top-color: #d9d3e0; }
+.retro-shell .retro-sheet[data-kind="lime"] .rs-btn.s-lime-reply { background: #fff; border: calc(var(--d) * 2) solid #1fa64a; color: #2a1d3a; box-shadow: none; }
+.retro-shell .retro-sheet[data-kind="lime"] .rs-btn.s-lime-reply.s-ghost { color: #fff; background: #1fa64a; border: calc(var(--d) * 1) solid #14803a; }
+
+/* 小窓（縦長のシート）: 設定の行・セーブの枠・用語集・規則の紙 */
+.retro-sheet[data-kind="modal"] .rs-head .rs-h, .retro-sheet[data-kind="log"] .rs-head { font-size: calc(var(--d) * 16); line-height: calc(var(--d) * 19); color: var(--r-gold); }
+.retro-sheet .s-modal-body { gap: calc(var(--d) * 5); }
+.retro-sheet .s-modal-actions { gap: calc(var(--d) * 4); }
+.retro-sheet .s-modal-actions > .rs-btn { flex: 1 1 0; justify-content: center; }
+.retro-sheet .s-cfg { gap: calc(var(--d) * 6); }
+.retro-sheet .s-cfg-row { display: flex; flex-direction: column; align-items: stretch; gap: calc(var(--d) * 3); padding-bottom: calc(var(--d) * 5); border-bottom: calc(var(--d) * 1) solid var(--r-line); }
+.retro-sheet .s-cfg-row > .rs-inl:first-child { color: var(--r-lilac); }
+.retro-sheet .s-cfg-seg { gap: calc(var(--d) * 3); }
+.retro-sheet .s-cfg-seg > .rs-btn { flex: 1 1 0; justify-content: center; }
+.retro-sheet .s-xfer-btns { display: flex; flex-wrap: wrap; gap: calc(var(--d) * 3); }
+.retro-shell .retro-sheet .rs-btn.s-save-slot { flex-direction: column; align-items: stretch; width: 100%; }
+.retro-sheet .s-ss-label { color: var(--r-gold); }
+.retro-sheet .s-ss-chapter, .retro-sheet .s-ss-phase { color: var(--r-gold); font-style: normal; }
+.retro-sheet .s-ss-faces { display: flex; flex-wrap: wrap; gap: calc(var(--d) * 2); }
+.retro-sheet .s-ss-faces .s-ss-face { width: calc(var(--d) * 18); height: calc(var(--d) * 18); }
+.retro-sheet .s-ss-stat { display: inline-flex; align-items: center; gap: calc(var(--d) * 2); }
+.retro-sheet .s-gl-tabs { gap: calc(var(--d) * 3); }
+.retro-sheet .s-gl-term { padding-bottom: calc(var(--d) * 4); border-bottom: calc(var(--d) * 1) solid var(--r-line); }
+.retro-sheet .s-gl-term > .rs-inl:first-child { color: var(--r-gold); }
+.retro-sheet .s-rule-sheet { gap: calc(var(--d) * 6); }
+.retro-sheet .s-rule-sheet-eyebrow, .retro-sheet .s-rule-sheet-foot { color: var(--r-lilac); }
+.retro-sheet .s-rule-article { padding: calc(var(--d) * 4) calc(var(--d) * 6); background: var(--r-paper); color: var(--r-ink); }
+.retro-sheet .s-rule-article .rs-h { color: var(--r-violet); }
+
+/* 切り抜きの絵（商品の絵・店のロゴ）: 元の窓の比率で、高さを決めて写す */
+.retro-sheet .rs-crop { position: relative; display: block; flex: none; height: calc(var(--d) * 36); overflow: hidden; }
+.retro-sheet .rs-crop > img { position: absolute; display: block; max-width: none; height: auto; }
+.retro-sheet [data-errand-target="true"] { outline: calc(var(--d) * 2) solid var(--r-gold); outline-offset: calc(var(--d) * 1); }
+/* 文字の入力欄（セーブの引っ越し） */
+.retro-sheet .rs-area {
+  width: 100%;
+  min-height: calc(var(--d) * 60);
+  padding: calc(var(--d) * 3) calc(var(--d) * 5);
+  background: var(--r-paper);
+  border: calc(var(--d) * 1) solid var(--r-ink);
+  border-radius: 0;
+  color: var(--r-ink);
+  font: inherit;
+  font-size: calc(var(--d) * 12);
+  line-height: calc(var(--d) * 15);
+  resize: vertical;
+  overflow-wrap: anywhere;
+}
+
+/* 店（縦長のシート）: 見出しの店名・所持金、種類の絞り込み、商品の行、下の合計と購入 */
+.retro-sheet[data-kind="shop"] .rs-head { flex-direction: column; align-items: stretch; gap: calc(var(--d) * 4); }
+.retro-sheet .s-shop-head { justify-content: space-between; gap: calc(var(--d) * 2) calc(var(--d) * 6); }
+.retro-sheet .s-shop-head .rs-h { color: var(--r-gold); font-size: calc(var(--d) * 12); }
+.retro-sheet .s-shop-brand { display: flex; flex-direction: row; align-items: center; gap: calc(var(--d) * 4); }
+.retro-sheet .s-store-logo.rs-crop { height: calc(var(--d) * 18); }
+.retro-sheet .s-shop-sub { color: var(--r-lilac); }
+.retro-sheet .s-shop-money { display: inline-flex; flex-direction: row; gap: calc(var(--d) * 4); align-items: baseline; color: var(--r-gold); }
+.retro-sheet .s-shop-money > :first-child { color: var(--r-lilac); }
+.retro-sheet .s-shop-errand { padding: calc(var(--d) * 3) calc(var(--d) * 5); background: var(--r-paper); color: var(--r-ink); border: calc(var(--d) * 1) solid var(--r-gold); }
+.retro-sheet .s-shop-filters { gap: calc(var(--d) * 3); }
+.retro-shell .retro-sheet .rs-btn.s-shop-filter { min-height: calc(var(--d) * 22); padding: calc(var(--d) * 2) calc(var(--d) * 5); }
+.retro-sheet .s-shop-filters > .rs-inl { color: var(--r-dim); }
+.retro-sheet[data-kind="shop"] .rs-body { gap: calc(var(--d) * 5); }
+.retro-sheet .s-shop-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: calc(var(--d) * 3) calc(var(--d) * 6);
+  padding: calc(var(--d) * 3);
+  background: rgba(10, 6, 18, 0.55);
+  border: calc(var(--d) * 1) solid var(--r-line);
+}
+.retro-sheet .s-shop-row.s-selected { border-color: var(--r-gold); }
+.retro-sheet .s-shop-row.s-errand { border: calc(var(--d) * 2) solid var(--r-gold); }
+.retro-shell .retro-sheet .rs-btn.s-shop-product { grid-column: 1 / -1; flex-wrap: nowrap; flex-direction: row; align-items: center; background: none; border: 0; box-shadow: none; padding: 0; }
+.retro-sheet .s-shop-product .s-shop-product-art.rs-crop { height: calc(var(--d) * 40); }
+.retro-sheet .s-shop-main { display: flex; flex-direction: column; gap: calc(var(--d) * 2); min-width: 0; }
+.retro-sheet .s-shop-main > .rs-inl:first-child { color: var(--r-text); }
+.retro-sheet .s-shop-feature-tags { color: var(--r-lilac); }
+.retro-sheet .s-shop-stock { display: inline-flex; flex-direction: row; gap: calc(var(--d) * 3); color: var(--r-dim); }
+.retro-sheet .s-shop-price { color: var(--r-gold); text-align: right; }
+.retro-sheet .s-shop-quantity { display: inline-flex; flex-direction: row; align-items: center; gap: calc(var(--d) * 4); grid-column: 1 / -1; justify-self: end; }
+.retro-shell .retro-sheet .rs-btn.s-shop-step { min-width: calc(var(--d) * 28); justify-content: center; align-items: center; }
+.retro-shell .retro-sheet .rs-btn.s-shop-step.s-plus:not([disabled]) { background: var(--r-gold); color: var(--r-ink); border-color: var(--r-ink); }
+.retro-sheet .s-shop-quantity > .rs-inl { min-width: calc(var(--d) * 18); text-align: center; }
+.retro-sheet .s-shop-owned { color: var(--r-lilac); grid-column: 1 / -1; justify-self: end; }
+.retro-sheet[data-kind="shop"] .rs-foot { display: grid; grid-template-columns: auto 1fr; gap: calc(var(--d) * 4); }
+.retro-shell .retro-sheet[data-kind="shop"] .rs-foot > .rs-btn { flex: none; }
+.retro-shell .retro-sheet[data-kind="shop"] .rs-foot > .s-shop-checkout { grid-column: 1 / -1; }
+.retro-shell .retro-sheet .rs-btn.s-shop-summary { justify-content: space-between; }
+.retro-shell .retro-sheet .rs-btn.s-shop-checkout:not([disabled]) { background: var(--r-gold); border: calc(var(--d) * 2) solid var(--r-ink); color: var(--r-ink); }
+.retro-sheet .s-shop-floors { display: flex; flex-direction: column; gap: calc(var(--d) * 5); }
+.retro-shell .retro-sheet .rs-btn.s-shop-floor { flex-direction: column; align-items: stretch; width: 100%; padding: calc(var(--d) * 3); }
+.retro-sheet .s-shop-floor-picture { position: relative; display: block; }
+.retro-sheet .s-shop-floor-picture img { width: 100%; height: calc(var(--d) * 70); object-fit: cover; }
+.retro-sheet .s-shop-floor-number { position: absolute; left: calc(var(--d) * 3); top: calc(var(--d) * 3); padding: 0 calc(var(--d) * 4); background: var(--r-gold); color: var(--r-ink); }
+.retro-sheet .s-shop-floor-caption { display: flex; flex-direction: row; flex-wrap: wrap; align-items: center; gap: calc(var(--d) * 3) calc(var(--d) * 8); }
+.retro-sheet .s-shop-floor-arrow { display: none; }
+.retro-sheet .s-shop-detail { gap: calc(var(--d) * 5); }
+.retro-sheet .s-shop-detail > .s-shop-product-art.rs-crop { height: calc(var(--d) * 72); align-self: center; }
+.retro-sheet .s-kuji-row { padding: calc(var(--d) * 3); background: rgba(10, 6, 18, 0.55); border: calc(var(--d) * 1) solid var(--r-line); }
+
+/* LIME の初回の案内・章のクリア（縦長のシート）。その場のレベルアップは上画面の知らせに文字で出る（SBD122） */
+.retro-sheet[data-kind="coach"] .rs-body { justify-content: center; }
+.retro-shell .retro-sheet .rs-btn.s-lc-bubble { flex-direction: column; align-items: stretch; padding: calc(var(--d) * 6) calc(var(--d) * 8); background: var(--r-paper); border: calc(var(--d) * 2) solid var(--r-ink); color: var(--r-ink); }
+.retro-sheet .s-lc-bubble > .rs-inl:first-child { color: var(--r-violet); font-size: calc(var(--d) * 16); line-height: calc(var(--d) * 19); }
+.retro-sheet[data-kind="end"] .rs-head { flex-direction: column; align-items: flex-start; gap: calc(var(--d) * 2); }
+.retro-sheet .s-end-title { color: var(--r-gold); font-size: calc(var(--d) * 16); line-height: calc(var(--d) * 19); }
+.retro-sheet .s-end-sub, .retro-sheet .s-clear-last-line { color: var(--r-lilac); }
+.retro-sheet .s-next-teaser { padding: calc(var(--d) * 4) calc(var(--d) * 6); border: calc(var(--d) * 1) solid var(--r-gold); }
+.retro-sheet .rs-svg { display: block; align-self: center; width: 100%; max-width: calc(var(--d) * 180); }
+.retro-sheet .rs-svg > svg { display: block; width: 100%; height: auto; }
+
+/* 会話の LOG（縦長のシート） */
+.retro-sheet .s-log-head { justify-content: space-between; }
+.retro-sheet[data-kind="log"] .rs-head { justify-content: space-between; }
+.retro-sheet .s-log-row { padding-bottom: calc(var(--d) * 4); border-bottom: calc(var(--d) * 1) solid var(--r-line); }
+.retro-sheet .s-log-row > .rs-inl:first-child { color: var(--r-gold); }
+.retro-sheet .s-log-inner { color: var(--r-lilac); }
+
+/* ---- 外枠を引っ込めている間の一言（縦長の画面で、現行の横長の画面が小さく出ている時） */
+.retro-note {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 14px);
+  z-index: 2001;
+  margin: 0 auto;
+  width: max-content;
+  max-width: calc(100vw - 24px);
+  padding: 7px 10px;
+  background: #120a1e;
+  border: 1px solid #5a4475;
+  color: #c9a7e6;
+  font-family: var(--font-dot);
+  font-size: max(12px, min(3.4vw, 15px));
+  font-weight: 400;
+  line-height: 1.3;
+  letter-spacing: 0;
+  text-align: center;
+  pointer-events: none;
+}

@@ -74,22 +74,22 @@
     {
       "id": "hiyori",
       "part": "PLAYER",
-      "role": "{pc:hiyori}／儚げな客室係",
+      "role": "{pc:hiyori}／大声の客室係",
       "color": "#e3a1ae",
       "ability": "三秒の支度",
       "abilityType": "prepare",
       "abilityText": "仕掛けを組むとき、判定に一度だけ＋7",
       "sheet": {
         "name": "ローザ",
-        "title": "儚げな客室係",
+        "title": "大声の客室係",
         "stats": {
           "eye": 3,
           "hand": 4,
           "talk": 3,
           "nerve": 1
         },
-        "trait": "月の光でも溶けそうな客室係。シーツ替えは、館で一番速い",
-        "likes": "夜食のラーメンと、ゆるい熊のぬいぐるみ"
+        "trait": "館じゅうに響く声で、客を起こしてしまう。シーツ替えは一番速い",
+        "likes": "厨房のまかない。大盛りで"
       }
     },
     {
@@ -651,7 +651,7 @@
           "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "sad",
-          "text": "……ざわめきは、儚い私には毒なの。早く調べましょう"
+          "text": "……ざわめきって、耳に残るのよね。早く調べましょう"
         }
       ]
     },
@@ -691,7 +691,7 @@
           "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "完璧……。儚いくらい、完璧ね"
+          "text": "完璧……。シーツの角くらい、ぴしっと決まったわ"
         }
       ]
     },
@@ -1708,7 +1708,7 @@
           "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "{pc:hiyori}が儚げに微笑んで、お客さまの噂を集めるわ"
+          "text": "{pc:hiyori}がにっこり微笑んで、お客さまの噂を集めるわ"
         },
         {
           "speaker": "adam",
@@ -1768,7 +1768,7 @@
           "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "serious",
-          "text": "{pc:hiyori}が銀の盆で一杯ずつ配るわ。儚く、でも速く"
+          "text": "{pc:hiyori}が銀の盆で一杯ずつ配るわ。静かに、でも速く"
         },
         {
           "speaker": "adam",
@@ -1928,20 +1928,56 @@
         {
           "speaker": "hiyori",
           "role": "PL／卓の会話",
-          "face": "sad",
-          "text": "……私はローザ。儚げな客室係よ。月の光でも溶けそうなの"
+          "face": "smile",
+          "text": "私はローザ。客室係よ。……館でいちばん、声が大きいの"
         },
         {
           "speaker": "hiyori",
-          "role": "PL／卓の会話",
-          "face": "smile",
-          "text": "でもシーツ替えは館で一番速いわ。夜食はラーメン派"
+          "role": "{pc:hiyori}／物語",
+          "face": "surprise",
+          "text": "お客さまー！ シーツ替えまーす！ 起きてくださーい！"
         },
         {
           "speaker": "adam",
           "role": "GM／卓の会話",
           "face": "smile",
-          "text": "儚さと速さの両立か。舞台映えする、いい役だ"
+          "text": "夜会の客が全員起きたな。いい幕開けだ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "ひよりさん、こんなに声が出るんだ……"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_apple_thief_aside_hiyori_hiyori_rosa",
+      "metadata": {
+        "preview_only": true,
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "{pc:hiyori}／物語",
+          "face": "smile",
+          "text": "怪盗さーん！ 帰りたい場所があるなら、正面から『ただいま』って言えばいいのよー！"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_apple_thief_after_hiyori_hiyori_rosa",
+      "metadata": {
+        "preview_only": true,
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "ローザの大声、明日の朝礼で出ちゃいそう。……出ちゃったら、儚く謝るわ"
         }
       ]
     },
@@ -2354,7 +2390,7 @@
           "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "一台を二人で囲む夜……。儚くて、いちばん贅沢な夜ね"
+          "text": "一台を二人で囲む夜……。短くて、いちばん贅沢な夜ね"
         },
         {
           "speaker": "tsumugi",
@@ -2682,7 +2718,7 @@
           "sheet": "hiyori",
           "stat": "talk",
           "label": "客に聞き込みをする",
-          "detail": "{pc:hiyori}が儚げに微笑み、客の噂を集める",
+          "detail": "{pc:hiyori}がにっこり微笑み、客の噂を集める",
           "declare": "trpg_apple_thief_declare_listen_guests"
         },
         {
@@ -2765,7 +2801,7 @@
           "sheet": "hiyori",
           "stat": "talk",
           "label": "月明かりの下で語りかける",
-          "detail": "{pc:hiyori}が儚げに、怪盗へそっと声をかける",
+          "detail": "{pc:hiyori}が、怪盗へそっと声をかける",
           "declare": "trpg_apple_thief_declare_serve_words"
         }
       ]
@@ -2910,16 +2946,18 @@
         {
           "id": "rosa",
           "name": "ローザ",
-          "title": "儚げな客室係",
-          "trait": "月の光でも溶けそうな客室係。シーツ替えは、館で一番速い",
-          "likes": "夜食のラーメンと、ゆるい熊のぬいぐるみ",
+          "title": "大声の客室係",
+          "trait": "館じゅうに響く声で、客を起こしてしまう。シーツ替えは一番速い",
+          "likes": "厨房のまかない。大盛りで",
           "stats": {
             "eye": 3,
             "hand": 4,
             "talk": 3,
             "nerve": 1
           },
-          "making": "trpg_apple_thief_make_hiyori_hiyori_rosa"
+          "making": "trpg_apple_thief_make_hiyori_hiyori_rosa",
+          "aside": "trpg_apple_thief_aside_hiyori_hiyori_rosa",
+          "after": "trpg_apple_thief_after_hiyori_hiyori_rosa"
         },
         {
           "id": "marta",

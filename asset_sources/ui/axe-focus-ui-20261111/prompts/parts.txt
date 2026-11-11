@@ -1,0 +1,35 @@
+共通（全6枚の冒頭に付ける）:
+Game UI prop for an axe-throwing mini game set in a Japanese night lounge with amber lamps, burgundy upholstery and black steel lanes. High quality illustrated anime adventure game prop with painterly realistic materials: chalkboard slate, walnut wood, blackened steel, brushed brass, safety-orange enamel paint. Same look as the existing target board `assets/ui/axe_throw/target_board_watl_c.png` and the menu panel `assets/ui/axe_throw/menu-walnut-panel.webp` (attach both as style references; copy their material and lighting, not their shape).
+Perfectly front-facing orthographic view, no perspective, no tilt. Soft even light from the upper left. One object only, centered, with a small transparent margin. True transparent background (RGBA PNG), no floor, no wall, no external cast shadow, no glow outside the object.
+STRICTLY NO text, NO letters, NO numbers, NO icons, NO arrows printed on the surface, NO logo, NO watermark, NO gauge marks, NO scale ticks, NO colored bands. The game code draws every label, band, needle position and number on top.
+The middle area must stay flat, calm and evenly lit (no knots, no scratches, no strong grain, no highlights) so that white or dark text stays readable on it. Wear, screws and rivets only on the outer rim.
+
+--- 1/6: gauge-frame.png ---
+A tall, narrow vertical power-meter housing, like a slim lane-side gauge: a blackened steel channel with a thin walnut wood rim and four small brass corner screws. The inside is one empty, dark, matte recessed slot running the full height (the game draws colored bands inside it). The slot takes about 70% of the width and is perfectly straight with square ends.
+Canvas 320x2048 px, object about 256x1984 px. Left-right symmetric. Top and bottom ends identical so the middle can be stretched vertically.
+Save as: asset_sources/ui/axe-focus-ui-20261111/raw/gauge-frame.png
+
+--- 2/6: gauge-needle.png ---
+A small pointer for that gauge: a flat horizontal brushed-brass bar with a short triangular arrowhead on its LEFT end pointing right toward the bar (the arrow sits outside the gauge and the bar crosses it). Thin dark outline so it reads on both light and dark bands. No numbers, no ticks.
+Canvas 512x160 px, object about 448x96 px.
+Save as: asset_sources/ui/axe-focus-ui-20261111/raw/gauge-needle.png
+
+--- 3/6: button-throw-orange.png ---
+A wide rounded-rectangle push plate for the main "throw" button: thick safety-orange enamel painted steel, slightly domed, with a darker orange bottom edge that reads as thickness, a thin bright top bevel and a fine black steel outer rim. Corner radius about 18% of the height. Blank flat middle.
+Canvas 1280x448 px, object about 1184x384 px. Borders uniform on all four sides (it will be 9-sliced).
+Save as: asset_sources/ui/axe-focus-ui-20261111/raw/button-throw-orange.png
+
+--- 4/6: button-throw-green.png ---
+The SAME plate as 3/6 (same size, same shape, same rim, same bevels, pixel-aligned if possible), repainted in a soft fresh green enamel (#b8e5aa family) for the "release now" moment. Attach 3/6 as the shape reference.
+Canvas 1280x448 px, object about 1184x384 px.
+Save as: asset_sources/ui/axe-focus-ui-20261111/raw/button-throw-green.png
+
+--- 5/6: tag-slate.png ---
+A small rounded-rectangle hanging tag for secondary buttons and aim tags: dark green-black chalkboard slate face with a thin walnut wood frame and a hairline brass inner line. Very faint chalk dust near the rim only. Blank flat middle. Neutral dark tone so the game can tint it blue or orange.
+Canvas 896x512 px, object about 800x432 px. Borders uniform on all four sides (it will be 9-sliced).
+Save as: asset_sources/ui/axe-focus-ui-20261111/raw/tag-slate.png
+
+--- 6/6: tag-selected.png ---
+The SAME tag as 5/6 (same size and shape), in its "chosen" state: the face is a bright killshot blue enamel (#2f7fc1 family), the frame is polished brass instead of walnut, with a second thin cream-white outer line. Clearly brighter and more important than 5/6 at a glance, without any text or check mark. Attach 5/6 as the shape reference.
+Canvas 896x512 px, object about 800x432 px.
+Save as: asset_sources/ui/axe-focus-ui-20261111/raw/tag-selected.png

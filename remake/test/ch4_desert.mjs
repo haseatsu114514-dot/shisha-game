@@ -378,6 +378,30 @@ test("Noor's finale, confession and gift data line up with bonds.js / romance.js
   assert.match(desert, /delete owner\.flags\[NOOR_OTHER_LOVER_FLAG\]/);
 });
 
+test("the other seven confessions also pause once when another lover exists (2026-11-11 講評 S12)", () => {
+  // ヌール以外の告白は、ほかの7人を lover 条件で順に確かめる（新しい印もコードも足さない）。
+  // 誰か一人でも恋人なら other_lover の内心を一行だけ読み、誰もいなければ何も読まずに選択肢へ進む。
+  const heroines = JSON.parse(readFileSync(new URL("../../data/story_routes.json", import.meta.url), "utf8")).heroine_ids;
+  const scenes = new Map(JSON.parse(readFileSync(new URL("../../data/dialogue/confession.json", import.meta.url), "utf8"))
+    .dialogues.map(d => [d.dialogue_id, d]));
+  for (const who of heroines.filter(id => id !== "noor")) {
+    const scene = scenes.get(`confession_${who}`);
+    const at = scene.lines.findIndex(line => line.type === "condition" && line.condition_type === "lover");
+    assert.equal(scene.lines[at + 1]?.type, "choice", `${who}: the aside sits right before the answer`);
+    const asked = [];
+    for (let line = scene.lines[at]; line; line = scene.branches[line.next_false]?.[0]) {
+      assert.deepEqual([line.type, line.condition_type, line.next_true], ["condition", "lover", "other_lover"], who);
+      if (line.next_false) assert.equal(scene.branches[line.next_false].length, 1, `${who}: ${line.next_false}`);
+      asked.push(line.char_id);
+    }
+    assert.deepEqual(asked.sort(), heroines.filter(id => id !== who).sort(), `${who}: every other heroine is asked once`);
+    const aside = scene.branches.other_lover;
+    assert.equal(aside.length, 1, who);
+    assert.equal(aside[0].speaker, "hajime");
+    assert.match(aside[0].text, /^（.*付き合っている人.*）$/, `${who}: one inner line about the lover he does not mention`);
+  }
+});
+
 test("Noor's 16 café stories follow the visited stages once, including a late chapter 5 visit", () => {
   const value = fresh();
   const data = JSON.parse(readFileSync(new URL("../../data/dialogue/noor.json", import.meta.url), "utf8"));

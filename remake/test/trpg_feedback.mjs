@@ -12,8 +12,9 @@ const shark = JSON.parse(await readFile(new URL("../../data/dialogue/trpg_shark.
 
 test("2d20 forecasts match all 400 real checks at base, aided and momentum bonuses", () => {
   const expected = [
-    { success: 26, mixed: 48, trouble: 26 },
-    { success: 43, mixed: 44, trouble: 14 },
+    // A 20 on either die always succeeds (TRF01), so the low bonuses gain a few points of success.
+    { success: 29, mixed: 45, trouble: 26 },
+    { success: 44, mixed: 43, trouble: 14 },
     { success: 57, mixed: 36, trouble: 7 },
     { success: 74, mixed: 25, trouble: 2 },
   ];
@@ -29,7 +30,7 @@ test("2d20 forecasts match all 400 real checks at base, aided and momentum bonus
       assert.equal(rollOdds(bonus)[grade], Math.round(counts[grade] * 100 / 400));
     }
   }
-  assert.deepEqual(rollOdds(-40), { success: 0, mixed: 0, trouble: 100 });
+  assert.deepEqual(rollOdds(-40), { success: 10, mixed: 0, trouble: 90 }, "only a 20 saves a hopeless roll");
   assert.deepEqual(rollOdds(30), { success: 100, mixed: 0, trouble: 0 });
 });
 
@@ -72,8 +73,8 @@ test("unconfirmed hypotheses and other phases have no conditional bonus; support
 });
 
 test("reroll forecasts enumerate all twenty outcomes of the selected die and preserve inputs", () => {
-  assert.deepEqual(rerollOdds([1, 20], 3, 0), { success: 70, mixed: 30, trouble: 0 });
-  assert.deepEqual(rerollOdds([1, 20], 3, 1), { success: 0, mixed: 30, trouble: 70 });
+  assert.deepEqual(rerollOdds([1, 20], 3, 0), { success: 100, mixed: 0, trouble: 0 }, "the kept 20 is already a critical");
+  assert.deepEqual(rerollOdds([1, 20], 3, 1), { success: 5, mixed: 25, trouble: 70 }, "only a new 20 succeeds beside a kept 1");
   for (const bonus of [3, 7, 10, 14]) for (let first = 1; first <= 20; first++) {
     for (let second = 1; second <= 20; second++) for (const index of [0, 1]) {
       const dice = Object.freeze([first, second]);

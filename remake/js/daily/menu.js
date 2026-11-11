@@ -222,7 +222,7 @@ function showMenu(initial, { saveOk }) {
     // 動きを減らす設定・2画面表示では、紙のシートの短いフェード（css/daily-menu.css）だけ
     const origin = menuOrigin();
     const sheet = root.querySelector(".dm-sheet");
-    if (origin && sheet && !matchMedia("(prefers-reduced-motion: reduce)").matches && !document.body.classList.contains("game-ds")) {
+    if (origin && sheet && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
       // 起点はシートの座標に直す（#modal 全体の座標 − シートの位置）
       const host = layers.modal.getBoundingClientRect(), box = sheet.getBoundingClientRect(), k = host.width / layers.modal.offsetWidth || 1;
       sheet.style.transformOrigin = `${origin.x - (box.left - host.left) / k}px ${origin.y - (box.top - host.top) / k}px`;
@@ -292,7 +292,7 @@ function growthCards(choose, select) {
   const gauge = g ? gaugeAt(g.level, g.settledXp, g.xp) : gaugeAt(1, 0, 0);
   const hidane = hidaneTotal(g);
   const lit = new Set(Array.isArray(g?.nodes) ? g.nodes : []);
-  const left = gauge.max ? "MAX" : gauge.pending > 0 ? `今夜 Lv UP${gauge.pending > 1 ? ` ×${gauge.pending}` : ""}` : `次のレベルまで EXP ${gauge.left}`;
+  const left = gauge.max ? "MAX" : `次のレベルまで EXP ${gauge.left}`;
   return [
     el("div.dm-grid.dm-grid-2", [
       el("section.dm-card.dm-level", { dataset: { test: "menu-level" } }, [
@@ -494,3 +494,4 @@ function systemTab(choose, saveOk) {
     saveOk ? null : el("p.dm-note", { dataset: { test: "menu-save-note" }, text: `今はセーブできない。${SAVE_RULE}` }),
   ];
 }
+

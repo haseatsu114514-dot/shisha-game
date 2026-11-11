@@ -1,21 +1,365 @@
-/* シーシャくじのガラガラ（remake/js/motions/garagara.js）。くじの暗幕の上に全面で重ねる（地の色は場面の壁の色を JS で入れる） */
-.mo-garagara { position: absolute; inset: 0; overflow: hidden; z-index: 2; pointer-events: none; background: #4d3c2f; }
+/* シーシャくじのガラガラ（remake/js/motions/garagara.js）と賞の札（remake/js/daily/kuji-reveal.js）。
+   2026-11-11 オーナー「ソシャゲのガチャや10連ガチャみたいなリッチな演出に」→「CSS感がすごい・祭り感が店に合わない」。
+   舞台は今いる店の中。道具は1つずつ別の部品（.kj-part）で、描いた絵（motions/kuji-art.js）が入れば <img>、無いあいだは下絵（.kj-sketch）。
+   火花やきらめきは canvas（motions/kuji-fx.js）。動かすのは位置・回転・濃さだけ。 */
 
-/* ラストワン賞のカード（NIGHTSIDE の黒地に銀。虹色の文字はやめて落ち着かせる） */
-.kuji-overlay .kuji-card.rank-LAST {
-  background: linear-gradient(165deg, #15131f, #0a0910 70%);
-  border-color: rgba(214, 218, 228, 0.7);
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.75), inset 0 0 0 4px #0a0910, inset 0 0 0 5px rgba(214, 218, 228, 0.25);
+/* ---- ガラガラの層: くじの暗幕の上に全面で重ねる ---- */
+.mo-garagara { position: absolute; inset: 0; overflow: hidden; z-index: 2; pointer-events: none; background: #0e0a09; }
+.kj-cam { position: absolute; inset: 0; will-change: transform; }
+/* 後ろ: 今の場面の背景（その店の絵）を写して、ぼかして暗くする */
+.kj-bg { position: absolute; inset: -5%; overflow: hidden; background: #1a1210; }
+.kj-bg-img { position: absolute; inset: 0; background: center / cover no-repeat; filter: blur(5px) brightness(0.52) saturate(0.92); }
+.kj-toplight { position: absolute; inset: 0; background: radial-gradient(ellipse 48% 84% at 46% -10%, rgba(255, 234, 196, 0.3), rgba(255, 234, 196, 0) 70%); }
+.kj-part { position: absolute; }
+.kj-part > img, .kj-part > .kj-sketch { position: absolute; inset: 0; display: block; width: 100%; height: 100%; }
+.kj-part > i { position: absolute; display: block; }
+/* カウンター（下絵）: くるみの天板と手前の縁 */
+.kj-counter { left: -60px; top: 478px; width: 1400px; height: 420px; }
+.kj-counter-wood {
+  inset: 0;
+  background:
+    radial-gradient(ellipse 46% 60% at 50% 42%, rgba(255, 226, 180, 0.2), rgba(255, 226, 180, 0) 70%),
+    linear-gradient(180deg, rgba(10, 7, 6, 0.7) 0, rgba(10, 7, 6, 0) 26px),
+    repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.22) 0 2px, rgba(0, 0, 0, 0) 2px 236px),
+    repeating-linear-gradient(179deg, rgba(255, 255, 255, 0.035) 0 2px, rgba(0, 0, 0, 0) 2px 9px),
+    linear-gradient(180deg, #3d2516 0%, #643f25 55%, #7a5231 82%);
 }
-.kuji-overlay .kuji-card.rank-LAST .kuji-rank {
-  font-size: 44px;
-  letter-spacing: 0.08em;
-  background: linear-gradient(180deg, #f4f5f8, #aab0bd 60%, #e2e5ec);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  text-shadow: none;
-  animation: none;
+.kj-counter-wood::after { content: ""; position: absolute; left: 0; right: 0; top: 216px; bottom: 0; background: linear-gradient(180deg, #2c190e, #120a06); border-top: 2px solid #b98a58; box-shadow: 0 -1px 0 rgba(0, 0, 0, 0.5); }
+/* 黒板（賞と玉の色） */
+.kj-sign { left: 100px; top: 250px; width: 196px; height: 340px; }
+.kj-sign-board { inset: 0 0 30px; border: 9px solid #5b3a22; border-radius: 8px; background: radial-gradient(ellipse at 40% 30%, #2f3439, #1d2023); box-shadow: inset 0 0 0 2px #2f1c11, inset 0 0 26px rgba(0, 0, 0, 0.55), 0 12px 16px rgba(0, 0, 0, 0.5); }
+.kj-sign-board::before, .kj-sign-board::after { content: ""; position: absolute; bottom: -38px; width: 14px; height: 30px; background: linear-gradient(90deg, #2f1c11, #6a4528, #2f1c11); }
+.kj-sign-board::before { left: 14px; }
+.kj-sign-board::after { right: 14px; }
+.kj-sign-text { position: absolute; inset: 24px 20px 54px; display: flex; flex-direction: column; align-items: center; gap: 8px; color: #f2efe6; font-family: var(--font); }
+/* 描いた黒板（脚まで・枠より少し広い）: 字を書ける面（x105〜291・y270〜543）の内側に収める */
+.kj-sign[data-art="painted"] .kj-sign-text { inset: 32px 30px 59px; }
+.kj-sign-title { width: 100%; padding-bottom: 7px; font-size: 21px; font-weight: 800; letter-spacing: 0.06em; text-align: center; border-bottom: 2px solid rgba(242, 239, 230, 0.55); }
+.kj-sign-row { display: flex; align-items: center; gap: 16px; width: 104px; font-size: 20px; font-weight: 700; }
+.kj-sign-note { margin-top: auto; font-size: 13px; font-weight: 700; color: #ffd9a0; }
+.kj-sign-big { display: grid; place-items: center; height: 96px; }
+.kj-sign .kj-ball-s { position: relative; flex: none; width: 26px; height: 26px; opacity: 1; }
+.kj-sign .kj-sign-big .kj-ball-s { width: 64px; height: 64px; }
+.kj-sign .kj-ball-halo { display: none; }
+/* 抽選器: 台・脚・胴（厚みは同じ形を奥へ重ねて出す）・ハンドル・受け皿 */
+.kj-machine, .kj-rig { position: absolute; inset: 0; }
+.kj-base { left: 331px; top: 568px; width: 440px; height: 64px; }
+.kj-frame { left: 375px; top: 274px; width: 330px; height: 330px; }
+/* 奥の脚: 胴の厚み（.kj-drum-side を右上へ 22px・16px ずらして重ねる）と同じだけ奥へずらす。大きさは変えない
+   （縮めると足先だけ余計に上がり、土台の板の外へ浮く。2026-11-11 オーナー「台と足の位置がズレてる」）。
+   手前と奥の足先は、どちらも土台の天板の上に載る（土台の置き場所は kuji-art.js の base） */
+.kj-frame-far { transform: translate(22px, -16px); filter: brightness(0.5); }
+/* 土台と受け皿がカウンターに落とす影（絵には影が無い） */
+.kj-ground { position: absolute; display: block; pointer-events: none; border-radius: 50%; background: radial-gradient(closest-side, rgba(10, 7, 6, 0.62) 0%, rgba(10, 7, 6, 0.4) 55%, rgba(10, 7, 6, 0) 100%); }
+.kj-ground-base { left: 318px; top: 600px; width: 468px; height: 56px; }
+.kj-ground-tray { left: 758px; top: 606px; width: 228px; height: 50px; }
+.kj-drum { position: absolute; width: 0; height: 0; --th: 0deg; }
+.kj-drum-face, .kj-drum-side { left: -154px; top: -154px; width: 308px; height: 308px; }
+.kj-drum-face { transform: rotate(var(--th)); }
+.kj-drum-side {
+  position: absolute; display: block; background: linear-gradient(135deg, var(--kj-side-a, #4a2e1b), var(--kj-side-b, #1d110a));
+  clip-path: polygon(98.7% 50%, 74.35% 92.18%, 25.65% 92.18%, 1.3% 50%, 25.65% 7.82%, 74.35% 7.82%);
+  transform: translate(calc(var(--i) * 3.1px), calc(var(--i) * -2.3px)) rotate(var(--th));
 }
-.kuji-overlay .kuji-card.rank-LAST .kuji-name { margin-top: 14px; color: #f1f2f6; }
-.kuji-overlay .kuji-card.rank-LAST .kuji-desc { color: #a9adbb; }
+/* 回転のぶれ（速く回っているあいだだけ、ぶれた胴の絵を上に重ねる。濃さは garagara-stage.js の blur） */
+.kj-drum-blur { opacity: 0; }
+.kj-drum-sheen { position: absolute; display: block; left: -130px; top: -130px; width: 260px; height: 260px; border-radius: 50%; background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0) 36%, rgba(0, 0, 0, 0) 62%, rgba(0, 0, 0, 0.3) 100%); }
+.kj-handle { left: 400px; top: 152px; width: 280px; height: 280px; transform-origin: 50% 50%; }
+/* くじのランク（店）ごとの抽選器（GCH16）。絵は kuji-art.js が色替えした版に差し替える。ここは胴の厚み（側面）の色と、軸の宝石 */
+.mo-garagara[data-look="steel"] { --kj-side-a: #a0703c; --kj-side-b: #4a2f17; }
+.mo-garagara[data-look="brass"] { --kj-side-a: #4f1a12; --kj-side-b: #1a0706; }
+.mo-garagara[data-look="marble"] { --kj-side-a: #c9c5bf; --kj-side-b: #77747a; }
+.mo-garagara[data-look="lacquer"] { --kj-side-a: #24232c; --kj-side-b: #050506; }
+.kj-gem { position: absolute; left: 531px; top: 283px; width: 18px; height: 18px; filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.6)); }
+.kj-tray { left: 762px; top: 562px; width: 220px; height: 84px; }
+.kj-exit-glow { position: absolute; display: block; width: 130px; height: 130px; margin: -65px 0 0 -65px; border-radius: 50%; background: radial-gradient(circle, #fff 0%, var(--kj-halo, #fff) 28%, rgba(255, 255, 255, 0) 70%); opacity: 0; }
+/* S賞・ラストワン賞の光の柱（受け皿の玉から立ちのぼる） */
+.kj-pillar {
+  /* ふちはぼかして、切り抜いた台形ではなく灯りの中の光の筋に見せる（動かすのは濃さだけなので、ぼかしは一度描けば済む） */
+  position: absolute; display: block; width: 200px; height: 700px; margin: -700px 0 0 -100px; opacity: 0; mix-blend-mode: screen; filter: blur(9px);
+  clip-path: polygon(33% 100%, 67% 100%, 100% 0, 0 0);
+  background: linear-gradient(0deg, var(--kj-halo-hi, #fff) 0%, var(--kj-halo, #ffcf4a) 30%, rgba(255, 255, 255, 0) 92%);
+}
+/* 抽選器の後ろの光（後光）と、当たりの玉が落ちた受け皿の後ろの光。描いた光の筋に色を掛けて canvas に描く（garagara-stage.js の lightLayer）。
+   舞台の半分の解像度で持ち、舞台いっぱいに広げる。濃さ・回転・大きさは演出（garagara.js）が決める */
+.kj-light { position: absolute; left: 0; top: 0; width: 1280px; height: 720px; pointer-events: none; }
+/* 玉（動かすのは位置と大きさ）と、賞の色のにじみ */
+.kj-ball-s { left: 0; top: 0; width: 34px; height: 34px; opacity: 0; will-change: transform; }
+.kj-ball-halo { left: 50%; top: 50%; width: 112px; height: 112px; margin: -56px 0 0 -56px; border-radius: 50%; background: radial-gradient(circle, var(--kj-halo-hi, #fff) 0%, var(--kj-halo, #fff) 26%, rgba(255, 255, 255, 0) 68%); opacity: 0; }
+/* 連続の玉置き（下絵）: くるみの細長い盆 */
+.kj-rail { height: 48px; }
+/* 玉置き: 描いた細長い盆（#3228）を九分割で横に伸ばす（左右の端70pxは伸ばさない）。玉の数で幅が変わる */
+.kj-rail-wood {
+  inset: 0; border-style: solid; border-color: transparent; border-width: 0 34px;
+  border-image: url("../../img/ui/kuji/rail.webp") 0 70 fill / 0 34px / 0 stretch;
+  filter: drop-shadow(0 8px 10px rgba(0, 0, 0, 0.5));
+}
+.kj-rail-pit { display: none; }
+.kj-rail-count { position: absolute; left: -4px; top: -46px; z-index: 1; font-family: var(--font); font-size: 24px; font-weight: 800; letter-spacing: 1px; color: #f3dc9a; text-shadow: 0 2px 0 #0a0706, 0 0 8px #000; }
+/* 係の人の鐘（柄の上が手首。上から下りてきて振る） */
+.kj-bell { left: 0; top: 0; width: 140px; height: 300px; transform-origin: 50% 0; opacity: 0; }
+/* 手前に重ねる幕: 溜めの暗がり・賞の色の染まり・周辺減光 */
+.kj-dim, .kj-tint, .kj-vignette { position: absolute; inset: 0; pointer-events: none; }
+.kj-dim { background: #0a0706; opacity: 0; }
+.kj-tint { opacity: 0; mix-blend-mode: overlay; }
+.kj-vignette { background: radial-gradient(ellipse 80% 80% at 50% 46%, rgba(10, 7, 6, 0) 52%, rgba(10, 7, 6, 0.74) 100%); }
+.kj-fx { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.kj-flash { position: absolute; inset: 0; opacity: 0; background: #fff; pointer-events: none; mix-blend-mode: screen; }
+/* 演出を飛ばす。右下に小さく置き、押せる大きさはスマホでも実寸 40px を下回らせない */
+.kj-skip {
+  position: absolute; right: calc(28px + var(--stage-gutter, 0px)); bottom: 26px; z-index: 3; pointer-events: auto;
+  min-width: max(104px, calc(72px / var(--k, 1))); min-height: max(46px, calc(40px / var(--k, 1))); padding: 0 20px;
+  font-family: var(--font); font-size: max(18px, calc(12px / var(--k, 1))); font-weight: 700; letter-spacing: 0.16em;
+  color: #f6efe0; background: rgba(20, 14, 12, 0.66); border: 1.5px solid rgba(246, 239, 224, 0.7); border-radius: 999px;
+  cursor: pointer; backdrop-filter: blur(4px);
+}
+.kj-skip::after { content: " ▶▶"; letter-spacing: -0.12em; font-size: 0.8em; }
+.kj-skip:hover, .kj-skip:focus-visible { background: rgba(70, 46, 30, 0.86); border-color: #fff; }
+
+/* ---- 暗幕と賞の色 ----
+   --kj-main 主の色 / --kj-hi 明るい側 / --kj-acc 差し色 / --kj-deep 影の側 / --kj-ink 紙の上の文字 / --kj-glow にじみ / --kj-ball 玉 / --kj-ray 光の濃さ */
+.kuji-overlay {
+  position: absolute; inset: 0 calc(-1 * var(--stage-gutter, 0px)); display: grid; place-items: center; overflow: hidden;
+  background: rgba(10, 7, 6, 0.8); backdrop-filter: blur(3px); cursor: pointer; animation: kj-fade 0.25s;
+}
+@keyframes kj-fade { from { opacity: 0; } }
+.kuji-overlay, .kuji-card, .kj-backdrop, .kj-showcase {
+  --kj-main: #d8d2c6; --kj-hi: #ffffff; --kj-acc: #b7ad9c; --kj-deep: #7b7166; --kj-ink: #5e554c; --kj-glow: rgba(240, 232, 214, 0.3); --kj-ball: #f6f3ec; --kj-ray: 0.2;
+}
+.kuji-overlay[data-rank="S"], .kuji-card.rank-S, :is(.kj-backdrop, .kj-showcase)[data-rank="S"] {
+  --kj-main: #f2c14a; --kj-hi: #fff3c8; --kj-acc: #e08a1e; --kj-deep: #8a5a10; --kj-ink: #9a6206; --kj-glow: rgba(255, 207, 74, 0.65); --kj-ball: #f7c648; --kj-ray: 0.62;
+}
+.kuji-overlay[data-rank="A"], .kuji-card.rank-A, :is(.kj-backdrop, .kj-showcase)[data-rank="A"] {
+  --kj-main: #e2443c; --kj-hi: #ffd5c8; --kj-acc: #f08a3a; --kj-deep: #7c1a14; --kj-ink: #b3261c; --kj-glow: rgba(255, 96, 78, 0.55); --kj-ball: #e2443c; --kj-ray: 0.44;
+}
+.kuji-overlay[data-rank="B"], .kuji-card.rank-B, :is(.kj-backdrop, .kj-showcase)[data-rank="B"] {
+  --kj-main: #4f8fe8; --kj-hi: #d6e8ff; --kj-acc: #7fd0f0; --kj-deep: #1c4690; --kj-ink: #1f55b0; --kj-glow: rgba(79, 155, 255, 0.45); --kj-ball: #3f82ea; --kj-ray: 0.3;
+}
+.kuji-overlay[data-rank="LAST"], .kuji-card.rank-LAST, :is(.kj-backdrop, .kj-showcase)[data-rank="LAST"] {
+  --kj-main: #b9b4d8; --kj-hi: #f1f2f8; --kj-acc: #8f8cc8; --kj-deep: #3a3660; --kj-ink: #e6e7f0; --kj-glow: rgba(184, 175, 240, 0.55); --kj-ball: #2a2648; --kj-ray: 0.5;
+}
+
+/* ---- 札の後ろ: 暗くした店内に、賞の色の光がゆっくり回る ---- */
+.kj-backdrop { position: absolute; inset: 0; overflow: hidden; pointer-events: none; opacity: 0; transition: opacity 0.4s ease; background: radial-gradient(ellipse 80% 90% at 50% 46%, rgba(46, 32, 24, 0.9) 0%, rgba(14, 10, 9, 0.94) 70%); }
+.kj-backdrop.on { opacity: 1; }
+.kj-backdrop .kj-bg-img { filter: blur(7px) brightness(0.3) saturate(0.85); }
+.kj-rays, .kj-halo { position: absolute; left: 50%; top: 46%; pointer-events: none; mix-blend-mode: screen; }
+/* 後ろの光: 描いた黒地の光の筋（#3228）に賞の色を掛け（multiply）、店の暗がりへ加算気味に重ねる（screen） */
+.kj-rays {
+  width: 1900px; height: 1900px; margin: -950px 0 0 -950px; border-radius: 50%; opacity: calc(var(--kj-ray) + 0.25); will-change: transform;
+  background: var(--kj-main) url("../../img/ui/kuji/burst.webp") center / cover no-repeat; background-blend-mode: multiply;
+  animation: kj-spin 44s linear infinite;
+}
+.kj-rays-b { opacity: calc(var(--kj-ray) * 0.7); background-color: var(--kj-hi); transform: rotate(13deg); animation: kj-spin 64s linear infinite reverse; }
+.kj-halo { width: 1320px; height: 780px; margin: -390px 0 0 -660px; opacity: calc(0.2 + var(--kj-ray) * 0.6); background: radial-gradient(closest-side, var(--kj-main), transparent); animation: kj-breathe 2.4s ease-in-out infinite alternate; }
+@keyframes kj-spin { to { transform: rotate(360deg); } }
+@keyframes kj-breathe { from { transform: scale(0.94); } to { transform: scale(1.06); } }
+.kuji-multi > .kj-backdrop .kj-rays { opacity: calc(var(--kj-ray) * 0.4); }
+.kuji-multi > .kj-backdrop .kj-halo { opacity: calc(0.1 + var(--kj-ray) * 0.26); }
+
+/* ---- 賞の札（1回引き・S賞の見せ場）: 生成りの厚紙の札に、賞の色の箔の縁。左に景品、右に賞と名前 ---- */
+.kuji-card { position: relative; color: #2b1d1a; font-family: var(--font); }
+/* 札の地は描いた絵（#3228。生成りの厚紙に賞の色の箔の縁、ラストワン賞は黒い厚紙に銀）。左の景品の窓も絵に含まれる。
+   絵が読み込めないときは、下の生成りの地だけで開く */
+.kuji-card:not(.kuji-short) {
+  --kj-card: url("../../img/ui/kuji/card-c.webp");
+  width: 884px; min-height: 372px; display: grid; grid-template-columns: 370px minmax(0, 1fr); text-align: left;
+  /* 角の丸みは描いた札の箔の縁に合わせる（影と照りが角からはみ出さない） */
+  border: 6px solid transparent; border-radius: 40px;
+  /* 下の生成りは絵が読み込めないときだけ見える（絵の縁からのぞかないよう、内側に寄せて敷く） */
+  background: var(--kj-card) center / 100% 100% no-repeat border-box, linear-gradient(168deg, #fcf7ec 0%, #f3ead8 60%, #eadfc8 100%) center / calc(100% - 28px) calc(100% - 28px) no-repeat padding-box;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.62), 0 0 70px var(--kj-glow);
+}
+.kuji-card.rank-S { --kj-card: url("../../img/ui/kuji/card-s.webp"); }
+.kuji-card.rank-A { --kj-card: url("../../img/ui/kuji/card-a.webp"); }
+.kuji-card.rank-B { --kj-card: url("../../img/ui/kuji/card-b.webp"); }
+.kuji-card.rank-LAST { --kj-card: url("../../img/ui/kuji/card-last.webp"); }
+/* 景品を置く窓: 絵の窓（札の x36〜376・y35〜334）に合わせる */
+.kj-art { position: relative; display: grid; place-items: center; overflow: hidden; margin: 29px 0 31px 30px; border-radius: 12px; }
+.kj-art > * { position: relative; filter: drop-shadow(0 12px 10px rgba(40, 22, 8, 0.34)); }
+.kj-art-img { display: block; overflow: hidden; }
+.kj-art-img img { position: absolute; max-width: none; }
+.kj-art .kj-art-leaf { display: flex; align-items: center; justify-content: center; flex: none; margin: 0; background: none; }
+.kj-art-pack { display: block; }
+.kj-art-fan { display: flex; align-items: flex-end; justify-content: center; }
+.kj-art-fan > * { margin: 0 -13%; transform-origin: 50% 100%; }
+.kj-art-fan .kj-gift { --u: 10px; }
+.kj-art-fan > :nth-child(1) { transform: rotate(-13deg) translateY(4%); }
+.kj-art-fan > :nth-child(2) { z-index: 1; transform: translateY(-6%); }
+.kj-art-fan > :nth-child(3) { transform: rotate(13deg) translateY(4%); }
+.kj-art-fan[data-n="2"] > :nth-child(2) { transform: rotate(11deg); }
+/* 景品の包み（絵の無い景品の下絵）。クラフト紙の箱に麻ひも。大きさは --u（一辺の 1/10）で決める */
+.kj-gift { --u: 19px; position: relative; display: block; width: calc(var(--u) * 10); height: calc(var(--u) * 10); }
+/* 描いた包み（#3228。クラフト紙の箱に麻ひもと札）。下の <i> は描く前の下絵の部品で、今は出さない */
+.kj-gift { background: url("../../img/ui/kuji/gift.webp") center bottom / contain no-repeat; }
+.kj-gift i { position: absolute; display: none; }
+.kj-gift-box {
+  left: calc(var(--u) * 1.4); right: calc(var(--u) * 1.4); bottom: calc(var(--u) * 0.7); height: calc(var(--u) * 5); border-radius: calc(var(--u) * 0.2);
+  background: linear-gradient(90deg, transparent 46%, #6b4a2a 46% 54%, transparent 54%), linear-gradient(155deg, #d2ad7c 0%, #b88d5c 55%, #94703f 100%);
+  box-shadow: inset 0 calc(var(--u) * -0.7) calc(var(--u) * 1.2) rgba(60, 30, 0, 0.28);
+}
+.kj-gift-box::after { content: ""; position: absolute; left: 0; right: 0; top: 0; height: calc(var(--u) * 0.5); background: linear-gradient(180deg, rgba(60, 30, 0, 0.4), transparent); }
+.kj-gift-lid {
+  left: calc(var(--u) * 0.9); right: calc(var(--u) * 0.9); bottom: calc(var(--u) * 5.5); height: calc(var(--u) * 1.7); border-radius: calc(var(--u) * 0.2);
+  background: linear-gradient(90deg, transparent 46.5%, #6b4a2a 46.5% 53.5%, transparent 53.5%), linear-gradient(155deg, #e2c193 0%, #c49a68 100%);
+  box-shadow: inset 0 calc(var(--u) * 0.2) 0 rgba(255, 255, 255, 0.35);
+}
+/* 結び目: 左右の輪と中央の結び */
+.kj-gift-bow { left: 50%; bottom: calc(var(--u) * 7.05); width: calc(var(--u) * 1.1); height: calc(var(--u) * 1); margin-left: calc(var(--u) * -0.55); border-radius: calc(var(--u) * 0.3); background: #6b4a2a; box-shadow: 0 calc(var(--u) * 0.1) calc(var(--u) * 0.2) rgba(0, 0, 0, 0.35); }
+.kj-gift-bow::before, .kj-gift-bow::after {
+  content: ""; position: absolute; bottom: calc(var(--u) * 0.1); width: calc(var(--u) * 2.3); height: calc(var(--u) * 1.6); box-sizing: border-box;
+  border: calc(var(--u) * 0.34) solid #6b4a2a; background: transparent;
+}
+.kj-gift-bow::before { right: calc(var(--u) * 0.8); border-radius: 70% 30% 20% 70%; transform: rotate(18deg); transform-origin: 100% 100%; }
+.kj-gift-bow::after { left: calc(var(--u) * 0.8); border-radius: 30% 70% 70% 20%; transform: rotate(-18deg); transform-origin: 0 100%; }
+.kuji-short .kj-gift { --u: 10.4px; }
+
+.kj-body { position: relative; display: flex; flex-direction: column; justify-content: center; gap: 10px; min-width: 0; padding: 30px 62px 30px 38px; }
+.kuji-rank {
+  position: relative; width: fit-content; font-family: var(--font); font-size: 100px; font-weight: 900; line-height: 1.02; letter-spacing: 0.02em;
+  background: linear-gradient(180deg, var(--kj-main) 0%, var(--kj-ink) 58%, var(--kj-deep) 100%);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  filter: drop-shadow(0 2px 0 rgba(255, 255, 255, 0.75)) drop-shadow(0 0 14px var(--kj-glow));
+}
+.kuji-card.rank-LAST:not(.kuji-short) .kuji-rank { font-size: 64px; letter-spacing: 0.06em; }
+.kuji-name { position: relative; padding-top: 12px; font-size: 30px; font-weight: 800; line-height: 1.32; color: #2b1d1a; border-top: 2px solid; border-image: linear-gradient(90deg, var(--kj-ink), transparent 92%) 1; }
+.kj-nowrap { display: inline-block; }
+.kuji-desc { position: relative; font-size: 22px; line-height: 1.55; color: #6a5648; }
+.kuji-dupe { position: relative; width: fit-content; padding: 6px 14px; font-size: 20px; font-weight: 700; line-height: 1.4; color: #5a3a12; background: rgba(201, 162, 74, 0.2); border: 1px solid rgba(138, 90, 16, 0.5); border-radius: 10px; }
+.kuji-dupe-badge { display: inline-grid; place-items: center; min-width: 1.6em; height: 1.6em; margin-right: 6px; padding: 0 4px; font-size: 1em; line-height: 1; color: #fff8e6; background: #8a5a10; border-radius: 4px; vertical-align: middle; }
+/* 札全体のタップで閉じる。文の案内は置かず、右上の ✕ だけ（#2835） */
+.kuji-close {
+  position: absolute; top: 8px; right: 8px; display: grid; place-items: center; width: max(56px, calc(40px / var(--k, 1))); height: max(56px, calc(40px / var(--k, 1))); padding: 0;
+  font-size: 26px; line-height: 1; color: #8a7666; background: transparent; border: 0; border-radius: 50%; cursor: pointer;
+}
+.kuji-close:hover, .kuji-close:focus-visible { color: #2b1d1a; background: rgba(60, 40, 20, 0.12); }
+/* ラストワン賞は黒い厚紙に銀の箔 */
+.kuji-card.rank-LAST { color: #f1f2f8; }
+.kuji-card.rank-LAST:not(.kuji-short) { background: var(--kj-card) center / 100% 100% no-repeat border-box, linear-gradient(168deg, #2a2730 0%, #1b1920 60%, #131216 100%) center / calc(100% - 28px) calc(100% - 28px) no-repeat padding-box; }
+.kuji-card.rank-LAST .kuji-rank { background: linear-gradient(180deg, #ffffff 0%, #d5d6e6 50%, #9a98c0 100%); -webkit-background-clip: text; background-clip: text; filter: drop-shadow(0 2px 0 rgba(0, 0, 0, 0.6)) drop-shadow(0 0 14px var(--kj-glow)); }
+.kuji-card.rank-LAST .kuji-name { color: #f1f2f8; }
+.kuji-card.rank-LAST .kuji-desc { color: #b6b4c8; }
+.kuji-card.rank-LAST .kuji-close { color: #b6b4c8; }
+
+/* S賞の上の「大当たり」 */
+.kj-banner {
+  position: absolute; left: 50%; top: -38px; z-index: 2; transform: translateX(-50%); padding: 7px 52px 8px; white-space: nowrap;
+  font-size: 28px; font-weight: 900; letter-spacing: 0.34em; text-indent: 0.34em; color: #5a2a00; text-shadow: 0 1px 0 rgba(255, 246, 214, 0.7);
+  /* 描いた金の帯（#3228。両端の燕尾ごと）。読み込めないときは金の色の帯 */
+  background: url("../../img/ui/kuji/banner.webp") center / 100% 100% no-repeat, linear-gradient(180deg, #fff6d6 0%, #f2c14a 50%, #d9952a 100%) center / 78% 70% no-repeat;
+  filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.45)) drop-shadow(0 0 18px rgba(255, 207, 74, 0.6));
+}
+/* 札を斜めに走る照り */
+.kuji-card::after {
+  content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; opacity: 0;
+  background: linear-gradient(108deg, transparent 42%, rgba(255, 255, 255, 0.7) 50%, transparent 58%) 130% 0 / 260% 100% no-repeat;
+}
+
+/* 開く動き: 光の中から回り込んで出て、賞の文字が判のように押される */
+.kuji-card.reveal { animation: kj-card-in 0.62s cubic-bezier(0.2, 1.22, 0.32, 1) both; }
+.kuji-card.reveal::after { animation: kj-shine 1.05s 0.5s ease-out both; }
+.kuji-card.reveal:is(.rank-S, .rank-LAST)::after { animation: kj-shine 2.6s 0.5s ease-out infinite; }
+.kuji-card.reveal .kuji-rank { animation: kj-stamp 0.46s 0.26s cubic-bezier(0.2, 1.5, 0.4, 1) both; }
+.kuji-card.reveal .kj-art > * { animation: kj-art-in 0.56s 0.2s cubic-bezier(0.2, 1.4, 0.4, 1) both; }
+.kuji-card.reveal :is(.kuji-name, .kuji-desc, .kuji-dupe) { animation: kj-rise 0.42s 0.44s ease-out both; }
+.kuji-card.reveal .kuji-desc { animation-delay: 0.52s; }
+.kuji-card.reveal .kuji-dupe { animation-delay: 0.6s; }
+.kuji-card.reveal .kj-banner { animation: kj-banner-in 0.5s 0.5s cubic-bezier(0.2, 1.5, 0.4, 1) both; }
+@keyframes kj-card-in {
+  0% { transform: perspective(1500px) scale(0.2) rotateY(-160deg) rotateZ(-10deg); opacity: 0; filter: brightness(3.2); }
+  45% { opacity: 1; filter: brightness(1.8); }
+  100% { transform: perspective(1500px) scale(1) rotateY(0deg) rotateZ(0deg); opacity: 1; filter: brightness(1); }
+}
+@keyframes kj-shine { 0% { opacity: 1; background-position: 130% 0; } 40%, 100% { opacity: 1; background-position: -30% 0; } }
+@keyframes kj-stamp { from { transform: scale(2.7) rotate(-9deg); opacity: 0; } }
+@keyframes kj-art-in { from { transform: scale(0.3) rotate(-14deg); opacity: 0; } }
+@keyframes kj-rise { from { transform: translateY(16px); opacity: 0; } }
+@keyframes kj-banner-in { from { transform: translateX(-50%) translateY(20px) scale(0.5); opacity: 0; } }
+
+/* ---- 連続の結果: 玉の載った札が並び、1枚ずつ開く ---- */
+.kuji-multi { cursor: default; padding: 14px 20px; }
+.kuji-multi-panel { position: relative; width: min(1240px, 100%); max-height: 100%; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; text-align: center; color: #f6efe0; }
+.kuji-multi-panel.kj-wait { visibility: hidden; }
+.kuji-multi-panel h2 {
+  display: flex; align-items: center; justify-content: center; gap: 18px; margin: 0 0 12px; font-family: var(--font); font-size: 30px; font-weight: 900; letter-spacing: 0.14em; color: #f6efe0;
+  text-shadow: 0 2px 0 #1a100a, 0 0 14px rgba(0, 0, 0, 0.6);
+}
+.kuji-multi-panel h2::before, .kuji-multi-panel h2::after { content: ""; width: 150px; height: 2px; background: linear-gradient(90deg, transparent, #c9a24a); }
+.kuji-multi-panel h2::after { transform: scaleX(-1); }
+.kuji-multi-cards { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin: 0 0 14px; perspective: 1500px; }
+/* 連続の小さい札: 1回引きの札と同じ絵の縁（箔）だけを九分割で使い、中は生成りの地 */
+.kuji-card.kuji-short {
+  --kj-card: url("../../img/ui/kuji/card-c.webp");
+  flex: 0 0 calc((100% - 48px) / 5); min-width: 0; min-height: 244px; display: flex; flex-direction: column; overflow: hidden; text-align: center;
+  border: 6px solid transparent; border-radius: 12px; border-image: var(--kj-card) 40 / 6px / 0 stretch;
+  background: linear-gradient(168deg, #fcf7ec 0%, #f0e6d2 100%) padding-box;
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.5), 0 0 20px var(--kj-glow);
+}
+.kuji-card.kuji-short.rank-LAST { background: linear-gradient(168deg, #2a2730 0%, #151318 100%) padding-box; }
+.kuji-multi-cards[data-n="11"] .kuji-card.kuji-short { flex-basis: calc((100% - 60px) / 6); }
+.kuji-short .kj-art {
+  flex: none; height: 132px; margin: 6px 6px 0; border-radius: 7px;
+  background: radial-gradient(circle at 50% 44%, #ffffff 0%, var(--kj-hi) 34%, var(--kj-main) 120%); box-shadow: inset 0 0 0 1.5px var(--kj-deep), inset 0 6px 18px rgba(60, 40, 20, 0.28);
+}
+.kuji-short.rank-LAST .kj-art { background: radial-gradient(circle at 50% 44%, #f1f2f8 0%, #b9b4d8 46%, #4a4670 130%); }
+.kuji-short .kj-body { position: static; flex: 1; justify-content: flex-start; align-items: center; gap: 6px; padding: 8px 8px 10px; }
+.kuji-short .kuji-rank {
+  position: absolute; left: 10px; top: 10px; z-index: 1; padding: 3px 11px 4px; font-size: 22px; line-height: 1.1; letter-spacing: 0.02em; border-radius: 999px;
+  color: #2a1300; -webkit-text-fill-color: #2a1300; background: linear-gradient(180deg, var(--kj-hi), var(--kj-main)); -webkit-background-clip: border-box; background-clip: border-box;
+  filter: none; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+.kuji-short.rank-LAST .kuji-rank { font-size: 17px; color: #f1f2f8; -webkit-text-fill-color: #f1f2f8; background: linear-gradient(180deg, #4a4670, #1c1a2c); }
+.kuji-short .kuji-name { padding: 0; border: 0; font-size: 19px; font-weight: 700; line-height: 1.34; }
+.kuji-short .kuji-dupe { margin-top: auto; padding: 3px 9px; font-size: 16px; }
+.kuji-short.rank-LAST .kuji-dupe { color: #ffe9a8; background: rgba(255, 207, 74, 0.12); border-color: rgba(255, 207, 74, 0.5); }
+/* 伏せた札: くるみの板に、出た玉が載っている（玉の色が賞の予告） */
+.kj-ball {
+  --kj-ball-art: url("../../img/ui/kuji/ball-c.webp");
+  position: absolute; left: 50%; top: 50%; z-index: 2; width: 86px; height: 86px; margin: -43px 0 0 -43px; border-radius: 50%; pointer-events: none;
+  /* 描いた玉（#3228。抽選器から出る玉と同じ絵）。円が枠いっぱいになるよう少し大きく敷く */
+  background: var(--kj-ball-art) center / 106.25% no-repeat, radial-gradient(circle at 34% 30%, #ffffff 0%, var(--kj-hi) 14%, var(--kj-ball) 48%, var(--kj-deep) 100%);
+  box-shadow: 0 0 30px var(--kj-glow), 0 12px 16px rgba(0, 0, 0, 0.5);
+  opacity: 0; transform: scale(2.3); transition: opacity 0.26s ease-out, transform 0.26s ease-out;
+}
+.rank-S .kj-ball { --kj-ball-art: url("../../img/ui/kuji/ball-s.webp"); }
+.rank-A .kj-ball { --kj-ball-art: url("../../img/ui/kuji/ball-a.webp"); }
+.rank-B .kj-ball { --kj-ball-art: url("../../img/ui/kuji/ball-b.webp"); }
+.rank-LAST .kj-ball { --kj-ball-art: url("../../img/ui/kuji/ball-last.webp"); }
+.kuji-card.kuji-short.kuji-facedown {
+  border-image: none;
+  background: linear-gradient(168deg, #5b3a22 0%, #2f1c11 100%) padding-box, linear-gradient(135deg, #b98a58, #5b3a22 55%, #b98a58) border-box;
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.5);
+}
+.kuji-short.kuji-facedown > :not(.kj-ball) { visibility: hidden; }
+.kuji-short.kuji-facedown .kj-ball { opacity: 1; transform: none; animation: kj-bob 1.5s ease-in-out infinite alternate; animation-delay: calc(var(--i, 0) * -0.17s); }
+.kuji-multi-panel.kj-in .kuji-short { animation: kj-deal 0.42s cubic-bezier(0.2, 1.3, 0.4, 1) both; animation-delay: calc(var(--i, 0) * 45ms); }
+.kuji-multi-panel .kuji-short.kj-open { animation: kj-tile-open 0.44s cubic-bezier(0.2, 1.4, 0.4, 1) both; }
+.kuji-short.kj-open::after { animation: kj-shine 0.9s 0.1s ease-out both; }
+.kuji-multi-panel.kj-complete .kuji-short:is(.rank-S, .rank-LAST)::after { animation: kj-shine 2.6s ease-out infinite; }
+@keyframes kj-bob { from { transform: translateY(-4px); } to { transform: translateY(4px); } }
+@keyframes kj-deal { from { transform: translateY(60px) scale(0.6); opacity: 0; } }
+@keyframes kj-tile-open { 0% { transform: rotateY(92deg) scale(0.92); filter: brightness(2.6); } 100% { transform: rotateY(0deg) scale(1); filter: brightness(1); } }
+.kj-actions { display: flex; align-items: center; justify-content: center; gap: 14px; }
+.kj-actions .btn { min-width: 200px; min-height: 52px; justify-content: center; }
+.kuji-flip-all { margin: 0; }
+/* S賞・ラストワン賞の見せ場（連続の途中で1枚ずつ大きく見せる。タップで戻る） */
+.kj-showcase { position: absolute; inset: 0; z-index: 4; display: grid; place-items: center; cursor: pointer; animation: kj-fade 0.2s; }
+
+/* スマホでは1回引きの札の説明（補足）を出さず、札の title で読む（#2729・2026-11-08「文字が多い」）。賞・景品名・重複の買い取りは出す */
+html:root[data-density="phone"] .kuji-card:not(.kuji-short) .kuji-desc { display: none; }
+/* 結果のボタンは共通のスマホ規格（phone-density.css の --phone-tap）を使い、実寸 40px を下回る画面ではそのぶん大きくする */
+html:root[data-density="phone"] body:not(.game-ds) .kj-actions .btn { min-height: max(var(--phone-tap, 72px), calc(40px / var(--k, 1))); }
+/* スマホ横持ち: stage が縮むぶん（--k）を戻し、実寸で文字 12px・押せる所 40px を下回らせない（#2835）。縦持ちは扱わない */
+@media (orientation: landscape) and (max-width: 1024px) and (max-height: 520px) and (pointer: coarse) and (hover: none) {
+  .kuji-card:not(.kuji-short) .kuji-name { font-size: max(30px, calc(14px / var(--k, 1))); }
+  .kuji-card:not(.kuji-short) :is(.kuji-desc, .kuji-dupe) { font-size: max(22px, calc(13px / var(--k, 1))); }
+  .kuji-short .kuji-name, .kuji-short .kuji-dupe { font-size: max(19px, calc(12px / var(--k, 1))); }
+  .kuji-short .kuji-rank { font-size: max(22px, calc(13px / var(--k, 1))); }
+  .kuji-short.rank-LAST .kuji-rank { font-size: max(17px, calc(12px / var(--k, 1))); }
+  .kuji-close { font-size: max(26px, calc(16px / var(--k, 1))); }
+  .kuji-multi-panel h2 { font-size: max(30px, calc(14px / var(--k, 1))); }
+}
+/* 動きを減らす設定: 札はその場に出し、光は回さない */
+@media (prefers-reduced-motion: reduce) {
+  .kuji-card.reveal, .kuji-card.reveal *, .kuji-card::after, .kuji-multi-panel .kuji-short, .kj-ball, .kj-rays, .kj-halo { animation: none !important; transition: none !important; }
+}

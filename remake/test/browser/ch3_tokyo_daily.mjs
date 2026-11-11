@@ -117,7 +117,7 @@ await suite("ch3-tokyo-daily", async check => {
   });
 
   // #2454 てつこといっしょ: 裏口の選択の先頭。初めてなら既存の段階会話（初回）を読んでから、ふれあいの画面へ。
-  // なでる・見守るをして「帰る」と、同じ処理の中で回復12・来訪1回・_tetsuko_time を確定する（二重にならない）。
+  // なでる・じゃらしをして「帰る」と、同じ処理の中で回復12・来訪1回・_tetsuko_time を確定する（二重にならない）。
   // 好感度・能力・お金・時間は動かさない（お金はシフトの日当だけ）。
   await check("tetsuko-time-first-visit-reads-the-stage-scene-and-settles-once", async page => {
     await seed(page);
@@ -141,13 +141,14 @@ await suite("ch3-tokyo-daily", async check => {
     const screen = page.locator(dt("tetsuko-time-screen"));
     await screen.waitFor({ timeout: 60000 });
     assert.equal(await screen.getAttribute("data-stage"), "0", "First visit: still keeping her distance");
-    assert.match(await page.locator(dt("tetsuko-mood")).innerText(), /今日は/);
+    assert.match(await page.locator(dt("tetsuko-mood")).getAttribute("aria-label"), /今日は/);
     assert((await page.locator(dt("tetsuko-caption")).innerText()).trim().length > 0, "She reacts as soon as the screen opens");
     assert.equal(await page.locator(dt("tetsuko-brush")).isDisabled(), true, "The brush waits until Mukai's brush scene");
     assert.equal((await get(page)).flags._ch3_outings.tetsuko, undefined, "Nothing is settled while the screen is open");
     await page.locator(dt("tetsuko-pet")).click();
-    await page.locator(dt("tetsuko-watch")).click();
-    await page.locator(dt("tetsuko-note")).filter({ hasText: "前足をそろえる" }).waitFor();
+    // じゃらしを3回振ると前足が出る（様子見の段階は飛びつかない）。
+    for (let i = 0; i < 3; i += 1) await page.locator(dt("tetsuko-play")).click();
+    await page.locator(dt("tetsuko-note")).filter({ hasText: "はじめて前足が出た" }).waitFor();
     // 二重押ししても確定は一度だけ。
     await page.locator(dt("tetsuko-time-back")).click();
     await page.locator(dt("tetsuko-time-back")).click({ timeout: 500 }).catch(() => {});
@@ -156,7 +157,8 @@ await suite("ch3-tokyo-daily", async check => {
     const maximum = await page.evaluate(async () => (await import("./js/core/stats.js")).maxStamina());
     assert.equal(settled.stamina, Math.min(maximum, mid.stamina + 12), "Stamina comes back by 12 (within the cap)");
     const record = settled.flags._tetsuko_time;
-    assert(record.found.includes("paws_together"), "The moment is kept in the book without a photo");
+    assert(record.found.includes("first_paw"), "The moment is kept in the book without a photo");
+    assert.equal(record.peaks, 0, "No happy peak yet on such a short visit");
     assert.equal(record.sessions, 1);
     assert.equal(record.lastKey, `3:33:1:0`, "The visit key comes from the mukai visit");
     assert.deepEqual(settled.affinity, mid.affinity, "No affinity from the cat");
@@ -222,7 +224,7 @@ await suite("ch3-tokyo-daily", async check => {
     await page.locator(dt("tetsuko-slot-floor")).click();
     assert.equal(await page.locator('.tt-slot[data-slot="floor"]').getAttribute("data-prop"), "box", "The box is on the floor");
     await page.locator(dt("tetsuko-panel-close")).click();
-    // 猫じゃらし: 持ち替えて、先を指（マウス）で動かす。動かすたびに振ったことになり、3回目で前足が出る。
+    // 猫じゃらし: 持ち替えて、先を指（マウス）で動かす。動かすたびに振ったことになり、3回目で前足が出る（その次で飛びつく）。
     await page.locator(dt("tetsuko-play")).click();
     assert.equal(await screen.getAttribute("data-tool"), "toy");
     const box = await screen.boundingBox();
@@ -472,6 +474,8 @@ await suite("ch3-tokyo-daily", async check => {
       Object.assign(value.met, { mashiro: true, mukai_master: true, naru: true, uranaishi: true });
       value.affinity.naru = 20; value.flags._fortune_met = true;
       value.flags._ch3_opening_read = value.flags._ch3_registration_read = value.flags._ch3_rules_read = true;
+      // この検査は1回の出現と退場。2回分の未消化予定が同時に来る種は別の条件なので除く。
+      while (fortune.fortunePlan(value).length !== 1) value.seed++;
       delete value.flags._fortune_wander;
       if (!fortune.placeFortuneNow(value, "tokyo")) throw new Error("Fortune teller placement failed");
       core.save();
@@ -538,6 +542,57 @@ await suite("ch3-tokyo-daily", async check => {
     assert.equal(state.slot, 0, "Answering the LIME uses no time");
   });
 
+  // 恋人のましろと mukai で過ごす時間（BLC03・chapters/mashiro-time.js）。一日に一度、行動1回・体力10で短い場面を読み、
+  // デート1回と同じ絆が入る。同じ日の二度目は、mukai の選択肢に出ない。
+  await check("a-lover-spends-time-with-mashiro-at-mukai-once-a-day", async page => {
+    await seed(page);
+    const day = await page.evaluate(async () => {
+      const core = await import("./js/core/state.js");
+      const progress = await import("./js/chapters/ch3-progress.js");
+      const value = core.state, intro = value.flags._ch3_intro;
+      // 東京DAY6の昼。ましろと交際していて、最初の節目（Lv1）は読んである。
+      intro.stage = progress.CH3_INTRO_SCENES.findIndex(scene => scene.id === "ch3_naru_contact_before_tournament");
+      value.day = intro.startDay + 5; value.slot = 0; value.phase = "daily"; value.stamina = 100;
+      Object.assign(value.met, { mashiro: true, mukai_master: true });
+      value.lovers = ["mashiro"]; value.contacts = [...new Set([...(value.contacts || []), "mashiro"])];
+      value.loveLevel.mashiro = 1; value.lovePts.mashiro = 9; value.loverSince.mashiro = value.day;
+      value.loverEventsSeen = ["lover_mashiro_lv1"];
+      for (const id of ["mashiro", "mukai_master"]) value.flags[`_intro_${id}`] = true;
+      value.limeRead = [...(value.limeRead || []), "_lover_private_account_mashiro"];
+      value.flags._ch3_opening_read = value.flags._ch3_registration_read = value.flags._ch3_rules_read = true;
+      core.save();
+      return value.day;
+    });
+    await loadSlot(page, 0);
+    await tokyoMap(page, { day, slot: 0 });
+    const before = await get(page);
+    await go(page, "ch3_tokyo_mukai");
+    const first = page.locator(dt("tokyo-mukai-0"));
+    await first.waitFor({ timeout: 30000 });
+    assert.match(await first.textContent(), /ましろちゃんと過ごす（恋人）/, "The lover option leads the mukai choices");
+    await first.click();
+    // mukai で行動を使った帰りは、裏口のてつこに会うかを聞かれる（ほかの mukai の行動と同じ）。
+    await page.locator(dt("tokyo-tetsuko-no")).waitFor({ timeout: 60000 });
+    await page.locator(dt("tokyo-tetsuko-no")).click();
+    await tokyoMap(page, { day, slot: 1 });
+    const state = await get(page);
+    assert.deepEqual(state.flags._mashiro_time, { count: 1, day }, "One short scene was read today");
+    assert.equal(state.lovePts.mashiro, before.lovePts.mashiro + 5, "A date-sized bond (10, halved for lovers)");
+    assert.equal(state.stamina, before.stamina - 10);
+    assert.deepEqual(state.loverEventsSeen, ["lover_mashiro_lv1"], "No milestone is due yet");
+    // 同じ日はもう選べない（mukai も「今日はもう行った」になる）。翌日にまた選べる。
+    const open = await page.evaluate(async () => {
+      const time = await import("./js/chapters/mashiro-time.js");
+      const value = structuredClone(window.__remake.state);
+      const today = time.mashiroTimeOpen(window.__remake.state);
+      value.day++;
+      return { today, spent: time.mashiroTimeSpentToday(window.__remake.state), nextScene: time.mashiroTimeScene(value) };
+    });
+    assert.equal(open.today, false, "Once a day");
+    assert.equal(open.spent, true);
+    assert.equal(open.nextScene, "mashiro_time_train", "The next day reads the next short scene");
+  });
+
   // 日常ループの東京の CHOI-ZAP も、旧行程（ch3-activity-progress.js）と同じく3日間「風邪をひきにくい」を付ける（spot.gym・daily/calendar.js）。
   await check("the-tokyo-choizap-grants-the-fit-days", async page => {
     await seed(page);
@@ -563,3 +618,4 @@ await suite("ch3-tokyo-daily", async check => {
     assert.equal(state.visitedDay?.ch3_tokyo_gym, 44);
   });
 });
+

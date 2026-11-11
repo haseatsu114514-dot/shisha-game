@@ -1,0 +1,34 @@
+[
+  {
+    "file": "raw/band-smoke.png",
+    "pixels": [
+      2172,
+      724
+    ],
+    "bytes": 1307004,
+    "sha256": "544e045a39d4680661898f3158feff5f3b4b0f0fdb415dd81bb2aae616fadc98",
+    "alpha_range": [
+      0,
+      250
+    ],
+    "alpha_gt_90_pixels": 224300,
+    "alpha0_pixels": 855636,
+    "qa": "CANDIDATE_OPACITY_NG"
+  },
+  {
+    "file": "raw/heading-rule.png",
+    "pixels": [
+      2172,
+      724
+    ],
+    "bytes": 110259,
+    "sha256": "2512a7c805181b03086c20c9390751cb54273aa803e904d33462cd4b752dc443",
+    "alpha_range": [
+      0,
+      255
+    ],
+    "alpha_gt_90_pixels": 11682,
+    "alpha0_pixels": 1520023,
+    "qa": "PASS_VISUAL"
+  }
+]

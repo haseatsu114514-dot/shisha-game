@@ -31,8 +31,8 @@ const expectBands = async (page, t, selector) => {
   const bands = await bandsOf(page, selector);
   near(bands.t, t);
   const model = await page.evaluate(() => QA.conditions.temperatureBands(QA.cs));
-  for (const [key, expected] of [["ideal", model.ideal], ["optimal", model.optimal]]) {
-    if (key === "optimal" && model.expressionWeight >= .999) { assert.equal(bands[key], null, "Expressive blends must not mark only the middle as best"); continue; }
+  // 虹（.thermo-optimal）はどの配合にも出し、表示の虹の帯（model.rainbow）に合わせる（2026-11-10 オーナー指示）。
+  for (const [key, expected] of [["ideal", model.ideal], ["optimal", model.rainbow]]) {
     expected.forEach((value, i) => near(bands[key][i], value, key));
   }
   assert.equal(bands.expressionMode, model.expressionWeight >= .999 ? "broad" : "focused");
@@ -99,7 +99,8 @@ await suite("mix-temperature", async check => {
       const preview = await expectBands(page, 1.2);
       assert.equal(await page.locator(".mix-ideal").textContent(), "おいしい範囲");
       assert.equal(await page.locator(".mix-optimal").textContent(), "低め／高め");
-      assert.equal(await page.locator('[data-test="mix-optimal"]').isVisible(), false);
+      // 作り分ける葉だけの配合でも虹は出る（おいしく作れる範囲全体。2026-11-10 オーナー指示）
+      assert.equal(await page.locator('[data-test="mix-optimal"]').isVisible(), true);
       assert.match(await page.locator(".mix-temperature").getAttribute("aria-label"), /低めと高めで香りが変わる/);
       assert.doesNotMatch(await page.locator(".mix-temperature-legend").textContent(), /[\d%]/);
       assert.doesNotMatch(await page.locator(".mix-temperature").getAttribute("aria-label"), /[\d%]/);
@@ -145,7 +146,8 @@ await suite("mix-temperature", async check => {
         background: document.querySelector(".bench").dataset.thermalBand,
         score: QA.cs.arcade.parts.pull, strain: QA.cs.strain || 0 }));
       assert.equal(result.pull.optimal, true); assert.equal(result.pull.inZone, true);
-      assert.equal(result.pull.score, result.expected.score); assert.equal(result.background, "ready");
+      // ミントだけの配合は作り分ける葉なので、おいしく作れる範囲全体が虹（2026-11-10 オーナー指示）。背景も虹
+      assert.equal(result.pull.score, result.expected.score); assert.equal(result.background, "optimal");
       assert.equal(result.pull.score, 100);
       assert.equal(result.score, result.pull.score * 100); assert.equal(result.strain, 0);
       await finishResult(page);
@@ -261,13 +263,9 @@ await suite("mix-temperature", async check => {
   });
 
   await check("expressive-labels-fit-through-care", async page => {
-    await page.evaluate(async () => {
-      const { TITLE_LAYOUT_KEY } = await import("./js/scenes/title-layout.js");
-      localStorage.setItem(TITLE_LAYOUT_KEY, "ds");
-      window.dispatchEvent(new Event("display-layout-change"));
-    });
+    // DS風は廃止（横画面一本化）。横持ちタッチの通常表示で、低め/高めの札が収まり観客の欄より前に出ることを確かめる。
     await prepare(page, "drill");
-    await page.locator("body.game-ds").waitFor();
+    assert.equal(await page.locator("body.game-ds").count(), 0);
     for (const care of [false, true]) for (const high of [false, true]) {
       await page.evaluate(async ({ care, high }) => {
         const cs = QA.session.newSession("drill");
@@ -285,7 +283,8 @@ await suite("mix-temperature", async check => {
       await page.locator('[data-test="pull-stop"]:enabled').waitFor();
       await page.locator(".pull-state").filter({ hasText: high ? "適温・高" : "適温・低" }).waitFor();
       await assertFits(page, ".pull-read");
-      assert.equal(await page.locator(".thermo-optimal").isVisible(), false);
+      // 作り分ける葉の配合でも虹は出る（2026-11-10 オーナー指示）
+      assert.equal(await page.locator(".thermo-optimal").isVisible(), true);
       assert.equal(await page.locator(".pull-drift").count(), care ? 1 : 0);
       // render() replaces the live label each frame; query it and measure it in one browser task.
       assert(await page.evaluate(() => {
@@ -296,7 +295,7 @@ await suite("mix-temperature", async check => {
           && node.scrollHeight <= node.clientHeight + 1 && text.left >= box.left - 1 && text.right <= box.right + 1
           && text.top >= box.top - 1 && text.bottom <= box.bottom + 1 && node.contains(front);
       }), "The low/high label must fit and remain in front of the audience panel, including while coals are cooling");
-      await page.screenshot({ path: path.join(shots, `expression-${care ? "care" : "pull"}-${high ? "high" : "low"}-ds.png`) });
+      await page.screenshot({ path: path.join(shots, `expression-${care ? "care" : "pull"}-${high ? "high" : "low"}-landscape.png`) });
       // Finish each live stage before mounting the next shisha; a cancelled care is an error.
       await keep(page);
       if (!care) await keep(page);
@@ -317,10 +316,10 @@ await suite("mix-temperature", async check => {
         const meter = thermometer.buildThermometer({ cs });
         const steam = forecast.buildSteamTemperature(cs);
         session.stepPanel("pull", "境界値").append(meter.root, steam.root);
-        for (const band of [bands.ideal, bands.optimal]) for (const temp of [band[0] - 1e-7, band[0], band[0] + 1e-7, band[1] - 1e-7, band[1], band[1] + 1e-7]) {
+        for (const band of [bands.ideal, bands.optimal, bands.rainbow]) for (const temp of [band[0] - 1e-7, band[0], band[0] + 1e-7, band[1] - 1e-7, band[1], band[1] + 1e-7]) {
           meter.update(temp); steam.update(temp);
           const actual = conditions.pullResult(temp, 2, 0, bands), effect = thermal.thermalBand(temp, bands);
-          rows.push({ id: flavor.id, temp, expressive: bands.expressionWeight >= .999,
+          rows.push({ id: flavor.id, temp, expressive: bands.expressionWeight >= .999, inRainbow: conditions.isRainbowTemperature(temp, bands),
             ideal: meter.root.classList.contains("ok"), optimal: meter.root.classList.contains("optimal"),
             steamIdeal: steam.root.classList.contains("ok"), steamOptimal: steam.root.classList.contains("optimal"), actual,
             ready: effect.id === "ready" || effect.id === "optimal", rainbow: effect.id === "optimal" });
@@ -366,15 +365,16 @@ await suite("mix-temperature", async check => {
       return { rows, modes, isolated, mintRisk, mintCenterRisk, afRisk, afCenterRisk, vanillaRisk, vanillaCenterRisk };
     });
     for (const row of results.rows) {
-      assert.equal(row.ideal, row.actual.inZone, JSON.stringify(row)); assert.equal(row.optimal, row.actual.optimal && !row.expressive, JSON.stringify(row));
+      assert.equal(row.ideal, row.actual.inZone, JSON.stringify(row)); assert.equal(row.optimal, row.inRainbow, JSON.stringify(row));
       assert.equal(row.steamIdeal, row.ideal); assert.equal(row.steamOptimal, row.optimal);
       assert.equal(row.ready, row.ideal); assert.equal(row.rainbow, row.optimal);
     }
-    assert(results.rows.length >= 768); assert(results.isolated);
+    assert(results.rows.length >= 1152); assert(results.isolated);
     assert.deepEqual(results.modes.map(m => m.mode), ["focused", "broad", "focused"]);
-    assert.deepEqual(results.modes.map(m => m.centerHidden), [false, true, false]);
-    assert.deepEqual(results.modes.map(m => m.horizontalCenterHidden), [false, true, false]);
-    assert.deepEqual(results.modes.map(m => m.optimal), [true, false, true]);
+    // 作り分ける葉の配合（double_apple）でも虹は出る。中央に立つ温度は虹の中。
+    assert.deepEqual(results.modes.map(m => m.centerHidden), [false, false, false]);
+    assert.deepEqual(results.modes.map(m => m.horizontalCenterHidden), [false, false, false]);
+    assert.deepEqual(results.modes.map(m => m.optimal), [true, true, true]);
     assert.equal(new Set(results.modes.map(m => m.center)).size, 1);
     assert.equal(new Set(results.modes.map(m => m.width)).size, 1);
     assert.match(results.modes[1].text, /おいしく作れる範囲/);
@@ -459,7 +459,7 @@ await suite("mix-temperature", async check => {
       assert(!row.hidden && row.width > 0 && row.height > 0, JSON.stringify(row));
       near(row.measured[0], row.target.low); near(row.measured[1], row.target.high);
       assert.equal(row.highlighted, "true"); assert.equal(row.bonusBefore, 0);
-      assert.match(row.text, /焼き際/); assert.equal(row.rainbowHidden, row.expressive);
+      assert.match(row.text, /焼き際/); assert.equal(row.rainbowHidden, false); // 虹はどの配合にも出る（2026-11-10）
       near(row.damaged.low, row.damaged.expected.low); near(row.damaged.high, row.damaged.expected.high);
       assert(row.hiddenAfter); assert.equal(row.savedBonus, .5);
     }

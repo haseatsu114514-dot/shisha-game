@@ -229,6 +229,70 @@ try {
     await finish(page, { aroma: "fruit", seat: "counter", approach: "company" });
     assert.equal(await page.locator('[data-test="trpg-ending-title"]').textContent(), "話の始まる一台");
   });
+  // 判定に賭けるもの（TRF01〜03）: seed 54 は最初の判定で20が出る。クリティカル → 質問が3つ → 思わぬ来客の成功で準備にGMのヒント。
+  // スマホ横持ちで、ごほうびの札・切り札の札・ヒントの付箋が画面に収まることも一緒に見る。
+  await run("stakes-critical-question-and-gm-hint", { seed: "54" },
+    { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }, async page => {
+      const snap = () => page.evaluate(() => __trpg.snapshot());
+      const inStage = async selector => page.locator(selector).first().evaluate(n => {
+        const stage = document.getElementById("stage").getBoundingClientRect(), r = n.getBoundingClientRect();
+        const actions = n.closest(".trpg-modal")?.querySelector(".trpg-modal-actions")?.getBoundingClientRect();
+        return r.width > 0 && r.top >= stage.top - 1 && r.bottom <= (actions ? actions.top : stage.bottom) + 1 && r.left >= stage.left - 1 && r.right <= stage.right + 1;
+      });
+      await page.locator('[data-test="trpg-start"]').tap();
+      await nextLines(page);
+      // 宣言の画面で、成功すると何がもらえるかを先に告げる。卓の上は短い札（TRF07）、文の説明は読み上げと「？」に。
+      const stake = page.locator('.trpg-declare-stage [data-test="trpg-stake"]');
+      assert.match(await stake.textContent(), /^成功で質問 ＋1$/);
+      assert.match(await stake.getAttribute("aria-label"), /成功すると.*聞き込み.*1つ増える/);
+      // カードは 誰が・何を・能力・見込みの帯。説明の一文はカードに出さない（押す前の読み上げとマウスの説明に残す）。
+      const card = page.locator('[data-test^="trpg-approach-"]').first();
+      assert.equal(await card.locator(".trpg-approach-copy span").count(), 0, "The approach card carries no sentence");
+      assert.equal(await card.locator('[data-test="trpg-approach-odds"]').count(), 1);
+      assert.match(await card.getAttribute("aria-label"), /成功 約\d+%、ひと手間 約\d+%/);
+      await page.locator('[data-test="trpg-declare-help"]').tap();
+      assert.match(await page.locator(".trpg-inline-help-body").textContent(), /帯は見込み.*ごほうび/);
+      await page.locator('[data-test="trpg-declare-help"]').tap();
+      await page.locator('[data-test^="trpg-approach-"]').first().tap();
+      await nextLines(page);
+      assert.equal(await page.locator('.trpg-roll-stage [data-test="trpg-stake"]').getAttribute("data-kind"), "listen");
+      assert(await inStage('.trpg-roll-stage [data-test="trpg-stake"]'), "The stake is visible on the roll table");
+      await page.locator('[data-test="trpg-roll"]').tap();
+      await page.locator('[data-test="trpg-settle"]').waitFor();
+      const first = (await snap()).pending;
+      assert(first.dice.includes(20), "Seed 54 opens with a 20");
+      assert.equal(await page.locator('[data-test="trpg-roll-special"]').getAttribute("data-special"), "critical");
+      assert.equal(await page.locator('[data-test="trpg-roll-total"]').getAttribute("data-grade"), "success", "A 20 always succeeds");
+      assert.equal(await page.locator('[data-test="trpg-roll-reward"]').getAttribute("data-kind"), "question");
+      assert.equal(await page.locator('[data-test="trpg-roll-special"]').textContent(), "クリティカル！", "The result names the event; the rule is explained in the help");
+      assert(await inStage('[data-test="trpg-roll-reward"]'), "The reward is not hidden under the buttons");
+      assert.equal(await page.locator('[data-test="trpg-reroll-0"]').count(), 0, "A critical offers no reroll");
+      await page.locator('[data-test="trpg-settle"]').tap();
+      await nextLines(page);
+      assert.equal((await snap()).extraQuestions, 1);
+      assert.match(await page.locator('[data-test="trpg-interview-left"]').textContent(), /あと 3 つ/);
+      const topics = page.locator('[data-test^="trpg-topic-"]');
+      for (let n = 0; n < 3; n++) { await topics.nth(n).tap(); await nextLines(page); }
+      assert.equal((await snap()).asked.length, 3);
+      assert(await topics.nth(3).isDisabled(), "The fourth question stays closed");
+      await page.locator('[data-test="trpg-interview-done"]').tap();
+      for (const id of ["menu", "window", "bag"]) { await page.locator('[data-test="trpg-spot-' + id + '"]').tap(); await nextLines(page); }
+      await page.locator('[data-test="trpg-interpret"]').tap();
+      await page.locator('[data-test="trpg-hypothesis-quiet"]').tap();
+      await nextLines(page);
+      await twistStep(page);
+      const hints = (await snap()).hints;
+      assert.deepEqual(Object.keys(hints).sort(), ["aroma", "seat"], "A successful twist marks one choice in each preparation field");
+      const marked = page.locator('[data-test="trpg-plan-aroma-' + hints.aroma + '"]');
+      assert.equal(await marked.getAttribute("data-hinted"), "true");
+      assert.equal(await page.locator('.trpg-choice-cards [data-hinted="true"]').count(), 1);
+      assert.match(await marked.locator(".trpg-hint-mark").textContent(), /合わなそう/);
+      assert.match(await marked.getAttribute("aria-label"), /GMのヒント/);
+      assert(await inStage('[data-test="trpg-hint-aroma"]'), "The hint tag stays on the stage");
+      // 付箋は助言。印の付いた選択肢も選べる。
+      await marked.tap();
+      assert.equal((await snap()).plan.aroma, hints.aroma);
+    });
   await run("discovery-small-touch", { seed: "12", traveler: "quiet" },
     { viewport: { width: 667, height: 375 }, isMobile: true, hasTouch: true }, async page => {
       await begin(page); await explore(page);
@@ -261,18 +325,18 @@ try {
     await hit(page, '[data-test="trpg-stat-nerve-down"]'); await hit(page, '[data-test="trpg-stat-talk-up"]');
     assert.equal(await page.locator('[data-test="trpg-stat-points"]').getAttribute("data-left"), "0");
     assert(await page.locator('[data-test="trpg-stat-talk-up"]').isDisabled(), "spent points disable raising");
-    await page.locator('[data-test="trpg-pc-name"]').fill("ソラ");
+    assert.equal(await page.locator('input[data-test="trpg-pc-name"], .trpg-builder input[type="text"]').count(), 0, "the role keeps its given name; no name field");
     await hit(page, '[data-test="trpg-build-confirm"]');
-    assert.equal(await page.locator('[data-test="trpg-cover-pc-name"]').textContent(), "ソラ");
+    assert.equal(await page.locator('[data-test="trpg-cover-pc-name"]').textContent(), "マル");
     const pc = (await page.evaluate(() => __trpg.snapshot())).pc;
-    assert.deepEqual(pc, { name: "ソラ", title: "船乗り帰りの手伝い", archetype: "sailor", stats: { eye: 2, hand: 3, talk: 3, nerve: 3 } });
+    assert.deepEqual(pc, { name: "マル", title: "船乗り帰りの手伝い", archetype: "sailor", stats: { eye: 2, hand: 3, talk: 3, nerve: 3 } });
     // "Leave it to the dice" is reproducible from the model, and cancelling keeps the confirmed character.
     await hit(page, '[data-test="trpg-build"]'); await hit(page, '[data-test="trpg-build-random"]'); await hit(page, '[data-test="trpg-build-back"]');
     assert.deepEqual((await page.evaluate(() => __trpg.snapshot())).pc, pc);
     await hit(page, '[data-test="trpg-start"]'); await nextLines(page);
-    assert.match(await page.locator('[data-test="trpg-seat-pc-hajime"]').textContent(), /ソラ/);
+    assert.match(await page.locator('[data-test="trpg-seat-pc-hajime"]').textContent(), /マル/);
     await hit(page, '[data-test="trpg-approach-listen_talk"]');
-    assert.match(await page.locator(".trpg-speech p").textContent(), /^ソラは/);
+    assert.match(await page.locator(".trpg-speech p").textContent(), /^マルは/);
     assert.equal(await page.locator(".trpg-root").evaluate(n => n.textContent.includes("{pc}")), false);
     await nextLines(page);
     assert.equal(await page.locator('[data-test="trpg-bonus"]').textContent(), "＋3", "the built talk stat is the roll's base");

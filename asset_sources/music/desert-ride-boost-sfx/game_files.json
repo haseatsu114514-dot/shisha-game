@@ -1,0 +1,38 @@
+[
+  {
+    "file": "assets/audio/se/desert_ride/zap_1.wav",
+    "role": "放電のビリッ（低め・短い）",
+    "source": "自作（build.py で合成。外部の音源なし）",
+    "sha256": "17e60d99226b7d83b7db36cee389a96936021f0fbb632f9c53b5cd446737d6cf"
+  },
+  {
+    "file": "assets/audio/se/desert_ride/zap_2.wav",
+    "role": "放電のビリッ（中くらい）",
+    "source": "自作（build.py で合成。外部の音源なし）",
+    "sha256": "04322736166c0212f52072e05b2811bba5f91b04adcd905aebd253e98eb1095c"
+  },
+  {
+    "file": "assets/audio/se/desert_ride/zap_3.wav",
+    "role": "放電のビリッ（高め・長い）",
+    "source": "自作（build.py で合成。外部の音源なし）",
+    "sha256": "8c5fbf6269fd44a1c21176c6eb2293a9a176a37cd4788ee603320db31141bb8d"
+  },
+  {
+    "file": "assets/audio/se/desert_ride/thunder_full.wav",
+    "role": "ゲージ満タンの雷",
+    "source": "自作（build.py で合成。外部の音源なし）",
+    "sha256": "51f71696446afd14ede84a2a3ce15aabc8cbecfc844e963d626ecdab0362f79e"
+  },
+  {
+    "file": "assets/audio/se/desert_ride/boost_rush.wav",
+    "role": "ブースト発進",
+    "source": "自作（build.py で合成。外部の音源なし）",
+    "sha256": "bb01fd76e75ebc4c6df76e51278ac3d67c71d54ca20a4aba85e1be379beb4927"
+  },
+  {
+    "file": "assets/audio/se/desert_ride/boost_loop.wav",
+    "role": "ブースト中の風切り（ループ）",
+    "source": "自作（build.py で合成。外部の音源なし）",
+    "sha256": "8f31279cd4e4bd448a6e890129cc6e52545a2e5fc2eddb8c3b298013c30451c4"
+  }
+]

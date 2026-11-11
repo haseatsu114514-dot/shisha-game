@@ -5,7 +5,7 @@ import { naruFinishGuide, naruFinishRange, inNaruFinishRange } from "../core/nar
 // 文字の目盛りは置かず、管の中の印で示す。低め・高めを作り分ける配合では、中央だけを虹で強調しない。
 // 一番上の焦げる帯に炎、熱管理の冷え切り帯に雪の結晶（TH32〜TH35）。
 import { el } from "../core/util.js";
-import { DANGER_TEMP, temperatureBands, isIdealTemperature, isOptimalTemperature, visualTemperature } from "./temperature-model.js";
+import { DANGER_TEMP, temperatureBands, isIdealTemperature, isOptimalTemperature, isRainbowTemperature, visualTemperature } from "./temperature-model.js";
 import { DB, makingUrl } from "../core/data.js";
 import { artImg } from "./art.js";
 
@@ -15,7 +15,7 @@ const POINTER = `<svg viewBox="0 0 30 30"><path d="M2.5 15 27 3.5 21.5 15 27 26.
 const pct = (f) => `${f * 100}%`;
 const fullExpression = bands => (bands.expressionWeight || 0) >= .999;
 const bandDescription = bands => fullExpression(bands)
-  ? "配合の温度帯：緑がおいしく作れる範囲。低めと高めで香りが変わる"
+  ? "配合の温度帯：虹がおいしく作れる範囲。低めと高めで香りが変わる"
   : "配合の温度帯：緑が適温の目安、中央の虹色が合わせやすい範囲";
 const SCALE_COLORS = [[0, "#fff4d2"], [.13, "#ffedb0"], [.26, "#ffe270"], [.37, "#ffd12a"], [.40, "#f6d559"], [.42, "#67d2a3"],
   [.44, "#4fcf98"], [.54, "#74e0b0"], [.64, "#4fcf98"], [.66, "#79d9a9"], [.71, "#ffb247"], [.76, "#ff8a2a"],
@@ -48,7 +48,7 @@ export function buildThermometer({ cs, compact = false, bandPreview = false, uns
   const skin = framed ? artImg("ui_temperature_frame.png", frameWidth, "thermo-skin", { h: height }) : null;
   const frameBox = DB.manifest.makingBox?.["ui_temperature_frame.png"];
   if (skin && frameBox) {
-    // 同じbboxの切り取りを比率で指定し、DSの短い管にも枠を追従させる。
+    // 同じbboxの切り取りを比率で指定し、管の長さが変わっても枠を追従させる。
     const [l, t, r, b] = frameBox, w = r - l, h = b - t;
     Object.assign(skin.style, { height: "100%", backgroundSize: `${100 / w}% ${100 / h}%`,
       backgroundPosition: `${w < 1 ? l / (1 - w) * 100 : 0}% ${h < 1 ? t / (1 - h) * 100 : 0}%` });
@@ -89,11 +89,11 @@ export function buildThermometer({ cs, compact = false, bandPreview = false, uns
     const expressive = fullExpression(bands);
     zone.style.bottom = pct(bands.ideal[0]); zone.style.height = pct(bands.ideal[1] - bands.ideal[0]);
     zone.title = expressive ? "おいしく作れる範囲" : "適温の目安";
-    optimal.hidden = expressive;
-    optimal.style.bottom = pct(bands.optimal[0]); optimal.style.height = pct(bands.optimal[1] - bands.optimal[0]);
+    // 虹はどの配合でも出す（作り分ける葉が多いほど広い）。
+    optimal.style.bottom = pct(bands.rainbow[0]); optimal.style.height = pct(bands.rainbow[1] - bands.rainbow[0]);
     heat.style.bottom = pct(bands.ideal[1]);
     root.style.setProperty("--thermo-gradient", `linear-gradient(0deg, ${SCALE_COLORS.map(([at, color]) => `${color} ${pct(visualTemperature(at, bands))}`).join(", ")})`);
-    Object.assign(root.dataset, { tolerance: bands.t, idealLow: bands.ideal[0], idealHigh: bands.ideal[1], optimalLow: bands.optimal[0], optimalHigh: bands.optimal[1], expressionMode: expressive ? "broad" : "focused" });
+    Object.assign(root.dataset, { tolerance: bands.t, idealLow: bands.ideal[0], idealHigh: bands.ideal[1], optimalLow: bands.optimal[0], optimalHigh: bands.optimal[1], rainbowLow: bands.rainbow[0], rainbowHigh: bands.rainbow[1], expressionMode: expressive ? "broad" : "focused" });
     if (bandPreview) root.setAttribute("aria-label", bandDescription(bands));
     return bands;
   };
@@ -106,7 +106,7 @@ export function buildThermometer({ cs, compact = false, bandPreview = false, uns
     dim.style.bottom = pct(temp);
     pointer.style.bottom = `calc(var(--thermo-inset) + ${temp} * (100% - 2 * var(--thermo-inset)) - 15px)`;
     root.classList.toggle("ok", isIdealTemperature(temp, bands));
-    root.classList.toggle("optimal", !fullExpression(bands) && isOptimalTemperature(temp, bands));
+    root.classList.toggle("optimal", isRainbowTemperature(temp, bands));
     root.classList.toggle("danger", temp >= DANGER_TEMP);
     root.classList.toggle("hot", temp > bands.ideal[1] && temp < DANGER_TEMP);
     root.classList.toggle("cool", temp < bands.ideal[0]);
@@ -149,7 +149,7 @@ export function buildMixTemperatureGauge(cs, { vertical = false } = {}) {
       const bands = temperatureBands(cs);
       meter.root.dataset.selected = String(bands.selected);
       for (const node of meter.root.querySelectorAll(".thermo-zone, .thermo-danger, .thermo-heat")) node.hidden = !bands.selected;
-      meter.root.querySelector(".thermo-optimal").hidden = !bands.selected || fullExpression(bands);
+      meter.root.querySelector(".thermo-optimal").hidden = !bands.selected;
       meter.root.setAttribute("aria-label", bands.selected
         ? bandDescription(bands)
         : "フレーバー未選択。葉を加えると合成温度帯を表示");
@@ -167,12 +167,12 @@ export function buildMixTemperatureGauge(cs, { vertical = false } = {}) {
     Object.assign(root.dataset, { tolerance: bands.t, idealLow: bands.ideal[0], idealHigh: bands.ideal[1],
       optimalLow: bands.optimal[0], optimalHigh: bands.optimal[1], center: bands.center,
       expressionMode: fullExpression(bands) ? "broad" : "focused" });
-    for (const [node, range] of [[ideal, bands.ideal], [optimal, bands.optimal]]) {
+    for (const [node, range] of [[ideal, bands.ideal], [optimal, bands.rainbow]]) {
       node.hidden = !bands.selected;
       node.style.left = pct(range[0]); node.style.width = pct(range[1] - range[0]);
     }
     ideal.title = fullExpression(bands) ? "おいしく作れる範囲" : "適温の目安";
-    optimal.hidden = !bands.selected || fullExpression(bands);
+    optimal.hidden = !bands.selected;
     center.hidden = !bands.selected || fullExpression(bands);
     center.style.left = pct(bands.center);
     scale.style.background = bands.selected

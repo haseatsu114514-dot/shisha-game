@@ -244,7 +244,7 @@ await suite("ch3-full-flow", async check => {
     await page.locator(t("aftermath")).click();
     const aftermath = id => `[data-test="ch3-aftermath-scene"][data-scene="${id}"]`;
     const after = ["ch3_abyss_hotel", "ch3_mashiro_recovery", "ch3_naru_reconcile", "ch3_enmaku_cleanup",
-      "ch3_home_customer", "ch3_tsumugi_result", "ch3_ageha_reunion"];
+      "ch3_ageha_reunion", "ch3_tsumugi_result", "ch3_home_customer"]; // STK23: 帰郷した夜の最後が帰郷の客
     for (const [index, id] of after.entries()) {
       await page.locator(aftermath(id)).waitFor();
       await page.locator(dt("ch3-aftermath-continue")).click();
@@ -265,7 +265,7 @@ await suite("ch3-full-flow", async check => {
     await page.locator(dt("ch3-aftermath-ageha-confession")).waitFor();
     assert.equal(await page.locator(dt("ch3-aftermath-chapter-four")).count(), 0);
     assert.equal((await get(page)).day, reunionDay + 1, "The confession happens the day after the reunion");
-    assert.equal((await get(page)).flags._ch3_cleared, true, "The reunion already closed the aftermath");
+    assert.equal((await get(page)).flags._ch3_cleared, true, "The homecoming night already closed the aftermath");
     await page.locator(dt("ch3-aftermath-ageha-confession-continue")).click();
     await page.locator(dt("ch3-aftermath-complete")).waitFor();
     assert((await get(page)).lovers.includes("ageha"), "The first answer (turbo) accepts ageha's confession");

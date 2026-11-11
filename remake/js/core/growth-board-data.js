@@ -23,7 +23,7 @@ export const HIDANE_NAME = { any: "白火", body: "紅火", sense: "蒼火", wis
  * - 要のマス（notable。各盤3つ: 近く・中ほど・関門の先）: 能力のマス・火種1のまま、名前つきの強化版（NOTABLES）。目的地になる。
  * - 授業は会う章の順に紋から遠い（SBD65）: 第1章＜第2章＜第3章＜第4章。
  * - 帯は3つ: 近く（第1章で開く・関門なし）、中ほど（第2章から・関門なし）、関門の先。
- *   普通のマスの恩恵は 近く×1・中ほど×2・関門の先×3。
+ *   普通のマスの恩恵は 近く×2・中ほど×2・関門の先×3（近くは 2026-11-11 に ×1 → ×2。SBD111）。
  * - 関門は4つ。**授業は関門のすぐ隣**（2人目は1マス先）。第2章の関門は紋のそば、あとの章の関門は中ほどの道の先。
  *   関門の先は 授業 → ×3のマス2つ → 強いスキル（火種6か8）。
  * - 紋のそばの授業は第1章で会う人だけ。授業はその人に会うまで盤に出さない。関門は色の火でどこからでも越えられる。
@@ -64,7 +64,7 @@ export const GRID = { w: 6, h: 8 }; // x は −w〜w、y は −h〜0（紋は�
  * そのマスを灯すと開く。どのマスかは BOARD_SHAPES の5つ目。効き目は growth-effects.js と各制作工程へ接続。通常公開前は GROWTH_BOARD の裏。
  */
 export const FEATURES = {
-  stage: { board: "body", name: "審査員の第一印象", text: "大会で審査員の第一印象が良く、少し加点される" },
+  stage: { board: "body", name: "審査員の第一印象", bonus: 0.3, text: "大会で審査員の第一印象に＋0.3点（人柄の伸びとは別に加点）" },
   omen: { board: "sense", name: "事故の予兆", text: "事故の予兆（焦げ・熱すぎ・吸いすぎ）が見える" },
   mental: { board: "sense", name: "弾消しで回復", text: "蒸らしで弾を消すと、メンタルも少し回復する" },
   insurance: { board: "sense", name: "一度だけの保険", text: "大会の一台で一度だけ、大失敗を防ぐ" },
@@ -74,24 +74,28 @@ export const FEATURES = {
 /**
  * 普通のマス（白火で灯す能力のマス）の恩恵（2026-10-30 オーナー「少しでも恩恵はつけたい。毎回違うのでなくてもいい」SBD59）。
  * どの恩恵かはマスごと（BOARD_SHAPES の4つ目）。強さは帯で決まる（SBD62「遠くをとりに行くやつはリターンを合わせたい」）:
- * 近く×1・中ほど×2・関門の先×3。text の {n} が帯の倍率で n×1／n×2／n×3 になる。数字は調整の初期値。表示と実効値は同じ集計を使う（growth-effects.js）。
+ * 近く×2・中ほど×2・関門の先×3（SBD111）。text の {n} に帯の倍率が掛かる。表示と実効値は同じ集計を使う（growth-effects.js）。
  */
 /**
  * 要のマス（2026-10-31 SBD73）: 能力のマスの中の目的地。その道の恩恵の名前つきの強化版。火種1・総量は変えない。
  * 数字は仮（効き目は C5 で決める）。bonus は帯の倍率にさらに掛ける倍率。
  */
 export const NOTABLES = {
-  friendly: { board: "body", name: "人懐こい", text: "初めて会った日の好感度が少し上がりやすい", bonus: 1.5 },
+  friendly: { board: "body", name: "人懐こい", text: "交流した時の好感度が少し上がりやすい（初対面の固定分は除く）", bonus: 1.5 },
   spotlight: { board: "body", name: "舞台映え", text: "提供の時、審査員の目が集まる", bonus: 1.5 },
-  ironsleep: { board: "body", name: "不眠の体", text: "寝不足の日でも体力の減りが小さい", bonus: 1.5 },
-  fire_eye: { board: "sense", name: "火の目", text: "炭焼きのジャスト帯が目で分かりやすい", bonus: 1.5 },
+  ironsleep: { board: "body", name: "不眠の体", text: "眠った時の体力の回復が増える", bonus: 1.5 },
+  fire_eye: { board: "sense", name: "火の目", text: "蒸らしで雑念に当たりにくくなる", bonus: 1.5 },
   smoke_breath: { board: "sense", name: "煙の呼吸", text: "リフレッシュの範囲が一回り広い", bonus: 1.5 },
-  hairbreadth: { board: "sense", name: "紙一重", text: "蒸らしの弾を紙一重でかわせる", bonus: 1.5 },
-  leaf_eye: { board: "wisdom", name: "葉の目利き", text: "葉の傷みが見た目で分かる", bonus: 1.5 },
+  hairbreadth: { board: "sense", name: "紙一重", text: "リフレッシュで広い範囲の雑念を消せる", bonus: 1.5 },
+  leaf_eye: { board: "wisdom", name: "葉の目利き", text: "吸いすぎた時の葉の傷みが小さくなる", bonus: 1.5 },
   golden_tongue: { board: "wisdom", name: "黄金の舌", text: "黄金比に近いほど舌が教える", bonus: 1.5 },
   long_coal: { board: "wisdom", name: "長持ちの炭", text: "炭の熱が長く持つ", bonus: 1.5 },
 };
-export const PERK_TIERS = [null, { mult: 1, name: "近く" }, { mult: 2, name: "中ほど" }, { mult: 3, name: "台座の先" }];
+/**
+ * 帯の倍率。近くの帯は 2026-11-11 に ×1 → ×2（オーナーが推奨を採用。SBD111）: 第1章で灯せる9マスの1つ1つ（人柄＋1%・眠り＋2% など）が
+ * 遊んでいて分からず、第1章の火種を使い切っても大会の優勝率が ±0〜＋1.6ポイントだった。×2 で最大＋3.2ポイント（上限の＋8以内）。
+ */
+export const PERK_TIERS = [null, { mult: 2, name: "近く" }, { mult: 2, name: "中ほど" }, { mult: 3, name: "台座の先" }];
 /**
  * 色の台座（もとの関門。2026-10-31 オーナー「章のロックに加えて、色の火種しか使えない所も作って欲しい。色火種をはめると進めて、その能力もゲットできる」SBD89）。
  * 色の火（紅火・蒼火・翠火）を1つはめると先へ進めて、その台座の能力が手に入る。台座1つ＝台座の先のマスの約1.3倍。
@@ -103,7 +107,7 @@ export const SQUARE_PERKS = {
     base: { glyph: "基", name: "基礎", text: "最大体力 ＋{1}・寝た時の回復 ＋{1}%" },
     perks: {
       stamina: { glyph: "体", name: "体力", text: "最大体力 ＋{4}" },
-      sleep: { glyph: "眠", name: "眠り", text: "寝た時の体力の回復 ＋{2}%" },
+      sleep: { glyph: "眠", name: "眠り", text: "寝た時の体力の回復 ＋{2}%（端数は次の睡眠へ）" },
       charm: { glyph: "人", name: "人柄", text: "好感度が上がりやすく（＋{1}%）" },
       stage: { glyph: "華", name: "華", text: "大会の審査員の第一印象 ＋{0.3}" },
     },
@@ -175,8 +179,9 @@ export const SKILLS = [
 
 /** reward: skill（新しい操作）／special（その人らしい強い効き目）／stat（能力が伸びる。bonus はマスの数） */
 // 2026-11-01 オーナー指示: 差し入れスキルは廃止。保存済みのID・位置・支払を保って通常マスへ。
+// worth は恩恵の倍率。火種2のマスなので恩恵も2マス分（2026-11-11 SBD112。火種1の通常マスと同じ＋2%で、半分の効率だった）
 export const STAT_UPGRADES = [
-  { id:"K20", cell:"-3,-1", board:"body", ring:2, cost:2, perk:"charm" },
+  { id:"K20", cell:"-3,-1", board:"body", ring:2, cost:2, perk:"charm", worth:2 },
 ];
 
 export const LESSONS = [
@@ -195,9 +200,12 @@ export const LESSONS = [
   { id: "M-W1", cell: "-1,-2", board: "wisdom", who: "sumi", need: 0, reward: "skill", name: "キューブ炭",
     hint: "盤の道が届いたら、スミさんが炭の授業をしてくれる",
     text: "キューブ炭を選べる", scene: "ch1_sumi_cube_coals", unlocks: ["_coal_cube_learned"] },
+  // 穴あけの「外周24穴」（craft/holes_templates.js）もこの授業で開く（#2020 H。炭を縁に回す置き方と、外周に穴を回す配置を一緒に教わる）。
+  // 習得済みの旧セーブは syncLessonFlags が読み込み時にフラグを立てる。
   { id: "M-W2", cell: "-3,-1", board: "wisdom", who: "sumi", need: 0, ring: 2, reward: "skill", name: "四つ置き・混ぜ置き",
-    hint: "盤の道が届いたら、スミさんが炭の置き方の奥を教えてくれる",
-    text: "炭の四つ置きと、フラット炭とキューブ炭の混ぜ置きを選べる", unlocks: ["_coal_four_unlocked", "_coal_mix_unlocked"], scene: "lesson_sumi_four" },
+    hint: "盤の道が届いたら、スミさんが炭と穴の置き方の奥を教えてくれる",
+    text: "炭の四つ置きと、フラット炭とキューブ炭の混ぜ置きを選べる。穴あけで「外周24穴」も選べる",
+    unlocks: ["_coal_four_unlocked", "_coal_mix_unlocked", "_hole_outer24_unlocked"], scene: "lesson_sumi_four" },
   { id: "M-W3", cell: "1,-2", board: "wisdom", who: "naru", need: 5, sig: true, reward: "skill", name: "焼き際の見極め",
     hint: "なると仲良くなると、提供する頃合いを話してくれそう",
     text: "温度計の琥珀の印に合わせて提供すると、焼き際を見極めた一台として総合評価が少し上がる。味の種類は問わない", scene: "lesson_naru_watch" },
@@ -281,4 +289,6 @@ export const PLAY_REWARDS = [
 /** くじのラストワン賞（中身はシークレット）。箱を引き切るたびに色つきの火種1つ（いちばん伸びの少ない盤の色）。
  * 第5章の限定台くじ（core/rules.js の KUJI_LIMITED_GRADES・KJ05）は付けない（#2455） */
 export const KUJI_LAST_ONE_GIFT = 1;
+
+
 

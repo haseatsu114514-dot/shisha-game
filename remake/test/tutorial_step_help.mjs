@@ -207,6 +207,18 @@ test("step intro shows once per save for choice steps in any mode (#3028)", asyn
   assert.equal(h.guide.open, false);
 });
 
+test("step intro prefers the session lesson override over the generic text (#3187)", async () => {
+  const h = await harness("tutorial");
+  h.cs.lessonHelp = { mix: { brief: "サッパリ系の葉を選び、合計12gにする", detail: "スミ「注文はサッパリ系。レモン・オレンジ・ミントから選ぶ」" } };
+  const done = h.mod.namespace.explainStepOnce(h.cs, "mix", "steam");
+  assert.equal(h.guide.open, true);
+  assert.match(h.b.guide.note.textContent, /レモン・オレンジ・ミントから選ぶ/);
+  assert.doesNotMatch(h.b.guide.note.textContent, /ダブルアップル/);
+  h.close();
+  assert.equal(await done, true);
+  assert.equal(h.statePort.state.flags.seenStepIntro.mix, true);
+});
+
 test("step intro is skipped when the save already saw it (#3028)", async () => {
   const h = await harness("tournament");
   h.statePort.state.flags.seenStepIntro = { mix: true };

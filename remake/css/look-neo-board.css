@@ -1,0 +1,227 @@
+/* 新版（LK02）の心得の盤（LK17）。look-neo.css が長くなったので、盤だけこのファイルに分けた。
+   すべての規則を :root[data-look="neo"] の中に書き、旧版の見た目を変えない（look-neo.css と同じ約束。look_neo_board.mjs が確かめる）。
+   色は look-neo.css の「会話の外」の変数（--neo-ui-*。#stage に定義）を読む。
+   配色テーマ（data-ui-theme の7種）の規則より必ず勝つよう、#stage と部品の id の2つで始める。 */
+
+/* ---------------------------------------------------------------- 1. 心得の盤（daily/growth-board-screen.js。#fx に重なる全面の画面）
+   紙の面をやめて、夜の店の灯り（screen_backdrop.webp）を背景に、夜紫の面と金の罫線で組む。
+   光る管とマスで描く盤の面（.gb-board の中）は変えない: 暗い面の上で、灯した所だけが光る。
+   並び・寸法・文・押せる大きさは旧版と同じ（面の色と線だけを替える）。 */
+:root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard {
+  --text: var(--neo-ui-ink);
+  --text-dim: var(--neo-ui-dim);
+  --gold: var(--neo-ui-gold);
+  --gold-hi: var(--neo-ui-gold-hi);
+  color: var(--neo-ui-ink);
+  text-shadow: none;
+  background:
+    radial-gradient(ellipse 60% 80% at 84% 26%, rgba(74, 49, 110, .34), transparent 70%),
+    linear-gradient(160deg, #0d0716, #150d22 60%, #1d1130);
+}
+:root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard.has-art {
+  background:
+    linear-gradient(180deg, rgba(13, 7, 22, .34), rgba(13, 7, 22, .5)),
+    #0a0612 url(../img/ui/growth_board/screen_backdrop.webp) center / cover no-repeat;
+}
+
+/* 見出しの行: 夜紫の帯。下に金の細い罫線（会話の帯・モーダルの見出しと同じ線）。 */
+:root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard .gb-header {
+  border-bottom: 0;
+  background:
+    linear-gradient(to right, var(--neo-ui-gold), rgba(227, 189, 110, .26) 55%, rgba(227, 189, 110, 0)) left bottom / 100% 1px no-repeat,
+    linear-gradient(180deg, rgba(27, 16, 41, .94), rgba(21, 13, 34, .8));
+}
+:root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard .gb-title { color: #fff; font-weight: 700; text-shadow: none; }
+:root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard .gb-level { color: var(--neo-ui-gold-hi); font-weight: 700; }
+:root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard .gb-level small { color: var(--neo-ui-dim); }
+:root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard .gb-gauge { background: rgba(8, 3, 16, .7); border-color: rgba(201, 167, 230, .42); }
+:root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard .gb-gauge b { background: linear-gradient(90deg, #c9973f, var(--neo-ui-gold-hi)); box-shadow: 0 0 6px rgba(227, 189, 110, .6); }
+:root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard .gb-place { color: var(--neo-ui-dim); }
+:root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard.can-light .gb-place { color: var(--neo-ui-gold-hi); font-weight: 700; }
+
+/* 丸い札（？・×・盤の倍率）: HUD の LIME／MENU と同じ夜紫の札。 */
+:root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard .gb-icon {
+  color: var(--neo-ui-ink);
+  background: rgba(34, 21, 52, .92);
+  border: 1px solid var(--neo-ui-edge);
+  box-shadow: var(--neo-ui-shadow);
+}
+:root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard .gb-icon:is(:hover, :focus-visible):not(:disabled) {
+  color: #fff;
+  background: rgba(74, 49, 110, .92);
+  border-color: var(--neo-ui-lav);
+  box-shadow: 0 0 0 3px rgba(201, 167, 230, .2);
+}
+:root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard .gb-icon:focus-visible { outline: 2px solid var(--neo-ui-gold); outline-offset: 2px; }
+:root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard .gb-icon:disabled { opacity: .45; }
+/* 倍率の札は字の幅で決まる。紙の札は縁が 2px だったので、細い縁（1px）にした分を余白で補って同じ幅にする。 */
+:root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard .gb-zoom .gb-icon { padding: 0 10px; background: rgba(27, 16, 41, .9); box-shadow: none; }
+/* 見出しの丸い札（？・×）の絵（GB04）: 黒い皿に細い金の縁。押せる大きさは同じ。夜紫の面は絵の下に敷いたまま。 */
+:root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard.has-art .gb-header .gb-icon {
+  background: center / 100% 100% no-repeat url(../img/ui/growth_board/socket.webp) rgba(34, 21, 52, .92);
+  border-color: transparent;
+  box-shadow: none;
+}
+:root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard.has-art .gb-header .gb-icon:is(:hover, :focus-visible):not(:disabled) {
+  background: center / 100% 100% no-repeat url(../img/ui/growth_board/socket.webp) rgba(34, 21, 52, .92);
+  border-color: transparent;
+  box-shadow: 0 0 12px rgba(227, 189, 110, .55);
+}
+
+/* 盤の札: 選んでいない盤は静かな夜紫、選んだ盤だけ盤の色の線が灯って下の盤の面へつながる。 */
+:root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard .gb-tab {
+  color: var(--neo-ui-dim);
+  background: rgba(27, 16, 41, .78);
+  border: 1px solid rgba(201, 167, 230, .22);
+  border-bottom: 0;
+  box-shadow: none;
+}
+:root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard .gb-tab:is(:hover, :focus-visible):not(.on) { color: var(--neo-ui-ink); border-color: var(--neo-ui-edge); }
+:root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard .gb-tab:focus-visible { outline: 2px solid var(--neo-ui-gold); outline-offset: -3px; }
+:root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard .gb-tab-head {
+  color: color-mix(in srgb, var(--c) 72%, #b9aac8);
+  border-color: color-mix(in srgb, var(--c) 50%, rgba(201, 167, 230, .3));
+  text-shadow: none;
+  box-shadow: none;
+}
+:root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard .gb-tab-line { background: rgba(255, 255, 255, .12); }
+:root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard .gb-tab-line b { box-shadow: none; }
+:root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard .gb-tab.on {
+  color: #fff;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--c) 16%, #1b1029), #0e0915);
+  border-color: color-mix(in srgb, var(--c) 62%, transparent);
+  box-shadow: inset 0 3px 0 var(--c), 0 -2px 14px color-mix(in srgb, var(--c) 26%, transparent);
+}
+:root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard .gb-tab.on .gb-tab-head {
+  color: #fff;
+  border-color: color-mix(in srgb, var(--c) 60%, #fff);
+  text-shadow: 0 0 8px var(--c);
+  box-shadow: 0 0 8px color-mix(in srgb, var(--c) 70%, transparent);
+}
+:root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard .gb-tab.on .gb-tab-line b { box-shadow: 0 0 6px var(--c); }
+:root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard .gb-tab-target { color: var(--neo-ui-gold-hi); }
+/* 札の絵（GB04・SBD123。盤の絵が読めた時だけ）: 選んでいる札は黒いガラスに白金の線、ほかは同じ札を暗くしたもの。盤の色は上の縁の光で。
+   上の border の指定が絵（border-image）を消すので、絵はここに書く。夜紫の面は絵の下に敷いたまま（角の丸みは絵とほぼ同じ）。 */
+:root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard.has-art .gb-tab {
+  border-color: transparent;
+  border-image: url(../img/ui/growth_board/tab_dim.webp) 30 40 0 fill / 15px 20px 0 stretch;
+}
+:root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard.has-art .gb-tab.on {
+  border-color: transparent;
+  border-image: url(../img/ui/growth_board/tab_on.webp) 30 40 0 fill / 15px 20px 0 stretch;
+  box-shadow: 0 -4px 14px -4px var(--c);
+}
+
+/* 盤の面: 中の描き方はそのまま。縁だけ新版の線にして、背景の灯りから少し浮かせる。 */
+:root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard .gb-board {
+  --gold: #e8c27a;
+  --gold-hi: #ffe2a6;
+  --text: #f4ede0;
+  --text-dim: #c9bdcc;
+  color: var(--text);
+  border: 1px solid rgba(201, 167, 230, .22);
+  border-top: 0;
+  box-shadow: 0 12px 30px rgba(8, 3, 16, .55);
+}
+
+/* 右の説明: 紙の板をやめて夜紫の面。金の罫線は見出しの下に1本。 */
+:root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard .gb-side,
+:root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard.has-art .gb-side {
+  color: var(--neo-ui-ink);
+  background: linear-gradient(180deg, rgba(36, 22, 55, .93), rgba(21, 13, 34, .9));
+  /* 紙の板は 22px の縁＋内側の余白で文の位置を決めていた。縁をやめて、同じ位置になる余白にする。 */
+  border: 0;
+  border-image: none;
+  padding: 26px 30px 26px;
+  border-radius: 6px;
+  box-shadow: inset 0 0 0 1px var(--neo-ui-edge), 0 12px 30px rgba(8, 3, 16, .5);
+  filter: none;
+}
+:root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard .gb-side::before,
+:root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard .gb-side::after { display: none; }
+:root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard .gb-p-title {
+  padding-bottom: 8px;
+  color: #fff;
+  font-weight: 700;
+  background: linear-gradient(to right, var(--neo-ui-gold), rgba(227, 189, 110, .26) 60%, rgba(227, 189, 110, 0)) left bottom / 100% 1px no-repeat;
+}
+:root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard :is(.gb-p-sub, .gb-p-state, .gb-hint) { color: var(--neo-ui-dim); font-weight: 500; letter-spacing: .02em; }
+:root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard .gb-p-next { color: var(--neo-ui-ink); }
+:root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard :is(.gb-p-quality, .gb-p-reward, .gb-p-state.s-available, .gb-p-target, .gb-bar-sum) { color: var(--neo-ui-gold-hi); }
+:root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard .gb-p-lock { color: #dcc4f2; }
+:root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard .gb-p-state.s-pending { color: #fff; }
+:root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard .gb-bar-name { color: var(--neo-ui-dim); }
+:root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard .gb-bar-line { background: rgba(255, 255, 255, .1); }
+:root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard .gb-bar-line b { background: var(--c); box-shadow: 0 0 8px color-mix(in srgb, var(--c) 70%, transparent); }
+
+/* 下の帯: 火種の数・決定。上に金の細い罫線（凡例は「？」の見方へ移した・SBD117）。 */
+:root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard .gb-footer {
+  border-top: 0;
+  background:
+    linear-gradient(to right, rgba(227, 189, 110, 0), rgba(227, 189, 110, .5) 30%, rgba(227, 189, 110, .5) 70%, rgba(227, 189, 110, 0)) left top / 100% 1px no-repeat,
+    linear-gradient(180deg, rgba(21, 13, 34, .88), rgba(13, 7, 22, .95));
+}
+:root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard .gb-wallet { background: var(--neo-ui-card); border: 1px solid rgba(201, 167, 230, .26); }
+:root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard .gb-hidane { color: var(--neo-ui-ink); }
+:root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard .gb-hidane b { color: color-mix(in srgb, var(--hc) 78%, #fff); }
+:root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard .gb-hidane i { filter: drop-shadow(0 0 3px color-mix(in srgb, var(--hc) 60%, transparent)); }
+:root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard .gb-hidane.zero { opacity: .45; }
+/* 財布の受け皿（GB04）: 0個の種類は皿だけが見える（数字だけ薄く）。 */
+:root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard.has-art .gb-hidane.zero { opacity: 1; }
+:root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard.has-art .gb-hidane i { filter: none; }
+
+/* ボタン（灯す・やめる・目標にする・組み直す・取り消す・決定／閉じる）: 新版の札。主のボタンだけ金。 */
+:root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard .btn {
+  color: var(--neo-ui-ink);
+  text-shadow: none;
+  background: var(--neo-ui-card);
+  border: 1px solid var(--neo-ui-edge);
+  border-image: none;
+  border-radius: 4px;
+  box-shadow: none;
+  filter: none;
+  clip-path: none;
+}
+:root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard .btn:is(:hover, :focus-visible):not(:disabled) { color: #fff; background: rgba(74, 49, 110, .82); border-color: var(--neo-ui-lav); box-shadow: 0 0 0 3px rgba(201, 167, 230, .2); }
+:root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard .btn.primary { color: #26160a; font-weight: 700; background: linear-gradient(180deg, #f3d48d, #d9a94f); border-color: #fbe6b4; }
+:root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard .btn.primary:is(:hover, :focus-visible):not(:disabled) { color: #26160a; background: linear-gradient(180deg, #fbe2a6, #e6b95e); border-color: #fff; box-shadow: 0 0 0 3px rgba(227, 189, 110, .3); }
+:root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard .btn:focus-visible { outline: 2px solid var(--neo-ui-gold); outline-offset: 3px; }
+:root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard .btn.primary:focus-visible { outline-color: #fff; }
+:root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard .btn:disabled { opacity: .5; }
+
+/* はじめての案内（growth-board-tutorial.js）: 光らせる枠はそのまま、吹き出しを夜紫の面に。見出しは金。 */
+:root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard .gb-tutorial-bubble {
+  color: var(--neo-ui-ink);
+  background: linear-gradient(180deg, rgba(36, 22, 55, .98), rgba(21, 13, 34, .97));
+  border: 1px solid var(--neo-ui-edge);
+  border-radius: 6px;
+  box-shadow: 0 12px 30px rgba(8, 3, 16, .6);
+}
+:root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard .gb-tutorial-bubble h3 { color: var(--neo-ui-gold-hi); }
+:root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard .gb-tutorial-bubble .gb-tutorial-count { color: var(--neo-ui-dim); }
+:root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard .gb-tutorial-spot {
+  box-shadow: 0 0 0 9999px rgba(8, 3, 16, .58), 0 0 0 3px var(--neo-ui-gold-hi), 0 0 18px 4px rgba(246, 223, 168, .5);
+}
+
+/* 近い目的地（SBD104）: 紙の札をやめて、盤の色の線が左に付いた夜紫の札。 */
+:root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard .gb-goals-head { color: var(--neo-ui-dim); }
+:root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard .gb-goal {
+  color: var(--neo-ui-ink);
+  background: color-mix(in srgb, var(--c) 9%, rgba(46, 29, 69, .62));
+  border: 1px solid rgba(201, 167, 230, .26);
+  border-left: 4px solid color-mix(in srgb, var(--c) 78%, #fff);
+  border-radius: 4px;
+  box-shadow: none;
+}
+:root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard .gb-goal:is(:hover, :focus-visible) {
+  background: color-mix(in srgb, var(--c) 14%, rgba(74, 49, 110, .82));
+  border-color: var(--neo-ui-lav);
+  border-left-color: color-mix(in srgb, var(--c) 78%, #fff);
+  box-shadow: 0 0 0 3px rgba(201, 167, 230, .2);
+}
+:root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard .gb-goal:focus-visible { outline: 2px solid var(--neo-ui-gold); outline-offset: 2px; }
+:root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard .gb-goal-cost { color: var(--neo-ui-gold-hi); font-weight: 700; }
+/* 文字を減らした部品（SBD116〜117）: 火種の粒の横の数・上の短い札。紙の色のままだと夜紫の面で読めない。 */
+:root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard .gb-goal-fire b { color: var(--neo-ui-ink); }
+:root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard .gb-place-chip { color: var(--neo-ui-ink); background: var(--neo-ui-card); border-color: rgba(201, 167, 230, .4); }
+:root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard.can-light .gb-place-chip { color: #26160a; background: linear-gradient(180deg, #f3d48d, #d9a94f); border-color: #fbe6b4; }

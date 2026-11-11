@@ -19,7 +19,7 @@
       "lines": [
         { "speaker": "", "face": "", "text": "郵便受けに、また厚い封筒が届いていた。差出人は、シェイク・ナジュム・アル=ガリヤーン。" },
         { "speaker": "sheikh", "face": "normal", "text": "君が帰ってから、客間が空いたままだ" },
-        { "speaker": "sheikh", "face": "smile", "text": "切符を入れておく。王族の招待だと思わなくていい。友人の誘いだ" },
+        { "speaker": "sheikh", "face": "smile", "text": "切符を入れておく。王族の招待だと思わなくていい。旅人の誘いだ" },
         { "speaker": "hajime", "face": "smile", "text": "（今度は、tonariの葉をもう一袋持っていこう）" },
         { "speaker": "", "face": "", "text": "封筒の底に、また往復の切符が入っていた。" }
       ]
@@ -38,6 +38,11 @@
       "dialogue_id": "ch5_dubai_go",
       "lines": [
         { "speaker": "", "face": "", "text": "空港行きのバスに乗り、ドバイ行きの便に乗った。" },
+        { "speaker": "", "face": "", "text": "今回は、大会の控え室でも表彰台の前でもない。封筒の切符を握った、一人の客だ。" },
+        { "speaker": "", "face": "", "text": "座席に深く座ると、エンジンの低い音が床から伝わってきた。" },
+        { "speaker": "", "face": "", "text": "窓の外で、日本の灯が遠ざかっていく。荷物は少ない。" },
+        { "speaker": "", "face": "", "text": "持っていくのは、中庭でもう一度吸うための時間だけだ。" },
+        { "speaker": "", "face": "", "text": "機内は静かだった。" },
         { "speaker": "", "face": "", "text": "窓の下に、砂の色をした街の明かりが近づいてくる。" }
       ]
     },
@@ -45,6 +50,10 @@
       "dialogue_id": "ch5_dubai_back",
       "lines": [
         { "speaker": "", "face": "", "text": "迎えの車で空港へ送ってもらい、帰りの便に乗った。" },
+        { "speaker": "", "face": "", "text": "屋敷の門が、後ろの窓の中で小さくなっていった。噴水の音は、もう聞こえない。" },
+        { "speaker": "", "face": "", "text": "座席に身を預けると、荷物は来た時と変わらないのに、肩の力だけが少し抜けていた。" },
+        { "speaker": "", "face": "", "text": "雲を抜けると、暗い海の縁に、小さな灯りが細く並んでいる。" },
+        { "speaker": "", "face": "", "text": "ずっと探していた形に、やっと会えた気がした。" },
         { "speaker": "", "face": "", "text": "窓の下に、見慣れた海岸線が近づいてくる。" }
       ]
     },
@@ -71,6 +80,7 @@
         { "speaker": "", "face": "", "text": "甘い香りが、乾いた部屋にふわりと広がった。" },
         { "speaker": "sheikh", "face": "smile", "text": "……軽いな。疲れた客のための葉だ" },
         { "speaker": "hajime", "face": "smile", "text": "スミさんも、同じことを言ってました" },
+        { "speaker": "", "face": "", "text": "シェイクは葉を指でほぐし、しばらく香りを確かめていた。" },
         { "speaker": "sheikh", "face": "normal", "text": "そうか。……あの人は、変わらないな" }
       ]
     },
@@ -80,7 +90,9 @@
         { "speaker": "", "face": "", "text": "中庭の噴水の縁に、シェイクが腰かけていた。" },
         { "speaker": "sheikh", "face": "normal", "text": "次の勝負は、まだ日が決まっていないそうだな" },
         { "speaker": "hajime", "face": "normal", "text": "相手と、相談して決めることになってて" },
+        { "speaker": "", "face": "", "text": "噴水の水が、縁の石をゆっくり濡らしている。" },
         { "speaker": "sheikh", "face": "smile", "text": "決めるのは君か。なら、決めた日がいちばんいい日だ" },
+        { "speaker": "sheikh", "face": "normal", "text": "炭の火も、煽って急がせれば、葉が焦げるだけだ" },
         { "speaker": "sheikh", "face": "serious", "text": "急ぐな。待てる者のほうが、最後の一口まで見ていられる" },
         { "speaker": "hajime", "face": "normal", "text": "（待つのも、勝負のうちか）" }
       ]
@@ -89,10 +101,12 @@
       "dialogue_id": "ch5_dubai_sheikh_c",
       "lines": [
         { "speaker": "", "face": "", "text": "屋敷の長い廊下。使用人たちが、シェイクに深く頭を下げて通り過ぎていく。" },
+        { "speaker": "hajime", "face": "normal", "text": "（頭を下げられる側は、こんなに静かなんだな）" },
         { "speaker": "sheikh", "face": "normal", "text": "ここでは、皆が私の機嫌を見て話す" },
+        { "speaker": "sheikh", "face": "normal", "text": "悪い意味ではない。そういう立場なのだ" },
         { "speaker": "sheikh", "face": "smile", "text": "君は、まずい時はまずいと言う。それが、ありがたい" },
         { "speaker": "hajime", "face": "normal", "text": "言わないと、次の一台が良くならないので" },
-        { "speaker": "sheikh", "face": "smile", "text": "職人の答えだな。……あとで一台、頼めるか" },
+        { "speaker": "sheikh", "face": "smile", "text": "職人の答えだな。……あとで、また一台頼めるか" },
         { "speaker": "hajime", "face": "smile", "text": "はい。今日は、ちゃんと客として座ってください" }
       ]
     },
@@ -100,42 +114,78 @@
       "dialogue_id": "ch5_dubai_souq",
       "lines": [
         { "speaker": "", "face": "", "text": "スークの細い通り。スパイスの袋が、店先に山になって並んでいる。" },
+        { "speaker": "", "face": "", "text": "赤、黄、焦げ茶。山ごとに、鼻の奥に届く匂いがまるで違った。" },
         { "speaker": "", "face": "", "text": "店主が、見たことのない乾いた花を一つまみ、手のひらに載せてくれた。" },
+        { "speaker": "shop_clerk", "face": "", "text": "指で揉んでから嗅ぐといい。花は、潰すと話し出す" },
         { "speaker": "hajime", "face": "normal", "text": "（この香り、葉に合わせたらどうなるんだろう）" },
-        { "speaker": "", "face": "", "text": "名前だけ聞いて、手帳に書き留めた。" }
+        { "speaker": "", "face": "", "text": "名前だけ聞いて、手帳に書き留めた。乾いた花の匂いが、指先にしばらく残っていた。" }
       ]
     },
     {
       "dialogue_id": "ch5_dubai_souq_b",
       "lines": [
         { "speaker": "", "face": "", "text": "金細工の店の前で、前に会った店主がこちらに気づいた。" },
+        { "speaker": "", "face": "", "text": "店先に吊るした細い金の鎖が、通りの光を拾って、揺れるたびに色を変えた。" },
         { "speaker": "", "face": "", "text": "また来たのか、と言うように、店主が肩をすくめて笑った。" },
         { "speaker": "hajime", "face": "smile", "text": "（覚えててくれたんだ）" },
+        { "speaker": "shop_clerk", "face": "", "text": "旅の人は、一度きりで消える者と、また来る者に分かれる。お前は後のほうだな" },
         { "speaker": "", "face": "", "text": "冷たいミントティーを一杯もらって、通りの人の流れをしばらく眺めた。" }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_dubai_souq_c",
+      "comment": "スークの小会話の3本目（#3097 ボリューム均し）。乳香の店。店主は shop_clerk（店員）の単発話者。買い物はしない（スークは代金なし）。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "通りの角で、白い煙がひと筋立ちのぼっていた。樹脂の粒を売る、乳香の店だ。" },
+        { "speaker": "", "face": "", "text": "店主が素焼きの皿に小さな炭を置き、琥珀色の粒をひとつ落とした。" },
+        { "speaker": "shop_clerk", "face": "", "text": "炭が赤いうちは、まだ。白くなってから載せる。そのほうが、香りが長い" },
+        { "speaker": "hajime", "face": "normal", "text": "（熱すぎると、香りより先に焦げが立つ。……シーシャの炭と、同じだ）" },
+        { "speaker": "", "face": "", "text": "煙は甘くて、奥のほうに少しだけ、松に似た匂いがした。" },
+        { "speaker": "", "face": "", "text": "じっと見ていたら、店主が粒をひとつ紙に包んで、持っていけと手渡してくれた。" }
       ]
     },
     {
       "dialogue_id": "ch5_dubai_alley",
       "lines": [
         { "speaker": "", "face": "", "text": "路地の奥の小さなカフェ。古い台が、壁際に並んでいる。" },
-        { "speaker": "", "face": "", "text": "前にここで、旅装の男と向かい合ったことを思い出す。" },
+        { "speaker": "", "face": "", "text": "表通りの音は、路地に入ったところで、ふっと遠くなった。" },
+        { "speaker": "", "face": "", "text": "前にここで、旅装の男と向かい合ったことを思い出す。同じ席が、今日も空いていた。" },
         { "speaker": "hajime", "face": "normal", "text": "（あの時は、王者だなんて知らなかった）" },
-        { "speaker": "", "face": "", "text": "店主の一台を頼んで、炭が落ち着くのを待った。" }
+        { "speaker": "", "face": "", "text": "店主の一台を頼んで、炭が落ち着くのを待った。" },
+        { "speaker": "", "face": "", "text": "赤かった炭が、ゆっくり灰をまとっていく。急かす人は、この店にはいない。" }
       ]
     },
     {
       "dialogue_id": "ch5_dubai_alley_b",
       "lines": [
         { "speaker": "", "face": "", "text": "路地裏のカフェに、シェイクが地味な旅装で座っていた。" },
+        { "speaker": "", "face": "", "text": "古い扇風機が、ゆっくり首を振っている。店の中の空気は、表通りより少し湿っていた。" },
         { "speaker": "sheikh", "face": "smug", "text": "ここでは、私はただの客だ。名前は呼ぶな" },
         { "speaker": "hajime", "face": "smile", "text": "分かりました。じゃあ、ただの常連さんで" },
-        { "speaker": "sheikh", "face": "smile", "text": "それでいい。この店の水は、少しぬるい。それも悪くない" }
+        { "speaker": "sheikh", "face": "smile", "text": "それでいい。この店の水は、少しぬるい。それも悪くない" },
+        { "speaker": "", "face": "", "text": "炭の上で、葉がゆっくり色を変えていく。二人とも、しばらく何も言わなかった。" }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_dubai_alley_c",
+      "comment": "路地裏のカフェの小会話の3本目（#3097 ボリューム均し）。店員に顔を覚えられて、来る前から炭が熾してある。店員は shop_clerk の単発話者。代金・報酬はコード側（一台3,000円）。",
+      "lines": [
+        { "speaker": "", "face": "", "text": "路地裏のカフェの戸をくぐると、店員がこちらを見て、軽くうなずいた。" },
+        { "speaker": "shop_clerk", "face": "", "text": "いつもの、ですね" },
+        { "speaker": "hajime", "face": "smile", "text": "……はい。いつもので" },
+        { "speaker": "", "face": "", "text": "炭は、もう熾してあった。路地を歩いてくるのが、窓から見えていたらしい。" },
+        { "speaker": "", "face": "", "text": "一口目から、熱がちょうどいい。待たされた感じが、どこにもなかった。" },
+        { "speaker": "hajime", "face": "normal", "text": "（座る前から、もう一台が始まってる。……店の時間は、扉の外から流れてるんだ）" }
       ]
     },
     {
       "dialogue_id": "ch5_dubai_guest_rest",
       "lines": [
         { "speaker": "", "face": "", "text": "客間の寝台に横になった。窓の外で、噴水の音がしている。" },
+        { "speaker": "", "face": "", "text": "水は同じ調子で落ち続けている。数えようとして、すぐにやめた。" },
+        { "speaker": "", "face": "", "text": "厚い壁が外の熱を遮って、部屋の空気はひんやりしている。" },
+        { "speaker": "", "face": "", "text": "吸って、吐く。息の長さが、少しずつ揃っていく。" },
+        { "speaker": "", "face": "", "text": "いつの間にか、噴水の音が遠くなっていた。考えごとも、水の音に混ざって消えていく。" },
         { "speaker": "", "face": "", "text": "少し眠ると、体が軽くなった。" }
       ]
     },
@@ -146,17 +196,21 @@
         { "speaker": "da_silva", "face": "excited", "text": "来たな、世界一！　見てたぞ、審査席からな" },
         { "speaker": "hajime", "face": "surprise", "text": "太陽さん。どうして、ここに？" },
         { "speaker": "da_silva", "face": "smile", "text": "休暇。シェイクの家、氷が切れねえからな" },
+        { "speaker": "", "face": "", "text": "使用人の青年が照れて腰を揺らし、拍がずれるたびに笑いが起きた。" },
+        { "speaker": "da_silva", "face": "excited", "text": "ずれてもいい。笑えりゃ正解だ。お前も肩だけ揺らしてけ" },
         { "speaker": "da_silva", "face": "normal", "text": "座れよ。今日は審査じゃねえ。ただのフェスタだ" }
       ]
     },
     {
       "dialogue_id": "ch5_dubai_taiyo_b",
       "lines": [
-        { "speaker": "", "face": "", "text": "中庭の木陰。太陽が、アサイーの一台を詰めていた。" },
+        { "speaker": "", "face": "", "text": "中庭の木陰。太陽が、パッションフルーツの一台を詰めていた。" },
         { "speaker": "da_silva", "face": "smile", "text": "大会のときの、お前の一台。手拍子ひとつ無しで……見入った、ってやつだ" },
         { "speaker": "hajime", "face": "normal", "text": "静かすぎましたか" },
         { "speaker": "da_silva", "face": "normal", "text": "いいや。静かでも、あれはフェスタ。客が楽しんでる、それでいい" },
-        { "speaker": "da_silva", "face": "excited", "text": "でも次は、手拍子も入れてみろよ！" }
+        { "speaker": "hajime", "face": "smile", "text": "ありがとうございます。あの一台、少し怖かったんです" },
+        { "speaker": "", "face": "", "text": "太陽は、ほぐした果肉を鼻に近づけて、にっと笑った。" },
+        { "speaker": "da_silva", "face": "excited", "text": "でも、手拍子のフェスタも忘れんなよ！" }
       ]
     },
     {
@@ -165,6 +219,8 @@
         { "speaker": "", "face": "", "text": "中庭の噴水の縁に、太陽とシェイクが並んで座っていた。" },
         { "speaker": "da_silva", "face": "smile", "text": "この王様、俺の店来ると、一番静かに笑うんだ" },
         { "speaker": "sheikh", "face": "smile", "text": "君の店では、王族の顔をしなくていいからな" },
+        { "speaker": "", "face": "", "text": "噴水の水音が、二人のあいだを、少しも気まずくしなかった。" },
+        { "speaker": "sheikh", "face": "normal", "text": "客として座れる店は、案外少ない。私は、そういう店が好きだ" },
         { "speaker": "da_silva", "face": "normal", "text": "ハジメ、お前の店も、そういう店にしろよ。誰が来ても……ただの客、いられる店" },
         { "speaker": "hajime", "face": "normal", "text": "（ただの客で、いられる店）" }
       ]

@@ -368,6 +368,11 @@
         {
           "speaker": "",
           "face": "",
+          "text": "炭を置く前に、一度だけ息を吐いた。トングの先が、すっと止まる。"
+        },
+        {
+          "speaker": "",
+          "face": "",
           "text": "ホースを渡す。スミさんは黙って一口吸い、長く煙を吐いた。"
         },
         {
@@ -506,6 +511,11 @@
         {
           "speaker": "",
           "face": "",
+          "text": "親父さんの店の話をした日より、「潰れねえ」の声が少しだけ軽かった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
           "text": "なるはカウンターの下をごそごそ漁って、素焼きのボウルをごとんと置いた。"
         },
         {
@@ -521,7 +531,7 @@
         {
           "speaker": "naru",
           "face": "normal",
-          "text": "ノートは見せた。技も教えた。……あとは、これかなって"
+          "text": "台は丸見えにした。ノートも見せた。……あとは、これかなって"
         },
         {
           "speaker": "hajime",
@@ -682,7 +692,22 @@
         {
           "speaker": "",
           "face": "",
-          "text": "「欠けた縁は削るな。そこが一番よく香る」。最後の頁だけ、日付と小さな失敗談だった。"
+          "text": "「欠けた縁は削るな、そこが一番よく香る」。最後の頁だけ、日付と一行の走り書きだった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "「手を滑らせて、縁を欠いた。捨てずに、明日も詰める」。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "思わず、ボウルの欠けた縁に指を当てた。"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "……器用ではないと、言ったろう"
         },
         {
           "speaker": "hajime",
@@ -693,6 +718,33 @@
           "speaker": "adam",
           "face": "smile",
           "text": "年月は、手入れの積み重ねでしか宿らぬ。それが継承の正体よ"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "……お前と悩んだ日から、常連にも聞くようになった"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "さっきと今、どちらが好きだ、とな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "アダムさんが、お客さんに聞くんですか"
+        },
+        {
+          "speaker": "adam",
+          "face": "smile",
+          "text": "答えは結局、ダブルアップルだがな"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_adam_fifth_strong",
+          "next_true": "fifth_strong",
+          "next_false": "fifth_other"
         },
         {
           "speaker": "adam",
@@ -730,7 +782,41 @@
             "guts": 2
           }
         }
-      ]
+      ],
+      "branches": {
+        "fifth_strong": [
+          {
+            "speaker": "adam",
+            "face": "normal",
+            "text": "お前は、さっきの濃い方を選んだな。あの日、炭を戻した一台だ"
+          },
+          {
+            "speaker": "adam",
+            "face": "smile",
+            "text": "常連の半分も、同じ方を選ぶ。ふっ、お前の舌はリンゴに素直だ"
+          }
+        ],
+        "fifth_other": [
+          {
+            "type": "condition",
+            "condition_type": "flag",
+            "flag": "_adam_fifth_light",
+            "next_true": "fifth_light"
+          }
+        ],
+        "fifth_light": [
+          {
+            "speaker": "adam",
+            "face": "normal",
+            "text": "お前は、軽い後味の方を選んだな。俺は、濃さを残したかったが"
+          },
+          {
+            "speaker": "adam",
+            "face": "smile",
+            "text": "今は、炭を一つ外へ寄せる日もある。軽い方を待つ常連も、案外いるのだ"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "ch1_tsumugi_bond_finale",

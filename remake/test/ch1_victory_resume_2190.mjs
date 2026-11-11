@@ -260,15 +260,16 @@ for (let step = 0; step <= 10; step++) {
   cases++;
 }
 
+// 4つ目の値は、元の一文を分けた行数。アダムのLIMEは、続きの釣り針の一文を台本から削ったので1行（2026-11-11 全体講評 C9）。
 const sentenceCases = [
-  ["ch1_tournament_judging", "チャコール博士も、", "チャコール博士も、炭の出来と調整後の味を見て票を投じる。スクリーンに並ぶ4台の票を見つめた。"],
-  ["interval_day2_adam_lime", "アダムからはそれきりで、", "アダムからはそれきりで、こちらの返信にも既読がつかなかった。……何か、大きなことが動いている気がする。"],
+  ["ch1_tournament_judging", "チャコール博士も、", "チャコール博士も、炭の出来と調整後の味を見て票を投じる。スクリーンに並ぶ4台の票を見つめた。", 2],
+  ["interval_day2_adam_lime", "アダムからはそれきりで、", "アダムからはそれきりで、こちらの返信にも既読がつかなかった。", 1],
 ];
-for (const [id, start, original] of sentenceCases) {
+for (const [id, start, original, count] of sentenceCases) {
   const lines = dialogues[id].lines;
   const at = lines.findIndex(line => line.text?.startsWith(start));
   assert(at >= 0);
-  const split = lines.slice(at, at + 2);
+  const split = lines.slice(at, at + count);
   assert(split.every(line => line.speaker === "" && !line.type), `${id}: preserve narration semantics`);
   assert.equal(split.map(line => line.text).join(""), original, `${id}: splitting must preserve the exact original text`);
   for (const line of split) {

@@ -27,7 +27,9 @@ assert.deepEqual(LONGLONG_VISIT_STORIES.map(e => [e.scene, e.heart]), [
 assert.deepEqual([...LONGLONG_IDS], [...LONGLONG_VISIT_STORIES.map(e => e.scene), ...LONGLONG_TALKS]);
 assert.deepEqual([...LONGLONG_LOAD_IDS], [...LONGLONG_IDS, LONGLONG_FINALE]);
 assert.equal(LONGLONG_CHAR, "master_hookah");
-assert(manifest.backgrounds.includes(`${LONGLONG_BG}.png`), "the placeholder background exists");
+assert.equal(LONGLONG_BG, "bg_longlong_shop", "Longlong visits use the adopted shop interior");
+assert(manifest.backgrounds.includes(`${LONGLONG_BG}.png`), "shop background is registered");
+assert(manifest.webp.includes(`backgrounds/${LONGLONG_BG}.png`), "shop background uses the display WebP");
 const value = { day: 50, flags: {} };
 assert.deepEqual(longlongRecord(value), { read: {}, talks: 0 });
 assert.deepEqual(nextLonglongVisit(value, 0), { id: "ch4_longlong_first", kind: "story" });
@@ -43,6 +45,10 @@ assert.deepEqual(nextLonglongVisit(value, 1), { id: "ch4_longlong_second", kind:
 recordLonglongVisit(value, { id: "ch4_longlong_visit_b", kind: "talk" });
 assert.deepEqual(longlongRecord(value), { read: { ch4_longlong_first: true }, talks: 1 });
 assert.deepEqual(nextLonglongVisit(value, 0), { id: "ch4_longlong_visit_c", kind: "talk" }, "小会話は順に巡回");
+recordLonglongVisit(value, { id: "ch4_longlong_visit_c", kind: "talk" });
+assert.deepEqual(nextLonglongVisit(value, 0), { id: "ch4_longlong_visit_d", kind: "talk" }, "3本目（RVE07）");
+recordLonglongVisit(value, { id: "ch4_longlong_visit_d", kind: "talk" });
+assert.deepEqual(nextLonglongVisit(value, 0), { id: "ch4_longlong_visit_b", kind: "talk" }, "3本を回ったら最初へ");
 value.flags[LONGLONG_FLAG] = "broken";
 assert.deepEqual(longlongRecord(value), { read: {}, talks: 0 }, "壊れた記録は空として読む");
 assert.equal(classifyFlag(LONGLONG_FLAG), "progression");
@@ -142,7 +148,8 @@ assert.equal(shop[LONGLONG_FINALE].metadata?.bond_finale, "master_hookah");
 assert.match(daily, /gainAffinity\(LONGLONG_CHAR, visitAffinity\(longlong\.kind === "story" \? "story" : "talk"\)\)/);
 assert.doesNotMatch(daily, /longlong: "master_hookah"|teacher.*longlong/, "授業（龍の煙）は大会後の会場の台詞なので、店では相談しない");
 // IR23: FESTA の太陽も、来店ごとに通いの小会話と同じ値（visitAffinity。第4章は +8）。♥5の授業（フェスタの煙）に届く
-assert.match(daily, /if \(entry\.place === "festa"\) gainAffinity\("da_silva", visitAffinity\("talk"\)\)/);
+// FESTA は来店ごとに小会話の値、太陽の段階の会話（RVE03・chapters/dubai-bonds.js）を読んだ来店は段階の値
+assert.match(daily, /if \(entry\.place === "festa"\) gainAffinity\("da_silva", visitAffinity\(festaBond \? "story" : "talk"\)\)/);
 assert.doesNotMatch(daily, /gainAffinity\("da_silva", \d/, "no fixed number for Taiyo");
 
 console.log("PASS ch4 Longlong Dubai shop: stages, hearts, records, scripts, eve-of-tournament acquaintance branch");

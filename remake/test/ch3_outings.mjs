@@ -94,6 +94,25 @@ const ids = (value, window) => chapterThreeOutings(value, window.id).map(item =>
     assert(ids(late.value, late.window).includes(once) && !ids(late.value, late.window).includes(regular), `${regular} waits for ${once}`);
 }
 
+// RVE07: 鉄の煙にも通える。初来店（DAY12夜の ch3_volk_first）の後から、何度でも・3本を巡回・好感度は通いの値
+{
+  const volk = TOKYO_OUTINGS.find(item => item.id === "volk_visit");
+  assert.deepEqual([volk.place, volk.after, volk.affinityWith, volk.repeat, volk.regular, volk.talks.length],
+    ["volk", "ch3_volk_first", "volk", true, true, 3]);
+  for (const id of volk.talks) assert(OUTING_DIALOGUE_IDS.includes(id), `${id} is loaded`);
+  const before = at("d12-noon");
+  assert(!ids(before.value, before.window).includes("volk_visit"), "Not before the first visit to Iron Smoke");
+  const talkAfter = n => outingDialogueId({ ...before.value, flags: { ...before.value.flags, [OUTINGS_FLAG]: { volk_visit: n } } }, volk, before.window);
+  assert.deepEqual([0, 1, 2, 3, 4].map(talkAfter),
+    ["ch3_outing_volk_visit", "ch3_outing_volk_visit_b", "ch3_outing_volk_visit_c", "ch3_outing_volk_visit_b", "ch3_outing_volk_visit_c"]);
+  assert.deepEqual(outingAffinity(before.value, volk), { volk: 16 }, "The first visit gains like a stage talk");
+  const regulars = { ...before.value, flags: { ...before.value.flags, [OUTINGS_FLAG]: { volk_visit: 1 } } };
+  assert.deepEqual(outingAffinity(regulars, volk), { volk: 8 }, "Later visits gain like a small talk");
+  const after = { ...before.value, flags: { ...before.value.flags, _ch3_intro: { ...before.value.flags._ch3_intro,
+    stage: chapterThreeScenes(before.value).findIndex(scene => scene.id === "ch3_volk_first") + 1 } } };
+  assert(chapterThreeOutingCandidates(after).some(item => item.id === "volk_visit"), "Open after the first visit");
+}
+
 // 旧ルートの非会員は従来どおり空き時間を増やさない。
 {
   const value = departure({ legacy: true });
@@ -387,3 +406,48 @@ function nextWindow(value) {
 
 assert.equal(classifyFlag(OUTINGS_FLAG), "progression");
 console.log("ch3 outings: ok");
+
+
+// #3097: park revisits vary by visit count and actual slot without changing state or recovery.
+{
+  const park = TOKYO_OUTINGS.find(item => item.id === "park_walk");
+  const value = at("d5-noon").value;
+  assert.equal(park.stamina, 20);
+  assert.equal(park.stat, undefined);
+  assert.equal(park.affinityWith, undefined);
+  for (const slot of [0, 1]) {
+    const base = `ch3_outing_park_walk_${slot ? "night" : "day"}`;
+    for (const count of [0, 1, 2, 3, 4, 81]) {
+      value.flags[OUTINGS_FLAG] = { park_walk: count };
+      value.slot = 1 - slot;
+      const before = structuredClone(value);
+      assert.equal(outingDialogueId(value, park, { slot }), count ? `${base}_${count % 2 ? "b" : "c"}` : base);
+      assert.deepEqual(value, before, "Selecting a park revisit must not mark a visit or change the save");
+      value.slot = slot;
+      assert.equal(outingDialogueId(value, park), count ? `${base}_${count % 2 ? "b" : "c"}` : base);
+    }
+  }
+  const data = JSON.parse(fs.readFileSync(new URL("../../data/dialogue/ch3_outings.json", import.meta.url)));
+  const byId = Object.fromEntries(data.dialogues.map(scene => [scene.dialogue_id, scene]));
+  const newIds = ["enmaku_visit_d", "steve_visit_c", ...["day", "night"].flatMap(time => ["b", "c"].map(suffix => `park_walk_${time}_${suffix}`))].map(id => `ch3_outing_${id}`);
+  for (const id of newIds) {
+    assert(OUTING_DIALOGUE_IDS.includes(id), `${id}: real loader requests the new scene`);
+    assert(byId[id].lines.length >= 8);
+    assert(byId[id].lines.every(line => !line.type && typeof line.text === "string" && line.text.length > 0));
+    assert.equal(byId[id].metadata, undefined, `${id}: no extra reward, flavor lesson or background override`);
+  }
+  for (const [id, expected] of [
+    ["enmaku_visit", ["b", "c", "d", "b", "c", "d"]],
+    ["steve_visit", ["b", "c", "b", "c", "b", "c"]],
+  ]) {
+    const outing = TOKYO_OUTINGS.find(item => item.id === id);
+    for (let count = 1; count <= expected.length; count++) {
+      value.flags[OUTINGS_FLAG] = { [id]: count };
+      const before = structuredClone(value);
+      assert.equal(outingDialogueId(value, outing), `ch3_outing_${id}_${expected[count - 1]}`);
+      assert.deepEqual(outingAffinity(value, outing), { [outing.affinityWith]: 8 });
+      assert.deepEqual(value, before);
+    }
+  }
+}
+console.log("PASS: six everyday scenes load and rotate; park recovery and ordinary visit affinity remain unchanged");

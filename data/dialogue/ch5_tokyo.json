@@ -17,17 +17,23 @@
     {
       "dialogue_id": "ch5_tokyo_go",
       "lines": [
-        { "speaker": "", "face": "", "text": "Dr.fookahの配送の車に乗せてもらい、東京へ向かった。" },
-        { "speaker": "", "face": "", "text": "途中の店で箱を降ろすのを手伝ううちに、窓の外が暗くなっていく。" },
-        { "speaker": "hajime", "face": "normal", "text": "（着いたら、まずmukaiに顔を出そう）" }
+        { "speaker": "", "face": "", "text": "Dr.fookahの配送の車に乗せてもらい、東京へ向かった。助手席は、葉の箱の匂いがする。" },
+        { "speaker": "", "face": "", "text": "昼の問屋街を出て、最初の店で箱を降ろす。台車を押して戻ると、車の影が少し長くなっていた。" },
+        { "speaker": "", "face": "", "text": "二軒目、三軒目と寄るたびに、荷台は軽くなっていく。" },
+        { "speaker": "", "face": "", "text": "窓の外の空が、橙から群青へ変わっていく。道路の灯が、ひとつずつ点いた。" },
+        { "speaker": "hajime", "face": "normal", "text": "（着いたら、まずmukaiに顔を出そう）" },
+        { "speaker": "", "face": "", "text": "車は夜の東京へ入っていった。" }
       ]
     },
     {
       "dialogue_id": "ch5_tokyo_back",
       "lines": [
         { "speaker": "", "face": "", "text": "東京店の裏で、帰りの配送の車に乗せてもらった。" },
-        { "speaker": "", "face": "", "text": "空になった箱を積んで、車は高速を西へ走る。" },
-        { "speaker": "", "face": "", "text": "見慣れた街の明かりが見えた頃には、もう夜だった。" }
+        { "speaker": "", "face": "", "text": "空になった箱を積んで、車は高速を西へ走る。荷台で、箱が小さく鳴った。" },
+        { "speaker": "hajime", "face": "normal", "text": "（行きは重かった荷が、帰りは空か。座席だけが、やけに広い）" },
+        { "speaker": "", "face": "", "text": "途中の店に寄るたび、積み残しの箱を手伝って降ろした。そのたびに、窓の外が少しずつ暗くなる。" },
+        { "speaker": "", "face": "", "text": "見慣れた街の明かりが見えた頃には、もう夜だった。" },
+        { "speaker": "hajime", "face": "smile", "text": "（戻ってきたな）" }
       ]
     },
     {
@@ -48,18 +54,26 @@
       "dialogue_id": "ch5_tokyo_mukai_help",
       "lines": [
         { "speaker": "", "face": "", "text": "昼のmukai。カウンターの内側で、洗い上がったグラスを拭いた。" },
+        { "speaker": "", "face": "", "text": "高架を電車が通ると、棚のグラスがかすかに鳴る。コーヒーの匂いは、前に来た時と同じだった。" },
         { "speaker": "mukai_master", "face": "normal", "text": "はじめくん、そっちの棚。上から二段目だ" },
         { "speaker": "hajime", "face": "normal", "text": "前と同じ場所ですね" },
-        { "speaker": "mukai_master", "face": "smile", "text": "変えてない。変えると、手が迷う" }
+        { "speaker": "mukai_master", "face": "smile", "text": "変えてない。変えると、手が迷う" },
+        { "speaker": "hajime", "face": "smile", "text": "俺は向こうで、迷ってばかりでした" },
+        { "speaker": "mukai_master", "face": "smile", "text": "棚くらいは、迷わなくていい" },
+        { "speaker": "", "face": "", "text": "言われた棚へ、拭いたグラスを一つずつ伏せていく。手は、迷わなかった。" }
       ]
     },
     {
       "dialogue_id": "ch5_tokyo_mukai_help_b",
       "lines": [
         { "speaker": "", "face": "", "text": "客が引いた時間に、ムカイさんが甘いラテを二つ淹れた。" },
+        { "speaker": "", "face": "", "text": "ミルクの湯気が、昼下がりのカウンターに薄く立つ。豆を挽く音も、今は止んでいる。" },
         { "speaker": "mukai_master", "face": "normal", "text": "一つは、はじめくんの" },
         { "speaker": "hajime", "face": "surprise", "text": "いいんですか" },
-        { "speaker": "mukai_master", "face": "smile", "text": "一人で飲むと、甘すぎる気がしてな" }
+        { "speaker": "mukai_master", "face": "smile", "text": "一人で飲むと、甘すぎる気がしてな" },
+        { "speaker": "hajime", "face": "smile", "text": "じゃあ、遠慮なく" },
+        { "speaker": "", "face": "", "text": "カップを両手で持つ。ほんのり甘いラテは、思ったより体に染みた。" },
+        { "speaker": "", "face": "", "text": "高架の上を電車が通り過ぎるまで、二人とも何も言わなかった。" }
       ]
     },
     {
@@ -69,7 +83,9 @@
         { "speaker": "mukai_master", "face": "normal", "text": "勝負が近いんだってな。スミから聞いた" },
         { "speaker": "hajime", "face": "normal", "text": "はい。日は、まだ決めてないんですけど" },
         { "speaker": "mukai_master", "face": "normal", "text": "決まる前に、ここで一服していけばいい" },
-        { "speaker": "", "face": "", "text": "ムカイさんはそれだけ言って、コーヒーの豆を量りに載せた。" }
+        { "speaker": "hajime", "face": "smile", "text": "はい。ここは、変わらないので落ち着きます" },
+        { "speaker": "", "face": "", "text": "ムカイさんはそれだけ言って、コーヒーの豆を量りに載せた。" },
+        { "speaker": "", "face": "", "text": "閉めた戸の向こうを、電車が通る。グラスは、全部いつもの棚に収まっていた。" }
       ]
     },
     {
@@ -79,6 +95,8 @@
         { "speaker": "steve", "face": "smile", "text": "ヘイ、ハジメ！　世界から帰ってきた顔だ" },
         { "speaker": "hajime", "face": "smile", "text": "そんな顔、してますか" },
         { "speaker": "steve", "face": "normal", "text": "してる。少し日に焼けて、少し落ち着いた" },
+        { "speaker": "hajime", "face": "normal", "text": "相変わらず、全部で待つんですね。俺は向こうで、待つのが少し下手になりました" },
+        { "speaker": "steve", "face": "smile", "text": "ノー、ノー。急いだ日があるから、待つ日が効くんだ" },
         { "speaker": "steve", "face": "smile", "text": "一台どうぞ。今日も、二口目までが勝負" }
       ]
     },
@@ -89,7 +107,9 @@
         { "speaker": "steve", "face": "normal", "text": "このカード、半分は客の言葉なんだ" },
         { "speaker": "hajime", "face": "surprise", "text": "お客さんの、ですか" },
         { "speaker": "steve", "face": "smile", "text": "「二口目がいちばん好き」とか。そういうのを余白に書く" },
-        { "speaker": "steve", "face": "serious", "text": "俺の言葉だけだと、炭が早くなる。客の言葉が手を止めてくれる" }
+        { "speaker": "hajime", "face": "normal", "text": "世界で見てきた店は、どこも自分の言葉で埋まってました" },
+        { "speaker": "steve", "face": "serious", "text": "俺の言葉だけだと、炭が早くなる。客の言葉が手を止めてくれる" },
+        { "speaker": "steve", "face": "smile", "text": "ハジメのカードにも、余白は残しとけ。そこに、誰かが勝手に書いていく" }
       ]
     },
     {
@@ -99,6 +119,9 @@
         { "speaker": "hajime", "face": "surprise", "text": "今の、タイマーより先でしたね" },
         { "speaker": "steve", "face": "smile", "text": "イエス。たまには、自分の鼻を信じる" },
         { "speaker": "steve", "face": "normal", "text": "タイマーは止めてくれる。でも、先に動く日も要る" },
+        { "speaker": "steve", "face": "normal", "text": "ほとんどの日は、タイマーに任せる。それも腕のうちだ" },
+        { "speaker": "hajime", "face": "normal", "text": "世界の舞台で、俺もそうでした。時計より、煙の方が先に答えてくれた" },
+        { "speaker": "steve", "face": "smile", "text": "そうか。その感覚、店に戻っても忘れるなよ" },
         { "speaker": "hajime", "face": "normal", "text": "（待つのも動くのも、同じ一台のためか）" }
       ]
     },
@@ -113,6 +136,7 @@
         { "speaker": "", "text": "鼻を近づけると、レモンのあとから、ライムが追ってきた。" },
         { "speaker": "hajime", "face": "surprise", "text": "これ、マウンテンミスト……ですよね" },
         { "speaker": "steve", "face": "smile", "text": "イエス。こいつで、何百回も待った" },
+        { "speaker": "steve", "face": "serious", "text": "縁の欠けは、急いでライムまで飛ばした日のだ。慌ててトングを当てた" },
         { "speaker": "steve", "face": "serious", "text": "待つ練習には、いい相棒だった。でも、客の顔を見る練習には、ならなかった" },
         { "speaker": "hajime", "face": "normal", "text": "そんな大事なものを" },
         { "speaker": "steve", "face": "normal", "text": "世界から帰ってきたハジメは、一台の前で、顔から先に見る" },
@@ -128,7 +152,8 @@
         { "speaker": "steve", "face": "smile", "text": "オーケー。その一行が、一番の礼だ" },
         { "speaker": "", "text": "スティーブはマウンテンミストの箱を一つ、紙袋に足した。" },
         { "speaker": "steve", "face": "normal", "text": "葉もつけとく。最初は、俺の秒数で一度吸ってみろ。外すのは、それからだ" },
-        { "speaker": "hajime", "face": "normal", "text": "（待ち方を教わったんじゃない。外していいって、言われたんだ）" },
+        { "speaker": "", "face": "", "text": "空いた棚に、スティーブはレシピカードを一枚立てた。余白まで、客の言葉で埋まっている。" },
+        { "speaker": "steve", "face": "smile", "text": "新しいのが焼けるまで、こいつが見張り役だ" },
         { "type": "apply", "stats": { "technique": 2 } }
       ],
       "branches": {
@@ -147,7 +172,9 @@
         { "speaker": "volk", "face": "normal", "text": "……来たか。座れ" },
         { "speaker": "volk", "face": "serious", "text": "今日は湿度が高い。炭の減りが、いつもより遅い" },
         { "speaker": "hajime", "face": "normal", "text": "測ってから、決めるんですね" },
-        { "speaker": "volk", "face": "normal", "text": "測る。それから、客に聞く。順番は変えない" }
+        { "speaker": "volk", "face": "normal", "text": "測る。それから、客に聞く。順番は変えない" },
+        { "speaker": "hajime", "face": "smile", "text": "世界を回ってきても、この順番は崩れないって思いました" },
+        { "speaker": "volk", "face": "smile", "text": "崩れないから、基準になる。お前が戻ってくる場所も、その一つだ" }
       ]
     },
     {
@@ -157,7 +184,9 @@
         { "speaker": "volk", "face": "normal", "text": "……熱いか。それとも、休んでいるだけか" },
         { "speaker": "", "face": "", "text": "客が首を振ると、ヴォルクは炭に触れず、水のグラスだけを寄せた。" },
         { "speaker": "volk", "face": "serious", "text": "数字は正常だ。直すのは、炭ではなかった" },
-        { "speaker": "hajime", "face": "normal", "text": "（聞いてから直す。それが、この人の精度なんだ）" }
+        { "speaker": "hajime", "face": "normal", "text": "数字が合ってるのに、手を出さないんですね" },
+        { "speaker": "volk", "face": "normal", "text": "合っている時こそ、人を見る。数字は、そのための道具だ" },
+        { "speaker": "", "face": "", "text": "客はグラスを受け取り、また窓の外を見た。ヴォルクは手帳に一行だけ足した。" }
       ]
     },
     {
@@ -166,7 +195,11 @@
         { "speaker": "", "face": "", "text": "帰り際、ヴォルクが紅茶のカップを置いた。小皿に、ジャムが添えてある。" },
         { "speaker": "volk", "face": "normal", "text": "祖母のやり方だ。量は測らない" },
         { "speaker": "hajime", "face": "smile", "text": "計器だらけの店なのに" },
-        { "speaker": "volk", "face": "smile", "text": "ここだけは、数字を持たない。……飲め。冷める" }
+        { "speaker": "volk", "face": "smile", "text": "ここだけは、数字を持たない。……飲め。冷める" },
+        { "speaker": "hajime", "face": "normal", "text": "甘さは、どのくらいが正解ですか" },
+        { "speaker": "volk", "face": "normal", "text": "正解はない。祖母は、俺の顔を見て足した。それだけのことだ" },
+        { "speaker": "volk", "face": "normal", "text": "だから今日は、お前の顔を見て出した、……足りないなら言え" },
+        { "speaker": "hajime", "face": "smile", "text": "（測らない一杯が、この店でいちばん正確なのかもしれない）" }
       ]
     },
     {
@@ -203,7 +236,7 @@
         { "speaker": "volk", "face": "normal", "text": "祖母に言われたことは、国を出ても、店を開いても変えていない" },
         { "speaker": "volk", "face": "smile", "text": "……お前のページは、まだ余っている。また来い" },
         { "speaker": "hajime", "face": "smile", "text": "来ます。次は、俺のお客さんの話も持ってきます" },
-        { "speaker": "hajime", "face": "normal", "text": "（測り続けてきた人から、続きを刻む役をもらったんだ）" },
+        { "speaker": "", "face": "", "text": "木箱の素焼きは、最後の刻みの隣だけ、土がまだ滑らかだった。" },
         { "type": "apply", "stats": { "technique": 2 } }
       ],
       "branches": {
@@ -220,14 +253,23 @@
       "lines": [
         { "speaker": "", "face": "", "text": "高架の下を抜けて、公園まで歩いた。池の水面に、昼の光が揺れている。" },
         { "speaker": "hajime", "face": "normal", "text": "（前に来た時より、景色がよく見える気がする）" },
-        { "speaker": "", "face": "", "text": "ベンチで少し休んでから、池をひと回りした。" }
+        { "speaker": "", "face": "", "text": "ベンチの端に座ると、隣で年配の人が文庫本を膝に伏せたまま、うとうとしていた。" },
+        { "speaker": "hajime", "face": "normal", "text": "（起こさないように、静かにしていよう）" },
+        { "speaker": "", "face": "", "text": "池の向こうを、小さな子が親の手を引っぱって走っていく。" },
+        { "speaker": "hajime", "face": "normal", "text": "（店のことは、任せてきたんだ。今日は考えないでおこう）" },
+        { "speaker": "", "face": "", "text": "ベンチで少し休んでから、池をひと回りした。" },
+        { "speaker": "", "face": "", "text": "戻ってくると、さっきの人は目を覚まして、本の続きを読んでいた。" }
       ]
     },
     {
       "dialogue_id": "ch5_tokyo_attic_rest",
       "lines": [
         { "speaker": "", "face": "", "text": "屋根裏で横になった。下の店から、コーヒーの匂いが上がってくる。" },
-        { "speaker": "", "face": "", "text": "少し眠ると、体が軽くなった。" }
+        { "speaker": "", "face": "", "text": "床板の下で、時々カップを置く小さな音がする。" },
+        { "speaker": "hajime", "face": "normal", "text": "（ムカイさんの店の上で寝る日が来るなんて、前は考えもしなかったな）" },
+        { "speaker": "", "face": "", "text": "窓の外を、高架の電車が通っていく。音が遠くなるのを、目を閉じて聞いた。" },
+        { "speaker": "", "face": "", "text": "少し眠ると、体が軽くなった。" },
+        { "speaker": "", "face": "", "text": "毛布をたたみ直して、元の場所に戻した。" }
       ]
     },
     {
@@ -237,6 +279,8 @@
         { "speaker": "uranaishi", "face": "normal", "text": "……ヒヒ。こんな所で会うとはね" },
         { "speaker": "hajime", "face": "surprise", "text": "東京にも、出るんですか？" },
         { "speaker": "uranaishi", "face": "smile", "text": "縁のある所なら、どこへでも。……理由は聞かない方がいい" },
+        { "speaker": "", "face": "", "text": "布の端が風に揺れて、机の上の水晶玉が路地の灯りを小さく返している。" },
+        { "speaker": "uranaishi", "face": "normal", "text": "……前に会った時より、いい顔をしてるじゃないか" },
         { "speaker": "uranaishi", "face": "normal", "text": "さて。今日は誰との縁が気になるんだい？" }
       ]
     },
@@ -258,6 +302,8 @@
         { "speaker": "", "face": "", "text": "夜のCHOI-ZAP。誰もいない店内で、マシンの画面だけが光っている。" },
         { "speaker": "hajime", "face": "normal", "text": "（勝負の日は、まだ決めていない。体だけは整えておこう）" },
         { "speaker": "", "face": "", "text": "動画のカウントに合わせて、スクワットを十回ずつ三組。" },
+        { "speaker": "hajime", "face": "normal", "text": "（数えている間は、頭の中が静かになる）" },
+        { "speaker": "", "face": "", "text": "タオルで首を拭くと、ゴムマットの匂いがした。" },
         { "speaker": "", "face": "", "text": "外へ出ると、高架の上を遅い電車が通っていった。" }
       ]
     }

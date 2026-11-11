@@ -111,18 +111,47 @@ function recordedSe(id) {
 }
 
 // 砂漠ライド専用の採用音。共通の SE 音量・ミュート・表示状態を使い、画面を閉じたらループを止める。
+// 拡張子の無い名前は .bgm（梱包した音）、.wav は自作の合成音をそのまま読む。
+// 2026-11-11 オーナー「ビリビリなる効果音とか欲しい、ブースト溜まると」「ブースト時も効果音欲しい、早そうな」:
+// ブーストの発進を boost_whoosh（短いシュッ）から boost_rush（ドンッ＋キュイーン＋シュゴーッ）へ替え、ブースト中の風切り boost_loop と、
+// 溜まるほど間隔が詰まる放電の「ビリッ」zap_1〜3、満タンの雷 thunder_full を足した（asset_sources/music/desert-ride-boost-sfx/）。
+// 同日「ビリビリはなんかバグみたいに聞こえる。わかりやすい雷みたいなビリビリがいい」で、不規則に点滅させたループをやめ、1発ずつの音にした。
 const DESERT_SE = Object.freeze({
   slide: "slide_sand", wind: "wind_ambience", jump: "jump_videogame",
-  land: "drop_soft", boost: "boost_whoosh", carve: "carve_sand",
+  land: "drop_soft", boost: "boost_rush.wav", carve: "carve_sand",
   countdown: "countdown_bleeps", goal: "goal_fanfare", fall: "drop_soft",
   decide: "ui_confirm", cursor: "ui_pluck",
   smash: "smash_pot", near: "ui_pluck", gaugeFull: "gauge_powerup",
+  boostLoop: "boost_loop.wav", thunder: "thunder_full.wav",
+  zap1: "zap_1.wav", zap2: "zap_2.wav", zap3: "zap_3.wav",
 });
+const DESERT_ZAPS = Object.freeze(["zap1", "zap2", "zap3"]);
+/**
+ * 放電の「ビリッ」の次までの秒数。ゲージが1割を超えると鳴り始め、溜まるほど間隔が詰まる（1割で約1.6秒、満タンで約0.35秒）。
+ * 毎回少しずらす（rand は 0〜1）。1割に満たない間は鳴らさない（Infinity）。
+ */
+export function desertZapGap(charge, rand = Math.random()) {
+  if (!(charge >= 0.1)) return Infinity;
+  return (1.7 - 1.35 * Math.min(1, charge)) * (0.75 + 0.5 * rand);
+}
+/** ループの音量（0〜1 の入力から）。boost（ブースト中 1、終わり際に 0 へ）はブースト中の風切り。 */
+export function desertLoopLevels({ speed = 0, carve = 0, grounded = false, boost = 0 } = {}) {
+  const moving = grounded && speed > 0.1;
+  const b = Math.max(0, Math.min(1, boost));
+  return {
+    slide: { gain: moving ? 0.34 * speed : 0, rate: 0.82 + 0.25 * speed },
+    wind: { gain: speed > 0.1 ? 0.14 * Math.max(0, (speed - 0.35) / 0.65) : 0, rate: 0.9 + 0.2 * speed },
+    carve: { gain: moving ? 0.18 * Math.min(1, carve) : 0, rate: 1 },
+    boostLoop: { gain: 0.2 * b, rate: 1 + 0.08 * b },
+  };
+}
 export function createDesertRideSe() {
   let alive = true;
   const loops = new Map();
-  const file = id => `desert_ride/${DESERT_SE[id]}.bgm`;
-  const ready = () => Promise.all(Object.values(DESERT_SE).map(name => loadSeBuffer(`desert_ride/${name}.bgm`)));
+  const file = id => `desert_ride/${DESERT_SE[id]}${DESERT_SE[id].includes(".") ? "" : ".bgm"}`;
+  const ready = () => Promise.all(Object.keys(DESERT_SE).map(id => loadSeBuffer(file(id))));
+  let levels = desertLoopLevels();
+  let zaps = 0, lastZap = "";
   function play(id, gain = 0.65) {
     if (!alive || !DESERT_SE[id]) return;
     const name = file(id);
@@ -143,21 +172,30 @@ export function createDesertRideSe() {
       voice.output.gain.setTargetAtTime(gain, ctx.currentTime, 0.12);
     }
   }
-  function motion({ speed = 0, carve = 0, grounded = false } = {}) {
-    const moving = grounded && speed > 0.1;
-    loop("slide", moving ? 0.34 * speed : 0, 0.82 + 0.25 * speed);
-    loop("wind", speed > 0.1 ? 0.14 * Math.max(0, (speed - 0.35) / 0.65) : 0, 0.9 + 0.2 * speed);
-    loop("carve", moving ? 0.18 * Math.min(1, carve) : 0);
+  function motion(state = {}) {
+    levels = desertLoopLevels(state);
+    for (const [id, { gain, rate }] of Object.entries(levels)) loop(id, gain, rate);
   }
-  function stop() { for (const voice of loops.values()) voice?.stop(0.12); loops.clear(); }
+  function stop() { for (const voice of loops.values()) voice?.stop(0.12); loops.clear(); levels = desertLoopLevels(); }
   function dispose() { alive = false; stop(); }
-  return { ready, play, motion, stop, dispose };
+  /** 放電の「ビリッ」を1発（3つから前と違うものを選び、高さを少し揺らす）。溜まっているほど大きい。 */
+  function zap(charge) {
+    if (!alive) return;
+    const choices = DESERT_ZAPS.filter(id => id !== lastZap);
+    const id = choices[Math.floor(Math.random() * choices.length)];
+    lastZap = id; zaps += 1;
+    if (seBuffers.has(file(id))) recordedVoice(file(id), { gain: 0.22 + 0.33 * Math.max(0, Math.min(1, charge)), rate: 0.94 + 0.12 * Math.random() });
+  }
+  /** 今のループの音量と、鳴らした「ビリッ」の数（検査用。音が出せない環境でも、鳴らすつもりの音が分かる）。 */
+  const loopLevels = () => ({ ...Object.fromEntries(Object.entries(levels).map(([id, { gain }]) => [id, gain])), zaps });
+  return { ready, play, motion, zap, stop, dispose, loopLevels };
 }
 
 // ---------------------------------------------------------------- ミニゲームの仮SE
 // 2026-11-10 オーナー依頼「ミニゲーム全般に合う効果音を探して一旦入れて」の仮置き（grok/minigame-audio）。
 // 出典・ライセンス（すべてCC0）・加工は asset_sources/music/minigame-se/。差し替えはこの表のファイル名だけ変える。
 // 共通のSE音量・ミュート・非表示停止（recordedVoice）に乗せ、未読込・取得失敗の間は既存の合成SE（fallback）で鳴らす。
+// 斧投げの実プレイは #3176 の playAxeSe を使う。以下の録音キューは出典台帳付きの既存素材として保持する。
 // TRPGの音（grok/trpg-audio）とは別の表にしてある。
 export const MINIGAME_SE = Object.freeze({
   axeThrow: { files: ["minigame/axe_throw.wav"], gain: .7, fallback: "whoosh" },
@@ -532,9 +570,58 @@ export const SE = {
   // てつこといっしょ（#2454）: 喉を鳴らす低いゴロゴロ（約1.2秒。録音なし・合成）と、写真のシャッター。
   purr: () => { for (let i = 0; i < 26; i++) noise({ dur: 0.04, vol: 0.05 * Math.min(1, (i + 1) / 4, (26 - i) / 4), filter: 160 + Math.random() * 50, q: 1.1, type: "lowpass", delay: i * 0.046 }); },
   shutter: () => { noise({ dur: 0.04, vol: 0.12, filter: 3200 }); tone({ freq: 1800, to: 900, type: "square", dur: 0.03, vol: 0.03, delay: 0.01 }); noise({ dur: 0.05, vol: 0.09, filter: 2200, delay: 0.09 }); },
+  // てつこといっしょ（§10・手応えの改善）: 短い鳴き声／飛びつく風切り／空振り／ぽん（ハートが増える）／とっておきのきらきら。どれも合成。
+  mew: () => { tone({ freq: 640, to: 1010, type: "triangle", dur: 0.09, vol: 0.1 }); tone({ freq: 1010, to: 720, type: "triangle", dur: 0.17, vol: 0.085, delay: 0.085 }); },
+  swish: () => noise({ dur: 0.16, vol: 0.1, filter: 900, sweepTo: 3600, q: 0.7 }),
+  boing: () => { tone({ freq: 430, to: 170, type: "sine", dur: 0.24, vol: 0.12 }); tone({ freq: 215, to: 120, type: "triangle", dur: 0.18, vol: 0.05, delay: 0.05 }); },
+  pon: () => tone({ freq: 880, to: 1320, type: "sine", dur: 0.07, vol: 0.085 }),
+  twinkle: () => { [1047, 1319, 1568, 2093].forEach((freq, i) => tone({ freq, type: "sine", dur: 0.22, vol: 0.11, delay: i * 0.07 })); noise({ dur: 0.3, vol: 0.04, filter: 7000, type: "highpass", delay: 0.1 }); },
   // 日付カードなど短いUI音（録音が無ければ短いクリック）。
   card: () => tone({ freq: 880, to: 660, type: "triangle", dur: 0.08, vol: 0.1 }),
+  // シーシャくじのガラガラ（motions/garagara.js）と賞の札（daily/kuji-reveal.js）
+  kujiCharge: (sec = 1.4) => { tone({ freq: 196, to: 740, type: "triangle", dur: sec, vol: 0.05, attack: sec * 0.5 }); noise({ dur: sec, vol: 0.05, filter: 500, q: 0.7, sweepTo: 4200 }); },
+  kujiShimmer: (n = 8) => { for (let i = 0; i < n; i++) tone({ freq: 2100 + Math.random() * 2600, type: "sine", dur: 0.2, vol: 0.045, delay: i * 0.05 + Math.random() * 0.03 }); },
+  kujiImpact: () => { tone({ freq: 130, to: 42, type: "sine", dur: 0.5, vol: 0.4 }); noise({ dur: 0.32, vol: 0.18, filter: 1500, sweepTo: 220 }); },
+  kujiRare: () => [784, 988, 1175, 1568, 1976].forEach((freq, i) => tone({ freq, type: "triangle", dur: 0.32, vol: 0.11, delay: i * 0.06 })),
+  kujiNote: (i = 0) => { const scale = [523, 587, 659, 784, 880, 1047, 1175, 1319, 1568, 1760, 2093]; tone({ freq: scale[Math.min(i, scale.length - 1)], type: "triangle", dur: 0.14, vol: 0.13 }); },
+  kujiFlip: () => { noise({ dur: 0.07, vol: 0.09, filter: 2600, q: 0.9 }); tone({ freq: 700, to: 1100, type: "triangle", dur: 0.07, vol: 0.07 }); },
 };
+
+// 斧投げ専用の合成音。共通の音量・ミュート・非表示停止を通し、外部音源は使わない。
+// 風切り→木への衝突→割れ・軋みを別の帯域にして、短い録音SEより重さを出す。
+export function playAxeSe(id, { scored = true } = {}) {
+  if (!seEnabled()) return;
+  if (id === "throw") {
+    noise({ dur: .43, vol: .19, filter: 380, sweepTo: 3100, q: .55 });
+    noise({ dur: .19, vol: .07, delay: .13, filter: 4200, sweepTo: 1800, q: .6 });
+    tone({ freq: 155, to: 82, type: "triangle", dur: .27, vol: .12 });
+  } else if (id === "stick") {
+    const weight = scored ? 1 : .72;
+    tone({ freq: 118, to: 44, dur: .32, vol: .36 * weight });
+    noise({ dur: .18, vol: .21 * weight, filter: 620, q: .5, type: "lowpass" });
+    noise({ dur: .09, vol: .14 * weight, filter: 2900, q: 1.2, delay: .014 });
+    // A few separated splinters and a falling wooden creak follow the initial hit.
+    [0.07, 0.12, 0.19].forEach((delay, i) => noise({ dur: .035 + i * .012, vol: .065 * weight,
+      filter: 3400 - i * 650, q: 1.5, delay }));
+    tone({ freq: 360, to: 125, type: "sawtooth", dur: .31, vol: .035 * weight, delay: .08 });
+  } else if (id === "drop") {
+    tone({ freq: 102, to: 47, dur: .18, vol: .22, delay: .035 });
+    noise({ dur: .13, vol: .13, filter: 950, type: "lowpass", delay: .035 });
+    noise({ dur: .1, vol: .11, filter: 3700, delay: .1 });
+    tone({ freq: 430, to: 180, type: "triangle", dur: .13, vol: .06, delay: .13 });
+  } else if (id === "miss") {
+    tone({ freq: 205, to: 105, type: "triangle", dur: .25, vol: .11, delay: .12 });
+  } else if (id === "cheer") {
+    noise({ dur: .7, vol: .11, filter: 850, q: .45 });
+    noise({ dur: .54, vol: .065, filter: 1900, q: .6, delay: .1 });
+    [523, 659, 784].forEach((freq, i) => tone({ freq, type: "triangle", dur: .2, vol: .065, delay: i * .075 }));
+  } else if (id === "win") {
+    SE.fanfare(); SE.crowd(1.2);
+  } else if (id === "lose") {
+    noise({ dur: .4, vol: .075, filter: 560, q: .5 });
+    [260, 205, 155].forEach((freq, i) => tone({ freq, to: freq * .7, type: "triangle", dur: .22, vol: .08, delay: i * .13 }));
+  }
+}
 
 for (const id of Object.keys(RECORDED_SE)) {
   const fallback = SE[id];
@@ -710,20 +797,29 @@ const BGM_GAIN = { sweets_or_sweets: 0.55, bgm_tournament_edm: 0.51, bgm_tournam
 const bgmLevel = (key) => config.mute || config.muted || bgmPaused ? 0
   : config.bgmVolume * (BGM_GAIN[key] ?? 1) * bgmDuck;
 
-// ラクダレース中だけ、プレイヤー速度に合わせて再生速度を緩やかに変える。
+// ラクダレース中はプレイヤー速度に、サンドボード中はブーストに合わせて、再生速度を緩やかに変える。
 // ピッチは保つ（HTMLAudioElement の既定 / preservesPitch=true。continue 曲と同じ）。
 let bgmTempo = 1, bgmTempoTarget = 1;
 const TEMPO_EASE = 0.22;
+const TEMPO_BGM = new Set(["bgm_camel_race", "bgm_ethnic05", "bgm_ethnic08", "bgm_ethnic12"]);
 
+// 2026-11-11 オーナー「ブーストするとBGM止まったりもバグ」: iPhone の Safari は、再生倍率や preservesPitch を書くたびに
+// 音の処理を作り直し、短い間に何度も変えると曲が途切れたり止まったりする。毎フレーム書き直していたのをやめ、
+// 0.01 刻みで値が変わった時だけ書く。変えた拍子に止まっていたら、同じ所から続ける。
 function applyBgmPlaybackRate() {
   if (!currentEl || currentKey === "bgm_continue_urgent") return;
-  currentEl.playbackRate = currentKey === "bgm_camel_race" ? bgmTempo : 1;
-  currentEl.preservesPitch = true;
+  const el = currentEl;
+  const rate = TEMPO_BGM.has(currentKey) ? Math.round(bgmTempo * 100) / 100 : 1;
+  if (el.preservesPitch !== true) el.preservesPitch = true;
+  if (Math.abs(el.playbackRate - rate) < 0.001) return;
+  const wasPlaying = !el.paused;
+  el.playbackRate = rate;
+  if (wasPlaying) setTimeout(() => { if (currentEl === el && el.paused && !bgmPaused && !rotateHeld && !document.hidden) el.play().catch(() => {}); }, 150);
 }
 
-/** 今の曲の目標再生倍率。1.00〜1.15。immediate ならその場で反映。 */
+/** 今の曲の目標再生倍率。1.00〜1.25。immediate ならその場で反映。 */
 export function setBgmPlaybackRate(rate, { immediate = false } = {}) {
-  const next = Math.max(1, Math.min(1.15, Number(rate) || 1));
+  const next = Math.max(1, Math.min(1.25, Number(rate) || 1));
   bgmTempoTarget = next;
   if (immediate) {
     bgmTempo = next;

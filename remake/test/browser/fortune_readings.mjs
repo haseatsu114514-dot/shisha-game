@@ -5,10 +5,9 @@ const { chromium }=createRequire(import.meta.url)('playwright');
 const out=process.env.ARTIFACT_DIR||'docs/qa/hud-fortune-682';fs.mkdirSync(out,{recursive:true});
 const browser=await chromium.launch({headless:true,executablePath:process.env.CHROME_EXECUTABLE_PATH||'/usr/bin/chromium'}),results=[];
 try{
- for(const [name,viewport,layout] of [['pc',{width:1280,height:900},'normal'],['touch',{width:844,height:390},'normal'],['ds',{width:844,height:390},'ds']]){
+ for(const [name,viewport] of [['pc',{width:1280,height:900}],['touch',{width:844,height:390}]]){ // DS風（ds）は廃止（横画面一本化）
   const ctx=await browser.newContext({viewport,hasTouch:name!=='pc',reducedMotion:'reduce'}),page=await ctx.newPage(),errors=[];
   page.on('pageerror',e=>errors.push(e.message));
-  await page.addInitScript(layout=>localStorage.setItem('suien_title_layout',layout),layout);
   await page.goto(process.env.BASE_URL||'http://127.0.0.1:8123/remake/');await page.locator('[data-test="title-new"]').waitFor({timeout:45000});await page.locator('#boot').waitFor({state:'detached'});
   await page.evaluate(async()=>{
    window.Q={core:await import('./js/core/state.js'),data:await import('./js/core/data.js'),vn:await import('./js/vn/engine.js'),chapter:await import('./js/chapters/ch1.js'),fortune:await import('./js/daily/fortune.js'),effects:await import('./js/core/fortune-effects.js'),stats:await import('./js/core/stats.js'),access:await import('./js/daily/spot-access.js'),spots:await import('./js/daily/spots.js'),schedule:await import('./js/daily/fortune-schedule.js')};

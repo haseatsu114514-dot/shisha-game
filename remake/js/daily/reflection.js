@@ -47,7 +47,7 @@ export async function reflectAt(place, { eve = false } = {}) {
 }
 
 /**
- * 大会前夜の内省（寝る前の精算のあと）。火種が残っていれば一度だけ強制で開く。
+ * 大会前夜の内省（寝る前）。火種が残っていれば一度だけ強制で開く。
  * 地元は観音堂、遠征先は宿の窓辺（2.8）。
  */
 export async function eveReflection(place) {

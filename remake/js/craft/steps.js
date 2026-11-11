@@ -322,7 +322,6 @@ export async function stepMix(cs) {
   const lcd = el("div.lcd");
   const vessel = el("div.mix-vessel", { dataset: { test: "mix-vessel" } });
   const taste = el("div.mix-taste", { "aria-live": "polite", dataset: { test: "mix-taste" } });
-  const compactTaste = el("div.mix-taste-compact", { dataset: { test: "mix-taste-compact" } });
   const regLine = el("div.reg-line");
   const recipeLine = el("div.recipe-line");
   const thermometer = buildMixTemperatureGauge(cs, { vertical: true });
@@ -359,15 +358,12 @@ export async function stepMix(cs) {
       : mixTaste(cs.mix);
     const tasteDisrupted = cs.mode === "tournament" && cs.chapter === 2;
     if (tasteDisrupted) {
-      for (const host of [taste, compactTaste]) host.replaceChildren(el("b", { text: aroma.headline }), el("p", { text: aroma.detail }));
+      taste.replaceChildren(el("b", { text: aroma.headline }), el("p", { text: aroma.detail }));
     } else {
       const masteryState = cs.masteryAtStart ? { flavorMastery: cs.masteryAtStart } : state;
       const mastery = mixMasteryProfile(masteryState, cs.mix, DB.flavorById);
       const precision = mastery.progress;
-      const compactOpen = compactTaste.querySelector(".flavor-forecast-compact")?.open;
       taste.replaceChildren(mixForecastCard(cs, { precision, mastery, aroma }));
-      compactTaste.replaceChildren(mixForecastCard(cs, { precision, mastery, aroma, compact: true }));
-      if (compactOpen) compactTaste.querySelector(".flavor-forecast-compact")?.setAttribute("open", "");
     }
     const info = evaluateMix(cs);
     const bands = thermometer.updateBands();
@@ -456,7 +452,6 @@ export async function stepMix(cs) {
         }))),
       ]) : null,
       el("p.mix-list-caption", { text: cs.orderFlavorIds ? "店の支給葉。サッパリ系から、1gずつ器へ。" : "葉を1gずつ、器へ。" }),
-      compactTaste,
       hint ? el("div.mix-hint", { dataset: { test: "mix-hint" } }, [
         insightful && effectVisible("insight") ? effectBadge("insight", "察") : null,
         el("span", { text: `ひらめき: ${hint.hint_text || hint.idea_hint || hint.memo}` }),

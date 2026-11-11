@@ -402,6 +402,10 @@ function migrate(s) {
     cleared: Object.fromEntries(Object.entries(record(trpg.cleared)).filter(([, v]) => v && typeof v.ending === "string"
       && Number.isInteger(v.chapter) && v.chapter >= 2 && Number.isInteger(v.day) && v.day > 0
       && typeof v.gm === "string" && Array.isArray(v.participants))),
+    // しおり（TMX13）: 途中の卓は1つだけ。形が崩れたものは捨て、最初から遊び直せばよい。
+    ...(trpg.bookmark && typeof trpg.bookmark.id === "string" && Array.isArray(trpg.bookmark.actions) && trpg.bookmark.actions.length
+      && trpg.bookmark.actions.every(a => Array.isArray(a) && typeof a[0] === "string") && trpg.bookmark.assignments
+      && typeof trpg.bookmark.assignments === "object" && Number.isInteger(trpg.bookmark.seed) ? { bookmark: trpg.bookmark } : {}),
     shifts: (Array.isArray(trpg.shifts) ? trpg.shifts : []).filter(v => v && typeof v.id === "string"
       && Number.isInteger(v.chapter) && Number.isInteger(v.day) && [0, 1].includes(v.slot) && typeof v.busy === "boolean"),
     club: { founded, members: founded ? Object.fromEntries(Object.entries(record(club.members))
@@ -602,13 +606,11 @@ export function load() {
   return migrated ? setState(migrated) : null;
 }
 
-// ---------------------------------------------------------------- 手動セーブ枠（オートセーブとは別に3枠）
+// ---------------------------------------------------------------- 手動セーブ枠（オートセーブとは別に1枠）
 
 export const SAVE_SLOTS = [
   { key: SAVE_KEY, label: "オートセーブ", auto: true },
   { key: "suien_remake_slot1", label: "スロット 1" },
-  { key: "suien_remake_slot2", label: "スロット 2" },
-  { key: "suien_remake_slot3", label: "スロット 3" },
 ];
 const BOOT_LOAD_KEY = "suien_remake_boot_load";
 
@@ -695,6 +697,7 @@ export const config = {
   portraitStyle: "new", // 採用済みの新版が既定。現行も設定で選べる
   portraitStyleVersion: 1, // 旧版の既定値・廃止画風を一度だけ新版へ移行
   uiTheme: "paper",    // 会話枠と共通UI。ゲームの進行とは別の端末設定（既定は紙とラベンダー・DUI08）。
+  look: "classic",     // 見た目の様式（新版／旧版／DS風・core/look.js）。ここは保存が無い時の素の値で、既定（新版）は起動時に main.js の migrateLook が決める（LK09）。
   mute: false,       // すべての音を一時的に消す（旧キー muted は読み込み時に mute へ統一）
   bgmVolume: 0.5,
   seVolume: 0.7,
@@ -710,6 +713,8 @@ export const config = {
   introArtStyle: "graphic", // 登場カットインの絵柄。"classic" で旧（立ち絵）に戻す（2026-10-31）
   introTransition: "morph", // 立ち絵からカットインへの変身のつなぎ: morph（2026-11-02 オーナー採用）/ none。card / slash は比較用に残す
   staffRollSeen: false, // スタッフロールを一度最後まで見たか。見た端末では2回目から飛ばせる（#517）
+  // 左右の余白（横長のスマホでステージの外に余る所・YHK）。"full"＝煙と縁・縦書きの帯・親指ボタン／"plain"＝これまでどおり、ぼかしだけ
+  sideArea: "full",
 };
 
 setPortraitStyleSource(() => config.portraitStyle);

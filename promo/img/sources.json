@@ -1,0 +1,435 @@
+{
+ "note": "promo/tools/build_images.py が書く記録。outputs＝サイトの絵が元にしたゲームの絵、sources＝書き出したときの版（Git の blob）。手で直さない。",
+ "outputs": {
+  "chara/adam-bg.webp": [
+   "remake/img/ui/character_intros/graphic/bg_adam.webp"
+  ],
+  "chara/adam-face.webp": [
+   "remake/img/ui/face_icons/new/face_adam.webp"
+  ],
+  "chara/adam-graphic.webp": [
+   "remake/img/ui/character_intros/graphic/adam.webp"
+  ],
+  "chara/adam-stand.webp": [
+   "remake/img/sprites/character_variants/new/adam/chr_adam_normal.webp"
+  ],
+  "chara/ageha-bg.webp": [
+   "remake/img/ui/character_intros/graphic/bg_ageha.webp"
+  ],
+  "chara/ageha-face.webp": [
+   "remake/img/ui/face_icons/new/face_ageha.webp"
+  ],
+  "chara/ageha-graphic.webp": [
+   "remake/img/ui/character_intros/graphic/ageha.webp"
+  ],
+  "chara/ageha-stand.webp": [
+   "remake/img/sprites/character_variants/new/ageha/chr_ageha_normal.webp"
+  ],
+  "chara/dr_kemuri-bust.webp": [
+   "remake/img/sprites/character_variants/new/dr_kemuri/chr_dr_kemuri_normal.webp"
+  ],
+  "chara/hajime-bg.webp": [
+   "remake/img/ui/character_intros/graphic/bg_hajime.webp"
+  ],
+  "chara/hajime-face.webp": [
+   "remake/img/ui/face_icons/new/face_hajime.webp"
+  ],
+  "chara/hajime-graphic.webp": [
+   "remake/img/ui/character_intros/graphic/hajime.webp"
+  ],
+  "chara/hajime-stand.webp": [
+   "remake/img/sprites/character_variants/new/hajime/chr_hajime_normal.webp"
+  ],
+  "chara/hiyori-bg.webp": [
+   "remake/img/ui/character_intros/graphic/bg_hiyori.webp"
+  ],
+  "chara/hiyori-face.webp": [
+   "remake/img/ui/face_icons/new/face_hiyori.webp"
+  ],
+  "chara/hiyori-graphic.webp": [
+   "remake/img/ui/character_intros/graphic/hiyori.webp"
+  ],
+  "chara/hiyori-stand.webp": [
+   "remake/img/sprites/character_variants/new/hiyori/chr_hiyori_normal.webp"
+  ],
+  "chara/kumicho-bg.webp": [
+   "remake/img/ui/character_intros/graphic/bg_kumicho.webp"
+  ],
+  "chara/kumicho-face.webp": [
+   "remake/img/ui/face_icons/new/face_kumicho.webp"
+  ],
+  "chara/kumicho-graphic.webp": [
+   "remake/img/ui/character_intros/graphic/kumicho.webp"
+  ],
+  "chara/kumicho-stand.webp": [
+   "remake/img/sprites/character_variants/new/kumicho/chr_kumicho_normal.webp"
+  ],
+  "chara/maezono-bust.webp": [
+   "remake/img/sprites/character_variants/new/maezono/chr_maezono_normal.webp"
+  ],
+  "chara/minto-bg.webp": [
+   "remake/img/ui/character_intros/graphic/bg_minto.webp"
+  ],
+  "chara/minto-face.webp": [
+   "remake/img/ui/face_icons/new/face_minto.webp"
+  ],
+  "chara/minto-graphic.webp": [
+   "remake/img/ui/character_intros/graphic/minto.webp"
+  ],
+  "chara/minto-stand.webp": [
+   "remake/img/sprites/character_variants/new/minto/chr_minto_normal.webp"
+  ],
+  "chara/naru-bg.webp": [
+   "remake/img/ui/character_intros/graphic/bg_naru.webp"
+  ],
+  "chara/naru-face.webp": [
+   "remake/img/ui/face_icons/new/face_naru.webp"
+  ],
+  "chara/naru-graphic.webp": [
+   "remake/img/ui/character_intros/graphic/naru.webp"
+  ],
+  "chara/naru-stand.webp": [
+   "remake/img/sprites/character_variants/new/naru/chr_naru_normal.webp"
+  ],
+  "chara/pakki-bust.webp": [
+   "remake/img/sprites/character_variants/new/pakki/chr_pakki_normal.webp"
+  ],
+  "chara/rei-bg.webp": [
+   "remake/img/ui/character_intros/graphic/bg_rei.webp"
+  ],
+  "chara/rei-face.webp": [
+   "remake/img/ui/face_icons/new/face_rei.webp"
+  ],
+  "chara/rei-graphic.webp": [
+   "remake/img/ui/character_intros/graphic/rei.webp"
+  ],
+  "chara/rei-stand.webp": [
+   "remake/img/sprites/character_variants/new/rei/chr_rei_normal.webp"
+  ],
+  "chara/rio-bg.webp": [
+   "remake/img/ui/character_intros/graphic/bg_rio.webp"
+  ],
+  "chara/rio-face.webp": [
+   "remake/img/ui/face_icons/new/face_rio.webp"
+  ],
+  "chara/rio-graphic.webp": [
+   "remake/img/ui/character_intros/graphic/rio.webp"
+  ],
+  "chara/rio-stand.webp": [
+   "remake/img/sprites/character_variants/new/rio/chr_rio_normal.webp"
+  ],
+  "chara/samechan-bg.webp": [
+   "remake/img/ui/character_intros/graphic/bg_samechan.webp"
+  ],
+  "chara/samechan-face.webp": [
+   "remake/img/ui/face_icons/new/face_samechan.webp"
+  ],
+  "chara/samechan-graphic.webp": [
+   "remake/img/ui/character_intros/graphic/samechan.webp"
+  ],
+  "chara/samechan-stand.webp": [
+   "remake/img/sprites/character_variants/new/samechan/chr_samechan_normal.webp"
+  ],
+  "chara/sui-bust.webp": [
+   "remake/img/sprites/character_variants/new/sui/chr_sui_normal.webp"
+  ],
+  "chara/sumi-bg.webp": [
+   "remake/img/ui/character_intros/graphic/bg_sumi.webp"
+  ],
+  "chara/sumi-face.webp": [
+   "remake/img/ui/face_icons/new/face_sumi.webp"
+  ],
+  "chara/sumi-graphic.webp": [
+   "remake/img/ui/character_intros/graphic/sumi.webp"
+  ],
+  "chara/sumi-stand.webp": [
+   "remake/img/sprites/character_variants/new/sumi/chr_sumi_normal.webp"
+  ],
+  "chara/tsumugi-bg.webp": [
+   "remake/img/ui/character_intros/graphic/bg_tsumugi.webp"
+  ],
+  "chara/tsumugi-face.webp": [
+   "remake/img/ui/face_icons/new/face_tsumugi.webp"
+  ],
+  "chara/tsumugi-graphic.webp": [
+   "remake/img/ui/character_intros/graphic/tsumugi.webp"
+  ],
+  "chara/tsumugi-stand.webp": [
+   "remake/img/sprites/character_variants/new/tsumugi/chr_tsumugi_normal.webp"
+  ],
+  "gallery/minto-cheki.webp": [
+   "remake/img/cgs/cg_minto_first_cheki.webp"
+  ],
+  "gallery/sumi-training.webp": [
+   "remake/img/cgs/cg_ch1_sumi_training.webp"
+  ],
+  "gallery/tournament-thumb.webp": [
+   "remake/img/cgs/cg_ch1_tournament_battle.webp"
+  ],
+  "gallery/tournament.webp": [
+   "remake/img/cgs/cg_ch1_tournament_battle.webp"
+  ],
+  "gallery/tsumugi-sketch-thumb.webp": [
+   "remake/img/cgs/cg_ch1_tsumugi_sketch_wip.webp"
+  ],
+  "gallery/tsumugi-sketch.webp": [
+   "remake/img/cgs/cg_ch1_tsumugi_sketch_wip.webp"
+  ],
+  "gallery/tsumugi-smoke-thumb.webp": [
+   "remake/img/cgs/cg_tsumugi_smoke_color.webp"
+  ],
+  "gallery/tsumugi-smoke.webp": [
+   "remake/img/cgs/cg_tsumugi_smoke_color.webp"
+  ],
+  "hero/kv-adam-thumb.webp": [
+   "remake/img/ui/title_arts/title_art_adam_01_sunset_proclamation.webp"
+  ],
+  "hero/kv-adam.webp": [
+   "remake/img/ui/title_arts/title_art_adam_01_sunset_proclamation.webp"
+  ],
+  "hero/kv-ageha-thumb.webp": [
+   "remake/img/ui/title_arts/title_art_ageha_04_gummy_light.webp"
+  ],
+  "hero/kv-ageha.webp": [
+   "remake/img/ui/title_arts/title_art_ageha_04_gummy_light.webp"
+  ],
+  "hero/kv-counter-s.webp": [
+   "asset_sources/promo-site-20261111/keyvisual/kv-a-02.png"
+  ],
+  "hero/kv-counter-thumb.webp": [
+   "asset_sources/promo-site-20261111/keyvisual/kv-a-02.png"
+  ],
+  "hero/kv-counter.webp": [
+   "asset_sources/promo-site-20261111/keyvisual/kv-a-02.png"
+  ],
+  "hero/kv-hiyori-thumb.webp": [
+   "remake/img/ui/title_arts/title_art_hiyori_06_riverside_hoodie.webp"
+  ],
+  "hero/kv-hiyori.webp": [
+   "remake/img/ui/title_arts/title_art_hiyori_06_riverside_hoodie.webp"
+  ],
+  "hero/kv-minto-thumb.webp": [
+   "remake/img/ui/title_arts/title_art_minto_05_mint_cloud.webp"
+  ],
+  "hero/kv-minto.webp": [
+   "remake/img/ui/title_arts/title_art_minto_05_mint_cloud.webp"
+  ],
+  "hero/kv-naru-thumb.webp": [
+   "remake/img/ui/title_arts/title_art_naru_01_bakery_morning.webp"
+  ],
+  "hero/kv-naru.webp": [
+   "remake/img/ui/title_arts/title_art_naru_01_bakery_morning.webp"
+  ],
+  "hero/kv-rio-thumb.webp": [
+   "remake/img/ui/title_arts/title_art_rio_04_rainy_neon_umbrella.webp"
+  ],
+  "hero/kv-rio.webp": [
+   "remake/img/ui/title_arts/title_art_rio_04_rainy_neon_umbrella.webp"
+  ],
+  "hero/kv-samechan-thumb.webp": [
+   "remake/img/ui/title_arts/title_art_samechan_04_throne_pose.webp"
+  ],
+  "hero/kv-samechan.webp": [
+   "remake/img/ui/title_arts/title_art_samechan_04_throne_pose.webp"
+  ],
+  "hero/kv-sumi-thumb.webp": [
+   "remake/img/ui/title_arts/title_art_sumi_01_own_clay_bowl.webp"
+  ],
+  "hero/kv-sumi.webp": [
+   "remake/img/ui/title_arts/title_art_sumi_01_own_clay_bowl.webp"
+  ],
+  "hero/kv-town-s.webp": [
+   "asset_sources/promo-site-20261111/keyvisual/kv-b-01.png"
+  ],
+  "hero/kv-town-thumb.webp": [
+   "asset_sources/promo-site-20261111/keyvisual/kv-b-01.png"
+  ],
+  "hero/kv-town.webp": [
+   "asset_sources/promo-site-20261111/keyvisual/kv-b-01.png"
+  ],
+  "hero/kv-tsumugi-thumb.webp": [
+   "remake/img/ui/title_arts/title_art_tsumugi_04_painting_studio.webp"
+  ],
+  "hero/kv-tsumugi.webp": [
+   "remake/img/ui/title_arts/title_art_tsumugi_04_painting_studio.webp"
+  ],
+  "hero/lounge-s.webp": [
+   "remake/img/backgrounds/bg_title.webp"
+  ],
+  "hero/lounge.webp": [
+   "remake/img/backgrounds/bg_title.webp"
+  ],
+  "logo-s.webp": [
+   "remake/img/ui/ui_title_logo_rich.webp"
+  ],
+  "logo.webp": [
+   "remake/img/ui/ui_title_logo_rich.webp"
+  ],
+  "parts/button-gold-l.webp": [
+   "remake/img/ui/craft-night/button-gold.webp"
+  ],
+  "parts/button-gold-m.webp": [
+   "remake/img/ui/craft-night/button-gold.webp"
+  ],
+  "parts/button-gold-s.webp": [
+   "remake/img/ui/craft-night/button-gold.webp"
+  ],
+  "parts/button-gold-wide.webp": [
+   "remake/img/ui/craft-night/button-gold.webp"
+  ],
+  "parts/button-white-l.webp": [
+   "remake/img/ui/craft-night/button-white.webp"
+  ],
+  "parts/button-white-m.webp": [
+   "remake/img/ui/craft-night/button-white.webp"
+  ],
+  "parts/button-white-wide.webp": [
+   "remake/img/ui/craft-night/button-white.webp"
+  ],
+  "story/ch1-title.webp": [
+   "remake/img/ui/chapters/ch1-title.webp"
+  ],
+  "story/ch2-title.webp": [
+   "remake/img/ui/chapters/ch2-title.webp"
+  ],
+  "story/strip-ch1.webp": [
+   "remake/img/ui/poems/poem_ch1.webp"
+  ],
+  "story/tonari-night.webp": [
+   "remake/img/backgrounds/bg_tonari_inside_night.webp"
+  ],
+  "world/logo-c-station.webp": [
+   "assets/ui/store_logos/c-station.webp"
+  ],
+  "world/logo-dr-fookah.webp": [
+   "assets/ui/store_logos/dr-fookah.webp"
+  ],
+  "world/logo-eden.webp": [
+   "assets/ui/store_logos/eden.webp"
+  ],
+  "world/logo-kemurikusa.webp": [
+   "assets/ui/store_logos/kemurikusa.webp"
+  ],
+  "world/logo-peppermint.webp": [
+   "assets/ui/store_logos/peppermint.webp"
+  ],
+  "world/logo-tonari.webp": [
+   "assets/ui/store_logos/tonari.webp"
+  ],
+  "world/map-day.webp": [
+   "remake/img/backgrounds/bg_osu_map_day.webp"
+  ],
+  "world/map-night.webp": [
+   "remake/img/backgrounds/bg_osu_map_night.webp"
+  ],
+  "world/shop-c-station.webp": [
+   "remake/img/backgrounds/bg_c_station_night.webp"
+  ],
+  "world/shop-dr-fookah.webp": [
+   "remake/img/backgrounds/bg_fookah_showroom.webp"
+  ],
+  "world/shop-eden.webp": [
+   "remake/img/backgrounds/bg_eden_shop.webp"
+  ],
+  "world/shop-kemurikusa.webp": [
+   "remake/img/backgrounds/kemurikusa.webp"
+  ],
+  "world/shop-peppermint.webp": [
+   "remake/img/backgrounds/peppermint.webp"
+  ],
+  "world/shop-tonari.webp": [
+   "remake/img/backgrounds/bg_tonari_inside_night.webp"
+  ]
+ },
+ "sources": {
+  "asset_sources/promo-site-20261111/keyvisual/kv-a-02.png": "065376ec68ebf9b0303f6c86317ef77fbbc5f9e0",
+  "asset_sources/promo-site-20261111/keyvisual/kv-b-01.png": "ab785e6782e966e3576f09847656a41ab4c98462",
+  "assets/ui/store_logos/c-station.webp": "1b1fba808a855da1a70b02da8ffd52b20db314a6",
+  "assets/ui/store_logos/dr-fookah.webp": "4dacdc762d200301633bbb859e6f16a2395d3c20",
+  "assets/ui/store_logos/eden.webp": "6612b4109c18ec455b88aebe614d710a097e921b",
+  "assets/ui/store_logos/kemurikusa.webp": "867c237b4019998df95ccfdafbe9a499495578ae",
+  "assets/ui/store_logos/peppermint.webp": "aca0600aeba4e0b85f2736635c3d6b706eebf7a0",
+  "assets/ui/store_logos/tonari.webp": "7bd92158557bd2b2dcca944e3efd85a003168a01",
+  "remake/img/backgrounds/bg_c_station_night.webp": "28ed5ebae8300eed69ab891f025e065f092bcb2d",
+  "remake/img/backgrounds/bg_eden_shop.webp": "9502a24a62942330d0b26189390e745da9e7296e",
+  "remake/img/backgrounds/bg_fookah_showroom.webp": "2f726fe536d807384bf4ce03cac33a9481a49a31",
+  "remake/img/backgrounds/bg_osu_map_day.webp": "b6cfcb7bd60b18dea121530abe92dbc09ec91218",
+  "remake/img/backgrounds/bg_osu_map_night.webp": "bf0bbbfb4953c327c6d29e30e015aae14339cd49",
+  "remake/img/backgrounds/bg_title.webp": "ac07cdfa6b5ffa6086f38fa01daaa68ff3fc4811",
+  "remake/img/backgrounds/bg_tonari_inside_night.webp": "f0f20d4456ebe97717e7b75d304cc89aa25d3355",
+  "remake/img/backgrounds/kemurikusa.webp": "a8bf65e6248e182bdf60fbfc2d67f80a2bd63bf1",
+  "remake/img/backgrounds/peppermint.webp": "fe60df8b7bf6a45ee45251966636c724f8031303",
+  "remake/img/cgs/cg_ch1_sumi_training.webp": "0559e284efe8d97facb730a73da4304fe5145ede",
+  "remake/img/cgs/cg_ch1_tournament_battle.webp": "adaae647abeb067c086dbd061c9275ee98eb8a20",
+  "remake/img/cgs/cg_ch1_tsumugi_sketch_wip.webp": "4f37925473aad9d80b5c96ab4ec875dabb9ff9f9",
+  "remake/img/cgs/cg_minto_first_cheki.webp": "5d4c8778e401b9184b1c84a354b6357236fe702e",
+  "remake/img/cgs/cg_tsumugi_smoke_color.webp": "061952bef3e8abb321e66ce18a4a59e9f0dfe3b0",
+  "remake/img/sprites/character_variants/new/adam/chr_adam_normal.webp": "7adeb79485d235bf09bdee6a7fdb1b6b0f640d66",
+  "remake/img/sprites/character_variants/new/ageha/chr_ageha_normal.webp": "3eefb72b99353e5c1783f9b43d5419694bdd378e",
+  "remake/img/sprites/character_variants/new/dr_kemuri/chr_dr_kemuri_normal.webp": "4b1bfa2d41c292f2e20973906d256cf560aaa269",
+  "remake/img/sprites/character_variants/new/hajime/chr_hajime_normal.webp": "33217cf99f479f39bb4a0b8eeb2ee52bb02461a1",
+  "remake/img/sprites/character_variants/new/hiyori/chr_hiyori_normal.webp": "5c7f826cd76e4f87daa18cd0a63aa2b7097e296e",
+  "remake/img/sprites/character_variants/new/kumicho/chr_kumicho_normal.webp": "c1945cf337a4f2d5f1231f7da2247a2e0ecc8766",
+  "remake/img/sprites/character_variants/new/maezono/chr_maezono_normal.webp": "a8c450699d784c5dbc2bfb60218b604d9cac0fbb",
+  "remake/img/sprites/character_variants/new/minto/chr_minto_normal.webp": "21e5ecbd41a545dc262957b2f64ecd317fb95635",
+  "remake/img/sprites/character_variants/new/naru/chr_naru_normal.webp": "aa7b4064f0c52d2575b918b00a1bcf38621143ab",
+  "remake/img/sprites/character_variants/new/pakki/chr_pakki_normal.webp": "18335d60805f15a5804cc122e9a6d1e929732b71",
+  "remake/img/sprites/character_variants/new/rei/chr_rei_normal.webp": "11a695dab3839bf4e475ce5e6859c5f94888ae90",
+  "remake/img/sprites/character_variants/new/rio/chr_rio_normal.webp": "ead9b92967f07b29372a19ecdffe6b7d7ff8a7a0",
+  "remake/img/sprites/character_variants/new/samechan/chr_samechan_normal.webp": "a1c68f5a4bf68128f56ed5d8ec51ccc49c9d6dd3",
+  "remake/img/sprites/character_variants/new/sui/chr_sui_normal.webp": "08e1a9b65d31afe346ab53a460da33efccdf6c92",
+  "remake/img/sprites/character_variants/new/sumi/chr_sumi_normal.webp": "2914e875bfea2a00e69f873c1284efc5ad283801",
+  "remake/img/sprites/character_variants/new/tsumugi/chr_tsumugi_normal.webp": "c6992b79d0cf6d59b2ca0dc0f10c3eed2899ad56",
+  "remake/img/ui/chapters/ch1-title.webp": "6ccacc63163ac85f0848a05ec5424a96a5184806",
+  "remake/img/ui/chapters/ch2-title.webp": "38759958684c971f5549db895bf6cb3fb84173ec",
+  "remake/img/ui/character_intros/graphic/adam.webp": "1d5dede69fe70a31a1e03e23ba67efa588540577",
+  "remake/img/ui/character_intros/graphic/ageha.webp": "e7f8212389ce7f2c3c8a72d4ec5282fb4650e918",
+  "remake/img/ui/character_intros/graphic/bg_adam.webp": "7e2240b7a07e6d494a1f479e8995ae38e1f699d6",
+  "remake/img/ui/character_intros/graphic/bg_ageha.webp": "387c3886424254041bbb5896728e1ddea09095f1",
+  "remake/img/ui/character_intros/graphic/bg_hajime.webp": "95561ee7517f90e8d5c060b47d418e3cdd0c1e2e",
+  "remake/img/ui/character_intros/graphic/bg_hiyori.webp": "c29a885a6316331d6a1fef98aa1fd40b24445037",
+  "remake/img/ui/character_intros/graphic/bg_kumicho.webp": "44846ade83f6926a0cecf3e9a63127eb91a66c1e",
+  "remake/img/ui/character_intros/graphic/bg_minto.webp": "1c8ffe5b22489865ab02ea5566ae265584a1c7b0",
+  "remake/img/ui/character_intros/graphic/bg_naru.webp": "e6443e18188f1bcaa11cc4b107dacc0397cdd9be",
+  "remake/img/ui/character_intros/graphic/bg_rei.webp": "0b516c017d72b5d8e936a6460c00076683c5daf1",
+  "remake/img/ui/character_intros/graphic/bg_rio.webp": "f363d7507bdc0329bd62bccbb8ad70cd9c095049",
+  "remake/img/ui/character_intros/graphic/bg_samechan.webp": "440b19998cc1470d33d7fee09654f9dde0e376b2",
+  "remake/img/ui/character_intros/graphic/bg_sumi.webp": "45464a3c83233b550b02d287d3ff9790239f8575",
+  "remake/img/ui/character_intros/graphic/bg_tsumugi.webp": "bc7bbda8bb3b7a0805985383d3c8dbcc5fbbf502",
+  "remake/img/ui/character_intros/graphic/hajime.webp": "d8dd7984a76a29656fb8a1edf0d6fa16aad37e34",
+  "remake/img/ui/character_intros/graphic/hiyori.webp": "a5c2284819571ce85980c9126843ffa48dfca5f8",
+  "remake/img/ui/character_intros/graphic/kumicho.webp": "7c45ea191b344750503931ddb01dc246e4771487",
+  "remake/img/ui/character_intros/graphic/minto.webp": "268441218f3d3a3d98e61f673ede3684a6a3d9d3",
+  "remake/img/ui/character_intros/graphic/naru.webp": "d5a469bf08b44be8c6b043fa6545a6b4199fc5e8",
+  "remake/img/ui/character_intros/graphic/rei.webp": "2a03fc902bacae6862082c81d857156846714376",
+  "remake/img/ui/character_intros/graphic/rio.webp": "e5866fa741327f5e7fdcff3681bad6f03d68f766",
+  "remake/img/ui/character_intros/graphic/samechan.webp": "9a73dd1d26e8562b2d84e4ad8e23ade9189cf9dd",
+  "remake/img/ui/character_intros/graphic/sumi.webp": "e9f82b00c426d5ea57b1061941a47fd1b1a9dec5",
+  "remake/img/ui/character_intros/graphic/tsumugi.webp": "5a2b3e118e40a5222100988dcc24cd35896cc457",
+  "remake/img/ui/craft-night/button-gold.webp": "659157ac81547dbc3d3d57ff8468ac82a7a9a95b",
+  "remake/img/ui/craft-night/button-white.webp": "8c3fd47989d5d9229ad92aa7cd7229972e34b03a",
+  "remake/img/ui/face_icons/new/face_adam.webp": "bd878b4d294b6671d5f2c75809806ae6b169492c",
+  "remake/img/ui/face_icons/new/face_ageha.webp": "67306ce21ac86d9d23d72b78df2b1a3936a3f6be",
+  "remake/img/ui/face_icons/new/face_hajime.webp": "94ef16b4431a6a477fe770b8ce1d5f9f1345c92a",
+  "remake/img/ui/face_icons/new/face_hiyori.webp": "b84ce8dfb638903aa598fd6496eea3d091a16f7f",
+  "remake/img/ui/face_icons/new/face_kumicho.webp": "8b621ffb12290499751ecacf663646046116a361",
+  "remake/img/ui/face_icons/new/face_minto.webp": "76b374e312469e1a38f69aa12c0ece897ae260e0",
+  "remake/img/ui/face_icons/new/face_naru.webp": "e721482fe5026926f1224e61177975ebda44f79e",
+  "remake/img/ui/face_icons/new/face_rei.webp": "a390a2210af98ec83b02a438025926d952822d43",
+  "remake/img/ui/face_icons/new/face_rio.webp": "3d22b1c10d4bdbe21d4d81e31239cb0df01fd776",
+  "remake/img/ui/face_icons/new/face_samechan.webp": "2b7f20557cd8aec113dab2333df9d80aa09d9b9e",
+  "remake/img/ui/face_icons/new/face_sumi.webp": "3ffcd22a8c34f7ac7fbb7202fc3ac81077b3a38e",
+  "remake/img/ui/face_icons/new/face_tsumugi.webp": "8eab6fb93f10e6f7c327e7432a8169c8e5654688",
+  "remake/img/ui/poems/poem_ch1.webp": "2d5b0e4c34f9bd8ba6ae723db20a4e06fc7bfaa7",
+  "remake/img/ui/title_arts/title_art_adam_01_sunset_proclamation.webp": "08498103d17b3c2ff0cc58554cc2764a53938fba",
+  "remake/img/ui/title_arts/title_art_ageha_04_gummy_light.webp": "92b9c2ecb6083da80260cb00cc5f1871ceec99d4",
+  "remake/img/ui/title_arts/title_art_hiyori_06_riverside_hoodie.webp": "bbdced41520f56f02c4fced15672de8bcb7bd069",
+  "remake/img/ui/title_arts/title_art_minto_05_mint_cloud.webp": "911080306d2838d4bfdb6a829adc3b4dcf0451d5",
+  "remake/img/ui/title_arts/title_art_naru_01_bakery_morning.webp": "d2779553be23b83078e49ee34cd9a0e3c475c204",
+  "remake/img/ui/title_arts/title_art_rio_04_rainy_neon_umbrella.webp": "2cee48e34832624f8c4d026685970264b0c1dc31",
+  "remake/img/ui/title_arts/title_art_samechan_04_throne_pose.webp": "594543d08778960157eb9a52def00a83d5b03661",
+  "remake/img/ui/title_arts/title_art_sumi_01_own_clay_bowl.webp": "600bbf9104607232e5b7bd6531cf9167fdb36397",
+  "remake/img/ui/title_arts/title_art_tsumugi_04_painting_studio.webp": "da5e62c8cfd3e9c8c2342fe76a898ebff4dee5ea",
+  "remake/img/ui/ui_title_logo_rich.webp": "4e025de5416fdedb4cfdc3375ed6fef7c3658a89"
+ }
+}

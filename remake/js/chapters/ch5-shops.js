@@ -2,6 +2,7 @@
 //   KEMURIKUSA（なる）: 第4章で再開した店（ch4_naru_dubai_3）。第2章の決裂の判定（naruRiftActive）は LIME・誘いでも
 //     使うので変えず、第5章の地図だけこの通い店で出す（charId を持たせない＝臨時休業の判定に掛からない）。
 //   C.STATION: 大会を運営するチェーン店。世界大会の後の、新しい王者としての来店。
+//   Dr.fookah の2階（凛想・夜だけ）: 地図のピンは1階の店。来店の時に階を選ぶ（chapterFiveShowroom・BLC08）。
 //   PEPPERMINT（みんと）・SHISHARK（サメちゃん）・MELTY PUFF（あげは・柚ヶ谷）: ヒロインの店。恋人でも友人でも
 //     不自然にならない、店での会話にする（オーナー指定 2026-11-02）。恋人の好感度は店では深まらない（core/stats.js）。
 // 代金・体力・能力は元の店の来店と同じ。好感度は第5章の通いの +5。台詞は data/dialogue/ch5_shops.json。
@@ -33,6 +34,16 @@ export const CH5_SHOPS = Object.freeze([
   shop(homeBase("minto"), { talkWith: "minto", stat: CHAR_STAT.minto, bg: VISIT_BG.minto, affinity: 5,
     needsMet: true, talks: talksOf("minto_shop"), desc: "みんとのコンセプトカフェ。今日も、ミントの香りがする。" }),
 ]);
+// Dr.fookah の2階（凛想・夜だけ・BLC08）。地図のピンは1階の店のままで、来店の時に階を選ぶ（ch5-daily.js）。
+// 第1・2章の物語の続き（段階の会話・試作）は流さず、ほかのヒロインの店と同じ通いの小会話にする。代金はかからない。
+const SHOWROOM_ID = "ch5_rio_showroom";
+const showroom = () => shop(homeBase("shop"), { id: SHOWROOM_ID, talkWith: "rio", stat: CHAR_STAT.rio, bg: VISIT_BG.rio, affinity: 5,
+  needsMet: true, stamina: -14, talks: talksOf("rio_shop"), desc: "Dr.fookah の2階。夜は、凛想さんがショールームにいる。" });
+/** 今、Dr.fookah の2階へ上がれるか（凛想に会ったことがあり、夜）。上がれるならその通い店、無ければ null。 */
+export function chapterFiveShowroom(value = state) {
+  const entry = showroom();
+  return value?.chapter === 5 && (value.slot || 0) >= 1 && known(value, entry) ? entry : null;
+}
 // SHISHARK は台本データ（samechan.json の spot）、MELTY PUFF は柚ヶ谷の店から作る（読み込み後に決まる）。
 const samechanShop = () => shop(DB.samechan?.spot && { ...DB.samechan.spot, region: "home" }, {
   talkWith: "samechan", stat: "insight", bg: DB.samechan?.spot?.bg || "bg_shishark", affinity: 5,
@@ -47,7 +58,7 @@ const known = (value, entry) => !!entry && (!entry.needsMet || !!value?.met?.[en
 export const chapterFiveShops = (value = state) => [...CH5_SHOPS, samechanShop()].filter(entry => known(value, entry));
 /** 第5章の柚ヶ谷の地図に出す通い店（あげはの店）。 */
 export const chapterFiveCityShops = (value = state) => [agehaShop()].filter(entry => known(value, entry));
-const allShops = () => [...CH5_SHOPS, samechanShop(), agehaShop()].filter(Boolean);
+const allShops = () => [...CH5_SHOPS, samechanShop(), agehaShop(), showroom()].filter(Boolean);
 /** spotById 用（地図の外から id で引く）。 */
 export const chapterFiveShopById = id => allShops().find(entry => entry.id === id) || null;
 

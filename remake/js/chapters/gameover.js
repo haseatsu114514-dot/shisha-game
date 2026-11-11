@@ -276,7 +276,7 @@ export function buildGameOver({ reason = "rank", rank = 0, variant = null, onRet
     layoutObserver.disconnect();
     offOwner();
     document.removeEventListener("visibilitychange", availabilityChanged);
-    for (const event of ["resize", "orientationchange", "display-layout-change"]) window.removeEventListener(event, availabilityChanged);
+    for (const event of ["resize", "orientationchange"]) window.removeEventListener(event, availabilityChanged);
     window.removeEventListener("pagehide", cleanup);
     root.removeEventListener("keydown", keyboardDown, true);
     root.removeEventListener("keyup", keyboardUp, true);
@@ -432,11 +432,11 @@ export function buildGameOver({ reason = "rank", rank = 0, variant = null, onRet
   // CSSの縦横条件を複製せず、実際の案内/MENUと表示レイアウトを読む。
   for (const node of [document.documentElement, document.body, document.getElementById("viewport"),
     document.getElementById("stage"), document.getElementById("rotate-hint"), document.getElementById("modal")]) {
-    if (node) layoutObserver.observe(node, { attributes: true, attributeFilter: ["class", "style", "hidden", "data-game-layout"],
+    if (node) layoutObserver.observe(node, { attributes: true, attributeFilter: ["class", "style", "hidden"],
       childList: node.id === "modal" || node === document.body });
   }
   document.addEventListener("visibilitychange", availabilityChanged);
-  for (const event of ["resize", "orientationchange", "display-layout-change"]) window.addEventListener(event, availabilityChanged);
+  for (const event of ["resize", "orientationchange"]) window.addEventListener(event, availabilityChanged);
   window.addEventListener("pagehide", cleanup);
   frame = requestAnimationFrame(begin);
   root.cleanupContinue = cleanup;

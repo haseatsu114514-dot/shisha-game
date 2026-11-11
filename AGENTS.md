@@ -5,6 +5,7 @@ Codex / Claude Code 共通。Claude Code は `CLAUDE.md` の `@AGENTS.md` から
 ## 対象・優先順位
 
 - 正本は GitHub の `haseatsu114514-dot/shisha-game`（main と作業branch）。ゲームの実装・起動・公開先は `remake/`、台詞・共有データは `data/`、共有素材は `assets/`。
+- 公式プロモーションサイトは `promo/`（ゲーム本体と独立した静的ページ。作り・更新・載せる範囲は [promo/README.md](promo/README.md)）。
 - 旧 `web/` と Godot 版は廃止済み。`web/` は存在不要で、復元・テスト・確認要求の対象にしない。`project.godot` が残るcheckoutは古い。
 - 最新の明示的なユーザー指示を、古い仕様・Issueコメント・引き継ぎ・スキルの担当メモより優先する。依頼された仕様変更に再承認を求めない。
 - 仕様・要望は `docs/master_spec.md` / `docs/owner_requests.md`、物語・人物は `brand/story_and_structure.md` / `brand/character_profiles.md` / `data/characters.json`。
@@ -50,7 +51,7 @@ Codex / Claude Code 共通。Claude Code は `CLAUDE.md` の `@AGENTS.md` から
 - quick（ブラウザ不要の検査）は毎回すべて動く。PRのbrowser（Chromium）は変更ファイルに関係する短いスイート（目安5分以内）を最大8グループで動かし、ブラウザテスト本体を変更した場合は長いスイートも動かす。長い通し検査を含む全件は毎晩mainで動かす。
 - Draft PRではbrowserを動かさない。結果が必要になったら Ready for review にする（その時点のheadで動く）。mainへのpushはquickだけ。browserの全テストは毎晩（03:17 JST）mainで動く。夜間の失敗は「mainのCIが赤い」として最優先で直す。
 - テストの追加は [tools/ci/suites.json](tools/ci/suites.json) に1件足す。**workflowファイルを増やさない**。手元では `node tools/ci/run.mjs --kind quick` / `--kind browser --suites <id>`（プレビューサーバーを先に起動）で同じものを動かせる。
-- CIのcheckoutは必要なフォルダだけ（約0.7GB）にし、約3.5GBのファイル一式を取らない。新規画像（Git LFS）はキャッシュ経由で取得する。
+- CIのcheckoutは必要なフォルダだけ（約0.7GB）にし、ファイル一式を取らない。新規画像（Git LFS）はキャッシュ経由で取得する。
 
 ## 実行経路: CLI / GitHub連携
 
@@ -84,12 +85,12 @@ checkout使用時は、開始時・checkout/worktree変更後・commit/push前�
 - 既存checkout/cacheを再利用し、必要なファイル・ref・差分だけ取得する。新しい作業場所は既存repoの `git worktree add` を使う。やむを得ない新規取得は事前に相談し、`--filter=blob:none` 等で最小化する。
 - 全履歴・全ブランチ・素材・LFSの一括取得や、CI成果物の大量ダウンロード（`gh run download` の繰り返し）を自動実行しない。大容量通信が見込まれる操作は、目的・推定量（不明なら不明）・節約案を示して承認を得る。
 - shallow/filtered fetchでも少量とは限らない。想定外に転送量が増えたら中断し、状況を報告する。
-- 最新のファイル一式だけでも約3.5GB（`asset_sources/` 約2.8GB。`docs/qa` の検証記録は2026-11-02に削除）ある。ゲーム開発に要るのは約0.7GB。新しいPCなどでどうしても取得が必要なときは、オーナーの承認を得たうえで次の「軽量取得」を使う（必要なフォルダの最新版だけを取る）。
+- 最新のファイル一式は約1.3GB（`asset_sources/` 約0.5GB。2026-11-11 に `asset_sources/` の画像・動画をLFSへ移す前は約3.5GB）。ゲーム開発に要るのは約0.8GB。履歴には変換前の画像が残るので、全履歴の取得は今も大きい。新しいPCなどでどうしても取得が必要なときは、オーナーの承認を得たうえで次の「軽量取得」を使う（必要なフォルダの最新版だけを取る）。
 
   ```bash
   git clone --depth 1 --filter=blob:none --sparse https://github.com/haseatsu114514-dot/shisha-game.git
   cd shisha-game
-  git sparse-checkout set --no-cone '/*' '!/*/' '/remake/' '/data/' '/assets/' '/tools/' '/brand/' '/experiments/' \
+  git sparse-checkout set --no-cone '/*' '!/*/' '/remake/' '/data/' '/assets/' '/promo/' '/tools/' '/brand/' '/experiments/' \
     '/.claude/' '/.agents/' '/.github/' '/.githooks/' '/docs/' '!/docs/archive/' '!/docs/qa/*/' '/asset_sources/' '!/asset_sources/*/' '/asset_sources/shisha-hardware-reference/'
   ```
 
@@ -97,7 +98,10 @@ checkout使用時は、開始時・checkout/worktree変更後・commit/push前�
 
 ### 画像と Git LFS
 
-- `assets/`・`remake/img/`・`asset_sources/` の png/jpg/jpeg/webp/gif は、`.gitattributes` により**新規追加分だけ** Git LFS。既存画像を通常Gitに固定する `.gitattributes` 末尾の生成ブロック（`tools/gen_lfs_legacy_attributes.sh`）は手で消さない。既存履歴の移行（`git lfs migrate` 等）や一括変換はしない。
+- `assets/`・`remake/img/` の png/jpg/jpeg/webp/gif は、`.gitattributes` により**新規追加分だけ** Git LFS。既存画像は `.gitattributes` 末尾の生成ブロック（`tools/gen_lfs_legacy_attributes.sh`）で通常Gitに固定してあり、手で消さない。
+- `asset_sources/` の画像（png/jpg/jpeg/webp/gif）・動画（mp4/webm/mov）・zip・pdf は、既存分も含めて Git LFS（2026-11-11 オーナー決定で一括変換。履歴は書き換えていない）。例外は、CIが中身を読むフォルダ（`tools/ci/suites.json` の `sparse` にある `asset_sources/…`）と `asset_sources/shisha-hardware-reference/` で、同じ生成ブロックで通常Gitのまま。CIに `asset_sources/` のフォルダを読ませるときは `sparse` に足してから生成ブロックを作り直す（足す前にLFSになったファイルはCIではポインタのまま）。
+- `asset_sources/` の原画を見る・加工するときは、そのフォルダだけ `git lfs pull --include="asset_sources/<フォルダ>/**"` で取る。
+- 既存履歴の書き換え（`git lfs migrate import` で過去のコミットを作り直す等）や force push はしない。それ以外の一括変換も、オーナーの依頼があるときだけ行う。
 - checkoutでの作業前に一度 `git lfs install --skip-repo`（LFS uploadは `.githooks/pre-push` が担う）。git-lfs が無ければ新規画像の追加前に導入する。`git add` 後は `git lfs ls-files` で新規画像がLFS管理になったことを確認する。
 - worktreeは `GIT_LFS_SKIP_SMUDGE=1` で作り、必要な実体だけ `git lfs pull --include="<パス>"` で取得する。LFSも所有者の無料枠を消費するため上の通信量ルールに従う。
 

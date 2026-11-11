@@ -124,6 +124,8 @@ function validate(rel) {
     endings.add(p.ending);
     need(p.arrival, p.id + ".arrival");
     for (const f of [...s.flow.prepare, ...s.flow.serve]) need(p.likes?.[f]?.length >= 1 && p.likes[f].every(v => s.options[f].some(o => o.id === v)), p.id + ".likes." + f);
+    // GMのヒント（TRF02）は「合わない選択肢」に印をつける。どの項目にも、合わない選択肢が1つは要る。
+    for (const f of [...s.flow.prepare, ...s.flow.serve]) need((p.likes?.[f]?.length || 0) < s.options[f].length, p.id + ".likes." + f + " が全部の選択肢を含んでいる（GMのヒントが出せない）");
     for (const spot of s.spots) { const e = p.evidence?.[spot.id]; if (need(e?.title && e.text, p.id + " の手がかり " + spot.id)) ref(e.lines, p.id + "/" + spot.id); }
     for (const t of s.interview.topics) { const a = p.answers?.[t.id]; if (need(a?.title && a.text, p.id + " の答え " + t.id)) ref(a.lines, p.id + "/ask " + t.id); }
   }

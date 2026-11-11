@@ -160,10 +160,12 @@ function deliver(msgs) {
 }
 
 // LM05: ♥3以上の知り合い（恋人・締めくくり前）から読むだけの雑談。全員で3日に1通・同じ相手は6日・一度ずつ。
-// 物語の誘い（♥3の外出など）は同じ相手の枠を先に取るので、ここでは済ませた状態にして雑談だけを見る。
+// 物語の誘い（♥3の外出など）と♥3・♥4で届く物語の雑談（lime_adam_bond_a など）は同じ相手の枠を先に取るので、
+// ここでは済ませた（読んだ）状態にして雑談だけを見る。
 const storyDone = Object.fromEntries(allMessages.filter((m) => m.type === "invitation").map((m) => [`_invited_${m.id}`, true]));
+const storyChatsRead = allMessages.filter((m) => m.type === "chat" && m.trigger_condition === "affinity_level").map((m) => m.id);
 {
-  reset({ flags: { ...storyDone }, chapter: 2, day: 20, contacts: ["naru", "adam", "minto", "kumicho", "tsumugi"], met: { naru: true, adam: true, minto: true, kumicho: true, tsumugi: true },
+  reset({ flags: { ...storyDone }, limeRead: [...storyChatsRead], chapter: 2, day: 20, contacts: ["naru", "adam", "minto", "kumicho", "tsumugi"], met: { naru: true, adam: true, minto: true, kumicho: true, tsumugi: true },
     levels: { naru: 3, adam: 4, minto: 2, kumicho: 3, tsumugi: 4 }, lovers: ["tsumugi"], finales: { kumicho: { route: "friend", day: 18 } } });
   const got = [];
   for (let day = 20; day <= 60; day++) {

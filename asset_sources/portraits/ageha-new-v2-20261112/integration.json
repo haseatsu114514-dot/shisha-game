@@ -1,0 +1,73 @@
+{
+  "issue": 3331,
+  "adopted": "2026-11-12 オーナー決定（通常=A案、4表情=#3355）",
+  "method": "通常Aは置き換え前の新版の通常と、頭頂〜足元の高さ・足元の下端・頭の横位置（上12%の重心）を同じにして LANCZOS で縮小・配置。4表情は配置した通常Aに同じ方法で合わせた。人物から離れた不透明度16未満の点だけ消した。描き直し・色の調整はしていない",
+  "items": [
+    {
+      "expression": "normal",
+      "source": "asset_sources/portraits/ageha-new-v2-20261112/normal-untouched.png",
+      "source_sha256": "d02f63ec34452381f771446d222dda14b280ff3459ee22ae75cb29357661d92c",
+      "reference": "今の新版の通常（置き換え前）",
+      "scale": 0.67947,
+      "offset": [
+        97,
+        192
+      ],
+      "runtime": "assets/sprites/character_variants/new/ageha/chr_ageha_normal.png",
+      "runtime_sha256": "9ca54324e9a310e68b7f276fb72e3cffa0d67c31ef110dd19f9e5e4db2bd8dc8"
+    },
+    {
+      "expression": "smile",
+      "source": "asset_sources/portraits/ageha-new-v2-20261112/smile-untouched.png",
+      "source_sha256": "13820d89f4d1c055d2feef46be1fc82dfd59346e810df355772c86396d2c7d22",
+      "reference": "配置した通常A",
+      "scale": 0.67875,
+      "offset": [
+        101,
+        193
+      ],
+      "runtime": "assets/sprites/character_variants/new/ageha/chr_ageha_smile.png",
+      "runtime_sha256": "602ca7128ce45ddd45ae3b5f0e4269d97b7433d6af8c71193c76d80ee4f15e7d",
+      "note": "2026-11-12 頭の横位置（上20%の重心）が会話の中央から1px強ずれ、立ち絵の位置の検査（portrait_framing）を外れたので、配置を左へ1px寄せた（offset 102→101）"
+    },
+    {
+      "expression": "surprise",
+      "source": "asset_sources/portraits/ageha-new-v2-20261112/surprise-untouched.png",
+      "source_sha256": "75e065e8dca8404aa2247150a08be22847f95fda15d6114bb5bcafe76eeef29e",
+      "reference": "配置した通常A",
+      "scale": 0.68207,
+      "offset": [
+        110,
+        193
+      ],
+      "runtime": "assets/sprites/character_variants/new/ageha/chr_ageha_surprise.png",
+      "runtime_sha256": "919f8cc0fb15d8c53b24e0bc87b1619a988fc407a7aa99bae7164311712e08ce"
+    },
+    {
+      "expression": "serious",
+      "source": "asset_sources/portraits/ageha-new-v2-20261112/serious-untouched.png",
+      "source_sha256": "5e5e325f283b9f2be3bb9519705933aabf70452ec8156862a22548d7c962d2cf",
+      "reference": "配置した通常A",
+      "scale": 0.65989,
+      "offset": [
+        118,
+        194
+      ],
+      "runtime": "assets/sprites/character_variants/new/ageha/chr_ageha_serious.png",
+      "runtime_sha256": "96ba9c60a07a374b5d8af77a15ad886ff84f2d003c9a9a587ad4b640c032fee1"
+    },
+    {
+      "expression": "sad",
+      "source": "asset_sources/portraits/ageha-new-v2-20261112/sad-untouched.png",
+      "source_sha256": "4264ff3a88b3bf0a048a48d443c7a8031ef5b0b529efb4afcff0354990aa4268",
+      "reference": "配置した通常A",
+      "scale": 0.67969,
+      "offset": [
+        99,
+        194
+      ],
+      "runtime": "assets/sprites/character_variants/new/ageha/chr_ageha_sad.png",
+      "runtime_sha256": "6146938dff085e17fb29a4a83f777f35511a980ca9352cbaed49d3cdd1723977"
+    }
+  ]
+}

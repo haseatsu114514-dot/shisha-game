@@ -598,12 +598,12 @@ try {
     state.owned = state.owned.filter((x) => x !== "suyaki_minto");
     const notOwned = score.giftBowlEffect(cs("suyaki_minto", { mint: 3, double_apple: 9 }));
     state.owned.push("suyaki_minto");
-    // 絵: 素焼きとして描き、染みた香りの色を縁に乗せる
+    // 絵: 贈り主の専用ハガルの絵で描き、染みた香りの色を縁に乗せる（2026-11-11 #3327）
     const rig = art.buildRig();
     document.body.append(rig.root);
     rig.update({ equip: { bowl: "suyaki_minto" }, mix: {} });
     const bowlEl = rig.root.querySelector(".rig-bowl");
-    const drawn = { clay: bowlEl.querySelector(".rig-bowl-img")?.style.backgroundImage.includes("bowl_empty_clay"), infused: bowlEl.classList.contains("infused") };
+    const drawn = { own: bowlEl.querySelector(".rig-bowl-img")?.style.backgroundImage.includes("bowl_empty_minto"), infused: bowlEl.classList.contains("infused") };
     rig.root.remove(); rig.destroy();
     // 保存とロードで所持・装備が残る
     state.equip.bowl = "suyaki_minto";
@@ -625,7 +625,7 @@ try {
   assert.equal(gifts.aromaDiff, 4); assert.equal(gifts.plainDiff, 0);
   assert(gifts.totalDiff > 1 && gifts.totalDiff < 2, `total diff ${gifts.totalDiff}`);
   assert(gifts.notes.includes("みんとが育てたミント専用ハガルに染みた香り")); assert(!gifts.clayNotes.some((n) => n.includes("専用ハガル")));
-  assert.deepEqual(gifts.drawn, { clay: true, infused: true });
+  assert.deepEqual(gifts.drawn, { own: true, infused: true });
   assert.deepEqual(gifts.saved, { owned: true, equip: "suyaki_minto" });
   log("HF06 gifts: six unsellable/non-sale hagal, sell refused in code and UI, small mint-only effect, clay art, save/load");
 

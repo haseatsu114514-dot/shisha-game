@@ -1,3 +1,4 @@
+/* body:not(:root)／.title:not(:root) は、DS風の廃止（横画面一本化）で外した :not(.game-ds)／:not([data-layout="ds"]) と同じ詳細度を保つための置き換え。 */
 /* ============================================================
    制作（シーシャ作り）の紫×白＋金（2026-11-01）
    日常の白×紫＋金から、制作では紫を主役にする。既存テーマの変数名と読み込み順は維持。
@@ -66,7 +67,7 @@ html .bench[data-mode] :is(.bench-condition-tip, .bench-guide-tip) p { color: va
 html .bench[data-mode] :is(.bench-condition, .bench-guide) summary:focus-visible { outline-color: var(--amber); }
 
 /* ---------------------------------------------------------------- 左右の板（九分割の紫の面）
-   板に filter を付けると、DSで position: fixed にしている温度計の台座・外観ボタンが板の中に閉じ込められる。影は box-shadow だけ。 */
+   板に filter を付けると、position: fixed の子が板の中に閉じ込められる。影は box-shadow だけ。 */
 /* 縁は従来どおり1pxで、中身の寸法・余白は craft.css などの値のまま。板の絵は余白の上と外側へ描く。 */
 html .bench[data-mode] .bench-left, html .bench[data-mode] .bench-right {
   background: var(--paper); border: 1px solid transparent; border-radius: 0;
@@ -202,9 +203,6 @@ html .bench[data-mode] .mix-thermal-scale { border-color: var(--lavender-line); 
 html .bench[data-mode] .mix-ideal { color: var(--good-ink); }
 html .bench[data-mode] .mix-optimal { color: var(--lavender); }
 
-/* DS の下画面の配合の足元（粘着）も紫。 */
-html body.game-ds .bench[data-mode][data-step="mix"] .mix-footer { background: var(--paper); border-top-color: var(--paper-line); }
-
 /* ---------------------------------------------------------------- 詰め方 */
 html .bench[data-mode] .pack-aroma { color: var(--paper-ink); border-left-color: var(--lavender); background: var(--lavender-soft); }
 html .bench[data-mode] .pack-vessel { background: none; }
@@ -219,7 +217,7 @@ html .bench[data-mode] .pack-choice[aria-pressed="true"]::before { color: #fff; 
 html .bench[data-mode] .pack-choice:focus-visible { outline-color: var(--amber); }
 html .bench[data-mode] .pack-footer small { color: var(--paper-muted); }
 @media (orientation: landscape) and (max-width: 1024px) and (max-height: 520px) and (pointer: coarse) and (hover: none) {
-  html body:not(.game-ds) .bench[data-mode]:is([data-step="setup"]:has(> .bench-right > .bench-panel > .opt-grid), [data-step="pack"], [data-step="place"]) .pack-footer { background: var(--paper); }
+  html body:not(:root) .bench[data-mode]:is([data-step="setup"]:has(> .bench-right > .bench-panel > .opt-grid), [data-step="pack"], [data-step="place"]) .pack-footer { background: var(--paper); }
 }
 
 /* ---------------------------------------------------------------- 穴あけ */
@@ -427,85 +425,85 @@ html:has(.bench[data-mode]:not(.done)) .countdown.go { color: #f3ce89; }
 /* ================================================================ 工程ごとの舞台（CUI05）
    小道具（コンロ・炭壺・アルミ・タイマー・ボウル）を紙の上に浮かせず、生成した天板に置く。
    台所の石の天板＝炭焼き・調整、ラベンダーの縁のリネンマット＝穴あけ・蒸らし時間・配合と詰め方のボウル。
-   文字は天板の上に直接置かず、紙のカードや札に載せる。DS（2画面）は今回の対象外なので通常表示だけ。 */
-html body:not(.game-ds) .bench[data-mode] {
+   文字は天板の上に直接置かず、紙のカードや札に載せる。 */
+html body:not(:root) .bench[data-mode] {
   --cp-stage-kitchen: url("../img/ui/craft-night/stage-kitchen.webp");
   --cp-stage-workbench: url("../img/ui/craft-night/stage-workbench.webp");
   --cp-stage-edge: inset 0 0 0 1px var(--lavender-line), inset 0 0 0 4px #dbc5ed1f, inset 0 14px 28px #2a1a3a24;
 }
-html body:not(.game-ds) .bench[data-mode]:is([data-step="heat"], [data-step="care"], [data-step="holes"]) .bench-panel,
-html body:not(.game-ds) .bench[data-mode][data-step="steam"] .bench-panel:has(> .steam-timer) { isolation: isolate; }
-html body:not(.game-ds) .bench[data-mode]:is([data-step="heat"], [data-step="care"], [data-step="holes"]) .bench-panel::before,
-html body:not(.game-ds) .bench[data-mode][data-step="steam"] .bench-panel:has(> .steam-timer)::before {
+html body:not(:root) .bench[data-mode]:is([data-step="heat"], [data-step="care"], [data-step="holes"]) .bench-panel,
+html body:not(:root) .bench[data-mode][data-step="steam"] .bench-panel:has(> .steam-timer) { isolation: isolate; }
+html body:not(:root) .bench[data-mode]:is([data-step="heat"], [data-step="care"], [data-step="holes"]) .bench-panel::before,
+html body:not(:root) .bench[data-mode][data-step="steam"] .bench-panel:has(> .steam-timer)::before {
   content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; border-radius: 8px;
   background: var(--cp-stage-workbench) center 58% / cover no-repeat; box-shadow: var(--cp-stage-edge);
 }
-html body:not(.game-ds) .bench[data-mode]:is([data-step="heat"], [data-step="care"]) .bench-panel::before { background: var(--cp-stage-kitchen) center 64% / cover no-repeat; }
+html body:not(:root) .bench[data-mode]:is([data-step="heat"], [data-step="care"]) .bench-panel::before { background: var(--cp-stage-kitchen) center 64% / cover no-repeat; }
 
 /* 炭焼き: 炭壺と判定はカードのまま。コンロの下に接地の影。 */
-html body:not(.game-ds) .bench[data-mode] .stove::after {
+html body:not(:root) .bench[data-mode] .stove::after {
   content: ""; position: absolute; left: 8%; right: 8%; bottom: -10px; height: 34px; z-index: -1; border-radius: 50%;
   background: radial-gradient(ellipse, #2a1a3a55, transparent 70%); pointer-events: none;
 }
-html body:not(.game-ds) .bench[data-mode] .heat-info { background: var(--paper-card); }
+html body:not(:root) .bench[data-mode] .heat-info { background: var(--paper-card); }
 
 /* 調整（炭の交換）: 問いを紙のカードに、選択肢は炭の絵の大きなカードに。下の空きは台所の天板が見える。 */
-html body:not(.game-ds) .bench[data-mode] .care-coals {
+html body:not(:root) .bench[data-mode] .care-coals {
   padding: 14px 18px 16px; border: 1px solid var(--lavender-line); border-radius: 10px; background: var(--paper-card); box-shadow: 0 6px 16px #2a1a3a24;
 }
 /* 炭を焼く間はコンロを天板に置く。カードは外し、案内の一行だけ紙の札に。 */
-html body:not(.game-ds) .bench[data-mode] .care-coals:not(:has(.care-coal-btns)) { padding: 0; border: 0; background: none; box-shadow: none; }
-html body:not(.game-ds) .bench[data-mode] .care-coals:not(:has(.care-coal-btns)) > .care-coals-lead {
+html body:not(:root) .bench[data-mode] .care-coals:not(:has(.care-coal-btns)) { padding: 0; border: 0; background: none; box-shadow: none; }
+html body:not(:root) .bench[data-mode] .care-coals:not(:has(.care-coal-btns)) > .care-coals-lead {
   width: fit-content; padding: 8px 18px; border: 1px solid var(--lavender-line); border-radius: 999px; background: var(--paper-card); box-shadow: 0 4px 10px #2a1a3a24;
 }
-html body:not(.game-ds) .bench[data-mode] .care-coal-btns { grid-template-columns: none; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); }
-html body:not(.game-ds) .bench[data-mode] .btn.care-coal {
+html body:not(:root) .bench[data-mode] .care-coal-btns { grid-template-columns: none; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); }
+html body:not(:root) .bench[data-mode] .btn.care-coal {
   display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 2px; min-height: 168px; padding-top: 4px; padding-bottom: 6px;
 }
-html body:not(.game-ds) .bench[data-mode] .btn.care-coal::before {
+html body:not(:root) .bench[data-mode] .btn.care-coal::before {
   content: ""; order: -1; flex: 1; align-self: stretch; min-height: 92px; pointer-events: none;
   background: url("../img/ui/making/coal_just.webp") center 70% / 64px no-repeat;
   filter: drop-shadow(0 4px 4px #2a1a3a40);
 }
-html body:not(.game-ds) .bench[data-mode] .btn.care-coal[data-test="care-coal-0"]::before { background-image: url("../img/ui/making/coal_white.webp"); filter: drop-shadow(0 4px 4px #2a1a3a40) saturate(.6); }
-html body:not(.game-ds) .bench[data-mode] .btn.care-coal[data-test="care-coal-2"]::before {
+html body:not(:root) .bench[data-mode] .btn.care-coal[data-test="care-coal-0"]::before { background-image: url("../img/ui/making/coal_white.webp"); filter: drop-shadow(0 4px 4px #2a1a3a40) saturate(.6); }
+html body:not(:root) .bench[data-mode] .btn.care-coal[data-test="care-coal-2"]::before {
   background: url("../img/ui/making/coal_just.webp") calc(50% - 30px) 70% / 58px no-repeat, url("../img/ui/making/coal_just.webp") calc(50% + 30px) 70% / 58px no-repeat;
 }
-html body:not(.game-ds) .bench[data-mode] .btn.care-coal[data-test="care-coal-3"]::before {
+html body:not(:root) .bench[data-mode] .btn.care-coal[data-test="care-coal-3"]::before {
   background: url("../img/ui/making/coal_just.webp") 50% 18% / 50px no-repeat, url("../img/ui/making/coal_just.webp") calc(50% - 28px) 88% / 50px no-repeat, url("../img/ui/making/coal_just.webp") calc(50% + 28px) 88% / 50px no-repeat;
 }
-html body:not(.game-ds) .bench[data-mode] .btn.care-coal[data-test="care-coal-4"]::before {
+html body:not(:root) .bench[data-mode] .btn.care-coal[data-test="care-coal-4"]::before {
   background: url("../img/ui/making/coal_just.webp") calc(50% - 25px) 18% / 46px no-repeat, url("../img/ui/making/coal_just.webp") calc(50% + 25px) 18% / 46px no-repeat, url("../img/ui/making/coal_just.webp") calc(50% - 25px) 88% / 46px no-repeat, url("../img/ui/making/coal_just.webp") calc(50% + 25px) 88% / 46px no-repeat;
 }
-html body:not(.game-ds) .bench[data-mode] .btn.care-coal .btn-label { font-size: 20px; font-weight: 800; }
-html body:not(.game-ds) .bench[data-mode] .btn.care-coal:disabled::before { filter: grayscale(.6); }
+html body:not(:root) .bench[data-mode] .btn.care-coal .btn-label { font-size: 20px; font-weight: 800; }
+html body:not(:root) .bench[data-mode] .btn.care-coal:disabled::before { filter: grayscale(.6); }
 
 /* 穴あけ: アルミはマットの上。配置の説明と操作は右の紙のカード。 */
-html body:not(.game-ds) .bench[data-mode] .holes { padding: 0 14px 0 18px; }
-html body:not(.game-ds) .bench[data-mode] :is(.ht-side, .hr-side) {
+html body:not(:root) .bench[data-mode] .holes { padding: 0 14px 0 18px; }
+html body:not(:root) .bench[data-mode] :is(.ht-side, .hr-side) {
   padding: 14px 16px; border: 1px solid var(--lavender-line); border-radius: 10px; background: var(--paper-card); box-shadow: 0 6px 16px #2a1a3a24;
 }
-html body:not(.game-ds) .bench[data-mode] .foil-legend { width: fit-content; margin-inline: auto; padding: 6px 14px; border-radius: 999px; background: var(--paper-card); box-shadow: 0 2px 6px #2a1a3a1f; }
+html body:not(:root) .bench[data-mode] .foil-legend { width: fit-content; margin-inline: auto; padding: 6px 14px; border-radius: 999px; background: var(--paper-card); box-shadow: 0 2px 6px #2a1a3a1f; }
 
 /* 蒸らし時間: タイマーはマットの上。説明の一行と目安は紙。 */
-html body:not(.game-ds) .bench[data-mode] .steam-clock { filter: drop-shadow(0 10px 14px #2a1a3a33); }
-html body:not(.game-ds) .bench[data-mode] .timer-advice { padding: 6px 16px; border-radius: 999px; background: var(--paper-card); color: var(--paper-ink); box-shadow: 0 2px 6px #2a1a3a1f; }
-html body:not(.game-ds) .bench[data-mode] .steam-forecast { background: var(--paper-card); box-shadow: 0 6px 16px #2a1a3a24; }
+html body:not(:root) .bench[data-mode] .steam-clock { filter: drop-shadow(0 10px 14px #2a1a3a33); }
+html body:not(:root) .bench[data-mode] .timer-advice { padding: 6px 16px; border-radius: 999px; background: var(--paper-card); color: var(--paper-ink); box-shadow: 0 2px 6px #2a1a3a1f; }
+html body:not(:root) .bench[data-mode] .steam-forecast { background: var(--paper-card); box-shadow: 0 6px 16px #2a1a3a24; }
 
 /* 配合・詰め方: ボウルの周りだけマットを窓のように見せる。 */
-html body:not(.game-ds) .bench[data-mode] .mix-vessel,
-html body:not(.game-ds) .bench[data-mode] .pack-vessel {
+html body:not(:root) .bench[data-mode] .mix-vessel,
+html body:not(:root) .bench[data-mode] .pack-vessel {
   border-radius: 10px; background: var(--cp-stage-workbench) center 62% / cover no-repeat; box-shadow: var(--cp-stage-edge);
 }
-html body:not(.game-ds) .bench[data-mode] .pack-vessel::before { background: #2a1a3a40; }
+html body:not(:root) .bench[data-mode] .pack-vessel::before { background: #2a1a3a40; }
 
 /* 工程が切り替わったとき、中身を短く浮かび上がらせる（位置は動かさない）。 */
-html body:not(.game-ds) .bench[data-mode] .bench-panel > * { animation: cp-panel-in .22s ease-out both; }
+html body:not(:root) .bench[data-mode] .bench-panel > * { animation: cp-panel-in .22s ease-out both; }
 @keyframes cp-panel-in { from { opacity: 0; } to { opacity: 1; } }
-@media (prefers-reduced-motion: reduce) { html body:not(.game-ds) .bench[data-mode] .bench-panel > * { animation: none; } }
+@media (prefers-reduced-motion: reduce) { html body:not(:root) .bench[data-mode] .bench-panel > * { animation: none; } }
 /* スマホ横は器の窓が小さく、縮めた器の絵が窓からはみ出すので天板の窓を使わない。 */
 @media (orientation: landscape) and (max-width: 1024px) and (max-height: 520px) and (pointer: coarse) and (hover: none) {
-  html body:not(.game-ds) .bench[data-mode] :is(.mix-vessel, .pack-vessel) { background: none; box-shadow: none; }
+  html body:not(:root) .bench[data-mode] :is(.mix-vessel, .pack-vessel) { background: none; box-shadow: none; }
 }
 
 /* CUI07: 夜紫の生成部品。寸法と当たり判定は既存のまま。 */

@@ -25,12 +25,9 @@ await suite("setup-continuation", async check => {
       session.openBench(session.newSession("rehearsal"), { steps: [["setup", "機材"]] });
     });
     await page.locator('[data-test="worker-appearance"] image').first().waitFor();
-    for (const layout of ["normal", "ds"]) {
-      await page.evaluate(layout => {
-        localStorage.setItem("suien_title_layout", layout);
-        window.dispatchEvent(new Event("display-layout-change"));
-      }, layout);
-      await page.waitForFunction(layout => document.body.classList.contains("game-ds") === (layout === "ds"), layout);
+    {
+      // DS風は廃止（横画面一本化）。通常表示だけを各寸法で確かめる。
+      assert.equal(await page.locator("body.game-ds").count(), 0);
       for (const viewport of [{ width: 1280, height: 800 }, { width: 844, height: 390 }, { width: 390, height: 844 }]) {
         await page.setViewportSize(viewport);
         // Wait for the real resize/layout handlers rather than imposing a particular offset.

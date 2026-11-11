@@ -1,6 +1,7 @@
-// 背景の読み込みを覆う、夜の紫とラベンダーのモーショングラフィックス。
-// 場面の意味ごとの型: 標準の切り替え＝一筆（#2688 F1）／就寝から翌朝＝波＋めくり（CI102）／マップから場所への移動（transition-moves.js・CI103）。
-// 型の一覧と残りの場面の案は asset_sources/transitions/scene-plan-20261009/README.md。
+// 場面の切り替えの型。標準の切り替え＝煙のにじみ（TMG45。前の背景を覆わず煙の形でほどく）／就寝から翌朝＝夜明け（TMG47。部屋の絵が窓から明ける）／
+// マップから場所への移動（transition-moves.js・TMG46）／敗北と再挑戦（#2688 A19）。
+// 2026-11-11 からの作り直しの方針（ゲームの絵で作る・紫の面で覆わない）は remake/previews/motion-direction/ と台帳 TMG35〜。
+// 紫の図形の型（一筆・波）は、作り直しが済むまでの旧型。旧型の一覧は asset_sources/transitions/scene-plan-20261009/README.md。
 import { el, sleep, nextFrame } from "./util.js";
 import { SE } from "./audio.js";
 import { W, H, COLOR, EASE, reducedMotion, svg, stageSvg, move, holdKeys } from "./transition-kit.js";
@@ -68,16 +69,114 @@ export function strokeBand({ angle = STROKE.angle, fill = COLOR.purple, edge = C
   return { art, mov };
 }
 
+// ---------------------------------------------------------------- 煙のにじみ: 標準の場面の切り替え（TMG44・A）
+
+// 前の背景を幕で覆わず、煙の形の境目で下から上へほどいて、下に置いた次の背景を見せる。境目と一緒に薄い煙が昇る。
+// マスクと煙は計算で作った小さな画像（asset_sources/transitions/smoke-dissolve-20261111/make_masks.py）。
+// 紫の一筆（下の strokeBand）は、DS風の2画面（黒の暗転）と再挑戦（retryStroke）だけに残る。
+let smokeUrls = null;
+/** マスク2枚と煙の絵の URL（js-<版>/ へ写しても同じ深さなので、このファイルからの相対で引く） */
+export function smokeArt() {
+  if (!smokeUrls) {
+    const dir = new URL("../../img/ui/transitions/smoke/", import.meta.url).href;
+    smokeUrls = { a: `${dir}wipe-a.webp`, b: `${dir}wipe-b.webp`, haze: `${dir}haze.webp` };
+  }
+  return smokeUrls;
+}
+let smokeReady = null; // null＝まだ読んでいない、Promise＝読み込み中、true／false＝結果
+const canMask = () => typeof CSS !== "undefined" && !!CSS.supports
+  && (CSS.supports("mask-image", 'url("x.png")') || CSS.supports("-webkit-mask-image", 'url("x.png")'));
+/** マスクと煙の絵を先に読む（このファイルを読み込んだ時に一度）。読めるまでの切り替えは、前の背景を薄くするだけ */
+export function warmSmoke() {
+  if (smokeReady !== null) return smokeReady;
+  if (typeof Image !== "function" || !canMask()) { smokeReady = false; return false; }
+  smokeReady = Promise.all(Object.entries(smokeArt()).map(([key, src]) => {
+    const img = new Image();
+    // CSS の mask-image は CORS で取りに行く。先読みも同じ取り方にしないと、ほどくたびに取り直す（煙の絵は普通の背景なのでそのまま）
+    if (key !== "haze") img.crossOrigin = "anonymous";
+    img.src = src;
+    return img.decode();
+  })).then(() => (smokeReady = true), () => (smokeReady = false));
+  return smokeReady;
+}
+// 起動の早い段階（ui.js がこのファイルを読む時）に読み始める。ブラウザでないテストの環境では何もしない。
+if (typeof window !== "undefined" && typeof document !== "undefined") warmSmoke();
+
+const MASK = (pos) => ({ maskPosition: pos, webkitMaskPosition: pos });
+
 /**
- * 背景を替えるときの標準の幕（CI101 の「一筆」・#2688 F1）。紫の帯が右下から一筆で画面を覆い、左上へ抜けて次の場面が出る。
- * 通常 約0.75秒、SKIP中・短い幕（brief）は 約0.35秒、動きを減らす設定では短いフェード。
- * 覆っている間は Enter・Space を受け付けない。素材の読み込みを待つ間は覆ったまま待つ（ui.setBg）。
+ * 煙のにじみの幕。覆わないので covered はすぐ解決し、ui.setBg が次の背景を前の背景の下に置いて dissolve() で前の背景を渡す。
+ * release() で前の背景を煙の形にほどいて消す。通常 約0.8秒、SKIP中・短い幕（brief）は 約0.42秒、
+ * 動きを減らす設定やマスクが使えない時は、前の背景を薄くするだけ（約0.22秒）。ほどけている間は Enter・Space を受け付けない。
+ */
+function smokeCurtain(host, { fast = false, reduced = false } = {}) {
+  const masked = !reduced && smokeReady === true;
+  const ms = !masked ? (reduced ? 220 : 320) : fast ? 420 : 780;
+  const node = el("div.scene-curtain.smoke", { "aria-hidden": "true", dataset: { transition: masked ? "smoke" : "fade" } });
+  const art = masked ? smokeArt() : null;
+  const haze = masked ? el("i.smoke-haze", { style: { backgroundImage: `url("${art.haze}")` } }) : null;
+  if (haze) node.append(haze);
+  const unhold = holdKeys();
+  host.append(node);
+  const covered = nextFrame();
+  let olds = [];
+  let released = false;
+  return {
+    covered,
+    /** ui.setBg から: 次の背景の上に残した前の背景（いちばん上だけをほどき、下に隠れている分はすぐ片付ける） */
+    dissolve(nodes) { olds = nodes; },
+    async release() {
+      if (released) return;
+      released = true;
+      try {
+        await covered;
+        // 次の背景・画面・台詞を描いてから、前の背景をほどき始める。
+        await nextFrame(); await nextFrame();
+        const old = olds.at(-1);
+        olds.slice(0, -1).forEach((o) => o.remove());
+        if (!old) return;
+        old.dataset.dissolving = "1";
+        if (!masked) {
+          await move(old, [{ opacity: 1 }, { opacity: 0 }], ms, { easing: "ease" });
+        } else {
+          const mask = `url("${art.a}"), url("${art.b}")`;
+          Object.assign(old.style, {
+            maskImage: mask, webkitMaskImage: mask,
+            maskSize: "100% 300%", webkitMaskSize: "100% 300%",
+            maskRepeat: "no-repeat", webkitMaskRepeat: "no-repeat",
+            maskComposite: "intersect", webkitMaskComposite: "source-in",
+          });
+          const easing = "cubic-bezier(.45,0,.55,1)";
+          // 2枚のマスクを少しずらして送り、境目の形を変えながら昇らせる。煙は境目の高さについていく。
+          const wipe = move(old, [MASK("50% 0%, 50% 0%"), { ...MASK("50% 46%, 50% 56%"), offset: 0.5 }, MASK("50% 100%, 50% 100%")], ms, { easing, fill: "forwards" });
+          move(haze, [{ top: "125%", opacity: 0 }, { top: "23%", opacity: 0.55, offset: 0.5 }, { top: "-75%", opacity: 0 }], ms, { easing, fill: "forwards" });
+          await wipe;
+        }
+        old.remove();
+      } finally {
+        olds.forEach((o) => o.isConnected && o.remove());
+        node.remove();
+        unhold();
+      }
+    },
+  };
+}
+
+/**
+ * 背景を替えるときの標準の切り替え。煙のにじみ（smokeCurtain・TMG44）。
+ * DS風の2画面では黒の暗転（game-ds.css。中身の紫の一筆は見せない）。マップ→場所は移動の型（transition-moves.js）。
+ * 素材の読み込みを待つ間は、前の背景のまま待つ（ui.setBg）。
  */
 export function createSceneCurtain(host, { fast = false, sceneArrival = takeSceneArrival() } = {}) {
   const reduced = reducedMotion();
   const { cued, commitArrival: entry } = sceneArrival;
   const arrival = (curtain) => Object.assign(curtain, { commitArrival: entry });
   if (cued?.kind === "place" && !fast && !reduced) return arrival(withStoreArrival(host, moveCurtain(host, moveStyle(cued.opts), cued.opts), cued.opts, { fast, reduced }));
+  if (!(typeof document !== "undefined" && document.body?.classList.contains("game-ds"))) {
+    warmSmoke();
+    const smoke = smokeCurtain(host, { fast, reduced });
+    return arrival(cued?.kind === "place" ? withStoreArrival(host, smoke, cued.opts, { fast, reduced }) : smoke);
+  }
   const coverMs = reduced ? 90 : fast ? 150 : 340;
   const revealMs = reduced ? 90 : fast ? 170 : 400;
   const node = el("div.scene-curtain.stroke", { "aria-hidden": "true", style: { "--st-ms": `${coverMs}ms` }, dataset: { transition: reduced ? "fade" : "stroke" } });
@@ -245,106 +344,108 @@ export async function retryStroke(mid, host = document.getElementById("fx")) {
   } finally { node.remove(); unhold(); }
 }
 
-// ---------------------------------------------------------------- 波＋めくり: 就寝 → 翌朝
+// ---------------------------------------------------------------- 夜明け: 就寝 → 翌朝（TMG47・見本 remake/previews/motion-direction/ の3）
+
+// 紫の夜の面とラベンダーの地平線をやめ、ゲームの絵で作る。眠る前の部屋の絵が暗く沈み、左下に日付の題字が出て、
+// 窓から差す光で朝の部屋の絵に替わる。天気は図形ではなく、窓の光（晴れ）・青みと曇りの絵（くもり）・窓の雨（雨）で伝える。
 
 function flipNumber(value) {
-  // 日付はすでに更新済み。めくりの両面を朝の値にし、前日の数字を朝の案内に混ぜない。
+  // 日付はすでに更新済み。送りの両面を朝の値にし、前日の数字を朝の案内に混ぜない。
   const span = el("span.tr-flip", [el("i", { text: String(value) }), el("i", { text: String(value) })]);
-  span.lastChild.style.transform = "rotateX(-90deg)";
-  span.lastChild.style.opacity = "0";
+  span.lastChild.style.transform = "translateY(100%)";
   return span;
 }
+/** 数字を下から送り入れる（両面とも朝の値）。中断されても朝の数字が見えたまま残る */
 async function flip(span) {
   const [before, after] = span.children;
-  await move(before, [{ transform: "rotateX(0)", opacity: 1 }, { transform: "rotateX(90deg)", opacity: 0 }], 170, { easing: EASE.in });
-  await move(after, [{ transform: "rotateX(-90deg)", opacity: 0 }, { transform: "rotateX(0)", opacity: 1 }], 230, { easing: EASE.out });
+  await Promise.all([
+    move(before, [{ transform: "translateY(0)" }, { transform: "translateY(-100%)" }], 460, { easing: EASE.inOut }),
+    move(after, [{ transform: "translateY(100%)" }, { transform: "translateY(0)" }], 460, { easing: EASE.inOut }),
+  ]);
   // WAAPIの中断後も朝の数字が残るよう、最終状態をDOMにも確定する。
   before.remove();
-  after.style.transform = "rotateX(0)";
+  after.style.transform = "translateY(0)";
   after.style.opacity = "1";
 }
 
-/** 下の縁が丸く波打つ夜の面（上から降りてくる） */
-function nightPath() {
-  const step = W / 5;
-  let d = `M -40 -1200 L -40 0 `;
-  for (let i = 0; i < 5; i++) {
-    const x = -40 + i * (step + 16);
-    d += `C ${x} 150, ${x + step + 16} 150, ${x + step + 16} 0 `;
-  }
-  return d + `L ${W + 60} -1200 Z`;
+/** いま見えている背景（#bg のいちばん上の絵）の写し。夜明けの幕の中で、眠る前と朝の場面として使う。
+ *  無い時と DS風の2画面（背景は上画面だけ・幕は両画面）では null（暗い面だけで明ける） */
+function bgSnapshot() {
+  const host = typeof document !== "undefined" && !document.body?.classList?.contains("game-ds") ? document.getElementById?.("bg") : null;
+  const top = host ? [...host.children].filter((n) => n.classList?.contains("bg-img")).at(-1) : null;
+  if (!top?.cloneNode) return null;
+  const copy = top.cloneNode(true);
+  copy.classList.add("tr-dawn-pic");
+  copy.style.transition = "none";
+  copy.style.opacity = "1";
+  const filter = typeof getComputedStyle === "function" ? getComputedStyle(top).filter : "";
+  if (filter && filter !== "none") copy.style.filter = filter; // 天気・夜の色づけ（#bg の下でだけ効く指定）を写す
+  return copy;
 }
+/** 自室の絵なら窓の位置（光の出どころ）。ほかの絵は上の真ん中から明ける */
+const isHome = (pic) => /bg_home/.test(`${pic?.style?.backgroundImage || ""} ${pic?.dataset?.sceneBg || ""} ${pic?.dataset?.homeScene || ""}`);
 
 /**
- * 夜の紫が上から降りて眠りにつき、朝のDAYと残り日数のカードがめくれ、ラベンダーの地平線が下から昇って朝が出る。
- * mid() は覆っている間に日付を進め、{ day, left, rain, weather, sick } を返す。
+ * 眠る前の部屋の絵が暗く沈み、朝の日付（DAYと残り日数）が左下に出て数字が送られ、窓から差す光で朝の部屋の絵に替わる。
+ * mid() は暗く沈んだ間に日付を進めて朝の背景にし、{ day, left, weather, sick, forecast, … } を返す。
  */
 export async function nightToMorning(host, mid) {
   const reduced = reducedMotion();
   const unhold = holdCover();
   const node = el("div.tr-dawn", { "aria-hidden": "true", dataset: { transition: "dawn" } });
   host.append(node);
-  let wx = null;
   try {
-    const veil = el("div.tr-dawn-veil");
-    if (reduced) {
-      node.append(veil);
-      await move(veil, [{ opacity: 0 }, { opacity: 1 }], 260, { easing: "ease" });
-    } else {
-      const fall = svg("g", {}, [svg("path", { d: nightPath(), fill: COLOR.lav, transform: "translate(0 34)" }), svg("path", { d: nightPath(), fill: COLOR.deep })]);
-      fall.style.transform = "translateY(-200px)";
-      const art = svg("svg", { viewBox: `0 0 ${W} ${H}`, class: "tr-svg", preserveAspectRatio: "xMidYMid slice" }, [fall]); // ワイドでは左右の余白まで夜が降りる
-      node.append(art);
-      await nextFrame();
-      await move(fall, [{ transform: "translateY(-200px)" }, { transform: "translateY(760px)" }], 540, { easing: EASE.in });
-      node.replaceChildren(veil);
-    }
+    // 1. 眠る前の絵（写し）の上で灯りが落ちる。写しは元の絵と同じなので、上に出ていた画面だけが消えていく
+    const night = bgSnapshot() || el("div.tr-dawn-pic.blank");
+    const grade = el("div.tr-dawn-grade");
+    node.append(night, grade);
+    await nextFrame();
+    move(night, [{ opacity: 0 }, { opacity: 1 }], reduced ? 200 : 320, { easing: "ease" });
+    await move(grade, [{ opacity: 0 }, { opacity: 0.9 }], reduced ? 260 : 460, { easing: "ease" });
     const info = await mid();
     if (!info) return;
+    // 2. 朝の絵（mid() が #bg に置いた朝の背景の写し）。窓を中心に広がる光の形で見せる
+    const day = bgSnapshot();
+    const home = isHome(day);
+    const weather = info.sick ? null : info.weather ?? (info.rain ? "rain" : null);
+    if (info.sick) node.classList.add("sick");
+    if (day) {
+      day.classList.add("day");
+      if (!reduced) day.classList.add("masked"); // 窓から広がる光の形（css: .tr-dawn-pic.day.masked）
+      node.style.setProperty?.("--dawn-at", home ? "61% 31%" : "50% 22%");
+      node.insertBefore?.(day, grade);
+    }
     if (info.eve) {
-      // 大会・勝負の前夜の当日版（#2688 F3 の時間経過の型）: 日付はめくらず、長い夜のあと地平線がいつもより遅く昇る。DAYは当日の場面が出す。
+      // 大会・勝負の前夜の当日版（#2688 F3 の時間経過の型）: 日付は出さず、長い夜のあとゆっくり明ける。DAYは当日の場面が出す。
       // 選別（#2809）で A10 の大会前夜への適用は外したので、今は info.eve を渡す呼び出し元がない（前夜は暗転のまま）。
-      if (reduced) {
-        await sleep(700);
-        await move(node, [{ opacity: 1 }, { opacity: 0 }], 400, { easing: "ease" });
-        return;
-      }
-      await sleep(900);
-      const horizon = el("div.tr-dawn-horizon.eve");
-      const glow = el("div.tr-dawn-glow");
-      node.append(horizon, glow);
-      move(glow, [{ opacity: 0 }, { opacity: 1, offset: 0.6 }, { opacity: 0 }], 1500, { easing: "ease-out" });
-      move(horizon, [{ bottom: "0%", opacity: 1 }, { bottom: "100%", opacity: 0.4 }], 1250, { easing: EASE.inOut });
-      await move(veil, [{ clipPath: "inset(0 0 0% 0)" }, { clipPath: "inset(0 0 100% 0)" }], 1250, { easing: EASE.inOut });
-      node.style.pointerEvents = "none";
+      await sleep(reduced ? 700 : 900);
+      await dawnReveal(node, day, grade, { reduced, slow: 1.5 });
+      await move(node, [{ opacity: 1 }, { opacity: 0 }], 400, { easing: "ease" });
       return;
     }
+    // 3. 日付の題字（左下）。最終日が決まっていない章（第5章の日程未定）は残り日数を送らず、章の一言だけ出す
     const dayFlip = flipNumber(info.day);
-    // 最終日が決まっていない章（第5章の日程未定）は残り日数をめくらず、章の一言だけ出す。
     const leftFlip = info.left === null || info.left === undefined ? null : flipNumber(info.left);
+    const label = weather ? (await import("../daily/weather.js").catch(() => ({}))).WEATHER_LABEL?.[weather] : null;
     const sub = info.sick
       ? el("div.tr-dawn-sub", [el("span", { text: "……熱っぽい" })])
       : !leftFlip ? el("div.tr-dawn-sub", [el("span", { text: info.undatedNote || "" })])
       : el("div.tr-dawn-sub", [el("span", { text: `${info.tournamentName || "SMOKE CROWN CUP"} まで あと` }), leftFlip, el("span", { text: "日" })]);
-    const card = el("div.tr-dawn-card", { dataset: { test: "dawn-card" } }, [el("div.tr-dawn-day", [el("small", { text: info.dayLabel || "DAY" }), dayFlip]), sub]);
-    if (info.forecast) card.append(el("small.tr-dawn-sub", { text: `明日は${info.forecast}`, dataset: { test: "dawn-forecast" } }));
-    if (info.sick) node.classList.add("sick");
-    // その日の天気（晴れ・くもり・雨。motions/dawn-weather.js）。熱っぽい朝は出さない
-    const weather = info.sick ? null : info.weather ?? (info.rain ? "rain" : null);
-    if (weather) {
-      const { dawnWeather } = await import("../motions/dawn-weather.js").catch(() => ({}));
-      wx = dawnWeather?.(node, weather, { reduced }) || null;
-    }
-    if (wx?.badge) card.append(wx.badge);
+    if (label) sub.append(el("span.tr-dawn-wx", { text: label, dataset: { weather } }));
+    const rule = el("i.tr-dawn-rule");
+    const card = el("div.tr-dawn-card", { dataset: { test: "dawn-card" } }, [el("div.tr-dawn-day", [el("small", { text: info.dayLabel || "DAY" }), dayFlip]), rule, sub]);
+    if (info.forecast) card.append(el("small.tr-dawn-sub.tr-dawn-forecast", { text: `明日は${info.forecast}`, dataset: { test: "dawn-forecast" } }));
     node.append(card);
     if (reduced) {
       [dayFlip, leftFlip].filter(Boolean).forEach((s) => { s.firstChild.remove(); s.firstChild.style.transform = ""; s.firstChild.style.opacity = ""; });
       await move(card, [{ opacity: 0 }, { opacity: 1 }], 200, { easing: "ease" });
-      await sleep(1300);
+      await dawnReveal(node, day, grade, { reduced });
+      await sleep(1100);
       await move(node, [{ opacity: 1 }, { opacity: 0 }], 300, { easing: "ease" });
       return;
     }
-    await move(card, [{ opacity: 0, transform: "translateY(14px)" }, { opacity: 1, transform: "none" }], 320, { easing: EASE.out });
+    move(card, [{ opacity: 0, transform: "translateY(14px)" }, { opacity: 1, transform: "none" }], 380, { easing: EASE.out });
+    move(rule, [{ transform: "scaleX(0)" }, { transform: "scaleX(1)" }], 640, { delay: 120, easing: EASE.out });
     if (info.sick) {
       card.animate([
         { transform: "skewX(0deg) scale(1)", filter: "blur(0)" },
@@ -353,21 +454,38 @@ export async function nightToMorning(host, mid) {
         { transform: "skewX(0deg) scale(1)", filter: "blur(0)" },
       ], { duration: 900, iterations: Infinity, easing: "ease-in-out" });
     }
-    await sleep(220);
+    await sleep(380);
     SE.tick();
     await Promise.all([flip(dayFlip), info.sick || !leftFlip ? null : sleep(90).then(() => flip(leftFlip))]);
-    await sleep(info.sick ? 1100 : 650);
-    const horizon = el("div.tr-dawn-horizon");
-    node.append(horizon);
-    const up = 760;
-    move(card, [{ opacity: 1, transform: "none" }, { opacity: 0, transform: "translateY(-18px)" }], 300, { easing: EASE.in });
-    wx?.fadeOut(up);
-    move(horizon, [{ bottom: "0%", opacity: 1 }, { bottom: "100%", opacity: 0.5 }], up);
-    await move(veil, [{ clipPath: "inset(0 0 0% 0)" }, { clipPath: "inset(0 0 100% 0)" }], up);
-    node.style.pointerEvents = "none";
+    await sleep(info.sick ? 650 : 160);
+    // 4. 窓から朝が広がる。天気は窓の光・青み・窓の雨で
+    await dawnReveal(node, day, grade, { weather, home, slow: weather && weather !== "sun" ? 1.2 : 1 });
+    // 5. 日付が抜けて朝の場面へ（写しは #bg と同じ絵なので、上の画面だけが戻ってくる）
+    move(card, [{ opacity: 1, transform: "none" }, { opacity: 0, transform: "translateY(-12px)" }], 340, { easing: EASE.in });
+    await move(node, [{ opacity: 1 }, { opacity: 0 }], 380, { delay: 120, easing: "ease" });
   } finally {
-    wx?.stop();
     node.remove();
     unhold();
   }
+}
+
+/** 朝の絵を窓から広げ、暗さを引く。晴れは窓の光と差し込む筋、くもり・雨は青み、雨は窓に雨（自室の絵のときだけ） */
+async function dawnReveal(node, day, grade, { reduced = false, weather = null, home = false, slow = 1 } = {}) {
+  if (reduced || !day) {
+    if (day) await move(day, [{ opacity: 0 }, { opacity: 1 }], 260, { easing: "ease" });
+    move(grade, [{ opacity: 0.9 }, { opacity: 0 }], reduced ? 260 : 700, { easing: "ease" });
+    return;
+  }
+  const fx = [];
+  if (weather === "sun") {
+    fx.push([el("i.tr-dawn-sun"), [{ opacity: 0 }, { opacity: 1, offset: 0.35 }, { opacity: 0 }], 1600]);
+    if (home) for (const b of ["b1", "b2"]) fx.push([el(`i.tr-dawn-beam.${b}`), [{ opacity: 0 }, { opacity: 0.8, offset: 0.4 }, { opacity: 0 }], 1600]);
+  } else if (weather) {
+    fx.push([el("i.tr-dawn-cool"), [{ opacity: 0 }, { opacity: 0.4, offset: 0.4 }, { opacity: 0 }], 1700]);
+  }
+  if (weather === "rain" && home) fx.push([el("i.tr-dawn-rainpane"), [{ opacity: 0, backgroundPosition: "0 0" }, { opacity: 0.85, offset: 0.25 }, { opacity: 0.6, offset: 0.8 }, { opacity: 0, backgroundPosition: "-80px 340px" }], 2000]);
+  fx.forEach(([n]) => node.insertBefore?.(n, grade.nextSibling));
+  fx.forEach(([n, frames, ms], i) => move(n, frames, ms, { delay: i * 120, easing: "ease-out" }));
+  move(grade, [{ opacity: 0.9 }, { opacity: 0 }], 800 * slow, { easing: EASE.inOut });
+  await move(day, [{ maskSize: "0% 0%", webkitMaskSize: "0% 0%" }, { maskSize: "420% 420%", webkitMaskSize: "420% 420%" }], 1000 * slow, { easing: EASE.inOut });
 }

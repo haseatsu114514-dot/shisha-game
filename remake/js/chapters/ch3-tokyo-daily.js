@@ -31,10 +31,13 @@ import { runMukaiDeliveryWork } from "./ch3-deliveries.js";
 import { availableOptionalScenes, commitOptionalRead, selectChapterThreeEvening,
   eveningRecord, EVENING_WINDOW } from "./ch3-story-wiring.js";
 import { loverMilestonesDue, readLoverMilestone, pendingLoverLime } from "./lover-entry.js";
+import { mashiroTimeOpen, spendMashiroTime } from "./mashiro-time.js";
 import { questionVisitDue, playQuestionVisit, finaleAtVisit, playFinale } from "../daily/bonds.js";
 import { runMukaiShift, loadMukaiShift, MUKAI_PAY, MUKAI_SHIFT_STAMINA } from "./tokyo-mukai.js";
 import { addRoamerSpots } from "../daily/roamers.js";
 import { openTetsukoTime, settleTetsukoTime, tetsukoVisitKey } from "../minigames/tetsuko-time.js";
+import { chainStageAt } from "./visit-chains.js";
+import { chainVisitDue, playChainStage } from "./visit-chain-play.js";
 
 export const TOKYO = "tokyo";
 const BG = name => bgUrl(name, timeOfDay());
@@ -115,6 +118,7 @@ export const CH3_TOKYO_SPOTS = Object.freeze([
 } : {}))));
 
 function spotHasNew(entry) {
+  if (chainStageAt(state, entry.place)) return true; // 通いの続きの次の段（chapters/visit-chains.js）
   if (["mukai", "enmaku", "steve", "volk"].includes(entry.place) && optionalAt(entry.place).length) return true;
   if (rivalFinaleAt(entry.place)) return true; // 綾取・スティーブ・ヴォルクの締めくくり（IR22・#2028）
   if (entry.place === "mukai") return mukaiBondDue() || outingsAt("mukai").some(outing => !outing.repeat);
@@ -122,7 +126,8 @@ function spotHasNew(entry) {
 }
 
 const outingsAt = place => chapterThreeOutingCandidates(state).filter(outing => outing.place === place && outing.id !== "tetsuko");
-const mukaiBondDue = () => loverMilestonesDue(["mashiro"]).length > 0 || questionVisitDue("mashiro") || finaleAtVisit("mashiro");
+const mashiroMilestoneDue = () => loverMilestonesDue(["mashiro"]).length > 0;
+const mukaiBondDue = () => mashiroMilestoneDue() || questionVisitDue("mashiro") || finaleAtVisit("mashiro");
 
 const ROAMER_TOKYO_SPOTS = () => state.chapter === 3 ? chapterThreeTokyoSpots() : [];
 
@@ -241,7 +246,14 @@ export async function runChapterThreeTokyo(io) {
 }
 
 const OUTING_IDS = OUTING_DIALOGUE_IDS; // 通いの小会話（AFB02）も含む外出の台本
-export const TOKYO_DAILY_IDS = Object.freeze(["ch3_tokyo_room_rest", "ch3_tokyo_fortune"]);
+// 奥の部屋で休む: 初回は ch3_tokyo_room_rest、2回目からは日常の小品を巡回する（#3097。公園の散歩と同じ読み分け）。
+const ROOM_REST_FLAG = "_ch3_room_rests";
+const ROOM_REST_AGAIN = Object.freeze(["b", "c", "d", "e"].map(suffix => `ch3_tokyo_room_rest_${suffix}`));
+export function roomRestId(value = state) {
+  const count = Math.max(0, Math.floor(Number(value.flags?.[ROOM_REST_FLAG]) || 0));
+  return count ? ROOM_REST_AGAIN[(count - 1) % ROOM_REST_AGAIN.length] : "ch3_tokyo_room_rest";
+}
+export const TOKYO_DAILY_IDS = Object.freeze(["ch3_tokyo_room_rest", ...ROOM_REST_AGAIN, "ch3_tokyo_fortune"]);
 
 // ---- 昼の行動を使う場面・約束 ----------------------------------------------------------
 function tokyoSlotEvent(io) {
@@ -421,8 +433,9 @@ async function performTokyoSpot(entry, io, { staminaGuard }) {
     return unused;
   }
   if (entry.place === "room") {
-    if (!await readPlain("ch3_tokyo_room_rest", "bg_mukai_shop", owner)) return unused;
+    if (!await readPlain(roomRestId(), "bg_mukai_shop", owner)) return unused;
     addStamina(entry.stamina);
+    state.flags[ROOM_REST_FLAG] = (Number(state.flags[ROOM_REST_FLAG]) || 0) + 1;
     return { used: true, exerted: false };
   }
   if (entry.place === "park") return goOuting(outingById("park_walk"), staminaGuard, owner);
@@ -535,7 +548,8 @@ async function readRivalFinale(who, place, staminaGuard, owner) {
  * 行動を使った帰りに、裏口のてつこの様子を見ていける（行動は使わない・体力が少し戻る。VOL11）。
  */
 async function visitMukai(io, staminaGuard, owner) {
-  const bond = loverMilestonesDue(["mashiro"]).length ? "lover" : questionVisitDue("mashiro") ? "question" : finaleAtVisit("mashiro") ? "finale" : null;
+  // 恋人のましろとは、節目が無い日も一日に一度いっしょに過ごせる（BLC03・chapters/mashiro-time.js）。
+  const bond = mashiroTimeOpen(state, { milestoneDue: mashiroMilestoneDue() }) ? "lover" : questionVisitDue("mashiro") ? "question" : finaleAtVisit("mashiro") ? "finale" : null;
   const scenes = optionalAt("mukai");
   const outings = outingsAt("mukai");
   const trials = availableChapterThreeTrials(state);
@@ -544,6 +558,7 @@ async function visitMukai(io, staminaGuard, owner) {
     ...scenes.map(scene => ({ label: scene.label, value: `scene:${scene.id}` })),
     ...outings.map(outing => ({ label: outing.id === "mukai_help" ? `シフトに入る（バイト・日当 ${MUKAI_PAY.toLocaleString("ja-JP")}円）` : outing.label, value: `outing:${outing.id}` })),
     ...trials.map(trial => ({ label: `作業台で${trial.label}（時間は進まない）`, value: `trial:${trial.id}` })),
+    ...chainOptions("mukai"),
   ];
   const pick = await modal({ title: "mukai", className: "tokyo-visit-choice", body: "何をしよう。",
     options: [...options.map((option, index) => ({ ...option, test: `tokyo-mukai-${index}` })), { label: "やめておく", value: null, test: "tokyo-visit-cancel" }] });
@@ -557,6 +572,7 @@ async function visitMukai(io, staminaGuard, owner) {
   }
   if (kind === "bond") result = await readMashiroBond(id, staminaGuard, owner);
   else if (kind === "scene") result = await readOptionalHere(io, optional.find(scene => scene.id === id), staminaGuard, owner);
+  else if (kind === "chain") result = await readChainHere("mukai", staminaGuard, owner);
   else if (id === "mukai_help") result = await (await staminaGuard(MUKAI_SHIFT_STAMINA) ? mukaiShift(owner) : false)
     ? { used: true, exerted: true, exp: MUKAI_SHIFT_EXP } : unused;
   else result = await goOuting(outingById(id), staminaGuard, owner);
@@ -580,17 +596,40 @@ async function mukaiShift(owner, { called = false } = {}) {
   return true;
 }
 
+/**
+ * 通いの続き（chapters/visit-chains.js）: mukai で2回働いた後の、豆腐屋の常連さんの相談→常連さんの台で一台→後日の報告。
+ * 行き先の選択肢の最後に、今読める段だけを出す（ほかの選択肢の並びを変えない）。
+ */
+const chainOptions = place => {
+  const due = chainStageAt(state, place);
+  return due?.stage.label ? [{ label: due.stage.label, value: `chain:${due.id}` }] : [];
+};
+/** 一段を読む。寄り道と同じく行動を一つ・体力10を使い、常連さんの話を聞く洞察が伸びる。読み終えた時だけ記録する。 */
+async function readChainHere(place, staminaGuard, owner) {
+  const due = await chainVisitDue(place);
+  if (state !== owner) return unused;
+  if (!due) { toast("会話を読み込めませんでした。行動は使っていません"); return unused; }
+  if (!(await staminaGuard(-10))) return unused;
+  if (!await playChainStage(due, id => readPlain(id, visitBg[place] || "bg_mukai_shop", owner)) || state !== owner) return unused;
+  addStamina(-10);
+  earnStat("insight", 4);
+  earnSceneCompletion(due.stage.id, owner);
+  return { used: true, exerted: true };
+}
+
 async function readMashiroBond(kind, staminaGuard, owner) {
   if (!(await staminaGuard(-10))) return unused;
   const bg = BG("bg_mukai_shop");
   await setBg(bg);
   let done = false;
-  if (kind === "lover") done = await readLoverMilestone("mashiro");
+  // 恋人の時間は絆も spendMashiroTime が足す（恋人には普通の好感度が入らない。core/stats.js の gainAffinity）。
+  if (kind === "lover") done = await spendMashiroTime({ read: scene => readPlain(scene, "bg_mukai_shop", owner),
+    milestoneDue: mashiroMilestoneDue, readMilestone: () => readLoverMilestone("mashiro") });
   else if (kind === "question") done = await playQuestionVisit("mashiro", { bg });
   else done = await playFinale("mashiro", { bg });
   if (!done || state !== owner) return unused;
   addStamina(-10);
-  gainAffinity("mashiro", 5);
+  if (kind !== "lover") gainAffinity("mashiro", 5);
   return { used: true, exerted: true, exp: personExp("mashiro") };
 }
 

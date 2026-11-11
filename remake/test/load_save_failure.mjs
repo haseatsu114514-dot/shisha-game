@@ -53,7 +53,7 @@ assert.equal(JSON.stringify(previous), previousJSON);
 assert.deepEqual(notifications, []);
 
 // 移行による拒否と移行中の例外でも、保存前に失敗してownerを公開しない。
-const invalidKey = core.SAVE_SLOTS[2].key;
+const invalidKey = "suien_remake_slot2";
 for (const raw of [JSON.stringify({ day: 1, schema: core.SCHEMA + 1 }), "migration-throws"]) {
   files.set(invalidKey, raw);
   vm.runInContext(`

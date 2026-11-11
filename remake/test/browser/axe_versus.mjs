@@ -26,14 +26,54 @@ async function press(page, { touch = false, keyboard = false } = {}) {
   else if (touch) await button.tap(); else await button.click();
 }
 async function stop(page, value, options) {
-  if (options?.precise) await root(page).focus();
-  // The press lands on the first frame inside the window, so a precise stop opens its window just before the value.
-  await page.waitForFunction(([value, precise]) => {
+  if (options?.precise) {
+    // The center bull needs frame-accurate input. Read the displayed needle
+    // and click the UI control in that frame, without changing game state.
+    await page.evaluate(value => new Promise((resolve, reject) => {
+      const deadline = performance.now() + 12000;
+      const seek = () => {
+        const game = document.querySelector('[data-test="axe-game"]');
+        const button = game?.querySelector('[data-test="axe-action"]');
+        const t = Number(game?.dataset.timing);
+        if (button && !button.disabled && t >= value - .008 && t <= value + .015) {
+          button.click(); resolve();
+        } else if (performance.now() < deadline) requestAnimationFrame(seek);
+        else reject(new Error(`Visible gauge never reached ${value}`));
+      };
+      requestAnimationFrame(seek);
+    }), value);
+    return;
+  }
+  await page.waitForFunction(value => {
     const game = document.querySelector('[data-test="axe-game"]'), t = Number(game.dataset.timing);
-    return !game.querySelector('[data-test="axe-action"]').disabled && t >= value - (precise ? .008 : .02) && t <= value + .015;
-  }, [value, Boolean(options?.precise)]);
-  if (options?.precise) await page.keyboard.press("Space");
-  else await press(page, options);
+    return !game.querySelector('[data-test="axe-action"]').disabled && t >= value - .02 && t <= value + .015;
+  }, value);
+  await press(page, options);
+}
+async function focusedBullOnFrame(page) {
+  // Use the visible power band and landing marker in one browser frame. The
+  // focus window can expire during separate Playwright input round trips.
+  await page.evaluate(() => new Promise((resolve, reject) => {
+    const deadline = performance.now() + 12000;
+    let focused = false, previous = -1;
+    const seek = () => {
+      const game = document.querySelector('[data-test="axe-game"]');
+      const focus = game?.querySelector('[data-test="axe-focus"]');
+      const action = game?.querySelector('[data-test="axe-action"]');
+      const t = Number(game?.dataset.timing);
+      if (!focused && focus && !focus.disabled && t >= .38 && t <= .48 && t > previous) {
+        focus.click(); focused = true;
+      }
+      if (focused && game.dataset.focused === "true" && action && !action.disabled
+        && t >= .54 && t <= .70 && Math.abs(Number(game.dataset.landingX)) < .025
+        && Math.abs(Number(game.dataset.landingY)) < .09) {
+        action.click(); resolve(); return;
+      }
+      if (performance.now() >= deadline) reject(new Error("Focused bull was not visible within the power band"));
+      else { previous = t; requestAnimationFrame(seek); }
+    };
+    requestAnimationFrame(seek);
+  }));
 }
 async function shoot(page, options = {}) {
   await phase(page, "choice"); await press(page, options); await phase(page, "horizontal");
@@ -47,13 +87,17 @@ async function shoot(page, options = {}) {
       await page.locator('[data-test="axe-reaim"]:not([disabled])').click();
       return shoot(page, { ...options, attempt: (options.attempt || 0) + 1 });
     }
-    await page.waitForFunction(() => {
-      const game = document.querySelector('[data-test="axe-game"]');
-      return Number(game.dataset.timing) >= .4 && Number(game.dataset.timing) <= .5;
-    });
-    await page.locator('[data-test="axe-focus"]').click();
+    if (options.precise) await focusedBullOnFrame(page);
+    else {
+      await page.waitForFunction(() => {
+        const game = document.querySelector('[data-test="axe-game"]');
+        return Number(game.dataset.timing) >= .4 && Number(game.dataset.timing) <= .5;
+      });
+      await page.locator('[data-test="axe-focus"]').click();
+    }
   }
-  await stop(page, options.power ?? .62, options); await phase(page, "result");
+  if (!(options.focus && options.precise)) await stop(page, options.power ?? .62, options);
+  await phase(page, "result");
   assert.equal(await root(page).getAttribute("data-actor"), "player");
 }
 /** A tie after ten throws goes to sudden death: alternate killshot throws until the game declares a winner. */
@@ -146,7 +190,11 @@ await suite("axe-versus", async check => {
       const { KILLS, canCall } = await import("./js/minigames/axe-model.js");
       return !KILLS.some(k => canCall(k.id, history, 10));
     }, result.match.opponent.slice(0, 9)), "the opponent skips its last call only when no blue is legal");
-    assert.deepEqual(await storageSnapshot(page), before);
+    const expectedStorage = structuredClone(before);
+    // Winning a hard match intentionally unlocks Adam on the standalone page.
+    // Keep every other save and session key byte-for-byte unchanged.
+    if (difficulty === "hard" && result.match.winner === "player") expectedStorage.local.shisha_axe_adam_unlocked = "1";
+    assert.deepEqual(await storageSnapshot(page), expectedStorage);
   }, context);
 
   await check("seeded-tie-goes-to-sudden-death-and-retry-clears-both-histories", async page => {

@@ -22,7 +22,7 @@ import { gradeOf, autoSkill, skill, resultCard, keys } from "./common.js";
 import { HEAT_GRADES } from "./heat.js";
 import { replacementCoals } from "./heat_logic.js";
 
-import { craftConditions, heatDelta, pullResult, isIdealTemperature, isOptimalTemperature, temperatureBands, visualTemperature, temperatureAfterSteam, pullFocusFromSteam, isBurnt, isColdOut, DANGER_TEMP, COLD_OUT } from "./conditions.js";
+import { craftConditions, heatDelta, pullResult, isIdealTemperature, isRainbowTemperature, temperatureBands, visualTemperature, temperatureAfterSteam, pullFocusFromSteam, isBurnt, isColdOut, DANGER_TEMP, COLD_OUT } from "./conditions.js";
 import { buildThermometer } from "./thermometer.js";
 import { DRAW_MS, animateDraw } from "./pull-draw.js";
 import { impact, exhale } from "./fx.js";
@@ -136,9 +136,10 @@ async function pullGame(cs, mode) {
   const tutorial = cs.mode === "tutorial";
   if (mode.store === "pull" && !cs.pullDone) startNaruFinish(cs, growthLesson(state, "M-W3"));
   const context=craftContext(cs);
-  // 提供ボタンの実ラベル。吸い出しでも「提供」画面でないとき（チュートリアル・試し吸い等）は「確かめる」。
+  // 提供ボタンの実ラベル。吸い出しでも「提供」画面でないとき（チュートリアル・試し吸い等）は「吸い出しをする」。
+  // 以前は「確かめる」→「温度を決める」。どちらも言葉として合わないので「吸い出しをする」に（2026-11-11 オーナー・CSL17）。
   // 吸い切りの案内文も必ずこの実ラベルを指すよう、ボタンと同じ値から文言を作る。
-  const serveBtnLabel = mode.store === "pull" && context.title !== "提供" ? "確かめる" : mode.serveLabel;
+  const serveBtnLabel = mode.store === "pull" && context.title !== "提供" ? "吸い出しをする" : mode.serveLabel;
   // 葉が傷むと適温帯が細くなるので、ダメージのたびに bands/ideal を取り直す。中心は動かないので一度だけ。
   let bands = temperatureBands(cs), ideal = bands.ideal;
   const center = bands.center;
@@ -282,11 +283,12 @@ async function pullGame(cs, mode) {
     if (choosing) return;
     const inZone = isIdealTemperature(T, bands);
     const expressive = bands.expressionWeight >= .999;
-    const optimal = !expressive && isOptimalTemperature(T, bands);
+    // 表示の虹（どの配合にもある。作り分ける葉だけの配合はおいしく作れる範囲全体）。採点の最適温とは別。
+    const optimal = isRainbowTemperature(T, bands);
     const position = (T - ideal[0]) / (ideal[1] - ideal[0]);
     const goodLabel = expressive ? position < .35 ? "適温・低" : position > .65 ? "適温・高" : "適温" : "適温";
     // 今の温度を短い一語で。温度計の印と同じ色にする。
-    const [state, tone] = optimal ? ["最適温", "optimal"] : inZone ? [goodLabel, "ok"] : T >= DANGER_TEMP ? ["焦げる寸前！", "danger"]
+    const [state, tone] = optimal ? [expressive ? goodLabel : "最適温", "optimal"] : inZone ? [goodLabel, "ok"] : T >= DANGER_TEMP ? ["焦げる寸前！", "danger"]
       : T > ideal[1] ? ["熱い", "hot"] : mode.drift && T <= COLD_OUT + 0.08 ? ["冷え切りそう！", "cold"] : ["ぬるい", "cool"];
     readout.dataset.tone = tone;
     readout.replaceChildren(el("b.pull-state", { text: state }), mode.drift && running && !drawing ? el("span.pull-drift", { text: "↓", title: "炭が燃え進んで、熱が落ちていく" }) : "");

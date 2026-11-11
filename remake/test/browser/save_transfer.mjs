@@ -38,6 +38,29 @@ const assertSizes = async (page, selector) => {
 const iphone = "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1";
 
 await suite("save-transfer", async check => {
+  await check("retired-slots-are-ignored-on-transfer", async page => {
+    await seed(page);
+    const result = await page.evaluate(async () => {
+      const xfer = await import("./js/scenes/save-transfer.js");
+      const keys = ["suien_remake_slot2", "suien_remake_slot3"];
+      const old = keys.map((key, i) => JSON.stringify({ day: 2 + i, money: 100 + i }));
+      keys.forEach((key, i) => localStorage.setItem(key, old[i]));
+      const exported = xfer.exportSaveText();
+      const decode = text => JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(text.slice("SUIEN-SAVE2:".length)), c => c.charCodeAt(0))));
+      const packet = decode(exported);
+      packet.slots[keys[0]] = old[0]; packet.slots[keys[1]] = old[1];
+      const bytes = new TextEncoder().encode(JSON.stringify(packet));
+      const legacy = "SUIEN-SAVE2:" + btoa(String.fromCharCode(...bytes));
+      const parsed = xfer.parseSaveText(legacy);
+      if (!parsed || parsed.length !== 2 || !xfer.applySlots(parsed)) return null;
+      return { included: Object.keys(decode(exported).slots),
+        retired: keys.map(key => localStorage.getItem(key)), old };
+    });
+    assert(result);
+    assert.deepEqual(result.included.sort(), ["suien_remake_save", "suien_remake_slot1"]);
+    assert.deepEqual(result.retired, result.old);
+  });
+
   for (const [label, viewport] of [["844x390", { width: 844, height: 390 }], ["844x340", { width: 844, height: 340 }]]) {
     await check(`roundtrip-and-sizes-${label}`, async page => {
       await seed(page);

@@ -99,6 +99,14 @@ export const CATERING_REQUESTS = Object.freeze([
       option("ブルーベリー＋ミント", { blueberry: 9, mint: 3 }, "off"),
       option("コーヒー＋ダークチョコ", { coffee: 8, dark_chocolate: 4 }, "ok"),
     ] }),
+  request({ id: "stargazing", title: "流れ星を見る会", client: "天文サークルの大学生", place: "観音堂の裏の高台", slot: 1, bg: "bg_kannon",
+    lime: ["大学の天文サークルからだ。観音堂の裏の高台で、流れ星を見る夜の会な", "解説役が一晩しゃべり通しだから、喉にきついのは困るってよ"],
+    conditions: ["流れ星を待って、明け方まで長く回す", "眠気をごまかせる、すっとする味がほしい", "解説役の先輩はしゃべり通し。喉にきついのは困る"],
+    options: [
+      option("レモンティー＋ハニー", { lemon_tea: 8, honey: 4 }, "ok"),
+      option("デスバイアイス＋クールミント", { death_by_ice: 8, cool_mint: 4 }, "off"),
+      option("グレープ＋ミント", { grape: 9, mint: 3 }, "best"),
+    ] }),
 ]);
 
 export const cateringRequestById = id => CATERING_REQUESTS.find(entry => entry.id === id) || null;

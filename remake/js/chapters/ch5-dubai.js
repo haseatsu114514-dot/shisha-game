@@ -21,12 +21,16 @@ import { DESERT_CAFE_PRICE, DESERT_GUIDE, DESERT_SPOT_IDS, completeDesertReunion
 import { spendableMoney } from "../core/travel-budget.js";
 import { play } from "../vn/engine.js";
 import { readDialogues } from "../core/chapter-data.js";
-import { addMoney, addStamina, earnStat, gainAffinity, visitAffinity } from "../core/stats.js";
+import { addMoney, addStamina, affinityLevel, earnStat, gainAffinity, visitAffinity } from "../core/stats.js";
 import { dubaiTripStatus, receiveDubaiLetter, useDubaiTicket, recordDubaiReturn, DUBAI_LETTER_AGAIN, DUBAI_LETTER_DAYS } from "./ch5-travel.js";
 import { openShop } from "../daily/shop.js";
 import { reflectAt } from "../daily/reflection.js";
 import { openingStatus, MOSQUE_VISITING_HOURS } from "../daily/spot-hours.js";
 import { consultLessons } from "../core/growth.js";
+import { finaleAtVisit, playFinale } from "../daily/bonds.js";
+import { SHEIKH_BOND_IDS, TAIYO_BOND_IDS, nextDubaiBondStory, recordDubaiBondRead, recordSheikhBondLetter, sheikhBondLetterDue } from "./dubai-bonds.js";
+import { chainStageAt } from "./visit-chains.js";
+import { chainVisitDue, playChainStage } from "./visit-chain-play.js";
 
 export const DUBAI = "dubai";
 // 手紙・切符・飛んだ回数・帰った日の旗は chapters/ch5-travel.js が持つ。
@@ -46,10 +50,12 @@ export const DUBAI_SPOTS = Object.freeze([
     talks: ["ch5_dubai_taiyo", "ch5_dubai_taiyo_b", "ch5_dubai_taiyo_c"],
     desc: "休暇で屋敷に遊びに来ている太陽。今日は審査じゃなく、ただのフェスタ。" }),
   spot({ id: "ch5_dubai_souq", label: "スーク", area: "旧市街の市場", x: 22, y: 58, theme: "shop", glyph: "市",
-    preview: "bg_dubai_souq_day", stamina: -10, stat: "insight", talks: ["ch5_dubai_souq", "ch5_dubai_souq_b"],
+    preview: "bg_dubai_souq_day", stamina: -10, stat: "insight", talks: ["ch5_dubai_souq", "ch5_dubai_souq_b", "ch5_dubai_souq_c"],
     desc: "スパイスの匂いが立つ市場を歩く。" }),
   spot({ id: "ch5_dubai_alley", label: "路地裏のカフェ", area: "路地の奥", x: 30, y: 78, theme: "store", glyph: "茶",
-    preview: "bg_dubai_alley_cafe_night", cost: 3000, stamina: -10, stat: "technique", talks: ["ch5_dubai_alley", "ch5_dubai_alley_b"],
+    preview: "bg_dubai_alley_cafe_night", cost: 3000, stamina: -10, stat: "technique", talks: ["ch5_dubai_alley", "ch5_dubai_alley_b", "ch5_dubai_alley_c"],
+    // 小会話を一通り読んだ後の、店員に一台を渡す通いの続き（chapters/visit-chains.js）が読める時に「！」
+    hasNew: () => !!chainStageAt(state, "ch5_dubai_alley"),
     desc: "前に旅装のシェイクと向かい合った、小さなカフェ。一台3,000円（約70ディルハム）。" }),
   spot({ id: "ch5_dubai_creek", label: "クリーク沿い", area: "水辺の遊歩道", x: 58, y: 86, theme: "park", glyph: "水",
     preview: "bg_dubai_street_night", stamina: 20, desc: "水辺を歩いて、少し体を休める。" }),
@@ -123,9 +129,10 @@ const CH4_SCENES = ["ch4_creek_walk_day", "ch4_creek_walk_night"];
 
 let loading = null;
 async function loadDubaiScenes() {
-  if ([...SCENES, ...CH4_SCENES].every(id => DB.dialogues[id]?.lines?.length)) return;
-  loading ||= Promise.all([readDialogues("ch5_dubai", SCENES), readDialogues("ch4_dubai_daily", CH4_SCENES)])
-    .then(([dubai, ch4]) => { Object.assign(DB.dialogues, dubai, ch4); })
+  if ([...SCENES, ...CH4_SCENES, ...SHEIKH_BOND_IDS, ...TAIYO_BOND_IDS].every(id => DB.dialogues[id]?.lines?.length)) return;
+  loading ||= Promise.all([readDialogues("ch5_dubai", SCENES), readDialogues("ch4_dubai_daily", CH4_SCENES),
+    readDialogues("sheikh_bond", SHEIKH_BOND_IDS), readDialogues("taiyo_bond", TAIYO_BOND_IDS)])
+    .then(([dubai, ch4, sheikh, taiyo]) => { Object.assign(DB.dialogues, dubai, ch4, sheikh, taiyo); })
     .catch(error => { loading = null; throw error; });
   await loading;
 }
@@ -190,6 +197,15 @@ export async function performDubaiSpot(spot, { staminaGuard } = {}) {
     return { used: true, exerted: false };
   }
   if (!spot.talks) return null;
+  // シェイク・太陽（2026-11-11 RVE03）: ♥5の締めくくりが来ていれば先に一度だけ、次に屋敷の段階の会話、無ければ小会話（chapters/dubai-bonds.js）。
+  const bond = BOND_PLACE[spot.id];
+  if (bond && finaleAtVisit(bond.who)) return readDubaiFinale(spot, bond.who, staminaGuard, owner);
+  const story = bond && bondStoryDue(spot, bond);
+  if (story) return readDubaiBondStory(spot, bond.who, story, staminaGuard, owner);
+  // 小会話を一通り読んだ後は、通いの続き（chapters/visit-chains.js）の段を読む（路地裏のカフェ）。
+  const chain = await chainVisitDue(spot.id);
+  if (state !== owner) return unused;
+  if (chain) return readDubaiChain(spot, chain, staminaGuard, owner);
   // シェイクの屋敷・スーク・路地裏のカフェ: 小会話を巡回して読む。
   if ((spot.cost || 0) > state.money) {
     toast("お金が足りない");
@@ -212,6 +228,61 @@ export async function performDubaiSpot(spot, { staminaGuard } = {}) {
   return { used: true, exerted: true };
 }
 
+/**
+ * 通いの続きの一段。代金・体力・能力はいつもの来店と同じ（閉店後の段は客の一台ではないので代金なし）。
+ * 小会話の巡回は進めない。読み終えた時だけ段を記録する（chapters/visit-chain-play.js）。
+ */
+async function readDubaiChain(spot, due, staminaGuard, owner) {
+  const fee = due.stage.free ? 0 : spot.cost || 0;
+  if (fee > state.money) {
+    toast("お金が足りない");
+    return unused;
+  }
+  if (staminaGuard && !(await staminaGuard(spot.stamina))) return unused;
+  if (!await playChainStage(due, id => read(id, spot.preview, owner)) || state !== owner) return unused;
+  if (fee) addMoney(-fee);
+  addStamina(spot.stamina);
+  earnStat(spot.stat, 4);
+  return { used: true, exerted: true };
+}
+
+/** 屋敷の段階の会話がある行き先（中庭の太陽は、第5章の最初の来店の場面 ch5_dubai_taiyo の後から）。 */
+const BOND_PLACE = Object.freeze({
+  ch5_dubai_sheikh: Object.freeze({ who: "sheikh", where: "residence" }),
+  ch5_dubai_taiyo: Object.freeze({ who: "da_silva", where: "courtyard", afterFirstTalk: true }),
+});
+function bondStoryDue(spot, bond) {
+  if (bond.afterFirstTalk && !(state.flags[TALKS_FLAG]?.[spot.id] > 0)) return null;
+  return nextDubaiBondStory(state, bond.who, bond.where, affinityLevel(bond.who));
+}
+/** 屋敷の行き先に、新しい段階の会話か締めくくりがあるか（地図の「！」）。 */
+export const dubaiBondHasNew = spot => !!BOND_PLACE[spot.id]
+  && (finaleAtVisit(BOND_PLACE[spot.id].who) || !!bondStoryDue(spot, BOND_PLACE[spot.id]));
+
+/** 段階の会話を一本読む。読み終えた時だけ既読・体力・好感度（段階の値）・能力を確定する。 */
+async function readDubaiBondStory(spot, who, scene, staminaGuard, owner) {
+  if (staminaGuard && !(await staminaGuard(spot.stamina))) return unused;
+  if (!await read(scene, spot.preview, owner)) return unused;
+  recordDubaiBondRead(state, scene);
+  addStamina(spot.stamina);
+  gainAffinity(who, visitAffinity("story"));
+  markMet(who);
+  earnStat(spot.stat, 4);
+  if (spot.teacher && state === owner) await consultLessons(spot.teacher, { bg: sceneBg(spot.preview, timeOfDay()).url });
+  return { used: true, exerted: true };
+}
+
+/** ♥5の締めくくり（daily/bonds.js）。客の一台ではないので体力・能力は動かさない。読み終えた時だけ行動を使う。 */
+async function readDubaiFinale(spot, who, staminaGuard, owner) {
+  await showBg(spot.preview, timeOfDay());
+  if (state !== owner) return unused;
+  const done = await playFinale(who, { bg: sceneBg(spot.preview, timeOfDay()).url });
+  if (!done || state !== owner) return unused;
+  // 会った場で授業も相談できる（第3章の東京の締めくくりと同じ。ch3-tokyo-daily.js の withLesson）
+  if (spot.teacher) await consultLessons(spot.teacher, { bg: sceneBg(spot.preview, timeOfDay()).url });
+  return { used: true, exerted: false };
+}
+
 async function goToDubai(owner) {
   const status = dubaiTripStatus(state);
   if (!status.ok) {
@@ -220,7 +291,11 @@ async function goToDubai(owner) {
   }
   // 手紙が届いていれば先に読む（読むだけでは行動を使わない）。同封の往復の切符が手に入る。
   if (status.letter) {
-    if (!await read(status.letter, "bg_home", owner)) return unused;
+    // 段階を読んだ後・締めくくりの後は、いつもの手紙の代わりにシェイクの手紙が一度ずつ届く（chapters/dubai-bonds.js）
+    const bondLetter = sheikhBondLetterDue(state);
+    const letter = bondLetter && DB.dialogues[bondLetter]?.lines?.length ? bondLetter : status.letter;
+    if (!await read(letter, "bg_home", owner)) return unused;
+    if (letter === bondLetter) recordSheikhBondLetter(state, bondLetter);
     receiveDubaiLetter(state);
     save();
   }

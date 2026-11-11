@@ -1,7 +1,7 @@
 // DESERT RIDE（第4章ドバイ・サンドボード）の規則: コースの決定性と公平さ、ジャンプ・着地・転倒、採点と評価の境目。
 import assert from "node:assert/strict";
 import test from "node:test";
-import { COURSE, SPEED, JUMP, FALL, SCORE, SPIN, BOOST, RULES_VERSION, RANKS, DEFAULT_SEED, COURSE_PACKS, CURVE_SCALE, generateCourse, practiceCourse, curveAt, headingAt, offsetAt, lateralAt, upcomingCurve, buildCourse, pickCourse, createGame, step, press, boost, chargeBoost, canRecover,
+import { COURSE, SPEED, JUMP, FALL, SCORE, SPIN, BOOST, STEER, CARVE, EDGE, RUBBER, rubberCaps, DISPLAY, toKmh, toMeters, RULES_VERSION, RANKS, DEFAULT_SEED, COURSE_PACKS, CURVE_SCALE, generateCourse, practiceCourse, curveAt, headingAt, offsetAt, lateralAt, upcomingCurve, buildCourse, pickCourse, createGame, step, press, boost, chargeBoost, canRecover,
   summary, rankOf, readResult, botControl, botStep, nextBumpDistance, comboMultiplier, rivalRun, rivalAt, smashing, RIVALS, jumpPeak, jumpHeight } from "../js/minigames/desert-ride-model.js";
 
 const DT = 1 / 60;
@@ -65,6 +65,19 @@ test("steering has inertia and sand drag; the edge slows the board; dt is capped
   assert(game.z - before < SPEED.max * 0.06);
 });
 
+test("analog steering follows stick deflection while button steering stays at full strength", () => {
+  const course = practiceCourse();
+  const travel = input => {
+    const game = createGame(course);
+    for (let i = 0; i < 18; i++) step(game, input, DT);
+    return game.x;
+  };
+  const half = travel({ steer: 0.5 }), full = travel({ steer: 1 });
+  assert(half > 0 && half < full * 0.6, `half tilt ${half} stays below full tilt ${full}`);
+  assert(Math.abs(full - travel({ right: true })) < 1e-9, "the right button still gives full steering");
+  assert(Math.abs(travel({ steer: -0.5 }) + half) < 1e-9, "left tilt mirrors right tilt");
+});
+
 test("pressing near a bump is a big jump, pressing in the air braces the landing, perfect landings boost", () => {
   const course = generateCourse(DEFAULT_SEED);
   const game = createGame(course);
@@ -107,7 +120,7 @@ test("a bump taken without pressing only bounces (slower, no score); a flat pres
   assert.equal(game.airTotal, JUMP.hopAir);
 });
 
-test("hitting a rock is a fall: slower, combo reset, recoverable, never game over; a big jump clears any rock, a hop only small ones", () => {
+test("hitting a rock is a fall: slower, combo reset, recoverable, never game over; a big jump clears any rock, a hop small ones and big ones near its top", () => {
   const course = generateCourse(DEFAULT_SEED);
   const rock = course.features.find(f => f.kind === "rock");
   let game = createGame(course);
@@ -129,11 +142,20 @@ test("hitting a rock is a fall: slower, combo reset, recoverable, never game ove
   game.x = rock.x; game.air = 1; game.airTotal = 1; game.airKind = "big";
   while (!game.passed.has(rock)) { game.x = rock.x; step(game, {}, DT); }
   assert.equal(game.falls, 0, "a big jump clears the rock");
-  game = createGame(course);
-  while (game.z < rock.z - 8) step(game, {}, DT);
-  game.x = rock.x; game.air = 0.5; game.airTotal = 0.5; game.airKind = "hop";
-  while (!game.passed.has(rock)) { game.x = rock.x; step(game, {}, DT); }
-  assert.equal(game.falls, rock.size === "small" ? 0 : 1, "a hop only clears small rocks");
+  // ホップ（2026-11-11 オーナー「ブースト溜まってない時のジャンプが弱すぎて難しい」）: 小さい岩はいつでも、
+  // 大きい岩は跳んだ高い所（JUMP.hopClearsBig 以上）で越える。低い所（跳び始め・着地際）では大きい岩に当たる
+  const big = course.features.find(f => f.kind === "rock" && f.size !== "small"), small = course.features.find(f => f.kind === "rock" && f.size === "small");
+  const hopOver = (target, height) => {
+    const g = createGame(course);
+    while (g.z < target.z - 1) step(g, {}, DT);
+    g.x = target.x; g.airKind = "hop"; g.airTotal = 1; g.air = 0.5; g.airPeak = height; // 弧の頂上で岩の上を通る
+    while (!g.passed.has(target)) { g.x = target.x; g.air = 0.5; step(g, {}, DT); }
+    return g.falls;
+  };
+  assert.equal(hopOver(small, 0.2), 0, "a hop clears a small rock even low");
+  assert.equal(hopOver(big, JUMP.hopClearsBig + 0.05), 0, "a hop clears a big rock near its top");
+  assert.equal(hopOver(big, JUMP.hopClearsBig - 0.2), 1, "but not a big rock while still low");
+  assert(jumpPeak(SPEED.start, "hop") > JUMP.hopClearsBig + 0.2, "a hop from the start speed is high enough to clear a big rock at its top");
 });
 
 test("passing close to a rock scores a near miss and extends the combo", () => {
@@ -478,8 +500,8 @@ test("take-off speed raises big jumps and hops through boost speed, without movi
       assert.equal(press(game), kind);
       assert(game.airPeak > previous, `${kind} gets higher at ${speed}m/s`);
       previous = game.airPeak;
-      const expectedTime = kind === "big" ? JUMP.bigAir * (0.85 + 0.3 * Math.min(1, speed / SPEED.max)) : JUMP.hopAir;
-      assert.equal(game.airTotal, expectedTime, "existing airtime and landing timing are preserved");
+      const expectedTime = kind === "big" ? JUMP.bigAir * (JUMP.airFloor + JUMP.airGain * Math.min(1, speed / SPEED.max)) : JUMP.hopAir;
+      assert.equal(game.airTotal, expectedTime, "the configured airtime applies at take-off");
       assert.equal(jumpHeight(game), 0, "starts on the ground");
       game.air = game.airTotal / 2;
       assert.equal(jumpHeight(game), game.airPeak, "the model trajectory reaches the take-off peak");
@@ -497,6 +519,8 @@ test("take-off speed raises big jumps and hops through boost speed, without movi
   assert.equal(jumpPeak(SPEED.boost * 100), jumpPeak(SPEED.boost));
   assert(jumpPeak(0) > 0, "zero-speed jump stays finite and nonzero");
   assert.equal(jumpPeak(0, "bounce"), jumpPeak(SPEED.boost, "bounce"), "unrequested bump bounce stays small");
+  assert(JUMP.bigAir > 1.22 && JUMP.hopAir > 0.53, "both deliberate jumps stay airborne longer");
+  assert(jumpPeak(SPEED.start) > 2 && jumpPeak(SPEED.start, "hop") > 0.9, "both leave the ground with a stronger arc");
 });
 
 test("rival playback preserves the same speed-based jump height", () => {
@@ -658,3 +682,186 @@ test("boost during the hit window cancels the stumble; an empty gauge or a late 
   assert(game.fallT > 0);
 });
 
+// ---- 2026-11-11: カーブの手応え（外へ流される・切り込むと踏ん張れてゲージが貯まる） ----
+
+/** まっすぐな 1000m の中に、曲がり c の区間（200〜800m）を持つコース。岩も起伏も無い。 */
+function curveOnly(c) {
+  const base = buildCourse({ id: "left-bowl" });
+  return { ...base, features: [], curves: [{ z: 0, c: 0 }, { z: 120, c: 0 }, { z: 200, c }, { z: 800, c }, { z: 880, c: 0 }, { z: 2400, c: 0 }] };
+}
+
+test("a curve pushes the board outward; steering into it holds the line, and the straight has no push", () => {
+  const drift = (c, input) => {
+    const game = createGame(curveOnly(c));
+    while (game.z < 320) step(game, {}, DT);
+    game.x = 0; game.vx = 0; game.speed = SPEED.max;
+    for (let i = 0; i < 60; i++) step(game, input, DT);
+    return game;
+  };
+  const right = drift(1, {}), left = drift(-1, {});
+  assert(right.x < -0.15 && right.x > -0.4, `a right curve carries an idle rider left, gently (${right.x})`);
+  assert(Math.abs(right.x + left.x) < 1e-9, "left and right curves mirror");
+  assert.equal(right.carving, false);
+  // 何もしないと、やがて端の深い砂に出て遅くなる
+  const idle = drift(1, {}); for (let i = 0; i < 300; i++) step(idle, {}, DT);
+  assert(idle.x < -EDGE && idle.stats.edgeTime > 0, "an idle rider ends up in the deep sand outside the curve");
+  // 曲がる向きへ切っている間は流されない（直線と同じだけ動ける）
+  const straight = createGame(curveOnly(0));
+  while (straight.z < 320) step(straight, {}, DT);
+  straight.x = 0; straight.vx = 0; straight.speed = SPEED.max;
+  for (let i = 0; i < 30; i++) step(straight, { right: true }, DT);
+  const into = createGame(curveOnly(1));
+  while (into.z < 320) step(into, {}, DT);
+  into.x = 0; into.vx = 0; into.speed = SPEED.max;
+  for (let i = 0; i < 30; i++) step(into, { right: true }, DT);
+  assert(Math.abs(into.x - straight.x) < 1e-9, "steering into the curve moves exactly like a straight");
+  // 外へ切ると、流れが乗ってさらに速く外へ出る
+  const away = createGame(curveOnly(1));
+  while (away.z < 320) step(away, {}, DT);
+  away.x = 0; away.vx = 0; away.speed = SPEED.max;
+  for (let i = 0; i < 30; i++) step(away, { left: true }, DT);
+  assert(away.x < -straight.x - 0.02, "steering away adds the drift");
+  // 直線では流されない
+  const flat = createGame(curveOnly(0));
+  for (let i = 0; i < 600; i++) step(flat, {}, DT);
+  assert.equal(flat.x, 0);
+  assert(STEER.curveDrift >= 0.8 && STEER.curveDrift < STEER.accel / 2, "the push is felt but always weaker than the steering");
+});
+
+test("carving: steering into a curve on the ground charges the boost gauge and scores a little; nowhere else", () => {
+  const start = c => { const game = createGame(curveOnly(c)); while (game.z < 320) step(game, {}, DT); game.x = 0; game.vx = 0; return game; };
+  const carve = start(1);
+  for (let i = 0; i < 30; i++) step(carve, { steer: 0.5 }, DT);
+  assert.equal(carve.carving, true);
+  assert(Math.abs(carve.gauge - CARVE.gaugePerSec * 0.5 * 0.5) < 1e-6, `half tilt for half a second charges a quarter of the rate (${carve.gauge})`);
+  const full = start(1);
+  for (let i = 0; i < 30; i++) step(full, { right: true }, DT);
+  assert(Math.abs(full.gauge - CARVE.gaugePerSec * 0.5) < 1e-6, "full tilt charges at the full rate");
+  // 0.8秒ぶん切り込むごとに少し得点（コンボは増やさない）
+  const scored = start(1);
+  while (scored.stats.carves < 1) { scored.x = 0; step(scored, { right: true }, DT); }
+  const event = scored.events.find(e => e.kind === "carve");
+  assert.equal(event.points, CARVE.points); assert.equal(event.dir, 1);
+  assert.equal(scored.combo, 0, "carving does not build the combo");
+  assert.equal(summary(scored).carves, 1);
+  assert(Math.abs(scored.stats.carveTime - CARVE.tickSec) < 0.02);
+  // 外へ切る・直線・空中・端の深い砂・転倒中は貯まらない
+  const away = start(1);
+  for (let i = 0; i < 30; i++) step(away, { left: true }, DT);
+  assert.equal(away.gauge, 0); assert.equal(away.carving, false);
+  const flat = start(0);
+  for (let i = 0; i < 30; i++) step(flat, { right: true }, DT);
+  assert.equal(flat.gauge, 0);
+  const edge = start(1); edge.x = EDGE + 0.1;
+  step(edge, { right: true }, DT);
+  assert.equal(edge.gauge, 0, "no carving in the deep sand");
+  const air = start(1); press(air); assert(air.air > 0);
+  step(air, { right: true }, DT);
+  assert.equal(air.gauge, 0, "no carving in the air");
+  const down = start(1); down.fallT = 0.5;
+  step(down, { right: true }, DT);
+  assert.equal(down.gauge, 0, "no carving while down");
+  // 満タンになった瞬間は、ほかの貯め方と同じく知らせる
+  const fill = start(1); fill.gauge = 1 - 1e-4;
+  step(fill, { right: true }, DT);
+  assert.equal(fill.gauge, 1); assert(fill.events.some(e => e.kind === "gaugeFull"));
+  // 保存する記録の形は変えない（結果画面だけに出す）
+  assert.equal("carves" in readResult({ ...summary(play(generateCourse(DEFAULT_SEED), "perfect")) }), false);
+});
+
+test("the autopilot looks ahead: it holds its line through curves, never dithers in front of a rock, and spends the gauge without waste", () => {
+  for (const pack of COURSE_PACKS) {
+    const course = buildCourse({ id: pack.id });
+    for (const skill of ["expert", "perfect", "good", "none"]) {
+      const game = play(course, skill);
+      assert.equal(game.falls, 0, `${skill} never falls on ${pack.id}`);
+      assert(game.stats.edgeTime < 0.5, `${skill} stays out of the deep sand on ${pack.id} (${game.stats.edgeTime})`);
+      if (skill !== "none") assert(game.gauge < 0.3, `${skill} spends the gauge before the goal on ${pack.id} (${game.gauge})`);
+    }
+  }
+  for (let seed = 31; seed <= 60; seed++) {
+    const course = generateCourse(seed);
+    for (const skill of ["expert", "perfect"]) assert.equal(play(course, skill).falls, 0, `seed ${seed} (${skill})`);
+    for (const who of ["noor", "naru"]) assert.equal(rivalRun(course, { who }).falls, 0, `${who} never falls on seed ${seed}`);
+  }
+  // 同じ状態からは同じ判断（決定的）
+  const course = generateCourse(DEFAULT_SEED), a = createGame(course), b = createGame(course);
+  assert.deepEqual(botControl(a, "perfect", {}), botControl(b, "perfect", {}));
+});
+
+test("rivals: Noor starts a touch quicker than the rider, Naru boosts and spins in the recorded run", () => {
+  assert(RIVALS.noor.startSpeed > SPEED.start && RIVALS.noor.startSpeed < SPEED.start + 1.5);
+  assert.equal(RIVALS.naru.startSpeed, SPEED.start);
+  const course = generateCourse(DEFAULT_SEED), noor = rivalRun(course), naru = rivalRun(course, { who: "naru" });
+  assert(rivalAt(noor, 1).z > rivalAt(naru, 1).z, "Noor is ahead of Naru off the line");
+  assert(naru.samples.some(s => s.boostT > 0), "the playback knows when Naru is boosting (aura)");
+  assert(naru.samples.some(s => Math.abs(s.rot) > 0.25), "the playback knows Naru's spin");
+  assert(noor.samples.every(s => Math.abs(s.rot) < 1e-9), "Noor does not spin");
+  const boosting = naru.samples.find(s => s.boostT > 1);
+  assert(rivalAt(naru, boosting.t + 0.01).boostT > 0);
+});
+
+test("Naru's rider art (Issue #3222) is rebuilt to the protagonist's scale with board-centre anchors, and is committed", async () => {
+  const { readFileSync } = await import("node:fs");
+  const { execFileSync } = await import("node:child_process");
+  const root = new URL("../../", import.meta.url);
+  const tracked = path => execFileSync("git", ["ls-files", "--", path], { cwd: root }).toString().trim() === path;
+  const { DESERT_ART, riderPose } = await import("../js/minigames/desert-ride-art.js");
+  const record = JSON.parse(readFileSync(new URL("asset_sources/desert-ride-naru-3222/adoption.json", root), "utf8"));
+  const names = { ride: "naruRider", lean_left: "naruRiderLeft", lean_right: "naruRiderRight", jump: "naruRiderJump", brace: "naruRiderBrace", fall: "naruRiderFall" };
+  for (const [pose, name] of Object.entries(names)) {
+    const entry = record[`rider_naru_${pose}`], art = DESERT_ART[name];
+    assert.equal(`remake/img/${art.file}`, entry.webp, `${name} file`);
+    assert.deepEqual([...art.size], entry.size, `${name} size`);
+    assert.deepEqual({ ...art.anchor }, entry.anchor, `${name} anchor`);
+    assert(entry.scale > 0.45 && entry.scale < 0.7, `${name} is downscaled from the raw art (${entry.scale})`);
+    assert(art.size[1] > 600 && art.size[1] < 860, `${name} is about the protagonist's sprite height`);
+    assert(tracked(entry.webp) && tracked(entry.raw), `${name} files are committed`);
+  }
+  // 走りの姿勢（riderPose）のどれにも、なるの絵がある（drawRival は `<相手>Rider…` を探す）
+  const game = createGame(generateCourse(DEFAULT_SEED));
+  for (const state of [{}, { vx: 0.5 }, { vx: -0.5 }, { air: 0.5, airTotal: 1, airKind: "big", landingPress: null }, { air: 0.2, airTotal: 1, airKind: "big", landingPress: 0.2 }, { fallT: 1 }]) {
+    const pose = riderPose({ ...game, ...state });
+    assert(DESERT_ART[pose.replace(/^rider/, "naruRider")], `Naru has art for ${pose}`);
+  }
+});
+
+test("a close race: the rival eases off when far ahead and catches up when far behind, but the result stays the rider's skill", () => {
+  // ずれの上限: 追いついた分は6割地点まで持てて、ゴール手前で 0。手加減は終盤に keep 秒まで戻す
+  assert.equal(rubberCaps(0).lead, RUBBER.lead); assert.equal(rubberCaps(RUBBER.holdUntil).lead, RUBBER.lead);
+  assert.equal(rubberCaps(RUBBER.settleAt).lead, 0); assert.equal(rubberCaps(1).lead, 0);
+  assert.equal(rubberCaps(0.5).lag, RUBBER.lag); assert(Math.abs(rubberCaps(1).lag - RUBBER.keep) < 1e-9);
+  for (const pack of COURSE_PACKS) {
+    const course = buildCourse({ id: pack.id });
+    for (const who of ["noor", "naru"]) {
+      const rival = rivalRun(course, { who });
+      for (const skill of ["expert", "perfect", "good", "none"]) {
+        const game = createGame(course, { rival }), memo = {};
+        let behindRaw = 0, behind = 0, maxDev = -Infinity, minDev = Infinity;
+        while (!game.finished && game.t < 200) {
+          botStep(game, skill, memo, DT);
+          const dev = game.rivalClock - game.t, p = game.z / course.length;
+          maxDev = Math.max(maxDev, dev - rubberCaps(p).lead); minDev = Math.min(minDev, dev + rubberCaps(Math.max(p, rivalAt(rival, game.rivalClock).z / course.length)).lag);
+          if (p < 0.85) { behindRaw = Math.min(behindRaw, game.z - rivalAt(rival, game.t).z); behind = Math.min(behind, game.z - rivalAt(rival, game.rivalClock).z); }
+        }
+        const label = `${pack.id} ${skill} vs ${who}`;
+        // 勝ち負けは記録どおりの相手と同じ（腕前で決まる）
+        assert.equal(game.race.won, game.finishTime < rival.finishTime, `${label}: the result is unchanged by the rubber band`);
+        assert(maxDev < 0.15 && minDev > -0.15, `${label}: the rival stays within its allowance (${maxDev.toFixed(2)}, ${minDev.toFixed(2)})`);
+        assert(behind >= behindRaw - 3, `${label}: the rival never runs further away than its recording (${behind.toFixed(1)} vs ${behindRaw.toFixed(1)} m)`);
+        // 手加減は最大 RUBBER.lag 秒分なので、大きく離された時は少なくとも 25m は待ってくれる
+        if (behindRaw < -80) assert(behind - behindRaw >= 25, `${label}: a rider left far behind sees the rival wait (${behind.toFixed(0)} vs ${behindRaw.toFixed(0)} m)`);
+      }
+    }
+  }
+});
+
+test("the meter shows realistic sandboard speeds: a slight stretch over the real riders, never past the records", () => {
+  // 実物: 上手な人で約64 km/h、サンドボードのギネス記録 82 km/h（砂のスキーの記録は 127 km/h）。少しだけ盛る。
+  assert.equal(Math.round(toKmh(SPEED.start)), 30, "the start reads about 30 km/h");
+  const top = toKmh(SPEED.max), boosted = toKmh(SPEED.boost);
+  assert(top >= 60 && top <= 70, `the normal top speed is a skilled rider's (${top.toFixed(1)} km/h)`);
+  assert(boosted > 82 && boosted < 95, `boost goes a little past the sandboard record, far below sand skiing's (${boosted.toFixed(1)} km/h)`);
+  assert(top < DISPLAY.redFrom && boosted > DISPLAY.redFrom && boosted < DISPLAY.dialMax, "only the boost reaches the red band, and the needle never pins");
+  assert.equal(toMeters(100), 100 * DISPLAY.scale, "distances on screen use the same scale as the speed");
+});

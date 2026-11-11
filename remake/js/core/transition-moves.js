@@ -1,13 +1,14 @@
-// マップで行き先を選んだあとの「移動」の型（CI103）。比較のため複数パターンを持ち、
-// 本編の既定は帰宅だけ door、ほかは pin（CI127）。?move=pin など、または __remake.dev.moveStyle("pin") で比較できる。
-import { el, sleep } from "./util.js";
+// マップで行き先を選んだあとの「移動」の型（CI103）。比較のため複数パターンを持ち、?move=pin など、または __remake.dev.moveStyle("pin") で比較できる。
+// 本編の既定は、帰宅が lights、ほかは zoom（2026-11-11・TMG46。地図の絵そのものを動かし、紫の面で覆わない）。
+// pin・steps・walk・door・noren・walkdoor は、作り直し前の紫の図形の型（比較用に残す）。
+import { el, sleep, nextFrame } from "./util.js";
 import { SE } from "./audio.js";
-import { W, H, COLOR, EASE, svg, stageSvg, move, curtain, openLeaf, stepIntoBg, walker, everyFrame } from "./transition-kit.js";
+import { W, H, COLOR, EASE, svg, stageSvg, move, curtain, openLeaf, stepIntoBg, walker, everyFrame, holdKeys } from "./transition-kit.js";
 import { motionVariant } from "./mg-kit.js";
 import { withLoadingNotice } from "./module-loading.js";
 import { loadingNotice } from "./ui.js";
 
-export const MOVE_STYLES = ["pin", "steps", "walk", "door", "noren", "walkdoor"];
+export const MOVE_STYLES = ["zoom", "lights", "pin", "steps", "walk", "door", "noren", "walkdoor"];
 const STORE_KEY = "suien_move_style";
 
 export function moveStyle({ spotId } = {}) {
@@ -17,7 +18,7 @@ export function moveStyle({ spotId } = {}) {
     const saved = localStorage.getItem(STORE_KEY);
     if (MOVE_STYLES.includes(saved)) return saved;
   } catch { /* 保存できない環境では既定 */ }
-  return spotId === "rest" ? "door" : "pin";
+  return spotId === "rest" ? "lights" : "zoom";
 }
 export function setMoveStyle(style) {
   try { localStorage.setItem(STORE_KEY, style); } catch { /* 保存できない環境 */ }
@@ -32,8 +33,128 @@ function doorMove(host, opts) {
 }
 
 export function moveCurtain(host, style, opts = {}) {
-  const make = { pin: pinMove, steps: stepsMove, walk: walkMove, door: doorMove, noren: norenMove, walkdoor: walkDoorMove }[style] || pinMove;
+  const make = { zoom: zoomMove, lights: lightsMove, pin: pinMove, steps: stepsMove, walk: walkMove, door: doorMove, noren: norenMove, walkdoor: walkDoorMove }[style] || zoomMove;
   return make(host, opts);
+}
+
+// ---------------------------------------------------------------- zoom・lights: 地図の絵そのものを動かす（TMG46・見本 remake/previews/motion-direction/ の2）
+// 幕で覆わず、いまの背景（地図）を押した場所へ寄せる。次の背景は ui.setBg が地図の下に置き、dissolve() で地図を渡す。
+// release() で地図を消し、次の背景を見せる。動いている間は Enter・Space を受け付けない。
+
+/** いま見えている背景（#bg のいちばん上の絵） */
+const topBg = () => [...(document.getElementById("bg")?.children || [])].filter((n) => n.classList.contains("bg-img")).at(-1) || null;
+
+/** ステージの座標（1280×720）の点を、背景の絵の箱の中の割合へ（ワイドステージで絵が広がり上下が切られていても、押した所へ寄る） */
+function originOn(node, x, y) {
+  const s = document.getElementById("stage")?.getBoundingClientRect();
+  const b = node.getBoundingClientRect();
+  if (!s?.width || !s.height || !b.width || !b.height) return `${(x / W) * 100}% ${(y / H) * 100}%`;
+  const px = s.left + (x / W) * s.width, py = s.top + (y / H) * s.height;
+  return `${((px - b.left) / b.width) * 100}% ${((py - b.top) / b.height) * 100}%`;
+}
+
+/** 背景にもともと掛かっている色（天気・夜の色づけ）に、明るさなどを足した filter の値 */
+function withBaseFilter(node) {
+  const f = getComputedStyle(node).filter;
+  const base = f && f !== "none" ? f : "";
+  return (extra = "") => `${base} ${extra}`.trim() || "none";
+}
+
+/** 地図を押した場所へ寄せる。いまの見え方（天気の色・ワイドの切り位置）を固定してから動かす */
+function zoomInto(map, { x = W / 2, y = H / 2 }, to, ms) {
+  if (!map) return Promise.resolve();
+  const filter = withBaseFilter(map);
+  map.style.backgroundPosition = getComputedStyle(map).backgroundPosition; // 地図の画面を閉じても、切り位置が跳ねない
+  map.style.transformOrigin = originOn(map, x, y);
+  return move(map, [{ transform: "scale(1)", filter: filter() }, { transform: "scale(2.7)", filter: filter(to) }], ms, { easing: EASE.in });
+}
+
+/** 選び終えた地図の画面（ピン・看板）は、寄り始めにすぐ消す（絵と一緒に寄らない） */
+function fadeRetiredScreen(ms) {
+  document.querySelectorAll("#screen > .done").forEach((n) => move(n, [{ opacity: 1 }, { opacity: 0 }], ms, { easing: "ease-out" }));
+}
+
+/**
+ * 地図を動かす移動の幕。cover(node, map) で地図を寄せ終えたら covered、
+ * reveal(node, { old, next }) で地図（old）を消して次の背景（next）を見せる。
+ * bareLogo: 店ロゴは白い札に載せず、光の中にそのまま出す（core/store-arrival.js）。
+ */
+function sceneMove(host, style, cover, reveal) {
+  const node = el(`div.scene-curtain.move.on-bg`, { "aria-hidden": "true", dataset: { transition: `move-${style}` } });
+  const unhold = holdKeys();
+  host.append(node);
+  const map = topBg();
+  const covered = (async () => { await nextFrame(); await cover(node, map); })();
+  let olds = [], next = null, released = false;
+  return {
+    covered,
+    bareLogo: true,
+    /** ui.setBg から: 次の背景はいちばん下（#bg の先頭）に置かれ、その上に前の背景（地図）が残っている */
+    dissolve(nodes) {
+      olds = nodes;
+      next = document.getElementById("bg")?.firstElementChild || null;
+      if (olds.includes(next)) next = null;
+    },
+    async release() {
+      if (released) return;
+      released = true;
+      try {
+        await covered;
+        // 次の背景・画面・台詞を地図の下で描いてから、地図を消し始める。
+        await nextFrame(); await nextFrame();
+        const old = olds.at(-1);
+        olds.slice(0, -1).forEach((o) => o.remove());
+        if (old) old.dataset.dissolving = "1";
+        await reveal(node, { old, next });
+      } finally {
+        olds.forEach((o) => o.remove());
+        if (next) {
+          next.getAnimations().forEach((a) => a.cancel());
+          next.querySelector(":scope > .tr-lamp")?.remove();
+        }
+        node.remove();
+        unhold();
+      }
+    },
+  };
+}
+
+/** 店・場所へ: 押した場所へ寄り、光がふくらんで店のロゴ（store-arrival）→ 光が引いて店内へ。通常 約1.9秒 */
+function zoomMove(host, opts = {}) {
+  let glow = null;
+  return sceneMove(host, "zoom", async (node, map) => {
+    glow = el("i.tr-zoom-glow");
+    node.append(glow);
+    fadeRetiredScreen(200);
+    zoomInto(map, opts, "blur(3px) brightness(1.22)", 560);
+    await move(glow, [{ opacity: 0 }, { opacity: 1 }], 300, { delay: 260, easing: "ease-out" });
+  }, async (node, { old, next }) => {
+    if (next) {
+      const filter = withBaseFilter(next);
+      move(next, [{ transform: "scale(1.12)", filter: filter("brightness(1.28)") }, { transform: "scale(1)", filter: filter("brightness(1)") }], 700, { easing: EASE.out });
+    }
+    if (old) move(old, [{ opacity: 1 }, { opacity: 0 }], 200, { easing: "ease-out" });
+    await move(glow, [{ opacity: 1 }, { opacity: 0 }], 460, { delay: 40, easing: "ease-out" });
+    if (next) await sleep(120); // 店内が落ち着くまで
+  });
+}
+
+/** 帰宅: 押した場所へ寄りながら暗くなり、暗い部屋に灯りが点く（一度ついて、わずかに沈んでから落ち着く）。扉は描かない。通常 約1.5秒 */
+function lightsMove(host, opts = {}) {
+  return sceneMove(host, "lights", async (node, map) => {
+    fadeRetiredScreen(200);
+    await zoomInto(map, opts, "blur(3px) brightness(0.1)", 480);
+  }, async (node, { old, next }) => {
+    if (next) {
+      const filter = withBaseFilter(next), lamp = el("i.tr-lamp");
+      next.append(lamp);
+      move(next, [{ transform: "scale(1.07)" }, { transform: "scale(1)" }], 900, { easing: EASE.out });
+      move(lamp, [{ opacity: 0 }, { opacity: 0, offset: 0.3 }, { opacity: 1, offset: 0.42 }, { opacity: 0.45, offset: 0.56 }, { opacity: 0.9, offset: 0.7 }, { opacity: 0 }], 900, { easing: "linear" });
+      move(next, [[0, 0.14], [0.3, 0.14], [0.42, 0.95], [0.56, 0.6], [0.72, 1.08], [1, 1]].map(([offset, b]) => ({ offset, filter: filter(`brightness(${b})`) })), 800, { easing: "linear" });
+    }
+    if (old) await move(old, [{ opacity: 1 }, { opacity: 0 }], 120, { easing: "ease-out" });
+    if (next) await sleep(780);
+  });
 }
 
 // ---------------------------------------------------------------- pin: 押したピンから円が広がり、中央の窓が開く

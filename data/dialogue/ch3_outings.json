@@ -3,49 +3,156 @@
     {
       "dialogue_id": "ch3_outing_mukai_help_lost",
       "lines": [
-        { "speaker": "", "text": "mukaiの仕込み。ホースを洗い、炭を並べる。" },
-        { "speaker": "mashiro", "face": "normal", "text": "はじめくん、手伝ってくれるの？　今日は客席が忙しくなりそう" },
-        { "speaker": "hajime", "face": "normal", "text": "味はまだ分からないけど、手は動くから" },
-        { "speaker": "", "text": "注文を聞き、ましろへ伝える。炭を替える頃合いは、煙の量と客の顔で見た。" },
-        { "speaker": "customer", "text": "よく見てるね。ちょうど替えてほしかった" },
-        { "speaker": "mashiro", "face": "smile", "text": "今の、僕より早かったねぇ" },
-        { "speaker": "hajime", "face": "normal", "text": "（舌じゃなくても、分かることはある）" },
-        { "speaker": "", "text": "閉店まで手伝い、ムカイさんから日当を受け取った。" }
+        {
+          "speaker": "",
+          "text": "mukaiの仕込み。ホースを洗い、炭を並べる。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "はじめくん、手伝ってくれるの？　今日は客席が忙しくなりそう"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "味はまだ分からないけど、手は動くから"
+        },
+        {
+          "speaker": "",
+          "text": "注文を聞き、ましろへ伝える。炭を替える頃合いは、煙の量と客の顔で見た。"
+        },
+        {
+          "speaker": "customer",
+          "text": "よく見てるね。ちょうど替えてほしかった"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "今の、僕より早かったねぇ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（舌じゃなくても、分かることはある）"
+        },
+        {
+          "speaker": "",
+          "text": "閉店まで手伝い、ムカイさんから日当を受け取った。"
+        }
       ]
     },
     {
       "dialogue_id": "ch3_outing_mukai_help",
       "lines": [
-        { "speaker": "", "text": "mukaiの仕込みを終えると、ましろが客席の一台を指した。" },
-        { "speaker": "mashiro", "face": "normal", "text": "はじめくん、あの席の調整、お願いしていい？" },
-        { "speaker": "hajime", "face": "serious", "text": "うん。……甘さが引いて、少し辛い。炭を一つだけ外へずらす" },
-        { "speaker": "customer", "text": "あ、戻ってきた。最初より好きかも" },
-        { "speaker": "mashiro", "face": "smile", "text": "味、ちゃんと戻ってきたねぇ" },
-        { "speaker": "hajime", "face": "smile", "text": "うん。今日は自分の舌で決められた" },
-        { "speaker": "", "text": "閉店まで手伝い、ムカイさんから日当を受け取った。" }
+        {
+          "speaker": "",
+          "text": "mukaiの仕込みを終えると、ましろが客席の一台を指した。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "はじめくん、あの席の調整、お願いしていい？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "うん。……甘さが引いて、少し辛い。炭を一つだけ外へずらす"
+        },
+        {
+          "speaker": "",
+          "text": "少し待ってから、客へ吸い口を戻した。ましろは煙の量を見ていた。"
+        },
+        {
+          "speaker": "customer",
+          "text": "あ、戻ってきた。最初より好きかも"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "味、ちゃんと戻ってきたねぇ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "うん。今日は自分の舌で決められた"
+        },
+        {
+          "speaker": "",
+          "text": "閉店まで手伝い、ムカイさんから日当を受け取った。"
+        }
       ]
     },
     {
       "dialogue_id": "ch3_outing_enmaku_notes",
       "lines": [
-        { "speaker": "", "text": "路地の「煙幕」。開店前の店で、綾取がノートをめくっていた。" },
-        { "speaker": "saku", "face": "smile", "text": "あれ、来てくれたんだ。今日は吸う？　休む？" },
-        { "speaker": "hajime", "face": "normal", "text": "今日は話だけです。綾取さんのノート、何が書いてあるのか気になって" },
-        { "speaker": "saku", "face": "normal", "text": "葉と炭の位置。それから、客が何の味だと言ったか" },
-        { "speaker": "saku", "face": "normal", "text": "同じ一台でも、答えはばらばら。外れた答えの方が、面白いことも多いよ" },
-        { "speaker": "hajime", "face": "normal", "text": "外れた答えも、消さないんですね" },
-        { "speaker": "saku", "face": "serious", "text": "消したら、その人の一口がなかったことになるじゃん" },
-        { "speaker": "hajime", "face": "serious", "text": "（今は自分の舌を信じきれない。でも、客の言葉なら書き留められる）" },
-        { "speaker": "saku", "face": "smug", "text": "君もノート、つけてみたら？　僕の組織、書記も募集中" },
-        { "speaker": "hajime", "face": "smile", "text": "入りません。でも、つけてみます" },
-        { "speaker": "saku", "face": "smile", "text": "振られた。……作業台は、いつでも空けとくよ" }
+        {
+          "speaker": "",
+          "text": "路地の「煙幕」。開店前の店で、綾取がノートをめくっていた。"
+        },
+        {
+          "speaker": "saku",
+          "face": "smile",
+          "text": "あれ、来てくれたんだ。今日は吸う？　休む？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "今日は話だけです。綾取さんのノート、何が書いてあるのか気になって"
+        },
+        {
+          "speaker": "saku",
+          "face": "normal",
+          "text": "葉と炭の位置。それから、客が何の味だと言ったか"
+        },
+        {
+          "speaker": "saku",
+          "face": "normal",
+          "text": "同じ一台でも、答えはばらばら。外れた答えの方が、面白いことも多いよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "外れた答えも、消さないんですね"
+        },
+        {
+          "speaker": "saku",
+          "face": "serious",
+          "text": "消したら、その人の一口がなかったことになるじゃん"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "（今は自分の舌を信じきれない。でも、客の言葉なら書き留められる）"
+        },
+        {
+          "speaker": "saku",
+          "face": "smug",
+          "text": "君もノート、つけてみたら？　僕の組織、書記も募集中"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "入りません。でも、つけてみます"
+        },
+        {
+          "speaker": "saku",
+          "face": "smile",
+          "text": "振られた。……作業台は、いつでも空けとくよ"
+        }
       ]
     },
     {
       "dialogue_id": "ch3_outing_enmaku_answer",
       "lines": [
-        { "speaker": "", "text": "昼の煙幕。綾取は客席を拭きながら、こちらに手を振った。" },
-        { "speaker": "saku", "face": "smile", "text": "来たね。で、どうしたいか決まった？" },
+        {
+          "speaker": "",
+          "text": "昼の煙幕。綾取は客席を拭きながら、こちらに手を振った。"
+        },
+        {
+          "speaker": "saku",
+          "face": "smile",
+          "text": "来たね。で、どうしたいか決まった？"
+        },
         {
           "type": "condition",
           "condition_type": "flag",
@@ -53,21 +160,61 @@
           "next_true": "tried",
           "next_false": "untried"
         },
-        { "speaker": "saku", "face": "normal", "text": "大会の日は、最初の一口だけで決めないでね" },
-        { "speaker": "hajime", "face": "normal", "text": "……それ、忠告ですか？" },
-        { "speaker": "saku", "face": "smile", "text": "さあ。半分はね" }
+        {
+          "speaker": "saku",
+          "face": "normal",
+          "text": "大会の日は、最初の一口だけで決めないでね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……それ、忠告ですか？"
+        },
+        {
+          "speaker": "saku",
+          "face": "smile",
+          "text": "さあ。半分はね"
+        }
       ],
       "branches": {
         "tried": [
-          { "speaker": "hajime", "face": "normal", "text": "mukaiで一台作りました。炭を急がない方が、後ろに甘さが残りました" },
-          { "speaker": "saku", "face": "surprise", "text": "自分の台で確かめたんだ。……それ、僕に教えてよかったの？" },
-          { "speaker": "hajime", "face": "smile", "text": "綾取さんに聞いたことだから。答えも返したくて" },
-          { "speaker": "saku", "face": "smile", "text": "律儀だなぁ。じゃあ僕からも一つ" }
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "mukaiで一台作りました。炭を急がない方が、後ろに甘さが残りました"
+          },
+          {
+            "speaker": "saku",
+            "face": "surprise",
+            "text": "自分の台で確かめたんだ。……それ、僕に教えてよかったの？"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "綾取さんに聞いたことだから。答えも返したくて"
+          },
+          {
+            "speaker": "saku",
+            "face": "smile",
+            "text": "律儀だなぁ。じゃあ僕からも一つ"
+          }
         ],
         "untried": [
-          { "speaker": "hajime", "face": "normal", "text": "まだです。大会までに、自分の台で一度確かめます" },
-          { "speaker": "saku", "face": "normal", "text": "うん。僕に答えを預けるより、ずっといい" },
-          { "speaker": "saku", "face": "smile", "text": "その代わり、僕からも一つ" }
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "まだです。大会までに、自分の台で一度確かめます"
+          },
+          {
+            "speaker": "saku",
+            "face": "normal",
+            "text": "うん。僕に答えを預けるより、ずっといい"
+          },
+          {
+            "speaker": "saku",
+            "face": "smile",
+            "text": "その代わり、僕からも一つ"
+          }
         ]
       }
     },
@@ -80,105 +227,376 @@
         }
       },
       "lines": [
-        { "speaker": "", "text": "Smoke & Glory。昼の店に、ピザの箱が積んである。" },
-        { "speaker": "steve", "face": "smile", "text": "ヘイ、ハジメ。今日は客？　それとも偵察？" },
-        { "speaker": "hajime", "face": "normal", "text": "客です。……それと、タイマーの置き場所をもう一度見たくて" },
-        { "speaker": "steve", "face": "normal", "text": "オーケー。炭の横じゃない。客のホースが見える所に置く" },
-        { "speaker": "steve", "face": "serious", "text": "時間だけ見てると、客の二口目を見落とす。だから両方が目に入る場所" },
-        { "speaker": "hajime", "face": "normal", "text": "待つための道具なのに、見るのは客なんですね" },
-        { "speaker": "steve", "face": "smile", "text": "イエス。タイマーは俺を止めるだけ。決めるのは客の顔" },
-        { "speaker": "steve", "face": "smile", "text": "せっかくだ、一口どうぞ。俺の推し、マウンテンミスト" },
-        { "speaker": "", "text": "レモンとライムが重なった葉だという。炭は遠く、ボウルの縁がまだ温まりきっていない。" },
-        { "speaker": "steve", "face": "serious", "text": "柑橘は熱に弱い。急ぐと、二口目でライムが飛ぶ" },
-        { "speaker": "", "text": "一口目はレモンが軽く抜けた。二口目、炭がなじんだ頃に、ライムの苦みが追ってくる。" },
-        { "speaker": "hajime", "face": "surprise", "text": "……順番に来る。レモンの後から、ライムが" },
-        { "speaker": "steve", "face": "smile", "text": "イエス。低い熱で待つと、二つが一列に並ぶ。それが俺の一台" },
-        { "speaker": "hajime", "face": "normal", "text": "（待った分だけ、柑橘が残るんだ）" },
-        { "speaker": "", "text": "スティーブはキッチンタイマーを一つ、俺の手に載せた。" },
-        { "speaker": "steve", "face": "smile", "text": "予備。大会で鳴らしたら、俺のせいにしていい" },
-        { "speaker": "hajime", "face": "smile", "text": "……ありがとうございます。借ります" }
+        {
+          "speaker": "",
+          "text": "Smoke & Glory。昼の店に、ピザの箱が積んである。"
+        },
+        {
+          "speaker": "steve",
+          "face": "smile",
+          "text": "ヘイ、ハジメ。今日は客？　それとも偵察？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "客です。……それと、タイマーの置き場所をもう一度見たくて"
+        },
+        {
+          "speaker": "steve",
+          "face": "normal",
+          "text": "オーケー。炭の横じゃない。客のホースが見える所に置く"
+        },
+        {
+          "speaker": "steve",
+          "face": "serious",
+          "text": "時間だけ見てると、客の二口目を見落とす。だから両方が目に入る場所"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "待つための道具なのに、見るのは客なんですね"
+        },
+        {
+          "speaker": "steve",
+          "face": "smile",
+          "text": "イエス。タイマーは俺を止めるだけ。決めるのは客の顔"
+        },
+        {
+          "speaker": "steve",
+          "face": "smile",
+          "text": "せっかくだ、一口どうぞ。俺の推し、マウンテンミスト"
+        },
+        {
+          "speaker": "",
+          "text": "レモンとライムが重なった葉だという。炭は遠く、ボウルの縁がまだ温まりきっていない。"
+        },
+        {
+          "speaker": "steve",
+          "face": "serious",
+          "text": "柑橘は熱に弱い。急ぐと、二口目でライムが飛ぶ"
+        },
+        {
+          "speaker": "",
+          "text": "一口目はレモンが軽く抜けた。二口目、炭がなじんだ頃に、ライムの苦みが追ってくる。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……順番に来る。レモンの後から、ライムが"
+        },
+        {
+          "speaker": "steve",
+          "face": "smile",
+          "text": "イエス。低い熱で待つと、二つが一列に並ぶ。それが俺の一台"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（待った分だけ、柑橘が残るんだ）"
+        },
+        {
+          "speaker": "",
+          "text": "スティーブはキッチンタイマーを一つ、俺の手に載せた。"
+        },
+        {
+          "speaker": "steve",
+          "face": "smile",
+          "text": "予備。大会で鳴らしたら、俺のせいにしていい"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "……ありがとうございます。借ります"
+        }
       ]
     },
     {
       "dialogue_id": "ch3_outing_mukai_steve",
       "lines": [
-        { "speaker": "", "text": "mukaiの客席。ドアベルが鳴って、柄シャツの大きな体が入ってきた。" },
-        { "speaker": "steve", "face": "smile", "text": "ヘイ、ハジメ。配達の礼に、今日は客で来た" },
-        { "speaker": "mashiro", "face": "smile", "text": "いらっしゃいませぇ。スティーブさん、レモン系でいい？" },
-        { "speaker": "steve", "face": "normal", "text": "イエス。タイマーは、俺のを置かせて" },
-        { "speaker": "", "text": "スティーブはテーブルにタイマーを置いた。ホースを持ったまま、目は数字から離れない。" },
-        { "speaker": "hajime", "face": "normal", "text": "人の店でも、時間を測るんですね" },
-        { "speaker": "steve", "face": "normal", "text": "癖なんだ。決めておかないと、俺は手が先に動く" },
-        { "speaker": "", "text": "炭がなじむと、レモンの香りが客席までふわりと広がった。" },
-        { "speaker": "mashiro", "face": "normal", "text": "……今、一番香ってたねぇ" },
-        { "speaker": "", "text": "スティーブはまだ数字を見ている。タイマーが鳴ってから、ようやく一口吸った。" },
-        { "speaker": "steve", "face": "serious", "text": "……ノー、ノー。山はもう過ぎてた。また数字の後ろで見送った" },
-        { "speaker": "hajime", "face": "normal", "text": "今の、鳴るまで待たなくてもよかったんじゃ……" },
-        { "speaker": "steve", "face": "normal", "text": "前に急いで、柑橘を飛ばしたことがある。それから、鳴るまで手が出せない" },
-        { "speaker": "steve", "face": "normal", "text": "俺の店の常連は優しい。山を逃しても「今日もうまい」と言ってくれる" },
-        { "speaker": "steve", "face": "serious", "text": "それに甘えたら、タイマーが俺の正解になる。だから知らない客ばかりの全国に来た" },
-        { "speaker": "hajime", "face": "normal", "text": "知らない人の一口で、確かめるためにですか" },
-        { "speaker": "steve", "face": "smile", "text": "イエス。負けるのは怖いけどな。怖い日は、ピザで忘れる" },
-        { "speaker": "mashiro", "face": "smile", "text": "じゃあ次の一口は、僕が合図するねぇ" },
-        { "speaker": "", "text": "スティーブはレシピカードの余白に、ましろの一言を書き足した。" },
-        { "speaker": "hajime", "face": "normal", "text": "（数字だけでも、目の前の煙だけでもだめなんだ）" },
-        { "speaker": "", "text": "閉店まで店番を続け、ムカイさんから半日分の日当を受け取った。" }
+        {
+          "speaker": "",
+          "text": "mukaiの客席。ドアベルが鳴って、柄シャツの大きな体が入ってきた。"
+        },
+        {
+          "speaker": "steve",
+          "face": "smile",
+          "text": "ヘイ、ハジメ。配達の礼に、今日は客で来た"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "いらっしゃいませぇ。スティーブさん、レモン系でいい？"
+        },
+        {
+          "speaker": "steve",
+          "face": "normal",
+          "text": "イエス。タイマーは、俺のを置かせて"
+        },
+        {
+          "speaker": "",
+          "text": "スティーブはテーブルにタイマーを置いた。ホースを持ったまま、目は数字から離れない。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "人の店でも、時間を測るんですね"
+        },
+        {
+          "speaker": "steve",
+          "face": "normal",
+          "text": "癖なんだ。決めておかないと、俺は手が先に動く"
+        },
+        {
+          "speaker": "",
+          "text": "炭がなじむと、レモンの香りが客席までふわりと広がった。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "……今、一番香ってたねぇ"
+        },
+        {
+          "speaker": "",
+          "text": "スティーブはまだ数字を見ている。タイマーが鳴ってから、ようやく一口吸った。"
+        },
+        {
+          "speaker": "steve",
+          "face": "serious",
+          "text": "……ノー、ノー。山はもう過ぎてた。また数字の後ろで見送った"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "今の、鳴るまで待たなくてもよかったんじゃ……"
+        },
+        {
+          "speaker": "steve",
+          "face": "normal",
+          "text": "前に急いで、柑橘を飛ばしたことがある。それから、鳴るまで手が出せない"
+        },
+        {
+          "speaker": "steve",
+          "face": "normal",
+          "text": "俺の店の常連は優しい。山を逃しても「今日もうまい」と言ってくれる"
+        },
+        {
+          "speaker": "steve",
+          "face": "serious",
+          "text": "それに甘えたら、タイマーが俺の正解になる。だから知らない客ばかりの全国に来た"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "知らない人の一口で、確かめるためにですか"
+        },
+        {
+          "speaker": "steve",
+          "face": "smile",
+          "text": "イエス。負けるのは怖いけどな。怖い日は、ピザで忘れる"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "じゃあ次の一口は、僕が合図するねぇ"
+        },
+        {
+          "speaker": "",
+          "text": "スティーブはレシピカードの余白に、ましろの一言を書き足した。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "はじめは手帳を開き、ましろの合図の位置を書き写した。"
+        },
+        {
+          "speaker": "",
+          "text": "閉店まで店番を続け、ムカイさんから半日分の日当を受け取った。"
+        }
       ]
     },
     {
       "dialogue_id": "ch3_outing_park_walk_day",
       "lines": [
-        { "speaker": "", "text": "高架の下を抜けて、公園まで歩いた。池の水面に、昼の光が揺れている。" },
-        { "speaker": "hajime", "face": "normal", "text": "（東京に来てから、ずっと何かを確かめてばかりだった）" },
-        { "speaker": "", "text": "動物園の方から、子どもの声が聞こえる。何も決めずに、池をひと回りした。" },
-        { "speaker": "hajime", "face": "smile", "text": "（落ち葉を踏む音が、思ったより心地いい）" }
+        {
+          "speaker": "",
+          "text": "高架の下を抜けて、公園まで歩いた。池の水面に、昼の光が揺れている。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（東京に来てから、ずっと何かを確かめてばかりだった）"
+        },
+        {
+          "speaker": "",
+          "text": "橋のたもとで、走る人とすれ違った。足音はすぐ木立に消えた。"
+        },
+        {
+          "speaker": "",
+          "text": "動物園の方から、子どもの声が聞こえる。何も決めずに、池をひと回りした。"
+        },
+        {
+          "speaker": "",
+          "text": "池のへりで、亀が甲羅を干している。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "（あいつら、動く気がまったくないな）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "（落ち葉を踏む音が、思ったより心地いい）"
+        }
       ]
     },
     {
       "dialogue_id": "ch3_outing_park_walk_night",
       "lines": [
-        { "speaker": "", "text": "夜の公園。池のまわりの街灯だけが、細く道を照らしている。" },
-        { "speaker": "hajime", "face": "normal", "text": "（明日のことは、明日の自分に任せよう）" },
-        { "speaker": "", "text": "ベンチで温かい飲み物を一本空けて、ゆっくり歩いて帰った。" }
+        {
+          "speaker": "",
+          "text": "夜の公園。池のまわりの街灯だけが、細く道を照らしている。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（明日のことは、明日の自分に任せよう）"
+        },
+        {
+          "speaker": "",
+          "text": "池の向こうで、自転車のライトが輪を描くように遠ざかった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（この時間の公園って、こんなに静かなんだな）"
+        },
+        {
+          "speaker": "",
+          "text": "ベンチに座って、温かい缶を両手で包んだ。指先がじわっと温まる。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "（それだけで、今日は十分だ）"
+        },
+        {
+          "speaker": "",
+          "text": "ベンチで温かい飲み物を一本空けて、ゆっくり歩いて帰った。"
+        }
       ]
     },
     {
       "dialogue_id": "ch3_outing_tetsuko",
       "comment": "mukaiの看板猫てつこ（#1993）。飼い主のムカイさんには普通で、懐くのはましろちゃんだけ。撫でる・餌の選択はどちらも同じ回復で、能力・好感度は増やさない。",
       "lines": [
-        { "speaker": "", "text": "mukaiの裏口。ベンチの上で、てつこが壁にもたれて座っていた。" },
-        { "speaker": "hajime", "face": "normal", "text": "よう、てつこ。今日も店番か" },
-        { "speaker": "", "text": "てつこはこちらを一度だけ見て、また目を閉じた。ましろの時とは、ずいぶん違う。" },
+        {
+          "speaker": "",
+          "text": "mukaiの裏口。ベンチの上で、てつこが壁にもたれて座っていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "よう、てつこ。今日も店番か"
+        },
+        {
+          "speaker": "",
+          "text": "てつこはこちらを一度だけ見て、また目を閉じた。ましろの時とは、ずいぶん違う。"
+        },
         {
           "type": "choice",
           "id": "ch3_tetsuko_care",
           "choices": [
-            { "text": "そっと撫でる", "next": "pet" },
-            { "text": "味付け前のささみを分ける", "next": "feed" }
+            {
+              "text": "そっと撫でる",
+              "next": "pet"
+            },
+            {
+              "text": "味付け前のささみを分ける",
+              "next": "feed"
+            }
           ]
         },
-        { "speaker": "", "text": "てつこを構っているうちに、肩の力が少し抜けていた。" }
+        {
+          "speaker": "",
+          "text": "てつこを構っているうちに、肩の力が少し抜けていた。"
+        }
       ],
       "branches": {
         "pet": [
-          { "speaker": "", "text": "指の背で、喉元をゆっくり撫でる。てつこは逃げなかったが、喜んでいるかは分からない。" },
-          { "speaker": "hajime", "face": "normal", "text": "（……嫌われてはいない、と思いたい）" },
-          { "speaker": "", "text": "裏口の戸が開いて、ましろが顔を出した。てつこがすぐに立ち上がる。" },
-          { "speaker": "mashiro", "face": "smile", "text": "あ、はじめくんも来てたんだぁ。てつこちゃん、おいで" },
-          { "speaker": "", "text": "てつこはましろの足にすり寄って、低く喉を鳴らした。" },
-          { "speaker": "hajime", "face": "normal", "text": "さっきまで、石みたいだったのに" },
-          { "speaker": "mashiro", "face": "normal", "text": "ムカイさんにもそうだよぉ。飼い主なのに、ちょっとかわいそう" }
+          {
+            "speaker": "",
+            "text": "指の背で、喉元をゆっくり撫でる。てつこは逃げなかったが、喜んでいるかは分からない。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（……嫌われてはいない、と思いたい）"
+          },
+          {
+            "speaker": "",
+            "text": "裏口の戸が開いて、ましろが顔を出した。てつこがすぐに立ち上がる。"
+          },
+          {
+            "speaker": "mashiro",
+            "face": "smile",
+            "text": "あ、はじめくんも来てたんだぁ。てつこちゃん、おいで"
+          },
+          {
+            "speaker": "",
+            "text": "てつこはましろの足にすり寄って、低く喉を鳴らした。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "さっきまで、石みたいだったのに"
+          },
+          {
+            "speaker": "mashiro",
+            "face": "normal",
+            "text": "ムカイさんにもそうだよぉ。飼い主なのに、ちょっとかわいそう"
+          }
         ],
         "feed": [
-          { "speaker": "", "text": "まかない用に取っておいた、味付け前のささみを小皿に少しだけ置く。" },
-          { "speaker": "", "text": "てつこはゆっくり近づいて、匂いを確かめてから食べ始めた。" },
-          { "speaker": "hajime", "face": "normal", "text": "ゆっくりでいいぞ。誰も取らないから" },
-          { "speaker": "", "text": "食べ終わると、てつこは一度だけこちらを見て、元のベンチへ戻った。" },
-          { "speaker": "", "text": "裏口の戸が開いて、ましろが顔を出した。" },
-          { "speaker": "mashiro", "face": "smile", "text": "てつこちゃん、ちゃんと食べた？　えらいねぇ" },
-          { "speaker": "", "text": "てつこはましろの足にすり寄って、低く喉を鳴らした。" },
-          { "speaker": "", "text": "店の中から、ムカイさんの低い声がした。" },
-          { "speaker": "mukai_master", "face": "normal", "text": "……買ってきたのは俺なんだけどな" }
+          {
+            "speaker": "",
+            "text": "まかない用に取っておいた、味付け前のささみを小皿に少しだけ置く。"
+          },
+          {
+            "speaker": "",
+            "text": "てつこはゆっくり近づいて、匂いを確かめてから食べ始めた。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "ゆっくりでいいぞ。誰も取らないから"
+          },
+          {
+            "speaker": "",
+            "text": "食べ終わると、てつこは一度だけこちらを見て、元のベンチへ戻った。"
+          },
+          {
+            "speaker": "",
+            "text": "裏口の戸が開いて、ましろが顔を出した。"
+          },
+          {
+            "speaker": "mashiro",
+            "face": "smile",
+            "text": "てつこちゃん、ちゃんと食べた？　えらいねぇ"
+          },
+          {
+            "speaker": "",
+            "text": "てつこはましろの足にすり寄って、低く喉を鳴らした。"
+          },
+          {
+            "speaker": "",
+            "text": "店の中から、ムカイさんの低い声がした。"
+          },
+          {
+            "speaker": "mukai_master",
+            "face": "normal",
+            "text": "……買ってきたのは俺なんだけどな"
+          }
         ]
       }
     },
@@ -186,45 +604,118 @@
       "dialogue_id": "ch3_outing_tetsuko_brush",
       "comment": "てつこのお世話の2回目（ROAM06）。ムカイさんのブラシを借りる。まだ素っ気ないが、続けろとしっぽで言う。",
       "lines": [
-        { "speaker": "", "text": "mukaiの裏口。ベンチの上で、てつこが丸くなっていた。" },
-        { "speaker": "", "text": "ムカイさんから、猫用のブラシを借りてきた。" },
-        { "speaker": "hajime", "face": "normal", "text": "てつこ、少しだけな。嫌だったら逃げていいから" },
-        { "speaker": "", "text": "背中にそっとブラシを当てる。てつこは片目だけ開けて、また閉じた。" },
-        { "speaker": "", "text": "茶色の毛が、ブラシにふわりと絡む。" },
-        { "speaker": "tetsuko", "face": "serious", "text": "……ん、にゃ" },
-        { "speaker": "hajime", "face": "smile", "text": "（今の、返事……だよな）" },
-        { "speaker": "", "text": "ブラシを止めると、しっぽの先が一度だけ動いた。続けろ、ということらしい。" },
-        { "speaker": "", "text": "言われたとおり、しばらくブラシをかけ続けた。" }
+        {
+          "speaker": "",
+          "text": "mukaiの裏口。ベンチの上で、てつこが丸くなっていた。"
+        },
+        {
+          "speaker": "",
+          "text": "ムカイさんから、猫用のブラシを借りてきた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "てつこ、少しだけな。嫌だったら逃げていいから"
+        },
+        {
+          "speaker": "",
+          "text": "背中にそっとブラシを当てる。てつこは片目だけ開けて、また閉じた。"
+        },
+        {
+          "speaker": "",
+          "text": "茶色の毛が、ブラシにふわりと絡む。"
+        },
+        {
+          "speaker": "tetsuko",
+          "face": "serious",
+          "text": "……ん、にゃ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "（今の、返事……だよな）"
+        },
+        {
+          "speaker": "",
+          "text": "ブラシを止めると、しっぽの先が一度だけ動いた。続けろ、ということらしい。"
+        },
+        {
+          "speaker": "",
+          "text": "言われたとおり、しばらくブラシをかけ続けた。"
+        }
       ]
     },
     {
       "dialogue_id": "ch3_outing_tetsuko_wait",
       "comment": "てつこのお世話の3回目（ROAM06）。裏口の戸を開けると、もうこちらを見ている。",
       "lines": [
-        { "speaker": "", "text": "裏口の戸を開けると、ベンチの上のてつこが、もうこちらを見ていた。" },
-        { "speaker": "hajime", "face": "surprise", "text": "……待ってた、わけじゃないよな" },
+        {
+          "speaker": "",
+          "text": "裏口の戸を開けると、ベンチの上のてつこが、もうこちらを見ていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……待ってた、わけじゃないよな"
+        },
         {
           "type": "choice",
           "id": "ch3_tetsuko_wait",
           "choices": [
-            { "text": "猫じゃらしを振る", "next": "play" },
-            { "text": "隣に座ってみる", "next": "sit" }
+            {
+              "text": "猫じゃらしを振る",
+              "next": "play"
+            },
+            {
+              "text": "隣に座ってみる",
+              "next": "sit"
+            }
           ]
         },
-        { "speaker": "", "text": "しばらく、てつこと裏口の風に当たっていた。" }
+        {
+          "speaker": "",
+          "text": "しばらく、てつこと裏口の風に当たっていた。"
+        }
       ],
       "branches": {
         "play": [
-          { "speaker": "", "text": "店の奥で見つけた猫じゃらしを、ベンチの端で小さく振る。" },
-          { "speaker": "", "text": "てつこは目で追うだけで、動かない。……と思ったら、前足が一度だけ伸びた。" },
-          { "speaker": "tetsuko", "face": "surprise", "text": "にゃっ" },
-          { "speaker": "hajime", "face": "smile", "text": "今、取ろうとしただろ" },
-          { "speaker": "", "text": "てつこは何もなかった顔で、前足をなめはじめた。" }
+          {
+            "speaker": "",
+            "text": "店の奥で見つけた猫じゃらしを、ベンチの端で小さく振る。"
+          },
+          {
+            "speaker": "",
+            "text": "てつこは目で追うだけで、動かない。……と思ったら、前足が一度だけ伸びた。"
+          },
+          {
+            "speaker": "tetsuko",
+            "face": "surprise",
+            "text": "にゃっ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "今、取ろうとしただろ"
+          },
+          {
+            "speaker": "",
+            "text": "てつこは何もなかった顔で、前足をなめはじめた。"
+          }
         ],
         "sit": [
-          { "speaker": "", "text": "ベンチの端に、少し間を空けて腰を下ろす。" },
-          { "speaker": "", "text": "てつこは逃げなかった。しばらくすると、空いていた間が少しだけ縮んでいた。" },
-          { "speaker": "hajime", "face": "normal", "text": "（近づいたの、俺じゃないぞ）" }
+          {
+            "speaker": "",
+            "text": "ベンチの端に、少し間を空けて腰を下ろす。"
+          },
+          {
+            "speaker": "",
+            "text": "てつこは逃げなかった。しばらくすると、空いていた間が少しだけ縮んでいた。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（近づいたの、俺じゃないぞ）"
+          }
         ]
       }
     },
@@ -232,156 +723,1105 @@
       "dialogue_id": "ch3_outing_tetsuko_trust",
       "comment": "てつこのお世話の4回目（ROAM06）。自分から寄ってきて喉を鳴らす。懐くのはましろちゃんだけ、だった。",
       "lines": [
-        { "speaker": "", "text": "裏口の戸を開けると、てつこがベンチから降りてきた。" },
-        { "speaker": "", "text": "そのまま足元まで来て、すねに頭をこすりつける。" },
-        { "speaker": "tetsuko", "face": "smile", "text": "……にゃあ" },
-        { "speaker": "hajime", "face": "surprise", "text": "てつこ……？" },
-        { "speaker": "", "text": "低い喉の音が、足元から聞こえる。ましろにしか聞かせない音だと思っていた。" },
-        { "speaker": "", "text": "戸の向こうで、ましろが目を丸くしていた。" },
-        { "speaker": "mashiro", "face": "surprise", "text": "わぁ……てつこちゃん、はじめくんにもすりすりしてる" },
-        { "speaker": "mashiro", "face": "smile", "text": "よかったねぇ。何回も来てたもんねぇ" },
-        { "speaker": "", "text": "店の奥から、ムカイさんの低い声がした。" },
-        { "speaker": "mukai_master", "face": "normal", "text": "……俺より先かよ" },
-        { "speaker": "hajime", "face": "smile", "text": "（ムカイさん、ちょっと悔しそうだ）" }
+        {
+          "speaker": "",
+          "text": "裏口の戸を開けると、てつこがベンチから降りてきた。"
+        },
+        {
+          "speaker": "",
+          "text": "そのまま足元まで来て、すねに頭をこすりつける。"
+        },
+        {
+          "speaker": "tetsuko",
+          "face": "smile",
+          "text": "……にゃあ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "てつこ……？"
+        },
+        {
+          "speaker": "",
+          "text": "低い喉の音が、足元から聞こえる。ましろにしか聞かせない音だと思っていた。"
+        },
+        {
+          "speaker": "",
+          "text": "戸の向こうで、ましろが目を丸くしていた。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "surprise",
+          "text": "わぁ……てつこちゃん、はじめくんにもすりすりしてる"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "よかったねぇ。何回も来てたもんねぇ"
+        },
+        {
+          "speaker": "",
+          "text": "店の奥から、ムカイさんの低い声がした。"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "……俺より先かよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "（ムカイさん、ちょっと悔しそうだ）"
+        }
       ]
     },
     {
       "dialogue_id": "ch3_outing_tetsuko_lap",
       "comment": "てつこが懐いた後のお世話（ROAM06）。膝に乗ってくる。",
       "lines": [
-        { "speaker": "", "text": "ベンチに座ると、てつこが膝に前足をかけた。" },
-        { "speaker": "", "text": "そのまま、当たり前のように乗ってくる。" },
-        { "speaker": "hajime", "face": "normal", "text": "……重いな、お前" },
-        { "speaker": "tetsuko", "face": "smile", "text": "……にゃ" },
-        { "speaker": "", "text": "膝の上で丸くなると、てつこはすぐに目を閉じた。" },
-        { "speaker": "hajime", "face": "smile", "text": "（これじゃ、立てない）" },
-        { "speaker": "", "text": "しばらく、このままでいることにした。" }
+        {
+          "speaker": "",
+          "text": "ベンチに座ると、てつこが膝に前足をかけた。"
+        },
+        {
+          "speaker": "",
+          "text": "そのまま、当たり前のように乗ってくる。"
+        },
+        {
+          "speaker": "",
+          "text": "前足の次に後ろ足。座り心地を探すように、二、三度その場で踏み直してから、ずしりと腰を落ち着けた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……重いな、お前"
+        },
+        {
+          "speaker": "tetsuko",
+          "face": "smile",
+          "text": "……にゃ"
+        },
+        {
+          "speaker": "",
+          "text": "膝の上で丸くなると、てつこはすぐに目を閉じた。"
+        },
+        {
+          "speaker": "",
+          "text": "喉の奥から、ごろごろと低い音が腿に伝わってくる。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "（これじゃ、立てない）"
+        },
+        {
+          "speaker": "",
+          "text": "しばらく、このままでいることにした。"
+        }
       ]
     },
     {
       "dialogue_id": "ch3_outing_tetsuko_belly",
       "comment": "てつこが懐いた後のお世話（ROAM06）。お腹を見せて寝ている。",
       "lines": [
-        { "speaker": "", "text": "ベンチの上で、てつこがお腹を見せて寝ていた。" },
-        { "speaker": "hajime", "face": "normal", "text": "無防備すぎるだろ" },
-        { "speaker": "", "text": "そっと撫でると、前足で手を抱え込まれた。" },
-        { "speaker": "tetsuko", "face": "normal", "text": "……ん" },
-        { "speaker": "hajime", "face": "smile", "text": "（離してくれない）" },
-        { "speaker": "", "text": "手が自由になるまで、少し時間がかかった。" }
+        {
+          "speaker": "",
+          "text": "ベンチの上で、てつこがお腹を見せて寝ていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "無防備すぎるだろ"
+        },
+        {
+          "speaker": "",
+          "text": "ふかふかの腹が、寝息に合わせてゆっくり上下している。起こしてしまわないか、少しだけ迷った。"
+        },
+        {
+          "speaker": "",
+          "text": "そっと撫でると、前足で手を抱え込まれた。"
+        },
+        {
+          "speaker": "tetsuko",
+          "face": "normal",
+          "text": "……ん"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "（離してくれない）"
+        },
+        {
+          "speaker": "",
+          "text": "指を一本ずつ抜こうとするたび、抱え直される。爪は出ていないのが、かえって断りにくい。"
+        },
+        {
+          "speaker": "",
+          "text": "手が自由になるまで、少し時間がかかった。"
+        }
       ]
     },
     {
       "dialogue_id": "ch3_outing_tetsuko_door",
       "comment": "てつこが懐いた後のお世話（ROAM06）。帰りに戸の前まで見送る。",
       "lines": [
-        { "speaker": "", "text": "てつこの耳の後ろを、指先でかいてやる。" },
-        { "speaker": "", "text": "帰ろうと立ち上がると、てつこが戸の前までついてきた。" },
-        { "speaker": "hajime", "face": "normal", "text": "見送ってくれるのか？" },
-        { "speaker": "tetsuko", "face": "smile", "text": "にゃ" },
-        { "speaker": "", "text": "一度だけ鳴いて、てつこはベンチへ戻っていった。" },
-        { "speaker": "hajime", "face": "smile", "text": "（また来いってことかな）" }
+        {
+          "speaker": "",
+          "text": "てつこの耳の後ろを、指先でかいてやる。"
+        },
+        {
+          "speaker": "",
+          "text": "目を細めたてつこが、頭を指に押しつけてくる。もう少し上、と言いたげに首の角度を変えた。"
+        },
+        {
+          "speaker": "",
+          "text": "帰ろうと立ち上がると、てつこが戸の前までついてきた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "見送ってくれるのか？"
+        },
+        {
+          "speaker": "tetsuko",
+          "face": "smile",
+          "text": "にゃ"
+        },
+        {
+          "speaker": "",
+          "text": "尻尾が、ゆっくり左右に揺れている。"
+        },
+        {
+          "speaker": "",
+          "text": "一度だけ鳴いて、てつこはベンチへ戻っていった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "（また来いってことかな）"
+        }
       ]
     },
     {
       "dialogue_id": "ch3_outing_mukai_steve_b",
       "comment": "スティーブがまた客として来る（AFB02）。前回ましろちゃんが言った「合図」を試すが、まだタイマーから目を離せない（成長は大会で）。好感度は任意の外出の確定時に付ける（ch3-outing-progress.js の affinity）。",
       "lines": [
-        { "speaker": "", "text": "mukaiの客席。ドアベルが鳴って、スティーブがピザの箱を抱えて入ってきた。" },
-        { "speaker": "steve", "face": "smile", "text": "ヘイ、ハジメ。差し入れだ。ムカイさんの分もある" },
-        { "speaker": "mashiro", "face": "smile", "text": "わぁ、ピザだぁ。スティーブさん、今日もレモン系？" },
-        { "speaker": "steve", "face": "normal", "text": "イエス。今日は、合図を頼みたい" },
-        { "speaker": "", "text": "炭がなじむ頃、ましろが小さく手を挙げた。スティーブの手が、ホースの手前で止まる。" },
-        { "speaker": "", "text": "目はタイマーへ戻った。鳴ってから、ようやく一口。" },
-        { "speaker": "steve", "face": "sad", "text": "……ノー、ノー。分かってたのに、待った" },
-        { "speaker": "mashiro", "face": "smile", "text": "惜しかったねぇ。でも、手は動きかけてたよ" },
-        { "speaker": "steve", "face": "normal", "text": "動きかけた。それだけでも、前の俺よりはましだ" },
-        { "speaker": "hajime", "face": "normal", "text": "（数字から目を離すのは、それだけ怖いんだ）" },
-        { "speaker": "", "text": "閉店まで店番を続け、ムカイさんから半日分の日当を受け取った。" }
+        {
+          "speaker": "",
+          "text": "mukaiの客席。ドアベルが鳴って、スティーブがピザの箱を抱えて入ってきた。"
+        },
+        {
+          "speaker": "steve",
+          "face": "smile",
+          "text": "ヘイ、ハジメ。差し入れだ。ムカイさんの分もある"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "わぁ、ピザだぁ。スティーブさん、今日もレモン系？"
+        },
+        {
+          "speaker": "steve",
+          "face": "normal",
+          "text": "イエス。今日は、合図を頼みたい"
+        },
+        {
+          "speaker": "",
+          "text": "炭がなじむ頃、ましろが小さく手を挙げた。スティーブの手が、ホースの手前で止まる。"
+        },
+        {
+          "speaker": "",
+          "text": "目はタイマーへ戻った。鳴ってから、ようやく一口。"
+        },
+        {
+          "speaker": "steve",
+          "face": "sad",
+          "text": "……ノー、ノー。分かってたのに、待った"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "惜しかったねぇ。でも、手は動きかけてたよ"
+        },
+        {
+          "speaker": "steve",
+          "face": "normal",
+          "text": "動きかけた。それだけでも、前の俺よりはましだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（数字から目を離すのは、それだけ怖いんだ）"
+        },
+        {
+          "speaker": "",
+          "text": "閉店まで店番を続け、ムカイさんから半日分の日当を受け取った。"
+        }
       ]
     },
     {
       "dialogue_id": "ch3_outing_mukai_steve_c",
       "comment": "スティーブの来店の3回目以降（_b と交互）。はじめが読む客の顔に、スティーブが気づく。味の言葉は使わない（味覚が戻る前でも読める）。",
       "lines": [
-        { "speaker": "", "text": "mukaiの客席。スティーブが、タイマーを手のひらで転がしていた。" },
-        { "speaker": "steve", "face": "normal", "text": "ハジメ。あの窓際の客、今どんな顔してる？" },
-        { "speaker": "hajime", "face": "normal", "text": "……二口目で、少し眉が上がりました。軽かったんだと思います" },
-        { "speaker": "steve", "face": "surprise", "text": "顔だけで、そこまで分かるのか" },
-        { "speaker": "hajime", "face": "normal", "text": "煙の量と、顔くらいしか見てないので" },
-        { "speaker": "steve", "face": "serious", "text": "俺はタイマーに夢中で、そこを見てなかった" },
-        { "speaker": "", "text": "スティーブはレシピカードの余白に、「窓際　二口目　眉」と書き足した。" },
-        { "speaker": "steve", "face": "smile", "text": "次は、俺も顔を見てみる。……タイマーも見るけどな" },
-        { "speaker": "hajime", "face": "smile", "text": "（数字と顔、両方。言うのは簡単だけど、きっと難しい）" },
-        { "speaker": "", "text": "閉店まで店番を続け、ムカイさんから半日分の日当を受け取った。" }
+        {
+          "speaker": "",
+          "text": "mukaiの客席。スティーブが、タイマーを手のひらで転がしていた。"
+        },
+        {
+          "speaker": "steve",
+          "face": "normal",
+          "text": "ハジメ。あの窓際の客、今どんな顔してる？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……二口目で、少し眉が上がりました。軽かったんだと思います"
+        },
+        {
+          "speaker": "steve",
+          "face": "surprise",
+          "text": "顔だけで、そこまで分かるのか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "煙の量と、顔くらいしか見てないので"
+        },
+        {
+          "speaker": "steve",
+          "face": "serious",
+          "text": "俺はタイマーに夢中で、そこを見てなかった"
+        },
+        {
+          "speaker": "",
+          "text": "スティーブはレシピカードの余白に、「窓際　二口目　眉」と書き足した。"
+        },
+        {
+          "speaker": "steve",
+          "face": "smile",
+          "text": "次は、俺も顔を見てみる。……タイマーも見るけどな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "（「タイマーも見る」が付くんだ）"
+        },
+        {
+          "speaker": "",
+          "text": "閉店まで店番を続け、ムカイさんから半日分の日当を受け取った。"
+        }
       ]
     },
     {
       "dialogue_id": "ch3_outing_enmaku_visit",
-      "comment": "煙幕に通う（AFB02）。綾取のノートの話の後に、繰り返し寄れる。1回目はこれ、2回目からは _b と _c を交互。味の言葉ははじめに言わせない（味覚が戻る前でも読める）。好感度は任意の外出の確定時に付ける。",
+      "comment": "煙幕に通う（AFB02）。綾取のノートの話の後に、繰り返し寄れる。1回目はこれ、2回目からは _b〜_d を巡回。味の言葉ははじめに言わせない（味覚が戻る前でも読める）。好感度は任意の外出の確定時に付ける。",
       "lines": [
-        { "speaker": "", "text": "路地の「煙幕」。綾取はカウンターで、ノートに二本の線を引いていた。" },
-        { "speaker": "saku", "face": "smile", "text": "いらっしゃい。ちょうどいい所に来た。これ見て" },
-        { "speaker": "", "text": "ノートの左には綾取の予想、右には客の答えが並んでいる。" },
-        { "speaker": "hajime", "face": "normal", "text": "「雨の日の縁側」……これ、味の名前ですか？" },
-        { "speaker": "saku", "face": "smile", "text": "さっきの客の答え。僕の予想は「白桃」だった" },
-        { "speaker": "saku", "face": "smug", "text": "外れたね。でも、こういう答えが一番うれしい" },
-        { "speaker": "hajime", "face": "surprise", "text": "外れたのに、ですか" },
-        { "speaker": "saku", "face": "serious", "text": "当たったら、僕の頭の中と同じだっただけ。外れたら、その人の一口がある" },
-        { "speaker": "hajime", "face": "normal", "text": "（正解を当ててもらうための店じゃないんだ）" },
-        { "speaker": "saku", "face": "smile", "text": "今日は吸わなくていいよ。座って、答えを一緒に読んでって" }
+        {
+          "speaker": "",
+          "text": "路地の「煙幕」。綾取はカウンターで、ノートに二本の線を引いていた。"
+        },
+        {
+          "speaker": "saku",
+          "face": "smile",
+          "text": "いらっしゃい。ちょうどいい所に来た。これ見て"
+        },
+        {
+          "speaker": "",
+          "text": "ノートの左には綾取の予想、右には客の答えが並んでいる。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "「雨の日の縁側」……これ、味の名前ですか？"
+        },
+        {
+          "speaker": "saku",
+          "face": "smile",
+          "text": "さっきの客の答え。僕の予想は「白桃」だった"
+        },
+        {
+          "speaker": "saku",
+          "face": "smug",
+          "text": "外れたね。でも、こういう答えが一番うれしい"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "外れたのに、ですか"
+        },
+        {
+          "speaker": "saku",
+          "face": "serious",
+          "text": "当たったら、僕の頭の中と同じだっただけ。外れたら、その人の一口がある"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（正解を当ててもらうための店じゃないんだ）"
+        },
+        {
+          "speaker": "saku",
+          "face": "smile",
+          "text": "今日は吸わなくていいよ。座って、答えを一緒に読んでって"
+        }
       ]
     },
     {
       "dialogue_id": "ch3_outing_enmaku_visit_b",
-      "comment": "煙幕に通う（_c と交互）。大げさな噂は自分で流し、片付けは自分でする（characters.json）。",
+      "comment": "煙幕に通う（_b〜_d を巡回）。大げさな噂は自分で流し、片付けは自分でする（characters.json）。",
       "lines": [
-        { "speaker": "", "text": "客の引いた煙幕。綾取は一人で、ホースを一本ずつ洗っていた。" },
-        { "speaker": "hajime", "face": "normal", "text": "手伝います" },
-        { "speaker": "saku", "face": "surprise", "text": "え、いいの？　……じゃあ、そっちのボウルをお願い" },
-        { "speaker": "saku", "face": "smug", "text": "そうだ。今日も噂、流しといたよ" },
-        { "speaker": "hajime", "face": "normal", "text": "今度は、どんな噂ですか" },
-        { "speaker": "saku", "face": "smile", "text": "「煙幕の店主は、客の思い出の味を出す」ってね" },
-        { "speaker": "hajime", "face": "normal", "text": "……大げさですね" },
-        { "speaker": "saku", "face": "normal", "text": "大げさな方が、人は路地に入ってくる。入った後は、一台でちゃんと返す" },
-        { "speaker": "hajime", "face": "smile", "text": "（噂は大きく、片付けは自分の手で。それがこの人のやり方なんだ）" }
+        {
+          "speaker": "",
+          "text": "客の引いた煙幕。綾取は一人で、ホースを一本ずつ洗っていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "手伝います"
+        },
+        {
+          "speaker": "saku",
+          "face": "surprise",
+          "text": "え、いいの？　……じゃあ、そっちのボウルをお願い"
+        },
+        {
+          "speaker": "saku",
+          "face": "smug",
+          "text": "そうだ。今日も噂、流しといたよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "今度は、どんな噂ですか"
+        },
+        {
+          "speaker": "saku",
+          "face": "smile",
+          "text": "「煙幕の店主は、客の思い出の味を出す」ってね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……大げさですね"
+        },
+        {
+          "speaker": "saku",
+          "face": "normal",
+          "text": "大げさな方が、人は路地に入ってくる。入った後は、一台でちゃんと返す"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "はじめは黙って、ボウルを洗い続けた。噂の大きな店の、小さな流しだった。"
+        }
       ]
     },
     {
       "dialogue_id": "ch3_outing_enmaku_visit_c",
-      "comment": "煙幕に通う（_b と交互）。はじめの手帳。「書記」は綾取のノートの話（ch3_outing_enmaku_notes）と同じ冗談。",
+      "comment": "煙幕に通う（_b〜_d を巡回）。はじめの手帳。結びは「書記」の勧誘を繰り返さず（ノートの話 ch3_outing_enmaku_notes にあるため。添削表の提案9）、綾取の予想の列に「？」が無いことを見せる。",
       "lines": [
-        { "speaker": "", "text": "煙幕のカウンター。綾取が、こちらの手帳をのぞき込んだ。" },
-        { "speaker": "saku", "face": "smile", "text": "それ、手帳？　何を書いてるの" },
-        { "speaker": "hajime", "face": "normal", "text": "客の顔と、煙の量です" },
-        { "speaker": "saku", "face": "normal", "text": "見せて。……「二口目で黙る」って書いてある" },
-        { "speaker": "hajime", "face": "normal", "text": "うまい時か、困った時か、まだ分からなくて" },
-        { "speaker": "saku", "face": "serious", "text": "分からないって書けるの、いいね。僕はすぐ、分かったことにしちゃう" },
-        { "speaker": "saku", "face": "smug", "text": "僕の組織、書記の席が空いてるよ" },
-        { "speaker": "hajime", "face": "smile", "text": "入りません" },
-        { "speaker": "saku", "face": "smile", "text": "……即答だ" }
+        {
+          "speaker": "",
+          "text": "煙幕のカウンター。綾取が、こちらの手帳をのぞき込んだ。"
+        },
+        {
+          "speaker": "saku",
+          "face": "smile",
+          "text": "それ、手帳？　何を書いてるの"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "客の顔と、煙の量です"
+        },
+        {
+          "speaker": "saku",
+          "face": "normal",
+          "text": "見せて。……「二口目で黙る」って書いてある"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "うまい時か、困った時か、まだ分からなくて"
+        },
+        {
+          "speaker": "saku",
+          "face": "serious",
+          "text": "分からないって書けるの、いいね。僕はすぐ、分かったことにしちゃう"
+        },
+        {
+          "speaker": "saku",
+          "face": "smug",
+          "text": "交換ね。僕のノートも、見ていいよ"
+        },
+        {
+          "speaker": "",
+          "text": "綾取の予想の列には、「？」が一つもなかった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……一つも、分からないって書いてないですね"
+        },
+        {
+          "speaker": "saku",
+          "face": "smile",
+          "text": "でしょ。だから、君の手帳がちょっとうらやましい"
+        }
       ]
     },
     {
       "dialogue_id": "ch3_outing_steve_visit",
-      "comment": "Smoke & Glory に通う（AFB02）。味の会話（steve_timer）の後に、何度でも寄れる。_b と交互。好感度は任意の外出の確定時に付ける。",
+      "comment": "Smoke & Glory に通う（AFB02）。味の会話（steve_timer）の後に、何度でも寄れる。初回の後は _b・_c を巡回。好感度は任意の外出の確定時に付ける。",
       "lines": [
-        { "speaker": "", "text": "Smoke & Glory。カウンターの端で、スティーブがキッチンタイマーを三つ並べていた。" },
-        { "speaker": "steve", "face": "smile", "text": "ヘイ、ハジメ。今日は三つで試してる" },
-        { "speaker": "hajime", "face": "surprise", "text": "三つも、ですか" },
-        { "speaker": "steve", "face": "normal", "text": "一つは炭、一つは客の二口目、一つは……俺がしゃべりすぎない用" },
-        { "speaker": "hajime", "face": "smile", "text": "最後のが、一番むずかしそうですね" },
-        { "speaker": "steve", "face": "smile", "text": "イエス。いつも、最初に鳴るのがそれだ" }
+        {
+          "speaker": "",
+          "text": "Smoke & Glory。カウンターの端で、スティーブがキッチンタイマーを三つ並べていた。"
+        },
+        {
+          "speaker": "steve",
+          "face": "smile",
+          "text": "ヘイ、ハジメ。今日は三つで試してる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "三つも、ですか"
+        },
+        {
+          "speaker": "steve",
+          "face": "normal",
+          "text": "一つは炭、一つは客の二口目、一つは……俺がしゃべりすぎない用"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "炭と二口目は、押す前に客を見る感じですか"
+        },
+        {
+          "speaker": "steve",
+          "face": "smile",
+          "text": "ああ。顔が先で、タイマーはあとだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "最後のが、一番むずかしそうですね"
+        },
+        {
+          "speaker": "steve",
+          "face": "smile",
+          "text": "イエス。いつも、最初に鳴るのがそれだ"
+        }
       ]
     },
     {
       "dialogue_id": "ch3_outing_steve_visit_b",
-      "comment": "Smoke & Glory に通う（_a と交互）。",
+      "comment": "Smoke & Glory に通う（2回目以降は _b・_c を巡回）。味覚回復・昼夜を問わず成立する食事の小会話。",
       "lines": [
-        { "speaker": "", "text": "昼のSmoke & Glory。スティーブが、ピザを一切れこちらへ押した。" },
-        { "speaker": "steve", "face": "smile", "text": "食ってけ。腹が減ってると、客の顔より自分の腹が気になる" },
-        { "speaker": "hajime", "face": "normal", "text": "食べながらでも、見ていていいですか" },
-        { "speaker": "steve", "face": "normal", "text": "オーケー。見るなら、手より客の方な" },
-        { "speaker": "", "text": "ピザを食べ終える頃、スティーブは客の顔を見てから、炭を数ミリだけ縁へ寄せた。" }
+        {
+          "speaker": "",
+          "text": "Smoke & Glory。スティーブが、ピザを一切れこちらへ押した。"
+        },
+        {
+          "speaker": "steve",
+          "face": "smile",
+          "text": "食ってけ。腹が減ってると、客の顔より自分の腹が気になる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ありがとうございます。紙、もう一枚もらっていいですか"
+        },
+        {
+          "speaker": "steve",
+          "face": "normal",
+          "text": "オーケー。こっちの角を持つと、落とさないぜ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "教わった通りに紙を折る。スティーブは自分の分を、もう半分食べていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "早いですね"
+        },
+        {
+          "speaker": "steve",
+          "face": "smile",
+          "text": "さっきから、箱を開けるの我慢してたんだ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "チーズが指に付きそうになって、慌てて紙を持ち直す。"
+        },
+        {
+          "speaker": "steve",
+          "face": "normal",
+          "text": "それと、熱いから。口の中、気をつけろよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい、……少しずついきます"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "食べ終えて、二人で紙を小さく丸めた。仕事の話をしない時間が、少しだけ続いた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_outing_park_walk_day_b",
+      "comment": "#3097 東京の仕事・大会から離れた日常。味覚回復・恋愛の成立に依存しない。報酬は既存の外出精算だけ。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "池のほとりのベンチは、日なたの半分だけ空いていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（座るなら、こっちか）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "腰を下ろすと、すぐそばで水鳥が一羽、羽を広げた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……おっと"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "俺の足元は見向きもせず、鳥は一枚の葉をつついている。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（餌をねだられたわけじゃなかった）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "水に浮いた葉がくるりと回る。その先を、目だけで追いかけた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "背もたれに体を預けると、張っていた首が少し楽になった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "（何分いたか、見なくてもいいや）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_outing_park_walk_day_c",
+      "comment": "#3097 東京の仕事・大会から離れた日常。味覚回復・恋愛の成立に依存しない。報酬は既存の外出精算だけ。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "公園に入って、池を左に見ながら歩き始めた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（いつも、こっちに曲がってるな）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "立ち止まって、今日は反対へ歩いてみる。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "橋の向こうに、小さな階段があった。下から見ると、木の枝が空を丸く囲んでいる。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "こんなところ、あったのか"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "階段には上らず、手すりのそばで少し休んだ。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "通り過ぎる人を先に行かせる。急がなくていい場所だと、今さら思った。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（帰り道は、もう分かる）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_outing_park_walk_night_b",
+      "comment": "#3097 東京の仕事・大会から離れた日常。味覚回復・恋愛の成立に依存しない。報酬は既存の外出精算だけ。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "公園のベンチで、ポケットの携帯が腿に当たった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（誰かから来てるかな）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "画面を点けかけて、やめる。見たい用事を思い出したわけではなかった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "携帯をしまい直すと、遠くの電車の音が聞こえた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（あの音、座ってると長く聞こえるんだな）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "音が通り過ぎるまで、両手をポケットに入れて待った。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "池の向こうの街灯が、水面で一本だけ長く揺れていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "そろそろ、帰ろう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_outing_park_walk_night_c",
+      "comment": "#3097 東京の仕事・大会から離れた日常。味覚回復・恋愛の成立に依存しない。報酬は既存の外出精算だけ。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "夜の公園を歩いていると、靴の中で靴下がずれた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……一回、座ろう"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ベンチで踵を合わせ直す。それだけで、さっきより足が軽くなった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（忙しいと、こういうの後回しにするんだよな）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "片足ずつ、つま先をゆっくり動かした。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "走る人の足音が近づいて、また遠くなる。ついていかずに、もう少し座っていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "よし。今度こそ帰るか"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "立ち上がると、冷たい風が足首を通り抜けた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_outing_enmaku_visit_d",
+      "comment": "#3097 東京の仕事・大会から離れた日常。味覚回復・恋愛の成立に依存しない。報酬は既存の外出精算だけ。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "綾取がノートを閉じて、持ち帰りのうどんをカウンターに置いた。"
+        },
+        {
+          "speaker": "saku",
+          "face": "smug",
+          "text": "今から僕は、重要な会議に入る"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……ごはんですか"
+        },
+        {
+          "speaker": "saku",
+          "face": "normal",
+          "text": "早いな。もう少し、もったいぶりたかったのに"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "休憩中でいいじゃないですか"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "綾取は割り箸を二膳出しかけて、一膳だけ袋へ戻した。"
+        },
+        {
+          "speaker": "saku",
+          "face": "normal",
+          "text": "食べた？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "俺は、さっき済ませました。どうぞ"
+        },
+        {
+          "speaker": "saku",
+          "face": "smile",
+          "text": "じゃあ、遠慮なく。話しかけるなら、飲み込んでからね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "いつもより静かなカウンターで、うどんをすする音だけがした。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（この人も、食べてる間は普通に黙るんだ）"
+        },
+        {
+          "speaker": "saku",
+          "face": "normal",
+          "text": "……今、失礼なこと考えたでしょ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "まだ何も言ってません"
+        },
+        {
+          "speaker": "saku",
+          "face": "smile",
+          "text": "口に出すまで待ってあげたのに"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_outing_steve_visit_c",
+      "comment": "#3097 東京の仕事・大会から離れた日常。味覚回復・恋愛の成立に依存しない。報酬は既存の外出精算だけ。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スティーブが、丸めた店のエプロンと格闘していた。"
+        },
+        {
+          "speaker": "steve",
+          "face": "normal",
+          "text": "ハジメ、ちょっと持っててくれ。ここの紐"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい。……固いですね、この結び目"
+        },
+        {
+          "speaker": "steve",
+          "face": "normal",
+          "text": "洗う前にほどくの、また忘れた。毎回、俺が俺を困らせる"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "先を引きたい手を止めて、結び目の方を少しずつ押した。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "引っ張らない方が、いけそうです"
+        },
+        {
+          "speaker": "steve",
+          "face": "surprise",
+          "text": "オー、そっちか"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "輪が一つ抜けて、長い紐がカウンターへ落ちた。"
+        },
+        {
+          "speaker": "steve",
+          "face": "smile",
+          "text": "助かった。今度は洗濯かごに入れる前にほどく"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "そこにメモ、貼っておきますか"
+        },
+        {
+          "speaker": "steve",
+          "face": "normal",
+          "text": "イエス。「未来の俺へ」って大きくな"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スティーブは自分でメモを書き、ほどいたエプロンと一緒に奥へ持っていった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_outing_volk_visit",
+      "comment": "鉄の煙に通う（2026-11-11 RVE07・添削表の提案2）。初来店（ch3_volk_first・DAY12夜）の後に何度でも寄れる。1回目はこれ、2回目からは _b・_c を巡回。大会の前後どちらでも読むので大会に触れない。段階の会話（second〜fifth・revisit・lime・締めくくり）と街で会う回（roam_volk_*）は読んだか分からないので前提にしない。時間帯を言わない。好感度は任意の外出の確定時に付ける。客として初めて腰を落ち着ける回: 鉄の椅子に膝掛け（極寒の地で客に温かい時間を切らさない工夫・正本）。「煙は冷たく、客は温かく」。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "鉄の煙の扉を開ける。今日は聞きたいことも、確かめたいこともない。"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "来たか。用件は"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ないです。今日は、一服しに来ました"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "そうか。なら、客の席だ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "鉄の丸椅子に腰を下ろすと、座面の冷たさが服越しに伝わってきた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ヴォルクは黙って奥へ行き、畳んだ膝掛けを一枚持ってきた。"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "敷け。鉄の椅子は、座って三分で腿が冷える"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "三分……測ったんですか"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "ロシアの店で、冬に。客が二口目の前に、膝をさすっていた"
+        },
+        {
+          "speaker": "volk",
+          "face": "serious",
+          "text": "敷くようにしてから、客がホースを置くまでが、平均で二十分延びた"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "膝掛けの上に座り直す。出てきたブラストミントは、相変わらず喉の奥まで冷たい。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "煙は冷たいのに、席は温かいんですね"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "煙は冷たく、客は温かく。逆にすると、誰も長くいない"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "吸い終えて膝掛けを畳む。ヴォルクは折り目を見て、小さく頷いた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_outing_volk_visit_b",
+      "comment": "鉄の煙に通う（_b・_c を巡回）。雨の日。計器を先に見る順番は変えず、客が拭き終わるまで炭を置かない。貸し傘の帳面で、戻らなかった三本を「三人が濡れずに帰った」と数える。大会・時間帯に触れない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "雨の日の鉄の煙。扉を開けると、壁の数字が一つ跳ねた。"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "湿度68。拭け"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "乾いたタオルが飛んできた。ヴォルクはそのまま、数字を一行書き足した。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "すみません、傘を持ってなくて"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "座れ。拭き終わるまで、炭は置かない"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "髪の先から雫が落ちなくなった頃、ちょうど一台が運ばれてきた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "帰り際、ヴォルクが傘立てから黒い傘を一本抜いた。柄に「貸出」の札が下がっている。"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "持っていけ。名前と日付を、そこに書け"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "壁の紙に、借りた人の名前と日付が並んでいた。返却の欄が、三つだけ空いている。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "三本、戻ってないんですか"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "戻っていない。……三人は、濡れずに帰った"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "俺のは、ちゃんと返しに来ます"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "そうしろ。返った日は、俺が書く"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_outing_volk_visit_c",
+      "comment": "鉄の煙に通う（_b・_c を巡回）。氷水で温度計を合わせる日課。ずれた一本は捨てずに札を掛ける（ずれを知っていれば使える）。はじめの舌の揺れ（第3章は味が戻った後も回復の途中）に、白紙の札を一枚。味覚の不調の中身は話さない。大会・時間帯に触れない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "鉄の煙。カウンターに、氷を浮かべた水のグラスが五つ並んでいた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "グラスには一本ずつ、細い温度計が挿してある。"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "少し待て。計器を合わせている"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "氷水で、ですか"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "氷の浮いた水は、0度になる。そこを指さない計器は、ずれている"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "四本は0度ちょうど。残りの一本だけが、0.5度を指していた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "一本、ずれてますね。捨てるんですか"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "捨てない"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ヴォルクは札に「0.5高い」と書いて、ずれた一本の首に掛けた。"
+        },
+        {
+          "speaker": "volk",
+          "face": "serious",
+          "text": "ずれを知っている計器は、使える。知らずに信じる方が、危ない"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……俺の舌も、日によってずれる気がします"
+        },
+        {
+          "speaker": "volk",
+          "face": "normal",
+          "text": "なら、どっちにずれたかを書け。札が掛かれば、使える"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ヴォルクは余った札を一枚、こちらの手帳に挟んだ。まだ何も書かれていない。"
+        }
       ]
     }
   ]

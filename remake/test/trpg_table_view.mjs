@@ -57,12 +57,12 @@ async function load(url) {
 }
 const mod = await load(new URL('../js/trpg/view.js', import.meta.url)); await mod.evaluate();
 const scenarios = await Promise.all(['ordinary', 'shark'].map(async theme => JSON.parse(await readFile(new URL('../../data/dialogue/trpg_' + theme + '.json', import.meta.url), 'utf8'))));
-function mount(scenario) {
+function mount(scenario, extra = {}) {
   const host = new Dom();
   const manifest = { portraits: Object.fromEntries(scenario.cast.map(c => [c.id, { faces: ['normal'], h: .7, b: .1, aspect: 1 }])) };
   const audio = { enabled: false, available: true, setTheme() {}, play() {}, silence() {}, setEnabled() {} };
-  let completions = 0;
-  const api = mod.namespace.mountTrpg(host, { onComplete: () => completions++, scenario, characters: [], manifest, seed: 9, profileId: scenario.profiles[0].id, audio });
+  let completions = 0, result = null;
+  const api = mod.namespace.mountTrpg(host, { ...extra, onComplete: r => { completions++; result = r; }, scenario, characters: [], manifest, seed: 9, profileId: scenario.profiles[0].id, audio });
   const root = host.children[0];
   const q = id => { const node = root.querySelector('[data-test="' + id + '"]'); assert(node, id); return node; };
   const drain = () => { let n = 0; while (!q('trpg-next').hidden) { q('trpg-next').click(); assert(++n < 100); } };
@@ -81,7 +81,7 @@ function mount(scenario) {
     q('trpg-plan-' + field + '-' + scenario.options[field][0].id).click();
     q('trpg-twist-open').click(); declare('twist'); roll(); q('trpg-settle').click(); drain();
   };
-  return { api, root, q, drain, roll, declare, interview, twist, get completions() { return completions; } };
+  return { api, root, q, drain, roll, declare, interview, twist, get completions() { return completions; }, get result() { return result; } };
 }
 for (const scenario of scenarios) {
   test(scenario.id + ': cast seats follow dialogue and idle GM; no invented participants', () => {
@@ -126,6 +126,41 @@ for (const scenario of scenarios) {
     q('trpg-settle').click(); drain(); assert.equal(api.snapshot().phase, 'ending');
     assert.equal(root.querySelectorAll('.trpg-table-clue').length, 3); assert(!q('trpg-finish').disabled);
     assert.equal(api.snapshot().teamwork, 0); assert.equal(mounted.completions, 1); drain(); assert.equal(mounted.completions, 1, 'Fast advance cannot deliver completion twice'); api.destroy(); assert.equal(mounted.completions,1);
+  });
+  test(scenario.id + ': a role against type says one line in the role before the ending and one as the player after the table (S17)', () => {
+    const text = id => scenario.dialogues.find(d => d.dialogue_id === id).lines[0].text;
+    // Play the whole table with the seat's player bringing the given role, and keep every line the ending talk shows.
+    const read = (seat, role) => {
+      const m = mount(scenario, { companions: { [seat]: role.id } }); const { api, root, q, drain, roll, declare, interview, twist } = m;
+      q('trpg-start').click(); drain(); declare('listen'); roll(); q('trpg-settle').click(); drain(); interview();
+      for (const spot of scenario.spots.slice(0, 3)) { q('trpg-spot-' + spot.id).click(); drain(); }
+      q('trpg-interpret').click(); q('trpg-hypothesis-' + scenario.hypotheses[0].id).click(); drain(); twist();
+      for (const field of scenario.flow.prepare) { q('trpg-choice-tab-' + field).click(); q('trpg-plan-' + field + '-' + scenario.options[field][0].id).click(); }
+      q('trpg-prepare-open').click(); declare('prepare'); roll(); q('trpg-settle').click(); drain();
+      for (const field of scenario.flow.serve) q('trpg-plan-' + field + '-' + scenario.options[field][0].id).click();
+      q('trpg-serve-open').click(); declare('serve'); roll(); q('trpg-settle').click();
+      const said = [];
+      for (let n = 0; !q('trpg-next').hidden; n++) { said.push(root.querySelector('.trpg-speech').textContent); q('trpg-next').click(); assert(n < 100); }
+      assert.equal(api.snapshot().phase, 'ending'); assert.equal(m.completions, 1);
+      assert.equal(m.result.companions[seat], role.id, 'the table kept the role the player brought');
+      api.destroy(); return said;
+    };
+    let checked = 0;
+    for (const [seat, byPlayer] of Object.entries(scenario.companionBuilds)) {
+      const against = (byPlayer[seat] || []).find(o => o.aside), usual = (byPlayer[seat] || []).find(o => !o.aside);
+      if (!against) continue;
+      // The speech box also shows the speaker and the role label in front of the line.
+      const at = (lines, line) => lines.findIndex(shown => shown.endsWith(line));
+      const said = read(seat, against), epilogue = at(said, text(scenario.epilogue)), aside = at(said, text(against.aside));
+      assert(epilogue > 0, 'the epilogue is read');
+      assert(aside >= 0 && aside < epilogue, 'the line in the role comes before the ending');
+      assert(said.at(-1).endsWith(text(against.after)), 'the player has the last word after the table');
+      const plain = read(seat, usual);
+      assert(at(plain, text(against.aside)) < 0 && at(plain, text(against.after)) < 0, 'the usual role adds nothing');
+      assert.equal(plain.length + 2, said.length, 'exactly the two lines are added');
+      checked++;
+    }
+    assert(checked >= 1, 'this table has a role against type');
   });
   test(scenario.id + ': 0/1/3 clue cards open the existing notes without inspecting again', () => {
     const { api, root, q, drain, roll, declare, interview } = mount(scenario); q('trpg-start').click(); drain(); declare('listen'); roll(); q('trpg-settle').click(); drain(); interview();
@@ -229,16 +264,19 @@ test('seat rail measurement waits for preview resize outputs', async () => {
   assert.match(seatLoop, /assert\(seats\.visible&&seats\.inside,/);
   const previewSource = await readFile(new URL('../js/trpg/preview.js', import.meta.url), 'utf8');
   const listeners = {}, styles = new Map();
-  const stage = { style: { setProperty: (k, v) => styles.set(k, v), getPropertyValue: k => styles.get(k) },
-    getBoundingClientRect: () => ({ width: 1280 * Number(styles.get('--k')) }) };
+  const stage = { style: { setProperty: (k, v) => styles.set(k, v), getPropertyValue: k => styles.get(k), removeProperty: k => styles.delete(k) },
+    dataset: {}, getBoundingClientRect: () => ({ width: 1280 * Number(styles.get('--k')) }) };
   const rotate = { hidden: true };
   const port = vm.createContext({ URL, URLSearchParams,
     innerWidth: 1280, innerHeight: 720,
-    document: { getElementById: id => id === 'stage' ? stage : id === 'trpg-rotate' ? rotate : {}, querySelector: () => null },
-    window: { addEventListener: (event, fn) => { listeners[event] = fn; } },
+    document: { documentElement: { dataset: {} }, getElementById: id => id === 'stage' ? stage : id === 'trpg-rotate' ? rotate : {}, querySelector: () => null },
+    // The preview fits with the game's shared core/stage-fit.js, which reads the window's size.
+    window: { addEventListener: (event, fn) => { listeners[event] = fn; }, get innerWidth() { return port.innerWidth; },
+      get innerHeight() { return port.innerHeight; }, get visualViewport() { return port.visualViewport; } },
     matchMedia: () => ({ matches: reducedMotion }), location: { href: 'https://example.invalid/remake/trpg-preview.html', search: '' }, history: { replaceState() {} } });
   const preview = new vm.SourceTextModule(previewSource, { context: port });
-  await preview.link(() => new vm.SyntheticModule(['mountTrpgCollection'], function () {
+  const stageFit = new vm.SourceTextModule(await readFile(new URL('../js/core/stage-fit.js', import.meta.url), 'utf8'), { context: port });
+  await preview.link(specifier => specifier.endsWith('core/stage-fit.js') ? stageFit : new vm.SyntheticModule(['mountTrpgCollection'], function () {
     this.setExport('mountTrpgCollection', () => ({ snapshot() {}, audioSnapshot() {}, loaded: true }));
   }, { context: port }));
   await preview.evaluate();
@@ -312,7 +350,7 @@ test('the shopkeeper tutorial plays on the cover, blocks the start until it ends
       assert(!root.querySelector('.trpg-speech').textContent.includes('{gm}'), 'the GM name is filled in');
       q('trpg-next').click(); assert(n < 40);
     }
-    assert.equal(done, 1); assert.equal(panels.size, 7); assert.equal(root.querySelector('[data-test="trpg-tutorial-panel"]'), null);
+    assert.equal(done, 1); assert.equal(panels.size, 8); assert.equal(root.querySelector('[data-test="trpg-tutorial-panel"]'), null);
     q('trpg-tutorial').click(); assert(!q('trpg-next').hidden, 'the cover button replays the tutorial');
     while (!q('trpg-next').hidden) q('trpg-next').click();
     assert.equal(done, 2);
