@@ -1,0 +1,116 @@
+{
+  "tag-selected-repair": {
+    "face_box": [
+      37,
+      36,
+      1484,
+      649
+    ],
+    "repainted_px": 875924,
+    "alpha_min_before": 126.0
+  },
+  "tag-slate-blue": {
+    "face_px": 857851,
+    "shift_rgb": [
+      3.0,
+      30.0,
+      66.0
+    ]
+  },
+  "focus-throw-orange": {
+    "display": [
+      1295,
+      300
+    ],
+    "adopted": [
+      2136,
+      495
+    ]
+  },
+  "focus-throw-green": {
+    "display": [
+      1295,
+      300
+    ],
+    "adopted": [
+      2136,
+      495
+    ]
+  },
+  "focus-tag-slate": {
+    "display": [
+      499,
+      224
+    ],
+    "adopted": [
+      1514,
+      680
+    ]
+  },
+  "focus-tag-slate-blue": {
+    "display": [
+      499,
+      224
+    ],
+    "adopted": [
+      1514,
+      680
+    ]
+  },
+  "focus-tag-selected": {
+    "display": [
+      498,
+      224
+    ],
+    "adopted": [
+      1522,
+      685
+    ]
+  },
+  "focus-tag-selected-amber": {
+    "display": [
+      498,
+      224
+    ],
+    "adopted": [
+      1522,
+      685
+    ]
+  },
+  "focus-gauge-frame": {
+    "display": [
+      160,
+      1425
+    ],
+    "adopted": [
+      197,
+      1755
+    ]
+  },
+  "focus-needle": {
+    "display": [
+      260,
+      27
+    ],
+    "adopted": [
+      1272,
+      130
+    ]
+  },
+  "gauge-slot": {
+    "image": [
+      160,
+      1425
+    ],
+    "left": 36,
+    "right": 36,
+    "top": 38,
+    "bottom": 39
+  },
+  "needle": {
+    "image": [
+      260,
+      27
+    ]
+  }
+}

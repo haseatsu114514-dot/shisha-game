@@ -335,6 +335,8 @@ await suite("axe-polish", async check => {
     ["pc", { viewport: { width: 1280, height: 720 } }, false],
     ["touch-landscape", { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }, true],
   ]) await check(`${label}-focus-layout`, async page => {
+    const parts = new Set();
+    page.on("response", response => { const name = response.url().match(/ui\/axe_throw\/(focus-[a-z-]+\.webp)$/)?.[1]; if (name && response.ok()) parts.add(name); });
     const before = await start(page, { mode: "league", opponent: "hiyori", seed: 11, division: "am" });
     const box = selector => page.locator(selector).first().evaluate(node => { const r = node.getBoundingClientRect(); return { left: r.left, top: r.top, right: r.right, bottom: r.bottom, width: r.width, height: r.height }; });
     const shown = selector => page.locator(selector).first().evaluate(node => node.getClientRects().length > 0 && getComputedStyle(node).visibility !== "hidden");
@@ -374,9 +376,19 @@ await suite("axe-polish", async check => {
       }
     };
     await chosen("normal", ["upper-left", "lower-right"]);
+    // Painted parts (#3207): every tag, the throw plate and the gauge frame are drawn from the generated art, not flat CSS boxes.
+    const art = (selector, pseudo) => page.locator(selector).first().evaluate((node, pseudo) => {
+      const style = getComputedStyle(node, pseudo); return { image: style.borderImageSource, opacity: Number(style.opacity) }; }, pseudo);
+    assert.match((await art('[data-call="normal"]', "::after")).image, /focus-tag-selected-amber\.webp/);
+    assert.match((await art('[data-call="upper-left"]', "::after")).image, /focus-tag-slate-blue\.webp/);
+    assert.match((await art('[data-test="axe-throw"] .axe-throw-button', "::before")).image, /focus-throw-orange\.webp/);
+    assert.equal((await art('[data-test="axe-throw"] .axe-throw-button', "::after")).opacity, 0);
+    assert.deepEqual([...parts].sort(), ["focus-gauge-frame.webp", "focus-needle.webp", "focus-tag-selected-amber.webp", "focus-tag-selected.webp", "focus-tag-slate-blue.webp", "focus-tag-slate.webp", "focus-throw-green.webp", "focus-throw-orange.webp"], "all parts are loaded before the first throw");
     await hit(page, '[data-call="upper-left"]', touch); await page.clock.runFor(300);
     assert.equal(Number(await page.locator(".axe-called-ring").getAttribute("opacity")), 1);
     await chosen("upper-left", ["normal", "upper-right", "lower-left"]);
+    assert.match((await art('[data-call="upper-left"]', "::after")).image, /focus-tag-selected\.webp/);
+    assert.match((await art('[data-call="normal"]', "::after")).image, /focus-tag-slate\.webp/);
     assert.match(await page.locator(".axe-call-status").textContent(), /宣言中：左上の青/);
     const caption = await box(".axe-call-status");
     assert(caption.width <= 2 && caption.height <= 2, "the declared caption is not drawn on the board");
@@ -391,7 +403,7 @@ await suite("axe-polish", async check => {
     close(aiming.left, pane.left, "the board does not move"); close(aiming.width, pane.width, "the board keeps its size");
     const gauge = await box(".axe-gauge");
     assert(gauge.left >= aiming.right - 1 && gauge.left - aiming.right <= game.width * .03, "the gauge stands right next to the board");
-    assert(gauge.height >= aiming.height * .95 && gauge.width * 5 < gauge.height, "the gauge is a tall bar as high as the board");
+    assert(gauge.height >= aiming.height * .9 && gauge.width * 5 < gauge.height, "the gauge is a tall bar almost as high as the board");
     for (const selector of ['[data-test="axe-action"]', '[data-test="axe-focus"]', '[data-test="axe-reaim"]']) {
       const control = await box(selector);
       assert(control.left >= gauge.right - 1 && control.right <= game.right + 1 && control.bottom <= game.bottom + 1, selector + " stays in the right column");
@@ -406,6 +418,11 @@ await suite("axe-polish", async check => {
     const sweet = await box(".axe-sweet"), stick = await box(".axe-stick");
     assert(sweet.top > stick.top && sweet.bottom < stick.bottom && sweet.width >= gauge.width * .9, "the green band lies inside the sticking band");
     assert(high.y >= sweet.top - 2 && high.y <= sweet.bottom + 2, "60% is inside the green band");
+    assert.match((await art(".axe-body > .axe-timing", "::before")).image, /focus-gauge-frame\.webp/);
+    assert.match((await art(".axe-needle", "::before")).image, /focus-needle\.webp/);
+    assert.equal((await art('[data-test="axe-throw"] .axe-throw-button', "::after")).opacity, 1, "the green plate shows while the release is in the green band");
+    const slot = await box(".axe-body > .axe-timing");
+    assert(gauge.left > slot.left && gauge.right < slot.right && gauge.top > slot.top && gauge.bottom < slot.bottom, "the colour bands sit inside the frame's slot");
     await hit(page, ".axe-target", touch); await phase(page, "flight");
     close((await box(".axe-board-pane")).left, pane.left, "the board does not move in flight");
     assert.equal(await shown(".axe-companion"), false);

@@ -1,0 +1,82 @@
+{
+  "QA.json": {
+    "bytes": 3115,
+    "sha256": "837b9b750e1e9a2a62b953776e363c71417f451f96dbb5b87edf715830fb6ae8"
+  },
+  "preview.jpg": {
+    "bytes": 57002,
+    "sha256": "5dce3cbc164bd459fa67ac179a6b1ad287ca2787149af179fc74f9579d9a92c6"
+  },
+  "README-ja.txt": {
+    "bytes": 1822,
+    "sha256": "e8dbc8dff86e51b85a84b3c9974ce842a7ac1e9fa5493342c2568c300010f61d"
+  },
+  "export-candidates.py": {
+    "bytes": 2211,
+    "sha256": "39dd6e2ae98cb35ff974c20ec1c77ca5b7fa1448140ac410e7f0a13c7b9eee58"
+  },
+  "parts-source.txt": {
+    "bytes": 4203,
+    "sha256": "0c7e5912e5fa356a6e78316e29945f4b3e7398b73136a65728cd6d4a06d01ed6"
+  },
+  "rejected/green-hole-DO-NOT-USE.png": {
+    "bytes": 1800446,
+    "sha256": "7d3430174fb6cae74253654426e71e4691fe9834a5df2e624ecafd5b17425fc2"
+  },
+  "rejected/gauge-first-ratio.png": {
+    "bytes": 708050,
+    "sha256": "641c2edf5faea86ee0bb18a9ce091f769c2a66eee4cb035ec530285f6259a79b"
+  },
+  "rejected/orange-taller-alternative.png": {
+    "bytes": 1311961,
+    "sha256": "d4c1a46de2617f59bcd39247b7bfe57b7070f462c3a827dfb676c6b2afaef708"
+  },
+  "raw/tag-slate.png": {
+    "bytes": 1458091,
+    "sha256": "1182be3d90c8eaf7a5d91762c201f9ae0f590702ddc665269976348886650d2f"
+  },
+  "raw/gauge-needle.png": {
+    "bytes": 197341,
+    "sha256": "490646ca00fde11f057f3814011f3be2e9c4453d0dffbbfe1097d9fcc74e19bf"
+  },
+  "raw/gauge-frame.png": {
+    "bytes": 481715,
+    "sha256": "b5443efddf2adb9c7aba3e9b2152cc7ce76ae58e023d26e0baba8a646d733ffa"
+  },
+  "raw/button-throw-green.png": {
+    "bytes": 1304585,
+    "sha256": "eb474150aebb1aa8414e002e70dd6dce4a5d4dd142a1e9583b27588f3b091e43"
+  },
+  "raw/button-throw-orange.png": {
+    "bytes": 1279749,
+    "sha256": "aad487f7b4f983c919052b1c1095cb85d2c52c37457aa6694b546e211b1c163e"
+  },
+  "raw/tag-selected.png": {
+    "bytes": 1199963,
+    "sha256": "3b381308b0fe63562a58e31ea4a23dd4571bde7ceb4693db659baba082961a20"
+  },
+  "canvas-candidates/tag-slate.png": {
+    "bytes": 333916,
+    "sha256": "43843d1dfda88b05794bdb144485d7496f04078ce00baf3b37b70aa8083d4e55"
+  },
+  "canvas-candidates/gauge-needle.png": {
+    "bytes": 18912,
+    "sha256": "bc147e56ef9eccc14578a8ab9b1de3df02d21d9247c9f1bc06d5c83fa75c70b8"
+  },
+  "canvas-candidates/gauge-frame.png": {
+    "bytes": 454608,
+    "sha256": "04e7d9119f529991e901e639001d726977c42550bc3577fb5fc9ed2f1f10b84f"
+  },
+  "canvas-candidates/button-throw-green.png": {
+    "bytes": 394253,
+    "sha256": "3f497ec9026e736c6e803fa6e9304bde18cf6b79b274ccce82a0e18d18dabd42"
+  },
+  "canvas-candidates/button-throw-orange.png": {
+    "bytes": 320619,
+    "sha256": "f297db46e7edac12e7845d7e9b21a9e0e27dc593657c3d7f056942aa1abe5d8f"
+  },
+  "canvas-candidates/tag-selected.png": {
+    "bytes": 313958,
+    "sha256": "a8875dccf70296bf813f440320a8e7e5d681953197c6a9e59f823b78df5284f8"
+  }
+}

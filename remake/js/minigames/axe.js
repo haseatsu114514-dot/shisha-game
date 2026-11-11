@@ -25,6 +25,9 @@ function decodeArt(url) {
 }
 // The WATL board (five 2x10 planks, calm light centre) from Codex, #2198 / AXR06. The older square board stays in the repository.
 const ART = { bg: imgFileUrl("backgrounds/bg_axe_lounge_night.webp"), board: imgFileUrl("ui/axe_throw/target_board_watl_c_800.webp") };
+// ゲージ・札の絵の部品（#3207・AXR14）。CSS の border-image で描く。読み込み中に先に解いておき、構えた瞬間の出遅れを防ぐ。
+const UI_ART = ["focus-gauge-frame", "focus-needle", "focus-throw-orange", "focus-throw-green", "focus-tag-slate", "focus-tag-slate-blue", "focus-tag-selected", "focus-tag-selected-amber"]
+  .map(name => imgFileUrl("ui/axe_throw/" + name + ".webp"));
 // Only the target is decoded early so it appears without a late pop-in; other art waits for the loading step.
 if (typeof Image !== "undefined") decodeArt(ART.board).catch(() => {});
 const { x: CX, y: CY, radius: R } = TARGET;
@@ -387,13 +390,13 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
                   throw new Error("Axe lesson incomplete");
               }));
         }
-        if (!companion) return Promise.all([...Object.values(ART).map(decodeArt), ...lessonArt]);
+        if (!companion) return Promise.all([...Object.values(ART).map(decodeArt), ...UI_ART.map(decodeArt), ...lessonArt]);
         portraitKey = companion.portraitKey || manifest.titleArts?.find(entry => entry.file.endsWith(companion.titleSuffix))?.character;
         if (!portraitKey || !companion.faces.every(face => manifest.portraits?.[portraitKey]?.faces?.includes(face)))
           throw new Error("Companion artwork missing from catalogue");
         showFace(companion.faces[0]);
         return Promise.all([
-          ...[...Object.values(ART), ...companion.faces.map(face => faceArt(portraitKey, face).src)].map(decodeArt),
+          ...[...Object.values(ART), ...UI_ART, ...companion.faces.map(face => faceArt(portraitKey, face).src)].map(decodeArt),
           ...(versus ? [fetch(new URL("../../../data/dialogue/axe_versus.json", import.meta.url), { signal: AbortSignal.any([lifetime.signal, timeout.signal]) })
             .then(response => { if (!response.ok) throw new Error("Axe match dialogue unavailable"); return response.json(); })
             .then(data => {
