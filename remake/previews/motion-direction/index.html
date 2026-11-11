@@ -275,7 +275,7 @@ footer { color: var(--dim); font-size: 13px; border-top: 1px solid var(--line); 
     <li><b>場面を紫で隠す</b><p>ほとんどの演出が、まず画面全体を紫で覆い、何もない面に図形を置きます。ミントとピンクの PEPPERMINT も、青い SHISHARK も、同じ紫に塗り替わります。</p></li>
     <li><b>山場に見せる絵がない</b><p>めくった札は白紙、龍の煙は線1本、ROUND 1 は小さな文字。数秒待たせた先に、見せるものが用意されていません。</p></li>
   </ol>
-  <p class="aside measure">これまでのご指摘「スケッチはいい感じ」「ハガルはちゃんと生成された絵で」「ペンだけダサい」「サメの顔がキモい」「ローディングの煙がダサい」も、同じ線で説明がつきます。絵を使った所は良く、コードで描いた物が悪い。10月に決めた2つの約束「画像を使わず図形で描く」「紫1色でそろえる」が、その原因でした。</p>
+  <p class="aside measure">これまでのご指摘「スケッチはいい感じ」「ハガルはちゃんと生成された絵で」「ペンだけダサい」「サメの顔がキモい」「ローディングの煙がダサい」も、同じ線で説明がつきます。絵を使った所は良く、コードで描いた物が悪い。10月から基準にしてきた2つの約束「画像を使わず図形で描く」「紫1色でそろえる」が、その原因でした。</p>
 </section>
 
 <section id="direction">
@@ -394,7 +394,7 @@ footer { color: var(--dim); font-size: 13px; border-top: 1px solid var(--line); 
     <ul class="notes">
       <li>舞台は占い師の登場カットインの背景。札の裏は、その絵に描かれている札をそのまま使っています。</li>
       <li>札の表は、占う相手の絵柄（ここではつむぎの藤棚）。顔は出さず、誰の札かが絵と帯で分かります。白紙の札はなくなります。</li>
-      <li>絵柄の切り出しは33人分できます。専用のタロットを描き下ろすなら、同じ絵柄で生成します。約 5 秒（いまは 4.5 秒）。</li>
+      <li>絵柄の切り出しは33人分できます。見本の札は切り出しなので少し粗く、鮮明な札の裏と表の枠を Codex へ依頼しました。約 5 秒（いまは 4.5 秒）。</li>
     </ul>
   </article>
 
@@ -452,7 +452,7 @@ footer { color: var(--dim); font-size: 13px; border-top: 1px solid var(--line); 
     <h2>28種類の判定</h2>
     <p class="measure">残すものは基準として使い、作り直すものは上の決まりで作ります。</p>
   </div>
-  <p class="tally"><span><b>5</b>残す</span><span><b>3</b>一部を直す</span><span><b>19</b>作り直す</span><span><b>1</b>やめる</span></p>
+  <p class="tally"><span><b>5</b>残す</span><span><b>4</b>一部を直す</span><span><b>18</b>作り直す</span><span><b>1</b>やめる</span></p>
   <div class="table-scroll" tabindex="0" role="region" aria-label="演出ごとの判定">
   <table>
     <thead><tr><th>演出</th><th>判定</th><th>いま</th><th>直し方</th><th>新しい絵</th></tr></thead>
@@ -463,19 +463,19 @@ footer { color: var(--dim); font-size: 13px; border-top: 1px solid var(--line); 
       <tr><th>帰宅の扉</th><td><span class="v redo">作り直す</span></td><td>線で描いた扉</td><td>見本2。部屋に灯りが点く。扉は描かない</td><td>不要</td></tr>
       <tr><th>就寝から翌朝へ</th><td><span class="v redo">作り直す</span></td><td>紫の幕、小さな DAY、太陽の図形</td><td>見本3。部屋の夜と朝の絵をつなぐ</td><td>不要</td></tr>
       <tr><th>DAY カード</th><td><span class="v redo">作り直す</span></td><td>暗い帯に小さな文字</td><td>見本3と同じ題字にそろえる</td><td>不要</td></tr>
-      <tr><th>バイト終業</th><td><span class="v redo">作り直す</span></td><td>紫の丸い札が回る。4.4 秒</td><td>店の扉の札を1回返すだけ。1.2 秒。店内は隠さない</td><td>札の絵（表と裏）</td></tr>
+      <tr><th>バイト終業</th><td><span class="v redo">作り直す</span></td><td>紫の丸い札が回る。4.4 秒</td><td>店の閉店の札を1回返すだけ。1.2 秒。店内は隠さない</td><td>閉店の札（表と裏）</td></tr>
       <tr><th>電車</th><td><span class="v fix">一部を直す</span></td><td>人混みの絵（良い）を紫1色で塗っている</td><td>絵は活かす。昼は日差し、夜は車内灯の色で塗り、窓の光を流す</td><td>不要</td></tr>
       <tr class="group"><th colspan="5">遠くへの移動</th></tr>
       <tr><th>新幹線</th><td><span class="v redo">作り直す</span></td><td>紫の線画の車内</td><td>見本6。本物の車内の絵で車窓を流す</td><td>不要</td></tr>
-      <tr><th>飛行機</th><td><span class="v redo">作り直す</span></td><td>暗い面に小さな窓が1つ</td><td>機内の窓の絵で、雲と空の色を流す。行き先は題字で</td><td>機内の窓の絵</td></tr>
+      <tr><th>飛行機</th><td><span class="v redo">作り直す</span></td><td>暗い面に小さな窓が1つ</td><td>機内の窓の絵で、雲と空の色を流す。行き先は題字で</td><td>機内の窓の席、雲海（夜・夜明け）</td></tr>
       <tr><th>配送便</th><td><span class="v drop">やめる</span></td><td>飛行機と同じ窓の図形</td><td>ふつうの切り替えと題字だけにする</td><td>不要</td></tr>
       <tr class="group"><th colspan="5">人との出来事</th></tr>
-      <tr><th>チェキ</th><td><span class="v redo">作り直す</span></td><td>紫の地、カメラの図形、写真が小さい。10 秒</td><td>みんとの絵柄を舞台に、写真を主役の大きさで。落書きの書き順はいまのものを活かす。5 秒</td><td>不要</td></tr>
-      <tr><th>占い</th><td><span class="v redo">作り直す</span></td><td>紫の札をめくると白紙</td><td>見本4</td><td>当面不要</td></tr>
+      <tr><th>チェキ</th><td><span class="v redo">作り直す</span></td><td>紫の地、カメラの図形、写真が小さい。10 秒</td><td>みんとの絵柄を舞台に、写真を主役の大きさで。落書きの書き順はいまのものを活かす。5 秒</td><td>マーカー2本（あると良い）</td></tr>
+      <tr><th>占い</th><td><span class="v redo">作り直す</span></td><td>紫の札をめくると白紙</td><td>見本4</td><td>札の裏と表の枠（あると鮮明）</td></tr>
       <tr><th>贈り物</th><td><span class="v redo">作り直す</span></td><td>白い箱の図形と紙吹雪</td><td>見本5</td><td>不要</td></tr>
       <tr><th>サメちゃんとの出会い</th><td><span class="v redo">作り直す</span></td><td>紫の口と三角の牙</td><td>サメちゃんの絵柄と店の青で。牙の図形はやめる</td><td>不要</td></tr>
-      <tr><th>ガラガラくじ</th><td><span class="v redo">作り直す</span></td><td>店の絵が、紫1色の抽選器の舞台に替わる</td><td>店の絵の上に抽選器の絵を置く。S賞は金の光と題字で山場に</td><td>抽選器の絵</td></tr>
-      <tr><th>スケッチ</th><td><span class="v fix">一部を直す</span></td><td>線画は良い。表紙とペンが紫の図形</td><td>表紙とペンだけ絵に替え、紙は白に</td><td>スケッチブックとペン</td></tr>
+      <tr><th>ガラガラくじ</th><td><span class="v fix">一部を直す</span></td><td>既定の配色が紫1色で、店の絵と合わない</td><td>実装済みの「場面ごとの色」（木のカウンター、漆と真鍮の抽選器）を既定に戻す</td><td>不要</td></tr>
+      <tr><th>スケッチ</th><td><span class="v fix">一部を直す</span></td><td>線画は良い。紙のスケッチブックとペンが紫の図形で、台本のタブレットとも合わない</td><td>台本どおりタブレットに替え、その画面に線画を描く</td><td>タブレットとペン</td></tr>
       <tr><th>LIME 交換</th><td><span class="v keep">残す</span></td><td>実際の画面と、ぼかした店内</td><td>そのまま</td><td>不要</td></tr>
       <tr><th>プリクラ</th><td><span class="v keep">残す</span></td><td>立ち絵・CG・店の柄</td><td>そのまま</td><td>不要</td></tr>
       <tr class="group"><th colspan="5">章の要所</th></tr>
@@ -493,17 +493,18 @@ footer { color: var(--dim); font-size: 13px; border-top: 1px solid var(--line); 
     </tbody>
   </table>
   </div>
+  <p class="aside measure">紫1色は既定の配色で、実装には「場面ごとの色」の版もあります。ガラガラくじは、その版が木のカウンターと漆の抽選器になっていて店の絵に合うので、配色を戻すだけにします。ほかの演出は、色を替えても平らな図形のままなので作り直します。</p>
 </section>
 
 <section id="next">
   <div class="sec-head">
     <h2>進め方</h2>
-    <p class="measure">19件の作り直しのうち15件は、新しい絵なしで始められます。よく見るものから、1つずつ本編へ入れます。</p>
+    <p class="measure">作り直す18件のうち15件は、新しい絵なしで始められます。よく見るものから、1つずつ本編へ入れます。</p>
   </div>
   <ol class="steps">
-    <li><b>毎日見る5つ</b><p>場面の切り替え、マップから店へ、帰宅、就寝から翌朝へ、DAY カード。新しい絵は不要。ゲーム全体の印象がいちばん変わります。</p></li>
+    <li><b>毎日見る5つ</b><p>場面の切り替え、マップから店へ、帰宅、就寝から翌朝へ、DAY カード。新しい絵は不要。ゲーム全体の印象がいちばん変わります。あわせて、ガラガラくじの配色を戻します。</p></li>
     <li><b>人との出来事4つ</b><p>占い、贈り物、チェキ、サメちゃん。登場カットインの絵柄を舞台にします。新しい絵は不要。</p></li>
-    <li><b>絵が要る5つ</b><p>バイト終業の札、ガラガラの抽選器、機内の窓、スケッチブックとペン、龍の煙の一枚絵。Codex 用の依頼文をまとめて出します。</p></li>
+    <li><b>絵が要る4つ</b><p>バイト終業（閉店の札）、スケッチ（タブレットとペン）、飛行機（機内の窓の席と雲海）、龍の煙（一枚絵）。龍の煙のほかは、占いの札とチェキのマーカーとあわせて11枚を Issue #3254 で Codex へ依頼しました。</p></li>
     <li><b>残りと資料</b><p>新幹線、電車、回想、フィナーレ、敗北と再挑戦、大会の2つ。配送便の窓はやめます。あわせて資料の「画像を使わない」「紫1色」の約束を、上の5つの決まりへ書き換えます。</p></li>
   </ol>
   <div class="sec-head"><h3>決めてほしいこと</h3></div>
@@ -511,7 +512,7 @@ footer { color: var(--dim); font-size: 13px; border-top: 1px solid var(--line); 
     <li>この方向（ゲームの絵で作り直す）で進めてよいか。</li>
     <li>場面の切り替えは A（煙のにじみ）と B（網点）のどちらにするか。ふだんは A、大きな区切りだけ B という使い分けもできます。</li>
     <li>占いの札の表を「占う相手の絵柄」にしてよいか。</li>
-    <li>絵が要る5つの依頼文を出してよいか。</li>
+    <li>Codex への依頼（Issue #3254 の11枚）を、この内容で投げてよいか。龍の煙の一枚絵は CG なので、別に相談します。</li>
     <li>「残す」とした5つ（LIME 交換・プリクラ・章題・登場カットイン・「???」の走査）に、気に入っていないものがあれば教えてください。同じ決まりで作り直します。</li>
   </ol>
   <footer>見本は本編に未接続です。新しい画像は作っていません（占いの札は、採用済みの登場カットインの絵から切り出しています）。いまの録画は 2026-11-11 の main を 1280×720・通常の速さで再生したものです。</footer>
