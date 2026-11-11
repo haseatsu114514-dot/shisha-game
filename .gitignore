@@ -9,3 +9,5 @@ __pycache__/
 asset_sources/portrait_sync_backup_*/
 remake/test/shots/
 # 1ファイル配布版（約65MB）は生成物。Pagesのデプロイでビルドする（コミットしない・2026-10-04）
+# 作業ごとの結果メモはPR本文に書く。ルートの RESULT.md はコミットしない（PRのたびに競合していた・2026-11-11）
+/RESULT.md
