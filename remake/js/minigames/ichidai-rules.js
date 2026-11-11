@@ -1,4 +1,10 @@
-// カードゲーム「一台勝負」の規則（第0.4版）。DOM・保存・音に触れない純粋な状態機械。
+// カードゲーム「一台勝負」の規則（第0.5版）。DOM・保存・音に触れない純粋な状態機械。
+// 第0.5版（2026-11-11 オーナー「初心者でも遊べるか・上級者でも深さがあるか・シーシャ作りの再現度」の見立てを受けて「それら全てお願い」）:
+//   ・冷めるのは1ターンに炭1つ・火1だけ（第0.4版は2つ）。炭を替える忙しさを実際のシーシャに寄せ、炭を保てない人が0点になるのを和らげる。
+//   ・審査カードは、ラウンドのはじめにめくる（全員が見てから、その吸い方に熱を合わせる）。運だった「吸い方」を、合わせる腕の勝負にする。
+//     「吸い方を読む」は、次のラウンドの審査カードを自分だけ先に見るカードになる（山のいちばん上＝次のラウンドの分）。
+//   ・ダブルアップルのジャストは熱7の1つだけ（どこでもジャストだと、温度を合わせる勝負が無くなる）。
+//   計りと理由は docs/design/card_game/v0.3_design.md の「7. 第0.5版」。
 // 第0.4版（2026-11-11 オーナー指示）: 火力ゾーン＝HMDの上の炭。炭そのものに「火」がある（新品のフラット炭は2・キューブ炭は3・
 // 手札を裏向きで置いた種火は1）。熱（10段階）＝置いてある炭の火の合計で、炭の数ではない。炭の火は下がるだけ（回復しない。
 // 冷めにくくはできる）。上げたければ新しい炭に入れ替える。炭は4つまで（5つ目は置けない）。冷めるときは、炭を2つ選んで
@@ -9,7 +15,7 @@
 // 設計の理由と比べた結果は docs/design/card_game/v0.3_design.md。
 // 使い方: const G = createGame(cfg); → G.wait が「だれの、どの入力を待っているか」。act(G, action) で進める。
 // 画面（ichidai.js）もCPU（ichidai-ai.js）もテストも、この act だけで対戦を進める。
-// 規則の文は docs/design/card_game/ichidai_shobu_rulebook_v0.4.pdf。
+// 規則の文は docs/design/card_game/ichidai_shobu_rulebook_v0.5.pdf。
 // 人数は2〜4人（2026-11-11 オーナー「1:1もあるし1:1:1:1の4人のやつとかもある」「5もいる」）。席は index の順に時計回りで、
 // 先手から順に1人ずつ手番を回す。一票は印象がいちばん高い1人に入る（いちばん上が並んだら入らない）。相手を1人ねらうカード
 // （実況の煽り・すきま風）は、action.target で相手を選ぶ（選ばなければ、点がいちばん高い相手）。
@@ -21,12 +27,14 @@ export const RULES = Object.freeze({
   // チャージしないなら普通に1ドロー」「ターン1。バディファイトと同じ。引かないと置けない」）: 自分のターンに1枚引く（普通のドロー）。
   // チャージは「チャージ＆ドロー」で、手札を1枚裏向きで置いて1枚引く。1ターンに1回。置かずに引くことも、引かずに置くこともできない。
   // 引く枚数が減るぶん、準備の「蒸らす」で引くのを2枚にして手札の量を保つ（steamDraw。計算は docs/design/card_game/v0.3_design.md）
-  draw: 1, chargeDraw: 1, cool: 2, slots: 4, heatMax: 10, handMax: 7, pile: 12, vote: 2, wear: 2, rich: 10, toolMax: 3,
+  draw: 1, chargeDraw: 1, cool: 1, slots: 4, heatMax: 10, handMax: 7, pile: 12, vote: 2, wear: 2, rich: 10, toolMax: 3,
   // 第0.3版: カードは必要火力を満たせば使える（払わない）。使えるのは1ラウンドに1枚（準備は1ターンに1枚）。
   // チャージと、炭を置く・のせるは何回でも。灰にするのは1ターンに1回。決めた理由は docs/design/card_game/v0.3_design.md
   cardsPerRound: 1, chargePerTurn: 1, ashPerTurn: 1,
   // 一口のカード: false＝提供の自分のターンに仕込む（第0.3版）。true＝審査カードをめくったあとに使う（第0.2版の受け方）
   reactAfterReveal: false,
+  // 審査カードをめくる時: true＝ラウンドのはじめ（第0.5版。全員が見てから熱を合わせる）。false＝全員のターンのあと（第0.4版まで）
+  revealFirst: true,
   // 印象＝味値＋帯の分＋濃厚＋カード。ジャストも適温も同じにして、印象は味の強さで競う
   impress: Object.freeze({ just: 1, band: 1, off: -1, cold: -2, scorch: -3 }),
 });
@@ -55,7 +63,7 @@ export const sidesOf = (p) => Object.keys(p.bowl).filter((k) => k !== p.main && 
 export const hasTool = (p, id) => p.tools.includes(id) || p.person === id;
 /** 炭焼き場の枠。だれでも4つで、カードでは増えない（2026-11-11 オーナー指示） */
 export const slotsOf = () => RULES.slots;
-/** このターンの冷める段階。炭を2つ選んで火を1ずつ下げる（同じ炭は1ターンに1段階まで。炭が1つなら1段階だけ） */
+/** このターンの冷める段階。炭を1つ選んで火を1下げる（第0.5版。RULES.cool を増やすと、その数だけ別の炭を1ずつ下げる） */
 export const coolStepsOf = (p) => Math.min(RULES.cool, Math.max(1, p.zone.length));
 export const roundsOf = (G) => G.tour.sessions * 3;
 export const sessionOf = (G) => Math.floor(G.round / 3);
@@ -123,6 +131,7 @@ export function scorePuff(p, h, q, fl = {}) {
     if (z === "just") add("ジャスト", 2);
     add("ミックス", mix); add("相性", pair); add("濃厚", rich ? 1 : 0);
     if (kinds === 1 && p.bowlId === "clay") add("素焼きハガル", 1);
+    if (kinds === 1 && f.id === "double_apple") add("原点", 1); // ダブルアップル【原点】: 単品なら毎口+1
     if (kinds === 1 && p.person === "adam") add("アダム", 1);
     if (sd.length >= 2 && p.person === "mashiro") add("ましろ", 1);
     if (fl.lastOfSession && p.bowl.jasmine >= 2) add("ジャスミン", 1);
@@ -263,7 +272,8 @@ export function canPlay(G, p, id, target = null) {
   if (id === "buyout" && (p.steamed || p.turn?.mode)) return fail("詰める前に使う");
   if (id === "draft" && !targetsOf(G, p, id).length) return fail("相手に炭がない");
   if (isTargeted(id) && target != null && !targetOf(G, p, id, target)) return fail("その相手には使えない");
-  if (id === "read" && (!G.pile.length || p.peek)) return fail(G.pile.length ? "もう見ている" : "審査カードがない");
+  if (id === "read" && (!G.pile.length || p.peek)) return fail(G.pile.length ? "もう見ている" : G.R.revealFirst ? "次の審査カードがない" : "審査カードがない");
+  if (id === "read" && G.R.revealFirst && G.round >= roundsOf(G) - 1) return fail("次のラウンドがない");
   if (id === "go_second" && G.round >= roundsOf(G) - 1) return fail("次のラウンドがない");
   if ((id === "inner" || id === "outer" || id === "loosen") && false) return OK;
   return OK;
@@ -577,9 +587,17 @@ function endTurn(G, p, kind) {
 }
 function startRound(G) {
   G.order = G.P.map((_, k) => (G.lead + k) % G.P.length); G.serveStep = 0; G.judge = null; // 先手から席の順
-  for (const p of G.P) { p.puff = newPuff(); p.cardsUsed = 0; }
+  for (const p of G.P) { p.puff = newPuff(); p.cardsUsed = 0; p.peek = null; }
   emit(G, { t: "round", round: G.round });
+  if (G.R.revealFirst) drawJudge(G); // このラウンドの吸い方を、先に全員が見る
   startServeTurn(G);
+}
+/** 審査カードを1枚めくる（練習試合は「ふつうに吸う」） */
+function drawJudge(G) {
+  const q = G.pile.length ? G.pile.shift() : { ...PUFFS.normal, judge: null };
+  G.judge = q; if (q.judge) G.shown.push(q);
+  emit(G, { t: "reveal", puff: q, round: G.round });
+  say(G, `審査：${q.judge ? JUDGE[q.judge].name + "「" + q.style + "」" : q.style}。${q.tx}`);
 }
 function startServeTurn(G) {
   const p = G.P[G.order[G.serveStep]];
@@ -603,11 +621,8 @@ function afterCool(G, p) {
 /** その一口にかけた技（審査の前に仕込んだものも、めくったあとに足したものも、ここに貯める） */
 const newPuff = () => ({ tk: 0, blow: false, cool: 0, impress: 0, allIn: 0, duel: 0, encore: 0, done: false, cards: [] });
 function startJudge(G) {
-  const q = G.pile.length ? G.pile.shift() : { ...PUFFS.normal, judge: null };
-  G.judge = q; if (q.judge) G.shown.push(q);
+  if (!G.R.revealFirst) drawJudge(G);
   for (const p of G.P) { p.puff ||= newPuff(); p.puff.done = false; }
-  emit(G, { t: "reveal", puff: q });
-  say(G, `審査：${q.judge ? JUDGE[q.judge].name + "「" + q.style + "」" : q.style}。${q.tx}`);
   if (!G.R.reactAfterReveal) { resolveJudge(G); return; }
   G.wait = { type: "react", player: G.order[0] };
 }
@@ -654,7 +669,7 @@ function resolveJudge(G) {
   }
   for (const p of G.P) {
     const i = p.index, r = res[i];
-    p.score += r.pts + (r.vote || 0); p.lastPuff = r.pts; p.pend = 0; p.peek = null;
+    p.score += r.pts + (r.vote || 0); p.lastPuff = r.pts; p.pend = 0; if (!G.R.revealFirst) p.peek = null;
     say(G, `判定熱${r.h}・${ZONE_LABEL[r.zone]} → ${r.pts}点${r.vote ? `＋一票${r.vote}点` : ""}${r.lost ? `（${FLAVOR[r.lost].name}を1枚失う）` : ""}`, i);
   }
   for (const p of G.P) p.puff.scored = true;
