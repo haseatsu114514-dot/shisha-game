@@ -1,8 +1,8 @@
 /* カードゲーム「一台勝負」の相手の一言（#3244 項目3。remake/js/minigames/ichidai-lines.js）。
    卓の並びには入れず重ねるだけ。審査・勝敗の札（z-index 10）の上に出し、指は通す（ボタンを押せなくしない）。
-   位置は JS が相手の顔の左横に合わせる（右横は熱の計りと早送りボタン）。顔が見つからないときは上の中央。 */
+   位置は JS が相手の顔の左横に合わせる（対面の卓では、席に座った相手の顔のあたり。右横は案内の札）。顔が見つからないときは上の中央。 */
 .ichi-say {
-  position: absolute; left: 50%; top: 14px; z-index: 11; max-width: 360px; padding: 9px 16px; pointer-events: none;
+  position: absolute; left: 50%; top: 14px; z-index: 11; max-width: 290px; padding: 9px 16px; pointer-events: none;
   border-radius: 14px; background: #f6f1fa; color: #1d1229; border: 2px solid var(--ichi-lav, #c9a7e6);
   font-size: 20px; font-weight: 800; line-height: 1.35; box-shadow: 0 6px 16px rgba(0, 0, 0, 0.55);
   word-break: auto-phrase; transform: translateX(-50%); animation: ichi-say-in 0.18s ease-out both;

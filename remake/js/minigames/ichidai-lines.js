@@ -82,8 +82,8 @@ export function attachIchidaiLines({ root, charId, foe = 1, quick = () => false,
     node.dataset.face = line.face || "";
     node.setAttribute("aria-live", "polite");
     node.textContent = line.text;
-    // 相手の顔の左横に、顔へ向けて出す（右横は熱の計りと早送りボタンがあるので空けておく）
-    const anchor = root.querySelector(".ichi-leader.is-foe .ichi-leader-ring") || root.querySelector(".ichi-leader.is-foe");
+    // 相手の顔の左横に、顔へ向けて出す（右横は案内の札とボタンがあるので空けておく）。対面の卓では、席の顔のあたり（.ichi-say-anchor）
+    const anchor = root.querySelector(".ichi-say-anchor") || root.querySelector(".ichi-leader.is-foe .ichi-leader-ring") || root.querySelector(".ichi-leader.is-foe");
     if (anchor) {
       const a = anchor.getBoundingClientRect(), r = root.getBoundingClientRect(), k = r.width ? root.offsetWidth / r.width : 1;
       node.style.right = `${Math.round((r.right - a.left) * k) + 12}px`;

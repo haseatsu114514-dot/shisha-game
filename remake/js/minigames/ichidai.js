@@ -31,6 +31,7 @@ import { aiAct } from "./ichidai-ai.js";
 import { artUrl, flavorArt, cardArt, faceUrl, bowlArt, hmdArt, JUDGE_FACE } from "./ichidai-art.js";
 import { HELP_PAGES } from "./ichidai-help.js";
 import { playVersus } from "./ichidai-versus.js";
+import { attachIchidaiLines } from "./ichidai-lines.js";
 
 export const ICHIDAI_TITLE = "一台勝負";
 export const LEVELS = Object.freeze([{ id: 0, name: "やさしい" }, { id: 1, name: "ふつう" }, { id: 2, name: "つよい" }]);
@@ -152,7 +153,8 @@ export function runIchidai({ host = document.getElementById("stage"), signal = n
   // 部屋・相手の席・卓は作り直さない（番が替わったときの見え方の動きと、相手の息づかいを切らさないため）。中身だけ差し替える
   const room = el("div.ichi-room", { "aria-hidden": "true" }, [el("i.ichi-haze"), el("i.ichi-haze")]);
   const seatBust = el("span.ichi-seat-bust"), seatHand = el("span.ichi-seat-hand");
-  const seat = el("button.ichi-seat", { type: "button", dataset: { test: "ichi-seat" }, onclick: () => { if (G && !G.over) { sfx("select"); openRig(G.P[CPU], false); } } }, [seatBust, seatHand]);
+  // .ichi-say-anchor＝相手の顔のあたり。相手の一言（ichidai-lines.js）の吹き出しを、ここへ向けて出す
+  const seat = el("button.ichi-seat", { type: "button", dataset: { test: "ichi-seat" }, onclick: () => { if (G && !G.over) { sfx("select"); openRig(G.P[CPU], false); } } }, [seatBust, el("i.ichi-say-anchor", { "aria-hidden": "true" }), seatHand]);
   const board = el("div.ichi-board", { dataset: { test: "ichi-board" } });
   const view = el("div.ichi-view", board);
   const table = el("div.ichi-table");
@@ -166,6 +168,10 @@ export function runIchidai({ host = document.getElementById("stage"), signal = n
   ]);
   root.append(room, seat, view, table, head, sheet, live);
   host.append(root);
+  // 対戦中、相手が一言しゃべる（2026-11-11 オーナー「対戦中は相手にセリフとか言わせたい」。台詞は data/dialogue/ichidai_lines.json）。
+  // 一言に表情が付いていれば、相手の顔もそれに替える。早送りと CPU に打たせているあいだは出さない
+  const lines = attachIchidaiLines({ root, charId: foe.id, quick: () => ui.fast || pilot === "cpu",
+    onLine: (line) => { if (line.face && G) { setFoeMood(line.face); renderSeat(G.P[CPU]); } } });
   const arm = () => unlockAudio();
   root.addEventListener("pointerdown", arm); root.addEventListener("keydown", arm);
   // このゲーム用の卓・裏面の絵があれば差し替える（無ければ CSS の既定＝本編の夜紫UIの部品）
@@ -177,6 +183,7 @@ export function runIchidai({ host = document.getElementById("stage"), signal = n
   function close(completed) {
     if (dead()) return;
     ctrl.abort(); pending?.(null);
+    lines.clear();
     root.remove(); active.delete(host);
     if (window.__ichidai === hook) delete window.__ichidai;
     try { previousFocus?.focus?.({ preventScroll: true }); } catch { /* 元の要素が無ければそのまま */ }
@@ -270,6 +277,7 @@ export function runIchidai({ host = document.getElementById("stage"), signal = n
       if (dead()) return;
     }
     root.dataset.phase = "play";
+    render(); lines.event({ t: "start" });
     if (tutorial && !games.length) { openHelp(); }
     await loop();
   }
@@ -401,12 +409,13 @@ export function runIchidai({ host = document.getElementById("stage"), signal = n
     for (const ev of evs) {
       if (dead()) return;
       // 置いた札は、飛んできた札が着くまで隠しておく（着いたら置かれる動き）
+      const said = lines.event(ev); // 相手の一言（カードを使った・審査の結果・勝ち負け）。待たずに進む
       const fl = from && !still();
       board.style.setProperty("--land", fl && ["charge", "place", "puton"].includes(ev.t) ? `${(human(ev.p) ? 0.3 : 0.36) / speed}s` : fl && ev.t === "play" ? `${(human(ev.p) ? 0.62 : 1.7) / speed}s` : "0s");
       if (ev.t === "reveal") { sfx("card"); render(); await showReveal(ev.puff); }
       else if (ev.t === "score") {
         const foeResult = ev.res[CPU], swing = priorScores[CPU] <= priorScores[ME] && G.P[CPU].score > G.P[ME].score;
-        setFoeMood(...(foeResult.zone === "scorch" ? ["sad", "shock", "serious"] : swing ? ["surprise", "excited", "smile"]
+        if (!said?.face) setFoeMood(...(foeResult.zone === "scorch" ? ["sad", "shock", "serious"] : swing ? ["surprise", "excited", "smile"]
           : foeResult.zone === "just" ? ["excited", "smile", "surprise"] : ev.voter === CPU ? ["smile", "smug"]
             : ev.voter === ME ? ["sad", "serious"] : foeResult.pts > ev.res[ME].pts ? ["smile", "smug"] : ["serious", "normal"]));
         render(); await showScore(ev);

@@ -302,6 +302,7 @@
 @keyframes ichi-breathe { 50% { transform: scale(1.012) translateY(-1px); } }
 .ichi-seat.is-active .ichi-foe-bust.is-seat { filter: drop-shadow(0 0 12px rgba(255, 210, 122, 0.6)); }
 .ichi-seat-bust > .ichi-leader-ring { position: absolute; left: 50%; top: 22px; margin-left: -62px; width: 124px; height: 124px; }
+.ichi-say-anchor { position: absolute; left: 148px; top: 8px; width: 124px; height: 124px; pointer-events: none; }
 .ichi-seat-hand { position: absolute; left: 50%; top: 114px; transform: translateX(-50%); display: flex; align-items: flex-end; padding: 0 16px; pointer-events: none; }
 .ichi-seat-hand .ichi-back { --cw: 34px; transform-origin: 50% 130%; transform: translateY(var(--dy, 0)) rotate(var(--r, 0deg)); box-shadow: 0 2px 5px rgba(0, 0, 0, 0.7); }
 .ichi-seat-hand .ichi-back + .ichi-back { margin-left: -14px; }
@@ -494,41 +495,48 @@ button.ichi-leaf.can:hover { border-color: #fff; }
 .ichi-float.is-me { left: 150px; top: 590px; } .ichi-float.is-foe { left: 190px; top: 14px; color: #e6d3f5; text-shadow: 0 0 16px rgba(155, 120, 196, 0.9), 0 3px 0 #150d22; }
 @keyframes ichi-float { 0% { opacity: 0; transform: translateY(14px) scale(0.7); } 18% { opacity: 1; transform: translateY(0) scale(1.15); } 70% { opacity: 1; } 100% { opacity: 0; transform: translateY(-34px); } }
 
-/* ── VS演出（対戦の前。ichidai-versus.js）: 顔アイコンが向かい合い、あいだを電撃が走る。2人＝左右／3人＝横に3つ／4人＝四隅 ── */
+/* ── VS演出（対戦の前。ichidai-versus.js）: キャラが向かい合い、あいだを電撃が走る。2人＝左右／3人＝横に3つ／4人＝四隅 ──
+   絵は登場カットインのグラフィック絵柄（顔の白い人物絵）と、その人の背景。絵が無いキャラは、色の面と顔アイコン */
 .ichi-vs, .ichi-vs * { box-sizing: border-box; }
 .ichi-vs { position: absolute; inset: 0; z-index: 12; overflow: hidden; outline: none; cursor: pointer; background: #0d0716; --vs-0: #f08a2b; --vs-1: #9b78c4; --vs-2: #2f9cc4; --vs-3: #c8405f; }
-.ichi-vs-panel { position: absolute; inset: 0; background:
+.ichi-vs-panel { position: absolute; inset: 0; overflow: hidden; background:
   radial-gradient(ellipse 70% 80% at var(--px, 50%) var(--py, 50%), color-mix(in srgb, var(--c) 62%, transparent), transparent 72%),
   linear-gradient(160deg, color-mix(in srgb, var(--c) 34%, #150d22), #150d22 82%);
   animation: ichi-vs-panel 0.34s var(--ease-out) both; }
 .ichi-vs-panel.p-0 { --c: var(--vs-0); } .ichi-vs-panel.p-1 { --c: var(--vs-1); } .ichi-vs-panel.p-2 { --c: var(--vs-2); } .ichi-vs-panel.p-3 { --c: var(--vs-3); }
 @keyframes ichi-vs-panel { from { transform: translate(var(--fx, 0), var(--fy, 0)); } }
+/* 面の中: その人の背景（面の箱いっぱい。柄は絵の右寄りにある）と人物絵。下は名前が読めるよう暗くする */
+.ichi-vs-bg { position: absolute; left: var(--bx, 0%); top: var(--by, 0%); width: var(--bw, 100%); height: var(--bh, 100%); background: center / cover no-repeat; background-position: 82% 50%; }
+.ichi-vs-art { position: absolute; height: auto; max-width: none; filter: drop-shadow(0 0 1px rgba(255, 255, 255, 0.9)) drop-shadow(0 10px 22px rgba(0, 0, 0, 0.7)); animation: ichi-vs-art 0.5s cubic-bezier(0.2, 1.2, 0.4, 1) both; }
+@keyframes ichi-vs-art { from { transform: translate(calc(var(--fx, 0%) * 0.5), calc(var(--fy, 0%) * 0.5)) scale(1.08); opacity: 0; } }
+.ichi-vs-panel.has-art::after { content: ""; position: absolute; left: var(--bx, 0%); top: var(--by, 0%); width: var(--bw, 100%); height: var(--bh, 100%); background: linear-gradient(180deg, transparent 58%, rgba(8, 4, 14, 0.9) 100%); }
 /* 2人: 斜めに割った左右 */
-.ichi-vs.n-2 .p-0.ichi-vs-panel { clip-path: polygon(0 0, 56% 0, 44% 100%, 0 100%); --px: 25%; --fx: -60%; }
-.ichi-vs.n-2 .p-1.ichi-vs-panel { clip-path: polygon(56% 0, 100% 0, 100% 100%, 44% 100%); --px: 75%; --fx: 60%; }
+.ichi-vs.n-2 .p-0.ichi-vs-panel { clip-path: polygon(0 0, 56% 0, 44% 100%, 0 100%); --px: 25%; --fx: -60%; --bw: 56%; }
+.ichi-vs.n-2 .p-1.ichi-vs-panel { clip-path: polygon(56% 0, 100% 0, 100% 100%, 44% 100%); --px: 75%; --fx: 60%; --bx: 44%; --bw: 56%; }
 /* 3人: 斜めに割った3つ */
-.ichi-vs.n-3 .p-0.ichi-vs-panel { clip-path: polygon(0 0, 37.4% 0, 31.1% 100%, 0 100%); --px: 18%; --fx: -50%; }
-.ichi-vs.n-3 .p-1.ichi-vs-panel { clip-path: polygon(37.4% 0, 68.9% 0, 62.6% 100%, 31.1% 100%); --px: 50%; --fy: -100%; }
-.ichi-vs.n-3 .p-2.ichi-vs-panel { clip-path: polygon(68.9% 0, 100% 0, 100% 100%, 62.6% 100%); --px: 82%; --fx: 50%; }
+.ichi-vs.n-3 .p-0.ichi-vs-panel { clip-path: polygon(0 0, 37.4% 0, 31.1% 100%, 0 100%); --px: 18%; --fx: -50%; --bw: 37.4%; }
+.ichi-vs.n-3 .p-1.ichi-vs-panel { clip-path: polygon(37.4% 0, 68.9% 0, 62.6% 100%, 31.1% 100%); --px: 50%; --fy: -100%; --bx: 31.1%; --bw: 37.8%; }
+.ichi-vs.n-3 .p-2.ichi-vs-panel { clip-path: polygon(68.9% 0, 100% 0, 100% 100%, 62.6% 100%); --px: 82%; --fx: 50%; --bx: 62.6%; --bw: 37.4%; }
 /* 4人: 四隅 */
+.ichi-vs.n-4 .ichi-vs-panel { --bw: 50%; --bh: 50.8%; }
 .ichi-vs.n-4 .p-0.ichi-vs-panel { clip-path: inset(0 50% 49.2% 0); --px: 25%; --py: 27%; --fx: -55%; --fy: -55%; }
-.ichi-vs.n-4 .p-1.ichi-vs-panel { clip-path: inset(0 0 49.2% 50%); --px: 75%; --py: 27%; --fx: 55%; --fy: -55%; }
-.ichi-vs.n-4 .p-2.ichi-vs-panel { clip-path: inset(50.8% 50% 0 0); --px: 25%; --py: 74%; --fx: -55%; --fy: 55%; }
-.ichi-vs.n-4 .p-3.ichi-vs-panel { clip-path: inset(50.8% 0 0 50%); --px: 75%; --py: 74%; --fx: 55%; --fy: 55%; }
-/* 顔アイコンと名前 */
-.ichi-vs-player { position: absolute; z-index: 2; display: grid; justify-items: center; gap: 6px; width: 420px; margin: -150px 0 0 -210px; text-align: center; animation: ichi-vs-in 0.38s cubic-bezier(0.2, 1.3, 0.4, 1) both; }
+.ichi-vs.n-4 .p-1.ichi-vs-panel { clip-path: inset(0 0 49.2% 50%); --px: 75%; --py: 27%; --fx: 55%; --fy: -55%; --bx: 50%; }
+.ichi-vs.n-4 .p-2.ichi-vs-panel { clip-path: inset(50.8% 50% 0 0); --px: 25%; --py: 74%; --fx: -55%; --fy: 55%; --by: 50.8%; --bh: 49.2%; }
+.ichi-vs.n-4 .p-3.ichi-vs-panel { clip-path: inset(50.8% 0 0 50%); --px: 75%; --py: 74%; --fx: 55%; --fy: 55%; --bx: 50%; --by: 50.8%; --bh: 49.2%; }
+/* 名前の札（絵が無いキャラは、その上に顔アイコン） */
+.ichi-vs-player { position: absolute; z-index: 2; display: grid; justify-items: center; gap: 6px; width: 420px; transform: translate(-50%, -50%); text-align: center; animation: ichi-vs-in 0.38s cubic-bezier(0.2, 1.3, 0.4, 1) both; }
 .ichi-vs-player.p-0 { --c: var(--vs-0); --fx: -520px; } .ichi-vs-player.p-1 { --c: var(--vs-1); --fx: 520px; } .ichi-vs-player.p-2 { --c: var(--vs-2); --fx: -520px; } .ichi-vs-player.p-3 { --c: var(--vs-3); --fx: 520px; }
 .ichi-vs.n-3 .ichi-vs-player.p-1 { --fx: 0px; --fy: -420px; } .ichi-vs.n-3 .ichi-vs-player.p-2 { --fx: 520px; }
-@keyframes ichi-vs-in { from { transform: translate(var(--fx, 0), var(--fy, 0)) scale(0.8); opacity: 0; } }
+@keyframes ichi-vs-in { from { transform: translate(calc(-50% + var(--fx, 0px)), calc(-50% + var(--fy, 0px))) scale(0.8); opacity: 0; } }
+.ichi-vs-player.no-art { transform: translate(-50%, -78%); }
 .ichi-vs-ring { display: grid; width: 220px; height: 220px; padding: 7px; border-radius: 50%; background: linear-gradient(135deg, #fff, var(--c) 45%, color-mix(in srgb, var(--c) 40%, #150d22)); box-shadow: 0 0 0 4px #150d22, 0 0 34px color-mix(in srgb, var(--c) 80%, transparent), 0 14px 30px rgba(0, 0, 0, 0.7); }
 .ichi-vs-face { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; background: #150d22; display: block; }
 .ichi-vs-face.is-blank { display: grid; place-items: center; font-size: 96px; font-weight: 900; color: var(--c); }
-.ichi-vs-player > b { padding: 2px 22px; border-radius: 8px; background: rgba(13, 7, 22, 0.86); border-bottom: 4px solid var(--c); font-size: 34px; font-weight: 900; letter-spacing: 0.06em; color: #fff; text-shadow: 0 2px 0 #150d22; white-space: nowrap; }
-.ichi-vs-player > small { font-size: 16px; font-weight: 800; color: #f6f1fa; text-shadow: 0 2px 4px #000; white-space: nowrap; }
-.ichi-vs.n-3 .ichi-vs-ring, .ichi-vs.n-4 .ichi-vs-ring { width: 168px; height: 168px; padding: 6px; }
-.ichi-vs.n-3 .ichi-vs-player, .ichi-vs.n-4 .ichi-vs-player { margin-top: -116px; gap: 4px; }
-.ichi-vs.n-3 .ichi-vs-player > b, .ichi-vs.n-4 .ichi-vs-player > b { font-size: 26px; }
-.ichi-vs.n-4 .ichi-vs-player > small { font-size: 14px; }
+.ichi-vs-player > b { padding: 2px 26px; border-radius: 8px; background: rgba(13, 7, 22, 0.9); border-bottom: 5px solid var(--c); font-size: 40px; font-weight: 900; letter-spacing: 0.06em; color: #fff; text-shadow: 0 2px 0 #150d22; white-space: nowrap; }
+.ichi-vs-player > small { padding: 1px 12px; border-radius: 6px; background: rgba(13, 7, 22, 0.7); font-size: 17px; font-weight: 800; color: #f6f1fa; white-space: nowrap; }
+.ichi-vs.n-3 .ichi-vs-ring, .ichi-vs.n-4 .ichi-vs-ring { width: 150px; height: 150px; padding: 6px; }
+.ichi-vs.n-3 .ichi-vs-player > b { font-size: 30px; } .ichi-vs.n-4 .ichi-vs-player > b { font-size: 28px; padding: 2px 18px; }
+.ichi-vs.n-4 .ichi-vs-player { width: 300px; gap: 3px; } .ichi-vs.n-4 .ichi-vs-player > small { font-size: 14px; }
 /* 電撃: 太い光・細い芯・枝。ぶつかった瞬間（.is-clash）から見える。形は短い間隔で引き直される */
 .ichi-vs-bolts { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 3; opacity: 0; pointer-events: none; filter: drop-shadow(0 0 7px #fff3b0) drop-shadow(0 0 18px #6fd0ff); }
 .ichi-vs-bolts polyline { fill: none; stroke-linejoin: round; stroke-linecap: round; }
