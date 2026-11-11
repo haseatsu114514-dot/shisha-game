@@ -1,13 +1,15 @@
 // 新版（現行の画面を磨き上げた様式・LK02）。見た目は css/look-neo.css、ここは絵の光・動きなど CSS だけでは足りない分。
 // setActive(false) では、足した要素・監視・クラスをすべて片付けて現行へ戻す。
+// 全画面 MENU の人物の絵は neo/menu-figure.js（ここから一緒に出し入れする）。
 //
-// ここで足すのは次の2つだけ（どちらも会話の DOM が変わった時にだけ動く。毎フレームの処理は無い）:
+// 会話に足すのは次の2つだけ（どちらも会話の DOM が変わった時にだけ動く。毎フレームの処理は無い）:
 //   1. 場面の光: 立ち絵（.vn-portraits > img.portrait）1枚ごとに、同じ位置・同じ大きさの <i class="neo-light"> を直後へ置く。
 //      立ち絵の絵を型（mask）にして、色は CSS が soft-light で重ねる。立ち絵の img 自体には触らない。
 //   2. 名前の縦線の色: 話している人の色（characters.json の intro_cutin.color）を #vn の --neo-speaker へ入れる。
 // 会話エンジン（vn/engine.js）は立ち絵を img だけで数え、登場を img.getAnimations() で待つ。
 // そのため img には要素もクラスも動きも足さない（呼吸は CSS が .vn-portraits の層ごと動かす）。
 import { DB, realName } from "../core/data.js";
+import { setActive as setMenuFigure } from "./neo/menu-figure.js";
 
 const LIGHT = "neo-light";
 const SPEAKER_VAR = "--neo-speaker";
@@ -143,6 +145,7 @@ function attachParts() {
 export function setActive(on) {
   if (active === !!on) return;
   active = !!on;
+  setMenuFigure(active);
   if (active) {
     host = document.getElementById("vn");
     if (!host) return;
