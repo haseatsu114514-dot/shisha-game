@@ -526,6 +526,7 @@
         {
           "speaker": "kumicho",
           "face": "normal",
+          "beat": 700,
           "text": "……昔な。若い衆を何人か、失ったことがありやしてね"
         },
         {
@@ -871,7 +872,7 @@
         {
           "speaker": "customer",
           "face": "normal",
-          "text": "……っ、はい"
+          "text": "[shiver]……っ、はい[/shiver]"
         },
         {
           "speaker": "",
@@ -1139,6 +1140,7 @@
         {
           "speaker": "kumicho",
           "face": "serious",
+          "duck": true,
           "text": "受け取りなせえ。こいつは盃の代わりでさ"
         },
         {
