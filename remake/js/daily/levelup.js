@@ -6,12 +6,12 @@ import { layers } from "../core/ui.js";
 import { SE } from "../core/audio.js";
 import { state, save } from "../core/state.js";
 import { on } from "../core/bus.js";
-import { DB, displayName } from "../core/data.js";
+import { DB, displayName, faceIconUrl } from "../core/data.js";
 import { peekGrowthStock, clearGrowthStock, gaugeAt, totalExpFor, growthView, HIDANE_KEYS, MILESTONE_LEVELS, BOARD_TOTAL } from "../core/growth.js";
-import { BOARD_HEAD, BOARD_JA, HIDANE_NAME } from "../core/growth-board-data.js";
-import { NODES, ringsOpen } from "../core/growth-board.js";
+import { HIDANE_NAME } from "../core/growth-board-data.js";
 import { spotById } from "./spots.js";
 import { hidaneIcon, igniteOn, emberField, HIDANE_COLOR, reducedMotion } from "./growth-fx.js";
+import { openBoardHelp } from "./growth-board-help.js";
 
 const colorName = (kind) => HIDANE_NAME[kind] || "火種";
 const PLACE_LABEL = {
@@ -48,59 +48,62 @@ export function giftLine(gift) {
   return `${from}：${parts}`;
 }
 
-/** 火種の粒つきの札（「火種 ＋4」「紅火 ＋2」）。文字は hidaneLine・giftLine と同じ言葉にそろえる */
-function hidaneChip(kind, n, { label = null, extra = "" } = {}) {
-  return el(`span.lu-chip.k-${HIDANE_COLOR[kind] ? kind : "any"}${extra}`, [hidaneIcon(kind), el("span", { text: `${label || colorName(kind)} ＋${n}` })]);
+// ---------------------------------------------------------------- 絵と数だけで見せる部品（SBD116「文字が多い。アイコンや絵でシンプルに」）
+// 文（色の火の使い道・節目の説明・手持ち）は「？」の見方へ移した。画面には粒の絵・数・顔だけを出し、言葉は読み上げと説明（title）に残す。
+
+const sr = (text) => el("span.lu-sr", { text });
+/** もらった火種の合計（レベル＋節目＋ご褒美）を色ごとに */
+export function stockTotals(r) {
+  const sum = Object.fromEntries(HIDANE_KEYS.map((k) => [k, 0]));
+  const add = (kind, n) => { if (n > 0) sum[HIDANE_COLOR[kind] ? kind : "any"] += n; };
+  add("any", r.gains.any);
+  for (const x of r.gains.limited) { add(x.system, x.n); add("any", x.any || 0); }
+  for (const gift of r.gifts) for (const part of gift.parts) add(part.kind, part.n);
+  return sum;
 }
-/** レベルアップでもらった火種の札の並び（白火は「火種」と書く。今までの言葉のまま） */
-function rewardChips(r) {
-  const chips = [];
-  if (r.gains.any) chips.push(hidaneChip("any", r.gains.any, { label: "火種" }));
-  // 節目は色の火1＋白火1（SBD109）。同じ色はまとめて1枚の札に
-  const milestone = {};
-  for (const { system, n, any = 0 } of r.gains.limited) {
-    if (n) milestone[system] = (milestone[system] || 0) + n;
-    if (any) milestone.any = (milestone.any || 0) + any;
+/** 大きな粒と数（「白火 ×12」は読み上げだけ） */
+function bigFires(r) {
+  const sum = stockTotals(r);
+  return HIDANE_KEYS.filter((k) => sum[k] > 0).map((k, i) => {
+    const node = el(`span.lu-big.k-${k}`, { title: `${colorName(k)} ＋${sum[k]}` }, [hidaneIcon(k), el("b", { "aria-hidden": "true", text: `×${sum[k]}` }), sr(`${colorName(k)} ＋${sum[k]}`)]);
+    node.style.setProperty("--i", String(i));
+    return node;
+  });
+}
+const smallFires = (parts) => parts.filter((p) => p.n > 0).map((p) => el(`span.lu-mini.k-${HIDANE_COLOR[p.kind] ? p.kind : "any"}`, { "aria-hidden": "true" }, [hidaneIcon(p.kind), el("b", { text: String(p.n) })]));
+const partsText = (parts) => parts.filter((p) => p.n > 0).map((p) => `${colorName(p.kind)} ＋${p.n}`).join("　");
+/** ご褒美の短い名札（長い名前は説明と読み上げに） */
+const SHORT_GIFT = [[/優勝/, "優勝"], [/大会/, "大会"], [/斧投げ/, "斧投げ"], [/TRPG/, "TRPG"], [/DJ/, "DJ"], [/ラクダ/, "ラクダ"], [/サンドボード/, "砂丘"], [/くじ/, "くじ"]];
+const shortGift = (label = "") => SHORT_GIFT.find(([re]) => re.test(label))?.[1] || label.slice(0, 4);
+/** 内訳の小さな札: 節目は「★Lv.10」、ご褒美は贈り主の顔か短い名札。文は出さない */
+function sourceBadges(r) {
+  const out = [];
+  for (const x of r.gains.limited) {
+    const parts = [{ kind: x.system, n: x.n }, { kind: "any", n: x.any || 0 }];
+    out.push(el("span.lu-src.milestone", { title: `節目の Lv.${x.level}：${partsText(parts)}`, dataset: { test: "levelup-milestone" } }, [
+      el("b.lu-src-tag", { "aria-hidden": "true", text: `★Lv.${x.level}` }), sr(`節目の Lv.${x.level}：${partsText(parts)}`), ...smallFires(parts)]));
   }
-  for (const kind of HIDANE_KEYS.filter((k) => k !== "any").concat("any")) if (milestone[kind]) chips.push(hidaneChip(kind, milestone[kind], { extra: ".milestone" }));
-  return chips;
+  for (const gift of r.gifts) {
+    const face = gift.who ? faceIconUrl(gift.who, state) : null, name = giftLine(gift);
+    const tag = face ? el("img.lu-src-face", { src: face, alt: "", draggable: "false" }) : el("b.lu-src-tag", { "aria-hidden": "true", text: gift.who ? displayName(gift.who, state).slice(0, 4) : shortGift(gift.label) });
+    if (face) tag.addEventListener("error", () => tag.replaceWith(el("b.lu-src-tag", { "aria-hidden": "true", text: displayName(gift.who, state).slice(0, 4) })));
+    out.push(el("span.lu-src", { title: name, dataset: { test: "levelup-gift" } }, [tag, sr(name), ...smallFires(gift.parts)]));
+  }
+  return out;
 }
-/** 節目の一行（「節目の Lv.10！ 紅火と白火を1つずつ（いちばん灯してきた才能盤の色）」） */
-function milestoneText({ level, system, n, any = 0 }) {
-  if (system === "any" || !n) return `節目の Lv.${level}！ 火種がさらに${n + any}つ`;
-  const what = any === n ? `${colorName(system)}と${HIDANE_NAME.any}を${n}つずつ` : any ? `${colorName(system)}${n}つと${HIDANE_NAME.any}${any}つ` : `${colorName(system)}を${n}つ`;
-  return `節目の Lv.${level}！ ${what}（いちばん灯してきた${BOARD_JA[system]}盤の色）`;
-}
-/** ご褒美の1行を、贈り主と火種の札に分けて並べる */
-function giftRow(gift, cls) {
-  const from = gift.who ? `${displayName(gift.who, state)}から` : gift.label;
-  return el(`p.${cls}`, { dataset: { test: "levelup-gift" }, "aria-label": giftLine(gift) }, [
-    el("span.lu-gift-from", { text: from }), ...gift.parts.map(({ kind, n }) => hidaneChip(kind, n)),
-  ]);
-}
-
-/**
- * 色の火をもらった夜の一言（SBD105）。色の火は「色の台座」にはめる鍵で、まだ灯していない台座の数ぶんは台座のために取ってある。
- * 台座は第2章から盤に現れるので、第1章でもらった色の火は「使えない火種」に見えていた。何のための火かをもらった時に伝える。
- */
-export function colorFireNote(r, s = state) {
-  const colored = r.gains.limited.some((x) => x.system !== "any" && x.n > 0) || r.gifts.some((x) => x.parts.some((p) => p.kind !== "any"));
-  if (!colored) return "";
-  const lit = new Set(growthView(s).nodes), open = ringsOpen(s);
-  const gates = NODES.filter((n) => n.kind === "gate" && !lit.has(n.id));
-  if (!gates.length) return "色の火（紅火・蒼火・翠火）は、その色の盤のマスに使える";
-  return gates.some((n) => n.ring <= open)
-    ? "色の火（紅火・蒼火・翠火）は、盤のひし形「色の台座」にはめる鍵。はめると、その先の道が開く"
-    : "色の火（紅火・蒼火・翠火）は、盤のひし形「色の台座」にはめる鍵。台座は物語が進むと盤に現れる（それまで取っておける）";
-}
-
-/** いま持っている火種（精算の後）。0 の色は出さない */
-function walletLine(s = state) {
-  const hidane = growthView(s).hidane || {};
-  const have = HIDANE_KEYS.filter((k) => hidane[k] > 0);
-  if (!have.length) return null;
-  return el("p.lu-wallet", { dataset: { test: "levelup-wallet" } }, [el("span.lu-wallet-head", { text: "手持ちの火種" }),
-    ...have.map((k) => el(`span.lu-chip.small.k-${k}`, [hidaneIcon(k), el("span", { text: `${HIDANE_NAME[k]} ${hidane[k]}` })]))]);
+/** 学んできた相手の顔（場所は説明だけ） */
+function learnedFaces(keys) {
+  const faces = keys.filter((key) => DB.characters?.[key] && learnedLabel(key)).map((key) => {
+    // 顔の絵が無い・読めない時は、短い名札で出す
+    const url = faceIconUrl(key, state), name = learnedLabel(key);
+    const tag = () => el("b.lu-src-tag", { "aria-hidden": "true", title: name, text: name.slice(0, 4) });
+    if (!url) return tag();
+    const img = el("img.lu-face", { src: url, alt: "", title: name, draggable: "false" });
+    img.addEventListener("error", () => img.replaceWith(tag()));
+    return img;
+  });
+  const text = learnedText(keys);
+  return faces.length ? el("p.lu-faces", { title: `学んできたこと：${text}`, dataset: { test: "levelup-learned" } }, [...faces, sr(`学んできたこと：${text}`)]) : null;
 }
 
 /** ストックに見せるものがあるか（レベルが上がった・ご褒美が届いた） */
@@ -142,33 +145,28 @@ async function fullLevelUp(r, signal) {
   const lvText = el("strong.lu-lv", { text: `Lv.${r.from}` });
   const leveled = r.to > r.from;
   const head = el("h2.lu-head", { text: leveled ? "LEVEL UP" : "HIDANE", "aria-hidden": "true" });
-  const learned = learnedText(r.learned);
-  const chips = rewardChips(r), note = colorFireNote(r);
-  const nextMilestone = MILESTONE_LEVELS.find((level) => level > r.to);
+  const fires = bigFires(r), sources = sourceBadges(r);
   const details = el("div.lu-details", [
     leveled ? el("p.lu-change", { text: `Lv.${r.from} → Lv.${r.to}` }) : null,
-    // もらった火種は、粒の絵つきの札で一つずつ出す（SBD103）。盤が埋まった夜は今までどおり一言
-    chips.length ? el("p.lu-hidane.lu-rewards", { dataset: { test: "levelup-rewards" } }, chips.map((chip, i) => { chip.style.setProperty("--i", String(i)); return chip; }))
+    // もらった火種は、大きな粒と数だけ（SBD116）。もらえなかった時（盤が埋まった・上限の後）だけ一言
+    fires.length ? el("p.lu-hidane.lu-rewards", { dataset: { test: "levelup-rewards" } }, fires)
       : hidaneLine(r) ? el("p.lu-hidane", { text: hidaneLine(r) }) : null,
-    ...r.gains.limited.map((x) => el("p.lu-milestone", { dataset: { stat: x.system }, text: milestoneText(x) })),
-    learned ? el("p.lu-learned", { text: `学んできたこと：${learned}` }) : null,
-    ...r.gifts.map((x) => { const row = giftRow(x, "lu-gift"); row.prepend(el("span.lu-gift-head", { text: "ご褒美" })); return row; }),
-    note ? el("p.lu-color-note", { dataset: { test: "levelup-color-note" }, text: note }) : null,
-    walletLine(),
-    // このあと盤が開く（内省の続き）
-    el("p.lu-note", { text: "このあと、心得の盤に灯せる（時間は使わない）" }),
+    sources.length ? el("p.lu-sources", { dataset: { test: "levelup-sources" } }, sources) : null,
+    learnedFaces(r.learned),
   ]);
   const ok = el("button.btn.primary.lu-ok", { text: "盤へ", dataset: { test: "levelup-ok" } });
+  // 火種の種類・もらえる時・色の火の使い道は「？」の絵つきの見方で（SBD116）
+  const helpButton = el("button.lu-help", { type: "button", text: "？", title: "火種の見方", "aria-label": "火種の見方", dataset: { test: "levelup-help" } });
+  helpButton.addEventListener("click", () => { SE.click?.(); void openBoardHelp({ page: "fire" }); });
   const panel = el(`div.levelup${r.milestone ? ".milestone" : ""}${leveled ? "" : ".gift-only"}`, { role: "dialog",
     "aria-label": leveled ? `レベルアップ。Lv.${r.from}からLv.${r.to}へ。${hidaneLine(r)}` : "火種が届いた", dataset: { test: "levelup" } }, [
     head, el("div.lu-lv-wrap", [el("i.lu-ring", { "aria-hidden": "true" }), lvText]),
     el("div.lu-gauge", { role: "img", "aria-hidden": "true" }, [settled, fill, el("i.lu-gauge-shine", { "aria-hidden": "true" })]),
-    nextMilestone ? el("p.lu-next", { dataset: { test: "levelup-next" }, text: `次の節目 Lv.${nextMilestone}（色の火がもらえる）まで あと${nextMilestone - r.to}` }) : null,
-    details, el("div.lu-actions", [ok]),
+    details, el("div.lu-actions", [ok]), helpButton,
   ]);
   // 後ろに光の筋と昇る火の粉（飾り。押した所は今までどおり早送り）
   const backdrop = el("div.levelup-backdrop", [el("i.lu-rays", { "aria-hidden": "true" }), Object.assign(emberField(12), { className: "gfx-embers lu-embers" }), panel]);
-  backdrop.addEventListener("pointerdown", (e) => { if (e.target !== ok) s.skip(); });
+  backdrop.addEventListener("pointerdown", (e) => { if (e.target !== ok && e.target !== helpButton) s.skip(); });
   layers.fx.append(backdrop);
   let fillPace = "";
   const setBar = (node, ratio, instant = false) => {

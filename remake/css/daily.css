@@ -1232,10 +1232,6 @@ body[data-weather="outdoor"] .map-weather { display: none; }
 /* 白火（レベルアップでもらう火）: 白金の丸い熾き（SBD62） */
 .lu-hidane-icon, .hidane-flight { display: inline-block; width: 17px; height: 17px; border-radius: 50%; background: radial-gradient(circle at 50% 45%, #ffffff, #fff1d0 45%, #d9b46a 80%, #7a5a2a); box-shadow: 0 0 10px rgba(255, 238, 200, 0.9); }
 .hidane-flight { position: absolute; left: 0; top: 0; margin: -9px 0 0 -8px; pointer-events: none; z-index: 5; }
-.lu-milestone { color: #ffe08a; }
-.lu-learned { color: #f6eefc; }
-.lu-gift { color: #ffd08a; }
-.lu-note { color: #ead9f2; font-size: 15px !important; }
 .levelup .lu-ok { margin-top: 12px; min-width: 140px; min-height: 44px; opacity: 0; pointer-events: none; transition: opacity .2s; }
 .levelup.lu-settled-state .lu-ok { opacity: 1; pointer-events: auto; }
 @media (prefers-reduced-motion: reduce) { .lu-gauge b, .levelup-backdrop { transition: none; } .levelup.burst .lu-head { animation: none; } }
@@ -1244,7 +1240,6 @@ html:root[data-density="phone"] body:not(:root) .levelup { width: 720px; }
 html:root[data-density="phone"] body:not(:root) .lu-details p { font-size: var(--phone-sub); }
 html:root[data-density="phone"] body:not(:root) .lu-details .lu-change { font-size: calc(var(--phone-text) + 4px) !important; }
 html:root[data-density="phone"] body:not(:root) .lu-details .lu-hidane { font-size: var(--phone-text); }
-html:root[data-density="phone"] body:not(:root) .lu-details .lu-note { font-size: var(--phone-sub) !important; }
 
 /* ---------------------------------------------------------------- レベルアップと火種の演出の強化（2026-11-11 オーナー「見た目や演出など全面的にパワーアップさせて」SBD103）
    部品は js/daily/growth-fx.js。動くのは transform と opacity だけ（広い面のぼかし・ノイズは使わない）。動きを減らす設定では止める */
@@ -1298,32 +1293,40 @@ html:root[data-density="phone"] body:not(:root) .lu-details .lu-note { font-size
 .lu-gauge-shine { position: absolute; inset: 0; z-index: 2; pointer-events: none; opacity: 0; background: linear-gradient(100deg, transparent 35%, rgba(255, 255, 255, 0.7) 50%, transparent 65%); }
 .levelup.burst .lu-gauge-shine { animation: lu-shine .5s ease-out; }
 @keyframes lu-shine { 0% { transform: translateX(-100%); opacity: 1; } 100% { transform: translateX(100%); opacity: 0; } }
-.lu-next { flex: none; margin: 6px 0 0; font-size: 13px; color: #cdbfe0; }
 .lu-details { min-height: 0; overflow: auto; }
 .lu-actions { flex: none; }
-/* もらった火種の札 */
-.lu-chip { --hc: #fff1d0; display: inline-flex; align-items: center; gap: 7px; padding: 5px 14px 5px 9px; border-radius: 999px; white-space: nowrap; font-size: 18px; font-weight: 700; color: #fff6e2;
-  border: 1px solid color-mix(in srgb, var(--hc) 62%, transparent); background: color-mix(in srgb, var(--hc) 13%, rgba(10, 6, 16, 0.86)); box-shadow: 0 0 12px color-mix(in srgb, var(--hc) 32%, transparent); }
-.lu-chip.k-body { --hc: #ef8a5e; } .lu-chip.k-sense { --hc: #58a6ff; } .lu-chip.k-wisdom { --hc: #7bd36d; }
-.lu-chip.milestone { border-width: 2px; }
-.lu-chip.milestone::before { content: "節目"; padding: 1px 6px; border-radius: 4px; font-size: 12px; color: #2a1406; background: linear-gradient(180deg, #ffe8a8, #e8b04a); }
-.lu-chip.small { padding: 2px 10px 2px 6px; font-size: 14px; font-weight: 600; box-shadow: none; }
-.lu-chip.small .hidane-icon { width: 15px; height: 15px; }
-.lu-details p.lu-rewards, .lu-details p.lu-gift, .lu-details p.lu-wallet { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 6px 10px; }
-.levelup.lu-settled-state .lu-rewards .lu-chip { animation: lu-chip-pop .4s cubic-bezier(.2, 1.5, .4, 1) both; animation-delay: calc(var(--i, 0) * 120ms + 140ms); }
-@keyframes lu-chip-pop { 0% { transform: scale(0.3) translateY(8px); opacity: 0; } 100% { transform: none; opacity: 1; } }
-.lu-gift .lu-chip { padding: 3px 12px 3px 8px; font-size: 16px; }
-.lu-gift-head { padding: 1px 8px; border-radius: 4px; border: 1px solid rgba(255, 208, 138, 0.6); font-size: 13px; color: #ffd08a; }
-.lu-gift-from { color: #ffd08a; }
-.lu-details p.lu-color-note { margin: 8px auto; padding: 6px 12px; max-width: 460px; border-radius: 8px; border: 1px dashed rgba(255, 214, 130, 0.4); background: rgba(255, 214, 130, 0.07); font-size: 14px; color: #ffe2a6; word-break: auto-phrase; text-wrap: pretty; }
-.lu-details p.lu-wallet { font-size: 14px; color: #cdbfe0; }
+/* 絵と数だけ（SBD116）: 大きな粒と ×N、内訳は小さな札、学んできた相手は顔。言葉は読み上げ（.lu-sr）と説明（title）と「？」へ */
+.lu-sr { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
+.lu-details p.lu-rewards { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 10px 26px; margin: 14px 0 10px; }
+.lu-big { --hc: #fff1d0; position: relative; display: inline-flex; align-items: center; gap: 8px; }
+.lu-big.k-body { --hc: #ef8a5e; } .lu-big.k-sense { --hc: #58a6ff; } .lu-big.k-wisdom { --hc: #7bd36d; }
+.lu-big .hidane-icon { width: 56px; height: 56px; filter: drop-shadow(0 0 12px var(--hc)); }
+.lu-big b { font-size: 34px; font-weight: 900; line-height: 1; color: #fff6e2; text-shadow: 0 0 14px color-mix(in srgb, var(--hc) 70%, transparent); font-variant-numeric: tabular-nums; }
+.levelup.lu-settled-state .lu-rewards .lu-big { animation: lu-big-pop .45s cubic-bezier(.2, 1.5, .4, 1) both; animation-delay: calc(var(--i, 0) * 140ms + 140ms); }
+@keyframes lu-big-pop { 0% { transform: scale(0.3) translateY(10px); opacity: 0; } 100% { transform: none; opacity: 1; } }
+.lu-details p.lu-sources { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 8px; margin: 6px 0; }
+.lu-src { position: relative; display: inline-flex; align-items: center; gap: 6px; padding: 3px 12px 3px 4px; border-radius: 999px; border: 1px solid rgba(255, 214, 130, 0.35); background: rgba(10, 6, 16, 0.6); }
+.lu-src-tag { padding: 3px 9px; border-radius: 999px; font-size: 13px; font-weight: 800; white-space: nowrap; color: #2a1406; background: linear-gradient(180deg, #ffe8a8, #e8b04a); }
+.lu-src-face { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; object-position: 50% 25%; border: 1px solid rgba(255, 214, 130, 0.7); }
+.lu-mini { display: inline-flex; align-items: center; gap: 6px; }
+.lu-mini .hidane-icon { width: 18px; height: 18px; }
+.lu-mini b { font-size: 15px; font-weight: 800; color: #fff6e2; font-variant-numeric: tabular-nums; }
+.lu-details p.lu-faces { position: relative; display: flex; justify-content: center; gap: 8px; margin: 10px 0 2px; }
+.lu-face { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; object-position: 50% 25%; border: 2px solid rgba(255, 214, 130, 0.6); box-shadow: 0 0 10px rgba(255, 190, 90, 0.3); }
+.lu-actions { align-items: center; }
+.levelup .lu-help { position: absolute; top: 12px; right: 12px; box-sizing: border-box; width: 44px; height: 44px; margin: 0; padding: 0; border-radius: 50%; border: 2px solid rgba(255, 214, 130, 0.7); background: rgba(10, 6, 16, 0.55); color: #ffe6a8; font: 800 20px/1 var(--font); cursor: pointer; opacity: 0; pointer-events: none; transition: opacity .2s; }
+.levelup.lu-settled-state .lu-help { opacity: 1; pointer-events: auto; animation: lu-help-hint 1.1s ease-out .5s 2; }
+@keyframes lu-help-hint { 0% { box-shadow: 0 0 0 0 rgba(255, 214, 130, 0.7); } 100% { box-shadow: 0 0 0 14px rgba(255, 214, 130, 0); } }
+.levelup .lu-help:is(:hover, :focus-visible) { background: rgba(255, 214, 130, 0.18); border-color: #ffe6a8; outline: none; }
+html:root[data-density="phone"] body:not(:root) :is(.lu-src-tag, .lu-mini b) { font-size: var(--phone-sub); }
+html:root[data-density="phone"] body:not(:root) .lu-mini .hidane-icon { width: 26px; height: 26px; }
+html:root[data-density="phone"] body:not(:root) .lu-src-face { width: 40px; height: 40px; }
+html:root[data-density="phone"] body:not(:root) .levelup .lu-help { width: var(--phone-tap); height: var(--phone-tap); font-size: var(--phone-text); }
 @media (prefers-reduced-motion: reduce) {
-  .lu-rays, .gfx-embers i, .levelup.burst .lu-lv, .levelup.burst .lu-ring, .levelup.burst .lu-gauge-shine, .levelup.lu-settled-state .lu-rewards .lu-chip { animation: none !important; }
+  .lu-rays, .gfx-embers i, .levelup.burst .lu-lv, .levelup.burst .lu-ring, .levelup.burst .lu-gauge-shine, .levelup.lu-settled-state .lu-rewards .lu-big, .levelup.lu-settled-state .lu-help { animation: none !important; }
   .gfx-embers { display: none; }
 }
-html:root[data-density="phone"] body:not(:root) .lu-details :is(.lu-color-note, .lu-wallet), html:root[data-density="phone"] body:not(:root) .lu-next { font-size: var(--phone-sub); }
 html:root[data-density="phone"] body:not(:root) .levelup { padding-top: 16px; padding-bottom: 14px; }
-html:root[data-density="phone"] body:not(:root) .lu-details:has(.lu-color-note) .lu-note { display: none; }
 
 /* ---------------------------------------------------------------- 心得の盤（第2版の試作。図形だけ。画像は #1772 のデザインで後から差し替え） */
 .gboard { --stat-body: #ef8a5e; --stat-sense: #58a6ff; --stat-wisdom: #7bd36d; --board-c: var(--stat-sense); --white-fire: #f3e8cf; position: absolute; inset: 0; display: grid; grid-template-rows: 60px 548px 112px; pointer-events: auto; color: var(--text); font-family: var(--font);
@@ -1484,13 +1487,6 @@ html:root[data-density="phone"] body:not(:root) .lu-details:has(.lu-color-note) 
 .gb-hidane.k-wisdom i { width: 14px; height: 14px; border-radius: 3px; background: linear-gradient(135deg, #fff 0 18%, var(--hc) 40%, color-mix(in srgb, var(--hc) 45%, #062420)); }
 .gb-hidane b { font-size: 20px; color: var(--hc); }
 .gb-hidane.zero { opacity: 0.4; }
-.gb-legend { flex: 1; display: flex; flex-wrap: wrap; gap: 4px 14px; margin: 0; font-size: 13px; color: var(--text-dim); }
-.gb-legend-item { display: inline-flex; gap: 6px; align-items: center; }
-.gb-legend-item i { width: 14px; height: 14px; border-radius: 50%; border: 2px solid var(--gold-hi); }
-.gb-legend-item i.s-available { box-shadow: 0 0 6px var(--gold-hi); }
-.gb-legend-item i.s-far { opacity: 0.45; }
-.gb-legend-item i.s-sealed { border-color: #e8c8ff; }
-.gb-legend-item i.s-locked { opacity: 0.2; }
 .gb-actions { display: flex; gap: 10px; flex: none; }
 .gb-actions .btn { min-height: 48px; min-width: 130px; }
 /* ================= ネオンのラウンジ（GB03 の見本を移した。2026-10-30 オーナー「プロトタイプをゲームに実装してみて」SBD69） =================
@@ -1617,6 +1613,92 @@ html:root[data-density="phone"] body:not(:root) .lu-details:has(.lu-color-note) 
 .gboard.has-art .gb-node.peak .gb-icon-img { inset: 26%; width: 48%; height: 48%; filter: drop-shadow(0 0 4px #f6f2ff); }
 .gboard.has-art .gb-node.s-far .gb-icon-img, .gboard.has-art .gb-node.s-sealed .gb-icon-img { filter: drop-shadow(0 0 2px #000) opacity(0.7); }
 .gboard-help .modal-body p { margin: 0 0 10px; line-height: 1.6; }
+/* 絵つきの見方（SBD116）: ページをめくる。見本は盤と同じ絵を暗い小窓に置く（紙の地でも夜の地でも同じに見える） */
+.gh { display: grid; gap: 8px; width: 740px; max-width: 100%; text-align: left; }
+.gh-dots { display: flex; flex-wrap: wrap; gap: 6px; }
+.gh-dot { min-height: 36px; padding: 4px 12px; border-radius: 999px; border: 1px solid color-mix(in srgb, currentColor 35%, transparent); background: transparent; color: inherit; font: 700 14px/1.2 var(--font); cursor: pointer; opacity: 0.7; }
+.gh-dot.on { opacity: 1; color: #2a1406; background: linear-gradient(180deg, #ffe8a8, #e8b04a); border-color: #e8b04a; }
+.gh-title { margin: 0; font-size: 18px; font-weight: 900; }
+.gh-page { height: 312px; overflow: auto; padding-right: 2px; }
+.modal-box.gboard-help { max-height: 680px; }
+.gh-list, .gh-flow, .gh-gains { display: grid; gap: 8px 16px; margin: 0; padding: 0; list-style: none; }
+.gh-list { grid-template-columns: 1fr 1fr; align-content: start; }
+.gh-row { display: grid; grid-template-columns: 84px 1fr; align-items: center; gap: 10px; }
+.gh-plain .gh-row { grid-template-columns: 48px 1fr; }
+.gh-art { display: flex; justify-content: center; align-items: center; gap: 4px; min-height: 52px; padding: 4px 6px; border-radius: 10px; background: radial-gradient(ellipse at 50% 60%, #241a30, #0c0812 80%); border: 1px solid rgba(244, 210, 122, 0.25); }
+.gh-plain .gh-art { min-height: 40px; background: none; border: 0; padding: 0; }
+.gh-text { display: grid; gap: 1px; min-width: 0; }
+.gh-text b { font-size: 16px; line-height: 1.3; }
+.gh-text span { font-size: 14px; line-height: 1.45; opacity: 0.85; word-break: auto-phrase; text-wrap: pretty; }
+.gh-pic { width: 100%; height: 100%; object-fit: contain; pointer-events: none; }
+.gh-pic.missing { visibility: hidden; }
+/* 見本のマス */
+.gh-node { position: relative; display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; border: 2px solid #4a4054; background: rgba(14, 10, 20, 0.96); box-sizing: border-box; }
+.gh-node .gh-pic { width: 70%; height: 70%; }
+.gh-node.k-stat.s-notable { border-color: #f4d27a; box-shadow: 0 0 0 3px rgba(244, 210, 122, 0.25); }
+.gh-node.k-stat.s-feature::after { content: "✦"; position: absolute; right: -6px; top: -8px; font-size: 14px; color: #ffe08a; }
+.gh-node.k-stat.s-lit { border-color: #ffd9c2; background: #5a2a1c; box-shadow: 0 0 8px #ef8a5e, 0 0 16px rgba(239, 138, 94, 0.6); }
+.gh-node.k-stat.s-pending { border: 2px dashed #fff; background: #4a3a2a; box-shadow: 0 0 10px #f3e8cf; }
+.gh-node.k-stat.s-ready { border-color: #f3e8cf; box-shadow: 0 0 8px #f3e8cf; }
+.gh-node.k-stat.s-ready::before { content: ""; position: absolute; left: 50%; top: -9px; width: 8px; height: 11px; margin-left: -4px; border-radius: 50% 50% 50% 50% / 62% 62% 38% 38%; background: radial-gradient(circle at 50% 70%, #fff6dc, #ffb43c 60%, transparent 78%); }
+.gh-node.k-stat.s-far { opacity: 0.45; }
+.gh-node.k-skill, .gh-node.k-lesson, .gh-node.k-peak, .gh-node.k-gate { width: 46px; height: 46px; border: 0; border-radius: 0; background: none; }
+.gh-node.k-skill .gh-pic, .gh-node.k-lesson .gh-pic, .gh-node.k-peak .gh-pic { width: 100%; height: 100%; }
+.gh-node.k-gate { background: center / contain no-repeat url(../img/ui/growth_board/frame_gate.webp); }
+.gh-node.k-gate .gh-pic { width: 46%; height: 46%; filter: drop-shadow(0 0 4px #ef8a5e); }
+.gh-node.k-lesson.s-sealed { filter: grayscale(0.6) brightness(0.75); }
+.gh-mark { position: absolute; right: -6px; top: -6px; display: grid; place-items: center; width: 16px; height: 16px; border-radius: 50%; font: 800 12px/1 var(--font); font-style: normal; color: #0c2a1c; background: #9fe6c0; }
+.gh-seal { display: block; width: 44px; height: 44px; }
+.gh-fire { display: inline-block; width: 26px; height: 26px; }
+.gh-count { display: inline-flex; align-items: center; gap: 2px; }
+.gh-count .gh-fire { width: 22px; height: 22px; }
+.gh-count b { font-size: 15px; font-variant-numeric: tabular-nums; }
+.gh-key { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; border: 2px solid color-mix(in srgb, currentColor 45%, transparent); font-size: 16px; font-weight: 900; }
+.gh-key.b-body { border-color: #ef8a5e; } .gh-key.b-sense { border-color: #58a6ff; } .gh-key.b-wisdom { border-color: #7bd36d; }
+.gh-note { margin: 8px 0 0; font-size: 14px; line-height: 1.5; opacity: 0.85; word-break: auto-phrase; }
+.gh-sub { margin: 12px 0 6px; font-size: 15px; font-weight: 800; }
+.gh-gains { grid-template-columns: 1fr 1fr 1fr; gap: 6px 10px; }
+.gh-gain { display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 4px 10px; border-radius: 8px; border: 1px solid color-mix(in srgb, currentColor 22%, transparent); font-size: 14px; }
+.gh-gain-fires { display: inline-flex; gap: 8px; padding: 2px 8px; border-radius: 999px; background: #1a1224; color: #fff6e2; }
+.gh-flow li { display: grid; grid-template-columns: 40px 1fr; align-items: center; gap: 12px; padding: 6px 10px; border-radius: 10px; border: 1px solid color-mix(in srgb, currentColor 22%, transparent); }
+.gh-flow li div { display: grid; gap: 2px; }
+.gh-flow li div > span { font-size: 14px; opacity: 0.85; }
+.gh-flow b { font-size: 16px; }
+.gh-step { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; font-size: 17px; font-weight: 900; color: #2a1406; background: linear-gradient(180deg, #ffe8a8, #e8b04a); }
+.gh-inline { display: inline-flex; align-items: center; gap: 8px; }
+.gh-inline .gh-count { padding: 1px 8px; border-radius: 999px; background: #1a1224; color: #fff6e2; }
+.gh-perks { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.gh-perk-col { --c: #ef8a5e; padding: 6px 8px 8px; border-radius: 10px; border: 1px solid color-mix(in srgb, var(--c) 45%, transparent); }
+.gh-perk-col.b-sense { --c: #58a6ff; } .gh-perk-col.b-wisdom { --c: #7bd36d; }
+.gh-perk-col h4 { margin: 0 0 6px; font-size: 15px; font-weight: 900; color: color-mix(in srgb, var(--c) 65%, currentColor); }
+.gh-perk-col ul { display: grid; gap: 6px; margin: 0; padding: 0; list-style: none; }
+.gh-perk-col li { display: grid; grid-template-columns: 36px 1fr; align-items: center; gap: 8px; }
+.gh-perk-icon { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 50%; background: radial-gradient(circle, #2a1f36, #120c1c 80%); border: 1px solid color-mix(in srgb, var(--c) 60%, transparent); }
+.gh-perk-icon .gh-pic { width: 70%; height: 70%; filter: drop-shadow(0 0 3px var(--c)); }
+.gh-perk-col .gh-text b { font-size: 15px; }
+.gh-perk-col .gh-text span { font-size: 13px; line-height: 1.3; }
+.gh-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.gh-nav { display: flex; gap: 8px; flex: none; }
+.gh-nav .btn { min-width: 88px; min-height: 44px; }
+.gh-nav .btn:disabled { opacity: 0.35; cursor: default; }
+html:root[data-density="phone"] body:not(:root) .gh-text b, html:root[data-density="phone"] body:not(:root) .gh-flow b { font-size: var(--phone-text); }
+html:root[data-density="phone"] body:not(:root) :is(.gh-text span, .gh-flow li div > span, .gh-note, .gh-gain, .gh-dot, .gh-perk-col h4, .gh-sub, .gh-count b) { font-size: var(--phone-sub); }
+html:root[data-density="phone"] body:not(:root) .gh-count .gh-fire { width: 30px; height: 30px; }
+html:root[data-density="phone"] body:not(:root) .gh-perk-col li { grid-template-columns: 44px 1fr; }
+html:root[data-density="phone"] body:not(:root) .gh-perk-icon { width: 44px; height: 44px; }
+/* スマホ横: 窓を広げ、題（心得の盤の見方）は出さず、ページの見出しと送りのボタンを一段目に並べる。中身は2列のまま、あふれたらページの中で送る */
+html:root[data-density="phone"] body:not(:root) .modal-box.gboard-help { max-width: 1180px; max-height: 704px; padding: 16px 28px; }
+html:root[data-density="phone"] body:not(:root) .modal-box.gboard-help > h3 { display: none; }
+html:root[data-density="phone"] body:not(:root) .modal-box.gboard-help .modal-actions { margin-top: 10px; }
+html:root[data-density="phone"] body:not(:root) .gh { width: 1100px; grid-template-columns: 1fr auto; grid-template-areas: "dots nav" "title title" "page page"; align-items: center; }
+html:root[data-density="phone"] body:not(:root) .gh-head { display: contents; }
+html:root[data-density="phone"] body:not(:root) .gh-dots { grid-area: dots; }
+html:root[data-density="phone"] body:not(:root) .gh-nav { grid-area: nav; }
+html:root[data-density="phone"] body:not(:root) .gh-title { grid-area: title; font-size: var(--phone-text); }
+html:root[data-density="phone"] body:not(:root) .gh-page { grid-area: page; height: 400px; }
+html:root[data-density="phone"] body:not(:root) .gh-dot { min-height: 56px; padding: 6px 16px; }
+html:root[data-density="phone"] body:not(:root) .gh-row { grid-template-columns: 96px 1fr; }
+html:root[data-density="phone"] body:not(:root) .gh-plain .gh-row { grid-template-columns: 56px 1fr; }
 .lu-actions { display: flex; justify-content: center; gap: 12px; }
 /* 結界・影絵・授業の札の特別感（2026-10-31 オーナー SBD74〜76）
    - 「封」の文字はやめ、開いている所とまだの所の境に鎖の結界（画像 wall_seal。無ければ二重線と錠）
@@ -1725,6 +1807,45 @@ html:root[data-density="phone"] body:not(:root) .gfx-cutin-count { font-size: 16
 .gb-goal-name { min-width: 0; font-size: 14px; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .gb-goal-cost { font-size: 13px; color: var(--gold-hi); white-space: nowrap; font-variant-numeric: tabular-nums; }
 .gb-goal.ready .gb-goal-cost { font-weight: 800; }
+/* ================= 文字を減らしてアイコン中心に（2026-11-11 オーナー「UIが文字が多くてごちゃついてる。基本アイコンとか絵でシンプルに」SBD116） =================
+   画面から外した文は、読み上げ（.gb-sr）と説明（title）と「？」の見方に残す */
+.gb-sr { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
+.gb-place { position: relative; display: flex; justify-content: flex-end; overflow: visible; }
+.gb-place-chip { padding: 4px 14px; border-radius: 999px; border: 1px solid currentColor; font-size: 14px; font-weight: 800; }
+.gboard.view-only .gb-place-chip { opacity: 0.75; }
+.gb-hidane { position: relative; gap: 4px; }
+.gb-hidane b { min-width: 1.2em; text-align: left; font-variant-numeric: tabular-nums; }
+.gb-footer-gap { flex: 1; }
+/* 右のパネル: 恩恵はアイコン・棒・数字 */
+.gb-bar { grid-template-columns: 30px 1fr auto; align-items: center; gap: 0 10px; width: 100%; min-height: 36px; margin: 0; padding: 2px 4px; border: 0; border-radius: 8px; background: none; color: inherit; font: inherit; font-size: 14px; text-align: left; cursor: pointer; }
+.gb-bar:is(:hover, :focus-visible, .open) { background: color-mix(in srgb, var(--c) 12%, transparent); outline: none; }
+.gb-bar-sum.zero { opacity: 0.45; }
+.gb-bar-note { display: flex; flex-wrap: wrap; gap: 2px 10px; margin: 0; padding: 6px 10px; border-radius: 8px; border-left: 3px solid var(--c); background: color-mix(in srgb, var(--c) 10%, transparent); font-size: 14px; line-height: 1.5; }
+.gb-bar-note b { white-space: nowrap; }
+.gb-bar .gb-bar-line { grid-column: 2; grid-row: 1; }
+.gb-bar-name { position: relative; display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: radial-gradient(circle, #2a1f36, #120c1c 80%); border: 1px solid color-mix(in srgb, var(--c) 60%, transparent); }
+.gb-bar-icon { width: 70%; height: 70%; object-fit: contain; filter: drop-shadow(0 0 3px var(--c)); }
+.gb-bar-glyph { font-size: 14px; font-weight: 800; color: color-mix(in srgb, var(--c) 60%, #fff); }
+.gb-bar-sum { min-width: 3.4em; font-size: 15px; font-weight: 800; }
+.gb-feats { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; }
+.gb-feat { padding: 2px 9px; border-radius: 999px; border: 1px solid color-mix(in srgb, currentColor 30%, transparent); font-size: 13px; opacity: 0.55; }
+.gb-feat.on { opacity: 1; color: #2a1406; background: linear-gradient(180deg, #ffe8a8, #e8b04a); border-color: #e8b04a; }
+/* 近い目的地: 絵・名前・火種の粒と数 */
+.gb-goal { grid-template-columns: 34px 1fr auto; align-items: center; }
+.gb-goal-icon { position: relative; display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; overflow: hidden; background: radial-gradient(circle, #2a1f36, #120c1c 80%); border: 1px solid color-mix(in srgb, var(--c) 60%, transparent); }
+.gb-goal-icon b { font-size: 15px; color: color-mix(in srgb, var(--c) 60%, #fff); }
+.gb-goal-icon img { position: absolute; inset: 12%; width: 76%; height: 76%; object-fit: contain; }
+.gb-goal-icon.k-lesson img { inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%; }
+.gb-goal-cost { display: inline-flex; align-items: center; gap: 8px; }
+.gb-goal-fire { display: inline-flex; align-items: center; gap: 3px; --hc: #fff1d0; }
+.gb-goal-fire.k-body { --hc: #ef8a5e; } .gb-goal-fire.k-sense { --hc: #58a6ff; } .gb-goal-fire.k-wisdom { --hc: #7bd36d; }
+.gb-goal-fire i { width: 16px; height: 16px; border-radius: 50%; background: center / contain no-repeat url(../img/ui/growth_board/hidane_any.webp), radial-gradient(circle at 50% 45%, #fff, var(--hc) 50%, #2a1406); }
+.gb-goal-fire.k-body i { background: center / contain no-repeat url(../img/ui/growth_board/hidane_body.webp); }
+.gb-goal-fire.k-sense i { background: center / contain no-repeat url(../img/ui/growth_board/hidane_sense.webp); }
+.gb-goal-fire.k-wisdom i { background: center / contain no-repeat url(../img/ui/growth_board/hidane_wisdom.webp); }
+.gb-goal-fire b { font-size: 15px; font-variant-numeric: tabular-nums; }
+.gb-goal-lock { font-size: 13px; font-weight: 800; color: #e06a8a; }
+.gb-goal-now { padding: 1px 8px; border-radius: 999px; font-size: 13px; font-weight: 800; color: #2a1406; background: linear-gradient(180deg, #ffe8a8, #e8b04a); }
 @media (prefers-reduced-motion: reduce) {
   .gboard.can-light .gb-node.stat.s-available::before, .gboard.has-art .gb-node.gate.lit-now .gb-gate-gem, .gb-bar.grew .gb-bar-sum, .gfx-cutin, .gfx-cutin-streak, .gfx-cutin-icon, .gfx-cutin-veil { animation: none !important; }
   .gb-bar-line b { transition: none; }
@@ -1818,8 +1939,6 @@ html:root[data-density="phone"] body:not(:root) .gfx-cutin-count { font-size: 16
   font-size: 13px; line-height: 1; font-weight: 900; text-shadow: none; pointer-events: none;
 }
 .gb-node.s-pending > .gb-node-state { color: #fff1b8; background: #302035; border: 2px dashed #fff1b8; }
-.gb-legend-item i.s-unlocked { background: #b8f3c7; border-color: #14261b; }
-.gb-legend-item i.s-pending { background: #302035; border: 2px dashed #b8651f; }
 /* 色の台座（SBD89）: ひし形の台座に、その盤の色の火がはまる。はめる前は暗いくぼみ、今はめられる時は息づき、はめたら光る */
 .gb-gate-gem { display: none; position: absolute; left: 50%; top: 50%; width: 62%; height: 62%; translate: -50% -50%; object-fit: contain; pointer-events: none; z-index: 1;
   filter: brightness(0.75) saturate(0.7) drop-shadow(0 0 2px rgba(0, 0, 0, 0.9)); opacity: 0.85; }

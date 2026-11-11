@@ -131,7 +131,7 @@ body #stage[data-wide] .shop-paper {
 /* 心得の盤: 上の帯・タブ・下の凡例の小さな文字を一段大きく（スマホでは実寸 12.5px 以上） */
 body #stage[data-wide] .gboard .gb-title { font-size: 28px; }
 body #stage[data-wide] .gboard .gb-level { font-size: max(18px, var(--wide-min)); }
-body #stage[data-wide] .gboard :is(.gb-level small, .gb-place, .gb-tab-body, .gb-legend) { font-size: max(16px, var(--wide-min)); }
+body #stage[data-wide] .gboard :is(.gb-level small, .gb-place, .gb-tab-body) { font-size: max(16px, var(--wide-min)); }
 body #stage[data-wide] .gboard .gb-tab-body b { font-size: max(18px, var(--wide-min)); }
 body #stage[data-wide] .gboard .gb-side { font-size: max(17px, var(--wide-min)); }
 body #stage[data-wide] .gboard .gb-p-title { font-size: max(22px, var(--wide-min)); }

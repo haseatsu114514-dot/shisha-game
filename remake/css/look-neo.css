@@ -2254,7 +2254,6 @@
   color: #fff;
   background: linear-gradient(to right, rgba(227, 189, 110, 0), var(--neo-ui-gold) 30%, var(--neo-ui-gold) 70%, rgba(227, 189, 110, 0)) center bottom / 70% 1px no-repeat;
 }
-:root[data-look="neo"] body:not(.game-ds) #stage #fx .levelup :is(.lu-note, .lu-learned) { color: var(--neo-ui-dim); }
 :root[data-look="neo"] body:not(.game-ds) #stage #fx .levelup .btn {
   color: var(--neo-ui-ink);
   text-shadow: none;
