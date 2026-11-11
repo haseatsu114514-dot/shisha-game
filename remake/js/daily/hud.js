@@ -7,7 +7,7 @@ import { CH2_CITY_EN, CH2_CITY_NAME, HOME_CITY_EN, HOME_CITY_NAME } from "../cor
 // 左上に DAY カード、右上に LIME と MENU。ステータスは全画面MENU（daily/menu.js）のタブへ移し、
 // 五角形のステータスボタンは廃止した（DUI05）。未使用の火種の印は MENU の右上に出す。
 import { el, yen, sleep } from "../core/util.js";
-import { layers, toast } from "../core/ui.js";
+import { layers, toast, gainCard } from "../core/ui.js";
 import { on } from "../core/bus.js";
 import { state } from "../core/state.js";
 import { staminaRatio, currentCondition, maxStamina } from "../core/stats.js";
@@ -15,7 +15,8 @@ import { conditionForRatio } from "../core/condition.js";
 import { isRainy } from "./weather.js";
 import { chapterDay, chapterDaysLeft, chapterFinalDay, chapterGoalLabel, departurePrep } from "../core/chapter-clock.js";
 import { travelsBetweenCities } from "../core/travel-budget.js";
-import { growthEnabled, growthView, gaugeInfo, hidaneTotal } from "../core/growth.js";
+import { growthEnabled, growthView, gaugeInfo, hidaneTotal, hasGrowthStock } from "../core/growth.js";
+import { HIDANE_NAME } from "../core/growth-board-data.js";
 import { NODE_BY_ID, pathTo } from "../core/growth-board.js";
 
 // 体力バーと経験値バーの共通の長さ（px）。経験値を少し短くし、体力も同じ長さにそろえる（#3034・オーナー指示 2026-11-09）。
@@ -133,6 +134,7 @@ export function initHud(h) {
     setTimeout(() => pop.remove(), 1400);
   });
   on("exp-gain", showExpChip);
+  on("hidane-stock", showStockChip);
   installMenuKey();
 }
 
@@ -148,6 +150,25 @@ function showExpChip({ total, tags = [], publicReward = false }) {
   ]);
   dom.exp.append(chip);
   setTimeout(() => chip.remove(), 2200);
+}
+
+/**
+ * レベルが上がった・火種が入った時の小さな知らせ（SBD108）。経験値のチップの下に「LEVEL UP Lv.4　火種 ＋2」と出すだけで、
+ * 押す必要はない。まとめての演出は観音堂などで振り返った時。はじめての時だけ、灯せる場所を一度カードで伝える。
+ */
+function showStockChip({ level = null, parts = [], gift = false } = {}) {
+  if (!dom || !growthEnabled()) return;
+  const got = parts.filter((p) => p?.n > 0).map((p) => `${p.kind === "any" ? "火種" : HIDANE_NAME[p.kind] || "火種"} ＋${p.n}`).join("　");
+  if (!level && !got) return;
+  const chip = el(`div.exp-chip.stock${gift ? ".gift" : ""}`, { role: "status", dataset: { test: "stock-chip" } }, [
+    el("b", { text: level ? `LEVEL UP Lv.${level}` : "HIDANE" }), got ? el("span", { text: got }) : null,
+  ]);
+  dom.exp.append(chip);
+  setTimeout(() => chip.remove(), 2800);
+  if (state?.flags && !state.flags._hidane_stock_notice) {
+    state.flags._hidane_stock_notice = true;
+    gainCard({ kind: "info", badge: "火", top: "HIDANE", main: "火種をストックした", sub: "観音堂で振り返ると、心得の盤に灯せる（時間は使わない）" });
+  }
 }
 
 function updateGrowth() {
@@ -166,14 +187,15 @@ function updateGrowth() {
   dom.exp.querySelector(".hx-today").style.width = `${Math.round(g.now * 100)}%`;
   const left = dom.exp.querySelector(".hx-left");
   // 「あと○」の数字は出さない（オーナー指示 2026-11-08「ゲージでわかる」）。数字は title / aria-label に残す。
-  // 状態を伝える「今夜 Lv UP」「MAX」だけ文字で出す。
-  left.textContent = g.max ? "MAX" : g.pending > 0 ? `今夜 Lv UP${g.pending > 1 ? ` ×${g.pending}` : ""}` : "";
+  // 状態を伝える「Lv UP」「MAX」だけ文字で出す。「Lv UP」は、観音堂などでまだ見せていないレベルアップがある間（SBD108）
+  const stocked = hasGrowthStock(state) && Number.isInteger(view?.today?.from) ? g.level - view.today.from : 0;
+  left.textContent = stocked > 0 ? `Lv UP${stocked > 1 ? ` ×${stocked}` : ""}` : g.max ? "MAX" : "";
   left.hidden = !left.textContent;
-  dom.exp.classList.toggle("ready", g.pending > 0);
+  dom.exp.classList.toggle("ready", stocked > 0);
   dom.exp.dataset.milestone = g.nextMilestone && !g.max ? "true" : "false";
   renderTarget(view);
-  dom.exp.title = g.max ? `Lv.${g.level} MAX` : g.pending > 0
-    ? `今夜レベルアップ（あふれた分 +${g.overflow}）` : `次のレベルまで EXP ${g.left}${g.nextMilestone ? "（次は火種が2つ）" : ""}`;
+  const leftText = g.max ? `Lv.${g.level} MAX` : `次のレベルまで EXP ${g.left}${g.nextMilestone ? "（次は節目。色の火ももらえる）" : ""}`;
+  dom.exp.title = stocked > 0 ? `レベルが${stocked}つ上がった。観音堂などで振り返ると、ストックした火種を灯せる（${leftText}）` : leftText;
   dom.exp.setAttribute("aria-label", dom.exp.title);
 }
 

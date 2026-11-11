@@ -62,7 +62,7 @@ export function growthCraftCondition(s, mode, condition) {
 
 /** 表示と処理が共有する帯・要の倍率。 */
 export const perkMultiplier = node => (node.kind === "gate" ? GATE_TIER.mult : PERK_TIERS[node.band]?.mult || 1)
-  * (node.notable ? NOTABLES[node.notable]?.bonus || 1 : 1);
+  * (node.notable ? NOTABLES[node.notable]?.bonus || 1 : 1) * (node.worth || 1);
 
 export function boardPerks(nodes = []) {
   const sums = { stamina: 0, sleep: 0, charm: 0, stage: 0, heat: 0, pull: 0,

@@ -702,10 +702,10 @@ await suite("look_neo_portrait", async (check) => {
     await page.locator(t("sheet-cfg-close")).tap();
     await page.locator(shellFor("title")).waitFor();
     assert.equal(await page.evaluate(() => window.__remake.state.money), 12345);
-    // 夜のレベルアップ（演出の層の画面）も縦長のシートで写り、写しの OK で閉じる
+    // ためた分のレベルアップ（演出の層の画面。観音堂などの内省が呼ぶもの・SBD108）も縦長のシートで写り、写しの OK で閉じる
     await page.evaluate(async () => {
       const g = await import("./js/core/growth.js"); g.gainExp(g.totalExpFor(3));
-      window.night = null; void (await import("./js/daily/levelup.js")).presentNightGrowth().then((r) => { window.night = r; });
+      window.night = null; void (await import("./js/daily/levelup.js")).presentStockedGrowth().then((r) => { window.night = r; });
     });
     await page.locator('.retro-sheet[data-kind="levelup"] [data-test="sheet-levelup-ok"]').waitFor();
     // 数字は元の演出どおり Lv.1 から上がっていく

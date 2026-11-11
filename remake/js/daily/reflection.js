@@ -2,7 +2,7 @@
 // 時間を使わない（行動の回数も体力も減らない）。大会前夜に火種が残っていれば、強制の場面で盤を開く。
 import { state, save } from "../core/state.js";
 import { play } from "../vn/engine.js";
-import { growthEnabled, growthView, openGrowthBoard } from "../core/growth.js";
+import { growthEnabled, growthView, openGrowthBoard, hasGrowthStock } from "../core/growth.js";
 import { hasUsableHidane } from "../core/growth-board.js";
 import { starterPending } from "./growth-board-tutorial.js";
 import { openingStatus, MOSQUE_VISITING_HOURS } from "./spot-hours.js";
@@ -18,8 +18,8 @@ export const REFLECT_PLACES = {
   inn_window: { scene: "reflect_inn_window", bg: "res://assets/backgrounds/bg_ch3_hotel_night.png", label: "宿の窓辺" },
 };
 
-/** 灯せる火種があるか（盤が有効な時だけ） */
-export const canReflect = (s = state) => !!s && growthEnabled() && hasUsableHidane(growthView(s), s); // 地図を描くだけで成長データを作らない
+/** 灯せる火種があるか、まだ見せていないレベルアップ・ご褒美があるか（盤が有効な時だけ。SBD108） */
+export const canReflect = (s = state) => !!s && growthEnabled() && (hasGrowthStock(s) || hasUsableHidane(growthView(s), s)); // 地図を描くだけで成長データを作らない
 /** その場所で振り返れるか。観音堂だけは、最初の火種をまだ渡していなければ火種が0でも開ける（はじめての案内・growth-board-tutorial.js） */
 export const canReflectAt = (place, s = state) => canReflect(s) || (place === "kannon" && !!s && growthEnabled() && starterPending(s));
 
@@ -32,7 +32,10 @@ function eveOpening(place) {
   return state.flags._eve_slept === state.day ? "reflect_eve_slept" : "reflect_eve_home";
 }
 
-/** 内省の場面 → 盤（灯せる）。戻り値=灯したマス（やめたら空） */
+/**
+ * 内省の場面 → ストックしたレベルアップ・ご褒美のフル演出（あれば。SBD108）→ 盤（灯せる）。
+ * 戻り値=灯したマス（やめたら空）
+ */
 export async function reflectAt(place, { eve = false } = {}) {
   const spot = REFLECT_PLACES[place];
   if (!spot || !canReflectAt(place) || !openingStatus(spot, state).ok) return [];
@@ -41,13 +44,18 @@ export async function reflectAt(place, { eve = false } = {}) {
   if (state !== owner) return [];
   await play(spot.scene, { bg: spot.bg });
   if (state !== owner || !canReflectAt(place) || !openingStatus(spot, state).ok) return [];
+  // 学んできたことが、ここでまとめて火になる: ためてきたレベルアップと火種を一気に見せてから盤へ
+  const { presentStockedGrowth } = await import("./levelup.js");
+  if (state !== owner) return [];
+  await presentStockedGrowth();
+  if (state !== owner || !growthEnabled()) return [];
   const lit = await openGrowthBoard({ place }) || [];
   if (state === owner) save();
   return lit;
 }
 
 /**
- * 大会前夜の内省（寝る前の精算のあと）。火種が残っていれば一度だけ強制で開く。
+ * 大会前夜の内省（寝る前）。火種か、まだ見せていないレベルアップ・ご褒美が残っていれば一度だけ強制で開く。
  * 地元は観音堂、遠征先は宿の窓辺（2.8）。
  */
 export async function eveReflection(place) {

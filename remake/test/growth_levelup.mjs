@@ -53,7 +53,7 @@ assert.equal(growth.gainExp(100), 0);
 const off = await stats.paidAction(async () => { stats.addStamina(-10); return true; }, { exp: { key: "naru", person: "naru" } });
 assert.equal(off.spent > 0, true);
 assert.equal(core.state.growth, undefined, "無効なら growth を作らない");
-assert.equal(growth.settleGrowth(), null);
+assert.equal(growth.takeGrowthStock(), null);
 const legacyRaw = core.state.stats.sense;
 await stats.paidAction(async () => { stats.earnStat("sense", 2); stats.addStamina(-4); });
 assert.equal(core.state.stats.sense, legacyRaw + 1, "無効時の行動による旧成長は維持");
@@ -114,67 +114,84 @@ await visit({ key: "naru", person: "naru" });
 assert.equal(g.xp - xp2, 38, "第2章 30×1.25 を四捨五入、新鮮さはリセット");
 core.state.chapter = 1;
 
-// 寝る時の精算: レベルと火種、今日の分、冪等
-const lvBefore = g.level;
-assert.equal(lvBefore, 1, "日中はレベルが上がらない");
-const pending = growth.pendingLevels();
-assert.equal(pending, growth.levelForExp(g.xp) - 1);
-const first = growth.settleGrowth();
+// ストック（SBD108）: 経験値が入ったその場でレベルが上がり、火種が手持ちに入る。演出は観音堂などでまとめて見せる
+const emptyStock = { xp: 0, learned: {}, gifts: [], from: null, xpFrom: null, any: 0, limited: [] };
+assert.equal(g.level, growth.levelForExp(g.xp), "経験値が入ったその場でレベルが上がる");
+assert.ok(g.level > 1);
+assert.equal(growth.pendingLevels(), 0, "レベルにしていない分は残らない");
+assert.equal(g.hidane.any, 2 * (g.level - 1), "レベル1つで火種2つ（SBD60）。その場で手持ちに入る");
+assert.equal(g.earned, 2 * (g.level - 1));
+assert.equal(g.settledXp, g.xp);
+assert.equal(g.today.from, 1, "見せていないレベルアップの始まり");
+assert.equal(g.today.any, 2 * (g.level - 1));
+assert.equal(growth.hasGrowthStock(), true);
+const peeked = growth.peekGrowthStock();
+assert.deepEqual([peeked.from, peeked.to, peeked.gains.any], [1, g.level, 2 * (g.level - 1)]);
+assert.equal(growth.hasGrowthStock(), true, "見ただけではストックを空にしない");
+const first = growth.takeGrowthStock();
 assert.equal(first.from, 1);
 assert.equal(first.to, growth.levelForExp(g.xp));
-assert.equal(first.full, true, "初めてのレベルアップはフル演出");
-assert.equal(g.hidane.any, 2 * (first.to - 1), "レベル1つで火種2つ（SBD60）");
-assert.equal(g.earned, 2 * (first.to - 1));
+assert.equal(first.full, true, "ためた分はまとめてフル演出");
+assert.ok(first.xpFrom > 0 && first.xpFrom < growth.totalExpFor(2), "ゲージは最初に上がる直前の経験値から動かす");
 assert.deepEqual([growth.hidaneForLevel(2), growth.hidaneForLevel(50), growth.hidaneForLevel(99)], [2, 2, 2]);
-// 1周目（中央 Lv.57）で盤の約7割、Lv.99 までのレベルの火種＋節目＋大会2周で全部に近い（SPEC 1.6a）
+// 1周目（中央 Lv.57）で盤の7〜8割、Lv.99 までのレベルの火種＋節目＋大会2周で全部に近い（SPEC 1.6a）
 const levelHidane = (to) => Array.from({ length: to - 1 }, (_, i) => growth.hidaneForLevel(i + 2)).reduce((a, b) => a + b, 0);
-const firstRun = levelHidane(57) + 5 * 2 + 5 * 2 + 8; // 節目5・大会5・♥5 数人
-assert(firstRun / growth.BOARD_TOTAL >= 0.7 && firstRun / growth.BOARD_TOTAL <= 0.8, `1周目 ${firstRun}/${growth.BOARD_TOTAL}（3盤とも7割）`);
+const firstRun = levelHidane(57) + 5 * 2 + 5 * 2 + 8 + 5 * growth.WIN_HIDANE; // 節目5・大会5・♥5 数人・全部の大会で優勝（SBD110）
+assert(firstRun / growth.BOARD_TOTAL >= 0.7 && firstRun / growth.BOARD_TOTAL <= 0.8, `1周目 ${firstRun}/${growth.BOARD_TOTAL}（3盤とも7割。優勝を重ねても8割まで）`);
 const full = levelHidane(99) + 9 * 2 + 10 * 2;
 assert(full >= growth.BOARD_TOTAL, "2周目の途中で全部開く（1周目の7割を優先）");
-assert.equal(g.settledXp, g.xp);
-assert.deepEqual(g.today, { xp: 0, learned: {}, gifts: [] });
-assert.ok(first.learned.length <= 3 && first.learned.includes("naru"), "今日学んだこと（最大3つ）");
-const again = growth.settleGrowth();
-assert.equal(again.to, again.from, "二度精算しても増えない");
+assert.deepEqual(g.today, emptyStock, "取り出すとストックは空になる");
+assert.equal(growth.hasGrowthStock(), false);
+assert.ok(first.learned.length <= 3 && first.learned.includes("naru"), "学んできたこと（最大3つ）");
+const again = growth.takeGrowthStock();
+assert.equal(again.to, again.from, "二度取り出しても増えない");
+assert.deepEqual([again.gains.any, again.full], [0, false]);
 assert.equal(g.earned, 2 * (first.to - 1));
 
-// 2回目以降の1レベルは短い帯、2つ以上はフル
-growth.gainExp(growth.totalExpFor(g.level + 1) - g.xp);
-const one = growth.settleGrowth();
-assert.equal(one.to - one.from, 1);
-assert.equal(one.full, false, "ふだんの1レベルは短い帯");
-growth.gainExp(growth.totalExpFor(g.level + 2) - g.xp);
-const two = growth.settleGrowth();
-assert.equal(two.to - two.from, 2);
-assert.equal(two.full, true, "1晩に2つ以上はフル");
+// 何日ぶんかをためてから見ても、最初に上がる前からまとめて一つの報告になる
+const stockStart = g.level, stockXp = g.xp;
+growth.gainExp(growth.totalExpFor(g.level + 1) - g.xp, { key: "sumi" });
+assert.equal(g.level, stockStart + 1);
+growth.gainExp(growth.totalExpFor(g.level + 2) - g.xp, { key: "kannon" });
+assert.equal(g.level, stockStart + 3);
+const stocked = growth.takeGrowthStock();
+assert.deepEqual([stocked.from, stocked.to, stocked.gains.any, stocked.xpFrom], [stockStart, stockStart + 3, 6, stockXp]);
+assert.deepEqual(stocked.learned.sort(), ["kannon", "sumi"]);
+assert.equal(stocked.full, true);
 
-// 節目 Lv.10: 色つきの火種2つ。前の節目から一番灯した盤の色（同数なら段の低い盤）
+// 節目 Lv.10: 色の火1つと白火1つ（SBD109）。色は前の節目から一番灯した盤（同数なら段の低い盤）
 growth.noteLit(g, "wisdom", 3);
 growth.noteLit(g, "sense", 5);
+const earnedBefore = g.earned, levelBefore = g.level, whiteBefore = g.hidane.any;
 growth.gainExp(growth.totalExpFor(10) - g.xp);
-const earnedBefore = g.earned;
-const ms = growth.settleGrowth();
+assert.equal(g.level, 10);
+assert.equal(g.hidane.sense, 1, "節目の色の火は1つ");
+assert.equal(g.hidane.any - whiteBefore, 2 * (10 - levelBefore) + 1, "レベルの白火に、節目の白火1つ");
+assert.equal(g.earned - earnedBefore, 2 * (10 - levelBefore) + 2, "節目でもらう数は今までと同じ2つ");
+const ms = growth.takeGrowthStock();
 assert.equal(ms.to, 10);
-assert.equal(ms.full, true, "節目はフル");
-assert.deepEqual(ms.gains.limited, [{ level: 10, system: "sense", n: 2 }], "感覚盤に一番灯した");
-assert.equal(g.hidane.sense, 2);
-assert.equal(g.earned - earnedBefore, 2 * (ms.to - ms.from) + 2);
+assert.equal(ms.milestone, true);
+assert.deepEqual(ms.gains.limited, [{ level: 10, system: "sense", n: 1, any: 1 }], "感覚盤に一番灯した");
+assert.equal(ms.gains.any, 2 * (ms.to - ms.from), "レベルの白火は節目の分と別に数える");
 assert.deepEqual(g.milestones, [10]);
 assert.deepEqual(g.litSince, { body: 0, sense: 0, wisdom: 0 }, "節目で数え直す");
 assert.equal(growth.milestoneSystem(g), "body", "同数（0）なら段の低い盤、それも同じなら才能");
 
-// ♥5の人から、その人のタイプの色の火種2つ（周回ごとに1回）
+// ♥5の人から、その人のタイプの色の火1つと白火1つ（周回ごとに1回。SBD109）
 core.state.affinity.minto = 999;
+const stockEvents = [];
+const offStock = on("hidane-stock", (e) => stockEvents.push(e));
 const gift = growth.giftAtMaxHeart("minto");
-assert.deepEqual(gift, { kind: "body", n: 2 });
-assert.equal(g.hidane.body, 2);
+assert.deepEqual(gift, [{ kind: "body", n: 1 }, { kind: "any", n: 1 }]);
+assert.equal(g.hidane.body, 1);
 assert.equal(growth.giftAtMaxHeart("minto"), null, "二度はもらえない");
 assert.equal(growth.giftAtMaxHeart("sumi"), null, "タイプの無い人はくれない");
 core.state.affinity.minto = 0;
-assert.deepEqual(g.today.gifts, [{ who: "minto", parts: [{ kind: "body", n: 2 }] }], "寝る前に知らせる");
+assert.deepEqual(g.today.gifts, [{ who: "minto", parts: [{ kind: "body", n: 1 }, { kind: "any", n: 1 }] }], "観音堂などで見せるまでためておく");
+assert.deepEqual(stockEvents, [{ parts: [{ kind: "body", n: 1 }, { kind: "any", n: 1 }], gift: true }], "HUD の小さな知らせは一度");
+offStock();
 
-// 遊びのご褒美（SBD39）: 斧投げ・TRPG の水準。一度だけ。寝る前の精算でまとめて渡す
+// 遊びのご褒美（SBD39）: 斧投げ・TRPG の水準。一度だけ。次に経験値が入った時・夜・内省の時に拾ってストックする
 core.state.flags._axe_bar_records = { classic: { plays: 3, best: { total: 70, maximum: 100 } } }; // 70% → A
 core.state.trpg.cleared = { "ordinary-cup": { ending: "x", stars: 3 } };
 const axe = await import("../js/minigames/axe-challenges.js");
@@ -182,22 +199,22 @@ for (const [rank, min] of growth.AXE_RANKS) assert.equal(axe.rankOf(min * 100, 1
 // くじのラストワン賞（SBD40）: 箱を引き切ったら火種のセット
 core.state.kuji = { g500: { order: [0, 0], drawn: 2, emptyDay: 5 } };
 const held = { ...g.hidane };
-const night = growth.settleGrowth();
+const night = growth.takeGrowthStock();
 const labels = night.gifts.map((x) => x.label || x.who);
 assert.deepEqual(labels, ["minto", "斧投げで Aランク", "TRPGで★3の卓", "くじのラストワン賞"]);
 assert.deepEqual(night.gifts[1].parts, [{ kind: "body", n: 1 }], "斧投げAで才1（小さめ。SBD39）");
 assert.deepEqual(night.gifts[2].parts, [{ kind: "wisdom", n: 1 }], "TRPG★3で理1");
 assert.deepEqual(night.gifts[3].parts, [{ kind: "body", n: 1 }], "ラストワン賞は1つ。段が同じなら才能盤の色");
 assert.equal(g.hidane.sense - held.sense + g.hidane.body - held.body + g.hidane.wisdom - held.wisdom, 3, "ラストワン賞は1つだけ（いちばん段の低い盤の色）");
-assert.deepEqual(growth.settleGrowth().gifts, [], "同じ水準・同じ箱では二度もらえない");
+assert.deepEqual(growth.takeGrowthStock().gifts, [], "同じ水準・同じ箱では二度もらえない");
 core.state.kuji.g500.emptyDay = 9;
-assert.deepEqual(growth.settleGrowth().gifts.map((x) => x.label), ["くじのラストワン賞"], "次の箱を引き切ればまたもらえる");
+assert.deepEqual(growth.takeGrowthStock().gifts.map((x) => x.label), ["くじのラストワン賞"], "次の箱を引き切ればまたもらえる");
 // 行かなくなった街の店の箱は空のまま残る（くじは店ごとに1種類・KJ11）。章が変わっても同じ箱では二度もらえない
 core.state.chapter += 1;
-assert.equal(growth.settleGrowth().gifts.some((x) => x.label === "くじのラストワン賞"), false, "章が変わっても、同じ箱では二度もらえない");
+assert.equal(growth.takeGrowthStock().gifts.some((x) => x.label === "くじのラストワン賞"), false, "章が変わっても、同じ箱では二度もらえない");
 core.state.chapter -= 1;
 core.state.flags._axe_bar_records = { classic: { plays: 9, best: { total: 85, maximum: 100 } } };
-assert.deepEqual(growth.settleGrowth().gifts, [], "斧投げのご褒美は Aランクの1回だけ");
+assert.deepEqual(growth.takeGrowthStock().gifts, [], "斧投げのご褒美は Aランクの1回だけ");
 delete core.state.flags._axe_bar_records; core.state.trpg.cleared = {}; core.state.kuji = {};
 
 // ゲージ（6.1a）
@@ -215,7 +232,7 @@ assert.equal(growth.gaugeAt(80, 0, 0).max, false);
 // 保存・読込・壊れた値
 core.save(); core.load();
 assert.equal(core.state.growth.level, 10);
-assert.equal(core.state.growth.hidane.sense, 2, "節目の2");
+assert.equal(core.state.growth.hidane.sense, 1, "節目の色の火1つ");
 assert.equal(core.state.growth.gifted.minto, true);
 core.state.growth = { level: 99, xp: -5, hidane: "x", milestones: [3, 10], firsts: null };
 const fixed = growth.ensureGrowth();
@@ -243,7 +260,8 @@ delete core.state.flags._coal_cube_learned; delete core.state.flags._sumi_attack
 assert.equal(growth.BOARD_TOTAL, 198);
 core.state.growth = { ...growth.newGrowth(), earned: growth.BOARD_TOTAL - 1 };
 growth.gainExp(growth.totalExpFor(12));
-const capped = growth.settleGrowth();
+const capped = growth.takeGrowthStock();
+assert.deepEqual([capped.from, capped.to, capped.gains.any], [1, 12, 1], "上限の後はレベルだけ上がる");
 assert.equal(core.state.growth.earned, growth.BOARD_TOTAL);
 assert.equal(capped.boardFull, false, "受け取りが上限でも、灯していなければ「盤は埋まった」と出さない");
 
@@ -316,12 +334,15 @@ const finishedCraft={pullDone:true,careHistory:[{score:60},{score:70}],heat:{sco
 assert.equal(growth.awardTournamentExp(3,finishedCraft),40);
 assert.equal(core.state.growth.hidane.sense,2);
 assert.equal(growth.awardTournamentExp(2,finishedCraft),40);
+assert.equal(growth.hidaneTotal(),4,"2位まででは優勝の白火は出ない（大会の学びの色の火2つ＋Lv.2の白火2つ）");
 assert.equal(growth.awardTournamentExp(1,finishedCraft),80);
+assert.equal(core.state.growth.hidane.any,2+growth.WIN_HIDANE,"優勝で白火3つ（SBD110）");
 assert.equal(growth.awardTournamentExp(4,finishedCraft),0);
 core.save();core.load();
 assert.equal(growth.awardTournamentExp(1,finishedCraft),0);
-assert.equal(core.state.growth.xp,300);assert.equal(core.state.growth.earned,2);
-assert.equal(core.state.growth.today.gifts.length,1);
+assert.equal(core.state.growth.xp,300);assert.equal(core.state.growth.earned,2+2+growth.WIN_HIDANE,"再挑戦・LOADの後の優勝で二度渡さない");
+assert.deepEqual(core.state.growth.today.gifts.map(x=>x.label),["大会の学び","大会で優勝"]);
+assert.deepEqual(core.state.growth.today.gifts[1].parts,[{kind:"any",n:growth.WIN_HIDANE}]);
 assert.deepEqual({day:core.state.day,slot:core.state.slot,stamina:core.state.stamina,money:core.state.money,stats:core.state.stats},resourceBefore);
 growth.awardActionExp({key:"naru",person:"naru"});
 growth.awardActionExp({key:"naru",person:"naru"});
@@ -341,4 +362,4 @@ assert.equal(growth.awardChapterClearExp(),165);
 growth.setGrowthPreview(false);
 core.newGame();
 assert.equal(core.state.growth, undefined);
-console.log("[growth levelup] PASS: curve, flag off, X1-X4 + freshness, one chip per action, chapter mult, night settlement, short/full, milestone hidane, ♥5 gift, play rewards, kuji last one, gauge, save/load, legacy lessons, cap");
+console.log("[growth levelup] PASS: curve, flag off, X1-X4 + freshness, one chip per action, chapter mult, instant stock + one report for the reflection, milestone/♥5 key gift, tournament win bonus, play rewards, kuji last one, gauge, save/load, legacy lessons, cap");

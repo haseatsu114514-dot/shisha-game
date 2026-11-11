@@ -30,7 +30,7 @@ async function runner(name,progress,exposed){
     layers:{hud:{replaceChildren:noop,classList:{remove:noop}}},showScreen:(_id,n)=>{screen=n;},
     setBg:async()=>{},enterScene:async()=>{},playBgm:noop,toast:noop,hooks:{},
     save:()=>{snapshots.push(JSON.parse(JSON.stringify(core.state)));if(pauseAtSave)owner.active=false;},
-    presentNight:async()=>{nightBefore=JSON.parse(JSON.stringify(core.state));growth.settleGrowth();},
+    presentNight:async()=>{nightBefore=JSON.parse(JSON.stringify(core.state));growth.takeGrowthStock();},
     play:async()=>{if(swap){core.newGame();syncBindings();replacement=JSON.stringify(core.state);}return {id:"fixture",visited:[],cancelled:cancel};},
     newSession:()=>craft,openBench:noop,waitBenchReady:async()=>{},CRAFT_STEPS:[],
     stepSetup:noop,stepWater:noop,stepMix:noop,stepPack:noop,runHoles:noop,stepPlace:noop,runHeat:noop,

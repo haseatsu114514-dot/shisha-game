@@ -234,6 +234,8 @@ html:root[data-ui-theme="paper"] .gb-legend-item i { border-color: var(--lavende
 html:root[data-ui-theme="paper"] .gb-legend-item i.s-available { box-shadow: 0 0 0 2px #e9dfef, 0 0 6px var(--amber); border-color: var(--amber-ink); }
 html:root[data-ui-theme="paper"] .gb-legend-item i.s-sealed { border-color: #9676a8; }
 /* 地図の左上に出る EXP の札とレベルアップの帯 */
+/* 見せていないレベルアップの印「Lv UP」（SBD108）: 紙の札の上でも読める濃さに */
+html:root[data-ui-theme="paper"] .hud-exp.ready .hx-left { color: var(--amber-ink); }
 html:root[data-ui-theme="paper"] .exp-chip { color: #fff; background: var(--lavender-art) center / 256px repeat, var(--lavender); border: 1px solid var(--lavender); box-shadow: 0 3px 8px #2a1a3a40; }
 html:root[data-ui-theme="paper"] .exp-chip :is(b, span) { color: #fff; }
 html:root[data-ui-theme="paper"] .gb-wallet { background: var(--paper); border: 1px solid var(--paper-line); }

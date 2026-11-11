@@ -2,6 +2,12 @@
 
 > このフォルダの決定は [ADDENDUM-BOARD-LAYOUT.md](ADDENDUM-BOARD-LAYOUT.md)、実装仕様は [SPEC.md](SPEC.md)（第2版）。**2026-11-02 から通常プレイで有効**（`GROWTH_BOARD=true`。オーナー「観音やモスクで割り振れるように実装して」SBD97）。開発・検査で旧しくみを見る時だけ `?growth=0`。下は 2026-11-02 に `remake/README.md` から移した実装メモ。
 
+## 2026-11-11 レベルアップは観音堂でまとめて（SBD108〜115）
+
+- 経験値が入ったその場でレベルが上がり、火種は手持ちに入る（`core/growth.js` の `stockLevels`）。寝る前の演出は無い。見せる分は `growth.today` に貯め、観音堂などの内省（`daily/reflection.js`）で `daily/levelup.js` の `presentStockedGrowth` がまとめて見せる。
+- 節目・♥5は色の火1＋白火1、大会の優勝で白火3つ、近くの帯×2、K20 は＋4%。仕様は SPEC 1.5・1.7・3.7・6.3。
+- 確認: `node remake/test/growth_levelup.mjs`、`node --experimental-vm-modules remake/test/kannon_growth.mjs`、`node remake/test/browser/growth_fx.mjs`。
+
 ## 2026-11-11 バランス調査と演出の強化（SBD101〜107）
 
 - 調査の結果と判断待ちは [BALANCE-REVIEW-20261111.md](BALANCE-REVIEW-20261111.md)。

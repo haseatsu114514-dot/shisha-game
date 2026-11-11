@@ -183,7 +183,7 @@ assert.equal(awardLoverSceneExp("lover_rio_lv1", core.state), 20);
 assert.equal(awardLoverSceneExp("lover_rio_lv1", core.state), 0);
 assert.equal(growth.gainExp(100), 0, "他のEXP源を先行公開しない");
 assert.equal(growth.awardSlotExp("big"), 0);
-assert.equal(growth.settleGrowth(), null);
+assert.equal(growth.takeGrowthStock(), null);
 assert.equal(core.state.growth.level, 1); assert.equal(growth.hidaneTotal(), 0);
 const held = structuredClone(core.state.growth);
 save(); newGame(); core.load();
@@ -193,13 +193,13 @@ growth.setGrowthPreview(true);
 assert.deepEqual(core.state.growth, held, "previewへ切り替えるだけでは加算・精算しない");
 assert.equal(awardLoverSceneExp("lover_rio_lv1", core.state), 0);
 growth.gainExp(300);
-growth.settleGrowth();
+growth.takeGrowthStock();
 const settled = structuredClone(core.state.growth);
 assert.equal(settled.xp, 320); assert.equal(settled.level, 2);
 growth.setGrowthPreview(false);
 assert.deepEqual(core.state.growth, settled, "通常へ戻しても失わない");
 assert.equal(awardLoverSceneExp("lover_rio_lv2", core.state), 20);
-assert.equal(growth.settleGrowth(), null, "通常プレイで火種を配らない");
+assert.equal(growth.takeGrowthStock(), null, "通常プレイで火種を配らない");
 assert.deepEqual(core.state.stats, abilityBefore);
 assert.equal(core.state.growth.xp, 340);
 core.state.growth.fresh.counts.rio = 4;
@@ -225,7 +225,7 @@ save(); newGame(); core.load();
 assert.equal(core.state.growth.xp, 360);
 growth.setGrowthPreview(true);
 assert.equal(awardLoverSceneExp("lover_rio_lv1", core.state), 0);
-const resettled = growth.settleGrowth();
+const resettled = growth.takeGrowthStock();
 assert.equal(resettled.to, resettled.from); assert.deepEqual(core.state.growth.hidane, settled.hidane);
 growth.setGrowthPreview(false);
 assert.equal(startNextCycle(expPackage, { groups: { stats: false } }).growth, undefined);
@@ -257,8 +257,8 @@ for (let cycle = 1; cycle <= 3; cycle++) {
   assert.equal(core.state.cycle, cycle);
   assert.deepEqual(core.state.stats, rawStats, "周回のたびに盤の恩恵を旧能力へ書き込まない");
   assert.deepEqual(boardSnapshot(), retainedBoard);
-  assert.equal(maxStamina(), 184, "旧最大160＋B1の4＋習得済みひよりの20");
-  assert.equal(effects.growthPerks(core.state).charm, 2, "旧K20の開放・支払を人柄へ引き継ぐ");
+  assert.equal(maxStamina(), 188, "旧最大160＋B1の8（近くの帯×2。SBD111）＋習得済みひよりの20");
+  assert.equal(effects.growthPerks(core.state).charm, 4, "旧K20の開放・支払を人柄へ引き継ぐ（火種2のマスは＋4%。SBD112）");
   assert.equal(effects.densePackAvailable(core.state), true);
   assert.equal(effects.growthLesson(core.state, "M-W1"), true, "交流をやり直しても習得済み授業は有効");
   for (let chapter = 1; chapter <= 5; chapter++) {
@@ -277,7 +277,7 @@ for (let cycle = 1; cycle <= 3; cycle++) {
     assert.deepEqual({ day: core.state.day, slot: core.state.slot, stamina: core.state.stamina,
       money: core.state.money, reel: core.state.reel, flavorStock: core.state.flavorStock }, before);
   }
-  growth.settleGrowth();
+  growth.takeGrowthStock();
   const settledBoard = structuredClone(core.state.growth);
   const source = structuredClone(core.state), carryBoard = buildCarryPackage(core.state);
   assert.deepEqual(core.state, source, "引き継ぎの抽出は元セーブを変えない");
@@ -295,7 +295,7 @@ for (let cycle = 1; cycle <= 3; cycle++) {
   assert.deepEqual(core.state.growth.partyLast, ["saku", "mashiro"]);
   assert.deepEqual(core.state.growth.firsts, { people: [], places: [] });
   const beforeResettle = structuredClone(core.state.growth);
-  growth.settleGrowth();
+  growth.takeGrowthStock();
   assert.deepEqual(core.state.growth, beforeResettle, "新周回の再精算では火種を積み増さない");
 }
 growth.setGrowthPreview(false);

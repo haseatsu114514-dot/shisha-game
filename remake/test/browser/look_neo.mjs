@@ -1737,7 +1737,8 @@ async function levelUp(page, { phone }) {
     g.setGrowthPreview(true);
     g.gainExp(g.totalExpFor(3) + 10);
     window.lookNeoNight = null;
-    void (await import("./js/daily/levelup.js")).presentNightGrowth().then((r) => { window.lookNeoNight = r; });
+    // ためた分のフル演出（観音堂などの内省が呼ぶもの。SBD108）を直接出す
+    void (await import("./js/daily/levelup.js")).presentStockedGrowth().then((r) => { window.lookNeoNight = r; });
   });
   await page.locator('[data-test="levelup"]').waitFor();
   // 検査の共通の仕掛け（growth_ack.mjs）が出そろった札の OK をすぐ押すので、出そろった瞬間（クラスが付いた時）に測っておく。
@@ -1748,7 +1749,7 @@ async function levelUp(page, { phone }) {
       const panel = document.querySelector(".levelup.lu-settled-state");
       if (!panel || window.lookNeoLevelup) return;
       window.lookNeoLevelup = { panel: look(panel), text: panel.innerText, lv: getComputedStyle(panel.querySelector(".lu-lv")).backgroundImage,
-        ok: look(panel.querySelector('[data-test="levelup-ok"]')), board: look(panel.querySelector('[data-test="levelup-board"]')) };
+        ok: look(panel.querySelector('[data-test="levelup-ok"]')) };
     };
     window.lookNeoLevelup = null;
     new MutationObserver(take).observe(document.getElementById("fx"), { subtree: true, attributes: true, attributeFilter: ["class"] });
@@ -1760,26 +1761,11 @@ async function levelUp(page, { phone }) {
   assert(inside(full.panel, STAGE) && full.panel.face.includes("rgba(36, 22, 55") && light(full.panel.ink), `レベルアップの札は夜紫の面 ${JSON.stringify(full.panel)}`);
   assert(full.lv.includes("227, 189, 110"), "レベルの下に金の罫線");
   assert.match(full.text, /Lv\.1 → Lv\.3/);
-  assert(full.ok.face.includes("linear-gradient") && !light(full.ok.ink) && light(full.board.ink), "OK は金、心得の盤は夜紫の札");
-  for (const button of [full.ok, full.board]) assert(inside(button, full.panel, 1) && button.height >= 44 - .5 && button.real >= (phone ? 30 : 38), `ボタンの押せる大きさ ${JSON.stringify(button)}`);
+  assert(full.ok.face.includes("linear-gradient") && !light(full.ok.ink), "「盤へ」は金の札");
+  for (const button of [full.ok]) assert(inside(button, full.panel, 1) && button.height >= 44 - .5 && button.real >= (phone ? 30 : 38), `ボタンの押せる大きさ ${JSON.stringify(button)}`);
   // OK で閉じる（共通の仕掛けが押す）。
   await page.waitForFunction(() => window.lookNeoNight?.to === 3);
-  // ふだんの1レベルは短い帯。
-  await page.evaluate(async () => {
-    const g = await import("./js/core/growth.js"), core = await import("./js/core/state.js");
-    g.gainExp(g.totalExpFor(core.state.growth.level + 1) - core.state.growth.xp + 5);
-    window.lookNeoNight = null;
-    void (await import("./js/daily/levelup.js")).presentNightGrowth().then((r) => { window.lookNeoNight = r; });
-  });
-  await page.locator(".levelup-band.show").waitFor();
-  await page.waitForTimeout(260);
-  const band = await page.locator(".levelup-band").evaluate((node, helpers) => {
-    const { px, rgb } = (0, eval)(helpers);
-    return { ...px(node), face: getComputedStyle(node).backgroundImage, ink: rgb(getComputedStyle(node.querySelector(".lb-lv")).color), text: node.innerText };
-  }, STAGE_PX);
-  assert(inside(band, STAGE) && band.face.includes("227, 189, 110") && band.face.includes("rgba(36, 22, 55") && light(band.ink), `短い帯は夜紫に金の罫線 ${JSON.stringify(band)}`);
-  assert.match(band.text, /LEVEL UP/);
-  await page.waitForFunction(() => window.lookNeoNight?.to === 4, null, { timeout: 8000 });
+  // 短い帯は廃止した（SBD108）。寝る前には何も出ない
 }
 
 /** ギャラリー（タイトルから）。一覧の面・タブ・閉じる・閲覧の帯。 */

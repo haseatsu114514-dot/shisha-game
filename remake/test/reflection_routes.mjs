@@ -13,6 +13,8 @@ const scenes = [], opened = [];
 const mocks = {
   "core/stats.js": { affinityLevel: () => 0, AFFINITY_RANK_PTS: [0, 9, 20, 33, 48, 66], maxStamina: () => 100, setExpHooks() {} },
   "vn/engine.js": { play: async id => { scenes.push(id); afterScene?.(); } },
+  // ためた分のレベルアップのフル演出（SBD108）は画面なので差し替える。経路・見学時間・保存だけを見る
+  "daily/levelup.js": { presentStockedGrowth: async () => null },
   "daily/growth-board-screen.js": { openBoard: async options => {
     opened.push(options.place);
     if (mode === "cancel") return [];

@@ -38,7 +38,7 @@ await suite("lover-milestones", async check => {
       ui.showScreen("map", document.createElement("div")); hud.initHud({}); hud.showHud(true);
       await M.romance.playLoverMilestone("rio");
       return { before, after: s.stats, xp: s.growth.xp, level: s.growth.level, hidane: growth.hidaneTotal(),
-        menu: growth.growthMenuItems(), board: await growth.openGrowthBoard(), night: growth.settleGrowth() };
+        menu: growth.growthMenuItems(), board: await growth.openGrowthBoard(), night: growth.takeGrowthStock() };
     });
     const notice = page.locator(".toast").filter({ hasText: "EXP +25（累計 25）" });
     await notice.waitFor();

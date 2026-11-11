@@ -1,4 +1,4 @@
-// 心得の盤・レベルアップの演出の強化（SBD102〜105）を実DOMで確かめる。
+// 心得の盤・レベルアップの演出（SBD102〜105）と、ストックしてから観音堂でまとめて見せる流れ（SBD108〜110）を実DOMで確かめる。
 // 飾りは規則を変えない: 火種の数・灯したマス・保存は今までどおりで、動きを減らす設定では待たずに閉じる。
 import assert from "node:assert/strict";
 import { suite, baseURL, assertFits } from "./support.mjs";
@@ -20,9 +20,10 @@ async function setupDaily(page, { chapter = 1 } = {}) {
     s.growth.seenRing = chapter;
   }, chapter);
 }
-const night = (page) => page.evaluate(async () => {
+/** ストックした分のフル演出（観音堂などの内省が呼ぶもの）を直接出す */
+const present = (page) => page.evaluate(async () => {
   window.night = null;
-  void (await import("./js/daily/levelup.js")).presentNightGrowth().then((r) => { window.night = r; });
+  void (await import("./js/daily/levelup.js")).presentStockedGrowth().then((r) => { window.night = r; });
 });
 const settled = (page) => page.waitForFunction(() => document.querySelector(".levelup")?.classList.contains("lu-settled-state"));
 
@@ -34,43 +35,81 @@ await suite("growth-fx", async (check) => {
     await check(`${label}-levelup-rewards`, async (page) => {
       const tap = (sel) => !options.hasTouch ? page.locator(sel).click() : page.locator(sel).tap();
       await setupDaily(page);
-      // 初回のフル演出: 火種の札・次の節目・手持ち。白火だけの夜は色の火の説明を出さない
+      // 経験値が入ったその場でレベルが上がり、火種が手持ちに入る。寝る前の演出は出ない。HUD に小さく知らせる
       await page.evaluate(async () => { const g = await import("./js/core/growth.js"); g.gainExp(g.totalExpFor(3)); });
-      await night(page);
+      assert.deepEqual(await page.evaluate(() => ({ level: __remake.state.growth.level, fire: __remake.state.growth.hidane.any })), { level: 3, fire: 4 });
+      assert.match(await page.locator(t("stock-chip")).innerText(), /LEVEL UP Lv\.3[\s\S]*火種 ＋4/);
+      await assertFits(page, t("stock-chip"));
+      await page.locator(".gain-card", { hasText: "火種をストックした" }).waitFor();
+      assert.match(await page.locator(t("hud-exp")).innerText(), /Lv\.3[\s\S]*Lv UP ×2/, "見せていないレベルアップがある間は HUD に出す");
+      assert.equal(await page.locator(t("hud-hidane")).innerText(), "4");
+      assert.equal(await page.locator(t("levelup")).count(), 0);
+      const quiet = await page.evaluate(async () => { const r = await (await import("./js/core/growth.js")).presentNight(); return { panel: !!document.querySelector(".levelup-backdrop, .levelup-band"), to: r.to, from: r.from }; });
+      assert.deepEqual(quiet, { panel: false, from: 1, to: 3 }, "寝る前は何も出さず、ストックも残す");
+
+      // ストックした分のフル演出: 火種の札・次の節目・手持ち。白火だけなら色の火の説明を出さない
+      await present(page);
       const panel = page.locator(t("levelup"));
       await panel.waitFor();
       await tap(".levelup-backdrop");
       await settled(page);
       assert.deepEqual(await page.locator(`${t("levelup-rewards")} .lu-chip`).allInnerTexts(), ["火種 ＋4"]);
+      assert.match(await panel.innerText(), /Lv\.1 → Lv\.3/);
       assert.match(await page.locator(t("levelup-next")).innerText(), /次の節目 Lv\.10（色の火がもらえる）まで あと7/);
       assert.match(await page.locator(t("levelup-wallet")).innerText(), /手持ちの火種[\s\S]*白火 4/);
       assert.equal(await page.locator(t("levelup-color-note")).count(), 0);
+      assert.equal(await page.locator(t("levelup-board")).count(), 0, "盤はこのあと開くので、盤を見るボタンは無い");
       assert.equal(await page.locator(".lu-chip .hidane-icon.has-img").count() > 0, true, "火種の粒は盤と同じ絵");
       await assertFits(page, t("levelup"));
       await tap(t("levelup-ok"));
       await page.waitForFunction(() => window.night?.to === 3);
       await panel.waitFor({ state: "detached" });
+      assert.equal(await page.evaluate(async () => (await import("./js/core/growth.js")).hasGrowthStock()), false, "見終えたらストックは空");
+      assert.equal(await page.evaluate(async () => (await import("./js/core/state.js")).peekSave()?.growth?.today?.from ?? null), null, "見終えたことを保存する");
+      await page.waitForFunction(() => !/Lv UP/.test(document.querySelector('[data-test="hud-exp"]').textContent));
 
-      // 節目の夜（第1章）: 色の火は台座の鍵で、台座は物語が進むと現れる、と伝える。行が多い夜も画面に収まる
+      // 何回かに分けてためた分も、一つの演出にまとまる。節目（第1章）は色の火1＋白火1で、色の火は台座の鍵だと伝える
       await page.evaluate(async () => {
         const g = await import("./js/core/growth.js"), gr = g.ensureGrowth();
-        Object.assign(gr, { level: 9, xp: g.totalExpFor(10) + 10, settledXp: g.totalExpFor(9) });
-        gr.today.gifts = [{ label: "斧投げで Aランク", parts: [g.giveColored(gr, "body", 1)] }, { label: "くじのラストワン賞", parts: [g.giveColored(gr, "sense", 1)] }];
+        g.gainExp(g.totalExpFor(8) - gr.xp, { key: "sumi" });
+        gr.today.gifts.push({ label: "斧投げで Aランク", parts: [g.giveColored(gr, "body", 1)] });
+        g.gainExp(g.totalExpFor(10) - gr.xp + 10, { key: "kannon" });
       });
-      await night(page);
+      assert.equal(await page.evaluate(() => __remake.state.growth.level), 10);
+      await present(page);
       await panel.waitFor();
       await tap(".levelup-backdrop");
       await settled(page);
       const chips = await page.locator(`${t("levelup-rewards")} .lu-chip`).allInnerTexts();
-      assert.equal(chips[0], "火種 ＋2");
-      assert.match(chips[1], /^(紅火|蒼火|翠火) ＋2$/, "節目の色の火");
-      assert.equal(await page.locator(`${t("levelup-rewards")} .lu-chip.milestone`).count(), 1);
+      assert.equal(chips[0], "火種 ＋14", "Lv.3→10 のレベルの白火");
+      assert.match(chips[1], /^(紅火|蒼火|翠火) ＋1$/, "節目の色の火は1つ");
+      assert.equal(chips[2], "白火 ＋1", "節目の白火");
+      assert.equal(await page.locator(`${t("levelup-rewards")} .lu-chip.milestone`).count(), 2);
+      assert.match(await panel.innerText(), /Lv\.3 → Lv\.10[\s\S]*節目の Lv\.10！ (紅火|蒼火|翠火)と白火を1つずつ/);
+      assert.match(await panel.innerText(), /学んできたこと：/);
       assert.match(await page.locator(t("levelup-color-note")).innerText(), /色の台座」にはめる鍵。台座は物語が進むと盤に現れる/);
-      assert.equal(await page.locator(t("levelup-gift")).count(), 2);
-      assert.match(await panel.innerText(), /斧投げで Aランク[\s\S]*紅火 ＋1[\s\S]*くじのラストワン賞[\s\S]*蒼火 ＋1/);
+      assert.equal(await page.locator(t("levelup-gift")).count(), 1);
+      assert.match(await panel.innerText(), /斧投げで Aランク[\s\S]*紅火 ＋1/);
       assert.equal(await panel.evaluate((node) => node.classList.contains("milestone")), true);
       await assertFits(page, t("levelup"));
       await assertFits(page, t("levelup-ok"));
+      await tap(t("levelup-ok"));
+      await panel.waitFor({ state: "detached" });
+
+      // ご褒美だけ（レベルは上がっていない）でも、同じ画面で見せる
+      await page.evaluate(async () => {
+        const g = await import("./js/core/growth.js"), gr = g.ensureGrowth();
+        __remake.state.affinity.minto = 999; __remake.state.flags._met_minto = true;
+        window.heart = g.giftAtMaxHeart("minto");
+      });
+      assert.deepEqual(await page.evaluate(() => window.heart), [{ kind: "body", n: 1 }, { kind: "any", n: 1 }], "♥5は色の火1＋白火1（SBD109）");
+      await present(page);
+      await panel.waitFor();
+      await tap(".levelup-backdrop");
+      await settled(page);
+      assert.equal(await panel.evaluate((node) => node.classList.contains("gift-only")), true);
+      assert.doesNotMatch(await panel.innerText(), /→/);
+      assert.match(await panel.innerText(), /紅火 ＋1[\s\S]*白火 ＋1/);
       await tap(t("levelup-ok"));
       await panel.waitFor({ state: "detached" });
 
@@ -78,21 +117,51 @@ await suite("growth-fx", async (check) => {
       const note = await page.evaluate(async () => {
         __remake.state.chapter = 2;
         const { colorFireNote } = await import("./js/daily/levelup.js");
-        return colorFireNote({ gains: { any: 2, limited: [{ level: 20, system: "sense", n: 2 }] }, gifts: [] });
+        return colorFireNote({ gains: { any: 2, limited: [{ level: 20, system: "sense", n: 1, any: 1 }] }, gifts: [] });
       });
       assert.match(note, /はめると、その先の道が開く/);
     }, options);
   }
+
+  // 観音堂で振り返る: 内省の場面 → ためた分のフル演出 → 盤（灯せる）。演出を見終えるまで盤は開かない
+  await check("reflection-presents-stock-then-board", async (page) => {
+    await setupDaily(page);
+    await page.evaluate(async () => {
+      const g = await import("./js/core/growth.js");
+      __remake.state.flags._board_starter_given = true; __remake.state.flags._board_tutorial_done = true;
+      g.gainExp(g.totalExpFor(4) + 5);
+      (await import("./js/vn/engine.js")).vnTest.turbo = true;
+      window.lit = (await import("./js/daily/reflection.js")).reflectAt("kannon");
+    });
+    const panel = page.locator(t("levelup"));
+    await panel.waitFor({ timeout: 30000 });
+    assert.equal(await page.locator(t("growth-board")).count(), 0, "演出の間は盤を開かない");
+    assert.match(await panel.innerText(), /Lv\.1 → Lv\.4[\s\S]*火種 ＋6/);
+    await page.locator(".levelup-backdrop").click();
+    await settled(page);
+    await page.locator(t("levelup-ok")).click();
+    await page.locator(`${t("growth-board")}[data-mode="light"]`).waitFor();
+    assert.match(await page.locator(t("board-wallet")).innerText(), /白火\s*6/);
+    assert.equal(await page.evaluate(async () => (await import("./js/core/growth.js")).hasGrowthStock()), false);
+    await page.locator(t("board-close")).click();
+    await page.locator(t("growth-board")).waitFor({ state: "detached" });
+    // 2回目は見せるものが無いので、演出を挟まずに盤が開く
+    await page.evaluate(async () => { window.lit = (await import("./js/daily/reflection.js")).reflectAt("kannon"); });
+    await page.locator(`${t("growth-board")}[data-mode="light"]`).waitFor({ timeout: 30000 });
+    assert.equal(await page.locator(t("levelup")).count(), 0);
+    await page.locator(t("board-close")).click();
+  }, { viewport: { width: 1331, height: 760 } });
 
   // 受け取りの上限に届いた後のレベルアップは、火種が増えない理由を一言で出す
   await check("capped-levelup-explains", async (page) => {
     await setupDaily(page);
     await page.evaluate(async () => {
       const g = await import("./js/core/growth.js"), gr = g.ensureGrowth();
-      Object.assign(gr, { level: 70, xp: g.totalExpFor(72) + 5, settledXp: g.totalExpFor(70), earned: g.BOARD_TOTAL });
+      Object.assign(gr, { level: 70, xp: g.totalExpFor(70), settledXp: g.totalExpFor(70), earned: g.BOARD_TOTAL });
       gr.hidane.any = 9;
+      g.gainExp(g.totalExpFor(72) + 5 - gr.xp);
     });
-    await night(page);
+    await present(page);
     await page.locator(t("levelup")).waitFor();
     await page.locator(".levelup-backdrop").click();
     await settled(page);
