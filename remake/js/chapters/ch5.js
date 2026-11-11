@@ -45,7 +45,7 @@ import { CH5_SCENE_BG, CH5_SCENE_BGM, CH5_DEFAULT_BGM, CH5_PROLOGUE, CH5_MATCH_S
   chapterFiveEndingContext, beginChapterFiveFinale, completeChapterFiveScene, CH5_LIME_MILESTONES, chapterFiveLimeDue,
   chapterFiveCreditsPending, recordChapterFiveCredits, chapterFiveTrueEndReached, chapterFiveFreeRemaining,
   chapterFivePostEndingPlan, chapterFivePostEndingUndecided, beginChapterFivePostEnding, chapterFivePostEndingNext,
-  completeChapterFivePostEnding } from "./ch5-progress.js";
+  completeChapterFivePostEnding, CH5_POST_ENDING } from "./ch5-progress.js";
 import { readCycleMeta, recordTrueEndForRun } from "../core/cycle-meta.js";
 
 let session = null;
@@ -638,7 +638,9 @@ async function renderPostEnding(owner) {
   if (!current(owner)) return;
   const [title, description, note] = next.talk
     ? ["話し直し", "本人が決めた日に、一人ずつ会って話す。", `${next.index}人目／${next.total}人`]
-    : ["後日のtonari", "閉店後のtonariで、次の話を読む。", ""];
+    : next.id === CH5_POST_ENDING.aftercare
+      ? ["閉店後のtonari", "最後の一人と話した夜。店に戻る。", ""]
+      : ["後日のtonari", "閉店後のtonariで、次の話を読む。", ""];
   card(owner, "scene", title, description, [
     button(owner, "続きを読む", "continue", async () => {
       for (;;) {
@@ -648,7 +650,7 @@ async function renderPostEnding(owner) {
         save();
         const following = chapterFivePostEndingNext(state);
         if (!following) return showResult(owner); // 話し直しまで読み終えたら、締めのリザルトからタイトルへ
-        if (following.talk) break;
+        if (following.talk || following.id === CH5_POST_ENDING.aftercare) break; // 場所が変わるので、カードと背景を出し直す
       }
       await renderStage(owner);
     }, true),

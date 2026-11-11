@@ -111,6 +111,7 @@ export const CH5_SCENE_BG = Object.freeze({
   shuraba_talk_samechan: "bg_street_night",          // 仮置き bg（閉めた後の店先）
   shuraba_talk_hiyori: "bg_street_night",            // 仮置き bg（仕事帰り）
   shuraba_talk_noor: "bg_home_night",                // 部屋からドバイへのテレビ電話
+  shuraba_sumi_cover: "bg_tonari_inside_night",      // 話し直しの後、閉店後のtonariでスミさんが待っている（STK12）
 });
 
 // ---- BGM の対応表（差し替えは remake/js/core/story-audio.js の STORY_BGM）------------
@@ -142,6 +143,8 @@ export const CH5_SCENE_BGM = Object.freeze({
     "shuraba_talk_tsumugi", "shuraba_talk_minto", "shuraba_talk_rio", "shuraba_talk_ageha", "shuraba_talk_mashiro",
     "shuraba_talk_samechan", "shuraba_talk_hiyori", "shuraba_talk_noor",
   ].map(id => [id, STORY_BGM.tasteDistant])),
+  // 話し直しの後のスミさんの締め（STK12）は、いつもの店の曲に戻す。
+  shuraba_sumi_cover: STORY_BGM.shopHome,
 });
 
 // ---- 場面表 -------------------------------------------------------------------------
@@ -238,6 +241,9 @@ export const CH5_ENDING_IDS = Object.freeze([
 // data/story_routes.json の conflict と romance[id].conflict / talk と同じ（ch5_progress.mjs が一致を確認）。
 export const CH5_POST_ENDING = Object.freeze({
   open: "shuraba_open", close: "shuraba_accountability", pending: "ending_relationship_pending",
+  // 一人ずつの話し直しを全員読み終えた後に一度だけ読む締め（2026-11-11 オーナー指示・STK12）。
+  // スミさんが裏で一人ずつ話を聞き「本命はあんた一人だ」と説得していたと明かし、「……気をつけろよ」と言う。
+  aftercare: "shuraba_sumi_cover",
 });
 export const CH5_CONFLICT_SCENES = Object.freeze({
   tsumugi: "shuraba_tsumugi", minto: "shuraba_minto", rio: "shuraba_rio", ageha: "shuraba_ageha",
@@ -273,7 +279,7 @@ export const CH5_SCENE_FILES = Object.freeze({
   ].filter((id, index, all) => all.indexOf(id) === index)),
   ending: Object.freeze([...CH5_ENDING_IDS, CH5_POST_ENDING.pending]),
   relationship_conflicts: Object.freeze([...CONFLICT_CALLS, CH5_POST_ENDING.open, ...CONFLICT_REACTIONS, CH5_POST_ENDING.close,
-    ...Object.values(CH5_TALK_SCENES)]),
+    ...Object.values(CH5_TALK_SCENES), CH5_POST_ENDING.aftercare]),
 });
 
 const PARTS = Object.freeze(["prologue", "free", "scheduled", "match", "aftermath", "finale", "cleared"]);
@@ -294,7 +300,9 @@ function isValidPostEnding(post) {
   const at = scenes.indexOf(CH5_POST_ENDING.pending);
   const calls = scenes.slice(0, Math.max(at, 0)).findIndex(id => !CONFLICT_CALLS.includes(id));
   const head = scenes.slice(Math.max(calls, 0), Math.max(at, 0));
-  const talks = scenes.slice(at + 1);
+  // 末尾の締め（aftercare）は任意。足す前に並びを固定した旧保存にはない。
+  const tail = scenes.at(-1) === CH5_POST_ENDING.aftercare ? 1 : 0;
+  const talks = scenes.slice(at + 1, scenes.length - tail);
   const conflict = !head.length || (head[0] === CH5_POST_ENDING.open && head.at(-1) === CH5_POST_ENDING.close
     && head.length >= 4 && head.slice(1, -1).every(id => CONFLICT_REACTIONS.includes(id)));
   if (at < 0 || !conflict || !talks.length || !talks.every(id => TALK_OWNER[id])) return false;
@@ -705,7 +713,8 @@ export function chapterFivePostEndingPlan(routes, value) {
   if (!result.talks?.length) return { kind: "none", scenes: [], unresolved: [] };
   // 遠くの恋人は、修羅場の開始（はじめの打ち明け）より前にテレビ電話をつなぐ（反応が「聞こえてた」と受ける）
   const calls = result.kind === "conflict" ? result.participants.map(id => CH5_CALL_SCENES[id]).filter(Boolean) : [];
-  return { kind: result.kind, scenes: [...calls, ...result.scenes, ...result.talks], unresolved: [...result.unresolved] };
+  return { kind: result.kind, scenes: [...calls, ...result.scenes, ...result.talks, CH5_POST_ENDING.aftercare],
+    unresolved: [...result.unresolved] };
 }
 
 /** スタッフロールを流し終え、スタッフロールの後の並びをまだ決めていないか。 */

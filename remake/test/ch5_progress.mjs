@@ -68,7 +68,8 @@ for (const id of [...Object.values(CH5_AFTER_MATCH_OPENINGS), CH5_AFTER_MATCH_TA
 for (const key of ["start", "normal", "daily", "salaryman_name"]) assert(CH5_ENDING_IDS.includes(routes.ending[key]), key);
 for (const id of routes.heroine_ids) assert(CH5_ENDING_IDS.includes(routes.romance[id].epilogue), id);
 // スタッフロールの後（IR32）: 修羅場と話し直しの場面は story_routes の conflict / romance と同じ。
-assert.deepEqual(CH5_POST_ENDING, { open: routes.conflict.open, close: routes.conflict.close, pending: routes.conflict.pending_ending });
+assert.deepEqual(CH5_POST_ENDING, { open: routes.conflict.open, close: routes.conflict.close, pending: routes.conflict.pending_ending,
+  aftercare: routes.conflict.aftercare });
 assert.deepEqual(Object.keys(CH5_CONFLICT_SCENES), routes.heroine_ids);
 assert.deepEqual(Object.keys(CH5_TALK_SCENES), routes.heroine_ids);
 for (const id of routes.heroine_ids) {
@@ -824,7 +825,7 @@ for (const scenes of [
     const conflict = [CH5_POST_ENDING.open, ...lovers.map(id => CH5_CONFLICT_SCENES[id]), CH5_POST_ENDING.close,
       CH5_POST_ENDING.pending];
     const talks = lovers.map(id => CH5_TALK_SCENES[id]);
-    assert.deepEqual(plan, { kind: "conflict", scenes: [...conflict, ...talks], unresolved: lovers });
+    assert.deepEqual(plan, { kind: "conflict", scenes: [...conflict, ...talks, CH5_POST_ENDING.aftercare], unresolved: lovers });
     const before = untouched(save);
     assert.equal(beginChapterFivePostEnding(save, plan), true);
     rejects(save, v => beginChapterFivePostEnding(v, plan));
@@ -850,11 +851,16 @@ for (const scenes of [
     const midTalk = JSON.parse(JSON.stringify(save));
     assert.deepEqual(chapterFivePostEndingNext(midTalk), { id: talks[1], talk: lovers[1], index: 2, total: lovers.length });
     rejects(midTalk, v => completeChapterFivePostEnding(v, talks[0]));
-    assert.deepEqual(readAll(save), talks.slice(1));
+    // 最後の話し直しの後、スミさんの締め（STK12）を一度だけ読んで終わる。締めは話し直しの数に入れない。
+    const afterTalks = JSON.parse(JSON.stringify(save));
+    for (const id of talks.slice(1)) read(afterTalks, id);
+    assert.deepEqual(chapterFivePostEndingNext(afterTalks), { id: CH5_POST_ENDING.aftercare, talk: null, index: 0, total: lovers.length });
+    assert.equal(afterTalks.flags._story_shuraba_unresolved, undefined, "Released by the talks, before the closing");
+    assert.deepEqual(readAll(save), [...talks.slice(1), CH5_POST_ENDING.aftercare]);
     assert.deepEqual(chapterFivePostEndingUnresolved(save), []);
     assert.equal(save.flags._story_shuraba_unresolved, undefined, "Released after every talk");
     assert.equal(chapterFivePostEndingNext(save), null);
-    for (const id of [...conflict, ...talks]) assert.equal(save.flags._ch5.read[id], true, id);
+    for (const id of [...conflict, ...talks, CH5_POST_ENDING.aftercare]) assert.equal(save.flags._ch5.read[id], true, id);
     rejects(save, v => completeChapterFivePostEnding(v, talks.at(-1)));
     assert.deepEqual(untouched(save), before, "The post-ending pays nothing and does not move the day or the finale");
     assert.deepEqual(save.lovers, lovers, "Nobody is dumped or forgiven by the talk");
@@ -869,8 +875,8 @@ for (const scenes of [
     assert.equal(save.flags._ch5.finaleScenes[1], "ending_normal");
     assert.deepEqual(chapterFivePostEndingContext(routes, save), { present: [], unresolved: ["tsumugi", "ageha"] });
     const plan = chapterFivePostEndingPlan(routes, save);
-    assert.deepEqual(plan, { kind: "pending", scenes: [CH5_POST_ENDING.pending, CH5_TALK_SCENES.tsumugi, CH5_TALK_SCENES.ageha],
-      unresolved: ["tsumugi", "ageha"] });
+    assert.deepEqual(plan, { kind: "pending", scenes: [CH5_POST_ENDING.pending, CH5_TALK_SCENES.tsumugi, CH5_TALK_SCENES.ageha,
+      CH5_POST_ENDING.aftercare], unresolved: ["tsumugi", "ageha"] });
     assert.equal(beginChapterFivePostEnding(save, plan), true);
     assert.deepEqual(readAll(save), plan.scenes);
     assert.equal(save.flags._story_shuraba_unresolved, undefined);
@@ -889,13 +895,14 @@ for (const scenes of [
     const save = party(["tsumugi", "minto"], ["tsumugi", "minto"]);
     assert.deepEqual(chapterFivePostEndingContext(routes, save), { present: [], unresolved: ["tsumugi", "minto"] });
     assert.deepEqual(chapterFivePostEndingPlan(routes, save), { kind: "pending",
-      scenes: [CH5_POST_ENDING.pending, CH5_TALK_SCENES.tsumugi, CH5_TALK_SCENES.minto], unresolved: ["tsumugi", "minto"] });
+      scenes: [CH5_POST_ENDING.pending, CH5_TALK_SCENES.tsumugi, CH5_TALK_SCENES.minto, CH5_POST_ENDING.aftercare],
+      unresolved: ["tsumugi", "minto"] });
   }
   // ヌール＋地元の恋人の修羅場（ヌールはテレビ電話）の後: 二人とも反応済み。話し直しだけで、着信も反応も読み直さない。
   {
     const save = party(["noor", "tsumugi"], ["noor", "tsumugi"]);
     const plan = chapterFivePostEndingPlan(routes, save);
-    assert.deepEqual(plan.scenes, [CH5_POST_ENDING.pending, CH5_TALK_SCENES.noor, CH5_TALK_SCENES.tsumugi]);
+    assert.deepEqual(plan.scenes, [CH5_POST_ENDING.pending, CH5_TALK_SCENES.noor, CH5_TALK_SCENES.tsumugi, CH5_POST_ENDING.aftercare]);
   }
   // 修羅場の後に凛想が恋人になった（第4章までの恋愛ルートの持ち越しの告白）: 凛想は反応を読んでいないので話し直しへ送らない。
   // 「説明して、って言ったよね」（shuraba_rio の発話の引用）を、読んでいない人に読ませない。
@@ -904,7 +911,8 @@ for (const scenes of [
     assert.deepEqual(chapterFivePostEndingContext(routes, save), { present: ["rio"], unresolved: ["tsumugi", "minto"] });
     const plan = chapterFivePostEndingPlan(routes, save);
     assert.deepEqual(plan, { kind: "pending",
-      scenes: [CH5_POST_ENDING.pending, CH5_TALK_SCENES.tsumugi, CH5_TALK_SCENES.minto], unresolved: ["tsumugi", "minto"] });
+      scenes: [CH5_POST_ENDING.pending, CH5_TALK_SCENES.tsumugi, CH5_TALK_SCENES.minto, CH5_POST_ENDING.aftercare],
+      unresolved: ["tsumugi", "minto"] });
     assert(!plan.scenes.includes(CH5_TALK_SCENES.rio) && !plan.scenes.includes(CH5_CONFLICT_SCENES.rio));
     assert.equal(beginChapterFivePostEnding(save, plan), true);
     assert.deepEqual(readAll(save), plan.scenes);
@@ -917,7 +925,7 @@ for (const scenes of [
     const plan = chapterFivePostEndingPlan(routes, save);
     assert.deepEqual(plan, { kind: "conflict", scenes: [CH5_CALL_SCENES.noor, CH5_POST_ENDING.open,
       CH5_CONFLICT_SCENES.rio, CH5_CONFLICT_SCENES.noor, CH5_POST_ENDING.close, CH5_POST_ENDING.pending,
-      CH5_TALK_SCENES.tsumugi, CH5_TALK_SCENES.minto, CH5_TALK_SCENES.rio, CH5_TALK_SCENES.noor],
+      CH5_TALK_SCENES.tsumugi, CH5_TALK_SCENES.minto, CH5_TALK_SCENES.rio, CH5_TALK_SCENES.noor, CH5_POST_ENDING.aftercare],
       unresolved: ["tsumugi", "minto", "rio", "noor"] });
     assert.equal(beginChapterFivePostEnding(save, plan), true);
     assert.deepEqual(chapterFivePostEndingNext(save), { id: CH5_CALL_SCENES.noor, talk: null, index: 0, total: 4 });
@@ -971,6 +979,22 @@ for (const scenes of [
     for (const id of ["ending_normal", "ending_daily_smoke"]) assert.equal(completeChapterFiveScene(resumed, id), true, id);
     credits(resumed);
     assert.equal(chapterFivePostEndingPlan(routes, resumed).kind, "conflict");
+  }
+
+  // 締め（STK12）を足す前に並びを固定した保存: 締めは読まず、話し直しを読み終えたら終わる（壊れた保存にしない）。
+  {
+    const save = credits(toCleared(["minto", "tsumugi"]));
+    const plan = chapterFivePostEndingPlan(routes, save);
+    const legacyPlan = { scenes: plan.scenes.filter(id => id !== CH5_POST_ENDING.aftercare), unresolved: plan.unresolved };
+    assert.equal(beginChapterFivePostEnding(save, legacyPlan), true);
+    roundTrip(save);
+    assert.deepEqual(readAll(save), legacyPlan.scenes);
+    assert.equal(chapterFivePostEndingNext(save), null);
+    // 締めは末尾だけ。話し直しの途中や、修羅場の前には置けない。
+    const fresh = () => credits(toCleared(["minto", "tsumugi"]));
+    const mid = [...legacyPlan.scenes]; mid.splice(mid.length - 1, 0, CH5_POST_ENDING.aftercare);
+    assert.equal(beginChapterFivePostEnding(fresh(), { scenes: mid, unresolved: plan.unresolved }), false);
+    assert.equal(beginChapterFivePostEnding(fresh(), { scenes: [CH5_POST_ENDING.aftercare, ...legacyPlan.scenes], unresolved: plan.unresolved }), false);
   }
 
   // 壊れた並びの保存は throw。決めるのはスタッフロールの後だけ。

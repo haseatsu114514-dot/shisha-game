@@ -134,12 +134,36 @@
           "text": "……ごめん。今夜は、一人で戻るよ"
         },
         {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_ch3_shuraba_deferred",
+          "next_true": "deferred_again",
+          "next_false": "check_ch1"
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "返事を待っていた顔から目をそらして、ケースを持ち直した。"
         }
       ],
-      "comment": "スティーブが同席しない前夜の重複予定。ここで本格的な修羅場や和解を再生しない。"
+      "branches": {
+        "check_ch1": [
+          {
+            "type": "condition",
+            "condition_type": "flag",
+            "flag": "_shuraba_ch1",
+            "next_true": "deferred_again"
+          }
+        ],
+        "deferred_again": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "前にも、同じ顔をさせた。……言い訳だけが、うまくなっていく。"
+          }
+        ]
+      },
+      "comment": "スティーブが同席しない前夜の重複予定。ここで本格的な修羅場や和解を再生しない。第1章の大会当日か第3章の前夜に、すでに一度先送りにした保存だけ一行足す（2026-11-11・STK26）。"
     },
     {
       "dialogue_id": "shuraba_noor_call",
@@ -1123,6 +1147,263 @@
           "text": "通話が切れた画面に、自分の顔だけが映っていた。"
         }
       ]
+    },
+    {
+      "dialogue_id": "shuraba_sumi_cover",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "最後の一人と話した夜。tonariに戻ると、スミさんがカウンターの中で待っていた。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "座れ、……ひどい顔だな"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "水のグラスが、二つ置かれた。スミさんは自分の分を一口飲んで、長く息を吐いた。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "serious",
+          "text": "この何日か、店に来たぞ。お前の彼女たちが、一人ずつ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……え"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "全員、お前の文句を言いに来た。全員、最後まで聞いた"
+        },
+        {
+          "type": "condition",
+          "condition_type": "lover",
+          "char_id": "tsumugi",
+          "next_true": "said_tsumugi",
+          "next_false": "check_minto"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "で、一人ずつに言っといた"
+        },
+        {
+          "speaker": "sumi",
+          "face": "serious",
+          "text": "『あいつの本命は、あんた一人だ』ってな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……全員に、ですか"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "全員にだ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんは悪びれもせず、グラスを一つ拭き終えた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "sad",
+          "text": "……それ、嘘じゃないですか"
+        },
+        {
+          "speaker": "sumi",
+          "face": "serious",
+          "text": "俺がついた嘘だ。本当にするか、嘘のまま終わらせるかは、お前が決めろ"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "……気をつけろよ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "頭を下げると、スミさんは鼻で笑って、俺のグラスに水を注ぎ足した。"
+        }
+      ],
+      "branches": {
+        "said_tsumugi": [
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "つむぎは、スケッチブックを閉じたまま、一杯だけ飲んでった"
+          },
+          {
+            "type": "condition",
+            "condition_type": "lover",
+            "char_id": "minto",
+            "next_true": "said_minto",
+            "next_false": "check_minto"
+          }
+        ],
+        "check_minto": [
+          {
+            "type": "condition",
+            "condition_type": "lover",
+            "char_id": "minto",
+            "next_true": "said_minto",
+            "next_false": "check_rio"
+          }
+        ],
+        "said_minto": [
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "みんとは、店の声で三十分怒って、帰り際だけ小さい声だった"
+          },
+          {
+            "type": "condition",
+            "condition_type": "lover",
+            "char_id": "rio",
+            "next_true": "said_rio",
+            "next_false": "check_rio"
+          }
+        ],
+        "check_rio": [
+          {
+            "type": "condition",
+            "condition_type": "lover",
+            "char_id": "rio",
+            "next_true": "said_rio",
+            "next_false": "check_ageha"
+          }
+        ],
+        "said_rio": [
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "凛想は、お前の悪いところを箇条書きにして持ってきた"
+          },
+          {
+            "type": "condition",
+            "condition_type": "lover",
+            "char_id": "ageha",
+            "next_true": "said_ageha",
+            "next_false": "check_ageha"
+          }
+        ],
+        "check_ageha": [
+          {
+            "type": "condition",
+            "condition_type": "lover",
+            "char_id": "ageha",
+            "next_true": "said_ageha",
+            "next_false": "check_mashiro"
+          }
+        ],
+        "said_ageha": [
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "あげはは、最初の五分泣いて、残りはずっと怒ってた"
+          },
+          {
+            "type": "condition",
+            "condition_type": "lover",
+            "char_id": "mashiro",
+            "next_true": "said_mashiro",
+            "next_false": "check_mashiro"
+          }
+        ],
+        "check_mashiro": [
+          {
+            "type": "condition",
+            "condition_type": "lover",
+            "char_id": "mashiro",
+            "next_true": "said_mashiro",
+            "next_false": "check_samechan"
+          }
+        ],
+        "said_mashiro": [
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "ましろは、ムカイの店から電話してきた。ほとんど黙ってたな"
+          },
+          {
+            "type": "condition",
+            "condition_type": "lover",
+            "char_id": "samechan",
+            "next_true": "said_samechan",
+            "next_false": "check_samechan"
+          }
+        ],
+        "check_samechan": [
+          {
+            "type": "condition",
+            "condition_type": "lover",
+            "char_id": "samechan",
+            "next_true": "said_samechan",
+            "next_false": "check_hiyori"
+          }
+        ],
+        "said_samechan": [
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "サメちゃんは、コロちゃんに全部言わせて、最後だけ自分の声だった"
+          },
+          {
+            "type": "condition",
+            "condition_type": "lover",
+            "char_id": "hiyori",
+            "next_true": "said_hiyori",
+            "next_false": "check_hiyori"
+          }
+        ],
+        "check_hiyori": [
+          {
+            "type": "condition",
+            "condition_type": "lover",
+            "char_id": "hiyori",
+            "next_true": "said_hiyori",
+            "next_false": "check_noor"
+          }
+        ],
+        "said_hiyori": [
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "ひよりは、儚い顔のまま、議事録みたいに怒ってた"
+          },
+          {
+            "type": "condition",
+            "condition_type": "lover",
+            "char_id": "noor",
+            "next_true": "said_noor",
+            "next_false": "check_noor"
+          }
+        ],
+        "check_noor": [
+          {
+            "type": "condition",
+            "condition_type": "lover",
+            "char_id": "noor",
+            "next_true": "said_noor"
+          }
+        ],
+        "said_noor": [
+          {
+            "speaker": "sumi",
+            "face": "normal",
+            "text": "ドバイの子とは、画面越しに話した。日本語、うまいもんだな"
+          }
+        ]
+      },
+      "comment": "2026-11-11 オーナー指示（STK12）。スタッフロールの後、一人ずつの話し直し（shuraba_talk_*）を全員読み終えた後に一度だけ読む締め。彼女たちに怒られた後、スミさんが裏で一人ずつ話を聞き『本命はあんた一人だ』と説得していたと明かし、『……気をつけろよ』と言う。名前を挙げる行は実際の恋人だけ（condition lover）。ch5-progress.js の chapterFivePostEndingPlan が末尾に足す。"
     }
   ]
 }
