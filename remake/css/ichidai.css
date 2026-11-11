@@ -347,7 +347,7 @@
 .ichi-foe-bust img { position: absolute; height: auto; max-width: none; filter: drop-shadow(0 3px 8px #090411); }
 .ichi-foe-bust.is-seat { position: absolute; inset: 0; width: auto; height: auto; mask-image: linear-gradient(#000 84%, transparent 100%); transition: filter 0.4s; }
 .ichi-foe-bust.is-seat img { transform-origin: 50% 60%; animation: ichi-breathe 4.6s ease-in-out infinite; filter: drop-shadow(0 6px 14px rgba(5, 2, 10, 0.9)); }
-@keyframes ichi-breathe { 50% { transform: scale(1.012) translateY(-1px); } }
+@keyframes ichi-breathe { 50% { transform: scale(1.02) translateY(-2px); } }
 .ichi-seat.is-active .ichi-foe-bust.is-seat { filter: drop-shadow(0 0 12px rgba(255, 210, 122, 0.6)); }
 .ichi-seat-bust > .ichi-leader-ring { position: absolute; left: 50%; top: 22px; margin-left: -62px; width: 124px; height: 124px; }
 .ichi-say-anchor { position: absolute; left: 148px; top: 8px; width: 124px; height: 124px; pointer-events: none; }
@@ -356,6 +356,74 @@
 .ichi-seat-hand .ichi-back + .ichi-back { margin-left: -14px; }
 .ichi-seat-hand .ichi-count { position: absolute; right: -14px; bottom: -2px; }
 .ichi-seat-hand[data-count="0"] .ichi-count { display: none; }
+
+/* ── 相手の動き（2026-11-11 オーナー「シャドウバースみたいに相手キャラに動きや躍動感が欲しい」） ──
+   立ち絵は1枚絵なので、体のゆれ・傾き・跳ね・身の乗り出しと、頭のそばの気持ちのしるしで動かす。
+   席（.ichi-seat）の data-motion が動きの種類。ふだんはゆっくり左右にゆれ、息をする。マウスの位置で少しずれる（視差） */
+.ichi-seat-bust { transform-origin: 50% 100%; animation: ichi-sway 7.5s ease-in-out infinite; translate: calc(var(--px, 0) * -8px) calc(var(--py, 0) * -3px); transition: translate 0.3s ease-out; }
+.ichi-room::before { translate: calc(var(--px, 0) * 5px) calc(var(--py, 0) * 2px); transition: translate 0.4s ease-out; }
+.ichi-seat-hand { transition: translate 0.3s ease-out; translate: calc(var(--px, 0) * -10px) 0; }
+@keyframes ichi-sway { 0%, 100% { transform: rotate(-0.55deg); } 50% { transform: rotate(0.65deg) translateY(-1px); } }
+/* カードを使う: 一度引いて、卓へ打ち出す */
+.ichi-seat[data-motion="play"] .ichi-seat-bust { animation: ichi-m-play 0.64s cubic-bezier(0.2, 0.9, 0.3, 1) both; }
+@keyframes ichi-m-play { 0% { transform: none; } 20% { transform: translateY(-8px) scale(0.972) rotate(1.6deg); } 48% { transform: translateY(14px) scale(1.12) rotate(-2.6deg); } 100% { transform: none; } }
+.ichi-seat[data-motion="play"] .ichi-seat-hand { animation: ichi-m-hand-throw 0.64s cubic-bezier(0.2, 0.9, 0.3, 1) both; }
+@keyframes ichi-m-hand-throw { 20% { transform: translateX(-50%) translateY(-6px) rotate(-3deg); } 48% { transform: translateX(-50%) translateY(16px) rotate(4deg) scale(1.08); } }
+/* 炭を置く・のせる・チャージ: 小さく手を伸ばす */
+.ichi-seat[data-motion="reach"] .ichi-seat-bust { animation: ichi-m-reach 0.44s ease-out both; }
+@keyframes ichi-m-reach { 42% { transform: translateY(7px) scale(1.05) rotate(-1.2deg); } }
+/* 相手の番のはじめ: 身を乗り出す */
+.ichi-seat[data-motion="lean"] .ichi-seat-bust { animation: ichi-m-lean 0.56s ease-out both; }
+@keyframes ichi-m-lean { 45% { transform: translateY(7px) scale(1.075); } }
+/* 喜ぶ（ジャスト・一票）: 2回跳ねる */
+.ichi-seat[data-motion="joy"] .ichi-seat-bust { animation: ichi-m-joy 0.92s ease-out both; }
+@keyframes ichi-m-joy { 0% { transform: none; } 18% { transform: translateY(-20px) scale(1.03); } 36% { transform: translateY(0) scaleY(0.965); } 54% { transform: translateY(-10px); } 72% { transform: translateY(0) scaleY(0.985); } 100% { transform: none; } }
+/* 焦げた: のけぞって震える（白く光る） */
+.ichi-seat[data-motion="shock"] .ichi-seat-bust { animation: ichi-m-shock 0.76s linear both; }
+@keyframes ichi-m-shock { 0% { transform: none; filter: none; } 10% { transform: translateY(-10px) scale(0.945); filter: brightness(1.9); } 22% { transform: translate(-10px, -7px) rotate(-2.2deg); filter: none; } 36% { transform: translate(9px, -6px) rotate(2deg); } 50% { transform: translate(-7px, -4px) rotate(-1.2deg); } 64% { transform: translate(5px, -2px); } 100% { transform: none; } }
+/* 一票を取られた: 肩を落として沈む */
+.ichi-seat[data-motion="down"] .ichi-seat-bust { animation: ichi-m-down 1s ease-in-out both; }
+@keyframes ichi-m-down { 0% { transform: none; filter: none; } 30%, 70% { transform: translateY(13px) rotate(1.6deg) scaleY(0.985); filter: brightness(0.74) saturate(0.75); } 100% { transform: none; filter: none; } }
+/* 揺さぶられた: ひるむ */
+.ichi-seat[data-motion="flinch"] .ichi-seat-bust { animation: ichi-m-flinch 0.52s linear both; }
+@keyframes ichi-m-flinch { 15% { transform: translate(-9px, -3px) rotate(-1.6deg); } 35% { transform: translate(8px, -2px) rotate(1.4deg); } 55% { transform: translate(-5px, 0); } 75% { transform: translate(3px, 0); } }
+/* しゃべる: 小さく弾む */
+.ichi-seat[data-motion="talk"] .ichi-seat-bust { animation: ichi-m-talk 1.3s ease-in-out both; }
+@keyframes ichi-m-talk { 0%, 24%, 48%, 72%, 100% { transform: none; } 12% { transform: translateY(-4px) scale(1.014); } 36% { transform: translateY(-3px) scale(1.01); } 60% { transform: translateY(-3px) rotate(0.6deg); } }
+/* 表情が変わる: ぽんと弾む */
+.ichi-seat[data-motion="pop"] .ichi-seat-bust { animation: ichi-m-pop 0.28s ease-out both; }
+@keyframes ichi-m-pop { 0% { transform: scale(1.06) translateY(-3px); } 100% { transform: none; } }
+/* ときどきのしぐさ: 首をかしげる／うなずく／手札に目を落とす（手札も持ち上がる） */
+.ichi-seat[data-motion="tilt"] .ichi-seat-bust { animation: ichi-m-tilt 1.5s ease-in-out both; }
+@keyframes ichi-m-tilt { 28%, 70% { transform: rotate(2.4deg) translateX(3px); } }
+.ichi-seat[data-motion="nod"] .ichi-seat-bust { animation: ichi-m-nod 0.95s ease-in-out both; }
+@keyframes ichi-m-nod { 22% { transform: translateY(5px) rotate(0.7deg); } 44% { transform: none; } 64% { transform: translateY(4px); } 86% { transform: none; } }
+.ichi-seat[data-motion="look"] .ichi-seat-bust { animation: ichi-m-look 1.7s ease-in-out both; }
+@keyframes ichi-m-look { 24%, 76% { transform: translateY(6px) scale(1.02) rotate(-1.3deg); } }
+.ichi-seat[data-motion="look"] .ichi-seat-hand { animation: ichi-m-hand-up 1.7s ease-in-out both; }
+@keyframes ichi-m-hand-up { 24%, 76% { transform: translateX(-50%) translateY(-7px) scale(1.06); } }
+/* 効果の層（相手の後ろ）: カードを使う・喜ぶときに、放射の光が走る */
+.ichi-seat-fx { position: absolute; left: 50%; top: -30px; width: 420px; height: 280px; margin-left: -210px; pointer-events: none; opacity: 0;
+  background: repeating-conic-gradient(from 0deg at 50% 46%, rgba(255, 210, 122, 0) 0 7deg, rgba(255, 226, 160, 0.7) 7deg 9deg);
+  -webkit-mask-image: radial-gradient(ellipse 50% 50% at 50% 46%, transparent 24%, #000 44%, transparent 72%); mask-image: radial-gradient(ellipse 50% 50% at 50% 46%, transparent 24%, #000 44%, transparent 72%); }
+.ichi-seat[data-motion="play"] .ichi-seat-fx { animation: ichi-fx-burst 0.6s ease-out both; }
+.ichi-seat[data-motion="joy"] .ichi-seat-fx { animation: ichi-fx-burst 0.9s ease-out both; }
+.ichi-seat[data-motion="shock"] .ichi-seat-fx { animation: ichi-fx-burst 0.5s ease-out both; filter: hue-rotate(150deg) saturate(1.6); }
+@keyframes ichi-fx-burst { 0% { opacity: 0; transform: scale(0.6) rotate(0deg); } 30% { opacity: 0.85; } 100% { opacity: 0; transform: scale(1.25) rotate(14deg); } }
+/* 気持ちのしるし（頭の右上に出て消える） */
+.ichi-emote { position: absolute; left: 262px; top: 4px; width: 46px; height: 46px; pointer-events: none; z-index: 3; animation: ichi-emote 1.3s ease-out both; }
+@keyframes ichi-emote { 0% { opacity: 0; transform: translateY(8px) scale(0.5); } 18% { opacity: 1; transform: translateY(-2px) scale(1.15); } 30% { transform: none; } 78% { opacity: 1; } 100% { opacity: 0; transform: translateY(-10px); } }
+.ichi-emote b { position: absolute; display: block; }
+.ichi-emote.is-spark b { width: 20px; height: 20px; background: #ffe9a8; clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%); filter: drop-shadow(0 0 5px #ffd27a); animation: ichi-twinkle 0.5s ease-in-out infinite alternate; }
+.ichi-emote.is-spark b:nth-child(1) { left: 2px; top: 14px; } .ichi-emote.is-spark b:nth-child(2) { left: 22px; top: 0; width: 26px; height: 26px; animation-delay: -0.2s; } .ichi-emote.is-spark b:nth-child(3) { left: 26px; top: 28px; width: 14px; height: 14px; animation-delay: -0.35s; }
+@keyframes ichi-twinkle { from { transform: scale(0.7) rotate(-8deg); } to { transform: scale(1.1) rotate(8deg); } }
+.ichi-emote.is-sweat b { width: 13px; height: 18px; border-radius: 50% 50% 50% 50% / 62% 62% 38% 38%; background: linear-gradient(180deg, #d6f3ff, #6fd0ff); clip-path: polygon(50% 0, 100% 62%, 82% 100%, 18% 100%, 0 62%); animation: ichi-drip 0.65s ease-in infinite; }
+.ichi-emote.is-sweat b:nth-child(1) { left: 6px; top: 6px; } .ichi-emote.is-sweat b:nth-child(2) { left: 26px; top: 16px; animation-delay: -0.3s; }
+@keyframes ichi-drip { from { transform: translateY(-4px); opacity: 1; } to { transform: translateY(12px); opacity: 0.2; } }
+.ichi-emote.is-gloom b { top: 2px; width: 4px; height: 30px; border-radius: 2px; background: linear-gradient(180deg, #8f7fb8, rgba(143, 127, 184, 0)); animation: ichi-drip 0.9s ease-in infinite; }
+.ichi-emote.is-gloom b:nth-child(1) { left: 8px; } .ichi-emote.is-gloom b:nth-child(2) { left: 20px; height: 38px; animation-delay: -0.3s; } .ichi-emote.is-gloom b:nth-child(3) { left: 32px; animation-delay: -0.6s; }
+.ichi-emote:is(.is-note, .is-bang) b { inset: 0; display: grid; place-items: center; font-size: 34px; font-weight: 900; line-height: 1; font-family: var(--font-dot); color: #ffe9a8; text-shadow: 0 0 8px #f08a2b, 2px 3px 0 #150d22; animation: ichi-twinkle 0.35s ease-in-out infinite alternate; }
+.ichi-emote.is-bang b { color: #fff; text-shadow: 0 0 8px #c8405f, 2px 3px 0 #150d22; }
 
 /* ── 卓（奥行きを付けて傾ける）。奥＝相手の札／中央＝審査の山と「この一口」（準備ではフレーバー場）／手前＝自分の札 ── */
 .ichi-view { position: absolute; inset: 0; z-index: 2; perspective: 1400px; perspective-origin: 50% 96px; pointer-events: none; }

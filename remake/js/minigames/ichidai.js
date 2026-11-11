@@ -162,7 +162,7 @@ export function runIchidai({ host = document.getElementById("stage"), signal = n
   const room = el("div.ichi-room", { "aria-hidden": "true" }, [el("i.ichi-haze"), el("i.ichi-haze")]);
   const seatBust = el("span.ichi-seat-bust"), seatHand = el("span.ichi-seat-hand");
   // .ichi-say-anchor＝相手の顔のあたり。相手の一言（ichidai-lines.js）の吹き出しを、ここへ向けて出す
-  const seat = el("button.ichi-seat", { type: "button", dataset: { test: "ichi-seat" }, onclick: () => { if (G && !G.over) { sfx("select"); openRig(G.P[CPU], false); } } }, [seatBust, el("i.ichi-say-anchor", { "aria-hidden": "true" }), seatHand]);
+  const seat = el("button.ichi-seat", { type: "button", dataset: { test: "ichi-seat" }, onclick: () => { if (G && !G.over) { sfx("select"); openRig(G.P[CPU], false); } } }, [el("i.ichi-seat-fx", { "aria-hidden": "true" }), seatBust, el("i.ichi-say-anchor", { "aria-hidden": "true" }), seatHand]);
   const board = el("div.ichi-board", { dataset: { test: "ichi-board" } });
   const view = el("div.ichi-view", board);
   const table = el("div.ichi-table");
@@ -179,7 +179,7 @@ export function runIchidai({ host = document.getElementById("stage"), signal = n
   // 対戦中、相手が一言しゃべる（2026-11-11 オーナー「対戦中は相手にセリフとか言わせたい」。台詞は data/dialogue/ichidai_lines.json）。
   // 一言に表情が付いていれば、相手の顔もそれに替える。早送りと CPU に打たせているあいだは出さない
   const lines = attachIchidaiLines({ root, charId: foe.id, quick: () => ui.fast || pilot === "cpu",
-    onLine: (line) => { if (line.face && G) { setFoeMood(line.face); renderSeat(G.P[CPU]); } } });
+    onLine: (line) => { if (line.face && G) { setFoeMood(line.face); renderSeat(G.P[CPU]); } seatMotion("talk"); } });
   const arm = () => unlockAudio();
   root.addEventListener("pointerdown", arm); root.addEventListener("keydown", arm);
   // このゲーム用の卓・裏面の絵があれば差し替える（無ければ CSS の既定＝本編の夜紫UIの部品）
@@ -188,10 +188,61 @@ export function runIchidai({ host = document.getElementById("stage"), signal = n
     if (url) root.style.setProperty(name, `url("${url}")`);
   }
 
+  // ───────── 相手の動き（席のバストアップに、しぐさ・手の動き・気持ちの動きを付ける） ─────────
+  // 2026-11-11 オーナー「シャドウバースみたいに相手キャラに動きや躍動感が欲しい」。立ち絵は1枚絵なので、体の傾き・跳ね・
+  // 身の乗り出し・ゆれと、頭のそばに出す気持ちのしるしで動きを出す（見た目は css/ichidai.css の「相手の動き」の節）。
+  // 規則にも保存にも触れない。早送り・CPU同士の自動対戦・動きを減らす設定では動かさない
+  const MOTION_MS = { play: 640, reach: 440, joy: 920, shock: 760, down: 1000, flinch: 520, talk: 1300, lean: 560, pop: 280, tilt: 1500, nod: 950, look: 1700 };
+  const SMALL_MOTION = ["tilt", "nod", "look", "talk", "pop", "lean"]; // ほかの動きの最中には重ねない小さな動き
+  let motionTimer = 0, fidgetTimer = 0;
+  const calm = () => ui.fast || pilot === "cpu" || matchMedia("(prefers-reduced-motion: reduce)").matches;
+  function seatMotion(kind) {
+    if (calm() || !seat.isConnected || (seat.dataset.motion && SMALL_MOTION.includes(kind))) return;
+    clearTimeout(motionTimer);
+    seat.removeAttribute("data-motion"); void seat.offsetWidth; seat.dataset.motion = kind; // 同じ動きを続けて出すときも、頭からやり直す
+    motionTimer = setTimeout(() => seat.removeAttribute("data-motion"), MOTION_MS[kind] / speed);
+  }
+  /** 気持ちのしるし（頭のそばに出て消える）: spark＝きらめき／sweat＝汗／note＝♪／bang＝！／gloom＝どんより */
+  function emote(kind) {
+    if (calm() || !seat.isConnected) return;
+    const parts = { spark: [el("b"), el("b"), el("b")], sweat: [el("b"), el("b")], gloom: [el("b"), el("b"), el("b")], note: [el("b", { text: "♪" })], bang: [el("b", { text: "！" })] }[kind];
+    const node = el(`i.ichi-emote.is-${kind}`, { "aria-hidden": "true", dataset: { test: "ichi-emote", kind } }, parts);
+    seat.append(node);
+    setTimeout(() => node.remove(), 1300 / speed);
+  }
+  /** ときどき小さなしぐさ（首をかしげる・うなずく・手札を見る）。対戦のあいだ、不ぞろいな間隔で続ける */
+  function fidget() {
+    clearTimeout(fidgetTimer);
+    fidgetTimer = setTimeout(() => {
+      if (dead()) return;
+      if (G && !G.over && !ui.sheet && root.dataset.phase !== "setup") seatMotion(["tilt", "nod", "look"][Math.floor(Math.random() * 3)]);
+      fidget();
+    }, 4200 + Math.random() * 3800);
+  }
+  /** 審査の結果への反応: 焦げたらのけぞる／ジャストや一票なら跳ねる／一票を取られたら沈む */
+  function reactToScore(ev) {
+    const r = ev.res[CPU];
+    if (r.zone === "scorch") { seatMotion("shock"); emote("sweat"); }
+    else if (r.zone === "just" || ev.voter === CPU) { seatMotion("joy"); emote(r.zone === "just" ? "spark" : "note"); }
+    else if (ev.voter === ME) { seatMotion("down"); emote("gloom"); }
+    else seatMotion("nod");
+  }
+  // 視差: マウスの位置で、相手と部屋が少しずれて奥行きが出る（指で触る画面では動かさない）
+  let parallaxFrame = 0;
+  root.addEventListener("pointermove", (e) => {
+    if (e.pointerType !== "mouse" || parallaxFrame || calm()) return;
+    parallaxFrame = requestAnimationFrame(() => {
+      parallaxFrame = 0;
+      const r = root.getBoundingClientRect(); if (!r.width) return;
+      root.style.setProperty("--px", (((e.clientX - r.left) / r.width) * 2 - 1).toFixed(3));
+      root.style.setProperty("--py", (((e.clientY - r.top) / r.height) * 2 - 1).toFixed(3));
+    });
+  });
+
   function close(completed) {
     if (dead()) return;
     ctrl.abort(); pending?.(null);
-    lines.clear();
+    lines.clear(); clearTimeout(motionTimer); clearTimeout(fidgetTimer);
     root.remove(); active.delete(host);
     if (window.__ichidai === hook) delete window.__ichidai;
     try { previousFocus?.focus?.({ preventScroll: true }); } catch { /* 元の要素が無ければそのまま */ }
@@ -285,7 +336,7 @@ export function runIchidai({ host = document.getElementById("stage"), signal = n
       if (dead()) return;
     }
     root.dataset.phase = "play";
-    render(); lines.event({ t: "start" });
+    render(); lines.event({ t: "start" }); fidget();
     if (tutorial && !games.length) { openHelp(); }
     await loop();
   }
@@ -319,6 +370,7 @@ export function runIchidai({ host = document.getElementById("stage"), signal = n
     if (quick()) return;
     const mine = human(w.player);
     flash(mine ? "あなたのターン" : `${G.P[w.player].name}のターン`, mine ? "is-me" : "is-foe");
+    if (!mine) seatMotion("lean"); // 相手の番: 卓へ身を乗り出す
     if (mine) sfx("select");
   }
   function flash(text, cls) {
@@ -444,10 +496,15 @@ export function runIchidai({ host = document.getElementById("stage"), signal = n
           : foeResult.zone === "just" ? ["excited", "smile", "surprise"] : ev.voter === CPU ? ["smile", "smug"]
             : ev.voter === ME ? ["sad", "serious"] : foeResult.pts > ev.res[ME].pts ? ["smile", "smug"] : ["serious", "normal"]));
         render(); await showScore(ev);
+        reactToScore(ev); // 結果の札を閉じたあと、相手が結果に反応する
       }
       else if (ev.t === "peek" && human(ev.p)) { ui.peek = ev.puff; sfx("card"); }
-      else if (ev.t === "play") { sfx("card"); render(); await playFlight(ev, from); }
-      else if (ev.t === "charge" || ev.t === "puton" || ev.t === "place") { sfx("click"); render(); coalFlight(ev, from); }
+      else if (ev.t === "play") {
+        // 相手がカードを使う: 札を卓へ打ち出す動き。自分のイベントで揺さぶられたら、相手がひるむ
+        if (ev.p === CPU) seatMotion("play"); else if (CARD[ev.id].type === "event" && ["hype", "draft", "venue_heat"].includes(ev.id)) { seatMotion("flinch"); emote("bang"); }
+        sfx("card"); render(); await playFlight(ev, from);
+      }
+      else if (ev.t === "charge" || ev.t === "puton" || ev.t === "place") { if (ev.p === CPU) seatMotion("reach"); sfx("click"); render(); coalFlight(ev, from); }
       else if (ev.t === "pack") { sfx("card"); render(); leafFlight(ev, from); }
       else if (ev.t === "flip" || ev.t === "ash" || ev.t === "wear") render();
       if (["puton", "flip", "ash", "place"].includes(ev.t)) pulseTarget(ev.t === "place" ? (ev.p === CPU ? ".ichi-foe .is-stove" : '[data-test="ichi-stove"]') : ev.p === CPU ? ".ichi-foe .is-coal" : '[data-test="ichi-zone"]', `fx-${ev.t}`);
@@ -478,7 +535,7 @@ export function runIchidai({ host = document.getElementById("stage"), signal = n
   /** 相手の席: バストアップ（顔が変わったときだけ差し替える）と、持っている手札の裏 */
   function renderSeat(op) {
     const key = `${foe.id}:${foePortrait() ? ui.foeMood : "icon"}`;
-    if (seat.dataset.key !== key) { seat.dataset.key = key; seatBust.replaceChildren(foeBust(op.name, true)); }
+    if (seat.dataset.key !== key) { const first = !seat.dataset.key; seat.dataset.key = key; seatBust.replaceChildren(foeBust(op.name, true)); if (!first) seatMotion("pop"); }
     seat.classList.toggle("is-active", G.active === op.index && !G.over);
     seat.setAttribute("aria-label", `${op.name}の一台を見る`);
     const n = op.hand.length, shown = Math.min(n, 7);

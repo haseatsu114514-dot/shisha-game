@@ -127,6 +127,7 @@ await suite("ichidai", async (check) => {
     const sheet = page.locator(t("ichi-end-sheet"));
     assert.match(await sheet.getAttribute("data-winner"), /^(me|foe|draw)$/);
     assert.equal(await page.locator(t("ichi-say")).count(), 0, "CPUに打たせる早回しでは、相手の一言を出さない");
+    assert.equal(await page.locator(`${t("ichi-seat")}[data-motion], ${t("ichi-emote")}`).count(), 0, "早回しでは、相手の動きも出さない");
     const [mine, foe] = (await sheet.locator(".ichi-end-scores b").allInnerTexts()).map(Number);
     assert.ok(mine > 20 && foe > 20 && mine < 200 && foe < 200, `点が範囲外: ${mine} / ${foe}`);
     await page.locator(t("ichi-finish")).click();
@@ -159,6 +160,14 @@ await suite("ichidai", async (check) => {
     assert.equal(await page.locator(t("ichi-board")).isVisible(), false, "VSのあいだは卓を出さない");
     await vs.waitFor({ state: "detached", timeout: 8000 });
     await page.locator(t("ichi-foe")).waitFor();
+    // 相手の動き（2026-11-11 オーナー「シャドウバースみたいに相手キャラに動きや躍動感が欲しい」）: 席の動きと気持ちのしるしを見張る
+    await page.evaluate(() => {
+      window.__ichiMotion = new Set();
+      const seat = document.querySelector('[data-test="ichi-seat"]');
+      const note = () => { if (seat.dataset.motion) window.__ichiMotion.add(seat.dataset.motion); for (const n of seat.querySelectorAll('[data-test="ichi-emote"]')) window.__ichiMotion.add(`emote:${n.dataset.kind}`); };
+      note(); new MutationObserver(note).observe(seat, { attributes: true, attributeFilter: ["data-motion"], childList: true });
+    });
+    assert.match(await page.locator(".ichi-seat-bust").evaluate((n) => getComputedStyle(n).animationName), /ichi-(sway|m-)/, "相手は、ふだんからゆっくり揺れている");
     // 卓に着くと、相手が一言しゃべる（吹き出しは相手の顔の左横。指は通す）
     const say = page.locator(t("ichi-say"));
     await say.waitFor();
@@ -386,6 +395,10 @@ await suite("ichidai", async (check) => {
     assert.deepEqual([await post.count(), await post.first().getAttribute("data-round"), await post.first().getAttribute("data-zone")], [1, "1", myZone]);
     assert.match(await post.first().innerText(), /1口目[\s\S]*吸う[\s\S]*「[^」]+」[\s\S]*\+\d+[\s\S]*(一票は|票なし)/);
     assert.equal(await page.locator(`${t("ichi-forecast")} ${t("ichi-post-intro")}`).count(), 0, "書き込みが入ったら、紹介は外す");
+    // 相手は、手を動かすとき（炭を置く・のせる・チャージ・カードを使う・番のはじめ）と、審査の結果に反応して動く
+    await page.waitForFunction(() => ["joy", "shock", "down", "nod"].some((k) => window.__ichiMotion.has(k)), null, { timeout: 5000 });
+    const motions = await page.evaluate(() => [...window.__ichiMotion]);
+    assert.ok(motions.some((k) => ["reach", "play", "lean"].includes(k)), `相手が手を動かすと、席が動く: ${motions.join(",")}`);
     assert.equal(await page.locator(t("ichi-pile")).getAttribute("data-left"), "11", "めくった審査カードは山から減る");
     // やめる: 確かめてから。記録は残らない
     await page.locator(t("ichi-close")).click();
