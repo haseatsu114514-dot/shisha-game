@@ -37,8 +37,14 @@ async function stepMine(page, plan, got) {
   const wait = await data(page, "wait"), turn = await data(page, "turn");
   if (turn !== "me") { await page.waitForTimeout(120); return false; }
   if (wait === "embers") {
-    assert.equal(await has(page, "ichi-embers"), false, "3枚選ぶまで種火にできない");
-    for (const i of [0, 1, 2]) await page.locator(t(`ichi-hand-${i}`)).click();
+    // 立ち上げ: 1〜4枚を裏向きで置く（ふつうは3枚）。0枚と5枚では始められない
+    assert.equal(await has(page, "ichi-embers"), false, "1枚も選ばないと立ち上げられない");
+    await page.locator(t("ichi-hand-0")).click();
+    assert.equal(await has(page, "ichi-embers"), true, "1枚でも立ち上げられる");
+    for (const i of [1, 2, 3, 4]) await page.locator(t(`ichi-hand-${i}`)).click();
+    assert.equal(await has(page, "ichi-embers"), false, "5枚は置けない（炭は4つまで）");
+    for (const i of [3, 4]) await page.locator(t(`ichi-hand-${i}`)).click();
+    assert.match(await page.locator(t("ichi-embers")).innerText(), /3枚・熱3/);
     await page.locator(t("ichi-embers")).click();
   } else if (wait === "prep") {
     let packed = 0;
@@ -158,7 +164,9 @@ await suite("ichidai", async (check) => {
         assert.equal(await page.locator(`${t("ichi-bowl")} .ichi-card.t-hmd`).count(), 1, "HMDは札");
         assert.equal(await page.locator(".ichi-stove-art, .ichi-rig").count(), 0, "現物の絵は置かない");
         assert.equal(await page.locator(`${t("ichi-zone")} .ichi-on`).count(), 3, "種火3枚は火力ゾーンの札");
-        assert.deepEqual(await fire(page), { left: 3, total: 3 }, "火力ゾーンの札を数えて、火力3（＝熱）");
+        assert.deepEqual(await fire(page), { left: 3, total: 3 }, "種火3つ（火1ずつ）で、火力3（＝熱）");
+        assert.equal(await page.locator(t("ichi-coal-count")).getAttribute("data-n"), "3", "炭は3つ（4つまで）");
+        assert.deepEqual(await page.locator(`${t("ichi-zone")} .ichi-coal-btn`).evaluateAll((list) => list.map((n) => n.dataset.fire)), ["1", "1", "1"], "種火は火1");
         // 火力ゾーンは卓の端に縦に積む柱で、すぐ外側に判定のゲージ（10段）が並ぶ。積んだ高さ＝熱
         const column = await page.evaluate(() => {
           const box = (n) => { const b = n.getBoundingClientRect(); return { l: b.left, r: b.right, t: b.top, b: b.bottom, cx: (b.left + b.right) / 2, cy: (b.top + b.bottom) / 2 }; };
@@ -221,6 +229,13 @@ await suite("ichidai", async (check) => {
       if (phase === "serve" && !seenServe) {
         seenServe = true;
         assert.ok(await heat(page) >= 3, "提供に入るとき、炭が載っている");
+        // 熱＝炭の火の合計（炭の数ではない）。炭は4つまでで、火の段数ぶんの高さで積む
+        const coals = await page.locator(`${t("ichi-zone")} .ichi-coal-btn`).evaluateAll((list) => list.map((n) => ({ fire: Number(n.dataset.fire), up: n.dataset.up, h: n.offsetHeight, label: n.querySelector(".ichi-coal-fire")?.textContent })));
+        assert.equal(coals.reduce((a, c) => a + c.fire, 0), await heat(page), `熱は炭の火の合計: ${JSON.stringify(coals)}`);
+        assert.ok(coals.length <= 4 && coals.length === Number(await page.locator(t("ichi-coal-count")).getAttribute("data-n")), "炭は4つまで");
+        assert.ok(coals.every((c) => c.label === String(c.fire) && (c.up === "1" ? c.fire >= 1 && c.fire <= 3 : c.fire === 1)), "札の横に、いまの火が出る（種火は1）");
+        const unit = Math.min(...coals.map((c) => c.h / c.fire));
+        assert.ok(coals.every((c) => Math.abs(c.h - unit * c.fire) < 3), "炭は火の段数ぶんの高さ");
         assert.equal(await page.locator(t("ichi-pile")).getAttribute("data-left"), "12");
         // 提供に入ったら場は出さない。葉の札の束と体力は出し続ける（相手の束も卓の奥に。HUD の相手の札には主役と体力）
         assert.equal(await page.locator(t("ichi-market")).count(), 0);

@@ -170,6 +170,13 @@
 .ichi-coal-btn { position: relative; display: block; width: 100%; height: calc(var(--lv, 1) * 10%); flex: none; padding: 0; border: 0; background: none; border-radius: 6px; cursor: default; }
 .ichi-coal-btn > .ichi-on { position: absolute; left: 50%; top: 50%; translate: -50% -50%; rotate: -90deg; }
 .ichi-coal-btn:not(:disabled) { cursor: pointer; }
+/* 炭1つ＝火の段数ぶんの高さ（第0.4版）。表向きの炭は、その段数ぶんの熾火の地を敷き、札の横にいまの火を出す。弱った炭は少し暗い */
+.ichi-coal-btn.is-up { background: linear-gradient(90deg, rgba(240, 138, 43, 0.3), rgba(200, 64, 47, 0.16)); box-shadow: inset 0 0 0 1.5px rgba(255, 176, 92, 0.6), inset 0 0 14px rgba(240, 138, 43, 0.35); }
+.ichi-coal-fire { position: absolute; right: -2px; top: 50%; z-index: 4; translate: 0 -50%; min-width: 24px; padding: 0 4px; border-radius: 12px; background: linear-gradient(180deg, #ffd27a, #f08a2b); color: #2a1206; border: 2px solid #150d22; font-size: 16px; font-weight: 900; line-height: 22px; text-align: center; font-family: var(--font-dot); pointer-events: none; }
+.ichi-coal-fire.is-ember { background: #3b2a55; color: #e9def2; }
+.ichi-zone-box.is-coal.is-foe .ichi-coal-fire { right: auto; left: -2px; }
+.ichi-on.is-worn .ichi-card { filter: brightness(0.82) saturate(0.8); }
+.ichi-coal-btn.is-cooled { opacity: 0.72; }
 .ichi-coal-btn.can { animation: ichi-pulse 1.2s ease-in-out infinite; }
 .ichi-coal-btn.is-sel { outline: 2px solid #fff; outline-offset: 2px; }
 @keyframes ichi-pulse { 50% { filter: brightness(1.45); } }
@@ -215,6 +222,8 @@
 .ichi-heat-read { position: absolute; left: 8px; top: 292px; width: 98px; display: grid; justify-items: center; gap: 4px; padding: 6px 4px 8px; border-radius: 12px; background: rgba(21, 13, 34, 0.78); border: 1px solid rgba(255, 176, 92, 0.5); box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5); }
 .ichi-heat-read .ichi-thermo-base { font-size: 13px; font-weight: 800; color: var(--ichi-ember-hi); white-space: nowrap; }
 .ichi-heat-read .ichi-mods { display: grid; justify-items: center; }
+.ichi-coal-count { font-size: 13px; font-weight: 800; color: #e9def2; white-space: nowrap; }
+.ichi-coal-count.is-full { color: var(--ichi-ember-hi); }
 .ichi-heat-read .ichi-hp { grid-template-columns: auto auto; justify-content: center; gap: 2px 6px; width: 100%; padding: 0 4px; }
 .ichi-heat-read .ichi-hp .ichi-hp-bar { grid-column: 1 / -1; }
 .ichi-heat-read .ichi-chip { font-size: 12px; padding: 1px 5px; white-space: normal; text-align: center; }
