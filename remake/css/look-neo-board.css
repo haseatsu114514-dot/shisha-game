@@ -56,6 +56,17 @@
 :root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard .gb-icon:disabled { opacity: .45; }
 /* 倍率の札は字の幅で決まる。紙の札は縁が 2px だったので、細い縁（1px）にした分を余白で補って同じ幅にする。 */
 :root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard .gb-zoom .gb-icon { padding: 0 10px; background: rgba(27, 16, 41, .9); box-shadow: none; }
+/* 見出しの丸い札（？・×）の絵（GB04）: 黒い皿に細い金の縁。押せる大きさは同じ。 */
+:root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard.has-art .gb-header .gb-icon {
+  background: center / 100% 100% no-repeat url(../img/ui/growth_board/socket.webp);
+  border-color: transparent;
+  box-shadow: none;
+}
+:root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard.has-art .gb-header .gb-icon:is(:hover, :focus-visible):not(:disabled) {
+  background: center / 100% 100% no-repeat url(../img/ui/growth_board/socket.webp);
+  border-color: transparent;
+  box-shadow: 0 0 12px rgba(227, 189, 110, .55);
+}
 
 /* 盤の札: 選んでいない盤は静かな夜紫、選んだ盤だけ盤の色の線が灯って下の盤の面へつながる。 */
 :root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard .gb-tab {
@@ -89,6 +100,19 @@
 }
 :root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard .gb-tab.on .gb-tab-line b { box-shadow: 0 0 6px var(--c); }
 :root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard .gb-tab-target { color: var(--neo-ui-gold-hi); }
+/* 札の絵（GB04・SBD123。盤の絵が読めた時だけ）: 選んでいる札は黒いガラスに白金の線、ほかは同じ札を暗くしたもの。盤の色は上の縁の光で。
+   上の border の指定が絵（border-image）を消すので、絵はここに書く。 */
+:root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard.has-art .gb-tab {
+  background: none;
+  border-color: transparent;
+  border-image: url(../img/ui/growth_board/tab_dim.webp) 30 40 0 fill / 15px 20px 0 stretch;
+}
+:root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard.has-art .gb-tab.on {
+  background: none;
+  border-color: transparent;
+  border-image: url(../img/ui/growth_board/tab_on.webp) 30 40 0 fill / 15px 20px 0 stretch;
+  box-shadow: 0 -4px 14px -4px var(--c);
+}
 
 /* 盤の面: 中の描き方はそのまま。縁だけ新版の線にして、背景の灯りから少し浮かせる。 */
 :root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard .gb-board {
@@ -144,6 +168,9 @@
 :root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard .gb-hidane b { color: color-mix(in srgb, var(--hc) 78%, #fff); }
 :root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard .gb-hidane i { filter: drop-shadow(0 0 3px color-mix(in srgb, var(--hc) 60%, transparent)); }
 :root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard .gb-hidane.zero { opacity: .45; }
+/* 財布の受け皿（GB04）: 0個の種類は皿だけが見える（数字だけ薄く）。 */
+:root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard.has-art .gb-hidane.zero { opacity: 1; }
+:root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard.has-art .gb-hidane i { filter: none; }
 
 /* ボタン（灯す・やめる・目標にする・組み直す・取り消す・決定／閉じる）: 新版の札。主のボタンだけ金。 */
 :root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard .btn {
