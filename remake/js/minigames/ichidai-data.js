@@ -48,8 +48,9 @@ export const HMDS = Object.freeze([
 
 // type: coal=炭 / tech=技 / tool=器具 / person=人物 / event=イベント
 // need: 必要火力（第0.3版）。自分の火力（＝火力ゾーンの札の数。表向きのキューブ炭は2）がこの数以上なら使える。払わない
-// pay: 追加コスト（第0.3版）。使うときに払う。ash=自分の炭をその数だけ灰にする（種火 → フラット → キューブの順。熱が下がる）
-//      leaf=主役の葉をその数だけ減らす。必要火力は払う前の火力で見る
+// pay: 発動するために落とすもの（第0.3版。2026-11-11 オーナー「炭を使うのではなく、火力を落として発動って感じ」）。
+//      fire=火力をその数だけ落とす（火力ゾーンの札が減って熱が下がる。種火 → 表向きのフラット炭の順に灰にし、
+//      表向きのキューブ炭しか無ければ裏返して1落とす）。leaf=主役の葉をその数だけ減らす。必要火力は落とす前の火力で見る
 // extra: 使ったあと、このラウンド（準備ではこのターン）にカードをもう1枚使える（1ラウンド1枚の枠を返す）
 // when: turn=手番 / puff=一口（提供の自分のターンに、そのラウンドの自分の一口へ仕込む。めくる前に決める） / prep=準備 / any=いつでも（自分のターンならどのフェイズでも）
 // 炭カードだけ: ig=着火（焼けるまでのターン数） heat=表向きのときの熱
@@ -60,19 +61,19 @@ export const CARDS = Object.freeze([
   { id: "heat_in", name: "熱を入れる吸い", type: "tech", need: 1, when: "puff", tx: "この一口の判定熱+1。適温かジャストになったら、さらに印象+1。" },
   { id: "heat_out", name: "熱を逃がす吸い", type: "tech", need: 6, when: "puff", tx: "この一口の判定熱−2。適温かジャストになったら、さらに+1点。" },
   { id: "blow", name: "ブロー", type: "tech", need: 4, when: "puff", tx: "この一口、自分は焦げない。焦げライン以上なら適温として採点する。" },
-  { id: "show_smoke", name: "見せ煙", type: "tech", need: 3, pay: { leaf: 1 }, when: "puff", tx: "追加コスト：自分の葉を1枚減らす。この一口の印象+4。" },
-  { id: "all_in", name: "渾身の一口", type: "tech", need: 6, pay: { ash: 1 }, when: "puff", tx: "追加コスト：自分の炭を1つ灰にする。この一口がジャストなら、さらに+3点・印象+2。" },
+  { id: "show_smoke", name: "見せ煙", type: "tech", need: 3, pay: { leaf: 1 }, when: "puff", tx: "葉を1枚減らして発動。この一口の印象+4。" },
+  { id: "all_in", name: "渾身の一口", type: "tech", need: 6, pay: { fire: 1 }, when: "puff", tx: "火力を1落として発動。この一口がジャストなら、さらに+3点・印象+2。" },
   { id: "duel", name: "勝負の一服", type: "tech", need: 3, when: "puff", tx: "この審査で一票を取ったら、さらに+3点。" },
   { id: "read", name: "吸い方を読む", type: "tech", need: 0, when: "turn", tx: "審査カードの山のいちばん上を自分だけ見て、元に戻す。" },
   { id: "ash_tap", name: "灰落とし", type: "tech", need: 3, when: "turn", tx: "次の自分のターン、冷めない。" },
   { id: "add_coal", name: "追い炭", type: "tech", need: 0, extra: 1, when: "turn", tx: "山札の上から2枚を、裏向きのまま種火として火力ゾーンに置く。このラウンド、カードをもう1枚使える。" },
-  { id: "tongs", name: "トングさばき", type: "tech", need: 3, pay: { ash: 1 }, extra: 1, when: "turn", tx: "追加コスト：自分の炭を1つ灰にする。カードを2枚引く。このラウンド、カードをもう1枚使える。" },
+  { id: "tongs", name: "トングさばき", type: "tech", need: 3, pay: { fire: 1 }, extra: 1, when: "turn", tx: "火力を1落として発動。カードを2枚引く。このラウンド、カードをもう1枚使える。" },
   { id: "fan", name: "火おこし", type: "tech", need: 1, when: "any", tx: "自分の炭焼き場の炭を、すべて1段階進める。" },
   { id: "inner", name: "内寄せ", type: "tech", need: 3, when: "turn", tx: "このセッションの終わりまで、自分の印象+1。" },
   { id: "outer", name: "外寄せ", type: "tech", need: 4, when: "turn", tx: "このセッションの終わりまで、自分の判定熱−1。" },
   { id: "loosen", name: "葉をほぐす", type: "tech", need: 3, when: "turn", tx: "このセッションの終わりに、自分の葉は減らない。" },
   { id: "breath", name: "ひと息", type: "tech", need: 0, extra: 1, when: "turn", tx: "カードを1枚引く。このラウンド、カードをもう1枚使える。" },
-  { id: "reset", name: "仕切り直し", type: "tech", need: 5, pay: { ash: 2 }, extra: 1, when: "turn", tx: "追加コスト：自分の炭を2つ灰にする。カードを3枚引く。このラウンド、カードをもう1枚使える。" },
+  { id: "reset", name: "仕切り直し", type: "tech", need: 5, pay: { fire: 2 }, extra: 1, when: "turn", tx: "火力を2落として発動。カードを3枚引く。このラウンド、カードをもう1枚使える。" },
   { id: "windguard", name: "風防", type: "tool", need: 2, when: "any", tx: "風防カウンターを2個のせて出す。冷めるとき、1段階ぶんのかわりにカウンターを1個取ってよい。0個になったら灰へ。相手のカードで自分の炭は弱まらない。" },
   { id: "chacosta", name: "チャコスタ", type: "tool", need: 3, when: "any", tx: "自分のターンのはじめ、炭焼き場に炭が3つ以上あれば、カードを1枚引く。" },
   { id: "timer", name: "キッチンタイマー", type: "tool", need: 1, when: "any", tx: "自分のターンのはじめに炭が焼けたら、カードを1枚引く（1ターンに1枚まで）。" },
@@ -84,7 +85,7 @@ export const CARDS = Object.freeze([
   { id: "go_second", name: "後の先", type: "event", need: 1, when: "turn", tx: "次のラウンド、自分が後手になる。" },
   { id: "buyout", name: "買い占め", type: "event", need: 0, when: "prep", tx: "このターンの「詰める」で、さらに2枚取れる。" },
   { id: "repack", name: "詰め直し", type: "event", need: 1, when: "prep", tx: "蒸らす前だけ。ボウルの葉を2枚まで場の山に戻し、同じ枚数を場から取る。" },
-  { id: "encore", name: "アンコール", type: "event", need: 7, pay: { ash: 2 }, when: "puff", tx: "最終セッションだけ。追加コスト：自分の炭を2つ灰にする。この一口の点をもう一度得る。" },
+  { id: "encore", name: "アンコール", type: "event", need: 7, pay: { fire: 2 }, when: "puff", tx: "最終セッションだけ。火力を2落として発動。この一口の点をもう一度得る。" },
   { id: "sumi", name: "スミさん", type: "person", need: 3, when: "any", tx: "【炭を見る目】自分の炭カードは着火が1ターン早い（フラット炭は置いたターンにのせられる）。" },
   { id: "naru", name: "なる", type: "person", need: 2, when: "any", tx: "【甘さを追う】主役がスイートなら、ジャストの一口+1。" },
   { id: "adam", name: "アダム", type: "person", need: 3, when: "any", tx: "【手入れ大全】単品なら毎口+1。" },

@@ -596,7 +596,7 @@
       "id": "ichidai-rules",
       "title": "Card game Ichidai Shobu: data matches the rulebook, kits are legal, scoring and coal rules, CPU-vs-CPU matches finish without illegal moves (ICG)",
       "kind": "quick",
-      "run": ["node remake/test/ichidai_rules.mjs", "python3 remake/tools/build_ichidai_art.py --check"]
+      "run": ["node remake/test/ichidai_rules.mjs", "node remake/test/ichidai_lines.mjs", "python3 remake/tools/build_ichidai_art.py --check"]
     },
     {
       "id": "ichidai",
