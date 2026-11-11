@@ -1,4 +1,5 @@
 // KJ02: 章が進むと高いくじが並び、景品は主に台と機材。データの約束・章の出し分け・持っている機材の扱いを確かめる。
+// KJ11（2026-11-11）: くじは店ごとに1種類。章が進むと新しい街の店に上位のくじがあり、第5章の本店は限定台くじに入れ替わる。
 // node remake/test/kuji_tiers.mjs
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
@@ -10,13 +11,15 @@ const flavors = Object.fromEntries(read("../../data/flavors.json").flavors.map(f
 const equipment = Object.fromEntries(read("../../data/equipment.json").equipment.map(e => [e.id, e]));
 const GEAR_TYPES = ["bowl", "hms", "charcoal"];
 
-// 1. 値段と並ぶ章（500円・1,000円は第1章から、上位は第2章3,000円／第3章5,000円／第4章10,000円／第5章20,000円の限定台くじ KJ05）。
-const TIERS = { g500: [500, 1], g1000: [1000, 1], g3000: [3000, 2], g5000: [5000, 3], g10000: [10000, 4], g20000: [20000, 5] };
-for (const [id, [price, chapter]] of Object.entries(TIERS)) {
+// 1. 値段・並ぶ章・置いてある店（本店1,000円は第1章から、柚ヶ谷3,000円は第2章／東京5,000円は第3章／ドバイ10,000円は第4章／第5章の本店は20,000円の限定台くじ KJ05・KJ11）。
+const TIERS = { g1000: [1000, 1, "home"], g3000: [3000, 2, "widehanga"], g5000: [5000, 3, "tokyo"], g10000: [10000, 4, "dubai"], g20000: [20000, 5, "home"] };
+assert.deepEqual(Object.keys(kuji.grades), Object.keys(TIERS), "くじは5種類（旧500円の箱は廃止）");
+for (const [id, [price, chapter, shop]] of Object.entries(TIERS)) {
   const g = kuji.grades[id];
   assert(g, `${id} がある`);
   assert.equal(g.price, price, `${id} の値段`);
   assert.equal(g.chapterMin, chapter, `${id} が並ぶ章`);
+  assert.equal(g.shop, shop, `${id} を置く店`);
   assert(g.label.includes(`1回${price.toLocaleString("ja-JP")}円`), `${id} の名前に1回の値段: ${g.label}`);
 }
 
@@ -87,20 +90,27 @@ for (const [id, g] of upper) {
 assert.equal(lastXp, topShopXp, "店の台を出すくじのいちばん上のS賞は、店で一番伸びる台");
 assert.equal(Math.max(...Object.values(equipment).filter(e => e.type === "homeware").map(e => e.home_xp || 0)), topShopXp, "くじ・非売品の台も店の一番の台より伸びない");
 
-// 4. 実際の kuji.js の出し分け: 章に達したくじだけ並ぶ。
+// 4. 実際の kuji.js の出し分け: くじは店ごとに1種類で、その街へ行ける章から並ぶ（KJ11）。
 const source = readFileSync(new URL("../js/daily/kuji.js", import.meta.url), "utf8");
-const gradesSource = source.match(/^const grades = \(\) => [\s\S]*?;\n/m)?.[0];
+const gradesSource = source.match(/^const grades = \(shop = "home"\) => [\s\S]*?;\n/m)?.[0];
 assert(gradesSource, "kuji.js の grades() が見つかる");
-const visible = chapter => {
-  const ctx = { DB: { kuji }, state: { chapter } };
-  vm.runInNewContext(`${gradesSource}; result = grades().map(g => g.id);`, ctx);
+const visible = (chapter, shop) => {
+  const ctx = { DB: { kuji }, state: { chapter }, shop };
+  vm.runInNewContext(`${gradesSource}; result = (shop === undefined ? grades() : grades(shop)).map(g => g.id);`, ctx);
   return [...ctx.result];
 };
-assert.deepEqual(visible(1), ["g500", "g1000"]);
-assert.deepEqual(visible(2), ["g500", "g1000", "g3000"]);
-assert.deepEqual(visible(3), ["g500", "g1000", "g3000", "g5000"]);
-assert.deepEqual(visible(4), ["g500", "g1000", "g3000", "g5000", "g10000"], "限定台くじは第4章には並ばない");
-assert.deepEqual(visible(5), [...visible(4), "g20000"], "第5章は全部＋限定台くじ");
+for (const chapter of [1, 2, 3, 4]) assert.deepEqual(visible(chapter, "home"), ["g1000"], `本店は第${chapter}章もシーシャくじ`);
+assert.deepEqual(visible(5, "home"), ["g20000"], "第5章の本店は限定台くじに入れ替わる");
+assert.deepEqual(visible(1), ["g1000"], "店を指定しなければ本店");
+assert.deepEqual(visible(1, "widehanga"), [], "柚ヶ谷店は第2章から");
+for (const chapter of [2, 3, 4, 5]) assert.deepEqual(visible(chapter, "widehanga"), ["g3000"], "柚ヶ谷店は機材くじ");
+assert.deepEqual(visible(2, "tokyo"), [], "東京店は第3章から");
+for (const chapter of [3, 4, 5]) assert.deepEqual(visible(chapter, "tokyo"), ["g5000"], "東京店は上級機材くじ");
+assert.deepEqual(visible(3, "dubai"), [], "ドバイ店は第4章から");
+for (const chapter of [4, 5]) assert.deepEqual(visible(chapter, "dubai"), ["g10000"], "ドバイ店は特注台くじ");
+// どの店・どの章でも、並ぶくじは1種類まで。新しい街ほど値段が上がる。
+for (const shop of ["home", "widehanga", "tokyo", "dubai"]) for (const chapter of [1, 2, 3, 4, 5]) assert(visible(chapter, shop).length <= 1, `${shop} 第${chapter}章`);
+assert.deepEqual(["home", "widehanga", "tokyo", "dubai"].map(shop => kuji.grades[visible(4, shop)[0]].price), [1000, 3000, 5000, 10000], "新しい街ほど上位のくじ");
 
 // 5. 実際の grant(): 持っていない台・機材は持ち物へ。持っている物は中古買い取りの額をお金で（売れない台は景品評価の半額）。
 const grantSource = source.match(/^function grant\(prize\) \{[\s\S]*?^\}\n/m)?.[0];

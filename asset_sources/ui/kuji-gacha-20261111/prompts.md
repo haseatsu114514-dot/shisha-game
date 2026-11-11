@@ -4,7 +4,7 @@
 くじの演出を **Dr.fookah の店内（倉庫のような問屋。コンクリートの壁・黒い鉄の棚・段ボール・くるみ材のカウンター）** に合わせ、道具と札を描いた絵に差し替える。
 コードは絵の差し込み口つきで出来ている（`remake/js/motions/kuji-art.js`。絵が無いあいだはコードで描いた下絵が出る）。ここで頼む絵が届けば、同じ場所へ同じ大きさで入れ替わる。
 
-- 下の**コードブロックをそのまま Codex へ貼る**（1ブロックに23枚ぶん。1回の生成で1枚）。
+- 依頼は GitHub の Issue #3228 で出している（[素材・Codex] シーシャくじの演出の絵）。下の**コードブロックが依頼文の正本**で、Issue には同じ文を載せている（1ブロックに23枚ぶん。1回の生成で1枚）。
 - 画風の参照に、採用済みのショップ背景 `assets/backgrounds/bg_shop.png` を毎回添付する（同じ店の道具に見えること）。
 - どの絵にもシーシャ台・ハガル・HMD・炭・ホース・葉は描かない（機材の必須手順 `docs/shisha_reference.md` §4 の対象外）。
 - 文字・数字・ロゴは描かない（賞の文字・景品名・「大当たり」はコードが重ねる）。
@@ -34,14 +34,15 @@
 
 ```
 あなたへの依頼: シーシャくじの演出に使う絵を、内蔵の画像生成で 1 回に 1 枚ずつ作ってください（1〜18 が必須、19〜23 は余力があれば）。
-- 作業 branch は claude/exciting-edison-vnt67v（PR #3212）。この branch を取得し、その上に画像と README の記録だけを commit して push する（新しい PR は作らない。本編のコード・CSS・既存の画像は変更しない）。
+- 最新 main から branch を作り、原画と記録だけを足して PR にする（Draft でよい）。本編のコード・CSS・既存の画像と、このフォルダの README.md・prompts.md は変更しない。
 - 各画像は「STYLE の段落」＋「その画像の段落」を、この順でそのまま英文のプロンプトにする。要約・言い換え・追記をしない。
 - 毎回 assets/backgrounds/bg_shop.png を画風と素材の参照として添付する（構図は写さない）。「Attach ...」と書いてある画像は、先に作ったその画像も添付する。
 - 生成した PNG は加工せず、asset_sources/ui/kuji-gacha-20261111/raw/ の指定のファイル名で保存する（切り出し・縮小・色の調整をしない）。
-- 保存後、asset_sources/ui/kuji-gacha-20261111/README.md の「原画の記録」の表に 1 枚 1 行で、ファイル名・ピクセル数・bytes・SHA-256・CHECK の結果を書く。
-- 各画像の「CHECK」を原寸で確認し、1 つでも外れたら同じプロンプトで作り直す（3 回作ってもだめなら、どこがだめかを README に書いて次へ進む）。
+- 保存後、asset_sources/ui/kuji-gacha-20261111/raw/GENERATION.md（新しく作る）に 1 枚 1 行で、ファイル名・ピクセル数・bytes・SHA-256・CHECK の結果を書く。添付した参照画像のパスも書く。
+- 透過の画像は本物の透過（alpha 0）で出す。道具が本物の透過を出せないときだけ、背景を単色のマゼンタ #FF00FF にして、その旨を GENERATION.md に書く（抜くのは実装側）。切り出し・ゲームへの組み込みはしない。
+- 各画像の「CHECK」を原寸で確認し、1 つでも外れたら同じプロンプトで作り直す（3 回作ってもだめなら、どこがだめかを GENERATION.md に書いて次へ進む）。
 - 新しい画像は Git LFS になる（git add のあと git lfs ls-files で確認）。
-- 終わったら PR #3212 に、作った絵の一覧と CHECK の結果をコメントで書く。
+- PR の本文に、作った絵の一覧と CHECK の結果を書く。
 
 === STYLE（どの画像でも先頭にそのまま置く）===
 Style: a hand-painted prop for an anime visual novel, drawn by the same artist as the attached shop background (a stylish industrial hookah-supply warehouse shop in Japan). Detailed digital painting with visible painterly brushwork; forms are built from painted planes with two or three clear value steps, not from smooth airbrushed gradients; thin dark-brown edge lines only where planes meet. Materials: oiled dark walnut wood with visible grain, black powder-coated steel, aged brass with soft wear, kraft cardboard, cream paper. Light: warm ceiling tube lights from above and slightly in front; shadows are neutral brown, never pure black. Calm, tasteful and slightly worn, like real shop fixtures. Not glossy plastic, not a 3D render, not a photo, no neon, no rainbow, no lens flare, no glow or sparkle effects unless the image paragraph asks for them. No text, letters, numbers, logos or watermark anywhere. No people or hands. No hookahs, bowls, hoses, charcoal or tobacco. Use the attached image only for style, materials and palette; do not copy its composition.
@@ -55,7 +56,7 @@ Create ONE A-shaped SUPPORT FRAME of the same lottery machine, seen exactly from
 CHECK: left-right symmetric / bearing centre at the top centre / the space between the legs is real alpha 0 / no shadow / no drum.
 
 --- 3/23: asset_sources/ui/kuji-gacha-20261111/raw/garagara-base.png ---
-Create ONE rectangular BASE BOARD of oiled dark walnut, the plinth that the lottery machine stands on, seen from the front and slightly from above (about 20 degrees), on a fully transparent background, landscape 1536x1024, centred. The board fills 90% of the image width. We see its top face as a thin trapezoid (slightly narrower at the back) and, below it, its front edge face; the total visible height is about 13% of the board's width. There is a small brass corner plate at each of the two front corners. A soft contact shadow under the board is allowed and must fade to full transparency. Nothing stands on the board.
+Create ONE rectangular BASE BOARD of oiled dark walnut, the plinth that the lottery machine stands on, seen from the front and slightly from above (about 20 degrees), on a fully transparent background, landscape 1536x1024, centred. The board fills 90% of the image width. We see its top face as a thin trapezoid (slightly narrower at the back) and, below it, its front edge face; the total visible height is about 13% of the board's width. There is a small brass corner plate at each of the two front corners. No shadow outside the board (the game adds it). Nothing stands on the board.
 CHECK: centred / about 7:1 wide to tall / the top face is empty / transparent background.
 
 --- 4/23: asset_sources/ui/kuji-gacha-20261111/raw/garagara-handle.png ---
@@ -63,7 +64,7 @@ Create ONE CRANK HANDLE of the same lottery machine seen exactly from the front,
 CHECK: the arm is horizontal / boss on the left, knob on the right, both centred on the horizontal midline / transparent background / no shadow.
 
 --- 5/23: asset_sources/ui/kuji-gacha-20261111/raw/garagara-tray.png ---
-Create ONE shallow round RECEIVING TRAY (where a lottery ball lands), seen from the front and from above at about 30 degrees so that it reads as a wide flat ellipse, on a fully transparent background, landscape 1536x1024, centred. The outer ellipse is 70% of the image width and about 28% as tall as it is wide, with a low outer wall visible along the front. Rim: turned walnut with a thin brass edge. Inside: dark green felt, empty, with a soft shadow under the far rim. A soft contact shadow under the tray is allowed and must fade to full transparency. No ball.
+Create ONE shallow round RECEIVING TRAY (where a lottery ball lands), seen from the front and from above at about 30 degrees so that it reads as a wide flat ellipse, on a fully transparent background, landscape 1536x1024, centred. The outer ellipse is 70% of the image width and about 28% as tall as it is wide, with a low outer wall visible along the front. Rim: turned walnut with a thin brass edge. Inside: dark green felt, empty, with a soft shadow under the far rim. No shadow outside the tray (the game adds it). No ball.
 CHECK: empty / the ellipse is level / transparent background.
 
 --- 6/23: asset_sources/ui/kuji-gacha-20261111/raw/ball-s.png ---
@@ -115,7 +116,7 @@ Create a RADIAL LIGHT BURST used as a slowly rotating glow behind a prize card, 
 CHECK: the centre of the burst is the image centre / the corners and edges are pure black / no rings or stars / roughly the same in every direction.
 
 --- 18/23: asset_sources/ui/kuji-gacha-20261111/raw/gift.png ---
-Create ONE closed KRAFT CARDBOARD GIFT BOX tied with natural jute twine in a cross and a simple bow on top, with a small blank cream paper tag hanging from the bow, seen from the front and slightly from above, on a fully transparent background, square 1024x1024, centred, filling 72% of the image width. A soft contact shadow under the box is allowed and must fade to full transparency. No text on the tag or the box.
+Create ONE closed KRAFT CARDBOARD GIFT BOX tied with natural jute twine in a cross and a simple bow on top, with a small blank cream paper tag hanging from the bow, seen from the front and slightly from above, on a fully transparent background, square 1024x1024, centred, filling 72% of the image width. No shadow outside the box (the game adds it). No text on the tag or the box.
 CHECK: one closed box / the tag is blank / transparent background.
 
 --- 19/23（あると良い）: asset_sources/ui/kuji-gacha-20261111/raw/sign.png ---
@@ -127,7 +128,7 @@ Create ONE brass HANDBELL (the bell a shop clerk rings for a winner) hanging mou
 CHECK: the handle reaches the top edge / centred / transparent background / no hand.
 
 --- 21/23（あると良い）: asset_sources/ui/kuji-gacha-20261111/raw/rail.png ---
-Create ONE long narrow BALL RAIL: a straight bar of walnut with a shallow groove lined with dark green felt running along its whole length, both ends rounded, seen from the front and slightly from above, on a fully transparent background, landscape 1536x1024, centred. The rail fills 94% of the image width and is about 5.5% as tall as it is wide. It is perfectly uniform along its length, with no marks, sockets or divisions, so that its middle can be stretched by code. A thin brass edge runs along the rim. A soft contact shadow is allowed and must fade to full transparency. No balls.
+Create ONE long narrow BALL RAIL: a straight bar of walnut with a shallow groove lined with dark green felt running along its whole length, both ends rounded, seen from the front and slightly from above, on a fully transparent background, landscape 1536x1024, centred. The rail fills 94% of the image width and is about 5.5% as tall as it is wide. It is perfectly uniform along its length, with no marks, sockets or divisions, so that its middle can be stretched by code. A thin brass edge runs along the rim. No shadow outside the rail (the game adds it). No balls.
 CHECK: uniform along its length / level / transparent background / no balls.
 
 --- 22/23（あると良い）: asset_sources/ui/kuji-gacha-20261111/raw/banner.png ---

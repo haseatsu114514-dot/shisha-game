@@ -42,11 +42,14 @@ function addFlavorStock(id, grams) {
 ${strip(kujiTickets)}
 ${strip(kujiReveal)}
 ${strip(kuji)}
-let root, old, oldTicket;
-function paint() { renders++; root.replaceChildren(...kujiRows(paint)); }
+let root, old, oldTicket, shop = 'home';
+// くじは店ごとに1種類（KJ11）。調べる等級を置いている店を開く。
+function paint() { renders++; root.replaceChildren(...kujiRows(paint, shop)); }
 function prepare(options = {}) {
   layers.modal.replaceChildren(); layers.modal.classList.remove('show');
-  newGame(); Object.assign(state, {phase:'daily', chapter:options.chapter || 2, day:9});
+  const want = DB.kuji.grades[options.grade || 'g1000'];
+  shop = want.shop;
+  newGame(); Object.assign(state, {phase:'daily', chapter:options.chapter || Math.max(2, want.chapterMin), day:9});
   state.owned.push('home_rig_set'); // A valid chapter-2 save already has its home rig.
   state.flags._kuji_seen = true;
   root = el('section.shop'); layers.screen.replaceChildren(root); paint();
@@ -54,7 +57,7 @@ function prepare(options = {}) {
   for (const box of Object.values(state.kuji)) {
     box.order = box.prizes.flatMap((p,i) => Array(p.count).fill(i));
   }
-  const grade = options.grade || 'g500';
+  const grade = options.grade || 'g1000';
   if (options.legacy) state.kuji[grade] = {
     order:DB.kuji.legacyGrades[grade].prizes.flatMap((p,i)=>Array(p.count).fill(i)), drawn:0, emptyDay:null,
   };
@@ -66,8 +69,8 @@ function prepare(options = {}) {
   if (options.tickets != null) state.kujiTickets = options.tickets;
   if (options.owned) state.owned.push(...options.owned);
   paint(); saves = moneyEvents = flavorGrants = renders = 0;
-  old = root.querySelector('[data-test="kuji-' + (options.grade || 'g500') + '"]');
-  oldTicket = root.querySelector('[data-test="kuji-' + (options.grade || 'g500') + '-ticket"]');
+  old = root.querySelector('[data-test="kuji-' + grade + '"]');
+  oldTicket = root.querySelector('[data-test="kuji-' + grade + '-ticket"]');
   old.focus();
   return snapshot();
 }
@@ -88,12 +91,12 @@ window.K = {prepare, snapshot, finish, forceOld:()=>force(old),
   batchResults:()=>[...layers.modal.querySelectorAll('.kuji-short')].map(card=>card.textContent),
   finishBatch:()=>layers.modal.querySelector('.kuji-multi-panel button')?.click(),
   burst:()=>{for(let i=0;i<5;i++) force(old);},
-  reenter:()=>{reentry=()=>force(root.querySelector('[data-test="kuji-g1000"]'));},
-  crossGrade:()=>force(root.querySelector('[data-test="kuji-g1000"]')),
+  reenter:()=>{reentry=()=>force(old);},
+  rows:()=>[...root.querySelectorAll('.kuji-row')].map(row=>row.dataset.test),
   detach:()=>root.remove(), retire:()=>root.classList.add('done'),
-  changeDay:()=>{state.day++;}, changeBox:()=>{state.kuji.g500=structuredClone(state.kuji.g500);},
-  changeOrder:()=>{state.kuji.g500.order=state.kuji.g500.order.slice();},
-  changeDrawn:()=>{state.kuji.g500.drawn++;},
+  changeDay:()=>{state.day++;}, changeBox:()=>{state.kuji.g1000=structuredClone(state.kuji.g1000);},
+  changeOrder:()=>{state.kuji.g1000.order=state.kuji.g1000.order.slice();},
+  changeDrawn:()=>{state.kuji.g1000.drawn++;},
   saveLoad:()=>{persistState(); load(); return snapshot();},
   load:()=>{load(); return snapshot();},
   abandon:()=>{layers.modal.replaceChildren(); layers.modal.classList.remove('show');},
@@ -147,16 +150,16 @@ try {
     return r.result.value;
   }
   await run(`(async()=>{while(!window.K)await new Promise(r=>setTimeout(r,10));})()`);
-  for (const grade of ["g500","g1000"]) {
+  // 本店（シーシャくじ）と柚ヶ谷店（機材くじ）。店に並ぶくじは1種類だけ（KJ11）。
+  for (const [grade, top] of [["g1000","home_rig_pro"],["g3000","stand_stainless"]]) {
     const before = await run(`K.prepare({grade:'${grade}'})`);
-    await run("K.reenter(); K.click(); K.burst(); K.crossGrade();");
+    assert.deepEqual(await run("K.rows()"), [`kuji-row-${grade}`], `${grade}: その店のくじは1種類`);
+    await run("K.reenter(); K.click(); K.burst();");
     const bought = await run("K.snapshot()");
     assert.equal(bought.state.money, before.state.money - JSON.parse(data).grades[grade].price, `${grade}: one debit`);
     assert.equal(bought.state.kuji[grade].drawn,1,`${grade}: one ticket`);
     assert.equal(bought.saves,1); assert.equal(bought.moneyEvents,1); assert.equal(bought.overlays,1);
-    if (grade === 'g500') {
-      assert.deepEqual(bought.state.goods,[{name:JSON.parse(data).grades.g500.prizes[0].name,sell:6000}]);
-    } else assert.equal(bought.state.owned.filter(id=>id==='home_rig_pro').length,1);
+    assert.equal(bought.state.owned.filter(id=>id===top).length,1,`${grade}: S賞の台が持ち物に1つ`);
     assert.deepEqual(bought.state.kuji[grade].order,before.state.kuji[grade].order);
     await run("K.finish()");
     const finished = await run("K.snapshot()");
@@ -164,14 +167,14 @@ try {
     await run("K.forceOld(); K.forceOld()");
     assert.deepEqual(await run("K.snapshot()"), finished,"old rendered button cannot buy again");
     assert.deepEqual((await run("K.load()")).state,bought.state,"normal purchase survives real SAVE/LOAD");
-    console.log(`PASS ${grade}: rapid input / cross-grade / old button`);
+    console.log(`PASS ${grade}: rapid input / re-entry / old button`);
   }
   await run("K.prepare()");
   // Real native Enter activation + browser autorepeat, rather than JS key dispatch.
   for (let i=0;i<6;i++) await rpc("Input.dispatchKeyEvent",{type:"keyDown",key:"Enter",code:"Enter",
     windowsVirtualKeyCode:13,nativeVirtualKeyCode:13,autoRepeat:i>0,text:"\r"},sessionId);
   await rpc("Input.dispatchKeyEvent",{type:"keyUp",key:"Enter",code:"Enter",windowsVirtualKeyCode:13},sessionId);
-  assert.equal((await run("K.snapshot()")).state.kuji.g500.drawn,1,"Enter repeat buys once");
+  assert.equal((await run("K.snapshot()")).state.kuji.g1000.drawn,1,"Enter repeat buys once");
   await run("K.finish()");
   console.log("PASS native Enter / autorepeat");
   for (const action of ["detach","retire","repaint","changeDay","changeBox","changeOrder","changeDrawn","saveLoad"]) {
@@ -184,9 +187,9 @@ try {
   const beforeLast = await run("K.prepare({last:true})");
   await run("K.click(); K.burst()");
   const last = await run("K.snapshot()");
-  assert.equal(last.state.money,beforeLast.state.money-500);
-  assert.equal(last.state.kuji.g500.drawn,last.state.kuji.g500.order.length);
-  assert.equal(last.state.kuji.g500.emptyDay,last.state.day);
+  assert.equal(last.state.money,beforeLast.state.money-1000);
+  assert.equal(last.state.kuji.g1000.drawn,last.state.kuji.g1000.order.length);
+  assert.equal(last.state.kuji.g1000.emptyDay,last.state.day);
   assert.equal(last.state.owned.filter(id=>id==='nightside_premier_hagal').length,1);
   assert.equal(last.flavorGrants,1); assert.equal(last.saves,1);
   await run("K.finish()");
@@ -195,9 +198,9 @@ try {
   await run("K.forceOld()");
   assert.deepEqual((await run("K.snapshot()")).state,last.state);
   const refilled = await run("K.refill()");
-  assert.equal(refilled.state.kuji.g500.drawn,0); assert.equal(refilled.state.kuji.g500.emptyDay,null);
+  assert.equal(refilled.state.kuji.g1000.drawn,0); assert.equal(refilled.state.kuji.g1000.emptyDay,null);
   console.log("PASS last ticket / last-one / real save-load / refill");
-  for (const opts of [{money:499},{empty:true}]) {
+  for (const opts of [{money:999},{empty:true}]) {
     const before = await run(`K.prepare(${JSON.stringify(opts)})`);
     await run("K.forceOld()");
     assert.deepEqual(await run("K.snapshot()"),before,"empty/poor: no purchase, save or reveal");
@@ -207,11 +210,11 @@ try {
   await run("K.load(); K.repaint(); K.forceOld()");
   assert.deepEqual((await run("K.snapshot()")).state,saved.state,"load during reveal cannot buy through old button");
   // Replacing the abandoned reveal must not leave a permanent purchase lock.
-  await run("K.abandon(); document.querySelector('[data-test=kuji-g500]').click()");
-  assert.equal((await run("K.snapshot()")).state.kuji.g500.drawn,2);
+  await run("K.abandon(); document.querySelector('[data-test=kuji-g1000]').click()");
+  assert.equal((await run("K.snapshot()")).state.kuji.g1000.drawn,2);
   await run("K.finish()");
   console.log("PASS insufficient money / empty / load during reveal / new-session purchase");
-  for (const grade of ['g500','g1000']) {
+  for (const grade of ['g1000']) {
     const before = await run(`K.prepare({grade:'${grade}',legacy:true})`);
     await run("K.click(); K.burst()");
     const after = await run("K.snapshot()");
@@ -222,33 +225,35 @@ try {
     await run("K.finish()");
     assert.deepEqual((await run("K.load()")).state,after.state,'legacy box survives real load');
   }
-  console.log("PASS legacy 20/12-ticket order and save-load");
+  console.log("PASS legacy 12-ticket order and save-load");
   for (const count of [5, 10]) {
-    const before = await run("K.prepare({grade:'g500'})");
-    await run(`K.batch('g500', ${count}); K.batch('g500', ${count});`);
+    const before = await run("K.prepare({grade:'g1000'})");
+    await run(`K.batch('g1000', ${count}); K.batch('g1000', ${count});`);
     const bought = await run("K.snapshot()");
-    assert.equal(bought.state.kuji.g500.drawn, count);
-    assert.equal(bought.state.money, before.state.money - 500 * count);
+    assert.equal(bought.state.kuji.g1000.drawn, count);
+    assert.equal(bought.state.money, before.state.money - 1000 * count);
     assert.equal(bought.saves, count, "every ticket saved immediately");
     assert.equal((await run("K.batchResults()")).length, count);
     await run("K.finishBatch()");
     assert.equal((await run("K.snapshot()")).overlays, 0, "batch result closes");
     assert.deepEqual((await run("K.load()")).state, bought.state, "batch survives real save/load");
   }
-  const beforeLastBatch = await run("K.prepare({grade:'g500',remaining:3})");
-  await run("K.batch('g500', 5)");
+  const beforeLastBatch = await run("K.prepare({grade:'g1000',remaining:3})");
+  await run("K.batch('g1000', 5)");
   const lastBatch = await run("K.snapshot()");
-  assert.equal(lastBatch.state.kuji.g500.drawn, beforeLastBatch.state.kuji.g500.drawn + 3);
-  assert.equal(lastBatch.state.money, beforeLastBatch.state.money - 1500);
+  assert.equal(lastBatch.state.kuji.g1000.drawn, beforeLastBatch.state.kuji.g1000.drawn + 3);
+  assert.equal(lastBatch.state.money, beforeLastBatch.state.money - 3000);
   assert.equal(lastBatch.state.owned.filter(id=>id==='nightside_premier_hagal').length, 1);
   assert.equal(lastBatch.saves, 3);
   assert.equal((await run("K.batchResults()")).length, 4, "last-one appears beside three tickets");
   console.log("PASS 5/10 batch charge, immediate saves, last-one result and load");
   // KJ05: 限定台くじは第5章だけ。くじ券1枚で1回（お金は使わない）、連打・古いボタンでも1枚だけ。0枚では押せない。
   {
-    await run("K.prepare({grade:'g500',chapter:4})");
+    await run("K.prepare({grade:'g1000',chapter:4})");
     assert.equal(await run("K.ticket()"), null, "第4章には限定台くじもくじ券の行も無い");
+    assert.deepEqual(await run("K.rows()"), ["kuji-row-g1000"], "第4章までの本店はシーシャくじ");
     const before = await run("K.prepare({grade:'g20000',chapter:5,tickets:1})");
+    assert.deepEqual(await run("K.rows()"), ["kuji-row-g20000"], "第5章の本店は限定台くじに入れ替わる（KJ11）");
     assert.equal(await run("K.ticketText()"), "くじ券で引く（残り1枚）");
     assert.equal(await run("K.ticketDisabled()"), false);
     await run("K.ticketClick(); K.ticketBurst(); K.click();");

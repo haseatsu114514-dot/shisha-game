@@ -22,7 +22,6 @@ const valueOf = p => p.flavorId ? leafValue(p.flavorId, p.grams ?? 50)
 const resaleOf = p => p.type === 'goods' ? p.sell
   : p.equipId && !equipment[p.equipId].unsellable ? equipment[p.equipId].sell_price : 0;
 const EXPECTED = {
-  g500: { box: 50, total: 25541 },
   g1000: { box: 50, total: 50660 },
   g3000: { box: 20, total: 63575 },
   g5000: { box: 40, total: 223300 },
@@ -30,7 +29,7 @@ const EXPECTED = {
   // 第5章の限定台くじ（KJ05）: S賞はくじ限定の台3種（非売品なので景品評価＝元の特注台の中古評価150,000円で数える）
   g20000: { box: 30, total: 630800, s: 3 },
 };
-assert.deepEqual(Object.keys(data.grades), Object.keys(EXPECTED), '500円・1,000円の箱を残し、上位くじを値段の順に並べる');
+assert.deepEqual(Object.keys(data.grades), Object.keys(EXPECTED), '本店の1,000円の箱から、新しい街ほど上位のくじを値段の順に並べる（旧500円の箱は廃止・KJ11）');
 for (const [id, g] of Object.entries(data.grades)) {
   const want = EXPECTED[id];
   assert.equal(g.boxSize, want.box, `${id}: 箱の枚数`);
@@ -50,7 +49,7 @@ for (const [id, g] of Object.entries(data.grades)) {
   if (s.equipId && !equipment[s.equipId].not_for_sale) assert(equipment[s.equipId].buy_price < cost, `${id}: S賞の店頭価格 < 箱の総額`);
   console.log(`[kuji balance] ${id}: S=${want.s ?? 1}/${g.boxSize}, value=${total} (${(total / cost * 100).toFixed(2)}%), with last=${((total + valueOf(g.lastOne)) / cost * 100).toFixed(2)}%, resale=${cash}`);
 }
-assert.equal(data.legacyGrades.g500.boxSize, 20);
+assert.deepEqual(Object.keys(data.legacyGrades), ['g1000'], '旧箱が残るのは本店の1,000円だけ');
 assert.equal(data.legacyGrades.g1000.boxSize, 12);
 for (const g of Object.values(data.legacyGrades)) assert.equal(g.prizes.reduce((n,p) => n+p.count, 0), g.boxSize);
 // 旧箱の flavor 景品も grant() が実際に付与できる形にする（#2823 C1）。参照を持たない景品は当たっても何も渡らない。

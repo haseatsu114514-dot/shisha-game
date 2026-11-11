@@ -13,9 +13,10 @@ async function setup(page, values = {}) {
     s.flags._kuji_seen = true;
     G.ui.clearScreen(); G.hud.initHud({}); G.hud.showHud();
     await G.ui.setBg(G.data.bgUrl("bg_osu_map_day"), { instant: true });
-    G.shop.openShop({});
+    // くじは店ごとに1種類（KJ11）。上級機材くじ（g5000）は第3章の東京店に置いてある
+    G.shop.openShop({ branch: "tokyo" });
   }, values);
-  await page.locator('[data-test="shop-enter"]').click();
+  await page.locator('.shop-tabs').waitFor();
   await page.locator('[data-tab="kuji"]').click();
   await page.locator('[data-test="kuji-g5000"]').waitFor();
 }
@@ -79,10 +80,10 @@ await suite("kuji-gacha", async check => {
   });
   await check("last-one-follows", async page => {
     await setup(page);
-    // 機材くじ（20枚）の最後の1枚: 札を閉じると、もう一度回ってラストワン賞
-    await page.evaluate(() => { const box = G.core.state.kuji.g3000; box.drawn = box.order.length - 1; });
+    // 上級機材くじ（40枚）の最後の1枚: 札を閉じると、もう一度回ってラストワン賞
+    await page.evaluate(() => { const box = G.core.state.kuji.g5000; box.drawn = box.order.length - 1; });
     await page.locator('[data-tab="sell"]').click(); await page.locator('[data-tab="kuji"]').click();
-    await tap(page, "kuji-g3000");
+    await tap(page, "kuji-g5000");
     await tap(page, "kuji-skip");
     await page.locator(".kuji-card.reveal").waitFor();
     assert.equal(await page.locator(".kuji-card.reveal.rank-LAST").count(), 0);
@@ -90,11 +91,11 @@ await suite("kuji-gacha", async check => {
     await page.locator('.mo-garagara[data-mode="single"]').waitFor();
     await tap(page, "kuji-skip");
     await page.locator(".kuji-card.reveal.rank-LAST").waitFor();
-    assert.match(await page.locator(".kuji-card.reveal.rank-LAST").innerText(), /ラストワン賞[\s\S]*ナイトサイド プレミアハガル/);
+    assert.match(await page.locator(".kuji-card.reveal.rank-LAST").innerText(), /ラストワン賞[\s\S]*大会公式モデルの台/);
     assert.equal(await page.locator(".kuji-card").count(), 1, "前の札は片付いている");
     await tap(page, "kuji-reveal");
     await gone(page, "kuji-reveal");
-    assert((await saved(page)).owned.includes("nightside_premier_hagal"));
+    assert((await saved(page)).owned.includes("home_rig_pro"));
   });
   await check("ten-pull-showcase-and-grid", async page => {
     await setup(page, { owned: ["lotos_plus"] });
@@ -144,9 +145,9 @@ await suite("kuji-gacha", async check => {
     const k = await page.locator("#stage").evaluate(stage => stage.getBoundingClientRect().width / stage.offsetWidth);
     const real = async (selector, read) => (await page.locator(selector).first().evaluate(read)) * k;
     // 連続（ラストワン賞込みで11枚）: SKIP と札の文字とボタンが実寸で小さすぎない
-    await page.evaluate(() => { const box = G.core.state.kuji.g3000; box.drawn = box.order.length - 10; });
+    await page.evaluate(() => { const box = G.core.state.kuji.g5000; box.drawn = box.order.length - 10; });
     await page.locator('[data-tab="sell"]').click(); await page.locator('[data-tab="kuji"]').click();
-    const ten = page.locator('[data-test="kuji-g3000-10"]');
+    const ten = page.locator('[data-test="kuji-g5000-10"]');
     await ten.scrollIntoViewIfNeeded(); await ten.click();
     assert((await page.locator('[data-test="kuji-skip"]').boundingBox()).height >= 39.5, "SKIP は実寸40px以上");
     await tap(page, "kuji-skip");
@@ -160,8 +161,10 @@ await suite("kuji-gacha", async check => {
     assert(sideways, "横にはみ出さない");
     await page.locator(".kj-done").scrollIntoViewIfNeeded(); await page.locator(".kj-done").click();
     await gone(page, "kuji-multi-reveal");
-    // 1回引き: 札が画面に収まり、説明はスマホでは出さない（#2729）
+    // 1回引き: 札が画面に収まり、説明はスマホでは出さない（#2729）。東京店のくじは1種類なので、引き切った箱を引く前へ戻して使う
     await stack(page, "g5000", [S]);
+    await page.evaluate(() => { G.core.state.kuji.g5000.emptyDay = null; });
+    await page.locator('[data-tab="sell"]').click(); await page.locator('[data-tab="kuji"]').click();
     const one = page.locator('[data-test="kuji-g5000"]');
     await one.scrollIntoViewIfNeeded(); await one.click();
     await tap(page, "kuji-skip");

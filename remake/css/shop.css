@@ -7,9 +7,13 @@
   box-shadow: 0 16px 54px #110a2255; text-shadow: none;
 }
 .shop.shop-paper { top: 72px; width: 1200px; height: 624px; padding: 0; }
-/* 店の入口と1Fショップでは左上の HUD の札を隠し、空いた分だけ店のパネルを中央で広げる（所持金は店のヘッダーに出す）。
-   右上の LIME・MENU はセーブや連絡に使うので残し、パネルはその下（top 72px）から置く。PC・スマホ共通（#2958・オーナー指示） */
+/* 店の入口と1Fショップでは左上の HUD の札を隠し、空いた分だけ店のパネルを中央で広げる（所持金は店のヘッダーに出す。#2958）。
+   右上の LIME・MENU も店の中では出さず、その分パネルを上まで広げる（上下左右 24px の余白。MENU と同じ枠）。
+   店を出ると LIME・MENU は元どおり出る。PC・スマホ共通（オーナー指示 2026-11-11・SUI01）。
+   DS風（body.game-ds）は LIME・MENU が下画面の帯にあるので、従来のまま */
 body[data-screen="shop"] #hud .hud-card, body[data-screen="shop-entry"] #hud .hud-card { visibility: hidden; }
+body:not(.game-ds)[data-screen="shop"] #hud .hud-right, body:not(.game-ds)[data-screen="shop-entry"] #hud .hud-right { visibility: hidden; }
+body:not(.game-ds) .shop.shop-paper, body:not(.game-ds) .shop-entry { top: 24px; width: 1232px; height: 672px; }
 .shop-paper button { font: inherit; cursor: pointer; touch-action: manipulation; }
 .shop-paper button:disabled { cursor: default; }
 .shop-paper button:focus-visible { outline: 3px solid #9470ad; outline-offset: 2px; }
@@ -130,6 +134,8 @@ body[data-screen="shop"] #hud .hud-card, body[data-screen="shop-entry"] #hud .hu
   .shop-paper .shop-row { min-height: var(--shop-tap); }
   .shop-paper .shop-product { min-height: var(--shop-tap); }
   .shop-paper .shop-filter { min-height: max(48px, calc(40px / var(--k, 1))); font-size: var(--shop-text) !important; }
+  /* 数量の欄は、大きくした − ＋ の分だけ広げる（固定幅のままだと − が価格に重なる） */
+  .shop-paper .shop-quantity { width: auto; }
   .shop-paper .shop-step { flex: none; min-width: max(52px, calc(40px / var(--k, 1))); width: max(52px, calc(40px / var(--k, 1))); height: var(--shop-tap); font-size: var(--shop-label) !important; }
   .shop-paper .shop-row .btn, .shop-paper .shop-checkout { min-height: var(--shop-tap); font-size: var(--shop-label) !important; }
   .shop-paper .kuji-row, .shop-paper .kuji-actions { gap: 16px; }

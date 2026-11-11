@@ -16,9 +16,14 @@ import { reveal, revealMany } from "./kuji-reveal.js";
 // 全等級で購入を共有ロック。表示・セーブには保存しない。
 let purchaseLock = null, currentRows = null;
 
-const grades = () => Object.entries(DB.kuji?.grades || {})
-  .filter(([, g]) => (g.chapterMin || 1) <= (state.chapter || 1))
+/** その店で今引けるくじ。くじは店ごとに1種類で、章が進むと新しい街の店に上位のくじがある（KJ11）。
+ * shop は置いてある店: "home"（地元の本店）・"widehanga"（柚ヶ谷店）・"tokyo"（東京店）・"dubai"（ドバイ店）。
+ * 本店は第5章になると、シーシャくじが限定台くじに入れ替わる（data/kuji.json の chapterMin〜chapterMax） */
+const grades = (shop = "home") => Object.entries(DB.kuji?.grades || {})
+  .filter(([, g]) => (g.shop || "home") === shop && (g.chapterMin || 1) <= (state.chapter || 1) && (state.chapter || 1) <= (g.chapterMax || Infinity))
   .map(([id, g]) => ({ id, ...g }));
+/** その店に今くじが置いてあるか（ショップの「シーシャくじ」タブを出すか） */
+export const hasKuji = (shop = "home") => grades(shop).length > 0;
 
 function newBox(g) {
   const order = [];
@@ -77,8 +82,8 @@ const noted = (prize) => prize.dupCash == null && prize.dupTicket == null ? priz
     : prize.dupTicket > 0 ? "持っているので、くじ券を1枚受け取った" : `持っている（くじ券は${KUJI_TICKET_MAX}枚まで）`,
   dupShort: prize.dupTicket == null ? yen(prize.dupCash) : `券+${prize.dupTicket}` };
 
-/** ショップの「くじ」タブの中身 */
-export function kujiRows(rerender) {
+/** ショップの「くじ」タブの中身。shop はその店（grades を参照） */
+export function kujiRows(rerender, shop = "home") {
   const view = currentRows = {};
   const session = state, boxes = state.kuji;
   const { chapter, day, slot, phase } = state;
@@ -86,10 +91,10 @@ export function kujiRows(rerender) {
   const live = button => currentRows === view && state === session && state.kuji === boxes
     && state.chapter === chapter && state.day === day && state.slot === slot && state.phase === phase
     && button.isConnected && !button.closest(".done");
-  const list = grades();
+  const list = grades(shop);
   if (!list.length) return [el("p.shop-empty", { text: "くじはまだ入荷していない" })];
   const rows = [];
-  const guide = "棚の案内には、残り枚数と景品が書かれている。くじは1階で昼夜とも引ける。";
+  const guide = "棚の案内には、残り枚数と景品が書かれている。くじは1階で昼夜とも引ける。置いてあるくじは店ごとに1種類で、ほかの街の Dr.fookah には別のくじがある。";
   const staffed = state.slot === 1 && state.day % 7 !== RIO_AWAY_DAY && state.met.rio;
   const firstSeen = !state.flags._kuji_seen;
   state.flags._kuji_seen = true;
@@ -219,7 +224,7 @@ async function drawMany(g, box, count) {
  * "LAST" はラストワン賞の場面だけ、"C+LAST" のように書くと C賞の札を閉じたあとにラストワン賞へ続く。
  * 数字で始めると連続の演出: "10"（B・C賞だけ）・"10A"・"10S"（その賞が1つ入る）・"10LAST"（最後にラストワン賞が付く）・"5S" など */
 export function previewReveal(rank = "S") {
-  const g = grades()[0];
+  const g = Object.values(DB.kuji?.grades || {})[0];
   const find = (r) => (r === "LAST" ? g?.lastOne : g?.prizes.find((p) => p.rank === r)) || { rank: r, name: r === "LAST" ? "ラストワン賞" : `${r}賞`, desc: "" };
   const many = /^(\d+)(.*)$/.exec(String(rank));
   if (many) {

@@ -19,7 +19,8 @@ const tap = (page, selector, touch) => touch ? page.locator(selector).tap() : pa
 await suite('ch1-feedback', async check => {
   for (const [name, touch, options] of [['pc', false, { reducedMotion: 'reduce' }],
     ['touch', true, { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true, reducedMotion: 'reduce' }]]) {
-    for (const grade of ['g500', 'g1000']) await check(`${name}-${grade}-full-box-and-refill`, async page => {
+    // くじは店ごとに1種類（KJ11）。地元の本店はシーシャくじ（g1000）だけ（旧500円の箱は廃止）
+    for (const grade of ['g1000']) await check(`${name}-${grade}-full-box-and-refill`, async page => {
       await setup(page);
       const initial = await page.evaluate(() => {
         F.core.state.money = 100000; F.core.state.flavorStock = {}; F.core.state.owned = [];
@@ -65,7 +66,7 @@ await suite('ch1-feedback', async check => {
     }, options);
     await check(`${name}-legacy-boxes`, async page => {
       await setup(page);
-      for (const id of ['g500', 'g1000']) {
+      for (const id of ['g1000']) {
         const before = await page.evaluate(id => {
           F.core.newGame(); F.core.state.money = 10000;
           const old = F.data.DB.kuji.legacyGrades[id];
@@ -85,7 +86,7 @@ await suite('ch1-feedback', async check => {
         const after = await page.evaluate(id => ({ b: F.core.state.kuji[id], owned: F.core.state.owned, money: F.core.state.money }), id);
         assert.equal(after.b.drawn, before.size);
         assert(after.owned.includes('nightside_premier_hagal'));
-        assert.equal(after.money, 10000 - (id === 'g500' ? 500 : 1000));
+        assert.equal(after.money, 10000 - 1000);
         await page.evaluate(id => { F.core.save(); F.core.load(); F.core.state.day += 3; F.showKuji(); }, id);
         assert.equal(await page.evaluate(id => F.core.state.kuji[id].order.length, id), 50);
       }
