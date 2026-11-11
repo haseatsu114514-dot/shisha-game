@@ -15,6 +15,7 @@ import { loadWithRecovery } from "./saves.js";
 import { pickTitleArt, prepareTitleArt } from "./title-art.js";
 import { mountTitleLayout, createTitleLayoutSettings } from "./title-layout.js";
 import { createUiThemeSelect } from "../core/ui-theme.js";
+import { LOOKS, normalizeLook, setLook } from "../core/look.js";
 import { fullscreenButton, saveTransferRow } from "./save-transfer.js";
 
 let titleRevision = 0;
@@ -316,6 +317,9 @@ export async function openConfig(opts = {}) {
     String(config.autoSpeed), (v) => setConfig("autoSpeed", Number(v)));
   const skipMode = segRow("SKIPの範囲", "cfg-skip-mode", [["seen", "既読"], ["all", "全部"]],
     config.skipSeenOnly ? "seen" : "all", (v) => setConfig("skipSeenOnly", v === "seen"));
+  // 見た目の様式（LK01）。新版とDS風は試作で、第1章にいる間だけ効く。現行へはいつでも戻せる。
+  const look = segRow("見た目（第1章・試作）", "cfg-look", LOOKS.map(({ id, label }) => [id, label]),
+    normalizeLook(config.look), (v) => { setConfig("look", v); setLook(v); });
   const portraits = segRow("会話の立ち絵", "cfg-portrait-style", [["classic", "旧"], ["new", "新"]],
     config.portraitStyle === "classic" ? "classic" : "new", (v) => setConfig("portraitStyle", v));
   const introArt = segRow("登場カットインの絵柄", "cfg-intro-art", [["classic", "旧"], ["graphic", "新"]],
@@ -364,6 +368,7 @@ export async function openConfig(opts = {}) {
     body: el("div.cfg", [
       ...(titleLayout ? [el("div.cfg-row.cfg-title-layout", [el("span", { text: "表示設定（タイトル）" }), titleLayout])] : []),
       row("UIデザイン", createUiThemeSelect(config.uiTheme, value => { config.uiTheme = value; persist(); opts.onChange?.("uiTheme", value); })),
+      look,
       row("ミュート（すべての音を消す）", mute),
       row("BGM 音量", range("bgmVolume", 0, 1, 0.05, "cfg-bgm-volume")),
       row("効果音 音量", range("seVolume", 0, 1, 0.05, "cfg-se-volume")),
