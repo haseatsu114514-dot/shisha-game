@@ -98,6 +98,14 @@ assert(freshIds.every(id => LOADING_COMICS.find(c => c.id === id).cast.every(x =
 const metNaru = craft(1, { ...fresh, met: { naru: true } });
 assert(metNaru.some(id => LOADING_COMICS.find(c => c.id === id).cast.includes('naru')), 'meeting naru unlocks naru comics');
 assert(metNaru.every(id => LOADING_COMICS.find(c => c.id === id).cast.every(x => x === 'sumi' || x === 'naru')), 'no comic of an unmet character');
+// 鉄仮面さん（salaryman）は名乗りの met が付かない。第1章冒頭の tonari を読み終えた記録か、常連の話の記録で会った扱いになる。
+const salarymanComics = LOADING_COMICS.filter(c => c.cast.includes('salaryman')).map(c => c.id);
+assert(salarymanComics.length > 0, 'salaryman comics are registered');
+assert(!craft(1, { ...fresh, flags: { _ch1_opening: {} } }).some(id => salarymanComics.includes(id)), 'salaryman comics wait until the opening at tonari is read');
+for (const flags of [{ _ch1_opening: { introDone: true } }, { _ev_salaryman: true }]) {
+  const ids = craft(1, { ...fresh, flags });
+  assert(salarymanComics.every(id => ids.includes(id)), `salaryman comics unlock with ${JSON.stringify(flags)}`);
+}
 // A comic with two characters needs both; a spoiler comic also waits for its chapter.
 const multi = LOADING_COMICS.filter(c => c.cast.length > 1);
 for (const comic of multi) {
