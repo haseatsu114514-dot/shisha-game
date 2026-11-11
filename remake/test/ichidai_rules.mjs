@@ -5,7 +5,7 @@
 //   4. CPUどうしの対戦が、規則違反の入力なしで最後まで進む
 import assert from "node:assert/strict";
 import { createRequire } from "node:module";
-import { FLAVORS, FLAVOR, CARDS, CARD, BOWLS, HMDS, JUDGES, PUFFS, TOURNAMENTS, KITS, TYPE_LABEL, WHEN_LABEL, expandDeck } from "../js/minigames/ichidai-data.js";
+import { FLAVORS, FLAVOR, CARDS, CARD, BOWLS, HMDS, JUDGES, PUFFS, TOURNAMENTS, KITS, TYPE_LABEL, WHEN_LABEL, RARITIES, SERIES_SIZE, numberOf, rarityOf, expandDeck } from "../js/minigames/ichidai-data.js";
 import { RULES, createGame, act, heatOf, leavesOf, firepower, coolStepsOf, slotsOf, scorePuff, judgedHeat, roundsOf, canPlay } from "../js/minigames/ichidai-rules.js";
 import { aiAct } from "../js/minigames/ichidai-ai.js";
 
@@ -126,6 +126,15 @@ const fake = (over = {}) => ({ bowl: { mango: 6, vanilla: 3 }, main: "mango", bo
   ok({ type: "end" });
   while (G.wait && G.wait.player === 1) ok(aiAct(G, 1));
   assert.deepEqual([G.wait.type, G.wait.player], ["react", G.order[0]]);
+}
+
+// ── 2b. トレカとしての札: 通し番号は重ならず、どの札にもレア度がある ──
+{
+  const all = [...FLAVORS.map((x) => ["flavor", x.id]), ...BOWLS.map((x) => ["bowl", x.id]), ...HMDS.map((x) => ["hmd", x.id]), ...CARDS.map((x) => ["card", x.id])];
+  assert.equal(SERIES_SIZE, all.length);
+  assert.deepEqual(all.map(([k, id]) => numberOf(k, id)), all.map((_, i) => i + 1), "通し番号は1から順");
+  for (const [k, id] of all) assert.ok(RARITIES[rarityOf(k, id)], `レア度が無い: ${k}/${id}`);
+  assert.equal(numberOf("card", "no_such_card"), 0);
 }
 
 // ── 3b. 炭焼き場は4つまで（カードでは増えない）。タヌキッシュリッド【素直】とチャコスタ ──

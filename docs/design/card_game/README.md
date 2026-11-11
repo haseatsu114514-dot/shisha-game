@@ -5,7 +5,7 @@
 - `ichidai_shobu_rulebook_v0.2.pdf` … ルールブック（A4・15ページ）。読むのはこれ。
 - 2026-11-11 追記: 炭焼き場は**だれでも4枠**（カードでは増えない）。枠を足していたタヌキッシュリッドとチャコスタは、カードを引く効果に替えた（仮・`docs/owner_requests.md` ICG15）。
 - **ゲーム内のミニゲーム版**は `remake/js/minigames/ichidai*.js`（試遊は `remake/ichidai.html`）。規則はこのルールブックの第0.2版で、カードの名前・数値・文がここの `cards.js` とずれないことを `remake/test/ichidai_rules.mjs` が確かめる。絵の依頼と置き場は `asset_sources/card_game/README.md`。
-- `card_design_brief.md` … カードの見た目を決めるための、Codex 用の依頼書（方向3案・載せる情報・合否の物差し・そのまま貼る依頼文）。
+- `card_design_brief.md` … カードとプレイマットを**トレカ風**にデザインするための、Codex 用の依頼書（2026-11-11 オーナー決定。卓の骨組み・載せる情報・物差し・差し替え口・そのまま貼る依頼文）。依頼の Issue は #3257。
 - `card_samples.html` … いまの仮のカードの見た目（載せる情報と読む順番の見本）。ブラウザで開く。
 - `rulebook.html` / `rulebook.css` / `render.js` … ルールブックの原稿と組版。
 - `cards.js` … カードの数値と文（フレーバー20種・セッティング8種・サポート38種・審査員5人と審査カード・大会5つ・組み済みデッキ2組）。図と一覧はここから作る。

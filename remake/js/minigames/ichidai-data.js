@@ -151,3 +151,30 @@ export const KIT = byId(KITS);
 
 /** [id, 枚数] の並びを、カードidの配列にする */
 export const expandDeck = (list) => list.flatMap(([id, n]) => Array(n).fill(id));
+
+// ───────── トレカとしての札（番号とレア度） ─────────
+// 画面の札に出す通し番号とレア度。集める遊び（入手・図鑑）はまだ無く、レア度は見た目のための仮の割り当て
+// （2026-11-11 オーナー「トレカ風にしたい。ゲーム内で集める楽しみもある」。決まったらここを書き換える）。
+// kind: flavor=葉 / bowl=ボウル（ハガル） / hmd=HMD / card=デッキのカード
+export const RARITIES = Object.freeze({
+  C: { name: "コモン", mark: "C" }, U: { name: "アンコモン", mark: "U" }, R: { name: "レア", mark: "R" }, SR: { name: "スーパーレア", mark: "SR" },
+});
+const CARD_RARITY = {
+  flat: "C", cube: "C", dense_flat: "U",
+  heat_in: "C", heat_out: "C", blow: "U", show_smoke: "U", all_in: "R", duel: "R", read: "C", ash_tap: "C", add_coal: "U", tongs: "U", fan: "C",
+  inner: "U", outer: "U", loosen: "U", breath: "C", reset: "R",
+  windguard: "U", chacosta: "U", timer: "U", ice_hose: "R", diffuser: "R",
+  hype: "U", draft: "U", venue_heat: "U", go_second: "R", buyout: "U", repack: "U", encore: "SR",
+  sumi: "SR", naru: "SR", adam: "SR", minto: "SR", mashiro: "SR", tsumugi: "SR", packy: "SR",
+};
+const SERIES = Object.freeze([...FLAVORS.map((x) => `flavor:${x.id}`), ...BOWLS.map((x) => `bowl:${x.id}`), ...HMDS.map((x) => `hmd:${x.id}`), ...CARDS.map((x) => `card:${x.id}`)]);
+/** 通し番号の総数（葉20・ボウル4・HMD4・デッキのカード38） */
+export const SERIES_SIZE = SERIES.length;
+/** 通し番号（1から）。知らない札は 0 */
+export const numberOf = (kind, id) => SERIES.indexOf(`${kind}:${id}`) + 1;
+/** レア度（C/U/R/SR）。葉は味値で決める（味1〜2=C・3=U・4=R）。ボウルとHMDは R */
+export function rarityOf(kind, id) {
+  if (kind === "flavor") return FLAVOR[id].t >= 4 ? "R" : FLAVOR[id].t === 3 ? "U" : "C";
+  if (kind === "bowl" || kind === "hmd") return "R";
+  return CARD_RARITY[id] || "C";
+}

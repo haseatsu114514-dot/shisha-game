@@ -2,22 +2,23 @@
 // 本編の #stage（1280×720）か、試遊ページの host に重ねて開く。本編の保存・進行・体力にはここでは触らない
 // （結果を返すだけ。記録は呼び出し側が確定する）。
 //
-// 画面の作り（上から）: 相手（手札の裏・顔と点・のせた炭・炭焼き場）／審査の山・案内・ボタン／
-// 自分の一台（熱の計り・ボウルとHMD・のせた炭・炭焼き場・山札）／自分の顔と点・手札。
-// 卓に出すのは「いま打つ手に要るもの」だけ。詰めた葉・セッティングの文・審査カードの内訳・相手の葉は、
-// それぞれの絵をタップして開く札に入れる（2026-11-11 オーナー指示: ピックした葉は出さない・狭くしない）。
+// 画面の作り: プレイマットの上でカードゲームとして見せる（2026-11-11 オーナー「トレカ風に。ハガルもカードに。炭焼き場も本物を
+// 出さず、プレイマット上でカードゲームとして」）。上から 相手のマット（手札の裏・顔と点・炭ゾーン・炭焼き場・器具と人物・ボウルとHMD）／
+// 審査の山・案内・ボタン／自分のマット（熱の計り・ボウルとHMD・炭ゾーン・炭焼き場・器具と人物・山札と灰）／自分の顔と点・手札。
+// 卓に出るものは、葉・ボウル（ハガル）・HMD・炭もふくめて全部「札」。マットに出すのは「いま打つ手に要るもの」だけにして、
+// 詰めた葉・札の文・審査カードの内訳・相手の葉は、札や山をタップして開く（オーナー指示: ピックした葉は出さない・狭くしない）。
 // 操作はタップだけ（カードや炭を選ぶ → 出てくるボタンを押す）。遊び方は「？」から開く。
 // 絵は ichidai-art.js が引く（このゲーム用の絵 → 本編の正規の絵 → 仮の線画の順）。
 import { el } from "../core/util.js";
 import { DB, faceFrame, portraitInfo } from "../core/data.js";
 import { portraitAsset } from "../core/portrait-resolver.js";
 import { SE, unlockAudio } from "../core/audio.js";
-import { KINDS, FLAVOR, CARD, BOWL, HMD, JUDGE, PUFFS, TOURNAMENTS, KITS, KIT, TYPE_LABEL, WHEN_LABEL } from "./ichidai-data.js";
+import { KINDS, FLAVOR, CARD, BOWL, HMD, JUDGE, PUFFS, TOURNAMENTS, KITS, KIT, TYPE_LABEL, WHEN_LABEL, RARITIES, SERIES_SIZE, numberOf, rarityOf } from "./ichidai-data.js";
 import { RULES, ZONE_LABEL, createGame, act, heatOf, leavesOf, firepower, sidesOf, slotsOf, roundsOf, sessionOf,
   judgedHeat, rawZone, scorchLineOf, scorePuff, puffPreview, unseenPuffs, packLimit,
   canPlay, canCharge, canPlace, canPutOn, canAsh, canPack, canSteam } from "./ichidai-rules.js";
 import { aiAct } from "./ichidai-ai.js";
-import { artUrl, flavorArt, cardArt, faceUrl, coalSprite, STOVE_ART, bowlArt, hmdArt, JUDGE_FACE } from "./ichidai-art.js";
+import { artUrl, flavorArt, cardArt, faceUrl, bowlArt, hmdArt, JUDGE_FACE } from "./ichidai-art.js";
 import { HELP_PAGES } from "./ichidai-help.js";
 
 export const ICHIDAI_TITLE = "一台勝負";
@@ -49,30 +50,55 @@ function artNode(art) {
   return el(`img.ichi-artimg.m-${art.mode}`, { src: art.url, alt: "", draggable: "false", onerror: (e) => { e.currentTarget.style.visibility = "hidden"; } });
 }
 const flavorIcon = (id) => artNode(flavorArt(id)) || kindBadge(FLAVOR[id].kind);
-/** 手札・詳細・相手が使った札に出す、デッキのカード */
-function cardFace(id, { big = false } = {}) {
-  const c = CARD[id], coal = c.type === "coal", art = cardArt(id);
-  return el(`div.ichi-card.t-${c.type}${c.when === "puff" ? ".w-puff" : ""}${big ? ".is-big" : ""}`, { dataset: { card: id } }, [
-    el(`div.ichi-card-art.m-${art?.mode || "none"}`, artNode(art) || el("span.ichi-glyph", { text: TYPE_LABEL[c.type].slice(0, 1) })),
-    coal ? null : el(`span.ichi-gem${c.burn ? ".is-burn" : ""}`, { title: c.burn ? `燃焼${c.burn}` : `火力${c.cost}` }, el("b", { text: String(c.burn ?? c.cost) })),
-    el("b.ichi-card-name", { text: c.name }),
-    el("span.ichi-card-foot", coal ? [el("span.ichi-tag.is-ig", { text: `着火${c.ig}` }), el("span.ichi-tag.is-heat", { text: `熱${c.heat}` })]
-      : [el("span.ichi-tag.is-type", { text: TYPE_LABEL[c.type] }), el(`span.ichi-tag.w-${c.when}`, { text: WHEN_LABEL[c.when] })]),
-    big ? el("p.ichi-card-text", { text: c.tx }) : null,
+
+// ───────── トレカの札 ─────────
+// 卓に出るものは、葉・ボウル（ハガル）・HMD・炭もふくめて全部「札」。枠の組み（名前・コスト・絵・種類の行・文・番号とレア度）は
+// ここで決め、色と質感は css/ichidai.css の .ichi-card（デザインが届いたら差し替える。docs/design/card_game/card_design_brief.md）。
+// 大きさ: big=拡大（文と番号まで）/ hand=手札 / pile=準備の場の葉 / mid=マットのボウルとHMD / mini=マットの炭・器具 / tiny=相手のマット
+function cardView(kind, id) {
+  if (kind === "flavor") {
+    const f = FLAVOR[id];
+    return { cls: `t-flavor.k-${f.kind}`, name: f.name, gem: { text: String(f.t), label: "味値", cls: "is-taste" }, art: flavorArt(id), glyph: KINDS[f.kind].k,
+      line: [KINDS[f.kind].name, ""], text: [`適温${f.lo}〜${f.hi}／ジャスト${f.j.join("・") || "なし"}／焦げ${f.s > 10 ? "なし" : `${f.s}以上`}`, f.ab].filter(Boolean).join("\n"), strip: id };
+  }
+  if (kind === "bowl") {
+    const b = BOWL[id];
+    return { cls: "t-bowl", name: b.name, gem: { text: String(b.cap), label: "容量（g）", cls: "is-cap" }, art: { url: bowlArt(id, false), mode: "sprite" }, glyph: "器", line: ["ボウル", "ハガル"], text: b.ab };
+  }
+  if (kind === "hmd") {
+    const h = HMD[id];
+    return { cls: "t-hmd", name: h.name, gem: null, art: { url: hmdArt(id), mode: "sprite" }, glyph: "蓋", line: ["HMD", ""], text: h.ab };
+  }
+  const c = CARD[id], coal = c.type === "coal";
+  return { cls: `t-${c.type}${c.when === "puff" ? ".w-puff" : ""}`, name: c.name,
+    gem: coal ? { text: String(c.heat), label: "熱", cls: "is-heat" } : { text: String(c.burn ?? c.cost), label: c.burn ? "燃焼" : "火力", cls: c.burn ? "is-burn" : "is-cost" },
+    art: cardArt(id), glyph: TYPE_LABEL[c.type].slice(0, 1), line: coal ? ["炭", `着火${c.ig}`] : [TYPE_LABEL[c.type], WHEN_LABEL[c.when]], text: c.tx };
+}
+function tcg(kind, id, { size = "hand" } = {}) {
+  const v = cardView(kind, id), rar = rarityOf(kind, id), big = size === "big", small = size === "mini" || size === "tiny";
+  return el(`div.ichi-card.s-${size}.${v.cls}.r-${rar}`, { dataset: { card: id, kind } }, [
+    el("div.ichi-card-head", [
+      v.gem ? el(`span.ichi-gem.${v.gem.cls}`, { title: `${v.gem.label} ${v.gem.text}` }, el("b", { text: v.gem.text })) : null,
+      small ? null : el("b.ichi-card-name", { text: v.name })]),
+    el(`div.ichi-card-art.m-${v.art?.mode || "none"}`, [artNode(v.art) || el("span.ichi-glyph", { text: v.glyph }), small ? null : el("i.ichi-rar", { title: RARITIES[rar].name, text: RARITIES[rar].mark })]),
+    small ? null : el("div.ichi-card-line", [el("span.ichi-line-type", { text: v.line[0] }), v.line[1] ? el("span.ichi-line-sub", { text: v.line[1] }) : null]),
+    v.strip && !small ? strip(v.strip) : null,
+    big ? el("p.ichi-card-text", { text: v.text || "効果なし。" }) : null,
+    big ? el("div.ichi-card-foot", [el("span", { text: `No.${String(numberOf(kind, id)).padStart(3, "0")}/${String(SERIES_SIZE).padStart(3, "0")}` }), el("span", { text: `${RARITIES[rar].name}・一台勝負` })]) : null,
   ]);
 }
-/** 炭ゾーンにのっている炭（表向き＝炭カード、裏向き＝種火） */
-function coalNode(c, { tapped = false } = {}) {
-  const cube = c.up && CARD[c.id].heat === 2;
-  return el(`i.ichi-coal${c.up ? (cube ? ".is-cube" : ".is-flat") : ".is-ember"}${tapped ? ".is-tapped" : ""}`, { title: c.up ? `${CARD[c.id].name}（熱${CARD[c.id].heat}）` : "種火（熱1）" }, [
-    el("img", { src: c.up ? coalSprite(cube ? "cube" : "flat", "hot") : coalSprite("flat", "warm"), alt: "", draggable: "false" }),
-    cube ? el("b", { text: "2" }) : null]);
+/** 炭ゾーンの札（表向き＝炭カード、裏向き＝種火）。火力を使った札は傾ける */
+function coalCard(c, { tapped = false, size = "mini" } = {}) {
+  return el(`span.ichi-on${c.up ? ".is-up" : ".is-ember"}${tapped ? ".is-tapped" : ""}`, { title: c.up ? `${CARD[c.id].name}（熱${CARD[c.id].heat}）` : "種火（熱1）" },
+    c.up ? tcg("card", c.id, { size }) : el(`i.ichi-back.s-${size}`));
 }
 function faceNode(charId, name, cls = "") {
   const url = faceUrl(charId);
   const blank = () => el(`span.ichi-face.is-blank${cls}`, { text: name.slice(0, 1) });
   return url ? el(`img.ichi-face${cls}`, { src: url, alt: "", draggable: "false", onerror: (e) => { e.currentTarget.replaceWith(blank()); } }) : blank();
 }
+/** プレイマットの枠（名前の札つき） */
+const zoneBox = (label, cls, attrs, children) => el(`div.ichi-zone-box${cls}`, attrs, [el("small.ichi-zone-tab", { text: label }), ...[].concat(children)]);
 
 /**
  * @param host 重ねる要素（既定: #stage）
@@ -81,10 +107,11 @@ function faceNode(charId, name, cls = "") {
  * @param tutorial はじめに遊び方を開くか
  * @param pilot テスト・デモ用: "cpu" にすると自分の席もCPUが打つ
  * @param speed CPUの手と演出の早回し
+ * @param skin 見た目の案の名前（デザインの見比べ用）。root に data-skin が付き、css/ichidai-skin-<名前>.css の決まりが効く
  * 戻り値: { completed, cancelled, games:[{ winner（0=自分/1=相手/null=引き分け）, scores, votes, tournament, kit, level }], last }
  */
 export function runIchidai({ host = document.getElementById("stage"), signal = null, seed = null, config = null, opponent = null,
-  tutorial = false, pilot = null, speed = 1, allowRetry = true } = {}) {
+  tutorial = false, pilot = null, speed = 1, allowRetry = true, skin = null } = {}) {
   if (!host?.isConnected) return Promise.reject(new Error("Connected game host required"));
   if (active.has(host)) return active.get(host);
   const games = [];
@@ -103,6 +130,7 @@ export function runIchidai({ host = document.getElementById("stage"), signal = n
   const foe = { id: opponent?.id || null, name: opponent?.name || "相手" };
 
   const root = el("section.ichi-game", { role: "dialog", "aria-modal": "true", "aria-label": ICHIDAI_TITLE, tabindex: "-1", dataset: { test: "ichi-game", phase: "setup" } });
+  if (skin) root.dataset.skin = skin;
   const table = el("div.ichi-table");
   const sheet = el("div.ichi-sheet", { hidden: true });
   const live = el("p.ichi-live", { role: "status", "aria-live": "polite" });
@@ -178,7 +206,7 @@ export function runIchidai({ host = document.getElementById("stage"), signal = n
       const kits = KITS.map((k) => el(`button.ichi-pick.ichi-kit${pick.kit === k.id ? ".is-on" : ""}`, { type: "button", dataset: { test: `ichi-kit-${k.id}` }, "aria-pressed": String(pick.kit === k.id),
         onclick: () => { pick.kit = k.id; sfx("select"); draw(); } }, [
         el("b", { text: k.name }),
-        el("span.ichi-kit-art", [el("img", { src: bowlArt(k.bowl, true), alt: "" }), el("img", { src: hmdArt(k.hmd), alt: "" }), ...k.plan.map(([id]) => flavorIcon(id))]),
+        el("span.ichi-kit-art", [tcg("bowl", k.bowl, { size: "mid" }), tcg("hmd", k.hmd, { size: "mid" }), ...k.plan.map(([id]) => tcg("flavor", id, { size: "mid" }))]),
         el("span.ichi-kit-leaf", k.plan.map(([id, n]) => el("span", [kindBadge(FLAVOR[id].kind), `${FLAVOR[id].name} ${n}`]))),
         el("small", { text: `${BOWL[k.bowl].name} ＋ ${HMD[k.hmd].name}` }),
         el("span.ichi-kit-blurb", { text: k.blurb }),
@@ -265,7 +293,7 @@ export function runIchidai({ host = document.getElementById("stage"), signal = n
   }
   function flyCard(ev) {
     if (quick() || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const node = el(`div.ichi-card-flight.is-${ev.p === ME ? "me" : "foe"}`, { "aria-hidden": "true" }, cardFace(ev.id));
+    const node = el(`div.ichi-card-flight.is-${ev.p === ME ? "me" : "foe"}`, { "aria-hidden": "true" }, tcg("card", ev.id, { size: "big" }));
     root.append(node); setTimeout(() => node.remove(), 650);
   }
   async function playEvents(priorScores) {
@@ -283,13 +311,13 @@ export function runIchidai({ host = document.getElementById("stage"), signal = n
       else if (ev.t === "peek" && human(ev.p)) { ui.peek = ev.puff; sfx("card"); }
       else if (ev.t === "play") { sfx("card"); render(); flyCard(ev); if (!human(ev.p)) await showPlayed(ev); }
       else if (ev.t === "charge" || ev.t === "puton") sfx("click");
-      if (["puton", "flip", "ash", "place"].includes(ev.t)) { render(); pulseTarget(ev.t === "place" ? `.ichi-stove${ev.p === CPU ? ".is-small" : ":not(.is-small)"}` : ev.p === CPU ? ".ichi-foe-rig" : ".ichi-zone", `fx-${ev.t}`); }
+      if (["puton", "flip", "ash", "place"].includes(ev.t)) { render(); pulseTarget(ev.t === "place" ? `[data-test="${ev.p === CPU ? "ichi-foe-stove" : "ichi-stove"}"]` : ev.p === CPU ? ".ichi-foe .is-coal" : ".ichi-zone", `fx-${ev.t}`); }
     }
   }
   /** 相手が使ったカードを、卓の中央に大きく見せる */
   async function showPlayed(ev) {
     if (quick()) return;
-    const node = el("div.ichi-played", { dataset: { test: "ichi-played" } }, [el("small", { text: `${G.P[ev.p].name}が使った` }), cardFace(ev.id, { big: true })]);
+    const node = el("div.ichi-played", { dataset: { test: "ichi-played" } }, [el("small", { text: `${G.P[ev.p].name}が使った` }), tcg("card", ev.id, { size: "big" })]);
     root.append(node);
     await wait(1150);
     node.remove();
@@ -319,50 +347,57 @@ export function runIchidai({ host = document.getElementById("stage"), signal = n
       ]),
     ]);
   }
-  /** 出している器具・人物（小さな札）。数字は風防の残り */
-  function permanents(p, mine) {
-    const list = [...p.tools.map((id) => ({ id, n: id === "windguard" ? p.wind : null })), ...(p.person ? [{ id: p.person, n: null }] : [])];
-    return list.map(({ id, n }) => el(`button.ichi-perm.t-${CARD[id].type}`, { type: "button", "aria-label": `${CARD[id].name}：${CARD[id].tx}`, title: `${CARD[id].name}：${CARD[id].tx}`,
-      onclick: () => { sfx("select"); openRig(p, mine); } }, [artNode(cardArt(id)), n != null ? el("b", { text: String(n) }) : null]));
+  /** 出している器具・人物（マットの札）。数字は風防の残り。空いた枠も見せる（器具3・人物1） */
+  function permanents(p, mine, size) {
+    const slots = [...Array.from({ length: RULES.toolMax }, (_, i) => p.tools[i] || null), p.person || null];
+    return slots.map((id, i) => (id
+      ? el(`button.ichi-perm.s-${size}`, { type: "button", "aria-label": `${CARD[id].name}：${CARD[id].tx}`, title: `${CARD[id].name}：${CARD[id].tx}`,
+          onclick: () => { sfx("select"); openRig(p, mine); } }, [tcg("card", id, { size }), id === "windguard" ? el("b.ichi-counter", { text: String(p.wind) }) : null])
+      : el(`i.ichi-slot.s-${size}${i === RULES.toolMax ? ".is-person" : ""}`)));
   }
   const modChips = (p) => [
     p.pend ? el("span.ichi-chip.is-warn", { text: `次の一口 ${dhText(p.pend)}` }) : null,
     p.sessMod ? el("span.ichi-chip", { text: `寄せ ${dhText(p.sessMod)}` }) : null,
   ];
+  /** セッティング（ボウルとHMDの札）。タップで一台の中身を開く */
+  function settingCards(p, mine, size) {
+    const grams = leavesOf(p), serve = G.phase === "serve";
+    return el("button.ichi-setting", { type: "button", dataset: { test: mine ? "ichi-bowl" : "ichi-foe-bowl", leaves: Object.entries(p.bowl).map(([id, n]) => `${id}:${n}`).join(",") },
+      "aria-label": `${mine ? "自分" : p.name}の一台（葉とセッティング）を見る`, onclick: () => { sfx("select"); openRig(p, mine); } }, [
+      el("span.ichi-setting-card", [tcg("bowl", p.bowlId, { size }), el("b.ichi-counter.is-grams", { text: mine && !serve ? `${grams}/${BOWL[p.bowlId].cap}g` : `${grams}g` })]),
+      el("span.ichi-setting-card", tcg("hmd", p.hmd, { size })),
+      // 準備のあいだだけ、詰めた葉を小さく並べる（次に何を足すか決めるのに要る）。提供に入ったら出さない
+      mine && !serve && grams ? el("span.ichi-packed", Object.entries(p.bowl).map(([id, n]) => el("span", { title: `${FLAVOR[id].name} ×${n}` }, [flavorIcon(id), el("b", { text: `×${n}` })]))) : null,
+    ]);
+  }
+  /** 炭焼き場（マットの枠に4つまで）。置いたばかりは横向き、火がまわると縦向き、焼けたら光る。自分の焼けた炭はタップでのせる */
+  function stoveSlots(p, mine, size) {
+    return Array.from({ length: slotsOf(p) }, (_, i) => {
+      const c = p.stove[i];
+      if (!c) return el(`i.ichi-slot.s-${size}`);
+      const ready = c.stage === 2, left = 2 - c.stage;
+      const can = mine && G.wait && human(G.wait.player) && canPutOn(G, p, i).ok;
+      return el(`button.ichi-stove-coal.s-${size}.st-${c.stage}${can ? ".can" : ""}`, { type: "button", disabled: !can, title: `${CARD[c.id].name}：${ready ? "焼けた" : `あと${left}ターン`}`,
+        dataset: { test: mine ? `ichi-stove-${i}` : null }, onclick: () => { if (can) { sfx("click"); submit({ type: "puton", stove: i }); } } }, [
+        tcg("card", c.id, { size }), mine ? el("small.ichi-counter", { text: ready ? "のせる" : `あと${left}` }) : null]);
+    });
+  }
 
-  // 相手
+  // 相手のマット
   function foeZone(op) {
     const tapped = Math.min(op.spent, op.zone.length), n = op.hand.length, h = heatOf(op);
     return el("div.ichi-foe", { dataset: { test: "ichi-foe" } }, [
-      el("div.ichi-foe-left", [
-        el("div.ichi-foe-hand", { title: `相手の手札 ${n}枚` }, [...Array.from({ length: Math.min(n, 8) }, () => el("i.ichi-back")), el("b.ichi-count", { text: String(n) })]),
-        el("div.ichi-perms", permanents(op, false)),
-        el("div.ichi-mods", modChips(op)),
-      ]),
+      zoneBox("ボウル・HMD", ".is-setting", {}, settingCards(op, false, "tiny")),
       leader(op, "foe"),
-      el("div.ichi-foe-right", [
-        el("div.ichi-foe-rig", [
-          el("div.ichi-foe-heat", [el("small", { text: "熱" }), el("b", { text: String(h) }), op.main ? strip(op.main, { now: G.phase === "serve" ? h : null, line: scorchLineOf(op) }) : null]),
-          el("div.ichi-coals.is-small", op.zone.map((c, i) => coalNode(c, { tapped: i < tapped }))),
-        ]),
-        stoveBox(op, false),
+      zoneBox("炭ゾーン", ".is-coal", {}, [
+        el("div.ichi-foe-heat", [el("small", { text: "熱" }), el("b", { text: String(h) }), op.main ? strip(op.main, { now: G.phase === "serve" ? h : null, line: scorchLineOf(op) }) : null, ...modChips(op)]),
+        el("div.ichi-row.is-tiny", op.zone.map((c, i) => coalCard(c, { tapped: i < tapped, size: "tiny" }))),
       ]),
+      zoneBox("炭焼き場", ".is-stove", { dataset: { test: "ichi-foe-stove", count: String(op.stove.length) } }, el("div.ichi-row.is-tiny", stoveSlots(op, false, "tiny"))),
+      zoneBox("器具・人物", ".is-perms", {}, el("div.ichi-row.is-tiny", permanents(op, false, "tiny"))),
+      // 相手の手札（裏面）は、右上の「？」「✕」の下に置く
+      el("div.ichi-foe-hand", { title: `相手の手札 ${n}枚・山札 ${op.deck.length}枚` }, [...Array.from({ length: Math.min(n, 7) }, () => el("i.ichi-back.s-tiny")), el("b.ichi-count", { text: String(n) })]),
     ]);
-  }
-  /** 炭焼き場（コンロの上に4つまで）。自分の焼けた炭はタップでのせる */
-  function stoveBox(p, mine) {
-    const cells = Array.from({ length: slotsOf(p) }, (_, i) => {
-      const c = p.stove[i];
-      if (!c) return el("i.ichi-slot");
-      const ready = c.stage === 2, cube = CARD[c.id].heat === 2, left = 2 - c.stage;
-      const can = mine && G.wait && human(G.wait.player) && canPutOn(G, p, i).ok;
-      return el(`button.ichi-stove-coal${ready ? ".is-ready" : ""}${can ? ".can" : ""}`, { type: "button", disabled: !can, title: `${CARD[c.id].name}：${ready ? "焼けた" : `あと${left}ターン`}`,
-        dataset: { test: mine ? `ichi-stove-${i}` : null }, onclick: () => { if (can) { sfx("click"); submit({ type: "puton", stove: i }); } } }, [
-        el("img", { src: coalSprite(cube ? "cube" : "flat", ready ? "hot" : c.stage === 1 ? "warm" : "cold"), alt: "", draggable: "false" }),
-        mine ? el("small", { text: ready ? "のせる" : `あと${left}` }) : null]);
-    });
-    return el(`div.ichi-stove${mine ? "" : ".is-small"}`, { dataset: { test: mine ? "ichi-stove" : "ichi-foe-stove", count: String(p.stove.length) } }, [
-      el("img.ichi-stove-art", { src: STOVE_ART, alt: "", draggable: "false" }), el("div.ichi-stove-grid", cells), mine ? el("small.ichi-label", { text: "炭焼き場" }) : null]);
   }
 
   // 中央: 審査の山・案内・ボタン
@@ -372,7 +407,7 @@ export function runIchidai({ host = document.getElementById("stage"), signal = n
     const pips = serve ? el("span.ichi-pips", { "aria-hidden": "true" }, Array.from({ length: rounds }, (_, i) => el(`i${i < G.round ? ".is-done" : i === G.round ? ".is-now" : ""}${i % 3 === 2 ? ".is-gap" : ""}`))) : null;
     const pile = !serve ? null : el("button.ichi-pile", { type: "button", dataset: { test: "ichi-pile", left: String(judges.length ? G.pile.length : 0) }, "aria-label": "審査カードの残りと審査員を見る",
       onclick: () => { sfx("select"); openJudges(); } }, [
-      el("i.ichi-back.is-judge"), judges.length ? el("b.ichi-count", { text: String(G.pile.length) }) : null, el("small", { text: judges.length ? "審査の山" : "練習" })]);
+      el("i.ichi-back.is-judge.s-mini"), judges.length ? el("b.ichi-count", { text: String(G.pile.length) }) : null, el("small", { text: judges.length ? "審査の山" : "練習" })]);
     const peek = ui.peek && serve && !G.judge ? el("span.ichi-peek", { dataset: { test: "ichi-peek" } }, [el("small", { text: "読んだ" }), el("b", { text: `${ui.peek.style} ${dhText(ui.peek.dh)}` })]) : null;
     const { lines, buttons } = guide(me, op, w);
     return el("div.ichi-mid", [
@@ -457,9 +492,9 @@ export function runIchidai({ host = document.getElementById("stage"), signal = n
     return el("span.ichi-outlook", { dataset: { test: "ichi-outlook" } }, [el("small", { text: "このままなら" }), ...chips]);
   }
 
-  // 自分の一台
+  // 自分のマット: 熱の計り・ボウルとHMD・炭ゾーン・炭焼き場・器具と人物・山札と灰
   function myZone(me, w, myTurn) {
-    const h = heatOf(me), f = me.main ? FLAVOR[me.main] : null, serve = G.phase === "serve";
+    const h = heatOf(me), f = me.main ? FLAVOR[me.main] : null;
     const judged = G.judge && me.puff ? judgedHeat(me, G.judge, me.puff.tk) : null;
     // セッティングやカードでいつも足される分（アマバースト・寄せ・煽り）を入れた、ふつうに吸われたときの判定熱
     const base = judgedHeat(me, PUFFS.normal);
@@ -472,35 +507,30 @@ export function runIchidai({ host = document.getElementById("stage"), signal = n
         })),
         el("i.ichi-thermo-frame"),
       ]),
-      el("div.ichi-thermo-read", [el("small", { text: "熱" }), el("b", { text: String(h) }), base !== h ? el("small.ichi-thermo-base", { text: `判定 ${base}` }) : null, el("small", { text: `火力 ${firepower(me)}` })]),
-    ]);
-    const grams = leavesOf(me);
-    const rig = el("button.ichi-rig", { type: "button", dataset: { test: "ichi-bowl", leaves: Object.entries(me.bowl).map(([id, n]) => `${id}:${n}`).join(",") },
-      "aria-label": "自分の一台（葉とセッティング）を見る", onclick: () => { sfx("select"); openRig(me, true); } }, [
-      el("img.ichi-rig-bowl", { src: bowlArt(me.bowlId, grams > 0), alt: "", draggable: "false" }),
-      el("img.ichi-rig-hmd", { src: hmdArt(me.hmd), alt: "", draggable: "false" }),
-      el("b.ichi-grams", { text: serve ? `${grams}g` : `${grams}/${BOWL[me.bowlId].cap}g` }),
-      // 準備のあいだだけ、詰めた葉を小さく並べる（次に何を足すか決めるのに要る）。提供に入ったら出さない
-      !serve && grams ? el("span.ichi-packed", Object.entries(me.bowl).map(([id, n]) => el("span", { title: `${FLAVOR[id].name} ×${n}` }, [flavorIcon(id), el("b", { text: `×${n}` })]))) : null,
+      el("div.ichi-thermo-read", [el("b", { text: String(h) }), base !== h ? el("small.ichi-thermo-base", { text: `判定 ${base}` }) : null, el("small", { text: `火力 ${firepower(me)}` })]),
     ]);
     const coolPick = myTurn && (w.type === "cool" || w.type === "weaken"), ashPick = myTurn && w.type === "main";
     const tapped = Math.min(me.spent, me.zone.length);
-    const zone = el("div.ichi-zone", { dataset: { test: "ichi-zone" } }, [
-      el("div.ichi-coals", me.zone.map((c, i) => el(`button.ichi-coal-btn${coolPick ? ".can" : ""}${ui.sel?.type === "zone" && ui.sel.i === i ? ".is-sel" : ""}`, { type: "button", disabled: !(coolPick || ashPick), dataset: { test: `ichi-coal-${i}`, up: c.up ? "1" : "0" },
-        onclick: () => {
-          if (coolPick) { sfx("click"); submit({ type: w.type, zone: i }); }
-          else if (ashPick) { ui.sel = ui.sel?.type === "zone" && ui.sel.i === i ? null : { type: "zone", i }; sfx("click"); render(); }
-        } }, coalNode(c, { tapped: i < tapped })))),
-      el("small.ichi-label", { text: "炭ゾーン" }),
+    // 炭ゾーンは札を横に並べ、枠に入りきらない枚数になったら重ねる（左上の熱の印は見える）
+    const cw = G.phase === "serve" ? 70 : 52, nz = me.zone.length, coalGap = nz > 1 ? Math.min(6, Math.floor((300 - nz * cw) / (nz - 1))) : 0;
+    const coals = el("div.ichi-row.is-coals", { style: { "--coal-gap": `${coalGap}px` } }, me.zone.map((c, i) => el(`button.ichi-coal-btn${coolPick ? ".can" : ""}${ui.sel?.type === "zone" && ui.sel.i === i ? ".is-sel" : ""}`, { type: "button", disabled: !(coolPick || ashPick), dataset: { test: `ichi-coal-${i}`, up: c.up ? "1" : "0" },
+      onclick: () => {
+        if (coolPick) { sfx("click"); submit({ type: w.type, zone: i }); }
+        else if (ashPick) { ui.sel = ui.sel?.type === "zone" && ui.sel.i === i ? null : { type: "zone", i }; sfx("click"); render(); }
+      } }, coalCard(c, { tapped: i < tapped }))));
+    return el("div.ichi-mine", [
+      zoneBox("熱", ".is-heat", {}, thermo),
+      zoneBox("ボウル・HMD", ".is-setting", {}, settingCards(me, true, "mid")),
+      zoneBox("炭ゾーン", ".is-coal", { dataset: { test: "ichi-zone" } }, [coals, el("div.ichi-mods", modChips(me))]),
+      zoneBox("炭焼き場", ".is-stove", { dataset: { test: "ichi-stove", count: String(me.stove.length) } }, el("div.ichi-row.is-stove", stoveSlots(me, true, "mini"))),
+      zoneBox("器具・人物", ".is-perms", {}, el("div.ichi-row.is-perms", permanents(me, true, "mini"))),
+      el("div.ichi-piles", [
+        zoneBox("山札", ".is-deck", { title: `山札 ${me.deck.length}枚` }, [el("i.ichi-back.s-mini"), el("b.ichi-count", { text: String(me.deck.length) })]),
+        zoneBox("灰", ".is-ash", { title: `灰（使った札） ${me.ash.length}枚` }, el("b.ichi-count.is-plain", { text: String(me.ash.length) })),
+      ]),
     ]);
-    const side = el("div.ichi-side", [
-      el("div.ichi-deck", { title: `山札 ${me.deck.length}枚` }, [el("i.ichi-back"), el("b.ichi-count", { text: String(me.deck.length) }), el("small", { text: "山札" })]),
-      el("div.ichi-perms", permanents(me, true)),
-      el("div.ichi-mods", modChips(me)),
-    ]);
-    return el("div.ichi-mine", [thermo, el("div.ichi-fire", [rig, zone]), stoveBox(me, true), side]);
   }
-  // 準備: フレーバー場
+  // 準備: フレーバー場（葉の札の山）
   function prepMarket(me, w, myTurn) {
     if (G.phase !== "prep" && G.phase !== "embers") return null;
     const canPick = myTurn && w.type === "prep" && !me.turn.mode && canPack(G, me).ok;
@@ -508,14 +538,11 @@ export function runIchidai({ host = document.getElementById("stage"), signal = n
     return el("div.ichi-market", { dataset: { test: "ichi-market" } }, G.market.map((id) => {
       const f = FLAVOR[id], left = G.supply[id] - (ui.counts[id] || 0), n = ui.counts[id] || 0;
       const can = canPick && left > 0 && total < packLimit(G, me) && (n > 0 || kinds.length < 2);
-      return el(`div.ichi-pile-card.k-${f.kind}${n ? ".is-on" : ""}`, { dataset: { test: `ichi-market-${id}` } }, [
-        el("button.ichi-pile-main", { type: "button", disabled: !can, title: f.ab || f.name,
+      return el(`div.ichi-pile-card${n ? ".is-on" : ""}${left > 1 ? ".is-stack" : ""}`, { dataset: { test: `ichi-market-${id}` } }, [
+        el("button.ichi-pile-main", { type: "button", disabled: !can, title: [f.name, `適温${f.lo}〜${f.hi}`, f.ab].filter(Boolean).join("　"), "aria-label": `${f.name} 味値${f.t} 適温${f.lo}〜${f.hi} 残り${left}枚`,
           onclick: () => { ui.counts[id] = n + 1; sfx("click"); render(); } }, [
-          el("span.ichi-pile-art", artNode(flavorArt(id)) || el("span.ichi-glyph", { text: KINDS[f.kind].k })),
-          el("b.ichi-pile-name", { text: f.name }),
-          strip(id),
-          el("span.ichi-pile-foot", [kindBadge(f.kind), el("span.ichi-taste", [el("small", { text: "味" }), String(f.t)]), el("small", { text: `適温${f.lo}〜${f.hi}` })]),
-          el("span.ichi-pile-foot", [el("small", { text: `残${left}` }), f.pair !== "none" ? el("small.ichi-pair", ["相性", kindBadge(f.pair)]) : null]),
+          tcg("flavor", id, { size: "pile" }),
+          el("span.ichi-pile-foot", [el("small", { text: `適温${f.lo}〜${f.hi}` }), f.pair !== "none" ? el("small.ichi-pair", ["相性", kindBadge(f.pair)]) : null, el("b.ichi-count", { text: String(left) })]),
         ]),
         n ? el("button.ichi-pile-minus", { type: "button", "aria-label": `${f.name}を1枚戻す`, text: `${n}枚 −`, onclick: () => { ui.counts[id] = n - 1; sfx("click"); render(); } }) : null,
       ]);
@@ -538,7 +565,7 @@ export function runIchidai({ host = document.getElementById("stage"), signal = n
           if (multi) { ui.picks.has(i) ? ui.picks.delete(i) : ui.picks.add(i); }
           else ui.sel = sel === i ? null : { type: "hand", i };
           sfx("click"); render();
-        } }, cardFace(id));
+        } }, tcg("card", id));
     });
     return el("div.ichi-hand-row", [leader(me, "me"), el("div.ichi-hand", { dataset: { test: "ichi-hand" } }, cards), detail(me, w, myTurn)]);
   }
@@ -580,15 +607,15 @@ export function runIchidai({ host = document.getElementById("stage"), signal = n
     openSheet("info", el("div.ichi-info", { dataset: { test: "ichi-info-sheet", who: mine ? "me" : "foe" } }, [
       el("header", [faceNode(mine ? "hajime" : foe.id, p.name), el("div", [el("h2", { text: mine ? "あなたの一台" : `${p.name}の一台` }), el("small", { text: KIT[p.kit]?.name || "" })])]),
       el("div.ichi-info-set", [
-        el("div", [el("img", { src: bowlArt(p.bowlId, leavesOf(p) > 0), alt: "" }), el("div", [el("b", { text: `${BOWL[p.bowlId].name}（${leavesOf(p)}/${BOWL[p.bowlId].cap}g）` }), el("p", { text: BOWL[p.bowlId].ab })])]),
-        el("div", [el("img", { src: hmdArt(p.hmd), alt: "" }), el("div", [el("b", { text: HMD[p.hmd].name }), el("p", { text: HMD[p.hmd].ab })])]),
+        el("div", [tcg("bowl", p.bowlId, { size: "mid" }), el("div", [el("b", { text: `${BOWL[p.bowlId].name}（${leavesOf(p)}/${BOWL[p.bowlId].cap}g）` }), el("p", { text: BOWL[p.bowlId].ab })])]),
+        el("div", [tcg("hmd", p.hmd, { size: "mid" }), el("div", [el("b", { text: HMD[p.hmd].name }), el("p", { text: HMD[p.hmd].ab })])]),
       ]),
       f ? el("div.ichi-info-main", [el("b", { text: `主役 ${f.name}` }), el("span.ichi-taste", [el("small", { text: "味" }), String(f.t)]),
         el("small", { text: `適温${f.lo}〜${f.hi}・ジャスト${f.j.join("・") || "なし"}・焦げ${scorchLineOf(p) > 10 ? "なし" : `${scorchLineOf(p)}以上`}` }),
         strip(p.main, { now: G.phase === "serve" ? h : null, line: scorchLineOf(p) })]) : el("p.ichi-empty", { text: "葉はまだ詰めていない" }),
       leaves.length ? el("div.ichi-info-leaves", leaves.map(([id, n]) => el(`span.ichi-leaf.k-${FLAVOR[id].kind}`, { title: FLAVOR[id].ab || FLAVOR[id].name }, [flavorIcon(id), el("span", { text: `${FLAVOR[id].name} ×${n}` }),
         id === p.main ? el("small", { text: "主役" }) : sd.includes(id) ? el("small", { text: "脇役" }) : null]))) : null,
-      perms.length ? el("ul.ichi-info-perms", perms.map((id) => el("li", [artNode(cardArt(id)), el("b", { text: CARD[id].name + (id === "windguard" ? `（残り${p.wind}）` : "") }), el("span", { text: CARD[id].tx })]))) : null,
+      perms.length ? el("ul.ichi-info-perms", perms.map((id) => el("li", [tcg("card", id, { size: "tiny" }), el("b", { text: CARD[id].name + (id === "windguard" ? `（残り${p.wind}）` : "") }), el("span", { text: CARD[id].tx })]))) : null,
       closeInfo(),
     ]));
     sheet.querySelector("button")?.focus({ preventScroll: true });
@@ -708,3 +735,4 @@ export function runIchidai({ host = document.getElementById("stage"), signal = n
   if (cfg) startGame(); else showSetup();
   return promise;
 }
+
