@@ -6,7 +6,7 @@
 
 - 経験値が入ったその場でレベルが上がり、火種は手持ちに入る（`core/growth.js` の `applyLevels`）。その場で画面の上に短い札が出る（`daily/levelup.js`。操作は止めない）。寝る前・観音堂でまとめて見せる画面は無い（SBD122）。火種を盤に灯すのは観音堂などの内省（`daily/reflection.js`）。
 - 盤・レベルアップの画面は絵と数が中心で、説明は「？」の絵つきの見方（`daily/growth-board-help.js`）とチュートリアルにある（SBD116〜119）。
-- 火種4種・レベルアップの札の板と光・盤の札・マスの印の台・丸いボタンなどは Codex の絵（[依頼文と使い所](../../asset_sources/ui/growth-board-20261111/README.md)・SBD121・SBD123）。火種は A案で組み込み済み（B案へは `convert.py --fire b`）。絵が読めない時は CSS の形のまま動く。
+- 火種4種・レベルアップの札の板と光・盤の札・マスの印の台・丸いボタンなどは Codex の絵（[依頼文と使い所](../../asset_sources/ui/growth-board-20261111/README.md)・SBD121・SBD123）。火種は A案「火を封じた玉」（2026-11-11 オーナー決定）。絵が読めない時は CSS の形のまま動く。
 - 節目・♥5は色の火1＋白火1、大会の優勝で白火3つ、近くの帯×2、K20 は＋4%。仕様は SPEC 1.5・1.7・3.7・6.3。
 - 確認: `node remake/test/growth_levelup.mjs`、`node --experimental-vm-modules remake/test/kannon_growth.mjs`、`node remake/test/browser/growth_fx.mjs`。
 
