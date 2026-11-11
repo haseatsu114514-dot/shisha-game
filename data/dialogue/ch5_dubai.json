@@ -152,7 +152,7 @@
     {
       "dialogue_id": "ch5_dubai_taiyo_b",
       "lines": [
-        { "speaker": "", "face": "", "text": "中庭の木陰。太陽が、アサイーの一台を詰めていた。" },
+        { "speaker": "", "face": "", "text": "中庭の木陰。太陽が、パッションフルーツの一台を詰めていた。" },
         { "speaker": "da_silva", "face": "smile", "text": "大会のときの、お前の一台。手拍子ひとつ無しで……見入った、ってやつだ" },
         { "speaker": "hajime", "face": "normal", "text": "静かすぎましたか" },
         { "speaker": "da_silva", "face": "normal", "text": "いいや。静かでも、あれはフェスタ。客が楽しんでる、それでいい" },
