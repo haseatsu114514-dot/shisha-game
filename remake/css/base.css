@@ -680,6 +680,11 @@ body[data-screen="bench"] .gain-card.out { animation-name: gain-out-l; }
 
 /* マップ→場所の「移動」の型（core/transition-moves.js・CI103） */
 .scene-curtain.move { background: transparent; }
+/* 地図の絵そのものを動かす移動（zoom・lights・TMG46）。光は左右の余白まで届かせる */
+#stage[data-wide] .scene-curtain.move.on-bg { inset: 0 calc(-1 * var(--stage-gutter)); }
+.tr-zoom-glow { position: absolute; inset: -35% -22%; background: radial-gradient(closest-side, #fff8ea 0%, #fff8eaf7 42%, #fff8ea00 100%); opacity: 0; pointer-events: none; }
+/* 帰宅の部屋の灯り（家の背景の照明の位置。次の背景の中に一時的に置く） */
+.tr-lamp { position: absolute; inset: 0; background: radial-gradient(22% 22% at 94% 50%, #ffcf8a66, transparent 70%), radial-gradient(18% 19% at 24% 54%, #ffcf8a4d, transparent 70%); mix-blend-mode: screen; opacity: 0; pointer-events: none; }
 .tr-move-field { position: absolute; inset: 0; }
 .tr-move-label { position: absolute; left: 72px; top: 64px; display: flex; flex-direction: column; gap: 2px; font-family: var(--font); color: #fff; text-shadow: 0 3px 0 #150f26; }
 .tr-move-label small { font-size: 18px; font-weight: 700; letter-spacing: 0.3em; color: #dcd1f4; }
