@@ -170,3 +170,83 @@ TK-UI02・03 は normal、pressed、active／door を個別に生成した。TK-
 | `ui_tk_token_active.png` | 384×384 | `1b854572072470e33adc44bb6fb190fd3b734fae7ca1f3ffae57e353b608d7ac` |
 | `ui_tk_token_pressed.png` | 384×384 | `f12b6659c7ae9542c9da7eecceb5a266254f581c2a6e1878a57ac4a39a92377e` |
 | `ui_tk_wish.png` | 384×320 | `94667dffab50a3b7cc2763dc54d991fd26d05a52bc7bc5be82597d5ccb2b165c` |
+
+## Issue #3243：TK-UI10〜20 候補原画（2026-11-11）
+
+内蔵画像生成で1回に1点ずつ生成し、出力 PNG を加工せず保存した。Issue の ID とファイル名を数えると14ファイル（UI13・UI14・UI16 が各2枚）になる。本文の「13ファイル」と数が食い違うため、ファイル名の列挙を優先した。
+
+### 参照画像と役割
+
+| 役割 | 指定パス | SHA-256 | 取得元 |
+|---|---|---|---|
+| ① 線・紙・段ボールの縁の正本 | `assets/ui/tetsuko/ui_tk_token.png` | `29e97a7c2c1266203c72b7390693036c906db0568940f3495b8725cf51068845` | PR #3238 のブランチからファイルのみ取得 |
+| ② 点線・肉球の判・テープの飾り方の正本 | `assets/ui/tetsuko/ui_tk_tab.png` | `bb9a7febd4e7f0ba6648270317ef90754e034074fa2d48c2ed1570f81cbc815d` | PR #3238 のブランチからファイルのみ取得 |
+| ③ 色の正本（茶トラの橙・胸の白・焦げ茶の輪郭） | `assets/sprites/characters/tetsuko/chr_tetsuko_normal.png` | `9890e78c6b90f636861ddbabc5657191398dfbe3087bffb24d5704720b4f6f00` | main の LFS 実体 |
+
+毎回、次の役割ラベルと画風固定文を共通文の前に渡した。
+
+```
+参照画像① assets/ui/tetsuko/ui_tk_token.png（添付1）＝この組の線・紙・段ボールの縁の正本。
+参照画像② assets/ui/tetsuko/ui_tk_tab.png（添付2）＝点線・肉球の判・テープの飾り方の正本。
+参照画像③ assets/sprites/characters/tetsuko/chr_tetsuko_normal.png（添付3）＝色の正本（茶トラの橙・胸の白・焦げ茶の輪郭）。
+①②と同じ描き手に見える画風で固定してください。
+```
+
+### 生成指示
+
+以下は Issue 本文の共通文と PART 一覧の原文。各生成で共通文の `PART: （下の一覧から1つを貼る）` を該当 PART 行に置き換えた。
+
+```
+ノベルゲーム「水煙前線」の、看板猫てつこと遊ぶミニゲーム画面のUI部品を1枚だけ描いてください。
+画面のテーマは「茶トラと段ボール」です。添付①②は、この画面ですでに使っている札の絵（線・紙・段ボールの縁・飾りの正本）、③はてつこの立ち絵（色の正本）です。①②と同じ描き手・同じ紙に見えるように描いてください。
+
+STYLE: hand-drawn game UI in exactly the same hand as attachments 1 and 2. Cream paper #fff5e4 surfaces with fine paper fiber, thick confident dark brown #3b2416 outlines, tabby orange #f08a2e and deep orange #c25e1c accents, kraft cardboard #c9965c with torn edges and visible corrugation, small strips of paper tape, tiny paw-print stamps only as corner decoration. Flat colors with one or two clean cel-shadow steps, light from the upper left. No lavender, no smoke curls, no glossy plastic, no glow, no airbrush gradients, no 3D render, no photo texture.
+Never bake in any text, letters, digits, question marks, logo or watermark (the game writes all text).
+FORMAT: flat and front-facing. Plain solid magenta #FF00FF background around the part (the game keys it out); keep the magenta exactly #FF00FF. No drop shadow outside the part. For nine-slice parts, keep every decoration inside the stated border band (corners especially), keep straight edges parallel to the canvas, and keep the center plain and evenly textured.
+
+PART: （下の一覧から1つを貼る）
+```
+
+```
+TK-UI10 ui_tk_tray.png 1600x400, nine-slice (96 px left and right, 80 px top and bottom) — A shallow open cardboard tray seen from above, kraft cardboard with a dark brown outline, torn and corrugated rim, a short strip of tape on one corner, plain flat bottom inside.
+TK-UI11 ui_tk_card.png 384x384, nine-slice (64 px) — A small cream paper card with rounded corners, thick dark brown outline and a small dark brown drop under it, a tiny tape piece on one top corner. Plain center.
+TK-UI12 ui_tk_panel.png 1536x1024, nine-slice (112 px) — A large cream paper sheet with rounded corners, thick dark brown outline and drop, a few faint paper fibers, two small tape pieces on the top corners. Plain center.
+TK-UI13 ui_tk_book.png 2048x1024, nine-slice (128 px), and ui_tk_book_spine.png 96x1024 — Book: an open notebook lying flat, kraft cardboard cover showing as a border around two cream pages, faint ruled lines, no spine in the middle (keep the center plain). Spine: only the middle binding strip, tabby orange and deep orange cloth stripes with a dark brown outline, seamless when tiled vertically. Make two images.
+TK-UI14 ui_tk_photo.png 768x896 and ui_tk_tape.png 512x160 — Photo: the white border of an instant photo, wider at the bottom, warm white with a dark brown outline; the window inside is plain solid magenta #FF00FF. Tape: a torn piece of kraft paper tape, slightly see-through looking, jagged ends. Make two images.
+TK-UI15 ui_tk_frame.png 1024x576, nine-slice (48 px) — A window cut out of a cardboard sheet: a 48 px band of kraft cardboard around the edge with rounded inner corners, the cut edge showing the wavy corrugated layer; the whole inside is plain solid magenta #FF00FF.
+TK-UI16 ui_tk_flap.png 1024x1152 and ui_tk_packtape.png 256x1152 — Flap: one closed cardboard box flap filling the image, kraft cardboard with fiber, a faint stamped paw print, no text. Tape: a vertical strip of matte brown packing tape, seamless when tiled vertically. Make two images.
+TK-UI17 ui_tk_slot.png 512x320, nine-slice (72 px) — A spot on the floor marked out with four L-shaped pieces of orange paper tape at the corners, like a place marked for a cat bed, slightly glowing warm. Only the four corner pieces and a very faint warm wash inside; the center is otherwise plain.
+TK-UI18 ui_tk_badge.png 160x160 — A small round sticker in nose pink #f39aa6 with a thick dark brown outline and a white glint, slightly tilted, like a "new" sticker. Plain center (the game writes one character on it).
+TK-UI19 ui_tk_nametag.png 384x128, nine-slice (48 px left and right) — A small tabby orange name tag with a thick dark brown outline, a punched hole on the left end and a tiny string. Plain center (the game writes a name on it).
+TK-UI20 ui_tk_unknown.png 256x256 — A soft dark brown silhouette of a sitting chubby Scottish Fold cat (small folded ears, round face, thick tail) inside a dashed cream circle, like an unfound entry in a sticker album. No question mark, no letters.
+```
+
+UI13・UI14・UI16 の2枚組は、1回に1点とするため各呼び出しの冒頭に `この1回では <ファイル名> の1点だけを描いてください。` を付けた。UI14 のテープと UI16 の封テープは単体を得るため再生成し、それぞれ `写真の額を描かず、テープだけを画面に置いてください。` と `箱のふたを描かず、縦の封テープだけを画面に置いてください。` も付けた。ただし再生成後も両部品が同じキャンバスに混在した。
+
+### 保存ファイルと機械検査
+
+| 原画 | 実寸 | 指定寸法 | SHA-256 | 背景角の #FF00FF |
+|---|---:|---:|---|---|
+| `ui_tk_card.png` | 1254×1254 | 384×384 | `92470c1d53ba25cc56289e6ecfec1787ac5e90d3c1f79745fb75ed050768bb4c` | 不合格 |
+| `ui_tk_book.png` | 1774×887 | 2048×1024 | `01efe546e6d4e8373793af61a88a36320dc12dddb590efb92038619d1ff79273` | 不合格 |
+| `ui_tk_book_spine.png` | 1214×1295 | 96×1024 | `d97a2e7498e11e20cd787dc8787c3a893e9d5f945dfa9dd8267aecb864b6472b` | 不合格 |
+| `ui_tk_panel.png` | 1536×1024 | 1536×1024 | `dd3131852462c6e3bd34cb1a641e988fbb9c276ec1c2fba70b0963d67b742d5d` | 不合格 |
+| `ui_tk_tray.png` | 2172×724 | 1600×400 | `8d9914483e14ac2a6d342cbe1a0ae049a4c4bdc64453a8048f14ce91797b000e` | 不合格 |
+| `ui_tk_slot.png` | 1586×992 | 512×320 | `c3290b0aefc3c30c6b5e5884e1e92db54dde219fb2c20ed66e9f99055b42d4da` | 不合格 |
+| `ui_tk_photo.png` | 1161×1354 | 768×896 | `b707b6b928667b3ed4096189cdfba55e5bfed68ccdf0bbc3947ecffa07c7e58a` | 不合格 |
+| `ui_tk_tape.png` | 2172×724 | 512×160 | `41c5e9b37b1dbc395db0f7fd633757f8642d7182299e9544006a95a2d6bebae7` | 不合格 |
+| `ui_tk_frame.png` | 1672×941 | 1024×576 | `61552212e6d6b4c8cf909f9a452af659d537129343f97dd2eb08bec483f132e5` | 不合格 |
+| `ui_tk_flap.png` | 1182×1330 | 1024×1152 | `9e9a1425f24f580834e1cf92b180174e87f92f5fad2c9e7417ae88e5142b957a` | 不合格 |
+| `ui_tk_packtape.png` | 1182×1330 | 256×1152 | `6cf602c47e96e09b5367379979fc4e92d65333c4517b0bd9e012aae25f4d8e2a` | 不合格 |
+| `ui_tk_badge.png` | 1254×1254 | 160×160 | `12921db61178d183c81f518e659634ba74c014d9e4becde1e271b6df78c3ec10` | 不合格 |
+| `ui_tk_nametag.png` | 2172×724 | 384×128 | `142f928db219e7c97f845e137804b28edae039b9e0b4781c70e57499328fff6d` | 不合格 |
+| `ui_tk_unknown.png` | 1254×1254 | 256×256 | `0e463e69b4a6735be39cc3a2b377aab2215e617c83d9ddd30fda0b1589cc2550` | 不合格 |
+
+### 目視検査と採用上の注意
+
+- 線と紙の色調は参照①②に近い。文字・数字・疑似文字・ロゴ・透かし・シーシャ機材は目視では見当たらない。
+- 全ファイルで背景角が正確な #FF00FF ではなく色むらがあり、背景単色条件に不合格。指定寸法にも `ui_tk_panel.png` を除き不一致。出力 PNG を加工しない条件を守り、原画はそのまま残した。
+- `ui_tk_tape.png` は写真枠とテープ、`ui_tk_packtape.png` は箱のふたと封テープが1枚に混在。再生成後も解消していない。
+- `ui_tk_book.png` は中央に背が描かれ、専用の背画像と重なる。`ui_tk_slot.png` は四隅テープのほかに紙面と点線があり、中心が無地という条件に不合格。
+- nine-slice の角飾りと中央の均一性は、寸法不一致と上記の構成問題があるため採用可能とは判定できない。これらは未採用の候補原画として扱う。
+- 透過・切り分け・色補正・ゲーム組み込みは行っていない。
