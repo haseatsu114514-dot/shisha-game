@@ -22,6 +22,13 @@ function customerLine({ moved, over, under }) {
     : "このくらいなら、もう少し吸ってたい";
 }
 
+// S7: 客に「熱いか、軽いか」を聞いた直後の答え。手を動かす前の様子なので、後の感想（customerLine）と食い違わないようにする。
+function customerAnswer({ moved, over }) {
+  return moved ? "……熱くはないです。でも、最初より遠くなったかも"
+    : over ? "……少し熱いです。軽くは、ないかな"
+    : "……熱くはないです。軽いけど、嫌な軽さじゃない";
+}
+
 function replaceLines(lines, table) {
   return lines.flatMap(line => {
     const to = table.get(line.text);
@@ -32,8 +39,7 @@ function replaceLines(lines, table) {
 function adjustmentTable(care) {
   const table = new Map();
   if (care.moved) {
-    table.set("香りを急いで立たせたくなる。隣ではスティーブが、灰を落とした炭をすぐには戻さない。", [{ text: "薄くなった煙を、客の様子と照らす。消耗した炭を替え、熱を戻した。隣ではスティーブが、自分の炭を静かに見ている。" }]);
-    table.set("（待つって、手を抜くことじゃなかった）", [{ text: "（動かすのも、自分で見て決めたことだ。誰かの手本じゃなくていい）" }]);
+    table.set("香りを急いで立たせたくなる。隣ではスティーブが、灰を落とした炭をすぐには戻さない。", [{ text: "客の答えを、煙の色と照らす。消耗した炭を替え、熱を戻した。隣ではスティーブが、自分の炭を静かに見ている。" }]);
     table.set("客が息を継ぐ。はじめも手を止め、吸い終わってからホースを受け取った。", [{ text: "客が息を継ぐ。はじめは吸い口を渡し、煙の戻りを見た。" }]);
     table.set("やるじゃん。僕が仕掛けたのに、僕の方が待たされた", [{ text: "動かしたのは君の判断か。釣れたと思ったのに、ちゃんと自分の理由で動いてる" }]);
     table.set("……今の待ち時間、記録していいか", [{ text: "……今の炭替えの判断、記録していいか" }]);
@@ -43,6 +49,7 @@ function adjustmentTable(care) {
     table.set("あはっ、動いた！　僕の一口を基準にしちゃった？", [{ text: "あはっ、手が出た！　僕の一口を基準にしかけたでしょ？" }]);
     table.set("煙幕で言ったよね、最後の甘さは長いって。今なら直せるよ？", [{ text: "煙幕で言ったよね、最後の甘さは長いって。直すのは、まだ早いよ？" }]);
   }
+  table.set("……熱くはないです。軽いけど、嫌な軽さじゃない", [{ text: customerAnswer(care) }]);
   table.set("このくらいなら、もう少し吸ってたい", [{ text: customerLine(care) }]);
   return table;
 }
