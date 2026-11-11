@@ -257,7 +257,7 @@ await suite("ch3-tournament", async check => {
     await page.locator(t("aftermath")).click();
     const aftermath = scene => `[data-test="ch3-aftermath-scene"][data-scene="${scene}"]`;
     const scenes = ["ch3_abyss_hotel", "ch3_mashiro_recovery", "ch3_naru_reconcile", "ch3_enmaku_cleanup",
-      "ch3_home_customer", "ch3_tsumugi_result", "ch3_ageha_reunion"];
+      "ch3_ageha_reunion", "ch3_tsumugi_result", "ch3_home_customer"]; // STK23: 帰郷した夜の最後が帰郷の客
     for (const [index, scene] of scenes.entries()) {
       await page.locator(aftermath(scene)).waitFor();
       if (index === 0) assert(await page.locator('#bg > .bg-img').last().evaluate(node =>
@@ -289,7 +289,8 @@ await suite("ch3-tournament", async check => {
     assert.equal(state.flags._ch3_tournament.history.length, 1);
     await page.reload();
     await page.locator('[data-test="title-load"]').click();
-    assert.match(await page.locator('[data-test="slot-0"]').innerText(), /第3章\s*DAY 17[\s\S]*第3章クリア/);
+    // STK23: あげはの再会を帰郷した夜へ移したので、第3章は帰郷した夜（DAY 16）で終わる。
+    assert.match(await page.locator('[data-test="slot-0"]').innerText(), /第3章\s*DAY 16[\s\S]*第3章クリア/);
   }, { reducedMotion: "reduce" });
   await check("actual-losing-rank-reads-defeat-and-retries-without-win", async page => {
     await seed(page);
