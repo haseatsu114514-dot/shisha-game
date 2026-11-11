@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-11-10 11:17 UTC",
+ "generated": "2026-11-11 02:42 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -497,12 +497,12 @@
   "bg_dubai_airport_day.png",
   "bg_dubai_alley_cafe_night.png",
   "bg_dubai_cafe_day.png",
+  "bg_dubai_cafe_salim_day.png",
   "bg_dubai_camel_track_morning.png",
   "bg_dubai_dunes_day.png",
   "bg_dubai_dunes_dusk.png",
   "bg_dubai_festa.png",
   "bg_dubai_grand_smoke_stage.png",
-  "bg_dubai_cafe_salim_day.png",
   "bg_dubai_inn_day.png",
   "bg_dubai_inn_night.png",
   "bg_dubai_map.png",
@@ -524,6 +524,8 @@
   "bg_kemurikusa_outside_night.png",
   "bg_longlong_shop.png",
   "bg_mukai_attic.png",
+  "bg_mukai_backdoor_day.png",
+  "bg_mukai_backdoor_night.png",
   "bg_mukai_shop.png",
   "bg_osu_map_day.png",
   "bg_osu_map_finale.png",
@@ -2677,6 +2679,8 @@
   "backgrounds/bg_kemurikusa_outside_night.png",
   "backgrounds/bg_longlong_shop.png",
   "backgrounds/bg_mukai_attic.png",
+  "backgrounds/bg_mukai_backdoor_day.png",
+  "backgrounds/bg_mukai_backdoor_night.png",
   "backgrounds/bg_mukai_shop.png",
   "backgrounds/bg_osu_map_day.png",
   "backgrounds/bg_osu_map_finale.png",
@@ -3464,9 +3468,9 @@
   "ui/making/ui_refresh_button.png",
   "ui/making/ui_temperature_frame.png",
   "ui/scene_props/shisha_home_pro.png",
-  "ui/scene_props/shisha_home_tabletop.png",
-  "ui/scene_props/shisha_home_stand_walnut.png",
   "ui/scene_props/shisha_home_stand_custom.png",
+  "ui/scene_props/shisha_home_stand_walnut.png",
+  "ui/scene_props/shisha_home_tabletop.png",
   "ui/title_arts/title_art_adam_01_sunset_proclamation.png",
   "ui/title_arts/title_art_adam_02_twin_apple_throne.png",
   "ui/title_arts/title_art_ageha_01_professional_taste.png",
@@ -5854,4 +5858,3 @@
   }
  }
 }
-

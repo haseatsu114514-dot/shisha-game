@@ -29,6 +29,13 @@ for (const note of Object.values(eveNotes)) {
   assert.ok([...note].length <= 48, note);
   assert.ok(!note.endsWith("。"), note);
 }
+// 正本: スミさんの入場メッセージは「目の前の一人に届けてこい」。優勝の場面がこの言葉を回収するので、
+// 前夜の選択で一言が差し替わっても、はじめの入場カードには必ずこの言葉が出る。
+const sendOff = "目の前の一人に届けてこい";
+assert.ok(block.includes(`{ id: "hajime", ring: "tonari の新星", note: "──行ってこい。${sendOff}" }`));
+for (const [choice, note] of Object.entries(eveNotes)) assert.ok(note.endsWith(sendOff), `${choice}: ${note}`);
+const reveal = JSON.parse(read("../../data/dialogue/ch1_tournament.json")).dialogues.find(d => d.dialogue_id === "ch1_tournament_reveal");
+assert.ok(reveal.lines.some(line => line.speaker === "hajime" && line.text?.includes(`${sendOff}、か`)), "優勝の場面が入場の言葉を回収する");
 assert.match(src, /me && heroNote \? heroNote : c\.note/);
 assert.match(read("../js/chapters/ch2-tournament.js"), /playEntrance\(2\)/);
 assert.match(read("../js/chapters/ch3-tournament.js"), /playEntrance\(3\)/);

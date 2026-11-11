@@ -121,8 +121,11 @@ export function tetsukoCameraFor({ x, y, s = 1 } = {}) {
   const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
   return { k, x: clamp(at.x - k * fx, 1280 * (1 - k), 0), y: clamp(at.y - k * fy, 720 * (1 - k), 0) };
 }
-/** 飛びついた先の範囲（舞台の px・足元）。じゃらしで遊ぶ間のカメラで、てつこの体が外枠の内側に収まる幅にする。 */
-export const TETSUKO_LEAP = Object.freeze({ min: 230, max: 1050, y: 550 });
+/**
+ * 飛びついた先の範囲（舞台の px・足元）。じゃらしで遊ぶ間のカメラで、いちばん横に長いしぐさの絵（跳ぶ・空振り。halfWidth は
+ * その半分の幅）まで外枠の内側に収まる幅にする。
+ */
+export const TETSUKO_LEAP = Object.freeze({ min: 320, max: 960, y: 550, halfWidth: 232 });
 /** じゃらしで遊ぶ間のカメラ { k, x, y }（舞台の外は映さない）。 */
 export function tetsukoToyCamera() {
   const { zoom: k, at } = TETSUKO_TOY_VIEW;
@@ -247,6 +250,8 @@ export async function openTetsukoTime({ value = null, visitKey = null, bg = null
     const camPlay = el("div.tt-cam.tt-cam-play", [...Object.values(slots), lap, plate, cat, toy, ...Object.values(slotHits), pops]);
     const yard = el("div.tt-yard", [
       el("div.tt-cam.tt-cam-set", { "aria-hidden": "true" }, [
+        // 裏口の絵（届いていれば）。ステージの背景のままだと寄せた舞台とずれるので、舞台と一緒に寄せる層に置く。
+        backdoor?.url ? el("img.tt-backdrop", { src: backdoor.url, alt: "", draggable: "false", decoding: "async" }) : null,
         el("div.tt-set", [
           el("div.tt-wall", [el("div.tt-door", [el("i.tt-door-window"), el("i.tt-door-knob")]), el("i.tt-lamp")]),
           el("div.tt-ground"),
@@ -609,15 +614,20 @@ export async function openTetsukoTime({ value = null, visitKey = null, bg = null
     }
 
     // -- 見つけた・撮った時の小さな札（反応の帯の中）。数秒で消え、手帳に残る。
-    function thumb(momentId) {
+    // 撮った写真（photo: アルバムの1件）は、裏口の絵を背にして見せる（生成りの紙の上の切り抜きにしない）。昼夜は撮った時のもの。
+    const photoScene = shot => (ART_READY.background ? data.sceneBg?.("bg_mukai_backdoor", shot?.night ? "night" : "day")?.url : null) || null;
+    function thumb(momentId, { photo = null } = {}) {
       const moment = momentById(momentId);
       const art = moment?.art && hasPose(moment.art) ? poseUrl(moment.art) : null;
-      return el("span.tt-thumb", { dataset: { face: moment?.face || "normal", art: art ? "1" : "" } },
+      const scene = photo ? photoScene(photo) : null;
+      return el("span.tt-thumb", { dataset: { face: moment?.face || "normal", art: art ? "1" : "", photo: scene ? "1" : "" },
+        style: scene ? { backgroundImage: `url("${scene}")` } : null },
         [el("img", { src: art || faceSrc(moment?.face || "normal"), alt: "" })]);
     }
+    const albumEntry = momentId => session.album.find(entry => entry.moment === momentId) || null;
     function toast(kind, momentId) {
       const card = el("div.tt-toast", { dataset: { kind } }, [
-        thumb(momentId),
+        thumb(momentId, { photo: kind === "photo" ? albumEntry(momentId) : null }),
         el("p", { dataset: { test: "tetsuko-note" } }, [
           el("small", { text: kind === "photo" ? "写真に残した" : "しぐさ図鑑に記録" }),
           el("b", { text: momentById(momentId)?.name || "" }),
@@ -633,7 +643,7 @@ export async function openTetsukoTime({ value = null, visitKey = null, bg = null
     function flyToBook(momentId) {
       if (reduced) return;
       const c = onScreen(catCenter());
-      const card = el("span.tt-fly", { "aria-hidden": "true", style: { left: `${c.x}px`, top: `${c.y}px` } }, [thumb(momentId)]);
+      const card = el("span.tt-fly", { "aria-hidden": "true", style: { left: `${c.x}px`, top: `${c.y}px` } }, [thumb(momentId, { photo: albumEntry(momentId) })]);
       host.append(card);
       requestAnimationFrame(() => card.classList.add("go"));
       setTimeout(() => card.remove(), 900);
@@ -1033,7 +1043,7 @@ export async function openTetsukoTime({ value = null, visitKey = null, bg = null
         return el("button.tt-card", { type: "button", dataset: { found: String(found), photo: String(!!photo), test: `tetsuko-book-${moment.id}` },
           "aria-pressed": String(bookSel === moment.id), onclick: () => { SE.click?.(); bookSel = moment.id; renderBook(); } }, [
           el("span.tt-card-no", { text: String(index + 1).padStart(2, "0") }),
-          found ? thumb(moment.id) : el("span.tt-thumb.unknown", { text: "？" }),
+          found ? thumb(moment.id, { photo }) : el("span.tt-thumb.unknown", { text: "？" }),
           el("b", { text: found ? moment.name : "？？？" }),
           found ? el("i.tt-stamp", { "aria-hidden": "true" }) : null,
         ]);
@@ -1043,7 +1053,7 @@ export async function openTetsukoTime({ value = null, visitKey = null, bg = null
       const photo = session.album.find(entry => entry.moment === pick.id);
       const detail = el("div.tt-detail", [
         el("div.tt-polaroid", { dataset: { photo: String(!!photo), known: String(known) } }, [
-          el("i.tt-tape"), known ? thumb(pick.id) : el("span.tt-thumb.unknown", { text: "？" }),
+          el("i.tt-tape"), known ? thumb(pick.id, { photo }) : el("span.tt-thumb.unknown", { text: "？" }),
           el("small", { text: photo ? dayLabel(photo.day) || "写真" : known ? "写真はまだ" : "" }),
         ]),
         el("h4", { text: known ? pick.name : "まだ見つけていない" }),
@@ -1119,6 +1129,8 @@ export async function openTetsukoTime({ value = null, visitKey = null, bg = null
 
     window.addEventListener("pagehide", abort, { once: true });
     window.addEventListener("keydown", onKey);
+    // overflow: clip の無い古いブラウザでも、画面がスクロールしてずれたら戻す（画面の外の物へのフォーカスで起きる）。
+    host.addEventListener("scroll", () => { if (host.scrollLeft || host.scrollTop) host.scrollTo(0, 0); });
     signal?.addEventListener?.("abort", abort, { once: true });
     // 開いた時の居場所・表情を先に決めてから出す（ベンチから滑ってこない）。
     show(openingReaction(session));
