@@ -1,0 +1,375 @@
+#!/usr/bin/env python3
+"""DJ ミニゲームのリニューアル（2026-11-11・DJS20〜）の部品を描いて remake/img/ui/dj/ に書き出す。
+
+画像生成 API が使えなかった（クレジット切れ）ので、機材まわりの部品はこのスクリプトが Pillow と numpy で描く
+（3倍で描いて縮小。乱数は固定なので何度実行しても同じ絵になる）。人物の絵（フロアの観客）は描けないので Codex へ依頼する
+（同じフォルダの CODEX_PROMPTS.md）。
+
+  python3 asset_sources/ui/dj-renewal-20261111/make_parts.py
+
+| 出力 | 大きさ | 使う場所（remake/previews/dj/style.css） |
+|---|---|---|
+| play-a / play-b / play-go.webp | 256×256 | ▶ボタン（A 紫・B 水色・「いま押す」金） |
+| xfader-plate.webp | 920×240 | 横フェーダーの台座（溝・目盛り・左右のランプ） |
+| pitch-plate.webp | 136×340 | PITCH フェーダーの台座 |
+| arrow.webp | 256×256 | 「ここを動かす／押す」の矢印（右向き。CSS で回す） |
+| chevron.webp | 120×160 | 横フェーダーの向きの矢印（右向き） |
+| bubble.webp / bubble-cold.webp | 560×216 | お客さんの声の吹き出し（良い反応／冷めた反応） |
+| flame.webp | 96×96 | 曲のノリ（盛り上がり）の炎 |
+| zone.webp / zone-ok.webp | 224×136 | 横フェーダーの「ここ」の目印（追いかける先／乗れているとき） |
+| heat-frame.webp | 597×160 | フロアの熱のゲージの枠（craft-night の温度計の枠を横向きにしたもの） |
+"""
+from pathlib import Path
+
+import numpy as np
+from PIL import Image, ImageChops, ImageDraw, ImageFilter
+
+ROOT = Path(__file__).resolve().parents[3]
+OUT = ROOT / "remake" / "img" / "ui" / "dj"
+KIT = ROOT / "remake" / "img" / "ui" / "craft-night"
+SS = 3  # 3倍で描いて縮小する
+rng = np.random.default_rng(20261111)
+
+VIOLET, VIOLET_HI = (180, 92, 240), (226, 204, 255)
+CYAN, CYAN_HI = (63, 208, 232), (206, 246, 255)
+GOLD, GOLD_HI, GOLD_LO = (255, 200, 87), (255, 244, 204), (214, 134, 30)
+PLUM = (42, 24, 64)
+
+
+def rgba(size, color=(0, 0, 0, 0)):
+    return Image.new("RGBA", size, color)
+
+
+def solid(mask, color):
+    """mask（L）の形を color で塗った RGBA。"""
+    img = rgba(mask.size, (*color[:3], 0))
+    img.putalpha(mask if len(color) < 4 else mask.point(lambda v: v * color[3] // 255))
+    return img
+
+
+def blur(img, radius):
+    return img.filter(ImageFilter.GaussianBlur(radius))
+
+
+def over(base, top, offset=(0, 0)):
+    layer = rgba(base.size)
+    layer.paste(top, offset)
+    return Image.alpha_composite(base, layer)
+
+
+def add(base, top):
+    """加算合成（光）。"""
+    b, t = np.asarray(base).astype(np.float32), np.asarray(top).astype(np.float32)
+    a = t[..., 3:4] / 255
+    rgb = np.clip(b[..., :3] + t[..., :3] * a, 0, 255)
+    alpha = np.clip(b[..., 3:4] + t[..., 3:4], 0, 255)
+    return Image.fromarray(np.concatenate([rgb, alpha], -1).astype(np.uint8), "RGBA")
+
+
+def glow(mask, color, radius, strength=1.0):
+    g = blur(mask, radius).point(lambda v: min(255, int(v * strength)))
+    return solid(g, color)
+
+
+def vgrad(size, stops):
+    """縦のグラデーション。stops = [(位置0..1, (r,g,b)), ...]"""
+    w, h = size
+    ys = np.linspace(0, 1, h)
+    pos = [p for p, _ in stops]
+    chans = [np.interp(ys, pos, [c[i] for _, c in stops]) for i in range(3)]
+    arr = np.stack([np.repeat(c[:, None], w, 1) for c in chans], -1)
+    return Image.fromarray(arr.astype(np.uint8), "RGB").convert("RGBA")
+
+
+def clip(img, mask):
+    out = img.copy()
+    out.putalpha(ImageChops.multiply(img.getchannel("A"), mask))
+    return out
+
+
+def noise(size, amount, streak=None):
+    """細かい粒（streak を渡すと、その向きに流れたヘアライン）。中央が 128 の L 画像。"""
+    w, h = size
+    if streak == "x":
+        arr = rng.normal(0, 1, (h, max(2, w // 60)))
+        img = Image.fromarray(np.clip(128 + arr * amount, 0, 255).astype(np.uint8), "L").resize((w, h), Image.BILINEAR)
+    elif streak == "y":
+        arr = rng.normal(0, 1, (max(2, h // 60), w))
+        img = Image.fromarray(np.clip(128 + arr * amount, 0, 255).astype(np.uint8), "L").resize((w, h), Image.BILINEAR)
+    else:
+        arr = rng.normal(0, 1, (h, w))
+        img = Image.fromarray(np.clip(128 + arr * amount, 0, 255).astype(np.uint8), "L")
+    return img
+
+
+def grain(img, n):
+    """RGBA に粒を乗せる（128 を中心に明暗）。"""
+    a = np.asarray(img).astype(np.float32)
+    a[..., :3] = np.clip(a[..., :3] + (np.asarray(n).astype(np.float32)[..., None] - 128), 0, 255)
+    return Image.fromarray(a.astype(np.uint8), "RGBA")
+
+
+def save(img, name, size):
+    img = img.resize(size, Image.LANCZOS)
+    arr = np.asarray(img).copy()
+    arr[arr[..., 3] == 0, :3] = 0  # 透明画素の色を黒にそろえる（縮小時のにじみ防止）
+    out = OUT / f"{name}.webp"
+    Image.fromarray(arr, "RGBA").save(out, "WEBP", quality=92, method=6)
+    print(f"{out.relative_to(ROOT)} {size[0]}x{size[1]} {out.stat().st_size}B")
+
+
+def circle_mask(size, center, radius):
+    m = Image.new("L", size, 0)
+    ImageDraw.Draw(m).ellipse([center[0] - radius, center[1] - radius, center[0] + radius, center[1] + radius], fill=255)
+    return m
+
+
+def rr_mask(size, box, radius):
+    m = Image.new("L", size, 0)
+    ImageDraw.Draw(m).rounded_rectangle(box, radius, fill=255)
+    return m
+
+
+def poly_mask(size, points):
+    m = Image.new("L", size, 0)
+    ImageDraw.Draw(m).polygon(points, fill=255)
+    return m
+
+
+def metal_ring(size, center, r_out, r_in):
+    """削り出しの金属の輪（角度で明暗が回る）。"""
+    w, h = size
+    yy, xx = np.mgrid[0:h, 0:w]
+    ang = np.arctan2(yy - center[1], xx - center[0])
+    light = .5 + .5 * np.cos(2 * (ang + np.pi * .28))
+    rad = np.hypot(xx - center[0], yy - center[1])
+    bevel = np.clip(1 - np.abs((rad - (r_out + r_in) / 2) / ((r_out - r_in) / 2)), 0, 1) ** .6
+    v = 34 + light * 120 * (.45 + .55 * bevel)
+    arr = np.stack([v * .96, v * .93, v * 1.06, np.full_like(v, 255)], -1)
+    img = Image.fromarray(np.clip(arr, 0, 255).astype(np.uint8), "RGBA")
+    ring = ImageChops.subtract(circle_mask(size, center, r_out), circle_mask(size, center, r_in))
+    return clip(img, ring)
+
+
+def play_pad(name, color, hi):
+    """▶ボタン: 金属の輪・LED の輪・ゴムの面・光る再生の三角。"""
+    S = 256 * SS
+    c = (S / 2, S / 2)
+    img = rgba((S, S))
+    img = over(img, blur(solid(circle_mask((S, S), (c[0], c[1] + S * .025), S * .455), (0, 0, 0, 150)), S * .02))  # 落ち影
+    img = add(img, glow(circle_mask((S, S), c, S * .43), color, S * .035, .55))  # 外へ漏れる光
+    img = Image.alpha_composite(img, metal_ring((S, S), c, S * .455, S * .385))
+    led = ImageChops.subtract(circle_mask((S, S), c, S * .392), circle_mask((S, S), c, S * .352))
+    img = Image.alpha_composite(img, solid(led, tuple(int(v * .82) for v in color)))
+    img = add(img, glow(led, hi, S * .012, .9))
+    disc = circle_mask((S, S), c, S * .352)
+    face = vgrad((S, S), [(0, (58, 52, 76)), (.45, (30, 26, 42)), (1, (12, 10, 20))])
+    face = grain(face, noise((S, S), 5))
+    img = Image.alpha_composite(img, clip(face, disc))
+    shine = Image.new("L", (S, S), 0)  # 面の上側の柔らかい照り
+    ImageDraw.Draw(shine).ellipse([S * .22, S * .14, S * .78, S * .5], fill=70)
+    img = add(img, clip(solid(blur(shine, S * .05), (255, 255, 255)), disc))
+    inner = ImageChops.subtract(disc, circle_mask((S, S), c, S * .338))  # 面のふちの暗い溝
+    img = Image.alpha_composite(img, solid(inner, (0, 0, 0, 150)))
+    tri = poly_mask((S, S), [(S * .425, S * .345), (S * .425, S * .655), (S * .69, S * .5)])
+    tri = blur(tri, S * .008).point(lambda v: 255 if v > 110 else 0)  # 角を少し丸める
+    tri = blur(tri, SS * .8)
+    img = add(img, glow(tri, color, S * .04, 1.3))
+    img = Image.alpha_composite(img, clip(vgrad((S, S), [(.3, hi), (.5, tuple((a + b) // 2 for a, b in zip(hi, color))), (.7, color)]), tri))
+    save(img, name, (256, 256))
+
+
+def screw(img, center, r):
+    S = img.size
+    img = Image.alpha_composite(img, solid(circle_mask(S, (center[0], center[1] + r * .25), r * 1.15), (0, 0, 0, 120)))
+    img = Image.alpha_composite(img, clip(vgrad(S, [(0, (150, 146, 168)), (1, (40, 36, 54))]), circle_mask(S, center, r)))
+    slot = Image.new("L", S, 0)
+    ImageDraw.Draw(slot).line([center[0] - r * .62, center[1] - r * .62, center[0] + r * .62, center[1] + r * .62], fill=255, width=max(2, int(r * .28)))
+    return Image.alpha_composite(img, solid(slot, (14, 12, 22, 220)))
+
+
+def plate(size, radius, streak):
+    """ヘアラインの入った暗い金属の板（面取り・上の照り・下の影）。"""
+    w, h = size
+    m = rr_mask(size, [SS * 2, SS * 2, w - SS * 2, h - SS * 3], radius)
+    img = rgba(size)
+    img = over(img, blur(solid(rr_mask(size, [SS * 2, SS * 4, w - SS * 2, h - SS], radius), (0, 0, 0, 170)), SS * 2.2))
+    face = vgrad(size, [(0, (74, 68, 92)), (.08, (52, 47, 68)), (.5, (38, 34, 52)), (.94, (26, 23, 38)), (1, (14, 12, 22))])
+    face = grain(face, noise(size, 16, streak))
+    face = grain(face, noise(size, 3))
+    img = Image.alpha_composite(img, clip(face, m))
+    edge = ImageChops.subtract(m, rr_mask(size, [SS * 3.4, SS * 3.4, w - SS * 3.4, h - SS * 4.4], radius - SS * 1.4))
+    img = Image.alpha_composite(img, clip(vgrad(size, [(0, (190, 182, 214)), (.5, (90, 84, 112)), (1, (10, 8, 16))]), edge))
+    return img, m
+
+
+def groove(img, box, radius):
+    """溝: 黒い穴・上の内側の影・下のふちの照り。"""
+    S = img.size
+    hole = rr_mask(S, box, radius)
+    lip = rr_mask(S, [box[0] - SS * 1.6, box[1] - SS * 1.6, box[2] + SS * 1.6, box[3] + SS * 1.6], radius + SS * 1.6)
+    img = Image.alpha_composite(img, clip(vgrad(S, [(0, (8, 6, 14)), (1, (150, 142, 178))]), ImageChops.subtract(lip, hole)))
+    img = Image.alpha_composite(img, solid(hole, (4, 3, 8)))
+    inner = ImageChops.multiply(hole, ImageChops.invert(blur(ImageChops.offset(hole, 0, int(SS * 2.5)), SS * 1.5)))
+    return Image.alpha_composite(img, solid(inner, (0, 0, 0, 255)))
+
+
+def lamp(img, center, r, color, hi):
+    S = img.size
+    img = add(img, glow(circle_mask(S, center, r * 1.5), color, r * 1.1, .9))
+    img = Image.alpha_composite(img, solid(circle_mask(S, center, r * 1.25), (16, 13, 24)))
+    img = Image.alpha_composite(img, solid(circle_mask(S, center, r), color))
+    return Image.alpha_composite(img, solid(blur(circle_mask(S, (center[0] - r * .25, center[1] - r * .3), r * .42), r * .2), hi))
+
+
+def xfader_plate():
+    """横フェーダーの台座: 長い溝、下に目盛り（中央は長く白い）、左右に A（紫）・B（水色）のランプ、四隅にねじ。"""
+    W, H = 920 * SS, 240 * SS
+    img, m = plate((W, H), H * .13, "x")
+    y = H * .44
+    x0, x1 = W * .085, W * .915
+    img = groove(img, [x0, y - H * .045, x1, y + H * .045], H * .045)
+    d = ImageDraw.Draw(img)
+    for i in range(41):  # 目盛り（2.5%刻み、10%ごとに長く、中央はいちばん長く白い）
+        x = x0 + (x1 - x0) * i / 40
+        major, mid = i % 4 == 0, i == 20
+        top, bottom = H * .64, H * (.82 if mid else .76 if major else .71)
+        col = (255, 255, 255, 235) if mid else (206, 198, 232, 200) if major else (150, 142, 178, 130)
+        d.line([x, top, x, bottom], fill=col, width=int(SS * (3 if mid else 2 if major else 1.4)))
+    tri = poly_mask((W, H), [(W / 2 - H * .035, H * .2), (W / 2 + H * .035, H * .2), (W / 2, H * .27)])  # 中央の印
+    img = Image.alpha_composite(img, solid(tri, (255, 255, 255, 220)))
+    img = lamp(img, (W * .045, y), H * .034, VIOLET, VIOLET_HI)
+    img = lamp(img, (W * .955, y), H * .034, CYAN, CYAN_HI)
+    for cx, cy in [(W * .03, H * .16), (W * .97, H * .16), (W * .03, H * .82), (W * .97, H * .82)]:
+        img = screw(img, (cx, cy), H * .032)
+    save(img, "xfader-plate", (920, 240))
+
+
+def pitch_plate():
+    """PITCH フェーダーの台座: 縦の溝、横に目盛り（中央 0 は長く白い）。"""
+    W, H = 136 * SS, 340 * SS
+    img, m = plate((W, H), W * .16, "y")
+    x = W * .5
+    y0, y1 = H * .075, H * .925
+    img = groove(img, [x - W * .07, y0, x + W * .07, y1], W * .07)
+    d = ImageDraw.Draw(img)
+    for i in range(17):
+        y = y0 + (y1 - y0) * i / 16
+        mid, major = i == 8, i % 4 == 0
+        for side in (-1, 1):
+            a, b = x + side * W * .16, x + side * W * (.4 if mid else .32 if major else .26)
+            col = (255, 255, 255, 235) if mid else (206, 198, 232, 190) if major else (150, 142, 178, 120)
+            d.line([a, y, b, y], fill=col, width=int(SS * (3 if mid else 2 if major else 1.4)))
+    save(img, "pitch-plate", (136, 340))
+
+
+def gold_shape(mask, size, pad):
+    """金色の案内の形（矢印）: 外の光・濃い縁・金の面・上の照り。"""
+    S = mask.size
+    img = rgba(S)
+    img = add(img, glow(mask, GOLD, pad * .55, .75))
+    img = over(img, blur(solid(ImageChops.offset(mask, 0, int(pad * .12)), (0, 0, 0, 130)), pad * .12))
+    outline = mask.filter(ImageFilter.MaxFilter(int(pad * .26) | 1))
+    img = Image.alpha_composite(img, solid(blur(outline, SS * .6), PLUM))
+    face = vgrad(S, [(.12, GOLD_HI), (.42, GOLD), (.9, GOLD_LO)])
+    img = Image.alpha_composite(img, clip(face, blur(mask, SS * .6)))
+    inner = ImageChops.subtract(mask, ImageChops.offset(mask, 0, int(pad * .1)))  # 上のふちの照り
+    img = Image.alpha_composite(img, solid(blur(inner, SS * .8), (255, 252, 236, 210)))
+    save(img, size[0], size[1])
+
+
+def arrow():
+    S = 256 * SS
+    pts = [(.14, .36), (.5, .36), (.5, .16), (.9, .5), (.5, .84), (.5, .64), (.14, .64)]
+    mask = poly_mask((S, S), [(x * S, y * S) for x, y in pts])
+    mask = blur(mask, S * .018).point(lambda v: 255 if v > 118 else 0)  # 角を丸める
+    gold_shape(mask, ("arrow", (256, 256)), S * .12)
+
+
+def chevron():
+    W, H = 120 * SS, 160 * SS
+    pts = [(.2, .12), (.46, .12), (.84, .5), (.46, .88), (.2, .88), (.56, .5)]
+    mask = poly_mask((W, H), [(x * W, y * H) for x, y in pts])
+    mask = blur(mask, W * .03).point(lambda v: 255 if v > 118 else 0)
+    gold_shape(mask, ("chevron", (120, 160)), W * .2)
+
+
+def bubble(name, top, bottom, line):
+    """お客さんの声の吹き出し: 角の丸い箱と下向きのしっぽ。中は空（文字はコードで重ねる）。"""
+    W, H = 560 * SS, 216 * SS
+    body = rr_mask((W, H), [W * .03, H * .07, W * .97, H * .74], H * .3)
+    tail = poly_mask((W, H), [(W * .40, H * .7), (W * .52, H * .7), (W * .43, H * .95)])
+    mask = ImageChops.lighter(body, tail)
+    mask = blur(mask, SS * 2.2).point(lambda v: 255 if v > 124 else 0)
+    img = rgba((W, H))
+    img = over(img, blur(solid(ImageChops.offset(mask, 0, int(SS * 5)), (10, 4, 24, 150)), SS * 5))
+    img = Image.alpha_composite(img, solid(blur(mask, SS * .7), line))
+    inner = mask.filter(ImageFilter.MinFilter(int(SS * 7) | 1))
+    face = grain(vgrad((W, H), [(.08, top), (.74, bottom)]), noise((W, H), 2.2))
+    img = Image.alpha_composite(img, clip(face, blur(inner, SS * .7)))
+    shine = ImageChops.subtract(inner, ImageChops.offset(inner, 0, int(SS * 5)))
+    img = Image.alpha_composite(img, solid(blur(shine, SS), (255, 255, 255, 150)))
+    save(img, name, (560, 216))
+
+
+def flame():
+    S = 96 * SS
+    t = np.linspace(0, 1, 60)
+    left = [(.5 - .34 * np.sin(np.pi * v) ** .8 * (1 - .35 * v), .93 - .82 * v) for v in t]
+    right = [(.5 + .30 * np.sin(np.pi * v) ** .9 * (1 - .15 * v) + .06 * np.sin(np.pi * 2.2 * v) * (v > .45), .93 - .82 * v) for v in t][::-1]
+    mask = poly_mask((S, S), [(x * S, y * S) for x, y in left + right])
+    mask = blur(mask, S * .02).point(lambda v: 255 if v > 120 else 0)
+    img = rgba((S, S))
+    img = add(img, glow(mask, (255, 95, 168), S * .06, .7))
+    img = Image.alpha_composite(img, solid(blur(mask.filter(ImageFilter.MaxFilter(int(S * .05) | 1)), SS * .6), PLUM))
+    img = Image.alpha_composite(img, clip(vgrad((S, S), [(.15, (255, 95, 168)), (.6, (255, 140, 120)), (.95, GOLD)]), blur(mask, SS * .6)))
+    core = poly_mask((S, S), [((.5 + (x - .5) * .5) * S, (.93 - (.93 - y) * .55) * S) for x, y in left + right])
+    img = Image.alpha_composite(img, solid(blur(core, S * .03), (255, 236, 170, 235)))
+    save(img, "flame", (96, 96))
+
+
+def zone(name, color, hi):
+    """横フェーダーの「ここ」の目印: 光る枠と中央の線。中は薄く光るだけなので、下のフェーダーのつまみが見える。"""
+    W, H = 224 * SS, 136 * SS
+    box = [W * .07, H * .12, W * .93, H * .88]
+    outer = rr_mask((W, H), box, H * .16)
+    inner = rr_mask((W, H), [box[0] + SS * 4, box[1] + SS * 4, box[2] - SS * 4, box[3] - SS * 4], H * .16 - SS * 4)
+    ring = ImageChops.subtract(outer, inner)
+    img = rgba((W, H))
+    img = add(img, glow(ring, color, SS * 7, 1.1))
+    img = Image.alpha_composite(img, solid(inner, (*color, 46)))
+    img = Image.alpha_composite(img, solid(blur(ring, SS * .6), hi))
+    line = rr_mask((W, H), [W / 2 - SS * 1.5, box[1] - SS * 5, W / 2 + SS * 1.5, box[3] + SS * 5], SS * 1.5)
+    img = add(img, glow(line, color, SS * 4, 1.2))
+    img = Image.alpha_composite(img, solid(blur(line, SS * .5), (255, 255, 255, 235)))
+    save(img, name, (224, 136))
+
+
+def heat_frame():
+    """フロアの熱のゲージの枠: ゲーム共通の夜のUIキット（craft-night）の温度計の枠を横向きにしたもの。透明な窓の位置は style.css の .heat-bar。"""
+    src = Image.open(KIT / "thermo-frame.webp").convert("RGBA")
+    out = src.rotate(-90, expand=True)
+    arr = np.asarray(out).copy()
+    arr[arr[..., 3] == 0, :3] = 0
+    path = OUT / "heat-frame.webp"
+    Image.fromarray(arr, "RGBA").save(path, "WEBP", quality=94, method=6)
+    a = arr[..., 3]
+    row, col = np.where(a[a.shape[0] // 2] < 10)[0], np.where(a[:, a.shape[1] // 2] < 10)[0]
+    print(f"{path.relative_to(ROOT)} {out.size[0]}x{out.size[1]} window x {row.min()}..{row.max()} y {col.min()}..{col.max()}")
+
+
+if __name__ == "__main__":
+    OUT.mkdir(parents=True, exist_ok=True)
+    play_pad("play-a", VIOLET, VIOLET_HI)
+    play_pad("play-b", CYAN, CYAN_HI)
+    play_pad("play-go", GOLD, GOLD_HI)
+    xfader_plate()
+    pitch_plate()
+    arrow()
+    chevron()
+    bubble("bubble", (255, 249, 236), (246, 230, 208), PLUM)
+    bubble("bubble-cold", (226, 223, 240), (192, 188, 214), (43, 39, 64))
+    flame()
+    zone("zone", GOLD, GOLD_HI)
+    zone("zone-ok", (150, 240, 200), (226, 255, 242))
+    heat_frame()

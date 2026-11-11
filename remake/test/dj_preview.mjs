@@ -2,7 +2,7 @@
 // Actual modules + controlled WebAudio; no real browser/listening claim.
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {createSet,makeDeck,detuneFactorFor,playDeck,pauseMix,resumeMix,beatAt,setTempo,setPitch,pitchOf,bpmRange,phaseError,gains,updateSet,syncIncoming,quality,floorStep,scoreTransition,scoreFromErr,scoreFromRatio,rankFromScore,scoreSet,lowCutDb,LOW_CUT_DB,LOCK_PCT,PHRASE,LEAD,GRACE,FOLLOW_BAND,toward,gradeOf,dancerPose,guideAt,keyMatch,energyMatch,pickRating,chooseTrack,REQUESTS,PICK_FLOOR} from '../previews/dj/model.mjs';
+import {createSet,makeDeck,detuneFactorFor,playDeck,pauseMix,resumeMix,beatAt,setTempo,setPitch,pitchOf,bpmRange,phaseError,gains,updateSet,syncIncoming,quality,floorStep,scoreTransition,scoreFromErr,scoreFromRatio,rankFromScore,scoreSet,lowCutDb,LOW_CUT_DB,LOCK_PCT,PHRASE,LEAD,GRACE,FOLLOW_BAND,toward,gradeOf,dancerPose,guideAt,keyMatch,energyMatch,pickRating,chooseTrack,REQUESTS,PICK_FLOOR,GRADE_FLOOR,RANK_FLOOR,FOLLOW_FLOOR,FLOOR_WARM,FOLLOW_SWEET,MOODS,moodOf,followHint} from '../previews/dj/model.mjs';
 import {renderTrack,peakAt} from '../previews/dj/synth.mjs';
 import {DJAudio} from '../previews/dj/audio.mjs';
 import {TRACKS,SETS,buildTrackData,peakAt as fullPeakAt} from '../previews/dj/tracks.mjs';
@@ -133,13 +133,50 @@ await check('選曲: Camelot key match, the floor request vs energy, ◎○△ r
  assert.equal(m.played.length,4);assert(ride(m).v.finished);
  assert.equal(chooseTrack(createSet(S1),0,0),null,'no pick outside the 選曲 phase');
 });
-await check('floor: silence and clashing beats bring it down, a clean blend lifts it; PERFECT entries give a bump',()=>{
+await check('floor: silence and clashing beats bring it down, a clean blend lifts it slowly; entries give a visible step',()=>{
  const m=createSet(S1);playDeck(m,0,0);m.mix=0;near(quality(m,1),.6);m.mix=1;near(quality(m,1),0,1e-9);m.mix=.5;near(quality(m,1),.6,1e-9);m.mix=.75;near(quality(m,1),gains(.75)[0]**2*.6,1e-9);
  const t0=sec(m.decks[0],32);updateSet(m,t0);playDeck(m,1,t0);m.mix=.5;near(quality(m,t0+1),1);
  m.decks[1].beat+=.25;assert(quality(m,t0+1)<.5);m.mix=0;near(quality(m,t0+1),1,1e-9);
- const f=createSet(S1);floorStep(f,1,10);near(f.floor,.5+.45*10*.06);floorStep(f,0,100);near(f.floor,0);
- const g=createSet(S1);playDeck(g,0,0);updateSet(g,sec(g.decks[0],32));playDeck(g,1,sec(g.decks[0],32));near(g.floor,.58);
- const h=createSet(S1);playDeck(h,0,0);updateSet(h,sec(h.decks[0],33));playDeck(h,1,sec(h.decks[0],33));near(h.floor,.45);
+ // DJS20: a good sound warms the room slowly (FLOOR_WARM), a bad sound cools it at full speed.
+ const f=createSet(S1);floorStep(f,1,10);near(f.floor,.5+.45*10*.06*FLOOR_WARM);const cool=createSet(S1);floorStep(cool,0,5);near(cool.floor,.5-.55*5*.06);floorStep(f,0,100);near(f.floor,0);
+ const g=createSet(S1);playDeck(g,0,0);updateSet(g,sec(g.decks[0],32));playDeck(g,1,sec(g.decks[0],32));near(g.floor,.5+GRADE_FLOOR.PERFECT);
+ const h=createSet(S1);playDeck(h,0,0);updateSet(h,sec(h.decks[0],33));playDeck(h,1,sec(h.decks[0],33));near(h.floor,.5+GRADE_FLOOR.LATE);
+ assert(GRADE_FLOOR.PERFECT>GRADE_FLOOR.GOOD&&GRADE_FLOOR.GOOD>0&&GRADE_FLOOR.OK===0&&GRADE_FLOOR.EARLY<0&&GRADE_FLOOR.LATE<0);assert(RANK_FLOOR.S>RANK_FLOOR.A&&RANK_FLOOR.B===0&&RANK_FLOOR.C<0);assert(FOLLOW_FLOOR.hit>0&&FOLLOW_FLOOR.miss<0);
+});
+await check('floor (DJS20): one perfect transition warms the room by a step, it takes a whole clean set to reach 最高潮; a sloppy one cools it',()=>{
+ // perfect: PERFECT entry, 32 beats on the line, clean blend, rank S
+ const m=createSet(S1);playDeck(m,0,0);const a=m.decks[0],t0=sec(a,32);updateSet(m,t0);playDeck(m,1,t0);
+ for(let b=1;b<=32;b++){m.mix=guideAt(b/32);updateSet(m,t0+sec(a,b+.01));}
+ assert.equal(m.transitions[0].rank,'S');assert(m.floor>.72&&m.floor<.85,`one perfect transition: ${m.floor}`);assert(moodOf(m.floor)>=3);
+ // sloppy: LATE entry (150 ms), the fader left behind for the whole 8 bars and pushed over at the end
+ const s=createSet(S1);playDeck(s,0,0);updateSet(s,t0+.15);playDeck(s,1,t0+.15);assert.equal(s.lastPlay.grade,'LATE');
+ for(let b=1;b<=32;b++)updateSet(s,t0+sec(a,b+.01));s.mix=1;updateSet(s,t0+sec(a,33));
+ assert.equal(s.transitions.length,1);assert(s.floor<.3,`a sloppy transition cools the room: ${s.floor}`);assert(moodOf(s.floor)<=1);
+ assert.deepEqual([0,.19,.2,.39,.4,.59,.6,.79,.8,1].map(moodOf),[0,0,1,1,2,2,3,3,4,4]);assert.equal(MOODS.length,5);assert.equal(MOODS[moodOf(.5)],'様子見','the set opens with the room watching');
+});
+await check('▶ is judged against the nearest phrase head (DJS20): a little before the next head is EARLY/PERFECT, not a huge LATE',()=>{
+ const m=createSet(S1);playDeck(m,0,0);const a=m.decks[0];updateSet(m,sec(a,40));assert.equal(m.cue.start,32,'the first head has passed, the window is still open');
+ const t=sec(a,64)-.02;updateSet(m,t);playDeck(m,1,t);assert.equal(m.cue.start,64,'aimed at the next head');assert.equal(m.cue.missed,1);assert.equal(m.lastPlay.grade,'PERFECT');near(m.lastPlay.errorMs,-20,1e-6);assert.equal(m.cue.pressed.beat,64);
+ const e=createSet(S1);playDeck(e,0,0);const te=sec(a,64)-.1;updateSet(e,te);playDeck(e,1,te);assert.equal(e.lastPlay.grade,'OK');assert(e.lastPlay.errorMs<0);
+ const l=createSet(S1);playDeck(l,0,0);const tl=sec(a,32+15);updateSet(l,tl);playDeck(l,1,tl);assert.equal(l.cue.start,32,'before the middle it is still the head that just passed');assert.equal(l.lastPlay.grade,'LATE');
+ // the guide line starts from the head that was judged
+ updateSet(m,sec(a,64+16));near(updateSet(m,sec(a,64+16)).progress,.5,1e-6);
+});
+await check('選曲 (DJS22): the guests never ask for something neither candidate can answer',()=>{
+ for(let seed=1;seed<=200;seed++){
+  let x=seed;const rng=()=>{x=(Math.imul(x,1664525)+1013904223)>>>0;return x/4294967296;};
+  for(const set of SETS){
+   const m=createSet(set,()=>1,rng);playDeck(m,0,0);const a=m.decks[0],t0=sec(a,32);updateSet(m,t0);playDeck(m,1,t0);m.mix=1;const v=updateSet(m,t0+sec(a,32.01));
+   assert(v.select,'select after the first transition');const now=m.decks[m.master].track;
+   assert(v.select.options.some(key=>energyMatch(v.select.request,now,key)),`${set.name} seed ${seed}: ${JSON.stringify(v.select)}`);
+  }
+ }
+});
+await check('fader arrows (DJS20): on the line no arrow, behind it points on toward the incoming deck, ahead it points back; mirrored when A is incoming',()=>{
+ const m=createSet(S1);playDeck(m,0,0);const t0=sec(m.decks[0],32);updateSet(m,t0);playDeck(m,1,t0);
+ m.mix=.5;assert.equal(followHint(m,.5),0);m.mix=.5-FOLLOW_SWEET+.001;assert.equal(followHint(m,.5),0);m.mix=.5-FOLLOW_SWEET-.01;assert.equal(followHint(m,.5),1);m.mix=.5+FOLLOW_SWEET+.01;assert.equal(followHint(m,.5),-1);
+ assert(FOLLOW_SWEET<FOLLOW_BAND,'the arrow shows before the beat check would miss');
+ m.cue.to=0;m.cue.from=1;m.mix=.8;assert.equal(followHint(m,.5),1,'toward A: the fader at 0.8 has only come 0.2 of the way');m.mix=.2;assert.equal(followHint(m,.5),-1);
 });
 await check('global pause/resume keeps beats, cue and fader state; dt does not jump across a pause',()=>{
  const m=createSet(S1);playDeck(m,0,0);updateSet(m,4);pauseMix(m,4);near(beatAt(m.decks[0],500),8);assert.deepEqual(m.resumeDecks,[0]);assert.equal(updateSet(m,100).mode,'idle');

@@ -1,5 +1,6 @@
-// DJ set (2026-11-01 redesign, DJS17 gameplay) in a real Chromium: ▶ ×2 + crossfader (+ optional PITCH/SYNC), quantized entry,
-// riding the guide band for 8 bars, 選曲 cards, floor meter.
+// DJ set (2026-11-01 redesign, DJS17 gameplay, 2026-11-11 renewal DJS20〜) in a real Chromium: ▶ ×2 + crossfader (+ optional PITCH/SYNC),
+// quantized entry, riding the guide band for 8 bars, 選曲 cards, floor meter.
+// Renewal: the how-to board before the set, the navi line + step lamps + gold arrows (▶ / crossfader), the crowd's mood word and voices.
 // Normal PR CI only; never launch locally around the recorded Chrome refusal.
 import assert from 'node:assert/strict';
 import {createRequire} from 'node:module';
@@ -36,8 +37,17 @@ try{
   assert.equal((await snap(page)).state,'not-started');assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
   const stageScale=await page.evaluate(()=>Number(getComputedStyle(document.getElementById('dj-stage')).getPropertyValue('--s'))||1);
   for(const id of ['play-a','play-b']){const r=await page.locator('#'+id).boundingBox();assert(r.height/stageScale>=52&&r.width/stageScale>=88,'Large ▶ targets');}
-  for(const key of ['a','b']){assert.equal(await page.locator('#indicator-'+key).textContent(),'STANDBY');const j=await page.locator('#platter-'+key).boundingBox();assert(j.width/stageScale>=330&&j.height/stageScale>=330,'Large jog wheels');}
-  {const r=await page.locator('#crossfader').boundingBox();assert(r.width/stageScale>=180&&r.height/stageScale>=60,'Large crossfader');}
+  // DJS20: the floor and the navi take the upper half, so the jogs are 188px; what the player touches (▶ 104px, crossfader 430px) is bigger than before.
+  for(const key of ['a','b']){assert.equal(await page.locator('#indicator-'+key).textContent(),'STANDBY');const j=await page.locator('#platter-'+key).boundingBox();assert(j.width/stageScale>=180&&j.height/stageScale>=180,'Jog wheels');}
+  for(const id of ['play-a','play-b']){const r=await page.locator('#'+id).boundingBox();assert(r.height/stageScale>=100&&r.width/stageScale>=100,'▶ is a 104px pad');}
+  {const r=await page.locator('#crossfader').boundingBox();assert(r.width/stageScale>=400&&r.height/stageScale>=70,'The crossfader is the widest control');}
+  {const f=await page.locator('.floor').boundingBox();assert(f.height/stageScale>=280,'the floor (the guests) takes the top 288px');}
+  // Before the set: the how-to board, step 1 lit, one navi line and a gold arrow on ▶ A. ？ 遊び方 folds the board away and back.
+  assert(await page.locator('#howto').isVisible(),'how-to board before the first ▶');assert.equal(await page.locator('#howto li').count(),4);
+  assert.match(await page.locator('#coaching').textContent(),/左の ▶ を押して/);assert.equal(await page.locator('#steps li.now').getAttribute('data-step'),'1');
+  assert(await page.locator('#point-play-a').isVisible(),'gold arrow on ▶ A');assert(await page.locator('#point-play-b').isHidden());assert.deepEqual((await snap(page)).points,['play-a']);
+  assert.equal(await page.locator('#mood').textContent(),'様子見');assert.equal(await page.locator('.floor').getAttribute('data-mood'),'2');
+  await press('help');await page.locator('#howto').waitFor({state:'hidden'});await press('help');await page.locator('#howto').waitFor({state:'visible'});
   assert(await page.evaluate(()=>{const f=document.querySelector('.floor'),w=document.querySelector('.waves'),c=document.querySelector('.console');const fr=f.getBoundingClientRect(),wr=w.getBoundingClientRect(),cr=c.getBoundingClientRect();return fr.bottom<=wr.top+1&&wr.bottom<=cr.top+1&&cr.bottom<=innerHeight+1;}),'floor / waveforms / controller stack top to bottom inside the viewport');
   const ready=await snap(page);assert.deepEqual(ready.playing,[false,false]);assert.equal(ready.voices,0);assert.deepEqual(ready.bpms,[120,120],'SET 1 needs no pitch match');assert.equal(ready.phase,'idle');near(ready.floor,.5);
   assert(await page.locator('#lock-a').evaluate(e=>e.classList.contains('on')),'LOCK lamp lit while BPMs match');
@@ -69,8 +79,26 @@ try{
   assert(await page.locator('#play-a').isDisabled(),'▶ only starts: a deck on air cannot be stopped by ▶');
   const a=await hashWaves(page);let b;await until(page,'deck A waveform',()=>true,errors);
   for(let i=0;i<40;i++){b=await hashWaves(page);if(b[0]!==a[0])break;await page.waitForTimeout(50);}assert.notEqual(a[0],b[0]);assert.equal(a[1],b[1],'Stopped B waveform cannot advance');
-  // The crowd canvas changes while playing (bobbing), and is static with reduced motion.
-  const crowdHash=()=>page.evaluate(()=>document.getElementById('crowd').getContext('2d').getImageData(0,0,313,28).data.reduce((h,b)=>(Math.imul(h,31)+b)>>>0,7));
+  // Started: the how-to board is gone, step 2 is lit, and no arrow yet (pressing ▶ B now would be early).
+  await page.locator('#howto').waitFor({state:'hidden'});assert.equal(await page.locator('#steps li.now').getAttribute('data-step'),'2');
+  assert.match(await page.locator('#coaching').textContent(),/次は右の ▶/);assert.match(await page.locator('#coach-sub').textContent(),/あと \d 小節/);
+  assert(await page.locator('#point-play-a').isHidden());assert(await page.locator('#point-play-b').isHidden(),'no arrow on ▶ B until the count');
+  if(kind==='pc'){
+   // Moving the fader away before the entry fades the playing track out: the navi warns and the arrows point back to A.
+   await page.locator('#crossfader').focus();await page.locator('#crossfader').press('End');
+   await until(page,'away',s=>s.away===true,errors);assert.match(await page.locator('#coaching').textContent(),/音が消えかけている/);
+   assert(await page.locator('#fader-arrows').isVisible());assert(await page.locator('#fader-arrows').evaluate(e=>e.classList.contains('left')),'arrows point back to the left (A)');
+   await page.locator('#crossfader').press('Home');await until(page,'back',s=>s.away===false&&s.mix===0,errors);assert(await page.locator('#fader-arrows').isHidden());
+   // An interruption (tab hidden) pauses the set. The navi points at the playing deck's ▶, and that one press brings the set back where it stopped.
+   await page.evaluate(()=>{Object.defineProperty(document,'hidden',{value:true,configurable:true});document.dispatchEvent(new Event('visibilitychange'));});
+   const paused=await until(page,'paused',s=>!s.running&&s.state==='suspended',errors);assert.equal(paused.phase,'cue');assert.deepEqual(paused.playing,[false,false]);
+   await until(page,'paused navi',s=>/一時停止中。左の ▶ で続きから/.test(s.navi),errors);assert(await page.locator('#point-play-a').isVisible());assert.deepEqual((await snap(page)).points,['play-a']);
+   await page.evaluate(()=>{delete document.hidden;});
+   await press('play-a');const resumed=await until(page,'resumed',s=>s.running,errors);assert.deepEqual(resumed.playing,[true,false]);assert.equal(resumed.cue.start,32);
+   assert(resumed.beats[0]>=paused.beats[0]-.01&&resumed.beats[0]<paused.beats[0]+2,'the track continues from where it stopped');
+  }
+  // The light on the floor moves while playing, and is static with reduced motion.
+  const crowdHash=()=>page.evaluate(()=>{const c=document.getElementById('crowd');return c.getContext('2d').getImageData(0,0,c.width,c.height).data.reduce((h,b)=>(Math.imul(h,31)+b)>>>0,7);});
   const c1=await crowdHash();await page.waitForTimeout(260);const c2=await crowdHash();
   if(kind==='reduced')assert.equal(await page.locator('#platter-a').evaluate(e=>e.style.getPropertyValue('--rotation')),'0deg','reduced motion: the platter does not spin');else assert.notEqual(c1,c2,'crowd bobs on the beat');
   // SYNC exists but SET 1 does not need it; it stays enabled while a cue is open.
@@ -79,21 +107,31 @@ try{
   await until(page,'countdown',s=>s.phase==='cue'&&s.remaining<=4&&s.remaining>0,errors,19000,20);
   const count=await page.locator('#count').textContent();assert(['4','3','2','1'].includes(count),`countdown digit, got ${JSON.stringify(count)}`);
   assert(await page.locator('#play-b').evaluate(e=>e.classList.contains('cue-soon')||e.classList.contains('cue-open')),'▶ B highlighted before the entry');
+  assert(await page.locator('#point-play-b').isVisible(),'gold arrow on ▶ B during the count');assert.match(await page.locator('#coaching').textContent(),/カウント 0 で、右の ▶/);
   await until(page,'head',s=>s.phase==='cue'&&s.remaining<=.12,errors,4000,5);
   await press('play-b');
   const entered=await until(page,'entry',s=>s.phase==='mix',errors);
   assert.deepEqual(entered.playing,[true,true]);assert(entered.lastPlay&&['PERFECT','GOOD','OK'].includes(entered.lastPlay.grade),JSON.stringify(entered.lastPlay));assert.equal(entered.cue.pressed.beat,32,'quantized onto the phrase head');
   await until(page,'B audible',s=>s.beats[1]>=0,errors);near((await snap(page)).phase_error,0,.02);
   assert.equal(await page.locator('#judge').textContent(),entered.lastPlay.grade);
+  // The guests answer the entry: a voice in a bubble, and the heat meter says why it moved.
+  assert(await page.locator('#voices .voice').count()>=1,'a guest reacts to the entry');assert.equal(await page.locator('#voices .voice').last().getAttribute('data-kind'),entered.lastPlay.grade);
+  if(entered.lastPlay.grade!=='OK')assert.match(await page.locator('#heat-delta').textContent(),/^\+\d+　/,'the heat meter shows the step and its reason');
+  assert.equal(await page.locator('#steps li.now').getAttribute('data-step'),'3');assert.match(await page.locator('#coaching').textContent(),/横フェーダーを右へ/);assert(await page.locator('#point-play-b').isHidden());
   assert.equal(await page.locator('#indicator-b').textContent(),'ON AIR');
   // 8-bar mix: the guide band shows where the fader should be on every beat; ride it toward B (keyboard / tap = genuine native input).
   // Automatic EQ cuts A's lows past the centre.
-  const fader=page.locator('#crossfader'),fr=await fader.boundingBox(),thumb=46*stageScale;
+  const fader=page.locator('#crossfader'),fr=await fader.boundingBox(),thumb=54*stageScale;
   assert(await page.locator('#guide').isVisible(),'guide band during the mix');
   if(kind==='pc')await fader.focus();
-  let mixed=null,comboText='';
+  // Leave the fader at A until the band has moved on a little: the gold arrows appear between the cap and the band and point to B (still inside the ±0.14 band, so no beat is missed).
+  const behind=await until(page,'behind',s=>s.phase==='mix'&&s.guide>.09,errors,8000,20);assert.equal(behind.mix,0);
+  assert(await page.locator('#fader-arrows').isVisible(),'arrows toward the band');assert(!(await page.locator('#fader-arrows').evaluate(e=>e.classList.contains('left'))),'they point right, toward B');
+  assert.match(await page.locator('#fader-hint').textContent(),/もっと右へ/);
+  let mixed=null,comboText='',onLine=false;
   for(let i=0;i<600;i++){
    const s=await snap(page);if(s.phase!=='mix')break;
+   if(!onLine&&s.hint==='いい感じ、そのまま'){onLine=true;assert(await page.locator('#fader-arrows').isHidden(),'no arrows while the cap rides the band');}
    const target=s.guide==null?s.mix:s.guide,diff=target-s.mix;
    if(kind==='pc'){if(Math.abs(diff)>.03)await fader.press(diff>0?(diff>.12?'PageUp':'ArrowRight'):(diff<-.12?'PageDown':'ArrowLeft'));}
    else if(Math.abs(diff)>.06)await page.touchscreen.tap(fr.x+thumb/2+Math.min(1,target+.02)*(fr.width-thumb),fr.y+fr.height/2);
@@ -101,7 +139,7 @@ try{
    if(!comboText&&s.fader?.combo>=4){await page.waitForTimeout(40);comboText=await page.locator('#combo').textContent();}
    await page.waitForTimeout(40);
   }
-  assert(mixed,'the fader rode past 0.8 during the 8 bars');assert.match(comboText,/^COMBO \d+$/,'combo counter on the fader');
+  assert(mixed,'the fader rode past 0.8 during the 8 bars');assert.match(comboText,/^COMBO \d+$/,'combo counter on the fader');assert(onLine,'the hint said the cap was on the band');
   // Transition end: scored toast, A leaves the air and empties, then the 選曲 cards appear over deck A.
   const done=await until(page,'transition',s=>s.transitions.length>=1,errors,20000,100);
   const t=done.transitions[0];assert.equal(t.to,'digitalLemonade');assert.equal(t.parts[0],100,'BPM matched');assert(t.parts[2]>=85,`fader ${t.parts[2]} follow ${t.follow}`);assert(t.combo>=16,`combo ${t.combo}`);assert(['S','A'].includes(t.rank),t.rank);
@@ -110,7 +148,9 @@ try{
   assert.equal(await page.locator('#indicator-a').textContent(),'EMPTY');assert.equal(await page.locator('#track-a').textContent(),'— 選曲中 —');assert.equal(await page.locator('#set-progress').textContent(),'2 / 3');
   assert(await page.locator('#guide').isHidden(),'no guide band outside the mix');
   await page.locator('#pick').waitFor();assert.equal(await page.locator('#pick').getAttribute('data-side'),'a');assert.equal(await page.locator('.pick-card').count(),2);
-  assert.match(await page.locator('#request').textContent(),/フロアの声：「.+」/);
+  assert.match(await page.locator('#request').textContent(),/^お客さんの声「.+」$/);assert.equal(await page.locator('#steps li.now').getAttribute('data-step'),'4');
+  assert.equal(await page.locator('.pick-card .energy').count(),2,'ノリ as flames');assert.equal(await page.locator('.pick-card .marks em').count(),4,'two ✓/✕ marks per card: fits the request, mixes in key');
+  assert(done.mood>=2,'a clean transition never cools the room');assert.equal(await page.locator('#mood').textContent(),['帰りそう','しらけ気味','様子見','ノってきた','最高潮'][done.mood]);assert.equal(await page.locator('.floor').getAttribute('data-mood'),String(done.mood));
   for(const [i,key] of done.select.options.entries())assert.match(await page.locator('#pick-'+i).textContent(),new RegExp(await page.evaluate(async k=>(await import('./tracks.mjs')).TRACKS[k].title.replace(/[()]/g,'.'),key)));
   // Pick the first card: it loads on deck A at the master tempo (SET 1) and the next cue opens from B.
   await press('pick-0');
