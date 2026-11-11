@@ -15,3 +15,10 @@
 .mo-cover-label b { font-size: 60px; font-weight: 900; letter-spacing: 0.14em; line-height: 1; }
 .mo-cover-label i { width: 120px; height: 6px; border-radius: 3px; background: currentColor; }
 .mo-cover-label small { font-size: 26px; font-weight: 700; letter-spacing: 0.2em; }
+/* c: つむぎのタブレット（#3254 のタブレットとペンの絵）。画面の座標は場面と同じ 1280×720 で、寄ると画面が場面いっぱいになる */
+.mo-tab-desk { position: absolute; inset: -24px; background-size: cover; background-position: center; background-color: #17120f; }
+.mo-tab-dim { position: absolute; inset: 0; background: radial-gradient(ellipse 70% 70% at 50% 55%, #0000 30%, #0008 100%); }
+.mo-tab { position: absolute; left: 0; top: 0; width: 1280px; height: 720px; transform-origin: 50% 50%; }
+.mo-tab-frame { position: absolute; max-width: none; display: block; filter: drop-shadow(0 34px 40px #000b); }
+.mo-tab-page { position: absolute; left: 0; top: 0; width: 1280px; height: 720px; }
+.mo-tab-pen { position: absolute; left: 0; top: 0; width: 1254px; height: 1254px; max-width: none; pointer-events: none; filter: drop-shadow(var(--lift, 4px) var(--lift, 4px) 6px #0006); }

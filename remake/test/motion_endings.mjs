@@ -202,7 +202,7 @@ async function checkScene(name, viewport, label, variant = null, stallPenFrames 
   }
 }
 
-// 電車は実際のアニメーションを通常速度で測る。紫・遮蔽・任意の乗客・保存不変を確認。
+// 電車（作り直しの c・TMG54）は実際のアニメーションを通常速度で測る。車両が画面を覆ってから場面を替える・時間帯の色・任意の乗客・保存不変を確認。
 async function checkTrains() {
   const cases = [
     ["normal", { width: 1280, height: 720 }, { cameo: null, tone: "night" }],
@@ -221,17 +221,20 @@ async function checkTrains() {
       if (name === "normal") await page.evaluate(async () => (await import("./js/core/mg-kit.js")).setMotionPalette("free"));
       await page.evaluate(options => {
         T.core.state.chapter = 2;
-        window.trainAudit = { mid: 0, opacity: null, fades: [], done: false, before: JSON.stringify(T.core.state), start: performance.now() };
-        const animate = Element.prototype.animate;
-        Element.prototype.animate = function (frames, timing) {
-          if (this.matches(".mo-train")) trainAudit.fades.push({ frames, duration: timing.duration });
-          return animate.call(this, frames, timing);
+        window.trainAudit = { mid: 0, opacity: null, done: false, before: JSON.stringify(T.core.state), start: performance.now() };
+        // 画面の四隅と中央が、どれも車両（.train-car）の下にあるか（切り口の外が見えたまま場面を替えない）
+        const coveredPoints = () => {
+          const r = document.getElementById("stage").getBoundingClientRect();
+          const pts = [[r.left + 2, r.top + 2], [r.right - 3, r.top + 2], [r.left + 2, r.bottom - 3], [r.right - 3, r.bottom - 3], [(r.left + r.right) / 2, (r.top + r.bottom) / 2]];
+          return pts.filter(([x, y]) => document.elementsFromPoint(x, y).some(n => n.classList?.contains("train-car"))).length;
         };
         window.trainRun = T.motions.trainRide(async () => {
           trainAudit.mid++;
           const node = document.querySelector(".mo-train");
           trainAudit.opacity = Number(getComputedStyle(node).opacity);
           trainAudit.covering = T.transitions.isCovering();
+          trainAudit.points = coveredPoints();
+          trainAudit.flag = node.dataset.covered;
           if (options.delay) await new Promise(r => setTimeout(r, options.delay));
           document.getElementById("bg").style.backgroundColor = "rgb(9, 7, 19)";
         }, options).then(() => {
@@ -245,10 +248,11 @@ async function checkTrains() {
       const visible = await page.evaluate(() => ({
         guests: document.querySelectorAll(".train-guest").length,
         costumes: document.querySelectorAll(".train-costume").length,
-        backdrop: document.querySelector(".mo-train .mo-back").style.backgroundColor,
+        backdrop: document.querySelectorAll(".mo-train .mo-back").length,
+        tone: document.querySelector(".mo-train").dataset.tone,
         keys: audit.keys,
       }));
-      assert.deepEqual(visible, { guests: options.cameo ? 1 : 0, costumes: options.halloween ? 2 : 0, backdrop: "rgb(21, 14, 48)", keys: 0 });
+      assert.deepEqual(visible, { guests: options.cameo ? 1 : 0, costumes: options.halloween ? 2 : 0, backdrop: 0, tone: options.tone || "day", keys: 0 });
       if (options.unavailable) assert.equal(await page.locator('.mo-train image[href*="/transitions/train/"]').count(), 0);
       if (shots) await page.screenshot({ path: `${shots}/train-${name}-covered.png` });
       await page.waitForFunction(() => trainAudit.done);
@@ -256,7 +260,7 @@ async function checkTrains() {
         overlays: document.querySelectorAll(".mo-train").length, coveringAfter: T.transitions.isCovering() }));
       assert.equal(result.mid, 1); assert.equal(result.opacity, 1); assert.equal(result.covering, true);
       assert.equal(result.unchanged, true); assert.equal(result.overlays, 0); assert.equal(result.coveringAfter, false);
-      assert.deepEqual(result.fades.map(f => [f.frames[0].opacity, f.frames.at(-1).opacity, f.duration]), [[0, 1, 220], [1, 0, 280]]);
+      assert.equal(result.points, 5, `${name}: the car covers all corners before the scene changes`); assert.equal(result.flag, "1");
       assert(result.elapsed < 2800, `${name}: ${result.elapsed}ms took too long`);
       await page.keyboard.press("Enter"); assert.equal(await page.evaluate(() => audit.keys), 1);
       if (name === "normal") {
@@ -282,7 +286,7 @@ async function checkTrains() {
         assert.deepEqual(policy, { seen: ["adam", "hiyori", "minto", "samechan", "tsumugi"], inbound: ["ageha", "kumicho", "rei"], invalidRoute: null, invalidCity: null, unknownInbound: null, occasional: true, stable: true,
           chapter1: null, unknown: null, seasonal: true, ordinary: false, chapter3: false, unchanged: true });
       }
-      console.log(`PASS train ${name}: ${Math.round(result.elapsed)}ms, fade/cover/cleanup/save`);
+      console.log(`PASS train ${name}: ${Math.round(result.elapsed)}ms, slide/cover/cleanup/save`);
     } finally { await context.close(); }
   }
   if (process.env.TRAIN_CASE_FILTER) return;

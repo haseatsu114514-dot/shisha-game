@@ -23,3 +23,17 @@
 .mo-coin-art { position: absolute; inset: 0; width: 100%; height: 100%; display: block; overflow: visible; }
 .mo-coin-word { position: absolute; left: 50%; top: 548px; transform: translateX(-50%); font-size: 38px; font-weight: 900; letter-spacing: 0.24em; padding-left: 0.24em; white-space: nowrap; }
 .mo-coin-bar { position: absolute; left: 0; top: 0; bottom: 0; width: 8px; transform: translateX(-8px); }
+/* c: tonari の吊り札（#3254 の表と裏の絵）を1回返す。店内は隠さず、上だけ少し落として札を読ませる */
+.mo-shop-shade { position: absolute; inset: 0; background: linear-gradient(#000a, #0004 38%, #0000 62%); }
+.mo-shop-sign { position: absolute; left: 340px; top: -10px; width: 600px; height: 400px; }
+.mo-shop-swing { position: absolute; inset: 0; transform-origin: 50% 4%; perspective: 1400px; }
+.mo-shop-flip { position: absolute; inset: 0; transform-style: preserve-3d; }
+.mo-shop-face { position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+.mo-shop-face.closed { transform: rotateY(180deg); }
+.mo-shop-face img { position: absolute; inset: 0; width: 100%; height: 100%; display: block; filter: drop-shadow(0 16px 18px #0009); }
+/* 文字の面: 絵（1536×1024）の中のエナメルの板 x240〜1296・y500〜916 */
+.mo-shop-text { position: absolute; left: 15.6%; top: 48.8%; width: 68.8%; height: 40.6%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; font-family: "Suien Name", var(--font); }
+.mo-shop-text small { font-size: 19px; letter-spacing: 0.42em; padding-left: 0.42em; font-weight: 700; opacity: 0.8; }
+.mo-shop-text b { font-size: 76px; line-height: 1; letter-spacing: 0.1em; padding-left: 0.1em; font-weight: 700; }
+.mo-shop-face.open .mo-shop-text { color: #4a2b18; }
+.mo-shop-face.closed .mo-shop-text { color: #f6ead2; text-shadow: 0 2px 0 #3d1216; }

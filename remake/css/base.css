@@ -54,11 +54,20 @@ html, body {
      会話の本文は autoWrap が行を決めるので対象外（vn.css） */
   word-break: auto-phrase;
   line-break: strict;
+  /* 最後の行だけ短い「切れ端」（「…経験値が／入ります」）をブラウザに避けさせる（TXW04。未対応ブラウザは通常の折り返し） */
+  text-wrap: pretty;
   overflow: hidden;
   -webkit-tap-highlight-color: transparent;
   -webkit-user-select: none;
   user-select: none;
   touch-action: manipulation;
+}
+/* 短い文は行の長さをそろえる（TXW04）。pretty は最後の1文節を引き下ろすだけで、「確認して次の／工程へ」のような形が残るため。
+   対象はボタンと、2〜3行の一言・注記だけ（長い説明文をそろえると右側が空く）。行数と箱の大きさは変わらない */
+.btn, .btn-label, .lime-reply.multiline, .lime-empty, .lime-tip, .lime-hint, .sub-lead, .big-choice > small, .opt > small,
+.map .mi-desc, .end-notes > p, .ch2-contest-note, .dm-sub, .lb-learned, .go-limit-note, .sd-note, .mix-taste, .flavor-forecast > b,
+.dr-caption, .axe-bar-division-note, .trpg-speech > p, .trpg-tutorial-panel > p, .trpg-object-label, .trpg-object-detail {
+  text-wrap: balance;
 }
 button { font: inherit; color: inherit; }
 
