@@ -105,8 +105,13 @@ await suite("ichidai", async (check) => {
     assert.deepEqual(await vs.locator(".ichi-vs-player > b").allInnerTexts(), ["はじめ", "スミさん"]);
     assert.deepEqual(await vs.locator(".ichi-vs-art").evaluateAll((list) => list.map((i) => i.getAttribute("src").split("/").slice(-2).join("/"))), ["graphic/hajime.webp", "graphic/sumi.webp"], "人物は登場カットインの絵");
     assert.match(await vs.locator(".ichi-vs-panel.p-1 .ichi-vs-bg").getAttribute("style"), /graphic\/bg_sumi\.webp/, "背景も登場カットインのもの");
-    assert.ok((await vs.locator(".ichi-vs-bolts polyline.is-core").first().getAttribute("points")).split(" ").length > 6, "電撃はギザギザの線");
+    const bolt0 = await vs.locator(".ichi-vs-bolts polyline.is-core").first().getAttribute("points");
+    assert.ok(bolt0.split(" ").length > 6, "電撃はギザギザの線");
     await page.locator(`${t("ichi-vs")}.is-clash .ichi-vs-mark`).waitFor();
+    // ビリビリ: 電撃の形は短い間隔で引き直され、火花と「VS」のまわりの放電も出る。「VS」は大きい
+    assert.notEqual(await vs.locator(".ichi-vs-bolts polyline.is-core").first().getAttribute("points"), bolt0, "電撃の形が引き直される");
+    assert.ok(await vs.locator(".ichi-vs-bolts .is-spark").count() >= 10 && await vs.locator(".ichi-vs-bolts .is-arc").count() >= 4, "火花と放電");
+    assert.ok(parseFloat(await vs.locator(".ichi-vs-mark").evaluate((n) => getComputedStyle(n).fontSize)) >= 240, "「VS」は大きい");
     assert.equal(await page.locator(t("ichi-board")).isVisible(), false, "VSのあいだは卓を出さない");
     await vs.waitFor({ state: "detached", timeout: 8000 });
     await page.locator(t("ichi-foe")).waitFor();
@@ -121,6 +126,14 @@ await suite("ichidai", async (check) => {
     });
     assert.ok(talk.text.length > 0 && talk.inside && talk.events === "none", `一言が画面の中に出る: ${JSON.stringify(talk)}`);
     assert.ok(talk.right <= talk.anchorLeft && talk.midY > talk.anchorTop && talk.midY < talk.anchorBottom, "吹き出しは相手の顔の左横");
+    // ほかの UI（左上の相手の札とラウンド・案内・ボタン・右上の小ボタン）に重ならない（2026-11-11 オーナー「キャラのセリフは他のUIに被らないように」）
+    const overlaps = await page.evaluate(() => {
+      const s = document.querySelector('[data-test="ichi-say"]').getBoundingClientRect();
+      const hit = (r) => r.width && r.height && s.left < r.right && r.left < s.right && s.top < r.bottom && r.top < s.bottom;
+      return [".ichi-hud-left > *", ".ichi-guide", ".ichi-actions > *", '[data-test="ichi-help"]', '[data-test="ichi-close"]', '[data-test="ichi-fast"]', ".ichi-heat-read"]
+        .flatMap((sel) => [...document.querySelectorAll(sel)].filter((n) => hit(n.getBoundingClientRect())).map((n) => n.className || sel));
+    });
+    assert.deepEqual(overlaps, [], "吹き出しはほかの UI に重ならない");
     // 試遊ページでも顔アイコンは WebP を読む（manifest だけ差し替えて PNG を指し、顔が出なかった不具合の再発防止）
     await page.waitForFunction(() => [...document.querySelectorAll(".ichi-leader.is-me img.ichi-face, .ichi-judges img.ichi-face")]
       .every((i) => /\.webp(\?|$)/.test(i.getAttribute("src")) && i.complete && i.naturalWidth > 0) && document.querySelectorAll(".ichi-judges img.ichi-face").length === 3, null, { timeout: 15000 });
@@ -190,9 +203,14 @@ await suite("ichidai", async (check) => {
         assert.equal(scene.foeCard, "180deg", "相手の札は向こう向き");
         assert.ok(await page.locator(`${t("ichi-hand")} .ichi-card.s-hand`).count() >= 3, "手札はトレカの札");
         assert.equal(await page.locator(`${t("ichi-market")} .ichi-card.t-flavor`).count(), 10, "場の葉も札");
-        // フレーバーミックスと葉の体力（ボウルの葉の枚数）を、ボウルの札の下に出す
-        assert.equal(await page.locator(`${t("ichi-mix")} .ichi-mix-leaf`).count(), 1, "詰めた葉（課題のレモン）が並ぶ");
-        assert.equal(await page.locator(t("ichi-mix")).getAttribute("data-hp"), "3", "体力＝葉の枚数");
+        // 詰めた葉は、ボウルの横に葉の札の束で置く（種類ごとに1束・帯に枚数）。体力（葉の枚数）は HUD 左
+        const bundles = page.locator(`${t("ichi-bundles")} ${t("ichi-bundle")}`);
+        assert.equal(await bundles.count(), 1, "課題のレモンの束が1つ");
+        assert.deepEqual([await bundles.first().getAttribute("data-id"), await bundles.first().getAttribute("data-n")], ["lemon", "3"]);
+        assert.equal(await bundles.first().locator(".ichi-card.t-flavor").count(), 1, "束は葉の札");
+        assert.match(await bundles.first().locator(".ichi-bundle-band").innerText(), /×3/, "帯に枚数");
+        assert.equal(await page.locator(t("ichi-hp")).getAttribute("data-hp"), "3", "体力＝葉の枚数");
+        assert.equal(await page.locator(".ichi-mine .ichi-mix").count(), 0, "卓の上に文字の帯は出さない");
         // カードの左上は必要火力。届かない札は暗い
         for (const card of await page.locator(`${t("ichi-hand")} .ichi-hand-card`).all()) {
           const id = await card.getAttribute("data-card"); if (["flat", "cube", "dense_flat"].includes(id)) continue;
@@ -204,12 +222,14 @@ await suite("ichidai", async (check) => {
         seenServe = true;
         assert.ok(await heat(page) >= 3, "提供に入るとき、炭が載っている");
         assert.equal(await page.locator(t("ichi-pile")).getAttribute("data-left"), "12");
-        // 提供に入ったら場は出さない。ミックスと体力は出し続ける（相手は主役と体力だけ）
+        // 提供に入ったら場は出さない。葉の札の束と体力は出し続ける（相手の束も卓の奥に。HUD の相手の札には主役と体力）
         assert.equal(await page.locator(t("ichi-market")).count(), 0);
-        const leaves = (await page.locator(t("ichi-bowl")).getAttribute("data-leaves")).split(",").reduce((a, x) => a + Number(x.split(":")[1]), 0);
-        assert.equal(Number(await page.locator(t("ichi-mix")).getAttribute("data-hp")), leaves, "体力＝ボウルの葉の枚数");
-        assert.match(await page.locator(t("ichi-mix")).innerText(), /ブルーベリー/, "フレーバーミックスに主役が出る");
-        assert.equal(await page.locator(`${t("ichi-foe-mix")} .ichi-mix-leaf`).count(), 1, "相手は主役だけ");
+        const bowl = (await page.locator(t("ichi-bowl")).getAttribute("data-leaves")).split(",").map((x) => x.split(":")), leaves = bowl.reduce((a, [, n]) => a + Number(n), 0);
+        assert.equal(Number(await page.locator(t("ichi-hp")).getAttribute("data-hp")), leaves, "体力＝ボウルの葉の枚数");
+        assert.equal(await page.locator(`${t("ichi-bundles")} ${t("ichi-bundle")}`).count(), bowl.length, "葉の種類ごとに束");
+        assert.equal(await page.locator(`${t("ichi-bundles")} ${t("ichi-bundle")}.is-main`).getAttribute("data-id"), "blueberry", "いちばん多いブルーベリーが主役の束");
+        assert.ok(await page.locator(`${t("ichi-foe-bundles")} ${t("ichi-bundle")}`).count() >= 1, "相手の葉の札の束も卓にある");
+        assert.equal(await page.locator(`${t("ichi-foe-mix")} .ichi-mix-leaf`).count(), 1, "HUD の相手の札は主役だけ");
         assert.ok(Number(await page.locator(t("ichi-foe-mix")).getAttribute("data-hp")) > 0, "相手の体力");
         await page.locator(t("ichi-bowl")).click();
         const rig = page.locator(t("ichi-info-sheet"));
@@ -315,7 +335,7 @@ await suite("ichidai", async (check) => {
       assert.equal(await vs.locator(".ichi-vs-player").count(), n, `${n}人ぶんの名前の札`);
       assert.equal(await vs.locator(".ichi-vs-art").count(), n, `${n}人とも登場カットインの人物絵`);
       assert.equal(await vs.locator(".ichi-vs-bg").count(), n, `${n}人ぶんの背景`);
-      assert.equal(await vs.locator(".ichi-vs-bolts polyline.is-core").count(), boltCount, `${n}人のときの電撃の本数`);
+      assert.equal(await vs.locator(".ichi-vs-bolts polyline.is-core.is-main").count(), boltCount, `${n}人のときの電撃の本数`);
       await page.waitForFunction(() => [...document.querySelectorAll(".ichi-vs-art")].every((i) => i.complete && i.naturalWidth > 0), null, { timeout: 4000 });
       await page.locator(`${t("ichi-vs")}.is-clash`).waitFor();
       // 名前の札どうしは重ならず、画面に収まる。人物の頭は、その人の面の中にある
