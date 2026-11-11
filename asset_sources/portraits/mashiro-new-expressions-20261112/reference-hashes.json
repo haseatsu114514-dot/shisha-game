@@ -1,0 +1,27 @@
+[
+  {
+    "name": "chr_mashiro_normal-new.png",
+    "bytes": 526049,
+    "sha256": "32a3938f9d01ccd7504b4ca3b705262a8184c39426033eac87e12517fe15ab4f"
+  },
+  {
+    "name": "chr_mashiro_sad.png",
+    "bytes": 321682,
+    "sha256": "9dc01cd3ed866a494c2ae0adb8433b5df39576060c3571fbe755168b9f4f95c3"
+  },
+  {
+    "name": "chr_mashiro_sleep.png",
+    "bytes": 354591,
+    "sha256": "27355edad6b51652ee2b10187b5eaad5d2780ceeeb101c3b06c3895e26dc9158"
+  },
+  {
+    "name": "chr_mashiro_smile.png",
+    "bytes": 370657,
+    "sha256": "6e6b9466fc9ba72ed33d585923db44f71adf11ff7ac4c7c25d2ca481222e1fed"
+  },
+  {
+    "name": "chr_minto_normal.png",
+    "bytes": 332471,
+    "sha256": "7a778a53e35050f7daf38d08a16ec3ff9cbf0b506324a01aa6770c47ec6c8d71"
+  }
+]
