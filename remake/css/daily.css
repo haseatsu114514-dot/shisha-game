@@ -1963,6 +1963,13 @@ html:root[data-density="phone"] body:not(:root) .gfx-cutin-count { font-size: 16
 .gboard.has-art .gb-header .gb-icon { border-color: transparent; background: center / 100% 100% no-repeat url(../img/ui/growth_board/socket.webp); box-shadow: none; }
 .gboard.has-art .gb-header .gb-icon:is(:hover, :focus-visible) { border-color: transparent; box-shadow: 0 0 12px rgba(244, 210, 122, 0.55); }
 
+/* 知らせの絵の印（gainCard の icon。心得の盤の決定の知らせ・SBD127）: 顔の印（base.css の .gc-badge.face）と同じ暗い丸に盤の絵。
+   絵が読めない時は字の印（火・関・極）のまま */
+.gc-badge.face.art { position: relative; color: #f4e6c4; }
+.gc-badge.art img { display: none; position: absolute; inset: 13%; width: 74%; height: 74%; object-fit: contain; image-rendering: auto; filter: drop-shadow(0 0 4px var(--gc, #f4d27a)); }
+.gc-badge.art.has-img img { display: block; }
+.gc-badge.art.has-img span { visibility: hidden; }
+
 /* ---------------------------------------------------------------- スマホ横の盤（SBD114・SBD120・SBD125①）
    PC と同じ配置をステージごと縮めていたので、上の帯・札・右のパネル・近い目的地の文字が実寸 7〜8px だった。
    規格（#2851。phone-density.css）の補助文の大きさ（--phone-sub。実寸 約11.5px）にそろえる。並びと押せる所は変えない。
