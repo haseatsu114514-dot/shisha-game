@@ -307,22 +307,17 @@ async function checkTrains() {
   }
 }
 
-// 新幹線(#1059)は電車(#891)と別クラス・別SEの一度きりの演出。往路/復路の行先表示・遮蔽・保存不変を確認。
+// 新幹線(#1059・作り直しの c は TMG58)は電車(#891)と別クラス・別SEの一度きりの演出。往路/復路の行き先の題字・本物の車内の絵・遮蔽・保存不変を確認。
 async function checkShinkansen() {
   const cases = [
-    ["outbound", { from: "home", to: "tokyo" }, "のぞみ ▶ 東京"],
-    ["inbound", { from: "tokyo", to: "home" }, "のぞみ ▶ 地元"],
+    ["outbound", { from: "home", to: "tokyo" }, "東京へ"],
+    ["inbound", { from: "tokyo", to: "home" }, "地元へ"],
   ];
   for (const [name, options, label] of cases) {
     const { page, context } = await open({ width: 1280, height: 720 }, `shinkansen-${name}`);
     try {
       await page.evaluate(options => {
-        window.shnAudit = { mid: 0, opacity: null, fades: [], done: false, before: JSON.stringify(T.core.state), start: performance.now() };
-        const animate = Element.prototype.animate;
-        Element.prototype.animate = function (frames, timing) {
-          if (this.matches(".mo-shinkansen")) shnAudit.fades.push({ frames, duration: timing.duration });
-          return animate.call(this, frames, timing);
-        };
+        window.shnAudit = { mid: 0, opacity: null, done: false, before: JSON.stringify(T.core.state), start: performance.now() };
         window.shnRun = T.motions.shinkansenRide(async () => {
           shnAudit.mid++;
           const node = document.querySelector(".mo-shinkansen");
@@ -338,21 +333,21 @@ async function checkShinkansen() {
       await page.waitForFunction(() => window.shnAudit.opacity === 1);
       await page.keyboard.press("Enter");
       const visible = await page.evaluate(() => ({
-        sign: document.querySelector(".mo-shinkansen text")?.textContent,
-        backdrop: document.querySelector(".mo-shinkansen .mo-back").style.backgroundColor,
+        title: document.querySelector('.mo-shinkansen [data-test="ride-title"] b')?.textContent,
+        car: !!document.querySelector(".mo-shinkansen .mo-shn-car"),
+        ride: document.querySelector(".mo-shinkansen").dataset.ride,
         keys: audit.keys,
       }));
-      assert.deepEqual(visible, { sign: label, backdrop: "rgb(21, 14, 48)", keys: 0 });
+      assert.deepEqual(visible, { title: label, car: true, ride: name, keys: 0 });
       if (shots) await page.screenshot({ path: `${shots}/shinkansen-${name}-covered.png` });
       await page.waitForFunction(() => shnAudit.done);
       const result = await page.evaluate(() => ({ ...shnAudit,
         overlays: document.querySelectorAll(".mo-shinkansen").length, coveringAfter: T.transitions.isCovering() }));
       assert.equal(result.mid, 1); assert.equal(result.opacity, 1); assert.equal(result.covering, true);
       assert.equal(result.unchanged, true); assert.equal(result.overlays, 0); assert.equal(result.coveringAfter, false);
-      assert.deepEqual(result.fades.map(f => [f.frames[0].opacity, f.frames.at(-1).opacity, f.duration]), [[0, 1, 240], [1, 0, 300]]);
-      assert(result.elapsed < 2600, `${name}: ${result.elapsed}ms took too long`);
+      assert(result.elapsed < 4600, `${name}: ${result.elapsed}ms took too long`);
       await page.keyboard.press("Enter"); assert.equal(await page.evaluate(() => audit.keys), 1);
-      console.log(`PASS shinkansen ${name}: ${Math.round(result.elapsed)}ms, sign/fade/cover/cleanup/save`);
+      console.log(`PASS shinkansen ${name}: ${Math.round(result.elapsed)}ms, title/car/cover/cleanup/save`);
     } finally { await context.close(); }
   }
   for (const mode of ["skip", "reduced", "turbo", "exception"]) {
@@ -372,9 +367,48 @@ async function checkShinkansen() {
   }
 }
 
+// 飛行機（作り直しの c・TMG57）: 機内の絵が覆ってから場面を替え、行き先の題字のあと窓へ寄って片付く。
+// 配送便は覆わずにふつうの切り替えで替え、題字だけを見せる（見せている間は先へ進ませない）。
+async function checkFlights() {
+  const cases = [["plane-dubai", "plane", "dubai", "ドバイへ"], ["plane-home", "plane", "home", "日本へ"], ["van-tokyo", "van", "tokyo", "東京へ"], ["van-town", "van", "town", "地元へ"]];
+  for (const [name, kind, to, label] of cases) {
+    const { page, context } = await open({ width: 1280, height: 720 }, name);
+    try {
+      await page.evaluate(({ kind, to }) => {
+        window.flyAudit = { mid: 0, done: false, title: null, start: performance.now() };
+        const ride = kind === "van" ? T.motions.vanRide : T.motions.planeRide;
+        window.flyRun = ride(async () => {
+          flyAudit.mid++;
+          flyAudit.covering = T.transitions.isCovering();
+          const node = document.querySelector(".mo-fly");
+          flyAudit.opacity = node ? Number(getComputedStyle(node).opacity) : null;
+        }, { to }).then(() => {
+          flyAudit.elapsed = performance.now() - flyAudit.start;
+          flyAudit.done = true;
+        });
+      }, { kind, to });
+      await page.waitForFunction(() => document.querySelector('[data-test="ride-title"]') && Number(getComputedStyle(document.querySelector('[data-test="ride-title"]')).opacity) > 0.9);
+      const shown = await page.evaluate(() => document.querySelector('[data-test="ride-title"] b').textContent);
+      await page.keyboard.press("Enter");
+      await page.waitForFunction(() => flyAudit.done, null, { timeout: 8000 });
+      const result = await page.evaluate(() => ({ ...flyAudit, keys: audit.keys, overlays: document.getElementById("fx").children.length, coveringAfter: T.transitions.isCovering() }));
+      assert.equal(shown, label);
+      assert.equal(result.mid, 1);
+      if (kind === "plane") { assert.equal(result.covering, true, `${name}: covered while the scene changes`); assert.equal(result.opacity, 1); }
+      else { assert.equal(result.covering, false, `${name}: the van uses the normal scene change`); assert.equal(result.opacity, null); }
+      assert.equal(result.keys, 0, `${name}: input waits for the title`);
+      assert.equal(result.overlays, 0); assert.equal(result.coveringAfter, false);
+      assert(result.elapsed < 5000, `${name}: ${result.elapsed}ms took too long`);
+      await page.keyboard.press("Enter"); assert.equal(await page.evaluate(() => audit.keys), 1);
+      console.log(`PASS ${name}: ${Math.round(result.elapsed)}ms, title/cover/cleanup`);
+    } finally { await context.close(); }
+  }
+}
+
 try {
   await checkTrains();
   await checkShinkansen();
+  await checkFlights();
   if (!process.argv.includes("--train-only")) {
   const desktop = { width: 1280, height: 720 }, mobile = { width: 844, height: 390 };
   const { page: auditPage, context: auditContext } = await open(desktop, "pen-audit");

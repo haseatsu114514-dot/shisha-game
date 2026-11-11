@@ -1,8 +1,12 @@
 // 会話演出デモ（#2732 / 案は #2666）の定義。判断用のデモで、本編の台本・進行には組み込まない。
 // 各案の「番号・名前・何が起きるか・見方・再現仕様・サンプル会話」をここに集める（ページと説明一覧の正本）。
 // 本文の印: [pause]＝文中の一拍 / [shiver]…[/shiver]＝震え文字。行のフラグは lines の各項目で指定する。
+// 新顔（#3417）の印: [whisper]…[/whisper]＝ささやき / [blur]…[/blur]＝にじみ / [pause=700]＝長さ指定の文中ポーズ。
 
 export const EFFECT_ORDER = [1, 2, 13, 22, 29, 3, 7, 8, 12, 15, 23, 11];
+// 章ごとの新顔（#3417 の 3-3）。採用5件の延長で、オーナーが見てから本実装を決める。#2732 の選別済み12件とは別の段に並べる。
+// 番号は #2666 の候補番号（37 息を止める・38 文中ポーズの長さ指定は #3417 で足した案）
+export const NEW_FACE_ORDER = [10, 9, 5, 37, 38, 32];
 
 export const EFFECTS = [
   {
@@ -159,7 +163,85 @@ export const EFFECTS = [
       { speaker: "hiyori", face: "smile", decl: true, text: "作ります。" },
     ],
   },
+  // ---------------------------------------------------------------- 章ごとの新顔（#3417）
+  {
+    no: 10, name: "ささやき", tag: "新顔", chapter: "第2章で初登場", weight: "軽",
+    summary: "区間の文字を1段小さく沈ませ、文字送りの音をまばらにする。閉店後の小声や、聞かせたくない一言に。",
+    watch: "つむぎの「ちょっとだけ、好きです」と「スミさん、奥で…」が小さく沈んだ字になり、音もまばらになる。OFFだと普通の字。",
+    spec: "本文の [whisper]…[/whisper] を span 化（0.84倍・不透明度0.72）。区間の文字送りの音は6字に1回へ間引く（本実装では音量を半分・音程を下げる）。折り位置は通常幅のまま数える。",
+    bgm: false,
+    lines: [
+      { speaker: "", text: "閉店後。札を裏返すと、雨の音だけが残った。" },
+      { speaker: "tsumugi", face: "smile", text: "閉店後のお店って、\n[whisper]ちょっとだけ、好きです[/whisper]" },
+      { speaker: "hajime", face: "normal", text: "なんで小声なの？" },
+      { speaker: "tsumugi", face: "normal", text: "[whisper]……スミさん、奥で寝てるので[/whisper]" },
+    ],
+  },
+  {
+    no: 9, name: "にじみ", tag: "新顔", chapter: "第3章で初登場", weight: "軽",
+    summary: "区間の文字が、ぼやけた状態から澄んでいく。涙・煙がしみる・本当のことを言う前の揺らぎに。",
+    watch: "ましろの最後の2行が、ぼやけた字で出てから0.4秒で澄む。OFFだと最初からくっきり。動きを減らすでも掛けない。",
+    spec: "本文の [blur]…[/blur] を span 化し、filter: blur(1.6px) から0.4秒で 0 へ。文字送りの間はぼかしたまま、出し終えてから澄ませる。reduceShake／prefers-reduced-motion では掛けない。",
+    bgm: false,
+    lines: [
+      { speaker: "mashiro", face: "normal", text: "紅茶、冷めちゃったねぇ。" },
+      { speaker: "hajime", face: "normal", text: "淹れ直そうか。……目、赤いよ。" },
+      { speaker: "mashiro", face: "smile", text: "ううん。[blur]……煙が、しみただけ[/blur]" },
+      { speaker: "mashiro", face: "sad", text: "[blur]嘘。ちょっとだけ、さみしかった[/blur]" },
+    ],
+  },
+  {
+    no: 5, name: "無言の一コマ", tag: "新顔", chapter: "第4章で初登場", weight: "中",
+    summary: "本文なしの1クリック分、台詞欄を薄くして立ち絵と背景だけを見せる。言葉のかわりの沈黙。",
+    watch: "3行目で台詞欄がほとんど消え、スミさんと店だけが残る。クリックで次へ。OFFだと「……」の台詞として出る。",
+    spec: "行に silent。台詞欄を不透明度0.12へ0.3秒で薄め、名札を隠す。次の行で戻す。本実装では行タイプにし、既読・ログでの数え方を決める（ログには残さない案）。",
+    bgm: false,
+    lines: [
+      { speaker: "sumi", face: "serious", text: "店、お前に任せてもいいか。" },
+      { speaker: "hajime", face: "surprise", text: "……俺が、ですか。" },
+      { speaker: "sumi", face: "normal", silent: true, text: "……" },
+      { speaker: "sumi", face: "smile", text: "返事は、炭を替えてからでいい。" },
+    ],
+  },
+  {
+    no: 37, name: "息を止める", tag: "新顔", chapter: "第5章・ゲーム全体で1回", weight: "軽",
+    summary: "BGMをほぼ無音まで落とし、その行のあいだ止める。最後の勝負の結果の直前など、ゲーム全体で1回だけ。",
+    watch: "音ありで再生する。2行目でBGMがすっと消え（メーターが空になる）、3行目でゆっくり戻る。OFFだと採用済みの息継ぎ（−6dB）。",
+    spec: "行に duck: \"hold\"。BGMを0.15秒で約 −30dB（0.03倍）へ落とし、次の行の頭から0.8秒で戻す。採用29（−6dB）の値の拡張。",
+    bgm: true,
+    lines: [
+      { speaker: "", text: "最後の挙手が、ゆっくりと上がっていく。" },
+      { speaker: "", duck: "hold", text: "数える声だけが、会場に残った。" },
+      { speaker: "pakki", face: "excited", text: "……決まりましたッ！" },
+      { speaker: "hajime", face: "normal", text: "（……息、してなかった）" },
+    ],
+  },
+  {
+    no: 38, name: "文中ポーズの長さ指定", tag: "新顔", chapter: "どの章でも", weight: "軽",
+    summary: "文中ポーズの長さを 300〜800ms で書き分ける。短い言いよどみと、答えを言う前の長い間。",
+    watch: "1行目は0.3秒の短い止まり、3行目は0.8秒の長い止まり。OFFだとどちらも採用済みの0.4秒。",
+    spec: "本文に [pause=700] のように ms を書く（300〜800に収める）。[pause] だけなら従来の0.4秒。",
+    bgm: false,
+    lines: [
+      { speaker: "naru", face: "smile", text: "……[pause=300]ふうん。悪くない" },
+      { speaker: "hajime", face: "normal", text: "今日の配合、当ててみてください。" },
+      { speaker: "naru", face: "serious", text: "バニラと、[pause=800]……レモンだな" },
+    ],
+  },
+  {
+    no: 32, name: "扉の合図", tag: "新顔", chapter: "どの章でも", weight: "軽",
+    summary: "立ち絵の入場で店のベル、退場で小さな風の音を鳴らし、退場は0.4秒で薄れる。来客と見送りの行だけ。",
+    watch: "1行目でなるが入ってくる時にベル、4行目で出ていく時に風の音がして立ち絵が薄れる。OFFだと音なしで出入りする。",
+    spec: "行に door: \"in\"（その行の人物の入場で SE.doorbell）／exit: 人物ID（SE.whoosh・立ち絵を0.4秒で薄めて外す）。既存の効果音だけ。",
+    bgm: false,
+    lines: [
+      { speaker: "naru", face: "smile", door: "in", text: "よう。まだ開いてるか？" },
+      { speaker: "hajime", face: "normal", text: "ラストオーダー、ぎりぎりです。" },
+      { speaker: "naru", face: "smile", text: "じゃあ一服だけ。……また来る。" },
+      { speaker: "", exit: "naru", text: "なるさんが、手を振って出ていった。" },
+    ],
+  },
 ];
 
-/** [pause]／[shiver] を取り除いた表示文（組版の確認用） */
-export const plainText = (text) => String(text).replace(/\[pause\]|\[\/?shiver\]/g, "");
+/** 印（[pause]・[pause=ms]・[shiver]・[whisper]・[blur]）を取り除いた表示文（組版の確認用） */
+export const plainText = (text) => String(text).replace(/\[pause(?:=\d+)?\]|\[\/?(?:shiver|whisper|blur)\]/g, "");
