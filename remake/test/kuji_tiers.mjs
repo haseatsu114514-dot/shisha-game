@@ -2,7 +2,7 @@
 // KJ11（2026-11-11）: くじは店ごとに1種類。章が進むと新しい街の店に上位のくじがあり、第5章の本店は限定台くじに入れ替わる。
 // node remake/test/kuji_tiers.mjs
 import assert from "node:assert/strict";
-import { existsSync, readFileSync } from "node:fs";
+import { readFileSync } from "node:fs";
 import vm from "node:vm";
 
 const read = file => JSON.parse(readFileSync(new URL(file, import.meta.url), "utf8"));
@@ -25,18 +25,14 @@ for (const [id, [price, chapter, shop]] of Object.entries(TIERS)) {
 }
 
 // 1b. 抽選器の見た目（GCH16・2026-11-11 オーナー「くじのランクによってガラガラの見た目を変えたり豪華に」）: 上の店のくじほど豪華。
-// 見た目の名前は演出（motions/kuji-art.js の KUJI_LOOKS）にあり、色替えした絵（remake/img/ui/kuji/garagara-<部品>-<見た目>.webp）がそろっている
+// 見た目の名前は演出（motions/kuji-art.js の KUJI_LOOKS）にある。色替えした絵が実際に出ることは、画像のある
+// ブラウザの検査（test/browser/kuji_gacha.mjs の machine-look-per-kuji）が見る（この検査は画像を取得しない環境でも動く）
 {
   const { KUJI_LOOKS } = await import("../js/motions/kuji-art.js");
   const MACHINES = { g1000: "walnut", g3000: "steel", g5000: "brass", g10000: "marble", g20000: "lacquer" };
   Object.entries(MACHINES).forEach(([id, look], rung) => {
     assert.equal(kuji.grades[id].machine, look, `${id} の抽選器の見た目`);
     assert.equal(KUJI_LOOKS[look]?.lux, rung, `${look} の豪華さは ${rung}（上の店ほど豪華）`);
-    if (look === "walnut") return; // 本店は元の絵
-    for (const part of ["drum", "drum-blur", "frame", "base", "handle", "tray"]) {
-      assert(existsSync(new URL(`../img/ui/kuji/garagara-${part}-${look}.webp`, import.meta.url)), `garagara-${part}-${look}.webp がある`);
-    }
-    if (KUJI_LOOKS[look].gem) assert(existsSync(new URL(`../img/ui/kuji/gem-${look}.webp`, import.meta.url)), `gem-${look}.webp がある`);
   });
   for (const g of Object.values(kuji.legacyGrades)) assert.equal(g.machine, undefined, "旧箱には見た目を持たせない（引き途中の旧箱は本店の抽選器で引く）");
 }
