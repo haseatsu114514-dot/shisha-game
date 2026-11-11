@@ -581,3 +581,8 @@ html:root .trpg-root.trpg-cinematic .trpg-approach .trpg-approach-meta .trpg-app
 html:root .trpg-root.trpg-cinematic .trpg-approach .trpg-approach-meta .trpg-approach-best {
   position: absolute; top: -11px; right: 12px; color: #2a1b0c; background: linear-gradient(135deg, #f7dc8c, #dcae4a); box-shadow: 0 2px 5px #0006;
 }
+
+/* しおりと見た結末（TMX13・TMX14）: 本の札の中で1行ずつ。しおりは紙の付箋の色。 */
+html:root .trpg-campaign-memory .trpg-campaign-endings { display: block; margin-top: 4px; color: var(--tt-brass-hi); font-weight: 700; }
+html:root .trpg-campaign-book .trpg-campaign-bookmark { display: block; margin: 4px 0 6px; padding: 3px 10px; border-left: 4px solid #c8553d; border-radius: 3px;
+  background: #f3e6c8; color: #3a2a14; font-weight: 700; }
