@@ -723,9 +723,9 @@ export async function dayCard(title, sub, { ms = 1900, weather = null, forecast 
   card.remove();
 }
 
-/** 中央の見出し帯（「ROUND 2」など） */
+/** 中央の見出し帯（「ROUND 2」など）。登場カットインと同じ生成りの帯を大きく（TMG59） */
 export async function roundCut(text, sub = "") {
-  const c = el("div.round-cut", [el("b", { text }), sub ? el("small", { text: sub }) : null]);
+  const c = el("div.round-cut", [el("div.round-cut-band", [sub ? el("small", { text: sub }) : null, el("b", { text })])]);
   layers.fx.append(c);
   SE.whoosh();
   await nextFrame();

@@ -1,0 +1,10 @@
+/* 新幹線（remake/js/motions/shinkansen.js の c・TMG58）。本物の車内の絵と、窓の中だけを流れる景色の筋 */
+.mo-shn-train, .mo-shn-car, .mo-shn-win, .mo-shn-flick, .mo-shn-from { position: absolute; inset: 0; }
+.mo-shn-car { background-size: cover; background-position: center; }
+.mo-shn-from { background-size: cover; background-position: center; background-color: #0c0f18; }
+.mo-shn-win { overflow: hidden; }
+.mo-shn-run { position: absolute; top: 0; left: -900%; width: 1000%; height: 100%; background-repeat: repeat-x; background-size: 25% 100%; background-position: 0 0; }
+.mo-shn-win.far { -webkit-mask-image: linear-gradient(to bottom, transparent 31%, #000 40%, #000 50%, transparent 60%); mask-image: linear-gradient(to bottom, transparent 31%, #000 40%, #000 50%, transparent 60%); opacity: 0; }
+.mo-shn-win.near { -webkit-mask-image: linear-gradient(to bottom, transparent 43%, #000 55%); mask-image: linear-gradient(to bottom, transparent 43%, #000 55%); opacity: 0; }
+.mo-shn-pole { position: absolute; left: 0; top: -4%; width: 77px; height: 108%; background: linear-gradient(to right, transparent, #1a2236 50%, transparent); filter: blur(10px); opacity: 0; }
+.mo-shn-flick { background: linear-gradient(80deg, transparent 30%, #fff8e633 46%, transparent 60%); mix-blend-mode: soft-light; opacity: 0; }
