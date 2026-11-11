@@ -105,11 +105,13 @@ body:not(.game-ds) .shop.shop-paper, body:not(.game-ds) .shop-entry { top: 24px;
 .kuji-lineup-item[data-rank="B"] { --lineup-color: #3f82ea; --lineup-ink: #1f55b0; }
 .kuji-lineup-item[data-rank="LAST"] { --lineup-color: #2a2648; --lineup-ink: #2a2648; background: #efedf5; }
 .kuji-lineup-item[data-out] { opacity: .45; }
-.kuji-lineup-art { flex: none; display: grid; place-items: center; width: 56px; height: 56px; }
+.kuji-lineup-art { flex: none; display: flex; align-items: center; justify-content: center; width: 56px; height: 56px; }
 .kuji-lineup-art > * { position: relative; }
 .kuji-lineup-art .kj-art-leaf { display: flex; align-items: center; justify-content: center; flex: none; margin: 0; background: none; }
 .kuji-lineup-art .kj-gift { --u: 5.6px; }
 .kuji-lineup-art .kj-art-fan .kj-gift { --u: 3.4px; }
+/* 詰め合わせ（パッケージを扇に重ねた絵）は、枠（56px）からはみ出して賞の字に重ならないよう縮める */
+.kuji-lineup-art .kj-art-fan { flex: none; width: 56px; transform: scale(.58); }
 .kuji-lineup-secret { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; background: #2a2648; color: #e6e7f0; font-size: 24px; font-weight: 700; box-shadow: inset 0 0 0 3px #b9b4d8; }
 .kuji-lineup-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
 .kuji-lineup-rank { color: var(--lineup-ink); font-size: 15px; font-weight: 700; letter-spacing: .06em; }

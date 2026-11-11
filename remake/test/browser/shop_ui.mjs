@@ -518,6 +518,12 @@ await suite("shop-ui", async check => {
       // 第2章の柚ヶ谷店: 機材くじ（1回1,000円）だけ。
       assert.deepEqual(await branchLabels(2, "widehanga"), ["機材くじ（1回1,000円）"]);
       assert.match(await page.locator('.kuji-row').first().innerText(), /のこり 60 \/ 60 枚 ・ S賞: ステンレス削り出しの台/);
+      // 景品の絵が、賞と名前の字に重ならない（3種セットはパッケージを3つ重ねた絵で、枠からはみ出しやすい）。
+      assert.equal(await page.locator('[data-test="kuji-lineup-g3000"] .kuji-lineup-item[data-rank="B"] .kj-art-fan > *').count(), 3);
+      assert.deepEqual(await page.locator('.kuji-lineup-item').evaluateAll(items => items.filter(item => {
+        const main = item.querySelector('.kuji-lineup-main').getBoundingClientRect();
+        return [...item.querySelectorAll('.kuji-lineup-art > *, .kuji-lineup-art .kj-art-fan > *')].some(n => { const r = n.getBoundingClientRect(); return r.width > 0 && r.right > main.left + 0.5; });
+      }).map(item => item.querySelector('.kuji-lineup-name').textContent)), [], "絵が字に重なっている景品");
       assert.equal(await page.locator('.kuji-row').first().locator('[data-test="kuji-help"]').count(), 1, "「?」はどの店でも最初のくじの横");
       await page.locator('[data-test="shop-leave"]').click();
       // 第3章の東京店: 上級機材くじ（1回3,000円）だけ。
