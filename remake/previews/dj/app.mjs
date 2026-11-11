@@ -1,6 +1,6 @@
 import { DJAudio } from './audio.mjs';
 import { beatAt, lowCutDb, LOCK_PCT, PHRASE, FOLLOW_BAND, REQUESTS, phaseError, bpmDiffPct, pitchOf, mod, gains, toward, keyMatch, energyMatch, quality, followHint, moodOf, MOODS, GRADE_FLOOR, RANK_FLOOR, PICK_FLOOR } from './model.mjs';
-import { peakAt, TRACKS, SETS } from './tracks.mjs';
+import { TRACKS, SETS } from './tracks.mjs';
 // View of the DJ set (2026-11-11 renewal, DJS20〜). Three things the screen always answers:
 //   1. いま何をするか — the navi line + the gold arrow on the control to touch (▶ / PITCH / SYNC / 横フェーダー).
 //   2. お客さんがどう感じたか — the floor: heat meter with a mood word, the crowd getting brighter and raising hands, voices in speech bubbles.
@@ -30,6 +30,20 @@ let strips = [], flash = 0;
 const status = text => { $('status').textContent = text; };
 /** Write text only when it changes (the render loop runs every frame; an unchanged write would still dirty the layout). */
 const put = (id, text) => { const el = $(id); if (el.textContent !== text) el.textContent = text; };
+// DJS33 (「処理重そう」): per-frame style writes only when the value changes, and the layout is read at most twice a second.
+// Reading offsetWidth after the frame's style writes forced a full style + layout pass on every frame.
+const written = new Map();
+const setVar = (el, name, value) => { const k = `${el.id}|${name}`; if (written.get(k) !== value) { written.set(k, value); el.style.setProperty(name, value); } };
+const setAttr = (el, name, value) => { const k = `${el.id}@${name}`; if (written.get(k) !== value) { written.set(k, value); el.setAttribute(name, value); } };
+const setStyle = (el, prop, value) => { const k = `${el.id}.${prop}`; if (written.get(k) !== value) { written.set(k, value); el.style[prop] = value; } };
+const geo = { at: -1e9, stageW: 1280, faderLeft: 0, faderW: 400, laneW: 960, laneH: 80 };
+function measure(t) {
+  if (t - geo.at < 500) return;
+  geo.at = t; const fader = $('crossfader'), lane = $('wave-a');
+  geo.stageW = $('dj-stage').offsetWidth || 1280; geo.faderLeft = fader.offsetLeft; geo.faderW = fader.offsetWidth;
+  geo.laneW = Math.max(320, Math.round(lane.clientWidth * 2)); geo.laneH = Math.max(40, Math.round(lane.clientHeight * 2)); // 2 canvas px per CSS px
+}
+addEventListener('resize', () => { geo.at = -1e9; });
 function create() {
   audio = new DJAudio(undefined, { setIndex, allowance: ALLOWANCE_MS });
   if (embedded) { audio.muted = gameMuted; if (Number.isFinite(gameVolume)) audio.volume = Math.max(0, Math.min(.36, .18 * gameVolume / .5)); }
@@ -159,14 +173,23 @@ document.addEventListener('visibilitychange', () => { if (document.hidden) pause
 window.addEventListener('pagehide', event => { if (event.persisted) { pause(); return; } disposed = true; cancelAnimationFrame(frame); audio.dispose().catch(() => {}); });
 
 // ── 曲の流れ（上 A・下 B の実波形）。金の線が「いま」、金の旗が次の入り ──────────────────
-let laneWidth = 0, laneHeight = 0, laneChecked = -1e9;
 const PHONE = document.documentElement.dataset.density === 'phone';
+/** The waveform as BINS bars per beat (the loudest moment in each), worked out once per track. Each frame only places the bars at their
+ *  (fractional) x, so the shape scrolls smoothly instead of being re-sampled and shimmering every frame (DJS33). */
+const BINS = 16;
+function binsOf(t) {
+  if (t.bins) return t.bins;
+  const n = t.beats * BINS, out = new Float32Array(n), per = 60 / t.nativeBpm / BINS, k = t.peaks.length / t.duration;
+  for (let i = 0; i < n; i++) {
+    const a = Math.floor((t.firstBeat + i * per) * k), b = Math.max(a + 1, Math.floor((t.firstBeat + (i + 1) * per) * k));
+    let v = 0; for (let j = Math.max(0, a); j < b && j < t.peaks.length; j++) if (t.peaks[j] > v) v = t.peaks[j];
+    out[i] = v;
+  }
+  return (t.bins = out);
+}
 function wave(canvas, id, now) {
-  const t0 = performance.now();
-  // 2 canvas px per CSS px both ways, so the bar numbers and the flag keep their shape (read the layout twice a second, not every frame)
-  if (t0 - laneChecked > 500) { laneChecked = t0; laneWidth = Math.max(320, Math.round(canvas.clientWidth * 2)); laneHeight = Math.max(40, Math.round(canvas.clientHeight * 2)); }
-  if (canvas.width !== laneWidth) canvas.width = laneWidth;
-  if (canvas.height !== laneHeight) canvas.height = laneHeight;
+  if (canvas.width !== geo.laneW) canvas.width = geo.laneW; // 2 canvas px per CSS px both ways, so the bar numbers and the flag keep their shape
+  if (canvas.height !== geo.laneH) canvas.height = geo.laneH;
   const c = canvas.getContext('2d'), w = canvas.width, h = canvas.height, x0 = Math.round(w * .3), scale = w / 7;
   c.clearRect(0, 0, w, h); c.fillStyle = '#0a0714cc'; c.fillRect(0, 0, w, h);
   const m = audio.mix, cue = m.cue, t = audio.tracks[id], d = m.decks[id];
@@ -190,13 +213,10 @@ function wave(canvas, id, now) {
   if (t) {
     // A deck on air follows its own beat. The incoming deck that has not started yet is drawn where it will come in: its first beat on the entry flag.
     const waiting = cue && cue.to === id && !d.playing, b = waiting ? (cb - cue.start) * d.bpm / clock.bpm : beatAt(d, now);
+    const bins = binsOf(t), n = bins.length, ppb = scale * 60 / d.bpm, bw = Math.max(1, ppb / BINS * .7);
+    const from = Math.max(0, Math.floor((b - x0 / ppb) * BINS)), to = Math.ceil((b + (w - x0) / ppb) * BINS); // nothing before beat 0: the track has not started
     c.fillStyle = id ? '#7fe3ff' : '#c39bff'; c.globalAlpha = d.playing ? .85 : .55;
-    for (let x = 0; x < w; x += 2) {
-      const beat = b + (x - x0) / scale * d.bpm / 60;
-      if (beat < 0) continue; // before the track starts there is nothing to hear
-      const size = peakAt(t, t.firstBeat + mod(beat, t.beats) * 60 / t.nativeBpm) * (h - 16);
-      c.fillRect(x, h / 2 - size / 2, 2, Math.max(1, size));
-    }
+    for (let i = from; i <= to; i++) { const size = Math.max(1, bins[i % n] * (h - 16)); c.fillRect(x0 + (i / BINS - b) * ppb, (h - size) / 2, bw, size); }
     c.globalAlpha = 1;
   }
   if (cue && !cue.pressed) {
@@ -239,11 +259,14 @@ function moveCrowd(beat, mood, still) {
 /** The whole floor jolts once (a good entry lands, the fader locks in for 8 beats). */
 function shake() { if (reduced.matches) return; const art = $('floor-art'); art.classList.remove('shake'); void art.offsetWidth; art.classList.add('shake'); flash = 1; }
 function drawFloor(beat, floor, running) {
-  const canvas = $('crowd'), W = $('dj-stage').offsetWidth || 1280, H = 288;
-  if (canvas.width !== W) canvas.width = W;
-  const c = canvas.getContext('2d'); c.clearRect(0, 0, W, H);
-  const still = reduced.matches || !running, mood = moodOf(floor), kick = still ? 0 : (1 - mod(beat, 1)) ** 2;
+  // The light layer is drawn at half resolution (it is all soft light) and not redrawn while nothing on it moves (DJS33).
+  const canvas = $('crowd'), W = geo.stageW, H = 288, still = reduced.matches || !running, mood = moodOf(floor), kick = still ? 0 : (1 - mod(beat, 1)) ** 2;
   moveCrowd(beat, mood, still);
+  const idle = still && !particles.length && flash <= .02 ? `${W}|${floor.toFixed(3)}` : null;
+  if (idle && idle === shown.floorKey) return;
+  shown.floorKey = idle;
+  if (canvas.width !== W / 2) { canvas.width = W / 2; canvas.height = H / 2; }
+  const c = canvas.getContext('2d'); c.setTransform(.5, 0, 0, .5, 0, 0); c.clearRect(0, 0, W, H);
   // beams from the truss over the booth, pointing out into the room: wider and brighter as it heats up
   const sweep = still ? 0 : Math.sin(beat / 8 * Math.PI * 2);
   c.globalCompositeOperation = 'lighter';
@@ -266,9 +289,13 @@ function drawFloor(beat, floor, running) {
   // notes rising from the crowd while the fader rides the line
   if (!reduced.matches) {
     particles = particles.filter(p => p.life > 0);
-    c.font = '900 30px sans-serif'; c.textAlign = 'center';
-    for (const p of particles) { p.y -= p.vy; p.x += Math.sin(p.life * 6) * .6; p.life -= .014; c.globalAlpha = Math.min(1, p.life * 2); c.shadowColor = p.color; c.shadowBlur = 12; c.fillStyle = p.color; c.fillText(p.char, p.x * W, p.y); }
-    c.globalAlpha = 1; c.shadowBlur = 0;
+    for (const p of particles) { p.y -= p.vy; p.x += Math.sin(p.life * 6) * .6; p.life -= .014; }
+    c.textAlign = 'center'; // a soft halo (a bigger faint note) instead of shadowBlur, which is slow on phones
+    for (const [font, alpha] of [['900 44px sans-serif', .3], ['900 30px sans-serif', 1]]) {
+      c.font = font;
+      for (const p of particles) { c.globalAlpha = Math.min(1, p.life * 2) * alpha; c.fillStyle = p.color; c.fillText(p.char, p.x * W, p.y + (alpha < 1 ? 5 : 0)); }
+    }
+    c.globalAlpha = 1;
   }
 }
 const note = () => { if (particles.length < 24) particles.push({ x: .08 + Math.random() * .84, y: 230 + Math.random() * 30, vy: 1 + Math.random() * 1.2, life: 1, char: pickOne(['♪', '♫', '♪']), color: pickOne(['#ffc857', '#ff8fc4', '#aee7d5', '#c39bff']) }); };
@@ -277,13 +304,13 @@ const note = () => { if (particles.length < 24) particles.push({ x: .08 + Math.r
 let comboShown = -1;
 /** away: the fader has left the playing deck's side while nothing is being mixed (the sound is fading out). */
 function faderGuide(m, away) {
-  const band = $('guide'), arrows = $('fader-arrows'), fader = $('crossfader'), x0 = fader.offsetLeft + THUMB / 2, track = fader.offsetWidth - THUMB;
+  const band = $('guide'), arrows = $('fader-arrows'), fader = $('crossfader'), x0 = geo.faderLeft + THUMB / 2, track = geo.faderW - THUMB;
   const mixing = m.phase === 'mix' && view.guide != null && m.fader;
   band.hidden = !mixing;
   let hint = '', target = null, ok = false;
   if (mixing) {
     const g = m.cue.to === 1 ? view.guide : 1 - view.guide, side = followHint(m, view.guide);
-    band.style.left = `${x0 + (g - FOLLOW_BAND) * track}px`; band.style.width = `${FOLLOW_BAND * 2 * track}px`;
+    setStyle(band, 'transform', `translateX(${(x0 + (g - FOLLOW_BAND) * track).toFixed(1)}px)`); setStyle(band, 'width', `${Math.round(FOLLOW_BAND * 2 * track)}px`); // moved with transform: no layout
     band.classList.toggle('in', Math.abs(toward(m) - view.guide) <= FOLLOW_BAND);
     if (view.follow) {
       band.classList.remove('hit', 'miss'); void band.offsetWidth; band.classList.add(view.follow.hit ? 'hit' : 'miss');
@@ -298,7 +325,7 @@ function faderGuide(m, away) {
   arrows.hidden = target == null;
   if (target != null) { // chevrons run from the cap's leading edge toward the target: 1〜3 of them, as many as fit
     const right = target > m.mix, cap = x0 + m.mix * track, n = Math.max(1, Math.min(3, Math.floor((Math.abs(target - m.mix) * track + 20) / 29))), width = n * 29;
-    arrows.style.left = `${right ? cap + THUMB / 2 - 6 : cap - THUMB / 2 + 6 - width}px`; arrows.style.width = `${width}px`;
+    setStyle(arrows, 'transform', `translateX(${(right ? cap + THUMB / 2 - 6 : cap - THUMB / 2 + 6 - width).toFixed(1)}px)`); setStyle(arrows, 'width', `${width}px`);
     arrows.classList.toggle('left', !right); [...arrows.children].forEach((el, i) => { el.hidden = i >= n; });
   }
   const label = $('fader-hint'); if (label.textContent !== hint) label.textContent = hint; label.classList.toggle('ok', ok);
@@ -376,7 +403,7 @@ function showNavi(n, m) {
   if (n.count !== lastCount) { const el = $('count'); el.textContent = n.count; el.classList.remove('beat'); if (n.count) { void el.offsetWidth; el.classList.add('beat'); } lastCount = n.count; }
 }
 function render() {
-  if (disposed) return; const now = audio.now, m = audio.mix;
+  if (disposed) return; measure(performance.now()); const now = audio.now, m = audio.mix; // measure first: the layout is still clean at the top of the frame
   view = audio.update();
   if (view.transition) { showTransition(view.transition); missStreak = 0; comboSaid = 0; clashSaid = false; }
   if (view.finished) showResult(view.finished);
@@ -417,17 +444,17 @@ function render() {
     const locked = d.track && other.track && bpmDiffPct(other, d) <= LOCK_PCT; $('lock-' + key).classList.toggle('on', !!locked);
     const beat = mod(beatAt(d, now), PHRASE);
     put('beat-' + key, d.playing ? `再生・${Math.floor(beat / 4) + 1}小節 ${Math.floor(beat % 4) + 1}拍` : '停止中');
-    play.setAttribute('aria-pressed', String(d.playing)); play.disabled = audio.busy || !d.track || d.playing;
+    setAttr(play, 'aria-pressed', String(d.playing)); play.disabled = audio.busy || !d.track || d.playing;
     const mine = !!(cue && cue.to === id && !cue.pressed && m.phase === 'cue' && m.running), soon = mine && n.untilHead != null && n.untilHead <= 4 && n.untilHead > 0;
     play.classList.toggle('cue-open', mine && n.untilHead === 0);
     play.classList.toggle('cue-soon', soon);
     play.classList.toggle('first', m.phase === 'idle' && id === 0);
     // approach ring: shrinks from 1.55× the button onto the button exactly on the phrase head
-    play.style.setProperty('--ap', soon ? (1 + n.untilHead / 4 * .55).toFixed(3) : '1');
-    $('deck-' + key).dataset.playing = String(d.playing);
-    $('deck-' + key).dataset.role = !d.track ? 'empty' : d.playing && m.master === id ? 'master' : d.playing ? 'incoming' : 'next';
+    setVar(play, '--ap', soon ? (1 + n.untilHead / 4 * .55).toFixed(3) : '1');
+    setAttr($('deck-' + key), 'data-playing', String(d.playing));
+    setAttr($('deck-' + key), 'data-role', !d.track ? 'empty' : d.playing && m.master === id ? 'master' : d.playing ? 'incoming' : 'next');
     put('indicator-' + key, !d.track ? 'EMPTY' : d.playing ? 'ON AIR' : 'STANDBY');
-    $('platter-' + key).style.setProperty('--rotation', `${reduced.matches || !d.playing ? 0 : mod(beatAt(d, now), 4) * 90}deg`);
+    setVar($('platter-' + key), '--rotation', `${reduced.matches || !d.playing ? 0 : (mod(beatAt(d, now), 4) * 90).toFixed(1)}deg`);
     if ($('platter-' + key).getAttribute('aria-valuenow') !== d.bpm.toFixed(2)) $('platter-' + key).setAttribute('aria-valuenow', d.bpm.toFixed(2));
     $('side-' + key).classList.toggle('goal', !!cue && cue.to === id && m.running);
     wave($('wave-' + key), id, now);
@@ -453,7 +480,7 @@ function controllerLeds() {
   const m = audio.mix, level = Math.min(1, audio.level() * 6), g = gains(m.mix), cut = lowCutDb(m.mix);
   for (const id of [0, 1]) {
     const on = m.decks[id].playing && m.running;
-    $('meter-' + (id ? 'b' : 'a')).style.setProperty('--lvl', on ? (level * g[id]).toFixed(3) : '0');
+    setVar($('meter-' + (id ? 'b' : 'a')), '--lvl', on ? (level * g[id]).toFixed(2) : '0');
   }
   const cutting = cut.findIndex(v => v < -1);
   $('led-autoeq').classList.toggle('on', cutting >= 0);

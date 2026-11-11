@@ -60,7 +60,9 @@ button.gold{color:#2a1840;border-width:14px;border-image:var(--goldbtn) 36 fill 
 .heat-bar{position:absolute;left:0;top:0;width:254px;height:68px}
 .heat-bar:before{content:"";position:absolute;left:7.6%;top:33%;width:84.6%;height:34%;border-radius:99px;background:#07050c}
 .heat-bar:after{content:"";position:absolute;inset:0;background:url('../../img/ui/dj/heat-frame.webp') center/100% 100% no-repeat;pointer-events:none}
-#floor-fill{position:absolute;left:8%;top:34.4%;height:30.6%;width:calc(83.6% * var(--f,.5));min-width:3%;border-radius:99px;background:linear-gradient(90deg,#3fd0e8,#b45cf0 150px,#ff5fa8 190px,#ffc857 215px);background-size:254px 100%;box-shadow:0 0 14px #b45cf0cc;transition:width .3s}
+/* the fill keeps its full width and is cut off by clip-path (DJS33: changing the width every frame re-ran the page layout) */
+#floor-fill{position:absolute;left:8%;top:34.4%;height:30.6%;width:83.6%;border-radius:99px;background:linear-gradient(90deg,#3fd0e8,#b45cf0 150px,#ff5fa8 190px,#ffc857 215px);background-size:254px 100%;box-shadow:0 0 14px #b45cf0cc;
+ clip-path:inset(-16px calc((1 - max(var(--f,.5), .04)) * 100%) -16px -16px round 99px);transition:clip-path .3s}
 .floor[data-mood="4"] #floor-fill{box-shadow:0 0 18px #ffc857}
 .floor:is([data-mood="0"],[data-mood="1"]) #floor-fill{filter:saturate(.45);box-shadow:none}
 .heat-goal{position:absolute;z-index:1;left:calc(8% + 83.6% * .8 - 8px);top:10%;width:16px;height:16px;background:url('../../img/ui/dj/chevron.webp') center/contain no-repeat;transform:rotate(90deg);filter:drop-shadow(0 1px 2px #000)}
@@ -250,7 +252,7 @@ input[type=range].dragging::-moz-range-thumb{filter:brightness(1.35)}
 .mixer{display:flex;flex-direction:column;gap:4px}
 .channels{flex:none;height:52px;display:grid;grid-template-columns:10px minmax(0,1fr) 168px minmax(0,1fr) 10px;align-items:center;gap:8px}
 .meter{flex:none;align-self:stretch;width:10px;border-radius:3px;background:#050409;box-shadow:inset 0 1px 3px #000,0 0 0 1px #4a4266;position:relative;overflow:hidden}
-.meter i{position:absolute;inset:auto 2px 0;height:calc(var(--lvl,0)*100%);background:linear-gradient(0deg,#7fdcf0,#b45cf0 65%,#ff5fa8);transition:height .05s;
+.meter i{position:absolute;inset:0 2px;clip-path:inset(calc((1 - var(--lvl,0)) * 100%) 0 0 0);background:linear-gradient(0deg,#7fdcf0,#b45cf0 65%,#ff5fa8);
  -webkit-mask:repeating-linear-gradient(0deg,#000 0 5px,transparent 5px 7px);mask:repeating-linear-gradient(0deg,#000 0 5px,transparent 5px 7px)}
 .meter.b i{background:linear-gradient(0deg,#3fd0e8,#7fe3ff 65%,#e6fbff)}
 .led{justify-self:center;display:flex;align-items:center;gap:5px;font:800 10px/1 var(--mono);letter-spacing:.06em;color:#6c6480;white-space:nowrap}
@@ -278,14 +280,14 @@ input[type=range].dragging::-moz-range-thumb{filter:brightness(1.35)}
 #crossfader::-moz-range-thumb{width:54px;height:66px;border:0;border-radius:5px;background:url('../../img/ui/dj/fader-cap-silver.webp') center/contain no-repeat;filter:drop-shadow(0 5px 5px #000c)}
 #crossfader.dragging::-webkit-slider-thumb,#crossfader:active::-webkit-slider-thumb{filter:brightness(1.25) drop-shadow(0 0 7px #fff8ea)}
 .xfade.go #crossfader::-webkit-slider-thumb{filter:drop-shadow(0 5px 5px #000c) drop-shadow(0 0 9px #ffc857)}
-.guide{position:absolute;z-index:1;top:6px;height:88px;background:url('../../img/ui/dj/zone.webp') center/100% 100% no-repeat;pointer-events:none;transition:left .06s linear}
+.guide{position:absolute;z-index:1;left:0;top:6px;height:88px;background:url('../../img/ui/dj/zone.webp') center/100% 100% no-repeat;pointer-events:none;will-change:transform;transition:transform .06s linear}
 .guide[hidden],.fader-arrows[hidden]{display:none}
 .guide.in{background-image:url('../../img/ui/dj/zone-ok.webp')}
 .guide.hit{animation:guide-hit .3s ease-out}
 .guide.miss{animation:guide-miss .3s ease-out}
 @keyframes guide-hit{0%{filter:brightness(1.8)}}
 @keyframes guide-miss{0%{filter:hue-rotate(-70deg) brightness(1.4)}}
-.fader-arrows{position:absolute;z-index:3;top:28px;height:44px;display:flex;justify-content:flex-start;align-items:center;gap:1px;pointer-events:none}
+.fader-arrows{position:absolute;z-index:3;left:0;top:28px;height:44px;will-change:transform;display:flex;justify-content:flex-start;align-items:center;gap:1px;pointer-events:none}
 .fader-arrows i[hidden]{display:none}
 .fader-arrows i{flex:none;width:28px;height:38px;background:url('../../img/ui/dj/chevron.webp') center/contain no-repeat;filter:drop-shadow(0 2px 3px #000a);animation:march .75s linear infinite}
 .fader-arrows.left{flex-direction:row-reverse}.fader-arrows.left i{transform:scaleX(-1)}
