@@ -1,0 +1,105 @@
+/* 新版（LK02）の絵の部品（LK19・2026-11-11 オーナー「CSSで作りました感強いところは直したい」）。
+   look-neo.css は面・札・ボタンを CSS のグラデーションと細い線だけで描いていた。ここで、制作・大会の画面と同じ夜紫の絵の部品
+   （生成した板・ボタン・帯。原画と依頼文は asset_sources/ui/craft-night-20261102/、実行時の WebP は img/ui/craft-night/）を九分割で重ねる。
+   - 重ねるのは絵だけ。箱の大きさ・余白・文字・押せる範囲は look-neo.css のまま（縁の幅は 0 のまま、border-image-width で絵の縁の太さを決める）。
+   - 絵が読めない時は、look-neo.css のグラデーションの面がそのまま見える。
+   - すべての規則を :root[data-look="neo"] の中に書く。look-neo.css のどの規則より後に効くよう、#viewport と #stage の2つを重ねて始める。
+   - 実物をまねた物（LIME など）と固有の見た目のミニゲームには当てない（LK18・LK20）。会話の帯は下の絵を透かす作りなので絵を重ねない。 */
+:root[data-look="neo"] body:not(.game-ds) #viewport #stage {
+  --neo-art-board: url("../img/ui/craft-night/board.webp");
+  --neo-art-button: url("../img/ui/craft-night/button-glass.webp");
+  --neo-art-button-gold: url("../img/ui/craft-night/button-gold.webp");
+  --neo-art-strip: url("../img/ui/craft-night/rank-strip.webp");
+}
+
+/* ---------------------------------------------------------------- 1. 板（小窓・行動の選択・章の場面カード・レベルアップ・盤の説明・リザルト・ギャラリー・ショップ・地図の案内）
+   織り目のある夜紫の板に、金とラベンダーの二重の罫線と、四隅の小さな煙の飾り。 */
+:root[data-look="neo"] body:not(.game-ds) #viewport #stage :is(
+  #modal .modal-box, #vn .vn-log, #modal .gal,
+  #screen .sub-menu, #screen .ch2-contest:not(:has(.ch2-contest-ranking)), #screen .ch2-shell > .panel,
+  #screen .shop-paper, #screen .result-screen .result-panel, #screen .map .map-info,
+  #fx .levelup, #fx .gboard .gb-side
+) {
+  border-style: solid;
+  border-color: transparent;
+  border-image: var(--neo-art-board) 48 fill / 24px / 0 stretch;
+  border-radius: 2px;
+  box-shadow: 0 18px 48px rgba(8, 3, 16, .62);
+}
+
+/* ---------------------------------------------------------------- 2. ボタン: 夜紫のガラスの札。主のボタンは金の札（まわりに淡い光）。 */
+:root[data-look="neo"] body:not(.game-ds) #viewport #stage :is(
+  #screen .sub-menu, #screen .ch2-contest:not(:has(.ch2-contest-ranking)), #screen .ch2-shell > .panel, #screen .shop-paper,
+  #screen .end-screen:not(.gameover), #screen .result-screen,
+  #modal .modal-box, #modal > .dmenu, #modal .gal-viewer-tools, #vn .vn-log, #fx .levelup, #fx .gboard, #hud .ch2-tournament-vn-menu
+) .btn:not(.xfer-q) {
+  border-style: solid;
+  border-color: transparent;
+  border-image: var(--neo-art-button) 40 fill / 13px / 0 stretch;
+  box-shadow: none;
+}
+:root[data-look="neo"] body:not(.game-ds) #viewport #stage :is(
+  #screen .sub-menu, #screen .ch2-contest:not(:has(.ch2-contest-ranking)), #screen .ch2-shell > .panel, #screen .shop-paper,
+  #screen .end-screen:not(.gameover), #screen .result-screen,
+  #modal .modal-box, #modal > .dmenu, #modal .gal-viewer-tools, #vn .vn-log, #fx .levelup, #fx .gboard
+) .btn:is(.primary, .result-next, [aria-pressed="true"]):not(.xfer-q) {
+  border-image: var(--neo-art-button-gold) 52 fill / 17px / 3.6px stretch;
+}
+:root[data-look="neo"] body:not(.game-ds) #viewport #stage :is(
+  #screen .sub-menu, #screen .ch2-contest:not(:has(.ch2-contest-ranking)), #screen .ch2-shell > .panel, #screen .shop-paper,
+  #screen .end-screen:not(.gameover), #screen .result-screen,
+  #modal .modal-box, #modal > .dmenu, #modal .gal-viewer-tools, #vn .vn-log, #fx .levelup, #fx .gboard, #hud .ch2-tournament-vn-menu
+) .btn:is(:hover, :focus-visible):not(:disabled, .xfer-q) {
+  filter: brightness(1.14);
+  box-shadow: 0 0 0 3px rgba(201, 167, 230, .22);
+}
+
+/* ---------------------------------------------------------------- 3. 行動の選択の札（.big-choice）: 煙の流れる夜紫の帯。選ぶと金の札。 */
+:root[data-look="neo"] body:not(.game-ds) #viewport #stage #screen .sub-menu .big-choice {
+  border-style: solid;
+  border-color: transparent;
+  border-image: var(--neo-art-strip) 30 fill / 12px / 0 stretch;
+}
+:root[data-look="neo"] body:not(.game-ds) #viewport #stage #screen .sub-menu .big-choice:is(:hover, :focus-visible):not(:disabled) {
+  border-image: var(--neo-art-button-gold) 52 fill / 17px / 3.6px stretch;
+}
+
+/* ---------------------------------------------------------------- 4. 細い帯（HUD の板・会話の選択肢・通知・獲得の札）: 煙の流れる夜紫の帯に金の細い縁。 */
+:root[data-look="neo"] body:not(.game-ds) #viewport #stage :is(#hud .hud-card, #vn .vn-choice, #toasts .toast, #banners .gain-card) {
+  border-style: solid;
+  border-color: transparent;
+  border-image: var(--neo-art-strip) 30 fill / 10px / 0 stretch;
+}
+:root[data-look="neo"] body:not(.game-ds) #viewport #stage #vn .vn-choice:is(:hover, :focus-visible, .picked) {
+  border-image: var(--neo-art-button-gold) 52 fill / 17px / 3.6px stretch;
+}
+
+/* ---------------------------------------------------------------- 5. 全画面 MENU: 夜のラウンジの面（奥に灯りと煙）と、織り目のある札。 */
+:root[data-look="neo"] body:not(.game-ds) #viewport #stage #modal > .dmenu .dm-sheet {
+  background:
+    linear-gradient(180deg, rgba(21, 13, 34, .5), rgba(21, 13, 34, .2) 40%, rgba(21, 13, 34, .55)),
+    #150d22 url("../img/ui/craft-night/backdrop.webp") center / cover no-repeat;
+}
+:root[data-look="neo"] body:not(.game-ds) #viewport #stage #modal > .dmenu .dm-card {
+  border-style: solid;
+  border-color: transparent;
+  border-image: url("../img/ui/craft-night/window.webp") 40 fill / 14px / 0 stretch;
+}
+
+/* ---------------------------------------------------------------- 6. 小さな札（会話の操作・用語集や STATUS のタブ・ショップのタブ・ギャラリーのタブ・地図の「行く」）
+   ふだんは夜紫のガラスの札、選んでいるタブは金の札。 */
+:root[data-look="neo"] body:not(.game-ds) #viewport #stage :is(
+  #vn .vn-controls .vn-ctl, #modal .gl-tab, #modal .st-tab, #modal .gal-tab, #modal .gal-close, #screen .shop-paper .shop-tab,
+  #screen .map .map-notice, #screen .map .map-guide, #screen .map .mi-go
+) {
+  border-style: solid;
+  border-color: transparent;
+  border-image: var(--neo-art-button) 40 fill / 11px / 0 stretch;
+}
+:root[data-look="neo"] body:not(.game-ds) #viewport #stage :is(
+  #modal .gl-tab.on, #modal .st-tab.on, #modal .gal-tab[aria-selected="true"], #screen .shop-paper .shop-tab.on
+) {
+  border-style: solid;
+  border-color: transparent;
+  border-image: var(--neo-art-button-gold) 52 fill / 14px / 3px stretch;
+}

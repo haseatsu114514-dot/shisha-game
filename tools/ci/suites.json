@@ -4607,6 +4607,7 @@
       "timeout": 16,
       "paths": [
         "remake/css/look-neo.css",
+        "remake/css/look-neo-art.css",
         "remake/js/looks/**",
         "remake/js/core/look.js",
         "remake/css/vn.css",
@@ -4649,6 +4650,7 @@
       "timeout": 8,
       "paths": [
         "remake/css/look-neo-board.css",
+        "remake/css/look-neo-art.css",
         "remake/css/look-neo.css",
         "remake/js/looks/**",
         "remake/js/core/look.js",

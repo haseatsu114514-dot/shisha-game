@@ -186,6 +186,8 @@ const measure = (page) => page.evaluate(async () => {
   };
 });
 
+/** 枠の絵（border-image）は、無いか、制作・大会と同じ夜紫の絵の部品（img/ui/craft-night。LK19）。紙の絵は使わない。 */
+const noPaperFrame = (frame) => frame === "none" || (/img\/ui\/craft-night\//.test(frame) && !/ui\/paper/.test(frame));
 const intersects = (a, b) => a.left < b.right - 0.5 && a.right > b.left + 0.5 && a.top < b.bottom - 0.5 && a.bottom > b.top + 0.5;
 const inside = (r, outer, slack = 0.75) => r.left >= outer.left - slack && r.top >= outer.top - slack && r.right <= outer.right + slack && r.bottom <= outer.bottom + slack;
 const STAGE = { left: 0, top: 0, right: 1280, bottom: 720 };
@@ -538,7 +540,7 @@ async function dailyMap(page, { phone }) {
   // HUD: 紙の箱ではなく、夜紫の半透明の細い板。日付・残り・所持金・体力・Lv が1行に並び、数字は白く大きい。
   assert(inside(m.hud.card, STAGE), `HUD の板がステージの中 ${JSON.stringify(m.hud.card)}`);
   assert(m.hud.card.height <= (phone ? 64 : 50), `HUD は細い板 ${m.hud.card.height}`);
-  assert.equal(m.hud.cardFrame, "none", "HUD に紙の枠の絵を使わない");
+  assert(noPaperFrame(m.hud.cardFrame), "HUD に紙の枠の絵を使わない");
   assert(m.hud.cardFace.includes("linear-gradient") && m.hud.cardFace.includes("rgba("), `HUD は半透明の面 ${m.hud.cardFace}`);
   assert(light(m.hud.dayColor) && light(m.hud.moneyColor), "HUD の数字は白");
   assert.equal(m.hud.day, "5/14");
@@ -571,7 +573,7 @@ async function dailyMap(page, { phone }) {
   for (const pin of m.pins) {
     for (const part of pin.parts) assert(inside(part, STAGE), `${pin.id}: ${part.what}がステージの中 ${JSON.stringify(part)}`);
     assert(pin.labelShown && pin.label, `${pin.id}: 店名が出ている`);
-    assert.equal(pin.band.frame, "none", `${pin.id}: 帯に紙の絵を使わない`);
+    assert(noPaperFrame(pin.band.frame), `${pin.id}: 帯に紙の絵を使わない`);
     // 休み・選べない店の帯は字を薄くする（読める明るさは保つ）。それ以外は白い字。
     const off = pin.classes.includes("off") || pin.classes.includes("closed");
     const ink = pin.labelColor.slice(0, 3).reduce((sum, v) => sum + v, 0);
@@ -648,7 +650,7 @@ async function dailyMap(page, { phone }) {
   const selected = await measureMap(page);
   assert(selected.info.go && inside(selected.info.rect, STAGE), `案内の板がステージの中 ${JSON.stringify(selected.info)}`);
   assert.match(selected.info.banner, /^tonari/);
-  assert.equal(selected.info.frame, "none", "案内の板に紙の枠の絵を使わない");
+  assert(noPaperFrame(selected.info.frame), "案内の板に紙の枠の絵を使わない");
   assert(selected.info.face.includes("linear-gradient"), "案内の板は夜紫の面");
   for (const [name, rect] of [["LIME", selected.hud.lime], ["MENU", selected.hud.menu], ["HUD の板", selected.hud.card]]) assert(!intersects(selected.info.rect, rect), `案内の板が${name}に重ならない`);
 
@@ -682,7 +684,7 @@ async function dailyMap(page, { phone }) {
       back: px(menu.querySelector(".sub-back")) };
   }, STAGE_PX);
   assert(inside(sub.rect, STAGE), `行動の選択がステージの中 ${JSON.stringify(sub.rect)}`);
-  assert.equal(sub.frame, "none");
+  assert(noPaperFrame(sub.frame));
   assert(sub.face.includes("linear-gradient") && light(sub.titleColor), "行動の選択は夜紫の面に白い見出し");
   assert(sub.choices.length >= 2);
   for (const choice of sub.choices) {
@@ -703,7 +705,7 @@ async function dailyMap(page, { phone }) {
     return { rect: px(node), frame: style.borderImageSource, face: style.backgroundImage, main: rgb(getComputedStyle(node.querySelector(".gc-main")).color),
       badge: rgb(getComputedStyle(node.querySelector(".gc-badge")).color), badgeFace: rgb(getComputedStyle(node.querySelector(".gc-badge")).backgroundColor) };
   }, STAGE_PX);
-  assert(inside(gain.rect, STAGE) && gain.frame === "none" && gain.face.includes("linear-gradient") && light(gain.main), `獲得の通知は夜紫の札 ${JSON.stringify(gain)}`);
+  assert(inside(gain.rect, STAGE) && noPaperFrame(gain.frame) && gain.face.includes("linear-gradient") && light(gain.main), `獲得の通知は夜紫の札 ${JSON.stringify(gain)}`);
   assert(light(gain.badge) && dark(gain.badgeFace), `通知の印は暗い札に明るい字 ${JSON.stringify(gain)}`);
   assert.equal(await page.evaluate(() => window.lookNeoDailyError || ""), "");
 }
@@ -753,7 +755,7 @@ async function dailyMenu(page, { phone }) {
   }, who, { timeout: 15000 });
   const common = (m, label) => {
     assert(inside(m.sheet, STAGE), `${label}: MENU の面がステージの中 ${JSON.stringify(m.sheet)}`);
-    assert(m.sheetFace.includes("gradient") && !m.sheetFace.includes("url("), `${label}: 紙の絵ではなく夜紫の面 ${m.sheetFace}`);
+    assert(m.sheetFace.includes("gradient") && !/ui\/paper/.test(m.sheetFace), `${label}: 紙の絵ではなく夜紫の面 ${m.sheetFace}`);
     assert(light(m.ink), `${label}: 文字は白`);
     for (const [name, rect] of [["左の帯", m.side], ["上の帯", m.head], ["中身", m.panel], ["閉じる", m.close]]) assert(inside(rect, m.sheet, 1), `${label}: ${name}が面の中 ${JSON.stringify(rect)}`);
     assert(!m.overflowX, `${label}: 中身が横にはみ出さない`);
@@ -848,7 +850,7 @@ async function dailyMenu(page, { phone }) {
     return { test: node.dataset.test, real: r.height, frame: style.borderImageSource, face: style.backgroundImage + style.backgroundColor, color: style.color };
   }));
   assert.deepEqual(system.map((button) => button.test).slice(0, 6), ["menu-save", "menu-load", "menu-config", "menu-glossary", "menu-rules", "menu-title"]);
-  for (const button of system) assert(button.real >= 38 && button.frame === "none" && !button.face.includes("url("), `システムのボタン ${JSON.stringify(button)}`);
+  for (const button of system) assert(button.real >= 38 && noPaperFrame(button.frame) && !/ui\/paper/.test(button.face), `システムのボタン ${JSON.stringify(button)}`);
 
   // 閉じられる。閉じた後に人物の絵（閉じる動きの写しも含む）を残さない。
   await press(page, page.locator('[data-test="menu-tab-status"]'));
@@ -877,14 +879,14 @@ const measureModal = (page) => page.evaluate((helpers) => {
 
 function assertModal(m, label, { phone }) {
   assert(inside(m.rect, STAGE), `${label}: モーダルがステージの中 ${JSON.stringify(m.rect)}`);
-  assert.equal(m.frame, "none", `${label}: 紙の枠の絵を使わない`);
+  assert(noPaperFrame(m.frame), `${label}: 紙の枠の絵を使わない`);
   assert(m.face.includes("linear-gradient") && m.face.includes("rgba("), `${label}: 夜紫の半透明の面 ${m.face}`);
   assert(light(m.color) && light(m.title), `${label}: 白い文字`);
   assert(m.rule.includes("linear-gradient") && m.rule.includes("227, 189, 110"), `${label}: 見出しの下に金の罫線 ${m.rule}`);
   assert(m.buttons.length >= 1);
   for (const button of m.buttons) {
     assert(inside(button, m.rect, 1) && button.real >= 38 && button.height >= (phone ? 72 : 44) - .5, `${label}: ボタンの大きさ ${JSON.stringify(button)}`);
-    assert.equal(button.frame, "none");
+    assert(noPaperFrame(button.frame));
     // 主のボタンは金に墨の字、ほかは夜紫に白い字。
     assert(button.primary ? button.face.includes("linear-gradient") && !light(button.ink) : light(button.ink), `${label}: ボタンの色 ${JSON.stringify(button)}`);
   }
@@ -958,7 +960,7 @@ async function modals(page, { phone }) {
   assert.deepEqual(list.map((slot) => [slot.test, slot.off, slot.blank]), [["slot-0", true, false], ["slot-1", false, true]]);
   for (const slot of list) {
     assert(inside(slot, box, 1) && slot.real >= 38, `セーブの枠が収まる ${JSON.stringify(slot)}`);
-    assert(slot.frame === "none" && light(slot.ink) && slot.face.slice(0, 3).reduce((sum, v) => sum + v, 0) < 300, `セーブの枠は夜紫の札 ${JSON.stringify(slot)}`);
+    assert(noPaperFrame(slot.frame) && light(slot.ink) && slot.face.slice(0, 3).reduce((sum, v) => sum + v, 0) < 300, `セーブの枠は夜紫の札 ${JSON.stringify(slot)}`);
   }
   assert(!intersects(list[0], list[1]));
   await press(page, page.locator('[data-test="slot-1"]'));
@@ -971,7 +973,7 @@ async function modals(page, { phone }) {
     return { rect: px(node), text: node.textContent, frame: style.borderImageSource, face: style.backgroundImage, ink: rgb(style.color) };
   }, STAGE_PX);
   assert.match(notice.text, /保存した/);
-  assert(inside(notice.rect, STAGE) && notice.frame === "none" && notice.face.includes("linear-gradient") && notice.ink.reduce((sum, v) => sum + v, 0) > 480,
+  assert(inside(notice.rect, STAGE) && noPaperFrame(notice.frame) && notice.face.includes("linear-gradient") && notice.ink.reduce((sum, v) => sum + v, 0) > 480,
     `通知は夜紫の札 ${JSON.stringify(notice)}`);
 
   // ロード: 書き込んだ枠が並ぶ。選ぶと確認の問い（やめる／ロードする）。やめれば地図のまま。
@@ -1032,7 +1034,7 @@ async function title(page, { phone }) {
   assert.deepEqual(m.items.map((item) => item.test), ["title-new", "title-load", "title-gallery", "title-config"]);
   for (const [index, item] of m.items.entries()) {
     assert(inside(item, STAGE) && item.height >= 72 - .5 && item.real >= 38 && item.width >= 300, `${item.test}: 札の押せる大きさ ${JSON.stringify(item)}`);
-    assert(item.face.includes("linear-gradient") && item.frame === "none", `${item.test}: 控えめな夜紫の札 ${item.face}`);
+    assert(item.face.includes("linear-gradient") && noPaperFrame(item.frame), `${item.test}: 控えめな夜紫の札 ${item.face}`);
     assert(inside(item.en, item, 1) && item.jaShown && inside(item.ja, item, 1), `${item.test}: 主文と副題が札に収まる`);
     assert.equal(item.mark, "none", "選んだ印は「◆」ではなく金の線");
     if (index) assert(item.top - m.items[index - 1].bottom >= 15.5, `${item.test}: 行の間隔は現行と同じ（16px）`);
@@ -1255,7 +1257,7 @@ async function chapterMap(page, { phone, chapter }) {
   // HUD: 夜紫の細い板1本。板が長くなりすぎない（上端近くの看板と居る人の顔に掛けない）。
   assert(inside(m.hud.card, STAGE) && m.hud.card.height <= (phone ? 64 : 50), `${label}: HUD は細い板 ${JSON.stringify(m.hud.card)}`);
   assert(m.hud.card.right <= (phone ? 640 : 720), `${label}: HUD の板が長くなりすぎない ${m.hud.card.right}`);
-  assert(m.hud.cardFrame === "none" && m.hud.cardFace.includes("linear-gradient") && light(m.hud.dayColor) && light(m.hud.moneyColor), `${label}: HUD は夜紫の板に白い数字`);
+  assert(noPaperFrame(m.hud.cardFrame) && m.hud.cardFace.includes("linear-gradient") && light(m.hud.dayColor) && light(m.hud.moneyColor), `${label}: HUD は夜紫の板に白い数字`);
   for (const rect of m.hud.inside) assert(inside(rect, m.hud.card, 1), `${label}: HUD の中身が板に収まる ${JSON.stringify(rect)}`);
   assert(Math.abs(m.hud.stamina.width - 120) < 1 && Math.abs(m.hud.expBar.width - 120) < 1, `${label}: ゲージは現行と同じ長さ`);
   if (phone) {
@@ -1287,7 +1289,7 @@ async function chapterMap(page, { phone, chapter }) {
       assert(inside(part, STAGE), `${label}: ${pin.id} の${part.what}がステージの中 ${JSON.stringify(part)}`);
       for (const [name, rect] of fixed) assert(!intersects(part, rect), `${label}: ${pin.id} の${part.what}が${name}に重ならない ${JSON.stringify([part, rect])}`);
     }
-    assert(pin.labelShown && pin.label && pin.band.frame === "none", `${label}: ${pin.id} の店名の帯`);
+    assert(pin.labelShown && pin.label && noPaperFrame(pin.band.frame), `${label}: ${pin.id} の店名の帯`);
     const off = pin.classes.includes("off") || pin.classes.includes("closed");
     const ink = pin.labelColor.slice(0, 3).reduce((sum, v) => sum + v, 0);
     assert(dark(pin.band.labelFace) && (off ? ink > 480 : light(pin.labelColor)), `${label}: ${pin.id} の帯は夜紫に白い字 ${pin.band.labelFace} / ${pin.labelColor}`);
@@ -1324,7 +1326,7 @@ async function chapterMap(page, { phone, chapter }) {
   await page.mouse.move(640, 700);
   await page.waitForTimeout(350);
   const selected = await measureMap(page);
-  assert(selected.info && inside(selected.info.rect, STAGE) && selected.info.frame === "none" && selected.info.face.includes("linear-gradient"), `${label}: 案内の板 ${JSON.stringify(selected.info)}`);
+  assert(selected.info && inside(selected.info.rect, STAGE) && noPaperFrame(selected.info.frame) && selected.info.face.includes("linear-gradient"), `${label}: 案内の板 ${JSON.stringify(selected.info)}`);
   for (const [name, rect] of [["LIME", selected.hud.lime], ["MENU", selected.hud.menu], ["HUD の板", selected.hud.card]]) assert(!intersects(selected.info.rect, rect), `${label}: 案内の板が${name}に重ならない`);
   if (spec.expect.menu) await chapterMenu(page, label, spec.expect.menu, { phone });
 }
@@ -1335,7 +1337,7 @@ async function chapterMenu(page, label, parts, { phone }) {
   await page.locator(".dmenu .dm-tab").nth(3).waitFor();
   await page.locator(".dmenu .dm-sheet").evaluate((node) => Promise.all(node.getAnimations().map((a) => a.finished.catch(() => {}))));
   const fits = (m, tab) => {
-    assert(inside(m.sheet, STAGE) && m.sheetFace.includes("gradient") && !m.sheetFace.includes("url(") && light(m.ink), `${label} MENU ${tab}: 夜紫の面`);
+    assert(inside(m.sheet, STAGE) && m.sheetFace.includes("gradient") && !/ui\/paper/.test(m.sheetFace) && light(m.ink), `${label} MENU ${tab}: 夜紫の面`);
     for (const part of parts) assert(m.summary.includes(part), `${label} MENU: 上の帯に ${part}（${m.summary}）`);
     for (const row of m.summaryRows) assert(inside(row, m.head, 1) && row.right <= m.close.left, `${label} MENU: 上の帯の項目が「閉じる」に掛からない ${JSON.stringify(row)}`);
     assert(!m.overflowX, `${label} MENU ${tab}: 中身が横にはみ出さない`);
@@ -1389,7 +1391,7 @@ function assertCard(m, label, classic, { phone }) {
     const before = classic.buttons[index];
     assert(inside(button, m.rect, 1) && button.real >= 38 && button.height >= before.height - 2.5 && button.width >= before.width - 2.5,
       `${label}: ${button.label} の押せる大きさは現行と同じ ${JSON.stringify([button, before])}`);
-    assert.equal(button.frame, "none");
+    assert(noPaperFrame(button.frame));
     // 主のボタンは金に墨の字、ほかは夜紫に白い字。
     assert(button.primary ? button.face.includes("linear-gradient") && !light(button.ink) : dark(button.fill) && light(button.ink), `${label}: ${button.label} の色 ${JSON.stringify(button)}`);
   }
@@ -1538,7 +1540,7 @@ async function shopScreen(page, { phone }) {
   await setLook(page, "neo");
   await page.waitForTimeout(300);
   assert.equal(m.look, "neo");
-  assert(inside(m.rect, STAGE) && m.frame === "none" && m.face.includes("linear-gradient") && m.face.includes("rgba(36, 22, 55"), `ショップは夜紫の面 ${m.face}`);
+  assert(inside(m.rect, STAGE) && noPaperFrame(m.frame) && m.face.includes("linear-gradient") && m.face.includes("rgba(36, 22, 55"), `ショップは夜紫の面 ${m.face}`);
   assert(light(m.ink) && light(m.head) && m.rule.includes("227, 189, 110"), "店名は白、見出しの下に金の罫線");
   assert(!classic.face.includes("rgba(36, 22, 55"), "現行は紙のまま");
   // 情報（所持金・タブ・商品名・値段・所持数・購入の札）は現行と同じ。
@@ -1820,7 +1822,7 @@ async function galleryScreen(page, { phone }) {
   await setLook(page, "neo");
   await page.waitForTimeout(300);
   assert.equal(m.look, "neo");
-  assert(inside(m.box, STAGE) && m.frame === "none" && m.box.face.includes("rgba(36, 22, 55") && light(m.box.ink) && light(m.title), `ギャラリーは夜紫の面 ${JSON.stringify(m.box)}`);
+  assert(inside(m.box, STAGE) && noPaperFrame(m.frame) && m.box.face.includes("rgba(36, 22, 55") && light(m.box.ink) && light(m.title), `ギャラリーは夜紫の面 ${JSON.stringify(m.box)}`);
   assert(m.rule.includes("227, 189, 110"), "見出しの下に金の罫線");
   // 収集率・タブ・枠の中身は現行と同じ。押せる大きさも同じ。
   assert.equal(m.rate, classic.rate);
