@@ -1,6 +1,7 @@
 // 一台勝負 第0.2版の計算（記録）。第0.3版は sim_v03.mjs（ゲーム内の規則とCPUで比べる）と v0.3_design.md。
 // 第0.2版のルールを動かし、決まった手筋で打つコンピュータどうしを対戦させて数値を確かめる。
 // cards.js は第0.3版（必要火力 need）になったので、第0.2版の火力（払うコスト）はこのファイルの COST_V02 に残してある。
+// cards.js の炭の heat は第0.4版で「新品の火」（フラット2・キューブ3）になったので、第0.2版の炭の熱（フラット1・キューブ2）も HEAT_V02 に残してある。
 // 使い方: node sim.mjs                 … 下の実験をすべて回して結果を表示
 //         node sim.mjs --games 400     … 1実験あたりの対戦数（既定 600）
 //         node sim.mjs --only decks    … 実験を選ぶ（decks,coals,rules,flavors,settings をカンマ区切り）
@@ -15,7 +16,9 @@ const COST_V02 = { 熱を入れる吸い: 1, 熱を逃がす吸い: 1, ブロー
   トングさばき: 0, 火おこし: 1, 内寄せ: 2, 外寄せ: 1, 葉をほぐす: 2, ひと息: 1, 仕切り直し: 'B2', 風防: 2, チャコスタ: 2, キッチンタイマー: 1, アイスホース: 2,
   ディフューザー: 2, 実況の煽り: 2, すきま風: 2, 会場の熱気: 1, 後の先: 1, 買い占め: 1, 詰め直し: 1, アンコール: 4,
   スミさん: 3, なる: 2, アダム: 3, みんと: 2, ましろ: 2, つむぎ: 2, パッキー: 2 };
-const S = Object.fromEntries(C.SUPPORT.map((s) => [s.n, { ...s, cost: s.type === '炭' ? '—' : COST_V02[s.n] }]));
+// 第0.2版の炭の熱（表向きでのせているあいだの熱）。このファイルは炭を heat 1＝フラット・2＝キューブで見分ける。cards.js の heat（第0.4版の新品の火）は読まない
+const HEAT_V02 = { フラット炭: 1, キューブ炭: 2, 高密度フラット炭: 1 };
+const S = Object.fromEntries(C.SUPPORT.map((s) => [s.n, s.type === '炭' ? { ...s, cost: '—', heat: HEAT_V02[s.n] } : { ...s, cost: COST_V02[s.n] }]));
 const J = Object.fromEntries(C.JUDGES.map((j) => [j.id, j]));
 const PLAIN = { ...C.PUFF.normal };
 
