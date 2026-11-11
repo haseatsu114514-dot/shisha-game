@@ -1456,6 +1456,70 @@
       ]
     },
     {
+      "id": "lime_rei_bond_a",
+      "sender": "rei",
+      "chapter": 2,
+      "type": "chat",
+      "trigger_condition": "flag",
+      "trigger_flag": "_ch2_read_ch2_rei_third",
+      "messages": [
+        {
+          "sender": "rei",
+          "text": "……健太"
+        },
+        {
+          "sender": "rei",
+          "text": "試しに、こっちで名乗ってみた"
+        },
+        {
+          "sender": "rei",
+          "text": "……変なら、戻す"
+        }
+      ],
+      "replies": [
+        {
+          "text": "変じゃないです",
+          "response": "……そうか。店では、レヰのままでいい",
+          "affinity": 2
+        },
+        {
+          "text": "どっちで呼べばいいですか",
+          "response": "……どっちでも。どっちで呼ばれても、振り向く",
+          "affinity": 1
+        }
+      ]
+    },
+    {
+      "id": "lime_rei_bond_b",
+      "sender": "rei",
+      "chapter": 2,
+      "type": "chat",
+      "trigger_condition": "flag",
+      "trigger_flag": "_ch2_rei_ticket",
+      "messages": [
+        {
+          "sender": "rei",
+          "text": "……チケットの端、折れてた。ごめん"
+        },
+        {
+          "sender": "rei",
+          "text": "渡すか迷って、ポケットの中で何回も握ってた"
+        }
+      ],
+      "replies": [
+        {
+          "text": "折れてても大事にします",
+          "response": "……うん。入口では、それで通れる",
+          "affinity": 2
+        },
+        {
+          "text": "迷ってたんですね",
+          "response": "……三回しまった。四回目で、出せた",
+          "affinity": 1
+        }
+      ]
+    },
+    {
       "id": "rumor_kemuri_experiments",
       "sender": "naru",
       "trigger_condition": "lime_exchanged",
@@ -1691,6 +1755,72 @@
           "text": "リンゴに見えますね",
           "response": "……気づいたか。そうだ、あの夜の月は熟れていた。お前も、ようやく見える目になってきたな",
           "affinity": 2
+        }
+      ]
+    },
+    {
+      "id": "lime_adam_bond_a",
+      "sender": "adam",
+      "trigger_condition": "affinity_level",
+      "trigger_value": 3,
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "adam",
+          "text": "はじめよ。今、湯を沸かしている"
+        },
+        {
+          "sender": "adam",
+          "text": "カップの蓋に『三分』とある。……炭が赤くなるまでより、短いのか"
+        },
+        {
+          "sender": "adam",
+          "text": "待つ間、蓋の上に何か載せるべきか。ボウルのように"
+        }
+      ],
+      "replies": [
+        {
+          "text": "炭は載せないでくださいね",
+          "response": "……載せぬ。今、トングを置いたところだ",
+          "affinity": 2
+        },
+        {
+          "text": "割り箸を載せれば十分です",
+          "response": "割り箸か。……なるほど、軽い重しだな。覚えておこう",
+          "affinity": 1
+        }
+      ]
+    },
+    {
+      "id": "lime_adam_bond_b",
+      "sender": "adam",
+      "trigger_condition": "affinity_level",
+      "trigger_value": 4,
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "adam",
+          "text": "はじめよ。今朝の一台目を、焦がした"
+        },
+        {
+          "sender": "adam",
+          "text": "客に出す前に、自分で吸って分かった。客は知らぬ。……だが、俺は知っている"
+        },
+        {
+          "sender": "adam",
+          "text": "何年やっても、焦がす朝はある。二台目は、炭を一つ外へ寄せた"
+        }
+      ],
+      "replies": [
+        {
+          "text": "俺も、昨日焦がしました",
+          "response": "そうか。……ならば同志よ、今日の一台目は、昨日より一拍遅く置け",
+          "affinity": 2
+        },
+        {
+          "text": "二台目は、どうでした？",
+          "response": "甘さが戻った。……焦がした朝のことほど、よく覚えている",
+          "affinity": 1
         }
       ]
     },
@@ -4896,7 +5026,7 @@
         },
         {
           "sender": "sumi",
-          "text": "換えたり、俺に言え。言わなくていいのは、換えたあとの報告だけだ。"
+          "text": "換えられない日は、俺に言え。言わなくていいのは、換えたあとの報告だけだ。"
         }
       ],
       "replies": [

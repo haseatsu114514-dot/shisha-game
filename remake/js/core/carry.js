@@ -177,6 +177,7 @@ export const FLAG_EXACT_RULES = [
   ["_ch2_read_ch2_rei_fifth", "person"],
   ["_ch2_read_ch2_rei_fourth", "person"],
   ["_ch2_read_ch2_rei_sixth", "person"],
+  ["_ch2_read_ch2_rei_third", "person"], // レヰの本名の回。LIME lime_rei_bond_a の条件
   ["_ch2_read_ch2_slump_taste", "progression"],
   ["_ch2_read_ch2_sofa_burn", "progression"],
   ["_ch2_read_ch2_strawberry_sample", "progression"],

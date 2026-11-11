@@ -135,7 +135,10 @@
         { "speaker": "naru", "face": "smile", "text": "走ってきた。昼に外を歩くと、頭が煮える" },
         { "speaker": "hajime", "face": "normal", "text": "旅先でも、走ってたの？" },
         { "speaker": "naru", "face": "smile", "text": "それは、勝ってから話す約束だろ" },
-        { "speaker": "naru", "face": "normal", "text": "それより、飯は食えよ。台より先に、自分の腹な" }
+        { "speaker": "naru", "face": "normal", "text": "お前の話なら聞く。……休みの日の話、まだ聞いてねえぞ" },
+        { "speaker": "hajime", "face": "normal", "text": "……寝て、飯食って。何もしない日も、作ってみた" },
+        { "speaker": "naru", "face": "smile", "text": "上出来だ" },
+        { "speaker": "naru", "face": "normal", "text": "その調子で、飯は食えよ。台より先に、自分の腹な" }
       ]
     },
     {
@@ -156,9 +159,11 @@
       "comment": "なると会う3回目（クリーク沿い。昼・夜どちらでも読める）。再開した店の話を短く。旅の話は一つだけで、続きは大会の後。なるはここでも負けを認めない。",
       "lines": [
         { "speaker": "", "face": "", "text": "クリーク沿い。手すりにもたれたなるが、渡し舟を目で追っていた。" },
-        { "speaker": "hajime", "face": "normal", "text": "店、再開した日はどうだった？" },
+        { "speaker": "hajime", "face": "normal", "text": "再開した日のこと、もう少し聞かせて" },
         { "speaker": "naru", "face": "normal", "text": "前からの客が、いつもの注文をした。休んでた理由も聞かずにな" },
         { "speaker": "naru", "face": "smile", "text": "きつかったけど、一番うれしかった" },
+        { "speaker": "naru", "face": "normal", "text": "閉めた店に、また客が来る。……親父の店じゃ、見られなかった景色だ" },
+        { "speaker": "", "face": "", "text": "何か言いかけて、やめた。渡し舟が、ゆっくり向こう岸に着いた。" },
         { "speaker": "naru", "face": "normal", "text": "……旅の話も、一個だけな。客が吸う速さを、ずっと数えてた" },
         { "speaker": "hajime", "face": "surprise", "text": "……俺も、ノートに同じこと書いてる" },
         { "speaker": "naru", "face": "smile", "text": "そっか。じゃあ、なおさら負けられねえな" }
