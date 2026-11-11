@@ -181,6 +181,41 @@ for (const scenario of scenarios) {
     assert.equal(steady.club.up, 'false'); assert.match(steady.club.text, /部の実績 ＋1次のランクまで あと 8/); assert.doesNotMatch(steady.club.text, /能力＋/);
     assert.equal(play({ growth: 1, onComplete: () => ({ club: { gained: 0, rankUp: false, growthUp: 0, next } }) }).club, null, 'nothing gained, nothing shown');
   });
+  // じっくり調べる（目星・TRF14）: 見立ての卓で一度だけ振れる。出目と結果の帯・違いそうな見立ての付箋が出て、しおりにも残る。
+  test(scenario.id + ': a closer look rolls once on the guess board, marks the wrong guesses and is kept in the bookmark', () => {
+    const marks = [];
+    const mounted = mount(scenario, { onBookmark: mark => marks.push(mark) }), { api, root, q, drain, roll, declare, interview } = mounted;
+    q('trpg-start').click(); drain(); declare('listen'); roll(); q('trpg-settle').click(); drain(); interview();
+    for (const spot of scenario.spots.slice(0, 3)) { q('trpg-spot-' + spot.id).click(); drain(); }
+    q('trpg-interpret').click();
+    const eye = api.snapshot().pc.stats.eye;
+    assert.equal(q('trpg-search').textContent, 'じっくり調べる' + scenario.presentation.stats.eye + ' ＋' + eye + ' · 1回');
+    assert.match(q('trpg-search').getAttribute('aria-label'), /一度だけ。成功 約\d+%で違う見立てが2つ、ひと手間 約\d+%で1つ分かる/);
+    assert.equal(root.querySelectorAll('.trpg-hint-mark').length, 0);
+    const pending = timers.length;
+    q('trpg-search').click(); for (const fn of timers.splice(pending)) fn();
+    const found = api.snapshot().search;
+    assert.equal(found.base, eye); assert.equal(root.querySelector('[data-test="trpg-search"]'), null, 'one look per table');
+    const strip = q('trpg-search-result');
+    assert.equal(strip.dataset.grade, found.grade); assert.equal(strip.dataset.fresh, 'true');
+    assert(strip.textContent.startsWith(found.dice.join('') + '＋' + eye + ' ＝ ' + found.total), strip.textContent);
+    assert(strip.textContent.endsWith(found.ruled.length ? '✕ ' + found.ruled.length + 'つ' : '決め手なし'), strip.textContent);
+    assert.equal(root.querySelectorAll('.trpg-hint-mark').length, found.ruled.length);
+    for (const h of scenario.hypotheses) assert.equal(q('trpg-hypothesis-' + h.id).dataset.ruled, String(found.ruled.includes(h.id)));
+    assert(marks.at(-1).actions.some(([key]) => key === 'search'), 'the bookmark keeps the look');
+    // Reopening the board shows the same result without replaying the roll.
+    q('trpg-hypothesis-back').click(); q('trpg-interpret').click();
+    assert.equal(q('trpg-search-result').dataset.fresh, 'false');
+    assert.equal(root.querySelectorAll('.trpg-hint-mark').length, found.ruled.length);
+    // A marked guess can still be chosen, and the table goes on as usual.
+    const pick = found.ruled[0] || scenario.hypotheses[0].id;
+    q('trpg-hypothesis-' + pick).click(); drain();
+    assert.equal(api.snapshot().hypothesis, pick);
+    const actions = marks.at(-1).actions; api.destroy();
+    // Continuing from the bookmark lands on the same look.
+    const again = mount(scenario, { resume: { actions } });
+    assert.deepEqual(again.api.snapshot().search, found); again.api.destroy();
+  });
   test(scenario.id + ': a role against type says one line in the role before the ending and one as the player after the table (S17)', () => {
     const text = id => scenario.dialogues.find(d => d.dialogue_id === id).lines[0].text;
     // Play the whole table with the seat's player bringing the given role, and keep every line the ending talk shows.

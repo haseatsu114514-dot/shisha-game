@@ -949,3 +949,41 @@ html:root .trpg-root.trpg-cinematic .trpg-ending-club b { padding: 1px 12px; bor
 html:root .trpg-root.trpg-cinematic .trpg-ending-club strong { color: #ffe39a; font-size: max(17px, var(--tt-min)); }
 html:root .trpg-root.trpg-cinematic .trpg-ending-club i { padding: 1px 10px; border-radius: 999px; font-style: normal; font-weight: 700; color: #2a1b0c; background: linear-gradient(135deg, #cfeacb, #8fc79a); font-size: max(13px, var(--tt-min)); }
 html:root .trpg-root.trpg-cinematic .trpg-ending[data-reveal="true"] > .trpg-ending-club { animation-delay: 2.9s; }
+
+/* ---- じっくり調べる（目星・TRF14）---- */
+/* 見立ての卓の下段: 「もう少し調べる」の右に札。振った後は、同じ場所に出目と結果の帯。決まりは「？」に。 */
+html:root .trpg-root.trpg-cinematic .trpg-search-slot { display: contents; }
+html:root .trpg-root.trpg-cinematic .trpg-hypothesis-stage .trpg-modal-actions .trpg-button.trpg-search {
+  display: inline-flex; align-items: center; justify-content: center; gap: 12px; border-color: var(--tt-brass-hi); color: #fff4d6;
+}
+html:root .trpg-root.trpg-cinematic .trpg-search::before { content: ""; flex: none; width: 24px; height: 26px; background: linear-gradient(135deg, #f7dc8c, #dcae4a);
+  clip-path: polygon(50% 0, 95% 25%, 95% 75%, 50% 100%, 5% 75%, 5% 25%); }
+html:root .trpg-root.trpg-cinematic .trpg-search strong { font-weight: 700; }
+html:root .trpg-root.trpg-cinematic .trpg-search small { padding: 1px 10px; border-radius: 999px; background: #0008; color: #f3d893; font-size: max(13px, var(--tt-min)); white-space: nowrap; }
+html:root .trpg-root.trpg-cinematic .trpg-search-result {
+  display: inline-flex; align-items: center; gap: 10px; min-height: 46px; margin: 0; padding: 4px 18px; box-sizing: border-box; white-space: nowrap;
+  border: 1px solid #b48f4f; border-radius: 3px; background: #0d2528e6; color: #f1ead4; font-size: max(16px, var(--tt-min));
+}
+html:root .trpg-root.trpg-cinematic .trpg-search-die { display: grid; place-items: center; width: 34px; height: 36px; color: #2a1b0c; font-weight: 700; font-size: max(15px, var(--tt-min));
+  background: linear-gradient(135deg, #f7e6b4, #d9b25a); clip-path: polygon(50% 0, 95% 25%, 95% 75%, 50% 100%, 5% 75%, 5% 25%); }
+html:root .trpg-root.trpg-cinematic .trpg-search-result strong { font-size: max(18px, var(--tt-min)); color: #9fe0a8; }
+html:root .trpg-root.trpg-cinematic .trpg-search-result[data-grade="success"] strong { color: #ffe39a; }
+html:root .trpg-root.trpg-cinematic .trpg-search-result[data-grade="trouble"] strong { color: #c9c6ba; }
+html:root .trpg-root.trpg-cinematic .trpg-search-result small { padding: 1px 10px; border-radius: 3px; background: #2c3a52; color: #e9f0ff; font-weight: 700; font-size: max(14px, var(--tt-min)); }
+html:root .trpg-root.trpg-cinematic .trpg-search-result[data-grade="trouble"] small { background: #0006; color: #c9c6ba; font-weight: 400; }
+/* 振った直後だけ: 出目が転がって止まり、合計と結果、付箋の順に現れる。字は最初からDOMにある（読み上げと検査は待たない）。 */
+@media (prefers-reduced-motion: no-preference) {
+  html:root .trpg-root.trpg-cinematic .trpg-search-result[data-fresh="true"] .trpg-search-die { animation: trpg-search-tumble .72s cubic-bezier(.2, .7, .3, 1) both; }
+  html:root .trpg-root.trpg-cinematic .trpg-search-result[data-fresh="true"] .trpg-search-die + .trpg-search-die { animation-duration: .8s; }
+  html:root .trpg-root.trpg-cinematic .trpg-search-result[data-fresh="true"] :is(.trpg-search-sum, strong, small) { animation: trpg-search-in .26s .8s both; }
+  html:root .trpg-root.trpg-cinematic .trpg-choice-cards[data-fresh="true"] .trpg-hint-mark { animation: trpg-search-stamp .32s .95s both; }
+}
+@keyframes trpg-search-tumble { from { transform: translateY(-26px) rotate(-300deg); color: transparent; } 70% { color: transparent; } to { transform: none; color: #2a1b0c; } }
+@keyframes trpg-search-in { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@keyframes trpg-search-stamp { from { opacity: 0; transform: translateX(-50%) rotate(-3deg) scale(1.7); } to { opacity: 1; transform: translateX(-50%) rotate(-3deg) scale(1); } }
+/* 横持ちスマホ: 字と札は規格の大きさ。 */
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-search small { font-size: var(--phone-sub); }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-search-result { min-height: var(--phone-tap); gap: 12px; font-size: var(--phone-text); }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-search-die { width: 52px; height: 56px; font-size: var(--phone-text); }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-search-result strong { font-size: var(--phone-text); }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-search-result small { font-size: var(--phone-sub); }

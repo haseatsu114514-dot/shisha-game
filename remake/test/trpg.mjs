@@ -3,7 +3,7 @@ import { readFile } from "node:fs/promises";
 import { test } from "node:test";
 
 const source = await readFile(new URL("../js/trpg/session.js", import.meta.url), "utf8");
-const { TrpgSession, specialOf, outcomeOf, HEAT, heatTier, checkKindsOf, buildPc, randomPc, grownStats, growthOf, GROWTH_MAX, STATS } = await import("data:text/javascript;base64," + Buffer.from(source).toString("base64"));
+const { TrpgSession, specialOf, outcomeOf, HEAT, heatTier, checkKindsOf, buildPc, randomPc, grownStats, growthOf, GROWTH_MAX, STATS, SEARCH_RULED } = await import("data:text/javascript;base64," + Buffer.from(source).toString("base64"));
 
 // The scenes a full session adds between the old ones: two questions after the first roll, a twist after the guess.
 function interviewDone(s) {
@@ -622,6 +622,67 @@ test("growth from the club's rank gives the player's character one or two more s
     assert.deepEqual(b.dice, a.dice); assert(b.base >= a.base);
     assert.deepEqual(Object.keys(grown.snapshot().pc).sort(), Object.keys(plain.snapshot().pc).sort(), "the recorded character keeps its shape");
   }
+});
+
+test("a closer look (TRF14): once per table the player's character rolls 観察 on dice of its own; it rules out wrong guesses and the story's dice never move", () => {
+  assert.deepEqual({ ...SEARCH_RULED }, { success: 2, mixed: 1, trouble: 0 });
+  for (const s of catalogScenarios) {
+    const toExplore = (seed, options = {}) => {
+      const t = new TrpgSession(s, { seed, ...options }); t.start();
+      assert.throws(() => t.search(), /unavailable/, "not before the room is open");
+      t.beginCheck("listen"); t.settleCheck(); interviewDone(t); return t;
+    };
+    const nextDice = t => {
+      t.interpret(t.profile.id);
+      const kind = t.flow.twist ? "twist" : "prepare";
+      for (const field of t.flow[kind]) t.plan(field, s.options[field][0].id);
+      return t.beginCheck(kind).dice;
+    };
+    const grades = new Set();
+    for (let seed = 1; seed <= 80; seed++) {
+      const t = toExplore(seed);
+      assert.throws(() => t.search(), /three clues/);
+      for (const spot of s.spots.slice(0, 3)) t.inspect(spot.id);
+      const heat = t.snapshot().heat, who = t.searchBase();
+      assert.deepEqual(who, { seat: "hajime", stat: "eye", base: t.sheets.hajime.stats.eye });
+      const found = t.search();
+      grades.add(found.grade);
+      assert.equal(found.total, found.dice[0] + found.dice[1] + who.base);
+      assert.equal(found.grade, outcomeOf(found.dice, who.base).grade);
+      for (const die of found.dice) assert(Number.isInteger(die) && die >= 1 && die <= 20);
+      assert.equal(found.ruled.length, SEARCH_RULED[found.grade]);
+      assert.equal(new Set(found.ruled).size, found.ruled.length);
+      assert(!found.ruled.includes(t.profile.id), "the truth is never ruled out");
+      for (const id of found.ruled) assert(s.hypotheses.some(h => h.id === id));
+      // Only a success lifts the table; nothing is ever spent.
+      assert.equal(t.snapshot().heat, Math.min(HEAT.max, heat + (found.grade === "success" ? 1 : 0)));
+      assert.equal(t.snapshot().teamwork, 2); assert.equal(t.snapshot().checks.length, 1, "it is not one of the story's checks");
+      assert.deepEqual(t.snapshot().search, found);
+      assert.throws(() => t.search(), /Already searched/);
+      // The same seed gives the same look, and the story's next dice are the same with or without it.
+      const again = toExplore(seed); for (const spot of s.spots.slice(0, 3)) again.inspect(spot.id);
+      assert.deepEqual(again.search(), found);
+      const plain = toExplore(seed); for (const spot of s.spots.slice(0, 3)) plain.inspect(spot.id);
+      assert.equal(plain.snapshot().search, null);
+      assert.deepEqual(nextDice(t), nextDice(plain));
+    }
+    assert.deepEqual([...grades].sort(), ["mixed", "success", "trouble"]);
+    // The roll uses the character the player made: a sharper eye is a better look on the same dice.
+    const keen = s.builder.archetypes.slice().sort((a, b) => b.stats.eye - a.stats.eye)[0], dull = s.builder.archetypes.slice().sort((a, b) => a.stats.eye - b.stats.eye)[0];
+    const look = archetype => { const t = toExplore(5, { pc: { archetype: archetype.id } }); for (const spot of s.spots.slice(0, 3)) t.inspect(spot.id); return t.search(); };
+    assert.equal(look(keen).base, keen.stats.eye); assert.equal(look(dull).base, dull.stats.eye);
+    assert.deepEqual(look(keen).dice, look(dull).dice); assert.equal(look(keen).total - look(dull).total, keen.stats.eye - dull.stats.eye);
+  }
+  // The finished table remembers the look; a table that never looked says so.
+  const looked = new TrpgSession(scenario, { seed: 9, profileId: "quiet" }); looked.start(); looked.beginCheck("listen"); looked.settleCheck(); interviewDone(looked);
+  for (const id of ["menu", "window", "bag"]) looked.inspect(id);
+  const found = looked.search();
+  assert.deepEqual(found.dice, [14, 13]); assert.equal(found.grade, "success"); assert.deepEqual(found.ruled.slice().sort(), ["company", "home"]);
+  looked.interpret("quiet"); twistDone(looked);
+  for (const [field, value] of [["aroma", "tea"], ["seat", "window"]]) looked.plan(field, value);
+  looked.beginCheck("prepare"); looked.settleCheck(); looked.plan("approach", "quiet"); looked.beginCheck("serve"); looked.settleCheck();
+  assert.deepEqual(looked.result().search, found);
+  assert.equal(complete().result().search, null);
 });
 
 test("the shopkeeper's first-table tutorial explains GM, PL, PC, the sheet, declaring, rolling and failure in short lines", async () => {

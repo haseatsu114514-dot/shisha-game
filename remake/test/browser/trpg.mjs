@@ -293,6 +293,60 @@ try {
       await marked.tap();
       assert.equal((await snap()).plan.aroma, hints.aroma);
     });
+  // じっくり調べる（目星・TRF14）: seed 9 は、自分の役（観察3）の出目が 14＋13＋3＝30 で成功。違う見立て2つに付箋が付き、本命だけが残る。
+  // PCとスマホ横持ちで、札・出目の帯・付箋が卓に収まることも一緒に見る。
+  for (const [label, options] of [["closer-look-pc", {}], ["closer-look-touch", { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }]]) {
+    await run(label, { seed: "9" }, options, async page => {
+      const snap = () => page.evaluate(() => __trpg.snapshot());
+      const inStage = async selector => page.locator(selector).first().evaluate(n => {
+        const stage = document.getElementById("stage").getBoundingClientRect(), r = n.getBoundingClientRect();
+        return r.width > 0 && r.top >= stage.top - 1 && r.bottom <= stage.bottom + 1 && r.left >= stage.left - 1 && r.right <= stage.right + 1;
+      });
+      await begin(page);
+      for (const id of ["menu", "window", "bag"]) { await hit(page, '[data-test="trpg-spot-' + id + '"]'); await nextLines(page); }
+      const heat = (await snap()).heat;
+      await hit(page, '[data-test="trpg-interpret"]');
+      const look = page.locator('[data-test="trpg-search"]');
+      assert.equal(await look.textContent(), "じっくり調べる観察 ＋3 · 1回", "The card shows the stat and the limit; the rule is in the help");
+      assert.match(await look.getAttribute("aria-label"), /フィンの観察で判定。一度だけ。成功 約\d+%で違う見立てが2つ、ひと手間 約\d+%で1つ分かる/);
+      assert(await inStage('[data-test="trpg-search"]'), "The card stays on the stage");
+      await hit(page, '[data-test="trpg-search"]');
+      const found = (await snap()).search;
+      assert.deepEqual(found.dice, [14, 13]); assert.equal(found.total, 30); assert.equal(found.grade, "success");
+      assert.deepEqual(found.ruled.slice().sort(), ["company", "home"]);
+      assert.equal((await snap()).heat, heat + 1, "A successful look lifts the table by one");
+      assert.equal(await look.count(), 0, "One look per table");
+      const strip = page.locator('[data-test="trpg-search-result"]');
+      assert.equal(await strip.getAttribute("data-grade"), "success");
+      assert.equal(await strip.textContent(), "1413＋3 ＝ 30成功！✕ 2つ");
+      assert.match(await strip.getAttribute("aria-label"), /合計 30。成功！。違いそうな見立てが2つ分かった/);
+      for (const id of found.ruled) {
+        const card = page.locator('[data-test="trpg-hypothesis-' + id + '"]');
+        assert.equal(await card.getAttribute("data-ruled"), "true");
+        assert.match(await card.getAttribute("aria-label"), /じっくり調べた結果：違いそう/);
+        assert.equal(await card.locator(".trpg-hint-mark").textContent(), "✕ 違いそう");
+      }
+      assert.equal(await page.locator('[data-test="trpg-hypothesis-quiet"]').getAttribute("data-ruled"), "false", "The truth is what is left");
+      // 出目が止まり、付箋が出そろってから、卓に収まっていることを見る。
+      await page.waitForFunction(() => [document.querySelector('[data-test="trpg-search-result"]'), ...document.querySelectorAll(".trpg-hypothesis-stage .trpg-hint-mark")]
+        .every(n => n.getAnimations({ subtree: true }).every(a => a.playState === "finished")));
+      assert(await inStage('[data-test="trpg-search-result"]'), "The result strip stays on the stage");
+      for (const id of found.ruled) assert(await inStage('[data-test="trpg-ruled-' + id + '"]'), "The tag stays on the stage");
+      const [back, result] = await Promise.all(['[data-test="trpg-hypothesis-back"]', '[data-test="trpg-search-result"]'].map(sel =>
+        page.locator(sel).evaluate(n => { const r = n.getBoundingClientRect(); return { left: r.left, right: r.right, top: r.top, bottom: r.bottom }; })));
+      assert(back.right <= result.left + 1 && Math.abs((back.top + back.bottom) - (result.top + result.bottom)) < 4, "The two sit side by side under the cards");
+      await page.screenshot({ path: path.join(artifacts, label + ".png") });
+      // 開き直しても同じ結果。出目は転がし直さない。
+      await hit(page, '[data-test="trpg-hypothesis-back"]'); await hit(page, '[data-test="trpg-interpret"]');
+      assert.equal(await strip.getAttribute("data-fresh"), "false");
+      assert.equal(await page.locator(".trpg-hypothesis-stage .trpg-hint-mark").count(), 2);
+      // 残った見立てを選ぶと的中。決まりは「？」に書いてある。
+      await hit(page, '[data-test="trpg-hypothesis-quiet"]'); await nextLines(page);
+      assert.equal((await snap()).hypothesis, "quiet"); assert.equal((await snap()).profileId, "quiet");
+      await hit(page, '[data-test="trpg-help"]');
+      assert.match(await page.locator(".trpg-help-glossary").nth(1).textContent(), /じっくり調べる.*自分の役の観察で判定。成功で2つ、ひと手間で1つ/);
+    });
+  }
   await run("discovery-small-touch", { seed: "12", traveler: "quiet" },
     { viewport: { width: 667, height: 375 }, isMobile: true, hasTouch: true }, async page => {
       await begin(page); await explore(page);

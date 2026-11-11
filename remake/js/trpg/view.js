@@ -4,13 +4,15 @@ import { displayName, portraitUrl, portraitAx, portraitHeadTop, portraitTop as t
 import { costumeUrl } from "./costumes.js";
 import { faceIconStyle } from "./face-crops.js";
 import { createTrpgAudio } from "./audio.js";
-import { checkForecast, rerollOdds } from "./feedback.js";
+import { checkForecast, rerollOdds, rollOdds } from "./feedback.js";
 import { playTrpgEntrance } from "./entrance.js";
 import { playIncarnation, playSceneCard, playResultCut, playClueCard, impact } from "./stage-fx.js";
 
 // 調べる場所の印の半径（見える輪。スマホでは押せる範囲が広いが、輪は同じ大きさ）。ワイドでの上下の切り方に使う
 const ROOM_SPOT_REACH = 28;
 const LABELS = { success: "うまくいった", mixed: "ひと手間かかる", trouble: "思わぬ出来事" };
+// じっくり調べる（TRF14）の結果は短い札に出すので、評価の言葉も短く。
+const SEARCH_LABELS = { success: "成功！", mixed: "ひと手間", trouble: "空振り" };
 const SPECIALS = { critical: "クリティカル！", fumble: "ファンブル……", double: "ゾロ目！" };
 // 判定に賭けるもの（TRF02）: 成功すると何がもらえるかを、振る前にGMの裁定として見せる。
 // 卓の上は短い札だけ（TRF07）。文の説明は「？」とチュートリアル、読み上げ・マウスを乗せた時の説明に置く。
@@ -35,7 +37,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
   warmStart = false, resume = null, onBookmark = null, costumeFrames = null, growth = 0 }) {
   // しおり（TMX13）: the table is the seed plus the order of what was pressed. Every action is recorded, the caller keeps
   // the list at each resting point, and a later visit replays it to land on the same scene (dice included).
-  const RECORDED = ["start", "ask", "endInterview", "inspect", "consult", "interpret", "plan", "beginCheck", "reroll", "settleCheck"];
+  const RECORDED = ["start", "ask", "endInterview", "inspect", "consult", "search", "interpret", "plan", "beginCheck", "reroll", "settleCheck"];
   let pressed = [];
   function recording(target) {
     for (const key of RECORDED) {
@@ -130,7 +132,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
   ]), skip, next]);
   const log = [];
   let frames = [], cursor = 0, afterTalk = null, afterFocus = null, busy = false, disposed = false, choiceField = null;
-  let overlay = null, modalCloser = null, timer = null, rollTicker = null, settleGuard = false;
+  let overlay = null, modalCloser = null, timer = null, rollTicker = null, settleGuard = false, searchTimer = null;
   // 演出（TRF08〜10）: 転生は1卓に一度（しおりから再開した卓は、もう物語の中）。場面の題の札は場面ごとに一度。
   let incarnated = resumed, staging = null, endingRevealed = false, sceneFx = null, clueFx = null, clubGained = null;
   const effects = [], carded = new Set();
@@ -604,14 +606,19 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
       ])),
     ]);
   }
-  function renderBody() {
-    if (disposed) return;
-    syncChrome();
+  /** しおり（TMX13）: 休める所に着くたび、押した順番を呼び出し側へ渡す。 */
+  function keepMark() {
     const state = session.snapshot();
     if (onBookmark && !busy && !completed && !state.pending && state.phase !== "cover" && state.phase !== "ending") {
       onBookmark({ actions: JSON.parse(JSON.stringify(pressed)), pc: build ? { ...build } : null, phase: state.phase,
         title: presentation.phases[state.phase]?.title || "" });
     }
+  }
+  function renderBody() {
+    if (disposed) return;
+    syncChrome();
+    const state = session.snapshot();
+    keepMark();
     content.hidden = state.phase === "cover";
     root.querySelector(".trpg-cover")?.remove();
     if (state.phase === "cover") { cover(); return; }
@@ -823,25 +830,72 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
   }
   function chooseHypothesis() {
     if (busy || overlay) return;
-    let pop;
-    const choices = scenario.hypotheses.map((h, i) => el("button.trpg-button.trpg-object-choice", { type: "button",
-      class: tileStyle(atlas?.rows?.hypotheses, i) ? "" : "trpg-text-choice",
-      dataset: { test: "trpg-hypothesis-" + h.id },
-      "aria-label": h.label + "。" + h.description,
-      onclick: () => {
-        if (!pop || busy) return;
-        session.interpret(h.id); pop.close();
-        // The table talks the guess over; a twist interrupts before the preparation when the scenario has one.
-        const twistIntro = scenario.twist ? (scenario.twist.byProfile?.[session.profile.id] || scenario.twist.intro) : null;
-        talk(sequence(h.discussion, twistIntro ? withCue(twistIntro, "twist") : scenario.preparation), () => renderBody());
-      },
-    }, [tileStyle(atlas?.rows?.hypotheses, i) ? el("span.trpg-object-art", { "aria-hidden": "true", style: tileStyle(atlas.rows.hypotheses, i) })
-      : el("span.trpg-text-choice-mark", { "aria-hidden": "true", text: "ABC"[i] || "" }),
-      el("strong.trpg-object-label", { text: h.label }), el("span.trpg-object-detail", { text: h.description })]));
+    let pop, fresh = false;
+    const cards = el("div.trpg-choice-cards"), slot = el("span.trpg-search-slot");
+    // じっくり調べる（TRF14）の結果で、違いそうな見立てに付箋が付く。付箋が付いても選ぶことはできる。
+    const draw = () => {
+      const search = session.snapshot().search;
+      cards.dataset.fresh = String(fresh);
+      cards.replaceChildren(...scenario.hypotheses.map((h, i) => {
+        const art = tileStyle(atlas?.rows?.hypotheses, i), ruled = !!search?.ruled.includes(h.id);
+        return el("button.trpg-button.trpg-object-choice", { type: "button",
+          class: [art ? "" : "trpg-text-choice", ruled ? "trpg-hinted" : ""].filter(Boolean).join(" "),
+          dataset: { test: "trpg-hypothesis-" + h.id, ruled: String(ruled) },
+          "aria-label": h.label + "。" + h.description + (ruled ? "。じっくり調べた結果：違いそう" : ""),
+          onclick: () => {
+            if (!pop || busy) return;
+            session.interpret(h.id); pop.close();
+            // The table talks the guess over; a twist interrupts before the preparation when the scenario has one.
+            const twistIntro = scenario.twist ? (scenario.twist.byProfile?.[session.profile.id] || scenario.twist.intro) : null;
+            talk(sequence(h.discussion, twistIntro ? withCue(twistIntro, "twist") : scenario.preparation), () => renderBody());
+          },
+        }, [art ? el("span.trpg-object-art", { "aria-hidden": "true", style: art })
+          : el("span.trpg-text-choice-mark", { "aria-hidden": "true", text: "ABC"[i] || "" }),
+          el("strong.trpg-object-label", { text: h.label }), el("span.trpg-object-detail", { text: h.description }),
+          ruled ? el("i.trpg-hint-mark", { "aria-hidden": "true", dataset: { test: "trpg-ruled-" + h.id }, text: "✕ 違いそう", title: "じっくり調べた結果" }) : null].filter(Boolean));
+      }));
+      slot.replaceChildren(searchControl(search, fresh, () => { fresh = true; draw(); pop?.box.focus({ preventScroll: true }); }));
+    };
+    draw();
     pop = modal(presentation.hypothesisTitle, el("div.trpg-hypothesis-board", [
-      el("div.trpg-choice-cards", choices),
+      cards,
       el("details.trpg-evidence-fold", [el("summary", { text: "手がかりを見る (" + session.snapshot().clues.length + ")" }), el("div.trpg-notes-grid", noteCards())]),
-    ]), [button("もう少し調べる", "trpg-hypothesis-back", () => pop.close())], { wide: true, skin: "trpg-hypothesis-stage" });
+    ]), [button("もう少し調べる", "trpg-hypothesis-back", () => pop.close()), slot], { wide: true, skin: "trpg-hypothesis-stage" });
+  }
+  /**
+   * じっくり調べる（目星・TRF14）: 見立ての卓で一度だけ、自分の役の観察で 2d20。成功で2つ、ひと手間で1つ、違う見立てが分かる。
+   * 振る前は札（押せる）、振った後は出目と結果の帯。決まりは「？」に書き、ここには能力と回数だけ出す。
+   */
+  function searchControl(search, fresh, rolled) {
+    const { seat, base } = session.searchBase(), who = sheets[seat]?.name || name(seat);
+    if (!search) {
+      const odds = rollOdds(base);
+      const node = button("", "trpg-search", () => {
+        if (busy || disposed || session.snapshot().search) return;
+        const result = session.search();
+        syncResources(); keepMark(); audio.play("roll"); rolled();
+        const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+        clearTimeout(searchTimer);
+        searchTimer = setTimeout(() => {
+          searchTimer = null;
+          if (disposed) return;
+          audio.play(result.special === "critical" || result.special === "fumble" ? result.special : result.grade);
+          if (result.special === "critical" || result.special === "fumble") stageFx(impact(root, result.special));
+        }, reduced ? 0 : 820);
+      }, { class: "trpg-search", title: "成功で2つ、ひと手間で1つ、違いそうな見立てが分かる",
+        "aria-label": "じっくり調べる。" + who + "の" + statLabel("eye") + "で判定。一度だけ。成功 約" + odds.success + "%で違う見立てが2つ、ひと手間 約" + odds.mixed + "%で1つ分かる" });
+      node.append(el("strong", { text: "じっくり調べる", "aria-hidden": "true" }), el("small", { text: statLabel("eye") + " ＋" + base + " · 1回", "aria-hidden": "true" }));
+      return node;
+    }
+    const label = search.special === "critical" ? SPECIALS.critical : search.special === "fumble" ? SPECIALS.fumble : SEARCH_LABELS[search.grade];
+    return el("p.trpg-search-result", { role: "status", dataset: { test: "trpg-search-result", grade: search.grade, special: search.special || "", fresh: String(fresh) },
+      "aria-label": "じっくり調べた。出目 " + search.dice.join(" と ") + "、" + statLabel("eye") + " ＋" + search.base + "、合計 " + search.total + "。" + label
+        + "。" + (search.ruled.length ? "違いそうな見立てが" + search.ruled.length + "つ分かった" : "決め手は見つからなかった") }, [
+      el("span.trpg-search-die", { text: String(search.dice[0]), "aria-hidden": "true" }), el("span.trpg-search-die", { text: String(search.dice[1]), "aria-hidden": "true" }),
+      el("span.trpg-search-sum", { text: "＋" + search.base + " ＝ " + search.total, "aria-hidden": "true" }),
+      el("strong", { text: label, "aria-hidden": "true" }),
+      el("small", { text: search.ruled.length ? "✕ " + search.ruled.length + "つ" : "決め手なし", "aria-hidden": "true" }),
+    ]);
   }
   // The die travels and casts its shadow; the body inside spins, so the shadow stays on the felt.
   function die(value, rolling = false) {
@@ -1186,7 +1240,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
         el("section", [el("h3", { text: "みんなで選んだこと" }),
           el("p.trpg-recap-hypothesis", { text: "見立て：" + hypothesis.label }), planSummary()]),
         el("section", [el("h3", { text: "サイコロが作った展開" }),
-          ...result.checks.map(check => el("article.trpg-recap-check", { dataset: { grade: check.grade } }, [
+          ...result.checks.flatMap((check, i) => [el("article.trpg-recap-check", { dataset: { grade: check.grade } }, [
             el("strong", { text: scenario.checks[check.kind].title }),
             check.approach ? el("em", { text: (sheets[check.sheet]?.name || "") + (check.actor && cast[check.actor] ? "（" + name(check.actor) + "）" : "") + " · " + pcText(approachesOf(scenario, check.kind).find(a => a.id === check.approach)?.label || "") + " · " + statLabel(check.stat) + "＋" + check.base }) : null,
             el("span", { text: check.dice.join(" ＋ ") + " ＋ 補正" + check.bonus + " ＝ " + check.total + " · " + LABELS[check.grade] }),
@@ -1194,7 +1248,12 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
               check.rerolled ? name(session.rerollActor) + "の振り直し" : "", check.hypothesisBonus ? "見立て＋" + check.hypothesisBonus : "",
               check.special ? SPECIALS[check.special] + (check.inspired ? "連携札＋1" : "") : "", check.near ? "あと" + check.near : "",
               check.reward ? "ごほうび：" + ({ question: "質問＋1", hint: "GMのヒント", finale: "会心のクライマックス" }[check.reward.type] || "") : ""].filter(Boolean).join(" · ") || "基本の判定" }),
-          ])),
+          ]), i === 0 && result.search ? el("article.trpg-recap-check", { dataset: { grade: result.search.grade, test: "trpg-recap-search" } }, [
+            el("strong", { text: "じっくり調べる" }),
+            el("em", { text: (sheets[result.search.seat]?.name || "") + " · " + statLabel("eye") + "＋" + result.search.base }),
+            el("span", { text: result.search.dice.join(" ＋ ") + " ＋ 補正" + result.search.bonus + " ＝ " + result.search.total + " · " + LABELS[result.search.grade] }),
+            el("small", { text: result.search.ruled.length ? "違いそうな見立てが" + result.search.ruled.length + "つ分かった" : "決め手は見つからなかった" }),
+          ]) : null].filter(Boolean)),
         ]),
       ]),
       el("p.trpg-recap-rule", { text: "選んだ提案が結末を、サイコロがそこまでの出来事と手がかりを作りました。" }),
@@ -1402,6 +1461,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
         el("dt", { text: "おすすめ" }), el("dd", { text: "いちばん成功しやすい行動" }),
         el("dt", { text: "見せ場 ＋1" }), el("dd", { text: "その役が初めて前に出る時。自分の役も仲間の役も、卓の盛り上がりが1上がる" }),
         el("dt", { text: "✕ 合わなそう" }), el("dd", { text: "GMのヒント。今夜の事情に合わない選択肢。選ぶことはできる" }),
+        el("dt", { text: "じっくり調べる" }), el("dd", { text: "見立てを選ぶ前に一度だけ、自分の役の" + statLabel("eye") + "で判定。成功で2つ、ひと手間で1つ、違う見立てに「✕ 違いそう」が付く。失っても何も減らない" }),
         el("dt", { text: "あと1……！" }), el("dd", { text: "成功に1〜2足りなかった出目" }),
         el("dt", { text: "会心の印" }), el("dd", { text: "最後の判定に成功した卓。結末に「会心のクライマックス」と出る" }),
       ]),
@@ -1446,7 +1506,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     entrance.cancel();
     for (const effect of effects) effect.cancel();
     if (timer) clearTimeout(timer);
-    clearTimeout(tipTimer);
+    clearTimeout(tipTimer); clearTimeout(searchTimer);
     if (rollTicker) clearInterval(rollTicker);
     if (providedAudio) audio.silence(); else audio.destroy();
     document.removeEventListener("visibilitychange", visibility);

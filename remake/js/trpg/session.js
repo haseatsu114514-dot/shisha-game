@@ -136,6 +136,15 @@ export const phasesOf = scenario => ["listen", ...(scenario.interview ? ["interv
 /** Every roll a full session makes: listen, the optional twist, preparation and the finale. */
 export const checkKindsOf = scenario => ["listen", ...(scenario.flow?.twist ? ["twist"] : []), "prepare", "serve"];
 
+/** A number picked from the seed and a label by a hash that never touches the dice stream (the GM's hint, the closer look). */
+function seededPick(seed, label) {
+  let x = ((seed >>> 0) ^ [...label].reduce((n, ch) => Math.imul(n ^ ch.codePointAt(0), 16777619) >>> 0, 2166136261)) >>> 0;
+  x = Math.imul(x ^ (x >>> 16), 0x85ebca6b) >>> 0; x = Math.imul(x ^ (x >>> 13), 0xc2b2ae35) >>> 0;
+  return (x ^ (x >>> 16)) >>> 0;
+}
+/** じっくり調べる（TRF14）: how many wrong guesses each grade rules out. */
+export const SEARCH_RULED = Object.freeze({ success: 2, mixed: 1, trouble: 0 });
+
 export class TrpgSession {
   constructor(scenario, { seed = Date.now(), profileId = null, pc = null, companions = {}, warmStart = false, growth = 0 } = {}) {
     if (!scenario?.profiles?.length || scenario.profiles.length < 1) throw new Error("Missing traveler profiles");
@@ -173,7 +182,7 @@ export class TrpgSession {
       plan: Object.fromEntries(Object.values(this.flow).flat().map(field => [field, null])),
       pressure: this.rules.initialPressure, teamwork: 2, heat: 0, momentum: 0, heatLog: [], extraQuestions: 0, hints: {},
       used: Object.fromEntries(scenario.cast.filter(c => c.part !== "GM").map(c => [c.id, false])),
-      acted: {}, checks: [], pending: null, asked: [],
+      acted: {}, checks: [], pending: null, asked: [], search: null,
       pc: this.pc ? { name: this.pc.name, title: this.pc.title, archetype: this.pc.archetype, stats: { ...this.pc.stats } } : null,
       companions: Object.fromEntries(Object.entries(this.companions).map(([seat, o]) => [seat, o.id])),
     };
@@ -259,6 +268,31 @@ export class TrpgSession {
     this.cheer(1, "みんなで見立てを話した");
   }
 
+  /**
+   * じっくり調べる（目星・TRF14）: once per table, before the table settles on a guess, the player's own character
+   * looks closer with 観察 (2d20 + eye). ひと手間 rules out one wrong guess, 成功 rules out two (the truth is what is left),
+   * 思わぬ出来事 finds nothing. It never costs anything. The dice come from the seed by a separate hash, like the
+   * GM's hint, so the story's own checks roll the same numbers whether or not anyone searched.
+   */
+  searchBase() {
+    const seat = this.pc?.seat || PLAYER_SEAT, rating = this.sheets[seat]?.stats?.eye;
+    return { seat, stat: "eye", base: Number.isInteger(rating) ? rating : DICE.base };
+  }
+  search() {
+    this.require("explore");
+    if (this.state.search) throw new Error("Already searched");
+    if (this.state.clues.length < 3) throw new Error("Collect three clues before a closer look");
+    const { seat, stat, base } = this.searchBase();
+    const dice = ["search:a", "search:b"].map(label => seededPick(this.state.seed, label) % DICE.sides + 1);
+    const outcome = outcomeOf(dice, base);
+    const wrong = this.scenario.hypotheses.filter(h => h.id !== this.profile.id).map(h => h.id);
+    const first = wrong.length ? seededPick(this.state.seed, "search:ruled") % wrong.length : 0;
+    const ruled = wrong.map((_, i) => wrong[(first + i) % wrong.length]).slice(0, SEARCH_RULED[outcome.grade] || 0);
+    this.state.search = { seat, stat, dice, base, bonus: base, ...outcome, ruled };
+    if (outcome.grade === "success") this.cheer(1, "目星が冴えた");
+    return copy(this.state.search);
+  }
+
   plan(field, value) {
     const phase = Object.keys(this.flow).find(kind => this.flow[kind].includes(field));
     if (!phase) throw new Error("Unknown preparation field");
@@ -314,9 +348,7 @@ export class TrpgSession {
     if (!liked?.length) return null;
     const wrong = (this.scenario.options[field] || []).filter(option => !liked.includes(option.id));
     if (!wrong.length) return null;
-    let x = ((this.state.seed >>> 0) ^ [...field].reduce((n, ch) => Math.imul(n ^ ch.codePointAt(0), 16777619) >>> 0, 2166136261)) >>> 0;
-    x = Math.imul(x ^ (x >>> 16), 0x85ebca6b) >>> 0; x = Math.imul(x ^ (x >>> 13), 0xc2b2ae35) >>> 0; x = (x ^ (x >>> 16)) >>> 0;
-    return wrong[x % wrong.length].id;
+    return wrong[seededPick(this.state.seed, field) % wrong.length].id;
   }
   /** Pay out what a successful check was rolled for. Returns what the table actually received. */
   grant(kind) {
@@ -402,6 +434,7 @@ export class TrpgSession {
       plan: copy(plan), hypothesis: this.state.hypothesis,
       clues: copy(this.state.clues), asked: copy(this.state.asked), checks: copy(this.state.checks), acted: copy(this.state.acted), pc: copy(this.state.pc),
       hints: copy(this.state.hints), finale: this.state.checks.some(check => check.reward?.type === "finale"),
+      search: copy(this.state.search),
       companions: copy(this.state.companions),
       pressure: this.state.pressure, profileId: this.profile.id,
     };
