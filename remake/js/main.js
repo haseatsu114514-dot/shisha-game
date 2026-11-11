@@ -8,9 +8,11 @@ import { initCraftStage } from "./craft/stage-layout.js";
 import { loadAll, loadDeferredDialogues, loadCinemaDialogue, loadTournamentCraftDialogue, DB, bgUrl, portraitInfo, makingUrl } from "./core/data.js";
 import { loadVnFonts } from "./core/vn-fonts.js";
 import { initLayers, imageReady, FRAME_ART, warmUiArt } from "./core/ui.js";
-import { loadConfig, state, load, consumeResumeOnBoot, tickPlayTime } from "./core/state.js";
+import { loadConfig, saveConfig, state, load, consumeResumeOnBoot, tickPlayTime } from "./core/state.js";
 import { unlockAudio, preloadBgm } from "./core/audio.js";
 import { applyUiTheme } from "./core/ui-theme.js";
+import { initLook, normalizeLook } from "./core/look.js";
+import { installLooks } from "./looks/index.js";
 import { installRotateGuard } from "./core/rotate-guard.js";
 import { imgFileUrl } from "./core/img-file.js";
 import { withLoading } from "./core/loading.js";
@@ -40,6 +42,11 @@ export async function boot() {
   initCraftStage(); // シーシャ作りの新しい配置（?craftStage=1 で入・CSL）
   const cfg = loadConfig();
   applyUiTheme(cfg.uiTheme);
+  // 見た目の様式（現行／新版／DS風・LK01）。?look=neo などで端末の設定ごと切り替えられる。
+  const lookParam = new URLSearchParams(location.search).get("look");
+  if (lookParam !== null && normalizeLook(lookParam) === lookParam) { cfg.look = lookParam; saveConfig(); }
+  initLook({ look: cfg.look, chapter: () => (document.body.dataset.screen === "title" ? 1 : state?.chapter || 1) });
+  installLooks();
   // 設定「揺れ・閃光を減らす」を CSS からも見えるようにする（場面の演出の閃光を省く・#2688 F11）
   document.body.classList.toggle("reduce-shake", !!cfg.reduceShake);
   const growthParam = new URLSearchParams(location.search).get("growth");

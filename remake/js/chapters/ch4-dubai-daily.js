@@ -39,6 +39,7 @@ import { CAFE_MENU, CAFE_PLACES, CAFE_TASTE_IDS, OMAKASE, OMAKASE_LINE, SMOKED_I
   resolveCafeOrder, tasteScene, recordCafeOrder } from "./ch4-dubai-cafe.js";
 import { LONGLONG_BG, LONGLONG_CHAR, LONGLONG_IDS, LONGLONG_LOAD_IDS, nextLonglongVisit, longlongHasNew, recordLonglongVisit } from "./ch4-longlong.js";
 import { finaleAtVisit, playFinale } from "../daily/bonds.js";
+import { FESTA_BOND_IDS, nextDubaiBondStory, recordDubaiBondRead } from "./dubai-bonds.js";
 import { NIGHT_SCENE_IDS, STALL_NONE, STALL_PLACE, STALL_SCENE_IDS, dubaiSpotAt, nightVisit, recordNightVisit, priceText,
   stallChoices, stallItem, stallLabel, stallSceneId } from "./ch4-dubai-local.js";
 import { runFullPractice } from "../craft/practice.js";
@@ -106,8 +107,12 @@ export const CH4_DUBAI_SPOTS = Object.freeze([
     preview: CH4_PLACE_BG.inn, stamina: 55, desc: "部屋で休む。体力が大きく戻る。" }),
 ].map(entry => Object.freeze({ ...entry, hasNew: () => spotHasNew(entry) })));
 
+/** FESTAで次に読む太陽の段階（初対面の ch4_festa の後・必要ハートに届いた最古の未読）。無ければ null。 */
+const festaBondDue = () => read("ch4_festa") ? nextDubaiBondStory(state, "da_silva", "festa", affinityLevel("da_silva")) : null;
+
 function spotHasNew(entry) {
   // 訪問時と同じ初回条件・巡回記録を見る。一巡後は会話を続けても新着にはしない。
+  if (entry.place === "festa" && festaBondDue()) return true;
   if (["souq", "festa", "center_cafe", "alley_cafe"].includes(entry.place))
     return firstScenes(entry.place).length > 0 || nextTalk(entry.place, { once: true }) !== null;
   if (entry.place === "naru") return nextTalk("naru", { once: true }) !== null;
@@ -211,7 +216,8 @@ export function chapterFourDubaiDefinition(io) {
 /** ドバイの日常（DAY1〜12）を回す。前夜祭の日（DAY13）の朝か LOAD で戻る。 */
 export async function runChapterFourDubai(io) {
   const owner = state;
-  Object.assign(DB.dialogues, await readDialogues("ch4_dubai_daily", DUBAI_DAILY_IDS), await readDialogues("ch4_longlong", LONGLONG_LOAD_IDS));
+  Object.assign(DB.dialogues, await readDialogues("ch4_dubai_daily", DUBAI_DAILY_IDS), await readDialogues("ch4_longlong", LONGLONG_LOAD_IDS),
+    await readDialogues("taiyo_bond", FESTA_BOND_IDS));
   // LOAD・再開でも最初の地図から、ヌールの MENU の案内（♥5の締めくくり・告白を選べる）を合わせる。どちらも台詞が読み込まれているかを見る
   // （daily/bonds.js の finaleDue・daily/romance.js の romanceRouteOpen。第5章は ch5-dubai.js の preloadNoorScenes）。読めなくても地図は開く
   if (owner.met?.noor) await import("./ch4-desert.js").then(desert => desert.loadDesertDialogues()).catch(() => {});
@@ -275,7 +281,7 @@ async function performDubaiSpot(entry, io, { staminaGuard }) {
   // 夜がにぎわう店（ch4-dubai-local.js）: 先に店の夜を読む。初めての夜は短い場面、二度目からは最初の一行だけ。
   const night = nightVisit(state, entry.place);
   if (night && !await readNight(night, entry, owner)) return unused;
-  let done = false, longlong = null, innTrial = false;
+  let done = false, longlong = null, innTrial = false, festaBond = null;
   if (entry.place === "inn") {
     const visit = await visitInn(io, owner, staminaGuard);
     done = visit.done; innTrial = visit.trial;
@@ -296,17 +302,23 @@ async function performDubaiSpot(entry, io, { staminaGuard }) {
     longlong = nextLonglongVisit(state, affinityLevel(LONGLONG_CHAR));
     done = await readPlain(longlong.id, LONGLONG_BG, owner);
   }
+  else if (entry.place === "festa" && (festaBond = festaBondDue())) {
+    // 太陽の段階の会話（chapters/dubai-bonds.js）。初対面の後、必要ハートに届いた最古の未読を、小会話の代わりに一本読む。
+    done = await readPlain(festaBond, entry.preview, owner);
+  }
   else done = await visitPlace(entry, io, owner);
   if (!done || state !== owner) return unused;
   if (night) recordNightVisit(state, entry.place);
   if (longlong) recordLonglongVisit(state, longlong);
+  if (festaBond) recordDubaiBondRead(state, festaBond);
   if (entry.cost) addMoney(-entry.cost);
   addStamina(innTrial ? 0 : entry.stamina || 0);
   if (entry.heat) toast(entry.heat); // 昼の屋外（暑さで多めに使った・夜ほど休まらない）
   // スークの後は屋台で軽く買える（時間は使わない・体力が少し戻る）。体力を使った後に戻すので、上限で消えにくい。
   if (entry.place === STALL_PLACE && state === owner) await visitStall(owner);
   if (entry.stat && !innTrial) earnStat(entry.stat, 4);
-  if (entry.place === "festa") gainAffinity("da_silva", visitAffinity("talk")); // 太陽: 来店ごとに通いの小会話と同じ +8（IR23）
+  // 太陽: 来店ごとに通いの小会話と同じ +8（IR23）。段階の会話を読んだ来店は、ほかの店の段階と同じ +16
+  if (entry.place === "festa") gainAffinity("da_silva", visitAffinity(festaBond ? "story" : "talk"));
   if (entry.place === "naru") gainAffinity("naru", 5);
   // 龍龍水煙所: ほかの章のライバルの店と同じ値（段階の会話 +16・通いの小会話 +8。core/stats.js の visitAffinity）
   if (longlong) gainAffinity(LONGLONG_CHAR, visitAffinity(longlong.kind === "story" ? "story" : "talk"));
