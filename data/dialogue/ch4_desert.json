@@ -1342,6 +1342,16 @@
           "text": "今日の砂は速いよ。風紋を見て"
         },
         {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "風紋、前より細かいですね。夜に風が動いたんですか"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "そう、砂の面が締まって板が走る。転ぶと派手だから、気をつけて"
+        },
+        {
           "speaker": "noor",
           "face": "smile",
           "text": "で、今日も競走する？ 手加減はしないよ。私の仕事場だからね"
@@ -1627,6 +1637,16 @@
           "speaker": "hajime",
           "face": "smile",
           "text": "なるが悔しがるの、久しぶりに見た"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "……ちょっとこのまま転がってる。砂は熱いのに、頭だけ冷えてきやがった"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "水、持ってきてますよ。起きられるなら、どうぞ"
         },
         {
           "speaker": "naru",

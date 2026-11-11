@@ -6,6 +6,9 @@
 //   3. マスを選ぶ→灯す→決定、見方の窓、はじめての案内が、新版でもそのまま使える。
 //   4. 盤の面の中（マス・道・紋）の描き方は旧版と同じ。
 //   5. 配色テーマ7種のどれでも同じ見た目。旧版へ戻すと、計算済みスタイルが最初から旧版の時と一致する。
+// 絵の部品（css/look-neo-art.css・LK19）:
+//   7. 小窓・ボタン・行動の選択の札・HUD の板などに、制作・大会と同じ夜紫の絵の部品（img/ui/craft-night）が九分割で重なる。
+//      絵は読めていて、重ねても箱の大きさは変わらない。旧版には重ならない。
 // そのほか（css/look-neo.css の 20〜24）:
 //   6. 大会の会話の間の MENU・店の人の一言（斧投げBar・クラブSEAM）・章のクリア・リザルト・古い STATUS の窓のタブが、暗い面の上で読める文字になり、
 //      紙の絵を使わない。ボタンは押せる。テーマ7種で同じ見た目、旧版へ戻すと元どおり。
@@ -20,12 +23,13 @@ const PHONE = { viewport: { width: 844, height: 390 }, deviceScaleFactor: 2, has
 const t = (id) => `[data-test="${id}"]`;
 
 // 1. 新版のスタイルシートは、様式が neo の時にしか効かない書き方だけを許す（look_neo.mjs の 6. と同じ決まり）。
-{
-  const css = fs.readFileSync(new URL("../../css/look-neo-board.css", import.meta.url), "utf8").replace(/\/\*[\s\S]*?\*\//g, "");
+function checkNeoOnly(name, prefix, least) {
+  const file = new URL(`../../css/${name}`, import.meta.url);
+  const css = fs.readFileSync(file, "utf8").replace(/\/\*[\s\S]*?\*\//g, "");
   let count = 0;
   for (const match of css.matchAll(/([^{}]+)\{[^{}]*\}/g)) {
     const prelude = match[1].trim();
-    assert(!prelude.startsWith("@"), `想定外の @ 規則: ${prelude}`);
+    assert(!prelude.startsWith("@"), `${name}: 想定外の @ 規則: ${prelude}`);
     let depth = 0, start = 0;
     const parts = [];
     for (let i = 0; i < prelude.length; i++) {
@@ -36,11 +40,24 @@ const t = (id) => `[data-test="${id}"]`;
     parts.push(prelude.slice(start));
     for (const selector of parts.map((part) => part.trim()).filter(Boolean)) {
       count++;
-      assert(selector.startsWith(':root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard'), `盤の中だけに効く書き方で始まらない規則: ${selector}`);
+      assert(selector.startsWith(prefix), `${name}: 決まった書き出しで始まらない規則: ${selector}`);
     }
   }
-  assert(count > 40, "look-neo-board.css の規則を読めている");
-  assert(!/!important/.test(css), "look-neo-board.css は !important に頼らない");
+  assert(count >= least, `${name} の規則を読めている`);
+  assert(!/!important/.test(css), `${name} は !important に頼らない`);
+  return { file, css };
+}
+checkNeoOnly("look-neo-board.css", ':root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard', 40);
+// 7. 絵の部品: 規則は新版の中だけ。絵は制作・大会と同じ夜紫の部品（img/ui/craft-night）で、ファイルがある。
+const ART_FILES = [];
+{
+  const { file, css } = checkNeoOnly("look-neo-art.css", ':root[data-look="neo"] body:not(.game-ds) #viewport #stage', 8);
+  for (const [, path] of css.matchAll(/url\("([^"]+)"\)/g)) {
+    assert(path.startsWith("../img/ui/craft-night/"), `絵の部品は夜紫の部品のフォルダから読む: ${path}`);
+    assert(fs.existsSync(new URL(path, file)), `絵の部品のファイルがある: ${path}`);
+    if (!ART_FILES.includes(path)) ART_FILES.push(path);
+  }
+  assert(ART_FILES.length >= 4, "絵の部品を読めている");
 }
 
 const press = (page, locator) => (page.__touch ? locator.tap() : locator.click());
@@ -419,6 +436,56 @@ await suite("look-neo-more", async (check) => {
     const after = await stylesOf(page, [...CHROME, ...INSIDE]);
     for (const key of Object.keys(before)) assert.deepEqual(after[key], before[key], `${key} の計算済みスタイルが最初から旧版の時と一致する`);
   }, { pageEntry: CLASSIC });
+
+  await check("art-parts", async (page) => {
+    // 絵の部品が読めている（Git LFS の実体が無いと 0 になる）。
+    const sizes = await page.evaluate((paths) => Promise.all(paths.map((path) => new Promise((resolve) => {
+      const image = new Image();
+      image.onload = () => resolve(image.naturalWidth);
+      image.onerror = () => resolve(0);
+      image.src = new URL(path, new URL("css/", location.href)).href;
+    }))), ART_FILES);
+    for (const [index, width] of sizes.entries()) assert(width >= 256, `絵の部品が読める: ${ART_FILES[index]} (${width})`);
+    const art = (selector) => page.locator(selector).first().evaluate((node) => {
+      const cs = getComputedStyle(node), r = node.getBoundingClientRect();
+      return { frame: cs.borderImageSource, slice: cs.borderImageSlice, border: cs.borderTopWidth, rect: [r.left, r.top, r.width, r.height].map((v) => Math.round(v * 10) / 10) };
+    });
+    const withoutArt = async (selector) => {
+      await page.evaluate(() => { document.querySelector('link[href*="look-neo-art.css"]').disabled = true; });
+      const plain = await art(selector);
+      await page.evaluate(() => { document.querySelector('link[href*="look-neo-art.css"]').disabled = false; });
+      return plain;
+    };
+    // 設定の小窓: 板の絵と、金の「閉じる」。重ねても箱の大きさは同じ（縁の幅は 0 のまま）。
+    await page.locator(t("title-config")).click();
+    await page.locator("#modal.show .modal-box").waitFor();
+    await page.waitForTimeout(400);
+    for (const [selector, file] of [["#modal .modal-box", "board.webp"], ["#modal .modal-actions .btn.primary", "button-gold.webp"]]) {
+      const now = await art(selector), plain = await withoutArt(selector);
+      assert(now.frame.includes(`img/ui/craft-night/${file}`) && now.slice.includes("fill"), `${selector}: 夜紫の絵の部品が九分割で重なる ${JSON.stringify(now)}`);
+      assert.equal(plain.frame, "none", `${selector}: 絵の部品を外すと CSS の面だけ`);
+      assert.deepEqual(now.rect, plain.rect, `${selector}: 絵を重ねても箱の位置と大きさは変わらない`);
+      assert.equal(now.border, plain.border, `${selector}: 縁の幅は変えない`);
+    }
+    // 旧版には重ならない。
+    await setLook(page, "classic");
+    await page.waitForTimeout(400);
+    assert(!(await art("#modal .modal-box")).frame.includes("craft-night"), "旧版の小窓には夜紫の絵を重ねない");
+    await setLook(page, "neo");
+    await page.locator("#modal .modal-actions button").last().click();
+    await page.locator("#modal.show").waitFor({ state: "hidden" });
+    // 行動の選択: 板・帯の札・ガラスのボタン。
+    await seedDaily(page);
+    await page.evaluate(async () => { void (await import("./js/daily/tonari.js")).tonariMenu(); });
+    await page.locator("#screen .sub-menu .big-choice").first().waitFor();
+    await page.mouse.move(2, 2);
+    await page.waitForTimeout(500);
+    for (const [selector, file] of [["#screen .sub-menu", "board.webp"], ["#screen .sub-menu .big-choice", "rank-strip.webp"], ["#screen .sub-menu .btn", "button-glass.webp"]]) {
+      const now = await art(selector), plain = await withoutArt(selector);
+      assert(now.frame.includes(`img/ui/craft-night/${file}`), `${selector}: ${file} が重なる ${JSON.stringify(now)}`);
+      assert.deepEqual(now.rect, plain.rect, `${selector}: 絵を重ねても箱の位置と大きさは変わらない`);
+    }
+  }, { pageEntry: NEO });
 
   await check("leftovers-desktop", (page) => leftovers(page), { pageEntry: NEO });
   await check("leftovers-phone", async (page) => {

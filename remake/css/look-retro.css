@@ -812,6 +812,30 @@
 .retro-sheet .s-lime-actions { gap: calc(var(--d) * 4); }
 .retro-shell .retro-sheet .rs-btn.s-lime-reply { width: 100%; background: var(--r-paper); border: calc(var(--d) * 2) solid var(--r-ink); color: var(--r-ink); }
 .retro-shell .retro-sheet .rs-btn.s-lime-reply.s-ghost { background: var(--r-panel); border: calc(var(--d) * 1) solid var(--r-line); color: var(--r-text); justify-content: center; }
+/* LIME は実際のスマホのメッセージアプリをまねた見た目（台帳 DUI06・LK20）。わざと紫にしない画面なので、ドット調のまま
+   緑の見出し・白いトーク一覧・青みがかった灰のトーク・緑の自分の吹き出しにする（横長の画面の LIME と同じ色の役割）。 */
+.retro-sheet[data-kind="lime"][data-tall="true"] {
+  background-color: #8fa6c5;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4' shape-rendering='crispEdges'%3E%3Crect width='4' height='4' fill='%238fa6c5'/%3E%3Crect width='2' height='2' fill='%23889fbf'/%3E%3Crect x='2' y='2' width='2' height='2' fill='%23889fbf'/%3E%3C/svg%3E");
+}
+.retro-sheet[data-kind="lime"][data-tall="true"]:has(.s-lime-chat-row, .s-lime-empty) { background-color: #fbf9f4; background-image: none; }
+.retro-sheet[data-kind="lime"] .rs-head { color: #fff; background: #1fa64a; border-bottom-color: #14803a; }
+.retro-sheet[data-kind="lime"] .rs-head .s-lime-logo { padding: 0 calc(var(--d) * 3); color: #1fa64a; background: #fff; }
+.retro-shell .retro-sheet[data-kind="lime"] .rs-head .rs-btn { color: #fff; background: #178a3c; border-color: #bfe8c9; box-shadow: none; }
+.retro-shell .retro-sheet[data-kind="lime"] .rs-btn.s-lime-chat-row { color: #2a1d3a; background: #fff; border: 0; border-bottom: calc(var(--d) * 1) solid #d9d3e0; box-shadow: none; }
+.retro-sheet[data-kind="lime"] .s-lcr-name { color: #2a1d3a; }
+.retro-sheet[data-kind="lime"] .s-lcr-preview { color: #6f6580; }
+.retro-sheet[data-kind="lime"] .s-lcr-side { color: #8a7f96; }
+.retro-sheet[data-kind="lime"] .s-lcr-dot { border-color: #fff; }
+.retro-sheet[data-kind="lime"] .s-lime-bubble, .retro-sheet[data-kind="lime"] .s-lime-media { background: #fff; border-color: #5b6f8c; box-shadow: calc(var(--d) * 2) calc(var(--d) * 2) 0 #6f86a6; }
+.retro-sheet[data-kind="lime"] .s-lime-row.s-me .s-lime-bubble { background: #8fe26a; border-color: #3f8a2c; }
+.retro-sheet[data-kind="lime"] .s-lime-note { padding: 0 calc(var(--d) * 6); color: #fff; background: #6f86a6; }
+.retro-sheet[data-kind="lime"] .s-lime-note.s-day { border: 0; }
+.retro-sheet[data-kind="lime"] .s-lime-tip, .retro-sheet[data-kind="lime"] .s-lime-hint { color: #2a1d3a; background: #eaf7ee; border-color: #1fa64a; }
+.retro-sheet[data-kind="lime"] .s-lime-empty { color: #8a7f96; }
+.retro-sheet[data-kind="lime"] .rs-foot { background: #fff; border-top-color: #d9d3e0; }
+.retro-shell .retro-sheet[data-kind="lime"] .rs-btn.s-lime-reply { background: #fff; border: calc(var(--d) * 2) solid #1fa64a; color: #2a1d3a; box-shadow: none; }
+.retro-shell .retro-sheet[data-kind="lime"] .rs-btn.s-lime-reply.s-ghost { color: #fff; background: #1fa64a; border: calc(var(--d) * 1) solid #14803a; }
 
 /* 小窓（縦長のシート）: 設定の行・セーブの枠・用語集・規則の紙 */
 .retro-sheet[data-kind="modal"] .rs-head .rs-h, .retro-sheet[data-kind="log"] .rs-head { font-size: calc(var(--d) * 16); line-height: calc(var(--d) * 19); color: var(--r-gold); }

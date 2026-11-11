@@ -57,20 +57,32 @@
 .kj-drum-face, .kj-drum-side { left: -154px; top: -154px; width: 308px; height: 308px; }
 .kj-drum-face { transform: rotate(var(--th)); }
 .kj-drum-side {
-  position: absolute; display: block; background: linear-gradient(135deg, #4a2e1b, #1d110a);
+  position: absolute; display: block; background: linear-gradient(135deg, var(--kj-side-a, #4a2e1b), var(--kj-side-b, #1d110a));
   clip-path: polygon(98.7% 50%, 74.35% 92.18%, 25.65% 92.18%, 1.3% 50%, 25.65% 7.82%, 74.35% 7.82%);
   transform: translate(calc(var(--i) * 3.1px), calc(var(--i) * -2.3px)) rotate(var(--th));
 }
+/* 回転のぶれ（速く回っているあいだだけ、ぶれた胴の絵を上に重ねる。濃さは garagara-stage.js の blur） */
+.kj-drum-blur { opacity: 0; }
 .kj-drum-sheen { position: absolute; display: block; left: -130px; top: -130px; width: 260px; height: 260px; border-radius: 50%; background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0) 36%, rgba(0, 0, 0, 0) 62%, rgba(0, 0, 0, 0.3) 100%); }
 .kj-handle { left: 400px; top: 152px; width: 280px; height: 280px; transform-origin: 50% 50%; }
+/* くじのランク（店）ごとの抽選器（GCH16）。絵は kuji-art.js が色替えした版に差し替える。ここは胴の厚み（側面）の色と、軸の宝石 */
+.mo-garagara[data-look="steel"] { --kj-side-a: #a0703c; --kj-side-b: #4a2f17; }
+.mo-garagara[data-look="brass"] { --kj-side-a: #4f1a12; --kj-side-b: #1a0706; }
+.mo-garagara[data-look="marble"] { --kj-side-a: #c9c5bf; --kj-side-b: #77747a; }
+.mo-garagara[data-look="lacquer"] { --kj-side-a: #24232c; --kj-side-b: #050506; }
+.kj-gem { position: absolute; left: 531px; top: 283px; width: 18px; height: 18px; filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.6)); }
 .kj-tray { left: 762px; top: 562px; width: 220px; height: 84px; }
 .kj-exit-glow { position: absolute; display: block; width: 130px; height: 130px; margin: -65px 0 0 -65px; border-radius: 50%; background: radial-gradient(circle, #fff 0%, var(--kj-halo, #fff) 28%, rgba(255, 255, 255, 0) 70%); opacity: 0; }
 /* S賞・ラストワン賞の光の柱（受け皿の玉から立ちのぼる） */
 .kj-pillar {
-  position: absolute; display: block; width: 200px; height: 700px; margin: -700px 0 0 -100px; opacity: 0; mix-blend-mode: screen;
+  /* ふちはぼかして、切り抜いた台形ではなく灯りの中の光の筋に見せる（動かすのは濃さだけなので、ぼかしは一度描けば済む） */
+  position: absolute; display: block; width: 200px; height: 700px; margin: -700px 0 0 -100px; opacity: 0; mix-blend-mode: screen; filter: blur(9px);
   clip-path: polygon(33% 100%, 67% 100%, 100% 0, 0 0);
   background: linear-gradient(0deg, var(--kj-halo-hi, #fff) 0%, var(--kj-halo, #ffcf4a) 30%, rgba(255, 255, 255, 0) 92%);
 }
+/* 抽選器の後ろの光（後光）と、当たりの玉が落ちた受け皿の後ろの光。描いた光の筋に色を掛けて canvas に描く（garagara-stage.js の lightLayer）。
+   舞台の半分の解像度で持ち、舞台いっぱいに広げる。濃さ・回転・大きさは演出（garagara.js）が決める */
+.kj-light { position: absolute; left: 0; top: 0; width: 1280px; height: 720px; pointer-events: none; }
 /* 玉（動かすのは位置と大きさ）と、賞の色のにじみ */
 .kj-ball-s { left: 0; top: 0; width: 34px; height: 34px; opacity: 0; will-change: transform; }
 .kj-ball-halo { left: 50%; top: 50%; width: 112px; height: 112px; margin: -56px 0 0 -56px; border-radius: 50%; background: radial-gradient(circle, var(--kj-halo-hi, #fff) 0%, var(--kj-halo, #fff) 26%, rgba(255, 255, 255, 0) 68%); opacity: 0; }

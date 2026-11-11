@@ -5,6 +5,7 @@
 このREADMEは起動・テスト・フォルダ構成・第1章の流れだけ。機能ごとの仕様は `docs/spec/` に移した。
 
 - UIテーマ（紙とラベンダー・制作の紫×白＋金。DS風レイアウトは 2026-11-10 に廃止し横画面一本）: [docs/spec/ui_paper_lavender.md](../docs/spec/ui_paper_lavender.md)
+- 左右の余白（横長のスマホでステージの外に余る所）の煙と縁・縦書きの帯・親指ボタン: [docs/spec/side_area.md](../docs/spec/side_area.md)
 - フレーバー熟練度・レモン課題・日々の体力収支: [docs/spec/flavor_mastery_and_stamina.md](../docs/spec/flavor_mastery_and_stamina.md)
 - 経験値・レベル・火種（心得の盤）: [docs/stat-design/README.md](../docs/stat-design/README.md)
 - タイトルのメディアギャラリー: [docs/spec/title_media_gallery.md](../docs/spec/title_media_gallery.md)
@@ -61,6 +62,8 @@ mukaiで行動を使った帰りの裏口では、ふれあいの画面「てつ
 タップ／Spaceで穴を開け、完成後に次のリング・仕上げを選ぶ。本番と同じ工程を呼び、本編セーブは読み書きしない。
 回帰テストは `node remake/test/browser/craft_materials.mjs`（PC／横持ちタッチ）と `node --experimental-vm-modules remake/test/foil_holes.mjs`。
 シーシャ作りのレイアウト「一枚の舞台」（2026-11-10 採用・本編へ組み込み中）の見本（静止モック）は `http://127.0.0.1:8123/remake/previews/craft-stage-layout/`。本編の工程は呼ばず、絵を新しい配置に並べただけ（[設計の要点](../docs/design/craft-stage-layout.md)）。
+
+煙の描き方の見本（2026-11-11・[要望台帳](../docs/owner_requests.md) の KMR。本編には未接続）は `http://127.0.0.1:8123/remake/previews/smoke-styles/`。「いま」の煙（本編の数値の写し）と、流体で描く3種（リアル・ドット×リアル・セル画）・丸の房で描く「もくもく」2種を、同じ場面で左右に見比べる。
 
 ラクダレース（第4章ドバイの任意ミニゲーム）の試遊は `http://127.0.0.1:8123/remake/camel-race.html`。
 ラクダは自分で走り、車のリモコンから「声」（Space／左ボタン。騎手のまわりの輪が重なる瞬間）と「ムチ」（X／右ボタン。押している間だけ効いてスタミナを使う）を送るだけ。前のラクダのすぐ後ろは風よけで息が戻り、並びかけると相手が粘るので声かムチで抜き切る。4頭・1,000m・約50〜60秒、順位＋声かけ＋スタミナで0〜100点とS/A/B/C。`?pilot=perfect&speed=6` で自動操作のデモ。本編ではドバイの自由行動の地図から、Dr.fookah ドバイ店のファーリスと知り合い→誘い→朝の見学の順に解放し、レースは昼の行動を使う。本編セーブは読み書きしない。[仕様・接続・素材依頼](../docs/spec/camel_race.md)。
@@ -229,6 +232,8 @@ PR226の14種の専用イラスト背景と極太ゴシック・斜め帯を `vn
      （`motions/garagara.js`・`garagara-stage.js`・`kuji-fx.js`、`daily/kuji-reveal.js`・`kuji-prize-art.js`、`css/motions/garagara.css`。確認は `node remake/test/browser/kuji_gacha.mjs`、演出だけ見るなら `__remake.dev.motion("garagara-10S")`）。
      道具・玉・札・後ろの光・包みは描いた絵（#3228・GCH14。`remake/img/ui/kuji/`。部品の差し込みは `motions/kuji-art.js`、札などは `css/motions/garagara.css`）。
      WebP は `python3 remake/tools/build_ui_skin.py kuji` で作り直せる（原画は `asset_sources/ui/kuji-gacha-20261111/processed/`）。読み込めなかった部品はコードで描いた下絵に戻る。
+     抽選器は店のくじごとの素材（GCH16。`data/kuji.json` の `machine`: walnut＝本店／steel＝柚ヶ谷／brass＝東京／marble＝ドバイ／lacquer＝限定台くじ）。色替えした絵は同じビルドが原画から作る（`KUJI_LOOKS`）。
+     演出（GCH17）: 登場の灯り・後ろの光・回転のぶれ・賞が上がるたびに色が上がる予告（白→青→赤→金→銀紫）・当たりの玉のスロー。くじを指定して見るなら、後ろに `@<くじの id>`（`data/kuji.json`）を付ける: `__remake.dev.motion("garagara-S@g5000")`・`"garagara-10S@g10000"`。
      第5章の本店は10,000円・30枚の限定台くじ（S賞はくじ限定の台3種・性能は店の特注台と同じ）。持っている限定の台はくじ券1枚に替わり、くじ券1枚で1回引ける。
      限定の台・箱・くじ券は周回に持ち越さず、火種も付かない（KJ05〜KJ09・`daily/kuji-tickets.js`・`remake/test/kuji_limited.mjs`）
    - **出張シーシャの依頼**（第5章・DLV・`chapters/ch5-catering.js`）: 勝負の日が決まる前の自由行動で、数日おきにスミさんのLIMEで店への出張の頼みが届く（一度に一つ）。

@@ -25,6 +25,8 @@ const grades = (shop = "home") => Object.entries(DB.kuji?.grades || {})
   .map(([id, g]) => ({ id, ...g }));
 /** その店に今くじが置いてあるか（ショップの「シーシャくじ」タブを出すか） */
 export const hasKuji = (shop = "home") => grades(shop).length > 0;
+/** その店のくじの抽選器の見た目（演出の絵を先に読み込むのに使う） */
+export const kujiLooks = (shop = "home") => grades(shop).map((g) => g.machine || "walnut");
 
 function newBox(g) {
   const order = [];
@@ -240,9 +242,12 @@ function takeTicket(g, box, pay = "money") {
   return { prize: shown, extras };
 }
 
+/** そのくじの抽選器（見た目と、黒板に書く名前）。演出へ渡す */
+export const machineOf = (g) => ({ look: g?.machine || "walnut", title: String(g?.label || "シーシャくじ").replace(/（.*$/, "") });
+
 async function draw(g, box, pay = "money") {
   const result = takeTicket(g, box, pay);
-  if (result) await reveal(noted(result.prize), result.extras.map(noted));
+  if (result) await reveal(noted(result.prize), result.extras.map(noted), machineOf(g));
 }
 
 async function drawMany(g, box, count) {
@@ -252,14 +257,17 @@ async function drawMany(g, box, count) {
     if (!result) break;
     results.push(noted(result.prize), ...result.extras.map(noted));
   }
-  if (results.length) await revealMany(results, count);
+  if (results.length) await revealMany(results, count, machineOf(g));
 }
 
 /** 開発用: 景品を渡さずに、指定の賞で引く演出だけ見る（__remake.dev.motion("garagara-S") など）。
  * "LAST" はラストワン賞の場面だけ、"C+LAST" のように書くと C賞の札を閉じたあとにラストワン賞へ続く。
- * 数字で始めると連続の演出: "10"（B・C賞だけ）・"10A"・"10S"（その賞が1つ入る）・"10LAST"（最後にラストワン賞が付く）・"5S" など */
-export function previewReveal(rank = "S") {
-  const g = Object.values(DB.kuji?.grades || {})[0];
+ * 数字で始めると連続の演出: "10"（B・C賞だけ）・"10A"・"10S"（その賞が1つ入る）・"10LAST"（最後にラストワン賞が付く）・"5S" など。
+ * 後ろに "@g5000" のようにくじの id（data/kuji.json）を付けると、そのくじの抽選器と景品で見る（"S@g5000"・"10S@g10000"） */
+export function previewReveal(spec = "S") {
+  const [rank, gradeId] = String(spec).split("@");
+  const g = DB.kuji?.grades?.[gradeId] || Object.values(DB.kuji?.grades || {})[0];
+  const machine = machineOf(g);
   const find = (r) => (r === "LAST" ? g?.lastOne : g?.prizes.find((p) => p.rank === r)) || { rank: r, name: r === "LAST" ? "ラストワン賞" : `${r}賞`, desc: "" };
   const many = /^(\d+)(.*)$/.exec(String(rank));
   if (many) {
@@ -270,10 +278,10 @@ export function previewReveal(rank = "S") {
     if (best === "A" || best === "S") results[Math.floor(count * 0.6)] = some("A", 0);
     if (best === "S") results[count - 2] = find("S");
     if (best === "LAST") results.push(find("LAST"));
-    return revealMany(results, count);
+    return revealMany(results, count, machine);
   }
   const [main, extra] = String(rank).split("+");
-  return reveal(find(main), extra ? [find(extra)] : []);
+  return reveal(find(main), extra ? [find(extra)] : [], machine);
 }
 
 /** 売れる小物（くじの景品など）の買い取り行 */

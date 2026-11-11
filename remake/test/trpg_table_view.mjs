@@ -350,7 +350,7 @@ test('the shopkeeper tutorial plays on the cover, blocks the start until it ends
       assert(!root.querySelector('.trpg-speech').textContent.includes('{gm}'), 'the GM name is filled in');
       q('trpg-next').click(); assert(n < 40);
     }
-    assert.equal(done, 1); assert.equal(panels.size, 7); assert.equal(root.querySelector('[data-test="trpg-tutorial-panel"]'), null);
+    assert.equal(done, 1); assert.equal(panels.size, 8); assert.equal(root.querySelector('[data-test="trpg-tutorial-panel"]'), null);
     q('trpg-tutorial').click(); assert(!q('trpg-next').hidden, 'the cover button replays the tutorial');
     while (!q('trpg-next').hidden) q('trpg-next').click();
     assert.equal(done, 2);

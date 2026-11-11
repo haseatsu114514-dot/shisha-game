@@ -24,6 +24,19 @@ for (const [id, [price, chapter, shop]] of Object.entries(TIERS)) {
   assert(g.label.includes(`1回${price.toLocaleString("ja-JP")}円`), `${id} の名前に1回の値段: ${g.label}`);
 }
 
+// 1b. 抽選器の見た目（GCH16・2026-11-11 オーナー「くじのランクによってガラガラの見た目を変えたり豪華に」）: 上の店のくじほど豪華。
+// 見た目の名前は演出（motions/kuji-art.js の KUJI_LOOKS）にある。色替えした絵が実際に出ることは、画像のある
+// ブラウザの検査（test/browser/kuji_gacha.mjs の machine-look-per-kuji）が見る（この検査は画像を取得しない環境でも動く）
+{
+  const { KUJI_LOOKS } = await import("../js/motions/kuji-art.js");
+  const MACHINES = { g1000: "walnut", g3000: "steel", g5000: "brass", g10000: "marble", g20000: "lacquer" };
+  Object.entries(MACHINES).forEach(([id, look], rung) => {
+    assert.equal(kuji.grades[id].machine, look, `${id} の抽選器の見た目`);
+    assert.equal(KUJI_LOOKS[look]?.lux, rung, `${look} の豪華さは ${rung}（上の店ほど豪華）`);
+  });
+  for (const g of Object.values(kuji.legacyGrades)) assert.equal(g.machine, undefined, "旧箱には見た目を持たせない（引き途中の旧箱は本店の抽選器で引く）");
+}
+
 // 2. 景品の参照先が実在し、種類が合い、その章より先の品を出さない。
 for (const section of ["grades", "legacyGrades"]) {
   for (const [id, g] of Object.entries(kuji[section])) {

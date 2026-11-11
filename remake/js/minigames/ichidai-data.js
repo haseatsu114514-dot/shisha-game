@@ -1,4 +1,4 @@
-// カードゲーム「一台勝負」のカードと数値。ルールの正本は docs/design/card_game/（第0.3版のルールブックと cards.js）。
+// カードゲーム「一台勝負」のカードと数値。ルールの正本は docs/design/card_game/（第0.4版のルールブックと cards.js）。
 // ここはゲーム内で動かすための写しで、名前・数値・文がルールブックとずれないことを remake/test/ichidai_rules.mjs が確かめる。
 // 画面にも規則にも依らない純データ（DOM・保存に触れない）。
 
@@ -47,17 +47,17 @@ export const HMDS = Object.freeze([
 ]);
 
 // type: coal=炭 / tech=技 / tool=器具 / person=人物 / event=イベント
-// need: 必要火力（第0.3版）。自分の火力（＝火力ゾーンの札の数。表向きのキューブ炭は2）がこの数以上なら使える。払わない
+// need: 必要火力。自分の火力（＝熱＝火力ゾーンの炭の火の合計）がこの数以上なら使える。払わない
 // pay: 発動するために落とすもの（第0.3版。2026-11-11 オーナー「炭を使うのではなく、火力を落として発動って感じ」）。
 //      fire=火力をその数だけ落とす（火力ゾーンの札が減って熱が下がる。種火 → 表向きのフラット炭の順に灰にし、
 //      表向きのキューブ炭しか無ければ裏返して1落とす）。leaf=主役の葉をその数だけ減らす。必要火力は落とす前の火力で見る
 // extra: 使ったあと、このラウンド（準備ではこのターン）にカードをもう1枚使える（1ラウンド1枚の枠を返す）
 // when: turn=手番 / puff=一口（提供の自分のターンに、そのラウンドの自分の一口へ仕込む。めくる前に決める） / prep=準備 / any=いつでも（自分のターンならどのフェイズでも）
-// 炭カードだけ: ig=着火（焼けるまでのターン数） heat=表向きのときの熱
+// 炭カードだけ: ig=着火（焼けるまでのターン数） heat=新品の火（のせたときの火。冷めるたびに1ずつ下がり、0で灰。回復しない）
 export const CARDS = Object.freeze([
-  { id: "flat", name: "フラット炭", type: "coal", ig: 1, heat: 1, tx: "【小回り】冷めるとき、裏返しても熱は下がらない。" },
-  { id: "cube", name: "キューブ炭", type: "coal", ig: 2, heat: 2, tx: "表向きのあいだ熱2・火力2。裏返ると熱1。【火持ち】表向きのあいだ、自分の冷める段階が1つ減る（1より少なくはならない）。" },
-  { id: "dense_flat", name: "高密度フラット炭", type: "coal", ig: 1, heat: 1, tx: "【小回り】冷めるとき、裏返しても熱は下がらない。火力ゾーンにのせたとき、カードを1枚引く。" },
+  { id: "flat", name: "フラット炭", type: "coal", ig: 1, heat: 2, tx: "火2。【早い】置いた次の自分のターンに焼ける。" },
+  { id: "cube", name: "キューブ炭", type: "coal", ig: 2, heat: 3, tx: "火3。【火持ち】火が大きく、長くもつ。焼けるまで2ターン。" },
+  { id: "dense_flat", name: "高密度フラット炭", type: "coal", ig: 1, heat: 2, tx: "火2。【早い】置いた次の自分のターンに焼ける。火力ゾーンにのせたとき、カードを1枚引く。" },
   { id: "heat_in", name: "熱を入れる吸い", type: "tech", need: 1, when: "puff", tx: "この一口の判定熱+1。適温かジャストになったら、さらに印象+1。" },
   { id: "heat_out", name: "熱を逃がす吸い", type: "tech", need: 6, when: "puff", tx: "この一口の判定熱−2。適温かジャストになったら、さらに+1点。" },
   { id: "blow", name: "ブロー", type: "tech", need: 4, when: "puff", tx: "この一口、自分は焦げない。焦げライン以上なら適温として採点する。" },
@@ -66,7 +66,7 @@ export const CARDS = Object.freeze([
   { id: "duel", name: "勝負の一服", type: "tech", need: 3, when: "puff", tx: "この審査で一票を取ったら、さらに+3点。" },
   { id: "read", name: "吸い方を読む", type: "tech", need: 0, when: "turn", tx: "審査カードの山のいちばん上を自分だけ見て、元に戻す。" },
   { id: "ash_tap", name: "灰落とし", type: "tech", need: 3, when: "turn", tx: "次の自分のターン、冷めない。" },
-  { id: "add_coal", name: "追い炭", type: "tech", need: 0, extra: 1, when: "turn", tx: "山札の上から2枚を、裏向きのまま種火として火力ゾーンに置く。このラウンド、カードをもう1枚使える。" },
+  { id: "add_coal", name: "追い炭", type: "tech", need: 0, extra: 1, when: "turn", tx: "山札の上から2枚までを、裏向きのまま種火（火1）として、空いている炭の枠に置く。このラウンド、カードをもう1枚使える。" },
   { id: "tongs", name: "トングさばき", type: "tech", need: 3, pay: { fire: 1 }, extra: 1, when: "turn", tx: "火力を1落として発動。カードを2枚引く。このラウンド、カードをもう1枚使える。" },
   { id: "fan", name: "火おこし", type: "tech", need: 1, when: "any", tx: "自分の炭焼き場の炭を、すべて1段階進める。" },
   { id: "inner", name: "内寄せ", type: "tech", need: 3, when: "turn", tx: "このセッションの終わりまで、自分の印象+1。" },
@@ -74,13 +74,13 @@ export const CARDS = Object.freeze([
   { id: "loosen", name: "葉をほぐす", type: "tech", need: 3, when: "turn", tx: "このセッションの終わりに、自分の葉は減らない。" },
   { id: "breath", name: "ひと息", type: "tech", need: 0, extra: 1, when: "turn", tx: "カードを1枚引く。このラウンド、カードをもう1枚使える。" },
   { id: "reset", name: "仕切り直し", type: "tech", need: 5, pay: { fire: 2 }, extra: 1, when: "turn", tx: "火力を2落として発動。カードを3枚引く。このラウンド、カードをもう1枚使える。" },
-  { id: "windguard", name: "風防", type: "tool", need: 2, when: "any", tx: "風防カウンターを2個のせて出す。冷めるとき、1段階ぶんのかわりにカウンターを1個取ってよい。0個になったら灰へ。相手のカードで自分の炭は弱まらない。" },
+  { id: "windguard", name: "風防", type: "tool", need: 2, when: "any", tx: "風防カウンターを2個のせて出す。冷めるとき、炭の火を1下げるかわりにカウンターを1個取ってよい。0個になったら灰へ。相手のカードで自分の炭は弱まらない。" },
   { id: "chacosta", name: "チャコスタ", type: "tool", need: 3, when: "any", tx: "自分のターンのはじめ、炭焼き場に炭が3つ以上あれば、カードを1枚引く。" },
   { id: "timer", name: "キッチンタイマー", type: "tool", need: 1, when: "any", tx: "自分のターンのはじめに炭が焼けたら、カードを1枚引く（1ターンに1枚まで）。" },
   { id: "ice_hose", name: "アイスホース", type: "tool", need: 4, when: "any", tx: "上側のズレを適温として扱う。" },
   { id: "diffuser", name: "ディフューザー", type: "tool", need: 3, when: "any", tx: "ズレの一口でも、ミックスと相性の加点を得る。" },
   { id: "hype", name: "実況の煽り", type: "event", need: 5, when: "turn", tx: "相手の次の一口の判定熱+1。" },
-  { id: "draft", name: "すきま風", type: "event", need: 3, when: "turn", tx: "相手の火力ゾーンの炭を1つ、相手が選んで1段階弱める。" },
+  { id: "draft", name: "すきま風", type: "event", need: 3, when: "turn", tx: "相手の炭を1つ、相手が選んで火を1下げる。" },
   { id: "venue_heat", name: "会場の熱気", type: "event", need: 2, when: "turn", tx: "全員の次の一口の判定熱+1。" },
   { id: "go_second", name: "後の先", type: "event", need: 1, when: "turn", tx: "次のラウンド、自分が後手になる。" },
   { id: "buyout", name: "買い占め", type: "event", need: 0, when: "prep", tx: "このターンの「詰める」で、さらに2枚取れる。" },

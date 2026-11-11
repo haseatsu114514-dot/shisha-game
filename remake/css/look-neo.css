@@ -2,8 +2,10 @@
    対象はすべての章とタイトル（1280×720 と横持ちスマホ。LK13 で第2〜5章へ広げた）。2画面表示（body.game-ds）には当てない。
    会話（1〜5）に続けて、地図と HUD・全画面 MENU・モーダル・タイトル・章の場面カードを同じ言葉づかい
    （夜紫の半透明の面・金の細い罫線・ラベンダーの縁・白い文字・小さめの角）へ揃える（7〜15）。
-   ショップ・LIME・レベルアップ・日付の幕・ギャラリーも同じ言葉づかい（16〜）。商品の絵・写真・漫画・動画などの絵そのものは変えない。
+   ショップ・レベルアップ・日付の幕・ギャラリーも同じ言葉づかい（16〜）。商品の絵・写真・漫画・動画などの絵そのものは変えない。
+   実物をまねた画面（LIME＝スマホのメッセージアプリ）と、固有の見た目を持つミニゲームには当てない（LK18・LK20）。
    紙とラベンダーのまま残っていた部品（LK17）は末尾の 20〜。心得の盤は css/look-neo-board.css。
+   面・札・ボタンに重ねる絵の部品（LK19）は css/look-neo-art.css（ここの面はその下敷き・絵が読めない時の姿）。
    専用のテーマを持つ画面（TRPG・斧投げ・てつこ・ミニゲーム・くじのガラガラ・シーシャ作り・大会の順位表）には当てない。
    配色テーマ（data-ui-theme の7種）の枠・色の規則より必ず勝つよう、#stage と部品の id の2つで始める。
    動く部品（立ち絵の光・名前の色・MENU の人物の絵）は js/looks/neo.js。 */
@@ -908,7 +910,7 @@
 }
 :root[data-look="neo"][data-density="phone"] body:not(.game-ds) #stage #hud .hud-card .hud-exp .hx-lv { width: calc(var(--neo-hud-sub) * 2.6); line-height: 1; }
 
-/* LIME と MENU: 同じ大きさの丸い札。LIME は緑の吹き出し、MENU は三本線。未読の赤丸・火種の印はそのまま右上。 */
+/* LIME と MENU: 同じ大きさで並べる。MENU は夜紫の丸い札に三本線、LIME はアプリの印（下の規則）。未読の赤丸・火種の印はそのまま右上。 */
 :root[data-look="neo"] body:not(.game-ds) #stage #hud .hud-right { align-items: flex-start; gap: 12px; }
 :root[data-look="neo"] body:not(.game-ds) #stage #hud :is(.hud-lime, .hud-menu) {
   position: relative;
@@ -939,27 +941,40 @@
   transform: none;
 }
 :root[data-look="neo"] body:not(.game-ds) #stage #hud :is(.hud-lime, .hud-menu):focus-visible { outline: 2px solid var(--neo-ui-gold); outline-offset: 2px; }
+/* LIME の印は、実際のスマホのメッセージアプリの印のオマージュ（緑の角丸四角に白い吹き出し・緑の字。台帳 DUI06・LK20）。
+   わざと紫にしていない部品なので、色と形は旧版のまま。大きさと位置だけ MENU と揃える。 */
+:root[data-look="neo"] body:not(.game-ds) #stage #hud .hud-lime {
+  color: #00a900;
+  background: #00c300;
+  border-radius: calc(var(--neo-hud-btn) * .23);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, .5);
+}
+:root[data-look="neo"] body:not(.game-ds) #stage #hud .hud-lime:is(:hover, :focus-visible) {
+  color: #00a900;
+  background: #00c300;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, .4), 0 4px 12px rgba(0, 0, 0, .5);
+}
 :root[data-look="neo"] body:not(.game-ds) #stage #hud .hud-lime span {
-  width: calc(var(--neo-hud-btn) * .68);
-  height: calc(var(--neo-hud-btn) * .48);
+  width: calc(var(--neo-hud-btn) * .71);
+  height: calc(var(--neo-hud-btn) * .58);
   margin: 0 0 calc(var(--neo-hud-btn) * .06);
-  padding: 1px 0 0;
+  padding: calc(var(--neo-hud-btn) * .04) 0 0;
   box-sizing: border-box;
-  font-size: max(11px, var(--neo-hud-btn) * .23);
+  font-size: max(12px, var(--neo-hud-btn) * .25);
   font-weight: 900;
   letter-spacing: 0;
-  color: #fff;
-  background: #06c755;
+  color: #00a900;
+  background: #fff;
   border-radius: 50%;
 }
 :root[data-look="neo"] body:not(.game-ds) #stage #hud .hud-lime span::after {
-  left: 30%;
-  bottom: calc(var(--neo-hud-btn) * -.07);
+  left: 32%;
+  bottom: calc(var(--neo-hud-btn) * -.08);
   width: calc(var(--neo-hud-btn) * .19);
-  height: calc(var(--neo-hud-btn) * .16);
-  background: #06c755;
+  height: calc(var(--neo-hud-btn) * .17);
+  background: #fff;
 }
-:root[data-look="neo"] body:not(.game-ds) #stage #hud .hud-lime .badge { right: -5px; top: -5px; box-shadow: 0 0 0 2px rgba(21, 13, 34, .9); }
+:root[data-look="neo"] body:not(.game-ds) #stage #hud .hud-lime .badge { right: -6px; top: -6px; }
 :root[data-look="neo"] body:not(.game-ds) #stage #hud .hud-menu i {
   width: calc(var(--neo-hud-btn) * .4);
   height: calc(var(--neo-hud-btn) * .3);
@@ -2181,69 +2196,9 @@
 }
 :root[data-look="neo"] body:not(.game-ds) #stage #modal .shop-dialog .flavor-guide-more summary { color: var(--neo-ui-lav); }
 
-/* ---------------------------------------------------------------- 17. LIME（daily/phone.js の端末・トーク一覧・トーク・朝の通知）
-   端末の枠と画面を夜紫に、吹き出しを新版の言葉づかいへ（相手は夜紫の札に白い字、自分はラベンダーに墨の字）。
-   LIME の緑のブランド色は、ロゴの札・ヘッダーの下の線・送る／閉じる（.ghost）のボタン・章の入口の印に残す。未読の赤丸・誘いの札の色も残す。 */
-:root[data-look="neo"] body:not(.game-ds) #stage #modal .phone {
-  --neo-phone-screen: #1f1430;
-  background: linear-gradient(180deg, #2a1b3f, #1a1029);
-  border-color: #120b1c;
-  box-shadow: 0 18px 60px rgba(0, 0, 0, .75), 0 0 0 1px rgba(201, 167, 230, .5), inset 0 0 0 1px rgba(0, 0, 0, .4);
-}
-:root[data-look="neo"] body:not(.game-ds) #stage #modal .phone-notch { background: #120b1c; }
-:root[data-look="neo"] body:not(.game-ds) #stage #modal .phone-status { color: #e6d7f5; }
-/* ヘッダー: 夜紫の帯に白い名前。下の線だけ LIME の緑。ロゴの札は緑の地に白い字。 */
-:root[data-look="neo"] body:not(.game-ds) #stage #modal .lime-header {
-  background: linear-gradient(180deg, #2e1d45, #24163a);
-  border-bottom: 2px solid #21b24e;
-  box-shadow: 0 2px 8px rgba(8, 3, 16, .45);
-}
-:root[data-look="neo"] body:not(.game-ds) #stage #modal .lime-logo { color: #fff; background: linear-gradient(180deg, #21b24e, #169a3e); }
-:root[data-look="neo"] body:not(.game-ds) #stage #modal .lime-unread { color: #fff; background: rgba(201, 167, 230, .26); }
-:root[data-look="neo"] body:not(.game-ds) #stage #modal .lime-back:is(:hover, :focus-visible) { color: var(--neo-ui-gold-hi); }
-:root[data-look="neo"] body:not(.game-ds) #stage #modal .lime-back:focus-visible { outline: 2px solid var(--neo-ui-gold); outline-offset: 1px; }
-:root[data-look="neo"] body:not(.game-ds) #stage #modal .lime-face { border-color: rgba(246, 241, 250, .85); }
-/* トーク一覧 */
-:root[data-look="neo"] body:not(.game-ds) #stage #modal .lime-chat.list { background: var(--neo-phone-screen); }
-:root[data-look="neo"] body:not(.game-ds) #stage #modal .lime-chat-row { color: var(--neo-ui-ink); background: var(--neo-phone-screen); border-bottom-color: rgba(201, 167, 230, .16); }
-:root[data-look="neo"] body:not(.game-ds) #stage #modal .lime-chat-row:is(:hover, :focus-visible) { background: rgba(201, 167, 230, .12); }
-:root[data-look="neo"] body:not(.game-ds) #stage #modal .lime-chat-row:focus-visible { outline: 2px solid var(--neo-ui-gold); outline-offset: -2px; }
-:root[data-look="neo"] body:not(.game-ds) #stage #modal .lime-shortcut { border-bottom-color: rgba(201, 167, 230, .3); }
-:root[data-look="neo"] body:not(.game-ds) #stage #modal .lcr-face .lime-face { border-color: rgba(201, 167, 230, .6); }
-:root[data-look="neo"] body:not(.game-ds) #stage #modal .lcr-dot { border-color: var(--neo-phone-screen); }
-:root[data-look="neo"] body:not(.game-ds) #stage #modal .lcr-name { color: #fff; }
-:root[data-look="neo"] body:not(.game-ds) #stage #modal .lcr-preview { color: var(--neo-ui-dim); }
-:root[data-look="neo"] body:not(.game-ds) #stage #modal .lime-chat-row.unread .lcr-preview { color: var(--neo-ui-ink); }
-:root[data-look="neo"] body:not(.game-ds) #stage #modal .lcr-side small { color: var(--neo-ui-dim); }
-:root[data-look="neo"] body:not(.game-ds) #stage #modal .lime-empty { color: var(--neo-ui-dim); }
-:root[data-look="neo"] body:not(.game-ds) #stage #modal .lime-tip { color: var(--neo-ui-ink); background: rgba(6, 199, 85, .1); border-color: rgba(6, 199, 85, .55); }
-:root[data-look="neo"] body:not(.game-ds) #stage #modal .lime-tip b { color: #9df0bd; }
-/* トーク: 画面は夜紫。相手の吹き出しは夜紫の札に白い字（ラベンダーの縁）、自分の吹き出しはラベンダーに墨の字。 */
-:root[data-look="neo"] body:not(.game-ds) #stage #modal .lime-chat:not(.list) { background: linear-gradient(180deg, #24173a, var(--neo-phone-screen)); }
-:root[data-look="neo"] body:not(.game-ds) #stage #modal .lime-row.peer .lime-bubble { color: var(--neo-ui-ink); background: #3a2754; box-shadow: inset 0 0 0 1px rgba(201, 167, 230, .35), 0 1px 3px rgba(8, 3, 16, .4); }
-:root[data-look="neo"] body:not(.game-ds) #stage #modal .lime-row.me .lime-bubble { color: #1b1029; background: #d9c2ef; box-shadow: 0 1px 3px rgba(8, 3, 16, .4); }
-:root[data-look="neo"] body:not(.game-ds) #stage #modal .lime-row.typing i { background: var(--neo-ui-dim); }
-:root[data-look="neo"] body:not(.game-ds) #stage #modal .lime-note { color: var(--neo-ui-ink); background: rgba(201, 167, 230, .2); }
-:root[data-look="neo"] body:not(.game-ds) #stage #modal .lime-note.day { background: rgba(201, 167, 230, .14); }
-:root[data-look="neo"] body:not(.game-ds) #stage #modal .lime-image { background: rgba(246, 241, 250, .1); }
-:root[data-look="neo"] body:not(.game-ds) #stage #modal .lime-media-fallback { color: var(--neo-ui-dim); }
-/* 返信欄: 夜紫の帯。返信の札は夜紫にラベンダーの縁（押すと明るく）。送る・閉じるは LIME の緑のまま。 */
-:root[data-look="neo"] body:not(.game-ds) #stage #modal .lime-actions { background: #1a1029; border-top-color: rgba(201, 167, 230, .22); }
-:root[data-look="neo"] body:not(.game-ds) #stage #modal .lime-hint { color: var(--neo-ui-dim); }
-:root[data-look="neo"] body:not(.game-ds) #stage #modal .lime-reply:not(.ghost) { color: #fff; background: rgba(46, 29, 69, .9); border-color: rgba(201, 167, 230, .65); }
-:root[data-look="neo"] body:not(.game-ds) #stage #modal .lime-reply:not(.ghost):hover { background: rgba(74, 49, 110, .92); border-color: var(--neo-ui-lav); }
-:root[data-look="neo"] body:not(.game-ds) #stage #modal .lime-reply:focus-visible { outline: 2px solid var(--neo-ui-gold); outline-offset: 2px; }
-:root[data-look="neo"] body:not(.game-ds) #stage #modal .lime-reply:is(.disabled, :disabled) { color: rgba(185, 170, 200, .75); background: rgba(46, 29, 69, .35); border-color: rgba(185, 170, 200, .35); }
-/* 朝の通知（上から降りてくる札）: 夜紫の札に白い字。LIME の印は緑のまま。 */
-:root[data-look="neo"] body:not(.game-ds) #stage #toasts .lime-push {
-  color: var(--neo-ui-ink);
-  background: linear-gradient(180deg, rgba(36, 22, 55, .97), rgba(24, 14, 38, .96));
-  box-shadow: inset 0 0 0 1px var(--neo-ui-edge), 0 10px 30px rgba(0, 0, 0, .5);
-}
-:root[data-look="neo"] body:not(.game-ds) #stage #toasts .lime-push .lp-top { color: var(--neo-ui-dim); }
-:root[data-look="neo"] body:not(.game-ds) #stage #toasts .lime-push .lp-top b { color: #fff; }
-:root[data-look="neo"] body:not(.game-ds) #stage #toasts .lime-push .lp-faces > * { border-color: #24163a; }
-:root[data-look="neo"] body:not(.game-ds) #stage #toasts button.lime-push:focus-visible { outline: 2px solid var(--neo-ui-gold); }
+/* ---------------------------------------------------------------- 17. LIME（daily/phone.js の端末・トーク一覧・トーク・朝の通知）: 新版でも変えない
+   LIME は実際のスマホのメッセージアプリをまねた見た目（緑の見出し・白い一覧・緑の自分の吹き出し。台帳 DUI06・LK20）。
+   わざと紫にしていない画面なので、新版の規則は書かない（LK16 で一度夜紫にしたのを 2026-11-11 オーナー指示で戻した）。look_neo.mjs が旧版と同じ見た目を確かめる。 */
 
 /* ---------------------------------------------------------------- 18. レベルアップ（その場で上に出る短い札。daily/levelup.js・SBD122）と、場面のつなぎ・夜明けの日付
    演出（札が降りる・火が弾ける・夜明けの光）はそのまま。札の面を新版の言葉づかいへ。 */

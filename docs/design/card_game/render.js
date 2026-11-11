@@ -1,4 +1,4 @@
-// rulebook.html の図と一覧を cards.js から組み立てる（第0.3版）。
+// rulebook.html の図と一覧を cards.js から組み立てる（第0.4版）。
 (function () {
   const byId = Object.fromEntries(FLAVORS.map((f) => [f.id, f]));
   const supByName = Object.fromEntries(SUPPORT.map((s) => [s.n, s]));
@@ -39,11 +39,11 @@
         <div class="txt">${f.ab || '<span style="color:#a79b8d">（能力なし）</span>'}</div></div></div>`;
   }
   function coalCard(s) {
-    const cube = s.heat === 2;
+    const cube = s.ig === 2; // キューブ炭（着火2ターン）。heat は新品の火（フラット2・キューブ3）
     return `<div class="card coal ${cube ? 'cube' : 'flat'}">
       <div class="top"><div class="nm" style="${s.n.length > 6 ? 'font-size:8pt' : ''}"><small>炭カード</small>${s.n}</div></div>
       <div class="art"><span class="lump"></span></div>
-      <div class="stats"><span><small>着火</small><b>${s.ig}</b><small>ターン</small></span><span class="h"><small>熱</small><b>${s.heat}</b></span></div>
+      <div class="stats"><span><small>着火</small><b>${s.ig}</b><small>ターン</small></span><span class="h"><small>火</small><b>${s.heat}</b></span></div>
       <div class="body"><div class="txt">${s.tx}</div></div></div>`;
   }
   function supCard(s) {
@@ -97,7 +97,7 @@
   add('tbl-hmds', HMDS.map((b) => `<tr><td class="nw"><b>${b.n}</b></td><td>${b.ab}</td></tr>`));
   const typeTag = (t) => `<span class="tag ${t === '技' ? 'k' : t === '器具' ? 'b' : t === '人物' ? 'g' : t === '炭' ? 'c' : ''}" style="margin:0">${t}</span>`;
   add('tbl-support', SUPPORT.map((s) => `<tr><td class="c">${typeTag(s.type)}</td>
-    <td class="nw"><b>${s.n}</b></td><td class="c">${s.type === '炭' ? `<span class="small nw">着火${s.ig}・熱${s.heat}</span>` : needHtml(s.need) + payTag(s)}</td><td class="c nw">${s.when === '炭' ? '<span class="small">自分のターン</span>' : whenTag(s.when) + extraTag(s)}</td><td style="line-height:1.35">${s.tx}</td></tr>`));
+    <td class="nw"><b>${s.n}</b></td><td class="c">${s.type === '炭' ? `<span class="small nw">着火${s.ig}・火${s.heat}</span>` : needHtml(s.need) + payTag(s)}</td><td class="c nw">${s.when === '炭' ? '<span class="small">自分のターン</span>' : whenTag(s.when) + extraTag(s)}</td><td style="line-height:1.35">${s.tx}</td></tr>`));
   add('tbl-judges', JUDGES.map((j) => `<tr><td class="nw"><b>${j.n}</b><br><span class="small">${j.t}</span></td>
     <td>${j.puffs.map((q) => `<span class="pchip ${q.dh > 0 ? 'up' : q.dh < 0 ? 'down' : ''}"><b>${q.style}</b>×${q.c}</span>`).join(' ')}</td><td>${j.tx}</td></tr>`));
   add('tbl-puffs', Object.values(PUFF).map((q) => `<tr><td class="nw"><b>${q.style}</b></td><td class="c"><span class="pchip ${q.dh > 0 ? 'up' : q.dh < 0 ? 'down' : ''}"><b>${dhMark(q)}</b></span></td><td>${q.stx}</td></tr>`));
@@ -109,7 +109,7 @@
   // 熱の動き（適温4〜6の葉の例）。線=蓄えた熱、丸=判定熱
   const hf = document.getElementById('heatfig');
   if (hf) {
-    const prep = [3, 3, 3, 4, 6, 6];
+    const prep = [3, 3, 3, 3, 6, 6];                    // 立ち上げは種火3つ。5ターン目に焼けたフラット炭2つ（1つは種火と入れ替え）
     const heat = [5, 5, 6, 5, 5, 5, 6, 5, 5];           // 自分のターンを終えたときの熱
     const dh = [0, 1, 0, 0, -1, 0, 0, 1, 0];            // 審査カードの変化
     const seq = [...prep, ...heat], n = seq.length;
@@ -129,7 +129,7 @@
       s += `<circle cx="${x(i)}" cy="${y(j)}" r="6.6" fill="#f5ad14" stroke="#1f1b19" stroke-width="1.6"/><text x="${x(i)}" y="${y(j) + 3.4}" font-size="8.5" font-weight="900" text-anchor="middle" fill="#1f1b19">${j}</text>`;
       if (dh[k]) s += `<text x="${x(i) + 9}" y="${y(v + dh[k] / 2) + 3}" font-size="8.5" font-weight="900" fill="#e2591f">${dh[k] > 0 ? '+1' : '−1'}</text>`; });
     s += `<text x="${L + 5}" y="${y(5.6) + 3.5}" font-size="9.5" font-weight="700" fill="#3f7a2c">適温 4〜6</text><text x="${L + 5}" y="${y(9) + 3.5}" font-size="9.5" font-weight="700" fill="#b5302a">焦げ 8〜</text>`;
-    hf.innerHTML = s + '</svg><p class="small" style="margin:1mm 0 0">適温4〜6の葉の例。黒い線は自分のターンを終えたときの熱、黄色い丸は一口の判定熱。審査カードが「長く吸う」（+1）や「ゆっくり吸う」（−1）だと、判定熱は熱からずれます。熱5にしておけば、どちらに1ずれても適温の中です。</p>';
+    hf.innerHTML = s + '</svg><p class="small" style="margin:1mm 0 0">適温4〜6の葉の例。黒い線は自分のターンを終えたときの熱、黄色い丸は一口の判定熱。審査カードが「長く吸う」（+1）や「ゆっくり吸う」（−1）だと、判定熱は熱からずれます。熱5にしておけば、どちらに1ずれても適温の中です。提供では毎ターン炭が冷めて熱が2下がるので、新しい炭を足して保っています。</p>';
   }
 
   const sup = document.getElementById('supply');
