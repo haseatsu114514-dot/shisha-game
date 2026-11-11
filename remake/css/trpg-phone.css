@@ -114,3 +114,6 @@ html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage > h2 
   display: inline; font-size: var(--phone-sub); font-weight: 400; letter-spacing: 0; color: #c6d4cb; white-space: nowrap;
 }
 html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-modal-body > div > p.trpg-roll-instruction { display: none; }
+
+/* ---- 演出（TRF08〜10）: スマホの判定の卓では、目標までの帯を右の列のいちばん上に置く ---- */
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-gauge { width: 94%; margin: 16px auto 12px; }

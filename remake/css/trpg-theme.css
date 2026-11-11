@@ -716,3 +716,190 @@ html:root .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-receipts > .trpg
 /* 「？」の用語の列は、いちばん長い言葉の幅に合わせる（「クリティカル」「✕ 合わなそう」が1行に収まる）。 */
 html:root .trpg-root .trpg-help-glossary { grid-template-columns: max-content 1fr; }
 html:root .trpg-root .trpg-help-glossary dt { white-space: nowrap; }
+
+/* ================================================================ 演出の強化（TRF08〜10・2026-11-12 オーナー「演出を強化したい。
+   今はテキストを読んでいくのがメイン。サイコロの判定や物語上のもの。キャラクターシートを作るとみんな転生みたいに。没入感を」）。
+   見た目だけ: 進行・判定・保存には触れない。重ねる演出は pointer-events: none で操作を塞がない。動きを減らす設定では動かさない。 */
+
+/* ---- 物語の層と卓の層（TRF10）----
+   卓の会話（素の本人どうし）: 部屋の絵を少し沈めて、卓の縁（座席の帯）を出す。
+   物語の中（語り・NPC・役の台詞）: 座席の帯を隠して、部屋の絵と人物を主役にする。 */
+html:root .trpg-root.trpg-cinematic .trpg-room > img { transition: filter .45s ease; }
+html:root .trpg-root.trpg-cinematic.trpg-talking[data-layer="table"]:not([data-phase="cover"]) .trpg-room > img { filter: brightness(.5) saturate(.55); }
+html:root .trpg-root.trpg-cinematic.trpg-talking .trpg-table { transition: opacity .3s ease, visibility 0s linear .3s; }
+html:root .trpg-root.trpg-cinematic.trpg-talking[data-layer="fiction"]:not([data-phase="cover"]) .trpg-table { opacity: 0; visibility: hidden; }
+html:root .trpg-root.trpg-cinematic.trpg-talking[data-layer="table"] .trpg-table { opacity: 1; visibility: visible; transition-delay: 0s; }
+/* 会話の間は、選ぶ画面の文字カードの印（A/B/C）と説明も隠す（カードだけ隠れて、丸い印が部屋の絵の上に透けて残っていた）。 */
+html:root .trpg-root.trpg-cinematic:not(.trpg-idle) .trpg-selection .trpg-object-choice > :is(.trpg-text-choice-mark, .trpg-object-detail, .trpg-hint-mark) { visibility: hidden !important; }
+
+/* 役として話す時は、役衣装の姿が帯の上まで立つ（部屋の中に居る）。 */
+html:root .trpg-root.trpg-cinematic .trpg-dock[data-layer="fiction"] { overflow: visible; }
+/* 役衣装の絵は生成りの台紙つきなので、宣言のカードと同じ「役の札」として立てる（縁と影）。 */
+html:root .trpg-root.trpg-cinematic .trpg-dock[data-kind="pc"] .trpg-speaker-art {
+  width: 232px; height: 318px; margin: -104px 6px 16px 0; flex: 0 0 232px; align-self: flex-end; overflow: hidden;
+  border: 3px solid #f4dda4; border-radius: 12px; background: #efe6d0 !important; box-shadow: 0 0 0 1px #8a6524, 0 14px 30px #000b;
+  animation: trpg-figure-in .32s ease-out both;
+}
+html:root .trpg-root.trpg-cinematic .trpg-dock[data-kind="pc"] .trpg-speaker-art img { width: 520px !important; filter: none; }
+@keyframes trpg-figure-in { from { opacity: 0; translate: -18px 0; } to { opacity: 1; translate: 0 0; } }
+/* 語り: 立ち絵は出さず、字を中央に置く（物語の地の文）。語っているGMは名前だけ小さく添える。 */
+html:root .trpg-root.trpg-cinematic .trpg-dock[data-kind="narration"] .trpg-speaker-art { display: none; }
+html:root .trpg-root.trpg-cinematic .trpg-dock[data-kind="narration"] .trpg-speech { flex: 1; padding-left: 150px; padding-right: 20px; text-align: center; }
+html:root .trpg-root.trpg-cinematic .trpg-dock[data-kind="narration"] .trpg-speaker-label { justify-content: center; align-items: center; gap: 12px; margin-bottom: 10px; }
+html:root .trpg-root.trpg-cinematic .trpg-dock[data-kind="narration"] .trpg-speaker-label strong { font-size: max(18px, var(--tt-min)); letter-spacing: .3em; padding: 1px 4px 1px 14px; border: 1px solid #d2ae6699; border-radius: 999px; color: #f4dda4; background: #0006; }
+html:root .trpg-root.trpg-cinematic .trpg-dock[data-kind="narration"] .trpg-speaker-label span { font-size: max(16px, var(--tt-min)); color: #b9c4b6; }
+html:root .trpg-root.trpg-cinematic .trpg-dock[data-kind="narration"] .trpg-speech p { margin-left: auto; margin-right: auto; letter-spacing: .04em; }
+/* GMが演じる物語の人物: 人影の札と、大きな名前。 */
+html:root .trpg-root.trpg-cinematic .trpg-dock[data-kind="npc"] .trpg-speaker-art { width: 190px; height: 232px; flex: 0 0 190px; display: grid; place-items: end center; }
+html:root .trpg-root.trpg-cinematic .trpg-npc-figure { display: block; width: 168px; height: 210px; animation: trpg-figure-in .32s ease-out both; }
+html:root .trpg-root.trpg-cinematic .trpg-npc-figure svg { width: 100%; height: 100%; fill: #0a1a1ee6; stroke: #d2ae66; stroke-width: 1.6; filter: drop-shadow(0 0 14px #f4dda455); }
+html:root .trpg-root.trpg-cinematic .trpg-npc-figure[data-shape="paper"] svg { fill: #efe6d0e6; stroke: #8a6524; }
+html:root .trpg-root.trpg-cinematic .trpg-dock[data-kind="npc"] .trpg-speaker-art { position: relative; }
+/* 演じているGMの顔を、人影の脇に小さく（声の主）。表情は台本のまま。 */
+html:root .trpg-root.trpg-cinematic .trpg-npc-gm { position: absolute; right: 2px; bottom: 14px; width: 70px; height: 70px; overflow: hidden; border-radius: 50%; border: 2px solid #ebd9a8; background: #2c4a4a; box-shadow: 0 3px 8px #000a; }
+html:root .trpg-root.trpg-cinematic .trpg-npc-gm img { position: absolute; left: 50%; max-width: none; }
+html:root .trpg-root.trpg-cinematic .trpg-dock[data-kind="npc"] .trpg-speaker-label strong { color: #fff1c8; }
+html:root .trpg-root.trpg-cinematic .trpg-dock:is([data-kind="npc"], [data-kind="pc"]) .trpg-speaker-label span { font-size: max(18px, var(--tt-min)); color: #b9c4b6; }
+html:root .trpg-root.trpg-cinematic .trpg-dock:is([data-kind="npc"], [data-kind="pc"]) .trpg-speaker-label span::before { content: "（"; }
+html:root .trpg-root.trpg-cinematic .trpg-dock:is([data-kind="npc"], [data-kind="pc"]) .trpg-speaker-label span::after { content: "）"; }
+
+/* 演出を載せる層: 舞台と同じ大きさで、はみ出しを切る。舞台の横スクロール幅を増やさない（stage-fx.js の layerOf）。
+   モーダル（z 40）より上、盛り上がりの知らせ（z 90）より下。操作は塞がない。 */
+html:root .trpg-root.trpg-cinematic > .trpg-fx-layer { position: absolute; inset: 0; z-index: 70; overflow: hidden; pointer-events: none; contain: strict; }
+
+/* ---- 転生（TRF08）: 卓の顔ぶれの札が裏返って、役の姿になる ---- */
+html:root .trpg-root.trpg-cinematic .trpg-incarnate { position: absolute; inset: 0; z-index: 70; overflow: hidden; pointer-events: none; perspective: 1500px; }
+html:root .trpg-root.trpg-cinematic .trpg-incarnate-veil { position: absolute; inset: 0; background: radial-gradient(ellipse at 50% 42%, #1b4744 0%, #0a2224 52%, #040d0e 100%), var(--tt-felt-deep, #0a2224); }
+html:root .trpg-root.trpg-cinematic .trpg-incarnate-kicker { position: absolute; left: 0; right: 0; top: 92px; margin: 0; text-align: center; color: #f4dda4; font-size: 26px; font-weight: 700; letter-spacing: .34em; text-shadow: 0 2px 10px #000; }
+html:root .trpg-root.trpg-cinematic .trpg-incarnate-cards { position: absolute; left: 0; right: 0; top: 168px; display: flex; justify-content: center; gap: 40px; }
+html:root .trpg-root.trpg-cinematic .trpg-incarnate-card { position: relative; flex: 0 0 250px; height: 380px; transform-style: preserve-3d; }
+html:root .trpg-root.trpg-cinematic .trpg-incarnate-face {
+  position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 18px 14px 16px; border-radius: 14px;
+  backface-visibility: hidden; -webkit-backface-visibility: hidden; box-shadow: 0 18px 40px #000a;
+}
+html:root .trpg-root.trpg-cinematic .trpg-incarnate-face.front { justify-content: center; border: 2px solid #b48f4f; background: linear-gradient(170deg, #1d4a47, #0e2829); }
+html:root .trpg-root.trpg-cinematic .trpg-incarnate-face.back { justify-content: flex-end; border: 2px solid #8a6524; background: linear-gradient(170deg, #fbf5e6, #efe3c6 70%, #e6d6b2); transform: rotateY(-180deg); }
+html:root .trpg-root.trpg-cinematic .trpg-incarnate-card[data-side="back"] .back { box-shadow: 0 0 0 3px #f4dda4, 0 0 44px #ffd98f99, 0 18px 40px #000a; }
+html:root .trpg-root.trpg-cinematic .trpg-incarnate-portrait { position: relative; display: block; width: 168px; height: 168px; overflow: hidden; border-radius: 50%; border: 3px solid #ebd9a8; background: #2c4a4a; }
+html:root .trpg-root.trpg-cinematic .trpg-incarnate-portrait img { position: absolute; left: 50%; max-width: none; }
+html:root .trpg-root.trpg-cinematic .trpg-incarnate-figure { position: relative; display: block; flex: 1; width: 100%; min-height: 0; overflow: hidden; border-radius: 9px; border: 1px solid #b89b62; background: #efe6d0; }
+html:root .trpg-root.trpg-cinematic .trpg-incarnate-figure img { position: absolute; left: 50%; max-width: none; }
+html:root .trpg-root.trpg-cinematic .trpg-incarnate-face strong { font-size: 30px; font-weight: 700; letter-spacing: .06em; line-height: 1.2; }
+html:root .trpg-root.trpg-cinematic .trpg-incarnate-face.front strong { color: #fff4d6; }
+html:root .trpg-root.trpg-cinematic .trpg-incarnate-face.back strong { color: #2a1b0c; }
+html:root .trpg-root.trpg-cinematic .trpg-incarnate-face.back small { font-size: 18px; font-weight: 700; color: #6b5637; line-height: 1.2; }
+html:root .trpg-root.trpg-cinematic .trpg-incarnate[data-calm="true"] .front { display: none; }
+html:root .trpg-root.trpg-cinematic .trpg-incarnate[data-calm="true"] .back { transform: none; }
+html:root .trpg-root.trpg-cinematic .trpg-incarnate-place { position: absolute; left: 50%; top: 50%; display: grid; justify-items: center; gap: 10px; width: max-content; max-width: 1100px; opacity: 0; transform: translate(-50%, -50%); text-align: center; }
+html:root .trpg-root.trpg-cinematic .trpg-incarnate[data-calm="true"] .trpg-incarnate-place { top: auto; bottom: 34px; opacity: 1; transform: translateX(-50%); }
+html:root .trpg-root.trpg-cinematic .trpg-incarnate[data-calm="true"] .trpg-incarnate-place strong { font-size: 30px; }
+html:root .trpg-root.trpg-cinematic .trpg-incarnate-place small { font-size: 20px; letter-spacing: .4em; color: #d2ae66; }
+html:root .trpg-root.trpg-cinematic .trpg-incarnate-place strong { font-size: 58px; font-weight: 700; letter-spacing: .08em; color: #fff4d6; text-shadow: 0 4px 22px #000, 0 0 40px #f4dda455; }
+html:root .trpg-root.trpg-cinematic .trpg-incarnate-place span { font-size: 22px; color: #e3ead9; letter-spacing: .12em; }
+html:root .trpg-root.trpg-cinematic .trpg-incarnate-flash { position: absolute; inset: 0; opacity: 0; background: radial-gradient(circle at 50% 50%, #fff9e6 0%, #fff3cfcc 35%, #fff3cf00 72%); }
+
+/* ---- 場面の題の札（TRF10）---- */
+html:root .trpg-root.trpg-cinematic .trpg-scene-card { position: absolute; left: 0; right: 0; top: 262px; z-index: 55; height: 132px; display: grid; align-content: center; justify-items: center; gap: 4px; pointer-events: none; }
+html:root .trpg-root.trpg-cinematic .trpg-scene-card-band { position: absolute; inset: 0; transform-origin: left center; border-top: 2px solid #d2ae66; border-bottom: 2px solid #d2ae66; background: linear-gradient(90deg, #06131500, #061315ee 18%, #0a2224f2 50%, #061315ee 82%, #06131500); }
+html:root .trpg-root.trpg-cinematic .trpg-scene-card small { position: relative; font-size: 20px; font-weight: 700; letter-spacing: .3em; color: #d2ae66; }
+html:root .trpg-root.trpg-cinematic .trpg-scene-card strong { position: relative; font-size: 46px; font-weight: 700; letter-spacing: .08em; color: #fff4d6; text-shadow: 0 3px 14px #000; }
+html:root .trpg-root.trpg-cinematic .trpg-scene-card[data-tone="alert"] .trpg-scene-card-band { border-color: #ff9d5c; background: linear-gradient(90deg, #2a0d0500, #2a0d05ee 18%, #40160af2 50%, #2a0d05ee 82%, #2a0d0500); }
+html:root .trpg-root.trpg-cinematic .trpg-scene-card[data-tone="alert"] small { color: #ffb37a; }
+
+/* ---- 判定の結果のカットイン（TRF09）---- */
+html:root .trpg-root.trpg-cinematic .trpg-cutin { --cut: #6f9c7c; position: absolute; left: 0; right: 0; top: 176px; z-index: 56; height: 190px; display: flex; align-items: center; justify-content: center; gap: 34px; pointer-events: none; }
+html:root .trpg-root.trpg-cinematic .trpg-cutin[data-grade="success"] { --cut: #e0b03e; }
+html:root .trpg-root.trpg-cinematic .trpg-cutin[data-grade="trouble"] { --cut: #c9765a; }
+html:root .trpg-root.trpg-cinematic .trpg-cutin[data-special="critical"] { --cut: #ffd86a; }
+html:root .trpg-root.trpg-cinematic .trpg-cutin[data-special="fumble"] { --cut: #8ea2c4; }
+html:root .trpg-root.trpg-cinematic .trpg-cutin-band { position: absolute; inset: 12px -80px; transform-origin: left center; border-top: 4px solid var(--cut); border-bottom: 4px solid var(--cut); background: linear-gradient(90deg, #040d0ef5, #0c2426f2 50%, #040d0ef5); box-shadow: 0 0 46px color-mix(in srgb, var(--cut) 55%, transparent); }
+html:root .trpg-root.trpg-cinematic .trpg-cutin-figure { position: relative; flex: 0 0 190px; height: 190px; overflow: hidden; border-radius: 12px; border: 3px solid var(--cut); background: #efe6d0; box-shadow: 0 10px 26px #000a; }
+html:root .trpg-root.trpg-cinematic .trpg-cutin-figure img { position: absolute; left: 50%; max-width: none; }
+html:root .trpg-root.trpg-cinematic .trpg-cutin-copy { position: relative; display: grid; gap: 2px; min-width: 300px; }
+html:root .trpg-root.trpg-cinematic .trpg-cutin-copy small { font-size: 24px; font-weight: 700; letter-spacing: .08em; color: #e9e2cc; }
+html:root .trpg-root.trpg-cinematic .trpg-cutin-copy strong { transform-origin: left center; font-size: 62px; font-weight: 700; letter-spacing: .06em; line-height: 1.15; color: var(--cut); text-shadow: 0 4px 0 #0009, 0 0 30px color-mix(in srgb, var(--cut) 50%, transparent); }
+
+/* ---- 画面の衝撃（揺れは stage-fx.js、ここは光）---- */
+html:root .trpg-root.trpg-cinematic .trpg-impact { position: absolute; inset: 0; z-index: 54; opacity: 0; pointer-events: none; background: radial-gradient(ellipse at 50% 45%, var(--impact, #fff) 0%, color-mix(in srgb, var(--impact, #fff) 40%, transparent) 45%, transparent 78%); mix-blend-mode: screen; }
+html:root .trpg-root.trpg-cinematic .trpg-impact[data-kind="fumble"] { mix-blend-mode: multiply; background: radial-gradient(ellipse at 50% 45%, #1a2436 0%, #0d1420cc 60%, #0d142000 100%); }
+
+/* ---- 判定の卓: 目標までの帯と、結果の判子（TRF09）---- */
+html:root .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-gauge {
+  position: relative; width: min(560px, 92%); height: 14px; margin: 2px auto 10px; flex-shrink: 0;
+}
+html:root .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-gauge-track {
+  position: absolute; inset: 3px 0; border-radius: 999px; border: 1px solid #d2ae6688; box-shadow: inset 0 1px 3px #0008;
+  background: linear-gradient(90deg, #7a4a3a 0 var(--mixed-at), #4f7a62 var(--mixed-at) var(--success-at), #c99a2e var(--success-at) 100%);
+}
+html:root .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-gauge-goal {
+  position: absolute; left: var(--success-at); top: -9px; transform: translateX(-50%); padding: 0 6px; border-radius: 4px; background: #f4dda4; color: #2a1b0c;
+  font-size: max(12px, calc(10 * var(--roll-unit))); font-weight: 700; line-height: 1.5;
+}
+html:root .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-gauge-goal::after { content: ""; position: absolute; left: 50%; top: 100%; width: 2px; height: 16px; background: #f4dda4; transform: translateX(-50%); }
+html:root .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-gauge-mark {
+  position: absolute; left: var(--mark-at); top: -3px; width: 20px; height: 20px; margin-left: -10px; border-radius: 50%; border: 3px solid #fff8e1;
+  background: var(--roll-color, #e4c79b); box-shadow: 0 0 14px #fff3c4cc, 0 2px 4px #0008;
+  animation: trpg-gauge-run .7s cubic-bezier(.2, .8, .2, 1) .12s both;
+}
+@keyframes trpg-gauge-run { from { left: 0%; scale: .6; } 80% { scale: 1.25; } to { left: var(--mark-at); scale: 1; } }
+html:root .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-gauge[data-grade="success"] .trpg-roll-gauge-mark { background: #f2c44e; }
+html:root .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-gauge[data-grade="mixed"] .trpg-roll-gauge-mark { background: #7fb894; }
+html:root .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-gauge[data-grade="trouble"] .trpg-roll-gauge-mark { background: #d48a70; }
+html:root .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-gauge[data-special="critical"] .trpg-roll-gauge-mark { box-shadow: 0 0 22px #ffe08a, 0 0 0 4px #ffe08a55; }
+/* 合計は印が止まるのに合わせて現れ、評価は判子のように押される。字は最初からDOMにある（読み上げ・検査は待たない）。 */
+html:root .trpg-root.trpg-cinematic .trpg-roll-stage[data-roll-state="settled"] .trpg-dice-total > strong { animation: trpg-total-in .34s cubic-bezier(.2, 1.4, .4, 1) .5s both; }
+html:root .trpg-root.trpg-cinematic .trpg-roll-stage[data-roll-state="settled"] .trpg-dice-total .trpg-dice-grade { animation: trpg-stamp .36s cubic-bezier(.2, 1.5, .4, 1) .82s both; }
+html:root .trpg-root.trpg-cinematic .trpg-roll-stage[data-roll-state="settled"] .trpg-dice-total .trpg-dice-near { animation: trpg-stamp .36s cubic-bezier(.2, 1.5, .4, 1) 1s both; }
+html:root .trpg-root.trpg-cinematic .trpg-roll-stage[data-roll-state="settled"] :is(.trpg-roll-special, .trpg-roll-reward) { animation: trpg-stamp .4s cubic-bezier(.2, 1.5, .4, 1) 1.02s both; }
+html:root .trpg-root.trpg-cinematic .trpg-roll-stage[data-roll-state="settled"] .trpg-roll-reward { animation-delay: 1.16s; }
+@keyframes trpg-total-in { from { opacity: 0; scale: .7; } to { opacity: 1; scale: 1; } }
+@keyframes trpg-stamp { from { opacity: 0; scale: 2.1; rotate: -7deg; } 70% { opacity: 1; scale: .94; rotate: 0deg; } to { opacity: 1; scale: 1; rotate: 0deg; } }
+/* ファンブル: 1の目のダイスがよろける。クリティカル: 20の目のダイスが光る。 */
+html:root .trpg-root.trpg-cinematic .trpg-roll-stage[data-special="critical"][data-roll-state="settled"] .trpg-dice-row { filter: drop-shadow(0 0 18px #ffe08acc); }
+html:root .trpg-root.trpg-cinematic .trpg-roll-stage[data-special="fumble"][data-roll-state="settled"] .trpg-dice-row { animation: trpg-fumble-wobble .7s ease-in-out .1s both; }
+@keyframes trpg-fumble-wobble { 0%, 100% { rotate: 0deg; } 20% { rotate: -3deg; } 45% { rotate: 2.4deg; } 70% { rotate: -1.4deg; } }
+
+/* ---- 結末の札: はじめて出た時だけ、一行ずつ現れる ---- */
+html:root .trpg-root.trpg-cinematic .trpg-ending[data-reveal="true"] > * { animation: trpg-ending-in .6s ease-out both; }
+html:root .trpg-root.trpg-cinematic .trpg-ending[data-reveal="true"] > :nth-child(1) { animation-delay: .15s; }
+html:root .trpg-root.trpg-cinematic .trpg-ending[data-reveal="true"] > h2 { animation-name: trpg-ending-title; animation-duration: .9s; animation-delay: .4s; }
+html:root .trpg-root.trpg-cinematic .trpg-ending[data-reveal="true"] > :nth-child(3) { animation-delay: 1.1s; }
+html:root .trpg-root.trpg-cinematic .trpg-ending[data-reveal="true"] > :nth-child(4) { animation-delay: 1.6s; }
+html:root .trpg-root.trpg-cinematic .trpg-ending[data-reveal="true"] > :nth-child(5) { animation-delay: 2s; }
+html:root .trpg-root.trpg-cinematic .trpg-ending[data-reveal="true"] .trpg-stars i { animation: trpg-stamp .4s cubic-bezier(.2, 1.5, .4, 1) both; }
+html:root .trpg-root.trpg-cinematic .trpg-ending[data-reveal="true"] .trpg-stars i:nth-child(1) { animation-delay: 2.2s; }
+html:root .trpg-root.trpg-cinematic .trpg-ending[data-reveal="true"] .trpg-stars i:nth-child(2) { animation-delay: 2.45s; }
+html:root .trpg-root.trpg-cinematic .trpg-ending[data-reveal="true"] .trpg-stars i:nth-child(3) { animation-delay: 2.7s; }
+html:root .trpg-root.trpg-cinematic .trpg-ending[data-reveal="true"] .trpg-ending-finale { animation: trpg-stamp .45s cubic-bezier(.2, 1.5, .4, 1) 1.9s both; }
+@keyframes trpg-ending-in { from { opacity: 0; translate: 0 14px; } to { opacity: 1; translate: 0 0; } }
+@keyframes trpg-ending-title { from { opacity: 0; letter-spacing: .3em; filter: blur(6px); } to { opacity: 1; letter-spacing: normal; filter: blur(0); } }
+
+@media (prefers-reduced-motion: reduce) {
+  html:root .trpg-root.trpg-cinematic .trpg-room > img, html:root .trpg-root.trpg-cinematic .trpg-table { transition: none; }
+  html:root .trpg-root.trpg-cinematic .trpg-dock[data-kind="pc"] .trpg-speaker-art, html:root .trpg-root.trpg-cinematic .trpg-npc-figure,
+  html:root .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-gauge-mark,
+  html:root .trpg-root.trpg-cinematic .trpg-roll-stage[data-roll-state="settled"] :is(.trpg-dice-total > strong, .trpg-dice-grade, .trpg-dice-near, .trpg-roll-special, .trpg-roll-reward, .trpg-dice-row),
+  html:root .trpg-root.trpg-cinematic .trpg-ending[data-reveal="true"] > *, html:root .trpg-root.trpg-cinematic .trpg-ending[data-reveal="true"] :is(.trpg-stars i, .trpg-ending-finale) { animation: none; }
+}
+
+/* ---- 物語の中の画面の動き（TRF10）----
+   語りと役の台詞の間、部屋の絵にゆっくり寄る（操作を待つ画面では元の大きさ。調べる場所の印とずれない）。 */
+html:root .trpg-root.trpg-cinematic .trpg-room > img { transform-origin: 50% 46%; transition: filter .45s ease, transform .5s ease; }
+html:root .trpg-root.trpg-cinematic.trpg-talking[data-layer="fiction"]:not([data-phase="cover"]) .trpg-room > img { transform: scale(1.045); transition: filter .45s ease, transform 9s cubic-bezier(.2, .6, .3, 1); }
+/* 台詞は一行ごとに短く現れる。語りは下から、人物の台詞は左から。 */
+html:root .trpg-root.trpg-cinematic .trpg-dock .trpg-speech p[data-tick="0"] { animation: trpg-line-a .26s ease-out both; }
+html:root .trpg-root.trpg-cinematic .trpg-dock .trpg-speech p[data-tick="1"] { animation: trpg-line-b .26s ease-out both; }
+@keyframes trpg-line-a { from { opacity: 0; translate: 0 8px; } to { opacity: 1; translate: 0 0; } }
+@keyframes trpg-line-b { from { opacity: 0; translate: 0 8px; } to { opacity: 1; translate: 0 0; } }
+/* 手がかりの札: 上の中央に置かれる紙。 */
+html:root .trpg-root.trpg-cinematic .trpg-clue-card {
+  position: absolute; left: 50%; top: 98px; z-index: 53; display: grid; justify-items: center; gap: 2px; min-width: 300px; max-width: 760px; padding: 10px 34px 12px;
+  transform: translate(-50%, 0) rotate(-2deg); pointer-events: none; border: 1px solid #b89b62; border-radius: 4px; border-left: 8px solid #c8553d;
+  background: linear-gradient(170deg, #fbf5e6, #efe3c6 70%, #e6d6b2); box-shadow: 0 2px 0 #a88a58, 0 14px 30px #000b;
+}
+html:root .trpg-root.trpg-cinematic .trpg-clue-card small { font-size: max(16px, var(--tt-min)); font-weight: 700; letter-spacing: .24em; color: #8a3d0c; }
+html:root .trpg-root.trpg-cinematic .trpg-clue-card strong { font-size: max(28px, var(--tt-min)); font-weight: 700; letter-spacing: .04em; color: #2a1b0c; white-space: nowrap; }
+@media (prefers-reduced-motion: reduce) {
+  html:root .trpg-root.trpg-cinematic .trpg-room > img { transform: none !important; transition: none; }
+  html:root .trpg-root.trpg-cinematic .trpg-dock .trpg-speech p { animation: none !important; }
+}

@@ -6,6 +6,7 @@ import { faceIconStyle } from "./face-crops.js";
 import { createTrpgAudio } from "./audio.js";
 import { checkForecast, rerollOdds } from "./feedback.js";
 import { playTrpgEntrance } from "./entrance.js";
+import { playIncarnation, playSceneCard, playResultCut, playClueCard, impact } from "./stage-fx.js";
 
 // 調べる場所の印の半径（見える輪。スマホでは押せる範囲が広いが、輪は同じ大きさ）。ワイドでの上下の切り方に使う
 const ROOM_SPOT_REACH = 28;
@@ -130,6 +131,14 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
   const log = [];
   let frames = [], cursor = 0, afterTalk = null, afterFocus = null, busy = false, disposed = false, choiceField = null;
   let overlay = null, modalCloser = null, timer = null, rollTicker = null, settleGuard = false;
+  // 演出（TRF08〜10）: 転生は1卓に一度（しおりから再開した卓は、もう物語の中）。場面の題の札は場面ごとに一度。
+  let incarnated = resumed, staging = null, endingRevealed = false, sceneFx = null, clueFx = null;
+  const effects = [], carded = new Set();
+  /** 重ねた演出を覚えておく（卓を片付ける時にまとめて止める）。終わったものは外す。 */
+  function stageFx(...list) {
+    for (let i = effects.length - 1; i >= 0; i--) if (!effects[i].playing) effects.splice(i, 1);
+    effects.push(...list.filter(effect => effect?.playing));
+  }
   let resolveFinished, completed = null;
   const finished = new Promise(resolve => { resolveFinished = resolve; });
   const progress = el("nav.trpg-journey", { "aria-label": "物語の進行" });
@@ -243,7 +252,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
   // The seat's chosen origin wears the role costume when we have one. The crop
   // matches the character's standing-portrait metrics (same head height / centre).
   function roleIdOf(id) {
-    const sheet = session.sheets[id];
+    const sheet = session.sheets[seatOf(id)] || session.sheets[id];
     return sheet?.archetype || sheet?.option || null;
   }
   function speakerPortrait(id, face = "normal") {
@@ -368,6 +377,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
   }
   function sequence(...ids) { return ids.flatMap(id => typeof id === "string" ? scripts[id] || [] : id).filter(Boolean); }
   function talk(lines, callback, focusTest = null) {
+    sceneFx?.cancel();
     syncHeat();
     frames = sequence(lines, heatChatter); heatChatter = []; cursor = 0; afterTalk = callback; afterFocus = focusTest; busy = true;
     root.classList.remove("trpg-idle"); root.classList.add("trpg-talking"); next.hidden = false; next.disabled = false;
@@ -376,33 +386,126 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     showFrame();
     next.focus({ preventScroll: true });
   }
+  /**
+   * 台詞の層（TRF10）。卓の会話（素の本人どうし）か、物語の中か。物語の中は3つに分かれる:
+   * narration＝GMが場面を語る／npc＝GMが物語の人物を演じる／pc＝PLが自分の役として話す。
+   * 台本の role の書き方（「GM／場面」「旅人オル」「{pc}／物語」「PL／卓の会話」）から決める。
+   */
+  function lineKind(frame) {
+    const raw = String(frame?.role ?? "");
+    if (!raw || /卓の会話$|はじめての人へ/.test(raw)) return "table";
+    if (/場面/.test(raw)) return "narration";
+    // 役の名前の付いた台詞でも、話しているのがGMなら（空席の役をGMが演じている）物語の人物と同じ見せ方にする。
+    if (frame.speaker === gm) return "npc";
+    return "pc";
+  }
+  const roleLabel = frame => pcText(frame.role).replace(/^(?:GM|PL)／卓の会話$/, "");
+  /** 舞台の層を切り替える: 物語の中では卓の縁（座席）を隠して人物を大きく、卓の会話では部屋の絵を少し沈める。 */
+  function setLayer(kind) {
+    const layer = kind === "idle" ? "idle" : kind === "table" ? "table" : "fiction";
+    root.dataset.layer = layer; root.dataset.kind = kind;
+    dock.dataset.layer = layer === "fiction" ? "fiction" : "table"; dock.dataset.kind = kind;
+  }
+  const NPC_FIGURE = '<svg viewBox="0 0 120 150" aria-hidden="true" focusable="false"><path d="M60 12c-17 0-29 13-29 31 0 10 4 18 9 24-17 6-30 20-33 41l-2 42h110l-2-42c-3-21-16-35-33-41 5-6 9-14 9-24 0-18-12-31-29-31Z"/></svg>';
+  // 人物ではないもの（予告状・招待状・手紙・貼り紙）を読む時は、紙の札。
+  const NPC_PAPER = '<svg viewBox="0 0 120 150" aria-hidden="true" focusable="false"><path d="M22 18h60l22 22v92H22Z"/><path d="M82 18v22h22M38 62h48M38 80h48M38 98h34" fill="none"/></svg>';
+  const isPaper = label => /状$|手紙|貼り紙|張り紙|看板|書き置き/.test(label);
   function showFrame() {
     const frame = frames[cursor];
     if (!frame) { finishTalk(); return; }
-    const person = cast[frame.speaker];
-    art.replaceChildren(el("img", { src: speakerPortrait(frame.speaker, frame.face), alt: name(frame.speaker),
-      style: portraitFrame(frame.speaker, 410, 16) }));
+    const person = cast[frame.speaker], kind = lineKind(frame);
+    // はじめて物語の中へ入る瞬間に、みんなが役の姿になる（TRF08）。送りの1押しめは、この演出を閉じるだけ。
+    if (kind !== "table" && !incarnated && session.snapshot().phase !== "cover") { incarnated = true; incarnate(); }
+    if (frame.fx) stageCue(frame.fx);
+    if (kind === "npc") {
+      // GMが演じる物語の人物: 立ち絵は出さず、人影の札と名前。語っているGMは小さく添える。
+      const who = roleLabel(frame).replace(/／物語$/, "");
+      art.replaceChildren(el("span.trpg-npc-figure", { html: isPaper(who) ? NPC_PAPER : NPC_FIGURE, dataset: { shape: isPaper(who) ? "paper" : "person" } }),
+        el("span.trpg-npc-gm", { title: "GM " + name(gm) }, el("img", { src: portrait(gm, frame.face), alt: "", style: circleStyle(gm, 150, 6) })));
+      speaker.textContent = who;
+      role.textContent = "GM " + name(gm);
+    } else if (kind === "narration") {
+      art.replaceChildren();
+      speaker.textContent = "語り"; role.textContent = name(frame.speaker);
+    } else if (kind === "pc") {
+      // 役として話す時は役衣装の姿と役の名前。演じている本人は小さく添える。
+      art.replaceChildren(el("img", { src: speakerPortrait(frame.speaker, frame.face), alt: name(frame.speaker), style: portraitFrame(frame.speaker, 410, 16) }));
+      speaker.textContent = pcOf(frame.speaker)?.name || name(frame.speaker);
+      role.textContent = name(frame.speaker);
+    } else {
+      // 卓の会話は素の本人。表情つきの立ち絵で話す（役衣装の絵は表情が1つなので、物語の中だけで使う）。
+      art.replaceChildren(el("img", { src: portrait(frame.speaker, frame.face) || speakerPortrait(frame.speaker, frame.face), alt: name(frame.speaker),
+        style: portraitFrame(frame.speaker, 410, 16) }));
+      speaker.textContent = name(frame.speaker);
+      role.textContent = roleLabel(frame);
+    }
     art.style.backgroundColor = person?.color || "#566053";
-    speaker.textContent = name(frame.speaker);
-    // 台詞の肩書きは場面の種類（「場面」「物語」）だけ。「GM／卓の会話」「PL／卓の会話」は出さない（#2839）。
-    role.textContent = pcText(frame.role).replace(/^(?:GM|PL)／卓の会話$/, "");
-    dock.dataset.layer = /場面|物語/.test(role.textContent) ? "fiction" : "table";
+    setLayer(kind);
     speech.textContent = pcText(frame.text);
+    // 一行ごとに短く現れる（字は最初から全部入っている。読み上げと検査は待たない）。
+    speech.dataset.tick = String(cursor % 2);
     showPanel(frame.panel || null);
     next.textContent = cursor + 1 < frames.length ? "次へ" : "続ける";
     syncSpeaker(frame.speaker);
-    log.push({ speaker: frame.speaker, role: role.textContent, text: pcText(frame.text) });
+    // 台詞の肩書きは場面の種類（「場面」「物語」）だけ。「GM／卓の会話」「PL／卓の会話」は出さない（#2839）。
+    log.push({ speaker: frame.speaker, role: roleLabel(frame), text: pcText(frame.text) });
+  }
+  /** 転生の演出（TRF08）: 卓の顔ぶれの札が裏返り、本人から役の姿へ。操作は塞がず、送りの1押しで閉じられる。 */
+  function incarnate() {
+    const cards = scenario.cast.filter(c => c.part !== "GM" && pcOf(c.id)).map(c => {
+      const seat = seatOf(c.id), pc = pcOf(c.id);
+      return { real: { name: name(c.id), face: pcFace(seat, c.id) }, role: { name: pc.name, title: pc.title || "", figure: pcFigure(seat, c.id) } };
+    });
+    audio.play("open");
+    staging = playIncarnation(root, { cards, place: presentation.location || scenario.title, teller: name(gm),
+      onFlip: () => audio.play("card"), onArrive: () => { audio.play("page"); stageFx(impact(root, "arrive")); } });
+    stageFx(staging);
+  }
+  /** 台詞の行に付いた合図（fx）で場面を動かす。twist＝思わぬ展開の入り、ending＝結末の入り、shake／flash は台本から。 */
+  function stageCue(fx) {
+    if (fx === "twist") {
+      audio.play("trouble");
+      sceneFx?.cancel();
+      sceneFx = playSceneCard(root, { ...sceneName("twist"), tone: "alert" });
+      stageFx(impact(root, "twist"), sceneFx);
+      carded.add("twist");
+    } else if (fx === "ending") stageFx(impact(root, "arrive"));
+    else if (fx === "shake") stageFx(impact(root, "twist"));
+    else if (fx === "flash") stageFx(impact(root, "arrive"));
+  }
+  /** 台本の最初の行に合図を付ける（台本のデータは書き換えない）。 */
+  function withCue(id, fx) {
+    const lines = typeof id === "string" ? scripts[id] || [] : id || [];
+    return lines.map((line, i) => i || line.fx ? line : { ...line, fx });
+  }
+  /** 場面が切り替わって操作を待つ時に、場面の題の札を一度だけ出す（TRF10）。 */
+  function sceneCard(phase) {
+    if (carded.has(phase) || !["interview", "explore", "prepare", "serve"].includes(phase)) return;
+    carded.add(phase);
+    sceneFx?.cancel(); clueFx?.cancel();
+    sceneFx = playSceneCard(root, sceneName(phase));
+    stageFx(sceneFx);
+  }
+  /** 場面の題の札の文: 「場面 2 / 7」と場面の名前（問いかけの文は、その画面の見出しにある）。 */
+  function sceneName(phase) {
+    return { kicker: "場面 " + (PHASES.indexOf(phase) + 1) + " / " + PHASES.length,
+      title: presentation.phases[phase]?.kicker?.split(" / ").pop() || presentation.phases[phase]?.title || "" };
   }
   function advanceDialogue() {
     if (!busy || overlay || disposed) return;
+    // 転生の演出の最中の1押しは、演出を閉じるだけ（下で出ている最初の一行を読み飛ばさない）。
+    if (staging?.playing) { staging.cancel(); return; }
     cursor++;
     if (cursor < frames.length) showFrame(); else finishTalk();
   }
   function skipTalk() {
     if (!busy || overlay || disposed) return;
+    staging?.cancel();
     for (cursor++; cursor < frames.length; cursor++) {
       const frame = frames[cursor];
-      log.push({ speaker: frame.speaker, role: pcText(frame.role).replace(/^(?:GM|PL)／卓の会話$/, ""), text: pcText(frame.text) });
+      // 飛ばした会話の中で物語に入っていたら、転生の演出は出さずに済ませる（後の場面で遅れて出さない）。
+      if (lineKind(frame) !== "table" && session.snapshot().phase !== "cover") incarnated = true;
+      log.push({ speaker: frame.speaker, role: roleLabel(frame), text: pcText(frame.text) });
     }
     finishTalk();
   }
@@ -421,7 +524,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
       style: portraitFrame(gm, 410, 16) }));
     art.style.backgroundColor = cast[gm].color;
     speaker.textContent = name(gm); role.textContent = ""; speech.textContent = text;
-    dock.dataset.layer = "table";
+    setLayer("idle");
     syncSpeaker(gm);
     root.classList.add("trpg-idle"); next.hidden = true;
   }
@@ -461,6 +564,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
             if (busy || overlay) return;
             const clue = session.inspect(spot.id), from = clue.fresh ? root.querySelector('[data-test="trpg-spot-' + spot.id + '"]')?.getBoundingClientRect?.() : null;
             audio.play(clue.fresh ? "clue" : "tap");
+            if (clue.fresh) { clueFx?.cancel(); clueFx = playClueCard(root, { kicker: "手がかり " + session.snapshot().clues.length, title: clue.evidence.title }); stageFx(clueFx); }
             talk(clue.evidence.lines, () => { renderBody(); idle(presentation.exploreIdle); if (from) flySlip(spot.id, from); }, "trpg-spot-" + spot.id);
           },
         }, [el("i", { text: checked ? "✓" : String(i + 1) }), el("span.trpg-stage-hotspot-label", {
@@ -585,6 +689,12 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     if (["interview", "twist", "prepare", "serve", "ending"].includes(state.phase)) cue.hidden = true;
     scene.append(cue, actions, pockets);
     content.append(scene);
+    if (!busy) {
+      setLayer("idle");
+      sceneCard(state.phase);
+      // 結末の札は、はじめて出た時だけ一行ずつ現れる（振り返りから戻った時は動かさない）。
+      if (state.phase === "ending" && !endingRevealed) { endingRevealed = true; scene.querySelector(".trpg-ending")?.setAttribute("data-reveal", "true"); }
+    }
   }
   function consult(id) {
     if (busy || overlay) return;
@@ -669,6 +779,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
             if (busy || overlay) return;
             const heard = session.ask(topic.id);
             audio.play(heard.fresh ? "clue" : "tap");
+            if (heard.fresh) { clueFx?.cancel(); clueFx = playClueCard(root, { kicker: "聞いた話", title: heard.answer.title }); stageFx(clueFx); }
             talk(heard.answer.lines, () => renderBody(), "trpg-topic-" + topic.id);
           },
         }, [el("strong", { text: topic.label }), asked ? el("small", { text: "聞いた · " + (session.profile.answers[topic.id]?.title || "") }) : null].filter(Boolean));
@@ -717,7 +828,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
         session.interpret(h.id); pop.close();
         // The table talks the guess over; a twist interrupts before the preparation when the scenario has one.
         const twistIntro = scenario.twist ? (scenario.twist.byProfile?.[session.profile.id] || scenario.twist.intro) : null;
-        talk(sequence(h.discussion, twistIntro || scenario.preparation), () => renderBody());
+        talk(sequence(h.discussion, twistIntro ? withCue(twistIntro, "twist") : scenario.preparation), () => renderBody());
       },
     }, [tileStyle(atlas?.rows?.hypotheses, i) ? el("span.trpg-object-art", { "aria-hidden": "true", style: tileStyle(atlas.rows.hypotheses, i) })
       : el("span.trpg-text-choice-mark", { "aria-hidden": "true", text: "ABC"[i] || "" }),
@@ -901,7 +1012,9 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
         el("strong", { text: "合計 " + result.total }), el("span.trpg-dice-grade", { text: LABELS[result.grade] }),
         near ? el("em.trpg-dice-near", { dataset: { test: "trpg-roll-near" }, text: "あと" + near + "……！" }) : null,
       ].filter(Boolean)),
+      rollGauge(result),
     );
+    if (result.special === "critical" || result.special === "fumble") stageFx(impact(root, result.special));
     pop.box.dataset.special = result.special || "";
     if (result.special) body.append(el("p.trpg-roll-special", { dataset: { test: "trpg-roll-special", special: result.special } }, [
       el("strong", { text: SPECIALS[result.special] }),
@@ -975,7 +1088,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
           // and one line as themselves after the epilogue. Other roles have neither, so nothing is added.
           const own = key => Object.values(session.companions).map(o => o[key]);
           audio.play("ending");
-          talk(sequence(...own("aside"), ending.dialogue, scenario.debrief?.[result.variant], scenario.epilogue, ...own("after")), () => {
+          talk(sequence(...own("aside"), withCue(ending.dialogue, "ending"), scenario.debrief?.[result.variant], scenario.epilogue, ...own("after")), () => {
             completed = result;
             onComplete(result);
             renderBody();
@@ -990,8 +1103,29 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
         : settled.near ? tableLines("near" + settled.near) : [];
       const rewarded = settled.reward ? tableLines("reward_" + settled.reward.type) : [];
       talk(sequence(chatter, ...responses, scenario.checks[settled.kind][settled.grade], rewarded), continuation);
+      // 判定の結果のカットイン（TRF09）: 動いた役の姿と結果が、場面を横切ってから物語が続く。
+      const acted = settled.approach ? approachesOf(scenario, settled.kind).find(a => a.id === settled.approach) : null;
+      if (acted) {
+        const seat = acted.sheet || acted.actor;
+        stageFx(playResultCut(root, { figure: pcFigure(seat, acted.actor), who: sheets[seat]?.name || name(acted.actor), how: statLabel(acted.stat),
+          label: settled.special === "critical" ? "クリティカル！" : settled.special === "fumble" ? "ファンブル……" : LABELS[settled.grade] + (settled.grade === "success" ? "！" : ""),
+          grade: settled.grade, special: settled.special || "" }));
+      }
     }, { class: "primary" }));
     actions.querySelector("button").focus({ preventScroll: true });
+  }
+  /**
+   * 目標までの距離を見せる帯（TRF09）: 左が思わぬ出来事、中がひと手間、右が成功。出目の合計の位置まで印が走り、
+   * 止まった所の色が結果。20の目（クリティカル）は、合計が届かなくても成功の側まで跳ぶ。
+   */
+  function rollGauge(result) {
+    const lo = 2 + result.bonus, hi = 2 * DICE.sides + result.bonus, span = hi - lo;
+    const at = value => Math.max(0, Math.min(100, (value - lo) / span * 100));
+    const shown = result.special === "critical" ? Math.max(result.total, DICE.success + 2) : result.total;
+    return el("div.trpg-roll-gauge", { "aria-hidden": "true", dataset: { grade: result.grade, special: result.special || "" },
+      style: { "--mixed-at": at(DICE.mixed) + "%", "--success-at": at(DICE.success) + "%", "--mark-at": at(shown) + "%" } }, [
+      el("span.trpg-roll-gauge-track"), el("b.trpg-roll-gauge-goal", { text: String(DICE.success) }), el("i.trpg-roll-gauge-mark"),
+    ]);
   }
   function rerollText(odds) {
     return odds.success ? "成功 約" + odds.success + "%" : "ひと手間以上 約" + (odds.mixed) + "%";
@@ -1299,6 +1433,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     if (disposed) return;
     disposed = true;
     entrance.cancel();
+    for (const effect of effects) effect.cancel();
     if (timer) clearTimeout(timer);
     clearTimeout(tipTimer);
     if (rollTicker) clearInterval(rollTicker);

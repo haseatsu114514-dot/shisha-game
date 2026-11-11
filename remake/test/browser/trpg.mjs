@@ -299,9 +299,88 @@ try {
       await finish(page, { aroma: "spice", seat: "counter", approach: "company" });
       assert.equal(await page.locator('[data-test="trpg-ending-title"]').textContent(), "一緒に見つけた一台");
     });
+  // 演出（TRF08〜10）: 転生・物語の層と卓の層・判定の帯とカットイン・場面の題の札・手がかりの札。
+  // どれも見た目だけで、操作を塞がない。seed 54 は最初の判定がクリティカル。
+  await run("staging-incarnation-layers-and-cutin", { seed: "54" }, {}, async page => {
+    const root = page.locator(".trpg-root"), next = page.locator('[data-test="trpg-next"]');
+    const shown = selector => page.locator(selector).first().evaluate(n => n.checkVisibility({ visibilityProperty: true, opacityProperty: true }));
+    await page.locator('[data-test="trpg-start"]').click();
+    // キャラ作りの時間は卓の会話: 座席の帯が出ていて、だれも役の姿ではない。
+    assert.equal(await root.getAttribute("data-layer"), "table");
+    assert(await shown(".trpg-table"));
+    for (let presses = 0; !await page.locator(".trpg-incarnate").count(); presses++) { assert(presses < 40, "The story begins after the character talk"); await next.click(); }
+    // 転生: 卓にいるPLの数だけ札があり、表は本人、裏は役。
+    const cards = page.locator(".trpg-incarnate-card"), pc = (await page.evaluate(() => __trpg.snapshot())).pc;
+    assert.equal(await cards.count(), 3);
+    assert.equal(await cards.first().locator(".front strong").textContent(), "はじめ");
+    assert.equal(await cards.first().locator(".back strong").textContent(), pc.name);
+    assert.equal(await cards.first().locator(".back small").textContent(), pc.title);
+    assert.match(await cards.first().locator(".back .trpg-costume i").getAttribute("style"), /costumes\/ordinary-cup\/hajime_/, "The role side wears the costume art");
+    assert.equal(await page.locator(".trpg-incarnate").getAttribute("aria-hidden"), "true");
+    assert.equal(await page.locator(".trpg-incarnate").evaluate(n => getComputedStyle(n).pointerEvents), "none", "The staging never blocks the table");
+    // 1押しめは演出を閉じるだけ。下に出ている物語の最初の一行は読み飛ばさない。
+    const first = await page.locator(".trpg-speech p").textContent();
+    await next.click();
+    assert.equal(await page.locator(".trpg-incarnate").count(), 0);
+    assert.equal(await page.locator(".trpg-speech p").textContent(), first);
+    // 物語の中: 語りは立ち絵なしで「語り」、座席の帯は隠れる。
+    assert.equal(await root.getAttribute("data-kind"), "narration");
+    assert.equal(await page.locator(".trpg-speaker-label strong").textContent(), "語り");
+    assert.equal(await page.locator(".trpg-speaker-art").evaluate(n => getComputedStyle(n).display), "none");
+    await page.waitForFunction(() => !document.querySelector(".trpg-table").checkVisibility({ visibilityProperty: true, opacityProperty: true }));
+    const seen = {};
+    for (let n = 0; n < 60 && await next.isVisible(); n++) {
+      const kind = await root.getAttribute("data-kind");
+      seen[kind] ||= { who: await page.locator(".trpg-speaker-label strong").textContent(), aside: await page.locator(".trpg-speaker-label span").textContent(),
+        art: await page.locator(".trpg-speaker-art").innerHTML() };
+      await next.click();
+    }
+    assert.equal(seen.npc.who, "旅人オル"); assert.equal(seen.npc.aside, "GM ひより");
+    assert.match(seen.npc.art, /trpg-npc-figure/); assert.match(seen.npc.art, /trpg-npc-gm/, "The GM's face stays beside the character they voice");
+    assert.equal(seen.pc.who, pc.name, "A player in role is named by the character"); assert.equal(seen.pc.aside, "はじめ");
+    assert.match(seen.pc.art, /costumes\/ordinary-cup\/hajime_/, "and wears the role costume");
+    assert(seen.table, "Table talk returns between the story's lines");
+    // 判定: 目標までの帯と、結果のカットイン。
+    await page.locator('[data-test^="trpg-approach-"]').first().click();
+    await nextLines(page);
+    await page.locator('[data-test="trpg-roll"]').click();
+    await page.locator('[data-test="trpg-settle"]').waitFor();
+    const pending = (await page.evaluate(() => __trpg.snapshot())).pending;
+    assert(pending.dice.includes(20), "Seed 54 opens with a 20");
+    const gauge = page.locator(".trpg-roll-gauge");
+    assert.equal(await gauge.getAttribute("data-grade"), "success"); assert.equal(await gauge.getAttribute("data-special"), "critical");
+    assert.equal(await gauge.locator(".trpg-roll-gauge-goal").textContent(), "30");
+    const marks = await gauge.evaluate(n => ["--mixed-at", "--success-at", "--mark-at"].map(k => parseFloat(n.style.getPropertyValue(k))));
+    assert(marks[0] < marks[1] && marks[1] < marks[2] && marks[2] <= 100, "The mark stops on the success side: " + marks);
+    await page.locator('[data-test="trpg-settle"]').click();
+    const cut = page.locator(".trpg-cutin");
+    assert.equal(await cut.getAttribute("data-special"), "critical");
+    assert.equal(await cut.locator("strong").textContent(), "クリティカル！");
+    assert.match(await cut.locator("small").textContent(), new RegExp("^" + pc.name + " · "));
+    assert.equal(await cut.evaluate(n => getComputedStyle(n).pointerEvents), "none");
+    // 帯や札が舞台の外へはみ出しても、舞台の横スクロール幅を増やさない（増えると、押した拍子に舞台ごと横へずれる）。
+    const scroll = await root.evaluate(n => [n.scrollWidth - n.clientWidth, n.scrollLeft, n.querySelector(":scope > .trpg-fx-layer") ? getComputedStyle(n.querySelector(":scope > .trpg-fx-layer")).overflowX : ""]);
+    assert.deepEqual(scroll, [0, 0, "hidden"], "The staging layer clips what leaves the stage");
+    await cut.waitFor({ state: "detached", timeout: 5000 });
+    await nextLines(page);
+    // 場面の題の札と、聞いた話の札。
+    const card = page.locator(".trpg-scene-card");
+    assert.equal(await card.locator("small").textContent(), "場面 2 / 7");
+    assert.equal(await card.locator("strong").textContent(), "旅人と話す");
+    await page.locator('[data-test^="trpg-topic-"]').first().click();
+    assert.equal(await page.locator(".trpg-clue-card small").textContent(), "聞いた話");
+    assert.equal(await page.locator(".trpg-scene-card").count(), 0, "The scene card leaves when the player moves on");
+    await nextLines(page);
+    await page.locator(".trpg-clue-card").waitFor({ state: "detached", timeout: 5000 });
+    assert.equal(await root.getAttribute("data-layer"), "idle");
+  });
   await run("reroll-cancel-and-low-motion", { seed: "8", traveler: "quiet" },
     { reducedMotion: "reduce" }, async page => {
       await page.locator('[data-test="trpg-start"]').click();
+      // 動きを減らす設定: 転生は役の札を動かさずに短く見せるだけ（裏返しも光もない）。
+      for (let presses = 0; !await page.locator(".trpg-incarnate").count(); presses++) { assert(presses < 40); await page.locator('[data-test="trpg-next"]').click(); }
+      assert.equal(await page.locator(".trpg-incarnate").getAttribute("data-calm"), "true");
+      assert.equal(await page.locator(".trpg-incarnate-card").first().getAttribute("data-side"), "back");
       await nextLines(page);
       await checkRoll(page, { reroll: true });
       assert.equal((await page.evaluate(() => __trpg.snapshot())).teamwork, 1);

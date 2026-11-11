@@ -84,6 +84,33 @@ function mount(scenario, extra = {}) {
   return { api, root, q, drain, roll, declare, interview, twist, get completions() { return completions; }, get result() { return result; } };
 }
 for (const scenario of scenarios) {
+  // 物語の層と卓の層（TRF10）: 台本の role から、語り・GMが演じる人物・役の台詞・卓の会話を見分けて、名札と舞台の層を切り替える。
+  test(scenario.id + ': each line is staged as table talk, narration, a character the GM plays, or a player in role', () => {
+    const { api, root, q } = mount(scenario); q('trpg-start').click();
+    const gm = scenario.cast.find(c => c.part === 'GM').id, seen = {};
+    const label = () => root.querySelector('.trpg-speaker-label').children.map(n => n.textContent);
+    for (let n = 0; !q('trpg-next').hidden; n++) {
+      assert(n < 100);
+      const kind = root.dataset.kind, [who, aside] = label();
+      seen[kind] ||= { who, aside, layer: root.dataset.layer, dock: root.querySelector('.trpg-dock').dataset.layer, art: root.querySelector('.trpg-speaker-art').children.length };
+      q('trpg-next').click();
+    }
+    assert(seen.table && seen.narration && seen.npc && seen.pc, 'the opening of ' + scenario.id + ' uses every layer: ' + Object.keys(seen));
+    assert.equal(seen.table.layer, 'table'); assert.equal(seen.table.dock, 'table');
+    for (const kind of ['narration', 'npc', 'pc']) { assert.equal(seen[kind].layer, 'fiction'); assert.equal(seen[kind].dock, 'fiction'); }
+    assert.equal(seen.narration.who, '語り'); assert.equal(seen.narration.aside, gm); assert.equal(seen.narration.art, 0, 'narration shows no portrait');
+    assert.equal(seen.npc.aside, 'GM ' + gm, 'the GM is credited beside the character they play');
+    assert(seen.npc.who && seen.npc.who !== gm && !/物語|\{pc/.test(seen.npc.who), 'the story character is named: ' + seen.npc.who);
+    const sheets = api.snapshot(), names = scenario.cast.filter(c => c.sheet).map(c => c.sheet.name);
+    assert(names.includes(seen.pc.who) || Object.values(scenario.companionBuilds || {}).some(byPlayer => Object.values(byPlayer).flat().some(o => o.name === seen.pc.who)),
+      'a player in role is named by the character: ' + seen.pc.who);
+    assert(scenario.cast.some(c => c.id === seen.pc.aside), 'with the player credited: ' + seen.pc.aside);
+    assert.equal(sheets.phase, 'listen');
+    // Waiting for input is neither layer: the scene is the player's again.
+    q('trpg-declare-back').click();
+    assert.equal(root.dataset.layer, 'idle');
+    api.destroy();
+  });
   test(scenario.id + ': cast seats follow dialogue and idle GM; no invented participants', () => {
     const { api, root, q, drain } = mount(scenario); q('trpg-start').click();
     assert.equal(root.querySelectorAll('.trpg-table-person').length, scenario.cast.length);
