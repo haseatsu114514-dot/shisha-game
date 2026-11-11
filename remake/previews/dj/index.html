@@ -6,7 +6,7 @@
 <div id="dj-viewport"><main id="dj-stage">
   <!-- 上: フロア（お客さんの反応）。熱のゲージ・気分・声の吹き出し・カウント・判定 -->
   <section class="floor" id="floor" data-mood="2" aria-label="フロアの様子">
-    <div class="floor-art" aria-hidden="true"><i data-level="1"></i><i data-level="2"></i><i data-level="3"></i><i data-level="4"></i></div>
+    <div class="floor-art" id="floor-art" aria-hidden="true"><i class="room"></i><div class="band" id="band"><i class="base"></i></div></div>
     <canvas id="crowd" width="1280" height="288" aria-hidden="true"></canvas>
     <div class="heat" aria-label="フロアの熱（お客さんの盛り上がり）">
       <div class="heat-bar"><i id="floor-fill"></i><b class="heat-goal" aria-hidden="true"></b></div>
@@ -40,10 +40,12 @@
        触るのは ▶ と横フェーダー（SET 2・3 は PITCH か SYNC も） -->
   <section class="console" aria-label="左右デッキ・中央の案内とミキサー">
     <article class="deck a" id="deck-a" data-playing="false" data-role="master">
-      <div class="deck-head"><span class="deck-indicator" id="indicator-a">STANDBY</span><b class="track-name" id="track-a">Dance Monster</b></div>
+      <span class="deck-indicator" id="indicator-a">STANDBY</span>
       <div class="platter" id="platter-a" role="slider" tabindex="0" aria-label="Aのジョグ。外周を回してBPM微調整（右回りで上げる・1目盛り0.01 BPM）" aria-valuemin="110" aria-valuemax="140" aria-valuenow="120.00"><div class="deck-display"><p id="beat-a" class="sr">停止中</p></div></div>
-      <div class="deck-meta"><span class="bpm"><output id="bpm-a" aria-live="off">120.00</output></span><span class="lock" id="lock-a">LOCK</span></div>
-      <div class="deck-controls"><i class="point play" id="point-play-a" hidden aria-hidden="true"></i><button id="play-a" class="deck-play" aria-pressed="false" aria-label="Aを再生">▶</button></div>
+      <div class="deck-strip">
+        <div class="lcd"><b class="track-name" id="track-a">Dance Monster</b><span class="lcd-row"><span class="bpm"><output id="bpm-a" aria-live="off">120.00</output></span><span class="lock" id="lock-a">LOCK</span></span></div>
+        <div class="deck-controls"><i class="point play" id="point-play-a" hidden aria-hidden="true"></i><button id="play-a" class="deck-play" aria-pressed="false" aria-label="Aを再生">▶</button></div>
+      </div>
     </article>
     <section class="navi waves" aria-label="いまやることの案内と、上段A下段Bの実PCM横波形（共通の秒スケール）">
       <ol class="steps" id="steps" aria-label="つなぎの手順">
@@ -78,10 +80,12 @@
       <div class="pitch-col b"><small>PITCH</small><label for="pitch-b" class="sr">B PITCH ±8%</label><input id="pitch-b" class="vfader" orient="vertical" type="range" min="-8" max="8" step=".01" value="0"><output id="pitch-value-b" class="pitch-value">0.00%</output><i class="point pitch" id="point-pitch-b" hidden aria-hidden="true"></i></div>
     </div>
     <article class="deck b" id="deck-b" data-playing="false" data-role="next">
-      <div class="deck-head"><span class="deck-indicator" id="indicator-b">STANDBY</span><b class="track-name" id="track-b">Digital Lemonade</b></div>
+      <span class="deck-indicator" id="indicator-b">STANDBY</span>
       <div class="platter" id="platter-b" role="slider" tabindex="0" aria-label="Bのジョグ。外周を回してBPM微調整（右回りで上げる・1目盛り0.01 BPM）" aria-valuemin="110" aria-valuemax="140" aria-valuenow="120.00"><div class="deck-display"><p id="beat-b" class="sr">停止中</p></div></div>
-      <div class="deck-meta"><span class="bpm"><output id="bpm-b" aria-live="off">120.00</output></span><span class="lock" id="lock-b">LOCK</span></div>
-      <div class="deck-controls"><i class="point play" id="point-play-b" hidden aria-hidden="true"></i><button id="play-b" class="deck-play" aria-pressed="false" aria-label="Bを再生">▶</button></div>
+      <div class="deck-strip">
+        <div class="lcd"><b class="track-name" id="track-b">Digital Lemonade</b><span class="lcd-row"><span class="bpm"><output id="bpm-b" aria-live="off">120.00</output></span><span class="lock" id="lock-b">LOCK</span></span></div>
+        <div class="deck-controls"><i class="point play" id="point-play-b" hidden aria-hidden="true"></i><button id="play-b" class="deck-play" aria-pressed="false" aria-label="Bを再生">▶</button></div>
+      </div>
     </article>
   </section>
   <section id="pick" class="pick" hidden aria-label="次の曲を選ぶ"><p class="pick-title"><i>4</i>次の曲をえらぶ</p><p class="request" id="request"></p><p class="pick-tip">声に合うノリで、つながりも良い曲ならフロアが沸く</p><div class="pick-cards" id="pick-cards"></div></section>

@@ -31,21 +31,29 @@ button.small{min-height:40px;font-size:13px;white-space:nowrap}
 button.gold{color:#2a1840;border-width:14px;border-image:var(--goldbtn) 36 fill / 14px / 0 stretch}
 /* ── 上: フロア ───────────────────────────────────────────────────────────────── */
 .floor{flex:none;position:relative;height:288px;overflow:hidden;background:#120c1e}
-/* 観客の絵は盛り上がり4段階を重ねて切り替える（--art-1〜4）。いまは同じ1枚（floor-crowd.webp）を明るさと彩度で描き分ける。
-   Codex の4枚（CODEX_PROMPTS.md）が届いたら、この4行の url を floor-1〜4.webp に替え、filter を外す。 */
-.floor{--art-1:url('../../img/ui/dj/floor-crowd.webp');--art-2:url('../../img/ui/dj/floor-crowd.webp');--art-3:url('../../img/ui/dj/floor-crowd.webp');--art-4:url('../../img/ui/dj/floor-crowd.webp')}
-.floor-art{position:absolute;inset:-6px 0 -6px;will-change:transform}
-.floor-art i{position:absolute;inset:0;opacity:0;transition:opacity .9s;background:center 76%/cover no-repeat,url('../../img/ui/dj/bg-purple.webp') center 38%/cover no-repeat}
-.floor-art i[data-level="1"]{background-image:var(--art-1),url('../../img/ui/dj/bg-purple.webp');filter:brightness(.58) saturate(.25) hue-rotate(-20deg)}
-.floor-art i[data-level="2"]{background-image:var(--art-2),url('../../img/ui/dj/bg-purple.webp');filter:brightness(.85) saturate(.8)}
-.floor-art i[data-level="3"]{background-image:var(--art-3),url('../../img/ui/dj/bg-purple.webp');filter:brightness(1.1) saturate(1.2)}
-.floor-art i[data-level="4"]{background-image:var(--art-4),url('../../img/ui/dj/bg-purple.webp');filter:brightness(1.38) saturate(1.55) contrast(1.06)}
-.floor:is([data-mood="0"],[data-mood="1"]) .floor-art i[data-level="1"],.floor[data-mood="2"] .floor-art i[data-level="2"],.floor[data-mood="3"] .floor-art i[data-level="3"],.floor[data-mood="4"] .floor-art i[data-level="4"]{opacity:1}
+/* フロア = 主人公（DJ）がブースから見た客席（DJS28）。奥に空の店内（floor-room）、手前に観客の帯（floor-pov-1〜4 = 熱の4段階で差し替え）。
+   観客の帯は、基準の1枚の上に縦の帯7本を重ねたもの。拍に合わせて帯ごとに少しずれて跳ねる（app.mjs の moveCrowd）。
+   動く層には filter を掛けない（毎フレーム掛け直しになって重い）。明るさの違いは画像の側で作ってある（make_parts.py の floor_pov）。 */
+.floor{--band:url('../../img/ui/dj/floor-pov-2.webp')}
+.floor:is([data-mood="0"],[data-mood="1"]){--band:url('../../img/ui/dj/floor-pov-1.webp')}
+.floor[data-mood="3"]{--band:url('../../img/ui/dj/floor-pov-3.webp')}
+.floor[data-mood="4"]{--band:url('../../img/ui/dj/floor-pov-4.webp')}
+.floor-art{position:absolute;inset:0;overflow:hidden}
+.floor-art .room{position:absolute;inset:0;background:url('../../img/ui/dj/floor-room.webp') center bottom/cover no-repeat;transition:filter .8s}
+.floor:is([data-mood="0"],[data-mood="1"]) .room{filter:brightness(.58) saturate(.3)}
+.floor[data-mood="2"] .room{filter:brightness(.82) saturate(.85)}
+.floor[data-mood="3"] .room{filter:brightness(1.05) saturate(1.1)}
+.floor[data-mood="4"] .room{filter:brightness(1.3) saturate(1.35)}
+.band{position:absolute;left:0;right:0;bottom:-18px;aspect-ratio:1512/232}
+.band .base,.band .strip>b{background:var(--band) center/100% 100% no-repeat}
+.band .base{position:absolute;inset:0;will-change:transform}
+.band .strip{position:absolute;top:0;bottom:0;overflow:hidden;will-change:transform;-webkit-mask-image:linear-gradient(90deg,transparent,#000 26%,#000 74%,transparent);mask-image:linear-gradient(90deg,transparent,#000 26%,#000 74%,transparent)}
+.band .strip>b{position:absolute;top:0;bottom:0}
+.floor-art.shake{animation:shake .42s ease-out}
+@keyframes shake{0%{transform:translate(0,7px) scale(1.012)}18%{transform:translate(-5px,-4px) scale(1.012)}36%{transform:translate(4px,3px)}54%{transform:translate(-3px,-2px)}72%{transform:translate(2px,1px)}100%{transform:none}}
 .floor:after{content:"";position:absolute;z-index:1;inset:auto 0 0;height:46px;background:linear-gradient(180deg,transparent,#0b0812);pointer-events:none}
 .floor:before{content:"";position:absolute;z-index:1;inset:0 0 auto;height:110px;background:linear-gradient(180deg,#07050ccc,transparent);pointer-events:none}
 #crowd{position:absolute;z-index:1;inset:0;width:100%;height:100%}
-.floor.hype .floor-art{animation:hype .28s ease-out}
-@keyframes hype{0%{filter:brightness(1.7) saturate(1.5)}100%{filter:none}}
 /* フロアの熱: 枠はキットの温度計を横向きにしたもの（透明な窓 = 幅 8.0〜91.6%・高さ 34.4〜65.0%） */
 .heat{position:absolute;z-index:3;left:12px;top:6px;width:430px;height:70px}
 .heat-bar{position:absolute;left:0;top:0;width:254px;height:68px}
@@ -129,7 +137,7 @@ button.gold{color:#2a1840;border-width:14px;border-image:var(--goldbtn) 36 fill 
 .how-foot{font-size:14px;font-weight:700;text-align:center;color:#d8cdea}
 .how-foot strong{color:var(--gold)}
 /* ── 下: ブース。左右に大きなターンテーブル（296px・DJS26）、中央の上に案内と曲の流れ、その下に PITCH・ミキサー・PITCH ───── */
-.console{flex:1;min-height:0;margin:6px 12px 8px;display:grid;grid-template-columns:320px minmax(0,1fr) 320px;grid-template-rows:180px minmax(0,1fr);gap:6px 10px;padding:8px 14px;
+.console{flex:1;min-height:0;margin:4px 12px 4px;display:grid;grid-template-columns:320px minmax(0,1fr) 320px;grid-template-rows:180px minmax(0,1fr);gap:6px 10px;padding:6px 14px;
  background:url('../../img/ui/dj/controller-body-duo.webp') center/100% 100% no-repeat,#16121f}
 .deck,.mixer,.mixrow,.navi{min-height:0;min-width:0}
 /* 中央の上: 案内（いまやること）と曲の流れ */
@@ -156,27 +164,17 @@ button.gold{color:#2a1840;border-width:14px;border-image:var(--goldbtn) 36 fill 
 .credits summary::-webkit-details-marker{display:none}
 .credits details[open] .pop{position:absolute;right:0;bottom:40px;width:540px;max-height:400px;overflow:auto;z-index:9;padding:2px 6px;border:14px solid transparent;border-image:var(--kit) 40 fill / 14px / 0 stretch;filter:drop-shadow(0 10px 20px #000c)}
 .pop p{margin:0 0 6px}.pop a{color:var(--b)}
-/* 左右のデッキ: 上に状態と曲名、大きなターンテーブル、外側の下に BPM と LOCK、内側の下（ミキサー寄り）に ▶ */
+/* 左右のデッキ（DJS26・DJS27）: 大きなターンテーブル（308px）と、その下の台座。台座には曲名と BPM の表示窓と、▶ の受け皿（▶ は皿に重ねない）。
+   状態のランプは皿の外側の上の角（円が空ける角）。 */
 .deck{--deck:var(--a);position:relative;grid-row:1/3;grid-column:1}
 .deck.b{--deck:var(--b);grid-column:3}
-.deck-head{position:absolute;left:0;right:0;top:0;height:26px;display:flex;align-items:center;gap:10px;min-width:0;padding:0 4px}
-.deck.b .deck-head{flex-direction:row-reverse}
-.deck-indicator{flex:none;display:flex;align-items:center;gap:6px;font-size:11px;font-weight:800;letter-spacing:.1em;color:#8f84a6}
+.deck-indicator{position:absolute;z-index:2;top:0;left:0;display:flex;align-items:center;gap:6px;font-size:11px;font-weight:800;letter-spacing:.1em;color:#8f84a6}
+.deck.b .deck-indicator{left:auto;right:0;flex-direction:row-reverse}
 .deck-indicator:before{content:"";width:11px;height:11px;border-radius:50%;background:currentColor}
 .deck[data-playing=true] .deck-indicator{color:var(--deck)}.deck[data-playing=true] .deck-indicator:before{box-shadow:0 0 10px var(--deck),0 0 2px #fff}
 .deck[data-role=empty] .deck-indicator{color:#5d5670}
-.track-name{flex:1;min-width:0;font-size:16px;font-weight:800;color:#f2ecfa;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.deck.b .track-name{text-align:right}
-.deck-meta{position:absolute;bottom:6px;left:8px;display:flex;flex-direction:column;align-items:flex-start;gap:5px}
-.deck.b .deck-meta{left:auto;right:8px;align-items:flex-end}
-.bpm{flex:none;font-variant-numeric:tabular-nums;white-space:nowrap}
-.bpm output{font:700 21px/1 var(--mono);letter-spacing:-.03em;color:var(--deck);text-shadow:0 1px 3px #000}
-.bpm:after{content:"BPM";margin-left:3px;font-size:9px;font-weight:700;letter-spacing:.1em;color:#b9aecd}
-.lock{flex:none;display:flex;align-items:center;gap:4px;font:800 11px/1 var(--mono);letter-spacing:.1em;color:#6c6480;transition:color .2s}
-.lock:before{content:"";width:16px;height:16px;background:url('../../img/ui/craft-night/step-next.webp') center/contain no-repeat}
-.lock.on{color:var(--ok)}.lock.on:before{background-image:url('../../img/ui/craft-night/step-now.webp');filter:drop-shadow(0 0 5px #ffc857)}
-/* jog wheel: outer grip ring (radius > 62 %) = fine pitch; the centre shows the artwork. ▶ sits in the corner the circle leaves free. */
-.platter{position:absolute;top:30px;left:calc(50% - 148px);width:296px;height:296px;border-radius:50%;display:grid;place-items:center;touch-action:none;cursor:grab;--rim:transparent;
+/* jog wheel: outer grip ring (radius > 62 %) = fine pitch; the centre shows the artwork */
+.platter{position:absolute;top:0;left:calc(50% - 154px);width:308px;height:308px;border-radius:50%;display:grid;place-items:center;touch-action:none;cursor:grab;--rim:transparent;
  background:radial-gradient(circle,transparent 61%,var(--rim) 62%,var(--rim) 100%);box-shadow:0 8px 14px #000b;transition:box-shadow .15s}
 .platter:before{content:"";position:absolute;inset:0;border-radius:50%;background:url('../../img/ui/dj/jog-wheel-purple.webp') center/100% 100% no-repeat;transform:rotate(calc(var(--rotation,0deg) + var(--spin,0deg)));will-change:transform}
 .deck.b .platter:before{background-image:url('../../img/ui/dj/jog-wheel-cyan.webp')}
@@ -184,19 +182,35 @@ button.gold{color:#2a1840;border-width:14px;border-image:var(--goldbtn) 36 fill 
 .deck[data-role=empty] .platter{filter:brightness(.55) saturate(.4)}
 .platter.touching{cursor:grabbing;--rim:color-mix(in srgb,var(--deck),transparent 65%)}
 .platter.tick{--rim:color-mix(in srgb,var(--deck),transparent 35%)}
-.deck-display{position:relative;z-index:1;width:116px;height:116px;border-radius:50%;overflow:hidden;pointer-events:none;background:var(--art,none) center/cover no-repeat;transform:rotate(calc(var(--rotation,0deg) + var(--spin,0deg)));will-change:transform}
-.deck-controls{position:absolute;right:0;bottom:2px}
-.deck.b .deck-controls{right:auto;left:0}
+.deck-display{position:relative;z-index:1;width:120px;height:120px;border-radius:50%;overflow:hidden;pointer-events:none;background:var(--art,none) center/cover no-repeat;transform:rotate(calc(var(--rotation,0deg) + var(--spin,0deg)));will-change:transform}
+/* 台座（deck-strip.webp）: 表示窓 = 幅 2.2〜68.8 %・高さ 11〜89 %、▶ の受け皿の中心 = 幅 84.4 %。右デッキは左右反転 */
+.deck-strip{position:absolute;left:0;right:0;bottom:0;height:100px;display:flex}
+.deck.b .deck-strip{flex-direction:row-reverse}
+.deck-strip:before{content:"";position:absolute;inset:0;background:url('../../img/ui/dj/deck-strip.webp') center/100% 100% no-repeat}
+.deck.b .deck-strip:before{transform:scaleX(-1)}
+.lcd{position:relative;flex:none;width:213px;min-width:0;margin:11px 0 11px 7px;padding:0 14px;display:flex;flex-direction:column;justify-content:center;gap:7px}
+.deck.b .lcd{margin:11px 7px 11px 0;align-items:flex-end}
+.track-name{max-width:100%;font-size:15px;font-weight:800;line-height:1.1;color:#efe9f4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lcd-row{display:flex;align-items:center;gap:12px}
+.deck.b .lcd-row{flex-direction:row-reverse}
+.bpm{flex:none;font-variant-numeric:tabular-nums;white-space:nowrap}
+.bpm output{font:700 25px/1 var(--mono);letter-spacing:-.03em;color:var(--deck);text-shadow:0 0 9px color-mix(in srgb,var(--deck),transparent 45%)}
+.bpm:after{content:"BPM";margin-left:4px;font-size:9px;font-weight:700;letter-spacing:.1em;color:#b9aecd}
+.lock{flex:none;display:flex;align-items:center;gap:4px;font:800 11px/1 var(--mono);letter-spacing:.1em;color:#6c6480;transition:color .2s}
+.lock:before{content:"";width:16px;height:16px;background:url('../../img/ui/craft-night/step-next.webp') center/contain no-repeat}
+.lock.on{color:var(--ok)}.lock.on:before{background-image:url('../../img/ui/craft-night/step-now.webp');filter:drop-shadow(0 0 5px #ffc857)}
+.deck-controls{position:relative;flex:1;display:grid;place-items:center}
 /* ▶: 丸いパッド（play-a / play-b）。次に押す側は金（play-go）に光り、入りに向かって輪が縮む */
-.deck-play{position:relative;display:block;width:104px;height:104px;min-height:0;padding:0;border:0;border-image:none;border-radius:50%;font-size:0;color:transparent;overflow:visible;
- background:url('../../img/ui/dj/play-a.webp') center/100% 100% no-repeat;filter:drop-shadow(0 4px 5px #000a) saturate(.75) brightness(.8)}
+.deck-play{position:relative;display:block;width:90px;height:90px;min-height:0;padding:0;border:0;border-image:none;border-radius:50%;font-size:0;color:transparent;overflow:visible;
+ background:url('../../img/ui/dj/play-a.webp') center/100% 100% no-repeat;filter:saturate(.8) brightness(.85)}
 .deck.b .deck-play{background-image:url('../../img/ui/dj/play-b.webp')}
-.deck-play:hover{filter:drop-shadow(0 4px 5px #000a) brightness(1.05)}
-.deck-play:disabled{opacity:1;filter:drop-shadow(0 4px 5px #000a) saturate(.3) brightness(.45)}
-.deck-play[aria-pressed=true],.deck-play[aria-pressed=true]:disabled{filter:drop-shadow(0 2px 3px #000a) drop-shadow(0 0 10px var(--deck)) brightness(1.15);transform:translateY(2px)}
-.deck-play.cue-soon,.deck-play.cue-open,.deck-play.first{background-image:url('../../img/ui/dj/play-go.webp');filter:drop-shadow(0 4px 5px #000a) drop-shadow(0 0 12px #f0a64a) brightness(1.1)}
+.deck-play:hover{filter:brightness(1.05)}
+.deck-play:active,.deck-play.hit{transform:scale(.96);filter:brightness(.9)}
+.deck-play:disabled{opacity:1;filter:saturate(.3) brightness(.45)}
+.deck-play[aria-pressed=true],.deck-play[aria-pressed=true]:disabled{filter:drop-shadow(0 0 7px var(--deck)) brightness(1.15);transform:scale(.97)}
+.deck .deck-play:is(.cue-soon,.cue-open,.first){background-image:url('../../img/ui/dj/play-go.webp');filter:drop-shadow(0 0 9px #f0a64a) brightness(1.1)}
 .deck-play.cue-open{animation:go .3s ease-in-out infinite alternate}
-@keyframes go{to{filter:drop-shadow(0 4px 5px #000a) drop-shadow(0 0 22px #ffc857) brightness(1.35)}}
+@keyframes go{to{filter:drop-shadow(0 0 16px #ffc857) brightness(1.35)}}
 .deck-play:after{content:"";position:absolute;inset:2px;border-radius:50%;border:4px solid var(--gold);box-shadow:0 0 14px #f0a64a,inset 0 0 8px #f0a64a88;opacity:0;transform:scale(var(--ap,1));pointer-events:none;transition:opacity .15s}
 .deck-play.cue-soon:after{opacity:.95}
 /* 中央の下: PITCH（±8 %。SET 1 では使わない）・ミキサー・PITCH */
@@ -211,7 +225,7 @@ button.gold{color:#2a1840;border-width:14px;border-image:var(--goldbtn) 36 fill 
 /* 金色の矢印: いま触るところ */
 .point{position:absolute;z-index:5;width:56px;height:56px;background:url('../../img/ui/dj/arrow.webp') center/contain no-repeat;pointer-events:none;filter:drop-shadow(0 3px 4px #000a)}
 .point[hidden]{display:none}
-.point.play{left:calc(50% - 28px);bottom:112px;transform:rotate(90deg);animation:point-down .55s ease-in-out infinite alternate}
+.point.play{left:calc(50% - 28px);bottom:100px;transform:rotate(90deg);animation:point-down .55s ease-in-out infinite alternate}
 @keyframes point-down{to{transform:translateY(12px) rotate(90deg)}}
 .point.pitch{width:30px;height:40px;left:calc(50% - 15px);background-image:url('../../img/ui/dj/chevron.webp')}
 .point.pitch.up{top:26px;transform:rotate(-90deg);animation:point-up .55s ease-in-out infinite alternate}
@@ -325,8 +339,8 @@ input[type=range].dragging::-moz-range-thumb{filter:brightness(1.35)}
 .medal.r-S,.medal.r-A,.medal.r-B{color:#2a1840}
 .result-card .advice{margin:10px 0 12px;font-size:15px;font-weight:700;color:#efe9f4}
 .result-actions{display:flex;gap:12px}.result-actions button{flex:1;min-height:50px;font-size:17px;font-weight:900}
-@media (prefers-reduced-motion:reduce){.platter:before,.deck-display{transform:none}button,.knob{transition:none}.floor-art{transform:none}
- .judge.pop,.count.beat,.heat-text strong.pop,.drop.big,.drop.small,.drop.miss,.floor.hype .floor-art,.guide.hit,.guide.miss,.deck-play.cue-open,.steps li.now i,.point,.fader-arrows i{animation:none}
+@media (prefers-reduced-motion:reduce){.platter:before,.deck-display{transform:none}button,.knob{transition:none}
+ .judge.pop,.count.beat,.heat-text strong.pop,.drop.big,.drop.small,.drop.miss,.floor-art.shake,.guide.hit,.guide.miss,.deck-play.cue-open,.steps li.now i,.point,.fader-arrows i{animation:none}
  .fader-arrows i{opacity:1}.guide{transition:none}.voice{animation:voice-still 2.7s both}}
 @keyframes voice-still{0%,90%{opacity:1}100%{opacity:0}}
 /* ── phone density (#2841・#2729): ?phone=1 → html[data-density=phone]. 表示だけ。文字は 20px 以上（iPhone 横で実寸 約11px）、押す所は大きく。判定は変えない ── */
@@ -370,7 +384,8 @@ html[data-density=phone] .credits details,html[data-density=phone] .credits summ
 html[data-density=phone] .deck-indicator{font-size:0;letter-spacing:0;gap:0}
 html[data-density=phone] .deck-indicator:before{width:18px;height:18px}
 html[data-density=phone] .track-name{font-size:20px}
-html[data-density=phone] .bpm output{font-size:24px}
+html[data-density=phone] .bpm output{font-size:26px}
+html[data-density=phone] .lcd{gap:4px;padding:0 10px}
 html[data-density=phone] .bpm:after{display:none}
 html[data-density=phone] .lock{font-size:0;gap:0}
 html[data-density=phone] .lock:before{width:24px;height:24px}

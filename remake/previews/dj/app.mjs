@@ -25,6 +25,8 @@ const sideOf = id => id ? '右' : '左', deckOf = id => id ? 'B' : 'A';
 const pickOne = list => list[Math.floor(Math.random() * list.length)];
 let audio, disposed = false, frame = 0, view = { mode: 'idle' }, message = '', subMessage = '', toastUntil = 0, judgeUntil = 0, shownPlay = null, lastCount = '', shownTracks = [null, null], shownSelect = null;
 let moodShown = null, helpManual = null, missStreak = 0, awaySince = 0, awaySaid = false, clashSince = 0, clashSaid = false, comboSaid = 0, shown = {}, particles = [], hands = [];
+const STRIPS = 7, STRIP_OVERLAP = 3; // the guests' band: 7 strips, each overlapping its neighbours by 3 % of the width (see buildBand)
+let strips = [], flash = 0;
 const status = text => { $('status').textContent = text; };
 /** Write text only when it changes (the render loop runs every frame; an unchanged write would still dirty the layout). */
 const put = (id, text) => { const el = $(id); if (el.textContent !== text) el.textContent = text; };
@@ -37,7 +39,7 @@ function create() {
   // SET 1 arrives already in tempo: PITCH and SYNC are dimmed so the eye goes to ▶ and the crossfader.
   $('dj-stage').dataset.pitch = SETS[setIndex].detune === 'match' ? 'off' : 'on';
   $('voices').replaceChildren(); $('heat-delta').className = 'heat-delta'; $('crossfader').value = '0';
-  view = { mode: 'idle' }; shownPlay = null; judgeUntil = 0; toastUntil = 0; moodShown = null; helpManual = null; missStreak = 0; awaySince = 0; awaySaid = false; clashSince = 0; clashSaid = false; comboSaid = 0; particles = []; hands = makeHands();
+  view = { mode: 'idle' }; shownPlay = null; judgeUntil = 0; toastUntil = 0; moodShown = null; helpManual = null; missStreak = 0; awaySince = 0; awaySaid = false; clashSince = 0; clashSaid = false; comboSaid = 0; particles = []; hands = makeHands(); flash = 0;
   shown = {}; message = ''; subMessage = ''; lastCount = ''; $('count').textContent = '';
   showDecks();
 }
@@ -52,6 +54,7 @@ function showDecks() {
     $('pitch-' + key).value = '0';
   });
 }
+buildBand();
 create();
 export function snapshot() {
   const now = audio.now, m = audio.mix;
@@ -203,14 +206,14 @@ function wave(canvas, id, now) {
 function makeHands() {
   let seed = 23 + setIndex; const rnd = () => { seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0; return seed / 4294967296; };
   // each hand goes up once the floor passes its own threshold: nobody below 40, almost everybody near 100
-  return Array.from({ length: 15 }, (_, i) => ({ x: (i + .15 + rnd() * .7) / 15, th: .42 + rnd() * .52, size: .8 + rnd() * .55, lean: (rnd() - .5) * .42, phase: rnd(), fist: rnd() < .34, up: 0 }));
+  return Array.from({ length: 20 }, (_, i) => ({ x: (i + .15 + rnd() * .7) / 20, th: .42 + rnd() * .52, size: .8 + rnd() * .5, lean: (rnd() - .5) * .42, phase: rnd(), fist: rnd() < .22, up: 0 }));
 }
 /** A raised hand in front of the booth: a dark silhouette against the lit haze, with a thin backlight on its edge. */
 function drawHand(c, x, base, h, len, bob) {
-  const w = 11 * h.size;
+  const w = 8 * h.size;
   c.save(); c.translate(x, base); c.rotate(h.lean); c.translate(0, -bob);
   c.beginPath(); c.moveTo(-w * 1.35, 40); c.quadraticCurveTo(-w * .7, -len * .5, -w * .62, -len + 2); c.lineTo(w * .62, -len + 2); c.quadraticCurveTo(w * .7, -len * .5, w * 1.35, 40); c.closePath(); // forearm, narrow at the wrist
-  if (h.fist) c.roundRect(-w * 1.15, -len - w * 1.75, w * 2.3, w * 2, w * .8);
+  if (h.fist) c.ellipse(0, -len - w * .8, w * 1.2, w * 1.15, 0, 0, Math.PI * 2);
   else { // open hand: palm, four fingers and a thumb
     c.roundRect(-w * 1.05, -len - w * 1.5, w * 2.1, w * 1.8, w * .6);
     for (const f of [-1.5, -.5, .5, 1.5]) { const fl = w * (1.75 - Math.abs(f) * .24); c.save(); c.translate(f * w * .53, -len - w * 1.3); c.rotate(f * .12); c.roundRect(-w * .22, -fl, w * .44, fl + 4, w * .22); c.restore(); }
@@ -220,12 +223,37 @@ function drawHand(c, x, base, h, len, bob) {
   c.lineWidth = 1.5; c.strokeStyle = 'rgba(255,170,225,.28)'; c.stroke();
   c.restore();
 }
+// The guests are one painted band cut into 7 soft-edged vertical strips over a base copy: each strip bounces a little out of step with its
+// neighbours, so the room moves like people and not like one sheet. How much depends on the mood: still when cold, a slow sway while they
+// watch, a bounce on every beat once they dance, a jump at the peak.
+function buildBand() {
+  const band = $('band'), size = 100 / STRIPS + STRIP_OVERLAP * 2;
+  strips = Array.from({ length: STRIPS }, (_, k) => {
+    const left = k * 100 / STRIPS - STRIP_OVERLAP, el = document.createElement('i'), inner = document.createElement('b');
+    el.className = 'strip'; el.style.left = `${left}%`; el.style.width = `${size}%`;
+    inner.style.width = `${100 / size * 100}%`; inner.style.left = `${-left / size * 100}%`; el.append(inner); band.append(el);
+    return { el, phase: [.0, .11, -.06, .15, -.1, .07, -.03][k], gain: [1, .8, 1.15, .9, 1.1, .85, 1.05][k], y: null, x: null };
+  });
+  strips.push({ el: band.querySelector('.base'), phase: 0, gain: .55, y: null, x: null });
+}
+function moveCrowd(beat, mood, still) {
+  // amp: how high they bounce (px); every: bounce on every beat (1) or every second beat (2); sway: sideways drift (px)
+  const [amp, every, sway] = still ? [0, 1, 0] : [[0, 1, 0], [0, 1, 0], [2.5, 2, 2], [8, 1, 3], [15, 1, 4]][mood];
+  for (const [k, strip] of strips.entries()) {
+    const t = beat / every + strip.phase, y = amp ? -Math.round(Math.abs(Math.sin(t * Math.PI)) ** .7 * amp * strip.gain * 2) / 2 : 0;
+    const x = sway ? Math.round(Math.sin((beat / 8 + k * .13) * Math.PI * 2) * sway * 2) / 2 : 0;
+    if (y !== strip.y || x !== strip.x) { strip.y = y; strip.x = x; strip.el.style.transform = x || y ? `translate(${x}px,${y}px)` : ''; }
+  }
+}
+/** The whole floor jolts once (a good entry lands, the fader locks in for 8 beats). */
+function shake() { if (reduced.matches) return; const art = $('floor-art'); art.classList.remove('shake'); void art.offsetWidth; art.classList.add('shake'); flash = 1; }
 function drawFloor(beat, floor, running) {
   const canvas = $('crowd'), W = $('dj-stage').offsetWidth || 1280, H = 288;
   if (canvas.width !== W) canvas.width = W;
   const c = canvas.getContext('2d'); c.clearRect(0, 0, W, H);
   const still = reduced.matches || !running, mood = moodOf(floor), kick = still ? 0 : (1 - mod(beat, 1)) ** 2;
-  // beams from the truss: wider and brighter as the room heats up
+  moveCrowd(beat, mood, still);
+  // beams from the truss over the booth, pointing out into the room: wider and brighter as it heats up
   const sweep = still ? 0 : Math.sin(beat / 8 * Math.PI * 2);
   c.globalCompositeOperation = 'lighter';
   for (const [at, dir, col] of [[.16, 1, '180,92,240'], [.38, -1, '63,208,232'], [.62, 1, '255,95,168'], [.84, -1, '180,92,240']]) {
@@ -233,12 +261,21 @@ function drawFloor(beat, floor, running) {
     const g = c.createLinearGradient(x, 0, tip, H); g.addColorStop(0, `rgba(${col},${alpha * 1.6})`); g.addColorStop(1, `rgba(${col},0)`);
     c.fillStyle = g; c.beginPath(); c.moveTo(x - 6, 0); c.lineTo(x + 6, 0); c.lineTo(tip + spread, H); c.lineTo(tip - spread, H); c.closePath(); c.fill();
   }
+  if (!still && mood >= 3) { // thin lasers fanning over the heads; more of them, and a strobe on the beat, at the peak
+    const n = mood >= 4 ? 6 : 3; c.lineWidth = 2;
+    for (let i = 0; i < n; i++) {
+      const a = Math.sin(beat / 4 * Math.PI + i * 1.7) * .9 + (i - (n - 1) / 2) * .22, x0 = W * (i % 2 ? .47 : .53), x1 = x0 + Math.tan(a) * 210;
+      c.strokeStyle = `rgba(${i % 2 ? '120,235,255' : '255,120,200'},${mood >= 4 ? .4 : .22})`; c.beginPath(); c.moveTo(x0, -4); c.lineTo(x1, 206); c.stroke();
+    }
+    if (mood >= 4) { c.fillStyle = `rgba(255,235,255,${(kick * .1).toFixed(3)})`; c.fillRect(0, 0, W, H); }
+  }
+  if (flash > .02) { c.fillStyle = `rgba(255,240,255,${(flash * .28).toFixed(3)})`; c.fillRect(0, 0, W, H); flash *= .86; } else flash = 0;
   c.globalCompositeOperation = 'source-over';
-  // hands in front of the booth
+  // hands of the guests right in front of the booth
   for (const h of hands) {
     h.up += ((floor >= h.th ? 1 : 0) - h.up) * (reduced.matches ? 1 : .08);
     if (h.up < .02) continue;
-    const len = h.up * (50 + h.size * 42), bob = kick * (6 + floor * 18) * (.6 + h.phase * .6) + (still ? 0 : Math.sin((beat / 2 + h.phase) * Math.PI * 2) * 3);
+    const len = h.up * (44 + h.size * 34), bob = kick * (6 + floor * 18) * (.6 + h.phase * .6) + (still ? 0 : Math.sin((beat / 2 + h.phase) * Math.PI * 2) * 3);
     drawHand(c, h.x * W, H + 8, h, len, bob);
   }
   // notes rising from the crowd while the fader rides the line
@@ -248,8 +285,6 @@ function drawFloor(beat, floor, running) {
     for (const p of particles) { p.y -= p.vy; p.x += Math.sin(p.life * 6) * .6; p.life -= .014; c.globalAlpha = Math.min(1, p.life * 2); c.shadowColor = p.color; c.shadowBlur = 12; c.fillStyle = p.color; c.fillText(p.char, p.x * W, p.y); }
     c.globalAlpha = 1; c.shadowBlur = 0;
   }
-  const bob = still || mood <= 1 ? 0 : Math.round(-kick * (1 + mood * 1.3) * 2) / 2; // the painted crowd dips on the beat
-  if (bob !== shown.bob) { shown.bob = bob; canvas.previousElementSibling.style.transform = bob ? `translateY(${bob}px)` : ''; }
 }
 const note = () => { if (particles.length < 24) particles.push({ x: .08 + Math.random() * .84, y: 230 + Math.random() * 30, vy: 1 + Math.random() * 1.2, life: 1, char: pickOne(['♪', '♫', '♪']), color: pickOne(['#ffc857', '#ff8fc4', '#aee7d5', '#c39bff']) }); };
 
@@ -268,7 +303,7 @@ function faderGuide(m, away) {
     if (view.follow) {
       band.classList.remove('hit', 'miss'); void band.offsetWidth; band.classList.add(view.follow.hit ? 'hit' : 'miss');
       if (view.follow.hit && view.follow.combo >= 4) { note(); if (view.follow.combo >= 16) note(); }
-      if (view.follow.combo >= 8 && view.follow.hit) { const f = $('floor'); f.classList.remove('hype'); void f.offsetWidth; f.classList.add('hype'); }
+      if (view.follow.hit && view.follow.combo >= 8) { if (view.follow.combo % 8 === 0) shake(); else flash = Math.max(flash, .35); }
     }
     const on = m.cue.to === 1 ? '右' : '左', back = m.cue.to === 1 ? '左' : '右', done = toward(m) >= .9 && view.guide >= .9;
     if (side === 0 || done) { hint = done ? 'そのまま！' : 'いい感じ、そのまま'; ok = true; }
@@ -371,6 +406,7 @@ function render() {
     const drop = $('drop'); drop.className = 'drop'; void drop.offsetWidth;
     drop.className = `drop ${grade === 'PERFECT' || grade === 'GOOD' ? 'big' : grade === 'OK' ? 'small' : 'miss'}`;
     drop.textContent = grade === 'PERFECT' || grade === 'GOOD' ? 'DROP!' : '';
+    if (grade === 'PERFECT' || grade === 'GOOD') shake();
     say(grade, { big: grade === 'PERFECT' }); bump(GRADE_FLOOR[grade], { PERFECT: 'ぴったり入った', GOOD: 'いい入り', EARLY: '入りが早かった', LATE: '入りが遅れた' }[grade] || '');
   }
   if (judgeUntil && performance.now() > judgeUntil) { $('judge').textContent = ''; $('judge-sub').textContent = ''; judgeUntil = 0; }
@@ -401,8 +437,8 @@ function render() {
     play.classList.toggle('cue-open', mine && n.untilHead === 0);
     play.classList.toggle('cue-soon', soon);
     play.classList.toggle('first', m.phase === 'idle' && id === 0);
-    // approach ring: shrinks from twice the button onto the button exactly on the phrase head
-    play.style.setProperty('--ap', soon ? (1 + n.untilHead / 4).toFixed(3) : '1');
+    // approach ring: shrinks from 1.55× the button onto the button exactly on the phrase head
+    play.style.setProperty('--ap', soon ? (1 + n.untilHead / 4 * .55).toFixed(3) : '1');
     $('deck-' + key).dataset.playing = String(d.playing);
     $('deck-' + key).dataset.role = !d.track ? 'empty' : d.playing && m.master === id ? 'master' : d.playing ? 'incoming' : 'next';
     put('indicator-' + key, !d.track ? 'EMPTY' : d.playing ? 'ON AIR' : 'STANDBY');

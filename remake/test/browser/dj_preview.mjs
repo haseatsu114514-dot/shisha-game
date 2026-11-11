@@ -37,9 +37,11 @@ try{
   assert.equal((await snap(page)).state,'not-started');assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
   const stageScale=await page.evaluate(()=>Number(getComputedStyle(document.getElementById('dj-stage')).getPropertyValue('--s'))||1);
   for(const id of ['play-a','play-b']){const r=await page.locator('#'+id).boundingBox();assert(r.height/stageScale>=52&&r.width/stageScale>=88,'Large ▶ targets');}
-  // DJS20/DJS26: the floor takes the top 288px; below it the turntables stand 296px tall on both sides, and what the player touches (▶ 104px, crossfader 400px+) is bigger than before.
-  for(const key of ['a','b']){assert.equal(await page.locator('#indicator-'+key).textContent(),'STANDBY');const j=await page.locator('#platter-'+key).boundingBox();assert(j.width/stageScale>=290&&j.height/stageScale>=290,'Large turntables');}
-  for(const id of ['play-a','play-b']){const r=await page.locator('#'+id).boundingBox();assert(r.height/stageScale>=100&&r.width/stageScale>=100,'▶ is a 104px pad');}
+  // DJS20/DJS26/DJS27: the floor takes the top 288px; below it the turntables stand 308px tall on both sides. ▶ (90px) sits in its socket on the strip under each
+  // turntable and never overlaps the platter; the crossfader is 400px+ wide.
+  for(const key of ['a','b']){assert.equal(await page.locator('#indicator-'+key).textContent(),'STANDBY');const j=await page.locator('#platter-'+key).boundingBox();assert(j.width/stageScale>=300&&j.height/stageScale>=300,'Large turntables');}
+  for(const key of ['a','b']){const r=await page.locator('#play-'+key).boundingBox(),j=await page.locator('#platter-'+key).boundingBox(),d=await page.locator('#deck-'+key).boundingBox();
+   assert(r.height/stageScale>=88&&r.width/stageScale>=88,'▶ is a 90px pad');assert(r.y>=j.y+j.height-1,'▶ sits below the platter, not on it');assert(r.x>=d.x-1&&r.x+r.width<=d.x+d.width+1&&r.y+r.height<=d.y+d.height+1,'▶ stays inside its deck');}
   {const r=await page.locator('#crossfader').boundingBox();assert(r.width/stageScale>=400&&r.height/stageScale>=70,'The crossfader is the widest control');}
   {const f=await page.locator('.floor').boundingBox();assert(f.height/stageScale>=280,'the floor (the guests) takes the top 288px');}
   // Before the set: the how-to board, step 1 lit, one navi line and a gold arrow on ▶ A. ？ 遊び方 folds the board away and back.
@@ -47,6 +49,9 @@ try{
   assert.match(await page.locator('#coaching').textContent(),/左の ▶ を押して/);assert.equal(await page.locator('#steps li.now').getAttribute('data-step'),'1');
   assert(await page.locator('#point-play-a').isVisible(),'gold arrow on ▶ A');assert(await page.locator('#point-play-b').isHidden());assert.deepEqual((await snap(page)).points,['play-a']);
   assert.equal(await page.locator('#mood').textContent(),'様子見');assert.equal(await page.locator('.floor').getAttribute('data-mood'),'2');
+  // The floor is the DJ's own view (DJS28): the empty room behind, the guests' band in front, cut into strips that move on the beat.
+  assert.equal(await page.locator('#band .strip').count(),7);assert(await page.evaluate(()=>{const r=document.querySelector('.floor-art .room').getBoundingClientRect(),b=document.getElementById('band').getBoundingClientRect(),f=document.querySelector('.floor').getBoundingClientRect();return r.height>=f.height-1&&b.width>=f.width-1&&b.bottom>=f.bottom-1&&b.top>f.top+20;}),'room fills the floor, the guests stand along its bottom');
+  assert(await page.evaluate(()=>[...document.querySelectorAll('#band .strip,#band .base')].every(e=>!e.style.transform)),'nobody moves before the music starts');
   await press('help');await page.locator('#howto').waitFor({state:'hidden'});await press('help');await page.locator('#howto').waitFor({state:'visible'});
   assert(await page.evaluate(()=>{const r=q=>document.querySelector(q).getBoundingClientRect(),fr=r('.floor'),cr=r('.console'),wr=r('.waves'),mr=r('.mixer'),a=r('#platter-a'),b=r('#platter-b'),pa=r('#play-a'),pb=r('#play-b'),x=r('#crossfader');
    return fr.bottom<=cr.top+1&&cr.bottom<=innerHeight+1   // the floor above the booth, the booth inside the viewport
@@ -104,6 +109,9 @@ try{
   // The light on the floor moves while playing, and is static with reduced motion.
   const crowdHash=()=>page.evaluate(()=>{const c=document.getElementById('crowd');return c.getContext('2d').getImageData(0,0,c.width,c.height).data.reduce((h,b)=>(Math.imul(h,31)+b)>>>0,7);});
   const c1=await crowdHash();await page.waitForTimeout(260);const c2=await crowdHash();
+  // 様子見: the guests only sway a little while the track plays (they bounce once the room warms up); with reduced motion they stay put.
+  const moved=()=>page.evaluate(()=>[...document.querySelectorAll('#band .strip')].filter(e=>e.style.transform).length);
+  if(kind==='reduced')assert.equal(await moved(),0,'reduced motion: the guests do not move');else{let n=0;for(let i=0;i<20&&!n;i++){n=await moved();await page.waitForTimeout(60);}assert(n>0,'the guests sway with the music');}
   if(kind==='reduced')assert.equal(await page.locator('#platter-a').evaluate(e=>e.style.getPropertyValue('--rotation')),'0deg','reduced motion: the platter does not spin');else assert.notEqual(c1,c2,'crowd bobs on the beat');
   // SYNC exists but SET 1 does not need it; it stays enabled while a cue is open.
   assert(!(await page.locator('#sync').isDisabled()));assert(!(await page.locator('#sync').evaluate(e=>e.classList.contains('needed'))));

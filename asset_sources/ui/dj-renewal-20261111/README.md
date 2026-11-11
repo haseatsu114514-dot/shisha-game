@@ -14,7 +14,8 @@ OpenAI の画像 API（`gpt-image-2.5-sunburst`）で作ろうとしたが、ク
 
 | ファイル | 大きさ | 使う場所（`remake/previews/dj/style.css`） |
 |---|---|---|
-| `play-a.webp`・`play-b.webp`・`play-go.webp` | 256×256 | ▶（A 紫・B 水色・「いま押す」金）。表示 104px |
+| `play-a.webp`・`play-b.webp`・`play-go.webp` | 256×256 | ▶（A 紫・B 水色・「いま押す」金）。表示 90px。台座の受け皿に収まる |
+| `deck-strip.webp` | 640×200 | デッキの下の台座（DJS27）。表示窓 = 幅 2.2〜68.8 %・高さ 11〜89 %、▶ の受け皿の中心 = 幅 84.4 %。右デッキは CSS で左右反転 |
 | `xfader-plate.webp` | 920×240 | 横フェーダーの台座。溝は幅 8.5〜91.5 %・高さ 44 %、左右に A（紫）・B（水色）のランプ |
 | `pitch-plate.webp` | 136×340 | PITCH フェーダーの台座 |
 | `arrow.webp` | 256×256 | 「いま触るところ」の金色の矢印（右向き。CSS で回す） |
@@ -28,10 +29,22 @@ OpenAI の画像 API（`gpt-image-2.5-sunburst`）で作ろうとしたが、ク
 
 Codex にもっと良い部品を描いてもらう場合は、同じファイル名・同じ大きさ・同じ溝や窓の位置で作れば、コードを変えずに差し替えられる。
 
+## フロアの2層（DJS28・主人公目線）
+
+オーナー「主人公目線から見たフロアにしたい。必要であれば生成」。画像 API は 2026-11-11 の時点でもクレジット切れだったので、手元の2枚から `make_parts.py` の `floor_pov()` が作る（新規生成なし）。
+
+| 出力（`remake/img/ui/dj/`） | 元 | 加工 |
+|---|---|---|
+| `floor-room.webp` 1600×383 | `remake/img/ui/dj/bg-purple.webp`（2048×768・ブースから見た空の店内） | y 30〜520 を切り出して縮小（下の黒いブースの縁を落とす） |
+| `floor-pov-1`〜`4.webp` 1512×232（透過） | `asset_sources/ui/dj-floor-crowd-20261102/crowd-a.png`（2172×724・Codex の候補 a 案） | x 330〜1842・y 390〜622 を切り出し。上は客の頭と上げた手の少し上でぼかして透明に（中央は 42px、両端は 92px から。両端のランタンとヤシを落とす）。熱の4段階ぶん、明るさ・彩度を変えて4枚 |
+
+- **a 案は 2026-11-02 の採用（b 案）では選ばれなかった候補**。ランタンやヤシがクラブSEAM（地下のコンクリート）と食い違うのが理由だった。今回はブース越しに客席を見た構図が要るので、装飾のない中央の観客だけを使っている。b 案（`floor-crowd.webp`）は客席の後ろから舞台を見た構図で、主人公目線にならない。
+- 客は影絵で、表情やしぐさ（腕を組む・スマホを見る）は出ない。そこは下の4枚（Codex）で置き換える。
+
 ## 4枚が届いたら（フロアの観客）
 
 1. 原画（`floor-1.png`〜`floor-4.png`）をこのフォルダの `raw/` に置く（無加工）。
-2. 4枚とも同じ範囲で 1536×512 へ縮小して WebP（quality 88）にし、`remake/img/ui/dj/floor-1.webp`〜`floor-4.webp` に置く。
-3. `remake/previews/dj/style.css` の `.floor` の `--art-1`〜`--art-4` を新しい4枚に替え、`.floor-art i[data-level]` の `filter`（明るさと彩度の描き分け）を外す。顔が帯に入るよう `background-position`（いまは `center 76%`）を合わせる。
-4. 新しい絵は客がこちらを向くので、手前の手のシルエット（`app.mjs` の `makeHands`・`drawHand`）は消すか本数を減らす。光と音符は残してよい。
+2. 画面は「奥の店内（`floor-room.webp`）＋手前の観客の帯（`floor-pov-1`〜`4.webp`）」の2層。届いた絵が店内ごと描いてある場合は、4枚とも同じ範囲で観客の帯（頭と上げた手の少し上から下）を切り出し、上をぼかして透明にして `floor-pov-1`〜`4.webp`（1512×232）に置き換える（`make_parts.py` の `floor_pov()` の元画像と切り出し範囲を変える）。店内も新しい絵に合わせるなら `floor-room.webp` も同じ絵から作る。
+3. 帯の縦横比を変えたら `remake/previews/dj/style.css` の `.band` の `aspect-ratio` を合わせる。
+4. 新しい絵は客がこちらを向いて手を上げるので、手前の手のシルエット（`app.mjs` の `makeHands`・`drawHand`）は消すか本数を減らす。光・レーザー・音符と、帯の揺れ（`moveCrowd`）はそのまま使える。
 5. `node remake/test/browser/dj_preview.mjs` と、PC・スマホ表示の目視。

@@ -17,6 +17,9 @@
 | bubble.webp / bubble-cold.webp | 560×216 | お客さんの声の吹き出し（良い反応／冷めた反応） |
 | flame.webp | 96×96 | 曲のノリ（盛り上がり）の炎 |
 | zone.webp / zone-ok.webp | 224×136 | 横フェーダーの「ここ」の目印（追いかける先／乗れているとき） |
+| deck-strip.webp | 640×200 | デッキの下の台座（曲名と BPM の表示窓・▶ の受け皿。右デッキは左右反転） |
+| floor-room.webp | 1600×383 | フロアの奥: ブースから見た空の店内（bg-purple.webp の上 2/3） |
+| floor-pov-1〜4.webp | 1512×232 | フロアの手前: 観客（crowd-a.png の中央を切り出し、熱の4段階に明るさを変えたもの） |
 | heat-frame.webp | 597×160 | フロアの熱のゲージの枠（craft-night の温度計の枠を横向きにしたもの） |
 """
 from pathlib import Path
@@ -156,25 +159,26 @@ def play_pad(name, color, hi):
     S = 256 * SS
     c = (S / 2, S / 2)
     img = rgba((S, S))
-    img = over(img, blur(solid(circle_mask((S, S), (c[0], c[1] + S * .025), S * .455), (0, 0, 0, 150)), S * .02))  # 落ち影
-    img = add(img, glow(circle_mask((S, S), c, S * .43), color, S * .035, .55))  # 外へ漏れる光
-    img = Image.alpha_composite(img, metal_ring((S, S), c, S * .455, S * .385))
-    led = ImageChops.subtract(circle_mask((S, S), c, S * .392), circle_mask((S, S), c, S * .352))
-    img = Image.alpha_composite(img, solid(led, tuple(int(v * .82) for v in color)))
-    img = add(img, glow(led, hi, S * .012, .9))
-    disc = circle_mask((S, S), c, S * .352)
+    # 台座の受け皿（deck-strip.webp）に収まるボタン。外へ漏れる光は弱く、LED の輪は細く色つき（白く飛ばさない）
+    img = add(img, glow(circle_mask((S, S), c, S * .44), color, S * .022, .22))
+    img = Image.alpha_composite(img, metal_ring((S, S), c, S * .47, S * .40))
+    led = ImageChops.subtract(circle_mask((S, S), c, S * .402), circle_mask((S, S), c, S * .372))
+    img = Image.alpha_composite(img, solid(led, tuple(int(v * .78) for v in color)))
+    core = ImageChops.subtract(circle_mask((S, S), c, S * .392), circle_mask((S, S), c, S * .382))
+    img = add(img, glow(core, hi, S * .006, .55))
+    disc = circle_mask((S, S), c, S * .372)
     face = vgrad((S, S), [(0, (58, 52, 76)), (.45, (30, 26, 42)), (1, (12, 10, 20))])
     face = grain(face, noise((S, S), 5))
     img = Image.alpha_composite(img, clip(face, disc))
     shine = Image.new("L", (S, S), 0)  # 面の上側の柔らかい照り
     ImageDraw.Draw(shine).ellipse([S * .22, S * .14, S * .78, S * .5], fill=70)
     img = add(img, clip(solid(blur(shine, S * .05), (255, 255, 255)), disc))
-    inner = ImageChops.subtract(disc, circle_mask((S, S), c, S * .338))  # 面のふちの暗い溝
+    inner = ImageChops.subtract(disc, circle_mask((S, S), c, S * .358))  # 面のふちの暗い溝
     img = Image.alpha_composite(img, solid(inner, (0, 0, 0, 150)))
     tri = poly_mask((S, S), [(S * .425, S * .345), (S * .425, S * .655), (S * .69, S * .5)])
     tri = blur(tri, S * .008).point(lambda v: 255 if v > 110 else 0)  # 角を少し丸める
     tri = blur(tri, SS * .8)
-    img = add(img, glow(tri, color, S * .04, 1.3))
+    img = add(img, glow(tri, color, S * .03, .9))
     img = Image.alpha_composite(img, clip(vgrad((S, S), [(.3, hi), (.5, tuple((a + b) // 2 for a, b in zip(hi, color))), (.7, color)]), tri))
     save(img, name, (256, 256))
 
@@ -345,6 +349,69 @@ def zone(name, color, hi):
     save(img, name, (224, 136))
 
 
+def deck_strip():
+    """デッキの下の台座（左デッキ用。右は CSS で左右反転）: 左に曲名と BPM の表示窓、右に ▶ の受け皿（丸いくぼみ）。
+    表示窓 = 幅 2.2〜68.8 %・高さ 11〜89 %、受け皿の中心 = 幅 84.4 %・高さ 50 %・直径 92px（表示 320×100 のとき）。"""
+    W, H = 640 * SS, 200 * SS
+    img, m = plate((W, H), H * .14, "x")
+    # 表示窓: 暗いガラス、内側の影、下のふちの照り、うすい走査線
+    box = [14 * SS, 22 * SS, 440 * SS, 178 * SS]
+    img = groove(img, box, 12 * SS)
+    glass = clip(vgrad((W, H), [(.1, (10, 8, 20)), (.5, (16, 12, 30)), (.9, (8, 6, 16))]), rr_mask((W, H), [box[0] + SS * 3, box[1] + SS * 3, box[2] - SS * 3, box[3] - SS * 3], 10 * SS))
+    img = Image.alpha_composite(img, glass)
+    lines = Image.new("L", (W, H), 0)
+    d = ImageDraw.Draw(lines)
+    for y in range(int(box[1]) + SS * 4, int(box[3]) - SS * 4, SS * 4):
+        d.line([box[0] + SS * 5, y, box[2] - SS * 5, y], fill=16, width=SS)
+    img = add(img, solid(lines, (150, 130, 220)))
+    shine = poly_mask((W, H), [(box[0] + SS * 6, box[1] + SS * 4), (box[0] + (box[2] - box[0]) * .46, box[1] + SS * 4), (box[0] + (box[2] - box[0]) * .34, box[1] + SS * 60), (box[0] + SS * 6, box[1] + SS * 60)])
+    img = add(img, clip(solid(blur(shine, SS * 10), (255, 255, 255, 22)), rr_mask((W, H), box, 12 * SS)))
+    # ▶ の受け皿: ふちの輪（上が暗く下が明るい）と、暗いくぼみ
+    c, r = (540 * SS, 100 * SS), 92 * SS
+    lip = ImageChops.subtract(circle_mask((W, H), c, r + SS * 4), circle_mask((W, H), c, r))
+    img = Image.alpha_composite(img, clip(vgrad((W, H), [(.05, (6, 5, 12)), (.95, (160, 152, 190))]), lip))
+    img = Image.alpha_composite(img, solid(circle_mask((W, H), c, r), (9, 7, 16)))
+    well = ImageChops.multiply(circle_mask((W, H), c, r), ImageChops.invert(blur(circle_mask((W, H), (c[0], c[1] + SS * 10), r - SS * 4), SS * 6)))
+    img = Image.alpha_composite(img, solid(well, (0, 0, 0, 255)))
+    for cx, cy in [(W * .012, H * .1), (W * .012, H * .9)]:
+        img = screw(img, (cx + SS * 2, cy), H * .028)
+    save(img, "deck-strip", (640, 200))
+
+
+FLOOR_SRC = ROOT / "asset_sources" / "ui" / "dj-floor-crowd-20261102" / "crowd-a.png"
+
+
+def floor_pov():
+    """主人公（DJ）目線のフロアの2層（DJS28）。新規生成はせず、手元の2枚から作る。
+    奥 = floor-room.webp: 空の店内をブースから見た絵（bg-purple.webp）の上 2/3（下の黒いブースの縁を落とす）。
+    手前 = floor-pov-1〜4.webp: 観客の候補 a 案（crowd-a.png・ブース越しに客席を見た絵）から、ランタンやヤシのない中央の観客だけを切り出したもの。
+      上は客の頭と上げた手の少し上でぼかして透明にし（両端は低めに切って飾りを落とす）、熱の4段階ぶん、明るさと彩度を変えて書き出す。"""
+    room = Image.open(OUT / "bg-purple.webp").convert("RGB").crop((0, 30, 2048, 520)).resize((1600, 383), Image.LANCZOS)
+    path = OUT / "floor-room.webp"
+    room.save(path, "WEBP", quality=88, method=6)
+    print(f"{path.relative_to(ROOT)} 1600x383 {path.stat().st_size}B")
+    src = Image.open(FLOOR_SRC).convert("RGB").crop((330, 390, 1842, 622))  # 1512×232
+    w, h = src.size
+    xs = np.arange(w)[None, :].repeat(h, 0)
+    ys = np.arange(h)[:, None].repeat(w, 1)
+    edge = np.clip(np.minimum(xs - 250, w - 250 - xs) / 230, 0, 1)  # 0 = 両端、1 = 中央
+    edge = edge * edge * (3 - 2 * edge)
+    top = 92 - 50 * edge  # 透明にし始める高さ: 中央 42px（上げた手を残す）、両端 92px（ランタンとヤシを落とす）
+    alpha = np.clip((ys - top) / 54, 0, 1)
+    alpha = alpha * alpha * (3 - 2 * alpha)
+    side = np.clip(np.minimum(xs, w - 1 - xs) / 40, 0, 1)
+    alpha = (alpha * side * 255).astype(np.uint8)
+    base = np.asarray(src).astype(np.float32)
+    for level, (bright, sat, tint) in {1: (.62, .2, (.92, .98, 1.12)), 2: (.84, .78, (1, 1, 1)), 3: (1.08, 1.12, (1, 1, 1)), 4: (1.36, 1.45, (1.08, .98, 1.02))}.items():
+        grey = base.mean(-1, keepdims=True)
+        rgb = np.clip((grey + (base - grey) * sat) * bright * np.array(tint), 0, 255)
+        out = np.dstack([rgb.astype(np.uint8), alpha])
+        out[alpha == 0, :3] = 0
+        path = OUT / f"floor-pov-{level}.webp"
+        Image.fromarray(out, "RGBA").save(path, "WEBP", quality=88, method=6)
+        print(f"{path.relative_to(ROOT)} {w}x{h} {path.stat().st_size}B")
+
+
 def heat_frame():
     """フロアの熱のゲージの枠: ゲーム共通の夜のUIキット（craft-night）の温度計の枠を横向きにしたもの。透明な窓の位置は style.css の .heat-bar。"""
     src = Image.open(KIT / "thermo-frame.webp").convert("RGBA")
@@ -372,4 +439,6 @@ if __name__ == "__main__":
     flame()
     zone("zone", GOLD, GOLD_HI)
     zone("zone-ok", (150, 240, 200), (226, 255, 242))
+    deck_strip()
+    floor_pov()
     heat_frame()
