@@ -1,4 +1,4 @@
-import { CH2_CITY_EN, CH2_CITY_NAME, HOME_CITY_EN, HOME_CITY_NAME } from "../core/city-locations.js";
+import { HOME_CITY_EN, currentCity } from "../core/city-locations.js";
 // 日常パートの常時表示（日付・時間帯・所持金・体力・スマホ・MENU）。
 // 「次の大会まで あと◯日」は左上カードに出さない（#3033・オーナー指示 2026-11-09。ラベルが印に
 // 置き換わって何の日数か分からない、とのプレイテスト指摘）。出発前の「出発まで」・第5章の
@@ -14,7 +14,6 @@ import { staminaRatio, currentCondition, maxStamina } from "../core/stats.js";
 import { conditionForRatio } from "../core/condition.js";
 import { isRainy } from "./weather.js";
 import { chapterDay, chapterDaysLeft, chapterFinalDay, chapterGoalLabel, departurePrep } from "../core/chapter-clock.js";
-import { travelsBetweenCities } from "../core/travel-budget.js";
 import { growthEnabled, growthView, gaugeInfo, hidaneTotal } from "../core/growth.js";
 import { NODE_BY_ID, pathTo } from "../core/growth-board.js";
 
@@ -212,10 +211,7 @@ export async function keepDailyHud(task) {
 export function updateHud() {
   if (!dom || !state) return;
   // 今いる街（第2章・第5章は flags._ch2_region。第5章は東京にも泊まれる・#2033。第3章の東京も同じ印・VOL03）
-  const region = travelsBetweenCities(state) || [3, 4].includes(state.chapter) ? state.flags._ch2_region : "home";
-  const [areaId, areaEn, areaName] = region === "widehanga" ? ["widehanga", CH2_CITY_EN, CH2_CITY_NAME]
-    : region === "tokyo" && [3, 5].includes(state.chapter) ? ["tokyo", "TOKYO", "東京"]
-    : region === "dubai" && [4, 5].includes(state.chapter) ? ["dubai", "DUBAI", "ドバイ"] : ["sakae", HOME_CITY_EN, HOME_CITY_NAME];
+  const { id: areaId, en: areaEn, name: areaName } = currentCity(state);
   dom.area.dataset.region = areaId;
   dom.area.setAttribute("aria-label", areaEn);
   dom.area.replaceChildren(
