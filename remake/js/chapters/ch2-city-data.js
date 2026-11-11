@@ -56,7 +56,9 @@ export async function loadPreparationDialogues() {
   required.push(...["ageha", "kumicho", "rei"].map(id => `remake_ch2_${id}_repeat_e`));
   // 好感度MAXの締めくくり（daily/bonds.js の BOND_FINALES・#2027）
   const files = { ch2_preparation: required, ch2_deliveries: [...PURIKURA_IDS, ...DISCOVERY_IDS, ...OUTING_IDS],
-    ch2_kumicho: ["ch2_kumicho_bond_finale"], ch2_rei: ["ch2_rei_bond_finale"] };
+    ch2_kumicho: ["ch2_kumicho_bond_finale"],
+    // レヰのライブの夜（第3章の出発前の準備期間だけ。ch2-preparation.js の reiLiveDue・RVE07）
+    ch2_rei: ["ch2_rei_bond_finale", "ch3_prep_rei_live"] };
   for (const step of CH2_NIGHTS.flatMap(night => night.steps)) (files[step.file] ||= []).push(step.id);
   // 神崎・レヰの長い段階会話（味の学習を含む）も通常訪問列として公開する（#1648）。
   for (const entry of Object.values(CH2_VISIT_STORIES).flat()) if (entry.file) (files[entry.file] ||= []).push(entry.scene);

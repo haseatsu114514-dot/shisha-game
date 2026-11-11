@@ -16,7 +16,7 @@ import { trpgSpot } from "../daily/trpg.js";
 import { MAP, loadChapterTwoDialogues, loadPreparationDialogues } from "./ch2-city-data.js";
 import { CITY_SHOP, knownCityOutings } from "./ch2-outings.js";
 import { returnCityHome } from "./ch2-commute.js";
-import { PREPARATION_SPOTS, visitPreparationSpot } from "./ch2-preparation.js";
+import { PREPARATION_SPOTS, visitPreparationSpot, reiLiveDue } from "./ch2-preparation.js";
 
 const PREP_KEYS = Object.freeze({ 3: "_ch3_prep", 4: "_ch4_prep" });
 export const prepKey = chapter => PREP_KEYS[chapter];
@@ -51,7 +51,9 @@ export function markDeparted(value = state) {
   return true;
 }
 
-const cityRegion = () => [...PREPARATION_SPOTS, CITY_SHOP, ...knownCityOutings(state).filter(spot => spot.kind !== "trpg"), trpgSpot()].filter(Boolean);
+// レヰのライブの夜が待っている間は、零-ZERO- に「！」（chapters/ch2-preparation.js の reiLiveDue・RVE07）
+const withReiLive = spot => spot.charId === "rei" ? { ...spot, hasNew: () => reiLiveDue(state) || !!spot.hasNew?.() } : spot;
+const cityRegion = () => [...PREPARATION_SPOTS.map(withReiLive), CITY_SHOP, ...knownCityOutings(state).filter(spot => spot.kind !== "trpg"), trpgSpot()].filter(Boolean);
 const atHome = spot => (spot?.region || "home") === "home";
 
 /**

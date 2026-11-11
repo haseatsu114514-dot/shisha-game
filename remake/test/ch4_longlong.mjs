@@ -45,6 +45,10 @@ assert.deepEqual(nextLonglongVisit(value, 1), { id: "ch4_longlong_second", kind:
 recordLonglongVisit(value, { id: "ch4_longlong_visit_b", kind: "talk" });
 assert.deepEqual(longlongRecord(value), { read: { ch4_longlong_first: true }, talks: 1 });
 assert.deepEqual(nextLonglongVisit(value, 0), { id: "ch4_longlong_visit_c", kind: "talk" }, "小会話は順に巡回");
+recordLonglongVisit(value, { id: "ch4_longlong_visit_c", kind: "talk" });
+assert.deepEqual(nextLonglongVisit(value, 0), { id: "ch4_longlong_visit_d", kind: "talk" }, "3本目（RVE07）");
+recordLonglongVisit(value, { id: "ch4_longlong_visit_d", kind: "talk" });
+assert.deepEqual(nextLonglongVisit(value, 0), { id: "ch4_longlong_visit_b", kind: "talk" }, "3本を回ったら最初へ");
 value.flags[LONGLONG_FLAG] = "broken";
 assert.deepEqual(longlongRecord(value), { read: {}, talks: 0 }, "壊れた記録は空として読む");
 assert.equal(classifyFlag(LONGLONG_FLAG), "progression");
