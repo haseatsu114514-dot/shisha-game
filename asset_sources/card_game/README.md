@@ -16,7 +16,7 @@
 | ボウル（ハガル）・HMD の札 | シーシャ作りのボウル（`bowl_*.webp`）・ショップのHMD（`remake/img/shop/equipment/`） |
 | 自分・相手・審査員・人物カード | 顔アイコン（`remake/img/ui/face_icons/`） |
 | 技16・イベント7・キッチンタイマー | **このゲーム用の絵**（2026-11-11 Codex 生成・#3221。`remake/img/ui/ichidai/card/`） |
-| 器具3枚（風防・アイスホース・ディフューザー） | **仮**: 成長盤の線画アイコン（`remake/img/ui/growth_board/icons/`） |
+| 器具3枚（風防・アイスホース・ディフューザー） | **このゲーム用の絵**（2026-11-11 Codex 生成・#3332。`remake/img/ui/ichidai/card/`） |
 | 裏面（デッキ・審査カード） | **仮**: 夜紫UIの札（`entry-rival.webp`・`entry-me.webp`） |
 
 葉の札は全種に箱絵がある。クールミント・ジャスミン・チョコレートは #3287 の箱、コーヒー（ドバジ）は #3221 C で作った箱（原画 `coffee-20261111/`、PR #3329）を本編のショップと同じ `remake/js/daily/shop-art-flavor-cartons-3287.js` から引く（`tools/build_flavor_cartons_3287.py` が WebP と一覧を作る）。アイスグレープはグレープの箱を借りている。
@@ -85,6 +85,9 @@
 | `raw/card/timer.png`（キッチンタイマー） | 1254×1254 | 1636206 | `7bd284319708c77a19de706adfa250bd9b26bb8f541cd5046db89d4686380f6a` | 合格・採用（`assets/ui/ichidai/card/timer.png` は原画のまま） |
 | `raw/card/tongs.png`（トングさばき） | 1254×1254 | 1685848 | `0d9568728b2c06d97a4e9053db13f924a04a73b17318ea0348833fa5d0e9f32f` | 合格・採用（`assets/ui/ichidai/card/tongs.png` は原画のまま） |
 | `raw/card/venue_heat.png`（会場の熱気） | 1254×1254 | 2041356 | `d0056375dcb8fa5b1d9613a2bae4a5eef831e499861034e051322b65748f9891` | 合格・採用（`assets/ui/ichidai/card/venue_heat.png` は原画のまま） |
+| `raw/card/diffuser.png`（ディフューザー） | 1254×1254 | 1713193 | `7f0507ae60d81b03754bc4ae2f06a9df93990bae430b591ba0e48a3734a984ae` | 合格・採用（`assets/ui/ichidai/card/diffuser.png` は原画のまま。検品は `hardware-20261111/README.md`） |
+| `raw/card/ice_hose.png`（アイスホース） | 1254×1254 | 1638636 | `63e83129b6810acdf6e77e3d3885148000bf6db4ea9a194caa51f95017c04b14` | 合格・採用（`assets/ui/ichidai/card/ice_hose.png` は原画のまま。検品は `hardware-20261111/README.md`） |
+| `raw/card/windguard.png`（風防） | 1254×1254 | 1820825 | `b8120b65aec52ca2da6ecfd705280141df340a8d97d21a25672d8410d771776c` | 合格・採用（`assets/ui/ichidai/card/windguard.png` は原画のまま。検品は `hardware-20261111/README.md`） |
 
 2026-11-11 受領（#3221・技16・イベント7・キッチンタイマー1）。Codex の内蔵画像生成で 1 回に 1 枚、`gen.py` の文（STYLE_ART＋SUBJECT）をそのまま使った（入力文は `art-20261111/prompts-3221/`。`gen.py --print` の文と24枚とも一致を確認）。
 依頼は 1024px だったが、生成ツールが返した実寸は 1254×1254。原画は加工していない。Codex の検品（一覧・100px の一覧・記録）は `art-20261111/qa-3221/`、SHA-256 は受け取ったファイルと全件一致。
@@ -93,6 +96,6 @@
 
 ## 依頼の状況
 
-- Issue #3221: 技16・イベント7・キッチンタイマー1 は**採用済み**（2026-11-11）。残りは機材が写る器具3枚（風防・アイスホース・ディフューザー）。箱絵の無い葉4種は、3種が #3287 の箱、コーヒーが #3329 の箱で埋まった（2026-11-11）。卓1・裏面2は #3257 の担当。
+- Issue #3221: 技16・イベント7・キッチンタイマー1 は**採用済み**（2026-11-11）。機材が写る器具3枚（風防・アイスホース・ディフューザー）も**採用済み**（#3332）。箱絵の無い葉4種は、3種が #3287 の箱、コーヒーが #3329 の箱で埋まった（2026-11-11）。卓1・裏面2は #3257 の担当。
 - 相手の立ち絵・表情・演出で「対戦している感じ」を強める: Issue に分けた（`docs/owner_requests.md` ICG18）。
 - カードの枠・裏面・プレイマット・しるしのデザイン（トレカ風）: Issue #3257。依頼書は `docs/design/card_game/card_design_brief.md`、原画と記録は `asset_sources/card_game/design-20261111/`。
