@@ -1,0 +1,52 @@
+{
+  "issue": 3217,
+  "date_utc": "2026-11-11",
+  "tool": "Codex built-in image_gen",
+  "authority": "Issue #3217 body (world-request.md not yet on origin/main)",
+  "references": [
+    {
+      "path": "assets/backgrounds/bg_dubai_camel_track_morning.png",
+      "role": "画風と朝の光の正本"
+    },
+    {
+      "path": "assets/ui/camel_race/camel_1.png",
+      "role": "物の描き込み密度の正本"
+    },
+    {
+      "path": "assets/ui/camel_race/suv.png",
+      "role": "物の描き込み密度の正本"
+    }
+  ],
+  "items": [
+    {
+      "id": "CR-WD02",
+      "prompt": "Use case: stylized-concept. Asset type: transparent PNG game sprite, CR-WD02 marker-board.png. Input reference roles: bg_dubai_camel_track_morning.png is the authoritative style and sunrise lighting reference; camel_1.png and suv.png are authoritative object detail-density references. STYLE: Game sprites for a Japanese pixel-painterly visual novel minigame set at a desert camel racetrack in Dubai at sunrise. Same painter's hand and texture as the game's racetrack background (bg_dubai_camel_track_morning) and its camel and SUV sprites: fine painterly pixel texture, confident dark outlines slightly heavier on the outer silhouette, flat local colors with two to three clearly shaped shadow steps, warm low light from the upper left. Honest, used materials: sun-bleached wood, faded cloth, packed sand, dull worn brass. Palette: sand #e2c48c, sun-bleached cream #f4ead6, brass #c9963a, deep indigo #1c2236, ink #1a110a, accent amber #e08a2c, racing red #c8302a, deep green #2f8f6b. NO glossy gradients, NO glow or bloom, NO neon, NO airbrush, NO photo realism, NO smooth 3D render. Never draw any text, letters, digits, pseudo-writing, logos or watermark. No people. FORMAT: side view as seen from the trackside, flat with no strong perspective. Transparent background with real alpha. No drop shadow or ground shadow outside the object (the game adds shadows). The object fills the canvas to within about 2% of the edges. Target final canvas exactly 160x240 pixels, 2:3 portrait ratio. Draw a thin sun-bleached wooden stake holding a small cream rectangular board with a racing-red strip along its top edge. Board central face completely blank and flat for code-drawn number. Stake base touches bottom canvas edge. Isolated sprite, no other objects.",
+      "source": {
+        "path": "asset_sources/ch4-camel-race/world/originals/marker-board.png",
+        "sha256": "ed98e046a5b20d36556a0d79e035e03639980b6a5158430626b5a5bfd2b4f308",
+        "width": 1024,
+        "height": 1536,
+        "alpha": true,
+        "alpha_extrema": [
+          0,
+          254
+        ],
+        "bytes": 1586428
+      },
+      "candidate": {
+        "path": "asset_sources/ch4-camel-race/world/candidates/marker-board.png",
+        "sha256": "2f3852c9060c1d68c6fc3216cc402ee66c1874c1570c4fa9e0354752ed486d2d",
+        "width": 160,
+        "height": 240,
+        "alpha": true,
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "bytes": 29472
+      },
+      "processing": "原画を縦横同率で160×240へ縮小。透過を維持。",
+      "status": "候補"
+    }
+  ]
+}
