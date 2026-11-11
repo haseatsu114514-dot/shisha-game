@@ -39,6 +39,7 @@ jobs:
             /assets/
             /data/
             /remake/
+            /promo/
             /experiments/proto/street/
             /icon.svg
             /tools/browser/flavor_stats_editor.html
@@ -98,6 +99,12 @@ jobs:
           # 本編が使用する既存ハリボテ歩行のみを同じ相対パスで配信。
           mkdir -p _site/experiments/proto/street
           cp experiments/proto/street/{index.html,street.js,stage_hankagai.json,stage_hankagai_hd.json,stage_hankagai_set.json} _site/experiments/proto/street/
+          # 公式プロモーションサイト（promo/ の中だけで完結。ゲームへは「遊ぶ」のリンク ../remake/ だけ）。
+          # 開発用の tools/ と README は公開しない。CSS・JS には版の名札を付けて、古いキャッシュが残らないようにする
+          mkdir -p _site/promo
+          cp -r promo/{index.html,css,js,img,fonts,ogp.jpg,favicon.png,apple-touch-icon.png} _site/promo/
+          sed -i -E "s#(css/site\\.css|js/site\\.js)\"#\\1?v=${GITHUB_SHA::7}\"#g" _site/promo/index.html
+          grep -q "site.css?v=${GITHUB_SHA::7}" _site/promo/index.html
           # ゲームが読まないファイルを公開物から外す（WebP 版で表示している元PNG・開発用フォルダ）。
           # 公開物は 1GB までが目安（2026-11 に約1.5GB で警告）。見た目・内容は変えない。最後に置く
           # （公開物の中の assets/ の直接の参照を全部見てから外すため）
