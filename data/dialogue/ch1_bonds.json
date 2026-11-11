@@ -740,6 +740,13 @@
           "text": "答えは結局、ダブルアップルだがな"
         },
         {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_adam_fifth_strong",
+          "next_true": "fifth_strong",
+          "next_false": "fifth_other"
+        },
+        {
           "speaker": "adam",
           "face": "normal",
           "text": "俺は一点を掘る。お前は全方向を受け入れる。だが、土を育てる手間は同じだ"
@@ -775,7 +782,41 @@
             "guts": 2
           }
         }
-      ]
+      ],
+      "branches": {
+        "fifth_strong": [
+          {
+            "speaker": "adam",
+            "face": "normal",
+            "text": "お前は、さっきの濃い方を選んだな。あの日、炭を戻した一台だ"
+          },
+          {
+            "speaker": "adam",
+            "face": "smile",
+            "text": "常連の半分も、同じ方を選ぶ。ふっ、お前の舌はリンゴに素直だ"
+          }
+        ],
+        "fifth_other": [
+          {
+            "type": "condition",
+            "condition_type": "flag",
+            "flag": "_adam_fifth_light",
+            "next_true": "fifth_light"
+          }
+        ],
+        "fifth_light": [
+          {
+            "speaker": "adam",
+            "face": "normal",
+            "text": "お前は、軽い後味の方を選んだな。俺は、濃さを残したかったが"
+          },
+          {
+            "speaker": "adam",
+            "face": "smile",
+            "text": "今は、炭を一つ外へ寄せる日もある。軽い方を待つ常連も、案外いるのだ"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "ch1_tsumugi_bond_finale",

@@ -49,8 +49,10 @@ try{
   assert.match(await page.locator('#coaching').textContent(),/左の ▶ を押して/);assert.equal(await page.locator('#steps li.now').getAttribute('data-step'),'1');
   assert(await page.locator('#point-play-a').isVisible(),'gold arrow on ▶ A');assert(await page.locator('#point-play-b').isHidden());assert.deepEqual((await snap(page)).points,['play-a']);
   assert.equal(await page.locator('#mood').textContent(),'様子見');assert.equal(await page.locator('.floor').getAttribute('data-mood'),'2');
-  // The floor is the DJ's own view (DJS28): the empty room behind, the guests' band in front, cut into strips that move on the beat.
-  assert.equal(await page.locator('#band .strip').count(),7);assert(await page.evaluate(()=>{const r=document.querySelector('.floor-art .room').getBoundingClientRect(),b=document.getElementById('band').getBoundingClientRect(),f=document.querySelector('.floor').getBoundingClientRect();return r.height>=f.height-1&&b.width>=f.width-1&&b.bottom>=f.bottom-1&&b.top>f.top+20;}),'room fills the floor, the guests stand along its bottom');
+  // The floor is the DJ's own view (DJS28/DJS32): the empty room behind, the silhouette guests' band in front (both cut from the same 3:1 picture,
+  // so they line up), cut into strips that move on the beat. The guests fill the floor from its upper half down past its bottom edge.
+  assert.equal(await page.locator('#band .strip').count(),7);assert(await page.evaluate(()=>{const r=document.querySelector('.floor-art .room').getBoundingClientRect(),b=document.getElementById('band').getBoundingClientRect(),f=document.querySelector('.floor').getBoundingClientRect();
+   return r.top<=f.top+1&&r.bottom>=f.bottom-1&&r.width>=f.width-1&&b.width>=f.width-1&&b.bottom>=f.bottom-1&&b.top<=f.top+f.height/2&&Math.abs(r.width/r.height-3)<.05;}),'room covers the floor, the guests fill it from the upper half down');
   assert(await page.evaluate(()=>[...document.querySelectorAll('#band .strip,#band .base')].every(e=>!e.style.transform)),'nobody moves before the music starts');
   await press('help');await page.locator('#howto').waitFor({state:'hidden'});await press('help');await page.locator('#howto').waitFor({state:'visible'});
   assert(await page.evaluate(()=>{const r=q=>document.querySelector(q).getBoundingClientRect(),fr=r('.floor'),cr=r('.console'),wr=r('.waves'),mr=r('.mixer'),a=r('#platter-a'),b=r('#platter-b'),pa=r('#play-a'),pb=r('#play-b'),x=r('#crossfader');
@@ -150,7 +152,8 @@ try{
   let mixed=null,comboText='',onLine=false;
   for(let i=0;i<600;i++){
    const s=await snap(page);if(s.phase!=='mix')break;
-   if(!onLine&&s.hint==='いい感じ、そのまま'){onLine=true;assert(await page.locator('#fader-arrows').isHidden(),'no arrows while the cap rides the band');}
+   // hint and arrows are read in the same snapshot (the same frame): asking the page again a moment later raced the moving band on slow CI machines
+   if(!onLine&&s.hint==='いい感じ、そのまま'){onLine=true;assert.equal(s.arrows,false,'no arrows while the cap rides the band');}
    const target=s.guide==null?s.mix:s.guide,diff=target-s.mix;
    if(kind==='pc'){if(Math.abs(diff)>.03)await fader.press(diff>0?(diff>.12?'PageUp':'ArrowRight'):(diff<-.12?'PageDown':'ArrowLeft'));}
    else if(Math.abs(diff)>.06)await page.touchscreen.tap(fr.x+thumb/2+Math.min(1,target+.02)*(fr.width-thumb),fr.y+fr.height/2);

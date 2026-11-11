@@ -1,4 +1,4 @@
-// rulebook.html の図と一覧を cards.js から組み立てる（第0.2版）。
+// rulebook.html の図と一覧を cards.js から組み立てる（第0.3版）。
 (function () {
   const byId = Object.fromEntries(FLAVORS.map((f) => [f.id, f]));
   const supByName = Object.fromEntries(SUPPORT.map((s) => [s.n, s]));
@@ -20,11 +20,13 @@
     return h + '</div>';
   }
   const kind = (k) => `<span class="kind ${k}">${KIND[k].k}</span>`;
-  function costHtml(c) {
-    if (c === '—') return '—';
-    if (typeof c === 'string' && c[0] === 'B') return `<span class="fire burn">${c.slice(1)}</span>`;
-    return `<span class="fire">${c}</span>`;
-  }
+  // 必要火力（自分の火力がこの数以上なら使える。払わない）
+  const needHtml = (n) => (n === '—' ? '—' : `<span class="nw" style="display:inline-flex;align-items:center;gap:.5mm"><span class="fire" style="vertical-align:0" title="火力${n}以上で使える">${n}</span><span class="small">以上</span></span>`);
+  // 発動するために落とすもの（火力を落とす／葉を減らす）と「もう1枚使える」の札。ゲームの画面と同じ「火力−1」「葉−1」
+  const payShort = (s) => (s.pay?.fire ? `火力−${s.pay.fire}` : s.pay?.leaf ? `葉−${s.pay.leaf}` : '');
+  const payLong = (s) => (s.pay?.fire ? `火力を${s.pay.fire}落として発動` : s.pay?.leaf ? `葉を${s.pay.leaf}枚減らして発動` : '');
+  const payTag = (s) => (payShort(s) ? `<span class="paytag" title="${payLong(s)}">${payShort(s)}</span>` : '');
+  const extraTag = (s) => (s.extra ? '<span class="extratag" title="このラウンド、カードをもう1枚使える">もう1枚</span>' : '');
   const whenTag = (w) => `<span class="when w-${w === '一口' ? 'puff' : w === '準備' ? 'prep' : w === 'いつでも' ? 'any' : 'turn'}">${w}</span>`;
 
   function flavorCard(f) {
@@ -46,12 +48,10 @@
   }
   function supCard(s) {
     if (s.type === '炭') return coalCard(s);
-    const burn = typeof s.cost === 'string' && s.cost[0] === 'B';
-    const c = burn ? s.cost.slice(1) : s.cost;
     return `<div class="card sup${s.when === '一口' ? ' puff' : ''}">
-      <div class="top"><div class="cost" style="${burn ? 'background:#fff;color:var(--ember)' : ''}">${c}</div><div class="nm" style="${s.n.length > 7 ? 'font-size:8pt' : ''}">${s.n}</div></div>
+      <div class="top"><div class="cost" title="必要火力${s.need}">${s.need}</div><div class="nm" style="${s.n.length > 7 ? 'font-size:8pt' : ''}">${s.n}</div></div>
       <div class="art"><span class="glyph" style="font-size:20pt;color:rgba(243,154,60,.85)">${s.type}</span></div>
-      <div class="body"><div style="margin-top:.6mm"><span class="type">${s.type}</span>${whenTag(s.when)}</div>
+      <div class="body"><div style="margin-top:.6mm"><span class="type">${s.type}</span>${whenTag(s.when)}${payTag(s)}${extraTag(s)}</div>
         <div class="txt" style="margin-top:1.4mm">${s.tx}</div></div></div>`;
   }
   function setCard(kindName, o) {
@@ -97,7 +97,7 @@
   add('tbl-hmds', HMDS.map((b) => `<tr><td class="nw"><b>${b.n}</b></td><td>${b.ab}</td></tr>`));
   const typeTag = (t) => `<span class="tag ${t === '技' ? 'k' : t === '器具' ? 'b' : t === '人物' ? 'g' : t === '炭' ? 'c' : ''}" style="margin:0">${t}</span>`;
   add('tbl-support', SUPPORT.map((s) => `<tr><td class="c">${typeTag(s.type)}</td>
-    <td class="nw"><b>${s.n}</b></td><td class="c">${s.type === '炭' ? `<span class="small nw">着火${s.ig}・熱${s.heat}</span>` : costHtml(s.cost)}</td><td class="c nw">${s.when === '炭' ? '<span class="small">自分のターン</span>' : whenTag(s.when)}</td><td style="line-height:1.35">${s.tx}</td></tr>`));
+    <td class="nw"><b>${s.n}</b></td><td class="c">${s.type === '炭' ? `<span class="small nw">着火${s.ig}・熱${s.heat}</span>` : needHtml(s.need) + payTag(s)}</td><td class="c nw">${s.when === '炭' ? '<span class="small">自分のターン</span>' : whenTag(s.when) + extraTag(s)}</td><td style="line-height:1.35">${s.tx}</td></tr>`));
   add('tbl-judges', JUDGES.map((j) => `<tr><td class="nw"><b>${j.n}</b><br><span class="small">${j.t}</span></td>
     <td>${j.puffs.map((q) => `<span class="pchip ${q.dh > 0 ? 'up' : q.dh < 0 ? 'down' : ''}"><b>${q.style}</b>×${q.c}</span>`).join(' ')}</td><td>${j.tx}</td></tr>`));
   add('tbl-puffs', Object.values(PUFF).map((q) => `<tr><td class="nw"><b>${q.style}</b></td><td class="c"><span class="pchip ${q.dh > 0 ? 'up' : q.dh < 0 ? 'down' : ''}"><b>${dhMark(q)}</b></span></td><td>${q.stx}</td></tr>`));

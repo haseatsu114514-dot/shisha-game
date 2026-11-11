@@ -9,17 +9,17 @@ Issue: [#3217](https://github.com/haseatsu114514-dot/shisha-game/issues/3217)（
 
 | いまコードで描いている物 | どう見えるか | この依頼 |
 |---|---|---|
-| スタートとゴールの門 | 木の柱と布の幕を四角と三角で描いた図形。背景の絵の隣で浮く | CR-WD01 |
+| スタートとゴールの門 | 木の柱と布の幕を四角と三角で描いた図形。背景の絵の隣で浮く | CR-WD01（**2026-11-11 手前の柱2枚を採用・組み込み済み**。奥の柱は同じ絵を半分の大きさで描く） |
 | 100mごとの距離板 | 四角3枚 | CR-WD02 |
 | 走路の砂・車の道 | 乱数で打った点と線のタイル。広い面積が単調 | CR-WD04（走路の砂は**2026-11-11 採用・組み込み済み**。道は再依頼） |
 | 砂煙 | 丸いぼかしの円 | CR-WD03（**2026-11-11 採用・組み込み済み**） |
-| 下の2つの操作ボタン | CSS の黒い角丸に SVG の記号 | CR-UI07（[ui-request.md](ui-request.md)。未生成） |
+| 下の2つの操作ボタン | CSS の黒い角丸に SVG の記号 | CR-UI07（[ui-request.md](ui-request.md)。2026-11-11 の4枚は不合格 → **指定を改訂して再依頼**） |
 | GO!・3・2・1・LAST SPURT・GOAL・GOOD・MISS | 画面の書体に縁取り（PERFECT だけ手描きの字） | CR-UI14 の残り9語（**2026-11-11 採用・組み込み済み**） |
-| 2〜4位のメダル | CSS の円（1位だけ絵） | CR-UI03 の銀・銅・鉄（同上。未生成） |
-| 進み具合の横木 | CSS の木の色 | CR-UI06 track-rail（同上。未生成） |
-| 競り合いの「VS」 | 画面の書体 | CR-WD09（START・FINISH は**採用済み**。VS は不合格で再依頼） |
+| 2〜4位のメダル | CSS の円（1位だけ絵） | CR-UI03 の銀・銅・鉄（**2026-11-11 採用・組み込み済み**。#3328） |
+| 進み具合の横木 | CSS の木の色 | CR-UI06 track-rail（**2026-11-11 採用・組み込み済み**。#3328） |
+| 競り合いの「VS」 | 画面の書体 | CR-WD09（START・FINISH・VS とも**採用・組み込み済み**。VS は 2026-11-11 の #3328） |
 | 大会を選ぶ札 | 文字だけの札 | CR-WD08（**2026-11-11 採用・組み込み済み**） |
-| 並走する車は自分の1台だけ | 実際のレースは調教師の車が何台も並走する。寂しい | CR-WD05 |
+| 並走する車は自分の1台だけ | 実際のレースは調教師の車が何台も並走する。寂しい | CR-WD05（**2026-11-11 採用・組み込み済み**。#3328。奥の柵の向こうを3台） |
 
 Claude は画像を生成しない。下の「Codex へ渡す文」をそのまま渡す。届くまでは今のコードの描画のまま動く。
 
@@ -30,17 +30,17 @@ Claude は画像を生成しない。下の「Codex へ渡す文」をそのま�
 
 | 優先 | ID | ファイル名 | サイズ | 何に使うか | 中身 |
 |---|---|---|---|---|---|
-| A | CR-WD01 | `post-start-near.png` / `post-start-far.png` / `post-finish-near.png` / `post-finish-far.png` | 手前 480×800・奥 240×400（同じ縦横比） | スタートとゴールの柱（2026-11-11 改訂。1枚の門をやめ、**手前の柵の柱と奥の柵の柱を別の絵**にした）。コードが手前の柱を手前の柵に、奥の柱を奥の柵に、**同じ横位置**で立てる。ゴールの線は地面にコードで引く | 1本ずつの柱。日に焼けた木の柱に、縄の縛り・真鍮の頭と足の金具・赤白の布の巻き（2026-11-11 の不合格の門の案と同じ質感）。柱の上の短い腕から、**こちらを向いた**布の幕が柱の左へ垂れる（幕の中央は**無地**。字はコードか CR-WD09）。柱の上に小さな三角の旗。手前は太く高く幕が大きい、奥は細く低く幕が小さい。スタートは深い緑、ゴールは朱で上下の縁が白黒の市松（旗も市松）。柱の根元がキャンバスの下端、柱の中心はキャンバスの右から 1/4 あたり。4枚で描き方をそろえる |
+| A | CR-WD01 | `post-start-near.png` / `post-start-far.png` / `post-finish-near.png` / `post-finish-far.png` | 手前 480×800・奥 240×400（同じ縦横比） | **2026-11-11 手前の2枚を採用。奥の2枚は作らなくてよい**（手前の絵を半分の大きさで描く）。スタートとゴールの柱（2026-11-11 改訂。1枚の門をやめ、**手前の柵の柱と奥の柵の柱を別の絵**にした）。コードが手前の柱を手前の柵に、奥の柱を奥の柵に、**同じ横位置**で立てる。ゴールの線は地面にコードで引く | 1本ずつの柱。日に焼けた木の柱に、縄の縛り・真鍮の頭と足の金具・赤白の布の巻き（2026-11-11 の不合格の門の案と同じ質感）。柱の上の短い腕から、**こちらを向いた**布の幕が柱の左へ垂れる（幕の中央は**無地**。字はコードか CR-WD09）。柱の上に小さな三角の旗。手前は太く高く幕が大きい、奥は細く低く幕が小さい。スタートは深い緑、ゴールは朱で上下の縁が白黒の市松（旗も市松）。柱の根元がキャンバスの下端、柱の中心はキャンバスの右から 1/4 あたり。4枚で描き方をそろえる |
 | A | CR-WD02 | `marker-board.png` | 160×240 | 100mごとの距離板（奥の柵の外） | 細い木の杭に、上の縁が朱色のクリーム色の板。板の中央は無地（数字はコード）。杭の根元がキャンバスの下端 |
 | A | CR-WD04 | `ground-track.png` / `ground-road.png` | 1280×452 / 1280×152 | 走路の砂と、車が走る道（横に流すタイル） | 走路: ならした砂。蹄の跡がまばらに続き、手前ほど砂粒が大きい。上の辺（奥）は明るく霞み、下の辺（手前）は少し濃い。道: 踏み固めた砂にタイヤの轍が2本。**左右の端がつながる**（横にタイルして継ぎ目が見えない）。影・物・人なし |
 | B | CR-WD03 | `dust-1.png` / `dust-2.png` / `dust-3.png` | 各 256×256 | 蹄と車輪の砂煙 | 輪郭のはっきりした2〜3段の塊で描いた砂煙（小・中・大。左へ流れる形）。エアブラシのぼかしにしない。外は透過 |
-| B | CR-WD05 | `suv-rival-a.png` / `suv-rival-b.png` | 各 720×360 | 奥の柵の向こうを並走する、ほかの調教師の車 | いまの `assets/ui/camel_race/suv.png` と同じ寸法・同じ向き（右）・同じ車輪の位置（後 153,282・前 583,282）の四角い SUV。a は銀がかった灰、b は砂色。窓は濃い色で中の人は描かない。屋根のアンテナは1本。実在の車種の顔・エンブレムにしない |
+| B | CR-WD05 | `suv-rival-a.png` / `suv-rival-b.png` | 各 720×360 | **2026-11-11 採用（#3328）**。奥の柵の向こうを並走する、ほかの調教師の車 | いまの `assets/ui/camel_race/suv.png` と同じ寸法・同じ向き（右）・同じ車輪の位置（後 153,282・前 583,282）の四角い SUV。a は銀がかった灰、b は砂色。窓は濃い色で中の人は描かない。屋根のアンテナは無し（2026-11-11 オーナー指示。初めの指定の「1本」より優先）。実在の車種の顔・エンブレムにしない |
 | B | CR-WD07 | `howto-tactics.png` | 640×480 | 遊び方の絵（風よけと競り合い） | CR-UI11 と同じ描き方の小さな絵。青い幕のラクダのすぐ後ろに、金の幕（赤い★）のハビーバが付く。前のラクダで割れた風の線が、後ろのラクダの上を流れる。背景は砂と空だけで、外側は透過 |
 | B | CR-WD08 | `cup-practice.png` / `cup-rookie.png` / `cup-standard.png` / `cup-expert.png` | 各 256×256 | 大会を選ぶ札の紋章 | 打ち出しの円いブリキの札。練習＝ラクダの足跡、入門＝若いラクダの横顔と星1つ、標準＝走るラクダと星2つ、上級＝ラクダの横顔に月桂の輪と星3つ。練習は鉄、入門は銅、標準は銀、上級は金。文字なし |
-| B | CR-WD09 | `word-vs.png` / `word-start.png` / `word-finish.png` | 長辺1024以内 | 競り合いの「VS」、門の幕の字 | CR-UI14 と同じ、ペンキで手描きした看板の字。VS は金に濃い茶の縁、START と FINISH は白にくっきりした濃い影。**綴りが違う案は不採用** |
+| B | CR-WD09 | `word-vs.png` / `word-start.png` / `word-finish.png` | 長辺1024以内 | **2026-11-11 3語とも採用**（VS は #3328）。競り合いの「VS」、門の幕の字 | CR-UI14 と同じ、ペンキで手描きした看板の字。VS は金に濃い茶の縁、START と FINISH は白にくっきりした濃い影。**綴りが違う案は不採用** |
 | C | CR-WD06 | `fg-flagpole.png` | 256×720 | 手前を速く流れる柱（速さの手がかり） | 白い細い柱の上に、金・朱・クリームの三角旗を3枚つないだ紐。柱の根元がキャンバスの下端 |
 
-未生成のまま残っている CR08 の部品（仕様は [ui-request.md](ui-request.md) のまま）: CR-UI03 `medal-{silver,bronze,plain}.png`、CR-UI06 `track-rail.png`、CR-UI07 `remote-{voice,whip}-{normal,pressed}.png`。優先は CR-UI07 → CR-UI03 → CR-UI06（CR-UI14 の9語は 2026-11-11 に採用済み）。
+未生成のまま残っている CR08 の部品（仕様は [ui-request.md](ui-request.md)）: CR-UI07 `remote-{voice,whip}-{normal,pressed}.png`（2026-11-11 に指定を改訂。下の依頼文の CR-UI07。改訂版の候補は Draft #3227 で検品待ち）。CR-UI03 の銀・銅・鉄と CR-UI06 の横木は 2026-11-11 に採用（#3328）、CR-UI14 の9語も採用済み。
 
 ## Codex へ渡す文（コピペ用）
 
@@ -58,13 +58,15 @@ CR-WD01（2026-11-11 改訂。1枚の門ではなく、柱を1本ずつ4枚） p
 CR-WD02 marker-board.png 160x240: a thin wooden stake holding a small cream board with a racing-red strip along its top edge. The board face is plain (the game prints the distance). The base of the stake touches the bottom edge.
 CR-WD04（ground-track は 2026-11-11 採用済み。ground-road だけ再依頼） ground-track.png 1280x452: a horizontally seamless tile of a groomed sand racetrack seen from the side at a low angle: raked sand with sparse lines of camel hoof prints, grains larger toward the bottom (near) edge, the top (far) edge lighter and hazier, the bottom edge slightly darker. Opaque, no objects, no shadows of objects, no people. The left and right edges must match perfectly. ground-road.png 1280x152: a horizontally seamless tile of a packed sand service road with two tire ruts running left to right. Opaque. The left and right edges must match perfectly. For ground-road: the previous attempt came back 1402x1122 with wide white margins above and below the strip and was rejected. Make the canvas itself the thin strip (1280x152, about 8.4:1) and fill the whole canvas with road texture edge to edge; no white, empty or transparent margins.
 CR-WD03 dust-1.png / dust-2.png / dust-3.png 各256x256: a puff of desert dust kicked up by hooves, drifting to the left, painted as two to three clearly shaped tone steps (not an airbrushed blur). Small, medium and large.
-CR-WD05 suv-rival-a.png / suv-rival-b.png 各720x360: a boxy generic desert SUV, side view facing right, the same size, proportions and wheel positions as the attached suv.png (rear wheel center at 153,282 and front wheel center at 583,282, tire diameter about 130). a: silver-grey body. b: sand-beige body. Dark tinted windows with no people visible. One thin antenna on the roof. Do not copy the grille, lights or badge of any real car model.
+CR-WD05（2026-11-11 採用済み。作らなくてよい） suv-rival-a.png / suv-rival-b.png 各720x360: a boxy generic desert SUV, side view facing right, the same size, proportions and wheel positions as the attached suv.png (rear wheel center at 153,282 and front wheel center at 583,282, tire diameter about 130). a: silver-grey body. b: sand-beige body. Dark tinted windows with no people visible. One thin antenna on the roof. Do not copy the grille, lights or badge of any real car model.
 CR-WD07 howto-tactics.png 640x480: a small spot illustration in the same style as the attached howto-camel.png, transparent outside a soft sand-and-sky vignette. Two racing camels with small box-shaped robot jockeys: the front camel wears a blue saddle blanket; the rear camel wears a gold saddle blanket with a red star and runs tucked right behind it. Wind lines split around the front camel and flow over the back of the rear camel.
 CR-WD08 cup-practice.png / cup-rookie.png / cup-standard.png / cup-expert.png 各256x256: a struck round tin racing badge, shallow relief, no ribbon. practice: dull iron, a single camel hoof print. rookie: bronze, a young camel's head in profile and one star. standard: silver, a running camel and two stars. expert: gold, a camel's head in profile inside a laurel ring and three stars. No letters or digits.
-CR-WD09 word-vs.png（START・FINISH は 2026-11-11 採用済み。VS だけ再依頼）（長辺1024以内）: hand-painted sign-writer lettering of exactly these words, nothing else on the canvas, transparent outside the letters: "VS" (gold with a dark brown outline), "START" and "FINISH" (white with a crisp dark drop shadow painted as part of the letters). Bold, slightly irregular brush strokes like paint on a racecourse board; not a computer font, no gradients, no glow. Every letter must be spelled exactly as written. (This is the only item where letters are allowed.) For VS: the previous attempts left a dark rectangular panel and a glow behind the letters and were rejected. Draw ONLY the two letters; nothing behind them (no panel, plate, board, box, glow or vignette). Every pixel outside the letter shapes and their painted outline must be fully transparent (alpha 0).
+CR-WD09（VS・START・FINISH とも 2026-11-11 採用済み。作らなくてよい） word-vs.png（長辺1024以内）: hand-painted sign-writer lettering of exactly these words, nothing else on the canvas, transparent outside the letters: "VS" (gold with a dark brown outline), "START" and "FINISH" (white with a crisp dark drop shadow painted as part of the letters). Bold, slightly irregular brush strokes like paint on a racecourse board; not a computer font, no gradients, no glow. Every letter must be spelled exactly as written. (This is the only item where letters are allowed.) For VS: the previous attempts left a dark rectangular panel and a glow behind the letters and were rejected. Draw ONLY the two letters; nothing behind them (no panel, plate, board, box, glow or vignette). Every pixel outside the letter shapes and their painted outline must be fully transparent (alpha 0).
 CR-WD06 fg-flagpole.png 256x720: a thin white pole with a string of three triangular pennants (gold, racing red, cream) at the top. The base of the pole touches the bottom edge.
 
-【まだ作っていない CR08 の部品も、この機会に】仕様と英文は asset_sources/ch4-camel-race/ui-request.md のまま: CR-UI07 remote-voice / remote-whip（normal と pressed）、CR-UI03 medal-silver / medal-bronze / medal-plain、CR-UI06 track-rail（CR-UI14 の9語は 2026-11-11 に採用済み）。
+CR-UI07（2026-11-11 改訂。前の指定より優先） remote-voice-normal.png / remote-voice-pressed.png / remote-whip-normal.png / remote-whip-pressed.png 各960x240: the black rubber housing of ONE camel trainer's handheld remote with ONE big round push button, seen straight from the front. The game shows it about 70px tall and stretches only the plain middle horizontally; the left part (the button) and the right edge keep their scale, and the height is never stretched. So: (1) The housing fills the whole canvas, top to bottom and left to right, within 2%; no empty or transparent margins above or below it. (2) The button is BIG: its diameter is about 75% of the canvas height (about 180px at 960x240), centered vertically, with its left edge about 20px inside the housing's left edge. Keep the button and every other decoration inside the leftmost 240px; the rightmost 60px holds only the frame and two small screws; everything between x=240 and x=900 is plain, even matte black rubber with no seams, inner panels, symbols or screws (the game prints the label and the gauge there). (3) Paint remote-voice-normal first, then make the other three by editing that exact image: the housing, frame, screws, color and lighting stay identical in all four; only the button changes. Voice: a gold (dull brass) button with a speaker-grille pattern of dark holes. Whip: a red-amber button with an embossed curved riding-whip symbol (symbol only, no letters). (4) Pressed: the button face sinks deep into its socket: the raised rim disappears, the face is clearly darker, and a dark ring of shadow shows around it, so normal and pressed are easy to tell apart at 70px tall. If 960x240 cannot be made exactly, a canvas between 3:1 and 4:1 is acceptable as long as (1) to (4) hold.
+
+【CR08 の部品】CR-UI03 の銀・銅・鉄と CR-UI06 の横木、CR-UI14 の9語は 2026-11-11 に採用済み（作らなくてよい）。残りは上の CR-UI07 の改訂版だけ。
 
 【参照（添付できれば添付。役割を書き添える）】CR-WD01 の柱の質感（形は真似しない。横木と奥の柱は描かない）: asset_sources/ch4-camel-race/world/review/gate-start-attempts-rejected.jpg。画風と光: assets/backgrounds/bg_dubai_camel_track_morning.png。物の描き込みの密度: assets/ui/camel_race/camel_1.png と suv.png。CR-WD05 の寸法と車輪の位置: suv.png。CR-WD07 の描き方: assets/ui/camel_race/ui/howto-camel.png。CR-WD09 の字: assets/ui/camel_race/ui/word-perfect.png。
 【渡し方】原画をそのまま asset_sources/ch4-camel-race/world/originals/ に置き、生成の指示と日付を asset_sources/ch4-camel-race/world/generation.json に書いて push。各ファイルの SHA-256・実寸・アルファの有無を添えてください。候補が複数ある部品は -A/-B を付けて全部ください。生成の決まり（開始前のコピーの確認・寸法とアルファの機械確認・文字を描かない）は Issue #3055 と同じです。
@@ -168,9 +170,69 @@ Codex がオーナー経由で渡した `3217-dust-A-production.zip`（SHA-256 `
 - そもそも走路をまたぐ門の幕はラクダの進む方向を向くので、横から見ると薄い線になる。今のコードの門も、手前と奥の柵に柱を立てて幕をこちらへ向ける描き方で、それなら柱は別の絵で足りる。
 - そこで CR-WD01 を「手前の柱・奥の柱を別の絵（スタートとゴールで計4枚）」に改訂した（上の一覧と依頼文）。2案の質感（縄・真鍮の金具・赤白の巻き）はよいので、参照に `world/review/gate-start-attempts-rejected.jpg` を付ける。原画の2枚は容量を節約するためリポジトリには入れず、並べた縮小図だけ残した。
 
+### 2026-11-11 CR-WD01 柱（手前の2枚を採用）・CR-UI07 リモコン（4枚とも不合格 → 指定を改訂）
+
+`3217-revised-posts-A-raw.zip` と `3217-remotes-A-raw.zip`。同梱の `generation-revised-posts-A.json`・`generation-remotes-raw-A.json`（どちらも `world/` に保存）の SHA-256 と原画がすべて一致した。どちらも Codex 自身が「原画候補・寸法未達」としていた納品。
+
+| 部品 | 判定 | 理由 | 使う所 |
+|---|---|---|---|
+| 手前の柱（スタート・ゴール） | **A を採用** | 柱1本で、幕は柱の左へこちらを向いて垂れ、中央は無地。上に小旗。柱の中心は幅の 74.5%（指定 75%）、根元はキャンバスの下端。スタートとゴールで形が同じで、幕と旗の色・市松だけが違う。縄・真鍮の金具・赤白の巻きが不合格の門の案と同じ質感。原画 971×1619 は 3:5 なので、**480×800 へ均一に縮小しただけ**（Codex の正寸の候補は無い。切り抜き・色・アルファの加工なし） | スタートとゴールの柱 |
+| 奥の柱（スタート・ゴール） | 不合格（Codex の判定と同じ）・**作り直さない** | スタートは背景に市松の汚れ、ゴールは余白と形の違い。もともと「手前と同じ絵の半分」の指定なので、手前の絵を半分の大きさで描けば足りる | ─ |
+| リモコン（声・ムチの通常と押下） | 不合格 | Codex の判定（3:1 で 4:1 にできない・ムチの飾りが左 120px を超える）に加え、ゲームのボタンに当てて見た（`world/review/remotes-A-rejected.jpg`）。① 比率は問題にならない（横だけ伸ばす九分割にすれば 3:1 でも使える）。② **押すボタンが小さい**: 筐体の高さの約4割で、画面（高さ 68px）では直径約25px。今の CSS の丸（46px）より小さく、押す所に見えない。前の指定（960×240 の左 120px に直径 80px）がそもそも小さかった。③ **声とムチで筐体が別物**（声は藍色で細い縁、ムチは茶色で太い縁と内側の仕切り）。並べると別の機械に見える。④ 押下の差がゲームの大きさではほとんど見えない（特に声）。⑤ 声は筐体の上下に、高さの 25% ずつ透明な余白がある | 操作ボタンは CSS のまま。上の依頼文の CR-UI07 を改訂して再依頼（大きなボタン・4枚とも同じ筐体・押下は暗く沈む・横だけ伸ばす前提） |
+
+- 置き方（`camel-race.js` の `drawGates`・`drawNearPosts`・`POST_ART`）: 柱の絵は 480×800（柱の中心 x=357、字を置く無地の所はスタート y 170〜370・ゴール y 198〜350）。手前の柱は手前の柵（y=606）に 0.45 倍、奥の柱は奥の柵（y=398）にその半分の 0.225 倍で立てる。横の位置は、スタートが発馬の柵（自分のラクダの中心から 118px 先。柵の奥の端に奥の柱）、ゴールが自分のラクダの鼻先がゴールした瞬間に柱に届く所（中心から 90px 先）。幕の字は採用済みの START／FINISH（CR-WD09）。
+- **スタートは奥の柱だけ**: 手前の柱も立てると、幕が並んだラクダの頭と「あなたのラクダ」の札にかぶった（比較図の左下）。発馬の柵が奥の柱の根元から手前の柵まで渡るので、スタートの線は読める。ゴールは手前と奥の柱を立て、地面に白黒の市松の線を引く（手前の端は手前の柱のすぐ左で、柱に隠れない）。手前の柱はラクダより前・車より奥に描くので、ゴールの瞬間にラクダの鼻先が柱の向こうを通る。
+- 画面の `data-gate` が `sprites`／`canvas`（2枚そろって読めた時だけ絵。読めなければ従来の木の柱2本と布の幕）。WebP は約50KB ずつ。
+- 原画は `world/originals/post-{start,finish}-near-A.png`、比較図は `world/review/posts-A-comparison.jpg`。不合格の奥の柱2枚とリモコン4枚は、容量を節約するためリポジトリに入れず、縮小図だけ残した。
+
+| 原画 | 寸法 | SHA-256 |
+|---|---|---|
+| `post-start-near-A.png`（採用） | 971×1619 | `af2ffbb6cdd5445d87edc805a95ea5742862adedb402b9c31946f406d202b2a8` |
+| `post-finish-near-A.png`（採用） | 971×1619 | `40209475c9c377ec0e38eae26a95ff5488b04df146ef6dd9307448a8a8cc914c` |
+| `post-start-far-A.png`（不合格・保存せず） | 971×1620 | `e453ae336afe10a559dab89ffd08aa053e5f2b8cffd41fc8402165700728bfd9` |
+| `post-finish-far-A.png`（不合格・保存せず） | 971×1619 | `e6e411272e8b0df337d0346d544ff0f664c124cec6d96c475987155d8c8c9dae` |
+| `remote-voice-normal-raw-A.png`（不合格・保存せず） | 2172×724 | `d2224e4dd06d9cfe092af3cc0c28d3f68bc0abe4f9ebcc10362dd00519d29510` |
+| `remote-voice-pressed-raw-A.png`（不合格・保存せず） | 2172×724 | `a4849ad9c5c627e8944a1a5432b2288bee1ed56abdfc81440804f1a7ebf625b8` |
+| `remote-whip-normal-raw-A.png`（不合格・保存せず） | 2172×724 | `a522b7497ed3f17e144daec6ae4d25f0a11ea7afaba8ac8bee312cfb5468bb38` |
+| `remote-whip-pressed-raw-A.png`（不合格・保存せず） | 2172×724 | `b08c92630a95f42682fb3287cd72aecea03ed1f3f15da65a37e9d2ff0ec6162a` |
+
+### 2026-11-11 #3328 並走車2色・銀銅鉄のメダル・横木・VS（7点とも採用）
+
+Codex の Draft PR [#3328](https://github.com/haseatsu114514-dot/shisha-game/pull/3328)（`codex/camel-missing-art-3217-20261111` の `f71a226b`）。オーナー「3328の実装をお願い」（2026-11-11）。原画7枚・正寸の候補7枚・不採用の途中版6枚・生成記録は、Codex が置いた `world/originals/`・`world/candidates/`・`world/remaining-20261111/` のまま取り込んだ。`remaining-20261111/SHA256SUMS` の21ファイルはすべて一致。
+
+| 部品 | 判定 | 理由 | ゲーム用 |
+|---|---|---|---|
+| CR-WD05 suv-rival-a（銀がかった灰） | **採用** | 右向きの四角い SUV。自分の車の絵に重ねて測ると、寸法・車輪の位置（後 153,282・前 583,282）のずれは数 px 以内。窓は濃い色で人なし。実在の車の顔・文字なし。オーナー指示でアンテナなし | `assets/ui/camel_race/world/suv-rival-a.png`（720×360） |
+| CR-WD05 suv-rival-b（砂色） | **採用** | a と同じ形で、車体の色だけ砂色 | `assets/ui/camel_race/world/suv-rival-b.png`（720×360） |
+| CR-UI03 medal-silver・medal-bronze・medal-plain | **採用** | 金と同じ型（ラクダの横顔の浮き彫りと、数字を置く無地の輪）。銀・赤みの銅・暗いくすんだ鉄がはっきり分かれる。全周が入り、紐・文字なし | `assets/ui/camel_race/ui/medal-{silver,bronze,plain}.png`（256×256） |
+| CR-UI06 track-rail | **採用** | 上下の辺が平行な、白いペンキの剥げた木の横木。真鍮の金具は左右の端（各約50px）だけで、64px の帯に収まる | `assets/ui/camel_race/ui/track-rail.png`（1600×96） |
+| CR-WD09 word-vs | **採用** | 綴りは VS。金の字に濃い茶の縁で、PERFECT と同じ手。前回の不合格の理由（字の後ろの四角い板・光）が無い | `assets/ui/camel_race/world/word-vs.png`（1024×834） |
+
+- 透過の留保（Codex の記録どおり）: 物の外にごく薄い画素（アルファ1〜15。画面の0.3〜0.8%）が散り、本体も主にアルファ 250〜254。灰・濃紺・砂色の上に置き、ゲームの大きさで見ると、薄い画素は見えず本体の透けも分からないので、**加工せずにそのまま使う**（アルファの二値化・背景の切り抜きはしていない）。
+- ゲーム用は Codex の正寸の候補そのもの。車・メダル・VS は均一の縮小だけ。横木は原画（1672×941）の中央の帯から、本体の外接範囲（アルファ16以上）を切り出して均一に縮小した（透明な余白を落としただけで、横木の絵は縮小だけ）。WebP は `build_images.py` の `encode()`（可逆と非可逆 q90 の小さい方）。
+- 置き方:
+  - 並走車（`camel-race.js` の `drawRivalSuvs`・`RIVAL_SUV_ART`）: 奥の柵の向こうに3台（灰・砂色・灰を少し暗くした1台）を、自分の車の半分の 0.2 倍で走らせる（背景の絵に停めてある車と同じくらいの大きさ）。相手の3頭の平均の位置から 12m ずつずらして並べるので、群れと同じ速さで走り、群れが画面の外へ離れると車も外へ出る。台ごとに ±1m だけ前後に揺れる。タイヤの下端は奥の柵の手すりに少し隠れる高さ（y=388）。車輪は車体の絵の車輪を半径 61px の円で切り抜いて回す（自分の車の回る車輪とはホイールの色が違うため）。柵・大会の飾り・距離板・奥の柱より奥に描く。2枚そろって読めた時だけ走らせる（画面の `data-convoy` が `sprites`／`none`）。
+  - VS（`drawDuel`・`VS_ART`）: 競り合いの火花の間に、幅 72px で描く（字の幅が書体の時の約1.4倍）。読めなければ書体に縁取り。
+  - メダル（`camel-race.css`）: 結果画面の2位＝銀・3位＝銅・4位＝鉄。円が金より約11%小さく描かれているので、背景を 112.6% に拡大して金と同じ大きさに見せる（絵は加工しない）。数字は金と同じく上の輪に、地の色に合う色で置く。
+  - 横木（`camel-race.css`）: 上の進み具合のバーを `border-image` の九分割にした（左右 64px の金具は縦横比を保ち、中の木だけ横へ伸ばす）。溝・目盛り・SPURT の帯・ゴールの柱は今のまま。剥げたペンキの上でも SPURT が読めるよう、字にクリーム色の縁を付けた。
+  - メダルと横木は、画像が読めた時だけ付くクラス（`cr-medal-silver`・`cr-medal-bronze`・`cr-medal-plain`・`cr-rail`）で切り替える。読めなければ今の CSS のまま。
+- 不採用の途中版（Codex が `remaining-20261111/history/` に保存）: アンテナ付きの車2色（オーナー「車にアンテナはいらなかった」）、上端が切れた銀メダル、細すぎた横木、光が残った VS 2枚。
+
+| ゲーム用（`assets/ui/camel_race/`） | 寸法 | SHA-256 |
+|---|---|---|
+| `world/suv-rival-a.png` | 720×360 | `2c11de271ece691947d360bf16a60a1bc94cc2b97ca333dd489eae63010db208` |
+| `world/suv-rival-b.png` | 720×360 | `ec6a27e56a2a5f618f62a3ce4ee9d667e59dd5b162fd1c4f942fe19b13f8cb8c` |
+| `world/word-vs.png` | 1024×834 | `8328056ee974bb2f12a6021eb966b3c7b878a15feb13f02f3942d81c869f42e3` |
+| `ui/medal-silver.png` | 256×256 | `7a527eb2703a5155befa6072364d3039e90fca5263725ed68009823666e349f8` |
+| `ui/medal-bronze.png` | 256×256 | `00f85d89911aa8c778a5b9627d32f56c5eaa0cb871765c06db99bbec8935ef48` |
+| `ui/medal-plain.png` | 256×256 | `55451b148e2db906e04aaec0d90fc46a3eed1aad2b3b9d18bf9fc93859da503d` |
+| `ui/track-rail.png` | 1600×96 | `cd902fa11f6934f6f7fc277e3bc969ff882c3b9a49e85f564055d16e96d8fa8f` |
+
+原画の SHA-256 は [remaining-20261111/README.md](world/remaining-20261111/README.md) の表。
+
 ## 届いた後（Claude の作業）
 
 1. 原画の SHA-256・寸法・アルファを確かめ、部品ごとに選ぶ（理由をこのファイルに追記）。CR-WD04 は左右のつなぎ目を、CR-WD05 は車輪の位置を測る。
 2. 縮小だけで `assets/ui/camel_race/world/` へ置き、WebP を `remake/img/ui/camel_race/world/` に作る（Git LFS）。
-3. `remake/js/minigames/camel-race.js` の `drawGates`・`drawMarkers`・`groundTiles` を、絵が読めた時だけ絵に替える（読めなければ今の描画。`drawDust`・門の字・旗の柱・紋章・手描きの字・走路の砂・遊び方の絵は 2026-11-11 に済み）。CR-WD01 は奥の柱を奥の柵、手前の柱を手前の柵に同じ横位置で立てる。CR-WD05 は奥の柵の向こうに、群れと同じ速さで2〜3台を走らせる。
+3. `remake/js/minigames/camel-race.js` の `drawMarkers`・`groundTiles` の道を、絵が読めた時だけ絵に替える（読めなければ今の描画。`drawDust`・門の柱と字・旗の柱・紋章・手描きの字・走路の砂・遊び方の絵・並走車・VS・メダル・横木は 2026-11-11 に済み）。CR-UI07 は操作ボタンの枠を横だけ伸ばす九分割（`border-image`）にし、左のボタンと右の縁は縮尺を保つ。
 4. PC（1280×720）とスマホ横（844×390）で、スタート・中盤・スパート・ゴールを目視し、`node remake/test/browser/ch4_camel_race.mjs` を通す。

@@ -19,26 +19,28 @@ const tap = (page, selector, touch) => touch ? page.locator(selector).tap() : pa
 await suite('ch1-feedback', async check => {
   for (const [name, touch, options] of [['pc', false, { reducedMotion: 'reduce' }],
     ['touch', true, { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true, reducedMotion: 'reduce' }]]) {
-    for (const grade of ['g500', 'g1000']) await check(`${name}-${grade}-full-box-and-refill`, async page => {
+    // くじは店ごとに1種類（KJ11）。地元の本店はシーシャくじ（g1000）だけ（旧500円の箱は廃止）
+    for (const grade of ['g1000']) await check(`${name}-${grade}-full-box-and-refill`, async page => {
       await setup(page);
       const initial = await page.evaluate(() => {
         F.core.state.money = 100000; F.core.state.flavorStock = {}; F.core.state.owned = [];
         F.showKuji(); return JSON.parse(JSON.stringify(F.core.state));
       });
       const rows = await page.locator('.kuji-row').allTextContents();
-      for (const row of rows) { assert.match(row, /50/); assert.match(row, /ラストワン賞・シークレット/); assert(!row.includes('ナイトサイド')); }
+      for (const row of rows) { assert.match(row, /40/); assert.match(row, /ラストワン賞・シークレット/); assert(!row.includes('ナイトサイド')); }
       // Verify the actual deck includes exactly one S before consuming it.
       const deck = await page.evaluate(id => {
         const b = F.core.state.kuji[id]; return { size: b.order.length, s: b.order.filter(i => b.prizes[i].rank === 'S').length };
       }, grade);
-      assert.deepEqual(deck, { size: 50, s: 1 });
-      for (let i = 0; i < 50; i++) {
+      // 本店のシーシャくじは40枚（KJ18）
+      assert.deepEqual(deck, { size: 40, s: 1 });
+      for (let i = 0; i < 40; i++) {
         await tap(page, `[data-test="kuji-${grade}"]`, touch);
         await page.locator('.kuji-card.reveal').waitFor();
         assert.equal(await page.evaluate(id => F.core.state.kuji[id].drawn, grade), i + 1);
         await tap(page, '[data-test="kuji-reveal"]', touch);
         await page.locator('[data-test="kuji-reveal"]').waitFor({ state: 'detached' });
-        if (i === 48) assert.match(await page.locator('.kuji-row').filter({ has: page.locator(`[data-test="kuji-${grade}"]`) }).textContent(), /次が最後の1枚/);
+        if (i === 38) assert.match(await page.locator('.kuji-row').filter({ has: page.locator(`[data-test="kuji-${grade}"]`) }).textContent(), /次が最後の1枚/);
       }
       const result = await page.evaluate(({id, initial}) => {
         const s = F.core.state, g = F.data.DB.kuji.grades[id], expected = {};
@@ -46,14 +48,14 @@ await suite('ch1-feedback', async check => {
           if (p.flavorId) expected[p.flavorId] = (expected[p.flavorId] || 0) + (p.grams ?? 50) * p.count;
           for (const f of p.flavors || []) expected[f.id] = (expected[f.id] || 0) + f.grams * p.count;
         }
-        return { stock: s.flavorStock, expected, money: s.money, expectedMoney: initial.money - g.price * 50,
+        return { stock: s.flavorStock, expected, money: s.money, expectedMoney: initial.money - g.price * 40,
           owned: s.owned, last: g.lastOne.equipId, saved: JSON.parse(localStorage.getItem(F.core.SAVE_KEY)) };
       }, { id: grade, initial });
       assert.deepEqual(result.stock, result.expected);
       assert.equal(result.money, result.expectedMoney);
       assert(result.owned.includes(result.last));
       if (grade === 'g1000') assert(result.owned.includes('home_rig_pro'));
-      assert.equal(result.saved.kuji[grade].drawn, 50);
+      assert.equal(result.saved.kuji[grade].drawn, 40);
       assert.equal(result.saved.owned.filter(id => id === result.last).length, 1);
       const refill = await page.evaluate(id => {
         const before = JSON.stringify(F.core.state.kuji[id]); F.core.state.day += 2; F.showKuji();
@@ -61,11 +63,11 @@ await suite('ch1-feedback', async check => {
         F.core.state.day++; F.showKuji();
         return { waiting, drawn: F.core.state.kuji[id].drawn, size: F.core.state.kuji[id].order.length };
       }, grade);
-      assert.deepEqual(refill, { waiting: true, drawn: 0, size: 50 });
+      assert.deepEqual(refill, { waiting: true, drawn: 0, size: 40 });
     }, options);
     await check(`${name}-legacy-boxes`, async page => {
       await setup(page);
-      for (const id of ['g500', 'g1000']) {
+      for (const id of ['g1000']) {
         const before = await page.evaluate(id => {
           F.core.newGame(); F.core.state.money = 10000;
           const old = F.data.DB.kuji.legacyGrades[id];
@@ -85,9 +87,9 @@ await suite('ch1-feedback', async check => {
         const after = await page.evaluate(id => ({ b: F.core.state.kuji[id], owned: F.core.state.owned, money: F.core.state.money }), id);
         assert.equal(after.b.drawn, before.size);
         assert(after.owned.includes('nightside_premier_hagal'));
-        assert.equal(after.money, 10000 - (id === 'g500' ? 500 : 1000));
+        assert.equal(after.money, 10000 - 1000); // 古い箱は、中身も1回の値段も当時のまま（値下げ前の1,000円・KJ17）
         await page.evaluate(id => { F.core.save(); F.core.load(); F.core.state.day += 3; F.showKuji(); }, id);
-        assert.equal(await page.evaluate(id => F.core.state.kuji[id].order.length, id), 50);
+        assert.equal(await page.evaluate(id => F.core.state.kuji[id].order.length, id), 40);
       }
     }, options);
     await check(`${name}-mix-same-event-update`, async page => {

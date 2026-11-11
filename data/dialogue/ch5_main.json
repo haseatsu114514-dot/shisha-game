@@ -2568,6 +2568,289 @@
       ]
     },
     {
+      "dialogue_id": "ch5_sumi_trial_intro",
+      "comment": "#2020 F 決戦前の実制作練習。閉店後の試作の会話（#1666）を終えた夜の tonari で、任意で一度だけ。実際にダブルアップルを提供まで作る前に読む（chapters/ch5-daily.js）。能力値は増やさない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "閉店後のカウンター。ダブルアップルの缶を開けて、量りを12グラムに合わせた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "スミさん。今夜は頭から通して、一台作ります。吸ってもらえますか"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "提供までだ。調整は、本番で客を見てやれ"
+        },
+        {
+          "speaker": "sumi",
+          "face": "serious",
+          "text": "工程は飛ばすな。どこで崩れたかは、吸えば分かる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "……はい"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_sumi_trial_great",
+      "comment": "#2020 F 決戦前の実制作練習。実際に作った一台をスミさんが吸って返す（どの工程も80点以上）。失敗しても進行は止めない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "できた一台を、スミさんの前に置く。スミさんはホースを取り、ゆっくり二口吸った。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "thinking",
+          "text": "……文句はねえ"
+        },
+        {
+          "speaker": "sumi",
+          "face": "smile",
+          "text": "穴も炭も、待ち方もそろってる。あとは、目の前の客を見ろ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "……ありがとうございます"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "礼はいらねえ。客が満足したなら、それでいい"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_sumi_trial_holes",
+      "comment": "#2020 F 決戦前の実制作練習。実際に作った一台をスミさんが吸って返す（いちばん低いのが穴あけ）。失敗しても進行は止めない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "できた一台を、スミさんの前に置く。スミさんはホースを取り、ゆっくり二口吸った。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "thinking",
+          "text": "煙が、片側から来るな"
+        },
+        {
+          "speaker": "sumi",
+          "face": "serious",
+          "text": "穴の間がばらついてる。熱は、開けた穴の通りにしか回らねえ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……目印から、目を離してました"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "数より、そろえ方だ。本番は、一つずつ合わせろ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_sumi_trial_heat",
+      "comment": "#2020 F 決戦前の実制作練習。実際に作った一台をスミさんが吸って返す（いちばん低いのが炭焼き）。失敗しても進行は止めない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "できた一台を、スミさんの前に置く。スミさんはホースを取り、ゆっくり二口吸った。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "thinking",
+          "text": "立ち上がりが、ちぐはぐだ"
+        },
+        {
+          "speaker": "sumi",
+          "face": "serious",
+          "text": "炭の頃合いがずれてる。トングを出す前に、炭の全面を見ろ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……取り出す時、焦ってました"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "炭は待てる。待てねえのは、お前のほうだ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_sumi_trial_steam",
+      "comment": "#2020 F 決戦前の実制作練習。実際に作った一台をスミさんが吸って返す（いちばん低いのが蒸らし）。失敗しても進行は止めない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "できた一台を、スミさんの前に置く。スミさんはホースを取り、ゆっくり二口吸った。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "thinking",
+          "text": "最初の煙が、散ってるな"
+        },
+        {
+          "speaker": "sumi",
+          "face": "serious",
+          "text": "蒸らしの間、気がそれたろ。待つのも作業のうちだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……頭の中が、うるさかったです"
+        },
+        {
+          "speaker": "sumi",
+          "face": "smile",
+          "text": "なら、うるさいまま待て。手が覚えてりゃ、煙は立つ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_sumi_trial_pull",
+      "comment": "#2020 F 決戦前の実制作練習。実際に作った一台をスミさんが吸って返す（いちばん低いのが吸い出し）。失敗しても進行は止めない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "できた一台を、スミさんの前に置く。スミさんはホースを取り、ゆっくり二口吸った。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "thinking",
+          "text": "温度が、合ってねえ"
+        },
+        {
+          "speaker": "sumi",
+          "face": "serious",
+          "text": "吸い出しで、熱を運び切れてない。出す前に、自分で一口確かめろ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……出すのを、急ぎました"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "客は待てる。渡す一口が合ってりゃな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_sumi_trial_failed",
+      "comment": "#2020 F 決戦前の実制作練習。実際に作った一台をスミさんが吸って返す（焦げ・冷え・葉切れで提供できなかった一台）。失敗しても進行は止めない。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "煙が途中で荒れた。それでもスミさんは、ホースを取って一口だけ吸った。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "……荒れたな"
+        },
+        {
+          "speaker": "sumi",
+          "face": "serious",
+          "text": "どこで崩れた。自分で言えるか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "sad",
+          "text": "……言えます。直すのは、一つだけです"
+        },
+        {
+          "speaker": "sumi",
+          "face": "smile",
+          "text": "なら、それでいい。本番は、そこだけ見てろ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_sumi_trial_recall_great",
+      "comment": "#2020 F 決戦前の実制作練習の返り。講評まで読んだ一台だけ、ch5_relationship_before_second_cup の末尾（試作の返りの後）に続けて再生（どの工程も80点以上）。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんに吸ってもらった一台は「文句はねえ」だった。あの手順を、指が覚えている。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_sumi_trial_recall_holes",
+      "comment": "#2020 F 決戦前の実制作練習の返り。講評まで読んだ一台だけ、ch5_relationship_before_second_cup の末尾（試作の返りの後）に続けて再生（穴あけ）。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんに吸ってもらった一台は、穴の間がばらついた。今日は一つずつ、目印に合わせる。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_sumi_trial_recall_heat",
+      "comment": "#2020 F 決戦前の実制作練習の返り。講評まで読んだ一台だけ、ch5_relationship_before_second_cup の末尾（試作の返りの後）に続けて再生（炭焼き）。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんに吸ってもらった一台は、炭を焦って取った。炭は待てる。待てないのは俺のほうだ。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_sumi_trial_recall_steam",
+      "comment": "#2020 F 決戦前の実制作練習の返り。講評まで読んだ一台だけ、ch5_relationship_before_second_cup の末尾（試作の返りの後）に続けて再生（蒸らし）。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんに吸ってもらった一台は、蒸らしで頭がうるさかった。うるさいまま、待てばいい。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_sumi_trial_recall_pull",
+      "comment": "#2020 F 決戦前の実制作練習の返り。講評まで読んだ一台だけ、ch5_relationship_before_second_cup の末尾（試作の返りの後）に続けて再生（吸い出し）。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんに吸ってもらった一台は、出すのを急いだ。渡す前の一口を、今日は確かめる。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_sumi_trial_recall_failed",
+      "comment": "#2020 F 決戦前の実制作練習の返り。講評まで読んだ一台だけ、ch5_relationship_before_second_cup の末尾（試作の返りの後）に続けて再生（提供できなかった一台）。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんに吸ってもらった一台は、途中で荒れた。崩れた所だけを、今日は見る。"
+        }
+      ]
+    },
+    {
       "dialogue_id": "ch5_tsumugi_serving",
       "comment": "#2606 (c)。第4章ラストの面接から時間が経ち、つむぎは後輩スタッフとして在籍・育った状態。成長過程は描かない。勤務時はバイト姿（私服＋ビブエプロン、PR #2608 案B、face baito_*）。自由行動の tonari で、閉店後の練習の後に1回（ch5-progress.js CH5_FREE_SCENES）。",
       "metadata": {

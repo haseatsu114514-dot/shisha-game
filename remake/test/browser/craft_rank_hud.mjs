@@ -8,13 +8,13 @@ const rects = page => page.locator(".bench-top").evaluate(top => {
   return { top: rect(top), rank: rect(top.querySelector(".craft-rank")), progress: rect(top.querySelector(".bench-progress")), button: rect(top.querySelector(".bench-appearance-button")) };
 });
 const overlap = (a, b) => a.left < b.right - 1 && a.right > b.left + 1 && a.top < b.bottom - 1 && a.bottom > b.top + 1;
-async function prepare(page, ds = false) {
-  await page.evaluate(ds => {
+async function prepare(page) {
+  await page.evaluate(() => {
     // Remove only the preview controls so geometry uses the exact gameplay viewport.
     document.querySelector(".rank-preview-tools").hidden = true;
     document.documentElement.style.setProperty("--rank-tools-height", "0px");
-    rankPreview.setLayout(ds);
-  }, ds);
+    rankPreview.resize();
+  });
 }
 
 await suite("craft-rank-hud", async check => {
@@ -27,14 +27,13 @@ await suite("craft-rank-hud", async check => {
     await page.locator('[data-test="rank-preview-unavailable"]').click();
     assert.match(await page.locator('[data-test="craft-rank-status"]').textContent(), /未計測/);
   });
-  for (const [name, options, ds] of [
-    ["pc", { viewport: { width: 1280, height: 720 } }, false],
-    ["touch-landscape", { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }, false],
-    ["ds-portrait", { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true }, true],
-    ["ds-small", { viewport: { width: 320, height: 568 }, isMobile: true, hasTouch: true }, true],
-    ["ds-landscape", { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }, true],
+  // DS風（ds-portrait・ds-small・ds-landscape）は廃止（横画面一本化）。いちばん小さい横持ち 568×320 を足す。
+  for (const [name, options] of [
+    ["pc", { viewport: { width: 1280, height: 720 } }],
+    ["touch-landscape", { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }],
+    ["small-landscape", { viewport: { width: 568, height: 320 }, isMobile: true, hasTouch: true }],
   ]) await check(`layout-${name}`, async page => {
-    await prepare(page, ds);
+    await prepare(page);
     let anchor, phaseAnchor;
     for (const step of ["pack", "heat", "steam", "pull", "serve", "care"]) {
       await page.evaluate(step => { rankPreview.phases.update(step, step); document.querySelector('.bench').dataset.step = step; }, step);
@@ -51,7 +50,7 @@ await suite("craft-rank-hud", async check => {
         const meterBox = await page.locator('.craft-rank-meter').evaluate(node => node.getBoundingClientRect().toJSON());
         assert(meterBox.height >= 1 && !overlap(meterBox, layout.progress), "meter must stay visible outside phases");
         for (const key of ["x", "y", "width", "height"]) assert(Math.abs(layout.rank[key] - anchor[key]) < 1, `${step}/${grade}: rank moved`);
-        const gradeBox = await page.locator(ds || name === 'touch-landscape' ? '.craft-rank-compact .craft-rank-grade' : '.craft-rank-wide .craft-rank-grade').evaluate(node => node.getBoundingClientRect().toJSON());
+        const gradeBox = await page.locator(name !== 'pc' ? '.craft-rank-compact .craft-rank-grade' : '.craft-rank-wide .craft-rank-grade').evaluate(node => node.getBoundingClientRect().toJSON());
         assert(gradeBox && gradeBox.left >= layout.rank.left - 1 && gradeBox.right <= layout.rank.right + 1, `grade clipped: ${grade}`);
       }
     }
@@ -87,11 +86,10 @@ await suite("craft-rank-hud", async check => {
     await page.emulateMedia({ reducedMotion: 'reduce' });
     await page.waitForFunction(() => !document.querySelector('.craft-rank').dataset.change);
     assert.equal(await page.locator('.craft-rank-wide').evaluate(node => getComputedStyle(node).transform), 'none');
-    await page.evaluate(() => rankPreview.setLayout(true));
     await assertFits(page, '.craft-rank, .craft-rank-meter');
     const toolsBottom = await page.locator('.rank-preview-tools').evaluate(node => node.getBoundingClientRect().bottom);
     const rankTop = await page.locator('.craft-rank').evaluate(node => node.getBoundingClientRect().top);
-    assert(rankTop >= toolsBottom, 'Preview controls must not cover the DS rank');
+    assert(rankTop >= toolsBottom, 'Preview controls must not cover the rank');
   });
   await check("preview-slider-and-auto-demo", async page => {
     await page.locator('button[data-grade="S"]').click();

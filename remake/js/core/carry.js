@@ -109,6 +109,8 @@ export const FLAG_CATEGORY_VERDICT = {
 /** 正確名の flag 分類: [名前, カテゴリ] */
 export const FLAG_EXACT_RULES = [
   ["_adam_arcade_done", "person"],
+  ["_adam_fifth_light", "person"], // アダムの5回目の「今の軽い後味」。締めくくりで返す（RVE07）
+  ["_adam_fifth_strong", "person"], // アダムの5回目の「さっきの濃い感じ」。締めくくりで返す（RVE07）
   ["_ageha_aquarium_introduced", "person"],
   ["_ageha_bear_seat_done", "person"],
   ["_ageha_first_purikura", "person"],
@@ -247,6 +249,7 @@ export const FLAG_EXACT_RULES = [
   ["_ch4_cafe_orders", "progression"], // ドバイのカフェで頼んだ一台の回数（メニューごと・ch4-dubai-cafe.js）
   ["_ch4_cleared", "progression"],
   ["_ch4_dubai_talks", "progression"],
+  ["_visit_chains", "progression"], // 通いの続きの小さな出来事（第3〜5章・段の既読と選んだ答え。chapters/visit-chains.js）。周回では持ち越さない
   ["_ch4_dubai_nights", "progression"], // ドバイの夜がにぎわう店に夜に行った回数（店ごと・ch4-dubai-local.js）。周回では持ち越さない
   ["_ch4_longlong", "progression"], // 龍龍水煙所のドバイの店の段階の既読・通いの回数（ch4-longlong.js）
   ["_ch4_desert", "progression"],
@@ -261,6 +264,7 @@ export const FLAG_EXACT_RULES = [
   ["_ch5_match_scheduled", "progression"],
   ["_ch5_match_started", "progression"],
   ["_ch5_region_started", "progression"],
+  ["_ch5_sumi_trial", "progression"], // 第5章の決戦前の実制作練習（閉店後にスミさんが吸う一台・#2020 F。chapters/ch5-sumi-trial.js）。周回では作り直す
   ["_ch5_tokyo_attic", "progression"],
   ["_ch5_dubai_letter", "progression"],
   ["_ch5_dubai_guest", "progression"],
@@ -277,6 +281,8 @@ export const FLAG_EXACT_RULES = [
   ["_ch5_catering", "progression"], // 第5章の出張シーシャの依頼（次に届く日・今の依頼・作った回数。chapters/ch5-catering-model.js）。くじ券そのものは kujiTickets（持ち越さない）
   ["_ch5_shop_stamps", "progression"], // 第5章の店めぐり帳（判子を押した店・受け取ったくじ券・帳面を開いた印。chapters/ch5-shop-stamps-model.js）。周回では白紙から
   ["_mukai_shift_day", "progression"],
+  ["_mashiro_time", "person"],
+  ["_ch4_companion_time", "person"], // 第4章で同行した恋人と宿で過ごした場面と最後の日（chapters/companion-time.js・BLC08） // 恋人のましろと mukai で過ごした回数と最後の日（chapters/mashiro-time.js・BLC03）
   ["_ch5_tokyo_talks", "progression"],
   ["_cheat_go", "progression"],
   ["_cinema_visit", "progression"],
@@ -530,6 +536,7 @@ export const FLAG_EXACT_RULES = [
   // 凛想が味の不調に気づいた回（第2章）を読んだか。第3・4章の出発前の凛想の会話が分岐に使う（data/dialogue/ch3_ch4_home.json）
   ["_talk_seen_ch2_rio_taste", "person"],
   // 第3章の出発前に凛想から「向こうの顔」を頼まれたか。第4章の出発前の凛想の会話が、その報告の分岐に使う
+  ["_talk_seen_ch3_prep_rei_live", "person"], // レヰのライブの夜（第3章の準備期間・RVE07）
   ["_talk_seen_ch3_prep_rio", "person"],
   ["_tsumugi_contest_art_seen", "person"],
   ["_tsumugi_contest_draft_hands", "person"],
@@ -628,6 +635,7 @@ export const FLAG_FAMILY_RULES = [
   ["_eve_reflect_*", "progression"], // 大会前夜の内省（心得の盤 SPEC 2.8）。章ごとに1回
   ["_ch3_trial_*", "progression"],
   ["_cafe_recall_*", "progression"],
+  ["_city_guest_count_*", "progression"], // 繰り返しの来店の巡回の位置（daily/city-guests.js・RVE07）
   ["_city_guest_seen_*", "progression"],
   ["_roam_seen_*", "person"],
   ["_trpg_topic_*", "person"], // 部活の話は周回ごとに対面し直す
@@ -647,6 +655,7 @@ export const FLAG_FAMILY_RULES = [
   ["_noor_story_*", "person"], // #3081 カフェ・オアシスの物語。未読を周回へ持ち越さない
   ["_morning_*", "progression"],
   ["_note_*", "progression"],
+  ["_recipe_return_*", "person"], // 名前を付けた一台を、配合を教えてくれた人に返した（daily/recipe-finds-model.js・#2020 G）。ヒントのメモ（_note_*）と同じく周回では持ち越さない
   ["_outing_done_*", "person"],
   ["_rescheduled_*", "pending"],
   ["_samechan_date_*", "person"],

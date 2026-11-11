@@ -107,6 +107,8 @@ try {
     console.log(`[coal browser] ${label}: abort and AUTO reread complete`);
 
     // Existing snapshot survives the new data; replenishment switches only after exhaustion + three days.
+    // The 500-yen box was retired when each store got a single kuji (KJ11), so the frozen prize list is put
+    // into the home store's box (g1000): a box saved with other contents must still be honoured as saved.
     // Frozen pre-#694 data (remake/test/fixtures/kuji-legacy.json). Reading origin/main via git is not
     // possible in CI checkouts (no such ref) and drifts as main moves; the case guards that a snapshot
     // written against THIS old data survives, so the old data must be a fixed fixture.
@@ -117,38 +119,39 @@ try {
       const order = old.prizes.flatMap((p, i) => Array(p.count).fill(i));
       const hose = old.prizes.findIndex(p => p.name.includes("ホース"));
       const index = order.indexOf(hose); [order[0], order[index]] = [order[index], order[0]];
-      Q.core.state.kuji.g500 = { version: 2, order, drawn: 0, emptyDay: null, prizes: structuredClone(old.prizes), lastOne: structuredClone(old.lastOne) };
+      // price: the box keeps the price it was created with (KJ17). A box without it that was never drawn is swapped for the current box.
+      Q.core.state.kuji.g1000 = { version: 2, price: 1000, order, drawn: 0, emptyDay: null, prizes: structuredClone(old.prizes), lastOne: structuredClone(old.lastOne) };
       Q.core.state.money = 30000; Q.core.state.goods = [{ name: "既所持ホース", sell: 800 }];
       const ui = await import("./js/core/ui.js"), util = await import("./js/core/util.js");
       Q.kujiRender = () => ui.showScreen("coal-kuji-test", util.el("div.shop", Q.kuji.kujiRows(Q.kujiRender)));
       Q.kujiRender();
     }, oldKuji);
-    await page.locator('[data-test="kuji-g500"]').click();
+    await page.locator('[data-test="kuji-g1000"]').click();
     await page.locator(".kuji-card.reveal").waitFor();
     await page.locator('[data-test="kuji-reveal"]').click();
     assert.equal(await page.evaluate(() => Q.core.state.goods.length), 2);
-    assert.equal(await page.evaluate(() => Q.core.state.kuji.g500.prizes.some(p => p.name.includes("ホース"))), true);
+    assert.equal(await page.evaluate(() => Q.core.state.kuji.g1000.prizes.some(p => p.name.includes("ホース"))), true);
     await page.evaluate(() => {
-      const b = Q.core.state.kuji.g500; b.drawn = b.order.length; b.emptyDay = Q.core.state.day;
+      const b = Q.core.state.kuji.g1000; b.drawn = b.order.length; b.emptyDay = Q.core.state.day;
       Q.core.state.day += 2; Q.kujiRender();
     });
-    assert.equal(await page.locator('[data-test="kuji-g500"]').isDisabled(), true);
+    assert.equal(await page.locator('[data-test="kuji-g1000"]').isDisabled(), true);
     await page.evaluate(() => {
       Q.core.state.day++; Q.kujiRender();
-      const b = Q.core.state.kuji.g500;
-      const vanilla = b.prizes.findIndex(p => p.flavorId === "vanilla" && p.grams === 25);
-      const index = b.order.indexOf(vanilla); [b.order[0], b.order[index]] = [b.order[index], b.order[0]];
-      Q.stockBefore = Q.core.state.flavorStock.vanilla || 0;
+      const b = Q.core.state.kuji.g1000;
+      const mint = b.prizes.findIndex(p => p.flavorId === "mint" && p.grams === 25);
+      const index = b.order.indexOf(mint); [b.order[0], b.order[index]] = [b.order[index], b.order[0]];
+      Q.stockBefore = Q.core.state.flavorStock.mint || 0;
     });
-    assert.equal(await page.evaluate(() => Q.core.state.kuji.g500.order.length), 50);
-    assert.equal(await page.evaluate(() => Q.core.state.kuji.g500.prizes.some(p => p.name.includes("ホース"))), false);
-    await page.locator('[data-test="kuji-g500"]').click();
+    assert.equal(await page.evaluate(() => Q.core.state.kuji.g1000.order.length), 40);
+    assert.equal(await page.evaluate(() => Q.core.state.kuji.g1000.prizes.some(p => p.name.includes("ホース"))), false);
+    await page.locator('[data-test="kuji-g1000"]').click();
     await page.locator(".kuji-card.reveal").waitFor();
     await page.locator('[data-test="kuji-reveal"]').click();
-    assert.equal(await page.evaluate(() => Q.core.state.flavorStock.vanilla - Q.stockBefore), 25);
+    assert.equal(await page.evaluate(() => Q.core.state.flavorStock.mint - Q.stockBefore), 25);
     assert.equal(await page.evaluate(() => Q.core.state.goods.length), 2);
     await page.evaluate(() => Q.core.load());
-    assert.equal(await page.evaluate(() => Q.core.state.flavorStock.vanilla - Q.stockBefore), 25);
+    assert.equal(await page.evaluate(() => Q.core.state.flavorStock.mint - Q.stockBefore), 25);
     console.log(`[coal browser] ${label}: old snapshot/hose, refill and actual 25g saved`);
 
     // The lesson unlocks cube, while four/mixed still require their independent flags.

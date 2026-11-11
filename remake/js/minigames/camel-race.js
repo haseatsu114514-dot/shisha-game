@@ -98,13 +98,24 @@ const ART_FILES = Object.freeze({
   balloon: "ui/camel_race/ui/balloon.webp",
   // 砂煙（CR-WD03・#3217・2026-11-11 採用）。小・中・大の3枚（256×256・左へ流れる形）。
   dust: [1, 2, 3].map(i => `ui/camel_race/world/dust-${i}.webp`),
-  // 門の幕の字（CR-WD09）と、手前を流れる旗の柱（CR-WD06）。#3217・2026-11-11 採用。
-  words: { START: "ui/camel_race/world/word-start.webp", FINISH: "ui/camel_race/world/word-finish.webp" },
+  // 門の幕の字と競り合いの「VS」（CR-WD09）と、手前を流れる旗の柱（CR-WD06）。#3217・2026-11-11 採用（VS は #3328）。
+  words: { START: "ui/camel_race/world/word-start.webp", FINISH: "ui/camel_race/world/word-finish.webp", VS: "ui/camel_race/world/word-vs.webp" },
+  // 奥の柵の向こうを並走する、ほかの調教師の車（CR-WD05・#3328・2026-11-11 採用）。銀がかった灰と砂色。
+  rivalSuvs: ["ui/camel_race/world/suv-rival-a.webp", "ui/camel_race/world/suv-rival-b.webp"],
   // キーの名前に flag を使わないこと（ngplus_carry.mjs が、flag という名前に文字列を入れた所をセーブのフラグとして拾う）。
   pole: "ui/camel_race/world/fg-flagpole.webp",
   // 走路の砂（CR-WD04・#3217・2026-11-11 採用）。640×226 で横につながるタイル。読めなければコードで描く砂。
   sand: "ui/camel_race/world/ground-track.webp",
+  // スタートとゴールの柱（CR-WD01 改訂・#3217・2026-11-11 採用）。手前の柱の絵を、奥の柵には半分の大きさで描く。
+  posts: { START: "ui/camel_race/world/post-start-near.webp", FINISH: "ui/camel_race/world/post-finish-near.webp" },
 });
+// 柱の絵（480×800）: 柱の中心が x=357（太さ 55px）、根元が下端。幕は柱の左へ垂れ、字を置く無地の所は
+// スタートが x 14〜330・y 170〜370、ゴールが市松の帯の間の y 198〜350。
+// 手前の柱は手前の柵（y=606）、奥の柱は奥の柵（y=398）に、半分の大きさで立てる。手前の柱はラクダより前（車より奥）に描く。
+// 横の位置: スタートは発馬の柵（自分のラクダの中心から 118px 先）、ゴールは自分のラクダの鼻先（中心から 90px 先）がゴールした瞬間の位置。
+// 発馬の柵と同じく、奥の柱を 13px 左、手前の柱を 13px 右にずらす（線が奥ほど左へ傾く）。
+const POST_ART = Object.freeze({ poleX: 357, pole: 55, plain: { START: [14, 170, 330, 370], FINISH: [14, 198, 330, 350] },
+  near: { ground: 606, scale: 0.45, dx: 13 }, far: { ground: 398, scale: 0.225, dx: -13 }, lead: { START: 118, FINISH: 90 } });
 // 旗の柱（256×720・柱の中心 x=43）: 手前の地面より前を、走路より速く（parallax 倍）流れる。スタートの少し手前とゴールの先に立てる。
 const FLAG_ART = Object.freeze({ poleX: 43, scale: 0.62, ground: 744, parallax: 1.35, at: [-14, 26] });
 // 砂煙の絵の置き方: 塊の右端（絵の幅の 0.9）を蹄の位置に、下の縁（絵の高さの 0.72）を地面に合わせる。size は puff.r に掛ける倍率。
@@ -121,6 +132,15 @@ const BODY = CAMEL_ART.scale / 0.3;
 const JOCKEY_ART = Object.freeze({ cx: 94, bottom: 133, scale: 0.9 });
 // SUV は手前（カメラ寄り）を走るので、ラクダより大きく描く（0.3→0.4。はじめが窓に見える大きさ）。
 const SUV_ART = Object.freeze({ scale: 0.4, centerX: 359, ground: 346, wheels: [[153, 282], [583, 282]], wheel: 130 / 160, radius: 65 });
+// ほかの調教師の車（720×360・自分の車と同じ寸法と車輪の位置）。奥の柵の向こうを、自分の車の半分の大きさで走らせる。
+// 背景の絵に停めてある車と同じくらいの大きさ。根元（タイヤの下端）は奥の柵の手すりに少し隠れる高さ。
+// 3台を相手の3頭の平均の位置から at m ずつずらして並べ、群れと同じ速さで走らせる（台ごとに drift m だけ前後に揺れる）。
+// 車輪は車体の絵の車輪を丸く切り抜いて回す（自分の車の回る車輪とはホイールの色が違うため）。radius は切り抜く半径。
+// 3台目は a の絵を少し暗くして、2台の色だけで3台に見せる。
+const RIVAL_SUV_ART = Object.freeze({ scale: 0.2, ground: 388, radius: 61, drift: 1,
+  cars: [{ art: 0, at: -12, tint: "brightness(0.78) saturate(0.9)" }, { art: 1, at: 0 }, { art: 0, at: 12 }] });
+// 競り合いの「VS」の絵（1024×834。字は x 93〜930・y 141〜711）を描く幅。字の幅が書体の時の約1.4倍になる。
+const VS_ART = Object.freeze({ width: 72 });
 // AI のラクダの毛色の違い（ctx.filter が無い端末では同じ色のまま。名札の色で見分ける）。
 const RIVAL_TINT = Object.freeze({ front: "sepia(0.25) saturate(1.25) brightness(0.95)", closer: "brightness(1.12) saturate(0.85)", steady: "brightness(0.82) saturate(1.05)" });
 let artTask = null;
@@ -136,9 +156,14 @@ export function loadCamelArt() {
     .then(entries => Object.fromEntries(entries.filter(([, image]) => image)));
   const pole = load(ART_FILES.pole).catch(() => null);
   const sand = load(ART_FILES.sand).catch(() => null);
-  artTask ||= Promise.all([Promise.all(ART_FILES.camel.map(load)), load(ART_FILES.jockey), load(ART_FILES.suv), load(ART_FILES.wheel), load(ART_FILES.track), balloon, dust, words, pole, sand])
-    .then(([camel, jockey, suv, wheel, track, balloonImage, dustImages, wordImages, poleImage, sandImage]) => ({ camel, jockey, suv, wheel, track, balloon: balloonImage, dust: dustImages,
-      words: wordImages, pole: poleImage, ground: groundTiles(sandImage), skins: camelSkins(camel) }))
+  // スタートとゴールの柱は2枚そろった時だけ絵にする（片方だけ絵だと門の描き方が混ざる）。
+  const posts = Promise.all(Object.entries(ART_FILES.posts).map(([word, rel]) => load(rel).then(image => [word, image])))
+    .then(entries => Object.fromEntries(entries), () => null);
+  // ほかの調教師の車は2色そろった時だけ走らせる（読めなければ車は自分の1台だけ）。
+  const rivalSuvs = Promise.all(ART_FILES.rivalSuvs.map(load)).catch(() => null);
+  artTask ||= Promise.all([Promise.all(ART_FILES.camel.map(load)), load(ART_FILES.jockey), load(ART_FILES.suv), load(ART_FILES.wheel), load(ART_FILES.track), balloon, dust, words, pole, sand, posts, rivalSuvs])
+    .then(([camel, jockey, suv, wheel, track, balloonImage, dustImages, wordImages, poleImage, sandImage, postImages, rivalImages]) => ({ camel, jockey, suv, wheel, track, balloon: balloonImage, dust: dustImages,
+      words: wordImages, pole: poleImage, ground: groundTiles(sandImage), posts: postImages, rivalSuvs: rivalImages, skins: camelSkins(camel) }))
     .catch(() => null);
   return artTask;
 }
@@ -350,6 +375,11 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     ["cr-rank", "ui/camel_race/ui/rank-plate.webp"],
     ["cr-rank-player", "ui/camel_race/ui/rank-plate-player.webp"],
     ["cr-medal-gold", "ui/camel_race/ui/medal-gold.webp"],
+    // 2〜4位のメダルと、進み具合の横木（CR-UI03・CR-UI06・#3328・2026-11-11 採用）。
+    ["cr-medal-silver", "ui/camel_race/ui/medal-silver.webp"],
+    ["cr-medal-bronze", "ui/camel_race/ui/medal-bronze.webp"],
+    ["cr-medal-plain", "ui/camel_race/ui/medal-plain.webp"],
+    ["cr-rail", "ui/camel_race/ui/track-rail.webp"],
     ["cr-gauge-frame", "ui/camel_race/ui/gauge-frame.webp"],
     ["cr-gauge-fill", "ui/camel_race/ui/gauge-fill.webp"],
     ["cr-call", "ui/camel_race/ui/call-plate.webp"],
@@ -374,6 +404,8 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     root.dataset.art = value ? "sprites" : "canvas";
     root.dataset.dust = value?.dust ? "sprites" : "canvas";
     root.dataset.sand = value?.ground.painted ? "sprites" : "canvas";
+    root.dataset.gate = value?.posts ? "sprites" : "canvas";
+    root.dataset.convoy = value?.rivalSuvs ? "sprites" : "none";
     if (phase === "tutorial" || phase === "loading") draw();
   });
   let race = null, phase = "loading", raf = 0, last = null, goalAt = 0, feedbackTimer = 0, bannerTimer = 0, countdownLeft = 0, countdownShown = -1;
@@ -884,6 +916,8 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     if (art) drawPaintedGround(camX);
     else drawPlainGround(camX);
     for (const lane of LANES) { ctx.fillStyle = "rgba(255,240,210,0.07)"; ctx.fillRect(0, lane.y - 2, W, 3); }
+    // 奥の柵の向こうを並走する、ほかの調教師の車（柵と飾りより奥）。
+    drawRivalSuvs(camX);
     // 柵（奥と手前）と100mごとの表示板。
     drawEventDecor(camX);
     drawFence(camX, 396, 0.7);
@@ -902,6 +936,7 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
       }
       drawStartBar(camX);
       drawFence(camX, 604, 1);
+      drawNearPosts(camX);
       drawOffscreen();
       drawWhipWind();
       drawDust("suv");
@@ -918,7 +953,7 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
       drawCue();
       drawEffects();
       drawConfetti();
-    } else { drawFence(camX, 604, 1); drawSuv(); drawLight(); }
+    } else { drawFence(camX, 604, 1); drawNearPosts(camX); drawSuv(); drawLight(); }
     ctx.restore();
   }
   /** 絵の背景: 奥の景色をゆっくり流し、走路・道・手前の砂地をタイルで速く流す。 */
@@ -1041,8 +1076,62 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     }
     ctx.restore();
   }
-  /** スタートとゴールの門: 木の柱2本に布の幕を張り、上に小旗。ゴールは幕の上下が市松。 */
+  /** スタートとゴールの線の画面の x（POST_ART.lead の位置）と、その字。 */
+  function gateLines(camX) {
+    return [[0, "START"], [race?.length || RACE.length, "FINISH"]]
+      .map(([m, label]) => [PLAYER_SCREEN_X + (m - camX) * PX_PER_M + POST_ART.lead[label], label]);
+  }
+  /** 柱の絵を1本（x は柱の中心、ground は根元）。根元から右下へ短い影を落とし、幕の無地の所に字を置く。 */
+  function drawPost(label, x, ground, k) {
+    const image = art.posts[label], w = image.width * k, h = image.height * k, left = x - POST_ART.poleX * k, top = ground - h;
+    if (left > W || left + w < 0) return;
+    const pole = POST_ART.pole * k;
+    ctx.fillStyle = "rgba(70,40,15,0.25)"; ctx.beginPath();
+    ctx.moveTo(x - pole / 2, ground); ctx.lineTo(x + pole / 2, ground); ctx.lineTo(x + pole * 3.4, ground + pole * 0.45); ctx.lineTo(x + pole * 2.4, ground + pole * 0.45); ctx.closePath(); ctx.fill();
+    ctx.drawImage(image, left, top, w, h);
+    const [x0, y0, x1, y1] = POST_ART.plain[label], cx = left + (x0 + x1) / 2 * k, cy = top + (y0 + y1) / 2 * k;
+    const word = art.words?.[label];
+    if (word) {
+      // 手描きの字（CR-WD09）: 幕の幅の 8 割、高さは無地の所の 7 割まで。
+      let ww = (x1 - x0) * k * 0.8, wh = word.height * ww / word.width;
+      if (wh > (y1 - y0) * k * 0.7) { wh = (y1 - y0) * k * 0.7; ww = word.width * wh / word.height; }
+      ctx.drawImage(word, cx - ww / 2, cy - wh / 2, ww, wh);
+    } else {
+      const size = Math.max(9, (y1 - y0) * k * 0.3);
+      ctx.font = `900 ${size}px ${FONT}`; ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.lineJoin = "round";
+      ctx.lineWidth = size / 4; ctx.strokeStyle = "rgba(30,14,4,0.7)"; ctx.strokeText(label, cx, cy);
+      ctx.fillStyle = "#fff6e5"; ctx.fillText(label, cx, cy);
+    }
+  }
+  /** 手前の柵の柱（絵の時だけ・ゴールだけ）。ラクダより前、車より奥に描く。
+   *  スタートは発馬の柵が手前の柵まで渡るので手前の柱を立てない（立てると、並んだラクダと「あなたのラクダ」の札に幕がかぶる）。 */
+  function drawNearPosts(camX) {
+    if (!art?.posts) return;
+    ctx.save();
+    for (const [x, label] of gateLines(camX)) if (label === "FINISH") drawPost(label, x + POST_ART.near.dx, POST_ART.near.ground, POST_ART.near.scale);
+    ctx.restore();
+  }
+  /** スタートとゴールの門。絵があれば奥の柵の柱とゴールの線（手前の柱は drawNearPosts）、なければ木の柱2本に布の幕を張り、上に小旗。ゴールは幕の上下が市松。 */
   function drawGates(camX) {
+    if (art?.posts) {
+      ctx.save();
+      for (const [x, label] of gateLines(camX)) {
+        // ゴールの線: 奥の柱の根元から手前の柵まで、地面に白黒の市松。手前の端は手前の柱のすぐ左（柱に隠れないように）。
+        if (label === "FINISH" && x > -40 && x < W + 40) {
+          const top = POST_ART.far.ground, bottom = POST_ART.near.ground - 4;
+          const slant = POST_ART.near.dx - POST_ART.pole * POST_ART.near.scale / 2 - 6 - POST_ART.far.dx;
+          ctx.globalAlpha = 0.85;
+          for (let y = top, i = 0; y < bottom; y += 8, i++) {
+            const lx = x + POST_ART.far.dx + slant * (y - top) / (bottom - top);
+            for (const col of [0, 1]) { ctx.fillStyle = (i + col) % 2 ? "#1a120c" : "#fff6e5"; ctx.fillRect(lx - 6 + col * 6, y, 6, Math.min(8, bottom - y)); }
+          }
+          ctx.globalAlpha = 1;
+        }
+        drawPost(label, x + POST_ART.far.dx, POST_ART.far.ground, POST_ART.far.scale);
+      }
+      ctx.restore();
+      return;
+    }
     for (const [m, label, cloth, ink] of [[0, "START", "#2f8f6b", "#f6ecd6"], [race?.length || RACE.length, "FINISH", "#c8302a", "#fff6e5"]]) {
       const sx = PLAYER_SCREEN_X + (m - camX) * PX_PER_M;
       if (sx < -160 || sx > W + 160) continue;
@@ -1293,6 +1382,33 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
       ctx.restore();
     }
   }
+  /** ほかの調教師の車（絵の時だけ）。相手の3頭の平均の位置に並べ、車体の絵の車輪を丸く切り抜いて回す。 */
+  function drawRivalSuvs(camX) {
+    const images = art?.rivalSuvs;
+    if (!images) return;
+    const { scale: k, ground, radius: r, drift, cars } = RIVAL_SUV_ART;
+    const t = (race?.t || 0) + afterGoal();
+    const pack = race ? race.rivals.reduce((sum, rival) => sum + viewDistance(rival), 0) / race.rivals.length : 0;
+    ctx.save();
+    cars.forEach((car, i) => {
+      const m = pack + car.at + (reducedMotion ? 0 : Math.sin(t * 0.45 + i * 2.1) * drift);
+      const image = images[car.art], x = PLAYER_SCREEN_X + (m - camX) * PX_PER_M;
+      const left = x - SUV_ART.centerX * k, top = ground - SUV_ART.ground * k + (reducedMotion ? 0 : Math.sin(t * 9 + i * 1.7) * 0.8);
+      if (left > W || left + image.width * k < 0) return;
+      ctx.fillStyle = "rgba(40,25,10,0.24)"; ctx.beginPath(); ctx.ellipse(x, ground - 1, 312 * k, 22 * k, 0, 0, Math.PI * 2); ctx.fill();
+      if (car.tint) ctx.filter = car.tint;
+      ctx.drawImage(image, left, top, image.width * k, image.height * k);
+      const angle = reducedMotion ? 0 : (m * PX_PER_M) / (SUV_ART.radius * k);
+      for (const [wx, wy] of SUV_ART.wheels) {
+        ctx.save(); ctx.translate(left + wx * k, top + wy * k);
+        ctx.beginPath(); ctx.arc(0, 0, r * k, 0, Math.PI * 2); ctx.clip(); ctx.rotate(angle);
+        ctx.drawImage(image, wx - r, wy - r, r * 2, r * 2, -r * k, -r * k, r * 2 * k, r * 2 * k);
+        ctx.restore();
+      }
+      ctx.filter = "none";
+    });
+    ctx.restore();
+  }
   function drawSuv() {
     const { x, y } = suvPosition();
     if (art) { drawSuvSprite(x, y); return; }
@@ -1479,9 +1595,14 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
       }
     }
     ctx.translate(mx, my); ctx.scale(Math.min(textScale, 1.35) * (1 + pulse * 0.08), Math.min(textScale, 1.35) * (1 + pulse * 0.08));
-    ctx.font = `900 26px ${FONT}`; ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.lineJoin = "round";
-    ctx.lineWidth = 7; ctx.strokeStyle = "#4a1a04"; ctx.strokeText("VS", 0, 0);
-    ctx.fillStyle = "#ffcf5a"; ctx.fillText("VS", 0, 0);
+    // 手描きの「VS」（CR-WD09）。読めなければ書体に縁取り。
+    const vs = art?.words?.VS;
+    if (vs) ctx.drawImage(vs, -VS_ART.width / 2, -VS_ART.width * vs.height / vs.width / 2, VS_ART.width, VS_ART.width * vs.height / vs.width);
+    else {
+      ctx.font = `900 26px ${FONT}`; ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.lineJoin = "round";
+      ctx.lineWidth = 7; ctx.strokeStyle = "#4a1a04"; ctx.strokeText("VS", 0, 0);
+      ctx.fillStyle = "#ffcf5a"; ctx.fillText("VS", 0, 0);
+    }
     ctx.restore();
     // 相手の頭上の「粘る！」と、粘りの残り（赤い帯が縮む）。
     const left = clamp((rival.duelUntil - race.t) / 2.4, 0, 1);

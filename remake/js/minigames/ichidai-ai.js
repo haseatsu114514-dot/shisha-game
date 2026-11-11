@@ -1,16 +1,24 @@
-// カードゲーム「一台勝負」のCPU。規則（ichidai-rules.js）の act に渡す入力を、1つずつ返す。
+// カードゲーム「一台勝負」のCPU（第0.3版）。規則（ichidai-rules.js）の act に渡す入力を、1つずつ返す。
 // 相手の手札と山札の順は見ない。見るのは自分の手札・場に出ているもの・めくられた審査カードだけ。
-// level: 0=やさしい（審査カードを数えない・構えない・揺さぶらない） 1=ふつう 2=つよい（残りの審査カードを数えて期待値で決める）
+// level: 0=やさしい（審査カードを数えない・一口のために取っておかない・揺さぶらない） 1=ふつう 2=つよい（残りの審査カードを数えて期待値で決める）
+//
+// 第0.3版の考え方: カードは1ラウンドに1枚。提供の自分のターンに、手番のカードを使う値打ちと、一口のカードを仕込む値打ち
+// （審査カードは見ずに、残りの吸い方の期待値）を比べて良いほうを使う。熱の狙いは「その熱で使える一口のカード（必要火力）」まで
+// 含めた期待点で決める。rules.reactAfterReveal のときは、めくったあとに一口のカードを選ぶ（取っておく値打ちと比べる）。
 import { CARD, FLAVOR, FLAVORS, BOWL, JUDGE, PUFFS } from "./ichidai-data.js";
-import { RULES, RANK, heatOf, coalHeat, leavesOf, firepower, sidesOf, slotsOf, coolStepsOf, judgedHeat, scorePuff, unseenPuffs,
-  canPlay, canCharge, canPlace, canPutOn, canPack, canSteam, packLimit, roundsOf, isLastSession, isLastOfSession, puffPreview } from "./ichidai-rules.js";
+import { RANK, heatOf, leavesOf, coolStepsOf, judgedHeat, scorePuff, impressionOf, unseenPuffs,
+  canPlay, canCharge, canPlace, canAsh, canPack, canSteam, packLimit, roundsOf, isLastSession, isLastOfSession, puffPreview } from "./ichidai-rules.js";
 
 const cnt = (p, id) => p.hand.filter((x) => x === id).length;
 const idx = (p, id) => p.hand.indexOf(id);
 const isCoal = (id) => CARD[id].type === "coal";
+const slotFree = (G, p) => (p.cardsUsed || 0) < G.R.cardsPerRound;
+const REACT = ["heat_in", "heat_out", "blow", "all_in", "show_smoke", "duel", "encore"];
+const IMP_W = 0.45; // 先読みでの印象1点の値打ち（一票に届く見込み）
+const CARDV = 0.6; // 手札1枚の値打ち（点。チャージすれば熱1になる）
 
 // 手元での値打ち（低いものから種火にする・捨てる）
-const VALUE = { buyout: 0.3, repack: 0, encore: 1.2, go_second: 0.8, outer: 0.9, tongs: 0.9, fan: 1.0, loosen: 1.0 };
+const VALUE = { buyout: 0.3, repack: 0, encore: 1.2, go_second: 0.8, outer: 1.0, tongs: 0.9, fan: 1.0, loosen: 1.0, breath: 0.8, add_coal: 0.9 };
 function cardValue(G, p, id) {
   const c = CARD[id];
   if (c.type === "coal") return 2.2;
@@ -36,30 +44,56 @@ function puffGuess(G, p) {
   for (const q of pool) { const e = m.get(q.id); if (e) e.w++; else m.set(q.id, { q, w: 1 }); }
   return [...m.values()];
 }
-/** 審査カード q に対する、技まで含めたいちばん良い受け方 */
-function bestReaction(G, p, heat, q, mana) {
-  let best = null;
-  const nIn = cnt(p, "heat_in"), nOut = cnt(p, "heat_out"), nBlow = cnt(p, "blow");
-  for (const tk of [0, 1, -1, 2, -2]) {
-    if (tk > nIn || -tk > nOut || Math.abs(tk) > mana) continue;
-    for (const blow of [false, true]) {
-      if (blow && (!nBlow || Math.abs(tk) + 1 > mana)) continue;
-      const s = scorePuff(p, judgedHeat(p, q, tk, heat), q, { blow, lastOfSession: isLastOfSession(G) });
-      if (blow && !s.saved) continue;
-      const v = s.pts - 1.2 * (Math.abs(tk) + (blow ? 1 : 0)) - (s.zone === "scorch" ? 4 : 0) - (s.usedSilicone ? 2.5 : 0) - (s.usedLotus ? 0.8 : 0);
-      if (!best || v > best.v + 1e-9) best = { v, tk, blow, s };
-    }
+/**
+ * 一口を1枚（または使わない）で受けたときの値打ち。opp=相手の印象（分かっていれば。分からなければ印象の見込みで数える）
+ * 返り値 { v, id, s, pts, imp }
+ */
+function reactionValue(G, p, heat, q, id, opp) {
+  const tk = id === "heat_in" ? 1 : id === "heat_out" ? -2 : 0, blow = id === "blow";
+  const paid = id ? CARD[id].pay?.fire || 0 : 0; // 発動のために落とす火力（熱が下がってから審査される）
+  const s = scorePuff(p, judgedHeat(p, q, tk, Math.max(0, heat - paid)), q, { blow, lastOfSession: isLastOfSession(G) });
+  const good = s.zone === "just" || s.zone === "band";
+  let pts = s.pts + (id === "heat_out" && good ? 1 : 0) + (id === "all_in" && s.zone === "just" ? 3 : 0);
+  if (id === "encore") pts *= 2;
+  const imp = impressionOf(p, s, (id === "show_smoke" ? 4 : 0) + (id === "all_in" && s.zone === "just" ? 2 : 0) + (id === "heat_in" && good ? 1 : 0) + (p.sessImp || 0), G.R.impress);
+  const vote = opp == null ? IMP_W * imp + (id === "duel" ? 0.8 : 0) : (imp > opp ? G.R.vote + (id === "duel" ? 3 : 0) : 0);
+  const v = pts + vote - (s.zone === "scorch" ? 4 : 0) - (s.usedSilicone ? 2.5 : 0) - (s.usedLotus ? 0.8 : 0)
+    - (id ? 0.5 : 0) - (id === "show_smoke" ? 0.6 : 0) - (blow && !s.saved ? 1 : 0) - 0.35 * paid;
+  return { v, id, s, pts, imp };
+}
+/** その熱 heat で審査カード q を受けるときの、いちばん良い受け方。slot=カードの1枚がまだ使えるか */
+function bestReaction(G, p, heat, q, { slot = true, opp = null } = {}) {
+  let best = reactionValue(G, p, heat, q, null, opp);
+  if (!slot) return best;
+  for (const id of REACT) {
+    if (!cnt(p, id) || (CARD[id].need || 0) > heat) continue;
+    if (id === "encore" && !isLastSession(G)) continue;
+    const r = reactionValue(G, p, heat, q, id, opp);
+    if (r.v > best.v + 1e-9) best = r;
   }
   return best;
 }
-function expected(G, p, heat, mana, guess = puffGuess(G, p)) {
+/** その熱で審査の前に仕込める一口のカード（審査を見ずに1枚決める規則のとき）。いちばん良いもの { v, id } */
+function bestCommit(G, p, heat, guess) {
+  let best = { v: -Infinity, id: null };
+  for (const id of [null, ...REACT]) {
+    if (id && (!cnt(p, id) || (CARD[id].need || 0) > heat)) continue;
+    if (id === "encore" && !isLastSession(G)) continue;
+    let sum = 0, w = 0;
+    for (const g of guess) { sum += g.w * reactionValue(G, p, heat, g.q, id, null).v; w += g.w; }
+    if (sum / w > best.v + 1e-9) best = { v: sum / w, id };
+  }
+  return best;
+}
+function expected(G, p, heat, guess, slot) {
+  if (slot && p.level >= 1 && !G.R.reactAfterReveal) return bestCommit(G, p, heat, guess).v;
   let sum = 0, w = 0;
-  for (const g of guess) { sum += g.w * bestReaction(G, p, heat, g.q, p.level <= 0 ? 0 : mana).v; w += g.w; }
+  for (const g of guess) { sum += g.w * bestReaction(G, p, heat, g.q, { slot: slot && p.level >= 1 }).v; w += g.w; }
   return sum / w;
 }
-function bestHeat(G, p, guess = puffGuess(G, p)) {
+function bestHeat(G, p, guess = puffGuess(G, p), slot = true) {
   let best = 0, bv = -Infinity;
-  for (let h = 0; h <= RULES.heatMax; h++) { const v = expected(G, p, h, Math.min(h, 2), guess) + (h <= 7 ? 0.01 * h : 0); if (v > bv) { bv = v; best = h; } }
+  for (let h = 0; h <= G.R.heatMax; h++) { const v = expected(G, p, h, guess, slot) + (h <= 7 ? 0.01 * h : 0); if (v > bv) { bv = v; best = h; } }
   return best;
 }
 const normalGuess = [{ q: PUFFS.normal, w: 1 }];
@@ -74,10 +108,10 @@ export function aiAct(G, playerIndex) {
 
 function embers(G, p) {
   const order = p.hand.map((id, i) => ({ i, v: cardValue(G, p, id) })).sort((a, b) => a.v - b.v);
-  return { type: "embers", picks: order.slice(0, RULES.startEmbers).map((x) => x.i) };
+  return { type: "embers", picks: order.slice(0, G.R.startEmbers).map((x) => x.i) };
 }
 function discard(G, p) {
-  const need = p.hand.length - RULES.handMax;
+  const need = p.hand.length - G.R.handMax;
   const order = p.hand.map((id, i) => ({ i, v: cardValue(G, p, id) })).sort((a, b) => a.v - b.v);
   return { type: "discard", picks: order.slice(0, need).map((x) => x.i) };
 }
@@ -126,11 +160,11 @@ function prep(G, p, w) {
     return { type: "end" };
   }
   if (p.turn.mode === "steam") {
-    const a = coalMove(G, p, { prep: true, turnsLeft: RULES.prepTurns - w.n });
+    const a = coalMove(G, p, { prep: true, turnsLeft: G.R.prepTurns - w.n });
     if (a) return a;
   }
-  const perm = permanent(G, p, 0);
-  if (perm) return perm;
+  const perm = permanent(G, p);
+  if (perm && perm.v >= 0.8) return perm.act;
   return { type: "end" };
 }
 function packPicks(G, p, want) {
@@ -157,9 +191,10 @@ function coalMove(G, p, { prep = false, turnsLeft = 0 } = {}) {
   const ci = p.hand.findIndex((id) => isCoal(id) && canPlace(G, p, id).ok);
   if (ci >= 0) return { type: "place", hand: ci };
   const h0 = heatOf(p), ready = p.stove.map((c, i) => ({ c, i })).filter((x) => x.c.stage === 2);
+  const chargesLeft = Math.max(0, G.R.chargePerTurn - (p.turn.charges || 0));
   if (prep) {
     // 準備: 提供の最初のターンに冷めるぶんを見込んで、狙いより少し上まで
-    const want1 = bestHeat(G, p), target = Math.min(RULES.heatMax, want1 + (p.hmd === "big_tanukish" ? 0 : coolStepsOf(p)));
+    const want1 = bestHeat(G, p), target = Math.min(G.R.heatMax, want1 + (p.hmd === "big_tanukish" ? 0 : coolStepsOf(p)));
     const on = ready.find((x) => h0 + CARD[x.c.id].heat <= target);
     if (on) return { type: "puton", stove: on.i };
     const coming = p.stove.reduce((a, c) => a + (2 - c.stage <= turnsLeft ? CARD[c.id].heat : 0), 0);
@@ -168,29 +203,27 @@ function coalMove(G, p, { prep = false, turnsLeft = 0 } = {}) {
   }
   // 提供: 蓄えた熱の変化 d を総当たりし、期待値がいちばん高いところへ1手ずつ寄せる
   if (p.turn.ai?.heatDone) return null;
-  const guess = puffGuess(G, p), spent = p.spent;
+  const guess = puffGuess(G, p), slot = slotFree(G, p);
   const rF = ready.filter((x) => CARD[x.c.id].heat === 1), rC = ready.filter((x) => CARD[x.c.id].heat === 2);
-  const upF = p.zone.filter((c) => c.up && CARD[c.id].heat === 1).length, embersN = p.zone.filter((c) => !c.up).length;
+  const upF = p.zone.filter((c) => c.up && CARD[c.id].heat === 1).length;
   const lastRound = G.round === roundsOf(G) - 1;
-  const canChg = canCharge(G, p).ok, hasAdd = cnt(p, "add_coal") && canPlay(G, p, "add_coal").ok;
-  const keep = reserve(p);
+  const ashLeft = canAsh(G, p).ok ? Math.max(0, G.R.ashPerTurn - (p.turn.ashes || 0)) : 0;
   let best = null;
-  for (let d = -3; d <= 4; d++) {
-    const step = { onF: 0, onC: 0, charge: 0, add: 0, ash: 0 }; let cost = 0, r = d;
+  for (let d = -3; d <= 5; d++) {
+    const step = { onF: 0, onC: 0, charge: 0, ash: 0 }; let cost = 0, r = d;
     if (d > 0) {
       step.onF = Math.min(rF.length, r); r -= step.onF; cost += 0.05 * step.onF;
       while (r >= 2 && step.onC < rC.length) { step.onC++; r -= 2; cost += 0.05; }
-      if (r >= 1 && hasAdd) { step.add = 1; r--; cost += 0.9; }
-      if (r >= 1 && canChg && p.hand.length - step.add > 0) { step.charge = 1; r--; cost += Math.max(0.6, cardValue(G, p, p.hand[worstIndex(G, p)])); }
+      while (r >= 1 && step.charge < Math.min(chargesLeft, p.hand.length)) { step.charge++; r--; cost += 0.6 + 0.3 * step.charge; }
       if (r !== 0) continue;
-    } else if (d < 0) { step.ash = -d; if (step.ash > embersN) continue; cost += 1.0 * step.ash; }
-    const h1 = h0 + d; if (h1 < 0 || h1 > RULES.heatMax) continue;
-    let v = expected(G, p, h1, Math.max(0, h1 - spent), guess) - cost;
+    } else if (d < 0) { step.ash = -d; if (step.ash > Math.min(ashLeft, p.zone.length)) continue; cost += 0.9 * step.ash; }
+    const h1 = h0 + d; if (h1 < 0 || h1 > G.R.heatMax) continue;
+    let v = expected(G, p, h1, guess, slot) - cost;
     if (!lastRound) { // 次の自分のターンに、狙いの熱へ届くか
       const want = bestHeat(G, p, p.level >= 1 ? puffGuess(G, { ...p, peek: null }) : normalGuess);
       const cube = step.onC || p.zone.some((c) => c.up && CARD[c.id].heat === 2);
-      const cs = Math.max(1, RULES.cool - (cube ? 1 : 0)), loss = Math.max(0, cs - (upF + step.onF + p.wind));
-      const up = p.stove.filter((c) => c.stage >= 1).reduce((a, c) => a + CARD[c.id].heat, 0) - step.onF - 2 * step.onC + (p.hand.length - step.charge - step.add > 0 ? 1 : 0);
+      const cs = Math.max(1, G.R.cool - (cube ? 1 : 0)), loss = Math.max(0, cs - (upF + step.onF + p.wind));
+      const up = p.stove.filter((c) => c.stage >= 1).reduce((a, c) => a + CARD[c.id].heat, 0) - step.onF - 2 * step.onC + Math.min(G.R.chargePerTurn, p.hand.length);
       v -= 1.4 * Math.max(0, want - (h1 - loss + Math.max(0, up))) + 0.5 * Math.max(0, h1 - cs - 2 - want);
     }
     if (!best || v > best.v + 1e-9) best = { v, d, step };
@@ -199,101 +232,134 @@ function coalMove(G, p, { prep = false, turnsLeft = 0 } = {}) {
   if (!s || best.d === 0) { (p.turn.ai ||= {}).heatDone = true; return null; }
   if (s.onF) return { type: "puton", stove: rF[0].i };
   if (s.onC) return { type: "puton", stove: rC[0].i };
-  if (s.add) return { type: "play", hand: idx(p, "add_coal") };
+  // 追い炭（山札から種火2枚・枠を返す）が使えるなら、手札を2枚チャージするかわりにそれを使う
+  if (s.charge >= 2 && cnt(p, "add_coal") && canPlay(G, p, "add_coal").ok) { (p.turn.ai ||= {}).heatDone = false; return { type: "play", hand: idx(p, "add_coal") }; }
   if (s.charge) return { type: "charge", hand: worstIndex(G, p) };
-  if (s.ash) return { type: "ash", zone: p.zone.findIndex((c) => !c.up) };
+  if (s.ash) { const i = p.zone.findIndex((c) => !c.up); return { type: "ash", zone: i >= 0 ? i : 0 }; }
   return null;
 }
-/** 一口の技のために残す火力 */
-function reserve(p) {
-  if (p.level <= 0) return 0;
-  const n = cnt(p, "heat_in") + cnt(p, "heat_out") + cnt(p, "blow");
-  return Math.min(p.level >= 2 ? 2 : 1, n);
-}
-/** 器具・人物を出す */
-function permanent(G, p, keep) {
-  if (G.phase === "serve" && roundsOf(G) - G.round < 2) return null;
+/** 器具・人物を出す手と、その値打ち（残りのラウンドが多いほど高い） */
+function permanent(G, p) {
+  const left = G.phase === "serve" ? roundsOf(G) - G.round : roundsOf(G) + 1;
+  if (left < 2) return null;
+  const scale = Math.min(1, left / 6);
+  const f = FLAVOR[p.main];
+  const W = { windguard: 1.5, chacosta: 1.0, timer: 1.0, ice_hose: f && f.hi >= 6 ? 1.8 : 1.0, diffuser: 1.2 };
+  let best = null;
   for (let i = 0; i < p.hand.length; i++) {
     const id = p.hand[i], c = CARD[id];
     if (c.type !== "tool" && c.type !== "person") continue;
     if (c.type === "person" && p.person) continue;
-    if (c.type === "tool" && p.tools.length >= RULES.toolMax) continue;
-    if (firepower(p) - keep < c.cost || !canPlay(G, p, id).ok) continue;
-    return { type: "play", hand: i };
+    if (c.type === "tool" && (p.tools.length >= G.R.toolMax || p.tools.includes(id))) continue;
+    if (!canPlay(G, p, id).ok) continue;
+    const v = (c.type === "person" ? 2.2 : W[id] ?? 1.0) * scale;
+    if (!best || v > best.v) best = { v, act: { type: "play", hand: i } };
   }
-  return null;
+  return best;
 }
-
-function main(G, p) {
-  const o = G.P[1 - p.index], keep = reserve(p), second = G.order[1] === p.index;
+/** 自分のターンに使うカードの候補と値打ち（いちばん良いもの）。無ければ null */
+function turnCard(G, p) {
+  const o = G.P[1 - p.index], second = G.order[1] === p.index;
   const lastRound = G.round === roundsOf(G) - 1, lastOfSession = isLastOfSession(G);
   const ok = (id) => cnt(p, id) && canPlay(G, p, id).ok;
-  const spare = () => firepower(p) - keep;
-  const use = (id) => ({ type: "play", hand: idx(p, id) });
-  // やさしい: ときどきチャージを忘れる（その回は炭の手をとばす）
-  const sloppy = p.level <= 0 && ((G.seed >>> 3) + G.round * 7 + p.hand.length) % 10 < 3;
-
-  const place = p.hand.findIndex((id) => isCoal(id) && canPlace(G, p, id).ok);
-  if (place >= 0) return { type: "place", hand: place };
-  if (p.level >= 1 && ok("read") && !p.peek) return use("read");
-  const perm = permanent(G, p, keep); if (perm) return perm;
-  if (!sloppy) { const cm = coalMove(G, p); if (cm) return cm; }
-
-  // 次に備える
-  const hNow = heatOf(p);
+  const cands = [];
+  const add = (id, v) => { if (ok(id) && v > 0) cands.push({ v, act: { type: "play", hand: idx(p, id) } }); };
+  const perm = permanent(G, p); if (perm) cands.push(perm);
+  const hNow = heatOf(p), hasReact = REACT.some((id) => cnt(p, id));
+  const guess0 = puffGuess(G, p);
+  // 熱を d 動かしたとき、この一口の期待点がどれだけ変わるか（カードの1枚はもう使う前提）
+  const heatDelta = (d) => expected(G, p, Math.max(0, Math.min(G.R.heatMax, hNow + d)), guess0, false) - expected(G, p, hNow, guess0, false);
+  // 引いた札の値打ち（手札が7枚を超えるぶんは捨てる）
+  const drawV = (n) => CARDV * Math.max(0, Math.min(n, G.R.handMax - (p.hand.length - 1)));
+  if (!p.peek && G.pile.length) add("read", p.level >= 1 ? (hasReact ? 1.1 : 0.6) : 0.3);
   if (!lastRound) {
     const want = bestHeat(G, p, p.level >= 1 ? puffGuess(G, { ...p, peek: null }) : normalGuess), cs = coolStepsOf(p);
     const cushion = p.zone.filter((c) => c.up && CARD[c.id].heat === 1).length + p.wind;
-    const readyNext = p.stove.filter((c) => c.stage >= 1).reduce((a, c) => a + CARD[c.id].heat, 0);
-    if (ok("ash_tap") && spare() >= 1 && !p.noCool && hNow - Math.max(0, cs - cushion) + readyNext < want) return use("ash_tap");
-    if (ok("fan") && spare() >= 1 && hNow - cs + readyNext < want) return use("fan");
-    if (ok("inner") && spare() >= 2 && !lastOfSession && hNow < want - 1) return use("inner");
-    if (ok("outer") && spare() >= 1 && !lastOfSession && hNow - cs > want + 1) return use("outer");
-    if (ok("tongs") && p.hand.length <= 3 && hNow - cs > want) return use("tongs");
-    if (ok("reset") && hNow - cs >= want + 2 && p.zone.filter((c) => !c.up).length >= 2 && p.hand.length <= 5) return use("reset");
-  }
-  if (ok("loosen") && spare() >= 2 && !isLastSession(G) && !p.keepLeaves && lastOfSession) return use("loosen");
-  if (ok("breath") && spare() >= 1 && p.hand.length <= 5) return use("breath");
-
-  // 相手を揺さぶる（ふつう以上）。相手がもうターンを終えている＝自分が後手のときに、相手の見込みが大きく下がるなら
-  if (p.level >= 1) {
-    const guess = puffGuess(G, p);
-    const oppLoss = () => {
-      const oh = heatOf(o), om = Math.min(firepower(o), 2), view = { ...o, hand: [] }; // 相手の手札は見ない
-      const base = expected(G, view, oh, om, guess); view.pend = o.pend + 1; return base - expected(G, view, oh, om, guess);
-    };
-    const calm = o.bowl.lavender >= 2;
-    if (second && !calm) {
-      if (ok("hype") && spare() >= 2 && oppLoss() >= 1.5) return use("hype");
-      if (ok("venue_heat") && spare() >= 1) {
-        const mine = expected(G, p, hNow, firepower(p), guess), me2 = { ...p, pend: p.pend + 1 };
-        if (oppLoss() - (mine - expected(G, me2, hNow, firepower(p), guess)) >= 1.5) return use("venue_heat");
-      }
+    const loss = Math.max(0, cs - cushion);
+    // 灰落とし: 次のターンに冷めて足りなくなる熱を、チャージせずに済む
+    if (!p.noCool) add("ash_tap", CARDV * Math.min(loss, Math.max(0, want - (hNow - loss))) + 0.2);
+    const notReady = p.stove.filter((c) => c.stage < 2).length;
+    if (notReady) add("fan", 0.5 * notReady);
+    // 寄せ: このセッションの残りの一口すべての判定熱を動かす。次の一口からは熱を合わせ直せるので、
+    // 「合わせ直したあとの一番良い期待点」の差で測る（外寄せなら、判定熱を保ったまま熱を上げて必要火力に届く）
+    const sessLeft = 3 - (G.round % 3);
+    const bestE = (pp) => { let b = -Infinity; for (let h = 0; h <= G.R.heatMax; h++) b = Math.max(b, expected(G, pp, h, guess0, true)); return b; };
+    // 内寄せ: このセッションの残りの一口すべての印象+1（一票に届く見込み）
+    if (sessLeft >= 2 || !lastOfSession) add("inner", IMP_W * 1.6 * sessLeft);
+    for (const [id, d] of [["outer", -1]]) {
+      if (sessLeft <= 1 || !cnt(p, id)) continue;
+      const view = { ...p, sessMod: p.sessMod + d };
+      add(id, (expected(G, view, hNow, guess0, false) - expected(G, p, hNow, guess0, false)) + (bestE(view) - bestE(p)) * (sessLeft - 1));
     }
-    if (ok("draft") && spare() >= 2 && o.zone.length && !o.tools.includes("windguard") && !calm) return use("draft");
-    if (ok("go_second") && spare() >= 1 && !lastRound && p.level >= 2) return use("go_second");
+  }
+  if (!isLastSession(G) && !p.keepLeaves && lastOfSession) add("loosen", 1.6);
+  if (p.hand.length <= 2) add("breath", 0.9);
+  if (p.level >= 1) {
+    const guess = puffGuess(G, p), calm = o.bowl.lavender >= 2;
+    const oppLoss = () => {
+      const view = { ...o, hand: [] }; // 相手の手札は見ない
+      const base = expected(G, view, heatOf(o), guess, false); view.pend = o.pend + 1; return base - expected(G, view, heatOf(o), guess, false);
+    };
+    if (second && !calm) {
+      add("hype", oppLoss());
+      if (ok("venue_heat")) { const me2 = { ...p, pend: p.pend + 1 }; add("venue_heat", oppLoss() - (expected(G, p, hNow, guess, false) - expected(G, me2, hNow, guess, false))); }
+    }
+    if (o.zone.length && !o.tools.includes("windguard") && !calm) add("draft", 0.9);
+    if (!lastRound && p.level >= 2) add("go_second", 0.5);
+  }
+  cands.sort((a, b) => b.v - a.v);
+  return cands[0] || null;
+}
+
+/** 枠を返すカードのうち、使って得なもの（引く値打ち＋熱が下がる値打ち）。無ければ null */
+function freeCard(G, p) {
+  const h = heatOf(p), guess = puffGuess(G, p);
+  const drawV = (n) => CARDV * Math.max(0, Math.min(n, G.R.handMax + 1 - p.hand.length));
+  // 熱が下がる値打ち: 下げたあとに、この一口で一番良く受けられるか（枠は残っている）
+  const at = (hh) => expected(G, p, Math.max(0, hh), guess, true);
+  let best = null;
+  for (const [id, n] of [["breath", 1], ["tongs", 2], ["reset", 3], ["add_coal", 0]]) {
+    if (!cnt(p, id) || !canPlay(G, p, id).ok) continue;
+    const ash = CARD[id].pay?.fire || 0, up = id === "add_coal" ? 2 : 0;
+    const v = drawV(n) + at(Math.min(G.R.heatMax, h - ash + up)) - at(h) + (id === "add_coal" ? 2 * CARDV * 0.5 : ash ? 0 : 0.05);
+    if (v > 0.05 && (!best || v > best.v)) best = { v, act: { type: "play", hand: idx(p, id) } };
+  }
+  return best?.act || null;
+}
+function main(G, p) {
+  // やさしい: ときどきチャージを忘れる（その回は炭の手をとばす）
+  const sloppy = p.level <= 0 && ((G.seed >>> 3) + G.round * 7 + p.hand.length) % 10 < 3;
+  const place = p.hand.findIndex((id) => isCoal(id) && canPlace(G, p, id).ok);
+  if (place >= 0) return { type: "place", hand: place };
+  if (!sloppy) { const cm = coalMove(G, p); if (cm) return cm; }
+  // 枠を返すカード（ひと息・トングさばき・仕切り直し）は、引く値打ちと熱の動きで得なら先に使う
+  if (slotFree(G, p) && G.phase === "serve") { const f = freeCard(G, p); if (f) { if (p.turn.ai) p.turn.ai.heatDone = false; return f; } }
+  if (slotFree(G, p)) {
+    // カードの1枚: 自分のターンに使うか、審査の一口のために取っておくか
+    const t = turnCard(G, p);
+    if (!G.R.reactAfterReveal && G.phase === "serve" && p.level >= 1) {
+      // 一口のカードはこのターンに仕込む。手番のカードと比べて良いほうを使う
+      const guess = puffGuess(G, p), h = heatOf(p), c = bestCommit(G, p, h, guess);
+      const gain = c.id ? c.v - expected(G, p, h, guess, false) : 0;
+      if (c.id && gain > (t ? t.v : 0) && canPlay(G, p, c.id).ok) return { type: "play", hand: idx(p, c.id) };
+      if (t && t.v > 0) { if (p.turn.ai) p.turn.ai.heatDone = false; return t.act; }
+      return { type: "end" };
+    }
+    if (t) {
+      const guess = puffGuess(G, p), h = heatOf(p);
+      const hold = p.level >= 1 ? expected(G, p, h, guess, true) - expected(G, p, h, guess, false) : 0;
+      if (t.v > hold) { if (p.turn.ai) p.turn.ai.heatDone = false; return t.act; }
+    }
   }
   return { type: "end" };
 }
 
-// 審査: めくられたカードを見て、吸いの技と点を伸ばすカードを使う
+// 審査: めくられたカードを見て、いちばん良い一口を1枚だけ使う（使わなくてもよい）
 function react(G, p) {
-  const q = G.judge, o = G.P[1 - p.index], pf = p.puff;
-  const use = (id) => ({ type: "play", hand: idx(p, id) });
-  const ok = (id) => cnt(p, id) && canPlay(G, p, id).ok;
-  if (!pf.ai) {
-    // 技を足す前の熱で、いちばん良い受け方を一度だけ決める
-    const b = bestReaction(G, p, heatOf(p), q, firepower(p));
-    pf.ai = { tk: b.tk, blow: b.blow };
-  }
-  if (pf.ai.tk > 0 && ok("heat_in")) { pf.ai.tk--; return use("heat_in"); }
-  if (pf.ai.tk < 0 && ok("heat_out")) { pf.ai.tk++; return use("heat_out"); }
-  if (pf.ai.blow && ok("blow")) { pf.ai.blow = false; return use("blow"); }
-  const now = puffPreview(G, p), good = now.zone === "just" || now.zone === "band";
-  if (now.zone === "just" && ok("all_in")) return use("all_in");
-  if (good && now.rich && ok("show_smoke")) return use("show_smoke");
-  const oppZone = o.puff?.done || G.order[0] === o.index ? puffPreview(G, o).zone : puffPreview(G, o).zone;
-  if (ok("duel") && RANK[now.zone] > RANK[oppZone] && (G.order[1] === p.index || p.level < 2)) return use("duel");
-  if (ok("encore") && (G.round === roundsOf(G) - 1 || now.pts >= 9)) return use("encore");
+  if (!slotFree(G, p)) return { type: "pass" };
+  const o = G.P[1 - p.index];
+  const opp = p.level >= 1 ? puffPreview(G, o).imp : null;
+  const b = bestReaction(G, p, heatOf(p), G.judge, { slot: true, opp });
+  if (b.id && cnt(p, b.id) && canPlay(G, p, b.id).ok) return { type: "play", hand: idx(p, b.id) };
   return { type: "pass" };
 }

@@ -1,12 +1,20 @@
 // DS風の外枠（上画面の canvas・下画面・本体のボタン）。見た目は css/look-retro.css。
 // 1ドット = --dpx。2画面は必ず 4:3（256×192）で、「幅いっぱい」か「高さに収まる最大」の小さい方に合わせる。
+// ドットを均一にするため、1ドットが実機の画素の整数倍になる大きさを優先する（layout）。
 import { el } from "../../core/util.js";
 
 export const SCREEN_W = 256, SCREEN_H = 192;
 // 外枠の寸法（ドット）。幅は画面 256 + 左右の縁、高さは 状態の行 + 画面2枚 + 継ぎ目 + 本体のボタン の最小構成。
 const DEVICE_W = 268, DEVICE_MIN_H = 458, BRAND_H = 20;
+// 整数倍へそろえる時に許す幅の損。スマホは 1 割まで。PC は窓が大きいので 2 割 5 分まで（均一なドットを優先する）。
+const LOSS_TOUCH = 0.1, LOSS_DESKTOP = 0.25;
 
-export function createShell() {
+/**
+ * paint: "dot"（DS風。1ドット＝実機の画素の整数倍にそろえる）／"hd"（新版の縦持ち。上画面は高解像度の絵で、
+ * 大きさは幅いっぱい（または高さに収まる最大）のまま。canvas の裏画面は CSS の大きさ × devicePixelRatio）。
+ */
+export function createShell({ paint = "dot" } = {}) {
+  const hd = paint === "hd";
   const canvas = el("canvas.retro-canvas", { width: SCREEN_W, height: SCREEN_H, "aria-hidden": "true" });
   const statusL = el("span.retro-status-l"), statusR = el("span.retro-status-r");
   const maphead = el("div.retro-maphead", { hidden: true });
@@ -27,12 +35,20 @@ export function createShell() {
     keys,
     brand,
   ]);
-  const root = el("div.retro-shell", { hidden: true, dataset: { test: "retro-shell", scene: "" } }, [device]);
+  const root = el("div.retro-shell", { hidden: true, dataset: { test: "retro-shell", scene: "", paint } }, [device]);
   const note = el("div.retro-note", { hidden: true, role: "status", dataset: { test: "retro-note" } });
 
-  /** 画面（ノッチ・ホームバーを除いた内側）に収まる最大の 1ドットを決める。 */
+  let dotScale = 1; // 1ドットが実機の何画素か（高解像度の描き方が、顔のアイコンなどの大きさを決めるのに使う）
+
+  /**
+   * 画面（ノッチ・ホームバーを除いた内側）に収まる 1ドットの大きさを決め、外枠を置く。
+   * 1ドット＝実機の画素の整数 n 個にできる時は、上画面の canvas を 256n×192n の裏画面にして、CSS の大きさと 1:1 にそろえる
+   * （image-rendering に頼らずにドットが均一になる）。外枠の位置も実機の画素の境目へ合わせる。
+   * 整数にすると小さくなりすぎる端末だけ、幅いっぱい＋image-rendering: pixelated（裏画面は 256×192）。
+   * 戻り値は canvas の大きさを変えたかどうか（変えたら描き直す）。
+   */
   function layout() {
-    if (!root.isConnected) return;
+    if (!root.isConnected) return false;
     const cs = getComputedStyle(root);
     const pad = (side) => parseFloat(cs[`padding${side}`]) || 0;
     const viewport = window.visualViewport;
@@ -40,11 +56,44 @@ export function createShell() {
     const fullH = viewport?.height > 0 ? Math.min(viewport.height, window.innerHeight) : window.innerHeight;
     const w = Math.max(1, fullW - pad("Left") - pad("Right"));
     const h = Math.max(1, fullH - pad("Top") - pad("Bottom"));
-    const dpx = Math.max(0.5, Math.min(w / DEVICE_W, h / DEVICE_MIN_H));
+    const ratio = window.devicePixelRatio || 1;
+    const ideal = Math.max(0.5, Math.min(w / DEVICE_W, h / DEVICE_MIN_H));
+    const exact = ideal * ratio, down = Math.floor(exact + 1e-4), up = down + 1;
+    const touch = typeof window.matchMedia === "function" && window.matchMedia("(hover: none) and (pointer: coarse)").matches;
+    let n = 0;
+    // 切り上げても2画面と本体のボタンが収まるなら大きい方、そうでなければ切り下げ（損が許す範囲の時だけ）
+    if (hd) n = 0;
+    else if (up / ratio * SCREEN_W <= w - 4 && up / ratio * DEVICE_MIN_H <= h) n = up;
+    else if (down >= 1 && down >= exact * (1 - (touch ? LOSS_TOUCH : LOSS_DESKTOP))) n = down;
+    const dpx = n ? n / ratio : ideal;
     const slack = Math.max(0, h / dpx - DEVICE_MIN_H);
-    root.style.setProperty("--dpx", `${dpx.toFixed(4)}px`);
-    root.style.setProperty("--slack", slack.toFixed(2));
+    // 余った高さは、行の間・継ぎ目・本体のボタンへ整数ドットで配る（画面の位置が画素の境目からずれないように）
+    const gaps = {
+      status: 5 + Math.min(4, Math.floor(slack * 0.04)),
+      hinge: 13 + Math.min(5, Math.floor(slack * 0.05)),
+      keys: 27 + Math.min(9, Math.floor(slack * 0.1)),
+      "keys-gap": 9 + Math.min(10, Math.floor(slack * 0.12)),
+      "brand-gap": 5 + Math.min(12, Math.floor(slack * 0.1)),
+    };
     brand.hidden = slack < BRAND_H + 8;
+    const height = 13 + gaps.status + SCREEN_H + gaps.hinge + SCREEN_H + gaps["keys-gap"] + gaps.keys + 3 + (brand.hidden ? 0 : gaps["brand-gap"] + 8);
+    const snap = (value) => (n ? Math.round(value * ratio) / ratio : value);
+    root.style.setProperty("--dpx", `${dpx.toFixed(6)}px`);
+    for (const [name, dots] of Object.entries(gaps)) root.style.setProperty(`--gap-${name}`, String(dots));
+    device.style.left = `${snap(pad("Left") + (w - DEVICE_W * dpx) / 2)}px`;
+    device.style.top = `${snap(pad("Top") + Math.max(0, (h - height * dpx) / 2))}px`;
+    root.dataset.pixel = hd ? "hd" : n ? "integer" : "fit";
+    dotScale = dpx * ratio;
+    let width = SCREEN_W * (n || 1), tall = SCREEN_H * (n || 1);
+    if (hd) {
+      // 高解像度: 裏画面を実機の画素の大きさにする（CSS の大きさ × devicePixelRatio）
+      width = Math.max(SCREEN_W, Math.round(SCREEN_W * dpx * ratio));
+      tall = Math.max(SCREEN_H, Math.round(SCREEN_H * dpx * ratio));
+      delete canvas.dataset.scale;
+    } else canvas.dataset.scale = String(n || 1);
+    if (canvas.width === width && canvas.height === tall) return false;
+    canvas.width = width; canvas.height = tall;
+    return true;
   }
 
   /** 状態の行（左・右）。 */
@@ -103,7 +152,8 @@ export function createShell() {
   }
 
   return {
-    root, note, canvas, top, bottom, maphead, markers, layout, setStatus, setKeys, setNotices, setCaption,
+    root, note, canvas, top, bottom, maphead, markers, layout, setStatus, setKeys, setNotices, setCaption, paint,
+    dotScale: () => dotScale,
     mount() { document.body.append(root, note); layout(); },
     unmount() { root.remove(); note.remove(); },
   };

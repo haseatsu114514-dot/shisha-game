@@ -1,12 +1,16 @@
 // 見た目の様式「DS風」（LK03・js/looks/retro.js）: 現行の画面を動かしたまま、上下2画面（256×192）の外枠へ写す。
 // 縦持ちのタッチ端末と PC で、タイトル・会話と選択肢・日常の地図に外枠が出ること、操作が現行へ中継されること、
-// 未対応の場面（MENU）では外枠が引っ込むこと、現行へ戻す・横持ち・第2章では現行のままであることを確かめる。
+// 全画面 MENU・設定はシート（retro/sheet.js）で外枠の中に写り、未対応の場面（心得の盤）では外枠が引っ込むこと、
+// 現行へ戻す・横持ち・第2章では現行のままであることを確かめる。
+// 上画面はドット絵の処方（色数を絞る・一人の場面は人物へ寄る・1ドット＝整数画素）で、場面転換・登場カットイン・
+// tonari の行動選びの間も外枠のまま続くこと（現行の画面へ行き来しないこと）も確かめる。
 import assert from "node:assert/strict";
 import { suite, baseURL } from "./support.mjs";
 
 const t = (id) => `[data-test="${id}"]`;
 const entry = `${baseURL}${baseURL.includes("?") ? "&" : "?"}look=retro`;
 const TALL = { viewport: { width: 390, height: 844 }, deviceScaleFactor: 2, hasTouch: true, isMobile: true };
+const TALL3 = { viewport: { width: 390, height: 844 }, deviceScaleFactor: 3, hasTouch: true, isMobile: true };
 const WIDE = { viewport: { width: 844, height: 390 }, deviceScaleFactor: 2, hasTouch: true, isMobile: true };
 const shellFor = (scene) => `.retro-shell:not([hidden])[data-scene="${scene}"]`;
 
@@ -21,7 +25,31 @@ const rootState = (page) => page.evaluate(() => {
   };
 });
 
-/** 上画面の canvas が 256×192 で、絵が写っている（真っ黒・単色でない）こと。 */
+/** 上画面の canvas の画素（256×192 のドットへ直した色の一覧・色の種類・寄りの倍率）。 */
+const topScreen = (page) => page.evaluate(() => {
+  const canvas = document.querySelector(".retro-canvas");
+  const scale = Number(canvas.dataset.scale) || 1;
+  const { data } = canvas.getContext("2d").getImageData(0, 0, canvas.width, canvas.height);
+  const px = new Uint32Array(data.buffer);
+  const colors = new Set(), dots = [];
+  let uniform = true, bright = 0;
+  for (let y = 0; y < 192; y++) for (let x = 0; x < 256; x++) {
+    const color = px[y * scale * canvas.width + x * scale];
+    colors.add(color); dots.push(color);
+    if ((color & 255) + ((color >> 8) & 255) + ((color >> 16) & 255) > 120) bright++;
+    // 1ドットの中の画素がすべて同じ色か（補間なしで拡大できているか）。端の画素だけ見る
+    if (scale > 1 && px[(y * scale + scale - 1) * canvas.width + x * scale + scale - 1] !== color) uniform = false;
+  }
+  const box = canvas.getBoundingClientRect();
+  return {
+    backing: [canvas.width, canvas.height], scale, colors: colors.size, bright, uniform, zoom: Number(canvas.dataset.zoom) || 0,
+    sample: [[40, 40], [128, 60], [216, 40], [64, 120], [128, 150], [200, 130], [128, 96]].map(([x, y]) => dots[y * 256 + x]),
+    ratio: box.width / box.height, device: [box.width * devicePixelRatio, box.left * devicePixelRatio, box.top * devicePixelRatio],
+    rendering: getComputedStyle(canvas).imageRendering, pixel: document.querySelector(".retro-shell").dataset.pixel,
+  };
+});
+
+/** 上画面が 256×192 のドット（裏画面はその整数倍）で、絵が写っている（真っ黒・単色でない）こと。 */
 async function assertTopScreenPainted(page, label) {
   await page.waitForFunction(() => {
     const canvas = document.querySelector(".retro-canvas");
@@ -29,22 +57,27 @@ async function assertTopScreenPainted(page, label) {
     const { data } = canvas.getContext("2d").getImageData(0, 0, canvas.width, canvas.height);
     let bright = 0;
     for (let i = 0; i < data.length; i += 4 * 97) if (data[i] + data[i + 1] + data[i + 2] > 120) bright++;
-    return bright > 40;
+    return bright > canvas.width * canvas.height / 97 * 0.08;
   }, null, { timeout: 15000 });
-  const result = await page.evaluate(() => {
-    const canvas = document.querySelector(".retro-canvas");
-    const ctx = canvas.getContext("2d");
-    const points = [[40, 40], [128, 60], [216, 40], [64, 120], [128, 150], [200, 130], [128, 96]];
-    const colors = points.map(([x, y]) => [...ctx.getImageData(x, y, 1, 1).data].join(","));
-    const box = canvas.getBoundingClientRect();
-    return { width: canvas.width, height: canvas.height, colors, ratio: box.width / box.height, rendering: getComputedStyle(canvas).imageRendering };
-  });
-  assert.deepEqual([result.width, result.height], [256, 192], `${label}: top screen is not 256x192`);
+  const result = await topScreen(page);
+  assert.deepEqual(result.backing, [256 * result.scale, 192 * result.scale], `${label}: top screen is not a multiple of 256x192`);
   assert(Math.abs(result.ratio - 4 / 3) < 0.01, `${label}: top screen is not 4:3 (${result.ratio})`);
   assert.equal(result.rendering, "pixelated", `${label}: top screen is not pixelated`);
-  assert(new Set(result.colors).size >= 4, `${label}: top screen looks blank ${JSON.stringify(result.colors)}`);
-  assert(result.colors.some((color) => color !== "0,0,0,255" && color !== "11,8,18,255"), `${label}: top screen is black`);
+  assert(result.uniform, `${label}: dots are not enlarged without smoothing`);
+  assert(new Set(result.sample).size >= 4, `${label}: top screen looks blank ${JSON.stringify(result.sample)}`);
+  return result;
 }
+
+/** 外枠の出入りを記録する（"off"＝現行の画面へ引っ込んだ）。 */
+const watchShell = (page) => page.evaluate(() => {
+  const shell = document.querySelector(".retro-shell");
+  window.__shellLog = [];
+  new MutationObserver(() => {
+    const now = shell.hidden ? "off" : shell.dataset.scene;
+    if (window.__shellLog.at(-1) !== now) window.__shellLog.push(now);
+  }).observe(shell, { attributes: true, attributeFilter: ["hidden", "data-scene"] });
+});
+const shellLog = (page) => page.evaluate(() => window.__shellLog.slice());
 
 /** 2つの画面と本体のボタンが、画面の中に収まっていること。 */
 async function assertShellFits(page, label) {
@@ -69,7 +102,7 @@ async function playScene(page, id, { chapter = 1, bg = "res://assets/backgrounds
     for (const c of ["sumi", "tsumugi", "naru", "minto", "adam", "rio"]) s.met[c] = true;
     const { play } = await import("./js/vn/engine.js");
     (await import("./js/core/ui.js")).clearScreen();
-    window.sceneRun = play(id, { bg }).catch((error) => { window.sceneError = String(error.stack || error); });
+    window.sceneRun = play(id, bg ? { bg } : {}).catch((error) => { window.sceneError = String(error.stack || error); });
   }, [id, chapter, bg]);
   await page.locator("#vn.active .vn-text").waitFor({ state: "attached", timeout: 20000 });
 }
@@ -132,6 +165,10 @@ await suite("look_retro", async (check) => {
     await assertShellFits(page, "portrait conversation");
     await assertTopScreenPainted(page, "conversation");
     await typed(page);
+    // ドット絵の処方: 一人の場面は人物へ寄り（1.35 倍）、色数は背景 64 色＋立ち絵 48 色＋店の台の範囲に収まる
+    await page.waitForFunction(() => document.querySelector(".retro-canvas").dataset.zoom === "1.35");
+    const dots = await topScreen(page);
+    assert(dots.colors <= 150 && dots.colors >= 24, `conversation: the upper screen should use a reduced palette, got ${dots.colors} colours`);
     const first = await page.evaluate(() => ({
       classic: document.querySelector("#vn .vn-text").textContent, retro: document.querySelector(".retro-vn-text").textContent,
       name: document.querySelector("#vn .vn-name.show")?.textContent || "", retroName: document.querySelector(".retro-vn-name:not([hidden])")?.textContent || "",
@@ -219,35 +256,82 @@ await suite("look_retro", async (check) => {
     assert.equal(await page.locator('.retro-marker[data-sel="true"]').count(), 1);
     assert.equal(await page.locator(".retro-maplabel").textContent(), "PEPPERMINT");
     assert.equal(await page.evaluate(() => window.__remake.state.money), 42000, "selecting does not travel");
+    // 地図の色数も絞られている（64 色）
+    const mapDots = await topScreen(page);
+    assert(mapDots.colors <= 80 && mapDots.colors >= 16, `map: reduced palette expected, got ${mapDots.colors} colours`);
     // 「行く」＝選択中のピンをもう一度押した結果（移動して利用料を払う）
+    await watchShell(page);
     await page.locator(t("retro-go")).tap();
     await page.waitForFunction(() => !document.querySelector("#screen .map:not(.done)") && window.__remake.state.money === 39000, null, { timeout: 15000 });
     await page.waitForFunction(() => document.body.classList.contains("in-vn"), null, { timeout: 20000 });
     await page.locator(shellFor("vn")).waitFor();
+    // 場面転換（移動の幕・店のロゴ）の間も外枠のまま（覆い）で、終われば会話が続く
+    const log = await shellLog(page);
+    assert(log.includes("cover"), `the move transition should be shown inside the shell: ${log}`);
+    assert(!log.includes("off"), `the shell must not fall back to the classic screen during the transition: ${log}`);
+    assert.equal(log.at(-1), "vn");
+    await typed(page);
+    const arrived = await vnText(page);
+    assert.equal(await page.locator(".retro-vn-text").textContent(), arrived);
+    await page.locator(t("retro-bottom")).tap({ position: { x: 60, y: 60 } });
+    await page.waitForFunction((text) => document.querySelector("#vn .vn-text").textContent !== text, arrived);
     assert.equal(await page.evaluate(() => window.dailyError || ""), "");
   }, { ...TALL, pageEntry: entry });
 
-  await check("portrait-menu-falls-back", async (page) => {
+  await check("portrait-menu-in-sheet", async (page) => {
     await page.locator(shellFor("title")).waitFor();
     await setupDaily(page);
     await page.locator(shellFor("map")).waitFor();
     await page.locator(t("retro-key-menu")).tap();
-    await page.locator(t("menu")).waitFor();
+    // 全画面 MENU は外枠のシートへ写す（上画面はタブに合った絵、下画面は今のタブの中身、本体のボタンはタブと「閉じる」）
+    await page.locator(shellFor("sheet")).waitFor();
+    await page.locator('.retro-sheet[data-kind="menu"]').waitFor();
+    const open = await rootState(page);
+    assert.equal(open.shellOn, "on");
+    assert.equal(open.viewportOpacity, "0");
+    assert.equal(open.note, "");
+    await assertShellFits(page, "menu sheet");
+    await assertTopScreenPainted(page, "menu sheet");
+    await page.locator(t("retro-key-tab-people")).tap();
+    await page.waitForFunction(() => document.querySelector(".dmenu").dataset.tab === "people"
+      && document.querySelector('[data-test="retro-key-tab-people"]').getAttribute("aria-pressed") === "true");
+    const rows = await page.evaluate(() => ({
+      classic: [...document.querySelectorAll(".dmenu .dm-person")].map((n) => n.dataset.test),
+      sheet: [...document.querySelectorAll(".retro-sheet .s-dm-person")].map((n) => n.dataset.test.replace(/^sheet-/, "")),
+      font: getComputedStyle(document.querySelector(".retro-sheet .s-dm-person")).fontFamily,
+    }));
+    assert(rows.classic.length >= 2);
+    assert.deepEqual(rows.sheet, rows.classic);
+    assert(/Suien Dot/.test(rows.font));
+    await page.locator(t("retro-key-close")).tap();
+    await page.locator(shellFor("map")).waitFor();
+    assert.equal(await page.locator(".dmenu").count(), 0);
+    assert.equal(await page.evaluate(() => window.dailyError || ""), "");
+  }, { ...TALL, pageEntry: entry });
+
+  await check("portrait-growth-board-falls-back", async (page) => {
+    await page.locator(shellFor("title")).waitFor();
+    await setupDaily(page);
+    await page.locator(shellFor("map")).waitFor();
+    await page.locator(t("retro-key-menu")).tap();
+    await page.locator(t("sheet-menu-board")).tap();
+    // 心得の盤（動かして見る盤・未対応の場面）では外枠を引っ込め、現行の画面を小さく見せて一言を添える
+    await page.locator(t("board-close")).waitFor({ timeout: 15000 });
     await page.waitForFunction(() => document.querySelector(".retro-shell").hidden);
     const open = await rootState(page);
-    assert.equal(open.shellOn, "", "the DS shell steps aside for MENU");
+    assert.equal(open.shellOn, "", "the DS shell steps aside for the growth board");
     assert.equal(open.viewportOpacity, "1", "the classic screen is visible while the shell is away");
     assert.equal(open.hint, "none", "no rotate hint while the DS look is available");
     assert.equal(open.guard, "");
     await page.locator(t("retro-note")).waitFor();
     assert.match(await page.locator(t("retro-note")).textContent(), /横向き/);
-    // 現行の MENU がそのまま押せる
-    assert(await page.locator(t("menu-close")).evaluate((node) => {
+    // 現行の盤の「閉じる」がそのまま押せる
+    assert(await page.locator(t("board-close")).evaluate((node) => {
       const r = node.getBoundingClientRect();
       const top = document.elementFromPoint((r.left + r.right) / 2, (r.top + r.bottom) / 2);
       return node === top || node.contains(top);
-    }), "the classic MENU close button is reachable");
-    await page.locator(t("menu-close")).tap();
+    }), "the classic board close button is reachable");
+    await page.locator(t("board-close")).tap();
     await page.locator(shellFor("map")).waitFor();
     const closed = await rootState(page);
     assert.equal(closed.shellOn, "on");
@@ -257,12 +341,11 @@ await suite("look_retro", async (check) => {
 
   await check("portrait-back-to-classic", async (page) => {
     await page.locator(shellFor("title")).waitFor();
-    // 設定から現行へ戻す（設定は未対応の場面なので、現行の画面で開く）
+    // 設定は外枠のシートで開き、写しの段ボタンから現行へ戻す（押すと元の段ボタンへ中継される）
     await page.locator(t("retro-title-config")).tap();
-    await page.locator(t("cfg-look")).waitFor();
-    await page.waitForFunction(() => document.querySelector(".retro-shell").hidden);
-    await page.locator(`${t("cfg-look")} button[value="classic"]`).tap();
-    await page.waitForFunction(() => document.documentElement.dataset.look === "classic" && !document.querySelector(".retro-shell, .retro-note"));
+    await page.locator('.retro-sheet[data-kind="modal"]').waitFor();
+    await page.locator(`${t("sheet-cfg-look")} button[value="classic"]`).tap();
+    await page.waitForFunction(() => document.documentElement.dataset.look === "classic" && !document.querySelector(".retro-shell, .retro-note, .retro-sheet"));
     await page.waitForFunction(() => document.documentElement.dataset.rotateGuard === "true");
     const classic = await rootState(page);
     assert.equal(classic.engaged, "");
@@ -274,8 +357,93 @@ await suite("look_retro", async (check) => {
     await page.locator(`${t("cfg-look")} button[value="retro"]`).evaluate((node) => node.click());
     await page.waitForFunction(() => document.documentElement.dataset.retro === "on" && !document.documentElement.dataset.rotateGuard);
     assert.equal((await rootState(page)).hint, "none");
-    await page.locator(t("cfg-close")).tap();
+    await page.locator('.retro-sheet[data-kind="modal"]').waitFor();
+    await page.locator(t("sheet-cfg-close")).tap();
     await page.locator(shellFor("title")).waitFor();
+  }, { ...TALL, pageEntry: entry });
+
+  await check("portrait-dpr3-integer-pixels", async (page) => {
+    await page.locator(shellFor("title")).waitFor();
+    await playScene(page, "ch1_minto_second");
+    await page.locator(shellFor("vn")).waitFor();
+    const dots = await assertTopScreenPainted(page, "dpr3 conversation");
+    // 1ドット＝実機の画素の整数倍。裏画面と CSS の大きさが 1:1 で、位置も画素の境目に合っている
+    assert.equal(dots.pixel, "integer");
+    assert(dots.scale >= 3, `one dot should span several device pixels, got ${dots.scale}`);
+    assert(Math.abs(dots.device[0] - dots.backing[0]) < 0.5, `canvas is not 1:1 with device pixels ${JSON.stringify(dots)}`);
+    for (const edge of dots.device.slice(1)) assert(Math.abs(edge - Math.round(edge)) < 0.1, `canvas is off the device pixel grid ${JSON.stringify(dots.device)}`);
+    const dpx = await page.evaluate(() => parseFloat(document.querySelector(".retro-shell").style.getPropertyValue("--dpx")) * devicePixelRatio);
+    assert(Math.abs(dpx - dots.scale) < 0.01, `the lower screen uses the same dot size (${dpx} vs ${dots.scale})`);
+    await assertShellFits(page, "dpr3 conversation");
+  }, { ...TALL3, pageEntry: entry });
+
+  await check("portrait-intro-cutin-in-shell", async (page) => {
+    await page.locator(shellFor("title")).waitFor();
+    await playScene(page, "ch1_tsumugi_first", { bg: null });
+    await page.locator(shellFor("vn")).waitFor();
+    await watchShell(page);
+    // スミさんの登場カットインまで送る
+    for (let i = 0; i < 40 && !(await page.locator("#fx .cutin").count()); i++) {
+      await page.locator(t("retro-bottom")).tap({ position: { x: 60, y: 60 } }).catch(() => {});
+      await page.waitForTimeout(250);
+    }
+    await page.locator("#fx .cutin .ci-name").waitFor({ state: "attached" });
+    await page.locator(".retro-profile:not([hidden]) .retro-profile-name").waitFor();
+    const card = await page.evaluate(() => ({
+      scene: document.querySelector(".retro-shell").dataset.scene, hidden: document.querySelector(".retro-shell").hidden,
+      classic: { name: document.querySelector("#fx .cutin .ci-name").getAttribute("aria-label"), title: document.querySelector("#fx .cutin .ci-title").textContent, line: document.querySelector("#fx .cutin .ci-line").textContent },
+      retro: { name: document.querySelector(".retro-profile-name").textContent, title: document.querySelector(".retro-profile-title")?.textContent || "", line: document.querySelector(".retro-profile-line")?.textContent || "" },
+      flavor: document.querySelector(".retro-profile-flavor")?.textContent || "",
+    }));
+    assert.equal(card.scene, "cover");
+    assert.equal(card.hidden, false);
+    assert.deepEqual(card.retro, card.classic, "the lower screen shows the cut-in's name, title and line");
+    assert(card.flavor.includes("好きなフレーバー"), "the favourite flavour is listed");
+    await assertTopScreenPainted(page, "intro cut-in"); // 上画面にカットインの絵
+    // カットインが終わると、外枠のまま会話へ戻る
+    await page.locator("#fx .cutin").waitFor({ state: "detached", timeout: 15000 });
+    await page.locator(shellFor("vn")).waitFor();
+    const log = await shellLog(page);
+    assert(!log.includes("off"), `the shell must stay up through the cut-in: ${log}`);
+    assert.equal(await page.evaluate(() => window.sceneError || ""), "");
+  }, { ...TALL, pageEntry: entry });
+
+  await check("portrait-tonari-menu-in-shell", async (page) => {
+    await page.locator(shellFor("title")).waitFor();
+    await setupDaily(page);
+    await page.locator(shellFor("map")).waitFor();
+    await watchShell(page);
+    await page.locator(t("retro-row-tonari")).tap();
+    await page.waitForFunction(() => document.querySelector('[data-test="retro-go"]').getAttribute("aria-disabled") === "false");
+    await page.locator(t("retro-go")).tap();
+    await page.locator(shellFor("menu")).waitFor({ timeout: 15000 });
+    await assertShellFits(page, "tonari menu");
+    await assertTopScreenPainted(page, "tonari menu");
+    const menu = await page.evaluate(() => ({
+      classic: [...document.querySelectorAll("#screen .sub-menu .big-choice")].map((n) => [n.dataset.test, n.disabled, n.querySelector("b").textContent, n.querySelector("small").textContent]),
+      retro: [...document.querySelectorAll(".retro-menu-list > .retro-option")].map((n) => [n.dataset.test.replace(/^retro-/, ""), n.disabled, n.querySelector("b").textContent, n.querySelector("small").textContent]),
+      status: document.querySelector(".retro-status-l").textContent, caption: document.querySelector(".retro-caption").textContent,
+      lead: document.querySelector("#screen .sub-menu .sub-lead").textContent,
+      keys: [...document.querySelectorAll(".retro-keys .retro-key")].map((n) => n.dataset.key),
+    }));
+    assert(menu.classic.length >= 2);
+    assert.deepEqual(menu.retro, menu.classic, "the lower screen lists the same actions");
+    assert.equal(menu.status, "tonari");
+    assert.equal(menu.caption, menu.lead);
+    assert(menu.keys.includes("back"), "a hardware key goes back to the map");
+    // 「もどる」で地図へ、もう一度入って「お客さんとして一服」を選ぶと会話が始まる
+    await page.locator(t("retro-key-back")).tap();
+    await page.locator(shellFor("map")).waitFor({ timeout: 15000 });
+    await page.locator(t("retro-row-tonari")).tap();
+    await page.waitForFunction(() => document.querySelector('[data-test="retro-go"]').getAttribute("aria-disabled") === "false");
+    await page.locator(t("retro-go")).tap();
+    await page.locator(shellFor("menu")).waitFor({ timeout: 15000 });
+    await page.locator(t("retro-tonari-customer")).tap();
+    await page.waitForFunction(() => document.body.classList.contains("in-vn"), null, { timeout: 20000 });
+    await page.locator(shellFor("vn")).waitFor();
+    const log = await shellLog(page);
+    assert(!log.includes("off"), `the shell must stay up from the map through the tonari menu: ${log}`);
+    assert.equal(await page.evaluate(() => window.dailyError || ""), "");
   }, { ...TALL, pageEntry: entry });
 
   await check("landscape-touch-stays-classic", async (page) => {
@@ -316,12 +484,18 @@ await suite("look_retro", async (check) => {
     assert.equal(await page.locator(".retro-vn-text").textContent(), before);
     await page.locator(t("retro-bottom")).click({ position: { x: 60, y: 60 } });
     await page.waitForFunction((text) => document.querySelector("#vn .vn-text").textContent !== text, before);
-    // LOG は未対応の場面: 現行の画面で開き、閉じると外枠が戻る
+    // LOG は外枠のシート（上下の画面をつないだ縦長の1枚）で開き、本体の「閉じる」で会話へ戻る
     await typed(page);
     await page.locator(t("retro-key-vn-log")).click();
-    await page.waitForFunction(() => document.querySelector("#vn .vn-log.show") && document.querySelector(".retro-shell").hidden);
+    await page.waitForFunction(() => document.querySelector("#vn .vn-log.show") && document.querySelector('.retro-sheet[data-kind="log"]'));
+    const log = await page.evaluate(() => ({
+      classic: [...document.querySelectorAll("#vn .vn-log .log-row")].map((n) => n.textContent),
+      sheet: [...document.querySelectorAll(".retro-sheet .s-log-row")].map((n) => n.textContent),
+    }));
+    assert(log.classic.length >= 2);
+    assert.deepEqual(log.sheet, log.classic);
     assert.equal((await rootState(page)).note, "", "no rotate advice on a landscape desktop window");
-    await page.keyboard.press("Escape");
+    await page.locator(t("retro-key-close")).click();
     await page.locator(shellFor("vn")).waitFor();
   }, { pageEntry: entry });
 
@@ -338,16 +512,4 @@ await suite("look_retro", async (check) => {
     await page.evaluate(() => { window.__remake.state.chapter = 1; });
     await page.locator(shellFor("vn")).waitFor();
   }, { pageEntry: entry });
-
-  await check("old-two-screen-layout-keeps-classic", async (page) => {
-    // 古い2画面表示（表示設定の「DS風」）が有効な端末では外枠を出さず、通常版へ戻す案内だけを出す。
-    // 古い2画面表示そのものが無くなった後は、この確認は不要になる。
-    if (!(await page.evaluate(() => !!document.querySelector('#screen .title[data-layout="ds"]')))) return;
-    await page.locator(t("retro-note")).waitFor();
-    const state = await rootState(page);
-    assert.equal(state.shellOn, "");
-    assert.equal(state.engaged, "");
-    assert.match(state.note, /通常版/);
-    assert.equal(state.viewportOpacity, "1");
-  }, { pageEntry: entry, storageState: { cookies: [], origins: [{ origin: new URL(baseURL).origin, localStorage: [{ name: "suien_title_layout", value: "ds" }] }] } });
 });

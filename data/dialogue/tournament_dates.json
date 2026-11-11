@@ -471,6 +471,41 @@
           "text": "つないだ指先が少し震えていた。二人の歩く速さが揃った。"
         },
         {
+          "speaker": "",
+          "face": "",
+          "text": "屋台の灯りの前で、あげはが空いているほうの手を開いて見せた。指先が、細かく揺れている。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "sad",
+          "text": "今日、震える日なんだ。飛行機、長かったし"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "言ってくれて、ありがと。……明日、客席にいてくれる？"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "いる。うちが吸うんじゃないけど、ちゃんと見てる"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "ハジメっちが炭置くとこ。震えてても、それはちゃんと見えるから"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "じゃあ明日は、あげはに見えるように置く"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "……それ、うちが言いたかったやつ"
+        },
+        {
           "type": "choice",
           "id": "tournament_date_choice_ageha",
           "choices": [

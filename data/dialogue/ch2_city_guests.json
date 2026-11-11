@@ -1,5 +1,5 @@
 {
-  "comment": "第2章以降、面識のある隣町の3人が地元の店へ私用で来る短い会話。日程・料金・読了保存は呼出側。秘密や大会結果、恋愛の進行を先取りしない。",
+  "comment": "第2章以降、面識のある隣町の3人が地元の店へ私用で来る短い会話。日程・料金・読了保存は呼出側。秘密や大会結果、恋愛の進行を先取りしない。神崎・レヰの2回目以降は _repeat・_repeat_b・_repeat_c を順に巡回する（呼出側）。段階会話を読んだかは分からないので、その出来事を前提にしない。",
   "dialogues": [
     {
       "dialogue_id": "ch2_city_guest_ageha_first",
@@ -197,6 +197,126 @@
       ]
     },
     {
+      "dialogue_id": "ch2_city_guest_kumicho_repeat_b",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "EDENの客席で、神崎さんが壁のメニューを端から順に読んでいた。"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "おう、あんちゃん。ここ、ドラゴンフルーツも置いてありやすね"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "在庫切れだ。ダブルアップルならある"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "……その隣の、マンゴーは"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "在庫切れだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（言いそびれた。この店のメニューは、だいたい在庫切れなんだ）"
+        },
+        {
+          "speaker": "adam",
+          "face": "smile",
+          "text": "ふっ。メニューとは、ダブルアップルへ至る道だ"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "smile",
+          "text": "惚れた味を通す、か。……俺のドラゴンフルーツと、同じでさ"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "盃ってのは、二つの家からは受けねえもんでさ。……いや、映画の話でさ"
+        },
+        {
+          "speaker": "adam",
+          "face": "serious",
+          "text": "映画ではない。真理だ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "二人は黙って、同じダブルアップルの煙を吐いた。妙に、息が合っていた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_city_guest_kumicho_repeat_c",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "神崎さんの首に、湿った手ぬぐいが掛かっていた。顔が、ほんのり赤い。"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "smile",
+          "text": "おう、あんちゃん。この町にも、俺みてえなのを入れてくれる湯がありやしてね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "銭湯に行ってきたんですか？"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "サウナでさ。店ごとに水が違うんでね。つい、遠くまで足が向く"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "湯上がりか。なら、今日は軽く詰める"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "surprise",
+          "text": "……まだ、何も頼んでやせんぜ"
+        },
+        {
+          "speaker": "adam",
+          "face": "smile",
+          "text": "顔に書いてある。よく熟れた林檎の色だ"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "水風呂を出て椅子に座ると、頭が空っぽになる。ととのう、ってやつでさ"
+        },
+        {
+          "speaker": "adam",
+          "face": "serious",
+          "text": "それは、ダブルアップルの三口目のことだ"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "smile",
+          "text": "……違えねえ。どっちも、急かしちゃいけねえんですわ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "軽く詰めた一台の煙が、手ぬぐいの湯気と一緒に、ゆっくり天井へ上がっていった。"
+        }
+      ]
+    },
+    {
       "dialogue_id": "ch2_city_guest_rei_first",
       "lines": [
         {
@@ -288,6 +408,126 @@
           "speaker": "rei",
           "face": "smile",
           "text": "……助かる。スミさんの炭替え、音がしないから好きだ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_city_guest_rei_repeat_b",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "奥の席の常連さんが、ホースを手に取った。カウンターのレヰが、ふと顔を上げる。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "レヰは黙って水差しを取り、グラスに注いで奥の席へ運んだ。置いたのと同時に、常連さんがむせた。"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "ごほっ……ああ、すまんね。ありがとう"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "レヰさん、むせる前に動いてましたよね"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……吸う音が、少し高かった。急いでる時の音"
+        },
+        {
+          "speaker": "sumi",
+          "face": "smile",
+          "text": "あの人、一口目を急ぐんだ。よく聞いてるな"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "兄さん、見た目のわりに気が利くねえ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "レヰは小さく会釈して、カウンターへ戻った。グラスを拭く手が、少しだけ速かった。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "smile",
+          "text": "うちで働くか？ 耳のいいのは助かる"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……自分の店が、ある"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "知ってる。言ってみただけだ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch2_city_guest_rei_repeat_c",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "炭を替えながら、スミさんが小さく鼻歌を歌っていた。"
+        },
+        {
+          "speaker": "rei",
+          "face": "surprise",
+          "text": "……その曲。サビの前で、一回だけ止まるやつ"
+        },
+        {
+          "speaker": "sumi",
+          "face": "surprise",
+          "text": "……歌ってたか？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "（スミさんの鼻歌、初めて聞いたかもしれない）"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "歌ってた。音程、合ってた"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "昔、よくラジオで流れてたんだ、……忘れてくれ"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……無理。炭を置く間が、サビ前の溜めと同じだった"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "炭替えに、リズムがあるんですか？"
+        },
+        {
+          "speaker": "rei",
+          "face": "smile",
+          "text": "ある。スミさんの炭替えは、音はしないのに拍がある"
+        },
+        {
+          "speaker": "sumi",
+          "face": "thinking",
+          "text": "……次から、鼻歌は店の外でやる"
+        },
+        {
+          "speaker": "rei",
+          "face": "smile",
+          "text": "……それは、もったいない"
         }
       ]
     }

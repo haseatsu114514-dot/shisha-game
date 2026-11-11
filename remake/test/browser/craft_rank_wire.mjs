@@ -9,8 +9,10 @@ async function assertHeaderControls(page, checkClicks) {
   const boxes = await page.evaluate(() => {
     const rect = selector => document.querySelector(selector).getBoundingClientRect().toJSON();
     return {
-      top: rect('.bench-top'), rank: rect('.craft-rank'), display: rect('.game-layout-toolbar summary'),
+      top: rect('.bench-top'), rank: rect('.craft-rank'),
       appearance: rect('.bench-appearance-button'), help: rect('.bench-guide summary'),
+      // 新しい配置（一枚の舞台・既定）では「外観を選ぶ」は機材を選ぶ工程だけに出す（CSL）
+      appearanceExpected: !document.body.matches('.craft-stage:not(.game-ds)') || document.querySelector('.bench')?.dataset.step === 'setup',
       progress: rect('.bench-progress'),
       phases: [...document.querySelectorAll('.bench-phase')].map(node => node.getBoundingClientRect().toJSON()),
     };
@@ -23,41 +25,39 @@ async function assertHeaderControls(page, checkClicks) {
         && phase.top >= container.top && phase.bottom <= container.bottom + .1,
       `Phase clipped: ${JSON.stringify(boxes)}`);
     }
-    for (const control of [boxes.rank, boxes.display, boxes.appearance]) {
+    for (const control of [boxes.rank, boxes.appearance]) {
       assert(!overlaps(phase, control), `Phase covered: ${JSON.stringify(boxes)}`);
     }
   }
   assert(boxes.rank.width > 0 && boxes.rank.height > 0);
-  assert(boxes.appearance.width > 0 && boxes.help.width > 0);
+  assert(boxes.help.width > 0);
+  assert.equal(boxes.appearance.width > 0, boxes.appearanceExpected, `Appearance visibility: ${JSON.stringify(boxes)}`);
   assert(!overlaps(boxes.appearance, boxes.help), `Appearance covered: ${JSON.stringify(boxes)}`);
   if (!checkClicks) return;
-  await page.locator('.bench-appearance-button').click({ trial: true });
+  if (boxes.appearanceExpected) await page.locator('.bench-appearance-button').click({ trial: true });
   await page.locator('.bench-guide summary').click({ trial: true });
-  if (boxes.display.width) await page.locator('.game-layout-toolbar summary').click({ trial: true });
 }
 
 await suite('craft-rank-wire', async check => {
-  for (const [name, ds, options] of [
-    ['session-pc', false, {}],
-    ['session-pc-1180', false, { viewport: { width: 1180, height: 740 } }],
-    ['session-touch', false, { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }],
-    ['session-ds', true, { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }],
+  // DS風（session-ds）は廃止（横画面一本化）。工程の札の検査は横持ちタッチ（session-touch）にも掛ける。
+  for (const [name, options] of [
+    ['session-pc', {}],
+    ['session-pc-1180', { viewport: { width: 1180, height: 740 } }],
+    ['session-touch', { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }],
   ]) await check(name, async page => {
-    await page.evaluate(async ds => {
+    await page.evaluate(async () => {
       const core = await import('./js/core/state.js'); core.newGame();
       window.T = { session: await import('./js/craft/session.js'), heat: await import('./js/craft/heat.js'),
         score: await import('./js/craft/score.js'), ui: await import('./js/core/ui.js') };
-      const { TITLE_LAYOUT_KEY } = await import('./js/scenes/title-layout.js');
-      localStorage.setItem(TITLE_LAYOUT_KEY, ds ? 'ds' : 'normal');
       const { CRAFT_STEPS } = await import('./js/craft/practice.js');
       T.cs = T.session.newSession('rehearsal');
       T.bench = T.session.openBench(T.cs, { steps: CRAFT_STEPS });
       while (!T.bench.root.isConnected) await new Promise(requestAnimationFrame);
       await T.bench.ready;
       T.session.stepPanel('heat', '炭焼き', '黒い面が消えて全面が赤くなった炭を、タップして取り上げる');
-    }, ds);
+    });
     // どの工程が今でも（いちばん長い名前でも）、残りの工程が全部見えること
-    if (ds || name === 'session-pc' || name === 'session-pc-1180') {
+    {
       const phases = await page.locator('.bench-phase').evaluateAll(nodes => nodes.map(node => ({ step: node.dataset.step, label: node.getAttribute('aria-label') })));
       for (const { step, label } of phases) {
         await page.evaluate(({ step, label }) => T.session.stepPanel(step, label, label), { step, label });
@@ -65,10 +65,10 @@ await suite('craft-rank-wire', async check => {
       }
       await page.evaluate(() => T.session.stepPanel('heat', '炭焼き', '黒い面が消えて全面が赤くなった炭を、タップして取り上げる'));
     }
-    assert.equal(await page.locator('body.game-ds').count(), ds ? 1 : 0);
+    assert.equal(await page.locator('body.game-ds').count(), 0);
     assert.equal(await page.locator('.craft-rank').count(), 1);
     assert.equal(await page.locator('.bench-mode').count(), 1);
-    if (!ds) await assertFits(page, '.bench-mode');
+    await assertFits(page, '.bench-mode');
     assert.equal(await page.locator('.craft-rank-wide .craft-rank-grade').textContent(), '—');
     await page.evaluate(() => { T.session.craftTest.auto = 'good'; window.heatRun = T.heat.runHeat(T.cs); });
     await page.evaluate(() => window.heatRun);
@@ -83,7 +83,7 @@ await suite('craft-rank-wire', async check => {
       assert(['enter', 'up', 'down'].includes(await page.locator('.craft-rank').getAttribute('data-change')));
       assert.equal(await page.locator('.craft-rank-meter').getAttribute('aria-valuenow'), progress);
       await assertFits(page, '.craft-rank, .craft-rank-meter');
-      if (!ds) {
+      {
         await assertFits(page, '.bench-mode');
         const separated = await page.evaluate(() => {
           const a = document.querySelector('.bench-mode').getBoundingClientRect();
@@ -99,10 +99,10 @@ await suite('craft-rank-wire', async check => {
         return a.left < b.right - 1 && a.right > b.left + 1 && a.top < b.bottom - 1 && a.bottom > b.top + 1;
       });
       assert.equal(overlaps, false);
-      if (process.env.SHOTS && ['session-pc', 'session-ds'].includes(name)) {
+      if (process.env.SHOTS && ['session-pc', 'session-touch'].includes(name)) {
         fs.mkdirSync(process.env.SHOTS, { recursive: true });
         await page.waitForTimeout(400);
-        await page.screenshot({ path: `${process.env.SHOTS}/U6-${ds ? 'DS' : 'PC'}-${grade}.png` });
+        await page.screenshot({ path: `${process.env.SHOTS}/U6-${name === 'session-touch' ? 'touch' : 'PC'}-${grade}.png` });
       }
     }
 

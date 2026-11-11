@@ -16,7 +16,6 @@
 <link rel="stylesheet" href="css/intro.css">
 <link rel="stylesheet" href="css/tonari-opening.css">
 <link rel="stylesheet" href="css/daily.css">
-<link rel="stylesheet" href="css/title-ds.css">
 <link rel="stylesheet" href="css/ch2-preview.css">
 <link rel="stylesheet" href="css/ch2-tournament.css">
 <link rel="stylesheet" href="css/store-logos.css">
@@ -46,7 +45,6 @@
 <link rel="stylesheet" href="css/vn/shisha-diagram.css">
 <link rel="stylesheet" href="css/vn/conversation-cutin.css">
 <link rel="stylesheet" href="css/continue.css">
-<link rel="stylesheet" href="css/game-ds.css">
 </head>
 <body data-screen="boot"><div id="viewport"><div id="stage">
 <div id="bg"></div><div id="screen"></div><div id="vn"></div><div id="hud"></div><div id="fx"></div><div id="toasts"></div><div id="banners"></div><div id="wipe"><i></i><i></i><i></i><i></i><i></i></div><div id="modal"></div>
@@ -56,9 +54,8 @@
 import {loadAll} from './js/core/data.js';
 import {initLayers, FRAME_ART, imageReady} from './js/core/ui.js';
 import {loadConfig} from './js/core/state.js';
-import {initGameLayout} from './js/scenes/game-layout.js';
 function fit(){document.querySelector('#stage').style.setProperty('--k',String(Math.min(innerWidth/1280,innerHeight/720)));}
-fit();window.addEventListener('resize',fit);initLayers();initGameLayout();loadConfig();
+fit();window.addEventListener('resize',fit);initLayers();loadConfig();
 await Promise.all([loadAll(), ...['500','700','900'].map(w=>document.fonts.load(`${w} 20px "Suien Gothic"`,'水煙前線あA7')), ...FRAME_ART.map(u=>imageReady(u,3000))]);
 const ready=document.createElement('span');ready.dataset.test='vn-fixture-ready';ready.textContent='VN fixture ready';ready.style.position='absolute';ready.style.top='0';document.body.append(ready);
 </script></body></html>

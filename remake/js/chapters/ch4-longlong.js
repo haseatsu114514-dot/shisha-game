@@ -10,7 +10,8 @@ import { LONGLONG_VISIT_STORIES } from "../core/affinity-stages.js";
 export const LONGLONG_FLAG = "_ch4_longlong";
 export const LONGLONG_CHAR = "master_hookah";
 /** 段階を読み終えた後の通い（小会話）。順に巡回する。 */
-export const LONGLONG_TALKS = Object.freeze(["ch4_longlong_visit_b", "ch4_longlong_visit_c"]);
+// 3本目は 2026-11-11 オーナー「推奨で全部」（RVE07）。同じ文が続けて出ないよう、通いの小会話を3本で巡回する。
+export const LONGLONG_TALKS = Object.freeze(["ch4_longlong_visit_b", "ch4_longlong_visit_c", "ch4_longlong_visit_d"]);
 export const LONGLONG_IDS = Object.freeze([...LONGLONG_VISIT_STORIES.map(entry => entry.scene), ...LONGLONG_TALKS]);
 /** 締めくくり（♥5の次の来店。段階列には入れず、daily/bonds.js から読む）。 */
 export const LONGLONG_FINALE = "ch4_longlong_bond_finale";

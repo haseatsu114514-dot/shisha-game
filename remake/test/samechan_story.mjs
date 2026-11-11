@@ -68,7 +68,7 @@ const deps={
  '../core/ui.js':{withScenePreparation: task => task, imageReady:async()=>false,toast:()=>{},setBg:async()=>{}},
  '../core/travel-budget.js':{spendableMoney:s=>s.money||0},
  '../core/scene-motions.js':{sharkSwim:async swap=>{await swap();}},
- '../core/stats.js':{gainAffinity:(...args)=>rewards.push(args),affinityLevel:()=>heart,releaseAffinity:()=>0,ensureAffinityLevel:()=>{},earnStat:()=>{},addMoney:()=>{},addStamina:()=>{},STAMINA_LOW:25},
+ '../core/stats.js':{gainAffinity:(...args)=>rewards.push(args),visitAffinity:kind=>({story:16,talk:8})[kind],affinityLevel:()=>heart,releaseAffinity:()=>0,ensureAffinityLevel:()=>{},earnStat:()=>{},addMoney:()=>{},addStamina:()=>{},STAMINA_LOW:25},
  '../vn/engine.js':{play:async id=>{played.push(id);return {id,visited:[]};},isPlaying:()=>false},
  './bonds.js':{finaleAtVisit:()=>false,playFinale:async()=>false,BOND_FINALES:{samechan:{dialogue:"samechan_bond_finale"}}},
  './trpg.js':{maybeRecruitTrpgMember:async()=>false},
@@ -101,8 +101,10 @@ state.limeRead.push(k.SAMECHAN_NICKNAME_TOPIC);k.syncSamechanKnowledge();assert.
 state.chapter=2;k.syncSamechanKnowledge();const open=k.samechanSpot();assert.equal(open.unavailable,undefined);assert.equal(open.preview,'bg_shishark');assert.equal(state.flags._shishark_opened,true);
 const contacts=state.contacts;state.contacts=[];delete state.flags._lime_contact_samechan;assert(k.samechanSpot(),'章2では未交換でも店が開く');state.contacts=contacts;
 await k.visitSamechan(open);assert.equal(played.at(-1),'samechan_shop_first');assert.equal(state.story.samechan,1);
+// 来店の好感度はほかの店と同じ（BLC01）: 初来店・段階の会話は16、いつもの来店・感想・不調は8。
+assert.deepEqual([...rewards.at(-1)],['samechan',16],'初来店は段階の会話と同じ');
 state.day++;
-await k.visitSamechan(open);assert.equal(played.at(-1),'samechan_shop_repeat_0');
+await k.visitSamechan(open);assert.equal(played.at(-1),'samechan_shop_repeat_0');assert.deepEqual([...rewards.at(-1)],['samechan',8],'いつもの来店は小会話と同じ');
 // 路地裏シネマを観た後の来店で、感想を一度だけ聞く（#1718）。
 state.day++;state.spotVisits={...(state.spotVisits||{}),rojiura_cinema:1};assert.equal(k.samechanVisitDialogue(),'samechan_shop_cinema_impression');
 await k.visitSamechan(open);assert.equal(played.at(-1),'samechan_shop_cinema_impression');assert.equal(state.flags._samechan_cinema_impression_done,true);
@@ -117,6 +119,7 @@ assert.equal(k.samechanVisitDialogue(),'samechan_shop_bond_question','♥4・♥
 state.flags._samechan_bond_question_done=true;heart=3;assert.notEqual(k.samechanVisitDialogue(),'samechan_shop_heart4');
 heart=4;assert.equal(k.samechanVisitDialogue(),'samechan_shop_heart4');
 state.day++;await k.visitSamechan(open);assert.equal(played.at(-1),'samechan_shop_heart4');assert.equal(state.flags._samechan_heart4_done,true);
+assert.deepEqual([...rewards.at(-1)],['samechan',16],'♥4の来店会話は段階の会話');
 assert.notEqual(k.samechanVisitDialogue(),'samechan_shop_heart5','♥5に届くまで待つ');assert.notEqual(k.samechanVisitDialogue(),'samechan_shop_heart4','♥4は一度だけ');
 heart=5;assert.equal(k.samechanVisitDialogue(),'samechan_shop_heart5');
 state.day++;await k.visitSamechan(open);assert.equal(played.at(-1),'samechan_shop_heart5');assert.equal(state.flags._samechan_heart5_done,true);
@@ -132,8 +135,10 @@ state.day++;await k.visitSamechan(open);assert.equal(played.at(-1),'samechan_sho
 assert.equal(state.flags._samechan_own_seat_done,true);
 assert.equal(k.samechanVisitDialogue(),'samechan_shop_look_away');
 state.day++;await k.visitSamechan(open);assert.equal(played.at(-1),'samechan_shop_look_away');
-assert.equal(state.flags._samechan_look_away_done,true);
+assert.equal(state.flags._samechan_look_away_done,true);assert.deepEqual([...rewards.at(-1)],['samechan',16],'一度きりの来店の話も段階の会話と同じ');
 assert.match(k.samechanVisitDialogue(),/^samechan_shop_repeat_/);
+for(const id of ['samechan_shop_first','samechan_shop_quiet_seat','samechan_shop_closing_check','samechan_shop_heart4','samechan_shop_heart5','samechan_shop_own_seat','samechan_shop_look_away','samechan_bond_finale'])assert.equal(k.samechanVisitAffinityKind(id),'story',id);
+for(const id of ['samechan_shop_bond_question','samechan_shop_repeat_0','samechan_shop_repeat_1','samechan_shop_cinema_impression','samechan_shop_unwell','ch3_prep_samechan','ch4_prep_samechan'])assert.equal(k.samechanVisitAffinityKind(id),'talk',id);
 for(const id of ['samechan_shop_heart4','samechan_shop_heart5']){const scene=story.dialogues.find(d=>d.dialogue_id===id);
  assert(scene.lines.some(l=>l.condition_type==='romance_open'&&l.char_id==='samechan'),`${id}: ♥3の答えで恋愛/友人の分岐`);
  assert(scene.branches.romance&&scene.branches.friend,id);

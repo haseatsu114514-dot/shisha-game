@@ -18,8 +18,8 @@
 | flame.webp | 96×96 | 曲のノリ（盛り上がり）の炎 |
 | zone.webp / zone-ok.webp | 224×136 | 横フェーダーの「ここ」の目印（追いかける先／乗れているとき） |
 | deck-strip.webp | 640×200 | デッキの下の台座（曲名と BPM の表示窓・▶ の受け皿。右デッキは左右反転） |
-| floor-room.webp | 1600×383 | フロアの奥: ブースから見た空の店内（bg-purple.webp の上 2/3） |
-| floor-pov-1〜4.webp | 1512×232 | フロアの手前: 観客（crowd-a.png の中央を切り出し、熱の4段階に明るさを変えたもの） |
+| floor-room.webp | 1600×533 | フロアの奥: 誰もいない店内（raw/floor-room.png・Codex） |
+| floor-pov-1〜4.webp | 1600×436 | フロアの手前: シルエットの客の4段階から切り出した観客の帯（raw/floor-sil-1〜4.png・Codex。上はぼかして透明、下に暗い余白） |
 | heat-frame.webp | 597×160 | フロアの熱のゲージの枠（craft-night の温度計の枠を横向きにしたもの） |
 """
 from pathlib import Path
@@ -378,38 +378,43 @@ def deck_strip():
     save(img, "deck-strip", (640, 200))
 
 
-FLOOR_SRC = ROOT / "asset_sources" / "ui" / "dj-floor-crowd-20261102" / "crowd-a.png"
+RAW = Path(__file__).resolve().parent / "raw"
+# 観客の帯（DJS32）: 元の絵（2172×724）の行 BAND_TOP から下を使い、上 BAND_FADE 行をぼかして透明にする。
+# 下には BAND_PAD 行の暗い余白を足す（拍で帯が上がったときに、絵の下端の外が見えないように）。
+# style.css の .room・.band の位置はこの3つの数と合わせてある（絵の高さの 31% から下が画面に映る）。
+BAND_TOP, BAND_FADE, BAND_PAD = 180, 52, 48
 
 
 def floor_pov():
-    """主人公（DJ）目線のフロアの2層（DJS28）。新規生成はせず、手元の2枚から作る。
-    奥 = floor-room.webp: 空の店内をブースから見た絵（bg-purple.webp）の上 2/3（下の黒いブースの縁を落とす）。
-    手前 = floor-pov-1〜4.webp: 観客の候補 a 案（crowd-a.png・ブース越しに客席を見た絵）から、ランタンやヤシのない中央の観客だけを切り出したもの。
-      上は客の頭と上げた手の少し上でぼかして透明にし（両端は低めに切って飾りを落とす）、熱の4段階ぶん、明るさと彩度を変えて書き出す。"""
-    room = Image.open(OUT / "bg-purple.webp").convert("RGB").crop((0, 30, 2048, 520)).resize((1600, 383), Image.LANCZOS)
+    """主人公（DJ）目線のフロアの2層（DJS28・DJS32）。元は Codex の5枚（raw/、Issue #3224）。
+    奥 = floor-room.webp: 誰もいない店内（raw/floor-room.png）を幅 1600 に縮小。
+    手前 = floor-pov-1〜4.webp: シルエットの客の4段階（raw/floor-sil-1〜4.png）から観客の帯を切り出したもの（透過）。
+      絵の側で熱ごとに明るさ・照明を描き分けてあるので、色は変えない。"""
+    room = Image.open(RAW / "floor-room.png").convert("RGB")
+    rw, rh = 1600, round(room.height * 1600 / room.width)
+    room = room.resize((rw, rh), Image.LANCZOS)
     path = OUT / "floor-room.webp"
-    room.save(path, "WEBP", quality=88, method=6)
-    print(f"{path.relative_to(ROOT)} 1600x383 {path.stat().st_size}B")
-    src = Image.open(FLOOR_SRC).convert("RGB").crop((330, 390, 1842, 622))  # 1512×232
-    w, h = src.size
-    xs = np.arange(w)[None, :].repeat(h, 0)
-    ys = np.arange(h)[:, None].repeat(w, 1)
-    edge = np.clip(np.minimum(xs - 250, w - 250 - xs) / 230, 0, 1)  # 0 = 両端、1 = 中央
-    edge = edge * edge * (3 - 2 * edge)
-    top = 92 - 50 * edge  # 透明にし始める高さ: 中央 42px（上げた手を残す）、両端 92px（ランタンとヤシを落とす）
-    alpha = np.clip((ys - top) / 54, 0, 1)
-    alpha = alpha * alpha * (3 - 2 * alpha)
-    side = np.clip(np.minimum(xs, w - 1 - xs) / 40, 0, 1)
-    alpha = (alpha * side * 255).astype(np.uint8)
-    base = np.asarray(src).astype(np.float32)
-    for level, (bright, sat, tint) in {1: (.62, .2, (.92, .98, 1.12)), 2: (.84, .78, (1, 1, 1)), 3: (1.08, 1.12, (1, 1, 1)), 4: (1.36, 1.45, (1.08, .98, 1.02))}.items():
-        grey = base.mean(-1, keepdims=True)
-        rgb = np.clip((grey + (base - grey) * sat) * bright * np.array(tint), 0, 255)
-        out = np.dstack([rgb.astype(np.uint8), alpha])
-        out[alpha == 0, :3] = 0
+    room.save(path, "WEBP", quality=86, method=6)
+    print(f"{path.relative_to(ROOT)} {rw}x{rh} {path.stat().st_size}B")
+    for level in (1, 2, 3, 4):
+        src = Image.open(RAW / f"floor-sil-{level}.png").convert("RGB")
+        w = src.width
+        band = np.asarray(src.crop((0, BAND_TOP, w, src.height))).astype(np.float32)
+        t = np.linspace(0, 1, BAND_PAD)[:, None, None] ** .7
+        pad = band[-1:].repeat(BAND_PAD, 0) * (1 - t) + np.array([11, 8, 18], np.float32) * t  # 最後の行から床の暗さへ
+        rgb = np.concatenate([band, pad], 0)
+        ys = np.arange(rgb.shape[0])[:, None].repeat(w, 1)
+        a = np.clip(ys / BAND_FADE, 0, 1)
+        a = a * a * (3 - 2 * a)
+        out = np.dstack([np.clip(rgb, 0, 255), a * 255]).astype(np.uint8)
+        img = Image.fromarray(out, "RGBA")
+        bw, bh = 1600, round(img.height * 1600 / w)
+        img = img.resize((bw, bh), Image.LANCZOS)
+        arr = np.asarray(img).copy()
+        arr[arr[..., 3] == 0, :3] = 0
         path = OUT / f"floor-pov-{level}.webp"
-        Image.fromarray(out, "RGBA").save(path, "WEBP", quality=88, method=6)
-        print(f"{path.relative_to(ROOT)} {w}x{h} {path.stat().st_size}B")
+        Image.fromarray(arr, "RGBA").save(path, "WEBP", quality=86, method=6)
+        print(f"{path.relative_to(ROOT)} {bw}x{bh} {path.stat().st_size}B")
 
 
 def heat_frame():

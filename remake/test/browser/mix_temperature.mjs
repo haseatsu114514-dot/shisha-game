@@ -263,13 +263,9 @@ await suite("mix-temperature", async check => {
   });
 
   await check("expressive-labels-fit-through-care", async page => {
-    await page.evaluate(async () => {
-      const { TITLE_LAYOUT_KEY } = await import("./js/scenes/title-layout.js");
-      localStorage.setItem(TITLE_LAYOUT_KEY, "ds");
-      window.dispatchEvent(new Event("display-layout-change"));
-    });
+    // DS風は廃止（横画面一本化）。横持ちタッチの通常表示で、低め/高めの札が収まり観客の欄より前に出ることを確かめる。
     await prepare(page, "drill");
-    await page.locator("body.game-ds").waitFor();
+    assert.equal(await page.locator("body.game-ds").count(), 0);
     for (const care of [false, true]) for (const high of [false, true]) {
       await page.evaluate(async ({ care, high }) => {
         const cs = QA.session.newSession("drill");
@@ -299,7 +295,7 @@ await suite("mix-temperature", async check => {
           && node.scrollHeight <= node.clientHeight + 1 && text.left >= box.left - 1 && text.right <= box.right + 1
           && text.top >= box.top - 1 && text.bottom <= box.bottom + 1 && node.contains(front);
       }), "The low/high label must fit and remain in front of the audience panel, including while coals are cooling");
-      await page.screenshot({ path: path.join(shots, `expression-${care ? "care" : "pull"}-${high ? "high" : "low"}-ds.png`) });
+      await page.screenshot({ path: path.join(shots, `expression-${care ? "care" : "pull"}-${high ? "high" : "low"}-landscape.png`) });
       // Finish each live stage before mounting the next shisha; a cancelled care is an error.
       await keep(page);
       if (!care) await keep(page);

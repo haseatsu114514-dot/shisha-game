@@ -1,7 +1,8 @@
 // 全画面MENU（DUI03・#2097）: 実際の日常ループ（runDaily）の HUD から開く4タブ。
 // 読むだけで保存データを変えないこと・キー操作・レシピ／チェキの戻り方・盤への入口・手動セーブ・
-// 1280×720／横持ちタッチ／DS風の横持ち（844×390・568×320）で紙が舞台に収まりタブに届くことと、
-// DS風の縦持ち（390×844・320×568）は回転ガードが HUD・MENU への入力を止め、横へ戻すと同じ状態から続くこと（#2789）を確かめる。
+// 1280×720／横持ちタッチ（844×390・568×320）で紙が舞台に収まりタブに届くことと、
+// スマホの縦持ち（390×844・320×568）は回転ガードが HUD・MENU への入力を止め、横へ戻すと同じ状態から続くこと（#2789）を確かめる。
+// DS風（2画面）は廃止した（横画面一本化）。
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
@@ -250,35 +251,22 @@ await suite("daily-menu", async (check) => {
     await page.locator(".dmenu").waitFor({ state: "detached" });
   }, { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true });
 
-  // DS風は縦持ちで始める（#2789・#2794: スマホの縦持ちは回転ガードで止める）。ガード越しの操作が届かないことを見てから、
-  // 横持ち（ds-small は 568×320）へ戻して MENU の配置を検査し、開いたまま縦へ回してもう一度止まることを見る。
+  // 縦持ちで始める（#2789・#2794: スマホの縦持ちは回転ガードで止める）。ガード越しの操作が届かないことを見てから、
+  // 横持ち（small は 568×320）へ戻して MENU の配置を検査し、開いたまま縦へ回してもう一度止まることを見る。
   for (const [label, portrait, landscape] of [
-    ["ds-portrait", { width: 390, height: 844 }, { width: 844, height: 390 }],
-    ["ds-small", { width: 320, height: 568 }, { width: 568, height: 320 }],
+    ["portrait-rotate", { width: 390, height: 844 }, { width: 844, height: 390 }],
+    ["small-rotate", { width: 320, height: 568 }, { width: 568, height: 320 }],
   ]) {
     await check(label, async (page) => {
-      // DS風（2画面）。タイトルの表示設定を切り替えて読み直す。
-      await page.evaluate(() => localStorage.setItem("suien_title_layout", "ds"));
-      await page.reload();
-      await page.locator(t("title-new")).waitFor({ timeout: 30000 });
-      await page.locator("#boot").waitFor({ state: "detached" });
       await setup(page);
-      await page.locator("body.game-ds").waitFor();
+      assert.equal(await page.locator("body.game-ds").count(), 0);
       const state = async () => ({ menu: await page.locator(".dmenu").count(),
         tab: await page.evaluate(() => document.querySelector(".dmenu")?.dataset.tab || null), progress: await progress(page) });
       await rotateThroughGuard(page, { portrait, landscape, targets: [page.locator(t("hud-menu"))], state, label: `${label}/hud` });
       await page.locator(t("hud-menu")).tap();
       await page.locator(".dmenu").waitFor();
       await settle(page);
-      // 横持ちのDS風（左右2画面）では、タブは本文の左に縦の帯で並ぶ（daily-menu.css の side）
-      const bar = await page.evaluate(() => {
-        const tabs = [...document.querySelectorAll(".dmenu .dm-tab")].map((n) => n.getBoundingClientRect());
-        const panel = document.querySelector(".dmenu .dm-panel").getBoundingClientRect();
-        return { side: document.documentElement.dataset.dsLayout, sameColumn: tabs.every((r) => Math.abs(r.left - tabs[0].left) < 1),
-          inOrder: tabs.every((r, i) => !i || r.top >= tabs[i - 1].bottom - 1), leftOfPanel: tabs.every((r) => r.right <= panel.left + 1),
-          labelsFit: [...document.querySelectorAll(".dmenu .dm-tab .dm-label")].every((n) => n.scrollWidth <= n.parentElement.clientWidth + 1) };
-      });
-      assert.deepEqual(bar, { side: "side", sameColumn: true, inOrder: true, leftOfPanel: true, labelsFit: true });
+      await assertLayout(page, `${label}/landscape`);
       await visitTabs(page, label, (sel) => page.locator(sel).tap());
       await rotateThroughGuard(page, { portrait, landscape, state, label: `${label}/menu`,
         targets: [page.locator(t("menu-tab-status")), page.locator(t("menu-tab-items")), page.locator(t("menu-close"))] });

@@ -1,13 +1,43 @@
 // 新版（現行の画面を磨き上げた様式・LK02）。見た目は css/look-neo.css、ここは絵の光・動きなど CSS だけでは足りない分。
 // setActive(false) では、足した要素・監視・クラスをすべて片付けて現行へ戻す。
+// 全画面 MENU の人物の絵は neo/menu-figure.js（ここから一緒に出し入れする）。
 //
-// ここで足すのは次の2つだけ（どちらも会話の DOM が変わった時にだけ動く。毎フレームの処理は無い）:
+// 会話に足すのは次の2つだけ（どちらも会話の DOM が変わった時にだけ動く。毎フレームの処理は無い）:
 //   1. 場面の光: 立ち絵（.vn-portraits > img.portrait）1枚ごとに、同じ位置・同じ大きさの <i class="neo-light"> を直後へ置く。
 //      立ち絵の絵を型（mask）にして、色は CSS が soft-light で重ねる。立ち絵の img 自体には触らない。
 //   2. 名前の縦線の色: 話している人の色（characters.json の intro_cutin.color）を #vn の --neo-speaker へ入れる。
 // 会話エンジン（vn/engine.js）は立ち絵を img だけで数え、登場を img.getAnimations() で待つ。
 // そのため img には要素もクラスも動きも足さない（呼吸は CSS が .vn-portraits の層ごと動かす）。
 import { DB, realName } from "../core/data.js";
+import { setActive as setMenuFigure } from "./neo/menu-figure.js";
+
+// 縦持ち（LK11）: 縦長の画面（スマホの縦持ち・縦長の PC の窓）では、DS風の外枠＋高解像度の上画面＋ドット調の下画面で見せる。
+// 外枠の部品は looks/retro.js を高解像度（hd）・縦長だけの条件で動かす。縦長になった時に初めて読み込む
+// （横長だけで遊ぶ端末には、外枠のコードを読み込ませない）。横長に戻すと外枠は自分で引っ込む。
+const PORTRAIT = "(orientation: portrait)";
+let portraitQuery = null, portraitShell = null, portraitLoad = 0;
+function startPortrait() {
+  if (portraitShell || !portraitQuery?.matches) return;
+  const mine = ++portraitLoad;
+  import("./retro.js").then((retro) => {
+    if (mine !== portraitLoad || !active || portraitShell) return;
+    portraitShell = retro.startShell({ paint: "hd", mode: "portrait" });
+  }).catch((error) => console.error("[look] 縦持ちの表示を読み込めませんでした", error));
+}
+function setPortrait(on) {
+  if (on) {
+    if (typeof window.matchMedia !== "function") return;
+    portraitQuery = window.matchMedia(PORTRAIT);
+    portraitQuery.addEventListener?.("change", startPortrait);
+    startPortrait();
+    return;
+  }
+  portraitQuery?.removeEventListener?.("change", startPortrait);
+  portraitQuery = null;
+  portraitLoad++;
+  portraitShell?.stop();
+  portraitShell = null;
+}
 
 const LIGHT = "neo-light";
 const SPEAKER_VAR = "--neo-speaker";
@@ -143,6 +173,8 @@ function attachParts() {
 export function setActive(on) {
   if (active === !!on) return;
   active = !!on;
+  setMenuFigure(active);
+  setPortrait(active);
   if (active) {
     host = document.getElementById("vn");
     if (!host) return;

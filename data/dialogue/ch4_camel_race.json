@@ -493,6 +493,11 @@
           "text": "来たか。ハビーバが待っている"
         },
         {
+          "speaker": "",
+          "face": "",
+          "text": "柵の向こうで、若いラクダが首をこちらに向けた。耳だけが、ゆっくり動いている。"
+        },
+        {
           "speaker": "faris",
           "face": "smile",
           "text": "リモコン、持ったね。今日は連打しないでよ"
@@ -501,6 +506,16 @@
           "speaker": "hajime",
           "face": "smile",
           "text": "しません、……たぶん"
+        },
+        {
+          "speaker": "khalil",
+          "face": "normal",
+          "text": "たぶん、では困る。声は少なく、間を外すな。それだけ守れ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（炭を置く手つきと同じだ。急がない。でも、遅れない）"
         }
       ]
     },
@@ -508,14 +523,29 @@
       "dialogue_id": "ch4_camel_replay_best",
       "lines": [
         {
+          "speaker": "",
+          "face": "",
+          "text": "ハビーバがゴールを抜けて、ゆっくり歩調を落とした。電光の数字を、ファーリスが先に読み上げる。"
+        },
+        {
           "speaker": "faris",
           "face": "excited",
           "text": "自己ベスト！　ハビーバ、ハジメのこと好きになってきたんじゃない？"
         },
         {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "声をかける前に、あいつが耳を向けてくれた気がして、……気のせいかな"
+        },
+        {
           "speaker": "khalil",
           "face": "smile",
           "text": "ラクダは声を覚える、……お前の声を、だ"
+        },
+        {
+          "speaker": "faris",
+          "face": "wink",
+          "text": "ほら、叔父さんがここまで言うのは珍しい"
         },
         {
           "speaker": "hajime",
@@ -527,6 +557,11 @@
     {
       "dialogue_id": "ch4_camel_replay_usual",
       "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ハビーバは無事にゴールを抜けた。息は荒くない。まだ余裕を残した顔をしている。"
+        },
         {
           "speaker": "khalil",
           "face": "normal",
@@ -541,6 +576,21 @@
           "speaker": "hajime",
           "face": "smile",
           "text": "じゃあ、今日はいい日だ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……でも、どこで余らせたのかは分かってます"
+        },
+        {
+          "speaker": "khalil",
+          "face": "normal",
+          "text": "分かっているなら十分だ。次はそこを使え"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "はい。次は、ちゃんと息を合わせます"
         }
       ]
     }

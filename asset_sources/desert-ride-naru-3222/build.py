@@ -24,6 +24,7 @@ RIDE = ROOT / "remake/img/ui/desert_ride"
 REF_RECORD = json.loads((ROOT / "asset_sources/desert-ride-2306/adoption.json").read_text())
 POSES = ["ride", "lean_left", "lean_right", "jump", "brace", "fall"]
 MARGIN = 2
+MERGE = 9  # 板の破片をつなぐ太らせ幅（1/4 縮小の画素。原画で約36px）
 
 
 def rgba(path):
@@ -41,8 +42,43 @@ def board_center(a, kind):
         m = (r > 190) & (g > 60) & (g < 170) & (b < 110) & (r - g > 60)
     else:  # なるのクリーム色の板（白い靴・銀の髪・日焼けした肌は入らない）
         m = (r > 222) & (g > 188) & (b > 125) & (b < 210) & (r - b > 32) & (g - b > 12)
-    ys, xs = np.nonzero(m & (al > 200))
+    m &= al > 200
+    if kind != "orange":
+        # 新しい服（焦げ茶とクリーム色のボンバー・クリーム色のポケット）にも同じ色があるので、
+        # 絵の下側（高さの下45%）にある、いちばん大きなかたまり（板）だけを使う
+        ys, _ = np.nonzero(al > 128)
+        top, bottom = ys.min(), ys.max()
+        m[: int(top + (bottom - top) * 0.55)] = False
+        m = largest_blob(m)
+    ys, xs = np.nonzero(m)
     return float(xs.mean()), float(ys.mean())
+
+
+def largest_blob(mask):
+    """4近傍でつながった画素のかたまりのうち、いちばん大きいものだけを残す（scipy を使わない）。"""
+    small = Image.fromarray((mask * 255).astype(np.uint8)).reduce(4)  # 速さのため 1/4 で数える
+    # 板は靴とバインディングで分かれて見えるので、少し太らせて破片をつなげてから数える
+    sm = np.asarray(small.filter(ImageFilter.MaxFilter(MERGE))) > 127
+    h, w = sm.shape
+    label = np.zeros((h, w), np.int32)
+    best, best_size, cur = 0, 0, 0
+    for y0, x0 in zip(*np.nonzero(sm)):
+        if label[y0, x0]:
+            continue
+        cur += 1
+        stack, size = [(y0, x0)], 0
+        label[y0, x0] = cur
+        while stack:
+            y, x = stack.pop(); size += 1
+            for ny, nx in ((y + 1, x), (y - 1, x), (y, x + 1), (y, x - 1)):
+                if 0 <= ny < h and 0 <= nx < w and sm[ny, nx] and not label[ny, nx]:
+                    label[ny, nx] = cur; stack.append((ny, nx))
+        if size > best_size:
+            best, best_size = cur, size
+    keep = np.kron(label == best, np.ones((4, 4), bool))
+    out = np.zeros_like(mask)
+    out[:keep.shape[0], :keep.shape[1]] = keep[:mask.shape[0], :mask.shape[1]]
+    return mask & out
 
 
 def clean_alpha(im):

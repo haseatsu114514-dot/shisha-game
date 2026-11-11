@@ -195,9 +195,12 @@ export const LESSONS = [
   { id: "M-W1", cell: "-1,-2", board: "wisdom", who: "sumi", need: 0, reward: "skill", name: "キューブ炭",
     hint: "盤の道が届いたら、スミさんが炭の授業をしてくれる",
     text: "キューブ炭を選べる", scene: "ch1_sumi_cube_coals", unlocks: ["_coal_cube_learned"] },
+  // 穴あけの「外周24穴」（craft/holes_templates.js）もこの授業で開く（#2020 H。炭を縁に回す置き方と、外周に穴を回す配置を一緒に教わる）。
+  // 習得済みの旧セーブは syncLessonFlags が読み込み時にフラグを立てる。
   { id: "M-W2", cell: "-3,-1", board: "wisdom", who: "sumi", need: 0, ring: 2, reward: "skill", name: "四つ置き・混ぜ置き",
-    hint: "盤の道が届いたら、スミさんが炭の置き方の奥を教えてくれる",
-    text: "炭の四つ置きと、フラット炭とキューブ炭の混ぜ置きを選べる", unlocks: ["_coal_four_unlocked", "_coal_mix_unlocked"], scene: "lesson_sumi_four" },
+    hint: "盤の道が届いたら、スミさんが炭と穴の置き方の奥を教えてくれる",
+    text: "炭の四つ置きと、フラット炭とキューブ炭の混ぜ置きを選べる。穴あけで「外周24穴」も選べる",
+    unlocks: ["_coal_four_unlocked", "_coal_mix_unlocked", "_hole_outer24_unlocked"], scene: "lesson_sumi_four" },
   { id: "M-W3", cell: "1,-2", board: "wisdom", who: "naru", need: 5, sig: true, reward: "skill", name: "焼き際の見極め",
     hint: "なると仲良くなると、提供する頃合いを話してくれそう",
     text: "温度計の琥珀の印に合わせて提供すると、焼き際を見極めた一台として総合評価が少し上がる。味の種類は問わない", scene: "lesson_naru_watch" },
