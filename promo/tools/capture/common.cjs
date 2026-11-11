@@ -16,6 +16,9 @@ async function open(url = BASE, { ready = '[data-test="title-new"]', init = null
   const browser = await chromium.launch();
   const context = await browser.newContext({ viewport: { width: 1280, height: 720 }, deviceScaleFactor: 2 });
   const page = await context.newPage();
+  // ゲームは、自動操作のブラウザ（navigator.webdriver）では見た目の様式を旧版にする（検査用。remake/js/core/look.js）。
+  // サイトに載せるのはプレイヤーが実際に見る画面なので、その印を外して既定の様式（新版）で撮る。
+  await page.addInitScript(() => { Object.defineProperty(Navigator.prototype, 'webdriver', { get: () => false, configurable: true }); });
   const small = [];
   const failed = [];
   const errors = [];

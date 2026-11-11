@@ -61,6 +61,19 @@ jobs:
       - name: Fetch game images stored in Git LFS
         # 本番へポインタを出さない: 取得後にポインタが残っていれば失敗する。
         run: tools/ci/lfs_images.sh fetch
+      # 公式サイト（promo/）の絵を、ゲームの今の採用（キービジュアル・立ち絵・店の中の絵・ロゴ・ボタン）から作り直す。
+      # ゲーム側で絵を差し替えたら、サイトも次の公開から同じ絵になる（没・旧版が残らない）。
+      # 失敗しても公開は止めない。そのときはリポジトリに入っている絵のまま公開する。
+      - uses: actions/setup-python@v5
+        continue-on-error: true
+        with:
+          python-version: "3.12"
+      - name: Rebuild promo site images from the current game art
+        continue-on-error: true
+        run: |
+          python3 -m pip install --quiet Pillow==12.3.0
+          python3 promo/tools/build_images.py --check || echo "::notice::公式サイトの絵がゲームの今の採用と違っていたので、公開物では作り直します（promo/README.md「ゲームの絵が差し替わったら」）"
+          python3 promo/tools/build_images.py
       - name: Prepare site
         run: |
           mkdir -p _site/tools

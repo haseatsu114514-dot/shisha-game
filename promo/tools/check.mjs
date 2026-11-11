@@ -3,6 +3,8 @@
 //  1. index.html と site.css が指す絵・フォント・CSS・JS が全部そろっている（Git LFS のポインタのままも不可）
 //  2. ページ内リンク（#story など）の行き先がある
 //  3. サイトが promo/ の中だけで完結している（外へ出るのは「遊ぶ」のゲームへのリンクだけ）
+//  4. promo/img/ に、どこからも使っていない絵が残っていない
+// ゲームの絵が差し替わっていないかは python3 promo/tools/build_images.py --check（絵の版を Git で比べる）。
 // CIは絵を取得しない軽い作業場所で動くので、手元に無いファイルは Git の一覧（git ls-files）で確かめる。
 import { execFileSync } from "node:child_process";
 import { existsSync, readFileSync, statSync } from "node:fs";
@@ -67,6 +69,13 @@ for (const [button, panel, label] of [["cast-tab", "cast", "人物"], ["pin", "s
   const panels = [...html.matchAll(new RegExp(`<article class="${panel}"[^>]*${key}="([^"]+)"`, "g"))].map((m) => m[1]);
   if (buttons.join() !== panels.join()) problems.push(`index.html: ${label}のボタンと中身の並びが合いません（ボタン ${buttons.length}／中身 ${panels.length}）`);
   if (!panels.length) problems.push(`index.html: ${label}の中身が見つかりません`);
+}
+
+// 使っていない絵が残っていない（没にした絵・差し替え前の絵を公開物へ出さない）
+const shipped = tracked.size ? [...tracked].filter((rel) => rel.startsWith("promo/img/")) : [];
+for (const rel of shipped) {
+  if (rel === "promo/img/sources.json") continue; // build_images.py の記録
+  if (!seen.has(rel)) problems.push(`どこからも使っていない絵が残っています → ${rel}`);
 }
 
 if (problems.length) {

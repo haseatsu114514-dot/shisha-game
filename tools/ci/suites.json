@@ -11,7 +11,7 @@
   "suites": [
     {
       "id": "promo-site",
-      "title": "公式プロモーションサイト（promo/）の参照切れ・ページ内リンク・人物と店の対応",
+      "title": "公式プロモーションサイト（promo/）の参照切れ・ページ内リンク・人物と店の対応・使っていない絵",
       "kind": "quick",
       "run": ["node promo/tools/check.mjs"]
     },

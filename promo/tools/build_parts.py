@@ -157,7 +157,7 @@ def build_parts() -> None:
     rng = np.random.default_rng(20261111)
     save(torn_strip(rng, grain, PAPER), "parts/torn-paper-down.webp", quality=90)
     save(torn_strip(rng, grain, PAPER, flip=True), "parts/torn-paper-up.webp", quality=90)
-    save(torn_strip(rng, grain, LAVENDER), "parts/torn-lavender-down.webp", quality=90)
+    torn_strip(rng, grain, LAVENDER)  # 下向きのラベンダーの縁は使っていない（乱数の並びを保つため、作るだけ作る）
     save(torn_strip(rng, grain, LAVENDER, flip=True), "parts/torn-lavender-up.webp", quality=90)
     save(tape(rng, grain, (150, 122, 178)), "parts/tape-lavender.webp", quality=90)
     save(tape(rng, grain, AMBER, width=360), "parts/tape-amber.webp", quality=90)

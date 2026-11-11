@@ -188,9 +188,8 @@
     lightbox.addEventListener("click", (event) => { if (event.target === lightbox || event.target.tagName === "FIGURE") lightbox.close(); });
   }
 
-  // ── スクロールに合わせた小さな動き（歩く列・漫画の帯）と、画面に入ったときの出かた ──
+  // ── スクロールに合わせた小さな動き（詩のコマ絵の帯）と、画面に入ったときの出かた ──
   const drifters = [
-    [$(".walk-line"), 5],
     [$(".strip img"), -4],
   ].filter(([el]) => el);
   let ticking = false;
@@ -209,7 +208,7 @@
     drift();
   }
 
-  const reveal = $$(".sec-head, .intro-head, .intro-body, .chapter-lockup, .chapter-text, .chapter-art, .chapter-rest li, .step-text, .judge, .world-lead, .spec-table, .fan");
+  const reveal = $$(".sec-head, .intro-head, .intro-body, .chapter-text, .chapter-art, .chapter-rest li, .step-text, .judge, .world-lead, .spec-table, .fan");
   if ("IntersectionObserver" in window && !calm) {
     const seen = new IntersectionObserver((entries) => {
       for (const entry of entries) {
