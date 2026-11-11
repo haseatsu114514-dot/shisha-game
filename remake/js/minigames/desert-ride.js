@@ -8,7 +8,7 @@
 import { el } from "../core/util.js";
 import { SE, unlockAudio, createDesertRideSe, currentBgm, playBgm, preloadBgm, setBgmPlaybackRate, resetBgmTempo, tickBgmPlaybackRate } from "../core/audio.js";
 import { EDGE, SPEED, COURSE_PACKS, generateCourse, practiceCourse, pickCourse, buildCourse, createGame, step, press, boost, chargeBoost, canRecover, summary, curveAt, headingAt, lateralAt, botControl,
-  rivalRun, rivalAt, RULES_VERSION, jumpHeight } from "./desert-ride-model.js";
+  rivalRun, rivalAt, RULES_VERSION, jumpHeight, DISPLAY, toKmh, toMeters } from "./desert-ride-model.js";
 import { DESERT_ART, DESERT_CONTROL_ART, loadDesertArt, riderPose } from "./desert-ride-art.js";
 import { imgFileUrl } from "../core/img-file.js";
 
@@ -366,7 +366,7 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       lead = 0; curveTipT = 0; if (curveTip === "shown") curveTip = carved ? "done" : "idle";
       particles = []; rings = []; floaters = []; clearTimeout(cutinTimer); cutin.classList.remove("show"); cutin.replaceChildren(); shakeT = 0; flashT = 0; popT = 0; slowT = 0; halfShown = 0; bot = null; botMemo = {}; botLag = 0;
       Object.assign(view, { depth: CAM.depth, back: CAM.back, roll: 0, kick: 0, boost: 0 });
-      shownKmh = SPEED.start * 3.6;
+      shownKmh = toKmh(SPEED.start);
       countdown = kind === "practice" ? 0 : COUNTDOWN; countShown = "";
       root.dataset.countdown = countdown > 0 ? "on" : "";
       root.dataset.rival = rival ? raceWith : "";
@@ -423,40 +423,65 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
     }
 
     // ---- HUD ---------------------------------------------------------------------------
-    let hudNodes = null, shownKmh = SPEED.start * 3.6;
-    const SPEEDO_ARC = Math.PI * 46; // SVG の半円（r=46）と同じ長さ
-    const SPEEDO_MAX = SPEED.boost * 3.6; // 表示の上限（ブースト最高速＝約166 km/h）
-    function makeSpeedoArc() {
+    let hudNodes = null, shownKmh = toKmh(SPEED.start);
+    // 速度メーター（2026-11-11 作り直し）: 左に針の文字盤、右に大きな数字。数字は文字盤の外に置き、針・弧と重ねない。
+    // 文字盤は 0〜100 km/h を左下から右下まで 240° で回る。70 から上は赤い帯（ブーストでだけ届く）。
+    const DIAL = Object.freeze({ c: 60, r: 41, from: 150, sweep: 240 });
+    const SPEEDO_ARC = DIAL.r * DIAL.sweep * Math.PI / 180; // 弧の長さ（描く弧と同じ半径）
+    const dialAngle = kmh => DIAL.from + DIAL.sweep * Math.max(0, Math.min(1, kmh / DISPLAY.dialMax));
+    const dialPoint = (r, kmh) => {
+      const a = dialAngle(kmh) * Math.PI / 180;
+      return [+(DIAL.c + r * Math.cos(a)).toFixed(2), +(DIAL.c + r * Math.sin(a)).toFixed(2)];
+    };
+    const dialArc = (r, from, to) => {
+      const [x0, y0] = dialPoint(r, from), [x1, y1] = dialPoint(r, to);
+      const large = (to - from) / DISPLAY.dialMax * DIAL.sweep > 180 ? 1 : 0;
+      return `M${x0} ${y0} A ${r} ${r} 0 ${large} 1 ${x1} ${y1}`;
+    };
+    function makeSpeedoDial() {
       const ns = "http://www.w3.org/2000/svg";
-      const svg = document.createElementNS(ns, "svg");
-      svg.setAttribute("class", "dr-speedo-arc");
-      svg.setAttribute("viewBox", "0 0 120 72");
-      svg.setAttribute("aria-hidden", "true");
-      const track = document.createElementNS(ns, "path");
-      track.setAttribute("class", "dr-speedo-track");
-      track.setAttribute("d", "M14 62 A 46 46 0 0 1 106 62");
-      track.setAttribute("fill", "none");
-      const fill = document.createElementNS(ns, "path");
-      fill.setAttribute("class", "dr-speedo-fill");
-      fill.setAttribute("d", "M14 62 A 46 46 0 0 1 106 62");
-      fill.setAttribute("fill", "none");
-      fill.setAttribute("stroke-dasharray", String(SPEEDO_ARC));
-      fill.setAttribute("stroke-dashoffset", String(SPEEDO_ARC));
-      svg.append(track, fill);
-      return { svg, fill };
+      const node = (tag, attrs = {}, kids = []) => {
+        const n = document.createElementNS(ns, tag);
+        for (const [k, v] of Object.entries(attrs)) n.setAttribute(k, String(v));
+        n.append(...kids);
+        return n;
+      };
+      const stops = list => list.map(([offset, color]) => node("stop", { offset, "stop-color": color }));
+      const fill = node("path", { class: "dr-speedo-fill", d: dialArc(DIAL.r, 0, DISPLAY.dialMax), fill: "none", stroke: "url(#dr-speedo-heat)",
+        "stroke-dasharray": SPEEDO_ARC.toFixed(2), "stroke-dashoffset": SPEEDO_ARC.toFixed(2) });
+      const needle = node("g", { class: "dr-speedo-needle", transform: `rotate(${dialAngle(0)} ${DIAL.c} ${DIAL.c})` }, [
+        node("path", { d: `M${DIAL.c - 9} ${DIAL.c} L${DIAL.c} ${DIAL.c - 2.6} L${DIAL.c + 46} ${DIAL.c} L${DIAL.c} ${DIAL.c + 2.6} Z` }),
+      ]);
+      const ticks = [];
+      for (let kmh = 0; kmh <= DISPLAY.dialMax; kmh += 10) {
+        const major = kmh % 20 === 0;
+        const [x0, y0] = dialPoint(major ? 28 : 31, kmh), [x1, y1] = dialPoint(35, kmh);
+        ticks.push(node("line", { x1: x0, y1: y0, x2: x1, y2: y1, class: `dr-speedo-tick${major ? " major" : ""}${kmh >= DISPLAY.redFrom ? " red" : ""}` }));
+      }
+      const svg = node("svg", { class: "dr-speedo-gauge", viewBox: "0 0 120 120", "aria-hidden": "true" }, [
+        node("defs", {}, [
+          node("linearGradient", { id: "dr-speedo-heat", gradientUnits: "userSpaceOnUse", x1: 18, y1: 0, x2: 102, y2: 0 }, stops([[0, "#f6cf5a"], [0.55, "#f28a2a"], [1, "#e0381a"]])),
+          node("radialGradient", { id: "dr-speedo-hub", cx: 0.38, cy: 0.34, r: 0.75 }, stops([[0, "#fff4cf"], [0.5, "#d49a3c"], [1, "#6e4212"]])),
+        ]),
+        node("path", { class: "dr-speedo-track", d: dialArc(DIAL.r, 0, DISPLAY.dialMax), fill: "none" }),
+        node("path", { class: "dr-speedo-red", d: dialArc(DIAL.r + 5.5, DISPLAY.redFrom, DISPLAY.dialMax), fill: "none" }),
+        fill, ...ticks, needle,
+        node("circle", { class: "dr-speedo-hub", cx: DIAL.c, cy: DIAL.c, r: 6.5, fill: "url(#dr-speedo-hub)" }),
+      ]);
+      return { svg, fill, needle };
     }
     function buildHud() {
-      const arc = makeSpeedoArc();
+      const dial = makeSpeedoDial();
       hudNodes = {
         score: el("strong.dr-score", { text: "0" }), combo: el("span.dr-combo", { text: "" }),
         time: el("span.dr-time", { text: "0.0" }), kmh: el("strong.dr-kmh", { text: "0", dataset: { test: "desert-kmh" } }), gauge: el("i"), gaugeBox: null, progress: el("i"),
         you: el("b.dr-mark.dr-mark-you", { title: "あなた" }), noor: el(`b.dr-mark.dr-mark-${raceWith}`, { title: RIVAL_NAMES[raceWith] }), race: el("span.dr-race", { dataset: { test: "desert-race-gap" } }),
         course: el("span.dr-course", { dataset: { test: "desert-course" } }),
-        speedo: el("div.dr-speedo", { dataset: { test: "desert-speedo" } }), speedFill: arc.fill,
+        speedo: el("div.dr-speedo", { dataset: { test: "desert-speedo" } }), speedFill: dial.fill, needle: dial.needle,
       };
       // BOOST は ⚡ とゲージだけ（% の文字は出さない。#2838）
       hudNodes.gaugeBox = el("div.dr-gauge", { dataset: { test: "desert-gauge" }, title: "BOOST" }, [hudNodes.gauge]);
-      hudNodes.speedo.append(arc.svg, el("div.dr-speedo-read", [hudNodes.kmh, el("small", { text: "km/h" })]));
+      hudNodes.speedo.append(el("div.dr-speedo-dial", [dial.svg]), el("div.dr-speedo-read", [hudNodes.kmh, el("small", { text: "km/h" })]));
       hud.replaceChildren(
         el("div.dr-hud-left", [el("small", { text: mode === "practice" ? "PRACTICE" : "SCORE" }), hudNodes.score, hudNodes.combo, feedback]),
         el("div.dr-hud-center", [
@@ -478,16 +503,15 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       hudNodes.combo.textContent = game.combo >= 2 ? `${game.combo} COMBO ×${(Math.min(3, 1 + 0.15 * game.combo)).toFixed(2).replace(/0$/, "")}` : "";
       hudNodes.combo.dataset.hot = game.combo >= 10 ? "2" : game.combo >= 5 ? "1" : "";
       hudNodes.time.textContent = game.t.toFixed(1);
-      const targetKmh = game.speed * 3.6;
+      const targetKmh = toKmh(game.speed);
       shownKmh += (targetKmh - shownKmh) * (countdown > 0 ? 1 : 0.22);
       hudNodes.kmh.textContent = String(Math.round(shownKmh));
       const boosting = game.boostT > 0;
-      hudNodes.kmh.dataset.fast = boosting ? "boost" : shownKmh > SPEED.max * 3.6 * 0.85 ? "fast" : "";
+      hudNodes.kmh.dataset.fast = boosting ? "boost" : shownKmh > toKmh(SPEED.max) * 0.85 ? "fast" : "";
       hudNodes.speedo.dataset.fast = hudNodes.kmh.dataset.fast;
-      if (hudNodes.speedFill) {
-        const t = Math.max(0, Math.min(1, shownKmh / SPEEDO_MAX));
-        hudNodes.speedFill.setAttribute("stroke-dashoffset", String(SPEEDO_ARC * (1 - t)));
-      }
+      const t = Math.max(0, Math.min(1, shownKmh / DISPLAY.dialMax));
+      hudNodes.speedFill.setAttribute("stroke-dashoffset", (SPEEDO_ARC * (1 - t)).toFixed(2));
+      hudNodes.needle.setAttribute("transform", `rotate(${dialAngle(shownKmh).toFixed(1)} ${DIAL.c} ${DIAL.c})`);
       const ready = game.gauge > 0;
       hudNodes.gauge.style.width = `${Math.round(100 * (boosting ? game.boostT / 3 : game.gauge))}%`;
       hudNodes.gaugeBox.dataset.state = boosting ? "boost" : ready ? "full" : "";
@@ -507,12 +531,13 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       if (rival) {
         const noor = rivalAt(rival, game.rivalClock);
         hudNodes.noor.style.left = progress(noor.z);
-        const gap = Math.round(game.z - Math.min(noor.z, game.course.length));
+        const gap = game.z - Math.min(noor.z, game.course.length);
+        const side = Math.abs(gap) < 3, shownGap = Math.max(1, Math.round(toMeters(Math.abs(gap)))); // 差は画面の縮尺の m で出す
         const name = RIVAL_NAMES[raceWith];
-        hudNodes.race.textContent = countdown > 0 ? `VS ${name}` : Math.abs(gap) < 3 ? `${name}と並走` : gap > 0 ? `${name}に ${gap}m 差` : `${name}まで ${-gap}m`;
-        hudNodes.race.dataset.lead = countdown > 0 || Math.abs(gap) < 3 ? "" : gap > 0 ? "you" : "noor";
-        // 前後が入れ替わった瞬間（3m 以上の差がついた時）に一言。スタート直後の並びは数えない
-        const now = countdown > 0 || game.finished || Math.abs(gap) < 3 ? lead : Math.sign(gap);
+        hudNodes.race.textContent = countdown > 0 ? `VS ${name}` : side ? `${name}と並走` : gap > 0 ? `${name}に ${shownGap}m 差` : `${name}まで ${shownGap}m`;
+        hudNodes.race.dataset.lead = countdown > 0 || side ? "" : gap > 0 ? "you" : "noor";
+        // 前後が入れ替わった瞬間（内部の距離で3以上の差がついた時）に一言。スタート直後の並びは数えない
+        const now = countdown > 0 || game.finished || side ? lead : Math.sign(gap);
         if (now !== lead) {
           if (lead !== 0 || game.t > 4) { floater(now > 0 ? `${name}を抜いた！` : `${name}に抜かれた…`, now > 0 ? "race" : "behind"); if (now > 0) rideSe.play("near", 0.5); }
           lead = now;
