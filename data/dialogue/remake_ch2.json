@@ -119,11 +119,11 @@
         {
           "speaker": "sumi",
           "face": "smile",
-          "text": "おう。今日は、早めに休め"
+          "text": "おう"
         },
         {
           "speaker": "",
-          "text": "カウンターの上に残っていた水を飲む。窓の向こうでは、商店街の明かりが消え始めていた。"
+          "text": "スミさんが看板の灯りを落とした。窓の向こうでも、商店街の明かりが消え始めていた。"
         }
       ],
       "branches": {
@@ -347,34 +347,6 @@
           "speaker": "",
           "face": "",
           "text": "レヰはケースを持ち直して、搬入口の方へ歩いていった。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "その先、搬入口の灯りの下に、背の高い男が立っていた。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "手帳を開いて、選手たちの出入りを見ている。"
-        },
-        {
-          "speaker": "volk",
-          "face": "normal",
-          "text": "……"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "男はこちらを一度だけ見ると、暗がりの方へ歩いていった。"
-        },
-        {
-          "type": "hide_portrait",
-          "char_id": "volk"
-        },
-        {
-          "type": "set_flag",
-          "flag": "_ch2_scout_seen"
         }
       ],
       "branches": {

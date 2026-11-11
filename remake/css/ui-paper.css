@@ -107,13 +107,17 @@ html:root[data-ui-theme="paper"][data-density="phone"] body:not(.game-ds) #stage
 }
 html:root[data-ui-theme="paper"][data-density="phone"] body:not(.game-ds) .vn-controls .vn-ctl {
   display: flex; align-items: flex-end; justify-content: center;
-  background-position: center bottom;
+  /* 文字を下端に寄せると、書体の上下の余白ぶん（約2px）が押せる箱の下へはみ出す（scrollHeight 74 > 72。
+     夜間検査 cinema の「Clipped control」・#1787）。上の「文字を2px上へ」を transform ではなく下の余白で持たせて箱の中に収める。
+     箱が2px下がるぶん、区切り線・下線・淡い面の位置を2px上げて、見える位置は変えない。 */
+  padding-bottom: 2px; transform: none;
+  background-position: center bottom 2px;
 }
 html:root[data-ui-theme="paper"][data-density="phone"] body:not(.game-ds) #stage .vn-controls .vn-ctl + .vn-ctl::before {
-  top: auto; bottom: 10px; height: 20px;
+  top: auto; bottom: 12px; height: 20px;
 }
 html:root[data-ui-theme="paper"][data-density="phone"] body:not(.game-ds) .vn-controls .vn-ctl.on::after {
-  top: auto; bottom: 0; transform: none;
+  top: auto; bottom: 2px; transform: none;
 }
 html:root[data-ui-theme="paper"] .vn-text { color: var(--paper-ink); text-shadow: none; }
 html:root[data-ui-theme="paper"] .vn-box.narration .vn-text { color: #4a3d52; }

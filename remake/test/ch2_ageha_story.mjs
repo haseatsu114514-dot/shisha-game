@@ -10,7 +10,8 @@ const story = Object.fromEntries(read("data/dialogue/ch2_ageha_story.json").dial
 // 強制の夜: 3日目（なるの祝福のあと）の偵察返し・9日目の試煙会・10日目のスランプ来店。
 // 2日目と8日目（サメのTRPG）は自由に使える夜として空けたまま（#639）
 const night = (day) => CH2_NIGHTS.find((n) => n.day === day);
-assert.deepEqual(night(3).steps.map((s) => s.id), ["ch2_naru_warm", "remake_ch2_ageha_scout"]);
+// 偵察返しのあとに、優勝目当ての客が大会の一台を半分残す場面が続く（全体講評S6）
+assert.deepEqual(night(3).steps.map((s) => s.id), ["ch2_naru_warm", "remake_ch2_ageha_scout", "ch2_title_customer_half"]);
 // 連絡先は台本の set_flag で交換する（交換の演出が出る・#2023）。偵察の夜も店の初回も、つながっていない時だけ
 assert.equal(night(3).steps[1].contact, undefined, "コードで連絡先を付けない");
 assert.equal(night(3).steps[1].met, "ageha", "偵察の夜に会ったら面識を記録する");
@@ -25,11 +26,14 @@ assert.equal(night(3).steps[1].met, "ageha", "偵察の夜に会ったら面識�
   }
 }
 assert(!night(2), "2日目は自由な夜");
-assert.deepEqual(night(9).steps.map((s) => s.id), ["remake_ch2_ageha_tasting", "ch2_strawberry_sample"]);
+// 開場前の客席で博士と会ってから、試煙会が始まる（全体講評S13）
+assert.deepEqual(night(9).steps.map((s) => s.id), ["ch2_kemuri_thermometer", "remake_ch2_ageha_tasting", "ch2_strawberry_sample"]);
 // 9日目はMELTY PUFFではなくC.STATION柚ヶ谷店の客席（#929）。旧IDのまま読了フラグを引き継ぐ
 assert.equal(night(9).pin, "ch2_c_station");
-assert.equal(night(9).steps[0].room, undefined);
-assert.equal(night(9).steps[0].bg, C_STATION_TASTING_BG);
+for (const step of night(9).steps.slice(0, 2)) {
+  assert.equal(step.room, undefined, step.id);
+  assert.equal(step.bg, C_STATION_TASTING_BG, step.id);
+}
 assert.equal(C_STATION_TASTING_BG, CITY_BACKGROUNDS.c_station_night, "柚ヶ谷店の客席の夜景を使う");
 assert.match(C_STATION_TASTING_BG, /bg_yuzugaya_c_station_night\.webp$/, "地元店や県大会ホールの背景と区別する");
 assert.notEqual(C_STATION_TASTING_BG, CITY_BACKGROUNDS.c_station, "昼の通常訪問用背景を変えない");
