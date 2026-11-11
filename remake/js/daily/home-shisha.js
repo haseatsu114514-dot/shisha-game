@@ -16,6 +16,7 @@ import { emit } from "../core/bus.js";
 import { play, vnTest } from "../vn/engine.js";
 import { flavorStock, addFlavorStock, ownedFlavorIds } from "./shop.js";
 import { evaluateMix, goldenLabel } from "../craft/steps.js";
+import { mixColor } from "../craft/art.js";
 import { mixPercents } from "../craft/mix-ratio.js";
 import { homeRig, homeRigXp } from "./home-rig.js";
 import { chapterThreeScenes } from "../chapters/ch3-scenes.js";
@@ -210,6 +211,8 @@ export function homeShishaDialogue(result, rig, random = Math.random, { distant 
   const lines = [{ speaker: "", face: "", text: intros[Math.floor(random() * intros.length)] },
     { type: "sfx", id: "coalPlace" },
     { type: "sfx", id: "bubbling" },
+    // 一日の句点（KMR11）: 吸ったあと、自分の吐いた煙がゆっくり昇る。色は今夜の葉の色をうっすら
+    { type: "fx", id: "exhale", who: "self", ...(distant ? {} : { color: mixColor(result.mix) }) },
     ...(impressions.length ? impressions : ["（今夜の味を、またゆっくり確かめたい）"]).map(text => ({ speaker: "hajime", face: "normal", text }))];
   lines.push({ type: "sfx", id: "crackle" });
   lines.push({ speaker: "hajime", face: "normal", text: distant

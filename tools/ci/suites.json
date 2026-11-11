@@ -285,6 +285,12 @@
       "run": ["node remake/test/growth_starter_accounting.mjs"]
     },
     {
+      "id": "smoke-field",
+      "title": "Breath smoke (KMR11): palette, breath styles, quality tiers, ring, cover, cleanup",
+      "kind": "quick",
+      "run": ["node remake/test/smoke_field.mjs"]
+    },
+    {
       "id": "vent-lid",
       "title": "Lotos lid vent heat and eligibility",
       "kind": "quick",
@@ -4233,6 +4239,15 @@
       "timeout": 4,
       "paths": ["remake/js/vn/engine.js", "remake/js/vn/text.js", "remake/js/core/audio.js", "remake/css/vn.css", "remake/test/browser/conversation_effects_2828.mjs"],
       "run": ["node remake/test/browser/conversation_effects_2828.mjs"]
+    },
+    {
+      "id": "smoke-breath",
+      "title": "Breath smoke in the game (KMR11): VN exhale from the mouth, craft exhale tiers, result cover",
+      "kind": "browser",
+      "weight": 1,
+      "timeout": 5,
+      "paths": ["remake/js/core/smoke.js", "remake/js/vn/breath.js", "remake/js/vn/engine.js", "remake/js/craft/fx.js", "remake/js/craft/result.js", "remake/test/browser/smoke_breath.mjs"],
+      "run": ["node remake/test/browser/smoke_breath.mjs"]
     },
     {
       "id": "conversation-cutin",
