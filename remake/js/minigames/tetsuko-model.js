@@ -135,7 +135,8 @@ export function readTetsukoRecord(value) {
   const album = [];
   for (const entry of Array.isArray(record.album) ? record.album : []) {
     if (!MOMENT_IDS.includes(entry?.moment) || album.some(item => item.moment === entry.moment)) continue;
-    album.push({ moment: entry.moment, day: Number(entry.day) || 0, props: cleanProps(entry.props) });
+    // night: 夜に撮った写真（手帳で、夜の裏口を背にして見せる）。無い旧い記録は昼。
+    album.push({ moment: entry.moment, day: Number(entry.day) || 0, props: cleanProps(entry.props), ...(entry.night === true ? { night: true } : {}) });
   }
   return {
     v: RECORD_VERSION, props, found, album: album.slice(0, ALBUM_LIMIT),
@@ -164,12 +165,13 @@ export function createSession(value, { visitKey = null } = {}) {
   const stage = sessionStage(count);
   const metMashiro = !!value?.met?.mashiro;
   const metMukai = !!value?.met?.mukai_master;
+  const night = (Number(value?.slot) || 0) >= 1;
   const record = readTetsukoRecord(value);
   const props = { ...record.props };
   for (const slot of SLOTS) if (props[slot] && !propUnlocked(PROP[props[slot]], stage, metMashiro)) props[slot] = null;
   const before = new Set(unlockedProps(count ? relationStage(count) : -1, metMashiro).map(prop => prop.id));
   return {
-    day, count, stage, metMashiro, metMukai, visitKey,
+    day, count, stage, metMashiro, metMukai, visitKey, night,
     mood: moodOf(day).id,
     random: rng(day * 31 + count),
     timing: rng(day * 31 + count + 7),
@@ -635,7 +637,7 @@ export function autoDelay(session, { reduced = false } = {}) {
 export function takePhoto(session) {
   const moment = session.moment;
   if (!MOMENT_IDS.includes(moment)) return false;
-  const entry = { moment, day: session.day, props: { ...session.props } };
+  const entry = { moment, day: session.day, props: { ...session.props }, ...(session.night ? { night: true } : {}) };
   const index = session.album.findIndex(item => item.moment === moment);
   if (index >= 0) session.album[index] = entry;
   else if (session.album.length < ALBUM_LIMIT) session.album.push(entry);

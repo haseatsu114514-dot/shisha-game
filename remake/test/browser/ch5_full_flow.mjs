@@ -255,14 +255,22 @@ await suite("ch5-full-flow", async check => {
     assert.equal(state.flags._ch5.part, "aftermath");
     assert.equal(state.flags._ch5.won, true);
 
-    // 9. 後日談→フィナーレ（開始→通常→日常→鉄仮面さんの名乗り）。
+    // 9. 後日談（勝負のあと・前半→後半→tonariへ戻る）→フィナーレ（開始→賄い→日常。鉄仮面さんの名乗りは日常に続けて読む）。
+    await page.locator(dt("ch5-continue")).click();
+    // 前半の末尾に千須への返事（ch5_sui_after_match）を続けて読み、後半は別の場面として読む。
+    await page.locator(scene("ch5_doctor_cocreation")).waitFor();
+    state = await get(page);
+    assert.equal(state.flags._ch5.read.ch5_doctor_after_match, true);
+    assert.equal(state.flags._ch5.aftermath, 1);
     await page.locator(dt("ch5-continue")).click();
     await page.locator(scene("ch5_return_to_tonari")).waitFor();
     await page.locator(dt("ch5-continue")).click();
-    for (const id of ["ending_start", "ending_normal", "ending_daily_smoke", "ending_salaryman_name"]) {
+    for (const id of ["ending_start", "ending_normal", "ending_daily_smoke"]) {
       await page.locator(scene(id)).waitFor();
       await page.locator(dt("ch5-continue")).click();
     }
+    // 日常の場面の次の名乗りは、カードを挟まずに続けて読み、そのまま完了カードへ（終幕を何度も閉じない）。
+    // 名乗りのカードが挟まると、ここで完了カードが出ずに止まる。
     await page.locator(dt("ch5-complete")).waitFor();
 
     // 10. 最終state
@@ -275,9 +283,11 @@ await suite("ch5-full-flow", async check => {
     for (const id of ["ch5_bridge_after_return", "ch5_opening", "ch5_free_mashiro_visit", "ch5_free_first_visitor",
       "ch5_free_tonari_practice", "ch5_unrecorded_day", "ch5_schedule_contact", "ch5_timeout",
       "ch5_match_day_arrival", "ch5_copy_first_cup", "ch5_relationship_before_second_cup",
-      "ch5_second_cup_result", "ch5_second_cup_result_afterglow", "ch5_doctor_after_match",
+      "ch5_second_cup_result", "ch5_second_cup_result_afterglow", "ch5_doctor_after_match", "ch5_doctor_cocreation",
       "ch5_return_to_tonari", "ending_start", "ending_normal", "ending_daily_smoke", "ending_salaryman_name"])
       assert.equal(state.flags._ch5.read[id], true, `${id} must be read`);
+    assert.deepEqual(state.flags._ch5.finaleScenes, ["ending_start", "ending_normal", "ending_daily_smoke", "ending_salaryman_name"]);
+    assert.equal(state.flags._ch5.aftermath, 3);
     // 完了後に再開しても、完了カードに戻り場面は再演されない。
     await loadSlot(page, 0);
     await page.locator(dt("ch5-complete")).waitFor({ timeout: 60000 });
@@ -1290,7 +1300,11 @@ await suite("ch5-full-flow", async check => {
     await page.evaluate(async () => {
       (await import("./js/craft/session.js")).craftTest.auto = "bad";
       window.__realRandom = Math.random; Math.random = () => .9;
+      // 読んだ行を、台本IDつきで記録する（制作のあとの行と、勝負のあとの台本の出し分けを確かめる）。
+      window.__ch5Lines = [];
+      (await import("./js/vn/engine.js")).hooks.onLine = (id, line) => window.__ch5Lines.push([id, line.speaker || "", line.text]);
     });
+    const readLines = () => page.evaluate(() => window.__ch5Lines.splice(0));
     await page.locator(dt("ch5-second-cup-start")).click();
     await page.locator(matchScene("ch5_second_cup_defeat")).waitFor({ timeout: 180000 });
     let state = await get(page);
@@ -1298,12 +1312,118 @@ await suite("ch5-full-flow", async check => {
     assert.notEqual(cup.category, "failed", `The weak cup is finished, not failed: ${JSON.stringify(cup)}`);
     assert(19 + cup.votes.hajime < 21 + cup.votes.machine, `A weak cup loses on the votes: ${JSON.stringify(cup)}`);
     await page.evaluate(async () => { (await import("./js/craft/session.js")).craftTest.auto = null; Math.random = window.__realRandom; });
+    // 制作のあと: 調整の地の文に続けて、初めて会う客に尋ね、先に吸ってもらう4行を読む（STK02。提供できた一台だけ）。
+    const afterCraft = (await readLines()).filter(([id]) => id === "ch5_second_cup_adjust");
+    assert.equal(afterCraft.length, 5, JSON.stringify(afterCraft));
+    assert.equal(afterCraft[0][1], "", "The adjustment line is narration");
+    assert.deepEqual(afterCraft.slice(1), [
+      ["ch5_second_cup_adjust", "", "隣の席は、初めて見る顔だった。ホースを持つ手が、まだ硬い。"],
+      ["ch5_second_cup_adjust", "hajime", "初めてですよね。今日は、どのくらいゆっくりできますか"],
+      ["ch5_second_cup_adjust", "customer", "……三十分くらい。このあと、人と会うので"],
+      ["ch5_second_cup_adjust", "hajime", "なら、先にどうぞ。いちばん香るのは、今なので"],
+    ]);
     await page.locator(dt("ch5-continue")).click();
-    await page.locator(scene("ch5_doctor_after_match")).waitFor();
+    // 負けたあとは、勝った博士が折れない専用の前半を読む。博士の一言は実際の挙手に合う台本
+    // （二台目の9000の挙手が一台目の21より減っていれば「票が減りました」、減っていなければ「票が割れました」）。
+    const opening = cup.votes.machine < 21 ? "ch5_doctor_after_match_loss_close" : "ch5_doctor_after_match_loss";
+    await page.locator(scene(opening)).waitFor();
     state = await get(page);
     assert.equal(state.flags._ch5.won, false);
     assert.equal(state.flags._ch5.part, "aftermath");
     assert.equal(state.flags._ch5.read.ch5_second_cup_result, undefined);
     assert.equal(state.flags._ch5.read.ch5_second_cup_result_afterglow, undefined);
+    // 前半→後半（勝敗共通）→tonariへ戻る。勝ちの前半は読まない。
+    await readLines(); // 敗北の場面（ch5_second_cup_defeat）の行は数えない
+    await page.locator(dt("ch5-continue")).click();
+    await page.locator(scene("ch5_doctor_cocreation")).waitFor();
+    // 前半: 博士の一言は挙手に合う。折れる台詞（正解の味）は出ない。末尾に、千須への返事が同じ場面として続く（STK05）。
+    const first = await readLines();
+    assert(first.every(([id]) => id === opening), JSON.stringify(first.map(([id]) => id)));
+    const said = first.map(([, , text]) => text);
+    assert.equal(said[1], cup.votes.machine < 21 ? "合計は、9000です。……なのに、二台目の票が減りました"
+      : "合計は、9000です。……なのに、二台目も票が割れました");
+    assert(said.includes("記録にない項目です。次回から、先に尋ねます"));
+    assert(!said.some(text => /正解の味/.test(text)), "The winning doctor does not concede");
+    assert.deepEqual(first.slice(-4).map(([, speaker, text]) => [speaker, text]).slice(0, 3), [
+      ["sui", "一つだけ聞く。君が作れない夜に来た客は、どうする"],
+      ["hajime", "俺が作れない日は、つむぎが作ります。つむぎが作れない日は、俺が"],
+      ["sui", "……それを、店と呼ぶんだろうな"],
+    ]);
+    await page.locator(dt("ch5-continue")).click();
+    await page.locator(scene("ch5_return_to_tonari")).waitFor();
+    // 後半: 検品札で始まり、博士の最後の一言で終わる。温度計の一言は、第2章で借りていない保存では出ない。
+    const second = (await readLines()).map(([, , text]) => text);
+    assert.equal(second[1], "博士はケースを開けた。配線に、小さな検品札が付いている。");
+    assert(second.includes("私は三つの大会で、君に点を入れました。味は、分からないまま"));
+    assert(!second.some(text => /温度計/.test(text)), "No thermometer line without the Chapter 2 loan");
+    assert.equal(second.at(-1), "……味は、まだ遠いです。でも、手は覚えていました");
+    state = await get(page);
+    assert.equal(state.flags._ch5.read[opening], true);
+    assert.equal(state.flags._ch5.read.ch5_doctor_cocreation, true);
+    assert.equal(state.flags._ch5.read.ch5_doctor_after_match, undefined, "The winner's first half is not read after a loss");
   }, { reducedMotion: "reduce" });
+
+  // 勝負のあと・後半の温度計の一言（第2章で借りた保存だけ）と、恋人が一人のフィナーレの順（賄い→その人の後日談。STK11）。
+  await check("chapter-five-thermometer-line-and-shared-meal-before-single-lover-epilogue", async page => {
+    page.setDefaultTimeout(30000);
+    await page.evaluate(async () => {
+      const core = await import("./js/core/state.js");
+      const value = core.newGame();
+      Object.assign(value, { chapter: 5, day: 52, slot: 0, phase: "aftermath", money: 50000, stamina: 100,
+        weatherSeed: 5, lovers: ["minto"], contacts: ["sumi", "minto"] });
+      value.met.minto = true;
+      const read = Object.fromEntries(["ch5_bridge_after_return", "ch5_opening", "ch5_unrecorded_day",
+        "ch5_schedule_contact", "ch5_match_day_arrival", "ch5_copy_first_cup", "ch5_relationship_before_second_cup",
+        "ch5_second_cup_result", "ch5_second_cup_result_afterglow"].map(id => [id, true]));
+      value.flags = { _elapsed_calendar: true, _ch1_cleared: true, _ch2_cleared: true, _ch3_cleared: true,
+        _ch4_preview_seen: true, _ch4_cleared: true, _ch5_after_party: true, _ch5_match_scheduled: true, _ch5_match_started: true,
+        _stk_kemuri_thermo_borrowed: true,
+        _ch5: { startDay: 51, stage: 2, part: "aftermath", titleSeen: true, read, scheduleDecision: "decide",
+          aftermath: 0, finale: 0, finaleScenes: null, won: true,
+          secondCup: { total: 90, category: "steady", votes: { hajime: 26, machine: 14 } } } };
+      value.stats = { technique: 60, sense: 60, guts: 60, charm: 60, insight: 60 };
+      Object.assign(core.config, { textSpeed: 4, bgmVolume: 0, seVolume: 0, voiceBlip: false });
+      core.saveConfig(); core.save();
+    });
+    await loadSlot(page, 0);
+    await page.locator(scene("ch5_doctor_after_match")).waitFor({ timeout: 60000 });
+    await page.evaluate(async () => {
+      window.__ch5Lines = [];
+      (await import("./js/vn/engine.js")).hooks.onLine = (id, line) => window.__ch5Lines.push(line.text);
+    });
+    const readLines = () => page.evaluate(() => window.__ch5Lines.splice(0));
+    await page.locator(dt("ch5-continue")).click();
+    await page.locator(scene("ch5_doctor_cocreation")).waitFor();
+    const first = await readLines();
+    assert(first.includes("……正解の味を、一つだけ探していたのかもしれません"), "The winner's first half keeps the doctor's own words");
+    assert.equal(first.at(-3), "俺が作れない日は、つむぎが作ります。つむぎが作れない日は、俺が");
+    await page.locator(dt("ch5-continue")).click();
+    await page.locator(scene("ch5_return_to_tonari")).waitFor();
+    const second = await readLines();
+    const judged = second.indexOf("熱と、煙と、吸った人の顔。それで、採点はできてしまった");
+    assert(judged > 0, JSON.stringify(second));
+    assert.deepEqual(second.slice(judged + 1, judged + 3), ["県大会の前に貸した温度計。あれが、9000のいちばん古い部品です",
+      "だから、舌が利かなくても作れる一台が欲しかった。私のような作り手のためにも"]);
+    await page.locator(dt("ch5-continue")).click();
+    // フィナーレ: 賄い（ending_normal）を読んでから、その人の後日談。名乗りは日常の場面に続けて読む。
+    for (const id of ["ending_start", "ending_normal", "epilogue_minto", "ending_daily_smoke"]) {
+      await page.locator(scene(id)).waitFor();
+      await page.locator(dt("ch5-continue")).click();
+    }
+    await page.locator(dt("ch5-complete")).waitFor();
+    const state = await get(page);
+    assert.deepEqual(state.flags._ch5.finaleScenes,
+      ["ending_start", "ending_normal", "epilogue_minto", "ending_daily_smoke", "ending_salaryman_name"]);
+    for (const id of state.flags._ch5.finaleScenes) assert.equal(state.flags._ch5.read[id], true, `${id} must be read`);
+    assert.equal(state.flags._ch5_cleared, true);
+    const lines = await readLines();
+    const order = ["三ヶ月目に決めた名前は、もう書けなかった。あれは、俺ひとりの城の名前だった。",
+      "スミさん。tonariって、どうしてこの名前なんですか", "客の隣に座れる店にしたかった、……それだけだ",
+      "別の日。閉店後、ミントさんの部屋で遅い夕飯を作った。", "返事を聞きながら、もう一つボウルを出す。",
+      "閉店の少し前。奥まった席に、いつもの鉄仮面さんが座った。",
+      "客が帰ったあと、カウンターの一番古いトロフィーを拭いた。"].map(text => lines.indexOf(text));
+    assert(order.every((index, i) => index >= 0 && (i === 0 || index > order[i - 1])), `finale order: ${order}`);
+    assert.equal(order.at(-1), lines.length - 1, "The last picture is the oldest trophy");
+    assert.equal(order[5], order[4] + 1, "The name scene follows the daily scene without a break");
+  });
 });

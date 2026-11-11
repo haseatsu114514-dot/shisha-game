@@ -43,6 +43,22 @@ assert.equal(encounters.spotEncounterDue("cafe", 5, save(2, { _spot_seen_cafe_ch
 assert.equal(encounters.spotEncounterDue("kannon", 5, save(2, {}, { slot: 1 }), all) === "kannon_ch2_wish", false);
 // 台本が読み込まれていない（第2章の準備期間の外）なら出さない
 assert.equal(encounters.spotEncounterDue("cafe", 5, save(2), {}), null);
+// #2090・RVE: なるとの決裂（第2章の対峙）以降は、店を閉めて修行に出ているので、喫茶こはく・ジムでもなるに会わない
+{
+  const ch2Seen = Object.fromEntries(Object.values(CH2).flat().map(id => [`_spot_seen_${id}`, true]));
+  const rifts = ["_ch2_read_ch2_naru_confrontation", "_ch2_night_11_done", "_ch2_naru_listened", "_ch2_naru_hurt"];
+  for (const [spot, id] of [["cafe", "cafe_naru_break"], ["choizap", "choizap_naru"]]) {
+    assert.equal(encounters.spotEncounterDue(spot, 5, save(1, ch2Seen), all), id, `${id}: chapter 1`);
+    assert.equal(encounters.spotEncounterDue(spot, 5, save(2, ch2Seen), all), id, `${id}: chapter 2 before the rift`);
+    for (const rift of rifts) {
+      for (const chapter of [2, 3, 5]) {
+        assert.notEqual(encounters.spotEncounterDue(spot, 5, save(chapter, { ...ch2Seen, [rift]: true }), all), id, `${id}: not during the rift (${rift}, chapter ${chapter})`);
+      }
+    }
+    // 第1章ではまだ決裂していない（同じ保存値でも章が1なら出る）
+    assert.equal(encounters.spotEncounterDue(spot, 5, save(1, { ...ch2Seen, _ch2_naru_hurt: true }), all), id, `${id}: chapter 1 is never a rift`);
+  }
+}
 
 // ---- 実モジュールを、名前付き import だけ差し替えて読み込む --------------------------------
 function namedImports(src) {
