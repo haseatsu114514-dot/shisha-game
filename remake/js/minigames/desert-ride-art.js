@@ -27,6 +27,13 @@ export const DESERT_ART = Object.freeze({
   noorRiderJump: Object.freeze({ file: "ui/desert_ride/rider_noor_jump.webp", size: Object.freeze([537, 670]), anchor: Object.freeze({ x: 0.5761, y: 0.8388 }) }),
   noorRiderBrace: Object.freeze({ file: "ui/desert_ride/rider_noor_brace.webp", size: Object.freeze([561, 644]), anchor: Object.freeze({ x: 0.558, y: 0.8198 }) }),
   noorRiderFall: Object.freeze({ file: "ui/desert_ride/rider_noor_fall.webp", size: Object.freeze([554, 655]), anchor: Object.freeze({ x: 0.5256, y: 0.9569 }) }),
+  // なるの背面6ポーズ。主人公・ヌールと同じ寸法と基準点を使う。
+  naruRider: Object.freeze({ file: "ui/desert_ride/rider_naru_ride.webp", size: Object.freeze([489, 768]), anchor: Object.freeze({ x: 0.6125, y: 0.833 }) }),
+  naruRiderLeft: Object.freeze({ file: "ui/desert_ride/rider_naru_lean_left.webp", size: Object.freeze([536, 724]), anchor: Object.freeze({ x: 0.6294, y: 0.8209 }) }),
+  naruRiderRight: Object.freeze({ file: "ui/desert_ride/rider_naru_lean_right.webp", size: Object.freeze([542, 771]), anchor: Object.freeze({ x: 0.5103, y: 0.8261 }) }),
+  naruRiderJump: Object.freeze({ file: "ui/desert_ride/rider_naru_jump.webp", size: Object.freeze([537, 670]), anchor: Object.freeze({ x: 0.5761, y: 0.8388 }) }),
+  naruRiderBrace: Object.freeze({ file: "ui/desert_ride/rider_naru_brace.webp", size: Object.freeze([561, 644]), anchor: Object.freeze({ x: 0.558, y: 0.8198 }) }),
+  naruRiderFall: Object.freeze({ file: "ui/desert_ride/rider_naru_fall.webp", size: Object.freeze([554, 655]), anchor: Object.freeze({ x: 0.5256, y: 0.9569 }) }),
   rockLarge: Object.freeze({ file: "ui/desert_ride/rock_large.webp", size: Object.freeze([512, 280]) }),
   rockSmall: Object.freeze({ file: "ui/desert_ride/rock_small.webp", size: Object.freeze([384, 211]) }),
   // 旗竿（Codex A）。foot は竿の足（画像に対する比率）
