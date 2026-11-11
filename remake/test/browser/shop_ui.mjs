@@ -123,7 +123,7 @@ await suite("shop-ui", async check => {
       }
       await page.locator('[data-tab="equip"]').click();
       const equipment = await decodeRows(8);
-      assert.equal(equipment.filter(row => row.url).length, 6, 'Three bowls, two regenerated coals and the new lotos image');
+      assert.equal(equipment.filter(row => row.url).length, 8, 'All eight equipment rows have illustrations, including the newly adopted art');
       for (const [id, suffix] of [['lotos_hagal', '/equipment-v2/lotos_hagal.webp'],
         ['flat_charcoal', '/equipment-v2/flat_charcoal.webp'], ['cube_charcoal', '/equipment-v2/cube_charcoal.webp']]) {
         assert(equipment.find(row => row.id === id)?.url.endsWith(suffix), `${id} uses its selected illustration`);
