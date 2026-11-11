@@ -71,6 +71,7 @@
       "sell_price": 1000,
       "price": 2000,
       "value": "tanukish_lid",
+      "art": "tanukish_lid",
       "description": "使いやすく癖が少ない。素焼きサイズには使えない。"
     },
     {
@@ -168,6 +169,7 @@
       "sell_price": 1500,
       "price": 3000,
       "value": "winkwink_hagal",
+      "art": "winkwink_hagal",
       "description": "素焼きなど大きいハガル向け。熱持ちは良いが熱が入りづらい。"
     },
     {

@@ -53,6 +53,18 @@
       "source": "asset_sources/equipment-art-2741-20261111/amaburst_hms.png",
       "delivery": "remake/img/shop/equipment-v2/amaburst_hms.webp",
       "sha256": "ab0f6f17530f5d6cab857c62157ae5df65b285770e8339b1e18effeb2a97afbb"
+    },
+    {
+      "id": "tanukish_lid",
+      "source": "asset_sources/equipment-art-2741-20261111/tanukish_lid.png",
+      "delivery": "remake/img/shop/equipment-v2/tanukish_lid.webp",
+      "sha256": "e0d1ae04de659959b51ca3053d6d71ab86851c406af0b5eeb1e5087c1184cce1"
+    },
+    {
+      "id": "winkwink_hagal",
+      "source": "asset_sources/equipment-art-2741-20261111/winkwink_hagal.png",
+      "delivery": "remake/img/shop/equipment-v2/winkwink_hagal.webp",
+      "sha256": "12a9b1866948a84535ed0cb5054eab960f66f64c147f6c194a2cf9ae801cc1a9"
     }
   ]
 }

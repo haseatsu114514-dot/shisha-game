@@ -188,6 +188,48 @@
         0,
         255
       ]
+    },
+    {
+      "id": "tanukish_lid",
+      "source": "asset_sources/equipment-art-2741-20261111/tanukish_lid.png",
+      "delivery": "remake/img/shop/equipment-v2/tanukish_lid.webp",
+      "sha256": "e0d1ae04de659959b51ca3053d6d71ab86851c406af0b5eeb1e5087c1184cce1",
+      "delivery_sha256": "dcfaded9cf8f177fb125432824efb3f9ba6dfbe5f5dd9ec348bc0b47a468a7fc",
+      "size": [
+        512,
+        512
+      ],
+      "box": [
+        130,
+        141,
+        278,
+        237
+      ],
+      "alpha": [
+        0,
+        255
+      ]
+    },
+    {
+      "id": "winkwink_hagal",
+      "source": "asset_sources/equipment-art-2741-20261111/winkwink_hagal.png",
+      "delivery": "remake/img/shop/equipment-v2/winkwink_hagal.webp",
+      "sha256": "12a9b1866948a84535ed0cb5054eab960f66f64c147f6c194a2cf9ae801cc1a9",
+      "delivery_sha256": "3cf16cffa91b146a45ca52539c6e4c22833e13bd90f9182e134e51cb109085ce",
+      "size": [
+        512,
+        512
+      ],
+      "box": [
+        100,
+        150,
+        328,
+        239
+      ],
+      "alpha": [
+        0,
+        255
+      ]
     }
   ]
 }

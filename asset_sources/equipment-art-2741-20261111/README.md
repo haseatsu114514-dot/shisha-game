@@ -20,4 +20,4 @@ Issueの「data.artなし18件」を現行データで照合し、単純な欠�
 
 ## 採用と組み込み（2026-11-11）
 
-オーナーは **アマバーストだけ採用**し、タヌキッシュリッドとビッグタヌキッシュリッド（`winkwink_hagal`）は作り直しにした（不採用の2枚はこのフォルダに入れていない。元の Draft #3337 には残る）。アマバーストは `asset_sources/premium-equipment-vol08/sources.json` に登録し、`python3 tools/build_shop_equipment_art.py` で店の絵（`remake/img/shop/equipment-v2/amaburst_hms.webp`）を作った。
+オーナーは3種とも採用した（最初はアマバーストだけ採用でタヌキッシュリッド2種は作り直しにしたが、同日「作り直しではなく使っていい」に変更）。`asset_sources/premium-equipment-vol08/sources.json` に登録し、`python3 tools/build_shop_equipment_art.py` で店の絵（`remake/img/shop/equipment-v2/{amaburst_hms,tanukish_lid,winkwink_hagal}.webp`）を作った。ビッグタヌキッシュリッドの装備 ID は `winkwink_hagal`。
