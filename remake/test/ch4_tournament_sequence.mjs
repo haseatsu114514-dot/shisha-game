@@ -244,7 +244,7 @@ const previewStorage = new Map();
 globalThis.localStorage = {getItem:key=>previewStorage.get(key)??null,setItem:(key,value)=>previewStorage.set(key,String(value))};
 growth.setGrowthPreview(true);
 const grown=await run(); assert.equal(grown.error,undefined);
-// 経験値はその場でレベルと火種になる（SBD108）: 大会の学びの色の火2＋Lv.3までの白火4＋優勝の白火3（SBD110）
+// 経験値はその場でレベルと火種になる（SBD108・SBD122）: 大会の学びの色の火2＋Lv.3までの白火4＋優勝の白火3（SBD110）
 assert.equal(grown.value.growth.xp,525);assert.equal(grown.value.growth.earned,9);
 const grownReload=await run({resume:structuredClone(grown.value)});
 assert.equal(grownReload.value.growth.xp,525);assert.equal(grownReload.value.growth.earned,9,"保存から再開しても二重に渡さない");

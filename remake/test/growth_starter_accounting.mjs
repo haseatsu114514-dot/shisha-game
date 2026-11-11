@@ -68,7 +68,7 @@ for (const room of [1, 2, 3, 4, 5, 0]) {
   assert.equal(tutorial.grantStarterHidane(s, g), 6);
   assert.deepEqual(account(g), { earned: 6, held: 6, paid: 0 });
   growth.gainExp(growth.totalExpFor(99), { silent: true });
-  growth.takeGrowthStock();
+  growth.settleGrowth();
   assert.deepEqual(account(g), { earned: 198, held: 198, paid: 0 });
 
   for (const lesson of board.LESSONS) { s.met[lesson.who] = true; s.affinity[lesson.who] = 999; }
@@ -83,7 +83,7 @@ for (const room of [1, 2, 3, 4, 5, 0]) {
   assert.equal(priced.filter(node => !g.nodes.includes(node.id)).length, 0,
     `全有料ノードを確定できる: ${JSON.stringify({ rest: priced.filter(node => !g.nodes.includes(node.id)).map(node => [node.id, board.nodeStatus(node, g, board.replay(g, []))]), wallet: g.hidane })}`);
   assert.deepEqual(account(g), { earned: 198, held: 0, paid: 198 });
-  assert.equal(growth.takeGrowthStock().boardFull, true, "全盤完成の判定も成立する");
+  assert.equal(growth.settleGrowth().boardFull, true, "全盤完成の判定も成立する");
   assert.equal(growth.giveColored(g, "body").n, 0, "完成後に追加配布しない");
 
   assert.equal(core.save(), true);

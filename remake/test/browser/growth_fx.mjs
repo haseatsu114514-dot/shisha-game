@@ -1,4 +1,4 @@
-// 心得の盤・レベルアップの演出（SBD102〜105）と、ストックしてから観音堂でまとめて見せる流れ（SBD108〜110）、
+// 心得の盤の演出（SBD102〜105）、経験値が届いたその場のレベルアップ（SBD108〜110・SBD122）、
 // 絵と数だけの画面と絵つきの「？」（SBD116〜119）を実DOMで確かめる。
 // 飾りは規則を変えない: 火種の数・灯したマス・保存は今までどおりで、動きを減らす設定では待たずに閉じる。
 import assert from "node:assert/strict";
@@ -21,14 +21,12 @@ async function setupDaily(page, { chapter = 1 } = {}) {
     s.growth.seenRing = chapter;
   }, chapter);
 }
-/** ストックした分のフル演出（観音堂などの内省が呼ぶもの）を直接出す */
-const present = (page) => page.evaluate(async () => {
-  window.night = null;
-  void (await import("./js/daily/levelup.js")).presentStockedGrowth().then((r) => { window.night = r; });
-});
-const settled = (page) => page.waitForFunction(() => document.querySelector(".levelup")?.classList.contains("lu-settled-state"));
-/** もらった火種の大きな粒: [種類, 見える数, 読み上げの文] */
-const bigFires = (page) => page.locator(`${t("levelup-rewards")} .lu-big`).evaluateAll((nodes) => nodes.map((n) => [n.className.match(/k-(\w+)/)[1], n.querySelector("b").textContent, n.querySelector(".lu-sr").textContent]));
+/** その場のレベルアップの札（押せない飾り。出て、少しして消える） */
+const cutIn = (page) => page.locator(t("levelup"));
+const shown = (page) => page.locator(`${t("levelup")}.show`).waitFor();
+const gone = (page) => cutIn(page).waitFor({ state: "detached", timeout: 15000 });
+/** 札の火種: [種類, 見える数] */
+const fires = (page) => page.locator(`${t("levelup-rewards")} .lvup-fire`).evaluateAll((nodes) => nodes.map((n) => [n.className.match(/k-(\w+)/)[1], n.querySelector("b").textContent]));
 /** 画面に見えている文字（読み上げ用の文を除く）。絵と数だけにした画面で、文が戻っていないことを見る */
 const visibleText = (page, sel) => page.locator(sel).evaluate((node) => { const copy = node.cloneNode(true); copy.querySelectorAll(".lu-sr, .gb-sr").forEach((n) => n.remove()); return copy.textContent.replace(/\s+/g, ""); });
 
@@ -37,157 +35,87 @@ await suite("growth-fx", async (check) => {
     ["pc", { viewport: { width: 1331, height: 760 } }],
     ["touch", { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }],
   ]) {
-    await check(`${label}-levelup-rewards`, async (page) => {
-      const tap = (sel) => !options.hasTouch ? page.locator(sel).click() : page.locator(sel).tap();
+    // 経験値が届いて上がったその場で、短い札が出る（SBD122）。まとめて見せる画面・寝る前の演出・ためておく印は無い
+    await check(`${label}-levelup-on-the-spot`, async (page) => {
       await setupDaily(page);
-      // 経験値が入ったその場でレベルが上がり、火種が手持ちに入る。寝る前の演出は出ない。HUD に小さく知らせる
       await page.evaluate(async () => { const g = await import("./js/core/growth.js"); g.gainExp(g.totalExpFor(3)); });
-      assert.deepEqual(await page.evaluate(() => ({ level: __remake.state.growth.level, fire: __remake.state.growth.hidane.any })), { level: 3, fire: 4 });
-      assert.match(await page.locator(t("stock-chip")).innerText(), /LEVEL UP Lv\.3[\s\S]*火種 ＋4/);
-      await assertFits(page, t("stock-chip"));
-      await page.locator(".gain-card", { hasText: "火種をストックした" }).waitFor();
-      assert.match(await page.locator(t("hud-exp")).innerText(), /Lv\.3[\s\S]*Lv UP ×2/, "見せていないレベルアップがある間は HUD に出す");
+      assert.deepEqual(await page.evaluate(() => ({ level: __remake.state.growth.level, fire: __remake.state.growth.hidane.any })), { level: 3, fire: 4 }, "レベルと火種はその場で入る");
+      await shown(page);
+      const card = cutIn(page);
+      assert.deepEqual(await card.evaluate((node) => ({ ...node.dataset })), { test: "levelup", kind: "level", line: "LEVEL UP Lv.3　白火 ＋4", from: "1", to: "3" });
+      assert.deepEqual(await fires(page), [["any", "×4"]]);
+      assert.equal(await visibleText(page, t("levelup")), "LEVELUPLv.1→Lv.3×4", "見えるのは見出し・レベル・粒の数だけ");
+      assert.equal(await card.evaluate((node) => getComputedStyle(node).pointerEvents), "none", "押せない飾り（操作を止めない）");
+      assert.equal(await page.locator(".lvup-fire .hidane-icon.has-img").count() > 0, true, "火種の粒は盤と同じ絵");
+      await assertFits(page, ".lvup-plate");
+      await page.locator(".gain-card", { hasText: "火種を手に入れた" }).waitFor();
+      assert.match(await page.locator(t("hud-exp")).innerText(), /Lv\.3/);
+      assert.doesNotMatch(await page.locator(t("hud-exp")).innerText(), /Lv UP/, "ためておく印は出さない");
       assert.equal(await page.locator(t("hud-hidane")).innerText(), "4");
-      assert.equal(await page.locator(t("levelup")).count(), 0);
-      const quiet = await page.evaluate(async () => { const r = await (await import("./js/core/growth.js")).presentNight(); return { panel: !!document.querySelector(".levelup-backdrop, .levelup-band"), to: r.to, from: r.from }; });
-      assert.deepEqual(quiet, { panel: false, from: 1, to: 3 }, "寝る前は何も出さず、ストックも残す");
+      assert.equal(await page.locator(".levelup-backdrop, .levelup-band, [data-test=\"levelup-ok\"], [data-test=\"stock-chip\"]").count(), 0, "止めて見せる画面は無い");
+      await gone(page);
+      // 寝る前の区切りでは何も出ない（もう上がっている）
+      const night = await page.evaluate(async () => { const r = await (await import("./js/core/growth.js")).presentNight(); await new Promise((done) => setTimeout(done, 400)); return { from: r.from, to: r.to, card: !!document.querySelector('[data-test="levelup"]') }; });
+      assert.deepEqual(night, { from: 3, to: 3, card: false });
 
-      // ストックした分のフル演出: 絵と数だけ（大きな粒と ×N）。説明の文は出さず、「？」の見方に寄せる（SBD116）
-      await present(page);
-      const panel = page.locator(t("levelup"));
-      await panel.waitFor();
-      await tap(".levelup-backdrop");
-      await settled(page);
-      assert.deepEqual(await bigFires(page), [["any", "×4", "白火 ＋4"]]);
-      assert.match(await panel.innerText(), /Lv\.1 → Lv\.3/);
-      assert.equal(await visibleText(page, t("levelup")), "LEVELUPLv.3Lv.1→Lv.3×4盤へ？", "見えるのは見出し・レベル・数・ボタンだけ");
-      assert.equal(await page.locator(`${t("levelup-next")}, ${t("levelup-wallet")}, ${t("levelup-color-note")}, ${t("levelup-sources")}`).count(), 0, "次の節目・手持ち・色の火の説明は出さない");
-      assert.equal(await page.locator(t("levelup-board")).count(), 0, "盤はこのあと開くので、盤を見るボタンは無い");
-      assert.equal(await page.locator(".lu-big .hidane-icon.has-img").count() > 0, true, "火種の粒は盤と同じ絵");
-      await assertFits(page, t("levelup"));
-      await assertFits(page, t("levelup-help"));
-
-      // 「？」: 火種のページから開く絵つきの見方。ページを送れて、閉じると元の画面に戻る
-      await tap(t("levelup-help"));
-      const help = page.locator(t("board-help-pages"));
-      await help.waitFor();
-      assert.equal(await help.locator(".gh-page").getAttribute("data-page"), "fire");
-      assert.match(await help.innerText(), /2\/7[\s\S]*白火[\s\S]*色の台座[\s\S]*節目（Lv\.10ごと）[\s\S]*大会で優勝/);
-      assert.equal(await help.locator(".gh-gain").count(), 6, "もらえる時は6つ");
-      await page.waitForFunction(() => { const imgs = [...document.querySelectorAll(".gh-page .gh-pic")]; return imgs.length > 0 && imgs.every((img) => img.complete && img.naturalWidth > 0); }, null, { timeout: 10000 }); // 見本は盤と同じ絵が読めている
-      await tap(t("board-help-next"));
-      assert.equal(await help.locator(".gh-page").getAttribute("data-page"), "kinds");
-      assert.equal(await help.locator(".gh-row").count(), 7, "マスの種類は7つ");
-      await tap(t("board-help-tab-perks"));
-      const perks = await help.locator("[data-perk]").evaluateAll((rows) => rows.map((row) => [row.dataset.perk, row.querySelector("b").textContent, row.querySelector(".gh-text span").textContent]));
-      assert.equal(perks.length, 12, "能力は12");
-      assert(perks.every(([key, name, text]) => key && name && text), `どの能力にも名前と一言がある: ${JSON.stringify(perks)}`);
-      for (const id of ["flow", "fire", "kinds", "perks", "states", "how", "rules"]) {
-        await tap(t(`board-help-tab-${id}`));
-        await assertFits(page, t("board-help-pages"));
-        await assertFits(page, t("board-help-next"));
-        await assertFits(page, t("board-help-close"));
-      }
-      assert.equal(await page.locator(t("board-help-next")).isDisabled(), true, "最後のページでは「次へ」を押せない");
-      await tap(t("board-help-close"));
-      await help.waitFor({ state: "detached" });
-      await panel.waitFor();
-      await tap(t("levelup-ok"));
-      await page.waitForFunction(() => window.night?.to === 3);
-      await panel.waitFor({ state: "detached" });
-      assert.equal(await page.evaluate(async () => (await import("./js/core/growth.js")).hasGrowthStock()), false, "見終えたらストックは空");
-      assert.equal(await page.evaluate(async () => (await import("./js/core/state.js")).peekSave()?.growth?.today?.from ?? null), null, "見終えたことを保存する");
-      await page.waitForFunction(() => !/Lv UP/.test(document.querySelector('[data-test="hud-exp"]').textContent));
-
-      // 何回かに分けてためた分も、一つの演出にまとまる。節目（第1章）は色の火1＋白火1で、色の火は台座の鍵だと伝える
+      // 続けて入った経験値は一つの札にまとまる。節目（Lv.10）は色の火1＋白火1で、札が大きく光る
       await page.evaluate(async () => {
         const g = await import("./js/core/growth.js"), gr = g.ensureGrowth();
         g.gainExp(g.totalExpFor(8) - gr.xp, { key: "sumi" });
-        gr.today.gifts.push({ label: "斧投げで Aランク", parts: [g.giveColored(gr, "body", 1)] });
         g.gainExp(g.totalExpFor(10) - gr.xp + 10, { key: "kannon" });
       });
       assert.equal(await page.evaluate(() => __remake.state.growth.level), 10);
-      await present(page);
-      await panel.waitFor();
-      await tap(".levelup-backdrop");
-      await settled(page);
-      // 大きな粒は種類ごとの合計: 白火＝レベル7つ分の14＋節目の1、色の火＝節目の1＋斧投げの紅火1
-      const fires = await bigFires(page);
-      assert.deepEqual(fires[0], ["any", "×15", "白火 ＋15"]);
-      assert.equal(fires.slice(1).reduce((sum, f) => sum + Number(f[1].slice(1)), 0), 2, `色の火は合わせて2: ${JSON.stringify(fires)}`);
-      assert.match(await panel.innerText(), /Lv\.3 → Lv\.10/);
-      // 内訳は小さな札（節目は ★Lv.10、ご褒美は短い名札）。長い文は読み上げと説明（title）に残す
-      const milestone = page.locator(t("levelup-milestone"));
-      assert.equal(await milestone.count(), 1);
-      assert.equal(await milestone.locator(".lu-src-tag").innerText(), "★Lv.10");
-      assert.match(await milestone.locator(".lu-sr").textContent(), /^節目の Lv\.10：(紅火|蒼火|翠火) ＋1　白火 ＋1$/, "節目は色の火1＋白火1");
-      assert.equal(await milestone.locator(".lu-mini").count(), 2);
-      const gift = page.locator(t("levelup-gift"));
-      assert.equal(await gift.count(), 1);
-      assert.equal(await gift.locator(".lu-src-tag").innerText(), "斧投げ");
-      assert.match(await gift.locator(".lu-sr").textContent(), /斧投げで Aランク：紅火 ＋1/);
-      assert.match(await gift.getAttribute("title"), /斧投げで Aランク/);
-      assert.match(await page.locator(t("levelup-learned")).getAttribute("title"), /^学んできたこと：/);
-      assert.equal(await page.locator(`${t("levelup-learned")} :is(.lu-face, .lu-src-tag)`).count(), 1, "学んできた相手（スミさん）は顔で出す（絵が読めない時は短い名札）。場所は説明だけ");
-      assert((await visibleText(page, t("levelup"))).length < 60, "見える文字は短い札だけ");
-      assert.equal(await panel.evaluate((node) => node.classList.contains("milestone")), true);
-      await assertFits(page, t("levelup"));
-      await assertFits(page, t("levelup-ok"));
-      await tap(t("levelup-ok"));
-      await panel.waitFor({ state: "detached" });
+      await shown(page);
+      assert.deepEqual(await card.evaluate((node) => [node.dataset.from, node.dataset.to, node.classList.contains("milestone")]), ["3", "10", true]);
+      const got = await fires(page);
+      assert.deepEqual(got[0], ["any", "×15"], "Lv.3→10 の白火14＋節目の白火1");
+      assert.deepEqual(got.slice(1).map((f) => f[1]), ["×1"], `節目の色の火は1つ: ${JSON.stringify(got)}`);
+      assert.match(await card.getAttribute("data-line"), /^LEVEL UP Lv\.10　白火 ＋15　(紅火|蒼火|翠火) ＋1$/);
+      await assertFits(page, ".lvup-plate");
+      await gone(page);
+      assert.equal(await page.locator(t("levelup")).count(), 0, "一つにまとめて出し、二つ目は出さない");
 
-      // ご褒美だけ（レベルは上がっていない）でも、同じ画面で見せる
+      // ご褒美の火種（♥5）も同じ形で、その場に出る。贈り主は顔（絵が読めない時は短い名札）
       await page.evaluate(async () => {
-        const g = await import("./js/core/growth.js"), gr = g.ensureGrowth();
+        const g = await import("./js/core/growth.js");
         __remake.state.affinity.minto = 999; __remake.state.flags._met_minto = true;
         window.heart = g.giftAtMaxHeart("minto");
       });
       assert.deepEqual(await page.evaluate(() => window.heart), [{ kind: "body", n: 1 }, { kind: "any", n: 1 }], "♥5は色の火1＋白火1（SBD109）");
-      await present(page);
-      await panel.waitFor();
-      await tap(".levelup-backdrop");
-      await settled(page);
-      assert.equal(await panel.evaluate((node) => node.classList.contains("gift-only")), true);
-      assert.doesNotMatch(await panel.innerText(), /→/);
-      assert.deepEqual(await bigFires(page), [["any", "×1", "白火 ＋1"], ["body", "×1", "紅火 ＋1"]]);
-      assert.match(await page.locator(`${t("levelup-gift")} .lu-sr`).textContent(), /.+から：紅火 ＋1　白火 ＋1$/, "贈り主の札（顔か名前）と、読み上げの文（名前はその時の呼び名）");
-      assert.equal(await page.locator(`${t("levelup-gift")} :is(.lu-src-face, .lu-src-tag)`).count(), 1);
-      await tap(t("levelup-ok"));
-      await panel.waitFor({ state: "detached" });
+      await shown(page);
+      assert.equal(await card.getAttribute("data-kind"), "gift");
+      assert.equal(await card.locator(".lvup-head").innerText(), "HIDANE");
+      assert.deepEqual(await fires(page), [["any", "×1"], ["body", "×1"]]);
+      assert.equal(await card.locator(":is(.lvup-face, .lvup-tag)").count(), 1);
+      assert.match(await card.getAttribute("data-line"), /　白火 ＋1　紅火 ＋1$/);
+      await gone(page);
     }, options);
   }
 
-  // 観音堂で振り返る: 内省の場面 → ためた分のフル演出 → 盤（灯せる）。演出を見終えるまで盤は開かない
-  await check("reflection-presents-stock-then-board", async (page) => {
+  // 観音堂で振り返る: 内省の場面 → 盤（灯せる）。レベルアップをまとめて見せる画面は挟まない
+  await check("reflection-opens-the-board", async (page) => {
     await setupDaily(page);
     await page.evaluate(async () => {
       const g = await import("./js/core/growth.js");
       __remake.state.flags._board_starter_given = true; __remake.state.flags._board_tutorial_done = true;
       g.gainExp(g.totalExpFor(4) + 5);
+    });
+    await shown(page);
+    await gone(page);
+    await page.evaluate(async () => {
       (await import("./js/vn/engine.js")).vnTest.turbo = true;
       window.lit = (await import("./js/daily/reflection.js")).reflectAt("kannon");
     });
-    const panel = page.locator(t("levelup"));
-    await panel.waitFor({ timeout: 30000 });
-    assert.equal(await page.locator(t("growth-board")).count(), 0, "演出の間は盤を開かない");
-    assert.match(await panel.innerText(), /Lv\.1 → Lv\.4/);
-    assert.deepEqual(await bigFires(page), [["any", "×6", "白火 ＋6"]]);
-    await page.locator(".levelup-backdrop").click();
-    await settled(page);
-    await page.locator(t("levelup-ok")).click();
-    await page.locator(`${t("growth-board")}[data-mode="light"]`).waitFor();
-    assert.match(await page.locator(t("board-wallet")).innerText(), /白火\s*6/);
-    assert.equal(await page.evaluate(async () => (await import("./js/core/growth.js")).hasGrowthStock()), false);
-    await page.locator(t("board-close")).click();
-    await page.locator(t("growth-board")).waitFor({ state: "detached" });
-    // 2回目は見せるものが無いので、演出を挟まずに盤が開く
-    await page.evaluate(async () => { window.lit = (await import("./js/daily/reflection.js")).reflectAt("kannon"); });
     await page.locator(`${t("growth-board")}[data-mode="light"]`).waitFor({ timeout: 30000 });
     assert.equal(await page.locator(t("levelup")).count(), 0);
+    assert.match(await page.locator(t("board-wallet")).innerText(), /白火\s*6/);
     await page.locator(t("board-close")).click();
+    await page.locator(t("growth-board")).waitFor({ state: "detached" });
+    // 火種を使い切れば、内省の入口は出ない（見せるためだけの内省は無い）
+    assert.equal(await page.evaluate(async () => { __remake.state.growth.hidane.any = 0; return (await import("./js/daily/reflection.js")).canReflect(); }), false);
   }, { viewport: { width: 1331, height: 760 } });
 
-  // 受け取りの上限に届いた後のレベルアップは、火種が増えない理由を一言で出す
+  // 受け取りの上限に届いた後のレベルアップは、火種が増えない理由を札の中に一言で出す
   await check("capped-levelup-explains", async (page) => {
     await setupDaily(page);
     await page.evaluate(async () => {
@@ -196,13 +124,31 @@ await suite("growth-fx", async (check) => {
       gr.hidane.any = 9;
       g.gainExp(g.totalExpFor(72) + 5 - gr.xp);
     });
-    await present(page);
-    await page.locator(t("levelup")).waitFor();
-    await page.locator(".levelup-backdrop").click();
-    await settled(page);
-    assert.match(await page.locator(t("levelup")).innerText(), /火種は盤の全部のぶんを受け取った/);
+    await shown(page);
+    assert.equal(await page.locator(t("levelup-none")).innerText(), "火種は受け取り済み");
+    assert.equal(await page.locator(t("levelup-rewards")).count(), 0);
+    assert.equal(await cutIn(page).getAttribute("data-line"), "LEVEL UP Lv.72　火種は受け取り済み");
     assert.equal(await page.evaluate(() => __remake.state.growth.hidane.any), 9, "上限の後は増えない");
-    await page.locator(t("levelup-ok")).click();
+    await gone(page);
+  }, { viewport: { width: 1331, height: 760 } });
+
+  // 動きを減らす設定: 札は動かさずに出して消す（知らせは残す）。LOAD で入れ替わった前のセーブの分は出さない
+  await check("levelup-still-and-stale", async (page) => {
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await setupDaily(page);
+    await page.evaluate(async () => { const g = await import("./js/core/growth.js"); g.gainExp(g.totalExpFor(2)); });
+    await shown(page);
+    assert.equal(await cutIn(page).evaluate((node) => node.classList.contains("still")), true);
+    assert.equal(await page.locator(".lvup-rays").evaluate((node) => getComputedStyle(node).display), "none");
+    assert.equal(await page.locator("#fx .gfx-ring, #fx .gfx-fly, #fx .gfx-spark").count(), 0, "光・飛ぶ粒は出さない");
+    await gone(page);
+    await page.evaluate(async () => {
+      const core = await import("./js/core/state.js"), g = await import("./js/core/growth.js");
+      g.gainExp(g.totalExpFor(3) - g.ensureGrowth().xp);
+      core.newGame(); // 札を出す前に別のセーブへ
+    });
+    await page.waitForTimeout(600);
+    assert.equal(await page.locator(t("levelup")).count(), 0, "前のセーブのレベルアップを、新しいセーブの画面に出さない");
   }, { viewport: { width: 1331, height: 760 } });
 
   for (const [label, options] of [
@@ -244,13 +190,34 @@ await suite("growth-fx", async (check) => {
       assert.equal(await page.locator(`${t("board-place")} .gb-place-chip`).innerText(), "灯せる");
       assert.equal(await page.locator(".gb-legend").count(), 0, "凡例は「？」の見方へ寄せた");
       assert.match(await visibleText(page, t("board-wallet")), /^\d+\d+\d+\d+$/, "財布は粒と数だけ");
-      // 盤の「？」も同じ絵つきの見方（何も選んでいない時は「ながれ」から）
+      // 「？」: 絵つきの見方（何も選んでいない時は「ながれ」から）。ページを送れて、閉じると盤に戻る
       await tap(t("board-help"));
-      await page.locator(t("board-help-pages")).waitFor();
-      assert.equal(await page.locator(".gh-page").getAttribute("data-page"), "flow");
-      assert.equal(await page.locator(".gh-flow > li").count(), 4);
+      const help = page.locator(t("board-help-pages"));
+      await help.waitFor();
+      assert.equal(await help.locator(".gh-page").getAttribute("data-page"), "flow");
+      assert.equal(await help.locator(".gh-flow > li").count(), 4);
+      assert.match(await help.innerText(), /1\/7[\s\S]*その場でレベルアップ[\s\S]*観音堂などで振り返る/);
+      await tap(t("board-help-next"));
+      assert.equal(await help.locator(".gh-page").getAttribute("data-page"), "fire");
+      assert.match(await help.innerText(), /2\/7[\s\S]*白火[\s\S]*色の台座[\s\S]*節目（Lv\.10ごと）[\s\S]*大会で優勝/);
+      assert.equal(await help.locator(".gh-gain").count(), 6, "もらえる時は6つ");
+      await page.waitForFunction(() => { const imgs = [...document.querySelectorAll(".gh-page .gh-pic")]; return imgs.length > 0 && imgs.every((img) => img.complete && img.naturalWidth > 0); }, null, { timeout: 10000 }); // 見本は盤と同じ絵が読めている
+      await tap(t("board-help-next"));
+      assert.equal(await help.locator(".gh-page").getAttribute("data-page"), "kinds");
+      assert.equal(await help.locator(".gh-row").count(), 7, "マスの種類は7つ");
+      await tap(t("board-help-tab-perks"));
+      const perks = await help.locator("[data-perk]").evaluateAll((rows) => rows.map((row) => [row.dataset.perk, row.querySelector("b").textContent, row.querySelector(".gh-text span").textContent]));
+      assert.equal(perks.length, 12, "能力は12");
+      assert(perks.every(([key, name, text]) => key && name && text), `どの能力にも名前と一言がある: ${JSON.stringify(perks)}`);
+      for (const id of ["flow", "fire", "kinds", "perks", "states", "how", "rules"]) {
+        await tap(t(`board-help-tab-${id}`));
+        await assertFits(page, t("board-help-pages"));
+        await assertFits(page, t("board-help-next"));
+        await assertFits(page, t("board-help-close"));
+      }
+      assert.equal(await page.locator(t("board-help-next")).isDisabled(), true, "最後のページでは「次へ」を押せない");
       await tap(t("board-help-close"));
-      await page.locator(t("board-help-pages")).waitFor({ state: "detached" });
+      await help.waitFor({ state: "detached" });
       const first = await goals.first().getAttribute("data-test");
       await goals.first().click();
       assert.equal(await page.locator(`.gb-node.selected`).getAttribute("data-test"), first.replace("board-goal-", "board-node-"));

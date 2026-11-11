@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import vm from "node:vm";
 const root = new URL("../js/", import.meta.url), storage = new Map(), modules = new Map();
-let core, growth, sceneHook = null, modalHook = null, importHook = null, cardHook = null, stockHook = null, choice = "reflect", scenes = [], opened = [], cards = [], shown = [];
+let core, growth, sceneHook = null, modalHook = null, importHook = null, cardHook = null, choice = "reflect", scenes = [], opened = [], cards = [];
 const context = vm.createContext({ console, Math, Map, Set, JSON, Date,
   localStorage: { getItem: k => storage.get(k) ?? null, setItem: (k,v) => storage.set(k,String(v)), removeItem: k => storage.delete(k) },
 });
@@ -15,8 +15,6 @@ const mocks = {
     return sceneHook ? sceneHook(id) : { id, visited: [id] };
   } },
   "daily/growth-board-screen.js": { openBoard: async ({ place }) => { opened.push(place); return []; } },
-  // ストックしたレベルアップのフル演出（SBD108）。画面は差し替え、内省の場面 → 演出 → 盤 の順と、演出中のLOADだけを見る
-  "daily/levelup.js": { presentStockedGrowth: async () => { shown.push(`after:${scenes.at(-1)}`); stockHook?.(); return null; } },
 };
 async function load(url) {
   if (modules.has(url.href)) return modules.get(url.href);
@@ -40,7 +38,7 @@ const plain = value => JSON.parse(JSON.stringify(value));
 function setup() {
   const s = core.newGame(); Object.assign(s,{ phase:"daily", day:3, slot:0, stamina:80 });
   growth.setGrowthPreview(true); growth.ensureGrowth().hidane.any = 2;
-  choice="reflect"; scenes=[]; opened=[]; cards=[]; shown=[]; sceneHook=null; modalHook=null; importHook=null; cardHook=null; stockHook=null;
+  choice="reflect"; scenes=[]; opened=[]; cards=[]; sceneHook=null; modalHook=null; importHook=null; cardHook=null;
   return s;
 }
 const resources = s => plain({ day:s.day, slot:s.slot, stamina:s.stamina, stats:s.stats, reel:s.reel, growth:s.growth });
@@ -48,7 +46,6 @@ let s = setup(), before = resources(s);
 assert.equal(await growth.reflectAtSpot("kannon"),true);
 assert.deepEqual(scenes,["kannon_growth_intro","reflect_kannon"]);
 assert.deepEqual(opened,["kannon"]);
-assert.deepEqual(shown,["after:reflect_kannon"],"内省の場面の後、盤の前に、ストックした分の演出を挟む（SBD108）");
 assert.equal(s.flags._kannon_growth_intro_done,true);
 assert.deepEqual(resources(s),before,"導入だけでは時間・体力・経験値・火種・旧能力・スロットを変えない");
 core.load(); scenes=[]; opened=[];
@@ -69,18 +66,6 @@ for (const where of ["modal","intro"]) {
   assert.equal(core.state.flags._kannon_growth_intro_done,undefined);
   assert.deepEqual(opened,[],"LOAD後の古い継続処理は盤を開かない");
 }
-// 演出の途中でLOADしたら、古い続きは盤を開かない
-s=setup(); core.save(); stockHook=() => core.load();
-await growth.reflectAtSpot("kannon");
-assert.notEqual(core.state,s);
-assert.deepEqual(opened,[],"ストックの演出中のLOAD後は盤を開かない");
-// 火種が無くても、まだ見せていないレベルアップがあれば振り返れる（上限の後など）
-s=setup(); s.growth.hidane.any=0; s.flags._board_starter_given=true;
-assert.equal(await growth.reflectAtSpot("kannon"),false,"火種もストックも無ければ内省の入口は出さない");
-Object.assign(s.growth,{ level:2, xp:growth.totalExpFor(2), settledXp:growth.totalExpFor(2) }); s.growth.today.from=1; s.growth.today.xpFrom=0;
-assert.equal(growth.hasGrowthStock(),true);
-assert.equal(await growth.reflectAtSpot("kannon"),true);
-assert.deepEqual(opened,["kannon"],"ストックがあれば演出の後に盤を開く");
 for (const selected of ["visit",null]) {
   s=setup(); choice=selected;
   assert.equal(await growth.reflectAtSpot("kannon"),selected !== "visit");
@@ -90,7 +75,7 @@ for (const selected of ["visit",null]) {
 s=setup(); growth.setGrowthPreview(false);
 assert.equal(await growth.reflectAtSpot("kannon"),false);
 assert.deepEqual(scenes,[]); assert.deepEqual(opened,[]);
-console.log("[kannon growth] PASS: first completion, reload, no resource/reel changes, stocked presentation between scene and board, missing/cancelled scene, owner changes at modal/intro/presentation, stock-only reflection, visit/back and flag off");
+console.log("[kannon growth] PASS: first completion, reload, no resource/reel changes, missing/cancelled scene, owner changes at modal/intro, visit/back and flag off");
 
 // 相談候補を調べてからVN/UIを読み込む間にも、LOAD・中断・条件変更が起こりうる。
 for (const boundary of ["../vn/engine.js", "./ui.js"]) {

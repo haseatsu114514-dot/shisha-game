@@ -911,12 +911,7 @@
 .retro-sheet .s-shop-detail > .s-shop-product-art.rs-crop { height: calc(var(--d) * 72); align-self: center; }
 .retro-sheet .s-kuji-row { padding: calc(var(--d) * 3); background: rgba(10, 6, 18, 0.55); border: calc(var(--d) * 1) solid var(--r-line); }
 
-/* 夜のレベルアップ・LIME の初回の案内・章のクリア（縦長のシート） */
-.retro-sheet[data-kind="levelup"] .rs-head { justify-content: center; color: var(--r-gold); font-size: calc(var(--d) * 24); line-height: calc(var(--d) * 28); }
-.retro-sheet[data-kind="levelup"] .rs-body > .rs-gauge { flex: none; width: 100%; height: calc(var(--d) * 8); }
-.retro-sheet .s-lu-change { color: var(--r-gold); font-size: calc(var(--d) * 16); line-height: calc(var(--d) * 19); }
-.retro-sheet .s-lu-details { gap: calc(var(--d) * 5); }
-.retro-sheet .s-lu-note { color: var(--r-dim); }
+/* LIME の初回の案内・章のクリア（縦長のシート）。その場のレベルアップは上画面の知らせに文字で出る（SBD122） */
 .retro-sheet[data-kind="coach"] .rs-body { justify-content: center; }
 .retro-shell .retro-sheet .rs-btn.s-lc-bubble { flex-direction: column; align-items: stretch; padding: calc(var(--d) * 6) calc(var(--d) * 8); background: var(--r-paper); border: calc(var(--d) * 2) solid var(--r-ink); color: var(--r-ink); }
 .retro-sheet .s-lc-bubble > .rs-inl:first-child { color: var(--r-violet); font-size: calc(var(--d) * 16); line-height: calc(var(--d) * 19); }

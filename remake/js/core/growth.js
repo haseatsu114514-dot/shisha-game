@@ -3,8 +3,8 @@
 // 開発中は URL の ?growth=1（または __remake.dev.growth(true)）でこの端末だけ有効にできる。
 // 無効時は旧成長、有効時は経験値へ置き換える。通常マスの恩恵は旧能力由来の効き目へ加算する（保存値へは書き戻さない）。
 // 第2版（SPEC 2026-10-30）: 能力は3つ（才能・感覚・理論）、火種はレベル1つで2つ、色つきの火種は才・感・理。
-// 2026-11-11 オーナー「寝る前のレベルアップは不要。経験値を貯めてレベルアップすると火種をストックして、一気にフル演出を観音とかで」（SBD108）:
-// 経験値が入ったその場でレベルが上がり、火種は手持ちに入る（ストック）。演出は出さず、観音堂などで振り返った時にまとめて見せる。
+// 2026-11-11 オーナー「寝る前のレベルアップは不要」（SBD108）「一気にリザルトみたいに見せるのはいらない。都度経験値もらって達したらレベルアップがいい」（SBD122）:
+// 経験値が入ったその場でレベルが上がり、火種は手持ちに入る。画面はその場で短い演出を出す（操作は止めない）。火種を盤に灯すのは観音堂などで振り返った時。
 import { state, save } from "./state.js";
 import { emit } from "./bus.js";
 import { setExpHooks, affinityLevel, AFFINITY_RANK_PTS } from "./stats.js";
@@ -97,9 +97,8 @@ export function newGrowth() {
     tournamentXp: {},      // 章 -> 大会の参加・最高順位・色の火種（再挑戦で戻さない）
     cleared: [],           // X10/X11を精算した章（周回ごと）
     memory: { lastMix: null, crafts: {} }, // 配合と一台の成績。能力と一緒に周回へ持ち越す
-    // 観音堂などで見せるまでのストック（SBD108。保存の名前は前の「今日の分」のまま）。learned は鍵 -> 経験値（「学んできたこと」）、
-    // gifts は♥5・大会・遊びのご褒美、from/xpFrom は最初に上がる前のレベルと経験値、any/limited はレベルでもらった白火と節目の火
-    today: newStock(),
+    // 寝るまでの分の覚え（xp・learned＝鍵 -> 経験値）。レベルと火種はその場で入るので、演出には使わない（SBD122）。gifts は前の保存の形のために残す
+    today: newDay(),
     seen: { fullLevelUp: false },      // フル演出を一度見たか（初回の判定）
     nodes: [],             // 盤で灯したマスID（確定済みだけ。紋は数えない。取った授業も入る）
     paid: {},              // マスID -> 払った火種 { any: n, body: n, … }（組み直しで同じ種類に戻す）
@@ -118,7 +117,7 @@ export function newGrowth() {
   };
 }
 
-const newStock = () => ({ xp: 0, learned: {}, gifts: [], from: null, xpFrom: null, any: 0, limited: [] });
+const newDay = () => ({ xp: 0, learned: {}, gifts: [] });
 const num = (v, min = 0) => Number.isFinite(v) && v >= min ? v : min;
 const strings = (list) => [...new Set((Array.isArray(list) ? list : []).filter((v) => typeof v === "string" && v))];
 
@@ -169,14 +168,7 @@ export function ensureGrowth(s = state) {
   g.today.xp = num(g.today.xp);
   if (!g.today.learned || typeof g.today.learned !== "object") g.today.learned = {};
   if (!Array.isArray(g.today.gifts)) g.today.gifts = [];
-  // ストックの始まり（見せていないレベルアップがある時だけ）。今のレベルより先や壊れた値は「無し」に戻す
-  const stockFrom = Number.isInteger(g.today.from) && g.today.from >= 1 && g.today.from < g.level ? g.today.from : null;
-  g.today.from = stockFrom;
-  g.today.xpFrom = stockFrom == null ? null : Math.min(Math.max(num(g.today.xpFrom), totalExpFor(stockFrom)), totalExpFor(stockFrom + 1));
-  g.today.any = stockFrom == null ? 0 : Math.floor(num(g.today.any));
-  g.today.limited = stockFrom == null ? [] : (Array.isArray(g.today.limited) ? g.today.limited : [])
-    .filter((x) => x && MILESTONE_LEVELS.includes(x.level) && HIDANE_KEYS.includes(x.system) && Number.isInteger(x.n) && x.n >= 0)
-    .map((x) => ({ level: x.level, system: x.system, n: x.n, any: Math.floor(num(x.any)) }));
+  g.today = { xp: g.today.xp, learned: g.today.learned, gifts: g.today.gifts };
   g.seen = { fullLevelUp: g.seen?.fullLevelUp === true };
   if (!g.paid || typeof g.paid !== "object" || Array.isArray(g.paid)) g.paid = {};
   if (g.boardVersion !== BOARD_VERSION) refundOldBoard(g);
@@ -356,8 +348,8 @@ export function holdExpChip() {
 // ---------------------------------------------------------------- 経験値の入口
 
 /**
- * 経験値の唯一の入口（4.1 の gainExp）。章倍率を掛けて累計とストックに足す。
- * レベルはその場で上がり、火種は手持ちに入る（SBD108。演出は観音堂などで振り返った時にまとめて）。戻り値=入った量。
+ * 経験値の唯一の入口（4.1 の gainExp）。章倍率を掛けて累計に足す。
+ * レベルはその場で上がり、火種は手持ちに入る（SBD108・SBD122。その場で短い演出を出す）。戻り値=入った量。
  */
 export function gainExp(base, { key = null, tag = null, silent = false, source = null, first = false } = {}) {
   // 恋人イベントだけは通常プレイでも貯める。精算・火種・盤の公開条件は変えない。
@@ -372,7 +364,7 @@ export function gainExp(base, { key = null, tag = null, silent = false, source =
   if (key) g.today.learned[key] = (g.today.learned[key] || 0) + amount;
   if (!silent) addToChip(amount, tag, source); // silent: 呼び出し側が自分の通知で見せる（スロットの結果カード）
   // 盤が有効な時だけ、その場でレベルと火種にする（恋人EXPの先行保存だけの時は貯めるだけ）
-  if (growthEnabled()) stockLevels(g);
+  if (growthEnabled()) applyLevels(g);
   emit("hud");
   return amount;
 }
@@ -474,14 +466,14 @@ export function awardTournamentExp(rank, craft) {
       const color = colors.reduce((best, key) => boardFill(g, key) < boardFill(g, best) ? key : best);
       entry.gifted = true;
       const gift = giveColored(g, color);
-      if (gift.n > 0) stockGift(g, { label: "大会の学び", parts: [gift] });
+      if (gift.n > 0) announceGift({ label: "大会の学び", parts: [gift] });
     }
   }
   // 優勝のご褒美（SBD110）: その章で初めて1位になった時に白火。再挑戦で優勝しても一度だけ
   if (rank === 1 && entry.winGift !== true) {
     entry.winGift = true;
     const bonus = giveColored(g, "any", WIN_HIDANE);
-    if (bonus.n > 0) stockGift(g, { label: "大会で優勝", parts: [bonus] });
+    if (bonus.n > 0) announceGift({ label: "大会で優勝", parts: [bonus] });
   }
   return got;
 }
@@ -513,16 +505,14 @@ export function giftAtMaxHeart(id) {
   if (g.gifted[id]) return null;
   g.gifted[id] = true;
   const parts = giveSet(g, { [color]: KEY_GIFT.color, any: KEY_GIFT.any });
-  // 観音堂などで振り返った時にまとめて見せる（会話の途中に割り込まない）
-  if (parts.length) stockGift(g, { who: id, parts });
+  if (parts.length) announceGift({ who: id, parts });
   return parts;
 }
 
-/** ご褒美の火種をストックに足して、HUD に小さく知らせる（火種そのものは渡し済み） */
-function stockGift(g, gift) {
-  g.today.gifts.push(gift);
+/** ご褒美の火種が届いたことを、その場の短い演出で知らせる（火種そのものは渡し済み。操作は止めない） */
+function announceGift(gift) {
   emit("hud");
-  emit("hidane-stock", { parts: gift.parts, gift: true });
+  emit("hidane-gift", { who: gift.who || null, label: gift.label || "", parts: gift.parts.map((part) => ({ ...part })) });
 }
 
 /** 色つきの火種のセットを渡す。戻り値=実際に渡した内訳（盤が埋まって白火に変わった分は白火にまとめる） */
@@ -593,7 +583,7 @@ export function claimPlayRewards(g, s = state) {
   return out;
 }
 
-// ---------------------------------------------------------------- ストック（SBD108。前は「寝る時の精算」6.3）
+// ---------------------------------------------------------------- その場のレベルアップ（SBD122。前は「寝る時の精算」6.3）
 
 /** 盤の伸び（灯した能力のマスの割合）。規則の growth-board.js と同じ数え方を、循環させずに持つ（段は SBD63 でなくした） */
 function boardFill(g, board) {
@@ -615,85 +605,69 @@ export function milestoneSystem(g = ensureGrowth()) {
 }
 
 /**
- * 経験値の分だけレベルを上げ、火種を手持ちに入れる（ストック）。遊びのご褒美・くじの火種もここで拾う。
- * 何度呼んでも、同じ経験値で二重に渡さない（level と milestones で判定）。演出は出さず、見せる分は g.today に貯める。
+ * 経験値の分だけレベルを上げ、火種を手持ちに入れる。遊びのご褒美・くじの火種もここで拾う。
+ * 2026-11-11 オーナー「一気にリザルトみたいに見せるのはいらない。都度経験値もらって達したらレベルアップがいい」（SBD122）:
+ * 経験値が届いたその場で上がり、"level-up"（ご褒美は "hidane-gift"）を知らせる。画面は短い演出を出すだけで、操作は止めない。
+ * 何度呼んでも、同じ経験値で二重に渡さない（level と milestones で判定）。戻り値={ from, to, parts, milestone }
  */
-function stockLevels(g, s = state) {
+function applyLevels(g, s = state) {
   const from = g.level, to = levelForExp(g.xp);
-  if (to > from && g.today.from == null) { g.today.from = from; g.today.xpFrom = Math.min(g.settledXp, totalExpFor(from + 1)); }
   const parts = [];
   const note = (kind, n) => { const same = parts.find((p) => p.kind === kind); if (same) same.n += n; else parts.push({ kind, n }); };
+  let milestone = false;
   for (let level = from + 1; level <= to; level++) {
     const n = Math.min(hidaneForLevel(level), BOARD_TOTAL - g.earned);
-    if (n > 0) { g.hidane.any += n; g.earned += n; g.today.any += n; note("any", n); }
+    if (n > 0) { g.hidane.any += n; g.earned += n; note("any", n); }
     if (MILESTONE_LEVELS.includes(level) && !g.milestones.includes(level)) {
       g.milestones.push(level);
+      milestone = true;
       // 節目は色の火1＋白火1（SBD109）。色は前の節目からいちばん灯した盤。その盤が埋まっていれば白火で渡す
       const color = giveColored(g, milestoneSystem(g), KEY_GIFT.color), white = giveColored(g, "any", KEY_GIFT.any);
       g.litSince = Object.fromEntries(BOARD_KEYS.map((k) => [k, 0]));
-      if (color.n > 0 || white.n > 0) g.today.limited.push({ level, system: color.kind, n: color.n, any: white.n });
       if (color.n > 0) note(color.kind, color.n);
       if (white.n > 0) note("any", white.n);
     }
   }
   const claimed = claimPlayRewards(g, s).filter((x) => x.parts.length);
-  g.today.gifts.push(...claimed);
   foldFullBoards(g);
   g.level = to;
   g.settledXp = g.xp;
   if (to > from || claimed.length) emit("hud");
-  // HUD の小さな知らせ（レベルが上がった・火種が入った）。まとめての演出は観音堂などで
-  if (to > from) emit("hidane-stock", { level: to, parts });
-  for (const gift of claimed) emit("hidane-stock", { parts: gift.parts, gift: true });
+  // capped: 盤の全部のぶんを受け取り終えていて、火種が増えないレベルアップ（SBD105。理由を黙らせない）
+  if (to > from) emit("level-up", { from, to, parts: parts.map((part) => ({ ...part })), milestone, capped: !parts.length && g.earned >= BOARD_TOTAL, boardFull: boardAllLit(g) });
+  for (const gift of claimed) announceGift(gift);
+  return { from, to, parts, milestone };
 }
 
 /**
- * ストックした分（前に見せた時からのレベル・火種・ご褒美）の報告。見せるものが無ければ from＝to・火種0。
- * 読むだけで、ストックは空にしない（空にするのは takeGrowthStock・clearGrowthStock）。
+ * たまっている分をいま精算する（寝る前・章の区切り・前の保存を読んだ直後・遊びのご褒美の受け取り）。
+ * ふだんは経験値が届いたその場で済んでいるので、何も起きない（from＝to）。
+ * 戻り値={ from, to, parts, milestone, boardFull }（盤が無効なら null）
  */
-export function peekGrowthStock() {
+export function settleGrowth() {
   if (!growthEnabled() || !state) return null;
   const g = ensureGrowth();
-  stockLevels(g);
-  const from = g.today.from ?? g.level, to = g.level;
-  const learned = Object.entries(g.today.learned).sort((a, b) => b[1] - a[1]).slice(0, 3).map(([key]) => key);
-  const gains = { any: g.today.any, limited: g.today.limited.map((x) => ({ ...x })) };
-  const gifts = g.today.gifts.filter((x) => x.parts?.length).map((x) => ({ ...x, parts: x.parts.map((p) => ({ ...p })) }));
-  const milestone = gains.limited.length > 0 || MILESTONE_LEVELS.some((l) => l > from && l <= to);
-  return { from, to, xpFrom: g.today.xpFrom ?? g.xp, xpTo: g.xp, gains, gifts, learned, milestone, full: to > from, boardFull: boardAllLit(g) };
+  return { ...applyLevels(g), boardFull: boardAllLit(g) };
 }
-/** 見せ終えたストックを空にする（レベルと火種はそのまま）。 */
-export function clearGrowthStock() {
-  if (!growthEnabled() || !state?.growth) return;
-  ensureGrowth().today = newStock();
-  emit("hud"); // HUD の「Lv UP」を消す
-}
-/** ストックの報告を取り出して空にする（観音堂などの演出が終わった時と同じ結果）。 */
-export function takeGrowthStock() {
-  const report = peekGrowthStock();
-  if (report) clearGrowthStock();
-  return report;
-}
-/** 観音堂などで見せるものがあるか（レベルが上がった・ご褒美が届いた）。読むだけ */
-export const hasGrowthStock = (s = state) => !!s?.growth?.today && growthEnabled()
-  && (Number.isInteger(s.growth.today.from) || (Array.isArray(s.growth.today.gifts) && s.growth.today.gifts.some((x) => x?.parts?.length)));
 
 /**
- * 寝る直前の区切り。寝る前のレベルアップ演出は無くした（SBD108）。遊びのご褒美・くじの火種をストックに拾い、
- * evePlace（大会前夜）があれば、火種やストックが残っている時だけ内省の場面で盤を開く（2.8・#1690）。
- * 戻り値=今のストックの報告（見せてはいない）。
+ * 寝る直前の区切り。寝る前のレベルアップ演出は無い（SBD108）。レベルと火種は経験値が届いたその場で入っている（SBD122）。
+ * ここでは、前の保存に残っていた分と遊びのご褒美・くじの火種を拾い、今日の覚えを空にして保存する。
+ * evePlace（大会前夜）があれば、火種が残っている時だけ内省の場面で盤を開く（2.8・#1690）。
+ * 戻り値=settleGrowth の結果（この時に上がった分。ふつうは from＝to）
  */
 export async function presentNight({ evePlace = null } = {}) {
   if (!growthEnabled()) return null;
   const owner = state;
   // 進行と一緒に先に保存する。内省の途中のLOADでも火種を失わず、別ownerを触らない。
-  stockLevels(ensureGrowth());
+  const result = settleGrowth();
+  ensureGrowth().today = newDay();
   save();
   if (evePlace && state === owner) {
     const { eveReflection } = await import("../daily/reflection.js");
     if (state === owner) await eveReflection(evePlace);
   }
-  return state === owner ? peekGrowthStock() : null;
+  return state === owner ? result : null;
 }
 
 /**

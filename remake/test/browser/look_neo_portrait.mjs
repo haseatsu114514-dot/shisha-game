@@ -677,7 +677,7 @@ await suite("look_neo_portrait", async (check) => {
     assert.equal(await page.evaluate(() => window.dailyError || ""), "");
   }, { ...TALL, pageEntry: entry });
 
-  await check("portrait-save-transfer-and-levelup-in-sheet", async (page) => {
+  await check("portrait-save-transfer-in-sheet-and-levelup-notice", async (page) => {
     await page.locator(shellFor("title")).waitFor();
     await page.evaluate(async () => { const core = await import("./js/core/state.js"); const s = core.newGame(); s.money = 12345; core.save(); });
     await watchGuard(page);
@@ -702,19 +702,16 @@ await suite("look_neo_portrait", async (check) => {
     await page.locator(t("sheet-cfg-close")).tap();
     await page.locator(shellFor("title")).waitFor();
     assert.equal(await page.evaluate(() => window.__remake.state.money), 12345);
-    // ためた分のレベルアップ（演出の層の画面。観音堂などの内省が呼ぶもの・SBD108）も縦長のシートで写り、写しの OK で閉じる
+    // その場のレベルアップ（演出の層の短い札・SBD122）は場面を止めず、上画面の知らせに文字で出る
     await page.evaluate(async () => {
       const g = await import("./js/core/growth.js"); g.gainExp(g.totalExpFor(3));
-      window.night = null; void (await import("./js/daily/levelup.js")).presentStockedGrowth().then((r) => { window.night = r; });
+      (await import("./js/daily/levelup.js")).showLevelUp({ from: 1, to: 3, parts: [{ kind: "any", n: 4 }] });
     });
-    await page.locator('.retro-sheet[data-kind="levelup"] [data-test="sheet-levelup-ok"]').waitFor();
-    // 数字は元の演出どおり Lv.1 から上がっていく
-    assert.match(await page.locator(".retro-sheet .rs-head").textContent(), /^Lv\.[123]$/);
-    await page.waitForFunction(() => document.querySelector(".levelup")?.classList.contains("lu-settled-state") || window.night, null, { timeout: 10000 });
-    await page.waitForFunction(() => window.night || document.querySelector(".retro-sheet .rs-head")?.textContent === "Lv.3");
-    // 検査の共通の仕組み（growth_ack.mjs）が先に元の OK を押すこともある
-    if (!(await page.evaluate(() => window.night))) await page.locator(t("sheet-levelup-ok")).tap({ timeout: 3000 }).catch(() => {});
-    await page.waitForFunction(() => window.night?.to === 3);
+    await page.locator(".retro-notice", { hasText: "LEVEL UP Lv.3　白火 ＋4" }).waitFor({ timeout: 10000 });
+    assert.equal(await page.locator(".retro-sheet:not([hidden])").count(), 0, "シートにはしない（押す物が無い）");
+    assert.equal(await page.locator(shellFor("title")).count(), 1, "出ている間も、元の場面のまま");
+    await page.locator('[data-test="levelup"]').waitFor({ state: "detached", timeout: 15000 });
+    await page.waitForFunction(() => !document.querySelector(".retro-notice"));
     await page.locator(shellFor("title")).waitFor();
     assert.deepEqual(await guardLog(page), [], "no rotate hint while the save transfer and level-up are open");
   }, { ...TALL, pageEntry: entry });

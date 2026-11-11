@@ -198,6 +198,8 @@ function start({ paint = "dot", mode = "retro" } = {}) {
       const part = (selector) => card.querySelector(selector)?.textContent.trim() || "";
       lines.push([part(".gc-main"), part(".gc-points"), part(".gc-sub")].filter(Boolean).join(" "));
     }
+    // その場のレベルアップ・ご褒美の火種（演出の層の短い札・SBD122）も、同じ知らせに文字で出す
+    for (const cut of document.querySelectorAll("#fx > .lvup:not(.out)")) if (cut.dataset.line) lines.push(cut.dataset.line);
     shell.setNotices(lines);
   }
 

@@ -27,6 +27,9 @@ async function setupDaily(page) {
   });
 }
 
+// 操作を止めるレベルアップの画面（前の仕様の全面の札・OK）。その場の短い札（[data-test="levelup"]・SBD122）は飾りなので数えない
+const BLOCKING = '.levelup-backdrop, .levelup-band, [data-test="levelup-ok"]';
+const levelCard = (page) => page.locator(`${t("levelup")}.show`);
 await suite("growth-levelup", async (runCheck) => {
   // ケースごとに独立したBrowserContext。検査の増加後も既存の5分枠へ収まるよう最大2件ずつ動かす。
   const cases=[];
@@ -39,12 +42,12 @@ await suite("growth-levelup", async (runCheck) => {
       g.setGrowthPreview(true);Object.assign(g.ensureGrowth(),{xp:260,level:1,settledXp:0});
       void (await import("./js/chapters/ch5.js")).beginChapterFive();
     });
-    // 寝る前のレベルアップは出さない（SBD108）。古いセーブのレベルにしていない分は、章の入口の夜に黙ってストックする
-    await page.locator(t("ch5-scene")).waitFor({timeout:30000});assert.equal(await page.locator(t("levelup")).count(),0);
-    assert.deepEqual(await page.evaluate(()=>{const s=JSON.parse(localStorage.getItem(entryFiveCore.SAVE_KEY));return{chapter:s.chapter,day:s.day,level:s.growth.level,fire:s.growth.hidane.any,xp:s.growth.xp,from:s.growth.today.from};}),
-      {chapter:5,day:61,level:2,fire:2,xp:260,from:1});
+    // 止めて見せるレベルアップは出さない（SBD108・SBD122）。古いセーブのレベルにしていない分は、章の入口の夜に上がって保存される
+    await page.locator(t("ch5-scene")).waitFor({timeout:30000});assert.equal(await page.locator(BLOCKING).count(),0);
+    assert.deepEqual(await page.evaluate(()=>{const s=JSON.parse(localStorage.getItem(entryFiveCore.SAVE_KEY));return{chapter:s.chapter,day:s.day,level:s.growth.level,fire:s.growth.hidane.any,xp:s.growth.xp};}),
+      {chapter:5,day:61,level:2,fire:2,xp:260});
     await page.evaluate(async()=>{if(!entryFiveCore.loadFromSlot(entryFiveCore.SAVE_KEY))throw new Error("entry autosave");void (await import("./js/chapters/ch5.js")).resumeChapterFive();});
-    await page.locator(t("ch5-scene")).waitFor();assert.equal(await page.locator(t("levelup")).count(),0);
+    await page.locator(t("ch5-scene")).waitFor();assert.equal(await page.locator(BLOCKING).count(),0);
     assert.deepEqual(await page.evaluate(()=>({xp:entryFiveCore.state.growth.xp,fire:entryFiveCore.state.growth.hidane.any})),{xp:260,fire:2});
   });
   await check("chapter-five-finale-settles-and-Kannon-stays-free",async(page)=>{
@@ -68,18 +71,14 @@ await suite("growth-levelup", async (runCheck) => {
       (await import("./js/vn/engine.js")).vnTest.turbo=true;
       void (await import("./js/chapters/ch5.js")).resumeChapterFive();
     });
-    // 章クリアの経験値はその場でレベルと火種になる。演出は出さず（SBD108）、観音堂で振り返った時にまとめて見せてから盤へ
-    await page.locator(t("ch5-continue")).click();await page.locator(t("ch5-complete")).waitFor();assert.equal(await page.locator(t("levelup")).count(),0);
+    // 章クリアの経験値はその場でレベルと火種になる（止めて見せる画面は無い）。観音堂で振り返ると、そのまま盤が開く
+    await page.locator(t("ch5-continue")).click();await page.locator(t("ch5-complete")).waitFor();assert.equal(await page.locator(BLOCKING).count(),0);
     assert.deepEqual(await page.evaluate(()=>{const s=JSON.parse(localStorage.getItem(finalCore.SAVE_KEY));return{cleared:s.flags._ch5_cleared,level:s.growth.level,fire:s.growth.hidane.any,xp:s.growth.xp};}),
       {cleared:true,level:3,fire:4,xp:460});
     await assertFits(page,t("ch5-reflect"));await page.locator(t("ch5-reflect")).click();
     await page.locator(t("kannon-reflect")).waitFor();assert.equal(await page.locator(t("kannon-visit")).count(),0);
-    await page.locator(t("kannon-reflect")).click();await page.locator(t("levelup")).waitFor({timeout:30000});
-    assert.equal(await page.locator(t("growth-board")).count(),0,"ためた分の演出を見終えるまで盤は開かない");
-    await page.waitForFunction(()=>document.querySelector(".levelup")?.classList.contains("lu-settled-state"));
-    assert.match(await page.locator(t("levelup")).innerText(),/Lv\.1 → Lv\.3[\s\S]*×4[\s\S]*白火 ＋4/);
-    await page.waitForTimeout(350);await page.locator(t("levelup-ok")).click();
-    await page.locator(`${t("growth-board")}[data-mode="light"][data-art]`).waitFor();
+    await page.locator(t("kannon-reflect")).click();await page.locator(`${t("growth-board")}[data-mode="light"][data-art]`).waitFor({timeout:30000});
+    assert.equal(await page.locator(BLOCKING).count(),0,"内省は 場面 → 盤。レベルアップをまとめて見せる画面は挟まない");
     await page.locator(t("board-node-B1")).click();await page.locator(t("board-light")).click();await page.locator(t("board-decide")).click();
     await page.locator(t("growth-board")).waitFor({state:"detached"});await page.locator(t("ch5-complete")).waitFor();
     const result=await page.evaluate(async()=>{
@@ -91,7 +90,7 @@ await suite("growth-levelup", async (runCheck) => {
     });
     assert(result.same&&result.node&&result.intro);assert.equal(result.fire,3);assert.equal(result.xp,460);assert.equal(result.maximum,8,"B1 の最大体力 +8（近くの帯×2。SBD111）");
     await page.evaluate(async()=>{void (await import("./js/chapters/ch5.js")).resumeChapterFive();});
-    await page.locator(t("ch5-complete")).waitFor();assert.equal(await page.locator(t("levelup")).count(),0);
+    await page.locator(t("ch5-complete")).waitFor();assert.equal(await page.locator(BLOCKING).count(),0);
   });
   await check("existing-Volk-and-FESTA-visits-teach-in-person",async(page)=>{
     await setupDaily(page);await page.emulateMedia({reducedMotion:"reduce"});
@@ -155,7 +154,7 @@ await suite("growth-levelup", async (runCheck) => {
     });
     assert(festa.same&&festa.active&&festa.read);
   });
-  await check("Tokyo-night-stocks-silently-and-saves",async(page)=>{
+  await check("Tokyo-night-levels-up-and-saves",async(page)=>{
     await setupDaily(page);await page.emulateMedia({reducedMotion:"reduce"});
     await page.evaluate(async()=>{
       window.nightCore=await import("./js/core/state.js");const p=await import("./js/chapters/ch3-progress.js"),g=await import("./js/core/growth.js");
@@ -173,9 +172,9 @@ await suite("growth-levelup", async (runCheck) => {
       window.nightBefore={day:s.day,slot:s.slot,stamina:s.stamina,money:s.money};
       window.tokyoNight=(await import("./js/chapters/ch3.js")).resumeChapterThree();
     });
-    // 寝る前のレベルアップは出さない（SBD108）。古いセーブのレベルにしていない分は、夜に黙ってストックして保存する
+    // 止めて見せるレベルアップは出さない（SBD108・SBD122）。古いセーブのレベルにしていない分は、夜に上がって保存される
     await page.locator(t("ch3-intro-continue")).click();await page.locator(t("ch3-intro-free")).waitFor({timeout:30000});
-    assert.equal(await page.locator(t("levelup")).count(),0);
+    assert.equal(await page.locator(BLOCKING).count(),0);
     const settled=await page.evaluate(()=>{
       const s=nightCore.state,saved=JSON.parse(localStorage.getItem(nightCore.SAVE_KEY));
       return{day:s.day,slot:s.slot,stamina:s.stamina,money:s.money,level:s.growth.level,fire:s.growth.hidane.any,
@@ -184,7 +183,7 @@ await suite("growth-levelup", async (runCheck) => {
     assert(settled.saved);assert.equal(settled.level,2);assert.equal(settled.fire,2);
     assert.equal(settled.day,settled.before.day+1);assert.equal(settled.slot,0);
     assert.equal(settled.stamina,settled.before.stamina);assert.equal(settled.money,settled.before.money);
-    assert.equal(await page.evaluate(()=>nightCore.state.growth.today.from),1,"観音堂などで見せる分として残る");
+    assert.deepEqual(await page.evaluate(()=>nightCore.state.growth.today),{xp:0,learned:{},gifts:[]},"今日の覚えは夜に空にする（ためておく報告は無い）");
     assert.equal(await page.locator(t("growth-board")).count(),0);
     await page.evaluate(async()=>{
       if(!nightCore.loadFromSlot(nightCore.SAVE_KEY))throw new Error("night autosave");
@@ -192,7 +191,7 @@ await suite("growth-levelup", async (runCheck) => {
     });
     await page.locator(t("ch3-intro-free")).waitFor();
     assert.deepEqual(await page.evaluate(()=>({level:nightCore.state.growth.level,fire:nightCore.state.growth.hidane.any})),{level:2,fire:2});
-    assert.equal(await page.locator(t("levelup")).count(),0);
+    assert.equal(await page.locator(BLOCKING).count(),0);
   });
   await check("minto-sales-through-real-shift",async(page)=>{
     await setupDaily(page);await page.emulateMedia({reducedMotion:"reduce"});
@@ -820,7 +819,7 @@ await suite("growth-levelup", async (runCheck) => {
         const map = await import("./js/daily/map.js");
         map.interruptMap(null); await window.entryFlow;
         const growth = await import("./js/core/growth.js");
-        growth.gainExp(205); growth.takeGrowthStock();
+        growth.gainExp(205); growth.settleGrowth();
         __remake.state.stats.guts = 100;
         __remake.state.stamina = 81;
         const stats = await import("./js/core/stats.js");
@@ -925,67 +924,46 @@ await suite("growth-levelup", async (runCheck) => {
       await page.waitForTimeout(400);
       await page.screenshot({ path: `${out}/growth-levelup-${label}-chip.png` });
 
-      // 満タンを越えたら、その場でレベルが上がって火種が手持ちに入る（SBD108）。HUD に小さく知らせ、見せていない間は「Lv UP」
+      // 満タンを越えたら、その場でレベルが上がって火種が手持ちに入る（SBD108・SBD122）。画面の上に短い札が出て、操作は止まらない
       await page.evaluate(async () => (await import("./js/core/growth.js")).gainExp(400));
-      await page.waitForFunction(() => /Lv UP ×2/.test(document.querySelector('[data-test="hud-exp"]').textContent));
       assert.equal(await page.evaluate(() => __remake.state.growth.level), 3);
-      assert.match(await page.locator(t("stock-chip")).innerText(), /LEVEL UP Lv\.3[\s\S]*火種 ＋4/);
+      const card = levelCard(page);
+      await card.waitFor();
+      assert.deepEqual(await card.evaluate((node) => [node.dataset.from, node.dataset.to, node.dataset.line]), ["1", "3", "LEVEL UP Lv.3　白火 ＋4"], "レベル1つで火種2つ");
+      assert.match(await card.innerText(), /LEVEL UP[\s\S]*Lv\.3[\s\S]*×4/);
+      assert.doesNotMatch(await card.innerText(), /？？？/, "名乗っていない相手の名前は出さない");
+      await assertFits(page, ".lvup-plate");
       const badge = page.locator(t("hud-hidane"));
       await badge.waitFor();
       assert.equal(await badge.innerText(), "4");
-      await page.waitForFunction(() => !document.querySelector('[data-test="exp-chip"], [data-test="stock-chip"]'));
+      assert.match(await exp.innerText(), /Lv\.3/);
+      assert.doesNotMatch(await exp.innerText(), /Lv UP/, "ためておく印は出さない");
+      await page.waitForTimeout(500);
+      await page.screenshot({ path: `${out}/growth-levelup-${label}-full.png` });
+      assert.equal(await page.locator(BLOCKING).count(), 0);
+      await page.locator(t("levelup")).waitFor({ state: "detached", timeout: 15000 });
+      await page.waitForFunction(() => !document.querySelector('[data-test="exp-chip"]'));
       await assertFits(page, '[data-test="hud-exp"]');
 
-      // 寝る前は何も出ない。ためた分は残る
+      // 寝る前は何も出ない（もう上がっている）
       const quiet = await page.evaluate(async () => {
         const r = await (await import("./js/core/growth.js")).presentNight();
-        return { shown: !!document.querySelector(".levelup-backdrop"), from: r.from, to: r.to };
+        await new Promise((done) => setTimeout(done, 300));
+        return { shown: !!document.querySelector('[data-test="levelup"], .levelup-backdrop'), from: r.from, to: r.to };
       });
-      assert.deepEqual(quiet, { shown: false, from: 1, to: 3 });
+      assert.deepEqual(quiet, { shown: false, from: 3, to: 3 });
 
-      // 観音堂などで振り返った時のフル演出（ここでは演出だけを直接出す）。押すと最後まで早送り → 盤へ
-      await page.evaluate(async () => {
-        window.night = null;
-        void (await import("./js/daily/levelup.js")).presentStockedGrowth().then((r) => { window.night = r; });
-      });
-      const panel = page.locator(t("levelup"));
-      await panel.waitFor();
-      await tap(".levelup-backdrop");
-      const ok = page.locator(t("levelup-ok"));
-      await page.waitForFunction(() => document.querySelector(".levelup")?.classList.contains("lu-settled-state"));
-      const text = await panel.innerText();
-      assert.match(text, /Lv\.1 → Lv\.3/);
-      assert.match(text, /×4[\s\S]*白火 ＋4/, "レベル1つで火種2つ（大きな粒と ×4。文は読み上げ用・SBD116）");
-      assert.doesNotMatch(text, /？？？/, "名乗っていない相手の名前は出さない");
-      await assertFits(page, '[data-test="levelup-ok"]');
-      await page.waitForTimeout(400);
-      await page.screenshot({ path: `${out}/growth-levelup-${label}-full.png` });
-      await tap(t("levelup-ok"));
-      await page.waitForFunction(() => window.night?.to === 3);
-      await panel.waitFor({ state: "detached" });
-      assert.equal(await badge.innerText(), "4");
-      assert.match(await exp.innerText(), /Lv\.3/);
-      assert.doesNotMatch(await exp.innerText(), /Lv UP/, "見終えたら HUD の印は消える");
-
-      // 次の1レベルも、その場でストックされる。見せるものが無くなった後の演出は、新しい分だけ
+      // 次の1レベルも、届いたその場で上がる
       await page.evaluate(async () => {
         const g = await import("./js/core/growth.js");
         g.gainExp(g.totalExpFor(4) - __remake.state.growth.xp);
       });
-      await page.waitForFunction(() => /Lv\.4[\s\S]*Lv UP/.test(document.querySelector('[data-test="hud-exp"]').textContent));
+      await card.waitFor();
+      assert.deepEqual(await card.evaluate((node) => [node.dataset.from, node.dataset.to]), ["3", "4"]);
+      assert.match(await card.innerText(), /Lv\.4[\s\S]*×2/);
+      assert.doesNotMatch(await card.innerText(), /→/, "1つ上がっただけなら、前のレベルは出さない");
       assert.equal(await badge.innerText(), "6");
-      await page.evaluate(async () => {
-        window.night = null;
-        void (await import("./js/daily/levelup.js")).presentStockedGrowth().then((r) => { window.night = r; });
-      });
-      await panel.waitFor();
-      await tap(".levelup-backdrop");
-      await page.waitForFunction(() => document.querySelector(".levelup")?.classList.contains("lu-settled-state"));
-      assert.match(await panel.innerText(), /Lv\.3 → Lv\.4[\s\S]*×2[\s\S]*白火 ＋2/);
-      await tap(t("levelup-ok"));
-      await page.waitForFunction(() => window.night?.to === 4, null, { timeout: 5000 });
-      await panel.waitFor({ state: "detached" });
-      assert.equal(await badge.innerText(), "6");
+      await page.locator(t("levelup")).waitFor({ state: "detached", timeout: 15000 });
 
       // 保存・読込で残る
       await page.evaluate(async () => { const core = await import("./js/core/state.js"); core.save(); core.load(); });
@@ -1000,7 +978,7 @@ await suite("growth-levelup", async (runCheck) => {
     await check(`${label}-board-from-levelup`, async (page) => {
       const tap = (sel) => !options.hasTouch ? page.locator(sel).click() : page.locator(sel).tap();
       await setupDaily(page);
-      // レベルが上がったその場で火種は手持ちに入る（SBD108）。メニューの盤は見るだけで、ためた分の演出は出さない
+      // レベルが上がったその場で火種は手持ちに入る（SBD108・SBD122）。メニューの盤は見るだけ
       await page.evaluate(async () => {
         const g = await import("./js/core/growth.js");
         g.gainExp(g.totalExpFor(3));
@@ -1008,7 +986,7 @@ await suite("growth-levelup", async (runCheck) => {
       });
       const board = page.locator(t("growth-board"));
       await board.waitFor();
-      assert.equal(await page.locator(t("levelup")).count(), 0);
+      assert.equal(await page.locator(BLOCKING).count(), 0);
       // メニューからは見るだけ（灯すのは参拝の場所。SPEC 2.8）
       assert.equal(await board.getAttribute("data-mode"), "view");
       assert.match(await page.locator(t("board-place")).innerText(), /見るだけ/);
@@ -1027,7 +1005,6 @@ await suite("growth-levelup", async (runCheck) => {
       assert.equal(await page.evaluate(() => __remake.state.growth.target), "K03", "目標は見るだけの盤でも決められる");
       await tap(t("board-close"));
       await board.waitFor({ state: "detached" });
-      assert.equal(await page.evaluate(async () => (await import("./js/core/growth.js")).hasGrowthStock()), true, "見るだけの盤では、ためた分を見せたことにしない");
 
       // 観音堂で内省 → 灯せる。目標まで灯す → 決定
       await page.evaluate(() => { window.lit = null; void import("./js/core/growth.js").then((g) => g.openGrowthBoard({ place: "kannon" })).then((r) => { window.lit = r; }); });
@@ -1095,28 +1072,25 @@ await suite("growth-levelup", async (runCheck) => {
     assert.equal(await page.locator(t("board-opened")).count(), 0, "演出は一度だけ");
     await page.locator(t("board-close")).click();
     await board.waitFor({ state: "detached" });
-    // くじを引き切った日（レベルは上がっていない）: 寝る前には何も出さず、火種はストックに入る（SBD108）。HUD に小さく知らせる
-    const quiet = await page.evaluate(async () => {
+    // くじを引き切った日（レベルは上がっていない）: 夜の区切りで火種を拾い、その場の短い札で知らせる（止めない・SBD122）
+    const night = await page.evaluate(async () => {
       __remake.state.kuji = { g500: { order: [0], drawn: 1, emptyDay: 3 } };
       const g = await import("./js/core/growth.js");
       const r = await g.presentNight();
-      return { shown: !!document.querySelector(".levelup-backdrop"), gifts: r.gifts.map((x) => x.label), fire: __remake.state.growth.hidane.body };
+      return { blocking: !!document.querySelector(".levelup-backdrop, .levelup-band"), from: r.from, to: r.to, fire: __remake.state.growth.hidane.body };
     });
-    assert.deepEqual(quiet, { shown: false, gifts: ["くじのラストワン賞"], fire: 1 });
-    assert.match(await page.locator(t("stock-chip")).innerText(), /HIDANE[\s\S]*紅火 ＋1/);
-    // 観音堂などで振り返った時に、ご褒美だけの画面で見せる
-    await page.evaluate(async () => {
-      window.night = null;
-      void (await import("./js/daily/levelup.js")).presentStockedGrowth().then((r) => { window.night = r; });
-    });
-    const panel = page.locator(t("levelup"));
-    await panel.waitFor();
-    await page.locator(".levelup-backdrop").click();
-    await page.waitForFunction(() => document.querySelector(".levelup")?.classList.contains("lu-settled-state"));
-    assert.match(await panel.innerText(), /HIDANE[\s\S]*くじのラストワン賞[\s\S]*紅火 ＋1/);
-    await assertFits(page, t("levelup"));
-    await page.locator(t("levelup-ok")).click();
-    await page.waitForFunction(() => window.night?.gifts?.length === 1, null, { timeout: 8000 });
+    assert.equal(night.blocking, false);
+    assert.equal(night.from, night.to, "レベルは上がっていない");
+    assert.equal(night.fire, 1);
+    const gift = levelCard(page);
+    await gift.waitFor();
+    assert.deepEqual(await gift.evaluate((node) => [node.dataset.kind, node.dataset.line]), ["gift", "くじのラストワン賞　紅火 ＋1"]);
+    assert.equal(await gift.locator(".lvup-head").innerText(), "HIDANE");
+    assert.equal(await gift.locator(".lvup-tag").innerText(), "くじ");
+    await assertFits(page, ".lvup-plate");
+    await page.locator(t("levelup")).waitFor({ state: "detached", timeout: 15000 });
+    // 同じ箱では二度もらえない（次の夜には何も出ない）
+    assert.equal(await page.evaluate(async () => { await (await import("./js/core/growth.js")).presentNight(); await new Promise((done) => setTimeout(done, 300)); return document.querySelectorAll('[data-test="levelup"]').length; }), 0);
   }, { viewport: { width: 1331, height: 760 } });
 
   // 既存スミ授業を実際のVNで中断→途中保存→再相談。好感度0でも、盤から同じ機能が開く。

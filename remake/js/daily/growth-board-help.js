@@ -33,8 +33,8 @@ export const PERK_HELP = Object.freeze({
 export const HELP_PAGES = Object.freeze([
   { id: "flow", title: "ながれ", build: () => el("ol.gh-flow", [
     el("li", [el("span.gh-step", { text: "1" }), el("div", [el("b", { text: "経験値をためる" }), el("span", { text: "人と会う・出かける・作る・大会" })])]),
-    el("li", [el("span.gh-step", { text: "2" }), el("div", [el("b", { text: "レベルが上がると、火種をストック" }), el("span.gh-inline", [n("any", HIDANE_PER_LEVEL), el("span", { text: "その場で手持ちに入る" })])])]),
-    el("li", [el("span.gh-step", { text: "3" }), el("div", [el("b", { text: "観音堂などで振り返る" }), el("span", { text: "ためた分をまとめて見て、盤に灯す（時間は進まない）" })])]),
+    el("li", [el("span.gh-step", { text: "2" }), el("div", [el("b", { text: "たまると、その場でレベルアップ" }), el("span.gh-inline", [n("any", HIDANE_PER_LEVEL), el("span", { text: "火種が手持ちに入る" })])])]),
+    el("li", [el("span.gh-step", { text: "3" }), el("div", [el("b", { text: "観音堂などで振り返る" }), el("span", { text: "手持ちの火種を盤に灯す（時間は進まない）" })])]),
     el("li", [el("span.gh-step", { text: "4" }), el("div", [el("b", { text: "灯したマスの分だけ、力が伸びる" }), el("span", { text: "メニューの盤は見るだけ（目標は付けられる）" })])]),
   ]) },
   { id: "fire", title: "火種", build: () => el("div", [

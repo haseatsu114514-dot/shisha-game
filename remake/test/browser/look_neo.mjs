@@ -1723,7 +1723,7 @@ async function limeScreen(page, { phone }) {
   assert.equal(await page.evaluate(() => window.lookNeoDailyError || ""), "");
 }
 
-/** レベルアップ（寝る前の全面の札・ふだんの短い帯）。 */
+/** レベルアップ（経験値が届いたその場で、画面の上に出る短い札。SBD122）。 */
 async function levelUp(page, { phone }) {
   await page.evaluate(async () => {
     const core = await import("./js/core/state.js"), ui = await import("./js/core/ui.js"), data = await import("./js/core/data.js"), hud = await import("./js/daily/hud.js");
@@ -1736,36 +1736,23 @@ async function levelUp(page, { phone }) {
     const g = await import("./js/core/growth.js");
     g.setGrowthPreview(true);
     g.gainExp(g.totalExpFor(3) + 10);
-    window.lookNeoNight = null;
-    // ためた分のフル演出（観音堂などの内省が呼ぶもの。SBD108）を直接出す
-    void (await import("./js/daily/levelup.js")).presentStockedGrowth().then((r) => { window.lookNeoNight = r; });
   });
-  await page.locator('[data-test="levelup"]').waitFor();
-  // 検査の共通の仕掛け（growth_ack.mjs）が出そろった札の OK をすぐ押すので、出そろった瞬間（クラスが付いた時）に測っておく。
-  await page.evaluate((helpers) => {
+  await page.locator('[data-test="levelup"].show').waitFor();
+  await page.waitForTimeout(700);
+  const card = await page.locator('[data-test="levelup"]').evaluate((node, helpers) => {
     const { px, rgb } = (0, eval)(helpers);
-    const look = (node) => ({ ...px(node), face: getComputedStyle(node).backgroundImage, ink: rgb(getComputedStyle(node).color) });
-    const take = () => {
-      const panel = document.querySelector(".levelup.lu-settled-state");
-      if (!panel || window.lookNeoLevelup) return;
-      window.lookNeoLevelup = { panel: look(panel), text: panel.innerText, lv: getComputedStyle(panel.querySelector(".lu-lv")).backgroundImage,
-        ok: look(panel.querySelector('[data-test="levelup-ok"]')) };
-    };
-    window.lookNeoLevelup = null;
-    new MutationObserver(take).observe(document.getElementById("fx"), { subtree: true, attributes: true, attributeFilter: ["class"] });
-    take();
+    const plate = node.querySelector(".lvup-plate"), lv = node.querySelector(".lvup-lv b"), count = node.querySelector(".lvup-fire b");
+    return { plate: { ...px(plate), face: getComputedStyle(plate).backgroundImage }, lv: { ...px(lv), ink: rgb(getComputedStyle(lv).color) }, count: px(count),
+      text: plate.innerText, line: node.dataset.line, events: getComputedStyle(node).pointerEvents };
   }, STAGE_PX);
-  await page.locator(".levelup-backdrop").click({ position: { x: 5, y: 5 } });
-  await page.waitForFunction(() => window.lookNeoLevelup);
-  const full = await page.evaluate(() => window.lookNeoLevelup);
-  assert(inside(full.panel, STAGE) && full.panel.face.includes("rgba(36, 22, 55") && light(full.panel.ink), `レベルアップの札は夜紫の面 ${JSON.stringify(full.panel)}`);
-  assert(full.lv.includes("227, 189, 110"), "レベルの下に金の罫線");
-  assert.match(full.text, /Lv\.1 → Lv\.3/);
-  assert(full.ok.face.includes("linear-gradient") && !light(full.ok.ink), "「盤へ」は金の札");
-  for (const button of [full.ok]) assert(inside(button, full.panel, 1) && button.height >= 44 - .5 && button.real >= (phone ? 30 : 38), `ボタンの押せる大きさ ${JSON.stringify(button)}`);
-  // OK で閉じる（共通の仕掛けが押す）。
-  await page.waitForFunction(() => window.lookNeoNight?.to === 3);
-  // 短い帯は廃止した（SBD108）。寝る前には何も出ない
+  assert(inside(card.plate, STAGE) && card.plate.face.includes("rgba(36, 22, 55"), `レベルアップの札は夜紫の面で、画面に収まる ${JSON.stringify(card.plate)}`);
+  assert(light(card.lv.ink) && inside(card.lv, card.plate, 1) && inside(card.count, card.plate, 1), `レベルと火種の数は札の中 ${JSON.stringify(card)}`);
+  assert(card.lv.real >= (phone ? 20 : 30) && card.count.real >= (phone ? 16 : 24), `数字は大きく ${JSON.stringify([card.lv, card.count])}`);
+  assert.match(card.text, /LEVEL UP[\s\S]*Lv\.3[\s\S]*×4/);
+  assert.equal(card.line, "LEVEL UP Lv.3　白火 ＋4");
+  assert.equal(card.events, "none", "押せない飾り（操作を止めない）");
+  assert.equal(await page.locator('.levelup-backdrop, .levelup-band, [data-test="levelup-ok"]').count(), 0, "止めて見せる画面は無い");
+  await page.locator('[data-test="levelup"]').waitFor({ state: "detached", timeout: 15000 });
 }
 
 /** ギャラリー（タイトルから）。一覧の面・タブ・閉じる・閲覧の帯。 */

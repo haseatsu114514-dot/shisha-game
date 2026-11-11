@@ -611,7 +611,7 @@ export const FLAG_EXACT_RULES = [
   ["seenDemo", "ui"],
   ["seenStepIntro", "ui"],
   ["_kannon_growth_intro_done", "ui"],
-  ["_hidane_stock_notice", "ui"], // はじめて火種をストックした時の案内カード（SBD108）。一度見たら周回しても出さない
+  ["_hidane_stock_notice", "ui"], // はじめて火種を手に入れた時の案内カード（SBD108）。一度見たら周回しても出さない
   ["spot_cafe_naru_done", "person"],
   ["spot_choizap_minto_done", "person"],
   ["spot_kannon_adam_done", "person"],
@@ -706,8 +706,7 @@ export function buildCarryPackage(s) {
     g.read = [];
     g.chapterLog = {}; g.tournamentXp = {}; g.cleared = [];
     g.gifted = {};
-    // 見せていないレベルアップ・ご褒美のストック（SBD108）は新しい周回へ持ち越さない（レベルと火種はそのまま）
-    g.today = { xp: Math.max(0, (Number(g.xp) || 0) - (Number(g.settledXp) || 0)), learned: {}, gifts: [], from: null, xpFrom: null, any: 0, limited: [] };
+    g.today = { xp: Math.max(0, (Number(g.xp) || 0) - (Number(g.settledXp) || 0)), learned: {}, gifts: [] };
     // 新しい周回は第1章から。章のはじめの盤（章末の淡い面）を引き継いだ盤で記録しておく
     g.chapterStart = { chapter: 1, nodes: Array.isArray(g.nodes) ? [...g.nodes] : [], level: g.level };
   }
