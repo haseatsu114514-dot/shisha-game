@@ -45,8 +45,9 @@ try {
             for (let i = 0; i < count; i++) {
               const c = view.coals[i], r = rects[i], [x, y, name] = spots[i];
               const angle = parseFloat(c.visual.style.getPropertyValue("--coal-angle"));
-              if (Math.abs(parseFloat(c.node.style.left) / 100 - x) * bounds.width > 11.01
-                || Math.abs(parseFloat(c.node.style.top) / 100 - y) * bounds.height > 5.01 || Math.abs(angle) > 3
+              // コンロ自身の寸法（見た目の拡大 transform を含まない）で測る。新しい配置はコンロを絵ごと拡大するだけなので、ゆらぎの許容は同じ。
+              if (Math.abs(parseFloat(c.node.style.left) / 100 - x) * view.stove.offsetWidth > 11.01
+                || Math.abs(parseFloat(c.node.style.top) / 100 - y) * view.stove.offsetHeight > 5.01 || Math.abs(angle) > 3
                 || c.label !== name) failures.push(label + ": excessive variation or changed label");
               if (r.left < bounds.left || r.right > bounds.right || r.top < panelBounds.top || r.bottom > bounds.bottom
                 || !c.node.contains(document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2))) failures.push(label + ": inaccessible coal");
@@ -156,7 +157,10 @@ try {
             rating: document.querySelector(`[data-test="coal-timing-${index}"]`).dataset.rating,
             stamps: strip.querySelectorAll(".stamp").length, stamp: stamp.textContent,
             geometry: {
-              separate: active.every(r => r.right <= carrier.left), stripInside: inside(f), carrierInside: inside(carrier),
+              // 旧配置は情報の板がコンロの右、新しい配置（既定）はコンロの上の帯。どちらも炭と重ならないことを確かめる。
+              separate: document.body.classList.contains("craft-stage")
+                ? active.every(r => r.right <= carrier.left || r.left >= carrier.right || r.top >= carrier.bottom || r.bottom <= carrier.top)
+                : active.every(r => r.right <= carrier.left), stripInside: inside(f), carrierInside: inside(carrier),
               separated: active.every((r, i) => active.slice(i + 1).every(o => r.right <= o.left || o.right <= r.left || r.bottom <= o.top || o.bottom <= r.top)),
               textInside: r.left >= f.left && r.right <= f.right,
               errorInside: er !== null && er.left >= f.left && er.right <= f.right && er.top >= f.top && er.bottom <= f.bottom,
