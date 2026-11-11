@@ -192,6 +192,32 @@ def build_craft_stage():
             print(f"{path.relative_to(ROOT)}: {image.width}×{image.height}, {path.stat().st_size:,} bytes")
 
 
+NEO_SOURCES = ROOT / "assets/ui/neo"
+NEO_OUT = ROOT / "remake/img/ui/neo"
+NEO_PARTS = {
+    # 会話の帯に重ねる煙（LK19 第2弾）。原画は依頼（不透明度10〜35%）より濃いので、実行時の絵だけ不透明度を35%に下げる。
+    "band-smoke": {"source_size": (2156, 454), "width": 1280, "alpha_scale": 0.35},
+    # 見出しの下の飾り罫。左端に煙の飾り、右へ消える。0.3倍（幅571）で使うので2倍密度の1142。
+    "heading-rule": {"source_size": (1903, 79), "width": 1142},
+}
+
+
+def build_neo():
+    NEO_OUT.mkdir(parents=True, exist_ok=True)
+    for name, spec in NEO_PARTS.items():
+        with Image.open(NEO_SOURCES / f"{name}.png") as source:
+            if source.size != spec["source_size"]:
+                raise ValueError(f"neo {name}: expected {spec['source_size']}, got {source.size}")
+            width = spec["width"]
+            image = source.convert("RGBA").resize((width, round(width * source.height / source.width)), Image.Resampling.LANCZOS)
+            if "alpha_scale" in spec:
+                r, g, b, a = image.split()
+                image = Image.merge("RGBA", (r, g, b, a.point(lambda v: round(v * spec["alpha_scale"]))))
+            path = NEO_OUT / f"{name}.webp"
+            image.save(path, "WEBP", quality=90, alpha_quality=100, method=6, exact=True)
+            print(f"{path.relative_to(ROOT)}: {image.width}×{image.height}, {path.stat().st_size:,} bytes")
+
+
 def build_craft_night():
     CRAFT_NIGHT_OUT.mkdir(parents=True, exist_ok=True)
     for name, spec in CRAFT_NIGHT_PARTS.items():
@@ -475,6 +501,7 @@ def main():
     build_craft_paper()
     build_craft_night()
     build_craft_stage()
+    build_neo()
     OUT.mkdir(parents=True, exist_ok=True)
     for name, spec in SPRITES.items():
         with Image.open(SOURCES / f"{spec.get('source', name)}.png") as source:

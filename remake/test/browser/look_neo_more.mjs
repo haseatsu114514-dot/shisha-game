@@ -53,11 +53,28 @@ const ART_FILES = [];
 {
   const { file, css } = checkNeoOnly("look-neo-art.css", ':root[data-look="neo"] body:not(.game-ds) #viewport #stage', 8);
   for (const [, path] of css.matchAll(/url\("([^"]+)"\)/g)) {
-    assert(path.startsWith("../img/ui/craft-night/"), `絵の部品は夜紫の部品のフォルダから読む: ${path}`);
+    // 夜紫の部品（制作・大会と共通）か、新版のために生成した部品（会話の帯の煙・見出しの飾り罫。LK19 第2弾）。
+    assert(/^\.\.\/img\/ui\/(craft-night|neo)\//.test(path), `絵の部品は夜紫の部品か新版の部品のフォルダから読む: ${path}`);
     assert(fs.existsSync(new URL(path, file)), `絵の部品のファイルがある: ${path}`);
     if (!ART_FILES.includes(path)) ART_FILES.push(path);
   }
   assert(ART_FILES.length >= 4, "絵の部品を読めている");
+}
+
+/** 見出しの下の飾り罫（LK19 第2弾）: 元の金の線（グラデーション）の上に絵が重なり、絵を外すと線だけ。見出しの箱の大きさは変わらない。 */
+async function headingRule(page, selector) {
+  const read = () => page.locator(selector).first().evaluate((node) => {
+    const cs = getComputedStyle(node), r = node.getBoundingClientRect();
+    return { image: cs.backgroundImage, rect: [r.left, r.top, r.width, r.height].map((v) => Math.round(v * 10) / 10) };
+  });
+  const now = await read();
+  await page.evaluate(() => { document.querySelector('link[href*="look-neo-art.css"]').disabled = true; });
+  const plain = await read();
+  await page.evaluate(() => { document.querySelector('link[href*="look-neo-art.css"]').disabled = false; });
+  assert(now.image.includes("img/ui/neo/heading-rule.webp") && now.image.includes("linear-gradient") && now.image.includes("227, 189, 110"),
+    `${selector}: 金の線に飾り罫の絵が重なる ${now.image}`);
+  assert(!plain.image.includes("heading-rule") && plain.image.includes("227, 189, 110"), `${selector}: 絵を外すと元の金の線 ${plain.image}`);
+  assert.deepEqual(now.rect, plain.rect, `${selector}: 見出しの箱の大きさは変わらない`);
 }
 
 const press = (page, locator) => (page.__touch ? locator.tap() : locator.click());
@@ -467,6 +484,8 @@ await suite("look-neo-more", async (check) => {
       assert.deepEqual(now.rect, plain.rect, `${selector}: 絵を重ねても箱の位置と大きさは変わらない`);
       assert.equal(now.border, plain.border, `${selector}: 縁の幅は変えない`);
     }
+    // 見出しの下: 元の金の線（グラデーション）の上に飾り罫の絵（LK19 第2弾）。絵を外すと線だけ。箱の大きさは同じ。
+    await headingRule(page, "#modal .modal-box > h3");
     // 旧版には重ならない。
     await setLook(page, "classic");
     await page.waitForTimeout(400);
@@ -485,6 +504,35 @@ await suite("look-neo-more", async (check) => {
       assert(now.frame.includes(`img/ui/craft-night/${file}`), `${selector}: ${file} が重なる ${JSON.stringify(now)}`);
       assert.deepEqual(now.rect, plain.rect, `${selector}: 絵を重ねても箱の位置と大きさは変わらない`);
     }
+    await headingRule(page, "#screen .sub-menu .sub-title");
+    // 会話の帯: 上の端に煙、名前の下の金の線に飾り罫（地の文では煙だけ）。帯の位置と大きさ、金の線（::after）は変えない。
+    await page.evaluate(async () => {
+      (await import("./js/core/ui.js")).clearScreen();
+      const vn = await import("./js/vn/engine.js");
+      vn.vnTest.turbo = false; // 行を自動で送らない（1行ずつ測る）
+      window.lookNeoArtRun = vn.play({ dialogue_id: "__look_neo_art", lines: [
+        { speaker: "sumi", text: "絵の部品の確認。" }, { speaker: "", text: "店の奥で、炭のはぜる小さな音がした。" }] });
+    });
+    await page.waitForFunction(() => document.querySelector("#vn.active .vn-text")?.textContent.includes("絵の部品の確認")
+      && !document.querySelector("#vn .vn-box").classList.contains("narration") && document.querySelector("#vn .vn-next.show"));
+    const band = () => page.evaluate(() => {
+      const box = document.querySelector("#vn .vn-box"), r = box.getBoundingClientRect();
+      const before = getComputedStyle(box, "::before"), after = getComputedStyle(box, "::after");
+      return { cls: box.className, name: document.querySelector("#vn .vn-name")?.textContent, image: before.backgroundImage, rect: [r.left, r.top, r.width, r.height].map((v) => Math.round(v * 10) / 10),
+        rule: [after.top, after.height, after.backgroundImage], narration: box.classList.contains("narration") };
+    });
+    const speech = await band();
+    await page.evaluate(() => { document.querySelector('link[href*="look-neo-art.css"]').disabled = true; });
+    const plainBand = await band();
+    await page.evaluate(() => { document.querySelector('link[href*="look-neo-art.css"]').disabled = false; });
+    assert(speech.image.includes("img/ui/neo/heading-rule.webp") && speech.image.includes("img/ui/neo/band-smoke.webp"), `会話の帯に煙と飾り罫 ${JSON.stringify(speech)}`);
+    assert(speech.image.includes("linear-gradient") && !plainBand.image.includes("img/ui/neo/"), "帯の暗いグラデーションは残し、絵を外すと元の帯だけ");
+    assert.deepEqual(speech.rect, plainBand.rect, "絵を重ねても会話の帯の位置と大きさは変わらない");
+    assert.deepEqual(speech.rule, plainBand.rule, "名前と本文のあいだの金の線（位置・太さ・色）は変えない");
+    await page.locator(".vn-text").click();
+    await page.waitForFunction(() => document.querySelector("#vn .vn-box")?.classList.contains("narration") && document.querySelector("#vn .vn-next.show"));
+    const narration = await band();
+    assert(narration.image.includes("img/ui/neo/band-smoke.webp") && !narration.image.includes("heading-rule"), `地の文は煙だけ（名前が無いので飾り罫は出さない） ${narration.image}`);
   }, { pageEntry: NEO });
 
   await check("leftovers-desktop", (page) => leftovers(page), { pageEntry: NEO });

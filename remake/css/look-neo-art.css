@@ -103,3 +103,40 @@
   border-color: transparent;
   border-image: var(--neo-art-button-gold) 52 fill / 14px / 3px stretch;
 }
+
+/* ---------------------------------------------------------------- 7. 会話の帯の煙と、見出しの下の飾り罫（LK19 第2弾・原画と依頼文は asset_sources/ui/neo-20261111/）
+   煙（band-smoke）は帯の上の端（名前の行のあたり）に漂わせ、本文の所では薄く消える。実行時の絵は不透明度を35%に下げてある（原画が依頼より濃いため）。
+   飾り罫（heading-rule。幅571・高さ23.7、金の線の中心は上から18.2px）は、今の金の細い線にぴったり重ねる。左端に小さな煙の飾り、すぐ下に薄いラベンダーの線、右へ消える。
+   元の CSS の金の線（グラデーション）はそのまま下に残すので、絵が読めない時も今の見た目になる。箱の大きさ・余白は変えない。 */
+:root[data-look="neo"] body:not(.game-ds) #viewport #stage {
+  --neo-art-smoke: url("../img/ui/neo/band-smoke.webp");
+  --neo-art-rule: url("../img/ui/neo/heading-rule.webp");
+}
+:root[data-look="neo"] body:not(.game-ds) #viewport #stage #vn .vn-box::before,
+:root[data-look="neo"] body:not(.game-ds) #viewport #stage #vn .vn-box:is(.narration, .thought)::before {
+  background-image:
+    var(--neo-art-rule),
+    var(--neo-art-smoke),
+    linear-gradient(to top, rgba(18, 9, 30, .96) 0%, rgba(18, 9, 30, .9) 52%, rgba(18, 9, 30, .56) 78%, rgba(18, 9, 30, 0) 100%);
+  background-size: 571px 23.7px, 1280px 270px, 100% 100%;
+  /* ::before は帯の上 78px から始まる。罫線の絵の金の線を、名前と本文のあいだの金の線（::after）と同じ高さへ。 */
+  background-position: var(--neo-side) calc(78px + var(--neo-rule-top) + .5px - 18.2px), center top, 0 0;
+  background-repeat: no-repeat;
+}
+/* 地の文・心の声では名前が無いので、飾り罫は出さない（線だけ）。 */
+:root[data-look="neo"] body:not(.game-ds) #viewport #stage #vn .vn-box:is(.narration, .thought)::before {
+  background-image:
+    var(--neo-art-smoke),
+    linear-gradient(to top, rgba(18, 9, 30, .96) 0%, rgba(18, 9, 30, .9) 52%, rgba(18, 9, 30, .56) 78%, rgba(18, 9, 30, 0) 100%);
+  background-size: 1280px 270px, 100% 100%;
+  background-position: center top, 0 0;
+}
+/* 小窓・LOG・行動の選択の見出し: 下端の金の線（1px）に、飾り罫の絵の金の線を重ねる（絵の下 5px は箱の外なので切れる）。 */
+:root[data-look="neo"] body:not(.game-ds) #viewport #stage :is(#modal .modal-box > h3, #vn .vn-log .log-head, #screen .sub-menu .sub-title) {
+  background-image:
+    var(--neo-art-rule),
+    linear-gradient(to right, var(--neo-ui-gold), rgba(227, 189, 110, .26) 60%, rgba(227, 189, 110, 0));
+  background-size: 571px 23.7px, 100% 1px;
+  background-position: left bottom -5px, left bottom;
+  background-repeat: no-repeat;
+}
