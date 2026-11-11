@@ -6,7 +6,7 @@
 // （審査カードは見ずに、残りの吸い方の期待値）を比べて良いほうを使う。熱の狙いは「その熱で使える一口のカード（必要火力）」まで
 // 含めた期待点で決める。rules.reactAfterReveal のときは、めくったあとに一口のカードを選ぶ（取っておく値打ちと比べる）。
 import { CARD, FLAVOR, FLAVORS, BOWL, JUDGE, PUFFS } from "./ichidai-data.js";
-import { RANK, heatOf, coalHeat, coalRoom, leavesOf, coolStepsOf, judgedHeat, scorePuff, impressionOf, unseenPuffs,
+import { RANK, heatOf, coalHeat, coalRoom, coalMaxOf, leavesOf, coolStepsOf, judgedHeat, scorePuff, impressionOf, unseenPuffs,
   canPlay, canCharge, canPlace, canAsh, canPack, canSteam, packLimit, roundsOf, isLastSession, isLastOfSession, puffPreview } from "./ichidai-rules.js";
 
 const cnt = (p, id) => p.hand.filter((x) => x === id).length;
@@ -108,7 +108,7 @@ export function aiAct(G, playerIndex) {
 
 function embers(G, p) {
   const order = p.hand.map((id, i) => ({ i, v: cardValue(G, p, id) })).sort((a, b) => a.v - b.v);
-  return { type: "embers", picks: order.slice(0, G.R.startEmbers).map((x) => x.i) };
+  return { type: "embers", picks: order.slice(0, Math.min(G.R.startEmbers, coalMaxOf(p))).map((x) => x.i) };
 }
 function discard(G, p) {
   const need = p.hand.length - G.R.handMax;
@@ -200,7 +200,8 @@ function coalMove(G, p, { prep = false, turnsLeft = 0 } = {}) {
   if (p.turn.ai?.heatDone) return null;
   const h0 = heatOf(p), ready = p.stove.map((c, i) => ({ f: CARD[c.id].heat, i })).filter((x) => p.stove[x.i].stage === 2);
   const later = p.stove.filter((c) => c.stage === 1).map((c) => CARD[c.id].heat); // 次の自分のターンに焼ける炭
-  const canAshNow = canAsh(G, p).ok, canChargeNow = canCharge(G, p).ok || (!coalRoom(p) && p.hand.length > 0 && canAshNow);
+  const cmax = coalMaxOf(p), chargesLeft = Math.max(0, Math.min(3, G.R.chargePerTurn - (p.turn.charges || 0)));
+  const canAshNow = canAsh(G, p).ok, canChargeNow = canCharge(G, p).ok || (!coalRoom(p) && p.hand.length > 0 && canAshNow && chargesLeft > 0);
   const guess = prep ? null : puffGuess(G, p), slot = slotFree(G, p);
   const lastRound = !prep && G.round === roundsOf(G) - 1;
   const want = bestHeat(G, p, prep ? undefined : (p.level >= 1 ? puffGuess(G, { ...p, peek: null }) : normalGuess));
@@ -213,26 +214,27 @@ function coalMove(G, p, { prep = false, turnsLeft = 0 } = {}) {
     if (ai >= 0) { ashCost = 0.25 + 0.3 * fires[ai]; fires.splice(ai, 1); }
     for (let mask = 0; mask < (1 << ready.length); mask++) {
       const on = ready.filter((_, k) => mask & (1 << k));
-      if (fires.length + on.length > G.R.coalMax) continue;
-      const room = G.R.coalMax - fires.length - on.length;
-      for (let ch = 0; ch <= Math.min(canChargeNow ? room : 0, p.hand.length, 3); ch++) {
+      if (fires.length + on.length > cmax) continue;
+      const room = cmax - fires.length - on.length;
+      for (let ch = 0; ch <= Math.min(canChargeNow ? room : 0, p.hand.length, chargesLeft); ch++) {
         const now = [...fires, ...on.map((x) => x.f), ...Array(ch).fill(1)], h1 = now.reduce((a, b) => a + b, 0);
         if (h1 > G.R.heatMax) continue;
         // チャージの値段: 手札1枚ぶん。そのターン最初のチャージは1枚引ける（チャージ＆ドロー）ので、ほぼただ
-        const cdFree = ch > 0 && !(p.turn.charges > 0) && G.R.chargeDraw > 0 ? 0.55 : 0;
+        const cdFree = ch > 0 && G.R.chargeDraw > 0 ? 0.55 : 0;
         let v = -ashCost - 0.05 * on.length - ch * 0.6 - 0.15 * ch * (ch - 1) + cdFree;
         if (!prep) v += expected(G, p, h1, guess, slot);
         if (!lastRound) {
           // 次の自分のターン: 冷めて（炭を2つまで・1つにつき1段階）、空いた枠に残りの炭と種火を足す。狙いに届くか・熱すぎないか
           const skipCool = prep && p.hmd === "big_tanukish";
-          const steps = skipCool ? 0 : Math.max(0, Math.min(G.R.cool, now.length) - p.wind);
+          const solo = p.hmd === "one_coal" && now.length === 1; // ワンコールリッド: 炭が1つだけなら冷めない
+          const steps = skipCool || solo ? 0 : Math.max(0, Math.min(G.R.cool, now.length) - p.wind);
           const after = [...now].sort((a, b) => a - b); let lost = 0;
           for (let k = 0; k < steps && k < after.length; k++) { after[k]--; lost++; }
           const left = after.filter((f) => f > 0), hNext = h1 - lost;
           const stock = [...ready.filter((x) => !on.includes(x)).map((x) => x.f), ...later].sort((a, b) => b - a);
-          let roomNext = G.R.coalMax - left.length, reach = hNext;
+          let roomNext = cmax - left.length, reach = hNext;
           for (const f of stock) if (roomNext > 0) { reach += f; roomNext--; }
-          reach += Math.min(roomNext, Math.max(0, p.hand.length - ch)) * 0.8;
+          reach += Math.min(roomNext, Math.max(0, p.hand.length - ch), G.R.chargePerTurn) * 0.8;
           const big = left.length ? Math.max(...left) : 0;
           v -= 1.4 * Math.max(0, want - reach) + 0.5 * Math.max(0, hNext - big - want);
           if (prep) v -= 0.35 * Math.abs(hNext - want) + (turnsLeft > 0 ? 0.3 * ch : 0); // 準備: 提供の最初のターンにちょうど合う熱へ。種火は急がない
