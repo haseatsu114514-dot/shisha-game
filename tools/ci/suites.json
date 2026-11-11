@@ -1790,7 +1790,6 @@
         "data/dialogue/ch5_catering.json",
         "remake/js/daily/phone.js",
         "remake/js/daily/kuji-tickets.js",
-        "remake/js/daily/kuji-resale.js",
         "remake/js/daily/calendar.js",
         "remake/test/browser/ch5_catering.mjs"
       ],
@@ -1812,7 +1811,6 @@
         "remake/js/daily/calendar.js",
         "remake/js/daily/phone.js",
         "remake/js/daily/kuji-tickets.js",
-        "remake/js/daily/kuji-resale.js",
         "remake/test/browser/ch5_shop_stamps.mjs"
       ],
       "run": [
@@ -3359,7 +3357,6 @@
         "remake/js/daily/kuji-reveal.js",
         "remake/js/daily/kuji-prize-art.js",
         "remake/js/daily/kuji-tickets.js",
-        "remake/js/daily/kuji-resale.js",
         "data/kuji.json",
         "remake/css/shop*.css",
         "remake/test/store_logos.mjs",
@@ -4212,7 +4209,6 @@
         "remake/js/daily/kuji.js",
         "remake/js/daily/kuji-reveal.js",
         "remake/js/daily/kuji-tickets.js",
-        "remake/js/daily/kuji-resale.js",
         "data/kuji.json"
       ],
       "run": [

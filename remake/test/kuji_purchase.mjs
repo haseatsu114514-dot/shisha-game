@@ -9,12 +9,11 @@ import path from "node:path";
 
 const read = file => readFile(new URL(file, import.meta.url), "utf8");
 const strip = source => source.replace(/^import .*;\s*$/gm, "").replace(/\bexport /g, "");
-const [kuji, core, util, stats, data, travelBudget, galleryProgress, kujiTickets, equipment, kujiReveal, kujiResale] = await Promise.all([
+const [kuji, core, util, stats, data, travelBudget, galleryProgress, kujiTickets, equipment, kujiReveal] = await Promise.all([
   read("../js/daily/kuji.js"), read("../js/core/state.js"), read("../js/core/util.js"),
   read("../js/core/stats.js"), read("../../data/kuji.json"), read("../js/core/travel-budget.js"),
   read("../js/core/gallery-progress.js"), read("../js/daily/kuji-tickets.js"), read("../../data/equipment.json"),
   read("../js/daily/kuji-reveal.js"), // 結果の札（賞・景品名・重複の表示）。ガラガラと粒子は高速送りでは読み込まない
-  read("../js/daily/kuji-resale.js"), // くじで手に入れた台・機材の記録（買い取りの上限・KJ16）
 ]);
 // くじ限定の台（KJ05）だけ実データを渡す（重複でくじ券に替わるかの判定に使う）
 const kujiOnly = Object.fromEntries(JSON.parse(equipment).equipment.filter(e => e.kuji_only).map(e => [e.id, e]));
@@ -42,7 +41,6 @@ function addFlavorStock(id, grams) {
 }
 ${strip(kujiTickets)}
 ${strip(kujiReveal)}
-${strip(kujiResale)}
 ${strip(kuji)}
 let root, old, oldTicket, shop = 'home';
 // くじは店ごとに1種類（KJ11）。調べる等級を置いている店を開く。
@@ -109,6 +107,14 @@ window.K = {prepare, snapshot, finish, forceOld:()=>force(old),
   ticketClick:()=>oldTicket.click(), ticketForceOld:()=>force(oldTicket),
   ticketBurst:()=>{for(let i=0;i<5;i++) force(oldTicket);},
   revealText:()=>layers.modal.textContent,
+  // 値下げ前（KJ17 より前）に作った箱: 値下げ前の景品20枚を持ち、price を持たない。drawn 枚だけ引いた状態にして描き直す
+  oldBox:(grade, drawn)=>{
+    const prizes=[{rank:'S',name:'ステンレス削り出しの台',equipId:'stand_stainless',type:'stand',sell:15000,count:1},
+      {rank:'C',name:'ドバジ ミルク（25g）',type:'flavor',flavorId:'milk',grams:25,sell:0,count:19}];
+    state.kuji[grade]={order:prizes.flatMap((p,i)=>Array(p.count).fill(i)).reverse(),drawn,emptyDay:null,version:2,prizes,lastOne:null};
+    paint(); old=root.querySelector('[data-test="kuji-'+grade+'"]');
+    return {text:root.querySelector('.kuji-row').textContent, button:old.textContent, box:JSON.parse(JSON.stringify(state.kuji[grade]))};
+  },
 };
 </script>`;
 
@@ -201,9 +207,7 @@ try {
   assert.deepEqual((await run("K.snapshot()")).state,last.state);
   const refilled = await run("K.refill()");
   assert.equal(refilled.state.kuji.g1000.drawn,0); assert.equal(refilled.state.kuji.g1000.emptyDay,null);
-  // 最後の1枚で付いたラストワン賞の機材は「このくじで手に入れた物」として覚え、箱が入れ替わっても引き継ぐ（買い取りの上限・KJ16）
-  assert.deepEqual(last.state.kuji.g1000.won,['nightside_premier_hagal']);
-  assert.deepEqual(refilled.state.kuji.g1000.won,['nightside_premier_hagal'],"新しい箱にも記録が残る");
+  assert.equal(refilled.state.kuji.g1000.price,500,"新しい箱は今の1回の値段を持つ");
   console.log("PASS last ticket / last-one / real save-load / refill");
   for (const opts of [{money:499},{empty:true}]) { // 1回500円に1円足りない／売り切れ
     const before = await run(`K.prepare(${JSON.stringify(opts)})`);
@@ -223,7 +227,9 @@ try {
     const before = await run(`K.prepare({grade:'${grade}',legacy:true})`);
     await run("K.click(); K.burst()");
     const after = await run("K.snapshot()");
-    assert.equal(after.state.money,before.state.money-JSON.parse(data).grades[grade].price);
+    // 古い箱（景品の控えを持たない12枚の箱）は、中身も1回の値段も当時のまま（値下げ前の1,000円・KJ17）
+    assert.equal(after.state.money,before.state.money-JSON.parse(data).grades[grade].priceWas);
+    assert.equal(after.state.kuji[grade].price,1000);
     assert.equal(after.state.kuji[grade].drawn,1);
     assert.deepEqual(after.state.kuji[grade].order,before.state.kuji[grade].order);
     assert.equal(after.saves,1);
@@ -231,6 +237,29 @@ try {
     assert.deepEqual((await run("K.load()")).state,after.state,'legacy box survives real load');
   }
   console.log("PASS legacy 12-ticket order and save-load");
+  // KJ17: 値下げ前に作った柚ヶ谷店の箱（20枚・1回3,000円）。まだ引いていなければ、今の箱（60枚・1回1,000円）に入れ替える。
+  {
+    await run("K.prepare({grade:'g3000'})");
+    const fresh = await run("K.oldBox('g3000', 0)");
+    assert.equal(fresh.box.order.length, 60, "未開封の旧箱は今の箱に入れ替わる");
+    assert.equal(fresh.box.price, 1000); assert.equal(fresh.box.drawn, 0);
+    assert.match(fresh.text, /機材くじ（1回1,000円）[\s\S]*のこり 60 \/ 60 枚/);
+    assert.doesNotMatch(fresh.text, /旧箱/);
+    // 引き途中の旧箱は、当時の景品と当時の値段（1回3,000円）のまま引き切る。安くなった値段で前の中身は引けない。
+    const before = await run("K.prepare({grade:'g3000',money:10000})");
+    const kept = await run("K.oldBox('g3000', 3)");
+    assert.equal(kept.box.order.length, 20, "引き途中の旧箱はそのまま");
+    assert.equal(kept.box.price, 3000, "1回の値段は値下げ前のもの");
+    assert.match(kept.text, /機材くじ（1回3,000円）[\s\S]*のこり 17 \/ 20 枚[\s\S]*（旧箱・次回は60枚で1回1,000円）/);
+    assert.equal(kept.button, "×1 ¥3,000");
+    await run("K.click()");
+    const drawn = await run("K.snapshot()");
+    assert.equal(drawn.state.money, before.state.money - 3000, "旧箱は1回3,000円を払う");
+    assert.equal(drawn.state.kuji.g3000.drawn, 4);
+    await run("K.finish()");
+    assert.deepEqual((await run("K.load()")).state.kuji.g3000, drawn.state.kuji.g3000, "旧箱の値段は保存される");
+    console.log("PASS pre-price-cut box: untouched → new box, in progress → old contents at the old price");
+  }
   for (const count of [5, 10]) {
     const before = await run("K.prepare({grade:'g1000'})");
     await run(`K.batch('g1000', ${count}); K.batch('g1000', ${count});`);

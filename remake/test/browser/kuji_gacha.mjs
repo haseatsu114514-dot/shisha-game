@@ -49,7 +49,7 @@ await suite("kuji-gacha", async check => {
     assert.equal(await page.locator(".kuji-card.reveal").count(), 0, "札はガラガラのあとに開く");
     assert((await page.locator('[data-test="kuji-skip"]').boundingBox()).height >= 40);
     await page.locator(".kuji-card.reveal.rank-C").waitFor({ timeout: 9000 });
-    assert.match(await page.locator(".kuji-card.reveal").innerText(), /C賞[\s\S]*AF ライム（50g）/);
+    assert.match(await page.locator(".kuji-card.reveal").innerText(), /C賞[\s\S]*AF ライム（お試し10g）/);
     assert.equal(await page.locator(".kuji-card.reveal .kj-banner").count(), 0, "大当たりの帯はS賞だけ");
     assert((await page.locator(".kuji-card.reveal .kj-art").locator("img, .kj-gift").count()) >= 1, "景品の絵（無ければ包み）が載る");
     await page.locator(".mo-garagara").waitFor({ state: "detached" });
@@ -80,7 +80,7 @@ await suite("kuji-gacha", async check => {
   });
   await check("last-one-follows", async page => {
     await setup(page);
-    // 上級機材くじ（40枚）の最後の1枚: 札を閉じると、もう一度回ってラストワン賞
+    // 上級機材くじ（55枚）の最後の1枚: 札を閉じると、もう一度回ってラストワン賞
     await page.evaluate(() => { const box = G.core.state.kuji.g5000; box.drawn = box.order.length - 1; });
     await page.locator('[data-tab="sell"]').click(); await page.locator('[data-tab="kuji"]').click();
     await tap(page, "kuji-g5000");
@@ -99,7 +99,7 @@ await suite("kuji-gacha", async check => {
   });
   await check("ten-pull-showcase-and-grid", async page => {
     await setup(page, { owned: ["lotos_plus"] });
-    await stack(page, "g5000", [B, S, A, C, C, B, 6, 6, 7, 8]); // A＝ロートスプラスHMD（持っているのでお金に替わる。中古買い取りは7,000円だが、くじ1回分の3,000円まで・KJ16）
+    await stack(page, "g5000", [B, S, A, C, C, B, 6, 6, 7, 8]); // A＝ロートスプラスHMD（持っているので中古買い取り）
     await tap(page, "kuji-g5000-10");
     await page.locator('.mo-garagara[data-mode="multi"]').waitFor();
     assert.equal(await page.locator(".kuji-multi-panel.kj-wait").count(), 1, "結果はガラガラのあと");
@@ -118,7 +118,7 @@ await suite("kuji-gacha", async check => {
     assert.equal(await page.locator(".kuji-short.kuji-facedown").count(), 0);
     assert.equal(await page.locator('[data-test="kuji-flip-all"]').count(), 0);
     assert.deepEqual(await page.locator(".kuji-short .kuji-rank").allTextContents(), ["B賞", "S賞", "A賞", "C賞", "C賞", "B賞", "C賞", "C賞", "C賞", "C賞"]);
-    assert.match(await page.locator(".kuji-short.rank-A .kuji-dupe").innerText(), /同\s*3,000円/);
+    assert.match(await page.locator(".kuji-short.rank-A .kuji-dupe").innerText(), /同\s*7,000円/);
     assert.equal(await page.locator(".kuji-short .kj-art").locator("img, .kj-gift").count() >= 10, true);
     // 10枚がスクロールなしで一度に見える
     const fits = await page.locator(".kuji-multi-panel").evaluate(panel => panel.scrollHeight <= panel.clientHeight + 1 && panel.scrollWidth <= panel.clientWidth + 1);
@@ -126,7 +126,7 @@ await suite("kuji-gacha", async check => {
     await page.locator(".kuji-multi-panel .kj-done").click();
     await gone(page, "kuji-multi-reveal");
     const save = await saved(page);
-    assert.equal(save.kuji.g5000.drawn, 10); assert.equal(save.money, 500000 - 30000 + 3000);
+    assert.equal(save.kuji.g5000.drawn, 10); assert.equal(save.money, 500000 - 30000 + 7000);
   });
   await check("ten-pull-flip-all", async page => {
     await setup(page);

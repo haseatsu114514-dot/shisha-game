@@ -119,7 +119,8 @@ try {
       const order = old.prizes.flatMap((p, i) => Array(p.count).fill(i));
       const hose = old.prizes.findIndex(p => p.name.includes("ホース"));
       const index = order.indexOf(hose); [order[0], order[index]] = [order[index], order[0]];
-      Q.core.state.kuji.g1000 = { version: 2, order, drawn: 0, emptyDay: null, prizes: structuredClone(old.prizes), lastOne: structuredClone(old.lastOne) };
+      // price: the box keeps the price it was created with (KJ17). A box without it that was never drawn is swapped for the current box.
+      Q.core.state.kuji.g1000 = { version: 2, price: 1000, order, drawn: 0, emptyDay: null, prizes: structuredClone(old.prizes), lastOne: structuredClone(old.lastOne) };
       Q.core.state.money = 30000; Q.core.state.goods = [{ name: "既所持ホース", sell: 800 }];
       const ui = await import("./js/core/ui.js"), util = await import("./js/core/util.js");
       Q.kujiRender = () => ui.showScreen("coal-kuji-test", util.el("div.shop", Q.kuji.kujiRows(Q.kujiRender)));
@@ -138,7 +139,7 @@ try {
     await page.evaluate(() => {
       Q.core.state.day++; Q.kujiRender();
       const b = Q.core.state.kuji.g1000;
-      const mint = b.prizes.findIndex(p => p.flavorId === "mint" && p.grams === 50);
+      const mint = b.prizes.findIndex(p => p.flavorId === "mint" && p.grams === 25);
       const index = b.order.indexOf(mint); [b.order[0], b.order[index]] = [b.order[index], b.order[0]];
       Q.stockBefore = Q.core.state.flavorStock.mint || 0;
     });
@@ -147,11 +148,11 @@ try {
     await page.locator('[data-test="kuji-g1000"]').click();
     await page.locator(".kuji-card.reveal").waitFor();
     await page.locator('[data-test="kuji-reveal"]').click();
-    assert.equal(await page.evaluate(() => Q.core.state.flavorStock.mint - Q.stockBefore), 50);
+    assert.equal(await page.evaluate(() => Q.core.state.flavorStock.mint - Q.stockBefore), 25);
     assert.equal(await page.evaluate(() => Q.core.state.goods.length), 2);
     await page.evaluate(() => Q.core.load());
-    assert.equal(await page.evaluate(() => Q.core.state.flavorStock.mint - Q.stockBefore), 50);
-    console.log(`[coal browser] ${label}: old snapshot/hose, refill and actual 50g saved`);
+    assert.equal(await page.evaluate(() => Q.core.state.flavorStock.mint - Q.stockBefore), 25);
+    console.log(`[coal browser] ${label}: old snapshot/hose, refill and actual 25g saved`);
 
     // The lesson unlocks cube, while four/mixed still require their independent flags.
     await page.evaluate(async () => {

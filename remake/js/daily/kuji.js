@@ -12,7 +12,6 @@ import { addFlavorStock, FLAVOR_BOX_GRAMS } from "./shop.js";
 import { RIO_AWAY_DAY, KUJI_TICKET_MAX } from "../core/rules.js";
 import { kujiTickets, grantKujiTickets, spendKujiTicket } from "./kuji-tickets.js";
 import { reveal, revealMany } from "./kuji-reveal.js";
-import { noteKujiGear } from "./kuji-resale.js";
 import { prizeArt } from "./kuji-prize-art.js";
 
 // 全等級で購入を共有ロック。表示・セーブには保存しない。
@@ -30,7 +29,8 @@ export const hasKuji = (shop = "home") => grades(shop).length > 0;
 function newBox(g) {
   const order = [];
   g.prizes.forEach((p, i) => { for (let k = 0; k < p.count; k++) order.push(i); });
-  return { order: shuffle(order), drawn: 0, emptyDay: null,
+  // 箱は、作った時の景品と1回の値段を持つ（price）。あとで値段や中身を変えても、引き途中の箱はそのまま引き切れる
+  return { order: shuffle(order), drawn: 0, emptyDay: null, price: g.price,
     version: DB.kuji.meta.version, prizes: structuredClone(g.prizes), lastOne: structuredClone(g.lastOne) };
 }
 
@@ -40,13 +40,12 @@ function boxOf(g) {
   const refill = DB.kuji.meta?.refillDays || 3;
   // 既存セーブの20/12枚箱は順番も景品もそのまま。引き切った次の補充から50枚へ。
   if (b && b.drawn >= b.order.length && b.emptyDay != null && state.day - b.emptyDay >= refill) b = null;
-  if (!b) {
-    // このくじで手に入れて今も持っている台・機材の記録（買い取りの上限・KJ16）は、箱が入れ替わっても引き継ぐ
-    const won = state.kuji[g.id]?.won;
-    b = state.kuji[g.id] = newBox(g);
-    if (Array.isArray(won) && won.length) b.won = won;
-    save();
-  }
+  // 値段と中身を変える前（KJ17・2026-11-11 より前）に作った箱は price を持たない。まだ1枚も引いていなければ今の箱に入れ替え、
+  // 引き途中なら、その箱の景品と当時の値段（priceWas）のまま引き切る（安くなった値段で前の中身を引いて、お金が増えないように）。
+  // もっと古い箱（景品の控えを持たない12枚・20枚の箱）は今までどおりそのまま残し、値段だけ当時のものにする
+  if (b && b.price == null && b.prizes && g.priceWas && g.priceWas !== g.price && b.drawn === 0) b = null;
+  if (!b) { b = state.kuji[g.id] = newBox(g); save(); }
+  if (b.price == null) { b.price = g.priceWas || g.price; save(); }
   if (!b.prizes) {
     const original = DB.kuji.legacyGrades?.[g.id] || g;
     b.prizes = structuredClone(original.prizes);
@@ -59,21 +58,16 @@ function boxOf(g) {
 
 /** 景品を実体化。goods は売れる小物、flavor は手持ちに加わる、台・機材（equipId）は持ち物に入る、consumable（旧箱）は演出のみ。
  * 機材は同じ物を二つ持てないので、持っている物が当たったら中古買い取りの額をお金で渡す（非売品で買い取りの無い台は景品評価の半額）。
- * ただし、くじの台・機材は重複しても売っても「そのくじ1回の値段」まで（KJ16。値段を下げた箱を買い切って売ると、お金が増えるのを防ぐ）。
- * 初めて手に入れた台・機材は、そのくじで手に入れた物として覚える（売るときの上限・daily/kuji-resale.js）。
  * くじ限定の台（kuji_only・KJ05）は売れないので、持っていたらお金ではなくくじ券1枚に替える（上限なら0枚）。
- * g は引いたくじ（id・price）。戻り値はその時に渡した額か { dupCash: 額, dupCapped: true }（1回の値段で頭打ち）か
- * { dupTicket: 枚数 }（持っていなかった・機材でない景品は null） */
-function grant(prize, g) {
+ * 戻り値はその時に渡した額か { dupTicket: 枚数 }（持っていなかった・機材でない景品は null） */
+function grant(prize) {
   if (prize.equipId) {
-    if (!state.owned.includes(prize.equipId)) { state.owned.push(prize.equipId); noteKujiGear(g?.id, prize.equipId); return null; }
+    if (!state.owned.includes(prize.equipId)) { state.owned.push(prize.equipId); return null; }
     const gear = DB.equipById?.[prize.equipId];
     if (gear?.kuji_only) return { dupTicket: grantKujiTickets(1, "kuji_dupe") };
-    const worth = gear && !gear.unsellable && gear.sell_price > 0 ? gear.sell_price : Math.round((prize.sell || 0) * 0.5);
-    const capped = g?.price > 0 && worth > g.price;
-    const cash = capped ? g.price : worth;
+    const cash = gear && !gear.unsellable && gear.sell_price > 0 ? gear.sell_price : Math.round((prize.sell || 0) * 0.5);
     if (cash) addMoney(cash);
-    return capped ? { dupCash: cash, dupCapped: true } : cash;
+    return cash;
   }
   if (prize.type === "flavor" && prize.flavorId) {
     addFlavorStock(prize.flavorId, prize.grams ?? FLAVOR_BOX_GRAMS);
@@ -91,7 +85,7 @@ const yen2 = (n) => `¥${Math.round(n).toLocaleString("ja-JP")}`;
 const withDupe = (prize, cash) => cash == null ? prize : typeof cash === "object" ? { ...prize, ...cash } : { ...prize, dupCash: cash };
 /** 結果の札に出す重複の文を賞に添える（dupText＝1回引きの札の文、dupShort＝連続の小さい札の短い表記。見せ方は kuji-reveal.js） */
 const noted = (prize) => prize.dupCash == null && prize.dupTicket == null ? prize : { ...prize,
-  dupText: prize.dupTicket == null ? `持っているので、${prize.dupCapped ? "くじ1回分" : "中古買い取り"}の${yen(prize.dupCash)}を受け取った`
+  dupText: prize.dupTicket == null ? `持っているので、中古買い取りの${yen(prize.dupCash)}を受け取った`
     : prize.dupTicket > 0 ? "持っているので、くじ券を1枚受け取った" : `持っている（くじ券は${KUJI_TICKET_MAX}枚まで）`,
   dupShort: prize.dupTicket == null ? yen(prize.dupCash) : `券+${prize.dupTicket}` };
 
@@ -128,7 +122,7 @@ export function kujiRows(rerender, shop = "home") {
   const list = grades(shop);
   if (!list.length) return [el("p.shop-empty", { text: "くじはまだ入荷していない" })];
   const rows = [];
-  const guide = "棚の案内には、残り枚数と景品が書かれている。くじは1階で昼夜とも引ける。置いてあるくじは店ごとに1種類で、ほかの街の Dr.fookah には別のくじがある。くじで当たった台・機材の買い取りは、重複したときも売るときも、くじ1回分の値段まで。";
+  const guide = "棚の案内には、残り枚数と景品が書かれている。くじは1階で昼夜とも引ける。置いてあるくじは店ごとに1種類で、ほかの街の Dr.fookah には別のくじがある。";
   const staffed = state.slot === 1 && state.day % 7 !== RIO_AWAY_DAY && state.met.rio;
   const firstSeen = !state.flags._kuji_seen;
   state.flags._kuji_seen = true;
@@ -145,13 +139,17 @@ export function kujiRows(rerender, shop = "home") {
     const size = box.order.length;
     const left = size - box.drawn;
     const empty = left <= 0;
+    // 引き途中の旧箱は、枚数も1回の値段も作った時のまま。名前の「1回◯円」もその箱の値段で出す
+    const price = box.price ?? g.price;
+    const old = size !== g.boxSize || price !== g.price;
+    const label = price === g.price ? g.label : g.label.replace(/1回[\d,]+円/, `1回${yen(price)}`);
     const tops = box.prizes.filter((p) => p.rank === "S").map((p) => p.name);
     // 限定台くじ（KJ05）はS賞が3種あるので、行には種類の数だけ出し、名前は行を押した案内に載せる（行を横にはみ出させない）
     const top = g.limited ? `くじ限定の台${tops.length}種` : tops.join("・");
     const drawn = box.drawn, order = box.order;
     // pay: "money"＝1回の値段を払う、"ticket"＝くじ券1枚で1回（限定台くじだけ。お金は使わない）
     const affordable = (count, pay) => pay === "ticket" ? !!g.limited && count === 1 && kujiTickets() >= 1
-      : spendableMoney(state) >= g.price * count;
+      : spendableMoney(state) >= price * count;
     const buyButton = (count, label, test, pay = "money") => {
       const button = el("button.btn.small", {
         text: label,
@@ -179,11 +177,11 @@ export function kujiRows(rerender, shop = "home") {
       buttons.push(button);
       return button;
     };
-    const actions = [buyButton(1, empty ? "売り切れ" : `×1 ${yen2(g.price)}`, `kuji-${g.id}`)];
+    const actions = [buyButton(1, empty ? "売り切れ" : `×1 ${yen2(price)}`, `kuji-${g.id}`)];
     for (const target of [5, 10]) {
       const count = Math.min(target, left);
       if (count < 2 || (target === 10 && count <= 5)) continue;
-      actions.push(buyButton(count, `×${count} ${yen2(g.price * count)}`, `kuji-${g.id}-${target}`));
+      actions.push(buyButton(count, `×${count} ${yen2(price * count)}`, `kuji-${g.id}-${target}`));
     }
     const secret = el("small.kuji-secret", { hidden: true, text: left === 1 ? "次が最後の1枚！ ラストワン賞・シークレットつき" : "ラストワン賞・シークレット（中身は獲得してから）" });
     const detailBody = () => g.limited ? el("div.kuji-detail", [
@@ -191,14 +189,14 @@ export function kujiRows(rerender, shop = "home") {
       el("p", { text: "持っている限定の台が当たったら、お金ではなくくじ券1枚に替わる。くじ券1枚で、このくじを1回引ける。" }),
       el("p", { text: secret.textContent }),
     ]) : secret.textContent;
-    const openDetail = () => { SE.select(); modal({ title: g.label, className: "shop-dialog", body: detailBody(), options: [{ label: "閉じる", value: null, primary: true, test: "kuji-detail-close" }] }); };
+    const openDetail = () => { SE.select(); modal({ title: label, className: "shop-dialog", body: detailBody(), options: [{ label: "閉じる", value: null, primary: true, test: "kuji-detail-close" }] }); };
     rows.push(el("div.shop-row.kuji-row", { dataset: { test: `kuji-row-${g.id}` }, onclick: (e) => { if (!e.target.closest(".kuji-actions")) openDetail(); } }, [
       el("span.shop-cat.kuji-cat", { text: "🎫", "aria-label": "くじ" }),
       el("div.shop-main", [
-        help ? el("span.kuji-title", [el("b", { text: g.label }), help]) : el("b", { text: g.label }),
+        help ? el("span.kuji-title", [el("b", { text: label }), help]) : el("b", { text: label }),
         el("small", { text: empty
           ? `売り切れ（あと${Math.max(0, refill - (state.day - box.emptyDay))}日で新しい箱）`
-          : `のこり ${left} / ${size} 枚 ・ S賞: ${top}${size !== g.boxSize ? `（旧箱・次回は${g.boxSize}枚）` : ""}` }),
+          : `のこり ${left} / ${size} 枚 ・ S賞: ${top}${old ? `（旧箱・次回は${g.boxSize}枚${price !== g.price ? `で1回${yen(g.price)}` : ""}）` : ""}` }),
         secret,
       ]),
       el("div.kuji-actions", actions),
@@ -227,15 +225,17 @@ function takeTicket(g, box, pay = "money") {
     // くじ券は限定台くじだけに使える。1枚減らし、お金は動かさない（0枚なら引かない）
     if (!g.limited || !spendKujiTicket()) return;
   } else {
-    if (spendableMoney(state) < g.price) return;
-    addMoney(-g.price);
+    // 1回の値段はその箱のもの（引き途中の旧箱は当時の値段）
+    const price = box.price ?? g.price;
+    if (spendableMoney(state) < price) return;
+    addMoney(-price);
   }
   const prize = box.prizes[box.order[box.drawn]];
   box.drawn += 1;
   const last = box.drawn >= box.order.length;
   if (last) box.emptyDay = state.day;
-  const shown = withDupe(prize, grant(prize, g));
-  const extras = (last && box.lastOne ? [box.lastOne] : []).map((ex) => withDupe(ex, grant(ex, g)));
+  const shown = withDupe(prize, grant(prize));
+  const extras = (last && box.lastOne ? [box.lastOne] : []).map((ex) => withDupe(ex, grant(ex)));
   save(); // 引いた直後に保存（結果を見てからのロードでは変わらない）
   return { prize: shown, extras };
 }

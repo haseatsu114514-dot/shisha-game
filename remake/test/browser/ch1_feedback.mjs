@@ -86,7 +86,7 @@ await suite('ch1-feedback', async check => {
         const after = await page.evaluate(id => ({ b: F.core.state.kuji[id], owned: F.core.state.owned, money: F.core.state.money }), id);
         assert.equal(after.b.drawn, before.size);
         assert(after.owned.includes('nightside_premier_hagal'));
-        assert.equal(after.money, 10000 - 500);
+        assert.equal(after.money, 10000 - 1000); // 古い箱は、中身も1回の値段も当時のまま（値下げ前の1,000円・KJ17）
         await page.evaluate(id => { F.core.save(); F.core.load(); F.core.state.day += 3; F.showKuji(); }, id);
         assert.equal(await page.evaluate(id => F.core.state.kuji[id].order.length, id), 50);
       }
