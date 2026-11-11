@@ -10,9 +10,11 @@ import { imgFileUrl } from "../core/img-file.js";
 export const ART_READY = Object.freeze({
   // 裏口の背景（#2689・PR #2695 の案02 を 2026-11-11 に採用。1672×941 のまま・オーナー承認）。舞台と一緒に寄せる（.tt-backdrop）
   background: true,           // bg_mukai_backdoor_day / _night
-  // しぐさ: #2690 の A 段8枚（PR #2715 の候補から 2026-11-11 採用）と、#3214（TKT26）の "leap","flop","mew","poke"。
-  // #2690 の B 段 "walk_a","walk_b","lookback","stretch" は未着（#3214 で依頼中）。
-  poses: Object.freeze(["loaf", "crouch", "reach", "hug", "groom", "yawn", "belly", "rub", "leap", "flop", "mew", "poke"]),
+  // しぐさ: #2690 の A 段8枚（PR #2715 の候補から 2026-11-11 採用）と、#3214（TKT26）の "leap","flop","mew","poke"、
+  // #2690 の B 段 "walk_a","walk_b","lookback","stretch"（#3214 の残り・オーナー経由の zip・2026-11-11 採用）。
+  // 絵はどれも右向き（画面が data-flip で左右を返す。歩く間は歩く向きで返す）。
+  poses: Object.freeze(["loaf", "crouch", "reach", "hug", "groom", "yawn", "belly", "rub", "leap", "flop", "mew", "poke",
+    "walk_a", "walk_b", "lookback", "stretch"]),
   // 小物: #2697（#2691）の原画を採用（2026-11-07・TKT13）。lap（はじめの膝）と tunnel_tail（トンネルから出るしっぽ）は #3214（2026-11-11）。
   props: Object.freeze(["box", "ball", "cushion", "scratcher", "tunnel", "bed", "plate", "teaser", "brush", "lap", "tunnel_tail"]),
   // UI: 紙×ラベンダーの "icons","notebook","photo_frame","tape","memo","paw_stamp","caption","toolbox","button"（#2691・専用テーマ後は使わない）。

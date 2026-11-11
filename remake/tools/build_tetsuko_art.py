@@ -219,15 +219,34 @@ CATS = {  # 名前 → (原画, 原画の中の顔の幅 px, 足元を上げる 
     "flop": ("cat_flop.png", 420, 0),
     "mew": ("cat_mew.png", 500, 0),
     "poke": ("cat_poke.png", 525, 0),
+    # #3214 の残り（#2690 の B 段・オーナー経由の zip・2026-11-11 採用。Codex の推奨どおり。理由は README の採用の記録）
+    # この3しぐさは頭に比べて体が大きく描かれていて、顔の幅でそろえると体が立ち絵より大きくなる（振り返るは座った高さが
+    # 立ち絵の約1.4倍）。体の大きさがしぐさで変わって見えないよう、顔の幅ではなく体で合わせた値にしてある:
+    # 振り返る＝座った高さを立ち絵（約350px）に近く、歩く＝頭の上が座った時の8割ほど、伸び＝腰の高さが座った時の8割ほど。
+    "walk_a": ("cat_walk_a.png", 375, 0),
+    "walk_b": ("cat_walk_b_candidate3.png", 375, 0),
+    "lookback": ("cat_lookback_candidate2.png", 540, 0),
+    "stretch": ("cat_stretch.png", 430, 0),
 }
+# しぐさの絵は右向きにそろえる（画面は data-flip の時に左右を返して左向きにする）。左向きに描かれた原画は書き出しで返す。
+MIRROR = {"walk_a", "walk_b", "lookback"}
+# 交互に出す歩きの2枚は、同じ枠で切り出す（1枚ずつの枠だと、足の位置の違いで体が左右にぶれる）。
+SAME_BOX = [("walk_a", "walk_b")]
 
 
 def build_cats():
     W, H, AX, AY = POSE_CANVAS
+    keyed = {name: key_tolerant(SRC / src) for name, (src, _, _) in CATS.items()}
+    boxes = {name: crop_box(rgba) for name, rgba in keyed.items()}
+    for group in SAME_BOX:
+        x0, y0, x1, y1 = zip(*(boxes[name] for name in group))
+        for name in group:
+            boxes[name] = (min(x0), min(y0), max(x1), max(y1))
     for name, (src, head, lift) in CATS.items():
-        rgba = key_tolerant(SRC / src)
-        x0, y0, x1, y1 = crop_box(rgba)
-        part = Image.fromarray(rgba[y0:y1, x0:x1], "RGBA")
+        x0, y0, x1, y1 = boxes[name]
+        part = Image.fromarray(keyed[name][y0:y1, x0:x1], "RGBA")
+        if name in MIRROR:
+            part = part.transpose(Image.FLIP_LEFT_RIGHT)
         k = HEAD_PX / head
         part = part.resize((round(part.width * k), round(part.height * k)), Image.LANCZOS)
         canvas = Image.new("RGBA", (W, H), (0, 0, 0, 0))

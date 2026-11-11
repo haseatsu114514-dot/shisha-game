@@ -124,6 +124,21 @@ await suite("tetsuko-feel", async check => {
       return [host.scrollLeft, host.scrollTop];
     });
     assert.deepEqual(shifted, [0, 0], "The screen never scrolls sideways");
+    // しぐさの絵はどれも右向きで、向き（data-flip）の時に左右を返す。歩く間は歩く向きが勝つ（歩きの絵が後ろ向きに進まない）。
+    const facing = await page.evaluate(() => {
+      const cat = document.querySelector('[data-test="tetsuko-cat"]'), pose = cat.querySelector(".tt-cat-pose");
+      const keep = { walk: cat.dataset.walk, flip: cat.dataset.flip };
+      const read = (walk, flip) => {
+        if (walk) cat.dataset.walk = walk; else delete cat.dataset.walk;
+        cat.dataset.flip = flip;
+        return getComputedStyle(pose).scale;
+      };
+      const seen = [read("left", "false"), read("left", "true"), read("right", "true"), read("", "true"), read("", "false")];
+      if (keep.walk) cat.dataset.walk = keep.walk; else delete cat.dataset.walk;
+      cat.dataset.flip = keep.flip;
+      return seen;
+    });
+    assert.deepEqual(facing, ["-1 1", "-1 1", "none", "-1 1", "none"], "Walking faces the way she walks; otherwise the art turns with her");
     assert(Number(await page.locator(dt("tetsuko-joy")).getAttribute("data-value")) > 0, "Being together fills her hearts a little");
     const { result, settled, flags } = await leaveAndSettle(page);
     assert.equal(result.meaningful, true, "Just watching her counts");

@@ -184,7 +184,6 @@
 /* 歩く（居場所を移る間だけ、小さく弾む） */
 .tt-cat[data-walk] .tt-cat-frame, .tt-cat[data-walk] .tt-cat-pose { animation: tt-trot .3s ease-in-out 3; }
 @keyframes tt-trot { 50% { translate: 0 -10px; } }
-.tt-cat[data-walk="right"] .tt-cat-pose { scale: -1 1; }
 /* 喉の音（なでて気を許している時・膝の上）: 胸元から広がる細い波 */
 .tt-purr { position: absolute; left: 50%; top: 58%; width: 0; height: 0; z-index: 8; pointer-events: none; }
 .tt-purr i { position: absolute; left: -46px; top: -30px; width: 92px; height: 60px; border-radius: 50%; border: 2px solid rgba(255, 236, 205, .85); border-left-color: transparent; border-bottom-color: transparent; opacity: 0; }
@@ -554,8 +553,11 @@
 .tt-book-heart svg { display: block; width: 100%; height: 100%; fill: #f2607c; stroke: var(--tk-ink, #3b2416); stroke-width: 2; stroke-linejoin: round; }
 
 /* ==== 猫のしぐさ・膝・しっぽの絵（#3214・TKT26・2026-11-11）==== */
-/* しぐさの絵も、向きを変える時（data-flip）は左右に返す（跳ぶ・空振りは右向きの絵） */
+/* しぐさの絵（どれも右向き）も、向きを変える時（data-flip）は左右に返す */
 .tt-cat[data-flip="true"] .tt-cat-pose { scale: -1 1; }
+/* 歩く間は、向き（data-flip）ではなく歩く向きで返す（歩きの絵も右向き） */
+.tt-cat[data-walk="right"] .tt-cat-pose { scale: none; }
+.tt-cat[data-walk="left"] .tt-cat-pose { scale: -1 1; }
 /* トンネルから出るしっぽ（奥の口＝右から、上へ巻く）。CSS のしまの四角の代わり */
 .tetsuko-time[data-art-props~="tunnel_tail"] .tt-prop[data-prop="tunnel"] > .tt-prop-tail { left: 112px; right: auto; bottom: 78px; width: 120px; height: 114px; border-radius: 0;
   background: url("../img/ui/tetsuko/prop_tunnel_tail.webp") left bottom / contain no-repeat; transform-origin: 6% 94%; }
