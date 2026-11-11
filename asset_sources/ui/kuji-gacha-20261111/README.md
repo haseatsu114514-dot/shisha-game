@@ -15,7 +15,7 @@
 |---|---|---:|---|
 | `garagara-drum.webp` | `garagara-drum.png` | 616×616 | 胴（`KUJI_ART.drum`。軸を中心に回す） |
 | `garagara-frame.webp` | `garagara-frame.png` | 660×675 | 脚（手前と奥。`box` で枠を上へ広げる） |
-| `garagara-base.webp` | `garagara-base.png` | 848×121 | 台（`box`） |
+| `garagara-base.webp` | `garagara-base.png` | 848×114 | 台（`box`）。下端の灰色の半透明の筋（影の名残）は切り落とす（GCH15） |
 | `garagara-handle.webp` | `garagara-handle.png` | 560×560 | ハンドル（軸を中心に回す） |
 | `garagara-tray.webp` | `garagara-tray.png` | 440×168 | 受け皿 |
 | `ball-s/a/b/c/last.webp` | `ball-*.png` | 256×256 | 抽選器から出る玉・黒板の玉・伏せた札の玉 |
