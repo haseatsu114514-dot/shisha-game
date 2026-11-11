@@ -99,6 +99,10 @@
 .loading-card::after { content: ""; position: absolute; inset: calc(7 * var(--loading-unit)); z-index: -1; border: 1px solid #3b1f3f2b; border-radius: calc(1.5 * var(--loading-unit)); pointer-events: none; }
 /* With no decoded comic, the intermission remains just the ink and its mark. */
 .loading-card:has(.loading-comic:empty) { visibility: hidden; }
+/* A chosen comic whose art is still decoding: the sheet already has its full size but stays hidden, so the
+   logo and gauge do not jump when the panels arrive. Removing .is-waiting starts the entrance animations. */
+.loading-card.is-waiting { visibility: hidden; animation: none; }
+.loading-card.is-waiting figure { animation: none; }
 /* Title row: a lavender ink tab, the episode title, and a double rule (ink + faint echo). One line in landscape. */
 .loading-comic-title { display: flex; align-items: center; gap: calc(10 * var(--loading-unit)); margin: 0 0 calc(12 * var(--loading-unit)); padding: 0 calc(2 * var(--loading-unit)) calc(7 * var(--loading-unit)); color: #2e1a33; font-size: calc(28 * var(--loading-unit)); font-weight: 900; line-height: 1.2; letter-spacing: .06em; text-align: left; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   background: linear-gradient(var(--loading-ink-soft), var(--loading-ink-soft)) left bottom / 100% 2px no-repeat, linear-gradient(#4a2c4455, #4a2c4455) left calc(100% - 4px) / 100% 1px no-repeat; }

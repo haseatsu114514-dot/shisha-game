@@ -5,7 +5,7 @@
       "dialogue_id": "ch5_party_open",
       "lines": [
         { "speaker": "", "face": "", "text": "週末、tonariは早めに看板を下ろした。店の中に、知った顔が集まっていた。" },
-        { "speaker": "sumi", "face": "normal", "text": "主役が来たぞ。……世界一、おめでとう" },
+        { "speaker": "sumi", "face": "normal", "beat": 600, "text": "主役が来たぞ。……世界一、おめでとう" },
         { "speaker": "", "face": "", "text": "グラスが鳴って、拍手が起きた。誰かが、世界大会の動画をまた流そうとして止められた。" },
         { "speaker": "naru", "face": "smile", "text": "今日だけは、お前の一台の話を聞いてやる" },
         { "speaker": "hajime", "face": "smile", "text": "今日だけなんだ" },

@@ -23,11 +23,12 @@
       "reference": "配置した通常A",
       "scale": 0.67875,
       "offset": [
-        102,
+        101,
         193
       ],
       "runtime": "assets/sprites/character_variants/new/ageha/chr_ageha_smile.png",
-      "runtime_sha256": "7012509910ca0fea2fe9fddf579e126de7b25b3d238a6d539df6d79e3efc7e03"
+      "runtime_sha256": "602ca7128ce45ddd45ae3b5f0e4269d97b7433d6af8c71193c76d80ee4f15e7d",
+      "note": "2026-11-12 頭の横位置（上20%の重心）が会話の中央から1px強ずれ、立ち絵の位置の検査（portrait_framing）を外れたので、配置を左へ1px寄せた（offset 102→101）"
     },
     {
       "expression": "surprise",

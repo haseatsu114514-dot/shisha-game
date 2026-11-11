@@ -90,7 +90,8 @@ export async function shiftClose() {
   const short = shortenSeen("shift");
   const mod = await shift().catch((e) => { console.error(e); return null; });
   if (!mod || state !== owner) return;
-  const run = short ? mod.brief : (motionVariant("shift") === "b" ? mod.b : mod.a);
+  const v = motionVariant("shift");
+  const run = short ? (v === "c" ? () => mod.c({ brief: true }) : mod.brief) : (mod[v] || mod.a);
   if (run) await run();
   if (state === owner) markSeen("shift"); // 見せ終えてから記録
 }
@@ -103,16 +104,17 @@ export async function sharkSwim(mid) {
 }
 
 /** 乗り物の演出の共通の入口。テストの高速送り・動きを減らす設定では省いて mid() だけ（engine の vnTest は window.__remake 経由で見る。循環 import を避ける） */
-async function ride(load, mid, opts) {
+async function ride(load, mid, opts, scene = null) {
   if (omitMotion() || window.__remake?.vnTest?.turbo) { await mid?.(); return; }
   const mod = await load().catch((e) => { console.error(e); return null; });
-  if (mod) await mod.a(mid, opts);
+  const run = mod && ((scene && mod[motionVariant(scene)]) || mod.a);
+  if (run) await run(mid, opts);
   else await mid?.();
 }
 
-/** 電車に乗る（Issue #891）。mid(): 車内の絵が覆っている間に次の背景へ替える。tone: "day"|"night"（省略で今の時間帯） */
+/** 電車に乗る（Issue #891・作り直し TMG54）。mid(): 車両が覆っている間に次の背景へ替える。tone: "day"|"night"（省略で今の時間帯） */
 export async function trainRide(mid, opts = {}) {
-  await ride(train, mid, opts);
+  await ride(train, mid, opts, "train");
 }
 
 /** 新幹線に乗る（Issue #1059）。mid(): 車窓が覆っている間に次の背景へ替える。
