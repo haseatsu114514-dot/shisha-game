@@ -2431,6 +2431,23 @@
       "chrome": "playwright"
     },
     {
+      "id": "visual-continuity-3203",
+      "title": "#3203 店の入口の写真を待ってから出す（遅い時は上限・下地）／背景の取得に失敗しても前の背景を残す",
+      "kind": "browser",
+      "weight": 0.4,
+      "timeout": 5,
+      "paths": [
+        "remake/js/core/ui.js",
+        "remake/js/core/scene-art.js",
+        "remake/js/daily/shop.js",
+        "remake/css/shop.css",
+        "remake/test/browser/visual_continuity_3203.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/visual_continuity_3203.mjs"
+      ]
+    },
+    {
       "id": "steam-forecast",
       "title": "Steam forecast",
       "kind": "browser",
