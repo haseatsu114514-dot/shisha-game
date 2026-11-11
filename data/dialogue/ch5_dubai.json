@@ -20,6 +20,8 @@
         { "speaker": "", "face": "", "text": "郵便受けに、また厚い封筒が届いていた。差出人は、シェイク・ナジュム・アル=ガリヤーン。" },
         { "speaker": "sheikh", "face": "normal", "text": "君が帰ってから、客間が空いたままだ" },
         { "speaker": "sheikh", "face": "smile", "text": "切符を入れておく。王族の招待だと思わなくていい。旅人の誘いだ" },
+        { "speaker": "sheikh", "face": "normal", "text": "寝台は毎朝整えさせている。使う者がいないままだが" },
+        { "speaker": "", "face": "", "text": "整えられた寝台の白さが、目に浮かぶようだった。" },
         { "speaker": "hajime", "face": "smile", "text": "（今度は、tonariの葉をもう一袋持っていこう）" },
         { "speaker": "", "face": "", "text": "封筒の底に、また往復の切符が入っていた。" }
       ]
@@ -29,7 +31,9 @@
       "lines": [
         { "speaker": "", "face": "", "text": "郵便受けに、見覚えのある厚い封筒が届いていた。" },
         { "speaker": "sheikh", "face": "normal", "text": "日本の袋が、だいぶ軽くなった" },
+        { "speaker": "sheikh", "face": "normal", "text": "減るのが惜しくて、このところは一日に一服と決めている。我ながら、けちくさいが" },
         { "speaker": "sheikh", "face": "smile", "text": "次の袋は、君が来た日に開けよう。切符は同封しておく" },
+        { "speaker": "", "face": "", "text": "袋の口を、惜しむように閉じる手つきが目に浮かんだ。" },
         { "speaker": "hajime", "face": "smile", "text": "（また、あの中庭で一緒に吸えるんだ）" },
         { "speaker": "", "face": "", "text": "封筒の底に、ドバイ行きの往復の切符が入っていた。" }
       ]
@@ -232,6 +236,8 @@
         { "speaker": "", "face": "", "text": "朝のレース場。ハリールの白い車の横で、見覚えのある顔が両手を大きく振った。" },
         { "speaker": "faris", "face": "excited", "text": "ハジメ！　日本に帰ったんじゃなかったの？" },
         { "speaker": "hajime", "face": "smile", "text": "また来ました。……ハビーバに、会いたくなって" },
+        { "speaker": "faris", "face": "smile", "text": "ハビーバ、きっと喜ぶよ。ハリールも、顔には出さないけど絶対嬉しいんだから" },
+        { "speaker": "", "face": "", "text": "柵の向こうで、ラクダの長い首が、こちらへゆっくり向いた。" },
         { "speaker": "khalil", "face": "normal", "text": "……戻ったか。乗りなさい。ハビーバが待っている" },
         { "speaker": "faris", "face": "smile", "text": "今日も連打しないでよ。リモコン、はい" }
       ]
