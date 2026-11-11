@@ -627,3 +627,92 @@ html:root .trpg-root.trpg-cinematic .trpg-builder :is(.trpg-builder-points, .trp
 html:root .trpg-root.trpg-cinematic .trpg-builder .trpg-builder-stat-rows i b { background: #d8cbad; }
 html:root .trpg-root.trpg-cinematic .trpg-builder .trpg-builder-stat-rows i b.lit { background: linear-gradient(180deg, #e7b955, #b8862c); }
 html:root .trpg-root.trpg-cinematic .trpg-builder .trpg-button:not(.trpg-builder-origin):not(.trpg-help-button) { border-color: #8a6524; background: #2f5a55; color: #fff6df; }
+
+/* 判定に賭けるもの（TRF02）: 成功のごほうびを、振る前に真鍮の札で見せる。宣言の画面と判定の卓で同じ見た目。 */
+html:root .trpg-root.trpg-cinematic .trpg-stake {
+  display: flex; align-items: center; justify-content: center; gap: 10px; width: fit-content; max-width: 100%; margin: 0 auto 12px;
+  padding: 4px 16px 4px 5px; border: 1px solid #d9b96a88; border-radius: 999px; background: #14211ddd; color: #f3e6c4;
+  font-size: max(15px, var(--tt-min)); line-height: 1.35; text-align: left;
+}
+html:root .trpg-root.trpg-cinematic .trpg-stake > b {
+  flex: none; padding: 2px 11px; border-radius: 999px; background: linear-gradient(135deg, #f7dc8c, #dcae4a); color: #2a1b0c;
+  font-size: max(13px, var(--tt-min)); font-weight: 700; letter-spacing: .04em;
+}
+html:root .trpg-root.trpg-cinematic .trpg-stake > span { font-size: inherit; color: inherit; }
+html:root .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-stake { margin-bottom: 8px; font-size: max(14px, calc(11 * var(--roll-unit))); }
+html:root .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-stake > b { font-size: max(12px, calc(10.5 * var(--roll-unit))); }
+/* 成功した時の「ごほうび」: 同じ札が光る。 */
+html:root .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-reward {
+  display: flex; align-items: center; justify-content: center; gap: 10px; width: fit-content; max-width: 100%; margin: 6px auto 8px; flex-shrink: 0;
+  padding: 4px 16px 4px 5px; border: 1px solid #ffd36e; border-radius: 999px; background: #3a2a0cc8; color: #fff1d0; box-shadow: 0 0 18px #ffcf6a44;
+  font-size: max(14px, calc(11 * var(--roll-unit))); line-height: 1.35;
+}
+html:root .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-reward > b {
+  flex: none; padding: 2px 11px; border-radius: 999px; background: linear-gradient(135deg, #fff0b8, #f0c35a); color: #2a1b0c;
+  font-size: max(12px, calc(10.5 * var(--roll-unit))); font-weight: 700;
+}
+/* GMのヒント（TRF02）: 合わない選択肢に付箋。絵は少し沈めるが、選ぶことはできる。 */
+html:root .trpg-root.trpg-cinematic .trpg-object-choice.trpg-hinted .trpg-object-art { opacity: .5; }
+html:root .trpg-root.trpg-cinematic .trpg-object-choice.trpg-hinted.trpg-text-choice { opacity: .78; }
+html:root .trpg-root.trpg-cinematic .trpg-object-choice .trpg-hint-mark {
+  position: absolute; top: 22px; left: 50%; z-index: 3; transform: translateX(-50%) rotate(-3deg); white-space: nowrap; pointer-events: none;
+  padding: 3px 12px; border-radius: 3px; background: #2c3a52; color: #e9f0ff; border-left: 4px solid #9db7e8; box-shadow: 0 3px 8px #0007;
+  font-style: normal; font-weight: 700; font-size: max(14px, var(--tt-min)); letter-spacing: .02em;
+}
+html:root .trpg-root.trpg-cinematic .trpg-interview[data-bonus="true"] .trpg-selection-title small { color: #ffe39a; }
+/* 最後の判定が成功した卓の印（TRF02）。結末の「夜の名前」の横に、真鍮の判子。 */
+html:root .trpg-root.trpg-cinematic .trpg-ending-heat .trpg-ending-finale {
+  display: inline-block; margin-left: 12px; padding: 1px 12px; border: 1px solid #ffd36e; border-radius: 4px; transform: rotate(-2deg);
+  color: #ffe39a; background: #3a2a0c99; font-size: max(14px, var(--tt-min)); font-weight: 700; letter-spacing: .06em;
+}
+
+/* 判定結果の卓を詰める（TRF03）: 補正の内訳は1行、クリティカル・ファンブル・ゾロ目の札も1行。
+   縦に積むと、PCでは振り直しの札が卓の外へ押し出されていた（勢い・助力があるとき）。 */
+html:root .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-receipts { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 2px 18px; margin: 4px 0; flex-shrink: 0; }
+html:root .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-receipts:empty { display: none; }
+html:root .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-receipts > .trpg-ability-receipt { margin: 0; font-size: max(13px, calc(11 * var(--roll-unit))); }
+html:root .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-special {
+  display: flex; flex-wrap: wrap; align-items: baseline; justify-content: center; gap: 0 14px; margin: 0 auto 6px; padding: 3px 18px;
+}
+html:root .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-special strong { font-size: max(20px, calc(14 * var(--roll-unit))); }
+html:root .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-special span { font-size: max(13px, calc(11 * var(--roll-unit))); }
+html:root .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-dice-total .trpg-dice-near {
+  display: inline-block; margin-left: 10px; padding: 0 10px; border-radius: 999px; background: #4a2a1acc; color: #ffcf9a; border: 1px solid #f0a35d99;
+  font-style: normal; font-weight: 700; font-size: max(15px, calc(12 * var(--roll-unit))); vertical-align: middle;
+}
+/* PC: 合計と評価を1行に並べて、振り直しの札までスクロールなしで見せる。スマホは左の列に余白があるので従来の2段のまま。 */
+html:root:not([data-density="phone"]) .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-dice-total > strong { display: inline-block; vertical-align: middle; }
+html:root:not([data-density="phone"]) .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-dice-total .trpg-dice-grade { display: inline-block; margin-left: 16px; vertical-align: middle; }
+html:root:not([data-density="phone"]) .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-dice-total .trpg-roll-equation { display: block; }
+
+/* 盛り上がりの知らせは右上へ（TRF03）: 上の中央に出すと、聞き込みの題・選ぶ画面の見出し・見立ての題に約2秒重なっていた。
+   クリティカルが起きるようになって出る回数が増えたので、道具のボタンの下へ寄せる。押す所は塞がない（pointer-events: none）。 */
+html:root .trpg-root.trpg-cinematic .trpg-heat-pop,
+html:root .trpg-root.trpg-cinematic .trpg-heat-pop:not([data-tier="0"]) { left: auto; right: 22px; top: 90px; transform: none; animation-name: trpg-heat-pop-side; }
+@keyframes trpg-heat-pop-side { 0% { opacity: 0; transform: translateY(10px) scale(.9); } 15% { opacity: 1; transform: translateY(0) scale(1.03); } 80% { opacity: 1; transform: translateY(-4px); } 100% { opacity: 0; transform: translateY(-14px); } }
+@media (prefers-reduced-motion: reduce) {
+  html:root .trpg-root.trpg-cinematic .trpg-heat-pop,
+  html:root .trpg-root.trpg-cinematic .trpg-heat-pop:not([data-tier="0"]) { animation-name: trpg-heat-fade; }
+}
+/* 判定の決まりの一文は、PCでは本文の先頭。スマホでは題の行の右（trpg-phone.css）。 */
+html:root .trpg-root.trpg-cinematic .trpg-roll-stage > h2 .trpg-roll-rule { display: none; }
+
+/* ---- 卓の上の文字を減らす（TRF07）: 説明の文は「？」とチュートリアルへ。普段の画面は、絵・短い札・数字だけ。 ---- */
+/* 宣言の画面: 場面の題の横に「成功で ○○」。カードは 誰が・何を・能力・見込みの帯。 */
+html:root .trpg-root.trpg-cinematic .trpg-declare-prompt .trpg-stake { margin: 0; }
+html:root .trpg-root.trpg-cinematic .trpg-approach .trpg-approach-meta .trpg-odds-bar {
+  flex: 1 1 96px; min-width: 84px; max-width: 170px; height: 12px; border-radius: 999px; border: 1px solid #8a652499;
+  background: linear-gradient(90deg, #e0b03e 0 var(--success), #6f9c7c var(--success) calc(var(--success) + var(--mixed)), #d9cfb8 calc(var(--success) + var(--mixed)));
+  box-shadow: inset 0 1px 2px #0003;
+}
+html:root .trpg-root.trpg-cinematic .trpg-approach .trpg-approach-meta > small { white-space: nowrap; }
+/* 聞き込み: 前置きの一文は出さない（題と「あと N つ」で足りる。スマホは以前から出していない）。増えた夜は数を金色に。 */
+html:root .trpg-root.trpg-cinematic .trpg-interview-prompt { display: none; }
+html:root .trpg-root.trpg-cinematic .trpg-interview .trpg-topic { justify-content: center; }
+/* 判定の卓: 使えない切り札の一言、補正の内訳に入れた 見立て・危機 の札。 */
+html:root .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-aid-spent { margin: 4px 0; text-align: center; color: #b9c4b6; font-size: max(13px, calc(11 * var(--roll-unit))); }
+html:root .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-receipts > :is(.trpg-roll-insight, .trpg-roll-consequence) { margin: 0 !important; text-align: left; }
+html:root .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-receipts > .trpg-roll-insight { color: #ffe39a; }
+/* 「？」の用語の列は、いちばん長い言葉の幅に合わせる（「クリティカル」「✕ 合わなそう」が1行に収まる）。 */
+html:root .trpg-root .trpg-help-glossary { grid-template-columns: max-content 1fr; }
+html:root .trpg-root .trpg-help-glossary dt { white-space: nowrap; }
