@@ -133,6 +133,8 @@ const { chainVisitDue, playChainStage, loadVisitChains } = playModule.ns;
     tokyoVanBlock: () => null, TOKYO_VAN_SLOTS: 2, TOKYO_VISIT_COST: 4000, MUKAI_SHIFT_STAMINA: -14, loadMukaiShift: async () => {},
     TOKYO_OUTINGS: [{ id: "tetsuko", stages: [], loop: [] }], OUTINGS_FLAG: "_ch3_outings", outingCounts: () => ({}),
     consultLessons: async () => {}, finaleAtVisit: () => false,
+    // ましろと過ごす時間（BLC03・mashiro-time.js）。台本の一覧は配列で読むので、空で差し込む
+    MASHIRO_TIME_SCENES: [], MASHIRO_TIME_FILE: "mashiro_time", mashiroTimeOpen: () => false, loverMilestonesDue: () => [],
     chainStageAt: chains.chainStageAt, chainVisitDue, playChainStage,
   });
   const { performTokyoSpot, tokyoSpotsNow, TOKYO_SPOTS } = tokyo.ns;
@@ -247,6 +249,7 @@ const { chainVisitDue, playChainStage, loadVisitChains } = playModule.ns;
     STALL_PLACE: "souq", dubaiSpotAt: entry => entry, nightVisit: () => null, stallChoices: () => [], priceText: n => `${n}`,
     INN_TRIAL_FLAG: "_ch4_inn_trial", INN_TRIAL_IDS: [], innTrialDue: () => false, REHEARSAL_FLAG: "_ch4_rehearsal", REHEARSAL_IDS: [],
     rehearsalDue: () => false, chapterFourStaffNightEvent: () => null,
+    companionTimeOpen: () => false, // 同行した恋人と過ごせる日（BLC08・companion-time.js）。この試験では開かない
     chainStageAt: chains.chainStageAt, chainVisitDue, playChainStage,
   });
   const { CH4_DUBAI_SPOTS, chapterFourDubaiDefinition } = ch4.ns;
