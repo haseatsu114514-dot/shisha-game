@@ -553,8 +553,9 @@ function next() {
       if (vnTest.turbo) continue;
       const run = { tarot: () => tarotFlip(), lime: () => limeExchange(line.char_id, line.context), purikura: () => purikuraShot(),
         dragon: () => sceneMoment("dragonSmoke"), // dragon: 第4章 前夜祭の龍の煙（#2688 A5）
-        // gaze: 修羅場で恋人たちの視線が刺さる。その場にいる恋人は呼び出し側が play の cast で渡す（無ければ会ったことのある恋人全員）
-        gaze: () => gazeCutin(r.cast || (state.lovers || []).filter((id) => state.met?.[id])) }[line.id];
+        // gaze: 修羅場で恋人たちの視線が刺さる。その場にいる恋人は呼び出し側が play の cast で渡す（無ければ会ったことのある恋人全員）。
+        // "brief": true はプチ修羅場の短い版
+        gaze: () => gazeCutin(r.cast || (state.lovers || []).filter((id) => state.met?.[id]), { brief: line.brief === true }) }[line.id];
       if (!run) continue;
       if (line.id === "lime") {
         const key = `_lime_exchange_shown_${line.char_id}_${line.context || "work"}`;

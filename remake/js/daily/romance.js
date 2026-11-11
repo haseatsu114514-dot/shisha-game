@@ -16,6 +16,7 @@ import { samechanMilestoneDue, playSamechanMilestone } from "./samechan-bonds.js
 import { dateScene, dateVenue, relationshipDayTotal } from "./date-scene.js";
 import { playSamechanDate, samechanDateGap, samechanDateReady } from "./samechan-date.js";
 import { questionDoneKey } from "../core/affinity-stages.js";
+import { petitAfterDate } from "./petit-shuraba.js";
 import { recordRouteLover, recordRouteEvent } from "../core/gallery-progress.js";
 
 // 告白は「帰り道」の場面。背景を持たない台本は通りの絵で（前の場面の背景を引き継がない）
@@ -281,6 +282,8 @@ export async function playDate(id) {
   await play(dateScene(id, venue), { growthScene: true });
   gainAffinity(id, 10);
   bond.private = false;
+  // プチ修羅場（恋人が2人以上・一度きり）: 着信・気づきかけ・帰り道の誤爆。デートの場所のまま読み、報酬は無い
+  await petitAfterDate(id);
   addStamina(-10);
   save();
   await playLoverMilestone(id);
@@ -442,7 +445,9 @@ export async function maybeShuraba() {
   state.flags._shuraba_ch1 = true;
   // 3人以上: 既存の all は3人固定の台本。ひよりを含む場合は、居合わせた恋人の行だけを出す all_hiyori
   const key = lv.length >= 3 ? (lv.includes("hiyori") ? "all_hiyori" : "all") : lv.join("_");
-  await play(`remake_shuraba_${key}`);
+  // 視線のカットイン（台本の motion "gaze" の短い版）に出すのは、ロビーで鉢合わせた恋人だけ
+  // （第1章のみんとは出場者として営業の姿で来ているので、営業の顔で出す）
+  await play(`remake_shuraba_${key}`, { cast: lv.map((id) => id === "minto" ? { id, face: "normal" } : id) });
   state.guilt = (state.guilt || 0) + 1;
   save();
   return true;

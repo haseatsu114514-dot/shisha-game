@@ -13,3 +13,5 @@
 /* テレビ電話で加わる人（ヌール）: 画面越しの走査線と冷たい色 */
 .mo-gaze-band.remote .mo-gaze-art { filter: saturate(.6) contrast(1.05) brightness(.95) hue-rotate(-8deg); }
 .mo-gaze-scan { position: absolute; inset: 0; pointer-events: none; background: repeating-linear-gradient(0deg, #0000 0 3px, #9fd8ff24 3px 4px); mix-blend-mode: screen; }
+/* 短い版（プチ修羅場）: 暗転を浅くして、会話の画面が透けて見える */
+.mo-gaze.brief .mo-gaze-dim { background: radial-gradient(ellipse at 50% 40%, #0b08148c 20%, #05030ab3 100%); }

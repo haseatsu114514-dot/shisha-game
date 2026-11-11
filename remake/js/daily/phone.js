@@ -892,7 +892,8 @@ async function runItem(item, ui, accepted, { forced = false } = {}) {
   const from = accountOf(item);
   if (!item.read) {
     for (const msg of m.messages || []) {
-      await drawMessage(ui, msg, false, from);
+      // { me: true, text } は、はじめが先に送っていた一通（LIMEの誤爆・daily/petit-shuraba.js）。自分の吹き出しで出す
+      await drawMessage(ui, msg, msg?.me === true, from);
       if (!alive()) break;
     }
     if (!alive()) return; // 読み終える前に戻ったら、既読・報酬を付けない
@@ -1038,7 +1039,7 @@ function drawHistory(items, ui) {
     for (const it of items) {
       if (!lastItem || it.day !== lastItem.day || it.chapter !== lastItem.chapter) { ui.note(dayLabel(it), ".day"); lastItem = it; }
       if (!it.read) continue;
-      for (const msg of it.msg.messages || []) drawMessage(ui, msg, false, accountOf(it), false);
+      for (const msg of it.msg.messages || []) drawMessage(ui, msg, msg?.me === true, accountOf(it), false);
       const missed = missedInvitationNote(it);
       if (missed) { ui.note(missed); continue; }
       for (const l of it.log || []) {

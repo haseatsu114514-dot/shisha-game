@@ -101,6 +101,25 @@ for (const id of routes.heroine_ids) {
   assert(lines.some(line => line.duck), `${id}: a line ducks the music`);
   if (id !== "noor") assert(lines.some(line => !/normal$/.test(line.face)), `${id}: not only the everyday face`); // ヌールは表情が3種だけ
 }
-assert.equal(dialogues.shuraba_ageha.lines[3].text, "今、いつもみたいに笑うのは、無理");
-assert.notEqual(dialogues.shuraba_ageha.lines[3].face, "normal", "Ageha does not smile while saying she cannot");
+const cannotSmile = dialogues.shuraba_ageha.lines.find(line => line.text === "今、いつもみたいに笑うのは、無理");
+assert(cannotSmile && cannotSmile.face !== "normal", "Ageha does not smile while saying she cannot");
+
+// プチ修羅場（SRB10〜）が最後の修羅場に返る。読んだ場面ごとに一行ずつ（打ち上げ版とスタッフロール後版は同じ並び・同じ文）。
+const recall = dialogue => ({
+  lines: dialogue.lines.filter(line => line.type === "condition" && String(line.next_true).startsWith("petit_recall_")),
+  branches: Object.fromEntries(Object.entries(dialogue.branches).filter(([id]) => id.startsWith("petit_recall_"))),
+});
+assert.deepEqual(recall(dialogues.ch5_party_shuraba_open), recall(dialogues.shuraba_open), "Both openings recall the same petit scenes");
+const recalled = recall(open);
+assert.equal(recalled.lines.length, 9);
+for (const line of recalled.lines) assert(recalled.branches[line.next_true]?.length, `${line.next_true}: recall branch exists`);
+for (const key of ["date_call", "lime_misfire", "notice", "cross", "sumi", "cinema", "naru"])
+  assert(recalled.lines.some(line => line.flag === `_petit_seen_${key}`), `${key}: recalled at the final shuraba`);
+// 「気づきかけ」を読んだ恋人は、反応の中で一行返す（8人ぶん。読んでいない保存には出ない）。
+for (const id of routes.heroine_ids) {
+  const reaction = dialogues[routes.romance[id].conflict];
+  const gate = reaction.lines.find(line => line.type === "condition" && line.flag === `_petit_seen_notice_${id}`);
+  assert(gate && gate.next_true === "petit_noticed" && !gate.next_false, `${id}: notice callback is conditional`);
+  assert.deepEqual(reaction.branches.petit_noticed.map(line => line.speaker), [id], `${id}: she says the callback herself`);
+}
 console.log("ch5 party: ok");

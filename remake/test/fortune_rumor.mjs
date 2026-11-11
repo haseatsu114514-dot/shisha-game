@@ -35,7 +35,7 @@ const mocks = {
   paidAction:async run=>({value:await run(),spent:10}), coldRisk:()=>false,catchesCold:()=>false,fitActive:()=>false,staminaAfter:n=>core.state.stamina+n,maxStamina:()=>100,staminaRatio:()=>core.state.stamina/100,
   readyLessons: () => [], consultLessons: async () => [], // 心得の盤の授業（相談）。この検査では無効
   takeChapterBoardNotice: () => null, chapterBoardCards: () => [], respecMapNotice: () => "", // 章はじめの盤の知らせ（#1801 C10）。この検査では無効
-  onAction:noop,hiyoriShopLocation:()=>null,visitHiyoriAtShop:async()=>false,visitCityGuestAtShop:async()=>false,roamerAt:()=>null,roamerPlan:()=>null,meetRoamer:async()=>false,
+  onAction:noop,hiyoriShopLocation:()=>null,visitHiyoriAtShop:async()=>false,visitCityGuestAtShop:async()=>false,roamerAt:()=>null,roamerPlan:()=>null,meetRoamer:async()=>false,petitAfterVisit:async()=>false,petitAfterDate:async()=>false,
 
   dialogueSequence: fn => fn(),
   play: async id => {

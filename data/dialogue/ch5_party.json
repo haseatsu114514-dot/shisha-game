@@ -341,13 +341,22 @@
     },
     {
       "dialogue_id": "ch5_party_shuraba_open",
-      "comment": "修羅場の開始（2026-11-11 演出の作り直し）。直前に ch5-party.js が店の曲を止め、背景の色を落とす。motion gaze は、その場にいる恋人たちの目元の帯が差し込まれるカットイン（motions/gaze.js）。選択肢はどれを選んでも同じ打ち明けに着く（ごまかす・黙るは通じない。今度は誰も話を流してくれない）。先頭の選択肢が、そのまま打ち明ける道。第1章の大会当日か第3章の前夜に一度流してもらった保存だけ、その一行を足す。",
+      "comment": "修羅場の開始（2026-11-11 演出の作り直し）。直前に ch5-party.js が店の曲を止め、背景の色を落とす。motion gaze は、その場にいる恋人たちの目元の帯が差し込まれるカットイン（motions/gaze.js）。選択肢はどれを選んでも同じ打ち明けに着く（ごまかす・黙るは通じない。今度は誰も話を流してくれない）。先頭の選択肢が、そのまま打ち明ける道。第1章の大会当日か第3章の前夜に一度流してもらった保存だけ、その一行を足す。petit_recall_* は、読んだプチ修羅場（core/petit-shuraba.js の _petit_seen_*）が一行ずつ返る枝で、スタッフロール後の shuraba_open と同じ並び（ch5_party.mjs が一致を確かめる）。",
       "lines": [
         { "speaker": "", "face": "", "text": "その時だった。俺の名前を呼ぶ声がした。隣からじゃ、なかった。", "fx": "shake" },
         { "speaker": "", "face": "", "text": "グラスを置く音が、いくつも重なった。笑い声が、引いていった。", "beat": 400 },
         { "type": "motion", "id": "gaze" },
         { "speaker": "hajime", "face": "surprise", "text": "（……あ）", "beat": 500 },
         { "type": "condition", "condition_type": "flag", "flag": "_ch3_shuraba_deferred", "next_true": "saved_before", "next_false": "check_ch1" },
+        { "type": "condition", "condition_type": "flag_count", "flag": "_petit_count", "threshold": 1, "next_true": "petit_recall_open" },
+        { "type": "condition", "condition_type": "flag", "flag": "_petit_seen_date_call", "next_true": "petit_recall_date_call" },
+        { "type": "condition", "condition_type": "flag", "flag": "_petit_seen_lime_misfire", "next_true": "petit_recall_lime_misfire" },
+        { "type": "condition", "condition_type": "flag", "flag": "_petit_seen_notice", "next_true": "petit_recall_notice" },
+        { "type": "condition", "condition_type": "flag", "flag": "_petit_seen_cross", "next_true": "petit_recall_cross" },
+        { "type": "condition", "condition_type": "flag", "flag": "_petit_seen_sumi", "next_true": "petit_recall_sumi" },
+        { "type": "condition", "condition_type": "flag", "flag": "_petit_seen_cinema", "next_true": "petit_recall_cinema" },
+        { "type": "condition", "condition_type": "flag", "flag": "_petit_seen_naru", "next_true": "petit_recall_naru" },
+        { "type": "condition", "condition_type": "flag_count", "flag": "_petit_count", "threshold": 1, "next_true": "petit_recall_close" },
         { "speaker": "", "face": "", "text": "誰からともなく、俺との関係を尋ねた。", "beat": 300 },
         {
           "type": "choice",
@@ -366,6 +375,34 @@
       "branches": {
         "check_ch1": [
           { "type": "condition", "condition_type": "flag", "flag": "_shuraba_ch1", "next_true": "saved_before" }
+        ],
+        "petit_recall_open": [
+          { "speaker": "", "face": "", "text": "ごまかした日のことが、順番に浮かんだ。", "beat": 400 }
+        ],
+        "petit_recall_date_call": [
+          { "speaker": "", "face": "", "text": "鳴りやまなかった、あの着信。" }
+        ],
+        "petit_recall_lime_misfire": [
+          { "speaker": "", "face": "", "text": "送り先を間違えた、あの一通。" }
+        ],
+        "petit_recall_notice": [
+          { "speaker": "", "face": "", "text": "気づきかけて、聞かないでくれた顔。" }
+        ],
+        "petit_recall_cross": [
+          { "speaker": "", "face": "", "text": "同じ店で、背中に受けた二人ぶんの視線。" }
+        ],
+        "petit_recall_sumi": [
+          { "speaker": "", "face": "", "text": "スミさんが、端と端に離してくれた二つの席。" }
+        ],
+        "petit_recall_cinema": [
+          { "speaker": "", "face": "", "text": "映画館で、振り向かなかった二つの後ろ姿。" }
+        ],
+        "petit_recall_naru": [
+          { "speaker": "", "face": "", "text": "「言うのは、俺じゃないだろ」という、なるの声。" }
+        ],
+        "petit_recall_close": [
+          { "speaker": "", "face": "", "text": "どれも、うまく切り抜けたつもりだった。" },
+          { "speaker": "", "face": "", "text": "全部、今日に続いていた。", "beat": 500 }
         ],
         "saved_before": [
           { "speaker": "", "face": "", "text": "前は、誰かが話を流してくれた。今日は、誰も流してくれない。" }

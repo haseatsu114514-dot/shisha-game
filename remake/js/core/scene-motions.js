@@ -156,13 +156,13 @@ export async function sceneMoment(name, ...args) {
 
 /**
  * 修羅場の「視線」（motions/gaze.js）。その場にいる恋人たちの目元の帯が左右から差し込まれる。
- * 会話の {"type": "motion", "id": "gaze"} から呼ぶ。cast はその場にいる恋人（ID か { id, remote }）。
+ * 会話の {"type": "motion", "id": "gaze"} から呼ぶ（"brief": true でプチ修羅場の短い版）。cast はその場にいる恋人（ID か { id, remote }）。
  * 動きを減らす設定・高速送りの判断は gaze.js 側。読み込めなかったときは何もせず先へ進む。
  */
-export async function gazeCutin(cast = []) {
+export async function gazeCutin(cast = [], options = {}) {
   const owner = state;
   const mod = await withLoadingNotice(gaze(), { ...loadingNotice("演出を準備しています…"), delayMs: 500 })
     .catch((e) => { console.error(e); return null; });
   if (state !== owner) return; // 読み込み中のLOADから、前のセーブの演出を始めない
-  await mod?.gaze(cast);
+  await mod?.gaze(cast, options);
 }
