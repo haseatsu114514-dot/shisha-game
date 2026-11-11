@@ -15,6 +15,8 @@ import { setBg, toast } from "../core/ui.js";
 import { vanRide } from "../core/scene-motions.js";
 import { play } from "../vn/engine.js";
 import { readDialogues } from "../core/chapter-data.js";
+import { chainStageAt } from "./visit-chains.js";
+import { chainVisitDue, playChainStage } from "./visit-chain-play.js";
 import { addMoney, addStamina, earnStat, gainAffinity, visitAffinity, earnSceneCompletion } from "../core/stats.js";
 import { spendableMoney } from "../core/travel-budget.js";
 import { tokyoVanBlock, TOKYO_VAN_SLOTS } from "./ch5-travel.js";
@@ -99,8 +101,13 @@ const vanPin = (entry, value) => {
 };
 /** 地元の地図に出す今の「東京へ（配送便）」。 */
 export const chapterFiveTokyoPin = (value = state) => vanPin(TO_TOKYO_SPOT, value);
+// 通いの続き（chapters/visit-chains.js）の段が読める店は「！」。無い時は付けず、いつもの判定（締めくくり等・daily/spots.js）に任せる。
+// 代金（rivalSpot の cost）は読み出しのたびに決まるので、写しも同じ getter を持たせる。
+const chainPin = (entry, value) => chainStageAt(value, entry.id)
+  ? Object.freeze(Object.defineProperties({}, { ...Object.getOwnPropertyDescriptors(entry), hasNew: { value: () => true, enumerable: true } }))
+  : entry;
 /** 東京の地図に出す今の行き先（帰りの配送便は昼だけ）。 */
-export const tokyoSpotsNow = (value = state) => TOKYO_SPOTS.map(entry => entry.id === HOME_ID ? vanPin(entry, value) : entry);
+export const tokyoSpotsNow = (value = state) => TOKYO_SPOTS.map(entry => entry.id === HOME_ID ? vanPin(entry, value) : chainPin(entry, value));
 
 export const inTokyo = (value = state) => value?.flags?._ch2_region === TOKYO;
 const SCENES = TOKYO_SPOTS.flatMap(entry => entry.talks || []).concat(["ch5_tokyo_van_first", "ch5_tokyo_go", "ch5_tokyo_back", "ch5_tokyo_arrival", "ch5_tokyo_park_day", "ch5_tokyo_attic_rest", "ch5_tokyo_fortune",
@@ -246,12 +253,16 @@ export async function performTokyoSpot(spot, { staminaGuard } = {}) {
   }
   const talks = state.flags[TALKS_FLAG] ||= {};
   const visits = talks[spot.id] || 0;
+  // 小会話を一通り読んだ後は、通いの続き（chapters/visit-chains.js）の段を読む。代金・体力・好感度・能力はいつもの来店と同じで、
+  // 小会話の巡回は進めない（段を読み終えると、また小会話に戻る）。
+  const chain = await chainVisitDue(spot.id);
+  if (state !== owner) return { used: false, exerted: false };
   const scene = spot.talks[visits % spot.talks.length];
-  if (!await read(scene, spot.preview, owner)) return { used: false, exerted: false };
+  if (!await (chain ? playChainStage(chain, id => read(id, spot.preview, owner)) : read(scene, spot.preview, owner))) return { used: false, exerted: false };
   if (fee) addMoney(-fee);
   if (spot.pay) addMoney(spot.pay);
   addStamina(spot.stamina);
-  talks[spot.id] = visits + 1;
+  if (!chain) talks[spot.id] = visits + 1;
   // 好感度は通いと同じ値（core/stats.js の visitAffinity。第5章はゆっくりの 10・5）。1回目は段階会話、2回目からは小会話。
   // ヴォルクは第3章の終盤に会うので、ここへ通って♥5に届き、授業（♥5）を相談できる（IR23）
   if (spot.charId) { gainAffinity(spot.charId, visitAffinity(visits ? "talk" : "story")); markMet(spot.charId); }

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build the nine adopted Issue #3287 cartons for the shop without editing originals."""
+"""Build the adopted Issue #3287 cartons (and the #3221 coffee carton) for the shop without editing originals."""
 import argparse
 import hashlib
 import io
@@ -14,8 +14,10 @@ SOURCE = ROOT / "asset_sources/flavor-cartons-20261111"
 DEST = ROOT / "remake/img/shop/flavor-cartons-3287"
 IDS = (
     "blueberry_mint", "cappuccino", "caramel", "chocolate", "cool_mint",
-    "frozen_citrus", "jasmine", "kiwi", "sakura",
+    "frozen_citrus", "jasmine", "kiwi", "sakura", "coffee",
 )
+# 原画が別の置き場にあるもの（#3221 C: ドバジ・コーヒー。PR #3329 で Codex が作った原画をそのまま使う）
+SOURCE_OVERRIDES = {"coffee": "asset_sources/card_game/coffee-20261111/coffee.png"}
 MODULE = ROOT / "remake/js/daily/shop-art-flavor-cartons-3287.js"
 REPORT = SOURCE / "integration.json"
 
@@ -28,7 +30,8 @@ def build(check):
     entries = []
     mappings = []
     for flavor_id in IDS:
-        native = SOURCE / f"{flavor_id}.png"
+        source_rel = SOURCE_OVERRIDES.get(flavor_id, f"asset_sources/flavor-cartons-20261111/{flavor_id}.png")
+        native = ROOT / source_rel
         source_bytes = native.read_bytes()
         before = inspect(native)
         if before["size"] != [1254, 1254]:
@@ -52,7 +55,7 @@ def build(check):
             raise ValueError(f"Original changed during conversion: {native}")
         entries.append({
             "id": flavor_id,
-            "source": f"asset_sources/flavor-cartons-20261111/{flavor_id}.png",
+            "source": source_rel,
             "source_sha256": sha(source_bytes),
             "delivery": f"remake/img/shop/flavor-cartons-3287/{flavor_id}.webp",
             "delivery_sha256": sha(encoded),

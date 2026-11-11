@@ -2,6 +2,7 @@
 // ?kit=a&tournament=practice&level=1 で設定の画面をとばす。?pilot=cpu&speed=8 で自分の席もCPUが打つ（ブラウザテスト用）。
 // ?seed=123 で同じ対戦を再現する。
 // ?skin=a で、見た目の案 css/ichidai-skin-a.css を重ねて見比べる（デザインの検討用。docs/design/card_game/card_design_brief.md）。
+// ?versus=4 で、対戦前の「VS」演出だけを人数を変えて見る（2〜4人。?versus=hajime,sumi,naru,adam のようにキャラIDでも指定できる）。
 import { el } from "./core/util.js";
 import { initStageFit } from "./core/stage-fit.js";
 initStageFit(document.getElementById("stage"));
@@ -40,3 +41,14 @@ function menu(outcome = null) {
   ]));
 }
 menu();
+
+// VS演出の見本（4人の並びは、まだ対戦そのものが無いので、ここで見る）
+if (params.has("versus")) {
+  const SAMPLE = [["hajime", "はじめ"], ["sumi", "スミさん"], ["naru", "なる"], ["adam", "アダム"]], raw = params.get("versus");
+  const players = /^[234]$/.test(raw) ? SAMPLE.slice(0, Number(raw)).map(([id, name]) => ({ id, name }))
+    : raw.split(",").filter((id) => /^[a-z0-9_]{1,24}$/.test(id)).slice(0, 4).map((id) => ({ id, name: SAMPLE.find((x) => x[0] === id)?.[1] || id }));
+  const show = async () => { const { playVersus } = await import("./minigames/ichidai-versus.js"); await playVersus({ host, players, speed: Number(params.get("speed")) || 1 }); };
+  if (players.length >= 2) {
+    host.querySelector(".ichi-menu")?.append(el("button.btn", { type: "button", text: `VS演出を見る（${players.length}人）`, dataset: { test: "ichi-menu-versus" }, onclick: show }));
+  }
+}

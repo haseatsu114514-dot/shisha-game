@@ -120,8 +120,10 @@
       "dialogue_id": "ch5_dubai_souq_b",
       "lines": [
         { "speaker": "", "face": "", "text": "金細工の店の前で、前に会った店主がこちらに気づいた。" },
+        { "speaker": "", "face": "", "text": "店先に吊るした細い金の鎖が、通りの光を拾って、揺れるたびに色を変えた。" },
         { "speaker": "", "face": "", "text": "また来たのか、と言うように、店主が肩をすくめて笑った。" },
         { "speaker": "hajime", "face": "smile", "text": "（覚えててくれたんだ）" },
+        { "speaker": "shop_clerk", "face": "", "text": "旅の人は、一度きりで消える者と、また来る者に分かれる。お前は後のほうだな" },
         { "speaker": "", "face": "", "text": "冷たいミントティーを一杯もらって、通りの人の流れをしばらく眺めた。" }
       ]
     },
@@ -152,9 +154,11 @@
       "dialogue_id": "ch5_dubai_alley_b",
       "lines": [
         { "speaker": "", "face": "", "text": "路地裏のカフェに、シェイクが地味な旅装で座っていた。" },
+        { "speaker": "", "face": "", "text": "古い扇風機が、ゆっくり首を振っている。店の中の空気は、表通りより少し湿っていた。" },
         { "speaker": "sheikh", "face": "smug", "text": "ここでは、私はただの客だ。名前は呼ぶな" },
         { "speaker": "hajime", "face": "smile", "text": "分かりました。じゃあ、ただの常連さんで" },
-        { "speaker": "sheikh", "face": "smile", "text": "それでいい。この店の水は、少しぬるい。それも悪くない" }
+        { "speaker": "sheikh", "face": "smile", "text": "それでいい。この店の水は、少しぬるい。それも悪くない" },
+        { "speaker": "", "face": "", "text": "炭の上で、葉がゆっくり色を変えていく。二人とも、しばらく何も言わなかった。" }
       ]
     },
     {
