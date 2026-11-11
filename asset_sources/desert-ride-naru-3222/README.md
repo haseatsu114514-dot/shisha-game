@@ -33,6 +33,10 @@ Codex が同梱した `canvas-candidates/`（主人公と同じキャンバス�
 - Codex の `canvas-candidates/` と同梱の WebP（上の理由で不採用）。
 - `rejected/` の2枚（最初の生成で頭・指先が切れた通常と右旋回。作り直し済み）。LFS の容量を使わないため保存しない。
 
+## 別案（PR #3234・未採用）
+
+Codex が別に作った6ポーズの原画を `alt-pr3234/` に保存した（ゲームには入れていない）。出来は同等だが、#3234 のゲーム用 WebP は板が基準点から 4〜39px ずれていたため使っていない。差し替える手順は `alt-pr3234/README.md`。
+
 ## Codex の生成記録
 
 `GENERATION.txt`（生成指示の要約）、`references.json`（参照画像のパスと SHA-256）、`codex-notes.txt`（Codex の受け渡しメモ）。
