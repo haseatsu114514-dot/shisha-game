@@ -43,3 +43,9 @@ TRPGミニゲームの判定画面で使う「20面ダイス」の絵を2枚作�
 2. `remake/img/ui/trpg/` へ WebP（rest は 512px、tumble は 768x512）
 3. `remake/css/trpg-stage.css` の `.trpg-roll-stage .trpg-die` を絵に替える（宙では tumble の6コマを順に、着地で rest。数字は今の DOM のまま上の面に重ねる）
 4. `node remake/test/browser/trpg_tabletop.mjs` と、スマホ横持ちの判定画面の目視
+
+## 受領と組み込み（2026-11-11）
+
+Codex 作の2枚を受領（`raw/d20-rest-generated.png` 1254px・`raw/d20-tumble-generated.png` 1536x1024、生成の記録 `raw/GENERATION.txt`、ハッシュ `raw/SHA256.json`、6コマの形の下敷き `raw/exact-icosahedron-geometry.png` とその作成スクリプト）。
+検品: 透過あり・数字や文字なし・止まった絵は上の面が頂点を上にした三角で中央・6コマは同じダイスで向きが違う・同梱のハッシュと一致。6コマの向きは依頼文の①〜⑥と一対一ではない（転がって見えれば足りるので採用）。
+組み込み: `remake/css/trpg-stage.css` の「立体の20面ダイス」。数字は DOM が上の面に描く。

@@ -1,6 +1,6 @@
 import { el } from "../core/util.js";
 import { TrpgSession, HEAT, heatTier, DICE, STATS, PLAYER_SEAT, approachesOf, approachBase, buildPc, randomPc, phasesOf, checkKindsOf } from "./session.js";
-import { displayName, portraitUrl, portraitAx, portraitTop as topFor, sceneUrl } from "./presentation.js";
+import { displayName, portraitUrl, portraitAx, portraitHeadTop, portraitTop as topFor, sceneUrl } from "./presentation.js";
 import { costumeUrl } from "./costumes.js";
 import { faceIconStyle } from "./face-crops.js";
 import { createTrpgAudio } from "./audio.js";
@@ -45,7 +45,12 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
   // "bust" zooms on the upper body for small cards; "full" shows the whole figure. Falls back to the round face.
   function pcFigure(seat, playerId, { role = sheets[seat]?.archetype || sheets[seat]?.option || null, shape = "bust" } = {}) {
     const url = costumeUrl(scenario.id, playerId, role);
-    return url ? el("span.trpg-costume", { dataset: { shape }, style: { backgroundImage: `url("${url}")` } }) : pcFace(seat, playerId);
+    if (!url) return pcFace(seat, playerId);
+    if (shape !== "bust") return el("span.trpg-costume", { dataset: { shape }, style: { backgroundImage: `url("${url}")` } });
+    // Costume art shares the standing portrait's framing, so the head starts lower for short characters (つむぎ).
+    // Slide the zoomed picture by its own height so every bust shows the head just under the top edge.
+    const lift = Math.max(0, portraitHeadTop(manifest, playerId) - 0.03) * 100, ax = portraitAx(manifest, playerId) * 100;
+    return el("span.trpg-costume", { dataset: { shape } }, el("i", { style: { backgroundImage: `url("${url}")`, transform: `translate(-${ax}%, -${lift}%)` } }));
   }
   const hasFigure = (seat, playerId, role = sheets[seat]?.archetype || sheets[seat]?.option || null) => !!costumeUrl(scenario.id, playerId, role);
   /** Authored text names the player's character with {pc}; the built name fills it in. */
