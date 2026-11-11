@@ -20,7 +20,7 @@
   # 4. ツール自身の確認（ブラウザ・外部ファイル不要）
   python3 tools/poem_panel_cut.py selftest
 
-Pillow と numpy だけで動く。
+Pillow だけで動く（CI のブラウザ検査の環境に合わせる）。
 """
 from __future__ import annotations
 
@@ -29,7 +29,6 @@ import sys
 import tempfile
 from pathlib import Path
 
-import numpy as np
 from PIL import Image, ImageDraw
 
 # ---- 規格（brand/chant_poems.md §8 と一致させる） ---------------------------------
@@ -60,16 +59,32 @@ def make_template(guide: bool = False) -> Image.Image:
     return img
 
 
-def _luma(arr: np.ndarray) -> np.ndarray:
-    return arr[..., 0] * 0.299 + arr[..., 1] * 0.587 + arr[..., 2] * 0.114
+class _Dark:
+    """暗い画素（輝度 < 90）の表。行・列の範囲で、暗い画素の割合を返す"""
+
+    def __init__(self, img: Image.Image) -> None:
+        # Pillow の L 変換の輝度は 0.299R + 0.587G + 0.114B
+        gray = img.convert("RGB").convert("L")
+        self.w, self.h = gray.size
+        self.px = gray.point(lambda v: 1 if v < 90 else 0).tobytes()
+        self.shape = (self.h, self.w)
+
+    def frac(self, axis: int, pos: int, span: tuple[int, int]) -> float:
+        """axis=0 は行 pos の span 列、axis=1 は列 pos の span 行"""
+        lo, hi = max(span[0], 0), min(span[1], self.w if axis == 0 else self.h)
+        if not (0 <= pos < self.shape[axis]) or hi <= lo:
+            return 0.0
+        if axis == 0:
+            row = self.px[pos * self.w + lo: pos * self.w + hi]
+            return sum(row) / len(row)
+        return sum(self.px[y * self.w + pos] for y in range(lo, hi)) / (hi - lo)
 
 
-def _best_line(dark: np.ndarray, axis: int, lo: int, hi: int, span: tuple[int, int]) -> tuple[int, float]:
+def _best_line(dark: _Dark, axis: int, lo: int, hi: int, span: tuple[int, int]) -> tuple[int, float]:
     """lo〜hi の行（axis=0）または列（axis=1）のうち、span の範囲で暗い画素の割合が最大の位置"""
     best, best_frac = -1, 0.0
     for pos in range(max(lo, 0), min(hi, dark.shape[axis])):
-        line = dark[pos, span[0]:span[1]] if axis == 0 else dark[span[0]:span[1], pos]
-        frac = float(line.mean()) if line.size else 0.0
+        frac = dark.frac(axis, pos, span)
         if frac > best_frac:
             best, best_frac = pos, frac
     return best, best_frac
@@ -77,11 +92,10 @@ def _best_line(dark: np.ndarray, axis: int, lo: int, hi: int, span: tuple[int, i
 
 def find_frame(img: Image.Image) -> tuple[tuple[int, int, int, int] | None, str]:
     """下敷きの枠（濃い線の矩形）を、期待位置の近くから探す。戻り値は (内側の left, top, right, bottom)、見つからなければ None"""
-    arr = np.asarray(img.convert("RGB"), dtype=np.float32)
-    h, w = arr.shape[:2]
+    dark = _Dark(img)
+    h, w = dark.h, dark.w
     sx, sy = w / CANVAS[0], h / CANVAS[1]
     ex0, ey0, ew, eh = FRAME_X * sx, FRAME_Y * sy, FRAME_W * sx, FRAME_H * sy
-    dark = _luma(arr) < 90
     win = round(48 * min(sx, sy))
     x_span = (round(ex0 + ew * .1), round(ex0 + ew * .9))
     top, ft = _best_line(dark, 0, round(ey0) - win, round(ey0) + win, x_span)
@@ -98,8 +112,7 @@ def find_frame(img: Image.Image) -> tuple[tuple[int, int, int, int] | None, str]
         # 枠線の太さの分だけ内側へ進む（線の画素が半分を切るまで）。絵の濃い線を食い込みすぎないよう最大 12px
         for _ in range(12):
             nxt = pos + step
-            line = dark[nxt, span[0]:span[1]] if axis == 0 else dark[span[0]:span[1], nxt]
-            if line.mean() < .5:
+            if dark.frac(axis, nxt, span) < .5:
                 break
             pos = nxt
         return pos + step
