@@ -657,6 +657,8 @@ await suite('ch2-tournament',async check=>{
     assert.match(await page.locator(dt('slot-0')).innerText(),/第3章\s*DAY 1(?!\d)/);
     await page.evaluate(async()=>{
       const vn=await import('./js/vn/engine.js');vn.vnTest.turbo=true;vn.vnTest.choose=()=>0;
+      // 綾取への一台（DAY9・必須の店仕事）の調整は、既存の制作の自動操作で一度だけ行う。
+      (await import('./js/craft/session.js')).craftTest.auto='good';
       window.__chapterThreeTrace=[];
       window.__pausedChapterThree={};
       vn.hooks.onLine=(id,line)=>{
@@ -687,6 +689,11 @@ await suite('ch2-tournament',async check=>{
       assert.equal(s.day,31+day,`Wrong elapsed day before ${id}`);
       assert.equal(s.slot,slot,`Wrong time slot before ${id}`);
       await page.locator(continueButton).click();
+      // 綾取への一台は、注文→一度だけの調整→反応まで読み終えてから次のカードへ進む（調整は時間のかかる工程）。
+      if(id==='ch3_saku_mukai_visit'){
+        await page.waitForFunction(()=>window.__remake.state.flags._ch3_intro.work?.service?.feedbackRead,null,{timeout:60000});
+        assert.equal((await get(page)).flags._ch3_intro.work.service.careDone,true);
+      }
       if(id==='ch3_double_apple_incident'){
         await page.waitForFunction(()=>window.__pausedChapterThree.mukai&&document.querySelector('#vn.active .vn-text')?.textContent.includes('mukai'));
         assert(await page.locator('#bg > .bg-img').last().evaluate(node=>node.style.backgroundImage.includes('bg_mukai_shop')),
@@ -735,7 +742,8 @@ await suite('ch2-tournament',async check=>{
     assert(s.relationshipMemories.includes('volk_measure'),'Volk’s measured hospitality should be remembered');
     assert.deepEqual(await page.evaluate(()=>window.__chapterThreeTrace),ordered.slice(1).flatMap(scene=>
       scene.id === 'ch3_mukai_intro' ? [scene.id, 'ch3_delivery_offer', 'ch3_delivery_saku',
-        'ch3_delivery_steve', 'ch3_delivery_volk', 'ch3_delivery_return'] : [scene.id]));
+        'ch3_delivery_steve', 'ch3_delivery_volk', 'ch3_delivery_return']
+        : scene.id === 'ch3_saku_mukai_visit' ? [scene.id, 'ch3_saku_mukai_served'] : [scene.id]));
     for (const who of ['saku', 'steve', 'volk']) assert.equal(s.flags[`_ch3_delivery_${who}`], true);
     assert.equal(await page.getByText(/全国大会・優勝|第三章・完/).count(),0,'The introduction cannot award a national win');
     for(const key of ['money','stats','flavorStock','lovers','loverSince','keepsakes','tournament'])
