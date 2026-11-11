@@ -166,6 +166,50 @@
 .ichi-stove-coal.st-2 > .ichi-counter { background: var(--ichi-gold); color: #1d1206; border-color: #150d22; }
 .ichi-stove-coal.can { cursor: pointer; animation: ichi-pulse 1.3s ease-in-out infinite; }
 
+/* ── 炭焼き場 ➜ 火力ゾーン（自分）。炭焼き場で焼けた炭を火力ゾーンへのせる流れを、ひと続きの枠と矢印で見せる ── */
+.ichi-lane { display: grid; grid-template-columns: auto 30px minmax(0, 1fr); gap: 6px; align-items: stretch; min-width: 0; min-height: 0; }
+.ichi-row.is-stove { display: grid; grid-template-columns: repeat(2, auto); gap: 6px; }
+.ichi-game:is([data-phase="prep"], [data-phase="embers"]) .ichi-row.is-stove { gap: 4px; }
+.ichi-flow { display: grid; place-items: center; align-content: center; gap: 4px; color: rgba(246, 241, 250, 0.55); }
+.ichi-flow i { display: block; width: 26px; height: 34px; background: currentColor; clip-path: polygon(0 28%, 52% 28%, 52% 0, 100% 50%, 52% 100%, 52% 72%, 0 72%); }
+.ichi-flow small { font-size: 12px; font-weight: 700; color: inherit; writing-mode: vertical-rl; letter-spacing: 0.02em; }
+.ichi-flow.is-hot { color: var(--ichi-ember-hi); filter: drop-shadow(0 0 6px rgba(240, 138, 43, 0.9)); animation: ichi-pulse 1.3s ease-in-out infinite; }
+.ichi-zone-box.is-coal { grid-template-columns: auto minmax(0, 1fr); grid-template-rows: minmax(0, 1fr) auto; justify-items: start; column-gap: 10px; }
+.ichi-zone-box.is-coal > .ichi-mods { grid-column: 1 / -1; justify-self: center; }
+.ichi-zone-box.is-target { border-color: var(--ichi-gold); box-shadow: inset 0 0 0 1px rgba(227, 189, 110, 0.5), 0 0 18px rgba(227, 189, 110, 0.35); }
+/* 火力の数: 使える火力 / 熱（＝火力ゾーンの札の数。表向きのキューブ炭は2） */
+.ichi-fire-count { display: grid; justify-items: center; align-content: center; min-width: 62px; padding: 6px 6px 8px; border-radius: 10px; background: rgba(8, 4, 14, 0.62); border: 1px solid rgba(255, 176, 92, 0.55); box-shadow: inset 0 0 14px rgba(240, 138, 43, 0.22); }
+.ichi-fire-count small { font-size: 13px; font-weight: 700; color: var(--ichi-ember-hi); }
+.ichi-fire-count b { font-size: 40px; font-weight: 900; line-height: 1; font-family: var(--font-dot); color: var(--ichi-ember-hi); text-shadow: 0 0 12px rgba(240, 138, 43, 0.75); }
+.ichi-fire-count span { font-size: 14px; font-weight: 800; color: var(--ichi-text); }
+.ichi-game:is([data-phase="prep"], [data-phase="embers"]) .ichi-fire-count b { font-size: 30px; }
+/* 置き場（手札を選んだときだけ出る）: 火力ゾーンの「裏向きで置く」、炭焼き場の「ここに置く」 */
+.ichi-ghost { position: relative; display: grid; place-items: center; align-content: center; gap: 2px; width: var(--cw); height: calc(var(--cw) * 1.4); flex: none; padding: 2px; border-radius: calc(var(--cw) * 0.07);
+  border: 2px dashed var(--ichi-gold); background: rgba(227, 189, 110, 0.12); color: var(--ichi-gold); cursor: pointer; animation: ichi-pulse 1.2s ease-in-out infinite; }
+.ichi-ghost b { font-size: 22px; font-weight: 900; line-height: 1; }
+.ichi-ghost small { font-size: 12px; font-weight: 700; line-height: 1.2; color: var(--ichi-gold); text-align: center; }
+.ichi-ghost:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+.ichi-coal-btn + .ichi-ghost { margin-left: max(var(--coal-gap, 6px), 4px); }
+/* 置いたばかりの札は、上から落ちて置かれる */
+.ichi-on.is-new, .ichi-stove-coal.is-new { animation: ichi-place 0.42s var(--ease-out) both; }
+@keyframes ichi-place { from { transform: translateY(-28px) scale(1.14); opacity: 0; } }
+
+/* ── 相手の火力のゲージ ── */
+.ichi-zone-box.is-gauge { justify-items: stretch; align-content: center; gap: 5px; padding: 12px 10px 6px; }
+.ichi-gauge-row { display: grid; grid-template-columns: 58px minmax(0, 1fr) 56px; align-items: center; gap: 6px; }
+.ichi-gauge-row small { font-size: 12px; font-weight: 700; color: var(--ichi-text); white-space: nowrap; }
+.ichi-gauge-row > b { font-size: 14px; font-weight: 800; color: #e6d3f5; white-space: nowrap; }
+.ichi-gauge-row > b.is-ready { color: var(--ichi-ember-hi); }
+.ichi-gauge { display: grid; grid-template-columns: repeat(10, 1fr); gap: 2px; }
+.ichi-gauge i { height: 12px; border-radius: 3px; background: rgba(246, 241, 250, 0.08); border: 1px solid rgba(246, 241, 250, 0.16); }
+.ichi-gauge i.is-lit { background: linear-gradient(180deg, #ffd27a, #f08a2b); border-color: #ffb05c; box-shadow: 0 0 5px rgba(240, 138, 43, 0.7); }
+.ichi-gauge i.is-used { background: #5a3a2a; border-color: #7a4e36; }
+.ichi-gauge.is-stove { grid-template-columns: repeat(4, 22px); justify-content: start; }
+.ichi-gauge.is-stove i.st-0 { background: #3b2a2a; border-color: #6a4a3a; }
+.ichi-gauge.is-stove i.st-1 { background: linear-gradient(90deg, #8a3a1a 50%, #3b2a2a 50%); border-color: #b4501c; }
+.ichi-gauge.is-stove i.st-2 { background: linear-gradient(180deg, #ffd27a, #f08a2b); border-color: #ffb05c; box-shadow: 0 0 6px rgba(240, 138, 43, 0.85); }
+.ichi-zone-box.is-gauge .ichi-foe-heat .ichi-strip { width: 170px; }
+
 /* ── 顔・点・票 ── */
 .ichi-leader { display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 10px; padding: 0; border: 0; background: none; text-align: left; cursor: pointer; }
 .ichi-leader-ring { display: grid; width: 92px; height: 92px; padding: 4px; border-radius: 50%; background: linear-gradient(135deg, #f6e2a8, #b98c3a 55%, #6d4f1c); box-shadow: 0 5px 14px rgba(0, 0, 0, 0.65); transition: box-shadow 0.2s; }
@@ -196,7 +240,7 @@
 .ichi-packed b { font-size: 13px; font-weight: 900; }
 
 /* ── 相手のマット ── */
-.ichi-foe { display: grid; grid-template-columns: 104px 206px minmax(0, 1fr) 190px 190px 150px; gap: 10px; align-items: stretch; min-height: 0; }
+.ichi-foe { display: grid; grid-template-columns: 104px 206px minmax(0, 1fr) 190px 150px; gap: 10px; align-items: stretch; min-height: 0; }
 .ichi-foe > .ichi-leader { align-self: center; }
 .ichi-foe-hand { position: relative; display: flex; align-items: center; justify-content: center; align-self: end; padding-bottom: 14px; }
 .ichi-foe-hand .ichi-back + .ichi-back { margin-left: -22px; }
@@ -277,7 +321,7 @@ button.ichi-leaf.can:hover { border-color: #fff; }
 .ichi-game:is([data-phase="prep"], [data-phase="embers"]) .s-pile { --cw: 92px; }
 
 /* ── 自分のマット ── */
-.ichi-mine { display: grid; grid-template-columns: 132px 204px minmax(0, 1fr) 316px 152px 86px; gap: 10px; align-items: stretch; min-height: 0; padding-top: 6px; }
+.ichi-mine { display: grid; grid-template-columns: 196px minmax(0, 1fr) 120px 152px 86px; gap: 10px; align-items: stretch; min-height: 0; padding-top: 6px; }
 .ichi-thermo { display: grid; grid-template-columns: 66px 1fr; align-items: center; gap: 0; height: 100%; width: 100%; min-height: 0; }
 .ichi-thermo-body { position: relative; width: 66px; height: 100%; max-height: 236px; min-height: 0; align-self: center; }
 .ichi-thermo-frame { position: absolute; inset: 0; background: url("../img/ui/craft-night/thermo-frame.webp") center / 100% 100% no-repeat; pointer-events: none; }
@@ -294,13 +338,15 @@ button.ichi-leaf.can:hover { border-color: #fff; }
 .ichi-thermo-read small.ichi-thermo-base { color: var(--ichi-ember-hi); }
 .ichi-zone-box.is-heat { padding: 12px 4px 6px; grid-template-rows: minmax(0, 1fr); align-content: stretch; align-items: stretch; }
 .ichi-piles { display: grid; grid-template-rows: 1fr auto; gap: 10px; min-height: 0; }
-.ichi-mine .ichi-zone-box:is(.is-coal, .is-stove) .s-mini { --cw: 70px; }
+.ichi-mine .ichi-zone-box.is-coal .s-mini { --cw: 66px; }
+.ichi-mine .ichi-zone-box.is-stove .s-mini { --cw: 56px; }
 .ichi-mine .s-mid { --cw: 88px; }
 .ichi-zone-box.is-deck { position: relative; }
 .ichi-zone-box.is-deck .ichi-back { box-shadow: inset 0 0 0 2px rgba(227, 189, 110, 0.3), 2px 2px 0 #1a1029, 4px 4px 0 #120a1d, 0 6px 10px rgba(0, 0, 0, 0.55); }
 .ichi-zone-box.is-deck .ichi-count { position: absolute; right: 2px; bottom: 2px; }
 .ichi-zone-box.is-ash { padding: 12px 6px 6px; }
-.ichi-game:is([data-phase="prep"], [data-phase="embers"]) .ichi-mine .s-mini { --cw: 52px; }
+.ichi-game:is([data-phase="prep"], [data-phase="embers"]) .ichi-mine .s-mini { --cw: 50px; }
+.ichi-game:is([data-phase="prep"], [data-phase="embers"]) .ichi-mine .ichi-zone-box.is-stove .s-mini { --cw: 42px; }
 .ichi-game:is([data-phase="prep"], [data-phase="embers"]) .ichi-mine .s-mid { --cw: 70px; }
 .ichi-game:is([data-phase="prep"], [data-phase="embers"]) .ichi-thermo-read b { font-size: 32px; }
 .ichi-game:is([data-phase="prep"], [data-phase="embers"]) .ichi-thermo-tube i:not(.is-now) { color: transparent; }

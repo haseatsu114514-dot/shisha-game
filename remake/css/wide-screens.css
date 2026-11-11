@@ -45,12 +45,9 @@ body:not(.game-ds):not([data-screen="title"][data-game-layout="ds"]) #stage[data
 body:not(.game-ds):not([data-screen="title"][data-game-layout="ds"]) #stage[data-wide] .saveload-modal { width: calc(760px + var(--wide-grow)); max-width: calc(1232px + var(--wide-grow)); }
 
 /* ---------------------------------------------------------------- 店の入口・1F ショップ（Dr.fookah） */
-/* パネルを左右対称に広げる。広げると右上の LIME・MENU（黒帯側の端・上から 12px）の真下に来るので、
-   スマホ規格で大きくなったボタン（--phone-tap）の下から始め、下の余白を 24→16px に詰めて高さの減りを抑える。
-   PC の横長（スマホ規格なし・ボタン 48px）は従来どおり上から 72px */
+/* パネルを左右対称に広げる。店の中では右上の LIME・MENU を出さないので（shop.css・SUI01）、上下 16px の余白まで使う */
 body:not(.game-ds):not([data-screen="title"][data-game-layout="ds"]) #stage[data-wide] :is(.shop-entry, .shop.shop-paper) {
-  --shop-top: max(72px, calc(24px + var(--phone-tap, 48px)));
-  top: var(--shop-top); height: calc(704px - var(--shop-top)); width: calc(1200px + var(--wide-grow));
+  top: 16px; height: 688px; width: calc(1232px + var(--wide-grow));
 }
 
 /* ---------------------------------------------------------------- ギャラリー */
