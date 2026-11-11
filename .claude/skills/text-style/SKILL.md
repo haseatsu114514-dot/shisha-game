@@ -1,6 +1,6 @@
 ---
 name: text-style
-description: 台詞・地の文の句読点（。と、の使い分け・。の量）・改行・改ページの規範。台詞やゲーム内テキストを書く/直すとき、句読点や改行の違和感を指摘されたとき、text の見た目（吹き出しの折れ方・ページ割れ）を調整するときに必ず使う。自動整形ツールと手動エディタの使い方も含む。Use when writing or fixing any in-game text punctuation, line breaks, or pagination, or when the owner reports awkward-looking text.
+description: 台詞・地の文の句読点（。と、の使い分け・。の量）・改行・改ページの規範。台詞・会話・LIME・UI文言などゲーム内テキストを追加する/書く/直すとき、画面の文字の箱（CSS）を作るとき、句読点や改行の違和感を指摘されたとき、text の見た目（吹き出しの折れ方・ページ割れ・2行目だけ短い）を調整するときに必ず使う。書いた台詞の改行を確かめるコマンド（check_wrap.mjs）・自動整形ツール・手動エディタの使い方も含む。
 ---
 
 # テキスト規範（句読点・改行・改ページ）
@@ -58,6 +58,12 @@ python3 tools/tidy_dialogue_text.py
 
 # 2) リンタ（規範違反は WARN、旧名等は ERROR）
 python3 tools/lint_dialogue.py
+
+# 2b) 書いた台詞が本編でどう折れるかを見る（TXW08。本編と同じ組版で、main から足した・変えた台詞だけ）
+node .claude/skills/text-style/check_wrap.mjs            # 「要確認」が出たら直す（0件にしてからコミット）
+node .claude/skills/text-style/check_wrap.mjs "台詞" …   # 書く前に文を試す
+#   知らせるもの: 2行目だけ短い・1行目だけ短い・手で改行している・2ページに分かれる・文の途中でページが割れる
+#   「長い文。／短い2文目」は規範どおりなので知らせない。直し方は、言い換える・読点の位置を変える・台詞を2つに分ける
 
 # 3) 手動で微調整したいとき（ブラウザの台詞エディタ。検索→編集→保存＋本編と同じ改行プレビュー）
 python3 tools/text_editor_server.py   # → http://127.0.0.1:8321/
