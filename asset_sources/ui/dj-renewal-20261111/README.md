@@ -1,0 +1,53 @@
+# DJ ミニゲームのリニューアルの素材（2026-11-11・DJS20〜25）
+
+オーナー「初見だとゲーム性がわかりづらい。お客さんの反応をわかりやすく、フェーダーのどこを動かすかアナウンスと矢印を。画像生成する場合はコーデックスに頼めます。CSS丸出しな見た目は嫌だ」。画面の説明は `remake/previews/dj/README.md`、台帳は `docs/owner_requests.md` の DJS20〜25。
+
+## 経緯
+
+OpenAI の画像 API（`gpt-image-2.5-sunburst`）で作ろうとしたが、クレジット切れ（`credit_balance_exhausted`）で1枚も生成できなかった。そこで次の3つに分けた。
+
+1. **ゲーム共通の夜のUIキットを使う**（新規生成なし）: 板・ボタン・手順のランプ・メダルは `remake/img/ui/craft-night/`（Codex 生成・シーシャ作りと大会で使用中。原画の記録は `asset_sources/ui/craft-night-20261102/`）をそのまま九分割で使う。
+2. **機材まわりの部品はスクリプトで描く**: `make_parts.py`（Pillow と numpy。3倍で描いて縮小、乱数は固定）。出力はこのフォルダに原画を置かず、直接 `remake/img/ui/dj/` の WebP にする（スクリプトが原本）。
+3. **人物の絵は Codex へ依頼**（Issue #3224）: こっちを向いて盛り上がる観客4枚（盛り上がり4段階）と、同じ構図で誰もいない店内1枚。依頼文は `CODEX_PROMPTS.md`。**未着**。
+
+## make_parts.py が書き出すもの（`remake/img/ui/dj/`）
+
+| ファイル | 大きさ | 使う場所（`remake/previews/dj/style.css`） |
+|---|---|---|
+| `play-a.webp`・`play-b.webp`・`play-go.webp` | 256×256 | ▶（A 紫・B 水色・「いま押す」金）。表示 90px。台座の受け皿に収まる |
+| `deck-strip.webp` | 640×200 | デッキの下の台座（DJS27）。表示窓 = 幅 2.2〜68.8 %・高さ 11〜89 %、▶ の受け皿の中心 = 幅 84.4 %。右デッキは CSS で左右反転 |
+| `xfader-plate.webp` | 920×240 | 横フェーダーの台座。溝は幅 8.5〜91.5 %・高さ 44 %、左右に A（紫）・B（水色）のランプ |
+| `pitch-plate.webp` | 136×340 | PITCH フェーダーの台座 |
+| `arrow.webp` | 256×256 | 「いま触るところ」の金色の矢印（右向き。CSS で回す） |
+| `chevron.webp` | 120×160 | 横フェーダーの向きの矢印、熱のゲージのボーナス線の印 |
+| `bubble.webp`・`bubble-cold.webp` | 560×216 | お客さんの声の吹き出し（良い反応／冷めた反応）。文字は載せない |
+| `zone.webp`・`zone-ok.webp` | 224×136 | 横フェーダーの光る枠（追いかける先／乗れているとき） |
+| `flame.webp` | 96×96 | 選曲カードのノリ（炎5段階） |
+| `heat-frame.webp` | 597×160 | フロアの熱のゲージの枠。`craft-night/thermo-frame.webp` を横向きにしたもの（透明な窓は x 48〜547・y 55〜104） |
+
+描き直すときは `python3 asset_sources/ui/dj-renewal-20261111/make_parts.py`（`remake/img/ui/craft-night/thermo-frame.webp` の実体が要る。LFS のポインタのままなら `git lfs pull --include="remake/img/ui/craft-night/*"`）。形や溝の位置を変えたら `style.css` の対応する数値（`.xtrack`・`#crossfader`・`.heat-bar`）も合わせる。
+
+Codex にもっと良い部品を描いてもらう場合は、同じファイル名・同じ大きさ・同じ溝や窓の位置で作れば、コードを変えずに差し替えられる。
+
+## フロアの2層（DJS28・主人公目線）
+
+オーナー「主人公目線から見たフロアにしたい。必要であれば生成」。画像 API は 2026-11-11 の時点でもクレジット切れだったので、手元の2枚から `make_parts.py` の `floor_pov()` が作る（新規生成なし）。
+
+| 出力（`remake/img/ui/dj/`） | 元 | 加工 |
+|---|---|---|
+| `floor-room.webp` 1600×383 | `remake/img/ui/dj/bg-purple.webp`（2048×768・ブースから見た空の店内） | y 30〜520 を切り出して縮小（下の黒いブースの縁を落とす） |
+| `floor-pov-1`〜`4.webp` 1512×232（透過） | `asset_sources/ui/dj-floor-crowd-20261102/crowd-a.png`（2172×724・Codex の候補 a 案） | x 330〜1842・y 390〜622 を切り出し。上は客の頭と上げた手の少し上でぼかして透明に（中央は 42px、両端は 92px から。両端のランタンとヤシを落とす）。熱の4段階ぶん、明るさ・彩度を変えて4枚 |
+
+- **a 案は 2026-11-02 の採用（b 案）では選ばれなかった候補**。ランタンやヤシがクラブSEAM（地下のコンクリート）と食い違うのが理由だった。今回はブース越しに客席を見た構図が要るので、装飾のない中央の観客だけを使っている。b 案（`floor-crowd.webp`）は客席の後ろから舞台を見た構図で、主人公目線にならない。
+- 客は影絵で、表情やしぐさ（こっちを向いて笑う・腕を組む・スマホを見る）は出ない。そこは下の5枚（Codex）で置き換える。
+
+## 5枚が届いたら（フロアの観客・Codex）
+
+依頼文は `CODEX_PROMPTS.md`（Issue #3224）。観客がいる4枚（`floor-1`〜`4.png`・盛り上がり4段階）と、同じ店・同じ構図で誰もいない1枚（`floor-room.png`）。
+
+1. 原画5枚をこのフォルダの `raw/` に置く（無加工）。
+2. 奥の層: `floor-room.png` を `remake/img/ui/dj/floor-room.webp` にする（幅 1600 に縮小。画面では下合わせの cover で、上の天井が切れる）。
+3. 手前の層: 4枚とも同じ範囲で観客の帯（いちばん高く上げた手の少し上から下）を切り出し、上をぼかして透明にして `floor-pov-1`〜`4.webp` を置き換える。`make_parts.py` の `floor_pov()` の元画像（`FLOOR_SRC`）と切り出し範囲・透明にし始める高さを、新しい絵に合わせて変える。新しい絵は熱ごとに描き分けてあるので、明るさ・彩度の調整（`floor_pov()` の4段階の数値）は 1 にする。
+4. 帯の縦横比が変わったら `remake/previews/dj/style.css` の `.band` の `aspect-ratio` を合わせる。店内の層の明るさの描き分け（`.floor[data-mood] .room` の `filter`）は、新しい店内が明るすぎ・暗すぎなければ弱める。
+5. 新しい絵は客がこっちを向いて手を上げるので、手前の手のシルエット（`app.mjs` の `makeHands`・`drawHand`）は消すか本数を減らす。光・レーザー・音符と、帯の揺れ（`moveCrowd`）はそのまま使える。
+6. `node remake/test/browser/dj_preview.mjs` と、PC・スマホ表示の目視（揺れたときに奥の店内の人影が二重に見えないこと＝`floor-room.png` に人が残っていないこと）。

@@ -138,6 +138,7 @@ function el(selector,attrs={},children=[]) {
 }
 const configCtx = vm.createContext({config:state.config,document:{body:{dataset:{screen:'vn'}}},el,
  saveConfig(){saves++;},applyVolumes(){},createUiThemeSelect(){return {};},
+ LOOKS:[{id:'classic',label:'現行'},{id:'neo',label:'新版'},{id:'retro',label:'DS風'}],normalizeLook(v){return v||'classic';},setLook(){},
  fullscreenButton(){return null;},saveTransferRow(){return {};},
  modal(args){modalArgs=args;return Promise.resolve(true);}});
 vm.runInContext(titleSource.slice(titleSource.indexOf('export async function openConfig')).replace('export async function','async function')+';globalThis.openConfig=openConfig;',configCtx);
