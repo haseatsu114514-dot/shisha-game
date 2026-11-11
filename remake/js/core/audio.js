@@ -36,6 +36,18 @@ const RECORDED_SE = {
   coalPlace: { files: ["hms_knock_01.wav", "hms_knock_02.wav"], gain: 1 },
   foilPunch: { files: ["foil_puncture.wav"], gain: 1 },
   bubbling: { files: ["water_draw.wav"], gain: 1 },
+  // 2026-11-11 本編の効果音 第1弾（CC0・OpenGameArt）。出典・切り出し・再生成は asset_sources/music/main-se-20261111/。
+  // 耳での確認はオーナーの試聴待ち（remake/audio-preview.html で前の合成音と聴き比べられる）。合わない音はこの行を消せば合成音へ戻る。
+  // fit: 呼び出しの秒数（SE.crowd(1.6) など）に合わせ、その後 fit 秒で消す。
+  // minGap: この秒数のうちに続けて呼ばれた分は鳴らさない（所持金の増減と店の売り買いが同時にコインを呼んでも1回）。
+  crowd: { files: ["crowd_applause_01.mp3", "crowd_applause_02.mp3"], gain: 1, fit: .7 },
+  money: { files: ["coin_01.wav", "coin_02.wav"], gain: 1, minGap: .25 },
+  parin: { files: ["glass_break.wav"], gain: 1 },
+  shutter: { files: ["camera_shutter.wav"], gain: 1 },
+  mew: { files: ["cat_mew_01.wav", "cat_mew_02.wav"], gain: 1 },
+  crackle: { files: ["fire_crackle_01.wav", "fire_crackle_02.wav", "fire_crackle_03.wav"], gain: 1 },
+  affinity: { files: ["heart_bell.wav"], gain: 1 },
+  save: { files: ["ui_save.wav"], gain: 1 },
 };
 const WATER_LOOP = "water_loop.wav", WATER_END = "water_end.wav";
 
@@ -76,7 +88,7 @@ export function preloadSe() {
   return Promise.all([...files].map(loadSeBuffer)).then(buffers => buffers.every(Boolean));
 }
 
-function recordedVoice(file, { gain = 1, rate = 1, loop = false } = {}) {
+function recordedVoice(file, { gain = 1, rate = 1, loop = false, delay = 0 } = {}) {
   if (!seEnabled() || !seBuffers.has(file)) return null;
   const source = ctx.createBufferSource(), output = ctx.createGain();
   source.buffer = seBuffers.get(file);
@@ -94,19 +106,26 @@ function recordedVoice(file, { gain = 1, rate = 1, loop = false } = {}) {
   } };
   seVoices.add(voice);
   source.onended = () => { seVoices.delete(voice); source.disconnect(); output.disconnect(); };
-  source.start();
+  source.start(delay > 0 ? ctx.currentTime + delay : 0);
   return voice;
 }
 
-function recordedSe(id) {
+function recordedSe(id, sec) {
   if (!seEnabled()) return true; // ミュートや非表示中に代用音へ回さない。
-  const { files, gain } = RECORDED_SE[id];
+  const { files, gain, fit } = RECORDED_SE[id];
   const ready = files.filter(file => seBuffers.has(file));
   if (!ready.length) { files.forEach(loadSeBuffer); return false; }
   const choices = ready.filter(file => file !== lastVariant.get(id));
   const file = (choices.length ? choices : ready)[Math.floor(Math.random() * (choices.length || ready.length))];
   lastVariant.set(id, file);
-  recordedVoice(file, { gain });
+  const voice = recordedVoice(file, { gain });
+  // 長さの指定がある呼び出し（歓声など）は、その秒数まで鳴らしてから fit 秒で消す。録音より長い指定は録音の終わりまで。
+  if (voice && fit && sec > 0 && sec + fit < voice.source.buffer.duration) {
+    const end = ctx.currentTime + sec;
+    voice.output.gain.setValueAtTime(gain, end);
+    voice.output.gain.linearRampToValueAtTime(0, end + fit);
+    voice.source.stop(end + fit + .02);
+  }
   return true;
 }
 
@@ -578,6 +597,9 @@ export const SE = {
   twinkle: () => { [1047, 1319, 1568, 2093].forEach((freq, i) => tone({ freq, type: "sine", dur: 0.22, vol: 0.11, delay: i * 0.07 })); noise({ dur: 0.3, vol: 0.04, filter: 7000, type: "highpass", delay: 0.1 }); },
   // 日付カードなど短いUI音（録音が無ければ短いクリック）。
   card: () => tone({ freq: 880, to: 660, type: "triangle", dur: 0.08, vol: 0.1 }),
+  // 好感度が上がった時のベル（録音が無ければ短い一音）と、セーブ完了（同じく短い二音）。
+  affinity: () => tone({ freq: 1319, type: "sine", dur: 0.3, vol: 0.1 }),
+  save: () => { tone({ freq: 784, type: "triangle", dur: 0.08, vol: 0.1 }); tone({ freq: 1175, type: "triangle", dur: 0.14, vol: 0.1, delay: 0.07 }); },
   // シーシャくじのガラガラ（motions/garagara.js）と賞の札（daily/kuji-reveal.js）
   kujiCharge: (sec = 1.4) => { tone({ freq: 196, to: 740, type: "triangle", dur: sec, vol: 0.05, attack: sec * 0.5 }); noise({ dur: sec, vol: 0.05, filter: 500, q: 0.7, sweepTo: 4200 }); },
   kujiShimmer: (n = 8) => { for (let i = 0; i < n; i++) tone({ freq: 2100 + Math.random() * 2600, type: "sine", dur: 0.2, vol: 0.045, delay: i * 0.05 + Math.random() * 0.03 }); },
@@ -623,10 +645,35 @@ export function playAxeSe(id, { scored = true } = {}) {
   }
 }
 
+/** 録音に差し替える前の合成音（試聴ページの聴き比べ用。ゲーム本編は SE を使う）。 */
+export const SYNTH_SE = {};
+/** 録音のある効果音のIDと、そのファイル（試聴ページ用）。 */
+export const recordedSeFiles = () => Object.fromEntries(Object.entries(RECORDED_SE).map(([id, cue]) => [id, [...cue.files]]));
+const lastPlayedAt = new Map();
 for (const id of Object.keys(RECORDED_SE)) {
-  const fallback = SE[id];
-  SE[id] = (...args) => { if (!recordedSe(id)) fallback(...args); };
+  const fallback = SYNTH_SE[id] = SE[id];
+  const { minGap } = RECORDED_SE[id];
+  SE[id] = (...args) => {
+    if (minGap) {
+      const now = Date.now();
+      if (now - (lastPlayedAt.get(id) ?? -Infinity) < minGap * 1000) return;
+      lastPlayedAt.set(id, now);
+    }
+    if (!recordedSe(id, Number(args[0]))) fallback(...args);
+  };
 }
+// 好感度の段階が上がった時・恋人になった時: 同じベルを高さを変えて2回（1回目→完全5度上）。
+SE.affinityUp = () => {
+  if (!seEnabled()) return;
+  const [file] = RECORDED_SE.affinity.files, { gain } = RECORDED_SE.affinity;
+  if (!seBuffers.has(file)) {
+    loadSeBuffer(file);
+    tone({ freq: 1319, type: "sine", dur: 0.22, vol: 0.1 }); tone({ freq: 1976, type: "sine", dur: 0.36, vol: 0.1, delay: 0.13 });
+    return;
+  }
+  recordedVoice(file, { gain });
+  recordedVoice(file, { gain, rate: 1.5, delay: .13 });
+};
 
 export function playSe(id, ...args) {
   const key = String(id || "").replace(/_([a-z])/g, (_, c) => c.toUpperCase());

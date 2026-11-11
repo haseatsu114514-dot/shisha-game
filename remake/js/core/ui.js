@@ -43,6 +43,7 @@ export function initLayers() {
       bond: !!bond,
       face: faceIconUrl(id, state, { context: bond ? "private" : null }),
       badge: [...displayName(id, state, { context: bond ? "private" : null })][0],
+      chime: levelUp ? "up" : "",
       top: bond ? (levelUp ? "BOND UP" : "BOND") : levelUp ? "AFFINITY UP" : "AFFINITY",
       main: displayName(id, state, { context: bond ? "private" : null }), // 恋人の絆は私的な場面でだけ深まる
       sub: bond
@@ -55,7 +56,7 @@ export function initLayers() {
   });
   on("notice", ({ text }) => toast(text, { ms: 3000 }));
   on("lovers", ({ id }) => {
-    gainCard({ kind: "affinity", bond: true, face: faceIconUrl(id, state, { context: "private" }), badge: "♥", top: "NEW RELATIONSHIP", main: displayName(id, state, { context: "private" }), sub: "恋人になった" });
+    gainCard({ kind: "affinity", bond: true, face: faceIconUrl(id, state, { context: "private" }), badge: "♥", top: "NEW RELATIONSHIP", chime: "up", main: displayName(id, state, { context: "private" }), sub: "恋人になった" });
   });
 }
 
@@ -332,7 +333,8 @@ export async function fadeBlack(mid, ms = 500) {
 
 // ---------------------------------------------------------------- トースト／通知
 
-export function toast(text, { ms = 2600, kind = "" } = {}) {
+export function toast(text, { ms = 2600, kind = "", se = "" } = {}) {
+  if (se) SE[se]?.(); // 通知と一緒に鳴らす効果音（「お金が足りない」のブザーなど）
   const effect = { "charm-bonus": ["魅", "魅力"], "insight-hint": ["察", "洞察"] }[kind];
   const t = el(`div.toast${kind ? "." + kind : ""}`, effect
     ? [el("span.toast-badge", { text: effect[0], "aria-label": `${effect[1]}の効果` }), el("span", { text })]
@@ -404,6 +406,7 @@ export function statBadge(key, className = "gc-badge") {
   return el(`div.${className}`, { text: STAT_BADGE[key], "aria-hidden": "true" });
 }
 
+let lastAffinityChime = -Infinity;
 function pumpBanners() {
   while (bannerBusy < 3 && bannerQueue.length) {
     const o = bannerQueue.shift();
@@ -437,6 +440,12 @@ function pumpBanners() {
     if (o.kind === "stat") {
       if (o.source === "slot") SE.slotBonus();
       else SE.select();
+    }
+    // 好感度・恋人の絆: ハートが動くのに合わせてベル。段階が上がった時と恋人になった時は2回（SE.affinityUp）。
+    // 何枚か同時に出る時は1回だけ（0.3秒あける）。
+    else if (o.kind === "affinity" && performance.now() - lastAffinityChime > 300) {
+      lastAffinityChime = performance.now();
+      (o.chime === "up" ? SE.affinityUp : SE.affinity)();
     }
     requestAnimationFrame(() => {
       b.classList.add("show");
