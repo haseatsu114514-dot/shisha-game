@@ -105,9 +105,24 @@
           "text": "大きく出なすったな、……うめえじゃねえか"
         },
         {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "この腕なら、どこの組でも若頭を張れやすぜ"
+        },
+        {
+          "speaker": "adam",
+          "face": "serious",
+          "text": "若頭ではない。総督だ"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "serious",
+          "text": "……映画の話でさ"
+        },
+        {
           "speaker": "hajime",
           "face": "normal",
-          "text": "そのダブルアップル、いい香りですね"
+          "text": "……そ、そのダブルアップル、いい香りですね"
         },
         {
           "speaker": "kumicho",
@@ -168,6 +183,16 @@
           "speaker": "rei",
           "face": "normal",
           "text": "お任せで。自分で選ばない日も、たまにはいい"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "台が届くと、レヰは吸うたびに、泡の音に合わせて指で小さく拍を取った。"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……ここ、泡の音までよく聞こえる。いい店だな"
         },
         {
           "speaker": "hajime",
