@@ -383,7 +383,8 @@
 .tt-polaroid .tt-thumb.unknown { font-size: 72px; }
 .tt-polaroid small { position: absolute; left: 0; right: 0; bottom: 8px; font-size: 14px; font-weight: 700; color: var(--tt-lav); }
 .tt-polaroid[data-photo="false"] { background: rgba(255, 253, 248, .7); box-shadow: 0 3px 8px rgba(0, 0, 0, .15); }
-.tt-polaroid[data-photo="false"] .tt-thumb { filter: saturate(.6) contrast(.92); opacity: .8; }
+/* まだ撮っていないしぐさ: 色は薄めない（てつこはそのままの色）。写真の窓を点線で囲み、背景は生成りの紙のまま */
+.tt-polaroid[data-photo="false"] .tt-thumb { outline: 2px dashed rgba(110, 67, 37, .35); outline-offset: -6px; }
 .tt-tape { position: absolute; left: 50%; top: -12px; width: 110px; height: 26px; margin-left: -55px; z-index: 2; background: rgba(185, 163, 201, .8); transform: rotate(3deg);
   clip-path: polygon(0 10%, 6% 0, 12% 12%, 18% 0, 82% 0, 88% 12%, 94% 0, 100% 10%, 100% 90%, 94% 100%, 88% 88%, 82% 100%, 18% 100%, 12% 88%, 6% 100%, 0 90%); }
 .tetsuko-time[data-art-ui~="photo_frame"] .tt-polaroid { background: url("../img/ui/tetsuko/ui_photo_frame.webp") center / 100% 100% no-repeat; box-shadow: none; }
@@ -566,4 +567,11 @@
 /* しぐさの絵も、ベッド・座布団の上ではその高さまで上げる（立ち絵の枠の -22%・-16% と同じ px） */
 .tetsuko-time[data-art-props~="bed"] .tt-cat[data-inside="bed"] .tt-cat-pose { translate: 0 -62px; }
 .tetsuko-time[data-art-props~="cushion"] .tt-cat[data-inside="cushion"] .tt-cat-pose { translate: 0 -45px; }
+/* 撮った写真: 裏口の絵を背にする（背景の絵は JS が style で入れる。ベンチと地面のあたりを写す）。少しだけ色を締めて「写真」らしく */
+.tt-thumb[data-photo="1"] { background-color: #6b5a4c; background-size: cover; background-position: 30% 78%; }
+.tt-thumb[data-photo="1"] img { filter: saturate(1.08) contrast(1.04); }
+.tt-thumb[data-photo="1"]::after { content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(160deg, rgba(255, 236, 200, .18), rgba(255, 236, 200, 0) 45%), radial-gradient(ellipse at 50% 55%, rgba(0, 0, 0, 0) 60%, rgba(30, 16, 6, .28)); }
+/* トンネルから出るしっぽ（#3214）: トンネルの奥の口（右の縁の後ろ）から地面に沿って出て、上へ巻く。根元はトンネルの縁に隠す */
+.tetsuko-time[data-art-props~="tunnel_tail"] .tt-prop[data-prop="tunnel"] > .tt-prop-tail { left: 102px; bottom: 30px; width: 110px; height: 105px; z-index: 1; transform-origin: 8% 90%; }
 

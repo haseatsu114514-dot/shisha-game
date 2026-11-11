@@ -614,15 +614,20 @@ export async function openTetsukoTime({ value = null, visitKey = null, bg = null
     }
 
     // -- 見つけた・撮った時の小さな札（反応の帯の中）。数秒で消え、手帳に残る。
-    function thumb(momentId) {
+    // 撮った写真（photo: アルバムの1件）は、裏口の絵を背にして見せる（生成りの紙の上の切り抜きにしない）。昼夜は撮った時のもの。
+    const photoScene = shot => (ART_READY.background ? data.sceneBg?.("bg_mukai_backdoor", shot?.night ? "night" : "day")?.url : null) || null;
+    function thumb(momentId, { photo = null } = {}) {
       const moment = momentById(momentId);
       const art = moment?.art && hasPose(moment.art) ? poseUrl(moment.art) : null;
-      return el("span.tt-thumb", { dataset: { face: moment?.face || "normal", art: art ? "1" : "" } },
+      const scene = photo ? photoScene(photo) : null;
+      return el("span.tt-thumb", { dataset: { face: moment?.face || "normal", art: art ? "1" : "", photo: scene ? "1" : "" },
+        style: scene ? { backgroundImage: `url("${scene}")` } : null },
         [el("img", { src: art || faceSrc(moment?.face || "normal"), alt: "" })]);
     }
+    const albumEntry = momentId => session.album.find(entry => entry.moment === momentId) || null;
     function toast(kind, momentId) {
       const card = el("div.tt-toast", { dataset: { kind } }, [
-        thumb(momentId),
+        thumb(momentId, { photo: kind === "photo" ? albumEntry(momentId) : null }),
         el("p", { dataset: { test: "tetsuko-note" } }, [
           el("small", { text: kind === "photo" ? "写真に残した" : "しぐさ図鑑に記録" }),
           el("b", { text: momentById(momentId)?.name || "" }),
@@ -638,7 +643,7 @@ export async function openTetsukoTime({ value = null, visitKey = null, bg = null
     function flyToBook(momentId) {
       if (reduced) return;
       const c = onScreen(catCenter());
-      const card = el("span.tt-fly", { "aria-hidden": "true", style: { left: `${c.x}px`, top: `${c.y}px` } }, [thumb(momentId)]);
+      const card = el("span.tt-fly", { "aria-hidden": "true", style: { left: `${c.x}px`, top: `${c.y}px` } }, [thumb(momentId, { photo: albumEntry(momentId) })]);
       host.append(card);
       requestAnimationFrame(() => card.classList.add("go"));
       setTimeout(() => card.remove(), 900);
@@ -1038,7 +1043,7 @@ export async function openTetsukoTime({ value = null, visitKey = null, bg = null
         return el("button.tt-card", { type: "button", dataset: { found: String(found), photo: String(!!photo), test: `tetsuko-book-${moment.id}` },
           "aria-pressed": String(bookSel === moment.id), onclick: () => { SE.click?.(); bookSel = moment.id; renderBook(); } }, [
           el("span.tt-card-no", { text: String(index + 1).padStart(2, "0") }),
-          found ? thumb(moment.id) : el("span.tt-thumb.unknown", { text: "？" }),
+          found ? thumb(moment.id, { photo }) : el("span.tt-thumb.unknown", { text: "？" }),
           el("b", { text: found ? moment.name : "？？？" }),
           found ? el("i.tt-stamp", { "aria-hidden": "true" }) : null,
         ]);
@@ -1048,7 +1053,7 @@ export async function openTetsukoTime({ value = null, visitKey = null, bg = null
       const photo = session.album.find(entry => entry.moment === pick.id);
       const detail = el("div.tt-detail", [
         el("div.tt-polaroid", { dataset: { photo: String(!!photo), known: String(known) } }, [
-          el("i.tt-tape"), known ? thumb(pick.id) : el("span.tt-thumb.unknown", { text: "？" }),
+          el("i.tt-tape"), known ? thumb(pick.id, { photo }) : el("span.tt-thumb.unknown", { text: "？" }),
           el("small", { text: photo ? dayLabel(photo.day) || "写真" : known ? "写真はまだ" : "" }),
         ]),
         el("h4", { text: known ? pick.name : "まだ見つけていない" }),

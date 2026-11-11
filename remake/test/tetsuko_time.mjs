@@ -494,6 +494,23 @@ assert.equal(classifyFlag(OUTINGS_FLAG), "progression");
   assert.equal(record.album.length, ALBUM_LIMIT);
   assert(record.album.every(entry => !("png" in entry)), "画像データは記録に残さない");
   assert.equal(record.album.find(entry => entry.moment === "first_paw").day, 0, "重複は先の1件だけ");
+  // 夜に撮った写真は night を残す（手帳で夜の裏口を背にして見せる）。昼の写真と旧い記録には付けない。壊れた値は昼。
+  const night = createSession(save({ count: 4, slot: 1 }));
+  keep(act(night, "pet"));
+  assert(takePhoto(night));
+  assert.equal(night.album[0].night, true);
+  const day = createSession(save({ count: 4, slot: 0 }));
+  keep(act(day, "pet"));
+  assert(takePhoto(day));
+  assert.equal("night" in day.album[0], false);
+  const kept = readTetsukoRecord(save({ record: { album: [{ moment: "first_rub", day: 3, props: {}, night: true }, { moment: "hug_toy", day: 4, props: {}, night: "yes" }] } }));
+  assert.equal(kept.album[0].night, true);
+  assert.equal("night" in kept.album[1], false, "true 以外は昼として読む");
+  const nightValue = save({ count: 4, slot: 1 });
+  const nightSession = createSession(nightValue, { visitKey: tetsukoVisitKey(nightValue) });
+  keep(act(nightSession, "pet")); takePhoto(nightSession);
+  assert(settleTetsukoTime(nightValue, sessionResult(nightSession)).committed);
+  assert.equal(nightValue.flags[TETSUKO_TIME_FLAG].album[0].night, true, "確定しても夜の写真のまま");
 }
 
 // 確定点: 意味のあるふれあいでない／訪問キーが無い／同じキーの2回目は保存に触らない。
