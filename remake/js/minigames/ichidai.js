@@ -1007,7 +1007,7 @@ export function runIchidai({ host = document.getElementById("stage"), signal = n
     if (a.type === "charge") return { action: a, text: `「${name(a.hand)}」を裏向きで置く（熱+1・1枚引く）`, where: () => (sel(a.hand) ? [T("ichi-charge-slot"), T("ichi-do-charge")] : [T(`ichi-hand-${a.hand}`)]) };
     if (a.type === "ash") return { action: a, text: "熱を下げる：火の小さい炭を1つ外す（灰にする）", where: () => (ui.sel?.type === "zone" && ui.sel.i === a.zone ? [T("ichi-do-ash")] : [T(`ichi-coal-${a.zone}`)]) };
     if (a.type === "play") { const c = CARD[me.hand[a.hand]], puff = c.when === "puff" && !G.R.reactAfterReveal;
-      return { action: a, text: `「${c.name}」を${puff ? "この一口に仕込む" : "使う"}${a.target != null ? `（${G.P[a.target].name}に）` : ""}`, where: () => (sel(a.hand) ? [T(a.target != null && multi() ? `ichi-do-play-${a.target}` : "ichi-do-play")] : [T(`ichi-hand-${a.hand}`)]) }; }
+      return { action: a, sub: c.tx, text: `「${c.name}」を${puff ? "この一口に仕込む" : "使う"}${a.target != null ? `（${G.P[a.target].name}に）` : ""}`, where: () => (sel(a.hand) ? [T(a.target != null && multi() ? `ichi-do-play-${a.target}` : "ichi-do-play")] : [T(`ichi-hand-${a.hand}`)]) }; }
     if (a.type === "end") { const g = w.type === "main" ? heatGoal(me) : null;
       return { action: a, text: w.type === "prep" ? "このターンはここまで。「ターンを終える」" : !g || g.diff === 0 ? "熱はねらいどおり。「ターンを終える」" : g.zone === "just" || g.zone === "band" ? "適温に入っている。「ターンを終える」" : "このターンは、これ以上合わせられない。「ターンを終える」", where: () => [T("ichi-end")] }; }
     if (a.type === "discard") return { action: a, text: `手札は7枚まで。光っている札を灰にする`, where: () => (sameSet(a.picks) ? [T("ichi-discard")] : a.picks.filter((i) => !ui.picks.has(i)).map((i) => T(`ichi-hand-${i}`))) };
@@ -1018,21 +1018,30 @@ export function runIchidai({ host = document.getElementById("stage"), signal = n
     return null;
   }
   /** 描き直したあと、次に押す場所を光らせる */
+  let hintToken = 0;
   function markHint(hint) {
     for (const n of root.querySelectorAll(".is-hint")) n.classList.remove("is-hint");
     for (const n of root.querySelectorAll(".ichi-pointer")) n.remove();
     root.dataset.assist = ui.assist ? "1" : "0";
+    const token = ++hintToken;
     if (!hint || ui.sheet) return;
-    const rr = root.getBoundingClientRect(), k = rr.width / 1280 || 1;
-    let shown = 0;
-    for (const q of hint.targets) for (const n of root.querySelectorAll(q)) {
-      if (n.disabled) continue;
-      n.classList.add("is-hint");
-      // 押す場所の上に、小さな矢印を出す（使える札の金の枠と見分けるため。3つまで）
-      const r = n.getBoundingClientRect();
-      if (!r.width || shown++ >= 3) continue;
-      root.append(el("i.ichi-pointer", { "aria-hidden": "true", dataset: { test: "ichi-pointer" }, style: { left: `${Math.round((r.left + r.width / 2 - rr.left) / k)}px`, top: `${Math.round((r.top - rr.top) / k)}px` } }, el("b", { text: "ここ" })));
-    }
+    const nodes = [];
+    for (const q of hint.targets) for (const n of root.querySelectorAll(q)) { if (n.disabled) continue; n.classList.add("is-hint"); if (nodes.length < 3) nodes.push(n); }
+    // 押す場所の上に、小さな矢印を出す（使える札の金の枠と見分けるため。3つまで）。
+    // 札が動いている途中（置いた直後・盆が出た直後）に測ると場所がずれるので、動きが収まったころにもう一度合わせる
+    const place = () => {
+      if (token !== hintToken) return;
+      for (const n of root.querySelectorAll(".ichi-pointer")) n.remove();
+      const rr = root.getBoundingClientRect(), k = rr.width / 1280 || 1;
+      for (const n of nodes) {
+        if (!n.isConnected) continue;
+        const r = n.getBoundingClientRect();
+        if (!r.width) continue;
+        root.append(el("i.ichi-pointer", { "aria-hidden": "true", dataset: { test: "ichi-pointer" }, style: { left: `${Math.round((r.left + r.width / 2 - rr.left) / k)}px`, top: `${Math.round((r.top - rr.top) / k)}px` } }, el("b", { text: "ここ" })));
+      }
+    };
+    place();
+    if (!quick()) setTimeout(place, 420);
   }
   /** いま何をすればよいか（短い一文）と、できることのボタン */
   function guide(me, op, w) {
@@ -1107,7 +1116,9 @@ export function runIchidai({ host = document.getElementById("stage"), signal = n
       const steps = flowSteps(w, me, hint), goal = ["embers", "prep", "main"].includes(w.type) ? goalLine(me, w) : null;
       if (steps) out.push(steps);
       if (goal) out.push(goal);
-      if (hint) out.push(el("div.ichi-next", { dataset: { test: "ichi-next-step", action: hint.action.type } }, [el("i", { text: "つぎ" }), el("span", { text: hint.text })]));
+      // カードを使う手には、そのカードが何をするかを1行添える（札を開かなくても分かるように）
+      if (hint) out.push(el("div.ichi-next", { dataset: { test: "ichi-next-step", action: hint.action.type } }, [el("i", { text: "つぎ" }), el("span", { text: hint.text }),
+        hint.sub ? el("small", { dataset: { test: "ichi-next-why" }, title: hint.sub, text: hint.sub }) : null]));
       out.push(...lines.slice(1).filter((n) => n.classList.contains("is-keep")));
     }
     // 「おすすめで進める」で、「つぎ」の手をそのまま打てる

@@ -580,7 +580,7 @@ button.ichi-leaf.can:hover { border-color: #fff; }
 .ichi-pile-minus { position: absolute; left: 50%; bottom: -6px; transform: translateX(-50%); z-index: 4; white-space: nowrap; min-width: 64px; min-height: 30px; padding: 0 8px; border-radius: 15px; border: 2px solid #150d22; background: var(--ichi-gold); color: #1d1206; font-size: 14px; font-weight: 900; cursor: pointer; }
 .ichi-market .s-pile { --cw: 86px; }
 /* 盆の見出し: いま何枚選んだか・蒸らせるか（押せない理由も字で出す） */
-.ichi-market-head { grid-column: 1 / -1; justify-self: stretch; display: flex; align-items: baseline; justify-content: space-between; gap: 14px; min-width: 0; padding: 0 4px 2px; }
+.ichi-market-head { grid-column: 1 / -1; justify-self: stretch; display: flex; align-items: baseline; justify-content: space-between; gap: 14px; min-width: 0; padding: 0 4px 2px; margin-bottom: 16px; } /* 下の余白は、札の上に出る「ここ」の矢印のぶん */
 .ichi-market-head b { font-size: 16px; font-weight: 900; color: #fff6dc; white-space: nowrap; }
 .ichi-market-head small { font-size: 13px; color: #ffcf9a; text-align: right; }
 /* ガイドつきは右上の案内の札が長いので、盆を少し下げる */
@@ -896,6 +896,7 @@ button.ichi-leaf.can:hover { border-color: #fff; }
 .ichi-next { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 8px; align-items: start; padding: 5px 9px; border-radius: 8px; background: rgba(227, 189, 110, 0.16); box-shadow: inset 0 0 0 1px rgba(227, 189, 110, 0.55); }
 .ichi-next i { font-style: normal; padding: 0 8px; border-radius: 10px; background: var(--ichi-gold); color: #1d1206; font-size: 13px; font-weight: 900; line-height: 22px; white-space: nowrap; }
 .ichi-next span { font-size: 16px; font-weight: 800; line-height: 1.35; color: #fff6dc; }
+.ichi-next small { grid-column: 1 / -1; font-size: 13px; line-height: 1.3; color: #e9def2; }
 .ichi-last { display: block; font-size: 13px; color: #d9cbe8; }
 /* 流れ: このターンにすることの順番（済み＝うすく、いま＝金） */
 .ichi-steps { display: flex; flex-wrap: wrap; gap: 3px 4px; align-items: center; }
