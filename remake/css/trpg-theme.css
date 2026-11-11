@@ -557,3 +557,27 @@ html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-builder .trpg-bu
 html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-builder-stat-rows dd .trpg-button { min-width: var(--q-hit); min-height: var(--q-hit); font-size: var(--b-name); }
 html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-builder-stage .trpg-modal-actions .trpg-button { font-size: var(--b-text); }
 html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-builder-stats .trpg-builder-name input { min-height: var(--q-hit); }
+
+/* ---------------------------------------------------------------- 行動宣言は「手札のカード」（TMX05・TMX07、2026-11-11 オーナー「深緑のウインドウに頼りすぎ」「文字数が多い所はアイコン化」）。
+   深緑の箱をやめて生成りの紙のカードにし、左上に役の姿、右上に「おすすめ」の札、下に能力と見込み。長い但し書きは短い札にして、説明は title と「？」へ。 */
+html:root .trpg-root.trpg-cinematic .trpg-approach {
+  position: relative; display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: 12px; row-gap: 8px; align-content: start; min-height: 0;
+  border: 1px solid #b89b62; border-radius: 10px; color: #2a1b0c; text-shadow: none;
+  background: linear-gradient(168deg, #fdf8ea 0%, #f1e6cb 62%, #e6d7b4 100%); box-shadow: 0 2px 0 #a88a58, 0 12px 26px #0009;
+}
+html:root .trpg-root.trpg-cinematic .trpg-approach:hover:not(:disabled),
+html:root .trpg-root.trpg-cinematic .trpg-approach:focus-visible { border-color: #8a6524; background: linear-gradient(168deg, #fffdf4, #f6ecd2); }
+html:root .trpg-root.trpg-cinematic .trpg-approach[data-best="true"] { border-color: #8a6524; box-shadow: 0 0 0 2px #e9c36a, 0 2px 0 #a88a58, 0 12px 26px #0009; }
+html:root .trpg-root.trpg-cinematic .trpg-approach .trpg-approach-copy { display: contents; }
+html:root .trpg-root.trpg-cinematic .trpg-approach .trpg-approach-face { grid-column: 1; grid-row: 1 / span 2; }
+html:root .trpg-root.trpg-cinematic .trpg-approach .trpg-approach-copy small { grid-column: 2; grid-row: 1; align-self: end; color: #6b5637; }
+html:root .trpg-root.trpg-cinematic .trpg-approach .trpg-approach-copy strong { grid-column: 2; grid-row: 2; align-self: start; color: #2a1b0c; font-weight: 700; }
+html:root .trpg-root.trpg-cinematic .trpg-approach .trpg-approach-copy span { grid-column: 1 / -1; color: #4a3d28; }
+html:root .trpg-root.trpg-cinematic .trpg-approach .trpg-approach-meta { grid-column: 1 / -1; padding-top: 8px; border-top: 1px dashed #b89b6299; }
+html:root .trpg-root.trpg-cinematic .trpg-approach .trpg-approach-meta b { color: #fff6df; background: linear-gradient(135deg, #2f5a55, #1c3d3b); }
+html:root .trpg-root.trpg-cinematic .trpg-approach .trpg-approach-meta small { color: #3d3221; }
+html:root .trpg-root.trpg-cinematic .trpg-approach .trpg-approach-meta i { flex-basis: auto; padding: 1px 9px; border-radius: 999px; font-weight: 700; }
+html:root .trpg-root.trpg-cinematic .trpg-approach .trpg-approach-meta .trpg-approach-first { color: #8a3d0c; background: #f6d9a8; }
+html:root .trpg-root.trpg-cinematic .trpg-approach .trpg-approach-meta .trpg-approach-best {
+  position: absolute; top: -11px; right: 12px; color: #2a1b0c; background: linear-gradient(135deg, #f7dc8c, #dcae4a); box-shadow: 0 2px 5px #0006;
+}

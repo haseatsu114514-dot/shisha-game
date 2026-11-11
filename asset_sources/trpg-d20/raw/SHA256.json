@@ -1,0 +1,42 @@
+{
+  "README-ja.txt": {
+    "bytes": 1483,
+    "sha256": "a3c97b362341b9e2592f57fff1de0d39843438e02912fcfa2ad8f2c95a52624f"
+  },
+  "GENERATION.txt": {
+    "bytes": 1286,
+    "sha256": "97466db68ddcfcaceed42bba337275562bfaea8f03bc6b4f0af30da018ba68e0"
+  },
+  "asset_sources/trpg-d20/raw/d20-rest-generated.png": {
+    "bytes": 912656,
+    "sha256": "3d508a7d9a6a1267e943c1d57d524eb10f7df6fe5297bbdabaf8a526e895cef8"
+  },
+  "asset_sources/trpg-d20/raw/geometry_reference.py": {
+    "bytes": 1110,
+    "sha256": "d3055127f86800d7fefe91a36db921358444fd1d1bc583c5a0474b118dc344ce"
+  },
+  "asset_sources/trpg-d20/raw/exact-icosahedron-geometry.png": {
+    "bytes": 37083,
+    "sha256": "61416aa9494921d4f9735501a8bd55d476b71f2265bc7c0ea84d6fa13371ecc6"
+  },
+  "asset_sources/trpg-d20/raw/d20-tumble-generated.png": {
+    "bytes": 1765857,
+    "sha256": "6d32eceed22d2cf4e91bd681a04516f3eee9ee66f97d531d071855e2f358f7ab"
+  },
+  "assets/ui/trpg/d20-tumble.png": {
+    "bytes": 1742191,
+    "sha256": "6eede25eb94a5f173481e253f55e2efc5a21fa54f3c65a4d1a21ca5011932c58"
+  },
+  "assets/ui/trpg/d20-rest.png": {
+    "bytes": 592077,
+    "sha256": "f7f0568a1d142208fe2f1e98b11ce074b86f5499c9f0ac53c6acb0881279714c"
+  },
+  "remake/img/ui/trpg/d20-tumble.webp": {
+    "bytes": 197068,
+    "sha256": "cf6751e4acca7cf13bff71fd1dd33b07ebb37ac09e019ecc1d44ac8201564e04"
+  },
+  "remake/img/ui/trpg/d20-rest.webp": {
+    "bytes": 99266,
+    "sha256": "ed5e12de53f851e2bd698555e6bf44161fc12d82da90d9f198de050014460587"
+  }
+}
