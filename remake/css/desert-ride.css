@@ -253,12 +253,12 @@ html:root[data-density="phone"] .desert-ride .dr-card .dr-kicker { display: none
 
 /* #3175: 選別済み操作画像。読み込み中だけ文字ボタンを見せる。 */
 .desert-ride .dr-controls { align-items: flex-end; padding-bottom: 10px; }
-/* 2026-11-11 オーナー「スティックはいらない。左右ボタンを大きく。ジャンプとブーストも大きく」: 左右 168・BOOST 160・ジャンプ 192（1280×720 の舞台の画素）。
+/* 2026-11-11 オーナー「スティックはいらない。左右ボタンを大きく。ジャンプとブーストも大きく」: 左右 168（1280×720 の舞台の画素）。
+   同日「ブーストとジャンプボタンサイズ統一したい」: BOOST とジャンプはどちらも 176（右 3割に2つ並べて収まる最大。以前は 160 と 192）。
    左の2つは舞台の左 3割、右の2つは右 3割に収め、真ん中の走路と人物は空ける */
 .desert-ride .dr-touch-pair { align-items: flex-end; gap: 10px; }
 .desert-ride .dr-touch { position: relative; width: 168px; height: 168px; flex: 0 0 auto; overflow: visible; }
-.desert-ride .dr-touch.dr-boost { width: 160px; height: 160px; }
-.desert-ride .dr-touch.dr-jump { width: 192px; height: 192px; }
+.desert-ride .dr-touch.dr-boost, .desert-ride .dr-touch.dr-jump { width: 176px; height: 176px; }
 .desert-ride .dr-touch.art-ready { padding: 0; border: 0; border-radius: 0; background: transparent; backdrop-filter: none; }
 .desert-ride .dr-touch.art-ready span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); }
 .desert-ride .dr-control-image { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; pointer-events: none; }
@@ -293,8 +293,8 @@ html:root[data-density="phone"] .desert-ride .dr-card .dr-kicker { display: none
 .desert-ride .dr-hud-right .dr-quit { top: calc(100% + 12px); right: 0; pointer-events: auto; }
 #stage[data-wide] .desert-ride .dr-hud-right .dr-quit { right: 0; }
 html:root[data-density="phone"] #stage[data-wide] .desert-ride .dr-touch { width: 168px; height: 168px; }
-html:root[data-density="phone"] #stage[data-wide] .desert-ride .dr-touch.dr-boost { width: 160px; height: 160px; }
-html:root[data-density="phone"] #stage[data-wide] .desert-ride .dr-touch.dr-jump { width: 192px; height: 192px; }
+html:root[data-density="phone"] #stage[data-wide] .desert-ride .dr-touch.dr-boost,
+html:root[data-density="phone"] #stage[data-wide] .desert-ride .dr-touch.dr-jump { width: 176px; height: 176px; }
 
 /* ---- 2026-11-11: カービングの印・最初のカーブの案内・裏の相手の名乗り ---- */
 /* カーブへ切り込んでいる間は、BOOST のゲージの縁が光る（貯まっていることが分かる） */
@@ -360,3 +360,10 @@ html:root[data-density="phone"] #stage[data-wide] .desert-ride .dr-touch.dr-jump
 .desert-ride[data-reduced-motion="true"] .dr-zap { display: none; }
 .desert-ride[data-reduced-motion="true"][data-charge="max"] .dr-touch.dr-boost.art-ready { animation: none; }
 @media (prefers-reduced-motion: reduce) { .desert-ride[data-charge="max"] .dr-touch.dr-boost.art-ready { animation: none; } }
+
+/* 絵のボタンには箱の形の光（box-shadow）を付けない（2026-11-11 オーナー「雷のやつ、うっすら水色の四角が見えるから目立たないように」）。
+   満タン・ブースト中の box-shadow がボタンの箱の形に光り、その上に稲妻の青い光（drop-shadow）が重なって水色の四角に見えていた。
+   光は絵の形に沿う drop-shadow だけにする（絵が読めない時の文字ボタンは今までどおり） */
+.desert-ride .dr-touch.art-ready,
+.desert-ride[data-gauge] .dr-touch.dr-boost.art-ready,
+.desert-ride[data-boost] .dr-touch.dr-boost.art-ready { box-shadow: none; }
