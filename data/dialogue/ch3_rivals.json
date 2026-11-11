@@ -323,12 +323,12 @@
       "lines": [
         {
           "speaker": "",
-          "text": "mukaiの開店前。仕込み中のはじめが顔を上げると、入口に綾取がいた。"
+          "text": "mukaiの開店前。仕込み中に顔を上げると、入口に綾取がいた。"
         },
         {
           "speaker": "saku",
           "face": "normal",
-          "text": "今日は客で来たよ。県大会の動画は見たけど、君がここで作る一台を吸ってみたくて"
+          "text": "今日は客で来たよ。君がここで作る一台を吸ってみたくて"
         },
         {
           "speaker": "hajime",
@@ -352,51 +352,138 @@
         },
         {
           "speaker": "",
-          "text": "今分かることをましろに伝えて、二人で炭の位置を決めた。"
-        },
-        {
-          "speaker": "",
-          "text": "綾取は名前を伏せずに材料を見てから吸う。"
+          "text": "綾取はメニューを開き、ぶどうと紅茶の欄へ指を置いた。"
         },
         {
           "speaker": "saku",
-          "face": "surprise",
-          "text": "最初は静かだね。……あ、二口目で変わった。君が待った理由、少し分かった気がする"
+          "face": "normal",
+          "text": "これ、混ぜられる？　急いで帰る用事はないよ"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "まだ、毎回同じようには作れません"
+          "text": "はい。注文、一つ確かめてもいいですか"
+        },
+        {
+          "type": "choice",
+          "id": "ch3_service_order",
+          "choices": [
+            {
+              "text": "強さの希望から聞く",
+              "next": "gentle"
+            },
+            {
+              "text": "吸う時間から聞く",
+              "next": "pace"
+            }
+          ]
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ぶどうと紅茶を、ゆっくり吸えるくらいで。材料の名前も先にお伝えします"
         },
         {
           "speaker": "saku",
           "face": "normal",
-          "text": "僕もだよ。だから、次の一台を見たい"
-        },
-        {
-          "speaker": "saku",
-          "face": "normal",
-          "text": "……大会でもね"
+          "text": "うん。今日は答えを隠す遊びじゃなくて、普通に頼むよ"
         },
         {
           "speaker": "",
-          "text": "綾取は笑って代金を払い、空のグラスを自分で下げた。はじめも、また話したいと思った。"
+          "text": "作業台へ戻り、ましろに注文を伝えた。葉も道具も、店のものを借りる。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "味の確認をお願い。俺は仕込みと、提供したあとの熱を見る"
         },
         {
           "speaker": "mashiro",
           "face": "normal",
-          "text": "陣、楽しそうだったね。勝負する時も、ああいう顔をするよ"
+          "text": "うん。ぶどうを多めに、ブラックティーを残す感じでねぇ"
+        },
+        {
+          "speaker": "",
+          "text": "葉を量り、道具を組んだ。ましろが一度確かめてから、俺が綾取の席へ運ぶ。"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "……俺も、楽しみだよ。少し怖いけど"
+          "text": "お待たせしました。熱かったら、そこで教えてください"
         },
         {
           "speaker": "",
-          "text": "親しくなった相手と、同じ舞台に立つ日が近づいていた。綾取が何を準備しているかは、まだ分からない。"
+          "text": "綾取は材料を見てから吸った。最初の一口のあと、水を飲み、もう一度ホースを取る。"
+        },
+        {
+          "speaker": "saku",
+          "face": "normal",
+          "text": "最初は静かだね。……二口目で、紅茶が出てきた"
+        },
+        {
+          "speaker": "",
+          "text": "しばらく近況を話しながら吸ううち、綾取がホースを置いた。"
+        },
+        {
+          "speaker": "saku",
+          "face": "normal",
+          "text": "少しぬるくなってきたかな。ここで、熱を見てもらえる？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "今、調整します。吸いやすさをもう一度聞かせてください"
+        },
+        {
+          "speaker": "",
+          "text": "綾取がホースを置くのを待ち、店で焼いてあった交換用の炭を持ってきた。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "味は僕も見るよ。はじめくんは、熱と吸う間隔を確かめてねぇ"
+        },
+        {
+          "speaker": "",
+          "text": "一度だけ調整して、綾取の席へ戻す。うまくいかない時は、ましろにも手を借りればいい。"
         }
-      ]
+      ],
+      "branches": {
+        "gentle": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "強さは、どのくらいがお好みですか"
+          },
+          {
+            "speaker": "saku",
+            "face": "normal",
+            "text": "軽めで。でも、紅茶の香りはなくしたくないな"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "分かりました。途中で強くなった時も、教えてください"
+          }
+        ],
+        "pace": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "途中で休みながら、長く吸う感じですか"
+          },
+          {
+            "speaker": "saku",
+            "face": "normal",
+            "text": "うん。話しながら、ゆっくり。重すぎないとうれしい"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "じゃあ、二口目からも確かめに来ますね"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "ch3_saku_advice",
@@ -1442,6 +1529,142 @@
             "speaker": "steve",
             "face": "normal",
             "text": "大会の日から、タイマーと一緒に客の二口目も見てる、……まだ少しだけな"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "ch3_saku_mukai_served",
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "どうでしょう。今度は、ゆっくり吸えますか"
+        },
+        {
+          "speaker": "saku",
+          "face": "normal",
+          "text": "うん。さっき聞いてくれたから、言いやすかった"
+        },
+        {
+          "speaker": "",
+          "text": "綾取は手帳を開いた。葉の名前の下へ、俺が炭に触れた時のことを書いている。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "それも、記録するんですか"
+        },
+        {
+          "speaker": "saku",
+          "face": "normal",
+          "text": "僕が吸った時のことだけ。君が何を考えたかは、聞かないと分からないよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "じゃあ、俺にも一行だけ書かせてください"
+        },
+        {
+          "speaker": "",
+          "text": "自分のノートに、綾取の注文と、調整のあとに返ってきた言葉を書いた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "まだ、毎回同じようには作れません"
+        },
+        {
+          "speaker": "saku",
+          "face": "normal",
+          "text": "僕もだよ。だから、次の一台を見たい"
+        },
+        {
+          "speaker": "saku",
+          "face": "normal",
+          "text": "……大会でもね"
+        },
+        {
+          "speaker": "",
+          "text": "綾取は笑って代金を払い、空のグラスを自分で下げた。店の売上は、いつもの伝票へ付ける。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "陣、楽しそうだったね。勝負する時も、ああいう顔をするよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……俺も、楽しみだよ。少し怖いけど"
+        },
+        {
+          "speaker": "",
+          "text": "綾取のグラスを洗い、ノートを作業台の端へ置いた。本番の配合は、まだ白紙だった。"
+        }
+      ],
+      "branches": {
+        "good": [
+          {
+            "speaker": "",
+            "text": "調整した一台を運び、別の吸い口を渡した。ましろは横で味を確かめる。"
+          },
+          {
+            "speaker": "saku",
+            "face": "normal",
+            "text": "あ、今は吸いやすい。茶の香りも、まだ残ってる"
+          }
+        ],
+        "rough": [
+          {
+            "speaker": "",
+            "text": "戻した一台を綾取が吸う。少し眉を上げ、ホースを置いた。"
+          },
+          {
+            "speaker": "saku",
+            "face": "normal",
+            "text": "さっきとは違うね。あと少しだけ、見てもらってもいい？"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "ましろちゃん、最後の確認をお願い"
+          },
+          {
+            "speaker": "",
+            "text": "気になった熱を伝え、ましろと整えた。二人で確かめてから、もう一度席へ運ぶ。"
+          }
+        ],
+        "failed": [
+          {
+            "speaker": "",
+            "text": "一台を傷めてしまった。綾取へ謝り、水を出して待ってもらう。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "すみません。作り直してから、お持ちしてもいいですか"
+          },
+          {
+            "speaker": "saku",
+            "face": "normal",
+            "text": "うん。急いでないよ。水、ありがとう"
+          },
+          {
+            "speaker": "",
+            "text": "ましろが作り直す間、俺は次の道具を用意した。味と熱を二人で確かめ、席へ運ぶ。"
+          }
+        ],
+        "coal_changed": [
+          {
+            "speaker": "",
+            "text": "ノートに、交換した炭と、綾取がホースを戻した時の様子を並べた。"
+          }
+        ],
+        "coal_kept": [
+          {
+            "speaker": "",
+            "text": "ノートに、炭を替えずに確かめたことと、綾取の返事を並べた。"
           }
         ]
       }

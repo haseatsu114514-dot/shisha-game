@@ -3,6 +3,9 @@
 // deck at the phrase head (quantized to the nearest beat, like a CDJ with QUANTIZE on), then ride the crossfader along
 // the guide line for 8 bars (one check per beat, combo). EQ (bass swap) is automatic. Each transition is scored on
 // pitch / entry / fader-follow; the floor meter reacts to the mix, the picks and every beat of the fader.
+// 2026-11-11 renewal (DJS20〜): the floor is the crowd's heat. It starts at 様子見 (50) and each thing the player does moves it by a
+// visible step (entry, every beat of the fader, the transition's rank, the pick), so a clean set warms the room up to 最高潮 by the end
+// instead of pinning the meter at 100 after one mix. ▶ is judged against the nearest phrase head.
 import { TRACKS } from './tracks.mjs';
 export const PHRASE = 32;      // 8 bars of 4/4
 export const LEAD = 16;        // the next entry cue is at least 4 bars away
@@ -47,11 +50,12 @@ export function pickRating(request, from, to) {
   return n === 2 ? '◎' : n === 1 ? '○' : '△';
 }
 export const PICK_FLOOR = { '◎': .1, '○': .03, '△': -.05 };
-function requestFor(m, master) {
+/** What the guests ask for. At least one of the two candidates can answer it (DJS22: never two cards that both miss the request). */
+function requestFor(m, master, options = []) {
   const e = TRACKS[master]?.energy ?? 3, roll = m.rng();
-  if (e >= 5) return roll < .6 ? 'down' : 'keep';
-  if (e <= 2) return roll < .7 ? 'up' : 'keep';
-  return roll < .5 ? 'up' : roll < .8 ? 'keep' : 'down';
+  const wish = e >= 5 ? (roll < .6 ? 'down' : 'keep') : e <= 2 ? (roll < .7 ? 'up' : 'keep') : roll < .5 ? 'up' : roll < .8 ? 'keep' : 'down';
+  const fits = request => !options.length || options.some(key => energyMatch(request, master, key));
+  return fits(wish) ? wish : ['keep', 'up', 'down'].find(fits) || wish;
 }
 function candidates(m, master) {
   const keys = Object.keys(TRACKS).filter(k => k !== master);
@@ -87,7 +91,14 @@ function nextCue(m, from, now) {
   m.cue = { from, to: 1 - from, start, end: start + PHRASE, pressed: null, synced: false, missed: 0 };
   m.phase = 'cue'; m.fader = null;
 }
-export const GRADE_FLOOR = { PERFECT: .08, GOOD: .04, OK: 0, EARLY: -.05, LATE: -.05 };
+export const GRADE_FLOOR = { PERFECT: .06, GOOD: .03, OK: 0, EARLY: -.06, LATE: -.06 };
+/** What a finished transition does to the floor, by its rank. */
+export const RANK_FLOOR = { S: .06, A: .03, B: 0, C: -.06 };
+/** One beat of the 8 bars on / off the guide line. Break-even is about 73 % on the line (the 85-point fader score starts at 75 %). */
+export const FOLLOW_FLOOR = { hit: .003, miss: -.008 };
+/** The crowd's mood from the floor meter: 0 帰りそう / 1 しらけ気味 / 2 様子見 / 3 ノってきた / 4 最高潮 (4 is also the +5 bonus line). */
+export const MOODS = Object.freeze(['帰りそう', 'しらけ気味', '様子見', 'ノってきた', '最高潮']);
+export const moodOf = floor => floor >= .8 ? 4 : floor >= .6 ? 3 : floor >= .4 ? 2 : floor >= .2 ? 1 : 0;
 export function gradeOf(errorMs, allowance = 0) { const v = Math.abs(errorMs) - allowance; return v <= 30 ? 'PERFECT' : v <= 60 ? 'GOOD' : v <= 120 ? 'OK' : errorMs < 0 ? 'EARLY' : 'LATE'; }
 /** ▶ on a deck. The incoming deck of an open cue starts quantized to the master's nearest beat; anything else starts at once. */
 export function playDeck(m, id, now) {
@@ -96,6 +107,8 @@ export function playDeck(m, id, now) {
   const c = m.cue;
   if (c && c.to === id && m.decks[c.from].playing && !c.pressed) {
     const from = m.decks[c.from], fb = beatAt(from, now), n = Math.round(fb);
+    // Judge against the nearest phrase head: past the middle of the 8 bars the player is aiming at the next head (a little early there is EARLY, not a huge LATE).
+    if (fb - c.start > PHRASE / 2) { c.start += PHRASE; c.end += PHRASE; c.missed++; }
     const errorMs = (fb - c.start) * 60 / from.bpm * 1000, grade = gradeOf(errorMs, m.allowance || 0);
     d.beat = 0; d.at = from.at + (n - from.beat) * 60 / from.bpm; // beat 0 on the master's nearest beat (may be a few ms ahead)
     c.pressed = { errorMs, grade, beat: n, at: now }; m.lastPlay = { id, errorMs, grade };
@@ -148,8 +161,8 @@ function followCheck(m, beatInMix) {
     f.lastBeat++;
     const hit = Math.abs(toward(m) - guideAt(f.lastBeat / PHRASE)) <= FOLLOW_BAND;
     f.checks++;
-    if (hit) { f.hits++; f.combo++; f.best = Math.max(f.best, f.combo); m.floor = clamp(m.floor + .006, 0, 1); }
-    else { f.combo = 0; m.floor = clamp(m.floor - .01, 0, 1); }
+    if (hit) { f.hits++; f.combo++; f.best = Math.max(f.best, f.combo); m.floor = clamp(m.floor + FOLLOW_FLOOR.hit, 0, 1); }
+    else { f.combo = 0; m.floor = clamp(m.floor + FOLLOW_FLOOR.miss, 0, 1); }
     f.last = result = { beat: f.lastBeat, hit, combo: f.combo };
   }
   return result;
@@ -165,7 +178,12 @@ export function quality(m, now) {
   } else q *= .6;
   return clamp(q, 0, 1);
 }
-export function floorStep(m, q, dt) { m.floor = clamp(m.floor + (q - .55) * dt * .06, 0, 1); }
+/** The room drifts with how the mix sounds. A bad sound cools it at full speed; a good sound only warms it slowly (the steps above do the lifting). */
+export const FLOOR_WARM = .15;
+export function floorStep(m, q, dt) { const d = (q - .55) * dt * .06; m.floor = clamp(m.floor + (d > 0 ? d * FLOOR_WARM : d), 0, 1); }
+/** Where the fader is against the guide line, for the arrows: 0 on it, 1 behind (move on toward the incoming deck), -1 ahead (come back). */
+export const FOLLOW_SWEET = FOLLOW_BAND / 2;
+export function followHint(m, guide) { const d = guide - toward(m); return Math.abs(d) <= FOLLOW_SWEET ? 0 : d > 0 ? 1 : -1; }
 export const scoreFromErr = (v, s, a, b) => v <= s + 1e-10 ? 100 : v <= a + 1e-10 ? 85 : v <= b + 1e-10 ? 60 : 30;
 export const scoreFromRatio = r => r >= .9 - 1e-10 ? 100 : r >= .75 - 1e-10 ? 85 : r >= .5 - 1e-10 ? 60 : 30;
 export const rankFromScore = total => total >= 90 ? 'S' : total >= 75 ? 'A' : total >= 55 ? 'B' : 'C';
@@ -191,11 +209,12 @@ function finishTransition(m, now, view) {
   const score = scoreTransition({ pitchErrPct: bpmDiffPct(from, to), synced: c.synced, playMs: Math.abs(c.pressed.errorMs), reached: f.reached, follow: f.checks ? f.hits / f.checks : 0, allowance: m.allowance || 0 });
   const record = { ...score, from: from.track, to: to.track, grade: c.pressed.grade, missed: c.missed, combo: f.best, pick: m.pendingPick?.rating || null };
   m.transitions.push(record); view.transition = record; m.pendingPick = null;
-  m.floor = clamp(m.floor + { S: .1, A: .05, B: 0, C: -.08 }[score.rank], 0, 1);
+  m.floor = clamp(m.floor + RANK_FLOOR[score.rank], 0, 1);
   anchor(from, now); from.playing = false; view.stopped = c.from; m.master = c.to;
   from.track = null; m.cue = null; m.fader = null;
   if (m.played.length < m.count) {
-    m.phase = 'select'; m.select = { deck: c.from, options: candidates(m, to.track), request: requestFor(m, to.track) };
+    const options = candidates(m, to.track);
+    m.phase = 'select'; m.select = { deck: c.from, options, request: requestFor(m, to.track, options) };
     view.select = { ...m.select };
   } else {
     m.phase = 'done'; m.result = scoreSet(m); view.finished = m.result;

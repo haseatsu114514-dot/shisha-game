@@ -26,6 +26,13 @@ import { canStudyCubeCoals, studyCubeCoals } from "./coal-lesson.js";
 import { tsumugiAtTonari } from "./tsumugi-schedule.js";
 
 const TONARI_BG = "res://assets/backgrounds/bg_tonari_inside.png";
+// カードゲーム「一台勝負」の入口の切替（ICG12）。入・切は daily/ichidai-table.js が起動時に端末へ書き、ここは読むだけにする
+// （このメニューの取り込みを増やさない。既定で出すと決まったら、この2つの関数ごと外す）。
+const ichidaiOn = () => { try { return globalThis.localStorage?.getItem("suien_ichidai") === "1"; } catch { return false; } };
+const ichidaiNote = () => {
+  const r = state.ichidai, n = (v) => (Number.isInteger(v) && v > 0 ? v : 0);
+  return n(r?.plays) ? `スミさんと卓を囲む。時間は進まない。${n(r.wins)}勝${n(r.losses)}敗` : "スミさんと卓を囲む。時間は進まない";
+};
 
 /** tonari に入ったときのサブメニュー。戻るなら null */
 // ch2-story-data.js の strawberryTrialReady と同じ条件。日常の共通画面へ第2章の台本データを読み込ませない。
@@ -58,6 +65,8 @@ export function tonariMenu() {
         hiyoriAxeReady() && axeThrowExposed() ? opt("ひよりと斧投げへ", hiyoriAxeAffordable()
           ? "夜の寄り道。参加3000円・体力を使う・行動1回。3投を一緒に楽しむ"
           : "参加には3000円と体力が必要。先にLIMEの約束を済ませよう", "hiyori_axe", "tonari-hiyori-axe") : null,
+        // カードゲーム「一台勝負」（ICG12）。時間・お金・体力を使わない。?ichidai=1 で入れた端末にだけ出す
+        ichidaiOn() ? opt("カードで一勝負（一台勝負）", ichidaiNote(), "ichidai", "tonari-ichidai") : null,
       ]),
       el("button.btn.ghost.small.sub-back", { text: "← マップに戻る", dataset: { test: "sub-back" }, onclick: () => { SE.cancel(); pickIt(null); } }),
     ]));

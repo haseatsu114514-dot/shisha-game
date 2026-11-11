@@ -24,6 +24,9 @@ const AURAS = Object.freeze({
 // カーブで遠景が横へ流れる量（向き 1 あたりの画素）。空は陸の半分。絵の端は左右反転でつなぐので、どこまで曲がっても途切れない
 const YAW_PX = 600;
 const RIVAL_TITLES = Object.freeze({ naru: "裏ボス" });
+// 相手の滑る絵の倍率。絵は主人公の背面と同じ縮尺で描かれているので、身長の比（主人公172cm）だけを掛ける
+// （data/characters.json の spriteScale と同じ値。ヌール168cm・なる176cm）。図形で描く時は従来の 0.86
+const RIVAL_ART_SCALE = Object.freeze({ noor: 0.977, naru: 1.02 });
 
 const W = 1280, H = 720;
 const HORIZON = 262;             // 地平線の高さ
@@ -1259,52 +1262,109 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       ctx.fillRect(p.x - p.w * 1.02, p.y - poleH, p.w * 2.04, Math.max(2, poleH * 0.06));
     }
     /**
-     * ブーストのオーラ。人物の絵の後ろに、揺れる炎の輪郭を加算合成で重ねる（走路の先は隠さない）。
-     * strength 0〜1 で立ち上がり・消え際をなめらかに。動き軽減では揺らさず、火の粉も出さない。
+     * ブーストのオーラ（2026-11-11 オーナー「今なんか光ってるだけ。早そうな感じにして。見づらいのは良くないけど、ちょっと大袈裟でいい」）。
+     * 前へ突っ込む向き（消失点）の反対＝画面の手前・外側へ、炎と風が流れる形にする。すべて人物の絵の後ろに描き、人物と走路の先は隠さない。
+     * ① 板から手前へ広がる炎の航跡（明るい切れ目が手前へ速く流れる） ② 体の縁から後ろへなびく炎の筋 ③ 体の横を流れ過ぎる風の線。
+     * 炎色の残像は人物の絵を使うので drawPlayer／drawRival が描く（boostAfterimages）。頭上の弧は輪・ドームに見えるので入れない。
+     * strength 0〜1 で立ち上がり・消え際をなめらかに。動き軽減では流れを止める（形だけ残す）。
      */
     function drawBoostAura(cx, baseY, unit, { palette = AURAS.player, strength = 1, time = 0, seed = 0 } = {}) {
       if (strength <= 0.02 || unit <= 0) return;
-      const t = reducedMotion ? 0 : time, midY = baseY - unit * 1.1;
-      const rgba = (c, a) => `rgba(${c[0]},${c[1]},${c[2]},${Math.max(0, a)})`;
-      // 炎の輪郭: 下半分は体を包む楕円、上半分は先のとがった炎の舌が何本も揺れる
-      const flame = (rx, ry, reach, speed, phase) => {
-        ctx.beginPath();
-        for (let i = 0; i <= 72; i++) {
-          const a = (i / 72) * Math.PI * 2, up = Math.max(0, -Math.sin(a));
-          const tongue = Math.pow(0.5 + 0.5 * Math.sin(a * 9 + t * 13 * speed + phase), 3) * 0.6 + Math.pow(0.5 + 0.5 * Math.sin(a * 5 - t * 19 * speed + phase * 1.7), 3) * 0.4;
-          const lick = 1 + up * up * reach * tongue + 0.03 * Math.sin(a * 6 + t * 8 + phase);
-          const x = cx + Math.cos(a) * rx * lick, y = midY + Math.sin(a) * ry * lick;
-          if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
-        }
-        ctx.closePath();
-      };
+      const t = reducedMotion ? 0 : time, s = strength, midY = baseY - unit * 1.1;
+      const rgba = (c, a) => `rgba(${c[0]},${c[1]},${c[2]},${Math.max(0, Math.min(1, a))})`;
+      const hash = i => { const v = Math.sin(i * 127.1 + seed * 311.7) * 43758.5453; return v - Math.floor(v); };
+      const back = (x, y) => boostBack(x, y);
       ctx.save();
-      // 足元から手前へ伸びる、うすい光の尾
-      const tail = ctx.createLinearGradient(0, baseY, 0, baseY + unit * 1.5);
-      tail.addColorStop(0, rgba(palette.mid, 0.3 * strength)); tail.addColorStop(1, rgba(palette.rim, 0));
-      ctx.fillStyle = tail;
-      ctx.beginPath(); ctx.moveTo(cx - unit * 0.3, baseY); ctx.lineTo(cx + unit * 0.3, baseY); ctx.lineTo(cx + unit * 0.7, baseY + unit * 1.5); ctx.lineTo(cx - unit * 0.7, baseY + unit * 1.5); ctx.closePath(); ctx.fill();
-      // 外の炎（色を保つため通常合成）: 根元は明るく、舌の先へ向かって赤く薄く
-      const outer = ctx.createRadialGradient(cx, baseY - unit * 0.7, unit * 0.3, cx, baseY - unit * 1.2, unit * 2.2);
-      outer.addColorStop(0, rgba(palette.mid, 0.72 * strength)); outer.addColorStop(0.5, rgba(palette.rim, 0.5 * strength)); outer.addColorStop(1, rgba(palette.rim, 0));
-      ctx.globalAlpha = 0.4; ctx.fillStyle = outer; flame(unit * 1.1, unit * 1.55, 0.6, 0.8, seed + 4.1); ctx.fill(); // 縁をやわらげる外側のかげろう
-      ctx.globalAlpha = 1; flame(unit * 0.96, unit * 1.42, 0.62, 1, seed); ctx.fill();
-      // 内の炎（加算合成で光らせる）
-      ctx.globalCompositeOperation = "lighter";
-      const inner = ctx.createRadialGradient(cx, baseY - unit * 0.8, unit * 0.2, cx, baseY - unit * 1.2, unit * 1.9);
-      inner.addColorStop(0, rgba(palette.core, 0.6 * strength)); inner.addColorStop(0.6, rgba(palette.mid, 0.4 * strength)); inner.addColorStop(1, rgba(palette.mid, 0));
-      ctx.fillStyle = inner; flame(unit * 0.74, unit * 1.25, 0.5, 1.35, seed + 2.2); ctx.fill();
-      // 立ちのぼる火の粉
-      if (!reducedMotion) {
-        for (let i = 0; i < 10; i++) {
-          const life = (time * (0.9 + (i % 3) * 0.3) + i * 0.37 + seed) % 1;
-          const x = cx + Math.sin(i * 2.4 + seed) * unit * (0.45 + 0.55 * life) + Math.sin(time * 9 + i) * unit * 0.05;
-          const y = baseY - unit * (0.2 + 3.1 * life), r = Math.max(1.4, unit * 0.06 * (1 - life));
-          ctx.fillStyle = rgba(palette.core, 0.9 * (1 - life) * strength);
-          ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
+      ctx.lineCap = "round";
+      // ① 炎の航跡: 板の左右から画面の手前・外側へ。根元は細く明るく、手前ほど太く薄い
+      for (const side of [-1, 1]) {
+        const x0 = cx + side * unit * 0.3, y0 = baseY + unit * 0.02, x1 = cx + side * unit * 2.4, y1 = baseY + unit * 2.7;
+        const len = Math.hypot(x1 - x0, y1 - y0), ux = -(y1 - y0) / len, uy = (x1 - x0) / len, w0 = unit * 0.07, w1 = unit * 0.6;
+        const g = ctx.createLinearGradient(x0, y0, x1, y1);
+        g.addColorStop(0, rgba(palette.core, 0.85 * s)); g.addColorStop(0.3, rgba(palette.mid, 0.6 * s)); g.addColorStop(1, rgba(palette.rim, 0));
+        ctx.fillStyle = g;
+        ctx.beginPath(); ctx.moveTo(x0 + ux * w0, y0 + uy * w0); ctx.lineTo(x1 + ux * w1, y1 + uy * w1); ctx.lineTo(x1 - ux * w1, y1 - uy * w1); ctx.lineTo(x0 - ux * w0, y0 - uy * w0); ctx.closePath(); ctx.fill();
+        ctx.globalCompositeOperation = "lighter";
+        for (let k = 0; k < 5; k++) {
+          const f = (t * 3.4 + k / 5 + hash(k + side * 7)) % 1, x = x0 + (x1 - x0) * f, y = y0 + (y1 - y0) * f, dl = unit * (0.18 + 0.5 * f);
+          ctx.strokeStyle = rgba(palette.core, 0.95 * (1 - f) * s); ctx.lineWidth = Math.max(1.5, unit * (0.05 + 0.12 * f));
+          ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + (x1 - x0) / len * dl, y + (y1 - y0) / len * dl); ctx.stroke();
         }
+        ctx.globalCompositeOperation = "source-over";
+      }
+      // ② 後ろへなびく炎の筋: 体の縁（上半分と両脇）から、外向きと「後ろ」の間の向きへ、細く長く曲がって流れる。
+      //    1本ごとに太く薄い外側と細く明るい芯を重ね、縁をやわらげる（重い blur は使わない）
+      const streak = (i, scale, alphaK, colors, widthK) => {
+        const a = -Math.PI - 0.6 + (i / 21) * (Math.PI + 1.2);
+        const x0 = cx + Math.cos(a) * unit * 0.42, y0 = midY + Math.sin(a) * unit * 0.98;
+        let nx = Math.cos(a) / 0.42, ny = Math.sin(a) / 0.98; const nl = Math.hypot(nx, ny); nx /= nl; ny /= nl;
+        const [bx, by] = back(x0, y0);
+        let dx = nx * 0.55 + bx * 0.9, dy = ny * 0.55 + by * 0.9; const dl = Math.hypot(dx, dy) || 1; dx /= dl; dy /= dl;
+        // 頭の真上の筋は短く（走路の先を隠さない）、両脇ほど長く後ろへ流す
+        const L = unit * (1.0 + 1.0 * hash(i)) * (0.78 + 0.26 * Math.sin(t * 27 + i * 2.3)) * (0.55 + 0.45 * s) * scale * (0.4 + 0.6 * Math.abs(Math.cos(a)));
+        const w0 = unit * (0.07 + 0.05 * hash(i + 9)) * widthK, px = -dy, py = dx;
+        const bend = unit * 0.22 * Math.sin(t * 19 + i * 1.7) * scale;      // 先へ行くほど揺れて曲がる
+        const mx = x0 + dx * L * 0.5 + px * bend * 0.5, my = y0 + dy * L * 0.5 + py * bend * 0.5;
+        const tx = x0 + dx * L + px * bend, ty = y0 + dy * L + py * bend;
+        const g = ctx.createLinearGradient(x0, y0, tx, ty);
+        g.addColorStop(0, rgba(colors[0], alphaK * s)); g.addColorStop(0.4, rgba(colors[1], 0.75 * alphaK * s)); g.addColorStop(1, rgba(colors[2], 0));
+        ctx.fillStyle = g;
+        ctx.beginPath(); ctx.moveTo(x0 + px * w0, y0 + py * w0);
+        ctx.quadraticCurveTo(mx + px * w0 * 0.7, my + py * w0 * 0.7, tx, ty);
+        ctx.quadraticCurveTo(mx - px * w0 * 0.7, my - py * w0 * 0.7, x0 - px * w0, y0 - py * w0);
+        ctx.closePath(); ctx.fill();
+      };
+      // 体を包む薄い炎（筋の根元をつなぐ）
+      const body = ctx.createRadialGradient(cx, midY + unit * 0.2, unit * 0.2, cx, midY, unit * 1.45);
+      body.addColorStop(0, rgba(palette.mid, 0.5 * s)); body.addColorStop(0.7, rgba(palette.rim, 0.28 * s)); body.addColorStop(1, rgba(palette.rim, 0));
+      ctx.fillStyle = body; ctx.beginPath(); ctx.ellipse(cx, midY + unit * 0.1, unit * 0.7, unit * 1.28, 0, 0, Math.PI * 2); ctx.fill();
+      for (let i = 0; i < 22; i++) streak(i, 1, 0.38, [palette.rim, palette.rim, palette.rim], 2.4);   // 太く薄い外側
+      for (let i = 0; i < 22; i++) streak(i, 0.96, 0.8, [palette.mid, palette.rim, palette.rim], 1);   // 炎の色
+      ctx.globalCompositeOperation = "lighter";
+      for (let i = 0; i < 22; i += 2) streak(i, 0.7, 0.7, [palette.core, palette.mid, palette.mid], 0.55); // 明るい芯
+      // ③ 体の横を流れ過ぎる風の線（人物の左右だけ。真ん中には引かない）
+      for (let i = 0; i < 14; i++) {
+        const side = i % 2 ? 1 : -1, f = (t * (3.2 + 1.8 * hash(i + 40)) + hash(i + 30)) % 1;
+        const x = cx + side * unit * (0.8 + 1.3 * hash(i + 20)) * (0.85 + 0.5 * f), y = midY - unit * 1.5 + f * unit * 3.4;
+        const [bx, by] = back(x, y), len = unit * (0.45 + 0.7 * hash(i + 50)) * (0.6 + f);
+        ctx.strokeStyle = `rgba(255,252,240,${Math.max(0, Math.sin(f * Math.PI) * 0.8 * s)})`; ctx.lineWidth = Math.max(1.4, unit * 0.035 * (0.6 + f));
+        ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + bx * len, y + by * len); ctx.stroke();
       }
       ctx.restore();
+    }
+    /** ブーストで「後ろ」へ流れる向き（消失点から、その点を通って手前・外側へ）。 */
+    function boostBack(x, y) {
+      const dx = x - W / 2, dy = y - HORIZON + 60, l = Math.hypot(dx, dy) || 1;
+      return [dx / l, dy / l];
+    }
+    // 炎色の残像に使う、人物の絵を一色に塗った小さな複製（絵と色ごとに一度だけ作る）
+    const tintCache = new WeakMap();
+    function tintedArt(image, color) {
+      let byColor = tintCache.get(image);
+      if (!byColor) tintCache.set(image, byColor = new Map());
+      const key = color.join(",");
+      let canvas = byColor.get(key);
+      if (!canvas) {
+        canvas = document.createElement("canvas");
+        canvas.width = Math.max(1, Math.round(image.naturalWidth / 2)); canvas.height = Math.max(1, Math.round(image.naturalHeight / 2));
+        const g = canvas.getContext("2d");
+        g.drawImage(image, 0, 0, canvas.width, canvas.height);
+        g.globalCompositeOperation = "source-in"; g.fillStyle = `rgb(${key})`; g.fillRect(0, 0, canvas.width, canvas.height);
+        byColor.set(key, canvas);
+      }
+      return canvas;
+    }
+    /**
+     * ブースト中の炎色の残像。draw(image, alpha, dx, dy, grow) で絵を描く関数を受け取り、
+     * 後ろ（手前・外側）へずらして、少し大きく・薄くした一色の複製を3枚、遠い順に重ねる。動き軽減では出さない。
+     */
+    function boostAfterimages(image, x, y, unit, strength, palette, draw) {
+      if (reducedMotion || strength <= 0.05 || !image) return;
+      const [bx, by] = boostBack(x, y);
+      for (let k = 3; k >= 1; k--) {
+        const color = k === 1 ? palette.mid : palette.rim;
+        draw(tintedArt(image, color), strength * (0.5 - 0.12 * k), bx * unit * 0.34 * k, by * unit * 0.34 * k, 1 + 0.08 * k);
+      }
     }
     function drawPlayer(dusk) {
       const p = placeAt(game.z, game.x);
@@ -1320,7 +1380,8 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       // カーブへ切り込んでいる間（カービング）は、横へ動いていなくても体が内側へ倒れる
       const carveDir = game.carving ? Math.sign(curveAt(game.course, game.z)) : 0;
       const lean = Math.max(-0.5, Math.min(0.5, game.vx * 0.35 + carveDir * 0.22));
-      drawBoostAura(cx, baseY, unit, { strength: Math.max(view.boost || 0, game.boostT > 0 ? 0.55 : 0), time: game.t });
+      const boostFeel = Math.max(view.boost || 0, game.boostT > 0 ? 0.55 : 0);
+      drawBoostAura(cx, baseY, unit, { strength: boostFeel, time: game.t });
       // 姿勢の絵（第4弾の差分）があれば、それを板の重心で立たせる。傾きは絵がもう描いているので少しだけ
       pose = riderPose(carveDir ? { ...game, vx: game.vx + carveDir * 0.4 } : game, pose);
       const poseArt = art.get(pose), baseArt = art.get("rider");
@@ -1342,21 +1403,21 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
         const def = DESERT_ART[pose];
         // 大きさは背面Bの高さ（unit×2.45）に対する比。どの姿勢も同じ縮尺で描かれている
         const dh = unit * 2.45 * poseArt.naturalHeight / baseArt.naturalHeight, dw = dh * poseArt.naturalWidth / poseArt.naturalHeight;
-        const sprite = (alpha, dy, grow) => {
+        const sprite = (alpha, dy, grow, image = poseArt, dx = 0) => {
           ctx.save();
           ctx.globalAlpha = alpha;
-          ctx.translate(cx, baseY + dy);
+          ctx.translate(cx + dx, baseY + dy);
           if (game.fallT > 0) ctx.rotate((game.x > 0 ? 1 : -1) * 0.25 * (game.fallT / 1.1));
           else {
             ctx.rotate(lean * (pose === "rider" ? 0.45 : 0.12));
             if (game.air > 0) ctx.translate(0, -Math.sin(airT * Math.PI) * unit * 0.1);
           }
           ctx.scale(spinX * grow, grow);
-          ctx.drawImage(poseArt, -def.anchor.x * dw, -def.anchor.y * dh, dw, dh);
+          ctx.drawImage(image, -def.anchor.x * dw, -def.anchor.y * dh, dw, dh);
           ctx.restore();
         };
-        // 砂に残る複数の残像。動き軽減時は静的なオーラだけを出す。
-        if (game.boostT > 0 && !reducedMotion) for (let i = 3; i >= 1; i--) sprite(0.22 - i * 0.035, unit * 0.2 * i, 1 + 0.035 * i);
+        // 炎色の残像（手前・外側へずれて大きく薄く）。動き軽減では出さない
+        boostAfterimages(poseArt, cx, baseY, unit, boostFeel, AURAS.player, (image, alpha, dx, dy, grow) => sprite(alpha, dy, grow, image, dx));
         sprite(1, 0, 1);
         return;
       }
@@ -1534,22 +1595,29 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       const lean = Math.max(-0.5, Math.min(0.5, noor.vx * 0.35));
       const bob = noor.air <= 0 && noor.fallT <= 0 ? Math.sin(noor.t * 13 + 1) * unit * 0.02 : 0;
       // 相手のブーストにもオーラ（なるは銀紫、ヌールは金）。追い抜かれる時に「加速している」と分かる
-      if (noor.boostT > 0) drawBoostAura(p.x, p.y - height * unit * 0.9 + bob, unit * 0.86, { palette: AURAS[raceWith] || AURAS.noor, strength: Math.min(1, noor.boostT / 0.3) * 0.85, time: noor.t, seed: 2.1 });
+      const noorPose = `${raceWith}${riderPose(noor).replace(/^rider/, "Rider")}`;
+      const noorArt = DESERT_ART[noorPose] ? art.get(noorPose) : null;
+      const artScale = noorArt ? RIVAL_ART_SCALE[raceWith] ?? 1 : 0.86, palette = AURAS[raceWith] || AURAS.noor;
+      const rivalBoost = noor.boostT > 0 ? Math.min(1, noor.boostT / 0.3) * 0.85 : 0, rivalY = p.y - height * unit * 0.9 + bob;
+      if (rivalBoost > 0) drawBoostAura(p.x, rivalY, unit * artScale, { palette, strength: rivalBoost, time: noor.t, seed: 2.1 });
       ctx.save();
-      ctx.translate(p.x, p.y - height * unit * 0.9 + bob);
+      ctx.translate(p.x, rivalY);
       // 空中の回転（なるの 360）は、主人公と同じく絵を横に縮めて裏返す
       let spinX = Math.abs(noor.rot || 0) > 0.001 ? Math.cos(noor.rot * Math.PI * 2) : 1;
       if (Math.abs(spinX) < 0.14) spinX = spinX < 0 ? -0.14 : 0.14;
-      // 滑る姿の絵は `<相手>Rider…`（DESERT_ART）にあれば使う。無い相手（絵が届く前のなる）は下の図形で描く
-      const noorPose = `${raceWith}${riderPose(noor).replace(/^rider/, "Rider")}`;
-      const noorArt = DESERT_ART[noorPose] ? art.get(noorPose) : null;
+      // 滑る姿の絵は `<相手>Rider…`（DESERT_ART）にあれば使う。読み込み前・失敗した時は下の図形で描く。
+      // 絵は主人公の背面と同じ縮尺（rider の高さ768に対する比）で、身長の差は RIVAL_ART_SCALE で付ける
       if (noorArt) {
         const def = DESERT_ART[noorPose];
-        const dh = unit * 2.45 * 0.86 * noorArt.naturalHeight / DESERT_ART[`${raceWith}Rider`].size[1];
+        const dh = unit * 2.45 * artScale * noorArt.naturalHeight / DESERT_ART.rider.size[1];
         const dw = dh * noorArt.naturalWidth / noorArt.naturalHeight;
         if (noor.fallT > 0) ctx.rotate((noor.x > 0 ? 1 : -1) * 0.25 * (noor.fallT / 1.1));
         else ctx.rotate(lean * (noorPose.endsWith("Rider") ? 0.45 : 0.12));
         ctx.scale(spinX, 1);
+        boostAfterimages(noorArt, p.x, rivalY, unit * artScale, rivalBoost, palette, (image, alpha, dx, dy, grow) => {
+          ctx.save(); ctx.globalAlpha *= alpha; ctx.translate(dx, dy); ctx.scale(grow, grow);
+          ctx.drawImage(image, -def.anchor.x * dw, -def.anchor.y * dh, dw, dh); ctx.restore();
+        });
         ctx.drawImage(noorArt, -def.anchor.x * dw, -def.anchor.y * dh, dw, dh);
         ctx.restore();
         ctx.restore();
