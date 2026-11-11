@@ -1,5 +1,29 @@
 # Issue #3420 B1 スタンプ原画
 
+## 全員分の追加と組み込み（2026-11-11、オーナー指示）
+
+B2〜B9も作成し、第4・5章の `lineMedia` を有効化。以下の旧依頼文の担当分担・保留は今回のオーナー指示で更新。原画は無加工保存。
+
+![128pxプレビュー](preview.png)
+
+生成ツール・依頼文全文は [generation.json](generation.json)。B2は専用全文、それ以外は common_prompt と各 prompts の連結。B1の記録は下に保持。B3の帽子・ベスト、B5の帽子は生成時に画風参照から付いた装飾で、2枚目も同じ造形を参照。
+
+変換: 原画を1024pxへLANCZOS縮小。RGB各成分235以上・成分差20以下の領域のうち左上と接続した背景のみ透過。内部のクリーム色は保持。art.png に Noto Sans CJK Bold 108px、中心 (512,943)、#3A261A、白縁9pxで文言合成し master.png、320px RGBAへLANCZOS縮小。原画とゲーム用の文字なし・透過・余白・小サイズを目視確認。
+
+| ID | 文言 | 差し込み先 | 原画 SHA-256 |
+|---|---|---|---|
+| `st_da_silva_great` | 最高！ | `casual_lime.people.da_silva` | `f9a5d54a88ac67d2878aae083bbca673ae258bd52d0cd30d76317f2645c7a2ce` |
+| `st_master_hookah_wait` | 待っている | `casual_lime.people.master_hookah` | `91e0d506c124f554bd6fba4549085db4eb37f337a8951735068a2d95e1c59a1b` |
+| `st_mukai_master_ack` | 助かる | `templates.mukai_baito.accept_reply` | `7878ce30d2ae833ef434d8e3cfc6a47b37ee905a3cfb742af9dc26960a8113b4` |
+| `st_mukai_master_latte` | まあ、一杯 | `casual_lime.people.mukai_master` | `5487a855cc9be21d10bd6ef6f91ff1211bed262ba2e0df4c9b5c812b83559e05` |
+| `st_noor_morning` | おはよう！ | `lover.morningStamp.noor` | `5eb1701b5fe4f5e7ad596a0e7238e706e6be2216e54fed1f7021575098096a88` |
+| `st_saku_ack` | 了解 | `casual_lime.people.saku` | `9c04cb199e21f209795ce28f9b1223d20ff0f69ece28a376ac34580ddd9de010` |
+| `st_saku_guess` | 予想どおり | `casual_lime.people.saku` | `dc4383b032b0f531e77c38d31f224040bc3576e9395dc42883f3a5cd6861deee` |
+| `st_steve_ok` | オーケー | `casual_lime.people.steve` | `f68fd58264b5399f7891ebf2feb5621ee0bb9addd3f9e682a600aa8fc702ed15` |
+| `st_steve_wait` | 急ぐなよ | `casual_lime.people.steve` | `279f8543b227d98943a7aa46dfd9199585963c48530909179583f954d47c8a0f` |
+
+## B1原画の当初依頼・履歴
+
 `st_mukai_master_ack/raw.png` — ムカイさんの「助かる」。文言は後で Claude 側が入れる。B2〜B9 は作らない。
 
 ## 原画・参照画像
