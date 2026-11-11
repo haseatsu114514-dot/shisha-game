@@ -8,6 +8,14 @@ export const COURSE = Object.freeze({ length: 1700, practiceLength: 640, laneHal
 export const PLAYER = Object.freeze({ half: 0.1 });
 export const EDGE = 0.86;
 export const SPEED = Object.freeze({ start: 15, min: 8, max: 34, boost: 46, boostAccel: 26, overDecay: 12, accel: 1.5, fallFactor: 0.42, edgeDrag: 7, landingBoost: 3.5, plainLanding: 0.94, bounceLoss: 0.9 });
+// 画面に出す速さ・距離の縮尺（2026-11-11 オーナー「実際にサンドボードってこんな速度出るの？やや盛ってもいいけど現実離れはしたくない」）。
+// 内部の速さ（SPEED）は手触りのまま変えず、表示だけ現実に寄せる。出だし 約30・通常の最高速 約67・ブースト 約91 km/h。
+// 実物: 上手な人で約64 km/h（National Geographic）、サンドボードのギネス記録 82 km/h、砂のスキーの記録 127 km/h（2026年）。
+export const DISPLAY = Object.freeze({ scale: 0.55, dialMax: 100, redFrom: 70 });
+/** 内部の速さ（m/s 相当）→ 画面の km/h。 */
+export const toKmh = speed => speed * 3.6 * DISPLAY.scale;
+/** 内部の距離 → 画面の m（相手との差など）。速さと同じ縮尺にして、数字どうしの釣り合いを保つ。 */
+export const toMeters = units => units * DISPLAY.scale;
 export const JUMP = Object.freeze({ bigAir: 1.27, hopAir: 0.56, bounceAir: 0.26, landingWindow: 0.3, goodWindow: 0.6, bumpWindow: 0.36, bumpGrace: 0.14, steerInAir: 0.55, bigHeight: 1.7, speedHeight: 1.3, hopHeight: 0.85, hopSpeedHeight: 0.45 });
 export const FALL = Object.freeze({ recover: 1.1, points: -150 });
 // curveDrift: カーブの外へ流す力（c=1・通常最高速で、何もしないと毎秒 約0.25 レーン外へ流れる）。曲がる向きへ切っている間は流されない。

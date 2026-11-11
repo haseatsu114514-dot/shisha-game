@@ -1,7 +1,7 @@
 // DESERT RIDE（第4章ドバイ・サンドボード）の規則: コースの決定性と公平さ、ジャンプ・着地・転倒、採点と評価の境目。
 import assert from "node:assert/strict";
 import test from "node:test";
-import { COURSE, SPEED, JUMP, FALL, SCORE, SPIN, BOOST, STEER, CARVE, EDGE, RUBBER, rubberCaps, RULES_VERSION, RANKS, DEFAULT_SEED, COURSE_PACKS, CURVE_SCALE, generateCourse, practiceCourse, curveAt, headingAt, offsetAt, lateralAt, upcomingCurve, buildCourse, pickCourse, createGame, step, press, boost, chargeBoost, canRecover,
+import { COURSE, SPEED, JUMP, FALL, SCORE, SPIN, BOOST, STEER, CARVE, EDGE, RUBBER, rubberCaps, DISPLAY, toKmh, toMeters, RULES_VERSION, RANKS, DEFAULT_SEED, COURSE_PACKS, CURVE_SCALE, generateCourse, practiceCourse, curveAt, headingAt, offsetAt, lateralAt, upcomingCurve, buildCourse, pickCourse, createGame, step, press, boost, chargeBoost, canRecover,
   summary, rankOf, readResult, botControl, botStep, nextBumpDistance, comboMultiplier, rivalRun, rivalAt, smashing, RIVALS, jumpPeak, jumpHeight } from "../js/minigames/desert-ride-model.js";
 
 const DT = 1 / 60;
@@ -845,4 +845,14 @@ test("a close race: the rival eases off when far ahead and catches up when far b
       }
     }
   }
+});
+
+test("the meter shows realistic sandboard speeds: a slight stretch over the real riders, never past the records", () => {
+  // 実物: 上手な人で約64 km/h、サンドボードのギネス記録 82 km/h（砂のスキーの記録は 127 km/h）。少しだけ盛る。
+  assert.equal(Math.round(toKmh(SPEED.start)), 30, "the start reads about 30 km/h");
+  const top = toKmh(SPEED.max), boosted = toKmh(SPEED.boost);
+  assert(top >= 60 && top <= 70, `the normal top speed is a skilled rider's (${top.toFixed(1)} km/h)`);
+  assert(boosted > 82 && boosted < 95, `boost goes a little past the sandboard record, far below sand skiing's (${boosted.toFixed(1)} km/h)`);
+  assert(top < DISPLAY.redFrom && boosted > DISPLAY.redFrom && boosted < DISPLAY.dialMax, "only the boost reaches the red band, and the needle never pins");
+  assert.equal(toMeters(100), 100 * DISPLAY.scale, "distances on screen use the same scale as the speed");
 });
