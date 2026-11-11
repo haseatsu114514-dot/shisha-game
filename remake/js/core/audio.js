@@ -533,6 +533,12 @@ export const SE = {
   // てつこといっしょ（#2454）: 喉を鳴らす低いゴロゴロ（約1.2秒。録音なし・合成）と、写真のシャッター。
   purr: () => { for (let i = 0; i < 26; i++) noise({ dur: 0.04, vol: 0.05 * Math.min(1, (i + 1) / 4, (26 - i) / 4), filter: 160 + Math.random() * 50, q: 1.1, type: "lowpass", delay: i * 0.046 }); },
   shutter: () => { noise({ dur: 0.04, vol: 0.12, filter: 3200 }); tone({ freq: 1800, to: 900, type: "square", dur: 0.03, vol: 0.03, delay: 0.01 }); noise({ dur: 0.05, vol: 0.09, filter: 2200, delay: 0.09 }); },
+  // てつこといっしょ（§10・手応えの改善）: 短い鳴き声／飛びつく風切り／空振り／ぽん（ハートが増える）／とっておきのきらきら。どれも合成。
+  mew: () => { tone({ freq: 640, to: 1010, type: "triangle", dur: 0.09, vol: 0.1 }); tone({ freq: 1010, to: 720, type: "triangle", dur: 0.17, vol: 0.085, delay: 0.085 }); },
+  swish: () => noise({ dur: 0.16, vol: 0.1, filter: 900, sweepTo: 3600, q: 0.7 }),
+  boing: () => { tone({ freq: 430, to: 170, type: "sine", dur: 0.24, vol: 0.12 }); tone({ freq: 215, to: 120, type: "triangle", dur: 0.18, vol: 0.05, delay: 0.05 }); },
+  pon: () => tone({ freq: 880, to: 1320, type: "sine", dur: 0.07, vol: 0.085 }),
+  twinkle: () => { [1047, 1319, 1568, 2093].forEach((freq, i) => tone({ freq, type: "sine", dur: 0.22, vol: 0.11, delay: i * 0.07 })); noise({ dur: 0.3, vol: 0.04, filter: 7000, type: "highpass", delay: 0.1 }); },
   // 日付カードなど短いUI音（録音が無ければ短いクリック）。
   card: () => tone({ freq: 880, to: 660, type: "triangle", dur: 0.08, vol: 0.1 }),
 };

@@ -24,9 +24,35 @@ const ICONS = {
 /** Mounts one isolated session; finished resolves only after the player leaves the table. */
 export function mountTrpg(host, { scenario, characters, manifest, tableTalk = null, tutorialLines = null, tutorial = false, onTutorialDone = () => {},
   seed, profileId = null, pc = null, companions = {}, closeLabel = "卓を片付ける", audio: providedAudio = null, allowReplay = true, onComplete = () => {},
-  warmStart = false }) {
+  warmStart = false, resume = null, onBookmark = null }) {
+  // しおり（TMX13）: the table is the seed plus the order of what was pressed. Every action is recorded, the caller keeps
+  // the list at each resting point, and a later visit replays it to land on the same scene (dice included).
+  const RECORDED = ["start", "ask", "endInterview", "inspect", "consult", "interpret", "plan", "beginCheck", "reroll", "settleCheck"];
+  let pressed = [];
+  function recording(target) {
+    for (const key of RECORDED) {
+      const original = target[key].bind(target);
+      target[key] = (...args) => { const out = original(...args); pressed.push([key, ...JSON.parse(JSON.stringify(args))]); return out; };
+    }
+    return target;
+  }
   // The player's character can be rebuilt on the cover; the session restarts from the same seed until the story begins.
-  let build = pc, session = new TrpgSession(scenario, { seed, profileId, pc: build, companions, warmStart });
+  let build = pc, session = recording(new TrpgSession(scenario, { seed, profileId, pc: build, companions, warmStart }));
+  let resumed = false;
+  if (Array.isArray(resume?.actions) && resume.actions.length) {
+    try {
+      for (const [key, ...args] of resume.actions) {
+        if (!RECORDED.includes(key)) throw new Error("Unknown bookmarked action");
+        session[key](...args);
+      }
+      const at = session.snapshot();
+      if (at.phase === "cover" || at.phase === "ending" || at.pending) throw new Error("Bookmark is not a resting point");
+      resumed = true;
+    } catch {
+      // A bookmark from an older version of the story: start again from the cover rather than guess.
+      pressed = []; session = recording(new TrpgSession(scenario, { seed, profileId, pc: build, companions, warmStart }));
+    }
+  }
   const cast = Object.fromEntries(scenario.cast.map(c => [c.id, c]));
   const gm = scenario.cast.find(c => c.part === "GM").id;
   const presentation = scenario.presentation;
@@ -431,6 +457,10 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     if (disposed) return;
     syncChrome();
     const state = session.snapshot();
+    if (onBookmark && !busy && !completed && !state.pending && state.phase !== "cover" && state.phase !== "ending") {
+      onBookmark({ actions: JSON.parse(JSON.stringify(pressed)), pc: build ? { ...build } : null, phase: state.phase,
+        title: presentation.phases[state.phase]?.title || "" });
+    }
     content.hidden = state.phase === "cover";
     root.querySelector(".trpg-cover")?.remove();
     if (state.phase === "cover") { cover(); return; }
@@ -1063,7 +1093,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
       let built;
       try { built = buildPc(scenario, draft); } catch { syncConfirm(); return; }
       build = { archetype: built.archetype, name: built.name, stats: built.stats };
-      session = new TrpgSession(scenario, { seed, profileId, pc: build, companions, warmStart });
+      pressed = []; session = recording(new TrpgSession(scenario, { seed, profileId, pc: build, companions, warmStart }));
       sheets = session.sheets;
       pop.close(); renderBody();
       root.querySelector('[data-test="trpg-build"]')?.focus({ preventScroll: true });
@@ -1205,7 +1235,8 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
   if (typeof window !== "undefined") window.addEventListener?.("resize", fitRoomCrop);
   visibility();
   renderBody(); root.focus({ preventScroll: true });
-  if (tutorial) playTutorial();
+  if (resumed) log.push({ speaker: gm, text: "（しおりから、前回の続き）" });
+  else if (tutorial) playTutorial();
   return { finished, snapshot: () => session.snapshot(),
     destroy: () => finish(completed || { cancelled: true, scenarioId: scenario.id }), get disposed() { return disposed; } };
 }
