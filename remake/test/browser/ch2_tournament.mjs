@@ -524,7 +524,8 @@ await suite('ch2-tournament',async check=>{
     assert.equal(await page.locator('.flavor-row[data-flavor="strawberry"]').count(),0);
     assert.match(await page.locator('.worker-scene-tag').textContent(),/HAZE: OPEN CLOUD/);
     assert.deepEqual(await page.locator('.bench-phase-copy b').allTextContents(),['パッキング','炭焼き','蒸らし','吸い出し','提供','調整']);
-    await assertFits(page,'.bench-top > *');
+    // 新しい配置（既定）では「外観を選ぶ」は機材を選ぶ工程だけ出るので、見えている部品で確かめる。
+    await assertFits(page,'.bench-top > :visible');
     await assertCraftProgress(page);
     await capture(page,touch?'touch-mix-header':'pc-mix-header');
     for(let n=0;n<4;n++)await press(dt('mix-plus-afsahr_strawberry'));

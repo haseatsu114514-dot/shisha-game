@@ -196,7 +196,7 @@
 
 /* ---------- 上のレール（大会）: ライバルは顔と灯だけ ---------- */
 & .bench-top > .rival-windows .rival-name { display: none; }
-& .bench-top > .rival-windows .rival-card { grid-template-columns: 34px; justify-items: center; row-gap: 3px; padding: 3px 4px 4px; }
+& .bench-top > .rival-windows .rival-card { grid-template-columns: minmax(34px, max-content); justify-items: center; row-gap: 3px; padding: 3px 4px 4px; }
 & .bench-top > .rival-windows .rival-face { grid-row: 1; width: 34px; height: 34px; }
 
 /* ---------- 操作の案内文は常設しない（「？」と初回の説明で読む・CSL15） ---------- */
@@ -287,6 +287,10 @@
 
 /* ---------- 上のレールを詰める（大会はライバルの顔も並ぶ） ---------- */
 & .bench-top { gap: 12px !important; }
+/* 第2章の大会の「メニュー」はレールに入りきらないので、はじめの左上（絵の上だけ）へ。レールの右の余白は「？」の分だけ */
+&:has(.bench-top > .ch2-tournament-menu) .bench-top { padding-right: 108px !important; }
+& .bench-top > .ch2-tournament-menu { position: fixed !important; left: 16px; top: 84px; margin: 0 !important; z-index: 6; }
+& .bench-top > .rival-windows { gap: 4px !important; }
 & .bench-top .bench-mode small { display: none !important; }
 & .bench-progress { flex: none !important; }
 & .bench-progress-track { gap: 18px !important; }
