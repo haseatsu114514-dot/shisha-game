@@ -17,8 +17,6 @@ import re
 import sys
 from pathlib import Path
 
-from PIL import Image
-
 ROOT = Path(__file__).resolve().parents[2]
 PNG_DIR = ROOT / "assets" / "ui" / "ichidai"
 WEBP_DIR = ROOT / "remake" / "img" / "ui" / "ichidai"
@@ -39,6 +37,7 @@ def known_ids():
 
 def cover(image, size):
     """中央を目的の縦横比に切ってから縮める（拡大はしない）。"""
+    from PIL import Image  # 作り直すときだけ要る（--check は CI の quick でも動くよう、Pillow 無しで通す）
     w, h = image.size
     tw, th = size
     ratio = tw / th
@@ -87,6 +86,7 @@ def main():
                 if path.stem not in found[kind]:
                     errors.append(f"{path.relative_to(ROOT)}: 採用した PNG が無い")
     else:
+        from PIL import Image
         for kind, ids in found.items():
             for i in ids:
                 out = WEBP_DIR / kind / f"{i}.webp"
