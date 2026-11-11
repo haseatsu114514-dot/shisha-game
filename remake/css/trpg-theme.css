@@ -600,3 +600,30 @@ html:root .trpg-root.trpg-cinematic .trpg-chrome-tip {
   border: 1px solid #d2ae66aa; background: #2a1b0cf0; color: #fff3d6; font-size: 17px; line-height: 1.5; box-shadow: 0 8px 20px #0008;
 }
 html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-chrome-tip { font-size: var(--phone-text); max-width: 1100px; }
+
+/* ---------------------------------------------------------------- 深緑の箱に頼らない（TMX07・2026-11-11 オーナー「ウインドウは推奨で」）。
+   台詞: 箱をやめ、部屋の絵の下側を暗く溶かした帯に文字を置く（物語の中にいる感じを残す）。
+   キャラ作成: 紙のキャラクターシートに書き込む形（卓のシートと同じ生成りの紙）。 */
+html:root .trpg-root.trpg-cinematic .trpg-dock {
+  background: linear-gradient(180deg, #04101100 0%, #04101199 26%, #040e0fe0 62%, #030b0cf2 100%);
+  box-shadow: none;
+}
+html:root .trpg-root.trpg-cinematic .trpg-dock .trpg-speech p { text-shadow: 0 1px 2px #000, 0 0 10px #000a; }
+html:root .trpg-root.trpg-cinematic .trpg-dock .trpg-speaker-label strong { text-shadow: 0 1px 2px #000; }
+
+html:root .trpg-root.trpg-cinematic .trpg-builder section {
+  border: 1px solid #b89b62; border-radius: 6px; color: #2a1b0c;
+  background: linear-gradient(170deg, #fbf5e6, #efe3c6 70%, #e6d6b2); box-shadow: 0 2px 0 #a88a58, 0 12px 26px #0008;
+}
+html:root .trpg-root.trpg-cinematic .trpg-builder h3 { color: #6b4a1e; }
+html:root .trpg-root.trpg-cinematic .trpg-builder-origin { border-color: #c9b07a; background: #fffaf0; color: #2a1b0c; }
+html:root .trpg-root.trpg-cinematic .trpg-builder-origin strong { color: #2a1b0c; font-weight: 700; }
+html:root .trpg-root.trpg-cinematic .trpg-builder-origin > span,
+html:root .trpg-root.trpg-cinematic .trpg-builder-origin small { color: #5a4528; }
+html:root .trpg-root.trpg-cinematic .trpg-builder-origin:hover:not(:disabled) { border-color: #8a6524; background: #fffdf6; }
+html:root .trpg-root.trpg-cinematic .trpg-builder-origin.selected { border-color: #8a6524; background: #f7e7bf; box-shadow: inset 0 0 0 2px #d9ad4f; }
+html:root .trpg-root.trpg-cinematic .trpg-builder-origin-art { border-color: #c9b07a; }
+html:root .trpg-root.trpg-cinematic .trpg-builder :is(.trpg-builder-points, .trpg-builder-easy, .trpg-builder-hint, .trpg-builder-stat-help, .trpg-builder-stat-rows dt, .trpg-builder-stat-rows dd > span) { color: #3d2c16; }
+html:root .trpg-root.trpg-cinematic .trpg-builder .trpg-builder-stat-rows i b { background: #d8cbad; }
+html:root .trpg-root.trpg-cinematic .trpg-builder .trpg-builder-stat-rows i b.lit { background: linear-gradient(180deg, #e7b955, #b8862c); }
+html:root .trpg-root.trpg-cinematic .trpg-builder .trpg-button:not(.trpg-builder-origin):not(.trpg-help-button) { border-color: #8a6524; background: #2f5a55; color: #fff6df; }
