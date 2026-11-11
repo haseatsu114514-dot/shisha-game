@@ -61,8 +61,10 @@ await suite("navigation-transitions", async (check) => {
       const result = await page.evaluate(async mode => {
         const transitions = await import("./js/core/transitions.js");
         const samples = [];
-        let frame;
+        let frame, purple = false;
         const sample = () => {
+          // 夜明け（TMG47）は紫の夜の面・ラベンダーの地平線を描かない
+          if (document.querySelector(".tr-dawn .tr-svg, .tr-dawn-veil, .tr-dawn-horizon")) purple = true;
           const card = document.querySelector('[data-test="dawn-card"]');
           if (card && Number(getComputedStyle(card).opacity) > .1) {
             samples.push([...card.querySelectorAll(".tr-flip")].map(span =>
@@ -84,11 +86,12 @@ await suite("navigation-transitions", async (check) => {
           cancelAnimationFrame(frame);
           Element.prototype.animate = animate;
         }
-        return { samples, covering: transitions.isCovering(), leftovers: document.querySelectorAll(".tr-dawn").length };
+        return { samples, purple, covering: transitions.isCovering(), leftovers: document.querySelectorAll(".tr-dawn").length };
       }, mode);
       assert(result.samples.length > 0, "朝のカードが一度も表示されなかった");
       assert(result.samples.some(([day, left]) => day.includes("7") && left.includes("7")));
       assert(result.samples.every(numbers => numbers.flat().every(value => value === "7")), "前日のDAY6／あと8日が表示された");
+      assert.equal(result.purple, false, "the dawn drew the purple night or the lavender horizon");
       assert.equal(result.covering, false); assert.equal(result.leftovers, 0);
     }, { reducedMotion: mode === "reduced" ? "reduce" : "no-preference" });
   }
