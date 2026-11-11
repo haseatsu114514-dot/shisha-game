@@ -4402,6 +4402,12 @@
       "run": ["node remake/test/character_birthdays.mjs"]
     },
     {
+      "id": "dubai-bonds",
+      "title": "Taiyo and the Sheikh bond routes: stages per place, finale prerequisites, letters, scripts and wiring (RVE03)",
+      "kind": "quick",
+      "run": ["node remake/test/dubai_bonds.mjs"]
+    },
+    {
       "id": "board-notification-visibility-browser",
       "title": "Paper mastery/purchase notices and stable board selection, undo and saved lit markers",
       "kind": "browser",
