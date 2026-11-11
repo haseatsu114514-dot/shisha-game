@@ -536,3 +536,44 @@ html:root[data-density="phone"] .camel-game .camel-cup strong { font-size: max(2
 .camel-game.cr-rank-player .camel-standings li[data-who="player"] .camel-chip-gap { color: #4a3418; font-weight: 900; }
 
 @media (prefers-reduced-motion: reduce) { .camel-control[data-duel="on"] { animation: none; border-color: #ff8a5c; } }
+
+/* ---- 手描きの字の残り（CR-UI14）・大会の紋章（CR-WD08）。#3217・2026-11-11 採用 ----
+   字は PERFECT と同じく、絵が読めた時だけ JS が .camel-game に cr-word-◯◯ を付け、文字を透明にして同じ大きさの絵を敷く。
+   読み上げ・テスト用の文字はそのまま残る。読めない字は従来の書体のまま。 */
+.camel-word { font-style: inherit; }
+/* 声の判定: GOOD と、輪を見送った時の MISS（無駄な声・連打は理由が分かるよう日本語のまま） */
+.camel-game.cr-word-good .camel-feedback[data-kind="good"] b,
+.camel-game.cr-word-miss .camel-feedback[data-kind="lost"] b { display: block; width: 4.4em; height: 1.4em; color: transparent; -webkit-text-stroke-color: transparent; text-shadow: none;
+  background: center / contain no-repeat; }
+.camel-game.cr-word-good .camel-feedback[data-kind="good"] b { background-image: url("../img/ui/camel_race/ui/word-good.webp"); }
+.camel-game.cr-word-miss .camel-feedback[data-kind="lost"] b { width: 4.6em; height: 1.5em; background-image: url("../img/ui/camel_race/ui/word-miss.webp"); }
+/* カウントダウン（3・2・1・GO!） */
+.camel-game:is(.cr-word-3, .cr-word-2, .cr-word-1, .cr-word-go) .camel-countdown { line-height: 1; }
+.camel-game.cr-word-3 .camel-countdown[data-word="3"],
+.camel-game.cr-word-2 .camel-countdown[data-word="2"],
+.camel-game.cr-word-1 .camel-countdown[data-word="1"],
+.camel-game.cr-word-go .camel-countdown[data-word="go"] { width: 1.15em; height: 1.2em; color: transparent; -webkit-text-stroke: 0; text-shadow: none; background: center / contain no-repeat;
+  filter: drop-shadow(0 .04em .08em rgba(0,0,0,.35)); }
+.camel-game.cr-word-go .camel-countdown[data-word="go"] { width: 2.3em; }
+.camel-game.cr-word-3 .camel-countdown[data-word="3"] { background-image: url("../img/ui/camel_race/ui/word-3.webp"); }
+.camel-game.cr-word-2 .camel-countdown[data-word="2"] { background-image: url("../img/ui/camel_race/ui/word-2.webp"); }
+.camel-game.cr-word-1 .camel-countdown[data-word="1"] { background-image: url("../img/ui/camel_race/ui/word-1.webp"); }
+.camel-game.cr-word-go .camel-countdown[data-word="go"] { background-image: url("../img/ui/camel_race/ui/word-go.webp"); }
+/* バナー（LAST SPURT・GOAL）: 英語の語だけ絵にする（「1着」は文字のまま） */
+.camel-game.cr-word-last-spurt .camel-banner .camel-word[data-word="last-spurt"],
+.camel-game.cr-word-goal .camel-banner .camel-word[data-word="goal"] { display: inline-block; vertical-align: middle; color: transparent; -webkit-text-stroke: 0; text-shadow: none;
+  background: center / contain no-repeat; }
+.camel-game.cr-word-last-spurt .camel-banner .camel-word[data-word="last-spurt"] { width: 6.2em; height: 1.9em; background-image: url("../img/ui/camel_race/ui/word-last-spurt.webp"); }
+.camel-game.cr-word-goal .camel-banner .camel-word[data-word="goal"] { width: 4em; height: 1.35em; margin-left: .25em; background-image: url("../img/ui/camel_race/ui/word-goal.webp"); }
+.camel-game.cr-word-last-spurt .camel-banner[data-kind="spurt"] b { font-style: normal; }
+/* 左上の計器の題名 */
+.camel-game.cr-word-title .camel-title { width: 6.6em; height: 2.2em; margin: -.35em 0 -.25em -.3em; color: transparent; letter-spacing: 0; background: url("../img/ui/camel_race/ui/word-title.webp") left center / contain no-repeat; }
+
+/* 大会を選ぶ札の紋章（右上）。未解放の大会は色を抜く */
+.camel-cup { position: relative; }
+.camel-cup-badge { position: absolute; right: .7cqw; top: .7cqw; width: max(44px, 4.8cqw); height: auto; pointer-events: none; filter: drop-shadow(0 2px 3px rgba(40,20,4,.35)); }
+.camel-cup:disabled .camel-cup-badge { filter: grayscale(1) brightness(1.05); opacity: .85; }
+.camel-cup :is(small, strong) { padding-right: calc(max(44px, 4.8cqw) + .2cqw); }
+
+/* 試遊ページの題名 */
+.camel-menu-title { display: block; width: min(460px, 80vw); height: auto; margin: 0 auto; }
