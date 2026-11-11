@@ -64,12 +64,13 @@ for (const [section, grades] of Object.entries({ grades: kuji.grades, legacyGrad
   for (const p of [...other.prizes, other.lastOne].filter(Boolean)) assert(!onlyIds.includes(p.equipId), `${section}.${id} に限定の台を入れない`);
 }
 
-// 性能は店で一番伸びる台（職人仕立ての特注台）と同じ。店では売らず、売れない。絵は今は無く、文字の箱で表示する。
+// 性能は店で一番伸びる台（職人仕立ての特注台）と同じ。店では売らず、売れない。絵は台ごとの専用絵（2026-11-11 採用・#3336）。
 const shopStands = equipmentList.filter(e => e.type === "homeware" && !e.not_for_sale);
 const best = shopStands.reduce((a, b) => (b.home_xp || 0) > (a.home_xp || 0) ? b : a);
 assert.equal(best.id, "stand_custom", "店で一番伸びる台");
 const NOT_PERFORMANCE = new Set(["id", "name", "description", "value", "art", "chapter_min", "buy_price", "sell_price", "price",
   "unsellable", "not_for_sale", "kuji_only", "base"]);
+const shopArt = fs.readFileSync(new URL("remake/js/daily/shop-equipment-art.js", root), "utf8");
 const names = new Set(equipmentList.filter(e => !e.kuji_only).map(e => e.name));
 for (const id of onlyIds) {
   const e = equipment[id];
@@ -81,7 +82,9 @@ for (const id of onlyIds) {
   assert(e.not_for_sale && e.unsellable && e.buy_price === 0 && e.sell_price === 0 && e.price === 0, `${id}: 店で売らず、売れない`);
   for (const stock of [1, 2, 3, 4, 5, 99]) assert.equal(forSale(e, stock), false, `${id}: 品揃え${stock}の店に並ばない`);
   assert.equal(e.chapter_min, 5);
-  assert(!("art" in e), `${id}: 絵は未制作（文字の箱で表示）`);
+  assert.equal(e.art, id, `${id}: 台ごとの専用絵（元の台の絵を借りない）`);
+  assert.match(shopArt, new RegExp(`"${id}": \\{ url: new URL\\("\\.\\./\\.\\./img/shop/equipment-v2/${id}\\.webp"`), `${id}: 店とくじの札に専用絵を出す`);
+  assert(fs.existsSync(new URL(`remake/img/shop/equipment-v2/${id}.webp`, root)), `${id}: 専用絵の WebP がある`);
   assert(!names.has(e.name), `${id}: 名前が既存の品と重ならない`);
   const prize = sPrizes.find(p => p.equipId === id);
   assert.equal(prize.name, e.name);
@@ -243,7 +246,8 @@ const walk = (dir, out = []) => {
 const files = [...walk("remake/js/"), ...walk("remake/data/"), ...walk("data/")];
 assert(files.length > 100, "走査が働いている");
 const RULES = [
-  [new RegExp(`\\b(${[...onlyIds, "g20000"].join("|")})\\b`), ["data/equipment.json", "data/kuji.json", "remake/js/core/rules.js"]],
+  // shop-equipment-art.js は tools/build_shop_equipment_art.py が作る絵の対応表（絵の場所だけで、性能・入手の判定は無い）
+  [new RegExp(`\\b(${[...onlyIds, "g20000"].join("|")})\\b`), ["data/equipment.json", "data/kuji.json", "remake/js/core/rules.js", "remake/js/daily/shop-equipment-art.js"]],
   [/\b(KUJI_LIMITED_GRADES|KUJI_ONLY_EQUIPMENT)\b/, ["remake/js/core/rules.js", "remake/js/core/carry.js", "remake/js/core/cycle-start.js", "remake/js/core/growth.js", "remake/js/core/growth-board-data.js"]],
   // くじ券を渡してよい寄り道: 第5章の出張シーシャの依頼（DLV・chapters/ch5-catering.js）と各地の店めぐり帳（MGR・chapters/ch5-shop-stamps.js）。
   // どちらもお金・火種は動かさない

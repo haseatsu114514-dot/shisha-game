@@ -41,7 +41,7 @@ function leaf(id, size) {
 /** 景品の絵。size は絵を収める正方形の一辺（px） */
 export function prizeArt(prize, size = 220) {
   if (prize.equipId) {
-    // 店と同じ絵を使う（data/equipment.json の art は絵の借り先。例: 高密度フラット炭 → フラット炭）
+    // 店と同じ絵を使う（data/equipment.json の art は絵の名前。別の品の絵を借りることもある）
     const shop = SHOP_EQUIPMENT_ART[DB.equipById?.[prize.equipId]?.art || prize.equipId];
     if (shop) return windowImg(shop.url, shop.box, shop.size, size);
     const rig = RIG_ART[prize.equipId];

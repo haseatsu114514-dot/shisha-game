@@ -25,7 +25,7 @@ const HEAVEN = ['mint', 'double_apple', 'blueberry', 'strawberry', 'pineapple', 
 const REMAINING = ['vanilla', 'coconut', 'mango', 'peach', 'melon', 'banana', 'rose', 'lychee'];
 const ADOPTED = [...HEAVEN, ...REMAINING];
 const CHARACTER_CARTONS = ['cola', 'raspberry', 'gum_cinnamon', 'bombshell', 'white_musk'];
-const HMD = ['tanukish_lid', 'amaburst_hms'];
+const HMD = ['tanukish_lid', 'amaburst_hms']; // 2026-11-11 オーナー採用の絵（#2741）。絵が無いときの「HMD」の札は equipment-art-fallback で見る
 const artifacts = path.resolve(process.env.ARTIFACT_DIR || '.codex/artifacts/remake-browser');
 fs.mkdirSync(artifacts, { recursive: true });
 const capture = (page, name) => page.screenshot({ path: path.join(artifacts, `shop-art-${name}.png`) });
@@ -123,7 +123,7 @@ await suite("shop-ui", async check => {
       }
       await page.locator('[data-tab="equip"]').click();
       const equipment = await decodeRows(8);
-      assert.equal(equipment.filter(row => row.url).length, 6, 'Three bowls, two regenerated coals and the new lotos image');
+      assert.equal(equipment.filter(row => row.url).length, 8, 'All eight equipment rows have illustrations, including the newly adopted art');
       for (const [id, suffix] of [['lotos_hagal', '/equipment-v2/lotos_hagal.webp'],
         ['flat_charcoal', '/equipment-v2/flat_charcoal.webp'], ['cube_charcoal', '/equipment-v2/cube_charcoal.webp']]) {
         assert(equipment.find(row => row.id === id)?.url.endsWith(suffix), `${id} uses its selected illustration`);
@@ -137,12 +137,15 @@ await suite("shop-ui", async check => {
         await tap(page, 'shop-detail-close');
       }
       for (const id of HMD) {
-        assert.equal(equipment.find(row => row.id === id)?.text, 'HMD');
+        const suffix = `/equipment-v2/${id}.webp`;
+        assert(equipment.find(row => row.id === id)?.url.endsWith(suffix), `${id} uses its adopted illustration`);
         await tap(page, `detail-${id}`);
-        assert.equal(await page.locator('.shop-detail .shop-type-mark').innerText(), 'HMD');
-        assert.equal(await page.locator('.shop-detail img').count(), 0);
+        const image = page.locator('.shop-detail img');
+        await image.evaluate(node => node.decode());
+        assert((await image.getAttribute('src')).endsWith(suffix));
         await page.locator('.modal-box.shop-dialog').evaluate(async box => Promise.all(box.getAnimations().map(a => a.finished)));
-        await capture(page, `${platform}-held-${id}`);
+        await assertFits(page, '.shop-detail .shop-product-art');
+        await capture(page, `${platform}-equipment-${id}`);
         await tap(page, 'shop-detail-close');
       }
       assert.equal(await page.evaluate(() => JSON.stringify(S.core.state)), before);

@@ -1,0 +1,137 @@
+{
+  "date": "2026-11-11",
+  "issue": 2741,
+  "generator": "Codex image_gen",
+  "references": {
+    "hmd-turkishLid-yimi-01.jpg": {
+      "path": "siryou:shisha-hardware-reference/web-refs/images/hmd-turkishLid-yimi-01.jpg",
+      "sha256": "b43689316410f71c70412dde618507bed75bce8c9ab7dacd11444f805010a816"
+    },
+    "hmd-turkishLid-onStem-01.jpg": {
+      "path": "siryou:shisha-hardware-reference/web-refs/images/hmd-turkishLid-onStem-01.jpg",
+      "sha256": "e4b36614c84990ffb19875ef3548a03742bc97fadb362c048203cd87f7b2a656"
+    },
+    "hmd-amaboost-01.jpg": {
+      "path": "siryou:shisha-hardware-reference/web-refs/images/hmd-amaboost-01.jpg",
+      "sha256": "276cd5de821be0c078f00c14ed83c4261bcb7dd55bcb6ebe775be82847c4ea45"
+    },
+    "hmd-amaboost-open-01.jpg": {
+      "path": "siryou:shisha-hardware-reference/web-refs/images/hmd-amaboost-open-01.jpg",
+      "sha256": "7747d281891ea47bdbafefe80cd412d66100a90c4e080c111ab363eb5dacb392"
+    },
+    "hmd-amaboost-onBowl-01.jpg": {
+      "path": "siryou:shisha-hardware-reference/web-refs/images/hmd-amaboost-onBowl-01.jpg",
+      "sha256": "b96cbffdfb20ef383171622c52585dce9b740a351a3aa8798eaddd4aa37d7dd6"
+    },
+    "lotos_hagal.webp": {
+      "path": "remake/img/shop/equipment-v2/lotos_hagal.webp",
+      "sha256": "f7d59525c20fd40add87a6784d2fc18a94c28dd3e4ab96f3c97fbbe77e67e139"
+    }
+  },
+  "source_photos_not_committed": true,
+  "records": {
+    "tanukish_lid": {
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "bytes": 788405,
+      "sha256": "e0d1ae04de659959b51ca3053d6d71ab86851c406af0b5eeb1e5087c1184cce1",
+      "alpha_range": [
+        0,
+        255
+      ],
+      "corners": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alpha_bbox": [
+        0,
+        37,
+        1210,
+        1254
+      ],
+      "alpha16_bbox": [
+        207,
+        244,
+        1137,
+        1033
+      ],
+      "candidate_512_sha256": "8e64f2c3c4790c556f1405e32c58c99ef9665d64ff1bf95deaaa3494e311b7a8"
+    },
+    "winkwink_hagal": {
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "bytes": 1003799,
+      "sha256": "12a9b1866948a84535ed0cb5054eab960f66f64c147f6c194a2cf9ae801cc1a9",
+      "alpha_range": [
+        0,
+        255
+      ],
+      "corners": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alpha_bbox": [
+        0,
+        33,
+        1238,
+        1254
+      ],
+      "alpha16_bbox": [
+        103,
+        272,
+        1205,
+        1072
+      ],
+      "candidate_512_sha256": "8bdd59fa6068377a917c5dddd1d053ef319c38ae82316742a75045f1a4db7da8"
+    },
+    "amaburst_hms": {
+      "size": [
+        1254,
+        1254
+      ],
+      "mode": "RGBA",
+      "bytes": 761983,
+      "sha256": "ab0f6f17530f5d6cab857c62157ae5df65b285770e8339b1e18effeb2a97afbb",
+      "alpha_range": [
+        0,
+        255
+      ],
+      "corners": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alpha_bbox": [
+        0,
+        33,
+        1250,
+        1254
+      ],
+      "alpha16_bbox": [
+        193,
+        344,
+        1096,
+        927
+      ],
+      "candidate_512_sha256": "f21ac647d01136d4f5bab8e8f959861f7e1644f28aaf411063db2d978490c801"
+    }
+  },
+  "counts": {
+    "tanukish_lid": 1,
+    "winkwink_hagal": 1,
+    "amaburst_hms": 1
+  },
+  "inspection": "Each complete unit, matching model photo; standard/open Turkish cylinder and wider version, separate low dome/thin tray Amaburst with three top openings and two orange tabs. No coal/bowl/foil/stand/hose/text/logo. True RGBA, zero corners. Low alpha debris remains; no threshold applied. Raw unmodified, candidate downsample only. 3D size targets in prompt are not exact physical measurements inferred from the image.",
+  "runtime": "No game/data/adopted files changed; adoption and gameplay validation remain."
+}
