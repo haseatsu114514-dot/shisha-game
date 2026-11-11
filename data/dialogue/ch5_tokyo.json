@@ -275,6 +275,8 @@
         { "speaker": "uranaishi", "face": "normal", "text": "……ヒヒ。こんな所で会うとはね" },
         { "speaker": "hajime", "face": "surprise", "text": "東京にも、出るんですか？" },
         { "speaker": "uranaishi", "face": "smile", "text": "縁のある所なら、どこへでも。……理由は聞かない方がいい" },
+        { "speaker": "", "face": "", "text": "布の端が風に揺れて、机の上の水晶玉が路地の灯りを小さく返している。" },
+        { "speaker": "uranaishi", "face": "normal", "text": "……前に会った時より、いい顔をしてるじゃないか" },
         { "speaker": "uranaishi", "face": "normal", "text": "さて。今日は誰との縁が気になるんだい？" }
       ]
     },
@@ -296,6 +298,8 @@
         { "speaker": "", "face": "", "text": "夜のCHOI-ZAP。誰もいない店内で、マシンの画面だけが光っている。" },
         { "speaker": "hajime", "face": "normal", "text": "（勝負の日は、まだ決めていない。体だけは整えておこう）" },
         { "speaker": "", "face": "", "text": "動画のカウントに合わせて、スクワットを十回ずつ三組。" },
+        { "speaker": "hajime", "face": "normal", "text": "（数えている間は、頭の中が静かになる）" },
+        { "speaker": "", "face": "", "text": "タオルで首を拭くと、ゴムマットの匂いがした。" },
         { "speaker": "", "face": "", "text": "外へ出ると、高架の上を遅い電車が通っていった。" }
       ]
     }
