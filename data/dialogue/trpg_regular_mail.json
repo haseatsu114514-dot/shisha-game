@@ -1,12 +1,12 @@
 {
   "id": "regular-mail",
-  "version": 1,
+  "version": 2,
   "title": "月夜の常連郵便",
   "subtitle": "スミと常連が届ける、宛名のにじんだ手紙",
   "author": "灯森こはる",
   "collection": "常連卓 02",
   "duration": "約10分",
-  "premise": "大きな月の夜、時計坂の町。郵便猫ミトンが、宛名のにじんだ手紙を持ってきた。『月のよく見える家の、だれかへ』。夜番たちは、誰に届けるだろう。 閉店後、tonariのスミと常連たちがこの本を開く。",
+  "premise": "大きな月の夜、時計坂の町。郵便猫ミトンが、宛名のにじんだ手紙を持ってきた。『月のよく見える家の、だれかへ』。夜番たちは、誰に届けるだろう。 サイの店の常連たちと、気軽に遊ぶ一冊。",
   "fiction": {
     "town": "時計坂の町",
     "shop": "夜番の詰所",
@@ -14,7 +14,7 @@
   },
   "cast": [
     {
-      "id": "tsumugi",
+      "id": "sai",
       "part": "GM",
       "role": "案内と、郵便猫ミトン",
       "color": "#b8a3cc"
@@ -40,9 +40,9 @@
       }
     },
     {
-      "id": "sumi",
+      "id": "regulara",
       "part": "PLAYER",
-      "role": "{pc:sumi}／灯りともし",
+      "role": "{pc:regulara}／灯りともし",
       "color": "#dab978",
       "ability": "灯りの段取り",
       "abilityText": "配達の支度をするとき、判定に一度だけ＋7",
@@ -56,14 +56,14 @@
           "talk": 2,
           "nerve": 2
         },
-        "trait": "か細い声の灯りともし。梯子をのぼるのは町一番速い",
-        "likes": "屋台の夜鳴きラーメン"
+        "trait": "町の灯りを守る夜番。暗い道にも目が利く",
+        "likes": "町の灯り"
       }
     },
     {
-      "id": "salaryman",
+      "id": "regularb",
       "part": "PLAYER",
-      "role": "{pc:salaryman}／鐘つき",
+      "role": "{pc:regularb}／鐘つき",
       "color": "#c9463a",
       "ability": "鐘の口上",
       "abilityText": "手紙を渡すとき、判定に一度だけ＋7",
@@ -78,7 +78,7 @@
           "nerve": 3
         },
         "trait": "時計塔の鐘をつく。鐘の音と同じくらい、言葉も大きい",
-        "likes": "林檎の砂糖煮。甘さの原点"
+        "likes": "鐘の響き"
       }
     }
   ],
@@ -103,20 +103,20 @@
         },
         {
           "id": "listen_look",
-          "actor": "sumi",
-          "sheet": "sumi",
+          "actor": "regulara",
+          "sheet": "regulara",
           "stat": "eye",
           "label": "灯りを寄せて、宛名を見る",
-          "detail": "{pc:sumi}が灯りを近づけ、にじんだ宛名をよく見る",
+          "detail": "{pc:regulara}が灯りを近づけ、にじんだ宛名をよく見る",
           "declare": "trpg_regular_mail_declare_listen_look"
         },
         {
           "id": "listen_greet",
-          "actor": "salaryman",
-          "sheet": "salaryman",
+          "actor": "regularb",
+          "sheet": "regularb",
           "stat": "talk",
           "label": "大げさに、郵便猫を歓迎する",
-          "detail": "{pc:salaryman}が帽子を取り、ミトンを詰所へ迎え入れる",
+          "detail": "{pc:regularb}が帽子を取り、ミトンを詰所へ迎え入れる",
           "declare": "trpg_regular_mail_declare_listen_greet"
         }
       ]
@@ -127,7 +127,7 @@
       "success": "trpg_regular_mail_prepare_success",
       "mixed": "trpg_regular_mail_prepare_mixed",
       "trouble": "trpg_regular_mail_prepare_trouble",
-      "helper": "sumi",
+      "helper": "regulara",
       "approaches": [
         {
           "id": "prepare_self",
@@ -140,20 +140,20 @@
         },
         {
           "id": "prepare_plan",
-          "actor": "sumi",
-          "sheet": "sumi",
+          "actor": "regulara",
+          "sheet": "regulara",
           "stat": "hand",
-          "label": "{pc:sumi}が支度を整える",
+          "label": "{pc:regulara}が支度を整える",
           "detail": "道具と道順を、手早くそろえる",
           "declare": "trpg_regular_mail_declare_prepare_plan"
         },
         {
           "id": "prepare_scout",
-          "actor": "salaryman",
-          "sheet": "salaryman",
+          "actor": "regularb",
+          "sheet": "regularb",
           "stat": "nerve",
           "label": "届ける道を、先に見てくる",
-          "detail": "{pc:salaryman}が夜道をひと足先に確かめる",
+          "detail": "{pc:regularb}が夜道をひと足先に確かめる",
           "declare": "trpg_regular_mail_declare_prepare_scout"
         }
       ]
@@ -164,7 +164,7 @@
       "success": "trpg_regular_mail_serve_success",
       "mixed": "trpg_regular_mail_serve_mixed",
       "trouble": "trpg_regular_mail_serve_trouble",
-      "helper": "salaryman",
+      "helper": "regularb",
       "approaches": [
         {
           "id": "serve_word",
@@ -177,20 +177,20 @@
         },
         {
           "id": "serve_wait",
-          "actor": "sumi",
-          "sheet": "sumi",
+          "actor": "regulara",
+          "sheet": "regulara",
           "stat": "eye",
           "label": "渡す時を、見はからう",
-          "detail": "{pc:sumi}が窓の灯りを見て、ちょうどいい時を待つ",
+          "detail": "{pc:regulara}が窓の灯りを見て、ちょうどいい時を待つ",
           "declare": "trpg_regular_mail_declare_serve_wait"
         },
         {
           "id": "serve_speech",
-          "actor": "salaryman",
-          "sheet": "salaryman",
+          "actor": "regularb",
+          "sheet": "regularb",
           "stat": "talk",
           "label": "ひと言、口上を添える",
-          "detail": "{pc:salaryman}が月にふさわしい一言を添える",
+          "detail": "{pc:regularb}が月にふさわしい一言を添える",
           "declare": "trpg_regular_mail_declare_serve_speech"
         }
       ]
@@ -213,20 +213,20 @@
         },
         {
           "id": "twist_tools",
-          "actor": "sumi",
-          "sheet": "sumi",
+          "actor": "regulara",
+          "sheet": "regulara",
           "stat": "hand",
           "label": "縄と網を、手早く配る",
-          "detail": "{pc:sumi}が詰所の道具を、みんなに手渡す",
+          "detail": "{pc:regulara}が詰所の道具を、みんなに手渡す",
           "declare": "trpg_regular_mail_declare_twist_tools"
         },
         {
           "id": "twist_call",
-          "actor": "salaryman",
-          "sheet": "salaryman",
+          "actor": "regularb",
+          "sheet": "regularb",
           "stat": "talk",
           "label": "町の窓に、呼びかける",
-          "detail": "{pc:salaryman}が窓から顔を出した人に、手紙の行方を聞く",
+          "detail": "{pc:regularb}が窓から顔を出した人に、手紙の行方を聞く",
           "declare": "trpg_regular_mail_declare_twist_call"
         }
       ]
@@ -277,8 +277,8 @@
     }
   ],
   "consult": {
-    "sumi": "trpg_regular_mail_consult_hiyori",
-    "salaryman": "trpg_regular_mail_consult_adam"
+    "regulara": "trpg_regular_mail_consult_hiyori",
+    "regularb": "trpg_regular_mail_consult_adam"
   },
   "hypotheses": [
     {
@@ -627,10 +627,10 @@
       },
       "lines": [
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／卓の会話",
           "face": "normal",
-          "text": "……物語の前に、キャラ作りの時間です。役は、決まりましたか"
+          "text": "物語の前に、役を決めましょう。どんな夜番にしますか？"
         }
       ]
     },
@@ -647,10 +647,10 @@
           "text": "俺は{pc}。{pcTitle}でいく"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／卓の会話",
-          "face": "smile",
-          "text": "……そろいました。では、最初のページをめくります"
+          "face": "normal",
+          "text": "役がそろいましたね。最初のページを開きましょう"
         }
       ]
     },
@@ -662,28 +662,22 @@
       },
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "regulara",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……俺はユラ。町の灯りをともして回る、か弱い夜番だ"
+          "text": "今回はユラ。灯りともしを演じます"
         },
         {
-          "speaker": "sumi",
+          "speaker": "regulara",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "夜風に吹かれたら、灯りと一緒に消えちまいそうだな……"
+          "text": "好きなものは、町の灯り"
         },
         {
-          "speaker": "sumi",
-          "role": "PL／卓の会話",
-          "face": "smile",
-          "text": "でも、屋台のラーメンの湯気が見えたら走るぞ。全力で"
-        },
-        {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／卓の会話",
-          "face": "smile",
-          "text": "……ラーメンで元気になる夜番さん。いいと思います"
+          "face": "normal",
+          "text": "では、その役で。物語を始めましょう"
         }
       ]
     },
@@ -695,28 +689,22 @@
       },
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "regulara",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……俺はネリ。風見の見習いだ。強い風が吹いたら、飛ばされちゃうの"
+          "text": "今回はネリ。風見の見習いを演じます"
         },
         {
-          "speaker": "sumi",
+          "speaker": "regulara",
           "role": "PL／卓の会話",
-          "face": "smile",
-          "text": "趣味は斧投げ。的の真ん中は、外したことがない"
+          "face": "normal",
+          "text": "好きなものは、風見の動き"
         },
         {
-          "speaker": "hajime",
-          "role": "PL／卓の会話",
-          "face": "surprise",
-          "text": "飛ばされる人の趣味じゃないよね！？"
-        },
-        {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／卓の会話",
-          "face": "evil",
-          "text": "……風の強い夜になるかも、しれませんね"
+          "face": "normal",
+          "text": "では、その役で。物語を始めましょう"
         }
       ]
     },
@@ -728,28 +716,22 @@
       },
       "lines": [
         {
-          "speaker": "salaryman",
+          "speaker": "regularb",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "俺の役はレオン。時計塔で鐘をつく夜番だ"
+          "text": "今回はレオン。鐘つきを演じます"
         },
         {
-          "speaker": "salaryman",
+          "speaker": "regularb",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "鐘は一つ。だが、その響きは町じゅうの窓に届く"
+          "text": "好きなものは、鐘の響き"
         },
         {
-          "speaker": "hajime",
-          "role": "PL／卓の会話",
-          "face": "smile",
-          "text": "鐘の音みたいに、声も大きそうだな"
-        },
-        {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／卓の会話",
-          "face": "smile",
-          "text": "……頼もしいです。夜の町に、ぴったり"
+          "face": "normal",
+          "text": "では、その役で。物語を始めましょう"
         }
       ]
     },
@@ -761,28 +743,22 @@
       },
       "lines": [
         {
-          "speaker": "salaryman",
+          "speaker": "regularb",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "俺の役はグラン。月を測りに来た、旅の天文学者だ"
+          "text": "今回はグラン。旅の天文学者を演じます"
         },
         {
-          "speaker": "salaryman",
+          "speaker": "regularb",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……林檎が二つ。そういう始まりもあるか"
+          "text": "好きなものは、月の観測"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／卓の会話",
-          "face": "surprise",
-          "text": "……そういう学説、ありましたっけ"
-        },
-        {
-          "speaker": "salaryman",
-          "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……今、決まったな"
+          "text": "では、その役で。物語を始めましょう"
         }
       ]
     },
@@ -793,10 +769,10 @@
       },
       "lines": [
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／卓の会話",
           "face": "normal",
-          "text": "……今夜は、私がGMです。絵本みたいな物語を、一冊だけ"
+          "text": "今夜は、この店の常連さんたちと郵便猫の物語を遊びましょう"
         },
         {
           "speaker": "hajime",
@@ -805,75 +781,75 @@
           "text": "『葉っぱ耳の郵便猫』……絵本のTRPGって、はじめてだな"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "",
           "face": "normal",
-          "text": "みんなは、時計坂の町の夜番です。私はGMと、郵便猫を",
+          "text": "私はGMと郵便猫を。皆さんは、この町の夜番をお願いします",
           "castIntro": true,
-          "smallTableText": "はじめさんは、時計坂の町の夜番です。空いた役は、私が"
+          "smallTableText": "私がGMを務めます。空いた役もお手伝いしますね"
         },
         {
-          "speaker": "sumi",
+          "speaker": "regulara",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "夜の見回りね。……俺も夜風は苦手だが"
+          "text": "夜の見回りね。……私も夜風は苦手だが"
         },
         {
-          "speaker": "salaryman",
+          "speaker": "regularb",
           "role": "PL／卓の会話",
           "face": "normal",
           "text": "……夜番なら、慣れている"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "時計坂の町。大きな月が、坂の石畳を白く照らしている"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "{pc}は詰所の前で、ランタンの火を確かめている"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "{pc:sumi}は、坂の街灯を一つずつ見上げている"
+          "text": "{pc:regulara}は、坂の街灯を一つずつ見上げている"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "{pc:salaryman}は時計塔の影で、月の高さから時刻を読んでいる"
+          "text": "{pc:regularb}は時計塔の影で、月の高さから時刻を読んでいる"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "そこへ、手紙をくわえた猫が一匹。耳は葉っぱ、尻尾は煙みたいに揺れている"
         },
         {
-          "speaker": "sumi",
+          "speaker": "regulara",
           "role": "PL／卓の会話",
-          "face": "surprise",
+          "face": "normal",
           "text": "猫！？ ……あ、いえ。いい猫だな"
         },
         {
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "surprise",
-          "text": "あれ、この猫……つむぎがよく描いてる子？"
+          "text": "葉っぱの耳に、煙のしっぽ。変わった郵便屋さんですね"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／卓の会話",
-          "face": "smile",
-          "text": "……はい。いつも描いてる子です。今夜は、町の郵便屋さん"
+          "face": "normal",
+          "text": "今夜の郵便屋さんです。どんな配達になるでしょうね"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "郵便猫ミトン／物語",
           "face": "normal",
           "text": "こんばんは、夜番さん。郵便猫の、ミトンです"
@@ -887,13 +863,13 @@
       },
       "lines": [
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "ミトンは前足で、手紙をそっと差しだす。宛名のインクが、にじんでいる"
         },
         {
-          "speaker": "salaryman",
+          "speaker": "regularb",
           "role": "PL／卓の会話",
           "face": "normal",
           "text": "……宛先がないと、困るな"
@@ -905,9 +881,9 @@
           "text": "こんばんは、ミトン。その手紙、届け先がわからないの？"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "郵便猫ミトン／物語",
-          "face": "sad",
+          "face": "normal",
           "text": "はい。にじんでしまって、半分しか読めなくて……"
         }
       ]
@@ -919,7 +895,7 @@
       },
       "lines": [
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "ミトンは尻尾をゆらりと振った。安心して、話してくれそうだ"
@@ -939,22 +915,22 @@
       },
       "lines": [
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "ミトンが小さくくしゃみをする。宛名のにじみが、少し広がった"
         },
         {
-          "speaker": "sumi",
+          "speaker": "regulara",
           "role": "PL／卓の会話",
           "face": "normal",
           "text": "……おや。でも、まだ読める字もあるわ"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／卓の会話",
           "face": "normal",
-          "text": "……大丈夫です。話の続きは、ちゃんと聞けます"
+          "text": "大丈夫ですよ。物語の続きは聞けます"
         }
       ]
     },
@@ -965,9 +941,9 @@
       },
       "lines": [
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／場面",
-          "face": "surprise",
+          "face": "normal",
           "text": "{pc}が手を伸ばすと、ミトンはびっくりして塀の上へ跳んだ"
         },
         {
@@ -977,7 +953,7 @@
           "text": "わっ、ごめん！ 驚かせるつもりじゃ……"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "郵便猫ミトン／物語",
           "face": "normal",
           "text": "……すみません、猫なので。話は、ここからします"
@@ -997,10 +973,10 @@
           "text": "{pc}はしゃがんで、ミトンと目線を合わせる。『どうしたの？』"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／卓の会話",
-          "face": "smile",
-          "text": "……話術で判定です。目標は30"
+          "face": "normal",
+          "text": "話術で判定です。目標は30"
         }
       ]
     },
@@ -1011,16 +987,16 @@
       },
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "regulara",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "{pc:sumi}は灯りを寄せて、にじんだ宛名をよく見るぞ"
+          "text": "{pc:regulara}は灯りを寄せて、にじんだ宛名をよく見るぞ"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／卓の会話",
           "face": "normal",
-          "text": "……観察で判定です。目標は30"
+          "text": "観察で判定です。目標は30"
         }
       ]
     },
@@ -1031,16 +1007,16 @@
       },
       "lines": [
         {
-          "speaker": "salaryman",
+          "speaker": "regularb",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "{pc:salaryman}は帽子を取って一礼。『ようこそ、月夜の郵便屋さん』"
+          "text": "{pc:regularb}は帽子を取って一礼。『ようこそ、月夜の郵便屋さん』"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／卓の会話",
-          "face": "smile",
-          "text": "……話術で判定。ミトン、照れてます。目標は30"
+          "face": "normal",
+          "text": "話術で判定です。目標は30"
         }
       ]
     },
@@ -1051,15 +1027,15 @@
       },
       "lines": [
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "風がやんだ一瞬、手紙は{pc}の手の中へ、すとんと落ちてきた"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "郵便猫ミトン／物語",
-          "face": "smile",
+          "face": "normal",
           "text": "すごい……！ 夜番さん、ありがとうございます"
         }
       ]
@@ -1071,22 +1047,22 @@
       },
       "lines": [
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "手紙は取り戻した。でも、封筒の角が少し折れてしまった"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "ミトンの耳の葉っぱも一枚、月の方へ飛んでいった"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／卓の会話",
-          "face": "smile",
-          "text": "……葉っぱがない日も、ミトンはミトンです"
+          "face": "normal",
+          "text": "耳の葉がなくても、ミトンはミトンですね"
         }
       ]
     },
@@ -1097,7 +1073,7 @@
       },
       "lines": [
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "手紙は町を一周して、パン屋の煙突に引っかかった"
@@ -1109,7 +1085,7 @@
           "text": "そこ！？ 届くかな……"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "パン屋の主人が長い棒で取ってくれた。少し、パンの香りがする"
@@ -1129,10 +1105,10 @@
           "text": "{pc}は風に向かって駆けだす！ 手紙から目を離さない"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／卓の会話",
           "face": "normal",
-          "text": "……度胸で判定です。坂は急ですよ。目標は30"
+          "text": "度胸で判定です。目標は30"
         }
       ]
     },
@@ -1143,16 +1119,16 @@
       },
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "regulara",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "{pc:sumi}は、縄と網を手早くみんなに配るぞ"
+          "text": "{pc:regulara}は、縄と網を手早くみんなに配るぞ"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／卓の会話",
           "face": "normal",
-          "text": "……手際で判定です。目標は30"
+          "text": "手際で判定です。目標は30"
         }
       ]
     },
@@ -1163,16 +1139,16 @@
       },
       "lines": [
         {
-          "speaker": "salaryman",
+          "speaker": "regularb",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "{pc:salaryman}は窓という窓に呼びかける。『手紙を見た者はいないか！』"
+          "text": "{pc:regularb}は窓という窓に呼びかける。『手紙を見た者はいないか！』"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／卓の会話",
-          "face": "smile",
-          "text": "……話術で判定。町じゅうが起きそうです。目標は30"
+          "face": "normal",
+          "text": "話術で判定です。目標は30"
         }
       ]
     },
@@ -1183,16 +1159,16 @@
       },
       "lines": [
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "支度はぴたりと整った。手紙は、出発を待っている"
         },
         {
-          "speaker": "sumi",
+          "speaker": "regulara",
           "role": "PL／卓の会話",
-          "face": "smile",
-          "text": "完璧ね。……俺が儚く消える前に、出発するか"
+          "face": "normal",
+          "text": "完璧ね。……私が儚く消える前に、出発するか"
         }
       ]
     },
@@ -1203,7 +1179,7 @@
       },
       "lines": [
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "包みを一度ほどいて、やり直す。そのぶん、出発が少し遅れた"
@@ -1215,10 +1191,10 @@
           "text": "急がば回れ、だな"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／卓の会話",
           "face": "normal",
-          "text": "……月は、まだ待ってくれます"
+          "text": "月はまだ空にあります。配達を続けましょう"
         }
       ]
     },
@@ -1229,19 +1205,19 @@
       },
       "lines": [
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "ランタンの油が切れた。暗い詰所で、手探りの支度になる"
         },
         {
-          "speaker": "sumi",
+          "speaker": "regulara",
           "role": "PL／卓の会話",
-          "face": "surprise",
+          "face": "normal",
           "text": "えっ、暗い！？ ……あ、ううん。闇も儚くていいな"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "ミトンの目がきらりと光って、手もとを照らしてくれた"
@@ -1261,10 +1237,10 @@
           "text": "{pc}は自分の手で、手紙を丁寧に包みます"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／卓の会話",
           "face": "normal",
-          "text": "……手際で判定です。ゆっくりで大丈夫。目標は30"
+          "text": "手際で判定です。目標は30"
         }
       ]
     },
@@ -1275,16 +1251,16 @@
       },
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "regulara",
           "role": "PL／卓の会話",
-          "face": "smile",
-          "text": "{pc:sumi}が支度するわ。段取りは任せろ"
+          "face": "normal",
+          "text": "{pc:regulara}が支度するわ。段取りは任せろ"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／卓の会話",
-          "face": "smile",
-          "text": "……手際で判定。頼もしいです。目標は30"
+          "face": "normal",
+          "text": "手際で判定です。目標は30"
         }
       ]
     },
@@ -1295,16 +1271,16 @@
       },
       "lines": [
         {
-          "speaker": "salaryman",
+          "speaker": "regularb",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "{pc:salaryman}は、届ける道をひと足先に見てこよう"
+          "text": "{pc:regularb}は、届ける道をひと足先に見てこよう"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／卓の会話",
           "face": "normal",
-          "text": "……度胸で判定です。夜道ですよ。目標は30"
+          "text": "度胸で判定です。目標は30"
         }
       ]
     },
@@ -1315,13 +1291,13 @@
       },
       "lines": [
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "手紙は、まっすぐ届いた。窓の灯りが、ふっと揺れる"
         },
         {
-          "speaker": "salaryman",
+          "speaker": "regularb",
           "role": "PL／卓の会話",
           "face": "normal",
           "text": "……届いて、よかったな"
@@ -1335,7 +1311,7 @@
       },
       "lines": [
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "渡すとき、{pc}は少し言葉に詰まった。でも、気持ちは伝わったようだ"
@@ -1355,19 +1331,19 @@
       },
       "lines": [
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "渡す直前、ミトンが大きなくしゃみ。封筒が、ころんと転がった"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "郵便猫ミトン／物語",
           "face": "normal",
           "text": "……すみません、月がまぶしくて"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "拾い直して、もう一度。今度は、ちゃんと届いた"
@@ -1387,10 +1363,10 @@
           "text": "{pc}が、選んだ渡し方で手紙を届けます"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／卓の会話",
-          "face": "smile",
-          "text": "……話術で判定です。最後の一言、大事に。目標は30"
+          "face": "normal",
+          "text": "話術で判定です。目標は30"
         }
       ]
     },
@@ -1401,16 +1377,16 @@
       },
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "regulara",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "{pc:sumi}は窓の灯りを見て、渡す時を待つぞ"
+          "text": "{pc:regulara}は窓の灯りを見て、渡す時を待つぞ"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／卓の会話",
           "face": "normal",
-          "text": "……観察で判定です。目標は30"
+          "text": "観察で判定です。目標は30"
         }
       ]
     },
@@ -1421,16 +1397,16 @@
       },
       "lines": [
         {
-          "speaker": "salaryman",
+          "speaker": "regularb",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "{pc:salaryman}が口上を添えよう。月にふさわしい一言を"
+          "text": "{pc:regularb}が口上を添えよう。月にふさわしい一言を"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／卓の会話",
-          "face": "evil",
-          "text": "……話術で判定です。大げさすぎないように。目標は30"
+          "face": "normal",
+          "text": "話術で判定です。目標は30"
         }
       ]
     },
@@ -1441,13 +1417,13 @@
       },
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "regulara",
           "role": "PL／卓の会話",
           "face": "normal",
           "text": "……宛名が半分なら、残りの半分は町が知ってるはずだ"
         },
         {
-          "speaker": "sumi",
+          "speaker": "regulara",
           "role": "PL／卓の会話",
           "face": "normal",
           "text": "におい、字の跡、町のうわさ。小さなものほど、行き先を教えてくれる"
@@ -1467,13 +1443,13 @@
       },
       "lines": [
         {
-          "speaker": "salaryman",
+          "speaker": "regularb",
           "role": "PL／卓の会話",
           "face": "normal",
           "text": "……まず、この手紙を待つ人を探そう"
         },
         {
-          "speaker": "salaryman",
+          "speaker": "regularb",
           "role": "PL／卓の会話",
           "face": "normal",
           "text": "誰が書き、誰が待つか。それが分かれば、道は自然に決まる"
@@ -1493,22 +1469,22 @@
       },
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "regulara",
           "role": "PL／卓の会話",
-          "face": "smile",
+          "face": "normal",
           "text": "毎晩の灯りに、町からのお礼……。いいな"
         },
         {
-          "speaker": "salaryman",
+          "speaker": "regularb",
           "role": "PL／卓の会話",
           "face": "normal",
           "text": "……灯りをともす人も、一人だな"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／卓の会話",
-          "face": "smile",
-          "text": "……いい読みです。その線で、行ってみましょう"
+          "face": "normal",
+          "text": "では、その見立てで進めましょう"
         }
       ]
     },
@@ -1519,22 +1495,22 @@
       },
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "regulara",
           "role": "PL／卓の会話",
           "face": "normal",
           "text": "遠くへ越した子に……。同じ月を、見てるといいな"
         },
         {
-          "speaker": "salaryman",
+          "speaker": "regularb",
           "role": "PL／卓の会話",
           "face": "normal",
           "text": "……手紙が届けば、また話せる"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／卓の会話",
-          "face": "smile",
-          "text": "……はい。遠い窓まで、届けましょう"
+          "face": "normal",
+          "text": "遠い窓まで届けるのですね。では、その見立てで"
         }
       ]
     },
@@ -1545,22 +1521,22 @@
       },
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "regulara",
           "role": "PL／卓の会話",
-          "face": "surprise",
+          "face": "normal",
           "text": "ミトンが自分で書いたの！？ ……なかなかやるな"
         },
         {
-          "speaker": "salaryman",
+          "speaker": "regularb",
           "role": "PL／卓の会話",
           "face": "normal",
           "text": "……描いた人への手紙か"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／卓の会話",
-          "face": "bow",
-          "text": "……そういう読みも、あると思います"
+          "face": "normal",
+          "text": "なるほど。では、その見立てで"
         }
       ]
     },
@@ -1571,28 +1547,28 @@
       },
       "lines": [
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／場面",
-          "face": "surprise",
+          "face": "normal",
           "text": "そのとき、坂の上から大きな風が吹きおろした"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "ミトンの前足から、手紙がふわりと舞い上がる"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "郵便猫ミトン／物語",
-          "face": "surprise",
+          "face": "normal",
           "text": "にゃっ！？ 手紙が……！"
         },
         {
-          "speaker": "sumi",
+          "speaker": "regulara",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……風。俺も、飛ばされちゃう……"
+          "text": "……風。私も、飛ばされちゃう……"
         },
         {
           "speaker": "hajime",
@@ -1601,10 +1577,10 @@
           "text": "手紙が月の方へ飛んでいく！ 追いかけないと！"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／卓の会話",
-          "face": "evil",
-          "text": "……さあ、夜番さん。どうしますか"
+          "face": "normal",
+          "text": "では、夜番の皆さん。どうしますか？"
         }
       ]
     },
@@ -1615,7 +1591,7 @@
       },
       "lines": [
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "夜番たちは石畳の坂を駆けだす。手紙は、屋根の向こうへひらひらと"
@@ -1635,15 +1611,15 @@
       },
       "lines": [
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "詰所の物置から、月の絵の古い凧を引っぱりだす"
         },
         {
-          "speaker": "sumi",
+          "speaker": "regulara",
           "role": "PL／卓の会話",
-          "face": "smile",
+          "face": "normal",
           "text": "凧揚げなら任せて！ ……じゃなくて、任せろ"
         }
       ]
@@ -1655,13 +1631,13 @@
       },
       "lines": [
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "時計塔のてっぺんで、ふくろうが片目を開けた"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "郵便猫ミトン／物語",
           "face": "normal",
           "text": "ふくろうさん、お願いです。手紙を、見ていてください"
@@ -1675,10 +1651,10 @@
       },
       "lines": [
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／卓の会話",
           "face": "normal",
-          "text": "……届ける道と、手紙の包み方を決めてください"
+          "text": "届ける道と、手紙の包み方を決めましょう"
         },
         {
           "speaker": "hajime",
@@ -1687,9 +1663,9 @@
           "text": "手がかりを見直して、道と包み方を選ぼう"
         },
         {
-          "speaker": "sumi",
+          "speaker": "regulara",
           "role": "PL／卓の会話",
-          "face": "smile",
+          "face": "normal",
           "text": "支度なら任せて。……まあ、段取りは得意なの"
         }
       ]
@@ -1701,7 +1677,7 @@
       },
       "lines": [
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "月が、いちばん高くなった。届け先の窓に、灯りがひとつ"
@@ -1713,7 +1689,7 @@
           "text": "最後は、どうやって渡そう"
         },
         {
-          "speaker": "salaryman",
+          "speaker": "regularb",
           "role": "PL／卓の会話",
           "face": "normal",
           "text": "……渡し方は、考えよう"
@@ -1727,13 +1703,13 @@
       },
       "lines": [
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "屋根の道へ。瓦の上を行く、猫と月の近道だ"
         },
         {
-          "speaker": "salaryman",
+          "speaker": "regularb",
           "role": "PL／卓の会話",
           "face": "normal",
           "text": "……屋根の上なら、よく見える"
@@ -1747,13 +1723,13 @@
       },
       "lines": [
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "川沿いの道へ。水面の月が、ずっと先まで続いている"
         },
         {
-          "speaker": "sumi",
+          "speaker": "regulara",
           "role": "PL／卓の会話",
           "face": "normal",
           "text": "川は、遠くの町まで流れているんだな"
@@ -1767,7 +1743,7 @@
       },
       "lines": [
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "坂の階段へ。百段の先に、丘の灯りが見える"
@@ -1787,13 +1763,13 @@
       },
       "lines": [
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "赤い封蝋を垂らし、月の印をひとつ押した"
         },
         {
-          "speaker": "sumi",
+          "speaker": "regulara",
           "role": "PL／卓の会話",
           "face": "normal",
           "text": "きちんとした手紙ね。背すじが伸びるな"
@@ -1807,13 +1783,13 @@
       },
       "lines": [
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "封筒に、丘の青い花の押し花を一輪"
         },
         {
-          "speaker": "sumi",
+          "speaker": "regulara",
           "role": "PL／卓の会話",
           "face": "normal",
           "text": "花の色って、遠くからでも思い出せるんだな"
@@ -1827,15 +1803,15 @@
       },
       "lines": [
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "封筒の角に、小さな鈴を結ぶ。ちりん、と鳴った"
         },
         {
-          "speaker": "sumi",
+          "speaker": "regulara",
           "role": "PL／卓の会話",
-          "face": "surprise",
+          "face": "normal",
           "text": "かわいい……！ あ、ううん。いいな"
         }
       ]
@@ -1889,7 +1865,7 @@
       },
       "lines": [
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "郵便猫ミトン／物語",
           "face": "normal",
           "text": "坂の下の渡し場です。船頭さんたちが、みんなで書いていました"
@@ -1909,13 +1885,13 @@
       },
       "lines": [
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "郵便猫ミトン／物語",
           "face": "normal",
           "text": "町でいちばん高いところ、だそうです。坂の階段の、ずっと上"
         },
         {
-          "speaker": "sumi",
+          "speaker": "regulara",
           "role": "PL／卓の会話",
           "face": "normal",
           "text": "坂の上……。あそこには、何があったかな"
@@ -1929,13 +1905,13 @@
       },
       "lines": [
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "郵便猫ミトン／物語",
-          "face": "sad",
+          "face": "normal",
           "text": "渡し場で、川のしぶきがかかってしまって……"
         },
         {
-          "speaker": "salaryman",
+          "speaker": "regularb",
           "role": "PL／卓の会話",
           "face": "normal",
           "text": "……川で宛名が消えたのか"
@@ -1949,15 +1925,15 @@
       },
       "lines": [
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "郵便猫ミトン／物語",
           "face": "normal",
           "text": "夜の配達の帰りは、いつも丘の灯りを目印にしています"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "郵便猫ミトン／物語",
-          "face": "smile",
+          "face": "normal",
           "text": "迷子にならないのは、あの灯りのおかげです"
         }
       ]
@@ -1969,13 +1945,13 @@
       },
       "lines": [
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "郵便猫ミトン／物語",
           "face": "normal",
           "text": "パン屋の裏口で、小さな女の子から預かりました"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "女の子は何度も『絶対に届けてね』と言ったらしい"
@@ -1989,7 +1965,7 @@
       },
       "lines": [
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "郵便猫ミトン／物語",
           "face": "normal",
           "text": "この町の家じゃない、と言っていました。遠くの、窓の大きな家"
@@ -2009,13 +1985,13 @@
       },
       "lines": [
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "郵便猫ミトン／物語",
-          "face": "sad",
+          "face": "normal",
           "text": "書いたあと、女の子がずっと胸に抱えていたので……"
         },
         {
-          "speaker": "sumi",
+          "speaker": "regulara",
           "role": "PL／卓の会話",
           "face": "normal",
           "text": "……大事な手紙なんだな"
@@ -2029,15 +2005,15 @@
       },
       "lines": [
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "郵便猫ミトン／物語",
           "face": "normal",
           "text": "前は毎晩、あの子ともう一人と、橋の上で遊んでいました"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "郵便猫ミトン／物語",
-          "face": "sad",
+          "face": "normal",
           "text": "もう一人の子は、春から見かけません"
         }
       ]
@@ -2049,13 +2025,13 @@
       },
       "lines": [
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "郵便猫ミトン／物語",
           "face": "normal",
           "text": "……ええと。拾いました。たぶん"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "ミトンは目をそらし、尻尾の先をくるくる回している"
@@ -2075,15 +2051,15 @@
       },
       "lines": [
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "郵便猫ミトン／物語",
           "face": "normal",
           "text": "屋根を歩いていると、丸い窓に月がまるごと映る家があって……"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "郵便猫ミトン／物語",
-          "face": "surprise",
+          "face": "normal",
           "text": "あっ、いえ。なんでもないです"
         }
       ]
@@ -2095,13 +2071,13 @@
       },
       "lines": [
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "郵便猫ミトン／物語",
-          "face": "sad",
+          "face": "normal",
           "text": "インクが乾く前に、前足で、さわってしまって……"
         },
         {
-          "speaker": "salaryman",
+          "speaker": "regularb",
           "role": "PL／卓の会話",
           "face": "normal",
           "text": "前足で？ 待て、それはつまり……"
@@ -2115,16 +2091,16 @@
       },
       "lines": [
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "郵便猫ミトン／物語",
-          "face": "smile",
+          "face": "normal",
           "text": "ぼくのこの耳、ある人に描いてもらったんです"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／卓の会話",
-          "face": "smile",
-          "text": "……ミトン、少し誇らしそうです"
+          "face": "normal",
+          "text": "ミトンも、少し誇らしそうですね"
         }
       ]
     },
@@ -2135,37 +2111,37 @@
       },
       "lines": [
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "丘の上の灯台。扉が開き、白いひげのおじいさんが目を丸くした"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "灯台守のおじいさん／物語",
-          "face": "surprise",
+          "face": "normal",
           "text": "この年寄りに、手紙かい？ ……五十年で、はじめてだ"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "封を開くと、船頭や子どもたちの字。『毎晩の灯りを、ありがとう』"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "灯台守のおじいさん／物語",
-          "face": "smile",
+          "face": "normal",
           "text": "そうか……。ちゃんと、見ていてくれたんだなあ"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "郵便猫ミトン／物語",
-          "face": "smile",
+          "face": "normal",
           "text": "お届け、完了です"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "その夜、丘の灯りは、いつもより少しだけ明るく見えた"
@@ -2185,39 +2161,39 @@
       },
       "lines": [
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "遠い町の、窓の大きな家。夜明け前の窓辺に、手紙をそっと置いた"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "朝。目を覚ました子が、窓辺の封筒に気づく"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "遠い町の子／物語",
-          "face": "surprise",
+          "face": "normal",
           "text": "……あの子からだ！"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "遠い町の子／物語",
-          "face": "smile",
+          "face": "normal",
           "text": "こっちの窓からも、同じ月が見えてるよって、返事を書かなきゃ"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "郵便猫ミトン／物語",
-          "face": "smile",
+          "face": "normal",
           "text": "返事も、ぼくが届けます"
         },
         {
-          "speaker": "sumi",
+          "speaker": "regulara",
           "role": "PL／卓の会話",
-          "face": "smile",
+          "face": "normal",
           "text": "遠くても、同じ月……。いい話だな"
         },
         {
@@ -2235,31 +2211,31 @@
       },
       "lines": [
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "丸窓の屋根裏。絵描きは描きかけの月の前で、うたた寝していた"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "ミトンが、いつもの鼻歌を歌う。絵描きが、ゆっくりと顔を上げた"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "屋根裏の絵描き／物語",
-          "face": "surprise",
+          "face": "normal",
           "text": "……その耳。いちばん最初に描いた、あの子だ"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "郵便猫ミトン／物語",
-          "face": "smile",
+          "face": "normal",
           "text": "描いてくれて、ありがとう。それだけ、言いたかったんです"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "にじんだ宛名の下に、肉球の判子がひとつ押してあった"
@@ -2271,10 +2247,10 @@
           "text": "（描いた人に、ありがとう……か）"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／卓の会話",
-          "face": "bow",
-          "text": "……物語の中の、お話です"
+          "face": "normal",
+          "text": "物語の中のお話ですよ"
         }
       ]
     },
@@ -2285,27 +2261,27 @@
       },
       "lines": [
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "郵便猫ミトン／物語",
           "face": "normal",
           "text": "……ちがったみたい、です。でも、ありがとうございます"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "宛先は、まだわからない。夜番たちはミトンと、月の下の町を歩きだす"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "パン屋も船頭も、窓から顔を出して『うちかもしれない』と言う"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "郵便猫ミトン／物語",
-          "face": "smile",
+          "face": "normal",
           "text": "この町、月のよく見える家ばかりみたいです"
         },
         {
@@ -2315,10 +2291,10 @@
           "text": "宛先を探して歩く夜も、悪くないな"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／卓の会話",
-          "face": "smile",
-          "text": "……続きは、また今度。きっと見つかります"
+          "face": "normal",
+          "text": "続きは、また今度。次の配達も楽しみですね"
         }
       ]
     },
@@ -2329,10 +2305,10 @@
       },
       "lines": [
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／卓の会話",
-          "face": "smile",
-          "text": "……みんな、まっすぐ届けてくれました。ミトン、喜んでます"
+          "face": "normal",
+          "text": "まっすぐ届けられましたね。ミトンも喜んでいます"
         },
         {
           "speaker": "hajime",
@@ -2349,15 +2325,15 @@
       },
       "lines": [
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／卓の会話",
           "face": "normal",
-          "text": "……寄り道も、配達のうちです。ミトンも、よく寄り道します"
+          "text": "寄り道も配達のうちですね。いろいろな道を通りました"
         },
         {
-          "speaker": "sumi",
+          "speaker": "regulara",
           "role": "PL／卓の会話",
-          "face": "smile",
+          "face": "normal",
           "text": "寄り道したぶん、町に詳しくなったな"
         }
       ]
@@ -2369,31 +2345,31 @@
       },
       "lines": [
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／卓の会話",
           "face": "normal",
-          "text": "……これで、おしまいです。配達、手伝ってくれてありがとうございました"
+          "text": "これでおしまいです。配達を手伝ってくださって、ありがとうございました"
         },
         {
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "ミトン、いい猫だったな。つむぎの絵の中でも、あんなふうに走ってるの？"
+          "text": "ミトン、いい猫だったな。配達の続きも見たくなった"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／卓の会話",
-          "face": "smile",
-          "text": "……たぶん。いつも描いてる子なので、走るところも見せたくて"
+          "face": "normal",
+          "text": "皆さんの想像の中で、元気に走っていましたね"
         },
         {
-          "speaker": "sumi",
+          "speaker": "regulara",
           "role": "PL／卓の会話",
           "face": "normal",
           "text": "ミトンのぬいぐるみが出たら、三つ買う……じゃなくて、ほしいな"
         },
         {
-          "speaker": "salaryman",
+          "speaker": "regularb",
           "role": "PL／卓の会話",
           "face": "normal",
           "text": "……描いた本人に聞けば、分かるか"
@@ -2408,13 +2384,13 @@
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "つむぎのGM、静かなのに、ちゃんとどきどきした"
+          "text": "サイさんのGM、静かなのに、ちゃんとどきどきした"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／卓の会話",
-          "face": "bow",
-          "text": "……光栄です。次の物語も、描いておきます"
+          "face": "normal",
+          "text": "ありがとうございます。次の物語もご用意しておきます"
         }
       ]
     },
@@ -2425,13 +2401,13 @@
       },
       "lines": [
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "郵便鞄の手紙を、月に透かしてみる"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "中には、大きさの違う字がいくつも。何人もで書いた手紙らしい"
@@ -2451,19 +2427,19 @@
       },
       "lines": [
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "時計塔の鐘が九つ鳴る。少し遅れて、丘の上に灯りがともった"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "丘の灯台へは、坂の階段で百段。灯りは一晩も欠かさないらしい"
         },
         {
-          "speaker": "salaryman",
+          "speaker": "regularb",
           "role": "PL／卓の会話",
           "face": "normal",
           "text": "……毎晩、同じ合図なのか"
@@ -2477,19 +2453,19 @@
       },
       "lines": [
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "屋根にのぼると、町じゅうの窓が見渡せる"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "月にいちばん近い窓は、丘の灯台のてっぺんだ"
         },
         {
-          "speaker": "sumi",
+          "speaker": "regulara",
           "role": "PL／卓の会話",
           "face": "normal",
           "text": "高いところの窓……。月がよく見えそうだな"
@@ -2503,13 +2479,13 @@
       },
       "lines": [
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "橋の下で、船頭たちが舟をつないでいる"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "『丘の灯りのおかげで帰れる。顔を見て礼を言いそびれててな』"
@@ -2529,19 +2505,19 @@
       },
       "lines": [
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "パン屋の窓から、焼きたての匂い。主人が顔を出した"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "『丘のおじいさんは毎晩、パンを一つだけ。話す相手もいないらしくてね』"
         },
         {
-          "speaker": "sumi",
+          "speaker": "regulara",
           "role": "PL／卓の会話",
           "face": "normal",
           "text": "毎晩、一人きり……。誰かが来たら、きっと嬉しいだろうな"
@@ -2555,19 +2531,19 @@
       },
       "lines": [
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "掲示板の隅に、古い貼り紙。『灯台の灯り、今年で五十年』"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "貼り紙の角は、赤い封蝋で留めてある。昔ながらのやり方だ"
         },
         {
-          "speaker": "sumi",
+          "speaker": "regulara",
           "role": "PL／卓の会話",
           "face": "normal",
           "text": "封蝋……。きちんとした手紙が好きな人なんだな"
@@ -2581,19 +2557,19 @@
       },
       "lines": [
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "郵便鞄の手紙を月に透かすと、小さな花の形が浮かぶ"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "押し花だ。丘に咲く、小さな青い花らしい"
         },
         {
-          "speaker": "sumi",
+          "speaker": "regulara",
           "role": "PL／卓の会話",
           "face": "normal",
           "text": "押し花を入れた手紙……。思い出を一緒に送りたいんだな"
@@ -2607,13 +2583,13 @@
       },
       "lines": [
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "時計塔の壁に、子どもの字の落書きがある"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "『九時に、ここで』。並んだ名前は二つ。片方だけ、色あせている"
@@ -2633,19 +2609,19 @@
       },
       "lines": [
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "屋根にのぼると、川がずっと遠くまで光っている"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "川下の先に、遠い町の窓明かり。月は、あちらの上にも出ている"
         },
         {
-          "speaker": "salaryman",
+          "speaker": "regularb",
           "role": "PL／卓の会話",
           "face": "normal",
           "text": "……遠くても、月は同じだな"
@@ -2659,19 +2635,19 @@
       },
       "lines": [
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "橋の上で、橋番のおばあさんが月を見ている"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "『春に、川沿いの道を一家が下っていったよ。子どもが何度も振り返ってね』"
         },
         {
-          "speaker": "sumi",
+          "speaker": "regulara",
           "role": "PL／卓の会話",
           "face": "normal",
           "text": "……振り返りながら、行ったんだな"
@@ -2685,19 +2661,19 @@
       },
       "lines": [
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "パン屋の主人が、窓から顔を出す"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "『うちの娘が手紙を書いてね。朝起きたら、窓辺で見つけてほしいんだと』"
         },
         {
-          "speaker": "salaryman",
+          "speaker": "regularb",
           "role": "PL／卓の会話",
           "face": "normal",
           "text": "……パン屋の窓、覚えておこう"
@@ -2711,13 +2687,13 @@
       },
       "lines": [
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "掲示板に、春の日付の貼り紙が残っている"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "『川下の町へ引っ越します。今度の家は、月のよく見える家です』"
@@ -2737,13 +2713,13 @@
       },
       "lines": [
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "郵便鞄の手紙。宛名のにじみに、ランタンを近づける"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "にじみの形は、小さな肉球。インクは、まだ乾ききっていない"
@@ -2763,19 +2739,19 @@
       },
       "lines": [
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "時計塔の壁に、色あせた猫の絵が描かれている"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "葉っぱの耳に、煙みたいな尻尾。ミトンにそっくりだ"
         },
         {
-          "speaker": "salaryman",
+          "speaker": "regularb",
           "role": "PL／卓の会話",
           "face": "normal",
           "text": "……この猫の絵、古いな"
@@ -2789,19 +2765,19 @@
       },
       "lines": [
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "屋根づたいに歩くと、屋根裏の丸い窓に出る"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "中には絵の具の瓶。丸い窓いっぱいに、月が映っている"
         },
         {
-          "speaker": "sumi",
+          "speaker": "regulara",
           "role": "PL／卓の会話",
           "face": "normal",
           "text": "屋根づたいでしか来られない窓……。まるで猫の道だな"
@@ -2815,15 +2791,15 @@
       },
       "lines": [
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "橋を渡りながら、ミトンが小さく鼻歌を歌っている"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "郵便猫ミトン／物語",
-          "face": "smile",
+          "face": "normal",
           "text": "この歌ですか？ ……描いてもらったとき、ずっと聞こえていた歌です"
         },
         {
@@ -2841,19 +2817,19 @@
       },
       "lines": [
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "パン屋の看板にも、葉っぱの耳の猫が描かれている"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "『屋根裏の絵描きさんが、描いてくれたんだよ』と主人が笑う"
         },
         {
-          "speaker": "salaryman",
+          "speaker": "regularb",
           "role": "PL／卓の会話",
           "face": "normal",
           "text": "……この猫、パン屋にもいた"
@@ -2867,13 +2843,13 @@
       },
       "lines": [
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "掲示板に、色あせた貼り紙がある"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "『鈴をつけた葉っぱ耳の猫を見かけたら、元気か教えてください』"
@@ -3030,9 +3006,9 @@
   "campaign": {
     "seats": [
       {
-        "actor": "tsumugi",
+        "actor": "sai",
         "candidates": [
-          "tsumugi"
+          "sai"
         ],
         "required": true
       },
@@ -3044,16 +3020,16 @@
         "required": true
       },
       {
-        "actor": "sumi",
+        "actor": "regulara",
         "candidates": [
-          "sumi"
+          "regulara"
         ],
         "required": true
       },
       {
-        "actor": "salaryman",
+        "actor": "regularb",
         "candidates": [
-          "salaryman"
+          "regularb"
         ],
         "required": true
       }
@@ -3114,14 +3090,14 @@
     }
   },
   "companionBuilds": {
-    "sumi": {
-      "sumi": [
+    "regulara": {
+      "regulara": [
         {
           "id": "yura",
           "name": "ユラ",
           "title": "灯りともし",
-          "trait": "か細い声の灯りともし。梯子をのぼるのは町一番速い",
-          "likes": "屋台の夜鳴きラーメン",
+          "trait": "町の灯りを守る夜番。暗い道にも目が利く",
+          "likes": "町の灯り",
           "stats": {
             "eye": 3,
             "hand": 4,
@@ -3134,8 +3110,8 @@
           "id": "neri",
           "name": "ネリ",
           "title": "風見の見習い",
-          "trait": "風が吹くと倒れそう。……斧投げで鍛えた腕は、びくともしない",
-          "likes": "斧投げ。ゆるい顔の猫のお守り",
+          "trait": "風に流されやすいが、夜道の支度は得意",
+          "likes": "風見の動き",
           "stats": {
             "eye": 3,
             "hand": 3,
@@ -3146,14 +3122,14 @@
         }
       ]
     },
-    "salaryman": {
-      "salaryman": [
+    "regularb": {
+      "regularb": [
         {
           "id": "leon",
           "name": "レオン",
           "title": "鐘つき",
           "trait": "時計塔の鐘をつく。鐘の音と同じくらい、言葉も大きい",
-          "likes": "林檎の砂糖煮。甘さの原点",
+          "likes": "鐘の響き",
           "stats": {
             "eye": 2,
             "hand": 2,
@@ -3167,7 +3143,7 @@
           "name": "グラン",
           "title": "旅の天文学者",
           "trait": "月を測りに来た。宇宙の話は、必ず林檎から始まる",
-          "likes": "二つ並んだ林檎。宇宙の原点",
+          "likes": "月の観測",
           "stats": {
             "eye": 4,
             "hand": 2,
@@ -3214,8 +3190,8 @@
     "intro": "trpg_regular_mail_twist_intro"
   },
   "zeroMemberCast": [
-    "sumi",
-    "tsumugi",
-    "salaryman"
+    "sai",
+    "regulara",
+    "regularb"
   ]
 }

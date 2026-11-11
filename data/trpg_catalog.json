@@ -1,5 +1,5 @@
 {
-  "version": 3,
+  "version": 4,
   "tableTalk": "dialogue/trpg_table_talk.json",
   "characterProfiles": [
     "dialogue/samechan.json"
@@ -11,9 +11,9 @@
       "price": 300,
       "stockRequires": [],
       "zeroMemberCast": [
-        "sumi",
-        "tsumugi",
-        "salaryman"
+        "sai",
+        "regulara",
+        "regularb"
       ]
     },
     {
@@ -22,9 +22,9 @@
       "price": 300,
       "stockRequires": [],
       "zeroMemberCast": [
-        "sumi",
-        "tsumugi",
-        "salaryman"
+        "sai",
+        "regulara",
+        "regularb"
       ]
     },
     {
@@ -33,7 +33,8 @@
       "price": 500,
       "stockRequires": [
         "hiyori"
-      ]
+      ],
+      "member": "hiyori"
     },
     {
       "id": "shark-last-order",
@@ -41,7 +42,8 @@
       "price": 800,
       "stockRequires": [
         "samechan"
-      ]
+      ],
+      "member": "samechan"
     },
     {
       "id": "leaf-mail",
@@ -49,7 +51,8 @@
       "price": 500,
       "stockRequires": [
         "tsumugi"
-      ]
+      ],
+      "member": "tsumugi"
     },
     {
       "id": "apple-thief",
@@ -57,55 +60,8 @@
       "price": 700,
       "stockRequires": [
         "adam"
-      ]
-    },
-    {
-      "id": "shark-island",
-      "file": "dialogue/trpg_shark_island.json",
-      "price": 800,
-      "stockRequires": [
-        "samechan"
-      ]
-    },
-    {
-      "id": "mist-kingdom",
-      "file": "dialogue/trpg_mist_kingdom.json",
-      "price": 700,
-      "stockRequires": [
-        "hiyori"
-      ]
-    },
-    {
-      "id": "smoke-robot",
-      "file": "dialogue/trpg_smoke_robot.json",
-      "price": 600,
-      "stockRequires": [
-        "samechan"
-      ]
-    },
-    {
-      "id": "fading-familiar",
-      "file": "dialogue/trpg_fading_familiar.json",
-      "price": 700,
-      "stockRequires": [
-        "hiyori"
-      ]
-    },
-    {
-      "id": "fox-market",
-      "file": "dialogue/trpg_fox_market.json",
-      "price": 600,
-      "stockRequires": [
-        "tsumugi"
-      ]
-    },
-    {
-      "id": "stage-ghost",
-      "file": "dialogue/trpg_stage_ghost.json",
-      "price": 800,
-      "stockRequires": [
-        "adam"
-      ]
+      ],
+      "member": "adam"
     },
     {
       "id": "moonflower-encore",
@@ -113,23 +69,37 @@
       "price": 800,
       "stockRequires": [
         "rei"
-      ]
+      ],
+      "member": "rei"
     },
     {
       "id": "purikura-hero",
       "file": "dialogue/trpg_purikura_hero.json",
       "price": 700,
       "stockRequires": [
-        "samechan",
         "ageha"
+      ],
+      "member": "ageha",
+      "zeroMemberCast": [
+        "sai"
       ]
     },
     {
-      "id": "doll-requiem",
-      "file": "dialogue/trpg_doll_requiem.json",
+      "id": "mist-kingdom",
+      "file": "dialogue/trpg_mist_kingdom.json",
       "price": 700,
-      "stockRequires": [
-        "rei"
+      "stockRequires": [],
+      "clearRequires": [
+        "ordinary-cup",
+        "shark-last-order",
+        "leaf-mail",
+        "apple-thief",
+        "moonflower-encore",
+        "purikura-hero"
+      ],
+      "finale": true,
+      "zeroMemberCast": [
+        "sai"
       ]
     }
   ],
@@ -271,5 +241,17 @@
     "name": "煙とサイコロ部",
     "file": "dialogue/trpg_club.json"
   },
-  "tutorial": "dialogue/trpg_tutorial.json"
+  "tutorial": "dialogue/trpg_tutorial.json",
+  "regulars": [
+    "regulara",
+    "regularb"
+  ],
+  "retiredScenarios": [
+    "shark-island",
+    "smoke-robot",
+    "fading-familiar",
+    "fox-market",
+    "stage-ghost",
+    "doll-requiem"
+  ]
 }

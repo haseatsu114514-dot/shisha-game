@@ -1,7 +1,8 @@
 import { spendableMoney } from "../core/travel-budget.js";
+import { isTrpgRegular } from "./regulars.js";
 // Campaign rules only. All mutations are explicit; this module has no DOM/storage.
 const clone = value => JSON.parse(JSON.stringify(value));
-const excluded = new Set(["sumi", "naru"]);
+const excluded = new Set(["sumi", "naru", "salaryman"]);
 export const emptyTrpgProgress = () => ({ stock: [], owned: [], cleared: {}, club: { founded: null, members: {} } });
 
 export function foundTrpgClub(state, catalog) {
@@ -77,14 +78,22 @@ export function syncTrpgStock(state, catalog) {
       const p = catalog.participants.find(p => p.id === id);
       return p && !excluded.has(id) && p.interested === true && !!state.trpg.club.members?.[id];
     });
-    if (ready && !state.trpg.stock.includes(book.id)) { state.trpg.stock.push(book.id); changed = true; }
+    if (ready && trpgBookProgress(state, book).ok && !state.trpg.stock.includes(book.id)) { state.trpg.stock.push(book.id); changed = true; }
   }
   return changed;
 }
 
+/** The final book follows the six members' stories, even in saves that bought its earlier edition. */
+export function trpgBookProgress(state, book) {
+  const required = book.clearRequires || [];
+  const done = required.filter(id => typeof state?.trpg?.cleared?.[id]?.ending === "string").length;
+  return { ok: done === required.length,
+    reason: done === required.length ? "" : `部員の物語を遊ぼう（${done}／${required.length}冊）` };
+}
+
 export function buyTrpgBook(state, catalog, id) {
   const book = catalog.scenarios.find(b => b.id === id);
-  if (!book || state.chapter < catalog.unlockChapter || !state.trpg?.stock.includes(id)
+  if (!book || !trpgBookProgress(state, book).ok || state.chapter < catalog.unlockChapter || !state.trpg?.stock.includes(id)
     || state.trpg.owned.includes(id) || !Number.isInteger(book.price) || book.price < 0 || spendableMoney(state) < book.price) return false;
   state.money -= book.price;
   state.trpg.owned.push(id);
@@ -95,17 +104,21 @@ export function buyTrpgBook(state, catalog, id) {
 export function castTrpgTable(state, catalog, scenario, options = {}) {
   const ready = tableStatus(state, catalog, options);
   if (!ready.ok) return ready;
+  const book = catalog.scenarios.find(b => b.id === scenario.id);
+  if (!book) return { ok: false, reason: "今の本棚にはない物語" };
+  const progress = trpgBookProgress(state, book);
+  if (!progress.ok) return progress;
   if (!state.trpg?.owned?.includes(scenario.id)) return { ok: false, reason: "本棚に加えると遊べる" };
   const available = new Set(catalog.participants.filter(p => participantStatus(state, p).ok).map(p => p.id));
-  const book = catalog.scenarios.find(b => b.id === scenario.id);
   if (book?.zeroMemberCast) for (const id of book.zeroMemberCast) available.add(id);
+  for (const id of catalog.regulars || []) if (isTrpgRegular(id)) available.add(id);
   available.add("hajime");
   const used = new Set();
   const assignments = {};
   for (const seat of scenario.campaign.seats) {
     const id = seat.candidates.find(id => available.has(id) && !used.has(id)
-      && (!excluded.has(id) || book?.zeroMemberCast?.includes(id)));
-    if (!id && seat.required) return { ok: false, reason: "今夜はGMの都合がつかない" };
+      && !excluded.has(id));
+    if (!id && seat.required) return { ok: false, reason: "今夜は必要な部員の都合がつかない" };
     assignments[seat.actor] = id || null;
     if (id) used.add(id);
   }
@@ -117,7 +130,7 @@ export function materializeTrpgCast(scenario, assignments) {
   const table = clone(scenario);
   const gm = scenario.cast.find(c => c.part === "GM").id;
   if (!assignments[gm] || assignments.hajime !== "hajime") throw new Error("Missing required TRPG participant");
-  if (Object.values(assignments).some(id => excluded.has(id) && !scenario.zeroMemberCast?.includes(id))) throw new Error("Excluded TRPG participant");
+  if (Object.values(assignments).some(id => excluded.has(id))) throw new Error("Excluded TRPG participant");
   // PC sheets stay keyed by the authored seat: the character exists even when the GM plays an empty seat.
   table.sheets = Object.fromEntries(scenario.cast.filter(c => c.sheet).map(c => [c.id, c.sheet]));
   table.cast = table.cast.filter(c => assignments[c.id]).map(c => {
@@ -178,7 +191,8 @@ export function bookPoints(memory) {
 }
 export function clubRecord(state, catalog) {
   const cleared = state?.trpg?.cleared || {};
-  const points = (catalog?.scenarios || []).reduce((n, book) => n + bookPoints(cleared[book.id]), 0);
+  const books = new Set([...(catalog?.scenarios || []).map(book => book.id), ...(catalog?.retiredScenarios || [])]);
+  const points = [...books].reduce((n, id) => n + bookPoints(cleared[id]), 0);
   const index = CLUB_RANKS.reduce((best, rank, i) => points >= rank.at ? i : best, 0);
   const rank = CLUB_RANKS[index], next = CLUB_RANKS[index + 1] || null;
   return { points, rank: index + 1, ranks: CLUB_RANKS.length, name: rank.name, growth: rank.growth, floor: rank.at,

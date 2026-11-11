@@ -361,7 +361,7 @@ test("every GM on the shelf has the whole set of table chatter, in the GM's and 
   const talk = JSON.parse(await readFile(new URL("../../data/" + catalog.tableTalk, import.meta.url), "utf8"));
   const shelf = await Promise.all(catalog.scenarios.map(async s => JSON.parse(await readFile(new URL("../../data/" + s.file, import.meta.url), "utf8"))));
   const gms = new Set(shelf.map(s => s.cast.find(c => c.part === "GM").id));
-  assert(gms.size >= 6, "hiyori, samechan, adam, tsumugi, rei and sumi all run tables");
+  assert(gms.size >= 6, "hiyori, samechan, adam, tsumugi, rei and sai all run tables");
   const faces = Object.fromEntries(characters.map(c => [c.id, c]));
   for (const gm of gms) for (const kind of ["critical", "critical_full", "fumble", "double", "heat_up", "heat_max",
     "near1", "near2", "reward_question", "reward_hint", "reward_finale"]) {
@@ -775,5 +775,7 @@ test("role costumes: 95 origin outfits are keyed, and a built sheet resolves to 
 
   const mail = JSON.parse(await readFile(new URL("../../data/dialogue/trpg_regular_mail.json", import.meta.url), "utf8"));
   const table = new TrpgSession(mail, { profileId: mail.profiles[0].id, seed: 1 });
-  assert(hasCostume(mail.id, "sumi", table.sheets.sumi.option), "regular-mail sumi " + table.sheets.sumi.option);
+  assert(table.sheets.regulara.option);
+  assert.equal(table.sheets.sumi, undefined);
+  assert.equal(table.sheets.salaryman, undefined);
 });

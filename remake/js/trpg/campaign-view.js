@@ -9,13 +9,14 @@ import { loadTrpgLibrary, preloadTrpgAssets, runTrpg } from "./index.js";
 import { playTrpgEntrance } from "./entrance.js";
 import { shelfHelpButton } from "./shelf-help.js";
 import { displayName, portraitUrl, portraitAx, portraitTop, sceneArt } from "./presentation.js";
-import { participantStatus, recruitmentStatus, foundTrpgClub, tableStatus, syncTrpgStock, buyTrpgBook, castTrpgTable, materializeTrpgCast, completeTrpgTable, keepTrpgBookmark, trpgBookmarkFor, clubRecord, clubGain } from "./campaign.js";
+import { participantStatus, recruitmentStatus, foundTrpgClub, tableStatus, syncTrpgStock, buyTrpgBook, castTrpgTable, materializeTrpgCast, completeTrpgTable, keepTrpgBookmark, trpgBookmarkFor, clubRecord, clubGain, trpgBookProgress } from "./campaign.js";
 
 // 店の決まりは画面に常に出さず、右上の「？」で読む（#2719・ミニゲーム共通のUI方針）。
 const SHOP_HELP = [
   ["夜の卓", "営業が終わるまで待ってから、空いている部員と集まって遊びます（夜の1枠）。中断した本は、しおりから続きを遊べます。結末を迎えた本も、もう一度遊べます。"],
   ["部のランク", "遊び終えた本・見た結末・星の数で、部の実績が貯まります（1冊につき 遊び終えた＋2、結末1つ＋1、星1つ＋1）。ランクが上がると、はじめの役の能力に成長点が付きます（ランク2で＋1、ランク4で＋2）。"],
   ["本を買う", "入荷したシナリオ本を本棚に加えると、仲間と遊べます。買い物は時間を使いません。"],
+  ["9冊の物語", "部員それぞれの物語が1冊ずつ。部員なしで遊べる2冊は、サイと店の常連が卓を囲みます。部員の6冊を遊び終えると、サイの最後の物語が入荷します。空いた仲間の席は、この店の常連が手伝います。"],
   ["部活と勧誘", "相手から部活の話を聞いたら、好感度に関係なく対面で誘えます。勧誘に追加の時間はかかりません。"],
   ["昼の試遊（七つの灯り）", "サイコロの合計を7に近づけます。振り足すか、止めるか。7を超えると失敗です。無料で、時間も使いません。"],
 ];
@@ -179,8 +180,12 @@ export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy =
         el("span.trpg-campaign-book-badge", { text: memory ? "遊び終えた物語" : owned ? "あなたの本棚" : stocked ? "入荷しました" : "🔒 未解放" })]));
       const copy = el("div.trpg-campaign-book-copy", [
         el("small", { text: locked ? "？？？ / 作 · ？？？" : scenario.collection + " / 作 · " + scenario.author }),
-        el("h2", { text: locked ? "？？？？？" : scenario.title }), el("p", { text: locked ? "部員との出会いで解放" : scenario.presentation.tagline }),
+        el("h2", { text: locked ? "？？？？？" : scenario.title }), el("p", { text: locked ? book.finale
+          ? trpgBookProgress(state, book).reason : "部員との出会いで解放" : scenario.presentation.tagline }),
       ]);
+      if (book.finale && !locked && !trpgBookProgress(state, book).ok) copy.append(el("p", {
+        dataset: { test: "trpg-finale-progress" }, text: trpgBookProgress(state, book).reason,
+      }));
       if (memory) {
         // 旧章内日の記録はそのまま。通算日で残した第2章の記録だけ章内日へ表示する。
         const memoryClock = { ...memory, flags: memory.day >= (state?.flags?._ch2_day1?.startDay ?? Infinity) ? state.flags : {} };
@@ -199,7 +204,7 @@ export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy =
         // もう一度遊ぶ（TMX14）: 夜の行動を1つ使う。記録は良い方（星、同じなら盛り上がり）を残す。
         if (owned) copy.append(...playButtons(book, scenario, cast, "もう一度遊ぶ"));
       } else if (locked) {
-        copy.append(el("p", { text: "🔒 まだ選べません" }));
+        copy.append(el("p", { text: book.finale ? trpgBookProgress(state, book).reason : "🔒 まだ選べません" }));
       } else if (!owned) {
         copy.append(button("本棚に加える · " + yen(book.price), "trpg-buy-" + book.id, () => {
             if (buyTrpgBook(getState(), catalog, book.id)) { save(); warmOwnedScenarios(); render("新しいTRPGが、本棚に加わりました。"); }

@@ -79,12 +79,16 @@ try {
   assert(motion.positions > 10, `aim stopped following the gauge: ${JSON.stringify(motion)}`);
   assert(motion.mutations < motion.frames * 100, `aim redraw regressed: ${JSON.stringify(motion)}`);
 
+  // 斧投げの音（2026-11-11 作り直し）: 鳴らした音を id ごとに数える（録音のファイルか、読めるまでの合成音か）。
+  const played = () => page.evaluate(async () => (await import("./js/core/audio.js")).axeSePlayed());
   await stopGauge(page, .5); await phase(page, "vertical");
   await stopGauge(page, .5); await phase(page, "power");
+  assert.deepEqual((await played()).stop, { recorded: 2, synth: 0 }, "each gauge stop clicks with the recorded ratchet");
   const beforeThrow = await page.evaluate(() => window.axeAudioProbe.starts);
   await stopGauge(page, .62); await phase(page, "flight");
   const afterThrow = await page.evaluate(() => window.axeAudioProbe.starts);
-  assert(afterThrow >= beforeThrow + 3, "wind and low throw layers did not fire");
+  assert(afterThrow >= beforeThrow + 1, "the throw sound did not start");
+  assert.deepEqual((await played()).throw, { recorded: 1, synth: 0 }, "the throw plays the spinning whoosh file");
   await phase(page, "result");
   const impact = await page.evaluate(() => ({
     starts: window.axeAudioProbe.starts,
@@ -93,9 +97,22 @@ try {
   }));
   assert.equal(impact.outcome, "killshot-miss");
   assert.equal(impact.embedded, 1, "the zero-point axe should stick in wood");
-  assert(impact.starts >= afterThrow + 5, "wood impact and failure layers did not fire");
+  assert(impact.starts >= afterThrow + 2, "wood impact and failure layers did not fire");
+  const sounds = await played();
+  assert.deepEqual(sounds.stick, { recorded: 1, synth: 0 }, "a zero-point axe still thuds into the wood (recorded hit)");
+  assert.equal(sounds.miss?.synth, 1, "and the failure tone follows");
+  assert.equal(sounds.killshot, undefined, "no killshot ring for a missed call");
+  // 弱く放すと柄から板に当たって跳ね返り（コンッ）、床に落ちて鳴る（ガシャン）。
+  await ready(page).click(); await phase(page, "choice");
+  await ready(page).click(); await phase(page, "horizontal");
+  await stopGauge(page, .5); await phase(page, "vertical");
+  await stopGauge(page, .5); await phase(page, "power");
+  await stopGauge(page, .25); await phase(page, "result");
+  assert.equal(await page.evaluate(() => document.querySelector(".axe-game").dataset.outcome), "drop");
+  const dropped = await played();
+  assert.deepEqual([dropped.bounce, dropped.drop], [{ recorded: 1, synth: 0 }, { recorded: 1, synth: 0 }], "a weak release bounces off the board, then clatters on the floor");
   assert.deepEqual(errors, []);
-  console.log(`[axe-audio-performance] PASS: BGM playing; throw and zero-point wood impact fired; cursor ${motion.positions} positions, ${motion.mutations} DOM changes / ${motion.frames} frames, mean ${motion.meanMs.toFixed(1)} ms, p95 ${motion.p95Ms.toFixed(1)} ms`);
+  console.log(`[axe-audio-performance] PASS: BGM playing; gauge clicks, throw and zero-point wood impact fired from the files; cursor ${motion.positions} positions, ${motion.mutations} DOM changes / ${motion.frames} frames, mean ${motion.meanMs.toFixed(1)} ms, p95 ${motion.p95Ms.toFixed(1)} ms`);
 } finally {
   await browser.close();
 }

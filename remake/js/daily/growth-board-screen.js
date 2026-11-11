@@ -836,13 +836,17 @@ export function openBoard({ place = null } = {}) {
     current = null;
     if (owner === state && committed.length) {
       emit("hud");
-      const squares = committed.filter((n) => n.kind === "stat").length;
-      if (squares) gainCard({ kind: "info", badge: "火", top: "LIGHT", main: `能力の火を${squares}つ灯した`, sub: perkDeltaText(committed, before) });
-      const gates = committed.filter((n) => n.kind === "gate").length;
-      if (gates) gainCard({ kind: "info", badge: "関", top: "BREAK", main: `色の台座に${gates}つはめた`, sub: "この先の道が開き、台座の能力が手に入った" });
-      for (const node of committed) if (node.feature) gainCard({ kind: "info", badge: "✦", top: "NEW", main: FEATURES[node.feature].name, sub: FEATURES[node.feature].text });
-      for (const node of committed) if (node.peak) gainCard({ kind: "info", badge: "極", top: "COMPLETE", main: `${BOARD_JA[node.board]}を極めた`, sub: "盤の能力のマスを全部灯した" });
-      for (const node of committed) if (node.kind === "skill") gainCard({ kind: "info", badge: node.glyph, top: "SKILL", main: node.name, sub: node.text });
+      // 知らせの印は盤と同じ絵（SBD125②）。絵が読めない時は今までの字（火・関・極）のまま
+      const iconUrl = (node) => iconOf(node) ? `${ART_DIR}icons/${iconOf(node)}.webp` : null;
+      const squares = committed.filter((n) => n.kind === "stat");
+      const perks = [...new Set(squares.filter((n) => !n.peak && n.perk).map((n) => n.perk))];
+      if (squares.length) gainCard({ kind: "info", badge: "火", icon: perks.length === 1 ? `${ART_DIR}icons/perk_${perks[0]}.webp` : `${ART_DIR}hidane_any.webp`,
+        top: "LIGHT", main: `能力の火を${squares.length}つ灯した`, sub: perkDeltaText(committed, before) });
+      const gates = committed.filter((n) => n.kind === "gate");
+      if (gates.length) gainCard({ kind: "info", badge: "関", icon: `${ART_DIR}hidane_${gates[0].board}.webp`, top: "BREAK", main: `色の台座に${gates.length}つはめた`, sub: "この先の道が開き、台座の能力が手に入った" });
+      for (const node of committed) if (node.feature) gainCard({ kind: "info", badge: "✦", icon: iconUrl(node), top: "NEW", main: FEATURES[node.feature].name, sub: FEATURES[node.feature].text });
+      for (const node of committed) if (node.peak) gainCard({ kind: "info", badge: "極", icon: `${ART_DIR}icons/peak.webp`, top: "COMPLETE", main: `${BOARD_JA[node.board]}を極めた`, sub: "盤の能力のマスを全部灯した" });
+      for (const node of committed) if (node.kind === "skill") gainCard({ kind: "info", badge: node.glyph, icon: iconUrl(node), top: "SKILL", main: node.name, sub: node.text });
       // 授業: 今のゲームの場面がある授業はその場面を見せる（読み終えたら習得。場面が無い授業はカードで）
       for (const node of committed) if (node.kind === "lesson") await presentLesson(node);
     }

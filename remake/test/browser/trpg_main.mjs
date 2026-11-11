@@ -155,9 +155,37 @@ await suite("trpg-main", async check => {
     await play(page, "regular-harbor", { expectTutorial: true });
     const done = await snapshot(page);
     assert(done.trpg.cleared["regular-harbor"]);
-    assert.deepEqual(new Set(done.trpg.cleared["regular-harbor"].participants), new Set(["sumi", "hajime", "tsumugi", "salaryman"]));
+    assert.deepEqual(new Set(done.trpg.cleared["regular-harbor"].participants), new Set(["sai", "hajime", "regulara", "regularb"]));
     assert.deepEqual(done.trpg.club.members, {});
   });
+  await check("nine-books-and-sai-finale", async page => {
+    await prepare(page);
+    const catalog = JSON.parse(fs.readFileSync(new URL("../../../data/trpg_catalog.json", import.meta.url), "utf8"));
+    const finale = catalog.scenarios.find(b => b.finale);
+    const memories = Object.fromEntries(catalog.scenarios.filter(b => b.member).map(b => {
+      const story = book(b.file.split("/").at(-1).replace(/\.json$/, ""));
+      const ending = Object.keys(story.endings)[0];
+      return [b.id, { chapter: 2, day: 2, participants: ["hajime", b.member], gm: story.cast[0].id,
+        ending, endingTitle: story.endings[ending].title }];
+    }));
+    const last = finale.clearRequires.at(-1);
+    await page.evaluate(({ memories, last }) => {
+      __remake.state.trpg.cleared = structuredClone(memories);
+      delete __remake.state.trpg.cleared[last];
+    }, { memories, last });
+    await open(page);
+    assert.equal(await page.locator(".trpg-campaign-book").count(), 9);
+    assert.match(await button(page, "trpg-book-" + finale.id).innerText(), /5／6/);
+    assert.equal(await button(page, "trpg-buy-" + finale.id).count(), 0);
+    await hit(page, "trpg-campaign-close");
+    await page.evaluate(({ memories, last }) => { __remake.state.trpg.cleared[last] = memories[last]; }, { memories, last });
+    await open(page);
+    await hit(page, "trpg-buy-" + finale.id);
+    assert(await button(page, "trpg-play-" + finale.id).isEnabled());
+    await hit(page, "trpg-play-" + finale.id);
+    await lines(page);
+    assert.match(await page.locator(".trpg-table-person").first().textContent(), /六角サイ/);
+  }, { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true });
   for (const [label, options] of [
     ["club-recruit-pc", { viewport: { width: 1280, height: 720 } }],
     ["club-recruit-touch", { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }],
@@ -380,7 +408,7 @@ await suite("trpg-main", async check => {
     // A bookmark keeps the growth the table started with, so "continue" replays to the same numbers.
     assert.equal((await snapshot(page)).trpg.bookmark.growth, 1);
   }, { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true });
-  await check("purchase-cancel-and-small-table", async page => {
+  await check("purchase-cancel-and-regular-fill", async page => {
     await prepare(page); await open(page); await hit(page, "trpg-buy-ordinary-cup");
     await page.evaluate(() => {
       delete __remake.state.trpg.club.members.tsumugi;
@@ -389,9 +417,11 @@ await suite("trpg-main", async check => {
     await hit(page, "trpg-campaign-close"); await open(page);
     const before = await snapshot(page);
     await hit(page, "trpg-play-ordinary-cup");
-    assert.equal(await page.locator(".trpg-table-person").count(), 2);
+    assert.equal(await page.locator(".trpg-table-person").count(), 4);
     await lines(page); await hit(page, "trpg-start"); await lines(page); await roll(page);
-    assert.equal(await page.locator('[data-test^="trpg-consult-"]').count(), 0);
+    assert.equal(await page.locator('[data-test^="trpg-consult-"]').count(), 2);
+    assert.equal(await button(page, "trpg-consult-regulara").count(), 1);
+    assert.equal(await button(page, "trpg-consult-regularb").count(), 1);
     await hit(page, "trpg-exit"); await hit(page, "trpg-exit-confirm"); await button(page, "trpg-play-ordinary-cup").waitFor();
     // Leaving keeps a bookmark (TMX13) and nothing else: no night, money or clear is spent.
     const left = await snapshot(page);
