@@ -55,7 +55,7 @@
 .ichi-taste small { font-size: 12px; font-weight: 700; color: var(--ichi-dim); }
 .ichi-chip { display: inline-block; padding: 1px 9px; border-radius: 10px; background: rgba(21, 13, 34, 0.82); border: 1px solid rgba(201, 167, 230, 0.4); font-size: 13px; font-weight: 700; white-space: nowrap; }
 /* 追加コストの印（必要火力の丸の下、絵の左上に重ねる）。炭＝熱が下がる */
-.ichi-pay { position: absolute; z-index: 3; left: 0; top: 100%; margin-top: 2px; padding: 0 4px; border-radius: 6px; background: #8a2418; border: 1px solid #ff9c8c; color: #ffe2dc; font-size: 10px; font-weight: 900; line-height: 15px; white-space: nowrap; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.6); }
+.ichi-pay { position: absolute; z-index: 3; left: 0; top: 100%; margin-top: 2px; padding: 0 4px; border-radius: 6px; background: #8a2418; border: 1px solid #ff9c8c; color: #ffe2dc; font-size: 12px; font-weight: 900; line-height: 16px; white-space: nowrap; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.6); }
 .ichi-card-head:has(.ichi-pay) { z-index: 2; } /* 印は絵の上に重ねる */
 .ichi-card.s-mini .ichi-pay, .ichi-card.s-tiny .ichi-pay { display: none; }
 .ichi-card.s-big .ichi-pay { font-size: 14px; line-height: 20px; padding: 0 7px; }
@@ -186,7 +186,7 @@
 .ichi-fire-count small { font-size: 13px; font-weight: 700; color: var(--ichi-ember-hi); }
 .ichi-fire-count b { font-size: 40px; font-weight: 900; line-height: 1; font-family: var(--font-dot); color: var(--ichi-ember-hi); text-shadow: 0 0 12px rgba(240, 138, 43, 0.75); }
 .ichi-card-left { display: inline-flex; align-items: center; gap: 3px; margin-top: 4px; padding: 1px 6px 1px 3px; border-radius: 8px; background: rgba(227, 189, 110, 0.18); border: 1px solid var(--ichi-gold); white-space: nowrap; }
-.ichi-card-left small { font-size: 11px; font-weight: 800; color: #ffe7b8; }
+.ichi-card-left small { font-size: 12px; font-weight: 800; color: #ffe7b8; }
 .ichi-card-left .ichi-back { width: 10px; height: 14px; }
 .ichi-card-left.is-used { background: rgba(0, 0, 0, 0.3); border-color: rgba(255, 255, 255, 0.2); }
 .ichi-card-left.is-used small { color: #9c8aab; }
@@ -251,7 +251,7 @@
 .ichi-mix-leaf.is-main small { color: var(--ichi-gold); }
 .ichi-mix-leaf b { font-size: 14px; font-weight: 900; }
 .ichi-hp { display: grid; grid-template-columns: auto 92px auto; align-items: center; gap: 5px; }
-.ichi-hp small { font-size: 11px; font-weight: 700; color: #cbb8dc; }
+.ichi-hp small { font-size: 12px; font-weight: 700; color: #cbb8dc; }
 .ichi-hp b { font-size: 14px; font-weight: 900; font-family: var(--font-dot); color: #b8f0a8; min-width: 18px; text-align: right; }
 .ichi-hp-bar { position: relative; height: 9px; border-radius: 5px; background: rgba(246, 241, 250, 0.1); border: 1px solid rgba(246, 241, 250, 0.22); overflow: hidden; }
 .ichi-hp-bar i { position: absolute; inset: 0 auto 0 0; width: var(--hp); background: linear-gradient(180deg, #d9f7a8, #6fbf55); }
