@@ -24,7 +24,7 @@ const ICONS = {
 /** Mounts one isolated session; finished resolves only after the player leaves the table. */
 export function mountTrpg(host, { scenario, characters, manifest, tableTalk = null, tutorialLines = null, tutorial = false, onTutorialDone = () => {},
   seed, profileId = null, pc = null, companions = {}, closeLabel = "卓を片付ける", audio: providedAudio = null, allowReplay = true, onComplete = () => {},
-  warmStart = false, resume = null, onBookmark = null }) {
+  warmStart = false, resume = null, onBookmark = null, costumeFrames = null }) {
   // しおり（TMX13）: the table is the seed plus the order of what was pressed. Every action is recorded, the caller keeps
   // the list at each resting point, and a later visit replays it to land on the same scene (dice included).
   const RECORDED = ["start", "ask", "endInterview", "inspect", "consult", "interpret", "plan", "beginCheck", "reroll", "settleCheck"];
@@ -69,12 +69,23 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
   }
   // The role costume (same person, dressed as the PC) where we have one: sheets, cover, origins and declaration cards (TMX04).
   // "bust" zooms on the upper body for small cards; "full" shows the whole figure. Falls back to the round face.
+  // Bust framing shared by every costume card: cheek-to-cheek width as a share of the box width, eye line as a share of its height.
+  const BUST = { face: 0.26, eye: 0.36 };
+  // 頬の幅の測定に、頬へかかる青い髪まで入ってしまう2人（全身の絵と見比べて決めた補正・2026-11-11）。
+  const FACE_FIX = { samechan: 0.86, rei: 0.8 };
   function pcFigure(seat, playerId, { role = sheets[seat]?.archetype || sheets[seat]?.option || null, shape = "bust" } = {}) {
     const url = costumeUrl(scenario.id, playerId, role);
     if (!url) return pcFace(seat, playerId);
     if (shape !== "bust") return el("span.trpg-costume", { dataset: { shape }, style: { backgroundImage: `url("${url}")` } });
-    // Costume art shares the standing portrait's framing, so the head starts lower for short characters (つむぎ).
-    // Slide the zoomed picture by its own height so every bust shows the head just under the top edge.
+    // Every bust shows the same face size at the same eye line (オーナー 2026-11-11「みんな同じぐらいのバストアップに」):
+    // the measured cheek width and eye line of each costume picture (img/ui/trpg/costumes/frames.json) set the zoom and the offset.
+    const face = costumeFrames?.[scenario.id + "/" + playerId + "/" + role]?.face;
+    if (face?.w > 0) {
+      const [W, H] = [896, 1200], width = BUST.face * W / (face.w * (FACE_FIX[playerId] || 1)) * 100;
+      return el("span.trpg-costume", { dataset: { shape, framed: "face" } }, el("i", { style: { backgroundImage: `url("${url}")`,
+        width: width + "%", top: BUST.eye * 100 + "%", transform: `translate(-${face.cx / W * 100}%, -${face.eye_y / H * 100}%)` } }));
+    }
+    // Without measurements: line up the head top from the standing-portrait metrics.
     const lift = Math.max(0, portraitHeadTop(manifest, playerId) - 0.03) * 100, ax = portraitAx(manifest, playerId) * 100;
     return el("span.trpg-costume", { dataset: { shape } }, el("i", { style: { backgroundImage: `url("${url}")`, transform: `translate(-${ax}%, -${lift}%)` } }));
   }
