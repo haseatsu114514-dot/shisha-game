@@ -175,6 +175,14 @@ html body.craft-stage:not(.game-ds) .bench[data-mode] .pull-btns { display: cont
 html body.craft-stage:not(.game-ds) .bench[data-mode] .pull-btns > .btn { grid-row: 2; height: 100px; min-height: 0; margin: 0; }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .pull-btns > .btn.primary { grid-column: 3; }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .pull-btns > .btn:not(.primary) { grid-column: 2; }
+/* 心得で吸い方の札が増えた時（ズボー・目隠しなど・pull.js の .with-options）は、右下の二枠を上下二段にする。
+   上の段に増えた札（1枚なら横いっぱい）、下の段に「確かめる／提供する」と「吸う」。
+   以前は増えた札が「確かめる」と同じ枠に重なって押せなかった（growth_levelup の deep-pull・blind-service）。 */
+html body.craft-stage:not(.game-ds) .bench[data-mode] .pull-btns.with-options { display: grid !important; grid-column: 2 / 4; grid-row: 2; grid-template-columns: repeat(2, minmax(0, 1fr)) !important; grid-template-rows: repeat(2, minmax(0, 1fr)); gap: 6px 8px; height: 100px; min-width: 0; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .pull-btns.with-options > .btn { grid-row: 1; grid-column: auto; height: auto; min-height: 0; min-width: 0; padding: 0 8px; border-width: 8px; border-image-width: 8px; line-height: 1.1; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .pull-btns.with-options > .btn:nth-child(2):nth-last-child(2) { grid-column: 1 / -1; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .pull-btns.with-options > [data-test="pull-serve"] { grid-row: 2; grid-column: 1; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .pull-btns.with-options > .btn.primary { grid-row: 2; grid-column: 2; }
 
 /* ---------- 舞台の天板: 枠を焼き込んだ旧い板の代わりに、枠なしの天板を舞台いっぱいに敷く ---------- */
 html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-panel::before { display: none !important; }
@@ -214,6 +222,10 @@ html body.craft-stage:not(.game-ds) .bench[data-mode] .mix-side { grid-column: 1
 html body.craft-stage:not(.game-ds) .bench[data-mode] .mix-vessel { width: 250px !important; height: 190px !important; }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .mix-list { grid-column: 2; grid-row: 1; min-height: 0; overflow-y: auto; gap: 10px !important; }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .mix-list-head { display: none !important; }
+/* 心得の「単体で勝負」と「香りの記憶」だけは一覧の頭に残す（見出しの文と助言は隠したまま）。
+   以前は見出しごと隠れて、覚えた心得が押せなかった（growth_levelup の single-leaf-style-lesson）。 */
+html body.craft-stage:not(.game-ds) .bench[data-mode] .mix-list-head:has(> [data-test="mix-single-style"], > .mix-recall) { display: flex !important; flex: none; flex-wrap: wrap; align-items: center; gap: 8px; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .mix-list-head > :not([data-test="mix-single-style"]):not(.mix-recall) { display: none !important; }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .flavor-row { display: flex !important; min-height: 0 !important; height: 116px !important; flex: none; padding: 4px 12px 4px 6px !important; gap: 12px !important; align-items: center !important; }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .flavor-row > * { grid-area: auto !important; }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .fr-name { padding-left: 0 !important; }
@@ -294,6 +306,8 @@ html body.craft-stage:not(.game-ds) .bench[data-mode]:has(.bench-top > .ch2-tour
 html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-top > .ch2-tournament-menu { position: fixed !important; left: 16px; top: 84px; margin: 0 !important; z-index: 6; }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-top > .rival-windows { gap: 4px !important; }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-top .bench-mode small { display: none !important; }
+/* 大会以外はレールに余白があるので、練習の種類（手順の中間チェック等）を残す */
+html body.craft-stage:not(.game-ds) .bench[data-mode]:not([data-mode="tournament"]) .bench-top .bench-mode small { display: inline !important; }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-progress { flex: none !important; }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-progress-track { gap: 18px !important; }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-phase:not(:last-child)::after { width: 18px !important; }
@@ -314,6 +328,7 @@ html body.craft-stage:not(.game-ds) .bench[data-mode] .heat-info { right: 104px 
 /* ---------- 吸い出しの金のボタン: 文字が一行で収まるように（絵の印は省く） ---------- */
 html body.craft-stage:not(.game-ds) .bench[data-mode] .pull-btns > .btn .pull-btn-icon { display: none !important; }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .pull-btns > .btn .btn-label { font-size: 24px !important; white-space: nowrap; letter-spacing: 0; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .pull-btns.with-options > .btn .btn-label { font-size: 18px !important; line-height: 1.1; }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .pull-btns > .btn .pull-serve-icon { display: none !important; }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .fr-name :is(.fr-reg, .fr-mastery, .fr-ratio) { font-size: 17px !important; line-height: 1.25 !important; margin: 0 !important; }
 

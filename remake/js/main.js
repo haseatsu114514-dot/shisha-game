@@ -145,7 +145,7 @@ window.__remake = {
     // 心得の盤を開く（?growth=1 のときだけ）。火種が無ければ addHidane で足す
     board() { return openGrowthBoard(); },
     addHidane(n = 5, kind = "any") { const g = ensureGrowth(); g.hidane[kind] = (g.hidane[kind] || 0) + n; return { ...g.hidane }; },
-    // マップ→場所の移動トランジションの比較用（pin / steps / walk / door / noren / walkdoor。本編の既定は door）。URLの ?move=pin でも切り替わる
+    // マップ→場所の移動トランジションの比較用（zoom / lights / pin / steps / walk / door / noren / walkdoor。本編の既定は帰宅が lights、ほかは zoom）。URLの ?move=pin でも切り替わる
     async moveStyle(style) {
       const moves = await import("./core/transition-moves.js");
       if (style) moves.setMoveStyle(style);

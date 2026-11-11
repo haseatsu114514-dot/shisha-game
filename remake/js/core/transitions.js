@@ -90,8 +90,10 @@ const canMask = () => typeof CSS !== "undefined" && !!CSS.supports
 export function warmSmoke() {
   if (smokeReady !== null) return smokeReady;
   if (typeof Image !== "function" || !canMask()) { smokeReady = false; return false; }
-  smokeReady = Promise.all(Object.values(smokeArt()).map((src) => {
+  smokeReady = Promise.all(Object.entries(smokeArt()).map(([key, src]) => {
     const img = new Image();
+    // CSS の mask-image は CORS で取りに行く。先読みも同じ取り方にしないと、ほどくたびに取り直す（煙の絵は普通の背景なのでそのまま）
+    if (key !== "haze") img.crossOrigin = "anonymous";
     img.src = src;
     return img.decode();
   })).then(() => (smokeReady = true), () => (smokeReady = false));

@@ -138,8 +138,53 @@ for (const focus of ["aroma", "light", "sweet"]) {
   const value = seed(); value.flags._ch3_strategy = focus;
   const before = structuredClone(value);
   const dialogue = chapterThreeWorkDialogue(value, all.ch3_national_craft);
-  assert.equal(dialogue.lines[0].text, all.ch3_national_craft.branches[`strategy_${focus}`][0].text);
+  // 作戦の内心は、合図と三人の描写のあと、はじめへ視点が戻る行の直後に入る（BLC04。以前は場面の頭で、合図より先に出ていた）。
+  const at = dialogue.lines.findIndex(line => line.id === "ch3_work_echo");
+  assert(at > 0, "開始の合図より後");
+  assert.equal(dialogue.lines[0].text, all.ch3_national_craft.lines[0].text);
+  assert.equal(dialogue.lines[at + 1].text, all.ch3_national_craft.branches[`strategy_${focus}`][0].text);
+  assert.equal(dialogue.lines.length, all.ch3_national_craft.lines.length + 1);
   assert.deepEqual(value, before);
+}
+
+// 差し込む場所（BLC04）: 昼の選択の一行は場面の説明の後、綾取の返事は問いかけの前、ノートの記録は「書かせてください」の後。
+for (const rest of ["tea", "sit"]) {
+  const value = seed();
+  assert(recordChapterThreeWorkChoice(value, "ch3_rest_before_recovery", { ch3_rest_choice: rest }));
+  for (const id of ["ch3_daily_cup_1", "ch3_work_without_taste"]) {
+    const dialogue = chapterThreeWorkDialogue(value, all[id]);
+    const at = dialogue.lines.findIndex(line => line.id === "ch3_work_echo");
+    assert(at >= 0, `${id}: 差し込みの印がある`);
+    assert.equal(dialogue.lines[0].text, all[id].lines[0].text, `${id}: 場面の説明から始まる`);
+    assert.equal(dialogue.lines[at + 1].text, all[id].branches[`rest_${rest}_echo`][0].text, id);
+  }
+}
+{
+  // 4日目の夜に「今日の一台」を受け取り、10日目の「いつものように、ましろの一台を吸う」の前提になる。
+  const cup = text({ lines: all.ch3_daily_cup_1.lines });
+  assert.match(cup, /はい、今日の/); assert.match(cup, /分かったふりは、もうしない/); assert.match(cup, /吸える日は一台。吸わない日はお茶/);
+  assert.match(text({ lines: all.ch3_taste_return.lines }), /いつものように、ましろの一台を吸う/);
+  // 大会翌日の「今日は俺が洗うよ」「交代で」（ch3_mashiro_recovery）は、役が初めて入れ替わる場面。前の夜に先に言わない。
+  for (const id of ["ch3_rest_before_recovery", "ch3_daily_cup_1", "ch3_work_without_taste"]) {
+    const scene = all[id], body = text({ lines: [...scene.lines, ...Object.values(scene.branches || {}).flat()] });
+    assert.doesNotMatch(body, /俺が洗うよ|交代/, id);
+  }
+  const recovery = text({ lines: all.ch3_mashiro_recovery.lines });
+  assert.match(recovery, /今日は俺が洗うよ/); assert.match(recovery, /交代で/);
+  // 綾取の来店: 動画の話は綾取が先に出す。一台の後は、返事 → はじめの一言 → 手帳 → ノートの順。
+  const visit = all.ch3_saku_mukai_visit.lines.map(line => line.text || "");
+  assert(visit.findIndex(t => /県大会の動画/.test(t)) < visit.findIndex(t => /動画、見たんですか/.test(t)));
+  for (const [result, coals] of [["good", 1], ["good", 0], ["rough", 1], ["failed", 0]]) {
+    const value = seed();
+    value.flags._ch3_intro.work = { service: { introRead: true, careDone: true, order: "gentle", result, adjustment: { coals } } };
+    const lines = chapterThreeWorkDialogue(value, all.ch3_saku_mukai_served).lines.map(line => line.text || "");
+    const reply = lines.findIndex(t => t === all.ch3_saku_mukai_served.branches[result].at(-1).text);
+    const ask = lines.findIndex(t => /書かせてください/.test(t)), note = lines.findIndex(t => /^ノートに、/.test(t));
+    assert(reply >= 0 && reply < ask, `${result}: 一台への返事が先`);
+    assert.doesNotMatch(lines.join(""), /どうでしょう。今度は/, "返事の後で同じことを訊かない");
+    if (result === "failed") assert.equal(note, -1);
+    else assert.equal(note, ask + 1, `${result}: ノートの記録は頼んだ直後`);
+  }
 }
 
 // 強制の調整は、共有の熱管理UIを一回だけ使い、店の機材を使う。スミさんや架空の採点は出さない。

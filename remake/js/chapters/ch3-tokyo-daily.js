@@ -31,6 +31,7 @@ import { runMukaiDeliveryWork } from "./ch3-deliveries.js";
 import { availableOptionalScenes, commitOptionalRead, selectChapterThreeEvening,
   eveningRecord, EVENING_WINDOW } from "./ch3-story-wiring.js";
 import { loverMilestonesDue, readLoverMilestone, pendingLoverLime } from "./lover-entry.js";
+import { mashiroTimeOpen, spendMashiroTime } from "./mashiro-time.js";
 import { questionVisitDue, playQuestionVisit, finaleAtVisit, playFinale } from "../daily/bonds.js";
 import { runMukaiShift, loadMukaiShift, MUKAI_PAY, MUKAI_SHIFT_STAMINA } from "./tokyo-mukai.js";
 import { addRoamerSpots } from "../daily/roamers.js";
@@ -122,7 +123,8 @@ function spotHasNew(entry) {
 }
 
 const outingsAt = place => chapterThreeOutingCandidates(state).filter(outing => outing.place === place && outing.id !== "tetsuko");
-const mukaiBondDue = () => loverMilestonesDue(["mashiro"]).length > 0 || questionVisitDue("mashiro") || finaleAtVisit("mashiro");
+const mashiroMilestoneDue = () => loverMilestonesDue(["mashiro"]).length > 0;
+const mukaiBondDue = () => mashiroMilestoneDue() || questionVisitDue("mashiro") || finaleAtVisit("mashiro");
 
 const ROAMER_TOKYO_SPOTS = () => state.chapter === 3 ? chapterThreeTokyoSpots() : [];
 
@@ -543,7 +545,8 @@ async function readRivalFinale(who, place, staminaGuard, owner) {
  * 行動を使った帰りに、裏口のてつこの様子を見ていける（行動は使わない・体力が少し戻る。VOL11）。
  */
 async function visitMukai(io, staminaGuard, owner) {
-  const bond = loverMilestonesDue(["mashiro"]).length ? "lover" : questionVisitDue("mashiro") ? "question" : finaleAtVisit("mashiro") ? "finale" : null;
+  // 恋人のましろとは、節目が無い日も一日に一度いっしょに過ごせる（BLC03・chapters/mashiro-time.js）。
+  const bond = mashiroTimeOpen(state, { milestoneDue: mashiroMilestoneDue() }) ? "lover" : questionVisitDue("mashiro") ? "question" : finaleAtVisit("mashiro") ? "finale" : null;
   const scenes = optionalAt("mukai");
   const outings = outingsAt("mukai");
   const trials = availableChapterThreeTrials(state);
@@ -593,12 +596,14 @@ async function readMashiroBond(kind, staminaGuard, owner) {
   const bg = BG("bg_mukai_shop");
   await setBg(bg);
   let done = false;
-  if (kind === "lover") done = await readLoverMilestone("mashiro");
+  // 恋人の時間は絆も spendMashiroTime が足す（恋人には普通の好感度が入らない。core/stats.js の gainAffinity）。
+  if (kind === "lover") done = await spendMashiroTime({ read: scene => readPlain(scene, "bg_mukai_shop", owner),
+    milestoneDue: mashiroMilestoneDue, readMilestone: () => readLoverMilestone("mashiro") });
   else if (kind === "question") done = await playQuestionVisit("mashiro", { bg });
   else done = await playFinale("mashiro", { bg });
   if (!done || state !== owner) return unused;
   addStamina(-10);
-  gainAffinity("mashiro", 5);
+  if (kind !== "lover") gainAffinity("mashiro", 5);
   return { used: true, exerted: true, exp: personExp("mashiro") };
 }
 
