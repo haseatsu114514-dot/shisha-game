@@ -567,8 +567,9 @@ await suite("shop-ui", async check => {
       await assertFits(page, '[data-test="kuji-ticket-row-g20000"] .btn');
       await assertFits(page, '[data-test="kuji-row-g20000"] .kuji-actions .btn');
       await capture(page, `kuji-limited-row-${platform}`);
-      // 行を押すと、S賞の限定の台3種の名前とくじ券の決まりが読める（見出しの横の「?」は案内なので、残り枚数の行を押す）。
-      await row.locator('.shop-main small').first().click();
+      // 行を押すと、S賞の限定の台3種の名前とくじ券の決まりが読める。見出しの横の「?」は案内で、押せる範囲が
+      // 見た目より広い（72px 四方）ので、「?」から離れた左端の券の印を押す。
+      await row.locator('.kuji-cat').click();
       const detail = await page.locator('.modal-box.shop-dialog').innerText();
       assert.match(detail, /MELTY PUFF柄の特注台・橙須限定色の特注台・名入れの特注台（逢縁）/);
       assert.match(detail, /くじ券1枚に替わる/);
