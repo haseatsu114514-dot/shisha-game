@@ -24,6 +24,8 @@ import { chapterThreeScenes, canAdvanceToChapterThree, advanceToChapterThree, ch
   completeChapterThreeScene, chapterThreeFreeTime, completeChapterThreeFreeTime,
   chapterThreePrepPending, departChapterThree, chapterThreeDaily } from "./ch3-progress.js";
 import { CH3_PREP_SCENES, chapterThreePrepEvents } from "./ch3-prep.js";
+import { CH3_SERVICE_IDS, chapterThreeWorkDialogue, recordChapterThreeWorkChoice,
+  runChapterThreeService } from "./ch3-work-progress.js";
 import { syncTokyoVisits, dueTokyoVisit, completeTokyoVisitAction, visitContacts, playerRegion } from "../core/tokyo-visits.js";
 
 import { createChapterThreeWayfinding } from "./ch3-wayfinding.js";
@@ -46,7 +48,7 @@ const FILES = {
     "ch3_daily_cup_1", "ch3_work_without_taste", "ch3_taste_return"],
   ch3_mukai: ["ch3_mukai_intro"],
   ch3_deliveries: MUKAI_DELIVERY_STEPS.filter(step => step.id !== "ch3_mukai_intro").map(step => step.id),
-  ch3_rivals: ["ch3_saku_first", "ch3_saku_mukai_visit", "ch3_saku_advice", "ch3_steve_low_heat"],
+  ch3_rivals: ["ch3_saku_first", ...CH3_SERVICE_IDS, "ch3_saku_advice", "ch3_steve_low_heat"],
   ch3_volk: ["ch3_volk_first"],
   // 出発前の準備3日と出発の朝（VOL02）。旧行程の保存も、章頭の回想の前に列車の4行（ch3_train_departure）を読む。
   ch3_departure: CH3_PREP_SCENES,
@@ -359,8 +361,20 @@ async function renderPrep(owner) {
 }
 
 async function readScene(owner, scene) {
+  if (scene.id !== "ch3_saku_mukai_visit") return readDialogueScene(owner, scene);
+  const { adjustChapterThreeService } = await import("./ch3-service.js");
   if (!current(owner)) return false;
-  const source = DB.dialogues[scene.id];
+  return runChapterThreeService(owner.state, {
+    read: id => readDialogueScene(owner, { ...scene, id }),
+    adjust: () => adjustChapterThreeService({ isCurrent: () => current(owner) }),
+    save, isCurrent: () => current(owner),
+  });
+}
+
+async function readDialogueScene(owner, scene) {
+  if (!current(owner)) return false;
+  const original = DB.dialogues[scene.id];
+  const source = original && chapterThreeWorkDialogue(state, original);
   if (!source) throw new Error(`台本がありません: ${scene.id}`);
   // 旧台本に仮置きされた tonari 等の metadata.bg は、東京の場面へ持ち込まない。
   const dialogue = { ...source, metadata: { ...source.metadata, bg: "" } };
@@ -384,16 +398,19 @@ async function readScene(owner, scene) {
   };
   owner.rollbackMeeting = rollbackMeeting;
   let strategyChoice = null;
+  const selected = {};
   const previousOnChoice = hooks.onChoice;
-  const choiceHook = scene.id === "ch3_strategy" ? (...args) => {
+  const choiceHook = (...args) => {
     previousOnChoice?.(...args);
+    if (args[0] === scene.id) selected[args[1]] = args[2];
     if (args[0] === "ch3_strategy" && args[1] === "ch3_strategy_choice") strategyChoice = args[2];
-  } : null;
-  if (choiceHook) hooks.onChoice = choiceHook;
+  };
+  hooks.onChoice = choiceHook;
   try {
     const result = await play(dialogue, { signal: controller.signal });
     finished = current(owner) && !controller.signal.aborted && !!result && !result.cancelled;
     if (finished && strategyChoice) state.flags._ch3_strategy = strategyChoice;
+    if (finished) recordChapterThreeWorkChoice(state, scene.id, selected);
     // 告白の返事（#1930）。第3章から読み込んだ保存では hooks.onEnter が無いことがあるため、読了後に入った返事で確定する。
     if (finished) for (const id of CH3_CONFESSION_IDS) {
       const answer = confessionAnswer(result.visited, id);

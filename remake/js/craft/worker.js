@@ -8,10 +8,10 @@ import { buildWorkerHoles } from "./worker-holes.js";
 import { imageReady } from "../core/ui.js";
 import { renderSceneArt, sceneArtUrls } from "../core/scene-art.js";
 
-/** 作業台の背景（大会＝会場、家で練習＝自宅・#638、それ以外＝tonari の店内） */
-export const benchBgRef = (cs) => cs?.mode === "tournament" ? "bg_tournament_stage" : cs?.venue === "home" ? "bg_home" : "bg_tonari_inside";
+/** 作業台の背景（店仕事の指定を優先。既定は大会＝会場、家＝自宅、それ以外＝tonari） */
+export const benchBgRef = (cs) => cs?.venueBg || (cs?.mode === "tournament" ? "bg_tournament_stage" : cs?.venue === "home" ? "bg_home" : "bg_tonari_inside");
 /** 作業風景の左上の場所の札 */
-export const benchPlaceTag = (cs) => cs?.mode === "tournament" ? cs.eventTitle || "SMOKE CROWN CUP" : cs?.venue === "home" ? "HOME" : "TONARI";
+export const benchPlaceTag = (cs) => cs?.venueLabel || (cs?.mode === "tournament" ? cs.eventTitle || "SMOKE CROWN CUP" : cs?.venue === "home" ? "HOME" : "TONARI");
 
 export const WORKER_STEPS = {
   setup: "道具を選ぶ", mix: "香りを合わせる",
