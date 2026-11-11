@@ -1030,11 +1030,21 @@ html:root[data-ui-theme="paper"] .axe-bar-menu .axe-bar-lesson { color: var(--la
 .axe-game.axe-in-stage .axe-calls [data-call="lower-left"] { left: 10px; bottom: 10px; }
 .axe-game.axe-in-stage .axe-calls [data-call="lower-right"] { right: 10px; bottom: 10px; }
 .axe-game.axe-in-stage .axe-calls [data-call="normal"] { left: 50%; bottom: 10px; width: 132px; margin-left: -66px; }
-/* 宣言中の一言は上の2枚の札のあいだ（青い的や得点の円に重ねない）。サドンデスは札が出ないので1行で広く。 */
-.axe-game.axe-in-stage .axe-board-pane > .axe-call-status:not([data-kind="remaining"]) { position: absolute; left: 50%; top: 10px; z-index: 2; box-sizing: border-box; width: 262px; min-height: var(--axe-tap); margin: 0 0 0 -131px; padding: 4px 8px;
-  display: grid; place-items: center; border: 1px solid #7fc4ee; border-radius: 10px; background: #0b1211eb; color: #dff2ff; line-height: 1.35; text-align: center; pointer-events: none; }
-.axe-game.axe-in-stage .axe-board-pane > .axe-call-status[data-kind="sudden-death"] { top: 44px; width: auto; min-height: 0; margin: 0; padding: 4px 16px; transform: translateX(-50%); border-radius: 999px; white-space: nowrap; }
+/* 「宣言中：…」の一言は画面に出さない（2026-11-11 オーナー指示）。選んだ札そのものを目立たせ、宣言した青は輪で囲む。文は読み上げ用に残す。
+   サドンデスは札が出ないので、狙う青の一言を的の上に1行で出す。 */
+.axe-game.axe-in-stage .axe-board-pane > .axe-call-status[data-kind="called"] { position: absolute !important; width: 1px !important; height: 1px !important; margin: -1px !important; padding: 0 !important;
+  overflow: hidden !important; clip-path: inset(50%) !important; white-space: nowrap !important; border: 0 !important; }
+.axe-game.axe-in-stage .axe-board-pane > .axe-call-status[data-kind="sudden-death"] { position: absolute; left: 50%; top: 44px; z-index: 2; transform: translateX(-50%); margin: 0; padding: 4px 16px;
+  border: 1px solid #7fc4ee; border-radius: 999px; background: #0b1211eb; color: #dff2ff; white-space: nowrap; pointer-events: none; }
 .axe-game.axe-in-stage:is([data-phase="horizontal"],[data-phase="vertical"],[data-phase="power"],[data-phase="result"],[data-phase="summary"]) .axe-board-pane > .axe-call-status { display: none; }
+/* 選んだ札: ひと回り大きく、チェックの印と明るい二重の縁。選んでいない札は少し沈める。 */
+.axe-game.axe-in-stage .axe-calls .axe-button { transition: transform .12s ease-out, opacity .12s; }
+.axe-game.axe-in-stage .axe-calls .axe-button[aria-pressed="false"]:not(:disabled) { opacity: .82; }
+.axe-game.axe-in-stage .axe-calls .axe-button[aria-pressed="true"] { z-index: 1; transform: scale(1.1); font-weight: 900; outline: 3px solid #fff8dc; outline-offset: 3px; }
+.axe-game.axe-in-stage .axe-calls .axe-button[aria-pressed="true"]::before { content: "✓"; display: inline-grid; place-items: center; width: 1.25em; height: 1.25em; margin-right: .3em; border-radius: 50%; background: #fff8dc; color: #1a120c; font-size: .8em; font-weight: 900; line-height: 1; vertical-align: .08em; }
+.axe-game.axe-in-stage .axe-calls [data-call="upper-left"] { transform-origin: left top; } .axe-game.axe-in-stage .axe-calls [data-call="upper-right"] { transform-origin: right top; }
+.axe-game.axe-in-stage .axe-calls [data-call="lower-left"] { transform-origin: left bottom; } .axe-game.axe-in-stage .axe-calls [data-call="lower-right"] { transform-origin: right bottom; }
+.axe-game.axe-in-stage .axe-calls [data-call="normal"] { transform-origin: center bottom; }
 
 /* 回転ゲージ: 的の右に縦。場所は常に取っておき（的が左右に動かない）、出ていない間は見えないだけ。 */
 .axe-game.axe-in-stage .axe-body > .axe-timing { position: relative; display: block !important; flex: none; width: 46px; margin: 0; padding: 0; transition: opacity .15s; }

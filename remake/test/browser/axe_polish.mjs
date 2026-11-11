@@ -360,14 +360,30 @@ await suite("axe-polish", async check => {
     const filtered = () => page.locator(".axe-board-pane :is(.axe-target-art, .axe-target), .axe-board-pane :is(.axe-target-art, .axe-target) *").evaluateAll(nodes =>
       nodes.filter(node => getComputedStyle(node).filter !== "none" || node.style.filter).map(node => node.getAttribute("class") || node.tagName));
     assert.deepEqual(await filtered(), []);
-    // Declaring a blue marks it with a ring and a short status between the upper tags.
+    // The chosen tag itself shows the choice: a check mark, a bright outline and a larger tag. No "宣言中" caption on screen (kept for screen readers).
+    const tag = id => page.locator(`[data-call="${id}"]`).evaluate(node => { const r = node.getBoundingClientRect(), style = getComputedStyle(node);
+      return { pressed: node.getAttribute("aria-pressed"), width: r.width, mark: getComputedStyle(node, "::before").content, outline: parseFloat(style.outlineWidth) || 0, opacity: Number(style.opacity) }; });
+    const chosen = async (id, others) => {
+      await page.waitForTimeout(250); // the tag's own 0.12s CSS transition runs on the browser timeline, not the controlled game clock
+      const on = await tag(id);
+      assert.equal(on.pressed, "true"); assert.match(on.mark, /✓/); assert(on.outline >= 1, "the chosen tag has an outline"); assert.equal(on.opacity, 1);
+      for (const other of others) {
+        const off = await tag(other);
+        assert.equal(off.pressed, "false"); assert.doesNotMatch(off.mark, /✓/); assert(off.opacity < 1, other + " steps back");
+        if (other !== "normal" && id !== "normal") assert(on.width > off.width * 1.05, `the chosen tag is larger: ${on.width} / ${off.width}`);
+      }
+    };
+    await chosen("normal", ["upper-left", "lower-right"]);
     await hit(page, '[data-call="upper-left"]', touch); await page.clock.runFor(300);
     assert.equal(Number(await page.locator(".axe-called-ring").getAttribute("opacity")), 1);
-    const status = await box(".axe-call-status");
-    assert(status.left >= calls.find(c => c.id === "upper-left").right - 1 && status.right <= calls.find(c => c.id === "upper-right").left + 1, "the declared status sits between the upper tags");
+    await chosen("upper-left", ["normal", "upper-right", "lower-left"]);
+    assert.match(await page.locator(".axe-call-status").textContent(), /宣言中：左上の青/);
+    const caption = await box(".axe-call-status");
+    assert(caption.width <= 2 && caption.height <= 2, "the declared caption is not drawn on the board");
     assert.deepEqual(await filtered(), []);
     await hit(page, '[data-call="normal"]', touch); await page.clock.runFor(300);
     assert.equal(Number(await page.locator(".axe-called-ring").getAttribute("opacity")), 0);
+    await chosen("normal", ["upper-left"]);
     // Once the stance is taken, only the board, the gauge and the stop buttons remain.
     await action(page, touch); await phase(page, "horizontal");
     for (const selector of [".axe-calls", ".axe-companion", ".axe-challenges", ".axe-call-status", ".axe-result-card"]) assert.equal(await shown(selector), false, selector + " is gone while aiming");
