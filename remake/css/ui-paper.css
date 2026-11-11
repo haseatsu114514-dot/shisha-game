@@ -224,15 +224,14 @@ html:root[data-ui-theme="paper"] .gb-goals-head { color: var(--paper-muted); }
 html:root[data-ui-theme="paper"] .gb-goal { color: var(--paper-ink); background: var(--paper-card); border: 1px solid var(--paper-line); border-left: 4px solid color-mix(in srgb, var(--c) 75%, var(--paper-ink)); }
 html:root[data-ui-theme="paper"] .gb-goal:is(:hover, :focus-visible) { border-color: var(--lavender); border-left-color: color-mix(in srgb, var(--c) 75%, var(--paper-ink)); box-shadow: 0 2px 8px #38283f22; }
 html:root[data-ui-theme="paper"] .gb-goal-cost { color: var(--amber-ink); font-weight: 700; }
+html:root[data-ui-theme="paper"] .gb-place-chip { color: var(--lavender); background: var(--paper-card); }
+html:root[data-ui-theme="paper"] .gboard.can-light .gb-place-chip { color: #fff; background: var(--lavender); border-color: var(--lavender); }
+html:root[data-ui-theme="paper"] .gb-goal-fire b { color: var(--paper-ink); }
 /* 下の帯: 火種の数と凡例 */
 html:root[data-ui-theme="paper"] .gb-footer { background: var(--paper-card); border-top: 1px solid var(--paper-line); }
 html:root[data-ui-theme="paper"] .gb-hidane { color: var(--paper-ink); }
 html:root[data-ui-theme="paper"] .gb-hidane b { color: var(--paper-ink); }
 html:root[data-ui-theme="paper"] .gb-hidane i { filter: drop-shadow(0 0 1px #38283f99); }
-html:root[data-ui-theme="paper"] .gb-legend { color: var(--paper-muted); font-weight: 700; letter-spacing: .02em; }
-html:root[data-ui-theme="paper"] .gb-legend-item i { border-color: var(--lavender); }
-html:root[data-ui-theme="paper"] .gb-legend-item i.s-available { box-shadow: 0 0 0 2px #e9dfef, 0 0 6px var(--amber); border-color: var(--amber-ink); }
-html:root[data-ui-theme="paper"] .gb-legend-item i.s-sealed { border-color: #9676a8; }
 /* 地図の左上に出る EXP の札とレベルアップの帯 */
 html:root[data-ui-theme="paper"] .exp-chip { color: #fff; background: var(--lavender-art) center / 256px repeat, var(--lavender); border: 1px solid var(--lavender); box-shadow: 0 3px 8px #2a1a3a40; }
 html:root[data-ui-theme="paper"] .exp-chip :is(b, span) { color: #fff; }

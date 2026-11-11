@@ -145,14 +145,15 @@ for (const k of board.BOARD_KEYS) {
   // 紋の場所は盤ごとに違う（SBD65）
   assert.equal(new Set(Object.values(board.HUB_AT)).size, 3, "紋の場所は3枚とも違う");
 }
-// 恩恵は帯の倍率（近く×1・中ほど×2・関門の先×3）
+// 恩恵は帯の倍率（近く×2・中ほど×2・関門の先×3。近くは 2026-11-11 に ×1 → ×2。SBD111）
 {
-  // 帯の倍率: 同じ恩恵（要のマスでない）が 近く・中ほど・関門の先 にあれば ×1・×2・×3
-  const plain = board.boardNodes("body").filter((n) => n.kind === "stat" && !n.peak && !n.notable);
+  assert.deepEqual(board.PERK_TIERS.slice(1).map((t) => t.mult), [2, 2, 3], "近く×2・中ほど×2・台座の先×3");
+  // 帯の倍率: 同じ恩恵（要のマスでない）が 近く・中ほど・関門の先 にあれば、1マスの単位にその帯の倍率が掛かる
+  const plain = board.boardNodes("body").filter((n) => n.kind === "stat" && !n.peak && !n.notable && !n.worth);
   const sample = plain.find((n) => [1, 2, 3].every((b) => plain.some((m) => m.perk === n.perk && m.band === b)));
   assert(sample, "3つの帯にまたがる恩恵がある");
-  const unit = Number(/[\d.]+/.exec(board.perkOf(plain.find((m) => m.perk === sample.perk && m.band === 1)).text)[0]);
-  for (const b of [1, 2, 3]) assert.equal(Number(/[\d.]+/.exec(board.perkOf(plain.find((m) => m.perk === sample.perk && m.band === b)).text)[0]), unit * b, `帯${b}は×${b}`);
+  const unit = Number(/[\d.]+/.exec(board.SQUARE_PERKS.body.perks[sample.perk].text)[0]);
+  for (const b of [1, 2, 3]) assert.equal(Number(/[\d.]+/.exec(board.perkOf(plain.find((m) => m.perk === sample.perk && m.band === b)).text)[0]), unit * board.PERK_TIERS[b].mult, `帯${b}は×${board.PERK_TIERS[b].mult}`);
   assert.equal(board.perkOf(plain.find((m) => m.band === 3)).tierName, "台座の先");
   // 色の台座（SBD89）: 色の火をはめると先へ進めて、台座の能力も手に入る。各盤の4つの台座に、その盤の4つの能力を1つずつ。台座1つ＝台座の先のマス×4/3
   for (const k of board.BOARD_KEYS) {
@@ -182,7 +183,7 @@ assert.deepEqual([N["M-W2"].ring, N["M-W6"].ring], [2, 2], "スミさんの四�
 for (const item of [...board.SKILLS, ...board.STAT_UPGRADES, ...board.LESSONS]) assert(N[item.id].ring <= (item.ring ?? 1), `${item.id} の章`);
 assert.equal(board.SKILLS.length, 23, "K20は通常マスへ変更（2026-11-01 オーナー指示）");
 assert.equal(N.K20.kind,"stat");assert.equal(N.K20.perk,"charm");assert.equal(N.K20.cost,2);
-assert.equal(board.perkOf(N.K20).text,"好感度が上がりやすく（＋2%）");
+assert.equal(board.perkOf(N.K20).text,"好感度が上がりやすく（＋4%）","火種2のマスは恩恵も2マス分（SBD112）");
 for (const k of board.BOARD_KEYS) {
   const sk = [...board.SKILLS,...board.STAT_UPGRADES].filter((x) => x.board === k);
   assert.equal(sk.reduce((n, x) => n + x.cost, 0), 36, `${k}: スキルの火種は各36`);
@@ -194,7 +195,7 @@ assert.equal(board.BOARD_TOTAL_COST, 198, "盤の全部で198（1レベル2つ�
 assert(140 >= 0.7 * board.BOARD_TOTAL_COST, "中央の1周目の火種（約140）で、3つの盤をどれも7割まで開ける");
 assert.equal(board.BOARD_TOTAL_COST, growth.BOARD_TOTAL, "盤の全部と火種の上限が同じ");
 const cumulative = [1, 2, 3, 4, 5].map((r) => board.NODES.filter((n) => n.ring <= r).reduce((a, n) => a + n.cost, 0));
-const received = [26, 52, 78, 104, 140]; // 中央の遊び方で章末までに受け取る火種（1.6。1レベル2つ）
+const received = [29, 58, 87, 116, 155]; // 中央の遊び方で章末までに受け取る火種（1.6。1レベル2つ）に、各章の大会の優勝の白火3つ（SBD110）を足した上振れ
 cumulative.forEach((c, i) => assert(c > received[i], `第${i + 1}章: 開く範囲（${c}）が受け取る火種（${received[i]}）より多い`));
 for (let i = 1; i < 5; i++) assert(cumulative[i] > cumulative[i - 1], `第${i + 1}章で新しい範囲が開く`);
 assert(board.LESSONS.every((l) => N[l.id].cost === 0), "授業は火種いらず");
