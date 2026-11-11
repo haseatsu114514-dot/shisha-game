@@ -314,3 +314,74 @@
 & .pull-btns > .btn .btn-label { font-size: 24px !important; white-space: nowrap; letter-spacing: 0; }
 & .pull-btns > .btn .pull-serve-icon { display: none !important; }
 & .fr-name :is(.fr-reg, .fr-mastery, .fr-ratio) { font-size: 17px !important; line-height: 1.25 !important; margin: 0 !important; }
+
+/* ==========================================================================
+   Codex の部品（CSL・2026-11-11 到着の11枚）。寸法は README の「受け取った後の手順」。
+   ========================================================================== */
+/* ---------- 熱の柱の外枠（spine-housing）: 温度計の箱を外枠ごと x331〜405・y93〜605 にし、
+   上下同じ余白46（矢印の位置の計算が上下対称の前提）で窓 y139〜559 に管を合わせる。上の帽子に札が乗る ---------- */
+& .bench-panel .thermo { left: 331px !important; top: 93px !important; width: 74px !important; height: 512px !important; --thermo-inset: 46px !important; }
+& .bench-panel .thermo .thermo-housing {
+  position: absolute; inset: 0 !important; width: auto !important; height: auto !important;
+  border-radius: 0; background: none; box-shadow: none; border: 0 solid transparent;
+  border-image: url("../img/ui/craft-stage/spine-housing.webp") 86 0 97 0 fill / 46px 0 46px 0 stretch !important;
+}
+& .bench-panel .thermo .thermo-housing .thermo-tube { left: 24px !important; right: 24px !important; top: 46px !important; bottom: 46px !important; border-radius: 13px; }
+& .bench-panel .thermo .thermo-pointer { left: 52px !important; }
+/* 札は帽子の上（y87〜129）。柱の箱の右端にそろえ、舞台へはみ出さない */
+& .bench-panel .thermo.mix-temperature::before, & .pull > .thermo .pull-read { top: -6px !important; right: 0 !important; }
+/* 温度計を持たない工程の消灯の柱も、同じ外枠に暗い管 */
+&:is([data-step="setup"], [data-step="place"], [data-step="holes"], [data-step="heat"]) .bench-right::before {
+  left: 331px; top: 93px; width: 74px; height: 512px; border-radius: 0; box-shadow: none; border: 0 solid transparent;
+  border-image: url("../img/ui/craft-stage/spine-housing.webp") 86 0 97 0 fill / 46px 0 46px 0 stretch !important;
+  background:
+    repeating-linear-gradient(0deg, #0000 0 11px, #1a0f2a55 11px 12px) 24px 46px / 26px 420px no-repeat,
+    linear-gradient(0deg, #6a6a68, #56585a 40%, #4a524e 44%, #525a56 64%, #55504c 71%, #3c3838 90%, #262224) 24px 46px / 26px 420px no-repeat;
+}
+/* ---------- 状態の札・「温度帯」の札の縁（spine-plate）: 帽子の上に乗る ---------- */
+& .bench-panel .thermo.mix-temperature::before, & .pull > .thermo .pull-read {
+  border: 0 solid transparent !important; border-radius: 21px !important;
+  border-image: url("../img/ui/craft-stage/spine-plate.webp") 0 50 fill / 0 21px stretch !important;
+}
+& .bench-panel .thermo.mix-temperature::before { z-index: 3; }
+& .pull > .thermo .pull-read { z-index: 3; }
+/* ---------- 工程の灯（lamp-*）: 輪は灯の箱いっぱい、光彩は外へ ---------- */
+& .bench-top > .rig-record .rig-lamp { isolation: isolate; overflow: visible; background: none !important; border: 0 !important; box-shadow: none !important; }
+& .bench-top > .rig-record .rig-lamp::before {
+  content: ""; position: absolute; inset: -18%; z-index: -1; pointer-events: none;
+  background: url("../img/ui/craft-stage/lamp-off.webp") center / contain no-repeat;
+}
+& .bench-top > .rig-record .rig-lamp[data-tier="dim"]::before { background-image: url("../img/ui/craft-stage/lamp-faint.webp"); }
+& .bench-top > .rig-record .rig-lamp[data-tier="good"]::before { background-image: url("../img/ui/craft-stage/lamp-fair.webp"); }
+& .bench-top > .rig-record .rig-lamp[data-tier="great"]::before { background-image: url("../img/ui/craft-stage/lamp-good.webp"); }
+& .bench-top > .rig-record .rig-lamp[data-tier="brilliant"]::before { background-image: url("../img/ui/craft-stage/lamp-shine.webp"); }
+& .bench-top > .rig-record .rig-lamp[data-tier="off"] b, & .bench-top > .rig-record .rig-lamp[data-tier="dim"] b { color: #b8aac4; }
+/* ---------- 上のレールの今の工程の札（rail-now）: 左の白い丸に工程の番号 ---------- */
+& .bench-progress-track > .bench-phase.now {
+  position: relative; padding: 0 22px 0 40px !important; border: 0 solid transparent !important; border-radius: 22px; background: none !important; box-shadow: none !important;
+  border-image: url("../img/ui/craft-stage/rail-now.webp") 0 61 0 99 fill / 0 22px 0 36px stretch !important;
+}
+& .bench-progress-track > .bench-phase.now .bench-phase-copy small {
+  display: grid !important; place-items: center; position: absolute; left: 6px; top: 50%; width: 24px; height: 24px; margin: -12px 0 0;
+  font-size: 13px !important; font-weight: 900; letter-spacing: 0; color: #2e1d45;
+}
+/* ---------- 見守る人の一言の板（voice-plate）: 顔は左の丸い座へ ---------- */
+& .bench-left .bench-audience {
+  padding: 8px 14px 8px 15px !important; gap: 14px; border: 0 solid transparent !important; border-radius: 0 !important; background: none !important; box-shadow: none !important;
+  border-image: url("../img/ui/craft-stage/voice-plate.webp") 96 112 96 194 fill / 48px 55px 48px 96px stretch !important; filter: drop-shadow(0 8px 14px #0009);
+}
+& .bench-audience .audience-people, & .bench-audience .audience-person, & .bench-audience .audience-face { width: 57px !important; height: 57px !important; }
+& .bench-audience .audience-face { border: 0 !important; }
+/* ---------- 舞台の天板（作業マット）: 配合・詰め方・穴あけ・蒸らし ---------- */
+&:is([data-step="mix"], [data-step="pack"], [data-step="holes"], [data-step="steam"]) .bench-right::after {
+  content: ""; position: fixed; left: 410px; top: 76px; right: 0; bottom: 0; z-index: -1; pointer-events: none;
+  background:
+    linear-gradient(90deg, #150d22 0, #150d2200 26%),
+    linear-gradient(180deg, #130b20 0, #130b2000 14%),
+    url("../img/ui/craft-stage/counter-mat.webp") right bottom / cover no-repeat;
+}
+/* ---------- 吸い出しの半円ダイヤルの台座（dial-bezel）: 帯 r118〜212 が透明の窓に合う ---------- */
+& .pull-dial::before {
+  content: ""; position: absolute; left: .92%; top: 3.08%; width: 98.23%; height: 99.25%; pointer-events: none;
+  background: url("../img/ui/craft-stage/dial-bezel.webp") center / 100% 100% no-repeat;
+}
