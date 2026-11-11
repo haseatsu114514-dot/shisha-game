@@ -26,7 +26,7 @@ function decodeArt(url) {
 // The WATL board (five 2x10 planks, calm light centre) from Codex, #2198 / AXR06. The older square board stays in the repository.
 const ART = { bg: imgFileUrl("backgrounds/bg_axe_lounge_night.webp"), board: imgFileUrl("ui/axe_throw/target_board_watl_c_800.webp") };
 // ゲージ・札の絵の部品（#3207・AXR14）。CSS の border-image で描く。読み込み中に先に解いておき、構えた瞬間の出遅れを防ぐ。
-const UI_ART = ["focus-gauge-frame", "focus-needle", "focus-throw-orange", "focus-throw-green", "focus-tag-slate", "focus-tag-slate-blue", "focus-tag-selected", "focus-tag-selected-amber"]
+const UI_ART = ["gauge-frame", "gauge-needle", "button-throw-orange", "button-throw-green", "tag-slate", "tag-slate-blue", "tag-selected", "tag-selected-amber"]
   .map(name => imgFileUrl("ui/axe_throw/" + name + ".webp"));
 // Only the target is decoded early so it appears without a late pop-in; other art waits for the loading step.
 if (typeof Image !== "undefined") decodeArt(ART.board).catch(() => {});

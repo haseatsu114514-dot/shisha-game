@@ -1052,15 +1052,15 @@ html:root[data-ui-theme="paper"] .axe-bar-menu .axe-bar-lesson { color: var(--la
 .axe-game.axe-in-stage .axe-timing[data-active="false"] { opacity: .45; }
 .axe-game.axe-in-stage .axe-timing .axe-power-readout { position: absolute !important; width: 1px !important; height: 1px !important; margin: -1px !important; padding: 0 !important;
   overflow: hidden !important; clip-path: inset(50%) !important; white-space: nowrap !important; border: 0 !important; }
-.axe-game.axe-in-stage .axe-gauge { position: absolute; inset: 14px 13.5px 14.6px; height: auto; border: 0; border-radius: 2px; }
+.axe-game.axe-in-stage .axe-gauge { position: absolute; inset: 21.2px 13.2px 20.9px 12.9px; height: auto; border: 0; border-radius: 2px; }
 .axe-game.axe-in-stage :is(.axe-stick, .axe-sweet) { left: 0; right: 0; top: auto; bottom: var(--from); width: auto; height: var(--size); border-inline: 0; }
 .axe-game.axe-in-stage .axe-stick { border-block: 1px solid #dcba7c; }
 .axe-game.axe-in-stage .axe-sweet { border-block: 2px solid #ddf0c2; }
 .axe-game.axe-in-stage .axe-sweet::after { writing-mode: vertical-rl; letter-spacing: .1em; }
 .axe-game.axe-in-stage .axe-power-fill { left: 0; top: 0; bottom: 0; width: 5px; height: auto; transform: scaleY(0); transform-origin: center bottom; }
 .axe-game.axe-in-stage .axe-needle { inset: 0; width: auto; border-radius: 0; background: none; box-shadow: none; transform: translateY(100%); pointer-events: none; will-change: transform; }
-.axe-game.axe-in-stage .axe-needle::before { left: -24px; right: auto; top: -7px; box-sizing: border-box; width: 72px; height: 14px; border-style: solid; border-color: transparent; border-width: 0 4px 0 17px; border-radius: 0;
-  background: none; box-shadow: none; border-image: url("../img/ui/axe_throw/focus-needle.webp") 0 8 0 32 fill / 0 4px 0 17px; }
+.axe-game.axe-in-stage .axe-needle::before { left: -20px; right: auto; top: -7px; box-sizing: border-box; width: 67px; height: 14px; border-style: solid; border-color: transparent; border-width: 0; border-radius: 0;
+  background: none; box-shadow: none; border-image: url("../img/ui/axe_throw/gauge-needle.webp") 0 42 0 100 fill / 0 6px 0 14.6px / 4.7px; }
 .axe-game.axe-in-stage .axe-needle::after { content: none; }
 
 /* 右: 枠のない操作の列。下から 投げる札 → 構え直す・息を整える → 今の刃先／結果。 */
@@ -1097,32 +1097,34 @@ html:root[data-ui-theme="paper"] .axe-bar-menu .axe-bar-lesson { color: var(--la
 .axe-game.axe-in-stage[data-phase="result"] .axe-result-label { letter-spacing: .04em; }
 
 /* ===== 絵の部品（2026-11-11・#3207・AXR14） =====
-   Codex の原画を切り抜いた部品（asset_sources/ui/axe-focus-ui-20261111/）。文字・色の帯・針の位置・押せる範囲はこれまでどおりコードが描く。
+   PR #3210 で main に入った Codex の部品（asset_sources/ui/axe-focus-ui-20261111/）。文字・色の帯・針の位置・押せる範囲はこれまでどおりコードが描く。
    - 回転ゲージ: 鉄と木の枠（9分割で縦に伸ばす）。色の帯は枠の中の溝（.axe-gauge）に入る。針は真鍮の棒と矢じり（矢じりは伸ばさない）。
    - 投げる札: 橙のエナメルの板。「いま放す！」の間だけ同じ形の緑の板が重なる（2枚とも先に読み込まれ、切り替えは opacity だけ）。
    - 狙いの札・構え直す・息を整える・もう一度: 木枠の黒板の札。青（キルショット）は面が濃紺の札。
    - 選んだ札: 真鍮の枠の札。青を選ぶと明るい青、「通常」を選ぶと橙。
+   どの画像も絵の周りに透明な余白があるので、余白の分は border-image-outset で外へ出して描く（はみ出しは描くだけで、ボタンの大きさや押せる範囲は変わらない）。
+   寸法は tools/geometry.json（画像の外接範囲・溝）から: 札は高さ82pxに絵の高さ432を合わせ 0.19倍、投げる札は100pxに383を合わせ 0.261倍、ゲージは幅60pxに255を合わせ 0.235倍。
    絵は ::after（狙いの札の ::before はチェックの印）に描き、ボタン自身の背景・影・縁は消す。 */
-.axe-game.axe-in-stage .axe-body > .axe-timing::before { content: ""; position: absolute; inset: 0; box-sizing: border-box; border-style: solid; border-color: transparent; border-width: 18px 15px; pointer-events: none;
-  border-image: url("../img/ui/axe_throw/focus-gauge-frame.webp") 48 40 fill / 18px 15px; }
+.axe-game.axe-in-stage .axe-body > .axe-timing::before { content: ""; position: absolute; inset: 0; box-sizing: border-box; border-style: solid; border-color: transparent; border-width: 0; pointer-events: none;
+  border-image: url("../img/ui/axe_throw/gauge-frame.webp") 140 95 fill / 25.1px 14.6px / 7.8px; }
 .axe-game.axe-in-stage :is(.axe-throw-button, .axe-throw .axe-retry, .axe-controls .axe-button, .axe-calls .axe-button) {
   isolation: isolate; border-color: transparent !important; background: none !important; box-shadow: none !important; }
 .axe-game.axe-in-stage .axe-throw-button { position: relative; }
 .axe-game.axe-in-stage :is(.axe-throw .axe-retry, .axe-controls .axe-button) { position: relative; }
 .axe-game.axe-in-stage :is(.axe-throw-button, .axe-throw .axe-retry, .axe-controls .axe-button, .axe-calls .axe-button)::after,
 .axe-game.axe-in-stage .axe-throw-button::before {
-  content: ""; position: absolute; inset: 0; z-index: -1; box-sizing: border-box; border-style: solid; border-color: transparent; pointer-events: none; }
-/* 投げる札: 角は丸い端のまま、中央だけ横へ伸ばす */
-.axe-game.axe-in-stage .axe-throw-button::before { border-width: 43px 50px; border-image: url("../img/ui/axe_throw/focus-throw-orange.webp") 130 150 fill / 43px 50px; }
-.axe-game.axe-in-stage .axe-throw > .axe-throw-button::after { border-width: 43px 50px; border-image: url("../img/ui/axe_throw/focus-throw-green.webp") 130 150 fill / 43px 50px; opacity: 0; }
+  content: ""; position: absolute; inset: 0; z-index: -1; box-sizing: border-box; border-style: solid; border-color: transparent; border-width: 0; pointer-events: none; }
+/* 投げる札: 角と端は伸ばさず、中央だけ伸ばす */
+.axe-game.axe-in-stage .axe-throw-button::before { border-image: url("../img/ui/axe_throw/button-throw-orange.webp") 150 200 fill / 30.5px 39.7px / 8.6px 12.5px; }
+.axe-game.axe-in-stage .axe-throw > .axe-throw-button::after { border-image: url("../img/ui/axe_throw/button-throw-green.webp") 150 200 fill / 30.5px 39.7px / 8.6px 12.5px; opacity: 0; }
 .axe-game.axe-in-stage[data-phase="power"]:has(.axe-timing[data-quality="sweet"]) .axe-throw-button::after { opacity: 1; }
 .axe-game.axe-in-stage .axe-throw-button:disabled { opacity: .7; }
 /* 黒板の札 */
 .axe-game.axe-in-stage :is(.axe-throw .axe-retry, .axe-controls .axe-button, .axe-calls .axe-button)::after {
-  border-width: 15px; border-image: url("../img/ui/axe_throw/focus-tag-slate.webp") 40 fill / 15px; }
-.axe-game.axe-in-stage .axe-calls .axe-button:not([data-call="normal"])::after { border-image-source: url("../img/ui/axe_throw/focus-tag-slate-blue.webp"); }
-.axe-game.axe-in-stage .axe-calls .axe-button[aria-pressed="true"]::after { border-image-source: url("../img/ui/axe_throw/focus-tag-selected.webp"); }
-.axe-game.axe-in-stage .axe-calls [data-call="normal"][aria-pressed="true"]::after { border-image-source: url("../img/ui/axe_throw/focus-tag-selected-amber.webp"); }
+  border-image: url("../img/ui/axe_throw/tag-slate.webp") 115 123 fill / 14.2px 14.2px / 7.6px 9.1px; }
+.axe-game.axe-in-stage .axe-calls .axe-button:not([data-call="normal"])::after { border-image-source: url("../img/ui/axe_throw/tag-slate-blue.webp"); }
+.axe-game.axe-in-stage .axe-calls .axe-button[aria-pressed="true"]::after { border-image-source: url("../img/ui/axe_throw/tag-selected.webp"); }
+.axe-game.axe-in-stage .axe-calls [data-call="normal"][aria-pressed="true"]::after { border-image-source: url("../img/ui/axe_throw/tag-selected-amber.webp"); }
 .axe-game.axe-in-stage .axe-calls .axe-button:not([data-call="normal"])[aria-pressed="true"] { color: #fff; text-shadow: 0 1px 0 #0b2a4a; }
 .axe-game.axe-in-stage .axe-calls [data-call="normal"][aria-pressed="true"] { color: var(--lane-orange-ink); }
 .axe-game.axe-in-stage :is(.axe-throw .axe-retry, .axe-controls .axe-button, .axe-calls .axe-button):hover:not(:disabled) { color: #fff8dc; }
