@@ -23,6 +23,9 @@
 .store-arrival { position: absolute; inset: 0; z-index: 999; display: grid; place-items: center; pointer-events: none; }
 .store-arrival-card { display: grid; place-items: center; gap: 14px; width: 440px; min-height: 250px; padding: 24px 32px; background: #fffdf7; border: 1px solid #d9c7a5; border-radius: 8px; box-shadow: 0 20px 60px rgba(12, 7, 25, .25); }
 .store-arrival-card > small { color: #816f52; font-size: 17px; letter-spacing: .14em; }
+/* 地図へ寄る移動（TMG46）: 白い札をやめ、光の中にロゴだけを出す。白い文字のロゴだけは暗いにじみを敷いて読めるようにする */
+.store-arrival.bare .store-arrival-card { background: none; border: 0; box-shadow: none; }
+.store-arrival.bare .store-arrival-card:has(.store-logo.on-dark) { background: radial-gradient(closest-side, #1f1a29f0 55%, #1f1a2900); }
 
 /* Face positions follow the shield, independently of the caption width. */
 .spot-pin .pin-visual { position: relative; }
