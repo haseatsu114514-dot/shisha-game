@@ -12,7 +12,10 @@ export const ART_READY = Object.freeze({
   poses: Object.freeze([]),   // "loaf","crouch","reach","hug","groom","yawn","belly","rub","walk_a","walk_b","lookback","stretch"
   // 小物: #2697（#2691）の原画を採用（2026-11-07・TKT13）。lap（はじめの膝）は B で未生成。
   props: Object.freeze(["box", "ball", "cushion", "scratcher", "tunnel", "bed", "plate", "teaser", "brush"]),
-  ui: Object.freeze([]),      // "icons","notebook","photo_frame","tape","memo","paw_stamp","caption","toolbox","button"
+  // UI: 紙×ラベンダーの "icons","notebook","photo_frame","tape","memo","paw_stamp","caption","toolbox","button"（#2691・専用テーマ後は使わない）。
+  // 専用テーマ「茶トラと段ボール」の部品は "tk_icons","tk_token","tk_tab","tk_heart","tk_pill","tk_wish","tk_caption","tk_title","tk_fx" ほか
+  // （TKT25・asset_sources/tetsuko-care/README.md「CSS で描いている部品をなくす」）。届いたら名前を書き、その部品の CSS の描画を消す。
+  ui: Object.freeze([]),
 });
 
 /** しぐさの絵（1024×768）の基準: 画面の上の大きさと足元。CSS の .tt-cat と同じ縮尺で重ねる。 */
