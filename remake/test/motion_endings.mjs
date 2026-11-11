@@ -187,7 +187,8 @@ async function checkScene(name, viewport, label, variant = null, stallPenFrames 
     assert.equal(result.leftovers, 0); assert.equal(result.covering, false);
     if (["shark", "sketch"].includes(name) || name.startsWith("dawn-")) assert.deepEqual(result.mid, [true]);
     if (name === "cheki") {
-      assert.deepEqual(result.dotLoops, variant === "a" ? [] : [{ state: "idle", iterations: true }], "dots must loop and be canceled at cleanup");
+      // 点の模様が流れ続けるのは b だけ（既定の c はみんとの絵柄、a は点なし）
+      assert.deepEqual(result.dotLoops, variant === "b" ? [{ state: "idle", iterations: true }] : [], "dots must loop and be canceled at cleanup");
       assert.equal(result.handoff.showing, true); assert.equal(Number(result.handoff.visible), 1);
       for (const k of ["left", "top", "width", "height"]) assert.ok(Math.abs(result.handoff[k]) < 1, `CG jumped at handoff: ${k}`);
     }
@@ -384,6 +385,7 @@ try {
   }
   // 共通のペン・finish()を使う別案も確認（採用の変更はしない）。
   await checkScene("cheki", desktop, "alternate-a", "a");
+  await checkScene("cheki", desktop, "alternate-b", "b");
   await checkScene("gift", desktop, "alternate-b", "b");
   await checkScene("cheki", desktop, "dropped-frames", null, true);
   // 動きを減らす設定だけ演出を省く。SKIP中は一度きりの演出を最後まで再生し（#1081 H05）、チェキは会話のCGを受け渡す。
@@ -425,7 +427,7 @@ try {
     console.log("PASS exception cleanup");
   } finally { await context.close(); }
   assert.deepEqual(errors, []);
-  console.log(`PASS motion endings: ${alternatesOnly ? 3 : 22} normal-speed scenes (including dropped frames), marker audit, skip/reduced motion, CG handoff and exception cleanup; browser errors 0`);
+  console.log(`PASS motion endings: ${alternatesOnly ? 4 : 23} normal-speed scenes (including dropped frames), marker audit, skip/reduced motion, CG handoff and exception cleanup; browser errors 0`);
   }
   assert.deepEqual(errors, []);
 } finally { await browser.close(); }
