@@ -342,7 +342,8 @@ await suite("ui-themes-config",async check=>{
       await page.evaluate(async () => { (await import("./js/vn/engine.js")).vnTest.turbo = true; });
       for (let i = 0; i < 60 && !(await page.locator("#screen .map:not(.done)").isVisible()); i++) {
         const choice = page.locator("#vn.active .vn-choices button").first();
-        if (await choice.isVisible().catch(() => false)) await choice.click(); else await page.waitForTimeout(500);
+        // turbo は出た選択肢を 10ms 後に自分で選ぶ（vn/engine.js）。先に選ばれて押す前に消えたら、そのまま次の行へ進む
+        if (await choice.isVisible().catch(() => false)) await choice.click({ timeout: 2000 }).catch(() => {}); else await page.waitForTimeout(500);
       }
       await page.locator("#screen .map:not(.done)").waitFor({ timeout: 30000 });
       await page.evaluate(async () => { (await import("./js/vn/engine.js")).vnTest.turbo = false; });
