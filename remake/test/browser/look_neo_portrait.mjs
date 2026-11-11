@@ -2,7 +2,9 @@
 // 下画面と本体のボタンはドット調のまま。横長の画面は今の新版のまま。未対応の場面では小さい横長の画面を出さず回転案内を出す。
 // 自動操作のブラウザの既定は旧版なので ?look=neo を付けて確かめる。
 // 第2〜5章（2026-11-11 オーナー「新版を広げる」）: 各章の会話・地図（第2章の初日の配達と店頭、日常の朝の行き先と駅、
-// 第3章の東京・場面カード、第4章のドバイ、第5章の地元）も外枠に写り、写せない画面（規則の紙など）は回転案内へ落ちる。
+// 第3章の東京・場面カード、第4章のドバイ、第5章の地元）も外枠に写る。
+// 全画面 MENU・LIME・小窓（設定・セーブ／ロード・規則の紙）・会話の LOG はシート（retro/sheet.js）で外枠の中に写り、
+// 回転案内を出さない。写せない画面（店など）は回転案内へ落ちる。
 import assert from "node:assert/strict";
 import { suite, baseURL } from "./support.mjs";
 
@@ -87,6 +89,14 @@ const watchShell = (page) => page.evaluate(() => {
   }).observe(shell, { attributes: true, attributeFilter: ["hidden", "data-scene"] });
 });
 const shellLog = (page) => page.evaluate(() => window.__shellLog.slice());
+/** 回転案内の印（html[data-rotate-guard]）が一度でも付いたかを記録する。 */
+const watchGuard = (page) => page.evaluate(() => {
+  window.__guardLog = [];
+  new MutationObserver(() => {
+    if (document.documentElement.dataset.rotateGuard) window.__guardLog.push(document.querySelector(".retro-shell")?.dataset.scene || "");
+  }).observe(document.documentElement, { attributes: true, attributeFilter: ["data-rotate-guard"] });
+});
+const guardLog = (page) => page.evaluate(() => window.__guardLog.slice());
 
 async function playScene(page, id, { chapter = 1, bg = "res://assets/backgrounds/bg_tonari_inside_night.png", file = "" } = {}) {
   await page.evaluate(async ([id, chapter, bg, file]) => {
@@ -108,8 +118,8 @@ async function playScene(page, id, { chapter = 1, bg = "res://assets/backgrounds
 }
 
 /** 第1章 DAY5 の昼の地図を、本物の日常ループ（runDaily）で出す。 */
-async function setupDaily(page) {
-  await page.evaluate(async () => {
+async function setupDaily(page, { lime = false } = {}) {
+  await page.evaluate(async (lime) => {
     const core = await import("./js/core/state.js");
     const s = core.newGame();
     Object.assign(s, { phase: "daily", chapter: 1, day: 5, slot: 0, money: 42000, stamina: 80, weatherSeed: 1234 });
@@ -118,12 +128,21 @@ async function setupDaily(page) {
     for (const id of ["minto", "naru", "adam", "tsumugi", "rio"]) s.met[id] = true;
     s.contacts.push("minto", "naru", "tsumugi");
     Object.assign(s.affinity, { minto: 40, sumi: 22, naru: 12, tsumugi: 66 });
+    if (lime) {
+      // LIME の確認用: スミさんの未読の雑談（返信の選択肢つき）と、みんとの既読の履歴
+      if (!s.contacts.includes("sumi")) s.contacts.push("sumi");
+      s.inbox.push({ id: "look_lime_read", originId: "look_lime_read", day: 4, chapter: 1, read: true, done: true, log: [{ text: "こちらこそ", me: true }],
+        msg: { id: "look_lime_read", sender: "minto", type: "chat", messages: ["きのうはありがと！"] } });
+      s.inbox.push({ id: "look_lime_fixture", originId: "look_lime_fixture", day: 5, chapter: 1, read: false, done: false, replyState: "waiting", log: [],
+        msg: { id: "look_lime_fixture", sender: "sumi", type: "chat", messages: ["今日は雨だな。", "店は昼から開けるから、手が空いたら顔を出してくれ。"],
+          replies: [{ text: "了解です。昼に行きます", response: "助かる。", affinity: 0 }, { text: "今日は少し遅れます", response: "無理はするな。", affinity: 0 }] } });
+    }
     core.save(); core.load();
     (await import("./js/chapters/ch1.js")).setupHooks();
     (await import("./js/core/ui.js")).clearScreen();
     window.dailyRun = (await import("./js/daily/calendar.js")).runDaily({ untilDay: 14, nightEvents: {} })
       .catch((error) => { window.dailyError = String(error.stack || error); });
-  });
+  }, lime);
   await page.locator("#screen .map:not(.done)").waitFor({ state: "attached", timeout: 20000 });
   await page.waitForFunction(() => !document.querySelector('.map[data-revealing="true"]'));
 }
@@ -181,15 +200,6 @@ async function assertMapMirrors(page, label, { picture = true } = {}) {
   if (picture) await assertHdTop(page, label);
   assert.equal((await rootState(page)).hint, "none", `${label}: no rotate hint over the map`);
   return (await ids()).pins;
-}
-
-/** 回転案内へ落ちていること（外枠を引っ込め、新版の文に差し替えた案内）。 */
-async function assertFallsBackToHint(page, label) {
-  await page.waitForFunction(() => document.documentElement.dataset.rotateGuard === "true", null, { timeout: 5000 });
-  const state = await rootState(page);
-  assert.equal(state.shell.hidden, true, `${label}: the shell is hidden`);
-  assert.equal(state.hint, "grid", `${label}: the rotate hint is shown`);
-  assert(state.replaced && state.hintText.includes(HINT_TEXT), `${label}: the hint text is replaced: ${state.hintText}`);
 }
 
 /** 第1章をクリアした直後から、第2章の初日（配達の地図）へ。 */
@@ -422,13 +432,15 @@ await suite("look_neo_portrait", async (check) => {
     assert.equal(await page.evaluate(() => window.dailyError || ""), "");
   }, { ...TALL, pageEntry: entry });
 
-  await check("portrait-menu-shows-rotate-hint", async (page) => {
+  await check("portrait-shop-shows-rotate-hint", async (page) => {
     await page.locator(shellFor("title")).waitFor();
     await setupDaily(page);
     await page.locator(shellFor("map")).waitFor();
-    await page.locator(t("retro-key-menu")).tap();
-    await page.locator(t("menu")).waitFor();
-    // 小さい横長の画面は出さず、少し待ってから回転案内を出す（制作の時計と音は案内の印で止まる）
+    await page.locator(t("retro-row-shop")).tap();
+    await page.waitForFunction(() => document.querySelector('[data-test="retro-go"]').getAttribute("aria-disabled") === "false");
+    await page.locator(t("retro-go")).tap();
+    await page.locator(t("shop-entry-back")).waitFor({ timeout: 15000 });
+    // 店（未対応の場面）は小さい横長の画面を出さず、少し待ってから回転案内を出す（制作の時計と音は案内の印で止まる）
     await page.waitForFunction(() => document.documentElement.dataset.rotateGuard === "true", null, { timeout: 5000 });
     const open = await rootState(page);
     assert.equal(open.hint, "grid");
@@ -437,14 +449,196 @@ await suite("look_neo_portrait", async (check) => {
     assert(open.replaced && open.hintText.includes(HINT_TEXT) && open.hintText.includes("端末を横にしてください"), `the hint text is replaced: ${open.hintText}`);
     assert(!open.hintText.includes("お楽しみください"), "the original hint line is hidden");
     assert.equal(await page.locator(t("retro-note")).isVisible(), false, "no extra note on top of the rotate hint");
-    // 閉じると外枠へ戻り、案内が消える
-    await page.locator(t("menu-close")).evaluate((node) => node.click());
+    // 店を出ると外枠へ戻り、案内が消える
+    await clickDom(page, "shop-entry-back");
     await page.locator(shellFor("map")).waitFor();
     await page.waitForFunction(() => !document.documentElement.dataset.rotateGuard);
     const closed = await rootState(page);
     assert.equal(closed.hint, "none");
     assert.equal(closed.hold, "hold");
     assert.equal(await page.evaluate(() => window.dailyError || ""), "");
+  }, { ...TALL, pageEntry: entry });
+
+  await check("portrait-menu-in-sheet", async (page) => {
+    await page.locator(shellFor("title")).waitFor();
+    await setupDaily(page);
+    await page.locator(shellFor("map")).waitFor();
+    await watchGuard(page);
+    await page.locator(t("retro-key-menu")).tap();
+    await page.locator('.retro-sheet[data-kind="menu"]').waitFor();
+    // 上画面: ステータスのタブははじめの立ち絵（高解像度）。下画面: 今のタブの中身。本体のボタン: 4つのタブと「閉じる」
+    await assertShellFits(page, "menu sheet");
+    await assertHdTop(page, "menu sheet");
+    const keys = await page.evaluate(() => [...document.querySelectorAll(".retro-key")].map((n) => [n.dataset.key, n.getAttribute("aria-pressed")]));
+    assert.deepEqual(keys, [["tab-status", "true"], ["tab-people", "false"], ["tab-items", "false"], ["tab-system", "false"], ["close", null]]);
+    assert.equal(await page.locator(".retro-caption").textContent(), "はじめ");
+    for (const tab of ["people", "items", "system", "status", "people"]) {
+      await page.locator(t(`retro-key-tab-${tab}`)).tap();
+      await page.waitForFunction((tab) => document.querySelector(".dmenu").dataset.tab === tab
+        && document.querySelector(`[data-test="retro-key-tab-${tab}"]`).getAttribute("aria-pressed") === "true"
+        && document.querySelector(".retro-status").textContent.includes(document.querySelector(`.dm-tab[data-tab="${tab}"] .dm-label`).textContent), tab);
+      // 写しの中身と元の中身が同じ（ボタン・行の data-test の並び）
+      const same = await page.evaluate(() => {
+        const tests = (root, prefix = "") => [...root.querySelectorAll("[data-test]")].filter((n) => n.getClientRects().length)
+          .map((n) => n.dataset.test.slice(prefix.length)).filter((id) => id.startsWith("menu-") || id.startsWith("recipe-") || id.startsWith("keepsake-"));
+        return { classic: tests(document.querySelector(".dmenu .dm-panel")), sheet: tests(document.querySelector(".retro-sheet .rs-body"), "sheet-").filter((id) => id !== "menu-summary" && !id.startsWith("menu-condition")) };
+      });
+      assert.deepEqual(same.sheet, same.classic, `the ${tab} tab is mirrored`);
+    }
+    // 人間関係の行を開く（元の行が開き、上画面はその相手）→ もう一度押して閉じる
+    await page.locator(t("sheet-menu-person-minto")).tap();
+    await page.waitForFunction(() => document.querySelector('[data-test="menu-person-minto"]').getAttribute("aria-expanded") === "true"
+      && document.querySelector('[data-test="sheet-menu-person-minto"]').getAttribute("aria-expanded") === "true");
+    await page.locator(t("sheet-menu-person-detail-minto")).waitFor();
+    await page.waitForFunction(() => document.querySelector(".retro-caption").textContent === document.querySelector('[data-test="menu-person-minto"] .dm-name').textContent);
+    await page.locator(t("sheet-menu-person-minto")).tap();
+    await page.waitForFunction(() => document.querySelector('[data-test="menu-person-minto"]').getAttribute("aria-expanded") === "false");
+    await page.locator(t("sheet-menu-person-detail-minto")).waitFor({ state: "detached" }); // 閉じた詳しい欄は写さない
+    await page.locator(t("retro-key-close")).tap();
+    await page.locator(shellFor("map")).waitFor();
+    assert.equal(await page.locator(".dmenu").count(), 0);
+    assert.deepEqual(await guardLog(page), [], "no rotate hint while the MENU is open");
+    assert.equal(await page.evaluate(() => window.dailyError || ""), "");
+  }, { ...TALL, pageEntry: entry });
+
+  await check("portrait-lime-in-sheet", async (page) => {
+    await page.locator(shellFor("title")).waitFor();
+    await setupDaily(page, { lime: true });
+    await page.locator(shellFor("map")).waitFor();
+    await watchGuard(page);
+    await page.locator(t("retro-key-lime")).tap();
+    // LIME は上下の画面をつないだ縦長のシート: トーク一覧 → 相手 → 返信の選択肢 → 一覧 → 閉じる
+    await page.locator('.retro-sheet[data-kind="lime"][data-tall="true"]').waitFor();
+    const list = await page.evaluate(() => ({
+      classic: [...document.querySelectorAll(".lime-chat .lime-chat-row")].map((n) => [n.dataset.test, n.classList.contains("unread")]),
+      sheet: [...document.querySelectorAll(".retro-sheet .s-lime-chat-row")].map((n) => [n.dataset.test.replace(/^sheet-/, ""), n.classList.contains("s-unread")]),
+    }));
+    assert.deepEqual(list.sheet, list.classic);
+    assert(list.sheet.some(([id, unread]) => id === "lime-chat-sumi" && unread), "the unread chat is marked");
+    await page.locator(t("sheet-lime-chat-sumi")).tap();
+    await page.locator(t("sheet-reply-0")).waitFor({ timeout: 10000 });
+    const thread = await page.evaluate(() => ({
+      classic: [...document.querySelectorAll(".lime-chat .lime-bubble")].map((n) => n.textContent),
+      sheet: [...document.querySelectorAll(".retro-sheet .s-lime-bubble")].map((n) => n.textContent),
+      replies: [...document.querySelectorAll(".retro-sheet .s-lime-reply")].map((n) => n.textContent),
+    }));
+    assert.deepEqual(thread.sheet, thread.classic);
+    assert.deepEqual(thread.replies, ["了解です。昼に行きます", "今日は少し遅れます"]);
+    await page.locator(t("sheet-reply-0")).tap();
+    await page.locator(t("sheet-phone-next")).waitFor({ timeout: 10000 });
+    const answered = await page.evaluate(() => ({
+      item: window.__remake.state.inbox.find((i) => i.id === "look_lime_fixture"),
+      sheet: [...document.querySelectorAll(".retro-sheet .s-lime-row.s-me .s-lime-bubble")].map((n) => n.textContent),
+    }));
+    assert.equal(answered.item.read, true);
+    assert.deepEqual(answered.sheet, ["了解です。昼に行きます"]);
+    await page.locator(t("retro-key-back")).tap();
+    await page.locator(t("sheet-phone-close")).waitFor();
+    await page.locator(t("retro-key-close")).tap();
+    await page.locator(shellFor("map")).waitFor();
+    assert.equal(await page.locator(".phone-overlay").count(), 0);
+    assert.deepEqual(await guardLog(page), [], "no rotate hint while LIME is open");
+    assert.equal(await page.evaluate(() => window.dailyError || ""), "");
+  }, { ...TALL, pageEntry: entry });
+
+  await check("portrait-config-slots-and-rules-in-sheet", async (page) => {
+    await page.locator(shellFor("title")).waitFor();
+    await setupDaily(page);
+    await page.locator(shellFor("map")).waitFor();
+    await watchGuard(page);
+    const system = async () => {
+      await page.locator(t("retro-key-menu")).tap();
+      await page.locator('.retro-sheet[data-kind="menu"]').waitFor();
+      await page.locator(t("retro-key-tab-system")).tap();
+      await page.locator(t("sheet-menu-config")).waitFor();
+    };
+    // 設定: 文字の速さの段を写しで押すと、元の段ボタンが押されて保存される
+    await system();
+    await page.locator(t("sheet-menu-config")).tap();
+    await page.locator('.retro-sheet[data-kind="modal"]').waitFor();
+    const before = await page.evaluate(async () => (await import("./js/core/state.js")).config.textSpeed);
+    const next = before === 2 ? "3" : "2";
+    await page.locator(`${t("sheet-cfg-text-speed")} button[value="${next}"]`).tap();
+    await page.waitForFunction((next) => document.querySelector(`[data-test="cfg-text-speed"] button[value="${next}"]`).getAttribute("aria-checked") === "true"
+      && document.querySelector(`[data-test="sheet-cfg-text-speed"] button[value="${next}"]`).getAttribute("aria-checked") === "true", next);
+    const saved = await page.evaluate(async () => ({
+      config: (await import("./js/core/state.js")).config.textSpeed,
+      stored: JSON.parse(localStorage.getItem("suien_remake_config") || "{}").textSpeed,
+    }));
+    assert.deepEqual(saved, { config: Number(next), stored: Number(next) });
+    // チェックボックスも写しから切り替わり、保存される
+    const shake = await page.evaluate(async () => (await import("./js/core/state.js")).config.reduceShake === true);
+    await page.locator(t("sheet-cfg-reduce-shake")).tap();
+    await page.waitForFunction((shake) => JSON.parse(localStorage.getItem("suien_remake_config") || "{}").reduceShake === !shake, shake);
+    await page.waitForFunction((on) => document.querySelector('[data-test="sheet-cfg-reduce-shake"]').getAttribute("aria-checked") === on, String(!shake));
+    await page.locator(t("sheet-cfg-reduce-shake")).tap();
+    await page.waitForFunction((shake) => JSON.parse(localStorage.getItem("suien_remake_config") || "{}").reduceShake === shake, shake);
+    await page.locator(t("sheet-cfg-close")).tap();
+    await page.locator(shellFor("map")).waitFor();
+    // セーブ／ロードの枠: 元の枠と同じ並びで出て、やめると地図へ（保存はしない）
+    await system();
+    await page.locator(t("sheet-menu-load")).tap();
+    await page.locator(t("sheet-slot-cancel")).waitFor();
+    const slots = await page.evaluate(() => ({
+      classic: [...document.querySelectorAll("#modal .save-slot")].map((n) => [n.dataset.test, n.disabled]),
+      sheet: [...document.querySelectorAll(".retro-sheet .s-save-slot")].map((n) => [n.dataset.test.replace(/^sheet-/, ""), n.disabled]),
+    }));
+    assert(slots.classic.length >= 2);
+    assert.deepEqual(slots.sheet, slots.classic);
+    await page.locator(t("sheet-slot-cancel")).tap();
+    await page.locator(shellFor("map")).waitFor();
+    // 大会の規則（読み物の小窓）も縦長のシートで読める
+    await system();
+    await page.locator(t("sheet-menu-rules")).tap();
+    await page.locator(t("sheet-rule-sheet")).waitFor();
+    const rules = await page.evaluate(() => ({
+      classic: [...document.querySelectorAll('#modal [data-test="rule-sheet"] h3')].map((n) => n.textContent),
+      sheet: [...document.querySelectorAll('.retro-sheet [data-test="sheet-rule-sheet"] .rs-h3')].map((n) => n.textContent),
+    }));
+    assert(rules.classic.length >= 3);
+    assert.deepEqual(rules.sheet, rules.classic);
+    await page.locator(t("sheet-rule-sheet-close")).tap();
+    await page.locator(shellFor("map")).waitFor();
+    assert.deepEqual(await guardLog(page), [], "no rotate hint while the settings and slots are open");
+    assert.equal(await page.evaluate(() => window.dailyError || ""), "");
+  }, { ...TALL, pageEntry: entry });
+
+  await check("portrait-log-in-sheet", async (page) => {
+    await page.locator(shellFor("title")).waitFor();
+    await playScene(page, "ch1_minto_second");
+    await page.locator(shellFor("vn")).waitFor();
+    for (let i = 0; i < 3; i++) {
+      await typed(page);
+      const now = await vnText(page);
+      await page.locator(t("retro-bottom")).tap({ position: { x: 60, y: 60 } });
+      await page.waitForFunction((text) => document.querySelector("#vn .vn-text").textContent !== text, now);
+    }
+    await typed(page);
+    await watchGuard(page);
+    const line = await vnText(page);
+    await page.locator(t("retro-key-vn-log")).tap();
+    await page.locator('.retro-sheet[data-kind="log"]').waitFor();
+    const log = await page.evaluate(() => ({
+      classic: [...document.querySelectorAll("#vn .vn-log .log-row")].map((n) => n.textContent),
+      sheet: [...document.querySelectorAll(".retro-sheet .s-log-row")].map((n) => n.textContent),
+    }));
+    assert(log.classic.length >= 3);
+    assert.deepEqual(log.sheet, log.classic);
+    // LOG を開いている間、会話は進まない（下のタップも会話へ届かない）
+    await page.locator(".retro-sheet .rs-body").tap({ position: { x: 40, y: 40 } });
+    await page.waitForTimeout(800);
+    assert.equal(await vnText(page), line);
+    await page.locator(t("retro-key-close")).tap();
+    await page.locator(shellFor("vn")).waitFor();
+    assert.equal(await vnText(page), line);
+    // 会話中の設定もシートで開いて閉じる
+    await page.locator(t("retro-key-vn-config")).tap();
+    await page.locator(t("sheet-cfg-close")).waitFor();
+    await page.locator(t("sheet-cfg-close")).tap();
+    await page.locator(shellFor("vn")).waitFor();
+    assert.equal(await vnText(page), line);
+    assert.deepEqual(await guardLog(page), [], "no rotate hint while the log and settings are open");
+    assert.equal(await page.evaluate(() => window.sceneError || ""), "");
   }, { ...TALL, pageEntry: entry });
 
   await check("landscape-and-desktop-stay-neo", async (page) => {
@@ -476,9 +670,15 @@ await suite("look_neo_portrait", async (check) => {
     const before = await vnText(page);
     await page.locator(t("retro-bottom")).click({ position: { x: 60, y: 60 } });
     await page.waitForFunction((text) => document.querySelector("#vn .vn-text").textContent !== text, before);
-    // タッチでない縦長の窓では回転案内が出ないので、未対応の場面は小さい画面＋一言（DS風と同じ）
+    // 会話の LOG はシートで開き、マウスでも閉じられる
     await typed(page);
     await page.locator(t("retro-key-vn-log")).click();
+    await page.locator('.retro-sheet[data-kind="log"]').waitFor();
+    await page.locator(t("retro-key-close")).click();
+    await page.locator(shellFor("vn")).waitFor();
+    // タッチでない縦長の窓では回転案内が出ないので、未対応の場面（設定の上に重ねるセーブの引っ越し）は小さい画面＋一言（DS風と同じ）
+    await page.locator(t("retro-key-vn-config")).click();
+    await page.locator(t("sheet-save-import")).click();
     await page.waitForFunction(() => document.querySelector(".retro-shell").hidden, null, { timeout: 5000 });
     await page.locator(t("retro-note")).waitFor();
     const state = await rootState(page);
@@ -486,6 +686,8 @@ await suite("look_neo_portrait", async (check) => {
     assert.equal(state.guard, "");
     assert.equal(state.viewportOpacity, "1");
     await page.keyboard.press("Escape");
+    await page.locator('.retro-sheet[data-kind="modal"]').waitFor();
+    await page.locator(t("sheet-cfg-close")).click();
     await page.locator(shellFor("vn")).waitFor();
   }, { ...DESK_TALL, pageEntry: entry });
 
@@ -582,14 +784,15 @@ await suite("look_neo_portrait", async (check) => {
     assert(!log.includes("off"), `the train ride stays inside the shell: ${log}`);
   }, { ...TALL, pageEntry: entry });
 
-  await check("chapter-three-rule-sheet-falls-back-and-tokyo-map", async (page) => {
+  await check("chapter-three-rule-sheet-and-tokyo-map", async (page) => {
     await page.locator(shellFor("title")).waitFor();
     await seedChapterThree(page);
     await loadSlot(page);
-    // 規則の紙（読み物の小窓）は一言に縮められないので回転案内へ
+    // 規則の紙（読み物の小窓）は縦長のシートで読み、写しの「閉じる」で閉じる
     await page.locator(t("rule-sheet")).waitFor({ state: "attached", timeout: 60000 });
-    await assertFallsBackToHint(page, "rule sheet");
-    await clickDom(page, "rule-sheet-close");
+    await page.locator(t("sheet-rule-sheet")).waitFor();
+    assert.equal((await rootState(page)).guard, "");
+    await page.locator(t("sheet-rule-sheet-close")).tap();
     await page.waitForFunction(() => document.querySelector('.map:not(.done) [data-test="pin-ch3_tokyo_mukai"]'), null, { timeout: 60000 });
     await assertMapMirrors(page, "chapter 3 tokyo map");
     assert.equal((await rootState(page)).guard, "");
@@ -689,6 +892,26 @@ await suite("look_neo_portrait", async (check) => {
     assert(state.hintText.includes("横向きでお楽しみください"));
     assert.equal(state.viewportOpacity, "1");
     assert.equal(await page.evaluate(() => window.sceneError || ""), "");
+  }, { ...TALL, pageEntry: entry });
+
+  await check("switching-to-classic-from-the-sheet-leaves-no-trace", async (page) => {
+    await page.locator(shellFor("title")).waitFor();
+    // 設定をシートで開き、写しの「旧版」を押す → 外枠・シート・写しの部品が残らず、現行の設定の小窓がそのまま開いている
+    await page.locator(t("retro-title-config")).tap();
+    await page.locator('.retro-sheet[data-kind="modal"]').waitFor();
+    await page.locator(`${t("sheet-cfg-look")} button[value="classic"]`).tap();
+    await page.waitForFunction(() => document.documentElement.dataset.look === "classic" && !document.querySelector(".retro-shell"));
+    assert.deepEqual(await residue(page), { shells: 0, notes: 0, hints: 0, attrs: [], paint: "" });
+    assert.equal(await page.evaluate(() => document.querySelectorAll(".retro-sheet, [class*='rs-'], [data-test^='sheet-']").length), 0);
+    assert.equal(await page.evaluate(() => JSON.parse(localStorage.getItem("suien_remake_config") || "{}").look), "classic");
+    assert.equal(await page.locator(`${t("cfg-look")} button[value="classic"]`).getAttribute("aria-checked"), "true");
+    await page.waitForFunction(() => document.documentElement.dataset.rotateGuard === "true");
+    // 新版へ戻すと、開いたままの設定が再びシートに写る
+    await page.locator(`${t("cfg-look")} button[value="neo"]`).evaluate((node) => node.click());
+    await page.locator('.retro-sheet[data-kind="modal"]').waitFor();
+    await page.waitForFunction(() => !document.documentElement.dataset.rotateGuard);
+    await page.locator(t("sheet-cfg-close")).tap();
+    await page.locator(shellFor("title")).waitFor();
   }, { ...TALL, pageEntry: entry });
 
   await check("switching-looks-leaves-no-trace", async (page) => {

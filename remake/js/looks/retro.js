@@ -1,15 +1,16 @@
 // DS風（上下2画面・256×192 のレトロな様式・LK03）。見た目は css/look-retro.css。
 // 現行の画面（#stage）は動かしたまま隠し、その内容を低い解像度の2画面へ写して操作を中継する。進行・判定・セーブには触れない。
 // 対応している場面はタイトル・会話と選択肢・日常の地図・ボタンが並ぶだけの画面（tonari の行動選びなど）。
+// 全画面 MENU・LIME・小窓（設定・用語集・セーブ／ロード・規則の紙・確認の問い）・会話の LOG は、シート（retro/sheet.js）で写す。
 // 場面転換・日付の札・章タイトル・詩・登場カットインなどの「見るだけの覆い」は、外枠のまま暗くして文字と絵だけを写す。
-// それ以外（MENU・LIME・設定・ロード画面・シーシャ作り・店…）では外枠を引っ込めて現行の画面をそのまま見せる。
+// それ以外（シーシャ作り・店・ミニゲーム…）では外枠を引っ込めて現行の画面をそのまま見せる。
 // 横持ちのタッチ端末では外枠を出さない。
 // setActive(false) では、足した要素・監視・タイマー・属性をすべて片付けて現行へ戻す。
 //
 // 同じ外枠を、新版の縦持ち（LK11）も使う（looks/neo.js が startShell({ paint: "hd", mode: "portrait" }) で動かす）。
 //   paint: "dot"（DS風のドット絵・retro/painter.js）／"hd"（新版と同じ高解像度の絵・retro/painter-hd.js）
 //   mode:  "retro"（DS風の条件: 縦長の画面か PC）／"portrait"（縦長の画面だけ）
-// 新版の縦持ちでは、未対応の場面（MENU・LIME・設定・店・シーシャ作り…）で小さい横長の画面を見せず、
+// 新版の縦持ちでは、未対応の場面（店・シーシャ作り・ミニゲーム…）で小さい横長の画面を見せず、
 // 回転案内（#rotate-hint）を出す（タッチでない縦長の窓では案内が出ないので、DS風と同じく小さい画面＋一言）。
 // どちらの描き方かは <html data-retro-paint="dot|hd"> と外枠の data-paint で分かる。
 import { createShell } from "./retro/shell.js";
@@ -21,6 +22,7 @@ import { createMapScene } from "./retro/map.js";
 import { createTitleScene } from "./retro/title.js";
 import { createMenuScene } from "./retro/menu.js";
 import { createCoverScene } from "./retro/cover.js";
+import { createSheetScene } from "./retro/sheet.js";
 import { el } from "../core/util.js";
 
 const DETECT_MS = 110;      // 場面の確認は 1 秒に 9 回ほど
@@ -30,7 +32,6 @@ const GAP_MS = 3000;        // 場面と場面のあいだの何も出ていな�
 const STUCK_MS = 6000;      // 何も写せない覆いがタップを待ったままなら、安全のため現行の画面へ切り替える
 const COVER_MAX_MS = 20000; // 覆いの中身が変わらないまま続く上限（外枠が暗いまま止まらないように）
 const NOTE_UNSUPPORTED = "この場面は横向きにすると大きく表示されます";
-const NOTE_OLD_LAYOUT = "表示設定を通常版にするとDS風が使えます";
 // 新版の縦持ちで回転案内を出している間の文（元の文は隠して、外枠を止めたら戻す）
 const HINT_MAIN = "この画面は横向きで表示します", HINT_SUB = "端末を横にしてください";
 
@@ -70,7 +71,7 @@ function start({ paint = "dot", mode = "retro" } = {}) {
   const own = [shell.root, shell.note];
   const scenes = {
     title: createTitleScene(shell, painter), vn: createVnScene(shell, painter), map: createMapScene(shell, painter),
-    menu: createMenuScene(shell, painter), cover: createCoverScene(shell, painter, own),
+    menu: createMenuScene(shell, painter), cover: createCoverScene(shell, painter, own), sheet: createSheetScene(shell, painter),
   };
   for (const scene of Object.values(scenes)) shell.bottom.append(scene.pane);
   shell.mount();
@@ -177,8 +178,7 @@ function start({ paint = "dot", mode = "retro" } = {}) {
     } else { candidate = null; streak = 0; }
     // 外枠を出していない間の一言
     let note = "";
-    if (engaged === "old") note = NOTE_OLD_LAYOUT;
-    else if (engaged === "on" && !scene && isPortrait() && !isLoading()) {
+    if (engaged === "on" && !scene && isPortrait() && !isLoading()) {
       unsupportedSince ||= now;
       // 新版の縦持ちで回転案内が出ている時は、案内が全面を覆うので一言は出さない
       if (now - unsupportedSince >= NOTE_DELAY_MS && !hintShown() && !dialogOpen) note = NOTE_UNSUPPORTED;
@@ -231,7 +231,7 @@ function start({ paint = "dot", mode = "retro" } = {}) {
   });
   observer.observe(document.documentElement, {
     subtree: true, childList: true, characterData: true, attributes: true,
-    attributeFilter: ["class", "hidden", "style", "src", "disabled", "aria-disabled", "aria-pressed", "data-screen", "data-revealing", "data-game-layout", "data-layout", "data-slot", "data-health", "title"],
+    attributeFilter: ["class", "hidden", "style", "src", "disabled", "aria-disabled", "aria-pressed", "data-screen", "data-revealing", "data-slot", "data-health", "data-tab", "aria-selected", "aria-expanded", "aria-checked", "title"],
   });
 
   const onResize = () => { if (shell.layout()) painter.refresh(); detectSoon = true; dirty = true; };
