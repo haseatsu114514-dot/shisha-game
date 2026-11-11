@@ -188,7 +188,14 @@ async function renderStage(owner) {
   if (progress.part === "free") return chapterFourDaily(state) ? renderDubaiDaily(owner) : renderFree(owner);
   if (progress.part === "eve") return renderEve(owner);
   if (progress.part === "tournament") return renderTournament(owner);
-  if (progress.part === "resolution") return renderScene(owner, CH4_RESOLUTION[progress.resolution], "");
+  if (progress.part === "resolution") {
+    // 店仕事の片づけ（借りた道具を返す）は、勝敗の台本で決勝を描いた後、結果発表の前に一度だけ読む。
+    // 片づけの前で中断した保存も、ここで読んでから結果発表へ進む。読めない保存（旧保存など）は何もしない。
+    if (progress.resolution === 0
+      && !await readChapterFourStaffCheckpoint(CH4_STAFF_IDS.cleanup, { isCurrent: () => current(owner) })) return;
+    if (!current(owner)) return;
+    return renderScene(owner, CH4_RESOLUTION[progress.resolution], "");
+  }
   return renderComplete(owner);
 }
 
@@ -525,8 +532,6 @@ async function runTournament(owner) {
   if (!result) { await renderTournament(owner); return; }
   // 最終票は result.rows / result.votes から表示する。勝敗の台本はこの後に読む。
   await showChapterFourCommittedResult(result);
-  if (!current(owner)) return;
-  if (!await readChapterFourStaffCheckpoint(CH4_STAFF_IDS.cleanup, { isCurrent: () => current(owner) })) return;
   if (!current(owner)) return;
   if (chapterFourTournamentOutcome(state) === "win") {
     clearContinueHistory(state);

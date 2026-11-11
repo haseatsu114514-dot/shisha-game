@@ -314,7 +314,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（これは、帰ってからも使う）"
+          "text": "（これは、次の準備でも使う）"
         },
         {
           "speaker": "naru",
@@ -589,7 +589,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（帰ったら、この聞き方も試してみよう）"
+          "text": "（次の一台でも、この聞き方を試してみよう）"
         },
         {
           "speaker": "",
@@ -796,12 +796,12 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "帰ったら、店の準備でも使ってみます"
+          "text": "次の準備でも、使ってみます"
         },
         {
           "speaker": "shop_clerk",
           "face": "",
-          "text": "そちらの店でも。お元気で"
+          "text": "ぜひ。お元気で"
         },
         {
           "speaker": "",
