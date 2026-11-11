@@ -1,0 +1,125 @@
+{
+  "issue": 3392,
+  "reference_recovery_only": true,
+  "generated_any_poem_panel": false,
+  "template": {
+    "bytes": 7054,
+    "sha256": "41a2438c1825d3a03d4ba85ab4b19d2b7b110119cc00e33188fcfc1e61952f65",
+    "canonical_generator": "tools/poem_panel_cut.py",
+    "result": "byte/hash match and selftest PASS",
+    "source_commit": "7cb74fb9e79a88b6ad682612dd94be27fe346a73",
+    "generator_git_blob_sha": "ec7f68d6516954a483c3b203090dea4e4b6e7506",
+    "canvas": [
+      1536,
+      1024
+    ],
+    "panel_bounds": [
+      48,
+      377,
+      1440,
+      270
+    ],
+    "guide_is_not_generation_input": true
+  },
+  "backgrounds": [
+    {
+      "file": "bg_tonari_inside_night.png",
+      "repository": "haseatsu114514-dot/shisha-game",
+      "repo_path": "assets/backgrounds/bg_tonari_inside_night.png",
+      "ref": "7cb74fb9e79a88b6ad682612dd94be27fe346a73",
+      "git_blob_sha": "aa143fa77ed72f9f5386ca4a6464eeef6431489c",
+      "mode": "GitHub Git Blob API; binary PNG decoded from base64",
+      "sha256": "a40237abeadf3ee6c6008a284f754b5d3937f8901550fc306aff200cfc67c238",
+      "bytes": 2874828,
+      "pixels": [
+        1920,
+        1080
+      ],
+      "actual_PNG_opened_and_decoded": true
+    },
+    {
+      "file": "bg_tonari_inside_day.png",
+      "repository": "haseatsu114514-dot/shisha-game",
+      "repo_path": "assets/backgrounds/bg_tonari_inside_day.png",
+      "ref": "7cb74fb9e79a88b6ad682612dd94be27fe346a73",
+      "git_blob_sha": "19fc875e9918e41e9327ceedc2678628d19b01e1",
+      "mode": "GitHub Git Blob API; binary PNG decoded from base64",
+      "sha256": "0c425cfc21a6241cf7cfba5f257ff5fbd5c42a640e7db28ed8e923ba45058645",
+      "bytes": 2699129,
+      "pixels": [
+        1920,
+        1080
+      ],
+      "actual_PNG_opened_and_decoded": true
+    },
+    {
+      "file": "bg_ch2_ageha_closed_night.png",
+      "repository": "haseatsu114514-dot/shisha-game",
+      "repo_path": "assets/backgrounds/bg_ch2_ageha_closed_night.png",
+      "ref": "7cb74fb9e79a88b6ad682612dd94be27fe346a73",
+      "git_blob_sha": "7b42478943538911159b7b4a25474a79d13df8f0",
+      "mode": "Git LFS batch download",
+      "sha256": "82a825c1406ef39056bdc03461869fec726fccc80443a912773675f648f83116",
+      "bytes": 1395300,
+      "pixels": [
+        1280,
+        720
+      ],
+      "actual_PNG_opened_and_decoded": true
+    },
+    {
+      "file": "bg_mukai_shop.png",
+      "repository": "haseatsu114514-dot/shisha-game",
+      "repo_path": "assets/backgrounds/bg_mukai_shop.png",
+      "ref": "7cb74fb9e79a88b6ad682612dd94be27fe346a73",
+      "git_blob_sha": "9127a2b2dbb17878b21c5051ed86e012e70df483",
+      "mode": "Git LFS batch download",
+      "sha256": "998401f6510d9ef9937b9710b1df1d49507e95e91f7331cbcfb6c1af1afeb4fc",
+      "bytes": 1265123,
+      "pixels": [
+        1280,
+        720
+      ],
+      "actual_PNG_opened_and_decoded": true
+    },
+    {
+      "file": "bg_dubai_grand_smoke_stage.png",
+      "repository": "haseatsu114514-dot/shisha-game",
+      "repo_path": "assets/backgrounds/bg_dubai_grand_smoke_stage.png",
+      "ref": "7cb74fb9e79a88b6ad682612dd94be27fe346a73",
+      "git_blob_sha": "42cf29b9feadad395e8546620b7f8c1147b7ad8c",
+      "mode": "Git LFS batch download",
+      "sha256": "6a24a8a500b5682fe361212f0849026fde191a03d03a7debe0531e2739ce0082",
+      "bytes": 1568775,
+      "pixels": [
+        1280,
+        720
+      ],
+      "actual_PNG_opened_and_decoded": true
+    },
+    {
+      "file": "bg_smoke_lab.png",
+      "repository": "haseatsu114514-dot/shisha-game",
+      "repo_path": "assets/backgrounds/bg_smoke_lab.png",
+      "ref": "7cb74fb9e79a88b6ad682612dd94be27fe346a73",
+      "git_blob_sha": "3553f3b18ca24d0723246bec28ffacdc7d834231",
+      "mode": "Git LFS batch download",
+      "sha256": "55d99fc7a1429bf3db0e8cbfbe13d63930a19c8a3588a7e044647fbdc96304f5",
+      "bytes": 1468333,
+      "pixels": [
+        1280,
+        720
+      ],
+      "actual_PNG_opened_and_decoded": true
+    }
+  ],
+  "total_background_bytes": 11271488,
+  "no_private_hardware_photos_in_output": true,
+  "scope": "Reference download and template verification only. Does not approve art, generate duplicate panels, or unblock the two explicitly held SHISHA-9000 panels.",
+  "retrieval_guidance": {
+    "normal_git": "For the two Tonari PNGs, use the Git Blob API at the recorded git_blob_sha and decode the base64 content. Empty content from the Contents API does not prove the binary is unavailable.",
+    "lfs": "For the other four PNGs, download the actual LFS object using the recorded sha256 oid and byte count (LFS batch download). A 132-byte pointer is not the image. All four actual objects were downloaded and their SHA-256 values matched.",
+    "full_clone_required": false,
+    "private_hardware_photo_copy_required": false
+  }
+}
