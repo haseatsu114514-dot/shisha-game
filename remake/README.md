@@ -229,6 +229,8 @@ PR226の14種の専用イラスト背景と極太ゴシック・斜め帯を `vn
      （`motions/garagara.js`・`garagara-stage.js`・`kuji-fx.js`、`daily/kuji-reveal.js`・`kuji-prize-art.js`、`css/motions/garagara.css`。確認は `node remake/test/browser/kuji_gacha.mjs`、演出だけ見るなら `__remake.dev.motion("garagara-10S")`）。
      道具・玉・札・後ろの光・包みは描いた絵（#3228・GCH14。`remake/img/ui/kuji/`。部品の差し込みは `motions/kuji-art.js`、札などは `css/motions/garagara.css`）。
      WebP は `python3 remake/tools/build_ui_skin.py kuji` で作り直せる（原画は `asset_sources/ui/kuji-gacha-20261111/processed/`）。読み込めなかった部品はコードで描いた下絵に戻る。
+     抽選器は店のくじごとの素材（GCH16。`data/kuji.json` の `machine`: walnut＝本店／steel＝柚ヶ谷／brass＝東京／marble＝ドバイ／lacquer＝限定台くじ）。色替えした絵は同じビルドが原画から作る（`KUJI_LOOKS`）。
+     演出（GCH17）: 登場の灯り・後ろの光・回転のぶれ・賞が上がるたびに色が上がる予告（白→青→赤→金→銀紫）・当たりの玉のスロー。くじを指定して見るなら、後ろに `@<くじの id>`（`data/kuji.json`）を付ける: `__remake.dev.motion("garagara-S@g5000")`・`"garagara-10S@g10000"`。
      第5章の本店は10,000円・30枚の限定台くじ（S賞はくじ限定の台3種・性能は店の特注台と同じ）。持っている限定の台はくじ券1枚に替わり、くじ券1枚で1回引ける。
      限定の台・箱・くじ券は周回に持ち越さず、火種も付かない（KJ05〜KJ09・`daily/kuji-tickets.js`・`remake/test/kuji_limited.mjs`）
    - **出張シーシャの依頼**（第5章・DLV・`chapters/ch5-catering.js`）: 勝負の日が決まる前の自由行動で、数日おきにスミさんのLIMEで店への出張の頼みが届く（一度に一つ）。

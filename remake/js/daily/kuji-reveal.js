@@ -82,7 +82,7 @@ function celebrate(fx, light, rank, x = 640, y = 330, w = 440, h = 190) {
 }
 
 /** 1つの賞を引いて見せる。札が開いたら、片付け用の end() を持つ舞台を返す */
-function revealOne(ov, prize, skip, prev) {
+function revealOne(ov, prize, skip, prev, machine = {}) {
   return new Promise((done) => {
     const card = prizeCard(prize);
     const back = backdrop(prize.rank);
@@ -111,13 +111,14 @@ function revealOne(ov, prize, skip, prev) {
     };
     if (skip) { sleep(300).then(() => show(null)); return; }
     // ガラガラが消え始めたところで札を下で開き、重ねて受け渡す
-    loadMotion().then((kit) => kit.garagara(ov, prize.rank, { onHandoff: () => show(kit) }).then(() => show(kit)))
+    loadMotion().then((kit) => kit.garagara(ov, prize.rank, { ...machine, onHandoff: () => show(kit) }).then(() => show(kit)))
       .catch((e) => { console.error(e); show(null); });
   });
 }
 
-/** 1回引きの演出。prize の札を閉じると extras（ラストワン賞）へ続き、全部閉じたら解決する */
-export function reveal(prize, extras = []) {
+/** 1回引きの演出。prize の札を閉じると extras（ラストワン賞）へ続き、全部閉じたら解決する。
+ * machine はそのくじの抽選器（{ look: 見た目, title: 黒板に書く名前 }。motions/garagara.js へそのまま渡す） */
+export function reveal(prize, extras = [], machine = {}) {
   return new Promise((resolve) => {
     const ov = el("div.kuji-overlay", { dataset: { test: "kuji-reveal" } });
     layers.modal.replaceChildren(ov);
@@ -134,7 +135,7 @@ export function reveal(prize, extras = []) {
         resolve();
         return;
       }
-      stage = await revealOne(ov, p, skip, stage);
+      stage = await revealOne(ov, p, skip, stage, machine);
       open = true;
       if (skip) for (const ex of extras) {
         await sleep(500);
@@ -151,8 +152,8 @@ export function reveal(prize, extras = []) {
   });
 }
 
-/** 連続で引いた結果。results は引いた順の賞（ラストワン賞を含む）、count は引いた回数 */
-export function revealMany(results, count) {
+/** 連続で引いた結果。results は引いた順の賞（ラストワン賞を含む）、count は引いた回数。machine は reveal と同じ */
+export function revealMany(results, count, machine = {}) {
   return new Promise((resolve) => {
     const quick = instant();
     const best = bestRank(results);
@@ -269,7 +270,7 @@ export function revealMany(results, count) {
       }
       timer = setTimeout(step, stillOnly() ? 200 : 300 + cards.length * 45);
     };
-    loadMotion().then((loaded) => loaded.garagara(ov, results.map((p) => p.rank), { onHandoff: () => start(loaded) }).then(() => start(loaded)))
+    loadMotion().then((loaded) => loaded.garagara(ov, results.map((p) => p.rank), { ...machine, onHandoff: () => start(loaded) }).then(() => start(loaded)))
       .catch((e) => { console.error(e); start(null); });
   });
 }
