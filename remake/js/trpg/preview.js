@@ -1,4 +1,5 @@
 import { mountTrpgCollection } from "./collection.js";
+import { fitStage } from "../core/stage-fit.js";
 
 const host = document.getElementById("trpg-app");
 const stage = document.getElementById("stage");
@@ -6,7 +7,7 @@ let collection = null;
 
 function fit() {
   const width = window.visualViewport?.width || innerWidth, height = window.visualViewport?.height || innerHeight;
-  stage.style.setProperty("--k", String(Math.min(width / 1280, height / 720)));
+  fitStage(stage); // 本編と同じ画面当て（--k と、スマホ横持ちの文字拡大 data-density="phone"）
   const touch = matchMedia("(pointer:coarse)").matches;
   document.getElementById("trpg-rotate").hidden = !(touch && height > width);
 }
