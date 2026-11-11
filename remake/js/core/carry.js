@@ -238,6 +238,7 @@ export const FLAG_EXACT_RULES = [
   ["_ch3_trial_saku", "progression"],
   ["_ch3_trial_steve", "progression"],
   ["_ch3_tokyo_call_night", "progression"],
+  ["_ch3_room_rests", "progression"], // 東京の奥の部屋で休んだ回数（ch3-tokyo-daily.js の小品の巡回）。周回では持ち越さない
   ["_ch4", "progression"],
   ["_camel_cups", "unlock"], // 大会の解放・中級認定・上級称号を周回へ残す
   ["_ch4_camel", "progression"], // ドバイのラクダレース（段階・自己ベスト）。周回では持ち越さない

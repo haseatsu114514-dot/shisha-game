@@ -220,7 +220,57 @@
         {
           "speaker": "",
           "face": "",
-          "text": "画面の線は、まだ増えていない。つむぎは笑って、俺の隣へ少し詰めた。"
+          "text": "画面の線は、まだ増えていない。つむぎは小さく笑って、俺の隣へ少し詰めた。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……近くで見たら、描けるかもしれません"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "肩が触れる距離で、ペンが動く。一本、二本。線は、すぐに止まった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "どうしたの？"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……近すぎて、はじめさんの顔、画面に全部入りません"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "じゃあ、少し離れようか"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "surprise",
+          "text": "……っ、だめです"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "smile",
+          "text": "……今日は、入るところだけ描きます。目と、笑ってる口"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "画面には、目と口だけの、ふしぎな顔ができていた。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "smile",
+          "text": "……続きは、また隣で描かせてください、……ずっと先まで"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "帰るまで、つむぎは詰めた距離を、元に戻さなかった。"
         }
       ]
     },
@@ -981,12 +1031,12 @@
         {
           "speaker": "",
           "face": "",
-          "text": "食事のあと、あげはは店員の手元から、目を離さなかった"
+          "text": "食事のあと、あげはは店員さんの手元から、目を離さなかった"
         },
         {
           "speaker": "ageha",
-          "face": "normal",
-          "text": "見て、今の、お冷の置き方"
+          "face": "smile",
+          "text": "見て見て、今の、お冷の置き方"
         },
         {
           "speaker": "hajime",
@@ -996,12 +1046,12 @@
         {
           "speaker": "ageha",
           "face": "smile",
-          "text": "そ！ 客が話してるとき、グラスを静かに置く人"
+          "text": "そ！ 客がしゃべってる時、グラスをスッて置く人。あれ、めっちゃプロ"
         },
         {
           "speaker": "ageha",
           "face": "normal",
-          "text": "うち、ああいうの見ると、この店好きってなる"
+          "text": "うち、ああいうの見ると「この店好き」ってなる"
         },
         {
           "speaker": "hajime",
@@ -1011,7 +1061,7 @@
         {
           "speaker": "ageha",
           "face": "smile",
-          "text": "半分ね、もう半分は、ハジメっちと見たいから"
+          "text": "半分ね。もう半分は、ハジメっちと見たいから"
         },
         {
           "speaker": "ageha",
@@ -1026,27 +1076,37 @@
         {
           "speaker": "ageha",
           "face": "smile",
-          "text": "この席、また予約しよ"
-        },
-        {
-          "speaker": "ageha",
-          "face": "normal",
-          "text": "ハジメっちと、見たいの"
+          "text": "この席、また予約しよ。……ハジメっちと、また来たいの"
         },
         {
           "speaker": "hajime",
           "face": "smile",
-          "text": "じゃあ、またこの席にしよう"
+          "text": "じゃあ、次は俺が予約する"
+        },
+        {
+          "speaker": "ageha",
+          "face": "surprise",
+          "text": "え、マジ？ ハジメっちが予約とか、デートっぽすぎない？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "デートだよ"
+        },
+        {
+          "speaker": "ageha",
+          "face": "surprise",
+          "text": "……っ、知ってるし！"
         },
         {
           "speaker": "ageha",
           "face": "smile",
-          "text": "うん、うちが選ぶから、ハジメっちは座ってて"
+          "text": "……でも、もう一回言って。今の、録音したかった"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "グラスが静かに置かれる音だけが、テーブルに残った"
+          "text": "グラスが静かに置かれる音がした。テーブルの下で、あげはの靴先が、俺の靴にこつんと当たった"
         }
       ]
     },
@@ -1240,6 +1300,26 @@
           "text": "……ただいま、充電中……"
         },
         {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "映画、まだ半分残ってるよ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "いいの。続きは、はじめくんが覚えてて。あとで、教えてもらうから"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "結末、言っちゃうかもよ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "……それでもいいよぉ。はじめくんの声で聞くほうが、好き"
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "ましろちゃんがゆっくり目を閉じた。"
@@ -1253,6 +1333,16 @@
           "speaker": "mashiro",
           "face": "sleep",
           "text": "……はじめくんのそば、いちばん安心する……えへへ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "エンドロールが流れても、肩の重さはそのままだった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "起こさないように、ソファの毛布を、そっと彼女の肩まで引き上げた。"
         }
       ]
     },
@@ -1312,6 +1402,41 @@
           "speaker": "mashiro",
           "face": "smile",
           "text": "……じゃあ、カップ、置いてからねぇ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "カップを置いて座ると、ましろちゃんは俺の手を両手で包んで、指を一本ずつ数えはじめた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……何してるの？"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "手、借りてるの。タイマーより、こっちのほうが、時間がゆっくりになる"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ピピ、とタイマーが鳴った。ましろちゃんは、数えかけの指を離さない。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "……鳴っちゃった。もう少し、鳴らなくてよかったのにねぇ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "二杯目のときも、手、空けとくよ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "……うん。じゃあ二杯目は、もっと長く蒸らそ"
         }
       ]
     },
@@ -1376,6 +1501,26 @@
           "speaker": "",
           "face": "",
           "text": "差し出された手を握ると、ましろちゃんは俺の肩に、こつんと肩を合わせた。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "……てつこちゃん、こっち見てる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "邪魔しないで、って顔だね"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "ふふ。じゃあ、もう少しだけ、このままでいよ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "てつこはあくびをひとつして、また丸くなった。"
         }
       ]
     },
@@ -1430,6 +1575,31 @@
           "speaker": "mashiro",
           "face": "smile",
           "text": "うん、……聞かせて"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "その夜は、tonariのこと、スミさんのこと、まだうまく作れなかった頃の一台のことを話した。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ましろちゃんは頬杖をついて、ひとつも急かさずに聞いていた。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "……はじめくんの話、軽いのに、ちゃんと残るねぇ。はじめくんの煙みたい"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "それ、褒めてる？"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "褒めてるよぉ。僕、重いのが好きだけど、はじめくんのは別腹なの"
         },
         {
           "speaker": "mashiro",
@@ -1617,12 +1787,12 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "窓、ないですよ。外です"
+          "text": "今、風は止んでますよ"
         },
         {
           "speaker": "hiyori",
           "face": "surprise",
-          "text": "外にも、夜風はあるでしょ！"
+          "text": "止んでても、夜風はあるの！"
         },
         {
           "speaker": "hajime",
@@ -2538,28 +2708,28 @@
         },
         {
           "speaker": "noor",
-          "face": "normal",
-          "text": "さっき、恋人って言った時。ハジメ、少し驚いてたでしょ"
+          "face": "smile",
+          "text": "さっき、恋人って言った時。ハジメ、ちょっと固まってたでしょ"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "驚きました。うれしいのに、返事が遅くなって"
+          "text": "固まりました。うれしいのに、返事が遅くなって"
         },
         {
           "speaker": "noor",
-          "face": "normal",
-          "text": "私も。言ったあとで、急に足がふらついた"
+          "face": "smile",
+          "text": "私も。言ったあとで、急に足がふらついた。砂のせいにしたけど"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "ヌールさんはいつものように笑おうとして、やめた。"
+          "text": "ヌールさんはいつものように笑おうとして、途中でやめた。"
         },
         {
           "speaker": "noor",
           "face": "normal",
-          "text": "ガイドなら迷わない顔ができる。でも今日は、ハジメに見せてもいい？"
+          "text": "ガイドなら、迷わない顔ができる。でも今日は、ハジメに見せてもいい？"
         },
         {
           "speaker": "hajime",
@@ -2579,22 +2749,37 @@
         {
           "speaker": "",
           "face": "",
-          "text": "彼女は小指を一本だけ離し、また握り直した。"
+          "text": "彼女は小指を一本だけ離して、また、指を絡め直した。"
         },
         {
           "speaker": "noor",
-          "face": "normal",
+          "face": "smile",
           "text": "じゃあ、最初の約束。会えない日に、会いたいって言ってもいい"
         },
         {
           "speaker": "hajime",
-          "face": "normal",
+          "face": "smile",
           "text": "言ってください。俺も言います"
         },
         {
           "speaker": "noor",
-          "face": "normal",
-          "text": "……うん。車に乗る前に、もう少しだけこうしてる"
+          "face": "surprise",
+          "text": "……あ、今の顔"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "ちょっとカワイイ。恋人になったら、からかうの、我慢しなくていいよね？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……手加減は、してください"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "考えておく。……車に乗る前に、もう少しだけ、こうしてる"
         },
         {
           "speaker": "",
@@ -2614,27 +2799,42 @@
         {
           "speaker": "",
           "face": "",
-          "text": "砂丘を下りる前、ヌールさんはスマホを取り出して画面を見せた。"
+          "text": "砂丘を下りる前、ヌールさんはスマホを取り出して、こちらへ画面を向けた。"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "見て。日本の時計、ホームに出しておいたの。もう、二つの時間で暮らしてる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "いつの間に"
         },
         {
           "speaker": "noor",
           "face": "normal",
-          "text": "ハジメと離れて話す時、声が途切れたら私、きっと大きな声になる"
+          "text": "離れて話す時、声が途切れたら、私きっと大きな声になる"
         },
         {
           "speaker": "hajime",
-          "face": "normal",
+          "face": "smile",
           "text": "ヌールさんなら、そうかもしれません"
         },
         {
           "speaker": "noor",
+          "face": "surprise",
+          "text": "そこは否定して！"
+        },
+        {
+          "speaker": "noor",
           "face": "normal",
-          "text": "元気にしてないと、距離まで大きくなる気がして"
+          "text": "……元気にしてないと、距離まで大きくなる気がして"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "彼女はスマホをしまい、近くに座った。"
+          "text": "彼女はスマホをしまい、肩が触れるところへ座り直した。"
         },
         {
           "speaker": "hajime",
@@ -2653,7 +2853,7 @@
         },
         {
           "speaker": "noor",
-          "face": "normal",
+          "face": "smile",
           "text": "……じゃあ、私もそうする。急いで面白い話を探さない"
         },
         {
@@ -2667,14 +2867,14 @@
           "text": "今は隣にいるから、もっとよく聞こえる"
         },
         {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "遠くにいる時も、同じ声ですよ"
+          "speaker": "",
+          "face": "",
+          "text": "ヌールさんは俺の肩に頭を預けて、目を閉じた。"
         },
         {
           "speaker": "noor",
-          "face": "normal",
-          "text": "うん。次に画面で会う時、今日の静けさも覚えておく"
+          "face": "smile",
+          "text": "……画面の向こうでも、今日のこの静けさ、覚えておく"
         }
       ]
     },
@@ -2699,11 +2899,11 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "景色はきれいですよ"
+          "text": "景色、きれいですよ"
         },
         {
           "speaker": "noor",
-          "face": "normal",
+          "face": "smile",
           "text": "景色だけなら、毎日見てる。今、隣でハジメが笑ったから"
         },
         {
@@ -2713,38 +2913,58 @@
         },
         {
           "speaker": "noor",
-          "face": "normal",
-          "text": "今日は二人で写ろう。かっこよく立つ必要はないよ"
+          "face": "smile",
+          "text": "今日は二人で写ろう。かっこよく立たなくていいよ"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "写真だと、どうしても顔を作ってしまいます"
+          "text": "写真だと、どうしても顔を作っちゃって"
         },
         {
           "speaker": "noor",
           "face": "normal",
-          "text": "だったら私を見る。いつもの、ちょっと困った顔で"
+          "text": "だったら、私を見て。いつもの、ちょっと困った顔で"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "タイマーが動き出し、二人で慌てて並ぶ。肩が触れたところでシャッターが切れた。"
+          "text": "タイマーが動き出し、二人で慌てて並ぶ。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "シャッターの直前、頬に、やわらかいものが触れた。"
         },
         {
           "speaker": "hajime",
-          "face": "normal",
-          "text": "たぶん、変な顔です"
+          "face": "surprise",
+          "text": "……っ、今の"
         },
         {
           "speaker": "noor",
-          "face": "normal",
-          "text": "私も。……でも、次に離れた時、これを見て笑える"
+          "face": "smile",
+          "text": "作ってない顔、撮れた。ガイドの勝ち"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "画面には少し傾いた二人と、まっすぐな砂の線が残った。"
+          "text": "画面には、目を丸くした俺と、得意げに笑うヌールさんが、少し傾いて写っていた。"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "これ、待ち受けにする。次に離れた時、これを見て笑えるように"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "俺にも送ってください。……あと、次は俺の番です"
+        },
+        {
+          "speaker": "noor",
+          "face": "surprise",
+          "text": "え、……ず、ずるい。それは、心の準備がいる"
         }
       ]
     },
@@ -2773,7 +2993,7 @@
         },
         {
           "speaker": "noor",
-          "face": "normal",
+          "face": "smile",
           "text": "教えるの、楽しかった。できるようになるのは、ちょっと寂しいけど"
         },
         {
@@ -2783,33 +3003,53 @@
         },
         {
           "speaker": "noor",
-          "face": "normal",
-          "text": "砂の読み方？"
+          "face": "surprise",
+          "text": "砂の読み方？ ……あ、競走の勝ち方は教えないよ"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "それも。でも、ヌールさんが黙った時、どう声をかけたらいいか"
+          "text": "それも、ですけど。ヌールさんが黙った時、どう声をかけたらいいか"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "彼女の手が板の上で止まった。"
+          "text": "彼女の手が、板の上で止まった。"
         },
         {
           "speaker": "noor",
           "face": "normal",
-          "text": "名前を呼んで。返事が遅くても、待ってくれたらうれしい"
+          "text": "……名前を呼んで。返事が遅くても、待ってくれたらうれしい"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "ハジメ、って呼ばれるのと同じですね"
+          "text": "……ヌール、って？"
+        },
+        {
+          "speaker": "noor",
+          "face": "surprise",
+          "text": "……っ"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "ずるい。今、さんが取れた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "あ、すみません。つい"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "謝らないで。普段は、ヌールさんのままでいい。黙った時だけ、それで呼んで"
         },
         {
           "speaker": "noor",
           "face": "normal",
-          "text": "うん。私も、ハジメの返事を待つ"
+          "text": "私も、ハジメの返事を待つ"
         },
         {
           "speaker": "",
@@ -2834,7 +3074,7 @@
         {
           "speaker": "noor",
           "face": "normal",
-          "text": "出る道は違っても、戻る印は同じ。店の地図にも小さな丸を書いてるの"
+          "text": "出る道は違っても、戻る印は同じ。店の地図にも、小さな丸を書いてるの"
         },
         {
           "speaker": "hajime",
@@ -2843,7 +3083,7 @@
         },
         {
           "speaker": "noor",
-          "face": "normal",
+          "face": "smile",
           "text": "今は、紙の上だけじゃない。ハジメの声がするところも、私の戻る場所"
         },
         {
@@ -2854,11 +3094,11 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "俺も、帰るたびにヌールさんのことを思います"
+          "text": "俺も、日本に帰っても、ヌールさんのことを思います"
         },
         {
           "speaker": "noor",
-          "face": "normal",
+          "face": "smile",
           "text": "それだけでいい。次に会う日を、無理に決めなくていいから"
         },
         {
@@ -2869,21 +3109,41 @@
         {
           "speaker": "noor",
           "face": "normal",
-          "text": "私も。会いたい時は会いたいって、ちゃんと言う"
+          "text": "私も。会いたい時は、会いたいって、ちゃんと言う"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "……だから、今言う。ハジメ、会いたかった。隣にいるのに"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "俺もです。隣にいるのに"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "彼女は砂を払って立ち上がり、俺へ手を伸ばした。"
+          "text": "ヌールさんは笑って、崩れた二本の線の真ん中に、小さな丸をひとつ描いた。"
         },
         {
           "speaker": "noor",
           "face": "normal",
-          "text": "さあ、戻ろう。今日は二人で、同じ線を歩ける"
+          "text": "戻る印。今日は、ここ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "そう言って、彼女は俺の首に腕を回した。唇が触れたのは、夕日が稜線に沈む少し前だった。"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "……さあ、戻ろう。今日は二人で、同じ線を歩ける"
         },
         {
           "speaker": "hajime",
-          "face": "normal",
+          "face": "smile",
           "text": "はい。また違う線になっても、一緒に探します"
         },
         {

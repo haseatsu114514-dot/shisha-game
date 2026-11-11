@@ -154,12 +154,13 @@ def fit_width(im, width):
 
 
 # UI の部品（専用テーマ「茶トラと段ボール」）。名前 → (原画, 書き出しの幅 px)。組は同じ切り出し枠（重ねても形がずれない）。
+# #3213 の原画は2回分ある。正規名（PR #3223）ではなく、オーナー経由で届いた *_candidate2 を使う（README の採用の記録）。
 UI_PARTS = {
-    "ui_tk_token": ("ui_tk_token.png", 320), "ui_tk_token_pressed": ("ui_tk_token_pressed.png", 320), "ui_tk_token_active": ("ui_tk_token_active.png", 320),
-    "ui_tk_tab": ("ui_tk_tab.png", 360), "ui_tk_tab_pressed": ("ui_tk_tab_pressed.png", 360), "ui_tk_tab_door": ("ui_tk_tab_door.png", 360),
-    "ui_tk_heart": ("ui_tk_heart.png", 112), "ui_tk_heart_empty": ("ui_tk_heart_empty.png", 112),
-    "ui_tk_pill": ("ui_tk_pill.png", 480), "ui_tk_wish": ("ui_tk_wish.png", 240),
-    "ui_tk_caption": ("ui_tk_caption.png", 1200), "ui_tk_title": ("ui_tk_title.png", 720),
+    "ui_tk_token": ("ui_tk_token_candidate2.png", 320), "ui_tk_token_pressed": ("ui_tk_token_pressed_candidate2.png", 320), "ui_tk_token_active": ("ui_tk_token_active_candidate2.png", 320),
+    "ui_tk_tab": ("ui_tk_tab_candidate2.png", 360), "ui_tk_tab_pressed": ("ui_tk_tab_pressed_candidate2.png", 360), "ui_tk_tab_door": ("ui_tk_tab_door_candidate2.png", 360),
+    "ui_tk_heart": ("ui_tk_heart_candidate2.png", 112), "ui_tk_heart_empty": ("ui_tk_heart_empty_candidate2.png", 112),
+    "ui_tk_pill": ("ui_tk_pill_candidate2.png", 480), "ui_tk_wish": ("ui_tk_wish_candidate2.png", 240),
+    "ui_tk_caption": ("ui_tk_caption_candidate2.png", 1200), "ui_tk_title": ("ui_tk_title_candidate2.png", 720),
 }
 UI_GROUPS = [("ui_tk_token", "ui_tk_token_pressed", "ui_tk_token_active"), ("ui_tk_tab", "ui_tk_tab_pressed", "ui_tk_tab_door"),
              ("ui_tk_heart", "ui_tk_heart_empty")]
@@ -193,8 +194,8 @@ def build_ui():
     for name, (_, width) in UI_PARTS.items():
         x0, y0, x1, y1 = boxes[name]
         save_as(name, fit_width(Image.fromarray(keyed[name][y0:y1, x0:x1], "RGBA"), width))
-    sheet_cells("ui_tk_icons.png", 6, 2, ICON_NAMES, "ui_tk_icon", 128)
-    sheet_cells("ui_tk_fx.png", 4, 2, FX_NAMES, "ui_tk_fx", 128)
+    sheet_cells("ui_tk_icons_candidate2.png", 6, 2, ICON_NAMES, "ui_tk_icon", 128)
+    sheet_cells("ui_tk_fx_candidate2.png", 4, 2, FX_NAMES, "ui_tk_fx", 128)
 
 
 # 猫のしぐさ: 既存の立ち絵と同じ縮尺（立ち絵の px＝しぐさの絵の px）で、1024×768 の透明な画面の中央下（足元 y=736・中心 x=512）に置く。

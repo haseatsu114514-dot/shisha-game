@@ -354,11 +354,13 @@ TKT-CAT16 cat_poke.png — Sitting and lifting one front paw toward the viewer t
 
 ## TKT25・26 の採用の記録（2026-11-11）
 
-#3213（UI の部品・A 段）と #3214（場面と猫）の原画を、Codex がオーナー経由（zip）で届けた。`originals/` に置き、生成の指示・参照・SHA-256 は `originals/GENERATION.md` の「Issue #3213」「Issue #3214」の節（Codex の記録をそのまま追記）。
+#3213（UI の部品・A 段）と #3214（場面と猫）の原画を、Codex がオーナー経由（zip）で届けた。`originals/` に置き、生成の指示・参照・SHA-256 は `originals/GENERATION.md` の「Issue #3213 …別の生成」「Issue #3214」の節（Codex の記録をそのまま追記）。
 
-**選んだ物**: すべて正規名を採用した。`ui_tk_tab_door_candidate1.png`（ほぼ生成りで、青灰が小さな札だけ）は Codex の記録どおり不採用。B 段（トレー・札・紙・手帳・写真の額・外枠・箱のふた）と、#2690 の B 段（歩く・振り返る・伸び）は届いていない（CSS のまま）。
+**#3213 は2回分ある**: Codex の PR #3223（マージ済み）が正規名 `ui_tk_*.png` で、依頼どおりの画素数・ちょうどの #FF00FF の原画を入れていた。オーナー経由の zip は別の生成で、大きめの原画（1254〜2172px）。zip の方を `ui_tk_*_candidate2.png` に改名して並べて保存し（不採用の戸は `ui_tk_tab_door_candidate3.png`）、**画面には candidate2 を使った**。理由: 手描きの細部（ちぎれた段ボールの縁・テープ・札の角の飾り）が多く、茶トラと段ボールの画面に合う。持っている道具の札（active）は、#3223 版は顔全体が茶トラのしまで札の上のアイコンが読みにくいが、candidate2 は縁だけがしまで中が無地。原画が大きいので縮めた絵もきれい。#3223 版は消さずに残す（比べ直す時のため）。
 
-**切り出し**: `python3 remake/tools/build_tetsuko_art.py ui cats scene`（原画の実体は `git lfs pull --include="asset_sources/tetsuko-care/originals/ui_tk_*,asset_sources/tetsuko-care/originals/cat_*,asset_sources/tetsuko-care/originals/prop_lap.png,asset_sources/tetsuko-care/originals/prop_tunnel_tail.png"`、約30MB）。
+**選んだ物**: zip のすべての正規の候補を採用した。`ui_tk_tab_door_candidate3.png`（元の名前は candidate1。ほぼ生成りで、青灰が小さな札だけ）は Codex の記録どおり不採用。B 段（トレー・札・紙・手帳・写真の額・外枠・箱のふた）と、#2690 の B 段（歩く・振り返る・伸び）は届いていない（CSS のまま）。
+
+**切り出し**: `python3 remake/tools/build_tetsuko_art.py ui cats scene`（原画の実体は `git lfs pull --include="asset_sources/tetsuko-care/originals/ui_tk_*_candidate2.png,asset_sources/tetsuko-care/originals/cat_*,asset_sources/tetsuko-care/originals/prop_lap.png,asset_sources/tetsuko-care/originals/prop_tunnel_tail.png"`、約30MB）。
 - 背景のマゼンタが #FF00FF ちょうどでなく (236,22,237)〜(244,14,243) と揺れるので、原画の周りの帯から背景の色を測り、その色からの近さで抜いた（`key_tolerant`。縁は測った色との混ざりを戻す）。抜いた後、絵の中にマゼンタの画素は残っていない。
 - 組の部品（札の3状態・ハートの満と空）は同じ切り出し枠にした（重ねても形がずれない）。アイコン（6×2）と粒（4×2）はシートを1つずつ切り出し、128px の正方形に置いた（`ui_tk_icon_*`・`ui_tk_fx_*`）。
 - 猫のしぐさは、顔の幅（頬から頬）を立ち絵 `chr_tetsuko_normal.png` の約160pxにそろえ、1024×768 の画面の中央下（足元 y=736）に置いた。原画の顔の幅: 跳ぶ 370・空振り 420・鳴く 500・つつく 525px。
