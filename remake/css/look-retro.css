@@ -1,1 +1,530 @@
-/* DS風（上下2画面・256×192 のレトロな様式・LK03）。すべての規則を :root[data-look="retro"] の中に書き、現行の見た目を変えない。 */
+/* DS風（上下2画面・256×192 のレトロな様式・LK03）。すべての規則を :root[data-look="retro"] か、
+   DS風の部品（js/looks/retro.js）が body へ足す外枠（.retro-shell / .retro-note）の中に書き、現行の見た目を変えない。
+   寸法は 1ドット = --dpx（外枠の幅 ÷ 268。retro/shell.js が置く）の単位で組む。
+   角丸・ぼかし・半透明の影・グラデーションは使わない（影は 1〜3 ドットずらしたベタ）。 */
+
+/* 外枠を出している間、現行の画面はレイアウトを生かしたまま見えなくする（会話の折り返しが .vn-text の実幅を測るため display は変えない）。 */
+:root[data-look="retro"][data-retro-shell="on"] #viewport { opacity: 0; }
+/* DS風が使える向き・端末では、縦持ちの回転案内を出さない（未対応の場面は現行の画面を小さく見せる）。 */
+:root[data-look="retro"][data-retro="on"] #rotate-hint { display: none; }
+
+.retro-shell {
+  --dpx: 1px;
+  --slack: 0;
+  --d: var(--dpx);
+  --r-body: #1b1230;
+  --r-ink: #2a1d3a;
+  --r-deep: #120a1e;
+  --r-black: #0a0612;
+  --r-edge: #4a3863;
+  --r-line: #5a4475;
+  --r-panel: #221534;
+  --r-key: #2e1d45;
+  --r-paper: #fbf7ea;
+  --r-text: #f6f1fa;
+  --r-lilac: #c9a7e6;
+  --r-violet: #6b4a8f;
+  --r-gold: #e3bd6e;
+  --r-dim: #8a7f96;
+  position: fixed;
+  inset: 0;
+  z-index: 990;
+  box-sizing: border-box;
+  padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px) env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: var(--r-body);
+  color: var(--r-text);
+  font-family: var(--font-dot);
+  font-weight: 400;
+  line-height: 1;
+  letter-spacing: 0;
+  word-break: normal;
+  -webkit-font-smoothing: none;
+  font-synthesis: none;
+  touch-action: manipulation;
+}
+.retro-shell[hidden], .retro-note[hidden], .retro-shell [hidden] { display: none !important; }
+.retro-shell *, .retro-shell *::before, .retro-shell *::after { box-sizing: border-box; }
+.retro-shell button {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  color: inherit;
+  font: inherit;
+  letter-spacing: inherit;
+  text-align: inherit;
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+}
+.retro-shell button:focus-visible { outline: calc(var(--d) * 2) solid #ffffff; outline-offset: calc(var(--d) * 1); }
+
+.retro-device {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: calc(var(--d) * 268);
+}
+
+/* ---- 状態の細い行 */
+.retro-status {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: calc(var(--d) * 8);
+  width: calc(var(--d) * 252);
+  height: calc(var(--d) * 13);
+  margin-bottom: calc(var(--d) * (5 + min(var(--slack) * 0.04, 4)));
+  color: var(--r-lilac);
+  font-size: calc(var(--d) * 10);
+  letter-spacing: .08em;
+  white-space: nowrap;
+}
+.retro-status span { overflow: hidden; text-overflow: clip; }
+.retro-status-r { flex: none; text-align: right; }
+
+/* ---- 2つの画面（どちらも 256×192） */
+.retro-screen {
+  position: relative;
+  flex: none;
+  width: calc(var(--d) * 256);
+  height: calc(var(--d) * 192);
+  overflow: hidden;
+  background: #000;
+  box-shadow: 0 0 0 calc(var(--d) * 1.6) var(--r-black), 0 0 0 calc(var(--d) * 3) var(--r-edge);
+}
+.retro-canvas {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  image-rendering: pixelated;
+}
+.retro-top-ui { position: absolute; inset: 0; pointer-events: none; }
+.retro-top-ui > * { pointer-events: auto; }
+
+.retro-hinge {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: calc(var(--d) * 5);
+  height: calc(var(--d) * (13 + min(var(--slack) * 0.05, 5)));
+}
+.retro-hinge i { width: calc(var(--d) * 3); height: calc(var(--d) * 3); background: var(--r-edge); }
+
+.retro-bottom {
+  background-color: #2b1c44;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4' shape-rendering='crispEdges'%3E%3Crect width='4' height='4' fill='%232b1c44'/%3E%3Crect width='2' height='2' fill='%2333224f'/%3E%3Crect x='2' y='2' width='2' height='2' fill='%2333224f'/%3E%3C/svg%3E");
+  background-size: calc(var(--d) * 4) calc(var(--d) * 4);
+  image-rendering: pixelated;
+}
+.retro-pane { position: absolute; inset: 0; }
+
+/* ---- 本体のボタン */
+.retro-keys {
+  flex: none;
+  display: flex;
+  gap: calc(var(--d) * 6);
+  width: calc(var(--d) * 256);
+  height: calc(var(--d) * (27 + min(var(--slack) * 0.1, 9)));
+  margin-top: calc(var(--d) * (9 + min(var(--slack) * 0.12, 10)));
+  margin-bottom: calc(var(--d) * 3);
+}
+.retro-shell .retro-key {
+  position: relative;
+  flex: 1 1 0;
+  min-width: 0;
+  display: grid;
+  place-items: center;
+  background: var(--r-key);
+  color: var(--r-text);
+  border: calc(var(--d) * 1.4) solid var(--r-black);
+  box-shadow: 0 calc(var(--d) * 3) 0 var(--r-black), inset 0 calc(var(--d) * 1.4) 0 var(--r-edge);
+  font-size: calc(var(--d) * 10);
+  letter-spacing: .06em;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.retro-shell .retro-key:active { transform: translateY(calc(var(--d) * 2)); box-shadow: 0 calc(var(--d) * 1) 0 var(--r-black), inset 0 calc(var(--d) * 1.4) 0 var(--r-edge); }
+.retro-shell .retro-key[aria-pressed="true"] { background: var(--r-gold); color: var(--r-ink); box-shadow: 0 calc(var(--d) * 3) 0 var(--r-black), inset 0 calc(var(--d) * 1.4) 0 #f4dfa8; }
+.retro-shell .retro-key[disabled] { color: var(--r-dim); cursor: default; }
+.retro-key-badge {
+  position: absolute;
+  right: calc(var(--d) * 2);
+  top: calc(var(--d) * 2);
+  min-width: calc(var(--d) * 11);
+  padding: calc(var(--d) * 1) calc(var(--d) * 2);
+  background: var(--r-gold);
+  color: var(--r-ink);
+  font-size: calc(var(--d) * 8);
+  letter-spacing: 0;
+  text-align: center;
+}
+
+.retro-brand {
+  flex: none;
+  margin-top: calc(var(--d) * (5 + min(var(--slack) * 0.1, 12)));
+  color: #6f5a8e;
+  font-size: calc(var(--d) * 8);
+  letter-spacing: .3em;
+  white-space: nowrap;
+}
+
+/* ---- 上画面に重ねる知らせ（トースト・報酬）と、地図の一言 */
+.retro-notices {
+  position: absolute;
+  left: calc(var(--d) * 4);
+  right: calc(var(--d) * 4);
+  top: calc(var(--d) * 4);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: calc(var(--d) * 2);
+  pointer-events: none;
+}
+.retro-shell[data-scene="map"] .retro-notices { top: calc(var(--d) * 20); }
+.retro-notice {
+  max-width: 100%;
+  padding: calc(var(--d) * 3) calc(var(--d) * 5);
+  background: var(--r-deep);
+  border: calc(var(--d) * 1) solid var(--r-gold);
+  box-shadow: calc(var(--d) * 2) calc(var(--d) * 2) 0 var(--r-black);
+  color: var(--r-text);
+  font-size: calc(var(--d) * 12);
+  line-height: calc(var(--d) * 15);
+}
+.retro-caption {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: calc(var(--d) * 4) calc(var(--d) * 6) calc(var(--d) * 4);
+  background: var(--r-deep);
+  border-top: calc(var(--d) * 1) solid var(--r-lilac);
+  color: var(--r-text);
+  font-size: calc(var(--d) * 12);
+  line-height: calc(var(--d) * 15);
+  pointer-events: none;
+}
+.retro-caption b { margin-right: calc(var(--d) * 6); color: var(--r-gold); font-weight: 400; }
+
+/* ---- 会話（下画面） */
+.retro-vn { display: flex; flex-direction: column; padding: calc(var(--d) * 9) calc(var(--d) * 7) calc(var(--d) * 6); cursor: pointer; }
+.retro-vn-name {
+  position: relative;
+  z-index: 1;
+  flex: none;
+  align-self: flex-start;
+  max-width: calc(var(--d) * 200);
+  height: calc(var(--d) * 22);
+  margin-bottom: calc(var(--d) * -2);
+  padding: 0 calc(var(--d) * 8);
+  background: var(--r-violet);
+  border: calc(var(--d) * 2) solid var(--r-ink);
+  color: #ffffff;
+  font-size: calc(var(--d) * 16);
+  line-height: calc(var(--d) * 18);
+  white-space: nowrap;
+  overflow: hidden;
+}
+.retro-vn-name[hidden] + .retro-vn-win { margin-top: calc(var(--d) * 20); }
+.retro-vn-win {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: calc(var(--d) * 44);
+  margin-right: calc(var(--d) * 2);
+  padding: calc(var(--d) * 9) calc(var(--d) * 3) calc(var(--d) * 4) calc(var(--d) * 9);
+  background: var(--r-paper);
+  border: calc(var(--d) * 2) solid var(--r-ink);
+  box-shadow: calc(var(--d) * 4) calc(var(--d) * 4) 0 var(--r-deep);
+  color: var(--r-ink);
+  overflow: hidden;
+}
+.retro-vn-text, .retro-vn-inner {
+  font-size: calc(var(--d) * 16);
+  line-height: calc(var(--d) * 22);
+  white-space: normal;
+  word-break: normal;
+  overflow-wrap: anywhere;
+  line-break: strict;
+}
+.retro-vn-inner { margin-top: calc(var(--d) * 2); color: #b03a6c; }
+.retro-gap { display: none; }
+.retro-vn[data-size="small"] :is(.retro-vn-text, .retro-vn-inner) { font-size: calc(var(--d) * 12); line-height: calc(var(--d) * 16); }
+.retro-vn[data-kind="thought"] .retro-vn-text { color: #3d4a7c; }
+.retro-vn[data-kind="reward"] .retro-vn-text { color: #8a5a10; }
+.retro-shell .tx-imp { color: #a8691a; font-weight: 400; text-shadow: none; }
+.retro-shell :is(.tx-warn, .tx-red) { color: #b3261e; font-weight: 400; }
+.retro-shell :is(.tx-hint, .tx-blue) { color: #2456a6; }
+.retro-shell .tx-sub { color: #6b5a80; font-size: .75em; }
+.retro-shell .tx-voice { color: #6b5a80; font-size: 1em; text-shadow: none; }
+.retro-vn-next {
+  position: absolute;
+  right: calc(var(--d) * 6);
+  bottom: calc(var(--d) * 6);
+  width: 0;
+  height: 0;
+  border-left: calc(var(--d) * 6) solid transparent;
+  border-right: calc(var(--d) * 6) solid transparent;
+  border-top: calc(var(--d) * 8) solid #a8691a;
+  animation: retro-blink 1s steps(1) infinite;
+}
+@keyframes retro-blink { 50% { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .retro-vn-next { animation: none; } }
+.retro-vn-tip {
+  flex: none;
+  height: calc(var(--d) * 27);
+  padding-top: calc(var(--d) * 12);
+  color: var(--r-lilac);
+  font-size: calc(var(--d) * 12);
+  text-align: center;
+  white-space: nowrap;
+}
+.retro-vn-choices {
+  flex: 0 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--d) * 4);
+  min-height: 0;
+  max-height: calc(var(--d) * 124);
+  margin-top: calc(var(--d) * 8);
+  padding: 0 calc(var(--d) * 3) calc(var(--d) * 3) 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+  scrollbar-width: none;
+}
+.retro-vn-choices::-webkit-scrollbar { display: none; }
+.retro-shell .retro-choice {
+  flex: none;
+  display: block;
+  width: 100%;
+  min-height: calc(var(--d) * 24);
+  padding: calc(var(--d) * 4) calc(var(--d) * 8);
+  background: var(--r-gold);
+  border: calc(var(--d) * 2) solid var(--r-ink);
+  box-shadow: calc(var(--d) * 3) calc(var(--d) * 3) 0 var(--r-deep);
+  color: var(--r-ink);
+  font-size: calc(var(--d) * 12);
+  line-height: calc(var(--d) * 15);
+  text-align: left;
+  overflow-wrap: anywhere;
+  line-break: strict;
+}
+.retro-shell .retro-choice:active { transform: translate(calc(var(--d) * 2), calc(var(--d) * 2)); box-shadow: calc(var(--d) * 1) calc(var(--d) * 1) 0 var(--r-deep); }
+.retro-shell .retro-choice[aria-disabled="true"] { background: var(--r-panel); border-color: var(--r-line); color: var(--r-dim); box-shadow: none; cursor: default; }
+.retro-shell .retro-choice[data-hint]::before { content: "◆ "; color: var(--r-violet); }
+.retro-choice .vn-choice-reason { display: block; position: static; margin: 0; padding: 0; background: none; border: 0; color: #b3261e; font-size: 1em; }
+.retro-vn[data-choosing="true"] .retro-vn-tip { display: none; }
+.retro-vn[data-choosing="true"] .retro-vn-win { flex: 1 1 0; }
+.retro-vn[data-choosing="true"] .retro-vn-next { display: none; }
+
+/* ---- 地図（上画面の帯と目印） */
+.retro-maphead {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: calc(var(--d) * 6);
+  height: calc(var(--d) * 16);
+  padding: 0 calc(var(--d) * 6);
+  background: var(--r-deep);
+  color: var(--r-text);
+  font-size: calc(var(--d) * 12);
+  white-space: nowrap;
+}
+.retro-maphead-slot { color: var(--r-lilac); }
+.retro-maphead-money { color: var(--r-gold); }
+.retro-gauge { display: flex; align-items: center; gap: calc(var(--d) * 3); color: #e56b8c; }
+.retro-gauge svg { display: block; width: calc(var(--d) * 7); height: calc(var(--d) * 6); }
+.retro-gauge i { position: relative; display: block; width: calc(var(--d) * 34); height: calc(var(--d) * 6); background: var(--r-black); border: calc(var(--d) * 1) solid var(--r-lilac); }
+.retro-gauge i b { position: absolute; left: 0; top: 0; bottom: 0; background: #57c79a; }
+.retro-gauge[data-health="yellow"] i b { background: #f6c93b; }
+.retro-gauge[data-health="red"] i b { background: #d9342b; }
+.retro-markers { position: absolute; inset: 0; pointer-events: none; }
+.retro-shell .retro-marker {
+  position: absolute;
+  width: calc(var(--d) * 20);
+  height: calc(var(--d) * 20);
+  margin: calc(var(--d) * -10) 0 0 calc(var(--d) * -10);
+  pointer-events: auto;
+}
+.retro-marker::before {
+  content: "";
+  position: absolute;
+  left: calc(var(--d) * 5);
+  top: calc(var(--d) * 5);
+  width: calc(var(--d) * 10);
+  height: calc(var(--d) * 10);
+  background: var(--r-paper);
+  border: calc(var(--d) * 2) solid var(--r-ink);
+}
+.retro-marker[data-off="true"]::before { background: var(--r-dim); }
+.retro-marker[data-sel="true"] { z-index: 2; }
+.retro-marker[data-sel="true"]::before {
+  left: calc(var(--d) * 2);
+  top: calc(var(--d) * 2);
+  width: calc(var(--d) * 16);
+  height: calc(var(--d) * 16);
+  background: var(--r-gold);
+  border: calc(var(--d) * 2) solid var(--r-ink);
+  outline: calc(var(--d) * 2) solid #ffffff;
+  box-shadow: inset 0 0 0 calc(var(--d) * 1) var(--r-ink);
+}
+.retro-maplabel {
+  position: absolute;
+  z-index: 3;
+  height: calc(var(--d) * 18);
+  padding: 0 calc(var(--d) * 5);
+  background: var(--r-gold);
+  border: calc(var(--d) * 2) solid var(--r-ink);
+  color: var(--r-ink);
+  font-size: calc(var(--d) * 12);
+  line-height: calc(var(--d) * 14);
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+/* ---- 地図（下画面の一覧と決定ボタン） */
+.retro-map { display: flex; flex-direction: column; padding: calc(var(--d) * 6) calc(var(--d) * 6) calc(var(--d) * 5); }
+.retro-list {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--d) * 2);
+  min-height: 0;
+  padding-right: calc(var(--d) * 3);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+  scrollbar-width: none;
+}
+.retro-list::-webkit-scrollbar { display: none; }
+.retro-shell .retro-row {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: calc(var(--d) * 5);
+  width: 100%;
+  height: calc(var(--d) * 26);
+  padding: 0 calc(var(--d) * 4) 0 calc(var(--d) * 1);
+  background: var(--r-panel);
+  border: calc(var(--d) * 1) solid var(--r-line);
+  color: var(--r-text);
+  white-space: nowrap;
+  overflow: hidden;
+}
+.retro-shell .retro-row[aria-pressed="true"] { background: var(--r-paper); border: calc(var(--d) * 2) solid var(--r-ink); box-shadow: calc(var(--d) * 3) calc(var(--d) * 3) 0 var(--r-deep); padding-left: 0; color: var(--r-ink); }
+.retro-row-faces { flex: none; display: flex; gap: calc(var(--d) * 1); min-width: calc(var(--d) * 24); height: calc(var(--d) * 24); }
+.retro-face { flex: none; display: grid; place-items: center; width: calc(var(--d) * 24); height: calc(var(--d) * 24); background: var(--r-deep); color: var(--r-lilac); font-size: calc(var(--d) * 12); }
+.retro-face canvas { display: block; width: 100%; height: 100%; image-rendering: pixelated; }
+.retro-row-name { flex: 1 1 auto; min-width: 0; overflow: hidden; font-size: calc(var(--d) * 16); line-height: calc(var(--d) * 22); }
+.retro-row-sub { flex: none; color: var(--r-lilac); font-size: calc(var(--d) * 12); }
+.retro-row[aria-pressed="true"] .retro-row-sub { color: var(--r-violet); }
+.retro-row-badge { flex: none; display: grid; place-items: center; min-width: calc(var(--d) * 14); height: calc(var(--d) * 14); padding: 0 calc(var(--d) * 2); background: var(--r-gold); border: calc(var(--d) * 1) solid var(--r-ink); color: var(--r-ink); font-size: calc(var(--d) * 12); font-style: normal; }
+.retro-row[data-off="true"] :is(.retro-row-name, .retro-row-sub) { color: var(--r-dim); }
+.retro-row[data-off="true"] .retro-row-faces { opacity: .55; }
+.retro-more {
+  position: absolute;
+  right: calc(var(--d) * 1);
+  width: 0;
+  height: 0;
+  border-left: calc(var(--d) * 4) solid transparent;
+  border-right: calc(var(--d) * 4) solid transparent;
+  pointer-events: none;
+  animation: retro-blink 1s steps(1) infinite;
+}
+.retro-more-up { top: calc(var(--d) * 1); border-bottom: calc(var(--d) * 5) solid var(--r-gold); }
+.retro-more-down { bottom: calc(var(--d) * 44); border-top: calc(var(--d) * 5) solid var(--r-gold); }
+@media (prefers-reduced-motion: reduce) { .retro-more { animation: none; } }
+.retro-shell .retro-go {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: calc(100% - var(--d) * 3);
+  height: calc(var(--d) * 30);
+  margin-top: calc(var(--d) * 6);
+  margin-bottom: calc(var(--d) * 3);
+  background: var(--r-gold);
+  border: calc(var(--d) * 2) solid var(--r-ink);
+  box-shadow: calc(var(--d) * 3) calc(var(--d) * 3) 0 var(--r-deep);
+  color: var(--r-ink);
+  font-size: calc(var(--d) * 16);
+  white-space: nowrap;
+  overflow: hidden;
+}
+.retro-shell .retro-go:active { transform: translate(calc(var(--d) * 2), calc(var(--d) * 2)); box-shadow: calc(var(--d) * 1) calc(var(--d) * 1) 0 var(--r-deep); }
+.retro-shell .retro-go[aria-disabled="true"] { background: var(--r-panel); border-color: var(--r-line); box-shadow: none; color: var(--r-dim); font-size: calc(var(--d) * 12); cursor: default; transform: none; }
+
+/* ---- タイトル（下画面） */
+.retro-title { display: flex; flex-direction: column; justify-content: center; gap: calc(var(--d) * 6); padding: calc(var(--d) * 8) calc(var(--d) * 10) calc(var(--d) * 10) calc(var(--d) * 7); }
+.retro-shell .retro-menu {
+  flex: 0 1 calc(var(--d) * 34);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: calc(var(--d) * 6);
+  min-height: calc(var(--d) * 24);
+  padding: 0 calc(var(--d) * 10);
+  background: var(--r-paper);
+  border: calc(var(--d) * 2) solid var(--r-ink);
+  box-shadow: calc(var(--d) * 3) calc(var(--d) * 3) 0 var(--r-deep);
+  color: var(--r-ink);
+  white-space: nowrap;
+  overflow: hidden;
+}
+.retro-menu b { font-weight: 400; font-size: calc(var(--d) * 16); letter-spacing: .06em; }
+.retro-menu small { color: var(--r-violet); font-size: calc(var(--d) * 12); }
+.retro-shell .retro-menu:active { transform: translate(calc(var(--d) * 2), calc(var(--d) * 2)); box-shadow: calc(var(--d) * 1) calc(var(--d) * 1) 0 var(--r-deep); }
+.retro-shell .retro-menu[disabled] { background: var(--r-panel); border: calc(var(--d) * 1) solid var(--r-line); box-shadow: none; color: var(--r-dim); cursor: default; transform: none; }
+.retro-menu[disabled] small { color: var(--r-dim); }
+
+.retro-toptext {
+  position: absolute;
+  left: calc(var(--d) * 8);
+  top: calc(var(--d) * 78);
+  padding: calc(var(--d) * 4) calc(var(--d) * 6);
+  background: var(--r-deep);
+  border: calc(var(--d) * 1) solid var(--r-lilac);
+  color: var(--r-text);
+  font-size: calc(var(--d) * 16);
+  line-height: calc(var(--d) * 20);
+  white-space: nowrap;
+  pointer-events: none;
+}
+
+/* ---- 外枠を引っ込めている間の一言（縦長の画面で、現行の横長の画面が小さく出ている時） */
+.retro-note {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 14px);
+  z-index: 2001;
+  margin: 0 auto;
+  width: max-content;
+  max-width: calc(100vw - 24px);
+  padding: 7px 10px;
+  background: #120a1e;
+  border: 1px solid #5a4475;
+  color: #c9a7e6;
+  font-family: var(--font-dot);
+  font-size: max(12px, min(3.4vw, 15px));
+  font-weight: 400;
+  line-height: 1.3;
+  letter-spacing: 0;
+  text-align: center;
+  pointer-events: none;
+}

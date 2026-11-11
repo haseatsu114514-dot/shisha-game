@@ -173,6 +173,7 @@ const title = await load(await read("../js/scenes/title.js"), {
   openGallery: () => new Promise(resolve => galleryCloses.push(resolve)),
   pickTitleArt: () => ({ ready: true, file: `art-${++picks}`, character: `character-${picks}`, url: "test" }),
   createUiThemeSelect: () => el("select"),
+  LOOKS: [{ id: "classic", label: "現行" }, { id: "neo", label: "新版" }, { id: "retro", label: "DS風" }], normalizeLook: (value) => value || "classic", setLook() {},
   config: {},
 }, { document: { body }, performance: { now: () => 0 }, window: {} });
 const art = { ready: true, file: "test", character: "test", url: "test" };
