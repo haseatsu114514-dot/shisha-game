@@ -35,7 +35,6 @@ JAPANESE = {
     "ZenOldMincho-Promo.woff2": ROOT / "remake" / "fonts" / "ZenOldMincho-Blue-Regular.woff2",
     "ZenOldMincho-Promo-Bold.woff2": ROOT / "remake" / "fonts" / "ZenOldMincho-Name-Bold.woff2",
     "ZenKakuGothicNew-Promo-Medium.woff2": ROOT / "remake" / "fonts" / "ZenKakuGothicNew-Medium.woff2",
-    "ZenKakuGothicNew-Promo-Bold.woff2": ROOT / "remake" / "fonts" / "ZenKakuGothicNew-Bold.woff2",
     "DotGothic16-Promo.woff2": ROOT / "assets" / "fonts" / "DotGothic16-Regular.ttf",
 }
 LATIN = {
@@ -50,7 +49,10 @@ def site_text() -> str:
     text = re.sub(r"<script.*?</script>|<style.*?</style>", "", text, flags=re.S)
     script = PROMO / "js" / "site.js"
     if script.exists():
-        text += script.read_text(encoding="utf-8")
+        # 画面に出るのは文字列だけ。説明のコメントの字までフォントに入れない
+        code = script.read_text(encoding="utf-8")
+        code = re.sub(r"/\*.*?\*/", "", code, flags=re.S)
+        text += re.sub(r"(^|\s)//[^\n]*", r"\1", code)
     return "".join(sorted(set(text) - set("\n\r\t")))
 
 

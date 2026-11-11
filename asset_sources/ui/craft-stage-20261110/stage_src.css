@@ -71,7 +71,7 @@
 & .bench-worker-stage > :is(.worker-counter, .worker-vignette, .worker-scene-tag) { display: none; }
 & .bench-left .bench-worker-name { display: none !important; }
 /* 場面ごとの寄せ方（顔が熱の柱に隠れない位置へ） */
-& .bench-worker:is([data-scene="pull"], [data-scene="inhale"]) .bench-worker-stage { --hero-x: -98px; }
+& .bench-worker:is([data-scene="pull"], [data-scene="inhale"]) .bench-worker-stage { --hero-x: -102px; } /* シーシャ台のボトルが熱の柱（x327〜）の手前で終わる */
 & .bench-worker:is([data-scene="pack"], [data-scene="holes"]) .bench-worker-stage { --hero-x: -70px; }
 & .bench-worker[data-scene="heat"] .bench-worker-stage { --hero-x: -60px; }
 
@@ -145,9 +145,10 @@
 & .pull > .thermo .pull-read {
   position: absolute !important; left: 50% !important; right: auto !important; top: -52px !important; transform: translateX(-50%);
   min-width: 124px; height: 42px; min-height: 0 !important; padding: 0 14px; justify-content: center; border-radius: 21px !important;
+  flex-wrap: nowrap; gap: 4px; /* 余熱の矢印（↓）を札の中の同じ行に置く */
   background: #1b112af2 !important; border-width: 1.5px !important; box-shadow: 0 4px 10px #0009;
 }
-& .pull > .thermo .pull-state { font-size: 22px !important; font-weight: 900; letter-spacing: .06em; white-space: nowrap; }
+& .pull > .thermo .pull-state { font-size: 22px !important; line-height: 1.4 !important; font-weight: 900; letter-spacing: .06em; white-space: nowrap; }
 /* 温度計を持たない工程（機材・炭の配置・穴あけ・炭焼き）は、消灯の柱を同じ場所に立てる */
 &:is([data-step="setup"], [data-step="place"], [data-step="holes"], [data-step="heat"]) .bench-right::before {
   content: ""; position: fixed; left: 344px; top: 134px; width: 48px; height: 468px; z-index: 5; border-radius: 26px; pointer-events: none;
@@ -333,37 +334,47 @@
 & .fr-name :is(.fr-reg, .fr-mastery, .fr-ratio) { font-size: 17px !important; line-height: 1.25 !important; margin: 0 !important; }
 
 /* ==========================================================================
-   Codex の部品（CSL・2026-11-11 到着の11枚）。寸法は README の「受け取った後の手順」。
+   絵の部品。CSL16 で夜紫の部品（../img/ui/craft-stage/）を当て、CSL18 でオーナーが選んだ方向B「ガラスと革」
+   （../img/ui/craft-glass/。原画と切り出しの枠は asset_sources/ui/craft-glass-20261111/）へ差し替えた。
+   工程の灯（lamp-*）と作業マットは CSL16 のまま。九分割は縁の幅を変えず border-image-width で絵の縁の太さを決め、
+   border-image-outset で絵の影・光彩を箱の外へ逃がす（箱の大きさ・押せる範囲は変えない）。
    ========================================================================== */
-/* ---------- 熱の柱の外枠（spine-housing）: 温度計の箱を外枠ごと x331〜405・y93〜605 にし、
-   上下同じ余白46（矢印の位置の計算が上下対称の前提）で窓 y139〜559 に管を合わせる。上の帽子に札が乗る ---------- */
-& .bench-panel .thermo { left: 331px !important; top: 93px !important; width: 74px !important; height: 512px !important; --thermo-inset: 46px !important; }
+/* ---------- 熱の柱の外枠（銅とガラスの柱）: 温度計の箱を外枠ごと x327〜407・y95〜603（幅80）にし、
+   上下同じ余白44（矢印の位置の計算が上下対称の前提）で窓 y139〜559 に管（幅26）を合わせる。帽子の上に札が乗る。
+   絵の窓は上 38.6・下 44 なので、絵だけ 5.4 下げて置く ---------- */
+& .bench-panel .thermo { left: 327px !important; top: 95px !important; width: 80px !important; height: 508px !important; --thermo-inset: 44px !important; }
 & .bench-panel .thermo .thermo-housing {
-  position: absolute; inset: 0 !important; width: auto !important; height: auto !important;
+  position: absolute; inset: 5.4px 0 0 0 !important; width: auto !important; height: auto !important;
   border-radius: 0; background: none; box-shadow: none; border: 0 solid transparent;
-  border-image: url("../img/ui/craft-stage/spine-housing.webp") 86 0 97 0 fill / 46px 0 46px 0 stretch !important;
+  border-image: url("../img/ui/craft-glass/spine-housing.webp") 91 0 90 0 fill / 58px 0 57px 0 stretch !important;
 }
-& .bench-panel .thermo .thermo-housing .thermo-tube { left: 24px !important; right: 24px !important; top: 46px !important; bottom: 46px !important; border-radius: 13px; }
-& .bench-panel .thermo .thermo-pointer { left: 52px !important; }
-/* 札は帽子の上（y87〜129）。柱の箱の右端にそろえ、舞台へはみ出さない */
+& .bench-panel .thermo .thermo-housing .thermo-tube { left: 27.1px !important; right: 27.1px !important; top: 38.6px !important; bottom: 44px !important; border-radius: 13px; }
+& .bench-panel .thermo .thermo-pointer { left: 55px !important; }
+/* 札は帽子の上（y89〜131）。柱の箱の右端にそろえ、舞台へはみ出さない */
 & .bench-panel .thermo.mix-temperature::before, & .pull > .thermo .pull-read { top: -6px !important; right: 0 !important; }
 /* 温度計を持たない工程の消灯の柱も、同じ外枠に暗い管 */
 &:is([data-step="setup"], [data-step="place"], [data-step="holes"], [data-step="heat"]) .bench-right::before {
-  left: 331px; top: 93px; width: 74px; height: 512px; border-radius: 0; box-shadow: none; border: 0 solid transparent;
-  border-image: url("../img/ui/craft-stage/spine-housing.webp") 86 0 97 0 fill / 46px 0 46px 0 stretch !important;
+  left: 327px; top: 100.4px; width: 80px; height: 502.6px; border-radius: 0; box-shadow: none; border: 0 solid transparent;
+  border-image: url("../img/ui/craft-glass/spine-housing.webp") 91 0 90 0 fill / 58px 0 57px 0 stretch !important;
   background:
-    repeating-linear-gradient(0deg, #0000 0 11px, #1a0f2a55 11px 12px) 24px 46px / 26px 420px no-repeat,
-    linear-gradient(0deg, #6a6a68, #56585a 40%, #4a524e 44%, #525a56 64%, #55504c 71%, #3c3838 90%, #262224) 24px 46px / 26px 420px no-repeat;
+    repeating-linear-gradient(0deg, #0000 0 11px, #1a0f2a55 11px 12px) 27.1px 38.6px / 25.8px 420px no-repeat,
+    linear-gradient(0deg, #6a6a68, #56585a 40%, #4a524e 44%, #525a56 64%, #55504c 71%, #3c3838 90%, #262224) 27.1px 38.6px / 25.8px 420px no-repeat;
 }
-/* ---------- 状態の札・「温度帯」の札の縁（spine-plate）: 帽子の上に乗る ---------- */
+/* ---------- 小さな札（銅の縁のガラスの札）: 柱の上の状態の札・「温度帯」の札・針の現在位置。両端の丸を残して横に伸ばす ---------- */
 & .bench-panel .thermo.mix-temperature::before, & .pull > .thermo .pull-read {
-  border: 0 solid transparent !important; border-radius: 21px !important;
-  border-image: url("../img/ui/craft-stage/spine-plate.webp") 0 50 fill / 0 21px stretch !important;
+  border: 0 solid transparent !important; border-radius: 21px !important; background: none !important; box-shadow: none !important;
+  border-image: url("../img/ui/craft-glass/plaque.webp") 0 125 fill / 0 21.6px stretch !important;
 }
 & .bench-panel .thermo.mix-temperature::before { z-index: 3; }
 & .pull > .thermo .pull-read { z-index: 3; }
-/* ---------- 工程の灯（lamp-*）: 輪は灯の箱いっぱい、光彩は外へ ---------- */
+& .pull-current-zone {
+  border-color: transparent !important; border-style: solid !important; border-radius: 26px !important; background: none !important; box-shadow: none !important;
+  border-image: url("../img/ui/craft-glass/plaque.webp") 0 125 fill / 0 26.3px stretch !important;
+}
+/* ---------- 工程の灯（lamp-*・CSL16 のまま）: 輪は灯の箱いっぱい、光彩は外へ ---------- */
 & .bench-top > .rig-record .rig-lamp { isolation: isolate; overflow: visible; background: none !important; border: 0 !important; box-shadow: none !important; }
+/* 光彩（::before の外側18% ≒ 5px）を灯の列の箱の中に収める。余白と同じだけ外へ広げ、レールでの大きさと位置は変えない */
+& .bench-top > .rig-record { padding: 5px; margin: -5px -5px -5px -1px; }
 & .bench-top > .rig-record .rig-lamp::before {
   content: ""; position: absolute; inset: -18%; z-index: -1; pointer-events: none;
   background: url("../img/ui/craft-stage/lamp-off.webp") center / contain no-repeat;
@@ -373,23 +384,27 @@
 & .bench-top > .rig-record .rig-lamp[data-tier="great"]::before { background-image: url("../img/ui/craft-stage/lamp-good.webp"); }
 & .bench-top > .rig-record .rig-lamp[data-tier="brilliant"]::before { background-image: url("../img/ui/craft-stage/lamp-shine.webp"); }
 & .bench-top > .rig-record .rig-lamp[data-tier="off"] b, & .bench-top > .rig-record .rig-lamp[data-tier="dim"] b { color: #b8aac4; }
-/* ---------- 上のレールの今の工程の札（rail-now）: 左の白い丸に工程の番号 ---------- */
+/* ---------- 上のレール: 今の工程の札（紫に灯るガラスの札・左の白い玉に番号）と、ほかの工程の玉 ---------- */
 & .bench-progress-track > .bench-phase.now {
-  position: relative; padding: 0 22px 0 40px !important; border: 0 solid transparent !important; border-radius: 22px; background: none !important; box-shadow: none !important;
-  border-image: url("../img/ui/craft-stage/rail-now.webp") 0 61 0 99 fill / 0 22px 0 36px stretch !important;
+  position: relative; padding: 0 24px 0 41px !important; border: 0 solid transparent !important; border-radius: 22px; background: none !important; box-shadow: none !important;
+  border-image: url("../img/ui/craft-glass/rail-now.webp") 0 144 0 214 fill / 0 26.2px 0 39px / 3.6px 3.5px 3.7px 3.6px stretch !important;
 }
 & .bench-progress-track > .bench-phase.now .bench-phase-copy small {
-  display: grid !important; place-items: center; position: absolute; left: 6px; top: 50%; width: 24px; height: 24px; margin: -12px 0 0;
+  display: grid !important; place-items: center; position: absolute; left: 7.6px; top: 50%; width: 24px; height: 24px; margin: -12px 0 0;
   font-size: 13px !important; font-weight: 900; letter-spacing: 0; color: #2e1d45;
 }
-/* ---------- 見守る人の一言の板（voice-plate）: 顔は左の丸い座へ ---------- */
-& .bench-left .bench-audience {
-  padding: 8px 14px 8px 15px !important; gap: 14px; border: 0 solid transparent !important; border-radius: 0 !important; background: none !important; box-shadow: none !important;
-  border-image: url("../img/ui/craft-stage/voice-plate.webp") 96 112 96 194 fill / 48px 55px 48px 96px stretch !important; filter: drop-shadow(0 8px 14px #0009);
+& .bench-progress-track > .bench-phase:not(.now) {
+  border: 0 !important; box-shadow: none !important; background: url("../img/ui/craft-glass/bead.webp") -.5px 0 / 37.3px 39px no-repeat !important;
 }
-& .bench-audience .audience-people, & .bench-audience .audience-person, & .bench-audience .audience-face { width: 57px !important; height: 57px !important; }
+& .bench-progress-track > .bench-phase.seen:not(.now) { filter: brightness(1.18) saturate(1.1); }
+/* ---------- 見守る人の一言の板（紫の革に縫い目・左のガラスの座に顔） ---------- */
+& .bench-left .bench-audience {
+  padding: 8px 14px 8px 20.6px !important; gap: 15px; border: 0 solid transparent !important; border-radius: 0 !important; background: none !important; box-shadow: none !important;
+  border-image: url("../img/ui/craft-glass/voice-plate.webp") 118 59 119 220 fill / 48.8px 24.3px 49.2px 90.8px / .4px 1.6px 1.6px 1.4px stretch !important; filter: drop-shadow(0 8px 14px #0009);
+}
+& .bench-audience .audience-people, & .bench-audience .audience-person, & .bench-audience .audience-face { width: 56px !important; height: 56px !important; }
 & .bench-audience .audience-face { border: 0 !important; }
-/* ---------- 舞台の天板（作業マット）: 配合・詰め方・穴あけ・蒸らし ---------- */
+/* ---------- 舞台の天板（作業マット・CSL16 のまま）: 配合・詰め方・穴あけ・蒸らし ---------- */
 &:is([data-step="mix"], [data-step="pack"], [data-step="holes"], [data-step="steam"]) .bench-right::after {
   content: ""; position: fixed; left: 410px; top: 76px; right: 0; bottom: 0; z-index: -1; pointer-events: none;
   background:
@@ -397,8 +412,87 @@
     linear-gradient(180deg, #130b20 0, #130b2000 14%),
     url("../img/ui/craft-stage/counter-mat.webp") right bottom / cover no-repeat;
 }
-/* ---------- 吸い出しの半円ダイヤルの台座（dial-bezel）: 帯 r118〜212 が透明の窓に合う ---------- */
+/* ---------- 吸い出しの舞台の奥: 紫の革の壁（見本 pull-B）。左と上を暗く溶かす ---------- */
+&:is([data-step="pull"], [data-step="serve"]) .bench-right::after {
+  content: ""; position: fixed; left: 410px; top: 76px; right: 0; bottom: 0; z-index: -1; pointer-events: none;
+  background:
+    linear-gradient(90deg, #150d22 0, #150d2200 18%),
+    linear-gradient(180deg, #130b20 0, #130b2000 12%),
+    url("../img/ui/craft-glass/stage-leather.webp") center / cover no-repeat;
+}
+/* ---------- 吸い出しの半円ダイヤル: 銅の台座（窓の外半径を帯の溝 r212 に合わせる。窓の中心は絵の (758, 771)）と、
+   色の帯に重ねるガラスの照り（内半径を窓の内側 r134 に合わせ、外側は銅の台座の縁に少し掛ける。中心は絵の (751, 774)） ---------- */
 & .pull-dial::before {
-  content: ""; position: absolute; left: .92%; top: 3.08%; width: 98.23%; height: 99.25%; pointer-events: none;
-  background: url("../img/ui/craft-stage/dial-bezel.webp") center / 100% 100% no-repeat;
+  content: ""; position: absolute; left: -1.279%; top: -2.904%; width: 103.98%; height: 114.65%; pointer-events: none;
+  background: url("../img/ui/craft-glass/dial-bezel.webp") center / 100% 100% no-repeat;
+}
+& .pull-dial::after {
+  content: ""; position: absolute; left: 3.52%; top: 3.71%; width: 93.04%; height: 96.62%; pointer-events: none;
+  background: url("../img/ui/craft-glass/dial-glass.webp") center / 100% 100% no-repeat;
+}
+
+/* ==========================================================================
+   CSL18 ガラスと革: CSS の平らな面と細い線を、絵の部品に置き換える。
+   下地の色（padding-box まで）は絵が読めない時の姿で、絵が読めれば隠れる。
+   ========================================================================== */
+/* ---------- ボタン: 銅の枠の厚いガラスの鍵。主のボタンは琥珀のガラス ---------- */
+& .btn, & .btn.ghost, & .btn:hover:not(:disabled) {
+  background: #2a1d3c padding-box !important; box-shadow: none !important; filter: none; color: #f6f1fa;
+  border-style: solid; border-color: transparent;
+  border-image: url("../img/ui/craft-glass/key.webp") 88 88 128 88 fill / 21px 21px 31px 21px / 4.3px 4.2px 4.8px 4.2px stretch !important;
+}
+& .btn .btn-desc { color: #cdbde0; }
+& .btn.primary, & .btn.primary:hover:not(:disabled), & .btn.primary:is(.pack-confirm, .hr-punch), & .pull-btns .btn.primary {
+  color: #2a1a05; text-shadow: 0 1px 0 #ffe9c299; background: #e3bd6e padding-box !important;
+  border-image: url("../img/ui/craft-glass/key-amber.webp") 88 88 128 88 fill / 21px 21px 31px 21px / 4.3px 4.2px 4.8px 4.2px stretch !important;
+}
+& .btn.primary .btn-desc { color: #5a3a14; }
+& .btn:hover:not(:disabled) { filter: brightness(1.12); }
+& .btn:disabled { filter: grayscale(.45) brightness(.72); }
+/* 雑念よけのリフレッシュは、充填中も押せない札ではなく「たまっていく」札として明るいまま（steam.css と同じ） */
+& .btn.dodge-action[data-cooling="true"]:disabled { filter: none; }
+/* ---------- 選ぶ札: 銅の枠の曇りガラスの札。選んでいる札は紫に灯り、選べない札は暗く ---------- */
+& :is(.opt, .pack-choice, .flavor-row, .btn.ht-option, .btn.care-place, .btn.care-coal),
+& :is(.opt, .pack-choice, .btn.ht-option, .btn.care-place, .btn.care-coal):hover:not(:disabled) {
+  background: #2a1d3c padding-box !important; box-shadow: none !important; border-radius: 8px !important; filter: none;
+  border-style: solid !important; border-color: transparent !important; color: #f6f1fa;
+  border-image: url("../img/ui/craft-glass/tile.webp") 75 75 74 75 fill / 15.6px 15.8px 15.4px 15.8px / 4.6px 3.7px 3.9px 3.7px stretch !important;
+}
+& :is(.opt, .pack-choice, .btn.ht-option, .btn.care-place, .btn.care-coal):hover:not(:disabled) { filter: brightness(1.15); }
+& :is(.opt.on, .pack-choice[aria-pressed="true"], .btn.ht-option[aria-pressed="true"], .btn.care-place[aria-pressed="true"]),
+& :is(.opt.on, .pack-choice[aria-pressed="true"], .btn.ht-option[aria-pressed="true"], .btn.care-place[aria-pressed="true"]):hover:not(:disabled) {
+  border-image: url("../img/ui/craft-glass/tile-on.webp") 75 75 74 75 fill / 15.6px 15.8px 15.4px 15.8px / 4.6px 3.7px 3.9px 3.7px stretch !important;
+}
+& :is(.opt, .pack-choice, .btn.ht-option, .btn.care-place, .btn.care-coal):disabled {
+  filter: none;
+  border-image: url("../img/ui/craft-glass/tile-off.webp") 75 75 74 75 fill / 15.6px 15.8px 15.4px 15.8px / 4.6px 3.7px 3.9px 3.7px stretch !important;
+}
+& :is(.opt, .pack-choice, .flavor-row) small, & .pack-choice span { color: #cdbde0; }
+/* ---------- 革の面: 舞台の上の板（穴あけの横・炭壺の帯・吸い出しのまとめ・調整・蒸らし後の目安・説明の吹き出し） ---------- */
+& :is(.ht-side, .heat-info, .pull-summary, .care-coals, .steam-forecast, .bench-guide-tip) {
+  background: #221534 padding-box !important; box-shadow: 0 10px 22px #0008 !important; border-radius: 6px !important;
+  border-style: solid !important; border-color: transparent !important;
+  border-image: url("../img/ui/craft-glass/panel.webp") 41 46 50 45 fill / 16.2px 18.2px 19.8px 18px / .2px 2.2px 3.8px 2px stretch !important;
+}
+/* ---------- 帯: 両端に銅の留め具のガラスの帯（香りの一言・配合の合計・持ちと吸い出し回数） ---------- */
+& :is(.pack-aroma, .mix-footer .lcd, .pull-life) {
+  background: #221534 padding-box !important; box-shadow: none !important; border-radius: 12px !important;
+  border-style: solid !important; border-color: transparent !important; padding-left: 28px !important; padding-right: 28px !important;
+  border-image: url("../img/ui/craft-glass/strip.webp") 0 50 fill / 0 24px stretch !important;
+}
+/* ---------- 配合の −／＋: 工程の玉と同じ銅の輪のガラスの玉 ---------- */
+& .fr-btn {
+  border: 0 !important; box-shadow: none !important; color: #f6f1fa;
+  background: url("../img/ui/craft-glass/bead.webp") center top / 100% auto no-repeat !important;
+}
+& .fr-btn:hover:not(:disabled) { filter: brightness(1.18); }
+& .fr-btn:disabled { filter: grayscale(.45) brightness(.72); }
+/* ---------- 丸い札: 右上の「？」（銅の輪のガラスの丸） ---------- */
+& .bench-guide summary {
+  border: 0 !important; box-shadow: none !important; background: url("../img/ui/craft-glass/badge.webp") -1px -.2px / 86px 89.7px no-repeat !important;
+}
+/* ---------- 額: 雑念よけの場のまわり（紫の革と銅の縁。中は今の場のまま） ---------- */
+& .dodge {
+  border-style: solid; border-color: transparent !important;
+  border-image: url("../img/ui/craft-glass/frame.webp") 50 60 50 60 / 20px 24px 20px 24px / 8px stretch !important;
 }
