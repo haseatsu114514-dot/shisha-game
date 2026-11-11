@@ -4422,6 +4422,53 @@
       "run": [
         "node remake/test/browser/board_notification_visibility.mjs"
       ]
+    },
+    {
+      "id": "look",
+      "title": "見た目の様式（現行／新版／DS風）の既定と章による制限",
+      "kind": "quick",
+      "run": ["node remake/test/look.mjs"]
+    },
+    {
+      "id": "look-neo",
+      "title": "新版: 会話の帯・右上の操作の札・選択肢の収まりと、現行へ戻した時に痕跡が残らないこと",
+      "kind": "browser",
+      "weight": 1.2,
+      "timeout": 5,
+      "paths": [
+        "remake/css/look-neo.css",
+        "remake/js/looks/**",
+        "remake/js/core/look.js",
+        "remake/css/vn.css",
+        "remake/css/phone-density.css",
+        "remake/css/daily-menu.css",
+        "remake/js/vn/engine.js",
+        "remake/js/scenes/title.js",
+        "remake/test/browser/look_neo.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/look_neo.mjs"
+      ]
+    },
+    {
+      "id": "look-retro",
+      "title": "DS風: 縦持ちの2画面・会話と地図の中継・未対応の場面と他章では現行のまま",
+      "kind": "browser",
+      "weight": 1.2,
+      "timeout": 5,
+      "paths": [
+        "remake/css/look-retro.css",
+        "remake/js/looks/**",
+        "remake/js/core/look.js",
+        "remake/js/core/rotate-guard.js",
+        "remake/js/vn/engine.js",
+        "remake/js/daily/map.js",
+        "remake/js/scenes/title.js",
+        "remake/test/browser/look_retro.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/look_retro.mjs"
+      ]
     }
   ]
 }
