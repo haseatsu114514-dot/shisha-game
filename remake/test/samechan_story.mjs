@@ -137,8 +137,13 @@ assert.equal(k.samechanVisitDialogue(),'samechan_shop_look_away');
 state.day++;await k.visitSamechan(open);assert.equal(played.at(-1),'samechan_shop_look_away');
 assert.equal(state.flags._samechan_look_away_done,true);assert.deepEqual([...rewards.at(-1)],['samechan',16],'一度きりの来店の話も段階の会話と同じ');
 assert.match(k.samechanVisitDialogue(),/^samechan_shop_repeat_/);
+// みんとの開店祝い（REL03）: みんとと面識がある時だけ、いつもの来店の代わりに一度。既読の旗は、ぺぱーみんとでの続きが読む。
+state.met.minto=true;assert.equal(k.samechanVisitDialogue(),'samechan_shop_minto_gift');
+state.day++;await k.visitSamechan(open);assert.equal(played.at(-1),'samechan_shop_minto_gift');
+assert.equal(state.flags._spot_seen_samechan_shop_minto_gift,true);assert.deepEqual([...rewards.at(-1)],['samechan',8],'開店祝いの話はいつもの来店と同じ');
+assert.match(k.samechanVisitDialogue(),/^samechan_shop_repeat_/,'開店祝いの話は一度だけ');
 for(const id of ['samechan_shop_first','samechan_shop_quiet_seat','samechan_shop_closing_check','samechan_shop_heart4','samechan_shop_heart5','samechan_shop_own_seat','samechan_shop_look_away','samechan_bond_finale'])assert.equal(k.samechanVisitAffinityKind(id),'story',id);
-for(const id of ['samechan_shop_bond_question','samechan_shop_repeat_0','samechan_shop_repeat_1','samechan_shop_cinema_impression','samechan_shop_unwell','ch3_prep_samechan','ch4_prep_samechan'])assert.equal(k.samechanVisitAffinityKind(id),'talk',id);
+for(const id of ['samechan_shop_bond_question','samechan_shop_repeat_0','samechan_shop_repeat_1','samechan_shop_cinema_impression','samechan_shop_unwell','samechan_shop_minto_gift','ch3_prep_samechan','ch4_prep_samechan'])assert.equal(k.samechanVisitAffinityKind(id),'talk',id);
 for(const id of ['samechan_shop_heart4','samechan_shop_heart5']){const scene=story.dialogues.find(d=>d.dialogue_id===id);
  assert(scene.lines.some(l=>l.condition_type==='romance_open'&&l.char_id==='samechan'),`${id}: ♥3の答えで恋愛/友人の分岐`);
  assert(scene.branches.romance&&scene.branches.friend,id);

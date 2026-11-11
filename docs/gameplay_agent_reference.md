@@ -390,6 +390,9 @@ jq '[.dialogues[].dialogue_id]' data/dialogue/ch1_main.json
 - チャコール博士が街の店の隅で、空気と客の吸う間隔を記録している（第5章の9000につながる。「人体実験の噂」としては描かない・2026-11-11）
 こうした世界観のクロスオーバーがゲーム性を深くする。
 
+人と人の関係（誰と誰がどんな仲か・社交性の目安・増やし方の決まり）の正本は [`brand/character_profiles.md`「キャラ同士のつながり」](../brand/character_profiles.md#キャラ同士のつながり相関2026-11-12-オーナー指示rel)（2026-11-12 オーナー指示・REL）。新しい絡みはそこを見てから書き、増やしたら一覧へ足す。増やしすぎない・社交性に合わせる（つむぎはtonariの中だけ）・はじめの好感度や恋愛を動かさない。
+見せ方は、施設で居合わせる短い場面（`remake/js/daily/spot-encounters.js` の `ENCOUNTERS`。`met` に複数人を書ける）と、それぞれの店の来店の冒頭で一度だけ読む続き（同 `FOLLOWUPS`）。検査は `node remake/test/town_ties.mjs` と `remake/test/browser/town_ties.mjs`。
+
 ---
 
 ## 矛盾・改行崩れの再発防止ルール（2026-06-15）

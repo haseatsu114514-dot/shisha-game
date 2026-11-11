@@ -2614,6 +2614,361 @@
           }
         ]
       }
+    },
+    {
+      "dialogue_id": "cafe_naru_rio",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_cafe_day.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "窓際の席で、なるが伝票を広げていた。足元に、Dr.fookahの紙袋が二つ。"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "よう。仕入れの帰りでさ。数を合わせてから、店に戻ろうと思って"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "入口のベルが鳴った。白いシャツの人が、持ち帰りのコーヒーを頼んでいる。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（凛想さんだ。こはくにも、コーヒーを買いに来るんだ）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "なるの背筋が、すっと伸びた。伝票の角を、指でそろえ直している。"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "あら、ケムリクサさん。バニラの追加、次の便で入るよ"
+        },
+        {
+          "speaker": "naru",
+          "face": "serious",
+          "text": "は、はい。……ありがとうございます、円頓寺さん"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "凛想さんは、俺にも小さく手を上げた。"
+        },
+        {
+          "speaker": "rio",
+          "face": "smile",
+          "text": "夜、またおいで"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "紙のカップを受け取って、凛想さんは通りへ出ていった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "なるさん。今、敬語でしたね"
+        },
+        {
+          "speaker": "naru",
+          "face": "surprise",
+          "text": "……取引先だぞ。普通だろ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "伝票、さっきから同じ一枚をそろえてます"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "……お前、そういうとこだけ、よく見てんな"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_spot_seen_cafe_naru_rio"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "cafe_naru_rio_followup",
+      "metadata": {
+        "private_scene": false
+      },
+      "lines": [
+        {
+          "type": "condition",
+          "condition_type": "lover",
+          "char_id": "rio",
+          "next_true": "lover",
+          "next_false": "plain"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_spot_follow_naru_rio"
+        }
+      ],
+      "branches": {
+        "plain": [
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "こはくの件、……誰にも言うなよ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "言いませんよ。敬語だった、ってだけですし"
+          },
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "あの人さ。袋を開けた瞬間に、ロットの違いを言い当てるんだ"
+          },
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "爪も、何も塗ってない。香りの邪魔になるから、ってさ"
+          },
+          {
+            "speaker": "naru",
+            "face": "serious",
+            "text": "……大人って、ああいう人のことを言うんだろうな"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "なるさん、よく見てますね"
+          },
+          {
+            "speaker": "naru",
+            "face": "surprise",
+            "text": "仕事の話だ、……仕事の"
+          }
+        ],
+        "lover": [
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "こはくの件。……お前、あの人と付き合ってんだろ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "surprise",
+            "text": "え、……分かりますか"
+          },
+          {
+            "speaker": "naru",
+            "face": "smile",
+            "text": "あの人、お前を見る時だけ、目尻がゆるむんだよ"
+          },
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "仕事のできる大人だ。俺も、ちょっと憧れてた、……ちょっとな"
+          },
+          {
+            "speaker": "naru",
+            "face": "smile",
+            "text": "泣かすなよ。次の仕入れで、俺が気まずいから"
+          }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "cafe_naru_rio_followup_rio",
+      "metadata": {
+        "private_scene": false
+      },
+      "lines": [
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "こはくで会ったね。……ケムリクサの子、私の前だと固まるでしょ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "気づいてたんですか"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "納品の確認に来ても、伝票だけ置いて三分で帰るの"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "魔女なんて呼ばれてるし、怖いのかな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（たぶん、逆です）"
+        },
+        {
+          "speaker": "rio",
+          "face": "smile",
+          "text": "注文書の字は、あんなに丁寧なのにね。次は、お茶でも出そうか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（なるさんが、三分もたなくなる）"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_spot_follow_rio_naru"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "kannon_adam_lunch",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_kannon_day.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "境内のベンチに、アダムが座っていた。膝の上に、ふたを開けた弁当箱。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "その前で、なるが腕を組んでいる。"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "野菜から食えって。今日は残すなよ"
+        },
+        {
+          "speaker": "adam",
+          "face": "serious",
+          "text": "……緑は、俺の髪の半分で足りている"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "足りてねえよ。いいから食え"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "なるさんが、作ったんですか？"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "試作の余りだよ。この人、放っとくと昼がカップ麺でさ"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "しかも、湯を入れ忘れる"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "あれは、一度だけだ"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "三回見た"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "アダムは観念したように、ピーマンを口へ運んだ。"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "……鳴切の飯は、うまい。ダブルアップルの、次に"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "それ、この人の最高の褒め言葉だからな"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_spot_seen_kannon_adam_lunch"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "kannon_adam_lunch_followup",
+      "metadata": {
+        "private_scene": false
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "カウンターの隅に、洗った弁当箱が伏せてあった。"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "鳴切の箱だ。洗い方は、三度目で覚えた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "二度目までは、どうしてたんですか"
+        },
+        {
+          "speaker": "adam",
+          "face": "serious",
+          "text": "……泡が、残っていたそうだ"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_spot_follow_adam_lunch"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "samechan_minto_followup",
+      "metadata": {
+        "private_scene": false
+      },
+      "lines": [
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "サメちゃんのお店、行ったんだって？ 通路、広くなってた？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "うん。お盆を持っても、すれ違えたよ"
+        },
+        {
+          "speaker": "minto",
+          "face": "wink",
+          "text": "でしょ♡ ひとりのお店はね、自分が転ばない道から作るの"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "明るい声のまま、みんとは自分の店の通路を、一度だけ目でなぞった。"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_spot_follow_minto_samechan"
+        }
+      ]
     }
   ]
 }

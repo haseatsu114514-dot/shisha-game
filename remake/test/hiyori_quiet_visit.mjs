@@ -125,6 +125,8 @@ await check('first meeting, followup, cafe introduction, question and missing re
 await check('samechan and C.STATION repeat classification preserves pending intros and special events',async f=>{
   const s=f.core.state;s.chapter=2;s.met.samechan=true;s.story.samechan=1;
   const shark=f.spots.allSpots().find(p=>p.kind==='samechan');assert(shark);
+  // みんとの開店祝い（REL03）は一度きりの話。読むまでは短い通常来店として扱わない（ひよりの相席を重ねない）。
+  if(s.met.minto){assert.equal(f.spots.shortNormalVisit(shark),false);s.flags._spot_seen_samechan_shop_minto_gift=true;}
   assert.equal(f.spots.shortNormalVisit(shark),true);
   s.flags._samechan_quiet_seat_done=true;assert.equal(f.spots.shortNormalVisit(shark),false);
   s.flags._samechan_cinema_introduced=true;assert.equal(f.spots.shortNormalVisit(shark),true);
