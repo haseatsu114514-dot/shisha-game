@@ -54,6 +54,8 @@ html, body {
      会話の本文は autoWrap が行を決めるので対象外（vn.css） */
   word-break: auto-phrase;
   line-break: strict;
+  /* 最後の行だけ短い「切れ端」（「…経験値が／入ります」）をブラウザに避けさせる（TXW04。未対応ブラウザは通常の折り返し） */
+  text-wrap: pretty;
   overflow: hidden;
   -webkit-tap-highlight-color: transparent;
   -webkit-user-select: none;
