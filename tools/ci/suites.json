@@ -4261,9 +4261,9 @@
     },
     {
       "id": "conversation-cutin",
-      "title": "Conversation cut-ins in the main VN engine (#2990): adopted placements, enter/leave, SKIP/LOG",
+      "title": "Conversation cut-ins in the main VN engine (#2990, #3417): every placement plays, enter/leave, SKIP/LOG",
       "kind": "browser",
-      "weight": 0.5,
+      "weight": 1.2,
       "timeout": 4,
       "paths": ["remake/js/vn/engine.js", "remake/js/vn/conversation-cutin.js", "remake/css/vn/conversation-cutin.css", "remake/test/browser/conversation_cutin_2990.mjs"],
       "run": ["node remake/test/browser/conversation_cutin_2990.mjs"]
