@@ -69,7 +69,7 @@ await suite("ch4-dubai-daily", async check => {
     ["touch", { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }],
   ]) await check(`revisit-new-markers-${device}`, async page => {
     const spots = ["ch4_dubai_souq", "ch4_dubai_festa", "ch4_dubai_cafe", "ch4_dubai_alley"];
-    const prepare = completed => seed(page, (value, progress) => {
+    const prepare = (completed, chains = null) => seed(page, (value, progress) => {
       const p = value.flags._ch4;
       for (const id of ["ch4_opening", "ch4_arrival_inn"]) progress.completeChapterFourScene(value, id);
       for (const id of ["ch4_festa", "ch4_dubai_souq", "ch4_stranger_first", "ch4_stranger_second", "ch4_dubai_cafe", "ch4_inn_tool_care"]) p.read[id] = true;
@@ -77,18 +77,27 @@ await suite("ch4-dubai-daily", async check => {
       value.day = p.startDay + 4; value.slot = 0; p.day = 5;
       value.met.da_silva = true;
     }).then(async () => {
-      if (completed) await page.evaluate(async () => {
+      if (completed) await page.evaluate(async chains => {
         const core = await import("./js/core/state.js");
         core.state.flags._ch4_dubai_talks = { souq: 4, festa: 4, center_cafe: 6, alley_cafe: 5 };
+        if (chains) core.state.flags._visit_chains = chains;
         core.save();
-      });
+      }, chains);
     });
     await prepare(false);
     await loadSlot(page, 0);
     await dubaiMap(page);
     for (const id of spots)
       assert.equal(await page.locator(`${dt(`pin-${id}`)} .evt-badge.story`).count(), 1, `${id}: new revisit after first scene`);
+    // 中心地のカフェは、再訪の会話を一巡した後に通いの続き（#2020 D・chapters/visit-chains.js）の段が新しく出る
     await prepare(true);
+    await loadSlot(page, 0);
+    await dubaiMap(page);
+    for (const id of spots)
+      assert.equal(await page.locator(`${dt(`pin-${id}`)} .evt-badge.story`).count(), id === "ch4_dubai_cafe" ? 1 : 0,
+        `${id}: after all revisits, only the cafe's visit chain is new`);
+    // 通いの続きも読み終えたら、一巡した行き先に「！」は残らない
+    await prepare(true, { ch4_second_bowl: { done: 3, day: 1, picks: {} } });
     await loadSlot(page, 0);
     await dubaiMap(page);
     for (const id of spots)
