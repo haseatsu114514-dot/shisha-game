@@ -62,9 +62,24 @@
           "text": "裏返して、店の名前を書きかけたところで、ペンを止めた。"
         },
         {
+          "speaker": "",
+          "face": "",
+          "text": "三ヶ月目に決めた名前は、もう書けなかった。あれは、俺ひとりの城の名前だった。"
+        },
+        {
           "speaker": "sumi",
           "face": "smile",
           "text": "店はもう、お前が回してる。俺が言うことも、だいぶ減ったな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "スミさん。tonariって、どうしてこの名前なんですか"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "客の隣に座れる店にしたかった、……それだけだ"
         },
         {
           "speaker": "sumi",

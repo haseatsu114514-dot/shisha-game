@@ -19,6 +19,9 @@ export const CH2_NIGHTS = [
   { day: 3, pin: "naru", label: "なるの祝福", beat: "夜。なるの話を聞きに、KEMURIKUSAへ──", doneFlag: "_ch2_naru_warm_done", steps: [
     { id: "ch2_naru_warm", file: "ch2_isolation" },
     { id: "remake_ch2_ageha_scout", file: "ch2_ageha_story", met: "ageha" },
+    // 全体講評S6: あげはを見送ったあと、優勝目当ての客が大会の一台を半分残す。DAY4の居残りと炭の事故の前段。
+    // DAY3の夜を読み終えた保存には足さない（夜ごと完了済み）。
+    { id: "ch2_title_customer_half", file: "ch2_main", flag: "_stk_title_customer_half" },
   ] },
   { day: 4, pin: "tonari", label: "焦げたソファ", beat: "夜。預けていたノートを取りに、閉店前のtonariへ──", steps: [
     { id: "ch2_sofa_burn", file: "ch2_main" },
@@ -32,6 +35,9 @@ export const CH2_NIGHTS = [
   { day: 6, schedule: "preparation", deadline: 7, pin: "tonari", label: "残る匂い", beat: "夜。残る匂いのことが気になって、tonariへ──", prerequisites: ["_ch2_read_ch2_sofa_burn"], steps: [
     // #1652: 事故と味の不調が続いたあと、閉店前の炭替えを二人でやり遂げる短い成果。読了フラグは場面ごとの既定だけで、
     // 新しい進行フラグは足さない。DAY6の夜をすでに読み終えた保存は夜ごと完了済みなので読まない。
+    // 全体講評S6: 半分残した客が、軽い一台を最後まで吸う。DAY3の場面を見た保存だけ、二人の炭替えの前に読む。
+    { id: "ch2_title_customer_back", file: "ch2_main", flag: "_stk_title_customer_back", when: ({ flags }) =>
+      !!flags._stk_title_customer_half && !flags._ch2_read_ch2_coal_together },
     { id: "ch2_coal_together", file: "ch2_main" },
     { id: "ch2_lingering_smell", file: "ch2_main" },
   ] },
@@ -40,6 +46,10 @@ export const CH2_NIGHTS = [
     { id: "ch2_adam_distance", file: "ch2_isolation" },
   ] },
   { day: 9, pin: "ch2_c_station", label: "アフサール新作の試煙会", beat: "夜。C.STATIONの試煙会へ──", steps: [
+    // 全体講評S13: 開場前の客席で、博士が吸う間隔から不調に気づき、温度計を貸そうとする。
+    // 選択の記録（_stk_kemuri_thermo_borrowed / _declined）は台本が付ける。試煙会を読み終えた保存には足さない。
+    { id: "ch2_kemuri_thermometer", file: "ch2_main", bg: C_STATION_TASTING_BG, when: ({ flags }) =>
+      !flags._ch2_read_remake_ch2_ageha_tasting },
     { id: "remake_ch2_ageha_tasting", file: "ch2_ageha_story", bg: C_STATION_TASTING_BG },
     // #1650: 帰り際に試供品の苺を受け取り、tonariのまかないで熱だけを試す導線にする
     { id: "ch2_strawberry_sample", file: "ch2_main", bg: C_STATION_TASTING_BG, sample: true },

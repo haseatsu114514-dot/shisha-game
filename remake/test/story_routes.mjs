@@ -18,8 +18,13 @@ for (const id of all) {
   assert.equal(selectStoryEvening(routes, state, {...ctx, accepted: []}).kind, 'rest');
   assert.equal(selectStoryEvening(routes, state, {...ctx, unresolved: [id]}).kind, 'rest');
   assert.equal(selectStoryEvening(routes, {...state, flags: {_story_shuraba_unresolved: true}}, ctx).kind, 'rest');
-  assert.equal(selectStoryEnding(routes, state, ctx)[1], routes.romance[id].epilogue);
-  assert.equal(selectStoryEnding(routes, state, {...ctx, present: []})[1], routes.ending.normal);
+  // 共通の賄い（ending.normal）は置き換えず、読んでからその人の後日談へ進む（全体講評 S11・STK11）。
+  assert.deepEqual(selectStoryEnding(routes, state, ctx),
+    [routes.ending.start, routes.ending.normal, routes.romance[id].epilogue, routes.ending.daily]);
+  assert.deepEqual(selectStoryEnding(routes, state, {...ctx, present: []}),
+    [routes.ending.start, routes.ending.normal, routes.ending.daily]);
+  assert.deepEqual(selectStoryEnding(routes, {...state, flags: {_story_shuraba_unresolved: true}}, ctx),
+    [routes.ending.start, routes.ending.normal, routes.ending.daily]);
   assert.equal(selectPostEndingConflict(routes, state, ctx).kind, 'none');
 }
 assert.equal(selectStoryEvening(routes, {chapter: 3, lovers: ['ageha']}, {...context, selected: 'ageha'}).kind, 'rest');
@@ -35,7 +40,7 @@ for (let n = 2; n <= all.length; n++) {
   assert.deepEqual(result.talks, lovers.map(id => routes.romance[id].talk), 'one talk per hurt lover, in order');
   result.scenes.forEach(id => assert.ok(scenes.has(id), id));
   assert.equal(selectStoryEvening(routes, state, {present: [lovers[0]]}).kind, 'rest');
-  assert.equal(selectStoryEnding(routes, state, context)[1], routes.ending.normal);
+  assert.deepEqual(selectStoryEnding(routes, state, context), [routes.ending.start, routes.ending.normal, routes.ending.daily]);
   assert.equal(selectPostEndingConflict(routes, state, {present: [lovers[0]]}).kind, 'pending');
 
   const tokyo = {chapter: 3, lovers};
