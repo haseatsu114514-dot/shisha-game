@@ -89,7 +89,8 @@ export async function shiftClose() {
   const short = shortenSeen("shift");
   const mod = await shift().catch((e) => { console.error(e); return null; });
   if (!mod || state !== owner) return;
-  const run = short ? mod.brief : (motionVariant("shift") === "b" ? mod.b : mod.a);
+  const v = motionVariant("shift");
+  const run = short ? (v === "c" ? () => mod.c({ brief: true }) : mod.brief) : (mod[v] || mod.a);
   if (run) await run();
   if (state === owner) markSeen("shift"); // 見せ終えてから記録
 }
