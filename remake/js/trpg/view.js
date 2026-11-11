@@ -159,7 +159,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
   });
   heatMeter.addEventListener("click", () => {
     const { heat } = session.snapshot(), nextTier = HEAT.tiers.find(t => t > heat);
-    showTip("盛り上がり " + heat + "/" + HEAT.max + "：3・6・8に届くと勢い（次の判定に＋" + DICE.momentum + "）"
+    showTip("盛り上がり " + heat + "/" + HEAT.max + "：" + HEAT.tiers.join("・") + "に届くと勢い（次の判定に＋" + DICE.momentum + "）"
       + (nextTier ? "。あと" + (nextTier - heat) + "で次の勢い" : "。最高潮"));
   });
   let heatSeen = 0, heatChatter = [];
@@ -890,11 +890,11 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
       const pc = sheets[approach.sheet || approach.actor];
       const { base } = approachBase(scenario, kind, approach.id, sheets);
       const odds = checkForecast(scenario, state, kind, { approach: approach.id, sheets }).odds;
-      const first = !state.acted[approach.actor] && !approach.npc && approach.actor !== PLAYER_SEAT;
+      const first = !state.acted[approach.actor] && !approach.npc;
       return el("button.trpg-button.trpg-approach", { type: "button", dataset: { test: "trpg-approach-" + approach.id, actor: approach.actor, best: String(approach.id === bestId) },
         title: pcText(approach.detail),
         "aria-label": pcText(approach.label) + "。" + pcText(approach.detail) + "。" + (approach.npc ? "GMが演じる" : name(approach.actor) + "の") + (pc?.name || "") + "、" + statLabel(approach.stat) + "＋" + base + "。成功 約" + odds.success + "%、ひと手間 約" + odds.mixed + "%"
-          + (approach.id === bestId ? "。おすすめ" : "") + (first ? "。初めての見せ場で盛り上がり＋1" : ""),
+          + (approach.id === bestId ? "。おすすめ" : "") + (first ? "。この役の初めての見せ場で盛り上がり＋1" : ""),
         onclick: () => {
           if (!pop || busy) return;
           pop.close();
@@ -912,7 +912,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
           el("span.trpg-odds-bar", { "aria-hidden": "true", dataset: { test: "trpg-approach-odds" }, style: { "--success": odds.success + "%", "--mixed": odds.mixed + "%" } }),
           el("small", { text: "成功 " + odds.success + "%" }),
           approach.id === bestId ? el("i.trpg-approach-best", { text: "おすすめ", title: "いちばん成功しやすい", dataset: { test: "trpg-approach-best" } }) : null,
-          first ? el("i.trpg-approach-first", { text: "見せ場 ＋1", title: "初めて前に出る仲間。盛り上がり＋1" }) : null,
+          first ? el("i.trpg-approach-first", { text: "見せ場 ＋1", title: "この役が初めて前に出る。盛り上がり＋1" }) : null,
         ].filter(Boolean)),
       ]);
     });
@@ -921,7 +921,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
         el("span", { text: presentation.declareHint || "" }),
         el("span.trpg-declare-rule", { text: presentation.target || ("目標値" + DICE.success) }),
         el("span.trpg-declare-rule", { text: "20の目が出たらクリティカル。必ず成功" }),
-        el("span", { text: "帯は見込み：金＝成功、緑＝ひと手間。「おすすめ」はいちばん成功しやすい行動。「見せ場 ＋1」は初めて前に出る仲間で、盛り上がりが1上がる。" }),
+        el("span", { text: "帯は見込み：金＝成功、緑＝ひと手間。「おすすめ」はいちばん成功しやすい行動。「見せ場 ＋1」はその役が初めて前に出る時で、盛り上がりが1上がる（自分の役も、仲間の役も）。" }),
         ...(STAKES[rewardKindOf(scenario, kind)] ? [el("span", { text: "「成功で ○○」は、成功した時のごほうび。" + STAKES[rewardKindOf(scenario, kind)].long + "。" })] : []),
       ])].filter(Boolean)),
       el("div.trpg-approach-list", cards),
@@ -1389,7 +1389,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
         el("dt", { text: "成功で ○○" }), el("dd", { text: "その判定に成功した時のごほうび。振る前にGMが告げる" }),
         el("dt", { text: "見込みの帯" }), el("dd", { text: "行動のカードの帯。金＝成功、緑＝ひと手間、残り＝思わぬ出来事の見込み" }),
         el("dt", { text: "おすすめ" }), el("dd", { text: "いちばん成功しやすい行動" }),
-        el("dt", { text: "見せ場 ＋1" }), el("dd", { text: "初めて前に出る仲間。卓の盛り上がりが1上がる" }),
+        el("dt", { text: "見せ場 ＋1" }), el("dd", { text: "その役が初めて前に出る時。自分の役も仲間の役も、卓の盛り上がりが1上がる" }),
         el("dt", { text: "✕ 合わなそう" }), el("dd", { text: "GMのヒント。今夜の事情に合わない選択肢。選ぶことはできる" }),
         el("dt", { text: "あと1……！" }), el("dd", { text: "成功に1〜2足りなかった出目" }),
         el("dt", { text: "会心の印" }), el("dd", { text: "最後の判定に成功した卓。結末に「会心のクライマックス」と出る" }),
@@ -1403,11 +1403,11 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
       head("成功のごほうび"),
       el("p", { text: "判定の前に、GMが「成功すると何が起きるか」を告げます。" + (scenario.interview ? "最初の判定は、聞き込みで聞けることが1つ増えます。" : "")
         + "途中の判定は、次の選択でGMが「合わないもの」に印をつけてくれます（選ぶことはできます）。最後の判定は、結末に「会心のクライマックス」の印がつきます。失敗しても、ごほうびが無いだけです。" }),
-      ...(Object.keys(sheets).length ? [el("p", { text: "仲間のキャラクターが初めて前に出ると、卓の盛り上がりが1上がります。能力値はキャラクターシートで確認できます。" })] : []),
+      ...(Object.keys(sheets).length ? [el("p", { text: "自分の役も仲間の役も、初めて前に出ると卓の盛り上がりが1上がります。みんなに一度ずつ見せ場を。能力値はキャラクターシートで確認できます。" })] : []),
       ...(scenario.builder ? [el("p", { text: "表紙の「キャラクターを作る」で、自分が演じる役の出自と能力値（合計" + scenario.builder.points + "点）を決められます。" })] : []),
       head("札と盛り上がり"),
       el("p", { text: "共有する連携札は2枚。切り札を使うたび1枚使います。クリティカル（20の目）が出ると、1枚戻ります。" }),
-      el("p", { text: "卓の盛り上がりは、うまくいった判定・思わぬ出来事・クリティカル・ファンブル・ゾロ目・仲間の見せ場・初めての相談・見立ての話し合いで上がります。3・6・8に届くたび、次の判定に勢い1つ（補正＋4、最大2つ）。" }),
+      el("p", { text: "卓の盛り上がりは、うまくいった判定・思わぬ出来事・クリティカル・ファンブル・ゾロ目・役の見せ場・初めての相談・見立ての話し合いで上がります。" + HEAT.tiers.join("・") + "に届くたび、次の判定に勢い1つ（補正＋" + DICE.momentum + "、最大" + HEAT.momentumMax + "つ）。" }),
       el("p", { text: "結末では卓を星3つで評価します。見立てが真相に合う、提案が本来の結末に届く、判定で2回以上うまくいく。" }),
       ...scenario.cast.filter(c => c.part !== "GM").map(c => el("p.trpg-help-ability", { text: name(c.id) + "「" + c.ability + "」 · " + c.abilityText })),
       el("p", { text: "切り札は各人一度ずつ。先に助けを借りるか、最後のために札を残すか、相談しながら決めましょう。" }),

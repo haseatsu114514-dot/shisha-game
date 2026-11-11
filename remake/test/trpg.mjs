@@ -402,7 +402,8 @@ test("table excitement rises with shared moments, tiers give the next roll one m
   session.state.heat = HEAT.max - 1; session.cheer(5, "test");
   assert.equal(session.snapshot().heat, HEAT.max);
   assert(session.snapshot().momentum <= HEAT.momentumMax);
-  assert.deepEqual([0, 3, 6, 8].map(heatTier), [0, 1, 2, 3]);
+  assert.deepEqual([0, 3, 6, 9, 10].map(heatTier), [0, 1, 2, 2, 3], "the top tier takes a full table (TRF12)");
+  assert.equal(HEAT.max, 10);
   const done = complete();
   assert.equal(done.result().heat.night, HEAT.nights[heatTier(done.snapshot().heat)]);
 });
@@ -441,6 +442,9 @@ test("declared approaches roll with the PC's sheet stat; a companion's first tur
   session.settleCheck(); interviewDone(session);
   for (const id of ["menu", "window", "bag"]) session.inspect(id);
   session.interpret("quiet"); twistDone(session); session.plan("aroma", "tea"); session.plan("seat", "window");
+  // The twist above was the player's own first turn: the character you made gets its spotlight too (TRF12).
+  assert(session.snapshot().heatLog.some(entry => /の見せ場$/.test(entry.reason) && entry.reason.startsWith(session.sheets.hajime.name)),
+    "the player's own character earns a spotlight the first time it acts");
   const heatBefore = session.snapshot().heat;
   const second = session.beginCheck("prepare", { approach: "prepare_light" });
   assert.equal(second.base, 5); assert.equal(session.snapshot().heat, heatBefore, "the same companion earns no second spotlight");
@@ -448,7 +452,7 @@ test("declared approaches roll with the PC's sheet stat; a companion's first tur
   const heatBeforeServe = session.snapshot().heat;
   const own = session.beginCheck("serve");
   assert.equal(own.actor, "hajime"); assert.equal(own.base, 4, "the default approach is the player's own character");
-  assert.equal(session.snapshot().heat, heatBeforeServe, "the player's own turn is not a spotlight");
+  assert.equal(session.snapshot().heat, heatBeforeServe, "the player's own second turn is no new spotlight");
   session.settleCheck();
   assert.deepEqual(session.result().checks.map(c => c.approach), ["listen_watch", "twist_talk", "prepare_light", "serve_word"]);
   assert.deepEqual(session.result().acted, { tsumugi: 2, hajime: 2 });

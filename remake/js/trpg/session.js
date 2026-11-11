@@ -102,8 +102,12 @@ export const hintFieldsOf = (scenario, kind) => {
 /** The prize a check offers at this table: a scenario without an interview cannot offer one more question. */
 export const rewardKindOf = (scenario, kind) => REWARDS[kind] === "question" && !scenario.interview ? "cheer" : REWARDS[kind] || "cheer";
 const RATING_TITLES = ["にぎやかな卓", "よい卓", "名卓", "伝説の卓"];
-/** Table excitement. Each tier reached once gives one momentum: bonus +4 to the next roll (up to two). */
-export const HEAT = { max: 8, tiers: [3, 6, 8], momentumMax: 2,
+/**
+ * Table excitement. Each tier reached once gives one momentum: bonus +4 to the next roll (up to two).
+ * The first two tiers are within anyone's reach; the top (TRF12) takes a table where everyone had a turn and the
+ * cards were played: with the old top at 8, a practised table reached it every single night.
+ */
+export const HEAT = { max: 10, tiers: [3, 6, 10], momentumMax: 2,
   names: ["静かな卓", "あたたまってきた", "沸いてきた", "最高潮"],
   nights: ["静かな夜", "和やかな夜", "盛り上がった夜", "大盛況の夜"] };
 export const heatTier = value => HEAT.tiers.filter(t => value >= t).length;
@@ -267,8 +271,9 @@ export class TrpgSession {
     if (chosen) {
       const first = !this.state.acted[chosen.actor];
       this.state.acted[chosen.actor] = (this.state.acted[chosen.actor] || 0) + 1;
-      // A companion stepping forward for the first time is a table moment; the GM playing an empty seat is not.
-      if (first && !chosen.npc && chosen.actor !== PLAYER_SEAT) this.cheer(1, (this.sheets[this.state.pending.sheet]?.name || "仲間") + "の見せ場");
+      // Anyone's character stepping forward for the first time is a table moment, the player's own included (TRF12):
+      // the character you made deserves its spotlight as much as a companion's. The GM playing an empty seat is not one.
+      if (first && !chosen.npc) this.cheer(1, (this.sheets[this.state.pending.sheet]?.name || "仲間") + "の見せ場");
     }
     if (support) this.cheer(1, "仲間の見せ場");
     return this.checkResult();

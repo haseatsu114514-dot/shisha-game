@@ -903,3 +903,8 @@ html:root .trpg-root.trpg-cinematic .trpg-clue-card strong { font-size: max(28px
   html:root .trpg-root.trpg-cinematic .trpg-room > img { transform: none !important; transition: none; }
   html:root .trpg-root.trpg-cinematic .trpg-dock .trpg-speech p { animation: none !important; }
 }
+
+/* 盛り上がりのマス目は10個（TRF12・以前は8個）。帯の幅は以前と同じに収める（題の字を削らない）。 */
+html:root .trpg-root.trpg-cinematic .trpg-heat-pips { gap: 3px; }
+html:root .trpg-root.trpg-cinematic .trpg-heat-pips i { width: 9px; }
+html:root .trpg-root.trpg-cinematic .trpg-heat-pips i.tier { margin-right: 5px; }
