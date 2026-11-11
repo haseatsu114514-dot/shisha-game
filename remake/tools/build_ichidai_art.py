@@ -4,6 +4,8 @@
 使い方:
   python3 remake/tools/build_ichidai_art.py          # 作り直す
   python3 remake/tools/build_ichidai_art.py --check  # 一覧と WebP が採用した PNG とそろっているかだけ確かめる（何も書かない）
+                                                     # 画像を取ってこない checkout（CI の quick）でも確かめられるよう、
+                                                     # 手元にある絵に加えて git が追跡している絵も数える
 
 - 採用した絵を assets/ui/ichidai/<種類>/<id>.png に置く。種類は flavor（葉）・card（デッキのカード）・table（卓）・back（裏面）。
   id は remake/js/minigames/ichidai-data.js の FLAVORS / CARDS の id。卓は mat、裏面は deck（デッキ）と judge（審査カード）。
@@ -16,6 +18,7 @@
 - どちらも新しい画像なので Git LFS になる（git add のあと git lfs ls-files で確かめる）。
 """
 import re
+import subprocess
 import sys
 from pathlib import Path
 
@@ -54,11 +57,28 @@ def cover(image, size):
     return cut
 
 
-def collect():
+def tracked(base, suffix):
+    """git が追跡しているファイル（画像を取ってこない sparse checkout でも一覧は分かる）。git が無ければ空。"""
+    try:
+        out = subprocess.run(["git", "ls-files", "-z", "--", str(base.relative_to(ROOT))], cwd=ROOT, capture_output=True, check=True).stdout
+    except (OSError, subprocess.CalledProcessError):
+        return set()
+    return {ROOT / p for p in out.decode("utf-8").split("\0") if p.endswith(suffix)}
+
+
+def files(base, kind, suffix, with_tracked):
+    """base/kind の中の絵。with_tracked なら、手元に無くても git が追跡しているものを足す。"""
+    here = set((base / kind).glob(f"*{suffix}")) if (base / kind).is_dir() else set()
+    if with_tracked:
+        here |= {p for p in tracked(base, suffix) if p.parent == base / kind}
+    return sorted(here)
+
+
+def collect(with_tracked=False):
     valid, found, errors = known_ids(), {}, []
     for kind in KINDS:
         found[kind] = []
-        for path in sorted((PNG_DIR / kind).glob("*.png")) if (PNG_DIR / kind).is_dir() else []:
+        for path in files(PNG_DIR, kind, ".png", with_tracked):
             if path.stem not in valid[kind]:
                 errors.append(f"{path.relative_to(ROOT)}: {kind} に {path.stem} という id は無い")
                 continue
@@ -75,17 +95,18 @@ def art_js(found):
 
 def main():
     check = "--check" in sys.argv
-    found, errors = collect()
+    found, errors = collect(with_tracked=check)
     new_js = art_js(found)
     if check:
         if new_js != ART_JS.read_text(encoding="utf-8"):
             errors.append("ichidai-art.js の一覧が、assets/ui/ichidai の絵とそろっていない（build_ichidai_art.py を実行する）")
         for kind, ids in found.items():
+            webps = {p.stem for p in files(WEBP_DIR, kind, ".webp", True)}
             for i in ids:
-                if not (WEBP_DIR / kind / f"{i}.webp").is_file():
+                if i not in webps:
                     errors.append(f"remake/img/ui/ichidai/{kind}/{i}.webp が無い")
         for kind in KINDS:
-            for path in (WEBP_DIR / kind).glob("*.webp") if (WEBP_DIR / kind).is_dir() else []:
+            for path in files(WEBP_DIR, kind, ".webp", True):
                 if path.stem not in found[kind]:
                     errors.append(f"{path.relative_to(ROOT)}: 採用した PNG が無い")
     else:

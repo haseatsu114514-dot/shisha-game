@@ -7,7 +7,8 @@
   OPENAI_API_KEY=... python3 asset_sources/card_game/art-20261111/gen.py            # まだ無いものを全部
   OPENAI_API_KEY=... python3 asset_sources/card_game/art-20261111/gen.py read fan   # 指定した id だけ作り直す
 
-2026-11-11 時点では 1 枚も生成していない（API の残高が無く「credit_balance_exhausted」で止まった）。
+2026-11-11 に API で実行したが残高が無く（「credit_balance_exhausted」）、card の24枚は同じ日に Codex の内蔵画像生成で
+この文のまま作った（#3221。記録は asset_sources/card_game/README.md の「原画の記録」）。卓と裏面は #3257 の担当。
 ここの文が第2弾の依頼文の正本。Codex 内蔵の画像生成で作るときも --print の文をそのまま使う。
 
 - 出力は raw/<種類>/<id>.png（生成したまま・加工しない）。作り直すと raw/<種類>/<id>.v2.png のように番号を足す。
