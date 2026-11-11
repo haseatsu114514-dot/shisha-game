@@ -4,6 +4,7 @@
   git lfs pull --include="asset_sources/tetsuko-care/originals/prop_*"   # 原画の実体（小物だけなら約8MB）
   python3 remake/tools/build_tetsuko_art.py                             # 小物を作り直す
   python3 remake/tools/build_tetsuko_art.py ui cats scene               # TKT25・26 の UI の部品・猫のしぐさ・膝としっぽ（#3213・#3214）
+  python3 remake/tools/build_tetsuko_art.py ui_b                        # TKT27 の UI の部品の B 段（#3243・PR #3248 の原画）
 
 - 原画は単色マゼンタ（#FF00FF）の背景。マゼンタを透過にする。縁（背景から3px以内）だけは、混ざったマゼンタの分を
   半透明に戻して色を引き戻す（輪郭が紫ににじまない）。絵の内側の色には触らない。
@@ -247,8 +248,39 @@ def build_scene():
         save_as(name, scale_to(Image.fromarray(rgba[y0:y1, x0:x1], "RGBA"), width))
 
 
+# UI の部品の B 段（#3243・Codex の PR #3248 の原画・2026-11-11 採用）。名前 → (原画, 切り出し枠（原画の px・None は絵の大きさ）, 書き出しの幅)。
+# テープ2枚は、同じ絵に別の部品が混ざっていたので、その部品だけを切り出す（枠は ndimage で測った塊）。
+UI_B = {
+    "ui_tk_tray": ("ui_tk_tray.png", None, 1200),
+    "ui_tk_card": ("ui_tk_card.png", None, 384),
+    "ui_tk_panel": ("ui_tk_panel.png", None, 768),
+    "ui_tk_book": ("ui_tk_book.png", (16, 16, 1623, 868), 1600),          # 右の端の別の帯（背）は使わない
+    "ui_tk_book_spine": ("ui_tk_book_spine.png", None, 48),
+    "ui_tk_photo": ("ui_tk_photo.png", None, 460),
+    "ui_tk_tape": ("ui_tk_tape.png", (1209, 221, 2045, 504), 220),       # 左の小さな写真の枠は使わない
+    "ui_tk_frame": ("ui_tk_frame.png", None, 1280),
+    "ui_tk_flap": ("ui_tk_flap.png", None, 640),
+    "ui_tk_packtape": ("ui_tk_packtape.png", (997, 95, 1148, 1234), 80),  # 左の箱のふたは使わない（ふたは ui_tk_flap）
+    "ui_tk_slot": ("ui_tk_slot.png", None, 500),
+    "ui_tk_badge": ("ui_tk_badge.png", None, 96),
+    "ui_tk_nametag": ("ui_tk_nametag.png", None, 300),
+    "ui_tk_unknown": ("ui_tk_unknown.png", None, 192),
+}
+
+
+def build_ui_b():
+    for name, (src, box, width) in UI_B.items():
+        rgba = key_tolerant(SRC / src)
+        if box:
+            x0, y0, x1, y1 = box
+            rgba = rgba[y0:y1, x0:x1].copy()
+        x0, y0, x1, y1 = crop_box(rgba)
+        save_as(name, fit_width(Image.fromarray(rgba[y0:y1, x0:x1], "RGBA"), width))
+
+
 def main(groups=("props",)):
     if "ui" in groups: build_ui()
+    if "ui_b" in groups: build_ui_b()
     if "cats" in groups: build_cats()
     if "scene" in groups: build_scene()
     if "props" in groups: build_props()

@@ -115,6 +115,15 @@ await suite("tetsuko-feel", async check => {
     assert.deepEqual(await page.evaluate(() => [...document.querySelectorAll(".tt-dock .tt-act-label")].map(node => node.textContent)),
       ["なでる", "じゃらし", "ブラシ", "おやつ"], "Four tools in hand");
     await page.waitForFunction(() => /前足をそろえて|膝に乗ってきた/.test(document.querySelector('[data-test="tetsuko-caption"]')?.textContent), null, { timeout: 40000 });
+    // 寄せた舞台は画面より大きい。画面の外にかかった物へスクロールしようとしても、画面（道具・外枠）は横にずれない（2026-11-11 の不具合）。
+    const shifted = await page.evaluate(async () => {
+      const host = document.querySelector('[data-test="tetsuko-time-screen"]');
+      document.querySelector(".tt-cam-play").scrollIntoView({ block: "end", inline: "end" });
+      host.scrollLeft = 400; host.scrollTop = 200;
+      await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+      return [host.scrollLeft, host.scrollTop];
+    });
+    assert.deepEqual(shifted, [0, 0], "The screen never scrolls sideways");
     assert(Number(await page.locator(dt("tetsuko-joy")).getAttribute("data-value")) > 0, "Being together fills her hearts a little");
     const { result, settled, flags } = await leaveAndSettle(page);
     assert.equal(result.meaningful, true, "Just watching her counts");

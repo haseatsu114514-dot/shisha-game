@@ -436,3 +436,41 @@ TKT-CAT16 cat_poke.png — Sitting and lifting one front paw toward the viewer t
 | `assets/backgrounds/bg_mukai_backdoor_night.png` | 1672×941 | `03f5b9077939cba33976dd2784c0bbac131ce746c1a3b1bcc2b6813ee4048042` |
 
 **まだ CSS の物**（#3243・TKT27 で依頼）: もようがえのトレー・小さな札・あそびかたの紙・手帳の見開き・写真の額とテープ・段ボールの外枠・入る時の箱のふた・置き場所のしるし・「新」のシール・名前の札・まだ見つけていないしぐさの札。
+
+## TKT27（#3243）UI の部品・B 段の採用の記録（2026-11-11）
+
+Codex が #3243 の候補14枚を Draft PR #3248 に入れ、「背景が #FF00FF ちょうどでない・寸法が違う・テープの絵に別の部品が混ざる・手帳の真ん中の背・置き場所の真ん中の紙」を理由に未採用のまま保留していた。前の2つは確認文で「かまわない」とした条件で、残りもこちらで切り分ければ使えるので、**作り直しを頼まずに14枚とも採用した**。原画は PR #3248 のブランチと同じ中身でこのフォルダに置いた（生成記録 `originals/GENERATION.md` の #3243 の節は #3248 側にあり、ここでは書き換えていない。#3248 がマージされても衝突しない）。
+
+| 部品 | 扱い |
+|---|---|
+| トレー・小さな札・あそびかたの紙・名前の札・「新」のシール・まだ見つけていないしぐさの札・写真の額・外枠・箱のふた | そのまま切り出して使う |
+| 手帳 `ui_tk_book.png` | 右の端に別の帯（背）が描き足されていたので、本の部分（原画の 16,16〜1623,868）だけを使う。真ん中の折り目はそのまま（手帳らしい） |
+| 写真のテープ `ui_tk_tape.png` | 左に小さな写真の枠が混ざっていたので、右のテープ（1209,221〜2045,504）だけを使う |
+| 封のテープ `ui_tk_packtape.png` | 左に箱のふたが混ざっていたので、右の帯（997,95〜1148,1234）だけを使う |
+| 置き場所のしるし `ui_tk_slot.png` | 真ん中が紙で埋まっていて、置いた物と床が隠れる。真ん中を丸くぼかして抜き（CSS の mask）、テープの角と紙の縁だけを見せる |
+
+**切り出し**: `python3 remake/tools/build_tetsuko_art.py ui_b`（揺れたマゼンタも周りの帯から測って抜く）。九分割の数字と、縁の飾りを角に入れる取り方は `remake/css/tetsuko-theme.css` の「B 段」の節。
+- 外枠は、帯（約20px）は今までどおり細く、角の飾り（テープ・肉球・毛糸玉）だけを角に縮めて置く。道具・題の札より奥の層。
+- 写真の額の窓は横長なので、正方形の写真を上下少し切って窓に合わせる。額の絵にテープが描いてあるので、CSS のテープは出さない。
+- 手帳は見開きの絵を伸ばして敷き、真ん中に背の絵を重ねる。左上のテープに見出しがかからないよう、見出しを右へ寄せた。
+
+**採用版**（実行時は `remake/img/ui/tetsuko/*.webp`）:
+
+| ファイル | 画素 | SHA-256 |
+|---|---|---|
+| `assets/ui/tetsuko/ui_tk_tray.png` | 1200×402 | `4c12d8546e94f7b14b212616584d217e98c3332106d241738db1d6b197b5e5fc` |
+| `assets/ui/tetsuko/ui_tk_card.png` | 384×391 | `f7aae89d6defc9f1649652508181d2fbffb6089fcdb0147d8a1320e1991efaf3` |
+| `assets/ui/tetsuko/ui_tk_panel.png` | 768×497 | `69a4027e43aa280d3f2df5505940426d3b8b1e4d926cc6ba4a6c3b9bd591b1ea` |
+| `assets/ui/tetsuko/ui_tk_book.png` | 1600×848 | `fd49af1354158da5c92a7214b68815736c96918068f50454e03f056a440a8f06` |
+| `assets/ui/tetsuko/ui_tk_book_spine.png` | 48×597 | `7bd50a61de5699919ec0a07412a868875e5db01905cfa4af5acd5aea825e16b4` |
+| `assets/ui/tetsuko/ui_tk_photo.png` | 460×533 | `e34562933daf75a7cace9a7d536211a57c95b224479cd01dc7c87d3d7c0ae66e` |
+| `assets/ui/tetsuko/ui_tk_tape.png` | 220×74 | `794958443869d3a41d5a30e0f85443f5b5df09cc433ebd556f0ab5456e0dfc8c` |
+| `assets/ui/tetsuko/ui_tk_frame.png` | 1280×711 | `859ec383f641b7d6f096c5f40d46a5b67148467b3e41f2c579878fe60ded6054` |
+| `assets/ui/tetsuko/ui_tk_flap.png` | 640×652 | `342da124767dd86f5e61c5d0bf7fae15afeaf6f40178966665cc052f059e6944` |
+| `assets/ui/tetsuko/ui_tk_packtape.png` | 80×603 | `f83755485829dbdb76281a3864c162f611b3ecc78406bfeaa58f97d2612b8eb5` |
+| `assets/ui/tetsuko/ui_tk_slot.png` | 500×308 | `10762111558914bbf10a34fec1183a82b9f78a5e5e4cc930b16be533578d533a` |
+| `assets/ui/tetsuko/ui_tk_badge.png` | 96×98 | `d4d7ee97f50436945b542968c8168efe3396ef60a5dd7bd1f8543771ac308acb` |
+| `assets/ui/tetsuko/ui_tk_nametag.png` | 300×98 | `f0978ac9ba63173dc9d3b0f034bfefeea9e80fbfa865d06b6f88215eb9dc5ad4` |
+| `assets/ui/tetsuko/ui_tk_unknown.png` | 192×195 | `97f29696b45c80cdca6c32661481b4ac944b974b91e78fa11003fd8c463dd4a4` |
+
+これで「てつこといっしょ」の画面に、CSS で描いた部品はほぼ残っていない（残るのは光・影・動き・擬音と、絵の届いていない歩く・振り返る・伸びのしぐさ＝#3214 の残り）。

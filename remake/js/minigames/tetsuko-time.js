@@ -1129,6 +1129,8 @@ export async function openTetsukoTime({ value = null, visitKey = null, bg = null
 
     window.addEventListener("pagehide", abort, { once: true });
     window.addEventListener("keydown", onKey);
+    // overflow: clip の無い古いブラウザでも、画面がスクロールしてずれたら戻す（画面の外の物へのフォーカスで起きる）。
+    host.addEventListener("scroll", () => { if (host.scrollLeft || host.scrollTop) host.scrollTo(0, 0); });
     signal?.addEventListener?.("abort", abort, { once: true });
     // 開いた時の居場所・表情を先に決めてから出す（ベンチから滑ってこない）。
     show(openingReaction(session));

@@ -17,8 +17,10 @@ export const ART_READY = Object.freeze({
   props: Object.freeze(["box", "ball", "cushion", "scratcher", "tunnel", "bed", "plate", "teaser", "brush", "lap", "tunnel_tail"]),
   // UI: 紙×ラベンダーの "icons","notebook","photo_frame","tape","memo","paw_stamp","caption","toolbox","button"（#2691・専用テーマ後は使わない）。
   // 専用テーマ「茶トラと段ボール」の部品（#3213・TKT25・2026-11-11 採用）。名前を書いた部品は CSS の描画が絵に替わる。
-  // B 段の "tk_tray","tk_card","tk_panel","tk_book","tk_photo","tk_frame","tk_flap" は未着（CSS のまま）。
-  ui: Object.freeze(["tk_icons", "tk_token", "tk_tab", "tk_heart", "tk_pill", "tk_wish", "tk_caption", "tk_title", "tk_fx"]),
+  // B 段（#3243・Codex の PR #3248 の原画・2026-11-11 採用）: トレー・札・紙・手帳（と背）・写真の額・テープ・外枠・箱のふた（と封のテープ）・
+  // 置き場所のしるし・「新」のシール・名前の札・まだ見つけていないしぐさの札。
+  ui: Object.freeze(["tk_icons", "tk_token", "tk_tab", "tk_heart", "tk_pill", "tk_wish", "tk_caption", "tk_title", "tk_fx",
+    "tk_tray", "tk_card", "tk_panel", "tk_book", "tk_photo", "tk_tape", "tk_frame", "tk_flap", "tk_slot", "tk_badge", "tk_nametag", "tk_unknown"]),
 });
 
 /** しぐさの絵（1024×768）の基準: 画面の上の大きさと足元。CSS の .tt-cat と同じ縮尺で重ねる。 */

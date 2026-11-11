@@ -5,7 +5,9 @@
    差し替える（[data-art-*] の時だけ画像を読む。tetsuko-art.js）。届くまでは CSS で描く。文字は絵に焼き込まない。
    座標は 1280×720 の px。動きを減らす設定（prefers-reduced-motion / data-reduced）では移動・揺れを止める。 */
 .tetsuko-time { --tt-paper: #f7f3ed; --tt-paper-2: #efe6d8; --tt-ink: #3a2a3f; --tt-lav: #69497e; --tt-lav-soft: #b9a3c9; --tt-amber: #d8963f; --tt-kraft: #c9a47a;
-  position: absolute; inset: 0; overflow: hidden; color: var(--tt-ink); font-family: var(--font); user-select: none; -webkit-user-select: none; }
+  position: absolute; inset: 0; overflow: hidden; overflow: clip; color: var(--tt-ink); font-family: var(--font); user-select: none; -webkit-user-select: none; }
+/* overflow: clip（hidden ではなく）: 寄せた舞台は画面より大きいので、画面の外にかかった物にフォーカスが当たると、hidden の箱は
+   そこまでスクロールしてしまい、道具・外枠ごと横にずれて戻らなかった（2026-11-11）。clip はスクロールしない */
 
 /* ---- 裏口の舞台（背景の街並みは少し落とし、猫を主役にする）。裏口の絵が届いたら .tt-set を隠す */
 .tt-yard { position: absolute; inset: 0; }

@@ -692,6 +692,8 @@ assert.equal(classifyFlag(OUTINGS_FLAG), "progression");
     tk_token: ["ui_tk_token.webp", "ui_tk_token_pressed.webp", "ui_tk_token_active.webp"],
     tk_tab: ["ui_tk_tab.webp", "ui_tk_tab_pressed.webp", "ui_tk_tab_door.webp"],
     tk_heart: ["ui_tk_heart.webp", "ui_tk_heart_empty.webp"],
+    tk_book: ["ui_tk_book.webp", "ui_tk_book_spine.webp"],
+    tk_flap: ["ui_tk_flap.webp", "ui_tk_packtape.webp"],
   };
   for (const part of ART_READY.ui) for (const file of UI_FILES[part] || [`ui_${part}.webp`]) assert(exists(file), `届いたUIの絵がある: ${file}`);
   // CSS が読む小物・しぐさ・専用テーマの絵は、どれも登録済み（名前の書き間違いで 404 にしない）。
