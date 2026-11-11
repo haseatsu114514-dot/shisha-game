@@ -8,7 +8,9 @@ import { hasMetCharacter } from "../core/title-art-unlock.js";
 
 export function minigameLoadingOptions(save = state) {
   return {
-    context: "minigame",
+    // 作業台の登録をそのまま使う。漫画追加のたびに別の場面名を足す必要をなくし、
+    // 後から追加された話も同じ章・面識の条件でミニゲームの前に出せるようにする。
+    context: "craft",
     chapter: Number.isInteger(save?.chapter) && save.chapter > 0 ? save.chapter : 1,
     isMet: save ? id => hasMetCharacter(save, id) : null,
   };
