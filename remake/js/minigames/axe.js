@@ -25,6 +25,9 @@ function decodeArt(url) {
 }
 // The WATL board (five 2x10 planks, calm light centre) from Codex, #2198 / AXR06. The older square board stays in the repository.
 const ART = { bg: imgFileUrl("backgrounds/bg_axe_lounge_night.webp"), board: imgFileUrl("ui/axe_throw/target_board_watl_c_800.webp") };
+// ゲージ・札の絵の部品（#3207・AXR14）。CSS の border-image で描く。読み込み中に先に解いておき、構えた瞬間の出遅れを防ぐ。
+const UI_ART = ["gauge-frame", "gauge-needle", "button-throw-orange", "button-throw-green", "tag-slate", "tag-slate-blue", "tag-selected", "tag-selected-amber"]
+  .map(name => imgFileUrl("ui/axe_throw/" + name + ".webp"));
 // Only the target is decoded early so it appears without a late pop-in; other art waits for the loading step.
 if (typeof Image !== "undefined") decodeArt(ART.board).catch(() => {});
 const { x: CX, y: CY, radius: R } = TARGET;
@@ -131,6 +134,9 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   const portrait = el("img.axe-portrait", { alt: companion?.name || "", dataset: { test: "axe-portrait" } });
   const comment = el("p.axe-comment", { "aria-live": "polite", dataset: { test: "axe-comment" } });
   const companionCard = companion ? el("div.axe-companion", [el("div.axe-portrait-frame", [portrait]), el("div", [el("strong", { text: companion.name }), comment])]) : null;
+  // 描画は2枚に分ける（2026-11-10）: 木の板・塗装・過去の切れ込みは動かない下の層（.axe-target-art）、
+  // 照準・針・飛ぶ斧・着弾の演出は上の層（.axe-target）。毎フレーム描き直すのは上の層だけになる。
+  const artBoard = svg("svg", { viewBox: `${VIEW.x} ${VIEW.y} ${VIEW.size} ${VIEW.size}`, class: "axe-target-art", "aria-hidden": "true" });
   const board = svg("svg", { viewBox: `${VIEW.x} ${VIEW.y} ${VIEW.size} ${VIEW.size}`, class: "axe-target", role: "button", tabindex: "0",
     "aria-label": "的。ゲージ操作中はタップでも止められます。構える前は青をタップして宣言できます", "data-test": "axe-target" });
   board.addEventListener("click", event => {
@@ -150,7 +156,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   const artId = "axe-art-" + (++instances), vignetteId = artId + "-vignette";
   const art = svg("g", { id: artId, class: "axe-art" }, [plank,
     svg("rect", { class: "axe-vignette", x: PLANK.left, y: PLANK.top, width: PLANK.right - PLANK.left, height: PLANK.bottom - PLANK.top, fill: `url(#${vignetteId})` })]);
-  board.append(svg("defs", {}, [svg("radialGradient", { id: vignetteId, cx: CX, cy: CY, r: R * 1.62, gradientUnits: "userSpaceOnUse" }, [
+  artBoard.append(svg("defs", {}, [svg("radialGradient", { id: vignetteId, cx: CX, cy: CY, r: R * 1.62, gradientUnits: "userSpaceOnUse" }, [
     svg("stop", { offset: "0", "stop-color": "#fff3d6", "stop-opacity": .08 }), svg("stop", { offset: ".55", "stop-color": "#000", "stop-opacity": 0 }),
     svg("stop", { offset: "1", "stop-color": "#000", "stop-opacity": .58 })])]), art);
   // Painted markings at the official proportions: 20 mm black lines, red bulls, blue killshots.
@@ -198,7 +204,13 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   const ghosts = [createAxe(), createAxe()];
   ghosts.forEach(node => { node.classList.add("axe-ghost"); node.setAttribute("opacity", 0); node.setAttribute("aria-hidden", "true"); });
   // A soft contact shadow on the wood grows as the axe arrives, so its depth reads.
-  const contactShadow = svg("ellipse", { class: "axe-contact-shadow", rx: 0, ry: 0, fill: "#120a05", opacity: 0 });
+  const shadowId = artId + "-shadow";
+  board.append(svg("defs", {}, [svg("radialGradient", { id: shadowId }, [
+    svg("stop", { offset: "0", "stop-color": "#120a05", "stop-opacity": .95 }), svg("stop", { offset: ".6", "stop-color": "#120a05", "stop-opacity": .55 }),
+    svg("stop", { offset: "1", "stop-color": "#120a05", "stop-opacity": 0 })])]));
+  const contactShadow = svg("ellipse", { class: "axe-contact-shadow", rx: 0, ry: 0, fill: `url(#${shadowId})`, opacity: 0 });
+  // 宣言した青を囲む輪。光らせる効果（filter）の代わりに線で描く。
+  const calledRing = svg("circle", { class: "axe-called-ring", r: KILLS[0].outer * R + 5, fill: "none", stroke: "#fff5b1", "stroke-width": 3, opacity: 0 });
   const bladePx = BLADE.halfLength * R;
   // The white blade marker is the 4 in cutting edge: the highest zone it touches scores.
   // A dark outline under the white blade keeps it readable on light and dark wood alike.
@@ -214,14 +226,15 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     svg("path", { d: "M-12 0H12 M0-12V12", stroke: "#e5bd70", "stroke-width": 1 })]);
   const powerShift = svg("path", { class: "axe-power-shift", fill: "none", stroke: "#aee0c0", "stroke-width": 3 });
   const releaseDot = svg("circle", { class: "axe-release-dot", r: 4, fill: "#aee0c0" });
-  const impactMark = svg("g", { class: "axe-impact-mark", opacity: 0 }, [svg("path", { d: `M0 ${-bladePx}V${bladePx}`, stroke: "#fff5d9", "stroke-width": 2, "stroke-dasharray": "3 3" }),
+  const impactMark = svg("g", { class: "axe-impact-mark", opacity: 0 }, [svg("path", { class: "axe-impact-outline", d: `M0 ${-bladePx}V${bladePx}`, stroke: "#0a0d0e", "stroke-width": 5, "stroke-linecap": "round", opacity: .55 }),
+    svg("path", { d: `M0 ${-bladePx}V${bladePx}`, stroke: "#fff5d9", "stroke-width": 2, "stroke-dasharray": "3 3" }),
     svg("circle", { r: 3, fill: "#fff5d9" })]);
   const xNeedle = svg("path", { class: "axe-x-needle", d: `M0 ${PLANK.top - 6}V${PLANK.bottom + 6}`, stroke: "#91cfe6", "stroke-width": 2.5 });
   const yNeedle = svg("path", { class: "axe-y-needle", d: `M${PLANK.left - 6} 0H${PLANK.right + 6}`, stroke: "#e5bd70", "stroke-width": 2.5 });
   const sdBadge = svg("text", { class: "axe-sd-badge", x: CX, y: VIEW.y + 26, "text-anchor": "middle", fill: "#9cecff", "font-size": 22, "font-weight": 900, opacity: 0 }, ["SUDDEN DEATH"]);
   const gaugeLabel = (x, y, text, fill, anchor, step) => svg("text", { class: "axe-gauge-label", "data-gauge": step, x, y, "text-anchor": anchor, fill, "font-size": 22, "font-weight": 900,
     "paint-order": "stroke", stroke: "#140d08", "stroke-width": 4 }, [text]);
-  board.append(zoneHalo, powerShift, releaseDot, contactShadow, impacts, impactMark, trail, ...ghosts, flying, fixedAim, crosshair, impactFx,
+  board.append(zoneHalo, calledRing, powerShift, releaseDot, contactShadow, impacts, impactMark, trail, ...ghosts, flying, fixedAim, crosshair, impactFx,
     gaugeLabel(CX, VIEW.y + VIEW.size - 10, "↔ 横", "#a9dcef", "middle", "horizontal"), gaugeLabel(VIEW.x + VIEW.size - 8, CY - 10, "↕ 縦", "#f1c983", "end", "vertical"), xNeedle, yNeedle, sdBadge);
   const note = el("p.axe-note", { dataset: { test: "axe-note" } });
   const announcement = el("p.axe-announcement", { "aria-live": "polite", "aria-atomic": "true" });
@@ -245,8 +258,8 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   const powerReadout = el("strong.axe-power-readout", { dataset: { test: "axe-power-cue" } });
   const powerFill = el("span.axe-power-fill");
   const gauge = el("div.axe-gauge", { role: "img", "aria-label": "回転ゲージ。緑の帯が刃から当たる回転" }, [
-    el("span.axe-stick", { style: { left: POWER.stickMin * 100 + "%", width: (POWER.stickMax - POWER.stickMin) * 100 + "%" } }),
-    el("span.axe-sweet", { style: { left: POWER.sweetMin * 100 + "%", width: (POWER.sweetMax - POWER.sweetMin) * 100 + "%" } }), powerFill, needle]);
+    el("span.axe-stick", { style: { "--from": POWER.stickMin * 100 + "%", "--size": (POWER.stickMax - POWER.stickMin) * 100 + "%" } }),
+    el("span.axe-sweet", { style: { "--from": POWER.sweetMin * 100 + "%", "--size": (POWER.sweetMax - POWER.sweetMin) * 100 + "%" } }), powerFill, needle]);
   const timing = el("div.axe-timing", [powerLabel, powerReadout, gauge]);
   const feedback = el("p.axe-feedback", { dataset: { test: "axe-feedback" } });
   // #2729 (2026-11-08): the throw button stands on its own below the panel, with an axe on it, so the place to throw reads at a glance.
@@ -285,11 +298,15 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   const zoomView = svg("svg", { class: "axe-zoom-view", viewBox: "0 0 1 1", "aria-hidden": "true" }, [svg("use", { href: "#" + artId }), zoomBlade]);
   const zoomScore = el("strong"), zoomZone = el("span");
   const zoom = el("figure.axe-zoom", { hidden: true, role: "img", dataset: { test: "axe-zoom" } }, [zoomView, el("figcaption", [zoomScore, zoomZone])]);
-  const boardPane = el("div.axe-board-pane", [
-    el("p.axe-legend", { text: "赤6 · 5の円 · リング4〜1 · 宣言した青7／8" }), board, zoom]),
-    panel = el("aside.axe-panel", [matchScore, goals, companionCard, matchRecords, status, calls, steps, note, liveScore, resultCard, timing, feedback, steadiness, stability, keyhint, controls]);
+  // 的に集中する配置（2026-11-10 オーナー指摘「UI配置が悪く斧や的に集中しづらい」「狙いを決める所が常に右にある」）:
+  // 的は中央。狙いの札（通常・青の宣言）は的の上に重ね、構えたら消える。回転ゲージは的のすぐ右に縦で立つ。
+  // 左は見守りの一言とチャレンジ（投げている間は消える）、右は結果と操作のボタンだけ。
   const throwZone = el("div.axe-throw", { dataset: { test: "axe-throw" } }, [action, retry]);
-  const body = el("div.axe-body", [boardPane, panel, throwZone]);
+  const boardPane = el("div.axe-board-pane", [
+    el("p.axe-legend", { text: "赤6 · 5の円 · リング4〜1 · 宣言した青7／8" }), artBoard, board, zoom, calls, status]),
+    side = el("aside.axe-side", { dataset: { test: "axe-side" } }, [matchScore, goals, companionCard]),
+    panel = el("aside.axe-panel", [matchRecords, steps, liveScore, resultCard, note, feedback, steadiness, stability, keyhint, controls, throwZone]);
+  const body = el("div.axe-body", [side, boardPane, timing, panel]);
   // #2729 (2026-11-08): the per-throw strip shares the sign's row (between the title and the total), so the board gets that row's height.
   heading.insertBefore(scoreboard, total);
   root.append(heading, body, announcement);
@@ -373,13 +390,13 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
                   throw new Error("Axe lesson incomplete");
               }));
         }
-        if (!companion) return Promise.all([...Object.values(ART).map(decodeArt), ...lessonArt]);
+        if (!companion) return Promise.all([...Object.values(ART).map(decodeArt), ...UI_ART.map(decodeArt), ...lessonArt]);
         portraitKey = companion.portraitKey || manifest.titleArts?.find(entry => entry.file.endsWith(companion.titleSuffix))?.character;
         if (!portraitKey || !companion.faces.every(face => manifest.portraits?.[portraitKey]?.faces?.includes(face)))
           throw new Error("Companion artwork missing from catalogue");
         showFace(companion.faces[0]);
         return Promise.all([
-          ...[...Object.values(ART), ...companion.faces.map(face => faceArt(portraitKey, face).src)].map(decodeArt),
+          ...[...Object.values(ART), ...UI_ART, ...companion.faces.map(face => faceArt(portraitKey, face).src)].map(decodeArt),
           ...(versus ? [fetch(new URL("../../../data/dialogue/axe_versus.json", import.meta.url), { signal: AbortSignal.any([lifetime.signal, timeout.signal]) })
             .then(response => { if (!response.ok) throw new Error("Axe match dialogue unavailable"); return response.json(); })
             .then(data => {
@@ -516,16 +533,19 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     ]);
   }
   function tileMark(shot) { return !shot ? "" : shot.outcome === "killshot" ? "K" : shot.outcome === "bull" ? "●" : !shot.stuck ? "↓" : shot.called ? "×" : ""; }
-  function renderPowerMotion(powerActive) {
+  // hud=false は毎フレームの軽い更新: 針と帯の色だけ動かし、読み上げ用の文（毎フレーム変わる％）は 0.1 秒ごとの render() に任せる。
+  function renderPowerMotion(powerActive, hud = true) {
     const strength = power < POWER.stickMin ? "弱すぎる・落下" : power > POWER.stickMax ? "強すぎる・落下"
       : power >= POWER.sweetMin && power <= POWER.sweetMax ? "適正" : "刺さる回転";
-    const label = powerActive ? "③ 回転 " + Math.round(power * 100) + "% · " + strength : "③ 回転";
-    if (powerLabel.textContent !== label) powerLabel.textContent = label;
+    powerFill.style.transform = "scaleY(" + power + ")";
+    needle.style.transform = "translateY(" + (1 - power) * 100 + "%)";
     const quality = strength === "適正" ? "sweet" : power < POWER.stickMin || power > POWER.stickMax ? "drop" : "edge";
     if (timing.dataset.quality !== quality) timing.dataset.quality = quality;
+    if (!hud) return strength;
+    const label = powerActive ? "③ 回転 " + Math.round(power * 100) + "% · " + strength : "③ 回転";
+    if (powerLabel.textContent !== label) powerLabel.textContent = label;
     const readout = phase !== "power" ? strength : strength === "適正" ? "いま放す！" : power < POWER.sweetMin ? "緑の帯まで待つ" : "回りすぎ · 次の緑で放す";
     if (powerReadout.textContent !== readout) powerReadout.textContent = readout;
-    powerFill.style.width = power * 100 + "%";
     const gaugeLabel = label + "。緑は適正、茶色は刺さる範囲";
     if (gauge.getAttribute("aria-label") !== gaugeLabel) gauge.setAttribute("aria-label", gaugeLabel);
     const shift = (POWER.ideal - power) * .28;
@@ -536,7 +556,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   }
   // The moving aim needs every animation frame. Scoreboard, text, portraits and
   // accessibility labels can follow at a lower rate without making the cursor lag.
-  function renderAimMotion(release, landing, powerActive = phase === "power") {
+  function renderAimMotion(release, landing, powerActive = phase === "power", hud = true) {
     root.dataset.timing = String(gaugeAt(elapsed, cycles[phase] || 3200));
     root.dataset.aimX = String(aim.x); root.dataset.aimY = String(aim.y); root.dataset.power = String(power);
     root.dataset.held = String(held); root.dataset.focusRemaining = String(Math.max(0, focusUntil - held));
@@ -549,9 +569,8 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     if (phase === "power") {
       powerShift.setAttribute("d", `M${CX + release.x * R} ${CY + release.y * R}V${CY + landing.y * R}`);
       releaseDot.setAttribute("cx", CX + release.x * R); releaseDot.setAttribute("cy", CY + release.y * R);
-      needle.style.left = power * 100 + "%";
     }
-    return renderPowerMotion(powerActive);
+    return renderPowerMotion(powerActive, hud);
   }
   function render() {
     lastHudRender = performance.now();
@@ -687,7 +706,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
       // The blue just thrown stays bright while its result (and close-up) is on screen, even though its height has now closed.
       const justThrown = phase === "result" && shown?.called === target.id;
       const marker = markers.get(target.id); marker.setAttribute("opacity", ks.closed.includes(target.row) && !sd && !justThrown ? .28 : 1);
-      marker.style.filter = called === target.id ? "drop-shadow(0 0 6px #fff5b1)" : "";
+      if (called === target.id) { calledRing.setAttribute("cx", CX + target.x * R); calledRing.setAttribute("cy", CY + target.y * R); }
       marker.setAttribute("data-callable", String(phase === "choice" && actor === "player" && !sd && canCall(target.id, shots, rules.throws)));
     }
     // Closures of this half, from the current thrower's own history.
@@ -717,13 +736,14 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
       if (comment.textContent !== line.text) comment.textContent = line.text;
       if (portraitKey) showFace(line.face);
     }
+    calledRing.setAttribute("opacity", called ? 1 : 0);
     fixedAim.setAttribute("opacity", moving ? .8 : 0);
     powerShift.setAttribute("opacity", phase === "power" ? 1 : 0);
     releaseDot.setAttribute("opacity", phase === "power" ? 1 : 0);
     impactMark.setAttribute("transform", `translate(${CX + landing.x * R} ${CY + landing.y * R})`);
     impactMark.setAttribute("opacity", displayedShot ? .85 : 0);
     impactMark.style.color = displayedShot?.score > 0 ? "#fff4cb" : "#ef9f86";
-    for (const node of impactMark.children) { node.setAttribute("stroke", "currentColor"); if (node.getAttribute("fill") !== "none") node.setAttribute("fill", "currentColor"); }
+    for (const node of impactMark.querySelectorAll(":scope > :not(.axe-impact-outline)")) { node.setAttribute("stroke", "currentColor"); if (node.getAttribute("fill") !== "none") node.setAttribute("fill", "currentColor"); }
     crosshair.style.opacity = ["choice", "horizontal", "vertical", "power"].includes(phase) ? "1" : "0";
     xNeedle.setAttribute("opacity", phase === "horizontal" ? 1 : moving ? .4 : 0); yNeedle.setAttribute("opacity", phase === "vertical" ? 1 : phase === "power" ? .4 : 0);
     sdBadge.setAttribute("opacity", sd ? 1 : 0);
@@ -749,7 +769,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     stability.hidden = !moving;
     stability.dataset.focused = String(remaining > 0);
     const stabilityValue = remaining > 0 ? remaining / SWAY.focusDuration : 1 - fatigue;
-    stability.style.setProperty("--axe-steady", (stabilityValue * 100).toFixed(1) + "%");
+    stability.style.setProperty("--axe-steady", stabilityValue.toFixed(3));
     stability.setAttribute("aria-label", remaining > 0 ? "集中の残り時間" : "腕の安定");
     stability.setAttribute("aria-valuenow", String(Math.round(stabilityValue * 100)));
     const focusText = remaining > 0 ? "集中中" : focusUsed ? "集中は使用済み" : "息を整える · 1回";
@@ -912,7 +932,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
         if (phase === "power") power = gaugeAt(elapsed, cycles.power);
         const release = releaseAimAt(aim, held, power, shots.length, held < focusUntil, steady);
         const landing = { x: release.x, y: release.y + (phase === "power" ? (POWER.ideal - power) * .28 : 0) };
-        renderAimMotion(release, landing);
+        renderAimMotion(release, landing, phase === "power", false);
       }
     } else if (!isPaused() && action.disabled && !["loading", "flight", "opponent-ready"].includes(phase)
       && performance.now() - lastAction >= 250) render();
