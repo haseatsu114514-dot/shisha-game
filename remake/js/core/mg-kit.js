@@ -30,9 +30,9 @@ export function setMotionPalette(name) {
 // 同じ場面の別パターン（a／b）。本編で使うのは場面ごとの採用（オーナー選択・CI121〜CI123）。
 // 比べるときは ?movar=a|b（全場面をそろえる）か __remake.dev.motionVariant("b")。"auto" で採用に戻す
 export const MOTION_VARIANTS = ["a", "b", "c"];
-export const ADOPTED_VARIANT = { door: "a", cheki: "c", tarot: "c", gift: "c", shift: "b", shark: "b", sketch: "b" };
+export const ADOPTED_VARIANT = { door: "a", cheki: "c", tarot: "c", gift: "c", shift: "b", shark: "c", sketch: "b" };
 // c は作り直しの型（2026-11-11〜・TMG48〜）。c の無い場面で c を選んでも、その場面の採用の型で動く
-const SCENE_VARIANTS = { gift: ["a", "b", "c"], tarot: ["a", "b", "c"], cheki: ["a", "b", "c"] };
+const SCENE_VARIANTS = { gift: ["a", "b", "c"], tarot: ["a", "b", "c"], cheki: ["a", "b", "c"], shark: ["a", "b", "c"] };
 const sceneHas = (scene, name) => (SCENE_VARIANTS[scene] || ["a", "b"]).includes(name);
 const VARIANT_KEY = "suien_motion_variant";
 export function motionVariant(scene) {
