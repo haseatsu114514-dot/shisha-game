@@ -311,7 +311,7 @@ function ensureCtx() {
   return ctx;
 }
 
-/** 最初のユーザー操作で音を解禁する（ブラウザの自動再生制限） */
+/** ユーザー操作で音を解禁し、OSによる中断から同じ曲・位置へ復帰する。 */
 export function unlockAudio() {
   audioUnlocked = true;
   const c = ensureCtx();
@@ -321,8 +321,14 @@ export function unlockAudio() {
     // resume() is asynchronous. Read the latest request only after it succeeds;
     // stop/scene changes during unlock must not revive an old title request.
     if (pendingBgm) { const k = pendingBgm; pendingBgm = null; playBgm(k); }
+    else if (currentEl?.paused && currentEl.src && currentEl.readyState >= 2
+      && !bgmPaused && !rotateHeld && !document.hidden) {
+      // iOSの割込などで要素だけ止まることがある。同じキーのplayBgmは重複を
+      // 防ぐため再生し直さないので、次の操作でこの要素をその位置から再開する。
+      currentEl.play().catch(() => {});
+    }
   };
-  if (c && c.state === "suspended") c.resume().then(ready, () => {});
+  if (c && (c.state === "suspended" || c.state === "interrupted")) c.resume().then(ready, () => {});
   else ready();
   preloadSe();
 }
@@ -1077,7 +1083,7 @@ export function playBgm(key) {
   currentKey = key;
   if (!key) return;
   const c = ensureCtx();
-  if (!c || c.state === "suspended") { pendingBgm = key; currentKey = null; return; }
+  if (!c || c.state === "suspended" || c.state === "interrupted") { pendingBgm = key; currentKey = null; return; }
   const url = bgmUrl(key);
   if (url) {
     const packed = url.endsWith(".bgm");
