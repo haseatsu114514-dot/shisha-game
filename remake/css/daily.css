@@ -1315,7 +1315,7 @@ html:root[data-density="phone"] body:not(:root) .levelup-band :is(.lb-learned, .
   border: 1px solid color-mix(in srgb, var(--hc) 62%, transparent); background: color-mix(in srgb, var(--hc) 13%, rgba(10, 6, 16, 0.86)); box-shadow: 0 0 12px color-mix(in srgb, var(--hc) 32%, transparent); }
 .lu-chip.k-body { --hc: #ef8a5e; } .lu-chip.k-sense { --hc: #58a6ff; } .lu-chip.k-wisdom { --hc: #7bd36d; }
 .lu-chip.milestone { border-width: 2px; }
-.lu-chip.milestone::before { content: "節目"; padding: 1px 6px; border-radius: 4px; font-size: 11px; letter-spacing: 0.08em; color: #2a1406; background: linear-gradient(180deg, #ffe8a8, #e8b04a); }
+.lu-chip.milestone::before { content: "節目"; padding: 1px 6px; border-radius: 4px; font-size: 12px; color: #2a1406; background: linear-gradient(180deg, #ffe8a8, #e8b04a); }
 .lu-chip.small { padding: 2px 10px 2px 6px; font-size: 14px; font-weight: 600; box-shadow: none; }
 .lu-chip.small .hidane-icon { width: 15px; height: 15px; }
 .lu-details p.lu-rewards, .lu-details p.lu-gift, .lu-details p.lu-wallet { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 6px 10px; }
@@ -1699,11 +1699,11 @@ html:root[data-density="phone"] body:not(:root) .lu-details:has(.lu-color-note) 
 .gboard.committing { pointer-events: none; }
 .gboard.committing .gfx-cutin-veil { pointer-events: auto; }
 .gfx-cutin-veil { position: absolute; inset: 0; z-index: 45; display: grid; place-items: center; cursor: pointer;
-  background: radial-gradient(ellipse 70% 46% at 50% 50%, rgba(6, 3, 12, 0.82), rgba(6, 3, 12, 0.35) 70%, transparent); animation: gfx-veil-in .18s ease-out both; }
+  background: radial-gradient(ellipse 70% 46% at 50% 50%, rgba(6, 3, 12, 0.6), transparent 75%), rgba(6, 3, 12, 0.5); animation: gfx-veil-in .18s ease-out both; }
 @keyframes gfx-veil-in { from { opacity: 0; } }
 .gfx-cutin { --cc: #ffd38a; position: relative; display: flex; align-items: center; gap: 22px; width: 780px; max-width: calc(100% - 48px); box-sizing: border-box; padding: 20px 34px; overflow: hidden;
   color: #fff6e2; border-top: 2px solid var(--cc); border-bottom: 2px solid var(--cc);
-  background: linear-gradient(90deg, transparent, rgba(14, 9, 22, 0.96) 12%, rgba(14, 9, 22, 0.96) 88%, transparent);
+  background: linear-gradient(90deg, rgba(14, 9, 22, 0.6), rgba(14, 9, 22, 0.97) 7%, rgba(14, 9, 22, 0.97) 93%, rgba(14, 9, 22, 0.6));
   box-shadow: 0 0 40px color-mix(in srgb, var(--cc) 35%, transparent); animation: gfx-cutin-in .36s cubic-bezier(.2, 1.2, .3, 1) both; }
 .gfx-cutin.b-body { --cc: #ef8a5e; } .gfx-cutin.b-sense { --cc: #58a6ff; } .gfx-cutin.b-wisdom { --cc: #7bd36d; }
 .gfx-cutin.t-lesson, .gfx-cutin.t-peak, .gfx-cutin.t-notable { --cc: #f4d27a; }
@@ -1723,7 +1723,7 @@ html:root[data-density="phone"] body:not(:root) .lu-details:has(.lu-color-note) 
 .gfx-cutin-text small { font-size: 14px; font-weight: 800; letter-spacing: 0.14em; color: var(--cc); }
 .gfx-cutin-text strong { font-size: 34px; font-weight: 900; line-height: 1.25; letter-spacing: 0.04em; text-shadow: 0 0 16px color-mix(in srgb, var(--cc) 70%, transparent); }
 .gfx-cutin-text span { font-size: 16px; line-height: 1.5; color: #eadff2; word-break: auto-phrase; text-wrap: pretty; }
-.gfx-cutin-count { position: absolute; right: 22px; bottom: 8px; font-size: 12px; font-style: normal; color: #b6a9c4; }
+.gfx-cutin-count { position: absolute; right: 64px; bottom: 8px; font-size: 12px; font-style: normal; color: #b6a9c4; }
 /* スマホ横持ち（#2851 の規格）: カットインの文字は規格の大きさに、帯は少し広く */
 html:root[data-density="phone"] body:not(:root) .gfx-cutin { width: 960px; }
 html:root[data-density="phone"] body:not(:root) .gfx-cutin-text small { font-size: 18px; }
@@ -1735,7 +1735,7 @@ html:root[data-density="phone"] body:not(:root) .gfx-cutin-count { font-size: 16
 .gb-bar.grew .gb-bar-sum { animation: gb-sum-pop .5s ease-out; }
 @keyframes gb-sum-pop { 0% { transform: scale(1.25); filter: brightness(1.5); } 100% { transform: none; } }
 .gb-goals { display: grid; gap: 5px; margin: 4px 0 2px; }
-.gb-goals-head { margin: 0; font-size: 13px; font-weight: 700; letter-spacing: 0.08em; color: var(--text-dim); }
+.gb-goals-head { margin: 0; font-size: 13px; font-weight: 700; color: var(--text-dim); }
 .gb-goal { display: grid; grid-template-columns: 1fr auto; align-items: baseline; gap: 2px 10px; min-height: 40px; padding: 6px 10px; text-align: left; cursor: pointer; font-family: var(--font);
   border-radius: 8px; border: 1px solid color-mix(in srgb, var(--c) 40%, transparent); background: color-mix(in srgb, var(--c) 8%, rgba(10, 6, 16, 0.6)); color: var(--text); }
 .gb-goal:hover, .gb-goal:focus-visible { border-color: var(--c); box-shadow: 0 0 10px color-mix(in srgb, var(--c) 45%, transparent); outline: none; }
