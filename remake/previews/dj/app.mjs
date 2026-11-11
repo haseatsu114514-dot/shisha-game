@@ -1,5 +1,5 @@
 import { DJAudio } from './audio.mjs';
-import { beatAt, lowCutDb, LOW_CUT_DB, LOCK_PCT, PHRASE, FOLLOW_BAND, REQUESTS, phaseError, bpmDiffPct, pitchOf, mod, gains, toward, keyMatch, energyMatch, quality, followHint, moodOf, MOODS, GRADE_FLOOR, RANK_FLOOR, PICK_FLOOR } from './model.mjs';
+import { beatAt, lowCutDb, LOCK_PCT, PHRASE, FOLLOW_BAND, REQUESTS, phaseError, bpmDiffPct, pitchOf, mod, gains, toward, keyMatch, energyMatch, quality, followHint, moodOf, MOODS, GRADE_FLOOR, RANK_FLOOR, PICK_FLOOR } from './model.mjs';
 import { peakAt, TRACKS, SETS } from './tracks.mjs';
 // View of the DJ set (2026-11-11 renewal, DJS20〜). Three things the screen always answers:
 //   1. いま何をするか — the navi line + the gold arrow on the control to touch (▶ / PITCH / SYNC / 横フェーダー).
@@ -159,44 +159,54 @@ document.addEventListener('visibilitychange', () => { if (document.hidden) pause
 window.addEventListener('pagehide', event => { if (event.persisted) { pause(); return; } disposed = true; cancelAnimationFrame(frame); audio.dispose().catch(() => {}); });
 
 // ── 曲の流れ（上 A・下 B の実波形）。金の線が「いま」、金の旗が次の入り ──────────────────
-let laneWidth = 0, laneChecked = -1e9;
+let laneWidth = 0, laneHeight = 0, laneChecked = -1e9;
+const PHONE = document.documentElement.dataset.density === 'phone';
 function wave(canvas, id, now) {
   const t0 = performance.now();
-  if (t0 - laneChecked > 500) { laneChecked = t0; laneWidth = Math.max(320, Math.round(canvas.clientWidth * 2)); } // read the layout twice a second, not every frame
+  // 2 canvas px per CSS px both ways, so the bar numbers and the flag keep their shape (read the layout twice a second, not every frame)
+  if (t0 - laneChecked > 500) { laneChecked = t0; laneWidth = Math.max(320, Math.round(canvas.clientWidth * 2)); laneHeight = Math.max(40, Math.round(canvas.clientHeight * 2)); }
   if (canvas.width !== laneWidth) canvas.width = laneWidth;
+  if (canvas.height !== laneHeight) canvas.height = laneHeight;
   const c = canvas.getContext('2d'), w = canvas.width, h = canvas.height, x0 = Math.round(w * .3), scale = w / 7;
   c.clearRect(0, 0, w, h); c.fillStyle = '#0a0714cc'; c.fillRect(0, 0, w, h);
   const m = audio.mix, cue = m.cue, t = audio.tracks[id], d = m.decks[id];
-  // where the next entry is on the screen: measured on the playing deck, so the flag sits at the same x on both lanes
-  const from = cue ? m.decks[cue.from] : null, fb = from ? beatAt(from, now) : 0, xOf = beat => x0 + (beat - fb) * 60 / from.bpm * scale;
+  // One clock for both lanes (DJS29): the deck on air (during a cue, the one being mixed out of). The bar grid, the 8 bars of the mix and the
+  // entry flag are all placed on it, so the two lanes line up bar for bar.
+  const clock = cue ? m.decks[cue.from] : m.decks[m.master], cb = beatAt(clock, now), xOf = beat => x0 + (beat - cb) * 60 / clock.bpm * scale;
   if (cue) { // the 8 bars of the mix
     const xs = Math.max(0, xOf(cue.start)), xe = Math.min(w, xOf(cue.end));
     if (xe > xs) { c.fillStyle = m.phase === 'mix' ? '#ffc85724' : '#ffc85712'; c.fillRect(xs, 0, xe - xs, h); }
   }
+  // the grid: a line on every bar with its number in the 8-bar phrase (1 = the phrase head, where tracks come in), small ticks on the beats
+  const perPx = clock.bpm / 60 / scale, from = Math.floor(cb - x0 * perPx) - 1, to = Math.ceil(cb + (w - x0) * perPx) + 1;
+  c.font = `800 ${PHONE ? 40 : 24}px sans-serif`; c.textBaseline = 'top'; // 12px on the 1280 stage; 20px in the phone density (#2729)
+  for (let n = from; n <= to; n++) {
+    const x = Math.round(xOf(n));
+    if (mod(n, 4)) { const tick = Math.round(h * .1); c.fillStyle = '#ffffff38'; c.fillRect(x, 0, 2, tick); c.fillRect(x, h - tick, 2, tick); continue; }
+    const head = mod(n, PHRASE) === 0, bar = Math.floor(mod(n, PHRASE) / 4) + 1;
+    c.fillStyle = head ? '#ffffffb0' : '#ffffff5c'; c.fillRect(x - (head ? 1 : 0), 0, head ? 4 : 2, h);
+    c.fillStyle = head ? '#ffffff' : '#ffffffb8'; c.fillText(String(bar), x + 6, 4);
+  }
   if (t) {
-    const b = beatAt(d, now);
-    c.fillStyle = id ? '#7fe3ff' : '#c39bff';
+    // A deck on air follows its own beat. The incoming deck that has not started yet is drawn where it will come in: its first beat on the entry flag.
+    const waiting = cue && cue.to === id && !d.playing, b = waiting ? (cb - cue.start) * d.bpm / clock.bpm : beatAt(d, now);
+    c.fillStyle = id ? '#7fe3ff' : '#c39bff'; c.globalAlpha = d.playing ? .85 : .55;
     for (let x = 0; x < w; x += 2) {
-      const beat = b + ((x - x0) / scale) * d.bpm / 60;
-      const peak = peakAt(t, t.firstBeat + mod(b, t.beats) * 60 / t.nativeBpm + (beat - b) * 60 / t.nativeBpm);
-      const size = peak * (h - 8); c.globalAlpha = beat < 0 ? .22 : d.playing ? .85 : .5; c.fillRect(x, h / 2 - size / 2, 2, Math.max(1, size));
+      const beat = b + (x - x0) / scale * d.bpm / 60;
+      if (beat < 0) continue; // before the track starts there is nothing to hear
+      const size = peakAt(t, t.firstBeat + mod(beat, t.beats) * 60 / t.nativeBpm) * (h - 16);
+      c.fillRect(x, h / 2 - size / 2, 2, Math.max(1, size));
     }
     c.globalAlpha = 1;
-    const first = Math.floor(b - x0 / scale * d.bpm / 60);
-    for (let n = first; n < b + (w - x0) / scale * d.bpm / 60; n++) {
-      if (mod(n, 4) !== 0) continue;
-      const x = x0 + (n - b) * 60 / d.bpm * scale, head = mod(n, PHRASE) === 0;
-      c.fillStyle = head ? '#ffffffcc' : '#ffffff40'; c.fillRect(x, 0, head ? 2 : 1, h);
-    }
   }
   if (cue && !cue.pressed) {
     const x = xOf(cue.start);
     if (x >= -40 && x < w + 40) { // the entry flag; pulses on every beat in the last bar
-      const left = cue.start - fb, pulse = left <= 4 && left > 0 && !reduced.matches ? 1 - mod(fb, 1) : .4, glow = c.createLinearGradient(x - 34, 0, x + 34, 0);
+      const left = cue.start - cb, pulse = left <= 4 && left > 0 && !reduced.matches ? 1 - mod(cb, 1) : .4, glow = c.createLinearGradient(x - 34, 0, x + 34, 0);
       glow.addColorStop(0, 'transparent'); glow.addColorStop(.5, `rgba(255,200,87,${.2 + pulse * .5})`); glow.addColorStop(1, 'transparent');
       c.fillStyle = glow; c.fillRect(x - 34, 0, 68, h);
       c.fillStyle = '#ffc857'; c.fillRect(x - 2, 0, 4, h);
-      if (cue.to === id) { c.font = '900 30px sans-serif'; c.textBaseline = 'middle'; c.fillStyle = '#2a1840'; c.fillRect(x + 2, h / 2 - 20, 86, 40); c.fillStyle = '#ffc857'; c.fillText(`▶ ${deckOf(id)}`, x + 10, h / 2 + 2); }
+      if (cue.to === id) { const size = PHONE ? 40 : 30; c.font = `900 ${size}px sans-serif`; c.textBaseline = 'middle'; c.fillStyle = '#2a1840'; c.fillRect(x + 4, h / 2 - size * .68, size * 2.9, size * 1.36); c.fillStyle = '#ffc857'; c.fillText(`▶ ${deckOf(id)}`, x + 4 + size * .27, h / 2 + 2); }
     }
   }
   c.fillStyle = '#ffc857'; c.fillRect(x0 - 1, 0, 3, h); // いま
@@ -463,15 +473,12 @@ function render() {
   frame = requestAnimationFrame(render);
 }
 render();
-// Controller LEDs only (no input/scoring effect): channel meters and the EQ knobs showing the automatic EQ.
+// Controller LEDs only (no input/scoring effect): channel meters and the AUTO EQ lamp (the bass swap itself is in audio.mjs).
 function controllerLeds() {
   const m = audio.mix, level = Math.min(1, audio.level() * 6), g = gains(m.mix), cut = lowCutDb(m.mix);
-  for (const id of ['meter-m', 'meter-m2']) $(id).style.setProperty('--lvl', m.running ? Math.min(1, level * (id === 'meter-m' ? 1 : .92)).toFixed(3) : '0');
   for (const id of [0, 1]) {
-    const key = id ? 'b' : 'a', on = m.decks[id].playing && m.running, c = cut[id] / LOW_CUT_DB;
-    $('meter-' + key).style.setProperty('--lvl', on ? (level * g[id]).toFixed(3) : '0');
-    const low = $('eq-low-' + key); low.style.setProperty('--k', `${-135 * c}deg`); low.parentElement.style.setProperty('--cut', c.toFixed(2));
-    $('eq-hi-' + key).style.setProperty('--k', `${-40 * c}deg`); $('eq-mid-' + key).style.setProperty('--k', `${-20 * c}deg`);
+    const on = m.decks[id].playing && m.running;
+    $('meter-' + (id ? 'b' : 'a')).style.setProperty('--lvl', on ? (level * g[id]).toFixed(3) : '0');
   }
   const cutting = cut.findIndex(v => v < -1);
   $('led-autoeq').classList.toggle('on', cutting >= 0);

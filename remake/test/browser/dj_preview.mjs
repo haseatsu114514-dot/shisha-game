@@ -87,7 +87,9 @@ try{
   assert.equal(await page.locator('#indicator-a').textContent(),'ON AIR');assert.equal(await page.locator('#deck-a').getAttribute('data-playing'),'true');
   assert(await page.locator('#play-a').isDisabled(),'▶ only starts: a deck on air cannot be stopped by ▶');
   const a=await hashWaves(page);let b;await until(page,'deck A waveform',()=>true,errors);
-  for(let i=0;i<40;i++){b=await hashWaves(page);if(b[0]!==a[0])break;await page.waitForTimeout(50);}assert.notEqual(a[0],b[0]);assert.equal(a[1],b[1],'Stopped B waveform cannot advance');
+  // DJS29: both lanes scroll on one bar grid (the deck on air); the stopped deck B itself never advances.
+  for(let i=0;i<40;i++){b=await hashWaves(page);if(b[0]!==a[0]&&b[1]!==a[1])break;await page.waitForTimeout(50);}assert.notEqual(a[0],b[0]);assert.notEqual(a[1],b[1],'B lane scrolls with the shared bar grid');
+  {const s=await snap(page);assert.equal(s.beats[1],0,'Stopped deck B cannot advance');assert.equal(s.playing[1],false);}
   // Started: the how-to board is gone, step 2 is lit, and no arrow yet (pressing ▶ B now would be early).
   await page.locator('#howto').waitFor({state:'hidden'});assert.equal(await page.locator('#steps li.now').getAttribute('data-step'),'2');
   assert.match(await page.locator('#coaching').textContent(),/次は右の ▶/);assert.match(await page.locator('#coach-sub').textContent(),/あと \d 小節/);
@@ -119,7 +121,12 @@ try{
   await until(page,'countdown',s=>s.phase==='cue'&&s.remaining<=4&&s.remaining>0,errors,19000,20);
   const count=await page.locator('#count').textContent();assert(['4','3','2','1'].includes(count),`countdown digit, got ${JSON.stringify(count)}`);
   assert(await page.locator('#play-b').evaluate(e=>e.classList.contains('cue-soon')||e.classList.contains('cue-open')),'▶ B highlighted before the entry');
-  assert(await page.locator('#point-play-b').isVisible(),'gold arrow on ▶ B during the count');assert.match(await page.locator('#coaching').textContent(),/カウント 0 で、右の ▶/);
+  assert(await page.locator('#point-play-b').isVisible(),'gold arrow on ▶ B during the count');
+  // DJS29: the waiting track is drawn from the entry flag on (nothing before it), so the player sees where B comes in.
+  const lane=await page.evaluate(async()=>{const s=(await import('./app.mjs')).snapshot(),cv=document.getElementById('wave-b'),c=cv.getContext('2d'),w=cv.width,h=cv.height,row=c.getImageData(0,Math.round(h/2),w,1).data,cyan=[];
+   for(let x=0;x<w;x++){const r=row[x*4],g=row[x*4+1],b=row[x*4+2];if(b>120&&g>100&&r<110)cyan.push(x);}
+   const f=s.cue.from;return{flag:Math.round(w*.3)+(s.cue.start-s.beats[f])*60/s.bpms[f]*(w/7),first:cyan[0]??null,count:cyan.length,w};});
+  assert(lane.count>0&&lane.first>=lane.flag-8,`B is drawn from the entry flag on: ${JSON.stringify(lane)}`);assert.match(await page.locator('#coaching').textContent(),/カウント 0 で、右の ▶/);
   await until(page,'head',s=>s.phase==='cue'&&s.remaining<=.12,errors,4000,5);
   await press('play-b');
   const entered=await until(page,'entry',s=>s.phase==='mix',errors);

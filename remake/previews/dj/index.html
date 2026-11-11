@@ -53,8 +53,8 @@
       </ol>
       <div class="say"><p id="coaching" class="coach" aria-live="polite"></p><p id="coach-sub" class="coach-sub"></p></div>
       <div class="lane">
-        <div><b class="a">A</b><canvas id="wave-a" width="960" height="58" aria-label="Aの実PCM波形"></canvas></div>
-        <div><b class="b">B</b><canvas id="wave-b" width="960" height="58" aria-label="Bの実PCM波形"></canvas></div>
+        <div><b class="a">A</b><canvas id="wave-a" width="960" height="80" aria-label="Aの実PCM波形"></canvas></div>
+        <div><b class="b">B</b><canvas id="wave-b" width="960" height="80" aria-label="Bの実PCM波形"></canvas></div>
       </div>
       <div class="credits"><details><summary aria-label="実曲クレジット（CC BY 4.0）">♪</summary><div class="pop"><p>Dance Monster / Kevin MacLeod / <a href="https://incompetech.com/">incompetech.com</a> / <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> / ISRC USUAN1100272</p><p>Digital Lemonade / Kevin MacLeod / <a href="https://incompetech.com/">incompetech.com</a> / <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> / ISRC USUAN1700010</p><p>Raving Energy / Kevin MacLeod / <a href="https://incompetech.com/">incompetech.com</a> / <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> / ISRC USUAN1900013</p><p>Cut and Dry / Kevin MacLeod / <a href="https://incompetech.com/">incompetech.com</a> / <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> / ISRC USUAN1100852</p><p>Rising Tide (faster) / Kevin MacLeod / <a href="https://incompetech.com/">incompetech.com</a> / <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> / ISRC USUAN1900011</p></div></details></div>
     </section>
@@ -62,13 +62,11 @@
       <div class="pitch-col a"><small>PITCH</small><label for="pitch-a" class="sr">A PITCH ±8%</label><input id="pitch-a" class="vfader" orient="vertical" type="range" min="-8" max="8" step=".01" value="0"><output id="pitch-value-a" class="pitch-value">0.00%</output><i class="point pitch" id="point-pitch-a" hidden aria-hidden="true"></i></div>
       <article class="mixer">
         <div class="channels">
-          <div class="ch a" aria-hidden="true"><div class="meter" id="meter-a"><i></i></div><div class="eqs"><div class="eq"><i class="knob" id="eq-hi-a"></i><small>HI</small></div><div class="eq"><i class="knob" id="eq-mid-a"></i><small>MID</small></div><div class="eq low"><i class="knob" id="eq-low-a"></i><small>LOW</small></div></div></div>
-          <div class="center">
-            <div class="leds"><span class="led on" id="led-quantize">QUANTIZE</span><span class="led" id="led-autoeq">AUTO EQ</span></div>
-            <div class="sync-box"><i class="point sync" id="point-sync" hidden aria-hidden="true"></i><button id="sync" type="button" class="sync" aria-label="SYNC：次の曲のBPMを今の曲に合わせる">SYNC</button></div>
-            <div class="master-meters" aria-hidden="true"><div class="meter master" id="meter-m"><i></i></div><div class="meter master" id="meter-m2"><i></i></div></div>
-          </div>
-          <div class="ch b" aria-hidden="true"><div class="eqs"><div class="eq"><i class="knob" id="eq-hi-b"></i><small>HI</small></div><div class="eq"><i class="knob" id="eq-mid-b"></i><small>MID</small></div><div class="eq low"><i class="knob" id="eq-low-b"></i><small>LOW</small></div></div><div class="meter" id="meter-b"><i></i></div></div>
+          <div class="meter a" id="meter-a" aria-hidden="true"><i></i></div>
+          <span class="led on" id="led-quantize">QUANTIZE</span>
+          <div class="sync-box"><i class="point sync" id="point-sync" hidden aria-hidden="true"></i><button id="sync" type="button" class="sync" aria-label="SYNC：次の曲のBPMを今の曲に合わせる">SYNC</button></div>
+          <span class="led" id="led-autoeq">AUTO EQ</span>
+          <div class="meter b" id="meter-b" aria-hidden="true"><i></i></div>
         </div>
         <p class="sr" id="auto-low"></p>
         <div class="xfade" id="xfade">
