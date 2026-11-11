@@ -1,11 +1,15 @@
 // 路上占いの結果（remake_fortune_result の {"type":"motion","id":"tarot"}）。charId は占った相手（state.fortune.char）。
-// 相手の名前は直後の会話で出すので、絵には顔も名前も出さない。札も何の札かは見せず、表は光だけ（CI122）。
-// a／b の2パターン（?movar=b）。配色は紫1色／場面ごとの色（?mopal=free・core/mg-kit.js の pick）。動きを減らす設定では core/scene-motions.js で省く（SKIP中は省かず最後まで再生）。
+// 既定は c（占い師の絵柄を舞台に、相手ごとの大アルカナを1枚めくる・TMG35〜44 の見本4・#3278）。
+// 札に相手の顔・名前・絵柄は出さない（CI110）。札は「その人っぽい」大アルカナで、帯に札の名前（例: XVII 星）を出す。
+// 作り直し前の a（表は光だけ・CI122）／b は見比べ用（?movar=a・?movar=b）。配色は紫1色／場面ごとの色（?mopal=free・core/mg-kit.js の pick）。動きを減らす設定では core/scene-motions.js で省く（SKIP中は省かず最後まで再生）。
 import { el, sleep } from "../core/util.js";
 import { SE } from "../core/audio.js";
+import { state } from "../core/state.js";
+import { displayName } from "../core/data.js";
 import { W, svg, stageSvg, move } from "../core/transition-kit.js";
 import { MG_EASE as E, pick, burst, ring, twinkle } from "../core/mg-kit.js";
 import { stagePlay, backdrop } from "./stage.js";
+import { graphicIntro } from "../vn/intro-graphic.js";
 
 // ---------------------------------------------------------------- 札の絵（表は 224x368 の枠の中に描く）
 
@@ -261,5 +265,121 @@ export async function b() {
     await sleep(1100);
     // 7. 札の中心へ、丸く窓が閉じて会話へ戻る
     await move(node, [{ clipPath: `circle(820px at ${W / 2}px ${cy}px)` }, { clipPath: `circle(0px at ${W / 2}px ${cy}px)` }], 480, { easing: E.in });
+  });
+}
+
+
+// ---------------------------------------------------------------- c: 占い師の卓で札を3枚配り、真ん中の1枚をめくる（見本4）
+// 舞台は占い師の登場カットインの背景。札の裏と表の金の枠は #3254、表の絵は #3278（占う相手ごとの大アルカナ）。
+
+/** 占う相手 → 大アルカナ（#3278 の表。死神・悪魔・塔は使わない）。[ファイル, 番号, 札の名前] */
+export const TAROT_ARCANA = Object.freeze({
+  sumi: ["09-hermit", "IX", "隠者"], naru: ["01-magician", "I", "魔術師"], adam: ["06-lovers", "VI", "恋人"],
+  minto: ["03-empress", "III", "女帝"], tsumugi: ["17-star", "XVII", "星"], rio: ["02-high-priestess", "II", "女教皇"],
+  hiyori: ["08-strength", "VIII", "力"], samechan: ["10-wheel", "X", "運命の輪"], ageha: ["19-sun", "XIX", "太陽"],
+  kumicho: ["05-hierophant", "V", "教皇"], rei: ["18-moon", "XVIII", "月"], saku: ["00-fool", "0", "愚者"],
+  steve: ["14-temperance", "XIV", "節制"], volk: ["04-emperor", "IV", "皇帝"], mashiro: ["12-hanged", "XII", "吊るされた男"],
+  da_silva: ["20-judgement", "XX", "審判"], sheikh: ["21-world", "XXI", "世界"], master_hookah: ["11-justice", "XI", "正義"],
+  noor: ["07-chariot", "VII", "戦車"],
+});
+const cardUrl = (name) => new URL(`../../img/ui/transitions/tarot/${name}.webp`, import.meta.url).href;
+const arcanaUrl = (file) => cardUrl(`arcana/${file}`);
+
+// 札の絵（1024x1536）の中で札が占める範囲と、表の枠の窓（札に対する比）。tools では作らず、絵を実測した値
+const CARD_BOX = { x: 89, y: 62, w: 847, h: 1394 };
+const WINDOW = { left: 12.5, right: 12.75, top: 11.0, bottom: 9.8 };
+const CARD_W = 200, CARD_H = Math.round(CARD_W * CARD_BOX.h / CARD_BOX.w); // 画面の札の大きさ（1280 幅の舞台）
+const sheet = (url) => {
+  const k = CARD_W / CARD_BOX.w;
+  return { backgroundImage: `url("${url}")`, backgroundSize: `${1024 * k}px ${1536 * k}px`, backgroundPosition: `${-CARD_BOX.x * k}px ${-CARD_BOX.y * k}px` };
+};
+// 配った位置（左・中・右）と、選ばれなかった2枚が退く位置、めくった1枚の決めの位置（舞台 1280x720 の px）
+const DEAL = [{ x: 154, y: 237, r: -8 }, { x: 348, y: 218, r: 2 }, { x: 543, y: 243, r: 9 }];
+const ASIDE = [{ x: 96, y: 256, r: -11 }, null, { x: 589, y: 262, r: 12 }];
+const PICK = "translate(323px, 187px) rotate(-2deg) scale(1.5)";
+const place = (p, extra = "") => `translate(${p.x}px, ${p.y}px) rotate(${p.r}deg) ${extra}`.trim();
+const under = (p) => place({ ...p, x: p.x + 6, y: p.y + 12 });
+const FACE = { back: (deg) => `perspective(1150px) rotateY(${deg}deg)`, front: (deg) => `perspective(1150px) rotateY(${deg - 180}deg)` };
+const SET_IN = [{ clipPath: "polygon(0 0, 0 0, -30% 100%, -30% 100%)" }, { clipPath: "polygon(0 0, 130% 0, 100% 100%, -30% 100%)" }];
+const SET_OUT = [{ clipPath: "polygon(0 0, 130% 0, 100% 100%, -30% 100%)" }, { clipPath: "polygon(130% 0, 130% 0, 100% 100%, 100% 100%)" }];
+const BAND_TEXT_W = 420; // 帯（幅 576・右端は画面の外 51px）の札の名前に使える幅
+
+async function loadImages(urls) {
+  await Promise.all(urls.filter(Boolean).map((url) => {
+    const img = new Image();
+    img.src = url;
+    return Promise.race([img.decode().catch(() => {}), sleep(1500)]);
+  }));
+}
+
+/** 札が決まっていない相手（対応表に無い・相手が分からない）は、作り直し前の a で見せる */
+export async function c(charId = state?.fortune?.char) {
+  const arcana = TAROT_ARCANA[charId];
+  if (!arcana) return a();
+  const [file, numeral, title] = arcana;
+  const tableUrl = graphicIntro("uranaishi", "graphic")?.background || null;
+  const backUrl = cardUrl("card-back"), frameUrl = cardUrl("card-front-frame"), artUrl = arcanaUrl(file);
+  await loadImages([tableUrl, backUrl, frameUrl, artUrl]);
+  await stagePlay("tarot", async (node) => {
+    node.classList.add("at-c");
+    const dim = el("i.mo-tc-dim");
+    const table = el("i.mo-tc-table", { style: tableUrl ? { backgroundImage: `url("${tableUrl}")` } : { backgroundColor: "#2a1638" } });
+    const lantern = el("i.mo-tc-lantern");
+    const set = el("div.mo-tc-set", [table, el("i.mo-tc-shade"), lantern]);
+    const shadows = [0, 1, 2].map(() => el("i.mo-tc-shadow"));
+    const cards = [0, 1, 2].map(() => el("div.mo-tc-card", [el("i.mo-tc-face.back", { style: sheet(backUrl) })]));
+    const front = el("i.mo-tc-face.front", { style: sheet(frameUrl) }, [
+      el("i.mo-tc-art", { style: { left: `${WINDOW.left}%`, right: `${WINDOW.right}%`, top: `${WINDOW.top}%`, bottom: `${WINDOW.bottom}%`, backgroundImage: `url("${artUrl}")` } }),
+      el("i.mo-tc-sheen"),
+    ]);
+    cards[1].append(front);
+    const band = el("div.mo-tc-band", [el("small", { text: `${displayName(charId, state)}を占った札` }), el("span.t", { text: `${numeral} ${title}` })]);
+    for (const n of [...cards, ...shadows]) Object.assign(n.style, { width: `${CARD_W}px`, height: `${CARD_H}px` });
+    node.append(dim, set, shadows[0], shadows[2], cards[0], cards[2], shadows[1], cards[1], band);
+    // 札の名前は帯の見えている幅（画面の右端まで）に収める。長い名前（XII 吊るされた男）は字を小さく
+    const name = band.lastChild;
+    if (name.scrollWidth > BAND_TEXT_W) name.style.fontSize = `${Math.floor(84 * BAND_TEXT_W / name.scrollWidth)}px`;
+    // 1. 元の場面が沈み、占い師の卓が斜めに差し込む
+    move(dim, [{ opacity: 0 }, { opacity: 0.4 }], 400, { easing: "ease" });
+    move(set, SET_IN, 520, { easing: E.inOut });
+    move(table, [{ transform: "scale(1.12)" }, { transform: "scale(1.06)" }], 4400, { easing: "linear" });
+    move(lantern, [{ opacity: 0 }, { opacity: 0.85 }, { opacity: 0.6 }, { opacity: 0.9 }, { opacity: 0.7 }], 3800, { delay: 300, easing: "ease-in-out" });
+    await sleep(430);
+    // 2. 札が3枚、卓の奥から配られる
+    DEAL.forEach((p, i) => {
+      const from = `translate(947px, 77px) rotate(${38 + i * 9}deg) scale(.82)`;
+      move(cards[i], [{ opacity: 0, transform: from }, { opacity: 1, offset: 0.2 }, { opacity: 1, transform: place(p) }], 520, { delay: i * 120 });
+      move(shadows[i], [{ opacity: 0, transform: `translate(973px, 115px) rotate(${38 + i * 9}deg)` }, { opacity: 0.5, transform: under(p) }], 520, { delay: i * 120 });
+      setTimeout(() => SE.tick(), 120 + i * 120);
+    });
+    await sleep(1020);
+    // 3. 両脇が退いて暗くなり、真ん中の1枚が持ち上がってめくられる
+    [0, 2].forEach((i) => {
+      move(cards[i], [{ opacity: 1, filter: "brightness(1)", transform: place(DEAL[i]) }, { opacity: 1, filter: "brightness(.5)", transform: place(ASIDE[i]) }], 520);
+      move(shadows[i], [{ opacity: 0.5, transform: under(DEAL[i]) }, { opacity: 0.5, transform: under(ASIDE[i]) }], 520);
+    });
+    move(shadows[1], [
+      { opacity: 0.5, transform: under(DEAL[1]) },
+      { opacity: 0.3, transform: "translate(358px, 250px) rotate(-2deg) scale(1.66)", offset: 0.6 },
+      { opacity: 0.6, transform: "translate(346px, 225px) rotate(-2deg) scale(1.52)" },
+    ], 1080, { easing: E.inOut });
+    move(cards[1].firstChild, [{ transform: FACE.back(0) }, { transform: FACE.back(180) }], 560, { delay: 300, easing: E.inOut });
+    move(front, [{ transform: FACE.front(0) }, { transform: FACE.front(180) }], 560, { delay: 300, easing: E.inOut });
+    setTimeout(() => SE.just(), 600);
+    await move(cards[1], [
+      { opacity: 1, transform: place(DEAL[1], "scale(1)"), easing: E.inOut },
+      { opacity: 1, transform: "translate(323px, 159px) rotate(0deg) scale(1.32)", offset: 0.32, easing: E.inOut },
+      { opacity: 1, transform: "translate(323px, 164px) rotate(-3deg) scale(1.6)", offset: 0.78, easing: E.out },
+      { opacity: 1, transform: PICK },
+    ], 1080, { easing: "linear" });
+    // 4. 金の光が表を走り、どの札かを帯で
+    move(front.lastChild, [{ translate: "-70% 0" }, { translate: "70% 0" }], 750, { easing: E.inOut });
+    move(band, [{ translate: "110% 0" }, { translate: "0 0" }], 520, { delay: 140, easing: E.out });
+    await sleep(1800);
+    // 5. 帯と札が退いて、元の場面へ戻る
+    move(band, [{ translate: "0 0" }, { translate: "110% 0" }], 360, { easing: E.in });
+    [...cards, ...shadows].forEach((n) => move(n, [{ opacity: Number(getComputedStyle(n).opacity) }, { opacity: 0 }], 300, { delay: 80 }));
+    move(dim, [{ opacity: 0.4 }, { opacity: 0 }], 520, { delay: 200, easing: "ease" });
+    await move(set, SET_OUT, 520, { delay: 200, easing: E.inOut });
   });
 }
