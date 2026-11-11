@@ -1773,6 +1773,7 @@
         "data/dialogue/ch4_main.json",
         "data/dialogue/ch4_visitors.json",
         "data/dialogue/ch4_*_dubai.json",
+        "data/dialogue/ch4_arrival_daily.json",
         "data/dialogue/tournament_dates.json",
         "remake/test/browser/ch4_dubai_daily.mjs"
       ],
@@ -1794,6 +1795,7 @@
         "data/dialogue/ch4_spots.json",
         "data/dialogue/ch4_visitors.json",
         "data/dialogue/ch4_*_dubai.json",
+        "data/dialogue/ch4_arrival_daily.json",
         "remake/test/browser/ch4_full_flow.mjs"
       ],
       "run": [
