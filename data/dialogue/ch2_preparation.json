@@ -750,291 +750,673 @@
     },
     {
       "dialogue_id": "remake_ch2_kumicho_followup",
+      "comment": "候補A10。既存 remake_ch2_kumicho_followup（♥1の短い続編）の改稿案。IDは維持。初回相談（chat）の『いったん置いて見直す』を受け、置く話を一本の小さな出来事にする。素性・若い衆の話は先取りしない。盃の本論は second に任せる。改稿後も続編の位置（chatのあと、長い first の前後どちらでも読める）は変えない想定。",
       "lines": [
         {
           "speaker": "",
-          "face": "",
-          "text": "黒革のソファに腰を下ろし、飲み物を机に置いた。"
+          "text": "黒革のソファに腰を下ろす。机の上は、相変わらず何も散らかっていない。",
+          "face": ""
         },
         {
           "speaker": "kumicho",
-          "face": "normal",
-          "text": "おう、あんちゃん。今日は何が引っかかってる"
+          "text": "おう、あんちゃん。今日は何が引っかかってる",
+          "face": "normal"
         },
         {
           "speaker": "hajime",
-          "face": "normal",
-          "text": "この前の、いったん置いて見直すって話です。急いでると、置くのも遅く感じそうで"
+          "text": "この前の、いったん置いて見直すって話です。急いでると、置くのも遅く感じそうで",
+          "face": "normal"
         },
         {
           "speaker": "kumicho",
-          "face": "normal",
-          "text": "手に持ってると、そいつをどうするかばっかり考えちまうんでね"
+          "text": "手に持ってると、そいつをどうするかばっかり考えちまうんでね",
+          "face": "normal"
         },
         {
           "speaker": "",
-          "face": "",
-          "text": "神崎さんは自分のグラスを置き、机の上で手を開いた。"
+          "text": "神崎さんは自分のグラスを置き、机の上で手を開いた。",
+          "face": ""
+        },
+        {
+          "speaker": "",
+          "text": "大きな手が空くと、ソファの肘と、こちらの席までの距離が急に見えてくる。",
+          "face": ""
         },
         {
           "speaker": "kumicho",
-          "face": "normal",
-          "text": "置きゃ、ほかも見えてくる。肘の先とか、次に手を出す場所とかね"
+          "text": "置きゃ、ほかも見えてくる。肘の先とか、次に手を出す場所とかね",
+          "face": "normal"
         },
         {
           "speaker": "hajime",
-          "face": "normal",
-          "text": "……あ。飲み物を持ったままだと、この空いてる所も使う気にならないですね"
+          "text": "……あ。飲み物を持ったままだと、この空いてる所も使う気にならないですね",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "はじめがグラスを机へ置く。手が空いた拍子に、神崎さんの湯呑みの位置まで、自然と目が行った。",
+          "face": ""
         },
         {
           "speaker": "kumicho",
-          "face": "normal",
-          "text": "そういうこってさ。急ぐ時ほど、持ったまま迷いなさんな"
+          "text": "そういうこってさ。急ぐ時ほど、持ったまま迷いなさんな",
+          "face": "normal"
+        },
+        {
+          "speaker": "kumicho",
+          "text": "好きなもんを雑に扱わねえためでもある。置かねえうちは、手元しか見えねえんでさ",
+          "face": "normal"
         },
         {
           "speaker": "hajime",
-          "face": "normal",
-          "text": "早く動くより、一度ちゃんと見られるようにするんですね"
+          "text": "早く動くより、一度ちゃんと見られるようにするんですね",
+          "face": "normal"
         },
         {
           "speaker": "kumicho",
-          "face": "normal",
-          "text": "おう。置き場所だって、一度決めりゃ終いじゃねえんでさ"
+          "text": "おう。置き場所だって、一度決めりゃ終いじゃねえ",
+          "face": "normal"
+        },
+        {
+          "speaker": "kumicho",
+          "text": "あんちゃんの店の卓で、手を空けた時に何が見えるか、確かめてみな",
+          "face": "normal"
         },
         {
           "speaker": "hajime",
-          "face": "normal",
-          "text": "はい。店の卓で、手を空けた時に何が見えるか、確かめてみます"
+          "text": "はい。俺の手に合う場所を探します",
+          "face": "normal"
         },
         {
           "speaker": "kumicho",
-          "face": "normal",
-          "text": "ああ。あんちゃんの手に合う場所を探しゃいい"
+          "text": "置き方は、人の手で違う。俺の卓の真似は、しなくていいんでさ",
+          "face": "normal"
+        },
+        {
+          "speaker": "kumicho",
+          "text": "ああ。見つけたら、また顔を出しな。そっちの話も、聞いてえんでさ",
+          "face": "smile"
         }
       ]
     },
     {
       "dialogue_id": "remake_ch2_kumicho_revisit",
+      "comment": "候補A11。既存 remake_ch2_kumicho_revisit（♥2の再訪）の改稿案。IDは維持。#952どおり『前の話を覚えていて少し進む』——神崎が自分の卓にもトレーを足し、今日ははじめに置き場所を任せる——を残し、一本の出来事として厚くする。素性には触れない。時間帯は言わない。",
       "lines": [
         {
           "speaker": "",
-          "face": "",
-          "text": "黒革のソファに座ると、机の端に小さなトレーが置いてあった。"
+          "text": "黒革のソファに座ると、机の端に小さなトレーが置いてあった。前に来た時には、なかったものだ。",
+          "face": ""
+        },
+        {
+          "speaker": "kumicho",
+          "text": "おう、あんちゃん。店の卓、試しなすったか",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "はい。トングを置く場所を決めたら、手が迷わなくなりました",
+          "face": "normal"
+        },
+        {
+          "speaker": "kumicho",
+          "text": "そうかい。……そいつは、あんちゃんの手が見つけた場所でさ",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "このトレー、前はなかったですよね",
+          "face": "surprise"
+        },
+        {
+          "speaker": "kumicho",
+          "text": "あんちゃんの話を聞いて、俺も一つ足した。客のグラスを置く場所でさ",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "神崎さんも、変えたんですか",
+          "face": "surprise"
+        },
+        {
+          "speaker": "kumicho",
+          "text": "教えたら終いじゃねえ。こっちも、使って確かめるんでさ",
+          "face": "normal"
         },
         {
           "speaker": "",
-          "face": "",
-          "text": "前に来た時には、なかったものだ。"
-        },
-        {
-          "speaker": "kumicho",
-          "face": "normal",
-          "text": "おう、あんちゃん。店の卓、試しなすったか"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "はい。トングを置く場所を決めたら、手が迷わなくなりました"
-        },
-        {
-          "speaker": "kumicho",
-          "face": "normal",
-          "text": "そうかい。……そいつは、あんちゃんの手が見つけた場所でさ"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "このトレー、前はなかったですよね"
-        },
-        {
-          "speaker": "kumicho",
-          "face": "normal",
-          "text": "あんちゃんの話を聞いて、俺も一つ足した。客のグラスを置く場所でさ"
-        },
-        {
-          "speaker": "hajime",
-          "face": "surprise",
-          "text": "神崎さんも、変えたんですか"
-        },
-        {
-          "speaker": "kumicho",
-          "face": "normal",
-          "text": "教えたら終いじゃねえ。こっちも、使って確かめるんでさ"
+          "text": "そう言っているうちに、常連のグラスが机の端で傾く。",
+          "face": ""
         },
         {
           "speaker": "",
-          "face": "",
-          "text": "神崎さんはトレーを指で少しずらし、こちらへ向けた。"
+          "text": "神崎さんは焦らず、新しいトレーの位置へ受けた。水は、一滴もこぼれていない。",
+          "face": ""
         },
         {
           "speaker": "kumicho",
-          "face": "normal",
-          "text": "今日はあんちゃんが置いてみな。どこがいいと思う"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "……ソファから手を伸ばして、迷わない所。ここです"
+          "text": "……ほら、こういう時のためでさ",
+          "face": "smile"
         },
         {
           "speaker": "kumicho",
-          "face": "smile",
-          "text": "……ああ。悪くねえ"
+          "text": "今日はあんちゃんが置いてみな。どこがいいと思う",
+          "face": "normal"
         },
         {
           "speaker": "",
-          "face": "",
-          "text": "トレーは、そのまま俺が置いた場所に残った。"
+          "text": "トレーをいったん空ける。はじめはソファから手を伸ばし、迷わない所へ戻した。",
+          "face": ""
+        },
+        {
+          "speaker": "hajime",
+          "text": "……ここです。グラスが傾いても、届く所",
+          "face": "normal"
+        },
+        {
+          "speaker": "kumicho",
+          "text": "……ああ。悪くねえ。俺が足した場所より、ええかもしれねえ",
+          "face": "smile"
+        },
+        {
+          "speaker": "",
+          "text": "トレーは、そのまま俺が置いた場所に残った。神崎さんは、それを動かさなかった。",
+          "face": ""
+        },
+        {
+          "speaker": "",
+          "text": "閉店まで、その位置のまま使われていた。",
+          "face": ""
+        },
+        {
+          "speaker": "hajime",
+          "text": "動かさないんですか",
+          "face": "normal"
+        },
+        {
+          "speaker": "kumicho",
+          "text": "ええ場所は、いじらねえんでさ",
+          "face": "smile"
+        },
+        {
+          "speaker": "kumicho",
+          "text": "置き場所は、使って決めるもんでさ。今日の分は、あんちゃんの手に預ける",
+          "face": "normal"
         }
       ]
     },
     {
       "dialogue_id": "remake_ch2_rei_followup",
+      "comment": "候補A12。既存 remake_ch2_rei_followup（♥1の短い続編）の改稿案。IDは維持。初回相談で見せた盤の『音がすぐには重ならない』話を、実際の間を一緒に聴く場面へ広げる。鎧やステージの人格は出さない（#1474）。長い段階会話（first のローズ、second の月光花）の開示は先取りしない。",
       "lines": [
         {
           "speaker": "",
-          "face": "",
-          "text": "棚のCDを見ていると、レヰが前に見せてくれた一枚を指した。"
+          "text": "棚のCDを見ていると、レヰが前に見せてくれた一枚を指した。",
+          "face": ""
         },
         {
           "speaker": "rei",
-          "face": "normal",
-          "text": "……それ、気になる？"
+          "text": "……それ、気になる？",
+          "face": "normal"
         },
         {
           "speaker": "hajime",
-          "face": "normal",
-          "text": "はい。レヰさんは、この曲のどんなところが好きなんですか？"
+          "text": "はい。レヰさんは、この曲のどんなところが好きなんですか？",
+          "face": "normal"
         },
         {
           "speaker": "rei",
-          "face": "normal",
-          "text": "……音が、すぐには重ならない"
+          "text": "……音が、すぐには重ならない",
+          "face": "normal"
         },
         {
           "speaker": "hajime",
-          "face": "normal",
-          "text": "重ならない？"
+          "text": "重ならない？",
+          "face": "normal"
         },
         {
           "speaker": "rei",
-          "face": "normal",
-          "text": "ひとつ鳴って、消えかけたところに、次の音が来る"
+          "text": "ひとつ鳴って、消えかけたところに、次の音が来る",
+          "face": "normal"
         },
         {
           "speaker": "rei",
-          "face": "normal",
-          "text": "その間が……いい。静かになっても、まだ続きがある感じがして"
+          "text": "その間が……いい。静かになっても、まだ続きがある感じがして",
+          "face": "normal"
         },
         {
           "speaker": "rei",
-          "face": "normal",
-          "text": "……だから、急いで次の曲にしない"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "音が止まった後も、聴いてるんですね"
-        },
-        {
-          "speaker": "rei",
-          "face": "normal",
-          "text": "……"
+          "text": "……だから、急いで次の曲にしない",
+          "face": "normal"
         },
         {
           "speaker": "",
-          "face": "",
-          "text": "レヰはそこで口を閉じ、CDケースの角を指でそろえた。"
+          "text": "レヰはプレイヤーの蓋を開け、その一枚を入れた。音量は小さい。",
+          "face": ""
+        },
+        {
+          "speaker": "",
+          "text": "店の煙の下で、一つの音が消えてから、次が来る。",
+          "face": ""
+        },
+        {
+          "speaker": "",
+          "text": "隣の席の客が、何か言いたそうに口を開く。",
+          "face": ""
+        },
+        {
+          "speaker": "",
+          "text": "曲の間が過ぎるまで、誰も話さなかった。レヰは、それを見ていないふりをした。",
+          "face": ""
+        },
+        {
+          "speaker": "",
+          "text": "はじめも、次の音が来るまで、何も聞かなかった。",
+          "face": ""
+        },
+        {
+          "speaker": "",
+          "text": "消えかけたあと、ほんの一瞬、何も重ならない。レヰはそこで口を開きかけ、やめた。",
+          "face": ""
+        },
+        {
+          "speaker": "hajime",
+          "text": "……今、言葉、出しかけましたね",
+          "face": "normal"
+        },
+        {
+          "speaker": "rei",
+          "text": "……間を、話すと、消える気がして",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "音が止まった後も、聴いてるんですね",
+          "face": "normal"
+        },
+        {
+          "speaker": "rei",
+          "text": "……うん。煙も、同じでいいと思ってる",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "曲はまだ終わらない。次の音が来るまで、レヰは何も足さなかった。",
+          "face": ""
+        },
+        {
+          "speaker": "",
+          "text": "CDケースの角だけ、指でそろえている。",
+          "face": ""
+        },
+        {
+          "speaker": "hajime",
+          "text": "どんなふうに聴いてるのか、少し分かりました",
+          "face": "normal"
+        },
+        {
+          "speaker": "rei",
+          "text": "……そうか。気になったら、また聞いて",
+          "face": "smile"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "どんなふうに聴いてるのか、少し分かりました"
-        },
-        {
-          "speaker": "rei",
-          "face": "normal",
-          "text": "……そうか"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "ほかのCDの話も、また聞いていいですか？"
-        },
-        {
-          "speaker": "rei",
-          "face": "normal",
-          "text": "……うん。気になったら、聞いて"
+          "text": "その間が、この店の居心地なんだと思いました"
         }
       ]
     },
     {
       "dialogue_id": "remake_ch2_rei_revisit",
+      "comment": "候補A13。既存 remake_ch2_rei_revisit（♥2の再訪）の改稿案。IDは維持。#952どおり『約束どおり一枚選んでおき、店で流す前に聴いてほしい』を残し、渡すまでの躊躇を厚くする。感想を頼むのは、レヰが自分から願う場面として着地させる。本名や私生活の顔には触れない。",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "店に入ると、カウンターにCDが一枚だけ、伏せて置いてあった。",
+          "face": ""
+        },
+        {
+          "speaker": "",
+          "text": "レヰの手が、一度だけその縁に触れて、離れる。",
+          "face": ""
+        },
+        {
+          "speaker": "rei",
+          "text": "……来た。これ、選んでおいた",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "俺に、ですか？",
+          "face": "surprise"
+        },
+        {
+          "speaker": "rei",
+          "text": "……前に、ほかの話も聞きたいって言ってたから",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "ジャケットは、夜明け前みたいな薄い青。前の一枚より、音が少なそうに見えた。",
+          "face": ""
+        },
+        {
+          "speaker": "",
+          "text": "レヰは、まだ裏返したままにする。",
+          "face": ""
+        },
+        {
+          "speaker": "rei",
+          "text": "……渡す前に、やめようと思った。自分の好きを、先に出すのが",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "やめてほしくないです。聴きたいです",
+          "face": "normal"
+        },
+        {
+          "speaker": "rei",
+          "text": "……そうか",
+          "face": "smile"
+        },
+        {
+          "speaker": "",
+          "text": "ケースが表を向く。レヰは自分ではプレイヤーに入れず、こちらへスライドした。",
+          "face": ""
+        },
+        {
+          "speaker": "hajime",
+          "text": "今、聴いてもいいですか",
+          "face": "normal"
+        },
+        {
+          "speaker": "rei",
+          "text": "……店が、少し混む前にしたい。今は、持って帰らなくていい",
+          "face": "normal"
+        },
+        {
+          "speaker": "rei",
+          "text": "ここに置いてく。かける夜に、来て",
+          "face": "normal"
+        },
+        {
+          "speaker": "rei",
+          "text": "……この人たち、音を減らして、間を広げてる",
+          "face": "normal"
+        },
+        {
+          "speaker": "rei",
+          "text": "店でかける前に、誰かに聴いてほしかった",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "お店の曲、レヰさんが選んでるんですね",
+          "face": "normal"
+        },
+        {
+          "speaker": "rei",
+          "text": "……うん。煙が濃い夜は、これくらいがいい気がする",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "吸ったあとに、少し余白が残る感じですか",
+          "face": "normal"
+        },
+        {
+          "speaker": "rei",
+          "text": "……そう。それ",
+          "face": "smile"
+        },
+        {
+          "speaker": "rei",
+          "text": "……今度、店で流す。その夜に来たら、感想を聞かせて",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "はい。煙と一緒に聴いてみます",
+          "face": "smile"
+        },
+        {
+          "speaker": "rei",
+          "text": "……無理に、詳しくならなくていい。好きか、嫌いかだけで",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "伏せて置いてあった盤が、今は表を向いたまま、カウンターに残された。",
+          "face": ""
+        },
+        {
+          "speaker": "",
+          "text": "レヰは、もう一度縁には触れなかった。",
+          "face": ""
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_ch2_ageha_repeat_e",
+      "comment": "#3097 大会進行・恋愛関係に依存しない通いの日常。既存の訪問精算で読む。",
       "lines": [
         {
           "speaker": "",
           "face": "",
-          "text": "店に入ると、カウンターにCDが一枚だけ、伏せて置いてあった。"
+          "text": "あげはさんが、テーブルのメニューを一枚ずつ拭いていた。"
         },
         {
-          "speaker": "rei",
+          "speaker": "ageha",
           "face": "normal",
-          "text": "……来た。これ、選んでおいた"
+          "text": "あ、ここのシール、また浮いてる"
         },
         {
           "speaker": "hajime",
-          "face": "surprise",
-          "text": "俺に、ですか？"
+          "face": "normal",
+          "text": "端だけ剥がして、貼り直しますか"
         },
         {
-          "speaker": "rei",
-          "face": "normal",
-          "text": "……前に、ほかの話も聞きたいって言ってたから"
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "待って。この角、爪に引っかかんの。上から透明のやつ貼る"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "ジャケットは、夜明け前みたいな薄い青。前の一枚より、音が少なそうに見えた。"
+          "text": "引き出しから出てきたのは、細いテープと、小さなはさみだった。"
         },
         {
-          "speaker": "rei",
-          "face": "normal",
-          "text": "……この人たち、音を減らして、間を広げてる"
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "シール用の道具まであるんですね"
         },
         {
-          "speaker": "rei",
+          "speaker": "ageha",
           "face": "normal",
-          "text": "店でかける前に、誰かに聴いてほしかった"
+          "text": "かわいくしたら終わり、じゃないもん。毎日触るし、拭くし"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "お店の曲、レヰさんが選んでるんですね"
+          "text": "……拭いても平気なように、してあるんだ"
         },
         {
-          "speaker": "rei",
-          "face": "normal",
-          "text": "……うん。煙が濃い夜は、これくらいがいい気がする"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "吸ったあとに、少し余白が残る感じですか"
-        },
-        {
-          "speaker": "rei",
+          "speaker": "ageha",
           "face": "smile",
-          "text": "……そう。それ"
+          "text": "そ。あと角を丸く切ると、服に引っかかんない。はい、触ってみ"
         },
         {
-          "speaker": "rei",
-          "face": "normal",
-          "text": "……今度、店で流す。その夜に来たら、感想を聞かせて"
+          "speaker": "",
+          "face": "",
+          "text": "指でなぞる。さっきの、かすかに尖った感触がなくなっていた。"
         },
         {
           "speaker": "hajime",
           "face": "smile",
-          "text": "はい。煙と一緒に聴いてみます"
+          "text": "ほんとだ。言われないと、気づかなかったです"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "気づかないで使えたら勝ちっしょ。はい、そっちの一枚もお願い"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "メニューを裏返して拭く。表には見えない透明なテープが、何か所も貼ってあった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_ch2_kumicho_repeat_e",
+      "comment": "#3097 大会進行・恋愛関係に依存しない通いの日常。既存の訪問精算で読む。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "神崎さんが、引き出しから出前の献立表を取り出した。"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "あんちゃん、飯は済んだかい"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "今日は食べてきました。神崎さんは、これからですか"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "おう。忙しくなる前に頼んじまおうと思ってな"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "赤い鉛筆を持ったまま、献立表の上で手が止まる。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "いつもは、何を頼むんですか"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "生姜焼きだな。だが、たまには違うもんも食いてえ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "じゃあ、今日がその日ですね"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "そう急かすな。今、最後の二つまで絞ったところだ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "二つのうち片方は、やっぱり生姜焼きだった。"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "……もしもし。神崎です。いつもの、一つお願いします"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "決まるのは早かったですね"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "声を聞いたら腹が決まりやしてね。あそこの親父、これがうめえんだ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "献立表を畳む顔が、さっきより少し楽しそうだった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_ch2_rei_repeat_e",
+      "comment": "#3097 大会進行・恋愛関係に依存しない通いの日常。既存の訪問精算で読む。",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "レヰが棚のCDを一枚抜いて、空いたところに別のジャケットを差した。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ここ、入れ替えるんですね"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "ずっと同じだと、置いてあるのに見なくなるから"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "俺も、今まで下の段ばかり見てました"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "背表紙だけのやつも、たまに表に出す。好きなの、多いし"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一枚を持ち上げかけて、レヰの指が止まった。"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "これ、見たことある？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ないです。どんな曲ですか"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "最初、静かで。急に音が入る。初めて聴いた時、音量間違えたと思った"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "じゃあ、ここで流す時は気をつけないと"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "うん。お客さんのカップ、揺らしたくないから"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "レヰは小さく笑って、その一枚を目の高さに飾った。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "今日はジャケットから、覚えて帰ります"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……次に来た時も、見つけてやって"
         }
       ]
     }

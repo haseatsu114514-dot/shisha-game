@@ -16,7 +16,7 @@ import { samechanMilestoneDue, playSamechanMilestone } from "./samechan-bonds.js
 import { dateScene, dateVenue, relationshipDayTotal } from "./date-scene.js";
 import { playSamechanDate, samechanDateGap, samechanDateReady } from "./samechan-date.js";
 import { questionDoneKey } from "../core/affinity-stages.js";
-import { recordRouteLover } from "../core/gallery-progress.js";
+import { recordRouteLover, recordRouteEvent } from "../core/gallery-progress.js";
 
 // 告白は「帰り道」の場面。背景を持たない台本は通りの絵で（前の場面の背景を引き継がない）
 const STREET = "res://assets/backgrounds/bg_street.png";
@@ -251,6 +251,13 @@ export async function playLoverMilestone(id, { signal = null, home } = {}) {
     if (state !== owner || signal?.aborted || (!result || result.cancelled)) return false;
     state.loverEventsSeen ||= [];
     if (!state.loverEventsSeen.includes(eventId)) state.loverEventsSeen.push(eventId);
+    // ギャラリーのルート記録「閲覧した段階・派生」へも通知する（#3164 B。完読が確定したここでだけ通知するので、
+    // 中断・キャンセル・別セーブへの差し替えでは記録されない。段階は基本=数値、_b 派生=文字列 "2b" 形式で
+    // 既存の保存形式・ギャラリー表示に合わせ、recordRouteEvent 側で重複は排除される）
+    try {
+      const stageMatch = /_lv(\d+)(_b)?$/.exec(eventId);
+      if (stageMatch) recordRouteEvent(id, stageMatch[2] ? `${stageMatch[1]}b` : Number(stageMatch[1]));
+    } catch { /* 記録の失敗で節目の読了を妨げない */ }
     releaseLoveAffinity(id);
     save();
     return true;

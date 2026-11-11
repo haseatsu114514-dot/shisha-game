@@ -1,11 +1,21 @@
 import { el } from "./core/util.js";
+import { initStageFit } from "./core/stage-fit.js";
+initStageFit(document.getElementById("stage")); // 画面の当て方は本編と同じ共通部品（#3076）
 import { runAxeThrow } from "./minigames/axe.js";
 import { DIFFICULTIES } from "./minigames/axe-match.js";
 import { DIVISIONS } from "./minigames/axe-model.js";
 import { COMPANIONS } from "./minigames/axe-companions.js";
 import { axeRules } from "./minigames/axe-rules.js";
 import { adamUnlocked, recordAdamUnlock } from "./minigames/axe-secret-boss.js";
+import { DB } from "./core/data.js";
+import { unlockAudio, preloadBgm, playBgm, stopBgm } from "./core/audio.js";
 const host = document.getElementById("axe-app");
+// This standalone page does not run the main game's data loader. Register its one
+// packaged track before the first click so bgmUrl() can resolve it immediately.
+DB.manifest.bgm = ["bgm_axe.bgm"];
+void preloadBgm("bgm_axe");
+window.addEventListener("pointerdown", unlockAudio);
+window.addEventListener("keydown", unlockAudio);
 let opponent = "hiyori", rival = "hiyori", difficulty = "normal", division = "am", bestOf = 1;
 function menu(result = null) {
   if (result) recordAdamUnlock(result);
@@ -18,10 +28,13 @@ function menu(result = null) {
     // The competitive modes ask for the division (and the match length) on a small sheet; practice starts at once.
     if (mode !== "practice" && !confirmed) { openSetup(mode, button); return; }
     buttons.forEach(b => { b.disabled = true; }); lesson.disabled = true;
-    try { menu(await runAxeThrow({ host, mode, opponent: mode === "versus" ? rival : opponent,
+    playBgm("bgm_axe");
+    try { const result = await runAxeThrow({ host, mode, opponent: mode === "versus" ? rival : opponent,
       difficulty: mode === "versus" && rival === "adam" ? "secret" : difficulty,
-      division: mode === "practice" ? "rec" : division, bestOf: mode === "versus" ? bestOf : 1 })); }
-    catch (error) { console.error(error); buttons.forEach(b => { b.disabled = false; }); lesson.disabled = false; message.textContent = "開き直して、もう一度お試しください。"; button.focus(); }
+      division: mode === "practice" ? "rec" : division, bestOf: mode === "versus" ? bestOf : 1 });
+      stopBgm(); menu(result);
+    }
+    catch (error) { stopBgm(); console.error(error); buttons.forEach(b => { b.disabled = false; }); lesson.disabled = false; message.textContent = "開き直して、もう一度お試しください。"; button.focus(); }
   };
   const modeCard = (kind, test, count, tag, title, description, action) => el("button.axe-button.axe-menu-mode", {
     type: "button", dataset: { test, kind }, onclick: () => startGame(kind, test === "axe-start" ? start : test === "axe-league" ? league : versus),
@@ -94,9 +107,11 @@ function menu(result = null) {
   const lesson = el("button.axe-button.axe-menu-lesson", { type: "button", text: "マキの無料1投レッスン", dataset: { test: "axe-menu-lesson" }, onclick: async () => {
     if (busy() || intro.inert || !intro.isConnected) return;
     lessonOpen = true; intro.inert = true;
+    playBgm("bgm_axe");
     try { await runAxeThrow({ host, tutorial: true, opponent: null, allowRetry: true }); }
     catch (error) { console.error(error); }
     finally {
+      stopBgm();
       lessonOpen = false;
       if (intro.isConnected) { intro.inert = false; lesson.focus(); }
     }

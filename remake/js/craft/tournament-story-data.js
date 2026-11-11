@@ -3,6 +3,10 @@ import { DB } from "../core/data.js";
 import { temperatureBands, isIdealTemperature } from "./temperature-model.js";
 
 export const TOURNAMENT_STORY_STEPS = new Map([[0, "opening"], [3, "packed"], [7, "waiting"]]);
+// 大会の合間の掛け合い（#3060）: 開始前・審査員への提供開始・結果発表前。台本は章ごとの `${event}_${chapter}`。
+// 第2章の開始前は既存の stations が受け持つ。第2章の提供開始は interlude_pull（心の声）の直後に声の掛け合い、
+// 第3・4章の開始前は当日の場面の後、作り始める直前に読む（オーナー 2026-11-10 04:48「全部推奨で」）。
+export const TOURNAMENT_BANTER_EVENTS = Object.freeze(["prestart", "serve", "preresult"]);
 const PACKING = { fluffy: "ふんわり詰め", normal: "均等な詰め方", firm: "デンスパック" };
 // 共通工程のうち、上園が話す行だけ第3章の審査員エミルへ切り替える。
 // 散文に出す葉の名前。短縮名の先頭メーカー表記（AF/NS/ドバジ 等）は落とす（served-eval.js の aromaName と同じ扱い）。
@@ -13,7 +17,7 @@ function leafName(id) {
   return sp > 0 && MAKER_TOKENS.has(name.slice(0, sp)) ? name.slice(sp + 1) : name;
 }
 const NATIONAL_JUDGE_SCENES = new Set(["mix_single", "mix_blend", "crowd_2", "aroma_good", "aroma_work", "aroma_unknown"]);
-// 第4章（世界大会）の審査員は伏見・エミル・太陽。博士の行は太陽へ、上園の行は第3章と同じエミルの行へ切り替える。
+// 第4章（世界大会）の審査員は千須・エミル・太陽。博士の行は太陽へ、上園の行は第3章と同じエミルの行へ切り替える。
 const WORLD_JUDGE_SCENES = new Set(["packed_intro", "pack_fluffy", "pack_normal", "pack_firm"]);
 function sceneIdFor(chapter, id) {
   if (chapter === 4 && WORLD_JUDGE_SCENES.has(id)) return `${id}_4`;
@@ -78,7 +82,9 @@ export function tournamentStoryDialogue(cs, event, random = Math.random, context
     if (context?.rank !== 1 && context?.leader === "naru") ids.push(`interlude2_4_naru${context?.tied ? "_tie" : ""}`);
     ids.push("interlude2_4");
   }
-  else if (event.startsWith("interlude")) ids.push(`${event}_${chapter}`);
+  // 第1章の優勝の流れは、ch1_tournament_judging の後にみんととアダムの待ち時間を読む（結果は言わない）。
+  else if (event === "preresult" && chapter === 1 && context?.win === true) ids.push("preresult_1_win");
+  else if (TOURNAMENT_BANTER_EVENTS.includes(event) || event.startsWith("interlude")) ids.push(`${event}_${chapter}`);
   else if (event === "packed") ids.push("packed_intro", `pack_${PACKING[cs.pack] ? cs.pack : "normal"}`,
     ingredients.length > 1 ? "mix_blend" : "mix_single", "packed_end");
   else if (event === "waiting") ids.push(`waiting_${chapter}`, `crowd_${Math.min(2, Math.max(0, Math.floor(random() * 3)))}`);

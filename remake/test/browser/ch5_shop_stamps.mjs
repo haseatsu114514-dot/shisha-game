@@ -1,7 +1,7 @@
 // 第5章の各地の店めぐり帳（MGR・chapters/ch5-shop-stamps.js）を、実際の地図の来店と LIME の帳面で確かめる。
 // 1. 第5章の地元の店（KEMURIKUSA）へ行く → 来店の会話を読み終えると判子が一つ（一言の案内）→ もう一度行っても増えない。
 //    くじ券は増えず、代金はいつもの来店のまま。
-// 2. 帳面の最後の一店（C.STATION）で判子 → 地元がそろった1枚＋全部そろった2枚＝くじ券3枚。
+// 2. 帳面の最後の一店（C.STATION）で判子 → 地元がそろった1枚＋全部そろった1枚＝くじ券2枚。
 // 3. LIME の一番上の「店めぐり帳」の行 → 帳面が開き、地域ごとの判子と「判子 10/10」が見える（時間は使わない）。
 import assert from "node:assert/strict";
 import { suite } from "./support.mjs";
@@ -119,12 +119,12 @@ await suite("ch5-shop-stamps", async check => {
     await mapReady(page, { day: 51, slot: 1 });
     const state = await get(page);
     assert.equal(Object.keys(book(state).shops).length, 10, "the book is full");
-    assert.deepEqual(book(state).rewards, { widehanga: 1, tokyo: 1, dubai: 1, home: 1, all: 2 });
-    assert.equal(state.kujiTickets, 3, "home region (1) + full book (2)");
+    assert.deepEqual(book(state).rewards, { widehanga: 1, tokyo: 1, dubai: 1, home: 1, all: 1 });
+    assert.equal(state.kujiTickets, 2, "home region (1) + full book (2)");
     assert.equal(state.money, before.money - 2500, "C.STATION's usual price; the book gives no money");
     const notes = await toasts(page);
     assert(notes.some(text => /判子をもらった：C\.STATION（10\/10）/.test(text)), notes.join(" | "));
-    assert(notes.some(text => /店めぐり帳が全部そろった。Dr\.fookahから、くじ券を3枚もらった/.test(text)), notes.join(" | "));
+    assert(notes.some(text => /店めぐり帳が全部そろった。Dr\.fookahから、くじ券を2枚もらった/.test(text)), notes.join(" | "));
 
     // LIME の一番上の行から帳面を開く（時間は使わない）
     await page.locator(dt("hud-phone")).click();
@@ -140,13 +140,14 @@ await suite("ch5-shop-stamps", async check => {
       assert.match(await panel.locator(dt(`shop-stamps-${region}`)).getAttribute("class"), /done/, `${region} is complete`);
     }
     assert.equal(await panel.locator('li[data-stamped="1"]').count(), 10);
+    assert.match(await panel.textContent(), /SHISHARK（任意）.*カフェ・オアシス（任意）/);
     assert.match(await panel.textContent(), /地元・橙須.*KEMURIKUSA.*EDEN.*PEPPERMINT.*C\.STATION.*隣町・柚ヶ谷.*MELTY PUFF.*神崎煙草店.*零-ZERO-.*東京.*Smoke & Glory.*鉄の煙.*ドバイ.*路地裏のカフェ/);
     await page.locator(dt("shop-stamps-close")).click();
     await mapReady(page, { day: 51, slot: 1 });
     const after = await get(page);
     assert.equal(after.flags._ch5_shop_stamps.opened, true, "opening the book clears the dot");
     assert.equal(after.slot, 1, "viewing the book uses no time");
-    assert.equal(after.kujiTickets, 3);
+    assert.equal(after.kujiTickets, 2);
   });
 
   await check("book-view-partial-progress", async page => {

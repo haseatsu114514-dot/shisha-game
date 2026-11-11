@@ -4,6 +4,8 @@ import { BULLS, KILLS, resolveThrow } from "../js/minigames/axe-model.js";
 const league = { throws: 10 };
 import { shotFeedback, sessionStats, impactFeedback, declarationCue, quiverAt, QUIVER_MS, zoneLabel, haloFor } from "../js/minigames/axe-presentation.js";
 import { RINGS, CLUSTERS } from "../js/minigames/axe-model.js";
+/** The middle of the n-point ring's band, on the horizontal through the centre. */
+const bandMiddle = score => (RINGS[5 - score].radius + RINGS[6 - score].radius) / 2;
 
 test("declaring a new killshot blue gives one cue; same blue, normal, or non-killshot gives none", () => {
   const [first, second] = KILLS;
@@ -45,11 +47,13 @@ test("feedback celebrates actual central and off-center red bulls without sugges
     assert.match(feedback.tip, /赤い中心に命中/); assert.doesNotMatch(feedback.tip, /次は/);
   }
 });
+// Just right of and just above the upper-right outer bull (positions from the model, so they follow the painted target).
+const upperRight = CLUSTERS.find(c => c.id === "ur"), rightOfOuter = () => shot(upperRight.x + .19, upperRight.y);
 test("normal aim correction uses the nearest red core, including outer bulls", () => {
-  assert.match(shotFeedback(shot(.6, -.24)).tip, /左の赤い中心/);
-  assert.match(shotFeedback(shot(.41, -.45)).tip, /下の赤い中心/);
+  assert.match(shotFeedback(rightOfOuter()).tip, /左の赤い中心/);
+  assert.match(shotFeedback(shot(upperRight.x, upperRight.y - .21)).tip, /下の赤い中心/);
   assert.match(shotFeedback(shot(.2, 0)).tip, /左の赤い中心/);
-  assert.equal(shotFeedback(shot(.6, -.24)).tone, "hit");
+  assert.equal(shotFeedback(rightOfOuter()).tone, "hit");
   assert.equal(shotFeedback(shot(1, 1)).tone, "miss");
 });
 test("declared misses explain the called blue instead of offering normal red points", () => {
@@ -68,7 +72,7 @@ test("drops use the actual power failure even over red or declared blue", () => 
     assert.match(feedback.tip, /54〜70%/); assert.match(feedback.tip, power < .42 ? /柄から/ : /回りすぎ/);
     assert.doesNotMatch(feedback.tip, /宣言した青だけ|赤い中心を狙/);
   }
-  const tired = { ...shot(.6, -.24), sway: { fatigue: 1, focused: false } };
+  const tired = { ...rightOfOuter(), sway: { fatigue: 1, focused: false } };
   assert.match(shotFeedback(tired).tip, /左の赤い中心.*息を整える/);
   assert.doesNotMatch(shotFeedback({ ...tired, sway: { fatigue: 1, focused: true } }).tip, /息を整える/);
 });
@@ -100,7 +104,7 @@ test("the close-up names the zone the blade touched in plain words", () => {
   assert.equal(zoneLabel(shot()), "中央の赤に触れた");
   assert.equal(zoneLabel(shot(BULLS[0].x, BULLS[0].y)), "左上の赤に触れた");
   assert.equal(zoneLabel(shot(RINGS[1].radius - .05, 0, .62)), "中央の5の円");
-  assert.equal(zoneLabel(shot(.3, 0)), "4のリング");
+  assert.equal(zoneLabel(shot(bandMiddle(4), 0)), "4のリング");
   assert.equal(zoneLabel(shot(target.x, target.y, .62, target.id)), "左上の青の中心");
   assert.equal(zoneLabel(shot(target.x + .04, target.y, .62, target.id)), "左上の青");
   assert.equal(zoneLabel(shot(0, 0, .62, target.id)), "宣言した青の外");
@@ -112,8 +116,8 @@ test("the aiming halo outlines exactly the zone that would score, and nothing fo
   assert.deepEqual(haloFor(shot()), { kind: "bull", x: 0, y: 0, r: RINGS[0].radius });
   const outer = CLUSTERS[1]; assert.deepEqual(haloFor(shot(outer.x, outer.y)), { kind: "bull", x: outer.x, y: outer.y, r: RINGS[0].radius });
   assert.deepEqual(haloFor(shot(RINGS[1].radius - .05, 0)), { kind: "five", x: 0, y: 0, r: RINGS[1].radius });
-  for (const [x, score] of [[.3, 4], [.5, 3], [.7, 2], [.95, 1]]) {
-    const result = shot(x, 0); assert.equal(result.score, score); assert.deepEqual(haloFor(result), { kind: "ring", x: 0, y: 0, r: RINGS[6 - score].radius });
+  for (const score of [4, 3, 2, 1]) {
+    const result = shot(bandMiddle(score), 0); assert.equal(result.score, score); assert.deepEqual(haloFor(result), { kind: "ring", x: 0, y: 0, r: RINGS[6 - score].radius });
   }
   const target = KILLS[2];
   assert.equal(haloFor(shot(target.x, target.y, .62, target.id)).r, target.inner);

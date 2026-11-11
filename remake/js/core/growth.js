@@ -78,6 +78,7 @@ export function newGrowth() {
     settledXp: 0,          // 最後に寝た時点の累計（ゲージの濃い金）
     hidane: Object.fromEntries(HIDANE_KEYS.map((k) => [k, 0])), // 未使用の火種（万能と系統限定）
     earned: 0,             // これまでに受け取った火種の総数
+    starterAccounted: false, // 初回の白火を earned に計上済みか（旧SAVEの一度だけの補正）
     milestones: [],        // 2つ目を渡した節目のレベル（重複防止）
     fresh: { chapter: 1, counts: {} }, // 新鮮さの鍵 -> その章の回数
     firsts: { people: [], places: [] }, // 周回内の「はじめて」
@@ -193,7 +194,15 @@ function syncLessonFlags(g, s) {
     }
     // 習得した授業はフラグを立てる（周回で消えても戻す）
     if (g.learned.includes(lesson.id)) for (const f of unlocks) s.flags[f] = true;
+    // 習得で渡される機材（M-W9「博士の試作HMD」）は、習得済みの旧セーブ・周回の引き継ぎでも所持へ戻す
+    if (g.learned.includes(lesson.id)) grantLessonEquipment(lesson, s);
   }
+}
+
+/** 授業の習得で渡される機材を所持へ入れる（二重には入れない）。 */
+export function grantLessonEquipment(lesson, s) {
+  if (!lesson || !Array.isArray(s?.owned)) return;
+  for (const id of lesson.grants || []) if (!s.owned.includes(id)) s.owned.push(id);
 }
 
 // 点灯だけを持ち越した授業は、今の周で好感度を上げ直してから相談する。
@@ -225,6 +234,7 @@ export function learnLesson(id, s = state) {
   if (!g.nodes.includes(id) || g.learned.includes(id) || !lessonHeartReady(lesson, s)) return false;
   g.learned.push(id);
   for (const f of lesson.unlocks || []) s.flags[f] = true;
+  grantLessonEquipment(lesson, s);
   return true;
 }
 

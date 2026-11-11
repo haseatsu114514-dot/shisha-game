@@ -2,7 +2,7 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import { CITY_BACKGROUNDS } from "../js/core/city-locations.js";
-import { CH2_NIGHTS, AGEHA_VISITS, AGEHA_BADDAY, C_STATION_TASTING_BG, agehaStoryScene, syncAgehaVibes } from "../js/chapters/ch2-story-data.js";
+import { CH2_NIGHTS, AGEHA_VISITS, AGEHA_BADDAY, AGEHA_LATER_SCENES, C_STATION_TASTING_BG, agehaStoryScene, agehaLaterScene, syncAgehaVibes } from "../js/chapters/ch2-story-data.js";
 
 const read = (path) => JSON.parse(fs.readFileSync(new URL(`../../${path}`, import.meta.url), "utf8"));
 const story = Object.fromEntries(read("data/dialogue/ch2_ageha_story.json").dialogues.map((d) => [d.dialogue_id, d]));
@@ -40,8 +40,9 @@ assert.deepEqual(night(10).steps.map((s) => s.id), ["remake_ch2_ageha_slump", "c
   const silence = read("data/dialogue/ch2_main.json").dialogues.find((d) => d.dialogue_id === "ch2_sumi_silence");
   assert.match(story.remake_ch2_ageha_slump.lines[0].text, /閉店間際のtonari/);
   assert.doesNotMatch(story.remake_ch2_ageha_slump.lines.map((l) => l.text).join("\n"), /家に着いても|引き返した/);
-  assert.match(silence.lines[0].text, /あげはを駅まで送った。終電には、まだ間に合った/);
-  assert.match(silence.lines[1].text, /^店へ戻ると/);
+  const spokenLines = silence.lines.filter((line) => typeof line.text === "string");
+  assert.match(spokenLines[0].text, /あげはを駅まで送った。終電には、まだ間に合った/);
+  assert.match(spokenLines[1].text, /^店へ戻ると/);
 }
 assert(!night(8), "8日目はサメのTRPG参加日");
 for (const step of CH2_NIGHTS.flatMap((n) => n.steps).filter((s) => s.file === "ch2_ageha_story")) assert(story[step.id], step.id);
@@ -56,6 +57,28 @@ for (const id of [AGEHA_BADDAY.id, ...AGEHA_VISITS]) {
 }
 assert.equal(agehaStoryScene(save, 9, story), null);
 assert.equal(agehaStoryScene({ flags: {} }, 9, {}), null, "台本が無ければいつもの会話");
+// 通う回とダメな日のあと、グミ→店の言葉→白いクマの席の順で一度ずつ（#3081）
+{
+  const later = Object.fromEntries(AGEHA_LATER_SCENES.map((extra) => [extra.id, { lines: [{ speaker: "ageha", text: "a" }] }]));
+  assert.equal(agehaLaterScene(save, story), null, "台本が無ければいつもの会話");
+  assert.equal(agehaLaterScene(save, later), AGEHA_LATER_SCENES[0].id);
+  const unread = { ...save.flags };
+  delete unread[`_ch2_read_${AGEHA_BADDAY.id}`];
+  assert.equal(agehaLaterScene({ flags: unread }, later), null, "ダメな日の前には出さない");
+  let progressed = { ...save.flags };
+  for (const [index, extra] of AGEHA_LATER_SCENES.entries()) {
+    assert.equal(agehaLaterScene({ flags: progressed }, later), extra.id);
+    progressed = { ...progressed, [extra.flag]: true };
+    const next = AGEHA_LATER_SCENES[index + 1];
+    assert.equal(agehaLaterScene({ flags: progressed }, later), next ? next.id : null);
+  }
+  const agehaFile = read("data/dialogue/ch1_ageha.json").dialogues;
+  for (const extra of AGEHA_LATER_SCENES) {
+    const scene = agehaFile.find((d) => d.dialogue_id === extra.id);
+    assert(scene?.lines?.length >= 8, `${extra.id} is a story scene`);
+    assert(!/大会|本番|県大会|優勝/.test(JSON.stringify(scene)), `${extra.id} does not presuppose the tournament`);
+  }
+}
 
 // 各♥段階と次の実会話を対応させる。高値の旧保存も未読順を飛ばさない。
 for (const [index,id] of AGEHA_VISITS.entries()) {

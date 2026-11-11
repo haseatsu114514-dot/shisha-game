@@ -38,7 +38,7 @@ import { roamerAt, meetRoamer } from "./roamers.js";
 import { restingToday, syncNightQueue, nightPlan, nightOccupied, runNightPlan, fixedNightVisitBlock } from "./night-events.js";
 import { openTrpgBar } from "./trpg.js";
 import { presentNight, reflectAtSpot, consultLessons } from "../core/growth.js";
-import { takeChapterBoardNotice, chapterBoardCards, respecMapNotice } from "../core/growth-chapter-notice.js";
+import { takeChapterBoardNotice, chapterBoardCards, respecMapNotice, takeRespecCloseWarning } from "../core/growth-chapter-notice.js";
 
 const SLEEP_RECOVERY = 14;
 
@@ -181,7 +181,8 @@ function announceChapterBoard() {
 
 async function morning() {
   refreshWeather();
-  playBgm("kansetsu_shomei_to_black_coffee");
+  // 第1〜3章は既存の街の曲。第4章はドバイの仮曲、第5章は店の曲（対応表は story-audio.js）。
+  playBgm(state.chapter === 4 ? "bgm_dubai" : state.chapter === 5 ? "tonari" : "kansetsu_shomei_to_black_coffee");
   // 就寝から続けて来た朝は、夜明けの幕でDAYを見せ終えている（見せた印はここで使い切る）
   if (dawnShownDay === state.day) dawnShownDay = null;
   else await dayCard(dayTitle(), countdownText(), { weather: weatherOf(), forecast: tomorrowForecast() });
@@ -466,7 +467,7 @@ async function deliver({ charId, scene, text }) {
   }
   await chooseSpot({ guide: { pin: charId, text, free: "配達（帰り道・代金なし）" } });
   f[`_delivery_${charId}`] = true;
-  playBgm("tonari");
+  playBgm("bgm_rival_shop");
   if (charId === "minto") {
     // 最初の背景・人物・台詞から店内。客としての初回接客は自由行動に残す。
     await play("remake_delivery_minto_handoff", { bg: "res://assets/backgrounds/peppermint.png" });
@@ -567,9 +568,15 @@ async function takeAction() {
       if (queuedLimeSender) { const sender = queuedLimeSender; queuedLimeSender = null; phoneButton({ sender }); }
       else limeCoach(phoneButton);
     }, // 通知を先にタップした場合は、マップが開いたところで目的のトークへ
-    onBeforeGo: (destination) => confirmLimeReminder(destination, {
-      spendsAction: !["shop", "fortune"].includes(destination.kind),
-    }),
+    onBeforeGo: async (destination) => {
+      const spendsAction = !["shop", "fortune"].includes(destination.kind);
+      // 組み直しが開いている間の最初の行動は、確定する前に閉じることを一度だけ知らせる（SPEC 5.2）
+      const closing = spendsAction ? takeRespecCloseWarning(state) : "";
+      if (closing && await modal({ title: "心得の盤の組み直し", body: `${closing}。<br>このまま向かいますか？`,
+        options: [{ label: "このまま向かう", value: "go", primary: true, test: "respec-close-go" },
+          { label: "戻る", value: null, test: "respec-close-back" }] }) !== "go") { save(); return false; }
+      return confirmLimeReminder(destination, { spendsAction });
+    },
   });
   if (spotId === "__lime__") return; // LIME で誘いに乗った → 次の takeAction で約束へ
   // 廃止前の rest:practice も通常の帰宅として扱う（#783）。

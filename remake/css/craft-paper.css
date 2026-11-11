@@ -258,8 +258,6 @@ html .bench[data-mode] .coal-corners { border-color: #c5a2dc88; }
 html .bench[data-mode] .coal.pikan .coal-corners, html .bench[data-mode] .coal:focus-visible .coal-corners { border-color: var(--amber-ink); filter: drop-shadow(0 0 6px #d8963f); }
 html .bench[data-mode] .coal.soon .coal-corners { border-color: var(--amber); }
 html .bench[data-mode] .coal:focus-visible { outline-color: var(--amber); }
-html .bench[data-mode] .heat-pick { background: var(--paper-card); color: var(--paper-ink); border-color: var(--lavender-line); }
-html .bench[data-mode] .heat-pick[data-phase="just"] { background: #fff1d8; color: #793a1c; border-color: var(--amber-ink); }
 html .bench[data-mode] .care-coals-ask { color: var(--lavender); }
 html .bench[data-mode] .care-coals-lead { color: var(--paper-ink); }
 html .bench[data-mode] .care-coal .btn-desc { color: #9b581d; }
@@ -524,6 +522,13 @@ html .bench[data-mode] .btn:hover:not(:disabled):not(.primary) {
   color: #221534; background-color: #f6f1fa; border: 12px solid transparent;
   border-image: var(--cp-button-primary) 28 fill / 12px / 0 stretch;
 }
+/* 蒸らしの「リフレッシュ」は、隣のアタック・精密と同じ夜紫の面に明るい名前で出す。
+   白い面に暗い名前だと読みにくかったため（2026-11-08 ミューズの仮判断。オーナーが後から変えられる）。 */
+html .bench[data-mode][data-art-skin] .btn.primary.dodge-refresh,
+html .bench[data-mode][data-art-skin] .btn.primary.dodge-refresh:hover:not(:disabled) {
+  color: #f6f1fa; background-color: #2e1d45; border: 1px solid var(--lavender-line); border-image: none; border-radius: 8px;
+}
+html .bench[data-mode][data-art-skin] .btn.primary.dodge-refresh:hover:not(:disabled) { border-color: var(--lavender); }
 html .bench[data-mode] .btn.primary .btn-desc { color: #5a4475; }
 html .bench[data-mode] .btn.primary:is(.hr-punch, .pack-confirm),
 html .bench[data-mode] .pull-btns .btn.primary { color: #221534; border: 14px solid transparent; border-image: var(--cp-button-amber) 36 fill / 14px / 0 stretch; }

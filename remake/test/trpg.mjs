@@ -341,11 +341,12 @@ test("declared approaches roll with the PC's sheet stat; a companion's first tur
   assert.deepEqual(session.result().acted, { tsumugi: 2, hajime: 2 });
 });
 
-test("character creation: looks, origin presets, a point-buy and a name replace the player's seat; dialogue names the built character", async () => {
+test("character creation: origin presets, a point-buy and a name replace the player's seat; the look is the player's own (#3050); dialogue names the built character", async () => {
   const { buildPc, randomPc } = await import("data:text/javascript;base64," + Buffer.from(source).toString("base64"));
   for (const s of catalogScenarios) {
     const b = s.builder;
-    assert(b && b.looks.length >= 4 && b.archetypes.length >= 3);
+    assert(b && b.archetypes.length >= 3);
+    assert.equal(b.looks, undefined, "the look choice is gone (#3050)");
     for (const a of b.archetypes) assert.equal(Object.values(a.stats).reduce((n, v) => n + v, 0), b.points, a.id + " presets spend every point");
     // The authored default on the player's seat equals the first origin, so the untouched table plays as before.
     const seat = s.cast.find(c => c.id === b.seat);
@@ -354,10 +355,15 @@ test("character creation: looks, origin presets, a point-buy and a name replace 
     assert(!s.dialogues.some(d => d.lines.some(l => l.text.includes(b.archetypes[0].name))), "no raw default name in dialogue");
     assert(s.dialogues.some(d => d.lines.some(l => l.text.includes("{pc}"))));
     for (const check of Object.values(s.checks)) assert(check.approaches.some(a => a.detail.includes("{pc}")));
-    const pc = buildPc(s, { look: b.looks[2].id, archetype: b.archetypes[1].id, name: "ソラ" });
-    assert.equal(pc.name, "ソラ"); assert.equal(pc.title, b.archetypes[1].title); assert.equal(pc.look, b.looks[2].id);
+    const pc = buildPc(s, { archetype: b.archetypes[1].id, name: "ソラ" });
+    assert.equal(pc.name, "ソラ"); assert.equal(pc.title, b.archetypes[1].title);
     assert.deepEqual(pc.stats, b.archetypes[1].stats);
-    assert.throws(() => buildPc(s, { look: "nope" })); assert.throws(() => buildPc(s, { archetype: "nope" }));
+    // No look is chosen (#3050): the built sheet carries no portrait or tint, so the seat shows the player's own face.
+    for (const key of ["look", "portrait", "color", "accent"]) assert(!(key in pc), "the built character has no " + key);
+    // An older save may still pass a look: it is ignored, never an error, and changes nothing.
+    assert.deepEqual(buildPc(s, { look: "rust", archetype: b.archetypes[1].id, name: "ソラ" }), pc);
+    assert.deepEqual(buildPc(s, { look: "nope" }), buildPc(s, {}));
+    assert.throws(() => buildPc(s, { archetype: "nope" }));
     assert.throws(() => buildPc(s, { name: "" })); assert.throws(() => buildPc(s, { name: "あいうえおかき" }));
     assert.throws(() => buildPc(s, { stats: { ...b.archetypes[0].stats, eye: b.max + 1 } }));
     assert.throws(() => buildPc(s, { stats: { ...b.archetypes[0].stats, nerve: b.min - 1 } }));
@@ -367,13 +373,31 @@ test("character creation: looks, origin presets, a point-buy and a name replace 
     assert.equal(buildPc(s, { stats: spare }).points, b.points - 1, "leaving a point unspent is allowed");
     const a = randomPc(s, 42), c = randomPc(s, 42);
     assert.deepEqual(a, c, "a seeded random character is reproducible");
+    assert(!("look" in a) && !("portrait" in a), "おまかせ never picks a look");
+    // Companions follow the same rule: every seat, built or authored, shows whoever plays it.
+    const table = new TrpgSession(s, { seed: 42 });
+    for (const [seat, sheet] of Object.entries(table.sheets)) {
+      for (const key of ["look", "portrait", "color", "accent"]) assert(!(key in sheet), s.id + " " + seat + " sheet has no " + key);
+    }
     assert(a.points <= b.points);
   }
   const moved = { eye: 2, hand: 3, talk: 3, nerve: 3 };
   const session = new TrpgSession(scenario, { profileId: "quiet", seed: 7, pc: { look: "rust", archetype: "sailor", name: "ソラ", stats: moved } });
+  // The look from an older save is dropped; the player's seat shows the player's own portrait (no sheet portrait or tint).
+  assert(!("portrait" in session.sheets.hajime) && !("color" in session.sheets.hajime) && !("look" in session.sheets.hajime));
+  // Older data that still carries role pictures for companions (or the authored sheets) is ignored the same way.
+  const legacy = JSON.parse(JSON.stringify(scenario));
+  for (const by of Object.values(legacy.companionBuilds)) for (const options of Object.values(by)) for (const o of options) o.portrait = "../../img/ui/trpg/pc-" + o.id + ".webp";
+  for (const c of legacy.cast) if (c.sheet) Object.assign(c.sheet, { portrait: "../../img/ui/trpg/pc-old.webp", color: "#123456" });
+  legacy.builder.looks = [{ id: "rust", label: "赤茶", detail: "", color: "#884422", portrait: "../../img/ui/trpg/look-old.webp" }];
+  const old = new TrpgSession(legacy, { profileId: "quiet", seed: 7, pc: { look: "rust", archetype: "sailor", name: "ソラ", stats: moved } });
+  for (const [seat, sheet] of Object.entries(old.sheets)) {
+    for (const key of ["look", "portrait", "color", "accent"]) assert(!(key in sheet), "legacy " + seat + " sheet drops " + key);
+  }
+  assert.deepEqual(old.snapshot().pc, session.snapshot().pc, "legacy role pictures change nothing else");
   assert.equal(session.sheets.hajime.name, "ソラ"); assert.deepEqual(session.sheets.hajime.stats, moved);
   assert(scenario.companionBuilds.adam.adam.some(o => o.name === session.sheets.adam.name), "companions bring a character they made");
-  assert.deepEqual(session.snapshot().pc, { name: "ソラ", title: "船乗り帰りの手伝い", look: "rust", archetype: "sailor", stats: moved });
+  assert.deepEqual(session.snapshot().pc, { name: "ソラ", title: "船乗り帰りの手伝い", archetype: "sailor", stats: moved });
   session.start();
   const roll = session.beginCheck("listen", { approach: "listen_talk" });
   assert.equal(roll.base, 3, "the player's own stat drives the roll");
@@ -477,5 +501,33 @@ test("a full session talks to the story's character, survives a twist and reads 
     const ending = L(s.endings[profile.ending].dialogue) + L(Object.values(s.debrief)[0]) + L(s.epilogue);
     const total = zero + opening + talk + clues + declare + middle + ending;
     assert(total >= 95, s.id + " reads only " + total + " lines on a typical path");
+  }
+});
+
+test("role costumes: 93 origin outfits are keyed, and a built sheet resolves to that character's art", async () => {
+  const { COSTUME_KEYS, hasCostume, costumeUrl, costumeKey } = await import("../js/trpg/costumes.js");
+  const retired = ["リラ", "りら", "かこ", "ナンディ", "チャド", "焚口ショウ", "mystery_girl", "カフカ", "lira", "kako", "nandi", "chad", "takiguchi", "kafka"];
+  assert.equal(COSTUME_KEYS.size, 93);
+  for (const key of COSTUME_KEYS) {
+    const [scenarioId, characterId, roleId] = key.split("/");
+    assert(scenarioId && characterId && roleId, key);
+    assert(!retired.some(n => key.toLowerCase().includes(n.toLowerCase())), "retired character in " + key);
+  }
+  assert(hasCostume("apple-thief", "hajime", "bellboy"));
+  assert(hasCostume("moonflower-encore", "ageha", "kirara"));
+  assert(hasCostume("moonflower-encore", "adam", "ziek"));
+  assert(hasCostume("doll-requiem", "hiyori", "cecilia"));
+  assert(!hasCostume("apple-thief", "hajime", "nope"));
+  const url = costumeUrl("apple-thief", "hajime", "bellboy");
+  assert.match(url, /\/img\/ui\/trpg\/costumes\/apple-thief\/hajime_bellboy\.webp$/);
+  assert.equal(costumeUrl("apple-thief", "hajime", "nope"), null);
+
+  const apple = JSON.parse(await readFile(new URL("../../data/dialogue/trpg_apple_thief.json", import.meta.url), "utf8"));
+  const built = new TrpgSession(apple, { profileId: apple.profiles[0].id, seed: 1, pc: { archetype: "bellboy", name: "ルイ" } });
+  assert.equal(built.pc.archetype, "bellboy");
+  assert.equal(built.sheets.hajime.archetype, "bellboy");
+  assert.equal(costumeKey(apple.id, "hajime", built.sheets.hajime.archetype), "apple-thief/hajime/bellboy");
+  for (const [seat, option] of Object.entries(built.companions || {})) {
+    assert(hasCostume(apple.id, seat, option.id), apple.id + " " + seat + " " + option.id);
   }
 });

@@ -40,7 +40,7 @@ export function actualExpressionCard(cs, temp) {
   return el("section.flavor-actual", { dataset: { test: "actual-flavor", zone: expression.zone } }, [
     el("b", { text: `今回の仕上がり · ${expression.label}` }),
     layers.length?el("p.flavor-guide-caption",{dataset:{test:"floral-layer"},text:round===2?"重なった花の余韻が立つ":`${layers[round%layers.length].name}の層が立つ`}):null,
-    flavorAxes([["sweetness", "甘い印象"], ["cooling", "清涼感"], ["body", "煙の厚み"]].map(([key, label]) =>
+    flavorAxes([["sweetness", "甘い印象"], ["cooling", "清涼感"], ["body", "煙の量"]].map(([key, label]) =>
       ({ key, label, value: expression.values[key] }))),
     el("small.flavor-guide-caption", { text: "提供時の味の傾向。強さと品質は別です。" }),
   ]);
@@ -109,6 +109,7 @@ const EQUIPMENT_USE = {
   cube_charcoal: ["大容量・デンスにも熱を入れやすい", "温度の上がりすぎに注意"],
   kumogama_phunnel: ["最大16g。適温幅がやや広い器", "多く詰めるほど蒸らしは長め"],
   lotos_plus: ["アルミ不要の全サイズ対応。熱が安定しやすい", "適温幅はタヌキッシュリッドより狭い"],
+  dr_kemuri_proto_hmd: ["全サイズ対応。適温幅がやや広く、葉が傷んでも帯が狭まりにくい", "店では売っていない博士の試作品"],
   dense_flat_charcoal: ["フラット炭より適温幅が少し広い", "炭を選べるのはキューブ炭を覚えてから"],
 };
 

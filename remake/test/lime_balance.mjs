@@ -58,7 +58,7 @@ const values = {
   "story-knowledge.js": { syncMintoKnowledge: noop },
   // サメちゃんのデート（samechan-date.js）が読む心得の盤。LIMEの検査なので旧しくみ（盤は無効）の代役にする
   "growth.js": { growthEnabled: () => false, awardActionExp: () => 0 },
-  "gallery-progress.js": { recordRouteLover: noop }, // コレクションの「恋人成立」は remake/test/gallery_route_records.mjs
+  "gallery-progress.js": { recordRouteLover: noop, recordRouteEvent: noop }, // コレクションのルート記録（恋人成立・閲覧した段階）は remake/test/gallery_route_records.mjs
 };
 const coreFiles = { "stat-step-tables.js": "stat-step-tables.js", "production-stats.js": "stats.js", "condition.js": "condition.js", "affinity-stages.js": "affinity-stages.js", "travel-budget.js": "travel-budget.js" };
 async function load(name) {
@@ -160,10 +160,12 @@ function deliver(msgs) {
 }
 
 // LM05: ♥3以上の知り合い（恋人・締めくくり前）から読むだけの雑談。全員で3日に1通・同じ相手は6日・一度ずつ。
-// 物語の誘い（♥3の外出など）は同じ相手の枠を先に取るので、ここでは済ませた状態にして雑談だけを見る。
+// 物語の誘い（♥3の外出など）と♥3・♥4で届く物語の雑談（lime_adam_bond_a など）は同じ相手の枠を先に取るので、
+// ここでは済ませた（読んだ）状態にして雑談だけを見る。
 const storyDone = Object.fromEntries(allMessages.filter((m) => m.type === "invitation").map((m) => [`_invited_${m.id}`, true]));
+const storyChatsRead = allMessages.filter((m) => m.type === "chat" && m.trigger_condition === "affinity_level").map((m) => m.id);
 {
-  reset({ flags: { ...storyDone }, chapter: 2, day: 20, contacts: ["naru", "adam", "minto", "kumicho", "tsumugi"], met: { naru: true, adam: true, minto: true, kumicho: true, tsumugi: true },
+  reset({ flags: { ...storyDone }, limeRead: [...storyChatsRead], chapter: 2, day: 20, contacts: ["naru", "adam", "minto", "kumicho", "tsumugi"], met: { naru: true, adam: true, minto: true, kumicho: true, tsumugi: true },
     levels: { naru: 3, adam: 4, minto: 2, kumicho: 3, tsumugi: 4 }, lovers: ["tsumugi"], finales: { kumicho: { route: "friend", day: 18 } } });
   const got = [];
   for (let day = 20; day <= 60; day++) {
@@ -375,3 +377,24 @@ console.log("[#2024] PASS Dubai story LIME: once each in its Dubai window, none 
   console.log("[#2024] PASS chapter 5 congratulations arrive once at home, wait while away, kumicho skips after the in-person talk");
 }
 console.log("[lime balance] PASS");
+
+// #3081: 布巾の場面を読み、連絡先がある朝に一度。旗が無い・連絡先が無い・既読の重ね配信はしない。
+{
+  const id = "lime_mashiro_glass_cloth";
+  const due = (overrides) => {
+    reset(overrides);
+    return phone.morningMessages({ fixedNight: () => false }).some((m) => m.id === id);
+  };
+  assert.equal(due({ chapter: 3, day: 50, contacts: ["mashiro"], flags: { _ch3_intro: { startDay: 40, routeVersion: 3 }, _ch2_region: "tokyo" } }), false, "unread scene");
+  assert.equal(due({ chapter: 3, day: 50, contacts: [], flags: { _ch3_read_ch3_mashiro_glass_cloth: true, _ch2_region: "tokyo" } }), false, "no contact");
+  reset({ chapter: 3, day: 50, contacts: ["mashiro"], flags: { _ch3_read_ch3_mashiro_glass_cloth: true, _ch3_intro: { startDay: 40, routeVersion: 3 }, _ch2_region: "tokyo" } });
+  const hit = phone.morningMessages({ fixedNight: () => false }).find((m) => m.id === id);
+  assert(hit, "arrives the morning after the cloth scene");
+  assert.equal(hit.sender, "mashiro");
+  deliver([hit]);
+  state.day += 1;
+  assert(!phone.morningMessages({ fixedNight: () => false }).some((m) => m.id === id), "once");
+  reset({ chapter: 4, day: 60, contacts: ["mashiro"], flags: { _ch3_read_ch3_mashiro_glass_cloth: true, _ch2_region: "dubai" } });
+  assert(phone.morningMessages({ fixedNight: () => false }).some((m) => m.id === id), "still arrives if the morning has moved on");
+  console.log("[#3081] PASS mashiro cloth LIME once after the scene flag");
+}

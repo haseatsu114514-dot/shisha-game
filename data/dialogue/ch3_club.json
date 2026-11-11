@@ -67,6 +67,33 @@
         { "speaker": "yoru", "face": "normal", "text": "またおいで。デッキはいつでも空けとく" }
       ]
     },
+    {
+      "dialogue_id": "ch3_club_floor_edge",
+      "comment": "（#3097・未接続原稿）フロアの端で踊らずに聴いている客。ヨルはフロアを見て次の曲を決める。再訪の夜に読む想定の小会話だが、クラブには再訪で回す仕組みがまだ無いので dj-club.js からは読まない。時間・お金・体力・好感度・EXP は変えない。",
+      "lines": [
+        { "speaker": "", "text": "フロアの端に、壁にもたれたまま動かない人がいた。グラスの氷だけが、ときどき鳴る。" },
+        { "speaker": "hajime", "face": "normal", "text": "ヨルさん、あの人、ずっと踊ってないですね" },
+        { "speaker": "yoru", "face": "normal", "text": "うん。でも、曲が変わるたびに、靴の先だけ拍を取ってる" },
+        { "speaker": "hajime", "face": "surprise", "text": "……ほんとだ" },
+        { "speaker": "yoru", "face": "smile", "text": "ああいう人がいる夜は、ブースから見てて安心する。踊らなくても、ちゃんと聴いてるから" },
+        { "speaker": "yoru", "face": "normal", "text": "手が上がるのも、靴の先が動くのも、あたしには同じ合図" },
+        { "speaker": "hajime", "face": "normal", "text": "（お客さんの吸う間隔で、だいたいの具合がわかる。あれと似てる）" }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_club_low_corner",
+      "comment": "（#3097・未接続原稿）まだ客の少ない時間、ヨルが低い音の溜まる場所を歩いて確かめる。再訪の夜に読む想定の小会話だが、クラブには再訪で回す仕組みがまだ無いので dj-club.js からは読まない。時間・お金・体力・好感度・EXP は変えない。",
+      "lines": [
+        { "speaker": "", "text": "まだ客の少ない時間。フロアの照明は、半分しか点いていない。" },
+        { "speaker": "", "text": "ヨルさんが低い音を一つ鳴らしては、隅のほうへ歩いていく。" },
+        { "speaker": "hajime", "face": "normal", "text": "何してるんですか？" },
+        { "speaker": "yoru", "face": "normal", "text": "音の溜まり場を探してる。部屋の隅は、低い音が膨らみやすいの" },
+        { "speaker": "hajime", "face": "normal", "text": "（店の席ごとに、煙の流れ方が違うのと同じかもしれない）" },
+        { "speaker": "yoru", "face": "smile", "text": "はじめくん、そこの柱の陰に立ってみて" },
+        { "speaker": "hajime", "face": "surprise", "text": "うわ、ここだけ床が震えてます" },
+        { "speaker": "yoru", "face": "smile", "text": "でしょ。今夜は、そこを荷物置き場にしよう" }
+      ]
+    },
     { "dialogue_id": "venue_yoru_greet", "lines": [{ "speaker": "yoru", "face": "smile", "text": "好きなセットを選んで。最初はSET 1からね" }] },
     { "dialogue_id": "venue_yoru_return", "lines": [{ "speaker": "yoru", "face": "normal", "text": "おかえり。デッキ、空いてるよ" }] },
     { "dialogue_id": "venue_yoru_set_S", "lines": [{ "speaker": "yoru", "face": "smile", "text": "最後まで手が上がってた。今夜のSEAMは、はじめくんの夜だね" }] },

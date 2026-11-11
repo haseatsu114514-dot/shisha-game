@@ -77,6 +77,20 @@ button { font: inherit; color: inherit; }
   overflow: hidden;
   background: #000;
 }
+/* 余白のぼかし（2026-11-09 オーナー決定・#3035）: ステージ（固定1280×720）の外に余った画面は、
+   その場面の背景をぼかして埋める（ブラウザアドベンチャー式）。絵は core/ui.js の setBg が
+   背景の差し替えと一緒に差し替える。ぼかしの縁が透けないよう少しだけ拡大しておく。 */
+#backdrop {
+  position: fixed; /* #viewport のスクロール領域に含めない（変換で広がった分が scrollTop をずらすため） */
+  inset: 0;
+  background: #000 center / cover no-repeat;
+  filter: blur(24px) brightness(0.72) saturate(1.15);
+  transform: scale(1.15);
+  transition: opacity 0.25s ease;
+  pointer-events: none;
+}
+#backdrop[data-tint="night"] { filter: blur(24px) brightness(0.5) saturate(0.85); }
+#backdrop[data-tint="dim"] { filter: blur(28px) brightness(0.4); }
 /* 画面の真ん中に置いてから縮める（grid/flex の中央寄せは、画面より大きい要素だと
    右下にはみ出す＝スマホで右下に埋まる不具合の原因だった）。倍率は main.js の fitStage() */
 #stage {
@@ -101,8 +115,32 @@ button { font: inherit; color: inherit; }
 #stage > div { position: absolute; inset: 0 var(--stage-gutter); }
 /* 背景・雨・場面転換のワイプだけはステージの両端まで広げる（絵は cover なので左右が少し切れるだけ） */
 #stage > :is(#bg, #weather, #wipe) { inset: 0; }
-/* 街マップは施設のピン（#screen・中央1280）が絵の位置に合わせてあるので、絵を広げず中央1280に据え置く（両端は地の色） */
-body[data-screen="map"] #stage[data-wide] #bg .bg-img { left: var(--stage-gutter); right: var(--stage-gutter); }
+/* 街マップ（#2855 → 2026-11-08 オーナー「マップがワイドになっていない」）: 絵と施設のピンを同じ倍率（ステージ幅 / 1280）で
+   横いっぱいまで拡大する。ピンは絵に対する % で置かれているので、絵と同じ箱（幅 --stage-w・高さ 幅×9/16）に載せればずれない。
+   拡大で上下にはみ出す分（絵の高さの約1割）は、どのピンも画面に入るよう map.js（fitMapCrop）が上から切る量 --map-crop を決める。
+   会話中（vn-open）は会話の背景としてふつうに cover で広げる。2画面表示（DS）は対象外。 */
+body:not(.game-ds)[data-screen="map"]:not(.vn-open) #stage[data-wide] #bg .bg-img {
+  background-position: 50% calc(-1 * var(--map-crop, calc((var(--stage-w) * 9 / 16 - 720px) / 2)));
+}
+body:not(.game-ds) #stage[data-wide] .map-pins {
+  left: calc(-1 * var(--stage-gutter)); right: calc(-1 * var(--stage-gutter)); bottom: auto;
+  top: calc(-1 * var(--map-crop, calc((var(--stage-w) * 9 / 16 - 720px) / 2))); height: calc(var(--stage-w) * 9 / 16);
+}
+body:not(.game-ds) #stage[data-wide] .map-weather { left: calc(-1 * var(--stage-gutter)); right: calc(-1 * var(--stage-gutter)); }
+/* ノッチにかかる端のピンだけ内側へ寄せる（map.js が必要な時だけ置く） */
+.map .spot-pin { translate: var(--pin-nudge-x, 0px) 0; }
+/* 画面全体を覆う暗幕・場面（中央1280の層に置かれる）は、左右の余白まで同じ色で塗り広げる。
+   位置や大きさは変えない（中の部品を左からの px で置いているものがあるため）。box-shadow の広がりで外側だけ塗る。 */
+#stage[data-wide] .kuji-overlay { box-shadow: 0 0 0 var(--stage-gutter) rgba(5, 4, 10, .72); }
+#stage[data-wide] .gal-overlay { box-shadow: 0 0 0 var(--stage-gutter) rgba(5, 4, 10, .78); }
+#stage[data-wide] .levelup-backdrop { box-shadow: 0 0 0 var(--stage-gutter) rgba(6, 3, 12, .6); }
+#stage[data-wide] .reel-intro { box-shadow: 0 0 0 var(--stage-gutter) rgba(6, 4, 10, .72); }
+#stage[data-wide] .trpg-overlay { box-shadow: 0 0 0 var(--stage-gutter) #081414c9; }
+#stage[data-wide] .fx-dim { box-shadow: 0 0 0 var(--stage-gutter) rgba(0, 0, 0, .72); }
+#stage[data-wide] .entrance { box-shadow: 0 0 0 var(--stage-gutter) rgba(0, 0, 0, .82); }
+#stage[data-wide] .mo-garagara { box-shadow: 0 0 0 var(--stage-gutter) #241a13; }
+/* LIME とメニューの暗幕はぼかしも掛けるので、box-shadow ではなく暗幕そのものを左右の余白まで広げる（中身は grid の中央なので位置は変わらない） */
+#stage[data-wide] .phone-overlay, #stage[data-wide] .dmenu .dm-backdrop { inset: 0 calc(-1 * var(--stage-gutter)); }
 #bg { z-index: 0; }
 #screen { z-index: 10; }
 body.vn-open #screen { visibility: hidden; } /* 会話中は前の画面を後ろに残さない */
@@ -533,6 +571,7 @@ body[data-screen="bench"] .gain-card.out { animation-name: gain-out-l; }
 .stamp.perfect, .stamp.just { color: var(--neon-amber); text-shadow: 0 0 24px rgba(255, 194, 74, 0.95), 0 0 60px rgba(255, 120, 40, 0.6); font-size: 54px; }
 .stamp.good { color: var(--neon-cyan); text-shadow: 0 0 20px rgba(56, 240, 255, 0.8); }
 .stamp.miss { color: #c8c8d0; text-shadow: none; font-size: 38px; }
+.stamp.rough { color: #e8b07d; text-shadow: 0 0 16px rgba(232, 176, 125, .45); font-size: 38px; }
 .stamp.bad { color: var(--danger); text-shadow: 0 0 20px rgba(255, 60, 60, 0.7); }
 @keyframes stamp-in {
   0% { opacity: 0; transform: translate(-50%, -50%) rotate(-6deg) scale(2.2); }
@@ -630,6 +669,9 @@ body[data-screen="bench"] .gain-card.out { animation-name: gain-out-l; }
 /* 大会前夜の当日版: 地平線を金に寄せ、ゆっくり昇らせる（#2688 F3 の時間経過の型） */
 .tr-dawn-horizon.eve { height: 4px; background: #f6dcaf; box-shadow: 0 0 24px 10px #f5d99d77; }
 .tr-dawn-glow { position: absolute; inset: 0; background: radial-gradient(circle at 50% 110%, #fff3d6cc, transparent 60%); pointer-events: none; }
+/* ワイドステージ（#2861）: 画面全体を覆う転換（翌朝・波・敗北）は左右の余白まで覆う。
+   端へ出した HUD（日付の札・LIME・MENU）が紫の面の外に覗かないように。中身は中央寄せなので位置は変わらない。 */
+#stage[data-wide] :is(.tr-dawn, .tr-wave, .tr-defeat) { inset: 0 calc(-1 * var(--stage-gutter)); }
 
 /* マップ→場所の「移動」の型（core/transition-moves.js・CI103） */
 .scene-curtain.move { background: transparent; }
@@ -664,6 +706,8 @@ body[data-screen="bench"] .gain-card.out { animation-name: gain-out-l; }
   pointer-events: auto;
 }
 .day-card.show { transform: none; }
+/* ワイドステージ: 帯は左右の余白まで伸ばし、文字の位置（中央1280の左から140px）は保つ */
+#stage[data-wide] .day-card { left: calc(-1 * var(--stage-gutter)); right: calc(-1 * var(--stage-gutter)); padding-left: calc(140px + var(--stage-gutter)); }
 .day-card.out { opacity: 0; transform: translateX(30%); }
 .dc-title { font-family: var(--font); font-size: 76px; font-weight: 800; letter-spacing: 0.12em; color: #fff; }
 .dc-sub { font-size: 20px; color: var(--gold); letter-spacing: 0.2em; margin-top: 4px; }
@@ -685,6 +729,8 @@ body[data-screen="bench"] .gain-card.out { animation-name: gain-out-l; }
   transition: transform 0.35s var(--ease-snap), opacity 0.4s;
 }
 .round-cut.show { transform: scaleY(1); }
+/* ワイドステージ: 「ROUND 1」の帯は画面の両端まで（文字は中央のまま） */
+#stage[data-wide] .round-cut { left: calc(-1 * var(--stage-gutter)); right: calc(-1 * var(--stage-gutter)); }
 .round-cut.out { opacity: 0; }
 .round-cut b { font-family: var(--font); font-size: 64px; font-weight: 700; letter-spacing: 0.2em; color: #fff; text-shadow: 0 0 20px var(--neon-pink); }
 .round-cut small { font-size: 18px; letter-spacing: 0.3em; color: var(--neon-cyan); }
@@ -729,7 +775,7 @@ body[data-screen="bench"] .gain-card.out { animation-name: gain-out-l; }
 #rotate-hint {
   position: fixed;
   inset: 0;
-  z-index: 999;
+  z-index: 2000;
   display: none;
   place-items: center;
   background: #07050c;
@@ -738,7 +784,8 @@ body[data-screen="bench"] .gain-card.out { animation-name: gain-out-l; }
   text-align: center;
   padding: 16px;
 }
-@media (orientation: portrait) and (max-width: 760px) and (hover: none) and (pointer: coarse) {
+/* 縦画面は廃止（#2826）。タッチ端末を縦に持ったら、タイトルを含む全画面を回転案内だけで覆う。 */
+@media (orientation: portrait) and (hover: none) and (pointer: coarse) {
   #rotate-hint { display: grid; }
 }
 
@@ -747,17 +794,19 @@ body[data-screen="bench"] .gain-card.out { animation-name: gain-out-l; }
 
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
 
-/* ---------------------------------------------------------------- セーブ／ロード（オート＋手動3枠） */
-.saveload-modal { width: 620px; }
-.ss-note { margin: -4px 0 14px; font-size: 14px; color: var(--text-dim); }
-.ss-list { display: flex; flex-direction: column; gap: 10px; container-type: inline-size; }
+/* ---------------------------------------------------------------- セーブ／ロード（オート＋手動1枠） */
+.saveload-modal { box-sizing: border-box; width: 1200px; max-width: calc(100% - 64px); max-height: 660px; padding: 32px 38px; }
+.saveload-modal h3 { font-size: 32px; }
+.ss-note { margin: -4px 0 22px; font-size: 24px; line-height: 1.5; color: var(--text-dim); }
+.ss-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px; }
 .save-slot {
   display: flex;
-  align-items: center;
-  gap: 14px;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 18px;
   width: 100%;
-  min-height: 78px;
-  padding: 10px 14px;
+  min-height: 390px;
+  padding: 24px;
   text-align: left;
   font-family: var(--font);
   color: var(--text);
@@ -770,36 +819,31 @@ body[data-screen="bench"] .gain-card.out { animation-name: gain-out-l; }
 }
 .save-slot:hover:not(:disabled) { filter: brightness(1.15); }
 .save-slot:active:not(:disabled) { transform: scale(0.99); }
-.save-slot.off { opacity: 0.45; cursor: default; }
+.save-slot.off { opacity: 0.72; cursor: default; }
 .save-slot.auto { border-left-color: #7fb8d4; border-color: rgba(127, 184, 212, 0.45); background: linear-gradient(90deg, rgba(127, 184, 212, 0.16), rgba(255, 255, 255, 0.03) 70%); }
 .save-slot.blank { background: rgba(255, 255, 255, 0.02); border-style: dashed; border-left-style: solid; }
-.ss-label { flex: none; display: flex; flex-direction: column; gap: 2px; width: 104px; font-size: 15px; font-weight: 700; letter-spacing: 0.08em; color: var(--gold-hi); }
-.ss-label small { font-size: 12px; font-weight: 700; letter-spacing: .02em; color: var(--gold); }
+.ss-label { flex: none; display: flex; align-items: baseline; gap: 14px; font-size: 30px; font-weight: 700; letter-spacing: 0.05em; color: var(--gold-hi); }
+.ss-label small { font-size: 24px; font-weight: 700; letter-spacing: .02em; color: var(--gold); }
 .save-slot.auto .ss-label { color: #a9d6ec; }
 .save-slot.auto .ss-label small { color: #7fb8d4; }
-.ss-info { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
-.ss-info b { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 8px; font-size: 16px; line-height: 1.25; }
+.ss-info { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; justify-content: space-evenly; gap: 18px; }
+.ss-info b { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 12px; font-size: 28px; line-height: 1.35; }
 .ss-info em { font-style: normal; }
-.ss-chapter { font-size: 12px; letter-spacing: .02em; color: var(--gold-hi); }
-.ss-phase { padding: 0 6px; font-size: 12px; color: var(--text-dim); border: 1px solid var(--panel-edge); border-radius: 3px; }
-.ss-info small { font-size: 14px; line-height: 1.2; color: var(--text-dim); }
+.ss-chapter { font-size: 24px; letter-spacing: .02em; color: var(--gold-hi); }
+.ss-phase { padding: 2px 8px; font-size: 24px; color: var(--text-dim); border: 1px solid var(--panel-edge); border-radius: 3px; }
+.ss-info small { font-size: 24px; line-height: 1.35; color: var(--text-dim); }
 .ss-info.empty { color: var(--text-dim); letter-spacing: 0.2em; }
-.ss-stats { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; }
-.ss-stat { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
-.ss-stat small { font-size: 12px; font-weight: 700; line-height: 1; letter-spacing: 0; white-space: nowrap; color: var(--text-dim); }
-.ss-stat i { display: block; height: 4px; border-radius: 2px; background: rgba(255, 255, 255, 0.12); overflow: hidden; }
+.ss-stats { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; }
+.ss-stat { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.ss-stat small { font-size: 24px; font-weight: 700; line-height: 1.1; letter-spacing: 0; white-space: nowrap; color: var(--text-dim); }
+.ss-stat i { display: block; height: 7px; border-radius: 4px; background: var(--panel-edge); overflow: hidden; }
 .ss-stat i::after { content: ""; display: block; width: var(--v); height: 100%; background: linear-gradient(90deg, var(--gold), var(--gold-hi)); }
 .save-slot.auto .ss-stat i::after { background: linear-gradient(90deg, #7fb8d4, #a9d6ec); }
-.ss-faces { flex: none; display: flex; flex-wrap: wrap; justify-content: flex-end; align-content: center; gap: 4px; width: 124px; }
-.ss-face { width: 28px; height: 28px; object-fit: cover; image-rendering: pixelated; background: #1a1422; border: 1px solid var(--panel-edge); border-radius: 4px; }
-.ss-more { align-self: center; font-size: 12px; color: var(--text-dim); }
-/* 幅が狭いときは、顔アイコンを本文の下へ回す */
-@container (max-width: 480px) {
-  .save-slot { flex-wrap: wrap; row-gap: 6px; }
-  .ss-label { width: auto; flex-direction: row; align-items: baseline; gap: 8px; }
-  .ss-info { flex-basis: 100%; }
-  .ss-faces { width: auto; justify-content: flex-start; }
-}
+.ss-faces { flex: none; display: flex; flex-wrap: wrap; justify-content: flex-start; align-content: center; gap: 8px; min-height: 42px; }
+.ss-face { width: 40px; height: 40px; object-fit: cover; image-rendering: pixelated; background: var(--panel); border: 1px solid var(--panel-edge); border-radius: 4px; }
+.ss-more { align-self: center; font-size: 17px; color: var(--text-dim); }
+.saveload-modal .modal-actions { margin-top: 22px; }
+.saveload-modal .modal-actions .btn { min-height: 52px; min-width: 180px; font-size: 19px; }
 
 /* 動きを減らす・揺れ／閃光を減らす（#2688 F11）。会話の送り印の上下を止め、場面の演出の全面の閃光を出さない。 */
 @media (prefers-reduced-motion: reduce) { .vn-next.show { animation: none !important; } }

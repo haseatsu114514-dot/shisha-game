@@ -39,9 +39,52 @@ export const STAFF_MUSIC = Object.freeze([
   { title: "民族05", composer: "魔王魂", source: "魔王魂" },
   { title: "民族09 揺れる提灯", composer: "魔王魂", source: "魔王魂" },
   { title: "月明かりの灯台", composer: "甘茶", source: "甘茶の音楽工房" },
+  { title: "Firebrand", composer: "Kevin MacLeod", source: "incompetech.com・CC BY 4.0" },
+  // TRPGのシナリオ別BGM（OpenGameArt・CC0。オーナー「クレジットは載せる」2026-11-10。出典は asset_sources/music/trpg-audio/）
+  { title: "Chest of Adventure", composer: "Eldritch Grim", source: "OpenGameArt・CC0" },
+  { title: "musicbox2_cute_tune", composer: "Aureolus_Omicron", source: "OpenGameArt・CC0" },
+  { title: "Covert Action", composer: "congusbongus", source: "OpenGameArt・CC0" },
+  { title: "Treasure Hunter", composer: "TAD", source: "OpenGameArt・CC0" },
+  { title: "Magic Town", composer: "controllerhead", source: "OpenGameArt・CC0" },
+  { title: "Space Music: Out There", composer: "yd", source: "OpenGameArt・CC0" },
+  { title: "Hot Springs Town", composer: "Kistol", source: "OpenGameArt・CC0" },
+  { title: "Death Waltz", composer: "northivanastan", source: "OpenGameArt・CC0" },
+  { title: "Apparitions Ball", composer: "Bobjt", source: "OpenGameArt・CC0" },
+  { title: "musicbox1_spooky_waltz", composer: "Aureolus_Omicron", source: "OpenGameArt・CC0" },
+  // 本編の仮BGM（OpenGameArt・CC0。2026-11-10。差し替えしやすいよう中央対応表に載せる。出典は asset_sources/music/main-placeholder-audio/）
+  { title: "Chill lofi inspired", composer: "omfgdude", source: "OpenGameArt・CC0" },
+  { title: "Tension Theme", composer: "Umplix", source: "OpenGameArt・CC0" },
+  { title: "Daisy", composer: "Kistol", source: "OpenGameArt・CC0" },
+  { title: "Cool City", composer: "MintoDog", source: "OpenGameArt・CC0" },
+  { title: "Desert Travel (Loop)", composer: "DJ CrisP", source: "OpenGameArt・CC0" },
+  { title: "Dare The Bustloro Way", composer: "Spring Spring", source: "OpenGameArt・CC0" },
+  { title: "Dark Horse", composer: "Centurion_of_war", source: "OpenGameArt・CC0" },
+  { title: "The Rush", composer: "tebruno99", source: "OpenGameArt・CC0" },
 ].map(song => Object.freeze(song)));
+// TRPGの卓の効果音（CC0・asset_sources/music/trpg-audio/）。
+export const STAFF_SOUND_TRPG = Object.freeze(["効果音（TRPG）：Kenney – Casino Audio / RPG Audio / Music Jingles（CC0） – https://kenney.nl/"]);
 export const STAFF_SOUND_CREDIT = "効果音：ポケットサウンド – https://pocket-se.info/";
+export const STAFF_SOUND_MAIN = Object.freeze([
+  "効果音（本編UI・場面転換）：Kenney – Interface Sounds / Music Jingles（CC0） – https://kenney.nl/",
+]);
 export const STAFF_ROLL_CLOSING = "Thank you for playing";
+// 斧投げの効果音（CC0・asset_sources/music/minigame-se/）。オーナー「クレジットは載せる」2026-11-10。
+export const STAFF_SOUND_AXE = Object.freeze([
+  "効果音（斧投げ）：Kenney – Impact Sounds（CC0） – https://kenney.nl/",
+  "効果音（斧投げ）：Freesound – Jofae「Swing Woosh」/ craigsmith「R15-11-Axe Thuds」/ qubodup「Short Crowd Cheer」/ plasterbrain「Tada Fanfare A」/ IndyArts「Sad, Downwards Jingle (Tremolo Version)」（CC0）",
+]);
+// ラクダレース・サンドボードの効果音（2026-11-10 採用。出典は asset_sources/music/minigame-sfx-swap/）。CC0 も含めて載せる。
+export const STAFF_SOUND_CAMEL = Object.freeze([
+  "効果音（ラクダレース）：Mixkit Sound Effects（Free License） – https://mixkit.co/",
+  "効果音（ラクダレース）：Kenney – Interface Sounds / Music Jingles（CC0） – https://kenney.nl/",
+  "効果音（ラクダレース）：Joseph Sardin（BigSoundBank / La Sonothèque）（CC0） – https://bigsoundbank.com/",
+  "効果音（ラクダレース）：AntumDeluge（原音 craigsmith / Freesound 437937）（CC0） – https://opengameart.org/content/camel-groan",
+]);
+export const STAFF_SOUND_DESERT = Object.freeze([
+  "効果音（サンドボード）：Mixkit Sound Effects（Free License） – https://mixkit.co/",
+  "効果音（サンドボード）：Kenney – Interface Sounds / RPG Sound Effects / Digital Sound Effects（CC0） – https://kenney.nl/",
+  "効果音（サンドボード）：Joseph Sardin（BigSoundBank / La Sonothèque）（CC0） – https://bigsoundbank.com/",
+]);
 
 const reducedMotion = () => !!window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
 
@@ -59,12 +102,19 @@ function sections() {
       el("p.staff-roll-role", { text: "使用楽曲" }),
       el("p.staff-roll-source", { text: "音楽：魔王魂" }),
       el("p.staff-roll-source", { text: "音楽：甘茶の音楽工房" }),
+      el("p.staff-roll-source", { text: "音楽：OpenGameArt.org（CC0）" }),
+      el("p.staff-roll-source", { text: "音楽：Kevin MacLeod（incompetech.com）– Licensed under Creative Commons: By Attribution 4.0 License http://creativecommons.org/licenses/by/4.0/" }),
       ...STAFF_MUSIC.map(({ title, composer, source }) => el("div.staff-roll-song", [
         el("p.staff-roll-song-title", { text: `「${title}」` }),
         el("p.staff-roll-song-credit", { text: `作曲 ${composer}（${source}）` }),
       ])),
     ]) : null,
+    el("section.staff-roll-sound-trpg", STAFF_SOUND_TRPG.map(text => el("p", { text }))),
     el("section.staff-roll-sound", [el("p", { text: STAFF_SOUND_CREDIT })]),
+    el("section.staff-roll-sound-main", STAFF_SOUND_MAIN.map(text => el("p", { text }))),
+    el("section.staff-roll-sound-camel", STAFF_SOUND_CAMEL.map(text => el("p", { text }))),
+    el("section.staff-roll-sound-desert", STAFF_SOUND_DESERT.map(text => el("p", { text }))),
+    el("section.staff-roll-sound-axe", STAFF_SOUND_AXE.map(text => el("p", { text }))),
     el("section.staff-roll-closing", [el("p", { text: STAFF_ROLL_CLOSING })]),
   ].filter(Boolean);
 }
@@ -134,3 +184,5 @@ async function showPages(parts, durationMs, keep) {
     if (index < parts.length - 1) await new Promise(resolve => keep({ id: setTimeout(resolve, each) }));
   }
 }
+
+

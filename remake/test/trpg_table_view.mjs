@@ -143,10 +143,13 @@ for (const scenario of scenarios) {
 for (const scenario of scenarios) {
   test(scenario.id + ': the cover builds the player character; seats, lines and the result use it', () => {
     const { api, root, q, drain, declare, roll, interview } = mount(scenario);
-    const builder = scenario.builder, look = builder.looks[1], origin = builder.archetypes[1];
+    const builder = scenario.builder, origin = builder.archetypes[1];
     assert.equal(q('trpg-cover-pc-name').textContent, builder.archetypes[0].name);
     q('trpg-build').click();
-    q('trpg-look-' + look.id).click(); q('trpg-archetype-' + origin.id).click();
+    // The look is not chosen (#3050): no look buttons; the PC wears the player's own face.
+    // Only two parts remain: the origin and the name/stats (#3050).
+    assert.deepEqual([...q('trpg-builder').children].map(n => String(n.className).trim()), ['trpg-builder-origins', 'trpg-builder-stats'], 'no look choice in the builder');
+    q('trpg-archetype-' + origin.id).click();
     // Beginners never see +/- unless they ask; every stat carries a plain explanation.
     assert(!root.querySelector('[data-test="trpg-stat-eye-up"]'), 'easy mode hides the point-buy');
     assert.equal(root.querySelectorAll('.trpg-builder-stat-help').length, 4);
@@ -159,9 +162,12 @@ for (const scenario of scenarios) {
     assert(q('trpg-stat-' + raised + '-up').disabled, 'no points left to spend');
     q('trpg-build-confirm').click();
     const pc = api.snapshot().pc;
-    assert.equal(pc.name, origin.name); assert.equal(pc.look, look.id);
+    assert.equal(pc.name, origin.name); assert(!('look' in pc), 'the built character has no look');
     assert.equal(pc.stats[lowered], origin.stats[lowered] - 1); assert.equal(pc.stats[raised], origin.stats[raised] + 1);
     assert.equal(q('trpg-cover-pc-name').textContent, origin.name);
+    const coverFace = root.querySelector('.trpg-cover-pc-face img');
+    assert(coverFace, 'the cover shows a face');
+    assert(!String(coverFace.src || '').includes('/ui/trpg/'), 'the cover shows the player\'s own portrait, not a look');
     q('trpg-start').click();
     assert(q('trpg-seat-pc-hajime').textContent.includes(origin.name), 'the seat shows the built character');
     assert(!root.textContent.includes('{pc}'), 'the name token never leaks to the screen');
@@ -223,16 +229,19 @@ test('seat rail measurement waits for preview resize outputs', async () => {
   assert.match(seatLoop, /assert\(seats\.visible&&seats\.inside,/);
   const previewSource = await readFile(new URL('../js/trpg/preview.js', import.meta.url), 'utf8');
   const listeners = {}, styles = new Map();
-  const stage = { style: { setProperty: (k, v) => styles.set(k, v), getPropertyValue: k => styles.get(k) },
-    getBoundingClientRect: () => ({ width: 1280 * Number(styles.get('--k')) }) };
+  const stage = { style: { setProperty: (k, v) => styles.set(k, v), getPropertyValue: k => styles.get(k), removeProperty: k => styles.delete(k) },
+    dataset: {}, getBoundingClientRect: () => ({ width: 1280 * Number(styles.get('--k')) }) };
   const rotate = { hidden: true };
   const port = vm.createContext({ URL, URLSearchParams,
     innerWidth: 1280, innerHeight: 720,
-    document: { getElementById: id => id === 'stage' ? stage : id === 'trpg-rotate' ? rotate : {}, querySelector: () => null },
-    window: { addEventListener: (event, fn) => { listeners[event] = fn; } },
+    document: { documentElement: { dataset: {} }, getElementById: id => id === 'stage' ? stage : id === 'trpg-rotate' ? rotate : {}, querySelector: () => null },
+    // The preview fits with the game's shared core/stage-fit.js, which reads the window's size.
+    window: { addEventListener: (event, fn) => { listeners[event] = fn; }, get innerWidth() { return port.innerWidth; },
+      get innerHeight() { return port.innerHeight; }, get visualViewport() { return port.visualViewport; } },
     matchMedia: () => ({ matches: reducedMotion }), location: { href: 'https://example.invalid/remake/trpg-preview.html', search: '' }, history: { replaceState() {} } });
   const preview = new vm.SourceTextModule(previewSource, { context: port });
-  await preview.link(() => new vm.SyntheticModule(['mountTrpgCollection'], function () {
+  const stageFit = new vm.SourceTextModule(await readFile(new URL('../js/core/stage-fit.js', import.meta.url), 'utf8'), { context: port });
+  await preview.link(specifier => specifier.endsWith('core/stage-fit.js') ? stageFit : new vm.SyntheticModule(['mountTrpgCollection'], function () {
     this.setExport('mountTrpgCollection', () => ({ snapshot() {}, audioSnapshot() {}, loaded: true }));
   }, { context: port }));
   await preview.evaluate();

@@ -11,7 +11,7 @@ import { rememberGrowthMix, growthRecallOptions } from "../core/growth-memory.js
 import { effectVisible, effectBadge } from "./effect-visual.js";
 import { canSeeMixHint, canSeeGoldenShort } from "../core/stat-step-tables.js";
 import { SE } from "../core/audio.js";
-import { stepPanel, refreshBench, reactAudience, waitBenchReady, dockBenchLeaf, setBenchLeafVisible, benchRoot } from "./session.js";
+import { stepPanel, refreshBench, reactAudience, waitBenchReady, dockBenchLeaf, setBenchLeafVisible, benchRoot, explainStepOnce } from "./session.js";
 import { flavorMixLife, LEAF_DAMAGE } from "./flavor-life.js";
 import { autoSkill } from "./common.js";
 import { mixBowlPreview, packingBowlPreview } from "./art.js";
@@ -117,6 +117,7 @@ export async function stepSetup(cs) {
     const currentId = state.equip[type];
     const categoryHint = { bowl: "ハガルは葉を詰める器。使う量と狙う味で選ぼう", hms: "HMDは炭を載せる道具。温度の合わせやすさを見比べよう", charcoal: "同じ3個でも熱の入り方が変わる。狙う温度で選ぼう" };
     const panel = stepPanel("setup", `機材 ${label}`, lessonHint(cs, "setup", categoryHint[type]));
+    if (!await explainStepOnce(cs, "setup")) return;
     const preview = el("div", [equipmentPreview(cs)]);
     panel.append(preview);
     panel.append(el("button.btn.small.equipment-compare", { type: "button", text: "性能を見比べる", dataset: { test: "setup-compare" },
@@ -310,6 +311,7 @@ export async function stepMix(cs) {
   const reg = regulationFor(cs);
   const cap = capacity(cs);
   const panel = stepPanel("mix", "フレーバーのミックス", lessonHint(cs, "mix", `${cap}gまで詰められるボウル。${reg ? reg.label + (reg.free ? "。" : "が今日の課題。") : ""}${reg?.exact != null ? `合計${reg.exact}gちょうどで決める` : "合計12g以上で決める"}`));
+  if (!await explainStepOnce(cs, "mix")) return;
   const consumes = cs.mode === "tournament";
   const supplyId = reg?.supply || null;
   const supplied = (id) => !!reg && id === supplyId;
@@ -530,6 +532,7 @@ export async function stepPack(cs) {
   if (!growthEnabled()) state.flags._dense_pack_legacy = true;
   const dense = densePackAvailable(state);
   const panel = stepPanel("pack", "パッキング", lessonHint(cs, "pack", "空気の通り道を作る。詰め方で抜けと熱の入り方が変わる"));
+  if (!await explainStepOnce(cs, "pack")) return;
   const options = [
     { value: "fluffy", label: "ふんわり", surface: "空気を残す・軽い吸い心地", desc: "熱が早く入る。軽い一台を狙う時に。温めすぎに注意" },
     { value: "normal", label: "ノーマル", surface: "均等にならす・基本", desc: "熱の入り方と抜けが標準。初めての葉や器具を試す時に" },
@@ -547,6 +550,26 @@ export async function stepPack(cs) {
   const confirm = el("button.btn.primary.pack-confirm", { dataset: { test: "pack-confirm" } }, [
     el("span.btn-label", { text: "この詰め方で決める" }),
   ]);
+  // 詰め込み時も配合で決まった適温帯を見せる（実温度は炭・蒸らし前なので帯のみ。採点は変えない）。
+  // 詰め方は温まり速度だけを変えるので、帯の位置は動かさず、注記で熱の入り方を伝える。
+  const PACK_HEAT = {
+    fluffy: { rate: "熱が早い", note: "過熱に注意" },
+    normal: { rate: "熱は標準", note: "帯は配合どおり" },
+    firm: { rate: "熱が遅い", note: "蒸らし長め" },
+  };
+  const thermometer = buildMixTemperatureGauge(cs, { vertical: true });
+  const idealLine = el("span.mix-ideal");
+  const optimalLine = el("span.mix-optimal");
+  const temperatureHint = el("small", { dataset: { test: "pack-heat-hint" } });
+  const temperaturePreview = el("div.mix-temperature-preview", {
+    hidden: cs.mode === "tutorial",
+    dataset: { test: "pack-temperature-preview" },
+  }, [
+    el("b", { text: "温度帯" }),
+    thermometer.root,
+    el("div.mix-temperature-legend", { "aria-live": "polite" }, [idealLine, optimalLine]),
+    temperatureHint,
+  ]);
   const choices = options.map(option => el("button.pack-choice", {
     type: "button", disabled: !!option.locked, dataset: { test: `opt-${option.value}` },
     onclick: () => { if (option.locked) return; selected = option; SE.select(); draw(); },
@@ -557,12 +580,23 @@ export async function stepPack(cs) {
     vessel.replaceChildren(packingBowlPreview(cs, selected.value));
     caption.replaceChildren(el("b", { text: selected.label }), el("p", { text: selected.desc }));
     choices.forEach((button, i) => button.setAttribute("aria-pressed", String(options[i] === selected)));
+    const bands = thermometer.updateBands();
+    const expressive = bands.expressionWeight >= .999;
+    idealLine.textContent = bands.selected ? expressive ? "おいしい範囲" : "適温の目安" : "未選択";
+    optimalLine.textContent = bands.selected ? expressive ? "低め／高め" : "合わせやすい" : "葉を加えると表示";
+    const heat = PACK_HEAT[selected.value] || PACK_HEAT.normal;
+    temperatureHint.textContent = bands.selected ? `${heat.rate}／${heat.note}` : "上が高温";
+    temperaturePreview.title = bands.selected
+      ? `配合の適温帯。詰め方は温まりの速さだけを変える（${heat.rate}）。炭・蒸らしのあとで実温度を見る`
+      : "配合の適温帯";
+    temperaturePreview.dataset.pack = selected.value;
   }
   panel.append(el("div.packing", [
     el("p.pack-aroma", { dataset: { test: "mix-confirmed-taste" }, text: mixTaste(cs.mix).detail }),
     vessel, caption,
     el("div.pack-choices", { role: "group", "aria-label": "詰め方を見比べる" }, choices),
     el("div.pack-footer", [el("small", { text: "葉の量はそのまま。詰め方を見比べよう" }), confirm]),
+    temperaturePreview,
   ]));
   draw();
   cs.pack = await new Promise(resolve => {
@@ -593,6 +627,7 @@ export async function stepPlace(cs) {
   if (!applyCoalTraining(cs, state.flags)) { refreshBench(); return; }
   await waitBenchReady(cs, "place");
   const panel = stepPanel("place", "炭の配置", lessonHint(cs, "place", "基本は同じ炭を三角に3個。配置を決めてから炭を焼く"));
+  if (!await explainStepOnce(cs, "place")) return;
   const layouts = availableCoalLayouts(cs.mode === "tutorial" ? {} : state.flags);
   cs.place = await choose(panel, layouts.map(value => value === "triangle"
     ? { value, label: "トライアングル（3個）", desc: "三角に置いて、熱を均等に届ける", auto: true }

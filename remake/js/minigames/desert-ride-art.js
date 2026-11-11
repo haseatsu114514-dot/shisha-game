@@ -27,12 +27,32 @@ export const DESERT_ART = Object.freeze({
   noorRiderJump: Object.freeze({ file: "ui/desert_ride/rider_noor_jump.webp", size: Object.freeze([537, 670]), anchor: Object.freeze({ x: 0.5761, y: 0.8388 }) }),
   noorRiderBrace: Object.freeze({ file: "ui/desert_ride/rider_noor_brace.webp", size: Object.freeze([561, 644]), anchor: Object.freeze({ x: 0.558, y: 0.8198 }) }),
   noorRiderFall: Object.freeze({ file: "ui/desert_ride/rider_noor_fall.webp", size: Object.freeze([554, 655]), anchor: Object.freeze({ x: 0.5256, y: 0.9569 }) }),
+  // なる（裏ボス）の背面6ポーズ（Issue #3222・Codex）。主人公の背面と同じ縮尺に作り直し、基準点は板の中心（転倒は主人公と同じ位置関係）。
+  // 寸法・基準点は asset_sources/desert-ride-naru-3222/adoption.json（build.py が書き出す）と同じ値。身長の差は描く時に掛ける（desert-ride.js の RIVAL_ART_SCALE）
+  naruRider: Object.freeze({ file: "ui/desert_ride/rider_naru_ride.webp", size: Object.freeze([517, 796]), anchor: Object.freeze({ x: 0.5954, y: 0.8026 }) }),
+  naruRiderLeft: Object.freeze({ file: "ui/desert_ride/rider_naru_lean_left.webp", size: Object.freeze([581, 752]), anchor: Object.freeze({ x: 0.588, y: 0.7849 }) }),
+  naruRiderRight: Object.freeze({ file: "ui/desert_ride/rider_naru_lean_right.webp", size: Object.freeze([591, 810]), anchor: Object.freeze({ x: 0.486, y: 0.7764 }) }),
+  naruRiderJump: Object.freeze({ file: "ui/desert_ride/rider_naru_jump.webp", size: Object.freeze([560, 696]), anchor: Object.freeze({ x: 0.5779, y: 0.8011 }) }),
+  naruRiderBrace: Object.freeze({ file: "ui/desert_ride/rider_naru_brace.webp", size: Object.freeze([600, 656]), anchor: Object.freeze({ x: 0.5384, y: 0.8029 }) }),
+  naruRiderFall: Object.freeze({ file: "ui/desert_ride/rider_naru_fall.webp", size: Object.freeze([541, 652]), anchor: Object.freeze({ x: 0.5265, y: 0.9582 }) }),
   rockLarge: Object.freeze({ file: "ui/desert_ride/rock_large.webp", size: Object.freeze([512, 280]) }),
   rockSmall: Object.freeze({ file: "ui/desert_ride/rock_small.webp", size: Object.freeze([384, 211]) }),
   // 旗竿（Codex A）。foot は竿の足（画像に対する比率）
   flag: Object.freeze({ file: "ui/desert_ride/flag_pole.webp", size: Object.freeze([110, 512]), foot: Object.freeze({ x: 0.0591, y: 1 }) }),
   goal: Object.freeze({ file: "ui/desert_ride/goal_banner.webp", size: Object.freeze([1024, 132]) }),
   puff: Object.freeze({ file: "ui/desert_ride/sand_puff.webp", size: Object.freeze([256, 141]) }),
+  curveLeft: Object.freeze({ file: "ui/desert_ride_controls/curve_left.webp", size: Object.freeze([512, 560]) }),
+  curveRight: Object.freeze({ file: "ui/desert_ride_controls/curve_right.webp", size: Object.freeze([512, 560]) }),
+});
+// Issue #3175 でオーナーが A 系を採用。画像の読み込みが終わるまでは操作名を表示する。
+export const DESERT_CONTROL_ART = Object.freeze({
+  left: "ui/desert_ride_controls/steer_left.webp",
+  right: "ui/desert_ride_controls/steer_right.webp",
+  boost: "ui/desert_ride_controls/boost.webp",
+  jump: "ui/desert_ride_controls/jump.webp",
+  land: "ui/desert_ride_controls/land.webp",
+  stickBase: "ui/desert_ride_controls/stick_base.webp",
+  stickKnob: "ui/desert_ride_controls/stick_knob.webp",
 });
 // 会話の背景（Codex C を 1280×720 に）と、同じ構図の夕方（夕日の場面）
 export const DESERT_BG = "bg_dubai_dunes_day";

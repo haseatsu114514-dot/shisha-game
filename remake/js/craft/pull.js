@@ -22,7 +22,7 @@ import { gradeOf, autoSkill, skill, resultCard, keys } from "./common.js";
 import { HEAT_GRADES } from "./heat.js";
 import { replacementCoals } from "./heat_logic.js";
 
-import { craftConditions, heatDelta, pullResult, isIdealTemperature, isOptimalTemperature, temperatureBands, visualTemperature, temperatureAfterSteam, pullFocusFromSteam, isBurnt, isColdOut, DANGER_TEMP, COLD_OUT } from "./conditions.js";
+import { craftConditions, heatDelta, pullResult, isIdealTemperature, isRainbowTemperature, temperatureBands, visualTemperature, temperatureAfterSteam, pullFocusFromSteam, isBurnt, isColdOut, DANGER_TEMP, COLD_OUT } from "./conditions.js";
 import { buildThermometer } from "./thermometer.js";
 import { DRAW_MS, animateDraw } from "./pull-draw.js";
 import { impact, exhale } from "./fx.js";
@@ -282,11 +282,12 @@ async function pullGame(cs, mode) {
     if (choosing) return;
     const inZone = isIdealTemperature(T, bands);
     const expressive = bands.expressionWeight >= .999;
-    const optimal = !expressive && isOptimalTemperature(T, bands);
+    // 表示の虹（どの配合にもある。作り分ける葉だけの配合はおいしく作れる範囲全体）。採点の最適温とは別。
+    const optimal = isRainbowTemperature(T, bands);
     const position = (T - ideal[0]) / (ideal[1] - ideal[0]);
     const goodLabel = expressive ? position < .35 ? "適温・低" : position > .65 ? "適温・高" : "適温" : "適温";
     // 今の温度を短い一語で。温度計の印と同じ色にする。
-    const [state, tone] = optimal ? ["最適温", "optimal"] : inZone ? [goodLabel, "ok"] : T >= DANGER_TEMP ? ["焦げる寸前！", "danger"]
+    const [state, tone] = optimal ? [expressive ? goodLabel : "最適温", "optimal"] : inZone ? [goodLabel, "ok"] : T >= DANGER_TEMP ? ["焦げる寸前！", "danger"]
       : T > ideal[1] ? ["熱い", "hot"] : mode.drift && T <= COLD_OUT + 0.08 ? ["冷え切りそう！", "cold"] : ["ぬるい", "cool"];
     readout.dataset.tone = tone;
     readout.replaceChildren(el("b.pull-state", { text: state }), mode.drift && running && !drawing ? el("span.pull-drift", { text: "↓", title: "炭が燃え進んで、熱が落ちていく" }) : "");
@@ -472,10 +473,14 @@ async function pullGame(cs, mode) {
   const prepareCoals = async () => {
     choosing = true;
     play.hidden = true;
-    const lead = el("p.care-coals-lead", { text: (cs.careRound > 1
+    // 「時間が止まる」の一文は、スマホでは画面に出さず「?」で読む（craft-landscape.css・#2729）。PCは画面にも残す。
+    const calm = "炭を選ぶ間は時間が止まるので、急がなくていい";
+    const lead = el("p.care-coals-lead", [(cs.careRound > 1
       ? `${context.waiting}、再び炭が消耗して温度が下がってきた。もう一度整えよう`
       : `${cs.mode==="tournament"?"提供して":"試し吸いから"}約20分。${context.waiting}炭が消耗し、温度が下がってきた。調整しよう`)
-      + "。炭を選ぶ間は時間が止まるので、急がなくていい" });
+      + "。", el("span.care-coals-calm", { text: calm })]);
+    const guideNote = panel.closest?.(".bench")?.querySelector?.(".bench-guide-tip > p");
+    if (guideNote && !guideNote.parentElement.querySelector(".care-guide-calm")) guideNote.after(el("div.bench-guide-extra.care-guide-calm", [el("p", { text: calm })]));
     // 説明文の代わりに、温度計と同じ印で戻る熱を示す（▲が多いほど戻る。交換しないと ↓ 落ちていく）。
     const options = Array.from({ length: coalCount(cs) + 1 }, (_, i) => i);
     // 置き方は先に選んでおき、個数のボタンで決める。既定は標準なので、個数を押すだけでも進める。

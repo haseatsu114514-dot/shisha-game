@@ -669,6 +669,8 @@ async function tournamentDay() {
   // ROUND 1 ── 準備
   playBgm("bgm_tournament_craft");
   const cs = startTournamentCraft();
+  // 開始前の掛け合い（#3060）。入場のあと、4台の前で合図を待つ。
+  await playTournamentEvent(cs, "prestart", { bg: STAGE });
   await roundCut("ROUND 1", "準備");
   await play("remake_round1_intro", { bg: STAGE });
   await playTournamentEvent(cs, "opening", { bg: STAGE });
@@ -718,6 +720,8 @@ async function tournamentDay() {
   bc.burst(cs, "serve", 1);
   await sleep(900);
   bc.clearComments();
+  // 審査員への提供開始の掛け合い（#3060）。4台が審査席に並び、一口目を待つ間。
+  await playTournamentEvent(cs, "serve", { bg: STAGE });
   await play("ch1_tournament_r2_end", { bg: STAGE });
   cs.stats = computeShisha(cs);
   await showStandings(2, avgScore(cs.holes.score, cs.heat.score, cs.stats.craftQuality), cs, state.tournament);
@@ -758,12 +762,14 @@ async function tournamentDay() {
   if (out.rank === 1) {
     state.tournament.victory = { step: 0, revealed: false };
     save();
-    // 伏見の二口 →「もうだめだ」→ 10カウント → プチュン → 伏見の持ち点10が先頭のはじめへ入り、優勝を締める（逆転ではない・#1282）
+    // 千須の二口 →「もうだめだ」→ 10カウント → プチュン → 千須の持ち点10が先頭のはじめへ入り、優勝を締める（逆転ではない・#1282）
     // 審査待ちのなるの一言は、実際の調整実績（安定／立て直し／終盤帯外／記録不足）に合わせて差し替える。
     const judging = DB.dialogues.ch1_tournament_judging;
     const judgingLines = judging.lines.map(line =>
       line.cue === "naru_tasting" ? { ...line, text: naruTastingLine(cs) } : line);
     await play({ ...judging, lines: judgingLines }, { bg: STAGE });
+    // 結果発表前の掛け合い（#3060）。会長の二口と選手席の待ち時間の後、みんととアダムが集計を待つ。
+    await playTournamentEvent(cs, "preresult", { bg: STAGE, context: { win: true } });
     await resultCountdown(cs, out.kind, state.tournament);
     retireScreen(); // カウント画面は次の場面で片付く
     playBgm("bgm_aftermath");
@@ -774,6 +780,8 @@ async function tournamentDay() {
     save();
     await victory(cs);
   } else {
+    // 結果発表前の掛け合い（#3060）。届かなかった流れは講評の直後、選手席で集計を待つ。
+    await playTournamentEvent(cs, "preresult", { bg: STAGE });
     await resultCountdown(cs, out.kind, state.tournament);
     retireScreen();
     await suiCutin(out.rank, state.tournament);

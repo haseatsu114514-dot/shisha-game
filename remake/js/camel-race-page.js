@@ -1,12 +1,20 @@
 // CAMEL RACE の独立ページ（remake/camel-race.html）。本編の保存は読み書きしない。
 // ?pilot=perfect&speed=4&skip=1 で自動操作・早回し・チュートリアル省略（ブラウザテスト用）。
 import { el } from "./core/util.js";
+import { initStageFit } from "./core/stage-fit.js";
+initStageFit(document.getElementById("stage")); // 画面の当て方は本編と同じ共通部品（#3076）
 import { runCamelRace } from "./minigames/camel-race.js";
+import { SE, unlockAudio } from "./core/audio.js";
+// 本編（main.js）と同じく、最初のユーザー操作で音を解禁する（自動再生制限・#3065）。
+// これが無いと試遊ページでは BGM・SE が一切鳴らなかった。
+window.addEventListener("pointerdown", unlockAudio);
+window.addEventListener("keydown", unlockAudio);
 const host = document.getElementById("camel-app");
 const params = new URLSearchParams(location.search);
 let best = null;
 function menu(result = null) {
   const start = async ({ tutorial = true, pilot = null } = {}) => {
+    try { SE.select(); } catch { /* 音は無くても遊べる */ }
     buttons.forEach(button => { button.disabled = true; });
     try {
       const outcome = await runCamelRace({ host, tutorial, pilot: pilot || params.get("pilot") || null,

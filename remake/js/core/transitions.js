@@ -293,7 +293,7 @@ export async function nightToMorning(host, mid) {
     } else {
       const fall = svg("g", {}, [svg("path", { d: nightPath(), fill: COLOR.lav, transform: "translate(0 34)" }), svg("path", { d: nightPath(), fill: COLOR.deep })]);
       fall.style.transform = "translateY(-200px)";
-      const art = svg("svg", { viewBox: `0 0 ${W} ${H}`, class: "tr-svg" }, [fall]);
+      const art = svg("svg", { viewBox: `0 0 ${W} ${H}`, class: "tr-svg", preserveAspectRatio: "xMidYMid slice" }, [fall]); // ワイドでは左右の余白まで夜が降りる
       node.append(art);
       await nextFrame();
       await move(fall, [{ transform: "translateY(-200px)" }, { transform: "translateY(760px)" }], 540, { easing: EASE.in });

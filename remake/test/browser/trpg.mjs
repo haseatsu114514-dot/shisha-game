@@ -254,24 +254,25 @@ try {
     await hit(page, '[data-test="trpg-build"]');
     await page.locator('[data-test="trpg-builder"]').waitFor();
     await fits(page);
-    await hit(page, '[data-test="trpg-look-rust"]'); await hit(page, '[data-test="trpg-archetype-sailor"]');
+    assert.equal(await page.locator('[data-test^="trpg-look-"]').count(), 0, "no look choice (#3050)");
+    await hit(page, '[data-test="trpg-archetype-sailor"]');
     assert.equal(await page.locator('[data-test="trpg-stat-nerve-down"]').count(), 0, "easy mode hides the point-buy");
     await hit(page, '[data-test="trpg-builder-advanced"]');
     await hit(page, '[data-test="trpg-stat-nerve-down"]'); await hit(page, '[data-test="trpg-stat-talk-up"]');
     assert.equal(await page.locator('[data-test="trpg-stat-points"]').getAttribute("data-left"), "0");
     assert(await page.locator('[data-test="trpg-stat-talk-up"]').isDisabled(), "spent points disable raising");
-    await page.locator('[data-test="trpg-pc-name"]').fill("ソラ");
+    assert.equal(await page.locator('input[data-test="trpg-pc-name"], .trpg-builder input[type="text"]').count(), 0, "the role keeps its given name; no name field");
     await hit(page, '[data-test="trpg-build-confirm"]');
-    assert.equal(await page.locator('[data-test="trpg-cover-pc-name"]').textContent(), "ソラ");
+    assert.equal(await page.locator('[data-test="trpg-cover-pc-name"]').textContent(), "マル");
     const pc = (await page.evaluate(() => __trpg.snapshot())).pc;
-    assert.deepEqual(pc, { name: "ソラ", title: "船乗り帰りの手伝い", look: "rust", archetype: "sailor", stats: { eye: 2, hand: 3, talk: 3, nerve: 3 } });
+    assert.deepEqual(pc, { name: "マル", title: "船乗り帰りの手伝い", archetype: "sailor", stats: { eye: 2, hand: 3, talk: 3, nerve: 3 } });
     // "Leave it to the dice" is reproducible from the model, and cancelling keeps the confirmed character.
     await hit(page, '[data-test="trpg-build"]'); await hit(page, '[data-test="trpg-build-random"]'); await hit(page, '[data-test="trpg-build-back"]');
     assert.deepEqual((await page.evaluate(() => __trpg.snapshot())).pc, pc);
     await hit(page, '[data-test="trpg-start"]'); await nextLines(page);
-    assert.match(await page.locator('[data-test="trpg-seat-pc-hajime"]').textContent(), /ソラ/);
+    assert.match(await page.locator('[data-test="trpg-seat-pc-hajime"]').textContent(), /マル/);
     await hit(page, '[data-test="trpg-approach-listen_talk"]');
-    assert.match(await page.locator(".trpg-speech p").textContent(), /^ソラは/);
+    assert.match(await page.locator(".trpg-speech p").textContent(), /^マルは/);
     assert.equal(await page.locator(".trpg-root").evaluate(n => n.textContent.includes("{pc}")), false);
     await nextLines(page);
     assert.equal(await page.locator('[data-test="trpg-bonus"]').textContent(), "＋3", "the built talk stat is the roll's base");
@@ -382,9 +383,15 @@ try {
     }
   });
   await run("audio-and-check-cancellation", { scenario: "shark-last-order", traveler: "light", seed: 3 }, {}, async page => {
-    assert.equal((await page.evaluate(() => __trpg.audio())).state, "idle");
+    // 音は既定でON（最初の操作まで AudioContext は作らない）。テーマ別BGMと録音SE（CC0・仮）を使う。
+    const initial = await page.evaluate(() => __trpg.audio());
+    assert.equal(initial.state, "idle"); assert.equal(initial.enabled, true); assert.equal(initial.bgm, "bgm_trpg_shark");
+    await hit(page, '[data-test="trpg-audio"]');
+    await page.waitForFunction(() => !__trpg.audio().enabled);
     await hit(page, '[data-test="trpg-audio"]');
     await page.waitForFunction(() => __trpg.audio().enabled && __trpg.audio().state === "running");
+    await page.waitForFunction(() => __trpg.audio().samples >= 19); // 録音SEが全部読めた
+    assert.equal((await page.evaluate(() => __trpg.audio())).ambience, 0); // BGMがあるテーマでは合成の環境音を重ねない
     await hit(page, '[data-test="trpg-start"]'); await nextLines(page);
     await hit(page, '[data-test="trpg-declare-back"]');
     assert.equal((await page.evaluate(() => __trpg.snapshot())).pending, null);

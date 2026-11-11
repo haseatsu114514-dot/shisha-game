@@ -83,7 +83,7 @@ const values = {
   "story-knowledge.js": { syncMintoKnowledge: () => {} },
   // サメちゃんのデート（samechan-date.js）が読む心得の盤。LIMEの検査なので旧しくみ（盤は無効）の代役にする
   "growth.js": { growthEnabled: () => false, awardActionExp: () => 0 },
-  "gallery-progress.js": { recordRouteLover: noop }, // コレクションの「恋人成立」は remake/test/gallery_route_records.mjs
+  "gallery-progress.js": { recordRouteLover: noop, recordRouteEvent: noop }, // コレクションのルート記録（恋人成立・閲覧した段階）は remake/test/gallery_route_records.mjs
 };
 // 同じVM stateに実statsを接続。新しいexportを空の成功stubで埋めない。
 const coreFiles = { "stat-step-tables.js": "stat-step-tables.js", "production-stats.js": "stats.js", "condition.js": "condition.js", "affinity-stages.js": "affinity-stages.js", "travel-budget.js": "travel-budget.js" };
@@ -355,7 +355,7 @@ for (const pts of [0, 1, 2]) {
 reset({ lovers: ["minto"] }); state.inbox.push(item({ id: "loverchat", sender: "minto", type: "chat", messages: ["おはよう"], replies: [{ text: "おはよう", affinity: 1 }] }));
 session = phone.openLime({ sender: "minto" }); await click("reply-0"); await closeThread(session); assert.equal(gains[0].pts, 3);
 
-// 五つの噂も返信可能（伏見は連絡先を交換しないため噂LIMEなし・#2026）。全選択肢が自然な文面/反応/小さい点数を持ち、洞察報酬は読む時に一度だけ。
+// 五つの噂も返信可能（千須は連絡先を交換しないため噂LIMEなし・#2026）。全選択肢が自然な文面/反応/小さい点数を持ち、洞察報酬は読む時に一度だけ。
 const rumors = allMessages.filter((m) => m.type === "rumor"); assert.equal(rumors.length, 5);
 for (const rumor of rumors) {
   assert(rumor.replies.length >= 2); assert(rumor.replies.some((r) => r.affinity === 0));
@@ -492,6 +492,10 @@ reset({ chapter: 1, day: 5, contacts: ["hiyori"], affinity: { hiyori: 33 }, flag
 reset({ chapter: 2, day: 5, contacts: ["hiyori"], affinity: { hiyori: 33 }, flags: { ...hiyoriReturned } }); assert(!hiyoriOuting(), "第2章では誘わない");
 reset({ chapter: 1, day: 5, contacts: ["hiyori"], affinity: { hiyori: 33 }, flags: { ...hiyoriReturned, _invited_lime_outing_hiyori_1: true, _outing_done_hiyori: true } });
 assert(!hiyoriOuting()); assert(phone.morningMessages().some((m) => m.id === "lime_after_outing_hiyori"), "ひよりの外出の後日談も『この前』で届く");
+reset({ chapter: 1, day: 6, contacts: ["hiyori"], flags: { _lime_contact_hiyori: true, _hiyori_charm_done: true } });
+assert(phone.morningMessages().some((m) => m.id === "lime_hiyori_charm"), "相席のあと、席の話が届く");
+reset({ chapter: 1, day: 6, contacts: ["hiyori"], flags: { _lime_contact_hiyori: true, _hiyori_peach_talk_done: true } });
+assert(phone.morningMessages().some((m) => m.id === "lime_hiyori_peach"), "桃の話のあと、本音のひとことが届く");
 reset({ day: 3, contacts: ["naru"] }); const naruDayOff = phone.morningMessages().find((m) => m.id === "lime_outing_naru_1"); assert(naruDayOff); assert(naruDayOff.messages.some((line) => /休み/.test(typeof line === "string" ? line : line.text)));
 state.day = 4; const naruTemporary = phone.morningMessages().find((m) => m.id === "lime_outing_naru_1"); assert.equal(naruTemporary.time_slot, "noon"); assert(naruTemporary.temporary_closed);
 // 次の私服の約束を定休日だけに縛らない。配信した時点で本文と予約時刻を一緒に確定。
@@ -575,6 +579,84 @@ for (const [id, sender, chapter, flag] of [
   assert.equal(state.inbox[0].read, true);
 }
 
+// #3081: 目をそらす話を読んだあと、章を問わず一度だけ届く。
+{
+  const id = "lime_samechan_after_seat";
+  const message = allMessages.find(m => m.id === id);
+  assert(message, id);
+  const setup = (overrides = {}) => {
+    reset({ chapter: 2, day: 9, contacts: ["samechan"], flags: { _samechan_look_away_done: true }, ...overrides });
+    db.lime = [message];
+  };
+  setup({ flags: {} });
+  assert.equal(phone.deliverMorning(), 0, `${id}: flag required`);
+  setup({ contacts: [] });
+  assert.equal(phone.deliverMorning(), 0, `${id}: contact required`);
+  setup();
+  assert.equal(phone.deliverMorning(), 1, `${id}: deliver when eligible`);
+  assert.equal(state.inbox[0].id, id);
+  setup({ chapter: 4 });
+  assert.equal(phone.deliverMorning(), 1, `${id}: later chapters still deliver`);
+}
+
+// #3081: ヌールは砂丘の告白に応えた時だけ連絡先を交換する。交換前・断った時は届かない。
+{
+  const id = "lime_noor_after_sunset";
+  const message = allMessages.find(m => m.id === id);
+  assert(message, id);
+  const setup = (overrides = {}) => {
+    reset({ chapter: 4, day: 11, contacts: ["noor"], flags: { _lime_contact_noor: true }, ...overrides });
+    db.lime = [message];
+  };
+  setup({ flags: {} });
+  assert.equal(phone.deliverMorning(), 0, `${id}: accepted confession required`);
+  setup({ contacts: [] });
+  assert.equal(phone.deliverMorning(), 0, `${id}: exchanged contact required`);
+  setup();
+  assert.equal(phone.deliverMorning(), 1, `${id}: delivered after exchange`);
+  assert.equal(state.inbox[0].id, id);
+  assert.equal(phone.deliverMorning(), 0, `${id}: unread is not stacked`);
+  setup({ chapter: 5, day: 61 });
+  assert.equal(phone.deliverMorning(), 1, `${id}: a late chapter 5 confession also delivers`);
+}
+
+// ヌールの砂丘の節目は既存の恋人Lvと既読判定を使い、飛ばし読み・再読をしない。
+{
+  reset({ chapter: 4, lovers: ["noor"], loveLevel: { noor: 1 }, lovePts: { noor: 9 } });
+  const events = JSON.parse(await fs.readFile(new URL("data/dialogue/lover_events.json", dataRoot), "utf8"));
+  db.dialogues = Object.fromEntries(events.dialogues.filter(scene => scene.dialogue_id.startsWith("lover_noor_")).map(scene => [scene.dialogue_id, scene]));
+  assert.equal(romance.loverMilestoneDue("noor", { home: false }), "lover_noor_lv1");
+  assert.equal(await romance.playLoverMilestone("noor", { home: false }), true);
+  assert.deepEqual(clone(state.loverEventsSeen), ["lover_noor_lv1"]);
+  assert.equal(romance.loverMilestoneDue("noor", { home: false }), null);
+  state.loveLevel.noor = 2;
+  assert.equal(romance.loverMilestoneDue("noor", { home: false }), "lover_noor_lv2");
+  assert.equal(actualStats.bond.private, false);
+}
+
+// #3081: 水が減るまでいた夜のあと、章を問わず一度だけ届く。
+{
+  const id = "lime_tsumugi_low_water";
+  const message = allMessages.find(m => m.id === id);
+  assert(message, id);
+  const setup = (overrides = {}) => {
+    reset({ chapter: 2, day: 9, contacts: ["tsumugi"], flags: { _spot_seen_ch1_tsumugi_low_water: true }, ...overrides });
+    db.lime = [message];
+  };
+  setup({ flags: {} });
+  assert.equal(phone.deliverMorning(), 0, `${id}: flag required`);
+  setup({ contacts: [] });
+  assert.equal(phone.deliverMorning(), 0, `${id}: contact required`);
+  setup();
+  assert.equal(phone.deliverMorning(), 1, `${id}: deliver when eligible`);
+  assert.equal(state.inbox[0].id, id);
+  assert.equal(phone.deliverMorning(), 0, `${id}: unread is not stacked`);
+  setup({ chapter: 1 });
+  assert.equal(phone.deliverMorning(), 1, `${id}: chapter 1 still delivers`);
+  setup({ chapter: 4 });
+  assert.equal(phone.deliverMorning(), 1, `${id}: later chapters still deliver`);
+}
+
 // #1178 CH2-TF-02/03: 実データの日数指定LIMEを章内日で配信する。
 for (const [id, sender, due] of [
   ["lime_ageha_day3", "ageha", 3],
@@ -635,6 +717,27 @@ console.log("[1178 CH2-TF-02/03] PASS actual messages/local days/contacts/chapte
   assert.equal(state.inbox.filter(i => i.id === "lime_ch2_ageha_after_visit").length, 1);
 }
 console.log("[1210] PASS ageha after-visit precedes day3; day3 arrives the next morning");
+
+// #3081: 白いクマの席を読み終えた旗の朝。連絡先があるときだけ、章を問わず一度
+{
+  const seat = allMessages.find(m => m.id === "lime_ageha_bear_seat");
+  assert(seat && seat.trigger_flag === "_ageha_bear_seat_done");
+  const deliver = (overrides) => {
+    reset({ contacts: ["ageha"], flags: { _ageha_bear_seat_done: true }, ...overrides });
+    db.lime = [seat];
+    return phone.deliverMorning();
+  };
+  assert.equal(deliver({ chapter: 2, day: 20, flags: { _ch2_day1: { startDay: 15 }, _ageha_bear_seat_done: true } }), 1);
+  assert.equal(state.inbox[0].msg.sender, "ageha");
+  assert.equal(phone.deliverMorning(), 0, "unread buffer does not duplicate the seat message");
+  assert.equal(deliver({ chapter: 2, day: 20, contacts: [], flags: { _ch2_day1: { startDay: 15 }, _ageha_bear_seat_done: true } }), 0);
+  assert.equal(deliver({ chapter: 2, day: 20, flags: { _ch2_day1: { startDay: 15 } } }), 0);
+  assert.equal(deliver({ chapter: 1, day: 6, flags: { _ageha_bear_seat_done: true } }), 0);
+  assert.equal(deliver({ chapter: 4, day: 40, flags: { _ageha_bear_seat_done: true } }), 1);
+  state.inbox[0].read = true; state.inbox[0].done = true; state.limeRead.push(seat.id);
+  assert.equal(phone.deliverMorning(), 0, "the seat message is once");
+}
+console.log("[3081] PASS ageha bear-seat LIME");
 
 // #782: 追加候補も本番の連絡先/未読/1話題/一度きり/最大3通の制御を通す。
 db.friends = JSON.parse(await fs.readFile(new URL("data/friends.json", root), "utf8"));
@@ -958,3 +1061,59 @@ for (const chapter of [1, 2, 3, 4, 5, 6, "1", "2", undefined, null, 0, false, Na
     }
 }
 console.log("PASS #2035 phone chapter features", { chapterGateCases });
+
+// L01–L43 / ヌールの友情着地でも LIME を交換する。恋愛稿は友情ルートに届かない。
+{
+  const afterSunset = allMessages.find(m => m.id === "lime_noor_after_sunset");
+  const firstFriend = allMessages.find(m => m.id === "L29");
+  const romanceChat = allMessages.find(m => m.id === "L26");
+  const firstVolk = allMessages.find(m => m.id === "L01");
+  const volkHeart = allMessages.find(m => m.id === "L04");
+  assert(firstFriend && romanceChat && firstVolk && volkHeart);
+  assert.equal(afterSunset.route, "romance");
+  assert.equal(firstFriend.route, "friend");
+  assert.equal(romanceChat.route, "romance");
+  for (let n = 1; n <= 43; n++) {
+    const id = `L${String(n).padStart(2, "0")}`;
+    assert(allMessages.some(m => m.id === id), id);
+  }
+
+  const setup = (id, overrides = {}) => {
+    const message = allMessages.find(m => m.id === id);
+    reset({ chapter: 4, day: 12, contacts: [message.sender], flags: {}, finales: {}, levels: {}, ...overrides });
+    db.lime = [message];
+    return message;
+  };
+
+  setup("lime_noor_after_sunset", { contacts: ["noor"], flags: { _lime_contact_noor: true } });
+  assert.equal(phone.deliverMorning(), 1, "after_sunset: romance exchange still delivers");
+
+  setup("lime_noor_after_sunset", { contacts: ["noor"], flags: { _lime_contact_noor: true, _friend_noor: true } });
+  assert.equal(phone.deliverMorning(), 0, "after_sunset: friend landing does not deliver the romance thread");
+
+  setup("lime_noor_after_sunset", { contacts: ["noor"], flags: { _lime_contact_noor: true }, finales: { noor: { route: "friend" } } });
+  assert.equal(phone.deliverMorning(), 0, "after_sunset: finale friend route does not deliver the romance thread");
+
+  setup("L26", { contacts: ["noor"], flags: { _lime_contact_noor: true } });
+  assert.equal(phone.deliverMorning(), 1, "L26: romance chat after accepted confession");
+  setup("L26", { contacts: ["noor"], flags: { _lime_contact_noor: true, _friend_noor: true } });
+  assert.equal(phone.deliverMorning(), 0, "L26: hidden on the friend route");
+
+  setup("L29", { contacts: ["noor"], flags: { _lime_contact_noor: true, _friend_noor: true } });
+  assert.equal(phone.deliverMorning(), 1, "L29: friend chat after friend landing and exchange");
+  assert.equal(state.inbox[0].id, "L29");
+  setup("L29", { contacts: ["noor"], flags: { _lime_contact_noor: true } });
+  assert.equal(phone.deliverMorning(), 0, "L29: not delivered on the romance path");
+  setup("L29", { contacts: [], flags: { _friend_noor: true } });
+  assert.equal(phone.deliverMorning(), 0, "L29: contact still required");
+  setup("L29", { contacts: ["noor"], flags: { _lime_contact_noor: true, _friend_noor: true }, lovers: ["noor"] });
+  assert.equal(phone.deliverMorning(), 0, "L29: not delivered to a lover");
+
+  setup("L01", { contacts: ["volk"], flags: { _lime_contact_volk: true } });
+  assert.equal(phone.deliverMorning(), 1, "L01: delivers after volk exchange");
+  setup("L01", { contacts: [], flags: { _lime_contact_volk: true } });
+  assert.equal(phone.deliverMorning(), 0, "L01: contact required");
+  assert.equal(volkHeart.trigger_condition, "affinity_level");
+  assert.equal(volkHeart.trigger_value, 3);
+}
+console.log("PASS L01-L43 noor friend lime hook");

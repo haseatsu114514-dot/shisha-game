@@ -10,6 +10,34 @@
   ],
   "suites": [
     {
+      "id": "stage-fit-3173",
+      "title": "Visual viewport stage fit updates after browser chrome and rotation",
+      "kind": "quick",
+      "run": ["node remake/test/stage_fit_3173.mjs"]
+    },
+    {
+      "id": "chapter-poems",
+      "title": "巻頭ポエムの台本・仕様・章タイトル直前の接続",
+      "kind": "quick",
+      "run": ["node remake/test/chapter_poems.mjs"]
+    },
+    {
+      "id": "chapter-poems-browser",
+      "title": "巻頭ポエムの表示順・操作・再開",
+      "kind": "browser",
+      "weight": 2,
+      "timeout": 10,
+      "paths": [
+        "brand/chant_poems.md",
+        "data/dialogue/chapter_poems.json",
+        "remake/css/motions/chapter-poem.css",
+        "remake/img/ui/poems/",
+        "remake/js/scenes/chapter-poem.js",
+        "remake/test/browser/chapter_poems.mjs"
+      ],
+      "run": ["node remake/test/browser/chapter_poems.mjs"]
+    },
+    {
       "id": "bgm-readiness-browser",
       "title": "BGM waits for real media readiness and reuses the prepared player",
       "kind": "browser",
@@ -237,7 +265,13 @@
       "id": "growth-levelup",
       "title": "Growth EXP, night level-up and hidane behind GROWTH_BOARD",
       "kind": "quick",
-      "run": ["node remake/test/growth_levelup.mjs", "node remake/test/growth_board.mjs", "node --experimental-vm-modules remake/test/slot_exp.mjs", "node --experimental-vm-modules remake/test/kannon_growth.mjs", "node remake/test/growth_effects.mjs", "node --experimental-vm-modules remake/test/growth_chapter_rewards.mjs", "node --experimental-vm-modules remake/test/growth_board_screen.mjs", "node remake/test/growth_chapter_notice.mjs"]
+      "run": ["node remake/test/growth_levelup.mjs", "node remake/test/growth_board.mjs", "node --experimental-vm-modules remake/test/slot_exp.mjs", "node --experimental-vm-modules remake/test/kannon_growth.mjs", "node remake/test/growth_effects.mjs", "node --experimental-vm-modules remake/test/growth_chapter_rewards.mjs", "node --experimental-vm-modules remake/test/growth_board_screen.mjs", "node remake/test/growth_chapter_notice.mjs", "node remake/test/proto_hmd_mw9.mjs"]
+    },
+    {
+      "id": "growth-starter-accounting",
+      "title": "Starter fire accounting, cap, legacy saves, full board and NG+ (#3118)",
+      "kind": "quick",
+      "run": ["node remake/test/growth_starter_accounting.mjs"]
     },
     {
       "id": "vent-lid",
@@ -268,12 +302,6 @@
       "title": "Opening-poem panel template, frame detection, 16:3 fitting and delivery check",
       "kind": "quick",
       "run": ["python3 tools/poem_panel_cut.py selftest"]
-    },
-    {
-      "id": "chapter-poems",
-      "title": "Opening poems: dialogue data, document match and chapter-title wiring",
-      "kind": "quick",
-      "run": ["node remake/test/chapter_poems.mjs"]
     },
     {
       "id": "load-save-failure",
@@ -454,8 +482,10 @@
         "remake/js/daily/growth-board-screen.js",
         "remake/js/daily/reflection.js",
         "remake/js/core/growth.js",
+        "remake/js/core/growth-starter.js",
         "remake/test/browser/board_tutorial.mjs",
-        "remake/test/browser/support.mjs"
+        "remake/test/browser/support.mjs",
+        "remake/css/wide-screens.css"
       ],
       "run": [
         "node remake/test/browser/board_tutorial.mjs"
@@ -549,6 +579,7 @@
       "weight": 1.5,
       "timeout": 5,
       "paths": [
+        "remake/js/core/stage-fit.js",
         "remake/js/minigames/desert-ride.js",
         "remake/js/minigames/desert-ride-model.js",
         "remake/js/minigames/desert-ride-art.js",
@@ -565,6 +596,21 @@
         "remake/test/browser/desert_ride.mjs"
       ],
       "run": ["node remake/test/browser/desert_ride.mjs"]
+    },
+    {
+      "id": "minigame-bgm-input",
+      "title": "DESERT RIDE practice-to-run steering and standalone minigame BGM startup/retry",
+      "kind": "browser",
+      "weight": 0.3,
+      "timeout": 3,
+      "paths": [
+        "remake/js/core/audio.js",
+        "remake/js/core/data.js",
+        "remake/js/minigames/desert-ride.js",
+        "remake/js/minigames/camel-race.js",
+        "remake/test/browser/minigame_bgm_input.mjs"
+      ],
+      "run": ["node remake/test/browser/minigame_bgm_input.mjs"]
     },
     {
       "id": "title-art-met",
@@ -764,12 +810,14 @@
         "node --experimental-vm-modules remake/test/ch4_progress.mjs",
         "node --experimental-vm-modules remake/test/ch4_rewards.mjs",
         "node remake/test/camel_race_model.mjs",
+        "node remake/test/camel_race_feedback.mjs",
         "node remake/test/ch4_camel_race.mjs",
         "node remake/test/ch4_dubai_cafe.mjs",
         "node --experimental-vm-modules remake/test/ch4_dubai_new_talks.mjs",
         "node remake/test/ch4_dubai_local.mjs",
         "node remake/test/ch4_inn_trial.mjs",
         "node remake/test/ch4_longlong.mjs",
+        "node remake/test/affection_fill.mjs",
         "node --experimental-vm-modules remake/test/ch5_progress.mjs",
         "node remake/test/ch5_party.mjs",
         "node remake/test/ch5_travel.mjs",
@@ -838,6 +886,18 @@
       ]
     },
     {
+      "id": "minto-story-visits",
+      "title": "Minto side seat and quiet hello, once each after her visit sequence (#3081)",
+      "kind": "quick",
+      "run": ["node --experimental-vm-modules remake/test/minto_story_visits.mjs"]
+    },
+    {
+      "id": "minto-later-visits",
+      "title": "Minto timer handoff and unposted cheki, once each after her visit sequence (#3081)",
+      "kind": "quick",
+      "run": ["node --experimental-vm-modules remake/test/minto_later_visits.mjs"]
+    },
+    {
       "id": "game-logic",
       "title": "Game logic without a browser",
       "kind": "quick",
@@ -870,6 +930,7 @@
         "node --experimental-vm-modules remake/test/craft_fx.mjs",
         "node --experimental-vm-modules remake/test/craft_rival_windows.mjs",
         "node remake/test/mix_temperature.mjs",
+        "node remake/test/packing_temperature.mjs",
         "node remake/test/steam_temperature.mjs",
         "node remake/test/flavor_life.mjs",
         "node remake/test/leaf_carry.mjs",
@@ -896,10 +957,14 @@
         "node --experimental-vm-modules remake/test/tournament_vote_progression.mjs",
         "node --experimental-vm-modules remake/test/tournament_sequence.mjs",
         "node --test remake/test/trpg.mjs",
+        "node --test remake/test/trpg_face_scale.mjs",
         "node --test remake/test/trpg_feedback.mjs",
         "node --test remake/test/trpg_d20.mjs",
         "node --experimental-vm-modules --test remake/test/trpg_table_view.mjs",
+        "node remake/test/trpg_audio_cues.mjs",
+        "node --experimental-vm-modules remake/test/trpg_audio_bgm.mjs",
         "node --test remake/test/trpg_campaign.mjs",
+        "node --test remake/test/trpg_club_event.mjs",
         "node --experimental-vm-modules remake/test/trpg_campaign_save.mjs",
         "node tools/validate_trpg_scenario.mjs",
         "node --test remake/test/playthrough-plan.test.mjs remake/test/playthrough-shopping.test.mjs",
@@ -933,7 +998,10 @@
       "kind": "quick",
       "run": [
         "node --experimental-vm-modules remake/test/recorded_se.mjs",
+        "node --experimental-vm-modules remake/test/minigame_se.mjs",
+        "node --experimental-vm-modules remake/test/story_audio.mjs",
         "node --experimental-vm-modules remake/test/entry_phone_audio.mjs",
+        "node --experimental-vm-modules remake/test/growth_board_audio.mjs",
         "node --experimental-vm-modules remake/test/continue_audio.mjs",
         "node --experimental-vm-modules remake/test/title_audio_entry.mjs",
         "node --experimental-vm-modules remake/test/continue_context.mjs",
@@ -941,6 +1009,7 @@
         "node --experimental-vm-modules remake/test/bgm_readiness.mjs",
         "node --experimental-vm-modules remake/test/bgm_tournament_wait.mjs",
         "node --experimental-vm-modules remake/test/bgm_packaged.mjs",
+    "node --experimental-vm-modules remake/test/camel_race_bgm.mjs",
         "node --experimental-vm-modules remake/test/bgm_packed_cache.mjs",
         "node --experimental-vm-modules remake/test/lime_lifecycle_833.mjs",
         "node --experimental-vm-modules remake/test/lime_fit_774.mjs",
@@ -948,7 +1017,8 @@
         "node --experimental-vm-modules remake/test/purikura_motion.mjs",
         "node remake/test/text_wrap.mjs --fixed-only",
         "node remake/test/natural_wrap.mjs",
-        "node remake/test/conversation_effects_marks.mjs"
+        "node remake/test/conversation_effects_marks.mjs",
+        "node remake/test/conversation_cutin.mjs"
       ]
     },
     {
@@ -1002,8 +1072,9 @@
       "title": "Axe throw on PC and touch",
       "kind": "browser",
       "weight": 10.5,
-      "timeout": 15,
+      "timeout": 25,
       "paths": [
+        "remake/js/core/stage-fit.js",
         "remake/js/minigames/**",
         "remake/js/axe-throw-page.js",
         "remake/axe-throw.html",
@@ -1023,7 +1094,8 @@
         "assets/ui/axe_throw/**",
         "remake/img/ui/axe_throw/**",
         "remake/img/backgrounds/bg_axe_lounge_night.webp",
-        "remake/test/browser/axe_bgm_788.mjs"
+        "remake/test/browser/axe_bgm_788.mjs",
+        "remake/test/browser/axe_audio_performance.mjs"
       ],
       "run": [
         "COMPARISON_DIR=.codex/artifacts/remake-browser/axe-poses node remake/test/browser/axe_throw.mjs",
@@ -1031,7 +1103,8 @@
         "COMPARISON_DIR=.codex/artifacts/remake-browser/axe-polish-poses node remake/test/browser/axe_polish.mjs",
         "COMPARISON_DIR=.codex/artifacts/remake-browser/axe-lesson-poses node remake/test/browser/axe_lesson.mjs",
         "node remake/test/browser/axe_menu_decor.mjs",
-        "node remake/test/browser/axe_bgm_788.mjs"
+        "node remake/test/browser/axe_bgm_788.mjs",
+        "node remake/test/browser/axe_audio_performance.mjs"
       ]
     },
     {
@@ -1147,6 +1220,7 @@
       "weight": 1,
       "timeout": 15,
       "paths": [
+        "remake/js/core/stage-fit.js",
         "remake/js/craft/water-pour*.js",
         "remake/css/craft-water-pour.css",
         "remake/js/craft/preview.js",
@@ -1500,12 +1574,30 @@
       ]
     },
     {
+      "id": "ch4-camel-feedback",
+      "title": "ラクダレースの判定表示・スタミナ予告・加速（観客ティッカーなし）",
+      "kind": "browser",
+      "weight": 1,
+      "timeout": 5,
+      "paths": [
+        "remake/js/minigames/camel-race.js",
+        "remake/camel-race.html",
+        "remake/js/minigames/camel-race-feedback.js",
+        "remake/js/minigames/camel-race-model.js",
+        "remake/css/camel-race.css",
+        "remake/test/browser/camel_stamina_feedback.mjs",
+        "remake/test/browser/camel_judge_feedback.mjs"
+      ],
+      "run": ["node remake/test/browser/camel_judge_feedback.mjs", "node remake/test/browser/camel_stamina_feedback.mjs"]
+    },
+    {
       "id": "ch4-camel-race",
       "title": "Chapter 4 camel race in the real UI (legacy 5-day map and the 14-day daily map): meet, invite, watch, race, record, save/load, replay, one daytime slot; hold-to-whip controls on the standalone page",
       "kind": "browser",
       "weight": 2,
       "timeout": 8,
       "paths": [
+        "remake/js/core/stage-fit.js",
         "remake/js/minigames/camel-race.js",
         "remake/js/minigames/camel-race-model.js",
         "remake/js/chapters/ch4-camel-race.js",
@@ -1875,11 +1967,28 @@
         "remake/js/minigames/tetsuko-theme.js",
         "remake/js/minigames/tetsuko-help.js",
         "remake/js/minigames/tetsuko-time.js",
+        "remake/js/minigames/tetsuko-model.js",
         "remake/css/tetsuko-theme.css",
         "remake/css/tetsuko-time.css",
         "remake/test/browser/tetsuko_theme.mjs"
       ],
       "run": ["node remake/test/browser/tetsuko_theme.mjs"]
+    },
+    {
+      "id": "tetsuko-feel",
+      "title": "Tetsuko Time feel: her wish bubble, petting zones, pounce and catch, the joy hearts and their peak, and just watching counts (spec section 10)",
+      "kind": "browser",
+      "weight": 0.2,
+      "timeout": 3,
+      "paths": [
+        "remake/js/minigames/tetsuko-time.js",
+        "remake/js/minigames/tetsuko-model.js",
+        "remake/js/minigames/tetsuko-help.js",
+        "remake/css/tetsuko-time.css",
+        "remake/css/tetsuko-theme.css",
+        "remake/test/browser/tetsuko_feel.mjs"
+      ],
+      "run": ["node remake/test/browser/tetsuko_feel.mjs"]
     },
     {
       "id": "ch3-full-flow",
@@ -1984,24 +2093,6 @@
         "ARTIFACT_DIR=.codex/artifacts/chapter-titles node remake/test/browser/chapter_titles.mjs",
         "ARTIFACT_DIR=.codex/artifacts/ch1-title-motion node remake/test/browser/ch1_title_motion.mjs"
       ]
-    },
-    {
-      "id": "chapter-poems-browser",
-      "title": "Opening poems play after the title screen and each chapter title, once",
-      "kind": "browser",
-      "weight": 2,
-      "timeout": 6,
-      "paths": [
-        "remake/js/scenes/chapter-poem.js",
-        "remake/css/motions/chapter-poem.css",
-        "remake/img/ui/poems/**",
-        "remake/js/chapters/ch1.js",
-        "remake/js/chapters/ch2.js",
-        "remake/js/core/data.js",
-        "data/dialogue/chapter_poems.json",
-        "remake/test/browser/chapter_poems.mjs"
-      ],
-      "run": ["ARTIFACT_DIR=.codex/artifacts/chapter-poems node remake/test/browser/chapter_poems.mjs"]
     },
     {
       "id": "craft-scenes",
@@ -2182,6 +2273,28 @@
       "sparse": [
         "/docs/qa/issue508-theme/"
       ]
+    },
+    {
+      "id": "step-intro",
+      "title": "Step intro (choice steps explain first, #3028)",
+      "kind": "browser",
+      "weight": 1,
+      "timeout": 5,
+      "paths": [
+        "remake/js/craft/session.js",
+        "remake/js/craft/steps.js",
+        "remake/js/craft/timer.js",
+        "remake/js/craft/bench-ui.js",
+        "remake/test/browser/step_intro.mjs",
+        "remake/test/browser/support.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/step_intro.mjs"
+      ],
+      "env": {
+        "ARTIFACT_DIR": ".codex/artifacts/remake-browser/step-intro"
+      },
+      "chrome": "playwright"
     },
     {
       "id": "steam-forecast",
@@ -2450,6 +2563,18 @@
       "pillow": true
     },
     {
+      "id": "newgame-font-wait",
+      "title": "New game opens while conversation font is stalled",
+      "kind": "browser",
+      "weight": 0.3,
+      "timeout": 5,
+      "paths": [
+        "remake/js/core/vn-fonts.js",
+        "remake/test/browser/newgame_font_wait.mjs"
+      ],
+      "run": ["node remake/test/browser/newgame_font_wait.mjs"]
+    },
+    {
       "id": "ch1-loading",
       "title": "Chapter 1 loading, playtest fixes and early contacts",
       "kind": "browser",
@@ -2586,9 +2711,13 @@
         "remake/test/thermal_background.mjs",
         "remake/test/pull_draw.mjs",
         "remake/test/craft_focus.mjs",
-        "remake/test/browser/mix_temperature.mjs"
+        "remake/test/browser/mix_temperature.mjs",
+        "remake/css/craft-landscape.css",
+        "remake/test/packing_temperature.mjs",
+        "remake/test/browser/packing_temperature.mjs"
       ],
       "run": [
+        "node remake/test/browser/packing_temperature.mjs",
         "node remake/test/browser/mix_temperature.mjs",
         "SHOTS=.codex/artifacts/remake-browser/temperature-regressions node remake/test/thermal_background.mjs",
         "SHOTS=.codex/artifacts/remake-browser/temperature-regressions node remake/test/pull_draw.mjs",
@@ -2711,7 +2840,10 @@
         "remake/test/natural_wrap*",
         "remake/test/browser/natural_wrap.mjs",
         "tools/check_changed_dialogue_layout.mjs",
-        "remake/test/choice_oneline.mjs"
+        "remake/test/choice_oneline.mjs",
+        "data/lime_messages.json",
+        "remake/data/lover.json",
+        "remake/data/friends.json"
       ],
       "run": [
         "PLAYWRIGHT_MODULE=\"$PWD/remake/test/browser/node_modules/playwright\" node remake/test/browser/natural_wrap.mjs",
@@ -2851,6 +2983,15 @@
       "timeout": 5,
       "paths": ["remake/js/scenes/game-layout.js", "remake/css/game-ds.css", "remake/test/browser/portrait_shop_fallback.mjs"],
       "run": ["node remake/test/browser/portrait_shop_fallback.mjs"]
+    },
+    {
+      "id": "no-zoom-landscape-only",
+      "title": "縦持ちはタイトルから回転案内のみ・ダブルタップ拡大の抑止",
+      "kind": "browser",
+      "weight": 1,
+      "timeout": 5,
+      "paths": ["remake/js/core/no-zoom.js", "remake/css/base.css", "remake/test/browser/no_zoom.mjs"],
+      "run": ["node remake/test/browser/no_zoom.mjs"]
     },
     {
       "id": "adam-eden",
@@ -3088,7 +3229,8 @@
         "remake/js/scenes/save-transfer.js",
         "remake/test/browser/save_transfer.mjs",
         "remake/js/chapters/ch2*.js",
-        "remake/js/chapters/ch3*.js"
+        "remake/js/chapters/ch3*.js",
+        "remake/css/wide-screens.css"
       ],
       "run": [
         "node remake/test/browser/save_load.mjs",
@@ -3113,7 +3255,8 @@
         "remake/test/browser/home_shisha.mjs",
         "remake/test/browser/home_practice_leaves.mjs",
         "remake/js/daily/practice*.js",
-        "remake/test/ui_polish.mjs"
+        "remake/test/ui_polish.mjs",
+        "remake/css/wide-screens.css"
       ],
       "run": [
         "node remake/test/browser/title_layout.mjs",
@@ -3232,7 +3375,8 @@
         "remake/js/daily/facility-icons.js",
         "remake/css/facility-icons.css",
         "remake/facility-icons-preview.html",
-        "assets/ui/map-facilities-*.webp"
+        "assets/ui/map-facilities-*.webp",
+        "remake/css/wide-screens.css"
       ],
       "run": [
         "node remake/test/store_logos.mjs",
@@ -3250,8 +3394,18 @@
       "chrome": "playwright"
     },
     {
+      "id": "phone-layout-1110",
+      "title": "横持ち Safari のマップと制作共通殻の重なり・文字・操作域",
+      "kind": "browser",
+      "weight": 1,
+      "timeout": 3,
+      "paths": ["remake/css/phone-layout.css", "remake/index.html", "remake/craft-preview.html", "remake/test/browser/phone_layout_1110.mjs"],
+      "run": ["node remake/test/browser/phone_layout_1110.mjs"],
+      "chrome": "playwright"
+    },
+    {
       "id": "phone-density",
-      "title": "Phone density standard on landscape touch: common parts keep real text >= 11px and taps >= 38px; desktop unchanged (#2851)",
+      "title": "Phone density standard on landscape touch: common parts keep real text >= 11px and taps >= 38px; edge parts stay outside a simulated notch; desktop unchanged (#2851, #3001)",
       "kind": "browser",
       "weight": 1,
       "timeout": 3,
@@ -3263,7 +3417,11 @@
         "remake/css/ui-paper.css",
         "remake/js/main.js",
         "remake/js/daily/hud.js",
-        "remake/test/browser/phone_density.mjs"
+        "remake/test/browser/phone_density.mjs",
+        "remake/css/wide-screens.css",
+        "remake/css/base.css",
+        "remake/css/shop.css",
+        "remake/css/daily-menu.css"
       ],
       "run": ["node remake/test/browser/phone_density.mjs"],
       "chrome": "playwright"
@@ -3280,7 +3438,8 @@
         "remake/js/scenes/title.js",
         "remake/js/chapters/ch1.js",
         "remake/js/chapters/ch2-tournament.js",
-        "remake/test/browser/hud_visibility_2190.mjs"
+        "remake/test/browser/hud_visibility_2190.mjs",
+        "remake/css/wide-screens.css"
       ],
       "run": ["node remake/test/browser/hud_visibility_2190.mjs"],
       "chrome": "playwright"
@@ -3297,7 +3456,8 @@
         "remake/js/daily/status.js",
         "remake/css/daily-menu.css",
         "remake/img/ui/paper/menu-bg.webp",
-        "remake/test/browser/daily_menu.mjs"
+        "remake/test/browser/daily_menu.mjs",
+        "remake/css/wide-screens.css"
       ],
       "run": ["node remake/test/browser/daily_menu.mjs"],
       "chrome": "playwright"
@@ -3326,7 +3486,8 @@
         "remake/css/ui-art.css",
         "remake/test/browser/fortune_readings.mjs",
         "remake/test/playtest_ui.mjs",
-        "remake/test/ui_skin.mjs"
+        "remake/test/ui_skin.mjs",
+        "remake/css/wide-screens.css"
       ],
       "run": [
         "node remake/test/fortune_readings.mjs",
@@ -3830,6 +3991,33 @@
       "timeout": 10
     },
     {
+      "id": "intro-wide-3012",
+      "title": "Wide character introduction band coverage",
+      "kind": "browser",
+      "weight": 0.5,
+      "timeout": 2,
+      "paths": ["remake/css/intro.css", "remake/test/browser/intro_wide_3012.mjs"],
+      "run": ["node remake/test/browser/intro_wide_3012.mjs"]
+    },
+    {
+      "id": "stage-fit-3035",
+      "title": "Fixed 1280x720 stage fit with blurred backdrop margins",
+      "kind": "browser",
+      "weight": 0.5,
+      "timeout": 3,
+      "paths": ["remake/js/core/stage-fit.js", "remake/js/main.js", "remake/js/core/ui.js", "remake/css/base.css", "remake/test/browser/stage_fit.mjs"],
+      "run": ["node remake/test/browser/stage_fit.mjs"]
+    },
+    {
+      "id": "trial-stage-fit-3076",
+      "title": "Trial pages (camel race, axe throw, desert ride, craft preview) use the fixed 1280x720 stage fit with blurred backdrop",
+      "kind": "browser",
+      "weight": 1,
+      "timeout": 5,
+      "paths": ["remake/js/core/stage-fit.js", "remake/js/main.js", "remake/js/core/ui.js", "remake/camel-race.html", "remake/js/camel-race-page.js", "remake/css/camel-race.css", "remake/axe-throw.html", "remake/js/axe-throw-page.js", "remake/css/axe-throw.css", "remake/js/minigames/axe.js", "remake/desert-ride.html", "remake/js/desert-ride-page.js", "remake/craft-preview.html", "remake/js/craft/preview.js", "remake/test/browser/trial_stage_fit.mjs"],
+      "run": ["node remake/test/browser/trial_stage_fit.mjs"]
+    },
+    {
       "id": "recent-intros",
       "title": "New cast introduction artwork and first-encounter state",
       "kind": "browser",
@@ -3837,6 +4025,7 @@
       "timeout": 6,
       "paths": [
         "remake/test/browser/recent_intros.mjs",
+        "remake/test/browser/salaryman_intro.mjs",
         "remake/js/vn/intro*.js",
         "remake/css/intro.css",
         "remake/data/manifest.json",
@@ -3848,6 +4037,7 @@
       ],
       "run": [
         "node remake/test/browser/recent_intros.mjs",
+        "node remake/test/browser/salaryman_intro.mjs",
         "node remake/test/intro_art.mjs",
         "node remake/test/intro_cutin.mjs"
       ],
@@ -3897,6 +4087,15 @@
       "timeout": 4,
       "paths": ["remake/js/vn/engine.js", "remake/js/vn/text.js", "remake/js/core/audio.js", "remake/css/vn.css", "remake/test/browser/conversation_effects_2828.mjs"],
       "run": ["node remake/test/browser/conversation_effects_2828.mjs"]
+    },
+    {
+      "id": "conversation-cutin",
+      "title": "Conversation cut-ins in the main VN engine (#2990): adopted placements, enter/leave, SKIP/LOG",
+      "kind": "browser",
+      "weight": 0.5,
+      "timeout": 4,
+      "paths": ["remake/js/vn/engine.js", "remake/js/vn/conversation-cutin.js", "remake/css/vn/conversation-cutin.css", "remake/test/browser/conversation_cutin_2990.mjs"],
+      "run": ["node remake/test/browser/conversation_cutin_2990.mjs"]
     },
     {
       "id": "flavor-expression",
@@ -4211,5 +4410,8 @@
     }
   ]
 }
+
+
+
 
 

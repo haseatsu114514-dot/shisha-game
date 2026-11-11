@@ -1,7 +1,10 @@
 // 起動: ステージの拡縮 → データ読込 → タイトル。
+import { installNoZoom } from "./core/no-zoom.js";
 import { installDoubleTapGuard } from "./core/double-tap-guard.js";
 import { TOURNAMENT_DAY } from "./core/rules.js";
 import { $, sleep } from "./core/util.js";
+import { initStageFit } from "./core/stage-fit.js";
+import { initCraftStage } from "./craft/stage-layout.js";
 import { loadAll, loadDeferredDialogues, loadCinemaDialogue, loadTournamentCraftDialogue, DB, bgUrl, portraitInfo, makingUrl } from "./core/data.js";
 import { loadVnFonts } from "./core/vn-fonts.js";
 import { initLayers, imageReady, FRAME_ART, warmUiArt } from "./core/ui.js";
@@ -22,51 +25,19 @@ import { isNormalTitleForced } from "./scenes/title-layout.js";
 import { initGameLayout } from "./scenes/game-layout.js";
 import { resumeGame } from "./chapters/ch1.js";
 import { setGrowthPreview, growthEnabled, gainExp, ensureGrowth, openGrowthBoard } from "./core/growth.js";
-installDoubleTapGuard(); // ダブルタップ拡大の保険（#2852）。#2872 の no-zoom.js があればそちらに任せる
+installNoZoom(); // ダブルタップによる拡大を止める（#2826。ピンチは禁止しない）
+installDoubleTapGuard(); // ダブルタップ拡大の保険（#2852）。no-zoom が入っていれば __suienNoZoom を見て自動で何もしない
 enableSeenLinePersistence(); // 既読SKIPの記録は本編でだけ端末に残す
 // デバッグ用の道具（URL に ?debug=1 で左下に「DBG」・?debug=0 で消す。速さ・シーシャ作りの自動など）。
 // リリース前に、この1行と remake/js/dev/ のフォルダを消す（remake/README.md「デバッグ用の道具」）
 try { const q = new URLSearchParams(location.search).get("debug"); if (q !== null) localStorage.setItem("suien_debug", q === "1" ? "1" : "0"); if (localStorage.getItem("suien_debug") === "1") import("./dev/debug-panel.js").then(m => m.mountDebugPanel()).catch(e => console.error(e)); } catch {}
 
-const PHONE_DENSITY_K = 0.62;
-function fitStage() {
-  const stage = $("#stage");
-  const viewport = window.visualViewport;
-  // Browser zoom shrinks visualViewport in CSS pixels. Normalize that zoom out
-  // of the game fit so it does not also change --k (or cancel accessible zoom).
-  // Keep following the visible height when browser chrome / the keyboard moves.
-  const zoom = viewport?.scale || 1;
-  const w = viewport ? viewport.width * zoom : window.innerWidth;
-  const h = viewport ? viewport.height * zoom : window.innerHeight;
-  const k = Math.min(w / 1280, h / 720);
-  stage.style.setProperty("--k", String(k));
-  // スマホ規格（#2851）: 横持ちスマホ（Plus/Pro Max の 0.60 も含む）で共通部品の文字・タップ部品を大きくする。css/phone-density.css
-  // 横長の画面だけ（PC の縦長ウィンドウや縦持ちは対象外。縦持ちのスマホは横向きの案内になる）
-  if (k < PHONE_DENSITY_K && w > h) document.documentElement.dataset.density = "phone";
-  else delete document.documentElement.dataset.density;
-  // ワイドステージ（#2861）: 横長の画面では黒帯ぶんだけステージを広げる（高さは720のまま・最大1600）。
-  // 中身の層は中央1280に置いたまま、背景と端へ出す部品だけが広がった幅を使う（base.css）。
-  const stageW = Math.min(1600, Math.max(1280, Math.floor((w / h) * 720)));
-  if (stageW > 1280) {
-    stage.style.setProperty("--stage-w", `${stageW}px`);
-    // 広げてもまだ残る黒帯（画面px）。safe-area のうち黒帯で吸収できない分だけ端の部品を内側へ寄せる
-    stage.style.setProperty("--stage-bar", `${Math.max(0, (w - stageW * k) / 2)}px`);
-    stage.dataset.wide = "";
-  } else {
-    stage.style.removeProperty("--stage-w");
-    stage.style.removeProperty("--stage-bar");
-    delete stage.dataset.wide;
-  }
-}
-
 export async function boot() {
-  fitStage();
-  window.addEventListener("resize", fitStage);
-  window.addEventListener("orientationchange", () => setTimeout(fitStage, 200));
-  window.visualViewport?.addEventListener("resize", fitStage);
+  initStageFit($("#stage")); // 画面の当て方は共通部品（core/stage-fit.js・#3076）
   installRotateGuard(); // 縦持ちの回転ガード中は、制作の時計と音を止める（#2941）
   initLayers();
   initGameLayout();
+  initCraftStage(); // シーシャ作りの新しい配置（?craftStage=1 で入・CSL）
   const cfg = loadConfig();
   applyUiTheme(cfg.uiTheme);
   // 設定「揺れ・閃光を減らす」を CSS からも見えるようにする（場面の演出の閃光を省く・#2688 F11）

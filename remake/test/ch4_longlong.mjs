@@ -7,7 +7,7 @@ import { readFileSync } from "node:fs";
 import { newState, setState } from "../js/core/state.js";
 import { gainAffinity, affinityLevel, visitAffinity } from "../js/core/stats.js";
 import { LONGLONG_VISIT_STORIES, pendingAffinityStage } from "../js/core/affinity-stages.js";
-import { LONGLONG_FLAG, LONGLONG_CHAR, LONGLONG_TALKS, LONGLONG_IDS, LONGLONG_BG, longlongRecord, nextLonglongVisit,
+import { LONGLONG_FLAG, LONGLONG_CHAR, LONGLONG_TALKS, LONGLONG_IDS, LONGLONG_LOAD_IDS, LONGLONG_FINALE, LONGLONG_BG, longlongRecord, nextLonglongVisit,
   longlongHasNew, longlongStoriesDone, recordLonglongVisit } from "../js/chapters/ch4-longlong.js";
 import { classifyFlag, flagVerdict } from "../js/core/carry.js";
 import { CHAR_TYPE } from "../js/core/growth-board-data.js";
@@ -25,8 +25,11 @@ const linesOf = d => [...(d.lines || []), ...Object.values(d.branches || {}).fla
 assert.deepEqual(LONGLONG_VISIT_STORIES.map(e => [e.scene, e.heart]), [
   ["ch4_longlong_first", 0], ["ch4_longlong_second", 1], ["ch4_longlong_third", 2], ["ch4_longlong_fourth", 3], ["ch4_longlong_fifth", 4]]);
 assert.deepEqual([...LONGLONG_IDS], [...LONGLONG_VISIT_STORIES.map(e => e.scene), ...LONGLONG_TALKS]);
+assert.deepEqual([...LONGLONG_LOAD_IDS], [...LONGLONG_IDS, LONGLONG_FINALE]);
 assert.equal(LONGLONG_CHAR, "master_hookah");
-assert(manifest.backgrounds.includes(`${LONGLONG_BG}.png`), "the placeholder background exists");
+assert.equal(LONGLONG_BG, "bg_longlong_shop", "Longlong visits use the adopted shop interior");
+assert(manifest.backgrounds.includes(`${LONGLONG_BG}.png`), "shop background is registered");
+assert(manifest.webp.includes(`backgrounds/${LONGLONG_BG}.png`), "shop background uses the display WebP");
 const value = { day: 50, flags: {} };
 assert.deepEqual(longlongRecord(value), { read: {}, talks: 0 });
 assert.deepEqual(nextLonglongVisit(value, 0), { id: "ch4_longlong_first", kind: "story" });
@@ -110,9 +113,9 @@ assert.equal(tournamentFinished({ chapter: 4, phase: "aftermath" }, 4), true);
 assert.equal(tournamentFinished({ chapter: 5, phase: "daily" }, 4), true);
 assert.deepEqual(Object.keys(first.metadata.flavor_lesson), ["jasmine"]);
 for (const id of Object.keys(first.metadata.flavor_lesson)) assert(flavors.has(id));
-// 中国の水煙の話（水烟袋）。水の役割は「煙を冷やす」だけ（濾過・除去と言わない）。
+// 中国の水煙の話（水煙袋）。水の役割は「煙を冷やす」だけ（濾過・除去と言わない）。
 const pipe = shop.ch4_longlong_second.lines.map(line => line.text).join("");
-assert(pipe.includes("水烟袋") && pipe.includes("冷やす") && !/濾過|有害|除去/.test(pipe));
+assert(pipe.includes("水煙袋") && pipe.includes("冷やす") && !/濾過|有害|除去/.test(pipe));
 
 // ---- 前夜祭の面識の分岐（交流の時系列ルール）----------------------------------------------------
 const reception = main.ch4_wang_reception;
@@ -133,7 +136,11 @@ assert.deepEqual(reception.metadata, { forced_event: true, flavor_lesson: { lych
 const daily = read("../js/chapters/ch4-dubai-daily.js");
 assert.match(daily, /id: "ch4_dubai_longlong", place: "longlong", label: "龍龍水煙所"[^}]*x: 58, y: 50[^}]*face: LONGLONG_CHAR[^}]*cost: 6000, stamina: -12, stat: "insight"/,
   "龍龍水煙所は最初から地図に出て、一台6,000円（専門店）");
-assert.match(daily, /readDialogues\("ch4_longlong", LONGLONG_IDS\)/);
+assert.match(daily, /readDialogues\("ch4_longlong", LONGLONG_LOAD_IDS\)/);
+assert.match(daily, /finaleAtVisit\(LONGLONG_CHAR\)/);
+assert.match(daily, /playFinale\(LONGLONG_CHAR/);
+assert(shop[LONGLONG_FINALE]?.lines?.length, "♥5の締めくくりの台本がある");
+assert.equal(shop[LONGLONG_FINALE].metadata?.bond_finale, "master_hookah");
 assert.match(daily, /gainAffinity\(LONGLONG_CHAR, visitAffinity\(longlong\.kind === "story" \? "story" : "talk"\)\)/);
 assert.doesNotMatch(daily, /longlong: "master_hookah"|teacher.*longlong/, "授業（龍の煙）は大会後の会場の台詞なので、店では相談しない");
 // IR23: FESTA の太陽も、来店ごとに通いの小会話と同じ値（visitAffinity。第4章は +8）。♥5の授業（フェスタの煙）に届く

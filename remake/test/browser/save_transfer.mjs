@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { suite } from "./support.mjs";
 
 const SAVED = { day: 9, money: 31415, phase: "daily", slot: 1 };
-const KEYS = ["suien_remake_save", "suien_remake_slot1"];
+const KEYS = ["suien_remake_save", "suien_remake_slot1", "suien_remake_gallery", "suien_remake_gallery_progress", "suien_remake_cycle"];
 
 async function seed(page) {
   await page.evaluate(async (v) => {
@@ -11,6 +11,14 @@ async function seed(page) {
     const s = core.newGame();
     Object.assign(s, { phase: v.phase, day: v.day, slot: v.slot, money: v.money, seed: 77 });
     core.saveToSlot(core.SAVE_SLOTS[1].key);
+    localStorage.setItem("suien_remake_gallery", JSON.stringify(["cg_previous_cycle"]));
+    localStorage.setItem("suien_remake_gallery_progress", JSON.stringify({ completeAnnounced: false, clearedChapters: [1, 5],
+      keepsakes: ["minto_first_cheki"], purikura: [], routeRecords: {
+        tsumugi: { becameLover: true, eventsSeen: [1, "2b"], trueEndAsLover: true } } }));
+    localStorage.setItem("suien_remake_cycle", JSON.stringify({ version: 1, unlocked: true,
+      trueEnds: [{ cycleId: "previous", cycle: 1, at: "2026-11-10", loversAtEnd: ["tsumugi"] }],
+      highestCycleStarted: 2, carryPackage: { fromCycleId: "previous", fromCycle: 1, at: "2026-11-10", data: { money: 50000 } },
+      lifetime: { tournamentWins: 1, tournamentAttempts: 3 } }));
   }, SAVED);
 }
 const openConfig = async (page) => {
@@ -30,6 +38,29 @@ const assertSizes = async (page, selector) => {
 const iphone = "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1";
 
 await suite("save-transfer", async check => {
+  await check("retired-slots-are-ignored-on-transfer", async page => {
+    await seed(page);
+    const result = await page.evaluate(async () => {
+      const xfer = await import("./js/scenes/save-transfer.js");
+      const keys = ["suien_remake_slot2", "suien_remake_slot3"];
+      const old = keys.map((key, i) => JSON.stringify({ day: 2 + i, money: 100 + i }));
+      keys.forEach((key, i) => localStorage.setItem(key, old[i]));
+      const exported = xfer.exportSaveText();
+      const decode = text => JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(text.slice("SUIEN-SAVE2:".length)), c => c.charCodeAt(0))));
+      const packet = decode(exported);
+      packet.slots[keys[0]] = old[0]; packet.slots[keys[1]] = old[1];
+      const bytes = new TextEncoder().encode(JSON.stringify(packet));
+      const legacy = "SUIEN-SAVE2:" + btoa(String.fromCharCode(...bytes));
+      const parsed = xfer.parseSaveText(legacy);
+      if (!parsed || parsed.length !== 2 || !xfer.applySlots(parsed)) return null;
+      return { included: Object.keys(decode(exported).slots),
+        retired: keys.map(key => localStorage.getItem(key)), old };
+    });
+    assert(result);
+    assert.deepEqual(result.included.sort(), ["suien_remake_save", "suien_remake_slot1"]);
+    assert.deepEqual(result.retired, result.old);
+  });
+
   for (const [label, viewport] of [["844x390", { width: 844, height: 390 }], ["844x340", { width: 844, height: 340 }]]) {
     await check(`roundtrip-and-sizes-${label}`, async page => {
       await seed(page);
@@ -39,7 +70,7 @@ await suite("save-transfer", async check => {
       await page.locator('[data-test="save-export"]').click();
       await assertSizes(page, ".xfer-box .modal-actions button");
       const text = await page.locator('[data-test="export-text"]').inputValue();
-      assert.match(text, /^SUIEN-SAVE1:/);
+      assert.match(text, /^SUIEN-SAVE2:/);
       // 往復: 保存を空にしたプロファイルへ読み込むと、同じ内容で再開できる
       await page.locator('[data-test="export-close"]').click();
       await page.evaluate((keys) => keys.forEach(k => localStorage.removeItem(k)), KEYS);
@@ -110,6 +141,25 @@ await suite("save-transfer", async check => {
     assert.equal(await page.locator('[data-test="a2hs-help"]').count(), 0);
   });
 
+  // #3013: 同じボタンで全画面化／解除の両方ができ、表示名が実状態へ追随すること（Fullscreen API はスタブで切り替える）
+  await check("fullscreen-button-toggles", async page => {
+    await page.evaluate(() => {
+      let fs = null;
+      Object.defineProperty(document, "fullscreenElement", { get: () => fs, configurable: true });
+      document.documentElement.requestFullscreen = async () => { fs = document.documentElement; document.dispatchEvent(new Event("fullscreenchange")); };
+      document.exitFullscreen = async () => { fs = null; document.dispatchEvent(new Event("fullscreenchange")); };
+    });
+    await openConfig(page);
+    const btn = page.locator('[data-test="fullscreen"]');
+    assert.equal(await btn.textContent(), "全画面");
+    await btn.click();
+    await page.waitForFunction(() => document.querySelector('[data-test="fullscreen"]')?.textContent === "全画面を解除");
+    assert.equal(await page.evaluate(() => !!document.fullscreenElement), true);
+    await btn.click();
+    await page.waitForFunction(() => document.querySelector('[data-test="fullscreen"]')?.textContent === "全画面");
+    assert.equal(await page.evaluate(() => !!document.fullscreenElement), false);
+  });
+
   await check("manifest-is-linked-and-landscape", async page => {
     const href = await page.locator('link[rel="manifest"]').getAttribute("href");
     const m = await page.evaluate(async (h) => (await fetch(h)).json(), href);
@@ -120,3 +170,4 @@ await suite("save-transfer", async check => {
     assert.equal(await page.locator('link[rel="apple-touch-icon"]').count(), 1);
   });
 });
+

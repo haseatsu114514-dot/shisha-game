@@ -16,7 +16,7 @@ const FACE_URLS = ["img/faces/face_sumi.webp", "img/faces/face_naru.webp"];
   const source = await fs.readFile(new URL("../js/core/vn-fonts.js", import.meta.url), "utf8");
   const calls = [];
   let fail = false;
-  const context = vm.createContext({ document: { fonts: { load: (font, sample) => {
+  const context = vm.createContext({ setTimeout, clearTimeout, document: { fonts: { load: (font, sample) => {
     calls.push([font, sample]);
     return fail ? Promise.reject(new Error("font unavailable")) : Promise.resolve([]);
   } } } });
@@ -31,7 +31,7 @@ const FACE_URLS = ["img/faces/face_sumi.webp", "img/faces/face_naru.webp"];
   assert.deepEqual(calls.map(([font]) => font), ['700 20px "Suien Name"', '400 20px "Suien Blue Mincho"']);
   assert(calls.every(([, sample]) => /[一-龯ぁ-ん]/.test(sample)));
 
-  const retryContext = vm.createContext({ document: { fonts: { load: (font) => {
+  const retryContext = vm.createContext({ setTimeout, clearTimeout, document: { fonts: { load: (font) => {
     calls.push([font]);
     return fail ? Promise.reject(new Error("font unavailable")) : Promise.resolve([]);
   } } } });
@@ -43,6 +43,14 @@ const FACE_URLS = ["img/faces/face_sumi.webp", "img/faces/face_naru.webp"];
   fail = false;
   await retryModule.namespace.loadVnFonts();
   assert.equal(calls.length, 6, "both faces retry after a failed attempt");
+
+  const stalled = new vm.SourceTextModule(source, { context: vm.createContext({
+    setTimeout: (fn) => setTimeout(fn, 10), clearTimeout,
+    document: { fonts: { load: () => new Promise(() => {}) } },
+  }) });
+  await stalled.link(() => { throw new Error("unexpected font loader import"); });
+  await stalled.evaluate();
+  assert.deepEqual(Array.from(await stalled.namespace.loadVnFonts()), [], "stalled fonts fall back instead of holding the first scene");
 
   const noFonts = new vm.SourceTextModule(source, { context: vm.createContext({}) });
   await noFonts.link(() => { throw new Error("unexpected font loader import"); });
@@ -81,6 +89,7 @@ async function loadUi() {
     "chapter-title-art.js": { chapterTitleArt: () => "img/ui/chapter_title_ch1.webp" },
     "ui-theme.js": { uiThemeFrame: () => "img/ui/frame.webp" },
     "module-loading.js": { withLoadingNotice: (p) => p },
+    "stage-fit.js": { syncBackdrop: () => {} },
     "loading-prefetch.js": {
       prepareImage: (url) => new Promise((resolve) => {
         const image = new Image();

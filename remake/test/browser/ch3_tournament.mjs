@@ -87,7 +87,10 @@ await suite("ch3-tournament", async check => {
     assert.equal(after.day, before.day);
     assert.equal(after.slot, before.slot);
     assert.deepEqual(p.votes, before.flags._ch3_tournament.votes);
-    assert.deepEqual(p.craft, before.flags._ch3_tournament.craft);
+    // 吸い出しの前の掛け合い（#3060）は読み終えた分だけ制作保存に残る。それ以外の制作記録は変わらない。
+    const beforeStory = before.flags._ch3_tournament.craft.tournamentStory;
+    assert.deepEqual(p.craft.tournamentStory.seen, [...beforeStory.seen, "serve"]);
+    assert.deepEqual({ ...p.craft, tournamentStory: beforeStory }, before.flags._ch3_tournament.craft);
     assert.equal(p.rollback, null);
     assert.equal(after.stamina, before.stamina);
     assert.deepEqual(after.flavorStock, before.flavorStock);
@@ -166,7 +169,7 @@ await suite("ch3-tournament", async check => {
       assert.match(await page.locator(".ch2-contest-judges").textContent(), /エミル|Emil/);
       const explanation = await page.locator(t("vote-reason")).innerText();
       if (round === 1) assert.doesNotMatch(explanation, /鋭い苦みの余韻/, "No tasting effect before service");
-      if (round === 2) assert.match(explanation, /伏見は水を飲んだ.*綾取の直後にはじめを試喫.*比較-2/s,
+      if (round === 2) assert.match(explanation, /千須は水を飲んだ.*綾取の直後にはじめを試喫.*比較-2/s,
         "Show the actual palate trap that affected Hajime");
       if (round === 3) assert.match(explanation, /鋭い苦みは直後の比較に残らなかった/,
         "Show when the same tactic failed because of order and water");

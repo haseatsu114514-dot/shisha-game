@@ -1,0 +1,174 @@
+{
+  "policy": "CC0 sources are stored in sources/. Mixkit sources are not committed (no standalone redistribution). All credits appear in the in-game staff roll, including CC0.",
+  "sources": [
+    {
+      "id": "mixkit-916",
+      "title": "Clock countdown bleeps",
+      "author": "Mixkit",
+      "license": "Mixkit Sound Effects Free License",
+      "page": "https://mixkit.co/free-sound-effects/download/916/",
+      "committed": false
+    },
+    {
+      "id": "mixkit-226",
+      "title": "Trumpet fanfare",
+      "author": "Mixkit",
+      "license": "Mixkit Sound Effects Free License",
+      "page": "https://mixkit.co/free-sound-effects/download/226/",
+      "committed": false
+    },
+    {
+      "id": "mixkit-2658",
+      "title": "Wind blowing ambience",
+      "author": "Mixkit",
+      "license": "Mixkit Sound Effects Free License",
+      "page": "https://mixkit.co/free-sound-effects/download/2658/",
+      "committed": false
+    },
+    {
+      "id": "mixkit-2494",
+      "title": "Sand SFX #2494",
+      "author": "Mixkit",
+      "license": "Mixkit Sound Effects Free License",
+      "page": "https://mixkit.co/free-sound-effects/sand/",
+      "committed": false,
+      "note": "sandboard slide loop (candidate 2)"
+    },
+    {
+      "id": "mixkit-2498",
+      "title": "Sand SFX #2498",
+      "author": "Mixkit",
+      "license": "Mixkit Sound Effects Free License",
+      "page": "https://mixkit.co/free-sound-effects/sand/",
+      "committed": false
+    },
+    {
+      "id": "mixkit-2043",
+      "title": "Player jumping in a video game",
+      "author": "Mixkit",
+      "license": "Mixkit Sound Effects Free License",
+      "page": "https://mixkit.co/free-sound-effects/player-jumping-in-a-video-game-2043/",
+      "committed": false
+    },
+    {
+      "id": "bsb-1997",
+      "title": "Firecracker gun #1",
+      "author": "Joseph Sardin (BigSoundBank / La Sonothèque)",
+      "license": "CC0 1.0",
+      "page": "https://bigsoundbank.com/firecracker-gun-1-s1997.html",
+      "file": "sources/bsb_1997_firecracker-gun-1.mp3"
+    },
+    {
+      "id": "bsb-0611",
+      "title": "Horse Gallop",
+      "author": "Joseph Sardin (BigSoundBank / La Sonothèque)",
+      "license": "CC0 1.0",
+      "page": "https://bigsoundbank.com/horse-gallop-s0611.html",
+      "file": "sources/bsb_0611_horse-gallop.mp3"
+    },
+    {
+      "id": "bsb-2961",
+      "title": "Complete whip #1",
+      "author": "Joseph Sardin (BigSoundBank / La Sonothèque)",
+      "license": "CC0 1.0",
+      "page": "https://bigsoundbank.com/complete-whip-1-s2961.html",
+      "file": "sources/bsb_2961_complete-whip-1.mp3"
+    },
+    {
+      "id": "bsb-1049",
+      "title": "Gas fog horn",
+      "author": "Joseph Sardin (BigSoundBank / La Sonothèque)",
+      "license": "CC0 1.0",
+      "page": "https://bigsoundbank.com/gas-fog-horn-s1049.html",
+      "file": "sources/bsb_1049_gas-fog-horn.mp3"
+    },
+    {
+      "id": "bsb-1801",
+      "title": "Whoosh #8",
+      "author": "Joseph Sardin (BigSoundBank / La Sonothèque)",
+      "license": "CC0 1.0",
+      "page": "https://bigsoundbank.com/whoosh-8-s1801.html",
+      "file": "sources/bsb_1801_whoosh-8.mp3"
+    },
+    {
+      "id": "bsb-2363",
+      "title": "Applause #1",
+      "author": "Joseph Sardin (BigSoundBank / La Sonothèque)",
+      "license": "CC0 1.0",
+      "page": "https://bigsoundbank.com/applause-1-s2363.html",
+      "file": "sources/bsb_2363_applause-1.mp3"
+    },
+    {
+      "id": "kenney-confirmation_002",
+      "title": "confirmation_002",
+      "author": "Kenney (www.kenney.nl)",
+      "license": "CC0 1.0",
+      "page": "https://opengameart.org/content/interface-sounds",
+      "file": "sources/confirmation_002.ogg"
+    },
+    {
+      "id": "kenney-confirmation_001",
+      "title": "confirmation_001",
+      "author": "Kenney (www.kenney.nl)",
+      "license": "CC0 1.0",
+      "page": "https://opengameart.org/content/interface-sounds",
+      "file": "sources/confirmation_001.ogg"
+    },
+    {
+      "id": "kenney-error_001",
+      "title": "error_001",
+      "author": "Kenney (www.kenney.nl)",
+      "license": "CC0 1.0",
+      "page": "https://opengameart.org/content/interface-sounds",
+      "file": "sources/error_001.ogg"
+    },
+    {
+      "id": "kenney-drop_004",
+      "title": "drop_004",
+      "author": "Kenney (www.kenney.nl)",
+      "license": "CC0 1.0",
+      "page": "https://opengameart.org/content/interface-sounds",
+      "file": "sources/drop_004.ogg"
+    },
+    {
+      "id": "kenney-pluck_001",
+      "title": "pluck_001",
+      "author": "Kenney (www.kenney.nl)",
+      "license": "CC0 1.0",
+      "page": "https://opengameart.org/content/interface-sounds",
+      "file": "sources/pluck_001.ogg"
+    },
+    {
+      "id": "kenney-jingles_HIT03",
+      "title": "jingles_HIT03",
+      "author": "Kenney (www.kenney.nl)",
+      "license": "CC0 1.0",
+      "page": "https://opengameart.org/content/85-short-music-jingles",
+      "file": "sources/jingles_HIT03.ogg"
+    },
+    {
+      "id": "kenney-metalPot1",
+      "title": "metalPot1",
+      "author": "Kenney (www.kenney.nl)",
+      "license": "CC0 1.0",
+      "page": "https://opengameart.org/content/50-rpg-sound-effects",
+      "file": "sources/metalPot1.ogg"
+    },
+    {
+      "id": "kenney-powerUp7",
+      "title": "powerUp7",
+      "author": "Kenney (www.kenney.nl)",
+      "license": "CC0 1.0",
+      "page": "https://opengameart.org/content/63-digital-sound-effects-lasers-phasers-space-etc",
+      "file": "sources/powerUp7.mp3"
+    },
+    {
+      "id": "camel-groan-01",
+      "title": "Camel Groan (camel_01)",
+      "author": "AntumDeluge (original: craigsmith / Freesound 437937)",
+      "license": "CC0 1.0",
+      "page": "https://opengameart.org/content/camel-groan",
+      "file": "sources/camel_01.ogg"
+    }
+  ]
+}

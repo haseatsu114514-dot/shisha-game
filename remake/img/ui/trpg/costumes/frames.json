@@ -1,0 +1,4001 @@
+[
+  {
+    "scenario": "apple-thief",
+    "character": "hajime",
+    "role_id": "bellboy",
+    "file": "costumes/apple-thief/hajime_bellboy.webp",
+    "box": [
+      370,
+      115,
+      581,
+      326
+    ],
+    "box_exact": [
+      370.07,
+      114.91,
+      580.93,
+      325.78
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 475.5,
+      "cy": 214.74,
+      "w": 97,
+      "eye_l": [
+        438.96,
+        206.03
+      ],
+      "eye_r": [
+        512.64,
+        200.93
+      ],
+      "eye_y": 203.48,
+      "cheeks": [
+        427,
+        524,
+        226
+      ],
+      "figtop": 61,
+      "figbot": 1138
+    }
+  },
+  {
+    "scenario": "apple-thief",
+    "character": "hajime",
+    "role_id": "doorman",
+    "file": "costumes/apple-thief/hajime_doorman.webp",
+    "box": [
+      383,
+      125,
+      556,
+      299
+    ],
+    "box_exact": [
+      382.54,
+      125.32,
+      556.46,
+      299.23
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 469.5,
+      "cy": 207.68,
+      "w": 80,
+      "eye_l": [
+        427.19,
+        198.75
+      ],
+      "eye_r": [
+        502.79,
+        197.96
+      ],
+      "eye_y": 198.36,
+      "cheeks": [
+        430,
+        509,
+        217
+      ],
+      "figtop": 61,
+      "figbot": 1138
+    }
+  },
+  {
+    "scenario": "apple-thief",
+    "character": "hajime",
+    "role_id": "steward",
+    "file": "costumes/apple-thief/hajime_steward.webp",
+    "box": [
+      378,
+      110,
+      568,
+      299
+    ],
+    "box_exact": [
+      378.43,
+      110.28,
+      567.57,
+      299.41
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 473.0,
+      "cy": 200.35500000000002,
+      "w": 87,
+      "eye_l": [
+        437.71,
+        191.52
+      ],
+      "eye_r": [
+        503.75,
+        187.89
+      ],
+      "eye_y": 189.71,
+      "cheeks": [
+        430,
+        516,
+        211
+      ],
+      "figtop": 60,
+      "figbot": 1139
+    }
+  },
+  {
+    "scenario": "apple-thief",
+    "character": "hiyori",
+    "role_id": "rosa",
+    "file": "costumes/apple-thief/hiyori_rosa.webp",
+    "box": [
+      426,
+      192,
+      595,
+      362
+    ],
+    "box_exact": [
+      425.72,
+      191.93,
+      595.28,
+      361.5
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 510.5,
+      "cy": 272.575,
+      "w": 78,
+      "eye_l": [
+        478.67,
+        266.06
+      ],
+      "eye_r": [
+        551.75,
+        260.25
+      ],
+      "eye_y": 263.15,
+      "cheeks": [
+        472,
+        549,
+        282
+      ],
+      "figtop": 141,
+      "figbot": 1140
+    }
+  },
+  {
+    "scenario": "apple-thief",
+    "character": "hiyori",
+    "role_id": "marta",
+    "file": "costumes/apple-thief/hiyori_marta.webp",
+    "box": [
+      420,
+      210,
+      594,
+      383
+    ],
+    "box_exact": [
+      420.04,
+      209.5,
+      593.96,
+      383.41
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 507.0,
+      "cy": 291.77,
+      "w": 80,
+      "eye_l": [
+        474.33,
+        281.33
+      ],
+      "eye_r": [
+        540.5,
+        283.75
+      ],
+      "eye_y": 282.54,
+      "cheeks": [
+        467,
+        547,
+        301
+      ],
+      "figtop": 140,
+      "figbot": 1139
+    }
+  },
+  {
+    "scenario": "apple-thief",
+    "character": "tsumugi",
+    "role_id": "shion",
+    "file": "costumes/apple-thief/tsumugi_shion.webp",
+    "box": [
+      333,
+      323,
+      526,
+      517
+    ],
+    "box_exact": [
+      332.76,
+      323.33,
+      526.24,
+      516.81
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 429.5,
+      "cy": 414.79499999999996,
+      "w": 89,
+      "eye_l": [
+        405.38,
+        411.05
+      ],
+      "eye_r": [
+        453.02,
+        398.12
+      ],
+      "eye_y": 404.59,
+      "cheeks": [
+        385,
+        474,
+        425
+      ],
+      "figtop": 279,
+      "figbot": 1174
+    }
+  },
+  {
+    "scenario": "apple-thief",
+    "character": "tsumugi",
+    "role_id": "nocto",
+    "file": "costumes/apple-thief/tsumugi_nocto.webp",
+    "box": [
+      346,
+      322,
+      520,
+      496
+    ],
+    "box_exact": [
+      346.04,
+      322.08,
+      519.96,
+      495.99
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 433.0,
+      "cy": 404.06,
+      "w": 80,
+      "eye_l": [
+        407.25,
+        392.75
+      ],
+      "eye_r": [
+        458.0,
+        397.5
+      ],
+      "eye_y": 395.12,
+      "cheeks": [
+        393,
+        473,
+        413
+      ],
+      "figtop": 305,
+      "figbot": 1173
+    }
+  },
+  {
+    "scenario": "doll-requiem",
+    "character": "hajime",
+    "role_id": "nightwatch",
+    "file": "costumes/doll-requiem/hajime_nightwatch.webp",
+    "box": [
+      346,
+      92,
+      575,
+      320
+    ],
+    "box_exact": [
+      346.37,
+      91.71,
+      574.63,
+      319.97
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 460.5,
+      "cy": 199.79000000000002,
+      "w": 105,
+      "eye_l": [
+        415.67,
+        182.17
+      ],
+      "eye_r": [
+        506.0,
+        193.0
+      ],
+      "eye_y": 187.58,
+      "cheeks": [
+        408,
+        513,
+        212
+      ],
+      "figtop": 61,
+      "figbot": 1138
+    }
+  },
+  {
+    "scenario": "doll-requiem",
+    "character": "hajime",
+    "role_id": "restorer",
+    "file": "costumes/doll-requiem/hajime_restorer.webp",
+    "box": [
+      384,
+      118,
+      564,
+      299
+    ],
+    "box_exact": [
+      383.78,
+      118.34,
+      564.22,
+      298.77
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 474.0,
+      "cy": 204.56,
+      "w": 83,
+      "eye_l": [
+        443.0,
+        193.5
+      ],
+      "eye_r": [
+        511.96,
+        194.73
+      ],
+      "eye_y": 194.12,
+      "cheeks": [
+        433,
+        515,
+        215
+      ],
+      "figtop": 61,
+      "figbot": 1138
+    }
+  },
+  {
+    "scenario": "doll-requiem",
+    "character": "hajime",
+    "role_id": "courier",
+    "file": "costumes/doll-requiem/hajime_courier.webp",
+    "box": [
+      368,
+      100,
+      601,
+      333
+    ],
+    "box_exact": [
+      368.2,
+      100.38,
+      600.8,
+      332.99
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 484.5,
+      "cy": 210.54000000000002,
+      "w": 107,
+      "eye_l": [
+        450.67,
+        202.67
+      ],
+      "eye_r": [
+        518.5,
+        193.5
+      ],
+      "eye_y": 198.08,
+      "cheeks": [
+        431,
+        538,
+        223
+      ],
+      "figtop": 60,
+      "figbot": 1138
+    }
+  },
+  {
+    "scenario": "doll-requiem",
+    "character": "ageha",
+    "role_id": "kirara",
+    "file": "costumes/doll-requiem/ageha_kirara.webp",
+    "box": [
+      374,
+      248,
+      592,
+      465
+    ],
+    "box_exact": [
+      374.3,
+      247.67,
+      591.7,
+      465.06
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 483.0,
+      "cy": 350.485,
+      "w": 100,
+      "eye_l": [
+        452.04,
+        340.88
+      ],
+      "eye_r": [
+        513.5,
+        337.07
+      ],
+      "eye_y": 338.97,
+      "cheeks": [
+        433,
+        533,
+        362
+      ],
+      "figtop": 204,
+      "figbot": 1175
+    }
+  },
+  {
+    "scenario": "doll-requiem",
+    "character": "ageha",
+    "role_id": "marie",
+    "file": "costumes/doll-requiem/ageha_marie.webp",
+    "box": [
+      386,
+      264,
+      565,
+      443
+    ],
+    "box_exact": [
+      386.37,
+      264.44,
+      564.63,
+      442.7
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 475.5,
+      "cy": 349.655,
+      "w": 82,
+      "eye_l": [
+        454.6,
+        337.37
+      ],
+      "eye_r": [
+        485.97,
+        341.26
+      ],
+      "eye_y": 339.31,
+      "cheeks": [
+        435,
+        516,
+        360
+      ],
+      "figtop": 204,
+      "figbot": 1174
+    }
+  },
+  {
+    "scenario": "doll-requiem",
+    "character": "hiyori",
+    "role_id": "cecilia",
+    "file": "costumes/doll-requiem/hiyori_cecilia.webp",
+    "box": [
+      410,
+      177,
+      601,
+      368
+    ],
+    "box_exact": [
+      409.85,
+      176.76,
+      601.15,
+      368.07
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 505.5,
+      "cy": 267.055,
+      "w": 88,
+      "eye_l": [
+        502.16,
+        257.14
+      ],
+      "eye_r": [
+        521.58,
+        257.09
+      ],
+      "eye_y": 257.11,
+      "cheeks": [
+        462,
+        549,
+        277
+      ],
+      "figtop": 140,
+      "figbot": 1141
+    }
+  },
+  {
+    "scenario": "doll-requiem",
+    "character": "hiyori",
+    "role_id": "chloe",
+    "file": "costumes/doll-requiem/hiyori_chloe.webp",
+    "box": [
+      410,
+      192,
+      602,
+      383
+    ],
+    "box_exact": [
+      410.35,
+      191.64,
+      601.65,
+      382.95
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 506.0,
+      "cy": 281.995,
+      "w": 88,
+      "eye_l": [
+        489.42,
+        275.22
+      ],
+      "eye_r": [
+        522.53,
+        268.76
+      ],
+      "eye_y": 271.99,
+      "cheeks": [
+        462,
+        550,
+        292
+      ],
+      "figtop": 140,
+      "figbot": 1140
+    }
+  },
+  {
+    "scenario": "fading-familiar",
+    "character": "hajime",
+    "role_id": "patrol",
+    "file": "costumes/fading-familiar/hajime_patrol.webp",
+    "box": [
+      370,
+      99,
+      585,
+      314
+    ],
+    "box_exact": [
+      369.89,
+      98.61,
+      585.11,
+      313.83
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 477.5,
+      "cy": 200.5,
+      "w": 99,
+      "eye_l": [
+        444.5,
+        189.0
+      ],
+      "eye_r": [
+        510.33,
+        189.0
+      ],
+      "eye_y": 189.0,
+      "cheeks": [
+        428,
+        527,
+        212
+      ],
+      "figtop": 61,
+      "figbot": 1138
+    }
+  },
+  {
+    "scenario": "fading-familiar",
+    "character": "hajime",
+    "role_id": "runner",
+    "file": "costumes/fading-familiar/hajime_runner.webp",
+    "box": [
+      355,
+      100,
+      584,
+      328
+    ],
+    "box_exact": [
+      355.37,
+      100.13,
+      583.63,
+      328.39
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 469.5,
+      "cy": 208.0,
+      "w": 105,
+      "eye_l": [
+        419.08,
+        194.0
+      ],
+      "eye_r": [
+        520.5,
+        198.0
+      ],
+      "eye_y": 196.0,
+      "cheeks": [
+        417,
+        522,
+        220
+      ],
+      "figtop": 61,
+      "figbot": 1138
+    }
+  },
+  {
+    "scenario": "fading-familiar",
+    "character": "hajime",
+    "role_id": "bookish",
+    "file": "costumes/fading-familiar/hajime_bookish.webp",
+    "box": [
+      361,
+      99,
+      587,
+      325
+    ],
+    "box_exact": [
+      360.96,
+      98.54,
+      587.04,
+      324.63
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 474.0,
+      "cy": 205.25,
+      "w": 104,
+      "eye_l": [
+        433.0,
+        190.0
+      ],
+      "eye_r": [
+        514.0,
+        197.0
+      ],
+      "eye_y": 193.5,
+      "cheeks": [
+        422,
+        526,
+        217
+      ],
+      "figtop": 61,
+      "figbot": 1138
+    }
+  },
+  {
+    "scenario": "fading-familiar",
+    "character": "samechan",
+    "role_id": "hirena",
+    "file": "costumes/fading-familiar/samechan_hirena.webp",
+    "box": [
+      332,
+      98,
+      598,
+      363
+    ],
+    "box_exact": [
+      332.39,
+      97.98,
+      597.61,
+      363.2
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 465.0,
+      "cy": 223.185,
+      "w": 122,
+      "eye_l": [
+        426.71,
+        210.9
+      ],
+      "eye_r": [
+        503.94,
+        207.83
+      ],
+      "eye_y": 209.37,
+      "cheeks": [
+        404,
+        526,
+        237
+      ],
+      "figtop": 60,
+      "figbot": 1138
+    }
+  },
+  {
+    "scenario": "fading-familiar",
+    "character": "samechan",
+    "role_id": "fukami",
+    "file": "costumes/fading-familiar/samechan_fukami.webp",
+    "box": [
+      353,
+      83,
+      609,
+      339
+    ],
+    "box_exact": [
+      352.74,
+      82.62,
+      609.26,
+      339.14
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 481.0,
+      "cy": 203.68,
+      "w": 118,
+      "eye_l": [
+        442.84,
+        186.25
+      ],
+      "eye_r": [
+        520.04,
+        194.47
+      ],
+      "eye_y": 190.36,
+      "cheeks": [
+        422,
+        540,
+        217
+      ],
+      "figtop": 60,
+      "figbot": 1139
+    }
+  },
+  {
+    "scenario": "fading-familiar",
+    "character": "adam",
+    "role_id": "mars",
+    "file": "costumes/fading-familiar/adam_mars.webp",
+    "box": [
+      307,
+      72,
+      533,
+      298
+    ],
+    "box_exact": [
+      306.96,
+      72.36,
+      533.04,
+      298.45
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 420.0,
+      "cy": 179.16,
+      "w": 104,
+      "eye_l": [
+        394.0,
+        167.87
+      ],
+      "eye_r": [
+        446.29,
+        166.77
+      ],
+      "eye_y": 167.32,
+      "cheeks": [
+        368,
+        472,
+        191
+      ],
+      "figtop": 61,
+      "figbot": 1139
+    }
+  },
+  {
+    "scenario": "fading-familiar",
+    "character": "adam",
+    "role_id": "nox",
+    "file": "costumes/fading-familiar/adam_nox.webp",
+    "box": [
+      314,
+      86,
+      525,
+      297
+    ],
+    "box_exact": [
+      314.07,
+      86.26,
+      524.93,
+      297.13
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 419.5,
+      "cy": 185.91500000000002,
+      "w": 97,
+      "eye_l": [
+        402.0,
+        176.0
+      ],
+      "eye_r": [
+        437.83,
+        173.67
+      ],
+      "eye_y": 174.83,
+      "cheeks": [
+        371,
+        468,
+        197
+      ],
+      "figtop": 61,
+      "figbot": 1140
+    }
+  },
+  {
+    "scenario": "fox-market",
+    "character": "hajime",
+    "role_id": "apprentice",
+    "file": "costumes/fox-market/hajime_apprentice.webp",
+    "box": [
+      351,
+      101,
+      592,
+      342
+    ],
+    "box_exact": [
+      350.85,
+      100.67,
+      592.15,
+      341.98
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 471.5,
+      "cy": 214.51,
+      "w": 111,
+      "eye_l": [
+        427.21,
+        200.0
+      ],
+      "eye_r": [
+        516.69,
+        204.04
+      ],
+      "eye_y": 202.02,
+      "cheeks": [
+        416,
+        527,
+        227
+      ],
+      "figtop": 60,
+      "figbot": 1138
+    }
+  },
+  {
+    "scenario": "fox-market",
+    "character": "hajime",
+    "role_id": "firewatch",
+    "file": "costumes/fox-market/hajime_firewatch.webp",
+    "box": [
+      385,
+      116,
+      558,
+      290
+    ],
+    "box_exact": [
+      384.54,
+      116.46,
+      558.46,
+      290.37
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 471.5,
+      "cy": 200.25,
+      "w": 80,
+      "eye_l": [
+        424.0,
+        189.0
+      ],
+      "eye_r": [
+        512.25,
+        190.0
+      ],
+      "eye_y": 189.5,
+      "cheeks": [
+        432,
+        511,
+        211
+      ],
+      "figtop": 60,
+      "figbot": 1138
+    }
+  },
+  {
+    "scenario": "fox-market",
+    "character": "hajime",
+    "role_id": "scholar",
+    "file": "costumes/fox-market/hajime_scholar.webp",
+    "box": [
+      377,
+      122,
+      560,
+      305
+    ],
+    "box_exact": [
+      377.2,
+      122.22,
+      559.8,
+      304.83
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 468.5,
+      "cy": 208.95999999999998,
+      "w": 84,
+      "eye_l": [
+        416.92,
+        199.08
+      ],
+      "eye_r": [
+        507.25,
+        198.75
+      ],
+      "eye_y": 198.92,
+      "cheeks": [
+        427,
+        510,
+        219
+      ],
+      "figtop": 61,
+      "figbot": 1138
+    }
+  },
+  {
+    "scenario": "fox-market",
+    "character": "hiyori",
+    "role_id": "kasumi",
+    "file": "costumes/fox-market/hiyori_kasumi.webp",
+    "box": [
+      406,
+      176,
+      606,
+      376
+    ],
+    "box_exact": [
+      406.5,
+      175.5,
+      606.5,
+      375.5
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 506.5,
+      "cy": 269.25,
+      "w": 92,
+      "eye_l": [
+        470.0,
+        267.0
+      ],
+      "eye_r": [
+        553.5,
+        252.0
+      ],
+      "eye_y": 259.5,
+      "cheeks": [
+        461,
+        552,
+        279
+      ],
+      "figtop": 140,
+      "figbot": 1140
+    }
+  },
+  {
+    "scenario": "fox-market",
+    "character": "hiyori",
+    "role_id": "shizuku",
+    "file": "costumes/fox-market/hiyori_shizuku.webp",
+    "box": [
+      426,
+      213,
+      594,
+      380
+    ],
+    "box_exact": [
+      426.3,
+      212.87,
+      593.7,
+      380.26
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 510.0,
+      "cy": 292.58500000000004,
+      "w": 77,
+      "eye_l": [
+        473.91,
+        286.81
+      ],
+      "eye_r": [
+        509.21,
+        279.53
+      ],
+      "eye_y": 283.17,
+      "cheeks": [
+        472,
+        548,
+        302
+      ],
+      "figtop": 141,
+      "figbot": 1140
+    }
+  },
+  {
+    "scenario": "fox-market",
+    "character": "samechan",
+    "role_id": "namimaru",
+    "file": "costumes/fox-market/samechan_namimaru.webp",
+    "box": [
+      343,
+      95,
+      603,
+      356
+    ],
+    "box_exact": [
+      342.57,
+      94.86,
+      603.43,
+      355.73
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 473.0,
+      "cy": 218.215,
+      "w": 120,
+      "eye_l": [
+        433.47,
+        204.27
+      ],
+      "eye_r": [
+        512.67,
+        204.58
+      ],
+      "eye_y": 204.43,
+      "cheeks": [
+        413,
+        533,
+        232
+      ],
+      "figtop": 61,
+      "figbot": 1139
+    }
+  },
+  {
+    "scenario": "fox-market",
+    "character": "samechan",
+    "role_id": "fukajiro",
+    "file": "costumes/fox-market/samechan_fukajiro.webp",
+    "box": [
+      311,
+      119,
+      577,
+      384
+    ],
+    "box_exact": [
+      311.39,
+      118.96,
+      576.61,
+      384.18
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 444.0,
+      "cy": 244.175,
+      "w": 122,
+      "eye_l": [
+        414.08,
+        230.75
+      ],
+      "eye_r": [
+        473.28,
+        229.95
+      ],
+      "eye_y": 230.35,
+      "cheeks": [
+        383,
+        505,
+        258
+      ],
+      "figtop": 60,
+      "figbot": 1139
+    }
+  },
+  {
+    "scenario": "leaf-mail",
+    "character": "hajime",
+    "role_id": "watch",
+    "file": "costumes/leaf-mail/hajime_watch.webp",
+    "box": [
+      393,
+      110,
+      576,
+      293
+    ],
+    "box_exact": [
+      393.2,
+      110.1,
+      575.8,
+      292.71
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 484.5,
+      "cy": 197.9,
+      "w": 84,
+      "eye_l": [
+        467.62,
+        184.25
+      ],
+      "eye_r": [
+        485.65,
+        189.35
+      ],
+      "eye_y": 186.8,
+      "cheeks": [
+        443,
+        526,
+        209
+      ],
+      "figtop": 61,
+      "figbot": 1139
+    }
+  },
+  {
+    "scenario": "leaf-mail",
+    "character": "hajime",
+    "role_id": "sweep",
+    "file": "costumes/leaf-mail/hajime_sweep.webp",
+    "box": [
+      392,
+      119,
+      575,
+      302
+    ],
+    "box_exact": [
+      392.2,
+      118.95,
+      574.8,
+      301.56
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 483.5,
+      "cy": 204.825,
+      "w": 84,
+      "eye_l": [
+        480.08,
+        190.72
+      ],
+      "eye_r": [
+        517.21,
+        200.58
+      ],
+      "eye_y": 195.65,
+      "cheeks": [
+        442,
+        525,
+        214
+      ],
+      "figtop": 60,
+      "figbot": 1138
+    }
+  },
+  {
+    "scenario": "leaf-mail",
+    "character": "hajime",
+    "role_id": "books",
+    "file": "costumes/leaf-mail/hajime_books.webp",
+    "box": [
+      364,
+      103,
+      579,
+      318
+    ],
+    "box_exact": [
+      363.89,
+      102.77,
+      579.11,
+      317.99
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 471.5,
+      "cy": 204.57999999999998,
+      "w": 99,
+      "eye_l": [
+        423.08,
+        191.83
+      ],
+      "eye_r": [
+        519.04,
+        194.48
+      ],
+      "eye_y": 193.16,
+      "cheeks": [
+        422,
+        521,
+        216
+      ],
+      "figtop": 60,
+      "figbot": 1138
+    }
+  },
+  {
+    "scenario": "leaf-mail",
+    "character": "hiyori",
+    "role_id": "yura",
+    "file": "costumes/leaf-mail/hiyori_yura.webp",
+    "box": [
+      450,
+      212,
+      618,
+      379
+    ],
+    "box_exact": [
+      450.3,
+      212.02,
+      617.7,
+      379.41
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 534.0,
+      "cy": 292.15999999999997,
+      "w": 77,
+      "eye_l": [
+        497.43,
+        286.64
+      ],
+      "eye_r": [
+        575.0,
+        278.0
+      ],
+      "eye_y": 282.32,
+      "cheeks": [
+        496,
+        572,
+        302
+      ],
+      "figtop": 141,
+      "figbot": 1141
+    }
+  },
+  {
+    "scenario": "leaf-mail",
+    "character": "hiyori",
+    "role_id": "neri",
+    "file": "costumes/leaf-mail/hiyori_neri.webp",
+    "box": [
+      455,
+      196,
+      613,
+      355
+    ],
+    "box_exact": [
+      454.65,
+      196.17,
+      613.35,
+      354.86
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 534.0,
+      "cy": 271.90999999999997,
+      "w": 73,
+      "eye_l": [
+        518.81,
+        263.56
+      ],
+      "eye_r": [
+        535.17,
+        262.07
+      ],
+      "eye_y": 262.82,
+      "cheeks": [
+        498,
+        570,
+        281
+      ],
+      "figtop": 141,
+      "figbot": 1140
+    }
+  },
+  {
+    "scenario": "leaf-mail",
+    "character": "adam",
+    "role_id": "leon",
+    "file": "costumes/leaf-mail/adam_leon.webp",
+    "box": [
+      308,
+      70,
+      541,
+      303
+    ],
+    "box_exact": [
+      308.2,
+      70.04,
+      540.8,
+      302.65
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 424.5,
+      "cy": 179.87,
+      "w": 107,
+      "eye_l": [
+        397.57,
+        168.1
+      ],
+      "eye_r": [
+        451.38,
+        167.38
+      ],
+      "eye_y": 167.74,
+      "cheeks": [
+        371,
+        478,
+        192
+      ],
+      "figtop": 60,
+      "figbot": 1140
+    }
+  },
+  {
+    "scenario": "leaf-mail",
+    "character": "adam",
+    "role_id": "gran",
+    "file": "costumes/leaf-mail/adam_gran.webp",
+    "box": [
+      306,
+      79,
+      540,
+      313
+    ],
+    "box_exact": [
+      305.61,
+      78.61,
+      540.39,
+      313.39
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 423.0,
+      "cy": 189.61,
+      "w": 108,
+      "eye_l": [
+        398.83,
+        178.67
+      ],
+      "eye_r": [
+        447.83,
+        175.77
+      ],
+      "eye_y": 177.22,
+      "cheeks": [
+        369,
+        477,
+        202
+      ],
+      "figtop": 60,
+      "figbot": 1139
+    }
+  },
+  {
+    "scenario": "mist-kingdom",
+    "character": "hajime",
+    "role_id": "rookie",
+    "file": "costumes/mist-kingdom/hajime_rookie.webp",
+    "box": [
+      371,
+      121,
+      558,
+      308
+    ],
+    "box_exact": [
+      371.02,
+      121.21,
+      557.98,
+      308.16
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 464.5,
+      "cy": 209.865,
+      "w": 86,
+      "eye_l": [
+        440.0,
+        203.0
+      ],
+      "eye_r": [
+        515.33,
+        196.46
+      ],
+      "eye_y": 199.73,
+      "cheeks": [
+        422,
+        507,
+        220
+      ],
+      "figtop": 61,
+      "figbot": 1139
+    }
+  },
+  {
+    "scenario": "mist-kingdom",
+    "character": "hajime",
+    "role_id": "wanderer",
+    "file": "costumes/mist-kingdom/hajime_wanderer.webp",
+    "box": [
+      371,
+      104,
+      597,
+      330
+    ],
+    "box_exact": [
+      370.96,
+      103.66,
+      597.04,
+      329.75
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 484.0,
+      "cy": 210.31,
+      "w": 104,
+      "eye_l": [
+        437.0,
+        194.0
+      ],
+      "eye_r": [
+        531.17,
+        203.25
+      ],
+      "eye_y": 198.62,
+      "cheeks": [
+        432,
+        536,
+        222
+      ],
+      "figtop": 61,
+      "figbot": 1138
+    }
+  },
+  {
+    "scenario": "mist-kingdom",
+    "character": "hajime",
+    "role_id": "shepherd",
+    "file": "costumes/mist-kingdom/hajime_shepherd.webp",
+    "box": [
+      383,
+      114,
+      598,
+      329
+    ],
+    "box_exact": [
+      382.89,
+      113.99,
+      598.11,
+      329.21
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 490.5,
+      "cy": 215.69,
+      "w": 99,
+      "eye_l": [
+        455.0,
+        204.0
+      ],
+      "eye_r": [
+        525.38,
+        204.75
+      ],
+      "eye_y": 204.38,
+      "cheeks": [
+        441,
+        540,
+        227
+      ],
+      "figtop": 60,
+      "figbot": 1138
+    }
+  },
+  {
+    "scenario": "mist-kingdom",
+    "character": "adam",
+    "role_id": "orchard",
+    "file": "costumes/mist-kingdom/adam_orchard.webp",
+    "box": [
+      312,
+      76,
+      542,
+      306
+    ],
+    "box_exact": [
+      311.78,
+      75.85,
+      542.22,
+      306.28
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 427.0,
+      "cy": 184.815,
+      "w": 106,
+      "eye_l": [
+        402.99,
+        173.55
+      ],
+      "eye_r": [
+        450.49,
+        171.72
+      ],
+      "eye_y": 172.63,
+      "cheeks": [
+        374,
+        480,
+        197
+      ],
+      "figtop": 61,
+      "figbot": 1140
+    }
+  },
+  {
+    "scenario": "mist-kingdom",
+    "character": "adam",
+    "role_id": "grants",
+    "file": "costumes/mist-kingdom/adam_grants.webp",
+    "box": [
+      293,
+      79,
+      519,
+      305
+    ],
+    "box_exact": [
+      292.96,
+      79.09,
+      519.04,
+      305.18
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 406.0,
+      "cy": 186.025,
+      "w": 104,
+      "eye_l": [
+        382.32,
+        174.9
+      ],
+      "eye_r": [
+        430.51,
+        173.2
+      ],
+      "eye_y": 174.05,
+      "cheeks": [
+        354,
+        458,
+        198
+      ],
+      "figtop": 61,
+      "figbot": 1140
+    }
+  },
+  {
+    "scenario": "mist-kingdom",
+    "character": "samechan",
+    "role_id": "koban",
+    "file": "costumes/mist-kingdom/samechan_koban.webp",
+    "box": [
+      333,
+      66,
+      589,
+      323
+    ],
+    "box_exact": [
+      332.74,
+      66.49,
+      589.26,
+      323.01
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 461.0,
+      "cy": 187.615,
+      "w": 118,
+      "eye_l": [
+        421.89,
+        174.17
+      ],
+      "eye_r": [
+        499.5,
+        174.29
+      ],
+      "eye_y": 174.23,
+      "cheeks": [
+        402,
+        520,
+        201
+      ],
+      "figtop": 62,
+      "figbot": 1139
+    }
+  },
+  {
+    "scenario": "mist-kingdom",
+    "character": "samechan",
+    "role_id": "sharuku",
+    "file": "costumes/mist-kingdom/samechan_sharuku.webp",
+    "box": [
+      344,
+      81,
+      604,
+      342
+    ],
+    "box_exact": [
+      343.57,
+      80.99,
+      604.43,
+      341.86
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 474.0,
+      "cy": 204.28,
+      "w": 120,
+      "eye_l": [
+        436.85,
+        190.61
+      ],
+      "eye_r": [
+        511.5,
+        190.5
+      ],
+      "eye_y": 190.56,
+      "cheeks": [
+        414,
+        534,
+        218
+      ],
+      "figtop": 60,
+      "figbot": 1139
+    }
+  },
+  {
+    "scenario": "moonflower-encore",
+    "character": "hajime",
+    "role_id": "stagehand",
+    "file": "costumes/moonflower-encore/hajime_stagehand.webp",
+    "box": [
+      365,
+      96,
+      587,
+      318
+    ],
+    "box_exact": [
+      365.13,
+      96.04,
+      586.87,
+      317.78
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 476.0,
+      "cy": 200.58499999999998,
+      "w": 102,
+      "eye_l": [
+        438.5,
+        193.0
+      ],
+      "eye_r": [
+        513.0,
+        185.33
+      ],
+      "eye_y": 189.17,
+      "cheeks": [
+        425,
+        527,
+        212
+      ],
+      "figtop": 60,
+      "figbot": 1139
+    }
+  },
+  {
+    "scenario": "moonflower-encore",
+    "character": "hajime",
+    "role_id": "usher",
+    "file": "costumes/moonflower-encore/hajime_usher.webp",
+    "box": [
+      383,
+      111,
+      585,
+      313
+    ],
+    "box_exact": [
+      382.91,
+      110.88,
+      585.09,
+      313.05
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 484.0,
+      "cy": 206.89499999999998,
+      "w": 93,
+      "eye_l": [
+        447.0,
+        198.0
+      ],
+      "eye_r": [
+        510.93,
+        193.57
+      ],
+      "eye_y": 195.79,
+      "cheeks": [
+        438,
+        530,
+        218
+      ],
+      "figtop": 61,
+      "figbot": 1139
+    }
+  },
+  {
+    "scenario": "moonflower-encore",
+    "character": "hajime",
+    "role_id": "pageturner",
+    "file": "costumes/moonflower-encore/hajime_pageturner.webp",
+    "box": [
+      348,
+      89,
+      596,
+      337
+    ],
+    "box_exact": [
+      348.09,
+      89.06,
+      595.91,
+      336.89
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 472.0,
+      "cy": 206.075,
+      "w": 114,
+      "eye_l": [
+        441.25,
+        193.58
+      ],
+      "eye_r": [
+        503.51,
+        192.72
+      ],
+      "eye_y": 193.15,
+      "cheeks": [
+        415,
+        529,
+        219
+      ],
+      "figtop": 60,
+      "figbot": 1139
+    }
+  },
+  {
+    "scenario": "moonflower-encore",
+    "character": "ageha",
+    "role_id": "kirara",
+    "file": "costumes/moonflower-encore/ageha_kirara.webp",
+    "box": [
+      398,
+      245,
+      591,
+      439
+    ],
+    "box_exact": [
+      397.76,
+      245.2,
+      591.24,
+      438.68
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 494.5,
+      "cy": 336.73,
+      "w": 89,
+      "eye_l": [
+        477.31,
+        335.06
+      ],
+      "eye_r": [
+        510.93,
+        317.86
+      ],
+      "eye_y": 326.46,
+      "cheeks": [
+        450,
+        539,
+        347
+      ],
+      "figtop": 204,
+      "figbot": 1175
+    }
+  },
+  {
+    "scenario": "moonflower-encore",
+    "character": "ageha",
+    "role_id": "moka",
+    "file": "costumes/moonflower-encore/ageha_moka.webp",
+    "box": [
+      395,
+      260,
+      564,
+      429
+    ],
+    "box_exact": [
+      394.72,
+      259.53,
+      564.28,
+      429.1
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 479.5,
+      "cy": 341.375,
+      "w": 78,
+      "eye_l": [
+        457.7,
+        339.18
+      ],
+      "eye_r": [
+        500.64,
+        322.32
+      ],
+      "eye_y": 330.75,
+      "cheeks": [
+        441,
+        518,
+        352
+      ],
+      "figtop": 204,
+      "figbot": 1175
+    }
+  },
+  {
+    "scenario": "moonflower-encore",
+    "character": "adam",
+    "role_id": "leon",
+    "file": "costumes/moonflower-encore/adam_leon.webp",
+    "box": [
+      316,
+      79,
+      530,
+      292
+    ],
+    "box_exact": [
+      316.48,
+      79.16,
+      529.52,
+      292.21
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 423.0,
+      "cy": 179.82,
+      "w": 98,
+      "eye_l": [
+        399.18,
+        169.33
+      ],
+      "eye_r": [
+        445.86,
+        167.94
+      ],
+      "eye_y": 168.64,
+      "cheeks": [
+        374,
+        472,
+        191
+      ],
+      "figtop": 61,
+      "figbot": 1139
+    }
+  },
+  {
+    "scenario": "moonflower-encore",
+    "character": "adam",
+    "role_id": "ziek",
+    "file": "costumes/moonflower-encore/adam_ziek.webp",
+    "box": [
+      325,
+      79,
+      555,
+      309
+    ],
+    "box_exact": [
+      324.78,
+      79.03,
+      555.22,
+      309.46
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 440.0,
+      "cy": 187.905,
+      "w": 106,
+      "eye_l": [
+        411.28,
+        176.64
+      ],
+      "eye_r": [
+        468.99,
+        174.98
+      ],
+      "eye_y": 175.81,
+      "cheeks": [
+        387,
+        493,
+        200
+      ],
+      "figtop": 61,
+      "figbot": 1139
+    }
+  },
+  {
+    "scenario": "ordinary-cup",
+    "character": "hajime",
+    "role_id": "apprentice",
+    "file": "costumes/ordinary-cup/hajime_apprentice.webp",
+    "box": [
+      368,
+      109,
+      581,
+      322
+    ],
+    "box_exact": [
+      367.98,
+      109.02,
+      581.02,
+      322.07
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 474.5,
+      "cy": 210.75,
+      "w": 98,
+      "eye_l": [
+        436.0,
+        196.5
+      ],
+      "eye_r": [
+        509.5,
+        200.5
+      ],
+      "eye_y": 198.5,
+      "cheeks": [
+        426,
+        523,
+        223
+      ],
+      "figtop": 60,
+      "figbot": 1138
+    }
+  },
+  {
+    "scenario": "ordinary-cup",
+    "character": "hajime",
+    "role_id": "sailor",
+    "file": "costumes/ordinary-cup/hajime_sailor.webp",
+    "box": [
+      360,
+      112,
+      574,
+      325
+    ],
+    "box_exact": [
+      360.48,
+      111.92,
+      573.52,
+      324.97
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 467.0,
+      "cy": 212.7,
+      "w": 98,
+      "eye_l": [
+        421.75,
+        200.25
+      ],
+      "eye_r": [
+        511.4,
+        202.56
+      ],
+      "eye_y": 201.4,
+      "cheeks": [
+        418,
+        516,
+        224
+      ],
+      "figtop": 61,
+      "figbot": 1138
+    }
+  },
+  {
+    "scenario": "ordinary-cup",
+    "character": "hajime",
+    "role_id": "regular",
+    "file": "costumes/ordinary-cup/hajime_regular.webp",
+    "box": [
+      361,
+      99,
+      576,
+      315
+    ],
+    "box_exact": [
+      360.89,
+      99.32,
+      576.11,
+      314.54
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 468.5,
+      "cy": 200.85500000000002,
+      "w": 99,
+      "eye_l": [
+        420.55,
+        189.67
+      ],
+      "eye_r": [
+        517.0,
+        189.75
+      ],
+      "eye_y": 189.71,
+      "cheeks": [
+        419,
+        518,
+        212
+      ],
+      "figtop": 60,
+      "figbot": 1137
+    }
+  },
+  {
+    "scenario": "ordinary-cup",
+    "character": "adam",
+    "role_id": "nico",
+    "file": "costumes/ordinary-cup/adam_nico.webp",
+    "box": [
+      311,
+      74,
+      544,
+      306
+    ],
+    "box_exact": [
+      311.2,
+      73.52,
+      543.8,
+      306.13
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 427.5,
+      "cy": 183.61,
+      "w": 107,
+      "eye_l": [
+        399.14,
+        172.25
+      ],
+      "eye_r": [
+        455.0,
+        170.2
+      ],
+      "eye_y": 171.22,
+      "cheeks": [
+        374,
+        481,
+        196
+      ],
+      "figtop": 60,
+      "figbot": 1139
+    }
+  },
+  {
+    "scenario": "ordinary-cup",
+    "character": "adam",
+    "role_id": "pippin",
+    "file": "costumes/ordinary-cup/adam_pippin.webp",
+    "box": [
+      303,
+      79,
+      522,
+      298
+    ],
+    "box_exact": [
+      302.72,
+      78.62,
+      522.28,
+      298.19
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 412.5,
+      "cy": 182.42000000000002,
+      "w": 101,
+      "eye_l": [
+        388.98,
+        171.58
+      ],
+      "eye_r": [
+        435.71,
+        170.09
+      ],
+      "eye_y": 170.84,
+      "cheeks": [
+        362,
+        463,
+        194
+      ],
+      "figtop": 61,
+      "figbot": 1140
+    }
+  },
+  {
+    "scenario": "ordinary-cup",
+    "character": "tsumugi",
+    "role_id": "luca",
+    "file": "costumes/ordinary-cup/tsumugi_luca.webp",
+    "box": [
+      342,
+      316,
+      527,
+      500
+    ],
+    "box_exact": [
+      342.11,
+      315.72,
+      526.89,
+      500.5
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 434.5,
+      "cy": 403.16499999999996,
+      "w": 85,
+      "eye_l": [
+        415.26,
+        399.46
+      ],
+      "eye_r": [
+        453.93,
+        387.21
+      ],
+      "eye_y": 393.33,
+      "cheeks": [
+        392,
+        477,
+        413
+      ],
+      "figtop": 279,
+      "figbot": 1174
+    }
+  },
+  {
+    "scenario": "ordinary-cup",
+    "character": "tsumugi",
+    "role_id": "leaf",
+    "file": "costumes/ordinary-cup/tsumugi_leaf.webp",
+    "box": [
+      332,
+      314,
+      518,
+      500
+    ],
+    "box_exact": [
+      331.52,
+      313.53,
+      518.48,
+      500.48
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 425.0,
+      "cy": 402.025,
+      "w": 86,
+      "eye_l": [
+        398.14,
+        394.6
+      ],
+      "eye_r": [
+        451.5,
+        389.5
+      ],
+      "eye_y": 392.05,
+      "cheeks": [
+        382,
+        468,
+        412
+      ],
+      "figtop": 261,
+      "figbot": 1173
+    }
+  },
+  {
+    "scenario": "purikura-hero",
+    "character": "hajime",
+    "role_id": "squire",
+    "file": "costumes/purikura-hero/hajime_squire.webp",
+    "box": [
+      387,
+      87,
+      613,
+      313
+    ],
+    "box_exact": [
+      386.96,
+      86.66,
+      613.04,
+      312.75
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 500.0,
+      "cy": 193.31,
+      "w": 104,
+      "eye_l": [
+        470.67,
+        174.67
+      ],
+      "eye_r": [
+        528.68,
+        188.57
+      ],
+      "eye_y": 181.62,
+      "cheeks": [
+        448,
+        552,
+        205
+      ],
+      "figtop": 61,
+      "figbot": 1138
+    }
+  },
+  {
+    "scenario": "purikura-hero",
+    "character": "hajime",
+    "role_id": "photographer",
+    "file": "costumes/purikura-hero/hajime_photographer.webp",
+    "box": [
+      357,
+      100,
+      576,
+      319
+    ],
+    "box_exact": [
+      356.72,
+      99.73,
+      576.28,
+      319.3
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 466.5,
+      "cy": 203.475,
+      "w": 101,
+      "eye_l": [
+        424.03,
+        190.37
+      ],
+      "eye_r": [
+        508.81,
+        193.54
+      ],
+      "eye_y": 191.95,
+      "cheeks": [
+        416,
+        517,
+        215
+      ],
+      "figtop": 61,
+      "figbot": 1139
+    }
+  },
+  {
+    "scenario": "purikura-hero",
+    "character": "hajime",
+    "role_id": "shield",
+    "file": "costumes/purikura-hero/hajime_shield.webp",
+    "box": [
+      409,
+      124,
+      585,
+      300
+    ],
+    "box_exact": [
+      408.96,
+      124.34,
+      585.04,
+      300.43
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 497.0,
+      "cy": 208.65,
+      "w": 81,
+      "eye_l": [
+        496.39,
+        193.62
+      ],
+      "eye_r": [
+        533.34,
+        202.97
+      ],
+      "eye_y": 198.3,
+      "cheeks": [
+        457,
+        537,
+        219
+      ],
+      "figtop": 61,
+      "figbot": 1138
+    }
+  },
+  {
+    "scenario": "purikura-hero",
+    "character": "ageha",
+    "role_id": "lovely",
+    "file": "costumes/purikura-hero/ageha_lovely.webp",
+    "box": [
+      376,
+      233,
+      580,
+      437
+    ],
+    "box_exact": [
+      375.83,
+      232.94,
+      580.17,
+      437.29
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 478.0,
+      "cy": 329.385,
+      "w": 94,
+      "eye_l": [
+        454.14,
+        326.25
+      ],
+      "eye_r": [
+        502.69,
+        311.28
+      ],
+      "eye_y": 318.77,
+      "cheeks": [
+        431,
+        525,
+        340
+      ],
+      "figtop": 184,
+      "figbot": 1176
+    }
+  },
+  {
+    "scenario": "purikura-hero",
+    "character": "ageha",
+    "role_id": "beatrice",
+    "file": "costumes/purikura-hero/ageha_beatrice.webp",
+    "box": [
+      394,
+      260,
+      566,
+      432
+    ],
+    "box_exact": [
+      394.13,
+      260.2,
+      565.87,
+      431.94
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 480.0,
+      "cy": 342.66499999999996,
+      "w": 79,
+      "eye_l": [
+        459.71,
+        336.24
+      ],
+      "eye_r": [
+        493.59,
+        328.41
+      ],
+      "eye_y": 332.33,
+      "cheeks": [
+        441,
+        519,
+        353
+      ],
+      "figtop": 174,
+      "figbot": 1175
+    }
+  },
+  {
+    "scenario": "purikura-hero",
+    "character": "rei",
+    "role_id": "nocturne",
+    "file": "costumes/purikura-hero/rei_nocturne.webp",
+    "box": [
+      318,
+      60,
+      584,
+      325
+    ],
+    "box_exact": [
+      318.39,
+      59.69,
+      583.61,
+      324.91
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 451.0,
+      "cy": 185.04000000000002,
+      "w": 122,
+      "eye_l": [
+        426.43,
+        171.17
+      ],
+      "eye_r": [
+        474.67,
+        171.0
+      ],
+      "eye_y": 171.08,
+      "cheeks": [
+        390,
+        512,
+        199
+      ],
+      "figtop": 60,
+      "figbot": 1139
+    }
+  },
+  {
+    "scenario": "purikura-hero",
+    "character": "rei",
+    "role_id": "shion",
+    "file": "costumes/purikura-hero/rei_shion.webp",
+    "box": [
+      328,
+      87,
+      594,
+      352
+    ],
+    "box_exact": [
+      328.39,
+      87.11,
+      593.61,
+      352.33
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 461.0,
+      "cy": 212.25,
+      "w": 122,
+      "eye_l": [
+        413.5,
+        198.0
+      ],
+      "eye_r": [
+        508.0,
+        199.0
+      ],
+      "eye_y": 198.5,
+      "cheeks": [
+        400,
+        522,
+        226
+      ],
+      "figtop": 7,
+      "figbot": 1139
+    }
+  },
+  {
+    "scenario": "shark-last-order",
+    "character": "hajime",
+    "role_id": "rookie",
+    "file": "costumes/shark-last-order/hajime_rookie.webp",
+    "box": [
+      356,
+      98,
+      601,
+      343
+    ],
+    "box_exact": [
+      355.67,
+      97.75,
+      601.33,
+      343.4
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 478.5,
+      "cy": 213.95999999999998,
+      "w": 113,
+      "eye_l": [
+        441.75,
+        200.75
+      ],
+      "eye_r": [
+        515.08,
+        201.08
+      ],
+      "eye_y": 200.92,
+      "cheeks": [
+        422,
+        535,
+        227
+      ],
+      "figtop": 61,
+      "figbot": 1138
+    }
+  },
+  {
+    "scenario": "shark-last-order",
+    "character": "hajime",
+    "role_id": "lifeguard",
+    "file": "costumes/shark-last-order/hajime_lifeguard.webp",
+    "box": [
+      381,
+      109,
+      565,
+      294
+    ],
+    "box_exact": [
+      380.61,
+      109.12,
+      565.39,
+      293.9
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 473.0,
+      "cy": 197.865,
+      "w": 85,
+      "eye_l": [
+        454.61,
+        178.28
+      ],
+      "eye_r": [
+        515.09,
+        195.18
+      ],
+      "eye_y": 186.73,
+      "cheeks": [
+        431,
+        515,
+        209
+      ],
+      "figtop": 60,
+      "figbot": 1138
+    }
+  },
+  {
+    "scenario": "shark-last-order",
+    "character": "hajime",
+    "role_id": "radio",
+    "file": "costumes/shark-last-order/hajime_radio.webp",
+    "box": [
+      380,
+      101,
+      598,
+      318
+    ],
+    "box_exact": [
+      380.3,
+      100.79,
+      597.7,
+      318.18
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 489.0,
+      "cy": 203.54500000000002,
+      "w": 100,
+      "eye_l": [
+        463.23,
+        192.17
+      ],
+      "eye_r": [
+        514.0,
+        192.0
+      ],
+      "eye_y": 192.09,
+      "cheeks": [
+        439,
+        539,
+        215
+      ],
+      "figtop": 61,
+      "figbot": 1139
+    }
+  },
+  {
+    "scenario": "shark-last-order",
+    "character": "hiyori",
+    "role_id": "otto",
+    "file": "costumes/shark-last-order/hiyori_otto.webp",
+    "box": [
+      420,
+      211,
+      612,
+      403
+    ],
+    "box_exact": [
+      420.35,
+      211.4,
+      611.65,
+      402.71
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 516.0,
+      "cy": 301.875,
+      "w": 88,
+      "eye_l": [
+        496.0,
+        292.0
+      ],
+      "eye_r": [
+        535.0,
+        291.5
+      ],
+      "eye_y": 291.75,
+      "cheeks": [
+        472,
+        560,
+        312
+      ],
+      "figtop": 141,
+      "figbot": 1140
+    }
+  },
+  {
+    "scenario": "shark-last-order",
+    "character": "hiyori",
+    "role_id": "midori",
+    "file": "costumes/shark-last-order/hiyori_midori.webp",
+    "box": [
+      428,
+      201,
+      608,
+      381
+    ],
+    "box_exact": [
+      427.78,
+      200.87,
+      608.22,
+      381.3
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 518.0,
+      "cy": 286.325,
+      "w": 83,
+      "eye_l": [
+        483.6,
+        286.22
+      ],
+      "eye_r": [
+        525.39,
+        267.09
+      ],
+      "eye_y": 276.65,
+      "cheeks": [
+        477,
+        559,
+        296
+      ],
+      "figtop": 141,
+      "figbot": 1140
+    }
+  },
+  {
+    "scenario": "shark-last-order",
+    "character": "adam",
+    "role_id": "otto",
+    "file": "costumes/shark-last-order/adam_otto.webp",
+    "box": [
+      317,
+      75,
+      547,
+      305
+    ],
+    "box_exact": [
+      316.78,
+      74.67,
+      547.22,
+      305.1
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 432.0,
+      "cy": 183.725,
+      "w": 106,
+      "eye_l": [
+        406.74,
+        170.18
+      ],
+      "eye_r": [
+        456.61,
+        172.72
+      ],
+      "eye_y": 171.45,
+      "cheeks": [
+        379,
+        485,
+        196
+      ],
+      "figtop": 60,
+      "figbot": 1139
+    }
+  },
+  {
+    "scenario": "shark-last-order",
+    "character": "adam",
+    "role_id": "mackin",
+    "file": "costumes/shark-last-order/adam_mackin.webp",
+    "box": [
+      333,
+      66,
+      537,
+      271
+    ],
+    "box_exact": [
+      332.83,
+      66.17,
+      537.17,
+      270.52
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 435.0,
+      "cy": 163.5,
+      "w": 94,
+      "eye_l": [
+        403,
+        152
+      ],
+      "eye_r": [
+        462,
+        152
+      ],
+      "eye_y": 152.0,
+      "cheeks": [
+        388,
+        482,
+        175
+      ],
+      "figtop": 7,
+      "figbot": 1139
+    }
+  },
+  {
+    "scenario": "shark-last-order",
+    "character": "tsumugi",
+    "role_id": "sera",
+    "file": "costumes/shark-last-order/tsumugi_sera.webp",
+    "box": [
+      349,
+      326,
+      541,
+      517
+    ],
+    "box_exact": [
+      349.35,
+      326.09,
+      540.65,
+      517.4
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 445.0,
+      "cy": 416.22,
+      "w": 88,
+      "eye_l": [
+        421.86,
+        407.84
+      ],
+      "eye_r": [
+        468.57,
+        405.03
+      ],
+      "eye_y": 406.44,
+      "cheeks": [
+        401,
+        489,
+        426
+      ],
+      "figtop": 305,
+      "figbot": 1174
+    }
+  },
+  {
+    "scenario": "shark-last-order",
+    "character": "tsumugi",
+    "role_id": "noa",
+    "file": "costumes/shark-last-order/tsumugi_noa.webp",
+    "box": [
+      335,
+      306,
+      538,
+      508
+    ],
+    "box_exact": [
+      335.41,
+      305.9,
+      537.59,
+      508.07
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 436.5,
+      "cy": 401.405,
+      "w": 93,
+      "eye_l": [
+        408.47,
+        394.42
+      ],
+      "eye_r": [
+        463.8,
+        387.2
+      ],
+      "eye_y": 390.81,
+      "cheeks": [
+        390,
+        483,
+        412
+      ],
+      "figtop": 253,
+      "figbot": 1173
+    }
+  },
+  {
+    "scenario": "shark-island",
+    "character": "hajime",
+    "role_id": "deckhand",
+    "file": "costumes/shark-island/hajime_deckhand.webp",
+    "box": [
+      382,
+      117,
+      569,
+      304
+    ],
+    "box_exact": [
+      382.02,
+      117.23,
+      568.98,
+      304.18
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 475.5,
+      "cy": 205.875,
+      "w": 86,
+      "eye_l": [
+        426.0,
+        195.0
+      ],
+      "eye_r": [
+        504.0,
+        196.5
+      ],
+      "eye_y": 195.75,
+      "cheeks": [
+        433,
+        518,
+        216
+      ],
+      "figtop": 61,
+      "figbot": 1138
+    }
+  },
+  {
+    "scenario": "shark-island",
+    "character": "hajime",
+    "role_id": "navigator",
+    "file": "costumes/shark-island/hajime_navigator.webp",
+    "box": [
+      391,
+      112,
+      586,
+      308
+    ],
+    "box_exact": [
+      390.67,
+      112.48,
+      586.33,
+      308.13
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 488.5,
+      "cy": 206.325,
+      "w": 90,
+      "eye_l": [
+        428.0,
+        190.5
+      ],
+      "eye_r": [
+        529.2,
+        198.8
+      ],
+      "eye_y": 194.65,
+      "cheeks": [
+        444,
+        533,
+        218
+      ],
+      "figtop": 61,
+      "figbot": 1138
+    }
+  },
+  {
+    "scenario": "shark-island",
+    "character": "hajime",
+    "role_id": "cook",
+    "file": "costumes/shark-island/hajime_cook.webp",
+    "box": [
+      369,
+      129,
+      569,
+      329
+    ],
+    "box_exact": [
+      369.0,
+      129.23,
+      569.0,
+      329.23
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 469.0,
+      "cy": 223.615,
+      "w": 92,
+      "eye_l": [
+        435.96,
+        216.33
+      ],
+      "eye_r": [
+        501.75,
+        210.13
+      ],
+      "eye_y": 213.23,
+      "cheeks": [
+        423,
+        515,
+        234
+      ],
+      "figtop": 6,
+      "figbot": 1137
+    }
+  },
+  {
+    "scenario": "shark-island",
+    "character": "hiyori",
+    "role_id": "ruri",
+    "file": "costumes/shark-island/hiyori_ruri.webp",
+    "box": [
+      427,
+      211,
+      612,
+      396
+    ],
+    "box_exact": [
+      427.11,
+      210.85,
+      611.89,
+      395.63
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 519.5,
+      "cy": 298.23,
+      "w": 85,
+      "eye_l": [
+        490.73,
+        288.42
+      ],
+      "eye_r": [
+        547.5,
+        288.5
+      ],
+      "eye_y": 288.46,
+      "cheeks": [
+        477,
+        562,
+        308
+      ],
+      "figtop": 140,
+      "figbot": 1141
+    }
+  },
+  {
+    "scenario": "shark-island",
+    "character": "hiyori",
+    "role_id": "nerine",
+    "file": "costumes/shark-island/hiyori_nerine.webp",
+    "box": [
+      386,
+      208,
+      578,
+      399
+    ],
+    "box_exact": [
+      386.35,
+      208.11,
+      577.65,
+      399.42
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 482.0,
+      "cy": 298.73,
+      "w": 88,
+      "eye_l": [
+        473.0,
+        285.43
+      ],
+      "eye_r": [
+        491.0,
+        291.5
+      ],
+      "eye_y": 288.46,
+      "cheeks": [
+        438,
+        526,
+        309
+      ],
+      "figtop": 141,
+      "figbot": 1141
+    }
+  },
+  {
+    "scenario": "shark-island",
+    "character": "adam",
+    "role_id": "doran",
+    "file": "costumes/shark-island/adam_doran.webp",
+    "box": [
+      304,
+      44,
+      538,
+      279
+    ],
+    "box_exact": [
+      303.61,
+      43.77,
+      538.39,
+      278.55
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 421.0,
+      "cy": 154.69,
+      "w": 108,
+      "eye_l": [
+        396.57,
+        143.07
+      ],
+      "eye_r": [
+        445.95,
+        141.7
+      ],
+      "eye_y": 142.38,
+      "cheeks": [
+        367,
+        475,
+        167
+      ],
+      "figtop": 8,
+      "figbot": 1139
+    }
+  },
+  {
+    "scenario": "shark-island",
+    "character": "adam",
+    "role_id": "jiruba",
+    "file": "costumes/shark-island/adam_jiruba.webp",
+    "box": [
+      309,
+      73,
+      539,
+      304
+    ],
+    "box_exact": [
+      308.78,
+      73.24,
+      539.22,
+      303.67
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 424.0,
+      "cy": 182.01,
+      "w": 106,
+      "eye_l": [
+        396.5,
+        170.92
+      ],
+      "eye_r": [
+        451.56,
+        169.12
+      ],
+      "eye_y": 170.02,
+      "cheeks": [
+        371,
+        477,
+        194
+      ],
+      "figtop": 7,
+      "figbot": 1139
+    }
+  },
+  {
+    "scenario": "smoke-robot",
+    "character": "hajime",
+    "role_id": "rookie",
+    "file": "costumes/smoke-robot/hajime_rookie.webp",
+    "box": [
+      380,
+      99,
+      570,
+      288
+    ],
+    "box_exact": [
+      380.43,
+      99.07,
+      569.57,
+      288.2
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 475.0,
+      "cy": 189.75,
+      "w": 87,
+      "eye_l": [
+        450.0,
+        172.0
+      ],
+      "eye_r": [
+        485.0,
+        185.0
+      ],
+      "eye_y": 178.5,
+      "cheeks": [
+        432,
+        518,
+        201
+      ],
+      "figtop": 61,
+      "figbot": 1138
+    }
+  },
+  {
+    "scenario": "smoke-robot",
+    "character": "hajime",
+    "role_id": "pilot",
+    "file": "costumes/smoke-robot/hajime_pilot.webp",
+    "box": [
+      389,
+      130,
+      568,
+      309
+    ],
+    "box_exact": [
+      389.37,
+      130.33,
+      567.63,
+      308.59
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 478.5,
+      "cy": 216.1,
+      "w": 82,
+      "eye_l": [
+        449.9,
+        206.1
+      ],
+      "eye_r": [
+        523.7,
+        204.3
+      ],
+      "eye_y": 205.2,
+      "cheeks": [
+        438,
+        519,
+        227
+      ],
+      "figtop": 61,
+      "figbot": 1137
+    }
+  },
+  {
+    "scenario": "smoke-robot",
+    "character": "hajime",
+    "role_id": "mechanic",
+    "file": "costumes/smoke-robot/hajime_mechanic.webp",
+    "box": [
+      375,
+      106,
+      598,
+      330
+    ],
+    "box_exact": [
+      374.54,
+      106.42,
+      598.46,
+      330.33
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 486.5,
+      "cy": 212.23000000000002,
+      "w": 103,
+      "eye_l": [
+        437.33,
+        198.42
+      ],
+      "eye_r": [
+        536.0,
+        202.5
+      ],
+      "eye_y": 200.46,
+      "cheeks": [
+        435,
+        538,
+        224
+      ],
+      "figtop": 61,
+      "figbot": 1138
+    }
+  },
+  {
+    "scenario": "smoke-robot",
+    "character": "adam",
+    "role_id": "nova",
+    "file": "costumes/smoke-robot/adam_nova.webp",
+    "box": [
+      310,
+      74,
+      540,
+      304
+    ],
+    "box_exact": [
+      309.78,
+      73.74,
+      540.22,
+      304.17
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 425.0,
+      "cy": 182.76,
+      "w": 106,
+      "eye_l": [
+        397.19,
+        171.19
+      ],
+      "eye_r": [
+        452.21,
+        169.84
+      ],
+      "eye_y": 170.52,
+      "cheeks": [
+        372,
+        478,
+        195
+      ],
+      "figtop": 60,
+      "figbot": 1138
+    }
+  },
+  {
+    "scenario": "smoke-robot",
+    "character": "adam",
+    "role_id": "cosmo",
+    "file": "costumes/smoke-robot/adam_cosmo.webp",
+    "box": [
+      306,
+      78,
+      540,
+      313
+    ],
+    "box_exact": [
+      305.61,
+      77.73,
+      540.39,
+      312.51
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 423.0,
+      "cy": 188.67000000000002,
+      "w": 108,
+      "eye_l": [
+        398.8,
+        176.92
+      ],
+      "eye_r": [
+        446.25,
+        175.75
+      ],
+      "eye_y": 176.34,
+      "cheeks": [
+        369,
+        477,
+        201
+      ],
+      "figtop": 60,
+      "figbot": 1138
+    }
+  },
+  {
+    "scenario": "smoke-robot",
+    "character": "tsumugi",
+    "role_id": "luna",
+    "file": "costumes/smoke-robot/tsumugi_luna.webp",
+    "box": [
+      324,
+      328,
+      524,
+      528
+    ],
+    "box_exact": [
+      324.0,
+      327.59,
+      524.0,
+      527.59
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 424.0,
+      "cy": 422.29499999999996,
+      "w": 92,
+      "eye_l": [
+        405.69,
+        414.7
+      ],
+      "eye_r": [
+        443.14,
+        408.48
+      ],
+      "eye_y": 411.59,
+      "cheeks": [
+        378,
+        470,
+        433
+      ],
+      "figtop": 304,
+      "figbot": 1172
+    }
+  },
+  {
+    "scenario": "smoke-robot",
+    "character": "tsumugi",
+    "role_id": "konoha",
+    "file": "costumes/smoke-robot/tsumugi_konoha.webp",
+    "box": [
+      341,
+      326,
+      522,
+      507
+    ],
+    "box_exact": [
+      341.28,
+      326.33,
+      521.72,
+      506.76
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 431.5,
+      "cy": 411.555,
+      "w": 83,
+      "eye_l": [
+        406.71,
+        406.21
+      ],
+      "eye_r": [
+        456.5,
+        398.0
+      ],
+      "eye_y": 402.11,
+      "cheeks": [
+        390,
+        473,
+        421
+      ],
+      "figtop": 304,
+      "figbot": 1172
+    }
+  },
+  {
+    "scenario": "stage-ghost",
+    "character": "hajime",
+    "role_id": "stagehand",
+    "file": "costumes/stage-ghost/hajime_stagehand.webp",
+    "box": [
+      354,
+      99,
+      584,
+      329
+    ],
+    "box_exact": [
+      353.78,
+      98.58,
+      584.22,
+      329.01
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 469.0,
+      "cy": 207.68,
+      "w": 106,
+      "eye_l": [
+        419.0,
+        194.0
+      ],
+      "eye_r": [
+        519.18,
+        196.73
+      ],
+      "eye_y": 195.36,
+      "cheeks": [
+        416,
+        522,
+        220
+      ],
+      "figtop": 60,
+      "figbot": 1137
+    }
+  },
+  {
+    "scenario": "stage-ghost",
+    "character": "hajime",
+    "role_id": "childstar",
+    "file": "costumes/stage-ghost/hajime_childstar.webp",
+    "box": [
+      378,
+      109,
+      572,
+      303
+    ],
+    "box_exact": [
+      378.26,
+      109.34,
+      571.74,
+      302.82
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 475.0,
+      "cy": 200.8,
+      "w": 89,
+      "eye_l": [
+        418.5,
+        190.36
+      ],
+      "eye_r": [
+        505.5,
+        190.83
+      ],
+      "eye_y": 190.6,
+      "cheeks": [
+        431,
+        519,
+        211
+      ],
+      "figtop": 61,
+      "figbot": 1138
+    }
+  },
+  {
+    "scenario": "stage-ghost",
+    "character": "hajime",
+    "role_id": "lightboy",
+    "file": "costumes/stage-ghost/hajime_lightboy.webp",
+    "box": [
+      347,
+      95,
+      569,
+      316
+    ],
+    "box_exact": [
+      347.13,
+      94.66,
+      568.87,
+      316.4
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 458.0,
+      "cy": 199.39499999999998,
+      "w": 102,
+      "eye_l": [
+        413.15,
+        184.75
+      ],
+      "eye_r": [
+        502.46,
+        190.82
+      ],
+      "eye_y": 187.79,
+      "cheeks": [
+        407,
+        509,
+        211
+      ],
+      "figtop": 61,
+      "figbot": 1139
+    }
+  },
+  {
+    "scenario": "stage-ghost",
+    "character": "hiyori",
+    "role_id": "mirei",
+    "file": "costumes/stage-ghost/hiyori_mirei.webp",
+    "box": [
+      433,
+      200,
+      602,
+      370
+    ],
+    "box_exact": [
+      432.72,
+      199.98,
+      602.28,
+      369.55
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 517.5,
+      "cy": 280.6,
+      "w": 78,
+      "eye_l": [
+        486.17,
+        280.15
+      ],
+      "eye_r": [
+        517.82,
+        262.25
+      ],
+      "eye_y": 271.2,
+      "cheeks": [
+        479,
+        556,
+        290
+      ],
+      "figtop": 141,
+      "figbot": 1141
+    }
+  },
+  {
+    "scenario": "stage-ghost",
+    "character": "hiyori",
+    "role_id": "serena",
+    "file": "costumes/stage-ghost/hiyori_serena.webp",
+    "box": [
+      431,
+      203,
+      600,
+      372
+    ],
+    "box_exact": [
+      430.72,
+      202.67,
+      600.28,
+      372.24
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 515.5,
+      "cy": 282.945,
+      "w": 78,
+      "eye_l": [
+        488.05,
+        282.15
+      ],
+      "eye_r": [
+        522.39,
+        265.62
+      ],
+      "eye_y": 273.89,
+      "cheeks": [
+        477,
+        554,
+        292
+      ],
+      "figtop": 141,
+      "figbot": 1140
+    }
+  },
+  {
+    "scenario": "stage-ghost",
+    "character": "samechan",
+    "role_id": "minamo",
+    "file": "costumes/stage-ghost/samechan_minamo.webp",
+    "box": [
+      347,
+      66,
+      613,
+      332
+    ],
+    "box_exact": [
+      347.39,
+      66.42,
+      612.61,
+      331.64
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 480.0,
+      "cy": 191.905,
+      "w": 122,
+      "eye_l": [
+        439.4,
+        174.0
+      ],
+      "eye_r": [
+        520.69,
+        181.62
+      ],
+      "eye_y": 177.81,
+      "cheeks": [
+        419,
+        541,
+        206
+      ],
+      "figtop": 61,
+      "figbot": 1139
+    }
+  },
+  {
+    "scenario": "stage-ghost",
+    "character": "samechan",
+    "role_id": "hiremaru",
+    "file": "costumes/stage-ghost/samechan_hiremaru.webp",
+    "box": [
+      299,
+      154,
+      573,
+      428
+    ],
+    "box_exact": [
+      299.04,
+      154.39,
+      572.96,
+      428.3
+    ],
+    "src": [
+      896,
+      1200
+    ],
+    "face": {
+      "cx": 436.0,
+      "cy": 283.71500000000003,
+      "w": 126,
+      "eye_l": [
+        395.77,
+        269.57
+      ],
+      "eye_r": [
+        476.86,
+        269.29
+      ],
+      "eye_y": 269.43,
+      "cheeks": [
+        373,
+        499,
+        298
+      ],
+      "figtop": 61,
+      "figbot": 1140
+    }
+  }
+]

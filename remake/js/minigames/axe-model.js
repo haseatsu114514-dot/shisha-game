@@ -10,24 +10,41 @@ export const DIVISIONS = {
   am: { name: "アマ", short: "AM", note: "当てた赤・5はその半分（5投）のあいだ閉じる。閉じた赤は5点、閉じた5は外側のリング点" },
   pro: { name: "プロ", short: "PRO", note: "当てた5の円は丸ごと閉じる。同じ半分で2度目は0点。5つの赤を順に回る" },
 };
-// Normalized board units: 1 = radius of the 1 ring (14.75 in). Sizes are the official inches.
-export const INCH = 1 / 14.75;
+// Normalized board units: 1 = radius of the 1 ring (18 in). Sizes are the official inches.
+export const INCH = 1 / 18;
+/** Line-centre radii. Bull 1.5 in and five ring 3.5 in follow the 2026 text. The 4/3/2/1 rings follow the 2024 WATL stencil
+ *  ("2026 Target Note: Use 2024 stencil"): its black-line slots sit every 4 1/8 in, i.e. 5.625 / 9.75 / 13.875 / 18 in
+ *  (diameters 11.25 / 19.5 / 27.75 / 36 in). Measured on worldaxethrowingleague.com/wp-content/uploads/2024/12/stencil-graphic.png
+ *  with the 1.5 in, 0.75 in and 2 in holes as the scale; owner: "公式に合わせて" (2026-11-08, #2729). */
 export const RINGS = [
-  { radius: .75 * INCH, score: 6 }, { radius: 1.75 * INCH, score: 5 }, { radius: 5.375 * INCH, score: 4 },
-  { radius: 8.5 * INCH, score: 3 }, { radius: 11.625 * INCH, score: 2 }, { radius: 14.75 * INCH, score: 1 },
+  { radius: .75 * INCH, score: 6 }, { radius: 1.75 * INCH, score: 5 }, { radius: 5.625 * INCH, score: 4 },
+  { radius: 9.75 * INCH, score: 3 }, { radius: 13.875 * INCH, score: 2 }, { radius: 18 * INCH, score: 1 },
 ];
 /** The painted 20 mm black lines score the lower zone: a ring counts only strictly inside its line. */
 export const LINE = .3937 * INCH;
 /** A 4 in cutting edge, vertical when stuck. The highest zone it touches scores. */
 export const BLADE = { halfLength: 2 * INCH };
+/** Middle of the band between two ring lines, and the side offset that puts a mark at a given height on that circle. */
+const bandMiddle = (inner, outer) => (RINGS[inner].radius + RINGS[outer].radius) / 2;
+const sideAt = (radius, height) => Math.sqrt(radius ** 2 - height ** 2);
+/** The 4 outer bulls and five rings are "centered within the 3 ring", 3.5 in above and below the centre (56.5 / 63.5 in from the
+ *  ground): on the stencil the outer-bull hole sits halfway between the 4 and 3 ring slots, so about 6.85 in to the side. */
+export const OUTER_RADIUS = bandMiddle(2, 3);
+export const OUTER_HEIGHT = 3.5 * INCH;
 export const CLUSTERS = [
   { id: "center", x: 0, y: 0, ring: 4 },
-  ...[-1, 1].flatMap(y => [-1, 1].map(x => ({ id: (y < 0 ? "u" : "l") + (x < 0 ? "l" : "r"), x: x * 6 * INCH, y: y * 3.5 * INCH, ring: 3 }))),
+  ...[-1, 1].flatMap(y => [-1, 1].map(x => ({ id: (y < 0 ? "u" : "l") + (x < 0 ? "l" : "r"), x: x * sideAt(OUTER_RADIUS, OUTER_HEIGHT), y: y * OUTER_HEIGHT, ring: 3 }))),
 ];
 export const BULLS = CLUSTERS.slice(1).map(c => ({ x: c.x, y: c.y, outer: RINGS[1].radius, inner: RINGS[0].radius }));
+/** Killshots (checked 2026-11-08 against worldaxethrowingleague.com/axe-throwing-rules and the 2024/2025 rule pages):
+ *  outer 1.5 in / inner 0.75 in, lower 48 in / upper 72 in on centre (target centre 60 in, i.e. 12 in up and down), "centered in the 1 ring".
+ *  On the stencil the kill hole sits halfway between the 2 and 1 ring slots; at 12 in up that is about 10.49 in to the side
+ *  (about 41 degrees from vertical, "Blue zones in 1-ring corners"), where the stencil's board-alignment arrow also points. */
+export const KILL_RADIUS = bandMiddle(4, 5);
+export const KILL_HEIGHT = 12 * INCH;
 export const KILLS = [-1, 1].flatMap(y => [-1, 1].map(x => ({
-  id: (y < 0 ? "upper" : "lower") + (x < 0 ? "-left" : "-right"),
-  row: y < 0 ? "upper" : "lower", x: x * 7 * INCH, y: y * 12 * INCH, outer: .75 * INCH, inner: .375 * INCH,
+  id: (y < 0 ? "upper" : "lower") + (x < 0 ? "-left" : "-right"), row: y < 0 ? "upper" : "lower",
+  x: x * sideAt(KILL_RADIUS, KILL_HEIGHT), y: y * KILL_HEIGHT, outer: .75 * INCH, inner: .375 * INCH,
 })));
 /** Clockwise sudden-death rotation, starting upper-left. */
 export const KILL_ROTATION = ["upper-left", "upper-right", "lower-right", "lower-left"];

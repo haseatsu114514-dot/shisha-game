@@ -58,7 +58,7 @@ test('every supported old/new bonus combination has a measured probability diffe
 test('actual d20 completion through campaign contract: cancel/stale inert, one action, detached serialization',()=>{
   const state={chapter:2,phase:'daily',day:3,slot:1,money:3000,lovers:[],affinity:{},met:{},flags:{},trpg:{...campaign.emptyTrpgProgress(),shifts:[]}};
   campaign.foundTrpgClub(state,catalog);
-  for(const p of catalog.participants){state.met[p.id]=true;state.affinity[p.id]=66;campaign.joinTrpgClub(state,catalog,p.id);}
+  for(const p of catalog.participants){state.met[p.id]=true;state.flags[`_trpg_topic_${p.id}`]=true;state.affinity[p.id]=0;campaign.joinTrpgClub(state,catalog,p.id);}
   campaign.syncTrpgStock(state,catalog);assert(campaign.buyTrpgBook(state,catalog,scenario.id));
   const cast=campaign.castTrpgTable(state,catalog,scenario);assert(cast.ok);
   const ticket={chapter:state.chapter,day:state.day,slot:state.slot,assignments:cast.assignments};

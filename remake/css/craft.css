@@ -366,8 +366,8 @@
 .foil-hole { position: absolute; width: 9px; height: 9px; margin: -4.5px 0 0 -4.5px; border-radius: 43% 55% 40% 52%; background: radial-gradient(ellipse at 65% 25%, #060509 45%, #34313a 75%, #89828b); box-shadow: -1px 1px 1px 1px #f6f0debd, 1px -1px 2px 2px #332f386b; animation: hole-pop .2s var(--ease-out); }
 .foil-hole::before { content: ""; position: absolute; inset: -5px; border-radius: 45% 51% 40% 48%; background: linear-gradient(135deg, #20203255, transparent 45%, #fff6dd55 70%, transparent); pointer-events: none; }
 .foil-hole::after { content: ""; position: absolute; top: 4px; left: -7px; width: 22px; height: 1px; background: linear-gradient(90deg, transparent, #4e465ccc 30%, transparent 46%, #fff5dacc 70%, transparent); transform: rotate(var(--scratch-angle, -28deg)); pointer-events: none; }
-.foil-hole.close, .foil-hole.miss { border-radius: 24% 52% 32% 60%; }
-.foil-hole.close::after, .foil-hole.miss::after { width: 27px; height: 2px; }
+.foil-hole.close, .foil-hole.miss, .foil-hole.rough { border-radius: 24% 52% 32% 60%; }
+.foil-hole.close::after, .foil-hole.miss::after, .foil-hole.rough::after { width: 27px; height: 2px; }
 @keyframes hole-pop { from { transform: scale(2); } }
 .foil-cursor { position: absolute; width: 26px; height: 26px; margin: -13px 0 0 -13px; border-radius: 50%; border: 3px solid #c5fcff; outline: 2px solid #132f40; background: transparent; box-shadow: inset 0 0 0 1px #132f40, 0 0 12px #52d9ed99; pointer-events: none; }
 .foil-cursor.technique-visible { box-shadow: inset 0 0 0 1px #132f40, 0 0 12px #52d9ed99, -7px 0 10px var(--stat-technique); }
@@ -381,6 +381,7 @@
 .foil-cursor.pressing::before { opacity: 1; transform: scale(calc(1 + var(--press, 0) * 2)); }
 .foil-cursor[data-depth="wide"] { border-color: #ffd27a; }
 .foil-cursor[data-depth="large"] { border-color: #ff9a76; }
+.foil-hole.shallow { width: 5px; height: 5px; margin: -2.5px 0 0 -2.5px; opacity: .75; }
 .foil-hole.wide { width: 12px; height: 12px; margin: -6px 0 0 -6px; }
 .foil-hole.large { width: 15px; height: 15px; margin: -7.5px 0 0 -7.5px; }
 .foil-dent { position: absolute; width: 8px; height: 8px; margin: -4px 0 0 -4px; border-radius: 50%; box-shadow: inset 1px -1px 2px #13101a66, 0 0 0 1px #fff8; animation: foil-dent-fade 1.6s ease-out forwards; }
@@ -442,14 +443,6 @@
 .coal.pikan .c-hot { opacity: 1; filter: brightness(2.2) saturate(.75) drop-shadow(0 0 10px #ffe1a0); }
 .coal.pikan .coal-corners { animation: heat-ready .35s ease-in-out infinite alternate; }
 @keyframes heat-ready { to { opacity: .35; filter: drop-shadow(0 0 12px #ff6b36); } }
-.heat-actions { display: flex; justify-content: center; gap: 6px; margin: 4px auto 0; max-width: 600px; }
-.heat-pick { flex: 1; min-width: 0; min-height: 50px; padding: 5px 3px; border: 2px solid #b98d5d; border-radius: 8px; background: #281923; color: #ffe2b4; cursor: pointer; font: inherit; }
-.heat-pick b, .heat-pick small { display: block; line-height: 1.25; }
-.heat-pick b { font-size: 14px; }
-.heat-pick small { font-size: 12px; font-variant-numeric: tabular-nums; }
-.heat-pick[data-phase="just"] { border-color: #ffe2a0; background: #8b321c; color: #fff7d9; box-shadow: 0 0 12px #ff7935; animation: heat-ready .35s ease-in-out infinite alternate; }
-.heat-pick:focus-visible { outline: 3px solid #fff1bf; outline-offset: 2px; }
-.heat-pick:disabled { opacity: .55; cursor: default; }
 .coal.soon .coal-corners { border-color: #e6a160; }
 .heat.insight-visible .coal.soon .coal-corners { border-color: var(--stat-insight); box-shadow: 0 0 12px var(--stat-insight); animation: insight-soon .5s ease-in-out infinite alternate; }
 .coal .effect-insight { display: none; position: absolute; right: -15px; top: -12px; }
@@ -479,8 +472,6 @@
 .heat-picks { position: absolute; width: 1px; height: 1px; padding: 0; margin: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 .heat-compact { grid-template-columns: minmax(0, 1fr) 200px; gap: 12px; height: 355px; }
 .heat-compact .stove { margin-top: 35px; }
-.heat-compact .heat-pick { min-height: 42px; }
-.heat-compact .heat-pick b { font-size: 12px; }
 .heat-compact .coal { width: 84px; height: 72px; }
 .heat-compact .heat-info { padding: 10px 10px 6px; }
 .heat-compact .heat-carrier-head h2 { font-size: 24px; }
@@ -489,7 +480,7 @@
 .heat-compact .heat-feedback { height: 44px; flex-direction: column; gap: 2px; }
 .heat-compact .heat-feedback .stamp { font-size: 14px; }
 .heat-compact .heat-error { font-size: 14px; line-height: 1.2; padding-left: 0; border-left: 0; }
-@media (prefers-reduced-motion: reduce) { .coal, .coal-stored, .coal.pikan .coal-corners, .heat-pick { transition: none; animation: none; } .coal.pikan .c-core { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .coal, .coal-stored, .coal.pikan .coal-corners { transition: none; animation: none; } .coal.pikan .c-core { opacity: 1; } }
 
 /* キッチンタイマー：液晶と四つのボタンだけをコードで重ねる。 */
 .steam-timer { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 22px; height: 100%; padding-bottom: 24px; }
@@ -666,7 +657,7 @@
 @keyframes fade-in { from { opacity: 0; } }
 .rc-over { position: absolute; left: 0; right: 0; top: 44%; text-align: center; font-size: 72px; font-weight: 800; color: #ff4a4a; text-shadow: 0 0 30px #f00; z-index: 5; animation: rc-pop 0.5s var(--ease-out); }
 
-/* ---------------------------------------------------------------- 伏見カットイン */
+/* ---------------------------------------------------------------- 千須カットイン */
 .sui-cut { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; background: rgba(0, 0, 0, 0.9); opacity: 0; transition: opacity 0.4s; pointer-events: none; }
 .sui-cut.show { opacity: 1; }
 .sui-cut.out { opacity: 0; }
@@ -726,6 +717,10 @@
 .bc-lane { position: absolute; left: 0; right: 0; top: 76px; bottom: 145px; z-index: 6; overflow: hidden; pointer-events: none; user-select: none; container-type: inline-size;
   mask-image: linear-gradient(90deg, #000 0 36%, #000b 46% 96%, #000d 100%);
   clip-path: polygon(0 0, calc(100% - 180px) 0, calc(100% - 180px) 80px, 100% 80px, 100% 100%, 0 100%); }
+/* ワイド時（#3007 の会話幅拡張に合わせる）: 弾幕の帯も横を少し使う。鮮明に見える範囲を右へ伸ばし、右上の切り欠きを少し狭める。通常時は上の形のまま */
+#stage[data-wide] .bc-lane {
+  mask-image: linear-gradient(90deg, #000 0 48%, #000b 60% 96%, #000d 100%);
+  clip-path: polygon(0 0, calc(100% - 120px) 0, calc(100% - 120px) 80px, 100% 80px, 100% 100%, 0 100%); }
 .nico {
   position: absolute;
   left: 0;
@@ -1339,6 +1334,15 @@ body.game-ds .bench[data-step] .mix-temperature-preview { position: fixed; left:
 
 .bench:is([data-step="pull"], [data-step="care"], [data-step="serve"]) .worker-equipment { right: 104px; bottom: 140px; width: 102px; height: 260px; }
 .mix-temperature-preview:has([data-selected="false"]) > small { display: none; }
+/* パッキングでも配合と同じ左の温度帯ゲージを出す（横画面）。実温度針はまだ無いので帯のみ。
+   DSは landscape-only で別途撤去中のため、ここでは非DSだけを触る。 */
+body:not(.game-ds) .bench[data-step="pack"] .packing { position: relative; }
+body:not(.game-ds) .bench[data-step="pack"] .bench-panel { overflow: visible; }
+body:not(.game-ds) .bench[data-step="pack"] .mix-temperature-preview {
+  left: -140px; height: 480px; padding-bottom: 78px; overflow: hidden;
+}
+body.game-ds .bench[data-step="pack"] .mix-temperature-preview { display: none; }
+
 
 body.game-ds .mix-temperature-legend { top: calc(100% - 15px); }
 body.game-ds .mix-temperature-preview > small { display: none; }

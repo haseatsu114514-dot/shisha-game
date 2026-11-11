@@ -19,6 +19,9 @@
   <!-- 本編と同じスマホ横持ちの補正（#2862。これが無いと試遊ページだけ文字が小さく見える） -->
   <link rel="stylesheet" href="css/craft-landscape.css">
   <link rel="stylesheet" href="css/craft-paper.css">
+  <link rel="stylesheet" href="css/wide-craft.css">
+  <link rel="stylesheet" href="css/phone-layout.css">
+  <link rel="stylesheet" href="css/craft-stage.css">
 </head>
 <body>
   <nav class="craft-preview-nav" aria-label="試遊する工程">
@@ -30,7 +33,7 @@
     <a href="craft-preview.html?loading=comic">漫画付きロード</a>
     <small>本編のセーブに影響しない試遊です</small>
   </nav>
-  <div id="viewport"><div id="stage">
+  <div id="viewport"><div id="backdrop" aria-hidden="true"></div><div id="stage">
     <div id="bg"></div><div id="screen"></div><div id="vn"></div><div id="hud"></div>
     <div id="fx"></div><div id="toasts"></div><div id="banners"></div>
     <div id="wipe"><i></i><i></i><i></i><i></i><i></i><i></i></div><div id="modal"></div>

@@ -179,7 +179,7 @@ await suite('ch2-main', async check => {
     assert.equal(value.chapter, 2); assert.equal(value.day, 15); assert.equal(value.phase, 'daily');
     assert.equal(value.flags._ch1_cleared, true);
     assert.match(await page.locator('.dc-day').textContent(), /^1\/14$/);
-    assert.match(await page.locator('.dc-meta').textContent(), /あと13日/);
+    assert.doesNotMatch(await page.locator('.dc-meta').textContent(), /あと\d+日/, '大会までの残り日数は左上カードに出さない（#3033）');
     await page.locator(test('station')).click();
     assert.equal(await page.locator(test('go')).count(), 0, 'Return remains unavailable before deliveries and venue');
     assert.match(await page.locator('.map-info .mi-desc').innerText(), /県大会ホールの入口と搬入場所も確認しよう。/);

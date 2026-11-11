@@ -1,7 +1,9 @@
 import assert from "node:assert/strict";
 import fs from "node:fs/promises";
-import { suite, storageSnapshot } from "./support.mjs";
+import { suite, baseURL, storageSnapshot } from "./support.mjs";
+import { KILLS, CLUSTERS } from "../../js/minigames/axe-model.js";
 const shotsPath = process.env.COMPARISON_DIR;
+const ignoreTitleSeResourceLimit = failure => failure.startsWith("net::ERR_INSUFFICIENT_RESOURCES ") && failure.includes("/assets/audio/se/");
 if (shotsPath) await fs.mkdir(shotsPath, { recursive: true });
 const game = page => page.locator('[data-test="axe-game"]');
 const phase = (page, value) => page.waitForFunction(value => document.querySelector('[data-test="axe-game"]')?.dataset.phase === value, value);
@@ -28,22 +30,44 @@ async function fit(page) {
   const target = await page.locator(".axe-target").boundingBox(); assert(target && target.height > 100,"Target must stay usable");
 }
 async function stopGauge(page, value, touch, keyboard) {
+  // Desktop timing is checked at the rendered needle, then the same UI click
+  // handler runs immediately. Separate automation round trips can add enough
+  // delay to turn an intended stick into a drop.
+  if (!touch && !keyboard) return stopGaugeOnFrame(page, value);
   await page.waitForFunction(value => {
     const root = document.querySelector('[data-test="axe-game"]'), n = Number(root.dataset.timing);
     return !root.querySelector('[data-test="axe-action"]').disabled && n >= value - .02 && n <= value + .005;
   }, value);
   await pressReady(page, touch, keyboard);
 }
+async function stopGaugeOnFrame(page, value) {
+  // For the tiny blue marker, read the visible needle and click its real UI
+  // control in the same frame. A Playwright round trip can miss this window.
+  await page.evaluate(value => new Promise((resolve, reject) => {
+    const deadline = performance.now() + 12000;
+    const seek = () => {
+      const root = document.querySelector('[data-test="axe-game"]');
+      const button = root?.querySelector('[data-test="axe-action"]');
+      const n = Number(root?.dataset.timing);
+      // The small blue outer ring only allows about .01 of gauge timing error.
+      if (button && !button.disabled && n >= value - .009 && n <= value + .009) {
+        button.click(); resolve();
+      } else if (performance.now() < deadline) requestAnimationFrame(seek);
+      else reject(new Error(`Visible gauge never reached ${value}`));
+    };
+    requestAnimationFrame(seek);
+  }), value);
+}
 async function shoot(page, { touch = false, x = 0, y = 0, power = .62, keyboard = false, precision = false, attempt = 0 } = {}) {
   await phase(page,"choice"); await pressReady(page,touch,keyboard); await phase(page,"horizontal"); await fit(page);
-  await stopGauge(page,(x / 1.2 + 1) / 2,touch,keyboard); await phase(page,"vertical");
+  await (precision ? stopGaugeOnFrame(page,(x / 1.2 + 1) / 2) : stopGauge(page,(x / 1.2 + 1) / 2,touch,keyboard)); await phase(page,"vertical");
   const stoppedX=await game(page).getAttribute("data-aim-x");
-  await stopGauge(page,(y / 1.2 + 1) / 2,touch,keyboard); await phase(page,"power");
+  await (precision ? stopGaugeOnFrame(page,(y / 1.2 + 1) / 2) : stopGauge(page,(y / 1.2 + 1) / 2,touch,keyboard)); await phase(page,"power");
   assert.equal(await game(page).getAttribute("data-aim-x"),stoppedX,"Horizontal position remains locked");
   if (precision) {
     const actualY=Number(await game(page).getAttribute("data-aim-y"));
-    // The 4in blade forgives vertical error; horizontal error must stay inside the small blue outer ring (.051).
-    if (Math.abs(Number(stoppedX)-x)>.04 || Math.abs(actualY-y)>.08) {
+    // The 4in blade forgives vertical error; horizontal error must stay inside the small blue outer ring (.75in = .042 of the 1 ring).
+    if (Math.abs(Number(stoppedX)-x)>.025 || Math.abs(actualY-y)>.08) {
       assert(attempt<4,"Physical aiming failed after five visible re-aims");
       // Use the player's real re-aim control before throwing; a slow runner can miss the narrow timing window.
       console.log(`[axe-throw] Re-aim ${attempt+1}: actual ${stoppedX},${actualY}; target ${x},${y}`);
@@ -62,7 +86,7 @@ async function shoot(page, { touch = false, x = 0, y = 0, power = .62, keyboard 
     },power);
     await press(page,'[data-test="axe-focus"]',touch);
   }
-  await stopGauge(page,power,touch,keyboard); await phase(page,"result");
+  await (precision ? stopGaugeOnFrame(page,power) : stopGauge(page,power,touch,keyboard)); await phase(page,"result");
 }
 async function standalone(page, { touch = false, keyboard = false, league = false, opponent = "hiyori" } = {}) {
   await page.evaluate(() => {
@@ -81,7 +105,12 @@ async function standalone(page, { touch = false, keyboard = false, league = fals
 await suite("axe-throw", async run => {
   const check=(label,...args)=>!process.env.TEST_CASES || label.includes(process.env.TEST_CASES) ? run(label,...args) : Promise.resolve();
   await check('front-perspective-actual-flight-frames',async page=>{
-    await standalone(page);await page.clock.install();await page.clock.pauseAt(new Date(Date.now()+100));
+    await standalone(page);
+    // Keep the pause target relative to the clock's installed time. A 100 ms
+    // target based on wall time can already be in the past on a busy runner.
+    const clockBase = Date.now();
+    await page.clock.install({ time: clockBase });
+    await page.clock.pauseAt(clockBase + 60_000);
     await pressReady(page);await phase(page,'horizontal');await page.clock.runFor(850);await pressReady(page);
     await phase(page,'vertical');await page.clock.runFor(950);await pressReady(page);
     await phase(page,'power');await page.clock.runFor(760);await pressReady(page);await phase(page,'flight');
@@ -105,7 +134,6 @@ await suite("axe-throw", async run => {
   });
   for(const [label,options,touch] of [
     ['flight-ui-pc',{viewport:{width:1280,height:800}},false],
-    ['flight-ui-touch-portrait',{viewport:{width:390,height:844},isMobile:true,hasTouch:true},true],
     ['flight-ui-touch-landscape',{viewport:{width:844,height:390},isMobile:true,hasTouch:true},true],
   ]) await check(label,async page=>{
     await standalone(page,{touch});const before=await storageSnapshot(page);
@@ -115,9 +143,14 @@ await suite("axe-throw", async run => {
     assert.match(await page.locator('[data-step="horizontal"]').textContent(),/✓/);
     await stopGauge(page,.5,touch);await phase(page,'power');await fit(page);
     assert.match(await page.locator('[data-step="vertical"]').textContent(),/✓/);
-    await page.waitForFunction(()=>Number(document.querySelector('.axe-game').dataset.power)<.4);
-    assert.match(await page.locator('.axe-power-label').textContent(),/弱すぎる・落下/);
-    assert.match(await page.locator('.axe-feedback').textContent(),/↓ 下/);
+    // Read the needle and its guidance together; separate browser round trips
+    // can cross the 42% drop threshold before the text assertion runs.
+    await page.waitForFunction(() => {
+      const game = document.querySelector('.axe-game');
+      return Number(game.dataset.power) < .4
+        && /弱すぎる・落下/.test(game.querySelector('.axe-power-label').textContent)
+        && /↓ 下/.test(game.querySelector('.axe-feedback').textContent);
+    });
     if(shotsPath)await page.screenshot({path:shotsPath+'/'+label+'-power.png'});
     await stopGauge(page,.62,touch);await phase(page,'flight');
     assert.match(await page.locator('[data-step="power"]').textContent(),/✓/);
@@ -158,7 +191,6 @@ await suite("axe-throw", async run => {
   },options);
   for(const [label,options,touch] of [
     ['rules-pc',{viewport:{width:1280,height:720}},false],
-    ['rules-touch-portrait',{viewport:{width:390,height:844},isMobile:true,hasTouch:true},true],
     ['rules-touch-landscape',{viewport:{width:844,height:390},isMobile:true,hasTouch:true},true],
   ]) await check(label,async page=>{
     await page.goto(new URL('axe-throw.html',page.url()).href);
@@ -211,7 +243,6 @@ await suite("axe-throw", async run => {
   for (const [label, options, touch] of [
     ["pc",{viewport:{width:1280,height:800}},false],
     ["touch-landscape",{viewport:{width:844,height:390},isMobile:true,hasTouch:true},true],
-    ["touch-portrait",{viewport:{width:390,height:844},isMobile:true,hasTouch:true},true],
     ["keyboard-reduced",{viewport:{width:1280,height:720},reducedMotion:"reduce"},false],
   ]) await check(label,async page => {
     const keyboard=label==="keyboard-reduced";
@@ -238,7 +269,7 @@ await suite("axe-throw", async run => {
     assert.match(await page.locator(".axe-comment").textContent(),/お主/); assert.equal(await page.locator(".axe-portrait").getAttribute("alt"),"サメちゃん");
     await page.locator('[data-call="upper-left"]').click(); assert.match(await page.locator(".axe-comment").textContent(),/キルショット/);
     // Physical timing stops, not injected model/history. Small marker is intentionally demanding.
-    await shoot(page,{x:-7/14.75,y:-12/14.75,precision:true});
+    const upperLeft=KILLS.find(k=>k.id==="upper-left"); await shoot(page,{x:upperLeft.x,y:upperLeft.y,precision:true});
     assert.match(await page.locator(".axe-note").textContent(),/キルショット！ [78]点/);
     assert.match(await page.locator(".axe-comment").textContent(),/小さい的/);
     assert.match(await page.locator(".axe-portrait").getAttribute("src"),/excited/);
@@ -250,7 +281,7 @@ await suite("axe-throw", async run => {
     assert.match(await page.locator(".axe-call-status").textContent(),/残り0回/);
     for (let n=2;n<10;n++) {
       if(n===5) { assert.match(await page.locator(".axe-note").textContent(),/後半5投/); assert(await page.locator('[data-call="upper-left"]').isDisabled()); }
-      await shoot(page,{x:n%2?6/14.75:0,y:n%2?3.5/14.75:0}); await pressReady(page);
+      const lowerRight=CLUSTERS.find(c=>c.id==="lr"); await shoot(page,{x:n%2?lowerRight.x:0,y:n%2?lowerRight.y:0}); await pressReady(page);
     }
     await phase(page,"summary"); await page.locator('[data-test="axe-action"]:not([disabled])').waitFor();
     await fit(page); assert.match(await page.locator(".axe-note").textContent(),/64点/);
@@ -325,6 +356,7 @@ await suite("axe-throw", async run => {
     await page.unrouteAll(); await pressReady(page); await phase(page,"choice"); await page.keyboard.press("Escape");
   });
   for (const relationship of ["friend-legacy", "friend", "lover"]) await check("api-" + relationship, async page => {
+    // These cases exercise the story host; the others begin at the small axe page.
     await page.evaluate(async relationship => {
       const core = await import("./js/core/state.js");
       window.A = { core, mini: await import("./js/minigames/axe.js"), route: await import("./js/core/hiyori-route.js") };
@@ -359,5 +391,11 @@ await suite("axe-throw", async run => {
     assert(complete.completed && !complete.cancelled); assert.equal(complete.throws.length, 3);
     assert.equal(complete.total, complete.throws.reduce((sum, shot) => sum + shot.score, 0));
     assert(await page.evaluate(() => JSON.stringify(A.core.state) === A.before));
-  });
-});
+  }, { pageEntry: baseURL, pageReadySelector: '[data-test="title-new"]', ignoreFailedResource: ignoreTitleSeResourceLimit });
+await check("touch-portrait-rotate-hint", async page => {
+    // 縦持ちスマホは本編と同じく横向き案内で止める（2026-11-09 オーナー決定・#3035／試遊ページ共通化 #3076）
+    await page.goto(new URL("axe-throw.html", page.url()).href);
+    await page.locator(".axe-menu").waitFor();
+    assert.equal(await page.locator("#rotate-hint").isVisible(), true);
+  }, { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
+}, { entry: new URL("axe-throw.html", baseURL).href, readySelector: '[data-test="axe-start"]', freshBrowserPerCase: true });

@@ -120,6 +120,9 @@ try {
     await page.evaluate(() => T.done);
     return src;
   };
+  const graphicSalaryman = await artFor("salaryman", "graphic");
+  assert.match(graphicSalaryman.portrait, /character_intros\/graphic\/salaryman\.webp$/);
+  assert.match(graphicSalaryman.background, /graphic\/bg_salaryman\.webp$/);
   const graphicMaki = await artFor("maki", "graphic");
   assert.match(graphicMaki.portrait, /character_intros\/graphic\/maki\.webp$/, "既定は新しい絵柄の人物");
   assert.match(graphicMaki.background, /character_intros\/graphic\/bg_maki\.webp$/, "描き直した背景を使う");
@@ -145,9 +148,9 @@ try {
     hajime: "逢縁はじめ", sumi: "炭吉丈一郎", naru: "鳴切亮太（なる）", adam: "アダム", minto: "みんと", shisha_9000: "SHISHA-9000",
     saku: "綾取陣", steve: "スティーブ・A・アッシュ", volk: "ヴォルク・イヴァノフ", rei: "鴉葬レヰ", master_hookah: "王煙楼",
     tsumugi: "猫洞つむぎ", rio: "円頓寺凛想", ageha: "あげは", kumicho: "神崎竜二（組長）", dr_kemuri: "チャコール博士", pakki: "パッキー",
-    sui: "伏見豪", emil: "エミル・ユルマズ", sheikh: "シェイク・ナジュム", da_silva: "ダ・シルヴァ・太陽", mashiro: "黒葉ましろ",
+    sui: "千須豪", emil: "エミル・ユルマズ", sheikh: "シェイク・ナジュム", da_silva: "ダ・シルヴァ・太陽", mashiro: "黒葉ましろ",
     uranaishi: "占いオババ", mukai_master: "向井然", maezono: "上園文太郎", oneesan: "お姉さん", hiyori: "泡沫ひより",
-    maki: "斧崎マキ", sai: "六角サイ", yoru: "針間ヨル", noor: "ヌール・サーリム", samechan: "サメちゃん",
+    maki: "斧崎マキ", sai: "六角サイ", salaryman: "鉄仮面さん", yoru: "針間ヨル", noor: "ヌール・サーリム", samechan: "サメちゃん",
   });
   // 肩書きは別欄: スミは「はじめの師匠」、王煙楼は「マスターフーカー」。名前にはふりがなだけを付ける
   const titled = await page.evaluate(() => ["sumi", "master_hookah"].map((id) => [T.DB.characters[id].intro_cutin.title, T.intro.introName(id).source]));

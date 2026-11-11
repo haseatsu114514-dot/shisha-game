@@ -4,10 +4,14 @@
 import { el } from "../core/util.js";
 import { layers, toast } from "../core/ui.js";
 import { SAVE_SLOTS, readSlot, isLoadableSave } from "../core/state.js";
+import { exportTransferProgress, parseTransferProgress, mergedTransferProgress } from "../core/transfer-progress.js";
 
-const PREFIX = "SUIEN-SAVE1:";
+const PREFIX = "SUIEN-SAVE2:";
+const LEGACY_PREFIX = "SUIEN-SAVE1:";
 const FORMAT = "suien-save";
 const FILE_NAME = "suien-save.txt";
+// 旧版の引っ越し文字列に含まれる枠。端末内のデータは消さず、取り込み対象からだけ外す。
+const RETIRED_SLOTS = new Set(["suien_remake_slot2", "suien_remake_slot3"]);
 
 
 // ---------------------------------------------------------------- 重ねて開く小窓
@@ -56,37 +60,48 @@ export function exportSaveText() {
     try { slots[key] = localStorage.getItem(key); } catch { /* 読めない枠は含めない */ }
   }
   if (!Object.keys(slots).length) return null;
-  return PREFIX + toBase64(JSON.stringify({ format: FORMAT, version: 1, exportedAt: Date.now(), slots }));
+  return PREFIX + toBase64(JSON.stringify({ format: FORMAT, version: 2, exportedAt: Date.now(), slots, progress: exportTransferProgress() }));
 }
 
 /** 書き出し文字列を検証し、書き込む枠を返す。壊れていれば null（何も書かない） */
 export function parseSaveText(text) {
   try {
     const t = String(text || "").replace(/\s+/g, "");
-    if (!t.startsWith(PREFIX)) return null;
-    const pack = JSON.parse(fromBase64(t.slice(PREFIX.length)));
-    if (!pack || pack.format !== FORMAT || pack.version !== 1 || !pack.slots || typeof pack.slots !== "object") return null;
+    const prefix = t.startsWith(PREFIX) ? PREFIX : t.startsWith(LEGACY_PREFIX) ? LEGACY_PREFIX : null;
+    if (!prefix) return null;
+    const pack = JSON.parse(fromBase64(t.slice(prefix.length)));
+    if (!pack || pack.format !== FORMAT || pack.version !== (prefix === PREFIX ? 2 : 1)
+      || !pack.slots || typeof pack.slots !== "object" || Array.isArray(pack.slots)) return null;
     const known = new Set(SAVE_SLOTS.map((s) => s.key));
     const slots = [];
     for (const [key, raw] of Object.entries(pack.slots)) {
-      if (!known.has(key) || typeof raw !== "string") return null;
+      if ((!known.has(key) && !RETIRED_SLOTS.has(key)) || typeof raw !== "string") return null;
+      if (RETIRED_SLOTS.has(key)) continue;
       const s = JSON.parse(raw);
       if (!s || typeof s !== "object" || !s.day || !isLoadableSave(s)) return null;
       slots.push({ key, raw, s });
     }
+    if (pack.version === 2) slots.progress = parseTransferProgress(pack.progress);
     return slots.length ? slots : null;
   } catch { return null; }
 }
 
 /** 検証済みの枠を書き込む。途中で失敗したら元に戻す。成功なら true */
 export function applySlots(slots) {
-  const before = slots.map(({ key }) => [key, localStorage.getItem(key)]);
+  let writes, before;
   try {
-    for (const { key, raw } of slots) localStorage.setItem(key, raw);
+    writes = [...slots, ...mergedTransferProgress(slots.progress || {})];
+    before = writes.map(({ key }) => [key, localStorage.getItem(key)]);
+  } catch { return false; } // 読取り・統合・退避の失敗では書込みを始めない。
+  const written = [];
+  try {
+    for (const { key, raw } of writes) { localStorage.setItem(key, raw); written.push(key); }
     return true;
   } catch {
-    for (const [key, old] of before) {
-      try { if (old === null) localStorage.removeItem(key); else localStorage.setItem(key, old); } catch { /* noop */ }
+    const originals = new Map(before);
+    for (const key of written.reverse()) {
+      const old = originals.get(key);
+      try { if (old === null) localStorage.removeItem(key); else localStorage.setItem(key, old); } catch { /* 復元も失敗した場合、成功とは表示しない */ }
     }
     return false;
   }
@@ -108,9 +123,18 @@ export async function enterFullscreen() {
   try { await screen.orientation?.lock?.("landscape"); } catch { /* 非対応は無視 */ }
 }
 
-/** 全画面のボタンを出す場面か。iPhone でホーム画面版を開いているとき・非対応のときは出さない */
+/** 全画面を解除する。失敗は無視する */
+export async function exitFullscreen() {
+  try { await (document.exitFullscreen || document.webkitExitFullscreen)?.call(document); } catch { /* 既に解除済みでも遊べる */ }
+}
+
+/** 全画面でなければ入り、全画面なら解除する（#3013: 同じボタンで化／解除の両方） */
+export const toggleFullscreen = () => (isFullscreen() ? exitFullscreen() : enterFullscreen());
+
+/** 全画面のボタンを出す場面か。iPhone でホーム画面版を開いているとき・非対応のときは出さない。
+ *  全画面中は display-mode が fullscreen に寄って standalone 判定に触れても、解除ボタンは出し続ける */
 export const fullscreenEntry = () =>
-  isStandalone() ? null : canFullscreen() ? "fullscreen" : isIPhone() ? "a2hs" : null;
+  isFullscreen() ? "fullscreen" : isStandalone() ? null : canFullscreen() ? "fullscreen" : isIPhone() ? "a2hs" : null;
 
 const HOME_HELP = [
   "ホーム画面に追加すると全画面で遊べます。",
@@ -125,8 +149,13 @@ export function fullscreenButton() {
   const kind = fullscreenEntry();
   if (!kind) return null;
   if (kind === "fullscreen") {
-    return el("button.btn.small.xfer-btn", { type: "button", text: "全画面", dataset: { test: "fullscreen" },
-      onclick: () => { enterFullscreen(); } });
+    const btn = el("button.btn.small.xfer-btn", { type: "button", text: isFullscreen() ? "全画面を解除" : "全画面", dataset: { test: "fullscreen" },
+      onclick: async () => { await toggleFullscreen(); sync(); } });
+    // Esc 等でボタン以外から全画面が切り替わっても、表示名を実状態へ追随させる
+    const sync = () => { btn.textContent = isFullscreen() ? "全画面を解除" : "全画面"; };
+    document.addEventListener("fullscreenchange", sync);
+    document.addEventListener("webkitfullscreenchange", sync);
+    return btn;
   }
   return el("button.btn.small.xfer-btn", { type: "button", text: "全画面で遊ぶには", dataset: { test: "a2hs-help" },
     onclick: () => modal({ title: "全画面で遊ぶには", className: "xfer-modal",
@@ -142,7 +171,8 @@ const copyText = async (text, area) => {
 };
 
 async function openExport() {
-  const text = exportSaveText();
+  let text;
+  try { text = exportSaveText(); } catch { toast("記録を読み取れないため、書き出せませんでした"); return; }
   if (!text) { toast("書き出せるセーブがありません"); return; }
   const area = el("textarea.xfer-text", { readonly: true, rows: 4, dataset: { test: "export-text" } });
   area.value = text;
@@ -154,7 +184,7 @@ async function openExport() {
     setTimeout(() => URL.revokeObjectURL(url), 4000);
   };
   await modal({ title: "セーブの書き出し",
-    body: el("div.xfer-body", [area]),
+    body: el("div.xfer-body", [area, el("p", { text: "セーブ枠・既見CG・写真・ルート記録・周回解放を含みます。設定と本文の既読は含みません。" })]),
     options: [
       { label: "文字列をコピー", test: "export-copy", keep: async () => { toast(await copyText(text, area) ? "コピーしました" : "コピーできません。文字列を長押しで選んでください"); } },
       { label: "ファイル保存", test: "export-file", keep: download },
@@ -184,10 +214,10 @@ async function openImportWith(text) {
   if (!slots) { await modal({ title: "読み込めません", body: "セーブの文字列が壊れているか、この形式ではありません。今のセーブはそのままです。", options: [{ label: "閉じる", value: true, primary: true, test: "import-error-ok" }] }); return; }
   const names = slots.map(({ key, s }) => `${SAVE_SLOTS.find((x) => x.key === key).label}：${s.day}日目`).join("\n");
   const ok = await modal({ title: "読み込みの確認", className: "xfer-modal",
-    body: el("div.xfer-help", [el("p", { text: "今のセーブを次の内容で上書きします。" }), el("pre.xfer-slots", { text: names })]),
+    body: el("div.xfer-help", [el("p", { text: "今のセーブを次の内容で上書きします。" }), el("pre.xfer-slots", { text: names }), el("p", { text: slots.progress ? "CG・写真・ルート・到達履歴は今の記録と統合します。周回解放は保持し、最高周回・通算値は大きい方、引き継ぎパッケージは新しい日時の方を残します（同時刻・日時不明は今の方）。通算値は合算しません。設定と本文の既読は変えません。" : "旧形式のため累積記録は含まれていません。今のCG・ルート・周回記録は変えません。" })]),
     options: [{ label: "上書きして読み込む", value: true, primary: true, test: "import-confirm" }, { label: "やめる", value: false, test: "import-abort" }] });
   if (!ok) return;
-  if (!applySlots(slots)) { toast("保存できませんでした。今のセーブはそのままです"); return; }
+  if (!applySlots(slots)) { toast("保存できませんでした。セーブと累積記録の保存状態を確認してください"); return; }
   toast("読み込みました。最初から読み直します");
   setTimeout(() => location.reload(), 600);
 }
@@ -206,3 +236,4 @@ export function saveTransferRow() {
     ]),
   ]);
 }
+

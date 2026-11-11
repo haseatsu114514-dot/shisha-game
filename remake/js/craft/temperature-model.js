@@ -17,6 +17,12 @@ function weightedMix(cs) {
   return entries.map(([id, g]) => [id, g / largest / weight]);
 }
 
+/** 博士の試作HMD（授業 M-W9 で渡される機材）: 葉の傷みによる適温帯の縮み方を半分にする係数。
+ * 「炭を替えても適温帯が狭まりにくい」（data/equipment.json の説明・SBD92）の最小接続。
+ * 数値は仮置きで、オーナーが実プレイで調整する前提（判断点は PR 本文に明記）。 */
+export const PROTO_HMD_ID = "dr_kemuri_proto_hmd";
+export const PROTO_HMD_DAMAGE_RESIST = 0.5;
+
 /** 未知の葉・不正な耐熱性は倍率1。空配合は互換用の標準帯と未選択フラグを返す。 */
 export function temperatureBands(cs, flavorById = DB.flavorById) {
   const entries = weightedMix(cs);
@@ -35,20 +41,30 @@ export function temperatureBands(cs, flavorById = DB.flavorById) {
   const totalWidthScale = makerWidth * equipWidth;
   const center = .54 * t;
   // #1106: 葉が傷むほど適温帯を段階的に細くする。中心は動かさず、幅だけを縮める（温度計・ダイヤルで見て分かる）。
-  const damageScale = 1 - LEAF_DAMAGE.bandNarrow * leafDamageRatio(cs?.leaf);
+  // 試作HMD装備中は、熱が蓋全体に回る分だけこの縮みが半分になる（M-W9）。
+  const damageResist = cs?.equip?.hms === PROTO_HMD_ID ? PROTO_HMD_DAMAGE_RESIST : 1;
+  const damageScale = 1 - LEAF_DAMAGE.bandNarrow * leafDamageRatio(cs?.leaf) * damageResist;
   const halfIdeal = .12 * totalWidthScale * damageScale, halfOptimal = .05 * totalWidthScale * damageScale;
   // 表情対応の葉だけをグラム比で反映。少量を足して全配合の中央狙いを消せない。
   const expressionWeight = entries.reduce((sum, [id, w]) =>
     sum + (flavorById?.[id]?.thermal_expression?.quality === "range" ? w : 0), 0);
+  // 虹（2026-11-10 オーナー「どのミックスでも、大きさは違えど虹はあるように」）: 採点の適合度が90以上になる範囲。
+  // 表情を作り分けない配合は最適温と同じ細い帯、作り分ける葉が多いほど広がり、作り分ける葉だけなら適温帯と同じ幅になる。
+  // 表示だけの帯で、採点（temperatureFitness・pullResult）は変えない。
+  const spread = expressionWeight >= .999 ? 1 : Math.min(1, .4 * expressionWeight / (1 - expressionWeight));
+  const halfRainbow = halfOptimal + (halfIdeal - halfOptimal) * spread;
   return Object.freeze({
     t, center, selected: entries.length > 0, makerWidth, equipWidth, totalWidthScale, expressionWeight, damageScale,
     ideal: Object.freeze([center - halfIdeal, center + halfIdeal]),
     optimal: Object.freeze([center - halfOptimal, center + halfOptimal]),
+    rainbow: Object.freeze([center - halfRainbow, center + halfRainbow]),
   });
 }
 
 export const isIdealTemperature = (temp, bands = temperatureBands()) => temp >= bands.ideal[0] && temp <= bands.ideal[1];
 export const isOptimalTemperature = (temp, bands = temperatureBands()) => temp >= bands.optimal[0] && temp <= bands.optimal[1];
+/** 温度計・背景の虹の範囲にあるか（表示用。採点は isOptimalTemperature / temperatureFitness）。 */
+export const isRainbowTemperature = (temp, bands = temperatureBands()) => temp >= bands.rainbow[0] && temp <= bands.rainbow[1];
 
 /** 帯の全境界と中心を共有帯へ写す。危険.90以降は絶対値のまま。 */
 export function visualTemperature(at, bands = temperatureBands()) {
@@ -125,6 +141,7 @@ export const EQUIP_WIDTH_FACTORS = Object.freeze({
   }),
   hms: Object.freeze({
     lotos_hagal: 1.00, tanukish_lid: 1.08, winkwink_hagal: 1.05, amaburst_hms: 0.88, lotos_plus: 1.04,
+    dr_kemuri_proto_hmd: 1.06,
   }),
   charcoal: Object.freeze({
     flat_charcoal: 1.04, cube_charcoal: 0.94, dense_flat_charcoal: 1.06,
@@ -191,7 +208,7 @@ export function makerMixProfile(cs, flavorById = DB.flavorById) {
 export const EQUIP_CATEGORY_GUIDE = Object.freeze({
   bowl: "ボウル（ハガル）：フレーバー（葉）を詰める器。容量と材質で「適温の広さ・味の濃さ・温まる速さ」が変わる。",
   hms: "HMD（ヒートマネジメント）：ボウルの上に載せて炭を入れる金属製の蓋。熱の当たり方と安定感が変わる。",
-  charcoal: "炭（チャコール）：熱源の形状。フラット（平型）は熱が穏やかで扱いやすく、キューブ（角型）は高火力で煙が厚くなる。",
+  charcoal: "炭（チャコール）：熱源の形状。フラット（平型）とキューブ（角型）は大きさの違いで、熱の持ちと燃焼時間が変わる。",
 });
 
 export const EQUIP_THERMAL_SPECS = Object.freeze({
@@ -246,6 +263,11 @@ export const EQUIP_THERMAL_SPECS = Object.freeze({
     warmup: "非常に早い（高火力）", response: "鋭い（1口で強く上がる）", fitNote: "素焼き20g含む全ボウル対応",
     summary: "直炭に近い高火力HMD。適温帯は-12%狭まるが、温まりにくい素焼き20gや高耐熱ミックスを一気に立ち上げられる。",
   }),
+  dr_kemuri_proto_hmd: Object.freeze({
+    id: "dr_kemuri_proto_hmd", type: "hms", widthFactor: 1.06, stabilityBonus: 4,
+    warmup: "じんわり（標準）", response: "素直（熱が均一に回る）", fitNote: "全ボウル対応",
+    summary: "チャコール博士の試作の銀の蓋。熱を蓋全体に回して均一に落とし、適温帯が+6%広がる。葉が傷んでも適温帯が狭まりにくい。",
+  }),
   flat_charcoal: Object.freeze({
     id: "flat_charcoal", type: "charcoal", widthFactor: 1.04, power: 1.00, response: 1.00, burnRisk: 0, smokeBonus: 0,
     warmup: "穏やか・安定（火力×1.00）", responseLabel: "標準（1口ずつ微調整しやすい）",
@@ -259,7 +281,7 @@ export const EQUIP_THERMAL_SPECS = Object.freeze({
   cube_charcoal: Object.freeze({
     id: "cube_charcoal", type: "charcoal", widthFactor: 0.94, power: 1.13, response: 1.12, burnRisk: 10.5, smokeBonus: 6,
     warmup: "強い（火力×1.13・煙量+6）", responseLabel: "強め（吸引で熱が上がりやすい）",
-    summary: "角型の高火力炭。煙の厚み（+6）と立ち上がりに優れる反面、適温帯が狭まり（×0.94）焦げリスク（+10.5）も上がるため温度管理が重要。",
+    summary: "角型の高火力炭。煙の量（+6）と立ち上がりに優れる反面、適温帯が狭まり（×0.94）焦げリスク（+10.5）も上がるため温度管理が重要。",
   }),
 });
 
@@ -333,7 +355,7 @@ export function compareEquipment(targetId, currentId) {
     const riskDiff = target.burnRisk - (current?.burnRisk || 0);
     const smokeDiff = target.smokeBonus - (current?.smokeBonus || 0);
     rows.push({
-      label: "煙の厚み・焦げリスク",
+      label: "煙の量・焦げリスク",
       value: same
         ? `煙量補正 +${target.smokeBonus} ／ 焦げリスク +${target.burnRisk}`
         : `煙量 ${smokeDiff >= 0 ? `+${smokeDiff}` : smokeDiff} ／ 焦げリスク ${riskDiff >= 0 ? `+${riskDiff}` : riskDiff}（${riskDiff > 0 ? "太い煙が出るが過熱に注意" : "焦げにくく香りを保ちやすい"}）`,

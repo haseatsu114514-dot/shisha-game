@@ -104,6 +104,14 @@
 .dmenu .dm-panel:focus { outline: none; }
 .dmenu .dm-heading { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 14px; }
 .dmenu .dm-heading h3 { margin: 0; font-size: max(22px, var(--dm-min)); font-weight: 900; color: var(--dm-ink); }
+/* タブの説明は見出し横の「?」で開く（2026-11-08 オーナー指示「説明の分量を減らす」）。開くと見出しの下に紙のカードで並び、中身を下へ押し下げる */
+.dmenu .dm-heading .dm-help { align-self: center; }
+.dmenu .dm-tab-help {
+  display: flex; flex-direction: column; gap: 6px; padding: 12px 16px; box-sizing: border-box;
+  background: var(--dm-card); border: 2px solid var(--dm-lav-line); border-radius: 4px; box-shadow: 0 6px 18px #38283f2e;
+}
+.dmenu .dm-tab-help[hidden] { display: none; }
+.dmenu .dm-tab-help p { margin: 0; font-size: max(15px, var(--dm-min)); font-weight: 500; line-height: 1.6; color: var(--dm-ink); }
 .dmenu .dm-sub { margin: 0; font-size: max(14px, var(--dm-min)); font-weight: 700; line-height: 1.5; color: var(--dm-muted); }
 .dmenu .dm-note { margin: 0; font-size: max(14px, var(--dm-min)); font-weight: 500; line-height: 1.65; color: var(--dm-muted); }
 .dmenu .dm-empty { margin: 0; font-size: max(15px, var(--dm-min)); font-weight: 500; color: var(--dm-muted); }

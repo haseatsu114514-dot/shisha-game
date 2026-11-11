@@ -1,4 +1,4 @@
-/* DJ — fixed 1280×720 stage like the main game (remake/index.html #stage), scaled by controller-fx.mjs.
+/* DJ — 1280×720 stage like the main game (remake/index.html #stage), scaled by controller-fx.mjs (wider up to 1600 on wide screens, like the main game).
    Theme: the game's purple (base.css --ink #0b0812 / --ink-2 #151024, loading gauge #b45cf0 → #3fd0e8). A = violet, B = light blue, crossfader = neutral silver.
    Art: remake/img/ui/dj/*.webp (generated set, Issues #2071/#2073/#2095/#2107/#2114); CSS gradients stay underneath as fallback.
    Layout (top → bottom): floor strip 110px (crowd + FLOOR meter + set + judge/count) / waveforms 172px / controller (rest). */
@@ -272,3 +272,13 @@ html[data-density=phone] .result-card table{font-size:16px}
 html[data-density=phone] .result-card thead th{font-size:16px;letter-spacing:0}
 html[data-density=phone] .energy small{font-size:16px}
 html[data-density=phone] .result-actions button{min-height:64px;font-size:18px}
+/* ── 見やすさ（#2729・2026-11-08 オーナー指示「文字は気持ち大きく」）: スマホ表示のラベルの下限を 16px → 20px（iPhone 横で実寸 約11px）。
+   ボタン 20px、ステップの番号の丸 30px（曲名は円盤の幅で切れないよう 20px のまま）。並び・つまみの大きさ・判定は変えない。 ── */
+html[data-density=phone] small,html[data-density=phone] .deck-head small,html[data-density=phone] .pitch-col small,html[data-density=phone] .energy small{font-size:20px;letter-spacing:.02em}
+html[data-density=phone] button.small,html[data-density=phone] .result-actions button{font-size:20px}
+html[data-density=phone] .set-info{font-size:20px}
+html[data-density=phone] .set-info b{font-size:22px}
+html[data-density=phone] :is(.pitch-value,.sync,.mix-label,.combo,.toast-parts,.pick-meta,.result-card table,.result-card thead th,.credits summary,.credits details){font-size:20px}
+html[data-density=phone] .bpm:after{font-size:20px}
+html[data-density=phone] .waves b{width:30px;height:30px;font-size:20px}
+html[data-density=phone] .coach{font-size:24px}

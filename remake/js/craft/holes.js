@@ -108,9 +108,9 @@ export async function runHoles(cs) {
   benchRoot(cs)?.querySelector(".bench-guide-tip > p")?.after(el("div.bench-guide-extra", { dataset: { test: "hole-guide" } }, [
     el("ul", [
       ["狙う", "光る目印の近くを針が行き来する。重なったところで押す"],
-      ["押し加減", "少し押し込んでから離す。短すぎると開かず、長く押すほど穴が大きくなる"],
-      ["外したとき", "穴は残る。針は同じ目印の手前へ戻るので、すぐ狙い直せる"],
-      ["採点", "間隔のそろい50・狙いの正確さ30・穴の大きさのそろい15・時間5"],
+      ["押し加減", "少し押し込んでから離す。短すぎると浅い穴になり、大きく減点される。長く押すほど穴が大きくなる"],
+      ["ズレたとき", "ミスにはならず、ズレた位置のまま穴として残る（点は低くなる）。針は次の目印へ進む"],
+      ["採点", "間隔のそろい50・狙いの正確さ30・穴の大きさのそろい15・時間5。浅い穴はさらに1穴8点減点"],
       ...rings.map(ring => [ring.label, ring.role]),
     ].map(([label, text]) => el("li", [el("b", { text: label }), el("span", { text })]))),
     el("p", { text: "時間が過ぎても、選んだ配置を最後まで開けられる" }),
@@ -122,9 +122,8 @@ export async function runHoles(cs) {
   const ringEls = rings.map((rg) => el("div.foil-ring", { style: { width: `${rg.r * 100}%`, height: `${rg.r * 100}%` }, dataset: { ring: rg.id } }));
   const markers = el("div.foil-markers");
   const holesLayer = el("div.foil-holes");
-  const dentsLayer = el("div.foil-dents");
   const cursor = el(`div.foil-cursor${effectVisible("technique") ? ".technique-visible" : ""}`, { dataset: { test: "hole-needle" } });
-  const plane = el("div.foil-target-plane", [...ringEls, markers, dentsLayer, holesLayer, cursor]);
+  const plane = el("div.foil-target-plane", [...ringEls, markers, holesLayer, cursor]);
   disc.append(foilSurface(), plane);
   const ringLabel = el("div.hr-ring");
   const timeBar = el("i.hr-time-bar", [el("b")]);
@@ -159,11 +158,11 @@ export async function runHoles(cs) {
   const gameClock = createCraftClock(panel);
   let t0 = null;
   let elapsed = 0;
-  const tally = { perfect: 0, good: 0, miss: 0, tooClose: 0, blank: 0, tooMany: 0, shallow: 0 };
+  const tally = { perfect: 0, good: 0, miss: 0, rough: 0, tooClose: 0, blank: 0, tooMany: 0, shallow: 0 };
   let finished = false;
   let raf = 0;
-  // 針: sweepStart から弧を動く。press は押している間、wait は浅すぎた後にその場で待つ間。
-  let sweepStart = 0, press = null, wait = null;
+  // 針: sweepStart から弧を動く。press は押している間。
+  let sweepStart = 0, press = null;
 
   const targetAngle = (ring, k) => ring.phase + (k * 2 * Math.PI) / ring.targets;
   const clockNow = () => t0 === null ? 0 : (gameClock.now() - t0) / 1000;
@@ -175,11 +174,6 @@ export async function runHoles(cs) {
   const needle = (t) => {
     const ring = state[ri], h = halfArc(ring);
     if (press) return { offset: press.offset, resting: false };
-    if (wait && t < wait.until) return { offset: wait.offset, resting: false };
-    if (wait) { // 待った位置から、そのまま動きを再開する
-      sweepStart = wait.until - ((wait.offset + h) / (2 * h)) * NEEDLE.sweep * slow;
-      wait = null;
-    }
     return needleOffset(t - sweepStart, h, slow);
   };
   const needleAngle = (t) => targetAngle(state[ri], state[ri].aim) + needle(t).offset;
@@ -258,7 +252,7 @@ export async function runHoles(cs) {
     if (finished || !ringComplete()) return;
     closeRing(state[ri]);
     if (ri < state.length - 1) {
-      ri++; press = null; wait = null; sweepStart = clockNow(); state[ri].aim = nextAim(state[ri], 0);
+      ri++; press = null; sweepStart = clockNow(); state[ri].aim = nextAim(state[ri], 0);
       drawMarkers(); hud(); drawNeedle(sweepStart); SE.whoosh();
     }
     else finish();
@@ -283,45 +277,36 @@ export async function runHoles(cs) {
   const pierce = (offset, depth, t) => {
     const ring = state[ri], k = ring.aim, h = halfArc(ring);
     const a = targetAngle(ring, k) + offset;
-    if (depth === "shallow") {
-      // 浅すぎて開かなかった。実穴に数えず、針はその場で少し待つので、そのまま押し直せる。
-      tally.shallow++;
-      wait = { offset, until: t + 0.6 * slow };
-      const dent = el("i.foil-dent");
-      place(dent, a, ring.r);
-      dentsLayer.append(dent);
-      feedback.replaceChildren();
-      popStamp(feedback, "浅い。もう一度", "miss", "50%", "50%");
-      drawNeedle(t);
-      return;
-    }
     SE.foilPunch();
     const dRef = referenceDegrees(offset, h);
     const near = ring.holes.some((hole) => referenceDegrees(angDiff(hole.a, a), h) < goodWin * 0.8);
     const size = HOLE_SIZES[depth];
-    const sizeNote = depth === "small" ? "" : depth === "wide" ? "・少し大きい" : "・大きい";
+    const sizeNote = depth === "small" ? "" : depth === "wide" ? "・少し大きい" : depth === "large" ? "・大きい" : "・浅い";
     let kind;
     if (dRef <= perfWin) kind = "perfect";
     else if (dRef <= goodWin) kind = "good";
     else if (near) kind = "close";
-    else kind = "miss";
-    if (kind === "perfect" || kind === "good") {
-      ring.taken[k] = true;
-      ring.holes.push({ a, d: dRef, size });
+    else kind = "rough";
+    // ズレた一刺しもミス（無効）にはしない。その目印の穴として成立させ、ズレの大きさで減点する（#3023）。
+    ring.taken[k] = true;
+    ring.holes.push({ a, d: dRef, size });
+    if (depth === "shallow") {
+      tally.shallow++;
+      report("浅い穴。大きく減点", "rough");
+    } else if (kind === "perfect" || kind === "good") {
       tally[kind]++;
       report(`${kind === "perfect" ? "EXCELLENT" : "GOOD"}${sizeNote}`, kind);
-      ring.aim = nextAim(ring, k + 1);
     } else {
-      ring.holes.push({ a, d: goodWin * 1.5, size });
       ring.extra++;
-      if (kind === "close") { tally.tooClose++; report("TOO CLOSE", "bad"); }
-      else { tally.miss++; report("ズレた…", "miss"); }
+      if (kind === "close") { tally.tooClose++; report(`近すぎたけど開いた${sizeNote}`, "rough"); }
+      else { tally.rough++; report(`ズレたけど開いた${sizeNote}`, "rough"); }
       if (ring.id === "inner") tally.tooMany++;
     }
-    // 成功なら次の目印、外したら同じ目印の、すぐ手前から針が動き出す。
-    sweepStart = t; wait = null;
-    addHoleDot(a, ring.r, kind, depth);
-    if (kind === "perfect" || kind === "good") {
+    ring.aim = nextAim(ring, k + 1);
+    // 成立したら（ズレた場合も）次の目印の、すぐ手前から針が動き出す。
+    sweepStart = t;
+    addHoleDot(a, ring.r, depth === "shallow" ? "rough" : kind, depth);
+    if (depth !== "shallow" && (kind === "perfect" || kind === "good")) {
       const [hx, hy] = posOf(a, ring.r);
       impact(plane, kind, { x: `${50 + hx * 50}%`, y: `${50 + hy * 50}%`, zoomNode: disc });
     }
@@ -411,7 +396,7 @@ export async function runHoles(cs) {
   if (auto) simulate(auto);
   await finishedP;
 
-  // ---- 採点（実穴の均等度50/タイミング精度30/実穴径の穴サイズ安定15/残り時間5。穴数そのものは減点しない）
+  // ---- 採点（実穴の均等度50/タイミング精度30/実穴径の穴サイズ安定15/残り時間5、浅い穴は追加減点）
   const res = evaluate(state, tally, Math.max(0, limit - elapsed) / limit, goodWin);
   res.templateId = template.id;
   res.templateLabel = template.label;
@@ -429,11 +414,12 @@ export async function runHoles(cs) {
     lines: [
       `テンプレート：${template.label}`,
       res.evenness > 0.8 ? "穴の間隔が揃い、熱が回りやすそうだ" : "穴の間隔にばらつきがある。次は目印をよく見よう",
-      `目印の達成：${res.tally.perfect + res.tally.good}/${Object.values(template.counts).reduce((sum, count) => sum + count, 0)}か所（EXCELLENT ${res.tally.perfect}・GOOD ${res.tally.good}）`,
-      `穴あけ入力：${res.total}回 ／ MISS：${res.tally.miss + res.tally.tooClose}回（TOO CLOSEを含む）`,
+      `目印の達成：${res.tally.perfect + res.tally.good + (res.tally.rough || 0) + res.tally.tooClose + res.tally.shallow}/${Object.values(template.counts).reduce((sum, count) => sum + count, 0)}か所（EXCELLENT ${res.tally.perfect}・GOOD ${res.tally.good}）`,
+      `穴あけ入力：${res.total}回 ／ ズレて開いた穴：${(res.tally.rough || 0) + res.tally.tooClose}回（近すぎた穴を含む）／ 浅い穴：${res.tally.shallow}回`,
       `実際に開いた穴：外周 ${res.outer}・中周 ${res.middle}・内周 ${res.inner}（計 ${res.total} 穴）`,
-      "MISSでも穴は開き、熱の回り方に影響する",
-      `穴の大きさ：小 ${res.holeSizes.small}・少し大きい ${res.holeSizes.wide}・大きい ${res.holeSizes.large}${res.holeSizes.shallow ? `（浅くて開かなかった ${res.holeSizes.shallow}回）` : ""}`,
+      "ズレた穴も開いた穴として残り、間隔と熱の回り方に影響する",
+      `穴の大きさ：浅い ${res.holeSizes.shallow}・小 ${res.holeSizes.small}・少し大きい ${res.holeSizes.wide}・大きい ${res.holeSizes.large}`,
+      res.holeSizes.shallow ? "浅い穴は成立したが、深さ不足で大きく減点された" : "",
       res.innerExcess ? "内周を開けすぎた。焦げやすくなるかもしれない" : res.outerEven > 0.8 ? "外周がきれいに揃った。熱が全体に回りそうだ" : "",
       res.total < 24 ? "穴を控えめに仕上げた。吸い出しでは温度の動きをよく見よう" : "",
     ],

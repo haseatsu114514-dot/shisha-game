@@ -50,7 +50,7 @@ async function fixture() {
     ["/remake/js/core/audio.js", { SE: { select() {} } }],
     ["/remake/js/craft/common.js", { autoSkill: () => auto }],
     ["/remake/js/craft/flavor-guide.js", { equipmentUse: () => ({ use: "fixture" }), equipmentGuide: () => new Element("section") }],
-    ["/remake/js/craft/session.js", { stepPanel: () => (panel = new Element("section")), waitBenchReady: async () => {}, refreshBench() {} }],
+    ["/remake/js/craft/session.js", { stepPanel: () => (panel = new Element("section")), waitBenchReady: async () => {}, refreshBench() {}, explainStepOnce: async () => true }],
   ]);
   // Fail on unexpected dependency calls; unused gameplay/rendering is not simulated.
   for (const [url, text] of texts) for (const match of text.matchAll(/import\s*\{([^}]+)\}\s*from\s*["']([^"']+)["']/g)) {

@@ -18,14 +18,16 @@ export function approachBase(scenario, kind, approachId = null, sheets = null) {
   const stat = (sheets || sheetsOf(scenario))[approach.sheet || approach.actor]?.stats?.[approach.stat];
   return { base: Number.isInteger(stat) ? stat : DICE.base, approach };
 }
-/** Build the player's own character from the scenario's builder: a look, an archetype preset, edited stats and a name. */
+/**
+ * Build the player's own character from the scenario's builder: an archetype preset, edited stats and a name.
+ * The look is not chosen (#3050, owner 2026-11-09): the player's own face plays the role, so the built sheet
+ * carries no portrait and the seat shows the player's portrait. Old saves may still pass a look; it is ignored.
+ */
 export function buildPc(scenario, choices = {}) {
   const builder = scenario.builder;
   if (!builder) return null;
   const archetype = builder.archetypes.find(a => a.id === (choices.archetype || builder.archetypes[0].id));
   if (!archetype) throw new Error("Unknown archetype");
-  const look = builder.looks.find(l => l.id === (choices.look || builder.looks[0].id));
-  if (!look) throw new Error("Unknown look");
   const stats = Object.fromEntries(STATS.map(key => [key, choices.stats?.[key] ?? archetype.stats[key]]));
   for (const key of STATS) {
     if (!Number.isInteger(stats[key]) || stats[key] < builder.min || stats[key] > builder.max) throw new Error("Stat out of range: " + key);
@@ -35,7 +37,7 @@ export function buildPc(scenario, choices = {}) {
   const name = String(choices.name ?? archetype.name).trim();
   if (!name || [...name].length > (builder.nameMax || 6)) throw new Error("Invalid character name");
   return { seat: builder.seat || PLAYER_SEAT, name, title: archetype.title, trait: archetype.trait, stats, points,
-    look: look.id, archetype: archetype.id, portrait: look.portrait || null, color: look.color || null, accent: look.accent || null };
+    archetype: archetype.id };
 }
 /**
  * Companions make their own characters: each seat's player picks one authored option (likes, a joke, a parody),
@@ -55,18 +57,19 @@ export function pickCompanions(scenario, seed = 1, chosen = {}) {
   }
   return picks;
 }
-/** A deterministic "leave it to the dice" character: look and archetype from the seed, with one point moved between stats. */
+/** A deterministic "leave it to the dice" character: archetype from the seed, with one point moved between stats. */
 export function randomPc(scenario, seed = Date.now()) {
   const builder = scenario.builder;
   if (!builder) return null;
   let x = Number(seed) >>> 0 || 1;
   const next = () => { x ^= x << 13; x ^= x >>> 17; x ^= x << 5; return x >>> 0; };
-  const look = builder.looks[next() % builder.looks.length];
+  // The first draw used to pick a look (#3050 removed the choice); it is still drawn so every seed keeps its archetype and stats.
+  next();
   const archetype = builder.archetypes[next() % builder.archetypes.length];
   const stats = { ...archetype.stats };
   const from = STATS[next() % STATS.length], to = STATS[next() % STATS.length];
   if (from !== to && stats[from] > builder.min && stats[to] < builder.max) { stats[from]--; stats[to]++; }
-  return buildPc(scenario, { look: look.id, archetype: archetype.id, stats });
+  return buildPc(scenario, { archetype: archetype.id, stats });
 }
 // Keep two dice and one-die rerolls; scale the old aids toward their original success rates.
 export const DICE = Object.freeze({ sides: 20, base: 3, support: 7, momentum: 4, hypothesis: 4, success: 30, mixed: 19 });
@@ -95,9 +98,14 @@ export class TrpgSession {
     this.companions = pickCompanions(scenario, seed, companions);
     for (const [seat, option] of Object.entries(this.companions)) {
       this.sheets[seat] = { ...(this.sheets[seat] || {}), name: option.name, title: option.title, trait: option.trait, likes: option.likes,
-        stats: { ...option.stats }, portrait: option.portrait || this.sheets[seat]?.portrait || null, option: option.id };
+        stats: { ...option.stats }, option: option.id };
     }
     if (this.pc) this.sheets[this.pc.seat] = { ...(this.sheets[this.pc.seat] || {}), ...this.pc };
+    // Every seat shows the face of whoever plays it (#3050): role art, looks and tints from older data are dropped.
+    for (const seat of Object.keys(this.sheets)) {
+      const { portrait, color, accent, look, ...sheet } = this.sheets[seat];
+      this.sheets[seat] = sheet;
+    }
     this.rng = Number(seed) >>> 0 || 1;
     const profile = profileId ? scenario.profiles.find(p => p.id === profileId)
       : scenario.profiles[this.next() % scenario.profiles.length];
@@ -117,7 +125,7 @@ export class TrpgSession {
       pressure: this.rules.initialPressure, teamwork: 2, heat: 0, momentum: 0, heatLog: [],
       used: Object.fromEntries(scenario.cast.filter(c => c.part !== "GM").map(c => [c.id, false])),
       acted: {}, checks: [], pending: null, asked: [],
-      pc: this.pc ? { name: this.pc.name, title: this.pc.title, look: this.pc.look, archetype: this.pc.archetype, stats: { ...this.pc.stats } } : null,
+      pc: this.pc ? { name: this.pc.name, title: this.pc.title, archetype: this.pc.archetype, stats: { ...this.pc.stats } } : null,
       companions: Object.fromEntries(Object.entries(this.companions).map(([seat, o]) => [seat, o.id])),
     };
   }

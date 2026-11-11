@@ -14,6 +14,8 @@ if (shots) fs.mkdirSync(shots, { recursive: true });
 const errors = [];
 const open = async (viewport, mobile = false) => {
   const context = await browser.newContext({ viewport, isMobile: mobile, hasTouch: mobile });
+  // 選ぶ工程の初回説明（#3028）は step-intro スイートで検証する。support.mjs と同じく既定で止める。
+  await context.addInitScript(() => { try { localStorage.setItem('suien_step_intro', 'off'); } catch {} });
   const page = await context.newPage(); page.on('pageerror', e => errors.push(e.message));
   await installLoadingComicReader(page);
   await page.goto(base); await page.waitForSelector('[data-test="title-new"]');

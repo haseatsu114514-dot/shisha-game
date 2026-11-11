@@ -83,7 +83,7 @@ export const STATE_KEY_RULES = {
 // 分類網羅テストが data 側と一致するか照合する。
 export const GIFT_EQUIPMENT_IDS = [
   "suyaki_adam", "suyaki_ageha", "suyaki_hiyori", "suyaki_kumicho", "suyaki_saku", "suyaki_mashiro", "suyaki_minto", "suyaki_naru", "suyaki_noor",
-  "suyaki_rei", "suyaki_rio", "suyaki_samechan", "suyaki_steve", "suyaki_sumi", "suyaki_tsumugi", "suyaki_volk",
+  "suyaki_rei", "suyaki_rio", "suyaki_samechan", "suyaki_steve", "suyaki_sumi", "suyaki_tsumugi", "suyaki_volk", "suyaki_master_hookah",
 ];
 
 // 記念品の由来分類（core/keepsakes.js の KEEPSAKES と対応）。
@@ -109,7 +109,10 @@ export const FLAG_CATEGORY_VERDICT = {
 export const FLAG_EXACT_RULES = [
   ["_adam_arcade_done", "person"],
   ["_ageha_aquarium_introduced", "person"],
+  ["_ageha_bear_seat_done", "person"],
   ["_ageha_first_purikura", "person"],
+  ["_ageha_floor_words_done", "person"],
+  ["_ageha_gummy_share_done", "person"],
   ["_ageha_purikura_history", "person"],
   ["_ageha_purikura_offer", "person"],
   ["_axe_bar_legacy_access", "unlock"],
@@ -144,6 +147,8 @@ export const FLAG_EXACT_RULES = [
   ["_ch2_city_visit_kumicho", "person"],
   ["_ch2_city_visit_rei", "person"],
   ["_ch2_cleared", "progression"],
+  ["_ch2_coal_role_coals", "progression"],
+  ["_ch2_coal_role_plate", "progression"],
   ["_ch2_commute_v1", "progression"],
   ["_ch2_day1", "progression"],
   ["_ch2_deliveries", "progression"],
@@ -154,22 +159,28 @@ export const FLAG_EXACT_RULES = [
   ["_ch2_morning_departed", "progression"],
   ["_ch2_naru_hurt", "person"],
   ["_ch2_naru_listened", "person"],
+  ["_ch2_naru_warm_customers", "person"],
   ["_ch2_naru_warm_done", "person"],
+  ["_ch2_naru_warm_flavor", "person"],
   ["_ch2_no_audience", "progression"],
   ["_ch2_prep_rehearsal_result", "progression"], // 第2章の最後の通しの講評（chapters/ch2-craft-prep.js）。大会の加点にはしない
   ["_ch2_preparation_started", "progression"],
   ["_ch2_preview_seen", "progression"],
+  ["_ch2_read_ch2_coal_together", "progression"],
   ["_ch2_read_ch2_kumicho_fifth", "person"],
   ["_ch2_read_ch2_kumicho_sixth", "person"],
   ["_ch2_read_ch2_kumicho_third", "person"],
   ["_ch2_read_ch2_lingering_smell", "progression"], // スミさんの飯の接客回（baito_ch2_staff_meal）の条件
+  ["_ch2_read_ch2_naru_warm", "person"],
   ["_ch2_read_ch2_naru_window", "person"], // 前夜の振り返りで、休みの店の前に送ったLIMEの返事を待つか（#2720）
   ["_ch2_read_ch2_pre_tournament_realisation", "progression"],
   ["_ch2_read_ch2_rei_fifth", "person"],
   ["_ch2_read_ch2_rei_fourth", "person"],
   ["_ch2_read_ch2_rei_sixth", "person"],
+  ["_ch2_read_ch2_rei_third", "person"], // レヰの本名の回。LIME lime_rei_bond_a の条件
   ["_ch2_read_ch2_slump_taste", "progression"],
   ["_ch2_read_ch2_sofa_burn", "progression"],
+  ["_ch2_read_ch2_strawberry_sample", "progression"],
   ["_ch2_read_ch2_tournament_ageha_heart", "person"],
   ["_ch2_read_ch2_tsumugi_color", "person"],
   ["_ch2_read_remake_ch2_ageha_tasting", "progression"],
@@ -213,6 +224,7 @@ export const FLAG_EXACT_RULES = [
   ["_ch3_prep_clinic", "progression"],
   ["_ch3_prep_farewell", "progression"],
   ["_ch3_preview_seen", "progression"],
+  ["_ch3_read_ch3_mashiro_glass_cloth", "progression"], // 布巾の場面（#3081）。LIMEの trigger_flag に字面で出る
   ["_ch3_read_ch3_saku_lime", "progression"],
   ["_ch3_read_ch3_steve_lime", "progression"],
   ["_ch3_read_ch3_volk_lime", "progression"],
@@ -227,6 +239,7 @@ export const FLAG_EXACT_RULES = [
   ["_ch3_trial_saku", "progression"],
   ["_ch3_trial_steve", "progression"],
   ["_ch3_tokyo_call_night", "progression"],
+  ["_ch3_room_rests", "progression"], // 東京の奥の部屋で休んだ回数（ch3-tokyo-daily.js の小品の巡回）。周回では持ち越さない
   ["_ch4", "progression"],
   ["_camel_cups", "unlock"], // 大会の解放・中級認定・上級称号を周回へ残す
   ["_ch4_camel", "progression"], // ドバイのラクダレース（段階・自己ベスト）。周回では持ち越さない
@@ -331,10 +344,13 @@ export const FLAG_EXACT_RULES = [
   ["_fortune_met", "progression"],
   ["_friend_hiyori", "person"],
   ["_friend_minto", "person"],
+  ["_friend_noor", "person"],
   ["_friend_samechan", "person"],
   ["_gym_member", "unlock"],
   ["_hiyori_bond_finale_done", "person"],
   ["_hiyori_bond_question_done", "person"],
+  ["_hiyori_charm_done", "person"],
+  ["_hiyori_clockout_done", "person"],
   ["_hiyori_cracks_done", "person"],
   ["_hiyori_encounter_day", "person"],
   ["_hiyori_feelings_spoken", "person"],
@@ -373,6 +389,7 @@ export const FLAG_EXACT_RULES = [
   ["_lime_contact_kumicho", "person"],
   ["_lime_contact_saku", "person"],
   ["_lime_contact_mashiro", "person"],
+  ["_lime_contact_master_hookah", "person"], // 王煙楼。龍龍水煙所の段階会話で交換する（第4章ドバイ）
   ["_lime_contact_minto", "person"],
   ["_lime_contact_naru", "person"],
   ["_lime_contact_noor", "person"],
@@ -410,19 +427,24 @@ export const FLAG_EXACT_RULES = [
   ["_met_steve", "person"],
   ["_met_tsumugi", "person"],
   ["_met_volk", "person"],
+  ["_minto_cheki_keep_done", "person"],
   ["_minto_fifth_done", "person"],
   ["_minto_history_shared", "person"],
   ["_minto_identity_revealed", "person"],
   ["_minto_name_known", "person"],
   ["_minto_phantom_shared", "person"],
   ["_minto_private_done", "person"],
+  ["_minto_quiet_hello_done", "person"],
+  ["_minto_side_seat_done", "person"],
   ["_minto_store_lime_reminder", "person"],
+  ["_minto_timer_hand_done", "person"],
   ["_motion_seen_", "progression"],
   ["_naru_venue_invited", "person"],
   ["_night_event_day", "progression"],
   ["_noor_ch5_promise", "person"], // 第5章の砂丘の再会で、告白を待つ約束の続きを出す一時の印（chapters/ch5-dubai.js。再生の前に立て、後で消す）
   ["_noor_confession_other_lover", "person"], // DSR20 告白の場面の一時の印（再生の前に立て、後で消す）
   ["_noor_confession_visit", "person"], // 第5章で締めくくりを迎えた人の告白の言い方を出す一時の印（chapters/ch4-desert.js。再生の前に立て、後で消す）
+  ["_noor_story_seat_edge", "person"], // #3081 の人物別既読。周回ではリセット
   ["_oneesan_id_checked", "progression"],
   ["_op_praise_report", "progression"],
   ["_op_praise_talent", "progression"],
@@ -460,8 +482,10 @@ export const FLAG_EXACT_RULES = [
   ["_samechan_heart4_done", "person"],
   ["_samechan_heart5_done", "person"],
   ["_samechan_last_date_chapter", "person"],
+  ["_samechan_look_away_done", "person"],
   ["_samechan_name_known", "person"],
   ["_samechan_nickname_known", "person"],
+  ["_samechan_own_seat_done", "person"],
   ["_samechan_quiet_seat_done", "person"],
   ["_samechan_swimming_known", "person"],
   ["_samechan_unwell_done", "person"],
@@ -480,6 +504,7 @@ export const FLAG_EXACT_RULES = [
   ["_spot_seen_cafe_maezono_break", "person"],
   ["_spot_seen_cafe_master_quiz", "progression"],
   ["_spot_seen_cafe_naru_break", "person"],
+  ["_spot_seen_ch1_tsumugi_low_water", "person"],
   ["_spot_seen_choizap_ch2_numbers", "progression"],
   ["_spot_seen_choizap_minto", "person"],
   ["_spot_seen_choizap_naru", "person"],
@@ -569,6 +594,7 @@ export const FLAG_EXACT_RULES = [
   ["romance_ageha", "person"],
   ["romance_minto", "person"],
   ["seenDemo", "ui"],
+  ["seenStepIntro", "ui"],
   ["_kannon_growth_intro_done", "ui"],
   ["spot_cafe_naru_done", "person"],
   ["spot_choizap_minto_done", "person"],
@@ -596,6 +622,7 @@ export const FLAG_FAMILY_RULES = [
   ["_cafe_recall_*", "progression"],
   ["_city_guest_seen_*", "progression"],
   ["_roam_seen_*", "person"],
+  ["_trpg_topic_*", "person"], // 部活の話は周回ごとに対面し直す
   ["_date_inv_*", "person"],
   ["_delivery_*", "progression"],
   ["_fortune_*", "progression"],
@@ -609,6 +636,7 @@ export const FLAG_FAMILY_RULES = [
   ["_lover_*", "person"],
   ["_mastery_practice_*", "progression"],
   ["_met_*", "person"],
+  ["_noor_story_*", "person"], // #3081 カフェ・オアシスの物語。未読を周回へ持ち越さない
   ["_morning_*", "progression"],
   ["_note_*", "progression"],
   ["_outing_done_*", "person"],

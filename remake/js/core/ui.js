@@ -1,5 +1,6 @@
 // 画面の土台: 背景・画面切替・煙ワイプ・トースト・ステ通知・モーダル・カウントダウン・スタンプ。
 import { $, el, sleep, nextFrame } from "./util.js";
+import { syncBackdrop } from "./stage-fit.js";
 import { on } from "./bus.js";
 import { SE, setRainAmbience } from "./audio.js";
 import { state, STAT_KEYS, config } from "./state.js";
@@ -165,6 +166,8 @@ export function uiArtReady(ms = 2000) {
   return Promise.race([warmCoreArt(), sleep(ms)]);
 }
 
+// 余白のぼかし（#backdrop）の差し替えは共通部品 core/stage-fit.js の syncBackdrop（#3076 で共通化）。
+
 /**
  * 背景を差し替える。新しい絵が読み込めてからクロスフェードする（読み込み中に黒や前の絵のまま
  * 新しい場面が始まって見えるのを防ぐ）。戻り値は画像の用意と幕が開き終わるまで待つ。
@@ -196,6 +199,7 @@ export function setBg(url, { instant = false, tint = null, fast = false, brief =
     if (fast) next.classList.add("fast");
     if (tint) next.dataset.tint = tint;
     host.append(next);
+    syncBackdrop(url, tint, instant);
     curtain?.commitArrival?.(url);
     if (!curtain) sceneArrival.commitArrival(url);
     weatherBg = url || "";
@@ -336,7 +340,13 @@ export function toast(text, { ms = 2600, kind = "" } = {}) {
  */
 export function loadingNotice(label = "読み込んでいます…") {
   const notice = el("div.vn-loading", { role: "status", "aria-live": "polite", text: label, dataset: { test: "module-loading" } });
-  return { onShow: () => layers.fx.append(notice), onHide: () => notice.remove() };
+  let hideComic, closed = false;
+  return { onShow: () => {
+    layers.fx.append(notice);
+    if (typeof window !== "undefined") void import("./loading-comic-notice.js").then(({ attachLoadingComic }) => {
+      if (!closed && notice.isConnected) hideComic = attachLoadingComic(notice);
+    }).catch(() => { /* The plain notice remains available if the comic module fails. */ });
+  }, onHide: () => { closed = true; hideComic?.(); notice.remove(); } };
 }
 
 /** VN開始前などの画像待ちにだけ添える通知。play()自体は包まない。 */
@@ -685,6 +695,7 @@ export async function dayCard(title, sub, { ms = 1900, weather = null, forecast 
   const card = el("div.day-card", [el("div.dc-title", { text: title }), sub ? el("div.dc-sub", [sub, wx?.badge]) : null]);
   if (forecast) card.append(el("small.dc-sub", { text: `明日は${forecast}`, dataset: { test: "day-forecast" } }));
   layers.fx.append(card);
+  SE.card();
   await nextFrame();
   card.classList.add("show");
   await sleep(ms);

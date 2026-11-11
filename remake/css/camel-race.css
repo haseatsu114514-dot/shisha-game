@@ -7,6 +7,11 @@
   color: var(--cr-sand); font-size: 15px; pointer-events: auto; outline: none; background: #0d0906;
 }
 
+/* ワイドステージ（#2861）: 外枠はステージの両端まで広げ、16:9 のコースの左右の余りは空と砂の色でつなぐ（黒い帯にしない）。
+   色はコースの端の夕空・砂丘・砂から拾った近い色。コースと HUD の大きさ・位置は変えない。 */
+#stage > .camel-game { inset: 0; }
+#stage[data-wide] > .camel-game { background: linear-gradient(180deg, #3a3c49 0%, #5f6579 20%, #7d7d80 31%, #aa8652 41%, #a37f45 62%, #8a6a40 92%, #98703d 100%); }
+
 /* ---- コースを画面いっぱいに（16:9 を保ち、余りは黒）。見出し・順位・ボタンはこの上に重ねる ---- */
 .camel-stage { position: relative; container-type: size; width: min(100cqw, 177.78cqh); aspect-ratio: 16 / 9; overflow: hidden; background: #e2c48c; }
 .camel-canvas { display: block; width: 100%; height: 100%; background: #e2c48c; }
@@ -61,7 +66,7 @@
 .camel-close:hover, .camel-close:focus-visible { border-color: var(--cr-gold); background: rgba(40,26,14,.9); }
 
 /* ---- 操作ボタン（調教師のリモコン）。左下と右下の角に重ね、真ん中の道と SUV は見せる ---- */
-.camel-controls { position: absolute; left: 1.6cqw; right: 1.6cqw; bottom: 1.6cqw; z-index: 2; display: flex; justify-content: space-between; gap: 2cqw; pointer-events: none; }
+.camel-controls { position: absolute; left: 1.6cqw; right: 1.6cqw; bottom: 1.6cqw; z-index: 2; display: flex; justify-content: space-between; align-items: flex-end; gap: 2cqw; pointer-events: none; }
 .camel-controls[hidden] { display: none; }
 .camel-control { --tone: var(--cr-gold); position: relative; overflow: hidden; pointer-events: auto; width: 31cqw; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 1cqw;
   min-height: max(52px, 9.5cqh); padding: .6cqw 1.3cqw .6cqw .9cqw; border: 1px solid rgba(255,255,255,.16); border-radius: 1.4cqw; color: var(--cr-sand); font: inherit; text-align: left; cursor: pointer;
@@ -158,12 +163,13 @@
 .camel-card h2 { margin: 2px 0 10px; font-size: 24px; color: #ffe9b8; }
 .camel-card p { margin: 0 0 8px; line-height: 1.75; }
 .camel-eyebrow { color: var(--cr-gold); font-size: 14px; font-weight: 800; letter-spacing: .16em; }
-.camel-card-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
+.camel-card-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; justify-content: center; }
 .camel-game .camel-sheet .camel-card .camel-card-actions .btn { min-height: 48px; padding-inline: 24px; border-radius: 12px; border: 1px solid rgba(255,215,122,.5); background: rgba(0,0,0,.3); color: var(--cr-sand); font-weight: 800; letter-spacing: .06em; box-shadow: none; }
 .camel-game .camel-sheet .camel-card .camel-card-actions .btn:hover, .camel-game .camel-sheet .camel-card .camel-card-actions .btn:focus-visible { background: rgba(255,215,122,.14); border-color: var(--cr-gold); color: #fff; }
 .camel-game .camel-sheet .camel-card .camel-card-actions .btn.primary { border-color: transparent; color: var(--cr-ink); background: linear-gradient(180deg, #fff1b8, var(--cr-gold) 45%, var(--cr-gold-deep)); box-shadow: inset 0 -3px 0 rgba(0,0,0,.2), 0 6px 18px rgba(224,164,60,.35); }
 .camel-game .camel-sheet .camel-card .camel-card-actions .btn.primary:hover, .camel-game .camel-sheet .camel-card .camel-card-actions .btn.primary:focus-visible { filter: brightness(1.06); color: var(--cr-ink); }
-.camel-tutorial { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 22px; align-items: start; }
+.camel-tutorial { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 14px 24px; align-items: center; }
+.camel-tutorial > .camel-card-actions { grid-column: 1 / -1; margin-top: 2px; justify-content: flex-end; flex-wrap: nowrap; }
 .camel-tutorial-icon { display: grid; place-items: center; width: 96px; height: 96px; border-radius: 24px; color: var(--cr-ink);
   background: radial-gradient(circle at 35% 30%, #fff6d6, var(--cr-gold) 55%, var(--cr-gold-deep)); box-shadow: 0 0 0 4px rgba(0,0,0,.35), 0 10px 24px rgba(224,164,60,.3); }
 .camel-tutorial-icon[data-kind="signal"] { background: radial-gradient(circle at 35% 30%, #fff1d6, var(--cr-amber) 55%, #b9682a); }
@@ -185,7 +191,7 @@
 @keyframes camel-stamp { from { opacity: 0; transform: scale(2.6) rotate(-14deg); } to { opacity: 1; transform: scale(1) rotate(-4deg); } }
 @keyframes camel-bar { from { width: 0; } }
 .camel-medal span { font-size: 18px; font-weight: 900; }
-.camel-result-score { display: grid; gap: 4px; }
+.camel-result-score { display: grid; gap: 4px; justify-items: center; text-align: center; }
 .camel-time { margin: 0; color: var(--cr-dim); font-size: 14px; font-weight: 800; letter-spacing: .08em; font-variant-numeric: tabular-nums; }
 .camel-total { display: flex; align-items: baseline; gap: 8px; margin: 0; }
 .camel-total small { font-size: 13px; font-weight: 800; color: var(--cr-dim); letter-spacing: .02em; }
@@ -203,8 +209,8 @@
 .camel-score-bar i { display: block; height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--cr-gold-deep), var(--cr-gold), #fff1b8); }
 .camel-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; margin: 14px 0 0; padding: 0; list-style: none; }
 .camel-stats li { display: flex; align-items: baseline; justify-content: space-between; gap: 6px; padding: 6px 10px; border-radius: 10px; background: rgba(0,0,0,.25); }
-.camel-stats small { font-size: 12px; font-weight: 800; color: var(--cr-dim); }
-.camel-stats b { font-size: 15px; font-weight: 900; font-variant-numeric: tabular-nums; }
+.camel-stats small { font-size: 12px; font-weight: 800; color: var(--cr-dim); white-space: nowrap; flex: none; }
+.camel-stats b { font-size: 15px; font-weight: 900; font-variant-numeric: tabular-nums; text-align: right; }
 .camel-best { margin-top: 10px; color: #ffe27a; font-weight: 900; letter-spacing: .1em; }
 /* 結果・大会選びの右上の「？」: 遊び方を読み直す（#2836） */
 .camel-game .camel-sheet .camel-card .camel-help { position: absolute; right: 14px; top: 14px; display: grid; place-items: center; width: 40px; height: 40px; padding: 0;
@@ -260,6 +266,7 @@
   .camel-banner[data-kind="tired"] { font-size: max(clamp(16px, 2.4cqw, 24px), var(--cr-min)); }
   /* 操作ボタン2つ: 高さ 96px（本編のステージ上）・幅は画面の 1/3。アイコン（🔊・⚡）を大きく、ゲージの字は 24px */
   .camel-control { width: 33.3cqw; min-height: max(13.3cqh, var(--cr-tap)); gap: 1.4cqw; }
+  .camel-control-stack { width: 33.3cqw; }
   .camel-control-icon { width: max(8.9cqh, calc(30px / var(--k, 1))); height: max(8.9cqh, calc(30px / var(--k, 1))); }
   .camel-control-text { font-size: max(min(24px, 3.3cqh), var(--cr-min)); }
   .camel-rhythm-bars { height: 1.2em; gap: .3em; } .camel-rhythm-bars i { width: .6em; }
@@ -278,7 +285,7 @@
 }
 
 /* 独立ページ（camel-race.html） */
-#camel-app { position: fixed; inset: 0; background: #1d140d; }
+#camel-app { position: absolute; inset: 0; background: #1d140d; } /* 試遊ページでは #stage（1280×720）の中に置く（#3076） */
 .camel-menu { display: grid; gap: 14px; max-width: 560px; margin: 0 auto; padding: clamp(20px, 6vw, 60px) 20px; color: #fff3dc; }
 .camel-menu h1 { margin: 0; font-size: clamp(32px, 6vw, 60px); letter-spacing: .14em; color: #ffd77a; }
 .camel-menu p { margin: 0; line-height: 1.7; color: #d9c6a3; }
@@ -297,3 +304,235 @@
 .camel-cup:not(:disabled):hover, .camel-cup:focus-visible { outline: 2px solid #ffd77a; outline-offset: 2px; transform: translateY(-2px); }
 @media (max-width: 700px) { .camel-cups { gap: 1cqw; } .camel-cup { padding: 1cqw; } .camel-cup strong { font-size: 2.2cqw; } .camel-cup span { font-size: 1.7cqw; } .camel-cup b { font-size: 1.7cqw; } }
 @media (prefers-reduced-motion: reduce) { .camel-cup:not(:disabled):hover { transform: none; } }
+
+/* ---- 「？」の統一と、常に出す文をもう一段減らす（#2729・2026-11-08 オーナー指摘「文字が多い・？が大きい」） ----
+   「？」: 見た目は舞台上 31〜35px の細い線の丸（::before）。押せる範囲はボタンの箱そのもの（透明）で実寸 40px 以上。カードの右上のまま。
+   スマホでは、時計の上の英字「CAMEL RACE」、遊び方の「HOW TO PLAY n/3」（下の点で分かる）と大会選びの「HABIBA RACING CLUB」、
+   大会選びの前置きの一文と時間の決まり（カードの title へ）、各大会の「CUP 01」の英字を出さない。 */
+.camel-game { --q-hit: max(44px, calc(40px / var(--k, 1))); --q-font: max(20px, calc(11.5px / var(--k, 1))); --q-dot: calc(var(--q-font) + 11px); }
+.camel-game .camel-sheet .camel-card .camel-help.camel-help { right: 4px; top: 4px; isolation: isolate; width: var(--q-hit); height: var(--q-hit);
+  border: 0; background: transparent; color: var(--cr-gold); font-size: var(--q-font); }
+.camel-game .camel-sheet .camel-card .camel-help.camel-help::before { content: ""; position: absolute; left: 50%; top: 50%; z-index: -1; box-sizing: border-box;
+  width: var(--q-dot); height: var(--q-dot); transform: translate(-50%, -50%); border: 1.5px solid rgba(255,215,122,.5); border-radius: 50%; background: rgba(0,0,0,.3); pointer-events: none; }
+.camel-game .camel-sheet .camel-card .camel-help.camel-help:is(:hover, :focus-visible) { background: transparent; }
+.camel-game .camel-sheet .camel-card .camel-help.camel-help:is(:hover, :focus-visible)::before { border-color: var(--cr-gold); background: rgba(255,215,122,.14); }
+html:root[data-density="phone"] .camel-game .camel-title,
+html:root[data-density="phone"] .camel-game :is(.camel-tutorial, .camel-cup-card) > .camel-eyebrow,
+html:root[data-density="phone"] .camel-game .camel-cup-card > p,
+html:root[data-density="phone"] .camel-game .camel-cup-card > .camel-cup-note,
+html:root[data-density="phone"] .camel-game .camel-cup > small:first-child { display: none; }
+/* 大会選びの札の中（距離・ひとこと・出走／未解放）は、スマホでは実寸 11.5px 以上に（これまで 8〜9px）。札の名前は一回り大きく。 */
+html:root[data-density="phone"] .camel-game .camel-cup :is(span, b) { font-size: max(18px, calc(11.5px / var(--k, 1))); line-height: 1.35; }
+html:root[data-density="phone"] .camel-game .camel-cup strong { font-size: max(26px, calc(14px / var(--k, 1))); }
+
+/* ---- CR08 素材（#3046）: 遊び方の絵・カードの紙（CR-UI08）・主ボタンの真鍮札（CR-UI09）。
+   カードと主ボタンは、絵が読めた時だけ JS が .camel-game へ cr-card / cr-btn を付けて有効になる。
+   読めなければ従来の見た目のまま（フォールバック）。 ---- */
+.camel-tutorial-visual { position: relative; width: 272px; aspect-ratio: 4 / 3; flex: none; }
+.camel-tutorial-visual .camel-tutorial-icon { width: 100%; height: 100%; border-radius: 18px; }
+.camel-tutorial-art { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; border-radius: 18px;
+  background: linear-gradient(180deg, #cfe0e8, #e9dab0); box-shadow: 0 10px 24px rgba(0,0,0,.35); }
+@media (max-height: 480px) { .camel-tutorial-visual { width: 150px; } .camel-tutorial-visual .camel-tutorial-icon { border-radius: 14px; } }
+
+.camel-game.cr-card .camel-sheet .camel-card { border: 30px solid transparent; border-radius: 6px; padding: 12px 16px;
+  border-image: url("../img/ui/camel_race/ui/program-card.webp") 96 fill / 30px / 0 stretch;
+  background: none; color: #43301c; box-shadow: 0 22px 60px rgba(0,0,0,.5); }
+.camel-game.cr-card .camel-card h2 { color: #4a2a0e; }
+.camel-game.cr-card .camel-eyebrow { color: #96690f; }
+.camel-game.cr-card .camel-key { background: rgba(74,42,14,.1); border-color: rgba(74,42,14,.4); color: #43301c; }
+.camel-game.cr-card .camel-steps i { background: rgba(74,42,14,.25); }
+.camel-game.cr-card .camel-steps i.on { background: #c08a1e; }
+.camel-game.cr-card .camel-sheet .camel-card .camel-card-actions .btn { background: rgba(255,252,244,.5); border-color: rgba(74,42,14,.45); color: #43301c; box-shadow: none; }
+.camel-game.cr-card .camel-sheet .camel-card .camel-card-actions .btn:hover,
+.camel-game.cr-card .camel-sheet .camel-card .camel-card-actions .btn:focus-visible { background: rgba(255,255,255,.8); border-color: #96690f; color: #2a1a0e; }
+.camel-game.cr-card .camel-sheet .camel-card .camel-help.camel-help { color: #96690f; }
+.camel-game.cr-card .camel-sheet .camel-card .camel-help.camel-help::before { background: rgba(255,252,244,.55); border-color: rgba(74,42,14,.4); }
+.camel-game.cr-card .camel-cup { background: linear-gradient(150deg, rgba(255,252,244,.88), rgba(240,226,196,.88)); border-color: #b27f36; color: #43301c; box-shadow: inset 0 0 0 3px rgba(74,42,14,.05); }
+.camel-game.cr-card .camel-cup small { color: #96690f; }
+.camel-game.cr-card .camel-cup b { color: #7a4d12; }
+.camel-game.cr-card .camel-cup-note { color: #6d5136; }
+.camel-game.cr-card .camel-time { color: #6d5136; }
+.camel-game.cr-card .camel-total small { color: #6d5136; }
+.camel-game.cr-card .camel-total strong { color: #2a1a0e; }
+.camel-game.cr-card .camel-score-bar { background: rgba(74,42,14,.18); box-shadow: inset 0 1px 2px rgba(74,42,14,.25); }
+.camel-game.cr-card .camel-stats li { background: rgba(74,42,14,.08); }
+.camel-game.cr-card .camel-stats small { color: #6d5136; }
+.camel-game.cr-card .camel-stats b { color: #2a1a0e; }
+.camel-game.cr-card .camel-best { color: #96690f; }
+.camel-game.cr-card .camel-grade-letter { background: rgba(255,252,244,.5); }
+@media (max-height: 480px) {
+  .camel-game.cr-card .camel-sheet .camel-card { border-width: 22px; border-image-width: 22px; padding: 6px 10px; }
+}
+
+.camel-game.cr-btn .camel-sheet .camel-card .camel-card-actions .btn.primary { border: 12px solid transparent; border-radius: 10px;
+  border-image: url("../img/ui/camel_race/ui/button-primary.webp") 60 64 fill / 12px 16px / 0 stretch;
+  background: none; color: #241304; box-shadow: 0 6px 18px rgba(0,0,0,.35); }
+.camel-game.cr-btn .camel-sheet .camel-card .camel-card-actions .btn.primary:hover,
+.camel-game.cr-btn .camel-sheet .camel-card .camel-card-actions .btn.primary:focus-visible { filter: brightness(1.07); color: #241304; }
+
+/* CR08 #3053: 各画像が読めたときだけ適用。数字と評価文字は DOM のまま。 */
+.camel-game.cr-dash .camel-clock { border: 12px solid transparent; border-radius: 0;
+  border-image: url("../img/ui/camel_race/ui/dash-panel.webp") 56 fill / 12px / 0 stretch;
+  background: none; padding: .4em .7em .45em; }
+.camel-game.cr-finish .camel-progress-flag { right: -2.5em; top: -1.7em; width: 3em; height: 3.75em;
+  transform: none; border-radius: 0; box-shadow: none;
+  background: url("../img/ui/camel_race/ui/finish-post.webp") center / contain no-repeat; }
+.camel-game.cr-btn-secondary .camel-sheet .camel-card .camel-card-actions .btn:not(.primary) { border: 12px solid transparent; border-radius: 10px;
+  border-image: url("../img/ui/camel_race/ui/button-secondary.webp") 60 64 fill / 12px 16px / 0 stretch;
+  background: none; color: #31210f; box-shadow: 0 6px 18px rgba(0,0,0,.3); }
+.camel-game.cr-btn-secondary .camel-sheet .camel-card .camel-card-actions .btn:not(.primary):is(:hover, :focus-visible) { filter: brightness(1.06); color: #241304; }
+.camel-game.cr-stamp-s .camel-grade-letter[data-grade="S"],
+.camel-game.cr-stamp-a .camel-grade-letter[data-grade="A"],
+.camel-game.cr-stamp-b .camel-grade-letter[data-grade="B"],
+.camel-game.cr-stamp-c .camel-grade-letter[data-grade="C"] { border: 0; border-radius: 0; box-shadow: none;
+  background-color: transparent; background-position: center; background-size: contain; background-repeat: no-repeat; }
+.camel-game.cr-stamp-s .camel-grade-letter[data-grade="S"] { background-image: url("../img/ui/camel_race/ui/stamp-s.webp"); color: #8f2b1c; }
+.camel-game.cr-stamp-a .camel-grade-letter[data-grade="A"] { background-image: url("../img/ui/camel_race/ui/stamp-a.webp"); color: #9a4f12; }
+.camel-game.cr-stamp-b .camel-grade-letter[data-grade="B"] { background-image: url("../img/ui/camel_race/ui/stamp-b.webp"); color: #182b54; }
+.camel-game.cr-stamp-c .camel-grade-letter[data-grade="C"] { background-image: url("../img/ui/camel_race/ui/stamp-c.webp"); color: #454545; }
+.camel-game.cr-word-perfect .camel-feedback[data-kind="perfect"] b { display: block; width: 5em; height: 1.1em;
+  color: transparent; -webkit-text-stroke-color: transparent; text-shadow: none;
+  background: url("../img/ui/camel_race/ui/word-perfect.webp") center / contain no-repeat; }
+
+/* CR08 #3055: 再制作した札・メダル・計器・無線。各クラスは画像ロード成功時だけ付く。 */
+.camel-game.cr-rank .camel-standings li:not([data-who="player"]),
+.camel-game.cr-rank-player .camel-standings li[data-who="player"] {
+  display: flex; gap: .35em; padding: 0 .55em 0 54px; border: 0; border-radius: 0;
+  background: none; box-shadow: none; color: #241608;
+}
+.camel-game.cr-rank .camel-standings li:not([data-who="player"])::before,
+.camel-game.cr-rank-player .camel-standings li[data-who="player"]::before {
+  content: ""; position: absolute; inset: 0; z-index: 0; pointer-events: none;
+  border: 10px solid transparent; border-left-width: 48px; border-right-width: 18px;
+  border-image: url("../img/ui/camel_race/ui/rank-plate.webp") 40 48 40 48 fill / 10px 18px 10px 48px / 0 stretch;
+}
+.camel-game.cr-rank-player .camel-standings li[data-who="player"]::before {
+  border-image-source: url("../img/ui/camel_race/ui/rank-plate-player.webp");
+}
+.camel-game.cr-rank .camel-standings li:not([data-who="player"]) > *,
+.camel-game.cr-rank-player .camel-standings li[data-who="player"] > * { position: relative; z-index: 1; }
+.camel-game.cr-rank .camel-standings li:not([data-who="player"]) .camel-rank-badge,
+.camel-game.cr-rank-player .camel-standings li[data-who="player"] .camel-rank-badge {
+  position: absolute; left: 30px; top: 50%; transform: translateY(-50%); width: 16px; height: 16px;
+  background: none; box-shadow: none; color: #38200b; font-size: .8em;
+}
+.camel-game.cr-rank .camel-standings li:not([data-who="player"]) .camel-chip-name,
+.camel-game.cr-rank-player .camel-standings li[data-who="player"] .camel-chip-name { flex: 1; min-width: 0; color: #241608; }
+.camel-game.cr-rank .camel-standings li:not([data-who="player"]) .camel-chip-gap,
+.camel-game.cr-rank-player .camel-standings li[data-who="player"] .camel-chip-gap { color: #59452c; }
+
+.camel-game.cr-medal-gold .camel-medal[data-rank="1"] {
+  position: relative; border-radius: 0; box-shadow: none; background: url("../img/ui/camel_race/ui/medal-gold.webp") center / contain no-repeat;
+}
+.camel-game.cr-medal-gold .camel-medal[data-rank="1"] strong,
+.camel-game.cr-medal-gold .camel-medal[data-rank="1"] span { position: absolute; top: 5%; color: #2b1808; line-height: 1; text-shadow: 0 1px #f8d276; }
+.camel-game.cr-medal-gold .camel-medal[data-rank="1"] strong { left: 42%; font-size: clamp(14px, 1.6cqw, 20px); }
+.camel-game.cr-medal-gold .camel-medal[data-rank="1"] span { left: 55%; font-size: clamp(11px, 1.1cqw, 14px); }
+
+.camel-game.cr-gauge-frame :is(.camel-speed-bar, .camel-stamina-bar) {
+  height: 1em; border: 3px solid transparent; border-radius: 0; box-sizing: border-box; overflow: hidden; background: none;
+  border-image: url("../img/ui/camel_race/ui/gauge-frame.webp") 24 48 fill / 3px 9px / 0 stretch;
+}
+.camel-game.cr-gauge-fill :is(.camel-speed-bar, .camel-stamina-bar) i {
+  top: 2px; bottom: 2px; border-radius: 0; background: url("../img/ui/camel_race/ui/gauge-fill.webp") left center / 100% 100% no-repeat;
+}
+.camel-game.cr-gauge-fill .camel-speed-bar i { filter: hue-rotate(100deg); }
+.camel-game.cr-gauge-fill .camel-speed[data-state="whip"] .camel-speed-bar i,
+.camel-game.cr-gauge-fill .camel-stamina[data-state="spent"] .camel-stamina-bar i { filter: hue-rotate(-115deg); }
+.camel-game.cr-gauge-fill .camel-stamina[data-state="tired"] .camel-stamina-bar i { filter: hue-rotate(-55deg); }
+
+.camel-game.cr-call .camel-call {
+  box-sizing: border-box; width: 42cqw; max-width: 52%; min-height: 4.3em; padding: .35em .8em .35em 105px;
+  border: 0; border-radius: 0; background: none; box-shadow: none;
+}
+.camel-game.cr-call .camel-call::before {
+  content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none;
+  border: 12px solid transparent; border-left-width: 95px; border-right-width: 18px;
+  border-image: url("../img/ui/camel_race/ui/call-plate.webp") 48 160 48 160 fill / 12px 18px 12px 95px / 0 stretch;
+}
+.camel-game.cr-call .camel-call-icon {
+  position: absolute; left: 18px; top: 50%; transform: translateY(-50%);
+  width: 3em; height: 3em; border: 0; background: none;
+}
+.camel-game.cr-call .camel-call-body { min-width: 0; }
+.camel-game.cr-call .camel-call-text { overflow: hidden; text-overflow: ellipsis; }
+
+.camel-game.cr-rank .camel-standings li:not([data-who="player"])::after,
+.camel-game.cr-rank-player .camel-standings li[data-who="player"]::after {
+  content: ""; position: absolute; left: 24px; top: 20%; height: 60%; width: 3px; z-index: 1;
+  border-radius: 2px; background: var(--camel-color); pointer-events: none;
+}
+@media (min-height: 481px) {
+  .camel-game:is(.cr-rank, .cr-rank-player) .camel-standings { width: 15.5em; }
+}
+
+
+/* 息の予告はムチのボタンのすぐ上に積む（2026-11-11。中央下は SUV とはじめを見せる）。色に加えて常に言葉でも示す。
+   見た目は操作ボタンと同じ黒いゴムの筐体で、状態は左の帯の色（緑＝ふつう・琥珀＝少ない・朱＝減速／停止）。 */
+.camel-control-stack { display: flex; flex-direction: column; align-items: stretch; gap: .5cqw; width: 31cqw; pointer-events: none; }
+.camel-control-stack .camel-control { width: 100%; box-sizing: border-box; }
+.camel-pacing { display: grid; gap: .1em; padding: .35em .8em .35em 1em; border-radius: .5em; border: 1px solid rgba(255,255,255,.14); border-left: .32em solid #7fd9a6;
+  background: linear-gradient(180deg, rgba(48,32,18,.92), rgba(20,13,7,.94)); color: #eafff3; text-align: left; font-size: max(clamp(11px, 1.08cqw, 14px), var(--cr-min, 11px)); font-weight: 800; line-height: 1.3; pointer-events: none; box-shadow: 0 4px 12px rgba(0,0,0,.35); }
+.camel-pacing[hidden] { display: none; }
+.camel-pacing small { font-size: max(.85em, var(--cr-min, 11px)); color: #d9c6a3; }
+.camel-pacing[data-state="low"] { border-left-color: #ffcf5a; color: #ffe9b8; }
+.camel-pacing[data-state="tired"], .camel-pacing[data-state="spent"] { border-left-color: #ff7a5c; color: #ffd2c6; background: linear-gradient(180deg, rgba(74,24,14,.94), rgba(40,12,8,.95)); }
+.camel-stamina[data-state="low"] .camel-stamina-bar i { background: linear-gradient(90deg, #e08a2c, #ffcf5c); }
+.camel-stamina-reserve { position: absolute; left: 39%; top: 0; bottom: 0; width: 2px; background: #fff7c5; box-shadow: 0 0 3px #241a12; }
+.camel-signal[data-stamina="low"] { border-color: #ffd06a; }
+.camel-boost-label { position: absolute; left: 1.6cqw; top: 30%; padding: .2em .4em; border-left: 3px solid #a6f0ff; background: #173b47d9; color: #e6ffff; font-size: max(clamp(13px, 1.5cqw, 20px), var(--cr-min, 13px)); font-weight: 900; letter-spacing: .12em; text-shadow: 0 2px 2px #173b47, 1px 0 3px #173b47, -1px 0 3px #173b47; pointer-events: none; }
+.camel-boost-label[hidden] { display: none; }
+@media (max-height: 480px) { .camel-pacing { padding: .25em .5em .25em .7em; } .camel-pacing small { display: none; } }
+
+
+/* ---- 2026-11-11 見た目の統一（オーナー「安っぽく見える」）----
+   これまで、手描きの札（順位・カード）と、CSS の半透明の黒い錠剤形（進み具合・やめる・バナー・WIND BOOST）が混ざっていた。
+   部品を2つの素材にそろえる: 「日に焼けた木とクリーム色の紙」（順位・進み具合・やめる）と「黒いゴムと真鍮」（計器・操作・無線）。
+   大きな字（カウントダウン・LAST SPURT・GOAL）は板をやめ、PERFECT の手描きの字と同じ「太い濃茶の縁取りの字」にする。 */
+
+/* 進み具合: 木の横木に、白いペンキの溝。点は杭の頭。 */
+.camel-progress { height: 2.2em; border-radius: .35em; border: 2px solid #4a2f16; background: linear-gradient(180deg, #ecd7ab 0%, #dcbf8a 46%, #c39f69 100%);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.45), inset 0 -2px 0 rgba(74,47,22,.28), 0 3px 8px rgba(0,0,0,.3); }
+.camel-progress-track { height: .42em; background: #4a2f16; box-shadow: inset 0 1px 2px rgba(0,0,0,.5), 0 1px 0 rgba(255,255,255,.35); }
+.camel-progress-spurt { top: 0; bottom: 0; border-radius: 0 99px 99px 0; background: repeating-linear-gradient(115deg, #e9742c 0 .5em, #f6b25a .5em 1em); }
+.camel-progress-spurt span { color: #8a3208; text-shadow: 0 1px 0 rgba(255,255,255,.4); bottom: 125%; }
+.camel-progress-tick { top: -.45em; width: 2px; height: 1.3em; background: rgba(74,47,22,.55); }
+.camel-dot { box-shadow: 0 0 0 2px #2a1a0e; }
+.camel-dot[data-who="player"] { box-shadow: 0 0 0 2px #2a1a0e, 0 0 0 4px #fff6d6; }
+
+/* やめる: 木の小さな札 */
+.camel-close { border: 2px solid #4a2f16; border-radius: .4em; background: linear-gradient(180deg, #ecd7ab, #cdaa72); color: #3a2412; font-weight: 900;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.45), 0 3px 8px rgba(0,0,0,.3); }
+.camel-close:hover, .camel-close:focus-visible { border-color: #2a1a0e; background: linear-gradient(180deg, #f6e6c0, #d9b77e); }
+
+/* 操作ボタン: 角を締めた黒いゴムの筐体に、真鍮の細い縁 */
+.camel-control { border-radius: .9cqw; border: 2px solid #8a6a34; background: linear-gradient(180deg, #33261b 0%, #1d140d 100%);
+  box-shadow: inset 0 0 0 2px #120b06, inset 0 3px 0 rgba(255,255,255,.07), 0 6px 14px rgba(0,0,0,.45); }
+.camel-control-icon { box-shadow: 0 0 0 3px #120b06, 0 0 0 4px rgba(201,150,58,.6), inset 0 -2px 0 rgba(0,0,0,.25); }
+.camel-voice[data-cue="on"] { border-color: #ffd77a; box-shadow: inset 0 0 0 2px #120b06, 0 0 0 2px rgba(255,215,122,.4), 0 0 20px rgba(255,215,122,.4); }
+.camel-signal[data-state="spurt"] { border-color: #ffb347; box-shadow: inset 0 0 0 2px #120b06, 0 0 0 2px rgba(255,179,71,.4), 0 0 22px rgba(255,179,71,.45); }
+.camel-signal.held, .camel-signal[data-state="whipping"] { border-color: #ff6e46; box-shadow: inset 0 0 0 2px #120b06, inset 0 4px 12px rgba(0,0,0,.6), 0 0 24px rgba(255,90,50,.55); }
+/* 風よけの間はスタミナのゲージが緑に脈打つ。競り合いの間は2つのボタンの縁が朱色に脈打つ。 */
+.camel-stamina[data-draft="on"] .camel-stamina-bar { box-shadow: 0 0 0 1px #9ff0cf, 0 0 10px rgba(159,240,207,.7); }
+.camel-signal[data-draft="on"] .camel-signal-note { color: #9ff0cf; }
+.camel-control[data-duel="on"] { animation: camel-duel .5s ease-in-out infinite alternate; }
+.camel-signal[data-duel="on"] .camel-signal-note { color: #ffb09a; }
+@keyframes camel-duel { from { border-color: #8a6a34; } to { border-color: #ff8a5c; box-shadow: inset 0 0 0 2px #120b06, 0 0 0 2px rgba(255,138,92,.45), 0 0 22px rgba(255,110,70,.5); } }
+
+/* 大きな字: 板をやめて、太い濃茶の縁取りの字に。後ろに左右へ消える細い帯。 */
+.camel-banner { display: grid; justify-items: center; gap: .1em; top: 29%; padding: .12em 2.2em .16em; border: 0; border-radius: 0; width: max-content; max-width: 96%;
+  background: linear-gradient(90deg, rgba(26,12,4,0), rgba(26,12,4,.62) 22%, rgba(26,12,4,.62) 78%, rgba(26,12,4,0)); box-shadow: none; }
+.camel-banner b { font-weight: 900; letter-spacing: .1em; line-height: 1.15; color: #fff6e5; paint-order: stroke fill; -webkit-text-stroke: .14em #3a1c06; text-shadow: 0 .07em 0 rgba(0,0,0,.4); }
+.camel-banner small { font-size: clamp(13px, 1.7cqw, 21px); font-weight: 900; letter-spacing: .08em; color: #fff6e5; paint-order: stroke fill; -webkit-text-stroke: .2em #3a1c06; }
+.camel-banner[data-kind="spurt"], .camel-banner[data-kind="goal"], .camel-banner[data-kind="goal-place"], .camel-banner[data-kind="tired"] { box-shadow: none; }
+.camel-banner[data-kind="spurt"] b { color: #ffb347; font-style: italic; }
+.camel-banner[data-kind="goal"] b { color: #ffd84a; text-shadow: 0 .07em 0 rgba(0,0,0,.4), 0 0 .5em rgba(255,200,80,.6); }
+.camel-banner[data-kind="tired"] b { color: #ff9a8a; }
+.camel-countdown { color: #fff6e5; paint-order: stroke fill; -webkit-text-stroke: .1em #3a1c06; text-shadow: 0 .06em 0 rgba(0,0,0,.45); font-style: italic; }
+.camel-boost-label { top: 31%; padding: 0; border: 0; background: none; color: #dffbff; font-style: italic; paint-order: stroke fill; -webkit-text-stroke: .22em #12333d; text-shadow: none; }
+
+/* 順位の札の「↓5m」は、差が読みやすい濃さに */
+.camel-game.cr-rank .camel-standings li:not([data-who="player"]) .camel-chip-gap,
+.camel-game.cr-rank-player .camel-standings li[data-who="player"] .camel-chip-gap { color: #4a3418; font-weight: 900; }
+
+@media (prefers-reduced-motion: reduce) { .camel-control[data-duel="on"] { animation: none; border-color: #ff8a5c; } }

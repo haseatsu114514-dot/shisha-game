@@ -6,9 +6,9 @@ export const STEP_DEMOS = Object.freeze({
     cues: [
       { from: 0, to: 3.4, text: "穴あけだ。まず配置を選べ。外周と中周に、均等な穴を作る", arrow: { x: .80, y: .24, rotate: 90 } },
       { from: 3.4, to: 6.5, text: "光を見ろ。カウントのあと、目印の周りを回りだす", arrow: { x: .36, y: .42, rotate: 135 } },
-      { from: 6.5, to: 14.5, text: "光が目印に重なったら、押せ。穴の位置は目印が教える", arrow: { x: .36, y: .42, rotate: 135 } },
+      { from: 6.5, to: 14.5, text: "光が目印に重なったら、少し押し込んで離せ。短すぎると浅い穴になり、大きく減点だ", arrow: { x: .36, y: .42, rotate: 135 } },
       { from: 14.5, to: 16.5, text: "外周が揃った。次のリングへ進め", arrow: { x: .79, y: .80, rotate: 0 } },
-      { from: 16.5, to: 25, text: "次は内側。中心へ熱を通す穴を、一つずつ", arrow: { x: .36, y: .42, rotate: 135 } },
+      { from: 16.5, to: 25, text: "次は中周。熱を通す穴を、一つずつ", arrow: { x: .36, y: .42, rotate: 135 } },
       { from: 25, to: Infinity, text: "よし、開通。結果を見て、間隔を確かめろ", arrow: { x: .865, y: .78, rotate: 0 } },
     ],
   },

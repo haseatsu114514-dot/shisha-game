@@ -65,6 +65,13 @@ assert.equal(sparse.score, full.score); assert(sparse.minimumComplete); assert.e
 assert.equal(sparse.densityProfile.density, 0.5); assert.equal(sparse.densityProfile.sparse, 0.5); assert.equal(full.densityProfile.sparse, 0);
 assert(holes.evaluate(rings([12, 0, 0], 6), tally, 1, 11).precision > holes.evaluate(rings([12, 8, 4], 6), tally, 1, 11).precision);
 assert.equal(holes.evaluate(rings([0, 0, 0]), tally, 1, 11).score, 0); assert(!holes.evaluate(rings([11, 0, 0]), tally, 1, 11).minimumComplete);
+// 同じ24目印・同じ残り時間でも、浅い穴が混じるほど得点が落ちる。
+const depthLayout = (shallow) => [{ ...logic.RINGS[0], targets: 24, taken: new Array(24).fill(true),
+  holes: Array.from({ length: 24 }, (_, k) => ({ a: k * Math.PI * 2 / 24, d: 0,
+    size: k < shallow ? logic.HOLE_SIZES.shallow : logic.HOLE_SIZES.small })) }];
+assert.equal(holes.evaluate(depthLayout(0), tally, 1, 11).score, 100);
+assert.equal(holes.evaluate(depthLayout(1), { ...tally, shallow: 1 }, 1, 11).score, 85);
+assert.equal(holes.evaluate(depthLayout(2), { ...tally, shallow: 2 }, 1, 11).score, 74);
 const wrapped = rings(); wrapped[0].holes.forEach((hole, i) => hole.a += Math.PI * 2 * (i % 3 - 1));
 assert(Math.abs(holes.evaluate(wrapped, tally, 1, 11).evenness - 1) < 1e-12);
 assert(Math.abs(logic.circularAngleDistance(-0.01, Math.PI * 6 + 0.01) - 0.02) < 1e-12);
@@ -112,7 +119,7 @@ async function pierce(hold = 250, approach = 400) {
 // 針が動き出した直後（手前の端）にそのまま押す
 function jab(hold = 250) { fire("hole-punch", "pointerdown"); now += hold; fire("hole-punch", "pointerup"); }
 async function punchCircle(targets) { for (let k = 0; k < targets; k++) await pierce(); }
-// 同じ位置への押し直しも実穴。TOO CLOSEを演出側が勝手に消さない。
+// 押し直しも実穴として残る。ズレた穴を演出側が勝手に消さない。
 let probe = await start(); jab(); jab();
 assert.equal(visualHoles.length, 2); assert.equal(visualHoles.at(-1).dots.length, 2);
 assert.deepEqual(visualHoles.at(-1).target, visualHoles.at(-1).dots.at(-1));
@@ -147,28 +154,42 @@ await frame(now + 60000); assert.equal(panel.querySelector("b").style.width, mix
 assert.equal(active.cs.holes, null); fire("hole-done"); await active.running;
 assert.equal(active.cs.holes.templateId, "outer12-middle12"); assert.equal(active.cs.holes.outer, 12);
 assert.equal(active.cs.holes.middle, 12); assert.equal(active.cs.holes.inner, 0); assert.equal(active.cs.holes.grade, "S");
-// #2446: 成功24か所と、MISS込みの実穴49個を混同しない。入力・描画・結果で同じ穴を保持。
+// #3023: 弧の手前の端で刺してもミス（無効）にはならない。その目印の穴として成立し、
+// ズレのぶんだけ精度がなだらかに落ちる。余分な穴は増えず、入力・描画・結果で同じ穴を保持する。
 active = await start(null, "outer12-middle12");
-// 弧の手前の端（目印と目印の間）でMISS。針は同じ手前の端へ戻るので、その後の連打はTOO CLOSE
-for (let n = 0; n < 23; n++) jab();
-await punchCircle(12);
+for (let n = 0; n < 12; n++) jab();
+assert(stamps.some((stamp) => stamp.text === "ズレたけど開いた"));
+assert(!find("hole-next").disabled, "ズレた穴だけでもリングは完成する");
 fire("hole-next");
-for (let n = 0; n < 2; n++) jab();
-await punchCircle(12);
-assert.equal(visualHoles.length, 49);
-assert.equal(visualHoles.at(-1).dots.length, 49);
+for (let n = 0; n < 12; n++) jab();
+assert.equal(visualHoles.length, 24);
+assert.equal(visualHoles.at(-1).dots.length, 24);
+assert(!find("hole-done").disabled);
 fire("hole-done"); await active.running;
-const missResult = active.cs.holes;
-assert.equal(missResult.tally.perfect + missResult.tally.good, 24);
-assert.equal(missResult.tally.miss + missResult.tally.tooClose, 25);
-assert.equal(missResult.outer, 35); assert.equal(missResult.middle, 14); assert.equal(missResult.inner, 0);
-assert.equal(missResult.total, 49); assert.equal(missResult.dots.length, 49);
-assert.equal(missResult.densityProfile.count, 49);
+const roughResult = active.cs.holes;
+assert.equal(roughResult.tally.perfect + roughResult.tally.good, 0);
+assert.equal(roughResult.tally.rough, 24);
+assert.equal(roughResult.tally.miss, 0); assert.equal(roughResult.tally.tooClose, 0);
+assert.equal(roughResult.outer, 12); assert.equal(roughResult.middle, 12); assert.equal(roughResult.inner, 0);
+assert.equal(roughResult.total, 24); assert.equal(roughResult.dots.length, 24);
+assert.equal(roughResult.densityProfile.count, 24);
+assert(roughResult.precision > 0 && roughResult.precision < .5, "ズレた穴は0点ではなく低精度として残る");
+assert(roughResult.score < full.score && roughResult.score >= 60, "ズレた穴だけでも大きく減点されたうえで成立する");
 const detail = results.at(-1).lines.join("\n");
 assert.match(detail, /目印の達成：24\/24か所/);
-assert.match(detail, /穴あけ入力：49回 ／ MISS：25回/);
-assert.match(detail, /実際に開いた穴：外周 35・中周 14・内周 0（計 49 穴）/);
-assert.match(detail, /MISSでも穴は開き/);
+assert.match(detail, /穴あけ入力：24回 ／ ズレて開いた穴：24回/);
+assert.match(detail, /実際に開いた穴：外周 12・中周 12・内周 0（計 24 穴）/);
+assert.match(detail, /ズレた穴も開いた穴として残り/);
+// #3023: 既に開いた穴の真上で刺した場合は「近すぎたけど開いた」として、その目印の穴になる。
+active = await start(null, "outer24");
+await pierce(250, 800); // 弧の奥の端で刺す（ズレた穴）
+jab(); // 次の目印の手前の端＝直前の穴と同じ位置
+assert.equal(stamps.at(-1).text, "近すぎたけど開いた");
+await punchCircle(22);
+fire("hole-done"); await active.running;
+const closeResult = active.cs.holes;
+assert.equal(closeResult.tally.rough, 1); assert.equal(closeResult.tally.tooClose, 1);
+assert.equal(closeResult.tally.miss, 0); assert.equal(closeResult.total, 24);
 // 時間0の12+12: 案内は、その時点で有効な次操作に一致する。
 active = await start(null, "outer12-middle12"); await frame(35000);
 assert(find("hole-plan").textContent.includes("穴あけは続けられます"));
@@ -229,33 +250,36 @@ assert.equal(logic.holeSizeStability([{ holes: [] }]), 0);
 const tallyMiss = { ...tally, miss: 9, tooClose: 9 };
 assert.equal(holes.evaluate(rings([12, 0, 0]), tallyMiss, 1, 11).sizeStab, 1, "MISS counts no longer lower the size score by themselves");
 
-// 浅すぎは実穴にならず、針はその場で待つので同じ位置に刺し直せる。
+// 浅い打ち込みも1穴として成立し、次の目印へ進む。精度とサイズに加え深さで大きく減点する。
 const keyupBefore = winListeners.keyup?.length || 0;
 active = await start(null, "outer24");
 await frame(now + 400); fire("hole-punch", "pointerdown"); now += 50; fire("hole-punch", "pointerup"); await settle();
-assert.equal(visualHoles.length, 0, "a shallow press opened a hole"); assert.equal(stamps.at(-1).text, "浅い。もう一度");
-assert.equal(seCalls.filter((id) => id === "foilPunch").length, 0);
-await frame(now + 300); fire("hole-punch", "pointerdown"); now += 250; fire("hole-punch", "pointerup"); await settle();
-assert.equal(visualHoles.length, 1); assert(Math.abs(visualHoles[0].target[1]) < 1e-9, "the retry pierced the waited spot");
+assert.equal(visualHoles.length, 1, "a shallow press should open one hole"); assert.equal(stamps.at(-1).text, "浅い穴。大きく減点");
+assert.equal(visualHoles[0].sizes[0], logic.HOLE_SIZES.shallow);
+assert.equal(seCalls.filter((id) => id === "foilPunch").length, 1);
+await pierce();
+assert.equal(visualHoles.length, 2); assert.notDeepEqual(visualHoles[1].target, visualHoles[0].target, "the needle should move to the next marker");
 assert.equal(stamps.at(-1).text, "EXCELLENT");
 // 押しすぎは少し大きい穴、さらに押すと離さなくても大きい穴で刺し抜ける。
 await pierce(600); assert.equal(stamps.at(-1).text, "EXCELLENT・少し大きい"); assert.equal(visualHoles.at(-1).sizes.at(-1), 1.35);
 await frame(now + 400); fire("hole-punch", "pointerdown"); await frame(now + 900);
-assert.equal(visualHoles.length, 3, "holding too long pierces by itself"); assert.equal(visualHoles.at(-1).sizes.at(-1), 1.7);
-fire("hole-punch", "pointerup"); await settle(); assert.equal(visualHoles.length, 3, "release after an auto pierce added a hole");
-// 外したら、同じ目印のすぐ手前から狙い直す（一周待ちなし）。
-now += 100; jab(); assert.equal(stamps.at(-1).text, "ズレた…"); await pierce(); assert.equal(stamps.at(-1).text, "EXCELLENT");
-assert.equal(visualHoles.length, 5);
+assert.equal(visualHoles.length, 4, "holding too long pierces by itself"); assert.equal(visualHoles.at(-1).sizes.at(-1), 1.7);
+fire("hole-punch", "pointerup"); await settle(); assert.equal(visualHoles.length, 4, "release after an auto pierce added a hole");
+// ズレても、その目印の穴として成立して次へ進む（一周待ちなし）。
+now += 100; jab(); assert.equal(stamps.at(-1).text, "ズレたけど開いた"); await pierce(); assert.equal(stamps.at(-1).text, "EXCELLENT");
+assert.equal(visualHoles.length, 6);
 // Space は押し始め（キーリピートは無視）、離して刺す。
 await frame(now + 400); keymap[" "]({}); keymap[" "]({ repeat: true }); now += 250; winFire("keyup", { key: " " }); await settle();
-assert.equal(visualHoles.length, 6); assert.equal(stamps.at(-1).text, "EXCELLENT");
-for (let k = 0; k < 20; k++) await pierce();
+assert.equal(visualHoles.length, 7); assert.equal(stamps.at(-1).text, "EXCELLENT");
+for (let k = 0; k < 17; k++) await pierce();
 fire("hole-done"); await active.running;
 const sizedResult = active.cs.holes;
-assert.equal(sizedResult.total, 25); assert.equal(sizedResult.tally.shallow, 1);
-assert.deepEqual({ ...sizedResult.holeSizes }, { small: 23, wide: 1, large: 1, shallow: 1 });
-assert(sizedResult.sizeStab < 1 && sizedResult.sizeStab > .5);
-assert.match(results.at(-1).lines.join("\n"), /穴の大きさ：小 23・少し大きい 1・大きい 1（浅くて開かなかった 1回）/);
+assert.equal(sizedResult.total, 24); assert.equal(sizedResult.tally.shallow, 1);
+assert.deepEqual({ ...sizedResult.holeSizes }, { small: 21, wide: 1, large: 1, shallow: 1 });
+assert(sizedResult.sizeStab < .5 && sizedResult.sizeStab > 0);
+assert.match(results.at(-1).lines.join("\n"), /穴の大きさ：浅い 1・小 21・少し大きい 1・大きい 1/);
+assert.match(results.at(-1).lines.join("\n"), /目印の達成：24\/24か所/);
+assert(sizedResult.score < full.score - 8, "a shallow hole should substantially lower the score");
 assert.equal(winListeners.keyup.length, keyupBefore, "finished foil left a keyup listener");
 
-console.log("[remake foil] PASS: template selection, exact 24/0/0 and 12/12/0, guarded completion, timeout continuation, no ring skipping, unlock flags, density and shared thermal response, near-marker needle and press depth (#2937)");
+console.log("[remake foil] PASS: template selection, exact 24/0/0 and 12/12/0, guarded completion, timeout continuation, no ring skipping, unlock flags, density and shared thermal response, near-marker needle and press depth (#2937), offset holes stand as low-score holes (#3023)");

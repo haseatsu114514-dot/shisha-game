@@ -7,7 +7,8 @@ import { DESERT_FLAG, DESERT_TALKS, DESERT_TALK_HEARTS, DESERT_INVITE_STAGE, NOO
   desertRivals, markNaruMet, desertProgress, desertInvited, desertTalkScene, completeDesertTalk, desertCafeVisit, completeDesertCafeVisit, noorHeart,
   desertOutingStatus, beginDesertOuting, desertRecords, recordDesertResult, desertRankAtLeast, desertDestinations,
   DESERT_SPOT_IDS, desertDailySpots, desertDailySpotById, NOOR_FINALE, NOOR_CONFESSION, NOOR_OTHER_LOVER_FLAG, noorStoriesDone, noorFinaleWaiting,
-  noorConfessionWaiting, desertChapterFiveSpots, completeDesertReunion, NOOR_VISIT_CONFESSION_FLAG } from "../js/chapters/ch4-desert-progress.js";
+  noorConfessionWaiting, desertChapterFiveSpots, completeDesertReunion, NOOR_VISIT_CONFESSION_FLAG,
+  NOOR_STORY_EXTRAS, NOOR_STORY_DIALOGUE_IDS, NOOR_CONFESSION_DIALOGUE_IDS, noorStoryFlag, noorStoryDue, completeNoorStory } from "../js/chapters/ch4-desert-progress.js";
 import { PLAY_REWARDS } from "../js/core/growth-board-data.js";
 import { tournamentFinished } from "../js/core/story-context.js";
 import { readFileSync } from "node:fs";
@@ -339,12 +340,20 @@ test("the ♥5 café visit is Noor's finale; a romantic answer makes the next du
 
 test("Noor's finale, confession and gift data line up with bonds.js / romance.js", () => {
   const data = JSON.parse(readFileSync(new URL("../../data/dialogue/ch4_desert.json", import.meta.url), "utf8"));
-  const scene = id => data.dialogues.find(d => d.dialogue_id === id);
+  const confessionData = JSON.parse(readFileSync(new URL("../../data/dialogue/confession.json", import.meta.url), "utf8"));
+  const scene = id => [...data.dialogues, ...confessionData.dialogues].find(d => d.dialogue_id === id);
+  assert.deepEqual(NOOR_CONFESSION_DIALOGUE_IDS, [NOOR_CONFESSION, `${NOOR_CONFESSION}_accept`, `${NOOR_CONFESSION}_reject`]);
+  for (const id of NOOR_CONFESSION_DIALOGUE_IDS) assert(confessionData.dialogues.some(d => d.dialogue_id === id), id);
   const finale = scene(NOOR_FINALE);
   assert.equal(finale.metadata.bond_finale, "noor");
   const ask = finale.branches.ask.find(line => line.type === "choice");
   assert.deepEqual([ask.id, ask.romance_char, ask.choices.map(c => c.romance)], ["bond_q2_noor", "noor", [1, 0]]);
   for (const key of ["lover", "check", "ask", "close", "ask_friend", "friend"]) assert(finale.branches[key]?.length, key);
+  const limeFlag = lines => (lines || []).some(line => line.type === "set_flag" && line.flag === "_lime_contact_noor");
+  assert(limeFlag(scene(`${NOOR_CONFESSION}_accept`).lines), "accepting the confession exchanges LIME");
+  assert(limeFlag(scene(`${NOOR_CONFESSION}_reject`).lines), "choosing friendship at the confession also exchanges LIME");
+  assert(limeFlag(finale.branches.friend), "the friend finale branch exchanges LIME");
+  assert(limeFlag(finale.branches.ask_friend), "choosing friendship at the last question also exchanges LIME");
   const choice = scene(NOOR_CONFESSION).lines.find(line => line.type === "choice");
   assert.deepEqual(choice.choices.map(c => c.next_id), [`${NOOR_CONFESSION}_accept`, `${NOOR_CONFESSION}_reject`]);
   assert.equal(scene(`${NOOR_CONFESSION}_accept`).metadata.set_romance, "noor");
@@ -360,11 +369,62 @@ test("Noor's finale, confession and gift data line up with bonds.js / romance.js
   assert.deepEqual([gear.type, gear.art, gear.gift.from, gear.gift.flavor, gear.not_for_sale], ["bowl", "suyaki_hagal", "noor", "double_apple", true]);
   const bonds = readFileSync(new URL("../js/daily/bonds.js", import.meta.url), "utf8");
   assert.match(bonds, /noor: \{ dialogue: "ch4_noor_bond_finale", gift: "suyaki_noor", question: "bond_q2_noor", ownConfession: true \}/);
+  assert.match(bonds, /id === "noor" && route === "friend"/);
+  assert.match(bonds, /state\.flags\._friend_noor = true/);
   const desert = readFileSync(new URL("../js/chapters/ch4-desert.js", import.meta.url), "utf8");
   assert.match(desert, /playFinale\(DESERT_GUIDE/);
   assert.match(desert, /romanceRouteOpen\(DESERT_GUIDE\)/);
   assert.match(desert, /read\(NOOR_CONFESSION, bgUrl\(DESERT_DUSK_BG\)\)/);
   assert.match(desert, /delete owner\.flags\[NOOR_OTHER_LOVER_FLAG\]/);
+});
+
+test("Noor's 16 café stories follow the visited stages once, including a late chapter 5 visit", () => {
+  const value = fresh();
+  const data = JSON.parse(readFileSync(new URL("../../data/dialogue/noor.json", import.meta.url), "utf8"));
+  const scenes = new Map(data.dialogues.map(scene => [scene.dialogue_id, scene]));
+  assert.equal(NOOR_STORY_EXTRAS.length, 16);
+  assert.deepEqual(NOOR_STORY_DIALOGUE_IDS, NOOR_STORY_EXTRAS.map(entry => entry.id));
+  assert.equal(noorStoryDue(value), null, "no story before meeting Noor");
+  assert.equal(completeNoorStory(value, NOOR_STORY_EXTRAS[0].id), false);
+  let day = 1;
+  for (let stage = 0; stage < DESERT_TALKS.length; stage++, day++) {
+    value.affinity.noor = HEART[DESERT_TALK_HEARTS[stage]];
+    assert(completeDesertTalk(value, DESERT_TALKS[stage], day, noorHeart(value)));
+    const group = NOOR_STORY_EXTRAS.filter(entry => entry.afterTalks === stage + 1);
+    assert.equal(noorStoryDue(value), group[0].id);
+    for (const entry of group) {
+      assert.equal(noorStoryDue(value), entry.id);
+      const scene = scenes.get(entry.id);
+      assert(scene?.lines?.length, entry.id);
+      assert(scene.lines.some(line => line.speaker === "noor"), entry.id);
+      assert(!scene.lines.some(line => "inner" in line), entry.id);
+      assert(!scene.lines.some(line => line.speaker && /。$/.test(line.text || "")), entry.id);
+      assert.doesNotMatch(scene.lines.map(line => line.text || "").join(""), /大会|本番|優勝|明日の試合/, entry.id);
+      assert(completeNoorStory(value, entry.id));
+      assert.equal(value.flags[noorStoryFlag(entry.id)], true);
+      assert.equal(completeNoorStory(value, entry.id), false, "read once");
+    }
+    assert.equal(noorStoryDue(value), null);
+  }
+  value.chapter = 5;
+  delete value.flags[noorStoryFlag(NOOR_STORY_EXTRAS.at(-1).id)];
+  assert.equal(noorStoryDue(value), NOOR_STORY_EXTRAS.at(-1).id, "unfinished story stays readable after the chapter changes");
+  value.finales = { noor: { route: "romance" } };
+  assert.equal(noorStoryDue(value), null, "a completed route does not replay the pre-confession stories out of order");
+});
+
+test("Noor's lover milestones use the five existing romance levels at the dunes", () => {
+  const data = JSON.parse(readFileSync(new URL("../../data/dialogue/lover_events.json", import.meta.url), "utf8"));
+  const scenes = new Map(data.dialogues.map(scene => [scene.dialogue_id, scene]));
+  for (let level = 1; level <= 5; level++) {
+    const id = `lover_noor_lv${level}`, scene = scenes.get(id);
+    assert(scene?.lines?.length, id);
+    assert.equal(scene.metadata.private_scene, true);
+    assert.match(scene.metadata.bg, /bg_dubai_dunes_dusk/);
+    assert(!scene.lines.some(line => line.speaker && /。$/.test(line.text || "")), id);
+  }
+  const desert = readFileSync(new URL("../js/chapters/ch4-desert.js", import.meta.url), "utf8");
+  assert.match(desert, /playLoverMilestone\(DESERT_GUIDE, \{ signal, home: false \}\)/);
 });
 
 test("chapter 5 Dubai: Café Oasis until Noor's finale, the dunes once invited; Naru stays home (owner 2026-11-07)", () => {
@@ -459,7 +519,8 @@ test("chapter 5 Dubai: Café Oasis until Noor's finale, the dunes once invited; 
   // 告白（confession_noor）は第5章でも読む。第4章は「いつか日本に帰る」のまま。大会の後は、第4章の締めくくりのあと帰国した人（came_back）と、
   // 第5章で締めくくりを迎えた人（visiting。ch4-desert.js が読む間だけ立てる一時の印）で分ける
   const ch4 = JSON.parse(readFileSync(new URL("../../data/dialogue/ch4_desert.json", import.meta.url), "utf8"));
-  const confession = ch4.dialogues.find(d => d.dialogue_id === NOOR_CONFESSION);
+  const confessionData = JSON.parse(readFileSync(new URL("../../data/dialogue/confession.json", import.meta.url), "utf8"));
+  const confession = confessionData.dialogues.find(d => d.dialogue_id === NOOR_CONFESSION);
   const after = confession.lines.find(line => line.type === "condition" && line.condition_type === "tournament_finished");
   assert.equal(after.tournament_chapter, 4);
   assert.match(JSON.stringify(confession.branches[after.next_false]), /いつか日本に帰る/, "Chapter 4 keeps the original lines");

@@ -11,7 +11,8 @@
         { "speaker": "", "face": "", "text": "バニラの甘さの奥に、焼いたパンのような香ばしさが残る一台だった。" },
         { "speaker": "naru", "face": "normal", "text": "前は甘さだけで押してた。今は、二口目に客が息をつける所を作ってる" },
         { "speaker": "hajime", "face": "normal", "text": "……吸ってる人の速さ、まだ数えてるんだ" },
-        { "speaker": "naru", "face": "smile", "text": "癖になった。お前のせいだぞ" }
+        { "speaker": "naru", "face": "smile", "text": "癖になった。……お前も、まだ数えてんだろ" },
+        { "speaker": "hajime", "face": "smile", "text": "……バレてた" }
       ]
     },
     {
@@ -22,7 +23,10 @@
         { "speaker": "hajime", "face": "normal", "text": "うん。準備ができたら、こっちから連絡する" },
         { "speaker": "naru", "face": "serious", "text": "急かすやつがいたら言え。俺が代わりに文句を言ってやる" },
         { "speaker": "hajime", "face": "smile", "text": "なるが一番、急かしそうだけど" },
-        { "speaker": "naru", "face": "smile", "text": "……否定はしねえ" }
+        { "speaker": "naru", "face": "smile", "text": "……否定はしねえ" },
+        { "speaker": "naru", "face": "normal", "text": "閉店後なら、台は空いてる。練習するなら使え" },
+        { "speaker": "hajime", "face": "smile", "text": "……それ、急かしてない？" },
+        { "speaker": "naru", "face": "smile", "text": "貸すだけだ。使うかどうかは、お前が決めろ" }
       ]
     },
     {
@@ -32,7 +36,7 @@
         { "speaker": "naru", "face": "normal", "text": "俺の台は丸見えだ。うまくいかなかった方もな" },
         { "speaker": "hajime", "face": "normal", "text": "前も、そう言ってたよね" },
         { "speaker": "naru", "face": "smile", "text": "言ってた。言った本人が、今やっと分かってきた" },
-        { "speaker": "", "face": "", "text": "うまくいかなかった一台の灰を、なるは捨てずに小皿へ取っておいた。" },
+        { "speaker": "", "face": "", "text": "うまくいかなかった一台の灰を、なるは捨てずに小皿に取っておいた。" },
         { "speaker": "hajime", "face": "normal", "text": "（うまくいかなかった方も、ちゃんと残すんだ）" }
       ]
     },
@@ -184,7 +188,7 @@
       "lines": [
         { "speaker": "", "face": "", "text": "零-ZERO-のカウンターで、レヰが常連の客にCDのジャケットを見せていた。" },
         { "speaker": "rei", "face": "normal", "text": "……この曲、二番のあとで音が全部止まる。そこが、好きで" },
-        { "speaker": "customer", "face": "normal", "text": "分かります、あそこ。息止めて聴いちゃう" },
+        { "speaker": "customer", "face": "normal", "text": "分かります、あそこ。息止めて聴いちゃうんですよね" },
         { "speaker": "rei", "face": "smile", "text": "……うん。俺も" },
         { "speaker": "", "face": "", "text": "客が席へ戻るのを待って、レヰがこちらに気づいた。耳が、少し赤い。" },
         { "speaker": "hajime", "face": "smile", "text": "レヰさん、お客さんと曲の話をしてましたね" },

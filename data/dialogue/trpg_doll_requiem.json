@@ -89,8 +89,7 @@
           "nerve": 1
         },
         "trait": "かわいい服なら一晩で縫う。人形は、怖いより先にかわいい",
-        "likes": "フリルとリボンと、白と赤のグミ",
-        "portrait": "../../img/ui/trpg/pc-doll-requiem-kirara.webp"
+        "likes": "フリルとリボンと、白と赤のグミ"
       }
     },
     {
@@ -111,8 +110,7 @@
           "nerve": 2
         },
         "trait": "指先ひとつで人形を直す、儚い人形師。なぜか斧を一本、背負っている",
-        "likes": "ゆるい顔のぬいぐるみと、斧投げ",
-        "portrait": "../../img/ui/trpg/pc-cecilia.webp"
+        "likes": "ゆるい顔のぬいぐるみと、斧投げ"
       }
     }
   ],
@@ -2829,41 +2827,7 @@
     "max": 5,
     "nameMax": 6,
     "title": "あなたのキャラクターを作る",
-    "intro": "雪の夜に館を訪れる一人を決めよう。見た目・出自・能力値は、卓のあいだずっと使う",
-    "looks": [
-      {
-        "id": "ink",
-        "label": "黒髪の客人",
-        "detail": "短い黒髪に、厚手の黒い外套",
-        "color": "#2b2733",
-        "accent": "#c9a7e0",
-        "portrait": "../../img/ui/trpg/look-doll-requiem-ink.webp"
-      },
-      {
-        "id": "snow",
-        "label": "銀髪の客人",
-        "detail": "雪のような銀の髪と、紺のマフラー",
-        "color": "#4a4f63",
-        "accent": "#dfe4f0",
-        "portrait": "../../img/ui/trpg/look-doll-requiem-snow.webp"
-      },
-      {
-        "id": "wine",
-        "label": "赤茶の髪の客人",
-        "detail": "赤茶の髪に、ワインレッドの手袋",
-        "color": "#5e2a33",
-        "accent": "#e29aa8",
-        "portrait": "../../img/ui/trpg/look-doll-requiem-wine.webp"
-      },
-      {
-        "id": "braid",
-        "label": "長髪の客人",
-        "detail": "長い髪を一つに編み、ラベンダー色の上着",
-        "color": "#3a2f4f",
-        "accent": "#b9a3d9",
-        "portrait": "../../img/ui/trpg/look-doll-requiem-braid.webp"
-      }
-    ],
+    "intro": "雪の夜に館を訪れる一人を決めよう。出自・能力値は、卓のあいだずっと使う",
     "archetypes": [
       {
         "id": "nightwatch",
@@ -2925,8 +2889,7 @@
             "talk": 3,
             "nerve": 1
           },
-          "making": "trpg_doll_requiem_make_ageha_ageha_kirara",
-          "portrait": "../../img/ui/trpg/pc-doll-requiem-kirara.webp"
+          "making": "trpg_doll_requiem_make_ageha_ageha_kirara"
         },
         {
           "id": "marie",
@@ -2940,8 +2903,7 @@
             "talk": 4,
             "nerve": 2
           },
-          "making": "trpg_doll_requiem_make_ageha_ageha_marie",
-          "portrait": "../../img/ui/trpg/pc-marie.webp"
+          "making": "trpg_doll_requiem_make_ageha_ageha_marie"
         }
       ]
     },
@@ -2959,8 +2921,7 @@
             "talk": 4,
             "nerve": 2
           },
-          "making": "trpg_doll_requiem_make_hiyori_hiyori_cecilia",
-          "portrait": "../../img/ui/trpg/pc-cecilia.webp"
+          "making": "trpg_doll_requiem_make_hiyori_hiyori_cecilia"
         },
         {
           "id": "chloe",
@@ -2974,8 +2935,7 @@
             "talk": 3,
             "nerve": 3
           },
-          "making": "trpg_doll_requiem_make_hiyori_hiyori_chloe",
-          "portrait": "../../img/ui/trpg/pc-chloe.webp"
+          "making": "trpg_doll_requiem_make_hiyori_hiyori_chloe"
         }
       ]
     }

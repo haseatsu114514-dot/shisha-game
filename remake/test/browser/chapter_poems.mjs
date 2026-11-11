@@ -148,6 +148,7 @@ await suite("chapter-poems", async check => {
     assert.equal(await page.locator(`${POEM} .cp-line`).count(), 6);
     assert.equal(await page.locator(`${POEM} .cp-page.now`).count(), 1, "いま見えている場面は1つ");
     assert.equal(await page.locator(`${POEM} .cp-page.now .cp-line`).count(), 4, "1場面目は4行");
+    assert.ok(await page.locator(`${POEM} .cp-page.now .cp-line.on`).count() < 2, "最初から全行は出ていない（行ごとに浮かぶ）");
     assert.equal(await page.locator(`${POEM} .cp-line rt`).count(), 0, "いまの詩にふりがなは無い（本家の巻頭詩もほぼ使わない）");
     // 詩の上に、横長のコマ絵（絵の比率のまま。4:1〜5.6:1）。細い枠つきで、詩より上に置く
     assert.equal(await page.locator(`${POEM}.has-panel`).count(), 1);
@@ -164,9 +165,11 @@ await suite("chapter-poems", async check => {
     const stage = await page.locator(`${POEM} .cp-stage`).boundingBox();
     assert.ok(stage.y >= box.y + box.height - 1, "詩の領域はコマ絵の下");
     assert.ok(box.width <= 1280 * 0.62 && box.x > 150, "画面いっぱいではなく、余白のある横長の枠");
-    assert.ok(await page.locator(`${POEM} .cp-page.now .cp-line.on`).count() < 2, "最初から全行は出ていない（行ごとに浮かぶ）");
     // タップ: まだ読み終えていなければ、その場面の残りの行を出す（次へは進まない）
-    await page.waitForTimeout(900);
+    await page.keyboard.press("Control");
+    await closed();
+    await start(2);
+    await page.locator(`${POEM} .cp-page.now .cp-line.on`).first().waitFor();
     await page.mouse.click(640, 360);
     await page.waitForFunction(() => document.querySelectorAll('[data-test="chapter-poem"] .cp-page.now .cp-line.on').length === 4);
     assert.equal(await cardPage(), "0", "残りを出しても場面は変わらない");

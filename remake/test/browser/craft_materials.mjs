@@ -251,16 +251,16 @@ await suite("craft-materials", async check => {
       await click(page, '[data-test="hole-next"]', touch);
       assert.deepEqual(await page.locator(".foil-holes .foil-hole").evaluateAll(ns => ns.map(n => [n.style.left, n.style.top])), locations);
       await advance(900 * slow); // 弧の奥の端で休んでいる針
-      await pressHold('[data-test="foil"]', 250); // Off-target puncture: its mark must remain too.
-      assert.equal(await page.locator(".foil-holes .foil-hole.miss").count(), 1);
+      await pressHold('[data-test="foil"]', 250); // Off-target puncture: it stands as that mark's hole (#3023).
+      assert.equal(await page.locator(".foil-holes .foil-hole.rough").count(), 1);
       for (let k = 1; k <= 12; k++) {
         await advance(400 * slow);
         await pressHold('[data-test="hole-punch"]', 250);
         if (k === 3) await capture(page, `${device}-foil-punches`);
       }
-      assert.equal(await page.locator(".foil-holes .foil-hole").count(), 25);
+      assert.equal(await page.locator(".foil-holes .foil-hole").count(), 24);
       assert.equal(await page.locator(".foil-markers .next").count(), 0);
-      assert.equal(await page.locator(".worker-punch-dots ellipse").count(), 25, "Hand illustration lost the real holes");
+      assert.equal(await page.locator(".worker-punch-dots ellipse").count(), 24, "Hand illustration lost the real holes");
       assert(!await page.locator('[data-test="hole-done"]').isDisabled());
       const finalBar = await page.locator('.hr-time-bar b').evaluate(n=>n.style.width);
       await page.evaluate(async () => {
@@ -273,7 +273,7 @@ await suite("craft-materials", async check => {
       await click(page, '[data-test="hole-done"]', touch);
       await page.waitForFunction(() => F.cs.holes !== null);
       const result = await page.evaluate(() => ({ template: F.cs.holes.templateId, outer: F.cs.holes.outer, middle: F.cs.holes.middle, inner: F.cs.holes.inner }));
-      assert.deepEqual(result, { template: "outer12-middle12", outer: 12, middle: 13, inner: 0 });
+      assert.deepEqual(result, { template: "outer12-middle12", outer: 12, middle: 12, inner: 0 });
       await click(page, '[data-test="step-next"]', touch);
       await page.evaluate(()=>F.running);
     }, options);
@@ -425,6 +425,26 @@ await suite("craft-materials", async check => {
     await page.evaluate(async () => { F.session.craftTest.auto = "good"; await F.steps.stepPack(F.cs); F.session.craftTest.auto = null; });
     assert.equal(await page.evaluate(() => F.cs.pack), "normal");
   });
+  await check("fixed-stage-packing-rows-3035", async page => {
+    await setup(page);
+    await page.evaluate(() => { F.running = F.steps.stepPack(F.cs); });
+    await page.locator('[data-test="pack-confirm"]').waitFor();
+    const layout = await page.evaluate(() => {
+      const rect = selector => {
+        const r = document.querySelector(selector).getBoundingClientRect();
+        return { top: r.top, bottom: r.bottom, width: r.width, right: r.right };
+      };
+      return { wide: document.querySelector("#stage").hasAttribute("data-wide"),
+        choice: rect(".pack-choices"), confirm: rect(".pack-confirm"),
+        description: rect(".pack-caption p"), pane: rect(".bench-right") };
+    });
+    // 固定ステージ（2026-11-09 オーナー決定・#3035）: スマホ横持ちでもワイド拡張せず 1280×720 の構図で収まる。
+    // 選択肢の説明文はボタン内ではなく、選んだ詰め方の説明としてキャプションに出る（craft-landscape.css）。
+    assert(!layout.wide, "phone landscape must use the fixed 1280 stage");
+    assert(layout.choice.bottom <= layout.confirm.top + 1, JSON.stringify(layout));
+    assert(layout.description.width >= 65, JSON.stringify(layout));
+    assert(layout.confirm.right <= layout.pane.right + 1, JSON.stringify(layout));
+  }, { viewport: { width: 844, height: 390 }, hasTouch: true, isMobile: true });
   // #2359: 実際の制作処理と素材で3サイズを撮影。縦長はデスクトップ窓で確認し、回転案内は改変しない。
   for (const viewport of [{ width: 1280, height: 720 }, { width: 844, height: 390 }, { width: 390, height: 844 }]) {
     for (const step of ["pack", "holes", "heat"]) await check(`night-${step}-${viewport.width}x${viewport.height}`, async page => {

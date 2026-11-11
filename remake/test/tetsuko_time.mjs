@@ -9,12 +9,16 @@ import { execFileSync } from "node:child_process";
 import { newState } from "../js/core/state.js";
 import { TOKYO_OUTINGS, OUTINGS_FLAG } from "../js/chapters/ch3-outing-progress.js";
 import { classifyFlag } from "../js/core/carry.js";
-import { TETSUKO_TIME, TETSUKO_STAMINA, TETSUKO_CAMERA, tetsukoCameraFor, settleTetsukoTime, tetsukoVisitKey, openTetsukoTime } from "../js/minigames/tetsuko-time.js";
+import { TETSUKO_TIME, TETSUKO_STAMINA, TETSUKO_CAMERA, TETSUKO_TOY_VIEW, TETSUKO_LEAP, WATCH_IDLE_MS, tetsukoCameraFor, tetsukoToyCamera, petZoneAt,
+  settleTetsukoTime, tetsukoVisitKey, openTetsukoTime } from "../js/minigames/tetsuko-time.js";
 import {
-  TETSUKO_TIME_FLAG, MOODS, MOMENTS, PROPS, SLOTS, ALBUM_LIMIT, PET_REST_STREAK, PLAY_AUTO_CATCH, AUTO_DELAY,
+  TETSUKO_TIME_FLAG, MOODS, MOMENTS, PROPS, SLOTS, ALBUM_LIMIT, PET_REST_STREAK, PLAY_PAW, PLAY_AUTO_CATCH, AUTO_DELAY,
+  JOY, JOY_MAX, JOY_HEARTS, PET_ZONES, SWEET_ZONES, WISH_PATIENCE,
   moodOf, moodLabel, relationStage, sessionStage, readTetsukoRecord, createSession, openingReaction, act, canAct,
-  autonomous, autoDelay, placeProp, takePhoto, farewell, sessionResult, unlockedProps,
+  autonomous, autoDelay, placeProp, takePhoto, farewell, sessionResult, unlockedProps, discoveryGuide,
+  invite, peakReaction, seekMoment, sweetZoneOf, joyHearts,
 } from "../js/minigames/tetsuko-model.js";
+import { HELP } from "../js/minigames/tetsuko-help.js";
 
 const CAT = TOKYO_OUTINGS.find(item => item.id === "tetsuko");
 /** 第3章・東京の一日。来訪回数と面識を決めたセーブ。 */
@@ -27,8 +31,13 @@ function save({ count = 0, day = 40, slot = 1, mashiro = true, record } = {}) {
   value.affinity.mashiro = 7;
   return value;
 }
-const everyText = [];
-const keep = reaction => { if (reaction?.text) everyText.push(reaction.text); for (const step of reaction?.steps || []) everyText.push(step.text); return reaction; };
+const everyText = [], everyPop = [];
+const keep = reaction => {
+  if (reaction?.text) everyText.push(reaction.text);
+  if (reaction?.pop) everyPop.push(reaction.pop);
+  for (const step of reaction?.steps || []) { everyText.push(step.text); if (step.pop) everyPop.push(step.pop); }
+  return reaction;
+};
 
 // 入口の形: メタ情報・開く関数・確定点。回復は「少し構っていく」と同じ内部値。
 {
@@ -87,18 +96,23 @@ assert.equal(classifyFlag(OUTINGS_FLAG), "progression");
   }
 }
 
-// なでる: 段階で反応が変わる。4回続けると休止、ほかの操作で戻る。関係は下がらない（来訪記録に触らない）。
+// なでる: 段階で反応が変わる。続けすぎると休止（今は、もういいらしい）、ほかの操作か、てつこが自分で動くと戻る。
+// 関係は下がらない（来訪記録に触らない）。
 {
   const value = save({ count: 1 });
   const before = structuredClone(value);
   const session = createSession(value);
   const texts = [];
   for (let i = 0; i < PET_REST_STREAK; i += 1) texts.push(keep(act(session, "pet")).text);
-  assert.match(texts[PET_REST_STREAK - 1], /もういいらしい/, "4回続けると「今は、もういいらしい」");
+  assert.match(texts[PET_REST_STREAK - 1], /もういいらしい/, "続けすぎると「今は、もういいらしい」");
   assert(!texts.slice(0, -1).some(text => /もういい/.test(text)));
   assert.match(keep(act(session, "pet")).text, /もういいらしい/, "続けている間は休止のまま");
   keep(act(session, "watch"));
   assert.doesNotMatch(keep(act(session, "pet")).text, /もういい/, "ほかの操作をすれば戻る");
+  for (let i = 0; i < PET_REST_STREAK; i += 1) keep(act(session, "pet"));
+  session.autoTicks = 0; session.wish = { kind: "watch" };
+  assert(!autonomous(session).quiet);
+  assert.doesNotMatch(keep(act(session, "pet")).text, /もういい/, "てつこが自分で動いた後も、またなでられる");
   assert.equal(session.stage, 1, "休止しても段階は下がらない");
   assert.deepEqual(value, before, "モデルはセーブを書かない");
   // 気を許した段階のなでるは「初めてすりすり」（⑤）。
@@ -107,15 +121,55 @@ assert.equal(classifyFlag(OUTINGS_FLAG), "progression");
   assert.equal(keep(act(createSession(save({ count: 0 })), "pet")).found, null, "様子見の段階では、すりすりはまだ");
 }
 
-// 猫じゃらし: 見る→狙う→前足（①）。止めると捕まえる（段階0は押さえてすぐ離す、1以上は抱える＝②）。
-// 5回振ったら自分から捕まえる（逃がし続ける勝負にしない）。
+// なでる場所（§10）: 頭・あご・背中のどれかが今日のお気に入り（日によって変わる・同じ日は同じ）。見つけると喉が鳴り、ごきげんが多めにたまる。
+// しっぽだけは触らせてくれない（ぷいと向くだけ。ごきげんは減らず、続けた回数にも数えない）。広い範囲で分け、一点の正解探しにしない。
+{
+  const days = Array.from({ length: 40 }, (_, index) => sweetZoneOf(index + 1));
+  assert.deepEqual([...new Set(days)].sort(), [...SWEET_ZONES].sort(), "お気に入りは3か所とも出る");
+  for (let day = 1; day <= 20; day += 1) assert.equal(sweetZoneOf(day), sweetZoneOf(day), "同じ日は同じ場所");
+  assert(!SWEET_ZONES.includes("tail") && PET_ZONES.includes("tail"));
+  for (const count of [0, 1, 2]) {
+    const session = createSession(save({ count, day: 12 }));
+    const plain = SWEET_ZONES.find(zone => zone !== session.sweet);
+    const dull = keep(act(session, "pet", { zone: plain }));
+    const liked = keep(act(session, "pet", { zone: session.sweet }));
+    assert.equal(dull.sweet, false);
+    assert.equal(liked.sweet, true, `回数${count}: お気に入りの場所に気づく`);
+    assert(liked.joy.gain > 0 && dull.joy.gain > 0, "どこをなでても、ごきげんは少し上がる");
+    assert.notEqual(liked.text, keep(act(session, "pet", { zone: session.sweet })).text, "2回目からは別の文");
+    const joy = session.joy, streak = session.petStreak;
+    const tail = keep(act(session, "pet", { zone: "tail" }));
+    assert.match(tail.text, /しっぽ/);
+    assert.equal(tail.joy.gain, 0);
+    assert.equal(session.joy, joy, "しっぽを触っても、ごきげんは減らない");
+    assert.equal(session.petStreak, streak, "しっぽは、続けた回数に数えない");
+    assert.equal(keep(act(session, "pet", { zone: "nowhere" })).zone, "head", "知らない場所は頭として扱う");
+  }
+  // 画面の当たり: 座った絵は上から頭・あご、下の左がしっぽ、ほかは背中。丸くなった絵は右が頭。向きを変えた時は左右を入れ替える。
+  assert.equal(petZoneAt(.5, .2), "head");
+  assert.equal(petZoneAt(.5, .55), "chin");
+  assert.equal(petZoneAt(.6, .8), "back");
+  assert.equal(petZoneAt(.15, .85), "tail");
+  assert.equal(petZoneAt(.85, .85, { flip: true }), "tail");
+  assert.equal(petZoneAt(.15, .85, { flip: true }), "back");
+  assert.equal(petZoneAt(.8, .7, { curled: true }), "head");
+  assert.equal(petZoneAt(.2, .7, { curled: true }), "back");
+  assert.equal(petZoneAt(NaN, NaN), "head");
+  for (let x = 0; x <= 1; x += .05) for (let y = 0; y <= 1; y += .05) assert(PET_ZONES.includes(petZoneAt(x, y)), "枠のどこを触っても、どこかの場所になる");
+}
+
+// 猫じゃらし: 見る→狙う→前足（①）→飛びつく。飛びついた先にじゃらしがあれば捕まえ（段階0は押さえてすぐ離す、1以上は抱える＝②）、
+// 引いていれば空振り。5回振ったら必ず捕まえる（逃がし続ける勝負にしない）。空振りは2回まで続き、その次は必ず捕まえる。
 {
   const shy = createSession(save({ count: 0 }));
-  assert.equal(canAct(shy, "catch"), false, "振る前は止められない");
+  assert.equal(canAct(shy, "catch"), false, "振る前は捕まえられない");
+  assert.equal(canAct(shy, "miss"), false, "振る前は空振りもない");
   const swings = [1, 2, 3, 4, 5].map(() => keep(act(shy, "play")));
   assert.deepEqual(swings.map(item => item.kind), ["play", "play", "play", "play", "catch"]);
+  assert.equal(PLAY_PAW, 3);
   assert.equal(swings[2].found, "first_paw");
   assert.equal(swings[3].found, null, "同じしぐさは一度だけ記録");
+  assert(swings.every(item => !item.pounce), "様子見の段階は飛びつかない（その場で前足を出す）");
   assert.equal(swings[4].found, null, "様子見の段階は押さえてすぐ離す（抱えるのはまだ）");
   assert.equal(shy.swings, 0, "捕まえたら、じゃらしは手元へ戻る");
   const friend = createSession(save({ count: 1 }));
@@ -124,8 +178,22 @@ assert.equal(classifyFlag(OUTINGS_FLAG), "progression");
   assert.equal(hold.kind, "catch");
   assert.equal(hold.found, "hug_toy");
   const auto = createSession(save({ count: 3 }));
-  for (let i = 0; i < PLAY_AUTO_CATCH - 1; i += 1) keep(act(auto, "play"));
-  assert.equal(keep(act(auto, "play")).found, "hug_toy", "5回目は自分から捕まえて抱える");
+  const run = Array.from({ length: PLAY_AUTO_CATCH - 1 }, () => keep(act(auto, "play")));
+  assert.deepEqual(run.map(item => !!item.pounce), [false, false, false, true], "前足の次のひと振りで飛びつく");
+  assert.equal(keep(act(auto, "play")).found, "hug_toy", "5回目は必ず捕まえて抱える");
+  // 空振り: 飛びついた先にじゃらしが無かった。てつこの負けではなく遊びの一コマで、ごきげんは上がる。
+  const dodge = createSession(save({ count: 2 }));
+  for (let i = 0; i < PLAY_PAW + 1; i += 1) keep(act(dodge, "play"));
+  const joy = dodge.joy;
+  const first = keep(act(dodge, "miss"));
+  assert.equal(first.kind, "miss");
+  assert.match(first.text, /空振り/);
+  assert(dodge.joy > joy, "空振りでも、ごきげんは上がる");
+  assert.equal(keep(act(dodge, "play")).pounce, true, "空振りの後は、もう一度飛びつく");
+  assert.notEqual(keep(act(dodge, "miss")).text, first.text, "2回目の空振りは別の文");
+  assert.equal(keep(act(dodge, "play")).kind, "catch", "空振りが2回続いたら、次は必ず捕まえる");
+  assert.equal(dodge.swings, 0);
+  assert.equal(dodge.misses, 0);
 }
 
 // ブラシ: ブラシの会話を読んだ後（段階1以上）。1回目でうっとり（③）。採点しない。
@@ -217,6 +285,166 @@ assert.equal(classifyFlag(OUTINGS_FLAG), "progression");
     assert(delay >= AUTO_DELAY.min && delay <= AUTO_DELAY.max);
   }
   assert.equal(autoDelay(s, { reduced: true }), AUTO_DELAY.reduced);
+}
+
+// おねだり（§10）: てつこのほうから「これがいい」を見せる。最初の拍で出て、応えると多めにごきげんがたまる。
+// 応えなくても損はなく、しばらくすると忘れる（ごきげんも段階も減らない）。寝ている・膝の上では出さない。
+{
+  const KINDS = ["pet", "play", "brush", "treat", "watch", "decor"];
+  for (const count of [0, 1, 2, 4]) for (const day of [3, 8, 21, 40]) {
+    const session = createSession(save({ count, day }));
+    keep(openingReaction(session));
+    const asleep = session.cat.face === "sleep";
+    const first = keep(autonomous(session));
+    if (asleep) { assert.notEqual(first.id, "ask", "寝ている間は、おねだりしない"); continue; }
+    assert.equal(first.id, "ask", `回数${count}・${day}日目: 最初の拍で、してほしいことを見せる`);
+    assert(KINDS.includes(first.wish.kind));
+    assert.deepEqual(session.wish, first.wish);
+    assert.equal(session.meaningful, false, "おねだりを見ただけでは確定しない");
+    if (count === 0) assert.notEqual(first.wish.kind, "pet", "様子見の段階は、なでてとは言わない");
+    if (first.wish.kind === "brush") assert(canAct(session, "brush"), "使えない道具はねだらない");
+    // 応えない: 何拍かすると忘れる。ごきげんは減らない。
+    const joy = session.joy;
+    let forgot = false;
+    for (let i = 0; i < (WISH_PATIENCE + 2) * 2 && !forgot; i += 1) forgot = !!autonomous(session).forgot;
+    assert(forgot, "応えないと、そのうち忘れる");
+    assert.equal(session.wish, null);
+    assert(session.joy >= joy, "忘れても、ごきげんは減らない");
+    assert.equal(session.stage, sessionStage(count), "段階も変わらない");
+  }
+  // 応える: じゃらしのおねだりは、振る・捕まえる・空振りのどれでも。応えた分だけ多くたまる。
+  const eager = createSession(save({ count: 2, day: 9 }));
+  eager.wish = { kind: "play", prop: null, moment: null };
+  const granted = keep(act(eager, "play"));
+  assert.equal(granted.granted, true);
+  assert.equal(granted.joy.gain, JOY.look + JOY.wish);
+  assert.equal(eager.wish, null);
+  assert.equal(keep(act(eager, "play")).granted, false, "同じおねだりは一度だけ");
+  const other = createSession(save({ count: 2, day: 9 }));
+  other.wish = { kind: "brush", prop: null, moment: null };
+  assert.equal(keep(act(other, "pet")).granted, false, "別の遊びをしても叱られない（おねだりは残る）");
+  assert.equal(other.wish.kind, "brush");
+  // 物のおねだりは、置いた物をてつこが使った時に応えたことになる。
+  const decor = createSession(save({ count: 0, day: 9 }));
+  decor.wish = { kind: "decor", prop: "box", moment: "box_peek" };
+  placeProp(decor, "floor", "box");
+  assert.equal(keep(autonomous(decor)).granted, true, "箱を置くと、のぞきに来て喜ぶ");
+  // 見つけたばかりのしぐさを保っている間（写真を撮れる間）も、姿を変えずにおねだりだけ出す。
+  const held = createSession(save({ count: 4, day: 9 }));
+  keep(act(held, "pet"));
+  const pose = structuredClone(held.cat);
+  const ask = keep(autonomous(held, { holding: true }));
+  assert.equal(ask.id, "ask");
+  assert.deepEqual(held.cat, pose, "姿は変えない");
+  assert.equal(held.moment, "first_rub", "写真に撮れるしぐさのまま");
+  assert.equal(autonomous(held, { holding: true }).quiet, true);
+  assert.equal(autonomous(held, { holding: true }).quiet, true, "保っている間は、ほかの行動をしない");
+  // 手帳の「このしぐさを探す」: 次のおねだりが、そのしぐさの手がかりになる。
+  const seeker = createSession(save({ count: 0, day: 9 }));
+  seekMoment(seeker, "ball_watch");
+  const want = keep(autonomous(seeker));
+  assert.equal(want.id, "ask");
+  assert.deepEqual([want.wish.kind, want.wish.prop, want.wish.moment], ["decor", "ball", "ball_watch"]);
+}
+
+// 触らずに眺めている（§10）: 隣で見守ったことになる（操作と同じ扱い。「そっと見守る」のボタンは無い）。
+{
+  assert(WATCH_IDLE_MS >= 5000 && WATCH_IDLE_MS <= 10000, "見守ったことになるまでの長さは数秒");
+  const session = createSession(save({ count: 0, day: 9 }));
+  session.wish = { kind: "play", prop: null, moment: null };
+  const seen = keep(autonomous(session, { idle: true }));
+  assert.equal(seen.watched, true);
+  assert.equal(seen.found, "paws_together", "隣にいるだけで、前足をそろえる（⑧）");
+  assert.equal(session.meaningful, true);
+  assert.equal(session.wish.kind, "play", "見守っただけでは、じゃらしのおねだりは消えない");
+  assert.equal(autonomous(session, { idle: true }).quiet, true);
+  assert.notEqual(autonomous(session, { idle: true }).watched, true, "毎回は見守りにならない（合間に、てつこが自分で動く）");
+  // 気を許した段階は、眺めているうちに膝に乗ってくる（⑩）。膝の上では、しばらくそのまま寝ている。
+  const close = createSession(save({ count: 5, day: 9 }));
+  for (let i = 0; i < 40 && !close.found.includes("lap_nap"); i += 1) keep(autonomous(close, { idle: true }));
+  assert(close.found.includes("lap_nap"), "眺めているだけで、そのうち膝で寝る");
+  assert.equal(close.cat.pose, "lap");
+  const naps = Array.from({ length: 6 }, () => autonomous(close, { idle: true })).filter(item => !item.quiet);
+  assert(naps.length >= 3 && naps.every(item => close.cat.pose === "lap" && /膝/.test(item.text)), "膝に乗ったら、すぐには降りない");
+  for (let i = 1; i < naps.length; i += 1) assert.notEqual(naps[i].id, naps[i - 1].id);
+}
+
+// ごきげん（§10）: ふれあうほどたまり、減らない。いっぱいになると「とっておき」（段階ごと）で、空に戻ってまたためられる。
+// 能力・お金・好感度には触らない。通算の回数だけ、手帳のために記録へ足す。
+{
+  assert.equal(JOY_MAX % JOY_HEARTS, 0);
+  for (const count of [0, 1, 2, 5]) {
+    const value = save({ count, day: 14 });
+    const before = structuredClone(value);
+    const session = createSession(value, { visitKey: tetsukoVisitKey(value) });
+    assert.equal(session.joy, 0);
+    assert.equal(peakReaction(session), null, "たまる前は、とっておきは出ない");
+    let last = 0, guard = 0;
+    while (!session.peakReady && guard < 200) {
+      const kind = ["play", "play", "play", "play", "miss", "play", "catch", "pet", "watch"][guard % 9];
+      const reaction = canAct(session, kind) ? keep(act(session, kind, { zone: SWEET_ZONES[guard % 3] })) : keep(autonomous(session));
+      assert(session.joy >= last, "ごきげんは減らない");
+      assert(session.joy <= JOY_MAX);
+      assert.equal(joyHearts(session), Math.floor(session.joy / (JOY_MAX / JOY_HEARTS)));
+      if (!reaction.quiet) assert.equal(reaction.joy.value, session.joy);
+      last = session.joy;
+      guard += 1;
+    }
+    assert(session.peakReady, `回数${count}: ふれあっていれば、いっぱいになる`);
+    assert(guard <= 40, `長くかからない（${guard}手）`);
+    assert.equal(joyHearts(session), JOY_HEARTS);
+    assert.equal(keep(act(session, "pet")).joy.gain, 0, "とっておきを見るまでは、それ以上たまらない");
+    const peak = keep(peakReaction(session));
+    assert.equal(peak.peak, true);
+    assert.equal(peak.peaks, 1);
+    assert(peak.text.length > 0 && peak.pop);
+    assert(session.joy < JOY_MAX / JOY_HEARTS * 2, "ハートは空に戻る（見つけた分だけ少し入ることはある）");
+    assert.equal(session.peakReady, false);
+    assert.equal(peakReaction(session), null);
+    if (session.stage >= 3) assert(["lap_nap", "first_rub"].includes(peak.moment), "気を許した段階のとっておきは、写真に撮れるしぐさ");
+    assert.deepEqual(value, before, "モデルはセーブを書かない");
+    // 確定すると、通算の回数だけ記録に足される（ほかは今までどおり）。
+    assert.equal(sessionResult(session).peaks, 1);
+    assert(settleTetsukoTime(value, sessionResult(session)).committed);
+    assert.equal(value.flags[TETSUKO_TIME_FLAG].peaks, 1);
+    value.day += 1;
+    const again = createSession(value, { visitKey: tetsukoVisitKey(value) });
+    assert.equal(again.joy, 0, "ごきげんは次の日へ持ち越さない");
+    assert.equal(again.pastPeaks, 1);
+    keep(act(again, "pet"));
+    assert(settleTetsukoTime(value, sessionResult(again)).committed);
+    assert.equal(value.flags[TETSUKO_TIME_FLAG].peaks, 1, "とっておきが無かった日は増えない");
+  }
+  // 段階ごとに別のとっておき。
+  const peaks = [0, 1, 2, 5].map(count => { const session = createSession(save({ count, day: 14 })); session.peakReady = true; session.joy = JOY_MAX; return peakReaction(session).text; });
+  assert.equal(new Set(peaks).size, 4);
+  // 壊れた記録は 0 として読む。「少し構っていく」（結果に peaks が無い）は回数を変えない。
+  assert.equal(readTetsukoRecord(save({ record: { peaks: "many" } })).peaks, 0);
+  assert.equal(readTetsukoRecord(save({ record: { peaks: -2 } })).peaks, 0);
+  const short = save({ count: 5, record: { peaks: 3 } });
+  assert(settleTetsukoTime(short, { meaningful: true, visitKey: tetsukoVisitKey(short) }).committed);
+  assert.equal(short.flags[TETSUKO_TIME_FLAG].peaks, 3);
+}
+
+// 置いてある物をタップして誘う（§10）: 箱なら顔を出す・入る、ボールなら見送る・転がす。一緒に遊んだことになる。
+{
+  const session = createSession(save({ count: 0, day: 6 }));
+  assert.equal(invite(session, "box"), null, "置いていない物では誘えない");
+  assert.equal(session.meaningful, false);
+  placeProp(session, "floor", "box");
+  placeProp(session, "floor", "ball");
+  assert.equal(invite(session, "box"), null, "片付いた物でも誘えない");
+  const first = keep(invite(session, "ball"));
+  assert.equal(first.id, "ball_watch");
+  assert.equal(first.invited, "ball");
+  assert.equal(session.meaningful, true, "物で誘ったら、ふれあったことになる");
+  assert(first.joy.gain >= JOY.invite);
+  assert.equal(keep(invite(session, "ball")).id, "ball_paw", "続けて誘うと、別の反応");
+  assert.equal(keep(invite(session, "ball")).id, "ball_watch");
+  placeProp(session, "bench", "box");
+  assert.equal(keep(invite(session, "box")).id, "box_peek");
+  assert.equal(session.cat.inside, "box");
+  assert.equal(keep(invite(session, "box")).id, "box_in");
 }
 
 // 同じ種なら同じ流れ（テスト・再現用）。
@@ -357,8 +585,15 @@ assert.equal(classifyFlag(OUTINGS_FLAG), "progression");
       const session = createSession(save({ count, day }));
       for (const slot of SLOTS) for (const prop of PROPS) placeProp(session, slot, prop.id);
       keep(openingReaction(session));
-      for (const kind of ["pet", "play", "play", "play", "catch", "brush", "treat", "watch", "watch", "pet", "pet", "pet", "pet"]) keep(act(session, kind));
-      for (let i = 0; i < 30; i += 1) { const r = keep(autonomous(session)); if (r.line) everyText.push(`LINE:${r.line.text}`); }
+      for (const kind of ["pet", "play", "play", "play", "play", "miss", "play", "miss", "play", "catch", "brush", "brush", "brush", "treat", "watch", "watch", "pet", "pet", "pet", "pet"]) keep(act(session, kind));
+      for (const zone of [...PET_ZONES, ...PET_ZONES, ...PET_ZONES]) keep(act(session, "pet", { zone }));
+      for (const prop of PROPS) keep(invite(session, prop.id));
+      for (let i = 0; i < 40; i += 1) { const r = keep(autonomous(session, { idle: i % 7 === 0 })); if (r.line) everyText.push(`LINE:${r.line.text}`); }
+      session.peakReady = true;
+      const peak = keep(peakReaction(session));
+      if (peak.line) everyText.push(`LINE:${peak.line.text}`);
+      session.peakReady = true;
+      keep(peakReaction(session));
       keep(farewell(session));
     }
   }
@@ -370,7 +605,15 @@ assert.equal(classifyFlag(OUTINGS_FLAG), "progression");
     assert(!text.includes("\n"), "手動改行を入れない");
     assert([...text].length <= 48, `全角48字以内: ${text}`);
   }
-  const strings = [...texts, ...MOODS.flatMap(mood => [mood.label, mood.shyLabel || ""]), ...MOMENTS.flatMap(m => [m.name, m.hint]), ...PROPS.flatMap(p => [p.name, p.from])];
+  // 擬音（猫のそばに大きく出す）は短く、句点を付けない。
+  const pops = [...new Set(everyPop)];
+  assert(pops.length >= 15, `擬音が十分にある（${pops.length}）`);
+  for (const pop of pops) assert([...pop].length <= 5 && !/[。、\n]/.test(pop), `擬音は5字以内・句読点なし: ${pop}`);
+  // 「？」の文は短く、「。」で終える。画面の道具（なでる・じゃらし・ブラシ・おやつ）と、しるし（ごきげん・吹き出し・カメラ）が載っている。
+  const helpRows = HELP.flatMap(group => group.rows);
+  for (const row of helpRows) assert(/。$/.test(row.text) && [...row.text].length <= 30, `あそびかたの文は30字以内: ${row.text}`);
+  for (const name of ["なでる", "じゃらし", "ブラシ", "おやつ", "ごきげん", "吹き出し", "カメラ", "もようがえ", "てつこ手帳", "帰る"]) assert(helpRows.some(row => row.name === name), `あそびかたに ${name} がある`);
+  const strings = [...texts, ...pops, ...helpRows.map(row => row.text), ...MOODS.flatMap(mood => [mood.label, mood.shyLabel || ""]), ...MOMENTS.flatMap(m => [m.name, m.hint]), ...PROPS.flatMap(p => [p.name, p.from])];
   for (const text of strings) assert(!/テツコ|ヤニネコ/.test(text), `旧表記を使わない: ${text}`);
   for (const mood of MOODS) assert(/。$/.test(mood.label) && (!mood.shyLabel || /。$/.test(mood.shyLabel)));
 }
@@ -396,7 +639,8 @@ assert.equal(classifyFlag(OUTINGS_FLAG), "progression");
     assert(/。$/.test(moment.memo) && [...moment.memo].length <= 48, `てつこメモは地の文・48字以内: ${moment.memo}`);
     assert(!/テツコ|ヤニネコ/.test(moment.memo));
   }
-  const POSES = ["loaf", "crouch", "reach", "hug", "groom", "yawn", "belly", "rub", "walk_a", "walk_b", "lookback", "stretch"];
+  // #2690 の12枚と、#3214（TKT26）の跳ぶ・空振り・鳴く・つつく
+  const POSES = ["loaf", "crouch", "reach", "hug", "groom", "yawn", "belly", "rub", "walk_a", "walk_b", "lookback", "stretch", "leap", "flop", "mew", "poke"];
   const hints = new Set(MOMENTS.map(moment => moment.art).filter(Boolean));
   for (const kind of ["pet", "play", "play", "play", "catch", "brush", "brush", "treat", "watch"]) {
     const reaction = act(createSession(save({ count: 4 })), kind);
@@ -415,7 +659,7 @@ assert.equal(classifyFlag(OUTINGS_FLAG), "progression");
   // 小物は、CSS が読むファイルが全部そろっていること（箱とベッドは手前の層も・おやつは前後2枚・じゃらしは先と棒・ブラシはカーソルも）。
   const PROP_FILES = { box: ["prop_box.webp", "prop_box_front.webp"], bed: ["prop_bed.webp", "prop_bed_front.webp"],
     plate: ["prop_plate_full.webp", "prop_plate_empty.webp"], teaser: ["prop_teaser_tip.webp", "prop_teaser_stick.webp"],
-    brush: ["prop_brush.webp", "prop_brush_cursor.png"], lap: ["prop_lap.webp"] };
+    brush: ["prop_brush.webp", "prop_brush_cursor.png"], lap: ["prop_lap.webp"], tunnel_tail: ["prop_tunnel_tail.webp"] };
   for (const prop of ART_READY.props) {
     assert(PROPS.some(item => item.id === prop) || PROP_FILES[prop], `小物の名前は依頼した物: ${prop}`);
     for (const file of PROP_FILES[prop] || [`prop_${prop}.webp`]) assert(exists(file), `届いた小物の絵がある: ${file}`);
@@ -423,7 +667,26 @@ assert.equal(classifyFlag(OUTINGS_FLAG), "progression");
   const css = fs.readFileSync(new URL("../css/tetsuko-time.css", import.meta.url), "utf8");
   for (const prop of ART_READY.props.filter(id => PROPS.some(item => item.id === id)))
     assert(css.includes(`[data-art-props~="${prop}"] .tt-prop[data-prop="${prop}"] > .tt-prop-back`), `小物の絵を出す CSS がある: ${prop}`);
-  for (const part of ART_READY.ui) assert(exists(`ui_${part}.webp`), `届いたUIの絵がある: ui_${part}.webp`);
+  // UI: 組の部品は全部の状態、シートは1つずつ切り出した絵が全部そろっていること（#3213）。
+  const { TK_ICONS } = await import("../js/minigames/tetsuko-art.js");
+  const UI_FILES = {
+    tk_icons: TK_ICONS.map(name => `ui_tk_icon_${name}.webp`),
+    tk_fx: ["heart", "spark", "note", "sweat", "fur", "paw", "purr", "puff"].map(name => `ui_tk_fx_${name}.webp`),
+    tk_token: ["ui_tk_token.webp", "ui_tk_token_pressed.webp", "ui_tk_token_active.webp"],
+    tk_tab: ["ui_tk_tab.webp", "ui_tk_tab_pressed.webp", "ui_tk_tab_door.webp"],
+    tk_heart: ["ui_tk_heart.webp", "ui_tk_heart_empty.webp"],
+  };
+  for (const part of ART_READY.ui) for (const file of UI_FILES[part] || [`ui_${part}.webp`]) assert(exists(file), `届いたUIの絵がある: ${file}`);
+  // CSS が読む小物・しぐさ・専用テーマの絵は、どれも登録済み（名前の書き間違いで 404 にしない）。
+  // 紙×ラベンダーの ui_*（#2691・採用しない）の規則は ART_READY に名前が無いので読まれない。ここでは数えない。
+  for (const file of ["../css/tetsuko-time.css", "../css/tetsuko-theme.css"]) {
+    const text = fs.readFileSync(new URL(file, import.meta.url), "utf8");
+    for (const [, name] of text.matchAll(/url\("\.\.\/img\/ui\/tetsuko\/((?:ui_tk_|cat_|prop_)[^"]+)"\)/g)) assert(exists(name), `${file} が読む絵がある: ${name}`);
+  }
+  // 新しい理由の書いてある素材は、CSS の描画を絵に替えている（膝・しっぽ・札・ハートなど）。
+  const themeCss = fs.readFileSync(new URL("../css/tetsuko-theme.css", import.meta.url), "utf8");
+  for (const part of ART_READY.ui.filter(name => name.startsWith("tk_"))) assert(themeCss.includes(`[data-art-ui~="${part}"]`), `専用テーマの絵を使う CSS がある: ${part}`);
+  assert(css.includes('[data-art-props~="tunnel_tail"]') && css.includes('[data-art-props~="lap"]'), "膝としっぽの絵を使う CSS がある");
   if (ART_READY.background) assert(tracked.has("remake/img/backgrounds/bg_mukai_backdoor_day.webp"), "裏口の絵がある");
   assert.deepEqual(Object.keys(artAttrs()).sort(), ["artBg", "artProps", "artUi"]);
 }
@@ -447,4 +710,53 @@ assert.equal(classifyFlag(OUTINGS_FLAG), "progression");
   }
 }
 
+// じゃらしで遊ぶ間のカメラ（§10）: 飛びつく先が見えるよう、てつこを追わずに少し引く。舞台の外は映さない。
+{
+  const cam = tetsukoToyCamera();
+  assert.equal(cam.k, TETSUKO_TOY_VIEW.zoom);
+  assert(cam.k > 1 && cam.k < TETSUKO_CAMERA.zoom, "寄せすぎず、全体よりは近い");
+  assert(cam.x <= 0 && cam.x >= 1280 * (1 - cam.k) && cam.y <= 0 && cam.y >= 720 * (1 - cam.k), "舞台の外は映さない");
+  // 飛びついた先（TETSUKO_LEAP）のどこでも、てつこの枠（270×280）が外枠（20px）の内側に映る（端で体が切れない）。
+  for (const x of [TETSUKO_LEAP.min, 640, TETSUKO_LEAP.max]) {
+    const box = { l: cam.x + cam.k * (x - 135), r: cam.x + cam.k * (x + 135), t: cam.y + cam.k * (TETSUKO_LEAP.y - TETSUKO_CAMERA.catHeight), b: cam.y + cam.k * TETSUKO_LEAP.y };
+    assert(box.l >= 20 && box.r <= 1260 && box.t >= 20 && box.b <= 700, `飛びついた先 x=${x} で、てつこが画面に収まる ${JSON.stringify(box)}`);
+  }
+  assert(TETSUKO_LEAP.max - TETSUKO_LEAP.min >= 700, "飛びまわれる幅は十分にある");
+}
+
+// 見守る初回だけの発見を、膝に乗る日や見守った後に案内しない。
+{
+  for (const count of [0, 1, 4]) for (const mood of MOODS) for (const watches of [0, 1, 2]) {
+    const session = createSession(save({ count }));
+    session.mood = mood.id;
+    session.watches = watches;
+    session.found = MOMENTS.filter(moment => moment.id !== "paws_together").map(moment => moment.id);
+    const reachable = watches === 0 && !(session.stage >= 3 && session.mood === "clingy");
+    assert.equal(discoveryGuide(session, "paws_together").id === "paws_together", reachable,
+      `前足をそろえる案内は今できる時だけ: ${count}/${mood.id}/${watches}`);
+    if (reachable) assert.equal(act(session, "watch").moment, "paws_together");
+  }
+}
+
+// 次の一手・模様替えの反応・撤去の回帰。旧セーブの確定点は変えない。
+{
+for(let count=0;count<5;count++) {
+ const s=createSession(save({ count }));
+ assert.equal(discoveryGuide(s).kind,'play');
+ act(s,'play');act(s,'play');assert.match(discoveryGuide(s).text,/もうひと振り/);
+ act(s,'play');assert(s.found.includes('first_paw'));
+ assert.notEqual(discoveryGuide(s).id,'first_paw');
+ if(count>0){assert.equal(discoveryGuide(s).kind,'play');assert.equal(discoveryGuide(s).id,'hug_toy');act(s,'catch');assert(s.found.includes('hug_toy'));}
+ placeProp(s,'floor','box');const a=autonomous(s);assert.equal(a.id,'box_peek');
+ assert.equal(s.cat.inside,'box');placeProp(s,'floor',null);assert.equal(s.cat.inside,null);
+ assert.equal(s.curiousProp,null);
+ placeProp(s,'floor','ball');assert.equal(autonomous(s).id,'ball_watch');
+ assert(!('curiousProp' in sessionResult(s)));
+}
+const s=createSession(save({ count: 0 }));assert.notEqual(discoveryGuide(s,'lap_nap').id,'lap_nap');
+assert.equal(discoveryGuide(s,'box_peek').kind,'decor');
+console.log('discovery loop / immediate prop curiosity / removal / stage gates: PASS');
+
+}
 console.log("tetsuko time model and settle: ok");
+

@@ -101,20 +101,28 @@ await suite("issue508-theme", async checkAll => {
       }, { opts, previous: baseline.scenes[opts.id] });
       if (opts.id === "ch1_salaryman_regular") {
         // #452 adds only the actual service answer and its immediate save.
-        const { savedAt: beforeAt, ...beforeGame } = result.before;
-        const { savedAt: currentAt, ...currentGame } = result.current;
+        // Each save also adds the elapsed play time (playMs, #2902): it is a clock, not a story effect.
+        const { savedAt: beforeAt, playMs: beforePlay, ...beforeGame } = result.before;
+        const { savedAt: currentAt, playMs: currentPlay, ...currentGame } = result.current;
         assert(Number.isFinite(currentAt));
+        assert(Number.isFinite(beforePlay) && Number.isFinite(currentPlay) && currentPlay >= 0, "play time stays a valid count");
         assert.equal(currentGame.flags._salaryman_service_order, opts.choice === 0);
         assert.equal(currentGame.flags._salaryman_service_water, opts.choice === 1);
+        // E案の立ち絵を見た時点で面識と紹介済みを記録する。
+        assert.equal(currentGame.met.salaryman, true);
+        assert.equal(currentGame.flags._intro_salaryman, true);
         delete currentGame.flags._salaryman_service_order;
         delete currentGame.flags._salaryman_service_water;
+        delete currentGame.flags._intro_salaryman;
+        delete currentGame.met.salaryman;
         assert.deepEqual(currentGame, beforeGame, `Changed state effect: ${JSON.stringify(opts)}`);
       } else if (opts.id === "ch1_tsumugi_work_in_progress") {
         // #452 saves the actual answer immediately. Compare every game field,
-        // and check the refreshed save timestamp separately.
-        const { savedAt: beforeAt, ...beforeGame } = result.before;
-        const { savedAt: currentAt, ...currentGame } = result.current;
+        // and check the refreshed save timestamp and play time (playMs, #2902) separately.
+        const { savedAt: beforeAt, playMs: beforePlay, ...beforeGame } = result.before;
+        const { savedAt: currentAt, playMs: currentPlay, ...currentGame } = result.current;
         assert(Number.isFinite(beforeAt) && currentAt >= beforeAt);
+        assert(Number.isFinite(beforePlay) && Number.isFinite(currentPlay) && currentPlay >= 0, "play time stays a valid count");
         assert.deepEqual(currentGame, beforeGame, `Changed state effect: ${JSON.stringify(opts)}`);
       } else if (opts.id === "ch1_naru_fourth") {
         // #1108: the fourth visit now teaches vanilla. Every other game effect stays identical.

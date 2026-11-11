@@ -41,6 +41,7 @@ import { provisionalCraftScore } from "./score.js";
 import { buildRigRecord } from "./rig-record.js";
 import { buildRivalWindows } from "./rival-windows.js";
 import { demoFor, openDemoSheet } from "./demo.js";
+import { craftStageEnabled } from "./stage-layout.js";
 
 // ライバルの顔アイコンを読むまでの間（作業台の準備が済んでから）
 const RIVAL_FACE_DELAY_MS = 1200;
@@ -185,12 +186,16 @@ export function openBench(cs, { steps = [], entryAssets = null } = {}) {
     updateBenchRank();
     // 一台の記録（CFX03）: ランクと同じ場面だけ、作業風景の隅に工程の灯を並べる
     bench.record = buildRigRecord();
-    worker.root.querySelector(".bench-worker-stage")?.append(bench.record.aura, bench.record.root);
+    // 新しい配置（CSL）では、灯とライバルの小窓を作業風景の上ではなく上のレールへ置く（気配の光は作業風景に残す）
+    const workerStage = worker.root.querySelector(".bench-worker-stage");
+    const railHost = craftStageEnabled() ? root.querySelector(".bench-top") : workerStage;
+    workerStage?.append(bench.record.aura);
+    railHost?.append(bench.record.root);
     bench.record.restore(cs);
     // ライバルの小窓（CFX04）: 大会だけ。隣の台の進み具合を工程ごとの灯で見せる
     bench.rivals = buildRivalWindows(cs);
     if (bench.rivals) {
-      worker.root.querySelector(".bench-worker-stage")?.append(bench.rivals.root);
+      railHost?.append(bench.rivals.root);
       bench.rivals.restore(bench.record);
       const dispose = b.disposeRank;
       b.disposeRank = () => { dispose(); b.rivals?.dispose(); };
@@ -237,16 +242,8 @@ export function benchRoot(cs) {
   return bench?.cs === cs && bench.root.isConnected && !bench.root.classList.contains("done") ? bench.root : null;
 }
 
-/** 初回の操作説明を、時計・カウントダウンを始める前に既存ガイドで読む。 */
-export async function explainTutorialStep(cs, id) {
-  const b = bench, owner = state;
-  const current = () => bench === b && state === owner && benchRoot(cs) === b?.root && b.panel.dataset.step === id;
-  if (!current()) return false;
-  if (cs.mode !== "tutorial") return true;
-  const lesson = cs.lessonHelp?.[id] || TUTORIAL_STEP_HELP[id];
-  b.explainedLessons ??= new Set();
-  if (!lesson || b.explainedLessons.has(id)) return true;
-  if (b.pendingHelp?.id === id) return (await b.pendingHelp.promise) && current();
+/** ガイドを開いて説明文を先に読み、閉じられるまで操作を止めて待つ。閉じたら true、画面が差し替わったら false。 */
+function waitGuideRead(b, current, panelId, text) {
   const guide = b.guide.root, note = b.guide.note, fullNote = note.textContent;
   const tip = guide.querySelector(".bench-guide-tip"), summary = guide.querySelector("summary");
   // 固定作業台の縮小後も、初回説明は読める文字と押せる閉じ口を保つ。
@@ -259,14 +256,14 @@ export async function explainTutorialStep(cs, id) {
   ].map(([node, values]) => ({ node, values, previous: Object.fromEntries(Object.keys(values).map(key => [key, node.style[key]])) }));
   styles.forEach(({ node, values }) => Object.assign(node.style, values));
   // 最初はスミの既存説明だけ。詳しい操作は従来の「?」に残す。
-  note.textContent = lesson.detail;
-  const pending = new Promise(resolve => {
+  note.textContent = text;
+  return new Promise(resolve => {
     const finish = ok => {
       guide.removeEventListener("toggle", closed);
       observer.disconnect();
       styles.forEach(({ node, previous }) => Object.assign(node.style, previous));
-      if (current() || note.textContent === lesson.detail) note.textContent = fullNote;
-      if (b.panel.dataset.step === id) {
+      if (current() || note.textContent === text) note.textContent = fullNote;
+      if (b.panel.dataset.step === panelId) {
         guide.open = false;
         b.panel.inert = false;
         b.root.dataset.helpPaused = "false";
@@ -284,11 +281,54 @@ export async function explainTutorialStep(cs, id) {
     // 既存の自動操作フックも、表示してからガイドを閉じて進む。
     if (craftTest.auto) sleep(120).then(() => { if (current()) guide.open = false; });
   });
+}
+
+/** 初回の操作説明を、時計・カウントダウンを始める前に既存ガイドで読む。 */
+export async function explainTutorialStep(cs, id) {
+  const b = bench, owner = state;
+  const current = () => bench === b && state === owner && benchRoot(cs) === b?.root && b.panel.dataset.step === id;
+  if (!current()) return false;
+  if (cs.mode !== "tutorial") return true;
+  const lesson = cs.lessonHelp?.[id] || TUTORIAL_STEP_HELP[id];
+  b.explainedLessons ??= new Set();
+  if (!lesson || b.explainedLessons.has(id)) return true;
+  if (b.pendingHelp?.id === id) return (await b.pendingHelp.promise) && current();
+  const pending = waitGuideRead(b, current, id, lesson.detail);
   b.pendingHelp = { id, promise: pending };
   const acknowledged = await pending;
   b.pendingHelp = null;
   if (!acknowledged || !current()) return false;
   b.explainedLessons.add(id);
+  return true;
+}
+
+/**
+ * 選ぶ工程（機材・配合・詰め・配置・蒸らし時間）は、セーブ内で初回だけ、
+ * 操作の前に説明をガイドで読む（オーナー指示 2026-11-09「説明の次にボタン」）。
+ * 既読は state.flags.seenStepIntro に残し、2回目以降は直接操作できる。
+ * 読み返しは従来どおり「?」ガイドからできる。panelId はパネルの工程IDが
+ * 説明のキーと違う場合（蒸らし時間はパネルが steam でキーが timer）に渡す。
+ */
+// ブラウザテストの既定は、よその店の人（suien_roamers）と同じ流儀で案内を止める。
+const stepIntroOff = () => { try { return globalThis.localStorage?.getItem("suien_step_intro") === "off"; } catch { return false; } };
+
+export async function explainStepOnce(cs, id, panelId = id) {
+  const b = bench, owner = state;
+  const current = () => bench === b && state === owner && benchRoot(cs) === b?.root && b.panel.dataset.step === panelId;
+  if (!current()) return false;
+  if (craftTest.auto || cs.preview || stepIntroOff()) return true;
+  const seen = state.flags.seenStepIntro ||= {};
+  if (seen[id]) return true;
+  if (b.pendingIntro?.id === id) return (await b.pendingIntro.promise) && current();
+  const text = cs.lessonHelp?.[id]?.detail || TUTORIAL_STEP_HELP[id]?.detail || b.guide.note.textContent;
+  if (!text) { seen[id] = true; return true; }
+  const pending = waitGuideRead(b, current, panelId, text);
+  b.pendingIntro = { id, promise: pending };
+  const acknowledged = await pending;
+  b.pendingIntro = null;
+  if (!acknowledged || !current()) return false;
+  seen[id] = true;
+  save();
   return true;
 }
 

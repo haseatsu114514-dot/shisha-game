@@ -139,9 +139,11 @@ await suite("ch4-camel-race", async check => {
     await endDay(page, 4);
     assert.equal((await get(page)).slot, 0);
     await camelTest(page, { pilot: "none", timeScale: 8 });
+    const replayEnteredBefore = (await entered(page)).length;
     await camel.click();
     await page.locator(dt("camel-game")).waitFor({ timeout: 60000 });
     assert.equal(await page.locator(dt("camel-tutorial")).count(), 0, "no tutorial after the first run");
+    assert.equal((await entered(page)).length, replayEnteredBefore, "a repeat visit starts directly without dialogue");
     await page.locator('[data-test="camel-cup"][data-cup="practice"]').click();
     await page.locator(dt("camel-result")).waitFor({ timeout: 120000 });
     const second = await page.locator(dt("camel-result")).evaluate(node => ({ ...node.dataset }));
@@ -149,8 +151,8 @@ await suite("ch4-camel-race", async check => {
     await page.locator(dt("camel-finish")).click();
     await page.waitForFunction(() => window.__remake.state.flags._ch4_camel?.plays === 2);
     await page.locator(dt("ch4-free")).waitFor({ timeout: 60000 });
-    const replayScenes = (await entered(page)).slice(-2);
-    assert.deepEqual(replayScenes, ["ch4_camel_replay", "ch4_camel_replay_usual"]);
+    const replayScenes = (await entered(page)).slice(replayEnteredBefore);
+    assert.deepEqual(replayScenes, ["ch4_camel_replay_usual"]);
     state = await get(page);
     assert.equal(state.flags._ch4_camel.best.total, Number(result.total), "a worse run keeps the best");
     assert.equal(state.slot, 1);

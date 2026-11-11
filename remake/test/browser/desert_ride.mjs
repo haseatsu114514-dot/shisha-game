@@ -14,9 +14,68 @@ const autoplayToResult = async (page, skill = "expert") => {
 };
 const resultText = async page => (await page.locator(t("desert-result")).innerText()).replace(/\s+/g, " ");
 
+
+// 文字盤の背景と弧・数字は同じ中心を使う。右寄せのままだと枠内で約50pxずれる。
+const assertSpeedoAligned = async page => {
+  const boxes = await page.locator(t("desert-speedo")).evaluate(node => {
+    const box = node.getBoundingClientRect();
+    const arc = node.querySelector(".dr-speedo-arc").getBoundingClientRect();
+    const read = node.querySelector(".dr-speedo-read").getBoundingClientRect();
+    const path = node.querySelector(".dr-speedo-fill");
+    return {
+      center: box.left + box.width / 2,
+      arc: arc.left + arc.width / 2,
+      read: read.left + read.width / 2,
+      length: path.getTotalLength(),
+      dash: Number(path.getAttribute("stroke-dasharray")),
+    };
+  });
+  assert(Math.abs(boxes.arc - boxes.center) < 1, "arc is centered on the dial background");
+  assert(Math.abs(boxes.read - boxes.center) < 1, "speed readout is centered on the dial background");
+  assert(Math.abs(boxes.length - boxes.dash) < 0.2, "full gauge uses the actual semicircle length");
+  const rows = await page.evaluate(() => {
+    const rect = selector => document.querySelector(selector).getBoundingClientRect();
+    return { dial: rect(".dr-speedo"), bar: rect(".dr-boost-meter"), clock: rect(".dr-clock"), panel: rect(".dr-hud-right"), quit: rect(".dr-quit") };
+  });
+  assert(rows.dial.bottom <= rows.bar.top && rows.bar.bottom <= rows.clock.top, "dial, boost bar and clock have separate rows");
+  assert(rows.clock.bottom <= rows.panel.bottom && rows.panel.bottom <= rows.quit.top, "clock and quit stay outside each other's bounds");
+  const flameLoads = await page.evaluate(() => performance.getEntriesByType("resource").filter(entry => /boost-(aura|burst|spark)\\.webp/.test(entry.name)).length);
+  assert.equal(flameLoads, 0, "boost does not load the screen-obscuring flame effects");
+};
+
 await suite("desert-ride", async check => {
+  await check("practice-captions-fit-between-hud-and-idle-finish-is-neutral", async page => {
+    await page.goto(new URL("desert-ride.html?course=ridge", page.url()).href);
+    await page.locator(t("desert-page-tutorial")).click();
+    await phase(page, "practice");
+    // 長いキーボード・タッチ用の案内も、左右の HUD と重ならず帯の中で折り返す。
+    for (const text of ["← → で左右に動こう","岩に当たると転ぶ。先を見て、早めによけよう","起伏の手前で Space ── 大きく跳べる","着地の直前にもう一度 Space ── 姿勢を整える","惜しい。次の起伏で、もう一度跳んでみよう","次は、跳んだら空中で ← か → を押し続けて回ろう","離すと回り切る。着地より前に離そう","回った！ 回るほど点が大きい","回りかけで着地すると転ぶ。もう少し早く離そう","溜まったゲージで↓（BOOST）を押すと超加速 ── 岩も砕ける","そのまま、岩へ突っ込め！","いい感じ。あとは、滑るだけ","「左へ」「右へ」で動こう","起伏の手前で「ジャンプ」── 大きく跳べる","着地の直前にもう一度「ジャンプ」── 姿勢を整える","次は、跳んだら空中で「左へ」か「右へ」を押し続けて回ろう","溜まったゲージで「BOOST」を押すと超加速 ── 岩も砕ける"]) {
+      const fits = await page.locator(t("desert-caption")).evaluate((node, text) => {
+        node.textContent = text;
+        const box = node.getBoundingClientRect();
+        const left = document.querySelector(".dr-hud-left").getBoundingClientRect();
+        const right = document.querySelector(".dr-hud-right").getBoundingClientRect();
+        return box.left >= left.right && box.right <= right.left
+          && node.scrollWidth <= node.clientWidth && node.scrollHeight <= node.clientHeight;
+      }, text);
+      assert(fits, `caption stays between the HUD panels: ${text}`);
+    }
+    // 何も操作せず終わっても習得・成功とは断定しない。再練習と本番の両方を選べる。
+    await page.evaluate(() => window.__desertRide.setSpeedUp(8));
+    await phase(page, "practiced");
+    const end = await page.locator(t("desert-practiced")).innerText();
+    assert.match(end, /もう一度練習するか、本番へ進もう/);
+    assert.doesNotMatch(end, /体が動きを覚えた|上手！/);
+    assert(await page.locator(t("desert-start")).isVisible());
+    await page.locator(t("desert-practice")).click();
+    await phase(page, "practice");
+    await page.keyboard.press("Escape");
+    await phase(page, "menu");
+    await page.locator(t("desert-leave")).click();
+  });
+
   await check("standalone-page-keyboard-run-result-best-and-quit", async page => {
-    await page.goto(new URL("desert-ride.html", page.url()).href);
+    await page.goto(new URL("desert-ride.html?course=ridge", page.url()).href);
     await page.locator(t("desert-page-start")).click();
     await page.locator(t("desert-menu")).waitFor();
     assert.match(await page.locator(t("desert-menu")).innerText(), /DESERT RIDE/);
@@ -32,6 +91,7 @@ await suite("desert-ride", async check => {
     await phase(page, "run");
     // 本番はスタートの合図（3・2・1・GO）から。合図の間は進まず、ヌールが左に並んでいる
     assert(await page.evaluate(() => window.__desertRide.countdown > 0), "the run starts with a countdown");
+    await assertSpeedoAligned(page);
     assert.equal(await page.locator(t("desert-race-gap")).innerText(), "VS ヌール");
     assert(await page.evaluate(() => window.__desertRide.rival.finishTime > 45), "Noor races the same course");
     // PC: → を押し続けると慣性で右へ、Space はホップ（起伏が無い所）
@@ -44,10 +104,11 @@ await suite("desert-ride", async check => {
     g = await game(page);
     assert(g.hops === 1 || g.bigJumps === 1, "Space jumps");
     assert(await page.locator(t("desert-left")).isVisible() && await page.locator(t("desert-jump")).isVisible(), "touch buttons are shown on PC too");
-    // Codex の採用画像（遠景の空・陸、主人公の背面、岩、旗、ゴール、砂煙）を読み込んで描いている
+    // Codex の採用画像（遠景の空・陸、主人公・ヌール・なるの背面、岩、旗、ゴール、砂煙）を読み込んで描いている
     const loaded = await page.evaluate(() => performance.getEntriesByType("resource").map(entry => entry.name).filter(name => name.includes("/img/ui/desert_ride/")).map(name => name.split("/").pop()).sort());
     assert.deepEqual(loaded, ["backdrop_day_land.webp", "backdrop_day_sky.webp", "backdrop_dusk_land.webp", "backdrop_dusk_sky.webp", "flag_pole.webp", "goal_banner.webp",
       "rider_brace.webp", "rider_fall.webp", "rider_jump.webp", "rider_lean_left.webp", "rider_lean_right.webp",
+      "rider_naru_brace.webp", "rider_naru_fall.webp", "rider_naru_jump.webp", "rider_naru_lean_left.webp", "rider_naru_lean_right.webp", "rider_naru_ride.webp",
       "rider_noor_brace.webp", "rider_noor_fall.webp", "rider_noor_jump.webp", "rider_noor_lean_left.webp", "rider_noor_lean_right.webp", "rider_noor_ride.webp",
       "rider_ride.webp", "rock_large.webp", "rock_small.webp", "sand_puff.webp"]);
     // 空中トリックとブーストを使う理想の滑り: S、ヌールに勝つ。360 以上を決めるとカットインが走る
@@ -99,11 +160,12 @@ await suite("desert-ride", async check => {
   });
 
   await check("phone-touch-buttons-reduced-motion-and-tutorial", async page => {
-    await page.goto(new URL("desert-ride.html", page.url()).href);
+    await page.goto(new URL("desert-ride.html?course=ridge", page.url()).href);
     await page.locator(t("desert-page-reduce")).check();
     await page.locator(t("desert-page-tutorial")).tap();
     await phase(page, "practice");
     assert.equal(await page.locator(t("desert-ride")).getAttribute("data-reduced-motion"), "true");
+    await assertSpeedoAligned(page);
     // タッチ端末ではキーの名前を出さず、画面のボタンの名前で言う（#2838）
     assert.equal(await page.locator(t("desert-caption")).innerText(), "「左へ」「右へ」で動こう");
     // ボタンは下辺の左右に分かれ、真ん中の視界を隠さない
@@ -120,6 +182,18 @@ await suite("desert-ride", async check => {
     assert.equal(await page.locator(t("desert-quit")).innerText(), "✕");
     assert(quitBox.width >= 38 && quitBox.height >= 38, `quit is big enough (${quitBox.width}x${quitBox.height})`);
     assert(quitBox.y >= hudRight.y + hudRight.height && quitBox.y + quitBox.height <= jump.y, "quit sits between the HUD and the touch buttons");
+    await page.waitForFunction(() => [...document.querySelectorAll(".dr-touch")].every(button => button.classList.contains("art-ready")));
+    assert.equal(await page.locator(".dr-stick img").count(), 2, "selected stick base and knob are present");
+    const stick = await page.locator(".dr-stick").boundingBox();
+    const cx = stick.x + stick.width / 2, cy = stick.y + stick.height / 2;
+    await page.mouse.move(cx, cy); await page.mouse.down();
+    await page.mouse.move(cx + stick.width * 0.14, cy);
+    const half = Number(await page.locator(".dr-stick").getAttribute("data-value"));
+    await page.mouse.move(cx + stick.width * 0.28, cy);
+    const full = Number(await page.locator(".dr-stick").getAttribute("data-value"));
+    await page.mouse.up();
+    assert(half >= 35 && half <= 65 && full >= 85, `stick gives analog deflection (${half}, ${full})`);
+    assert.equal(await page.locator(".dr-stick").getAttribute("data-value"), "0", "stick centers on release");
     // 右を押している間だけ右へ。離すと入力が消える
     const press = async (box, hold) => {
       await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
@@ -165,6 +239,73 @@ await suite("desert-ride", async check => {
     await page.locator(t("desert-page-best")).waitFor();
   }, { viewport: { width: 844, height: 390 }, hasTouch: true, isMobile: true });
 
+  // 2026-11-11: カーブの案内とカービング、ブースト中の曲の速さ、裏の相手（なる）の名乗り
+  await check("curve-tip-carving-boost-tempo-and-the-hidden-boss-banner", async page => {
+    await page.evaluate(() => localStorage.setItem("suien_desert_ride_preview", JSON.stringify({ score: 1, rank: "C", rulesVersion: 2, beatNoor: true })));
+    await page.goto(new URL("desert-ride.html?course=left-bowl", page.url()).href);
+    await page.locator(t("desert-page-start")).click();
+    await page.locator(t("desert-menu")).waitFor();
+    await page.locator(t("desert-help")).click();
+    assert.match(await page.locator(t("desert-help-panel")).innerText(), /カーブでは外へ流される。曲がる向きへ切り込むと踏ん張れて、ブーストも貯まる/);
+    await page.locator(t("desert-help-close")).click();
+    // 裏の相手: スタートの合図の間だけ、人物と数字に重ならない画面の下に名乗りが出る
+    await page.locator(t("desert-start-naru")).click();
+    await phase(page, "run");
+    assert.equal((await page.locator(t("desert-versus")).innerText()).replace(/\s+/g, " "), "裏ボス VS なる");
+    const banner = await page.evaluate(() => {
+      const node = document.querySelector('[data-test="desert-versus"]'), root = document.querySelector('[data-test="desert-ride"]').getBoundingClientRect(), box = node.getBoundingClientRect();
+      return { shown: node.classList.contains("show") && getComputedStyle(node).opacity !== "0", top: (box.top - root.top) / root.height, counting: window.__desertRide.countdown > 0 };
+    });
+    assert(banner.counting && banner.shown, "the boss banner shows during the countdown");
+    assert(banner.top > 0.7, `the banner sits below the riders (${banner.top})`);
+    await page.waitForFunction(() => window.__desertRide.countdown <= 0);
+    assert.equal(await page.locator(t("desert-versus")).evaluate(node => node.classList.contains("show")), false, "the banner leaves at GO");
+    assert(await ride(page, () => window.__desertRide.rival.samples.some(s => s.boostT > 0) && window.__desertRide.rival.samples.some(s => Math.abs(s.rot) > 0.25)), "Naru's boosts and spins are in the playback");
+    // なるの滑る絵（#3222）を読みに行っている（読めない時は図形で描く）
+    assert(await page.evaluate(() => performance.getEntriesByType("resource").some(entry => /\/rider_naru_ride\.webp$/.test(entry.name))), "Naru's rider art is requested");
+    // 最初のカーブ: 一度だけ案内が出る。曲がる向きへ切り込むとカービング（ゲージが貯まり、印が出る）
+    assert.equal(await page.locator(t("desert-caption")).innerText(), "", "no caption on the straight");
+    await ride(page, () => { const r = window.__desertRide; while (r.game.z < 340) r.advance(1 / 60, {}); r.game.x = 0; r.game.vx = 0; });
+    await page.waitForFunction(() => /カーブ！/.test(document.querySelector('[data-test="desert-caption"]').textContent));
+    assert.equal(await page.locator(t("desert-caption")).getAttribute("data-kind"), "tip");
+    const tip = await page.evaluate(() => {
+      const rect = selector => document.querySelector(selector).getBoundingClientRect();
+      return { tip: rect('[data-test="desert-caption"]'), course: rect('[data-test="desert-course"]'), left: rect(".dr-hud-left"), right: rect(".dr-hud-right") };
+    });
+    assert(tip.tip.top >= tip.course.bottom && tip.tip.left >= tip.left.right && tip.tip.right <= tip.right.left, "the tip clears the course name and both HUD panels");
+    await ride(page, () => window.__desertRide.setInput(true, false)); // 左カーブへ左へ切り込む
+    await page.waitForFunction(() => document.querySelector('[data-test="desert-ride"]').dataset.carve === "on");
+    await page.waitForFunction(() => { const g = window.__desertRide.game; if (Math.abs(g.x) > 0.6) { g.x = 0; g.vx = 0; } return g.stats.carves >= 1; });
+    const carved = await ride(page, () => { const g = window.__desertRide.game; window.__desertRide.setInput(false, false); return { gauge: g.gauge, event: g.events.some(e => e.kind === "carve" && e.points > 0), falls: g.falls }; });
+    assert(carved.event && carved.gauge > 0.05, `carving charges the gauge (${carved.gauge})`);
+    await page.waitForFunction(() => document.querySelector('[data-test="desert-ride"]').dataset.carve === "");
+    // ブースト中は曲が速くなり、終わると戻る。やめてメニューへ戻っても元の速さ
+    const audioUrl = new URL("js/core/audio.js", page.url()).href;
+    await page.evaluate(async url => { window.__audio = await import(url); }, audioUrl);
+    assert.equal(await page.evaluate(() => window.__audio.bgmPlaybackRate()), 1, "normal tempo outside a boost");
+    await ride(page, () => { const r = window.__desertRide; r.game.x = 0; r.game.vx = 0; r.game.fallT = 0; r.game.gauge = 1; r.boost(); });
+    await page.waitForFunction(() => window.__audio.bgmPlaybackRate() > 1.15 && document.querySelector('[data-test="desert-ride"]').dataset.boost === "on");
+    assert(await page.evaluate(() => window.__audio.bgmPlaybackRate()) <= 1.18 + 1e-9, "the boost tempo is 1.18x at most");
+    await ride(page, () => { window.__desertRide.game.boostT = 0.02; });
+    await page.waitForFunction(() => window.__audio.bgmPlaybackRate() === 1);
+    await ride(page, () => { const r = window.__desertRide; r.game.fallT = 0; r.game.gauge = 1; r.boost(); });
+    await page.waitForFunction(() => window.__audio.bgmPlaybackRate() > 1.05);
+    await page.keyboard.press("Escape");
+    await phase(page, "menu");
+    assert.equal(await page.evaluate(() => window.__audio.bgmPlaybackRate()), 1, "quitting mid-boost restores the tempo");
+    // 次の滑走では、一度切り込めたので案内は出ない
+    await page.locator(t("desert-start")).click();
+    await phase(page, "run");
+    assert.equal(await page.locator(t("desert-versus")).evaluate(node => node.classList.contains("show")), false, "no boss banner against Noor");
+    await ride(page, () => window.__desertRide.skipCountdown());
+    await ride(page, () => { const r = window.__desertRide; while (r.game.z < 420) r.advance(1 / 60, {}); r.game.x = 0; r.game.vx = 0; });
+    await page.waitForFunction(() => window.__desertRide.game.z > 470);
+    assert.equal(await page.locator(t("desert-caption")).innerText(), "", "the curve tip is shown once");
+    await page.keyboard.press("Escape");
+    await phase(page, "menu");
+    await page.locator(t("desert-leave")).click();
+    await page.locator(t("desert-page-start")).waitFor();
+  });
   await check("chapter-four-desk-talks-outing-record-sunset-day-use-save-load-and-interrupt", async page => {
     page.setDefaultTimeout(30000);
     await page.evaluate(async () => {
@@ -221,7 +362,7 @@ await suite("desert-ride", async check => {
     assert.equal(value.desert, undefined);
     await page.evaluate(() => { window.__desertRide.autoplay("perfect"); window.__desertRide.setSpeedUp(8); });
     await phase(page, "practiced");
-    assert.match(await page.locator(t("desert-practiced")).innerText(), /ヌール「上手！/);
+    assert.match(await page.locator(t("desert-practiced")).innerText(), /ヌール「もう一度練習してもいいし、本番へ進んでもいいよ」/);
     await page.locator(t("desert-start")).click();
     // 1本目は着地が遅い滑り: B。ヌールと同じ滑りなので競走は負け
     await autoplayToResult(page, "good");
@@ -351,6 +492,9 @@ await suite("desert-ride", async check => {
     value = await get(page);
     assert.equal(value.money, cafeBefore.money - 3000, "a shisha at the café costs 3,000円");
     assert(value.affinity.noor > cafeBefore.affinity.noor, "talking at the café raises Noor's affinity");
+    assert(value.flags._noor_story_seat_edge && value.flags._noor_story_second_cup && value.flags._noor_story_map_corner,
+      "three unread Noor café stories are read and saved after the staged talk");
+    assert.equal(value.flags._noor_story_water_glass, undefined, "the remaining stories wait for another visit");
     await page.locator(t("pin-ch4_dubai_dunes")).waitFor();
     assert.equal(await page.locator(t("pin-ch4_dubai_tour_desk")).count(), 1, "the café stays on the map");
     // 砂丘は昼だけ。宿で夜を越して翌日の昼に出かける
@@ -386,7 +530,7 @@ await suite("desert-ride", async check => {
   });
   await check("legacy-preview-best-is-separate-from-the-new-landing-rules", async page => {
     await page.evaluate(() => localStorage.setItem("suien_desert_ride_preview", JSON.stringify({ score: 99999, rank: "S", beatNoor: true })));
-    await page.goto(new URL("desert-ride.html", page.url()).href);
+    await page.goto(new URL("desert-ride.html?course=ridge", page.url()).href);
     assert.match(await page.locator(t("desert-page-legacy-best")).innerText(), /旧ルール.*99,999/);
     assert.equal(await page.locator(t("desert-page-best")).count(), 0);
     await page.locator(t("desert-page-start")).click();
@@ -507,6 +651,7 @@ await suite("desert-ride", async check => {
     assert.equal(value.money, before.money, "Noor's invitation: no tour fee");
     assert.deepEqual(value.lovers, ["noor"]);
     assert.equal(value.loveLevel.noor, 1);
+    assert(value.loverEventsSeen.includes("lover_noor_lv1"), "the first dunes milestone follows the accepted confession");
     assert(value.flags._lime_contact_noor && value.contacts.includes("noor"), "they exchange LIME when they start dating");
     assert.equal(value.flags._noor_confession_other_lover, undefined, "the temporary flag is cleared");
     assert((await page.evaluate(() => window.__bgs)).some(url => /bg_dubai_dunes_dusk/.test(url)), "the confession is on the sunset dunes");

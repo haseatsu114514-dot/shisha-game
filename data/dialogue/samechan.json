@@ -1011,7 +1011,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "解説はそのあとジンベエザメの口の大きさにまで広がった。俺の一服が終わるまで、本は閉じられなかった"
+          "text": "解説はそのあとジンベエザメの口の大きさにまで広がった。俺の一服が終わるまで、本は閉じられなかった。"
         },
         {
           "speaker": "samechan",
@@ -1466,6 +1466,397 @@
           "speaker": "samechan",
           "face": "smile",
           "text": "うむ、お主の感想をもろうたからの。今度は、わしが泣いた回の話をするのじゃ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "samechan_shop_own_seat",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_shishark.png",
+        "min_chapter": 2,
+        "bgm": "sweets_or_sweets",
+        "bgm_on_speaker": "samechan",
+        "setting": "夜の片付け（samechan_shop_closing_check）の後、ほかの来店イベントがない日に一度。彼女自身が隣の席に座る続き。"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "店に入ると、サメちゃんはカウンターのメモを、また束ねかけていた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "あの夜は、隣に座ってくれましたよね"
+        },
+        {
+          "speaker": "samechan",
+          "face": "serious",
+          "text": "……覚えておったか。わしが休む場所はあるのか、と聞かれた夜じゃな"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "あの夜は座れたのに、お主がおらん日は、水を置く前に立ってしまうのじゃ"
+        },
+        {
+          "speaker": "samechan",
+          "face": "ventriloquism",
+          "text": "側近は今日も、立つ準備を済ませていた。余は見ていたぞ",
+          "voice": "korochan"
+        },
+        {
+          "speaker": "samechan",
+          "face": "surprise",
+          "text": "こ、コロちゃん！ 準備などしておらん、メモを見ておっただけじゃ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "メモは、座ってからでも見えますよ"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "……お主が、そう言うなら"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "彼女はメモを鞄へしまうと、俺の隣の椅子に、おずおずと腰を下ろした"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "今日は、お主の水が空くまで、ここにおる、……試しじゃ"
+        },
+        {
+          "speaker": "samechan",
+          "face": "ventriloquism",
+          "text": "勇者はじめよ、側近が立とうとしたら、袖をつかめ",
+          "voice": "korochan"
+        },
+        {
+          "speaker": "samechan",
+          "face": "surprise",
+          "text": "つ、つかまんでよい！ まだ座ったばかりじゃぞ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "じゃあ、つかまなくても座っててもらえるように、ゆっくり飲みます"
+        },
+        {
+          "speaker": "samechan",
+          "face": "smile",
+          "text": "……う、うむ。それなら、よい"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "座ったまま、サメちゃんは入口のほうへ目をやった"
+        },
+        {
+          "speaker": "samechan",
+          "face": "serious",
+          "text": "座ってみると、通り道が客の目で見えるのう。立って見たときより、広い"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "じゃが、客がつまずかんかは、見ているだけでは分からん"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "じゃあ俺が客のふりをして、歩いてみます"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "入口から、彼女の隣の席まで歩いてみる。肩をひねらずに、すっと通れた"
+        },
+        {
+          "speaker": "samechan",
+          "face": "smile",
+          "text": "……通れたか。お主の肩が、壁に当たらなんだ"
+        },
+        {
+          "speaker": "samechan",
+          "face": "ventriloquism",
+          "text": "合格である。側近は座ったまま、余の海を見守れ",
+          "voice": "korochan"
+        },
+        {
+          "speaker": "samechan",
+          "face": "surprise",
+          "text": "み、見守るのはよいが、命令が多すぎるのじゃ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "今日は、コロちゃんの命令を聞いておきましょう"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "……わしも、今日は聞いておく"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "席へ戻ると、隣の椅子が小さくきしんだ。彼女は、立たなかった"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "サメちゃんが隣にいると、この店、もっと落ち着きます"
+        },
+        {
+          "speaker": "samechan",
+          "face": "surprise",
+          "text": "……っ。そ、それは、席の話じゃろう"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "席の話も、です"
+        },
+        {
+          "speaker": "samechan",
+          "face": "surprise",
+          "text": "も、とはなんじゃ、も、とは……！"
+        },
+        {
+          "speaker": "samechan",
+          "face": "ventriloquism",
+          "text": "側近の耳が赤い。余は見逃さぬ",
+          "voice": "korochan"
+        },
+        {
+          "speaker": "samechan",
+          "face": "surprise",
+          "text": "コロちゃんは黙っておれ！"
+        },
+        {
+          "speaker": "samechan",
+          "face": "smile",
+          "text": "……直すメモは、明日の朝でよい。今日は、この椅子の座り心地を覚えておく"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "お主が来るまで立って待つのも、今日で終わりにするのじゃ"
+        },
+        {
+          "speaker": "samechan",
+          "face": "smile",
+          "text": "……じゃから、お主の席も、隣に残しておく"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "彼女はコロちゃんの頭を一度なでて、俺の水が空くまで、本当に一度も立たなかった"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "samechan_shop_look_away",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_shishark.png",
+        "min_chapter": 2,
+        "bgm": "sweets_or_sweets",
+        "bgm_on_speaker": "samechan",
+        "setting": "own_seatの次の来店で一度。サメ映画の話の途中で、歯の場面から目をそらす。新しい題名は出さない。"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一服が落ち着いた頃、サメちゃんの話が、いつものサメ映画へ入っていった"
+        },
+        {
+          "speaker": "samechan",
+          "face": "excited",
+          "text": "スピルバーグのサメはな、なかなか姿を見せぬのじゃ"
+        },
+        {
+          "speaker": "samechan",
+          "face": "excited",
+          "text": "低い音が二つ、交互に鳴るだけで、海がぐっと深くなる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "音だけで、ですか。もう少し聞かせてください"
+        },
+        {
+          "speaker": "samechan",
+          "face": "smile",
+          "text": "そうじゃろう、そうじゃろう。あの音が近づくとな"
+        },
+        {
+          "speaker": "samechan",
+          "face": "excited",
+          "text": "まだ見えぬサメが、すぐ足の下まで来た気がするのじゃ"
+        },
+        {
+          "speaker": "samechan",
+          "face": "serious",
+          "text": "……で、そのあとじゃ。水面が割れて、歯が画面いっぱいに──"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "そこまで言って、彼女の目が、俺から壁のポスターへすっとそれた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "サメちゃん？"
+        },
+        {
+          "speaker": "samechan",
+          "face": "serious",
+          "text": "き、気にするな。ポスターの傾きを、確かめておっただけじゃ"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "わしは平気じゃぞ。歯の大きいサメなど、何度も見ておる"
+        },
+        {
+          "speaker": "samechan",
+          "face": "ventriloquism",
+          "text": "勇者はじめよ、側近は歯の話で目が逃げた。毎回である",
+          "voice": "korochan"
+        },
+        {
+          "speaker": "samechan",
+          "face": "surprise",
+          "text": "コ、コロちゃん！ 毎回ではない、三回に一回じゃ！"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "俺も、歯が大きくなるところは、画面の端を見ます"
+        },
+        {
+          "speaker": "samechan",
+          "face": "surprise",
+          "text": "……お、お主も、か"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "平気なふりは、しなくていいです。音の続きから、聞かせてください"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "……なら、歯のあとは飛ばす。もう一度、音が鳴る所からじゃ"
+        },
+        {
+          "speaker": "samechan",
+          "face": "excited",
+          "text": "その前にな、海がしんと静まる間がある。観客まで息を止めるのじゃ"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "わしも、毎回つい止めてしまう"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "彼女は指でカウンターを、とん、とんと低く叩いた。俺も、つられて息を止める"
+        },
+        {
+          "speaker": "samechan",
+          "face": "serious",
+          "text": "……鳴った瞬間、背筋がぞくりとする。あれが、好きなのじゃ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "気づけば、彼女の目はもうポスターを見ていなかった"
+        },
+        {
+          "speaker": "samechan",
+          "face": "serious",
+          "text": "……さっきのは、傾きの確認ではない。少しだけ、目をそらしたのじゃ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "分かってます。それでも、続きが聞きたかったので"
+        },
+        {
+          "speaker": "samechan",
+          "face": "surprise",
+          "text": "お、お主、分かったうえで聞いておったのか"
+        },
+        {
+          "speaker": "samechan",
+          "face": "ventriloquism",
+          "text": "勇者は、側近の強がりを見抜いた。余は満足である",
+          "voice": "korochan"
+        },
+        {
+          "speaker": "samechan",
+          "face": "surprise",
+          "text": "こ、コロちゃんまで納得するでない！"
+        },
+        {
+          "speaker": "samechan",
+          "face": "smile",
+          "text": "……じゃが、ありがとう。怖がっておるのを、笑われなんだ"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "歯の場面は、ほかの客の前では、まだ平気なふりをする"
+        },
+        {
+          "speaker": "samechan",
+          "face": "serious",
+          "text": "じゃが、お主の前でだけは、本当のことを言うておく"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "次に怖い所が来たら、ポスターじゃなくて、俺のほうを見てください"
+        },
+        {
+          "speaker": "samechan",
+          "face": "surprise",
+          "text": "な、なっ……！ お主の顔を見ながら、サメの話をしろと言うのか"
+        },
+        {
+          "speaker": "samechan",
+          "face": "ventriloquism",
+          "text": "側近よ、良い案だと顔に書いてあるぞ",
+          "voice": "korochan"
+        },
+        {
+          "speaker": "samechan",
+          "face": "surprise",
+          "text": "書いておらん！ ……書いておらんが、……考えておく"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "コロちゃんの口を左手でそっと閉じて、サメちゃんは小さく咳払いをした"
+        },
+        {
+          "speaker": "samechan",
+          "face": "smile",
+          "text": "……では次は、海が静まる間の話じゃ。今度は、最後まで目をそらさぬ"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "……たぶん、な"
         }
       ]
     },
@@ -2041,6 +2432,7 @@
     "future_private": "既存の泳ぎの原稿はlover_samechan_lv3、本名の原稿はlover_samechan_lv4から正式接続。読了と知識は実際に読んだものだけを記録し、既知の本名は問い直さない。恋人絆Lv1〜5はsamechan-bonds.jsで未読の前段から一つずつ読む。",
     "assets": "通常・笑顔・びっくり・真剣の4表情。第1章の工事中は bg_shishark_preparing_night、第2章の開店後は bg_shishark。",
     "entry_route": "初来店と既存交流2本の後、静かな席→夜の片付けを実読了で記録。♥3の問いかけは既存romanceChoicesへ回答を保存。この前半分岐だけで告白・恋人化は確定しない。 ♥3の問いかけの後、♥4・♥5の来店会話（samechan_shop_heart4／heart5、#2025）を一本ずつ読み、締めくくりの前提にする。♥3の答えで恋愛／友人の分岐を読み、新しい隠し恋愛値の問いは置かない。締めくくり・友人・恋人へ着地済みの旧セーブには出さない。",
+    "later_visits": "片付けの夜（samechan_shop_closing_check）の後、問いかけ・♥4・♥5・締めくくり・シネマ感想・不調が無い来店で samechan_shop_own_seat → samechan_shop_look_away を一度ずつ。既読は _samechan_own_seat_done / _samechan_look_away_done。daily/samechan.js の laterVisits。目をそらす話の読了後、lime_samechan_after_seat が届く。",
     "max_relationship": "第2〜3章の交流A/Bと♥3の実回答の読了後、夜の♥MAXで締めくくり。実回答が恋愛寄りなら夜の告白で恋人/友人を選ぶ。既存関係を維持。恋人絆・本名/泳ぎ・専用LIME/デート/記念日は接続済み。第2章本体の通し到達は別工程。",
     "outing": "♥3の外出（#2025）は lime_outing_samechan_1 → outing_samechan_1。本人から路地裏シネマを紹介された後（第2章以降）に、閉店後のレイトショー（年に一度のサメ映画特集）へ誘う。完了は共通の _outing_done_samechan。"
   }

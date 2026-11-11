@@ -39,6 +39,14 @@
   body:not(.game-ds) .bench:is([data-step="setup"]:has(> .bench-right > .bench-panel > .opt-grid), [data-step="pack"], [data-step="place"]) .pack-footer > * { flex: 1; min-width: 0; }
   body:not(.game-ds) .bench:is([data-step="setup"]:has(> .bench-right > .bench-panel > .opt-grid), [data-step="pack"], [data-step="place"]) .pack-footer .pack-confirm { min-width: 0; min-height: var(--landscape-target); font-size: calc(16px / var(--k, 1)); }
   body:not(.game-ds) .bench:is([data-step="setup"]:has(> .bench-right > .bench-panel > .opt-grid), [data-step="pack"], [data-step="place"]) :is(.opt,.fr-btn,.pack-choice,.pack-confirm,.mix-footer > .btn,.bench-guide summary):focus-visible { outline: 3px solid var(--gold-hi, #ffe3a7); outline-offset: 2px; }
+
+  /* パッキングの温度帯ゲージは配合と同じくパネル左へはみ出すので、外枠の overflow を外す */
+  body:not(.game-ds) .bench[data-step="pack"] .bench-panel { overflow: visible; }
+  body:not(.game-ds) .bench[data-step="pack"] .packing { overflow: visible; }
+  body:not(.game-ds) .bench[data-step="pack"] .mix-temperature-preview { left: -140px; top: 0; height: min(420px, 100%); padding-bottom: 60px; }
+  body:not(.game-ds) .bench[data-step="pack"] .pack-choices,
+  body:not(.game-ds) .bench[data-step="pack"] .pack-caption { overflow-y: auto; }
+
   /* #2862 詰め方: 選択肢の副文と下の注記は「?」の中へ（ボタンは名前だけで大きく）。 */
   body:not(.game-ds) .bench[data-step="pack"] :is(.pack-choice small, .pack-footer > small) { display: none; }
   body:not(.game-ds) .bench[data-step="pack"] .pack-choice { display: grid; place-items: center; }
@@ -77,3 +85,43 @@
   body:not(.game-ds) .bench[data-step="mix"] .mix-list:has(.flavor-row:nth-child(3)):not(:has(.flavor-row:nth-child(4))) .fr-btn { width: var(--landscape-target); height: var(--landscape-target); min-height: var(--landscape-target); }
   body:not(.game-ds) .bench[data-step="mix"] .mix-list:has(.flavor-row:nth-child(3)):not(:has(.flavor-row:nth-child(4))) .fr-g { width: 36px; font-size: calc(16px / var(--k, 1)); }
 }
+
+/* ================================================================ スマホ規格のシーシャ作り（#2851・#2729 B班）
+   オーナー指示 2026-11-08「説明の分量は減らし、ボタンや文字は気持ち大きく。プレイしやすく」。
+   ワイドで作業台を左右へ広げる・文字の下限を上げるのは wide-craft.css（#2983）。ここは押す所の大きさと、
+   「?」へ移した説明・欄の並びだけを足す（同じ文字の大きさを二か所で決めない）。 */
+/* 「?」は全工程で押せる大きさに（従来は 34px＝iPhone 横で実寸18px。実寸38px以上） */
+html:root[data-density="phone"] body:not(.game-ds) .bench .bench-guide summary { width: max(64px, calc(38px / var(--k, 1))); height: max(64px, calc(38px / var(--k, 1))); }
+html:root[data-density="phone"] body:not(.game-ds) .bench .bench-guide-tip :is(b, p, small, li) { font-size: var(--phone-sub); line-height: 1.45; }
+/* 「?」へ移した説明（スマホだけ画面から外す。PCは画面にも残す・water-view.js / pull.js） */
+html:root[data-density="phone"] body:not(.game-ds) .bench :is(.craft-water-help, .care-coals-calm) { display: none; }
+
+/* 水入れ: メーターを大きく、状態と目安を規格の文字に。ボタンは横に並べて押しやすい幅に */
+html:root[data-density="phone"] body:not(.game-ds) .bench .craft-water { width: min(100%, 760px); }
+html:root[data-density="phone"] body:not(.game-ds) .bench .craft-water-meter { flex-basis: 150px; height: 300px; }
+html:root[data-density="phone"] body:not(.game-ds) .bench .craft-water-tip { font-size: var(--phone-sub); padding-left: 40px; }
+html:root[data-density="phone"] body:not(.game-ds) .bench :is(.craft-water-status, .craft-water-display p) { font-size: var(--phone-text); line-height: 1.4; }
+html:root[data-density="phone"] body:not(.game-ds) .bench .craft-water-actions { gap: var(--phone-gap); }
+html:root[data-density="phone"] body:not(.game-ds) .bench .craft-water-actions .btn { min-width: 300px; }
+
+/* 配合: 下の欄は「合計g・課題」と「詰める」を半分ずつにして、課題の一行（「課題フレーバー「レモン」を2g以上（大会支給）」）が 180px の列で縦に細く折れないように */
+html:root[data-density="phone"] body:not(.game-ds) .bench[data-step="mix"] .mix-footer { grid-template-columns: minmax(0, 1fr) minmax(240px, 1fr); }
+html:root[data-density="phone"] body:not(.game-ds) .bench .mix-life-note { font-size: var(--phone-sub); }
+
+/* 蓋の通気: 二択だけなので、上に寄せず縦の中央に置く（下半分が空いていた）。名前を大きく、押す所を高く */
+html:root[data-density="phone"] body:not(.game-ds) .bench[data-step="holes"] .bench-panel:has(> .opt-grid:only-child) { display: grid; align-content: center; }
+html:root[data-density="phone"] body:not(.game-ds) .bench .opt-grid .opt { min-height: var(--phone-tap); }
+html:root[data-density="phone"] body:not(.game-ds) .bench .opt-grid .opt b { font-size: var(--phone-text); }
+
+/* 炭焼き: 炭壺の「0 / 3」が右上の「?」に隠れないよう見出しの右を空ける */
+html:root[data-density="phone"] body:not(.game-ds) .bench .heat-carrier-head { padding-right: max(56px, calc(32px / var(--k, 1))); }
+
+/* 蒸らし時間: 雑念回避の長さの案内と温度の目安を規格の文字に（タイマーの絵の中のボタンは絵が固定なので変えない） */
+html:root[data-density="phone"] body:not(.game-ds) .bench :is(.steam-timer > p, .steam-forecast-heading, .steam-forecast-value, .steam-forecast-note) { font-size: var(--phone-sub); }
+/* 雑念回避の丸い操作（リフレッシュ・アタック・精密）は絵と名前を上から詰めて置く部品。
+   共通の .btn 規格（上下の余白・中央寄せ・phone-density.css）が掛かると名前が下へ押し出されて欠けるので、ここだけ元の並びに戻す */
+html:root[data-density="phone"] body:not(.game-ds) .bench[data-art-skin] .btn.dodge-action { justify-content: flex-start; padding-block: 0; }
+
+/* 吸い出し・調整: 天気の札・置き方の見出し・調整のリード文 */
+html:root[data-density="phone"] body:not(.game-ds) .bench :is(.pull-tag, .care-places-label) { font-size: var(--phone-sub); }
+html:root[data-density="phone"] body:not(.game-ds) .bench .care-coals-lead { font-size: var(--phone-text); line-height: 1.45; }

@@ -2,6 +2,7 @@
 import { loadAll } from "../core/data.js";
 import { newGame } from "../core/state.js";
 import { initLayers, layers } from "../core/ui.js";
+import { initStageFit } from "../core/stage-fit.js";
 import { unlockAudio, SE } from "../core/audio.js";
 import { installRotateGuard } from "../core/rotate-guard.js";
 import { el } from "../core/util.js";
@@ -10,11 +11,8 @@ import { stepPack } from "./steps.js";
 import { runHoles } from "./holes.js";
 import { runHeat } from "./heat.js";
 import { mountWaterPour } from "./water-pour-view.js";
+import { initCraftStage } from "./stage-layout.js";
 
-function fit() {
-  const w = window.visualViewport?.width || innerWidth, h = window.visualViewport?.height || innerHeight;
-  document.getElementById("stage").style.setProperty("--k", String(Math.min(w / 1280, (h - 52) / 720)));
-}
 function activeStep(step) {
   document.querySelectorAll("[data-preview-step]").forEach(link => {
     if (link.dataset.previewStep === step) link.setAttribute("aria-current", "page");
@@ -22,10 +20,11 @@ function activeStep(step) {
   });
 }
 export async function boot() {
-  fit(); window.addEventListener("resize", fit); window.visualViewport?.addEventListener("resize", fit);
+  initStageFit(document.getElementById("stage"), document.getElementById("viewport"));
   window.addEventListener("pointerdown", unlockAudio); window.addEventListener("keydown", unlockAudio);
   installRotateGuard(); // 縦持ちの回転ガード中は、制作の時計と音を止める（#2941）
   initLayers();
+  initCraftStage(); // 新しい配置（?craftStage=1）も本編と同じ切り替えで試せる
   await Promise.all([loadAll(), document.fonts.ready]);
   newGame(); // メモリ上の一台だけ。load / save / 設定の読込は呼ばない。
   const query = new URLSearchParams(location.search);

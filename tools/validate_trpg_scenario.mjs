@@ -40,7 +40,7 @@ function validate(rel) {
   const gms = s.cast.filter(c => c.part === "GM");
   need(gms.length === 1, "GMはちょうど1人");
   const gm = gms[0]?.id;
-  need(MEMBERS.has(gm), "GM '" + gm + "' は部員（catalog.participants）から選ぶ");
+  need(MEMBERS.has(gm) || s.zeroMemberCast?.includes(gm), "GM '" + gm + "' は部員か常連卓の配役から選ぶ");
   const player = s.cast.find(c => c.id === "hajime");
   need(player?.sheet && player.abilityType === "reroll", "はじめ（PL・切り札は振り直し）が必要");
   const seats = s.cast.filter(c => c.part !== "GM" && c.id !== "hajime");
@@ -58,7 +58,8 @@ function validate(rel) {
   // Builder and companions.
   const b = s.builder;
   need(b.seat === "hajime" && b.points === 11 && b.min === 1 && b.max === 5, "builder: seat hajime / points 11 / min 1 / max 5");
-  need(b.looks?.length === 4 && b.looks.every(l => l.id && l.label && l.detail && l.color), "builder.looks は4つ（id/label/detail/color）");
+  // #3050: the look is not chosen. The player's character wears the player's own face.
+  need(b.looks === undefined, "builder.looks は廃止（#3050）。見た目は選ばず、本人の立ち絵を使う");
   need(b.archetypes?.length === 3 && b.archetypes[0].recommended === true, "builder.archetypes は3つ、1つ目に recommended:true");
   for (const a of b.archetypes || []) need(Object.values(a.stats).reduce((n, v) => n + v, 0) === 11 && a.name && a.title && a.trait, "出自 " + a.id + " は合計11点・name/title/trait");
   need(JSON.stringify(b.archetypes?.[0]?.stats) === JSON.stringify(player?.sheet?.stats) && b.archetypes?.[0]?.name === player?.sheet?.name, "はじめの sheet は出自1つ目と同じ");
@@ -81,7 +82,8 @@ function validate(rel) {
   // Campaign seats.
   const cs = s.campaign.seats;
   need(cs.find(x => x.actor === gm)?.required === true && cs.find(x => x.actor === "hajime")?.required === true, "campaign.seats: GMとはじめは required");
-  for (const x of cs) need(x.candidates.every(id => MEMBERS.has(id) || id === "hajime") && !x.candidates.some(id => ["sumi", "naru"].includes(id)), "seat " + x.actor + " の候補は部員だけ");
+  for (const x of cs) need(x.candidates.every(id => MEMBERS.has(id) || id === "hajime" || s.zeroMemberCast?.includes(id))
+    && !x.candidates.some(id => id === "naru" || id === "sumi" && !s.zeroMemberCast?.includes(id)), "seat " + x.actor + " の候補は部員か常連卓の配役だけ");
   need(cs.length === s.cast.length, "campaign.seats は cast と同じ席数");
   // Flow and checks.
   need(JSON.stringify(Object.keys(s.flow).sort()) === JSON.stringify(["prepare", "serve", "twist"]) && s.flow.prepare.length === 2 && s.flow.serve.length === 1 && s.flow.twist.length === 1,
@@ -146,9 +148,10 @@ function validate(rel) {
     for (const [field, row] of Object.entries(pr.choiceArt.rows || {})) need(Number.isInteger(row) && row < pr.choiceArt.rowCount, "choiceArt.rows." + field);
   }
   for (const phase of phasesOf(s)) need(pr.phases?.[phase]?.kicker && pr.phases[phase].title, "presentation.phases." + phase);
-  const faces = [...(s.builder?.looks || []), ...Object.values(s.companionBuilds || {}).flatMap(seat => Object.values(seat).flat()),
-    ...s.cast.map(c => c.sheet).filter(Boolean)].map(x => x.portrait).filter(Boolean);
-  for (const url of new Set(faces)) need(shipped(url), "人物シートの顔 " + url + " が存在しない");
+  // #3050: every seat shows whoever plays it, so no sheet or companion build carries its own role picture.
+  const sheetsWithArt = [...Object.values(s.companionBuilds || {}).flatMap(seat => Object.values(seat).flat()),
+    ...s.cast.map(c => c.sheet).filter(Boolean)].filter(x => x.portrait !== undefined || x.color !== undefined);
+  for (const x of sheetsWithArt) need(false, "人物シート " + (x.id || x.name) + " に portrait/color がある（#3050: 顔は演じる本人の立ち絵）");
   // Lines: speakers, faces, width, punctuation, tokens.
   const seatsAll = new Set(s.cast.map(c => c.id));
   for (const d of s.dialogues) {
@@ -224,7 +227,8 @@ function validate(rel) {
   if (entry) {
     need(entry.id === s.id, "catalog の id と scenario.id が違う");
     need(Number.isInteger(entry.price) && entry.price >= 300 && entry.price <= 1500, "catalog.price は300〜1500円");
-    need(entry.stockRequires?.includes(gm) && entry.stockRequires.every(id => MEMBERS.has(id)), "catalog.stockRequires にGMを含める");
+    need(s.zeroMemberCast ? entry.zeroMemberCast?.includes(gm) && entry.stockRequires?.length === 0
+      : entry.stockRequires?.includes(gm) && entry.stockRequires.every(id => MEMBERS.has(id)), "catalog の入荷条件とGM");
   } else warn("catalog に未登録");
   return { errors, warns, total };
 }

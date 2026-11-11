@@ -81,10 +81,9 @@ async function dsGeometry(p) {
 }
 async function normalGeometry(p) {
   assert.equal(await p.locator("body.game-ds").count(),0);
-  // 通常表示は高さ720のまま。横長の画面だけワイドステージ（#2861）で幅が clamp(1280, 画面比×720, 1600) に広がる
-  const [size,wide]=await p.locator("#stage").evaluate(n=>[[n.offsetWidth,n.offsetHeight],
-    Math.min(1600,Math.max(1280,Math.floor(innerWidth/innerHeight*720)))]);
-  assert.deepEqual(size,[wide,720]);
+  // 通常表示は常に 1280×720 の固定ステージ（2026-11-09 オーナー決定・#3035。ワイド拡張 #2861 は廃止）
+  const [size]=await p.locator("#stage").evaluate(n=>[[n.offsetWidth,n.offsetHeight]]);
+  assert.deepEqual(size,[1280,720]);
   assert.deepEqual(await p.locator("#viewport").evaluate(n=>[n.getBoundingClientRect().top,n.scrollLeft,n.scrollTop]),[0,0,0]);
 }
 async function check(name, options, run, setup) {
@@ -93,6 +92,7 @@ async function check(name, options, run, setup) {
   const browser=await chromium.launch(browserOptions);
   const context=await browser.newContext(options), p=await context.newPage(); const errors=[];
   await p.addInitScript(()=>{
+    try { localStorage.setItem("suien_step_intro", "off"); } catch {} // 選ぶ工程の初回説明（#3028）はレイアウト検査の対象外
     window.__layoutInputs=[];
     document.addEventListener("click",e=>{
       const test=e.target.closest("[data-test]")?.dataset.test;
@@ -175,11 +175,12 @@ try {
         assert.equal(after.runs.at(-1).adjustments,2);assert.equal(after.runs.at(-1).success,true);
         assert.deepEqual(after.runs.at(-1).mix,{double_apple:10,lemon:2});
         await p.screenshot({path:path.join(dir,`${device}-${mode}-result.png`)});
-        await activate(p,"hud-menu",touch);await activate(p,"menu-tab-system",touch);await activate(p,"menu-save",touch);await activate(p,"slot-2",touch);
+        await activate(p,"hud-menu",touch);await activate(p,"menu-tab-system",touch);await activate(p,"menu-save",touch);await activate(p,"slot-1",touch);
+        await activate(p,"confirm-overwrite",touch);
         await p.waitForFunction(()=>!document.querySelector("#modal.show"));
-        const saved=await p.evaluate(()=>JSON.parse(localStorage.getItem("suien_remake_slot2")));
+        const saved=await p.evaluate(()=>JSON.parse(localStorage.getItem("suien_remake_slot1")));
         assert.equal(saved.slot,0);assert.equal(saved.money,after.money);assert.deepEqual(saved.flags._craft_practice_runs,after.runs);
-        await activate(p,"hud-menu",touch);await activate(p,"menu-tab-system",touch);await activate(p,"menu-load",touch);await activate(p,"slot-2",touch);
+        await activate(p,"hud-menu",touch);await activate(p,"menu-tab-system",touch);await activate(p,"menu-load",touch);await activate(p,"slot-1",touch);
         const navigation=p.waitForNavigation({waitUntil:"load"});
         await activate(p,"confirm-load",touch);await navigation;
         await p.locator("#boot").waitFor({state:"detached",timeout:35000});
@@ -188,7 +189,7 @@ try {
         if(mode==="ds"){
           await activate(p,"game-layout-recover",touch);await ready(p);
           assert.equal(await p.locator(".title").getAttribute("data-layout"),"normal");
-          assert.equal(await p.evaluate(()=>JSON.parse(localStorage.getItem("suien_remake_slot2")).slot),0);
+          assert.equal(await p.evaluate(()=>JSON.parse(localStorage.getItem("suien_remake_slot1")).slot),0);
         }
       });
     }

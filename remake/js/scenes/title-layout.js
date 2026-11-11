@@ -28,15 +28,12 @@ export function mountTitleLayout(root, { art, brand, menu, left, background }) {
     el("p.title-ds-chapter", { text: "CH.01 SMOKE CROWN CUP" }),
   ]);
   root.append(visual, controls);
-  const hint = document.querySelector("#rotate-hint");
-  const hintDisplay = hint?.style.display;
   let current = "normal";
   const listeners = new Set();
   function apply(mode) {
     if (mode === "ds") installDsGeometry(); // 本編と同じ上下2画面の寸法
     current = mode;
     root.dataset.layout = mode;
-    if (hint) hint.style.display = mode === "ds" ? "none" : hintDisplay;
     visual.hidden = controls.hidden = mode !== "ds";
     if (mode === "ds") {
       visual.append(art, brand); controls.insertBefore(menu, controls.firstChild);
@@ -72,7 +69,6 @@ export function mountTitleLayout(root, { art, brand, menu, left, background }) {
   const dispose = () => {
     observer.disconnect(); listeners.clear();
     if (activeLayout === layout) activeLayout = null;
-    if (hint) hint.style.display = hintDisplay;
   };
   disposePrevious = dispose;
   observer.observe(document.querySelector("#screen"), { childList: true });

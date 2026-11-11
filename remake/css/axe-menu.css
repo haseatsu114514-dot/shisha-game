@@ -373,3 +373,31 @@
 @container (max-height: 500px) {
   .axe-intro.axe-menu { grid-template-areas: "masthead masthead" "title message" "modes modes" "settings settings" "footer footer"; }
 }
+/* 「？」はゲーム中の看板と同じ小さな丸（#2729・2026-11-08 オーナー指摘「？ボタンが大きい」。#2991 と同じ式）。
+   丸は ::before で描き、押せる範囲（ボタンの箱 44px）は透明のまま。 */
+.axe-menu .axe-help.axe-menu-rules { --help-font: 20px; --help-size: calc(var(--help-font) + 11px); isolation: isolate; display: inline-grid; place-items: center;
+  border: 0; background: transparent; box-shadow: none; color: var(--lane-chalk); font-size: var(--help-font); }
+.axe-menu .axe-help.axe-menu-rules::before { content: ""; position: absolute; left: 50%; top: 50%; z-index: -1; box-sizing: border-box; width: var(--help-size); height: var(--help-size);
+  transform: translate(-50%, -50%); border: 1.5px solid #f4f0e66b; border-radius: 50%; background: var(--lane-board-2); box-shadow: inset 0 -2px #00000066; pointer-events: none; }
+.axe-menu .axe-help.axe-menu-rules:is(:hover, :focus-visible) { border: 0; background: transparent; }
+.axe-menu .axe-help.axe-menu-rules:is(:hover, :focus-visible)::before { border-color: var(--lane-orange); background: var(--lane-board-3); }
+
+/* #stage 内のメニュー（#3076）: ステージが --k で縮んでも、押す部品の実寸は 44px を保つ。
+   そのぶん画面が低い時は、見出しとカードを詰めて1画面に収める。 */
+.axe-menu .axe-menu-options .axe-button,
+.axe-menu .axe-menu-rules,
+.axe-menu .axe-menu-lesson { min-width: calc(44.5px / var(--k, 1)); min-height: calc(44.5px / var(--k, 1)); }
+.axe-menu .axe-back { display: inline-flex; align-items: center; justify-content: center; min-width: calc(44.5px / var(--k, 1)); min-height: calc(44.5px / var(--k, 1)); }
+@media (max-height: 650px) {
+  .axe-intro.axe-menu { padding-top: 20px; padding-bottom: 20px; gap: 12px 32px; }
+  .axe-menu h1 { font-size: clamp(44px, 7.4vw, 64px); }
+  .axe-menu .axe-menu-mode { min-height: 160px; }
+}
+@media (max-height: 520px) {
+  .axe-intro.axe-menu { padding-top: 14px; padding-bottom: 14px; gap: 10px 32px; }
+  .axe-menu h1 { font-size: 52px; }
+  .axe-menu .axe-menu-mode { min-height: 138px; padding: 16px 20px; }
+  .axe-menu .axe-menu-message { font-size: 15px; }
+  .axe-menu-settings { gap: 12px; padding: 6px 0; }
+  .axe-menu-masthead { padding-bottom: 8px; }
+}

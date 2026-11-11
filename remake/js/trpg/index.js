@@ -1,5 +1,6 @@
 import { mountTrpg } from "./view.js";
 import { portraitUrl, sceneUrl } from "./presentation.js";
+import { costumeUrlsFor } from "./costumes.js";
 
 async function json(url, signal) {
   const controller = new AbortController();
@@ -46,6 +47,7 @@ function trpgAssetUrls({ characters, manifest, tableTalk, tutorialLines = [] }, 
   scenarios.forEach(s => {
     if (sceneUrl(s)) urls.add(sceneUrl(s));
     if (s.presentation.choiceArt?.src) urls.add(new URL(s.presentation.choiceArt.src, new URL("./view.js", import.meta.url)).href);
+    costumeUrlsFor([s]).forEach(url => urls.add(url));
     s.cast.forEach(c => {
       if (!people.has(c.id) || !manifest.portraits[c.id]) throw new Error("Missing canonical character: " + c.id);
       urls.add(portraitUrl(manifest, c.id));
@@ -83,7 +85,11 @@ export async function loadTrpgLibrary({ signal, scenarioId = null, preloadAssets
   const people = new Map(characters.map(c => [c.id, c]));
   overlays.forEach(o => { if (o.profile?.id) people.set(o.profile.id, o.profile); });
   const tutorialLines = (tutorial?.lines || []).filter(l => people.has(l.speaker));
-  const resources = { catalog, scenarios, characters: [...people.values()], manifest, club, tableTalk, tutorialLines };
+  // Measured faces of the role costumes, for even bust-ups (optional: without it the busts fall back to the portrait metrics).
+  const frames = await json(new URL("../../img/ui/trpg/costumes/frames.json", import.meta.url), signal).catch(error => { if (signal?.aborted) throw error; return []; });
+  const costumeFrames = Object.fromEntries((Array.isArray(frames) ? frames : []).filter(f => f?.face)
+    .map(f => [f.scenario + "/" + f.character + "/" + f.role_id, f]));
+  const resources = { catalog, scenarios, characters: [...people.values()], manifest, club, tableTalk, tutorialLines, costumeFrames };
   // cast 検証は先読みを省く場合も従来どおりここで行う。
   const urls = trpgAssetUrls(resources, scenarios);
   if (preloadAssets) await Promise.all([...urls].map(url => preload(url, signal)));

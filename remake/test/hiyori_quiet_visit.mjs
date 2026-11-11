@@ -52,7 +52,7 @@ async function fixture() {
   await entry.evaluate();
   const ns = p => modules.get(p).namespace;
   const core=ns('core/state.js'), stats=ns('core/stats.js');
-  const fresh=() => { const s=core.newGame(); Object.assign(s,{phase:'daily',day:8,slot:0,seed:4}); Object.assign(s.met,{hiyori:true,naru:true,adam:true,minto:true}); Object.assign(s.flags,{_hiyori_meeting_done:true,_hiyori_sumi_message_done:true,_hiyori_message_delivered:true,_hiyori_cracks_done:true}); return s; };
+  const fresh=() => { const s=core.newGame(); Object.assign(s,{phase:'daily',day:8,slot:0,seed:4}); Object.assign(s.met,{hiyori:true,naru:true,adam:true,minto:true}); Object.assign(s.flags,{_hiyori_meeting_done:true,_hiyori_sumi_message_done:true,_hiyori_message_delivered:true,_hiyori_cracks_done:true,_hiyori_clockout_done:true}); return s; };
   fresh();
   return { core, stats, fresh, db, plays, events, memory, stages: ns('core/affinity-stages.js'), spots: ns('daily/spots.js'), hiyori: ns('daily/hiyori.js'), util: ns('core/util.js'), bonds: ns('daily/bonds.js'), samechan: ns('daily/samechan.js'), romance: ns('daily/romance.js'), sharkBond: ns('daily/samechan-bonds.js'), setRain: value => rainy=value, setPlay: fn => playImpl=fn,
     tick: () => { for (const [id,fn] of [...timers]) { timers.delete(id); fn(); } },
@@ -186,6 +186,21 @@ await check('repeat pool rotates four scenes; double entry and deferred completi
   for(let n=1;n<4;n++){s.day++;assert.equal(await f.hiyori.visitHiyoriAtShop(p,{scheduledSpot:'naru'}),true);}
   assert.deepEqual(f.plays.map(p=>p[0]),[0,1,2,3].map(n=>`hiyori_shop_repeat_${n}`));
   assert.equal(s.flags._hiyori_repeat_count,4);assert(s.affinity.hiyori>=earned);
+});
+await check('after tonari return, the charm visit plays once and repeats resume',async f=>{
+  const s=f.core.state,p=f.spots.spotById('naru'),story=s.story.hiyori||0;
+  s.flags._hiyori_tonari_return_done=true;
+  f.setPlay(async()=>done);
+  assert.equal(await f.hiyori.visitHiyoriAtShop(p,{scheduledSpot:'naru'}),true);
+  assert.equal(f.plays.at(-1)[0],'hiyori_shop_charm');
+  assert.equal(s.flags._hiyori_charm_done,true);
+  assert.equal(s.flags._hiyori_repeat_count,undefined);
+  assert.equal(s.story.hiyori||0,story);
+  s.day++;delete s.flags._hiyori_encounter_day;
+  assert.equal(await f.hiyori.visitHiyoriAtShop(p,{scheduledSpot:'naru'}),true);
+  assert.equal(f.plays.at(-1)[0],'hiyori_shop_repeat_0');
+  assert.equal(s.flags._hiyori_repeat_count,1);
+  assert.equal(await f.hiyori.visitHiyoriAtShop(p,{scheduledSpot:'naru'}),false);
 });
 await check('multiple host repeats and rain use the same existing scripts in preview and actual visit',async f=>{
   const s=f.core.state,p=host(f,'naru',{read:3,points:20});

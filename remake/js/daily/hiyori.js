@@ -129,6 +129,12 @@ export async function visitHiyoriAtShop(spot, { bg, scheduledSpot = hiyoriShopLo
       if (!await playHiyoriEvent("relay", options)) return false;
     } else if (hiyoriEventStatus("cracks") === "ready") {
       if (!await playHiyoriEvent("cracks", options)) return false;
+    } else if (hiyoriEventStatus("clockout") === "ready") {
+      // 退勤後の食堂（bg_cafe）。他店の相席ではなく、仕事のあとの一台として読む。
+      if (!await playHiyoriEvent("clockout", { ...options, bg: "bg_cafe.png" })) return false;
+    } else if (hiyoriEventStatus("shop_charm") === "ready") {
+      // 再会のあと他店で一度だけ。相席の繰り返しには数えない（#3081）。
+      if (!await playHiyoriEvent("shop_charm", options)) return false;
     } else {
       const n = Number(state.flags._hiyori_repeat_count || 0);
       const id = `hiyori_shop_repeat_${n % 4}`;

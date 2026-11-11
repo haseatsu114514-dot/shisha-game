@@ -5,7 +5,7 @@ import { el, yen } from "../core/util.js";
 import { createChapterActions } from "../core/chapter-actions.js";
 import { storeLogo } from "../core/store-logos.js";
 import { state, save, requestResumeOnBoot } from "../core/state.js";
-import { chapterDay, chapterDaysLeft } from "../core/chapter-clock.js";
+import { chapterDay } from "../core/chapter-clock.js";
 import { layers, showScreen, setBg, enterScene, imageReady, chapterTitle, toast, withScenePreparation, loadingNotice } from "../core/ui.js";
 import { chapterTitleEntry } from "../core/chapter-title-art.js";
 import { withLoadingNotice } from "../core/module-loading.js";
@@ -361,7 +361,7 @@ function renderMap() {
   showScreen("map", root);
   layers.hud.replaceChildren(el("div.hud", [
     el("div.hud-card", [el("div.dc-main", [el("div.dc-area", { text: CH2_CITY_EN }), el("div.dc-day", [el("b", { text: chapterDay(state) }), el("small", { text: "/14" })]), el("div.dc-slot", { text: "配達" })]),
-      el("div.dc-meta", [el("div.dc-row.money", [el("span", { text: "所持金" }), el("b", { text: yen(state.money) })]), el("div.dc-row", [el("span", { text: "次の大会まで" }), el("b", { text: `あと${chapterDaysLeft(state)}日` })])])]),
+      el("div.dc-meta", [el("div.dc-row.money", [el("span", { text: "所持金" }), el("b", { text: yen(state.money) })])])]),
     el("div.hud-right", [
       el("button.hud-lime", { type: "button", title: "LIME", dataset: { test: test("lime") }, onclick: () => perform(openLimeFromMap) }, [el("span", { text: "LIME" }), el(`em.badge${unreadCount() ? ".single" : ""}`, unreadCount() ? [el("b.badge-number", { text: String(Math.min(unreadCount(), 99)) })] : [])]),
       el("button.hud-menu", { type: "button", dataset: { test: test("menu") }, onclick: () => perform(openMapMenu) }, [el("i"), el("span", { text: "MENU" })])]),

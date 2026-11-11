@@ -13,14 +13,14 @@ import { refreshBench } from "./session.js";
 import { gradeOf } from "./common.js";
 import { steamSecondsOf, steamOpening, steamBurnRisk } from "./steam-time.js";
 import { foilHeatProfile } from "./holes_logic.js";
-import { temperatureBands, makerMixProfile } from "./temperature-model.js";
+import { temperatureBands, makerMixProfile, equipSpecOf } from "./temperature-model.js";
 import { coalWarmth } from "./coals.js";
 import { waterComfort } from "./water.js";
 
 const WATER_TASTE_FACTOR = .5;
 
 export const WEIGHTS = { holes: .2, heat: .2, shisha: .2, care1: .2, care2: .2 };
-/** 伏見が持ち点を動かす基準（これ未満なら伏見票は入らず、普通に負ける） */
+/** 千須が持ち点を動かす基準（これ未満なら千須票は入らず、普通に負ける） */
 export const SUI_BAR = 90.8; // MEASURE.md: 第1章・mid 初回突破率 74.2%（742/1000）。
 
 /** 同系統フレーバー（AF/ドバジ/アフサールのミント・ダブルアップル等）の合計グラム数 */
@@ -60,7 +60,8 @@ export function computeShisha(cs) {
   const grams = m.total || 12;
   const packDraw = { fluffy: 12, normal: 0, firm: -12 }[cs.pack] || 0;
   const four = cs.place === "four";
-  const hms = { lotos_hagal: 2, tanukish_lid: 5, winkwink_hagal: 4, amaburst_hms: 0, lotos_plus: 4 }[cs.equip?.hms] || 0;
+  // HMDの熱安定は性能表（equipSpecOf の stabilityBonus）を正とする。表示と採点で値をずらさない。
+  const hms = equipSpecOf(cs.equip?.hms)?.stabilityBonus || 0;
   const steamSeconds = steamSecondsOf(cs);
   const opening = steamOpening(steamSeconds);
 

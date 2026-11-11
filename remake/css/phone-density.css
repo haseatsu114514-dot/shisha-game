@@ -14,6 +14,17 @@ html:root[data-density="phone"] #stage {
   --phone-gap: 12px;                                      /* 隣り合うタップ部品の間隔 */
   --phone-ctl: max(24px, calc(13px / var(--k, 1)));     /* 会話の操作ボタンの文字（オーナー指示 2026-11-08「少し大きく」） */
 }
+/* ワイドステージ（#2861・横に余裕がある画面）では一段大きくする（オーナー指示 2026-11-08「ワイドモードに合わせてボタンとか少し大きくしていい」）。
+   iPhone 横持ち（844×390）で 文字 22→24px（実寸 13px）・補助文 18→19px・押す所 72→80px（実寸 43px）・会話の操作 24→26px。 */
+html:root[data-density="phone"] #stage[data-wide] {
+  --phone-text: max(24px, calc(12.5px / var(--k, 1)));
+  --phone-sub: max(19px, calc(11.5px / var(--k, 1)));
+  --phone-tap: max(80px, calc(43px / var(--k, 1)));
+  --phone-ctl: max(26px, calc(14px / var(--k, 1)));
+}
+/* 大会の結果表: ボタンの段が 54px 固定（tournament.css）なので、スマホ規格の「次へ」（ワイドで 80px）が段からはみ出し、
+   縦の 720 を越えていた（ch1_tournament results-landscape）。ボタンの段をボタンの高さに合わせ、真ん中の表（1fr）が詰める。 */
+html:root[data-density="phone"] body:not(.game-ds) .result-table { grid-template-rows: 128px minmax(0, 1fr) auto; }
 
 /* ---------------------------------------------------------------- ボタン（主文だけを大きく・説明は落とす） */
 html:root[data-density="phone"] body:not(.game-ds) .btn,
@@ -54,10 +65,10 @@ html:root[data-density="phone"] body:not(.game-ds) .hud-lime .badge.single { fon
 html:root[data-density="phone"] body:not(.game-ds) .hud-lime .badge-number { transform: translateX(calc(var(--badge-d) / 40)); }
 /* DAY カード: 英字の地名（飾り）は消し、補助文は読める大きさにする。行の高さと右列の幅は文字に合わせて伸ばす。 */
 html:root[data-density="phone"] body:not(.game-ds) #hud .dc-area { display: none; }
-/* 「次の大会まで あと○日」はスマホでは出さない（オーナー指示 2026-11-08「次の大会までは書かなくていい。わかるし」）。
-   出発前の「出発まで」・第5章の「勝負の日まで」は大会の日程とは別の情報なので出す（ch2_tournament の検査）。
-   文字を大きくした分だけ札が伸びて街マップのスポットに重なるのを、行を減らして防ぐ。日数は MENU のステータスで見られる。 */
-html:root[data-density="phone"] body:not(.game-ds) #hud .dc-row.goal[data-goal="tournament"] { display: none; }
+/* 「次の大会まで あと○日」の行は、スマホ・PC とも左上カードに出さない（#3033・オーナー指示
+   2026-11-09。hud.js が大会のとき行自体を外す）。出発前の「出発まで」・第5章の「勝負の日まで」は
+   大会の日程とは別の情報なので出す（オーナー指示 2026-11-08）。大会までの日数は MENU で見られる。
+   ※旧ルール（[data-goal] 指定）は JS の data-dual と食い違って効いていなかったため #3033 で除去。 */
 /* 幅は固定する。日数（1〜2桁）や所持金の桁で札の幅が変わると、LIME・MENU まで動いてしまう（ui_skin の検査）。
    幅は「☀残り2」（#2853 の昼夜の札・約 3.5 文字）が補助文の大きさで収まる分。文字の大きさに比例させ、中身では変えない。 */
 html:root[data-density="phone"] body:not(.game-ds) #hud .dc-main { width: calc(var(--phone-sub) * 3.7); min-width: 0; }
@@ -87,9 +98,15 @@ html:root[data-density="phone"][data-ui-theme] body:not(.game-ds) .vn-controls {
   grid-template-columns: repeat(5, auto);
 }
 html:root[data-density="phone"][data-ui-theme] body:not(.game-ds) .vn-controls .vn-ctl + .vn-ctl::before { left: calc(var(--phone-gap) / -2); top: 30%; bottom: 30%; }
+/* 会話の本文（オーナー指示 2026-11-08「文字を入れるならサイズも気持ち大きく」）: 28→32px（iPhone 横で実寸 15→17px）。
+   1行は全角24字まで（vn/text.js の WRAP_LIMIT）なので、32px でも枠の内幅（約1020px）に収まり、折り返し・改ページは変わらない。
+   2行（46px×2）と、本心つき（1行44px＋本心2行）が枠の高さ（176px・下15px空き）に収まる行の高さにする（notifications_layout の検査）。 */
+html:root[data-density="phone"][data-ui-theme] body:not(.game-ds) .vn-text { font-size: 32px; line-height: 46px; min-height: 92px; }
+html:root[data-density="phone"][data-ui-theme] body:not(.game-ds) .vn-box.has-inner .vn-text { line-height: 44px; min-height: 44px; }
 /* 名札は補助文の大きさに上げる。名札の幅に収まらない長い名前は name-fit.js の縮小（--vn-name-fit-size）に従う。 */
 html:root[data-density="phone"][data-ui-theme] body:not(.game-ds) .vn-name { font-size: var(--vn-name-fit-size, var(--phone-sub)); }
-html:root[data-density="phone"] body:not(.game-ds) .vn-choice { min-height: var(--phone-tap); font-size: max(24px, var(--phone-text)); }
+/* 選択肢の文字は本文に合わせて 24→28px（iPhone 横で実寸 13→15px）。全角26字（GUI22 の上限）が縮まずに1行で入るよう、幅を 720→880px に広げる */
+html:root[data-density="phone"] body:not(.game-ds) .vn-choice { width: 880px; max-width: 100%; min-height: var(--phone-tap); font-size: max(28px, calc(var(--phone-text) + 4px)); }
 /* 操作ボタンが上へ伸びた分だけ、選択肢を上げて間隔を保つ。 */
 html:root[data-density="phone"] body:not(.game-ds) .vn-choices { bottom: calc(262px + var(--phone-tap) - 44px); }
 html:root[data-density="phone"] body:not(.game-ds) .vn-choices:has(> .vn-choice:nth-child(2):last-child) { bottom: calc(338px + var(--phone-tap) - 44px); }
@@ -104,7 +121,7 @@ html:root[data-density="phone"] body:not(.game-ds) .vn-choices:has(> .vn-choice:
   top: 16px;
   left: 50%;
   right: auto;
-  width: 760px;
+  width: 920px;
   max-width: 100%;
   transform: translateX(-50%);
   overflow-y: auto;

@@ -14,6 +14,8 @@ html:root[data-ui-theme="paper"] {
   --vn-lounge-frame: url("../img/ui/paper/dialogue.webp");
   --vn-lounge-narration: url("../img/ui/paper/dialogue.webp");
   --vn-lounge-name: #fff;
+  /* 名前札は左上へ寄せて枠へ自然に接続し、送りマークは右下の煙の装飾から離す（#3100）。 */
+  --vn-name-inset: 58px; --vn-caption-top: -42px; --vn-next-right: 120px;
   --vn-tab-face: var(--lavender-art) center / 256px repeat, #69497e;
   --vn-tab-edge: #69497e; --vn-tab-inner: #c3a9d566; --vn-tab-text: #fff;
   --vn-tab-radius: 8px 8px 3px 3px; --vn-tab-shadow: 0 3px 8px #2a1a3a40;
@@ -30,6 +32,15 @@ html:root[data-ui-theme="paper"] :is(.panel, .modal-box, .ink-panel, .vn-log, .m
 html:root[data-ui-theme="paper"] :is(.map-notice, .map-time, .toast) { border-width: 12px; border-image-width: 12px; }
 html:root[data-ui-theme="paper"] .modal-backdrop { background: #1e14298c; }
 html:root[data-ui-theme="paper"] .modal-box h3 { color: var(--paper-ink); font-weight: 900; letter-spacing: .02em; }
+html:root[data-ui-theme="paper"] .saveload-modal .save-slot {
+  color: var(--paper-ink); background: var(--paper-card); border-color: var(--paper-line);
+  border-left: 5px solid var(--lavender); box-shadow: 0 3px 10px #39264a1c;
+}
+html:root[data-ui-theme="paper"] .saveload-modal .save-slot.auto { border-left-color: var(--amber); background: #fff8ef; }
+html:root[data-ui-theme="paper"] .saveload-modal .save-slot.blank { border-style: dashed; border-left-style: solid; }
+html:root[data-ui-theme="paper"] .saveload-modal .save-slot.auto .ss-label,
+html:root[data-ui-theme="paper"] .saveload-modal .save-slot.auto .ss-label small { color: var(--amber-ink); }
+html:root[data-ui-theme="paper"] .saveload-modal .save-slot.auto .ss-stat i::after { background: var(--amber); }
 
 /* 紙の上の小さな面（入れ子の豪華な枠を作らない。GUI31） */
 html:root[data-ui-theme="paper"] :is(.st-row, .shop-item, .dc-row, .hud-level, .hud-menu, .hud-stamina) {
@@ -72,20 +83,38 @@ html:root[data-ui-theme="paper"] body:not(.game-ds) .vn-box .vn-name {
    名前札と左右で釣り合う位置へ文字だけで並べる。場面の上には何も出さない。
    押せる範囲は44pxのまま、帯の高さ（約30px）の中央に文字を置く。本文は罫線より下から始まるので重ならない。 */
 html:root[data-ui-theme="paper"] body:not(.game-ds) .vn-controls {
-  bottom: calc(var(--vn-dialogue-bottom) + var(--vn-dialogue-height) - 44px);
-  right: calc((1280px - var(--vn-dialogue-width)) / 2 + 44px);
-  width: 300px; height: 44px; padding: 0;
+  bottom: calc(var(--vn-dialogue-bottom) + var(--vn-dialogue-height) - 46px);
+  right: calc((1280px - var(--vn-dialogue-width)) / 2 + 24px);
+  width: 372px; height: 44px; padding: 0;
   background: none; border: 0; border-radius: 0; box-shadow: none;
+  /* 等幅の列＋中央寄せだと、文字幅の広い AUTO だけ区切り線に寄って見える（オーナー指摘 2026-11-10）。
+     列を文字幅に合わせ右端へ詰めると、各ボタンの padding（左右10px）がそのまま線との距離になり全て均等になる。 */
+  grid-template-columns: repeat(5, auto); justify-content: end;
 }
 html:root[data-ui-theme="paper"] body:not(.game-ds) .vn-controls::before { display: none; }
-html:root[data-ui-theme="paper"] body:not(.game-ds) .vn-controls .vn-ctl { height: 44px; min-height: 44px; color: var(--lavender); font-size: 16px; font-weight: 700; border-radius: 4px; }
-html:root[data-ui-theme="paper"] body:not(.game-ds) .vn-controls .vn-ctl + .vn-ctl::before { top: 16px; bottom: 16px; background: var(--paper-line); opacity: 1; }
+html:root[data-ui-theme="paper"] body:not(.game-ds) .vn-controls .vn-ctl { height: 44px; min-height: 44px; padding: 0 10px; color: var(--lavender); font-size: 22px; font-weight: 700; border-radius: 4px; transform: translateY(-2px); }
+html:root[data-ui-theme="paper"] body:not(.game-ds) .vn-controls .vn-ctl + .vn-ctl::before { top: 12px; bottom: 12px; background: var(--paper-line); opacity: 1; }
 /* 押せる範囲（44px）は帯より広いので、塗りではなく帯の高さの淡い面と下線で示す。AUTO・SKIP中は琥珀色。 */
 html:root[data-ui-theme="paper"] body:not(.game-ds) .vn-controls .vn-ctl:is(:hover, :focus-visible) {
   color: var(--paper-ink); background: linear-gradient(var(--lavender-soft), var(--lavender-soft)) center / 100% 26px no-repeat;
   box-shadow: none; text-decoration: underline 2px var(--lavender); text-underline-offset: 4px;
 }
 html:root[data-ui-theme="paper"] body:not(.game-ds) .vn-controls .vn-ctl.on { color: var(--amber-ink); background: none; box-shadow: none; }
+/* スマホの枠はホームバーを避けて上がる。操作列も同じ下端を参照しないと本文へ残ってしまう。
+   大きいタップ領域は上へ伸ばし、文字と区切り線は下端に寄せて紙の見出し帯に収める。 */
+html:root[data-ui-theme="paper"][data-density="phone"] body:not(.game-ds) #stage {
+  --vn-dialogue-bottom: max(30px, calc((env(safe-area-inset-bottom, 0px) + 8px) / var(--k, 1)));
+}
+html:root[data-ui-theme="paper"][data-density="phone"] body:not(.game-ds) .vn-controls .vn-ctl {
+  display: flex; align-items: flex-end; justify-content: center;
+  background-position: center bottom;
+}
+html:root[data-ui-theme="paper"][data-density="phone"] body:not(.game-ds) #stage .vn-controls .vn-ctl + .vn-ctl::before {
+  top: auto; bottom: 10px; height: 20px;
+}
+html:root[data-ui-theme="paper"][data-density="phone"] body:not(.game-ds) .vn-controls .vn-ctl.on::after {
+  top: auto; bottom: 0; transform: none;
+}
 html:root[data-ui-theme="paper"] .vn-text { color: var(--paper-ink); text-shadow: none; }
 html:root[data-ui-theme="paper"] .vn-box.narration .vn-text { color: #4a3d52; }
 html:root[data-ui-theme="paper"] .vn-box.thought .vn-text { color: #46578a; }

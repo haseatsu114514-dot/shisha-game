@@ -7,10 +7,11 @@ import { MAX_MONEY, TOURNAMENT_DAY, KUJI_TICKET_MAX } from "./rules.js";
 import { MASTERY_THRESHOLDS, learnFlavorStory } from "./flavor-mastery.js";
 import { emit } from "./bus.js";
 import { recordGalleryProgress } from "./gallery-progress.js";
+import { STARTER_HIDANE, STARTER_FLAG } from "./growth-starter.js";
 
 export const SAVE_KEY = "suien_remake_save";
 export const CONFIG_KEY = "suien_remake_config";
-export const SCHEMA = 27; // 27: 好感度名簿と既知キャラの初期♥1 / 26: キャラID改名（IDREN01）の旧セーブ付け替え / 25: 盤のデンスパック制限から旧セーブの選択肢を保護 / 24: 凛想の味の話を第4回へ移し、旧セーブの不足分を補う / 23: 味の話を第4回へ移し、読了済みセーブの不足分を補う / 22: 周回（NG+）の周回数・周回ID・開始時能力・引き継ぎ選択 / 21: フレーバー熟練度・まかない在庫 / 20: 東京訪問の旅程と自由時間 / 19: ダブルアップルの受取を卓上台と同時に移す / 18: 第1章の大会開始資源 / 17: 第1章の敗北回数・今回限りの操作補助 / 16: 斧Barの旧保存利用許可 / 15: TRPG部活の設立・入部 / 14: TRPGの入荷・購入・卓の記録 / 13: サメちゃんのID統一 / 12: 当日休養・延期した夜の予定 / 11: チェキ等の記念品 / 10: C.STATIONでスロット導入 / 2: スロット・くじ・恋人 / 3: LIME の受信箱 / 4: グラム在庫・天気 / 5: 交流の記憶 / 6: 好感度の端数・LIME返信と予約 / 7: 恋人の端数・接客履歴 / 8: 隠し恋愛値・交友の締めくくり / 9: 通常1P・成長の端数を進捗率へ
+export const SCHEMA = 28; // 28: 初回の白火6を累計獲得へ計上 / 27: 好感度名簿と既知キャラの初期♥1 / 26: キャラID改名（IDREN01）の旧セーブ付け替え / 25: 盤のデンスパック制限から旧セーブの選択肢を保護 / 24: 凛想の味の話を第4回へ移し、旧セーブの不足分を補う / 23: 味の話を第4回へ移し、読了済みセーブの不足分を補う / 22: 周回（NG+）の周回数・周回ID・開始時能力・引き継ぎ選択 / 21: フレーバー熟練度・まかない在庫 / 20: 東京訪問の旅程と自由時間 / 19: ダブルアップルの受取を卓上台と同時に移す / 18: 第1章の大会開始資源 / 17: 第1章の敗北回数・今回限りの操作補助 / 16: 斧Barの旧保存利用許可 / 15: TRPG部活の設立・入部 / 14: TRPGの入荷・購入・卓の記録 / 13: サメちゃんのID統一 / 12: 当日休養・延期した夜の予定 / 11: チェキ等の記念品 / 10: C.STATIONでスロット導入 / 2: スロット・くじ・恋人 / 3: LIME の受信箱 / 4: グラム在庫・天気 / 5: 交流の記憶 / 6: 好感度の端数・LIME返信と予約 / 7: 恋人の端数・接客履歴 / 8: 隠し恋愛値・交友の締めくくり / 9: 通常1P・成長の端数を進捗率へ
 
 // 実際の任意交流で好感度を育てられる人物。占い・STATUS・初対面報酬で共用する。
 // ひよりは交流機会が少なくても対象に残す（Issue #2750）。
@@ -297,6 +298,13 @@ function migrate(s) {
   }
   if (!s.flags || typeof s.flags !== "object" || Array.isArray(s.flags)) s.flags = {};
   delete s.notes; // 常連ノートは廃止。旧セーブの残存キーを捨てる
+  // ヌールの友情着地でも LIME を交換する。告白で断った旧セーブと、締めくくりで友情に着地した旧セーブに連絡先を補う。
+  if ((s.flags._friend_noor || s.finales?.noor?.route === "friend") && !(s.lovers || []).includes("noor")) {
+    s.flags._friend_noor = true;
+    s.flags._lime_contact_noor = true;
+    if (!Array.isArray(s.contacts)) s.contacts = [];
+    if (!s.contacts.includes("noor")) s.contacts.push("noor");
+  }
   // #577: 旧保存は未訪問でもBAR利用と従来の初対面を維持する。噂・目撃・面識は補わない。
   // 現行schemaで再保存してもこの許可を保持し、新規ゲームには付けない。
   if (oldSchema < 16) s.flags._axe_bar_legacy_access = true;
@@ -394,6 +402,10 @@ function migrate(s) {
     cleared: Object.fromEntries(Object.entries(record(trpg.cleared)).filter(([, v]) => v && typeof v.ending === "string"
       && Number.isInteger(v.chapter) && v.chapter >= 2 && Number.isInteger(v.day) && v.day > 0
       && typeof v.gm === "string" && Array.isArray(v.participants))),
+    // しおり（TMX13）: 途中の卓は1つだけ。形が崩れたものは捨て、最初から遊び直せばよい。
+    ...(trpg.bookmark && typeof trpg.bookmark.id === "string" && Array.isArray(trpg.bookmark.actions) && trpg.bookmark.actions.length
+      && trpg.bookmark.actions.every(a => Array.isArray(a) && typeof a[0] === "string") && trpg.bookmark.assignments
+      && typeof trpg.bookmark.assignments === "object" && Number.isInteger(trpg.bookmark.seed) ? { bookmark: trpg.bookmark } : {}),
     shifts: (Array.isArray(trpg.shifts) ? trpg.shifts : []).filter(v => v && typeof v.id === "string"
       && Number.isInteger(v.chapter) && Number.isInteger(v.day) && [0, 1].includes(v.slot) && typeof v.busy === "boolean"),
     club: { founded, members: founded ? Object.fromEntries(Object.entries(record(club.members))
@@ -433,6 +445,9 @@ function migrate(s) {
   // 家シーシャ（#638）: スミさんが卓上台を譲る中間準備（第1章 DAY7）を終えた旧セーブにも台を渡す（能力はさかのぼらない）
   const midDone = !!(s.flags?._ev_midcheck || s.flags?._ch1_mid?.feedbackRead) || (Number(s.chapter) || 1) >= 2;
   if (midDone && Array.isArray(s.owned) && !s.owned.includes("home_rig_set")) s.owned.push("home_rig_set");
+  // 博士の試作HMD（授業 M-W9）: 機材の接続より前に習得していたセーブにも、習得の記録があれば試作HMDを渡す（未習得には渡さない）
+  if (Array.isArray(s.owned) && Array.isArray(s.growth?.learned) && s.growth.learned.includes("M-W9")
+    && !s.owned.includes("dr_kemuri_proto_hmd")) s.owned.push("dr_kemuri_proto_hmd");
   // 以前のDAY15大会セーブも、進行状況を保って正しい大会日に揃える。
   if (s.chapter === 1 && s.day > TOURNAMENT_DAY) s.day = TOURNAMENT_DAY;
   s.tournament ||= { attempts: 0, lastRank: null };
@@ -498,6 +513,14 @@ function migrate(s) {
   // プレイ時間（#2902）。数え始める前の保存は 0 から数え、最初からの時間ではないことを残す。
   if (!Number.isFinite(s.playMs) || s.playMs < 0) s.playMs = 0;
   if (s.playMsFull !== true) s.playMsFull = false;
+  // schema27以前は初回の白火6を所持にだけ加算した。実際に渡した印がある保存だけ、
+  // 所持・支払を動かさず累計へ一度だけ足す。すでに198を通常獲得した保存も没収しない。
+  if (oldSchema < 28 && s.flags[STARTER_FLAG] === true && s.growth && typeof s.growth === "object"
+    && !Array.isArray(s.growth) && s.growth.starterAccounted !== true) {
+    const earned = s.growth.earned;
+    s.growth.earned = (Number.isFinite(earned) && earned > 0 ? Math.floor(earned) : 0) + STARTER_HIDANE;
+    s.growth.starterAccounted = true;
+  }
   s.schema = SCHEMA;
   return s;
 }
@@ -583,13 +606,11 @@ export function load() {
   return migrated ? setState(migrated) : null;
 }
 
-// ---------------------------------------------------------------- 手動セーブ枠（オートセーブとは別に3枠）
+// ---------------------------------------------------------------- 手動セーブ枠（オートセーブとは別に1枠）
 
 export const SAVE_SLOTS = [
   { key: SAVE_KEY, label: "オートセーブ", auto: true },
   { key: "suien_remake_slot1", label: "スロット 1" },
-  { key: "suien_remake_slot2", label: "スロット 2" },
-  { key: "suien_remake_slot3", label: "スロット 3" },
 ];
 const BOOT_LOAD_KEY = "suien_remake_boot_load";
 

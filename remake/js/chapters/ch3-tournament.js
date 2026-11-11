@@ -231,7 +231,7 @@ async function morningCheers(owner) {
 function renderEntry(owner) {
   card(owner, "entry", "全国大会の朝。", "はじめ・綾取・スティーブ・ヴォルク。四人が同時に一台を仕上げる。", [
     button(owner, "会場へ向かう", "start", async () => { checkpoint("opening"); await drive(owner); }, true),
-  ], [el("p.ch2-contest-note", { text: "審査員は伏見・チャコール博士・エミル。各10点を四回に分けて投じる。" })]);
+  ], [el("p.ch2-contest-note", { text: "審査員は千須・チャコール博士・エミル。各10点を四回に分けて投じる。" })]);
 }
 
 function renderReady(owner) {
@@ -309,9 +309,9 @@ function voteReason(p, cs, final = false) {
     const target = displayName(tactic.affected, state);
     const contrast = tactic.delta > 0 ? "香りが強く映った" : "香りが薄く映った";
     const others = affected.filter(who => who !== judge);
-    lines.push(`伏見は水を飲んだ。${names([judge])}は水を挟まず、綾取の直後に${target}を試喫。鋭い苦みの余韻で${contrast}（比較${tactic.delta > 0 ? "+" : ""}${tactic.delta}）。${others.length ? `${names(others)}にも残った。` : ""}`);
+    lines.push(`千須は水を飲んだ。${names([judge])}は水を挟まず、綾取の直後に${target}を試喫。鋭い苦みの余韻で${contrast}（比較${tactic.delta > 0 ? "+" : ""}${tactic.delta}）。${others.length ? `${names(others)}にも残った。` : ""}`);
   } else if (JUDGES.some(judge => last[judge]?.tactic)) {
-    lines.push("伏見は水を飲んだ。ほかの席も試喫順と給水が噛み合わず、綾取の鋭い苦みは直後の比較に残らなかった。");
+    lines.push("千須は水を飲んだ。ほかの席も試喫順と給水が噛み合わず、綾取の鋭い苦みは直後の比較に残らなかった。");
   }
   return lines;
 }
@@ -435,7 +435,8 @@ async function drive(owner) {
       const cs = owner.cs;
       playBgm("bgm_tournament_craft");
       // 投票の後、調整に入る合間の掛け合い（#1290）。見た目は commentary と同じ経路で一度だけ。
-      const interlude = p.step === 9 ? "interlude1" : p.step === 10 ? "interlude2" : null;
+      // 作り始める直前（開始前）と吸い出しの前（審査員への提供開始）の掛け合い（#3060）。
+      const interlude = p.step === 0 ? "prestart" : p.step === 8 ? "serve" : p.step === 9 ? "interlude1" : p.step === 10 ? "interlude2" : null;
       if (interlude && !await commentary(owner, interlude)) return;
       const event = TOURNAMENT_STORY_STEPS.get(p.step);
       if (event && !await commentary(owner, event)) return;
@@ -483,6 +484,8 @@ async function drive(owner) {
       owner.cs ||= clone(p.craft);
       playBgm("bgm_judging");
       if (!await commentary(owner, "tasting")) return;
+      // 結果発表前の掛け合い（#3060）。
+      if (!await commentary(owner, "preresult")) return;
       checkpoint("result");
     } else if (p.stage === "votes") { renderVotes(owner); return; }
     else if (p.stage === "result") {

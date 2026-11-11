@@ -103,3 +103,20 @@ export function agehaStoryScene(save, day, dialogues) {
   const threshold = [0, 9, 20, 33, 48, 66][required];
   return next && unread(next) && (save.affinity?.ageha || 0) >= threshold ? next : null;
 }
+
+// 通う回とダメな日のあと、MELTY PUFFで一度ずつ（#3081）。小品の巡回には混ぜない。
+// #3091 のグミ・店の言葉のあとに、#3089 の白いクマの席。
+export const AGEHA_LATER_SCENES = Object.freeze([
+  { id: "ch1_ageha_gummy_share", flag: "_ageha_gummy_share_done" },
+  { id: "ch1_ageha_floor_words", flag: "_ageha_floor_words_done" },
+  { id: "ch1_ageha_bear_seat", flag: "_ageha_bear_seat_done" },
+]);
+export function agehaLaterScene(save, dialogues) {
+  const needed = [...AGEHA_VISITS, AGEHA_BADDAY.id];
+  if (!needed.every((id) => save?.flags?.[`_ch2_read_${id}`])) return null;
+  for (const extra of AGEHA_LATER_SCENES) {
+    if (save?.flags?.[extra.flag]) continue;
+    if (dialogues?.[extra.id]?.lines?.length) return extra.id;
+  }
+  return null;
+}

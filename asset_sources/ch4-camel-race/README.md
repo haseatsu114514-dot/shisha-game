@@ -6,6 +6,8 @@ Claude は画像を生成しない。ここにある依頼文を Codex にコピ
 共通の画風: `tools/bg_prompts.txt` の先頭の指針（`bg_eden_shop.png` を基準にした温かい2Dドット絵〜ピクセルペインター調。写真調・滑らかな3D調にしない）。立ち絵は `.claude/skills/character-portrait-remaster/SKILL.md`（1回の生成で1人・1表情・人物の高さ1300px以上・マゼンタ #FF00FF 背景）と `docs/prompts/image_generation_guide.md`。
 焼き込み禁止（全素材共通）: 文字・ロゴ・数字・ゲージ・watermark。レース画面の順位・距離・スタミナ・合図の輪・PERFECT 等の表示はコードが描く。シーシャ台は写さない（この題材では機材の描写は不要）。実在の競走場・人物・車種のロゴを模写しない。
 
+> 2026-11-11 CR23〜CR25: 門・距離板・走路の砂・砂煙・並走する車・紋章の依頼は [world-request.md](world-request.md)（Issue #3217）。下の CR-GM03（砂煙・ゴールゲート・テント）はこれに置き換えた。
+>
 > 2026-11-02 CR08: レース画面のUI素材（順位の札・メダル・計器板・ゲージ・リモコンのボタン・出走表のカード・判子・遊び方の絵）の依頼は [ui-request.md](ui-request.md)。
 
 ## 採用の記録（2026-11-02）
@@ -36,8 +38,17 @@ Codex が2回に分けてギガファイル便で渡した候補から選んだ�
 | `CR-GM01-jockey-B.png` | 1254×1254 | `cdfd2055067174fa41475a9a97948c5c0e9b05f1aa97bd48ad4b496aab2f7804` |
 | `CR-GM02-C-generic-v2.png` | 1774×887 | `24d918323aa19c5af57b077b63b505fde86b511d013a6b1d127f52d282a806ad` |
 | `CR-GM02-wheel.png` | 1254×1254 | `43d888db865649b8e3fd1ef9b736fd05f30b377392dbcb5be2bd723a2f058dd5` |
+| `CR-GM02-suv-v6-green.png` | 720×360 | `dae614393655f0e4d4f5903d36eb0e17c84bf3d1792513bb7eec74ab17ad38ba` |
+| `CR-GM02-suv-v6.png` | 720×360 | `babe0f7cfcfc64ba4dd99e924c52c0d4f43d06927b5aa2078ad5b38bc201fd32` |
 | `saif-normal-A-v2.png` | 887×1774 | `0308bfb8af01fc40a2a0b8a5af5bfe375740fd0b5ab30152e75095b016f676d5` |
 | `rashid-normal-B.png` | 887×1774 | `d2c02f934120075cec198a64e96e87a80146e4f0882e8538dd29a1f9faafa33b` |
+
+### 2026-11-09 SUV v6 差し替え（Issue #3044、オーナー採用）
+
+旧絵は運転手がリモコンを持ち、はじめは立ち絵の切り抜きをコードで合成していた（乗り出し方に違和感、というオーナー指摘）。v6 は車全体・運転手・後席のはじめを一枚絵で描き直したもの（候補3点中の2、生成記録は `review/generation-suv-v6.json`）。リモコンは後席のはじめの担当（CR-UI11 仕様どおり）で、運転手はハンドルだけ。ゲーム用 `assets/ui/camel_race/suv.png` はキー済み原画そのもの（720×360）。
+
+- 実測（絵の画素）: 外接 x 4〜713・y 40〜346、車輪中心 後 (153, 282)・前 (583, 282)、タイヤ直径 約130、アンテナ先端 (308, 90)。
+- コード側（`remake/js/minigames/camel-race.js`）: `SUV_ART` を新寸法へ更新（centerX 359・ground 346・wheel 130/160・radius 65）。はじめの立ち絵合成と表情切り替えは廃止し、重ねるのはアンテナ先端の状態ランプと吹き出しだけ（`HAJIME_AT`）。
 
 ## 一覧
 

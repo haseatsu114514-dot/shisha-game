@@ -8,6 +8,7 @@ import { basicsExperienced } from "../craft/practice-history.js";
 //   play(idOrDialogue, opts) → Promise（会話が終わると解決）
 // 分岐（condition / choice）の行は「残りの行の前」に差し込む（旧版・Godot版と同じ挙動）。
 import { createNameFit } from "./name-fit.js";
+import { conversationCutinCue, conversationCutinAllowed, createConversationCutin } from "./conversation-cutin.js";
 import { uiThemeFrame } from "../core/ui-theme.js";
 import { fortuneChoiceIndex } from "../core/fortune-effects.js";
 import { el, sleep, fitOneLine, nextFrame } from "../core/util.js";
@@ -27,6 +28,7 @@ import { buyKeepsake } from "../core/keepsakes.js";
 import { chekiShot, tarotFlip, limeExchange, purikuraShot, sceneMoment } from "../core/scene-motions.js";
 import { showShishaDiagram, hideShishaDiagram } from "./shisha-diagram.js";
 import { reducedMotion } from "../core/transition-kit.js";
+import { attachLoadingComic } from "../core/loading-comic-notice.js";
 
 // 立ち絵を出さない話者（主人公は一人称視点）
 const NO_PORTRAIT = new Set(["hajime", "hazime", "", "everyone", "customer", "shop_clerk", "old_man", "traveler"]);
@@ -63,6 +65,7 @@ function warnVn(kind, detail) {
 const log = [];
 let dom = null;
 let nameFit = null;
+let cutin = null; // 会話カットイン（立ち絵版・#2990）
 let settingsReady = null;
 let openVnConfig = null;
 let running = null;     // 再生中の会話の状態
@@ -115,6 +118,7 @@ function buildDom() {
     effect: el("div.vn-effect"),
     cg: el("div.vn-cg"),
     portraits: el("div.vn-portraits"),
+    cutin: el("div.vn-cutin-layer", { "aria-hidden": "true" }),
     name: el("div.vn-name"),
     text: el("div.vn-text", { "aria-live": "polite" }),
     inner: el("div.vn-inner", { hidden: true, "aria-live": "polite", "aria-label": "ひよりの本心（はじめには聞こえない）" }),
@@ -130,7 +134,8 @@ function buildDom() {
   dom.autoBtn.setAttribute("aria-pressed", "false");
   dom.skipBtn.setAttribute("aria-pressed", "false");
   dom.controls.append(dom.autoBtn, dom.skipBtn, ctl("LOG", openLog, "vn-log"), ctl("用語", openGlossary, "vn-glossary"), ctl("設定", openSettings, "vn-config"));
-  host.replaceChildren(dom.effect, dom.cg, dom.portraits, dom.box, dom.choices, dom.controls, dom.log);
+  host.replaceChildren(dom.effect, dom.cg, dom.portraits, dom.cutin, dom.box, dom.choices, dom.controls, dom.log);
+  cutin = createConversationCutin(dom.cutin);
   nameFit = createNameFit(dom.name);
   host.addEventListener("pointerup", (e) => {
     if (!running || e.target.closest(".vn-ctl, .vn-choices, .vn-log")) return;
@@ -181,7 +186,7 @@ function setAuto(v) {
 function setSkip(v) {
   if (v && running?.cancelOnSkip) return finish(true);
   if (v && config.skipSeenOnly && running?.activeSeenKey && !readSeenLines().has(running.activeSeenKey)) return;
-  if (v) setAuto(false);
+  if (v) { cutin?.clear(); setAuto(false); }
   skipMode = v;
   document.body.classList.toggle("vn-skip", v);
   dom?.skipBtn.classList.toggle("on", v);
@@ -217,14 +222,15 @@ function kickAuto() {
 
 /** 同じ背景へ続く会話でも、長い素材待ちには案内を出す。既存のreadyガードで操作を保護する。 */
 function waitSceneAssets(task, owner = running, assets = task.assetsReady || task) {
-  let notice = null;
+  let notice = null, hideComic;
   const timer = setTimeout(() => {
     if (running !== owner) return;
     notice = el("div.vn-loading", { role: "status", "aria-live": "polite",
       text: "場面を準備しています…", dataset: { test: "vn-loading" } });
     layers.fx.append(notice);
+    if (typeof attachLoadingComic === "function") hideComic = attachLoadingComic(notice);
   }, 500);
-  const loaded = Promise.resolve(assets).finally(() => { clearTimeout(timer); notice?.remove(); });
+  const loaded = Promise.resolve(assets).finally(() => { clearTimeout(timer); hideComic?.(); notice?.remove(); });
   // 場面転換の演出は最後まで待つが、取得・デコード済みなら読み込み表示を延長しない。
   return Promise.all([task, loaded]).then(([value]) => value);
 }
@@ -298,6 +304,7 @@ export function play(idOrDlg, opts = {}) {
       spoken: new Set(),
     };
     autoFxGap = 0;
+    cutin?.clear();
     dom.portraits.replaceChildren();
     dom.choices.replaceChildren();
     dom.text.innerHTML = "";
@@ -459,6 +466,7 @@ function finish(cancelled = false) {
   document.body.classList.remove("in-vn", "vn-open", "vn-lift-props");
   dom.cg.classList.remove("show");
   dom.portraits.replaceChildren();
+  cutin?.clear();
   hideShishaDiagram(); // 会話終了（SKIP/キャンセル含む）で図解を片付ける（#1128）
   dom.effect.dataset.effect = "";
   layers.vn.classList.remove("sepia", "flashback");
@@ -484,6 +492,7 @@ function next() {
   if (!r) return;
   if (!skipMode && !vnTest.turbo) markSeenLine(r.activeSeenKey);
   r.activeSeenKey = null;
+  cutin?.leave({ still: reducedMotion() });
   // BGMの息継ぎは、その行を読み終えて次へ進むところで戻す。すぐ次の台詞行も duck なら下げたまま渡す（戻して下げ直すと音量が波打つ）。
   if (!r.queue[0]?.duck || r.queue[0].type) releaseDuck(r);
   // 読み終えた行の合図を、次の行の画像待ち・制御行へ持ち越さない。
@@ -495,7 +504,7 @@ function next() {
     if (line === undefined) return introThenShow();
     const type = line.type || "";
     if (!type) return introThenShow(line);
-    if (type === "choice") return showChoices(line);
+    if (type === "choice") return introThenShow(line, showChoices);
     if (type === "game_over") return finish();
     if (type === "condition") { if (handleCondition(line)) return; continue; }
     if (type === "jump") { if (!line.next_id) warnVn("jump-missing-next-id", r.currentId || r.id); else if (jumpTo(line.next_id)) return; continue; }
@@ -727,21 +736,21 @@ function queueIntro(cue) {
 }
 
 // 読み進めた時点で、本人の立ち絵と発話を見た紹介だけを出す。
-function introThenShow(line) {
+function introThenShow(line, show = showLine) {
   const r = running;
   const due = r.pendingIntros.filter(({ id, variant }) => r.spoken.has(id) && !state.flags[introSeenKey(id, variant || "")]);
   r.pendingIntros = r.pendingIntros.filter((cue) => !due.includes(cue));
-  if (!due.length) return line ? showLine(line) : finish();
+  if (!due.length) return line ? show(line) : finish();
   if (vnTest.turbo) {
     due.forEach(({ id, variant }) => markIntroSeen(id, variant || ""));
-    return line ? showLine(line) : finish();
+    return line ? show(line) : finish();
   }
   r.ready = false;
   (async () => {
     for (const { id, variant, override } of due) await playIntro(id, { variant, override, onAppear: () => speakerBgm(id) });
     if (running !== r) return;
     r.ready = true;
-    if (line) showLine(line); else finish();
+    if (line) show(line); else finish();
   })();
 }
 
@@ -751,6 +760,9 @@ async function showLine(line) {
   r.ready = false;
   clearTimeout(autoTimer);
   const images = linePortraits(line);
+  const cutinCue = conversationCutinCue(r.currentId || r.id, line);
+  const cutinSrc = cutinCue ? portraitInfo("hajime", cutinCue.face, "new")?.src : null;
+  if (cutinSrc) images.push(cutinSrc);
   // 選択したUIの書体で折り返す。初回だけ代替フォントでページを決めない。
   const fontReady = Promise.all([dom.text, dom.name].map(node => {
     const type = getComputedStyle(node);
@@ -832,7 +844,28 @@ async function showLine(line) {
     r.spoken.add(speaker);
     if (needsIntro(speaker)) queueIntro({ id: speaker });
   }
+  if (line.intro_on_portrait && line.portrait && Object.hasOwn(r.slots, line.portrait)) {
+    markMet(line.portrait);
+    r.spoken.add(line.portrait);
+    if (needsIntro(line.portrait)) queueIntro({ id: line.portrait });
+  }
+  if (cutinSrc) showCutin(r, cutinCue, cutinSrc);
   renderPage();
+}
+
+/** 会話カットイン（#2990）。台本で決めた行だけ、出せる条件（1会話1回・相手の立ち絵の枚数）を満たす時に出す */
+function showCutin(r, cue, src) {
+  const shown = [...dom.portraits.querySelectorAll("img")];
+  const ok = conversationCutinAllowed(cue, {
+    shown: r.cutinShown, skip: skipMode, turbo: vnTest.turbo,
+    cg: dom.cg.classList.contains("show"), log: dom.log.classList.contains("show"), choices: !!r.waitingChoice,
+    intro: r.pendingIntros.some(({ id, variant }) => r.spoken.has(id) && !state.flags[introSeenKey(id, variant || "")]),
+    protagonistVisible: shown.some((img) => img.dataset.speaker === "hajime"),
+    portraits: shown.length, portraitSpeakers: shown.map((img) => img.dataset.speaker),
+  });
+  if (!ok) return;
+  r.cutinShown = true;
+  cutin?.show(cue, src, { still: reducedMotion() });
 }
 
 // 報酬キュー: 「……【技術】と【センス】が少し上がった。」の規定フレーズを読んで加算する
@@ -1093,6 +1126,7 @@ function closeLog() {
 }
 
 function openLog() {
+  cutin?.clear();
   SE.select();
   clearTimeout(autoTimer);
   const list = el("div.log-list", log.slice(-120).map((l) => el("div.log-row", [
