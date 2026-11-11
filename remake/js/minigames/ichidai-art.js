@@ -13,6 +13,8 @@ import { AF_VANILLA_ART } from "../daily/shop-art-af-vanilla.js";
 import { REMAINING_SHOP_ART } from "../daily/shop-art-remaining.js";
 import { LIMITED_FLAVOR_ART } from "../daily/shop-art-limited.js";
 import { CHARACTER_FLAVOR_ART } from "../daily/shop-art-character-flavors.js";
+import { NEW_FLAVOR_ART } from "../daily/shop-art-new-flavors.js";
+import { FLAVOR_CARTONS_3287_ART } from "../daily/shop-art-flavor-cartons-3287.js";
 
 export const ICHIDAI_ART = Object.freeze({
   flavor: [],
@@ -30,8 +32,9 @@ const icon = (name) => imgFileUrl(`ui/growth_board/icons/${name}.webp`);
 const equip = (name) => imgFileUrl(`shop/equipment/${name}.webp`);
 
 // ───────── 葉 ─────────
-// ショップの箱絵（本編と同じ引き方）。箱絵の無い葉のうち、同じ果物の箱があるものはそれを借りる。
-const shopBox = (id) => AF_VANILLA_ART[id] || SHOP_ART[id] || REMAINING_SHOP_ART[id] || LIMITED_FLAVOR_ART[id] || CHARACTER_FLAVOR_ART[id] || null;
+// ショップの箱絵（本編 shop.js の generatedFlavorArt と同じ並び）。箱絵の無い葉のうち、同じ果物の箱があるものはそれを借りる。
+const shopBox = (id) => AF_VANILLA_ART[id] || SHOP_ART[id] || REMAINING_SHOP_ART[id] || LIMITED_FLAVOR_ART[id]
+  || NEW_FLAVOR_ART[id] || CHARACTER_FLAVOR_ART[id] || FLAVOR_CARTONS_3287_ART[id] || null;
 const FLAVOR_ALIAS = { ice_grape: "grape" };
 /** 葉の絵。{ url, mode:"art" } か { url, size:[w,h], box:[x,y,w,h], mode:"box" }。無ければ null */
 export function flavorArt(id) {

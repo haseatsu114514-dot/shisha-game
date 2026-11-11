@@ -188,6 +188,27 @@
         306,
         407
       ]
+    },
+    {
+      "id": "coffee",
+      "source": "asset_sources/card_game/coffee-20261111/coffee.png",
+      "source_sha256": "0671b9d9206af7740c74ff023810a70557cb04ac4331c18ec006a0d276dc8ed7",
+      "delivery": "remake/img/shop/flavor-cartons-3287/coffee.webp",
+      "delivery_sha256": "c7152f52fef59f05e7a6a173aedb915fa52e045c4596cb8779204dc4ea02f469",
+      "source_size": [
+        1254,
+        1254
+      ],
+      "delivery_size": [
+        512,
+        512
+      ],
+      "box": [
+        107,
+        41,
+        299,
+        434
+      ]
     }
   ]
 }

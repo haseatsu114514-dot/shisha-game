@@ -9,3 +9,7 @@ Codex 内蔵画像生成、2026-11-11。`coffee.png` は無加工の透過原画
 全点RGBA、四隅alpha0。生成出力に低いalphaの微細画素が残るため、採用前の境界確認は必要です。alpha編集は行っていません。箱の見える範囲の測定・WebP・shop登録・一台勝負への組み込みは採用後の別工程です。
 
 API経路で原画・候補・記録だけ保存。画像デコード・寸法・SHAを確認。ゲームコードを変えないためゲームテストは対象外です。ローカルcheckout検査も対象外です。
+
+## 採用（2026-11-11）
+
+オーナーの「3329の実装お願い」で採用。原画 `coffee.png` を加工せず、`tools/build_flavor_cartons_3287.py` で 512×512 の WebP（`remake/img/shop/flavor-cartons-3287/coffee.webp`）にして、本編のショップ（`shop-art-flavor-cartons-3287.js`）と一台勝負の葉の札の両方に出す。記録は `asset_sources/flavor-cartons-20261111/integration.json`。`coffee-512.png` は候補のまま使っていない。低い alpha の微細画素は、同じ作りの採用済みの箱（カプチーノ・チョコレート）と同程度で、ショップの灰色・白の地と一台勝負の札の上で目立たないことを確かめた。
