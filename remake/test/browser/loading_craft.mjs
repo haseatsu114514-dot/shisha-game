@@ -37,7 +37,9 @@ await suite('loading-craft', async check => {
       const comic = eligibleComics.find(entry => entry.title === shownTitle);
       assert(comic, `Shown comic "${shownTitle}" must be a registered comic eligible for craft in a fresh game (met: ${MET_AT_START.join(', ')})`);
       assert.match(await page.locator('.loading-comic').getAttribute('aria-label'), new RegExp(escapeRegExp(comic.title)));
-      assert.equal(await page.locator('.loading-status').innerText(), 'LOADING…');
+      // The status reads LOADING… until the reading hold opens, then 準備完了 (read both in one step: preparation may finish in between).
+      const [ready, statusText] = await page.locator('.loading-gate').evaluate(gate => [gate.classList.contains('is-ready'), gate.querySelector('.loading-status').innerText]);
+      assert.equal(statusText, ready ? '準備完了' : 'LOADING…');
       assert.equal(await page.locator('.loading-gate button, .loading-gate progress, .loading-gate figcaption').count(), 0);
       assert.equal(await page.locator('.bench-panel > *').count(), 0, 'No gameplay before preparation');
       await page.keyboard.press('Enter');

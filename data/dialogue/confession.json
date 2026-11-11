@@ -166,7 +166,7 @@
         {
           "speaker": "minto",
           "face": "ura_smile",
-          "text": "……っ。うん、……うれしい、すごく"
+          "text": "[shiver]……っ。うん、[/shiver]……うれしい、すごく"
         },
         {
           "speaker": "minto",
@@ -773,7 +773,7 @@
         {
           "speaker": "ageha",
           "face": "surprise",
-          "text": "……マジ？ 今の、聞き間違いじゃない？"
+          "text": "[shiver]……マジ？[/shiver] 今の、聞き間違いじゃない？"
         },
         {
           "speaker": "hajime",
@@ -1095,7 +1095,7 @@
         {
           "speaker": "mashiro",
           "face": "surprise",
-          "text": "……急がなくていいって、言ったのに"
+          "text": "[shiver]……急がなくていいって、[/shiver]言ったのに"
         },
         {
           "speaker": "hajime",
@@ -1385,7 +1385,7 @@
         {
           "speaker": "rio",
           "face": "normal",
-          "text": "私も、君が好き。……試香が終わっても帰らないで、って。ずっと言えずにいた"
+          "text": "私も、君が好き。[shiver]……試香が終わっても帰らないで、って。[/shiver]ずっと言えずにいた"
         },
         {
           "speaker": "hajime",
@@ -1639,7 +1639,7 @@
         {
           "speaker": "samechan",
           "face": "surprise",
-          "text": "……うむ。わしも、ずっと前から、お主が好きじゃ"
+          "text": "[shiver]……うむ。わしも、[/shiver]ずっと前から、お主が好きじゃ"
         },
         {
           "speaker": "hajime",
@@ -1930,7 +1930,7 @@
         },
         {
           "speaker": "hiyori",
-          "text": "はじめくん……。私も、好き……",
+          "text": "はじめくん……。[shiver]私も、好き……[/shiver]",
           "face": "love_blush"
         },
         {
@@ -2179,7 +2179,7 @@
         {
           "speaker": "noor",
           "face": "surprise",
-          "text": "……ほんと？ ……ごめん、うれしすぎて、言葉が出てこない"
+          "text": "[shiver]……ほんと？[/shiver] ……ごめん、うれしすぎて、言葉が出てこない"
         },
         {
           "speaker": "noor",
