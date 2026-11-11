@@ -95,3 +95,12 @@ html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg
 html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-forecast-head > strong,
 html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-odds small { display: none; } /* 「30以上で成功」は右の説明と同じ */
 html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-forecast-head { margin-bottom: 2px; justify-content: center; }
+
+/* ---- 役衣装の姿（TMX04）: シートは 姿｜顔書きと能力｜特徴と切り札 の3列 ---- */
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-sheet[data-costume="true"] { grid-template-columns: 196px 330px 1fr; column-gap: 24px; }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-sheet[data-costume="true"] > .trpg-sheet-costume { grid-column: 1; grid-row: 1 / span 6; width: 196px; height: 262px; }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-sheet[data-costume="true"] > .trpg-sheet-head { grid-column: 2; grid-row: 1; }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-sheet[data-costume="true"] > .trpg-sheet-stats { grid-column: 2; grid-row: 2 / span 5; }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-sheet[data-costume="true"] > :is(p, small) { grid-column: 3; }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-builder-origin:has(.trpg-builder-origin-art) { padding-left: 104px; min-height: 104px; }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-builder-origin-art { width: 82px; }

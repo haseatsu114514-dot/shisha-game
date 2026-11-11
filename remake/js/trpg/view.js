@@ -41,6 +41,13 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
   function pcFace(seat, playerId) {
     return el("img", { src: portrait(playerId), alt: "", style: circleStyle(playerId, 150, 6) });
   }
+  // The role costume (same person, dressed as the PC) where we have one: sheets, cover, origins and declaration cards (TMX04).
+  // "bust" zooms on the upper body for small cards; "full" shows the whole figure. Falls back to the round face.
+  function pcFigure(seat, playerId, { role = sheets[seat]?.archetype || sheets[seat]?.option || null, shape = "bust" } = {}) {
+    const url = costumeUrl(scenario.id, playerId, role);
+    return url ? el("span.trpg-costume", { dataset: { shape }, style: { backgroundImage: `url("${url}")` } }) : pcFace(seat, playerId);
+  }
+  const hasFigure = (seat, playerId, role = sheets[seat]?.archetype || sheets[seat]?.option || null) => !!costumeUrl(scenario.id, playerId, role);
   /** Authored text names the player's character with {pc}; the built name fills it in. */
   // {pc} is the player's character, {pc:seat} a companion's, {pcTitle} the player's origin and {gm} tonight's GM.
   const pcText = text => String(text ?? "").replace(/\{pc:([a-z]+)\}/g, (_, seat) => sheets[seat]?.name || "")
@@ -683,7 +690,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
           talk(sequence(approach.declare), () => { renderBody(); openCheck(kind, approach.id); });
         },
       }, [
-        el("span.trpg-approach-face", { "aria-hidden": "true" }, pcFace(approach.sheet || approach.actor, approach.actor)),
+        el("span.trpg-approach-face", { "aria-hidden": "true", dataset: { costume: String(hasFigure(approach.sheet || approach.actor, approach.actor)) } }, pcFigure(approach.sheet || approach.actor, approach.actor)),
         el("span.trpg-approach-copy", [
           el("small", { text: (approach.npc ? "GM " + name(approach.actor) + " が演じる" : "PL " + name(approach.actor)) + " · " + (pc?.name || "") }),
           el("strong", { text: pcText(approach.label) }), el("span", { text: pcText(approach.detail) }),
@@ -976,7 +983,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
   function pcCard() {
     const me = session.pc;
     return el("div.trpg-cover-pc", { dataset: { test: "trpg-cover-pc" } }, [
-      el("span.trpg-cover-pc-face", { "aria-hidden": "true" }, pcFace(me.seat, PLAYER_SEAT)),
+      el("span.trpg-cover-pc-face", { "aria-hidden": "true", dataset: { costume: String(hasFigure(me.seat, PLAYER_SEAT)) } }, pcFigure(me.seat, PLAYER_SEAT)),
       el("div.trpg-cover-pc-copy", [
         el("small", { text: name(PLAYER_SEAT) + " が演じる" }),
         el("strong", { text: me.name, dataset: { test: "trpg-cover-pc-name" } }), el("span", { text: me.title }),
@@ -1015,7 +1022,8 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
               draft.name = a.name;
               audio.play("tap"); render("trpg-archetype-" + a.id);
             },
-          }, [el("strong", { text: a.title + " " + a.name }), a.recommended ? el("em.trpg-builder-recommend", { text: "はじめてならこれ" }) : null,
+          }, [costumeUrl(scenario.id, PLAYER_SEAT, a.id) ? el("span.trpg-builder-origin-art", { "aria-hidden": "true" }, pcFigure(PLAYER_SEAT, PLAYER_SEAT, { role: a.id })) : null,
+            el("strong", { text: a.title + " " + a.name }), a.recommended ? el("em.trpg-builder-recommend", { text: "はじめてならこれ" }) : null,
             el("span", { text: "得意 " + strengths(a.stats) }),
             el("small", { text: a.trait })].filter(Boolean))))]),
         el("section.trpg-builder-stats", [
@@ -1073,7 +1081,9 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
   function sheetCard(seat) {
     const pc = sheets[seat], player = scenario.cast.find(c => seatOf(c.id) === seat), state = session.snapshot();
     const portraitId = player ? player.id : gm;
-    return el("article.trpg-sheet", { dataset: { test: "trpg-sheet-" + seat, npc: String(!player) } }, [
+    const figure = hasFigure(seat, portraitId);
+    return el("article.trpg-sheet", { dataset: { test: "trpg-sheet-" + seat, npc: String(!player), costume: String(figure) } }, [
+      figure ? el("span.trpg-sheet-costume", { "aria-hidden": "true" }, pcFigure(seat, portraitId, { shape: "full" })) : null,
       el("div.trpg-sheet-head", [
         el("span.trpg-sheet-face", { "aria-hidden": "true" }, pcFace(seat, portraitId)),
         el("div", [el("small", { text: player ? "PL " + name(player.id) : "GM " + name(gm) + " が兼任" }),

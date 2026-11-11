@@ -1082,3 +1082,18 @@
 .trpg-root.trpg-cinematic .trpg-object-choice:is(.selected, [aria-pressed="true"]) .trpg-object-art { filter: var(--sticker-edge) drop-shadow(0 0 6px #0b1420b0) drop-shadow(0 0 17px #ead49e5e) drop-shadow(0 10px 10px #0005); }
 /* タッチ操作の配置では、タブの下線が2行目の文字を横切って取り消し線に見えていたので、札の下端へ。 */
 @media (pointer: coarse) { .trpg-root.trpg-cinematic .trpg-choice-tabs button.trpg-choice-tab::after { bottom: 3px; } }
+
+/* ---- 役衣装の姿（TMX04・2026-11-11）: 同じ人物が役の服を着た全身の絵（生成りの下地つき）を、シート・表紙・役どころ・宣言カードにも出す。
+   絵が無い役は従来の丸い顔のまま。 ---- */
+.trpg-root.trpg-cinematic .trpg-costume { display: block; width: 100%; height: 100%; background-repeat: no-repeat; background-color: #efe6d0; }
+.trpg-root.trpg-cinematic .trpg-costume[data-shape="bust"] { background-size: 200% auto; background-position: 50% 8%; }
+.trpg-root.trpg-cinematic .trpg-costume[data-shape="full"] { background-size: cover; background-position: 50% 0; }
+.trpg-root.trpg-cinematic .trpg-approach-face[data-costume="true"] { width: 84px; height: 100px; border-radius: 8px; border: 2px solid #f4ead2; box-shadow: 0 3px 8px #0006; }
+.trpg-root.trpg-cinematic .trpg-cover-pc-face[data-costume="true"] { flex: 0 0 66px; width: 66px; height: 84px; border-radius: 8px; border: 2px solid #f4ead2; }
+.trpg-root.trpg-cinematic .trpg-sheet[data-costume="true"] { display: grid; grid-template-columns: 88px minmax(0, 1fr); column-gap: 12px; align-content: start; min-width: 0; }
+.trpg-root.trpg-cinematic .trpg-sheet[data-costume="true"] > * { grid-column: 1 / -1; }
+.trpg-root.trpg-cinematic .trpg-sheet[data-costume="true"] > .trpg-sheet-costume { grid-column: 1; grid-row: 1; align-self: start; width: 88px; height: 118px; overflow: hidden; border-radius: 6px; border: 1px solid #c9b58a; }
+.trpg-root.trpg-cinematic .trpg-sheet[data-costume="true"] > .trpg-sheet-head { grid-column: 2; }
+.trpg-root.trpg-cinematic .trpg-sheet[data-costume="true"] .trpg-sheet-face { display: none; }
+.trpg-root.trpg-cinematic .trpg-builder-origin:has(.trpg-builder-origin-art) { position: relative; padding-left: 92px; min-height: 92px; }
+.trpg-root.trpg-cinematic .trpg-builder-origin-art { position: absolute; left: 8px; top: 8px; bottom: 8px; width: 72px; overflow: hidden; border-radius: 6px; border: 1px solid #e3d7b66b; }
