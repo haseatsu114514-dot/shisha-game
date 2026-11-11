@@ -235,6 +235,8 @@ export async function runHoles(cs) {
     punchBtn.disabled = finished || ringComplete();
     nextBtn.disabled = finished || !ringComplete() || ri === state.length - 1;
     doneBtn.disabled = finished || !ready;
+    // 初めの一行は操作の案内（新しい配置では常設しない・CSL15）。完成などの知らせは出す。
+    plan.dataset.tone = ready || ringComplete() || elapsed >= limit ? "notice" : "hint";
     plan.textContent = ready ? "選んだ配置が完成。結果を確認しよう"
       : ringComplete() ? "リング完成。「次のリングへ」で残りの目印を開けよう"
       : elapsed >= limit ? "時間評価は終了。穴あけは続けられます"

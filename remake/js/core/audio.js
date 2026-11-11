@@ -541,6 +541,13 @@ export const SE = {
   twinkle: () => { [1047, 1319, 1568, 2093].forEach((freq, i) => tone({ freq, type: "sine", dur: 0.22, vol: 0.11, delay: i * 0.07 })); noise({ dur: 0.3, vol: 0.04, filter: 7000, type: "highpass", delay: 0.1 }); },
   // 日付カードなど短いUI音（録音が無ければ短いクリック）。
   card: () => tone({ freq: 880, to: 660, type: "triangle", dur: 0.08, vol: 0.1 }),
+  // シーシャくじのガラガラ（motions/garagara.js）と賞の札（daily/kuji-reveal.js）
+  kujiCharge: (sec = 1.4) => { tone({ freq: 196, to: 740, type: "triangle", dur: sec, vol: 0.05, attack: sec * 0.5 }); noise({ dur: sec, vol: 0.05, filter: 500, q: 0.7, sweepTo: 4200 }); },
+  kujiShimmer: (n = 8) => { for (let i = 0; i < n; i++) tone({ freq: 2100 + Math.random() * 2600, type: "sine", dur: 0.2, vol: 0.045, delay: i * 0.05 + Math.random() * 0.03 }); },
+  kujiImpact: () => { tone({ freq: 130, to: 42, type: "sine", dur: 0.5, vol: 0.4 }); noise({ dur: 0.32, vol: 0.18, filter: 1500, sweepTo: 220 }); },
+  kujiRare: () => [784, 988, 1175, 1568, 1976].forEach((freq, i) => tone({ freq, type: "triangle", dur: 0.32, vol: 0.11, delay: i * 0.06 })),
+  kujiNote: (i = 0) => { const scale = [523, 587, 659, 784, 880, 1047, 1175, 1319, 1568, 1760, 2093]; tone({ freq: scale[Math.min(i, scale.length - 1)], type: "triangle", dur: 0.14, vol: 0.13 }); },
+  kujiFlip: () => { noise({ dur: 0.07, vol: 0.09, filter: 2600, q: 0.9 }); tone({ freq: 700, to: 1100, type: "triangle", dur: 0.07, vol: 0.07 }); },
 };
 
 // 斧投げ専用の合成音。共通の音量・ミュート・非表示停止を通し、外部音源は使わない。
