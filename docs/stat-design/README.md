@@ -8,6 +8,7 @@
 - 盤・レベルアップの画面は絵と数が中心で、説明は「？」の絵つきの見方（`daily/growth-board-help.js`）とチュートリアルにある（SBD116〜119）。
 - 火種4種・レベルアップの札の板と光・盤の札・マスの印の台・丸いボタンなどは Codex の絵（[依頼文と使い所](../../asset_sources/ui/growth-board-20261111/README.md)・SBD121・SBD123）。火種は A案「火を封じた玉」（2026-11-11 オーナー決定）。絵が読めない時は CSS の形のまま動く。
 - 新版でまだ図形のままの部品（右のパネル・近い目的地の行・小さな札・「ながれ」の絵・節目の紋）は Codex に依頼中（[第2弾の依頼文](../../asset_sources/ui/growth-board-20261112/README.md)・SBD124・Issue #3408）。見直しで挙げたほかの点は台帳 SBD125。
+- スキルの絵の欄は、白黒の漫画のコマにそろえる依頼中（[依頼文](../../asset_sources/ui/growth-board-skill-manga-20261112/README.md)・SBD129）。届くまでは、はじめの立ち絵のまま。
 - 節目・♥5は色の火1＋白火1、大会の優勝で白火3つ、近くの帯×2、K20 は＋4%。仕様は SPEC 1.5・1.7・3.7・6.3。
 - 確認: `node remake/test/growth_levelup.mjs`、`node --experimental-vm-modules remake/test/kannon_growth.mjs`、`node remake/test/browser/growth_fx.mjs`。
 
