@@ -2,6 +2,7 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import vm from "node:vm";
+import { chapterFiveUnrecordedDialogue } from "../js/chapters/ch5-unrecorded.js";
 globalThis.document = { addEventListener() {} }; globalThis.window = {};
 const storage = new Map();
 globalThis.localStorage = { getItem: k => storage.get(k) ?? null, setItem: (k,v) => storage.set(k,String(v)), removeItem: k => storage.delete(k) };
@@ -23,7 +24,7 @@ const syncBindings=()=>stateBindings.forEach(m=>m.setExport("state",core.state))
 async function runner(name,progress,exposed){
   let owner,screen,cancel=false,swap=false,craft,snapshots=[],replacement,nightBefore,pauseAtSave=true;
   const noop=()=>{};
-  const ports={createChapterMenu: () => () => {}, ...progress,...growth,el:node,DB:{dialogues},bgUrl:x=>x,
+  const ports={chapterFiveUnrecordedDialogue,createChapterMenu: () => () => {}, ...progress,...growth,el:node,DB:{dialogues},bgUrl:x=>x,
     chapterFourMapModel:map4.chapterFourMapModel,canReflect:()=>false,loverMilestonesDue:()=>[],readLoverMilestone:async()=>false,paidAction:stats.paidAction,
     chapterDay:()=>core.state.day,chapterGrowthNight:async()=>true,createChapterActions:opts=>actions.createChapterActions(opts),
     layers:{hud:{replaceChildren:noop,classList:{remove:noop}}},showScreen:(_id,n)=>{screen=n;},

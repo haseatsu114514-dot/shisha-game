@@ -32,9 +32,9 @@ export const CH2_CLOSED_ON = Object.freeze({ kumicho: 0, rei: 1 });
 // 通い訪問の小会話。初回相談と続編だけを前提にし、来店数で巡回する（#2027）
 // あげはの b〜d は ch2_ageha_story.json（VOL13）。大会の前後どちらに読んでも成り立つ話だけにする（出発前の準備期間でも読む）。
 const REPEAT_POOL = {
-  ageha: ["remake_ch2_ageha_repeat", "remake_ch2_ageha_repeat_b", "remake_ch2_ageha_repeat_c", "remake_ch2_ageha_repeat_d"],
-  kumicho: ["remake_ch2_kumicho_repeat", "remake_ch2_kumicho_repeat_b", "remake_ch2_kumicho_repeat_c", "remake_ch2_kumicho_repeat_d"],
-  rei: ["remake_ch2_rei_repeat", "remake_ch2_rei_repeat_b", "remake_ch2_rei_repeat_c", "remake_ch2_rei_repeat_d"],
+  ageha: ["remake_ch2_ageha_repeat", "remake_ch2_ageha_repeat_b", "remake_ch2_ageha_repeat_c", "remake_ch2_ageha_repeat_d", "remake_ch2_ageha_repeat_e"],
+  kumicho: ["remake_ch2_kumicho_repeat", "remake_ch2_kumicho_repeat_b", "remake_ch2_kumicho_repeat_c", "remake_ch2_kumicho_repeat_d", "remake_ch2_kumicho_repeat_e"],
+  rei: ["remake_ch2_rei_repeat", "remake_ch2_rei_repeat_b", "remake_ch2_rei_repeat_c", "remake_ch2_rei_repeat_d", "remake_ch2_rei_repeat_e"],
 };
 function repeatScene(id) {
   const pool = (REPEAT_POOL[id] || []).filter(scene => DB.dialogues[scene]?.lines?.length);
@@ -306,4 +306,5 @@ export async function runChapterTwoPreparation() {
     nightEvents: chapterTwoNights(startDay),
   });
 }
+
 

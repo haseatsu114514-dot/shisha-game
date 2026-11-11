@@ -11,6 +11,7 @@ import { stepPack } from "./steps.js";
 import { runHoles } from "./holes.js";
 import { runHeat } from "./heat.js";
 import { mountWaterPour } from "./water-pour-view.js";
+import { initCraftStage } from "./stage-layout.js";
 
 function activeStep(step) {
   document.querySelectorAll("[data-preview-step]").forEach(link => {
@@ -23,6 +24,7 @@ export async function boot() {
   window.addEventListener("pointerdown", unlockAudio); window.addEventListener("keydown", unlockAudio);
   installRotateGuard(); // 縦持ちの回転ガード中は、制作の時計と音を止める（#2941）
   initLayers();
+  initCraftStage(); // 新しい配置（?craftStage=1）も本編と同じ切り替えで試せる
   await Promise.all([loadAll(), document.fonts.ready]);
   newGame(); // メモリ上の一台だけ。load / save / 設定の読込は呼ばない。
   const query = new URLSearchParams(location.search);

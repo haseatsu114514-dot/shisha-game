@@ -557,3 +557,73 @@ html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-builder .trpg-bu
 html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-builder-stat-rows dd .trpg-button { min-width: var(--q-hit); min-height: var(--q-hit); font-size: var(--b-name); }
 html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-builder-stage .trpg-modal-actions .trpg-button { font-size: var(--b-text); }
 html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-builder-stats .trpg-builder-name input { min-height: var(--q-hit); }
+
+/* ---------------------------------------------------------------- 行動宣言は「手札のカード」（TMX05・TMX07、2026-11-11 オーナー「深緑のウインドウに頼りすぎ」「文字数が多い所はアイコン化」）。
+   深緑の箱をやめて生成りの紙のカードにし、左上に役の姿、右上に「おすすめ」の札、下に能力と見込み。長い但し書きは短い札にして、説明は title と「？」へ。 */
+html:root .trpg-root.trpg-cinematic .trpg-approach {
+  position: relative; display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: 12px; row-gap: 8px; align-content: start; min-height: 0;
+  border: 1px solid #b89b62; border-radius: 10px; color: #2a1b0c; text-shadow: none;
+  background: linear-gradient(168deg, #fdf8ea 0%, #f1e6cb 62%, #e6d7b4 100%); box-shadow: 0 2px 0 #a88a58, 0 12px 26px #0009;
+}
+html:root .trpg-root.trpg-cinematic .trpg-approach:hover:not(:disabled),
+html:root .trpg-root.trpg-cinematic .trpg-approach:focus-visible { border-color: #8a6524; background: linear-gradient(168deg, #fffdf4, #f6ecd2); }
+html:root .trpg-root.trpg-cinematic .trpg-approach[data-best="true"] { border-color: #8a6524; box-shadow: 0 0 0 2px #e9c36a, 0 2px 0 #a88a58, 0 12px 26px #0009; }
+html:root .trpg-root.trpg-cinematic .trpg-approach .trpg-approach-copy { display: contents; }
+html:root .trpg-root.trpg-cinematic .trpg-approach .trpg-approach-face { grid-column: 1; grid-row: 1 / span 2; }
+html:root .trpg-root.trpg-cinematic .trpg-approach .trpg-approach-copy small { grid-column: 2; grid-row: 1; align-self: end; color: #6b5637; }
+html:root .trpg-root.trpg-cinematic .trpg-approach .trpg-approach-copy strong { grid-column: 2; grid-row: 2; align-self: start; color: #2a1b0c; font-weight: 700; }
+html:root .trpg-root.trpg-cinematic .trpg-approach .trpg-approach-copy span { grid-column: 1 / -1; color: #4a3d28; }
+html:root .trpg-root.trpg-cinematic .trpg-approach .trpg-approach-meta { grid-column: 1 / -1; padding-top: 8px; border-top: 1px dashed #b89b6299; }
+html:root .trpg-root.trpg-cinematic .trpg-approach .trpg-approach-meta b { color: #fff6df; background: linear-gradient(135deg, #2f5a55, #1c3d3b); }
+html:root .trpg-root.trpg-cinematic .trpg-approach .trpg-approach-meta small { color: #3d3221; }
+html:root .trpg-root.trpg-cinematic .trpg-approach .trpg-approach-meta i { flex-basis: auto; padding: 1px 9px; border-radius: 999px; font-weight: 700; }
+html:root .trpg-root.trpg-cinematic .trpg-approach .trpg-approach-meta .trpg-approach-first { color: #8a3d0c; background: #f6d9a8; }
+html:root .trpg-root.trpg-cinematic .trpg-approach .trpg-approach-meta .trpg-approach-best {
+  position: absolute; top: -11px; right: 12px; color: #2a1b0c; background: linear-gradient(135deg, #f7dc8c, #dcae4a); box-shadow: 0 2px 5px #0006;
+}
+
+/* しおりと見た結末（TMX13・TMX14）: 本の札の中で1行ずつ。しおりは紙の付箋の色。 */
+html:root .trpg-campaign-memory .trpg-campaign-endings { display: block; margin-top: 4px; color: var(--tt-brass-hi); font-weight: 700; }
+html:root .trpg-campaign-book .trpg-campaign-bookmark { display: block; margin: 4px 0 6px; padding: 3px 10px; border-left: 4px solid #c8553d; border-radius: 3px;
+  background: #f3e6c8; color: #3a2a14; font-weight: 700; }
+
+/* 会話を飛ばす「≫」（#3199 C4）: 「次へ」の左に控えめに。押せる大きさは「次へ」と同じ規格。 */
+html:root .trpg-root.trpg-cinematic .trpg-skip { align-self: flex-end; min-width: 64px; min-height: 43px; margin: 0 10px 32px 0; padding: 6px 12px;
+  border: 1px solid #d2ae6655; border-radius: 6px; background: transparent; color: #d8cfae; font-size: 20px; box-shadow: none; }
+html:root .trpg-root.trpg-cinematic .trpg-skip:hover:not(:disabled) { color: var(--tt-brass-hi); border-color: #d2ae66aa; background: #d2ae6614; }
+@media (pointer: coarse) { html:root .trpg-root.trpg-cinematic .trpg-skip { min-width: 84px; min-height: 84px; margin-bottom: 22px; } }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-skip { min-height: var(--phone-tap); min-width: var(--phone-tap); font-size: var(--phone-text); }
+/* 上の帯の印を押した時の一行（TMX05）。 */
+html:root .trpg-root.trpg-cinematic :is(.trpg-teamwork, .trpg-heat) { cursor: pointer; }
+html:root .trpg-root.trpg-cinematic .trpg-chrome-tip {
+  position: absolute; z-index: 30; top: calc(100% + 8px); left: 14px; max-width: 760px; margin: 0; padding: 8px 14px; border-radius: 8px;
+  border: 1px solid #d2ae66aa; background: #2a1b0cf0; color: #fff3d6; font-size: 17px; line-height: 1.5; box-shadow: 0 8px 20px #0008;
+}
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-chrome-tip { font-size: var(--phone-text); max-width: 1100px; }
+
+/* ---------------------------------------------------------------- 深緑の箱に頼らない（TMX07・2026-11-11 オーナー「ウインドウは推奨で」）。
+   台詞: 箱をやめ、部屋の絵の下側を暗く溶かした帯に文字を置く（物語の中にいる感じを残す）。
+   キャラ作成: 紙のキャラクターシートに書き込む形（卓のシートと同じ生成りの紙）。 */
+html:root .trpg-root.trpg-cinematic .trpg-dock {
+  background: linear-gradient(180deg, #04101100 0%, #04101199 26%, #040e0fe0 62%, #030b0cf2 100%);
+  box-shadow: none;
+}
+html:root .trpg-root.trpg-cinematic .trpg-dock .trpg-speech p { text-shadow: 0 1px 2px #000, 0 0 10px #000a; }
+html:root .trpg-root.trpg-cinematic .trpg-dock .trpg-speaker-label strong { text-shadow: 0 1px 2px #000; }
+
+html:root .trpg-root.trpg-cinematic .trpg-builder section {
+  border: 1px solid #b89b62; border-radius: 6px; color: #2a1b0c;
+  background: linear-gradient(170deg, #fbf5e6, #efe3c6 70%, #e6d6b2); box-shadow: 0 2px 0 #a88a58, 0 12px 26px #0008;
+}
+html:root .trpg-root.trpg-cinematic .trpg-builder h3 { color: #6b4a1e; }
+html:root .trpg-root.trpg-cinematic .trpg-builder-origin { border-color: #c9b07a; background: #fffaf0; color: #2a1b0c; }
+html:root .trpg-root.trpg-cinematic .trpg-builder-origin strong { color: #2a1b0c; font-weight: 700; }
+html:root .trpg-root.trpg-cinematic .trpg-builder-origin > span,
+html:root .trpg-root.trpg-cinematic .trpg-builder-origin small { color: #5a4528; }
+html:root .trpg-root.trpg-cinematic .trpg-builder-origin:hover:not(:disabled) { border-color: #8a6524; background: #fffdf6; }
+html:root .trpg-root.trpg-cinematic .trpg-builder-origin.selected { border-color: #8a6524; background: #f7e7bf; box-shadow: inset 0 0 0 2px #d9ad4f; }
+html:root .trpg-root.trpg-cinematic .trpg-builder-origin-art { border-color: #c9b07a; }
+html:root .trpg-root.trpg-cinematic .trpg-builder :is(.trpg-builder-points, .trpg-builder-easy, .trpg-builder-hint, .trpg-builder-stat-help, .trpg-builder-stat-rows dt, .trpg-builder-stat-rows dd > span) { color: #3d2c16; }
+html:root .trpg-root.trpg-cinematic .trpg-builder .trpg-builder-stat-rows i b { background: #d8cbad; }
+html:root .trpg-root.trpg-cinematic .trpg-builder .trpg-builder-stat-rows i b.lit { background: linear-gradient(180deg, #e7b955, #b8862c); }
+html:root .trpg-root.trpg-cinematic .trpg-builder .trpg-button:not(.trpg-builder-origin):not(.trpg-help-button) { border-color: #8a6524; background: #2f5a55; color: #fff6df; }

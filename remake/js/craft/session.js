@@ -41,6 +41,7 @@ import { provisionalCraftScore } from "./score.js";
 import { buildRigRecord } from "./rig-record.js";
 import { buildRivalWindows } from "./rival-windows.js";
 import { demoFor, openDemoSheet } from "./demo.js";
+import { craftStageEnabled } from "./stage-layout.js";
 
 // ライバルの顔アイコンを読むまでの間（作業台の準備が済んでから）
 const RIVAL_FACE_DELAY_MS = 1200;
@@ -185,12 +186,16 @@ export function openBench(cs, { steps = [], entryAssets = null } = {}) {
     updateBenchRank();
     // 一台の記録（CFX03）: ランクと同じ場面だけ、作業風景の隅に工程の灯を並べる
     bench.record = buildRigRecord();
-    worker.root.querySelector(".bench-worker-stage")?.append(bench.record.aura, bench.record.root);
+    // 新しい配置（CSL）では、灯とライバルの小窓を作業風景の上ではなく上のレールへ置く（気配の光は作業風景に残す）
+    const workerStage = worker.root.querySelector(".bench-worker-stage");
+    const railHost = craftStageEnabled() ? root.querySelector(".bench-top") : workerStage;
+    workerStage?.append(bench.record.aura);
+    railHost?.append(bench.record.root);
     bench.record.restore(cs);
     // ライバルの小窓（CFX04）: 大会だけ。隣の台の進み具合を工程ごとの灯で見せる
     bench.rivals = buildRivalWindows(cs);
     if (bench.rivals) {
-      worker.root.querySelector(".bench-worker-stage")?.append(bench.rivals.root);
+      railHost?.append(bench.rivals.root);
       bench.rivals.restore(bench.record);
       const dispose = b.disposeRank;
       b.disposeRank = () => { dispose(); b.rivals?.dispose(); };
@@ -315,7 +320,7 @@ export async function explainStepOnce(cs, id, panelId = id) {
   const seen = state.flags.seenStepIntro ||= {};
   if (seen[id]) return true;
   if (b.pendingIntro?.id === id) return (await b.pendingIntro.promise) && current();
-  const text = TUTORIAL_STEP_HELP[id]?.detail || b.guide.note.textContent;
+  const text = cs.lessonHelp?.[id]?.detail || TUTORIAL_STEP_HELP[id]?.detail || b.guide.note.textContent;
   if (!text) { seen[id] = true; return true; }
   const pending = waitGuideRead(b, current, panelId, text);
   b.pendingIntro = { id, promise: pending };

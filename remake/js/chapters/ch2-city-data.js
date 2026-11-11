@@ -52,6 +52,8 @@ export async function loadPreparationDialogues() {
   required.push(...["kumicho", "rei"].map(id => `remake_ch2_${id}_revisit`));
   // 神崎・レヰの通い訪問の小会話（#2027）
   required.push(...["kumicho", "rei"].flatMap(id => ["b", "c", "d"].map(suffix => `remake_ch2_${id}_repeat_${suffix}`)));
+  // 店の手入れ・出前・CDの入れ替え。大会の前後を問わない通いの日常（#3097）。
+  required.push(...["ageha", "kumicho", "rei"].map(id => `remake_ch2_${id}_repeat_e`));
   // 好感度MAXの締めくくり（daily/bonds.js の BOND_FINALES・#2027）
   const files = { ch2_preparation: required, ch2_deliveries: [...PURIKURA_IDS, ...DISCOVERY_IDS, ...OUTING_IDS],
     ch2_kumicho: ["ch2_kumicho_bond_finale"], ch2_rei: ["ch2_rei_bond_finale"] };
@@ -69,7 +71,7 @@ export async function loadPreparationDialogues() {
   const groups = await Promise.all(Object.entries(files).map(async ([file, ids]) => {
     const dialogues = await readDialogues(file, ids);
     if (file === "ch2_preparation") {
-      for (const id of ids.filter(id => /_(followup|revisit)$/.test(id))) {
+      for (const id of ids.filter(id => /_(followup|revisit|repeat_e)$/.test(id))) {
         if (!dialogues[id].lines.every(line => line && !line.type && typeof line.text === "string"
           && line.text.length > 0 && typeof line.speaker === "string" && typeof line.face === "string")) {
           throw new Error(`${file}: 続編・再訪台本の形式を確認してください ${id}`);
@@ -80,3 +82,4 @@ export async function loadPreparationDialogues() {
   }));
   Object.assign(DB.dialogues, ...groups);
 }
+

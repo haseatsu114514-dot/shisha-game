@@ -1,5 +1,6 @@
 // シーシャ作り「一枚の舞台」レイアウト案の静止モック。
 // 本編の工程・判定・保存は読まない（絵と文字を新しい配置に並べるだけ）。
+// 操作の案内文は画面に常設しない（「？」と初回の説明で読む。2026-11-10 オーナー指示）。
 // ?step=mix|pack|holes|heat|timer|steam|pull|care  ?mode=practice|tournament  ?zones=1  ?bare=1
 const IMG = "../../img/";
 const M = `${IMG}ui/making/`;
@@ -124,7 +125,7 @@ const SCENES = {
         <div class="gram">12.0<small> / 12 g</small></div><div class="gram-bar"><i></i></div>
         <div class="recipe">氷レモネード</div>
         <div class="taste glass">
-          <div>甘い印象<i style="--a:10%;--b:52%"></i></div><div>清涼感<i style="--a:25%;--b:75%"></i></div><div>煙の厚み<i style="--a:11%;--b:53%"></i></div>
+          <div>甘い印象<i style="--a:10%;--b:52%"></i></div><div>清涼感<i style="--a:25%;--b:75%"></i></div><div>煙の量<i style="--a:11%;--b:53%"></i></div>
         </div>
         <div class="mix-keep">フレーバーの持ち${leaves(5)}</div>
       </div>
@@ -150,7 +151,7 @@ const SCENES = {
         <div class="opt glass">デンスパック<small>熱が強く入る</small></div>
       </div>
     </div>`,
-    dock: `<div class="grow"><span class="brief">ボウルを見比べて、<em>詰め方をひとつ</em>選ぶ</span></div><button class="btn gold">この詰め方で決める</button>`,
+    dock: `<div class="grow"></div><button class="btn gold">この詰め方で決める</button>`,
     voice: ["sumi", "スミさん", "詰め方で空気の通り道を作れ"],
   }),
   holes: () => ({
@@ -171,7 +172,6 @@ const SCENES = {
     hero: `<img src="${M}hajime_craft_heat.webp" alt="" style="left:-170px;bottom:0;width:720px">`,
     spine: spine({ kind: "standby" }),
     play: `<div class="heat">
-      <span class="chip heat-brief">全面が赤くなった炭を<em>タップして取る</em></span>
       ${art("heat_stove", 850, { cls: "stove", style: "left:6px;top:118px" })}
       ${art("heat_flat_cold", 176, { cls: "coal", style: "left:290px;top:112px" })}
       ${art("heat_flat_lit", 176, { cls: "coal", style: "left:122px;top:296px;filter:brightness(.8) saturate(.8)" })}
@@ -189,7 +189,7 @@ const SCENES = {
         <span class="key" style="left:15%">分</span><span class="key" style="left:34%">秒</span><span class="key" style="left:60%">スタート<br>＆ストップ</span><span class="key small" style="left:85%">リセット</span></div>
       <div class="timer-notes"><span class="chip">☀ 晴れ・28℃</span><span class="chip">雑念よけは 約40秒</span></div>
     </div>`,
-    dock: `<div class="grow"><span class="brief">柱の<em>点線</em>を見ながら、蒸らす時間を決める</span></div>`,
+    dock: `<div class="grow"></div>`,
     voice: ["sumi", "スミさん", "熱の目安を見て、決めろ"],
   }),
   // 蒸らし: スティックと補助ボタンは今と同じく近くにまとめる（押しやすさのための配置。2026-11-10 オーナー指示）
@@ -208,7 +208,7 @@ const SCENES = {
       </div>
       <i class="steam-bar"><b></b></i>
     </div>`,
-    dock: `<div class="grow"><span class="brief">ハートを動かして<br><em>雑念をよける</em></span></div>`,
+    dock: `<div class="grow"></div>`,
     voice: null,
     extra: `<div class="steam-ctrl">
         <div class="pad"><img src="${M}steam_refresh_simple.webp" alt=""><b>リフレッシュ</b></div>
@@ -240,7 +240,7 @@ const SCENES = {
         ${[["交換しない", 0], ["1個", 1], ["2個", 2], ["3個", 3]].map(([label, n]) => `<div class="glass"><div class="coals">${n ? Array.from({ length: n }, () => `<img src="${M}coal_just.webp" alt="">`).join("") : `<img src="${M}coal_white.webp" alt="" style="filter:grayscale(1)">`}</div>${label}</div>`).join("")}
       </div>
     </div>`,
-    dock: `<div class="grow"><span class="brief">炭を替えてから、<em>吸って整える</em></span></div>`,
+    dock: `<div class="grow"></div>`,
     voice: ["sumi", "スミさん", "吸われた一台は冷えていく"],
   }),
 };

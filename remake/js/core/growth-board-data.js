@@ -64,7 +64,7 @@ export const GRID = { w: 6, h: 8 }; // x は −w〜w、y は −h〜0（紋は�
  * そのマスを灯すと開く。どのマスかは BOARD_SHAPES の5つ目。効き目は growth-effects.js と各制作工程へ接続。通常公開前は GROWTH_BOARD の裏。
  */
 export const FEATURES = {
-  stage: { board: "body", name: "審査員の第一印象", text: "大会で審査員の第一印象が良く、少し加点される" },
+  stage: { board: "body", name: "審査員の第一印象", bonus: 0.3, text: "大会で審査員の第一印象に＋0.3点（人柄の伸びとは別に加点）" },
   omen: { board: "sense", name: "事故の予兆", text: "事故の予兆（焦げ・熱すぎ・吸いすぎ）が見える" },
   mental: { board: "sense", name: "弾消しで回復", text: "蒸らしで弾を消すと、メンタルも少し回復する" },
   insurance: { board: "sense", name: "一度だけの保険", text: "大会の一台で一度だけ、大失敗を防ぐ" },
@@ -81,13 +81,13 @@ export const FEATURES = {
  * 数字は仮（効き目は C5 で決める）。bonus は帯の倍率にさらに掛ける倍率。
  */
 export const NOTABLES = {
-  friendly: { board: "body", name: "人懐こい", text: "初めて会った日の好感度が少し上がりやすい", bonus: 1.5 },
+  friendly: { board: "body", name: "人懐こい", text: "交流した時の好感度が少し上がりやすい（初対面の固定分は除く）", bonus: 1.5 },
   spotlight: { board: "body", name: "舞台映え", text: "提供の時、審査員の目が集まる", bonus: 1.5 },
-  ironsleep: { board: "body", name: "不眠の体", text: "寝不足の日でも体力の減りが小さい", bonus: 1.5 },
-  fire_eye: { board: "sense", name: "火の目", text: "炭焼きのジャスト帯が目で分かりやすい", bonus: 1.5 },
+  ironsleep: { board: "body", name: "不眠の体", text: "眠った時の体力の回復が増える", bonus: 1.5 },
+  fire_eye: { board: "sense", name: "火の目", text: "蒸らしで雑念に当たりにくくなる", bonus: 1.5 },
   smoke_breath: { board: "sense", name: "煙の呼吸", text: "リフレッシュの範囲が一回り広い", bonus: 1.5 },
-  hairbreadth: { board: "sense", name: "紙一重", text: "蒸らしの弾を紙一重でかわせる", bonus: 1.5 },
-  leaf_eye: { board: "wisdom", name: "葉の目利き", text: "葉の傷みが見た目で分かる", bonus: 1.5 },
+  hairbreadth: { board: "sense", name: "紙一重", text: "リフレッシュで広い範囲の雑念を消せる", bonus: 1.5 },
+  leaf_eye: { board: "wisdom", name: "葉の目利き", text: "吸いすぎた時の葉の傷みが小さくなる", bonus: 1.5 },
   golden_tongue: { board: "wisdom", name: "黄金の舌", text: "黄金比に近いほど舌が教える", bonus: 1.5 },
   long_coal: { board: "wisdom", name: "長持ちの炭", text: "炭の熱が長く持つ", bonus: 1.5 },
 };
@@ -103,7 +103,7 @@ export const SQUARE_PERKS = {
     base: { glyph: "基", name: "基礎", text: "最大体力 ＋{1}・寝た時の回復 ＋{1}%" },
     perks: {
       stamina: { glyph: "体", name: "体力", text: "最大体力 ＋{4}" },
-      sleep: { glyph: "眠", name: "眠り", text: "寝た時の体力の回復 ＋{2}%" },
+      sleep: { glyph: "眠", name: "眠り", text: "寝た時の体力の回復 ＋{2}%（端数は次の睡眠へ）" },
       charm: { glyph: "人", name: "人柄", text: "好感度が上がりやすく（＋{1}%）" },
       stage: { glyph: "華", name: "華", text: "大会の審査員の第一印象 ＋{0.3}" },
     },
@@ -281,4 +281,6 @@ export const PLAY_REWARDS = [
 /** くじのラストワン賞（中身はシークレット）。箱を引き切るたびに色つきの火種1つ（いちばん伸びの少ない盤の色）。
  * 第5章の限定台くじ（core/rules.js の KUJI_LIMITED_GRADES・KJ05）は付けない（#2455） */
 export const KUJI_LAST_ONE_GIFT = 1;
+
+
 

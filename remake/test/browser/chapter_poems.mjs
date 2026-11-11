@@ -139,15 +139,15 @@ await suite("chapter-poems", async check => {
     const phase = () => page.locator(POEM).evaluate(node => node.dataset.phase);
     const holding = () => page.waitForFunction(() => document.querySelector('[data-test="chapter-poem"]')?.dataset.phase === "holding");
 
-    // 1) 見た目: 第2章の詩は2場面（2行／最後の1行）。縦書き・行ごとに浮かぶ
+    // 1) 見た目: 第2章の詩は2場面（4行／2行）。縦書き・行ごとに浮かぶ
     await start(2);
     await page.locator(`${POEM}[data-poem="poem_ch2"]`).waitFor();
     assert.equal(await page.locator(POEM).evaluate(node => node.dataset.pages), "2", "連ごとに場面を分ける");
     assert.equal(await cardPage(), "0");
     assert.equal(await page.locator(`${POEM} .cp-page.now .cp-body`).evaluate(node => getComputedStyle(node).writingMode), "vertical-rl");
-    assert.equal(await page.locator(`${POEM} .cp-line`).count(), 3);
+    assert.equal(await page.locator(`${POEM} .cp-line`).count(), 6);
     assert.equal(await page.locator(`${POEM} .cp-page.now`).count(), 1, "いま見えている場面は1つ");
-    assert.equal(await page.locator(`${POEM} .cp-page.now .cp-line`).count(), 2, "1場面目は2行");
+    assert.equal(await page.locator(`${POEM} .cp-page.now .cp-line`).count(), 4, "1場面目は4行");
     assert.ok(await page.locator(`${POEM} .cp-page.now .cp-line.on`).count() < 2, "最初から全行は出ていない（行ごとに浮かぶ）");
     assert.equal(await page.locator(`${POEM} .cp-line rt`).count(), 0, "いまの詩にふりがなは無い（本家の巻頭詩もほぼ使わない）");
     // 詩の上に、横長のコマ絵（絵の比率のまま。4:1〜5.6:1）。細い枠つきで、詩より上に置く
@@ -171,7 +171,7 @@ await suite("chapter-poems", async check => {
     await start(2);
     await page.locator(`${POEM} .cp-page.now .cp-line.on`).first().waitFor();
     await page.mouse.click(640, 360);
-    await page.waitForFunction(() => document.querySelectorAll('[data-test="chapter-poem"] .cp-page.now .cp-line.on').length === 2);
+    await page.waitForFunction(() => document.querySelectorAll('[data-test="chapter-poem"] .cp-page.now .cp-line.on').length === 4);
     assert.equal(await cardPage(), "0", "残りを出しても場面は変わらない");
     // 読み終えた段（holding）で、直後の誤タップでは進まず、少し置いてのタップで次の場面へ
     await holding();
@@ -182,10 +182,10 @@ await suite("chapter-poems", async check => {
     await page.mouse.click(640, 360);
     await page.waitForFunction(() => document.querySelector('[data-test="chapter-poem"]')?.dataset.page === "1");
     assert.equal(await page.locator(`${POEM} .cp-page.now`).count(), 1);
-    assert.equal(await page.locator(`${POEM} .cp-page.now .cp-line`).count(), 1, "2場面目は最後の1行");
+    assert.equal(await page.locator(`${POEM} .cp-page.now .cp-line`).count(), 2, "2場面目は2行");
     assert.equal(await page.locator(`${POEM} .cp-page.now.last`).count(), 1, "最後の場面");
-    // 最後の場面: 1行が浮かび終えて読み終えた段になっても、ひとりでには閉じない（タップか時間で閉じる）
-    await page.waitForFunction(() => document.querySelectorAll('[data-test="chapter-poem"] .cp-page.now .cp-line.on').length === 1);
+    // 最後の場面: 2行が浮かび終えて読み終えた段になっても、ひとりでには閉じない（タップか時間で閉じる）
+    await page.waitForFunction(() => document.querySelectorAll('[data-test="chapter-poem"] .cp-page.now .cp-line.on').length === 2);
     await holding();
     assert.equal(await page.evaluate(() => window.RESULT), undefined, "読み終えた直後には閉じない");
     await page.waitForTimeout(400);
@@ -257,7 +257,7 @@ await suite("chapter-poems", async check => {
     await page.locator(`${POEM}[data-poem="poem_ch3"]`).waitFor();
     // 動き軽減では行ごとの演出をせず、場面の行を最初から全部出す（フェードだけ）。場面の分け方は同じ。
     assert.equal(await page.locator(POEM).evaluate(node => node.dataset.pages), "2");
-    await page.waitForFunction(() => document.querySelectorAll('[data-test="chapter-poem"] .cp-page.now .cp-line.on').length === 3, null, { timeout: 3000 });
+    await page.waitForFunction(() => document.querySelectorAll('[data-test="chapter-poem"] .cp-page.now .cp-line.on').length === 2, null, { timeout: 3000 });
     await page.keyboard.press("Control");
     await page.waitForFunction(() => window.RESULT === true);
   }, { reducedMotion: "reduce" });

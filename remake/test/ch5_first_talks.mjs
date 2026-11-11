@@ -143,3 +143,6 @@ assert(shopCallAt >= 0 && edenFreeAt >= 0, "ch5-daily.js: performChapterFiveShop
 assert(shopCallAt < edenFreeAt);
 
 console.log("PASS: Chapter 5 first talks (Adam, Rei, Kanzaki): gating, read once, carry and scripts");
+
+// 日程を決める前の必須場面も、この quick 入口で検査する。
+await import("./ch5_unrecorded.mjs");
