@@ -323,6 +323,18 @@
       "char_id": "noor",
       "dialogue_id": "ch4_noor_talk2",
       "echo": "（砂を見て、その日の線を決める。ヌールさんの言葉が、炭の前でよみがえる）"
+    },
+    {
+      "id": "tofu_regular_throat",
+      "char_id": "customer",
+      "dialogue_id": "ch3_chain_tofu_3",
+      "echo": "（豆腐屋さんの「喉が、静かだ」という声を、まだ覚えている）"
+    },
+    {
+      "id": "dubai_cafe_second_bowl",
+      "char_id": "customer",
+      "dialogue_id": "ch4_chain_bowl_3",
+      "echo": "（ドバイのカフェの客は、一つ目の続きを二つ目のボウルに載せていた）"
     }
   ]
 }

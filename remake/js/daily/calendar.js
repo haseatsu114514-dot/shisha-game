@@ -35,6 +35,7 @@ import { invitationCost, invitationGrowth, storeInvitationSpot, storeInvitationD
 import { visitHiyoriAtShop, playHiyoriEvent, playHiyoriHangout, hiyoriShopLocation } from "./hiyori.js";
 import { cityGuestAtShop, visitCityGuestAtShop } from "./city-guests.js";
 import { roamerAt, meetRoamer } from "./roamers.js";
+import { recipeFindAfterVisit } from "./recipe-finds.js";
 import { restingToday, syncNightQueue, nightPlan, nightOccupied, runNightPlan, fixedNightVisitBlock } from "./night-events.js";
 import { openTrpgBar } from "./trpg.js";
 import { presentNight, reflectAtSpot, consultLessons } from "../core/growth.js";
@@ -622,6 +623,8 @@ async function performSpotAction(spot) {
   if (chapterDef.performSpot) {
     const result = await chapterDef.performSpot(spot, { staminaGuard });
     if (result) {
+      // 第3章以降の店の人が、配合を教える／名前を付けた一台を受け取る（#2020 G・daily/recipe-finds.js）
+      if (result.used && state === actionOwner) await recipeFindAfterVisit(spot, { bg: roamerBg() });
       if (result.used && state === actionOwner) await meetRoamer(spot, scheduledRoamer, { bg: roamerBg() });
       return result;
     }

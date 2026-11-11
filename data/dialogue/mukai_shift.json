@@ -1,5 +1,5 @@
 {
-  "comment": "東京の mukai のシフトの客の反応（VOL09）。chapters/tokyo-mukai.js の今日の注文（二択）に対応。第3章・第5章の東京で共通。報酬は台詞に書かない（日当・体力・能力はコードが付ける）。はじめの味覚が戻る前でも読めるよう、自分の舌の感想ではなく組み立てと客の言葉で書く。",
+  "comment": "東京の mukai のシフトの客の反応（VOL09）。chapters/tokyo-mukai.js の今日の注文（二択）に対応。第3章・第5章の東京で共通。一度シフトに入った次の日からは、知らない客に聞いて作る注文・あいまいな注文を読む注文も混ざる（#2020 E）。報酬は台詞に書かない（日当・体力・能力はコードが付ける）。はじめの味覚が戻る前でも読めるよう、自分の舌の感想ではなく組み立てと客の言葉で書く。",
   "dialogues": [
     {
       "dialogue_id": "mukai_shift_after_coffee_0",
@@ -150,6 +150,218 @@
           "speaker": "hajime",
           "face": "normal",
           "text": "（アニスを足して、甘さを後ろへ下げた）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "mukai_shift_first_timer_0",
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "普段、よく飲むものってありますか"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "紅茶ばっかりです。コーヒーは、苦くて"
+        },
+        {
+          "speaker": "",
+          "text": "紅茶の葉にピーチを少し合わせて、一台を客席へ運んだ。"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "知ってる香りだ。……初めてなのに、怖くない"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "smile",
+          "text": "うちのコーヒーより、気に入られたな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "mukai_shift_first_timer_1",
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "今日は、どうしてシーシャを？"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "友達が吸ってるのが、大人っぽくて、……ちょっと憧れて"
+        },
+        {
+          "speaker": "",
+          "text": "アールグレイにレモンを添えて、軽めの一台を客席へ運んだ。"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "大人っぽい香りなのに、むせない"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（憧れて来た日の一台は、怖くない方がいい）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "mukai_shift_anything_fine_0",
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "このあと、何か予定はありますか"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "……会社に戻るんです。まだ、仕事が残ってて"
+        },
+        {
+          "speaker": "",
+          "text": "ライムにミントを重ねて、すっきりした一台を客席へ運んだ。"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "頭が、すっとする。これなら戻れそうです"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（『何でもいい』の中にも、今日の答えはある）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "mukai_shift_anything_fine_1",
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "今日は、何をしてきたんですか"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "一日、立ちっぱなしで。もう足が棒です"
+        },
+        {
+          "speaker": "",
+          "text": "カモミールにハニーを合わせて、柔らかい一台を客席へ運んだ。"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "……座って吸ってるだけで、ほどけていく"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "ゆっくりしていけ。急ぐ席じゃない"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "mukai_shift_tokyo_like_0",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "キャラメルにコーヒーを合わせて、ラテのような一台を客席へ運んだ。"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "甘くて、ちょっと苦い。……都会の喫茶店って感じだ"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "smile",
+          "text": "うちのラテの真似か"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（東京っぽい、で真っ先に浮かんだのが、この店のラテだった）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "mukai_shift_tokyo_like_1",
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "東京っぽくは、ないかもしれません。来たばかりの日向けの一台です"
+        },
+        {
+          "speaker": "",
+          "text": "ミルクにハニーを少し合わせて、柔らかい一台を客席へ運んだ。"
+        },
+        {
+          "speaker": "customer",
+          "face": "surprise",
+          "text": "……ほっとする。東京に来て、初めて息をついた気がする"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（来たばかりの心細さなら、俺にも分かる）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "mukai_shift_celebration_0",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "レッドチェリーにローズを重ねて、香りの立つ一台を客席へ運んだ。"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "おお、華やかだ。乾杯って感じがする"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "同期が、やっと昇進してさ。こういうのが似合う日なんだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（お祝いの席には、一口目から明るい煙を）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "mukai_shift_celebration_1",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "ビスケットに紅茶を合わせて、軽くて長く吸える一台を客席へ運んだ。"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "派手じゃないけど……話が止まらないな、これ"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "smile",
+          "text": "祝いの話は、長いほうがいい"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（祝う時間を長くする、っていう読み方もある）"
         }
       ]
     }

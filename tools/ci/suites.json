@@ -291,6 +291,12 @@
       "run": ["node remake/test/shift_mix_record.mjs"]
     },
     {
+      "id": "mukai-shift-orders",
+      "title": "Tokyo mukai shift orders: entrusted orders join from the day after the first shift (#2020 E)",
+      "kind": "quick",
+      "run": ["node remake/test/mukai_shift_orders.mjs"]
+    },
+    {
       "id": "ch1-interval-connection",
       "title": "Chapter 1 victory interval connections",
       "kind": "quick",
@@ -828,6 +834,12 @@
       "run": ["node remake/test/ch4_rehearsal.mjs"]
     },
     {
+      "id": "visit-chains",
+      "title": "Visit chains after the revisit talks (#2020 D): ch3 mukai regular, ch4 cafe-inn-cafe, ch5 Smoke & Glory and Dubai alley; later-day gating, picks, memories, wiring",
+      "kind": "quick",
+      "run": ["node remake/test/visit_chains.mjs", "node --experimental-vm-modules remake/test/visit_chains_wiring.mjs"]
+    },
+    {
       "id": "manifest-dependencies",
       "title": "Manifest generator required dependency diagnostics",
       "kind": "quick",
@@ -890,6 +902,29 @@
         "node remake/test/dubai_weather.mjs",
         "node remake/test/ch3_aftermath.mjs"
       ]
+    },
+    {
+      "id": "recipe-finds",
+      "title": "Late-chapter recipe chain: hint → own craft → named recipe → return to the person (#2020 G)",
+      "kind": "quick",
+      "run": ["node remake/test/recipe_finds.mjs"]
+    },
+    {
+      "id": "recipe-finds-browser",
+      "title": "Late-chapter recipe chain on the real daily loop: Steve's hint, return after the recipe book, all scenes, LOAD (#2020 G)",
+      "kind": "browser",
+      "weight": 0.4,
+      "timeout": 5,
+      "paths": [
+        "remake/js/daily/recipe-finds.js",
+        "remake/js/daily/recipe-finds-model.js",
+        "remake/js/daily/calendar.js",
+        "data/recipes.json",
+        "data/dialogue/recipe_finds.json",
+        "remake/test/browser/recipe_finds.mjs",
+        "remake/test/browser/support.mjs"
+      ],
+      "run": ["node remake/test/browser/recipe_finds.mjs"]
     },
     {
       "id": "ch3-lover-entry",
@@ -1707,7 +1742,7 @@
       "title": "Chapter 4 Dubai days on the shared daily loop (VOL04), one shisha at the local cafes, the Longlong shop, the eve acquaintance branch, daytime heat, lively nights and the souq stall (DBS)",
       "kind": "browser",
       "weight": 0.8,
-      "timeout": 6,
+      "timeout": 9,
       "paths": [
         "remake/js/chapters/ch4-dubai-daily.js",
         "remake/js/chapters/ch4-dubai-cafe.js",
