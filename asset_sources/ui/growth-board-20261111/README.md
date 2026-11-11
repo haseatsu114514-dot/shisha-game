@@ -133,10 +133,38 @@ GBP-11 / gb_title_rule.png 1024x96 — A horizontal ornamental rule: a thin lave
 - **透過・切り分け・縮小・ゲームへの組み込みはしない**（Claude が行う）。この PR では `originals/` と `GENERATION.md` だけを変える。
 - 画像は Git LFS（`asset_sources/` の png は `.gitattributes` で LFS）。
 
-## 7. 検品と組み込み（Claude・受け取り後）
+## 7. 検品と組み込み（済み）
 
-- 検品: 文字・数字・記号が無い／マゼンタが `#FF00FF` の単色で、にじみ・影が外に出ていない（GBP-05 は真っ黒の地）／同じ案の火種4つが一組に見える／16px で丸・炎・しずく・角が読める／九分割の角に飾りが収まっている／盤の一覧（参照①）と並べて浮かない。
-- A案・B案を並べた確認用の画像（暗い地と紙の地、実寸 16・24・48・96px）を作り、**オーナーが案を選ぶ**。
-- 変換: マゼンタを抜いて WebP に。ゲームが読むのは `remake/img/ui/growth_board/`。火種は今と同じ名前 `hidane_<any|body|sense|wisdom>.webp`（256px）で差し替え、小さい版は `hidane_s_<…>.webp`（64px）。ほかは `socket.webp`・`levelup_plate.webp`・`burst_rays.webp`・`tab_on.webp`・`tab_off.webp`・`badge_<cost|check|unknown>.webp`・`card.webp`・`gauge.webp`・`round_btn.webp`・`title_rule.webp`。
-- 組み込み: `remake/css/daily.css`（`.hidane-icon`・`.lvup-*`・`.gb-tab`・`.gb-cost`・`.gb-goal`・`.gb-bar-line`・`.gb-gauge`・`.gb-icon`）と `remake/css/ui-paper.css`。絵が読めない時は今の CSS の形のまま動くようにする（今の `has-art` と同じ考え方）。`python3 remake/tools/build_manifest.py`。
-- 確認: `remake/test/browser/growth_fx.mjs`・`growth_levelup.mjs`・`board_tutorial.mjs`、PC 1280×720 とスマホ横 844×390 の画面。
+原画は `originals/`（22枚・[#3374](https://github.com/haseatsu114514-dot/shisha-game/pull/3374)。生成の記録は `originals/GENERATION.md`）。
+
+変換は [`convert.py`](convert.py): マゼンタの地を抜く → 絵の外接矩形で切る → 縮めて WebP に。出力は `remake/img/ui/growth_board/`。一覧は `contact_sheet.png`。
+
+```bash
+git lfs pull --include="asset_sources/ui/growth-board-20261111/originals/*"
+python3 asset_sources/ui/growth-board-20261111/convert.py --sheet           # 火種は A案
+python3 asset_sources/ui/growth-board-20261111/convert.py --fire b --sheet  # 火種を B案に（同じファイル名で替わる）
+```
+
+- マゼンタの抜き方: 地との境目の画素は、色を内側のいちばん近い画素から取り、透過は混ざり具合から出す（ラベンダーの細い線をただ引き算で抜くと、緑に寄る）。
+- 原画は枠の中に余白がある（九分割の部品も）。九分割の縁の幅は、切った後の絵で測った値を CSS に書いた。
+- 白火だけ色を白金に寄せた（`WHITE_FIRE`）。原画は琥珀色のガラスで、紙の地では茶色に見えた。形と明暗はそのまま。
+- **火種は A案で組み込んである。最終の案はオーナーが決める**（B案にする時は上のコマンド。CSS・JS は変えなくてよい）。
+
+| ゲームのファイル | 原画 | 使っている所 |
+|---|---|---|
+| `hidane_<any\|body\|sense\|wisdom>.webp`（256px） | `hidane_*_a.png` | 火種の粒の全部: 財布・レベルアップの札・近い目的地の値段・色の台座・「？」の見方 |
+| `socket.webp` | `hidane_socket.png` | 財布の受け皿（0個の種類は皿だけ）。新版と暗い配色では、見出しの丸いボタン（？・×）の台にも使う |
+| `levelup_plate.webp`（732×100・九分割） | `levelup_plate.png` | その場のレベルアップの札の板（`.lvup.has-art .lvup-plate`）。上下を高さの半分ずつにして、絵を高さに合わせて同じ比で縮める（両端の火花を伸ばさない） |
+| `burst_rays.webp`（512px） | `burst_rays.png` | 札の後ろの放射の光。真っ黒の地は、明るさを透過にして抜いた |
+| `tab_on.webp`・`tab_dim.webp` | `gb_tab_on.png` | 盤を切り替える札。選んでいる札は `tab_on`、ほかは同じ絵を暗くした `tab_dim`（新版と暗い配色） |
+| `tab_off.webp` | `gb_tab_off.png` | 紙の見た目（旧版・配色「紙とラベンダー」）の、選んでいない札 |
+| `badge_cost.webp`・`badge_unknown.webp`・`badge_check.webp` | `gb_badge_*.png` | マスの印の台: 値段（札の「今取れる数」にも）・まだ分からない「?」・灯した「✓」。数字と記号はゲームが書く。決定前の「+」は破線の丸のまま（色と絵だけに頼らず区別する） |
+| `round_btn.webp` | `gb_round_btn.png` | 紙の見た目の、見出しの丸いボタン（？・×） |
+| `card.webp`（九分割） | `gb_card.png` | 紙の見た目の、近い目的地の行。左の帯は盤の色を上に重ねる |
+| `title_rule.webp` | `gb_title_rule.png` | 紙の見た目の、見出し「心得の盤」の下の飾り罫 |
+
+- 使っていない原画: `gb_gauge.png`（ゲームのゲージは高さ 4〜8px の棒で、飾りつきの枠は読めない大きさになる）、`hidane_small_sheet_a/b.png`（丸が平たいコインに見えた。大きい絵を縮めたほうが、財布の大きさでも形と質感が残る）、`hidane_*_b.png`（B案）。
+- 絵が読めない時は今までの CSS の形のまま動く: 盤は全部の絵が読めた時だけ `.gboard.has-art`（`growth-board-screen.js` の `ART_FILES`）、レベルアップは板と光が読めた時だけ `.lvup.has-art`（`levelup.js`）。
+- CSS は3か所: `remake/css/daily.css`（共通と暗い配色）・`ui-paper.css`（紙の見た目）・`look-neo-board.css` と `look-neo.css`（新版）。紙の見た目と新版は、札の縁の指定（`border`）が絵（`border-image`）を消すので、それぞれに同じ絵を書いてある。
+- 箱の大きさ・位置は変えていない（絵は `border-image`／`background` で敷くだけ）。変えたのは、財布の粒（18px → 受け皿つき 26px）、印の台（20px → 24px）、レベルアップの札（高さを 86px に固定・左右に火花の分の余白）。
+- 確認: `remake/test/browser/growth_fx.mjs`・`growth_levelup.mjs`・`board_tutorial.mjs`・`look_neo.mjs`・`look_neo_more.mjs`、PC 1280×720 とスマホ横 844×390 の画面（新版・旧版）。
