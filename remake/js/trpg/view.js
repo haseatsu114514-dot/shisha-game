@@ -103,9 +103,12 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
   const role = el("span");
   const speech = el("p", { "aria-live": "polite" });
   const next = button("次へ", "trpg-next", advanceDialogue, { class: "trpg-next" });
+  // テンポ（#3199 C4）: 今の会話を最後まで飛ばす。読んだことにしてログに残し、続きの処理はふだんどおり。
+  const skip = button("≫", "trpg-skip", skipTalk, { class: "trpg-skip", "aria-label": "この会話を最後まで飛ばす", title: "この会話を最後まで飛ばす" });
+  skip.hidden = true;
   const dock = el("div.trpg-dock", [art, el("div.trpg-speech", [
     el("div.trpg-speaker-label", [speaker, role]), speech,
-  ]), next]);
+  ]), skip, next]);
   const log = [];
   let frames = [], cursor = 0, afterTalk = null, afterFocus = null, busy = false, disposed = false, choiceField = null;
   let overlay = null, modalCloser = null, timer = null, rollTicker = null, settleGuard = false;
@@ -115,6 +118,23 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
   const teamwork = el("div.trpg-teamwork", { dataset: { test: "trpg-teamwork" } });
   let shownTeamwork = null;
   const heatMeter = el("div.trpg-heat", { dataset: { test: "trpg-heat" }, role: "meter", "aria-valuemin": "0", "aria-valuemax": String(HEAT.max) });
+  // 上の帯の印は絵だけ（#2839）。押すと、その印が何かを一行で出す（TMX05）。
+  const chromeTip = el("p.trpg-chrome-tip", { role: "status", dataset: { test: "trpg-chrome-tip" } });
+  chromeTip.hidden = true;
+  let tipTimer = null;
+  function showTip(text) {
+    chromeTip.textContent = text; chromeTip.hidden = false;
+    clearTimeout(tipTimer); tipTimer = setTimeout(() => { chromeTip.hidden = true; }, 3800);
+  }
+  teamwork.addEventListener("click", () => {
+    const n = session.snapshot().teamwork;
+    showTip("連携札 " + n + "/2：仲間の切り札（判定＋" + DICE.support + "）や、はじめの振り直しに1枚ずつ使う");
+  });
+  heatMeter.addEventListener("click", () => {
+    const { heat } = session.snapshot(), nextTier = HEAT.tiers.find(t => t > heat);
+    showTip("盛り上がり " + heat + "/" + HEAT.max + "：3・6・8に届くと勢い（次の判定に＋" + DICE.momentum + "）"
+      + (nextTier ? "。あと" + (nextTier - heat) + "で次の勢い" : "。最高潮"));
+  });
   let heatSeen = 0, heatChatter = [];
   const tableStatus = el("div.trpg-table-status", { dataset: { test: "trpg-table-status" }, "aria-label": "卓の進行と残りの札" });
   const table = el("div.trpg-table", { "aria-label": "卓の参加者" });
@@ -134,7 +154,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
   const headingStep = el("small", { dataset: { test: "trpg-heading-step" }, text: "小さな卓の冒険" });
   root.append(el("header.trpg-header", [
     el("div.trpg-heading", [headingStep,
-      el("strong", { text: scenario.title }), teamwork, heatMeter]), tools,
+      el("strong", { text: scenario.title }), teamwork, heatMeter, chromeTip]), tools,
   ]), progress, table, content, dock, tableStatus);
   host.replaceChildren(root);
   fitRoomCrop();
@@ -333,6 +353,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     syncHeat();
     frames = sequence(lines, heatChatter); heatChatter = []; cursor = 0; afterTalk = callback; afterFocus = focusTest; busy = true;
     root.classList.remove("trpg-idle"); root.classList.add("trpg-talking"); next.hidden = false; next.disabled = false;
+    skip.hidden = frames.length < 3;
     renderBody();
     showFrame();
     next.focus({ preventScroll: true });
@@ -359,12 +380,20 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     cursor++;
     if (cursor < frames.length) showFrame(); else finishTalk();
   }
+  function skipTalk() {
+    if (!busy || overlay || disposed) return;
+    for (cursor++; cursor < frames.length; cursor++) {
+      const frame = frames[cursor];
+      log.push({ speaker: frame.speaker, role: pcText(frame.role).replace(/^(?:GM|PL)／卓の会話$/, ""), text: pcText(frame.text) });
+    }
+    finishTalk();
+  }
   function finishTalk() {
     busy = false; frames = [];
     root.classList.remove("trpg-talking");
     showPanel(null);
     const callback = afterTalk, focusTest = afterFocus; afterTalk = null; afterFocus = null;
-    next.hidden = true; root.classList.add("trpg-idle");
+    next.hidden = true; skip.hidden = true; root.classList.add("trpg-idle");
     if (callback) callback(); else renderBody();
     if (!overlay && !busy) (focusTest && root.querySelector('[data-test="' + focusTest + '"]') || root).focus({ preventScroll: true });
   }
@@ -1196,6 +1225,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     disposed = true;
     entrance.cancel();
     if (timer) clearTimeout(timer);
+    clearTimeout(tipTimer);
     if (rollTicker) clearInterval(rollTicker);
     if (providedAudio) audio.silence(); else audio.destroy();
     document.removeEventListener("visibilitychange", visibility);

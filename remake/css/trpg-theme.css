@@ -586,3 +586,17 @@ html:root .trpg-root.trpg-cinematic .trpg-approach .trpg-approach-meta .trpg-app
 html:root .trpg-campaign-memory .trpg-campaign-endings { display: block; margin-top: 4px; color: var(--tt-brass-hi); font-weight: 700; }
 html:root .trpg-campaign-book .trpg-campaign-bookmark { display: block; margin: 4px 0 6px; padding: 3px 10px; border-left: 4px solid #c8553d; border-radius: 3px;
   background: #f3e6c8; color: #3a2a14; font-weight: 700; }
+
+/* 会話を飛ばす「≫」（#3199 C4）: 「次へ」の左に控えめに。押せる大きさは「次へ」と同じ規格。 */
+html:root .trpg-root.trpg-cinematic .trpg-skip { align-self: flex-end; min-width: 64px; min-height: 43px; margin: 0 10px 32px 0; padding: 6px 12px;
+  border: 1px solid #d2ae6655; border-radius: 6px; background: transparent; color: #d8cfae; font-size: 20px; box-shadow: none; }
+html:root .trpg-root.trpg-cinematic .trpg-skip:hover:not(:disabled) { color: var(--tt-brass-hi); border-color: #d2ae66aa; background: #d2ae6614; }
+@media (pointer: coarse) { html:root .trpg-root.trpg-cinematic .trpg-skip { min-width: 84px; min-height: 84px; margin-bottom: 22px; } }
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-skip { min-height: var(--phone-tap); min-width: var(--phone-tap); font-size: var(--phone-text); }
+/* 上の帯の印を押した時の一行（TMX05）。 */
+html:root .trpg-root.trpg-cinematic :is(.trpg-teamwork, .trpg-heat) { cursor: pointer; }
+html:root .trpg-root.trpg-cinematic .trpg-chrome-tip {
+  position: absolute; z-index: 30; top: calc(100% + 8px); left: 14px; max-width: 760px; margin: 0; padding: 8px 14px; border-radius: 8px;
+  border: 1px solid #d2ae66aa; background: #2a1b0cf0; color: #fff3d6; font-size: 17px; line-height: 1.5; box-shadow: 0 8px 20px #0008;
+}
+html:root[data-density="phone"] .trpg-root.trpg-cinematic .trpg-chrome-tip { font-size: var(--phone-text); max-width: 1100px; }
