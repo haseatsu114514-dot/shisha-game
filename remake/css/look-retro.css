@@ -255,6 +255,7 @@
   line-height: calc(var(--d) * 15);
   pointer-events: none;
 }
+.retro-caption { max-height: calc(var(--d) * 124); overflow: hidden; }
 .retro-caption b { margin-right: calc(var(--d) * 6); color: var(--r-gold); font-weight: 400; }
 
 /* ---- 会話（下画面） */
@@ -618,6 +619,28 @@
 .retro-shell .retro-option:active { transform: translate(calc(var(--d) * 2), calc(var(--d) * 2)); box-shadow: calc(var(--d) * 1) calc(var(--d) * 1) 0 var(--r-deep); }
 .retro-shell .retro-option[disabled] { background: var(--r-panel); border: calc(var(--d) * 1) solid var(--r-line); box-shadow: none; color: var(--r-dim); cursor: default; transform: none; }
 .retro-option[disabled] small { color: var(--r-dim); }
+
+/* ---- 新版の縦持ち: 地図の案内の箱のボタン（駅の行き先・配達メモなど）と、場面カード・確かめの小窓の主なボタン */
+.retro-shell .retro-row.retro-row-action { justify-content: center; background: var(--r-gold); border: calc(var(--d) * 2) solid var(--r-ink); color: var(--r-ink); }
+.retro-shell .retro-row.retro-row-action.alt { background: var(--r-panel); border: calc(var(--d) * 1) solid var(--r-line); color: var(--r-text); }
+.retro-shell .retro-row.retro-row-action[disabled] { background: var(--r-panel); border-color: var(--r-line); color: var(--r-dim); cursor: default; }
+.retro-row-action .retro-row-name { flex: 0 1 auto; text-align: center; font-size: calc(var(--d) * 12); }
+.retro-shell .retro-option.primary { background: var(--r-gold); }
+.retro-submenu[data-dense="true"] .retro-option { min-height: calc(var(--d) * 26); margin-bottom: calc(var(--d) * 3); padding: calc(var(--d) * 3) calc(var(--d) * 8); }
+.retro-submenu[data-dense="true"] .retro-option b { font-size: calc(var(--d) * 12); line-height: calc(var(--d) * 15); }
+.retro-shell .retro-option.primary small { color: var(--r-ink); }
+.retro-menu-lead {
+  flex: none;
+  width: calc(100% - var(--d) * 3);
+  margin: 0 0 calc(var(--d) * 4);
+  padding: calc(var(--d) * 4) calc(var(--d) * 6);
+  background: var(--r-deep);
+  border: calc(var(--d) * 1) solid var(--r-lilac);
+  color: var(--r-text);
+  font-size: calc(var(--d) * 12);
+  line-height: calc(var(--d) * 15);
+  overflow-wrap: anywhere;
+}
 
 /* ---- 外枠を引っ込めている間の一言（縦長の画面で、現行の横長の画面が小さく出ている時） */
 .retro-note {

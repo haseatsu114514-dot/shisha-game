@@ -1,7 +1,8 @@
 /* 新版（現行の画面を磨き上げた様式・LK02）。すべての規則を :root[data-look="neo"] の中に書き、現行の見た目を変えない。
-   対象は第1章とタイトル（1280×720 と横持ちスマホ）。2画面表示（body.game-ds）には当てない。
-   会話（1〜5）に続けて、地図と HUD・全画面 MENU・モーダル・タイトルを同じ言葉づかい
-   （夜紫の半透明の面・金の細い罫線・ラベンダーの縁・白い文字・小さめの角）へ揃える（7〜）。
+   対象はすべての章とタイトル（1280×720 と横持ちスマホ。LK13 で第2〜5章へ広げた）。2画面表示（body.game-ds）には当てない。
+   会話（1〜5）に続けて、地図と HUD・全画面 MENU・モーダル・タイトル・章の場面カードを同じ言葉づかい
+   （夜紫の半透明の面・金の細い罫線・ラベンダーの縁・白い文字・小さめの角）へ揃える（7〜15）。
+   専用のテーマを持つ画面（TRPG・斧投げ・てつこ・ミニゲーム・シーシャ作り・大会の順位表）とショップ・LIME には当てない。
    配色テーマ（data-ui-theme の7種）の枠・色の規則より必ず勝つよう、#stage と部品の id の2つで始める。
    動く部品（立ち絵の光・名前の色・MENU の人物の絵）は js/looks/neo.js。 */
 
@@ -868,6 +869,43 @@
 :root[data-look="neo"] body:not(.game-ds) #stage #hud .hud-exp:has(> :is(.hx-left, .hx-target):not([hidden])) .exp-chip { top: calc(100% + 15px + max(12px, var(--neo-hud-sub) - 2px) * 1.3 + 6px); }
 :root[data-look="neo"] body:not(.game-ds) #stage #hud .exp-chip b { color: var(--neo-ui-gold-hi); font-size: max(13px, var(--neo-hud-sub)); }
 :root[data-look="neo"] body:not(.game-ds) #stage #hud .exp-chip span { color: var(--neo-ui-ink); font-size: max(12px, var(--neo-hud-sub) - 2px); }
+/* 「出発まで」（第3・4章の出発前の3日）と「勝負の日まで」（第5章）の行は、板を伸ばさないよう日付の下へ小さな札で下げる
+   （「今夜 Lv UP」と同じ考え方）。板の中に並べると板が 130px ほど伸び、出発前の地元の地図で KEMURIKUSA の看板と居る人の顔に掛かった。
+   印（トロフィー）と日数は板の中と同じ。 */
+:root[data-look="neo"] body:not(.game-ds) #stage #hud .dc-meta > .dc-row.goal {
+  position: absolute;
+  top: calc(100% + 5px);
+  left: 4px;
+  gap: 6px;
+  padding: 3px 12px 3px 9px;
+  line-height: 1.2;
+  background: rgba(21, 13, 34, .9);
+  border: 1px solid rgba(227, 189, 110, .5);
+  border-radius: 999px;
+  box-shadow: 0 3px 8px rgba(8, 3, 16, .4);
+}
+:root[data-look="neo"] body:not(.game-ds) #stage #hud .dc-meta > .dc-row.goal::before { width: max(14px, var(--neo-hud-sub)); height: max(14px, var(--neo-hud-sub)); }
+:root[data-look="neo"] body:not(.game-ds) #stage #hud .dc-meta > .dc-row.goal b { font-size: max(15px, var(--neo-hud-sub) + 1px); }
+/* 横持ちスマホ: 1行に並べると板が画面の半分を超え（約 720px）、上端近くの看板の居る人の顔に掛かる（第4章のドバイの FESTA）。
+   体力と Lv のゲージを1つの区画に上下2段で重ねて、板を約 160px 短くする。ゲージの長さ（120px）・文字の大きさ・板の高さは変えず、
+   2つのゲージの始まりをそろえる（印の箱と「Lv.」の幅を同じにする。現行の HUD と同じ考え方）。 */
+:root[data-look="neo"][data-density="phone"] body:not(.game-ds) #stage #hud .dc-meta {
+  display: grid;
+  grid-template-columns: auto auto;
+  grid-template-rows: auto auto;
+  align-content: center;
+}
+:root[data-look="neo"][data-density="phone"] body:not(.game-ds) #stage #hud .dc-meta > .dc-row.money { grid-column: 1; grid-row: 1 / 3; }
+:root[data-look="neo"][data-density="phone"] body:not(.game-ds) #stage #hud .dc-meta > :is(.hud-stamina, .hud-exp) { grid-column: 2; padding-top: 2px; padding-bottom: 2px; }
+/* 区切りの縦線は2段を通して1本に見せる。 */
+:root[data-look="neo"][data-density="phone"] body:not(.game-ds) #stage #hud .dc-meta > .hud-stamina { grid-row: 1; background-position: left bottom; background-size: 1px 72%; }
+:root[data-look="neo"][data-density="phone"] body:not(.game-ds) #stage #hud .dc-meta > .hud-exp { grid-row: 2; background-position: left top; background-size: 1px 72%; }
+:root[data-look="neo"][data-density="phone"] body:not(.game-ds) #stage #hud .hud-card .hud-stamina::before {
+  width: calc(var(--neo-hud-sub) * 2.6);
+  -webkit-mask-position: left center;
+  mask-position: left center;
+}
+:root[data-look="neo"][data-density="phone"] body:not(.game-ds) #stage #hud .hud-card .hud-exp .hx-lv { width: calc(var(--neo-hud-sub) * 2.6); line-height: 1; }
 
 /* LIME と MENU: 同じ大きさの丸い札。LIME は緑の吹き出し、MENU は三本線。未読の赤丸・火種の印はそのまま右上。 */
 :root[data-look="neo"] body:not(.game-ds) #stage #hud .hud-right { align-items: flex-start; gap: 12px; }
@@ -1112,6 +1150,13 @@
 
 /* 案内の板（右下）: 夜紫の半透明の板＋上辺の金の罫線。行き先を選んだ後は、板ごと押して移動する。 */
 :root[data-look="neo"] body:not(.game-ds) #stage #screen .map :is(.map-info, .map-notice, .map-guide) {
+  /* 中の部品が読む色の変数も暗い面の上の色へ（紙のテーマは板の中を墨色・ラベンダーへ切り替えている。第2章の初日の「進み具合」の見出しなど）。 */
+  --text: var(--neo-ui-ink);
+  --text-dim: var(--neo-ui-dim);
+  --gold: var(--neo-ui-gold);
+  --gold-hi: var(--neo-ui-gold-hi);
+  --paper-ink: var(--neo-ui-ink);
+  --paper-muted: var(--neo-ui-dim);
   color: var(--neo-ui-ink);
   text-shadow: none;
   background: var(--neo-ui-face);
@@ -1245,8 +1290,8 @@
 :root[data-look="neo"] body:not(.game-ds) #stage #toasts .toast.charm-bonus { color: var(--stat-charm); box-shadow: inset 0 0 0 1px var(--stat-charm), 0 6px 18px rgba(8, 3, 16, .45); }
 :root[data-look="neo"] body:not(.game-ds) #stage #toasts .toast.insight-hint { color: var(--stat-insight); box-shadow: inset 0 0 0 1px var(--stat-insight), 0 6px 18px rgba(8, 3, 16, .45); }
 
-/* 共通のボタン（行動の選択・MENU とモーダルの中）: 夜紫の札にラベンダーの縁。主のボタンは金。 */
-:root[data-look="neo"] body:not(.game-ds) #stage :is(#screen .sub-menu, #modal .modal-box:not(.shop-dialog), #modal > .dmenu) .btn {
+/* 共通のボタン（行動の選択・章の場面カード・MENU とモーダルの中）: 夜紫の札にラベンダーの縁。主のボタンは金。 */
+:root[data-look="neo"] body:not(.game-ds) #stage :is(#screen .sub-menu, #screen .ch2-contest:not(:has(.ch2-contest-ranking)), #screen .ch2-shell > .panel, #modal .modal-box:not(.shop-dialog), #modal > .dmenu) .btn {
   color: var(--neo-ui-ink);
   text-shadow: none;
   background: var(--neo-ui-card);
@@ -1257,29 +1302,29 @@
   filter: none;
   clip-path: none;
 }
-:root[data-look="neo"] body:not(.game-ds) #stage :is(#screen .sub-menu, #modal .modal-box:not(.shop-dialog), #modal > .dmenu) .btn:is(:hover, :focus-visible):not(:disabled) {
+:root[data-look="neo"] body:not(.game-ds) #stage :is(#screen .sub-menu, #screen .ch2-contest:not(:has(.ch2-contest-ranking)), #screen .ch2-shell > .panel, #modal .modal-box:not(.shop-dialog), #modal > .dmenu) .btn:is(:hover, :focus-visible):not(:disabled) {
   color: #fff;
   background: rgba(74, 49, 110, .82);
   border-color: var(--neo-ui-lav);
   box-shadow: 0 0 0 3px rgba(201, 167, 230, .2);
   transform: none;
 }
-:root[data-look="neo"] body:not(.game-ds) #stage :is(#screen .sub-menu, #modal .modal-box:not(.shop-dialog), #modal > .dmenu) .btn.primary {
+:root[data-look="neo"] body:not(.game-ds) #stage :is(#screen .sub-menu, #screen .ch2-contest:not(:has(.ch2-contest-ranking)), #screen .ch2-shell > .panel, #modal .modal-box:not(.shop-dialog), #modal > .dmenu) .btn.primary {
   color: #26160a;
   font-weight: 700;
   background: linear-gradient(180deg, #f3d48d, #d9a94f);
   border-color: #fbe6b4;
 }
-:root[data-look="neo"] body:not(.game-ds) #stage :is(#screen .sub-menu, #modal .modal-box:not(.shop-dialog), #modal > .dmenu) .btn.primary:is(:hover, :focus-visible):not(:disabled) {
+:root[data-look="neo"] body:not(.game-ds) #stage :is(#screen .sub-menu, #screen .ch2-contest:not(:has(.ch2-contest-ranking)), #screen .ch2-shell > .panel, #modal .modal-box:not(.shop-dialog), #modal > .dmenu) .btn.primary:is(:hover, :focus-visible):not(:disabled) {
   color: #26160a;
   background: linear-gradient(180deg, #fbe2a6, #e6b95e);
   border-color: #fff;
   box-shadow: 0 0 0 3px rgba(227, 189, 110, .3);
 }
-:root[data-look="neo"] body:not(.game-ds) #stage :is(#screen .sub-menu, #modal .modal-box:not(.shop-dialog), #modal > .dmenu) .btn:focus-visible { outline: 2px solid var(--neo-ui-gold); outline-offset: 3px; }
-:root[data-look="neo"] body:not(.game-ds) #stage :is(#screen .sub-menu, #modal .modal-box:not(.shop-dialog), #modal > .dmenu) .btn.primary:focus-visible { outline-color: #fff; }
-:root[data-look="neo"] body:not(.game-ds) #stage :is(#screen .sub-menu, #modal .modal-box:not(.shop-dialog), #modal > .dmenu) .btn .btn-desc { color: var(--neo-ui-dim); }
-:root[data-look="neo"] body:not(.game-ds) #stage :is(#screen .sub-menu, #modal .modal-box:not(.shop-dialog), #modal > .dmenu) .btn.primary .btn-desc { color: rgba(38, 22, 10, .78); }
+:root[data-look="neo"] body:not(.game-ds) #stage :is(#screen .sub-menu, #screen .ch2-contest:not(:has(.ch2-contest-ranking)), #screen .ch2-shell > .panel, #modal .modal-box:not(.shop-dialog), #modal > .dmenu) .btn:focus-visible { outline: 2px solid var(--neo-ui-gold); outline-offset: 3px; }
+:root[data-look="neo"] body:not(.game-ds) #stage :is(#screen .sub-menu, #screen .ch2-contest:not(:has(.ch2-contest-ranking)), #screen .ch2-shell > .panel, #modal .modal-box:not(.shop-dialog), #modal > .dmenu) .btn.primary:focus-visible { outline-color: #fff; }
+:root[data-look="neo"] body:not(.game-ds) #stage :is(#screen .sub-menu, #screen .ch2-contest:not(:has(.ch2-contest-ranking)), #screen .ch2-shell > .panel, #modal .modal-box:not(.shop-dialog), #modal > .dmenu) .btn .btn-desc { color: var(--neo-ui-dim); }
+:root[data-look="neo"] body:not(.game-ds) #stage :is(#screen .sub-menu, #screen .ch2-contest:not(:has(.ch2-contest-ranking)), #screen .ch2-shell > .panel, #modal .modal-box:not(.shop-dialog), #modal > .dmenu) .btn.primary .btn-desc { color: rgba(38, 22, 10, .78); }
 
 /* 行動の選択: 夜紫の半透明の板。見出しの下に金の罫線、選択肢は会話の選択肢と同じ夜紫の札。 */
 :root[data-look="neo"] body:not(.game-ds) #stage #screen .sub-menu {
@@ -1840,3 +1885,110 @@
   filter: none;
 }
 :root[data-look="neo"] body:not(.game-ds) #stage #banners .gain-card.affinity .gc-top { color: #ffc2d6; }
+
+/* ---------------------------------------------------------------- 14. 章の場面カード（第3〜5章の場面・旅程・読み込み、第2・3章の大会の前後の案内）と、第2章の初日の店頭の札
+   紺の箱・紙の板をやめ、モーダルと同じ夜紫の半透明の面＋見出しの下の金の罫線（第2〜5章へ新版を広げた時・LK13）。
+   順位表のある大会の画面（.ch2-contest-ranking を含むカード）は大会の UI のまま。ボタンは上の「共通のボタン」。 */
+:root[data-look="neo"] body:not(.game-ds) #stage #screen :is(.ch2-contest:not(:has(.ch2-contest-ranking)), .ch2-shell > .panel) {
+  --text: var(--neo-ui-ink);
+  --text-dim: var(--neo-ui-dim);
+  --gold: var(--neo-ui-gold);
+  --gold-hi: var(--neo-ui-gold-hi);
+  --paper-ink: var(--neo-ui-ink);
+  --paper-muted: var(--neo-ui-dim);
+  --ch2-accent: var(--neo-ui-gold);
+  color-scheme: dark;
+  color: var(--neo-ui-ink);
+  text-shadow: none;
+  background: linear-gradient(180deg, rgba(36, 22, 55, .95), rgba(21, 13, 34, .93));
+  border: 0;
+  border-image: none;
+  border-radius: 6px;
+  box-shadow: inset 0 0 0 1px var(--neo-ui-edge), 0 18px 48px rgba(8, 3, 16, .62);
+  filter: none;
+  backdrop-filter: none;
+}
+/* 見出し: 章の名前は金の小さな字、場面の題は白。下に金の細い罫線。 */
+:root[data-look="neo"] body:not(.game-ds) #stage #screen .ch2-contest:not(:has(.ch2-contest-ranking)) > .ch2-contest-header {
+  padding-bottom: 12px;
+  background: linear-gradient(to right, var(--neo-ui-gold), rgba(227, 189, 110, .26) 60%, rgba(227, 189, 110, 0)) left bottom / 100% 1px no-repeat;
+}
+:root[data-look="neo"] body:not(.game-ds) #stage #screen .ch2-contest:not(:has(.ch2-contest-ranking)) > .ch2-contest-header p { color: var(--neo-ui-gold); letter-spacing: .08em; }
+:root[data-look="neo"] body:not(.game-ds) #stage #screen .ch2-contest:not(:has(.ch2-contest-ranking)) > .ch2-contest-header h1 { color: #fff; letter-spacing: .04em; }
+:root[data-look="neo"] body:not(.game-ds) #stage #screen .ch2-contest:not(:has(.ch2-contest-ranking)) > .ch2-contest-description { color: var(--neo-ui-ink); }
+:root[data-look="neo"] body:not(.game-ds) #stage #screen .ch2-contest:not(:has(.ch2-contest-ranking)) > .ch2-contest-note { color: var(--neo-ui-dim); }
+:root[data-look="neo"] body:not(.game-ds) #stage #screen .ch2-contest:not(:has(.ch2-contest-ranking)) .ch4-destination-purpose { color: var(--neo-ui-dim); }
+/* 東京の行程（第3章の場面カードに添える行程表）: 面より少し明るい夜紫の札。次に読む場面は金の縦線。 */
+:root[data-look="neo"] body:not(.game-ds) #stage #screen .ch3-wayfinding {
+  background: rgba(46, 29, 69, .5);
+  border: 1px solid rgba(201, 167, 230, .3);
+  border-radius: 4px;
+}
+:root[data-look="neo"] body:not(.game-ds) #stage #screen .ch3-wayfinding-title { color: var(--neo-ui-dim); letter-spacing: .06em; }
+:root[data-look="neo"] body:not(.game-ds) #stage #screen .ch3-wayfinding-stop { border-left-color: rgba(201, 167, 230, .55); }
+:root[data-look="neo"] body:not(.game-ds) #stage #screen .ch3-wayfinding-stop.next { border-left-color: var(--neo-ui-gold); }
+:root[data-look="neo"] body:not(.game-ds) #stage #screen .ch3-wayfinding-stop small { color: var(--neo-ui-dim); }
+:root[data-look="neo"] body:not(.game-ds) #stage #screen .ch3-wayfinding-stop strong { color: #fff; }
+:root[data-look="neo"] body:not(.game-ds) #stage #screen .ch3-wayfinding-stop span { color: var(--neo-ui-ink); }
+/* 第2章の初日の店頭の札: 見出しの上の小さな字は金。店のロゴは明るい台紙向けに描かれているので、地図の看板と同じ生成りの札に載せる。 */
+:root[data-look="neo"] body:not(.game-ds) #stage #screen .ch2-shell > .panel h1 { color: #fff; }
+:root[data-look="neo"] body:not(.game-ds) #stage #screen .ch2-shell > .panel .ch2-kicker { color: var(--neo-ui-gold); }
+:root[data-look="neo"] body:not(.game-ds) #stage #screen .ch2-shell > .panel .ch2-room-warning { color: var(--neo-ui-gold-hi); }
+:root[data-look="neo"] body:not(.game-ds) #stage #screen .ch2-shell > .panel > .store-logo {
+  box-sizing: content-box;
+  padding: 10px 18px;
+  background: #fffaf0;
+  border: 1px solid rgba(227, 189, 110, .95);
+  border-radius: 6px;
+  box-shadow: 0 6px 14px rgba(8, 3, 16, .45);
+}
+:root[data-look="neo"] body:not(.game-ds) #stage #screen .ch2-shell > .panel > .store-logo.on-dark { background: #1f1a29; }
+
+/* ---------------------------------------------------------------- 15. 東京の街の地図（第3章の場面カードの「東京の地図」。ステージの外の <dialog>）: 紺をやめて夜紫の面と金の罫線 */
+:root[data-look="neo"] body:not(.game-ds) > .ch3-map-dialog {
+  --text: #f6f1fa;
+  --text-dim: #b9aac8;
+  --gold: #e3bd6e;
+  --gold-hi: #f6dfa8;
+  --paper-ink: #f6f1fa;
+  --paper-muted: #b9aac8;
+  color-scheme: dark;
+  color: #f6f1fa;
+  background: linear-gradient(180deg, rgba(36, 22, 55, .97), rgba(21, 13, 34, .96));
+  border: 0;
+  border-radius: 6px;
+  box-shadow: inset 0 0 0 1px rgba(201, 167, 230, .44), 0 18px 48px rgba(8, 3, 16, .62);
+}
+:root[data-look="neo"] body:not(.game-ds) > .ch3-map-dialog::backdrop { background: rgba(12, 6, 22, .78); }
+:root[data-look="neo"] body:not(.game-ds) > .ch3-map-dialog .ch3-map-header {
+  padding-bottom: 8px;
+  background: linear-gradient(to right, #e3bd6e, rgba(227, 189, 110, .26) 60%, rgba(227, 189, 110, 0)) left bottom / 100% 1px no-repeat;
+}
+:root[data-look="neo"] body:not(.game-ds) > .ch3-map-dialog .ch3-map-header h2 { color: #fff; letter-spacing: .06em; }
+:root[data-look="neo"] body:not(.game-ds) > .ch3-map-dialog .ch3-map-header p { color: #b9aac8; }
+:root[data-look="neo"] body:not(.game-ds) > .ch3-map-dialog .ch3-map-canvas { background: #1b1029; border-color: rgba(227, 189, 110, .55); border-radius: 4px; }
+:root[data-look="neo"] body:not(.game-ds) > .ch3-map-dialog .ch3-map-pin { color: #fff; background: rgba(33, 20, 52, .94); border-color: #e3bd6e; }
+:root[data-look="neo"] body:not(.game-ds) > .ch3-map-dialog .ch3-map-pin.gym { border-color: #c9a7e6; }
+:root[data-look="neo"] body:not(.game-ds) > .ch3-map-dialog .ch3-map-landmark { color: #f6f1fa; background: rgba(21, 13, 34, .86); }
+:root[data-look="neo"] body:not(.game-ds) > .ch3-map-dialog .ch3-map-details { background: rgba(46, 29, 69, .6); border-color: rgba(201, 167, 230, .4); border-radius: 4px; }
+:root[data-look="neo"] body:not(.game-ds) > .ch3-map-dialog .ch3-map-place { color: #f6f1fa; background: rgba(46, 29, 69, .55); border-color: rgba(201, 167, 230, .4); border-radius: 4px; }
+:root[data-look="neo"] body:not(.game-ds) > .ch3-map-dialog .ch3-map-place-number { color: #f6dfa8; background: #1b1029; }
+/* 選んでいる場所: 地図の上の丸は金で塗って墨の字（絵の上でも番号が読める）、一覧の行は金の縁。 */
+:root[data-look="neo"] body:not(.game-ds) > .ch3-map-dialog .ch3-map-pin[aria-pressed="true"] { color: #26160a; background: #e3bd6e; border-color: #fbe6b4; }
+:root[data-look="neo"] body:not(.game-ds) > .ch3-map-dialog .ch3-map-place[aria-pressed="true"] { color: #fff; background: rgba(227, 189, 110, .24); border-color: #e3bd6e; }
+:root[data-look="neo"] body:not(.game-ds) > .ch3-map-dialog :is(.ch3-map-pin, .ch3-map-place):is(:hover, :focus-visible) { border-color: #c9a7e6; }
+:root[data-look="neo"] body:not(.game-ds) > .ch3-map-dialog :is(.ch3-map-pin, .ch3-map-place):focus-visible { outline: 2px solid #e3bd6e; outline-offset: 2px; }
+:root[data-look="neo"] body:not(.game-ds) > .ch3-map-dialog :is(.ch3-map-note, .ch3-map-image-error) { color: #b9aac8; }
+:root[data-look="neo"] body:not(.game-ds) > .ch3-map-dialog .btn {
+  color: #f6f1fa;
+  text-shadow: none;
+  background: rgba(46, 29, 69, .62);
+  border: 1px solid rgba(201, 167, 230, .44);
+  border-image: none;
+  border-radius: 4px;
+  box-shadow: none;
+  filter: none;
+  clip-path: none;
+}
+:root[data-look="neo"] body:not(.game-ds) > .ch3-map-dialog .btn:is(:hover, :focus-visible):not(:disabled) { color: #fff; background: rgba(74, 49, 110, .82); border-color: #c9a7e6; box-shadow: 0 0 0 3px rgba(201, 167, 230, .2); }
+:root[data-look="neo"] body:not(.game-ds) > .ch3-map-dialog .btn:focus-visible { outline: 2px solid #e3bd6e; outline-offset: 3px; }

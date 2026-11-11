@@ -72,15 +72,18 @@ await suite("look-default", async (check) => {
     assert.equal(await page.evaluate(async () => (await import("./js/core/state.js")).config.bgmVolume), 0.2);
   });
 
-  await check("player-default-applies-to-chapter-one-only", async (page) => {
+  await check("player-default-applies-to-every-chapter", async (page) => {
     await asPlayer(page, undefined);
-    await page.evaluate(async () => {
-      const core = await import("./js/core/state.js");
-      core.newGame(); core.state.chapter = 2; document.body.dataset.screen = "daily";
-    });
-    await page.waitForFunction(() => document.documentElement.dataset.look === "classic", null, { timeout: 5000 });
-    assert.equal((await look(page)).choice, "neo", "選んでいるのは新版のまま（第2章以降は旧版で表示する）");
-    await page.evaluate(async () => { (await import("./js/core/state.js")).state.chapter = 1; });
-    await page.waitForFunction(() => document.documentElement.dataset.look === "neo", null, { timeout: 5000 });
+    // 新版はすべての章で効く（LK13）。第2章へ進んでも旧版の表示に変わらない。
+    for (const chapter of [2, 3, 4, 5, 1]) {
+      await page.evaluate(async (chapter) => {
+        const core = await import("./js/core/state.js");
+        if (!core.state) core.newGame();
+        core.state.chapter = chapter; document.body.dataset.screen = "daily";
+      }, chapter);
+      await page.waitForTimeout(650);
+      const state = await look(page);
+      assert.deepEqual([state.look, state.choice], ["neo", "neo"], `第${chapter}章でも新版`);
+    }
   });
 });
