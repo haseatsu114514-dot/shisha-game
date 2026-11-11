@@ -1,0 +1,85 @@
+{
+  "date": "2026-11-11",
+  "issue": 2290,
+  "generator": "Codex image_gen",
+  "source_instruction": "Owner update 2026-11-11: flat square tiles, current flat art is the shape authority. 25x25mm; 15-17mm thick, no tall bars/cubes.",
+  "references": {
+    "flat_charcoal.webp": {
+      "path": "remake/img/shop/equipment-v2/flat_charcoal.webp",
+      "sha256": "443ea853135f38c641b1a8a63b85c5807a764455616e463785de92fc0d35fe1e"
+    },
+    "cube_charcoal.webp": {
+      "path": "remake/img/shop/equipment-v2/cube_charcoal.webp",
+      "sha256": "8181a506ea5f557f72425630c754355c1f12f97565c666c9c9ac83b9d37236ac"
+    },
+    "coal-cubes-01.jpg": {
+      "path": "siryou:shisha-hardware-reference/web-refs/images/coal-cubes-01.jpg",
+      "sha256": "09ea1f6a63d91cdfc78587dea00c5f9543f86299f65e03ad0d2092e4dc5d32cf"
+    }
+  },
+  "count": 1,
+  "raw": {
+    "size": [
+      1254,
+      1254
+    ],
+    "mode": "RGBA",
+    "bytes": 918096,
+    "sha256": "bf2d160d0fce92bc36cf4acfd834dad2424eb5bc714d21dab305f44c72ca379f",
+    "alpha": [
+      0,
+      255
+    ],
+    "corners": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "alpha_bbox": [
+      0,
+      37,
+      1240,
+      1254
+    ],
+    "alpha16_bbox": [
+      146,
+      342,
+      1108,
+      1035
+    ]
+  },
+  "candidate_512": {
+    "size": [
+      512,
+      512
+    ],
+    "mode": "RGBA",
+    "bytes": 124427,
+    "sha256": "98a536154480d84b1e41b23b43ebebf1cf39c205dd1e822d19036806c5bb364c",
+    "alpha": [
+      0,
+      254
+    ],
+    "corners": [
+      0,
+      0,
+      0,
+      0
+    ],
+    "alpha_bbox": [
+      59,
+      119,
+      453,
+      445
+    ],
+    "alpha16_bbox": [
+      59,
+      139,
+      453,
+      423
+    ]
+  },
+  "checks": "Three flat square tiles, two below/one above offset, width exceeds thickness, dense fine grain, few faint cracks, no glow/ash/smoke/box/tray/text. 3D physical dimensions are instructions, not inferred exact physical measurements from the drawing.",
+  "notes": "Raw unmodified; candidate proportional downsample only. Low-alpha fringe/debris remains; adoption check required. Source photos not committed."
+}
