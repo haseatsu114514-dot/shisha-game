@@ -59,6 +59,27 @@ export const LONGLONG_VISIT_STORIES = Object.freeze([
   { scene: "ch4_longlong_fifth", heart: 4 },
 ].map(entry => Object.freeze(entry)));
 export const longlongStoryRead = (flags, scene) => flags?._ch4_longlong?.read?.[scene] === true;
+// 第4・5章ドバイの太陽・シェイク（2026-11-11 オーナー「ルートを新設」RVE03。chapters/dubai-bonds.js）。
+// 太陽は第4章のFESTAで段階1〜3（prelude: FESTAは第4章だけなので締めくくりの前提にしない）、第5章の屋敷の中庭で段階4・5。
+// シェイクは第5章の屋敷で段階1〜5。既読は flags._dubai_bonds.read。
+export const DUBAI_BOND_FLAG = "_dubai_bonds";
+export const DUBAI_BOND_STORIES = Object.freeze({
+  da_silva: Object.freeze([
+    { scene: "ch4_festa_bond_1", heart: 1, where: "festa", prelude: true },
+    { scene: "ch4_festa_bond_2", heart: 2, where: "festa", prelude: true },
+    { scene: "ch4_festa_bond_3", heart: 3, where: "festa", prelude: true },
+    { scene: "ch5_taiyo_bond_4", heart: 2, where: "courtyard" },
+    { scene: "ch5_taiyo_bond_5", heart: 3, where: "courtyard" },
+  ].map(entry => Object.freeze(entry))),
+  sheikh: Object.freeze([
+    { scene: "ch5_sheikh_bond_1", heart: 1, where: "residence" },
+    { scene: "ch5_sheikh_bond_2", heart: 1, where: "residence" },
+    { scene: "ch5_sheikh_bond_3", heart: 2, where: "residence" },
+    { scene: "ch5_sheikh_bond_4", heart: 3, where: "residence" },
+    { scene: "ch5_sheikh_bond_5", heart: 4, where: "residence" },
+  ].map(entry => Object.freeze(entry))),
+});
+const dubaiBondStoryRead = (flags, scene) => flags?.[DUBAI_BOND_FLAG]?.read?.[scene] === true;
 // 質問済みフラグの保存キーは id から機械的に導出する（第1章の形式）。
 // 既存IDは保存互換のため改名せず、旧文字列を使う相手だけ下の対応表で返す（#2035）。
 const LEGACY_QUESTION_DONE_KEYS = { samechan: "_samechan_bond_question_done" };
@@ -116,6 +137,11 @@ export function pendingAffinityStage(s, id, db = {}) {
     if (route.question?.flag) stages.push({ level: Math.max(3, levelOf(events.find(e => e.dialogue === route.question.host))), scene: route.question.dialogue, done: settled(s, id) || !!flags[route.question.flag] });
   }
   if (id === "master_hookah") LONGLONG_VISIT_STORIES.forEach(entry => stages.push({ level: entry.heart, scene: entry.scene, done: longlongStoryRead(flags, entry.scene) }));
+  // 太陽のFESTAの段階は第4章の間だけ、屋敷の段階は第5章だけを残件にする（読めない章で「次の会話」を約束しない）。
+  // 締めくくり・友人に着地した後は残件にしない。
+  if (DUBAI_BOND_STORIES[id]) DUBAI_BOND_STORIES[id].forEach(entry => stages.push({ level: entry.heart, scene: entry.scene,
+    done: dubaiBondStoryRead(flags, entry.scene) || settled(s, id)
+      || (entry.where === "festa" ? (s.chapter || 1) !== 4 : (s.chapter || 1) !== 5) }));
   if (id === "mashiro") {
     MASHIRO_AFFINITY_SCENES.forEach((scene, level) => stages.push({ level, scene, done: !!flags[`_ch3_read_${scene}`] }));
     stages.push({ level: 3, scene: "ch3_mashiro_bond_question", done: questionComplete(s, id) });

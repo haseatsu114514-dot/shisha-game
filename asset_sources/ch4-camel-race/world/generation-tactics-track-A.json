@@ -1,0 +1,157 @@
+{
+  "issue": 3217,
+  "date_utc": "2026-11-11",
+  "tool": "Codex built-in image_gen",
+  "reference_verification": {
+    "file": "word-perfect-A.png",
+    "sha256": "c5a90223d5c952ab70abd61dd83a32b1d508781114f2fd33c78187d8e63a8233",
+    "authority": "Latest main asset_sources/ch4-camel-race/ui/generation.json adopted record matches exact source hash",
+    "visual_comparison_of_prior_words_A": "Now inspected against verified adopted PERFECT original. Same broad brush-letter family/dark outline/stepped shade texture; newer letters have stronger cream-colored scrape highlights. Final style acceptance remains owner/reviewer decision, not automatically adopted."
+  },
+  "items": [
+    {
+      "part": "word-vs-B",
+      "prompt": "Create CR-WD09 word-vs-B.png. Use attached adopted PERFECT lettering as the EXACT painter's hand and material reference. Replace its word with exactly \"VS\" (capital V and capital S), nothing else. Same dull GOLD hand-painted brush letters and dark BROWN crisp outline, same rough brush edges and two to three flat shaped tone steps, same fine painterly pixel texture. ONLY TWO LETTERS. Real transparent alpha outside letters and in gap between V and S. No colored backdrop, no glow/halo, no shadow outside crisp outline, no board, ground, scene, people, extra letters/digits, logo or watermark. Flat matte paint, no glossy smooth gradients, no airbrush. Target longest edge <=1024 pixels, landscape, entire letter outline visible. Background MUST be fully transparent, not a brown rectangle.",
+      "original": {
+        "path": "rejected/word-vs-B-raw.png",
+        "size": [
+          1536,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_extrema": [
+          0,
+          254
+        ],
+        "sha256": "720bb494fd051896e01bea5c549103249a0ccc013b01ad9286446f41f056fcb9",
+        "bytes": 1738098
+      },
+      "status": "REJECTED",
+      "reason": "Brown/black rectangular backdrop and halo remain; not isolated transparent letters."
+    },
+    {
+      "part": "ground-track",
+      "prompt": "CR-WD04 ground-track.png. A horizontally seamless repeating strip of groomed desert CAMEL RACETRACK SAND. Target EXACT 1280x452 pixels, landscape aspect 320:113, full canvas filled completely OPAQUE. This is only a texture strip for ground below game sprites, NOT a scenic background: no horizon, sky, fence, objects, vehicles, vegetation, people, text, symbols or shadows of objects. Low-angle trackside view: sparse small camel hoof-print lines in raked packed sand, grains slightly larger toward bottom foreground, top far edge lighter and hazier, bottom a little darker. Left and right tile edges must join PERFECTLY when repeated horizontally, identical sand brightness, raked lines and hoof detail alignment at both sides. No singular large feature near either side seam. Japanese pixel-painterly game background texture, use attached sunrise racetrack as authoritative sand texture/light reference only, warm light upper-left, fine painterly pixel texture, flat earth local colors with 2-3 shaped steps, sand #e2c48c and cream #f4ead6. No glossy gradients, bloom, glow, neon, airbrush, photorealism or smooth 3D. Opaque sand all the way to every edge.",
+      "original": {
+        "path": "originals/ground-track-raw.png",
+        "size": [
+          2109,
+          745
+        ],
+        "mode": "RGB",
+        "alpha_extrema": null,
+        "sha256": "bb1f9c35a8a10943fdd4e08264ca3f8eb49a3ffce980093d2bc1e436e3c4645f",
+        "bytes": 2157633
+      },
+      "candidate": {
+        "path": "candidates/ground-track-A.png",
+        "size": [
+          1280,
+          452
+        ],
+        "mode": "RGB",
+        "alpha_extrema": null,
+        "sha256": "2d68cb40dc2e6cec2c615b645532faa449355702bbe1190838ac86654b19bb8f",
+        "bytes": 874121
+      },
+      "processing": "Uniform downscale only; no crop, warping, color/alpha correction.",
+      "status": "NEEDS SEAM REPAIR, not final accepted",
+      "seam_rgb_MAD": 6.873156342182891,
+      "interior_adjacent_rgb_MAD": 3.9347261526681288,
+      "visual_qa": "Opaque1280x452, no sky/objects, sparse hoof prints. Two-tile preview shows mild discontinuity in raked lines at join; exact seamless criterion not met."
+    },
+    {
+      "part": "ground-road",
+      "prompt": "CR-WD04 ground-road.png. Target EXACT 1280x152 pixel VERY THIN WIDE strip, aspect 160:19. A horizontally seamless repeating packed sand service road texture with EXACTLY TWO parallel tire ruts running LEFT TO RIGHT across entire width. Full canvas OPAQUE sand. Same painterly pixel sand style, palette and upper-left warm sunrise lighting as attached ground-track reference. Low-angle trackside texture view, no horizon/sky/fence/objects/vehicles/people/plants/text/digits/logos/watermark or object shadows. The left and right edges MUST align seamlessly when tiled horizontally, ruts meet at same height and same lighting both sides. No big unique edge feature. Fine painterly pixel texture, flat local sand #e2c48c / cream #f4ead6 / muted brown colors in 2-3 shaped steps, top slightly lighter and bottom darker. No glossy gradient, glow, bloom, airbrush, realism or smooth 3D. Only packed sand and two horizontal tire ruts.",
+      "original": {
+        "path": "rejected/ground-road-raw.png",
+        "size": [
+          1402,
+          1122
+        ],
+        "mode": "RGB",
+        "alpha_extrema": null,
+        "sha256": "c1d2f6b57697e5ef7fca4d297765a7708a2cd4ea958aa3b812c62b38baf03178",
+        "bytes": 1139061
+      },
+      "status": "REJECTED",
+      "reason": "Generated 1402x1122 with broad white area above and below sand strip. Cannot meet 1280x152 via uniform downscale only; no crop/warp used."
+    },
+    {
+      "part": "remote-voice-normal",
+      "prompt": "CR-UI07 remote-voice-normal.png. Target EXACT 960x240 pixels (4:1 horizontal belt), nine-slice UI sprite. ONE long rectangular black rubber/matte plastic housing of a camel trainer remote, perfectly FRONT-FACING with straight edges parallel to image edges. Transparent background, real alpha only OUTSIDE housing. Entire housing fills canvas to within 2% margin. Tiny dull brass corner screws inside border bands. Strict nine-slice margins LEFT120 RIGHT120 TOP60 BOTTOM60 target pixels. ALL decoration including the GOLD SPEAKER BUTTON must fit in the LEFT120 border band: a small 80px diameter gold circular push button centered x60,y120. Gold button has small speaker grille dots. No decorations extend past x110. The entire rest from x120 to x840 is plain even matte black rubber, including central stretchable area, for game text and gauge; absolutely no symbols there. This is NORMAL unpressed state, shallow gold lip raised slightly. Same fine painterly pixel texture and 2-3 crisp shaped shadow steps as attached sunrise game reference. Palette ink #1a110a, indigo #1c2236, dull brass #c9963a. No text, letters, digits, pseudo-writing, logos, watermark, people, scene, external drop shadow, gloss, smooth gradient, glow, bloom, neon, airbrush, 3D. Simple used physical object, not polished app UI.",
+      "original": {
+        "path": "rejected/remote-voice-normal-raw.png",
+        "size": [
+          2172,
+          724
+        ],
+        "mode": "RGBA",
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "sha256": "d2224e4dd06d9cfe092af3cc0c28d3f68bc0abe4f9ebcc10362dd00519d29510",
+        "bytes": 1718449
+      },
+      "status": "REJECTED",
+      "reason": "Generated canvas 2172x724 (3:1), not 4:1. Uniform resize produces960x320, cannot meet960x240; no crop/warp used. Nine-slice decoration not accepted until aspect repaired."
+    },
+    {
+      "part": "howto-tactics",
+      "prompt": "CR-WD07 howto-tactics.png, target exactly 640x480 (4:3 landscape). Small tutorial spot illustration matching attached adopted howto-camel-B.png's exact painter's hand: fine painterly pixel texture, clear dark contours, matte colors with 2-3 shaped shadow steps, warm upper-left sunrise. Transparent outside a soft sand-and-sky brush vignette. TWO racing DROMEDARY CAMELS (one hump each) facing and running RIGHT, each with a SMALL BOX-SHAPED robot jockey. FRONT camel on RIGHT wears BLUE saddle blanket. REAR camel immediately tucked right behind it on LEFT wears GOLD saddle blanket with ONE RED STAR; this rear camel is Habiba. Both camels visible and legs separate/anatomically coherent, rear camel nose very near front camel's tail, close drafting not side-by-side. Pale curved wind lines split around leading blue camel's chest then flow backward over the back of following gold camel to visually teach wind shelter. No arrows/text/letters/digits/pseudo-writing/logos/watermark, no people, no extra camels, no panels, no glossy gradients/glow/bloom/neon/airbrush/photo realism/3D. Same robot proportions and camel body design as attached reference, but two camels in composition.",
+      "original": {
+        "path": "originals/howto-tactics-raw.png",
+        "size": [
+          1448,
+          1086
+        ],
+        "mode": "RGBA",
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "sha256": "1154d66fd023cb213fd364a595bb2f7adf05213fcbbcda1de9ec51bdada02578",
+        "bytes": 2091859
+      },
+      "candidate": {
+        "path": "candidates/howto-tactics-A.png",
+        "size": [
+          640,
+          480
+        ],
+        "mode": "RGBA",
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "sha256": "c8a82a774a264c1ff7cd7919dd7950d4f9c448fe3611b7125cd88f0d20cccf56",
+        "bytes": 440899
+      },
+      "processing": "Uniform downscale only; no crop, warping, color/alpha correction.",
+      "status": "technical candidate, adoption pending",
+      "visual_qa": "Two camels running right: blue front, gold/red-star rear tucked close behind; two robot jockeys, wind curves split at front and run over follower; adopted howto-camel original reference used. No text, extra animals or clipped camel anatomy. Real alpha outside sand/sky vignette. Robot heads match adopted round-head source; box torsos. Interior translucent vignette retained."
+    },
+    {
+      "part": "gate-start-B",
+      "prompt": "CR-WD01 gate-start-B.png. One isolated wooden START gate sprite, NO LETTERING. Final canvas 480x800 portrait 3:5. Real transparent alpha everywhere except object. Two sun-bleached wood posts connected by diagonal crossbeam, deep green blank cloth banner on beam, small green triangular flags on top. TRACKSIDE VIEW: near right post very tall and thick, extends to bottom edge. Far left post much thinner and SHORT, located in TOP HALF ONLY: far left post's bottom MUST END at 47% canvas height, immediately below green banner bottom; no part of left post extends into lower half. LOWER HALF of canvas is empty transparency except the right post. Near-post foot at x430,y800, far-post foot at x50,y376. Left post begins at about y45, right at y120; beam connects them at these top levels, green banner bottom about y330. Plain green center for future game lettering. Match attached background's fine painterly pixel texture, confident dark outline, 2-3 hard-shaped warm sunrise shadow steps. Worn wood and cloth, no gloss/gradient/glow/bloom/airbrush/3D/photorealism. No ground shadow, no scenery/people/text/digits/logo/watermark. Object all fully visible except right foot touches bottom.",
+      "original": {
+        "path": "rejected/gate-start-B-raw.png",
+        "size": [
+          971,
+          1619
+        ],
+        "mode": "RGBA",
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "sha256": "6889f0fca738265f332542fd154bfb8eab899536ba921d6e4cee78fdbc6ad1d6",
+        "bytes": 1242906
+      },
+      "status": "REJECTED",
+      "reason": "Far-post foot about52% canvas height rather than requested47%; no matching finish gate. Not accepted."
+    }
+  ],
+  "repository_delivery": "No GitHub/LFS upload completed. No existing assets overwritten or game integration performed."
+}

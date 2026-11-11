@@ -144,7 +144,8 @@ assert.equal(shop[LONGLONG_FINALE].metadata?.bond_finale, "master_hookah");
 assert.match(daily, /gainAffinity\(LONGLONG_CHAR, visitAffinity\(longlong\.kind === "story" \? "story" : "talk"\)\)/);
 assert.doesNotMatch(daily, /longlong: "master_hookah"|teacher.*longlong/, "授業（龍の煙）は大会後の会場の台詞なので、店では相談しない");
 // IR23: FESTA の太陽も、来店ごとに通いの小会話と同じ値（visitAffinity。第4章は +8）。♥5の授業（フェスタの煙）に届く
-assert.match(daily, /if \(entry\.place === "festa"\) gainAffinity\("da_silva", visitAffinity\("talk"\)\)/);
+// FESTA は来店ごとに小会話の値、太陽の段階の会話（RVE03・chapters/dubai-bonds.js）を読んだ来店は段階の値
+assert.match(daily, /if \(entry\.place === "festa"\) gainAffinity\("da_silva", visitAffinity\(festaBond \? "story" : "talk"\)\)/);
 assert.doesNotMatch(daily, /gainAffinity\("da_silva", \d/, "no fixed number for Taiyo");
 
 console.log("PASS ch4 Longlong Dubai shop: stages, hearts, records, scripts, eve-of-tournament acquaintance branch");

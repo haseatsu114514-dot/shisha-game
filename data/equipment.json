@@ -595,6 +595,54 @@
       }
     },
     {
+      "id": "suyaki_da_silva",
+      "type": "bowl",
+      "name": "太陽が育てたパッションフルーツ専用ハガル",
+      "chapter_min": 99,
+      "buy_price": 0,
+      "sell_price": 0,
+      "price": 0,
+      "value": "suyaki_da_silva",
+      "description": "太陽がFESTAの閉店後、手拍子の止んだ店で、帰りそびれた一人のために詰めてきた素焼き。甘酸っぱい南国の香りが土まで染み付いている。容量20g。",
+      "capacity": 20,
+      "art": "suyaki_hagal",
+      "not_for_sale": true,
+      "unsellable": true,
+      "gift": {
+        "from": "da_silva",
+        "reason": "祭りのあとの一台を、次の客に",
+        "flavor": "passion_fruit",
+        "leaf_grams": 50,
+        "min_grams": 3,
+        "aroma": 4,
+        "bonus": 1
+      }
+    },
+    {
+      "id": "suyaki_sheikh",
+      "type": "bowl",
+      "name": "シェイクが育てたグレープ専用ハガル",
+      "chapter_min": 99,
+      "buy_price": 0,
+      "sell_price": 0,
+      "price": 0,
+      "value": "suyaki_sheikh",
+      "description": "シェイクが旅装で路地裏のカフェへ来る時だけ使い、店の棚に預けてきた素焼き。王族の顔を外した夜の、熟したぶどうの香りが土まで染み付いている。容量20g。",
+      "capacity": 20,
+      "art": "suyaki_hagal",
+      "not_for_sale": true,
+      "unsellable": true,
+      "gift": {
+        "from": "sheikh",
+        "reason": "ただの客でいられた夜を、友に",
+        "flavor": "grape",
+        "leaf_grams": 50,
+        "min_grams": 3,
+        "aroma": 4,
+        "bonus": 1
+      }
+    },
+    {
       "id": "kumogama_phunnel",
       "type": "bowl",
       "name": "雲窯ファンネルハガル",

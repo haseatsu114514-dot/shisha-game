@@ -1,0 +1,245 @@
+{
+  "issue": 3217,
+  "date_utc": "2026-11-11",
+  "tool": "Codex built-in image_gen",
+  "reference": "Cached bg_dubai_camel_track_morning.png inspected for texture and light; cup-practice used for shape/detail consistency.",
+  "limits": [
+    "No GitHub LFS save completed.",
+    "No adoption or game integration.",
+    "All badge interiors have residual transparency; not fully opaque."
+  ],
+  "items": [
+    {
+      "id": "CR-WD08",
+      "part": "practice",
+      "status": "NEEDS OPACITY REPAIR, not final accepted",
+      "prompts": [
+        "CR-WD08 cup-practice.png: target 256x256 square, ONE struck round dull IRON tin racing badge, shallow relief of a SINGLE CAMEL HOOF PRINT at center. Not horse horseshoe: camel foot has two broad soft toe pads. No ribbon, string, letters, digits, logos, watermark. Badge fully opaque metal and background outside disc real transparent alpha. Flat front view. Object fills canvas to within 2% edges, no cut off. Japanese pixel-painterly desert racetrack visual novel minigame, same painter texture and upper-left warm sunrise light as reference background. Fine painterly pixel texture, confident dark silhouette outline, flat local iron-gray colors, only 2-3 hard shadow steps. Used dull worn tin, not shiny gold. No glossy gradients, glow, bloom, neon, airbrush, photo realism, 3D, no background scene, ground or external drop shadow, no people."
+      ],
+      "original": {
+        "path": "originals/cup-practice-A.png",
+        "size": [
+          1254,
+          1254
+        ],
+        "mode": "RGBA",
+        "sha256": "06ea73bb60c8ac54db74ef8f1ad6a15570c8ddd019071f85748b08de5b826723",
+        "bytes": 2035685,
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "central_third_alpha_extrema": [
+          252,
+          254
+        ]
+      },
+      "candidate": {
+        "path": "candidates/cup-practice-A.png",
+        "size": [
+          256,
+          256
+        ],
+        "mode": "RGBA",
+        "sha256": "f80cb69d4965245c929ee607e1662b2511eabf5f0f32a5e5c045abb571c60dc3",
+        "bytes": 101350,
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "central_third_alpha_extrema": [
+          252,
+          253
+        ]
+      },
+      "processing": "Uniform downscale only, transparent centered horizontal padding and bottom alignment if needed. Alpha preserved without threshold or repaint.",
+      "visual_qa": "No letters, extra symbols or external ground shadow; correct visible motif and star count. Disc interior alpha is 252-254 before downscale, not fully opaque: NEEDS opacity repair before final acceptance."
+    },
+    {
+      "id": "CR-WD08",
+      "part": "rookie",
+      "status": "NEEDS OPACITY REPAIR, not final accepted",
+      "prompts": [
+        "CR-WD08 cup-rookie.png: target 256x256 square, ONE struck round dull BRONZE tin racing badge, shallow relief depicting a young camel HEAD IN PROFILE and EXACTLY ONE small five-point star. Same circular disc size, rim design, painterly texture and sunrise upper-left light as supplied practice badge reference. Flat front view, worn used metal, full disc opaque with real transparent alpha only outside disc. Fill canvas to within 2% edges, disc never cut off. Fine painterly pixel texture, confident dark outer contour, flat local colors with only 2-3 hard-shaped shadow steps. No ribbon, string, letters, digits, logos, watermark. No glossy gradients, glow, bloom, neon, airbrush, realism, 3D render, background scene, ground or external shadow, no people. Count stars exactly.",
+        "Precise color-only edit of supplied rookie coin. Change its metal from current grey iron to unmistakable warm reddish-BRONZE copper: base #a66537, dark recesses #633f2b, flat highlight #d5a26a. Preserve exact coin geometry, camel relief, ONE star, all shapes and texture, transparent alpha outside disc. Coin itself fully opaque. No new objects/text, no glow, no smooth gradient, no exterior shadow, no background. Only bronze metal color change. Target 256x256 square final."
+      ],
+      "original": {
+        "path": "originals/cup-rookie-A.png",
+        "size": [
+          1254,
+          1254
+        ],
+        "mode": "RGBA",
+        "sha256": "f83ce62e9473524d8b2408a9a3edaafabcaa132076b848e30b44f49443f59901",
+        "bytes": 1906679,
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "central_third_alpha_extrema": [
+          252,
+          254
+        ]
+      },
+      "candidate": {
+        "path": "candidates/cup-rookie-A.png",
+        "size": [
+          256,
+          256
+        ],
+        "mode": "RGBA",
+        "sha256": "5ef57cc2062ffd2118ec510b3cdb5351da5f49c09bb5cbb6ca05cea1e2351483",
+        "bytes": 109657,
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "central_third_alpha_extrema": [
+          252,
+          254
+        ]
+      },
+      "processing": "Uniform downscale only, transparent centered horizontal padding and bottom alignment if needed. Alpha preserved without threshold or repaint.",
+      "visual_qa": "No letters, extra symbols or external ground shadow; correct visible motif and star count. Disc interior alpha is 252-254 before downscale, not fully opaque: NEEDS opacity repair before final acceptance."
+    },
+    {
+      "id": "CR-WD08",
+      "part": "standard",
+      "status": "NEEDS OPACITY REPAIR, not final accepted",
+      "prompts": [
+        "CR-WD08 cup-standard.png: target 256x256 square, ONE struck round dull SILVER tin racing badge, shallow relief depicting a RUNNING CAMEL silhouette and EXACTLY TWO small five-point stars. Same circular disc size, rim design, painterly texture and sunrise upper-left light as supplied practice badge reference. Flat front view, worn used metal, full disc opaque with real transparent alpha only outside disc. Fill canvas to within 2% edges, disc never cut off. Fine painterly pixel texture, confident dark outer contour, flat local colors with only 2-3 hard-shaped shadow steps. No ribbon, string, letters, digits, logos, watermark. No glossy gradients, glow, bloom, neon, airbrush, realism, 3D render, background scene, ground or external shadow, no people. Count stars exactly.",
+        "Precise color-only edit of this standard racing badge. Change current dark warm grey metal to unmistakable pale cool SILVER: base #b5bcc5, hard dark recess #626b79, flat highlight #e6e8e9. Preserve exact coin shape, running camel relief, TWO stars, rim and painterly pixel texture, no new objects or text. Metal disc fully opaque, real transparent alpha outside disc. No glossy or smooth gradients, no glow, no background or exterior shadow. Target 256x256 square. Only silver color change."
+      ],
+      "original": {
+        "path": "originals/cup-standard-A.png",
+        "size": [
+          1254,
+          1254
+        ],
+        "mode": "RGBA",
+        "sha256": "db42aabc96c151b16b27706482f3cf9de20596123bf2945585894fa01ada76d4",
+        "bytes": 1974832,
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "central_third_alpha_extrema": [
+          252,
+          254
+        ]
+      },
+      "candidate": {
+        "path": "candidates/cup-standard-A.png",
+        "size": [
+          256,
+          256
+        ],
+        "mode": "RGBA",
+        "sha256": "95053e1134b8a462a4ea788dc1e5258eff686fa7c4ba6fc27180b09344ad76d0",
+        "bytes": 108776,
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "central_third_alpha_extrema": [
+          252,
+          254
+        ]
+      },
+      "processing": "Uniform downscale only, transparent centered horizontal padding and bottom alignment if needed. Alpha preserved without threshold or repaint.",
+      "visual_qa": "No letters, extra symbols or external ground shadow; correct visible motif and star count. Disc interior alpha is 252-254 before downscale, not fully opaque: NEEDS opacity repair before final acceptance."
+    },
+    {
+      "id": "CR-WD08",
+      "part": "expert",
+      "status": "NEEDS OPACITY REPAIR, not final accepted",
+      "prompts": [
+        "CR-WD08 cup-expert.png: target 256x256 square, ONE struck round dull GOLD tin racing badge, shallow relief depicting a camel HEAD IN PROFILE inside a laurel wreath and EXACTLY THREE small five-point stars. Same circular disc size, rim design, painterly texture and sunrise upper-left light as supplied practice badge reference. Flat front view, worn used metal, full disc opaque with real transparent alpha only outside disc. Fill canvas to within 2% edges, disc never cut off. Fine painterly pixel texture, confident dark outer contour, flat local colors with only 2-3 hard-shaped shadow steps. No ribbon, string, letters, digits, logos, watermark. No glossy gradients, glow, bloom, neon, airbrush, realism, 3D render, background scene, ground or external shadow, no people. Count stars exactly."
+      ],
+      "original": {
+        "path": "originals/cup-expert-A.png",
+        "size": [
+          1254,
+          1254
+        ],
+        "mode": "RGBA",
+        "sha256": "9ecf8b7fbbae40fd3f2aecb4e2b0b7796cb60860f7b338e13e5ec83216bb5450",
+        "bytes": 2228840,
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "central_third_alpha_extrema": [
+          251,
+          254
+        ]
+      },
+      "candidate": {
+        "path": "candidates/cup-expert-A.png",
+        "size": [
+          256,
+          256
+        ],
+        "mode": "RGBA",
+        "sha256": "2bb2f23394ec44834f106bbc10b9d4afeb91800b047930f307b950f8c418b12d",
+        "bytes": 118727,
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "central_third_alpha_extrema": [
+          252,
+          253
+        ]
+      },
+      "processing": "Uniform downscale only, transparent centered horizontal padding and bottom alignment if needed. Alpha preserved without threshold or repaint.",
+      "visual_qa": "No letters, extra symbols or external ground shadow; correct visible motif and star count. Disc interior alpha is 252-254 before downscale, not fully opaque: NEEDS opacity repair before final acceptance."
+    },
+    {
+      "id": "CR-WD06",
+      "part": "flagpole",
+      "status": "technical candidate, adoption pending",
+      "prompts": [
+        "CR-WD06 fg-flagpole.png ONE isolated thin WHITE vertical flagpole, target 256x720 tall portrait canvas. Base of pole touches bottom canvas edge. Near its top a SHORT STRING with EXACTLY THREE triangular pennants: dull gold, racing red, sun-bleached cream, one of each, fluttering gently right. No extra flags. Japanese pixel-painterly visual novel minigame at Dubai sunrise: same fine painterly pixel texture as reference background, confident dark outer contour, flat local colors with two to three hard-shaped shadow steps, warm light upper left. Real transparent alpha background. No ground, no base platform, no external shadow, no people, scenery, words, digits, logos, watermark. No gradients, glow, bloom, neon, airbrush, photo realism or smooth 3D. Entire pole and three flags fully visible, object fills canvas near edges, flat side view."
+      ],
+      "original": {
+        "path": "originals/fg-flagpole-A.png",
+        "size": [
+          748,
+          2103
+        ],
+        "mode": "RGBA",
+        "sha256": "23016a56879ef0cd317375419bd1158e4bb910de07f1097424915eff428edbe8",
+        "bytes": 254181,
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "central_third_alpha_extrema": [
+          0,
+          1
+        ]
+      },
+      "candidate": {
+        "path": "candidates/fg-flagpole-A.png",
+        "size": [
+          256,
+          720
+        ],
+        "mode": "RGBA",
+        "sha256": "6251d6f4af35e3780d506454fed5d9a435d47f38ef35789d0b055e90fb640c85",
+        "bytes": 40451,
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "central_third_alpha_extrema": [
+          0,
+          0
+        ]
+      },
+      "processing": "Uniform downscale only, transparent centered horizontal padding and bottom alignment if needed. Alpha preserved without threshold or repaint.",
+      "visual_qa": "Three triangular flags in gold/red/cream; thin white pole; base at canvas bottom; no text or external shadow. Final visual style acceptance pending."
+    }
+  ]
+}

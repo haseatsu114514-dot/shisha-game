@@ -1,0 +1,605 @@
+/* 新版（現行の画面を磨き上げた様式・LK02）。すべての規則を :root[data-look="neo"] の中に書き、現行の見た目を変えない。
+   対象は第1章の会話（1280×720 と横持ちスマホ）。2画面表示（body.game-ds）には当てない。
+   配色テーマ（data-ui-theme の7種）の枠・色の規則より必ず勝つよう、#stage #vn の2つの id で始める。
+   動く部品（立ち絵の光・名前の色）は js/looks/neo.js。 */
+
+/* ---------------------------------------------------------------- 寸法と色（ステージ上の px） */
+:root[data-look="neo"] body:not(.game-ds) #stage #vn {
+  --neo-gold: #e3bd6e;
+  --neo-lav: #c9a7e6;
+  --neo-side: 166px;          /* 本文の左右の余白（本文の幅は 948px） */
+  --neo-safe-b: 0px;          /* 画面下端の安全域（スマホのホームバー） */
+  --neo-name-top: 28px;
+  --neo-name-h: 44px;
+  --neo-name-size: 28px;
+  --neo-rule-top: 82px;
+  --neo-text-top: 96px;
+  --neo-text-size: 30px;
+  --neo-line: 51px;           /* 本文の行の高さ（30px × 1.7） */
+  --neo-inner-size: 26px;
+  --neo-band-h: calc(var(--neo-text-top) + var(--neo-line) * 2 + 50px + var(--neo-safe-b));
+  /* 立ち絵に重ねる場面の光（判定できない場面の弱い共通色）。時間帯ごとの色は下の「場面の光」。 */
+  --neo-key: rgba(255, 218, 178, .5);
+  --neo-fill: rgba(118, 88, 170, .36);
+}
+:root[data-look="neo"][data-density="phone"] body:not(.game-ds) #stage #vn {
+  --neo-safe-b: max(30px, calc((env(safe-area-inset-bottom, 0px) + 8px) / var(--k, 1)));
+  --neo-name-top: 18px;
+  --neo-name-h: 48px;
+  --neo-name-size: 30px;
+  --neo-rule-top: 72px;
+  --neo-text-top: 84px;
+  --neo-text-size: 34px;
+  --neo-line: 56px;
+  --neo-inner-size: 28px;
+  --neo-band-h: calc(var(--neo-text-top) + var(--neo-line) * 2 + 10px + var(--neo-safe-b));
+}
+
+/* ---------------------------------------------------------------- 1. 会話窓: 画面下から立ち上がる夜紫の帯 */
+:root[data-look="neo"] body:not(.game-ds) #stage #vn .vn-box {
+  left: 0;
+  right: auto;
+  bottom: 0;
+  width: 1280px;
+  height: var(--neo-band-h);
+  padding: var(--neo-text-top) var(--neo-side) 0;
+  transform: none;
+  translate: none;
+  background: none;
+  border: 0;
+  border-image: none;
+  border-radius: 0;
+  box-shadow: none;
+  backdrop-filter: none;
+  filter: none;
+  isolation: isolate;
+}
+:root[data-look="neo"] body:not(.game-ds) #stage #vn .vn-box::before,
+:root[data-look="neo"] body:not(.game-ds) #stage #vn .vn-box:is(.narration, .thought)::before {
+  content: "";
+  position: absolute;
+  inset: -78px 0 0;
+  width: auto;
+  height: auto;
+  background: linear-gradient(to top,
+    rgba(18, 9, 30, .96) 0%, rgba(18, 9, 30, .9) 52%, rgba(18, 9, 30, .56) 78%, rgba(18, 9, 30, 0) 100%);
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  filter: none;
+  clip-path: none;
+  opacity: 1;
+  z-index: -1;
+  pointer-events: none;
+}
+/* 金の細い罫線（名前と本文のあいだ）。地の文でも同じ位置に残し、本文の位置を動かさない。 */
+:root[data-look="neo"] body:not(.game-ds) #stage #vn .vn-box::after {
+  content: "";
+  position: absolute;
+  left: var(--neo-side);
+  right: var(--neo-side);
+  top: var(--neo-rule-top);
+  height: 1px;
+  background: linear-gradient(to right, var(--neo-gold), rgba(227, 189, 110, .26) 60%, rgba(227, 189, 110, 0));
+  pointer-events: none;
+}
+:root[data-look="neo"] body:not(.game-ds) #stage #vn .vn-light-overlay { display: none; }
+
+:root[data-look="neo"] body:not(.game-ds) #stage #vn .vn-text {
+  min-height: calc(var(--neo-line) * 2);
+  font-family: var(--font);
+  font-size: var(--neo-text-size);
+  font-weight: 500;
+  line-height: var(--neo-line);
+  letter-spacing: .04em;
+  color: #fbf8ff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, .55);
+}
+:root[data-look="neo"] body:not(.game-ds) #stage #vn .vn-box.has-inner .vn-text {
+  min-height: var(--neo-line);
+  line-height: var(--neo-line);
+}
+:root[data-look="neo"] body:not(.game-ds) #stage #vn .vn-box.narration .vn-text { color: #ece5f6; }
+:root[data-look="neo"] body:not(.game-ds) #stage #vn .vn-box.thought .vn-text { color: #cfdaf6; }
+:root[data-look="neo"] body:not(.game-ds) #stage #vn .vn-box.reward .vn-text { color: #ffe2a6; font-size: var(--neo-text-size); }
+:root[data-look="neo"] body:not(.game-ds) #stage #vn .vn-inner {
+  margin-top: 0;
+  font-family: var(--font);
+  font-size: var(--neo-inner-size);
+  font-weight: 500;
+  line-height: var(--neo-line);
+  letter-spacing: .03em;
+  white-space: nowrap;
+  color: #ffb6cc;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, .7);
+}
+/* 文中の色: 紙の面向けに濃くした色（ui-paper.css）を、暗い帯向けの明るい色へ戻す。 */
+:root[data-look="neo"] body:not(.game-ds) #stage #vn .vn-box .tx-imp { color: #ffe2a6; text-shadow: 0 0 16px rgba(255, 210, 120, .6); }
+:root[data-look="neo"] body:not(.game-ds) #stage #vn .vn-box .tx-warn { color: #ff9a9a; }
+:root[data-look="neo"] body:not(.game-ds) #stage #vn .vn-box .tx-hint { color: #9fe3ff; }
+:root[data-look="neo"] body:not(.game-ds) #stage #vn .vn-box .tx-red { color: #ff8585; }
+:root[data-look="neo"] body:not(.game-ds) #stage #vn .vn-box .tx-blue { color: #9cc0ff; }
+:root[data-look="neo"] body:not(.game-ds) #stage #vn .vn-box .tx-sub { color: #cbbfd6; }
+:root[data-look="neo"] body:not(.game-ds) #stage #vn .vn-box .tx-voice { color: #b9bdd4; text-shadow: 0 1px 2px rgba(0, 0, 0, .5); }
+:root[data-look="neo"] body:not(.game-ds) #stage #vn .vn-next {
+  right: var(--neo-side);
+  bottom: calc(22px + var(--neo-safe-b));
+  font-size: 18px;
+  color: var(--neo-gold);
+}
+
+/* ---------------------------------------------------------------- 2. 名前札: キャラの色の細い縦線＋名前 */
+:root[data-look="neo"] body:not(.game-ds) #stage #vn .vn-box .vn-name {
+  left: var(--neo-side);
+  top: var(--neo-name-top);
+  width: max-content;
+  min-width: 0;
+  max-width: 640px;
+  height: var(--neo-name-h);
+  padding: 0 0 0 20px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  background: none;
+  border: 0;
+  border-image: none;
+  border-radius: 0;
+  box-shadow: none;
+  clip-path: none;
+  rotate: none;
+  filter: none;
+  font-family: var(--font);
+  font-size: var(--vn-name-fit-size, var(--neo-name-size));
+  font-weight: 700;
+  line-height: var(--neo-name-h);
+  letter-spacing: .08em;
+  text-align: left;
+  white-space: nowrap;
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, .6);
+}
+:root[data-look="neo"] body:not(.game-ds) #stage #vn .vn-box:is(.narration, .thought) .vn-name { display: none; }
+/* 縦線の色は話している人の色（characters.json の intro_cutin.color を neo.js が --neo-speaker へ入れる）。無ければラベンダー。 */
+:root[data-look="neo"] body:not(.game-ds) #stage #vn .vn-box .vn-name::before {
+  content: "";
+  position: absolute;
+  inset: 7px auto 7px 0;
+  width: 6px;
+  height: auto;
+  background: var(--neo-speaker, var(--neo-lav));
+  border: 0;
+  border-radius: 2px;
+  box-shadow: 0 0 14px color-mix(in srgb, var(--neo-speaker, var(--neo-lav)) 70%, transparent);
+  pointer-events: none;
+}
+:root[data-look="neo"] body:not(.game-ds) #stage #vn .vn-box .vn-name::after { content: none; }
+
+/* ---------------------------------------------------------------- 3. 操作: 画面右上の半透明の丸い札 */
+/* 押せる範囲（ボタンの箱）は現行の 44px（スマホは --phone-tap）のまま、札の絵（::after）だけ上下 5px 小さく描く。 */
+:root[data-look="neo"] body:not(.game-ds) #stage #vn .vn-controls {
+  top: 12px;
+  right: 24px;
+  bottom: auto;
+  left: auto;
+  width: auto;
+  height: auto;
+  padding: 0;
+  gap: 10px;
+  display: flex;
+  align-items: center;
+  translate: none;
+  background: none;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  clip-path: none;
+}
+:root[data-look="neo"] body:not(.game-ds) #stage #vn .vn-controls::before,
+:root[data-look="neo"] body:not(.game-ds) #stage #vn .vn-controls::after { content: none; }
+:root[data-look="neo"] body:not(.game-ds) #stage #vn .vn-controls .vn-ctl {
+  --neo-face: rgba(21, 13, 34, .58);
+  --neo-edge: rgba(246, 241, 250, .3);
+  position: relative;
+  isolation: isolate;
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  width: auto;
+  min-width: 0;
+  height: 44px;
+  min-height: 44px;
+  margin: 0;
+  padding: 0 16px;
+  background: none;
+  border: 0;
+  border-image: none;
+  border-radius: 999px;
+  box-shadow: none;
+  filter: none;
+  transform: none;
+  clip-path: none;
+  font-family: var(--font);
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: .08em;
+  text-decoration: none;
+  color: #f6f1fa;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, .5);
+  cursor: pointer;
+}
+/* 札の面 */
+:root[data-look="neo"] body:not(.game-ds) #stage #vn .vn-controls .vn-ctl::after {
+  content: "";
+  position: absolute;
+  inset: 5px 0;
+  z-index: -1;
+  margin: 0;
+  transform: none;
+  background: var(--neo-face);
+  border: 1px solid var(--neo-edge);
+  border-radius: 999px;
+  box-shadow: 0 2px 8px rgba(8, 3, 16, .35);
+  pointer-events: none;
+  transition: background-color .15s ease, border-color .15s ease;
+}
+/* 札の絵記号（インライン SVG を型にして文字色で塗る。区切り線だった ::before を置き換える） */
+:root[data-look="neo"] body:not(.game-ds) #stage #vn .vn-controls .vn-ctl::before,
+:root[data-look="neo"] body:not(.game-ds) #stage #vn .vn-controls .vn-ctl + .vn-ctl::before {
+  content: "";
+  position: static;
+  flex: none;
+  inset: auto;
+  width: 16px;
+  height: 16px;
+  background: currentColor;
+  opacity: 1;
+  -webkit-mask: var(--neo-ico) center / contain no-repeat;
+  mask: var(--neo-ico) center / contain no-repeat;
+}
+:root[data-look="neo"] body:not(.game-ds) #stage #vn .vn-ctl[data-test="vn-auto"] {
+  --neo-ico: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M4.5 2.8v10.4l8.5-5.2z'/%3E%3C/svg%3E");
+}
+:root[data-look="neo"] body:not(.game-ds) #stage #vn .vn-ctl[data-test="vn-skip"] {
+  --neo-ico: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M2 3.2v9.6l5.6-4.8zM8.4 3.2v9.6l5.6-4.8z'/%3E%3C/svg%3E");
+}
+:root[data-look="neo"] body:not(.game-ds) #stage #vn .vn-ctl[data-test="vn-log"] {
+  --neo-ico: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3 4h10M3 8h10M3 12h6' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E");
+}
+:root[data-look="neo"] body:not(.game-ds) #stage #vn .vn-ctl[data-test="vn-glossary"] {
+  --neo-ico: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M8 4.3C6.6 3.3 4.8 3 2.6 3.2v8.7c2.2-.2 4 .1 5.4 1.1 1.4-1 3.2-1.3 5.4-1.1V3.2C11.2 3 9.4 3.3 8 4.3zM8 4.3V13' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+:root[data-look="neo"] body:not(.game-ds) #stage #vn .vn-ctl[data-test="vn-config"] {
+  --neo-ico: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%23000' stroke-width='1.6' stroke-linecap='round'%3E%3Cpath d='M2.5 5h4.6M11.9 5h1.6M2.5 11h1.6M8.9 11h4.6'/%3E%3Ccircle cx='9.5' cy='5' r='2'/%3E%3Ccircle cx='6.5' cy='11' r='2'/%3E%3C/svg%3E");
+}
+:root[data-look="neo"] body:not(.game-ds) #stage #vn .vn-controls .vn-ctl:is(:hover, :focus-visible) {
+  --neo-face: rgba(58, 38, 88, .82);
+  --neo-edge: rgba(201, 167, 230, .85);
+  color: #fff;
+  background: none;
+  box-shadow: none;
+  filter: none;
+  text-decoration: none;
+}
+:root[data-look="neo"] body:not(.game-ds) #stage #vn .vn-controls .vn-ctl:focus-visible {
+  outline: 2px solid var(--neo-gold);
+  outline-offset: -3px;
+}
+/* AUTO・SKIP の点灯: 札を金で塗り、文字を墨にする。 */
+:root[data-look="neo"] body:not(.game-ds) #stage #vn .vn-controls .vn-ctl.on {
+  --neo-face: linear-gradient(180deg, #f3d48d, #d9a94f);
+  --neo-edge: #fbe6b4;
+  color: #26160a;
+  background: none;
+  box-shadow: none;
+  filter: none;
+  text-shadow: none;
+}
+:root[data-look="neo"] body:not(.game-ds) #stage #vn .vn-controls .vn-ctl.on::after {
+  box-shadow: 0 0 14px rgba(240, 200, 110, .55), 0 2px 8px rgba(8, 3, 16, .35);
+}
+/* 横持ちスマホ: 押せる高さは規格（--phone-tap）、文字は規格の大きさ。幅を取るので絵記号は出さない。 */
+:root[data-look="neo"][data-density="phone"] body:not(.game-ds) #stage #vn .vn-controls {
+  top: 8px;
+  right: 20px;
+  gap: var(--phone-gap);
+}
+:root[data-look="neo"][data-density="phone"] body:not(.game-ds) #stage #vn .vn-controls .vn-ctl {
+  height: var(--phone-tap);
+  min-height: var(--phone-tap);
+  padding: 0 22px;
+  font-size: var(--phone-ctl);
+}
+:root[data-look="neo"][data-density="phone"] body:not(.game-ds) #stage #vn .vn-controls .vn-ctl::after { inset: 9px 0; }
+:root[data-look="neo"][data-density="phone"] body:not(.game-ds) #stage #vn .vn-controls .vn-ctl::before,
+:root[data-look="neo"][data-density="phone"] body:not(.game-ds) #stage #vn .vn-controls .vn-ctl + .vn-ctl::before { content: none; }
+
+/* ---------------------------------------------------------------- 4. 背景と立ち絵のなじませ */
+/* 人物がいる間だけ背景をわずかにぼかして暗くする（人物がいない場面は絵そのものを見せる）。 */
+/* ぼかしで縁が透けないよう、会話の間は絵を少しだけ拡大しておく。拡大した絵がステージのスクロール領域を
+   広げないよう背景の層で切る（広がると、選択肢へ focus() が当たった時にステージごと数 px ずれる）。 */
+:root[data-look="neo"] body.in-vn:not(.game-ds) #stage #bg { overflow: hidden; overflow: clip; }
+:root[data-look="neo"] body.in-vn:not(.game-ds) #stage #bg .bg-img {
+  scale: 1.03;
+  transition: opacity .6s ease, filter .45s ease;
+}
+:root[data-look="neo"] body.in-vn:not(.game-ds) #stage:has(#vn .vn-portraits > img) #bg .bg-img {
+  filter: blur(5px) brightness(.87) saturate(1.06);
+}
+:root[data-look="neo"] body.in-vn:not(.game-ds) #stage:has(#vn .vn-portraits > img) #bg .bg-img[data-tint="night"] {
+  filter: blur(5px) brightness(.62) saturate(.74) contrast(1.05);
+}
+:root[data-look="neo"] body.in-vn:not(.game-ds) #stage:has(#vn .vn-portraits > img) #bg .bg-img[data-tint="dim"] {
+  filter: blur(6px) brightness(.42);
+}
+:root[data-look="neo"] body.in-vn:not(.game-ds)[data-weather="outdoor"][data-weather-sky="day"] #stage:has(#vn .vn-portraits > img) #bg .bg-img.show:not([data-tint]) {
+  filter: blur(5px) saturate(.68) brightness(.74) contrast(1.03);
+}
+/* 「揺れ・閃光を減らす」と端末の「動きを減らす」では、ぼかしの出入りをゆっくり動かさない。 */
+:root[data-look="neo"] body.in-vn.reduce-shake:not(.game-ds) #stage #bg .bg-img { transition: opacity .6s ease; }
+@media (prefers-reduced-motion: reduce) {
+  :root[data-look="neo"] body.in-vn:not(.game-ds) #stage #bg .bg-img { transition: opacity .6s ease; }
+}
+/* 周辺減光（立ち絵より後ろ。背景だけを落とす） */
+:root[data-look="neo"] body:not(.game-ds) #stage #vn .vn-effect {
+  background: radial-gradient(120% 92% at 50% 30%, rgba(10, 4, 20, 0) 46%, rgba(10, 4, 20, .46) 100%);
+}
+
+/* 立ち絵: 輪郭の外の薄い影。話していない人を暗くする処理（brightness・saturate）は現行と同じ値。
+   動き（animation）は img に付けない: 会話エンジンが立ち絵の登場を img.getAnimations() の終了で待つため、終わらない動きを付けると会話が止まる。 */
+:root[data-look="neo"] body:not(.game-ds) #stage #vn .portrait {
+  filter: brightness(.62) saturate(.85) drop-shadow(0 0 18px rgba(16, 6, 26, .55));
+}
+:root[data-look="neo"] body:not(.game-ds) #stage #vn .portrait.active {
+  filter: brightness(1) saturate(1) drop-shadow(0 0 18px rgba(16, 6, 26, .55));
+}
+/* 呼吸: 立ち絵の層ごと、足元（画面の下端）を基準にゆっくり 0.5% 伸び縮みさせる。光の重ねも同じ層なので一緒に動く。 */
+:root[data-look="neo"] body:not(.game-ds) #stage #vn .vn-portraits {
+  transform-origin: 50% 100%;
+  animation: neo-breathe 5.2s ease-in-out infinite;
+}
+@keyframes neo-breathe {
+  0%, 100% { transform: scaleY(1); }
+  50% { transform: scaleY(1.005); }
+}
+:root[data-look="neo"] body:is(.reduce-shake, .vn-skip):not(.game-ds) #stage #vn .vn-portraits { animation: none; }
+:root[data-look="neo"] body:not(.game-ds) #stage #vn.intro-morph-dialog-hidden .vn-portraits { animation-play-state: paused; }
+@media (prefers-reduced-motion: reduce) {
+  :root[data-look="neo"] body:not(.game-ds) #stage #vn .vn-portraits { animation: none; }
+}
+
+/* 場面の光: neo.js が立ち絵1枚ごとに同じ位置・同じ形（立ち絵の絵を型にする）の層を重ね、ここで色を乗せる。 */
+:root[data-look="neo"] body:not(.game-ds) #stage #vn .neo-light {
+  position: absolute;
+  left: 50%;
+  transform: translateX(var(--ax, -50%));
+  background:
+    linear-gradient(205deg, var(--neo-key), rgba(255, 255, 255, 0) 55%),
+    linear-gradient(20deg, var(--neo-fill), rgba(255, 255, 255, 0) 50%);
+  -webkit-mask: var(--neo-mask) 0 0 / 100% 100% no-repeat;
+  mask: var(--neo-mask) 0 0 / 100% 100% no-repeat;
+  mix-blend-mode: soft-light;
+  opacity: .5;
+  pointer-events: none;
+  transition: left .35s var(--ease-out), opacity .3s ease, translate .35s var(--ease-out);
+}
+:root[data-look="neo"] body:not(.game-ds) #stage #vn .neo-light.active { opacity: 1; translate: 0 -3px; }
+:root[data-look="neo"] body:not(.game-ds) #stage #vn .neo-light[data-pos="left"] { left: 30%; }
+:root[data-look="neo"] body:not(.game-ds) #stage #vn .neo-light[data-pos="right"] { left: 70%; }
+:root[data-look="neo"] body:not(.game-ds) #stage #vn .neo-light.enter { opacity: 0; translate: 0 24px; }
+:root[data-look="neo"] body.vn-skip:not(.game-ds) #stage #vn .neo-light { transition-duration: .12s; }
+/* 回想・セピアは色を抜く演出なので光を重ねない。登場カットインへ変身する間は、立ち絵と一緒に消す。 */
+:root[data-look="neo"] body:not(.game-ds) #stage #vn:is(.sepia, .flashback) .neo-light { display: none; }
+:root[data-look="neo"] body:not(.game-ds) #stage #vn.intro-morph-dialog-hidden .neo-light { opacity: 0; transition-duration: .12s; }
+/* 2画面表示には新版を当てないので、光の層も出さない。 */
+:root[data-look="neo"] body.game-ds .neo-light { display: none; }
+
+/* 時間帯の色（背景の絵の名前と、夜の色調補正 data-tint から判定。#bg の最後の絵がいまの場面） */
+:root[data-look="neo"] body:not(.game-ds) #stage:has(#bg > .bg-img:last-child:is([style*="_day."], [data-scene-bg*="_day."], [style*="_morning."])) #vn {
+  --neo-key: rgba(255, 246, 220, .58);
+  --neo-fill: rgba(122, 160, 222, .32);
+}
+:root[data-look="neo"] body:not(.game-ds) #stage:has(#bg > .bg-img:last-child:is([style*="_overcast_day."], [data-scene-bg*="_overcast_day."])) #vn {
+  --neo-key: rgba(216, 226, 242, .5);
+  --neo-fill: rgba(92, 106, 144, .38);
+}
+:root[data-look="neo"] body:not(.game-ds) #stage:has(#bg > .bg-img:last-child:is([style*="_dusk."], [style*="_evening."], [style*="_sunset."])) #vn {
+  --neo-key: rgba(255, 146, 84, .82);
+  --neo-fill: rgba(126, 62, 142, .52);
+}
+:root[data-look="neo"] body:not(.game-ds) #stage:has(#bg > .bg-img:last-child:is([data-tint="night"], [style*="_night."], [data-scene-bg*="_night."])) #vn {
+  --neo-key: rgba(255, 180, 104, .72);
+  --neo-fill: rgba(92, 52, 150, .55);
+}
+
+/* ---------------------------------------------------------------- 5. 選択肢: 夜紫の半透明・ラベンダーの縁・金の番号 */
+/* 選択肢が出ている間は場面を少し落とす（会話の帯と操作の札は落とさない）。 */
+:root[data-look="neo"] body:not(.game-ds) #stage #vn::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 4;
+  background: rgba(10, 4, 20, .36);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .2s ease;
+}
+:root[data-look="neo"] body:not(.game-ds) #stage #vn:has(> .vn-choices.show)::before { opacity: 1; }
+/* 帯のすぐ上へ下げて、顔にかかりにくくする（現行は2択で帯の 94px 上）。 */
+:root[data-look="neo"] body:not(.game-ds) #stage #vn .vn-choices,
+:root[data-look="neo"] body:not(.game-ds) #stage #vn .vn-choices:has(> .vn-choice:nth-child(2):last-child) {
+  bottom: calc(var(--neo-band-h) + 12px);
+  gap: 12px;
+  counter-reset: neo-choice;
+}
+/* 多い時のスクロール領域は、右上の操作の札の下から始める。幅は選択肢の幅＋左右 20px。 */
+:root[data-look="neo"] body:not(.game-ds) #stage #vn .vn-choices:has(> .vn-choice:nth-child(6)) { top: 66px; width: 840px; }
+:root[data-look="neo"][data-density="phone"] body:not(.game-ds) #stage #vn .vn-choices:has(> .vn-choice:nth-child(5)) { top: calc(var(--phone-tap) + 18px); width: 960px; }
+:root[data-look="neo"] body:not(.game-ds) #stage #vn .vn-choice {
+  --neo-c-fill: rgba(33, 20, 52, .9);
+  --neo-c-edge: rgba(201, 167, 230, .78);
+  position: relative;
+  /* 番号のぶん左の余白が広いので、幅を 720→800px に広げる（全角26字が 24px のまま1行に入る内幅 660px）。高さは現行（73px）以上。 */
+  width: 800px;
+  min-height: 74px;
+  padding: 15px 44px 15px 96px;
+  counter-increment: neo-choice;
+  font-family: var(--font);
+  font-weight: 700;
+  line-height: 1.45;
+  letter-spacing: .04em;
+  text-align: left;
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, .45);
+  /* 斜めの切り口にも縁の線を通す: 面を1枚敷き、上・下の線と、左右の斜めの線（幅16pxの帯の対角線）を重ねる。外側は clip-path が切る。 */
+  background:
+    linear-gradient(var(--neo-c-edge), var(--neo-c-edge)) 16px 0 / calc(100% - 16px) 1px no-repeat,
+    linear-gradient(var(--neo-c-edge), var(--neo-c-edge)) 0 100% / calc(100% - 16px) 1px no-repeat,
+    linear-gradient(to top left, rgba(0, 0, 0, 0) calc(50% - 1.5px), var(--neo-c-edge) calc(50% - 1.5px), var(--neo-c-edge) 50%, rgba(0, 0, 0, 0) 50%) 0 0 / 16px 100% no-repeat,
+    linear-gradient(to bottom right, rgba(0, 0, 0, 0) calc(50% - 1.5px), var(--neo-c-edge) calc(50% - 1.5px), var(--neo-c-edge) 50%, rgba(0, 0, 0, 0) 50%) 100% 0 / 16px 100% no-repeat,
+    linear-gradient(var(--neo-c-fill), var(--neo-c-fill));
+  border: 0;
+  border-image: none;
+  border-radius: 0;
+  box-shadow: none;
+  filter: none;
+  outline: none;
+  clip-path: polygon(16px 0, 100% 0, calc(100% - 16px) 100%, 0 100%);
+}
+/* 横持ちスマホ: 文字は規格の 28px のまま、全角26字が入る幅（880→920px）。高さは現行（規格＋6px）以上。 */
+:root[data-look="neo"][data-density="phone"] body:not(.game-ds) #stage #vn .vn-choice { width: 920px; min-height: calc(var(--phone-tap) + 8px); }
+/* 左の番号（1〜3 は数字キーでも選べる） */
+:root[data-look="neo"] body:not(.game-ds) #stage #vn .vn-choice::before,
+:root[data-look="neo"] body:not(.game-ds) #stage #vn .vn-choice.growth-hint::before {
+  content: counter(neo-choice);
+  position: absolute;
+  left: 34px;
+  top: 50%;
+  width: 40px;
+  transform: translateY(-50%);
+  rotate: none;
+  border-right: 1px solid rgba(227, 189, 110, .4);
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: 0;
+  font-variant-numeric: tabular-nums;
+  text-align: left;
+  color: var(--neo-gold);
+  text-shadow: none;
+  opacity: 1;
+  pointer-events: none;
+}
+:root[data-look="neo"] body:not(.game-ds) #stage #vn .vn-choice:is(:hover, :focus-visible) {
+  --neo-c-fill: #e6c276;
+  --neo-c-edge: #fbe9bd;
+  color: #26160a;
+  text-shadow: none;
+  box-shadow: none;
+  outline: none;
+  transform: scale(1.02);
+}
+:root[data-look="neo"] body:not(.game-ds) #stage #vn .vn-choice:is(:hover, :focus-visible)::before {
+  color: #5a3a0e;
+  border-right-color: rgba(90, 58, 14, .4);
+}
+/* 会話の気配（成長の手がかり）の印は右端へ。占いの予感は意味色（赤）を保つ。 */
+:root[data-look="neo"] body:not(.game-ds) #stage #vn .vn-choice.growth-hint::after {
+  content: "〰";
+  position: absolute;
+  right: 30px;
+  top: 50%;
+  transform: translateY(-50%) rotate(-90deg);
+  font-size: 18px;
+  color: var(--neo-gold);
+  opacity: .85;
+  pointer-events: none;
+}
+:root[data-look="neo"] body:not(.game-ds) #stage #vn .vn-choice.fortune-hint { color: #ff8f96; text-shadow: 0 1px 2px #000; }
+:root[data-look="neo"] body:not(.game-ds) #stage #vn .vn-choice.fortune-hint:is(:hover, :focus-visible) {
+  --neo-c-fill: #a52c44;
+  --neo-c-edge: #ff9aa6;
+  color: #fff;
+}
+:root[data-look="neo"] body:not(.game-ds) #stage #vn .vn-choice[aria-disabled="true"] { opacity: .8; cursor: default; }
+:root[data-look="neo"] body:not(.game-ds) #stage #vn .vn-choice[aria-disabled="true"]:is(:hover, :focus-visible) {
+  --neo-c-fill: rgba(33, 20, 52, .9);
+  --neo-c-edge: rgba(201, 167, 230, .78);
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, .45);
+  transform: none;
+}
+:root[data-look="neo"] body:not(.game-ds) #stage #vn .vn-choice[aria-disabled="true"]:is(:hover, :focus-visible)::before {
+  color: var(--neo-gold);
+  border-right-color: rgba(227, 189, 110, .4);
+}
+
+/* ---------------------------------------------------------------- 会話に重なる他の部品の置き直し（帯が高くなり、操作が右上へ移った分） */
+/* LOG を開いている間は、右上の札と送りの印を消す（現行では LOG の紙の下に隠れている）。 */
+:root[data-look="neo"] body:not(.game-ds) #stage #vn:has(> .vn-log.show) .vn-controls { opacity: 0; pointer-events: none; }
+:root[data-look="neo"] body:not(.game-ds) #stage #vn:has(> .vn-log.show) .vn-next { opacity: 0; animation: none; }
+/* 会話カットイン（はじめの顔の枠・下端 y526）: 名前の行に掛からない高さへ上げ、帯の暗がりの上に出す。 */
+:root[data-look="neo"] body:not(.game-ds) #stage #vn .vn-cutin-layer { translate: 0 -44px; z-index: 6; }
+/* シーシャの図解: 右上の札の下から、帯の上までに収める（少し縮めて、帯の暗がりの上に出す）。 */
+:root[data-look="neo"] body:not(.game-ds) #stage #vn .sd-diagram { top: 62px; scale: .9; transform-origin: 100% 0; z-index: 6; }
+:root[data-look="neo"][data-density="phone"] body:not(.game-ds) #stage #vn .sd-diagram { top: calc(var(--phone-tap) + 12px); scale: .86; }
+/* 縦型チェキの一枚絵: 落書きの余白まで帯の上に見せる。 */
+:root[data-look="neo"] body:not(.game-ds) #stage #vn .vn-cg[data-cg="cg_minto_first_cheki"] {
+  background-size: auto calc(100% - 336px);
+  background-position: center 22px;
+}
+/* 回想の札: 画面中央（立ち絵の頭の後ろ）から左上へ移し、右上の操作の札と同じ形にする。 */
+:root[data-look="neo"] body:not(.game-ds) #stage #vn.flashback::after {
+  top: 17px;
+  left: 26px;
+  z-index: 6;
+  transform: none;
+  padding: 0 16px 0 20px;
+  font-size: 15px;
+  font-weight: 700;
+  line-height: 32px;
+  letter-spacing: .3em;
+  color: #f6f1fa;
+  background: rgba(21, 13, 34, .58);
+  border: 1px solid rgba(246, 241, 250, .3);
+  border-radius: 999px;
+}
+:root[data-look="neo"][data-density="phone"] body:not(.game-ds) #stage #vn.flashback::after {
+  top: 17px;
+  padding: 0 20px 0 26px;
+  font-size: var(--phone-ctl);
+  line-height: 52px;
+}
+/* 猫（てつこ）は現行の会話枠の上に座る高さ（下から 30%）で出るので、帯の上へ座り直させる。 */
+:root[data-look="neo"] body:not(.game-ds) #stage #vn :is(.portrait[data-speaker="tetsuko"], .neo-light[data-of="tetsuko"]) { translate: 0 -36px; }
+:root[data-look="neo"] body:not(.game-ds) #stage #vn :is(.portrait[data-speaker="tetsuko"], .neo-light[data-of="tetsuko"]).active { translate: 0 -39px; }
+:root[data-look="neo"] body:not(.game-ds) #stage #vn :is(.portrait[data-speaker="tetsuko"], .neo-light[data-of="tetsuko"]).enter { translate: 0 -12px; }
+
+/* ---------------------------------------------------------------- 6. MENU のタブ: 絵文字をやめ、同じ線の太さ（1.8）の線画の絵記号にする */
+/* 絵文字の字は箱の外へ送って隠し、インライン SVG を型にしてタブの文字色で塗る（選択中は白になる）。箱の大きさは字の大きさに比例。 */
+:root[data-look="neo"] body:not(.game-ds) .dmenu .dm-tab .dm-icon {
+  display: block;
+  align-self: flex-start;
+  width: 1.25em;
+  height: 1.25em;
+  overflow: hidden;
+  white-space: nowrap;
+  text-indent: -9em;
+  background: currentColor;
+  -webkit-mask: var(--neo-ico) center / contain no-repeat;
+  mask: var(--neo-ico) center / contain no-repeat;
+}
+:root[data-look="neo"] body:not(.game-ds) .dmenu .dm-tab[data-tab="status"] .dm-icon {
+  --neo-ico: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='8' r='3.7'/%3E%3Cpath d='M4.6 20.2c.6-4 3.5-6.3 7.4-6.3s6.8 2.3 7.4 6.3'/%3E%3C/svg%3E");
+}
+:root[data-look="neo"] body:not(.game-ds) .dmenu .dm-tab[data-tab="people"] .dm-icon {
+  --neo-ico: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6.2 4.2h11.6a2.4 2.4 0 0 1 2.4 2.4v7.6a2.4 2.4 0 0 1-2.4 2.4h-6.4l-4.4 3.6v-3.6h-.8a2.4 2.4 0 0 1-2.4-2.4V6.6a2.4 2.4 0 0 1 2.4-2.4z'/%3E%3Cpath d='M8.2 8.8h7.6M8.2 12.2h4.8'/%3E%3C/svg%3E");
+}
+:root[data-look="neo"] body:not(.game-ds) .dmenu .dm-tab[data-tab="items"] .dm-icon {
+  --neo-ico: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 11.2c0-2.9 2.3-4.7 6-4.7s6 1.8 6 4.7v7.6a1.7 1.7 0 0 1-1.7 1.7H7.7A1.7 1.7 0 0 1 6 18.8z'/%3E%3Cpath d='M9.4 6.8V5.6a2 2 0 0 1 2-2h1.2a2 2 0 0 1 2 2v1.2'/%3E%3Cpath d='M9.2 13.6h5.6v3.4H9.2z'/%3E%3C/svg%3E");
+}
+:root[data-look="neo"] body:not(.game-ds) .dmenu .dm-tab[data-tab="system"] .dm-icon {
+  --neo-ico: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M10.3 5.3 L10.6 2.8 L13.4 2.8 L13.7 5.3 L15.5 6.1 L17.5 4.5 L19.5 6.5 L17.9 8.5 L18.7 10.3 L21.2 10.6 L21.2 13.4 L18.7 13.7 L17.9 15.5 L19.5 17.5 L17.5 19.5 L15.5 17.9 L13.7 18.7 L13.4 21.2 L10.6 21.2 L10.3 18.7 L8.5 17.9 L6.5 19.5 L4.5 17.5 L6.1 15.5 L5.3 13.7 L2.8 13.4 L2.8 10.6 L5.3 10.3 L6.1 8.5 L4.5 6.5 L6.5 4.5 L8.5 6.1z'/%3E%3Ccircle cx='12' cy='12' r='2.9'/%3E%3C/svg%3E");
+}
