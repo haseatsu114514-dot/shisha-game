@@ -11,6 +11,34 @@
 import { DB, realName } from "../core/data.js";
 import { setActive as setMenuFigure } from "./neo/menu-figure.js";
 
+// 縦持ち（LK11）: 縦長の画面（スマホの縦持ち・縦長の PC の窓）では、DS風の外枠＋高解像度の上画面＋ドット調の下画面で見せる。
+// 外枠の部品は looks/retro.js を高解像度（hd）・縦長だけの条件で動かす。縦長になった時に初めて読み込む
+// （横長だけで遊ぶ端末には、外枠のコードを読み込ませない）。横長に戻すと外枠は自分で引っ込む。
+const PORTRAIT = "(orientation: portrait)";
+let portraitQuery = null, portraitShell = null, portraitLoad = 0;
+function startPortrait() {
+  if (portraitShell || !portraitQuery?.matches) return;
+  const mine = ++portraitLoad;
+  import("./retro.js").then((retro) => {
+    if (mine !== portraitLoad || !active || portraitShell) return;
+    portraitShell = retro.startShell({ paint: "hd", mode: "portrait" });
+  }).catch((error) => console.error("[look] 縦持ちの表示を読み込めませんでした", error));
+}
+function setPortrait(on) {
+  if (on) {
+    if (typeof window.matchMedia !== "function") return;
+    portraitQuery = window.matchMedia(PORTRAIT);
+    portraitQuery.addEventListener?.("change", startPortrait);
+    startPortrait();
+    return;
+  }
+  portraitQuery?.removeEventListener?.("change", startPortrait);
+  portraitQuery = null;
+  portraitLoad++;
+  portraitShell?.stop();
+  portraitShell = null;
+}
+
 const LIGHT = "neo-light";
 const SPEAKER_VAR = "--neo-speaker";
 const MASK_VAR = "--neo-mask";
@@ -146,6 +174,7 @@ export function setActive(on) {
   if (active === !!on) return;
   active = !!on;
   setMenuFigure(active);
+  setPortrait(active);
   if (active) {
     host = document.getElementById("vn");
     if (!host) return;

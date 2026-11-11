@@ -144,8 +144,11 @@ export function createCoverScene(shell, painter, own) {
   const tip = el("div.retro-vn-tip", { text: "タッチで つぎへ", hidden: true, "aria-hidden": "true" });
   const pane = el("div.retro-pane.retro-cover", { hidden: true, dataset: { test: "retro-cover" } }, [lines, profile, wait, tip]);
 
+  let holding = false; // 未対応の場面を待っている間（MENU などが開いている）。中継すると中のボタンを押してしまうので、しない
+
   /** 現行ステージ中央の一番上の要素へ、タップ（pointerdown → pointerup → click）を中継する。 */
   function relayTap() {
+    if (holding) return;
     const stage = document.getElementById("stage");
     const rect = stage?.getBoundingClientRect();
     if (!rect?.width) return;
@@ -167,6 +170,7 @@ export function createCoverScene(shell, painter, own) {
   const lineNode = (line, big) => el(`div.retro-cover-line${big ? ".big" : ""}`, { text: line.text });
 
   function sync(state = {}) {
+    holding = !!state.hold;
     if (!!state.gap !== gap) {
       gap = !!state.gap;
       painter.enter(true); // 背景のまま待つ ⇄ 暗くして覆いを写す の切り替えも、網点のコマ送りでつなぐ
@@ -204,7 +208,7 @@ export function createCoverScene(shell, painter, own) {
     }
     wait.hidden = !lines.hidden || !!card; // 下画面に出す物が無い間は、待っている印（点）を出す
     // 「タッチで つぎへ」は、覆いがタップを受ける状態のまま中身がしばらく変わらない時だけ出す（時間で進む場面転換では出さない）
-    tip.hidden = !state.pressable || !!card || performance.now() - Math.max(changedAt, lastTap) < 1500;
+    tip.hidden = holding || !state.pressable || !!card || performance.now() - Math.max(changedAt, lastTap) < 1500;
     shell.setStatus("", "");
     shell.setKeys([]);
     shell.setCaption("");

@@ -5,14 +5,23 @@
 // それ以外（MENU・LIME・設定・ロード画面・シーシャ作り・店…）では外枠を引っ込めて現行の画面をそのまま見せる。
 // 横持ちのタッチ端末では外枠を出さない。
 // setActive(false) では、足した要素・監視・タイマー・属性をすべて片付けて現行へ戻す。
+//
+// 同じ外枠を、新版の縦持ち（LK11）も使う（looks/neo.js が startShell({ paint: "hd", mode: "portrait" }) で動かす）。
+//   paint: "dot"（DS風のドット絵・retro/painter.js）／"hd"（新版と同じ高解像度の絵・retro/painter-hd.js）
+//   mode:  "retro"（DS風の条件: 縦長の画面か PC）／"portrait"（縦長の画面だけ）
+// 新版の縦持ちでは、未対応の場面（MENU・LIME・設定・店・シーシャ作り…）で小さい横長の画面を見せず、
+// 回転案内（#rotate-hint）を出す（タッチでない縦長の窓では案内が出ないので、DS風と同じく小さい画面＋一言）。
+// どちらの描き方かは <html data-retro-paint="dot|hd"> と外枠の data-paint で分かる。
 import { createShell } from "./retro/shell.js";
 import { createPainter } from "./retro/painter.js";
+import { createHdPainter } from "./retro/painter-hd.js";
 import { engageState, detectState, isPortrait, isLoading } from "./retro/detect.js";
 import { createVnScene } from "./retro/vn.js";
 import { createMapScene } from "./retro/map.js";
 import { createTitleScene } from "./retro/title.js";
 import { createMenuScene } from "./retro/menu.js";
 import { createCoverScene } from "./retro/cover.js";
+import { el } from "../core/util.js";
 
 const DETECT_MS = 110;      // 場面の確認は 1 秒に 9 回ほど
 const SYNC_MS = 250;        // 変化の通知が無くても、この間隔で写し直す
@@ -22,19 +31,42 @@ const STUCK_MS = 6000;      // 何も写せない覆いがタップを待った�
 const COVER_MAX_MS = 20000; // 覆いの中身が変わらないまま続く上限（外枠が暗いまま止まらないように）
 const NOTE_UNSUPPORTED = "この場面は横向きにすると大きく表示されます";
 const NOTE_OLD_LAYOUT = "表示設定を通常版にするとDS風が使えます";
+// 新版の縦持ちで回転案内を出している間の文（元の文は隠して、外枠を止めたら戻す）
+const HINT_MAIN = "この画面は横向きで表示します", HINT_SUB = "端末を横にしてください";
 
-let session = null;
+let lookSession = null; // 様式「DS風」の外枠
+let current = null;     // いま動いている外枠（同時に1つだけ）
 
+/** 様式「DS風」の出し入れ（looks/index.js から呼ばれる）。 */
 export function setActive(on) {
-  if (!!session === !!on) return;
-  if (on) session = start();
-  else { session.stop(); session = null; }
+  if (!!lookSession === !!on) return;
+  if (on) lookSession = startShell({ paint: "dot", mode: "retro" });
+  else { lookSession.stop(); lookSession = null; }
 }
 
-function start() {
+/** 外枠を動かす。戻り値の stop() で、足した要素・監視・属性をすべて片付ける（何度呼んでもよい）。 */
+export function startShell(options = {}) {
+  current?.stop();
+  const session = start(options);
+  const handle = { stop() { if (current === handle) current = null; session.stop(); } };
+  current = handle;
+  return handle;
+}
+
+function start({ paint = "dot", mode = "retro" } = {}) {
   const root = document.documentElement;
-  const shell = createShell();
-  const painter = createPainter(shell.canvas);
+  const hd = paint === "hd";
+  const shell = createShell({ paint });
+  const painter = hd ? createHdPainter(shell.canvas, { dotScale: shell.dotScale }) : createPainter(shell.canvas);
+  root.dataset.retroPaint = paint;
+  // 新版の縦持ち: 回転案内の文を差し替える（元の文は CSS で隠すだけで、書き換えない）
+  const hint = hd ? document.getElementById("rotate-hint") : null;
+  const hintText = hint ? el("div.retro-hint", { dataset: { test: "retro-hint" } }, [
+    el("i.retro-hint-device", { "aria-hidden": "true" }),
+    el("p.retro-hint-main", { text: HINT_MAIN }),
+    el("p.retro-hint-sub", { text: HINT_SUB }),
+  ]) : null;
+  if (hintText) hint.append(hintText);
   const own = [shell.root, shell.note];
   const scenes = {
     title: createTitleScene(shell, painter), vn: createVnScene(shell, painter), map: createMapScene(shell, painter),
@@ -42,13 +74,14 @@ function start() {
   };
   for (const scene of Object.values(scenes)) shell.bottom.append(scene.pane);
   shell.mount();
-  window.__retroLook = { stats: painter.stats }; // 確認・検査用（重い処理の回数と時間）
+  window.__retroLook = { stats: painter.stats, paint, mode }; // 確認・検査用（重い処理の回数と時間）
 
   let stopped = false, frame = 0;
   let engaged = "off", scene = null, candidate = null, streak = 0;
   let fresh = true; // 起動・向きの切り替えの直後。最初に見つけた対応済みの場面は待たずに出す（現行の画面を一瞬見せない）
   let dirty = true, detectSoon = true, lastDetect = 0, lastSync = 0, unsupportedSince = 0;
   let holdSince = 0, pressable = false, gap = false; // 覆い・あいだの待ちに入った時刻、覆いがタップを待っているか、あいだの待ちか
+  let noneSince = 0, hold = false; // 新版の縦持ち: 未対応の場面になってから、回転案内を出すまで外枠のまま待つ間
 
   /** 回転案内（#rotate-hint）の出し入れを変えたら、core/rotate-guard.js に測り直させる。 */
   function setEngaged(next) {
@@ -59,6 +92,16 @@ function start() {
     else delete root.dataset.retro;
     window.dispatchEvent(new Event("resize"));
   }
+
+  /** 新版の縦持ち: 外枠を出している間は回転案内を隠す。引っ込めたら案内を出す（タッチ端末の縦持ちだけ。base.css の条件）。 */
+  function setHintHold(on) {
+    if (!hd) return;
+    if ((root.dataset.retroHint === "hold") === on) return;
+    if (on) root.dataset.retroHint = "hold";
+    else delete root.dataset.retroHint;
+    window.dispatchEvent(new Event("resize"));
+  }
+  const hintShown = () => !!hint && getComputedStyle(hint).display !== "none";
 
   function setScene(next) {
     if (next === scene) return;
@@ -86,8 +129,10 @@ function start() {
 
   /** periodic: 定期の確認（1 秒に 9 回ほど）。DOM の変化を受けた臨時の確認では、外枠を引っ込める・つなぐ判断だけを行う。 */
   function evaluate(now, periodic) {
-    setEngaged(engageState());
+    setEngaged(engageState(mode));
     const found = engaged === "on" ? detectState(own) : { kind: "none" };
+    if (found.kind !== "none" || engaged !== "on") noneSince = 0;
+    hold = false;
     if (scene) {
       // 外枠を出している間: 覆い・あいだの待ちは、外枠のままつなぐ
       if (found.kind === "scene") setScene(found.name);
@@ -99,6 +144,11 @@ function start() {
         const since = now - Math.max(holdSince, scene === "cover" ? cover.activeAt() : 0);
         const limit = gap ? GAP_MS : pressable && !(scene === "cover" && cover.hasContent()) ? STUCK_MS : COVER_MAX_MS;
         setScene(since > limit ? null : "cover");
+      } else if (hd && engaged === "on") {
+        // 新版の縦持ち: 未対応の場面でも、すぐには引っ込めない。短い間は外枠のまま（暗くして）待ち、続いたら回転案内へ
+        noneSince ||= now;
+        hold = now - noneSince < NOTE_DELAY_MS;
+        setScene(hold ? "cover" : null);
       } else setScene(null);
       candidate = null; streak = 0;
     } else if (found.kind === "scene") {
@@ -112,9 +162,12 @@ function start() {
     if (engaged === "old") note = NOTE_OLD_LAYOUT;
     else if (engaged === "on" && !scene && isPortrait() && !isLoading()) {
       unsupportedSince ||= now;
-      if (now - unsupportedSince >= NOTE_DELAY_MS) note = NOTE_UNSUPPORTED;
+      // 新版の縦持ちで回転案内が出ている時は、案内が全面を覆うので一言は出さない
+      if (now - unsupportedSince >= NOTE_DELAY_MS && !hintShown()) note = NOTE_UNSUPPORTED;
     }
     if (scene || engaged !== "on") unsupportedSince = 0;
+    // 新版の縦持ち: 外枠を出している間と、読み込みの画面（縦持ち用の配置を持つ）の間は回転案内を隠す
+    setHintHold(!!scene || (engaged === "on" && isLoading()));
     if (shell.note.textContent !== note) shell.note.textContent = note;
     shell.note.hidden = !note;
   }
@@ -143,7 +196,7 @@ function start() {
     if (dirty || now - lastSync >= SYNC_MS) {
       dirty = false;
       lastSync = now;
-      scenes[scene].sync({ pressable, gap });
+      scenes[scene].sync({ pressable, gap, hold });
       syncNotices();
     }
     scenes[scene].paint(now);
@@ -173,6 +226,7 @@ function start() {
 
   return {
     stop() {
+      if (stopped) return;
       stopped = true;
       cancelAnimationFrame(frame);
       observer.disconnect();
@@ -186,9 +240,12 @@ function start() {
       delete window.__retroLook;
       const wasEngaged = engaged === "on";
       engaged = "off";
+      hintText?.remove();
       delete root.dataset.retro;
       delete root.dataset.retroShell;
-      if (wasEngaged) window.dispatchEvent(new Event("resize")); // 回転案内を現行どおりに戻す
+      delete root.dataset.retroHint;
+      delete root.dataset.retroPaint;
+      if (wasEngaged || hd) window.dispatchEvent(new Event("resize")); // 回転案内を現行どおりに戻す
     },
   };
 }
