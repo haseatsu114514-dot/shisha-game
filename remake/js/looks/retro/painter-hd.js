@@ -460,6 +460,31 @@ export function createHdPainter(canvas, { dotScale = () => 1 } = {}) {
     };
   }
 
+  /**
+   * 窓がステージ（絵）の外まで広がる時（行き先が左右に広く散らばった地図）の余白。現行の画面の余白（#backdrop）と同じく、
+   * 同じ絵を大きくぼかして暗くした面で埋める（黒い帯にしない）。
+   */
+  let blurry = null;
+  function backdrop(c, layers, at) {
+    if (at.x >= -0.5 && at.y >= -0.5 && at.x + at.w <= STAGE_W + 0.5 && at.y + at.h <= STAGE_H + 0.5) return;
+    const part = layers.find((layer) => layer.opacity > 0.5)?.parts.find((p) => p.url && (p.type === "cover" || p.type === "image"));
+    const entry = part ? sourceFor(part.url) : null;
+    if (!entry?.ready) return;
+    blurry ||= canvasOf(48, 36);
+    const b = smooth(blurry.getContext("2d"));
+    const [iw, ih] = sizeOf(entry.levels[0]);
+    const s = Math.max(blurry.width / iw, blurry.height / ih);
+    b.clearRect(0, 0, blurry.width, blurry.height);
+    drawWhole(b, entry, (blurry.width - iw * s) / 2, (blurry.height - ih * s) / 2, iw * s, ih * s, 1);
+    c.save();
+    c.setTransform(1, 0, 0, 1, 0, 0);
+    smooth(c).drawImage(blurry, 0, 0, canvas.width, canvas.height);
+    c.globalAlpha = 0.5;
+    c.fillStyle = "#0a0612";
+    c.fillRect(0, 0, canvas.width, canvas.height);
+    c.restore();
+  }
+
   /** 回想（白黒）・セピア。重ね終えた絵の上に、彩度と色の重ね塗りで掛ける。 */
   function tone(c, mode) {
     if (!mode) return;
@@ -547,7 +572,7 @@ export function createHdPainter(canvas, { dotScale = () => 1 } = {}) {
       const sig = `map|${canvas.width}x${canvas.height}|${viewKey(at)}|${rainy}|${version}|${JSON.stringify(layers.map((l) => [l.parts, l.opacity, l.black]))}`;
       return frame(now, sig, fading, () => {
         const bg = backgroundPlan(layers, at, { rainy: !!rainy, vn: false });
-        return { ready: bg.ready, complete: bg.complete, paint: (c) => { for (const step of bg.steps) step(c); } };
+        return { ready: bg.ready, complete: bg.complete, paint: (c) => { backdrop(c, layers, at); for (const step of bg.steps) step(c); } };
       });
     },
 

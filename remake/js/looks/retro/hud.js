@@ -19,6 +19,7 @@ export function readHud() {
     moves: /あと(\d+)回/.exec(title)?.[1] || "",
     money: text(hud.querySelector(".dc-row.money b")).replace(/円$/, ""),
     stamina: parseFloat(stamina?.querySelector(".gauge-track b")?.style.width) || 0,
+    hasStamina: !!stamina,
     health: stamina?.dataset.health || "",
     unread: lime?.classList.contains("has") ? text(lime.querySelector(".badge-number")) : "",
     hidane: text(hud.querySelector(".hud-menu .hidane-badge:not([hidden])")),

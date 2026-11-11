@@ -15,7 +15,7 @@
 import { createShell } from "./retro/shell.js";
 import { createPainter } from "./retro/painter.js";
 import { createHdPainter } from "./retro/painter-hd.js";
-import { engageState, detectState, isPortrait, isLoading } from "./retro/detect.js";
+import { engageState, detectState, isPortrait, isLoading, topDialogOpen } from "./retro/detect.js";
 import { createVnScene } from "./retro/vn.js";
 import { createMapScene } from "./retro/map.js";
 import { createTitleScene } from "./retro/title.js";
@@ -82,6 +82,7 @@ function start({ paint = "dot", mode = "retro" } = {}) {
   let dirty = true, detectSoon = true, lastDetect = 0, lastSync = 0, unsupportedSince = 0;
   let holdSince = 0, pressable = false, gap = false; // 覆い・あいだの待ちに入った時刻、覆いがタップを待っているか、あいだの待ちか
   let noneSince = 0, hold = false; // 新版の縦持ち: 未対応の場面になってから、回転案内を出すまで外枠のまま待つ間
+  let coverBlocked = false;        // 待ちすぎて引っ込めた覆い（場面が変わるまで外枠へ戻さない）
 
   /** 回転案内（#rotate-hint）の出し入れを変えたら、core/rotate-guard.js に測り直させる。 */
   function setEngaged(next) {
@@ -130,8 +131,12 @@ function start({ paint = "dot", mode = "retro" } = {}) {
   /** periodic: 定期の確認（1 秒に 9 回ほど）。DOM の変化を受けた臨時の確認では、外枠を引っ込める・つなぐ判断だけを行う。 */
   function evaluate(now, periodic) {
     setEngaged(engageState(mode));
-    const found = engaged === "on" ? detectState(own) : { kind: "none" };
+    const found = engaged === "on" ? detectState(own, { extended: hd }) : { kind: "none" };
+    // 新版の縦持ち: 一番上の層に開いた <dialog>（第3章の東京の地図など）は、自分の作りで縦にも並ぶので、
+    // 外枠を引っ込めて回転案内も出さず、そのまま見せる（案内は dialog の下に隠れて、音や制作の時計だけを止めてしまうため）
+    const dialogOpen = hd && engaged === "on" && found.kind === "none" && topDialogOpen();
     if (found.kind !== "none" || engaged !== "on") noneSince = 0;
+    if (found.kind === "scene" || found.kind === "none") coverBlocked = false;
     hold = false;
     if (scene) {
       // 外枠を出している間: 覆い・あいだの待ちは、外枠のままつなぐ
@@ -143,7 +148,10 @@ function start({ paint = "dot", mode = "retro" } = {}) {
         const cover = scenes.cover;
         const since = now - Math.max(holdSince, scene === "cover" ? cover.activeAt() : 0);
         const limit = gap ? GAP_MS : pressable && !(scene === "cover" && cover.hasContent()) ? STUCK_MS : COVER_MAX_MS;
+        if (since > limit) coverBlocked = true; // 待ちすぎて引っ込めた覆いへは、場面が変わるまで戻らない
         setScene(since > limit ? null : "cover");
+      } else if (dialogOpen) {
+        setScene(null);
       } else if (hd && engaged === "on") {
         // 新版の縦持ち: 未対応の場面でも、すぐには引っ込めない。短い間は外枠のまま（暗くして）待ち、続いたら回転案内へ
         noneSince ||= now;
@@ -156,6 +164,16 @@ function start({ paint = "dot", mode = "retro" } = {}) {
       if (found.name !== candidate) { candidate = found.name; streak = 0; }
       if (periodic) streak++;
       if (fresh || streak >= 2) { setScene(found.name); candidate = null; streak = 0; fresh = false; }
+    } else if (hd && engaged === "on" && !coverBlocked && (found.kind === "gap" || (found.kind === "cover" && found.base))) {
+      // 新版の縦持ち: 回転案内から、場面転換・あいだの待ちになったら（その下が写せる場面なら）外枠へ戻して暗くつなぐ。
+      // 定期の確認で2回続けてから（短いちらつきで案内と外枠が行き来しないように）
+      if (found.kind !== candidate) { candidate = found.kind; streak = 0; }
+      if (periodic) streak++;
+      if (streak >= 2) {
+        holdSince = now; gap = found.kind === "gap"; pressable = !!found.pressable;
+        setScene("cover");
+        candidate = null; streak = 0;
+      }
     } else { candidate = null; streak = 0; }
     // 外枠を出していない間の一言
     let note = "";
@@ -163,11 +181,11 @@ function start({ paint = "dot", mode = "retro" } = {}) {
     else if (engaged === "on" && !scene && isPortrait() && !isLoading()) {
       unsupportedSince ||= now;
       // 新版の縦持ちで回転案内が出ている時は、案内が全面を覆うので一言は出さない
-      if (now - unsupportedSince >= NOTE_DELAY_MS && !hintShown()) note = NOTE_UNSUPPORTED;
+      if (now - unsupportedSince >= NOTE_DELAY_MS && !hintShown() && !dialogOpen) note = NOTE_UNSUPPORTED;
     }
     if (scene || engaged !== "on") unsupportedSince = 0;
     // 新版の縦持ち: 外枠を出している間と、読み込みの画面（縦持ち用の配置を持つ）の間は回転案内を隠す
-    setHintHold(!!scene || (engaged === "on" && isLoading()));
+    setHintHold(!!scene || (engaged === "on" && (isLoading() || dialogOpen)));
     if (shell.note.textContent !== note) shell.note.textContent = note;
     shell.note.hidden = !note;
   }
