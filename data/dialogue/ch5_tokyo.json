@@ -58,6 +58,8 @@
         { "speaker": "mukai_master", "face": "normal", "text": "はじめくん、そっちの棚。上から二段目だ" },
         { "speaker": "hajime", "face": "normal", "text": "前と同じ場所ですね" },
         { "speaker": "mukai_master", "face": "smile", "text": "変えてない。変えると、手が迷う" },
+        { "speaker": "hajime", "face": "smile", "text": "俺は向こうで、迷ってばかりでした" },
+        { "speaker": "mukai_master", "face": "smile", "text": "棚くらいは、迷わなくていい" },
         { "speaker": "", "face": "", "text": "言われた棚へ、拭いたグラスを一つずつ伏せていく。手は、迷わなかった。" }
       ]
     },
@@ -117,6 +119,7 @@
         { "speaker": "hajime", "face": "surprise", "text": "今の、タイマーより先でしたね" },
         { "speaker": "steve", "face": "smile", "text": "イエス。たまには、自分の鼻を信じる" },
         { "speaker": "steve", "face": "normal", "text": "タイマーは止めてくれる。でも、先に動く日も要る" },
+        { "speaker": "steve", "face": "normal", "text": "ほとんどの日は、タイマーに任せる。それも腕のうちだ" },
         { "speaker": "hajime", "face": "normal", "text": "世界の舞台で、俺もそうでした。時計より、煙の方が先に答えてくれた" },
         { "speaker": "steve", "face": "smile", "text": "そうか。その感覚、店に戻っても忘れるなよ" },
         { "speaker": "hajime", "face": "normal", "text": "（待つのも動くのも、同じ一台のためか）" }
@@ -195,6 +198,7 @@
         { "speaker": "volk", "face": "smile", "text": "ここだけは、数字を持たない。……飲め。冷める" },
         { "speaker": "hajime", "face": "normal", "text": "甘さは、どのくらいが正解ですか" },
         { "speaker": "volk", "face": "normal", "text": "正解はない。祖母は、俺の顔を見て足した。それだけのことだ" },
+        { "speaker": "volk", "face": "normal", "text": "だから今日は、お前の顔を見て出した、……足りないなら言え" },
         { "speaker": "hajime", "face": "smile", "text": "（測らない一杯が、この店でいちばん正確なのかもしれない）" }
       ]
     },
