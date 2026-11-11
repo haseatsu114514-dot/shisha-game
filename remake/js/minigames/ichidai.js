@@ -9,6 +9,8 @@
 // 操作はタップだけ（カードや炭を選ぶ → 出てくるボタンを押す）。遊び方は「？」から開く。
 // 絵は ichidai-art.js が引く（このゲーム用の絵 → 本編の正規の絵 → 仮の線画の順）。
 import { el } from "../core/util.js";
+import { DB, faceFrame, portraitInfo } from "../core/data.js";
+import { portraitAsset } from "../core/portrait-resolver.js";
 import { SE, unlockAudio } from "../core/audio.js";
 import { KINDS, FLAVOR, CARD, BOWL, HMD, JUDGE, PUFFS, TOURNAMENTS, KITS, KIT, TYPE_LABEL, WHEN_LABEL } from "./ichidai-data.js";
 import { RULES, ZONE_LABEL, createGame, act, heatOf, leavesOf, firepower, sidesOf, slotsOf, roundsOf, sessionOf,
@@ -97,7 +99,7 @@ export function runIchidai({ host = document.getElementById("stage"), signal = n
   const dead = () => ctrl.signal.aborted;
   let G = null, cfg = config ? { ...config } : null;
   let pending = null;            // 人の入力を待つ Promise の resolve
-  const ui = { sel: null, picks: new Set(), counts: {}, note: "", toast: "", fast: false, sheet: null, peek: null, lastLog: 0, turnKey: null };
+  const ui = { sel: null, picks: new Set(), counts: {}, note: "", toast: "", fast: false, sheet: null, peek: null, lastLog: 0, turnKey: null, foeMood: "normal" };
   const foe = { id: opponent?.id || null, name: opponent?.name || "相手" };
 
   const root = el("section.ichi-game", { role: "dialog", "aria-modal": "true", "aria-label": ICHIDAI_TITLE, tabindex: "-1", dataset: { test: "ichi-game", phase: "setup" } });
@@ -139,6 +141,34 @@ export function runIchidai({ host = document.getElementById("stage"), signal = n
   window.__ichidai = hook;
   const human = (i) => i === ME && pilot !== "cpu";
   const say = (text) => { ui.toast = text; live.textContent = text; };
+  // 試遊ページは本編の loadAll を通らない。立ち絵の測定値だけ同じ manifest から読む。
+  const portraitReady = DB.manifest.faceFrames ? Promise.resolve() : fetch("data/manifest.json")
+    .then((res) => { if (!res.ok) throw new Error(`manifest ${res.status}`); return res.json(); })
+    .then((manifest) => { if (!dead() && !DB.manifest.faceFrames) DB.manifest = manifest; })
+    .catch(() => {}); // 素材が無い場合は従来の顔アイコンを維持する
+  function foePortrait() {
+    if (!foe.id) return null;
+    const faces = DB.manifest.portraits?.[foe.id]?.faces || [];
+    const mood = [ui.foeMood, "normal"].find((f) => faces.includes(f));
+    if (!mood) return null;
+    const portrait = DB.characters[foe.id] ? portraitInfo(foe.id, mood, "classic") : portraitAsset(DB.manifest, foe.id, mood, "classic");
+    const frame = portrait && faceFrame(portrait.folder, portrait.style);
+    return frame?.eye && frame?.unit ? { portrait, frame } : null;
+  }
+  function foeBust(name) {
+    const found = foePortrait();
+    if (!found) return el("span.ichi-leader-ring", faceNode(foe.id, name));
+    const { portrait, frame } = found;
+    const scale = 0.46;
+    return el("span.ichi-foe-bust", { dataset: { test: "ichi-foe-bust", face: portrait.face }, "aria-hidden": "true" },
+      el("img", { src: portrait.src, alt: "", draggable: "false", style: {
+        width: `${896 * scale}px`, left: `${108 - frame.eye[0] * scale}px`, top: `${27 - frame.eye[1] * scale}px`,
+      }, onerror: (e) => { e.currentTarget.parentElement.replaceWith(el("span.ichi-leader-ring", faceNode(foe.id, name))); } }));
+  }
+  function setFoeMood(...choices) {
+    const faces = DB.manifest.portraits?.[foe.id]?.faces || [];
+    ui.foeMood = choices.find((f) => faces.includes(f)) || "normal";
+  }
 
   // ───────── 設定の画面 ─────────
   function showSetup() {
@@ -170,12 +200,14 @@ export function runIchidai({ host = document.getElementById("stage"), signal = n
   }
   // ───────── 対戦 ─────────
   async function startGame() {
+    await portraitReady;
+    if (dead()) return;
     const others = KITS.map((k) => k.id).filter((id) => id !== cfg.kit);
     const s = (seed ?? (Date.now() ^ (Math.random() * 0xffffffff))) >>> 0;
     const foeKit = cfg.opponentKit || others[s % others.length];
     G = createGame({ seed: s + games.length * 7919, tournament: cfg.tournament, market: cfg.market,
       players: [{ name: "はじめ", kit: cfg.kit, level: 2 }, { name: foe.name, kit: foeKit, ai: true, level: cfg.level }] });
-    Object.assign(ui, { sel: null, picks: new Set(), counts: {}, note: "", toast: "", sheet: null, peek: null, lastLog: 0, turnKey: null });
+    Object.assign(ui, { sel: null, picks: new Set(), counts: {}, note: "", toast: "", sheet: null, peek: null, lastLog: 0, turnKey: null, foeMood: "normal" });
     closeSheet(); root.dataset.phase = "play";
     if (tutorial && !games.length) { openHelp(); }
     await loop();
@@ -190,11 +222,11 @@ export function runIchidai({ host = document.getElementById("stage"), signal = n
       let action;
       if (human(w.player)) { action = await new Promise((resolve) => { pending = resolve; }); if (!action) return; }
       else { await sleep(cpuDelay(w), ctrl.signal); if (dead() || G !== mine) return; action = aiAct(G, w.player); }
-      const before = G.log.length, r = act(G, action);
+      const before = G.log.length, priorScores = G.P.map((p) => p.score), r = act(G, action);
       if (!r.ok) { if (human(w.player)) { say(r.reason); sfx("cancel"); } else { console.error("ichidai: CPUの入力が通らない", action, r.reason); close(false); return; } continue; }
       ui.sel = null; ui.picks = new Set(); ui.counts = {}; ui.toast = "";
       if (!human(w.player) && G.log.length > before) ui.note = G.log.at(-1).text;
-      await playEvents();
+      await playEvents(priorScores);
     }
   }
   const cpuDelay = (w) => (ui.fast || pilot === "cpu" ? 40 : w.type === "embers" || w.type === "wear" || w.type === "discard" ? 260 : 620) / speed;
@@ -224,15 +256,34 @@ export function runIchidai({ host = document.getElementById("stage"), signal = n
     setTimeout(() => node.remove(), 1500);
   }
 
-  async function playEvents() {
+  function pulseTarget(selector, cls) {
+    if (quick() || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const target = root.querySelector(selector);
+    if (!target) return;
+    target.classList.remove(cls); void target.offsetWidth; target.classList.add(cls);
+    setTimeout(() => target.classList.remove(cls), 650);
+  }
+  function flyCard(ev) {
+    if (quick() || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const node = el(`div.ichi-card-flight.is-${ev.p === ME ? "me" : "foe"}`, { "aria-hidden": "true" }, cardFace(ev.id));
+    root.append(node); setTimeout(() => node.remove(), 650);
+  }
+  async function playEvents(priorScores) {
     const evs = G.events.splice(0);
     for (const ev of evs) {
       if (dead()) return;
       if (ev.t === "reveal") { sfx("card"); render(); await showReveal(ev.puff); }
-      else if (ev.t === "score") { render(); await showScore(ev); }
+      else if (ev.t === "score") {
+        const foeResult = ev.res[CPU], swing = priorScores[CPU] <= priorScores[ME] && G.P[CPU].score > G.P[ME].score;
+        setFoeMood(...(foeResult.zone === "scorch" ? ["sad", "shock", "serious"] : swing ? ["surprise", "excited", "smile"]
+          : foeResult.zone === "just" ? ["excited", "smile", "surprise"] : ev.voter === CPU ? ["smile", "smug"]
+            : ev.voter === ME ? ["sad", "serious"] : foeResult.pts > ev.res[ME].pts ? ["smile", "smug"] : ["serious", "normal"]));
+        render(); await showScore(ev);
+      }
       else if (ev.t === "peek" && human(ev.p)) { ui.peek = ev.puff; sfx("card"); }
-      else if (ev.t === "play" && !human(ev.p)) { sfx("card"); render(); await showPlayed(ev); }
+      else if (ev.t === "play") { sfx("card"); render(); flyCard(ev); if (!human(ev.p)) await showPlayed(ev); }
       else if (ev.t === "charge" || ev.t === "puton") sfx("click");
+      if (["puton", "flip", "ash", "place"].includes(ev.t)) { render(); pulseTarget(ev.t === "place" ? `.ichi-stove${ev.p === CPU ? ".is-small" : ":not(.is-small)"}` : ev.p === CPU ? ".ichi-foe-rig" : ".ichi-zone", `fx-${ev.t}`); }
     }
   }
   /** 相手が使ったカードを、卓の中央に大きく見せる */
@@ -260,7 +311,7 @@ export function runIchidai({ host = document.getElementById("stage"), signal = n
     const mine = who === "me";
     return el(`button.ichi-leader.is-${who}${G.active === p.index && !G.over ? ".is-active" : ""}`, { type: "button", dataset: { test: `ichi-score-${who}`, score: String(p.score), votes: String(p.votes) },
       "aria-label": `${mine ? "あなた" : p.name} ${p.score}点 票${p.votes}。一台を見る`, onclick: () => { sfx("select"); openRig(p, mine); } }, [
-      el("span.ichi-leader-ring", faceNode(mine ? "hajime" : foe.id, p.name)),
+      mine ? el("span.ichi-leader-ring", faceNode("hajime", p.name)) : foeBust(p.name),
       el("span.ichi-leader-plate", [
         el("span.ichi-leader-name", { text: mine ? "あなた" : p.name }),
         el("span.ichi-leader-score", [el("b", { text: String(p.score) }), el("small", { text: "点" })]),
@@ -518,7 +569,7 @@ export function runIchidai({ host = document.getElementById("stage"), signal = n
   // ───────── 重ねる札（一台・審査員・審査・結果・遊び方・やめる） ─────────
   function openSheet(kind, node) { ui.sheet = kind; sheet.replaceChildren(node); sheet.hidden = false; sheet.dataset.kind = kind; }
   function closeSheet() { ui.sheet = null; sheet.hidden = true; sheet.replaceChildren(); }
-  const wait = (ms) => sleep(ms / (quick() ? 12 : speed), ctrl.signal);
+  const wait = (ms) => quick() ? Promise.resolve() : sleep(ms / speed, ctrl.signal);
   const closeInfo = () => el("button.ichi-btn.is-primary", { type: "button", text: "とじる", dataset: { test: "ichi-info-close" }, onclick: () => { sfx("select"); if (ui.sheet === "info") closeSheet(); } });
   /** その人の一台: セッティング・詰めた葉・出しているカード（卓には出していない細かい情報） */
   function openRig(p, mine) {
@@ -577,29 +628,40 @@ export function runIchidai({ host = document.getElementById("stage"), signal = n
     const mine = ev.res[ME];
     sfx(mine.zone === "just" ? "perfect" : mine.zone === "band" ? "good" : "miss");
     return new Promise((resolve) => {
+      let settled = false;
       const done = () => {
+        if (settled) return; settled = true;
         if (ui.sheet === "score") closeSheet();
         for (const [i, who] of [[ME, "me"], [CPU, "foe"]]) { const n = ev.res[i].pts + (ev.res[i].vote || 0); if (n && !quick()) floatText(who, `+${n}`); }
+        if (ev.voter != null && !quick() && !matchMedia("(prefers-reduced-motion: reduce)").matches) {
+          const medal = el(`i.ichi-flying-medal.is-${ev.voter === ME ? "me" : "foe"}`, { "aria-hidden": "true" });
+          root.append(medal); setTimeout(() => medal.remove(), 850);
+        }
         resolve();
       };
       openSheet("score", el("div.ichi-result", { dataset: { test: "ichi-result" } }, [
+        !quick() && ev.res.some((r) => r.zone === "just" || r.zone === "scorch") ? el(`div.ichi-cutin-band.${ev.res[CPU].zone === "scorch" || ev.res[ME].zone === "scorch" ? "is-scorch" : "is-just"}`, { "aria-hidden": "true" },
+          el("b", { text: ev.res[CPU].zone === "scorch" || ev.res[ME].zone === "scorch" ? "焦げ" : "ジャスト" })) : null,
         el("header", [el("small", { text: `ラウンド ${ev.round + 1}` }), puffCard(ev.puff)]),
         row(ME, "あなた"), row(CPU, G.P[CPU].name),
         el("p.ichi-result-vote", { text: ev.voter == null ? "帯が同じなので、票は入らない" : `${ev.voter === ME ? "あなた" : G.P[CPU].name}に一票` }),
         el("button.ichi-btn.is-primary", { type: "button", text: "次へ", dataset: { test: "ichi-next" }, onclick: () => { sfx("select"); done(); } }),
       ]));
       sheet.querySelector("button")?.focus({ preventScroll: true });
-      if (pilot === "cpu") wait(600).then(done);
+      if (pilot === "cpu") queueMicrotask(done);
     });
   }
   function showEnd() {
     const res = G.result, me = G.P[ME], op = G.P[CPU];
     const game = { winner: res.winner, scores: res.scores.slice(), votes: res.votes.slice(), tournament: G.tour.id, kit: me.kit, level: cfg.level, rounds: roundsOf(G) };
     games.push(game);
+    setFoeMood(...(res.winner === CPU ? ["excited", "smile", "smug"] : res.winner === ME ? ["sad", "shock", "serious"] : ["normal"]));
+    render();
     sfx(res.winner === ME ? "fanfare" : "cancel");
     return new Promise((resolve) => {
       const bonus = res.bonus.filter((b) => b.pts[0] || b.pts[1]).map((b) => el("li", [el("span", { text: `${JUDGE[b.judge].name}${b.note ? `（${b.note}）` : "の決め手"}` }), el("b", { text: `${b.pts[0] ? `+${b.pts[0]}` : "—"}` }), el("b", { text: `${b.pts[1] ? `+${b.pts[1]}` : "—"}` })]));
       openSheet("end", el("div.ichi-end", { dataset: { test: "ichi-end-sheet", winner: res.winner === ME ? "me" : res.winner === CPU ? "foe" : "draw" } }, [
+        el("div.ichi-end-foe", { "aria-label": `${op.name}の表情` }, foeBust(op.name)),
         el("h2", { text: res.winner === ME ? "勝ち" : res.winner === CPU ? "負け" : "引き分け" }),
         el("div.ichi-end-scores", [el("div", [el("small", { text: "あなた" }), el("b", { text: String(me.score) }), el("span", { text: `票 ${me.votes}・ジャスト ${me.justCount}・焦げ ${me.scorchCount}` })]),
           el("div", [el("small", { text: op.name }), el("b", { text: String(op.score) }), el("span", { text: `票 ${op.votes}・ジャスト ${op.justCount}・焦げ ${op.scorchCount}` })])]),
