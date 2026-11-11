@@ -1,0 +1,193 @@
+{
+  "items": [
+    {
+      "id": "blueberry_mint",
+      "source": "asset_sources/flavor-cartons-20261111/blueberry_mint.png",
+      "source_sha256": "db523e6727d0b17508e0223aed921ec32ab4cdb6ffc0278bf93c4b64068e2d60",
+      "delivery": "remake/img/shop/flavor-cartons-3287/blueberry_mint.webp",
+      "delivery_sha256": "ff50c5b9393e197af76e7bbe3a97873d7c41d6fe81ec93bf2b4bae7d9257f594",
+      "source_size": [
+        1254,
+        1254
+      ],
+      "delivery_size": [
+        512,
+        512
+      ],
+      "box": [
+        103,
+        51,
+        306,
+        408
+      ]
+    },
+    {
+      "id": "cappuccino",
+      "source": "asset_sources/flavor-cartons-20261111/cappuccino.png",
+      "source_sha256": "bb2cb16ec230ff98738d867083d4274e7e03aff5241dacfa5adc7f4e32427704",
+      "delivery": "remake/img/shop/flavor-cartons-3287/cappuccino.webp",
+      "delivery_sha256": "57c0563a8f82879acdffa3b7d3acbbb3fc3e20da7e63abe640bb7737509c98cc",
+      "source_size": [
+        1254,
+        1254
+      ],
+      "delivery_size": [
+        512,
+        512
+      ],
+      "box": [
+        107,
+        41,
+        299,
+        434
+      ]
+    },
+    {
+      "id": "caramel",
+      "source": "asset_sources/flavor-cartons-20261111/caramel.png",
+      "source_sha256": "a16292a5038aa9848013a59ffd08a0eea097a86d60fad34fe9ade6863cab7e28",
+      "delivery": "remake/img/shop/flavor-cartons-3287/caramel.webp",
+      "delivery_sha256": "59e17b65d3dd98659f73cb5445d5c459b0d34bd492259c9a8219c5450e4d77e6",
+      "source_size": [
+        1254,
+        1254
+      ],
+      "delivery_size": [
+        512,
+        512
+      ],
+      "box": [
+        106,
+        42,
+        300,
+        434
+      ]
+    },
+    {
+      "id": "chocolate",
+      "source": "asset_sources/flavor-cartons-20261111/chocolate.png",
+      "source_sha256": "24b332ab6d5c4ef73d6ce1e36644e42554f09019fa9262dcee847e07fd9833be",
+      "delivery": "remake/img/shop/flavor-cartons-3287/chocolate.webp",
+      "delivery_sha256": "55dfe0da9af4be473f4e631ff2eeb191907673b770cb2fb59d4b00023b0b2def",
+      "source_size": [
+        1254,
+        1254
+      ],
+      "delivery_size": [
+        512,
+        512
+      ],
+      "box": [
+        107,
+        41,
+        299,
+        434
+      ]
+    },
+    {
+      "id": "cool_mint",
+      "source": "asset_sources/flavor-cartons-20261111/cool_mint.png",
+      "source_sha256": "1e7eeefd5362a0b9b0ef0be4151fc11e570faa1c3102d69bc6ecfca503012bf3",
+      "delivery": "remake/img/shop/flavor-cartons-3287/cool_mint.webp",
+      "delivery_sha256": "af42ac89cc4170102c27da082a0328f3b60f97573e74aac214bb8f0e05387ca9",
+      "source_size": [
+        1254,
+        1254
+      ],
+      "delivery_size": [
+        512,
+        512
+      ],
+      "box": [
+        104,
+        52,
+        305,
+        407
+      ]
+    },
+    {
+      "id": "frozen_citrus",
+      "source": "asset_sources/flavor-cartons-20261111/frozen_citrus.png",
+      "source_sha256": "8a6db25187379c07ff8d0d53334e55928b2b87f2a7c746d7d7cfea63aa1fb778",
+      "delivery": "remake/img/shop/flavor-cartons-3287/frozen_citrus.webp",
+      "delivery_sha256": "8f4ad30f797c46946a9369f820bbed3a82d4a871b2eae20d0ae230ef1fc048da",
+      "source_size": [
+        1254,
+        1254
+      ],
+      "delivery_size": [
+        512,
+        512
+      ],
+      "box": [
+        104,
+        52,
+        305,
+        406
+      ]
+    },
+    {
+      "id": "jasmine",
+      "source": "asset_sources/flavor-cartons-20261111/jasmine.png",
+      "source_sha256": "7a938536159d81c34c6a0d0f1ebb4ed43b1d4cf233efe6c294d682e761515a62",
+      "delivery": "remake/img/shop/flavor-cartons-3287/jasmine.webp",
+      "delivery_sha256": "f6dc0eeabf04dcd102a0c153774dc44b1146fff759eb661fae107c23ab78a91b",
+      "source_size": [
+        1254,
+        1254
+      ],
+      "delivery_size": [
+        512,
+        512
+      ],
+      "box": [
+        106,
+        29,
+        312,
+        464
+      ]
+    },
+    {
+      "id": "kiwi",
+      "source": "asset_sources/flavor-cartons-20261111/kiwi.png",
+      "source_sha256": "f605ae19aacbb2dd43fb48ed55aa6844717fd29fd16abfcbb8e312f6091483d7",
+      "delivery": "remake/img/shop/flavor-cartons-3287/kiwi.webp",
+      "delivery_sha256": "2563f93de7c73edd7a621792f27255616f36ca85c59f885649c2c034b7b18705",
+      "source_size": [
+        1254,
+        1254
+      ],
+      "delivery_size": [
+        512,
+        512
+      ],
+      "box": [
+        103,
+        52,
+        306,
+        407
+      ]
+    },
+    {
+      "id": "sakura",
+      "source": "asset_sources/flavor-cartons-20261111/sakura.png",
+      "source_sha256": "54753ab92875fe5b7a72bc97567d451ca5f70d4933ddba922e14d708c134a008",
+      "delivery": "remake/img/shop/flavor-cartons-3287/sakura.webp",
+      "delivery_sha256": "46abaa3f7e53bae74f68536eb8cec088f7cbd37854e65a036e90911c04ab6e09",
+      "source_size": [
+        1254,
+        1254
+      ],
+      "delivery_size": [
+        512,
+        512
+      ],
+      "box": [
+        104,
+        52,
+        306,
+        407
+      ]
+    }
+  ]
+}
