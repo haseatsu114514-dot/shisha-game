@@ -2,7 +2,9 @@
 // 復路（東京→地元・ch3_home_customer の直前）で共通の車窓を使う。新しい素材は使わず、
 // 既存のモーション基盤（transition-kit / mg-kit / stage）だけで組む。
 import { SE } from "../core/audio.js";
-import { svg, stageSvg, move } from "../core/transition-kit.js";
+import { svg, stageSvg, move, EASE } from "../core/transition-kit.js";
+import { el, sleep } from "../core/util.js";
+import { smokeArt, warmSmoke } from "../core/transitions.js";
 import { MONO } from "../core/mg-kit.js";
 import { stagePlay, backdrop } from "./stage.js";
 
@@ -128,3 +130,129 @@ export async function a(mid, opts = {}) {
 }
 
 export const b = a;
+
+// ---------------------------------------------------------------- c: 作り直し（TMG58・見本 remake/previews/motion-direction/ の6）
+// 紫の線画の車内をやめ、最初から本物の車内の絵（第3章の新幹線の背景）を使う。窓の中だけ景色の筋が流れ続け、
+// 減速して止まると、止まった景色（絵そのもの）が見える。前の場面は煙のにじみでほどけて車内になる。
+// 往路（→東京）は着いた先がこの車内の場面なのでそのまま渡し、復路（→地元）は最後に車内が煙のにじみでほどけて地元の場面になる。
+
+const CAR_ART = new URL("../../img/backgrounds/bg_ch3_train_arrival.webp", import.meta.url).href;
+// 絵の窓の輪郭（絵に対する %）。左の縁は上から下へ、そこから窓の下の縁が右下へ下がる
+const CAR_WINDOW = [[33.4, 0], [100, 0], [100, 83], [86, 75.5], [72, 68], [58, 60.6], [46, 54.4], [39, 50.6], [35.6, 47.6], [34.2, 43], [33.6, 30]];
+const WINDOW_CLIP = `polygon(${CAR_WINDOW.map(([x, y]) => `${x}% ${y}%`).join(", ")})`;
+/** 高さ y%（0〜83）での窓の左の縁（%） */
+function windowLeft(y) {
+  const edge = [[0, 33.4], [30, 33.6], [43, 34.2], [47.6, 35.6], [50.6, 39], [54.4, 46], [60.6, 58], [68, 72], [75.5, 86], [83, 100]];
+  for (let i = 1; i < edge.length; i++) {
+    const [y0, x0] = edge[i - 1], [y1, x1] = edge[i];
+    if (y <= y1) return x0 + ((x1 - x0) * (y - y0)) / (y1 - y0 || 1);
+  }
+  return 100;
+}
+
+/** 車窓の「流れ」の絵: 行ごとに窓の中の景色を横に縮めて色だけにし、横へ引き伸ばす（左右対称にして継ぎ目なく繰り返す） */
+async function streakTexture(img) {
+  if (!img.naturalWidth || typeof document === "undefined") return null;
+  const OW = 512, OH = 360, NW = 12;
+  const small = document.createElement("canvas");
+  small.width = NW * 2; small.height = OH;
+  const sc = small.getContext("2d");
+  sc.imageSmoothingEnabled = true; sc.imageSmoothingQuality = "high";
+  for (let row = 0; row < OH; row++) {
+    const y = Math.min(82, ((row + 0.5) / OH) * 100);
+    const sx = Math.floor((Math.min(97, windowLeft(y) + 2.5) / 100) * img.naturalWidth);
+    const sy = Math.floor((y / 100) * img.naturalHeight);
+    sc.drawImage(img, sx, sy, img.naturalWidth - sx, 1, 0, row, NW, 1);
+    sc.save(); sc.scale(-1, 1); sc.drawImage(img, sx, sy, img.naturalWidth - sx, 1, -NW * 2, row, NW, 1); sc.restore();
+  }
+  const c = document.createElement("canvas");
+  c.width = OW; c.height = OH;
+  const ctx = c.getContext("2d");
+  ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = "high";
+  ctx.drawImage(small, 0, 0, OW, OH);
+  // 細い光と影の筋（速さの手がかり）。乱数の種は固定
+  let seed = 7;
+  const rand = () => ((seed = (seed * 9301 + 49297) % 233280) / 233280);
+  for (let i = 0; i < 90; i++) {
+    const y = rand() * OH, x = rand() * OW, len = 40 + rand() * 220;
+    ctx.fillStyle = rand() < 0.5 ? "rgba(255,255,255,.10)" : "rgba(0,0,0,.08)";
+    ctx.fillRect(x, y, len, 1 + rand() * 2);
+    if (x + len > OW) ctx.fillRect(x - OW, y, len, 1 + rand() * 2);
+  }
+  const blob = await new Promise((r) => c.toBlob(r, "image/webp", 0.85));
+  return blob ? URL.createObjectURL(blob) : null;
+}
+
+/** 今見えている背景の写し（#bg のいちばん上の絵）。無ければ null */
+function sceneCopy() {
+  const host = document.getElementById("bg");
+  const top = host ? [...host.children].filter((n) => n.classList?.contains("bg-img")).at(-1) : null;
+  if (!top?.cloneNode) return null;
+  const copy = top.cloneNode(true);
+  copy.className = "mo-shn-from";
+  copy.style.transition = "none";
+  copy.style.opacity = "1";
+  return copy;
+}
+
+const SMOKE_POS = (pos) => ({ maskPosition: pos, webkitMaskPosition: pos });
+/** 場面の切り替えと同じ煙のにじみで node をほどいて消す（煙の絵が無い環境では薄くするだけ） */
+async function smokeAway(node, ms) {
+  const ready = await Promise.race([Promise.resolve(warmSmoke()), sleep(300).then(() => false)]);
+  if (ready !== true) return move(node, [{ opacity: 1 }, { opacity: 0 }], ms * 0.6, { easing: "ease" });
+  const art = smokeArt();
+  const mask = `url("${art.a}"), url("${art.b}")`;
+  Object.assign(node.style, {
+    maskImage: mask, webkitMaskImage: mask, maskSize: "100% 300%", webkitMaskSize: "100% 300%",
+    maskRepeat: "no-repeat", webkitMaskRepeat: "no-repeat", maskComposite: "intersect", webkitMaskComposite: "source-in",
+  });
+  return move(node, [SMOKE_POS("50% 0%, 50% 0%"), { ...SMOKE_POS("50% 46%, 50% 56%"), offset: 0.5 }, SMOKE_POS("50% 100%, 50% 100%")], ms, { easing: "cubic-bezier(.45,0,.55,1)", fill: "forwards" });
+}
+
+export async function c(mid, opts = {}) {
+  const img = new Image();
+  img.src = CAR_ART;
+  await Promise.race([img.decode().catch(() => {}), sleep(1500)]);
+  const streak = await streakTexture(img).catch(() => null);
+  const outbound = opts.to !== "home"; // 往路は車内の場面に着く
+  const RUN = 3400, slowing = "cubic-bezier(.2,.55,.3,1)";
+  try {
+    await stagePlay("shinkansen", async (node) => {
+      node.dataset.ride = outbound ? "outbound" : "inbound";
+      const lane = (cls) => el(`div.mo-shn-win.${cls}`, { style: { clipPath: WINDOW_CLIP } }, [el("i.mo-shn-run", streak ? { style: { backgroundImage: `url("${streak}")` } } : {})]);
+      const far = lane("far"), near = lane("near");
+      const pole = el("i.mo-shn-pole");
+      const poles = el("div.mo-shn-win.poles", { style: { clipPath: WINDOW_CLIP } }, [pole]);
+      const flick = el("div.mo-shn-flick");
+      const car = el("div.mo-shn-car", { style: { backgroundImage: `url("${CAR_ART}")` } });
+      const train = el("div.mo-shn-train", [car, far, near, poles, flick]);
+      const title = el("div.mo-ride-title.shn", { dataset: { test: "ride-title" } }, [el("small", { text: "新幹線 のぞみ" }), el("b", { text: DEST_LABEL[opts.to] ? `${DEST_LABEL[opts.to]}へ` : "のぞみ" }), el("i")]);
+      const from = sceneCopy();
+      node.append(train, title, ...(from ? [from] : []));
+      // 1. 走っている車内へ。前の場面は煙のにじみでほどける（車内が覆っている間に裏で次の場面へ替える）
+      SE.shinkansen?.(RUN / 1000);
+      move(near.firstChild, [{ transform: "translateX(0)" }, { transform: "translateX(72%)" }], RUN, { easing: slowing });
+      move(far.firstChild, [{ transform: "translateX(0)" }, { transform: "translateX(26%)" }], RUN, { easing: slowing });
+      move(near, [{ opacity: 1 }, { opacity: 1, offset: 0.66 }, { opacity: 0 }], RUN, { easing: "linear" });
+      move(far, [{ opacity: 0.75 }, { opacity: 0.75, offset: 0.6 }, { opacity: 0 }], RUN, { easing: "linear" });
+      // 架線の柱が窓を横切る影（だんだん間が空いて、遅くなる）
+      [[150, 150], [640, 170], [1220, 210], [1940, 300]].forEach(([at, ms]) => pole.animate([{ opacity: 0.34, transform: "translateX(358px) skewX(4deg)" }, { opacity: 0.34, transform: "translateX(1331px) skewX(4deg)" }], { duration: ms, delay: at, easing: "linear" }));
+      flick.animate([{ opacity: 0, transform: "translateX(-70%)" }, { opacity: 1, offset: 0.5 }, { opacity: 0, transform: "translateX(60%)" }], { duration: 560, iterations: 4, easing: "linear" });
+      car.animate([{ transform: "translateY(0)" }, { transform: "translateY(-1.5px)" }, { transform: "translateY(1.2px)" }, { transform: "translateY(0)" }], { duration: 260, iterations: 9, easing: "linear" });
+      const swapped = Promise.resolve().then(() => mid?.());
+      swapped.catch(() => {}); // 失敗は下で待つときに投げ直す（待つまでの間に未処理の拒否として出さない）
+      if (from) smokeAway(from, 760).then(() => from.remove());
+      await sleep(380);
+      // 2. 行き先の題字
+      move(title.lastChild, [{ transform: "scaleX(0)" }, { transform: "scaleX(1)" }], 700, { delay: 140, easing: EASE.out });
+      move(title, [{ opacity: 0, transform: "translateX(-20px)" }, { opacity: 1, transform: "none" }], 520, { easing: EASE.out });
+      await Promise.all([swapped, sleep(2400)]);
+      // 3. 止まる。往路は止まった車内がそのまま次の場面、復路は車内がほどけて地元の場面になる
+      const out = move(title, [{ opacity: 1 }, { opacity: 0 }], 420, { easing: "ease" });
+      if (outbound) await Promise.all([out, sleep(Math.max(0, RUN - 2780))]);
+      else await Promise.all([out, smokeAway(train, 780)]);
+    }, { cover: true });
+  } finally {
+    if (streak) URL.revokeObjectURL(streak);
+  }
+}

@@ -119,7 +119,7 @@ export async function trainRide(mid, opts = {}) {
 /** 新幹線に乗る（Issue #1059）。mid(): 車窓が覆っている間に次の背景へ替える。
  * opts.from/to: "home"|"tokyo"。第2章の隣町行き電車(#891 trainRide)とは別の演出。 */
 export async function shinkansenRide(mid, opts = {}) {
-  await ride(shinkansen, mid, opts);
+  await ride(shinkansen, mid, opts, "shinkansen");
 }
 
 /** 飛行機に乗る（#2688 A4・作り直し TMG57）。機内の窓の外の雲海が時差の色へ移り、行き先の題字のあと窓へ寄って次の場面になる。opts.to: "dubai" | "home" */
