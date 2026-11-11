@@ -1,5 +1,5 @@
 // サンドボードのブーストの効果音（2026-11-11 オーナー「ビリビリなる効果音とか欲しい、ブースト溜まると」「ブースト時も効果音欲しい、早そうな」）。
-// 自作の合成音（asset_sources/music/desert-ride-boost-sfx/build.py）の形式・台帳と、溜まり具合・ブーストに応じたループの音量。
+// 自作の合成音（asset_sources/music/desert-ride-boost-sfx/build.py）の形式・台帳と、溜まり具合で詰まる「ビリッ」の間隔、ブースト中のループの音量。
 // node --experimental-vm-modules remake/test/desert_ride_sfx.mjs
 import assert from "node:assert/strict";
 import fs from "node:fs/promises";
@@ -45,20 +45,18 @@ async function boot() {
 const { audio, requests } = await boot();
 const L = state => audio.desertLoopLevels(state);
 
-// 1) 放電: 空では鳴らない。溜まり始めはまばらなパチパチだけ、半分を超えると濃いビリビリが混ざり、満タンで最大（ずっと大きくなる）
-assert.equal(L({ charge: 0 }).zapSparse.gain, 0); assert.equal(L({ charge: 0 }).zapDense.gain, 0);
-const low = L({ charge: .3 }), full = L({ charge: 1 });
-assert(low.zapSparse.gain > 0 && low.zapDense.gain === 0, "a little charge: sparse crackle only");
-assert(L({ charge: .75 }).zapDense.gain > 0, "past half: the dense buzz joins");
-assert(full.zapDense.gain > full.zapSparse.gain, "full: the dense buzz leads");
-let before = 0;
-for (let c = .15; c <= 1.0001; c += .05) {
-  const level = L({ charge: c }), total = level.zapSparse.gain + level.zapDense.gain;
-  assert(total >= before - 1e-9, `the discharge only grows as the gauge fills (${c.toFixed(2)})`);
-  assert(level.zapSparse.rate >= low.zapSparse.rate - 1e-9 || c < .3, "and gets a little sharper");
-  before = total;
+// 1) 放電の「ビリッ」: 1割に満たない間は鳴らない。溜まるほど間隔が詰まる（1割で約1.6秒、満タンで約0.35秒）
+// 同日「ビリビリはなんかバグみたいに聞こえる。わかりやすい雷みたいなビリビリがいい」で、ループをやめ1発ずつにした
+assert.equal(audio.desertZapGap(0), Infinity); assert.equal(audio.desertZapGap(.05), Infinity);
+let previous = Infinity;
+for (let c = .1; c <= 1.0001; c += .05) {
+  const gap = audio.desertZapGap(c, .5);
+  assert(gap < previous, `the zaps come closer together as the gauge fills (${c.toFixed(2)}: ${gap.toFixed(2)}s)`);
+  previous = gap;
 }
-assert(full.zapDense.gain <= .3 && full.zapSparse.gain <= .3, "stays under the music and the slide");
+assert(audio.desertZapGap(.1, .5) > 1.4 && audio.desertZapGap(1, .5) < .4, "about 1.6s apart at first, about 0.35s when full");
+assert(audio.desertZapGap(1, 0) > .2 && audio.desertZapGap(1, 1) < .5, "a little jitter so it is not a metronome");
+assert(!("zapSparse" in L({})) && !("zapDense" in L({})), "no more flickering discharge loops");
 // 2) ブースト中の風切り: ブースト中だけ、終わり際（boost が 1→0）に小さくなって消える
 assert.equal(L({ boost: 0 }).boostLoop.gain, 0);
 assert(L({ boost: .5 }).boostLoop.gain > 0 && L({ boost: .5 }).boostLoop.gain < L({ boost: 1 }).boostLoop.gain);
@@ -71,17 +69,21 @@ assert(Math.abs(now.slide.gain - old.slide) < 1e-9 && Math.abs(now.wind.gain - o
 audio.unlockAudio(); // 最初の操作で音を解禁する（本編と同じ）
 const se = audio.createDesertRideSe();
 await se.ready();
-for (const name of ["boost_rush", "boost_loop", "zap_sparse", "zap_dense"]) assert(requests.includes(`../assets/audio/se/desert_ride/${name}.wav`), `${name}.wav is loaded`);
+for (const name of ["boost_rush", "boost_loop", "zap_1", "zap_2", "zap_3", "thunder_full"]) assert(requests.includes(`../assets/audio/se/desert_ride/${name}.wav`), `${name}.wav is loaded`);
+assert(!requests.some(url => /zap_(sparse|dense)/.test(url)), "the flickering loops are gone");
 assert(requests.includes("../assets/audio/se/desert_ride/slide_sand.bgm"), "packed sounds still load as .bgm");
 assert(!requests.some(url => url.includes("boost_whoosh")), "the old short whoosh is no longer used");
-se.motion({ charge: 1 });
-assert(se.loopLevels().zapDense > 0, "the ride reports what it means to play");
+se.motion({ boost: 1 });
+assert(se.loopLevels().boostLoop > 0, "the ride reports what it means to play");
 se.stop();
-assert.equal(se.loopLevels().zapDense, 0, "stopping clears the loops");
+assert.equal(se.loopLevels().boostLoop, 0, "stopping clears the loops");
+for (let i = 0; i < 6; i++) se.zap(i / 5);
+assert.equal(se.loopLevels().zaps, 6, "every zap is counted");
 
 // 4) ファイル: モノラル 44.1kHz 16bit、長さ、ピーク（-16〜-8 dBFS）、ループのつなぎ目、台帳（SHA-256）
 const ledger = JSON.parse(await fs.readFile(new URL("asset_sources/music/desert-ride-boost-sfx/game_files.json", ROOT), "utf8"));
-const spec = { zap_sparse: { loop: true, seconds: 2 }, zap_dense: { loop: true, seconds: 2 }, boost_rush: { loop: false, seconds: 1.4 }, boost_loop: { loop: true, seconds: 2 } };
+const spec = { zap_1: { loop: false, seconds: .2 }, zap_2: { loop: false, seconds: .26 }, zap_3: { loop: false, seconds: .32 },
+  thunder_full: { loop: false, seconds: 1.5 }, boost_rush: { loop: false, seconds: 1.4 }, boost_loop: { loop: true, seconds: 2 } };
 assert.deepEqual(ledger.map(entry => entry.file).sort(), Object.keys(spec).map(name => `assets/audio/se/desert_ride/${name}.wav`).sort());
 for (const [name, { loop, seconds }] of Object.entries(spec)) {
   const file = `assets/audio/se/desert_ride/${name}.wav`;

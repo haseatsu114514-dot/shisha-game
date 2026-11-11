@@ -1,15 +1,27 @@
 [
   {
-    "file": "assets/audio/se/desert_ride/zap_sparse.wav",
-    "role": "溜まり始めの放電（ループ）",
+    "file": "assets/audio/se/desert_ride/zap_1.wav",
+    "role": "放電のビリッ（低め・短い）",
     "source": "自作（build.py で合成。外部の音源なし）",
-    "sha256": "ac07d44b585e638a9475f1004a6219fc53f5e1ac102cb7c8503cada3cf3242ae"
+    "sha256": "17e60d99226b7d83b7db36cee389a96936021f0fbb632f9c53b5cd446737d6cf"
   },
   {
-    "file": "assets/audio/se/desert_ride/zap_dense.wav",
-    "role": "満タンに近い放電（ループ）",
+    "file": "assets/audio/se/desert_ride/zap_2.wav",
+    "role": "放電のビリッ（中くらい）",
     "source": "自作（build.py で合成。外部の音源なし）",
-    "sha256": "0d23e9c68faa066730151292e7dcc5412b845e3e0413f0dcc0e0efd199397ab6"
+    "sha256": "04322736166c0212f52072e05b2811bba5f91b04adcd905aebd253e98eb1095c"
+  },
+  {
+    "file": "assets/audio/se/desert_ride/zap_3.wav",
+    "role": "放電のビリッ（高め・長い）",
+    "source": "自作（build.py で合成。外部の音源なし）",
+    "sha256": "8c5fbf6269fd44a1c21176c6eb2293a9a176a37cd4788ee603320db31141bb8d"
+  },
+  {
+    "file": "assets/audio/se/desert_ride/thunder_full.wav",
+    "role": "ゲージ満タンの雷",
+    "source": "自作（build.py で合成。外部の音源なし）",
+    "sha256": "51f71696446afd14ede84a2a3ce15aabc8cbecfc844e963d626ecdab0362f79e"
   },
   {
     "file": "assets/audio/se/desert_ride/boost_rush.wav",

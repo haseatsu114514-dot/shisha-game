@@ -3,8 +3,8 @@
 
 オーナー「ビリビリなる効果音とか欲しい、ブースト溜まると」「ブースト時も効果音欲しい、早そうな」。
 
-- zap_sparse.wav … 溜まり始めの放電（まばらなパチパチとジジッ）。2秒ループ
-- zap_dense.wav  … 満タンに近い放電（絶え間ないビリビリ）。2秒ループ
+- zap_1〜3.wav   … 放電の「ビリッ」1発（鋭いバチッ＋規則正しく震えるビリリリッ）。高さと長さ違いの3つ
+- thunder_full.wav … ゲージ満タンの雷（バリバリバリッ＋ビリリッ＋ゴロゴロ）。1.5秒
 - boost_rush.wav … ブースト発進（ドンッ＋キュイーンと上がる回転音＋シュゴーッと抜ける風）。1.4秒
 - boost_loop.wav … ブースト中の風切り（細かく震える風圧と低いうなり）。2秒ループ
 
@@ -102,33 +102,59 @@ def ramp_env(n, attack, release):
     return env
 
 
-def zap(seed, seconds, arcs, crackles_per_sec, peak):
-    """放電: ジジッと鳴る弧（うなる矩形波＋雑音を細かく点滅）と、パチッという火花を散らす。"""
+def crack(n, rng, clicks, spread, width=(0.0006, 0.0018)):
+    """バチッ: ごく短い雑音の粒（1〜2ミリ秒）を spread 秒のあいだに clicks 個。高い音だけ残して鋭くする。"""
+    out = np.zeros(n)
+    for k in range(clicks):
+        pos = int(rng.uniform(0, spread) * SR) if k else 0
+        m = int(rng.uniform(*width) * SR)
+        if pos + m >= n:
+            continue
+        out[pos:pos + m] += rng.standard_normal(m) * np.exp(-np.arange(m) / (m / 3)) * rng.uniform(0.6, 1.0)
+    return biquad(out, "hp", 1500)
+
+
+def buzz(t, f0, glide, flutter, drive=4.0):
+    """ビリリリ: ひずませた鋸歯状波（f0 から glide 倍へ下がる）を、規則正しい flutter Hz で区切る（ビ・リ・リ・リ）。"""
+    f = f0 * (1 + (glide - 1) * t / t[-1]) * (1 + 0.04 * np.sin(2 * math.pi * 9 * t))
+    phase = np.cumsum(f) / SR
+    saw = 2 * (phase % 1) - 1
+    tone = np.tanh(drive * (saw + 0.35 * np.sign(np.sin(2 * math.pi * 2 * phase))))
+    pulse = 0.5 + 0.5 * np.tanh(6 * np.sin(2 * math.pi * flutter * t + 0.6))  # 規則正しい区切り（角を丸めた矩形）
+    return tone * (0.25 + 0.75 * pulse)
+
+
+def zap(seed, f0, flutter, seconds):
+    """ビリッ（1発）: 鋭い「バチッ」のあとに、規則正しく震える「ビリリリッ」が少し下がりながら消える。"""
     rng = np.random.default_rng(seed)
-    n_total = int(SR * seconds)
-    out = np.zeros(n_total)
-    for _ in range(arcs):
-        start = rng.integers(0, n_total)
-        n = int(rng.uniform(0.04, 0.17) * SR)
-        tt = np.arange(n) / SR
-        f0 = rng.uniform(90, 200)  # ブブブ…と鳴る高さ（低いとブーン、高いとビー）
-        phase = 2 * math.pi * f0 * tt + 0.4 * np.sin(2 * math.pi * rng.uniform(6, 14) * tt)
-        buzz = np.sign(np.sin(phase)) * 0.6 + (2 * ((f0 * tt) % 1) - 1) * 0.4
-        flick_rate = rng.uniform(25, 70)
-        steps = int(n / SR * flick_rate) + 2
-        gate = np.repeat((rng.random(steps) > 0.3).astype(float), int(SR / flick_rate) + 1)[:n]
-        gate = np.convolve(gate, np.ones(44) / 44, mode="same")  # 1ms でならしてプツプツ鳴らさない
-        arc = (buzz * 0.75 + rng.standard_normal(n) * 0.25) * gate * ramp_env(n, 0.003, 0.025) * rng.uniform(0.5, 1.0)
-        out[(start + np.arange(n)) % n_total] += arc
-    for _ in range(int(seconds * crackles_per_sec)):
-        pos = rng.integers(0, n_total)
-        n = int(rng.uniform(0.0008, 0.004) * SR)
-        burst = rng.standard_normal(n) * np.exp(-np.arange(n) / (n / 4)) * rng.uniform(0.3, 1.0)
-        out[(pos + np.arange(n)) % n_total] += burst * 0.9
-    body = circular(lambda s: biquad(s, "hp", 350), out)
-    sizzle = circular(lambda s: biquad(s, "bp", 3000, 1.2), out)
-    mix = circular(lambda s: biquad(s, "lp", 10000), body + 0.6 * sizzle)
-    return normalize(mix, peak)
+    n = int(SR * seconds)
+    t = np.arange(n) / SR
+    env = np.clip(t / 0.003, 0, 1) * np.exp(-t / (seconds * 0.6))
+    env[-int(0.03 * SR):] *= np.linspace(1, 0, int(0.03 * SR))
+    body = buzz(t, f0, 0.8, flutter) * env
+    sizzle = biquad(rng.standard_normal(n), "hp", 3500) * (0.5 + 0.5 * np.tanh(6 * np.sin(2 * math.pi * flutter * t + 0.6))) * env * 0.22
+    snap = crack(n, rng, clicks=3, spread=0.012) * 1.4
+    mix = biquad(body, "hp", 250) * 1.0 + sizzle + snap
+    mix = biquad(mix, "lp", 9000)
+    return normalize(mix, -10)
+
+
+def thunder():
+    """満タンの雷: 「バリバリバリッ」（裂けるように続く火花）＋ビリリッ（長め）＋「ゴロゴロ」（低い雑音がうねって消える）。"""
+    rng = np.random.default_rng(61)
+    n = int(SR * 1.5)
+    t = np.arange(n) / SR
+    tear = crack(n, rng, clicks=18, spread=0.2, width=(0.0008, 0.003)) * 1.6
+    tear *= np.exp(-np.clip(t - 0.2, 0, None) / 0.05)
+    zap_env = np.clip(t / 0.004, 0, 1) * np.exp(-t / 0.22)
+    body = biquad(buzz(t, 95, 0.7, 30, drive=5.0), "hp", 200) * zap_env * 0.8
+    # スマホのスピーカーは 150Hz より下がほとんど出ないので、ゴロゴロは 450Hz あたりまで広げる
+    rumble = biquad(rng.standard_normal(n), "lp", 140) * 5 + biquad(rng.standard_normal(n), "bp", 300, 0.8) * 1.6
+    roll = 0.6 + 0.4 * np.sin(2 * math.pi * 7 * t + 1.0) * np.sin(2 * math.pi * 2.3 * t)
+    rumble *= np.clip((t - 0.05) / 0.08, 0, 1) * np.exp(-np.clip(t - 0.15, 0, None) / 0.45) * roll
+    mix = tear + body + rumble
+    mix[-int(0.05 * SR):] *= np.linspace(1, 0, int(0.05 * SR))
+    return normalize(mix, -8)
 
 
 def boost_rush():
@@ -174,8 +200,10 @@ def boost_loop():
 
 
 SOUNDS = {
-    "zap_sparse": ("溜まり始めの放電（ループ）", lambda: zap(seed=7, seconds=2.0, arcs=4, crackles_per_sec=10, peak=-14)),
-    "zap_dense": ("満タンに近い放電（ループ）", lambda: zap(seed=11, seconds=2.0, arcs=16, crackles_per_sec=40, peak=-12)),
+    "zap_1": ("放電のビリッ（低め・短い）", lambda: zap(seed=7, f0=110, flutter=28, seconds=0.2)),
+    "zap_2": ("放電のビリッ（中くらい）", lambda: zap(seed=11, f0=140, flutter=34, seconds=0.26)),
+    "zap_3": ("放電のビリッ（高め・長い）", lambda: zap(seed=13, f0=175, flutter=40, seconds=0.32)),
+    "thunder_full": ("ゲージ満タンの雷", thunder),
     "boost_rush": ("ブースト発進", boost_rush),
     "boost_loop": ("ブースト中の風切り（ループ）", boost_loop),
 }

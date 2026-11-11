@@ -6,7 +6,7 @@
 // 着地の輪・得点の浮き出し・トリックのスロー・ブーストの残像。動き軽減ではカメラの動き・揺れ・スロー・閃光・速度線を止める。
 // 本番はスタートの合図のあと、ヌール（rivalRun）が横で滑る。
 import { el } from "../core/util.js";
-import { SE, unlockAudio, createDesertRideSe, currentBgm, playBgm, preloadBgm, setBgmPlaybackRate, resetBgmTempo, tickBgmPlaybackRate } from "../core/audio.js";
+import { SE, unlockAudio, createDesertRideSe, desertZapGap, currentBgm, playBgm, preloadBgm, setBgmPlaybackRate, resetBgmTempo, tickBgmPlaybackRate } from "../core/audio.js";
 import { EDGE, SPEED, COURSE_PACKS, generateCourse, practiceCourse, pickCourse, buildCourse, createGame, step, press, boost, chargeBoost, canRecover, summary, curveAt, headingAt, lateralAt, botControl,
   rivalRun, rivalAt, RULES_VERSION, jumpHeight, DISPLAY, toKmh, toMeters, JUMP } from "./desert-ride-model.js";
 import { DESERT_ART, DESERT_CONTROL_ART, loadDesertArt, riderPose } from "./desert-ride-art.js";
@@ -281,7 +281,7 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
     // ブーストの放電の稲妻: 形を描き直す間隔（秒）と、ボタン・ゲージそれぞれの最大本数（下の updateZaps）
     const ZAP_EVERY = 1 / 15;
     const ZAP_SLOTS = 7;
-    let zapAt = 0;
+    let zapAt = 0, zapClock = 0.35, zapBurstT = 0, zapBurstShown = false;
     const jumpButton = holdButton("ジャンプ／着地", "dr-jump", "desert-jump", act, () => {}, "jump");
     const boostButton = holdButton("BOOST", "dr-boost", "desert-boost", doBoost, () => {}, "boost");
     // ブーストの放電（2026-11-11 オーナー「ブーストは溜まるとどんどん放電みたいな演出つけたい」）: ボタンの縁から稲妻
@@ -374,7 +374,7 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       world = { sky: 0, yaw: 0, sunPulse: 0 };
       resetBgmTempo();
       lead = 0; curveTipT = 0; if (curveTip === "shown") curveTip = carved ? "done" : "idle";
-      particles = []; rings = []; floaters = []; clearTimeout(cutinTimer); cutin.classList.remove("show"); cutin.replaceChildren(); shakeT = 0; flashT = 0; popT = 0; slowT = 0; halfShown = 0; bot = null; botMemo = {}; botLag = 0;
+      particles = []; rings = []; floaters = []; clearTimeout(cutinTimer); cutin.classList.remove("show"); cutin.replaceChildren(); shakeT = 0; flashT = 0; popT = 0; slowT = 0; halfShown = 0; bot = null; botMemo = {}; botLag = 0; zapClock = 0.35; zapBurstT = 0; zapBurstShown = false;
       Object.assign(view, { depth: CAM.depth, back: CAM.back, roll: 0, kick: 0, boost: 0 });
       shownKmh = toKmh(SPEED.start);
       countdown = kind === "practice" ? 0 : COUNTDOWN; countShown = "";
@@ -461,12 +461,15 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
     /** 溜まり具合 charge（0〜1）に応じて、ボタンとゲージの稲妻を描き直す。 */
     function updateZaps(charge, gaugeZap) {
       const now = performance.now() / 1000;
-      if (now - zapAt < ZAP_EVERY) return;
-      zapAt = now;
+      const burst = zapBurstT > 0 && !reducedMotion;
+      root.dataset.zap = burst ? "burst" : "";
+      // 「ビリッ」が鳴った瞬間は間隔を待たずに描き直す（音と光を合わせる）
+      if (now - zapAt < ZAP_EVERY && !(burst && !zapBurstShown)) return;
+      zapAt = now; zapBurstShown = burst;
       const zaps = [buttonZap, gaugeZap].filter(Boolean);
       if (reducedMotion || charge <= 0.08) { for (const zap of zaps) for (const path of zap.paths) path.removeAttribute("d"); return; }
-      const full = charge >= 0.999;
-      const shown = Math.random; // 1本ずつ、溜まるほど高い割合で光る（ちらつき）
+      const full = charge >= 0.999 || burst; // 鳴った瞬間は満タンと同じだけ走らせる
+      const shown = burst ? () => 0 : Math.random; // 1本ずつ、溜まるほど高い割合で光る（ちらつき）。鳴った瞬間は全部
       // ボタン（160×160 を 24 の余白で囲む）: 縁の一点から外へ跳ぶ稲妻と、縁を這う稲妻
       const buttonCount = full ? ZAP_SLOTS : Math.round(1 + charge * 4);
       buttonZap.paths.forEach((path, i) => {
@@ -474,13 +477,13 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
         const side = Math.floor(Math.random() * 4), u = 0.12 + Math.random() * 0.76;
         const along = [[24 + 160 * u, 26], [182, 24 + 160 * u], [24 + 160 * u, 182], [26, 24 + 160 * u]][side];
         const out = [[0, -1], [1, 0], [0, 1], [-1, 0]][side], tan = [out[1], -out[0]];
-        const reach = (14 + Math.random() * 18) * (0.6 + 0.6 * charge);
+        const reach = (14 + Math.random() * 18) * (0.6 + 0.6 * charge) * (burst ? 1.4 : 1);
         const crawl = Math.random() < 0.4;
         const end = crawl
           ? [along[0] + tan[0] * (24 + Math.random() * 30) + out[0] * 6, along[1] + tan[1] * (24 + Math.random() * 30) + out[1] * 6]
           : [along[0] + out[0] * reach + tan[0] * (Math.random() * 2 - 1) * 12, along[1] + out[1] * reach + tan[1] * (Math.random() * 2 - 1) * 12];
         path.setAttribute("d", zapBolt(along[0], along[1], end[0], end[1], crawl ? 6 : 4, crawl ? 5 : 4));
-        path.dataset.core = i % 3 === 0 ? "thick" : "";
+        path.dataset.core = burst || i % 3 === 0 ? "thick" : "";
       });
       if (!gaugeZap) return;
       // ゲージ（横 200・縦 40 に引き伸ばす。棒は真ん中の 10〜30）: 溜まった所から上下へ跳ぶ稲妻、満タンでは棒に沿って走る
@@ -733,8 +736,15 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       const events = game.events.slice(before);
       react(events);
       rideSe.motion({ speed: (game.speed / SPEED.max) * (game.boostT > 0 ? 1.35 : 1), carve: Math.max(Math.abs(game.vx), game.carving ? 0.9 : 0), grounded: game.air <= 0 && game.fallT <= 0,
-        // ブーストの放電（溜まるほどビリビリ）と、ブースト中の風切り（終わりの0.5秒で消える）
-        charge: game.boostT > 0 || game.finished ? 0 : game.gauge, boost: game.boostT > 0 && !game.finished ? Math.min(1, game.boostT / 0.5) : 0 });
+        // ブースト中の風切り（終わりの0.5秒で消える）
+        boost: game.boostT > 0 && !game.finished ? Math.min(1, game.boostT / 0.5) : 0 });
+      // ブーストの放電: 溜まるほど「ビリッ」の間隔が詰まる。鳴った瞬間はボタン・ゲージ・板の稲妻を強く光らせて音と合わせる
+      const charge = game.boostT > 0 || game.finished ? 0 : game.gauge;
+      zapBurstT = Math.max(0, zapBurstT - real);
+      if (charge >= 0.1) {
+        zapClock -= real;
+        if (zapClock <= 0) { rideSe.zap(charge); zapBurstT = 0.14; zapClock = desertZapGap(charge); }
+      } else zapClock = 0.35; // 溜まり始めたら少しして最初の1発
       // ブースト中は曲が速くなる（音程は保ち、約0.2秒で滑らかに切り替わる）
       setBgmPlaybackRate(game.boostT > 0 && !game.finished ? BOOST_BGM_RATE : 1);
       tickBgmPlaybackRate(real);
@@ -770,7 +780,7 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
         } else if (event.kind === "near") { rideSe.play("near", 0.45); floater(`かすめ +${event.points}`, "near"); if (game.combo >= 2) showPop(`${game.combo} COMBO`, "combo"); }
         else if (event.kind === "smash") { rideSe.play("smash", 0.6); floater(`粉砕 +${event.points}`, "smash"); chips(event.size); if (!reducedMotion) shakeT = Math.max(shakeT, 0.22); }
         else if (event.kind === "carve") floater(`カービング +${event.points}`, "carve");
-        else if (event.kind === "gaugeFull") { rideSe.play("gaugeFull", 0.55); floater(touchUi() ? "BOOST OK" : "BOOST OK ↓", "gauge"); }
+        else if (event.kind === "gaugeFull") { rideSe.play("thunder", 0.55); rideSe.play("gaugeFull", 0.35); zapBurstT = 0.35; zapClock = 0.6; floater(touchUi() ? "BOOST OK" : "BOOST OK ↓", "gauge"); }
         else if (event.kind === "boost") onBoostEvent("boost");
         else if (event.kind === "recover") onBoostEvent("recover");
         else if (event.kind === "race") {
@@ -1461,7 +1471,8 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
      */
     function drawCharge() {
       const charge = game.boostT > 0 || game.fallT > 0 ? 0 : game.gauge;
-      if (reducedMotion || charge < 0.5) return;
+      const burst = zapBurstT > 0 && charge >= 0.1; // 「ビリッ」が鳴った瞬間は、半分に満たなくても走る
+      if (reducedMotion || (charge < 0.5 && !burst)) return;
       const p = placeAt(game.z, game.x);
       if (!p) return;
       const unit = p.scale * (H / 2), cx = p.x, baseY = p.y - jumpHeight(game) * unit * 0.9;
@@ -1476,9 +1487,9 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
         glow.addColorStop(0, `rgba(80,180,255,${0.2 + 0.07 * Math.sin(game.t * 20)})`); glow.addColorStop(1, "rgba(80,180,255,0)");
         ctx.fillStyle = glow; ctx.beginPath(); ctx.ellipse(cx, baseY, unit * 0.8, unit * 0.32, 0, 0, Math.PI * 2); ctx.fill();
       }
-      const count = full ? 5 : charge >= 0.75 ? 2 : 1;
+      const count = full ? 5 : burst ? 3 : charge >= 0.75 ? 2 : 1;
       for (let i = 0; i < count; i++) {
-        if (rand() > 0.3 + 0.6 * charge) continue;
+        if (!burst && rand() > 0.3 + 0.6 * charge) continue;
         const side = rand() < 0.5 ? -1 : 1;
         const x0 = cx + side * unit * (0.2 + rand() * 0.4), y0 = baseY - unit * 0.05 + (rand() - 0.5) * unit * 0.12;
         const climb = full && i >= 3; // 満タンでは体を這い上がる

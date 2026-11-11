@@ -310,12 +310,23 @@ await suite("desert-ride", async check => {
     await page.waitForTimeout(90);
     const during = await page.evaluate(() => { window.__desertRide.redraw(); return { charge: document.querySelector('[data-test="desert-ride"]').dataset.charge, lit: [...document.querySelectorAll(".dr-zap path")].filter(path => path.getAttribute("d")).length }; });
     assert.deepEqual(during, { charge: "", lit: 0 }, "the charge is spent by the boost");
-    // 効果音（2026-11-11 オーナー「ビリビリなる効果音」「ブースト時も効果音、早そうな」）: 溜まるとビリビリ、ブースト中は風切りに替わる。
-    // 音を出せない環境でも、鳴らすつもりの大きさ（ループの音量）で確かめる
+    // 効果音（2026-11-11 オーナー「ビリビリなる効果音」→「わかりやすい雷みたいなビリビリ」「ブースト時も効果音、早そうな」）:
+    // 溜まっている間は「ビリッ」が1発ずつ鳴り、鳴った瞬間にボタンとゲージが光る。ブースト中は鳴らず、風切りに替わる。
+    // 音を出せない環境でも、鳴らすつもりの音（「ビリッ」の数・ループの音量）で確かめる
+    await page.evaluate(() => {
+      window.__bursts = 0;
+      const root = document.querySelector('[data-test="desert-ride"]');
+      new MutationObserver(() => { if (root.dataset.zap === "burst") window.__bursts += 1; }).observe(root, { attributes: true, attributeFilter: ["data-zap"] });
+    });
+    const zapsBefore = await page.evaluate(() => window.__desertRide.soundLevels().zaps);
     await ride(page, () => { const r = window.__desertRide; r.game.boostT = 0; r.game.fallT = 0; r.game.gauge = 1; r.pause(false); });
-    await page.waitForFunction(() => { const l = window.__desertRide.soundLevels(); return l.zapDense > 0 && l.boostLoop === 0; });
+    await page.waitForFunction(before => window.__desertRide.soundLevels().zaps >= before + 3 && window.__bursts >= 2, zapsBefore, { timeout: 5000 });
+    assert.equal(await page.evaluate(() => window.__desertRide.soundLevels().boostLoop), 0, "no wind rush before the boost");
     await ride(page, () => { const r = window.__desertRide; r.game.fallT = 0; r.boost(); });
-    await page.waitForFunction(() => { const l = window.__desertRide.soundLevels(); return l.boostLoop > 0 && l.zapDense === 0 && l.zapSparse === 0; });
+    await page.waitForFunction(() => window.__desertRide.soundLevels().boostLoop > 0);
+    const zapsDuring = await page.evaluate(() => window.__desertRide.soundLevels().zaps);
+    await page.waitForTimeout(700);
+    assert.equal(await page.evaluate(() => window.__desertRide.soundLevels().zaps), zapsDuring, "the zaps stop while boosting");
   });
 
   await check("curve-tip-carving-boost-tempo-and-the-hidden-boss-banner", async page => {

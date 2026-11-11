@@ -354,6 +354,9 @@ html:root[data-density="phone"] #stage[data-wide] .desert-ride .dr-touch.dr-jump
 .desert-ride[data-charge="max"] .dr-touch.dr-boost.art-ready { opacity: 1; filter: brightness(1.12) drop-shadow(0 0 10px rgba(255, 255, 255, .9)) drop-shadow(0 0 22px rgba(90, 190, 255, 1)); animation: dr-charged .09s steps(2) infinite; }
 .desert-ride[data-charge="max"] .dr-gauge { box-shadow: 0 0 0 2px rgba(210, 245, 255, .9), 0 0 16px rgba(90, 190, 255, .9); }
 @keyframes dr-charged { 0% { translate: 0 0; } 50% { translate: 1px -1px; } 100% { translate: -1px 1px; } }
+/* 「ビリッ」が鳴った瞬間（data-zap="burst"・約0.14秒。満タンの雷は0.35秒）は、ボタンとゲージが白く光る。動き軽減では光らせない */
+.desert-ride[data-zap="burst"] .dr-touch.dr-boost.art-ready { filter: brightness(1.35) drop-shadow(0 0 10px #ffffff) drop-shadow(0 0 24px rgba(90, 190, 255, 1)); }
+.desert-ride[data-zap="burst"] .dr-gauge { box-shadow: 0 0 0 2px #ffffff, 0 0 20px rgba(120, 210, 255, 1); }
 .desert-ride[data-reduced-motion="true"] .dr-zap { display: none; }
 .desert-ride[data-reduced-motion="true"][data-charge="max"] .dr-touch.dr-boost.art-ready { animation: none; }
 @media (prefers-reduced-motion: reduce) { .desert-ride[data-charge="max"] .dr-touch.dr-boost.art-ready { animation: none; } }

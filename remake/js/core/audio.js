@@ -113,30 +113,35 @@ function recordedSe(id) {
 // 砂漠ライド専用の採用音。共通の SE 音量・ミュート・表示状態を使い、画面を閉じたらループを止める。
 // 拡張子の無い名前は .bgm（梱包した音）、.wav は自作の合成音をそのまま読む。
 // 2026-11-11 オーナー「ビリビリなる効果音とか欲しい、ブースト溜まると」「ブースト時も効果音欲しい、早そうな」:
-// ブーストの発進を boost_whoosh（短いシュッ）から boost_rush（ドンッ＋キュイーン＋シュゴーッ）へ替え、
-// ブースト中の風切り boost_loop と、溜まるほど濃くなる放電 zap_sparse → zap_dense を足した（asset_sources/music/desert-ride-boost-sfx/）。
+// ブーストの発進を boost_whoosh（短いシュッ）から boost_rush（ドンッ＋キュイーン＋シュゴーッ）へ替え、ブースト中の風切り boost_loop と、
+// 溜まるほど間隔が詰まる放電の「ビリッ」zap_1〜3、満タンの雷 thunder_full を足した（asset_sources/music/desert-ride-boost-sfx/）。
+// 同日「ビリビリはなんかバグみたいに聞こえる。わかりやすい雷みたいなビリビリがいい」で、不規則に点滅させたループをやめ、1発ずつの音にした。
 const DESERT_SE = Object.freeze({
   slide: "slide_sand", wind: "wind_ambience", jump: "jump_videogame",
   land: "drop_soft", boost: "boost_rush.wav", carve: "carve_sand",
   countdown: "countdown_bleeps", goal: "goal_fanfare", fall: "drop_soft",
   decide: "ui_confirm", cursor: "ui_pluck",
   smash: "smash_pot", near: "ui_pluck", gaugeFull: "gauge_powerup",
-  boostLoop: "boost_loop.wav", zapSparse: "zap_sparse.wav", zapDense: "zap_dense.wav",
+  boostLoop: "boost_loop.wav", thunder: "thunder_full.wav",
+  zap1: "zap_1.wav", zap2: "zap_2.wav", zap3: "zap_3.wav",
 });
+const DESERT_ZAPS = Object.freeze(["zap1", "zap2", "zap3"]);
 /**
- * ループの音量（0〜1 の入力から）。ブーストの放電は charge（ゲージの溜まり 0〜1。ブースト中は 0）で、
- * 溜まり始めはまばらなパチパチ、半分を超えると濃いビリビリへ移り、満タンで最大。boost（ブースト中 1、終わり際に 0 へ）は風切り。
+ * 放電の「ビリッ」の次までの秒数。ゲージが1割を超えると鳴り始め、溜まるほど間隔が詰まる（1割で約1.6秒、満タンで約0.35秒）。
+ * 毎回少しずらす（rand は 0〜1）。1割に満たない間は鳴らさない（Infinity）。
  */
-export function desertLoopLevels({ speed = 0, carve = 0, grounded = false, charge = 0, boost = 0 } = {}) {
+export function desertZapGap(charge, rand = Math.random()) {
+  if (!(charge >= 0.1)) return Infinity;
+  return (1.7 - 1.35 * Math.min(1, charge)) * (0.75 + 0.5 * rand);
+}
+/** ループの音量（0〜1 の入力から）。boost（ブースト中 1、終わり際に 0 へ）はブースト中の風切り。 */
+export function desertLoopLevels({ speed = 0, carve = 0, grounded = false, boost = 0 } = {}) {
   const moving = grounded && speed > 0.1;
-  const c = Math.max(0, Math.min(1, charge)), b = Math.max(0, Math.min(1, boost));
-  const thick = Math.max(0, Math.min(1, (c - 0.5) / 0.5));
+  const b = Math.max(0, Math.min(1, boost));
   return {
     slide: { gain: moving ? 0.34 * speed : 0, rate: 0.82 + 0.25 * speed },
     wind: { gain: speed > 0.1 ? 0.14 * Math.max(0, (speed - 0.35) / 0.65) : 0, rate: 0.9 + 0.2 * speed },
     carve: { gain: moving ? 0.18 * Math.min(1, carve) : 0, rate: 1 },
-    zapSparse: { gain: c > 0.1 ? (0.12 + 0.25 * c) * (1 - 0.6 * thick) : 0, rate: 0.9 + 0.2 * c },
-    zapDense: { gain: 0.25 * thick ** 1.5, rate: 0.95 + 0.15 * c },
     boostLoop: { gain: 0.2 * b, rate: 1 + 0.08 * b },
   };
 }
@@ -146,6 +151,7 @@ export function createDesertRideSe() {
   const file = id => `desert_ride/${DESERT_SE[id]}${DESERT_SE[id].includes(".") ? "" : ".bgm"}`;
   const ready = () => Promise.all(Object.keys(DESERT_SE).map(id => loadSeBuffer(file(id))));
   let levels = desertLoopLevels();
+  let zaps = 0, lastZap = "";
   function play(id, gain = 0.65) {
     if (!alive || !DESERT_SE[id]) return;
     const name = file(id);
@@ -172,9 +178,17 @@ export function createDesertRideSe() {
   }
   function stop() { for (const voice of loops.values()) voice?.stop(0.12); loops.clear(); levels = desertLoopLevels(); }
   function dispose() { alive = false; stop(); }
-  /** 今のループの音量（検査用。音が出せない環境でも、鳴らすつもりの大きさが分かる）。 */
-  const loopLevels = () => Object.fromEntries(Object.entries(levels).map(([id, { gain }]) => [id, gain]));
-  return { ready, play, motion, stop, dispose, loopLevels };
+  /** 放電の「ビリッ」を1発（3つから前と違うものを選び、高さを少し揺らす）。溜まっているほど大きい。 */
+  function zap(charge) {
+    if (!alive) return;
+    const choices = DESERT_ZAPS.filter(id => id !== lastZap);
+    const id = choices[Math.floor(Math.random() * choices.length)];
+    lastZap = id; zaps += 1;
+    if (seBuffers.has(file(id))) recordedVoice(file(id), { gain: 0.22 + 0.33 * Math.max(0, Math.min(1, charge)), rate: 0.94 + 0.12 * Math.random() });
+  }
+  /** 今のループの音量と、鳴らした「ビリッ」の数（検査用。音が出せない環境でも、鳴らすつもりの音が分かる）。 */
+  const loopLevels = () => ({ ...Object.fromEntries(Object.entries(levels).map(([id, { gain }]) => [id, gain])), zaps });
+  return { ready, play, motion, zap, stop, dispose, loopLevels };
 }
 
 // ---------------------------------------------------------------- ミニゲームの仮SE
