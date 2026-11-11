@@ -4642,6 +4642,37 @@
       ]
     },
     {
+      "id": "look-neo-more",
+      "title": "新版: 心得の盤（夜紫の面・旧版と同じ並び・灯す→決定・案内）と、店の人の一言・章のクリア・リザルト・古い STATUS のタブ・大会の MENU が読める見た目で、テーマ7種で同じ・旧版へ戻せること",
+      "kind": "browser",
+      "weight": 2.6,
+      "timeout": 8,
+      "paths": [
+        "remake/css/look-neo-board.css",
+        "remake/css/look-neo.css",
+        "remake/js/looks/**",
+        "remake/js/core/look.js",
+        "remake/css/daily.css",
+        "remake/css/ui-paper.css",
+        "remake/css/result.css",
+        "remake/css/venue-host.css",
+        "remake/css/axe-throw.css",
+        "remake/css/ch2-tournament.css",
+        "remake/js/daily/growth-board-screen.js",
+        "remake/js/daily/growth-board-tutorial.js",
+        "remake/js/daily/axe-bar.js",
+        "remake/js/daily/dj-club.js",
+        "remake/js/daily/status.js",
+        "remake/js/core/venue-host.js",
+        "remake/js/scenes/result.js",
+        "remake/js/chapters/ch1.js",
+        "remake/test/browser/look_neo_more.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/look_neo_more.mjs"
+      ]
+    },
+    {
       "id": "look-neo-portrait",
       "title": "新版の縦持ち: DS風の外枠と操作に高解像度の上画面・第1〜5章の会話と地図とカード・MENU・LIME・設定・LOG・ショップ・セーブの引っ越し・レベルアップ・章のクリアをシートで・写せない画面では回転案内・横長は今のまま",
       "kind": "browser",
