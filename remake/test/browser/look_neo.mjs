@@ -243,6 +243,13 @@ async function conversation(page, { phone }) {
   assert.equal(m.portraits.length, 1);
   assert.equal(m.name.text, "みんと");
   assert.equal(m.name.face, "none", "名前札は箱にしない");
+  // 背景のぼかしは控えめ（LK10: 5px では奥の物の形が分からず「ぼんやりしすぎ」）。人物がいる間だけ掛かる。
+  const bgBlur = await page.evaluate(() => {
+    const node = document.querySelector("#bg > .bg-img.show") || document.querySelector("#bg > .bg-img:last-child");
+    const match = /blur\(([\d.]+)px\)/.exec(getComputedStyle(node).filter);
+    return match ? Number(match[1]) : 0;
+  });
+  assert(bgBlur > 0 && bgBlur <= 2, `背景のぼかしは 0 より大きく 2px 以下: ${bgBlur}px`);
   const minto = await charColor(page, "minto");
   assert.equal(m.speaker, minto, "名前の縦線の色はデータの色（intro_cutin.color）");
   assert.equal(m.name.bar, rgb(minto));

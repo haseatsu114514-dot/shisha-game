@@ -350,6 +350,7 @@
 
 /* ---------------------------------------------------------------- 4. 背景と立ち絵のなじませ */
 /* 人物がいる間だけ背景をわずかにぼかして暗くする（人物がいない場面は絵そのものを見せる）。 */
+/* ぼかしは 1.5px（暗い場面は 2px）。5px では奥の棚や台の形が分からなくなり「ぼんやりしすぎ」とオーナー指摘（LK10）。 */
 /* ぼかしで縁が透けないよう、会話の間は絵を少しだけ拡大しておく。拡大した絵がステージのスクロール領域を
    広げないよう背景の層で切る（広がると、選択肢へ focus() が当たった時にステージごと数 px ずれる）。 */
 :root[data-look="neo"] body.in-vn:not(.game-ds) #stage #bg { overflow: hidden; overflow: clip; }
@@ -358,16 +359,16 @@
   transition: opacity .6s ease, filter .45s ease;
 }
 :root[data-look="neo"] body.in-vn:not(.game-ds) #stage:has(#vn .vn-portraits > img) #bg .bg-img {
-  filter: blur(5px) brightness(.87) saturate(1.06);
+  filter: blur(1.5px) brightness(.87) saturate(1.06);
 }
 :root[data-look="neo"] body.in-vn:not(.game-ds) #stage:has(#vn .vn-portraits > img) #bg .bg-img[data-tint="night"] {
-  filter: blur(5px) brightness(.62) saturate(.74) contrast(1.05);
+  filter: blur(1.5px) brightness(.62) saturate(.74) contrast(1.05);
 }
 :root[data-look="neo"] body.in-vn:not(.game-ds) #stage:has(#vn .vn-portraits > img) #bg .bg-img[data-tint="dim"] {
-  filter: blur(6px) brightness(.42);
+  filter: blur(2px) brightness(.42);
 }
 :root[data-look="neo"] body.in-vn:not(.game-ds)[data-weather="outdoor"][data-weather-sky="day"] #stage:has(#vn .vn-portraits > img) #bg .bg-img.show:not([data-tint]) {
-  filter: blur(5px) saturate(.68) brightness(.74) contrast(1.03);
+  filter: blur(1.5px) saturate(.68) brightness(.74) contrast(1.03);
 }
 /* 「揺れ・閃光を減らす」と端末の「動きを減らす」では、ぼかしの出入りをゆっくり動かさない。 */
 :root[data-look="neo"] body.in-vn.reduce-shake:not(.game-ds) #stage #bg .bg-img { transition: opacity .6s ease; }
