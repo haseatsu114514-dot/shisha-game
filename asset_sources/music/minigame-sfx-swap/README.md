@@ -37,7 +37,7 @@ UIの click / select / cancel は既存のポケットサウンド録音のま�
 | カーブ | `carve_sand.bgm` | Mixkit 砂 #2498（候補1） |
 | ジャンプ | `jump_videogame.bgm` | Mixkit「Player jumping in a video game」#2043（候補1） |
 | 着地・転倒 | `drop_soft.bgm` | Kenney「drop_004」（着地は候補1、転倒は柔らかめの候補3。同じ音） |
-| ブースト | `boost_whoosh.bgm` | Joseph Sardin「Whoosh #8」（CC0、候補1） |
+| ブースト | `boost_whoosh.bgm` | Joseph Sardin「Whoosh #8」（CC0、候補1）。2026-11-11 に自作の `boost_rush.wav` へ差し替え、今は使っていない（[desert-ride-boost-sfx](../desert-ride-boost-sfx/README.md)） |
 | 粉砕 | `smash_pot.bgm` | Kenney RPG「metalPot1」（CC0、候補1） |
 | かすめ・半回転・カーソル | `ui_pluck.bgm` | Kenney「pluck_001」（CC0、候補1） |
 | ゲージ満タン | `gauge_powerup.bgm` | Kenney Digital「powerUp7」（CC0、候補1） |

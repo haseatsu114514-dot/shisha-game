@@ -310,6 +310,12 @@ await suite("desert-ride", async check => {
     await page.waitForTimeout(90);
     const during = await page.evaluate(() => { window.__desertRide.redraw(); return { charge: document.querySelector('[data-test="desert-ride"]').dataset.charge, lit: [...document.querySelectorAll(".dr-zap path")].filter(path => path.getAttribute("d")).length }; });
     assert.deepEqual(during, { charge: "", lit: 0 }, "the charge is spent by the boost");
+    // 効果音（2026-11-11 オーナー「ビリビリなる効果音」「ブースト時も効果音、早そうな」）: 溜まるとビリビリ、ブースト中は風切りに替わる。
+    // 音を出せない環境でも、鳴らすつもりの大きさ（ループの音量）で確かめる
+    await ride(page, () => { const r = window.__desertRide; r.game.boostT = 0; r.game.fallT = 0; r.game.gauge = 1; r.pause(false); });
+    await page.waitForFunction(() => { const l = window.__desertRide.soundLevels(); return l.zapDense > 0 && l.boostLoop === 0; });
+    await ride(page, () => { const r = window.__desertRide; r.game.fallT = 0; r.boost(); });
+    await page.waitForFunction(() => { const l = window.__desertRide.soundLevels(); return l.boostLoop > 0 && l.zapDense === 0 && l.zapSparse === 0; });
   });
 
   await check("curve-tip-carving-boost-tempo-and-the-hidden-boss-banner", async page => {

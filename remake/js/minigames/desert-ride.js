@@ -348,11 +348,11 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
     }
     function onBoostEvent(kind) {
       if (kind === "recover") {
-        rideSe.play("boost", 0.7); showPop("リカバリー", "recover"); burst(28, 1.8); floater("リカバリー", "recover");
+        rideSe.play("boost", 0.55); showPop("リカバリー", "recover"); burst(28, 1.8); floater("リカバリー", "recover");
         rings.push({ age: 0, life: 0.7, power: 1.35, burst: true });
         if (!reducedMotion) { shakeT = Math.max(shakeT, 0.28); flashT = Math.max(flashT, 0.12); view.kick = Math.max(view.kick, 1.2); }
       } else if (kind === "boost") {
-        rideSe.play("boost", 0.6); showPop("BOOST!!", "boost"); burst(10, 0.8);
+        rideSe.play("boost", 0.5); showPop("BOOST!!", "boost"); burst(10, 0.8);
         rings.push({ age: 0, life: 0.62, power: 1.2, burst: true });
         if (!reducedMotion) { shakeT = 0.1; view.kick = 0.7; }
       }
@@ -732,7 +732,9 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       }
       const events = game.events.slice(before);
       react(events);
-      rideSe.motion({ speed: (game.speed / SPEED.max) * (game.boostT > 0 ? 1.35 : 1), carve: Math.max(Math.abs(game.vx), game.carving ? 0.9 : 0), grounded: game.air <= 0 && game.fallT <= 0 });
+      rideSe.motion({ speed: (game.speed / SPEED.max) * (game.boostT > 0 ? 1.35 : 1), carve: Math.max(Math.abs(game.vx), game.carving ? 0.9 : 0), grounded: game.air <= 0 && game.fallT <= 0,
+        // ブーストの放電（溜まるほどビリビリ）と、ブースト中の風切り（終わりの0.5秒で消える）
+        charge: game.boostT > 0 || game.finished ? 0 : game.gauge, boost: game.boostT > 0 && !game.finished ? Math.min(1, game.boostT / 0.5) : 0 });
       // ブースト中は曲が速くなる（音程は保ち、約0.2秒で滑らかに切り替わる）
       setBgmPlaybackRate(game.boostT > 0 && !game.finished ? BOOST_BGM_RATE : 1);
       tickBgmPlaybackRate(real);
@@ -1851,6 +1853,7 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       pause(value) { paused = !!value; if (!paused) { last = performance.now(); } },
       redraw() { if (game) { updateHud(); simulateParticles(0); draw(1 / 60); } },
       rawBoost() { return boost(game); },
+      soundLevels() { return rideSe.loopLevels(); },
     };
     showMenu();
     if (tutorial) startRun("practice");

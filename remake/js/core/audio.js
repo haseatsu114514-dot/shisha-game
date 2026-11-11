@@ -111,18 +111,41 @@ function recordedSe(id) {
 }
 
 // 砂漠ライド専用の採用音。共通の SE 音量・ミュート・表示状態を使い、画面を閉じたらループを止める。
+// 拡張子の無い名前は .bgm（梱包した音）、.wav は自作の合成音をそのまま読む。
+// 2026-11-11 オーナー「ビリビリなる効果音とか欲しい、ブースト溜まると」「ブースト時も効果音欲しい、早そうな」:
+// ブーストの発進を boost_whoosh（短いシュッ）から boost_rush（ドンッ＋キュイーン＋シュゴーッ）へ替え、
+// ブースト中の風切り boost_loop と、溜まるほど濃くなる放電 zap_sparse → zap_dense を足した（asset_sources/music/desert-ride-boost-sfx/）。
 const DESERT_SE = Object.freeze({
   slide: "slide_sand", wind: "wind_ambience", jump: "jump_videogame",
-  land: "drop_soft", boost: "boost_whoosh", carve: "carve_sand",
+  land: "drop_soft", boost: "boost_rush.wav", carve: "carve_sand",
   countdown: "countdown_bleeps", goal: "goal_fanfare", fall: "drop_soft",
   decide: "ui_confirm", cursor: "ui_pluck",
   smash: "smash_pot", near: "ui_pluck", gaugeFull: "gauge_powerup",
+  boostLoop: "boost_loop.wav", zapSparse: "zap_sparse.wav", zapDense: "zap_dense.wav",
 });
+/**
+ * ループの音量（0〜1 の入力から）。ブーストの放電は charge（ゲージの溜まり 0〜1。ブースト中は 0）で、
+ * 溜まり始めはまばらなパチパチ、半分を超えると濃いビリビリへ移り、満タンで最大。boost（ブースト中 1、終わり際に 0 へ）は風切り。
+ */
+export function desertLoopLevels({ speed = 0, carve = 0, grounded = false, charge = 0, boost = 0 } = {}) {
+  const moving = grounded && speed > 0.1;
+  const c = Math.max(0, Math.min(1, charge)), b = Math.max(0, Math.min(1, boost));
+  const thick = Math.max(0, Math.min(1, (c - 0.5) / 0.5));
+  return {
+    slide: { gain: moving ? 0.34 * speed : 0, rate: 0.82 + 0.25 * speed },
+    wind: { gain: speed > 0.1 ? 0.14 * Math.max(0, (speed - 0.35) / 0.65) : 0, rate: 0.9 + 0.2 * speed },
+    carve: { gain: moving ? 0.18 * Math.min(1, carve) : 0, rate: 1 },
+    zapSparse: { gain: c > 0.1 ? (0.12 + 0.25 * c) * (1 - 0.6 * thick) : 0, rate: 0.9 + 0.2 * c },
+    zapDense: { gain: 0.25 * thick ** 1.5, rate: 0.95 + 0.15 * c },
+    boostLoop: { gain: 0.2 * b, rate: 1 + 0.08 * b },
+  };
+}
 export function createDesertRideSe() {
   let alive = true;
   const loops = new Map();
-  const file = id => `desert_ride/${DESERT_SE[id]}.bgm`;
-  const ready = () => Promise.all(Object.values(DESERT_SE).map(name => loadSeBuffer(`desert_ride/${name}.bgm`)));
+  const file = id => `desert_ride/${DESERT_SE[id]}${DESERT_SE[id].includes(".") ? "" : ".bgm"}`;
+  const ready = () => Promise.all(Object.keys(DESERT_SE).map(id => loadSeBuffer(file(id))));
+  let levels = desertLoopLevels();
   function play(id, gain = 0.65) {
     if (!alive || !DESERT_SE[id]) return;
     const name = file(id);
@@ -143,15 +166,15 @@ export function createDesertRideSe() {
       voice.output.gain.setTargetAtTime(gain, ctx.currentTime, 0.12);
     }
   }
-  function motion({ speed = 0, carve = 0, grounded = false } = {}) {
-    const moving = grounded && speed > 0.1;
-    loop("slide", moving ? 0.34 * speed : 0, 0.82 + 0.25 * speed);
-    loop("wind", speed > 0.1 ? 0.14 * Math.max(0, (speed - 0.35) / 0.65) : 0, 0.9 + 0.2 * speed);
-    loop("carve", moving ? 0.18 * Math.min(1, carve) : 0);
+  function motion(state = {}) {
+    levels = desertLoopLevels(state);
+    for (const [id, { gain, rate }] of Object.entries(levels)) loop(id, gain, rate);
   }
-  function stop() { for (const voice of loops.values()) voice?.stop(0.12); loops.clear(); }
+  function stop() { for (const voice of loops.values()) voice?.stop(0.12); loops.clear(); levels = desertLoopLevels(); }
   function dispose() { alive = false; stop(); }
-  return { ready, play, motion, stop, dispose };
+  /** 今のループの音量（検査用。音が出せない環境でも、鳴らすつもりの大きさが分かる）。 */
+  const loopLevels = () => Object.fromEntries(Object.entries(levels).map(([id, { gain }]) => [id, gain]));
+  return { ready, play, motion, stop, dispose, loopLevels };
 }
 
 // ---------------------------------------------------------------- ミニゲームの仮SE
