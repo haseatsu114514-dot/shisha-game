@@ -1,0 +1,203 @@
+{
+  "sources": {
+    "A-normal": {
+      "size": [
+        1084,
+        1451
+      ],
+      "mode": "RGBA",
+      "bytes": 983651,
+      "sha256": "d02f63ec34452381f771446d222dda14b280ff3459ee22ae75cb29357661d92c",
+      "alpha_range": [
+        0,
+        255
+      ],
+      "corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alpha16_bbox": [
+        279,
+        15,
+        880,
+        1447
+      ],
+      "visible_height_alpha16": 1432,
+      "native_figure_height_at_least_1300": true,
+      "alpha_gt0_bbox": [
+        25,
+        13,
+        1078,
+        1451
+      ]
+    },
+    "smile": {
+      "size": [
+        1084,
+        1451
+      ],
+      "mode": "RGBA",
+      "bytes": 1026027,
+      "sha256": "13820d89f4d1c055d2feef46be1fc82dfd59346e810df355772c86396d2c7d22",
+      "alpha_range": [
+        0,
+        255
+      ],
+      "corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alpha16_bbox": [
+        272,
+        13,
+        885,
+        1449
+      ],
+      "visible_height_alpha16": 1436,
+      "native_figure_height_at_least_1300": true,
+      "alpha_gt0_bbox": [
+        0,
+        9,
+        1074,
+        1451
+      ]
+    },
+    "surprise": {
+      "size": [
+        1084,
+        1451
+      ],
+      "mode": "RGBA",
+      "bytes": 970854,
+      "sha256": "75e065e8dca8404aa2247150a08be22847f95fda15d6114bb5bcafe76eeef29e",
+      "alpha_range": [
+        0,
+        255
+      ],
+      "corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alpha16_bbox": [
+        268,
+        12,
+        869,
+        1440
+      ],
+      "visible_height_alpha16": 1428,
+      "native_figure_height_at_least_1300": true,
+      "alpha_gt0_bbox": [
+        41,
+        8,
+        1064,
+        1451
+      ]
+    },
+    "serious": {
+      "size": [
+        1054,
+        1493
+      ],
+      "mode": "RGBA",
+      "bytes": 997875,
+      "sha256": "5e5e325f283b9f2be3bb9519705933aabf70452ec8156862a22548d7c962d2cf",
+      "alpha_range": [
+        0,
+        255
+      ],
+      "corner_alpha": [
+        0,
+        0,
+        0,
+        0
+      ],
+      "alpha16_bbox": [
+        244,
+        12,
+        879,
+        1488
+      ],
+      "visible_height_alpha16": 1476,
+      "native_figure_height_at_least_1300": true,
+      "alpha_gt0_bbox": [
+        25,
+        10,
+        1040,
+        1493
+      ]
+    },
+    "sad": {
+      "size": [
+        1084,
+        1451
+      ],
+      "mode": "RGBA",
+      "bytes": 970852,
+      "sha256": "4264ff3a88b3bf0a048a48d443c7a8031ef5b0b529efb4afcff0354990aa4268",
+      "alpha_range": [
+        0,
+        255
+      ],
+      "corner_alpha": [
+        0,
+        0,
+        1,
+        0
+      ],
+      "alpha16_bbox": [
+        298,
+        12,
+        881,
+        1445
+      ],
+      "visible_height_alpha16": 1433,
+      "native_figure_height_at_least_1300": true,
+      "alpha_gt0_bbox": [
+        0,
+        10,
+        1064,
+        1451
+      ]
+    }
+  },
+  "review_registration": {
+    "A-normal": {
+      "scale": 1.0,
+      "translate_x": 0.0,
+      "translate_y": 0.0,
+      "method": "one uniform scale; align alpha>=16 figure top/bottom and silhouette horizontal center; review only"
+    },
+    "smile": {
+      "scale": 0.9972144846796658,
+      "translate_x": 2.61142061281339,
+      "translate_y": 2.036211699164344,
+      "method": "one uniform scale; align alpha>=16 figure top/bottom and silhouette horizontal center; review only"
+    },
+    "surprise": {
+      "scale": 1.0028011204481793,
+      "translate_x": 9.407563025210038,
+      "translate_y": 2.966386554621849,
+      "method": "one uniform scale; align alpha>=16 figure top/bottom and silhouette horizontal center; review only"
+    },
+    "serious": {
+      "scale": 0.9701897018970189,
+      "translate_x": 34.7384823848239,
+      "translate_y": 3.357723577235774,
+      "method": "one uniform scale; align alpha>=16 figure top/bottom and silhouette horizontal center; review only"
+    },
+    "sad": {
+      "scale": 0.9993021632937893,
+      "translate_x": -9.588625261688776,
+      "translate_y": 3.0083740404745285,
+      "method": "one uniform scale; align alpha>=16 figure top/bottom and silhouette horizontal center; review only"
+    }
+  },
+  "native_geometry_result": "NOT pixel-identical. Serious uses a different canvas and requires scale/placement alignment on integration; see README.",
+  "alpha_note": "All four outputs are true RGBA alpha PNGs. Low-alpha debris remains in the untouched originals, including sad bottom-left alpha=1. No alpha cleanup was applied."
+}

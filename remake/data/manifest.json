@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-11-11 11:21 UTC",
+ "generated": "2026-11-11 15:30 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -2932,6 +2932,9 @@
   "sprites/character_variants/new/adam/chr_adam_surprise.png",
   "sprites/character_variants/new/ageha/chr_ageha_normal.png",
   "sprites/character_variants/new/ageha/chr_ageha_sad.png",
+  "sprites/character_variants/new/ageha/chr_ageha_serious.png",
+  "sprites/character_variants/new/ageha/chr_ageha_smile.png",
+  "sprites/character_variants/new/ageha/chr_ageha_surprise.png",
   "sprites/character_variants/new/da_silva/chr_da_silva_excited.png",
   "sprites/character_variants/new/da_silva/chr_da_silva_normal.png",
   "sprites/character_variants/new/da_silva/chr_da_silva_serious.png",
@@ -3862,11 +3865,14 @@
    "ageha": {
     "faces": [
      "normal",
-     "sad"
+     "sad",
+     "serious",
+     "smile",
+     "surprise"
     ],
-    "h": 0.8108,
+    "h": 0.8117,
     "b": 0.02,
-    "ax": 0.5437,
+    "ax": 0.546,
     "aspect": 0.7467,
     "anchor": "head"
    },
@@ -5202,15 +5208,15 @@
    },
    "ageha": {
     "box": [
-     380,
-     197,
-     208
+     378,
+     196,
+     205
     ],
     "eye": [
-     484,
-     338
+     480,
+     335
     ],
-    "unit": 120.4
+    "unit": 118.7
    },
    "da_silva": {
     "box": [
@@ -5700,6 +5706,21 @@
      "top": 0.04583,
      "size": 0.17667
     },
+    "sad": {
+     "cx": 0.46875,
+     "top": 0.04583,
+     "size": 0.17667
+    },
+    "smile": {
+     "cx": 0.46875,
+     "top": 0.04583,
+     "size": 0.17667
+    },
+    "surprise": {
+     "cx": 0.46875,
+     "top": 0.045,
+     "size": 0.17667
+    },
     "ura_normal": {
      "cx": 0.46875,
      "top": 0.05333,
@@ -5724,17 +5745,52 @@
      "cx": 0.46875,
      "top": 0.05333,
      "size": 0.17667
+    },
+    "wink": {
+     "cx": 0.46875,
+     "top": 0.04583,
+     "size": 0.17667
     }
    },
    "ageha": {
     "normal": {
-     "cx": 0.54018,
+     "cx": 0.53627,
+     "top": 0.16333,
+     "size": 0.17083
+    },
+    "sad": {
+     "cx": 0.53627,
      "top": 0.16417,
-     "size": 0.17333
+     "size": 0.17083
+    },
+    "serious": {
+     "cx": 0.53627,
+     "top": 0.16333,
+     "size": 0.17083
+    },
+    "smile": {
+     "cx": 0.53627,
+     "top": 0.16333,
+     "size": 0.17083
+    },
+    "surprise": {
+     "cx": 0.53627,
+     "top": 0.1625,
+     "size": 0.17083
     }
    },
    "mashiro": {
     "normal": {
+     "cx": 0.49386,
+     "top": 0.03083,
+     "size": 0.21583
+    },
+    "serious": {
+     "cx": 0.49386,
+     "top": 0.03083,
+     "size": 0.21583
+    },
+    "surprise": {
      "cx": 0.49386,
      "top": 0.03083,
      "size": 0.21583

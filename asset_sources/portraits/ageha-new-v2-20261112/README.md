@@ -23,12 +23,14 @@ Codex の検品メモ（原画は無加工のまま）:
 
 不採用の B・C（1024×1536）は保存していない。SHA-256 は B `e76fa379139d8b4f2941f096e75bd5e2888d2b56555030921ce227701bf2c483`、C `9acbdd3bdbc6d40aebaf7984af16c178c095b8ecf96d4d677bcbad6c32347512`。
 
-## G2〜G5 表情（未作成）
+## G2〜G5 表情（採用）
 
-smile・surprise・serious・sad を、**この A の丸くて可愛い顔を基準に**そろえて作る。依頼文は #3331 の「G2〜G5」で、画像②にこのフォルダの `normal-untouched.png` を渡す。原画は同じフォルダに `<face>-untouched.png` で置く。
+smile・surprise・serious・sad は、この A を基準に Codex が作った（#3355）。原画は同じフォルダの `<face>-untouched.png`、生成の記録は [`expressions-README.md`](expressions-README.md)。オーナーが 2026-11-12（日本時間）に **4表情とも採用**した。
 
-2026-11-11 に Claude 側から OpenAI 画像APIでの生成を試したが、残高切れ（`credit_balance_exhausted`）で生成できなかった。
+## 組み込み（済み）
 
-## 組み込み（全表情がそろってから）
+通常と4表情をまとめて新版のあげはに入れた（今の新版の normal と、#3326 で入れた sad も置き換え）。
 
-あげはの新版は、通常と4表情をまとめて置き換える（今の新版の normal と、#3326 で入れた sad も置き換える）。顔アイコンと `data/portrait_metrics.json` の `styles.new` も測り直す。
+- 位置合わせ: 通常Aは置き換え前の新版の通常と、頭頂〜足元の高さ・足元の下端・頭の横位置を同じにして縮小・配置。4表情は配置した通常Aに同じ方法で合わせた。人物から離れた極薄の点だけ消した（描き直し・色の調整なし）。倍率と位置は [`integration.json`](integration.json)。
+- 置き換え前の新版の通常・悲しみは `previous-runtime/` に残した。
+- `data/portrait_metrics.json` の `styles.new.ageha` を測り直した（5.88頭身・規格内）。顔アイコン（`assets/ui/face_icons/new/face_ageha.png`）とコンティニュー画面の顔の枠も作り直した。
