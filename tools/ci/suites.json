@@ -298,6 +298,21 @@
       "run": ["node remake/test/ch1_interval_connection.mjs"]
     },
     {
+      "id": "poem-panel-cut",
+      "title": "Opening-poem panel template, frame detection, panel fitting and delivery check (Pillow)",
+      "kind": "browser",
+      "weight": 0.2,
+      "timeout": 3,
+      "paths": [
+        "tools/poem_panel_cut.py",
+        "asset_sources/poem-panels/template/**"
+      ],
+      "run": [
+        "python3 tools/poem_panel_cut.py selftest"
+      ],
+      "pillow": true
+    },
+    {
       "id": "load-save-failure",
       "title": "Slot load persistence failure and state rollback",
       "kind": "quick",
