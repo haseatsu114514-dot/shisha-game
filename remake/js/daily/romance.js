@@ -349,6 +349,9 @@ function apartFrom(id, home, value = state) {
  */
 export function loverMessages({ tournamentDay = false, fixedNight = () => false, invitations = true, away = [], exclude = [], home = !awayFromHome() } = {}) {
   const out = [];
+  // 修羅場が未解決のあいだは、恋人の誰からも連絡が来ない（朝のひとこと・記念日・誘いのどれも。2026-11-11 オーナー
+  // 「やってしまった感を出せるように」）。打ち上げの後、スマホが鳴らなくなる。一人ずつの話し直しが済めば、元どおり届く
+  if (state.flags?._story_shuraba_unresolved) return out;
   const read = (id) => state.limeRead.includes(id);
   const phase = L().limePhase || {};
   const invites = [];

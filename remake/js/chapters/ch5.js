@@ -45,7 +45,8 @@ import { CH5_SCENE_BG, CH5_SCENE_BGM, CH5_DEFAULT_BGM, CH5_PROLOGUE, CH5_MATCH_S
   chapterFiveEndingContext, beginChapterFiveFinale, completeChapterFiveScene, CH5_LIME_MILESTONES, chapterFiveLimeDue,
   chapterFiveCreditsPending, recordChapterFiveCredits, chapterFiveTrueEndReached, chapterFiveFreeRemaining,
   chapterFivePostEndingPlan, chapterFivePostEndingUndecided, beginChapterFivePostEnding, chapterFivePostEndingNext,
-  completeChapterFivePostEnding, CH5_POST_ENDING } from "./ch5-progress.js";
+  completeChapterFivePostEnding, CH5_POST_ENDING, chapterFivePostEndingCast, chapterFivePostEndingTense } from "./ch5-progress.js";
+import { setSceneMood } from "../core/scene-mood.js";
 import { readCycleMeta, recordTrueEndForRun } from "../core/cycle-meta.js";
 import { chapterFiveUnrecordedDialogue } from "./ch5-unrecorded.js";
 
@@ -203,7 +204,9 @@ async function readScene(owner, id, { keepHud = false } = {}) {
   } : null;
   if (choiceHook) hooks.onChoice = choiceHook;
   try {
-    const result = await play(dialogue, { signal: controller.signal });
+    // スタッフロールの後の修羅場の開始は、同席している恋人だけを視線のカットインに出す（motion gaze）
+    const cast = id === CH5_POST_ENDING.open ? chapterFivePostEndingCast(state) : null;
+    const result = await play(dialogue, { signal: controller.signal, ...(cast?.length ? { cast } : {}) });
     const finished = current(owner) && !controller.signal.aborted && !!result && !result.cancelled;
     if (finished && id === "ch5_schedule_contact") {
       // ※捕捉できなかった場合は安全側（先送り）に倒す。日程を誤って確定させない。
@@ -644,15 +647,19 @@ async function renderPostEnding(owner) {
       : ["後日のtonari", "閉店後のtonariで、次の話を読む。", ""];
   card(owner, "scene", title, description, [
     button(owner, "続きを読む", "continue", async () => {
-      for (;;) {
-        const scene = chapterFivePostEndingNext(state);
-        if (!scene || !await readScene(owner, scene.id)) return;
-        if (!completeChapterFivePostEnding(state, scene.id)) return;
-        save();
-        const following = chapterFivePostEndingNext(state);
-        if (!following) return showResult(owner); // 話し直しまで読み終えたら、締めのリザルトからタイトルへ
-        if (following.talk || following.id === CH5_POST_ENDING.aftercare) break; // 場所が変わるので、カードと背景を出し直す
-      }
+      // 修羅場（開始・反応・謝罪）の間は、場面をまたいで背景の色を落とす。抜ける時は必ず戻す
+      try {
+        for (;;) {
+          const scene = chapterFivePostEndingNext(state);
+          setSceneMood(scene && chapterFivePostEndingTense(scene.id) ? "dread" : "");
+          if (!scene || !await readScene(owner, scene.id)) return;
+          if (!completeChapterFivePostEnding(state, scene.id)) return;
+          save();
+          const following = chapterFivePostEndingNext(state);
+          if (!following) { setSceneMood(""); return showResult(owner); } // 話し直しまで読み終えたら、締めのリザルトからタイトルへ
+          if (following.talk || following.id === CH5_POST_ENDING.aftercare) break; // 場所が変わるので、カードと背景を出し直す
+        }
+      } finally { setSceneMood(""); }
       await renderStage(owner);
     }, true),
   ], note, next.id);

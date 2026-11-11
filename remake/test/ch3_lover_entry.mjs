@@ -115,6 +115,10 @@ await check('an unresolved shuraba stops every date invitation; a single lover a
   same(invites(), ['tsumugi'], 'Control: before the affair comes out, one of the two is invited');
   f.core.state.flags._story_shuraba_unresolved = true;
   same(invites(), [], 'While the shuraba is unresolved nobody sends a date invitation');
+  // 2026-11-11: 未解決のあいだは、朝のひとこと・記念日も届かない（恋人たちからの連絡が止まる）。話し直しが済めば戻る。
+  same(f.romance.loverMessages(), [], 'While the shuraba is unresolved no lover sends anything');
+  delete f.core.state.flags._story_shuraba_unresolved;
+  assert(f.romance.loverMessages().length > 0, 'Once every talk is done the lovers write again');
   f.chapterAt(5, ['tsumugi'], { day: 55, flags: { _ch5: { startDay: 51, part: 'free' }, _ch5_after_party: true, _ch5_party_seat: 'tsumugi' } });
   same(invites(), ['tsumugi'], 'One lover at the party: no shuraba, dates go on');
 });
