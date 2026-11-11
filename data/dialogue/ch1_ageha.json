@@ -157,127 +157,117 @@
         {
           "speaker": "",
           "face": "",
-          "text": "白いクマのグミが、瓶の中で重なっていた"
+          "text": "白いクマのグミが、瓶の中でぎゅうぎゅうに重なっていた"
         },
         {
           "speaker": "ageha",
           "face": "smile",
-          "text": "ハジメっち、帰る前に一個"
+          "text": "あ、ハジメっち！ ちょうどよかった、帰る前に一個あげる"
         },
         {
           "speaker": "ageha",
           "face": "normal",
-          "text": "これ、店のメニューじゃない、うちの引き出しのやつ"
+          "text": "これ、メニューじゃないよ。うちの引き出しの私物ね"
         },
         {
           "speaker": "hajime",
           "face": "surprise",
-          "text": "ホワイトグミベア、ですか"
+          "text": "ホワイトグミベア……の、食べるほうですか"
         },
         {
           "speaker": "ageha",
-          "face": "normal",
-          "text": "そう、吸うほうじゃなくて、食べるほう"
+          "face": "smile",
+          "text": "そ！ 吸うほうの元ネタ。この顔、かわいくない？"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "白いのだけ集めた瓶なの。赤も好きだけど、白は別枠"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "掌に、白いクマが一粒乗った"
+          "text": "掌に、白いクマが一粒、ころんと乗った"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "甘い匂いが、さっきの煙と同じだった"
+          "text": "甘い匂いが、さっきまで吸っていた煙と同じだった"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "この前、炭の前で口に入れてましたよね"
+          "text": "この前、炭の前で一つ食べてましたよね"
         },
         {
           "speaker": "ageha",
+          "face": "surprise",
+          "text": "え、見てたの？ やば、ハジメっち観察しすぎ"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "……なんでかって、今日は聞かないで"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "理由、まだ言葉になんないの。うちの中で、もやっとしてる"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "でも、ハジメっちに持って帰ってほしいのは、ほんと"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "聞きません。帰り道で、ゆっくり食べます"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "駅まで我慢してね。店の中でもぐもぐしてると、みんな欲しがるから"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "あげはさんの分は、ちゃんと残ってるんですか"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "残ってる。……ない日の朝用に、ちょっとだけ"
+        },
+        {
+          "speaker": "hajime",
           "face": "serious",
-          "text": "……見てたじゃん"
-        },
-        {
-          "speaker": "ageha",
-          "face": "normal",
-          "text": "なんでかって、今日は聞かないで"
+          "text": "（ない日。……あの日、震えていた手のことだ）"
         },
         {
           "speaker": "ageha",
           "face": "smile",
-          "text": "理由、まだ言葉になんない"
-        },
-        {
-          "speaker": "ageha",
-          "face": "normal",
-          "text": "でも、持って帰ってほしいのは本当"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "聞きません"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "帰り道に食べます"
-        },
-        {
-          "speaker": "ageha",
-          "face": "smile",
-          "text": "駅まで、ね"
-        },
-        {
-          "speaker": "ageha",
-          "face": "normal",
-          "text": "店の中でばりばりやると、お客さんが欲しがるし"
-        },
-        {
-          "speaker": "hajime",
-          "face": "smile",
-          "text": "あげはさんの分は、瓶に残ってるんですね"
-        },
-        {
-          "speaker": "ageha",
-          "face": "normal",
-          "text": "残ってる"
-        },
-        {
-          "speaker": "ageha",
-          "face": "normal",
-          "text": "ない日の朝用に、少しだけ"
-        },
-        {
-          "speaker": "ageha",
-          "face": "smile",
-          "text": "……それ以上は、また今度"
+          "text": "……はい、しんみり禁止！ それ以上は、また今度ね"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "あげはは瓶を、客から見えない棚の奥へ戻した"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "ありがとうございます"
+          "text": "あげはは瓶を、客から見えない棚の奥へしまった"
         },
         {
           "speaker": "hajime",
           "face": "smile",
-          "text": "味、覚えて帰ります"
-        },
-        {
-          "speaker": "ageha",
-          "face": "smile",
-          "text": "覚えてて"
+          "text": "ありがとうございます。この味、覚えて帰ります"
         },
         {
           "speaker": "ageha",
           "face": "normal",
-          "text": "次来たとき、同じ匂いがしたら、それ"
+          "text": "覚えといて。……この匂いがしたら、うちのこと思い出して"
+        },
+        {
+          "speaker": "ageha",
+          "face": "surprise",
+          "text": "……あ、今のナシ！ 普通に宣伝！ グミベア、店でも吸えまーす"
         }
       ]
     },
@@ -287,7 +277,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "次に店へ入ると、カウンターの客があげはに聞いていた"
+          "text": "店へ入ると、カウンターのお客さんがあげはに何か聞いていた"
         },
         {
           "speaker": "",
@@ -297,97 +287,107 @@
         {
           "speaker": "ageha",
           "face": "normal",
-          "text": "えっと……なんか、その"
+          "text": "えっと、それは……なんか、その"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "言葉が止まって、あげはがこちらを見た"
+          "text": "言葉が止まって、あげはがちらっとこちらを見た"
         },
         {
           "speaker": "hajime",
           "face": "serious",
-          "text": "（代わりには言わない、あげはさんが口を開きかけてる）"
+          "text": "（代わりには言わない。あげはさんが、口を開きかけてる）"
         },
         {
           "speaker": "ageha",
           "face": "serious",
-          "text": "……待って、うちが言う"
+          "text": "……待って。うちが言う"
         },
         {
           "speaker": "ageha",
           "face": "normal",
-          "text": "入ってきたとき、肩が上がってた"
+          "text": "入ってきたとき、肩がぎゅって上がってたじゃん？"
         },
         {
           "speaker": "ageha",
           "face": "normal",
-          "text": "だから最初の一口、甘くて、ゆっくりのにした"
+          "text": "だから最初の一口、甘くてゆっくりのにしたの。ふわ〜って抜けるやつ"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "客は笑って、自分の席へ戻っていった"
+          "text": "お客さんは「当たってる」と笑って、自分の席へ戻っていった"
         },
         {
           "speaker": "ageha",
-          "face": "smile",
+          "face": "surprise",
           "text": "……言えた"
         },
         {
           "speaker": "ageha",
-          "face": "normal",
-          "text": "台、消えてない"
+          "face": "smile",
+          "text": "言えたよね、今！ ハジメっち、聞いてた？"
         },
         {
           "speaker": "hajime",
           "face": "smile",
-          "text": "消えないですよ、煙は、さっきのままです"
-        },
-        {
-          "speaker": "ageha",
-          "face": "normal",
-          "text": "この前、取材で止まっちゃったやつ"
+          "text": "聞いてました。最後まで、あげはさんの言葉でした"
         },
         {
           "speaker": "ageha",
           "face": "smile",
-          "text": "今日は、最後まで言えた"
+          "text": "やば、手汗すご。……でも、台、消えてない"
         },
         {
           "speaker": "ageha",
           "face": "normal",
-          "text": "ちょっとだけ、びっくり"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "次も「なんか」のままでいい日は、それでいいです"
-        },
-        {
-          "speaker": "ageha",
-          "face": "normal",
-          "text": "うん、出ない日は、ハジメっちは座ってて"
-        },
-        {
-          "speaker": "ageha",
-          "face": "smile",
-          "text": "出た日は、今みたいに、最後までうちに言わせて"
+          "text": "言葉にしたら、うちの一台がただの理屈になっちゃう気がしてたの"
         },
         {
           "speaker": "hajime",
           "face": "smile",
-          "text": "はい、遮りません"
+          "text": "消えてないですよ。煙は、さっきのままです"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "この前、取材の練習で止まっちゃったやつ。今日は最後まで行けた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "出ない日は、「なんか」のままでいいと思います"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "うん。出ない日は、ハジメっちは隣で座ってて"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "出た日は、今みたいに最後まで、うちに言わせて"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "はい。遮りません"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "……ありがと。待っててくれたの、ちゃんと分かってるから"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "あとでジュースおごったげる。言えた記念ね！"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "あげははホースを直した"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "客の肩の力が抜けたほうへ、もう一度煙を向けた"
+          "text": "あげははお客さんの席へ、炭の様子を見に戻っていった。足取りが、さっきより軽い"
         }
       ]
     },
@@ -397,17 +397,17 @@
         {
           "speaker": "",
           "face": "",
-          "text": "今日のMELTY PUFFは、白いクマの隣だけ席が空いていた"
+          "text": "今日のMELTY PUFFは、白いクマのぬいぐるみの隣だけ、席が空いていた"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "あげはがカウンターから、手を振った"
+          "text": "あげはがカウンターから、ぶんぶん手を振った"
         },
         {
           "speaker": "ageha",
           "face": "smile",
-          "text": "ハジメっち、そこ！ 白いクマの隣、今日は空けといた"
+          "text": "ハジメっち、そこそこ！ 白いクマの隣、空けといた！"
         },
         {
           "speaker": "hajime",
@@ -416,68 +416,73 @@
         },
         {
           "speaker": "ageha",
-          "face": "normal",
-          "text": "分かってないけど、来るかもって思うと、先に空けちゃう"
+          "face": "smile",
+          "text": "分かってないけど、来るかもって思うと先に空けちゃうの。バイブス！"
         },
         {
           "speaker": "ageha",
           "face": "normal",
-          "text": "あの席、ぼーっとしたい子の席でもあるんだけど"
+          "text": "ほんとは、のんびりしたい子の、特等席なんだけど"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "今日は、俺が座っていいんですね"
+          "text": "今日は、俺がぼーっとしていいんですね"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "いいよ〜。クマ、もふっていいからね"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "隣に座ると、白いクマの頭が、肩に少し当たった"
+          "text": "隣に座ると、白いクマの頭が、肩にぽすんと当たった"
         },
         {
           "speaker": "ageha",
           "face": "serious",
-          "text": "……ねえ、朝、指の感覚、確かめた"
+          "text": "……ねえ。今朝も、指の感覚、確かめた"
         },
         {
           "speaker": "ageha",
           "face": "normal",
-          "text": "今日は、ある日"
+          "text": "今日は、ある日。グーパーしたら、ちゃんと全部いた"
         },
         {
           "speaker": "ageha",
           "face": "normal",
-          "text": "ない日は、炭を触る前に分かる"
+          "text": "ない日は、炭に触る前に分かるの、……朝、布団の中で"
         },
         {
           "speaker": "hajime",
           "face": "serious",
-          "text": "（震えていた手を、今日は自分から出している）"
+          "text": "（震えていた手のことを、今日は自分から話してくれている）"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "ある日なら、隣で待ってます"
+          "text": "ある日なら、隣で一台待ってます"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "ない日も、来ます"
+          "text": "ない日も、来ます。何も作らなくても"
         },
         {
           "speaker": "ageha",
-          "face": "smile",
+          "face": "surprise",
           "text": "……ハジメっち、ずるい"
         },
         {
           "speaker": "ageha",
-          "face": "smile",
+          "face": "sad",
           "text": "そういうの、断れないじゃん"
         },
         {
           "speaker": "ageha",
           "face": "normal",
-          "text": "隠すの、もう遅いし、あの日、見られちゃったし"
+          "text": "隠すの、もう遅いしね。あの日、見られちゃったし"
         },
         {
           "speaker": "hajime",
@@ -487,37 +492,47 @@
         {
           "speaker": "ageha",
           "face": "smile",
-          "text": "いいよ、言葉になんない日は、座ってて"
+          "text": "いいよ。言葉になんない日は、座ってて"
         },
         {
           "speaker": "ageha",
           "face": "normal",
-          "text": "うちの「なんか」、ハジメっちがいると、ちょっとだけ言葉になる"
+          "text": "うちの「なんか」、ハジメっちが隣にいると、ちょっとだけ言葉になるの"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "……ちょっとだけ、だからね。調子乗んないでよ"
         },
         {
           "speaker": "hajime",
-          "face": "normal",
-          "text": "ならない日は、煙のほうを見ます"
+          "face": "smile",
+          "text": "ならない日は、クマと一緒に煙を見てます"
         },
         {
           "speaker": "ageha",
           "face": "smile",
-          "text": "それでいい"
+          "text": "ふはっ、クマと並ぶハジメっち、絵面かわいすぎ。写真撮っていい？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "だめです"
         },
         {
           "speaker": "ageha",
           "face": "smile",
-          "text": "今日は、ある日の一台、吸ってって"
+          "text": "えー、けち！ ……じゃ、今日はある日の一台、ズボーって吸ってって"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "白いクマは、そのまま隣に残った"
+          "text": "白いクマは、そのまま俺の肩にもたれていた"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "あげはは、その席を戻さなかった"
+          "text": "あげははその席を、俺が帰るまで、ほかの誰にも案内しなかった"
         }
       ]
     }
