@@ -58,6 +58,8 @@
         { "speaker": "", "face": "", "text": "店員が炭の籠を提げて、客席と裏を何度も往復していた。" },
         { "speaker": "hajime", "face": "normal", "text": "炭、ひとりで回してるんですか" },
         { "speaker": "shop_clerk", "face": "", "text": "三人で順番です。太陽さんは、前に出る係なんで" },
+        { "speaker": "", "face": "", "text": "籠の炭は、左右に分けて積まれていた。" },
+        { "speaker": "shop_clerk", "face": "", "text": "舞台の近くは煙の減りが早いので、先にそっち。奥は後です" },
         { "speaker": "shop_clerk", "face": "", "text": "でも閉めたあと、最後まで残って床を拭くのは、あの人です" },
         { "speaker": "", "face": "", "text": "舞台の方で、ひときわ大きな歓声が上がった。太陽の煙の輪が、天井の近くでほどけていく。" },
         { "speaker": "", "face": "", "text": "店員は歓声の方を見もせずに、籠へ次の炭を足した。" }
@@ -84,6 +86,8 @@
         { "speaker": "hajime", "face": "surprise", "text": "（寒いって、言ってなかったのに）" },
         { "speaker": "", "face": "", "text": "同じ店員が、こちらの席にも肩掛けを持ってきた。" },
         { "speaker": "cafe_staff", "face": "", "text": "外から来られた方は、汗が引くころにいちばん冷えますので" },
+        { "speaker": "hajime", "face": "normal", "text": "外から来たって、どうして分かるんですか" },
+        { "speaker": "cafe_staff", "face": "", "text": "上着をお持ちでないことと、お席へ着かれてすぐ、腕を組まれたことで" },
         { "speaker": "", "face": "", "text": "言われて自分の腕に触れると、もう冷たかった。" }
       ]
     },
@@ -190,8 +194,10 @@
         { "speaker": "", "face": "", "text": "一台を吸い終えて、炭を下ろした。" },
         { "speaker": "hajime", "face": "serious", "text": "（tonariより、炭が早く白くなる。壁際でも、冷房の風が片側だけ削ってた）" },
         { "speaker": "", "face": "", "text": "ノートの吸った時間の横に、この部屋の温度を書き足した。" },
+        { "speaker": "", "face": "", "text": "風の向きも、小さな矢印で添えた。" },
         { "speaker": "", "face": "", "text": "向かいの作り手が、こちらの煙を見て親指を立てた。言葉は分からないまま、笑い返した。" },
         { "speaker": "hajime", "face": "normal", "text": "（本番は客が座る。人の熱で、また変わるはずだ）" },
+        { "speaker": "hajime", "face": "normal", "text": "（炭の向きを変えたら、減りはそろうかもしれない）" },
         { "speaker": "hajime", "face": "normal", "text": "（もう一度、来よう）" }
       ]
     },

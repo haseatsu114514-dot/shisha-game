@@ -193,6 +193,15 @@
   "hero/kv-ageha.webp": [
    "remake/img/ui/title_arts/title_art_ageha_04_gummy_light.webp"
   ],
+  "hero/kv-counter-s.webp": [
+   "asset_sources/promo-site-20261111/keyvisual/kv-a-02.png"
+  ],
+  "hero/kv-counter-thumb.webp": [
+   "asset_sources/promo-site-20261111/keyvisual/kv-a-02.png"
+  ],
+  "hero/kv-counter.webp": [
+   "asset_sources/promo-site-20261111/keyvisual/kv-a-02.png"
+  ],
   "hero/kv-hiyori-thumb.webp": [
    "remake/img/ui/title_arts/title_art_hiyori_06_riverside_hoodie.webp"
   ],
@@ -228,6 +237,15 @@
   ],
   "hero/kv-sumi.webp": [
    "remake/img/ui/title_arts/title_art_sumi_01_own_clay_bowl.webp"
+  ],
+  "hero/kv-town-s.webp": [
+   "asset_sources/promo-site-20261111/keyvisual/kv-b-01.png"
+  ],
+  "hero/kv-town-thumb.webp": [
+   "asset_sources/promo-site-20261111/keyvisual/kv-b-01.png"
+  ],
+  "hero/kv-town.webp": [
+   "asset_sources/promo-site-20261111/keyvisual/kv-b-01.png"
   ],
   "hero/kv-tsumugi-thumb.webp": [
    "remake/img/ui/title_arts/title_art_tsumugi_04_painting_studio.webp"
@@ -324,6 +342,8 @@
   ]
  },
  "sources": {
+  "asset_sources/promo-site-20261111/keyvisual/kv-a-02.png": "065376ec68ebf9b0303f6c86317ef77fbbc5f9e0",
+  "asset_sources/promo-site-20261111/keyvisual/kv-b-01.png": "ab785e6782e966e3576f09847656a41ab4c98462",
   "assets/ui/store_logos/c-station.webp": "1b1fba808a855da1a70b02da8ffd52b20db314a6",
   "assets/ui/store_logos/dr-fookah.webp": "4dacdc762d200301633bbb859e6f16a2395d3c20",
   "assets/ui/store_logos/eden.webp": "6612b4109c18ec455b88aebe614d710a097e921b",
@@ -345,7 +365,7 @@
   "remake/img/cgs/cg_minto_first_cheki.webp": "5d4c8778e401b9184b1c84a354b6357236fe702e",
   "remake/img/cgs/cg_tsumugi_smoke_color.webp": "061952bef3e8abb321e66ce18a4a59e9f0dfe3b0",
   "remake/img/sprites/character_variants/new/adam/chr_adam_normal.webp": "7adeb79485d235bf09bdee6a7fdb1b6b0f640d66",
-  "remake/img/sprites/character_variants/new/ageha/chr_ageha_normal.webp": "807e00e5ad50188ef1d922e2c1348cf4f0a12a74",
+  "remake/img/sprites/character_variants/new/ageha/chr_ageha_normal.webp": "3eefb72b99353e5c1783f9b43d5419694bdd378e",
   "remake/img/sprites/character_variants/new/dr_kemuri/chr_dr_kemuri_normal.webp": "4b1bfa2d41c292f2e20973906d256cf560aaa269",
   "remake/img/sprites/character_variants/new/hajime/chr_hajime_normal.webp": "33217cf99f479f39bb4a0b8eeb2ee52bb02461a1",
   "remake/img/sprites/character_variants/new/hiyori/chr_hiyori_normal.webp": "5c7f826cd76e4f87daa18cd0a63aa2b7097e296e",
@@ -389,7 +409,7 @@
   "remake/img/ui/craft-night/button-gold.webp": "659157ac81547dbc3d3d57ff8468ac82a7a9a95b",
   "remake/img/ui/craft-night/button-white.webp": "8c3fd47989d5d9229ad92aa7cd7229972e34b03a",
   "remake/img/ui/face_icons/new/face_adam.webp": "bd878b4d294b6671d5f2c75809806ae6b169492c",
-  "remake/img/ui/face_icons/new/face_ageha.webp": "5ba8c6d2aaee48b3ea4540289982eb6435a84cda",
+  "remake/img/ui/face_icons/new/face_ageha.webp": "67306ce21ac86d9d23d72b78df2b1a3936a3f6be",
   "remake/img/ui/face_icons/new/face_hajime.webp": "94ef16b4431a6a477fe770b8ce1d5f9f1345c92a",
   "remake/img/ui/face_icons/new/face_hiyori.webp": "b84ce8dfb638903aa598fd6496eea3d091a16f7f",
   "remake/img/ui/face_icons/new/face_kumicho.webp": "8b621ffb12290499751ecacf663646046116a361",

@@ -42,13 +42,13 @@ function checkFile(ref, from, baseDir) {
   if (!tracked.has(rel)) problems.push(`${from}: ファイルがありません → ${rel}`);
 }
 
-// HTML: src / href / data-src / data-full / srcset
+// HTML: src / href / data-src / data-full / srcset / data-srcset（あとから読む絵）/ imagesrcset（先読み）
 for (const match of html.matchAll(/\s(?:src|href|data-src|data-full)="([^"]+)"/g)) {
   const ref = match[1].replace(/&amp;/g, "&");
   if (ref.startsWith("#")) continue;
   checkFile(ref, "index.html", promo);
 }
-for (const match of html.matchAll(/\ssrcset="([^"]+)"/g)) {
+for (const match of html.matchAll(/\s(?:data-|image)?srcset="([^"]+)"/g)) {
   for (const part of match[1].split(",")) checkFile(part.trim().split(/\s+/)[0], "index.html", promo);
 }
 // CSS: url(...)

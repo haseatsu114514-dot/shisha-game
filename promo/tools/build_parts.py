@@ -7,7 +7,9 @@
 - 紙と木目は ambientCG の CC0 テクスチャ（写真から作られた実物の質感）を使う。出典は promo/README.md。
   --textures を省くと、すでに書き出してある promo/img/tex/ の地をそのまま使う（縁とテープは作り直せる）。
 - ちぎった縁とテープは、その実物の紙の地から切り出して形を付ける。乱数の種は固定なので、何度作っても同じ絵になる。
-- 人物・シーシャ機材は描かない。絵はすべてゲームの採用済み素材を使う（build_images.py）。
+- 人物・シーシャ機材は描かない。絵はゲームの採用済み素材（build_images.py）と、サイトのために描いた採用済みのキービジュアルだけ。
+- OGP画像は、ヒーローの1枚目と同じ横長のキービジュアルの原画（asset_sources/ の Git LFS）から作る。
+  git lfs pull --include="asset_sources/promo-site-20261111/keyvisual/kv-b-01.png" で取得してから実行する。
 """
 from __future__ import annotations
 
@@ -18,6 +20,8 @@ from pathlib import Path
 import numpy as np
 from PIL import Image, ImageFilter
 
+from build_images import PROMO_KEY_ART, WIDE_KEY_VISUALS, cover
+
 ROOT = Path(__file__).resolve().parents[2]
 OUT = ROOT / "promo" / "img"
 GAME = ROOT / "remake" / "img"
@@ -26,6 +30,8 @@ PAPER = (246, 242, 233)     # 生成りの紙
 LAVENDER = (112, 84, 140)   # ゲームのUI「紙とラベンダー」の紫
 AMBER = (222, 164, 62)      # ボタンの琥珀
 INK = (28, 24, 36)
+NIGHT = (21, 13, 30)        # サイトの夜の色（CSS の --night）
+OGP_KEY_VISUAL = "town"     # ヒーローの1枚目と同じ絵（build_images.py の WIDE_KEY_VISUALS）
 
 
 def save(image: Image.Image, rel: str, quality: int = 82, lossless: bool = False) -> None:
@@ -165,21 +171,26 @@ def build_parts() -> None:
 
 
 def build_ogp() -> None:
-    """SNSで共有されたときの絵（1200x630）。タイトル画面と同じ組み立て: 夜のラウンジ＋キービジュアル＋ロゴ。"""
-    canvas = Image.open(GAME / "backgrounds" / "bg_title.webp").convert("RGB")
-    canvas = canvas.resize((1200, 675), Image.NEAREST).crop((0, 22, 1200, 652))
-    canvas = Image.eval(canvas, lambda v: int(v * 0.72))
-    art = Image.open(GAME / "ui" / "title_arts" / "title_art_tsumugi_04_painting_studio.webp").convert("RGB")
-    art = art.resize((560, 840), Image.LANCZOS).crop((0, 60, 560, 690))
-    fade = np.clip((np.arange(560) - 20) / 200.0, 0, 1)
-    mask = Image.fromarray((np.tile(fade, (630, 1)) * 255).astype(np.uint8))
-    canvas.paste(art, (640, 0), mask)
+    """SNSで共有されたときの絵（1200x630）。ヒーローの1枚目と同じ横長のキービジュアルに、ロゴを重ねる。
+
+    キービジュアルは左の4割をロゴと文を重ねる場所として描いてあるので、ロゴはそこへ置き、サイトと同じく左を少し沈める。
+    """
+    path = PROMO_KEY_ART / f"{WIDE_KEY_VISUALS[OGP_KEY_VISUAL][0]}.png"
+    rel = path.relative_to(ROOT).as_posix()
+    if not path.exists() or path.stat().st_size < 200:
+        sys.exit(f"キービジュアルの原画がありません（Git LFS のポインタのまま）: {rel}\n  git lfs pull --include=\"{rel}\" で取得してからやり直してください。")
+    # 上下を切って 1200x630 に。人物の頭から足元までが入る高さで切る
+    canvas = cover(Image.open(path).convert("RGB"), 1200, 630, focus=(0.5, 0.65))
+    shade = np.interp(np.arange(1200) / 1200, [0, 0.32, 0.56, 1], [0.72, 0.5, 0, 0])[None, :, None]
+    pixels = np.asarray(canvas).astype(np.float32)
+    canvas = Image.fromarray((pixels * (1 - shade) + np.array(NIGHT) * shade).astype(np.uint8))
     logo = Image.open(GAME / "ui" / "ui_title_logo_rich.webp").convert("RGBA")
-    logo = logo.resize((620, round(620 * logo.height / logo.width)), Image.LANCZOS)
+    logo = logo.resize((460, round(460 * logo.height / logo.width)), Image.LANCZOS)
+    x, y = 28, 224  # 右端は人物（いちばん左のみんと）の手前で止める
     shadow = Image.new("RGBA", canvas.size, (0, 0, 0, 0))
-    shadow.paste((10, 6, 18, 150), (58, 216), logo.split()[3])
-    canvas = Image.alpha_composite(canvas.convert("RGBA"), shadow.filter(ImageFilter.GaussianBlur(14)))
-    canvas.alpha_composite(logo, (50, 204))
+    shadow.paste((10, 6, 18, 170), (x + 6, y + 10), logo.split()[3])
+    canvas = Image.alpha_composite(canvas.convert("RGBA"), shadow.filter(ImageFilter.GaussianBlur(12)))
+    canvas.alpha_composite(logo, (x, y))
     target = ROOT / "promo" / "ogp.jpg"
     canvas.convert("RGB").save(target, "JPEG", quality=86, optimize=True, progressive=True)
     print(f"{'ogp.jpg':36s} 1200x630   {target.stat().st_size / 1024:7.1f} KB")

@@ -6,7 +6,7 @@
 // 着地の輪・得点の浮き出し・トリックのスロー・ブーストの残像。動き軽減ではカメラの動き・揺れ・スロー・閃光・速度線を止める。
 // 本番はスタートの合図のあと、ヌール（rivalRun）が横で滑る。
 import { el } from "../core/util.js";
-import { SE, unlockAudio, createDesertRideSe, desertZapGap, currentBgm, playBgm, preloadBgm, setBgmPlaybackRate, resetBgmTempo, tickBgmPlaybackRate } from "../core/audio.js";
+import { SE, unlockAudio, createDesertRideSe, desertZapGap, currentBgm, playBgm, preloadBgm, setBgmPlaybackRate, resetBgmTempo, bgmPlaybackRate } from "../core/audio.js";
 import { EDGE, SPEED, COURSE_PACKS, generateCourse, practiceCourse, pickCourse, buildCourse, createGame, step, press, boost, chargeBoost, canRecover, summary, curveAt, headingAt, lateralAt, botControl,
   rivalRun, rivalAt, RULES_VERSION, jumpHeight, DISPLAY, toKmh, toMeters, JUMP } from "./desert-ride-model.js";
 import { DESERT_ART, DESERT_CONTROL_ART, loadDesertArt, riderPose } from "./desert-ride-art.js";
@@ -150,6 +150,7 @@ const tutorialText = key => (touchUi() && TUTORIAL_TOUCH[key]) || TUTORIAL[key];
 const HOWTO = {
   keys: [
     "← → で左右。砂の上なので、少し遅れてついてくる",
+    "岩は ← → でよけるか、平らな所で Space を押して跳び越える（大きい岩は跳んだ高い所で越える）",
     "起伏の手前で Space で大ジャンプ。空中ではボタンが LAND に変わり、輪が重なった時に Space で着地が決まる（加速・ブースト回復）",
     "空中で ← → を押し続けると回転。回りかけで着地すると転ぶ",
     "ゲージが満タンで ↓（BOOST）。超加速して、岩も砕く",
@@ -158,6 +159,7 @@ const HOWTO = {
   ],
   touch: [
     "「左へ」「右へ」で左右。砂の上なので、少し遅れてついてくる",
+    "岩は「左へ」「右へ」でよけるか、平らな所で「ジャンプ」して跳び越える（大きい岩は跳んだ高い所で越える）",
     "起伏の手前で「ジャンプ」で大ジャンプ。空中ではボタンが「LAND」に変わり、輪が重なった時に押すと着地が決まる（加速・ブースト回復）",
     "空中で「左へ」「右へ」を押し続けると回転。回りかけで着地すると転ぶ",
     "ゲージが溜まったら「BOOST」。超加速して、岩も砕く",
@@ -622,6 +624,8 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       if (hudNodes.course) {
         hudNodes.course.textContent = mode === "practice" ? "" : (game.course.name || "");
         hudNodes.course.hidden = mode === "practice" || !game.course.name;
+        // 走り出して4秒で消す（跳んだ人物の頭にかぶらないように。コース名は結果のカードにも出る）
+        hudNodes.course.dataset.fade = countdown <= 0 && game.t > 4 ? "out" : "";
       }
       const progress = z => `${(100 * Math.min(1, z / game.course.length)).toFixed(1)}%`;
       hudNodes.progress.style.width = progress(game.z);
@@ -746,8 +750,9 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
         if (zapClock <= 0) { rideSe.zap(charge); zapBurstT = 0.14; zapClock = desertZapGap(charge); }
       } else zapClock = 0.35; // 溜まり始めたら少しして最初の1発
       // ブースト中は曲が速くなる（音程は保ち、約0.2秒で滑らかに切り替わる）
-      setBgmPlaybackRate(game.boostT > 0 && !game.finished ? BOOST_BGM_RATE : 1);
-      tickBgmPlaybackRate(real);
+      // ブーストの始まりと終わりに一度だけ切り替える（少しずつ変えると iPhone で曲が止まる。2026-11-11）
+      const bgmRate = game.boostT > 0 && !game.finished ? BOOST_BGM_RATE : 1;
+      if (bgmPlaybackRate() !== bgmRate) setBgmPlaybackRate(bgmRate, { immediate: true });
       updateCurveTip(real);
       updateTutorial(events);
       updateHud();
@@ -1466,6 +1471,15 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       drawCharge();
     }
     /**
+     * 跳んだ人物を地面から持ち上げて描く量（画素）。ふつうは高さ×0.9m 分。ブーストの大ジャンプの頂上では
+     * 頭が上の進み具合の線・相手との差の札（上 100px）より上へ出ないよう抑える（2026-11-11。それまでは頭が画面の上で切れていた）。
+     */
+    function riderLift(height, unit, groundY) {
+      const lift = height * unit * 0.9;
+      const headroom = groundY - unit * 2.45 * 0.86 - 100; // 板の基準点から頭までは絵の約86%。頭は上の進み具合・相手との差の札より下
+      return Math.max(0, Math.min(lift, headroom));
+    }
+    /**
      * ブーストの放電（人物）: ゲージが半分を超えると板の周りに小さな稲妻、満タンでは数が増え、体を這い上がる。
      * 形は 1/15 秒ごとに変わる（時刻から決まる乱数）。ブースト中・転倒中・動き軽減では出さない。人物の絵は隠さない細い線。
      */
@@ -1475,7 +1489,7 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       if (reducedMotion || (charge < 0.5 && !burst)) return;
       const p = placeAt(game.z, game.x);
       if (!p) return;
-      const unit = p.scale * (H / 2), cx = p.x, baseY = p.y - jumpHeight(game) * unit * 0.9;
+      const unit = p.scale * (H / 2), cx = p.x, baseY = p.y - riderLift(jumpHeight(game), unit, p.y);
       const full = charge >= 0.999, tick = Math.floor(game.t * 15);
       let n = 0;
       const rand = () => { const v = Math.sin(++n * 91.7 + tick * 12.9898) * 43758.5453; return v - Math.floor(v); };
@@ -1517,7 +1531,7 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       const groundY = p.y, cx = p.x;
       // 影（空中では小さく薄く）
       softShadow(cx, groundY, unit * 0.62 * (1 - height * 0.2), unit * 0.16, 0.42 - height * 0.12);
-      const baseY = groundY - height * unit * 0.9 + bob;
+      const baseY = groundY - riderLift(height, unit, groundY) + bob;
       // カーブへ切り込んでいる間（カービング）は、横へ動いていなくても体が内側へ倒れる
       const carveDir = game.carving ? Math.sign(curveAt(game.course, game.z)) : 0;
       const lean = Math.max(-0.5, Math.min(0.5, game.vx * 0.35 + carveDir * 0.22));
