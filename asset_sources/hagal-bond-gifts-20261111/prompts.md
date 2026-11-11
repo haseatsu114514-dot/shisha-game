@@ -72,6 +72,14 @@ HMD       : なし
 
 ---
 
+## 採用と組み込み（2026-11-11）
+
+オーナーが Draft #3341 の23枚を**全部採用**した。原画は `originals/`（無加工）、ゲーム用の透過PNGは `assets/ui/making/` の各ファイル名。
+
+- `python3 remake/tools/build_manifest.py --making-only <23枚>` で manifest（`makingBox`）と WebP を作った。
+- 作りパート: `remake/js/craft/art.js` の `BOWL_ART` に専用ハガル18人分を足し、素焼き・80beat の寸法を新しい絵に合わせた。どれもひよりと同じ大きさ・角度で描いてあるので、幅はひより（中身の幅 812px を `w: 150`）との中身の幅の比、口の高さ（`rim`）は口の楕円のいちばん幅の広い行を実測。詰めの見本の葉の高さ（`packRim`）はひよりと同じく rim から +0.02 まで。配合・詰め・アルミと炭を実画面で確かめた。
+- 贈り物の動き（`remake/js/motions/gift.js`）は manifest に絵があれば自動で専用ハガルを出す。脚のある器はどれも背が高いので、ひよりと同じ高さの上限（380px）にした。
+
 ## Codex に渡すプロンプト（そのままコピー）
 
 ```
