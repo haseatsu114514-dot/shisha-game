@@ -654,6 +654,7 @@ export const FLAG_FAMILY_RULES = [
   ["_noor_story_*", "person"], // #3081 カフェ・オアシスの物語。未読を周回へ持ち越さない
   ["_morning_*", "progression"],
   ["_note_*", "progression"],
+  ["_recipe_return_*", "person"], // 名前を付けた一台を、配合を教えてくれた人に返した（daily/recipe-finds-model.js・#2020 G）。ヒントのメモ（_note_*）と同じく周回では持ち越さない
   ["_outing_done_*", "person"],
   ["_rescheduled_*", "pending"],
   ["_samechan_date_*", "person"],

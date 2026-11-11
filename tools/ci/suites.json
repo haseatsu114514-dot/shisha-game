@@ -877,6 +877,29 @@
       ]
     },
     {
+      "id": "recipe-finds",
+      "title": "Late-chapter recipe chain: hint → own craft → named recipe → return to the person (#2020 G)",
+      "kind": "quick",
+      "run": ["node remake/test/recipe_finds.mjs"]
+    },
+    {
+      "id": "recipe-finds-browser",
+      "title": "Late-chapter recipe chain on the real daily loop: Steve's hint, return after the recipe book, all scenes, LOAD (#2020 G)",
+      "kind": "browser",
+      "weight": 0.4,
+      "timeout": 5,
+      "paths": [
+        "remake/js/daily/recipe-finds.js",
+        "remake/js/daily/recipe-finds-model.js",
+        "remake/js/daily/calendar.js",
+        "data/recipes.json",
+        "data/dialogue/recipe_finds.json",
+        "remake/test/browser/recipe_finds.mjs",
+        "remake/test/browser/support.mjs"
+      ],
+      "run": ["node remake/test/browser/recipe_finds.mjs"]
+    },
+    {
       "id": "ch3-lover-entry",
       "title": "Lover LIME and lover_events milestones after chapter 3 (#2024)",
       "kind": "quick",

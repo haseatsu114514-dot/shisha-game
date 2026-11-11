@@ -385,6 +385,8 @@ node --experimental-vm-modules remake/test/data_loading.mjs # 接続数・通信
 
 レシピ帳は STATUS → 持ち物から発見済みの名前をタップして、材料・設定済みの黄金比（割合）・記録済みの発見日を閲覧できる。発見時のグラム数は保存していないため表示しない。黄金比がないレシピは「未設定」、発見日のない旧セーブは「記録なし」とする。未発見・裏レシピは一覧・詳細に出さない。家シーシャは夜の行動後の誘いから利用できる。
 
+第3章以降は「ヒントを聞く→自分で試す→名前のある発見→相手に返す」連鎖がある（#2020 G）。章の行き先（Smoke & Glory・煙幕・龍龍水煙所・FESTA・第5章の鉄の煙・KEMURIKUSA・屋敷の中庭）で一服を終えた後、好感度♥2以上の店の人が配合を短く教える（第1章のヒントと同じ `type:"note"` のメモで、STATUS の「試したい配合」に出る）。葉はその土地の店でそろう。自分の葉で作ってレシピ帳に載った後、同じ人の店で一服を終えると、名前を付けた一台を返す会話を一度だけ読む。好感度・能力の報酬は来店のぶんだけ。定義は `data/recipes.json` の `find`、台詞は `data/dialogue/recipe_finds.json`、判定は `js/daily/recipe-finds-model.js`、再生は `js/daily/recipe-finds.js`（日常ループ `daily/calendar.js` の章の行き先の後、居合わせる人の前）。メモと返した印は周回で持ち越さず、レシピ帳は持ち越す。確認は `node remake/test/recipe_finds.mjs` と `node remake/test/browser/recipe_finds.mjs`（後者はプレビューサーバーが必要）。
+
 ## まだ無いもの（次の作業候補）
 
 - 第3章の任意スポット・恋人との大会前夜デートは実装済み（`remake/js/chapters/ch3-story-wiring.js`、#1176）。第4章・第5章も接続済みで、細部の調整は `docs/stat-design/` と `docs/owner_requests.md` の最新節を見る
