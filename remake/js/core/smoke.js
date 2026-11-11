@@ -74,6 +74,9 @@ const DEFAULTS = {
   colors: null,    // [[r,g,b]]（2色まで）。無ければ白
   vivid: false,    // 色を主役にする（白へ寄せる量を減らす）
   jitter: 1,       // 房ごとの速さ・大きさのばらつき（0 でそろえる。煙の輪）
+  swell: .3,       // 房がふくらみきるまでの秒数（漂う煙はゆっくり）
+  soft: false,     // 縁へ向かって段々に薄くする（漂う煙。人が吐く煙は縁をくっきり）
+  lean: false,     // 房を少ない丸で作る（画面を覆う煙。大きな房が何重にも重なるので、描く量を半分にする）
   move: null,      // (breath, 進み 0〜1) => void  口の位置を動かす
 };
 
@@ -101,14 +104,14 @@ export function createSmokeField({ random = Math.random } = {}) {
 
   const size = (p) => {
     const k = p.age / p.life;
-    const grow = p.born ? 1 : 1 - (1 - Math.min(1, p.age / .3)) ** 3; // 生まれて0.3秒でふくらみきる（口元から離れる前に形になる）
+    const grow = p.born ? 1 : 1 - (1 - Math.min(1, p.age / p.swell)) ** 3; // 既定は0.3秒でふくらみきる（口元から離れる前に形になる）
     const shrink = k < p.hold ? 1 : 1 - ((k - p.hold) / (1 - p.hold)) ** 1.7;
     return p.R * grow * (1 + .45 * k) * shrink;
   };
   // 房: 芯の丸いくつか・まわりの中くらいの丸・縁の小さな丸。大きな丸1つにせず、細かいふくらみの集まりにする。
   // まわりの丸は少し遅れてふくらむ（もこもこ育つ）。並びは [x, y, 大きさ, ふくらみ始める時期]
-  const cluster = () => {
-    const list = [[0, 0, .62, 0]], a0 = random() * TAU;
+  const cluster = (lean) => {
+    const list = [[0, 0, lean ? .78 : .62, 0]], a0 = random() * TAU;
     const ring = (n, dist, spread, r, vary, wait) => {
       const turn = random() * TAU;
       for (let i = 0; i < n; i++) {
@@ -116,6 +119,7 @@ export function createSmokeField({ random = Math.random } = {}) {
         list.push([Math.cos(a) * d, Math.sin(a) * d, r + vary * random(), wait * random()]);
       }
     };
+    if (lean) { ring(6, .66, .18, .3, .14, .2); ring(5, .95, .2, .15, .1, .3); return list; }
     ring(4, .3, .16, .46, .16, .08);
     ring(7, .62, .2, .3, .14, .26);
     ring(7, .9, .22, .15, .1, .34);
@@ -123,7 +127,7 @@ export function createSmokeField({ random = Math.random } = {}) {
   };
   const spawn = (b, x, y, vx, vy, R, life, pal, born) => {
     parts.push({ x, y, vx, vy, R, life, pal, born, age: 0, id: b.id, seed: random() * 40, spin: (random() - .5) * .6, rot: random() * TAU,
-      disks: cluster(), split: born, buoy: b.buoy, drag: b.drag, turb: b.turb, hold: b.hold, fade: b.fade, alpha: b.alpha });
+      disks: cluster(b.lean), split: born, buoy: b.buoy, drag: b.drag, turb: b.turb, hold: b.hold, fade: b.fade, alpha: b.alpha, swell: b.swell, soft: b.soft, lean: b.lean });
     alive.set(b.id, (alive.get(b.id) || 0) + 1);
   };
   const envelope = (b, u) => b.flat ? 1 : u < .28 ? .35 + .65 * (u / .28) : 1 - .7 * ((u - .28) / .72);
@@ -201,7 +205,8 @@ export function createSmokeField({ random = Math.random } = {}) {
         const R = size(p) * H;
         if (R < 1) continue;
         const k = p.age / p.life, c = Math.cos(p.rot), s = Math.sin(p.rot);
-        const alpha = (p.fade ? Math.min(1, (1 - k) * 2.3) : 1) * p.alpha;
+        // 消えぎわは薄くする。ゆっくりふくらむ煙（漂う煙）は、生まれぎわも薄くから
+        const alpha = (p.fade ? Math.min(1, (1 - k) * 2.3) : 1) * (p.swell > 1 && !p.born ? Math.min(1, .25 + p.age / p.swell) : 1) * p.alpha;
         for (const [ox, oy, rr, wait] of p.disks) {
           const g = p.born ? 1 : Math.min(1, Math.max(0, (k - wait) / .16));
           const r = R * rr * (1 - (1 - g) ** 2);
@@ -217,7 +222,9 @@ export function createSmokeField({ random = Math.random } = {}) {
               if (t2 >= 1) continue;
               const h = top * (1 - t2 * t2 * t2) + .01;
               if (h > z[i]) { z[i] = h; pl[i] = p.pal; }
-              if (alpha > al[i]) al[i] = alpha; // 透けは、重なった丸のうちいちばん濃いものに合わせる（丸ごとの濃淡を出さない）
+              // 透けは、重なった丸のうちいちばん濃いものに合わせる（丸ごとの濃淡を出さない）。soft の煙は縁へ向かって薄くする
+              const a = p.soft ? alpha * Math.min(1, (1 - t2) * 1.7) : alpha;
+              if (a > al[i]) al[i] = a;
             }
           }
         }
@@ -233,7 +240,9 @@ export function createSmokeField({ random = Math.random } = {}) {
           const gx = (zr > 0 ? zr : zc) - (zl > 0 ? zl : zc), gy = (zd > 0 ? zd : zc) - (zu > 0 ? zu : zc);
           const lam = (-gx * lx - gy * ly + flat) / Math.sqrt(gx * gx + gy * gy + s2 * s2);
           const tone = lam >= .8 ? 3 : lam >= .44 ? 2 : lam >= .16 ? 1 : 0;
-          px[i] = palettes[pl[i]][tone][Math.max(1, Math.round(Math.min(1, al[i]) * ALPHA_STEPS))];
+          const step = Math.round(Math.min(1, al[i]) * ALPHA_STEPS);
+          if (!step) { px[i] = 0; continue; } // soft の煙の、いちばん外の縁
+          px[i] = palettes[pl[i]][tone][step];
           painted++;
         }
       }
@@ -290,9 +299,19 @@ export function mouthBreath(style = "", { x, y, side = 1, colors = null } = {}) 
 /** 画面を覆う煙（結果発表）。下から昇る横一列の口が房を置いていき、縮んで晴れる。透かさない */
 export function coverBreath(colors = null) {
   return Array.from({ length: 6 }, (_, i) => ({
-    x: .07 + i * .172, y: 1.04, angle: UP + (i - 2.5) * .1, spread: 1.1, speed: .25, width: .2, dur: 1.25, rate: 19, size: .19, life: 1.9, buoy: .05, drag: 2.2, turb: .1, hold: .62,
+    x: .07 + i * .172, y: 1.04, angle: UP + (i - 2.5) * .1, spread: 1.1, speed: .25, width: .2, dur: 1.25, rate: 19, size: .19, life: 1.9, buoy: .05, drag: 2.2, turb: .1, hold: .62, lean: true,
     solid: true, fade: false, even: true, flat: true, colors, move: (b, u) => { b.y = 1.04 - Math.min(1, u * 1.7) * 1.02; },
   }));
+}
+
+/**
+ * 店にうっすら漂う煙のひとかたまり（KMR21）。部屋の中ほどより上に、ゆっくりふくらんで横へ流れ、長く残る。
+ * 人が吐く煙より薄く・遅く。濃さは載せる層の透け具合（hazeLayer）で決める。
+ */
+export function hazeBreath(random = Math.random) {
+  const right = random() < .5;
+  return { x: .04 + .92 * random(), y: .14 + .36 * random(), angle: (right ? 0 : Math.PI) + (random() - .5) * .7, spread: 1.4, speed: .04, width: .1,
+    dur: 1.6, rate: 2.6, size: .11, life: 11, buoy: .003, drag: .5, turb: .05, hold: .5, alpha: .8, swell: 3, soft: true };
 }
 
 // ---------------------------------------------------------------- 画面に載せる層
@@ -364,4 +383,56 @@ export function smokeLayer(host, { zIndex = 30, className = "" } = {}) {
   };
   layers.set(host, layer);
   return layer;
+}
+
+const HAZE_FRAME = 1 / 8; // 漂う煙は動きが遅いので、描くのは毎秒8コマ
+
+/**
+ * host いっぱいに、店に漂う煙の層を載せる（KMR21）。level（0〜1）で濃さと量を決める。開いた時点で、もう漂っている状態から始める。
+ * 戻り値の setLevel で濃さを変え、stop でゆっくり消して外す。host は position が static 以外であること。
+ */
+export function hazeLayer(host, { level = 1, random = Math.random } = {}) {
+  const canvas = document.createElement("canvas");
+  canvas.width = GRID_W; canvas.height = GRID_H;
+  canvas.className = "smoke-layer smoke-haze";
+  canvas.setAttribute("aria-hidden", "true");
+  Object.assign(canvas.style, { position: "absolute", inset: "0", width: "100%", height: "100%", pointerEvents: "none", imageRendering: "pixelated", opacity: "0", transition: "opacity 1.2s ease" });
+  host.append(canvas);
+  const ctx = canvas.getContext("2d");
+  const field = createSmokeField({ random });
+  const image = ctx ? ctx.createImageData(GRID_W, GRID_H) : null, px = image ? new Uint32Array(image.data.buffer) : null;
+  let raf = 0, last = 0, acc = 0, sinceDraw = HAZE_FRAME, wait = 0, dead = false, stopping = false;
+  const emit = (dt) => {
+    wait -= dt;
+    if (wait > 0 || stopping) return;
+    wait = (1.1 + 1.2 * random()) / Math.max(.35, level);
+    field.breath(hazeBreath(random));
+  };
+  const draw = () => { if (ctx) { field.paint(px); ctx.putImageData(image, 0, 0); } };
+  const destroy = () => { if (dead) return; dead = true; cancelAnimationFrame(raf); field.clear(); canvas.remove(); };
+  const tick = (now) => {
+    if (dead) return;
+    if (!canvas.isConnected) { destroy(); return; }
+    const dt = Math.min(.1, (now - last) / 1000 || 0);
+    last = now; acc += dt; sinceDraw += dt;
+    let n = 0;
+    while (acc >= STEP && n < 4) { emit(STEP); field.step(STEP); acc -= STEP; n++; }
+    if (acc > STEP * 4) acc = 0;
+    if (sinceDraw >= HAZE_FRAME) { sinceDraw = 0; draw(); }
+    raf = requestAnimationFrame(tick);
+  };
+  const apply = () => { canvas.style.opacity = String(stopping ? 0 : .22 + .22 * level); };
+  // 入った時点で、もう店に煙がある状態にする（少し粗い刻みで先に進めておく）
+  for (let t = 0; t < 14; t += 1 / 20) { emit(1 / 20); field.step(1 / 20); }
+  draw();
+  last = performance.now();
+  raf = requestAnimationFrame(() => { apply(); raf = requestAnimationFrame(tick); });
+  return {
+    canvas, field,
+    get level() { return level; },
+    setLevel(value) { level = value; apply(); },
+    /** ゆっくり消して外す */
+    stop() { if (stopping) return; stopping = true; apply(); setTimeout(destroy, 1300); },
+    destroy,
+  };
 }

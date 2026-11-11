@@ -1,7 +1,8 @@
 // 人が吐く煙（js/core/smoke.js）の計算部分の検査。DOM を使わない。
 //   node remake/test/smoke_field.mjs
 import assert from "node:assert/strict";
-import { createSmokeField, firstPersonBreath, mouthBreath, ringBreath, coverBreath, parseColor, smokeTint, smokeAllowed, GRID_W, GRID_H, SMOKE_WHITE } from "../js/core/smoke.js";
+import { createSmokeField, firstPersonBreath, mouthBreath, ringBreath, coverBreath, hazeBreath, parseColor, smokeTint, smokeAllowed, GRID_W, GRID_H, SMOKE_WHITE } from "../js/core/smoke.js";
+import { hazeLevel } from "../js/core/shop-haze.js";
 
 // 同じ乱数列なら同じ煙になる（撮り直しても結果が変わらないようにする）
 function rng(seed) {
@@ -118,4 +119,35 @@ assert.equal(smokeAllowed(), false);
   assert.deepEqual([...reds].sort(), ["cool", "warm"]);
 }
 
-console.log("smoke field: PASS (色・吐き方・成績表・輪・覆う・2色・後片付け)");
+// ---- 店に漂う煙（KMR21）: うっすら。画面を覆わず、縁は段々に薄く、部屋の上半分に溜まる
+{
+  const random = rng(21), field = createSmokeField({ random });
+  let wait = 0;
+  for (let t = 0; t < 30; t += 1 / 20) { wait -= 1 / 20; if (wait <= 0) { wait = 1.1 + 1.2 * random(); field.breath(hazeBreath(random)); } field.step(1 / 20); }
+  const painted = field.paint(px), share = painted / px.length;
+  assert.ok(share > .05 && share < .3, `漂う煙は画面の1〜2割ほど（${(share * 100).toFixed(1)}%）`);
+  const alphas = [...new Set([...px].filter((v) => v).map(alphaOf))].sort((a, b) => a - b);
+  assert.ok(alphas.length >= 3, `縁へ向かって段々に薄くなる（${alphas}）`);
+  assert.ok(alphas.at(-1) < 200, "いちばん濃い所でも、人が吐く煙より薄い");
+  let low = 0;
+  for (let i = 0; i < px.length; i++) if (px[i] && Math.floor(i / GRID_W) > GRID_H * .72) low++;
+  assert.ok(low < painted * .05, "台詞の箱のあたり（画面の下）には溜まらない");
+}
+
+// ---- 漂う煙を出す背景: シーシャ屋の店内だけ。夜は濃く、昼は控えめ。作業台・結果発表では出さない
+{
+  const B = "img/backgrounds/";
+  assert.equal(hazeLevel(`${B}bg_tonari_inside_night.webp`, "", "", "day"), 1, "絵の名前が夜なら夜");
+  assert.equal(hazeLevel("res://assets/backgrounds/bg_tonari_inside_overcast_day.png", "", "", "night"), .55, "曇りの昼も同じ店・昼");
+  assert.equal(hazeLevel(`${B}bg_tonari_inside.webp`, "", "night", "day"), 1, "色味が夜なら夜");
+  assert.equal(hazeLevel(`${B}kemurikusa.webp`, "", "", "night"), 1, "昼夜で同じ絵の店は、今の時間帯で決める");
+  assert.equal(hazeLevel(`${B}kemurikusa.webp?v=abc`, "", "", "day"), .55);
+  for (const shop of ["bg_eden_shop", "eden", "peppermint", "bg_ageha_shop", "bg_yuzugaya_kumicho", "bg_mukai_shop", "bg_yohaku_shop", "bg_steve_shop", "bg_volk_shop", "bg_longlong_shop", "bg_dubai_cafe_day", "bg_dubai_cafe_salim_day", "bg_dubai_alley_cafe_night"])
+    assert.ok(hazeLevel(`${B}${shop}.webp`, "", "", "night") > 0, `${shop} はシーシャ屋`);
+  for (const other of ["bg_home_night", "bg_street_night", "bg_fookah_showroom", "bg_shop", "bg_c_station_night", "bg_cafe_night", "bg_choizap_night", "bg_club_seam", "bg_tournament_stage", "bg_tonari_customer_hands", "bg_title", ""])
+    assert.equal(hazeLevel(other && `${B}${other}.webp`, "", "", "night"), 0, `${other || "背景なし"} には出さない`);
+  for (const screen of ["bench", "count", "result", "title", "end"])
+    assert.equal(hazeLevel(`${B}bg_tonari_inside_night.webp`, screen, "", "night"), 0, `${screen} の画面では出さない`);
+}
+
+console.log("smoke field: PASS (色・吐き方・成績表・輪・覆う・2色・漂う煙・出す背景・後片付け)");

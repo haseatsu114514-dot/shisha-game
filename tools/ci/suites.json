@@ -286,7 +286,7 @@
     },
     {
       "id": "smoke-field",
-      "title": "Breath smoke (KMR11): palette, breath styles, quality tiers, ring, cover, cleanup",
+      "title": "Breath smoke and shop haze (KMR11・KMR21): palette, breath styles, quality tiers, ring, cover, haze amount, which backgrounds",
       "kind": "quick",
       "run": ["node remake/test/smoke_field.mjs"]
     },
@@ -4242,11 +4242,11 @@
     },
     {
       "id": "smoke-breath",
-      "title": "Breath smoke in the game (KMR11): VN exhale from the mouth, craft exhale tiers, result cover",
+      "title": "Breath smoke and shop haze in the game (KMR11・KMR21): VN exhale, craft exhale tiers, result cover, faint haze in shisha shops",
       "kind": "browser",
       "weight": 1,
       "timeout": 5,
-      "paths": ["remake/js/core/smoke.js", "remake/js/vn/breath.js", "remake/js/vn/engine.js", "remake/js/craft/fx.js", "remake/js/craft/result.js", "remake/test/browser/smoke_breath.mjs"],
+      "paths": ["remake/js/core/smoke.js", "remake/js/core/shop-haze.js", "remake/js/core/ui.js", "remake/js/vn/breath.js", "remake/js/vn/engine.js", "remake/js/craft/fx.js", "remake/js/craft/result.js", "remake/test/browser/smoke_breath.mjs"],
       "run": ["node remake/test/browser/smoke_breath.mjs"]
     },
     {

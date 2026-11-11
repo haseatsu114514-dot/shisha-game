@@ -1,5 +1,5 @@
-// 人が吐く煙（KMR11）を本編で確かめる。
-// 会話の一服（{"type":"fx","id":"exhale"}）／吸い出しの山場（craft/fx.js の exhale）／結果発表の審査員の一服。
+// 人が吐く煙（KMR11）と、店に漂う煙（KMR21）を本編で確かめる。
+// 会話の一服（{"type":"fx","id":"exhale"}）／吸い出しの山場（craft/fx.js の exhale）／結果発表の審査員の一服／シーシャ屋の店内の薄い煙。
 // 煙は 640×360 の canvas 1枚で、消えきったら自分で外れる。早送り・「動きを減らす」・自動操作では出さない。
 import assert from "node:assert/strict";
 import { suite } from "./support.mjs";
@@ -122,6 +122,58 @@ await suite("smoke-breath", async (check) => {
     assert.ok(best.most > 640 * 360 * .2, `最適温の煙は画面を満たす（${best.most}）`);
     assert.ok(best.most > thin.most * 3, `ぬるい煙は小さい（最適 ${best.most}／ぬるい ${thin.most}）`);
   });
+
+  // ---- 店に漂う煙（KMR21）。自動操作のブラウザでは既定で出さないので、localStorage の印で明示して出す
+  const showBg = (page, name, { time = "night", screen = "" } = {}) => page.evaluate(async ([name, time, screen]) => {
+    const core = await import("./js/core/state.js"), ui = await import("./js/core/ui.js"), data = await import("./js/core/data.js");
+    if (!core.state) core.newGame();
+    core.state.slot = time === "night" ? 1 : 0;
+    const bg = data.sceneBg(`res://assets/backgrounds/${name}.png`, time);
+    await ui.setBg(bg.url, { instant: true, tint: bg.tint });
+    if (screen) ui.showScreen(screen, document.createElement("div")); else ui.clearScreen();
+  }, [name, time, screen]);
+  const hazeGone = (page) => page.waitForFunction(() => !document.querySelector("#haze canvas"), null, { timeout: 6000 });
+
+  await check("shop-haze-only-in-shisha-shops", async (page) => {
+    await showBg(page, "bg_tonari_inside");
+    assert.equal(await page.locator("#haze canvas").count(), 0, "自動操作のブラウザでは、既定では出さない");
+    await page.evaluate(() => localStorage.setItem("suien_shop_haze", "on"));
+    await showBg(page, "bg_home");
+    await showBg(page, "bg_tonari_inside");
+    await page.locator("#haze canvas.smoke-haze").waitFor({ state: "attached" });
+    // 入った時点で、もう漂っている。画面の1〜2割ほどで、台詞の箱のあたりには溜まらない
+    const night = await smokeOf(page, "#haze canvas");
+    assert.ok(night.n > 640 * 360 * .04 && night.n < 640 * 360 * .32, `うっすら（${(night.n / 2304).toFixed(1)}%）`);
+    assert.ok(night.y < .5, `部屋の上半分に溜まる（重心の高さ ${night.y.toFixed(2)}）`);
+    const look = await page.evaluate(async () => {
+      await new Promise((r) => setTimeout(r, 1500)); // ふわっと出てくるのを待つ
+      const host = document.getElementById("haze"), canvas = host.querySelector("canvas"), stage = [...document.getElementById("stage").children];
+      return { opacity: +getComputedStyle(canvas).opacity, pointer: getComputedStyle(host).pointerEvents, z: +getComputedStyle(host).zIndex,
+        order: [stage.indexOf(document.getElementById("bg")), stage.indexOf(host), stage.indexOf(document.getElementById("screen"))],
+        zs: ["bg", "screen", "vn"].map((id) => +getComputedStyle(document.getElementById(id)).zIndex) };
+    });
+    assert.ok(look.opacity > .3 && look.opacity <= .5, `濃すぎない（${look.opacity}）`);
+    assert.equal(look.pointer, "none");
+    assert.ok(look.zs[0] < look.z && look.z < look.zs[1] && look.z < look.zs[2], `背景より上、画面・立ち絵より下（${JSON.stringify(look)}）`);
+    // 昼は控えめ
+    await showBg(page, "bg_tonari_inside", { time: "day" });
+    await page.waitForFunction(() => +document.querySelector("#haze canvas").style.opacity < .36);
+    assert.equal(await page.locator("#haze canvas").count(), 1, "同じ店の昼と夜は、同じ煙のまま濃さだけ変える");
+    // 作業台の画面では出さない。シーシャ屋でない場所でも出さない
+    await showBg(page, "bg_tonari_inside", { screen: "bench" });
+    await hazeGone(page);
+    await showBg(page, "bg_tonari_inside");
+    await page.locator("#haze canvas").waitFor({ state: "attached" });
+    await showBg(page, "bg_home");
+    await hazeGone(page);
+  });
+
+  await check("shop-haze-reduced-motion", async (page) => {
+    await page.evaluate(() => localStorage.setItem("suien_shop_haze", "on"));
+    await showBg(page, "bg_tonari_inside");
+    await page.waitForTimeout(400);
+    assert.equal(await page.locator("#haze canvas").count(), 0, "端末の「動きを減らす」では出さない");
+  }, { reducedMotion: "reduce" });
 
   await check("result-breath-covers-then-clears", async (page) => {
     // 結果発表（1位）: 暗転のあと、審査員の吐いた煙が画面を覆い、次の画面の上で晴れる
