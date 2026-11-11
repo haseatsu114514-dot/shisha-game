@@ -32,6 +32,7 @@ await suite("loading-gate", async check => {
       await page.locator('.loading-gate.is-ready').waitFor();
       assert.equal(await page.locator('.loading-proceed').evaluate(node => getComputedStyle(node).opacity !== '0'), true, 'The reading prompt appears');
       assert.equal(await page.locator('.loading-status').innerText(), '準備完了', 'The status says loading has finished');
+      assert.equal(await page.locator('.loading-proceed').innerText(), 'クリック・Enter で進む', 'A mouse-and-keyboard screen is told to click or press Enter');
       await page.locator('.loading-status').click();
       await page.locator('.loading-gate').waitFor({ state: 'detached' });
       assert.equal(await page.locator('#underlying').evaluate(node => node.closest('.demo-scene').inert), false);
@@ -159,6 +160,40 @@ await suite("loading-gate", async check => {
     await page.locator('.loading-gate').waitFor({ state: 'detached' });
     assert.match(await page.locator('#result').textContent(), /準備完了/);
   }, { viewport: { width: 390, height: 844 } });
+  await check("phone-landscape-readable", async page => {
+    // A phone held sideways leaves the letterboxed #stage like portrait does: no logo, panels that use the
+    // screen width, and small texts with a real-pixel floor (they used to shrink to about 8px).
+    await page.locator('[data-demo="comic"]').click();
+    await page.locator('.loading-gate').waitFor();
+    await page.locator('.loading-panels img').first().waitFor();
+    await page.locator('.loading-gate.is-ready').waitFor();
+    const layout = await page.evaluate(() => {
+      const gate = document.querySelector('.loading-gate');
+      const box = selector => gate.querySelector(selector).getBoundingClientRect();
+      const font = selector => parseFloat(getComputedStyle(gate.querySelector(selector)).fontSize);
+      return {
+        viewport: gate.classList.contains('is-viewport') && gate.parentElement === document.body,
+        logo: getComputedStyle(gate.querySelector('.loading-logo')).display,
+        panelWidths: [...gate.querySelectorAll('.loading-panel-art')].map(node => node.getBoundingClientRect().width),
+        sideBySide: box('.loading-panel-art').top === [...gate.querySelectorAll('.loading-panel-art')][1].getBoundingClientRect().top,
+        fonts: { title: font('.loading-comic-title'), caption: font('.loading-comic-caption'), status: font('.loading-status'), proceed: font('.loading-proceed') },
+        within: ['.loading-card', '.loading-bar', '.loading-status', '.loading-proceed'].map(box)
+          .every(rect => rect.left >= 0 && rect.top >= 0 && rect.right <= window.innerWidth + 1 && rect.bottom <= window.innerHeight + 1),
+        prompt: gate.querySelector('.loading-proceed').innerText,
+      };
+    });
+    assert(layout.viewport, 'Short landscape renders the gate at viewport scale, outside #stage');
+    assert.equal(layout.logo, 'none', 'The logo gives its height to the panels');
+    assert(layout.sideBySide && layout.panelWidths.every(width => width >= 340), `Panels must be large and side by side, got ${layout.panelWidths}`);
+    assert(layout.fonts.caption >= 12 && layout.fonts.proceed >= 12 && layout.fonts.status >= 13 && layout.fonts.title >= 16,
+      `Small texts keep a readable floor, got ${JSON.stringify(layout.fonts)}`);
+    assert(layout.within, 'The whole stack stays on screen');
+    assert.equal(layout.prompt, 'タップで進む', 'A touch screen is only told to tap');
+    await page.screenshot({ path: path.resolve('.codex/artifacts/remake-browser/loading-comic-phone-landscape.png') });
+    await page.locator('.loading-status').tap();
+    await page.locator('.loading-gate').waitFor({ state: 'detached' });
+    assert.match(await page.locator('#result').textContent(), /準備完了/);
+  }, { viewport: { width: 844, height: 390 }, hasTouch: true, isMobile: true });
   await check("fast-error-cancel", async page => {
     await page.evaluate(() => {
       window.gatesShown = 0;

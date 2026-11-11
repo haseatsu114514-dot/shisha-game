@@ -80,7 +80,9 @@ export async function withLoading(prepare, {
   const bar = el("div.loading-bar", { "aria-hidden": "true" }, [el("div.loading-bar-fill")]);
   // The gauge wrapper only carries the decorative smoke flourishes at both ends (css/loading.css).
   const gauge = el("div.loading-gauge", { "aria-hidden": "true" }, [bar]);
-  const proceed = el("p.loading-proceed", { "aria-hidden": "true", text: "タップ・クリック・キーで進む" });
+  // The prompt names only what this device can do (a touch screen has no click or Enter key to offer).
+  const touchFirst = !!window.matchMedia?.("(pointer: coarse)").matches;
+  const proceed = el("p.loading-proceed", { "aria-hidden": "true", text: touchFirst ? "タップで進む" : "クリック・Enter で進む" });
   const content = el("div.loading-comic");
   overlay.classList.add("has-logo");
   const card = el("div.loading-card", [content]);
@@ -161,15 +163,19 @@ export async function withLoading(prepare, {
   styleReady.catch(error => controller.abort(error));
   // Portrait phones/tablets scale #stage down so far that comic text is unreadable. There, show the
   // overlay at true viewport scale (outside the scaled stage) and stack the panels large instead.
-  const portraitMq = window.matchMedia?.("(orientation: portrait)");
-  const portraitHost = () => (portraitMq?.matches ? document.body : host);
+  // A phone held sideways (a short landscape screen) leaves the stage too: the 16:9 stage is letterboxed
+  // on a wider screen, and the sheet can use that width and real-pixel text sizes (css/loading.css).
+  const viewportMqs = ["(orientation: portrait)", "(orientation: landscape) and (max-height: 500px)"]
+    .map(query => window.matchMedia?.(query)).filter(Boolean);
+  const atViewportScale = () => viewportMqs.some(mq => mq.matches);
   const placeOverlay = () => {
-    overlay.classList.toggle("is-viewport", !!portraitMq?.matches);
-    const parent = portraitHost();
+    const viewport = atViewportScale();
+    overlay.classList.toggle("is-viewport", viewport);
+    const parent = viewport ? document.body : host;
     if (overlay.parentNode !== parent) parent.append(overlay);
   };
   const onOrient = () => { if (overlay.isConnected) { placeOverlay(); overlay.focus(); } };
-  portraitMq?.addEventListener?.("change", onOrient);
+  for (const mq of viewportMqs) mq.addEventListener?.("change", onOrient);
   const show = async () => {
     try { await styleReady; } catch { return; }
     if (settled || controller.signal.aborted) return;
@@ -217,7 +223,7 @@ export async function withLoading(prepare, {
   } finally {
     settled = true; clearTimeout(timer); clearTimeout(guardTimer); controller.abort();
     void comicReady;
-    portraitMq?.removeEventListener?.("change", onOrient);
+    for (const mq of viewportMqs) mq.removeEventListener?.("change", onOrient);
     leaveLoading(overlay, { cancelled: !!signal?.aborted });
     signal?.removeEventListener("abort", abort);
     window.removeEventListener("keydown", guard, true);
