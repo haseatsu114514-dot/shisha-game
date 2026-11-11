@@ -1,0 +1,50 @@
+{
+  "note": "Small patches inside windows; strict alpha 0 fails even at alpha 1. Raw pixels have not been changed.",
+  "probes": [
+    {
+      "file": "frame.png",
+      "rectangle_xyxy": [
+        400,
+        200,
+        1400,
+        680
+      ],
+      "pixels": 480000,
+      "alpha_extrema": [
+        0,
+        1
+      ],
+      "nonzero_alpha_pixels": 16978
+    },
+    {
+      "file": "spine-housing.png",
+      "rectangle_xyxy": [
+        485,
+        230,
+        540,
+        1270
+      ],
+      "pixels": 57200,
+      "alpha_extrema": [
+        0,
+        1
+      ],
+      "nonzero_alpha_pixels": 1207
+    },
+    {
+      "file": "dial-bezel.png",
+      "rectangle_xyxy": [
+        650,
+        200,
+        850,
+        300
+      ],
+      "pixels": 20000,
+      "alpha_extrema": [
+        0,
+        1
+      ],
+      "nonzero_alpha_pixels": 111
+    }
+  ]
+}
