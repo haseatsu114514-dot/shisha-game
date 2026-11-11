@@ -2411,6 +2411,7 @@
         {
           "speaker": "hiyori",
           "face": "love_blush",
+          "duck": true,
           "text": "……うん。好きだよ、はじめくん。儚くないほうの声で、言っとくね"
         },
         {
@@ -2749,6 +2750,7 @@
         {
           "speaker": "samechan",
           "face": "smile",
+          "beat": 600,
           "text": "……はじめさんが、好きです。面白い話ができない日も、隣にいてほしい"
         },
         {

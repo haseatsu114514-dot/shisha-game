@@ -31,6 +31,7 @@ await suite("loading-gate", async check => {
       await page.evaluate(() => { window.clicksBehindGate = 0; window.addEventListener('click', () => { window.clicksBehindGate++; }, { once: true }); });
       await page.locator('.loading-gate.is-ready').waitFor();
       assert.equal(await page.locator('.loading-proceed').evaluate(node => getComputedStyle(node).opacity !== '0'), true, 'The reading prompt appears');
+      assert.equal(await page.locator('.loading-status').innerText(), '準備完了', 'The status says loading has finished');
       await page.locator('.loading-status').click();
       await page.locator('.loading-gate').waitFor({ state: 'detached' });
       assert.equal(await page.locator('#underlying').evaluate(node => node.closest('.demo-scene').inert), false);
@@ -74,6 +75,62 @@ await suite("loading-gate", async check => {
     assert.equal(await page.locator('.loading-gate').count(), 1);
     await page.keyboard.press('Enter');
     await page.locator('.loading-gate').waitFor({ state: 'detached' });
+  });
+  await check("late-art-keeps-layout-and-reading-guard", async page => {
+    // The sheet's space is reserved while the art decodes, so the logo and gauge do not jump when it
+    // arrives; and taps made before the ready look appears (left over from the previous screen, or
+    // mashing) must not skip a comic nobody has read yet.
+    await page.route('**/late-panel.svg', async route => {
+      await new Promise(resolve => setTimeout(resolve, 500));
+      await route.fulfill({ status: 200, contentType: 'image/svg+xml', body: '<svg xmlns="http://www.w3.org/2000/svg" width="300" height="200"/>' });
+    });
+    await page.evaluate(async () => {
+      const { withLoading } = await import('./js/core/loading.js');
+      const host = document.querySelector('#loading-demo');
+      const src = new URL('late-panel.svg', location.href).href;
+      let started;
+      const preparationStarted = new Promise(resolve => { started = resolve; });
+      window.__lateGate = withLoading(() => new Promise(resolve => {
+        window.__releaseLateGate = resolve;
+        started();
+      }), { host, delayMs: 0, comics: [{ id: 'late', title: 'late', minChapter: 1, caption: 'note',
+        panels: [{ src, alt: 'one' }, { src, alt: 'two' }] }] });
+      await preparationStarted;
+    });
+    const layout = () => page.evaluate(() => {
+      const gate = document.querySelector('.loading-gate');
+      const top = selector => Math.round(gate.querySelector(selector).getBoundingClientRect().top);
+      return { logo: top('.loading-logo'), bar: top('.loading-bar'),
+        card: getComputedStyle(gate.querySelector('.loading-card')).visibility,
+        images: gate.querySelectorAll('.loading-panels img').length };
+    });
+    const before = await layout();
+    assert.deepEqual([before.card, before.images], ['hidden', 0], 'The sheet stays hidden until its art is decoded');
+    await page.locator('.loading-panels img').first().waitFor();
+    const after = await layout();
+    assert.deepEqual([after.logo, after.bar, after.card, after.images], [before.logo, before.bar, 'visible', 2],
+      'Late art must not move the logo or the gauge');
+    const hold = await page.evaluate(async () => {
+      const releasedAt = performance.now();
+      window.__releaseLateGate();
+      let taps = 0;
+      for (;;) {
+        const gate = document.querySelector('.loading-gate');
+        if (!gate) return { skipped: true, taps };
+        const status = gate.querySelector('.loading-status').innerText;
+        if (gate.classList.contains('is-ready')) return { skipped: false, taps, heldMs: performance.now() - releasedAt, status };
+        if (status !== 'LOADING…') return { skipped: false, taps, early: status };
+        gate.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }));
+        taps++;
+        await new Promise(resolve => setTimeout(resolve, 20));
+      }
+    });
+    assert.equal(hold.skipped, false, 'Taps made before the ready look must not skip the comic');
+    assert.equal(hold.status, '準備完了', `The status changes only with the ready look, got ${JSON.stringify(hold)}`);
+    assert(hold.taps >= 3 && hold.heldMs >= 200, `The reading guard must outlast early taps, got ${JSON.stringify(hold)}`);
+    await page.locator('.loading-status').click();
+    await page.locator('.loading-gate').waitFor({ state: 'detached' });
+    await page.evaluate(() => window.__lateGate);
   });
   await check("portrait-readable", async page => {
     // Portrait escapes the shrunken #stage: the overlay covers the real viewport and stacks the
