@@ -28,13 +28,15 @@ const VN_PARTS = ".vn-effect, .vn-cg, .vn-portraits, .vn-cutin-layer, .vn-box, .
 const NONE = Object.freeze({ kind: "none" }), GAP = Object.freeze({ kind: "gap" });
 
 /**
- * DS風を使える端末・向きか。
- * "on": 縦長の画面、またはタッチ端末でない（PC）。"off": 横持ちのタッチ端末（現行のまま）。
+ * 外枠を使える端末・向きか。mode は "retro"（様式 DS風）か "portrait"（新版の縦持ち）。
+ * "on": DS風は縦長の画面、またはタッチ端末でない（PC）。新版の縦持ちは縦長の画面だけ（タッチかどうかは問わない）。
+ * "off": それ以外（現行のまま）。
  * "old": 古い2画面表示（表示設定の「DS風」）が有効。そちらを通常版へ戻すまで外枠は出さない。
  */
-export function engageState() {
+export function engageState(mode = "retro") {
   const body = document.body;
   if (body.classList.contains("game-ds") || body.dataset.gameLayout === "ds" || document.querySelector('#screen .title[data-layout="ds"]')) return "old";
+  if (mode === "portrait") return media("(orientation: portrait)") ? "on" : "off";
   const touch = media("(hover: none) and (pointer: coarse)");
   return media("(orientation: portrait)") || !touch ? "on" : "off";
 }
@@ -53,7 +55,9 @@ function layerOf(node, stage) {
 function topLayer(stage, rect, px, py, own) {
   const x = rect.left + rect.width * px, y = rect.top + rect.height * py;
   if (x < 0 || y < 0 || x >= window.innerWidth || y >= window.innerHeight) return null;
-  const top = document.elementsFromPoint(x, y).find((node) => !own.some((mine) => mine.contains(node)));
+  // 回転案内（新版の縦持ちでは、外枠を出すまで全面を覆っている）も、自分の外枠と同じく確認から除く
+  const hint = byId("rotate-hint");
+  const top = document.elementsFromPoint(x, y).find((node) => !own.some((mine) => mine.contains(node)) && !hint?.contains(node));
   return top ? layerOf(top, stage) : null;
 }
 

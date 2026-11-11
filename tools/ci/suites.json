@@ -4519,6 +4519,28 @@
       ]
     },
     {
+      "id": "look-neo-portrait",
+      "title": "新版の縦持ち: DS風の外枠と操作に高解像度の上画面・未対応の場面では回転案内・横長と第2章は今のまま",
+      "kind": "browser",
+      "weight": 1.6,
+      "timeout": 6,
+      "paths": [
+        "remake/js/looks/**",
+        "remake/css/look-retro.css",
+        "remake/css/look-neo.css",
+        "remake/js/core/look.js",
+        "remake/js/core/rotate-guard.js",
+        "remake/js/vn/engine.js",
+        "remake/js/daily/map.js",
+        "remake/js/scenes/title.js",
+        "remake/js/core/ui.js",
+        "remake/test/browser/look_neo_portrait.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/look_neo_portrait.mjs"
+      ]
+    },
+    {
       "id": "look-retro",
       "title": "DS風: 縦持ちの2画面・ドット絵の上画面・会話と地図の中継・場面転換と登場カットイン・未対応の場面と他章では現行のまま",
       "kind": "browser",
