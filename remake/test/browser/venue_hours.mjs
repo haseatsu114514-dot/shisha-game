@@ -144,7 +144,8 @@ await suite("venue-hours", async runCheck => {
     });
     assert.match(result.dayLines, /アプリのフォーム動画/);
     assert(!/スタッフが来る|フォームを直される/.test(result.dayLines));
-    assert.match(result.lines, /夜の境内/); assert.match(result.lines, /夜のCHOI-ZAP/);
+    // 夜の束の一本目（束ごとに順番に読む。daily/spots.js の quietTurn）
+    assert.match(result.lines, /夜の境内/); assert.match(result.lines, /夜の無人ジム/);
     assert(!result.flags._spot_seen_kannon_adam && !result.flags._spot_seen_kannon_oldman);
   });
 });

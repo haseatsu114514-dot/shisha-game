@@ -91,6 +91,66 @@
       ]
     },
     {
+      "dialogue_id": "venue_kannon_night_c",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "夜の観音堂。扉は閉まり、提灯だけが灯っている。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（昼の人の声が、うそみたいだ）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "石段は上らずに、下からしばらくお堂を見上げた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（今日できなかったことは、明日の最初にやろう）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "それだけ決めて、来た道を戻った。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "venue_kannon_night_d",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "夜の境内。石灯籠の下を、白い猫が横切った。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "こちらを一度だけ見て、灯籠の陰へ消える。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "（おまえも、夜はひとりで歩くのか）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "しばらく待っても、猫は出てこなかった。待つのをやめたら、肩が軽くなった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……帰って、ちゃんと寝よう）"
+        }
+      ]
+    },
+    {
       "dialogue_id": "venue_choizap_night",
       "lines": [
         {
@@ -132,6 +192,66 @@
           "speaker": "",
           "face": "",
           "text": "スマホのメモに回数を残す。自分で決めた分を終えると、気分が軽くなった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "venue_choizap_night_c",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "CHOI-ZAPに着いたのは、夜も遅い時間だった。ほかに、誰もいない。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "自分の足音と、マシンのベルトの音だけがする。窓の外には、街の明かりが並んでいた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（貸し切りだ。……なのに、端のマシンを選んでるな、俺）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "真ん中のマシンに移って、もう五分だけ走った。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "（うん。真ん中、悪くない）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "venue_choizap_night_d",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "夜のジムは静かで、壁の時計の秒針がよく聞こえる。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一組やって、三十秒休む。秒針を見ながら待つと、三十秒は思ったより長い。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（蒸らしを待つ時と同じだな。待つのも、作業のうちだ）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "最後の一組を終えて、使ったベンチを拭いた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "外へ出ると、夜の空気が汗をすっと冷やした。"
         }
       ]
     },

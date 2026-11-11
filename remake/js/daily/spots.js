@@ -72,15 +72,18 @@ export const SPOTS = [
   { id: "shop", kind: "shop", label: "Dr.fookah", area: "問屋街", x: 36, y: 30, theme: "shop", glyph: "卸",
     desc: "1階で買い物。夜は2階で相談できる。" },
   { id: "cafe", kind: "spot", label: "喫茶こはく", area: "繁華街", x: 72, y: 45, theme: "cafe", glyph: "珈", cost: 800, requiresMet: "naru", stat: "sense", stamina: -4,
-    first: "ch1_cafe_visit", pool: ["cafe_herb_tea", "cafe_counter_watch", "cafe_crowd", "cafe_naru_break", "cafe_master_quiz"], bg: "bg_cafe",
+    first: "ch1_cafe_visit", bg: "bg_cafe",
+    pool: ["cafe_herb_tea", "cafe_baked", "cafe_counter_watch", "cafe_terrace", "cafe_record", "cafe_crowd", "cafe_cold_brew", "cafe_naru_break", "cafe_master_quiz"],
     openSlots: [0], desc: "なる行きつけの喫茶。昼だけ開く。" },
   { id: "kannon", kind: "spot", label: "観音堂", area: "古町", x: 18, y: 57, theme: "park", glyph: "観", requiresMet: "adam", stat: "guts", stamina: -4,
-    first: "ch1_kannon_visit", pool: ["kannon_cat", "kannon_sweep", "kannon_adam", "kannon_oldman"], bg: "bg_kannon_day",
-    nightPool: ["venue_kannon_night", "venue_kannon_night_b"],
+    first: "ch1_kannon_visit", bg: "bg_kannon_day",
+    pool: ["kannon_cat", "kannon_pigeons", "kannon_sweep", "kannon_incense", "kannon_steps", "kannon_banners", "kannon_adam", "kannon_oldman"],
+    nightPool: ["venue_kannon_night", "venue_kannon_night_c", "venue_kannon_night_b", "venue_kannon_night_d"],
     desc: "昼は猫と街の人、夜は静かな境内。" },
   { id: "choizap", kind: "spot", label: "CHOI-ZAP", area: "ジム", x: 20, y: 24, theme: "gym", glyph: "筋", requiresMet: "minto", stat: "charm", stamina: -8,
-    first: "ch1_choizap_first", pool: ["choizap_lesson", "choizap_mirror", "choizap_oldman", "choizap_minto"], bg: "bg_choizap",
-    nightPool: ["venue_choizap_night", "venue_choizap_night_b"],
+    first: "ch1_choizap_first", bg: "bg_choizap",
+    pool: ["choizap_lesson", "choizap_scenery", "choizap_mirror", "choizap_dumbbell", "choizap_stretch", "choizap_posture", "choizap_oldman", "choizap_minto"],
+    nightPool: ["venue_choizap_night", "venue_choizap_night_c", "venue_choizap_night_b", "venue_choizap_night_d"],
     desc: "昼夜使える無人ジム。入会はアプリから。" },
   { id: "c_station", kind: "spot", label: "C.STATION", area: "大会運営", x: 54, y: 66, theme: "stadium", glyph: "C", cost: 2500, requiresMet: "naru", stat: "insight", stamina: -16,
     first: "ch1_c_station_visit", pool: ["cs_staff_greeting", "cs_customer_rumor", "cs_stage_setup", "cs_regular_chat", "cs_sui_glimpse", "cs_kemuri_solo", "cs_maezono_taste", "cs_pakki_rehearsal", "cs_prep_line"], bg: "bg_c_station",
@@ -115,6 +118,23 @@ export function fortuneSpot(where = "home") {
 export const allSpots = () => [...SPOTS, ...[samechanSpot(), trpgSpot(), cinemaSpot(), fortuneSpot("home")].filter(Boolean)];
 // 占い師は東京（第3・5章）に現れていることもある。その時も行き先として引けるようにする（地図の一覧は地域ごと）。
 export const spotById = (id) => allSpots().find((s) => s.id === id) || (id === "fortune" ? fortuneSpot(null) || undefined : undefined);
+
+/**
+ * 施設の静かな回の巡回（SPV02）。束（昼・夜・雨）ごとに、読み終えた本数で次の一本を決める。
+ * 来店回数の余りで選ぶと、昼と夜を交互に通う・雨の回や寄り道会話を挟む、で同じ一本に当たり続ける。
+ * 本数はフラグ `_spot_turn_<施設>`（夜は `_night`、雨は `_rain` を付ける）に持つ。無い保存は先頭から読む。読み込めない台本は飛ばす。
+ */
+export function quietTurn(spotId, ids, bundle = "") {
+  const pool = (ids || []).filter((id) => DB.dialogues[id]);
+  if (!pool.length) return null;
+  const key = `_spot_turn_${spotId}${bundle ? `_${bundle}` : ""}`;
+  const count = Math.max(0, Math.floor(Number(state.flags[key]) || 0));
+  return { id: pool[count % pool.length], key, count };
+}
+/** 夜の束がある施設の夜か（観音堂・CHOI-ZAP）。夜は雨の回を出さない。 */
+const nightBundle = (spot) => state.slot === 1 && !!spot.nightPool;
+const quietVisit = (spot) => quietTurn(spot.id, quietSpotPool(spot, state.slot), nightBundle(spot) ? "night" : "");
+const rainVisit = (spot) => isRainy() && !nightBundle(spot) ? quietTurn(spot.id, RAIN_SPOT_TEXTS[spot.id], "rain") : null;
 
 // ---------------------------------------------------------------- 状態の読み取り
 
@@ -335,10 +355,7 @@ export function shortNormalVisit(spot) {
     if (n < 2 || !state.reel?.introDone || state.flags._pakki_first_spin_pending
       || state.flags._ev_reviewer_cameo && !state.flags._ev_reviewer_payoff && DB.dialogues.ch1_reviewer_payoff
       || spotEncounterDue(spot.id, n, state, DB.dialogues, { wide: state.growth?.nodes?.includes("K19") && growthEnabled() })) return false;
-    const pool = quietSpotPool(spot, state.slot);
-    const rain = RAIN_SPOT_TEXTS[spot.id];
-    const id = rain && isRainy() && DB.dialogues[rain] ? rain : pool[Math.max(0, n - 2) % pool.length];
-    return valid(id);
+    return valid((rainVisit(spot) || quietVisit(spot))?.id);
   }
   return false;
 }
@@ -585,18 +602,16 @@ export async function visitSpot(spot) {
   state.spotVisits = state.spotVisits || {};
   const n = (state.spotVisits[spot.id] = (state.spotVisits[spot.id] || 0) + 1);
   const owner = state;
-  const pool = quietSpotPool(spot, state.slot);
-  let id = spot.first;
-  if (spot.id === "choizap") {
-    if (state.flags._gym_member && pool.length) id = pool[(n - 1) % pool.length];
-  } else if ((n > 1 || state.slot === 1 && spot.nightPool) && pool.length) {
-    id = pool[Math.max(0, n - 2) % pool.length];
-  }
+  // 初回は場所の紹介（CHOI-ZAP は入会まで）。再訪と夜は、静かな回を束ごとに順番に読む（quietTurn）。
+  let id = spot.first, turn = null;
+  const revisit = spot.id === "choizap" ? !!state.flags._gym_member : n > 1 || nightBundle(spot);
+  if (revisit) turn = quietVisit(spot);
   const encounter = spotEncounterDue(spot.id, n, state, DB.dialogues, { wide: state.growth?.nodes?.includes("K19") && growthEnabled() });
-  if (encounter) id = encounter;
+  if (encounter) turn = null;
   // 雨の日（2回目以降）は雨の回を出す
-  const rainId = RAIN_SPOT_TEXTS[spot.id];
-  if (rainId && n > 1 && isRainy() && !(state.slot === 1 && spot.nightPool) && DB.dialogues[rainId]) id = rainId;
+  if (n > 1) turn = rainVisit(spot) || turn;
+  if (turn) id = turn.id;
+  else if (encounter) id = encounter;
   // お忍び客の回収: tonari で覆面レビュアーを接客していたら、2回目以降の来店で記事の噂を聞く
   if (spot.id === "c_station" && n > 1 && state.flags._ev_reviewer_cameo && !state.flags._ev_reviewer_payoff && DB.dialogues.ch1_reviewer_payoff) {
     state.flags._ev_reviewer_payoff = true;
@@ -604,6 +619,8 @@ export async function visitSpot(spot) {
   }
   await play(id, { bg: bgRef(spot.bg), growthScene: true }); // bgUrl が昼夜差分（_day/_night）を選ぶ
   if (state !== owner) return;
+  // 読んだ束だけ次へ送る。寄り道会話・記事の噂の来店では送らない。
+  if (turn && id === turn.id) state.flags[turn.key] = turn.count + 1;
   recordSpotEncounter(spot.id, id, n, state);
   if (spot.id === "c_station") {
     state.flags._c_station_registered = true;
