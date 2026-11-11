@@ -25,9 +25,13 @@ function decodeArt(url) {
 }
 // The WATL board (five 2x10 planks, calm light centre) from Codex, #2198 / AXR06. The older square board stays in the repository.
 const ART = { bg: imgFileUrl("backgrounds/bg_axe_lounge_night.webp"), board: imgFileUrl("ui/axe_throw/target_board_watl_c_800.webp") };
-// ゲージ・札の絵の部品（#3207・AXR14）。CSS の border-image で描く。読み込み中に先に解いておき、構えた瞬間の出遅れを防ぐ。
-const UI_ART = ["gauge-frame", "gauge-needle", "button-throw-orange", "button-throw-green", "tag-slate", "tag-slate-blue", "tag-selected", "tag-selected-amber"]
+// ゲージ・札の絵の部品（#3207・AXR14）と、見出しの板・投げ数の溝・黒板の窓・ランクの丸・帯・木片（#3423・AXQ03）。
+// 木片以外は CSS の border-image で描く。読み込み中に先に解いておき、構えた瞬間や結果の出遅れを防ぐ。
+const UI_ART = ["gauge-frame", "gauge-needle", "button-throw-orange", "button-throw-green", "tag-slate", "tag-slate-blue", "tag-selected", "tag-selected-amber",
+  "hud-plate", "score-slot", "chalk-window", "rank-medallion", "banner-orange", "banner-green", "wood-chips"]
   .map(name => imgFileUrl("ui/axe_throw/" + name + ".webp"));
+// 木片の絵（wood-chips.webp 512×256・4×2 のマス、1マス128）。刺さった所から飛ぶ破片を、マスごとに切り出して描く。
+const CHIPS = { src: imgFileUrl("ui/axe_throw/wood-chips.webp"), cell: 128, cols: 4, rows: 2, size: 26 };
 // Only the target is decoded early so it appears without a late pop-in; other art waits for the loading step.
 if (typeof Image !== "undefined") decodeArt(ART.board).catch(() => {});
 const { x: CX, y: CY, radius: R } = TARGET;
@@ -192,9 +196,14 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   const echoRing = svg("circle", { r: 18, fill: "none", "stroke-width": 1.5 });
   const impactFlash = svg("circle", { r: 30, fill: "#fff5da" });
   const dust = Array.from({ length: 10 }, () => svg("circle", { r: 3, fill: "#d8b477" }));
-  const splinters = Array.from({ length: 24 }, (_, i) => svg("path", {
-    d: "M0 -3L" + (i % 2 ? 10 : 6) + " 0L0 3Z", fill: i % 3 ? "#e6ba70" : "#fff3d5",
-  }));
+  // 木片: 8種の絵を順に使い回す。動き（飛ぶ向き・回転・縮み）は drawImpact がこれまでどおり g に掛ける。
+  const splinters = Array.from({ length: 24 }, (_, i) => {
+    const chip = i % (CHIPS.cols * CHIPS.rows), half = CHIPS.size / 2;
+    return svg("g", { class: "axe-chip" }, [svg("svg", {
+      x: -half, y: -half, width: CHIPS.size, height: CHIPS.size, overflow: "hidden",
+      viewBox: `${chip % CHIPS.cols * CHIPS.cell} ${Math.floor(chip / CHIPS.cols) * CHIPS.cell} ${CHIPS.cell} ${CHIPS.cell}`,
+    }, [svg("image", { href: CHIPS.src, width: CHIPS.cell * CHIPS.cols, height: CHIPS.cell * CHIPS.rows })])]);
+  });
   const burst = svg("text", { class: "axe-score-burst", "text-anchor": "middle", "font-size": 38,
     "font-weight": 900, "paint-order": "stroke", stroke: "#17120e", "stroke-width": 4 });
   const impactFx = svg("g", { class: "axe-impact-fx", opacity: 0, "aria-hidden": "true", "pointer-events": "none" }, [impactFlash, impactRing, echoRing, ...dust, ...splinters, burst]);
