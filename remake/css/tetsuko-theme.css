@@ -360,3 +360,17 @@ html:root[data-density="phone"] .tetsuko-time .tt-logo-roman { display: none; }
   .tetsuko-time[data-art-ui~="tk_pill"] .tt-joy { border-width: 0 32px; border-image-width: 0 32px; padding: 7px 2px 11px; }
   .tetsuko-time[data-art-ui~="tk_caption"] .tt-caption { padding: 4px 14px 2px 10px; }
 }
+
+/* 手持ちの絵で置き換えられる小さな部品（TKT27 の依頼が届くまで）: 道具の名前の札＝ハートの台の絵、パネルのボタン＝上の道具の札の絵、
+   「？」の中のアイコンの丸＝丸い札の絵 */
+.tetsuko-time[data-art-ui~="tk_pill"] .tt-act-label { border-style: solid; border-color: transparent; border-width: 0 12px; border-radius: 0; padding: 1px 0 4px;
+  background: none; border-image: url("../img/ui/tetsuko/ui_tk_pill.webp") 0 70 fill / 0 12px stretch; }
+:root .tetsuko-time[data-art-ui~="tk_tab"] .btn.small:is(.tt-drawer-close, .tt-book-close, .tt-help-close, .tt-seek) { border: 0; border-radius: 0; box-shadow: none; clip-path: none;
+  background: url("../img/ui/tetsuko/ui_tk_tab.webp") center / 100% 100% no-repeat; color: var(--tk-ink); padding: 10px 22px 14px; }
+:root .tetsuko-time[data-art-ui~="tk_tab"] .btn.small:is(.tt-drawer-close, .tt-book-close, .tt-help-close, .tt-seek):is(:hover, :focus-visible, :active) {
+  border: 0; box-shadow: none; color: var(--tk-ink); background: url("../img/ui/tetsuko/ui_tk_tab_pressed.webp") center / 100% 100% no-repeat; }
+.tetsuko-time[data-art-ui~="tk_token"] .tt-help-ico { border: 0; border-radius: 0; background: url("../img/ui/tetsuko/ui_tk_token.webp") center / contain no-repeat; width: 42px; height: 44px; }
+@media (orientation: landscape) and (max-width: 1024px) and (max-height: 520px) and (pointer: coarse) and (hover: none) {
+  .tetsuko-time[data-art-ui~="tk_pill"] .tt-act-label { border-width: 0 16px; border-image-width: 0 16px; }
+}
+

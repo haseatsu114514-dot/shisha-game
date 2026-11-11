@@ -121,8 +121,11 @@ export function tetsukoCameraFor({ x, y, s = 1 } = {}) {
   const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
   return { k, x: clamp(at.x - k * fx, 1280 * (1 - k), 0), y: clamp(at.y - k * fy, 720 * (1 - k), 0) };
 }
-/** 飛びついた先の範囲（舞台の px・足元）。じゃらしで遊ぶ間のカメラで、てつこの体が外枠の内側に収まる幅にする。 */
-export const TETSUKO_LEAP = Object.freeze({ min: 230, max: 1050, y: 550 });
+/**
+ * 飛びついた先の範囲（舞台の px・足元）。じゃらしで遊ぶ間のカメラで、いちばん横に長いしぐさの絵（跳ぶ・空振り。halfWidth は
+ * その半分の幅）まで外枠の内側に収まる幅にする。
+ */
+export const TETSUKO_LEAP = Object.freeze({ min: 320, max: 960, y: 550, halfWidth: 232 });
 /** じゃらしで遊ぶ間のカメラ { k, x, y }（舞台の外は映さない）。 */
 export function tetsukoToyCamera() {
   const { zoom: k, at } = TETSUKO_TOY_VIEW;
@@ -247,6 +250,8 @@ export async function openTetsukoTime({ value = null, visitKey = null, bg = null
     const camPlay = el("div.tt-cam.tt-cam-play", [...Object.values(slots), lap, plate, cat, toy, ...Object.values(slotHits), pops]);
     const yard = el("div.tt-yard", [
       el("div.tt-cam.tt-cam-set", { "aria-hidden": "true" }, [
+        // 裏口の絵（届いていれば）。ステージの背景のままだと寄せた舞台とずれるので、舞台と一緒に寄せる層に置く。
+        backdoor?.url ? el("img.tt-backdrop", { src: backdoor.url, alt: "", draggable: "false", decoding: "async" }) : null,
         el("div.tt-set", [
           el("div.tt-wall", [el("div.tt-door", [el("i.tt-door-window"), el("i.tt-door-knob")]), el("i.tt-lamp")]),
           el("div.tt-ground"),

@@ -716,12 +716,14 @@ assert.equal(classifyFlag(OUTINGS_FLAG), "progression");
   assert.equal(cam.k, TETSUKO_TOY_VIEW.zoom);
   assert(cam.k > 1 && cam.k < TETSUKO_CAMERA.zoom, "寄せすぎず、全体よりは近い");
   assert(cam.x <= 0 && cam.x >= 1280 * (1 - cam.k) && cam.y <= 0 && cam.y >= 720 * (1 - cam.k), "舞台の外は映さない");
-  // 飛びついた先（TETSUKO_LEAP）のどこでも、てつこの枠（270×280）が外枠（20px）の内側に映る（端で体が切れない）。
+  // 飛びついた先（TETSUKO_LEAP）のどこでも、いちばん横に長いしぐさの絵（跳ぶ・空振り）まで外枠（20px）の内側に映る（端で体が切れない）。
+  // しぐさの絵は 1024×768 の画面を 0.754 倍で出す（CSS の .tt-cat-pose）。絵の中の猫の幅を測って halfWidth と比べる。
   for (const x of [TETSUKO_LEAP.min, 640, TETSUKO_LEAP.max]) {
-    const box = { l: cam.x + cam.k * (x - 135), r: cam.x + cam.k * (x + 135), t: cam.y + cam.k * (TETSUKO_LEAP.y - TETSUKO_CAMERA.catHeight), b: cam.y + cam.k * TETSUKO_LEAP.y };
+    const box = { l: cam.x + cam.k * (x - TETSUKO_LEAP.halfWidth), r: cam.x + cam.k * (x + TETSUKO_LEAP.halfWidth),
+      t: cam.y + cam.k * (TETSUKO_LEAP.y - TETSUKO_CAMERA.catHeight), b: cam.y + cam.k * TETSUKO_LEAP.y };
     assert(box.l >= 20 && box.r <= 1260 && box.t >= 20 && box.b <= 700, `飛びついた先 x=${x} で、てつこが画面に収まる ${JSON.stringify(box)}`);
   }
-  assert(TETSUKO_LEAP.max - TETSUKO_LEAP.min >= 700, "飛びまわれる幅は十分にある");
+  assert(TETSUKO_LEAP.max - TETSUKO_LEAP.min >= 600, "飛びまわれる幅は十分にある");
 }
 
 // 見守る初回だけの発見を、膝に乗る日や見守った後に案内しない。

@@ -204,6 +204,16 @@ def build_ui():
 HEAD_PX = 160  # chr_tetsuko_normal.png の顔の幅（頬から頬。耳の先は含めない）
 POSE_CANVAS = (1024, 768, 512, 736)
 CATS = {  # 名前 → (原画, 原画の中の顔の幅 px, 足元を上げる px)
+    # #2690（PR #2715 の候補 a/b から1枚ずつ・2026-11-11 採用。理由は README の採用の記録）
+    "loaf": ("cat_loaf_b.png", 485, 0),
+    "crouch": ("cat_crouch_a.png", 430, 0),
+    "reach": ("cat_reach_a.png", 477, 0),
+    "hug": ("cat_hug_a.png", 420, 0),
+    "groom": ("cat_groom_a.png", 490, 0),
+    "yawn": ("cat_yawn_a.png", 477, 0),
+    "belly": ("cat_belly_a.png", 450, 0),
+    "rub": ("cat_rub_b.png", 400, 0),  # 横顔なので顔の幅が狭く見える分、少し小さめに測った
+    # #3214（TKT26）
     "leap": ("cat_leap.png", 370, 0),
     "flop": ("cat_flop.png", 420, 0),
     "mew": ("cat_mew.png", 500, 0),
