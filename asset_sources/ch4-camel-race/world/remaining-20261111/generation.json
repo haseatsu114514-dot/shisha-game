@@ -1,0 +1,520 @@
+{
+  "date": "2026-11-11",
+  "issue": 3217,
+  "generator": "Codex built-in image_gen",
+  "owner_override": "Both SUV antennas removed per user instruction in this session, overriding Issue 3217 antenna line. Antenna versions in history are rejected.",
+  "references": {
+    "bg_dubai_camel_track_morning.png": {
+      "path": "assets/backgrounds/bg_dubai_camel_track_morning.png",
+      "sha256": "55bc6c314a14e8f3801fb2ab3cbd2108deba4480813abc674097610040532e9d",
+      "bytes": 1358647
+    },
+    "camel_1.png": {
+      "path": "assets/ui/camel_race/camel_1.png",
+      "sha256": "aa5e76658062717ef4b678fa5b49fc6d99d8465660ea495b037a1508af5f88ad",
+      "bytes": 149694
+    },
+    "suv.png": {
+      "path": "assets/ui/camel_race/suv.png",
+      "sha256": "babe0f7cfcfc64ba4dd99e924c52c0d4f43d06927b5aa2078ad5b38bc201fd32",
+      "bytes": 340286
+    },
+    "word-perfect.png": {
+      "path": "assets/ui/camel_race/ui/word-perfect.png",
+      "sha256": "57d6fd21e1ae06e547bf67a0acaf546d187252f72bd75eead71895d3d6b6ddae",
+      "bytes": 288175
+    },
+    "medal-gold.png": {
+      "path": "assets/ui/camel_race/ui/medal-gold.png",
+      "sha256": "973ef6b99634d66daf9174a567b6be42fc18815ac2d88eab25f0a2c477c7585f",
+      "bytes": 97376
+    }
+  },
+  "generation_counts": {
+    "suv-rival-a": 2,
+    "suv-rival-b": 2,
+    "medal-silver": 2,
+    "medal-bronze": 1,
+    "medal-plain": 1,
+    "track-rail": 2,
+    "word-vs": 3
+  },
+  "copy_check": "512KiB copy SHA256 matched before generation.",
+  "verification": {
+    "suv-rival-a": {
+      "raw": {
+        "size": [
+          1774,
+          887
+        ],
+        "mode": "RGBA",
+        "bytes": 1718662,
+        "sha256": "1989aabbd5f734aee8d7e950c4d43c7713227daadfe519695d1bd45cbb56dc08",
+        "alpha_range": [
+          0,
+          255
+        ],
+        "alpha_bbox": [
+          0,
+          39,
+          1774,
+          871
+        ],
+        "alpha16_bbox": [
+          10,
+          98,
+          1767,
+          864
+        ],
+        "corner_alpha": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fully_opaque_pixels": 230
+      },
+      "candidate": {
+        "size": [
+          720,
+          360
+        ],
+        "mode": "RGBA",
+        "bytes": 290908,
+        "sha256": "2c11de271ece691947d360bf16a60a1bc94cc2b97ca333dd489eae63010db208",
+        "alpha_range": [
+          0,
+          255
+        ],
+        "alpha_bbox": [
+          0,
+          39,
+          720,
+          353
+        ],
+        "alpha16_bbox": [
+          4,
+          39,
+          717,
+          351
+        ],
+        "corner_alpha": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fully_opaque_pixels": 4
+      },
+      "processing": "Proportional downsample to 720x360, no crop or alpha edits. Strip derived-file metadata."
+    },
+    "suv-rival-b": {
+      "raw": {
+        "size": [
+          1774,
+          887
+        ],
+        "mode": "RGBA",
+        "bytes": 1616420,
+        "sha256": "bc49deffa52cbe0b1784244eff4930b2d69c770fefb124d78dc368b2950d888c",
+        "alpha_range": [
+          0,
+          255
+        ],
+        "alpha_bbox": [
+          0,
+          45,
+          1774,
+          870
+        ],
+        "alpha16_bbox": [
+          10,
+          98,
+          1767,
+          864
+        ],
+        "corner_alpha": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fully_opaque_pixels": 346
+      },
+      "candidate": {
+        "size": [
+          720,
+          360
+        ],
+        "mode": "RGBA",
+        "bytes": 287507,
+        "sha256": "ec6a27e56a2a5f618f62a3ce4ee9d667e59dd5b162fd1c4f942fe19b13f8cb8c",
+        "alpha_range": [
+          0,
+          255
+        ],
+        "alpha_bbox": [
+          0,
+          39,
+          720,
+          352
+        ],
+        "alpha16_bbox": [
+          4,
+          39,
+          717,
+          351
+        ],
+        "corner_alpha": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fully_opaque_pixels": 1
+      },
+      "processing": "Proportional downsample to 720x360, no crop or alpha edits. Strip derived-file metadata."
+    },
+    "medal-silver": {
+      "raw": {
+        "size": [
+          1254,
+          1254
+        ],
+        "mode": "RGBA",
+        "bytes": 1839432,
+        "sha256": "4270cbe76edea87a8c86e5361fa61f4e0bdc86c12f5922285ee4372ef49bb4b1",
+        "alpha_range": [
+          0,
+          255
+        ],
+        "alpha_bbox": [
+          0,
+          0,
+          1232,
+          1254
+        ],
+        "alpha16_bbox": [
+          77,
+          59,
+          1162,
+          1173
+        ],
+        "corner_alpha": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fully_opaque_pixels": 538
+      },
+      "candidate": {
+        "size": [
+          256,
+          256
+        ],
+        "mode": "RGBA",
+        "bytes": 88898,
+        "sha256": "7a527eb2703a5155befa6072364d3039e90fca5263725ed68009823666e349f8",
+        "alpha_range": [
+          0,
+          255
+        ],
+        "alpha_bbox": [
+          15,
+          11,
+          238,
+          240
+        ],
+        "alpha16_bbox": [
+          15,
+          12,
+          238,
+          240
+        ],
+        "corner_alpha": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fully_opaque_pixels": 11
+      },
+      "processing": "Proportional downsample to 256x256, no crop or alpha edits. Strip derived-file metadata."
+    },
+    "medal-bronze": {
+      "raw": {
+        "size": [
+          1254,
+          1254
+        ],
+        "mode": "RGBA",
+        "bytes": 1830443,
+        "sha256": "8e46d9206ac16862db4d23a54a43469d56937d2eac0c795912e165e60142c492",
+        "alpha_range": [
+          0,
+          255
+        ],
+        "alpha_bbox": [
+          0,
+          37,
+          1228,
+          1254
+        ],
+        "alpha16_bbox": [
+          76,
+          59,
+          1165,
+          1175
+        ],
+        "corner_alpha": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fully_opaque_pixels": 782
+      },
+      "candidate": {
+        "size": [
+          256,
+          256
+        ],
+        "mode": "RGBA",
+        "bytes": 93530,
+        "sha256": "00f85d89911aa8c778a5b9627d32f56c5eaa0cb871765c06db99bbec8935ef48",
+        "alpha_range": [
+          0,
+          255
+        ],
+        "alpha_bbox": [
+          15,
+          11,
+          239,
+          241
+        ],
+        "alpha16_bbox": [
+          15,
+          11,
+          238,
+          240
+        ],
+        "corner_alpha": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fully_opaque_pixels": 35
+      },
+      "processing": "Proportional downsample to 256x256, no crop or alpha edits. Strip derived-file metadata."
+    },
+    "medal-plain": {
+      "raw": {
+        "size": [
+          1254,
+          1254
+        ],
+        "mode": "RGBA",
+        "bytes": 1729301,
+        "sha256": "24d49aec435be918bb186b2cfb60ac5dab64ac9dac466075d9dff2c93949458a",
+        "alpha_range": [
+          0,
+          255
+        ],
+        "alpha_bbox": [
+          0,
+          21,
+          1240,
+          1254
+        ],
+        "alpha16_bbox": [
+          76,
+          58,
+          1166,
+          1174
+        ],
+        "corner_alpha": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fully_opaque_pixels": 619
+      },
+      "candidate": {
+        "size": [
+          256,
+          256
+        ],
+        "mode": "RGBA",
+        "bytes": 83782,
+        "sha256": "55451b148e2db906e04aaec0d90fc46a3eed1aad2b3b9d18bf9fc93859da503d",
+        "alpha_range": [
+          0,
+          255
+        ],
+        "alpha_bbox": [
+          15,
+          11,
+          239,
+          240
+        ],
+        "alpha16_bbox": [
+          15,
+          11,
+          238,
+          240
+        ],
+        "corner_alpha": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fully_opaque_pixels": 36
+      },
+      "processing": "Proportional downsample to 256x256, no crop or alpha edits. Strip derived-file metadata."
+    },
+    "track-rail": {
+      "raw": {
+        "size": [
+          1672,
+          941
+        ],
+        "mode": "RGBA",
+        "bytes": 337486,
+        "sha256": "980e12b3a1089aca7b2bad29285e14c39368ed0696c64a8e3cd7883677b3420a",
+        "alpha_range": [
+          0,
+          255
+        ],
+        "alpha_bbox": [
+          0,
+          37,
+          1660,
+          898
+        ],
+        "alpha16_bbox": [
+          15,
+          421,
+          1657,
+          520
+        ],
+        "corner_alpha": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fully_opaque_pixels": 690
+      },
+      "candidate": {
+        "size": [
+          1600,
+          96
+        ],
+        "mode": "RGBA",
+        "bytes": 236287,
+        "sha256": "cd902fa11f6934f6f7fc277e3bc969ff882c3b9a49e85f564055d16e96d8fa8f",
+        "alpha_range": [
+          0,
+          254
+        ],
+        "alpha_bbox": [
+          4,
+          0,
+          1596,
+          96
+        ],
+        "alpha16_bbox": [
+          4,
+          0,
+          1596,
+          96
+        ],
+        "corner_alpha": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fully_opaque_pixels": 0
+      },
+      "processing": "Crop the alpha>=16 object bounds (15,421)-(1657,520), downsample proportionally and place in 1600x96. No repaint or alpha threshold on kept pixels. Strip derived-file metadata."
+    },
+    "word-vs": {
+      "raw": {
+        "size": [
+          1390,
+          1132
+        ],
+        "mode": "RGBA",
+        "bytes": 960502,
+        "sha256": "1a5af107b768e64647425aafe6242a1a8f7dd9e765c62fefb3c066947b320002",
+        "alpha_range": [
+          0,
+          255
+        ],
+        "alpha_bbox": [
+          0,
+          9,
+          1354,
+          1132
+        ],
+        "alpha16_bbox": [
+          126,
+          190,
+          1265,
+          968
+        ],
+        "corner_alpha": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fully_opaque_pixels": 594
+      },
+      "candidate": {
+        "size": [
+          1024,
+          834
+        ],
+        "mode": "RGBA",
+        "bytes": 479227,
+        "sha256": "8328056ee974bb2f12a6021eb966b3c7b878a15feb13f02f3942d81c869f42e3",
+        "alpha_range": [
+          0,
+          255
+        ],
+        "alpha_bbox": [
+          67,
+          13,
+          955,
+          795
+        ],
+        "alpha16_bbox": [
+          92,
+          140,
+          932,
+          713
+        ],
+        "corner_alpha": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "fully_opaque_pixels": 5
+      },
+      "processing": "Proportional downsample so long edge is 1024, no crop or alpha edits. Strip derived-file metadata."
+    }
+  },
+  "notes": [
+    "Raw sources are byte-for-byte copies of image_gen outputs.",
+    "Metal surfaces are visually solid but predominantly alpha 252-254 rather than 255; low alpha debris also exists. Not certified as strict binary-alpha assets.",
+    "SUV native wheels visually approximate source positions; exact wheel alignment remains an adoption task.",
+    "No game code, CSS or adopted files changed."
+  ]
+}

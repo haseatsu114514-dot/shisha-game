@@ -312,3 +312,48 @@ html:root[data-density="phone"] #stage[data-wide] .desert-ride .dr-touch.dr-jump
 @media (orientation: landscape) and (max-height: 520px) and (pointer: coarse) {
   .dr-caption[data-kind="tip"] { top: 176px; font-size: 26px; }
 }
+
+/* ---- 空中の着地ボタン（2026-11-11 オーナー「ジャンプ中にタイミングよく押すと着地が決まる仕様が気づきづらい。
+   空中にいる時はボタンがそういう仕様に変わったり、分かりやすくしたい」）:
+   大ジャンプの空中だけ、ボタンが LAND の絵になって青く光り、外から縮んでくる輪がボタンに重なった時（完璧の窓）が押し時。
+   上の札は「重なったら押す」→「今！」→ 押した後は「構えた！」。輪の大きさは --land（1→0）で JS が決める。 ---- */
+.desert-ride .dr-land-ring, .desert-ride .dr-land-tag { position: absolute; pointer-events: none; opacity: 0; }
+.desert-ride .dr-land-ring {
+  inset: 2px; border-radius: 30%; border: 6px solid rgba(255, 255, 255, .95);
+  box-shadow: 0 0 14px rgba(110, 215, 255, .95), inset 0 0 10px rgba(110, 215, 255, .6);
+  transform: scale(calc(1 + var(--land, 1) * .9));
+}
+.desert-ride .dr-land-tag {
+  left: 50%; bottom: calc(100% + 14px); translate: -50% 0; white-space: nowrap;
+  padding: 6px 14px; border-radius: 999px; background: rgba(16, 34, 52, .9); border: 2px solid rgba(140, 225, 255, .9);
+  color: #eafaff; font: 900 24px/1.1 var(--font); letter-spacing: .04em; text-shadow: 0 1px 2px rgba(0, 0, 0, .5);
+}
+.desert-ride .dr-jump:is([data-land="wait"], [data-land="soon"], [data-land="now"], [data-land="set"]) :is(.dr-land-ring, .dr-land-tag) { opacity: 1; }
+/* PC ではタッチボタンを薄く出しているが、着地の合図の間はくっきり出す */
+.desert-ride .dr-touch.dr-jump:is([data-land="wait"], [data-land="soon"], [data-land="now"], [data-land="set"]) { opacity: 1; }
+.desert-ride .dr-jump:is([data-land="wait"], [data-land="soon"]).art-ready { filter: drop-shadow(0 0 16px rgba(110, 215, 255, .95)); }
+.desert-ride .dr-jump[data-land="soon"] .dr-land-ring { border-color: #fff1a0; box-shadow: 0 0 16px rgba(255, 220, 90, .95), inset 0 0 10px rgba(255, 220, 90, .6); }
+.desert-ride .dr-jump[data-land="now"] .dr-land-ring { inset: -4px; border-width: 8px; border-color: #ffd84a; box-shadow: 0 0 24px rgba(255, 200, 60, 1), inset 0 0 14px rgba(255, 220, 90, .8); }
+.desert-ride .dr-jump[data-land="now"].art-ready { filter: brightness(1.18) drop-shadow(0 0 22px rgba(255, 205, 70, 1)); animation: dr-land-now .16s ease-in-out infinite alternate; }
+.desert-ride .dr-jump[data-land="now"] .dr-land-tag { background: #ffcf3a; border-color: #fff6c8; color: #3a1a06; font-size: 30px; text-shadow: none; }
+.desert-ride .dr-jump[data-land="set"] .dr-land-ring { inset: -4px; border-width: 6px; border-color: #8ef0a8; box-shadow: 0 0 18px rgba(120, 240, 160, .95); }
+.desert-ride .dr-jump[data-land="set"] .dr-land-tag { background: rgba(18, 60, 34, .92); border-color: #9af5b4; color: #eafff0; }
+@keyframes dr-land-now { from { scale: 1; } to { scale: 1.06; } }
+.desert-ride[data-reduced-motion="true"] .dr-jump[data-land="now"].art-ready { animation: none; }
+@media (prefers-reduced-motion: reduce) { .desert-ride .dr-jump[data-land="now"].art-ready { animation: none; } }
+
+/* ---- ブーストの放電（2026-11-11 オーナー「ブーストは溜まるとどんどん放電みたいな演出つけたい」）:
+   溜まるほど BOOST ボタンの縁とゲージから稲妻が多く走る（形と本数は JS の updateZaps）。白い芯に青い光。
+   満タン（data-charge="max"）ではボタンが青白く光って小刻みに震える。動き軽減では稲妻を出さず、光だけ。 ---- */
+.desert-ride .dr-zap { position: absolute; pointer-events: none; overflow: visible; filter: drop-shadow(0 0 3px rgba(150, 225, 255, .95)) drop-shadow(0 0 7px rgba(70, 170, 255, .8)); }
+.desert-ride .dr-zap path { stroke: #f2fdff; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+.desert-ride .dr-zap path[data-core="thick"] { stroke-width: 3.5; }
+.desert-ride .dr-zap-button { inset: -24px; width: calc(100% + 48px); height: calc(100% + 48px); z-index: 2; }
+.desert-ride .dr-zap-gauge { left: 0; right: 0; top: -9px; bottom: -9px; width: 100%; height: calc(100% + 18px); z-index: 2; }
+.desert-ride[data-charge="mid"] .dr-touch.dr-boost.art-ready { filter: drop-shadow(0 0 12px rgba(120, 210, 255, .75)); }
+.desert-ride[data-charge="max"] .dr-touch.dr-boost.art-ready { opacity: 1; filter: brightness(1.12) drop-shadow(0 0 10px rgba(255, 255, 255, .9)) drop-shadow(0 0 22px rgba(90, 190, 255, 1)); animation: dr-charged .09s steps(2) infinite; }
+.desert-ride[data-charge="max"] .dr-gauge { box-shadow: 0 0 0 2px rgba(210, 245, 255, .9), 0 0 16px rgba(90, 190, 255, .9); }
+@keyframes dr-charged { 0% { translate: 0 0; } 50% { translate: 1px -1px; } 100% { translate: -1px 1px; } }
+.desert-ride[data-reduced-motion="true"] .dr-zap { display: none; }
+.desert-ride[data-reduced-motion="true"][data-charge="max"] .dr-touch.dr-boost.art-ready { animation: none; }
+@media (prefers-reduced-motion: reduce) { .desert-ride[data-charge="max"] .dr-touch.dr-boost.art-ready { animation: none; } }

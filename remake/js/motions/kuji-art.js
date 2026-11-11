@@ -17,8 +17,9 @@ export const KUJI_ART = {
   drum: { url: img("garagara-drum") },
   // 軸受けの上の丸が枠の上へはみ出すので、枠を上へ広げる（軸は上から26.4px。奥の脚の回転の中心も合わせる: .kj-frame-far）
   frame: { url: img("garagara-frame"), box: [375, 265.6, 330, 337.3] },
-  // 板の幅424px。脚の先が天板の中ほどに載る高さ
-  base: { url: img("garagara-base"), box: [328, 579.4, 424.6, 60.8] },
+  // 板の幅424px。天板は上から41.6px（y571〜613）。手前の脚の足先（下端 y600）と、奥の脚の足先（右へ22・上へ16。下端 y584）が
+  // どちらも天板に載るよう、2組の脚の中ほど（右へ11）に置く
+  base: { url: img("garagara-base"), box: [339, 571.4, 424.6, 57.1] },
   handle: { url: img("garagara-handle") },
   tray: { url: img("garagara-tray") },
   counter: { url: img("counter") },

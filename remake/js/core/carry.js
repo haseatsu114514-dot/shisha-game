@@ -249,6 +249,7 @@ export const FLAG_EXACT_RULES = [
   ["_ch4_cafe_orders", "progression"], // ドバイのカフェで頼んだ一台の回数（メニューごと・ch4-dubai-cafe.js）
   ["_ch4_cleared", "progression"],
   ["_ch4_dubai_talks", "progression"],
+  ["_visit_chains", "progression"], // 通いの続きの小さな出来事（第3〜5章・段の既読と選んだ答え。chapters/visit-chains.js）。周回では持ち越さない
   ["_ch4_dubai_nights", "progression"], // ドバイの夜がにぎわう店に夜に行った回数（店ごと・ch4-dubai-local.js）。周回では持ち越さない
   ["_ch4_longlong", "progression"], // 龍龍水煙所のドバイの店の段階の既読・通いの回数（ch4-longlong.js）
   ["_ch4_desert", "progression"],
@@ -655,6 +656,7 @@ export const FLAG_FAMILY_RULES = [
   ["_noor_story_*", "person"], // #3081 カフェ・オアシスの物語。未読を周回へ持ち越さない
   ["_morning_*", "progression"],
   ["_note_*", "progression"],
+  ["_recipe_return_*", "person"], // 名前を付けた一台を、配合を教えてくれた人に返した（daily/recipe-finds-model.js・#2020 G）。ヒントのメモ（_note_*）と同じく周回では持ち越さない
   ["_outing_done_*", "person"],
   ["_rescheduled_*", "pending"],
   ["_samechan_date_*", "person"],
