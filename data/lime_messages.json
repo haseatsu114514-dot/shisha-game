@@ -3213,6 +3213,283 @@
       ]
     },
     {
+      "id": "lime_wang_01",
+      "sender": "master_hookah",
+      "chapter": 4,
+      "trigger_condition": "flag",
+      "trigger_flag": "_lime_contact_master_hookah",
+      "priority": 1,
+      "region": "dubai",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "master_hookah",
+          "text": "王煙楼だ。届いているかな"
+        },
+        {
+          "sender": "master_hookah",
+          "text": "この画面を開くのは、店の仕入れの連絡くらいでね"
+        },
+        {
+          "sender": "master_hookah",
+          "text": "茶の話なら、いつでも送っていい"
+        }
+      ],
+      "replies": [
+        {
+          "text": "届いてます！",
+          "response": "よかった。仕入れ以外の連絡が、一つ増えた",
+          "affinity": 1
+        },
+        {
+          "text": "茶の話、たくさん聞きたいです",
+          "response": "いい。では、明日の一杯から書こう",
+          "affinity": 2
+        }
+      ]
+    },
+    {
+      "id": "lime_wang_02",
+      "sender": "master_hookah",
+      "chapter": 4,
+      "trigger_condition": "flag",
+      "trigger_flag": "_lime_contact_master_hookah",
+      "region": "dubai",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "master_hookah",
+          "text": "ドバイの客は、夜が遅い。日付が変わる頃に、いちばん混む"
+        },
+        {
+          "sender": "master_hookah",
+          "text": "本店は、朝の茶の客が多い。同じ店の名でも、街で顔が変わる"
+        },
+        {
+          "sender": "master_hookah",
+          "text": "君の店の客は、何時ごろに来る"
+        }
+      ],
+      "replies": [
+        {
+          "text": "仕事帰りの人が多いです",
+          "response": "なら、疲れた息の客だ。軽い一台から始めなさい",
+          "affinity": 2
+        },
+        {
+          "text": "昼の常連さんもいます",
+          "response": "昼の客は、話が長い。茶を多めに用意しておくといい",
+          "affinity": 1
+        }
+      ]
+    },
+    {
+      "id": "lime_wang_03",
+      "sender": "master_hookah",
+      "chapter": 4,
+      "trigger_condition": "flag",
+      "trigger_flag": "_lime_contact_master_hookah",
+      "region": "dubai",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "master_hookah",
+          "text": "閉店後、店員にせがまれて、龍を一つだけ出した"
+        },
+        {
+          "sender": "master_hookah",
+          "text": "ここは本店より提灯が低い。龍の頭が、ちょうど提灯に当たって崩れた"
+        },
+        {
+          "sender": "master_hookah",
+          "text": "本店の癖で、高く上げすぎた"
+        }
+      ],
+      "replies": [
+        {
+          "text": "見たかったです、それ",
+          "response": "見せない。……次は、首を低くして出そう",
+          "affinity": 2
+        },
+        {
+          "text": "店員さん、笑ってました？",
+          "response": "笑っていた。私も、少し笑った",
+          "affinity": 1
+        }
+      ]
+    },
+    {
+      "id": "lime_wang_04",
+      "sender": "master_hookah",
+      "chapter": 4,
+      "trigger_condition": "flag",
+      "trigger_flag": "_lime_contact_master_hookah",
+      "region": "dubai",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "master_hookah",
+          "text": "日本の店で覚えた言葉で、今も毎日使うのは「いただきます」だ"
+        },
+        {
+          "sender": "master_hookah",
+          "text": "茶の前に、手を合わせる。店員にも移って、今では私より先に言う"
+        }
+      ],
+      "replies": [
+        {
+          "text": "tonariでも言ってます",
+          "response": "いい店だ。一台の前にも、よく合う言葉だよ",
+          "affinity": 2
+        },
+        {
+          "text": "店員さん、覚えが早いですね",
+          "response": "若い人は早い。私は、口に馴染むまでかかった",
+          "affinity": 1
+        }
+      ]
+    },
+    {
+      "id": "lime_wang_05",
+      "sender": "master_hookah",
+      "chapter": 4,
+      "trigger_condition": "affinity_level",
+      "trigger_value": 3,
+      "region": "dubai",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "master_hookah",
+          "text": "今日は砂の強い日だった"
+        },
+        {
+          "sender": "master_hookah",
+          "text": "入口に、靴の砂を払う布を置いた。座る前に、一息つける"
+        },
+        {
+          "sender": "master_hookah",
+          "text": "君の店の入口には、何がある"
+        }
+      ],
+      "replies": [
+        {
+          "text": "特に何も置いてないです",
+          "response": "なら、一日だけ客の足もとを見てみなさい。置く物が分かる",
+          "affinity": 2
+        },
+        {
+          "text": "雨の日は、床が大変です",
+          "response": "雨も砂も同じだ。座る前の一息を、作ってあげなさい",
+          "affinity": 1
+        }
+      ]
+    },
+    {
+      "id": "lime_wang_06",
+      "sender": "master_hookah",
+      "chapter": 4,
+      "trigger_condition": "affinity_level",
+      "trigger_value": 4,
+      "region": "dubai",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "master_hookah",
+          "text": "近くの道具屋で、シリコンのボウルを一つ買った。落としても割れない"
+        },
+        {
+          "sender": "master_hookah",
+          "text": "本店の古い職人に見せたら、きっと渋い顔をする"
+        },
+        {
+          "sender": "master_hookah",
+          "text": "君と話すようになってから、どうも新しい物に手が伸びる"
+        }
+      ],
+      "replies": [
+        {
+          "text": "渋い顔、見てみたいです",
+          "response": "見せない。……私が先に笑ってしまう",
+          "affinity": 1
+        },
+        {
+          "text": "使い心地、どうでした？",
+          "response": "悪くない。古い配合にも、すぐ馴染んだ",
+          "affinity": 2
+        }
+      ]
+    },
+    {
+      "id": "lime_wang_07",
+      "sender": "master_hookah",
+      "chapter": 4,
+      "trigger_condition": "affinity_level",
+      "trigger_value": 4,
+      "region": "dubai",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "master_hookah",
+          "text": "店員が、初めて一人で客の一台を作った"
+        },
+        {
+          "sender": "master_hookah",
+          "text": "炭を置く前に、客の顔を見ていた。私が何度言っても、直らなかった所だ"
+        },
+        {
+          "sender": "master_hookah",
+          "text": "君の真似だそうだ。店で、君の手を見ていたらしい"
+        }
+      ],
+      "replies": [
+        {
+          "text": "俺の真似ですか！？",
+          "response": "そうだ。私の言葉より、覚えが早かった",
+          "affinity": 2
+        },
+        {
+          "text": "店員さんに、よろしく",
+          "response": "伝えた。照れて、炭を落としかけていた",
+          "affinity": 1
+        }
+      ]
+    },
+    {
+      "id": "lime_wang_08",
+      "sender": "master_hookah",
+      "chapter": 5,
+      "trigger_condition": "ch5_started",
+      "trigger_day": 4,
+      "region": "home",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "master_hookah",
+          "text": "本店に戻った。店の者に、ドバイの話を三日続けている"
+        },
+        {
+          "sender": "master_hookah",
+          "text": "日本の若い職人の話になると、皆が茶を淹れ直す。長くなると知っているからだ"
+        },
+        {
+          "sender": "master_hookah",
+          "text": "遅くなったが、おめでとう。tonariへ寄る日を、そろそろ考えよう"
+        }
+      ],
+      "replies": [
+        {
+          "text": "いつでも待ってます",
+          "response": "ありがとう。最初の火種は、君に頼もう",
+          "affinity": 2
+        },
+        {
+          "text": "三日も話してたんですか",
+          "response": "今日で四日目だ。今も、茶を淹れ直している",
+          "affinity": 1
+        }
+      ]
+    },
+    {
       "id": "lime_noor_after_sunset",
       "sender": "noor",
       "trigger_condition": "flag",
