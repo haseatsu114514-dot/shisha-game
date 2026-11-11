@@ -54,6 +54,12 @@
 .ichi-taste { display: inline-flex; align-items: baseline; gap: 2px; padding: 0 6px; border-radius: 10px; background: #0f0819; border: 1px solid rgba(227, 189, 110, 0.5); font-size: 15px; font-weight: 900; color: var(--ichi-ember-hi); }
 .ichi-taste small { font-size: 12px; font-weight: 700; color: var(--ichi-dim); }
 .ichi-chip { display: inline-block; padding: 1px 9px; border-radius: 10px; background: rgba(21, 13, 34, 0.82); border: 1px solid rgba(201, 167, 230, 0.4); font-size: 13px; font-weight: 700; white-space: nowrap; }
+/* 追加コストの印（必要火力の丸の下、絵の左上に重ねる）。炭＝熱が下がる */
+.ichi-pay { position: absolute; z-index: 3; left: 0; top: 100%; margin-top: 2px; padding: 0 4px; border-radius: 6px; background: #8a2418; border: 1px solid #ff9c8c; color: #ffe2dc; font-size: 12px; font-weight: 900; line-height: 16px; white-space: nowrap; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.6); }
+.ichi-card-head:has(.ichi-pay) { z-index: 2; } /* 印は絵の上に重ねる */
+.ichi-card.s-mini .ichi-pay, .ichi-card.s-tiny .ichi-pay { display: none; }
+.ichi-card.s-big .ichi-pay { font-size: 14px; line-height: 20px; padding: 0 7px; }
+.ichi-chip.is-set { border-color: var(--ichi-gold); background: rgba(227, 189, 110, 0.22); color: #ffe7b8; }
 .ichi-chip.is-warn { border-color: var(--z-scorch); background: rgba(200, 64, 47, 0.42); color: #ffd6cf; }
 .ichi-empty { margin: 0; font-size: 15px; color: var(--ichi-dim); }
 .ichi-boxart { display: block; height: 100%; max-width: 100%; background-repeat: no-repeat; filter: drop-shadow(0 3px 5px rgba(0, 0, 0, 0.55)); }
@@ -75,7 +81,6 @@
 .ichi-gem { display: grid; place-items: center; width: calc(var(--cw) * 0.22); height: calc(var(--cw) * 0.22); min-width: 20px; min-height: 20px; border-radius: 50%; flex: none;
   background: radial-gradient(circle at 35% 30%, #5d4488, #221534 70%); border: 1.5px solid var(--ichi-gold); box-shadow: 0 1px 3px rgba(0, 0, 0, 0.6); }
 .ichi-gem b { font-size: max(13px, calc(var(--cw) * 0.14)); font-weight: 900; line-height: 1; color: var(--ichi-ember-hi); }
-.ichi-gem.is-burn { border-color: #ff9c8c; } .ichi-gem.is-burn b { color: #ff9c8c; }
 .ichi-gem.is-heat { border-radius: 28%; background: radial-gradient(circle at 35% 30%, #ffb05c, #b4501c 75%); border-color: #2a1206; } .ichi-gem.is-heat b { color: #2a1206; }
 .ichi-gem.is-taste { background: radial-gradient(circle at 35% 30%, #fff3d0, #e3bd6e 75%); border-color: #2a1a05; } .ichi-gem.is-taste b { color: #2a1a05; }
 .ichi-gem.is-cap { border-radius: 28%; background: radial-gradient(circle at 35% 30%, #f1c3a6, #a85f3c 75%); border-color: #2a1206; } .ichi-gem.is-cap b { color: #2a1206; font-size: max(12px, calc(var(--cw) * 0.12)); font-weight: 900; }
@@ -150,7 +155,6 @@
 .ichi-on.is-up .ichi-card { box-shadow: 0 0 0 1px #ffb05c, 0 0 14px rgba(240, 138, 43, 0.8), 0 4px 10px rgba(0, 0, 0, 0.6); }
 .ichi-on.is-ember .ichi-back { box-shadow: inset 0 0 0 calc(var(--cw) * 0.04) rgba(227, 189, 110, 0.3), 0 0 9px rgba(200, 64, 47, 0.75), 0 3px 8px rgba(0, 0, 0, 0.55); }
 .ichi-on.is-ember::after { content: ""; position: absolute; left: 50%; top: 50%; width: 46%; aspect-ratio: 1; transform: translate(-50%, -50%); border-radius: 50%; background: radial-gradient(circle, rgba(255, 176, 92, 0.95), rgba(200, 64, 47, 0.7) 45%, transparent 70%); pointer-events: none; }
-.ichi-on.is-tapped { transform: rotate(14deg) translateY(5px); filter: grayscale(0.7) brightness(0.55); }
 .ichi-coal-btn { padding: 0; border: 0; background: none; border-radius: 6px; cursor: default; flex: none; }
 .ichi-coal-btn + .ichi-coal-btn { margin-left: var(--coal-gap, 6px); }
 .ichi-row.is-coals { gap: 0; }
@@ -165,6 +169,53 @@
 .ichi-stove-coal.st-2 .ichi-card { box-shadow: 0 0 0 2px var(--ichi-gold), 0 0 16px rgba(255, 210, 122, 0.85), 0 4px 10px rgba(0, 0, 0, 0.6); }
 .ichi-stove-coal.st-2 > .ichi-counter { background: var(--ichi-gold); color: #1d1206; border-color: #150d22; }
 .ichi-stove-coal.can { cursor: pointer; animation: ichi-pulse 1.3s ease-in-out infinite; }
+
+/* ── 炭焼き場 ➜ 火力ゾーン（自分）。炭焼き場で焼けた炭を火力ゾーンへのせる流れを、ひと続きの枠と矢印で見せる ── */
+.ichi-lane { display: grid; grid-template-columns: auto 30px minmax(0, 1fr); gap: 6px; align-items: stretch; min-width: 0; min-height: 0; }
+.ichi-row.is-stove { display: grid; grid-template-columns: repeat(2, auto); gap: 6px; }
+.ichi-game:is([data-phase="prep"], [data-phase="embers"]) .ichi-row.is-stove { gap: 4px; }
+.ichi-flow { display: grid; place-items: center; align-content: center; gap: 4px; color: rgba(246, 241, 250, 0.55); }
+.ichi-flow i { display: block; width: 26px; height: 34px; background: currentColor; clip-path: polygon(0 28%, 52% 28%, 52% 0, 100% 50%, 52% 100%, 52% 72%, 0 72%); }
+.ichi-flow small { font-size: 12px; font-weight: 700; color: inherit; writing-mode: vertical-rl; letter-spacing: 0.02em; }
+.ichi-flow.is-hot { color: var(--ichi-ember-hi); filter: drop-shadow(0 0 6px rgba(240, 138, 43, 0.9)); animation: ichi-pulse 1.3s ease-in-out infinite; }
+.ichi-zone-box.is-coal { grid-template-columns: auto minmax(0, 1fr); grid-template-rows: minmax(0, 1fr) auto; justify-items: start; column-gap: 10px; }
+.ichi-zone-box.is-coal > .ichi-mods { grid-column: 1 / -1; justify-self: center; }
+.ichi-zone-box.is-target { border-color: var(--ichi-gold); box-shadow: inset 0 0 0 1px rgba(227, 189, 110, 0.5), 0 0 18px rgba(227, 189, 110, 0.35); }
+/* 火力の数: 使える火力 / 熱（＝火力ゾーンの札の数。表向きのキューブ炭は2） */
+.ichi-fire-count { display: grid; justify-items: center; align-content: center; min-width: 62px; padding: 6px 6px 8px; border-radius: 10px; background: rgba(8, 4, 14, 0.62); border: 1px solid rgba(255, 176, 92, 0.55); box-shadow: inset 0 0 14px rgba(240, 138, 43, 0.22); }
+.ichi-fire-count small { font-size: 13px; font-weight: 700; color: var(--ichi-ember-hi); }
+.ichi-fire-count b { font-size: 40px; font-weight: 900; line-height: 1; font-family: var(--font-dot); color: var(--ichi-ember-hi); text-shadow: 0 0 12px rgba(240, 138, 43, 0.75); }
+.ichi-card-left { display: inline-flex; align-items: center; gap: 3px; margin-top: 4px; padding: 1px 6px 1px 3px; border-radius: 8px; background: rgba(227, 189, 110, 0.18); border: 1px solid var(--ichi-gold); white-space: nowrap; }
+.ichi-card-left small { font-size: 12px; font-weight: 800; color: #ffe7b8; }
+.ichi-card-left .ichi-back { width: 10px; height: 14px; }
+.ichi-card-left.is-used { background: rgba(0, 0, 0, 0.3); border-color: rgba(255, 255, 255, 0.2); }
+.ichi-card-left.is-used small { color: #9c8aab; }
+.ichi-game:is([data-phase="prep"], [data-phase="embers"]) .ichi-fire-count b { font-size: 30px; }
+/* 置き場（手札を選んだときだけ出る）: 火力ゾーンの「裏向きで置く」、炭焼き場の「ここに置く」 */
+.ichi-ghost { position: relative; display: grid; place-items: center; align-content: center; gap: 2px; width: var(--cw); height: calc(var(--cw) * 1.4); flex: none; padding: 2px; border-radius: calc(var(--cw) * 0.07);
+  border: 2px dashed var(--ichi-gold); background: rgba(227, 189, 110, 0.12); color: var(--ichi-gold); cursor: pointer; animation: ichi-pulse 1.2s ease-in-out infinite; }
+.ichi-ghost b { font-size: 22px; font-weight: 900; line-height: 1; }
+.ichi-ghost small { font-size: 12px; font-weight: 700; line-height: 1.2; color: var(--ichi-gold); text-align: center; }
+.ichi-ghost:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+.ichi-coal-btn + .ichi-ghost { margin-left: max(var(--coal-gap, 6px), 4px); }
+/* 置いたばかりの札は、上から落ちて置かれる */
+.ichi-on.is-new, .ichi-stove-coal.is-new { animation: ichi-place 0.42s var(--ease-out) both; }
+@keyframes ichi-place { from { transform: translateY(-28px) scale(1.14); opacity: 0; } }
+
+/* ── 相手の火力のゲージ ── */
+.ichi-zone-box.is-gauge { justify-items: stretch; align-content: center; gap: 5px; padding: 12px 10px 6px; }
+.ichi-gauge-row { display: grid; grid-template-columns: 58px minmax(0, 1fr) 56px; align-items: center; gap: 6px; }
+.ichi-gauge-row small { font-size: 12px; font-weight: 700; color: var(--ichi-text); white-space: nowrap; }
+.ichi-gauge-row > b { font-size: 14px; font-weight: 800; color: #e6d3f5; white-space: nowrap; }
+.ichi-gauge-row > b.is-ready { color: var(--ichi-ember-hi); }
+.ichi-gauge { display: grid; grid-template-columns: repeat(10, 1fr); gap: 2px; }
+.ichi-gauge i { height: 12px; border-radius: 3px; background: rgba(246, 241, 250, 0.08); border: 1px solid rgba(246, 241, 250, 0.16); }
+.ichi-gauge i.is-lit { background: linear-gradient(180deg, #ffd27a, #f08a2b); border-color: #ffb05c; box-shadow: 0 0 5px rgba(240, 138, 43, 0.7); }
+.ichi-gauge.is-stove { grid-template-columns: repeat(4, 22px); justify-content: start; }
+.ichi-gauge.is-stove i.st-0 { background: #3b2a2a; border-color: #6a4a3a; }
+.ichi-gauge.is-stove i.st-1 { background: linear-gradient(90deg, #8a3a1a 50%, #3b2a2a 50%); border-color: #b4501c; }
+.ichi-gauge.is-stove i.st-2 { background: linear-gradient(180deg, #ffd27a, #f08a2b); border-color: #ffb05c; box-shadow: 0 0 6px rgba(240, 138, 43, 0.85); }
+.ichi-zone-box.is-gauge .ichi-foe-heat .ichi-strip { width: 170px; }
 
 /* ── 顔・点・票 ── */
 .ichi-leader { display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 10px; padding: 0; border: 0; background: none; text-align: left; cursor: pointer; }
@@ -190,13 +241,29 @@
 .ichi-mods:empty { display: none; }
 .ichi-setting { position: relative; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 0; border: 0; background: none; cursor: pointer; }
 .ichi-setting-card { position: relative; display: block; }
-.ichi-packed { position: absolute; left: 50%; top: 100%; transform: translateX(-50%); margin-top: 10px; display: flex; gap: 4px; z-index: 3; }
-.ichi-packed > span { display: inline-flex; align-items: center; gap: 2px; padding: 1px 6px 1px 2px; border-radius: 8px; background: rgba(15, 8, 25, 0.92); border: 1px solid rgba(255, 255, 255, 0.22); height: 28px; }
-.ichi-packed .ichi-boxart, .ichi-packed .ichi-artimg { height: 24px; width: auto; }
-.ichi-packed b { font-size: 13px; font-weight: 900; }
+/* フレーバーミックスと葉の体力（ボウルとHMDの札の下）。相手は主役と体力だけ */
+.ichi-mix { position: absolute; left: 50%; top: 100%; transform: translateX(-50%); margin-top: 6px; display: grid; gap: 3px; justify-items: center; z-index: 3; padding: 4px 8px 5px; border-radius: 10px; background: rgba(15, 8, 25, 0.9); border: 1px solid rgba(255, 255, 255, 0.2); white-space: nowrap; }
+.ichi-mix-leaves { display: flex; gap: 6px; align-items: center; }
+.ichi-mix-leaf { display: inline-flex; align-items: center; gap: 3px; opacity: 0.78; }
+.ichi-mix-leaf.is-main, .ichi-mix-leaf.is-side { opacity: 1; }
+.ichi-mix-leaf .ichi-boxart, .ichi-mix-leaf .ichi-artimg { height: 22px; width: auto; }
+.ichi-mix-leaf small { font-size: 12px; font-weight: 700; color: #e9def2; }
+.ichi-mix-leaf.is-main small { color: var(--ichi-gold); }
+.ichi-mix-leaf b { font-size: 14px; font-weight: 900; }
+.ichi-hp { display: grid; grid-template-columns: auto 92px auto; align-items: center; gap: 5px; }
+.ichi-hp small { font-size: 12px; font-weight: 700; color: #cbb8dc; }
+.ichi-hp b { font-size: 14px; font-weight: 900; font-family: var(--font-dot); color: #b8f0a8; min-width: 18px; text-align: right; }
+.ichi-hp-bar { position: relative; height: 9px; border-radius: 5px; background: rgba(246, 241, 250, 0.1); border: 1px solid rgba(246, 241, 250, 0.22); overflow: hidden; }
+.ichi-hp-bar i { position: absolute; inset: 0 auto 0 0; width: var(--hp); background: linear-gradient(180deg, #d9f7a8, #6fbf55); }
+.ichi-hp-bar i.is-rich { background: linear-gradient(180deg, #fff1b0, #e3bd6e); }
+.ichi-hp-bar::after { content: ""; position: absolute; top: -1px; bottom: -1px; left: var(--rich); width: 2px; background: rgba(255, 255, 255, 0.7); }
+.ichi-mix.is-foe { padding: 2px 6px 3px; margin-top: 3px; gap: 1px; }
+.ichi-mix.is-foe .ichi-hp { grid-template-columns: auto 54px auto; }
+.ichi-mix.is-foe .ichi-mix-leaf .ichi-boxart, .ichi-mix.is-foe .ichi-mix-leaf .ichi-artimg { height: 16px; }
+.ichi-mix.is-foe .ichi-mix-leaf b, .ichi-mix.is-foe .ichi-hp b { font-size: 12px; }
 
 /* ── 相手のマット ── */
-.ichi-foe { display: grid; grid-template-columns: 104px 206px minmax(0, 1fr) 190px 190px 150px; gap: 10px; align-items: stretch; min-height: 0; }
+.ichi-foe { display: grid; grid-template-columns: 104px 206px minmax(0, 1fr) 190px 150px; gap: 10px; align-items: stretch; min-height: 0; }
 .ichi-foe > .ichi-leader { align-self: center; }
 .ichi-foe-hand { position: relative; display: flex; align-items: center; justify-content: center; align-self: end; padding-bottom: 14px; }
 .ichi-foe-hand .ichi-back + .ichi-back { margin-left: -22px; }
@@ -249,6 +316,12 @@
 .ichi-preview i { font-style: normal; padding: 0 8px; border-radius: 4px; font-weight: 900; color: rgba(0, 0, 0, 0.78); }
 .ichi-preview i.z-scorch { color: #fff; }
 .ichi-outlook { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; }
+.ichi-imp { justify-self: start; width: max-content; display: inline-flex; align-items: baseline; gap: 6px; padding: 1px 10px; border-radius: 10px; background: rgba(0, 0, 0, 0.35); border: 1px solid rgba(255, 255, 255, 0.2); }
+.ichi-imp small { font-size: 12px; font-weight: 700; color: #cbb8dc; }
+.ichi-imp b { font-size: 18px; font-weight: 900; font-family: var(--font-dot); }
+.ichi-imp span { font-size: 14px; font-weight: 800; }
+.ichi-imp.is-ahead { border-color: var(--ichi-gold); } .ichi-imp.is-ahead b { color: var(--ichi-gold); }
+.ichi-imp.is-behind b { color: #ff9c8c; }
 .ichi-outlook-chip { font-style: normal; display: inline-flex; align-items: center; gap: 4px; padding: 0 7px 0 2px; border-radius: 10px; font-size: 13px; font-weight: 700; color: rgba(0, 0, 0, 0.8); white-space: nowrap; }
 .ichi-outlook-chip b { padding: 0 6px; border-radius: 8px; background: rgba(0, 0, 0, 0.55); color: #fff; font-size: 12px; font-weight: 700; }
 .ichi-outlook-chip.z-scorch { color: #fff; }
@@ -277,7 +350,7 @@ button.ichi-leaf.can:hover { border-color: #fff; }
 .ichi-game:is([data-phase="prep"], [data-phase="embers"]) .s-pile { --cw: 92px; }
 
 /* ── 自分のマット ── */
-.ichi-mine { display: grid; grid-template-columns: 132px 204px minmax(0, 1fr) 316px 152px 86px; gap: 10px; align-items: stretch; min-height: 0; padding-top: 6px; }
+.ichi-mine { display: grid; grid-template-columns: 196px minmax(0, 1fr) 120px 152px 86px; gap: 10px; align-items: stretch; min-height: 0; padding-top: 6px; }
 .ichi-thermo { display: grid; grid-template-columns: 66px 1fr; align-items: center; gap: 0; height: 100%; width: 100%; min-height: 0; }
 .ichi-thermo-body { position: relative; width: 66px; height: 100%; max-height: 236px; min-height: 0; align-self: center; }
 .ichi-thermo-frame { position: absolute; inset: 0; background: url("../img/ui/craft-night/thermo-frame.webp") center / 100% 100% no-repeat; pointer-events: none; }
@@ -294,13 +367,15 @@ button.ichi-leaf.can:hover { border-color: #fff; }
 .ichi-thermo-read small.ichi-thermo-base { color: var(--ichi-ember-hi); }
 .ichi-zone-box.is-heat { padding: 12px 4px 6px; grid-template-rows: minmax(0, 1fr); align-content: stretch; align-items: stretch; }
 .ichi-piles { display: grid; grid-template-rows: 1fr auto; gap: 10px; min-height: 0; }
-.ichi-mine .ichi-zone-box:is(.is-coal, .is-stove) .s-mini { --cw: 70px; }
+.ichi-mine .ichi-zone-box.is-coal .s-mini { --cw: 66px; }
+.ichi-mine .ichi-zone-box.is-stove .s-mini { --cw: 56px; }
 .ichi-mine .s-mid { --cw: 88px; }
 .ichi-zone-box.is-deck { position: relative; }
 .ichi-zone-box.is-deck .ichi-back { box-shadow: inset 0 0 0 2px rgba(227, 189, 110, 0.3), 2px 2px 0 #1a1029, 4px 4px 0 #120a1d, 0 6px 10px rgba(0, 0, 0, 0.55); }
 .ichi-zone-box.is-deck .ichi-count { position: absolute; right: 2px; bottom: 2px; }
 .ichi-zone-box.is-ash { padding: 12px 6px 6px; }
-.ichi-game:is([data-phase="prep"], [data-phase="embers"]) .ichi-mine .s-mini { --cw: 52px; }
+.ichi-game:is([data-phase="prep"], [data-phase="embers"]) .ichi-mine .s-mini { --cw: 50px; }
+.ichi-game:is([data-phase="prep"], [data-phase="embers"]) .ichi-mine .ichi-zone-box.is-stove .s-mini { --cw: 42px; }
 .ichi-game:is([data-phase="prep"], [data-phase="embers"]) .ichi-mine .s-mid { --cw: 70px; }
 .ichi-game:is([data-phase="prep"], [data-phase="embers"]) .ichi-thermo-read b { font-size: 32px; }
 .ichi-game:is([data-phase="prep"], [data-phase="embers"]) .ichi-thermo-tube i:not(.is-now) { color: transparent; }
@@ -315,6 +390,8 @@ button.ichi-leaf.can:hover { border-color: #fff; }
 .ichi-hand-card:disabled { cursor: default; }
 .ichi-hand-card:disabled .ichi-card { filter: saturate(0.75) brightness(0.74); }
 .ichi-hand-card.can .ichi-card { box-shadow: 0 0 0 2px var(--ichi-gold), 0 0 16px rgba(227, 189, 110, 0.55), 0 5px 14px rgba(0, 0, 0, 0.6); }
+.ichi-hand-card.is-locked .ichi-card { filter: brightness(0.62) saturate(0.6); }
+.ichi-hand-card.is-locked .ichi-gem { box-shadow: 0 0 0 2px #ff9c8c; }
 .ichi-hand-card.is-sel { transform: translateY(-16px) scale(1.16); z-index: 3; }
 .ichi-hand-card.is-sel .ichi-card { box-shadow: 0 0 0 3px #fff, 0 12px 24px rgba(0, 0, 0, 0.75); }
 .ichi-detail { display: grid; grid-template-rows: minmax(0, 1fr) auto; gap: 6px; height: 100%; padding: 10px 14px; border-radius: 10px; background: rgba(34, 21, 52, 0.94) var(--ichi-plaque) center / 100% 100% no-repeat; box-shadow: 0 0 0 2px var(--ichi-gold), 0 8px 18px rgba(0, 0, 0, 0.55); min-height: 0; }
@@ -392,13 +469,14 @@ button.ichi-leaf.can:hover { border-color: #fff; }
 .ichi-result header > small { font-size: 18px; color: var(--ichi-gold); }
 .ichi-result .ichi-puff-card { width: auto; grid-template-columns: auto auto auto 1fr; align-items: center; gap: 12px; padding: 6px 34px 6px 56px; text-align: left; flex: 1; border-radius: 10px; }
 .ichi-result .ichi-puff-card strong { font-size: 34px; } .ichi-result .ichi-puff-card b { font-size: 19px; }
-.ichi-result-row { display: grid; grid-template-columns: 170px 96px 96px 1fr auto auto; gap: 10px; align-items: center; padding: 8px 12px; border-radius: 10px; background: rgba(0, 0, 0, 0.34) !important; border-left: 8px solid var(--z-cold); color: var(--ichi-text) !important; }
+.ichi-result-row { display: grid; grid-template-columns: 170px 96px 96px 1fr auto auto auto; gap: 10px; align-items: center; padding: 8px 12px; border-radius: 10px; background: rgba(0, 0, 0, 0.34) !important; border-left: 8px solid var(--z-cold); color: var(--ichi-text) !important; }
 .ichi-result-row.z-just { border-left-color: var(--z-just); } .ichi-result-row.z-band { border-left-color: var(--z-band); } .ichi-result-row.z-off { border-left-color: var(--z-off); } .ichi-result-row.z-scorch { border-left-color: var(--z-scorch); }
 .ichi-result-who { display: flex; align-items: center; gap: 10px; min-width: 0; } .ichi-result-who .ichi-face { width: 44px; height: 44px; border: 2px solid var(--ichi-gold); flex: none; font-size: 20px; }
 .ichi-result-who b { font-size: 18px; white-space: nowrap; }
 .ichi-result-heat { font-size: 16px; }
 .ichi-zone-chip { font-style: normal; text-align: center; padding: 2px 8px; border-radius: 5px; font-size: 16px; font-weight: 900; color: rgba(0, 0, 0, 0.78); }
 .ichi-result-parts { font-size: 15px; color: #e9def2; }
+.ichi-result-imp { font-size: 15px; font-weight: 800; padding: 2px 10px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.3); white-space: nowrap; }
 .ichi-result-row strong { font-size: 30px; font-weight: 900; font-family: var(--font-dot); color: var(--ichi-ember-hi); }
 .ichi-result-row em { font-style: normal; padding: 2px 10px; border-radius: 12px; background: var(--ichi-gold); color: #1d1206; font-size: 15px; font-weight: 900; }
 .ichi-result-row > small { grid-column: 4 / -1; color: #ffb4a6; }

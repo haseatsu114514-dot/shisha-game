@@ -261,6 +261,14 @@ function faceCorrectionVersion(rel) {
   return /^(sprites\/characters\/(minto\/chr_minto_normal|ageha\/chr_ageha_[a-z]+)\.png|ui\/face_icons\/face_(minto|ageha)\.png)$/.test(rel)
     ? `?v=${FACE_CORRECTION_REVISION}` : "";
 }
+/**
+ * 本編の読み込み（loadAll）を通らない単体のページ（一台勝負の試遊ページなど）が、manifest だけを読み込んで使うとき。
+ * DB.manifest だけを差し替えると WebP の一覧が空のままで、img() が元の PNG を指してしまう（顔アイコンが出ない）ので、一緒にそろえる
+ */
+export function useManifest(manifest) {
+  DB.manifest = manifest;
+  WEBP = new Set(manifest.webp || []);
+}
 /** assets/ からの相対パス（例 "backgrounds/bg_x.png"）→ 実際に読む URL */
 export function img(rel) {
   const url = WEBP.has(rel) ? `img/${rel.replace(/\.png$/, ".webp")}` : `${ROOT}assets/${rel}`;

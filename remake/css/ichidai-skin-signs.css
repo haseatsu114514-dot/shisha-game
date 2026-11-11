@@ -7,7 +7,6 @@
 .ichi-game:is([data-skin="a"], [data-skin="b"]) .ichi-gem { position: relative; }
 .ichi-game:is([data-skin="a"], [data-skin="b"]) .ichi-gem::before { content: ""; position: absolute; right: 1px; top: 1px; width: 8px; height: 8px; background: currentColor; opacity: .95; mask: var(--sign) center / contain no-repeat; pointer-events: none; }
 .ichi-game:is([data-skin="a"], [data-skin="b"]) .ichi-gem.is-cost { --sign: url("../img/ui/ichidai/signs/firepower.svg"); }
-.ichi-game:is([data-skin="a"], [data-skin="b"]) .ichi-gem.is-burn { --sign: url("../img/ui/ichidai/signs/burn.svg"); }
 .ichi-game:is([data-skin="a"], [data-skin="b"]) .ichi-gem.is-heat { --sign: url("../img/ui/ichidai/signs/heat.svg"); }
 .ichi-game:is([data-skin="a"], [data-skin="b"]) .ichi-gem.is-taste { --sign: url("../img/ui/ichidai/signs/taste.svg"); }
 .ichi-game:is([data-skin="a"], [data-skin="b"]) .ichi-gem.is-cap { --sign: url("../img/ui/ichidai/signs/capacity.svg"); }

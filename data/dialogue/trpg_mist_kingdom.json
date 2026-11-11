@@ -564,7 +564,7 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "選手権と聞いては黙っていられない。林檎が、もう騒いでいる"
+          "text": "選手権と聞いては黙っていられない。腕が、もう騒いでいる"
         },
         {
           "speaker": "samechan",
@@ -600,7 +600,7 @@
           "speaker": "hiyori",
           "role": "GM／場面",
           "face": "normal",
-          "text": "{pc:adam}は、審査員席へ向かって林檎の紋章を掲げている"
+          "text": "{pc:adam}は、審査員席の前で、背すじをぴんと伸ばしている"
         },
         {
           "speaker": "hiyori",
@@ -1022,7 +1022,7 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "香りは物語の第一声だ。始まりを間違えなければ、宇宙は応える"
+          "text": "香りは物語の第一声だ。始まりを間違えなければ、霧も応える"
         },
         {
           "speaker": "samechan",
@@ -1196,7 +1196,7 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "serious",
-          "text": "生まれた庭の香りを、生まれた庭で。原点は、原点で一番香る"
+          "text": "生まれた庭の香りを、生まれた庭で。花は、咲いた場所で一番香る"
         },
         {
           "speaker": "samechan",
@@ -1490,7 +1490,7 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "生まれた場所の香りか。原点とは、そういうものだ"
+          "text": "生まれた場所の香りか。帰る場所は、鼻が覚えているものだ"
         },
         {
           "speaker": "hiyori",
@@ -1674,7 +1674,7 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "intense",
-          "text": "{pc:adam}は林檎の紋章を掲げ、審査員席の前で高らかに名乗る！"
+          "text": "{pc:adam}は審査員席の前に進み出て、高らかに名乗る！"
         },
         {
           "speaker": "hiyori",
@@ -1922,25 +1922,55 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "俺の役はグランツ。前回の選手権の王者だ"
+          "text": "俺の役はグランツ。前回の選手権の……最下位だ"
         },
         {
           "speaker": "adam",
           "role": "PL／卓の会話",
-          "face": "intense",
-          "text": "前回の記録？ 霧と一緒に、晴れてしまった"
+          "face": "normal",
+          "text": "得意なのは拍手だ。ほかの出場者の一台を、誰より先に褒める"
         },
         {
           "speaker": "hiyori",
           "role": "GM／卓の会話",
           "face": "surprise",
-          "text": "待って、それ確かめようがないじゃない！ ……こほん。ずるい設定ね"
+          "text": "待って、アダムさんが最下位！？ ……こほん。謙虚な騎士ね"
         },
         {
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "確かめられないからこそ、伝説は伝説なんだ"
+          "text": "最下位にも、最下位の誇りがある。今夜はそれを演じる"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_mist_kingdom_aside_adam_adam_grants",
+      "metadata": {
+        "preview_only": true,
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "{pc:adam}／物語",
+          "face": "normal",
+          "text": "姫さま。僕は前回、最下位でした。でも、あの日の一位の一台、今でも覚えてます"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_mist_kingdom_after_adam_adam_grants",
+      "metadata": {
+        "preview_only": true,
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "最下位の役は、拍手ばかりで手が痛い、……悪くない痛みだ"
         }
       ]
     },
@@ -2254,7 +2284,7 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "serious",
-          "text": "生まれた庭の香り、か。それは彼女の原点だな"
+          "text": "生まれた庭の香り、か。それは彼女の、最初の記憶だな"
         }
       ]
     },
@@ -2378,7 +2408,7 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "ゆっくり長く香る、か。林檎の次くらいに、気に入った"
+          "text": "ゆっくり長く香る、か。急がない香りは、嫌いじゃない"
         },
         {
           "speaker": "hajime",
@@ -2864,7 +2894,7 @@
           "sheet": "adam",
           "stat": "nerve",
           "label": "審査員席の前で、名乗りを上げる",
-          "detail": "{pc:adam}が林檎の紋章を掲げ、王宮じゅうの目を集める",
+          "detail": "{pc:adam}が審査員席の前に出て、王宮じゅうの目を集める",
           "declare": "trpg_mist_kingdom_declare_listen_herald"
         },
         {
@@ -3106,16 +3136,18 @@
         {
           "id": "grants",
           "name": "グランツ",
-          "title": "自称・前回王者",
-          "trait": "前回の選手権の王者を名乗る。前回が本当にあったかは、誰も知らない",
-          "likes": "表彰台の真ん中と、林檎の香り",
+          "title": "自称・前回最下位",
+          "trait": "前回の最下位を名乗る。人の一台を、誰より先に褒める",
+          "likes": "表彰台の端。拍手する側の席",
           "stats": {
             "eye": 2,
             "hand": 4,
             "talk": 2,
             "nerve": 3
           },
-          "making": "trpg_mist_kingdom_make_adam_adam_grants"
+          "making": "trpg_mist_kingdom_make_adam_adam_grants",
+          "aside": "trpg_mist_kingdom_aside_adam_adam_grants",
+          "after": "trpg_mist_kingdom_after_adam_adam_grants"
         }
       ]
     },

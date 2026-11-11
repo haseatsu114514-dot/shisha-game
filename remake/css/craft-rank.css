@@ -47,3 +47,21 @@ body:not(:root) .bench-top:has(> .craft-rank) > .bench-mode small {
   display: block; margin: 4px 0 0; padding: 0; border: 0; line-height: normal;
 }
 body:not(:root) .bench-top:has(> .bench-mode) > .craft-rank { flex-basis: 100px; width: 100px; }
+
+/* ランクが変わった瞬間（CSL10）: 舞台の中央に補助名まで読める大きさで出し、帯のランクの位置へ縮めて収める。
+   位置と大きさは session.js が --to-x / --to-y / --to-s で渡す。動きを減らす設定・自動操作では出さない。 */
+.craft-rank-burst {
+  position: absolute; left: 0; top: 0; z-index: 30; width: 420px; height: auto; max-height: 340px; object-fit: contain; pointer-events: none;
+  --from-x: 640px; --from-y: 330px; translate: var(--from-x) var(--from-y); transform: translate(-50%, -50%) scale(.6); opacity: 0; filter: drop-shadow(0 10px 30px #000c);
+  animation: craft-rank-burst 2.1s cubic-bezier(.2, .8, .2, 1) forwards;
+}
+body.craft-stage .craft-rank-burst { --from-x: 837px; --from-y: 330px; }
+@keyframes craft-rank-burst {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(.6); }
+  12% { opacity: 1; transform: translate(-50%, -50%) scale(1.08); }
+  20% { transform: translate(-50%, -50%) scale(1); }
+  62% { opacity: 1; translate: var(--from-x) var(--from-y); transform: translate(-50%, -50%) scale(1); }
+  100% { opacity: .9; translate: var(--to-x) var(--to-y); transform: translate(-50%, -50%) scale(var(--to-s)); }
+}
+@media (prefers-reduced-motion: reduce) { .craft-rank-burst { display: none; } }
+.craft-rank :is(.craft-rank-wide, .craft-rank-compact) > img { filter: drop-shadow(0 2px 6px #000a); }

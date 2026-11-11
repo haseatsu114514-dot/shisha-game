@@ -11,6 +11,8 @@ async function assertHeaderControls(page, checkClicks) {
     return {
       top: rect('.bench-top'), rank: rect('.craft-rank'),
       appearance: rect('.bench-appearance-button'), help: rect('.bench-guide summary'),
+      // 新しい配置（一枚の舞台・既定）では「外観を選ぶ」は機材を選ぶ工程だけに出す（CSL）
+      appearanceExpected: !document.body.matches('.craft-stage:not(.game-ds)') || document.querySelector('.bench')?.dataset.step === 'setup',
       progress: rect('.bench-progress'),
       phases: [...document.querySelectorAll('.bench-phase')].map(node => node.getBoundingClientRect().toJSON()),
     };
@@ -28,10 +30,11 @@ async function assertHeaderControls(page, checkClicks) {
     }
   }
   assert(boxes.rank.width > 0 && boxes.rank.height > 0);
-  assert(boxes.appearance.width > 0 && boxes.help.width > 0);
+  assert(boxes.help.width > 0);
+  assert.equal(boxes.appearance.width > 0, boxes.appearanceExpected, `Appearance visibility: ${JSON.stringify(boxes)}`);
   assert(!overlaps(boxes.appearance, boxes.help), `Appearance covered: ${JSON.stringify(boxes)}`);
   if (!checkClicks) return;
-  await page.locator('.bench-appearance-button').click({ trial: true });
+  if (boxes.appearanceExpected) await page.locator('.bench-appearance-button').click({ trial: true });
   await page.locator('.bench-guide summary').click({ trial: true });
 }
 

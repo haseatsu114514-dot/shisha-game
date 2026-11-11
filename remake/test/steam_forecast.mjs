@@ -181,11 +181,14 @@ try {
     await screenshot(page, `timer-rain-${name}`);
     const spacing = await page.evaluate(() => {
       const r = s => document.querySelector(s).getBoundingClientRect();
-      const left = r('.bench-left'), right = r('.bench-right'), bench = r('.bench');
+      const right = r('.bench-right'), bench = r('.bench');
       const scale = bench.width / 1280;
-      return { gap: (right.left - left.right) / scale, bottom: (bench.bottom - right.bottom) / scale };
+      // 新しい配置（一枚の舞台・既定）では、舞台は熱の柱のすぐ右から始まる。旧配置（?craftStage=0）は左右の窓が接する。
+      const stage = document.body.classList.contains('craft-stage');
+      const left = stage ? r('.bench-panel .thermo') : r('.bench-left');
+      return { stage, gap: (right.left - left.right) / scale, bottom: (bench.bottom - right.bottom) / scale };
     });
-    assert(spacing.gap > 0 && spacing.gap <= 8, `Window gap too wide: ${JSON.stringify(spacing)}`);
+    assert(spacing.gap > 0 && spacing.gap <= (spacing.stage ? 14 : 8), `Window gap too wide: ${JSON.stringify(spacing)}`);
     assert(spacing.bottom <= 14, `Bottom margin too large: ${JSON.stringify(spacing)}`);
     await page.locator('[data-test="timer-start"]').click(); await page.evaluate(() => window.timerRun);
     await page.evaluate(() => { window.steamRun = T.steam.runSteamDodge(cs); });
@@ -197,7 +200,9 @@ try {
     assert.equal(await page.locator('.bench-title').textContent(), '蒸らし');
     assert(await page.locator('.bench-title').isHidden());
     assert.equal(await page.locator('.bench-phase[aria-current="step"]').textContent(), '03蒸らし');
-    assert.equal(await page.locator('.bench-phase[aria-current="step"]').evaluate(n => n.offsetHeight), 49);
+    // 今の工程の札の高さ: 新しい配置（既定）は上のレールの札 44、旧配置は帯の札 49
+    assert.equal(await page.locator('.bench-phase[aria-current="step"]').evaluate(n => n.offsetHeight),
+      await page.evaluate(() => document.body.classList.contains('craft-stage')) ? 44 : 49);
     assert.deepEqual(await page.locator('.dodge-controls .refresh-copy').allTextContents(), ['リフレッシュ', 'アタック', '精密']);
     assert.equal(await page.locator('.dodge-world-title').count(), 0);
     const controls = await page.locator('.dodge-controls').evaluate(n => {

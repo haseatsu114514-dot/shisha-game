@@ -10,7 +10,6 @@
 
 .retro-shell {
   --dpx: 1px;
-  --slack: 0;
   --d: var(--dpx);
   --r-body: #1b1230;
   --r-ink: #2a1d3a;
@@ -31,9 +30,6 @@
   z-index: 990;
   box-sizing: border-box;
   padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px) env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
   overflow: hidden;
   background: var(--r-body);
   color: var(--r-text);
@@ -64,8 +60,11 @@
 }
 .retro-shell button:focus-visible { outline: calc(var(--d) * 2) solid #ffffff; outline-offset: calc(var(--d) * 1); }
 
+/* 位置（left / top）と行の間（--gap-*・整数ドット）は retro/shell.js が、実機の画素の境目に合わせて置く。 */
 .retro-device {
-  flex: none;
+  position: absolute;
+  left: 0;
+  top: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -80,7 +79,7 @@
   gap: calc(var(--d) * 8);
   width: calc(var(--d) * 252);
   height: calc(var(--d) * 13);
-  margin-bottom: calc(var(--d) * (5 + min(var(--slack) * 0.04, 4)));
+  margin-bottom: calc(var(--d) * var(--gap-status, 5));
   color: var(--r-lilac);
   font-size: calc(var(--d) * 10);
   letter-spacing: .08em;
@@ -118,7 +117,7 @@
   align-items: center;
   justify-content: center;
   gap: calc(var(--d) * 5);
-  height: calc(var(--d) * (13 + min(var(--slack) * 0.05, 5)));
+  height: calc(var(--d) * var(--gap-hinge, 13));
 }
 .retro-hinge i { width: calc(var(--d) * 3); height: calc(var(--d) * 3); background: var(--r-edge); }
 
@@ -136,8 +135,8 @@
   display: flex;
   gap: calc(var(--d) * 6);
   width: calc(var(--d) * 256);
-  height: calc(var(--d) * (27 + min(var(--slack) * 0.1, 9)));
-  margin-top: calc(var(--d) * (9 + min(var(--slack) * 0.12, 10)));
+  height: calc(var(--d) * var(--gap-keys, 27));
+  margin-top: calc(var(--d) * var(--gap-keys-gap, 9));
   margin-bottom: calc(var(--d) * 3);
 }
 .retro-shell .retro-key {
@@ -173,7 +172,8 @@
 
 .retro-brand {
   flex: none;
-  margin-top: calc(var(--d) * (5 + min(var(--slack) * 0.1, 12)));
+  height: calc(var(--d) * 8);
+  margin-top: calc(var(--d) * var(--gap-brand-gap, 5));
   color: #6f5a8e;
   font-size: calc(var(--d) * 8);
   letter-spacing: .3em;
@@ -505,6 +505,80 @@
   white-space: nowrap;
   pointer-events: none;
 }
+
+/* ---- 覆い（場面転換・日付の札・章タイトル・詩・登場カットイン）: 上画面は暗くして、読み取った文字だけを出す */
+.retro-covertext, .retro-cover-lines {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: calc(var(--d) * 4);
+  padding: calc(var(--d) * 8);
+  text-align: center;
+  pointer-events: none;
+}
+.retro-covertext { position: absolute; inset: 0; }
+.retro-cover-lines { width: 100%; }
+.retro-cover-line { max-width: 100%; color: var(--r-lilac); font-size: calc(var(--d) * 12); line-height: calc(var(--d) * 16); overflow-wrap: anywhere; }
+.retro-cover-line.big { color: var(--r-text); font-size: calc(var(--d) * 16); line-height: calc(var(--d) * 22); }
+.retro-cover { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: calc(var(--d) * 8); cursor: pointer; }
+.retro-cover .retro-vn-tip { position: absolute; left: 0; right: 0; bottom: calc(var(--d) * 4); }
+.retro-wait { display: flex; gap: calc(var(--d) * 6); }
+.retro-wait i { width: calc(var(--d) * 4); height: calc(var(--d) * 4); background: var(--r-line); animation: retro-wait 1.2s steps(1) infinite; }
+.retro-wait i:nth-child(2) { animation-delay: .4s; }
+.retro-wait i:nth-child(3) { animation-delay: .8s; }
+@keyframes retro-wait { 0%, 33% { background: #c9a7e6; } 34%, 100% { background: #5a4475; } }
+@media (prefers-reduced-motion: reduce) { .retro-wait i { animation: none; } }
+/* 登場カットインの言葉（名前・ふりがな・肩書き・ひと言・好きなフレーバー） */
+.retro-profile { display: flex; flex-direction: column; align-items: flex-start; width: 100%; }
+.retro-profile-ruby { margin: 0 0 calc(var(--d) * 2) calc(var(--d) * 9); color: var(--r-lilac); font-size: calc(var(--d) * 8); letter-spacing: .1em; }
+.retro-profile-name {
+  max-width: 100%;
+  padding: calc(var(--d) * 1) calc(var(--d) * 8) calc(var(--d) * 3);
+  background: var(--r-violet);
+  border: calc(var(--d) * 2) solid var(--r-ink);
+  color: #ffffff;
+  font-size: calc(var(--d) * 16);
+  line-height: calc(var(--d) * 20);
+}
+.retro-profile-title { margin: calc(var(--d) * 5) 0 0 calc(var(--d) * 2); color: var(--r-gold); font-size: calc(var(--d) * 12); line-height: calc(var(--d) * 15); }
+.retro-profile-line {
+  align-self: stretch;
+  margin: calc(var(--d) * 6) calc(var(--d) * 4) 0 0;
+  padding: calc(var(--d) * 6) calc(var(--d) * 8);
+  background: var(--r-paper);
+  border: calc(var(--d) * 2) solid var(--r-ink);
+  box-shadow: calc(var(--d) * 4) calc(var(--d) * 4) 0 var(--r-deep);
+  color: var(--r-ink);
+  font-size: calc(var(--d) * 12);
+  line-height: calc(var(--d) * 16);
+  overflow-wrap: anywhere;
+}
+.retro-profile-flavor { display: flex; gap: calc(var(--d) * 6); margin: calc(var(--d) * 9) 0 0 calc(var(--d) * 2); color: var(--r-lilac); font-size: calc(var(--d) * 12); }
+.retro-profile-flavor b { color: var(--r-text); font-weight: 400; }
+
+/* ---- ボタンが並ぶだけの画面（tonari の行動選びなど） */
+.retro-shell .retro-option {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: calc(var(--d) * 2);
+  width: calc(100% - var(--d) * 3);
+  min-height: calc(var(--d) * 40);
+  margin-bottom: calc(var(--d) * 4);
+  padding: calc(var(--d) * 4) calc(var(--d) * 8);
+  background: var(--r-paper);
+  border: calc(var(--d) * 2) solid var(--r-ink);
+  box-shadow: calc(var(--d) * 3) calc(var(--d) * 3) 0 var(--r-deep);
+  color: var(--r-ink);
+  text-align: left;
+}
+.retro-option b { font-weight: 400; font-size: calc(var(--d) * 16); line-height: calc(var(--d) * 18); }
+.retro-option small { color: var(--r-violet); font-size: calc(var(--d) * 12); line-height: calc(var(--d) * 14); overflow-wrap: anywhere; }
+.retro-shell .retro-option:active { transform: translate(calc(var(--d) * 2), calc(var(--d) * 2)); box-shadow: calc(var(--d) * 1) calc(var(--d) * 1) 0 var(--r-deep); }
+.retro-shell .retro-option[disabled] { background: var(--r-panel); border: calc(var(--d) * 1) solid var(--r-line); box-shadow: none; color: var(--r-dim); cursor: default; transform: none; }
+.retro-option[disabled] small { color: var(--r-dim); }
 
 /* ---- 外枠を引っ込めている間の一言（縦長の画面で、現行の横長の画面が小さく出ている時） */
 .retro-note {

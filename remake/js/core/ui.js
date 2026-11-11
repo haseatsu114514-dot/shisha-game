@@ -206,6 +206,15 @@ export function setBg(url, { instant = false, tint = null, fast = false, brief =
     weatherTint = tint || "";
     refreshWeather();
     const olds = [...host.children].slice(0, -1);
+    if (curtain?.dissolve) {
+      // 煙のにじみ（TMG44）: 次の背景を前の背景の下にすぐ置き、前の背景は curtain.release() で煙の形にほどく
+      next.style.transition = "none";
+      next.classList.add("show");
+      host.insertBefore(next, olds[0] || null);
+      // 前の切り替えでほどけている途中の絵は、その幕に任せる（その下にある今の背景から次の背景へほどく）
+      curtain.dissolve(olds.filter((o) => !o.dataset.dissolving));
+      return;
+    }
     if (instant || curtain || coveredElsewhere) {
       next.classList.add("show");
       olds.forEach((o) => o.remove());

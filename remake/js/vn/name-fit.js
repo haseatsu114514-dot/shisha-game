@@ -15,8 +15,15 @@ export function createNameFit(element) {
     const textWidth = range.getBoundingClientRect().width * width / box.width;
     if (textWidth <= available) return;
     const fontSize = parseFloat(getComputedStyle(element).fontSize);
-    const fitted = Math.max(14, Math.floor(fontSize * (available - 1) / textWidth * 1000) / 1000);
+    let fitted = Math.max(14, Math.floor(fontSize * (available - 1) / textWidth * 1000) / 1000);
     element.style.setProperty('--vn-name-fit-size', `${fitted}px`);
+    // The text width is not exactly proportional to the font size (glyph rounding and tracking differ between
+    // browser versions), so measure again and step down until the name really fits with the same 1px slack.
+    for (let step = 0; step < 24 && fitted > 14; step++) {
+      if (range.getBoundingClientRect().width * width / box.width <= available - 1) break;
+      fitted = Math.max(14, Math.floor((fitted - 0.25) * 1000) / 1000);
+      element.style.setProperty('--vn-name-fit-size', `${fitted}px`);
+    }
   }
   const observer = new ResizeObserver(fit);
   observer.observe(element);

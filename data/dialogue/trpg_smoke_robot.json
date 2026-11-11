@@ -74,22 +74,22 @@
     {
       "id": "adam",
       "part": "PLAYER",
-      "role": "{pc:adam}／香りの航海士",
+      "role": "{pc:adam}／手順書の航海士",
       "color": "#c9463a",
       "ability": "舞台の支度",
       "abilityType": "prepare",
       "abilityText": "ピコと一台を支度するとき、判定に一度だけ＋7",
       "sheet": {
         "name": "ノヴァ",
-        "title": "香りの航海士",
+        "title": "手順書の航海士",
         "stats": {
           "eye": 2,
           "hand": 5,
           "talk": 3,
           "nerve": 1
         },
-        "trait": "香りの配合なら駅一番。名言の前に、少し間を取る",
-        "likes": "林檎の香り。宇宙の始まりの味"
+        "trait": "手順書どおりにしか動けない。名言の代わりに、頁番号を言う",
+        "likes": "付箋だらけの手順書。定時のチャイム"
       }
     },
     {
@@ -522,7 +522,7 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "宇宙か。林檎に始まったこの世界の、果てを見に行こう"
+          "text": "星の海か。舞台としては、これ以上ない広さだな"
         },
         {
           "speaker": "tsumugi",
@@ -1187,7 +1187,7 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "作り手の好物か。原点の味というやつだな"
+          "text": "作り手の好物か。ピコが最初に覚えた味だな"
         }
       ]
     },
@@ -1623,7 +1623,7 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "片翼では飛べぬ、か。宇宙でも同じだな"
+          "text": "片翼では飛べぬ、か。軌道の上でも同じだな"
         }
       ]
     },
@@ -1705,7 +1705,7 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "柑橘か。作り手の好物は、ピコの原点だな"
+          "text": "柑橘か。作り手の好物を、ピコの手でもう一度"
         },
         {
           "speaker": "samechan",
@@ -1891,7 +1891,7 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "作り手に返す一台。原点への、最高の便りだ"
+          "text": "作り手に返す一台。いちばん遠くまで届く手紙だな"
         },
         {
           "speaker": "tsumugi",
@@ -1932,7 +1932,7 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "一台と、この眺め。宇宙で一番の席だな"
+          "text": "一台と、この眺め。駅で一番の席だな"
         },
         {
           "speaker": "hajime",
@@ -2014,7 +2014,7 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "仲間の一台を、仲間と探す。それもまた原点だ"
+          "text": "仲間の一台を、仲間と探す。夜番が一人増えるのも、悪くない"
         },
         {
           "speaker": "samechan",
@@ -2040,7 +2040,7 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "作り手の好きな香りを、もう一度。原点への帰還だな"
+          "text": "作り手の好きな香りを、もう一度。帰り道の一台だな"
         },
         {
           "speaker": "tsumugi",
@@ -2248,7 +2248,7 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "{pc:adam}が告げる。失敗とは、成功という林檎の種だ"
+          "text": "{pc:adam}がピコの前にしゃがむ。失敗は、次の一台の下書きだ"
         },
         {
           "speaker": "samechan",
@@ -2368,7 +2368,7 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "intense",
-          "text": "{pc:adam}が香りを量る。この一匙に、宇宙の始まりを込める"
+          "text": "{pc:adam}が香りを量る。この一匙に、今夜のすべてを込める"
         },
         {
           "speaker": "samechan",
@@ -2469,19 +2469,55 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "俺の役はノヴァ。駅の夜番で、香りの航海士だ"
+          "text": "俺の役はノヴァ。駅の夜番の航海士だ。……手順書が手放せない"
+        },
+        {
+          "speaker": "adam",
+          "role": "{pc:adam}／物語",
+          "face": "serious",
+          "text": "手順書、四十二頁。『配合は、量ってから』。以上です"
+        },
+        {
+          "speaker": "samechan",
+          "role": "GM／卓の会話",
+          "face": "surprise",
+          "text": "名言の代わりに頁番号じゃと！？ 新しいのう"
         },
         {
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "好きなものは林檎の香り。宇宙は、そこから始まった"
-        },
+          "text": "今夜の俺は、書いてあることしか言わない"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_smoke_robot_aside_adam_adam_nova",
+      "metadata": {
+        "preview_only": true,
+        "making": true
+      },
+      "lines": [
         {
-          "speaker": "samechan",
-          "role": "GM／卓の会話",
-          "face": "smile",
-          "text": "宇宙の始まりまで背負うとは、頼もしいのう"
+          "speaker": "adam",
+          "role": "{pc:adam}／物語",
+          "face": "normal",
+          "text": "ピコ。……私も手順書がないと、何もできない。失敗するのが、怖いからだ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_smoke_robot_after_adam_adam_nova",
+      "metadata": {
+        "preview_only": true,
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "怖いと言ったのは、ノヴァだ。俺じゃない。……今夜は、そういうことにしておこう"
         }
       ]
     },
@@ -2733,8 +2769,8 @@
           "actor": "adam",
           "sheet": "adam",
           "stat": "talk",
-          "label": "名言で、ピコを励ます",
-          "detail": "{pc:adam}が大げさな言葉で、ピコの顔を上げさせる",
+          "label": "言葉をかけて、ピコを励ます",
+          "detail": "{pc:adam}がピコの前にしゃがみ、顔を上げさせる",
           "declare": "trpg_smoke_robot_declare_listen_cheer"
         },
         {
@@ -2816,8 +2852,8 @@
           "actor": "adam",
           "sheet": "adam",
           "stat": "talk",
-          "label": "名言で、最後の幕を上げる",
-          "detail": "{pc:adam}が大げさな口上で、ピコの晴れ舞台を作る",
+          "label": "声をかけて、最後の幕を上げる",
+          "detail": "{pc:adam}がピコの背中を押し、晴れ舞台を作る",
           "declare": "trpg_smoke_robot_declare_serve_speech"
         }
       ]
@@ -2962,16 +2998,18 @@
         {
           "id": "nova",
           "name": "ノヴァ",
-          "title": "香りの航海士",
-          "trait": "香りの配合なら駅一番。名言の前に、少し間を取る",
-          "likes": "林檎の香り。宇宙の始まりの味",
+          "title": "手順書の航海士",
+          "trait": "手順書どおりにしか動けない。名言の代わりに、頁番号を言う",
+          "likes": "付箋だらけの手順書。定時のチャイム",
           "stats": {
             "eye": 2,
             "hand": 5,
             "talk": 3,
             "nerve": 1
           },
-          "making": "trpg_smoke_robot_make_adam_adam_nova"
+          "making": "trpg_smoke_robot_make_adam_adam_nova",
+          "aside": "trpg_smoke_robot_aside_adam_adam_nova",
+          "after": "trpg_smoke_robot_after_adam_adam_nova"
         },
         {
           "id": "cosmo",

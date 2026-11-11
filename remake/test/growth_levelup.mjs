@@ -192,6 +192,10 @@ assert.equal(g.hidane.sense - held.sense + g.hidane.body - held.body + g.hidane.
 assert.deepEqual(growth.settleGrowth().gifts, [], "同じ水準・同じ箱では二度もらえない");
 core.state.kuji.g500.emptyDay = 9;
 assert.deepEqual(growth.settleGrowth().gifts.map((x) => x.label), ["くじのラストワン賞"], "次の箱を引き切ればまたもらえる");
+// 行かなくなった街の店の箱は空のまま残る（くじは店ごとに1種類・KJ11）。章が変わっても同じ箱では二度もらえない
+core.state.chapter += 1;
+assert.equal(growth.settleGrowth().gifts.some((x) => x.label === "くじのラストワン賞"), false, "章が変わっても、同じ箱では二度もらえない");
+core.state.chapter -= 1;
 core.state.flags._axe_bar_records = { classic: { plays: 9, best: { total: 85, maximum: 100 } } };
 assert.deepEqual(growth.settleGrowth().gifts, [], "斧投げのご褒美は Aランクの1回だけ");
 delete core.state.flags._axe_bar_records; core.state.trpg.cleared = {}; core.state.kuji = {};
