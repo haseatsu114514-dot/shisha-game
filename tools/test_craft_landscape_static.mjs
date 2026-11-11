@@ -7,11 +7,10 @@ const folder=dirname(fileURLToPath(import.meta.url));
 const cache=process.env.CRAFT_CACHE;
 const repoRoot=process.env.CRAFT_SOURCE_ROOT||resolve(folder,'..');
 const out=process.env.CRAFT_ARTIFACTS||'/tmp/shisha-craft-landscape-static';await mkdir(out,{recursive:true});
-const files=['remake/css/base.css','remake/css/craft.css','remake/css/ui-art.css','remake/css/craft-header.css','remake/css/game-ds.css'];
+const files=['remake/css/base.css','remake/css/craft.css','remake/css/ui-art.css','remake/css/craft-header.css'];
 async function source(path){
  if(!cache)return readFile(resolve(repoRoot,path),'utf8');
  if(path==='remake/css/base.css')return readFile(resolve(cache,'../dialogue-offset/base.css'),'utf8');
- if(path==='remake/css/game-ds.css')return readFile(resolve(cache,'../dialogue-offset/game-ds.css'),'utf8');
  return readFile(resolve(cache,path.replaceAll('/','__')),'utf8');
 }
 const sheets=await Promise.all(files.map(source));
@@ -39,7 +38,7 @@ const results=[];
 try{
  const {targetId}=await send('Target.createTarget',{url:'about:blank'});session=(await send('Target.attachToTarget',{targetId,flatten:true})).sessionId;await send('Page.enable',{},session);
  for(const [label,width,height,mobile,ds,step] of [
-  ...['setup','mix','mix-visible','mix-two','mix-two-visible','pack','place'].flatMap(step=>[['pc',1920,1080,false,false,step],['desktop-narrow',844,390,false,false,step],['phone-844',844,390,true,false,step],['phone-915',915,412,true,false,step],['phone-740',740,360,true,false,step],['ds',844,390,true,true,step]]),
+  ...['setup','mix','mix-visible','mix-two','mix-two-visible','pack','place'].flatMap(step=>[['pc',1920,1080,false,false,step],['desktop-narrow',844,390,false,false,step],['phone-844',844,390,true,false,step],['phone-915',915,412,true,false,step],['phone-740',740,360,true,false,step]]),
   ...[[844,390],[915,412],[740,360]].map(([w,h])=>['long-description',w,h,true,false,'pack-detail']),
   ...['holes','heat','timer','steam','pull','care','serve'].map(step=>['outside',844,390,true,false,step]),['water',844,390,true,false,'setup-water']]){
   if(process.env.CRAFT_REGRESSION_MIX_TWO && !(label==='phone-844'&&step==='mix-two'))continue;

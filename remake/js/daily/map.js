@@ -125,7 +125,7 @@ function cueMove(shield, spot) {
 /** ワイドステージ（#2861）: 街の絵と施設のピンを同じ倍率（ステージ幅 / 1280）で横いっぱいに拡大する（base.css）。
  *  拡大した絵は上下に1割ほどはみ出すので、上から切る量 --map-crop を「どのピンも頭（看板・顔）から先まで画面に入る」範囲で、
  *  できるだけ上下均等に決める（地図ごとにピンの高さの範囲が違う。第4章の砂漠の「砂丘」は y=92%）。
- *  ノッチ（safe-area）にかかる端のピンは、その分だけ内側へ寄せる（--pin-nudge-x）。PC の 16:9 と 2画面表示（DS）では何もしない。 */
+ *  ノッチ（safe-area）にかかる端のピンは、その分だけ内側へ寄せる（--pin-nudge-x）。PC の 16:9 では何もしない。 */
 const MAP_TOP_SAFE = 40, MAP_BOTTOM_SAFE = 8, MAP_SIDE_SAFE = 8;
 function fitMapCrop(pins) {
   const stage = document.getElementById?.("stage");
@@ -134,7 +134,7 @@ function fitMapCrop(pins) {
   const height = width * 9 / 16, overflow = height - 720;
   const all = [...pins.querySelectorAll(".spot-pin")];
   for (const pin of all) pin.style.removeProperty?.("--pin-nudge-x");
-  if (overflow <= 0 || document.body?.classList?.contains("game-ds")) { stage.style.removeProperty?.("--map-crop"); return; }
+  if (overflow <= 0) { stage.style.removeProperty?.("--map-crop"); return; }
   const box = pins.getBoundingClientRect();
   if (!box.height) return;
   const unit = box.height / height; // 画面 px ÷ ステージ px
@@ -171,9 +171,6 @@ function openMap({ notice = "", reminder = "", eventPin = null, guide = null, on
     updateHud();
     const info = el("div.map-info");
     const pins = el("div.map-pins");
-    // DS風の上画面：街の全体図に行き先の点を打つ（表示だけ。操作は下画面のカード）。通常版ではCSSで出さない。
-    const markers = el("div.ds-map-markers", { "aria-hidden": "true" });
-    const markSelected = (id) => markers.querySelectorAll(".ds-map-marker").forEach(m => m.classList.toggle("sel", m.dataset.marker === id));
     let selected = null;
     const owner = state;
     let stationTrip = null;
@@ -269,7 +266,6 @@ function openMap({ notice = "", reminder = "", eventPin = null, guide = null, on
       stationTrip?.cancel(); stationTrip = null;
       selected = s;
       pins.querySelectorAll(".spot-pin").forEach((p) => p.classList.toggle("sel", p === btn));
-      markSelected(s.id);
       SE.click();
       renderInfo(s);
     };
@@ -281,7 +277,6 @@ function openMap({ notice = "", reminder = "", eventPin = null, guide = null, on
       clearSpotInfo();
       stationTrip?.cancel(); stationTrip = null; selected = null;
       pins.querySelectorAll(".spot-pin").forEach(p => p.classList.remove("sel"));
-      markSelected(null);
       const cancel = () => { stationTrip?.cancel(); stationTrip = null; idleInfo(); };
       const destinations = stationDestinations(state, regions || [], region?.id);
       const choose = (item) => {
@@ -310,9 +305,6 @@ function openMap({ notice = "", reminder = "", eventPin = null, guide = null, on
               if (walk) { await arrive(); toast(`歩いて${item.label}へ帰った。かなり疲れた`); }
               else await trainRide(arrive, { from: trip.from, to: trip.to });
               if (!stationActive()) return;
-              // 短いDS縦画面では駅の確認ボタンに合わせて外側がスクロールする。
-              // 到着後は新しい街の上画面（HUDと地図）から見せる。
-              if (document.body.classList.contains("game-ds")) root.closest("#viewport")?.scrollTo(0, 0);
             } finally { moving = false; }
           };
         const confirm = el("button.mi-go", { type: "button", text: `${yen(trip.fare)}で移動する`,
@@ -365,7 +357,6 @@ function openMap({ notice = "", reminder = "", eventPin = null, guide = null, on
     function renderPins() {
       stopReveal();
       pins.replaceChildren();
-      markers.replaceChildren();
       const freshPins = [];
       const spots = mapSpots().filter(s => spotVisible(s) && (s.kind !== "fortune" || fortuneToday()));
       const reveals = newlyRevealedSpots(state, region?.id || "osu", spots.map(s => ({
@@ -419,8 +410,6 @@ function openMap({ notice = "", reminder = "", eventPin = null, guide = null, on
         freshPins.push({ btn, spot: s, index: revealIndex });
       }
       pins.append(btn);
-      markers.append(el("i.ds-map-marker", { className: `ds-map-marker${av.ok || av.guided ? "" : " off"}${selected?.id === s.id ? " sel" : ""}`,
-        dataset: { marker: s.id, label: caption }, style: { left: `${s.x}%`, top: `${s.y}%` } }));
       }
       if (!guide && stationDestinations(state, regions || [], region?.id).length) {
         const station = region?.id === "widehanga" ? { x: 15, y: 37 } : { x: 15, y: 36 };
@@ -431,8 +420,6 @@ function openMap({ notice = "", reminder = "", eventPin = null, guide = null, on
           onclick: openStation,
         }, [el("div.pin-visual", [el("div.shield", [el("div.ico", [el("span.pin-symbol", { html: TRAIN_ICON_SVG })])])]),
           el("div.sub-label", { text: `駅・一律${yen(STATION_FARE)}` })]));
-        markers.append(el("i.ds-map-marker", { dataset: { marker: "station", label: "駅" },
-          style: { left: `${station.x}%`, top: `${station.y}%` } }));
       }
       if (typeof requestAnimationFrame === "function") requestAnimationFrame(() => fitMapCrop(pins));
       if (freshPins.length) {
@@ -477,7 +464,6 @@ function openMap({ notice = "", reminder = "", eventPin = null, guide = null, on
     const rainy = isRainy();
     const root = el("div.map", { dataset: { night: String(night), rain: String(rainy), destinationSelection: "true" } }, [
       rainy ? el("div.map-weather") : null, // 雨の日のオーバーレイ（ピンより下・操作を邪魔しない）
-      markers,
       pins,
       notice ? el("div.map-notice", { text: notice }) : null,
       revealNotice,

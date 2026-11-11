@@ -57,18 +57,15 @@ async function fullRig(page) {
   assert(result.length>=4);for(const r of result)assert(r.visible && r.contained,JSON.stringify(r));
 }
 await suite('craft-layout-703', async check => {
-  for(const [name,options,layout,portrait] of [
-    ['pc',{},'normal'],['touch',{viewport:{width:844,height:390},isMobile:true,hasTouch:true},'normal'],
-    ['pc-ds',{},'ds'],['touch-ds',{viewport:{width:844,height:390},isMobile:true,hasTouch:true},'ds'],
-    // #2789: スマホの縦持ちはDS風も回転ガードで止める（#2794）。作業台を開いたまま縦（390×844）へ回すと、ガードが
+  // DS風（pc-ds・touch-ds）は廃止（横画面一本化）。
+  for(const [name,options,portrait] of [
+    ['pc',{}],['touch',{viewport:{width:844,height:390},isMobile:true,hasTouch:true}],
+    // #2789: スマホの縦持ちは回転ガードで止める（#2794）。作業台を開いたまま縦（390×844）へ回すと、ガードが
     // 観客の札と操作を覆い、押しても一台は変わらない。横（844×390）へ戻すと同じ工程から続け、以下の配置を横で検査する。
-    ['portrait-ds',{viewport:{width:844,height:390},isMobile:true,hasTouch:true},'ds',{width:390,height:844}],
+    ['portrait-rotate',{viewport:{width:844,height:390},isMobile:true,hasTouch:true},{width:390,height:844}],
   ]) {
     await check(`layout-${name}`,async page=>{
-      // タイトルの見た目は CONFIG の中で切り替える（#2863）。
-      if(options.hasTouch)await test(page,'title-config').tap();
-      else await test(page,'title-config').click();
-      await test(page,`title-layout-${layout}`).click();await test(page,'cfg-close').click();await init(page,'drill');await run(page,'mix');
+      await init(page,'drill');await run(page,'mix');
       if(portrait)await rotateThroughGuard(page,{portrait,landscape:options.viewport,label:`${name}/mix`,
         targets:[page.locator('.bench-audience'),test(page,'mix-plus-double_apple'),test(page,'mix-ok'),page.locator('.bench-guide summary')],
         state:()=>page.evaluate(()=>({cs:JSON.stringify(QA.cs),step:document.querySelector('.bench')?.dataset.step??null,

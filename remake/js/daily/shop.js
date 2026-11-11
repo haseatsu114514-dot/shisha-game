@@ -23,6 +23,7 @@ import { AF_VANILLA_ART } from "./shop-art-af-vanilla.js";
 import { REMAINING_SHOP_ART } from "./shop-art-remaining.js";
 import { LIMITED_FLAVOR_ART } from "./shop-art-limited.js";
 import { NEW_FLAVOR_ART } from "./shop-art-new-flavors.js";
+import { FLAVOR_CARTONS_3287_ART } from "./shop-art-flavor-cartons-3287.js";
 import { CHARACTER_FLAVOR_ART } from "./shop-art-character-flavors.js";
 import { SHOP_EQUIPMENT_ART } from "./shop-equipment-art.js";
 import { flavorThermalGuide } from "../craft/temperature-model.js";
@@ -115,7 +116,7 @@ function windowArt(item, url, box, dimensions, size, kind, fallback) {
   return root;
 }
 const generatedFlavorArt = (id) => AF_VANILLA_ART[id] || SHOP_ART[id] || REMAINING_SHOP_ART[id] || LIMITED_FLAVOR_ART[id]
-  || NEW_FLAVOR_ART[id] || CHARACTER_FLAVOR_ART[id];
+  || NEW_FLAVOR_ART[id] || CHARACTER_FLAVOR_ART[id] || FLAVOR_CARTONS_3287_ART[id];
 /** 制作の葉選びも、ショップで採用済みの商品パッケージを使う。未収録・配信失敗は文字へ。 */
 export function flavorPackageArt(id, size = 54) {
   const item = { id };

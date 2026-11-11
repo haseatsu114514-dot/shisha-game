@@ -63,17 +63,24 @@ await suite("no-zoom-and-landscape-only", async check => {
     const r = await page.evaluate(() => {
       const g = document.querySelector("#rotate-hint"), b = g.getBoundingClientRect();
       const hit = document.elementFromPoint(innerWidth / 2, innerHeight / 2);
-      return { covers: b.left <= 0 && b.top <= 0 && b.right >= innerWidth && b.bottom >= innerHeight, hit: g === hit || g.contains(hit),
-        above: [...document.querySelectorAll(".game-layout-toolbar, .title-layout-toolbar")].every(n => { const q = n.getBoundingClientRect(); return !q.width || g.contains(document.elementFromPoint(q.x + q.width / 2, q.y + q.height / 2)); }) };
+      return { covers: b.left <= 0 && b.top <= 0 && b.right >= innerWidth && b.bottom >= innerHeight, hit: g === hit || g.contains(hit) };
     });
-    assert.deepEqual(r, { covers: true, hit: true, above: true });
+    assert.deepEqual(r, { covers: true, hit: true });
   }, { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
 
-  await check("portrait-tablet-and-ds-title-are-guarded", async page => {
+  await check("portrait-tablet-title-is-guarded", async page => {
     await page.locator("#rotate-hint").waitFor({ state: "visible" });
   }, { viewport: { width: 820, height: 1180 }, isMobile: true, hasTouch: true });
 
   await check("desktop-never-shows-guard", async page => {
     assert.equal(await page.locator("#rotate-hint").isVisible(), false);
   }, { viewport: { width: 700, height: 900 } });
-}, { initScript: () => localStorage.setItem("suien_title_layout", "ds") });
+  // DS風の廃止（横画面一本化）: 以前に DS風を選んでいた端末でも、縦持ちは同じ回転ガードだけを出す。
+  await check("legacy-ds-preference-portrait-is-guarded", async page => {
+    await page.evaluate(() => localStorage.setItem("suien_title_layout", "ds"));
+    await page.reload();
+    await page.locator("#rotate-hint").waitFor({ state: "visible" });
+    await page.waitForFunction(() => localStorage.getItem("suien_title_layout") === null);
+    assert.equal(await page.locator("body.game-ds, .title-ds-panel, .game-ds-panel").count(), 0);
+  }, { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
+});

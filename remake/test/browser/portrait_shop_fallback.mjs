@@ -1,8 +1,7 @@
-// #2789: 縦持ちではDS風の章タイトル・ショップ・ショップ入口を回転ガードで封じる。
+// #2789: スマホの縦持ちではショップ・ショップ入口・地図を回転ガードで封じる。横画面一本化（DS風は廃止）。
 import assert from "node:assert/strict";
 import { suite } from "./support.mjs";
 
-const chooseDs = () => localStorage.setItem("suien_title_layout", "ds");
 const setup = page => page.evaluate(async () => {
   const core = await import("./js/core/state.js");
   const ui = await import("./js/core/ui.js");
@@ -31,7 +30,7 @@ const assertGuard = async (page, screen) => {
 };
 
 await suite("portrait-shop-rotate-guard", async check => {
-  await check("ds-portrait-guards-shop-and-entry", async page => {
+  await check("portrait-guards-shop-entry-and-map", async page => {
     await setup(page);
     await assertGuard(page, "none");
     await page.evaluate(() => openTestShop({ errand: "lemon", expense: true, expenseFlag: "_errand_lemon_expensed" }));
@@ -45,22 +44,12 @@ await suite("portrait-shop-rotate-guard", async check => {
     await assertGuard(page, "shop-entry");
     assert.equal(await page.locator('[data-test="shop-enter"]').count(), 1);
     await page.evaluate(async () => (await import("./js/core/ui.js")).showScreen("map", document.createElement("section")));
-    await page.waitForFunction(() => document.body.classList.contains("game-ds"));
     await assertGuard(page, "map");
-  }, { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
-
-  await check("normal-portrait-keeps-guard", async page => {
-    await page.evaluate(() => {
-      localStorage.setItem("suien_title_layout", "normal");
-      window.dispatchEvent(new Event("display-layout-change"));
-    });
-    await setup(page);
-    await assertGuard(page, "none");
+    assert.equal(await page.locator("body.game-ds").count(), 0);
   }, { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
 
   await check("landscape-shop-and-supported-map", async page => {
     await setup(page);
-    await page.waitForFunction(() => document.body.dataset.gameLayout === "ds");
     assert.equal(await page.locator("#rotate-hint").isVisible(), false);
     await page.evaluate(() => openTestShop({ errand: "lemon", expense: true, expenseFlag: "_errand_lemon_expensed" }));
     await page.waitForFunction(() => document.body.dataset.screen === "shop");
@@ -68,7 +57,8 @@ await suite("portrait-shop-rotate-guard", async check => {
     assert.equal(await page.locator('[data-test="buy-lemon"]').isVisible(), true);
     assert.equal(await page.locator("#viewport").evaluate(node => getComputedStyle(node).overflowX), "hidden");
     await page.evaluate(async () => (await import("./js/core/ui.js")).showScreen("map", document.createElement("section")));
-    await page.waitForFunction(() => document.body.classList.contains("game-ds"));
+    await page.waitForFunction(() => document.body.dataset.screen === "map");
     assert.equal(await page.locator("#rotate-hint").isVisible(), false);
+    assert.equal(await page.locator("body.game-ds").count(), 0);
   }, { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true });
-}, { initScript: chooseDs });
+});

@@ -54,6 +54,8 @@ await suite("minto-cheki-cg", async check => {
         window.manualBefore = localStorage.getItem("suien_remake_slot1");
         void K.calendar.runDaily({ nightEvents: {} });
       });
+      // LIME は行き先を選んでいる間だけ開ける。背景の切り替え（煙のにじみ）と地図の準備が済んでから押す
+      await page.waitForFunction(() => !!document.querySelector("#screen [data-destination-selection]:not(.done)"));
       await page.locator('[data-test="hud-phone"]').click();
       await page.locator('[data-test="lime-chat-minto"]').click();
       for (let n = 0; n < 45 && !await page.locator('[data-test="reply-0"]').isVisible(); n++) {

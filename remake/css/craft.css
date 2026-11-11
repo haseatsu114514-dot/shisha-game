@@ -1,3 +1,4 @@
+/* body:not(:root) は、DS風の廃止（横画面一本化）で外した :not(.game-ds) と同じ詳細度を保つための置き換え。 */
 /* ============================================================
    作業台（シーシャ作り）と大会の演出
    大会中（data-mode="tournament"）は黒×ネオンの「スタイリッシュ職人バトル」。
@@ -746,7 +747,6 @@
 }
 .rt-part.feel b { font-size: 20px; color: #ffe79a; }
 
-
 /* 温度判定の細い高得点帯。実温度と見える針を同期し、遅れた表示で外れないようにする。 */
 .thermo-mark { transition: none; }
 .thermo-mark { z-index: 3; }
@@ -1327,29 +1327,17 @@
 .mix-temperature-preview > small { position: absolute; top: calc(100% - 36px); left: 2px; width: 84px; text-align: center; font-weight: 700; font-size: 12px; }
 .mix-temperature[data-selected="false"] .thermo-scale { background: #55515d; }
 .thermo[hidden], .mix-temperature-preview[hidden] { display: none; }
-/* DSの上画面でも両工程を同じ位置へ。既存の下画面スクロールから独立させる。 */
-body.game-ds .bench[data-step] .pull > .thermo { position: fixed; left: calc(var(--ds-vx) + var(--ds-vw) - 96px); top: calc(64px + var(--ds-vy) + 90px); height: max(80px, calc(var(--ds-vh) - 302px)); }
-body.game-ds .bench[data-step] .mix-temperature-preview { position: fixed; left: calc(var(--ds-vx) + var(--ds-vw) - 108px); top: calc(64px + var(--ds-vy) + 56px); height: max(134px, calc(var(--ds-vh) - 248px)); padding-bottom: 20px; }
 .mix-footer { grid-template-columns: 180px minmax(240px, 1fr); }
 
 .bench:is([data-step="pull"], [data-step="care"], [data-step="serve"]) .worker-equipment { right: 104px; bottom: 140px; width: 102px; height: 260px; }
 .mix-temperature-preview:has([data-selected="false"]) > small { display: none; }
-/* パッキングでも配合と同じ左の温度帯ゲージを出す（横画面）。実温度針はまだ無いので帯のみ。
-   DSは landscape-only で別途撤去中のため、ここでは非DSだけを触る。 */
-body:not(.game-ds) .bench[data-step="pack"] .packing { position: relative; }
-body:not(.game-ds) .bench[data-step="pack"] .bench-panel { overflow: visible; }
-body:not(.game-ds) .bench[data-step="pack"] .mix-temperature-preview {
+/* パッキングでも配合と同じ左の温度帯ゲージを出す（横画面）。実温度針はまだ無いので帯のみ。 */
+body:not(:root) .bench[data-step="pack"] .packing { position: relative; }
+body:not(:root) .bench[data-step="pack"] .bench-panel { overflow: visible; }
+body:not(:root) .bench[data-step="pack"] .mix-temperature-preview {
   left: -140px; height: 480px; padding-bottom: 78px; overflow: hidden;
 }
-body.game-ds .bench[data-step="pack"] .mix-temperature-preview { display: none; }
 
-
-body.game-ds .mix-temperature-legend { top: calc(100% - 15px); }
-body.game-ds .mix-temperature-preview > small { display: none; }
-body.game-ds .bench:is([data-step="pull"], [data-step="care"], [data-step="serve"]) .worker-equipment { bottom: 128px; transform: scale(.4); transform-origin: 50% 100%; }
-@media (min-height: 600px) and (min-width: 761px) {
-  body.game-ds .bench:is([data-step="pull"], [data-step="care"], [data-step="serve"]) .worker-equipment { transform: none; }
-}
 
 /* #2359 CUI08: 入場札と実況を夜紫の面へ。 */
 .entrance { background: #150d22e8; }

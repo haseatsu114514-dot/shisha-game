@@ -32,14 +32,14 @@ try {
     ['pc', { width: 1280, height: 900 }, false],
     ['landscape', { width: 844, height: 390 }, true],
     ['portrait', { width: 390, height: 844 }, true],
-  ]) for (const layout of ['normal', 'ds']) {
+  ]) for (const layout of ['normal']) { // DS風は廃止（横画面一本化）。名前と画像のファイル名は従来どおり layout を含める
     if (process.env.QA_DEVICE && process.env.QA_DEVICE !== device) continue;
     const context = await browser.newContext({ viewport, isMobile: touch, hasTouch: touch, reducedMotion: 'reduce' });
     const page = await context.newPage(), errors = [], resources = [];
     page.setDefaultTimeout(15000);
     page.on('pageerror', e => errors.push(e.message));
     page.on('response', r => { if (r.status() >= 400) resources.push(`${r.status()} ${r.url()}`); });
-    await page.addInitScript(layout => { localStorage.setItem('suien_title_layout', layout); localStorage.setItem('qa-facility-sentinel', '579'); }, layout);
+    await page.addInitScript(() => { localStorage.setItem('qa-facility-sentinel', '579'); });
     await page.goto(process.env.BASE_URL || 'http://127.0.0.1:8123/remake/');
     await page.locator('[data-test="title-new"]').waitFor({ timeout: 45000 });
     await page.locator('#boot').waitFor({ state: 'detached' });
@@ -153,7 +153,7 @@ try {
         assert(pins.filter(p => p.id !== 'trpg_bar').every(({ target: b }) =>
           a.x+a.width <= b.x || b.x+b.width <= a.x || a.y+a.height <= b.y || b.y+b.height <= a.y), 'board-game cafe overlaps another destination');
       }
-      // #2789（#2794）: 縦持ちは通常版・DS風とも回転ガードで画面を覆い、地図のピンは操作させない。
+      // #2789（#2794）: 縦持ちは回転ガードで画面を覆い、地図のピンは操作させない。
       const rotates = device === 'portrait';
       if (rotates) {
         assert(await page.locator('#rotate-hint').isVisible());

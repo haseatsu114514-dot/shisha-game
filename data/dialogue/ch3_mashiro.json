@@ -1853,6 +1853,246 @@
           }
         ]
       }
+    },
+    {
+      "dialogue_id": "mashiro_time_counter",
+      "comment": "BLC03。恋人のましろとmukaiで過ごす時間（一日に一度・巡回）。第3章の東京と第5章の東京の両方で読むので、大会・味・滞在の長さには触れない。",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_mukai_shop.png",
+        "private_scene": true
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "客の途切れたmukaiで、ましろちゃんがカウンターの椅子を二つ引いた。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "ひと休みしよぉ。ここから先は、僕たちの時間"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "洗い物、まだ途中だよ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "途中でいいの。グラスは、乾くまで待ってくれるから"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "彼女は隣の席を、手のひらでぽんと叩いた。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "座って。今日あったこと、一個だけ聞かせて"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "一個だけ？"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "うん。たくさん聞くと、僕、途中で寝ちゃうから"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一個だけのつもりの話が、三つになった。ましろちゃんは、最後まで起きていた。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "……えへへ。三つとも、ちゃんと覚えたよぉ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "mashiro_time_train",
+      "comment": "BLC03。恋人のましろとmukaiで過ごす時間（一日に一度・巡回）。第3章の東京と第5章の東京の両方で読むので、大会・味・滞在の長さには触れない。",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_mukai_shop.png",
+        "private_scene": true
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "mukaiの裏口。ましろちゃんと並んだ頭の上を、電車が一本通りすぎた。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "今の、たぶん各駅。音がのんびりしてるでしょ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "音で分かるんだ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "ずっとここにいるからねぇ。急いでる電車は、もっと高い音"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "次の一本を、二人で黙って待った。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……今のは、急いでた"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "正解。はじめくん、耳がここの人になってきたねぇ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "彼女は俺の手を取って、自分の膝の上に置いた。当てたごほうび、らしい。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "次のが来るまで、このまま。……来ても、このままだけど"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "mashiro_time_errand",
+      "comment": "BLC03。恋人のましろとmukaiで過ごす時間（一日に一度・巡回）。第3章の東京と第5章の東京の両方で読むので、大会・味・滞在の長さには触れない。",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_mukai_shop.png",
+        "private_scene": true
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "高架下の商店街。買い出しの袋を、ましろちゃんと片方ずつ持った。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "レモンと、炭酸と、ムカイさんのシロップ。これで全部"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "シロップ、また増えてない？"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "増えてる。新しいのが出ると、あの人、我慢できないの"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "店の手前で、彼女は足を止めて、袋を持っていない方の手を出した。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "ここから店までは、お客さんに見られないから"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "じゃあ、少し遠回りしようか"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "surprise",
+          "text": "……いいの？　氷、とけちゃうよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "氷、買ってないよ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "……あ、ほんとだ。じゃあ、ひと回りぶんだけねぇ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "つないだ手は、裏口の戸に手をかけるまで、そのままだった。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "mashiro_time_braid",
+      "comment": "BLC03。恋人のましろとmukaiで過ごす時間（一日に一度・巡回）。第3章の東京と第5章の東京の両方で読むので、大会・味・滞在の長さには触れない。",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_mukai_shop.png",
+        "private_scene": true
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "休憩の終わり際。ましろちゃんの三つ編みが、片方だけほどけかけていた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ましろちゃん、左、ほどけそうだよ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "……ほんとだ。今日は、手が眠いの。結んでぇ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "手が眠いって、初めて聞いた"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "あるんだよぉ。頭は起きてるのに、指だけお布団にいる日"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "見よう見まねで編み直す。右より、少しだけ太くなった。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "……ふふ。左だけ、はじめくんの編み方"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ごめん、やり直す？"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "ううん。今日は、このまま帰る"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "店に戻るまで、彼女は左の三つ編みを、何度も指でたしかめていた。"
+        }
+      ]
     }
   ]
 }

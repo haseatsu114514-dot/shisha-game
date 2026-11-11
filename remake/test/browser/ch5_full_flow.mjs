@@ -1419,7 +1419,7 @@ await suite("ch5-full-flow", async check => {
     const lines = await readLines();
     const order = ["三ヶ月目に決めた名前は、もう書けなかった。あれは、俺ひとりの城の名前だった。",
       "スミさん。tonariって、どうしてこの名前なんですか", "客の隣に座れる店にしたかった、……それだけだ",
-      "別の日。閉店後、ミントさんの部屋で遅い夕飯を作った。", "返事を聞きながら、もう一つボウルを出す。",
+      "別の日。閉店後、栞さんの部屋で遅い夕飯を作った。", "返事を聞きながら、もう一つボウルを出す。",
       "閉店の少し前。奥まった席に、いつもの鉄仮面さんが座った。",
       "客が帰ったあと、カウンターの一番古いトロフィーを拭いた。"].map(text => lines.indexOf(text));
     assert(order.every((index, i) => index >= 0 && (i === 0 || index > order[i - 1])), `finale order: ${order}`);
