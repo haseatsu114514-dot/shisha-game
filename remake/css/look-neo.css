@@ -1628,7 +1628,8 @@
   backdrop-filter: none;
 }
 /* LOG は会話の上に直接重なるので、下の本文が透けない濃さにする。 */
-:root[data-look="neo"] body:not(.game-ds) #stage #vn .vn-log { background: linear-gradient(180deg, #24163a, #150d22); }
+/* （上の :is() の規則と同じ強さになるよう、クラスを2つ重ねて書く。） */
+:root[data-look="neo"] body:not(.game-ds) #stage #vn .vn-log.vn-log { background: linear-gradient(180deg, #24163a, #150d22); }
 /* 見出しの下に金の細い罫線（会話の帯と同じ）。 */
 :root[data-look="neo"] body:not(.game-ds) #stage #modal .modal-box:not(.shop-dialog) > h3,
 :root[data-look="neo"] body:not(.game-ds) #stage #vn .vn-log .log-head {
@@ -1800,3 +1801,41 @@
   :root[data-look="neo"] body:not(.game-ds) #stage #screen .title:not([data-layout="ds"]) .title-item { transition: color .2s ease; }
   :root[data-look="neo"] body:not(.game-ds) #stage #screen .title:not([data-layout="ds"]) .title-item:is(:hover, :focus-visible):not(:disabled) { transform: none; }
 }
+
+/* ---------------------------------------------------------------- 13. 獲得の通知（能力・好感度・お知らせのカード）: 紙から夜紫の札へ。意味の色（能力の色・好感度の桃）は左の線と数字に残す */
+:root[data-look="neo"] body:not(.game-ds) #stage #banners .gain-card {
+  --text: var(--neo-ui-ink);
+  --text-dim: var(--neo-ui-dim);
+  --paper-ink: var(--neo-ui-ink);
+  --paper-muted: var(--neo-ui-dim);
+  --lavender: var(--neo-ui-lav);
+  color: var(--neo-ui-ink);
+  text-shadow: none;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--gc) 16%, #24163a) 0%, rgba(21, 13, 34, .95) 100%);
+  border: 1px solid color-mix(in srgb, var(--gc) 62%, rgba(201, 167, 230, .5));
+  border-left-width: 5px;
+  border-left-color: var(--gc);
+  border-image: none;
+  border-radius: 4px;
+  box-shadow: 0 8px 22px rgba(8, 3, 16, .5);
+  filter: none;
+  backdrop-filter: none;
+}
+:root[data-look="neo"] body:not(.game-ds) #stage #banners .gain-card.info { --gc: var(--neo-ui-lav); }
+:root[data-look="neo"] body:not(.game-ds) #stage #banners .gain-card:not(.affinity) .gc-main { color: #fff; text-shadow: 0 1px 3px rgba(8, 3, 16, .7); }
+:root[data-look="neo"] body:not(.game-ds) #stage #banners .gain-card .gc-top { color: color-mix(in srgb, var(--gc) 70%, #fff); }
+:root[data-look="neo"] body:not(.game-ds) #stage #banners .gain-card .gc-sub { color: var(--neo-ui-dim); }
+:root[data-look="neo"] body:not(.game-ds) #stage #banners .gain-card .gc-points { color: color-mix(in srgb, var(--gc) 70%, #fff); }
+:root[data-look="neo"] body:not(.game-ds) #stage #banners .gain-card.stat .gc-next { color: color-mix(in srgb, var(--gc) 70%, #fff); }
+:root[data-look="neo"] body:not(.game-ds) #stage #banners .gain-card.stat .gc-next i { background: rgba(246, 241, 250, .2); }
+/* 左の印（能力の漢字・「!」など）: 白い札ではなく、意味の色を薄く敷いた夜紫の札に明るい字。 */
+:root[data-look="neo"] body:not(.game-ds) #stage #banners .gain-card .gc-badge:not(.face) {
+  color: color-mix(in srgb, var(--gc) 45%, #fff);
+  background: color-mix(in srgb, var(--gc) 24%, #1b1029);
+  border: 1px solid color-mix(in srgb, var(--gc) 70%, #fff);
+  border-image: none;
+  border-radius: 4px;
+  box-shadow: none;
+  filter: none;
+}
+:root[data-look="neo"] body:not(.game-ds) #stage #banners .gain-card.affinity .gc-top { color: #ffc2d6; }

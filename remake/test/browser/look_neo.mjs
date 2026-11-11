@@ -443,7 +443,9 @@ const STAGE_PX = `(() => {
   const shown = (node) => { if (!node) return false; const r = node.getBoundingClientRect(), cs = getComputedStyle(node);
     return r.width > 0 && r.height > 0 && cs.visibility !== "hidden" && cs.display !== "none" && Number(cs.opacity) > .05; };
   const text = (node) => (node ? node.textContent.replace(/\\s+/g, "") : null);
-  const rgb = (value) => (value.match(/[\\d.]+/g) || []).slice(0, 4).map(Number);
+  // 色の数値（0〜255 と不透明度）。color-mix() の計算値は color(srgb 0〜1 …) の書き方で返るので 255 倍する。
+  const rgb = (value) => { const n = (value.match(/[\\d.]+/g) || []).slice(0, 4).map(Number);
+    return /^color\\(srgb/.test(value) ? [...n.slice(0, 3).map((v) => Math.round(v * 255)), ...n.slice(3)] : n; };
   return { px, shown, text, rgb, k };
 })()`;
 
@@ -666,6 +668,19 @@ async function dailyMap(page, { phone }) {
   assert(inside(sub.back, sub.rect) && sub.back.real >= (phone ? 38 : 30), "戻るボタンが板の中");
   await press(page, page.locator("#screen .sub-menu .sub-back"));
   await page.locator("#screen .map:not(.done)").waitFor({ timeout: 20000 });
+
+  // 獲得の通知（能力・好感度・お知らせのカード）も、紙ではなく夜紫の札に白い字。
+  await page.evaluate(async () => (await import("./js/core/ui.js")).gainCard({ kind: "info", badge: "!", top: "NEW", main: "レシピを覚えた", sub: "スミさんの基本形" }));
+  const card = page.locator("#banners .gain-card.show");
+  await card.waitFor();
+  await page.waitForTimeout(700); // 出現（0.45 秒）
+  const gain = await card.evaluate((node, helpers) => {
+    const { px, rgb } = (0, eval)(helpers); const style = getComputedStyle(node);
+    return { rect: px(node), frame: style.borderImageSource, face: style.backgroundImage, main: rgb(getComputedStyle(node.querySelector(".gc-main")).color),
+      badge: rgb(getComputedStyle(node.querySelector(".gc-badge")).color), badgeFace: rgb(getComputedStyle(node.querySelector(".gc-badge")).backgroundColor) };
+  }, STAGE_PX);
+  assert(inside(gain.rect, STAGE) && gain.frame === "none" && gain.face.includes("linear-gradient") && light(gain.main), `獲得の通知は夜紫の札 ${JSON.stringify(gain)}`);
+  assert(light(gain.badge) && dark(gain.badgeFace), `通知の印は暗い札に明るい字 ${JSON.stringify(gain)}`);
   assert.equal(await page.evaluate(() => window.lookNeoDailyError || ""), "");
 }
 
