@@ -76,11 +76,16 @@ export async function runChapterThreeService(value, { read, adjust, save, isCurr
   return true;
 }
 
-/** 台本の分岐を、保存に残る実体験だけで差し込む。読み取るだけでは保存を変えない。 */
+/**
+ * 台本の分岐を、保存に残る実体験だけで差し込む。読み取るだけでは保存を変えない。
+ * 差し込む場所は台本の行の id で決める（BLC04）: before は id "ch3_work_echo" の行の直後、綾取の一台の記録（serviceNote）は
+ * id "ch3_service_note" の行の直後、作戦のメモ（notes）は id "ch3_work_notes" の行の直後。印の無い台本では場面の頭に足す。
+ * 以前は before を必ず頭に足していたので、返事が問いより先に出る・合図の前に内心が出る、という順番のずれがあった。
+ */
 export function chapterThreeWorkDialogue(value, source) {
   const record = chapterThreeWork(value), service = chapterThreeService(value);
   const branch = key => source.branches?.[key] || [];
-  let before = [], notes = [];
+  let before = [], notes = [], serviceNote = [];
   if (source.dialogue_id === "ch3_daily_cup_1" && ["tea", "sit"].includes(record?.rest))
     before = branch(`rest_${record.rest}_echo`);
   if (source.dialogue_id === "ch3_work_without_taste" && ["tea", "sit"].includes(record?.rest))
@@ -88,8 +93,8 @@ export function chapterThreeWorkDialogue(value, source) {
   if (source.dialogue_id === "ch3_naru_contact_before_tournament" && own(record, "shift"))
     before = branch("work_phone_echo");
   if (source.dialogue_id === "ch3_saku_mukai_served" && service?.careDone) {
-    before = [...branch(service.result), ...(service.result === "failed" ? []
-      : branch(service.adjustment?.coals > 0 ? "coal_changed" : "coal_kept"))];
+    before = branch(service.result);
+    if (service.result !== "failed") serviceNote = branch(service.adjustment?.coals > 0 ? "coal_changed" : "coal_kept");
   }
   if (source.dialogue_id === "ch3_strategy") {
     if (service?.feedbackRead) {
@@ -104,6 +109,9 @@ export function chapterThreeWorkDialogue(value, source) {
   }
   if (source.dialogue_id === "ch3_national_craft" && ["aroma", "light", "sweet"].includes(value.flags?._ch3_strategy))
     before = branch(`strategy_${value.flags._ch3_strategy}`);
-  const lines = source.lines.flatMap(line => line.id === "ch3_work_notes" ? [line, ...notes] : [line]);
-  return { ...source, lines: [...before, ...lines] };
+  const inserts = { ch3_work_notes: notes, ch3_work_echo: before, ch3_service_note: serviceNote };
+  const marked = id => source.lines.some(line => line.id === id);
+  const lines = source.lines.flatMap(line => inserts[line.id]?.length ? [line, ...inserts[line.id]] : [line]);
+  const head = [...(marked("ch3_work_echo") ? [] : before), ...(marked("ch3_service_note") ? [] : serviceNote)];
+  return { ...source, lines: [...head, ...lines] };
 }

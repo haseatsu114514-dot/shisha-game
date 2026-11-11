@@ -447,7 +447,7 @@
         },
         {
           "speaker": "minto",
-          "face": "ura_sad",
+          "face": "ura_normal",
           "text": "……これ出すの、ちょっと迷った。お店のより、地味だなって"
         },
         {
@@ -456,18 +456,53 @@
           "text": "栞さんが家で使ってるもの、見せてもらえてうれしい"
         },
         {
-          "speaker": "minto",
-          "face": "ura_surprise",
-          "text": "……じゃあ、今日はここに置いて。はじめくんのカップ"
+          "speaker": "",
+          "face": "",
+          "text": "コースターの真ん中に、薄い輪の跡がある。何度洗っても、そこだけ色が落ちなかったらしい。"
         },
         {
           "speaker": "minto",
-          "face": "ura_smug",
-          "text": "……ね、トングのほうはお店で使ってるの。……見つけても、笑わないでよ"
+          "face": "ura_normal",
+          "text": "お店を手放した日、これだけ鞄に入れたの。……ほかは、何も持ち出せなくて"
         },
         {
           "speaker": "hajime",
           "face": "normal",
+          "text": "……それで、今日まで"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_smile",
+          "text": "うん。……でも、重い話はここまで。はじめくん、肩が上がってる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "え"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_smile",
+          "text": "今日、ずっと立ちっぱなしだったでしょ。……ここでは、お客さんの顔しなくていいよ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "栞さんは俺の湯のみを取って、輪の跡にぴったり重ねた。"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_smile",
+          "text": "……じゃあ、今日はここに置いて。はじめくんのカップ"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_normal",
+          "text": "……ね、トングのほうはお店で使ってるの。……見つけても、笑わないでよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
           "text": "笑わないよ。今度、こっそり見せて"
         }
       ]
@@ -487,12 +522,32 @@
         },
         {
           "speaker": "minto",
-          "face": "ura_smile",
+          "face": "ura_normal",
           "text": "……試作一号。お店でまた出したくて。まだ、味見してないの"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "グラスの横に、手書きの表が置いてあった。層の厚さ、アイスの温度、ミントの葉の枚数。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "これ、全部量ったんですか"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_smile",
+          "text": "うん。上から食べても、底から食べても、同じ甘さで終わるように"
         },
         {
           "speaker": "minto",
           "face": "ura_normal",
+          "text": "最後の一口が冷たすぎると、お客さんの顔が、ちょっとだけ曇るの"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_smile",
           "text": "……最初のひと口、はじめくんに、……はい、あーん"
         },
         {
@@ -506,9 +561,24 @@
           "text": "……っ、ふふ。味の感想、もうちょっと欲しいけど、……うれしい"
         },
         {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "底のほう、チョコがちょっとだけ固いかも"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_surprise",
+          "text": "……ほんとだ。冷やす時間、十分短くしてみる"
+        },
+        {
           "speaker": "",
           "face": "",
-          "text": "メモの感想欄に、栞さんは「もう一口」と書いた。笑って、スプーンを持ち直す。"
+          "text": "メモの感想欄に、栞さんは「もう一口」と「底は十分短く」を書いた。笑って、スプーンを持ち直す。"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_smile",
+          "text": "「もう一口」を三回もらえたら、お店に出すの。あと、二回"
         }
       ]
     },
@@ -544,6 +614,51 @@
           "speaker": "minto",
           "face": "ura_smile",
           "text": "……こんなに楽なの、生まれて初めて。……ありがとね、はじめくん"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "栞さんはクッションを一つ取って、俺の背中へ差し込んだ。"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_normal",
+          "text": "でも、はじめくんはまだ隠してるでしょ。……肩、ずっと固いもん"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "そんなこと、ないと思うけど"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_smug",
+          "text": "七つも上だとね、見えちゃうの。……ほら、寄りかかって"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "言われるまま、肩を預けた。栞さんの手が、ゆっくり、一定の速さで背中を叩く。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……これ、お店でもやってるの？"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_smug",
+          "text": "やってないよ。お店のみんとは、甘やかしてもらう係だもん"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_smile",
+          "text": "今日もお疲れさまでした♡ ……なんてね。これも、私の声"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "どっちの声でも、ちゃんと届いてる"
         },
         {
           "speaker": "hajime",

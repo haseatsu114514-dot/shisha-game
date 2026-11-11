@@ -19,7 +19,7 @@
       "lines": [
         { "speaker": "", "face": "", "text": "郵便受けに、また厚い封筒が届いていた。差出人は、シェイク・ナジュム・アル=ガリヤーン。" },
         { "speaker": "sheikh", "face": "normal", "text": "君が帰ってから、客間が空いたままだ" },
-        { "speaker": "sheikh", "face": "smile", "text": "切符を入れておく。王族の招待だと思わなくていい。友人の誘いだ" },
+        { "speaker": "sheikh", "face": "smile", "text": "切符を入れておく。王族の招待だと思わなくていい。旅人の誘いだ" },
         { "speaker": "hajime", "face": "smile", "text": "（今度は、tonariの葉をもう一袋持っていこう）" },
         { "speaker": "", "face": "", "text": "封筒の底に、また往復の切符が入っていた。" }
       ]
@@ -92,7 +92,7 @@
         { "speaker": "sheikh", "face": "normal", "text": "ここでは、皆が私の機嫌を見て話す" },
         { "speaker": "sheikh", "face": "smile", "text": "君は、まずい時はまずいと言う。それが、ありがたい" },
         { "speaker": "hajime", "face": "normal", "text": "言わないと、次の一台が良くならないので" },
-        { "speaker": "sheikh", "face": "smile", "text": "職人の答えだな。……あとで一台、頼めるか" },
+        { "speaker": "sheikh", "face": "smile", "text": "職人の答えだな。……あとで、また一台頼めるか" },
         { "speaker": "hajime", "face": "smile", "text": "はい。今日は、ちゃんと客として座ってください" }
       ]
     },
@@ -180,7 +180,7 @@
         { "speaker": "da_silva", "face": "smile", "text": "大会のときの、お前の一台。手拍子ひとつ無しで……見入った、ってやつだ" },
         { "speaker": "hajime", "face": "normal", "text": "静かすぎましたか" },
         { "speaker": "da_silva", "face": "normal", "text": "いいや。静かでも、あれはフェスタ。客が楽しんでる、それでいい" },
-        { "speaker": "da_silva", "face": "excited", "text": "でも次は、手拍子も入れてみろよ！" }
+        { "speaker": "da_silva", "face": "excited", "text": "でも、手拍子のフェスタも忘れんなよ！" }
       ]
     },
     {

@@ -19,6 +19,9 @@ const TOKYO_FREE_TIMES_V2 = Object.freeze(TOKYO_FREE_TIMES.map(window => ({ ...w
   "d10-night": "ch3_taste_return",
 })[window.id] || window.before })));
 
+/** 大会前夜の空き時間（前夜の過ごし方を選ぶ窓）。訪問の散歩がここに当たると前夜デートになる。 */
+export const TOKYO_EVE_WINDOW = "d13-night";
+
 // 東京も日常ループで遊ぶ行程（版3・VOL03）の空き時間。昼の行動を使う場面の無い時間帯すべて。
 // 恋人の東京訪問（合流・散歩）はこの中から選ぶ。d13-night は前夜（大会前夜の場面の後に過ごし方を選ぶ）。
 const V3_STORY_NOONS = new Set([1, 2, 3, 4, 8, 11, 13]);
