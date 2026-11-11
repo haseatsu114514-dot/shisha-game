@@ -4236,7 +4236,7 @@
     },
     {
       "id": "conversation-effects-demo",
-      "title": "Conversation effects demo (#2732): 12 candidates, ON/OFF, one at a time",
+      "title": "Conversation effects demo (#2732): 12 candidates and 6 new faces (#3417), ON/OFF, one at a time",
       "kind": "browser",
       "weight": 1.5,
       "timeout": 5,
