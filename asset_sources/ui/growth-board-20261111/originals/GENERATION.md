@@ -40,10 +40,22 @@ Attachment 4 is the game's paper panel: match its paper, its lavender double rul
 
 内蔵生成の生画像を `normalize.py` で指定実寸に Lanczos 縮小した。RGB に変換し、マゼンタ地の近似画素（R/B>180、G<125、|R-B|<90）を正確な `#FF00FF` に置換した。`burst_rays.png` は black モードを使い、RGB 各成分が32未満の画素を `#000000` に置換した。イラスト本体の透過化や切り分けは行っていない。
 
-各 PNG は実寸・ファイルサイズ・SHA-256・四隅の背景色を機械的に確認し、外形・文字や記号の有無・外側の光や影・九分割の縁を目視確認した。小さい版は16px相当で丸・炎・しずく・角を確認した。
+22枚すべてについてファイル名・実寸・四隅の背景色を機械的に確認し、ファイルサイズと SHA-256 を実測した。外形・文字や記号の有無・外側の光や影・九分割の縁を目視確認した。小さい版は各マスを16pxに縮めて丸・炎・しずく・角を確認した。
+
+`gb_title_rule.png` は最初の2回で背景色または縮小後の視認性が不合格だったため、マゼンタ地と線・煙の大きさを明示して再生成し、3回目の合格版を保存した。
 
 | 区分 | ファイル | 実寸 | バイト数 | SHA-256 | 四隅 |
 |---|---|---:|---:|---|---|
+| B | `burst_rays.png` | 1024×1024 | 222,431 | `b2879ce3137ed66d24a9541098cc4624c9e3a447a2250ee4793a709723596942` | 一致（`#000000`） |
+| C | `gb_badge_check.png` | 256×256 | 38,680 | `8127b4ba3347065db5ef6305bc4277ad19524bc412eaa2c901eb3cf35359d59d` | 一致（`#FF00FF`） |
+| C | `gb_badge_cost.png` | 256×256 | 35,828 | `45ae53a7d76c605dd10b7bb3a0ebfd49276fe47f6256f6a5de76677a88d5389b` | 一致（`#FF00FF`） |
+| C | `gb_badge_unknown.png` | 256×256 | 34,449 | `0ef3b6fc910bc53633e69d9a66f6fd4b196ea427a8d14872ccfbe5844b89876d` | 一致（`#FF00FF`） |
+| C | `gb_card.png` | 768×192 | 146,985 | `263db86f9a39b319f9088d2d091a7f5f356ed00d58e7c6182cb1efb69f9faee9` | 一致（`#FF00FF`） |
+| C | `gb_gauge.png` | 1024×96 | 30,830 | `c4b5a9f35c3ee8763a57e05040215d14861e4090b7751d60149623f00f244bc8` | 一致（`#FF00FF`） |
+| C | `gb_round_btn.png` | 256×256 | 86,083 | `71ca897d0552a660a1e5528b70540f092889b3c3c51f8a54ca3e0568d8989763` | 一致（`#FF00FF`） |
+| C | `gb_tab_off.png` | 768×192 | 123,082 | `b0ad5bc253374d95aa309596cd9acf0c76413ec45874785ce3cb333a4750633b` | 一致（`#FF00FF`） |
+| C | `gb_tab_on.png` | 768×192 | 109,970 | `80f11293b2333610c87360f981300a4526bab6f216b94e31aa836fd60a30baa5` | 一致（`#FF00FF`） |
+| C | `gb_title_rule.png` | 1024×96 | 5,413 | `008e44f8792496748dcb6ee54cc0800264688a7b0eaa78c600b740d5483afd7d` | 一致（`#FF00FF`） |
 | A | `hidane_any_a.png` | 1024×1024 | 692,872 | `ec26aade1d596d35466dae892dfcf061ba37c5dd0b2f5e929183ad38658913c4` | 一致（`#FF00FF`） |
 | A | `hidane_any_b.png` | 1024×1024 | 823,110 | `5dfec35c545ced269d99e7fac0b619d26fa22b92bce5f66b388e249b7715f934` | 一致（`#FF00FF`） |
 | A | `hidane_body_a.png` | 1024×1024 | 469,785 | `fa4b35090060c1019e9d6e47db570e22f21f22a5642b57398e27cb7de93dd38e` | 一致（`#FF00FF`） |
@@ -55,8 +67,113 @@ Attachment 4 is the game's paper panel: match its paper, its lavender double rul
 | A | `hidane_socket.png` | 512×512 | 159,055 | `853e797cd048aeb951e3a9043ce479d6cbea0d9ed56a1df221d30f642c455e1f` | 一致（`#FF00FF`） |
 | A | `hidane_wisdom_a.png` | 1024×1024 | 696,855 | `48145dc1fca2c461fd407d1c55ffe5ca4c29629970af351cabdcc4d47b3ca6cb` | 一致（`#FF00FF`） |
 | A | `hidane_wisdom_b.png` | 1024×1024 | 755,410 | `f21448c3da2a2d27374ee05f9712c05e1d152db97f4ef19451edeeb1a6d5063c` | 一致（`#FF00FF`） |
+| B | `levelup_plate.png` | 1536×384 | 236,548 | `cd38ea920a0ca65059f96e0625c9df56c7ebc17f59b4eff571fe7888cc110a9d` | 一致（`#FF00FF`） |
 
 ## 個別指示と参照画像
+
+### `burst_rays.png`
+
+```text
+GBP-05 / burst_rays.png 1024x1024, on a pure black #000000 background instead of magenta — A radial burst of thin warm gold light rays from the exact center, uneven lengths, brightest near the center and fading to black before the edges, with a few tiny ember sparks between the rays. No object in the middle, no lens-flare rings, no text. The game adds it to the screen as light.
+```
+
+- ① `asset_sources/ui/growth-board-20261030/neon/contact_sheet.png` — 画風と色の役割の正本
+- ② `asset_sources/ui/growth-board-20261111/reference/parts_levelup.png` — 配置・大きさの比。桃色の番号と線は描かない
+
+### `gb_badge_check.png`
+
+```text
+GBP-07 / gb_badge_check.png 256x256 — The same token with a mint green #9fe6c0 face and a dark green rim, plain face (the game draws a check mark on it).
+```
+
+- ① `asset_sources/ui/growth-board-20261030/neon/contact_sheet.png` — 画風と色の役割の正本
+- ② `asset_sources/ui/growth-board-20261111/reference/parts_board.png` — 配置・大きさの比。桃色の番号と線は描かない
+- 補助 `asset_sources/ui/growth-board-20261111/reference/parts_board_summary.png` — 右パネルの配置参考
+
+### `gb_badge_cost.png`
+
+```text
+GBP-07 / gb_badge_cost.png 256x256 — A small round token like a tiny coin of dark glass with a gold neon rim and a warm amber #ffb43c face, plain face (the game writes a number on it).
+```
+
+- ① `asset_sources/ui/growth-board-20261030/neon/contact_sheet.png` — 画風と色の役割の正本
+- ② `asset_sources/ui/growth-board-20261111/reference/parts_board.png` — 配置・大きさの比。桃色の番号と線は描かない
+- 補助 `asset_sources/ui/growth-board-20261111/reference/parts_board_summary.png` — 右パネルの配置参考
+
+### `gb_badge_unknown.png`
+
+```text
+GBP-07 / gb_badge_unknown.png 256x256 — The same token with a dim, clouded smoky face and a faint gold rim, plain face.
+```
+
+- ① `asset_sources/ui/growth-board-20261030/neon/contact_sheet.png` — 画風と色の役割の正本
+- ② `asset_sources/ui/growth-board-20261111/reference/parts_board.png` — 配置・大きさの比。桃色の番号と線は描かない
+- 補助 `asset_sources/ui/growth-board-20261111/reference/parts_board_summary.png` — 右パネルの配置参考
+
+### `gb_card.png`
+
+```text
+GBP-08 / gb_card.png 768x192, nine-slice (64 px) — A small card of cream paper with slightly rounded corners, a lavender hairline border, a slightly darker paper edge on the bottom and right as if it lies on the panel (no cast shadow), and a thicker lavender band 12 px wide along the left edge. Center plain paper.
+```
+
+- ① `asset_sources/ui/growth-board-20261030/neon/contact_sheet.png` — 画風と色の役割の正本
+- ② `asset_sources/ui/growth-board-20261111/reference/parts_board.png` — 配置・大きさの比。桃色の番号と線は描かない
+- 補助 `asset_sources/ui/growth-board-20261111/reference/parts_board_summary.png` — 右パネルの配置参考
+- ④ `assets/ui/paper/panel.png` — 紙、ラベンダー二重罫、煙の飾りの正本
+
+### `gb_gauge.png`
+
+```text
+GBP-09 / gb_gauge.png 1024x96, nine-slice (48 px left and right, 32 px top and bottom) — A long empty gauge frame: a rounded tube outline in lavender ink on cream paper, with a pale lavender #e6dcea trough inside. Completely empty (the game fills it).
+```
+
+- ① `asset_sources/ui/growth-board-20261030/neon/contact_sheet.png` — 画風と色の役割の正本
+- ② `asset_sources/ui/growth-board-20261111/reference/parts_board.png` — 配置・大きさの比。桃色の番号と線は描かない
+- 補助 `asset_sources/ui/growth-board-20261111/reference/parts_board_summary.png` — 右パネルの配置参考
+- ④ `assets/ui/paper/panel.png` — 紙、ラベンダー二重罫、煙の飾りの正本
+
+### `gb_round_btn.png`
+
+```text
+GBP-10 / gb_round_btn.png 256x256 — A round paper button: a cream paper disc with a lavender double rule around the rim, plain center (the game writes a symbol on it).
+```
+
+- ① `asset_sources/ui/growth-board-20261030/neon/contact_sheet.png` — 画風と色の役割の正本
+- ② `asset_sources/ui/growth-board-20261111/reference/parts_board.png` — 配置・大きさの比。桃色の番号と線は描かない
+- 補助 `asset_sources/ui/growth-board-20261111/reference/parts_board_summary.png` — 右パネルの配置参考
+- ④ `assets/ui/paper/panel.png` — 紙、ラベンダー二重罫、煙の飾りの正本
+
+### `gb_tab_off.png`
+
+```text
+GBP-06 off / gb_tab_off.png 768x192, same nine-slice — An unselected paper index tab: cream paper with rounded top corners and a flat bottom, a lavender hairline along the top and both sides, a fainter second rule inside, one tiny smoke-curl flourish in the top left corner. Center plain paper.
+```
+
+- ① `asset_sources/ui/growth-board-20261030/neon/contact_sheet.png` — 画風と色の役割の正本
+- ② `asset_sources/ui/growth-board-20261111/reference/parts_board.png` — 配置・大きさの比。桃色の番号と線は描かない
+- 補助 `asset_sources/ui/growth-board-20261111/reference/parts_board_summary.png` — 右パネルの配置参考
+- ④ `assets/ui/paper/panel.png` — 紙、ラベンダー二重罫、煙の飾りの正本
+
+### `gb_tab_on.png`
+
+```text
+GBP-06 on / gb_tab_on.png 768x192, nine-slice (96 px left and right, 64 px top, 0 px bottom) — The selected index tab of the board: black smoked glass with rounded top corners and a flat bottom edge that runs off the bottom of the canvas, a thin white-gold neon tube along the top and both sides (no line at the bottom). Center plain dark glass.
+```
+
+- ① `asset_sources/ui/growth-board-20261030/neon/contact_sheet.png` — 画風と色の役割の正本
+- ② `asset_sources/ui/growth-board-20261111/reference/parts_board.png` — 配置・大きさの比。桃色の番号と線は描かない
+- 補助 `asset_sources/ui/growth-board-20261111/reference/parts_board_summary.png` — 右パネルの配置参考
+
+### `gb_title_rule.png`
+
+```text
+GBP-11 / gb_title_rule.png 1024x96 — A horizontal ornamental rule: a thin lavender line with a small smoke curl at each end and one tiny amber ember dot at the center. Nothing else.
+```
+
+- ① `asset_sources/ui/growth-board-20261030/neon/contact_sheet.png` — 画風と色の役割の正本
+- ② `asset_sources/ui/growth-board-20261111/reference/parts_board.png` — 配置・大きさの比。桃色の番号と線は描かない
+- 補助 `asset_sources/ui/growth-board-20261111/reference/parts_board_summary.png` — 右パネルの配置参考
+- ④ `assets/ui/paper/panel.png` — 紙、ラベンダー二重罫、煙の飾りの正本
 
 ### `hidane_any_a.png`
 
@@ -172,3 +289,12 @@ GBP-01 B / hidane_wisdom_b.png 1024x1024 — same make, shaped as a cube with so
 - ② `asset_sources/ui/growth-board-20261111/reference/parts_board.png` — 配置・大きさの比。桃色の番号と線は描かない
 - ③ `asset_sources/ui/growth-board-20261030/neon/hidane_wisdom.png` — 外形の役割だけ（質感は踏襲しない）
 - ④ `originals/hidane_any_b.png` — B案の同じ作り、光源、質感、大きさ感の見本
+
+### `levelup_plate.png`
+
+```text
+GBP-04 / levelup_plate.png 1536x384, nine-slice (160 px left and right, 96 px top and bottom) — A long plaque of black smoked glass with softly rounded corners, edged by one thin gold neon tube; a second fainter inner line; at the left and right ends, inside the border band, a small ornament of two ember sparks. Center plain dark glass with a very faint purple sheen. The background outside the plaque is magenta.
+```
+
+- ① `asset_sources/ui/growth-board-20261030/neon/contact_sheet.png` — 画風と色の役割の正本
+- ② `asset_sources/ui/growth-board-20261111/reference/parts_levelup.png` — 配置・大きさの比。桃色の番号と線は描かない
