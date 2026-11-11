@@ -469,7 +469,17 @@
         {
           "speaker": "mashiro",
           "face": "normal",
-          "text": "僕も、平気なふりしてた。陣が帰ってきて嬉しかったのに、また無理するんじゃないかって怖くて"
+          "text": "平気な顔は、嘘じゃないよぉ。僕も、店ではそうしてる"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "でも、陣が帰ってきて嬉しかったのも、また無理しそうで怖かったのも、黙ってた"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "言わなかったのは、僕。そっちは、ごめんね"
         },
         {
           "speaker": "saku",
@@ -496,7 +506,12 @@
         {
           "speaker": "mashiro",
           "face": "normal",
-          "text": "本当はグレープだったの。はじめくんを試したくて、僕が名前で嘘をついた"
+          "text": "本当はグレープだったの。お客さんの『甘い』に、はじめくんがすぐ頷いてたから"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "自分の舌で言ってるのか、知りたくて。……僕が、名前で嘘をついた"
         },
         {
           "speaker": "hajime",
@@ -597,41 +612,6 @@
         {
           "type": "hide_portrait",
           "char_id": "hajime"
-        },
-        {
-          "type": "show_cg",
-          "cg_id": "cg_naru_next_entry"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "同じ夜、別の会場の控室。なるの前にも、明日の分だけの道具が並んでいた。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "地域大会の出場票と引き換えに渡された番号札を、ケースの上へ置く。代表決定大会は、明日だ。"
-        },
-        {
-          "speaker": "naru",
-          "face": "normal",
-          "text": "一回勝っても、まだ終わりじゃない"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "荷物を閉じる前に、ノートをいちばん上へ入れ直した。明朝も確かめたいことが、一つだけ残っている。"
-        },
-        {
-          "type": "hide_portrait",
-          "char_id": "naru"
-        },
-        {
-          "type": "hide_cg"
-        },
-        {
-          "type": "bg",
-          "bg": "res://assets/backgrounds/bg_street_night.png"
         }
       ],
       "comment": "章題「嘘つきたちの夜」の三人場面。綾取の見栄、ましろの平気なふり、はじめの強がりを一部明かす。はじめの味覚回復は別の生活場面でましろと積み重ねる。任意の前夜デートはch3_dates。",
@@ -894,6 +874,11 @@
           "text": "煙幕で言ったよね、最後の甘さは長いって。今なら直せるよ？"
         },
         {
+          "speaker": "saku",
+          "face": "wild",
+          "text": "昨日、分からないって言ってたよね。その一口、どう？"
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "客席のましろが、立ち上がりかけた。昔の陣を知っているぶん、あの笑い方が怖いのかもしれない。"
@@ -915,13 +900,36 @@
         },
         {
           "speaker": "",
-          "face": "",
-          "text": "香りを急いで立たせたくなる。隣ではスティーブが、灰を落とした炭をすぐには戻さない。"
+          "text": "審査席のペンが止まった。県大会を勝った作り手が、何と答えるのか。"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（待つって、手を抜くことじゃなかった）"
+          "text": "……今日も、薄く感じます。だから、聞きます"
+        },
+        {
+          "speaker": "saku",
+          "face": "normal",
+          "text": "……言うんだ、それ。ここで"
+        },
+        {
+          "speaker": "",
+          "text": "はじめは綾取から目を外し、客へ向き直った。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "熱いか、軽いか。それだけ、教えてください"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "……熱くはないです。軽いけど、嫌な軽さじゃない"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "香りを急いで立たせたくなる。隣ではスティーブが、灰を落とした炭をすぐには戻さない。"
         },
         {
           "speaker": "",
@@ -1005,7 +1013,7 @@
         {
           "speaker": "dr_kemuri",
           "face": "smile",
-          "text": "逢縁くん。今日は、自分の舌で確かめてから動いたね"
+          "text": "逢縁くん。今日は、数字より先に、人に聞いたね"
         },
         {
           "speaker": "",
@@ -1170,62 +1178,6 @@
         {
           "type": "hide_portrait",
           "char_id": "pakki"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "その日の夕方、別の会場。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "ラストチャンスの代表決定大会も、最後の調整を迎えていた。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "甘さが重くなりかける。なるは炭を小さく動かし、旅先で何度も確かめた、一口ぶんの間を待った。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "審査員が吸い終わる。残った票がすべて置かれるまで、トングを下ろさなかった。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "最終結果、日本第二代表――KEMURIKUSA、なる。"
-        },
-        {
-          "type": "show_cg",
-          "cg_id": "cg_naru_last_chance"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "渡されたトロフィーを握る。笑おうとすると、先に目元がゆがんだ。"
-        },
-        {
-          "speaker": "naru",
-          "face": "smile",
-          "text": "……くそ。やっと、勝てた"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "スタッフから、東京の全国大会も終わったと聞く。なるは目元を拭い、スマホを手に取った。"
-        },
-        {
-          "speaker": "naru",
-          "face": "smile",
-          "text": "俺も行くぞ、はじめ"
-        },
-        {
-          "type": "hide_portrait",
-          "char_id": "naru"
-        },
-        {
-          "type": "hide_cg"
         }
       ],
       "comment": "成功時の台本。失敗時は勝利台本へ進めず、再挑戦へ。"
@@ -1468,6 +1420,72 @@
           "speaker": "hajime",
           "face": "normal",
           "text": "……うん。じゃあ、改めてよろしく。なる"
+        },
+        {
+          "type": "hide_portrait",
+          "char_id": "hajime"
+        },
+        {
+          "type": "hide_portrait",
+          "char_id": "naru"
+        },
+        {
+          "type": "bg",
+          "bg": "res://assets/backgrounds/bg_tournament_stage.png"
+        },
+        {
+          "speaker": "",
+          "text": "前の日の夕方、別の会場。ラストチャンスの代表決定大会も、最後の調整を迎えていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "甘さが重くなりかける。なるは炭を小さく動かし、旅先で何度も確かめた、一口ぶんの間を待った。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "審査員が吸い終わる。残った票がすべて置かれるまで、トングを下ろさなかった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "最終結果、日本第二代表――KEMURIKUSA、なる。"
+        },
+        {
+          "type": "show_cg",
+          "cg_id": "cg_naru_last_chance"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "渡されたトロフィーを握る。笑おうとすると、先に目元がゆがんだ。"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "……くそ。やっと、勝てた"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スタッフから、東京の全国大会も終わったと聞く。なるは目元を拭い、スマホを手に取った。"
+        },
+        {
+          "speaker": "naru",
+          "face": "smile",
+          "text": "俺も行くぞ、はじめ"
+        },
+        {
+          "speaker": "",
+          "text": "打ちかけた一行は、送らずに閉じた。"
+        },
+        {
+          "type": "hide_portrait",
+          "char_id": "naru"
+        },
+        {
+          "type": "hide_cg"
         }
       ],
       "comment": "全国大会と同日の代表決定大会を勝ち抜いた二人が、翌日に結果を伝え合う。なるは東京会場の客席にはいない。"
@@ -1732,6 +1750,13 @@
           "text": "帰郷した夜。tonariのカウンターに、浮かない顔の客が座った。"
         },
         {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_stk_title_customer_half",
+          "next_true": "title_customer",
+          "next_false": ""
+        },
+        {
           "speaker": "customer",
           "face": "normal",
           "text": "悪いけど、今日は何が吸いたいか分からないんだよね"
@@ -1771,7 +1796,16 @@
           "face": "",
           "text": "机の上には、まだ世界大会の案内がある。それは後だ。今は、客の返事を待った。"
         }
-      ]
+      ],
+      "branches": {
+        "title_customer": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（優勝の一台を、半分残した人だ）"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "ch3_tsumugi_result",
