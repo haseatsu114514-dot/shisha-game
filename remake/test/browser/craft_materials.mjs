@@ -20,7 +20,11 @@ async function demoKeyboardLoop(page) {
   // Include native video controls when present, the text disclosure, and both close buttons.
   for (const key of ["Tab", "Shift+Tab"]) for (let i = 0; i < 16; i++) {
     await page.keyboard.press(key);
-    assert.equal(await page.locator(".bench-demo-sheet").evaluate(n => n.contains(document.activeElement)), true, key);
+    const focus = await page.locator(".bench-demo-sheet").evaluate(n => {
+      const a = document.activeElement;
+      return { inside: n.contains(a), at: a ? `${a.tagName}.${a.className}${a.closest?.(".bench") ? " (bench)" : ""}` : "none" };
+    });
+    assert.equal(focus.inside, true, `${key} #${i}: focus left the demo sheet to ${focus.at}`);
   }
 }
 async function setup(page) {
