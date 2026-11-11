@@ -93,6 +93,8 @@
         { "speaker": "steve", "face": "smile", "text": "ヘイ、ハジメ！　世界から帰ってきた顔だ" },
         { "speaker": "hajime", "face": "smile", "text": "そんな顔、してますか" },
         { "speaker": "steve", "face": "normal", "text": "してる。少し日に焼けて、少し落ち着いた" },
+        { "speaker": "hajime", "face": "normal", "text": "相変わらず、全部で待つんですね。俺は向こうで、待つのが少し下手になりました" },
+        { "speaker": "steve", "face": "smile", "text": "ノー、ノー。急いだ日があるから、待つ日が効くんだ" },
         { "speaker": "steve", "face": "smile", "text": "一台どうぞ。今日も、二口目までが勝負" }
       ]
     },
@@ -103,7 +105,9 @@
         { "speaker": "steve", "face": "normal", "text": "このカード、半分は客の言葉なんだ" },
         { "speaker": "hajime", "face": "surprise", "text": "お客さんの、ですか" },
         { "speaker": "steve", "face": "smile", "text": "「二口目がいちばん好き」とか。そういうのを余白に書く" },
-        { "speaker": "steve", "face": "serious", "text": "俺の言葉だけだと、炭が早くなる。客の言葉が手を止めてくれる" }
+        { "speaker": "hajime", "face": "normal", "text": "世界で見てきた店は、どこも自分の言葉で埋まってました" },
+        { "speaker": "steve", "face": "serious", "text": "俺の言葉だけだと、炭が早くなる。客の言葉が手を止めてくれる" },
+        { "speaker": "steve", "face": "smile", "text": "ハジメのカードにも、余白は残しとけ。そこに、誰かが勝手に書いていく" }
       ]
     },
     {
@@ -113,6 +117,8 @@
         { "speaker": "hajime", "face": "surprise", "text": "今の、タイマーより先でしたね" },
         { "speaker": "steve", "face": "smile", "text": "イエス。たまには、自分の鼻を信じる" },
         { "speaker": "steve", "face": "normal", "text": "タイマーは止めてくれる。でも、先に動く日も要る" },
+        { "speaker": "hajime", "face": "normal", "text": "世界の舞台で、俺もそうでした。時計より、煙の方が先に答えてくれた" },
+        { "speaker": "steve", "face": "smile", "text": "そうか。その感覚、店に戻っても忘れるなよ" },
         { "speaker": "hajime", "face": "normal", "text": "（待つのも動くのも、同じ一台のためか）" }
       ]
     },
@@ -163,7 +169,9 @@
         { "speaker": "volk", "face": "normal", "text": "……来たか。座れ" },
         { "speaker": "volk", "face": "serious", "text": "今日は湿度が高い。炭の減りが、いつもより遅い" },
         { "speaker": "hajime", "face": "normal", "text": "測ってから、決めるんですね" },
-        { "speaker": "volk", "face": "normal", "text": "測る。それから、客に聞く。順番は変えない" }
+        { "speaker": "volk", "face": "normal", "text": "測る。それから、客に聞く。順番は変えない" },
+        { "speaker": "hajime", "face": "smile", "text": "世界を回ってきても、この順番は崩れないって思いました" },
+        { "speaker": "volk", "face": "smile", "text": "崩れないから、基準になる。お前が戻ってくる場所も、その一つだ" }
       ]
     },
     {
@@ -173,6 +181,8 @@
         { "speaker": "volk", "face": "normal", "text": "……熱いか。それとも、休んでいるだけか" },
         { "speaker": "", "face": "", "text": "客が首を振ると、ヴォルクは炭に触れず、水のグラスだけを寄せた。" },
         { "speaker": "volk", "face": "serious", "text": "数字は正常だ。直すのは、炭ではなかった" },
+        { "speaker": "hajime", "face": "normal", "text": "数字が合ってるのに、手を出さないんですね" },
+        { "speaker": "volk", "face": "normal", "text": "合っている時こそ、人を見る。数字は、そのための道具だ" },
         { "speaker": "", "face": "", "text": "客はグラスを受け取り、また窓の外を見た。ヴォルクは手帳に一行だけ足した。" }
       ]
     },
@@ -182,7 +192,10 @@
         { "speaker": "", "face": "", "text": "帰り際、ヴォルクが紅茶のカップを置いた。小皿に、ジャムが添えてある。" },
         { "speaker": "volk", "face": "normal", "text": "祖母のやり方だ。量は測らない" },
         { "speaker": "hajime", "face": "smile", "text": "計器だらけの店なのに" },
-        { "speaker": "volk", "face": "smile", "text": "ここだけは、数字を持たない。……飲め。冷める" }
+        { "speaker": "volk", "face": "smile", "text": "ここだけは、数字を持たない。……飲め。冷める" },
+        { "speaker": "hajime", "face": "normal", "text": "甘さは、どのくらいが正解ですか" },
+        { "speaker": "volk", "face": "normal", "text": "正解はない。祖母は、俺の顔を見て足した。それだけのことだ" },
+        { "speaker": "hajime", "face": "smile", "text": "（測らない一杯が、この店でいちばん正確なのかもしれない）" }
       ]
     },
     {
