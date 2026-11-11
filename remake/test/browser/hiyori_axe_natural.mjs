@@ -152,6 +152,9 @@ try {
         if (await click('[data-test="coach-lime"]')) continue;
         // 寝る前のレベルアップ（心得の盤）。初回はOKを押すまで待つ全画面の演出。
         if (await click('[data-test="levelup-ok"]')) continue;
+        // 大会前夜の内省で盤が開いたら、初回案内を閉じて盤から戻る。
+        if (await click('[data-test="board-tutorial-skip"]')) continue;
+        if (await click('[data-test="board-close"]')) continue;
         if (snap.modal) {
           if (await click('[data-test="reel-intro"]') || await click('[data-test="drill-finish"]') || await click('[data-test="status-close"]')) continue;
           await click('#modal .modal-actions button');
@@ -213,6 +216,11 @@ try {
           }
           if (await page.locator('[data-test="map-guide"]').isVisible()) {
             await click('.spot-pin.guide'); await click('[data-test="map-go"]'); continue;
+          }
+          // スミさんの未読が残ると再会の誘いが届かない。先にスマホで読み終える。
+          const unreadSumi = await page.evaluate(() => Q.core.state.inbox.some(i => i.msg.sender === 'sumi' && !i.read));
+          if (snap.flags._hiyori_cracks_done && unreadSumi) {
+            await click('[data-test="hud-phone"]'); await click('[data-test="lime-chat-sumi"]'); continue;
           }
           const invite = await page.evaluate(() => Q.core.state.inbox.some(i => !i.done && i.msg.accept_event === 'hiyori_tonari_return' && i.day === Q.core.state.day));
           if (invite && snap.slot === 0 && (snap.affinity >= 33 || snap.day >= 11)) {
