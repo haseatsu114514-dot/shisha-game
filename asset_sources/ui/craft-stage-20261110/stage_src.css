@@ -173,6 +173,11 @@
 & .pull-btns > .btn { grid-row: 2; height: 100px; min-height: 0; margin: 0; }
 & .pull-btns > .btn.primary { grid-column: 3; }
 & .pull-btns > .btn:not(.primary) { grid-column: 2; }
+/* 心得で吸い方の札が増えた時（ズボー・目隠しなど・pull.js の .with-options）は、右下の二枠を一つの列にして並べる。
+   以前は増えた札が「確かめる」と同じ枠に重なり、上の札が押せなかった（growth_levelup の zero-steam-and-deep-pull-lesson）。 */
+& .pull-btns.with-options { display: flex !important; grid-column: 2 / 4; grid-row: 2; gap: 8px; height: 100px; min-width: 0; }
+& .pull-btns.with-options > .btn { flex: 1 1 0; min-width: 0; grid-row: auto; grid-column: auto; padding: 0 6px; }
+& .pull-btns.with-options > .btn.primary { flex-grow: 2; order: 9; }
 
 /* ---------- 舞台の天板: 枠を焼き込んだ旧い板の代わりに、枠なしの天板を舞台いっぱいに敷く ---------- */
 & .bench-panel::before { display: none !important; }
@@ -212,6 +217,10 @@
 & .mix-vessel { width: 250px !important; height: 190px !important; }
 & .mix-list { grid-column: 2; grid-row: 1; min-height: 0; overflow-y: auto; gap: 10px !important; }
 & .mix-list-head { display: none !important; }
+/* 心得の「単体で勝負」と「香りの記憶」だけは一覧の頭に残す（見出しの文と助言は隠したまま）。
+   以前は見出しごと隠れて、覚えた心得が押せなかった（growth_levelup の single-leaf-style-lesson）。 */
+& .mix-list-head:has(> [data-test="mix-single-style"], > .mix-recall) { display: flex !important; flex: none; flex-wrap: wrap; align-items: center; gap: 8px; }
+& .mix-list-head > :not([data-test="mix-single-style"]):not(.mix-recall) { display: none !important; }
 & .flavor-row { display: flex !important; min-height: 0 !important; height: 116px !important; flex: none; padding: 4px 12px 4px 6px !important; gap: 12px !important; align-items: center !important; }
 & .flavor-row > * { grid-area: auto !important; }
 & .fr-name { padding-left: 0 !important; }
@@ -312,5 +321,6 @@
 /* ---------- 吸い出しの金のボタン: 文字が一行で収まるように（絵の印は省く） ---------- */
 & .pull-btns > .btn .pull-btn-icon { display: none !important; }
 & .pull-btns > .btn .btn-label { font-size: 24px !important; white-space: nowrap; letter-spacing: 0; }
+& .pull-btns.with-options > .btn .btn-label { font-size: 18px !important; }
 & .pull-btns > .btn .pull-serve-icon { display: none !important; }
 & .fr-name :is(.fr-reg, .fr-mastery, .fr-ratio) { font-size: 17px !important; line-height: 1.25 !important; margin: 0 !important; }
