@@ -4,6 +4,14 @@
 // 全てこの部品を使い、ページごとに別の当て方を作らない。
 const PHONE_DENSITY_K = 0.62;
 
+// 当て直しの通知。左右の余白の層（core/side-area.js・YHK）が、余白の幅と倍率を知るのに使う。
+const fitListeners = new Set();
+/** 画面を当て直すたびに fn({ stage, k, region }) を呼ぶ。戻り値は解除の関数。 */
+export function onStageFit(fn) {
+  fitListeners.add(fn);
+  return () => fitListeners.delete(fn);
+}
+
 /** ステージ（#stage）へ --k を入れる。region を渡すと、その要素の内側（例: 試遊ページの
  *  ナビの下の #viewport）を画面の代わりに使う。戻り値は倍率 k。 */
 export function fitStage(stage, region = null) {
@@ -25,6 +33,7 @@ export function fitStage(stage, region = null) {
   stage.style.removeProperty("--stage-w");
   stage.style.removeProperty("--stage-bar");
   delete stage.dataset.wide;
+  for (const fn of fitListeners) fn({ stage, k, region });
   return k;
 }
 

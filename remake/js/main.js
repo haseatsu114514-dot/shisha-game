@@ -17,7 +17,8 @@ import { installLooks } from "./looks/index.js";
 import { installRotateGuard } from "./core/rotate-guard.js";
 import { imgFileUrl } from "./core/img-file.js";
 import { withLoading } from "./core/loading.js";
-import { vnTest, enableSeenLinePersistence } from "./vn/engine.js";
+import { vnTest, enableSeenLinePersistence, tapAdvance } from "./vn/engine.js";
+import { initSideArea } from "./core/side-area.js";
 import { createDevInspector } from "./core/dev-inspector.js";
 import { createEventPreview } from "./core/dev-event-preview.js";
 import { createIsolatedEventPlayer } from "./core/dev-isolated-player.js";
@@ -54,6 +55,8 @@ export async function boot() {
   if (lookParam !== null && normalizeLook(lookParam) === lookParam) { cfg.look = lookParam; saveConfig(); }
   initLook({ look: cfg.look, chapter: () => (document.body.dataset.screen === "title" ? 1 : state?.chapter || 1) });
   installLooks();
+  // 左右の余白（煙と縁・縦書きの帯・親指ボタン。YHK）。設定と見た目の様式が決まってから作る。
+  initSideArea({ stage: $("#stage"), advance: tapAdvance });
   // 設定「揺れ・閃光を減らす」を CSS からも見えるようにする（場面の演出の閃光を省く・#2688 F11）
   document.body.classList.toggle("reduce-shake", !!cfg.reduceShake);
   const growthParam = new URLSearchParams(location.search).get("growth");

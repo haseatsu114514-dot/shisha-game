@@ -50,7 +50,9 @@ async function startScene(page, privateOutfit = false) {
     const people = privateOutfit ? ["oneesan", "tsumugi"] : ["tsumugi", "minto"];
     void play({ dialogue_id: "portrait-style-browser-fixture", lines: [
       { speaker: people[0], face: "smile", text: "一人目の台詞です" },
-      { speaker: people[1], face: privateOutfit ? "serious" : "sad", text: "二人目の台詞です" },
+      // 二人目は「新版にもまだ無い表情」を指定し、同じ画風の通常顔へ戻ることを確かめる。
+      // みんとの新版 sad は #3281（28cb2bbc）で届いたので、どちらの画風にも無い serious にした。
+      { speaker: people[1], face: "serious", text: "二人目の台詞です" },
       { speaker: people[0], face: "serious", text: "未制作の表情です" },
       { speaker: "sumi", face: "normal", text: "新絵のない人物です" },
     ] }, { signal: window.portraitSceneAbort.signal }).then(() => { window.portraitSceneDone = true; });
@@ -125,7 +127,7 @@ await suite("portrait-style", async check => {
         if(value === "classic") assert.deepEqual(actual, srcs);
         else if(value === "new") {
           assert.match(actual[0], /character_variants\/new\/tsumugi\/chr_tsumugi_smile/);
-          assert.match(actual[1], /character_variants\/new\/minto\/chr_minto_normal/, "Missing new Minto sad retains the same-style normal");
+          assert.match(actual[1], /character_variants\/new\/minto\/chr_minto_normal/, "Missing new Minto serious retains the same-style normal");
         }
         assert.equal(await page.evaluate(async () => (await import("./js/core/data.js")).portraitInfo('tsumugi','smile').scale), value === 'new' ? .9 : .88);
         assert.equal(await page.evaluate(() => JSON.parse(localStorage.suien_remake_config).portraitStyle), value);
