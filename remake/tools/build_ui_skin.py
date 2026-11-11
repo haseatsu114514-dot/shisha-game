@@ -4,7 +4,7 @@
 元のPNGは1254px・約1MBあり、初めて筐体が出たときに読み込みが間に合わず図柄が欠けていた（GUI20）。
 """
 from pathlib import Path
-from PIL import Image, ImageDraw
+from PIL import Image, ImageChops, ImageDraw
 
 ROOT = Path(__file__).resolve().parents[2]
 SOURCES = ROOT / "assets/ui/lounge"
@@ -225,7 +225,84 @@ def build_craft_paper():
             print(f"{path.relative_to(ROOT)}: {sprite.width}×{sprite.height}, {path.stat().st_size:,} bytes")
 
 
+# シーシャくじの演出の絵（GCH・Issue #3228）。原画の後処理済み（透明の清書・寸法合わせ）は
+# asset_sources/ui/kuji-gacha-20261111/processed/（#3313・処理の記録は PROCESSING.md）。ここで部品の枠に合わせて切り出し、
+# 2倍密度の WebP にする。crop は原画の px（左, 上, 右, 下）で、原画の外へはみ出す分は透明で埋める。
+# 置き場所の決まり（枠・合わせる点）は asset_sources/ui/kuji-gacha-20261111/README.md、差し込みは js/motions/kuji-art.js と css/motions/garagara.css。
+KUJI_SOURCES = ROOT / "asset_sources/ui/kuji-gacha-20261111/processed"
+KUJI_OUT = ROOT / "remake/img/ui/kuji"
+KUJI_PARTS = {
+    # 胴: 軸（原画の中心）を中心にした正方形。六角の外接半径481px → 枠308pxで150px。
+    "garagara-drum": {"source_size": (1024, 1024), "crop": (17, 17, 1005, 1005), "width": 616},
+    # 脚: 軸受けの中心(512,129)・足先の下端992。枠は box で [375, 265.6, 330, 337.3]（軸は上から26.4px）。
+    "garagara-frame": {"source_size": (1024, 1024), "crop": (50, 55, 974, 1000), "width": 660},
+    # 台: 板の幅1380px → 424px。box で [328, 579.4, 424.6, 60.8]（天板の中ほどに脚の先が載る）。
+    "garagara-base": {"source_size": (1536, 1024), "crop": (77, 413, 1459, 611), "width": 848},
+    # ハンドル: 軸の円の中心(256.5,510.5)を中心にした正方形。握りの中心まで491px → 104px（枠280px）。
+    "garagara-handle": {"source_size": (1024, 1024), "crop": (-405, -151, 917, 1171), "width": 560},
+    # 受け皿: 外周の幅1075px → 192px、緑の敷物の中心(767,486.5)を受け皿の中心(872,598)へ。枠 [762,562,220,84] に合わせた切り出し。
+    "garagara-tray": {"source_size": (1536, 1024), "crop": (151, 285, 1383, 755), "width": 440},
+    # 玉5種: 同じ切り出し（直径720pxの円を、枠34pxで直径32pxに）。
+    **{f"ball-{k}": {"source_size": (1024, 1024), "crop": (130, 130, 895, 895), "width": 256} for k in ("s", "a", "b", "c", "last")},
+    # カウンター: 奥の縁(y563)から下。枠 1400×420 と同じ縦横比（手前の縁が y694 付近）。
+    "counter": {"source_size": (1536, 1024), "crop": (0, 563, 1536, 1024), "width": 1536},
+    # 黒板: 脚まで。box で [85.2, 250, 225.5, 340]（書ける面は x105〜291・y270〜543）。
+    "sign": {"source_size": (1024, 1536), "crop": (84, 123, 939, 1413), "width": 452},
+    # 鐘: 柄の先が上端の中央。枠 140×300 と同じ縦横比になるよう下を透明で延ばす。
+    "bell": {"source_size": (1024, 1536), "crop": (307, 0, 717, 879), "width": 280},
+    # 玉置き: 横に九分割で伸ばす（css の border-image。左右の端は70px）。
+    "rail": {"source_size": (1536, 1024), "crop": (46, 462, 1490, 562), "width": 1444},
+    # 札の地5種: 同じ切り出し（本体 1414×595 → 札 884×372）。左の窓は x57〜602・y56〜535。
+    **{f"card-{k}": {"source_size": (1536, 1024), "crop": (62, 215, 1476, 810), "width": 1414} for k in ("s", "a", "b", "c", "last")},
+    # 景品の包み・「大当たり」の帯。
+    "gift": {"source_size": (1024, 1024), "crop": (144, 192, 881, 831), "width": 400},
+    "banner": {"source_size": (1536, 1024), "crop": (230, 409, 1305, 615), "width": 600},
+    # 黒地: 後ろの光は CSS で screen 合成するので黒地のまま。きらめきは透明な canvas に加算で描くので、
+    # 明るさを透明度に移した絵にする（黒地のままだと黒い四角が残る）。十字の縦の腕は中心から220px。
+    "burst": {"source_size": (1024, 1024), "crop": (0, 0, 1024, 1024), "width": 1024, "alpha": False},
+    "sparkle": {"source_size": (1024, 1024), "crop": (256, 258, 768, 770), "width": 160, "luma_alpha": True},
+}
+
+
+def luma_alpha(image):
+    """黒地の光の絵を、明るさ（RGB の最大）＝透明度の絵にする。色は透明度で割り戻す（加算で重ねると元の見た目に戻る）。"""
+    rgb = image.convert("RGB")
+    r, g, b = rgb.split()
+    alpha = ImageChops.lighter(ImageChops.lighter(r, g), b)
+    pixels = [(min(255, round(cr * 255 / max(a, 1))), min(255, round(cg * 255 / max(a, 1))), min(255, round(cb * 255 / max(a, 1))), a)
+              for (cr, cg, cb), a in zip(rgb.getdata(), alpha.getdata())]
+    out = Image.new("RGBA", rgb.size)
+    out.putdata(pixels)
+    return out
+
+
+def build_kuji():
+    KUJI_OUT.mkdir(parents=True, exist_ok=True)
+    for name, spec in KUJI_PARTS.items():
+        source_name = "ball-" + name.split("-", 1)[1] if name.startswith("ball-") else name
+        with Image.open(KUJI_SOURCES / f"{source_name}.png") as source:
+            if source.size != spec["source_size"]:
+                raise ValueError(f"kuji {name}: update KUJI_PARTS for new source size {source.size}")
+            alpha = spec.get("alpha", True)
+            left, top, right, bottom = spec["crop"]
+            canvas = Image.new("RGBA" if alpha else "RGB", (right - left, bottom - top), (0, 0, 0, 0) if alpha else (0, 0, 0))
+            canvas.paste(source.convert("RGBA" if alpha else "RGB"), (-left, -top))
+            width = spec["width"]
+            image = canvas.resize((width, round(width * canvas.height / canvas.width)), Image.Resampling.LANCZOS)
+            if spec.get("luma_alpha"):
+                image = luma_alpha(image)
+                alpha = True
+            path = KUJI_OUT / f"{name}.webp"
+            if alpha:
+                # exact=False: 透明な所の色は捨ててよい（明るさを透明度に移したきらめきは、暗い所の色が荒れて重くなる）
+                image.save(path, "WEBP", quality=88, alpha_quality=100, method=6, exact=not spec.get("luma_alpha"))
+            else:
+                image.save(path, "WEBP", quality=85, method=6)
+            print(f"{path.relative_to(ROOT)}: {image.width}×{image.height}, {path.stat().st_size:,} bytes")
+
+
 def main():
+    build_kuji()
     build_paper()
     build_craft_paper()
     build_craft_night()
@@ -253,4 +330,6 @@ def main():
             print(f"{path.relative_to(ROOT)}: {sprite.width}×{sprite.height}, {path.stat().st_size:,} bytes")
 
 if __name__ == "__main__":
-    main()
+    import sys
+    # くじの絵だけ作り直す: python3 remake/tools/build_ui_skin.py kuji（ほかの原画が手元に無くても動く）
+    build_kuji() if sys.argv[1:] == ["kuji"] else main()

@@ -422,7 +422,11 @@ function openCounter({ errand = null, expense = false, minStock = 1, expenseFlag
     for (const [id, label] of [["flavor", "フレーバー"], ["equip", "機材"], ...(kuji && hasKuji(kujiShop) ? [["kuji", "シーシャくじ"]] : []), ["sell", "売却"]]) {
       tabs.append(el("button.shop-tab", { text: label, dataset: { tab: id }, onclick: () => {
         if (!live()) return;
-        if (tab !== "kuji" && id === "kuji") { kujiBgmBefore = currentBgm(); kujiBgmActive = true; playBgm("bgm_ethnic09"); }
+        if (tab !== "kuji" && id === "kuji") {
+          kujiBgmBefore = currentBgm(); kujiBgmActive = true; playBgm("bgm_ethnic09");
+          // 引く前に、演出の絵（抽選器・玉・札）を読み込んでおく（初めて回すときに部品が欠けないように）
+          import("../motions/kuji-art.js").then((art) => art.warmKujiArt()).catch(() => {});
+        }
         else if (tab === "kuji" && id !== "kuji") restoreKujiBgm();
         tab = id; body.scrollTop = 0; SE.click(); render();
       } }));

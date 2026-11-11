@@ -4278,6 +4278,7 @@
         "remake/js/motions/kuji-art.js",
         "remake/js/motions/kuji-fx.js",
         "remake/css/motions/garagara.css",
+        "remake/img/ui/kuji/*",
         "data/kuji.json"
       ],
       "run": [
