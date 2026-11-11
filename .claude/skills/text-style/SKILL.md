@@ -46,7 +46,8 @@ description: 台詞・地の文の句読点（。と、の使い分け・。の�
 - 会話以外の画面の文字（メニュー・説明・ボタン・通知・LIME）はブラウザが折る（TXW04・TXW05）。全体に `word-break: auto-phrase`（文節で折る）と
   `text-wrap: pretty`（最後の行だけ短い形を避ける）、ボタンと2〜3行の一言・注記に `text-wrap: balance`（行の長さをそろえる）を当ててある
   （`remake/css/base.css` の冒頭）。新しい短い注記の部品は、そこの一覧にセレクタを足す。UIの文字に手動の `<br>` や `\n` を足して整えない。
-  部品の規則に `word-break: break-word` / `break-all` を書くと文節の折り返しが消える（LIMEの吹き出しで起きていた）。
+  部品の規則に `word-break: break-word` / `break-all` / `keep-all` / `normal` を書くと文節の折り返しが消える（LIMEの吹き出しで起きていた）。
+  CI の `remake/test/css_wrap_guard.mjs` が止める。どうしても要る時だけ、そのファイルの ALLOWED に理由つきで足す。
   幅が狭すぎて1〜3字ずつ折れる箱は、折り返しの指定ではなく箱の幅か文を直す。
 
 ## ツール（書いたら必ず通す）
@@ -62,8 +63,10 @@ python3 tools/lint_dialogue.py
 # 2b) 書いた台詞が本編でどう折れるかを見る（TXW08。本編と同じ組版で、main から足した・変えた台詞だけ）
 node .claude/skills/text-style/check_wrap.mjs            # 「要確認」が出たら直す（0件にしてからコミット）
 node .claude/skills/text-style/check_wrap.mjs "台詞" …   # 書く前に文を試す
-#   知らせるもの: 2行目だけ短い・1行目だけ短い・手で改行している・2ページに分かれる・文の途中でページが割れる
-#   「長い文。／短い2文目」は規範どおりなので知らせない。直し方は、言い換える・読点の位置を変える・台詞を2つに分ける
+#   【直す】= CI で止まる（remake/test/text_wrap.mjs が全台詞で0件を確かめる）: 2行目だけ短い・文の途中でページが割れる
+#   要確認 = 知らせるだけ: 1行目だけ短い・手で改行している・2ページに分かれる（文末で切れていれば読める）
+#   「長い文。／短い2文目」は規範どおりなので知らせない。直し方は、言い換える・読点の位置を変える・文を「。」で2つに分ける
+#   判定の中身は remake/test/text_wrap_rules.mjs（スキルと CI で同じもの）
 
 # 3) 手動で微調整したいとき（ブラウザの台詞エディタ。検索→編集→保存＋本編と同じ改行プレビュー）
 python3 tools/text_editor_server.py   # → http://127.0.0.1:8321/
