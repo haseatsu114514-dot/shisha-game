@@ -36,12 +36,15 @@ const REPEAT_POOL = {
   kumicho: ["remake_ch2_kumicho_repeat", "remake_ch2_kumicho_repeat_b", "remake_ch2_kumicho_repeat_c", "remake_ch2_kumicho_repeat_d", "remake_ch2_kumicho_repeat_e"],
   rei: ["remake_ch2_rei_repeat", "remake_ch2_rei_repeat_b", "remake_ch2_rei_repeat_c", "remake_ch2_rei_repeat_d", "remake_ch2_rei_repeat_e"],
 };
-/** レヰのライブの夜（RVE07）。台本は data/dialogue/ch3_ch4_home.json（準備期間に departure-prep.js が読み込む）。 */
+/** レヰのライブの夜（RVE07）。台本は data/dialogue/ch2_rei.json（柚ヶ谷の台本と一緒に ch2-city-data.js が読み込む）。 */
 export const REI_LIVE_SCENE = "ch3_prep_rei_live";
-/** 第3章の東京へ発つ前の準備期間（core/chapter-clock.js の departurePrep と同じ判定）で、チケットを受け取っていて、まだ読んでいない。 */
+/**
+ * 第3章の東京へ発つ前の準備期間（core/chapter-clock.js の departurePrep と同じ判定）の夜に、チケットを受け取っていて、まだ読んでいない。
+ * 場面は終演後の夜なので、昼の来店では出さない（その日の夜にまた寄れば読める）。
+ */
 export function reiLiveDue(value) {
   const prep = value?.chapter === 3 ? value.flags?._ch3_prep : null;
-  return !!prep && !prep.departed && Number.isInteger(prep.startDay) && !!value.flags._ch2_rei_ticket
+  return !!prep && !prep.departed && Number.isInteger(prep.startDay) && (value.slot ?? 0) >= 1 && !!value.flags._ch2_rei_ticket
     && !value.flags[`_talk_seen_${REI_LIVE_SCENE}`] && !!DB.dialogues[REI_LIVE_SCENE]?.lines?.length;
 }
 function repeatScene(id) {

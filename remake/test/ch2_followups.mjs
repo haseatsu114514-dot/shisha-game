@@ -286,9 +286,9 @@ for (const id of validatedIds) {
 }
 fixture = preparation; await loader.namespace.loadPreparationDialogues();
 // 31 本 + あげはの♥3の質問（#1988）＋あげは♥5の締めくくり（#2023）+ 神崎・レヰの小会話6本と締めくくり2本（#2027）
-// + 今回の日常3本（#3097）
+// + 今回の日常3本（#3097）+ レヰのライブの夜（RVE07）
 // + あげはの小会話3本と地元の第2章の会話7本、tonariの大会準備9本（VOL13）＋中間の確認4本（#2032）
-assert.equal(Object.keys(loaderDB.dialogues).length, 67 +Object.values(CH2_VISIT_STORIES).flat().filter(entry => entry.file).length);
+assert.equal(Object.keys(loaderDB.dialogues).length, 68 +Object.values(CH2_VISIT_STORIES).flat().filter(entry => entry.file).length);
 for (const suffix of ["b", "c", "d"]) assert(loaderDB.dialogues[`remake_ch2_ageha_repeat_${suffix}`], `ageha small talk ${suffix}`);
 for (const id of ["cafe_ch2_commute", "cafe_ch2_taste", "kannon_ch2_wish", "choizap_ch2_numbers", "cs_ch2_haze", "ch2_rio_taste", "ch2_rio_strawberry"]) assert(loaderDB.dialogues[id], id);
 for (const id of ["ch2_prep_basics_intro", "ch2_prep_basics_end", "ch2_prep_basics_failed", "ch2_prep_rehearsal_intro",
@@ -447,15 +447,16 @@ for (const id of ids) {
 console.log("PASS: three everyday talks are loaded, rotate, retain normal fees/rewards, and leave no settlement on interruption");
 
 // RVE07: レヰのライブの夜。第2章で余りチケットを受け取った人が、第3章の東京へ発つ前の準備期間にレヰの店へ来たら、
-// いつもの会話・段階より先に一度だけ。チケットが無い・第2章・出発後は出さない。中断では既読にしない。
+// いつもの会話・段階より先に一度だけ。終演後の場面なので夜だけ。チケットが無い・第2章・出発後は出さない。中断では既読にしない。
 {
   const live = "ch3_prep_rei_live";
-  const homeScript = JSON.parse(fs.readFileSync(new URL("data/dialogue/ch3_ch4_home.json", root), "utf8")).dialogues
+  const homeScript = JSON.parse(fs.readFileSync(new URL("data/dialogue/ch2_rei.json", root), "utf8")).dialogues
     .find(d => d.dialogue_id === live);
-  assert(homeScript?.lines?.length, "the live night script exists in ch3_ch4_home.json");
+  assert(homeScript?.lines?.length, "the live night script exists in ch2_rei.json");
+  assert(loaderDB.dialogues[live], "the preparation loader publishes it with Rei's scripts");
   assert(homeScript.lines.some(line => line.type === "set_flag" && line.flag === `_talk_seen_${live}`), "the script marks itself read");
   const prepSave = (extra = {}) => {
-    state.chapter = 3; state.flags._ch3_prep = { startDay: 1, days: 3, departed: false }; Object.assign(state.flags, extra);
+    state.chapter = 3; state.slot = 1; state.flags._ch3_prep = { startDay: 1, days: 3, departed: false }; Object.assign(state.flags, extra);
   };
   await setup(2); DB.dialogues[live] = homeScript; prepSave({ _ch2_rei_ticket: true });
   assert.equal(module.namespace.reiLiveDue(state), true);
@@ -471,6 +472,7 @@ console.log("PASS: three everyday talks are loaded, rotate, retain normal fees/r
   await visit("rei"); assert.notEqual(played.at(-1), live, "the next visit is an ordinary one");
   for (const [label, prepare] of [
     ["no ticket", () => prepSave()],
+    ["daytime (the scene is after the show)", () => { prepSave({ _ch2_rei_ticket: true }); state.slot = 0; }],
     ["chapter 2", () => { state.flags._ch2_rei_ticket = true; }],
     ["after departure", () => { prepSave({ _ch2_rei_ticket: true }); state.flags._ch3_prep.departed = true; }],
     ["script not loaded", () => { prepSave({ _ch2_rei_ticket: true }); delete DB.dialogues[live]; }],

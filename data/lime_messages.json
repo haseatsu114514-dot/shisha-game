@@ -3620,6 +3620,41 @@
       ]
     },
     {
+      "id": "lime_wang_09",
+      "sender": "master_hookah",
+      "chapter": 5,
+      "trigger_condition": "ch5_started",
+      "trigger_day": 9,
+      "region": "home",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "master_hookah",
+          "text": "大会の日、シェイクが私を先生と呼んだとき、君の息が一つ止まっていた"
+        },
+        {
+          "sender": "master_hookah",
+          "text": "店で言わなかったのは、本人が名乗る日を待っていたからだ"
+        },
+        {
+          "sender": "master_hookah",
+          "text": "教えたのは昔のことだ。炭の起こし方と、客を待つことくらいだよ"
+        }
+      ],
+      "replies": [
+        {
+          "text": "息、止まってましたか",
+          "response": "止まっていた。二口ぶんくらいね",
+          "affinity": 2
+        },
+        {
+          "text": "全然、気づきませんでした",
+          "response": "隠れるのは、昔から上手かった。それは私が教えていない",
+          "affinity": 1
+        }
+      ]
+    },
+    {
       "id": "lime_taiyo_01",
       "sender": "da_silva",
       "chapter": 4,

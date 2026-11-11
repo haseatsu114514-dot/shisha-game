@@ -103,8 +103,6 @@ export function departurePrepDefinition({ destination, nightEvents = {}, morning
 export const departureTalkScenes = () => [
   ...Object.values(CHAPTER_TALKS).flat().filter(talk => talk.prep).map(talk => talk.scene),
   ...Object.values(SAMECHAN_PREP_TALKS),
-  // レヰのライブの夜（第3章の準備期間に柚ヶ谷の零-ZERO-で一度だけ。chapters/ch2-preparation.js の reiLiveDue・RVE07）
-  "ch3_prep_rei_live",
 ];
 /** 送り出しの会話は寄り道なので、読み込めなくても準備期間は始める（会話が出ないだけ）。 */
 async function loadDepartureTalks() {
