@@ -5,6 +5,8 @@ import { el } from "../core/util.js";
 
 const TAU = Math.PI * 2;
 const MAX = 460; // 粒の上限（スマホでも重くならない数）
+// きらめきの絵（黒地・加算で重ねる。remake/img/ui/kuji/sparkle.webp）。最初の粒までに読み込めていなければ、コードで描いた十字を出す
+const SPARKLE = typeof Image === "function" ? Object.assign(new Image(), { decoding: "async", src: new URL("../../img/ui/kuji/sparkle.webp", import.meta.url).href }) : {};
 const SCALE = 0.5; // canvas の解像度（ステージの半分。光の粒はにじんだ絵なので荒さは見えず、塗る画素が1/4で済む）
 const rnd = (a, b) => a + Math.random() * (b - a);
 const pickOf = (list) => list[Math.floor(Math.random() * list.length)];
@@ -58,10 +60,22 @@ export function createFx(host, { className = "kj-fx" } = {}) {
       ctx.globalAlpha = Math.max(0, fade * p.alpha * tw);
       ctx.drawImage(glow(p.color), x - size / 2, p.y - size / 2, size, size);
     } else if (p.kind === "star") {
-      // 十字のきらめき: ふくらんで消える
+      // 十字のきらめき: ふくらんで消える。描いた絵（黒地の十字・#3228）を加算で重ね、読み込めていなければコードで描く
       const s = p.size * Math.sin(Math.PI * Math.min(1, k * 1.05)) ** 0.8;
       ctx.globalCompositeOperation = "lighter";
       ctx.globalAlpha = Math.max(0, p.alpha * (1 - k * 0.4));
+      if (SPARKLE.complete && SPARKLE.naturalWidth) {
+        // 絵の十字の縦の腕は、切り出し（512px）の中心から220px → 腕の長さ s に合わせる
+        const size = s * (512 / 220);
+        ctx.save();
+        ctx.translate(x, p.y);
+        ctx.rotate(p.rot + p.age * p.spin);
+        ctx.drawImage(SPARKLE, -size / 2, -size / 2, size, size);
+        ctx.restore();
+        ctx.globalAlpha = Math.max(0, p.alpha * (1 - k) * 0.8);
+        ctx.drawImage(glow(p.color), x - s, p.y - s, s * 2, s * 2);
+        return;
+      }
       ctx.save();
       ctx.translate(x, p.y);
       ctx.rotate(p.rot + p.age * p.spin);
