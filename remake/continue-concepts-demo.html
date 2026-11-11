@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>ゲームオーバー画面の見た目の案（見比べ） — 水煙前線 -EN:CODE-</title>
+<link rel="icon" href="../icon.svg">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/daily.css">
+<link rel="stylesheet" href="css/continue.css">
+<link rel="stylesheet" href="css/continue-concepts-demo.css">
+<style>
+#demo-tools { position:fixed; top:8px; left:12px; right:12px; z-index:200;
+ display:flex; align-items:center; flex-wrap:wrap; justify-content:center; gap:8px; padding:10px 14px;
+ background:#0c1021ef; border:1px solid #f2b86688; border-radius:10px; font:700 14px var(--font); color:#fff;
+ box-shadow:0 8px 26px #000a; }
+#demo-tools select,#demo-tools button { border:1px solid #e2b97f99; border-radius:6px; padding:6px 10px;
+ background:#1b1e31; color:#fff; cursor:pointer; font:inherit; }
+#demo-tools button { background:#b88325; color:#080910; font-weight:900; }
+#demo-tools button:disabled { opacity:.45; cursor:default; }
+#demo-tools label { display:flex; align-items:center; gap:4px; white-space:nowrap; }
+#demo-note { flex:1 1 100%; margin:0; text-align:center; font-weight:500; font-size:13px; color:#cfd6e6; }
+#demo-tools[hidden] { display:none; }
+@media(max-width:900px) { #demo-tools { gap:5px; padding:6px; font-size:12px; } #demo-tools select { max-width:170px; } }
+</style>
+</head>
+<body>
+<div id="demo-tools">
+ <label>見た目の案<select id="concept" aria-label="見た目の案"></select></label>
+ <label>出演<select id="character" aria-label="出演キャラクター">
+ <option value="0" selected>スミさん① 共同責任</option>
+ <option value="1">スミさん② 世界の終わり</option>
+ <option value="2">スミさん③ 反対多数</option>
+ <option value="lover:tsumugi">つむぎ</option>
+ <option value="lover:minto">栞／みんと</option>
+ <option value="lover:hiyori">ひより</option>
+ <option value="lover:rio">凛想</option>
+ <option value="lover:ageha">あげは</option>
+ <option value="lover:mashiro">ましろ</option>
+ <option value="lover:samechan">サメちゃん</option>
+ </select></label>
+ <label>負けた回数<select id="loss" aria-label="負けた回数"><option value="1" selected>初回（時間制限なし）</option><option value="2">2敗目（20秒で終了）</option></select></label>
+ <button type="button" id="demo-play">▶ 再生する</button>
+ <button type="button" id="demo-retry" disabled>再挑戦の反応</button>
+ <button type="button" id="demo-quit" disabled>諦める反応</button>
+ <label><input type="checkbox" id="demo-se">音を出す</label>
+ <p id="demo-note" role="status"></p>
+</div>
+<div id="viewport"><div id="stage"><div id="bg"></div><div id="screen"></div></div></div>
+<script type="module">
+// 見比べ専用のページ。セーブに書き込まず、本編の入口からは開かない。
+// URL: ?concept=ember|versus|manga|sign|current &character=0|1|2|lover:<id> &loss=1|2 &tools=0（操作欄を隠す）
+import { loadAll } from "./js/core/data.js";
+import { buildGameOver } from "./js/chapters/gameover.js";
+import { unlockAudio, applyVolumes } from "./js/core/audio.js";
+import { config, loadConfig } from "./js/core/state.js";
+import { CONTINUE_CONCEPTS, applyContinueConcept } from "./js/chapters/continue-concepts-demo.js";
+const $ = id => document.getElementById(id);
+const stage = $("stage"), screen = $("screen"), tools = $("demo-tools"), note = $("demo-note"),
+  concept = $("concept"), character = $("character"), loss = $("loss"), play = $("demo-play"),
+  retry = $("demo-retry"), quit = $("demo-quit"), se = $("demo-se");
+for (const item of CONTINUE_CONCEPTS) concept.append(new Option(item.name, item.id));
+const params = new URLSearchParams(location.search);
+if (CONTINUE_CONCEPTS.some(item => item.id === params.get("concept"))) concept.value = params.get("concept");
+else concept.value = "ember";
+if ([...character.options].some(option => option.value === params.get("character"))) character.value = params.get("character");
+if (["1", "2"].includes(params.get("loss"))) loss.value = params.get("loss");
+if (params.get("tools") === "0") tools.hidden = true;
+function fit() {
+ const top = tools.hidden ? 0 : tools.offsetHeight + 22, bottom = tools.hidden ? 0 : 12;
+ $("viewport").style.top = top + "px";
+ stage.style.setProperty("--k", String(Math.max(.05, Math.min(innerWidth / 1280, (innerHeight - top - bottom) / 720))));
+}
+addEventListener("resize", fit); new ResizeObserver(fit).observe(tools); fit();
+let ready = false, root = null;
+loadConfig();
+play.textContent = "読み込み中…"; play.disabled = true;
+function describe() {
+ const item = CONTINUE_CONCEPTS.find(entry => entry.id === concept.value);
+ note.textContent = `${item.name}: ${item.note}`;
+}
+function show() {
+ if (!ready) return null;
+ if (se.checked) unlockAudio();
+ root?.cleanupContinue?.();
+ const value = character.value, count = Number(loss.value);
+ retry.disabled = quit.disabled = false;
+ root = applyContinueConcept(buildGameOver({
+   context: { chapter: 1, reason: "rank", rank: 2, lossOrdinal: count, sameReasonOrdinal: count },
+   variant: value.startsWith("lover:") ? value : Number(value),
+   soundEffects: se.checked, layout: "neon", background: "stage",
+   onRetry: () => complete("再挑戦"), onTitle: () => complete(root.dataset.timedOut === "true" ? "時間切れ" : "諦める"),
+ }), concept.value);
+ screen.replaceChildren(root);
+ describe();
+ return root;
+}
+function complete(label) {
+ root.classList.remove("go-leaving"); root.dataset.phase = "preview-ended";
+ retry.disabled = quit.disabled = true;
+ note.textContent = `${label}の流れを最後まで再生しました。「再生する」でもう一度見られます。`;
+}
+try {
+ await loadAll(); ready = true; play.textContent = "▶ 再生する"; play.disabled = false; describe();
+ if (!se.checked) { config.bgmVolume = 0; applyVolumes(); }
+} catch (error) { note.textContent = "ゲーム素材を読み込めません: " + error.message; play.textContent = "素材エラー"; }
+play.addEventListener("click", show);
+for (const select of [concept, character, loss]) select.addEventListener("change", show);
+retry.addEventListener("click", () => root?.querySelector('[data-test="retry"]')?.click());
+quit.addEventListener("click", () => root?.querySelector('[data-test="game-over-title"]')?.click());
+se.addEventListener("change", () => { config.bgmVolume = se.checked ? .5 : 0; applyVolumes(); root?.setContinueSoundEffects?.(se.checked); });
+addEventListener("pagehide", () => root?.cleanupContinue?.());
+window.__continueConceptsDemo = { show, ready: () => ready, root: () => root };
+if (params.get("autoplay") === "1") show();
+</script>
+</body>
+</html>

@@ -4226,6 +4226,25 @@
       ]
     },
     {
+      "id": "continue-concepts-demo",
+      "title": "Game over look concepts demo (#2524): 4 reskins of the real continue screen",
+      "kind": "browser",
+      "weight": 1.5,
+      "timeout": 5,
+      "paths": [
+        "remake/test/continue_concepts_demo.mjs",
+        "remake/js/chapters/continue-concepts-demo.js",
+        "remake/css/continue-concepts-demo.css",
+        "remake/continue-concepts-demo.html",
+        "remake/js/chapters/gameover.js",
+        "remake/js/chapters/continue-view.js",
+        "remake/css/continue*.css"
+      ],
+      "run": [
+        "node remake/test/continue_concepts_demo.mjs"
+      ]
+    },
+    {
       "id": "conversation-effects",
       "title": "Conversation effects in the main VN engine (#2828): beat, BGM duck, [pause], inner voice, [shiver]",
       "kind": "browser",
