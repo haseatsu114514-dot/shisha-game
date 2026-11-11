@@ -318,7 +318,7 @@ export async function openConfig(opts = {}) {
   const skipMode = segRow("SKIPの範囲", "cfg-skip-mode", [["seen", "既読"], ["all", "全部"]],
     config.skipSeenOnly ? "seen" : "all", (v) => setConfig("skipSeenOnly", v === "seen"));
   // 見た目の様式（LK01）。既定は新版（LK09）。新版とDS風は第1章にいる間だけ効く。旧版へはいつでも戻せる。
-  const look = segRow("見た目（新版・DS風は第1章のみ）", "cfg-look", LOOKS.map(({ id, label }) => [id, label]),
+  const look = segRow("見た目（DS風は第1章のみ）", "cfg-look", LOOKS.map(({ id, label }) => [id, label]),
     normalizeLook(config.look), (v) => { setConfig("look", v); setLook(v); });
   const portraits = segRow("会話の立ち絵", "cfg-portrait-style", [["classic", "旧"], ["new", "新"]],
     config.portraitStyle === "classic" ? "classic" : "new", (v) => setConfig("portraitStyle", v));
