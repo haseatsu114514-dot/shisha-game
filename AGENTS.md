@@ -5,6 +5,7 @@ Codex / Claude Code 共通。Claude Code は `CLAUDE.md` の `@AGENTS.md` から
 ## 対象・優先順位
 
 - 正本は GitHub の `haseatsu114514-dot/shisha-game`（main と作業branch）。ゲームの実装・起動・公開先は `remake/`、台詞・共有データは `data/`、共有素材は `assets/`。
+- 公式プロモーションサイトは `promo/`（ゲーム本体と独立した静的ページ。作り・更新・載せる範囲は [promo/README.md](promo/README.md)）。
 - 旧 `web/` と Godot 版は廃止済み。`web/` は存在不要で、復元・テスト・確認要求の対象にしない。`project.godot` が残るcheckoutは古い。
 - 最新の明示的なユーザー指示を、古い仕様・Issueコメント・引き継ぎ・スキルの担当メモより優先する。依頼された仕様変更に再承認を求めない。
 - 仕様・要望は `docs/master_spec.md` / `docs/owner_requests.md`、物語・人物は `brand/story_and_structure.md` / `brand/character_profiles.md` / `data/characters.json`。
@@ -89,7 +90,7 @@ checkout使用時は、開始時・checkout/worktree変更後・commit/push前�
   ```bash
   git clone --depth 1 --filter=blob:none --sparse https://github.com/haseatsu114514-dot/shisha-game.git
   cd shisha-game
-  git sparse-checkout set --no-cone '/*' '!/*/' '/remake/' '/data/' '/assets/' '/tools/' '/brand/' '/experiments/' \
+  git sparse-checkout set --no-cone '/*' '!/*/' '/remake/' '/data/' '/assets/' '/promo/' '/tools/' '/brand/' '/experiments/' \
     '/.claude/' '/.agents/' '/.github/' '/.githooks/' '/docs/' '!/docs/archive/' '!/docs/qa/*/' '/asset_sources/' '!/asset_sources/*/' '/asset_sources/shisha-hardware-reference/'
   ```
 

@@ -10,6 +10,12 @@
   ],
   "suites": [
     {
+      "id": "promo-site",
+      "title": "公式プロモーションサイト（promo/）の参照切れ・ページ内リンク・人物と店の対応・使っていない絵",
+      "kind": "quick",
+      "run": ["node promo/tools/check.mjs"]
+    },
+    {
       "id": "stage-fit-3173",
       "title": "Visual viewport stage fit updates after browser chrome and rotation",
       "kind": "quick",
