@@ -1,21 +1,19 @@
 #!/usr/bin/env python3
 """モーション改善案の見本で使う派生画像を、採用済みの絵から作る。
 - cards/back.webp          占いの札の裏（Issue #3254 で Codex が作った札の裏。透過の外側を切り落として縮小）
-- cards/front-tsumugi.webp 札の表（#3254 の表の枠の窓に、占う相手＝つむぎの登場カットインの絵柄を入れる）
+- cards/front-frame.webp   札の表の枠（#3254。窓に入れる札の絵は #3278 で依頼中。相手の絵柄は使わない＝オーナー指示）
 - stills/train-streak.webp 新幹線の車窓の「流れ」。車内の絵の窓の中だけを行ごとに横へ引き伸ばしたもの
 使い方: python3 remake/previews/motion-direction/make_assets.py   （Pillow・numpy が必要）"""
 from pathlib import Path
 import numpy as np
-from PIL import Image, ImageFilter
+from PIL import Image
 
 ROOT = Path(__file__).resolve().parents[3]
 HERE = Path(__file__).parent
-INTRO = ROOT / "remake/img/ui/character_intros/graphic"
 BG = ROOT / "remake/img/backgrounds"
 TAROT = ROOT / "remake/img/ui/transitions/tarot"  # #3254 の札（原画は asset_sources/transitions/motion-props-3254/raw/）
 CARD_BOX = (87, 60, 937, 1457)  # 札の外形（1024x1536 の中。裏と表の枠で共通）
 W, H = 420, round(420 * (CARD_BOX[3] - CARD_BOX[1]) / (CARD_BOX[2] - CARD_BOX[0]))  # 420x690（index.html の .card の比率と同じ）
-WINDOW = (195, 215, 828, 1319)  # 表の枠の窓（生成りの無地の所）
 
 
 def card_back():
@@ -24,25 +22,8 @@ def card_back():
 
 
 def card_front():
-    frame = Image.open(TAROT / "card-front-frame.webp").convert("RGBA")
-    a = np.asarray(frame).astype(int)
-    # 窓＝生成りの無地の画素（窓の矩形の中だけ）。少しぼかして、金の細い線との継ぎ目をなじませる
-    ivory = (abs(a[..., 0] - 241) < 16) & (abs(a[..., 1] - 229) < 16) & (abs(a[..., 2] - 208) < 18) & (a[..., 3] > 250)
-    box = np.zeros_like(ivory)
-    x0, y0, x1, y1 = WINDOW
-    box[y0 - 6:y1 + 6, x0 - 6:x1 + 6] = True
-    mask = Image.fromarray(((ivory & box) * 255).astype("uint8")).filter(ImageFilter.MaxFilter(3)).filter(ImageFilter.GaussianBlur(0.8))
-    # 藤棚と遠景の縦長の一角（左側）を、窓と同じ縦横比で切る
-    art = Image.open(INTRO / "bg_tsumugi.webp").convert("RGB")
-    ww, wh = x1 - x0 + 12, y1 - y0 + 12
-    ch = 900
-    cw = round(ch * ww / wh)
-    scene = art.crop((60, 20, 60 + cw, 20 + ch)).resize((ww, wh), Image.Resampling.LANCZOS)
-    layer = Image.new("RGBA", frame.size, (0, 0, 0, 0))
-    layer.paste(scene, (x0 - 6, y0 - 6))
-    out = frame.copy()
-    out.paste(layer, (0, 0), mask)
-    return out.crop(CARD_BOX).resize((W, H), Image.Resampling.LANCZOS)
+    """表の枠だけ（窓は生成りの無地）。窓に入れる札の絵は占う相手ごとの大アルカナで、Codex に依頼中（#3278）"""
+    return Image.open(TAROT / "card-front-frame.webp").convert("RGBA").crop(CARD_BOX).resize((W, H), Image.Resampling.LANCZOS)
 
 
 def window_left(y):
@@ -98,6 +79,6 @@ if __name__ == "__main__":
     (HERE / "cards").mkdir(exist_ok=True)
     (HERE / "stills").mkdir(exist_ok=True)
     card_back().save(HERE / "cards/back.webp", quality=88, alpha_quality=100, method=6)
-    card_front().save(HERE / "cards/front-tsumugi.webp", quality=88, alpha_quality=100, method=6)
+    card_front().save(HERE / "cards/front-frame.webp", quality=88, alpha_quality=100, method=6)
     train_streak().save(HERE / "stills/train-streak.webp", quality=82, method=6)
     print("ok")
