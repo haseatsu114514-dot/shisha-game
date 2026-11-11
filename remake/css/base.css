@@ -1,3 +1,4 @@
+/* body:not(:root)／.title:not(:root) は、DS風の廃止（横画面一本化）で外した :not(.game-ds)／:not([data-layout="ds"]) と同じ詳細度を保つための置き換え。 */
 /* ============================================================
    水煙前線 リメイク版 — 土台（トークン・ステージ・共通UI）
    論理解像度 1280×720 の固定ステージを画面に合わせて拡縮する。
@@ -118,15 +119,15 @@ button { font: inherit; color: inherit; }
 /* 街マップ（#2855 → 2026-11-08 オーナー「マップがワイドになっていない」）: 絵と施設のピンを同じ倍率（ステージ幅 / 1280）で
    横いっぱいまで拡大する。ピンは絵に対する % で置かれているので、絵と同じ箱（幅 --stage-w・高さ 幅×9/16）に載せればずれない。
    拡大で上下にはみ出す分（絵の高さの約1割）は、どのピンも画面に入るよう map.js（fitMapCrop）が上から切る量 --map-crop を決める。
-   会話中（vn-open）は会話の背景としてふつうに cover で広げる。2画面表示（DS）は対象外。 */
-body:not(.game-ds)[data-screen="map"]:not(.vn-open) #stage[data-wide] #bg .bg-img {
+   会話中（vn-open）は会話の背景としてふつうに cover で広げる。 */
+body:not(:root)[data-screen="map"]:not(.vn-open) #stage[data-wide] #bg .bg-img {
   background-position: 50% calc(-1 * var(--map-crop, calc((var(--stage-w) * 9 / 16 - 720px) / 2)));
 }
-body:not(.game-ds) #stage[data-wide] .map-pins {
+body:not(:root) #stage[data-wide] .map-pins {
   left: calc(-1 * var(--stage-gutter)); right: calc(-1 * var(--stage-gutter)); bottom: auto;
   top: calc(-1 * var(--map-crop, calc((var(--stage-w) * 9 / 16 - 720px) / 2))); height: calc(var(--stage-w) * 9 / 16);
 }
-body:not(.game-ds) #stage[data-wide] .map-weather { left: calc(-1 * var(--stage-gutter)); right: calc(-1 * var(--stage-gutter)); }
+body:not(:root) #stage[data-wide] .map-weather { left: calc(-1 * var(--stage-gutter)); right: calc(-1 * var(--stage-gutter)); }
 /* ノッチにかかる端のピンだけ内側へ寄せる（map.js が必要な時だけ置く） */
 .map .spot-pin { translate: var(--pin-nudge-x, 0px) 0; }
 /* 画面全体を覆う暗幕・場面（中央1280の層に置かれる）は、左右の余白まで同じ色で塗り広げる。

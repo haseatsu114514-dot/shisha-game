@@ -1,3 +1,4 @@
+/* body:not(:root)／.title:not(:root) は、DS風の廃止（横画面一本化）で外した :not(.game-ds)／:not([data-layout="ds"]) と同じ詳細度を保つための置き換え。 */
 /* 紙×ラベンダー＋琥珀（日常UI・DUI01〜09）。原画は assets/ui/paper/、ビルドは remake/tools/build_ui_skin.py。
    場面の上に直接書く文字（日付の幕など）が読めるよう、全体の文字色は明るいまま。
    紙の面の中だけ文字色の変数を墨へ切り替える（子孫へ継承される）。 */
@@ -70,19 +71,19 @@ html:root[data-ui-theme="paper"] .sub-title { color: var(--paper-ink); }
 
 /* 会話: 生成した紙の窓（表示と同じ縦横比に組んだ原画）＋ラベンダーの名前札 */
 /* 窓の絵が読めない（未取得・配信のずれ）時も、紙の面を必ず敷いて本文を読めるようにする（DUI12）。 */
-html:root[data-ui-theme="paper"] body:not(.game-ds) .vn-box::before,
-html:root[data-ui-theme="paper"] body:not(.game-ds) .vn-box:is(.narration, .thought)::before {
+html:root[data-ui-theme="paper"] body:not(:root) .vn-box::before,
+html:root[data-ui-theme="paper"] body:not(:root) .vn-box:is(.narration, .thought)::before {
   inset: -8px -8px -8px; background: var(--vn-lounge-frame) center / 100% 100% no-repeat, var(--paper);
   border-radius: 8px; box-shadow: inset 0 0 0 1px #69497e40;
   filter: drop-shadow(0 8px 18px #110a2240);
 }
-html:root[data-ui-theme="paper"] body:not(.game-ds) .vn-box .vn-name {
+html:root[data-ui-theme="paper"] body:not(:root) .vn-box .vn-name {
   font-family: var(--font); font-weight: 900; color: #fff; text-shadow: none;
 }
 /* AUTO・SKIP などは窓の中へ入れる（DUI18）。窓の上の帯（外枠の内線と、本文の上の罫線のあいだ）の右側に、
    名前札と左右で釣り合う位置へ文字だけで並べる。場面の上には何も出さない。
    押せる範囲は44pxのまま、帯の高さ（約30px）の中央に文字を置く。本文は罫線より下から始まるので重ならない。 */
-html:root[data-ui-theme="paper"] body:not(.game-ds) .vn-controls {
+html:root[data-ui-theme="paper"] body:not(:root) .vn-controls {
   bottom: calc(var(--vn-dialogue-bottom) + var(--vn-dialogue-height) - 46px);
   right: calc((1280px - var(--vn-dialogue-width)) / 2 + 24px);
   width: 372px; height: 44px; padding: 0;
@@ -91,21 +92,21 @@ html:root[data-ui-theme="paper"] body:not(.game-ds) .vn-controls {
      列を文字幅に合わせ右端へ詰めると、各ボタンの padding（左右10px）がそのまま線との距離になり全て均等になる。 */
   grid-template-columns: repeat(5, auto); justify-content: end;
 }
-html:root[data-ui-theme="paper"] body:not(.game-ds) .vn-controls::before { display: none; }
-html:root[data-ui-theme="paper"] body:not(.game-ds) .vn-controls .vn-ctl { height: 44px; min-height: 44px; padding: 0 10px; color: var(--lavender); font-size: 22px; font-weight: 700; border-radius: 4px; transform: translateY(-2px); }
-html:root[data-ui-theme="paper"] body:not(.game-ds) .vn-controls .vn-ctl + .vn-ctl::before { top: 12px; bottom: 12px; background: var(--paper-line); opacity: 1; }
+html:root[data-ui-theme="paper"] body:not(:root) .vn-controls::before { display: none; }
+html:root[data-ui-theme="paper"] body:not(:root) .vn-controls .vn-ctl { height: 44px; min-height: 44px; padding: 0 10px; color: var(--lavender); font-size: 22px; font-weight: 700; border-radius: 4px; transform: translateY(-2px); }
+html:root[data-ui-theme="paper"] body:not(:root) .vn-controls .vn-ctl + .vn-ctl::before { top: 12px; bottom: 12px; background: var(--paper-line); opacity: 1; }
 /* 押せる範囲（44px）は帯より広いので、塗りではなく帯の高さの淡い面と下線で示す。AUTO・SKIP中は琥珀色。 */
-html:root[data-ui-theme="paper"] body:not(.game-ds) .vn-controls .vn-ctl:is(:hover, :focus-visible) {
+html:root[data-ui-theme="paper"] body:not(:root) .vn-controls .vn-ctl:is(:hover, :focus-visible) {
   color: var(--paper-ink); background: linear-gradient(var(--lavender-soft), var(--lavender-soft)) center / 100% 26px no-repeat;
   box-shadow: none; text-decoration: underline 2px var(--lavender); text-underline-offset: 4px;
 }
-html:root[data-ui-theme="paper"] body:not(.game-ds) .vn-controls .vn-ctl.on { color: var(--amber-ink); background: none; box-shadow: none; }
+html:root[data-ui-theme="paper"] body:not(:root) .vn-controls .vn-ctl.on { color: var(--amber-ink); background: none; box-shadow: none; }
 /* スマホの枠はホームバーを避けて上がる。操作列も同じ下端を参照しないと本文へ残ってしまう。
    大きいタップ領域は上へ伸ばし、文字と区切り線は下端に寄せて紙の見出し帯に収める。 */
-html:root[data-ui-theme="paper"][data-density="phone"] body:not(.game-ds) #stage {
+html:root[data-ui-theme="paper"][data-density="phone"] body:not(:root) #stage {
   --vn-dialogue-bottom: max(30px, calc((env(safe-area-inset-bottom, 0px) + 8px) / var(--k, 1)));
 }
-html:root[data-ui-theme="paper"][data-density="phone"] body:not(.game-ds) .vn-controls .vn-ctl {
+html:root[data-ui-theme="paper"][data-density="phone"] body:not(:root) .vn-controls .vn-ctl {
   display: flex; align-items: flex-end; justify-content: center;
   /* 文字を下端に寄せると、書体の上下の余白ぶん（約2px）が押せる箱の下へはみ出す（scrollHeight 74 > 72。
      夜間検査 cinema の「Clipped control」・#1787）。上の「文字を2px上へ」を transform ではなく下の余白で持たせて箱の中に収める。
@@ -113,10 +114,10 @@ html:root[data-ui-theme="paper"][data-density="phone"] body:not(.game-ds) .vn-co
   padding-bottom: 2px; transform: none;
   background-position: center bottom 2px;
 }
-html:root[data-ui-theme="paper"][data-density="phone"] body:not(.game-ds) #stage .vn-controls .vn-ctl + .vn-ctl::before {
+html:root[data-ui-theme="paper"][data-density="phone"] body:not(:root) #stage .vn-controls .vn-ctl + .vn-ctl::before {
   top: auto; bottom: 12px; height: 20px;
 }
-html:root[data-ui-theme="paper"][data-density="phone"] body:not(.game-ds) .vn-controls .vn-ctl.on::after {
+html:root[data-ui-theme="paper"][data-density="phone"] body:not(:root) .vn-controls .vn-ctl.on::after {
   top: auto; bottom: 2px; transform: none;
 }
 html:root[data-ui-theme="paper"] .vn-text { color: var(--paper-ink); text-shadow: none; }
@@ -131,23 +132,15 @@ html:root[data-ui-theme="paper"] .vn-box .tx-blue { color: #3b5ea8; }
 html:root[data-ui-theme="paper"] .vn-box .tx-sub { color: var(--paper-muted); }
 html:root[data-ui-theme="paper"] .vn-box .tx-voice { color: #6f6a80; }
 html:root[data-ui-theme="paper"] .vn-log .log-row b { color: var(--lavender); }
-/* 2画面表示は窓の大きさが違うので、原画を引き伸ばさず紙の面と線で描く。 */
-html:root[data-ui-theme="paper"] body.game-ds .vn-box::before,
-html:root[data-ui-theme="paper"] body.game-ds .vn-box:is(.narration, .thought)::before {
-  background: var(--paper); border: 1px solid var(--lavender); border-radius: 8px;
-}
-html:root[data-ui-theme="paper"] body.game-ds .vn-box .vn-name { font-family: var(--font); color: #fff; background: var(--lavender); border-radius: 6px 6px 2px 2px; text-shadow: none; }
-html:root[data-ui-theme="paper"] body.game-ds .vn-controls { background: var(--paper); border: 1px solid var(--paper-line); border-radius: 8px; }
-html:root[data-ui-theme="paper"] body.game-ds .vn-controls .vn-ctl { color: var(--lavender); }
 
 /* 紙の上で読めるよう、暗い面向けに明るく作られた色を濃くする。 */
 html:root[data-ui-theme="paper"] .hud-card { border-width: 10px; border-image-width: 10px; }
-html:root[data-ui-theme="paper"] body:not(.game-ds) #hud .hud-card .hud-bar { background: #e6dcea; border: 1px solid #b9a5c6; }
-html:root[data-ui-theme="paper"] body:not(.game-ds) #hud .dc-area { color: var(--lavender); }
+html:root[data-ui-theme="paper"] body:not(:root) #hud .hud-card .hud-bar { background: #e6dcea; border: 1px solid #b9a5c6; }
+html:root[data-ui-theme="paper"] body:not(:root) #hud .dc-area { color: var(--lavender); }
 /* 左上の札の文字色をそろえる: 項目名（所持金・次の大会まで・体力）は灰紫、日付の数字は他の見出しと同じ紫（DUI13） */
-html:root[data-ui-theme="paper"] body:not(.game-ds) #hud .hud-card .hud-stamina > span:first-child { color: var(--paper-muted); }
-html:root[data-ui-theme="paper"] body:not(.game-ds) #hud .dc-day b { color: var(--lavender); }
-html:root[data-ui-theme="paper"] body:not(.game-ds) #hud .dc-row:not(.money) b { color: var(--amber-ink); }
+html:root[data-ui-theme="paper"] body:not(:root) #hud .hud-card .hud-stamina > span:first-child { color: var(--paper-muted); }
+html:root[data-ui-theme="paper"] body:not(:root) #hud .dc-day b { color: var(--lavender); }
+html:root[data-ui-theme="paper"] body:not(:root) #hud .dc-row:not(.money) b { color: var(--amber-ink); }
 html:root[data-ui-theme="paper"] :is(.cfg-row select, .ui-theme-select) {
   background: var(--paper-card); color: var(--paper-ink); border: 1px solid var(--lavender-line);
 }

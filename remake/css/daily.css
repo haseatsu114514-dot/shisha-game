@@ -1,3 +1,4 @@
+/* body:not(:root)／.title:not(:root) は、DS風の廃止（横画面一本化）で外した :not(.game-ds)／:not([data-layout="ds"]) と同じ詳細度を保つための置き換え。 */
 /* =====================================================   タイトル・日常パート（HUD / マップ / tonari / ショップ / LIME / ステータス / 終章）
    ============================================================ */
 
@@ -107,15 +108,15 @@
    その1行を行の高さの中央に置く（flex-wrap + align-content。折り返さない幅は検査で確かめる）。
    スマホ横持ちのタッチ端末では副題を実寸11px以上（ステージ上 21〜24px。丸め誤差で11pxを割らないよう11.2pxで割る）に上げ、主文（26px）より一段小さいまま。
    PC（1280×720・マウス）は15pxのまま。 */
-.title:not([data-layout="ds"]) .title-item { flex-wrap: wrap; align-items: baseline; align-content: center; gap: 0 16px; }
-.title:not([data-layout="ds"]) .ti-ja { white-space: nowrap; }
+.title:not(:root) .title-item { flex-wrap: wrap; align-items: baseline; align-content: center; gap: 0 16px; }
+.title:not(:root) .ti-ja { white-space: nowrap; }
 @media (pointer: coarse) and (hover: none) {
-  .title:not([data-layout="ds"]) .ti-ja { font-size: max(15px, calc(11.2px / var(--k, 1))); }
+  .title:not(:root) .ti-ja { font-size: max(15px, calc(11.2px / var(--k, 1))); }
 }
 /* NEXT CYCLE が出て5行になるときは、ロゴの上下の余白を詰めて720pxに収める。 */
-.title:not([data-layout="ds"]) .title-left:has(.title-menu > :nth-child(5)) { top: 16px; }
-.title:not([data-layout="ds"]) .title-left:has(.title-menu > :nth-child(5)) .title-brand { height: 200px; }
-.title:not([data-layout="ds"]) .title-left:has(.title-menu > :nth-child(5)) .title-logo { top: 20px; }
+.title:not(:root) .title-left:has(.title-menu > :nth-child(5)) { top: 16px; }
+.title:not(:root) .title-left:has(.title-menu > :nth-child(5)) .title-brand { height: 200px; }
+.title:not(:root) .title-left:has(.title-menu > :nth-child(5)) .title-logo { top: 20px; }
 .title-item:hover:not(:disabled), .title-item:focus-visible { color: var(--gold-hi); transform: translateX(10px); outline: none; }
 .title-item:hover:not(:disabled) .ti-en::before { content: "◆ "; font-size: 18px; color: var(--gold); }
 .title-ver { position: absolute; right: 20px; bottom: 20px; z-index: 2; font-size: max(13px, calc(11.2px / var(--k, 1))); letter-spacing: 0.02em; color: rgba(255, 255, 255, 0.55); text-shadow: 0 1px 3px rgba(0, 0, 0, 0.85); pointer-events: none; }
@@ -464,7 +465,6 @@ body[data-screen="bench"] .hud-right, body[data-screen="count"] .hud-right, body
 .pin-station .pin-symbol { color: #e2f1f7; }
 .train-icon { display: grid; place-items: center; color: #e2f1f7; }
 .train-icon svg { display: block; width: 42px; height: 42px; }
-body.game-ds .pin-station .pin-symbol { color: #29485d; }
 .pin-locked  { --pin-from: #4a4a52; --pin-to: #2a2a32; }
 .pin-locked .shield { color: #d8d8e0; }
 
@@ -847,7 +847,7 @@ p.gear-offer.owned b { color: var(--gold); }
 .shop-stamps-shops i { display: grid; place-items: center; width: 1.6em; height: 1.6em; border: 2px dotted color-mix(in srgb, currentColor 45%, transparent); border-radius: 50%; font-style: normal; font-size: 0.8em; font-weight: 900; }
 .shop-stamps-shops li.on i { color: #fff; background: #c8484a; border: 2px solid #f0a0a0; transform: rotate(-12deg); }
 /* スマホ横持ち（phone-density.css の規格）: 説明・地域・店名も補助文の大きさ（実寸11.5px）を下回らない */
-html:root[data-density="phone"] body:not(.game-ds) .shop-stamps :is(.shop-stamps-lead, .shop-stamps-head, .shop-stamps-shops) { font-size: var(--phone-sub); }
+html:root[data-density="phone"] body:not(:root) .shop-stamps :is(.shop-stamps-lead, .shop-stamps-head, .shop-stamps-shops) { font-size: var(--phone-sub); }
 .lime-shortcut { border-bottom: 2px solid #e3e7ec; }
 .lcr-face .lime-face { width: 42px; height: 42px; border-color: #e3e7ec; }
 .lcr-dot {
@@ -1028,7 +1028,7 @@ button.lime-push:focus-visible { outline: 3px solid var(--lime); outline-offset:
 .chip.dim { color: var(--text-dim); }
 .recipe-chip { border: 1px solid var(--gold); min-height: 36px; font: 700 14px var(--font); cursor: pointer; }
 .recipe-chip:focus-visible { outline: 2px solid var(--gold-hi); outline-offset: 2px; }
-/* レシピ詳細だけ本文をスクロールし、狭い下画面でも戻る操作を残す。 */
+/* レシピ詳細だけ本文をスクロールし、背の低い画面でも戻る操作を残す。 */
 .status-modal .modal-body:has(.recipe-detail) { display: flex; flex-direction: column; }
 .status-modal .status:has(.recipe-detail) { display: flex; flex-direction: column; min-height: 0; }
 .status-modal .modal-body:has(.recipe-detail) .st-tabs { display: none; }
@@ -1248,12 +1248,12 @@ body[data-weather="outdoor"] .map-weather { display: none; }
 .levelup.lu-settled-state .lu-ok { opacity: 1; pointer-events: auto; }
 @media (prefers-reduced-motion: reduce) { .lu-gauge b, .levelup-band, .levelup-backdrop { transition: none; } .levelup.burst .lu-head { animation: none; } }
 /* スマホ横持ち（#2851 の規格・オーナー指示 2026-11-08「文字は気持ち大きく」）: 結果の行と注記を規格の文字にし、パネルを少し広げる */
-html:root[data-density="phone"] body:not(.game-ds) .levelup { width: 720px; }
-html:root[data-density="phone"] body:not(.game-ds) .lu-details p { font-size: var(--phone-sub); }
-html:root[data-density="phone"] body:not(.game-ds) .lu-details .lu-change { font-size: calc(var(--phone-text) + 4px) !important; }
-html:root[data-density="phone"] body:not(.game-ds) .lu-details .lu-hidane { font-size: var(--phone-text); }
-html:root[data-density="phone"] body:not(.game-ds) .lu-details .lu-note { font-size: var(--phone-sub) !important; }
-html:root[data-density="phone"] body:not(.game-ds) .levelup-band :is(.lb-learned, .lb-gift) { font-size: var(--phone-sub); }
+html:root[data-density="phone"] body:not(:root) .levelup { width: 720px; }
+html:root[data-density="phone"] body:not(:root) .lu-details p { font-size: var(--phone-sub); }
+html:root[data-density="phone"] body:not(:root) .lu-details .lu-change { font-size: calc(var(--phone-text) + 4px) !important; }
+html:root[data-density="phone"] body:not(:root) .lu-details .lu-hidane { font-size: var(--phone-text); }
+html:root[data-density="phone"] body:not(:root) .lu-details .lu-note { font-size: var(--phone-sub) !important; }
+html:root[data-density="phone"] body:not(:root) .levelup-band :is(.lb-learned, .lb-gift) { font-size: var(--phone-sub); }
 
 /* ---------------------------------------------------------------- 心得の盤（第2版の試作。図形だけ。画像は #1772 のデザインで後から差し替え） */
 .gboard { --stat-body: #ef8a5e; --stat-sense: #58a6ff; --stat-wisdom: #7bd36d; --board-c: var(--stat-sense); --white-fire: #f3e8cf; position: absolute; inset: 0; display: grid; grid-template-rows: 60px 548px 112px; pointer-events: auto; color: var(--text); font-family: var(--font);
@@ -1716,164 +1716,164 @@ html:root[data-density="phone"] body:not(.game-ds) .levelup-band :is(.lb-learned
 .gboard.has-art .gb-node.gate.selected .gb-face, .gboard.has-art .gb-node.gate.target .gb-face { outline: none; filter: drop-shadow(0 0 2px #fff) drop-shadow(0 0 2px #fff) drop-shadow(0 0 8px var(--board-c)) !important; }
 
 /* 左上の日付カード（2026-10-31 DUI13）: 紙の色になる前の配置（左に日付、右に所持金・大会まで・体力の3行）を薄く組み直す。
-   行ごとの枠は付けず、細い線で区切る。幅は固定（所持金の桁・時間帯・最大体力で板が動かない）。2画面表示は game-ds.css のまま。 */
-body:not(.game-ds) #hud .hud-card { display: flex; align-items: center; width: auto; height: auto; padding: 6px 14px 7px 16px; }
-body:not(.game-ds) #hud .dc-main { flex: none; width: 58px; min-width: 0; }
-body:not(.game-ds) #hud .dc-area { margin: 0 0 2px; font-size: 12px; font-weight: 700; letter-spacing: .02em; }
-body:not(.game-ds) #hud .dc-day b { font-size: 30px; font-weight: 900; }
-body:not(.game-ds) #hud .dc-slot { margin-top: 2px; font-size: 14px; font-weight: 700; }
-body:not(.game-ds) #hud .dc-meta {
+   行ごとの枠は付けず、細い線で区切る。幅は固定（所持金の桁・時間帯・最大体力で板が動かない）。 */
+body:not(:root) #hud .hud-card { display: flex; align-items: center; width: auto; height: auto; padding: 6px 14px 7px 16px; }
+body:not(:root) #hud .dc-main { flex: none; width: 58px; min-width: 0; }
+body:not(:root) #hud .dc-area { margin: 0 0 2px; font-size: 12px; font-weight: 700; letter-spacing: .02em; }
+body:not(:root) #hud .dc-day b { font-size: 30px; font-weight: 900; }
+body:not(:root) #hud .dc-slot { margin-top: 2px; font-size: 14px; font-weight: 700; }
+body:not(:root) #hud .dc-meta {
   flex: none; width: 214px; gap: 0; margin-left: 12px; padding-left: 14px; border-left: 1px solid var(--paper-line, #d5c8dc);
 }
-body:not(.game-ds) #hud .dc-row,
-body:not(.game-ds) #hud .hud-card .hud-stamina {
+body:not(:root) #hud .dc-row,
+body:not(:root) #hud .hud-card .hud-stamina {
   display: flex; align-items: center; gap: 8px; width: auto; min-width: 0; height: 25px; padding: 0;
   background: none; border: 0; border-bottom: 1px solid var(--paper-line, #d5c8dc); border-image: none; border-radius: 0; box-shadow: none; white-space: nowrap;
 }
-body:not(.game-ds) #hud .dc-row { justify-content: space-between; }
-body:not(.game-ds) #hud .dc-meta > :last-child:not([hidden]),
-body:not(.game-ds) #hud .dc-meta > .hud-stamina:has(+ [hidden]) { border-bottom: 0; }
-body:not(.game-ds) #hud .dc-row span,
-body:not(.game-ds) #hud .hud-card .hud-stamina > span:first-child { flex: none; width: auto; font-size: 12px; font-weight: 700; letter-spacing: .02em; }
-body:not(.game-ds) #hud .dc-row.money b { font-size: 20px; line-height: 1; }
-body:not(.game-ds) #hud .dc-row:not(.money) b { font-size: 15px; line-height: 1; }
+body:not(:root) #hud .dc-row { justify-content: space-between; }
+body:not(:root) #hud .dc-meta > :last-child:not([hidden]),
+body:not(:root) #hud .dc-meta > .hud-stamina:has(+ [hidden]) { border-bottom: 0; }
+body:not(:root) #hud .dc-row span,
+body:not(:root) #hud .hud-card .hud-stamina > span:first-child { flex: none; width: auto; font-size: 12px; font-weight: 700; letter-spacing: .02em; }
+body:not(:root) #hud .dc-row.money b { font-size: 20px; line-height: 1; }
+body:not(:root) #hud .dc-row:not(.money) b { font-size: 15px; line-height: 1; }
 /* 体力: バーの長さは経験値ゲージと共通の固定長（#3034）。最大体力が伸びてもバーは伸ばさない（長さは hud.js の HUD_GAUGE_WIDTH が決める）。 */
-body:not(.game-ds) #hud .hud-card .hud-stamina { position: relative; }
-body:not(.game-ds) #hud .hud-card .hud-stamina > span:first-child { width: 28px; }
-body:not(.game-ds) #hud .hud-card .hud-stamina .hud-bar { position: relative; flex: none; box-sizing: border-box; height: 12px; min-width: 0; max-width: none; margin: 0; border-radius: 6px; }
+body:not(:root) #hud .hud-card .hud-stamina { position: relative; }
+body:not(:root) #hud .hud-card .hud-stamina > span:first-child { width: 28px; }
+body:not(:root) #hud .hud-card .hud-stamina .hud-bar { position: relative; flex: none; box-sizing: border-box; height: 12px; min-width: 0; max-width: none; margin: 0; border-radius: 6px; }
 /* 中身は枠の内側に上下左右とも1pxで収める（古い position: relative と絵の枠用の inset: 3px 4px を引き継がない）。 */
-body:not(.game-ds) #hud .hud-card .hud-stamina .gauge-track { position: absolute; inset: 1px; display: block; overflow: hidden; border-radius: 4px; }
-body:not(.game-ds) #hud .hud-card .hud-stamina .hud-bar b { border-radius: 4px; }
-body:not(.game-ds) #hud .hud-card .hud-exp { height: 25px; padding: 0; }
+body:not(:root) #hud .hud-card .hud-stamina .gauge-track { position: absolute; inset: 1px; display: block; overflow: hidden; border-radius: 4px; }
+body:not(:root) #hud .hud-card .hud-stamina .hud-bar b { border-radius: 4px; }
+body:not(:root) #hud .hud-card .hud-exp { height: 25px; padding: 0; }
 /* 体力と経験値のゲージの始まりをそろえる（オーナー指示 2026-11-08）。ラベル（「体力」「Lv.1」）を同じ幅・同じ間隔にする。 */
-body:not(.game-ds) #hud .hud-card :is(.hud-stamina > span:first-child, .hud-exp .hx-lv) { flex: none; width: 40px; min-width: 0; }
-body:not(.game-ds) #hud .hud-card :is(.hud-stamina, .hud-exp) { gap: 8px; }
+body:not(:root) #hud .hud-card :is(.hud-stamina > span:first-child, .hud-exp .hx-lv) { flex: none; width: 40px; min-width: 0; }
+body:not(:root) #hud .hud-card :is(.hud-stamina, .hud-exp) { gap: 8px; }
 /* 経験値のゲージも体力と同じ太さ・同じ角の丸み・同じ内側の余白にする（オーナー指示 2026-11-08「太さ同じにしたい」） */
 /* 長さも体力と共通の 120px にそろえて少し短くする（#3034・オーナー指示 2026-11-09）。「今夜 Lv UP」等の文字が出る時は、その分だけ縮んでよい（潰れすぎない範囲で）。 */
-body:not(.game-ds) #hud .hud-card .hud-exp .hx-bar { box-sizing: border-box; height: 12px; border-radius: 6px; flex: 0 1 120px; }
-body:not(.game-ds) #hud .hud-card .hud-exp .hx-bar b { top: 1px; bottom: 1px; left: 1px; max-width: calc(100% - 2px); border-radius: 4px; }
-body:not(.game-ds) #hud .hud-card .hud-exp[data-milestone="true"] .hx-bar::after { top: 4px; }
+body:not(:root) #hud .hud-card .hud-exp .hx-bar { box-sizing: border-box; height: 12px; border-radius: 6px; flex: 0 1 120px; }
+body:not(:root) #hud .hud-card .hud-exp .hx-bar b { top: 1px; bottom: 1px; left: 1px; max-width: calc(100% - 2px); border-radius: 4px; }
+body:not(:root) #hud .hud-card .hud-exp[data-milestone="true"] .hx-bar::after { top: 4px; }
 
 /* 地図の案内パネル: 選んだスポットの写真と名前だけを表示する。 */
-body:not(.game-ds) .map .map-info {
+body:not(:root) .map .map-info {
   display: grid; grid-template-columns: minmax(0, 1fr); width: 312px; padding: 6px 8px 8px;
 }
-body:not(.game-ds) .map .map-info > * { grid-column: 1; }
-body:not(.game-ds) .map .mi-banner { justify-self: start; margin-bottom: 4px; white-space: nowrap; }
-body:not(.game-ds) .map .mi-desc { margin: 2px 2px 6px; font-size: 14px; line-height: 1.45; word-break: auto-phrase; line-break: strict; }
-body:not(.game-ds) .map .mi-foot { white-space: nowrap; }
-body:not(.game-ds) .map .mi-area { font-size: 14px; font-weight: 700; line-height: 1.3; }
-body:not(.game-ds) .map .map-info > .mi-preview {
+body:not(:root) .map .map-info > * { grid-column: 1; }
+body:not(:root) .map .mi-banner { justify-self: start; margin-bottom: 4px; white-space: nowrap; }
+body:not(:root) .map .mi-desc { margin: 2px 2px 6px; font-size: 14px; line-height: 1.45; word-break: auto-phrase; line-break: strict; }
+body:not(:root) .map .mi-foot { white-space: nowrap; }
+body:not(:root) .map .mi-area { font-size: 14px; font-weight: 700; line-height: 1.3; }
+body:not(:root) .map .map-info > .mi-preview {
   grid-row: 1; aspect-ratio: 16 / 9; width: 100%; height: auto; margin: 0 0 6px; background-position: center; border-radius: 4px;
 }
-body:not(.game-ds) .map .map-info:has(> .mi-preview) > .mi-banner {
+body:not(:root) .map .map-info:has(> .mi-preview) > .mi-banner {
   grid-row: 1; align-self: start; z-index: 1; margin: 6px; max-width: calc(100% - 12px); overflow: hidden; text-overflow: ellipsis;
 }
-body:not(.game-ds) .map .map-info:has(> .mi-preview) > .mi-area {
+body:not(:root) .map .map-info:has(> .mi-preview) > .mi-area {
   grid-row: 1; align-self: end; justify-self: start; z-index: 1; margin: 0 6px 12px; padding: 1px 8px;
   color: var(--paper-ink, #38283f); background: #fffcf8e6; border-radius: 3px; box-shadow: 0 2px 6px #0000004d;
 }
-body:not(.game-ds) .map .mi-go { display: flex; justify-content: center; align-items: baseline; gap: 10px; padding: 6px 0; }
-body:not(.game-ds) .map .mi-note { font-size: 12px; font-weight: 700; letter-spacing: 0; opacity: .85; }
-body:not(.game-ds) .map .mi-note.warn { color: #b83a3a; opacity: 1; }
-body:not(.game-ds) .map .mi-go:is(:hover, :focus-visible) .mi-note.warn { color: #ffd6d6; }
-body:not(.game-ds) .map .mi-no { padding: 5px; }
+body:not(:root) .map .mi-go { display: flex; justify-content: center; align-items: baseline; gap: 10px; padding: 6px 0; }
+body:not(:root) .map .mi-note { font-size: 12px; font-weight: 700; letter-spacing: 0; opacity: .85; }
+body:not(:root) .map .mi-note.warn { color: #b83a3a; opacity: 1; }
+body:not(:root) .map .mi-go:is(:hover, :focus-visible) .mi-note.warn { color: #ffd6d6; }
+body:not(:root) .map .mi-no { padding: 5px; }
 
 /* ---------------------------------------------------------------- 街マップ・HUD のスマホ横持ち（#2853・#2729 優先3）
    ステージ倍率 --k で縮んでも、文字は実寸11px・押す部品は実寸38px を下回らないよう max() で下限を付ける。
-   PC（--k ≥ 1）は左側の設計値のまま。2画面表示（game-ds）は対象外。 */
+   PC（--k ≥ 1）は左側の設計値のまま。 */
 /* 下限を --k で割るのは共通のスマホ規格（横長のスマホ・html[data-density="phone"]・#2917）のときだけ。PC・縦長の画面は設計値のまま。 */
 #hud, .map { --mui-text: 11px; --mui-tap: 38px; }
 html:root[data-density="phone"] :is(#hud, .map) { --mui-text: calc(11px / var(--k, 1)); --mui-tap: calc(38px / var(--k, 1)); }
 
 /* HUD: ラベルの文字は読み上げ用に残して隠し、¥・トロフィー・ハートの印＋数値（24px）にする。札の幅・行の高さは変えない。 */
-body:not(.game-ds) #hud .dc-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
-body:not(.game-ds) #hud :is(.dc-row, .hud-card .hud-stamina)::before {
+body:not(:root) #hud .dc-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+body:not(:root) #hud :is(.dc-row, .hud-card .hud-stamina)::before {
   content: ""; flex: none; width: max(18px, var(--mui-text)); height: max(18px, var(--mui-text));
   background: currentColor; color: var(--paper-muted, var(--text-dim));
   -webkit-mask: var(--hud-icon) center / contain no-repeat; mask: var(--hud-icon) center / contain no-repeat;
 }
-body:not(.game-ds) #hud .dc-row.money::before {
+body:not(:root) #hud .dc-row.money::before {
   content: "¥"; background: none; -webkit-mask: none; mask: none; display: grid; place-items: center;
   font-size: max(18px, var(--mui-text)); font-weight: 900; line-height: 1;
 }
-body:not(.game-ds) #hud .dc-row:not(.money) { --hud-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6 2h12v2h4v3a5 5 0 0 1-4.6 5A6 6 0 0 1 13 15.9V19h4v3H7v-3h4v-3.1A6 6 0 0 1 6.6 12 5 5 0 0 1 2 7V4h4V2Zm0 4H4v1a3 3 0 0 0 2.2 2.9A6 6 0 0 1 6 9V6Zm12 0v3a6 6 0 0 1-.2.9A3 3 0 0 0 20 7V6h-2Z'/%3E%3C/svg%3E"); }
-body:not(.game-ds) #hud .hud-card .hud-stamina { --hud-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 21.4 10.6 20C5.4 15.4 2 12.3 2 8.5 2 5.4 4.4 3 7.5 3c1.7 0 3.4.8 4.5 2.1A6 6 0 0 1 16.5 3C19.6 3 22 5.4 22 8.5c0 3.8-3.4 6.9-8.6 11.5L12 21.4Z'/%3E%3C/svg%3E"); }
-body:not(.game-ds) #hud .hud-card .hud-stamina::before { color: #d9586a; }
+body:not(:root) #hud .dc-row:not(.money) { --hud-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6 2h12v2h4v3a5 5 0 0 1-4.6 5A6 6 0 0 1 13 15.9V19h4v3H7v-3h4v-3.1A6 6 0 0 1 6.6 12 5 5 0 0 1 2 7V4h4V2Zm0 4H4v1a3 3 0 0 0 2.2 2.9A6 6 0 0 1 6 9V6Zm12 0v3a6 6 0 0 1-.2.9A3 3 0 0 0 20 7V6h-2Z'/%3E%3C/svg%3E"); }
+body:not(:root) #hud .hud-card .hud-stamina { --hud-icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 21.4 10.6 20C5.4 15.4 2 12.3 2 8.5 2 5.4 4.4 3 7.5 3c1.7 0 3.4.8 4.5 2.1A6 6 0 0 1 16.5 3C19.6 3 22 5.4 22 8.5c0 3.8-3.4 6.9-8.6 11.5L12 21.4Z'/%3E%3C/svg%3E"); }
+body:not(:root) #hud .hud-card .hud-stamina::before { color: #d9586a; }
 /* ハートの印は「Lv.1」のラベルと同じ幅の箱に左寄せで置き、体力と経験値のゲージの始まりをそろえる（#2917 の規則・オーナー指示 2026-11-08）。
    スマホ規格では「Lv.1」が 2.9em（--phone-sub）になるので、印の箱もそれに合わせる。 */
-body:not(.game-ds) #hud .hud-card .hud-stamina::before { width: 40px; -webkit-mask-position: left center; mask-position: left center; }
-html:root[data-density="phone"] body:not(.game-ds) #hud .hud-card .hud-stamina::before { width: calc(var(--phone-sub) * 2.9); height: var(--phone-sub); }
-body:not(.game-ds) #hud :is(.dc-row.money, .dc-row:not(.money)) b { font-size: max(24px, var(--mui-text)); line-height: 1; }
+body:not(:root) #hud .hud-card .hud-stamina::before { width: 40px; -webkit-mask-position: left center; mask-position: left center; }
+html:root[data-density="phone"] body:not(:root) #hud .hud-card .hud-stamina::before { width: calc(var(--phone-sub) * 2.9); height: var(--phone-sub); }
+body:not(:root) #hud :is(.dc-row.money, .dc-row:not(.money)) b { font-size: max(24px, var(--mui-text)); line-height: 1; }
 /* 日付の列は幅を固定（中身で札が動かない）。スマホは「☀残り2」が下限の文字で収まる幅まで広げる。 */
-body:not(.game-ds) #hud .dc-main { width: max(58px, var(--mui-text) * 4); }
-body:not(.game-ds) #hud .dc-area { font-size: max(12px, var(--mui-text)); white-space: nowrap; }
-body:not(.game-ds) #hud .dc-day small { font-size: max(13px, var(--mui-text)); }
-body:not(.game-ds) #hud .dc-slot { font-size: max(14px, var(--mui-text)); }
+body:not(:root) #hud .dc-main { width: max(58px, var(--mui-text) * 4); }
+body:not(:root) #hud .dc-area { font-size: max(12px, var(--mui-text)); white-space: nowrap; }
+body:not(:root) #hud .dc-day small { font-size: max(13px, var(--mui-text)); }
+body:not(:root) #hud .dc-slot { font-size: max(14px, var(--mui-text)); }
 
 /* LIME・MENU の大きさは共通のスマホ規格（#2917・phone-density.css。スマホは 72px 相当・PC は 48px／40px のまま）に従う。
    MENU は「≡」だけの正方形にする（名前は title・読み上げに残す・#2853。オーナー指示 2026-11-08 で採用）。 */
-body:not(.game-ds) #hud .hud-menu { justify-content: center; width: 40px; padding: 0; }
-body:not(.game-ds) #hud .hud-menu > span { display: none; }
-body:not(.game-ds) #hud .hud-menu i { width: 18px; height: 13px; }
-body:not(.game-ds) #hud .hud-menu i::after { top: calc(50% - 1px); }
-html:root[data-density="phone"] body:not(.game-ds) #hud .hud-menu { width: var(--phone-tap); padding: 0; }
-html:root[data-density="phone"] body:not(.game-ds) #hud .hud-menu i { width: calc(var(--phone-tap) * .44); height: calc(var(--phone-tap) * .33); border-top-width: 3px; border-bottom-width: 3px; }
-html:root[data-density="phone"] body:not(.game-ds) #hud .hud-menu i::after { top: calc(50% - 1.5px); border-top-width: 3px; }
-body:not(.game-ds) #hud .hud-menu .hidane-badge { min-width: max(20px, var(--mui-text)); height: max(20px, var(--mui-text)); font-size: max(12px, var(--mui-text)); }
+body:not(:root) #hud .hud-menu { justify-content: center; width: 40px; padding: 0; }
+body:not(:root) #hud .hud-menu > span { display: none; }
+body:not(:root) #hud .hud-menu i { width: 18px; height: 13px; }
+body:not(:root) #hud .hud-menu i::after { top: calc(50% - 1px); }
+html:root[data-density="phone"] body:not(:root) #hud .hud-menu { width: var(--phone-tap); padding: 0; }
+html:root[data-density="phone"] body:not(:root) #hud .hud-menu i { width: calc(var(--phone-tap) * .44); height: calc(var(--phone-tap) * .33); border-top-width: 3px; border-bottom-width: 3px; }
+html:root[data-density="phone"] body:not(:root) #hud .hud-menu i::after { top: calc(50% - 1.5px); border-top-width: 3px; }
+body:not(:root) #hud .hud-menu .hidane-badge { min-width: max(20px, var(--mui-text)); height: max(20px, var(--mui-text)); font-size: max(12px, var(--mui-text)); }
 
 /* 地図のピン: 名前・¥・状態の札に下限。顔と「?」は 48px、押すとそのピンを選ぶ（ピンのボタンの中）。 */
-body:not(.game-ds) .map .spot-pin .sub-label { font-size: max(13px, var(--mui-text)); }
-body:not(.game-ds) .map .spot-pin .pin-cost { font-size: max(18px, var(--mui-text)); font-weight: 700; line-height: 1.2; }
+body:not(:root) .map .spot-pin .sub-label { font-size: max(13px, var(--mui-text)); }
+body:not(:root) .map .spot-pin .pin-cost { font-size: max(18px, var(--mui-text)); font-weight: 700; line-height: 1.2; }
 /* スマホ規格: 文字を下限まで大きくした分、札の余白を詰めて隣のスポットと重ならないようにする（compact_gains_map の重なりの検査） */
-html:root[data-density="phone"] body:not(.game-ds) .map .spot-pin .sub-label { padding: 2px 5px; line-height: 1.2; }
-html:root[data-density="phone"] body:not(.game-ds) .map .spot-pin .pin-cost { margin-top: 1px; padding: 0 5px; line-height: 1.15; }
-html:root[data-density="phone"] body:not(.game-ds) .map .spot-pin .pin-status:not(.pin-closed) { margin-top: 1px; padding: 0 5px; line-height: 1.15; }
-body:not(.game-ds) .map .spot-pin .pin-status { font-size: max(14px, var(--mui-text)); }
-body:not(.game-ds) .map .spot-pin .pin-people { top: -42px; pointer-events: auto; } /* 顔の下端は今までと同じ（看板の上端から 6px）。ロゴに重ならない */
-body:not(.game-ds) .map .spot-pin .pin-person { flex-basis: 48px; width: 48px; height: 48px; }
-body:not(.game-ds) .map .spot-pin .pin-unknown b { font-size: max(22px, var(--mui-text)); }
-body:not(.game-ds) .map .spot-pin .pin-visual:has(.pin-person:nth-child(3)) .evt-badge { top: 16px; }
+html:root[data-density="phone"] body:not(:root) .map .spot-pin .sub-label { padding: 2px 5px; line-height: 1.2; }
+html:root[data-density="phone"] body:not(:root) .map .spot-pin .pin-cost { margin-top: 1px; padding: 0 5px; line-height: 1.15; }
+html:root[data-density="phone"] body:not(:root) .map .spot-pin .pin-status:not(.pin-closed) { margin-top: 1px; padding: 0 5px; line-height: 1.15; }
+body:not(:root) .map .spot-pin .pin-status { font-size: max(14px, var(--mui-text)); }
+body:not(:root) .map .spot-pin .pin-people { top: -42px; pointer-events: auto; } /* 顔の下端は今までと同じ（看板の上端から 6px）。ロゴに重ならない */
+body:not(:root) .map .spot-pin .pin-person { flex-basis: 48px; width: 48px; height: 48px; }
+body:not(:root) .map .spot-pin .pin-unknown b { font-size: max(22px, var(--mui-text)); }
+body:not(:root) .map .spot-pin .pin-visual:has(.pin-person:nth-child(3)) .evt-badge { top: 16px; }
 /* 顔を 48px にした分、2人並ぶと右の顔が右上の「!」にかかる。2人のときは顔の列を「!」の左で終わらせ、左へ伸ばす。 */
-body:not(.game-ds) .map .spot-pin .pin-visual:has(.pin-person:nth-child(2)):not(:has(.pin-person:nth-child(3))) .pin-people { left: auto; right: 16px; }
+body:not(:root) .map .spot-pin .pin-visual:has(.pin-person:nth-child(2)):not(:has(.pin-person:nth-child(3))) .pin-people { left: auto; right: 16px; }
 /* 「!」の丸は文字（実寸 11px 以上）に比例させ、もとの比（21px の丸に 14px・字面を上へ 2px）を保つ（字面が丸の中央からずれない）。 */
-body:not(.game-ds) .map { --evt-d: max(21px, calc(var(--mui-text) * 1.5)); }
-body:not(.game-ds) .map .evt-badge {
+body:not(:root) .map { --evt-d: max(21px, calc(var(--mui-text) * 1.5)); }
+body:not(:root) .map .evt-badge {
   width: var(--evt-d); height: var(--evt-d); font-size: calc(var(--evt-d) * 14 / 21); padding-bottom: calc(var(--evt-d) * 2 / 21);
   /* 丸が大きくなっても、看板にかかる左下の角は 21px の時と同じ所（右上から内へ 13px）に置き、右上の外へ伸ばす（ロゴ・顔に重ならない） */
   top: calc(13px - var(--evt-d)); right: calc(13px - var(--evt-d));
 }
 /* 観音堂の火種の数（.hidane-badge）は数字なので、文字は丸の大きさに比例させ（もとの 20px に 12px の比）、
    丸の大きさを下限に横は数字に合わせて伸ばす（「!」の文字の下限で数字が丸からはみ出さない）。 */
-body:not(.game-ds) .map .evt-badge.hidane-badge {
+body:not(:root) .map .evt-badge.hidane-badge {
   --evt-d: max(21px, calc(var(--mui-text) / .6)); /* スマホでも数字が実寸 11px を割らない丸 */
   width: auto; min-width: var(--evt-d); height: var(--evt-d); padding: 0 3px; font-size: calc(var(--evt-d) * .6);
 }
 /* 施設の絵の印は、絵の輪郭の目印（--facility-badge-x/y）から丸の中心が右へ 8px・上へ 3px（facility-icons.css の 21px の丸の式）。
    丸の大きさが変わっても中心が同じ所に来るよう、丸の半径で引く（facility_map の検査）。 */
-body:not(.game-ds) .map .spot-pin.facility-pin .evt-badge {
+body:not(:root) .map .spot-pin.facility-pin .evt-badge {
   top: calc(6px + (96px - var(--facility-art-height)) / 2 + var(--facility-badge-y) - 3px - var(--evt-d) / 2);
   left: calc(12px + (96px - var(--facility-art-width)) / 2 + var(--facility-badge-x) + 8px - var(--evt-d) / 2);
 }
-body:not(.game-ds) .map .pin-reveal-label { font-size: max(12px, var(--mui-text)); }
+body:not(:root) .map .pin-reveal-label { font-size: max(12px, var(--mui-text)); }
 /* 定休日・臨時休業: 看板をグレーにして、右上に「休」の印（札の文字は読み上げ・title 用に残す）。 */
-body:not(.game-ds) .map .spot-pin.closed .shield { filter: grayscale(1) brightness(0.82); }
-body:not(.game-ds) .map .spot-pin .pin-status.pin-closed {
+body:not(:root) .map .spot-pin.closed .shield { filter: grayscale(1) brightness(0.82); }
+body:not(:root) .map .spot-pin .pin-status.pin-closed {
   position: absolute; top: -12px; right: -12px; z-index: 3; display: grid; place-items: center; box-sizing: border-box;
   width: max(32px, var(--mui-text) * 1.5); height: max(32px, var(--mui-text) * 1.5); margin: 0; padding: 0;
   font-size: 0; color: #fff; background: #b8323a; border: 2px solid #fff; border-radius: 50%; box-shadow: 0 2px 6px #0008;
 }
-body:not(.game-ds) .map .spot-pin .pin-status.pin-closed::before { content: "休"; font-size: max(16px, var(--mui-text)); font-weight: 900; line-height: 1; }
+body:not(:root) .map .spot-pin .pin-status.pin-closed::before { content: "休"; font-size: max(16px, var(--mui-text)); font-weight: 900; line-height: 1; }
 
 /* 案内箱・案内の帯・一言: 文字の下限。中身が無い日は箱ごと出さない。 */
-body:not(.game-ds) .map .map-info:empty { display: none; }
-body:not(.game-ds) .map .map-info :is(.mi-banner, .mi-desc, .mi-foot, .mi-area, .mi-no) { font-size: max(14px, var(--mui-text)); }
-body:not(.game-ds) .map .map-info p { font-size: max(14px, var(--mui-text)); }
-body:not(.game-ds) .map .mi-go { min-height: max(36px, var(--mui-tap)); font-size: max(15px, var(--mui-text)); align-items: center; }
-body:not(.game-ds) .map .mi-note { font-size: max(12px, var(--mui-text)); }
-body:not(.game-ds) .map .map-guide { font-size: max(16px, var(--mui-text)); }
-body:not(.game-ds) .map .map-guide b { font-size: max(12px, var(--mui-text)); }
-body:not(.game-ds) .map .map-notice { font-size: max(14px, var(--mui-text)); }
+body:not(:root) .map .map-info:empty { display: none; }
+body:not(:root) .map .map-info :is(.mi-banner, .mi-desc, .mi-foot, .mi-area, .mi-no) { font-size: max(14px, var(--mui-text)); }
+body:not(:root) .map .map-info p { font-size: max(14px, var(--mui-text)); }
+body:not(:root) .map .mi-go { min-height: max(36px, var(--mui-tap)); font-size: max(15px, var(--mui-text)); align-items: center; }
+body:not(:root) .map .mi-note { font-size: max(12px, var(--mui-text)); }
+body:not(:root) .map .map-guide { font-size: max(16px, var(--mui-text)); }
+body:not(:root) .map .map-guide b { font-size: max(12px, var(--mui-text)); }
+body:not(:root) .map .map-notice { font-size: max(14px, var(--mui-text)); }
 /* ---------------------------------------------------------------- 全画面・セーブの引っ越し（#2856）
    スマホ横持ち（844×390 で約0.54倍）でも実寸11px・38px以上になるよう、ゲーム内の寸法を大きめに取る。 */
 .xfer-btns { display: inline-flex; gap: 10px; align-items: center; }

@@ -1,93 +1,94 @@
+/* body:not(:root) は、DS風の廃止（横画面一本化）で外した :not(.game-ds) と同じ詳細度を保つための置き換え。 */
 /* 1280×720 の舞台はそのまま。横持ち端末では、舞台内の固定寸法と
    phone-density の文字・タップ寸法が同時に収まるよう配置する。 */
 @media (orientation: landscape) and (max-width: 1024px) and (max-height: 520px) and (pointer: coarse) and (hover: none) {
   /* GUIDE と右下の案内札は別の段に置く。長い案内も互いを隠さない。 */
-  html[data-density="phone"] body:not(.game-ds) .map:has(.map-guide) .map-info {
+  html[data-density="phone"] body:not(:root) .map:has(.map-guide) .map-info {
     bottom: 112px;
   }
   /* 案内先の ! を HUD 札の右端から離す。ピン自体は動かさない。 */
-  html[data-density="phone"] body:not(.game-ds) .map .spot-pin.guide .evt-badge {
+  html[data-density="phone"] body:not(:root) .map .spot-pin.guide .evt-badge {
     top: 22px;
   }
 
   /* 左の会話を広げると、顔の横の名前と本文の折り返しが減る。
      右の作業域にはなお 900px ほど残る。 */
-  html[data-density="phone"] body:not(.game-ds) .bench:is([data-step="setup"], [data-step="pack"], [data-step="place"]) .bench-left {
+  html[data-density="phone"] body:not(:root) .bench:is([data-step="setup"], [data-step="pack"], [data-step="place"]) .bench-left {
     width: 340px !important;
   }
-  html[data-density="phone"] body:not(.game-ds) .bench:is([data-step="setup"], [data-step="pack"], [data-step="place"]) .bench-right {
+  html[data-density="phone"] body:not(:root) .bench:is([data-step="setup"], [data-step="pack"], [data-step="place"]) .bench-right {
     left: 358px !important;
   }
-  html[data-density="phone"] body:not(.game-ds) .bench .audience-name {
+  html[data-density="phone"] body:not(:root) .bench .audience-name {
     white-space: nowrap;
     flex: none;
   }
-  html[data-density="phone"] body:not(.game-ds) .bench:is([data-step="setup"], [data-step="pack"], [data-step="place"]) .bench-audience .audience-note {
+  html[data-density="phone"] body:not(:root) .bench:is([data-step="setup"], [data-step="pack"], [data-step="place"]) .bench-audience .audience-note {
     overflow-y: auto;
     overflow-wrap: normal;
   }
   /* 機材の性能プレビューは長文。高さを使い切って選択肢を画面外へ
      押し出さないよう、プレビュー自身を読めるスクロール領域にする。 */
-  html[data-density="phone"] body:not(.game-ds) .bench[data-step="setup"] .bench-panel:has(> .opt-grid) .equipment-set-preview {
+  html[data-density="phone"] body:not(:root) .bench[data-step="setup"] .bench-panel:has(> .opt-grid) .equipment-set-preview {
     max-height: 132px;
     margin-bottom: 4px;
     overflow-y: auto;
     overscroll-behavior: contain;
     touch-action: pan-y;
   }
-  html[data-density="phone"] body:not(.game-ds) .bench[data-step="setup"] .bench-panel:has(> .opt-grid) .equipment-compare {
+  html[data-density="phone"] body:not(:root) .bench[data-step="setup"] .bench-panel:has(> .opt-grid) .equipment-compare {
     margin-bottom: 4px;
   }
-  html[data-density="phone"] body:not(.game-ds) .bench[data-step="setup"] .equipment-set-preview :is(.equipment-guide-rows, .flavor-guide-caption) {
+  html[data-density="phone"] body:not(:root) .bench[data-step="setup"] .equipment-set-preview :is(.equipment-guide-rows, .flavor-guide-caption) {
     font-size: calc(11.5px / var(--k, 1));
   }
 
   /* パッキング: 器・説明、3択、決定を別セルに置く。決定ボタンは
      選択肢のスクロール領域を覆わず、3択は横一列で全て見える。 */
-  html[data-density="phone"] body:not(.game-ds) .bench[data-step="pack"] .bench-panel,
-  html[data-density="phone"] body:not(.game-ds) .bench[data-step="pack"] .packing {
+  html[data-density="phone"] body:not(:root) .bench[data-step="pack"] .bench-panel,
+  html[data-density="phone"] body:not(:root) .bench[data-step="pack"] .packing {
     overflow: hidden !important;
   }
-  html[data-density="phone"] body:not(.game-ds) .bench[data-step="pack"] .packing {
+  html[data-density="phone"] body:not(:root) .bench[data-step="pack"] .packing {
     grid-template-columns: 250px minmax(0, 1fr) !important;
     grid-template-rows: auto minmax(0, 1fr) auto !important;
     gap: 8px 12px;
   }
-  html[data-density="phone"] body:not(.game-ds) .bench[data-step="pack"] .pack-aroma { grid-column: 2 !important; grid-row: 1 !important; }
-  html[data-density="phone"] body:not(.game-ds) .bench[data-step="pack"] .pack-vessel {
+  html[data-density="phone"] body:not(:root) .bench[data-step="pack"] .pack-aroma { grid-column: 2 !important; grid-row: 1 !important; }
+  html[data-density="phone"] body:not(:root) .bench[data-step="pack"] .pack-vessel {
     grid-column: 1 !important; grid-row: 1 / 3 !important; min-height: 0 !important;
   }
-  html[data-density="phone"] body:not(.game-ds) .bench[data-step="pack"] .pack-vessel-art { transform: scale(.7); }
-  html[data-density="phone"] body:not(.game-ds) .bench[data-step="pack"] .pack-choices {
+  html[data-density="phone"] body:not(:root) .bench[data-step="pack"] .pack-vessel-art { transform: scale(.7); }
+  html[data-density="phone"] body:not(:root) .bench[data-step="pack"] .pack-choices {
     grid-column: 2 !important; grid-row: 2 !important; grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
     align-content: center; overflow: visible; padding: 0; gap: 8px;
   }
-  html[data-density="phone"] body:not(.game-ds) .bench[data-step="pack"] .pack-choice {
+  html[data-density="phone"] body:not(:root) .bench[data-step="pack"] .pack-choice {
     min-width: 0; min-height: var(--landscape-target); padding: 6px;
   }
-  html[data-density="phone"] body:not(.game-ds) .bench[data-step="pack"] .pack-choice b {
+  html[data-density="phone"] body:not(:root) .bench[data-step="pack"] .pack-choice b {
     font-size: calc(11.5px / var(--k, 1)) !important;
     white-space: nowrap;
   }
-  html[data-density="phone"] body:not(.game-ds) .bench[data-step="pack"] .pack-caption {
+  html[data-density="phone"] body:not(:root) .bench[data-step="pack"] .pack-caption {
     grid-column: 1 !important; grid-row: 3 !important; min-height: 0; max-height: 190px; overflow-y: auto;
   }
-  html[data-density="phone"] body:not(.game-ds) .bench[data-step="pack"] .pack-caption p {
+  html[data-density="phone"] body:not(:root) .bench[data-step="pack"] .pack-caption p {
     font-size: calc(12px / var(--k, 1)) !important;
     line-height: 1.35 !important;
   }
-  html[data-density="phone"] body:not(.game-ds) .bench[data-step="pack"] .pack-footer {
+  html[data-density="phone"] body:not(:root) .bench[data-step="pack"] .pack-footer {
     display: flex !important; grid-column: 2 !important; grid-row: 3 !important;
     position: static !important; bottom: auto; align-self: end; width: 100%;
   }
-  html[data-density="phone"] body:not(.game-ds) .bench[data-step="pack"] .pack-confirm {
+  html[data-density="phone"] body:not(:root) .bench[data-step="pack"] .pack-confirm {
     align-self: auto; width: 100%;
     min-height: var(--landscape-target);
   }
 
   /* 配合の ? は右列の「＋」から離し、器プレビューとリストの間へ置く。
      作業面の高さを削らないので最上段の操作もそのまま見える。 */
-  html[data-density="phone"] body:not(.game-ds) .bench[data-step="mix"] .bench-head {
+  html[data-density="phone"] body:not(:root) .bench[data-step="mix"] .bench-head {
     left: 248px !important;
     right: auto !important;
     top: 84px !important;
@@ -96,34 +97,38 @@
   /* 共通ヘルプを右の作業域内へ戻す。蒸らしの温度計も同じ域へ置き、
      人物絵を覆わない。 */
   /* 弾幕の場と操作の列に重ねない位置: 作業域の左下（温度計の下）。説明は上へ開く。 */
-  html[data-density="phone"] body:not(.game-ds):not(.craft-stage) .bench[data-step="steam"] .bench-right .bench-head {
+  html[data-density="phone"] body:not(:root):not(.craft-stage) .bench[data-step="steam"] .bench-right .bench-head {
     position: absolute !important; left: 0 !important; right: auto !important; top: auto !important; bottom: 8px !important;
     min-height: 0; margin: 0; padding: 0; border: 0;
   }
-  html[data-density="phone"] body:not(.game-ds):not(.craft-stage) .bench[data-step="steam"] .bench-head::after { display: none; }
+  html[data-density="phone"] body:not(:root):not(.craft-stage) .bench[data-step="steam"] .bench-head::after { display: none; }
   /* 温度計は吸い出し・調整と同じ位置のまま（全工程で同じ場所）。人物絵に重ならないよう、
      蒸らしの間だけ人物の枠を温度計の手前で終える。 */
-  html[data-density="phone"] body:not(.game-ds):not(.craft-stage) .bench[data-step="steam"] .bench-left {
+  html[data-density="phone"] body:not(:root):not(.craft-stage) .bench[data-step="steam"] .bench-left {
     width: 325px !important;
   }
+  /* 狭めた人物の枠では見守りの一言が3行になる。行間を少し詰めて、欄（高さ110px）からはみ出さないようにする。 */
+  html[data-density="phone"] body:not(:root) .bench[data-step="steam"] .bench-audience .audience-note {
+    line-height: 1.45 !important;
+  }
   /* 作業域は人物の枠のすぐ右から（窓の間は詰めたまま）。温度計は作業域を左へ広げた分だけ戻して、同じ場所に保つ。 */
-  html[data-density="phone"] body:not(.game-ds):not(.craft-stage) .bench[data-step="steam"] .bench-right {
+  html[data-density="phone"] body:not(:root):not(.craft-stage) .bench[data-step="steam"] .bench-right {
     left: 343px !important;
   }
-  html[data-density="phone"] body:not(.game-ds):not(.craft-stage) .bench[data-step="steam"] :is(.steam, .steam-timer) > .thermo {
+  html[data-density="phone"] body:not(:root):not(.craft-stage) .bench[data-step="steam"] :is(.steam, .steam-timer) > .thermo {
     translate: 107px 0;
   }
-  html[data-density="phone"] body:not(.game-ds):not(.craft-stage) .bench[data-step="steam"] .bench-guide-tip {
+  html[data-density="phone"] body:not(:root):not(.craft-stage) .bench[data-step="steam"] .bench-guide-tip {
     left: 0 !important; right: auto !important; top: auto !important; bottom: calc(100% + 12px) !important;
   }
   /* タイマーの絵柄はそのまま、透明なボタンの当たり判定を広げる。 */
-  html[data-density="phone"] body:not(.game-ds) .bench[data-step="steam"] .timer-button {
+  html[data-density="phone"] body:not(:root) .bench[data-step="steam"] .timer-button {
     height: 24%;
   }
-  html[data-density="phone"] body:not(.game-ds) .bench[data-step="steam"] .timer-button[data-test="timer-reset"] {
+  html[data-density="phone"] body:not(:root) .bench[data-step="steam"] .timer-button[data-test="timer-reset"] {
     width: 16%;
   }
-  html[data-density="phone"] body:not(.game-ds) .bench[data-step="heat"] .heat-info {
+  html[data-density="phone"] body:not(:root) .bench[data-step="heat"] .heat-info {
     margin-top: 108px !important;
   }
 }

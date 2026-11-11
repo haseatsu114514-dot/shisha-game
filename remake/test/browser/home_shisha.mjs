@@ -52,18 +52,12 @@ await suite("home-shisha", async check => {
     await page.locator(t("status-close")).click();
   });
   // #1906: 家で発見した配合を、在庫や保存内容を変えずにレシピ帳で読み返す。
-  // portrait はDS風の家で縦持ちから始める（#2789・#2794: スマホの縦持ちは回転ガードで止める）。ガードがレシピ帳の操作を
+  // portrait は縦持ちから始める（#2789・#2794: スマホの縦持ちは回転ガードで止める）。ガードがレシピ帳の操作を
   // 止め、保存も変えないことを確かめてから、横（844×390）へ戻して同じ帳面を読み返す。
   for (const [label, options] of [["pc", {}], ["touch", { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }],
     ["portrait", { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true }]]) {
     await check(`${label}-discovered-recipe-details`, async page => {
-      const before = await page.evaluate(async portrait => {
-        if (portrait) {
-          const layout = await import("./js/scenes/title-layout.js");
-          localStorage.setItem(layout.TITLE_LAYOUT_KEY, "ds");
-          (await import("./js/core/ui.js")).showScreen("home", document.createElement("div"));
-          window.dispatchEvent(new Event("display-layout-change"));
-        }
+      const before = await page.evaluate(async () => {
         const core = await import("./js/core/state.js"), s = core.newGame();
         s.recipes = { ice_lemonade: { day: 3, home: true }, sumi_basic: true, secret_probe: { day: 1 } };
         s.flavorStock = {}; // 閲覧には材料の在庫を要求しない。
@@ -71,7 +65,7 @@ await suite("home-shisha", async check => {
         window.recipeClosed = false;
         void (await import("./js/daily/status.js")).openStatus().then(() => { recipeClosed = true; });
         return JSON.stringify(core.state);
-      }, label === "portrait");
+      });
       const storage = await storageSnapshot(page);
       if (label === "portrait") await rotateThroughGuard(page, { portrait: options.viewport, landscape: { width: 844, height: 390 },
         label: "portrait/recipe-book", targets: [page.locator('[data-tab="items"]'), page.locator(t("status-close"))],
@@ -95,9 +89,7 @@ await suite("home-shisha", async check => {
       assert.doesNotMatch(await detail.innerText(), /白桃ソルベ|secret_probe/);
       await assertFits(page, '[data-test="recipe-detail"]');
       const text = detail.locator('.recipe-detail-text');
-      // 詳細本文に読める高さ（#1906）。DS風の横持ち（portrait を横へ戻した 844×390）では旧STATUSが右の画面に収まり、本文は
-      // 約68pxしか取れない（縦持ちの上下2画面では足りていた。#2789 で縦持ちを封じて表に出た既存の不足）。モーダルの組み方は
-      // 判断待ちなので、DS風の横では高さを測らず、下のスクロールで最後まで読めることを確かめる。
+      // 詳細本文に読める高さ（#1906）。DS風は廃止したので、どの横画面でも同じ基準で測る。
       const textBox = await text.evaluate(node => ({ client: node.clientHeight, scroll: node.scrollHeight }));
       assert(textBox.client >= Math.min(96, textBox.scroll), `詳細本文に読める高さを確保する（${label}: ${textBox.client}px / 内容${textBox.scroll}px）`);
       await assertFits(page, '[data-test="recipe-back"]');

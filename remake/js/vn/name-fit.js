@@ -4,8 +4,7 @@ export function createNameFit(element) {
   function fit() {
     if (disposed) return;
     element.style.removeProperty('--vn-name-fit-size');
-    // DS retains its existing independent font rule.
-    if (!element.isConnected || element.closest('body.game-ds') || !element.textContent) return;
+    if (!element.isConnected || !element.textContent) return;
     const width = element.clientWidth;
     const box = element.getBoundingClientRect();
     const style = getComputedStyle(element);

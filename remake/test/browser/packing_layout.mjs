@@ -1,4 +1,5 @@
 // Isolated newState fixture, then real LOAD/map/home/grams/packing UI; not NEW GAME coverage.
+// 旧 ds_packing.mjs。DS風の廃止（横画面一本化・2026-11-10）で DS の端末を外し、PC・スマホ横・縦持ち（回転ガード）の詰め方の配置を検査する。
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
@@ -11,25 +12,18 @@ import { rotateThroughGuard } from "./rotate_guard.mjs";
 prepareAppearanceCatalog();
 const { chromium } = createRequire(import.meta.url)("playwright");
 const base = process.env.BASE_URL || "http://127.0.0.1:8123/remake/";
-const dir = process.env.ARTIFACT_DIR || ".codex/artifacts/ds-packing";
+const dir = process.env.ARTIFACT_DIR || ".codex/artifacts/packing-layout";
 fs.mkdirSync(dir, { recursive: true });
 const hash = text => createHash("sha256").update(text).digest("hex");
 const write = (name, value) => fs.writeFileSync(path.join(dir, name), JSON.stringify(value, null, 2) + "\n");
 const report = { sourceSHA: execFileSync("git", ["rev-parse", "HEAD"], { encoding: "utf8" }).trim(),
   workingTree: execFileSync("git", ["status", "--short"], { encoding:"utf8" }).trim(),
   fixture: "isolated newState daily DAY6; subsequent progression uses real UI, no auto craft/turbo",
-  overrideCSS: process.env.DS_PACKING_CSS_OVERRIDE || null, base, cases: [] };
-const expectedCSS = fs.readFileSync(report.overrideCSS || "remake/css/game-ds.css", "utf8");
-report.cssSHA256 = hash(expectedCSS);
+  base, cases: [] };
 const b = (p, id) => p.locator(`[data-test="${id}"]`);
 async function hit(p, id, touch) {
-  // タイトルの見た目は CONFIG の中で切り替え、切り替えたら閉じる（#2863）。
-  const titleLayout = ["title-layout-normal", "title-layout-ds", "title-layout-recover"].includes(id);
-  if (titleLayout && !(await p.locator("#modal.show .title-layout-options").count()))
-    await hit(p, "title-config", touch);
   const n = b(p, id); await n.scrollIntoViewIfNeeded();
   if (touch) await n.tap(); else await n.click();
-  if (titleLayout && id !== "title-layout-recover") await hit(p, "cfg-close", touch);
 }
 async function ready(p) {
   await b(p, "title-new").waitFor({ timeout: 40000 });
@@ -61,8 +55,13 @@ async function geometry(p) {
     return { windowX:scrollX, viewportWidth:innerWidth, pane:{ ...rect(pane), clientWidth:pane.clientWidth, scrollWidth:pane.scrollWidth, scrollLeft:pane.scrollLeft, scrollTop:pane.scrollTop, clientHeight:pane.clientHeight, scrollHeight:pane.scrollHeight },
       nodes:selectors.flatMap(selector => [...document.querySelectorAll(selector)].filter(n => n.getClientRects().length).map(n => {
         const range = document.createRange(); range.selectNodeContents(n);
-        return { selector, test:n.dataset.test, ...rect(n), text:n.textContent,
-          textRects:[...range.getClientRects()].map(r => ({x:r.x,right:r.right})) };
+        // .bench-panel's selectNodeContents includes the packing temperature gauge
+        // (#3070), which is deliberately parked in the left gutter (left:-140px)
+        // and is not part of the right-hand control column. Its children
+        // (.pack-aroma, .pack-choice, …) are still measured below.
+        const textRects = [...range.getClientRects()].map(r => ({x:r.x,right:r.right}))
+          .filter(r => selector !== ".bench-panel" || (r.x >= n.getBoundingClientRect().x - 1 && r.right <= n.getBoundingClientRect().right + 1));
+        return { selector, test:n.dataset.test, ...rect(n), text:n.textContent, textRects };
       })) };
   });
 }
@@ -77,12 +76,12 @@ function horizontal(g) {
   }
 }
 const devices = [
-  { name:"pc-normal", mode:"normal", viewport:{width:1280,height:720}, touch:false },
-  { name:"pc-ds", mode:"ds", viewport:{width:1280,height:720}, touch:false },
-  { name:"touch-landscape-ds", mode:"ds", viewport:{width:844,height:390}, touch:true },
-  // #2789: スマホの縦持ちはDS風も回転ガードで止める（#2794）。作業台の水量と詰め方の工程で縦（390×844）へ回し、
+  { name:"pc", viewport:{width:1280,height:720}, touch:false },
+  { name:"touch-landscape", viewport:{width:844,height:390}, touch:true },
+  { name:"touch-small-landscape", viewport:{width:568,height:320}, touch:true },
+  // #2789: スマホの縦持ちは回転ガードで止める（#2794）。作業台の水量と詰め方の工程で縦（390×844）へ回し、
   // ガードが入力を止めることを確かめ、横（844×390）へ戻して同じ工程から続ける。配置の検査は横で行う。
-  { name:"touch-portrait-ds", mode:"ds", viewport:{width:844,height:390}, portrait:{width:390,height:844}, touch:true },
+  { name:"touch-portrait-rotate", viewport:{width:844,height:390}, portrait:{width:390,height:844}, touch:true },
 ];
 const benchState = p => p.evaluate(() => ({
   step: document.querySelector(".bench")?.dataset.step || null,
@@ -112,12 +111,12 @@ try {
         gitBlobSHA1:createHash("sha1").update(`blob ${body.length}\0`).update(body).digest("hex") })).catch(e => errors.push(e.message)));
     });
     await p.addInitScript(() => {
+      try { localStorage.setItem("suien_step_intro", "off"); } catch {} // 選ぶ工程の初回説明（#3028）は配置検査の対象外（step_intro.mjs が検査）
       window.__packingInputs = [];
       for (const type of ["click", "pointerdown", "keydown"]) document.addEventListener(type, e => {
         window.__packingInputs.push({type, test:e.target.closest?.("[data-test]")?.dataset.test || null, key:e.key, pointerType:e.pointerType});
       }, true);
     });
-    if (report.overrideCSS) await p.route("**/css/game-ds.css*", route => route.fulfill({contentType:"text/css", body:expectedCSS}));
     const snap = async label => {
       const g = await geometry(p); result.snapshots.push({label, geometry:g});
       await p.screenshot({path:path.join(dir, `${device.name}-${label}.png`)});
@@ -142,8 +141,7 @@ try {
       });
       write(`${device.name}-fixture.json`, result.fixture);
       await p.reload(); await ready(p);
-      await hit(p, `title-layout-${device.mode}`, device.touch);
-      assert.equal(await p.locator(".title").getAttribute("data-layout"), device.mode);
+      assert.equal(await p.locator('[data-test^="title-layout-"]').count(), 0, "no display switch (DS mode removed)");
       await hit(p,"title-load",device.touch); await hit(p,"slot-1",device.touch); await map(p,device.touch);
       // 作業台の表示検査は店の制作本体を直接呼ぶ（自宅練習は廃止）。
       await p.evaluate(() => { import("./js/craft/practice.js").then(m => m.runFullPractice()); });
@@ -151,12 +149,7 @@ try {
       await guarded(p, device, "water", ["water-pour", "water-confirm"]);
       await confirmWaterSetup(p, { touch: device.touch });
       await b(p,"mix-ok").waitFor();
-      // DS風の配合は下画面（触る画面）の幅に組み直す。横にはみ出さない。
-      if (device.mode === "ds") {
-        const fit = await p.evaluate(() => ({ panel: document.querySelector(".bench-panel").getBoundingClientRect().width,
-          screen: document.querySelector(".game-ds-controls").getBoundingClientRect().width }));
-        assert(fit.panel > 0 && fit.panel <= fit.screen + 1, `mix panel overflows the touch screen: ${JSON.stringify(fit)}`);
-      }
+      assert.equal(await p.locator("body.game-ds").count(), 0);
       for (let n=0;n<10;n++) await hit(p,"mix-plus-double_apple",device.touch);
       for (let n=0;n<2;n++) await hit(p,"mix-plus-lemon",device.touch);
       await hit(p,"mix-ok",device.touch); await b(p,"pack-confirm").waitFor();
@@ -195,14 +188,10 @@ try {
       assert.equal(selected,"opt-normal");
       await hit(p,"pack-confirm",device.touch); await b(p,"hole-start").waitFor();
       assert.equal(await p.locator(".bench").getAttribute("data-step"),"holes");
-      if (device.mode === "ds") {
-        // 座標で操作する工程は760px基準の盤面を、形を保ったまま下画面の幅へ等倍率で縮める。
-        const stage = await p.evaluate(() => ({ panel: document.querySelector(".bench-panel").getBoundingClientRect().width,
-          foil: document.querySelector('[data-test="hole-preview"]').getBoundingClientRect().width,
-          screen: document.querySelector(".game-ds-controls").getBoundingClientRect().width }));
-        assert(stage.panel <= stage.screen + 1, `coordinate stage overflows the touch screen: ${JSON.stringify(stage)}`);
-        assert(Math.abs(stage.foil / stage.panel - 430 / 760) < .01, `foil surface was not scaled with its stage: ${JSON.stringify(stage)}`);
-      }
+      // 座標で操作する工程の盤面は形を保ったまま（760px基準に対するアルミの比）。
+      const stage = await p.evaluate(() => ({ panel: document.querySelector(".bench-panel").getBoundingClientRect().width,
+        foil: document.querySelector('[data-test="hole-preview"]').getBoundingClientRect().width }));
+      assert(stage.panel > 0 && stage.foil > 0 && stage.foil <= stage.panel + 1, `foil surface outside its stage: ${JSON.stringify(stage)}`);
       assert.deepEqual(errors,[]); result.status="passed";
     } catch (e) {
       result.error=e.stack; console.error(`FAIL ${device.name}: ${e.stack}`);
@@ -212,14 +201,11 @@ try {
       await Promise.all(pending);
       result.errors = errors;
       if (errors.length) { result.status="failed"; result.error ||= `Runtime/resource errors: ${errors.join("; ")}`; }
-      if (!result.resources.some(r=>r.url.includes("/css/game-ds.css") && r.sha256===report.cssSHA256)) {
-        result.status="failed"; result.cssError="runtime CSS did not match selected source";
-      }
       await context.close(); write("results.json",report);
     }
     console.log(`${result.status.toUpperCase()}: ${device.name}`);
   }
 } catch(e) { report.launchError=e.stack; console.error(e.stack); }
 finally { await browser?.close(); write("results.json",report); }
-if (report.launchError || report.cases.length!==4 || report.cases.some(r=>r.status!=="passed")) process.exitCode=1;
+if (report.launchError || report.cases.length!==devices.length || report.cases.some(r=>r.status!=="passed")) process.exitCode=1;
 

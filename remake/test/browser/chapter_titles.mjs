@@ -132,25 +132,6 @@ await suite('chapter-titles', async check => {
     }, options);
   }
 
-  await check('portrait-ds-keeps-full-title', async page => {
-    // タイトルの見た目は CONFIG の中（#2863）。縦持ちでは回転の案内が出るので、横にして選んでから縦へ戻す。
-    await page.setViewportSize({ width: 844, height: 390 });
-    await page.locator('[data-test="title-config"]').tap();
-    await page.locator('[data-test="title-layout-ds"]').tap();
-    await page.locator('[data-test="cfg-close"]').tap();
-    await page.setViewportSize({ width: 390, height: 844 });
-    await page.evaluate(async () => {
-      const core = await import('./js/core/state.js'); core.newGame();
-      document.body.dataset.screen = 'map';
-    });
-    await page.locator('body.game-ds').waitFor();
-    const before = await storageSnapshot(page), entry = (await entries(page))[0];
-    await start(page, entry); await drawn(page, entry);
-    await page.screenshot({ path: path.join(out, 'portrait-ds-chapter-1.png') });
-    await done(page);
-    assert.deepEqual(await storageSnapshot(page), before);
-  }, { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true, reducedMotion: 'reduce' });
-
   await check('delayed-image-waits-before-visible-time', async page => {
     let release;
     const gate = new Promise(resolve => { release = resolve; });

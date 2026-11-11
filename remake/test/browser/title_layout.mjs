@@ -1,4 +1,6 @@
-// Title + game display prototype: real inputs, isolated storage, no player's saves.
+// Title display, landscape only: real inputs, isolated storage, no player's saves.
+// DS風・スマホ縦画面モードは廃止（2026-11-04「横画面一本にして」・2026-11-10「DSモードは開発中止」オーナー決定）。
+// タイトルにも CONFIG にも表示の切り替えは出さない。以前の DS風の設定（suien_title_layout）は起動時に消す。
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
@@ -31,66 +33,21 @@ async function seed(p) {
   });
   await p.reload(); await ready(p);
 }
-// #2863: タイトルの見た目（通常版／DS風）は右上ではなく CONFIG の中で切り替える。
-// 縦持ちの通常版は回転の案内（#rotate-hint）が全面を覆うので、横にしてから CONFIG を開く（実機と同じ手順）。
-async function landscapeIfHinted(p) {
-  if (!(await p.locator("#rotate-hint").isVisible())) return null;
-  const viewport = p.viewportSize();
-  await p.setViewportSize({ width: viewport.height, height: viewport.width });
-  return viewport;
-}
-async function openLayoutControls(p) {
-  await landscapeIfHinted(p);
-  if (!(await p.locator("#modal.show .title-layout-options").count())) {
-    await button(p, "title-config").click(); await p.locator("#modal.show .cfg").waitFor();
-  }
-}
-async function closeConfig(p) {
-  await button(p, "cfg-close").click(); await p.locator("#modal.show").waitFor({ state: "detached" }).catch(() => {});
-  await p.waitForFunction(() => !document.querySelector("#modal.show"));
-}
-async function layout(p, mode) {
-  let portrait = await landscapeIfHinted(p);
-  await openLayoutControls(p);
-  await button(p, `title-layout-${mode}`).click();
-  assert.equal(await p.locator(".title").getAttribute("data-layout"), mode);
-  // DS風の縦持ちから通常版へ戻すと、その場で回転の案内が CONFIG ごと覆う。実機と同じく横にしてから閉じる。
-  portrait ||= await landscapeIfHinted(p);
-  await closeConfig(p);
-  if (portrait) {
-    // 縦に戻したあと、画面の resize（DS風の上下2画面の寸法 applyDsGeometry）が処理されるまで待つ。
-    await p.setViewportSize(portrait);
-    await p.waitForFunction(([w, h]) => innerWidth === w && innerHeight === h, [portrait.width, portrait.height]);
-    await p.evaluate(() => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))));
-  }
-  assert.equal(await p.locator(".title").getAttribute("data-layout"), mode);
-}
+
+const noDisplaySwitch = async p => {
+  assert.equal(await p.locator(".title-layout-toolbar, .title-layout-options, .cfg-title-layout, [data-test^='title-layout-'], [data-test^='game-layout-']").count(), 0,
+    "display switch (normal/DS) must not exist anymore");
+};
 async function stageIsOriginal(p) {
   // 通常表示は常に 1280×720 の固定ステージ（2026-11-09 オーナー決定・#3035。ワイド拡張 #2861 は廃止）
   const [size] = await p.locator("#stage").evaluate(n => [[n.offsetWidth, n.offsetHeight]]);
   assert.deepEqual(size, [1280, 720], "normal/unsupported screen must retain original sizing");
 }
-async function stageMatchesTitleLayout(p, mode) {
-  assert.equal(await p.locator("body").getAttribute("data-screen"), "title");
-  assert.equal(await p.locator(".title").getAttribute("data-layout"), mode);
-  if (mode === "normal") return stageIsOriginal(p);
-  const viewport = p.viewportSize();
-  assert(viewport, "DS title check requires a fixed browser viewport");
-  const size = await p.locator("#stage").evaluate(n => [n.offsetWidth, n.offsetHeight]);
-  assert.deepEqual(size, [viewport.width, viewport.height], "DS title must fill the current viewport");
-}
-async function gameIsDS(p) {
-  await p.locator("body.game-ds").waitFor();
-  const panels = await p.locator(".game-ds-panel").evaluateAll(ns => ns.map(n => {
-    const r = n.getBoundingClientRect(); return { w:r.width, h:r.height, hidden:n.hidden };
-  }));
-  assert.equal(panels.length, 2);
-  assert(panels.every(n => !n.hidden && n.w > 0 && n.h > 0));
-  assert(Math.abs(panels[0].w-panels[1].w) < 1 && Math.abs(panels[0].h-panels[1].h) < 1);
-  // 表示切替は「表示」から開く（DS風ではヒンジの小さなボタン）。
-  assert.equal(await button(p, "game-layout-settings").isVisible(), true);
-  if (!(await p.locator(".game-layout-toolbar").evaluate(n => n.open))) await button(p, "game-layout-settings").click();
-  assert.equal(await button(p, "game-layout-normal").isVisible(), true);
+async function landscapeOnly(p) {
+  assert.equal(await p.locator("body.game-ds, .title-ds-panel, .game-ds-panel").count(), 0, "no DS panels");
+  assert.equal(await p.locator(".title[data-layout='ds']").count(), 0);
+  assert.equal(await p.evaluate(() => document.documentElement.dataset.dsLayout ?? null), null);
+  await stageIsOriginal(p);
 }
 async function check(name, options, run, setup = null) {
   // 重い端末では CASE_FILTER=<名前の一部> で1ケースずつ流せる（CIは全件）。
@@ -111,135 +68,94 @@ async function check(name, options, run, setup = null) {
 const sizes = { pc: { viewport: { width: 1280, height: 720 } }, phone: { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true } };
 try {
   for (const [device, options] of Object.entries(sizes)) {
-    for (const mode of ["normal", "ds"]) {
-      await check(`${device}-${mode}-menus-and-reload`, options, async p => {
-        assert.equal(await p.locator(".title").getAttribute("data-layout"), "normal", "fresh default must remain normal");
-        await seed(p); const before = await snapshot(p);
-        assert.equal(await button(p, "title-layout-normal").count(), 0, "Display choices live inside CONFIG, not on the title");
-        await button(p, "title-config").focus(); await p.keyboard.press("Enter");
-        assert.equal(await button(p, "title-layout-normal").isVisible(), true, "Keyboard opens display settings in CONFIG");
-        const artBefore = await p.locator(".title-art").getAttribute("data-art");
-        if (mode === "ds") await p.screenshot({ path: path.join(dir, `${device}-same-art-normal.png`) });
-        await layout(p, mode);
-        assert.equal(await p.locator(".title-art").getAttribute("data-art"), artBefore, "switching must keep the approved original art");
-        assert.equal(await p.locator(".title-item").count(), 4);
-        assert.equal(await button(p, "title-load").isEnabled(), true);
-        await p.screenshot({ path: path.join(dir, `${device}-${mode}-title.png`) });
-        if (mode === "ds") {
-          const rects = await p.locator(".title-ds-panel").evaluateAll(ns => ns.map(n => { const r = n.getBoundingClientRect(); return { x:r.x, y:r.y, w:r.width, h:r.height }; }));
-          assert(Math.abs(rects[0].w - rects[1].w) < 1 && Math.abs(rects[0].h - rects[1].h) < 1, "panels must have equal dimensions");
-          // 縦長の画面は上下（端末を縦に持つ形）、背の低い横長だけ左右に並ぶ。
-          const stacked = await p.evaluate(() => document.documentElement.dataset.dsLayout === "stacked");
-          assert(stacked ? rects[1].y > rects[0].y + rects[0].h : rects[1].x > rects[0].x + rects[0].w);
-          for (const size of await p.locator(".title-item").evaluateAll(ns => ns.map(n => n.getBoundingClientRect().height))) assert(size >= 44);
-        }
-        await p.reload(); await ready(p);
-        assert.equal(await p.locator(".title").getAttribute("data-layout"), mode);
-        assert.deepEqual(await snapshot(p), before, "display/reload changed game data");
-        // 縦持ちはタイトル（通常版・DS風とも）から回転案内だけを出す（#2826）。横に戻せば操作できる。
-        if (device === "phone") {
-          assert.equal(await p.locator("#rotate-hint").isVisible(), false, "landscape: no guard");
-          await p.setViewportSize({ width: 390, height: 844 });
-          assert.equal(await p.locator("#rotate-hint").isVisible(), true, `${mode}: portrait title shows only the guard`);
-          assert.equal(await p.evaluate(() => { const g = document.querySelector("#rotate-hint"); const h = document.elementFromPoint(innerWidth / 2, innerHeight / 2); return g === h || g.contains(h); }), true);
-          await p.setViewportSize({ width: 844, height: 390 });
-        }
-        // Native keyboard activation remains available in both modes.
-        await button(p, "title-config").focus(); await p.keyboard.press("Enter");
-        await p.locator("#modal.show .cfg").waitFor();
-        await p.locator("#modal.show .modal-actions button").click();
-        await button(p, "title-gallery").click();
-        if (device === "phone" && mode === "normal") {
-          const reachable = await p.evaluate(() => {
-            const hit = node => {
-              const r = node.getBoundingClientRect();
-              return node.contains(document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2));
-            };
-            return { close: hit(document.querySelector(".gal-close")),
-              noTitleSettings: !document.querySelector(".title-layout-toolbar, .title-layout-options") };
-          });
-          assert.deepEqual(reachable, { close: true, noTitleSettings: true }, "Gallery close must remain reachable without display settings overlapping");
-          await p.screenshot({ path: path.join(dir, "normal-gallery-landscape-open.png") });
-        }
-        await button(p, "gallery-close").click();
-        await button(p, "title-load").click(); await button(p, "slot-cancel").click();
-        await button(p, "title-new").click(); await button(p, "cancel-new").click();
-        assert.deepEqual(await snapshot(p), before, "opening/cancelling menus changed save");
-        assert.equal(await button(p, "title-trpg").count(), 0);
-        await stageMatchesTitleLayout(p, mode);
-        await p.setViewportSize({ width: 1280, height: 720 });
-        await ready(p); assert.equal(await p.locator(".title").getAttribute("data-layout"), mode);
-        await layout(p, "normal"); await stageIsOriginal(p);
-        await p.reload(); await ready(p); assert.equal(await p.locator(".title").getAttribute("data-layout"), "normal");
-        assert.deepEqual(await snapshot(p), before);
-      });
-      await check(`${device}-${mode}-legacy-continue`, options, async p => {
-        await seed(p); await layout(p, mode);
-        await button(p, "title-load").click(); await button(p, "slot-1").click();
-        await p.locator("body.vn-open").waitFor();
-        if (mode === "ds") await gameIsDS(p); else await stageIsOriginal(p);
-        const saved = await p.evaluate(async () => {
-          const { state } = await import("./js/core/state.js");
-          return { money:state.money, lovers:state.lovers, memory:state.relationshipMemories, marker:state.flags._qa_preserved };
-        });
-        assert.deepEqual(saved, { money:45678, lovers:["hiyori"], memory:["actually-read"], marker:"keep" });
-        assert.equal(await p.locator(".title-layout-options").count(), 0);
-      });
-    }
-  }
-  for (const [device, options] of Object.entries({
-    landscape: { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true },
-    portrait: sizes.phone,
-    small: { viewport: { width: 320, height: 568 } }, // 縦の小画面は狭いウィンドウ（タッチ縦持ちは回転案内）
-  })) {
-    await check(`ds-gallery-${device}`, options, async p => {
-      await layout(p, "ds");
+    await check(`${device}-menus-and-reload`, options, async p => {
+      await landscapeOnly(p); await noDisplaySwitch(p);
+      await seed(p); const before = await snapshot(p);
+      const artBefore = await p.locator(".title-art").getAttribute("data-art");
+      await button(p, "title-config").focus(); await p.keyboard.press("Enter");
+      await p.locator("#modal.show .cfg").waitFor(); await noDisplaySwitch(p);
+      await button(p, "cfg-close").click(); await p.waitForFunction(() => !document.querySelector("#modal.show"));
+      assert.equal(await p.locator(".title-art").getAttribute("data-art"), artBefore, "CONFIG must keep the approved original art");
+      assert.equal(await p.locator(".title-item").count(), 4);
+      assert.equal(await button(p, "title-load").isEnabled(), true);
+      await p.screenshot({ path: path.join(dir, `${device}-title.png`) });
+      await p.reload(); await ready(p);
+      assert.deepEqual(await snapshot(p), before, "reload changed game data");
+      // 縦持ちはタイトルから回転案内だけを出す（#2826）。横に戻せば操作できる。
+      if (device === "phone") {
+        assert.equal(await p.locator("#rotate-hint").isVisible(), false, "landscape: no guard");
+        await p.setViewportSize({ width: 390, height: 844 });
+        assert.equal(await p.locator("#rotate-hint").isVisible(), true, "portrait title shows only the guard");
+        assert.equal(await p.evaluate(() => { const g = document.querySelector("#rotate-hint"); const h = document.elementFromPoint(innerWidth / 2, innerHeight / 2); return g === h || g.contains(h); }), true);
+        await p.setViewportSize({ width: 844, height: 390 });
+      }
+      // Native keyboard activation remains available.
+      await button(p, "title-config").focus(); await p.keyboard.press("Enter");
+      await p.locator("#modal.show .cfg").waitFor();
+      await p.locator("#modal.show .modal-actions button").click();
       await button(p, "title-gallery").click();
-      const geometry = await p.evaluate(() => {
-        const box = document.querySelector(".gal").getBoundingClientRect();
-        const note = document.querySelector(".gal-note").getBoundingClientRect();
-        const close = document.querySelector(".gal-close").getBoundingClientRect();
-        const count = document.querySelector(".gal-count");
-        const hit = document.elementFromPoint(close.x + close.width / 2, close.y + close.height / 2);
-        return {
-          fits: [box, note, close].every(r => r.left >= 0 && r.top >= 64 && r.right <= innerWidth && r.bottom <= innerHeight),
-          countFits: count.scrollWidth <= count.clientWidth + 1 && count.getBoundingClientRect().height <= 24,
-          closeHit: document.querySelector(".gal-close").contains(hit),
-        };
-      });
-      assert.deepEqual(geometry, { fits: true, countFits: true, closeHit: true });
-      await p.screenshot({ path: path.join(dir, `ds-gallery-${device}-open.png`) });
+      if (device === "phone") {
+        const reachable = await p.evaluate(() => {
+          const hit = node => {
+            const r = node.getBoundingClientRect();
+            return node.contains(document.elementFromPoint(r.x + r.width / 2, r.y + r.height / 2));
+          };
+          return { close: hit(document.querySelector(".gal-close")),
+            noTitleSettings: !document.querySelector(".title-layout-toolbar, .title-layout-options") };
+        });
+        assert.deepEqual(reachable, { close: true, noTitleSettings: true }, "Gallery close must remain reachable without display settings overlapping");
+        await p.screenshot({ path: path.join(dir, "normal-gallery-landscape-open.png") });
+      }
       await button(p, "gallery-close").click();
+      await button(p, "title-load").click(); await button(p, "slot-cancel").click();
+      await button(p, "title-load").click(); await button(p, "slot-cancel").click();
+      await button(p, "title-new").click(); await button(p, "cancel-new").click();
+      assert.deepEqual(await snapshot(p), before, "opening/cancelling menus changed save");
+      assert.equal(await button(p, "title-trpg").count(), 0);
+      await landscapeOnly(p);
+    });
+    await check(`${device}-legacy-continue`, options, async p => {
+      await seed(p);
+      await button(p, "title-load").click(); await button(p, "slot-1").click();
+      await p.locator("body.vn-open").waitFor();
+      await landscapeOnly(p); await noDisplaySwitch(p);
+      const saved = await p.evaluate(async () => {
+        const { state } = await import("./js/core/state.js");
+        return { money:state.money, lovers:state.lovers, memory:state.relationshipMemories, marker:state.flags._qa_preserved };
+      });
+      assert.deepEqual(saved, { money:45678, lovers:["hiyori"], memory:["actually-read"], marker:"keep" });
     });
   }
-  await check("forced-normal-and-save-preservation", sizes.phone, async p => {
-    await seed(p); await layout(p, "ds"); const before = await snapshot(p);
-    await p.evaluate(() => sessionStorage.setItem("suien_remake_boot_load", "1"));
+  // 移行: 以前に DS風（や壊れた値）を選んでいた端末でも、通常の横画面で開き、古い表示設定だけを消す。セーブは触らない。
+  for (const [name, value] of [["ds", "ds"], ["normal", "normal"], ["invalid", "broken"]]) {
+    await check(`legacy-${name}-preference-migrates`, sizes.phone, async p => {
+      await seed(p); const before = await snapshot(p);
+      await p.evaluate(v => localStorage.setItem("suien_title_layout", v), value);
+      await p.reload(); await ready(p);
+      await landscapeOnly(p); await noDisplaySwitch(p);
+      assert.equal(await p.evaluate(() => localStorage.getItem("suien_title_layout")), null, "legacy display preference is removed");
+      assert.deepEqual(await snapshot(p), before, "migration must not touch saves or other settings");
+      await button(p, "title-load").click(); await button(p, "slot-1").click();
+      await p.locator("body.vn-open").waitFor(); await landscapeOnly(p);
+    });
+  }
+  // 旧「通常版で開き直す」リンク（?titleLayout=normal）や、ロード予約が残っていてもふつうに開く。
+  await check("legacy-recovery-url", sizes.phone, async p => {
+    await seed(p); const before = await snapshot(p);
+    await p.evaluate(() => localStorage.setItem("suien_title_layout", "ds"));
     await p.goto(new URL("?titleLayout=normal", base).href); await ready(p);
-    assert.equal(await p.locator(".title").getAttribute("data-layout"), "normal");
+    await landscapeOnly(p);
     assert.deepEqual(await snapshot(p), before);
-    await layout(p, "ds"); assert.equal(new URL(p.url()).searchParams.has("titleLayout"), false);
-    await openLayoutControls(p); await button(p, "title-layout-recover").click(); await ready(p);
-    assert.equal(await p.locator(".title").getAttribute("data-layout"), "normal");
   });
-  await check("invalid-preference", sizes.pc, async p => {
-    await p.evaluate(() => localStorage.setItem("suien_title_layout", "broken"));
-    await p.reload(); await ready(p); assert.equal(await p.locator(".title").getAttribute("data-layout"), "normal");
-  });
-  for (const operation of ["getItem", "setItem"]) {
+  // 古い設定の削除が失敗する端末（ストレージ禁止など）でも起動して遊べる。
+  for (const operation of ["getItem", "setItem", "removeItem"]) {
     await check(`storage-${operation}-failure`, sizes.phone, async p => {
-      assert.equal(await p.locator(".title").getAttribute("data-layout"), "normal");
-      await openLayoutControls(p); await button(p, "title-layout-ds").click();
-      assert.equal(await p.locator(".title").getAttribute("data-layout"), "normal");
-      assert.match(await p.locator(".title-layout-note").textContent(), /通常版です/);
-      await closeConfig(p);
-      await p.setViewportSize({ width: 844, height: 390 });
+      await landscapeOnly(p); await noDisplaySwitch(p);
       await button(p, "title-config").click(); await p.locator("#modal.show .cfg").waitFor();
       await p.locator("#modal.show .modal-actions button").click();
-      await openLayoutControls(p); await button(p, "title-layout-recover").click(); await ready(p);
-      assert.equal(await p.locator(".title").getAttribute("data-layout"), "normal");
+      await button(p, "title-gallery").click(); await button(p, "gallery-close").click();
+      await button(p, "title-new").click(); await p.locator("body.vn-open").waitFor(); await landscapeOnly(p);
     }, p => p.addInitScript(operation => {
-      // 保存済みDS設定がある端末でも、読み書き不能なら通常版へ戻す。
       localStorage.setItem("suien_title_layout", "ds");
       const original = Storage.prototype[operation];
       Storage.prototype[operation] = function(k, ...args) {
@@ -248,82 +164,15 @@ try {
       };
     }, operation));
   }
-  for (const mode of ["normal", "ds"]) {
-    await check(`${mode}-image-failure`, sizes.phone, async p => {
-      await layout(p, mode); assert.equal(await p.locator(".title-item").count(), 4);
-      await p.locator(".title-logo-fallback:not([hidden])").waitFor();
-      if (mode === "normal") await p.setViewportSize({ width: 844, height: 390 });
-      await button(p, "title-config").click(); await p.locator("#modal.show .cfg").waitFor();
-      await p.locator("#modal.show .modal-actions button").click(); await layout(p, "normal");
-    }, p => p.route(/(?:title_arts\/|bg_title|ui_title_logo_rich)/, route => route.fulfill({ status: 200, contentType: "image/png", body: "invalid-image" })));
-  }
-  await check("missing-ds-style", sizes.phone, async p => {
-    await openLayoutControls(p); await button(p, "title-layout-ds").click(); assert.equal(await p.locator(".title").getAttribute("data-layout"), "normal");
-    await openLayoutControls(p); await button(p, "title-layout-recover").click(); await ready(p);
-  }, p => p.route("**/css/title-ds.css", r => r.fulfill({ status: 200, contentType: "text/css", body: "" })));
-  for (const [name, options] of Object.entries({
-    // 縦持ちのタッチ端末は回転案内で覆う（#2826）ため、縦の小画面はマウス（狭いウィンドウ）だけ検査する。
-    // ページ拡大でCSS viewportが縮んだ場合の寸法。DPR変更とピンチは別に検査する。
-    "320x480-mouse-dpr2": { viewport: { width: 320, height: 480 }, deviceScaleFactor: 2 },
-  })) await check(`small-phone-equal-panels-and-scroll-${name}`, options, async p => {
-    await seed(p);
-    await layout(p, "ds");
-    assert.equal(await p.locator(":root").getAttribute("data-ds-layout"), "stacked");
-    const panels = await p.locator(".title-ds-panel").evaluateAll(ns => ns.map(n => n.getBoundingClientRect().toJSON()));
-    const heights = panels.map(r => r.height);
-    assert.equal(heights[0], heights[1]);
-    assert(panels.every(r => r.width >= 290 && r.left >= 0 && r.right <= options.viewport.width && r.bottom <= options.viewport.height));
-    const before = await snapshot(p);
-    const activate = async id => {
-      const target = button(p, id); await target.scrollIntoViewIfNeeded();
-      if (options.hasTouch) await target.tap(); else await target.click();
-    };
-    await activate("title-new"); await activate("cancel-new");
-    await activate("title-load"); await activate("slot-cancel");
-    await activate("title-gallery"); await activate("gallery-close");
-    // Tabでスクロール領域内の末尾項目にも到達してEnterで開ける。
-    await button(p, "title-new").focus();
-    for (let i = 0; i < 3; i++) await p.keyboard.press("Tab");
-    assert.equal(await button(p, "title-config").evaluate(n => n === document.activeElement), true);
-    await p.keyboard.press("Enter"); await p.locator("#modal.show .cfg").waitFor();
-    await p.locator("#modal.show .modal-actions button").click();
-    await p.screenshot({ path: path.join(dir, `ds-small-${name}.png`) });
-    await layout(p, "normal");
-    assert.deepEqual(await snapshot(p), before, "small-screen inputs changed save data");
-  });
-  await check("ds-portrait-pinch-safe-area-and-rotation", { viewport: { width: 390, height: 844 } }, async p => {
-    await seed(p);
-    await layout(p, "ds");
-    const cdp = await p.context().newCDPSession(p);
-    const geometry = () => p.evaluate(async () => (await import("./js/scenes/ds-geometry.js")).applyDsGeometry());
-    const before = await snapshot(p), original = await geometry();
-    await cdp.send("Emulation.setPageScaleFactor", { pageScaleFactor: 2 });
-    await p.waitForFunction(() => visualViewport.scale === 2);
-    const visible = await p.evaluate(() => ({ width: visualViewport.width, height: visualViewport.height }));
-    assert(visible.width < 200 && visible.height < 430, "pinch must actually shrink visual viewport");
-    assert.deepEqual(await geometry(), original, "pinch reflowed the DS screens instead of magnifying them");
-    await button(p, "title-config").focus(); await p.keyboard.press("Enter");
-    await p.locator("#modal.show .cfg").waitFor();
-    await p.locator("#modal.show .modal-actions button").focus(); await p.keyboard.press("Enter");
-    await p.screenshot({ path: path.join(dir, "ds-pinch-2x.png") });
-    await cdp.send("Emulation.setPageScaleFactor", { pageScaleFactor: 1 });
-    await cdp.send("Emulation.setSafeAreaInsetsOverride", { insets: { top: 24, bottom: 20, left: 0, right: 0 } });
-    await p.setViewportSize({ width: 320, height: 480 });
-    const safe = await geometry();
-    assert.equal(safe.layout, "stacked"); assert.equal(safe.vy, 32);
-    assert.equal(safe.cy + safe.ch, 452, "bottom safe area was ignored");
-    await button(p, "title-new").click(); await button(p, "cancel-new").click();
-    await p.setViewportSize({ width: 844, height: 390 });
-    assert.equal((await geometry()).layout, "side");
+  await check("image-failure", sizes.phone, async p => {
+    assert.equal(await p.locator(".title-item").count(), 4);
+    await p.locator(".title-logo-fallback:not([hidden])").waitFor();
     await button(p, "title-config").click(); await p.locator("#modal.show .cfg").waitFor();
-    await p.locator("#modal.show .modal-actions button").click();
-    await p.setViewportSize({ width: 390, height: 844 });
-    assert.equal((await geometry()).layout, "stacked");
-    assert.deepEqual(await snapshot(p), before, "pinch/rotation changed save data");
-  });
+    await p.locator("#modal.show .modal-actions button").click(); await landscapeOnly(p);
+  }, p => p.route(/(?:title_arts\/|bg_title|ui_title_logo_rich)/, route => route.fulfill({ status: 200, contentType: "image/png", body: "invalid-image" })));
   // #2863: スマホ横持ち（Safariのバーあり含む）で、通常版の文字は実寸11px以上・押す所は38px以上。
   // 副題（はじめから等）は残して実寸11px以上（2026-11-08 オーナー指示）。主文より小さく、主文のすぐ右の同じ行に並ぶ。
-  // 下中央の操作ヒント・右上の表示設定は出さず、メニュー行は72px以上・行間16px。
+  // 下中央の操作ヒント・表示設定は出さず、メニュー行は72px以上・行間16px。
   for (const [w, h] of [[844, 390], [844, 340]]) await check(`phone-landscape-${w}x${h}-sizes`, { viewport: { width: w, height: h }, isMobile: true, hasTouch: true }, async p => {
     for (const cycle of [false, true]) {
       if (cycle) {
@@ -359,18 +208,10 @@ try {
         JSON.stringify(m.subtitles));
       assert.deepEqual([m.foot, m.toolbar], [0, 0]);
     }
-    await openLayoutControls(p);
-    // 開く演出（pop-in: scale 0.96→1）が終わってから寸法を測る（途中だと4%小さく測れてしまう）。
-    await p.locator("#modal.show .modal-box").evaluate(n => Promise.all(n.getAnimations({ subtree: true })
-      .filter(a => a.effect?.getComputedTiming().endTime !== Infinity).map(a => a.finished)));
-    const row = await p.locator(".cfg-title-layout").evaluate(n => {
-      const k = document.querySelector("#stage").getBoundingClientRect().height / 720;
-      return [...n.querySelectorAll("button,a,span")].filter(e => e.getBoundingClientRect().width > 0)
-        .map(e => ({ tag: e.tagName, h: e.getBoundingClientRect().height, px: parseFloat(getComputedStyle(e).fontSize) * k }));
-    });
-    assert(row.every(r => r.px >= 11 - 1e-6 && (r.tag === "SPAN" || r.h >= 38 - .5)), JSON.stringify(row));
-    await button(p, "title-layout-ds").tap(); assert.equal(await p.locator(".title").getAttribute("data-layout"), "ds");
-    await button(p, "cfg-close").tap(); await layout(p, "normal");
+    // 表示設定の行（通常版／DS風）は CONFIG から消えた。CONFIG は開けて、閉じられる。
+    await button(p, "title-config").tap(); await p.locator("#modal.show .cfg").waitFor();
+    assert.equal(await p.locator(".cfg-title-layout, .title-layout-options, [data-test^='title-layout-']").count(), 0);
+    await button(p, "cfg-close").tap(); await p.waitForFunction(() => !document.querySelector("#modal.show"));
   });
   // PC（1280×720・マウス）の副題は従来どおり15pxで、主文のすぐ右に並ぶ（スマホ用の拡大を持ち込まない）。
   await check("pc-subtitles-unchanged", sizes.pc, async p => {
@@ -380,38 +221,28 @@ try {
     }));
     assert(subs.length === 4 && subs.every(t => t.px === 15 && t.gap === 16 && t.sameLine && t.w > 0), JSON.stringify(subs));
   });
-  await check("new-game-enters-game-layout", sizes.pc, async p => {
-    await layout(p, "ds"); await button(p, "title-new").click();
-    await p.locator("body.vn-open").waitFor(); await gameIsDS(p);
-    assert.equal(await p.locator(".title-layout-options").count(), 0);
+  await check("new-game-stays-landscape", sizes.pc, async p => {
+    await button(p, "title-new").click();
+    await p.locator("body.vn-open").waitFor(); await landscapeOnly(p); await noDisplaySwitch(p);
   });
-  await check("real-map-and-craft-enter-game-layout-and-return", sizes.pc, async p => {
-    await layout(p, "ds");
+  await check("real-map-and-craft-stay-landscape-and-return", sizes.pc, async p => {
     await p.evaluate(async () => {
       const core = await import("./js/core/state.js");
       core.newGame(); Object.assign(core.state, { phase: "daily", day: 5, slot: 1 });
       const map = await import("./js/daily/map.js");
       window.titleScopeQA = { map, pending: map.chooseSpot() };
     });
-    await p.locator('#screen[data-screen="map"]').waitFor(); await gameIsDS(p);
-    assert.equal(await p.locator(".title-layout-options").count(), 0);
+    await p.locator('#screen[data-screen="map"]').waitFor(); await landscapeOnly(p); await noDisplaySwitch(p);
     await p.evaluate(async () => {
       titleScopeQA.map.interruptMap(null); await titleScopeQA.pending;
       const { showTitle } = await import("./js/scenes/title.js"); showTitle();
     });
-    await ready(p); await layout(p, "ds");
+    await ready(p);
     await p.evaluate(async () => {
       const craft = await import("./js/craft/session.js");
       window.titleScopeQA.bench = craft.openBench(craft.newSession("rehearsal"));
     });
-    await p.locator('#screen[data-screen="bench"]').waitFor(); await gameIsDS(p);
-    assert.equal(await p.locator(".title-layout-options").count(), 0);
-    assert.equal(await p.locator(".title-ds-panel").count(), 0);
-    const before = await p.evaluate(() => JSON.stringify(window.__remake.state));
-    await button(p, "game-layout-normal").click();
-    await p.waitForFunction(() => !document.body.classList.contains("game-ds"));
-    await stageIsOriginal(p);
-    assert.equal(await p.evaluate(() => JSON.stringify(window.__remake.state)), before);
+    await p.locator('#screen[data-screen="bench"]').waitFor(); await landscapeOnly(p); await noDisplaySwitch(p);
   });
 } finally {
   await browser.close();

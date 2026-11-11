@@ -92,7 +92,7 @@
 | **システム** | `セーブ／ロード／設定／用語集／大会の規則／タイトルへ戻る` の6ボタンと注記1行 | `saves.js`・`openConfig`・`glossaryPanel`・`openRuleSheet` |
 
 - `GROWTH_BOARD=false` の間は、ステータスの枠に旧5能力の行（★段・呼称）を同じ紙の部品で出して互換を保ち、盤の公開と同時に差し替える。レーダーは出さない。
-- 章別の `openMenu` は `daily/menu.js`（新）の1関数に委譲。キー: `M`／`Esc`、`Q/E`、`1〜4`。スマホ縦（DS風）は下画面にタブバー4つ。
+- 章別の `openMenu` は `daily/menu.js`（新）の1関数に委譲。キー: `M`／`Esc`、`Q/E`、`1〜4`。（当初のスマホ縦＝DS風の下画面タブバーは 2026-11-10 に DS風ごと廃止。横画面一本）
 
 ---
 
@@ -133,7 +133,7 @@ CSSだけの紙と線では「シンプルすぎる」ので、面を画像生�
 |---|---|---|---|---|
 | **P0（本PR）** | ロゴ代替表示の店名を折り返す（§A） | `css/store-logos.css` | `typography_css.mjs`・ロゴ遮断時の表示（済） | 済 |
 | **P1（済）** | 画像生成4枚→色合わせ→`remake/css/ui-paper.css` の紙テーマ（`data-ui-theme="paper"`、既定）として会話窓・名前札・操作札・選択肢・モーダル・HUD・地図の案内・tonariの選択・ボタンに適用 | `tools/build_ui_skin.py`・`css/ui-art.css`・`css/ui-themes.css`・`css/vn-composition.css`・`core/ui-theme.js` | `ui_skin`・`conversation_ui`・`choice_oneline`・3画面サイズ | 1日・PR 1本（生成待ち） |
-| **P2** | HUDの板（行動回数なし・五角形廃止）、`daily/menu.js`（全画面4タブ）、章別 `openMenu` の委譲、STATUS の吸収 | `daily/hud.js`・`daily/menu.js`（新）・`daily/status.js`・`daily/calendar.js`・各章・`css/daily.css`・`css/game-ds.css` | `game_layout`・`hud_fortune`・`status_steps`・新規 `browser/daily_menu.mjs` | 1日・PR 2本 |
+| **P2** | HUDの板（行動回数なし・五角形廃止）、`daily/menu.js`（全画面4タブ）、章別 `openMenu` の委譲、STATUS の吸収 | `daily/hud.js`・`daily/menu.js`（新）・`daily/status.js`・`daily/calendar.js`・各章・`css/daily.css`（当時は `css/game-ds.css` も。2026-11-10 削除） | `game_layout`・`hud_fortune`・`status_steps`・新規 `browser/daily_menu.mjs` | 1日・PR 2本 |
 | **P3** | 看板（採用案）、案内パネルの `TODAY`、tonari の3択を紙の「行」部品へ、LIMEの面を紙に | `daily/map.js`・`css/daily.css`・`daily/tonari.js`・`daily/phone.js` | `facility_map`・`ui_polish`・撮影 | 1日・PR 1本 |
 
 - 保存データの schema は変えない。MENU は読み取りだけ。各段階で 1280×720・844×390・390×844 を撮影して自己レビュー（#22）。
