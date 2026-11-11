@@ -4,6 +4,7 @@ import { installDoubleTapGuard } from "./core/double-tap-guard.js";
 import { TOURNAMENT_DAY } from "./core/rules.js";
 import { $, sleep } from "./core/util.js";
 import { initStageFit } from "./core/stage-fit.js";
+import { initCraftStage } from "./craft/stage-layout.js";
 import { loadAll, loadDeferredDialogues, loadCinemaDialogue, loadTournamentCraftDialogue, DB, bgUrl, portraitInfo, makingUrl } from "./core/data.js";
 import { loadVnFonts } from "./core/vn-fonts.js";
 import { initLayers, imageReady, FRAME_ART, warmUiArt } from "./core/ui.js";
@@ -39,6 +40,7 @@ export async function boot() {
   // DS風表示（上下2画面）は廃止して横画面一本にした（オーナー決定 2026-11-04／11-10）。
   // 以前に「DS風」を選んだ端末に残る表示設定は読まずに消すだけ（セーブ・設定には触れない）。
   try { localStorage.removeItem(LEGACY_TITLE_LAYOUT_KEY); } catch { /* 保存できない環境は何もしない */ }
+  initCraftStage(); // シーシャ作りの新しい配置（?craftStage=1 で入・CSL）
   const cfg = loadConfig();
   applyUiTheme(cfg.uiTheme);
   // 設定「揺れ・閃光を減らす」を CSS からも見えるようにする（場面の演出の閃光を省く・#2688 F11）

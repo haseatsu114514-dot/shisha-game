@@ -139,11 +139,12 @@ try {
         assert.equal(after.runs.at(-1).adjustments,2);assert.equal(after.runs.at(-1).success,true);
         assert.deepEqual(after.runs.at(-1).mix,{double_apple:10,lemon:2});
         await p.screenshot({path:path.join(dir,`${device}-result.png`)});
-        await activate(p,"hud-menu",touch);await activate(p,"menu-tab-system",touch);await activate(p,"menu-save",touch);await activate(p,"slot-2",touch);
+        await activate(p,"hud-menu",touch);await activate(p,"menu-tab-system",touch);await activate(p,"menu-save",touch);await activate(p,"slot-1",touch);
+        await activate(p,"confirm-overwrite",touch);
         await p.waitForFunction(()=>!document.querySelector("#modal.show"));
-        const saved=await p.evaluate(()=>JSON.parse(localStorage.getItem("suien_remake_slot2")));
+        const saved=await p.evaluate(()=>JSON.parse(localStorage.getItem("suien_remake_slot1")));
         assert.equal(saved.slot,0);assert.equal(saved.money,after.money);assert.deepEqual(saved.flags._craft_practice_runs,after.runs);
-        await activate(p,"hud-menu",touch);await activate(p,"menu-tab-system",touch);await activate(p,"menu-load",touch);await activate(p,"slot-2",touch);
+        await activate(p,"hud-menu",touch);await activate(p,"menu-tab-system",touch);await activate(p,"menu-load",touch);await activate(p,"slot-1",touch);
         const navigation=p.waitForNavigation({waitUntil:"load"});
         await activate(p,"confirm-load",touch);await navigation;
         await p.locator("#boot").waitFor({state:"detached",timeout:35000});

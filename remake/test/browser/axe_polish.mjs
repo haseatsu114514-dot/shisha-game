@@ -183,10 +183,15 @@ await suite("axe-polish", async check => {
 
   await check("green-power-cue-and-zero-point-wood-contact-never-celebrate", async page => {
     const before = await start(page, { opponent: null });
-    await page.evaluate(async () => {
-      const { SE } = await import("./js/core/audio.js");
-      window.axeSounds = { hit: 0, perfect: 0, miss: 0 };
-      for (const kind of Object.keys(window.axeSounds)) SE[kind] = () => window.axeSounds[kind]++;
+    await page.evaluate(() => {
+      window.axeSoundStarts = 0;
+      for (const type of [OscillatorNode, AudioBufferSourceNode]) {
+        const start = type.prototype.start;
+        type.prototype.start = function (...args) {
+          window.axeSoundStarts++;
+          return start.apply(this, args);
+        };
+      }
     });
     await action(page); await phase(page, "horizontal");
     await boardStop(page, .995, 3600, "vertical", false);
@@ -197,11 +202,14 @@ await suite("axe-polish", async check => {
     assert.equal(await root(page).getAttribute("data-preview-score"), "0");
     await capture(page, "pc-green-power");
     await page.locator(".axe-target").click();
+    const beforeImpact = await page.evaluate(() => window.axeSoundStarts);
+    assert(beforeImpact > 0, "the throw must schedule sound layers");
     const predicted = await root(page).evaluate(n => ({ x: Number(n.dataset.landingX), y: Number(n.dataset.landingY) }));
     await page.clock.runFor(1320); await phase(page, "result");
     assert.equal(await page.locator(".axe-total strong").textContent(), "0");
     assert.equal(Number(await page.locator(".axe-impact-fx").getAttribute("opacity")), 0);
-    assert.deepEqual(await page.evaluate(() => window.axeSounds), { hit: 0, perfect: 0, miss: 1 });
+    assert.equal((await page.evaluate(() => window.axeSoundStarts)) - beforeImpact, 8,
+      "zero-point wood contact schedules the impact and miss layers, without the five cheer layers");
     await capture(page, "pc-zero-point-wood");
     // The five planks are wider than the sweep, so the corner is wood: the axe sticks for zero without any celebration.
     assert.equal(await page.locator(".axe-impacts > g").count(), 1);

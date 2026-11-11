@@ -94,15 +94,28 @@
     top: 84px !important;
   }
 
-  /* 蒸らしのヘルプは人物欄の上端へ置き、弾幕へのタップを遮らない。
-     左端にそろえた説明も画面内に収まる。温度計は右の作業域へ。 */
+  /* 共通ヘルプを右の作業域内へ戻す。蒸らしの温度計も同じ域へ置き、
+     人物絵を覆わない。 */
+  /* 弾幕の場と操作の列に重ねない位置: 作業域の左下（温度計の下）。説明は上へ開く。 */
   html[data-density="phone"] body:not(:root) .bench[data-step="steam"] .bench-right .bench-head {
-    position: absolute !important; left: -238px !important; right: auto !important; top: 8px !important;
+    position: absolute !important; left: 0 !important; right: auto !important; top: auto !important; bottom: 8px !important;
     min-height: 0; margin: 0; padding: 0; border: 0;
   }
   html[data-density="phone"] body:not(:root) .bench[data-step="steam"] .bench-head::after { display: none; }
-  html[data-density="phone"] body:not(:root) .bench[data-step="steam"] .steam-timer > .steam-temperature {
-    left: 8px !important; top: 40px !important;
+  /* 温度計は吸い出し・調整と同じ位置のまま（全工程で同じ場所）。人物絵に重ならないよう、
+     蒸らしの間だけ人物の枠を温度計の手前で終える。 */
+  html[data-density="phone"] body:not(:root) .bench[data-step="steam"] .bench-left {
+    width: 325px !important;
+  }
+  /* 作業域は人物の枠のすぐ右から（窓の間は詰めたまま）。温度計は作業域を左へ広げた分だけ戻して、同じ場所に保つ。 */
+  html[data-density="phone"] body:not(:root) .bench[data-step="steam"] .bench-right {
+    left: 343px !important;
+  }
+  html[data-density="phone"] body:not(:root) .bench[data-step="steam"] :is(.steam, .steam-timer) > .thermo {
+    translate: 107px 0;
+  }
+  html[data-density="phone"] body:not(:root) .bench[data-step="steam"] .bench-guide-tip {
+    left: 0 !important; right: auto !important; top: auto !important; bottom: calc(100% + 12px) !important;
   }
   /* タイマーの絵柄はそのまま、透明なボタンの当たり判定を広げる。 */
   html[data-density="phone"] body:not(:root) .bench[data-step="steam"] .timer-button {

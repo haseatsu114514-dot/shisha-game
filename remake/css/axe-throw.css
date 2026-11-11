@@ -41,7 +41,7 @@
 .axe-target { cursor: crosshair; outline: none; }
 .axe-target:focus-visible { outline-offset: -5px; border-radius: 12px; }
 .axe-target > image { filter: drop-shadow(0 8px 12px rgba(0,0,0,.45)); }
-.axe-crosshair, .axe-impact-mark { filter: drop-shadow(0 0 3px #0a0d0e); }
+.axe-impact-mark { filter: drop-shadow(0 0 3px #0a0d0e); }
 .axe-aim-guides { pointer-events: none; }
 .axe-fixed-aim { opacity: .8; }
 .axe-legend { order: -1; align-self: center; margin: 12px 8px 0; padding: 5px 12px; color: #d2c6b2; font-size: 12px; font-weight: 700; letter-spacing: .02em; text-align: center; border: 1px solid rgba(224,183,126,.16); border-radius: 100px; background: rgba(10,13,14,.75); }
@@ -594,8 +594,8 @@ html:root[data-ui-theme="paper"] .axe-bar-menu .axe-bar-lesson { color: var(--la
 }
 
 /* AXR07: the target and the axe read at a glance. Presentation only. */
-.axe-zone-halo { stroke: #fff2b0; stroke-width: 3; filter: drop-shadow(0 0 4px rgba(255,236,160,.9)); pointer-events: none; }
-.axe-zone-halo[data-kind="kill"] { stroke: #b6f0ff; filter: drop-shadow(0 0 5px rgba(140,226,255,.95)); }
+.axe-zone-halo { stroke: #fff2b0; stroke-width: 3; pointer-events: none; }
+.axe-zone-halo[data-kind="kill"] { stroke: #b6f0ff; }
 .axe-zone-halo[data-kind="ring"] { stroke-width: 2.5; stroke-dasharray: 10 6; }
 .axe-ghost { pointer-events: none; }
 .axe-flight-trail { filter: blur(1.5px); }
@@ -911,6 +911,8 @@ html:root[data-ui-theme="paper"] .axe-bar-menu .axe-bar-lesson { color: var(--la
 .axe-in-stage.axe-game[data-phase="summary"] .axe-result-card { display: grid; grid-template-columns: auto minmax(0,1fr); align-items: center; column-gap: 16px; padding-block: 2px; }
 .axe-in-stage.axe-game[data-phase="summary"] .axe-result-card > :not(.axe-result-value, .axe-rank) { grid-column: 1 / -1; }
 .axe-in-stage.axe-game[data-phase="summary"] .axe-rank { flex-wrap: wrap; justify-content: flex-start; align-items: baseline; column-gap: 8px; row-gap: 0; margin: 0; }
+/* A long sudden-death caption stays on one row so the result and buttons fit below the two-row scoreboard. */
+.axe-game[data-mode="versus"][data-phase="summary"] .axe-result-label { font-size: 18px; line-height: 1.2; white-space: nowrap; }
 /* 対戦の結果: 投ごとの点の一覧は上の得点表（あなた／ひよりの2段）と同じなので本編では出さない。
    チャレンジの札も畳む（達成数は成績の行「チャレンジ n/3」に残る）。勝敗・コメント・自分の点とランク・ボタンを一画面に。 */
 .axe-in-stage.axe-game[data-mode="versus"][data-phase="summary"] :is(.axe-match-records, .axe-challenges) { display: none; }

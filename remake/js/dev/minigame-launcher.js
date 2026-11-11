@@ -51,6 +51,7 @@ export function mountMiniGameDebug() {
       close.textContent = "デバッグ一覧へ戻る";
       close.dataset.test = "debug-minigame-close";
       Object.assign(close.style, { position: "absolute", right: "12px", top: "12px", zIndex: "2147483001", padding: "8px", background: "#21162c", color: "#fff", border: "1px solid #f5c26b", borderRadius: "6px" });
+      if (game.id === "desert") Object.assign(close.style, { left: "20px", right: "auto", top: "280px" });
       close.onclick = () => { controller.abort(); host.remove(); close.remove(); if (current === controller) current = null; location.reload(); };
       stage.append(close);
       document.querySelector("[data-test='debug-panel']").hidden = true;

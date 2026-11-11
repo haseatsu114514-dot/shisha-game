@@ -65,7 +65,7 @@ await suite("flavor-expression", async check => {
       await add(page, "lemon", 11);
       const noviceCard = await forecast(page), novice = await readRanges(noviceCard);
       assert.equal(novice.length, 3);
-      assert.deepEqual(novice.map(axis => axis.label), ["甘い印象", "清涼感", "煙の厚み"]);
+      assert.deepEqual(novice.map(axis => axis.label), ["甘い印象", "清涼感", "煙の量"]);
       assert(novice.every(axis => /予想/.test(axis.text) && axis.low < axis.high));
       assert.notDeepEqual(novice, mintOnly, "Real gram controls update the blended forecast");
       assert.match(await noviceCard.innerText(), /仕上がりの目安/);

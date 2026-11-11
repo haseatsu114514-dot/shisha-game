@@ -724,6 +724,112 @@
       ]
     },
     {
+      "dialogue_id": "ch5_catering_stargazing_intro",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "観音堂の裏の高台。灯りを消すと、町の明かりの上に星が出てきた。"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "今夜が流星群のピークなんです。明け方まで粘るつもりで"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "先輩が解説係で、一晩しゃべりっぱなしなんですよ。去年は声が枯れてました"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "あと、みんな眠いのをごまかしたくて"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "わかりました。ここで一台、作ります"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（長く回せて、眠気が飛ぶ。でも、しゃべり通しの喉にきつくない一台）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_catering_stargazing_best",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "グレープに、ミントを少しだけ重ねた。"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "……あ、すっとする。でも、喉は痛くならない"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "先輩、ずっとしゃべってるのにホースを離さないんですよ。あ、今の見ました？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "（みんなが同じ方を見上げて、ホースだけが手から手へ回っていく）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_catering_stargazing_ok",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "レモンティーに、ハニーを重ねた。"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "やさしい味ですね。これなら先輩の声、最後まで持ちそうです"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "……ただ、ちょっと眠くなってきたかも。三時くらいが山なんですけど"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（喉は守れた。眠気の方を、置いてきてしまった）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch5_catering_stargazing_off",
+      "lines": [
+        {
+          "speaker": "",
+          "text": "デスバイアイスに、クールミントを重ねた。"
+        },
+        {
+          "speaker": "customer",
+          "face": "surprise",
+          "text": "うわ、目が覚める。いや、覚めすぎるかも"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "先輩、一口でむせて解説が止まっちゃいました。星は、ちゃんと流れてましたけど"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（眠気のことだけ見て、喉のことを忘れてた）"
+        }
+      ]
+    },
+    {
       "dialogue_id": "ch5_catering_close_best_a",
       "lines": [
         {

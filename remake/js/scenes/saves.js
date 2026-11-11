@@ -1,4 +1,4 @@
-// セーブ／ロードの枠選び（オートセーブ＋手動3枠）。タイトルの「ロード」と、日常の MENU から開く。
+// セーブ／ロードの枠選び（オートセーブ＋手動1枠）。タイトルの「ロード」と、日常の MENU から開く。
 import { el, yen } from "../core/util.js";
 import { layers, modal, toast } from "../core/ui.js";
 import { SCHEMA, SAVE_SLOTS, STAT_KEYS, STAT_JA, readSlot, saveToSlotResult, loadFromSlot, state } from "../core/state.js";

@@ -155,6 +155,29 @@ CRAFT_NIGHT_PARTS = {
 }
 
 
+# 新しい配置「一枚の舞台」（CSL）の部品。採用PNGのサイズを固定する。
+CRAFT_STAGE_SOURCES = ROOT / "assets/ui/craft-stage"
+CRAFT_STAGE_OUT = ROOT / "remake/img/ui/craft-stage"
+CRAFT_STAGE_PARTS = {
+    # 舞台の天板（石）: 炭焼き・調整。枠なしの全面。
+    "counter-stone": {"source_size": (1536, 1024), "width": 1280, "alpha": False},
+}
+
+
+def build_craft_stage():
+    CRAFT_STAGE_OUT.mkdir(parents=True, exist_ok=True)
+    for name, spec in CRAFT_STAGE_PARTS.items():
+        with Image.open(CRAFT_STAGE_SOURCES / f"{name}.png") as source:
+            if source.size != spec["source_size"]:
+                raise ValueError(f"craft-stage {name}: expected {spec['source_size']}, got {source.size}")
+            width = spec["width"]
+            size = (width, round(width * source.height / source.width))
+            image = source.convert("RGBA" if spec["alpha"] else "RGB").resize(size, Image.Resampling.LANCZOS)
+            path = CRAFT_STAGE_OUT / f"{name}.webp"
+            image.save(path, "WEBP", quality=90 if spec["alpha"] else 84, alpha_quality=100, method=6, exact=spec["alpha"])
+            print(f"{path.relative_to(ROOT)}: {image.width}×{image.height}, {path.stat().st_size:,} bytes")
+
+
 def build_craft_night():
     CRAFT_NIGHT_OUT.mkdir(parents=True, exist_ok=True)
     for name, spec in CRAFT_NIGHT_PARTS.items():
@@ -192,6 +215,7 @@ def main():
     build_paper()
     build_craft_paper()
     build_craft_night()
+    build_craft_stage()
     OUT.mkdir(parents=True, exist_ok=True)
     for name, spec in SPRITES.items():
         with Image.open(SOURCES / f"{spec.get('source', name)}.png") as source:

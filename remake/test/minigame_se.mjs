@@ -1,4 +1,4 @@
-// ミニゲームの仮SE（grok/minigame-audio）: 表の各キューが実ファイル・出典台帳に結びつき、音量・ミュート・未読込の代用音に従うこと。
+// ミニゲームの録音SE台帳と、斧投げ専用の合成SEの出力・音量制御。
 // node --experimental-vm-modules remake/test/minigame_se.mjs
 import assert from "node:assert/strict";
 import fs from "node:fs/promises";
@@ -86,7 +86,8 @@ for (const original of sources.originals) {
   assert.equal(committed.length, original.bytes, `${original.file} bytes`);
   assert.equal(createHash("sha256").update(committed).digest("hex"), original.sha256, `${original.file} hash`);
 }
-// 3) Every playMinigameSe("…") call in the game names a registered cue.
+// 3) Legacy recorded cue calls stay registered. The axe scene now fires its
+// own synthesized layers for throw, wood contact, miss, crowd and match end.
 const calls = [];
 async function scan(dir) {
   for (const entry of await fs.readdir(dir, { withFileTypes: true })) {
@@ -96,8 +97,10 @@ async function scan(dir) {
   }
 }
 await scan(new URL("remake/js/", ROOT));
-assert(calls.length >= 6, "the axe throw uses the cues");
 for (const id of calls) assert(cues[id], `unknown cue ${id}`);
+const axeCode = await fs.readFile(new URL("remake/js/minigames/axe.js", ROOT), "utf8");
+const axeCalls = [...axeCode.matchAll(/playAxeSe\("([A-Za-z]+)"/g)].map(match => match[1]);
+assert.deepEqual([...new Set(axeCalls)].sort(), ["throw", "stick", "drop", "miss", "cheer", "win", "lose"].sort());
 
 // 4) Behaviour: nothing before unlock; recordings after preload; mute is silent; a missing file falls back to the synth (or stays silent).
 const live = await boot();
@@ -125,4 +128,18 @@ assert(missing.oscillators() > 0, "missing recording falls back to the synth hit
 const quiet = missing.oscillators();
 missing.audio.playMinigameSe("axeDrop");
 assert.equal(missing.oscillators(), quiet, "the drop has no synth fallback (the caller plays the miss tone)");
-console.log(`minigame SE: ${Object.keys(cues).length} cues, ${files.length} files, ${calls.length} call sites OK`);
+const synthesized = await boot();
+synthesized.audio.unlockAudio();
+for (const id of ["throw", "stick", "drop", "miss", "cheer", "win", "lose"]) {
+  const count = synthesized.sources.length;
+  synthesized.audio.playAxeSe(id);
+  assert(synthesized.sources.length > count, `${id} must schedule an audible layer`);
+}
+const scheduled = synthesized.sources.length;
+synthesized.config.muted = true;
+synthesized.audio.playAxeSe("stick");
+assert.equal(synthesized.sources.length, scheduled, "mute silences the synthesized axe impact");
+synthesized.config.muted = false; synthesized.config.seVolume = 0;
+synthesized.audio.playAxeSe("throw");
+assert.equal(synthesized.sources.length, scheduled, "SE volume zero silences the synthesized axe throw");
+console.log(`minigame SE: ${Object.keys(cues).length} recorded cues, ${files.length} files, ${axeCalls.length} synthesized axe call sites OK`);

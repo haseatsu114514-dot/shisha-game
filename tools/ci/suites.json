@@ -10,6 +10,12 @@
   ],
   "suites": [
     {
+      "id": "stage-fit-3173",
+      "title": "Visual viewport stage fit updates after browser chrome and rotation",
+      "kind": "quick",
+      "run": ["node remake/test/stage_fit_3173.mjs"]
+    },
+    {
       "id": "chapter-poems",
       "title": "巻頭ポエムの台本・仕様・章タイトル直前の接続",
       "kind": "quick",
@@ -585,6 +591,21 @@
       "run": ["node remake/test/browser/desert_ride.mjs"]
     },
     {
+      "id": "minigame-bgm-input",
+      "title": "DESERT RIDE practice-to-run steering and standalone minigame BGM startup/retry",
+      "kind": "browser",
+      "weight": 0.3,
+      "timeout": 3,
+      "paths": [
+        "remake/js/core/audio.js",
+        "remake/js/core/data.js",
+        "remake/js/minigames/desert-ride.js",
+        "remake/js/minigames/camel-race.js",
+        "remake/test/browser/minigame_bgm_input.mjs"
+      ],
+      "run": ["node remake/test/browser/minigame_bgm_input.mjs"]
+    },
+    {
       "id": "title-art-met",
       "title": "Title art unlocks by characters met in the latest save",
       "kind": "quick",
@@ -929,6 +950,7 @@
         "node --experimental-vm-modules remake/test/tournament_vote_progression.mjs",
         "node --experimental-vm-modules remake/test/tournament_sequence.mjs",
         "node --test remake/test/trpg.mjs",
+        "node --test remake/test/trpg_face_scale.mjs",
         "node --test remake/test/trpg_feedback.mjs",
         "node --test remake/test/trpg_d20.mjs",
         "node --experimental-vm-modules --test remake/test/trpg_table_view.mjs",
@@ -1043,7 +1065,7 @@
       "title": "Axe throw on PC and touch",
       "kind": "browser",
       "weight": 10.5,
-      "timeout": 15,
+      "timeout": 25,
       "paths": [
         "remake/js/core/stage-fit.js",
         "remake/js/minigames/**",
@@ -1065,7 +1087,8 @@
         "assets/ui/axe_throw/**",
         "remake/img/ui/axe_throw/**",
         "remake/img/backgrounds/bg_axe_lounge_night.webp",
-        "remake/test/browser/axe_bgm_788.mjs"
+        "remake/test/browser/axe_bgm_788.mjs",
+        "remake/test/browser/axe_audio_performance.mjs"
       ],
       "run": [
         "COMPARISON_DIR=.codex/artifacts/remake-browser/axe-poses node remake/test/browser/axe_throw.mjs",
@@ -1073,7 +1096,8 @@
         "COMPARISON_DIR=.codex/artifacts/remake-browser/axe-polish-poses node remake/test/browser/axe_polish.mjs",
         "COMPARISON_DIR=.codex/artifacts/remake-browser/axe-lesson-poses node remake/test/browser/axe_lesson.mjs",
         "node remake/test/browser/axe_menu_decor.mjs",
-        "node remake/test/browser/axe_bgm_788.mjs"
+        "node remake/test/browser/axe_bgm_788.mjs",
+        "node remake/test/browser/axe_audio_performance.mjs"
       ]
     },
     {
@@ -1544,7 +1568,7 @@
     },
     {
       "id": "ch4-camel-feedback",
-      "title": "ラクダレースの判定表示・スタミナ予告・加速・観客席",
+      "title": "ラクダレースの判定表示・スタミナ予告・加速（観客ティッカーなし）",
       "kind": "browser",
       "weight": 1,
       "timeout": 5,
@@ -1936,11 +1960,28 @@
         "remake/js/minigames/tetsuko-theme.js",
         "remake/js/minigames/tetsuko-help.js",
         "remake/js/minigames/tetsuko-time.js",
+        "remake/js/minigames/tetsuko-model.js",
         "remake/css/tetsuko-theme.css",
         "remake/css/tetsuko-time.css",
         "remake/test/browser/tetsuko_theme.mjs"
       ],
       "run": ["node remake/test/browser/tetsuko_theme.mjs"]
+    },
+    {
+      "id": "tetsuko-feel",
+      "title": "Tetsuko Time feel: her wish bubble, petting zones, pounce and catch, the joy hearts and their peak, and just watching counts (spec section 10)",
+      "kind": "browser",
+      "weight": 0.2,
+      "timeout": 3,
+      "paths": [
+        "remake/js/minigames/tetsuko-time.js",
+        "remake/js/minigames/tetsuko-model.js",
+        "remake/js/minigames/tetsuko-help.js",
+        "remake/css/tetsuko-time.css",
+        "remake/css/tetsuko-theme.css",
+        "remake/test/browser/tetsuko_feel.mjs"
+      ],
+      "run": ["node remake/test/browser/tetsuko_feel.mjs"]
     },
     {
       "id": "ch3-full-flow",

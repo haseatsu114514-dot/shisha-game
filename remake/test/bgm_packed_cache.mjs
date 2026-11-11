@@ -153,4 +153,20 @@ async function loadAudio() {
   assert(revoked.includes(first.src), "faded-out track becomes evictable after release");
 }
 
+// ---- Phase C: 曲の初回取得失敗後、同じキーで再度開始できる ----
+{
+  const { audio, elements, failUrls, fetches, flush } = await loadAudio();
+  const url = "/assets/audio/bgm/f8.bgm";
+  failUrls.add(url);
+  audio.playBgm("f8");
+  await flush();
+  assert.equal(elements.at(-1).plays, 0);
+  failUrls.delete(url);
+  audio.playBgm("f8");
+  assert.equal(await audio.preloadBgm("f8"), true);
+  await flush();
+  assert.equal(fetches.get(url), 2, "the same key retries after a failed fetch");
+  assert.equal(elements.at(-1).plays, 1, "the retried music reaches play()");
+}
+
 console.log("[packed BGM cache] PASS: LRU cap 5, playing/fading tracks protected, evicted tracks refetch and play");
