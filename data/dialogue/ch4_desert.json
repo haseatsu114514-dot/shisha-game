@@ -858,7 +858,22 @@
         {
           "speaker": "noor",
           "face": "smile",
+          "text": "その人、席が埋まってたら困った顔する？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "しますね。入ってすぐ、席を目で探してます"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
           "text": "世界共通だね。父の席も、ずっと奥の同じ椅子なの"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "奥の椅子、いい席そうですね"
         },
         {
           "speaker": "",
@@ -951,6 +966,16 @@
           "speaker": "hajime",
           "face": "surprise",
           "text": "あ、本当だ。写真の子ですね"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "そう、澄ました顔でしょ。でも砂に着くと、急にはしゃぐの"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "ギャップがありますね"
         },
         {
           "speaker": "noor",
