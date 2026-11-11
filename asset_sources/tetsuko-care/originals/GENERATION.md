@@ -101,3 +101,49 @@ The final size and SHA-256 list is recorded below; it is generated from the deli
 | `ui_photo_frame.png` | 1161×1355 | 634708 | `0e48c544c23a267249fa62f6a0e2b3926c1d0a3761c0386b112ed4ce682e5040` |
 | `ui_photo_frame_candidate2.png` | 1161×1355 | 629427 | `b495048d7fa63f1eff927783bd3a1e92b2b354facb067c16bebc228bf7343da4` |
 | `ui_tape.png` | 2172×724 | 1141470 | `6f52bf49c4b7a8d9968a2c5be66f32f175695b9293a1e143d9109b954da25bd3` |
+
+## Issue #3214 追加候補（2026-11-11）
+
+Codex の組み込み画像生成を使用。必須6点を各1枚ずつ別の生成で作成した。背景は単色マゼンタを指示したが、生成器の実測値は完全な `#FF00FF` ではない。Issue 本文の指定どおり、透過処理・ゲーム内での縮尺合わせ・組み込みは行っていない。`prop_tunnel_tail.png` のみ、生成器の 1254×1254 出力を指定画素数にするため Pillow の LANCZOS で 512×512 に縮小した。
+
+### 参照画像と役割
+
+| 参照画像 | 役割 | SHA-256 |
+|---|---|---|
+| `assets/sprites/characters/tetsuko/chr_tetsuko_normal.png` | 全6点の描き手の線と影。猫4点では本人の柄・顔・耳・目・体格の正本。しっぽでは縞の正本 | `9890e78c6b90f636861ddbabc5657191398dfbe3087bffb24d5704720b4f6f00` |
+| `assets/sprites/characters/tetsuko/chr_tetsuko_smile.png` | 猫4点の同じ描き手による表情 | `3df30e566cd75707c686621a87e5071fe11e1ef6cf5faab441d6fb8348959c10` |
+| `assets/sprites/characters/tetsuko/chr_tetsuko_sleep.png` | 猫4点の丸い体型と毛の塗り | `7cbba9787ff8228d44b188f55f9154f40e1dcba9beba010d8958ce395381876e` |
+| `assets/sprites/characters/hajime/chr_hajime_normal.png` | 膝の作業ズボンの色のみ | `6affe667e9cc665b53713c6a2319c1c91792e2e335e8408d9c941c364295e409` |
+| `assets/ui/tetsuko/prop_tunnel.png` | しっぽが出るトンネルの口の向きと大きさのみ。絵にはトンネルを入れない | `62bd8cc1e10e07323f07267ed3b526f7334266fc55a554d6ee5a0d8214419419` |
+
+参照は膝が1枚目＝てつこの画風、2枚目＝はじめの服の色。しっぽが1枚目＝てつこの画風と縞、2枚目＝採用済みトンネルの口。猫4点は毎回、1枚目＝本人、2枚目＝表情、3枚目＝丸い体と毛の塗り。各指示文で役割と「同じ描き手の焦げ茶輪郭・2〜3段セル影」を明示し、横並びの参照シートは使用していない。
+
+### 生成指示
+
+猫4点に共通して与えた画風・本人・形式の指示：2D ノベルゲーム用のてつこの全身絵を1枚。参照①を本人の橙色の広い縞、鼻の白い逆V、白い顎・胸・腹・足、折れ耳、金色の目、ふっくらした体格、画風の正本とする。参照②は同じ描き手の表情、参照③は丸い体と毛の塗り。焦げ茶の輪郭線（外周は太め）、輪郭にまとめた毛束、2〜3段のセル影を維持。長辺1000px以上、周囲に少し余白。背景は均一な `#FF00FF`。猫1匹のみ、床・影・おもちゃ・小物・文字・ウォーターマークなし。自然な体の構造と参照猫の同一性を保つ。
+
+| ファイル | 個別の POSE 指示 |
+|---|---|
+| `cat_leap.png` | Mid-air pounce in side view, facing right; body stretched long; front legs reaching forward and up with toes spread; hind legs extended back; thick striped tail streaming behind; eyes wide and focused; ears forward. |
+| `cat_flop.png` | After missing a pounce, sprawled on her belly, front legs splayed forward, hind legs tucked, glancing back over her shoulder with a slightly ruffled, sheepish expression. Side view facing right. |
+| `cat_mew.png` | Sitting upright, looking up at the viewer and giving a short soft meow; mouth open with tiny fangs and pink tongue; folded ears lifted, eyes round. |
+| `cat_poke.png` | Sitting and lifting ONE front paw toward the viewer to poke, pink paw pads clearly visible; head tilted a little, eyes curious. |
+
+膝の採用指示（初回は出力段階で安全システムにより失敗したため、服の素材を主語にして再生成）：
+
+> Illustrate a family-friendly clothing prop for a 2D Japanese visual novel. WIDE 2048x768. Reference image 1 defines the artist's dark brown outline and crisp 2–3 step cel shading. Reference image 2 defines ONLY the charcoal color of work trousers. Draw the two fabric-covered rounded knee shapes of a seated person from a downward first-person viewpoint, with the upper thigh fabric leading toward the lower edge of frame. There is a soft dip between the knees. Fill the lower third with continuation of the two trouser legs, cropping before the waist. Image must show trouser cloth only. No waist, belt, pockets, shoes, skin, hands, face, cat, furniture, floor, writing, or watermark. Plain uniform solid #FF00FF magenta surrounding the trouser silhouette.
+
+しっぽの指示：
+
+> Create a square 512x512 pixel 2D visual-novel prop illustration containing ONLY Tetsuko's detached visible tail segment. Reference image 1 defines the cat's thick orange tail, broad tabby stripes, dark brown outlines, and crisp 2–3 step cel shading by the same artist. Reference image 2 defines the orientation and scale of the rear mouth of the adopted teal play tunnel; use its opening only to understand where the tail emerges, but do NOT draw any part of the tunnel or its opening. Show the orange striped tail starting at the lower left and curling upward at the tip, as though emerging from a round opening just outside the canvas. Tail only, no body, no paws, no tunnel, no props. Uniform solid #FF00FF magenta background, no floor, shadow, writing, or watermark. Fit the whole visible tail inside the canvas with a small margin.
+
+### 追加 PNG の実測
+
+| ID | ファイル | 画素寸法 | SHA-256 |
+|---|---|---:|---|
+| TK-SC01 | `prop_lap.png` | 2048×768 | `e3a63d191a0cc59e19902bb2f437839cdab300cc7a7424cc718f66dc78f9da64` |
+| TK-SC02 | `prop_tunnel_tail.png` | 512×512 | `4e48b17fae4a11288eee3f49ce687f126ecd7df7075dabe3c1e95dc90120d293` |
+| TKT-CAT13 | `cat_leap.png` | 1719×915 | `752ad29ac53be461322bbb4486ee4a7beccfd1bd856605d81ec22dcedc40e08c` |
+| TKT-CAT14 | `cat_flop.png` | 1774×887 | `b9398df270f31c3e4c8c0bc589dc66834a0c6f915aa54f87fb02b33a3feb50f0` |
+| TKT-CAT15 | `cat_mew.png` | 1084×1451 | `9803da39bca8ae14105b1af31a30b7732427ba112d9a257c12cc2202885e6dd0` |
+| TKT-CAT16 | `cat_poke.png` | 1084×1451 | `6a4e6ce96484f5abade0737a2afa63742411535736b4c72821c0a418bba3d373` |
