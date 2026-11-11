@@ -291,6 +291,12 @@
       "run": ["node remake/test/shift_mix_record.mjs"]
     },
     {
+      "id": "mukai-shift-orders",
+      "title": "Tokyo mukai shift orders: entrusted orders join from the day after the first shift (#2020 E)",
+      "kind": "quick",
+      "run": ["node remake/test/mukai_shift_orders.mjs"]
+    },
+    {
       "id": "ch1-interval-connection",
       "title": "Chapter 1 victory interval connections",
       "kind": "quick",
