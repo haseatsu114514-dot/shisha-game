@@ -360,3 +360,79 @@ html:root[data-density="phone"] .tetsuko-time .tt-logo-roman { display: none; }
   .tetsuko-time[data-art-ui~="tk_pill"] .tt-joy { border-width: 0 32px; border-image-width: 0 32px; padding: 7px 2px 11px; }
   .tetsuko-time[data-art-ui~="tk_caption"] .tt-caption { padding: 4px 14px 2px 10px; }
 }
+
+/* 手持ちの絵で置き換えられる小さな部品（TKT27 の依頼が届くまで）: 道具の名前の札＝ハートの台の絵、パネルのボタン＝上の道具の札の絵、
+   「？」の中のアイコンの丸＝丸い札の絵 */
+.tetsuko-time[data-art-ui~="tk_pill"] .tt-act-label { border-style: solid; border-color: transparent; border-width: 0 12px; border-radius: 0; padding: 1px 0 4px;
+  background: none; border-image: url("../img/ui/tetsuko/ui_tk_pill.webp") 0 70 fill / 0 12px stretch; }
+:root .tetsuko-time[data-art-ui~="tk_tab"] .btn.small:is(.tt-drawer-close, .tt-book-close, .tt-help-close, .tt-seek) { border: 0; border-radius: 0; box-shadow: none; clip-path: none;
+  background: url("../img/ui/tetsuko/ui_tk_tab.webp") center / 100% 100% no-repeat; color: var(--tk-ink); padding: 10px 22px 14px; }
+:root .tetsuko-time[data-art-ui~="tk_tab"] .btn.small:is(.tt-drawer-close, .tt-book-close, .tt-help-close, .tt-seek):is(:hover, :focus-visible, :active) {
+  border: 0; box-shadow: none; color: var(--tk-ink); background: url("../img/ui/tetsuko/ui_tk_tab_pressed.webp") center / 100% 100% no-repeat; }
+.tetsuko-time[data-art-ui~="tk_token"] .tt-help-ico { border: 0; border-radius: 0; background: url("../img/ui/tetsuko/ui_tk_token.webp") center / contain no-repeat; width: 42px; height: 44px; }
+@media (orientation: landscape) and (max-width: 1024px) and (max-height: 520px) and (pointer: coarse) and (hover: none) {
+  .tetsuko-time[data-art-ui~="tk_pill"] .tt-act-label { border-width: 0 16px; border-image-width: 0 16px; }
+}
+
+/* ==== 専用テーマの部品の絵・B 段（#3243・TKT27・PR #3248 の原画・2026-11-11）====
+   九分割の数字は、書き出した絵（remake/tools/build_tetsuko_art.py ui_b）の px。角の飾り（テープ・肉球・毛糸玉・ちぎれ）を角の範囲に入れて、伸ばさない */
+/* 小さな札（もようがえの小物・手帳のしぐさ・見つけた／撮った時の札・もようがえの見出し） */
+.tetsuko-time[data-art-ui~="tk_card"] :is(.tt-item, .tt-card) { border-style: solid; border-color: transparent; border-width: 8px; border-radius: 0; box-shadow: none; background: none;
+  border-image: url("../img/ui/tetsuko/ui_tk_card.webp") 60 100 96 130 fill / 15px 25px 24px 32px stretch; }
+.tetsuko-time[data-art-ui~="tk_card"] .tt-item[aria-pressed="true"] { box-shadow: none; filter: drop-shadow(0 0 4px #f08a2e) drop-shadow(0 0 2px #f08a2e); }
+.tetsuko-time[data-art-ui~="tk_card"] .tt-card[aria-pressed="true"] { box-shadow: none; filter: drop-shadow(0 0 4px #f08a2e) drop-shadow(0 0 2px #f08a2e); }
+.tetsuko-time[data-art-ui~="tk_card"] :is(.tt-drawer-head, .tt-toast) { border-style: solid; border-color: transparent; border-width: 6px 10px; border-radius: 0; box-shadow: none; background: none;
+  border-image: url("../img/ui/tetsuko/ui_tk_card.webp") 60 100 96 130 fill / 10px 17px 16px 22px stretch; }
+/* もようがえのトレー */
+.tetsuko-time[data-art-ui~="tk_tray"] .tt-drawer { border-style: solid; border-color: transparent; border-width: 14px 22px; border-radius: 0; box-shadow: none; background: none;
+  border-image: url("../img/ui/tetsuko/ui_tk_tray.webp") 70 110 70 110 fill / 30px 46px stretch; }
+/* あそびかたの紙 */
+.tetsuko-time[data-art-ui~="tk_panel"] .tt-help-card { border-style: solid; border-color: transparent; border-width: 10px; border-radius: 0; box-shadow: none; background: none;
+  border-image: url("../img/ui/tetsuko/ui_tk_panel.webp") 72 112 82 112 fill / 43px 67px 49px 67px stretch; padding: 30px 44px 22px; }
+/* てつこ手帳: 見開きの絵（左右の紙・段ボールの表紙）を伸ばして敷く。中の紙と線は絵の物を使い、CSS の紙は消す。真ん中は背の絵 */
+.tetsuko-time[data-art-ui~="tk_book"] .tt-book-spread { border: 0; border-radius: 0; box-shadow: none; padding: 52px 50px 40px 58px; gap: 54px;
+  background: url("../img/ui/tetsuko/ui_tk_book.webp") center / 100% 100% no-repeat; filter: drop-shadow(0 10px 18px rgba(20, 10, 4, .45)); }
+.tetsuko-time[data-art-ui~="tk_book"] .tt-page { border: 0; border-radius: 0; box-shadow: none; background: none; }
+.tetsuko-time[data-art-ui~="tk_book"] .tt-page.left h3 { margin-left: 46px; }
+.tetsuko-time[data-art-ui~="tk_book"] .tt-book-spread::after { top: 8px; bottom: 10px; width: 22px; margin-left: -11px; border: 0; border-radius: 0;
+  background: url("../img/ui/tetsuko/ui_tk_book_spine.webp") center / 100% 100% no-repeat; }
+/* 写真の額（窓の位置は絵の窓に合わせる。窓は横長なので、正方形の写真を上下少し切って見せる） */
+.tetsuko-time[data-art-ui~="tk_photo"] .tt-polaroid { width: 230px; height: 266px; padding: 0; box-shadow: none; background: url("../img/ui/tetsuko/ui_tk_photo.webp") center / 100% 100% no-repeat;
+  filter: drop-shadow(0 6px 10px rgba(20, 10, 4, .3)); }
+.tetsuko-time[data-art-ui~="tk_photo"] .tt-polaroid .tt-thumb { position: absolute; left: 18px; top: 23px; width: 194px; height: 194px; clip-path: inset(14px 0 16px 0); }
+.tetsuko-time[data-art-ui~="tk_photo"] .tt-polaroid small { bottom: 12px; }
+.tetsuko-time[data-art-ui~="tk_photo"] .tt-polaroid[data-photo="false"] { background-color: transparent; box-shadow: none; }
+.tetsuko-time[data-art-ui~="tk_photo"] .tt-polaroid[data-photo="false"] .tt-thumb { outline-offset: -20px; }
+.tetsuko-time[data-art-ui~="tk_photo"] .tt-detail:has(.tt-seek) .tt-polaroid { width: 230px; height: 266px; padding: 0; zoom: .66; }
+.tetsuko-time[data-art-ui~="tk_photo"] .tt-detail:has(.tt-seek) .tt-polaroid .tt-thumb { width: 194px; height: 194px; }
+/* 写真のテープ */
+/* 写真の額の絵にはテープが描いてあるので、額の絵を使う時は CSS のテープを出さない（手帳の中のほかのテープはこの絵） */
+.tetsuko-time[data-art-ui~="tk_photo"] .tt-polaroid .tt-tape { display: none; }
+.tetsuko-time[data-art-ui~="tk_tape"] .tt-tape { width: 110px; height: 37px; margin-left: -55px; top: -14px; clip-path: none; background: url("../img/ui/tetsuko/ui_tk_tape.webp") center / contain no-repeat; }
+/* 段ボールの外枠: 細い帯（約20px）はそのままに、角の飾り（テープ・肉球・毛糸玉）は角に縮めて置く。帯の外の窓は透明。道具より奥に置く */
+.tetsuko-time[data-art-ui~="tk_frame"] .tt-frame { z-index: 19; border-style: solid; border-color: transparent; border-width: 21px;
+  border-image: url("../img/ui/tetsuko/ui_tk_frame.webp") 120 200 120 200 / 50px 84px 50px 84px stretch; }
+.tetsuko-time[data-art-ui~="tk_frame"] .tt-frame-svg { display: none; }
+/* 入った時の箱: ふたの絵（右は左右に返す）と、封のテープの絵 */
+.tetsuko-time[data-art-ui~="tk_flap"] .tt-intro-flap { box-shadow: none; background: url("../img/ui/tetsuko/ui_tk_flap.webp") center / cover no-repeat; }
+.tetsuko-time[data-art-ui~="tk_flap"] .tt-intro-flap.r { background-image: none; }
+.tetsuko-time[data-art-ui~="tk_flap"] .tt-intro-flap.r::before { content: ""; position: absolute; inset: 0; scale: -1 1; background: url("../img/ui/tetsuko/ui_tk_flap.webp") center / cover no-repeat; }
+.tetsuko-time[data-art-ui~="tk_flap"] .tt-intro-tape { width: 90px; margin-left: -45px; box-shadow: none; background: url("../img/ui/tetsuko/ui_tk_packtape.webp") center / 100% 100% no-repeat; }
+/* もようがえの置き場所のしるし（オレンジのテープの角と紙の縁。真ん中は抜いて、床と小物が見えるように） */
+.tetsuko-time[data-art-ui~="tk_slot"] .tt-slot-hit[data-mode="decor"][data-allowed="true"] { border-color: transparent; animation: tt-slot-art 1.2s ease-in-out infinite;
+  background: url("../img/ui/tetsuko/ui_tk_slot.webp") center / 100% 100% no-repeat;
+  -webkit-mask-image: radial-gradient(ellipse 50% 50% at center, transparent 55%, #000 78%); mask-image: radial-gradient(ellipse 50% 50% at center, transparent 55%, #000 78%); }
+@keyframes tt-slot-art { 50% { opacity: .7; } }
+/* 「新」のシール（文字はコードが書く） */
+.tetsuko-time[data-art-ui~="tk_badge"] .tt-tool.new::after, .tetsuko-time[data-art-ui~="tk_badge"] .tt-new { display: grid; place-items: center; width: 30px; height: 30px; padding: 0; border: 0; border-radius: 0;
+  background: url("../img/ui/tetsuko/ui_tk_badge.webp") center / contain no-repeat; color: var(--tk-ink); line-height: 1; }
+/* 人物の名前の札（ムカイさん など） */
+.tetsuko-time[data-art-ui~="tk_nametag"] .tt-line-name { border: 0; border-radius: 0; padding: 2px 14px 3px 22px; background: url("../img/ui/tetsuko/ui_tk_nametag.webp") center / 100% 100% no-repeat; }
+/* まだ見つけていないしぐさ（「？」の文字の代わりに、点線の丸の中のてつこの影） */
+.tetsuko-time[data-art-ui~="tk_unknown"] .tt-thumb.unknown { border: 0; color: transparent; background: url("../img/ui/tetsuko/ui_tk_unknown.webp") center / contain no-repeat; }
+@media (orientation: landscape) and (max-width: 1024px) and (max-height: 520px) and (pointer: coarse) and (hover: none) {
+  .tetsuko-time[data-art-ui~="tk_photo"] .tt-polaroid { width: 230px; height: 266px; padding: 0; zoom: .87; }
+  .tetsuko-time[data-art-ui~="tk_photo"] .tt-polaroid .tt-thumb { width: 194px; height: 194px; }
+  .tetsuko-time[data-art-ui~="tk_badge"] .tt-tool.new::after, .tetsuko-time[data-art-ui~="tk_badge"] .tt-new { width: calc(var(--tk-fs-sub) * 1.7); height: calc(var(--tk-fs-sub) * 1.7); }
+}
+
