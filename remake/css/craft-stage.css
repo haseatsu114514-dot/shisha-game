@@ -100,6 +100,8 @@ html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-right > .panel-smok
 html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-panel { background: none !important; border: 0 !important; box-shadow: none !important; border-image: none !important; }
 /* 「？」は右上の角に固定（中身に重ねない） */
 html body.craft-stage:not(.game-ds) .bench[data-mode][data-step] .bench-head { position: fixed !important; inset: 6px 12px auto auto !important; z-index: 9; margin: 0; padding: 0; border: 0; }
+/* 角には「？」だけ。工程名は上のレールにあるので、スマホ横の旧い見出し（craft-landscape.css の機材・詰め方・炭の配置）は出さない */
+html body.craft-stage:not(.game-ds) .bench[data-mode][data-step] .bench-head > .bench-heading { display: none !important; }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-guide summary { width: 68px !important; height: 68px !important; font-size: 30px !important; font-weight: 800; border: 2px solid #8f78ab !important; background: #2e1d45e6 !important; color: #c9a7e6 !important; }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-guide-tip { top: calc(100% + 10px) !important; bottom: auto !important; left: auto !important; right: 0 !important; }
 
@@ -174,6 +176,14 @@ html body.craft-stage:not(.game-ds) .bench[data-mode] .pull-btns { display: cont
 html body.craft-stage:not(.game-ds) .bench[data-mode] .pull-btns > .btn { grid-row: 2; height: 100px; min-height: 0; margin: 0; }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .pull-btns > .btn.primary { grid-column: 3; }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .pull-btns > .btn:not(.primary) { grid-column: 2; }
+/* 覚えた技の追加操作（ズボー・味の名前を伏せる）は副ボタンの席に重ねず、下の列の真上に一段足して置く。
+   ズボー（もう一つの吸い方）は金の「吸う」の上、味の名前を伏せる（出し方）は「確かめる／提供する」の上。ダイヤルの段はその分だけ低くなる */
+html body.craft-stage:not(.game-ds) .bench[data-mode] .pull-play:has(> .pull-btns.with-options) { grid-template-rows: minmax(0, 1fr) 80px 100px; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .pull-play:has(> .pull-btns.with-options) > .pull-summary { grid-row: 3; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .pull-btns.with-options > .btn { grid-row: 3; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .pull-btns.with-options > .btn:is([data-test="pull-deep"], [data-test="pull-blind"]) { grid-row: 2; height: 80px; padding-block: 0; line-height: 1.15; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .pull-btns.with-options > .btn[data-test="pull-deep"] { grid-column: 3; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .pull-btns.with-options > .btn[data-test="pull-blind"] { grid-column: 2; }
 
 /* ---------- 舞台の天板: 枠を焼き込んだ旧い板の代わりに、枠なしの天板を舞台いっぱいに敷く ---------- */
 html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-panel::before { display: none !important; }
@@ -212,8 +222,11 @@ html body.craft-stage:not(.game-ds) .bench[data-mode] .mix { height: 100% !impor
 html body.craft-stage:not(.game-ds) .bench[data-mode] .mix-side { grid-column: 1; grid-row: 1; min-height: 0; overflow: hidden auto !important; gap: 6px !important; }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .mix-vessel { width: 250px !important; height: 190px !important; }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .mix-list { grid-column: 2; grid-row: 1; min-height: 0; overflow-y: auto; gap: 10px !important; }
-html body.craft-stage:not(.game-ds) .bench[data-mode] .mix-list-head { display: none !important; }
-html body.craft-stage:not(.game-ds) .bench[data-mode] .flavor-row { display: flex !important; min-height: 0 !important; height: 116px !important; flex: none; padding: 4px 12px 4px 6px !important; gap: 12px !important; align-items: center !important; }
+/* 葉の一覧の頭は、操作の案内文（常設しない・CSL15）だけのときは出さない。覚えた技（単体で勝負・香りの記憶）とひらめきは残す */
+html body.craft-stage:not(.game-ds) .bench[data-mode] .mix-list-head:not(:has(> :not(.mix-list-caption))) { display: none !important; }
+/* 行の高さは116（4種が一度に見える）を下限にし、まかない（バイト後の練習）の行のように中身が多い時は伸ばす。
+   固定の高さだと中身が上下へはみ出して、上の行や「香りの記憶」に重なって押せなくなる */
+html body.craft-stage:not(.game-ds) .bench[data-mode] .flavor-row { display: flex !important; min-height: 116px !important; height: auto !important; flex: none; padding: 4px 12px 4px 6px !important; gap: 12px !important; align-items: center !important; }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .flavor-row > * { grid-area: auto !important; }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .fr-name { padding-left: 0 !important; }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .fr-package { flex: none; width: 92px !important; height: 108px !important; display: grid; place-items: center; overflow: visible; }
@@ -234,7 +247,7 @@ html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .mix
 html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .mix-taste :is(b, small, p, summary, .flavor-axis, .flavor-heat-choices, .flavor-heat-choices span) { font-size: 22px !important; line-height: 1.3 !important; }
 html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .mix-taste .flavor-axis { min-height: 0 !important; }
 html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .mix-temperature-preview > .mix-temperature-legend { left: auto !important; right: 408px !important; top: 0 !important; width: auto; flex-direction: column; gap: 0; align-items: flex-end; }
-html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .flavor-row { display: grid !important; height: auto !important; grid-template-columns: 80px minmax(0, 1fr) 60px 52px 60px; grid-template-rows: auto auto auto auto; column-gap: 8px !important; row-gap: 2px !important; padding: 6px 10px 6px 6px !important; align-items: center !important; }
+html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .flavor-row { display: grid !important; min-height: 0 !important; height: auto !important; grid-template-columns: 80px minmax(0, 1fr) 60px 52px 60px; grid-template-rows: auto auto auto auto; column-gap: 8px !important; row-gap: 2px !important; padding: 6px 10px 6px 6px !important; align-items: center !important; }
 html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .flavor-row > .fr-name { display: contents !important; }
 html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .fr-package { grid-row: 1 / -1 !important; grid-column: 1 !important; width: 80px !important; height: 104px !important; }
 html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .fr-package > .shop-product-art { transform: scale(2); }
