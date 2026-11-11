@@ -68,22 +68,32 @@ rt { font-size: .42em; letter-spacing: .08em; font-weight: 500; }
 .head-play { width: 108px; height: 46px; padding-bottom: 2px; font-size: 15px; background-image: url("../img/parts/button-gold-s.webp"); }
 .head-menu { display: none; }
 
-/* ── ヒーロー（タイトル画面と同じ組み立て: 夜のラウンジ＋1キャラ1枚の絵＋ロゴ） ── */
+/* ── ヒーロー（タイトル画面と同じ組み立て: 夜のラウンジ＋1キャラ1枚の絵＋ロゴ。サイトのために描いた横長の絵は、文の右へ広げて置く） ── */
 .hero { --copy-left: clamp(24px, 6.2vw, 120px); --copy-w: min(41vw, 640px); position: relative; isolation: isolate; height: 100vh; height: 100svh; min-height: 620px; max-height: 1180px; overflow: hidden; background: var(--night); color: #fff; }
 .hero-lounge { position: absolute; inset: 0; z-index: -3; width: 100%; height: 100%; object-fit: cover; object-position: 0% 50%; filter: brightness(.78); }
-.hero-art { position: absolute; inset: 0 0 0 auto; z-index: -2; width: 58vw; -webkit-mask-image: linear-gradient(to right, transparent 0, #000 38%); mask-image: linear-gradient(to right, transparent 0, #000 38%); }
-.kv { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 50% 14%; opacity: 0; transform: scale(1.04); transition: opacity 1.3s ease, transform 7s linear; }
+.hero-art { position: absolute; inset: 0; z-index: -2; container-type: inline-size; }
+.kv { position: absolute; top: 0; right: 0; width: 58vw; height: 100%; object-fit: cover; object-position: 50% 14%; -webkit-mask-image: linear-gradient(to right, transparent 0, #000 38%); mask-image: linear-gradient(to right, transparent 0, #000 38%); opacity: 0; transform: scale(1.04); transition: opacity 1.3s ease, transform 7s linear; }
 .kv.is-on { opacity: 1; transform: scale(1); }
+/* 横長の絵は、左の4割をロゴと文を重ねる場所として描いてある。その4割の線が文の右端に来る幅で右に寄せ（広い画面では幅いっぱい）、
+   左右は切らない。縦に長い画面では上に寄せ、余った左と下は夜の地へなじませる。左を少し沈めて文を読みやすくする。
+   縦書きのコピーは人物に掛かるので出さない（.is-wide は js/site.js が付け外しする。最初の1枚が横長なので HTML にも書いてある） */
+.kv-wide { width: 100%; object-position: 50% 30%; -webkit-mask-image: linear-gradient(to bottom, #000 84%, transparent); mask-image: linear-gradient(to bottom, #000 84%, transparent); }
+@supports (width: 1cqw) {
+  .kv-wide { --kw: min(100cqw, (100cqw - var(--copy-left) - var(--copy-w)) / .6); width: var(--kw); height: min(100%, var(--kw) * 2 / 3); -webkit-mask-image: linear-gradient(to right, transparent 0, #000 calc((100cqw - var(--kw)) * 1.6)), linear-gradient(to bottom, #000 84%, transparent); -webkit-mask-composite: source-in; mask-image: linear-gradient(to right, transparent 0, #000 calc((100cqw - var(--kw)) * 1.6)), linear-gradient(to bottom, #000 84%, transparent); mask-composite: intersect; }
+}
+.hero-art::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to right, rgba(21, 13, 30, .72) 0, rgba(21, 13, 30, .5) 32%, rgba(21, 13, 30, 0) 56%); opacity: 0; transition: opacity 1.3s ease; pointer-events: none; }
+.hero.is-wide .hero-art::after { opacity: 1; }
+.hero.is-wide .hero-catch { opacity: 0; }
 .hero::before, .hero::after { content: ""; position: absolute; left: 0; right: 0; z-index: -1; pointer-events: none; }
 .hero::before { top: 0; height: 150px; background: linear-gradient(to bottom, rgba(21, 13, 30, .78), rgba(21, 13, 30, 0)); }
 .hero::after { bottom: 0; height: 34%; background: linear-gradient(to top, rgba(21, 13, 30, .92), rgba(21, 13, 30, 0)); }
 .hero-copy { position: absolute; left: var(--copy-left); top: 50%; width: var(--copy-w); transform: translateY(-48%); }
 .hero-logo img { width: 100%; filter: drop-shadow(0 6px 22px rgba(12, 5, 20, .7)); }
-.hero-genre { margin-top: 6px; font-family: var(--f-min); font-size: clamp(13px, 1.15vw, 17px); letter-spacing: .34em; text-align: center; color: var(--cream); }
+.hero-genre { margin-top: 6px; font-family: var(--f-min); font-size: clamp(13px, 1.15vw, 17px); letter-spacing: .34em; text-align: center; color: var(--cream); text-shadow: 0 1px 10px rgba(10, 4, 16, .9); }
 .hero-lead { margin-top: clamp(22px, 4vh, 44px); font-family: var(--f-min); font-size: clamp(15px, 1.25vw, 19px); line-height: 2.1; letter-spacing: .08em; text-shadow: 0 1px 12px rgba(10, 4, 16, .9); }
 .hero-cta { display: flex; flex-wrap: wrap; gap: 14px 18px; margin-top: clamp(22px, 4vh, 40px); }
 .hero-note { margin-top: 14px; font-family: var(--f-dot); font-size: 13px; letter-spacing: .12em; color: rgba(241, 232, 214, .78); }
-.hero-catch { position: absolute; top: 15%; left: calc(var(--copy-left) + var(--copy-w) + clamp(10px, 1.6vw, 30px)); writing-mode: vertical-rl; font-family: var(--f-min); font-weight: 700; font-size: clamp(30px, 3.5vw, 58px); line-height: 1.7; letter-spacing: .22em; white-space: nowrap; text-shadow: 0 2px 18px rgba(12, 5, 20, .85), 0 0 2px rgba(12, 5, 20, .9); }
+.hero-catch { position: absolute; top: 15%; left: calc(var(--copy-left) + var(--copy-w) + clamp(10px, 1.6vw, 30px)); writing-mode: vertical-rl; font-family: var(--f-min); font-weight: 700; font-size: clamp(30px, 3.5vw, 58px); line-height: 1.7; letter-spacing: .22em; white-space: nowrap; text-shadow: 0 2px 18px rgba(12, 5, 20, .85), 0 0 2px rgba(12, 5, 20, .9); transition: opacity 1.3s ease; }
 .hero-catch span { display: block; }
 .hero-catch span + span { padding-top: 2.4em; }
 .hero-reel { position: absolute; right: clamp(16px, 3vw, 44px); bottom: clamp(18px, 4vh, 40px); display: grid; justify-items: end; gap: 12px; }
@@ -356,7 +366,11 @@ rt { font-size: .42em; letter-spacing: .08em; font-weight: 500; }
   .hero { height: auto; min-height: 0; max-height: none; padding-bottom: 46px; }
   .hero-lounge { height: 100%; filter: brightness(.5); }
   .hero-art { position: relative; inset: auto; width: 100%; height: 74vh; height: 74svh; min-height: 440px; max-height: 760px; -webkit-mask-image: linear-gradient(to bottom, #000 62%, transparent 100%); mask-image: linear-gradient(to bottom, #000 62%, transparent 100%); }
-  .kv { object-position: 50% 8%; }
+  .kv { width: 100%; object-position: 50% 8%; -webkit-mask-image: none; mask-image: none; }
+  /* 横長の絵は幅いっぱいの帯にして、ロゴの上の空きの真ん中へ。切るのは人物のいない左の空きだけ */
+  .kv-wide { top: calc(50% - 36px); height: auto; aspect-ratio: 1.17; max-height: calc(100% - 184px); translate: 0 -50%; object-position: 100% 40%; -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 9%, #000 91%, transparent 100%); mask-image: linear-gradient(to bottom, transparent 0, #000 9%, #000 91%, transparent 100%); }
+  .hero-art::after { display: none; }
+  .hero.is-wide .hero-catch { opacity: 1; }
   .hero::after { display: none; }
   .hero-copy { position: relative; left: auto; top: auto; width: auto; margin: -128px var(--gutter) 0; transform: none; }
   .hero-logo { width: min(100%, 460px); margin-inline: auto; }
@@ -369,9 +383,9 @@ rt { font-size: .42em; letter-spacing: .08em; font-weight: 500; }
   .hero-catch { top: calc(var(--head-h) + 14px); left: 14px; font-size: clamp(22px, 6.2vw, 30px); line-height: 1.3; }
   .hero-catch span { display: inline; }
   .hero-catch span + span { padding-top: 0; margin-top: .5em; }
-  .hero-reel { position: relative; right: auto; bottom: auto; justify-items: center; margin-top: 30px; }
-  .hero-reel ul { gap: 6px; }
-  .reel-tab { width: clamp(28px, 8.4vw, 44px); }
+  .hero-reel { position: relative; right: auto; bottom: auto; justify-items: center; margin-top: 30px; padding-inline: var(--gutter); }
+  .hero-reel ul { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 44px); justify-content: center; gap: 5px; width: 100%; }
+  .reel-tab { width: 100%; }
 
   .intro-grid { grid-template-columns: minmax(0, 1fr); }
   .intro-head { font-size: clamp(27px, 7.6vw, 40px); }

@@ -46,7 +46,7 @@
     addEventListener("keydown", (event) => { if (event.key === "Escape") setMenu(false); });
   }
 
-  // ── ヒーロー: 1キャラ1枚の絵を順に見せる（タイトル画面と同じ絵） ──
+  // ── ヒーロー: 横長のキービジュアル（サイトのために描いた絵）と、1キャラ1枚の絵（タイトル画面と同じ絵）を順に見せる ──
   const kvs = $$(".kv");
   const tabs = $$(".reel-tab");
   const now = $(".reel-now");
@@ -54,6 +54,10 @@
   let kvTimer = 0;
   const loadKv = (img) => {
     if (!img || !img.dataset.src) return Promise.resolve();
+    if (img.dataset.srcset) { // 横長の絵は、スマホでは小さい絵を読む
+      img.srcset = img.dataset.srcset;
+      delete img.dataset.srcset;
+    }
     img.src = img.dataset.src;
     delete img.dataset.src;
     return img.decode ? img.decode().catch(() => {}) : Promise.resolve();
@@ -63,6 +67,7 @@
     await loadKv(kvs[next]);
     kvIndex = next;
     kvs.forEach((img, i) => img.classList.toggle("is-on", i === next));
+    hero?.classList.toggle("is-wide", kvs[next].classList.contains("kv-wide")); // 横長の絵の間は、コピーを出さない（人物に掛かるので）
     tabs.forEach((tab, i) => tab.classList.toggle("is-on", i === next));
     const tab = tabs[next];
     if (now && tab) {
