@@ -8,22 +8,35 @@ const PI = Math.PI;
 const $ = (id) => document.getElementById(id);
 const img = (path) => new URL(path, import.meta.url).href;
 
-// ゲームの絵（remake/img）。非公開ページへ出すときは、この3行の置き場所だけ差し替える。
+// ゲームの絵（remake/img）と、それを細かいドット絵に変換した見本用の絵（make_pixel_art.py が作る）。
+// 非公開ページへ出すときは、置き場所だけ差し替える。
 const ART = {
-  shop: img("../../img/backgrounds/bg_tonari_inside_night.webp"),
-  stage: img("../../img/backgrounds/bg_tournament_stage.webp"),
-  sumi: img("../../img/sprites/characters/sumi/chr_sumi_normal.webp"),
+  paint: {
+    shop: img("../../img/backgrounds/bg_tonari_inside_night.webp"),
+    stage: img("../../img/backgrounds/bg_tournament_stage.webp"),
+    sumi: img("../../img/sprites/characters/sumi/chr_sumi_normal.webp"),
+    minto: img("../../img/sprites/characters/minto/chr_minto_normal.webp"),
+    tsumugi: img("../../img/sprites/characters/tsumugi/chr_tsumugi_normal.webp"),
+  },
+  dot: {
+    shop: img("./img/dot_bg_shop.webp"),
+    stage: img("./img/dot_bg_stage.webp"),
+    sumi: img("./img/dot_sumi.webp"),
+    minto: img("./img/dot_minto.webp"),
+    tsumugi: img("./img/dot_tsumugi.webp"),
+  },
 };
 
 // ---------------------------------------------------------------- 描き方・色
 
 const STYLES = [
   { id: "now", name: "いま", note: "ぼかした丸を拡大して消す", engine: "legacy" },
+  { id: "fine", name: "繊細ドット", note: "もこもこの房を、細かい升目と白に近い4色で", engine: "puff", mode: "fine", stepped: true, dots: true },
   { id: "real", name: "リアル", note: "空気の流れを計算。店の灯りを拾う", engine: "fluid", look: "real" },
-  { id: "dot", name: "ドット×リアル", note: "同じ煙を粗い升目と網点で描く", engine: "fluid", look: "pixel", stepped: true, dots: true },
+  { id: "dot", name: "ドット×リアル", note: "流れを計算した煙を、升目と淡い色の段で", engine: "fluid", look: "pixel", stepped: true, dots: true },
   { id: "cel", name: "セル画", note: "同じ煙を3色と細い線で塗る", engine: "fluid", look: "cel", stepped: true },
-  { id: "moku", name: "ドット絵もくもく", note: "丸を重ねた雲。縮んでちぎれて消える", engine: "puff", stepped: true, dots: true },
-  { id: "mokuS", name: "アニメもくもく", note: "もくもくを、なめらかな線で", engine: "puff", smooth: true, stepped: true },
+  { id: "moku", name: "ドット絵もくもく", note: "はっきりした色と輪郭線の、もこもこ", engine: "puff", mode: "bold", stepped: true, dots: true },
+  { id: "mokuS", name: "アニメもくもく", note: "もこもこを、なめらかな線で", engine: "puff", mode: "smooth", stepped: true },
 ];
 const STYLE = Object.fromEntries(STYLES.map((s) => [s.id, s]));
 
@@ -39,47 +52,56 @@ const TINTS = [
 // 吐く口（emitter）: x・y は画面に対する 0〜1（y は下向き）、angle は吐く向き（右が0・上が -π/2）、
 // 速さ・半径は「画面の高さ＝1」。rate は流体へ足す煙の量、puffRate は「もくもく」の丸の数（毎秒）。
 
-const MOUTH = { x: .49, y: .325 }; // 立ち絵（高さ150%・上3%）の口元
+// 会話の相手。mouth は立ち絵の絵の中での口の位置（幅・高さに対する割合）
+const CHARS = [
+  { id: "minto", name: "みんと", mouth: [.543, .319] },
+  { id: "sumi", name: "スミさん", mouth: [.491, .191] },
+  { id: "tsumugi", name: "つむぎ", mouth: [.484, .381] },
+];
+// 立ち絵は 高さ150%・上3%・左右中央に置く（index.html の .chara と同じ）。絵の縦横比は 896:1200
+const mouthOf = (id) => { const [u, v] = (CHARS.find((c) => c.id === id) || CHARS[0]).mouth; return { x: .5 + (u - .5) * (1.5 * 896 / 1200) / (16 / 9), y: .03 + v * 1.5 }; };
 
 const SCENES = {
   first: {
     name: "吸い出しの山場", sub: "自分が吐いた煙が、画面の下から満ちて晴れる", bg: "shop", period: 5.4,
     fluid: { dyeFade: .42, velFade: 1.5, buoy: .05, vort: 34, turb: .09, densK: 2.4, wind: [0, .01] },
-    puff: { life: 2.3, buoy: .07, drag: 1.5, turb: .16 },
+    puff: { life: 2.5, buoy: .05, drag: 1.7, turb: .12 },
     start(add) {
-      add({ kind: "first", x: .5, y: 1.0, angle: -PI / 2, spread: 1.3, speed: 1.05, radius: .09, width: .9, dur: 1.1, rate: 62, splats: 5, puffRate: 34, puffSize: .1 });
+      add({ kind: "first", x: .5, y: 1.0, angle: -PI / 2, spread: 1.3, speed: 1.05, radius: .09, width: .9, dur: 1.1, rate: 62, splats: 5,
+        puffRate: 44, puffSize: .115, puffWidth: .5, puffSpread: 1.0, puffSpeed: 1.0 });
     },
   },
   chara: {
     name: "会話の相手が吐く", sub: "立ち絵の口元から、細く出て広がる", bg: "shop", chara: true, period: 5.2,
     fluid: { dyeFade: .3, velFade: 1.3, buoy: .06, vort: 30, turb: .08, densK: 3, wind: [.01, .01] },
-    puff: { life: 2.6, buoy: .03, drag: 1.5, turb: .1 },
+    puff: { life: 2.5, buoy: .028, drag: 1.9, turb: .09, hold: .45 },
     start(add) {
-      add({ kind: "mouth", ...MOUTH, angle: -.3, spread: .34, sway: .16, speed: .8, radius: .014, width: .006, dur: 1.6, rate: 50, push: 12, splats: 3, puffRate: 30, puffSize: .03 });
+      add({ kind: "mouth", ...mouthOf(state.chara), angle: -.3, spread: .34, sway: .16, speed: .62, radius: .014, width: .006, dur: 1.6, rate: 62, push: 10, dyeWide: 1.5, splats: 3,
+        puffRate: 19, puffSize: .05, puffSpeed: .5, puffSpread: .85 });
     },
   },
   haze: {
     name: "店に漂う煙", sub: "席で吐かれた煙が、灯りの下をゆっくり流れる", bg: "shop", ambient: true, prewarm: 6,
     fluid: { dyeFade: .035, velFade: .5, buoy: .02, vort: 12, turb: .12, densK: 1.9, dotGain: .8, wind: [.014, 0] },
-    puff: { life: 5.5, buoy: .02, drag: 1.5, turb: .1 },
+    puff: { life: 5, buoy: .022, drag: 1.4, turb: .09, hold: .35 },
     seats: [[.165, .50], [.47, .455], [.705, .49], [.33, .47]],
     tick(add, st, dt) {
       st.wait = (st.wait ?? .2) - dt;
       if (st.wait > 0) return;
       st.wait = 1.1 + Math.random() * 1.8;
       const [x, y] = this.seats[Math.floor(Math.random() * this.seats.length)];
-      add({ kind: "seat", x, y, angle: -PI / 2 + (Math.random() - .5) * 1.5, spread: .7, sway: .3, speed: .3, radius: .022, width: .012, dur: 2.2, rate: 15, push: 7, splats: 2, puffRate: 11, puffSize: .03 });
+      add({ kind: "seat", x, y, angle: -PI / 2 + (Math.random() - .5) * 1.5, spread: .7, sway: .3, speed: .3, radius: .022, width: .012, dur: 2.2, rate: 15, push: 7, splats: 2, puffRate: 7, puffSize: .05, puffSpeed: .2, puffSpread: 1.2 });
     },
   },
   cover: {
     name: "画面を覆う", sub: "煙で覆って、晴れると次の場面", bg: "shop", period: 4.6, swapAt: 1.0,
-    fluid: { dyeFade: .05, velFade: .8, buoy: .06, vort: 26, turb: .1, densK: 3.4, wind: [0, .02] },
-    puff: { life: 1.9, buoy: .05, drag: 2.2, turb: .1, hold: .62 },
+    fluid: { dyeFade: .05, velFade: .8, buoy: .06, vort: 26, turb: .1, densK: 3.4, solid: true, wind: [0, .02] },
+    puff: { life: 1.9, buoy: .05, drag: 2.2, turb: .1, hold: .62, solid: true, fade: false },
     start(add) {
       // 下の列が吹き上げ、少し遅れて中段の列が上半分を埋める（流体）。もくもくは下から昇る横一列。
       for (let i = 0; i < 6; i++) {
         add({ kind: "cover", lead: i === 0, x: .07 + i * .172, y: 1.0, angle: -PI / 2 + (i - 2.5) * .1, spread: 1.1, sway: .35, speed: 2.5, radius: .12, width: .16, dur: 1.25, rate: 170, push: 15, splats: 3,
-          puffRate: 40, puffSize: .15, puffSpeed: .25, puffEven: true, env: "flat", move: (e, u) => { e.puffY = 1.04 - Math.min(1, u * 1.7) * 1.02; } });
+          puffRate: 19, puffSize: .19, puffSpeed: .25, puffWidth: .2, puffEven: true, env: "flat", move: (e, u) => { e.puffY = 1.04 - Math.min(1, u * 1.7) * 1.02; } });
       }
       for (let i = 0; i < 5; i++) {
         add({ kind: "cover", x: .1 + i * .2, y: .56, angle: -PI / 2 + (i - 2) * .25, spread: 2.4, sway: .5, speed: 1.3, radius: .13, width: .2, dur: .7, delay: .28, rate: 150, push: 9, splats: 3, env: "flat" });
@@ -94,7 +116,7 @@ const SCENES = {
 
 // ---------------------------------------------------------------- 状態
 
-const state = { scene: "first", right: "real", left: "now", tint: "white", dot: 3, fps: 12, split: .5, paused: false };
+const state = { scene: "chara", right: "fine", left: "", tint: "white", world: "dot", chara: "minto", zoom: false, dot: 2, fps: 12, split: .5, paused: false };
 const engines = { fluid: null };          // 流体は左右で1つを共有
 const sides = { left: {}, right: {} };    // { style, puff, legacy, canvas }
 let emitters = [], sceneTime = 0, sceneState = {}, swapped = false, fluidFailed = false;
@@ -114,9 +136,10 @@ function ensureFluid() {
 
 const bgImages = {};
 function loadBgTexture() {
-  const key = swapped ? "stage" : SCENES[state.scene].bg;
-  const im = bgImages[key] || (bgImages[key] = Object.assign(new Image(), { src: ART[key] }));
-  const apply = () => { if (engines.fluid && (swapped ? "stage" : SCENES[state.scene].bg) === key) engines.fluid.setBackground(im); };
+  const name = () => `${state.world}/${swapped ? "stage" : SCENES[state.scene].bg}`;
+  const key = name(), [world, id] = key.split("/");
+  const im = bgImages[key] || (bgImages[key] = Object.assign(new Image(), { src: ART[world][id] }));
+  const apply = () => { if (engines.fluid && name() === key) engines.fluid.setBackground(im); };
   if (im.complete && im.naturalWidth) apply(); else im.addEventListener("load", apply, { once: true });
 }
 
@@ -128,9 +151,9 @@ function setupSide(name) {
     side.canvas?.remove(); side.puff = null; side.canvas = null; side.puffKey = "";
     if (style?.engine === "puff") {
       side.canvas = document.createElement("canvas");
-      side.canvas.className = style.smooth ? "puff" : "puff dots";
+      side.canvas.className = style.mode === "smooth" ? "puff" : "puff dots";
       host.append(side.canvas);
-      side.puff = createPuffs(side.canvas, { smooth: !!style.smooth });
+      side.puff = createPuffs(side.canvas, { mode: style.mode });
       side.puffKey = style.id;
     }
   }
@@ -156,18 +179,38 @@ function sizeLayers() {
   engines.fluid?.resize(cw, Math.round(cw * 9 / 16));
   for (const s of Object.values(sides)) {
     if (!s.puff) continue;
-    if (s.style.smooth) s.puff.resize(cw, Math.round(cw * 9 / 16));
+    // なめらかな方は 960×540 に描いて、ブラウザのなめらかな拡大に任せる
+    if (s.style.mode === "smooth") s.puff.resize(960, 540);
     else s.puff.resize(Math.round(1280 / state.dot), Math.round(720 / state.dot));
   }
   stageEl.style.setProperty("--k", String(w / 1280));
 }
 
+/** 絵柄（いまの絵／ドット絵）と会話の相手を、背景と立ち絵へ反映する */
+function applyArt() {
+  const art = ART[state.world];
+  $("bgA").style.backgroundImage = `url("${art.shop}")`;
+  $("bgB").style.backgroundImage = `url("${art.stage}")`;
+  $("chara").src = art[state.chara];
+  stageEl.classList.toggle("dotworld", state.world === "dot");
+}
+
+/** 寄り（2倍）: 口元と、そこから出る煙が画面に収まる位置を中心にする。くらべている間は使わない */
+function applyZoom() {
+  const sc = SCENES[state.scene], on = state.zoom && !state.left;
+  const m = sc.chara ? mouthOf(state.chara) : state.scene === "first" ? { x: .45, y: .8 } : { x: .45, y: .55 };
+  const clamp = (v) => Math.max(0, Math.min(1, v));
+  stageEl.style.setProperty("--zx", `${clamp((m.x - .2) * 2) * 100}%`);
+  stageEl.style.setProperty("--zy", `${clamp((m.y - .3) * 2) * 100}%`);
+  stageEl.classList.toggle("zoom", on);
+}
+
 /** 場面の空気の性質と色を、いま使っている全部の描き方へ入れる。restart で煙を消して最初から */
 function applyScene(restart) {
   const sc = SCENES[state.scene], colors = tint().colors;
-  if (engines.fluid) Object.assign(engines.fluid.params, { shadowK: 1.5, sceneLight: .7, dotGain: 1.5 }, sc.fluid, { wind: [...sc.fluid.wind] });
+  if (engines.fluid) Object.assign(engines.fluid.params, { shadowK: 1.5, sceneLight: .7, dotGain: 1.5, solid: false }, sc.fluid, { wind: [...sc.fluid.wind] });
   for (const s of Object.values(sides)) {
-    if (s.puff) { Object.assign(s.puff.params, { hold: .5 }, sc.puff); s.puff.setColors(colors); }
+    if (s.puff) { Object.assign(s.puff.params, { hold: .5, solid: false, fade: true }, sc.puff); s.puff.setColors(colors); }
     if (s.legacy) { s.legacy.setColors(colors); s.legacy.setAmbient(!!sc.ambient); }
   }
   sizeLayers();
@@ -282,7 +325,10 @@ function chips(host, items, get, set, label) {
 }
 
 function sync() {
-  for (const id of ["scenes", "styles", "compare", "tints", "dots", "fpsChips"]) $(id).sync?.();
+  for (const id of ["scenes", "styles", "compare", "tints", "dots", "fpsChips", "worlds", "charas", "zooms"]) $(id).sync?.();
+  $("charaRow").classList.toggle("off", !SCENES[state.scene].chara);
+  $("zoomRow").classList.toggle("off", !!state.left);
+  applyZoom();
   const st = [STYLE[state.right], STYLE[state.left]].filter(Boolean);
   $("dotRow").classList.toggle("off", !st.some((s) => s.dots));
   $("fpsRow").classList.toggle("off", !st.some((s) => s.stepped));
@@ -305,6 +351,9 @@ function buildControls() {
     f.append(dot, text(t.name));
     return f;
   });
+  chips($("worlds"), [{ id: "dot", name: "ドット絵" }, { id: "paint", name: "いまの絵" }], () => state.world, (id) => { state.world = id; applyArt(); loadBgTexture(); }, (w) => text(w.name));
+  chips($("charas"), CHARS, () => state.chara, (id) => { state.chara = id; applyArt(); applyScene(true); }, (c) => text(c.name));
+  chips($("zooms"), [{ id: "0", name: "ぜんたい" }, { id: "1", name: "口元に寄る（2倍）" }], () => (state.zoom && !state.left ? "1" : "0"), (id) => { state.zoom = id === "1"; if (state.zoom && state.left) { state.left = ""; setupSide("left"); applyScene(true); } }, (z) => text(z.name));
   chips($("dots"), [2, 3, 4, 6].map((id) => ({ id, name: { 2: "細かい", 3: "ふつう", 4: "粗い", 6: "とても粗い" }[id] })), () => state.dot, (id) => { state.dot = id; sizeLayers(); }, (d) => text(d.name));
   chips($("fpsChips"), [60, 24, 12, 8].map((id) => ({ id, name: id === 60 ? "なめらか" : `毎秒${id}コマ` })), () => state.fps, (id) => { state.fps = id; }, (d) => text(d.name));
 
@@ -328,7 +377,7 @@ function buildControls() {
   });
   stageEl.addEventListener("pointerdown", (ev) => {
     if (ev.target.closest("#divider")) return;
-    const r = stageEl.getBoundingClientRect();
+    const r = $("world").getBoundingClientRect(); // 寄りの拡大もここに反映されている
     const x = (ev.clientX - r.left) / r.width, y = (ev.clientY - r.top) / r.height;
     addEmitter({ kind: "tap", x, y, angle: -PI / 2 + (x - .5) * .9, spread: .55, speed: .8, radius: .024, width: .014, dur: .8, rate: 16, splats: 2, puffRate: 44, puffSize: .05 });
     $("hint").classList.add("seen");
@@ -336,8 +385,7 @@ function buildControls() {
 }
 
 function start() {
-  for (const [id, key] of [["bgA", "shop"], ["bgB", "stage"]]) $(id).style.backgroundImage = `url("${ART[key]}")`;
-  $("chara").src = ART.sumi;
+  applyArt();
   buildControls();
   setupSide("right"); setupSide("left");
   new ResizeObserver(() => { sizeLayers(); drawAll(true); }).observe(stageEl);
@@ -349,6 +397,6 @@ function start() {
 }
 
 // 動作確認用（ヘッドレスの撮影で時間を進める）
-window.smokeStyles = { state, advance(sec) { for (let t = 0; t < sec; t += STEP) advance(STEP); drawAll(true); }, set(patch) { Object.assign(state, patch); setupSide("right"); setupSide("left"); sync(); applyScene(true); } };
+window.smokeStyles = { state, advance(sec) { for (let t = 0; t < sec; t += STEP) advance(STEP); drawAll(true); }, set(patch) { Object.assign(state, patch); applyArt(); setupSide("right"); setupSide("left"); sync(); applyScene(true); } };
 
 start();

@@ -194,6 +194,8 @@ export async function a(mid, opts = {}) {
     try {
       SE.train?.(TOTAL / 1000);
       await move(node, [{ opacity: 0 }, { opacity: 1 }], FADE_IN, { easing: "ease-out" });
+      // move は描画が遅いと時間切れで先に進むので、覆い切ってから場面を替える（CI で 0.986 のまま mid に入っていた）
+      node.getAnimations().forEach((animation) => animation.finish());
       // mid は完全に覆ってから一度だけ。遅延・失敗時も幕と入力抑止はstagePlayが片付ける。
       try {
         await Promise.all([new Promise(r => setTimeout(r, RIDE)), Promise.resolve().then(() => mid?.())]);

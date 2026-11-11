@@ -367,3 +367,12 @@ html:root[data-density="phone"] #stage[data-wide] .desert-ride .dr-touch.dr-jump
 .desert-ride .dr-touch.art-ready,
 .desert-ride[data-gauge] .dr-touch.dr-boost.art-ready,
 .desert-ride[data-boost] .dr-touch.dr-boost.art-ready { box-shadow: none; }
+
+/* 結果・練習のおわりのカード（2026-11-11 オーナー「サンドボードのリザルトがバグってた」）:
+   ブーストのゲージの枠（::after）と稲妻（.dr-zap）の z-index が HUD の外へ漏れ、カードの上に描かれていた。
+   HUD を1つの重なりにまとめ（isolation）、カードの間は HUD を消す（カードに同じ数字が出る） */
+.desert-ride .dr-hud { isolation: isolate; }
+.desert-ride:is([data-phase="result"], [data-phase="practiced"]) .dr-hud { opacity: 0; pointer-events: none; }
+.desert-ride .dr-course { transition: opacity .6s ease; }
+.desert-ride .dr-course[data-fade="out"] { opacity: 0; }
+.desert-ride[data-reduced-motion="true"] .dr-course { transition: none; }
