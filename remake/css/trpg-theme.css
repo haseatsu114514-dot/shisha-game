@@ -696,3 +696,23 @@ html:root .trpg-root.trpg-cinematic .trpg-heat-pop:not([data-tier="0"]) { left: 
 }
 /* 判定の決まりの一文は、PCでは本文の先頭。スマホでは題の行の右（trpg-phone.css）。 */
 html:root .trpg-root.trpg-cinematic .trpg-roll-stage > h2 .trpg-roll-rule { display: none; }
+
+/* ---- 卓の上の文字を減らす（TRF07）: 説明の文は「？」とチュートリアルへ。普段の画面は、絵・短い札・数字だけ。 ---- */
+/* 宣言の画面: 場面の題の横に「成功で ○○」。カードは 誰が・何を・能力・見込みの帯。 */
+html:root .trpg-root.trpg-cinematic .trpg-declare-prompt .trpg-stake { margin: 0; }
+html:root .trpg-root.trpg-cinematic .trpg-approach .trpg-approach-meta .trpg-odds-bar {
+  flex: 1 1 96px; min-width: 84px; max-width: 170px; height: 12px; border-radius: 999px; border: 1px solid #8a652499;
+  background: linear-gradient(90deg, #e0b03e 0 var(--success), #6f9c7c var(--success) calc(var(--success) + var(--mixed)), #d9cfb8 calc(var(--success) + var(--mixed)));
+  box-shadow: inset 0 1px 2px #0003;
+}
+html:root .trpg-root.trpg-cinematic .trpg-approach .trpg-approach-meta > small { white-space: nowrap; }
+/* 聞き込み: 前置きの一文は出さない（題と「あと N つ」で足りる。スマホは以前から出していない）。増えた夜は数を金色に。 */
+html:root .trpg-root.trpg-cinematic .trpg-interview-prompt { display: none; }
+html:root .trpg-root.trpg-cinematic .trpg-interview .trpg-topic { justify-content: center; }
+/* 判定の卓: 使えない切り札の一言、補正の内訳に入れた 見立て・危機 の札。 */
+html:root .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-aid-spent { margin: 4px 0; text-align: center; color: #b9c4b6; font-size: max(13px, calc(11 * var(--roll-unit))); }
+html:root .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-receipts > :is(.trpg-roll-insight, .trpg-roll-consequence) { margin: 0 !important; text-align: left; }
+html:root .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-roll-receipts > .trpg-roll-insight { color: #ffe39a; }
+/* 「？」の用語の列は、いちばん長い言葉の幅に合わせる（「クリティカル」「✕ 合わなそう」が1行に収まる）。 */
+html:root .trpg-root .trpg-help-glossary { grid-template-columns: max-content 1fr; }
+html:root .trpg-root .trpg-help-glossary dt { white-space: nowrap; }

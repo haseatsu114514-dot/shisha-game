@@ -42,7 +42,7 @@ python3 tools/lint_dialogue.py trpg_<名前>                             # 台�
 
 - 4つの判定（`listen`・`twist`・`prepare`・`serve`）に `approaches` を3つ。1つ目ははじめ、残りは仲間2人。誰がどの能力で何をするかを `label`（短い行動）と `detail`（{pc}などを使った説明）で。
 - `declare` の台詞は2行: PLが行動を口にする → GMが「○○で判定。目標は30」。
-- 判定の成功には「ごほうび」が付く（TRF02・2026-11-11）: `listen`＝聞き込みが1つ増える、`twist`・`prepare`＝次の選択にGMのヒント（合わない選択肢に付箋）、`serve`＝結末に「会心のクライマックス」の印。札の文は共通で、変えたい判定だけ `checks.<判定>.stake` に1行（全角18字まで）を書く。聞き込みの案内文（`interview.prompt`・`presentation.interviewIdle`）の数は「二つ」と漢数字で書く（成功した夜は画面が「三つ」に読み替える）。
+- 判定の成功には「ごほうび」が付く（TRF02・2026-11-11）: `listen`＝聞き込みが1つ増える、`twist`・`prepare`＝次の選択にGMのヒント（合わない選択肢に付箋）、`serve`＝結末に「会心のクライマックス」の印。卓の上の札は短い言葉（「質問 ＋1」「GMのヒント」「会心の印」）で共通。変えたい判定だけ `checks.<判定>.stake` に書く（全角8字まで。説明の文は書かない。決まりの説明は「？」とチュートリアルにある）。聞き込みの案内文（`interview.prompt`・`presentation.interviewIdle`）の数は「二つ」と漢数字で書く（成功した夜は画面が「三つ」に読み替える）。
 - GMのヒントは「合わない選択肢」に付くので、**準備とクライマックスの各項目で、どの事情（profile）にも合わない選択肢を1つは残す**（`likes` に全部の選択肢を入れない。検査ツールがERRORにする）。
 - 各判定の結果 `success`・`mixed`・`trouble` は2〜3行。
 - 新しい人がGMをする本を足す時は、`data/dialogue/trpg_table_talk.json` にそのGMの掛け合い（`critical`・`critical_full`・`fumble`・`double`・`heat_up`・`heat_max`・`near1`・`near2`・`reward_question`・`reward_hint`・`reward_finale`）も足す。無くても遊べるが、出目の一言が出ない卓になる。

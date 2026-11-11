@@ -579,10 +579,11 @@ test("companions make their own characters: seeded variety, likes, own-voice mak
 test("the shopkeeper's first-table tutorial explains GM, PL, PC, the sheet, declaring, rolling and failure in short lines", async () => {
   const tutorial = JSON.parse(await readFile(new URL("../../data/" + catalog.tutorial, import.meta.url), "utf8"));
   const panels = new Set(tutorial.lines.map(l => l.panel));
-  for (const panel of ["welcome", "table", "sheet", "declare", "roll", "fail", "build"]) assert(panels.has(panel), panel);
+  for (const panel of ["welcome", "table", "sheet", "declare", "roll", "aid", "fail", "build"]) assert(panels.has(panel), panel);
   assert(tutorial.lines.every(l => ["sai", "hajime"].includes(l.speaker)));
   const text = tutorial.lines.map(l => l.text).join("");
-  for (const word of ["GM", "PL", "PC", "キャラクターシート", "30以上", "おすすめ"]) assert(text.includes(word), word);
+  // The table itself shows short marks only (TRF07): the rules they stand for are explained here and in the "?" help.
+  for (const word of ["GM", "PL", "PC", "キャラクターシート", "30以上", "おすすめ", "クリティカル", "ごほうび", "切り札", "振り直し", "連携札"]) assert(text.includes(word), word);
   for (const l of tutorial.lines) assert(Array.from(l.text.replace("{gm}", "サメちゃん")).reduce((n, c) => n + (c.codePointAt(0) <= 255 ? 0.5 : 1), 0) <= 48, l.text);
 });
 

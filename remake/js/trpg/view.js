@@ -12,10 +12,11 @@ const ROOM_SPOT_REACH = 28;
 const LABELS = { success: "うまくいった", mixed: "ひと手間かかる", trouble: "思わぬ出来事" };
 const SPECIALS = { critical: "クリティカル！", fumble: "ファンブル……", double: "ゾロ目！" };
 // 判定に賭けるもの（TRF02）: 成功すると何がもらえるかを、振る前にGMの裁定として見せる。
+// 卓の上は短い札だけ（TRF07）。文の説明は「？」とチュートリアル、読み上げ・マウスを乗せた時の説明に置く。
 const STAKES = {
-  question: { stake: "聞き込みで聞けることが、1つ増える", got: "聞き込みで聞けることが ＋1" },
-  hint: { stake: "次の選択で、GMのヒントがもらえる", got: "GMのヒント · 合わない選択肢に印がつく" },
-  finale: { stake: "結末に「会心のクライマックス」の印", got: "会心のクライマックス · 結末に印がつく" },
+  question: { stake: "質問 ＋1", long: "成功すると、聞き込みで聞けることが1つ増える" },
+  hint: { stake: "GMのヒント", long: "成功すると、次の選択で合わない選択肢にGMが印をつける" },
+  finale: { stake: "会心の印", long: "成功すると、結末に「会心のクライマックス」の印がつく" },
 };
 const STAR_MARKS = [["insight", "見立てが的中", ""], ["plan", "提案が届いた", "物語の本来の結末にたどり着いた"], ["dice", "サイコロが味方", "判定で2回以上うまくいった"]];
 const ICONS = {
@@ -339,7 +340,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     audio.play(entry.tier ? "success" : "clue");
     const pop = el("div.trpg-heat-pop", { "aria-hidden": "true", dataset: { tier: String(entry.tier) } }, [
       el("strong", { text: entry.tier ? HEAT.names[entry.tier] + "！" : "盛り上がり ＋" + entry.amount }),
-      el("span", { text: entry.tier ? "次の判定に 勢い1つ（補正＋4）" : entry.reason }),
+      el("span", { text: entry.tier ? "次の判定 ＋" + DICE.momentum : entry.reason }),
     ]);
     root.querySelectorAll(".trpg-heat-pop").forEach(old => old.remove());
     pop.addEventListener("animationend", () => pop.remove());
@@ -574,9 +575,8 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
         el("p.trpg-ending-heat", { dataset: { test: "trpg-ending-heat", tier: String(heatTier(result.heat.value)) } },
           [el("strong", { text: result.heat.night }), el("span", { text: "盛り上がり " + result.heat.value + "/" + result.heat.max }),
             result.finale ? el("b.trpg-ending-finale", { dataset: { test: "trpg-ending-finale" }, text: "会心のクライマックス" }) : null].filter(Boolean)),
-        el("div.trpg-ending-rating", { dataset: { test: "trpg-ending-rating" } }, [stars(result.rating),
-          el("strong", { text: result.rating.title }),
-          el("small", { text: STAR_MARKS.map(([key, label]) => (result.rating.marks[key] ? "★" : "☆") + label).join(" · ") })]),
+        el("div.trpg-ending-rating", { dataset: { test: "trpg-ending-rating" }, title: STAR_MARKS.map(([key, label]) => (result.rating.marks[key] ? "★" : "☆") + label).join(" · ") },
+          [stars(result.rating), el("strong", { text: result.rating.title })]),
       ]));
       actions.append(button("この卓を振り返る", "trpg-recap", openRecap, { disabled: busy }), ...(allowReplay ? [button("もう一度、この物語", "trpg-replay", () => finish({ ...result, replayRequested: true }),
         { disabled: busy })] : []), button(closeLabel, "trpg-finish", () => finish(result), { class: "primary", disabled: busy }));
@@ -628,7 +628,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
       },
     }, [art ? el("span.trpg-object-art", { "aria-hidden": "true", style: art }) : el("span.trpg-text-choice-mark", { "aria-hidden": "true", text: "ABC"[column] || "" }),
       el("strong.trpg-object-label", { text: option.label }), el("span.trpg-object-detail", { text: option.description }),
-      hinted ? el("i.trpg-hint-mark", { "aria-hidden": "true", dataset: { test: "trpg-hint-" + field }, text: "GMのヒント · 合わなそう" }) : null].filter(Boolean));
+      hinted ? el("i.trpg-hint-mark", { "aria-hidden": "true", dataset: { test: "trpg-hint-" + field }, text: "✕ 合わなそう", title: "GMのヒント" }) : null].filter(Boolean));
   }
   function choiceTabs(fields, interactive = true) {
     const state = session.snapshot();
@@ -657,7 +657,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
   function interviewTopics() {
     const state = session.snapshot(), picks = session.interviewPicks();
     return el("div.trpg-selection.trpg-interview", { dataset: { field: "interview", bonus: String(!!state.extraQuestions) } }, [
-      el("div.trpg-selection-title", [el("small", { dataset: { test: "trpg-interview-left" }, text: "聞けるのは あと " + Math.max(0, picks - state.asked.length) + " つ" + (state.extraQuestions ? "（判定の成功で ＋1）" : "") }),
+      el("div.trpg-selection-title", [el("small", { dataset: { test: "trpg-interview-left" }, text: "あと " + Math.max(0, picks - state.asked.length) + " つ", title: state.extraQuestions ? "判定の成功で、聞けることが1つ増えた" : "" }),
         el("h2", { text: scenario.interview.title, "aria-live": "polite" })]),
       el("p.trpg-interview-prompt", { text: interviewCopy(scenario.interview.prompt) }),
       el("div.trpg-topic-list", scenario.interview.topics.map(topic => {
@@ -671,7 +671,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
             audio.play(heard.fresh ? "clue" : "tap");
             talk(heard.answer.lines, () => renderBody(), "trpg-topic-" + topic.id);
           },
-        }, [el("strong", { text: topic.label }), el("small", { text: asked ? "聞いた · " + (session.profile.answers[topic.id]?.title || "") : topic.description || "" })]);
+        }, [el("strong", { text: topic.label }), asked ? el("small", { text: "聞いた · " + (session.profile.answers[topic.id]?.title || "") }) : null].filter(Boolean));
       })),
     ]);
   }
@@ -746,7 +746,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     return el("div.trpg-roll-actor", { dataset: { test: "trpg-roll-actor", actor, npc: String(!!approach.npc) } }, [
       el("span.trpg-roll-actor-face", { "aria-hidden": "true" }, pcFace(approach.sheet || approach.actor, actor)),
       el("span.trpg-roll-actor-copy", [
-        el("small", { text: (approach.npc ? "GM " + name(actor) + " が演じる " : "PL " + name(actor) + " の ") + (pc?.name || "") }),
+        el("small", { text: (approach.npc ? "GM" : name(actor)) + " · " + (pc?.name || "") }),
         el("strong", { text: pcText(approach.label) }),
         compact ? null : el("span.trpg-roll-actor-stat", { text: statLabel(approach.stat) + " ＋" + (Number.isInteger(rating) ? rating : DICE.base) }),
       ].filter(Boolean)),
@@ -761,8 +761,8 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
   function stakeLine(kind) {
     const prize = STAKES[rewardKindOf(scenario, kind)];
     if (!prize) return null;
-    return el("p.trpg-stake", { dataset: { test: "trpg-stake", kind } }, [
-      el("b", { text: "成功すると" }), el("span", { text: scenario.checks[kind].stake || prize.stake }),
+    return el("p.trpg-stake", { dataset: { test: "trpg-stake", kind }, title: prize.long, "aria-label": prize.long }, [
+      el("b", { text: "成功で", "aria-hidden": "true" }), el("span", { text: scenario.checks[kind].stake || prize.stake, "aria-hidden": "true" }),
     ]);
   }
   /** A real table asks who acts and how before any die is touched. */
@@ -781,7 +781,9 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
       const odds = checkForecast(scenario, state, kind, { approach: approach.id, sheets }).odds;
       const first = !state.acted[approach.actor] && !approach.npc && approach.actor !== PLAYER_SEAT;
       return el("button.trpg-button.trpg-approach", { type: "button", dataset: { test: "trpg-approach-" + approach.id, actor: approach.actor, best: String(approach.id === bestId) },
-        "aria-label": pcText(approach.label) + "。" + (approach.npc ? "GMが演じる" : name(approach.actor) + "の") + (pc?.name || "") + "、" + statLabel(approach.stat) + "＋" + base + "。成功 約" + odds.success + "%",
+        title: pcText(approach.detail),
+        "aria-label": pcText(approach.label) + "。" + pcText(approach.detail) + "。" + (approach.npc ? "GMが演じる" : name(approach.actor) + "の") + (pc?.name || "") + "、" + statLabel(approach.stat) + "＋" + base + "。成功 約" + odds.success + "%、ひと手間 約" + odds.mixed + "%"
+          + (approach.id === bestId ? "。おすすめ" : "") + (first ? "。初めての見せ場で盛り上がり＋1" : ""),
         onclick: () => {
           if (!pop || busy) return;
           pop.close();
@@ -790,24 +792,27 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
       }, [
         el("span.trpg-approach-face", { "aria-hidden": "true", dataset: { costume: String(hasFigure(approach.sheet || approach.actor, approach.actor)) } }, pcFigure(approach.sheet || approach.actor, approach.actor)),
         el("span.trpg-approach-copy", [
-          el("small", { text: (approach.npc ? "GM " + name(approach.actor) + " が演じる" : "PL " + name(approach.actor)) + " · " + (pc?.name || "") }),
-          el("strong", { text: pcText(approach.label) }), el("span", { text: pcText(approach.detail) }),
+          el("small", { text: (approach.npc ? "GM" : name(approach.actor)) + " · " + (pc?.name || "") }),
+          el("strong", { text: pcText(approach.label) }),
         ]),
         el("span.trpg-approach-meta", [
           el("b", { text: statLabel(approach.stat) + " ＋" + base, dataset: { stat: approach.stat } }),
-          el("small", { text: "成功 約" + odds.success + "% · ひと手間 約" + odds.mixed + "%" }),
+          // 見込みは帯で見せる（金＝成功・緑＝ひと手間・残り＝思わぬ出来事）。数字は成功だけ。
+          el("span.trpg-odds-bar", { "aria-hidden": "true", dataset: { test: "trpg-approach-odds" }, style: { "--success": odds.success + "%", "--mixed": odds.mixed + "%" } }),
+          el("small", { text: "成功 " + odds.success + "%" }),
           approach.id === bestId ? el("i.trpg-approach-best", { text: "おすすめ", title: "いちばん成功しやすい", dataset: { test: "trpg-approach-best" } }) : null,
           first ? el("i.trpg-approach-first", { text: "見せ場 ＋1", title: "初めて前に出る仲間。盛り上がり＋1" }) : null,
         ].filter(Boolean)),
       ]);
     });
     pop = modal(presentation.declareTitle || "どうする？", el("div.trpg-declare-board", [
-      el("div.trpg-declare-prompt", [el("strong", { text: check.title }), helpToggle("宣言のしかた", "trpg-declare-help", [
+      el("div.trpg-declare-prompt", [el("strong", { text: check.title }), stakeLine(kind), helpToggle("宣言のしかた", "trpg-declare-help", [
         el("span", { text: presentation.declareHint || "" }),
         el("span.trpg-declare-rule", { text: presentation.target || ("目標値" + DICE.success) }),
         el("span.trpg-declare-rule", { text: "20の目が出たらクリティカル。必ず成功" }),
-      ])]),
-      stakeLine(kind),
+        el("span", { text: "帯は見込み：金＝成功、緑＝ひと手間。「おすすめ」はいちばん成功しやすい行動。「見せ場 ＋1」は初めて前に出る仲間で、盛り上がりが1上がる。" }),
+        ...(STAKES[rewardKindOf(scenario, kind)] ? [el("span", { text: "「成功で ○○」は、成功した時のごほうび。" + STAKES[rewardKindOf(scenario, kind)].long + "。" })] : []),
+      ])].filter(Boolean)),
       el("div.trpg-approach-list", cards),
     ]), [button("卓に戻る", "trpg-declare-back", () => pop.close())], { wide: true, skin: "trpg-declare-stage" });
   }
@@ -815,7 +820,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     if (busy || overlay || session.snapshot().pending) return;
     const check = scenario.checks[kind], helper = check.helper || null;
     const declared = approachBase(scenario, kind, approachId, sheets).approach;
-    const body = el("div", [el("p.trpg-roll-instruction", { text: "20面ダイス2個 ＋ 補正 · 30以上で成功" }), stakeLine(kind), actorPanel(declared), el("div.trpg-roll-scene",
+    const body = el("div", [el("p.trpg-roll-instruction", { text: DICE.success + "以上で成功" }), stakeLine(kind), actorPanel(declared), el("div.trpg-roll-scene",
       el("div.trpg-dice-row", [die(1), die(1), el("span.trpg-dice-bonus", { text: "＋" + DICE.base, dataset: { test: "trpg-bonus" } })]))].filter(Boolean));
     const forecast = el("div.trpg-forecast", { dataset: { test: "trpg-forecast" }, "aria-live": "polite" });
     function updateForecast() {
@@ -838,11 +843,11 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
       ? el("input", { type: "checkbox", dataset: { test: "trpg-support-" + helper } }) : null;
     if (support) body.append(el("label.trpg-aid", [support, seatMark(helper),
       el("span.trpg-aid-art", { "aria-hidden": "true" }, el("img", { src: portrait(helper), alt: "", style: circleStyle(helper, 150, 6) })), el("span", [
-      el("strong", { text: name(helper) + "の「" + cast[helper].ability + "」を借りる" }),
-      el("small", { text: "判定＋7 · 連携札1枚 · 一度だけ" }),
+      el("strong", { text: name(helper) + "の「" + cast[helper].ability + "」" }),
+      el("small", { text: "＋" + DICE.support + " · 連携札1枚" }),
     ])]));
     if (support) support.addEventListener("change", () => { if (support.checked) audio.play("card"); updateForecast(); });
-    if (helper && !support) body.append(el("p", { text: "この判定では連携札を使えません。手元の作戦で進めましょう。" }));
+    if (helper && !support) body.append(el("p.trpg-aid-spent", { text: name(helper) + "の切り札は使えない" }));
     body.append(el("details.trpg-roll-details", { dataset: { test: "trpg-roll-details" } }, [
       el("summary", { text: "判定の詳細", dataset: { test: "trpg-details-toggle" } }),
       el("p", { text: check.hint }), forecast,
@@ -878,7 +883,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     }, { class: "primary" });
     pop = modal(check.title, body, [button("卓に戻る", "trpg-check-back", () => pop.close()), roll], { skin: "trpg-roll-stage" });
     // スマホでは判定の決まりの一文を題の行の右へ出す（本文の一文は隠す）。右の列で切り札の札を押し下げないため（TRF03）。
-    pop.box.querySelector("h2").append(el("small.trpg-roll-rule", { text: "20面ダイス2個 ＋ 補正 · 30以上で成功" }));
+    pop.box.querySelector("h2").append(el("small.trpg-roll-rule", { text: DICE.success + "以上で成功" }));
     pop.box.append(el("div.trpg-spare-kit", { "aria-hidden": "true", role: "presentation" }));
   }
   function showRollResult(pop, body, rerolledDie = null) {
@@ -900,25 +905,24 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     pop.box.dataset.special = result.special || "";
     if (result.special) body.append(el("p.trpg-roll-special", { dataset: { test: "trpg-roll-special", special: result.special } }, [
       el("strong", { text: SPECIALS[result.special] }),
-      el("span", { text: result.special === "critical" ? "20の目は必ず成功。" + (session.snapshot().teamwork < 2 ? "物語を続けると、連携札が1枚戻る" : "連携札は満タン。卓が沸いた")
-        : result.special === "fumble" ? "1の目で転んだ。それでも物語は続く。卓は笑いに包まれた" : "揃った出目に、卓が少しざわめく" }),
-    ]));
-    if (result.grade === "success" && prize) body.append(el("p.trpg-roll-reward", { dataset: { test: "trpg-roll-reward", kind: rewardKindOf(scenario, result.kind) } },
-      [el("b", { text: "ごほうび" }), el("span", { text: prize.got })]));
+      result.special === "critical" && session.snapshot().teamwork < 2 ? el("span", { text: "連携札 ＋1" }) : null,
+    ].filter(Boolean)));
+    if (result.grade === "success" && prize) body.append(el("p.trpg-roll-reward", { dataset: { test: "trpg-roll-reward", kind: rewardKindOf(scenario, result.kind) }, title: prize.long },
+      [el("b", { text: "ごほうび" }), el("span", { text: scenario.checks[result.kind].stake || prize.stake })]));
     // 補正の内訳（誰が・勢い・助力・振り直し）は1行に並べる。縦に積むと振り直しの札が卓の外へ押し出される。
     const receipts = el("div.trpg-roll-receipts");
     body.append(receipts);
     if (result.approach) {
       const pc = sheets[result.sheet], actorText = (result.actor && cast[result.actor] ? name(result.actor) : "GM") + (pc ? "の" + pc.name : "");
-      receipts.append(el("p.trpg-ability-receipt.trpg-actor-receipt", { dataset: { test: "trpg-actor-receipt" } },
-        [actorText + " · " + statLabel(result.stat) + " ＋" + result.base]));
+      receipts.append(el("p.trpg-ability-receipt.trpg-actor-receipt", { dataset: { test: "trpg-actor-receipt" }, title: actorText },
+        [(pc?.name || actorText) + " · " + statLabel(result.stat) + " ＋" + result.base]));
     }
-    if (result.momentum) receipts.append(el("p.trpg-ability-receipt.trpg-momentum-receipt", { text: "卓の勢い ＋" + result.momentum * DICE.momentum }));
+    if (result.momentum) receipts.append(el("p.trpg-ability-receipt.trpg-momentum-receipt", { text: "勢い ＋" + result.momentum * DICE.momentum }));
     if (result.helper) receipts.append(el("p.trpg-ability-receipt", { dataset: { test: "trpg-helper-receipt" } },
-      [seatMark(result.helper), name(result.helper) + "の助力 ＋7 · 札 使用済"]));
+      [seatMark(result.helper), name(result.helper) + " ＋" + DICE.support]));
     if (result.rerolled) {
       receipts.append(el("p.trpg-ability-receipt", { dataset: { test: "trpg-reroll-receipt" } },
-        [seatMark(session.rerollActor), name(session.rerollActor) + "の振り直し · 札 使用済"]));
+        [seatMark(session.rerollActor), name(session.rerollActor) + "の振り直し"]));
       if (rerolledDie !== null) {
         const target = body.querySelectorAll(".trpg-die")[rerolledDie];
         target.classList.add("rethrown");
@@ -936,11 +940,11 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     }
     // クリティカル（20の目）とファンブル（1の目で思わぬ出来事）は専用のジングル。
     audio.play(result.special === "critical" || result.special === "fumble" ? result.special : result.grade);
-    if (result.hypothesisBonus) body.append(el("p.trpg-roll-insight", { text: "見立てが合っていた · 仕掛けに ＋" + result.hypothesisBonus }));
-    if (session.rules.inspectionPressure) body.append(el("p.trpg-roll-consequence", { text: result.grade === "success" ? RISK + "を進めず、次の場面へ" : RISK + " ＋" + session.rules.checkPressure[result.grade] + " · 全員で次の場面へ" }));
-    if (result.special === "critical") body.append(el("p.trpg-roll-trump", { text: "最高の出目。振り直しは温存しよう" }));
-    else if (!session.snapshot().used[session.rerollActor] && session.snapshot().teamwork > 0) {
-      body.append(el("p.trpg-roll-trump", { text: name(session.rerollActor) + "の「" + cast[session.rerollActor].ability + "」 · 連携札1枚で、1個を振り直せる（下がることもある）" }));
+    if (result.hypothesisBonus) receipts.append(el("p.trpg-ability-receipt.trpg-roll-insight", { text: "見立て的中 ＋" + result.hypothesisBonus }));
+    if (session.rules.inspectionPressure) receipts.append(el("p.trpg-ability-receipt.trpg-roll-consequence", { text: RISK + (result.grade === "success" ? " ±0" : " ＋" + session.rules.checkPressure[result.grade]) }));
+    // クリティカルは最高の出目なので振り直しは出さない。使えない時も何も出さない（決まりは「？」に）。
+    if (result.special !== "critical" && !session.snapshot().used[session.rerollActor] && session.snapshot().teamwork > 0) {
+      body.append(el("p.trpg-roll-trump", { text: name(session.rerollActor) + "の「" + cast[session.rerollActor].ability + "」 · 連携札1枚" }));
       body.append(el("div.trpg-rerolls", [0, 1].map(i =>
       button("", "trpg-reroll-" + i, () => {
         if (settleGuard || session.snapshot().used[session.rerollActor] || session.snapshot().teamwork < 1) return;
@@ -952,7 +956,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
         el("strong", { text: (i + 1) + "個目（" + result.dice[i] + "）を振り直す" }),
         el("small", { text: rerollText(rerollOdds(result.dice, result.bonus, i)) }),
       ));
-    } else body.append(el("p.trpg-roll-trump", { text: "振り直しには、未使用の切り札と連携札1枚が必要です。" }));
+    }
     const actions = pop.box.querySelector(".trpg-modal-actions");
     actions.replaceChildren(button("物語を続ける", "trpg-settle", () => {
       if (settleGuard || disposed) return;
@@ -990,8 +994,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     actions.querySelector("button").focus({ preventScroll: true });
   }
   function rerollText(odds) {
-    return odds.success ? "振り直した後の成功 約" + odds.success + "%"
-      : "成功には届かない · ひと手間以上 約" + (odds.mixed) + "%";
+    return odds.success ? "成功 約" + odds.success + "%" : "ひと手間以上 約" + (odds.mixed) + "%";
   }
   function stars(rating) {
     return el("span.trpg-stars", { "aria-label": "卓の評価 星" + rating.stars + "つ", dataset: { test: "trpg-stars", stars: String(rating.stars) } },
@@ -1093,6 +1096,8 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     roll: () => [el("div.trpg-tutorial-row.trpg-tutorial-dice", [el("b", { text: "14" }), el("span", { text: "＋" }), el("b", { text: "12" }),
       el("span", { text: "＋ 能力 4 ＝" }), el("strong", { text: "30" })]), el("p", { text: "30以上で成功 · 19〜29でひと手間 · 18以下は思わぬ出来事" }),
       el("p", { text: "20の目が出たらクリティカル＝必ず成功 · 成功にはごほうび" })],
+    aid: () => [el("div.trpg-tutorial-row", [el("i", { text: "連携札 2枚" }), el("i", { class: "best", text: "仲間の切り札 ＋" + DICE.support }), el("i", { text: "あなたの切り札 振り直し" })]),
+      el("p", { text: "切り札は一人一度。使うたび、みんなの連携札を1枚使う" })],
     fail: () => [el("div.trpg-tutorial-row", [el("i", { text: "うまくいった" }), el("i", { text: "ひと手間かかる" }), el("i", { text: "思わぬ出来事" })]),
       el("p", { text: "どれでも物語は続く。失敗も、卓の楽しみ" })],
     build: () => [el("strong", { text: "あなたの役を作ろう" }), el("p", { text: "表紙の「キャラクターを作る」で、役どころを選ぶ。迷ったら、おすすめのままでOK" })],
@@ -1245,6 +1250,16 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
         el("dt", { text: "クリティカル" }), el("dd", { text: "20の目が出ること。合計がいくつでも、必ず成功" }),
         el("dt", { text: "ファンブル" }), el("dd", { text: "1の目が出て、思わぬ出来事になること。卓がいちばん笑う瞬間" }),
       ]),
+      head("画面の印"),
+      el("dl.trpg-help-glossary", [
+        el("dt", { text: "成功で ○○" }), el("dd", { text: "その判定に成功した時のごほうび。振る前にGMが告げる" }),
+        el("dt", { text: "見込みの帯" }), el("dd", { text: "行動のカードの帯。金＝成功、緑＝ひと手間、残り＝思わぬ出来事の見込み" }),
+        el("dt", { text: "おすすめ" }), el("dd", { text: "いちばん成功しやすい行動" }),
+        el("dt", { text: "見せ場 ＋1" }), el("dd", { text: "初めて前に出る仲間。卓の盛り上がりが1上がる" }),
+        el("dt", { text: "✕ 合わなそう" }), el("dd", { text: "GMのヒント。今夜の事情に合わない選択肢。選ぶことはできる" }),
+        el("dt", { text: "あと1……！" }), el("dd", { text: "成功に1〜2足りなかった出目" }),
+        el("dt", { text: "会心の印" }), el("dd", { text: "最後の判定に成功した卓。結末に「会心のクライマックス」と出る" }),
+      ]),
       head("この物語の進め方"),
       el("p", { text: presentation.help }),
       head("判定"),
@@ -1262,6 +1277,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
       el("p", { text: "結末では卓を星3つで評価します。見立てが真相に合う、提案が本来の結末に届く、判定で2回以上うまくいく。" }),
       ...scenario.cast.filter(c => c.part !== "GM").map(c => el("p.trpg-help-ability", { text: name(c.id) + "「" + c.ability + "」 · " + c.abilityText })),
       el("p", { text: "切り札は各人一度ずつ。先に助けを借りるか、最後のために札を残すか、相談しながら決めましょう。" }),
+      el("p", { text: "仲間の切り札は、振る前に札を選ぶと判定に＋" + DICE.support + "。振り直しは、出目を見てからサイコロ1個を選んで振り直します。新しい出目を採用するので、下がることもあります。クリティカル（20の目）の時は振り直せません。" }),
       head("操作"),
       el("p", { text: "クリック・タップで操作。会話はEnter／Spaceでも進みます。Tabでボタンを選び、Enterで決定できます。" }),
     ], [button("卓に戻る", "trpg-help-close", () => pop.close(), { class: "primary" })]);

@@ -113,6 +113,20 @@
       "speaker": "sai",
       "role": "店長／はじめての人へ",
       "face": "normal",
+      "text": "仲間の切り札は、判定に＋7。あなたの切り札は、サイコロの振り直しです",
+      "panel": "aid"
+    },
+    {
+      "speaker": "sai",
+      "role": "店長／はじめての人へ",
+      "face": "normal",
+      "text": "切り札は一人一度。使うたび、連携札を1枚使います",
+      "panel": "aid"
+    },
+    {
+      "speaker": "sai",
+      "role": "店長／はじめての人へ",
+      "face": "normal",
       "text": "失敗しても、物語は止まりません。思わぬ出来事も、卓の楽しみです",
       "panel": "fail"
     },
