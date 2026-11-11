@@ -16,6 +16,9 @@
     立ち絵・顔     … 採用済みの新版（remake/js/core/portrait-style.js の既定）
     章題の絵       … remake/js/core/chapter-title-art.js（採用済みの1枚絵。人物を切り分けた絵は使わない）
     ボタン         … シーシャ作りの現行スキン（remake/css/craft-paper.css の --cp-button-*）
+- 例外は、サイトのために描いた横長のキービジュアル（#3232。2026-11-11 オーナーが6枚を全採用）。ゲームには無い絵なので、
+  どの原画を使うかは下の WIDE_KEY_VISUALS が採用表になる（原画は asset_sources/promo-site-20261111/keyvisual/）。
+  公開用の手順はこの原画を取得しないので、原画が手元に無い（ポインタのままも同じ）ときは、書き出し済みの絵と記録をそのまま残す。
 - 絵そのものは描き変えず、大きさと圧縮だけをサイト向けに整える。
 - 元の絵が Git LFS のポインタ（131バイトのテキスト）のままなら、そのパスを出して止まる。
     git lfs pull --include="$(python3 promo/tools/build_images.py --sources | paste -sd, -)"
@@ -45,6 +48,14 @@ CAST_MAIN = ["hajime", "sumi", "naru", "adam", "minto", "tsumugi", "rio", "hiyor
 CAST_SUB = ["pakki", "sui", "dr_kemuri", "maezono"]
 # ヒーローで順に見せる人。第3章で出会うましろは載せない
 KEY_VISUAL_CAST = ["minto", "tsumugi", "sumi", "rio", "naru", "hiyori", "samechan", "adam", "ageha"]
+# サイトのために描いた横長のキービジュアル（#3232）。原画は 1536x1024。ヒーローでの並びは index.html の .hero-art と .hero-reel。
+# サイトでの名前 → (原画, ヒーローの札に切り出す範囲 左・上・右・下 0〜1)。
+# 6枚は「案A 夜のカウンター」「案B 夜の商店街」の2つの構図を3回ずつ描いた物なので、構図ごとに1枚を選んで使う（promo/README.md）。
+PROMO_KEY_ART = ROOT / "asset_sources" / "promo-site-20261111" / "keyvisual"
+WIDE_KEY_VISUALS = {
+    "town": ("kv-b-01", (0.60, 0.36, 0.98, 0.92)),     # 夜の商店街を歩く6人。ヒーローの1枚目。OGP（build_parts.py）も
+    "counter": ("kv-a-02", (0.48, 0.14, 0.86, 0.80)),  # 閉店前のtonariのカウンター。スミさんの絵の前に出す
+}
 # 舞台に載せる店: サイトでの名前 → ゲームの行き先 id（spots.js・store-logos.js のキー）
 SHOPS = {"tonari": "tonari", "kemurikusa": "naru", "eden": "adam", "peppermint": "minto", "dr-fookah": "shop", "c-station": "c_station"}
 SHOP_TONE = {"tonari": "night", "c-station": "night"}  # 昼夜のある店は、夜の絵を使う
@@ -63,6 +74,7 @@ STAND_HEIGHT, STAND_FLOOR = 1200, 1188  # 立ち絵の台紙の高さと、足�
 LIST_ONLY = False          # --sources: 絵を開かず、パスだけ集める
 used: list[str] = []       # いま作っている1枚が元にした絵
 records: dict[str, list[str]] = {}
+kept: dict[str, str] = {}  # 原画が無くて書き出さなかった絵の元の版（前の記録のまま残す）
 all_sources: set[str] = set()
 
 
@@ -128,6 +140,36 @@ def load(path: Path) -> Image.Image:
     return image
 
 
+def load_site_art(path: Path) -> Image.Image | None:
+    """サイトのために描いた原画（asset_sources/ の Git LFS）。手元に無い・ポインタのままなら None を返す。
+
+    公開用の手順は asset_sources/ を取得しないので、そのときは keep() で書き出し済みの絵を残す。
+    """
+    rel = path.relative_to(ROOT).as_posix()
+    used.append(rel)
+    all_sources.add(rel)
+    if LIST_ONLY:
+        return Image.new("RGB", (64, 64), (0, 0, 0))
+    if not path.exists() or path.stat().st_size < 200:
+        return None
+    image = Image.open(path)
+    image.load()
+    return image
+
+
+def keep(rel: str) -> None:
+    """原画が無いので書き出さず、書き出し済みの絵と、その元の版の記録をそのまま残す。"""
+    sources = sorted(set(used))
+    used.clear()
+    was = json.loads(RECORD.read_text(encoding="utf-8")).get("sources", {}) if RECORD.exists() else {}
+    if not (OUT / rel).exists() or any(src not in was for src in sources):
+        print(f"{rel:44s} （原画が手元に無く、書き出し済みの絵も無い。git lfs pull --include=\"{','.join(sources)}\"）")
+        return
+    records[rel] = sources
+    kept.update({src: was[src] for src in sources})
+    print(f"{rel:44s} （原画が手元に無いので、書き出し済みの絵のまま）")
+
+
 def save(image: Image.Image, rel: str, quality: int = 80, lossless: bool = False) -> None:
     records[rel] = sorted(set(used))
     used.clear()
@@ -174,12 +216,33 @@ def three_slice(source: Image.Image, width: int, height: int, cap: int) -> Image
 
 # ── 書き出す絵 ────────────────────────────────────────────────
 
+def crop_box(image: Image.Image, box: tuple[float, float, float, float]) -> Image.Image:
+    w, h = image.size
+    return image.crop((round(box[0] * w), round(box[1] * h), round(box[2] * w), round(box[3] * h)))
+
+
+def build_wide_key_visuals() -> None:
+    """サイトのために描いた横長のキービジュアル: 原寸（PC）・幅960（スマホ）・ヒーローの札（縦長の絵の札と同じ3:4）。"""
+    for name, (file, box) in WIDE_KEY_VISUALS.items():
+        for rel, make, quality in (
+            (f"hero/kv-{name}.webp", lambda art: art, 78),
+            (f"hero/kv-{name}-s.webp", lambda art: fit_width(art, 960), 76),
+            (f"hero/kv-{name}-thumb.webp", lambda art: cover(crop_box(art, box), 144, 192), 78),
+        ):
+            art = load_site_art(PROMO_KEY_ART / f"{file}.png")
+            if art is None:
+                keep(rel)
+            else:
+                save(make(art.convert("RGB")), rel, quality=quality)
+
+
 def build_hero() -> None:
     # タイトル画面の背景（1280x720のドット絵）。ぼかさず整数倍に拡大して、ドットの角を保つ。
     lounge = load(GAME / "backgrounds" / "bg_title.webp").convert("RGB")
     save(lounge.resize((2560, 1440), Image.NEAREST), "hero/lounge.webp", quality=76)
     lounge = load(GAME / "backgrounds" / "bg_title.webp").convert("RGB")
     save(lounge.resize((1280, 720), Image.NEAREST), "hero/lounge-s.webp", quality=74)
+    build_wide_key_visuals()
     for cid, name in key_visuals().items():
         art = load(GAME / "ui" / "title_arts" / f"{name}.webp").convert("RGB")
         save(art, f"hero/kv-{cid}.webp", quality=80)
@@ -326,7 +389,7 @@ def write_record(partial: bool) -> None:
     outputs = {**previous.get("outputs", {}), **records} if partial else dict(records)
     outputs = {rel: sources for rel, sources in outputs.items() if (OUT / rel).exists()}  # 消した絵は記録からも外す
     needed = sorted({src for sources in outputs.values() for src in sources})
-    ids = blob_ids(needed)
+    ids = {**blob_ids(needed), **kept}  # 書き出さなかった絵は、書き出したときの版のまま
     data = {
         "note": "promo/tools/build_images.py が書く記録。outputs＝サイトの絵が元にしたゲームの絵、sources＝書き出したときの版（Git の blob）。手で直さない。",
         "outputs": dict(sorted(outputs.items())),

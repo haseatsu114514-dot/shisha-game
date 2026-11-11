@@ -24,3 +24,10 @@
 .mo-cheki .mo-ck-backline { position: absolute; border-radius: 99px; background: #d9d6d2; }
 .mo-cheki .mo-ck-loupe { position: absolute; border-radius: 50%; overflow: hidden; box-shadow: 0 18px 40px #0005; }
 .mo-cheki .mo-ck-loupe > .mo-ck-film { will-change: transform; }
+/* c: みんとの絵柄を舞台に、写真を主役の大きさで（TMG51）。舞台はみんとの登場カットインの背景 */
+.mo-cheki.at-c { background: transparent; }
+.mo-cheki .mo-ck-c-dim { position: absolute; inset: 0; background: #0b0612; opacity: 0; }
+.mo-cheki .mo-ck-c-set { position: absolute; inset: 0; clip-path: polygon(0 0, 0 0, -30% 100%, -30% 100%); }
+.mo-cheki .mo-ck-c-set > i { position: absolute; inset: 0; }
+.mo-cheki .mo-ck-c-art { background: center / cover no-repeat; transform-origin: 50% 50%; }
+.mo-cheki .mo-ck-c-shade { background: radial-gradient(520px 420px at 50% 52%, #0b061299, transparent 75%), linear-gradient(to top, #0b061266, transparent 45%); }
