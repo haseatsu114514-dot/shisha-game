@@ -1,14 +1,24 @@
 // 会話演出デモ（#2732・案は #2666）。12件が番号・名前つきで1件ずつ再生でき、演出ON/OFFで挙動が変わり、
+// #3417 の章ごとの新顔6件（別の段）も同じく ON/OFF で挙動が変わり、
 // 本編の保存に触れず、サンプル本文が autoWrap の幅（全角24字×2行）に収まることを確かめる。
 // サーバーを8123で起動後: node remake/test/conversation_effects_demo.mjs
 import assert from "node:assert/strict";
 import { createRequire } from "node:module";
-import { EFFECTS, EFFECT_ORDER, plainText } from "../js/vn/conversation-effects-data.js";
+import { EFFECTS, EFFECT_ORDER, NEW_FACE_ORDER, plainText } from "../js/vn/conversation-effects-data.js";
 import { textWidth, MAX_PAGE_LINES } from "../js/vn/text.js";
 
 // --- データ（ブラウザ不要）
 assert.deepEqual([...EFFECT_ORDER].sort((a, b) => a - b), [1, 2, 3, 7, 8, 11, 12, 13, 15, 22, 23, 29]);
 assert.deepEqual(EFFECT_ORDER.slice(0, 5), [1, 2, 13, 22, 29], "先頭は推奨5件");
+// #3417 の新顔は選別済みの12件と重ならない別の段。どの章で初めて出すかを書いておく
+assert.deepEqual(NEW_FACE_ORDER, [10, 9, 5, 37, 38, 32]);
+assert.equal(EFFECTS.length, EFFECT_ORDER.length + NEW_FACE_ORDER.length);
+for (const no of NEW_FACE_ORDER) {
+  const e = EFFECTS.find((x) => x.no === no);
+  assert.ok(e && e.tag === "新顔" && e.chapter, `${no}: 新顔の印と章`);
+  assert.ok(!EFFECT_ORDER.includes(no), `${no}: 選別済みの段に入れない`);
+}
+assert.equal(plainText("ああ[pause=700]い[whisper]う[/whisper][blur]え[/blur]"), "ああいうえ", "新しい印も表示には出ない");
 for (const e of EFFECTS) {
   assert.ok(e.name && e.summary && e.watch && e.spec, `${e.no}: 説明が揃っている`);
   assert.ok(e.lines.length >= 3, `${e.no}: サンプルは3行以上`);
@@ -33,11 +43,12 @@ try {
   await page.goto(`${base}/remake/conversation-effects-demo.html`);
   await page.waitForSelector("#fx-chips button");
   assert.equal(await page.locator("#fx-chips button").count(), 12, "12件のボタン");
+  assert.equal(await page.locator("#fx-chips-new button").count(), 6, "新顔6件のボタン（別の段）");
   const typed = () => page.evaluate(() => document.querySelector(".vn-text").textContent);
   const finish = () => page.waitForFunction(() => document.querySelector(".vn-next.show"), null, { timeout: 15000 }); // 行を出し終えるまで待つ
   const pick = async (no, on = true) => {
     await page.setChecked("#fx-on", on);
-    await page.click(`#fx-chips button[data-fx="${no}"]`);
+    await page.click(`.preview-tools button[data-fx="${no}"]`);
     await page.waitForFunction((n) => document.querySelector("#fx-label i").textContent === String(n), no);
   };
 
@@ -102,11 +113,63 @@ try {
     assert.equal(await page.locator(".vn-name.demo-theme").count(), on ? 1 : 0, `12: ${on ? "ON" : "OFF"}`);
   }
 
-  // 全12件が最後まで進められ、「おしまい」が出る。SKIPでも進む。保存・本編のキーへ書かない
+  // ---------------------------------------------------------------- 新顔（#3417）
+  const step = async (n) => { for (let i = 0; i < n; i++) { await finish(); await page.click("#stage"); } };
+  // 10 ささやき: 2行目に小さく沈む区間。OFF では出ない
+  for (const on of [true, false]) {
+    await pick(10, on);
+    await step(1); await finish();
+    assert.equal(await page.locator(".vn-text .demo-whisper").count() > 0, on, `10: ${on ? "ON" : "OFF"}`);
+  }
+  // 9 にじみ: 3行目にぼかしの区間。OFF と動きを減らすでは出ない
+  for (const [on, reduce] of [[true, false], [false, false], [true, true]]) {
+    await page.setChecked("#fx-reduce", reduce);
+    await pick(9, on);
+    await step(2); await finish();
+    assert.equal(await page.locator(".vn-text .demo-nijimi").count() > 0, on && !reduce, `9: on=${on} reduce=${reduce}`);
+  }
+  await page.setChecked("#fx-reduce", false);
+  // 5 無言の一コマ: 3行目で台詞欄が薄れ、本文は空。OFF は「……」の台詞
+  for (const on of [true, false]) {
+    await pick(5, on);
+    await step(2); await finish();
+    assert.equal(await page.locator(".vn-box.demo-silent").count(), on ? 1 : 0, `5: ${on ? "ON" : "OFF"}`);
+    assert.equal(await typed(), on ? "" : "……");
+    await page.click("#stage"); await finish();
+    assert.equal(await page.locator(".vn-box.demo-silent").count(), 0, "5: 次の行で戻る");
+  }
+  // 37 息を止める: 2行目で ON はほぼ無音、OFF は採用済みの −6dB
+  for (const on of [true, false]) {
+    await pick(37, on);
+    await step(1); await finish();
+    assert.match(await page.textContent("#demo-bgm-db"), on ? /無音/ : /−6 dB/, `37: ${on ? "ON" : "OFF"}`);
+  }
+  // 38 文中ポーズの長さ指定: 3行目（0.8秒）は ON の方が OFF（0.4秒）より長い
+  const hold = {};
+  for (const on of [true, false]) {
+    await pick(38, on);
+    await step(2);
+    const t0 = Date.now();
+    await page.waitForFunction(() => document.querySelector(".vn-text").textContent.length > 0);
+    await finish();
+    hold[on] = Date.now() - t0;
+  }
+  assert.ok(hold[true] > hold[false] + 250, `38: ONは約0.4秒長い (${hold[true]} vs ${hold[false]})`);
+  // 32 扉の合図: ON は入場でベル・退場で風の音。OFF は鳴らさない。どちらも退場で立ち絵が外れる
+  for (const on of [true, false]) {
+    await pick(32, on);
+    await finish();
+    assert.deepEqual(await page.evaluate(() => window.__demoFx), on ? ["doorbell"] : [], `32 入場: ${on ? "ON" : "OFF"}`);
+    await step(3); await finish();
+    assert.deepEqual(await page.evaluate(() => window.__demoFx), on ? ["doorbell", "whoosh"] : [], `32 退場: ${on ? "ON" : "OFF"}`);
+    assert.equal(await page.locator('.vn-portraits img[data-speaker="naru"]').count(), 0, "32: 退場で立ち絵が外れる");
+  }
+
+  // 全18件（選別済み12＋新顔6）が最後まで進められ、「おしまい」が出る。SKIPでも進む。保存・本編のキーへ書かない
   await page.setChecked("#fx-on", true);
   await page.setChecked("#fx-skip", true);
-  for (const no of EFFECT_ORDER) {
-    await page.click(`#fx-chips button[data-fx="${no}"]`);
+  for (const no of [...EFFECT_ORDER, ...NEW_FACE_ORDER]) {
+    await page.click(`.preview-tools button[data-fx="${no}"]`);
     await page.waitForSelector("#demo-end.show", { timeout: 20000 });
   }
   assert.equal(await page.evaluate(() => window.__writes), 0, "localStorage へ書かない");

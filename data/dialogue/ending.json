@@ -84,6 +84,7 @@
         {
           "speaker": "sumi",
           "face": "normal",
+          "duck": true,
           "text": "tonariは任せた。お前の店の名前は、その先まで取っとけ"
         },
         {
@@ -797,6 +798,7 @@
         {
           "speaker": "dr_kemuri",
           "face": "normal",
+          "beat": 500,
           "text": "いえ。今日は、客です"
         },
         {

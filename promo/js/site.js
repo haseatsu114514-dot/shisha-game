@@ -5,7 +5,27 @@
   const $ = (sel, root = document) => root.querySelector(sel);
   const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
   const calm = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const narrow = matchMedia("(max-width: 820px)");
   document.documentElement.classList.add("js");
+
+  // 左右のスワイプ（縦のスクロールとは区別する）。handler(+1) が「次へ」
+  const onSwipe = (el, handler) => {
+    if (!el) return;
+    let startX = 0, startY = 0;
+    el.addEventListener("touchstart", (event) => { startX = event.touches[0].clientX; startY = event.touches[0].clientY; }, { passive: true });
+    el.addEventListener("touchend", (event) => {
+      const dx = event.changedTouches[0].clientX - startX;
+      const dy = event.changedTouches[0].clientY - startY;
+      if (Math.abs(dx) < 48 || Math.abs(dx) < Math.abs(dy) * 1.4) return;
+      handler(dx < 0 ? 1 : -1);
+    }, { passive: true });
+  };
+  // 横に送る列（顔・絵・店の札）の中で、選んだ物が見える所へ列だけを送る（ページは動かさない）
+  const centerIn = (strip, item) => {
+    if (!strip || !item || strip.scrollWidth <= strip.clientWidth + 1) return;
+    const left = item.getBoundingClientRect().left - strip.getBoundingClientRect().left + strip.scrollLeft;
+    strip.scrollTo({ left: left - strip.clientWidth / 2 + item.clientWidth / 2, behavior: calm ? "auto" : "smooth" });
+  };
 
   // ── 「遊ぶ」ボタン。<body data-play="soon"> にすると、リンクを止めて「近日公開」に変える ──
   if (document.body.dataset.play === "soon") {
@@ -52,6 +72,7 @@
   const now = $(".reel-now");
   let kvIndex = 0;
   let kvTimer = 0;
+  let kvMoved = false; // 最初の表示では、絵を選ぶ列を動かさない
   const loadKv = (img) => {
     if (!img || !img.dataset.src) return Promise.resolve();
     const mobileSource = img.parentElement.querySelector("source[data-srcset]");
@@ -75,6 +96,7 @@
     hero?.classList.toggle("is-wide", kvs[next].classList.contains("kv-wide")); // 横長の絵の間は、コピーを出さない（人物に掛かるので）
     tabs.forEach((tab, i) => tab.classList.toggle("is-on", i === next));
     const tab = tabs[next];
+    if (tab && kvMoved) centerIn(tab.closest("ul"), tab);
     if (now && tab) {
       now.firstElementChild.textContent = tab.dataset.name;
       now.lastElementChild.textContent = tab.dataset.place;
@@ -83,9 +105,11 @@
   };
   const playKv = () => {
     clearInterval(kvTimer);
-    if (!calm && kvs.length > 1) kvTimer = setInterval(() => { if (!document.hidden) showKv(kvIndex + 1); }, 6500);
+    if (!calm && kvs.length > 1) kvTimer = setInterval(() => { if (!document.hidden) { kvMoved = true; showKv(kvIndex + 1); } }, 6500);
   };
-  tabs.forEach((tab, i) => tab.addEventListener("click", () => { showKv(i); playKv(); }));
+  tabs.forEach((tab, i) => tab.addEventListener("click", () => { kvMoved = true; showKv(i); playKv(); }));
+  // 絵を左右に払っても切り替わる
+  onSwipe($(".hero-art"), (step) => { kvMoved = true; showKv(kvIndex + step); playKv(); });
   if (kvs.length) {
     addEventListener("load", () => { loadKv(kvs[1]); playKv(); }, { once: true });
   }
@@ -108,10 +132,7 @@
       tab.setAttribute("aria-pressed", String(on));
       if (on) {
         if (focus) tab.focus({ preventScroll: true });
-        const strip = tab.closest(".cast-tabs");
-        if (strip && strip.scrollWidth > strip.clientWidth) {
-          strip.scrollTo({ left: tab.offsetLeft - strip.clientWidth / 2 + tab.clientWidth / 2, behavior: calm ? "auto" : "smooth" });
-        }
+        centerIn(tab.closest(".cast-tabs"), tab);
       }
     }
   };
@@ -132,18 +153,10 @@
     }, { once: true });
   }
   // 左右のスワイプでも切り替える
-  const deck = $(".cast-deck");
-  if (deck) {
-    let startX = 0, startY = 0;
-    deck.addEventListener("touchstart", (event) => { startX = event.touches[0].clientX; startY = event.touches[0].clientY; }, { passive: true });
-    deck.addEventListener("touchend", (event) => {
-      const dx = event.changedTouches[0].clientX - startX;
-      const dy = event.changedTouches[0].clientY - startY;
-      if (Math.abs(dx) < 56 || Math.abs(dx) < Math.abs(dy) * 1.4) return;
-      const current = castTabs.findIndex((tab) => tab.classList.contains("is-on"));
-      showCast(castTabs[(current + (dx < 0 ? 1 : -1) + castTabs.length) % castTabs.length].dataset.cast);
-    }, { passive: true });
-  }
+  onSwipe($(".cast-deck"), (step) => {
+    const current = castTabs.findIndex((tab) => tab.classList.contains("is-on"));
+    showCast(castTabs[(current + step + castTabs.length) % castTabs.length].dataset.cast);
+  });
 
   // ── 舞台: 昼と夜の地図、店の切り替え ──
   const town = $(".town");
@@ -154,16 +167,19 @@
         for (const other of $$(".tone button", town)) other.setAttribute("aria-pressed", String(other === button));
       });
     }
-    const pins = $$(".pin", town);
+    const picks = $$(".pin, .shop-tab", town); // 地図のピンと、スマホ用の札の列。どちらからでも選べる
     const shops = $$(".shop", town);
-    for (const pin of pins) {
-      pin.addEventListener("click", () => {
-        for (const other of pins) other.classList.toggle("is-on", other === pin);
+    for (const pick of picks) {
+      pick.addEventListener("click", () => {
+        const id = pick.dataset.shop;
+        for (const other of picks) other.classList.toggle("is-on", other.dataset.shop === id);
         for (const shop of shops) {
-          const on = shop.dataset.shop === pin.dataset.shop;
+          const on = shop.dataset.shop === id;
           shop.hidden = !on;
           shop.classList.toggle("is-in", on);
         }
+        const chip = picks.find((el) => el.classList.contains("shop-tab") && el.dataset.shop === id);
+        if (chip) centerIn(chip.closest(".shop-tabs"), chip);
       });
     }
   }
@@ -187,34 +203,57 @@
     shelf.addEventListener("click", (event) => {
       const shot = event.target.closest(".shot");
       if (!shot || moved > 6 || !lightbox || !lightbox.showModal) return;
-      const img = $("img", lightbox);
-      img.src = shot.dataset.full;
-      img.alt = $("img", shot).alt;
-      $("figcaption", lightbox).textContent = shot.dataset.caption || "";
+      showShot(shots.indexOf(shot));
       lightbox.showModal();
     });
   }
+  // 拡大表示: ボタン・矢印キー・左右のスワイプで前後の絵へ送れる
+  const shots = $$(".shot");
+  let shotIndex = 0;
+  const showShot = (index) => {
+    if (!lightbox || !shots.length) return;
+    shotIndex = (index + shots.length) % shots.length;
+    const shot = shots[shotIndex];
+    const img = $("img", lightbox);
+    img.src = shot.dataset.full;
+    img.alt = $("img", shot).alt;
+    $("figcaption", lightbox).textContent = shot.dataset.caption || "";
+    const count = $(".lightbox-count", lightbox);
+    if (count) count.textContent = (shotIndex + 1) + " / " + shots.length;
+  };
   if (lightbox) {
     lightbox.addEventListener("click", (event) => { if (event.target === lightbox || event.target.tagName === "FIGURE") lightbox.close(); });
+    $(".lightbox-prev", lightbox)?.addEventListener("click", () => showShot(shotIndex - 1));
+    $(".lightbox-next", lightbox)?.addEventListener("click", () => showShot(shotIndex + 1));
+    lightbox.addEventListener("keydown", (event) => {
+      if (event.key === "ArrowRight") showShot(shotIndex + 1);
+      if (event.key === "ArrowLeft") showShot(shotIndex - 1);
+    });
+    onSwipe(lightbox, (step) => showShot(shotIndex + step));
   }
 
   // ── スクロールに合わせた小さな動き（詩のコマ絵の帯）と、画面に入ったときの出かた ──
-  const drifters = [
-    [$(".strip img"), -4],
-  ].filter(([el]) => el);
+  const strip = $(".strip img");
   let ticking = false;
   const drift = () => {
     ticking = false;
+    if (!strip) return;
     const vh = innerHeight;
-    for (const [el, amount] of drifters) {
-      const box = el.parentElement.getBoundingClientRect();
-      if (box.bottom < 0 || box.top > vh) continue;
+    const box = strip.parentElement.getBoundingClientRect();
+    if (box.bottom < 0 || box.top > vh) return;
+    if (narrow.matches) {
+      // スマホ: 帯が画面の下から入って上へ抜けるまでに、絵の左端から右端までを見せる
+      const over = Math.max(0, strip.offsetWidth - box.width);
+      const through = Math.min(1, Math.max(0, (vh - box.top) / (vh + box.height)));
+      strip.style.transform = "translate3d(" + (-through * over).toFixed(1) + "px, 0, 0)";
+    } else {
       const progress = (box.top + box.height / 2 - vh / 2) / vh; // 画面の真ん中で0
-      el.style.transform = `translate3d(${(-progress * amount).toFixed(2)}%, 0, 0)`;
+      strip.style.transform = "translate3d(" + (progress * 4).toFixed(2) + "%, 0, 0)";
     }
   };
-  if (!calm && drifters.length) {
+  if (!calm && strip) {
     addEventListener("scroll", () => { if (!ticking) { ticking = true; requestAnimationFrame(drift); } }, { passive: true });
+    addEventListener("resize", drift, { passive: true });
     drift();
   }
 

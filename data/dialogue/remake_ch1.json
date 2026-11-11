@@ -4836,6 +4836,7 @@
           {
             "speaker": "sumi",
             "face": "serious",
+            "beat": 600,
             "text": "……今日の一台は、はじめだ"
           }
         ],
@@ -4843,6 +4844,7 @@
           {
             "speaker": "sumi",
             "face": "normal",
+            "beat": 600,
             "text": "……決めきれねえな。今日は引分けだ"
           }
         ],
@@ -4850,6 +4852,7 @@
           {
             "speaker": "sumi",
             "face": "normal",
+            "beat": 600,
             "text": "今日の一台は、なるだ。基礎の堅さで、まだ差がある"
           }
         ],

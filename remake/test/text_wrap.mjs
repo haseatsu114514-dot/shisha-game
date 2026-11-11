@@ -5,6 +5,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { autoWrap, paginate, WRAP_LIMIT, MAX_PAGE_LINES, textWidth } from "../js/vn/text.js";
+import { wrapProblems } from "./text_wrap_rules.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
 const strip = (s) => s.replace(/\[\/?[a-z]+\]/g, "");
@@ -70,6 +71,12 @@ for (const [text, expected] of [
 ]) assert.equal(lines(text).join("｜"), expected);
 // 文末「、……」の「……」は前の句に付く（行頭に置かない）
 assert.ok(!lines("だから、これは預けるんじゃなくて、あげる、……お礼、かな").some((l) => l.startsWith("…")));
+// 3b') 規範の判定（CI で止めるもの）: 切れ端と文の途中の改ページは error、短い2文目や文末で割れる2ページは止めない
+const levels = (text) => wrapProblems(text, paginate).problems.filter((p) => p.level === "error").map((p) => p.code);
+assert.deepEqual(levels("それを「客の思い込み」って片づけられると、腹が立つ"), ["short-second"]);
+assert.deepEqual(levels("木製の重厚なドアを開けた瞬間、暴力的なまでの甘さとアニスの香りが壁のように押し寄せてきた。"), ["mid-sentence"]);
+assert.deepEqual(levels("原点に返れば、次にやることも見えてくる。それだけだ"), []);
+assert.deepEqual(levels("ガラス越しにホールをのぞく。片付けの進む客席の隅に、チャコール博士が1人残っていた。"), []);
 // 3c) 2ページになる長い台詞は、ページの切れ目を文末に合わせる（一文を2つの吹き出しにまたがせない）
 assert.deepEqual(paginate("説明会の控室では、短く名乗ったきり黙っていた人だ。今はカウンターの奥で、片手を大きく広げている。"),
   ["説明会の控室では、\n短く名乗ったきり黙っていた人だ。", "今はカウンターの奥で、片手を大きく広げている。"]);
@@ -88,8 +95,7 @@ function walk(node, file, id) {
   for (const [k, v] of Object.entries(node)) if (k !== "text" && typeof v === "object") walk(v, file, did);
 }
 for (const f of files) walk(JSON.parse(fs.readFileSync(path.join(root, "data/dialogue", f), "utf8")), f, "");
-const problems = [], stubs = [];
-let twoLinePages = 0;
+const problems = [], rules = [];
 for (const { file, id, text } of texts) {
   for (const segment of text.split("\n")) {
     autoWrap(segment).split("\n").forEach((line, i, rows) => {
@@ -102,17 +108,16 @@ for (const { file, id, text } of texts) {
     });
   }
   for (const page of paginate(text)) {
-    const rows = page.split("\n");
-    if (rows.length > MAX_PAGE_LINES) problems.push(`${file}:${id} 3行のページ ${page}`);
-    if (rows.length !== 2) continue;
-    twoLinePages++;
-    // 2行目だけ短い（全角5字以下）ページ。短い2文目を文末で折った形（「〜見えてくる。／それだけだ」）は数えない
-    if (width(rows[1]) <= 5 && !/[。！？♡♪][ 　]*$/.test(strip(rows[0]))) stubs.push(`${file}:${id} ${rows.join("｜")}`);
+    if (page.split("\n").length > MAX_PAGE_LINES) problems.push(`${file}:${id} 3行のページ ${page}`);
+  }
+  // 改行の規範（text_wrap_rules.mjs の error）: 2行目だけ短い・文の途中でページが割れる。全台詞で0件に保つ（TXW08）
+  for (const p of wrapProblems(text, paginate).problems) {
+    if (p.level === "error") rules.push(`${file}:${id} ${p.message}\n    ${paginate(text).map((pg) => pg.replaceAll("\n", "／")).join("  ‖  ")}`);
   }
 }
 assert.deepEqual(problems, [], problems.slice(0, 20).join("\n"));
-// 切れ端は台詞が増えても2行のページの0.5%未満に保つ（改良前は約10%。括弧や連語で折る位置が限られる台詞だけが残る）
-if (twoLinePages) assert.ok(stubs.length < twoLinePages * 0.005, `2行目だけ短いページ ${stubs.length}/${twoLinePages}\n${stubs.slice(0, 20).join("\n")}`);
+assert.deepEqual(rules, [], `改行の規範から外れた台詞が ${rules.length}件ある。言い換えるか、文を分けて直す。` +
+  `確かめ方: node .claude/skills/text-style/check_wrap.mjs（text-style スキル）\n${rules.slice(0, 20).join("\n")}`);
 
 // 本心と同じ固定枠に収める発言は1行ずつ送る。装飾・全文を失わない。
 const singleLineText = "[imp]今日は、会社からの通知を切って、ゆっくり煙の香りだけを楽しみたい。[/imp]";

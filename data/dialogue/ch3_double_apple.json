@@ -267,7 +267,7 @@
         {
           "speaker": "hajime",
           "face": "smile",
-          "text": "……うん。ダブルアップル、だね。懐かしい味"
+          "text": "……うん。[shiver]ダブルアップル、だね[/shiver]。懐かしい味"
         },
         {
           "speaker": "hajime",
@@ -282,6 +282,7 @@
         {
           "speaker": "mashiro",
           "face": "normal",
+          "duck": true,
           "text": "これ、グレープ。ダブルアップル、一粒も入ってないよ"
         },
         {
@@ -813,6 +814,7 @@
         {
           "speaker": "mashiro",
           "face": "smile",
+          "beat": 600,
           "text": "おかえり"
         },
         {

@@ -4,7 +4,7 @@ import { imgFileUrl } from "../core/img-file.js";
 import { portraitStyle } from "../core/portrait-style.js";
 import { portraitAsset } from "../core/portrait-resolver.js";
 import { svg } from "../core/transition-kit.js";
-import { SE, unlockAudio, playAxeSe } from "../core/audio.js";
+import { SE, unlockAudio, playAxeSe, preloadAxeSe } from "../core/audio.js";
 import { RINGS, KILLS, CLUSTERS, LINE, BLADE, POWER, SWAY, MODES, DIVISIONS, BOARD, RULESET, gaugeAt, axisAt, releaseAimAt, resolveThrow, totalOf, gradeOf, killState, canCall, closuresOf, halfOf } from "./axe-model.js";
 import { createMatch, takeTurn, turnOf, planOpponent, matchResult, resolveTurn, inSuddenDeath, suddenDeathTarget, DIFFICULTIES } from "./axe-match.js";
 import { COMPANIONS, reaction, matchReaction, portraitFocus } from "./axe-companions.js";
@@ -83,7 +83,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   const callerScreen = (versus || tutorial) && host.id === "stage" ? host.querySelector("#screen") : null;
   const callerContent = callerScreen ? [...callerScreen.childNodes] : [];
   let phase = "loading", elapsed = 0, stamp = null, frame = 0, lastHudRender = -Infinity, aim = { x: 0, y: 0 }, power = POWER.ideal;
-  let shots = match?.player || [], pending = null, called = null, lastAction = -Infinity;
+  let shots = match?.player || [], pending = null, bounced = null, called = null, lastAction = -Infinity;
   let actor = "player", matchLines = null, gameRecorded = false;
   let portraitKey = null;
   let portraitManifest = null;
@@ -423,7 +423,8 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
       el("strong", { text: cue.label }), el("span", { text: cue.place }),
     ]);
     root.append(declareNode);
-    SE.good();
+    // 宣言は刃を構える「チャキッ」、最後の1投・持ち替え・延長戦は太鼓、目標達成は「シャーン」（2026-11-11 オーナー「効果音しょぼかったり」）
+    playAxeSe(cue.kind === "goal" ? "cueClear" : cue.kind === "last" || cue.kind === "half" ? "cueDrum" : "call");
     declareTimer = setTimeout(clearDeclareCue, cue.duration || 950);
   }
   function switching() { return rules.half > 0 && actor === "player" && shots.length === rules.half; }
@@ -483,11 +484,11 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   function act() {
     if (isPaused() || !["choice", "horizontal", "vertical", "power", "result", "summary", "failed"].includes(phase)
       || cycles[phase] && elapsed < 250 || performance.now() - lastAction < 250) return;
-    lastAction = performance.now(); unlockAudio();
+    lastAction = performance.now(); unlockAudio(); void preloadAxeSe();
     if (phase === "failed") loadArt();
     else if (phase === "choice") { held = 0; SE.select(); setPhase("horizontal"); }
-    else if (phase === "horizontal") { aim.x = axisAt(gaugeAt(elapsed, cycles.horizontal)); SE.select(); setPhase("vertical"); }
-    else if (phase === "vertical") { aim.y = axisAt(gaugeAt(elapsed, cycles.vertical)); SE.select(); setPhase("power"); }
+    else if (phase === "horizontal") { aim.x = axisAt(gaugeAt(elapsed, cycles.horizontal)); playAxeSe("stop"); setPhase("vertical"); }
+    else if (phase === "vertical") { aim.y = axisAt(gaugeAt(elapsed, cycles.vertical)); playAxeSe("stop"); setPhase("power"); }
     else if (phase === "power") {
       power = gaugeAt(elapsed, cycles.power);
       const release = releaseAimAt(aim, held, power, shots.length, held < focusUntil, steady);
@@ -874,6 +875,8 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
       const slow = root.dataset.slowMotion === "true";
       const display = reducedMotion ? FLIGHT.travel + FLIGHT.fall : flightTime(elapsed, slow);
       const pose = flightPose(pending, display);
+      // 柄から当たる・回りすぎ: 板に当たって跳ね返る瞬間に「コンッ」。床に落ちた時の「ガシャン」は下の drop（板の外は跳ね返らない）。
+      if (!pending.stuck && pending.dropReason !== "off-board" && display >= FLIGHT.travel && bounced !== pending) { bounced = pending; playAxeSe("bounce"); }
       if (!reducedMotion && display < FLIGHT.travel) {
         const points = [160, 110, 60, 0].map(offset => flightPose(pending, Math.max(0, display - offset)));
         trail.setAttribute("d", points.map((p, i) => `${i ? "L" : "M"}${p.bladeX} ${p.bladeY}`).join(" "));
@@ -898,8 +901,8 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
           shots = match.player; shot = latest(actor);
         } else shots.push(shot);
         pending = null;
-        // 刃が木に刺さったら0点でも衝突音を鳴らす。得点と失敗の合図は別に重ねる。
-        if (shot.stuck) playAxeSe("stick", { scored: shot.score > 0 });
+        // 刃が木に刺さったら0点でも衝突音を鳴らす。得点と失敗の合図は別に重ねる。キルショットは刃が鳴る「キィーン」付き。
+        if (shot.stuck) playAxeSe(shot.outcome === "killshot" ? "killshot" : "stick", { scored: shot.score > 0 });
         else playAxeSe("drop");
         if (shot.score >= 6) playAxeSe("cheer");
         else if (!shot.score) playAxeSe("miss");
