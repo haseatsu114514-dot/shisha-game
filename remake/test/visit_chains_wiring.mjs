@@ -193,6 +193,8 @@ const { chainVisitDue, playChainStage, loadVisitChains } = playModule.ns;
     consultLessons: async () => {}, nextDubaiBondStory: () => null, DUBAI_LETTER_AGAIN: [], DUBAI_LETTER_DAYS: 2,
     CH5_CAMEL_MEET: { scene: "ch5_camel_meet" }, CH4_CAMEL_SCENE_FILES: { ch4_camel_race: [] }, SHEIKH_BOND_IDS: [], TAIYO_BOND_IDS: [],
     DESERT_SPOT_IDS: { dunes: "dunes", desk: "desk" }, CAMEL_DAILY_SPOT_ID: "camel", MOSQUE_VISITING_HOURS: {},
+    // クリーク沿いの場面の束（SPV03・ch4-dubai-local.js）。台本の一覧は配列で読むので、空で差し込む
+    CREEK_SCENES: { day: [], night: [] }, CREEK_SPOT_IDS: [], CREEK_TURN: "dubai_creek", creekSpotScenes: () => ({}), quietTurn: () => null,
     chainStageAt: chains.chainStageAt, chainVisitDue, playChainStage,
   });
   const { performDubaiSpot, DUBAI_SPOTS } = dubai.ns;
