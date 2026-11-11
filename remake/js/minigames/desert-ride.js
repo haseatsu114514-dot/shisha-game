@@ -209,11 +209,9 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
     root.focus({ preventScroll: true });
 
     const input = { left: false, right: false };
-    let stickSteer = 0;
     const releaseButtons = [];
     const resetInput = () => {
       input.left = input.right = false;
-      stickSteer = 0;
       for (const release of releaseButtons) release();
     };
     let pose = "rider";
@@ -280,48 +278,12 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       button.addEventListener("contextmenu", event => event.preventDefault());
       return button;
     };
-    const stick = el("button.dr-stick", { type: "button", dataset: { test: "desert-stick", value: "0" }, "aria-label": "左右移動スティック" }, [
-      el("img.dr-stick-base", { src: imgFileUrl(DESERT_CONTROL_ART.stickBase), alt: "", draggable: false }),
-      el("img.dr-stick-knob", { src: imgFileUrl(DESERT_CONTROL_ART.stickKnob), alt: "", draggable: false }),
-    ]);
-    let stickPointer = null;
-    const centerStick = () => {
-      stickPointer = null; stickSteer = 0;
-      stick.dataset.value = "0";
-      stick.style.setProperty("--stick-x", "0px");
-      stick.style.setProperty("--stick-y", "0px");
-      stick.classList.remove("on");
-    };
-    const moveStick = event => {
-      const rect = stick.getBoundingClientRect();
-      const radius = rect.width * 0.28;
-      let x = (event.clientX - rect.left - rect.width / 2) / radius;
-      let y = (event.clientY - rect.top - rect.height / 2) / radius;
-      const length = Math.hypot(x, y);
-      if (length > 1) { x /= length; y /= length; }
-      stickSteer = Math.abs(x) < 0.12 ? 0 : x;
-      stick.dataset.value = String(Math.round(stickSteer * 100));
-      stick.style.setProperty("--stick-x", `${(x * 42).toFixed(1)}px`);
-      stick.style.setProperty("--stick-y", `${(y * 42).toFixed(1)}px`);
-    };
-    stick.addEventListener("pointerdown", event => {
-      if (stickPointer !== null) return;
-      event.preventDefault(); unlockAudio();
-      stickPointer = event.pointerId;
-      stick.setPointerCapture?.(event.pointerId);
-      stick.classList.add("on");
-      moveStick(event);
-    });
-    stick.addEventListener("pointermove", event => { if (stickPointer === event.pointerId) { event.preventDefault(); moveStick(event); } });
-    for (const type of ["pointerup", "pointercancel", "lostpointercapture"]) stick.addEventListener(type, event => { if (stickPointer === event.pointerId) centerStick(); });
-    stick.addEventListener("contextmenu", event => event.preventDefault());
-    releaseButtons.push(centerStick);
     const jumpButton = holdButton("ジャンプ／着地", "dr-jump", "desert-jump", act, () => {}, "jump");
     controls.append(
-      el("div.dr-steer-group", [stick, el("div.dr-touch-pair", [
+      el("div.dr-touch-pair.dr-steer-pair", [
         holdButton("左へ", "dr-left", "desert-left", () => { input.left = true; }, () => { input.left = false; }, "left"),
         holdButton("右へ", "dr-right", "desert-right", () => { input.right = true; }, () => { input.right = false; }, "right"),
-      ])]),
+      ]),
       el("div.dr-touch-pair", [
         holdButton("BOOST", "dr-boost", "desert-boost", doBoost, () => {}, "boost"),
         jumpButton,
@@ -543,7 +505,7 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       hudNodes.progress.style.width = progress(game.z);
       hudNodes.you.style.left = progress(game.z);
       if (rival) {
-        const noor = rivalAt(rival, game.t);
+        const noor = rivalAt(rival, game.rivalClock);
         hudNodes.noor.style.left = progress(noor.z);
         const gap = Math.round(game.z - Math.min(noor.z, game.course.length));
         const name = RIVAL_NAMES[raceWith];
@@ -644,8 +606,8 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
         }
       } else {
         const steps = Math.max(1, Math.ceil(dt / (1 / 60)));
-        // ボタンは最大舵角、スティックは倒し量に比例。併用時は合算して範囲内に収める。
-        const steer = Math.max(-1, Math.min(1, (input.right ? 1 : 0) - (input.left ? 1 : 0) + stickSteer));
+        // 左右のボタン・キーは最大舵角（2026-11-11 オーナー「スティックはいらない」でスティックを外した）
+        const steer = (input.right ? 1 : 0) - (input.left ? 1 : 0);
         for (let i = 0; i < steps && !game.finished; i++) step(game, { ...input, steer }, dt / steps);
       }
       const events = game.events.slice(before);
@@ -1113,7 +1075,7 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
         drawables.push({ z: f.z, kind: f.kind, f });
       }
       for (const sign of curveSigns) if (sign.z > camZ + 0.8 && sign.z < camZ + DRAW_DIST) drawables.push({ z: sign.z, kind: "curveSign", sign });
-      const noor = rival ? rivalAt(rival, game.t) : null;
+      const noor = rival ? rivalAt(rival, game.rivalClock) : null; // 差に応じて速さを変えた再生（RUBBER）
       if (noor && noor.z > camZ + 1.2 && noor.z < camZ + DRAW_DIST) drawables.push({ z: noor.z, kind: "noor", noor });
       if (game.course.length >= camZ && game.course.length < camZ + DRAW_DIST) drawables.push({ z: game.course.length, kind: "goal" });
       drawables.sort((a, b) => b.z - a.z);
