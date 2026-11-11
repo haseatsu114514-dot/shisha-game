@@ -2208,6 +2208,14 @@
   border-radius: 6px;
   box-shadow: inset 0 0 0 1px var(--neo-ui-gold), 0 14px 40px rgba(8, 3, 16, .65), 0 0 30px rgba(227, 189, 110, .28);
 }
+/* 札の板の絵（GB04）が読めた時: 絵の縁に合わせて角を丸め、面の色は絵の下に敷いたまま。
+   上の border: 0 が border-image も消すので、絵は daily.css と同じ指定をここにも書く。 */
+:root[data-look="neo"] body:not(.game-ds) #stage #fx .lvup.has-art .lvup-plate {
+  border: 1px solid transparent;
+  border-image: url(../img/ui/growth_board/levelup_plate.webp) 49 56 fill / calc(var(--plate-h) * .49) calc(var(--plate-h) * .56) stretch;
+  border-radius: calc(var(--plate-h) * .24);
+  box-shadow: 0 14px 40px rgba(8, 3, 16, .65), 0 0 30px rgba(227, 189, 110, .28);
+}
 /* 場面のつなぎの一行（暗転＋文字）: 下に金の細い罫線。 */
 :root[data-look="neo"] body:not(.game-ds) #stage #fx .beat::after {
   content: "";

@@ -1,0 +1,46 @@
+{
+  "issue": 3331,
+  "adopted": "2026-11-12 オーナー決定（H1 笑顔・H2 悲しみ・H3 眠いの3枚とも採用）",
+  "method": "今の新版の通常と、頭頂〜足元の高さ・足元の下端・体（下40%: スカートと足元）の横位置を同じにして LANCZOS で縮小・配置（首を傾ける眠いでも体が動かない。今の新版のあくびと同じ合わせ方）。人物から離れた不透明度16未満の点だけ消した。描き直し・色の調整はしていない",
+  "items": [
+    {
+      "expression": "smile",
+      "source": "asset_sources/portraits/mashiro-new-expressions-20261112/smile-untouched.png",
+      "source_sha256": "9eea82f45ac8723aa5d1e895cefc6fba6d2c068ed96cb2ab21cfa4c3a262aabe",
+      "reference": "今の新版の通常（assets/sprites/character_variants/new/mashiro/chr_mashiro_normal.png）",
+      "scale": 0.82317,
+      "offset": [
+        0,
+        0
+      ],
+      "runtime": "assets/sprites/character_variants/new/mashiro/chr_mashiro_smile.png",
+      "runtime_sha256": "843bec5eff6e874d28db6f0ba5fbe0c0632aebde07b577ef15ec52862d16ef99"
+    },
+    {
+      "expression": "sad",
+      "source": "asset_sources/portraits/mashiro-new-expressions-20261112/sad-untouched.png",
+      "source_sha256": "f894a48139203263d82b9545c5c3780900cdd4c098c024990792455b7a94568e",
+      "reference": "今の新版の通常（assets/sprites/character_variants/new/mashiro/chr_mashiro_normal.png）",
+      "scale": 0.82254,
+      "offset": [
+        0,
+        2
+      ],
+      "runtime": "assets/sprites/character_variants/new/mashiro/chr_mashiro_sad.png",
+      "runtime_sha256": "b84bf917a450339b88fffee984064e1c5d3a44274695f9692c5759656e18d683"
+    },
+    {
+      "expression": "sleep",
+      "source": "asset_sources/portraits/mashiro-new-expressions-20261112/sleep-untouched.png",
+      "source_sha256": "bfa3bd552821c93165c99303897afb74da31f25753721e48898d4642c11ee4c2",
+      "reference": "今の新版の通常（assets/sprites/character_variants/new/mashiro/chr_mashiro_normal.png）",
+      "scale": 0.81818,
+      "offset": [
+        -2,
+        3
+      ],
+      "runtime": "assets/sprites/character_variants/new/mashiro/chr_mashiro_sleep.png",
+      "runtime_sha256": "e8c998ce5ffcf9fdf6b4bc3002b10c2a64dd56d96a4ce835e7e832ddc95f81ae"
+    }
+  ]
+}
