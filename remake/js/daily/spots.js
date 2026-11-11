@@ -642,14 +642,21 @@ async function maybeCafeIdea(spot, visit) {
   toast(`📝 試したい配合をメモした ──「${combo}」（配合の画面でひらめきに出る）`, { kind: "good" });
 }
 
+/** 家で休む小品（SPV03）。順番に読み、雨の日は雨の回。体調を崩した日の「残りを全部休む」は別の一本（remake_rest_day）。 */
+export const REST_SCENES = Object.freeze(["remake_rest", "remake_rest_b", "remake_rest_c", "remake_rest_d", "remake_rest_e"]);
+export const REST_RAIN_SCENES = Object.freeze(["remake_rest_rain"]);
+
 export async function restAtHome(spot, { fullDay = false } = {}) {
   const owner = state;
   addStamina(spot.stamina);
   delete state.flags._cold_pending;
   delete state.flags._overwork;
   state.flags._home_tonight = state.slot >= 1;
-  const result = await play(fullDay ? "remake_rest_day" : "remake_rest");
-  if (state === owner && owner.chapter === 2 && result && !result.cancelled) owner.flags._ch2_rest_taken = true;
+  const turn = fullDay ? null : isRainy() && quietTurn("rest", REST_RAIN_SCENES, "rain") || quietTurn("rest", REST_SCENES);
+  const result = await play(fullDay ? "remake_rest_day" : turn?.id || REST_SCENES[0]);
+  if (state !== owner || !result || result.cancelled) return;
+  if (turn) owner.flags[turn.key] = turn.count + 1;
+  if (owner.chapter === 2) owner.flags._ch2_rest_taken = true;
 }
 
 /** 好感度の段階（♥の数） */

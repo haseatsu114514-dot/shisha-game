@@ -229,6 +229,24 @@ await suite("spot-encounters", async check => {
     assert.equal(r.afterLoad, r.second, "読んだ本数は保存され、LOAD後は続きから読む");
   });
 
+  // SPV03: 家で休む小品も順番に読む。雨の日は雨の回、体調を崩した日の「残りを全部休む」は今までの一本。
+  await run("home-rest-reads-each-piece-in-turn", async page => {
+    await setup(page);
+    const r = await page.evaluate(async () => {
+      const rest = async (options) => { E.clear(); await E.spots.restAtHome({ stamina: 10 }, options); return E.trace[0]; };
+      const seen = [];
+      for (let i = 0; i <= E.spots.REST_SCENES.length; i++) { E.sunny(); seen.push(await rest()); }
+      E.rain(); const rain = await rest();
+      E.sunny(); const next = await rest(), full = await rest({ fullDay: true }), afterFull = await rest();
+      return { seen, rain, next, full, afterFull, pool: [...E.spots.REST_SCENES], rainPool: [...E.spots.REST_RAIN_SCENES] };
+    });
+    assert(r.pool.length >= 5 && new Set(r.pool).size === r.pool.length);
+    assert.deepEqual(r.seen.slice(0, r.pool.length), r.pool, "休む小品を順に一本ずつ読む");
+    assert.equal(r.seen.at(-1), r.pool[0], "一巡してから先頭へ戻る");
+    assert.equal(r.rain, r.rainPool[0]); assert.equal(r.next, r.pool[1], "雨の回は晴れの日の順番を進めない");
+    assert.equal(r.full, "remake_rest_day"); assert.equal(r.afterFull, r.pool[2], "全部休む日は順番を進めない");
+  });
+
   const examples = [
     { spot: "cafe", char: "naru", source: "cafe_naru_break", follow: "cafe_naru_followup", positive: "_spot_choice_naru_cafe_share", reply: ["結局俺の方", "まだ食べてない"] },
     { spot: "kannon", char: "adam", source: "kannon_adam", follow: "kannon_adam_followup", positive: "_spot_choice_adam_pray", reply: ["お願いした甲斐", "代わりがきかない"] },

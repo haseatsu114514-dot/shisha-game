@@ -16,7 +16,8 @@ import { runDaily } from "../daily/calendar.js";
 import { showHud } from "../daily/hud.js";
 import { addMoney, addStamina, earnStat, gainAffinity, paidAction, earnSceneCompletion } from "../core/stats.js";
 import { openShop } from "../daily/shop.js";
-import { fortuneSpot, TOKYO_VISIT_COST } from "../daily/spots.js";
+import { fortuneSpot, TOKYO_VISIT_COST, quietTurn } from "../daily/spots.js";
+import { TOKYO_GYM_SCENES, TOKYO_GYM_IDS, TOKYO_GYM_TURN } from "./ch3-activity-progress.js";
 import { spendableMoney } from "../core/travel-budget.js";
 import { canReflect, reflectAt } from "../daily/reflection.js";
 import { consultLessons } from "../core/growth.js";
@@ -232,7 +233,7 @@ export async function runChapterThreeTokyo(io) {
   const [definitions] = await Promise.all([
     import("./ch3-social.js").then(social => { tokyoSocial = social; return social.loadTokyoSocial(); }),
     readDialogues("ch3_outings", OUTING_IDS).then(found => Object.assign(DB.dialogues, found)),
-    readDialogues("ch3_activities", ["ch3_choizap_day", "ch3_choizap_night"]).then(found => Object.assign(DB.dialogues, found)),
+    readDialogues("ch3_activities", TOKYO_GYM_IDS).then(found => Object.assign(DB.dialogues, found)),
     readDialogues("ch3_tokyo_daily", TOKYO_DAILY_IDS).then(found => Object.assign(DB.dialogues, found)),
     loadMukaiShift(),
     refreshOptional(),
@@ -477,8 +478,11 @@ async function goOuting(outing, staminaGuard, owner) {
 
 async function goGym(entry, staminaGuard, owner) {
   if (!(await staminaGuard(entry.stamina))) return unused;
-  const sceneId = state.slot ? "ch3_choizap_night" : "ch3_choizap_day";
+  // 昼・夜それぞれの小品を順番に読む（SPV03。初回は今までの一本）
+  const turn = quietTurn(TOKYO_GYM_TURN, TOKYO_GYM_SCENES[state.slot ? "night" : "day"], state.slot ? "night" : "");
+  const sceneId = turn?.id || (state.slot ? "ch3_choizap_night" : "ch3_choizap_day");
   if (!await readPlain(sceneId, "bg_choizap", owner)) return unused;
+  if (turn) state.flags[turn.key] = turn.count + 1;
   addStamina(entry.stamina);
   earnStat(entry.stat, 4);
   earnSceneCompletion(sceneId, owner);

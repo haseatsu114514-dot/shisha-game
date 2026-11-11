@@ -21,7 +21,7 @@ import { addMoney, addStamina, earnStat, gainAffinity, visitAffinity, earnSceneC
 import { spendableMoney } from "../core/travel-budget.js";
 import { tokyoVanBlock, TOKYO_VAN_SLOTS } from "./ch5-travel.js";
 import { openShop } from "../daily/shop.js";
-import { TOKYO_VISIT_COST } from "../daily/spots.js";
+import { TOKYO_VISIT_COST, quietTurn } from "../daily/spots.js";
 import { modal } from "../core/ui.js";
 import { runMukaiShift, loadMukaiShift, MUKAI_SHIFT_STAMINA, MUKAI_PAY } from "./tokyo-mukai.js";
 import { loverMilestonesDue, readLoverMilestone } from "./lover-entry.js";
@@ -114,7 +114,24 @@ const SCENES = TOKYO_SPOTS.flatMap(entry => entry.talks || []).concat(["ch5_toky
   "ch5_tokyo_gym_day", "ch5_tokyo_gym_night", "ch5_steve_bond_finale", "ch5_volk_bond_finale"]);
 // てつこのお世話は第3章の続き（通うほど懐いていく。回数も第3章と同じ記録。ch3-outing-progress.js の stages・loop）
 const TETSUKO = TOKYO_OUTINGS.find(outing => outing.id === "tetsuko");
-const CH3_SCENES = ["ch3_outing_park_walk_night", ...TETSUKO.stages, ...TETSUKO.loop];
+// 公園と CHOI-ZAP は、昼・夜それぞれの小品を順番に読む（SPV03。daily/spots.js の quietTurn）。
+// 一本目は第5章の場面、続きは第3章で書いた東京の小品（章に触れない文だけ。「遠征バッジ」の ch3_choizap_app は第3章だけ）。
+const PARK_SCENES = Object.freeze({
+  day: ["ch5_tokyo_park_day", "ch3_outing_park_walk_day_b", "ch3_outing_park_walk_day_c"],
+  night: ["ch3_outing_park_walk_night", "ch3_outing_park_walk_night_b", "ch3_outing_park_walk_night_c"],
+});
+const GYM_SCENES = Object.freeze({
+  day: ["ch5_tokyo_gym_day", "ch3_choizap_lunch", "ch3_choizap_train"],
+  night: ["ch5_tokyo_gym_night", "ch3_choizap_locker"],
+});
+/** 今の時間帯の次の一本 { id, key, count }。読み終えたら flags[key] を count + 1 にする。 */
+function quietScene(key, scenes) {
+  const night = state.slot >= 1, ids = scenes[night ? "night" : "day"];
+  return quietTurn(key, ids, night ? "night" : "") || { id: ids[0], key: null, count: 0 };
+}
+const readTurn = turn => { if (turn.key) state.flags[turn.key] = turn.count + 1; };
+const CH3_ACTIVITY_SCENES = [...GYM_SCENES.day, ...GYM_SCENES.night].filter(id => id.startsWith("ch3_"));
+const CH3_SCENES = [...PARK_SCENES.day, ...PARK_SCENES.night].filter(id => id.startsWith("ch3_")).concat(TETSUKO.stages, TETSUKO.loop);
 async function careForTetsuko(owner) {
   if (!await read(outingDialogueId(state, TETSUKO), "bg_street", owner)) return false;
   state.flags[OUTINGS_FLAG] = { ...outingCounts(state), tetsuko: (outingCounts(state).tetsuko || 0) + 1 };
@@ -123,10 +140,10 @@ async function careForTetsuko(owner) {
 
 let loading = null;
 async function loadTokyoScenes() {
-  if ([...SCENES, ...CH3_SCENES, ...MASHIRO_TIME_SCENES].every(id => DB.dialogues[id]?.lines?.length)) return loadMukaiShift();
+  if ([...SCENES, ...CH3_SCENES, ...CH3_ACTIVITY_SCENES, ...MASHIRO_TIME_SCENES].every(id => DB.dialogues[id]?.lines?.length)) return loadMukaiShift();
   loading ||= Promise.all([readDialogues("ch5_tokyo", SCENES), readDialogues("ch3_outings", CH3_SCENES),
-    readDialogues(MASHIRO_TIME_FILE, MASHIRO_TIME_SCENES), loadMukaiShift().then(() => ({}))])
-    .then(([tokyo, ch3, mashiro]) => { Object.assign(DB.dialogues, tokyo, ch3, mashiro); })
+    readDialogues(MASHIRO_TIME_FILE, MASHIRO_TIME_SCENES), readDialogues("ch3_activities", CH3_ACTIVITY_SCENES), loadMukaiShift().then(() => ({}))])
+    .then(([tokyo, ch3, mashiro, activities]) => { Object.assign(DB.dialogues, tokyo, ch3, mashiro, activities); })
     .catch(error => { loading = null; throw error; });
   await loading;
 }
@@ -184,8 +201,9 @@ export async function performTokyoSpot(spot, { staminaGuard } = {}) {
   }
   if (spot.id === "ch5_tokyo_park") {
     // 池のある公園の絵（昼夜の差分あり）。第3章の公園と同じ（ch3-outings.js の OUTING_BG.park）
-    const scene = state.slot >= 1 ? "ch3_outing_park_walk_night" : "ch5_tokyo_park_day";
-    if (!await read(scene, spot.preview, owner)) return { used: false, exerted: false };
+    const turn = quietScene(spot.id, PARK_SCENES);
+    if (!await read(turn.id, spot.preview, owner)) return { used: false, exerted: false };
+    readTurn(turn);
     addStamina(spot.stamina);
     return { used: true, exerted: false };
   }
@@ -203,8 +221,9 @@ export async function performTokyoSpot(spot, { staminaGuard } = {}) {
   if (spot.gym) {
     // 第3章の東京の CHOI-ZAP と同じ手順（体力・魅力・初めて読んだ場面）。昼と夜で場面が違う。
     if (staminaGuard && !(await staminaGuard(spot.stamina))) return { used: false, exerted: false };
-    const scene = state.slot >= 1 ? "ch5_tokyo_gym_night" : "ch5_tokyo_gym_day";
+    const turn = quietScene(spot.id, GYM_SCENES), scene = turn.id;
     if (!await read(scene, spot.preview, owner)) return { used: false, exerted: false };
+    readTurn(turn);
     addStamina(spot.stamina);
     earnStat(spot.stat, 4);
     earnSceneCompletion(scene, owner);

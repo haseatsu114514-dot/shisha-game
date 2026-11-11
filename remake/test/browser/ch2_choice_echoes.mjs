@@ -7,7 +7,7 @@ await suite("ch2-choice-echoes", async check => {
       const core = await import("./js/core/state.js");
       const vn = await import("./js/vn/engine.js");
       const { DB } = await import("./js/core/data.js");
-      const { restAtHome } = await import("./js/daily/spots.js");
+      const { restAtHome, REST_SCENES, REST_RAIN_SCENES } = await import("./js/daily/spots.js");
       const { loadPreparationDialogues } = await import("./js/chapters/ch2-city-data.js");
       const { chapterTwoNights } = await import("./js/chapters/ch2-story.js");
       (await import("./js/chapters/ch1.js")).setupHooks();
@@ -49,11 +49,12 @@ await suite("ch2-choice-echoes", async check => {
       vn.hooks.onLine = () => { const s = core.newGame(); s.chapter = 2; vn.hooks.onLine = null; };
       await restAtHome({ stamina: 10 });
       const interruptedMarked = !!interrupted.flags._ch2_rest_taken || !!core.state.flags._ch2_rest_taken;
-      const scene = DB.dialogues.remake_rest;
-      delete DB.dialogues.remake_rest;
+      // 休む場面（順番に読む小品と雨の回。SPV03）がどれも読めない時
+      const restIds = [...REST_SCENES, ...REST_RAIN_SCENES], scenes = restIds.map(id => DB.dialogues[id]);
+      for (const id of restIds) delete DB.dialogues[id];
       await restAtHome({ stamina: 10 });
       const missingMarked = !!core.state.flags._ch2_rest_taken;
-      DB.dialogues.remake_rest = scene;
+      restIds.forEach((id, index) => { DB.dialogues[id] = scenes[index]; });
       return { rows, chapterOne, interruptedMarked, missingMarked };
     });
     assert(!result.chapterOne && !result.interruptedMarked && !result.missingMarked);

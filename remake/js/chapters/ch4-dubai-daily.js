@@ -43,7 +43,8 @@ import { LONGLONG_BG, LONGLONG_CHAR, LONGLONG_IDS, LONGLONG_LOAD_IDS, nextLonglo
 import { finaleAtVisit, playFinale } from "../daily/bonds.js";
 import { FESTA_BOND_IDS, nextDubaiBondStory, recordDubaiBondRead } from "./dubai-bonds.js";
 import { NIGHT_SCENE_IDS, STALL_NONE, STALL_PLACE, STALL_SCENE_IDS, dubaiSpotAt, nightVisit, recordNightVisit, priceText,
-  stallChoices, stallItem, stallLabel, stallSceneId } from "./ch4-dubai-local.js";
+  stallChoices, stallItem, stallLabel, stallSceneId, CREEK_SCENES, CREEK_SPOT_IDS, CREEK_TURN, creekSpotScenes } from "./ch4-dubai-local.js";
+import { quietTurn } from "../daily/spots.js";
 import { runFullPractice } from "../craft/practice.js";
 import { computeShisha } from "../craft/score.js";
 import { INN_TRIAL_FLAG, INN_TRIAL_IDS, innTrialDue, innTrialResult } from "./ch4-inn-trial.js";
@@ -223,7 +224,7 @@ export function chapterFourDubaiDefinition(io) {
 export async function runChapterFourDubai(io) {
   const owner = state;
   Object.assign(DB.dialogues, await readDialogues("ch4_dubai_daily", DUBAI_DAILY_IDS), await readDialogues("ch4_longlong", LONGLONG_LOAD_IDS),
-    await readDialogues("taiyo_bond", FESTA_BOND_IDS));
+    await readDialogues("taiyo_bond", FESTA_BOND_IDS), creekSpotScenes(await readDialogues("ch4_spots", CREEK_SPOT_IDS)));
   // 同行した恋人と宿で過ごす場面（BLC08・companion-time.js）。読めなくても地図は開き、宿の選択肢に出ないだけ
   if (companionLover(owner)) await readDialogues(COMPANION_TIME_FILE, COMPANION_TIME_IDS).then(found => Object.assign(DB.dialogues, found)).catch(() => {});
   // LOAD・再開でも最初の地図から、ヌールの MENU の案内（♥5の締めくくり・告白を選べる）を合わせる。どちらも台詞が読み込まれているかを見る
@@ -297,7 +298,12 @@ async function performDubaiSpot(entry, io, { staminaGuard }) {
     const visit = await visitInn(io, owner, staminaGuard);
     done = visit.done; innTrial = visit.trial; withCompanion = !!visit.companion;
   }
-  else if (entry.place === "creek") done = await readPlain(state.slot ? "ch4_creek_walk_night" : "ch4_creek_walk_day", "bg_dubai_street_night", owner);
+  else if (entry.place === "creek") {
+    // 昼・夜それぞれの場面を順番に読む（SPV03）
+    const turn = quietTurn(CREEK_TURN, CREEK_SCENES[state.slot ? "night" : "day"], state.slot ? "night" : "");
+    done = await readPlain(turn?.id || (state.slot ? "ch4_creek_walk_night" : "ch4_creek_walk_day"), "bg_dubai_street_night", owner);
+    if (done && turn) state.flags[turn.key] = turn.count + 1;
+  }
   else if (entry.place === "longlong") {
     // ♥5の締めくくりが来ていれば、段階や小会話より先に一度だけ読む（客の一台ではないので代金は取らない）。
     if (finaleAtVisit(LONGLONG_CHAR)) {

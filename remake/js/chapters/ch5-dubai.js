@@ -31,6 +31,8 @@ import { finaleAtVisit, playFinale } from "../daily/bonds.js";
 import { SHEIKH_BOND_IDS, TAIYO_BOND_IDS, nextDubaiBondStory, recordDubaiBondRead, recordSheikhBondLetter, sheikhBondLetterDue } from "./dubai-bonds.js";
 import { chainStageAt } from "./visit-chains.js";
 import { chainVisitDue, playChainStage } from "./visit-chain-play.js";
+import { CREEK_SCENES, CREEK_SPOT_IDS, CREEK_TURN, creekSpotScenes } from "./ch4-dubai-local.js";
+import { quietTurn } from "../daily/spots.js";
 
 export const DUBAI = "dubai";
 // 手紙・切符・飛んだ回数・帰った日の旗は chapters/ch5-travel.js が持つ。
@@ -126,13 +128,14 @@ const SCENES = DUBAI_SPOTS.flatMap(entry => entry.talks || [])
   .concat(["ch5_dubai_letter", ...DUBAI_LETTER_AGAIN, "ch5_dubai_go", "ch5_dubai_back", "ch5_dubai_arrival", "ch5_dubai_guest_rest",
     CAMEL_AGAIN.scene, DUNES_AGAIN.scene, CH5_CAMEL_MEET.scene, NOOR_CAFE_AGAIN, ...Object.values(CH5_NOOR_SCENES)]);
 const CH4_SCENES = ["ch4_creek_walk_day", "ch4_creek_walk_night"];
+// クリーク沿いは第4章と同じ場面を、同じ順番の続きから読む（SPV03）
 
 let loading = null;
 async function loadDubaiScenes() {
-  if ([...SCENES, ...CH4_SCENES, ...SHEIKH_BOND_IDS, ...TAIYO_BOND_IDS].every(id => DB.dialogues[id]?.lines?.length)) return;
+  if ([...SCENES, ...CH4_SCENES, ...CREEK_SPOT_IDS, ...SHEIKH_BOND_IDS, ...TAIYO_BOND_IDS].every(id => DB.dialogues[id]?.lines?.length)) return;
   loading ||= Promise.all([readDialogues("ch5_dubai", SCENES), readDialogues("ch4_dubai_daily", CH4_SCENES),
-    readDialogues("sheikh_bond", SHEIKH_BOND_IDS), readDialogues("taiyo_bond", TAIYO_BOND_IDS)])
-    .then(([dubai, ch4, sheikh, taiyo]) => { Object.assign(DB.dialogues, dubai, ch4, sheikh, taiyo); })
+    readDialogues("sheikh_bond", SHEIKH_BOND_IDS), readDialogues("taiyo_bond", TAIYO_BOND_IDS), readDialogues("ch4_spots", CREEK_SPOT_IDS)])
+    .then(([dubai, ch4, sheikh, taiyo, creek]) => { Object.assign(DB.dialogues, dubai, ch4, sheikh, taiyo, creekSpotScenes(creek)); })
     .catch(error => { loading = null; throw error; });
   await loading;
 }
@@ -191,8 +194,10 @@ export async function performDubaiSpot(spot, { staminaGuard } = {}) {
     return { used: true, exerted: false };
   }
   if (spot.id === "ch5_dubai_creek") {
-    const scene = state.slot >= 1 ? "ch4_creek_walk_night" : "ch4_creek_walk_day";
+    const turn = quietTurn(CREEK_TURN, CREEK_SCENES[state.slot >= 1 ? "night" : "day"], state.slot >= 1 ? "night" : "");
+    const scene = turn?.id || (state.slot >= 1 ? "ch4_creek_walk_night" : "ch4_creek_walk_day");
     if (!await read(scene, "bg_dubai_street_night", owner)) return unused;
+    if (turn) state.flags[turn.key] = turn.count + 1;
     addStamina(spot.stamina);
     return { used: true, exerted: false };
   }
