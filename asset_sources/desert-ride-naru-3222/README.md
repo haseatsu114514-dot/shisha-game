@@ -3,6 +3,8 @@
 Codex の画像生成で作った透過 PNG 原画（6ポーズ）。ゲーム用 WebP は `remake/img/ui/desert_ride/rider_naru_*.webp`。
 2026-11-11 にオーナーが ZIP で受け渡し（`naru-sandboard-3222-candidates.zip`）。同梱の `SHA256.json` と 25 ファイルすべて一致を確認した。
 
+> **2026-11-11 追記**: この6枚は旧版の服装（黒に白い切り替えのボンバー・黒いカーゴ・白いスニーカー）。オーナー「新バージョンのファッションにする」で、新バージョンの立ち絵（`assets/sprites/character_variants/new/naru/chr_naru_normal.png`）の服で描き直す依頼を #3306 に出した。届いたら、今の6枚を `classic-outfit/` へ移し、新しい原画をここへ置いて `build.py` を実行する。
+
 ## 採用したもの
 
 | 原画 | ポーズ | WebP の寸法 | 基準点（板の中心） | 原画→WebP の倍率 |
