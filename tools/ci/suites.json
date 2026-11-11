@@ -4518,10 +4518,10 @@
     },
     {
       "id": "look-neo",
-      "title": "新版: 第1〜5章の会話の帯と操作の札・地図とHUD・MENU・場面カード・モーダル・タイトルの収まりと、旧版へ戻した時に痕跡が残らないこと",
+      "title": "新版: 第1〜5章の会話の帯と操作の札・地図とHUD・MENU・場面カード・モーダル・タイトル・ショップ・LIME・レベルアップ・ギャラリーの収まりと、旧版へ戻した時に痕跡が残らないこと",
       "kind": "browser",
-      "weight": 5.5,
-      "timeout": 14,
+      "weight": 7,
+      "timeout": 16,
       "paths": [
         "remake/css/look-neo.css",
         "remake/js/looks/**",
@@ -4546,6 +4546,12 @@
         "remake/js/core/chapter-card.js",
         "remake/js/chapters/ch3-map.js",
         "remake/js/chapters/ch3-wayfinding.js",
+        "remake/css/shop.css",
+        "remake/js/daily/shop.js",
+        "remake/js/daily/shop-display.js",
+        "remake/js/daily/phone.js",
+        "remake/js/daily/levelup.js",
+        "remake/js/scenes/gallery.js",
         "remake/test/browser/look_neo.mjs"
       ],
       "run": [
