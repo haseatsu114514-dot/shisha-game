@@ -1,6 +1,6 @@
 // タイマー設定・蒸らしで共通の温度計。予測は現在地の矢印と別の、幅のある点線で示す。
 import { el } from "../core/util.js";
-import { temperatureBands, isIdealTemperature, isOptimalTemperature, DANGER_TEMP, temperatureAfterSteam, steamTemperatureRange } from "./conditions.js";
+import { temperatureBands, isIdealTemperature, isRainbowTemperature, DANGER_TEMP, temperatureAfterSteam, steamTemperatureRange } from "./conditions.js";
 import { steamClimate } from "./steam-climate.js";
 import { buildThermometer } from "./thermometer.js";
 import { effectBadge } from "./effect-visual.js";
@@ -28,12 +28,12 @@ export function buildSteamTemperature(cs) {
     const bands = temperatureBands(cs);
     const expressive = bands.expressionWeight >= .999;
     state.textContent = expressive && isIdealTemperature(temp, bands) ? "適温" : thermometer.root.getAttribute("aria-valuetext");
-    read.dataset.tone = temp >= DANGER_TEMP ? "danger" : !expressive && isOptimalTemperature(temp, bands) ? "optimal" : isIdealTemperature(temp, bands) ? "ok" : temp > bands.ideal[1] ? "hot" : "cool";
+    read.dataset.tone = temp >= DANGER_TEMP ? "danger" : isRainbowTemperature(temp, bands) ? "optimal" : isIdealTemperature(temp, bands) ? "ok" : temp > bands.ideal[1] ? "hot" : "cool";
   } };
 }
 
 const temperatureName = (temp, bands) => isIdealTemperature(temp, bands)
-  ? bands.expressionWeight >= .999 ? "適温" : isOptimalTemperature(temp, bands) ? "最適温" : "適温"
+  ? bands.expressionWeight >= .999 ? "適温" : isRainbowTemperature(temp, bands) ? "最適温" : "適温"
   : temp > bands.ideal[1] ? "熱い" : temp < .2 * bands.t ? "低温" : "ぬるい";
 
 export function buildSteamForecast(cs, thermometer) {

@@ -145,3 +145,6 @@ assert.equal(nights.namespace.nightPlan(booked).length, 0);
 state.day = abs(8); delete state.flags._private_night_day;
 assert.equal(nights.namespace.nightOccupied(booked, abs(8)), false, 'DAY8 stays open for TRPG and invitations');
 console.log('ch2_night_pacing: ok');
+
+// The strengthened mandatory scenes keep this same night schedule and its save checkpoints.
+await import('./ch2_mandatory_work.mjs');

@@ -4,7 +4,7 @@ import { imgFileUrl } from "../core/img-file.js";
 import { portraitStyle } from "../core/portrait-style.js";
 import { portraitAsset } from "../core/portrait-resolver.js";
 import { svg } from "../core/transition-kit.js";
-import { SE, unlockAudio, playMinigameSe, preloadMinigameSe } from "../core/audio.js";
+import { SE, unlockAudio, playAxeSe } from "../core/audio.js";
 import { RINGS, KILLS, CLUSTERS, LINE, BLADE, POWER, SWAY, MODES, DIVISIONS, BOARD, RULESET, gaugeAt, axisAt, releaseAimAt, resolveThrow, totalOf, gradeOf, killState, canCall, closuresOf, halfOf } from "./axe-model.js";
 import { createMatch, takeTurn, turnOf, planOpponent, matchResult, resolveTurn, inSuddenDeath, suddenDeathTarget, DIFFICULTIES } from "./axe-match.js";
 import { COMPANIONS, reaction, matchReaction, portraitFocus } from "./axe-companions.js";
@@ -79,7 +79,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   // A stage caller can replace #screen while the match overlay is its sibling.
   const callerScreen = (versus || tutorial) && host.id === "stage" ? host.querySelector("#screen") : null;
   const callerContent = callerScreen ? [...callerScreen.childNodes] : [];
-  let phase = "loading", elapsed = 0, stamp = null, frame = 0, aim = { x: 0, y: 0 }, power = POWER.ideal;
+  let phase = "loading", elapsed = 0, stamp = null, frame = 0, lastHudRender = -Infinity, aim = { x: 0, y: 0 }, power = POWER.ideal;
   let shots = match?.player || [], pending = null, called = null, lastAction = -Infinity;
   let actor = "player", matchLines = null, gameRecorded = false;
   let portraitKey = null;
@@ -439,11 +439,11 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     series.games.push({ game: gameIndex + 1, playerTotal: game.playerTotal, opponentTotal: game.opponentTotal, winner: game.winner, suddenDeath: game.suddenDeath });
     if (game.winner === "player" || game.winner === "opponent") series.wins[game.winner]++;
   }
-  // 仮SE（grok/minigame-audio）: 結果画面のジングル。勝ち・好記録＝ファンファーレ、負け＝下がるジングル、引き分け・練習の低得点＝短い合成音。
+  // 結果画面のジングル。勝ち・好記録＝歓声付きファンファーレ、負け＝下がる音、引き分け・練習の低得点＝短い合成音。
   function summaryJingle() {
     const outcome = versus ? matchResult(match).winner : tutorial || gradeOf(totalOf(shots), rules.max) !== "again" ? "player" : "draw";
-    if (outcome === "player") playMinigameSe("axeWin");
-    else if (outcome === "opponent") playMinigameSe("axeLose");
+    if (outcome === "player") playAxeSe("win");
+    else if (outcome === "opponent") playAxeSe("lose");
     else SE.jingle();
   }
   function setPhase(next) {
@@ -466,7 +466,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   function act() {
     if (isPaused() || !["choice", "horizontal", "vertical", "power", "result", "summary", "failed"].includes(phase)
       || cycles[phase] && elapsed < 250 || performance.now() - lastAction < 250) return;
-    lastAction = performance.now(); unlockAudio(); preloadMinigameSe("axe");
+    lastAction = performance.now(); unlockAudio();
     if (phase === "failed") loadArt();
     else if (phase === "choice") { held = 0; SE.select(); setPhase("horizontal"); }
     else if (phase === "horizontal") { aim.x = axisAt(gaugeAt(elapsed, cycles.horizontal)); SE.select(); setPhase("vertical"); }
@@ -475,7 +475,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
       power = gaugeAt(elapsed, cycles.power);
       const release = releaseAimAt(aim, held, power, shots.length, held < focusUntil, steady);
       pending = { ...preview({ x: release.x, y: release.y, power, called }), baseAim: { ...aim }, sway: release.sway };
-      playMinigameSe("axeThrow"); setPhase("flight");
+      playAxeSe("throw"); setPhase("flight");
     }
     else if (phase === "result") {
       if (versus && actor === "player" && turnOf(match) === "opponent") {
@@ -516,7 +516,45 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     ]);
   }
   function tileMark(shot) { return !shot ? "" : shot.outcome === "killshot" ? "K" : shot.outcome === "bull" ? "●" : !shot.stuck ? "↓" : shot.called ? "×" : ""; }
+  function renderPowerMotion(powerActive) {
+    const strength = power < POWER.stickMin ? "弱すぎる・落下" : power > POWER.stickMax ? "強すぎる・落下"
+      : power >= POWER.sweetMin && power <= POWER.sweetMax ? "適正" : "刺さる回転";
+    const label = powerActive ? "③ 回転 " + Math.round(power * 100) + "% · " + strength : "③ 回転";
+    if (powerLabel.textContent !== label) powerLabel.textContent = label;
+    const quality = strength === "適正" ? "sweet" : power < POWER.stickMin || power > POWER.stickMax ? "drop" : "edge";
+    if (timing.dataset.quality !== quality) timing.dataset.quality = quality;
+    const readout = phase !== "power" ? strength : strength === "適正" ? "いま放す！" : power < POWER.sweetMin ? "緑の帯まで待つ" : "回りすぎ · 次の緑で放す";
+    if (powerReadout.textContent !== readout) powerReadout.textContent = readout;
+    powerFill.style.width = power * 100 + "%";
+    const gaugeLabel = label + "。緑は適正、茶色は刺さる範囲";
+    if (gauge.getAttribute("aria-label") !== gaugeLabel) gauge.setAttribute("aria-label", gaugeLabel);
+    const shift = (POWER.ideal - power) * .28;
+    const shiftText = Math.abs(shift) < .006 ? "回転による上下ずれなし" : "回転の補正 " + (shift > 0 ? "↓ 下" : "↑ 上") + Math.round(Math.abs(shift) * 100) + "%";
+    const feedbackText = powerActive ? shiftText + " · 白い刃先が着地点" : "針から伸びる線で位置を確認";
+    if (feedback.textContent !== feedbackText) feedback.textContent = feedbackText;
+    return strength;
+  }
+  // The moving aim needs every animation frame. Scoreboard, text, portraits and
+  // accessibility labels can follow at a lower rate without making the cursor lag.
+  function renderAimMotion(release, landing, powerActive = phase === "power") {
+    root.dataset.timing = String(gaugeAt(elapsed, cycles[phase] || 3200));
+    root.dataset.aimX = String(aim.x); root.dataset.aimY = String(aim.y); root.dataset.power = String(power);
+    root.dataset.held = String(held); root.dataset.focusRemaining = String(Math.max(0, focusUntil - held));
+    root.dataset.releaseX = String(release.x); root.dataset.releaseY = String(release.y);
+    root.dataset.landingX = String(landing.x); root.dataset.landingY = String(landing.y);
+    crosshair.setAttribute("transform", `translate(${CX + landing.x * R} ${CY + landing.y * R})`);
+    fixedAim.setAttribute("transform", `translate(${CX + aim.x * R} ${CY + aim.y * R})`);
+    xNeedle.setAttribute("transform", `translate(${CX + aim.x * R} 0)`);
+    yNeedle.setAttribute("transform", `translate(0 ${CY + aim.y * R})`);
+    if (phase === "power") {
+      powerShift.setAttribute("d", `M${CX + release.x * R} ${CY + release.y * R}V${CY + landing.y * R}`);
+      releaseDot.setAttribute("cx", CX + release.x * R); releaseDot.setAttribute("cy", CY + release.y * R);
+      needle.style.left = power * 100 + "%";
+    }
+    return renderPowerMotion(powerActive);
+  }
   function render() {
+    lastHudRender = performance.now();
     const focusedButton = document.activeElement?.tagName === "BUTTON" && root.contains(document.activeElement) ? document.activeElement : null;
     if (phase === "horizontal") aim.x = axisAt(gaugeAt(elapsed, cycles.horizontal));
     if (phase === "vertical") aim.y = axisAt(gaugeAt(elapsed, cycles.vertical));
@@ -531,11 +569,10 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     const currentHalf = halfOf(["result", "summary"].includes(phase) && !sd ? Math.max(0, currentShots.length - 1) : throwIndex, rules.throws);
     root.dataset.actor = actor; root.dataset.playerThrows = String(shots.length);
     root.dataset.opponentThrows = String(match?.opponent.length || 0);
-    root.dataset.phase = phase; root.dataset.timing = String(gaugeAt(elapsed, cycles[phase] || 3200));
+    root.dataset.phase = phase;
     root.dataset.outcome = displayedShot?.outcome || "";
     root.dataset.special = String(Boolean(displayedShot) && impactFeedback(displayedShot).special);
     root.dataset.focused = String(moving && held < focusUntil);
-    root.dataset.aimX = String(aim.x); root.dataset.aimY = String(aim.y); root.dataset.power = String(power);
     root.dataset.paused = String(isPaused()); root.dataset.called = called || "";
     root.dataset.half = String(currentHalf); root.dataset.suddenDeath = String(sd); root.dataset.game = String(gameIndex + 1);
     root.dataset.suddenDeathRounds = String(match?.suddenDeath.length || 0);
@@ -543,9 +580,8 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     // Secondary readouts stay for screen readers; the board and gauge already show them.
     for (const node of [powerLabel, feedback, steadiness, keyhint]) node.classList.add("axe-quiet");
     note.classList.toggle("axe-quiet", !["choice", "loading", "failed", "opponent-ready"].includes(phase));
-    root.dataset.held = String(held); root.dataset.focusRemaining = String(Math.max(0, focusUntil - held));
-    root.dataset.releaseX = String(release.x); root.dataset.releaseY = String(release.y);
-    root.dataset.landingX = String(landing.x); root.dataset.landingY = String(landing.y);
+    const powerActive = phase === "power" || Boolean(displayedShot);
+    const strength = renderAimMotion(release, landing, powerActive);
     const phaseIndex = ["horizontal", "vertical", "power"].indexOf(phase);
     liveScore.hidden = !moving;
     if (moving) {
@@ -567,16 +603,6 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
       const value = i === 0 ? axisText(aim.x, "左", "右") : i === 1 ? axisText(aim.y, "上", "下") : Math.round(power * 100) + "%";
       step.lastChild.textContent = locked ? "✓ " + value : live ? value : "—";
     }
-    const powerActive = phase === "power" || Boolean(displayedShot), shift = (POWER.ideal - power) * .28;
-    const strength = power < POWER.stickMin ? "弱すぎる・落下" : power > POWER.stickMax ? "強すぎる・落下"
-      : power >= POWER.sweetMin && power <= POWER.sweetMax ? "適正" : "刺さる回転";
-    powerLabel.textContent = powerActive ? "③ 回転 " + Math.round(power * 100) + "% · " + strength : "③ 回転";
-    timing.dataset.quality = strength === "適正" ? "sweet" : power < POWER.stickMin || power > POWER.stickMax ? "drop" : "edge";
-    powerReadout.textContent = phase !== "power" ? strength : strength === "適正" ? "いま放す！" : power < POWER.sweetMin ? "緑の帯まで待つ" : "回りすぎ · 次の緑で放す";
-    powerFill.style.width = power * 100 + "%";
-    gauge.setAttribute("aria-label", powerLabel.textContent + "。緑は適正、茶色は刺さる範囲");
-    const shiftText = Math.abs(shift) < .006 ? "回転による上下ずれなし" : "回転の補正 " + (shift > 0 ? "↓ 下" : "↑ 上") + Math.round(Math.abs(shift) * 100) + "%";
-    feedback.textContent = powerActive ? shiftText + " · 白い刃先が着地点" : "針から伸びる線で位置を確認";
     timing.hidden = !moving && !displayedShot;
     timing.dataset.active = String(powerActive); feedback.hidden = ["loading", "failed", "summary"].includes(phase);
     const sdRound = versus ? match.suddenDeath.length : 0;
@@ -691,20 +717,14 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
       if (comment.textContent !== line.text) comment.textContent = line.text;
       if (portraitKey) showFace(line.face);
     }
-    crosshair.setAttribute("transform", "translate(" + (CX + landing.x * R) + " " + (CY + landing.y * R) + ")");
-    fixedAim.setAttribute("transform", "translate(" + (CX + aim.x * R) + " " + (CY + aim.y * R) + ")");
     fixedAim.setAttribute("opacity", moving ? .8 : 0);
-    powerShift.setAttribute("d", `M${CX + release.x * R} ${CY + release.y * R}V${CY + landing.y * R}`);
     powerShift.setAttribute("opacity", phase === "power" ? 1 : 0);
-    releaseDot.setAttribute("cx", CX + release.x * R); releaseDot.setAttribute("cy", CY + release.y * R);
     releaseDot.setAttribute("opacity", phase === "power" ? 1 : 0);
     impactMark.setAttribute("transform", `translate(${CX + landing.x * R} ${CY + landing.y * R})`);
     impactMark.setAttribute("opacity", displayedShot ? .85 : 0);
     impactMark.style.color = displayedShot?.score > 0 ? "#fff4cb" : "#ef9f86";
     for (const node of impactMark.children) { node.setAttribute("stroke", "currentColor"); if (node.getAttribute("fill") !== "none") node.setAttribute("fill", "currentColor"); }
     crosshair.style.opacity = ["choice", "horizontal", "vertical", "power"].includes(phase) ? "1" : "0";
-    xNeedle.setAttribute("transform", "translate(" + (CX + aim.x * R) + " 0)");
-    yNeedle.setAttribute("transform", "translate(0 " + (CY + aim.y * R) + ")");
     xNeedle.setAttribute("opacity", phase === "horizontal" ? 1 : moving ? .4 : 0); yNeedle.setAttribute("opacity", phase === "vertical" ? 1 : phase === "power" ? .4 : 0);
     sdBadge.setAttribute("opacity", sd ? 1 : 0);
     if (phase !== "flight") { flying.setAttribute("opacity", 0); trail.setAttribute("opacity", 0); contactShadow.setAttribute("opacity", 0); ghosts.forEach(node => node.setAttribute("opacity", 0)); }
@@ -721,7 +741,6 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
       zoomScore.textContent = zoomShot.score + "点"; zoomZone.textContent = label;
       zoom.setAttribute("aria-label", "刃の着地点の拡大。" + zoomShot.score + "点・" + label);
     }
-    needle.style.left = power * 100 + "%";
     calls.hidden = phase !== "choice" || sd; reaim.hidden = !cycles[phase]; retry.hidden = !allowRetry || phase !== "summary" || Boolean(series && !seriesWinner());
     controls.hidden = steadiness.hidden = !moving;
     focusButton.disabled = isPaused() || focusUsed || performance.now() - lastAction < 250;
@@ -828,7 +847,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     const delta = stamp === null ? 0 : Math.min(50, Math.max(0, now - stamp)); stamp = now;
     if (!isPaused()) { elapsed += delta; if (cycles[phase]) held += delta; }
     if (phase === "opponent-ready" && !isPaused() && elapsed >= 1000) {
-      playMinigameSe("axeThrow"); setPhase("flight");
+      playAxeSe("throw"); setPhase("flight");
     }
     if (phase === "flight" && !isPaused()) {
       // A called throw (killshot or sudden death) slows down for its final approach.
@@ -859,10 +878,11 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
           shots = match.player; shot = latest(actor);
         } else shots.push(shot);
         pending = null;
-        // 仮SE（grok/minigame-audio）: 得点＝木に刺さる音、ブル・キルショット＝店の歓声、落下＝板に当たって床へ落ちる音。
-        // 0点で刺さった時は今まで通り失敗音だけ（喜ばせない）。録音が未読込の間は前と同じ合成音（hit/perfect）になる。
-        if (shot.score > 0) { playMinigameSe("axeThunk"); if (shot.score >= 6) playMinigameSe("axeCheer"); }
-        else { if (!shot.stuck) playMinigameSe("axeDrop"); SE.miss(); }
+        // 刃が木に刺さったら0点でも衝突音を鳴らす。得点と失敗の合図は別に重ねる。
+        if (shot.stuck) playAxeSe("stick", { scored: shot.score > 0 });
+        else playAxeSe("drop");
+        if (shot.score >= 6) playAxeSe("cheer");
+        else if (!shot.score) playAxeSe("miss");
         if (shot.stuck) {
           const embedded = createAxe(); renderAxe(embedded, impactPose(shot)); embedded.dataset.scored = String(shot.score > 0);
           // The handle quivers around the cutting edge for a moment after the thunk; the edge itself never moves.
@@ -882,7 +902,20 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
       quiver.node.setAttribute("transform", q ? `translate(${quiver.x} ${quiver.y}) rotate(${q.rotate}) scale(1 ${q.scale}) translate(${-quiver.x} ${-quiver.y})` : "");
       if (!q) quiver = null;
     }
-    if (cycles[phase] || action.disabled && !["loading", "flight", "opponent-ready"].includes(phase) && !document.hidden && performance.now() - lastAction >= 250) render();
+    if (cycles[phase] && !isPaused()) {
+      // Re-enable the stop control on the first eligible frame even while the
+      // secondary HUD is throttled; its click timing is part of aiming.
+      if (now - lastHudRender >= 100 || action.disabled && elapsed >= 250 && performance.now() - lastAction >= 250) render();
+      else {
+        if (phase === "horizontal") aim.x = axisAt(gaugeAt(elapsed, cycles.horizontal));
+        if (phase === "vertical") aim.y = axisAt(gaugeAt(elapsed, cycles.vertical));
+        if (phase === "power") power = gaugeAt(elapsed, cycles.power);
+        const release = releaseAimAt(aim, held, power, shots.length, held < focusUntil, steady);
+        const landing = { x: release.x, y: release.y + (phase === "power" ? (POWER.ideal - power) * .28 : 0) };
+        renderAimMotion(release, landing);
+      }
+    } else if (!isPaused() && action.disabled && !["loading", "flight", "opponent-ready"].includes(phase)
+      && performance.now() - lastAction >= 250) render();
     frame = requestAnimationFrame(tick);
   }
   function cleanup(completed) {

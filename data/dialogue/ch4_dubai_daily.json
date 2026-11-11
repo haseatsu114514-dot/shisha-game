@@ -111,19 +111,7 @@
         { "speaker": "hajime", "face": "normal", "text": "（高い一台で買ってるのは、急かされない時間なのかもしれない）" }
       ]
     },
-    {
-      "dialogue_id": "ch4_alley_talk_b",
-      "comment": "路地裏のカフェ再訪（ch4_stranger_second で店を知った後の想定）。旅装の男がいない静かな夜。使わない日の古い台の手入れ。店員は shop_clerk。",
-      "lines": [
-        { "speaker": "", "face": "", "text": "夜の路地裏のカフェ。換気扇の低い音のほかは、静かだった。" },
-        { "speaker": "", "face": "", "text": "客は奥に二人だけ。盤の上の駒を、黙って動かしている。" },
-        { "speaker": "", "face": "", "text": "店員はカップを洗い終えると、古びた台のボトルにも新しい水を入れた。" },
-        { "speaker": "hajime", "face": "normal", "text": "その台、今日は使わないんですか" },
-        { "speaker": "shop_clerk", "face": "", "text": "使わない日も、水は替えます。古い台ほど、乾くと機嫌が悪いので" },
-        { "speaker": "hajime", "face": "smile", "text": "（使わない日の手入れか。……スミさんも、きっとそう言う）" },
-        { "speaker": "", "face": "", "text": "盤の二人が、同時に小さく笑った。勝負がついたらしい。" }
-      ]
-    },
+
     {
       "dialogue_id": "ch4_alley_talk_c",
       "comment": "路地裏のカフェ再訪。一台を吸い終えた閉店前、客のいない店で店員と茶を一杯。休む時間も店の一部。注文と味わいの後に読む（ch4-dubai-cafe.js の TALKS_AFTER_ORDER）。",
@@ -147,7 +135,10 @@
         { "speaker": "naru", "face": "smile", "text": "走ってきた。昼に外を歩くと、頭が煮える" },
         { "speaker": "hajime", "face": "normal", "text": "旅先でも、走ってたの？" },
         { "speaker": "naru", "face": "smile", "text": "それは、勝ってから話す約束だろ" },
-        { "speaker": "naru", "face": "normal", "text": "それより、飯は食えよ。台より先に、自分の腹な" }
+        { "speaker": "naru", "face": "normal", "text": "お前の話なら聞く。……休みの日の話、まだ聞いてねえぞ" },
+        { "speaker": "hajime", "face": "normal", "text": "……寝て、飯食って。何もしない日も、作ってみた" },
+        { "speaker": "naru", "face": "smile", "text": "上出来だ" },
+        { "speaker": "naru", "face": "normal", "text": "その調子で、飯は食えよ。台より先に、自分の腹な" }
       ]
     },
     {
@@ -168,9 +159,11 @@
       "comment": "なると会う3回目（クリーク沿い。昼・夜どちらでも読める）。再開した店の話を短く。旅の話は一つだけで、続きは大会の後。なるはここでも負けを認めない。",
       "lines": [
         { "speaker": "", "face": "", "text": "クリーク沿い。手すりにもたれたなるが、渡し舟を目で追っていた。" },
-        { "speaker": "hajime", "face": "normal", "text": "店、再開した日はどうだった？" },
+        { "speaker": "hajime", "face": "normal", "text": "再開した日のこと、もう少し聞かせて" },
         { "speaker": "naru", "face": "normal", "text": "前からの客が、いつもの注文をした。休んでた理由も聞かずにな" },
         { "speaker": "naru", "face": "smile", "text": "きつかったけど、一番うれしかった" },
+        { "speaker": "naru", "face": "normal", "text": "閉めた店に、また客が来る。……親父の店じゃ、見られなかった景色だ" },
+        { "speaker": "", "face": "", "text": "何か言いかけて、やめた。渡し舟が、ゆっくり向こう岸に着いた。" },
         { "speaker": "naru", "face": "normal", "text": "……旅の話も、一個だけな。客が吸う速さを、ずっと数えてた" },
         { "speaker": "hajime", "face": "surprise", "text": "……俺も、ノートに同じこと書いてる" },
         { "speaker": "naru", "face": "smile", "text": "そっか。じゃあ、なおさら負けられねえな" }
@@ -435,7 +428,7 @@
     },
     {
       "dialogue_id": "ch4_alley_culture_majlis",
-      "comment": "路地裏のカフェの現地の文化の話。奥の盤の席の年配の常連（old_man。ch4_alley_talk_b の盤の客）が、自分の家ではマジュリス（客を迎えて座って話す部屋）に人が集まると一台出す、と話す。本人の家の話として書き、湾岸全体の決まりとして断定しない。",
+      "comment": "路地裏のカフェの現地の文化の話。奥の盤の席の年配の常連（old_man）が、自分の家ではマジュリス（客を迎えて座って話す部屋）に人が集まると一台出す、と話す。本人の家の話として書き、湾岸全体の決まりとして断定しない。",
       "lines": [
         { "speaker": "", "face": "", "text": "奥の盤の席から、年配の客がこちらを手招きした。駒を並べ直している。" },
         { "speaker": "old_man", "face": "", "text": "日本から来たのか。その台、ずいぶん丁寧に吸うね" },
@@ -467,7 +460,7 @@
     },
     {
       "dialogue_id": "ch4_dubai_night_alley_cafe",
-      "comment": "夜がにぎわう店。路地裏のカフェは混み合う店ではなく、夜に近所の常連が集まる店（ch4_alley_talk_b の「客は奥に二人だけ」と並ぶ）。「マルハバ」はあいさつ（ようこそ・こんにちは）で、はじめは文脈から分かる。旅装の男には触れない（ch4_stranger_second の前にも置ける）。",
+      "comment": "夜がにぎわう店。路地裏のカフェは混み合う店ではなく、夜に近所の常連が集まる店。「マルハバ」はあいさつ（ようこそ・こんにちは）で、はじめは文脈から分かる。旅装の男には触れない（ch4_stranger_second の前にも置ける）。",
       "lines": [
         { "speaker": "", "face": "", "text": "夜になると、路地裏のカフェには近所の常連がぽつぽつと集まってくる。" },
         { "speaker": "", "face": "", "text": "入ってきた客は、店員と「マルハバ」と短く言い交わして、いつもの席に座っていく。" },

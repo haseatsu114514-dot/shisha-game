@@ -171,7 +171,7 @@ for (const k of board.BOARD_KEYS) {
   assert.equal(board.perkOf(board.boardNodes("body").find((n) => n.peak)).name, "基礎", "極みは基礎");
   const notable = board.boardNodes("body").find((n) => n.notable === "ironsleep");
   assert.equal(board.perkOf(notable).notable.name, "不眠の体");
-  assert.equal(board.perkOf(notable).text, "寝た時の体力の回復 ＋9%", "要のマスは帯の倍率×1.5（SBD73）。眠りの単位は2%（2026-11-02 補正）");
+  assert.equal(board.perkOf(notable).text, "寝た時の体力の回復 ＋9%（端数は次の睡眠へ）", "要のマスは帯の倍率×1.5（SBD73）。眠りの単位は2%（2026-11-02 補正）");
   for (const n of board.NODES.filter((x) => x.kind === "stat" && !x.peak)) assert(board.SQUARE_PERKS[n.board].perks[n.perk], `${n.id}: 恩恵が決まっている`);
 }
 assert.deepEqual(board.HIDANE_NAME, { any: "白火", body: "紅火", sense: "蒼火", wisdom: "翠火" }, "火種の名前（SBD62）");
@@ -670,3 +670,77 @@ respecG.respec=null;core.state.chapter=3;growth.ensureGrowth();
 assert.equal(respec.canRespec(respecG,core.state),false,"既存セーブの表示だけで旧移行特典を作らない");
 growth.setGrowthPreview(false);
 console.log("[respec] PASS: exact payments, lessons retained, no shortcut/duplicate refund, draft/commit, SAVE/LOAD, old owner, action/day/NG+ windows and legacy no-grant");
+
+// 探索を共有しても、同額時の選択順・経路・費用を変えない。
+function referencePathTo(id, unlocked) {
+  const goal = board.NODE_BY_ID[id];
+  if (!goal) return { cost: 0, path: [] };
+  // 極みは道でなく「その盤の能力のマスを全部」: 残りの能力のマスへの道を近い順につないで、最後に極み
+  if (goal.peak) {
+    const have = new Set(unlocked), path = [];
+    for (;;) {
+      const rest = board.boardNodes(goal.board).filter((n) => n.kind === "stat" && !n.peak && !have.has(n.id));
+      if (!rest.length) break;
+      const next = rest.map((n) => referencePathTo(n.id, have)).sort((a, b) => a.cost - b.cost)[0];
+      for (const step of next.path) { have.add(step); path.push(step); }
+    }
+    if (!unlocked.has(id)) path.push(id);
+    return { cost: path.reduce((n, step) => n + board.NODE_BY_ID[step].cost, 0), path };
+  }
+  const nodes = board.boardNodes(goal.board);
+  const dist = { [board.HUB]: 0 }, prev = {}, done = new Set(), queue = [board.HUB];
+  const linksOf = (u) => u === board.HUB ? nodes.filter((n) => n.links.includes(board.HUB)).map((n) => n.id) : board.NODE_BY_ID[u].links;
+  while (queue.length) {
+    queue.sort((a, b) => dist[a] - dist[b]);
+    const u = queue.shift();
+    if (done.has(u)) continue;
+    done.add(u);
+    for (const v of linksOf(u)) {
+      if (v === board.HUB) continue;
+      const w = unlocked.has(v) ? 0 : board.NODE_BY_ID[v].cost;
+      if (dist[u] + w < (dist[v] ?? Infinity)) { dist[v] = dist[u] + w; prev[v] = u; queue.push(v); }
+    }
+  }
+  const path = [];
+  for (let c = id; c && c !== board.HUB; c = prev[c]) if (!unlocked.has(c)) path.unshift(c);
+  return { cost: dist[id] ?? 0, path };
+}
+
+let routeSeed = 0x31415926;
+const routeRandom = () => { routeSeed = (Math.imul(routeSeed, 1664525) + 1013904223) >>> 0; return routeSeed / 2 ** 32; };
+let routeCases = 0;
+for (const key of board.BOARD_KEYS) {
+  const nodes = board.boardNodes(key);
+  const sets = [new Set(), new Set(nodes.map(n => n.id))];
+  for (let i = 0; i < 20; i++) sets.push(new Set(nodes.filter(() => routeRandom() < i / 20).map(n => n.id)));
+  for (const unlocked of sets) for (const node of nodes) {
+    const before = [...unlocked];
+    assert.deepEqual(board.pathTo(node.id, unlocked), referencePathTo(node.id, unlocked), `${node.id}: cost and exact tie-broken path`);
+    assert.deepEqual([...unlocked], before, "path lookup does not mutate unlocked nodes");
+    routeCases++;
+  }
+}
+assert.deepEqual(board.pathTo("missing", new Set()), { cost: 0, path: [] });
+console.log(`[growth routes] PASS: ${routeCases} reference-equivalent routes, including empty/full/partial boards and peaks`);
+
+// 任意の比較計測。時間で合否を決めず、Node内の経路計算だけを測る（描画FPSではない）。
+if (process.env.GROWTH_ROUTE_BENCH === "1") {
+  const median = (values) => values.sort((a, b) => a - b)[Math.floor(values.length / 2)];
+  for (const key of board.BOARD_KEYS) {
+    const id = board.boardNodes(key).find((n) => n.peak).id;
+    const unlocked = new Set();
+    const ms = {};
+    for (const [name, lookup] of [["before", referencePathTo], ["after", board.pathTo]]) {
+      for (let i = 0; i < 8; i++) lookup(id, unlocked);
+      const times = [];
+      for (let i = 0; i < 41; i++) {
+        const start = performance.now();
+        lookup(id, unlocked);
+        times.push(performance.now() - start);
+      }
+      ms[name] = median(times);
+    }
+    console.log(`[growth route benchmark] ${key}: ${JSON.stringify(ms)} ms (median of 41)`);
+  }
+}
+

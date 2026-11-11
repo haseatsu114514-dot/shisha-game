@@ -33,6 +33,18 @@ export const DESERT_ART = Object.freeze({
   flag: Object.freeze({ file: "ui/desert_ride/flag_pole.webp", size: Object.freeze([110, 512]), foot: Object.freeze({ x: 0.0591, y: 1 }) }),
   goal: Object.freeze({ file: "ui/desert_ride/goal_banner.webp", size: Object.freeze([1024, 132]) }),
   puff: Object.freeze({ file: "ui/desert_ride/sand_puff.webp", size: Object.freeze([256, 141]) }),
+  curveLeft: Object.freeze({ file: "ui/desert_ride_controls/curve_left.webp", size: Object.freeze([512, 560]) }),
+  curveRight: Object.freeze({ file: "ui/desert_ride_controls/curve_right.webp", size: Object.freeze([512, 560]) }),
+});
+// Issue #3175 でオーナーが A 系を採用。画像の読み込みが終わるまでは操作名を表示する。
+export const DESERT_CONTROL_ART = Object.freeze({
+  left: "ui/desert_ride_controls/steer_left.webp",
+  right: "ui/desert_ride_controls/steer_right.webp",
+  boost: "ui/desert_ride_controls/boost.webp",
+  jump: "ui/desert_ride_controls/jump.webp",
+  land: "ui/desert_ride_controls/land.webp",
+  stickBase: "ui/desert_ride_controls/stick_base.webp",
+  stickKnob: "ui/desert_ride_controls/stick_knob.webp",
 });
 // 会話の背景（Codex C を 1280×720 に）と、同じ構図の夕方（夕日の場面）
 export const DESERT_BG = "bg_dubai_dunes_day";

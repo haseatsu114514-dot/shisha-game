@@ -298,6 +298,13 @@ function migrate(s) {
   }
   if (!s.flags || typeof s.flags !== "object" || Array.isArray(s.flags)) s.flags = {};
   delete s.notes; // 常連ノートは廃止。旧セーブの残存キーを捨てる
+  // ヌールの友情着地でも LIME を交換する。告白で断った旧セーブと、締めくくりで友情に着地した旧セーブに連絡先を補う。
+  if ((s.flags._friend_noor || s.finales?.noor?.route === "friend") && !(s.lovers || []).includes("noor")) {
+    s.flags._friend_noor = true;
+    s.flags._lime_contact_noor = true;
+    if (!Array.isArray(s.contacts)) s.contacts = [];
+    if (!s.contacts.includes("noor")) s.contacts.push("noor");
+  }
   // #577: 旧保存は未訪問でもBAR利用と従来の初対面を維持する。噂・目撃・面識は補わない。
   // 現行schemaで再保存してもこの許可を保持し、新規ゲームには付けない。
   if (oldSchema < 16) s.flags._axe_bar_legacy_access = true;
@@ -395,6 +402,10 @@ function migrate(s) {
     cleared: Object.fromEntries(Object.entries(record(trpg.cleared)).filter(([, v]) => v && typeof v.ending === "string"
       && Number.isInteger(v.chapter) && v.chapter >= 2 && Number.isInteger(v.day) && v.day > 0
       && typeof v.gm === "string" && Array.isArray(v.participants))),
+    // しおり（TMX13）: 途中の卓は1つだけ。形が崩れたものは捨て、最初から遊び直せばよい。
+    ...(trpg.bookmark && typeof trpg.bookmark.id === "string" && Array.isArray(trpg.bookmark.actions) && trpg.bookmark.actions.length
+      && trpg.bookmark.actions.every(a => Array.isArray(a) && typeof a[0] === "string") && trpg.bookmark.assignments
+      && typeof trpg.bookmark.assignments === "object" && Number.isInteger(trpg.bookmark.seed) ? { bookmark: trpg.bookmark } : {}),
     shifts: (Array.isArray(trpg.shifts) ? trpg.shifts : []).filter(v => v && typeof v.id === "string"
       && Number.isInteger(v.chapter) && Number.isInteger(v.day) && [0, 1].includes(v.slot) && typeof v.busy === "boolean"),
     club: { founded, members: founded ? Object.fromEntries(Object.entries(record(club.members))
@@ -595,13 +606,11 @@ export function load() {
   return migrated ? setState(migrated) : null;
 }
 
-// ---------------------------------------------------------------- 手動セーブ枠（オートセーブとは別に3枠）
+// ---------------------------------------------------------------- 手動セーブ枠（オートセーブとは別に1枠）
 
 export const SAVE_SLOTS = [
   { key: SAVE_KEY, label: "オートセーブ", auto: true },
   { key: "suien_remake_slot1", label: "スロット 1" },
-  { key: "suien_remake_slot2", label: "スロット 2" },
-  { key: "suien_remake_slot3", label: "スロット 3" },
 ];
 const BOOT_LOAD_KEY = "suien_remake_boot_load";
 

@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-11-09 19:43 UTC",
+ "generated": "2026-11-10 11:17 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -294,9 +294,9 @@
     "normal",
     "smile"
    ],
-   "h": 0.915,
-   "b": 0.0233,
-   "ax": 0.5309,
+   "h": 0.9333,
+   "b": 0.025,
+   "ax": 0.4994,
    "aspect": 0.7467
   },
   "uranaishi": {
@@ -522,6 +522,7 @@
   "bg_kannon_night.png",
   "bg_kannon_overcast_day.png",
   "bg_kemurikusa_outside_night.png",
+  "bg_longlong_shop.png",
   "bg_mukai_attic.png",
   "bg_mukai_shop.png",
   "bg_osu_map_day.png",
@@ -1998,6 +1999,24 @@
      "top": 22.41
     }
    }
+  },
+  "salaryman": {
+   "color": "#a49b8e",
+   "secondary": "#f0d6a5",
+   "shadow": "#101722",
+   "background": "ui/character_intros/salaryman.png",
+   "frames": {
+    "normal": {
+     "width": 912.0,
+     "left": -157.76,
+     "top": -12.893
+    },
+    "smile": {
+     "width": 912.0,
+     "left": -156.604,
+     "top": -12.893
+    }
+   }
   }
  },
  "titleArts": [
@@ -2570,19 +2589,28 @@
  "bgm": [
   "bgm_aftermath.bgm",
   "bgm_axe.bgm",
+  "bgm_camel_race.bgm",
+  "bgm_ch5_duel.mp3",
   "bgm_continue_urgent.mp3",
+  "bgm_dubai.mp3",
+  "bgm_ending.mp3",
   "bgm_ethnic05.bgm",
   "bgm_ethnic08.bgm",
   "bgm_ethnic09.bgm",
   "bgm_ethnic12.bgm",
   "bgm_judging.bgm",
+  "bgm_map.mp3",
   "bgm_purikura.bgm",
   "bgm_purikura_b.bgm",
   "bgm_purikura_d.bgm",
+  "bgm_result_emotional.mp3",
+  "bgm_rival_shop.mp3",
+  "bgm_smoke_lab.mp3",
   "bgm_taste_distant.bgm",
   "bgm_tetsuko_time.bgm",
   "bgm_tournament_craft.bgm",
   "bgm_tournament_edm.bgm",
+  "bgm_tournament_wait.mp3",
   "bgm_trpg.bgm",
   "bgm_trpg_castle.mp3",
   "bgm_trpg_fox.mp3",
@@ -2594,6 +2622,7 @@
   "bgm_trpg_shark.mp3",
   "bgm_trpg_space.mp3",
   "bgm_trpg_stage.mp3",
+  "bgm_world_stage.mp3",
   "kansetsu_shomei_to_black_coffee.mp3",
   "sweets_or_sweets.mp3",
   "title.mp3",
@@ -2646,6 +2675,7 @@
   "backgrounds/bg_kannon_night.png",
   "backgrounds/bg_kannon_overcast_day.png",
   "backgrounds/bg_kemurikusa_outside_night.png",
+  "backgrounds/bg_longlong_shop.png",
   "backgrounds/bg_mukai_attic.png",
   "backgrounds/bg_mukai_shop.png",
   "backgrounds/bg_osu_map_day.png",
@@ -3285,6 +3315,7 @@
   "ui/character_intros/rio.png",
   "ui/character_intros/sai.png",
   "ui/character_intros/saku.png",
+  "ui/character_intros/salaryman.png",
   "ui/character_intros/samechan.png",
   "ui/character_intros/sheikh.png",
   "ui/character_intros/shisha_9000.png",
@@ -4107,9 +4138,9 @@
      "normal",
      "smile"
     ],
-    "h": 0.9008,
-    "b": 0.0492,
-    "ax": 0.4992,
+    "h": 0.9333,
+    "b": 0.025,
+    "ax": 0.4994,
     "aspect": 0.7467
    },
    "emil": {
@@ -4983,15 +5014,15 @@
    },
    "salaryman": {
     "box": [
-     333,
-     67,
-     208
+     323,
+     18,
+     228
     ],
     "eye": [
      438,
-     183
+     140
     ],
-    "unit": 120.8
+    "unit": 132.4
    },
    "samechan": {
     "box": [
@@ -5376,15 +5407,15 @@
    },
    "salaryman": {
     "box": [
-     319,
-     53,
-     199
+     323,
+     18,
+     228
     ],
     "eye": [
-     418,
-     166
+     438,
+     140
     ],
-    "unit": 115.3
+    "unit": 132.4
    },
    "samechan": {
     "box": [
@@ -5823,3 +5854,4 @@
   }
  }
 }
+

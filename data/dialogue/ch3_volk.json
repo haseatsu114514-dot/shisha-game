@@ -149,7 +149,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "届いたブラストミントは、強い火でも焦げない。鋭く冷たい煙が、喉の奥まで一直線に届く。"
+          "text": "届いたブラストミントは、強い火でも焦げを感じにくい。鋭く冷たい煙が、喉の奥まで一直線に届く。"
         },
         {
           "speaker": "",
@@ -570,7 +570,7 @@
         {
           "speaker": "volk",
           "face": "normal",
-          "text": "炭を一つ減らして、火を詰める。重さは熱で支える"
+          "text": "炭を一つ減らす。重さは熱で支える"
         },
         {
           "speaker": "hajime",
@@ -681,101 +681,156 @@
       "lines": [
         {
           "speaker": "",
-          "face": "",
-          "text": "今日はヴォルクが一人で、モニターに数字を記録していた。"
+          "text": "今日はヴォルクが一人で、モニターに数字を記録していた。",
+          "face": ""
         },
         {
           "speaker": "hajime",
-          "face": "normal",
-          "text": "今日もデータ記録ですか"
+          "text": "今日もデータ記録ですか",
+          "face": "normal"
         },
         {
           "speaker": "volk",
-          "face": "normal",
-          "text": "毎日記録する。向こうの店から数えて、7年分になる"
+          "text": "毎日記録する。向こうの店から数えて、7年分になる",
+          "face": "normal"
         },
         {
           "speaker": "hajime",
-          "face": "surprise",
-          "text": "7年分……"
+          "text": "7年分……",
+          "face": "normal"
         },
         {
           "speaker": "volk",
-          "face": "normal",
-          "text": "同じフレーバーでも、季節と気温と湿度で最適値が変わる。客の吸い方も変わる"
+          "text": "同じフレーバーでも、季節と気温と湿度で最適値が変わる。客の吸い方も変わる",
+          "face": "normal"
         },
         {
           "speaker": "volk",
-          "face": "serious",
-          "text": "軍で教わった。記録しないことは、忘れることと同じだと"
+          "text": "軍で教わった。記録しないことは、忘れることと同じだと",
+          "face": "normal"
         },
         {
           "speaker": "volk",
-          "face": "normal",
-          "text": "お前のことも、記録している"
+          "text": "お前のことも、記録している",
+          "face": "normal"
         },
         {
           "speaker": "hajime",
-          "face": "surprise",
-          "text": "え、俺のことを！？"
+          "text": "え、俺のことを！？",
+          "face": "surprise"
         },
         {
           "speaker": "volk",
-          "face": "normal",
-          "text": "来店時刻、注文、水を飲んだ回数、休んだ口数。2回分ある"
+          "text": "来店時刻、注文、水を飲んだ回数、休んだ口数。2回分ある",
+          "face": "normal"
         },
         {
           "speaker": "hajime",
-          "face": "normal",
-          "text": "（……俺、何かの被験体なのか？）"
+          "text": "（……俺、何かの被験体なのか？）",
+          "face": "normal"
         },
         {
           "speaker": "",
-          "face": "",
-          "text": "ヴォルクがモニターをこちらへ向けた。数字の列の端に、一行だけ文字がある。「熱い、ではなく休憩」。"
-        },
-        {
-          "speaker": "volk",
-          "face": "normal",
-          "text": "最初の日、俺は熱すぎたと思った。聞かなければ、炭を一つ減らしていた"
-        },
-        {
-          "speaker": "volk",
-          "face": "normal",
-          "text": "数字は合っていた。読み方を間違えるところだった"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "……だから、先に聞いたんですね"
-        },
-        {
-          "speaker": "volk",
-          "face": "normal",
-          "text": "計器が正常でも、客がホースを置くなら、どこかが合っていない。それを探すために測る"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "俺もメモの書き方、変えてみます。温度の隣に、相手の時間を"
-        },
-        {
-          "speaker": "volk",
-          "face": "normal",
-          "text": "書いたら見せろ。比べる"
+          "text": "ヴォルクがモニターをこちらへ向けた。数字の列の端に、一行だけ文字がある。",
+          "face": ""
         },
         {
           "speaker": "",
-          "face": "",
-          "text": "……【センス】が上がった。"
+          "text": "「熱い、ではなく休憩」。",
+          "face": ""
+        },
+        {
+          "speaker": "volk",
+          "text": "最初の日、俺は熱すぎたと思った。聞かなければ、炭を一つ減らしていた",
+          "face": "normal"
+        },
+        {
+          "speaker": "volk",
+          "text": "数字は合っていた。読み方を間違えるところだった",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "……だから、先に聞いたんですね",
+          "face": "normal"
+        },
+        {
+          "speaker": "volk",
+          "text": "計器が正常でも、客がホースを置くなら、どこかが合っていない。それを探すために測る",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "モニターの隣に、紙のメモが一枚だけ出してある。温度の列は埋まって、客の列は短い。",
+          "face": ""
+        },
+        {
+          "speaker": "volk",
+          "text": "数字の隣が空だと、あとで自分の想像で埋めたくなる。空欄のまま残す方が正確だ",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "俺もメモの書き方、変えてみます。温度の隣に、相手の時間を",
+          "face": "normal"
+        },
+        {
+          "speaker": "volk",
+          "text": "書いたら見せろ。比べる",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "比べられるように、日付は揃えます",
+          "face": "normal"
+        },
+        {
+          "speaker": "volk",
+          "text": "揃えろ。揃わない記録は、7年あっても使えない",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "7年分の列のいちばん下に、今日の日付が、まだ途中までしか入っていなかった。",
+          "face": ""
+        },
+        {
+          "speaker": "hajime",
+          "text": "今日のは、まだ終わってないんですね",
+          "face": "normal"
+        },
+        {
+          "speaker": "volk",
+          "text": "お前が休む口数が、まだ出ていない。帰り際に書く",
+          "face": "normal"
+        },
+        {
+          "speaker": "volk",
+          "text": "途中で閉じた記録は、終わった顔をする。終わるまで、行は開けておけ",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "……被験体、というより、一緒に書いてる感じですね",
+          "face": "normal"
+        },
+        {
+          "speaker": "volk",
+          "text": "被験体なら、聞かずに書く。俺は、聞いてから書いてる",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "……【センス】が上がった。",
+          "face": ""
         },
         {
           "type": "apply",
-          "stats": {
-            "sense": 3
-          },
           "affinity": {
             "volk": 2
+          },
+          "stats": {
+            "sense": 3
           }
         }
       ]
@@ -788,83 +843,128 @@
       "lines": [
         {
           "speaker": "volk",
-          "face": "normal",
-          "text": "一つ、聞いていいか"
+          "text": "一つ、聞いていいか",
+          "face": "normal"
         },
         {
           "speaker": "hajime",
-          "face": "normal",
-          "text": "どうぞ"
+          "text": "どうぞ",
+          "face": "normal"
         },
         {
           "speaker": "volk",
-          "face": "normal",
-          "text": "お前は、客が何を言っても先に頷く。それから自分で吸って確かめる。逆の順番の店主が多い"
+          "text": "お前は、客が何を言っても先に頷く。それから自分で吸って確かめる。逆の順番の店主が多い",
+          "face": "normal"
         },
         {
           "speaker": "hajime",
-          "face": "normal",
-          "text": "……そんなとこまで見てたんですか"
+          "text": "……そんなとこまで見てたんですか",
+          "face": "normal"
         },
         {
           "speaker": "volk",
-          "face": "normal",
-          "text": "記録した。三回分、同じだった"
+          "text": "記録した。三回分、同じだった",
+          "face": "normal"
         },
         {
           "speaker": "hajime",
-          "face": "normal",
-          "text": "相手が感じたことは、まず本当だと思うから、かな。違ってたら、あとで俺が直せばいい"
+          "text": "相手が感じたことは、まず本当だと思うから、かな。違ってたら、あとで俺が直せばいい",
+          "face": "normal"
         },
         {
           "speaker": "volk",
-          "face": "normal",
-          "text": "……"
+          "text": "……",
+          "face": "normal"
         },
         {
           "speaker": "hajime",
-          "face": "normal",
-          "text": "答えになってないですか"
+          "text": "答えになってないですか",
+          "face": "normal"
         },
         {
           "speaker": "volk",
-          "face": "normal",
-          "text": "いや"
+          "text": "いや",
+          "face": "normal"
         },
         {
           "speaker": "",
-          "face": "",
-          "text": "ヴォルクはモニターに打ち込み、少し考えてから一行を書き足した。"
+          "text": "ヴォルクはモニターに打ち込み、少し考えてから一行を書き足した。",
+          "face": ""
         },
         {
           "speaker": "volk",
-          "face": "normal",
-          "text": "俺は逆だ。先に計器を見て、それから客に聞く。軍で覚えた順番が抜けなかった"
+          "text": "俺は逆だ。先に計器を見て、それから客に聞く。軍で覚えた順番が抜けなかった",
+          "face": "normal"
         },
         {
           "speaker": "volk",
-          "face": "serious",
-          "text": "向こうの店で一度、計器だけ見て「問題ない」と言った夜がある。客は二口でホースを置いて帰った"
+          "text": "向こうの店で一度、計器だけ見て「問題ない」と言った夜がある。客は二口でホースを置いて帰った",
+          "face": "normal"
         },
         {
           "speaker": "hajime",
-          "face": "normal",
-          "text": "……"
+          "text": "……",
+          "face": "normal"
         },
         {
           "speaker": "volk",
-          "face": "normal",
-          "text": "次の日から、温度の隣に客の時間を書いている。式は、客が来るたびに直す"
+          "text": "次の日から、温度の隣に客の時間を書いている。式は、客が来るたびに直す",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "打ち込んだ一行は、「先に頷く」だった。数値の列ではなく、順番の列に入っている。",
+          "face": ""
         },
         {
           "speaker": "volk",
-          "face": "normal",
-          "text": "お前の順番も、条件に入れておく、……また来い"
+          "text": "頷くのは、同意ではない。相手の言葉を、先に記録に残すということだ",
+          "face": "normal"
         },
         {
           "speaker": "hajime",
-          "face": "normal",
-          "text": "はい。次は、俺のメモも持ってきます"
+          "text": "……俺は、そこまで考えてなかったです。でも、先に残す、は近いです",
+          "face": "normal"
+        },
+        {
+          "speaker": "volk",
+          "text": "近いでいい。遠い正解より、近い記録の方が直せる",
+          "face": "normal"
+        },
+        {
+          "speaker": "volk",
+          "text": "お前の順番も、条件に入れておく、……また来い",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "はい。次は、俺のメモも持ってきます",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "「また来い」のあと、ヴォルクは紙の端を千切って、日付だけ書いた切れを渡した。",
+          "face": ""
+        },
+        {
+          "speaker": "volk",
+          "text": "次に持ってくるメモの、最初の行だ。これと揃えて書け",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "日付だけ、ですね",
+          "face": "normal"
+        },
+        {
+          "speaker": "volk",
+          "text": "日付が同じでないと、比べられない。中身は、お前の言葉でいい",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "切れの裏は空白だった。条件は、表の日付だけだ。",
+          "face": ""
         },
         {
           "type": "remember",
@@ -872,16 +972,16 @@
         },
         {
           "speaker": "",
-          "face": "",
-          "text": "……【洞察】が上がった。"
+          "text": "……【洞察】が上がった。",
+          "face": ""
         },
         {
           "type": "apply",
-          "stats": {
-            "insight": 3
-          },
           "affinity": {
             "volk": 2
+          },
+          "stats": {
+            "insight": 3
           }
         }
       ]
@@ -1086,9 +1186,9 @@
           "text": "測っていないものを、測ったように書くな。それが一番、記録を狂わせる"
         },
         {
-          "speaker": "hajime",
-          "face": "smile",
-          "text": "（東京の店と地元の店の数字が、同じ画面に並んでいくんだ）"
+          "speaker": "",
+          "face": "",
+          "text": "はじめは、tonariの窓を思い浮かべた。曇る朝なら、何度も見てきた。"
         },
         {
           "type": "apply",
@@ -1269,9 +1369,9 @@
           "text": "客の時間は書く。友人と過ごした時間は、書かなくても覚えている"
         },
         {
-          "speaker": "hajime",
-          "face": "smile",
-          "text": "じゃあ、俺も今は、メモを出しません"
+          "speaker": "",
+          "face": "",
+          "text": "出しかけていた手帳を、鞄へ戻した。"
         },
         {
           "speaker": "volk",
@@ -1287,6 +1387,220 @@
           "type": "apply",
           "stats": {
             "technique": 2
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_volk_fifth",
+      "comment": "候補A08。好感度♥4の段階会話（未採用）。鉄の煙。四度目の来店とLIME交換（ch3_volk_lime）の後、締めくくりの前。計器は正常なのに長く残る常連に、先に尋ねる（四度目で言った順番）。客が残る理由は袋の数字にない、という着地。締めくくりの『友人の時間は書かない』とハガルは先取りしない。精度を捨てて感情だけへ転向させない。恋愛対象外なので共有1本。大会の前後を前提にせず、時間帯も言わない。",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_volk_shop.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "text": "鉄の煙。壁の数字は、いつもの列を示していた。奥の席の常連だけ、ホースを置かずに残っている。"
+        },
+        {
+          "speaker": "volk",
+          "text": "来たか。座れ。……今は、触るな",
+          "face": "serious"
+        },
+        {
+          "speaker": "hajime",
+          "text": "計器、合ってますか",
+          "face": "normal"
+        },
+        {
+          "speaker": "volk",
+          "text": "合っている。室温、湿度、炭の位置。袋の条件も、前回と同じだ",
+          "face": "normal"
+        },
+        {
+          "speaker": "volk",
+          "text": "なのに、あの客は帰らない。数字だけ見れば、もう十分吸っている",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "ヴォルクは入力を止め、トングを置いた。奥の席へ歩いて、先に尋ねる。"
+        },
+        {
+          "speaker": "volk",
+          "text": "熱いか。休むか",
+          "face": "serious"
+        },
+        {
+          "speaker": "customer",
+          "text": "いえ。……この店の静かさがよくて。帰り際の紅茶まで、今日は残ろうと思って"
+        },
+        {
+          "speaker": "",
+          "text": "ヴォルクは一瞬だけ止まる。うなずいて席を離れ、はじめの前に戻った。"
+        },
+        {
+          "speaker": "volk",
+          "text": "……数字は合っていた。残る理由は、袋には書いていない",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "モニターの端に、カーソルだけが点滅している。ヴォルクは『滞在』と打ちかけて、消した。"
+        },
+        {
+          "speaker": "hajime",
+          "text": "市場調査でも、そういうことはあるんですか",
+          "face": "normal"
+        },
+        {
+          "speaker": "volk",
+          "text": "器具と部屋と、客の吸い方は測る。それが、次のロットになる",
+          "face": "normal"
+        },
+        {
+          "speaker": "volk",
+          "text": "だが、「静かさ」の単位を、俺は知らない",
+          "face": "serious"
+        },
+        {
+          "speaker": "",
+          "text": "常連が帰り際に紅茶を受け取る。ヴォルクは、はじめの前にも同じ杯を置いた。"
+        },
+        {
+          "speaker": "volk",
+          "text": "……冷める前に飲め。帰り際の一杯までが、この店だそうだ",
+          "face": "normal"
+        },
+        {
+          "type": "apply",
+          "affinity": {
+            "volk": 2
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_volk_revisit",
+      "comment": "好感度補充（段階2・A28）。♥4の五度目のあと、鉄の煙への短い再訪。残した式の一項だけを渡し、測らない欄を空ける。恋愛対象外なので共有1本。大会の前後を前提にせず、時間帯も言わない。締めくくりの『友人の時間は書かない』とハガルは先取りしない。",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_volk_shop.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "text": "鉄の煙。ヴォルクは、計器ではなく、一枚の短い紙を台に置いていた。",
+          "face": ""
+        },
+        {
+          "speaker": "volk",
+          "text": "座れ。長くは取らない",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "……何か、記録の続きですか",
+          "face": "normal"
+        },
+        {
+          "speaker": "volk",
+          "text": "続きではない。一項だけだ。お前の店用に写した",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "紙には、式というより、順番だけが書いてあった。",
+          "face": ""
+        },
+        {
+          "speaker": "",
+          "text": "「室温の隣は、客が残るかではない。何口目で肩が落ちるか」。",
+          "face": ""
+        },
+        {
+          "speaker": "volk",
+          "text": "残る理由には、単位が無い。これは、測れる方の項だ",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "肩が落ちる口数、ですね。俺も、見てから書きます",
+          "face": "normal"
+        },
+        {
+          "speaker": "volk",
+          "text": "見て、書け。想像で埋めるな",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "紙の上の隅に、几帳面な字で「tonari」とあった。",
+          "face": ""
+        },
+        {
+          "speaker": "hajime",
+          "text": "うちの店の名前、書いてくれたんですね",
+          "face": "surprise"
+        },
+        {
+          "speaker": "volk",
+          "text": "宛先のない式は、どこにも届かない",
+          "face": "normal"
+        },
+        {
+          "speaker": "volk",
+          "text": "紙は持って行け。原本は、こっちに置く。日付がずれたら、送ればいい",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "LIMEで、ですか",
+          "face": "normal"
+        },
+        {
+          "speaker": "volk",
+          "text": "そうだ。日付は、揃えろ",
+          "face": "normal"
+        },
+        {
+          "speaker": "volk",
+          "text": "以上だ。今日は、これでいい",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "一項だけ、確かに受け取りました",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "受け取った紙を内側のポケットに入れると、ヴォルクは計器を一度だけ見て、数字を口に出さなかった。",
+          "face": ""
+        },
+        {
+          "speaker": "hajime",
+          "text": "今日の室温は、書かないんですか",
+          "face": "normal"
+        },
+        {
+          "speaker": "volk",
+          "text": "書く。お前が紙を持って出てからだ",
+          "face": "normal"
+        },
+        {
+          "speaker": "volk",
+          "text": "数字は、その日で終わる。順番は、残る",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "計器の針は、静かに同じ位置にいた。ヴォルクは、もう紙を見なかった。",
+          "face": ""
+        },
+        {
+          "type": "apply",
+          "affinity": {
+            "volk": 2
           }
         }
       ]

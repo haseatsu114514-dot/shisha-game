@@ -44,6 +44,26 @@
           "text": "じゃあ俺は、いつもの葉で待ってみる"
         },
         {
+          "speaker": "mashiro",
+          "face": "yawn",
+          "text": "……ふぁ。ごめんね。待つ時間って、僕、すぐ眠くなっちゃうの"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "寝ててもいいよ。鳴ったら起こすから"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "ほんと？ ……じゃあ、はじめくんの声で起きるねぇ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "タイマーの音より、そっちのほうが、びっくりしないから"
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "二人でタイマーを並べた。早く終わった方が、遅い方のお茶を入れた。"
@@ -52,6 +72,16 @@
           "speaker": "mashiro",
           "face": "normal",
           "text": "競争にしないと、待つ時間までおいしいねぇ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "次も、並べてやろうか"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "うん。はじめくんのタイマーの場所、僕の隣に空けとくねぇ"
         },
         {
           "type": "apply",
@@ -66,28 +96,118 @@
       "lines": [
         {
           "speaker": "",
-          "face": "",
-          "text": "問屋で、ましろが小さなティーカップを二つ並べていた。"
+          "text": "問屋で、ましろが小さなティーカップを二つ並べていた。値札の紐が、同じ色で結ばれている。",
+          "face": ""
         },
         {
           "speaker": "mashiro",
-          "face": "normal",
-          "text": "どっちが持ちやすい？"
+          "text": "どっちが持ちやすい？",
+          "face": "normal"
         },
         {
           "speaker": "hajime",
-          "face": "normal",
-          "text": "こっちかな。ましろちゃんは？"
+          "text": "こっちかな。ましろちゃんは？",
+          "face": "normal"
         },
         {
           "speaker": "mashiro",
-          "face": "normal",
-          "text": "僕は逆だぁ。……じゃあ、お揃いはやめて、別々のにしよ"
+          "text": "僕は逆だぁ。……じゃあ、お揃いはやめて、別々のにしよ",
+          "face": "normal"
         },
         {
           "speaker": "",
-          "face": "",
-          "text": "お揃いにしようとしていた手を戻し、それぞれ好きな方を包んでもらった。"
+          "text": "ましろは、さっきまで揃いにしようとしていた手を、一度テーブルに戻した。",
+          "face": ""
+        },
+        {
+          "speaker": "",
+          "text": "紐をほどく指が、少し残念そうだ。",
+          "face": ""
+        },
+        {
+          "speaker": "hajime",
+          "text": "お揃いの方が、かわいいと思ったんだけど",
+          "face": "normal"
+        },
+        {
+          "speaker": "mashiro",
+          "text": "かわいいよぉ。でもね、持つところが違うと、揃いにしたくなる気持ちと、指が喧嘩するの",
+          "face": "smile"
+        },
+        {
+          "speaker": "",
+          "text": "二つのカップを持ち替えてみる。片方は縁が薄い。",
+          "face": ""
+        },
+        {
+          "speaker": "",
+          "text": "片方は、取っ手が小さめで、ましろの指にぴったり乗る。",
+          "face": ""
+        },
+        {
+          "speaker": "mashiro",
+          "text": "僕の指、細いから。はじめくんの、ちょっと太い。同じのにすると、どっちかが我慢する",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "……たしかに。俺のが、ましろちゃんには大きすぎるかも",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "店員が「ペアですよ」と声をかけてくる。ましろは首を横に振って、値札の紐を別々に結んだ。",
+          "face": ""
+        },
+        {
+          "speaker": "mashiro",
+          "text": "ペアは、見た目。持つのは、毎日だよぉ",
+          "face": "normal"
+        },
+        {
+          "speaker": "mashiro",
+          "text": "我慢したカップは、置いたあと、ちょっと寂しくなるの。別々なら、隣同士でも、ちゃんと二人分",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "お揃いにしようとしていた手を戻し、それぞれ好きな方を包んでもらった。",
+          "face": ""
+        },
+        {
+          "speaker": "mashiro",
+          "text": "店に戻ったら、はじめくんの席のほうに、はじめくんのを置くねぇ",
+          "face": "smile"
+        },
+        {
+          "speaker": "hajime",
+          "text": "俺も、ましろちゃんの席には、触れないようにする",
+          "face": "normal"
+        },
+        {
+          "speaker": "mashiro",
+          "text": "うん。別々のカップで、同じお茶。それが、いちばんお揃いだよぉ",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "包みを受け取るとき、ましろは自分のカップの箱だけ、少し高く持った。",
+          "face": ""
+        },
+        {
+          "speaker": "",
+          "text": "落としたくない、というより、取り違えたくない顔だ。",
+          "face": ""
+        },
+        {
+          "speaker": "hajime",
+          "text": "俺のがどれか、箱でも分かると安心だな",
+          "face": "normal"
+        },
+        {
+          "speaker": "mashiro",
+          "text": "箱より、持つところ。毎日持てば、はじめくんのも、僕の手で分かるようになるよぉ",
+          "face": "smile"
         },
         {
           "type": "apply",
@@ -102,28 +222,148 @@
       "lines": [
         {
           "speaker": "",
-          "face": "",
-          "text": "休憩中。二人とも、トングを置いている。"
-        },
-        {
-          "speaker": "mashiro",
-          "face": "normal",
-          "text": "はじめくん、仕事じゃない日も、ここ座る？"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "座るよ。ましろちゃんと話したいこと、まだいっぱいあるし"
-        },
-        {
-          "speaker": "mashiro",
-          "face": "normal",
-          "text": "……そっか。それ、ちょっとうれしい"
+          "text": "休憩中。二人とも、トングを置いている。",
+          "face": ""
         },
         {
           "speaker": "",
-          "face": "",
-          "text": "次に会う日の話をした。大会の日付を見ずに、予定を決めた。"
+          "text": "開店の音が、遠くで一度だけした。",
+          "face": ""
+        },
+        {
+          "speaker": "mashiro",
+          "text": "はじめくん、仕事じゃない日も、ここ座る？",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "座るよ。ましろちゃんと話したいこと、まだいっぱいあるし",
+          "face": "normal"
+        },
+        {
+          "speaker": "mashiro",
+          "text": "……そっか。それ、ちょっとうれしい",
+          "face": "smile"
+        },
+        {
+          "speaker": "",
+          "text": "ましろは、言いかけて、言葉を一度飲み込んだ。カウンターの傷を、指でなぞっている。",
+          "face": ""
+        },
+        {
+          "speaker": "mashiro",
+          "text": "……仕事の日はね、座っていい場所が決まってるの",
+          "face": "normal"
+        },
+        {
+          "speaker": "mashiro",
+          "text": "休みの日は、どこでもいいような、困るような",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "困る？",
+          "face": "normal"
+        },
+        {
+          "speaker": "mashiro",
+          "text": "お客さんの席に座ると、少しだけ、店の人じゃなくなる感じがするの",
+          "face": "normal"
+        },
+        {
+          "speaker": "mashiro",
+          "text": "でも、裏に行くと、休みじゃないみたいで",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "じゃあ、俺が座る場所は、ましろちゃんが決めてくれてもいい",
+          "face": "normal"
+        },
+        {
+          "speaker": "mashiro",
+          "text": "え。……いいの？",
+          "face": "surprise"
+        },
+        {
+          "speaker": "hajime",
+          "text": "いいよ。休みの日の席、まだ空いてるなら",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "ましろは、カウンターの端の、少し低い椅子を指さした。",
+          "face": ""
+        },
+        {
+          "speaker": "",
+          "text": "荷物を置く場所の隣で、店員の動線から外れている。",
+          "face": ""
+        },
+        {
+          "speaker": "mashiro",
+          "text": "ここ。通しのお客さんも、あまり座らないの。僕、ここなら、休みの顔でいられる",
+          "face": "normal"
+        },
+        {
+          "speaker": "mashiro",
+          "text": "……はじめくんが来る日は、僕、そこを空けとく",
+          "face": "smile"
+        },
+        {
+          "speaker": "",
+          "text": "次に会う日の話をした。大会の日付を見ずに、予定を決めた。",
+          "face": ""
+        },
+        {
+          "speaker": "mashiro",
+          "text": "仕事の日の席と、休みの日の席。どっちも、はじめくんの分、取っとくねぇ",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "予定を書いた紙の端を、ましろは二つに折って、トングの下へ滑り込ませた。",
+          "face": ""
+        },
+        {
+          "speaker": "hajime",
+          "text": "仕事の日に来ても、この席に座っていい？",
+          "face": "normal"
+        },
+        {
+          "speaker": "mashiro",
+          "text": "仕事の日は、こっち。休みの日は、今指したほう",
+          "face": "smile"
+        },
+        {
+          "speaker": "mashiro",
+          "text": "はじめくんが間違えても、僕が「こっち」って言うから",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "じゃあ、次は仕事じゃない日に来る。この席で",
+          "face": "normal"
+        },
+        {
+          "speaker": "mashiro",
+          "text": "うん。仕事の顔じゃない日の、いちばんいい席だよぉ",
+          "face": "smile"
+        },
+        {
+          "speaker": "",
+          "text": "トングの下の紙が、少しだけはみ出している。ましろは、それを見て小さく笑った。",
+          "face": ""
+        },
+        {
+          "speaker": "mashiro",
+          "text": "忘れないようにしたのに、はみ出してる。でも、これなら僕も見つけられる",
+          "face": "smile"
+        },
+        {
+          "speaker": "hajime",
+          "text": "俺も、来た日はまずその紙を見る",
+          "face": "normal"
         },
         {
           "type": "apply",
@@ -138,86 +378,160 @@
       "metadata": {
         "bg": "res://assets/backgrounds/bg_mukai_shop.png"
       },
+      "growth_stats": {
+        "technique": 2,
+        "sense": 2
+      },
       "lines": [
         {
           "speaker": "",
-          "face": "",
-          "text": "mukai。閉店後。"
+          "text": "mukai。閉店後。",
+          "face": ""
         },
         {
           "speaker": "",
-          "face": "",
-          "text": "ムカイさんの計らいで、閉店後の店をましろと練習に使わせてもらえることになった。"
+          "text": "ムカイさんの計らいで、閉店後の店をましろと練習に使わせてもらえることになった。",
+          "face": ""
         },
         {
           "speaker": "mukai_master",
-          "face": "smile",
-          "text": "好きに使っていいよ。鍵はましろに預けてあるから"
+          "text": "好きに使っていいよ。鍵はましろに預けてあるから",
+          "face": "normal"
         },
         {
           "speaker": "",
-          "face": "",
-          "text": "二人きりのmukai。カウンターに並んで、それぞれシーシャを作る。"
+          "text": "二人きりのmukai。カウンターに並んで、それぞれシーシャを作る。",
+          "face": ""
         },
         {
           "speaker": "",
-          "face": "",
-          "text": "気づけば、手に力が入っていた。"
+          "text": "気づけば、手に力が入っていた。",
+          "face": ""
         },
         {
           "speaker": "",
-          "face": "",
-          "text": "「もっと上手く」「もっと正確に」。東京の店で見せつけられた差を、早く埋めたかった。"
+          "text": "「もっと上手く」「もっと正確に」。東京の店で見せつけられた差を、早く埋めたかった。",
+          "face": ""
         },
         {
           "speaker": "mashiro",
-          "face": "normal",
-          "text": "……はじめくん、肩に力、入りすぎてるよぉ"
+          "text": "……はじめくん、肩に力、入りすぎてるよぉ",
+          "face": "normal"
         },
         {
           "speaker": "hajime",
-          "face": "surprise",
-          "text": "え？"
+          "text": "え？",
+          "face": "normal"
         },
         {
           "speaker": "mashiro",
-          "face": "normal",
-          "text": "葉っぱもね、ぎゅって押すと息ができないの。ふわって、置くだけでいいよぉ"
+          "text": "葉っぱもね、ぎゅって押すと息ができないの。ふわって、置くだけでいいよぉ",
+          "face": "normal"
         },
         {
           "speaker": "",
-          "face": "",
-          "text": "ましろは葉をつまみ、ボウルへふわりと落とした。押さえもしない。"
+          "text": "ましろは葉をつまみ、ボウルへふわりと落とした。押さえもしない。",
+          "face": ""
         },
         {
           "speaker": "",
-          "face": "",
-          "text": "ましろの手つきを見ていると、不思議と呼吸が深くなっていく。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "ましろはトングの先を布で拭き、タイマーを手元に置いた。急ぐ様子はない。"
-        },
-        {
-          "speaker": "mashiro",
-          "face": "smile",
-          "text": "……ねぇ、はじめくん。僕ね、はじめくんの煙、好きだよぉ"
+          "text": "はじめが組んだ一台は、一口目から煙が細い。葉が、底で固まっていた。",
+          "face": ""
         },
         {
           "speaker": "hajime",
-          "face": "normal",
-          "text": "……ありがとう、ましろちゃん"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "次の一台は、葉を押さえずにボウルへ落とした。"
+          "text": "……やっぱり、押さえすぎた",
+          "face": "normal"
         },
         {
           "speaker": "mashiro",
-          "face": "normal",
-          "text": "今日も、はじめくんと吸った分だけ、増えたねぇ"
+          "text": "うん。力が入ると、葉が息できなくなるの。一枚ずつ、置く練習しよっか",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "ましろは、残った葉を小皿に分けて、こちらの手のひらへ少しずつ乗せる。",
+          "face": ""
+        },
+        {
+          "speaker": "mashiro",
+          "text": "落とすだけ。押さない。ボウルが受け取ってくれるから",
+          "face": "smile"
+        },
+        {
+          "speaker": "",
+          "text": "言われた通りに置くと、葉はふんわりと山になる。押さえない方が、量は少なく見える。",
+          "face": ""
+        },
+        {
+          "speaker": "hajime",
+          "text": "少なく見えるな。……これで足りる？",
+          "face": "normal"
+        },
+        {
+          "speaker": "mashiro",
+          "text": "足りるよぉ。隙間があるから、炭の熱が通るの",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "ましろの手つきを見ていると、不思議と呼吸が深くなっていく。",
+          "face": ""
+        },
+        {
+          "speaker": "",
+          "text": "ましろはトングの先を布で拭き、タイマーを手元に置いた。急ぐ様子はない。",
+          "face": ""
+        },
+        {
+          "speaker": "",
+          "text": "二台目は、葉を押さえずにボウルへ落とした。煙は、最初からまっすぐ立つ。",
+          "face": ""
+        },
+        {
+          "speaker": "mashiro",
+          "text": "……ねぇ、はじめくん。僕ね、はじめくんの煙、好きだよぉ",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "……ありがとう、ましろちゃん",
+          "face": "normal"
+        },
+        {
+          "speaker": "mashiro",
+          "text": "上手いとか正確とかより、吸ったあと肩が下がる煙。それが好き",
+          "face": "smile"
+        },
+        {
+          "speaker": "mashiro",
+          "text": "今日も、はじめくんと吸った分だけ、増えたねぇ",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "二台目の煙を、並んで吸う。はじめの肩が、いつの間にか下がっていた。",
+          "face": ""
+        },
+        {
+          "speaker": "mashiro",
+          "text": "ほら。今の、さっきより柔らかい。力、抜けてるよぉ",
+          "face": "smile"
+        },
+        {
+          "speaker": "hajime",
+          "text": "……ましろちゃんの台を見てたら、自分の手も、同じになった",
+          "face": "normal"
+        },
+        {
+          "speaker": "mashiro",
+          "text": "見てるだけで、呼吸はうつるの。僕も、はじめくんの隣だと、急がなくて済む",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "鍵は、ましろのポケットに入ったまま、一度も机に置かれなかった。預かった店を、大切にしている。",
+          "face": ""
         },
         {
           "type": "apply",
@@ -231,18 +545,14 @@
         },
         {
           "speaker": "",
-          "face": "",
-          "text": "……【技術】と【センス】が上がった。"
+          "text": "……【技術】と【センス】が上がった。",
+          "face": ""
         }
-      ],
-      "growth_stats": {
-        "technique": 2,
-        "sense": 2
-      }
+      ]
     },
     {
       "dialogue_id": "ch3_mashiro_black_tea",
-      "comment": "味の会話（#2022）。ましろの好み＝アフサール ブラックティー（2026-10-31決定・SBD57「ブラックティーを一割」）。ダーク・シガーリーフ好みは保持し、得意なのはブラックティーという区別を本人に言わせる。味覚が戻った後（ch3_taste_return）に置く。大会に触れない。",
+      "comment": "味の会話（#2022）。ましろの好み＝アフサール ブラックティー（2026-10-31決定・SBD57「ブラックティーを一割」）。ダーク・シガーリーフ好みは保持し、得意なのはブラックティーという区別を本人に言わせる。味覚が戻った後（ch3_taste_return）に置く。大会に触れない。段階2で増補。",
       "metadata": {
         "flavor_lesson": {
           "black_tea": 1
@@ -251,78 +561,143 @@
       "lines": [
         {
           "speaker": "",
-          "face": "",
-          "text": "閉店後のmukai。ましろが、ブラックティーの缶と、はじめのいつものブロンドを並べていた。"
+          "text": "閉店後のmukai。ましろが、ブラックティーの缶と、はじめのいつものブロンドを並べていた。",
+          "face": ""
         },
         {
           "speaker": "mashiro",
-          "face": "normal",
-          "text": "はじめくん、味、戻ってきたでしょ。今日は、足し算の練習しよっか"
+          "text": "はじめくん、味、戻ってきたでしょ。今日は、足し算の練習しよっか",
+          "face": "normal"
         },
         {
           "speaker": "hajime",
-          "face": "normal",
-          "text": "足し算？"
+          "text": "足し算？",
+          "face": "normal"
         },
         {
           "speaker": "mashiro",
-          "face": "normal",
-          "text": "ブラックティーを、ほんの少しだけ足すの。一割くらい"
+          "text": "ブラックティーを、ほんの少しだけ足すの。一割くらい",
+          "face": "normal"
         },
         {
           "speaker": "",
-          "face": "",
-          "text": "ましろは小皿に葉を分けた。ブロンドの山の横に、ブラックティーがひとつまみ。"
+          "text": "ましろは小皿に葉を分けた。ブロンドの山の横に、ブラックティーがひとつまみ。",
+          "face": ""
         },
         {
           "speaker": "mashiro",
-          "face": "normal",
-          "text": "多いとね、紅茶が独りでしゃべっちゃう。ほかの葉が、黙るの"
+          "text": "多いとね、紅茶が独りでしゃべっちゃう。ほかの葉が、黙るの",
+          "face": "normal"
         },
         {
           "speaker": "mashiro",
-          "face": "normal",
-          "text": "一割なら、後ろで支えるだけ。前の葉の声が、ちゃんと残るよぉ"
+          "text": "一割なら、後ろで支えるだけ。前の葉の声が、ちゃんと残るよぉ",
+          "face": "normal"
         },
         {
           "speaker": "",
-          "face": "",
-          "text": "言われた量で一台組む。一口目は、いつものブロンドの味がした。"
+          "text": "こちらの指が、ついもう少し多めに摘もうとした。ましろが、手首を軽く押さえる。",
+          "face": ""
         },
         {
-          "speaker": "",
-          "face": "",
-          "text": "二口目の終わりに、渋みが薄く残る。甘さの輪郭が、少しだけはっきりした。"
+          "speaker": "mashiro",
+          "text": "多い。今の、もう一割超えてる。戻して",
+          "face": "smile"
         },
         {
           "speaker": "hajime",
-          "face": "surprise",
-          "text": "……あれ。いつもの味なのに、奥がある"
+          "text": "……つい、効かせたくなった",
+          "face": "normal"
         },
         {
           "speaker": "mashiro",
-          "face": "smile",
-          "text": "でしょ。消さないで、足すの。僕、その足し算が一番好きだよぉ"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "ましろちゃん、自分で吸うのはダークなのに、足し方はすごく詳しいんだね"
-        },
-        {
-          "speaker": "mashiro",
-          "face": "normal",
-          "text": "好きなのは重いの。得意なのはブラックティー。それは別の話だよぉ"
-        },
-        {
-          "speaker": "mashiro",
-          "face": "normal",
-          "text": "はじめくんの煙に足すなら、僕はこのくらいがいいなぁ"
+          "text": "効かせると、消えるの。足すのは、残すためだよぉ",
+          "face": "normal"
         },
         {
           "speaker": "",
-          "face": "",
-          "text": "ましろは配合メモの端に「一割」とだけ書き足して、こちらへ渡した。"
+          "text": "言われた量で一台組む。一口目は、いつものブロンドの味がした。",
+          "face": ""
+        },
+        {
+          "speaker": "",
+          "text": "二口目の終わりに、渋みが薄く残る。甘さの輪郭が、少しだけはっきりした。",
+          "face": ""
+        },
+        {
+          "speaker": "hajime",
+          "text": "……あれ。いつもの味なのに、奥がある",
+          "face": "normal"
+        },
+        {
+          "speaker": "mashiro",
+          "text": "でしょ。消さないで、足すの。僕、その足し算が一番好きだよぉ",
+          "face": "smile"
+        },
+        {
+          "speaker": "hajime",
+          "text": "ましろちゃん、自分で吸うのはダークなのに、足し方はすごく詳しいんだね",
+          "face": "normal"
+        },
+        {
+          "speaker": "mashiro",
+          "text": "好きなのは重いの。得意なのはブラックティー。それは別の話だよぉ",
+          "face": "normal"
+        },
+        {
+          "speaker": "mashiro",
+          "text": "はじめくんの煙に足すなら、僕はこのくらいがいいなぁ",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "ましろは配合メモの端に「一割」とだけ書き足して、こちらへ渡した。",
+          "face": ""
+        },
+        {
+          "speaker": "hajime",
+          "text": "このメモ、俺の台に置いとく。次も、この一割で組む",
+          "face": "normal"
+        },
+        {
+          "speaker": "mashiro",
+          "text": "うん。数字は小さくでいい。葉の声が残れば、それで勝ちだよぉ",
+          "face": "smile"
+        },
+        {
+          "speaker": "",
+          "text": "ましろは、同じブロンドだけでもう一台を組み、一口ずつ交互に渡した。",
+          "face": ""
+        },
+        {
+          "speaker": "mashiro",
+          "text": "こっちが足す前。どっちが、はじめくんのいつもの声か、聴いてみて",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "足す前は、明るいだけの味だった。一割を足したほうは、同じ明るさの奥に、細い渋みが残る。",
+          "face": ""
+        },
+        {
+          "speaker": "hajime",
+          "text": "……足す前は、明るさだけだ。一割あると、明るさが輪郭を持つ",
+          "face": "normal"
+        },
+        {
+          "speaker": "mashiro",
+          "text": "そう。ダークを足すと、はじめくんの葉が隠れるの。だから僕は、こっちを選ぶ",
+          "face": "smile"
+        },
+        {
+          "speaker": "hajime",
+          "text": "好きな葉と、足す葉を、ちゃんと分けてるんだな",
+          "face": "normal"
+        },
+        {
+          "speaker": "mashiro",
+          "text": "分けてる。好きを押し付けると、相手の声が消えるから",
+          "face": "normal"
         },
         {
           "type": "apply",
@@ -717,7 +1092,7 @@
         {
           "speaker": "mashiro",
           "face": "smile",
-          "text": "覚えてるよぉ。軽いのも、重いのも、隣で待てるのが好きなの"
+          "text": "覚えてるよぉ。軽いのも重いのも、どっちも、ちゃんと待てる葉だから"
         },
         {
           "speaker": "hajime",
@@ -728,11 +1103,6 @@
           "speaker": "mashiro",
           "face": "normal",
           "text": "……うん。今日は吸わなくていい。待つだけで、ここにいるから"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "二つのタイマーが、少しずれて鳴った。先に鳴った方が、カップへ手を伸ばす。"
         },
         {
           "speaker": "mashiro",
@@ -767,6 +1137,18 @@
         {
           "speaker": "",
           "face": "",
+          "text": "二つのタイマーが、少しずれて鳴った。先に鳴った方が、カップへ手を伸ばす。"
+        },
+        {
+          "type": "condition",
+          "condition_type": "lover",
+          "char_id": "mashiro",
+          "next_true": "lover",
+          "next_false": "friend"
+        },
+        {
+          "speaker": "",
+          "face": "",
           "text": "湯気の向こうで、ましろは急がずに、葉の山を見ていた。"
         },
         {
@@ -775,7 +1157,38 @@
             "mashiro": 2
           }
         }
-      ]
+      ],
+      "branches": {
+        "lover": [
+          {
+            "speaker": "mashiro",
+            "face": "smile",
+            "text": "……鳴ったねぇ。でも、話の途中だから、もう一回だけ押しちゃお"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "ましろはタイマーをもう一度回して、はじめの肩に、こつんと頭を預けた。"
+          },
+          {
+            "speaker": "mashiro",
+            "face": "normal",
+            "text": "……次に鳴るまで、ここ、僕の場所ねぇ"
+          }
+        ],
+        "friend": [
+          {
+            "speaker": "mashiro",
+            "face": "smile",
+            "text": "……ほらね。話の途中でも、焦らなかったでしょ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "うん。ましろちゃんの話のほうが、気になってた"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "ch3_mashiro_cup_warm",
@@ -895,6 +1308,21 @@
           "speaker": "mashiro",
           "face": "smile",
           "text": "……そうしよ。冷えたら、また底から温めるね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "冷えるまで、いてもいいの？"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "surprise",
+          "text": "……え。冷えるまでいるつもり、だったの？"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "……ふふ。じゃあ、二杯目のお湯も、沸かしておくねぇ"
         },
         {
           "speaker": "",
@@ -1019,6 +1447,13 @@
           "text": "……うん。布巾は、ここに置いとく。はじめくんの印も、一緒に"
         },
         {
+          "type": "condition",
+          "condition_type": "lover",
+          "char_id": "mashiro",
+          "next_true": "lover",
+          "next_false": "friend"
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "カウンターの端で、畳んだ布巾だけが、店の明かりを少し受けていた。"
@@ -1029,7 +1464,33 @@
             "mashiro": 2
           }
         }
-      ]
+      ],
+      "branches": {
+        "lover": [
+          {
+            "speaker": "mashiro",
+            "face": "normal",
+            "text": "……ねぇ。手、まだ冷たいの。はじめくんので、あっためて"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "布巾をほどいたばかりの指が、はじめの手の中に、するりと入ってきた。"
+          },
+          {
+            "speaker": "mashiro",
+            "face": "smile",
+            "text": "……ふふ。最後の一個より、こっちのほうが、ずっといいねぇ"
+          }
+        ],
+        "friend": [
+          {
+            "speaker": "mashiro",
+            "face": "normal",
+            "text": "……手、冷たくなっちゃった。帰りに、温かい紅茶、買って帰ろ"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "ch3_mashiro_leaf_rest",
@@ -1114,6 +1575,21 @@
           "speaker": "mashiro",
           "face": "normal",
           "text": "だって、ほんとだもん。重いのが好きなのは、僕の方"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "……でもね、僕、はじめくんのお水みたいな煙、けっこう好きなの"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……え"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "あ、今、肩がまた上がった。ふわって、だよぉ"
         },
         {
           "speaker": "",
@@ -1305,7 +1781,7 @@
         {
           "speaker": "mashiro",
           "face": "normal",
-          "text": "ふふ。降りない日は、膝が温かいまま。それも、閉店のあと"
+          "text": "ふふ。降りない日は、膝が温かいまま。それも、悪くないの"
         },
         {
           "speaker": "",
@@ -1328,14 +1804,16 @@
           "text": "……うん。隣は、もうここにあるから"
         },
         {
-          "speaker": "mashiro",
-          "face": "normal",
-          "text": "膝の上で丸いままなら、店じまいも、急がなくていい"
-        },
-        {
           "speaker": "hajime",
           "face": "normal",
           "text": "てつこが起きるまで、ここで待とう"
+        },
+        {
+          "type": "condition",
+          "condition_type": "lover",
+          "char_id": "mashiro",
+          "next_true": "lover",
+          "next_false": "friend"
         },
         {
           "speaker": "",
@@ -1348,7 +1826,33 @@
             "mashiro": 2
           }
         }
-      ]
+      ],
+      "branches": {
+        "lover": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "てつこが膝から降りると、ましろはカップを置いて、はじめのほうへ少し寄った。"
+          },
+          {
+            "speaker": "mashiro",
+            "face": "smile",
+            "text": "……てつこちゃんの次は、僕の番ねぇ"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "小さな頭が、はじめの肩に、ことんと乗った。"
+          }
+        ],
+        "friend": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "てつこが膝から降りても、ましろはしばらく、ベンチの端から動かなかった。"
+          }
+        ]
+      }
     }
   ]
 }

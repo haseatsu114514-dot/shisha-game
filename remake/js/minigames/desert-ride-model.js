@@ -8,27 +8,48 @@ export const COURSE = Object.freeze({ length: 1700, practiceLength: 640, laneHal
 export const PLAYER = Object.freeze({ half: 0.1 });
 export const EDGE = 0.86;
 export const SPEED = Object.freeze({ start: 15, min: 8, max: 34, boost: 46, boostAccel: 26, overDecay: 12, accel: 1.5, fallFactor: 0.42, edgeDrag: 7, landingBoost: 3.5, plainLanding: 0.94, bounceLoss: 0.9 });
-export const JUMP = Object.freeze({ bigAir: 1.22, hopAir: 0.53, bounceAir: 0.26, landingWindow: 0.3, goodWindow: 0.6, bumpWindow: 0.36, bumpGrace: 0.14, steerInAir: 0.55, bigHeight: 1.25, speedHeight: 1.1 });
+export const JUMP = Object.freeze({ bigAir: 1.27, hopAir: 0.56, bounceAir: 0.26, landingWindow: 0.3, goodWindow: 0.6, bumpWindow: 0.36, bumpGrace: 0.14, steerInAir: 0.55, bigHeight: 1.7, speedHeight: 1.3, hopHeight: 0.85, hopSpeedHeight: 0.45 });
 export const FALL = Object.freeze({ recover: 1.1, points: -150 });
-export const STEER = Object.freeze({ accel: 4.6, damping: 4.0, curveDrift: 0.28 });
+// curveDrift: カーブの外へ流す力（c=1・通常最高速で、何もしないと毎秒 約0.25 レーン外へ流れる）。曲がる向きへ切っている間は流されない。
+export const STEER = Object.freeze({ accel: 4.6, damping: 4.0, curveDrift: 1 });
+// カービング: カーブ（|c| >= minCurve）の地上で、曲がる向きへ切り込んでいる間だけブーストのゲージが貯まり、tickSec ごとに少し得点。
+// 端の深い砂・空中・転倒中は貯まらない。押し込みの強さ（スティックの倒し量）に比例する。
+export const CARVE = Object.freeze({ minCurve: 0.4, gaugePerSec: 0.1, tickSec: 0.8, points: 30 });
 export const SCORE = Object.freeze({ finish: 1200, timePar: 72, timeBonusPerSec: 30, perfect: 250, good: 120, nearMiss: 60, comboStep: 0.15, comboMax: 3,
   smash: 100, raceWin: 600, raceWinNaru: 1500 });
 // 競走の相手。ヌールは着地が少し遅い滑り（ブーストは使う）。なる（裏の相手・ヌールに勝った後）は 360 を決めて着地も完璧、ブーストも使う。
+// startSpeed: スタートの速さ。ヌールは砂丘のガイドなので、出だしが少しだけうまい（同じ滑りでは並べない）。
 export const RIVALS = Object.freeze({
-  noor: Object.freeze({ skill: "rival", startX: -0.42, only360: false }),
-  naru: Object.freeze({ skill: "expert", startX: 0.42, only360: true }),
+  noor: Object.freeze({ skill: "rival", startX: -0.42, only360: false, startSpeed: SPEED.start + 0.6 }),
+  naru: Object.freeze({ skill: "expert", startX: 0.42, only360: true, startSpeed: SPEED.start }),
 });
 // 空中トリック: 大ジャンプ中に ← か → を押している間だけ回る（rate 回転/秒）。離すと次の半回転まで finishRate で回り切る。
 // 着地の瞬間に半回転の区切りから tolerance（回転）以上ずれていると転倒。points は半回転の数ごとの得点（180, 360, 540 …）。
 // 跳んだ瞬間から押していた向きは、一度離すまで回転に使わない（よけながら跳んだだけで回り出さないように）。
 export const SPIN = Object.freeze({ rate: 1.7, finishRate: 3.2, tolerance: 0.1, points: Object.freeze([0, 150, 400, 700, 1100, 1500, 2000, 2600, 3300]) });
 // ブースト: かすめ・大ジャンプの着地・トリックでゲージ（0〜1）が貯まり、残量に比例した時間だけ発動できる。duration 秒のあいだ速度の上限が SPEED.boost になり、
-// 当たった岩は砕ける（転倒しない）。転倒するとゲージが fallLoss 減る。
-export const BOOST = Object.freeze({ duration: 3, near: 0.12, land: 0.05, perfect: 0.22, good: 0.1, trickPerHalf: 0.1, fallLoss: 0.3 });
-// 本編のコースは1本（DEFAULT_SEED）。評価の境目はそのコースで、空中で回って着地も決める＝S、回らないが着地を決めてブーストも使う＝A、
-// 着地が「良い」止まり＝B、ジャンプを使わず避けるだけ＝C になるよう合わせた（remake/test/desert_ride.mjs のボットで照合）。
+// 当たった岩は砕ける（転倒しない）。転倒するとゲージが fallLoss 減る。岩に当たった直後（recoverWindow 秒）にゲージがあれば、ブーストで立て直せる（転倒を取り消して加速する）。
+export const BOOST = Object.freeze({ duration: 3, near: 0.12, land: 0.05, perfect: 0.22, good: 0.1, trickPerHalf: 0.1, fallLoss: 0.3, recoverWindow: 0.45 });
+// 評価の境目は DEFAULT_SEED（コース「稜線」）で合わせた: 空中で回って着地も決める＝S、回らないが着地を決めてブーストも使う＝A、
+// 着地が「良い」止まり＝B、ジャンプを使わず避けるだけ＝C（remake/test/desert_ride.mjs のボットで照合）。
+// 本番は COURSE_PACKS から1本を選ぶ（同じ長さ・難易度帯で、カーブと配置だけが違う）。
 export const RULES_VERSION = 2; // 離陸加点なし・着地回復。旧記録とは点数を比較しない
 export const DEFAULT_SEED = 7;
+export const CURVE_STEP = 2; // heading/offset の焼きテーブル間隔（m）
+export const CURVE_SCALE = 0.0045; // c=1 のとき、1m あたりの向きの変化（レーン単位）。見た目の曲がりだけに使う（横へ流す力は STEER.curveDrift）
+// 本番のコース。seed は配置、curves があればカーブだけ差し替える（稜線は従来の seed 7 のまま）。
+export const COURSE_PACKS = Object.freeze([
+  Object.freeze({ id: "ridge", name: "稜線", seed: 7 }),
+  Object.freeze({ id: "left-bowl", name: "左のボウル", seed: 19, curves: Object.freeze([
+    { z: 0, c: 0 }, { z: 240, c: 0 }, { z: 480, c: -0.9 }, { z: 820, c: -1 }, { z: 1100, c: -0.35 }, { z: 1380, c: 0.45 },
+  ]) }),
+  Object.freeze({ id: "right-crest", name: "右の稜", seed: 23, curves: Object.freeze([
+    { z: 0, c: 0 }, { z: 240, c: 0 }, { z: 480, c: 0.9 }, { z: 820, c: 1 }, { z: 1100, c: 0.35 }, { z: 1380, c: -0.45 },
+  ]) }),
+  Object.freeze({ id: "switchback", name: "切り替え", seed: 11, curves: Object.freeze([
+    { z: 0, c: 0 }, { z: 200, c: 0 }, { z: 400, c: 0.95 }, { z: 620, c: 0 }, { z: 900, c: -0.95 }, { z: 1120, c: 0 }, { z: 1360, c: 0.85 },
+  ]) }),
+]);
 export const RANKS = Object.freeze([["S", 12000], ["A", 6000], ["B", 3500], ["C", 0]]);
 export const RANK_ORDER = Object.freeze(["C", "B", "A", "S"]);
 
@@ -91,7 +112,7 @@ export function generateCourse(seed = 1, { length = COURSE.length } = {}) {
   }
   curves.push({ z: length - 60, c: 0 }, { z: length + 400, c: 0 });
   features.sort((a, b) => a.z - b.z);
-  return Object.freeze({ seed, length, features, curves, practice: false });
+  return decorateCourse({ seed, length, features, curves, practice: false, id: packId(seed), name: packName(seed) });
 }
 
 /** 練習コース: まっすぐ → 岩1つ → 起伏（跳ぶ・着地）→ 岩 → 起伏（空中で回る）→ 岩2つ（ブーストで砕く）。説明の順番が固定なので乱数は使わない。 */
@@ -99,7 +120,7 @@ export function practiceCourse() {
   const length = COURSE.practiceLength;
   const features = [rock(150, 0.35), bump(240), rock(330, -0.3), bump(410), rock(540, 0), rock(590, 0.05)];
   const curves = [{ z: 0, c: 0 }, { z: length + 400, c: 0 }];
-  return Object.freeze({ seed: 0, length, features, curves, practice: true });
+  return decorateCourse({ seed: 0, length, features, curves, practice: true, id: "practice", name: "練習" });
 }
 
 /** z でのカーブ（-1〜1）。要所の間は滑らかにつなぐ。 */
@@ -117,16 +138,95 @@ export function curveAt(course, z) {
   return points[points.length - 1].c;
 }
 
+function packById(id) { return COURSE_PACKS.find(p => p.id === id) || null; }
+function packBySeed(seed) { return COURSE_PACKS.find(p => p.seed === seed) || null; }
+function packId(seed) { return packBySeed(seed)?.id ?? `seed-${seed}`; }
+function packName(seed) { return packBySeed(seed)?.name ?? "砂丘"; }
+
+function closeCurves(points, length) {
+  const list = points.map(p => ({ z: p.z, c: p.c })).sort((a, b) => a.z - b.z);
+  if (!list.length || list[0].z !== 0) list.unshift({ z: 0, c: 0 });
+  if (list[0].c !== 0) list[0] = { z: 0, c: 0 };
+  const end = length - 60;
+  if (list[list.length - 1].z < end) list.push({ z: end, c: 0 });
+  list.push({ z: length + 400, c: 0 });
+  return Object.freeze(list);
+}
+
+/** カーブの向きと横ずれを等間隔で焼いておく（描画と検査で同じ値を使う）。 */
+function bakeCurve(course) {
+  const maxZ = course.length + 400;
+  const n = Math.floor(maxZ / CURVE_STEP) + 1;
+  const heading = new Float64Array(n), offset = new Float64Array(n);
+  for (let i = 1; i < n; i++) {
+    const c = curveAt(course, (i - 0.5) * CURVE_STEP);
+    heading[i] = heading[i - 1] + c * CURVE_SCALE * CURVE_STEP;
+    offset[i] = offset[i - 1] + 0.5 * (heading[i] + heading[i - 1]) * CURVE_STEP;
+  }
+  return { heading, offset };
+}
+
+function decorateCourse(course) {
+  const baked = bakeCurve(course);
+  return Object.freeze({ ...course, curves: Object.freeze(course.curves.map(p => Object.freeze({ ...p }))), heading: baked.heading, offset: baked.offset });
+}
+
+function sampleBake(table, z) {
+  if (!table?.length) return 0;
+  const i = z / CURVE_STEP;
+  if (i <= 0) return table[0];
+  if (i >= table.length - 1) return table[table.length - 1];
+  const lo = Math.floor(i), t = i - lo;
+  return table[lo] + (table[lo + 1] - table[lo]) * t;
+}
+
+/** z での向き（レーン単位）。z=0 は 0。 */
+export function headingAt(course, z) { return sampleBake(course.heading, z); }
+/** z での横ずれ（レーン単位、コース原点から）。 */
+export function offsetAt(course, z) { return sampleBake(course.offset, z); }
+/** 基準位置 zRef から見た、地点 z の横ずれ（カメラ相対。同じ地点なら 0）。 */
+export function lateralAt(course, z, zRef) {
+  return offsetAt(course, z) - offsetAt(course, zRef) - headingAt(course, zRef) * (z - zRef);
+}
+
+/** 先のカーブの向き（-1〜1）。もうすぐ曲がるときだけ値を返し、すでに曲がっている／まっすぐなら 0。 */
+export function upcomingCurve(course, z, lookAhead = 110) {
+  const now = curveAt(course, z);
+  let best = 0;
+  for (let ahead = 24; ahead <= lookAhead; ahead += 8) {
+    const c = curveAt(course, z + ahead);
+    if (Math.abs(c) > Math.abs(best)) best = c;
+  }
+  if (Math.abs(best) < 0.35 || Math.abs(best) <= Math.abs(now) + 0.15) return 0;
+  return best;
+}
+
+/** コース定義（id か seed）から本番の1本を作る。同じ引数なら同じコース。 */
+export function buildCourse({ id, seed } = {}) {
+  const pack = (id && packById(id)) || (seed != null && packBySeed(seed)) || null;
+  if (!pack) return generateCourse(seed ?? DEFAULT_SEED);
+  const course = generateCourse(pack.seed);
+  if (!pack.curves) return decorateCourse({ ...course, id: pack.id, name: pack.name, curves: course.curves });
+  return decorateCourse({ ...course, id: pack.id, name: pack.name, curves: closeCurves(pack.curves, course.length) });
+}
+
+/** runSeed から COURSE_PACKS の1本を決めて作る（決定的）。 */
+export function pickCourse(runSeed) {
+  const index = Math.floor(rng(runSeed)() * COURSE_PACKS.length);
+  return buildCourse({ id: COURSE_PACKS[index].id });
+}
+
 /** rival: rivalRun() の結果（本番のヌール）。あれば、ゴールの順を競い、先着で加点する。 */
 export function createGame(course, { rival = null } = {}) {
   return {
     course, rival, t: 0, z: 0, x: 0, vx: 0, speed: SPEED.start,
     air: 0, airTotal: 0, airPeak: 0, airKind: null, landingPress: null, lastJumpT: -9,
     rot: 0, spinDir: 0, spinHold: false, spinArmed: null, lastTrick: null,
-    gauge: 0, boostT: 0,
-    fallT: 0, falls: 0, combo: 0, maxCombo: 0, score: 0,
+    gauge: 0, boostT: 0, carving: false, carveT: 0,
+    fallT: 0, fallAt: -9, fallReason: null, preFallSpeed: SPEED.start, preFallCombo: 0, preFallGauge: 0,
+    falls: 0, combo: 0, maxCombo: 0, score: 0,
     stats: { bigJumps: 0, hops: 0, perfect: 0, good: 0, plain: 0, nearMiss: 0, edgeTime: 0, bounces: 0, airTime: 0,
-      tricks: 0, bestTrick: 0, spinFalls: 0, boosts: 0, smashed: 0 },
+      tricks: 0, bestTrick: 0, spinFalls: 0, boosts: 0, smashed: 0, recoveries: 0, carves: 0, carveTime: 0 },
     passed: new Set(), smashedRocks: new Set(), lastBump: null, finished: false, finishTime: null, race: null, events: [], landedAt: null,
   };
 }
@@ -150,9 +250,33 @@ export function chargeBoost(game, amount) {
   return game.gauge;
 }
 
-/** ブースト（↓ ／ BOOST ボタン）。残量を使い切り、その割合だけ加速時間を得る。 */
+/** 転倒からブーストで立て直せるか（岩に当たった直後の短い間だけで、ゲージが必要）。 */
+export function canRecover(game) {
+  return !game.finished && (game.preFallGauge ?? 0) > 0 && game.fallT > 0 && game.fallReason === "rock"
+    && game.t - game.fallAt <= BOOST.recoverWindow + 1e-9;
+}
+
+/** ブースト（↓ ／ BOOST ボタン）。残量を使い切り、その割合だけ加速時間を得る。転倒直後なら立て直す。 */
 export function boost(game) {
-  if (game.finished || game.gauge <= 0) return null;
+  if (game.finished) return null;
+  if (canRecover(game)) {
+    game.gauge = game.preFallGauge;
+    game.score -= FALL.points;
+    game.falls = Math.max(0, game.falls - 1);
+    game.combo = game.preFallCombo;
+    game.maxCombo = Math.max(game.maxCombo, game.combo);
+    game.fallT = 0;
+    game.fallReason = null;
+    game.speed = Math.max(game.speed, game.preFallSpeed);
+    game.stats.recoveries += 1;
+    game.boostT = Math.min(BOOST.duration, game.boostT + BOOST.duration * game.gauge);
+    game.gauge = 0;
+    game.preFallGauge = 0;
+    game.stats.boosts += 1;
+    game.events.push({ kind: "recover", t: game.t });
+    return "recover";
+  }
+  if (game.gauge <= 0) return null;
   game.boostT = Math.min(BOOST.duration, game.boostT + BOOST.duration * game.gauge);
   game.gauge = 0;
   game.stats.boosts += 1;
@@ -193,10 +317,10 @@ export function press(game) {
 }
 
 /** 離陸時の速さで高さを固定。空中のブースト開始・終了では軌道を飛ばさない。
- * 滞空時間・岩の回避・着地判定は従来通り。高さのために着地帯の外へ滞空を延ばさない。 */
+ * 滞空と高さを少し伸ばし、岩越えの手応えを強める。着地判定の幅は変えない。 */
 export function jumpPeak(speed, kind = "big") {
   const fast = Math.min(1, Math.max(0, Number.isFinite(speed) ? speed / SPEED.boost : 0));
-  return kind === "big" ? JUMP.bigHeight + JUMP.speedHeight * fast : kind === "hop" ? 0.65 + 0.35 * fast : 0.5;
+  return kind === "big" ? JUMP.bigHeight + JUMP.speedHeight * fast : kind === "hop" ? JUMP.hopHeight + JUMP.hopSpeedHeight * fast : 0.5;
 }
 
 /** 現在の地面からの高さ。描画・相手の走行サンプルで共通の軌道を使う。 */
@@ -275,6 +399,11 @@ function land(game) {
 }
 
 function fall(game, feature, reason = "rock") {
+  game.preFallSpeed = game.speed;
+  game.preFallCombo = game.combo;
+  game.preFallGauge = game.gauge;
+  game.fallAt = game.t;
+  game.fallReason = reason;
   game.fallT = FALL.recover;
   game.falls += 1;
   game.combo = 0;
@@ -317,14 +446,34 @@ export function step(game, input, dt) {
     game.stats.edgeTime += dt;
   }
   // 横移動: 入力で加速、砂の抵抗で減衰。空中は効きが弱い。カーブでは外へ流れる。
-  const steer = falling ? 0 : ((input?.right ? 1 : 0) - (input?.left ? 1 : 0));
+  // タッチスティックは倒し量をそのまま使う。鍵盤・ボタン・ボットの二値入力も従来どおり受ける。
+  const steer = falling ? 0 : Number.isFinite(input?.steer)
+    ? Math.max(-1, Math.min(1, input.steer))
+    : ((input?.right ? 1 : 0) - (input?.left ? 1 : 0));
   let grip = game.air > 0 ? JUMP.steerInAir : 1;
   if (game.air > 0 && game.airKind === "big") {
-    spinStep(game, steer, dt);
+    spinStep(game, Math.sign(steer), dt);
     if (game.spinDir !== 0) grip = 0; // 回っている間は横へ動かない
   }
   game.vx += steer * STEER.accel * grip * dt;
-  game.vx -= curveAt(game.course, game.z) * STEER.curveDrift * (game.speed / SPEED.max) * dt;
+  const curve = curveAt(game.course, game.z);
+  // 外へ流す力。曲がる向きへ切っている間は板が砂を噛んで流されない（よける力は直線と同じ）。何もしない・外へ切ると流される
+  const bite = Math.max(0, Math.min(1, steer * Math.sign(curve))) * grip;
+  game.vx -= curve * STEER.curveDrift * (game.speed / SPEED.max) * (1 - bite) * dt;
+  // カービング: カーブの地上で、曲がる向きへ切り込んでいる間（外へ流されるのに耐えている間）
+  const carve = !falling && game.air <= 0 && Math.abs(curve) >= CARVE.minCurve && steer * curve > 0 && Math.abs(game.x) <= EDGE
+    ? Math.abs(steer) * Math.min(1, Math.abs(curve)) : 0;
+  game.carving = carve > 0;
+  if (carve > 0) {
+    game.stats.carveTime += dt;
+    chargeBoost(game, CARVE.gaugePerSec * carve * dt);
+    game.carveT += carve * dt;
+    if (game.carveT >= CARVE.tickSec) {
+      game.carveT -= CARVE.tickSec;
+      game.stats.carves += 1;
+      award(game, "carve", CARVE.points, { combo: false, at: { dir: Math.sign(curve) } });
+    }
+  }
   game.vx *= Math.max(0, 1 - STEER.damping * dt);
   game.x += game.vx * dt;
   if (game.x > 1.05) { game.x = 1.05; game.vx = Math.min(0, game.vx); }
@@ -420,6 +569,7 @@ export function summary(game) {
     maxCombo: game.maxCombo, falls: game.falls, bigJumps: game.stats.bigJumps, perfect: game.stats.perfect,
     good: game.stats.good, nearMiss: game.stats.nearMiss, seed: game.course.seed,
     tricks: game.stats.tricks, bestTrick: game.stats.bestTrick, boosts: game.stats.boosts, smashed: game.stats.smashed,
+    recoveries: game.stats.recoveries, carves: game.stats.carves, courseId: game.course.id ?? null, courseName: game.course.name ?? null,
     race: game.race ? { ...game.race } : null,
   };
 }
@@ -438,6 +588,57 @@ export function readResult(value) {
     tricks: Math.round(n(value.tricks) ?? 0), bestTrick: Math.round(n(value.bestTrick) ?? 0), boosts: Math.round(n(value.boosts) ?? 0), race };
 }
 
+const BOT_PLANS = Object.freeze([[0, 0], ...[-1, 1].flatMap(dir => [0.2, 0.45, 0.8, 1.4].map(hold => [dir, hold]))]);
+const BOT_LOOK = Object.freeze({ horizon: 2.2, dt: 1 / 20, every: 3, commit: 0.35 });
+/**
+ * 自動操作の舵。2.2秒先まで横の動き（慣性・カーブで外へ流される力）を試算し、岩に当たらず端にも出ない押し方を選ぶ。
+ * 「何もしない／左右どちらかを 0.2〜1.4 秒押して離す」の中から、いちばん安全で自分の位置（lane）へ戻れるものを選び直す（every 歩ごと）。
+ */
+function botSteer(game, skill, memo) {
+  memo.steerTick = (memo.steerTick ?? -1) + 1;
+  if (memo.steerDir != null && memo.steerTick % BOT_LOOK.every !== 0) return { left: memo.steerDir < 0, right: memo.steerDir > 0 };
+  const course = game.course, speed = Math.max(SPEED.min, game.speed), { horizon, dt } = BOT_LOOK, lane = memo.lane ?? 0;
+  const steps = Math.round(horizon / dt), reach = game.z + speed * horizon + 4;
+  // 空中の区間（今の大ジャンプと、これから跳ぶ起伏）。大ジャンプ中は岩を越え、← → は回転に使うので横へは動かさない
+  // 飛ぶ距離は短めに見積もる（ブーストが切れると速さが落ちる）。着地のすぐ先の岩は、跳ぶ前から位置をずらしてよける
+  const spans = [], glide = time => (game.boostT >= time ? speed : Math.min(speed, SPEED.max)) * time * 0.95;
+  if (game.air > 0 && game.airKind === "big") spans.push([game.z, game.z + glide(game.air)]);
+  const rocks = [];
+  for (const f of course.features) {
+    if (f.z <= game.z || f.z > reach || game.passed.has(f)) continue;
+    if (f.kind === "rock") rocks.push(f);
+    else if (skill !== "none") spans.push([f.z, f.z + glide(JUMP.bigAir * (0.85 + 0.3 * Math.min(1, speed / SPEED.max)))]);
+  }
+  const inAir = z => spans.some(([from, to]) => z >= from && z < to);
+  // 各歩の地面の状態は、どの押し方でも同じ（前へ進む速さは変わらない）
+  const drift = new Float64Array(steps), side = new Int8Array(steps), grip = new Uint8Array(steps), hits = [];
+  for (let k = 0; k < steps; k++) {
+    const z = game.z + speed * dt * k, curve = curveAt(course, z);
+    drift[k] = curve * STEER.curveDrift * (speed / SPEED.max) * dt; side[k] = Math.sign(curve); grip[k] = inAir(z) ? 0 : 1;
+    hits.push(rocks.filter(rock => rock.z > z && rock.z <= z + speed * dt && !inAir(rock.z)));
+  }
+  const damp = Math.max(0, 1 - STEER.damping * dt);
+  let best = null;
+  for (const [dir, hold] of BOT_PLANS) {
+    // 無駄に切らない。前と同じ向きを少し優先して、岩の正面で左右に迷わない
+    let x = game.x, vx = game.vx, cost = (dir === 0 ? 0 : 0.04 + hold * 0.02) + (memo.steerDir && dir !== memo.steerDir ? BOT_LOOK.commit : 0);
+    for (let k = 0; k < steps; k++) {
+      const steer = k * dt < hold ? dir * grip[k] : 0;
+      vx = (vx + steer * STEER.accel * dt - drift[k] * (1 - Math.max(0, steer * side[k]))) * damp;
+      x = Math.max(-1.05, Math.min(1.05, x + vx * dt));
+      for (const rock of hits[k]) {
+        const gap = Math.abs(x - rock.x) - rock.w - PLAYER.half;
+        cost += gap < 0.05 ? 1000 * (1 + horizon - k * dt) : Math.max(0, 0.5 - gap) * 3; // 当たるのは論外。空いていれば余裕を取る
+      }
+      if (Math.abs(x) > EDGE - 0.06) cost += 40 * dt; // 端の深い砂
+    }
+    cost += Math.abs(x - lane) * 1.2;
+    if (!best || cost < best.cost - 1e-9) best = { dir, cost };
+  }
+  memo.steerDir = best.dir;
+  return { left: best.dir < 0, right: best.dir > 0 };
+}
+
 /**
  * 検証・デモ・ヌール用の自動操作。skill:
  * "expert"（全部よけて起伏で跳び、空中で 360〜720 回って着地を決め、ゲージが満ちたらブースト）／"perfect"（回らないが着地を決め、ブーストも使う）／
@@ -446,22 +647,24 @@ export function readResult(value) {
  * 戻り値は { input, action } で、action は押すべき時に "press"（ジャンプ・着地の構え）か "boost"。乱数を使わないので同じコースなら同じ結果になる。
  */
 export function botControl(game, skill = "perfect", memo = {}) {
-  const course = game.course;
-  const react = skill === "lazy" ? 22 : 45;
-  const ahead = course.features.filter(f => f.kind === "rock" && !game.passed.has(f) && f.z > game.z && f.z - game.z < react);
-  let target = memo.lane ?? 0; // 岩が無い所で滑る位置（ヌールは少し左を滑る）
-  if (ahead.length) {
-    const first = ahead[0], row = ahead.filter(r => Math.abs(r.z - first.z) < 1);
-    let best = null;
-    for (let x = -0.8; x <= 0.8001; x += 0.05) {
-      const d = Math.min(...row.map(r => Math.abs(x - r.x) - r.w - PLAYER.half));
-      const cost = -Math.min(d, 0.6) * 3 + Math.abs(x - game.x) * 0.6;
-      if (!best || cost < best.cost) best = { x, cost };
+  let input;
+  if (skill === "lazy") {
+    // 反応が遅い人: すぐ手前の岩だけを見て大きくよけ、時々手が止まる
+    const ahead = game.course.features.filter(f => f.kind === "rock" && !game.passed.has(f) && f.z > game.z && f.z - game.z < 22);
+    let target = memo.lane ?? 0;
+    if (ahead.length) {
+      const first = ahead[0], row = ahead.filter(r => Math.abs(r.z - first.z) < 1);
+      let best = null;
+      for (let x = -0.8; x <= 0.8001; x += 0.05) {
+        const d = Math.min(...row.map(r => Math.abs(x - r.x) - r.w - PLAYER.half));
+        const cost = -Math.min(d, 0.6) * 3 + Math.abs(x - game.x) * 0.6;
+        if (!best || cost < best.cost) best = { x, cost };
+      }
+      target = best.x;
     }
-    target = best.x;
-  }
-  const slow = skill === "lazy" && Math.floor(game.t * 4) % 3 === 0; // 時々手が止まる
-  let input = slow ? { left: false, right: false } : { left: game.x > target + 0.03, right: game.x < target - 0.03 };
+    const slow = Math.floor(game.t * 4) % 3 === 0; // 時々手が止まる
+    input = slow ? { left: false, right: false } : { left: game.x > target + 0.03, right: game.x < target - 0.03 };
+  } else input = botSteer(game, skill, memo);
   let action = null;
   const jumps = ["expert", "perfect", "good", "rival"].includes(skill);
   const braceAt = skill === "expert" || skill === "perfect" ? 0.2 : 0.45;
@@ -474,7 +677,12 @@ export function botControl(game, skill = "perfect", memo = {}) {
   }
   if (jumps && game.air <= 0 && nextBumpDistance(game) <= game.speed * JUMP.bumpWindow * 0.8) { action = "press"; memo.braced = false; }
   else if (game.air > 0 && game.airKind === "big" && !memo.braced && game.air <= braceAt) { action = "press"; memo.braced = true; }
-  else if (["expert", "perfect", "good", "rival"].includes(skill) && game.gauge >= 1 && game.boostT <= 0 && game.fallT <= 0) action = "boost";
+  else if (jumps && game.fallT <= 0) {
+    // ゲージを無駄にしない使い方: 満タンで使う／加速中は、あふれない分だけ継ぎ足す／ゴールが近づいたら残りを使い切る
+    const remaining = game.course.length - game.z, room = 1 - game.boostT / BOOST.duration;
+    if (game.boostT <= 0 ? game.gauge >= 1 || (game.gauge >= 0.15 && remaining <= SPEED.boost * BOOST.duration * game.gauge + 20)
+      : game.gauge >= 0.3 && game.gauge <= room) action = "boost";
+  }
   return { input, action };
 }
 
@@ -493,11 +701,11 @@ const RIVAL_SAMPLE = 1 / 30;
  * 同じコースなら毎回同じ（決定的）。人物とは当たらない（並んで滑るだけ）。
  */
 export function rivalRun(course, { who = "noor", maxTime = 200 } = {}) {
-  const { skill, startX, only360 } = RIVALS[who] || RIVALS.noor;
+  const { skill, startX, only360, startSpeed } = RIVALS[who] || RIVALS.noor;
   const game = createGame(course), memo = { lane: startX, only360 }, samples = [];
-  game.x = startX;
+  game.x = startX; game.speed = startSpeed;
   const snap = () => samples.push({ t: game.t, z: game.z, x: game.x, vx: game.vx, air: game.air, airTotal: game.airTotal, airPeak: game.airPeak, airKind: game.airKind,
-    landingPress: game.landingPress, fallT: game.fallT, landedAt: game.landedAt, rot: game.rot });
+    landingPress: game.landingPress, fallT: game.fallT, landedAt: game.landedAt, rot: game.rot, boostT: game.boostT });
   snap();
   let next = RIVAL_SAMPLE;
   while (!game.finished && game.t < maxTime) {

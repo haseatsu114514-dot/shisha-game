@@ -97,7 +97,7 @@ await suite("hiyori-encounters", async (check) => {
       for (let seed = 0; seed < 100; seed++) {
         const s = H.fresh(); s.seed = seed;
         Object.assign(s.flags, { _hiyori_meeting_done: true, _hiyori_sumi_message_done: true,
-          _hiyori_message_delivered: true, _hiyori_cracks_done: true });
+          _hiyori_message_delivered: true, _hiyori_cracks_done: true, _hiyori_clockout_done: true });
         const before = JSON.stringify(s);
         if (!await H.visit("minto")) { missed = { before, unchanged: JSON.stringify(s) === before }; break; }
       }

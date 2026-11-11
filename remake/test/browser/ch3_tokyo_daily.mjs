@@ -117,7 +117,7 @@ await suite("ch3-tokyo-daily", async check => {
   });
 
   // #2454 てつこといっしょ: 裏口の選択の先頭。初めてなら既存の段階会話（初回）を読んでから、ふれあいの画面へ。
-  // なでる・見守るをして「帰る」と、同じ処理の中で回復12・来訪1回・_tetsuko_time を確定する（二重にならない）。
+  // なでる・じゃらしをして「帰る」と、同じ処理の中で回復12・来訪1回・_tetsuko_time を確定する（二重にならない）。
   // 好感度・能力・お金・時間は動かさない（お金はシフトの日当だけ）。
   await check("tetsuko-time-first-visit-reads-the-stage-scene-and-settles-once", async page => {
     await seed(page);
@@ -141,13 +141,14 @@ await suite("ch3-tokyo-daily", async check => {
     const screen = page.locator(dt("tetsuko-time-screen"));
     await screen.waitFor({ timeout: 60000 });
     assert.equal(await screen.getAttribute("data-stage"), "0", "First visit: still keeping her distance");
-    assert.match(await page.locator(dt("tetsuko-mood")).innerText(), /今日は/);
+    assert.match(await page.locator(dt("tetsuko-mood")).getAttribute("aria-label"), /今日は/);
     assert((await page.locator(dt("tetsuko-caption")).innerText()).trim().length > 0, "She reacts as soon as the screen opens");
     assert.equal(await page.locator(dt("tetsuko-brush")).isDisabled(), true, "The brush waits until Mukai's brush scene");
     assert.equal((await get(page)).flags._ch3_outings.tetsuko, undefined, "Nothing is settled while the screen is open");
     await page.locator(dt("tetsuko-pet")).click();
-    await page.locator(dt("tetsuko-watch")).click();
-    await page.locator(dt("tetsuko-note")).filter({ hasText: "前足をそろえる" }).waitFor();
+    // じゃらしを3回振ると前足が出る（様子見の段階は飛びつかない）。
+    for (let i = 0; i < 3; i += 1) await page.locator(dt("tetsuko-play")).click();
+    await page.locator(dt("tetsuko-note")).filter({ hasText: "はじめて前足が出た" }).waitFor();
     // 二重押ししても確定は一度だけ。
     await page.locator(dt("tetsuko-time-back")).click();
     await page.locator(dt("tetsuko-time-back")).click({ timeout: 500 }).catch(() => {});
@@ -156,7 +157,8 @@ await suite("ch3-tokyo-daily", async check => {
     const maximum = await page.evaluate(async () => (await import("./js/core/stats.js")).maxStamina());
     assert.equal(settled.stamina, Math.min(maximum, mid.stamina + 12), "Stamina comes back by 12 (within the cap)");
     const record = settled.flags._tetsuko_time;
-    assert(record.found.includes("paws_together"), "The moment is kept in the book without a photo");
+    assert(record.found.includes("first_paw"), "The moment is kept in the book without a photo");
+    assert.equal(record.peaks, 0, "No happy peak yet on such a short visit");
     assert.equal(record.sessions, 1);
     assert.equal(record.lastKey, `3:33:1:0`, "The visit key comes from the mukai visit");
     assert.deepEqual(settled.affinity, mid.affinity, "No affinity from the cat");
@@ -222,7 +224,7 @@ await suite("ch3-tokyo-daily", async check => {
     await page.locator(dt("tetsuko-slot-floor")).click();
     assert.equal(await page.locator('.tt-slot[data-slot="floor"]').getAttribute("data-prop"), "box", "The box is on the floor");
     await page.locator(dt("tetsuko-panel-close")).click();
-    // 猫じゃらし: 持ち替えて、先を指（マウス）で動かす。動かすたびに振ったことになり、3回目で前足が出る。
+    // 猫じゃらし: 持ち替えて、先を指（マウス）で動かす。動かすたびに振ったことになり、3回目で前足が出る（その次で飛びつく）。
     await page.locator(dt("tetsuko-play")).click();
     assert.equal(await screen.getAttribute("data-tool"), "toy");
     const box = await screen.boundingBox();
@@ -324,7 +326,7 @@ await suite("ch3-tokyo-daily", async check => {
       value.day = intro.startDay + 12; value.slot = 0; value.phase = "daily";
       Object.assign(value.met, { saku: true, steve: true, volk: true, mashiro: true, mukai_master: true });
       value.flags._ch3_opening_read = value.flags._ch3_registration_read = value.flags._ch3_rules_read = true;
-      Object.assign(value.flags, { _lime_contact_saku: true, _ch3_read_ch3_saku_lime: true, _ch3_outings: { enmaku_answer: 1, enmaku_visit: 3 } });
+      Object.assign(value.flags, { _lime_contact_saku: true, _ch3_read_ch3_saku_lime: true, _ch3_read_ch3_saku_missed: true, _ch3_read_ch3_saku_cleanup: true, _ch3_read_ch3_saku_liar: true, _ch3_read_ch3_saku_first_reply: true, _ch3_outings: { enmaku_answer: 1, enmaku_visit: 3 } });
       value.affinity.saku = 66; value.money = 10000;
       core.save();
     });
@@ -360,6 +362,7 @@ await suite("ch3-tokyo-daily", async check => {
       Object.assign(value.met, { saku: true, steve: true, volk: true, mashiro: true, mukai_master: true });
       value.flags._ch3_opening_read = value.flags._ch3_registration_read = value.flags._ch3_rules_read = true;
       Object.assign(value.flags, { _lime_contact_steve: true, _ch3_read_ch3_steve_lime: true,
+        _ch3_read_ch3_steve_two_timers: true, _ch3_read_ch3_steve_empty_seat: true, _ch3_read_ch3_steve_tongs: true, _ch3_read_ch3_steve_watch: true,
         _ch3_outings: { mukai_steve: 2, steve_timer: 1, steve_visit: 2 } });
       value.affinity.steve = 66; value.money = 10000;
       core.save();
@@ -403,7 +406,7 @@ await suite("ch3-tokyo-daily", async check => {
       value.day = intro.startDay + 12; value.slot = 0; value.phase = "daily";
       Object.assign(value.met, { saku: true, steve: true, volk: true, mashiro: true, mukai_master: true });
       value.flags._ch3_opening_read = value.flags._ch3_registration_read = value.flags._ch3_rules_read = true;
-      for (const id of ["ch3_volk_second", "ch3_volk_third", "ch3_volk_fourth", "ch3_volk_lime"]) value.flags[`_ch3_read_${id}`] = true;
+      for (const id of ["ch3_volk_second", "ch3_volk_third", "ch3_volk_fourth", "ch3_volk_lime", "ch3_volk_fifth", "ch3_volk_revisit"]) value.flags[`_ch3_read_${id}`] = true;
       value.flags._lime_contact_volk = true;
       value.affinity.volk = 66; value.money = 1000;
       core.save();

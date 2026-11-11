@@ -56,9 +56,10 @@ check("key visual table matches the roster and the real manifest", () => {
   assert.deepEqual(sorted(Object.entries(TITLE_KEY_VISUALS).filter(([, f]) => f === null).map(([id]) => id)), [], "全員に専用キービジュアルが割り当て済み");
 });
 check("latest save selection", () => {
-  const slot = "suien_remake_slot2";
+  const slot = "suien_remake_slot1";
   localStorage.setItem(SAVE_KEY, JSON.stringify(sv({ savedAt: 100, met: { minto: true } })));
   localStorage.setItem(slot, JSON.stringify(sv({ savedAt: 200, met: { rio: true } })));
+  localStorage.setItem("suien_remake_slot2", JSON.stringify(sv({ savedAt: 300, met: { ageha: true } })));
   assert.deepEqual(peekLatestSave().met, { rio: true }, "手動枠が新しい");
   localStorage.setItem(slot, JSON.stringify(sv({ savedAt: 50, met: { rio: true } })));
   assert.deepEqual(peekLatestSave().met, { minto: true }, "オートが新しい");

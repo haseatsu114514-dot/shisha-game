@@ -44,7 +44,7 @@ const CALL_NIGHT_FLAG = "_ch3_tokyo_call_night"; // 遠くからの電話を受�
 // 任意の場面の location を、東京の地図の行き先へ。電話の場面は夜の予定として届く（行動を使わない）。
 const PLACE_OF_LOCATION = Object.freeze({
   mukai: "mukai", "東京の問屋": "mukai", "ましろの部屋": "mukai",
-  "煙幕": "enmaku", "鉄の煙": "volk",
+  "煙幕": "enmaku", "鉄の煙": "volk", "Smoke & Glory": "steve",
 });
 const CALL_SCENES = Object.freeze(["ch3_minto_small_lies", "ch3_tsumugi_slump", "hiyori_tokyo_contact"]);
 const isCall = id => CALL_SCENES.includes(id);
@@ -115,7 +115,7 @@ export const CH3_TOKYO_SPOTS = Object.freeze([
 } : {}))));
 
 function spotHasNew(entry) {
-  if (["mukai", "enmaku", "volk"].includes(entry.place) && optionalAt(entry.place).length) return true;
+  if (["mukai", "enmaku", "steve", "volk"].includes(entry.place) && optionalAt(entry.place).length) return true;
   if (rivalFinaleAt(entry.place)) return true; // 綾取・スティーブ・ヴォルクの締めくくり（IR22・#2028）
   if (entry.place === "mukai") return mukaiBondDue() || outingsAt("mukai").some(outing => !outing.repeat);
   return outingsAt(entry.place).some(outing => !outing.repeat);
@@ -241,7 +241,14 @@ export async function runChapterThreeTokyo(io) {
 }
 
 const OUTING_IDS = OUTING_DIALOGUE_IDS; // 通いの小会話（AFB02）も含む外出の台本
-export const TOKYO_DAILY_IDS = Object.freeze(["ch3_tokyo_room_rest", "ch3_tokyo_fortune"]);
+// 奥の部屋で休む: 初回は ch3_tokyo_room_rest、2回目からは日常の小品を巡回する（#3097。公園の散歩と同じ読み分け）。
+const ROOM_REST_FLAG = "_ch3_room_rests";
+const ROOM_REST_AGAIN = Object.freeze(["b", "c", "d", "e"].map(suffix => `ch3_tokyo_room_rest_${suffix}`));
+export function roomRestId(value = state) {
+  const count = Math.max(0, Math.floor(Number(value.flags?.[ROOM_REST_FLAG]) || 0));
+  return count ? ROOM_REST_AGAIN[(count - 1) % ROOM_REST_AGAIN.length] : "ch3_tokyo_room_rest";
+}
+export const TOKYO_DAILY_IDS = Object.freeze(["ch3_tokyo_room_rest", ...ROOM_REST_AGAIN, "ch3_tokyo_fortune"]);
 
 // ---- 昼の行動を使う場面・約束 ----------------------------------------------------------
 function tokyoSlotEvent(io) {
@@ -407,7 +414,7 @@ const unused = { used: false, exerted: false };
 const personExp = id => id ? Object.freeze({ key: id, person: id }) : null;
 const MUKAI_SHIFT_EXP = Object.freeze({ key: "tokyo:mukai_help", place: "tokyo:mukai_help" });
 const GYM_EXP = Object.freeze({ key: "tokyo:gym", place: "tokyo:gym" });
-const OPTIONAL_HOST = Object.freeze({ mukai: "mashiro", enmaku: "saku", volk: "volk" });
+const OPTIONAL_HOST = Object.freeze({ mukai: "mashiro", enmaku: "saku", steve: "steve", volk: "volk" });
 
 async function performTokyoSpot(entry, io, { staminaGuard }) {
   if (entry.region !== TOKYO) return null;
@@ -421,8 +428,9 @@ async function performTokyoSpot(entry, io, { staminaGuard }) {
     return unused;
   }
   if (entry.place === "room") {
-    if (!await readPlain("ch3_tokyo_room_rest", "bg_mukai_shop", owner)) return unused;
+    if (!await readPlain(roomRestId(), "bg_mukai_shop", owner)) return unused;
     addStamina(entry.stamina);
+    state.flags[ROOM_REST_FLAG] = (Number(state.flags[ROOM_REST_FLAG]) || 0) + 1;
     return { used: true, exerted: false };
   }
   if (entry.place === "park") return goOuting(outingById("park_walk"), staminaGuard, owner);

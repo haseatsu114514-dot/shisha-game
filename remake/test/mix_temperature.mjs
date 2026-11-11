@@ -6,7 +6,7 @@ import { DB } from "../js/core/data.js";
 import { temperatureBands, IDEAL, OPTIMAL, visualTemperature, isIdealTemperature, isOptimalTemperature,
   temperatureAfterSteam, pullResult, DANGER_TEMP, BURST_TEMP, COLD_OUT, isBurnt, isColdOut } from "../js/craft/conditions.js";
 import { thermalBand, envAt } from "../js/craft/thermal.js";
-import { temperatureFitness, makerMixProfile } from "../js/craft/temperature-model.js";
+import { temperatureFitness, makerMixProfile, isRainbowTemperature } from "../js/craft/temperature-model.js";
 
 const flavors = JSON.parse(fs.readFileSync(new URL("../../data/flavors.json", import.meta.url))).flavors;
 DB.flavorById = Object.fromEntries(flavors.map(f => [f.id, f]));
@@ -63,7 +63,7 @@ for (const flavor of flavors) {
       assert.equal(check(temp, bands), expected, `${flavor.id} ${name} ${temp}`);
       assert.equal(pullResult(temp, 2, 0, bands)[name === "ideal" ? "inZone" : "optimal"], expected);
       const effect = thermalBand(temp, bands);
-      if (name === "optimal") assert.equal(effect.id === "optimal", expected && bands.expressionWeight < .999);
+      if (name === "optimal") assert.equal(effect.id === "optimal", isRainbowTemperature(temp, bands), `${flavor.id} rainbow effect ${temp}`);
       else assert.equal(effect.id === "ready" || effect.id === "optimal", expected);
       if (isIdealTemperature(temp, bands)) {
         assert.equal(envAt(temp, bands).fire, 0); assert.equal(envAt(temp, bands).dark, 0); assert.equal(effect.haze, 0);
@@ -80,14 +80,31 @@ for (const flavor of flavors) {
   for (let i = 0; i <= 200; i++) {
     const temp = i / 200, effect = envAt(temp, bands);
     for (const value of Object.values(effect).filter(v => typeof v === "number")) assert(Number.isFinite(value));
-    assert.equal(effect.rainbow > 0, isOptimalTemperature(temp, bands) && bands.expressionWeight < .999, `${flavor.id} rainbow at ${temp}`);
+    assert.equal(effect.rainbow > 0, isRainbowTemperature(temp, bands), `${flavor.id} rainbow at ${temp}`);
     if (isIdealTemperature(temp, bands)) assert.equal(effect.fire + effect.dark + effect.sparks, 0);
   }
 }
-assert.equal(thermalBand(.76, mint).id, "ready");
+// ミントは作り分ける葉なので、おいしく作れる範囲全体が虹（2026-11-10）。高めの.76も炎ではなく虹。
+assert.equal(thermalBand(.76, mint).id, "optimal");
 assert.equal(envAt(.76, mint).fire, 0);
 assert(visualTemperature(.76, mint) > mint.ideal[1] && visualTemperature(.76, mint) < DANGER_TEMP);
-console.log(`[mix temperature] PASS: ${boundaryCases} inclusive green/rainbow edges; expressive blends stay green across their tasty range`);
+// 虹（2026-11-10 オーナー指示）: どの配合にもあり、最適温を含み適温帯に収まる。作り分ける葉が多いほど広く、
+// 作り分ける葉だけなら適温帯と同じ。虹の端でも採点の適合度は90以上（表示だけの帯で採点は変えない）。
+let rainbowCases = 0, sawFull = false, sawFocused = false;
+for (const mix of [...flavors.map(f => ({ [f.id]: 12 })), { lemon: 6, mint: 6 }, { lemon: 6, peach: 6 }, { mint: 9, vanilla: 3 }, { mint: 3, vanilla: 9 }]) {
+  const bands = temperatureBands({ mix });
+  assert(bands.rainbow[0] <= bands.optimal[0] + 1e-12 && bands.rainbow[1] >= bands.optimal[1] - 1e-12, `rainbow covers optimal ${JSON.stringify(mix)}`);
+  assert(bands.rainbow[0] >= bands.ideal[0] - 1e-12 && bands.rainbow[1] <= bands.ideal[1] + 1e-12, `rainbow inside ideal ${JSON.stringify(mix)}`);
+  assert(bands.rainbow[1] > bands.rainbow[0], `rainbow exists ${JSON.stringify(mix)}`);
+  for (const edge of bands.rainbow) assert(temperatureFitness(edge, bands) >= 90 - 1e-9, `rainbow edge scores ${JSON.stringify(mix)}`);
+  if (bands.expressionWeight >= .999) { sawFull = true; near(bands.rainbow[0], bands.ideal[0]); near(bands.rainbow[1], bands.ideal[1]); }
+  if (bands.expressionWeight === 0) { sawFocused = true; near(bands.rainbow[0], bands.optimal[0]); near(bands.rainbow[1], bands.optimal[1]); }
+  rainbowCases++;
+}
+assert(sawFull && sawFocused);
+const halfWidth = mix => { const b = temperatureBands({ mix }); return b.rainbow[1] - b.rainbow[0]; };
+assert(halfWidth({ mint: 12 }) > halfWidth({ mint: 6, vanilla: 6 }) && halfWidth({ mint: 6, vanilla: 6 }) > halfWidth({ vanilla: 12 }) - 1e-12);
+console.log(`[mix temperature] PASS: ${boundaryCases} inclusive green/rainbow edges; ${rainbowCases} mixes all show a rainbow that widens with expressive leaves`);
 
 assert.deepEqual([DANGER_TEMP, BURST_TEMP, COLD_OUT], [.90, 1, .06]);
 for (const bands of [vanilla, apple, mint, ...flavors.map(f => temperatureBands({ mix: { [f.id]: 12 } }))]) {
@@ -173,8 +190,9 @@ for (const flavor of flavors) {
 assert.equal(mint.expressionWeight, 1, "AF mint must support low/high expression");
 for (const temp of [mint.ideal[0], mint.center, mint.ideal[1]]) {
   assert.equal(temperatureFitness(temp, mint), 100);
-  assert.equal(thermalBand(temp, mint).id, "ready");
-  assert.equal(envAt(temp, mint).rainbow, 0);
+  // 作り分ける葉だけの配合は、おいしく作れる範囲全体が虹（2026-11-10 オーナー指示。以前は緑のみ）。
+  assert.equal(thermalBand(temp, mint).id, "optimal");
+  assert(envAt(temp, mint).rainbow > 0);
 }
 assert.equal(vanilla.expressionWeight, 0, "Unconfigured leaves retain their focused heat curve");
 assert.equal(thermalBand(vanilla.center, vanilla).id, "optimal");

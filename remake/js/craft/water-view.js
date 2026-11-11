@@ -47,15 +47,27 @@ export function mountWater(panel, { quantity = 0, isCurrent = () => true, signal
   panel.append(root);
   const available = () => !done && root.isConnected && isCurrent() && !document.hidden
     && !panel.closest('[inert], .done') && !document.querySelector('#modal.show, .bench-guide[open], .bench-condition[open]');
+  let drawnQuantity = null, drawnWave = null, drawnBand = null, drawnFlow = null;
   function render() {
-    fill.style.height = `${q * 100}%`;
-    fill.style.setProperty("--water-wave", `${wave}px`);
-    meter.setAttribute("aria-valuenow", String(q * 100));
+    if (drawnQuantity !== q) {
+      fill.style.height = `${q * 100}%`;
+      meter.setAttribute("aria-valuenow", String(q * 100));
+      drawnQuantity = q;
+    }
+    const visibleWave = Math.round(wave * 100) / 100;
+    if (drawnWave !== visibleWave) {
+      fill.style.setProperty("--water-wave", `${visibleWave}px`);
+      drawnWave = visibleWave;
+    }
     const band = waterComfort(q).band;
-    status.textContent = { none: "ステムに届いていない", shallow: "浸かりが浅い", ideal: "ちょうどよく浸かっている", deep: "深い" }[band];
-    status.dataset.band = band;
-    meter.setAttribute("aria-valuetext", status.textContent);
-    root.dataset.flow = direction || "stopped";
+    if (drawnBand !== band) {
+      status.textContent = { none: "ステムに届いていない", shallow: "浸かりが浅い", ideal: "ちょうどよく浸かっている", deep: "深い" }[band];
+      status.dataset.band = band;
+      meter.setAttribute("aria-valuetext", status.textContent);
+      drawnBand = band;
+    }
+    const flow = direction || "stopped";
+    if (drawnFlow !== flow) { root.dataset.flow = flow; drawnFlow = flow; }
   }
   function advance(now) {
     if (direction && last !== null) q = changeWater(q, direction, Math.max(0, now - last) / 1000);

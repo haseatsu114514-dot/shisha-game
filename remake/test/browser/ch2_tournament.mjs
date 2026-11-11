@@ -233,8 +233,8 @@ await suite('ch2-tournament',async check=>{
     // 移行で拒否されるデータも旧ownerと保存を維持し、通知しない。
     assert.equal(await page.evaluate(() => {
       const { core } = loadQA;
-      localStorage.setItem(core.SAVE_SLOTS[2].key, JSON.stringify({ day: 1, schema: core.SCHEMA + 1 }));
-      return core.loadFromSlot(core.SAVE_SLOTS[2].key);
+      localStorage.setItem("suien_remake_slot2", JSON.stringify({ day: 1, schema: core.SCHEMA + 1 }));
+      return core.loadFromSlot("suien_remake_slot2");
     }), null);
     const count = Number(await page.locator('.go-count').textContent());
     await page.clock.runFor(2000);
