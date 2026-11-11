@@ -1,5 +1,5 @@
 // みんとの物語系2本（#3081）。固有会話を読み終え、店で正体がつながったあと、
-// 端の席 → 小さい声のあいさつ、の順に一度ずつ。中断では既読にしない。締めくくりと送り出しが先。
+// 端の席 → 二回のあいさつ（店の声のまま言う）、の順に一度ずつ。中断では既読にしない。締めくくりと送り出しが先。
 // node --experimental-vm-modules remake/test/minto_story_visits.mjs
 import assert from "node:assert/strict";
 import fs from "node:fs";
@@ -27,8 +27,9 @@ for (const scene of [side, quiet]) {
   }
 }
 assert(/端の席/.test(textOf(side)) && /戻さない/.test(textOf(side)));
-assert(/私の声/.test(textOf(quiet)) && /この席だけ/.test(textOf(quiet)));
-assert(!/みんとの声/.test(textOf(quiet).split("私の声")[0] || ""), "the quiet line is hers, not the shop name");
+// 2026-11-11 講評 C11: 「小さい声が本当の私」の型をやめ、店の声のまま本気を言う（手本は ch1_minto_fourth「今のは営業。たぶんね♡」）。
+assert(/みんとの声で言ってる/.test(textOf(quiet)) && /端の席だけ/.test(textOf(quiet)));
+assert(!/私の声|小さいほう/.test(textOf(quiet)), "the shop voice carries the real line; no separate small 'real' voice");
 
 function namedImports(src) {
   const map = new Map();

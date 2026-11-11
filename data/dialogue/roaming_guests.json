@@ -626,18 +626,23 @@
           },
           {
             "speaker": "dr_kemuri",
-            "face": "evil",
-            "text": "大丈夫。痛いことは、何もしないよ"
+            "face": "normal",
+            "text": "眠れた時間で、吸う間隔が変わる人がいる。それだけ、知りたくてね"
           },
           {
             "speaker": "hajime",
             "face": "normal",
-            "text": "（博士、今のは冗談……ですよね？）"
+            "text": "……あんまり、覚えてなくて"
+          },
+          {
+            "speaker": "dr_kemuri",
+            "face": "smile",
+            "text": "だいたいでいいよ。五時間かな、六時間かな"
           },
           {
             "speaker": "",
             "face": "",
-            "text": "博士は、楽しそうにキーを叩き続けていた。"
+            "text": "六時間、と答えるまで、博士の指はキーの上で待っていた。"
           }
         ],
         "not_met": [
@@ -678,18 +683,23 @@
           },
           {
             "speaker": "dr_kemuri",
-            "face": "evil",
-            "text": "大丈夫。痛いことは、何もしないよ"
+            "face": "normal",
+            "text": "眠れた時間で、吸う間隔が変わる人がいる。それだけ、知りたくてね"
           },
           {
             "speaker": "hajime",
             "face": "normal",
-            "text": "（痛いことって……。いや、聞かないでおこう）"
+            "text": "……あんまり、覚えてなくて"
+          },
+          {
+            "speaker": "dr_kemuri",
+            "face": "smile",
+            "text": "だいたいでいいよ。五時間かな、六時間かな"
           },
           {
             "speaker": "",
             "face": "",
-            "text": "白衣の客は、楽しそうにキーを叩き続けていた。"
+            "text": "六時間、と答えるまで、白衣の客の指はキーの上で待っていた。"
           }
         ]
       }
@@ -847,13 +857,13 @@
           },
           {
             "speaker": "dr_kemuri",
-            "face": "evil",
-            "text": "……よかった。消すのは、もったいないから"
+            "face": "smile",
+            "text": "ありがとう。気が変わったら、いつでも言って。その日のうちに消す"
           },
           {
             "speaker": "hajime",
-            "face": "surprise",
-            "text": "（今、一瞬だけ……笑い方が違った）"
+            "face": "normal",
+            "text": "（消すかどうかは、俺が決めていい。……測るかどうかは、聞かれなかった）"
           },
           {
             "speaker": "dr_kemuri",
@@ -899,13 +909,13 @@
           },
           {
             "speaker": "dr_kemuri",
-            "face": "evil",
-            "text": "……よかった。消すのは、もったいないから"
+            "face": "smile",
+            "text": "ありがとう。気が変わったら、いつでも言って。その日のうちに消す"
           },
           {
             "speaker": "hajime",
-            "face": "surprise",
-            "text": "（今、一瞬だけ……笑い方が違った）"
+            "face": "normal",
+            "text": "（消すかどうかは、俺が決めていい。……測るかどうかは、聞かれなかった）"
           },
           {
             "speaker": "dr_kemuri",
@@ -1958,7 +1968,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（行った場所が、少しずつ残る。……俺の一台も、そうなのかな）"
+          "text": "（花の明かり。……言われるまで、天井を見てなかった）"
         },
         {
           "speaker": "tsumugi",
@@ -2063,7 +2073,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（やり方は違っても、見ている先は同じなんだ）"
+          "text": "（次は、奥の席で吸ってみよう。炭の減り方、比べたい）"
         },
         {
           "speaker": "",
@@ -2544,9 +2554,9 @@
             "text": "エミルさんは吸い口をハンドルの先に付けて、ゆっくり一口吸った。"
           },
           {
-            "speaker": "hajime",
-            "face": "normal",
-            "text": "（一本の吸い口に、何人もの手が入ってるんだ）"
+            "speaker": "",
+            "face": "",
+            "text": "継ぎ目の輪が、店の明かりを一度だけ返した。"
           }
         ],
         "not_met": [

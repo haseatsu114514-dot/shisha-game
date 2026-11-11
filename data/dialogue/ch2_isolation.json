@@ -504,24 +504,14 @@
           "text": "今日は熱を少し変えた。どうだ"
         },
         {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "……大会なら、何点くらいになりますか"
-        },
-        {
-          "speaker": "adam",
-          "face": "normal",
-          "text": "点は聞いてない。お前がどう感じたか、聞いてる"
+          "speaker": "",
+          "face": "",
+          "text": "一口吸う。熱は前より低い。煙は細い。そこから先を、舌が拾わない。"
         },
         {
           "speaker": "hajime",
           "face": "normal",
           "text": "すみません。今は、うまく言えなくて"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "アダムはホースを台に戻した。"
         },
         {
           "speaker": "adam",
@@ -531,7 +521,27 @@
         {
           "speaker": "",
           "face": "",
-          "text": "次に差し出されたのは、水の入ったグラスだった。"
+          "text": "アダムはホースを台に戻し、自分で一口吸って、炭を少しだけ外へ寄せた。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……前と、炭の置き方が違いますね"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "昨日うまくいった置き方は、今朝やめた。同じ果実を、そうやって詰めてきた"
+        },
+        {
+          "speaker": "adam",
+          "face": "serious",
+          "text": "昨日の正解をそのまま置いた日は、たいてい焦がした"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "店を出て、ノートを開いた。優勝した日の炭の置き方に、今日も丸をつけた。"
         }
       ]
     },
@@ -562,12 +572,9 @@
           "text": "ありがとうございます。本番も、絶対……"
         },
         {
-          "type": "condition",
-          "condition_type": "contact",
-          "char_id": "minto",
-          "threshold": 1,
-          "next_true": "lime_replies",
-          "next_false": "face_to_face"
+          "speaker": "minto",
+          "face": "normal",
+          "text": "ね〜え。いま、『ミント祭り』のとこ、素通りしたでしょ？"
         },
         {
           "speaker": "hajime",
@@ -577,12 +584,12 @@
         {
           "speaker": "minto",
           "face": "sad",
-          "text": "別に、責めてるんじゃないよ？　勝負の世界だもん。勝ってるはじめくんは、何も悪くない"
+          "text": "ほんとはね、祭りの日のお手伝い、頼みたかったの。でも、言い出せなくて"
         },
         {
           "speaker": "minto",
           "face": "normal",
-          "text": "ただ……はじめくん自身が、ちょっとしんどそうに見えるの。わたしは、それがいちばん心配"
+          "text": "今のはじめくんに頼んだら、断らせちゃいそうで。それが、ちょっとさみしい"
         },
         {
           "speaker": "hajime",
@@ -609,23 +616,7 @@
           "face": "",
           "text": "突き放されなかったことが、なぜだか少しだけ、こたえた。"
         }
-      ],
-      "branches": {
-        "lime_replies": [
-          {
-            "speaker": "minto",
-            "face": "normal",
-            "text": "最近のLIME、何送っても『大会前なので』で返ってくるよ？"
-          }
-        ],
-        "face_to_face": [
-          {
-            "speaker": "minto",
-            "face": "normal",
-            "text": "いまも、話しながら頭の中は大会のことばっかり、って顔してるよ？"
-          }
-        ]
-      }
+      ]
     },
     {
       "dialogue_id": "ch2_naru_window",

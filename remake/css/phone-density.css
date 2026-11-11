@@ -90,6 +90,7 @@ html:root[data-density="phone"] body:not(.game-ds) .vn-controls .vn-ctl {
   height: var(--phone-tap);
   padding: 0 12px;
   font-size: var(--phone-ctl);
+  line-height: 1.4; /* 書体の上下の余白ぶん、下寄せの文字が枠の下へ2pxはみ出していた（cinema の touch 検査） */
 }
 /* 画風つきの会話枠: 区切り線つきの横並びは保ち、高さと間隔だけ広げる（下辺の位置は従来どおり・上へ伸びる）。 */
 html:root[data-density="phone"][data-ui-theme] body:not(.game-ds) .vn-controls {
