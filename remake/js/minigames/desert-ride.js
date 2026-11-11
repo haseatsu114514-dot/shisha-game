@@ -139,7 +139,7 @@ const TUTORIAL_TOUCH = {
   boost: "溜まったゲージで「BOOST」を押すと超加速 ── 岩も砕ける",
 };
 // 本番で最初のカーブに入った時に一度だけ出す案内（切り込めば踏ん張れて、ゲージも貯まる）
-const CURVE_TIP = { keys: "カーブ！ 曲がる向きへ ← → で切り込もう ── ブーストが貯まる", touch: "カーブ！ 曲がる向きへ切り込もう ── ブーストが貯まる" };
+const CURVE_TIP = "カーブ！ 曲がる向きへ切り込むと、ブーストが貯まる";
 const touchUi = () => typeof matchMedia === "function" && matchMedia("(hover: none) and (pointer: coarse)").matches;
 const tutorialText = key => (touchUi() && TUTORIAL_TOUCH[key]) || TUTORIAL[key];
 // 遊び方（メニューの「？」で開いた時だけ見せる。常時は出さない）
@@ -598,7 +598,7 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       if (game.stats.carves > 0) carved = true;
       if (curveTip === "idle" && !carved && game.air <= 0 && Math.abs(curveAt(game.course, game.z)) >= 0.4) {
         curveTip = "shown"; curveTipT = 3.6;
-        caption.dataset.kind = "tip"; caption.textContent = CURVE_TIP[touchUi() ? "touch" : "keys"];
+        caption.dataset.kind = "tip"; caption.textContent = CURVE_TIP;
       } else if (curveTip === "shown" && curveTipT > 0) {
         curveTipT -= dt;
         if (curveTipT <= 0 || game.finished) { caption.textContent = ""; delete caption.dataset.kind; }
@@ -871,34 +871,39 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       ctx.restore();
     }
     /** 絵の遠景（空・太陽・陸）。絵がまだ無ければ false（図形の空と砂丘で描く）。 */
-    const BACKDROP_SCALE = 0.95;
+    const BACKDROP_SCALE = 0.95, BACKDROP_MARGIN = 60; // 余白は、傾き・揺れで見える画面の外
+    // 遠景は傾けない別の面に整数の位置で並べてから、傾いた画面へ1枚で貼る（並べた絵の継ぎ目に線が出ないように）
+    let backdropLayer = null;
     function drawBackdrop(dusk, progress) {
       const sky = art.get("sky"), land = art.get("land");
       if (!sky || !land) return false;
-      const B = DESERT_ART.backdrop, k = BACKDROP_SCALE, dw = B.width * k, baseX = (W - dw) / 2;
+      if (!backdropLayer) { backdropLayer = document.createElement("canvas"); backdropLayer.width = W + BACKDROP_MARGIN * 2; backdropLayer.height = H; }
+      const g = backdropLayer.getContext("2d");
+      g.setTransform(1, 0, 0, 1, BACKDROP_MARGIN, 0);
+      const B = DESERT_ART.backdrop, k = BACKDROP_SCALE, dw = Math.round(B.width * k), baseX = (W - dw) / 2;
       // 空はゆっくり、陸は速く横へ流れる（カーブに合わせたパララックス）。絵の地平線の行を HORIZON に合わせる。
       // 曲がっている間は遠くの砂丘が横へ流れ続ける（2026-11-11 オーナー「カーブがほんとにしてるのか分かりづらい」）
       const yawPx = world.yaw * YAW_PX * (reducedMotion ? 0.5 : 1);
-      wrapImage(sky, 0, 0, B.width, sky.naturalHeight, baseX - yawPx * 0.5, HORIZON - B.horizon * k, dw, sky.naturalHeight * k);
+      wrapImage(g, sky, 0, 0, B.width, sky.naturalHeight, baseX - yawPx * 0.5, HORIZON - B.horizon * k, dw, sky.naturalHeight * k);
       const duskSky = art.get("duskSky"), duskLand = art.get("duskLand");
       if (dusk > 0 && duskSky && duskLand) {
         // 同じ構図の夕方の絵を、ゴールへ近づくほど濃く重ねる
-        ctx.globalAlpha = dusk;
-        wrapImage(duskSky, 0, 0, B.width, duskSky.naturalHeight, baseX - yawPx * 0.5, HORIZON - B.horizon * k, dw, duskSky.naturalHeight * k);
-        ctx.globalAlpha = 1;
+        g.globalAlpha = dusk;
+        wrapImage(g, duskSky, 0, 0, B.width, duskSky.naturalHeight, baseX - yawPx * 0.5, HORIZON - B.horizon * k, dw, duskSky.naturalHeight * k);
+        g.globalAlpha = 1;
       } else if (dusk > 0) {
-        const g = ctx.createLinearGradient(0, 0, 0, HORIZON + 10);
-        g.addColorStop(0, `rgba(120,72,110,${dusk * 0.85})`); g.addColorStop(0.62, `rgba(245,150,84,${dusk * 0.8})`); g.addColorStop(1, `rgba(255,208,140,${dusk * 0.7})`);
-        ctx.fillStyle = g; ctx.fillRect(0, 0, W, HORIZON + 10);
+        const tint = g.createLinearGradient(0, 0, 0, HORIZON + 10);
+        tint.addColorStop(0, `rgba(120,72,110,${dusk * 0.85})`); tint.addColorStop(0.62, `rgba(245,150,84,${dusk * 0.8})`); tint.addColorStop(1, `rgba(255,208,140,${dusk * 0.7})`);
+        g.fillStyle = tint; g.fillRect(-BACKDROP_MARGIN, 0, W + BACKDROP_MARGIN * 2, HORIZON + 10);
       }
-      // 太陽: 進むほど大きく低く。ゴールの手前では砂丘の稜線の後ろへ沈みかける
-      // 太陽は曲がり始めに横へ動き、その先は画面に残る（ゴールの夕日を見失わない）
+      // 太陽: 進むほど大きく低く。ゴールの手前では砂丘の稜線の後ろへ沈みかける。
+      // 曲がり始めに横へ動き、その先は画面に残る（ゴールの夕日を見失わない）
       const sunX = W * 0.5 - Math.tanh(world.yaw * 0.8) * 300 + 180 * (1 - progress), sunY = lerp(70, HORIZON - 34, Math.min(1, progress * 1.05)), r = lerp(30, 72, progress);
-      const glow = ctx.createRadialGradient(sunX, sunY, r * 0.4, sunX, sunY, r * 3.2);
+      const glow = g.createRadialGradient(sunX, sunY, r * 0.4, sunX, sunY, r * 3.2);
       glow.addColorStop(0, `rgba(255,230,170,${0.55 + 0.3 * dusk})`); glow.addColorStop(1, "rgba(255,200,120,0)");
-      ctx.fillStyle = glow; ctx.fillRect(sunX - r * 3.2, sunY - r * 3.2, r * 6.4, r * 6.4);
-      ctx.fillStyle = mixColor([255, 248, 220], [255, 170, 90], dusk);
-      ctx.beginPath(); ctx.arc(sunX, sunY, r, 0, Math.PI * 2); ctx.fill();
+      g.fillStyle = glow; g.fillRect(sunX - r * 3.2, sunY - r * 3.2, r * 6.4, r * 6.4);
+      g.fillStyle = mixColor([255, 248, 220], [255, 170, 90], dusk);
+      g.beginPath(); g.arc(sunX, sunY, r, 0, Math.PI * 2); g.fill();
       // 陸: 稜線〜地平線は空と同じ倍率、地平線より下（平らな砂）は画面の下端まで伸ばす
       const landX = baseX - yawPx, above = B.horizon - DESERT_ART.land.top, below = B.height - B.horizon;
       // ブースト中は遠景を左右に少しずらして重ね、流れているように見せる
@@ -906,23 +911,24 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       for (const [image, alpha] of [[land, 1], [dusk > 0 ? duskLand : null, dusk]]) {
         if (!image) continue;
         for (const [shift, a] of smear ? [[0, alpha], [smear, alpha * 0.28], [-smear, alpha * 0.28]] : [[0, alpha]]) {
-          ctx.globalAlpha = a;
-          wrapImage(image, 0, 0, B.width, above, landX + shift, HORIZON - above * k, dw, above * k);
-          wrapImage(image, 0, above, B.width, below, landX + shift, HORIZON, dw, H - HORIZON);
+          g.globalAlpha = a;
+          wrapImage(g, image, 0, 0, B.width, above, landX + shift, HORIZON - above * k, dw, above * k);
+          wrapImage(g, image, 0, above, B.width, below, landX + shift, HORIZON, dw, H - HORIZON);
         }
       }
-      ctx.globalAlpha = 1;
+      g.globalAlpha = 1;
+      ctx.drawImage(backdropLayer, -BACKDROP_MARGIN, 0);
       return true;
     }
-    /** 横へ流れる遠景を、画面を覆うまで並べて描く。隣は左右反転した同じ絵なので、継ぎ目がつながる。 */
-    function wrapImage(image, sx, sy, sw, sh, x, y, dw, dh) {
-      const margin = 60; // 傾き・揺れで見える画面の外
-      let index = Math.floor((-margin - x) / dw);
-      for (let left = x + index * dw; left < W + margin; left += dw, index++) {
-        if (index % 2 === 0) { ctx.drawImage(image, sx, sy, sw, sh, left, y, dw + 1, dh); continue; }
-        ctx.save(); ctx.translate(left + dw, y); ctx.scale(-1, 1);
-        ctx.drawImage(image, sx, sy, sw, sh, -1, 0, dw + 1, dh);
-        ctx.restore();
+    /** 横へ流れる遠景を、面を覆うまで並べて描く。隣は左右反転した同じ絵なので絵柄がつながり、整数の位置に置くので隙間も重なりも出ない。 */
+    function wrapImage(g, image, sx, sy, sw, sh, x, y, dw, dh) {
+      const start = Math.round(x);
+      let index = Math.floor((-BACKDROP_MARGIN - start) / dw);
+      for (let left = start + index * dw; left < W + BACKDROP_MARGIN; left += dw, index++) {
+        if (index % 2 === 0) { g.drawImage(image, sx, sy, sw, sh, left, y, dw, dh); continue; }
+        g.save(); g.translate(left + dw, y); g.scale(-1, 1);
+        g.drawImage(image, sx, sy, sw, sh, 0, 0, dw, dh);
+        g.restore();
       }
     }
     function drawSky(dusk, progress) {
