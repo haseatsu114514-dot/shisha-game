@@ -59,6 +59,10 @@
           "text": "うん。……甘さが引いて、少し辛い。炭を一つだけ外へずらす"
         },
         {
+          "speaker": "",
+          "text": "少し待ってから、客へ吸い口を戻した。ましろは煙の量を見ていた。"
+        },
+        {
           "speaker": "customer",
           "text": "あ、戻ってきた。最初より好きかも"
         },
@@ -1188,6 +1192,16 @@
           "speaker": "steve",
           "face": "normal",
           "text": "一つは炭、一つは客の二口目、一つは……俺がしゃべりすぎない用"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "炭と二口目は、押す前に客を見る感じですか"
+        },
+        {
+          "speaker": "steve",
+          "face": "smile",
+          "text": "ああ。顔が先で、タイマーはあとだ"
         },
         {
           "speaker": "hajime",

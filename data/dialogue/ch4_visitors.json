@@ -25,9 +25,19 @@
           "text": "サメちゃん、お疲れさまです"
         },
         {
+          "speaker": "",
+          "face": "",
+          "text": "鞄の取っ手には、几帳面な字の荷札が揺れている。"
+        },
+        {
           "speaker": "samechan",
           "face": "normal",
           "text": "うむ。まず荷物を置こう。観光の話はそれからじゃ"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "地図も畳んで入れてきたのじゃ。印をつけるのは、荷物を置いてからじゃな"
         },
         {
           "speaker": "hajime",
@@ -60,9 +70,19 @@
           "text": "少し。今日は儚くなる前にちゃんと寝る"
         },
         {
+          "speaker": "",
+          "face": "",
+          "text": "言いながら、ひよりのまぶたはもう半分ほど下りている。"
+        },
+        {
           "speaker": "hajime",
           "face": "normal",
           "text": "夕飯に起きられたら、連絡ください"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "ん……約束。目覚ましは、三回かけておく"
         },
         {
           "speaker": "hiyori",

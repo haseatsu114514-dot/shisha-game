@@ -174,14 +174,20 @@ const measure = (page) => page.evaluate(async () => {
       fontSize: parseFloat(getComputedStyle(node).fontSize), shrunk: node.style.fontSize, face: getComputedStyle(node).backgroundImage })) : [],
     portraits: [...document.querySelectorAll(".vn-portraits > img.portrait")].map((img) => {
       const light = img.nextElementSibling?.classList.contains("neo-light") ? img.nextElementSibling : null;
-      const a = img.getBoundingClientRect(), b = light?.getBoundingClientRect();
+      const amb = light?.nextElementSibling?.classList.contains("neo-amb") ? light.nextElementSibling : null;
+      const a = img.getBoundingClientRect(), b = light?.getBoundingClientRect(), c = amb?.getBoundingClientRect();
+      const file = new URL(img.currentSrc || img.src).pathname.split("/").pop();
       return { speaker: img.dataset.speaker, active: img.classList.contains("active"), filter: getComputedStyle(img).filter,
         endless: img.getAnimations().some((animation) => animation.effect?.getComputedTiming().iterations === Infinity),
         light: !!light, lightActive: light?.classList.contains("active"), lightBlend: light && getComputedStyle(light).mixBlendMode,
         lightMask: light ? light.style.getPropertyValue("--neo-mask").includes(new URL(img.currentSrc || img.src).pathname.split("/").pop()) : false,
-        lightOff: b ? Math.max(Math.abs(a.left - b.left), Math.abs(a.top - b.top), Math.abs(a.width - b.width), Math.abs(a.height - b.height)) / k : null };
+        lightOff: b ? Math.max(Math.abs(a.left - b.left), Math.abs(a.top - b.top), Math.abs(a.width - b.width), Math.abs(a.height - b.height)) / k : null,
+        amb: !!amb, ambActive: amb?.classList.contains("active"), ambBlend: amb && getComputedStyle(amb).mixBlendMode,
+        ambMask: amb ? amb.style.getPropertyValue("--neo-mask").includes(file) : false,
+        ambOff: c ? Math.max(Math.abs(a.left - c.left), Math.abs(a.top - c.top), Math.abs(a.width - c.width), Math.abs(a.height - c.height)) / k : null };
     }),
     lights: document.querySelectorAll(".neo-light").length,
+    ambs: document.querySelectorAll(".neo-amb").length,
     breathe: getComputedStyle(document.querySelector(".vn-portraits")).animationName,
   };
 });
@@ -237,8 +243,11 @@ function assertLayout(m, label, { lines = 2, phone = false } = {}) {
     assert(p.filter.includes("drop-shadow"), `${label}: 立ち絵の輪郭の外に影 ${p.filter}`);
     assert(p.light && p.lightMask && p.lightBlend === "soft-light" && p.lightActive === p.active && p.lightOff <= 1.5,
       `${label}: 場面の光が立ち絵と同じ位置・同じ形で重なる ${JSON.stringify(p)}`);
+    assert(p.amb && p.ambMask && p.ambBlend === "multiply" && p.ambActive === p.active && p.ambOff <= 1.5,
+      `${label}: 場所の光が場面の光のすぐ後ろで、立ち絵と同じ位置・同じ形で重なる ${JSON.stringify(p)}`);
   }
   assert.equal(m.lights, m.portraits.length, `${label}: 光の層は立ち絵と同じ数`);
+  assert.equal(m.ambs, m.portraits.length, `${label}: 場所の光の層は立ち絵と同じ数`);
 }
 
 const rgb = (hex) => `rgb(${[1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16)).join(", ")})`;
@@ -339,6 +348,7 @@ async function conversation(page, { phone }) {
   await press(page, page.locator(".vn-text"));
   await page.evaluate(() => window.lookNeoRun);
   assert.equal(await page.locator(".neo-light").count(), 0, "会話が終わったら光の層を残さない");
+  assert.equal(await page.locator(".neo-amb").count(), 0, "会話が終わったら場所の光の層を残さない");
 }
 
 /** 会話の部品の計算済みスタイル（疑似要素を含む）。動いている最中の値を拾わないよう、送りの印（▼）は見ない。 */
@@ -1849,6 +1859,51 @@ await suite("look-neo", async (check) => {
     touchPages.add(page);
     await conversation(page, { phone: true });
   }, { pageEntry: NEO, viewport: { width: 844, height: 390 }, deviceScaleFactor: 2, hasTouch: true, isMobile: true });
+
+  // 場所の光（BGU01）: 背景の絵から立ち絵へ重ねる色を決める。暗い店では少し暗く・その店の色へ寄せ、明るい場所ではほぼそのまま。
+  // 会話の途中で背景が替われば、色も替わる。色の規則そのものは test/neo_ambient.mjs。
+  await check("place-light-follows-background", async (page) => {
+    const script = { dialogue_id: "__look_neo_place_light", lines: [
+      { speaker: "minto", face: "normal", text: "夜のとなりは落ち着くね。" },
+      { type: "bg", bg: "res://assets/backgrounds/bg_dubai_cafe_day.png" },
+      { speaker: "minto", face: "smile", text: "こっちは明るい！" },
+      { type: "bg", bg: "res://assets/backgrounds/bg_dubai_cafe_day.png" },
+      { speaker: "minto", face: "normal", text: "夜になったね。" },
+    ] };
+    // 時間帯（昼＝0・夜＝1）。夜は、夜の絵が無い場所の昼の絵に夜の色調補正（data-tint="night"）が掛かる。
+    const setSlot = (slot) => page.evaluate(async (slot) => { (await import("./js/core/state.js")).state.slot = slot; }, slot);
+    const changed = (before) => page.waitForFunction((before) => {
+      const now = document.getElementById("vn").style.getPropertyValue("--neo-amb");
+      return now && now !== before;
+    }, `rgb(${before.join(", ")})`);
+    const read = () => page.evaluate(() => /^rgb\((\d+), (\d+), (\d+)\)$/.exec(document.getElementById("vn").style.getPropertyValue("--neo-amb"))?.slice(1).map(Number) || null);
+    const painted = () => page.evaluate(() => getComputedStyle(document.querySelector(".vn-portraits > .neo-amb")).backgroundColor);
+    await start(page, script);
+    await page.waitForFunction(() => document.getElementById("vn").style.getPropertyValue("--neo-amb"));
+    const dark = await read();
+    assert(dark, "夜の店内: 場所の光の色が決まる");
+    assert(Math.max(...dark) < 250 && Math.min(...dark) >= 128, `夜の店内: 人物を少し暗くする（暗くしすぎない） ${dark}`);
+    assert(dark[0] >= dark[1] && dark[1] >= dark[2] && dark[0] > dark[2], `暖色の店内: 暖色へ寄せる ${dark}`);
+    await page.waitForTimeout(700); // 色の移り変わり（0.6 秒）
+    assert.equal(await painted(), `rgb(${dark.join(", ")})`, "層に色が乗る");
+
+    await setSlot(0);
+    await advance(page, "こっちは明るい");
+    await changed(dark);
+    const bright = await read();
+    assert(Math.min(...bright) >= 235, `明るい昼のカフェ: 人物はほぼそのまま ${bright}`);
+    await page.waitForTimeout(700);
+    assert.equal(await painted(), `rgb(${bright.join(", ")})`, "背景が替わると層の色も替わる");
+    assertLayout(await measure(page), "背景が替わった後");
+
+    // 同じ絵でも、夜の色調補正が掛かれば人物も暗く・紺へ寄る。
+    await setSlot(1);
+    await advance(page, "夜になったね");
+    await changed(bright);
+    const night = await read();
+    assert.equal(await page.evaluate(() => document.querySelector("#bg > .bg-img:last-child").dataset.tint), "night", "昼の絵に夜の色調補正が掛かっている");
+    assert(Math.max(...night) < Math.min(...bright) && night[2] >= night[0], `夜の色調補正: 昼より暗く、紺へ寄る ${night}`);
+  }, { pageEntry: NEO });
 
   await check("restore-classic", async (page) => {
     // 最初から現行（neo.js をまだ読んでいない）で会話を出し、基準を取る。
