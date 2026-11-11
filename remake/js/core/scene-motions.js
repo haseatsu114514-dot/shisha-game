@@ -122,14 +122,14 @@ export async function shinkansenRide(mid, opts = {}) {
   await ride(shinkansen, mid, opts);
 }
 
-/** 飛行機に乗る（#2688 A4）。丸い機窓の外が時差の色へ移り、着く土地が見えたところで窓が広がる。opts.to: "dubai" | "home" */
+/** 飛行機に乗る（#2688 A4・作り直し TMG57）。機内の窓の外の雲海が時差の色へ移り、行き先の題字のあと窓へ寄って次の場面になる。opts.to: "dubai" | "home" */
 export async function planeRide(mid, opts = {}) {
-  await ride(plane, mid, { ...opts, kind: "plane" });
+  await ride(plane, mid, { ...opts, kind: "plane" }, "plane");
 }
 
-/** 配送便（車）に乗る（#2688 A4）。横長の車窓の外を道路の灯が流れる。opts.to: "tokyo" | "town" */
+/** 配送便（車）に乗る（#2688 A4・TMG57）。ふつうの切り替えと行き先の題字だけ（車窓の演出はやめた）。opts.to: "tokyo" | "town" */
 export async function vanRide(mid, opts = {}) {
-  await ride(plane, mid, { ...opts, kind: "van" });
+  await ride(plane, mid, { ...opts, kind: "van" }, "plane");
 }
 
 /** mid(): 覆っている間に背景を替える。bgUrl はその背景の絵（線画の元） */
