@@ -1,4 +1,5 @@
-// シート: 全画面 MENU・LIME・小窓（設定・用語集・セーブ／ロード・規則の紙・確認の問い）・会話の LOG を、外枠の中へ写す。
+// シート: 全画面 MENU・LIME・小窓（設定・用語集・セーブ／ロード・セーブの引っ越し・規則の紙・確認の問い）・会話の LOG・
+// 店（daily/shop.js の入口と1階の売り場）・夜のレベルアップ・LIME の初回の案内・章のクリアの画面を、外枠の中へ写す。
 // 画面ごとに作り込まず、現行の DOM を読んで、ドット調の部品（見出し・文・一覧・ボタン・入力・絵）へ置き換える汎用の写し。
 //   - 元の要素と写しの要素を対で覚え（cache）、中身が変わったら同じ写しの要素を使い回して書き直す
 //     （押している途中のボタンを作り直さない。スクロールの位置も保つ）
@@ -10,23 +11,28 @@
 //   MENU … 上画面にタブに合った絵（ステータスははじめ、人間関係は選んだ相手の立ち絵。ほかは背景を暗く）、
 //          下画面に今のタブの中身、本体のボタンに4つのタブと「閉じる」。
 //   LIME・小窓・LOG … 上画面と下画面をつないだ1枚の縦長のシート（見出し・中身（送れる）・下のボタン）。
+//   店 … 縦長のシート（見出しに店名・所持金・種類の絞り込み、中身に商品の一覧、下に「店を出る」・合計・購入）。
+//          本体のボタンは売り場のタブ（フレーバー・機材・くじ・売却）。商品の絵は元の切り抜きの窓のまま写す。
+//   夜のレベルアップ・章のクリア … 縦長のシート。LIME の初回の案内 … 下画面に吹き出し（上画面はその場の絵を暗く）。
+// 写さない物: くじを引く演出（ガラガラ）・心得の盤（動かして見る盤）・シーシャ作り・大会・ミニゲームは回転案内のまま。
 import { el } from "../../core/util.js";
 import { portraitInfo, realName } from "../../core/data.js";
 import { readBackgrounds, stageMetrics, STAGE_W } from "./stage-read.js";
 
 const SKIP_TAGS = new Set(["script", "style", "svg", "canvas", "video", "audio", "iframe", "template", "noscript", "rt", "rp", "dialog"]);
-// 写さない飾り（新版の MENU の人物の絵・端末の枠・幕・入力中の点々の顔の空き）
-const SKIP = ".neo-figure, .phone-notch, .phone-status, .modal-backdrop, .dm-backdrop, .lime-face.gap, .modal-ghost";
+// 写さない飾り（端末の枠・幕・入力中の点々の顔の空き）。新版（looks/neo）が現行の画面に足す飾り（neo- で始まるクラス）も写さない
+const SKIP = ".phone-notch, .phone-status, .modal-backdrop, .dm-backdrop, .lime-face.gap, .modal-ghost, [class^='neo-'], [class*=' neo-']";
 const INTERACTIVE = "button, a[href], [role='button'], [role='tab'], [role='radio'], [role='switch'], summary";
+const CROP = ".shop-product-art, .store-logo";
 // 絵文字（アイコン代わりの記号）は写さない。♥♡★☆♪ は文字として残す
-const PICTO = /(?![♡♥★☆♪])[\u{1F000}-\u{1FAFF}\u{2600}-\u{27BF}\u{2B00}-\u{2BFF}\u{FE0F}\u{200D}]/gu;
+const PICTO = /(?![♡♥★☆♪])[\u{1F000}-\u{1FAFF}\u{2300}-\u{23FF}\u{2600}-\u{27BF}\u{2B00}-\u{2BFF}\u{FE0F}\u{200D}]/gu;
 const clean = (value) => String(value || "").replace(PICTO, "");
 const text = (node) => clean(node?.textContent || "").replace(/\s+/g, " ").trim();
 const shown = (node) => !!node && node.getClientRects().length > 0;
 // 写しに引き継ぐ状態（押している・選んでいる・開いている）
-const STATE_ATTRS = ["aria-pressed", "aria-checked", "aria-selected", "aria-expanded", "aria-current"];
+const STATE_ATTRS = ["aria-pressed", "aria-checked", "aria-selected", "aria-expanded", "aria-current", "data-errand-target"];
 
-/** いま写す物。kind: "menu" | "lime" | "modal" | "log"。 */
+/** いま写す物。kind: "menu" | "lime" | "modal" | "levelup" | "coach" | "log" | "shop" | "end"。 */
 function liveSheet() {
   const modal = document.getElementById("modal");
   if (modal?.classList.contains("show")) {
@@ -34,20 +40,37 @@ function liveSheet() {
     if (menu) return { kind: "menu", root: menu, viewer: modal.querySelector(":scope > .keepsake-viewer") };
     const phone = modal.querySelector(":scope > .phone-overlay");
     if (phone) return { kind: "lime", root: phone };
-    const box = modal.querySelector(":scope > .modal-box");
+    // 設定の上に重ねたセーブの引っ越しは、一番上の小窓
+    const box = [...modal.querySelectorAll(":scope > .xfer-layer > .modal-box")].pop() || modal.querySelector(":scope > .modal-box");
     if (box) return { kind: "modal", root: box };
   }
+  const levelup = document.querySelector("#fx > .levelup-backdrop > .levelup");
+  if (levelup) return { kind: "levelup", root: levelup };
+  const coach = document.querySelector("#fx > .lime-coach");
+  if (coach) return { kind: "coach", root: coach };
   const log = document.querySelector("#vn .vn-log.show");
   if (log) return { kind: "log", root: log };
+  const shop = document.querySelector("#screen > section.shop-paper:not(.done)");
+  if (shop) return { kind: "shop", root: shop };
+  const end = document.querySelector("#screen > .end-screen:not(.done)");
+  if (end) return { kind: "end", root: end };
   return null;
 }
 
 /** 写しの部品の種類と並べ方を、元の要素から決める。写さない物は null。 */
 function describe(src) {
+  // 大きな図（章のクリアの成長のグラフなど）は、色を写した複製で見せる。小さな飾りの図は写さない
+  if (src.localName === "svg" && !src.closest("[aria-hidden='true']") && src.getBoundingClientRect().width >= 60) return { kind: "svg" };
   if (src.hidden || SKIP_TAGS.has(src.localName) || src.matches(SKIP)) return null;
   const cs = getComputedStyle(src);
   if (cs.display === "none" || cs.visibility === "hidden") return null;
   const tag = src.localName;
+  // 閉じている <details> の中身（summary 以外）は見えていないので写さない
+  if (src.parentElement?.localName === "details" && !src.parentElement.open && tag !== "summary") return null;
+  // 切り抜いて見せる絵（商品の絵・店のロゴ）: 元の見えている窓の比率のまま写す（飾り扱いの aria-hidden でも写す）
+  if (src.matches(CROP) && src.querySelector("img, .art")) return { kind: "crop" };
+  // 量の目盛り（role="meter"）は帯で
+  if (["meter", "progressbar"].includes(src.getAttribute("role"))) return { kind: "meter" };
   if (src.getAttribute("aria-hidden") === "true") {
     // 飾りは写さない。ただしゲージ（幅で量を見せる帯）は写す
     return src.querySelector("[style*='width']") ? { kind: "gauge" } : null;
@@ -55,6 +78,7 @@ function describe(src) {
   if (tag === "br") return { kind: "br" };
   if (src.style.getPropertyValue("--v")) return { kind: "gauge" };
   if (tag === "img") return { kind: "img" };
+  if (tag === "textarea") return { kind: "area" };
   if (tag === "input") return src.type === "range" ? { kind: "range" } : src.type === "checkbox" ? { kind: "check" } : null;
   if (tag === "select") return { kind: "select" };
   if (src.getAttribute("role") === "img") return { kind: "pips" };
@@ -87,6 +111,13 @@ function createMirror({ testPrefix = "sheet-", onRelay = () => {} } = {}) {
     src.dispatchEvent(new Event("input", { bubbles: true }));
     src.dispatchEvent(new Event("change", { bubbles: true }));
     onRelay();
+  };
+  // 文字の入力欄: 打った文字を元の欄へ入れて input を送る
+  const fields = new Set();
+  const relayText = (src, value) => {
+    if (!src.isConnected || src.disabled || src.readOnly) return;
+    src.value = value;
+    src.dispatchEvent(new Event("input", { bubbles: true }));
   };
 
   function setChildren(parent, list) {
@@ -122,9 +153,13 @@ function createMirror({ testPrefix = "sheet-", onRelay = () => {} } = {}) {
       case "range": return el("input", { type: "range", oninput: (event) => relayValue(src, event.target.value) });
       case "check": return el("button", { type: "button", role: "switch", onclick: (event) => { event.stopPropagation(); relayClick(src); } });
       case "select": return el("div", { role: "radiogroup" });
+      case "area": return el("textarea", { oninput: (event) => relayText(src, event.target.value) });
+      case "crop": return el("span", {}, [el("img", { alt: "", draggable: "false", decoding: "async" })]);
       case "img": return el("img", { alt: "", draggable: "false", decoding: "async" });
       case "br": return document.createElement("br");
       case "gauge": case "pips": case "inl": return document.createElement("span");
+      case "meter": return el("span", {}, [el("i.rs-fill")]);
+      case "svg": return document.createElement("span");
       default: return document.createElement(spec.inline ? "span" : "div");
     }
   }
@@ -206,6 +241,44 @@ function createMirror({ testPrefix = "sheet-", onRelay = () => {} } = {}) {
         if (node.getAttribute("src") !== url) node.src = url;
         return;
       }
+      case "area": {
+        for (const name of ["rows", "placeholder"]) setAttr(node, name, src.getAttribute(name));
+        setAttr(node, "readonly", src.readOnly);
+        setAttr(node, "aria-label", src.getAttribute("aria-label") || src.placeholder || "");
+        fields.add([node, src]);
+        syncField(node, src);
+        return;
+      }
+      case "crop": {
+        // 窓（見えている枠）と、その中の絵の位置・大きさを、窓に対する割合で写す
+        const img = src.querySelector("img");
+        let box, url, part;
+        if (img) {
+          box = img.parentElement;
+          const b = box.getBoundingClientRect(), r = img.getBoundingClientRect();
+          url = img.currentSrc || img.src || "";
+          part = b.width && b.height ? { w: b.width, h: b.height, x: r.left - b.left, y: r.top - b.top, iw: r.width, ih: r.height } : null;
+        } else {
+          // 背景の絵を切り抜く作り（craft/art.js の artImg）。大きさと位置は CSS の px のまま読む
+          box = src.querySelector(".art");
+          const cs = getComputedStyle(box);
+          const [iw, ih] = cs.backgroundSize.split(" ").map(parseFloat), [x, y] = cs.backgroundPosition.split(" ").map(parseFloat);
+          url = /url\((['"]?)(.*?)\1\)/.exec(cs.backgroundImage)?.[2] || "";
+          part = box.offsetWidth && box.offsetHeight && iw && ih ? { w: box.offsetWidth, h: box.offsetHeight, x: x || 0, y: y || 0, iw, ih } : null;
+        }
+        if (!part || !url) { node.hidden = true; return; }
+        node.hidden = false;
+        setAttr(node, "role", src.getAttribute("role") ? "img" : null);
+        setAttr(node, "aria-label", src.getAttribute("aria-label"));
+        const ratio = `${Math.round(part.w * 100) / 100} / ${Math.round(part.h * 100) / 100}`;
+        if (node.style.aspectRatio !== ratio) node.style.aspectRatio = ratio;
+        const pic = node.firstElementChild;
+        if (pic.getAttribute("src") !== url) pic.src = url;
+        const pct = (v, total) => `${Math.round(v / total * 10000) / 100}%`;
+        const place = { left: pct(part.x, part.w), top: pct(part.y, part.h), width: pct(part.iw, part.w), height: pct(part.ih, part.h) };
+        for (const [key, value] of Object.entries(place)) if (pic.style[key] !== value) pic.style[key] = value;
+        return;
+      }
       case "gauge": {
         // ゲージ: 幅を持つ子（量）を、同じ幅の帯で写す（セーブの枠の能力の帯は --v の値）
         const own = src.style.getPropertyValue("--v");
@@ -220,6 +293,38 @@ function createMirror({ testPrefix = "sheet-", onRelay = () => {} } = {}) {
           return bar;
         });
         setChildren(node, parts);
+        return;
+      }
+      case "svg": {
+        // 元の図の形と、計算済みの色・線（#stage の中でしか効かない CSS の分）を複製へ写す。形が変わった時だけ作り直す
+        const sig = src.outerHTML.length + "|" + src.getAttribute("viewBox");
+        if (node.dataset.sig === sig) return;
+        node.dataset.sig = sig;
+        const copy = src.cloneNode(true);
+        const props = ["fill", "stroke", "stroke-width", "opacity", "fill-opacity", "stroke-opacity", "font-size", "text-anchor", "dominant-baseline"];
+        const from = [src, ...src.querySelectorAll("*")], to = [copy, ...copy.querySelectorAll("*")];
+        from.forEach((item, i) => {
+          const cs = getComputedStyle(item);
+          to[i].removeAttribute("class");
+          for (const prop of props) to[i].style.setProperty(prop, cs.getPropertyValue(prop));
+        });
+        if (!copy.getAttribute("viewBox")) {
+          const box = src.getBoundingClientRect(), k = (src.ownerSVGElement || src).getBoundingClientRect().width / (src.width?.baseVal?.value || box.width || 1);
+          copy.setAttribute("viewBox", `0 0 ${src.width?.baseVal?.value || box.width / k} ${src.height?.baseVal?.value || box.height / k}`);
+        }
+        copy.removeAttribute("width"); copy.removeAttribute("height");
+        copy.setAttribute("aria-hidden", "true");
+        node.replaceChildren(copy);
+        return;
+      }
+      case "meter": {
+        const max = parseFloat(src.getAttribute("aria-valuemax")) || 100, min = parseFloat(src.getAttribute("aria-valuemin")) || 0;
+        const now = parseFloat(src.getAttribute("aria-valuenow")) || 0;
+        const width = `${Math.round(Math.max(0, Math.min(1, (now - min) / (max - min || 1))) * 1000) / 10}%`;
+        const bar = node.firstElementChild;
+        if (bar.style.width !== width) bar.style.width = width;
+        setAttr(node, "role", "meter");
+        for (const name of ["aria-label", "aria-valuemin", "aria-valuemax", "aria-valuenow", "aria-valuetext"]) setAttr(node, name, src.getAttribute(name));
         return;
       }
       case "pips": {
@@ -252,11 +357,23 @@ function createMirror({ testPrefix = "sheet-", onRelay = () => {} } = {}) {
     return document.createTextNode(value);
   }
 
+  /** 入力欄の文字を合わせる（打っている間は書き戻さない。ファイルから読んだ文字など、属性の変わらない変化もここで拾う）。 */
+  function syncField(node, src) {
+    if (document.activeElement !== node && node.value !== src.value) node.value = src.value;
+  }
+
   return {
     mirror,
     /** 元の要素の中身（子）を写した一覧。 */
     childrenOf: (src) => (src ? children(src) : []),
-    reset() { cache = new WeakMap(); },
+    refreshFields() {
+      for (const pair of fields) {
+        const [node, src] = pair;
+        if (!node.isConnected || !src.isConnected) { fields.delete(pair); continue; }
+        syncField(node, src);
+      }
+    },
+    reset() { cache = new WeakMap(); fields.clear(); },
   };
 }
 
@@ -292,7 +409,7 @@ export function createSheetScene(shell, painter) {
   const watch = () => {
     observer?.disconnect();
     observer = new MutationObserver(() => { version++; });
-    for (const id of ["modal", "vn"]) {
+    for (const id of ["modal", "vn", "screen", "fx"]) {
       const node = document.getElementById(id);
       if (node) observer.observe(node, { subtree: true, childList: true, characterData: true, attributes: true });
     }
@@ -378,6 +495,54 @@ export function createSheetScene(shell, painter) {
         keys: close ? [{ id: "close", label: "閉じる", run: () => liveSheet()?.root.querySelector(".log-head button")?.click() }] : [],
       };
     }
+    if (sheet.kind === "levelup") {
+      // 夜のレベルアップ: Lv の数字・ゲージ・火種とご褒美の行、「心得の盤を見る」「OK」
+      return {
+        tall: true, status: ["LEVEL UP", ""],
+        head: src(node(".lu-lv"), true),
+        body: [...src(node(".lu-gauge"), true), ...src(node(".lu-details"), true)],
+        foot: src(node(".lu-actions")),
+        identity: root, keys: [],
+      };
+    }
+    if (sheet.kind === "coach") {
+      // LIME の初回の案内: 吹き出し（押すと LIME が開く）
+      return {
+        tall: false, status: ["LIME", ""],
+        head: [], body: src(node(".lc-bubble"), true), foot: [],
+        identity: root,
+        keys: [{ id: "lime", label: "LIMEを開く", run: () => liveSheet()?.root.querySelector(".lc-bubble")?.click() }],
+      };
+    }
+    if (sheet.kind === "end") {
+      // 章のクリア: 見出し・成長のグラフと一言・次の章へ／タイトルへ
+      return {
+        tall: true, status: [text(node(".end-title")), ""],
+        head: [...src(node(":scope > .end-title"), true), ...src(node(":scope > .end-sub"), true)],
+        body: [...root.children].filter((child) => !child.matches(".end-title, .end-sub, .end-actions")).map((child) => ({ node: child, whole: true })),
+        foot: src(node(":scope > .end-actions")),
+        identity: root, keys: [],
+      };
+    }
+    if (sheet.kind === "shop") {
+      // 入口（1F・2F を選ぶ）と、1階の売り場
+      const entry = root.matches(".shop-entry");
+      const tabs = [...root.querySelectorAll(":scope > .shop-tabs > .shop-tab")];
+      const name = text(node(".shop-head h2"));
+      return {
+        tall: true,
+        status: [name, text(node(".shop-head .shop-sub"))],
+        head: [...src(node(":scope > .shop-head"), true), ...src(node(":scope > .shop-errand"), true), ...(entry ? [] : src(node(":scope > .shop-filters"), true))],
+        body: entry ? [...root.children].filter((child) => !child.matches(".shop-head, .shop-entry-foot")).map((child) => ({ node: child, whole: true }))
+          : src(node(":scope > .shop-body")),
+        foot: src(node(entry ? ":scope > .shop-entry-foot" : ":scope > .shop-foot")),
+        identity: `${entry ? "entry" : "counter"}|${tabs.find((tab) => tab.classList.contains("on"))?.dataset.tab || ""}|${[...root.querySelectorAll(".shop-filter.on")].map((b) => b.dataset.category).join()}`,
+        keys: tabs.map((tab) => ({
+          id: `shop-${tab.dataset.tab}`, label: text(tab), pressed: tab.classList.contains("on"),
+          run: () => liveSheet()?.root.querySelector(`:scope > .shop-tabs > .shop-tab[data-tab="${tab.dataset.tab}"]`)?.click(),
+        })),
+      };
+    }
     // 小窓: 見出し（h3）・本文（送れる）・選択肢のボタン
     const title = node(":scope > h3");
     return {
@@ -427,12 +592,18 @@ export function createSheetScene(shell, painter) {
       live = sheet.root;
       identity = parts.identity;
     }
+    mirror.refreshFields();
     shell.setStatus(parts.status[0] || "", parts.status[1] || "");
     shell.setKeys(parts.keys);
     if (sheet.kind === "menu") {
       const { images, name } = menuPicture(sheet);
       picture = images;
       shell.setCaption("", name);
+    } else if (!parts.tall) {
+      // 下画面だけのシート（LIME の初回の案内）: 上画面はその場の背景を暗くして
+      const bg = backgroundUrl();
+      picture = bg ? [{ url: bg, x: 0, y: -120, w: STAGE_W, h: 960, fit: "cover", pos: "50% 50%", opacity: 0.45 }] : [];
+      shell.setCaption("");
     } else {
       picture = [];
       shell.setCaption("");
@@ -443,7 +614,7 @@ export function createSheetScene(shell, painter) {
     pane,
     sync,
     // 縦長のシートは上画面を覆うので描かない。MENU は上画面にタブに合った絵
-    paint: (now) => (kind === "menu" ? painter.paintCover(now, picture) : false),
+    paint: (now) => (pane.dataset.tall === "false" ? painter.paintCover(now, picture) : false),
     enter() {
       live = null; identity = null; drawn = -1; version = 0; kind = ""; pressing = false;
       watch();

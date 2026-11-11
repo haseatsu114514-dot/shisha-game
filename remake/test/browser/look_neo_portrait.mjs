@@ -3,8 +3,9 @@
 // 自動操作のブラウザの既定は旧版なので ?look=neo を付けて確かめる。
 // 第2〜5章（2026-11-11 オーナー「新版を広げる」）: 各章の会話・地図（第2章の初日の配達と店頭、日常の朝の行き先と駅、
 // 第3章の東京・場面カード、第4章のドバイ、第5章の地元）も外枠に写る。
-// 全画面 MENU・LIME・小窓（設定・セーブ／ロード・規則の紙）・会話の LOG はシート（retro/sheet.js）で外枠の中に写り、
-// 回転案内を出さない。写せない画面（店など）は回転案内へ落ちる。
+// 全画面 MENU・LIME（初回の案内も）・小窓（設定・セーブ／ロード・セーブの引っ越し・規則の紙）・会話の LOG・店・
+// 夜のレベルアップ・章のクリアはシート（retro/sheet.js）で外枠の中に写り、回転案内を出さない。
+// 写せない画面（心得の盤など）は回転案内へ落ちる。
 import assert from "node:assert/strict";
 import { suite, baseURL } from "./support.mjs";
 
@@ -118,8 +119,8 @@ async function playScene(page, id, { chapter = 1, bg = "res://assets/backgrounds
 }
 
 /** 第1章 DAY5 の昼の地図を、本物の日常ループ（runDaily）で出す。 */
-async function setupDaily(page, { lime = false } = {}) {
-  await page.evaluate(async (lime) => {
+async function setupDaily(page, { lime = false, coach = false } = {}) {
+  await page.evaluate(async ([lime, coach]) => {
     const core = await import("./js/core/state.js");
     const s = core.newGame();
     Object.assign(s, { phase: "daily", chapter: 1, day: 5, slot: 0, money: 42000, stamina: 80, weatherSeed: 1234 });
@@ -137,12 +138,13 @@ async function setupDaily(page, { lime = false } = {}) {
         msg: { id: "look_lime_fixture", sender: "sumi", type: "chat", messages: ["今日は雨だな。", "店は昼から開けるから、手が空いたら顔を出してくれ。"],
           replies: [{ text: "了解です。昼に行きます", response: "助かる。", affinity: 0 }, { text: "今日は少し遅れます", response: "無理はするな。", affinity: 0 }] } });
     }
+    if (coach) delete s.flags._lime_tut; // LIME の初回の案内（地図の上の吹き出し）を出す
     core.save(); core.load();
     (await import("./js/chapters/ch1.js")).setupHooks();
     (await import("./js/core/ui.js")).clearScreen();
     window.dailyRun = (await import("./js/daily/calendar.js")).runDaily({ untilDay: 14, nightEvents: {} })
       .catch((error) => { window.dailyError = String(error.stack || error); });
-  }, lime);
+  }, [lime, coach]);
   await page.locator("#screen .map:not(.done)").waitFor({ state: "attached", timeout: 20000 });
   await page.waitForFunction(() => !document.querySelector('.map[data-revealing="true"]'));
 }
@@ -218,8 +220,9 @@ async function seedChapterTwoFirstDay(page) {
     (await import("./js/chapters/ch1.js")).setupHooks();
     await (await import("./js/chapters/ch1.js")).showClear();
   });
-  await page.locator(t("end-chapter2")).waitFor({ state: "attached" });
-  await clickDom(page, "end-chapter2");
+  // 第1章のクリアの画面（成長のグラフ・次の章へ）も縦長のシートで写り、写しのボタンから第2章へ進む
+  await page.locator('.retro-sheet[data-kind="end"] svg').waitFor({ timeout: 20000 });
+  await page.locator(t("sheet-end-chapter2")).tap();
 }
 
 /** 第2章の DAY2（配達を終えた後の日常）の朝から。 */
@@ -432,15 +435,14 @@ await suite("look_neo_portrait", async (check) => {
     assert.equal(await page.evaluate(() => window.dailyError || ""), "");
   }, { ...TALL, pageEntry: entry });
 
-  await check("portrait-shop-shows-rotate-hint", async (page) => {
+  await check("portrait-growth-board-shows-rotate-hint", async (page) => {
     await page.locator(shellFor("title")).waitFor();
     await setupDaily(page);
     await page.locator(shellFor("map")).waitFor();
-    await page.locator(t("retro-row-shop")).tap();
-    await page.waitForFunction(() => document.querySelector('[data-test="retro-go"]').getAttribute("aria-disabled") === "false");
-    await page.locator(t("retro-go")).tap();
-    await page.locator(t("shop-entry-back")).waitFor({ timeout: 15000 });
-    // 店（未対応の場面）は小さい横長の画面を出さず、少し待ってから回転案内を出す（制作の時計と音は案内の印で止まる）
+    await page.locator(t("retro-key-menu")).tap();
+    await page.locator(t("sheet-menu-board")).tap();
+    await page.locator(t("board-close")).waitFor({ state: "attached", timeout: 15000 });
+    // 心得の盤（動かして見る盤・未対応の場面）は小さい横長の画面を出さず、少し待ってから回転案内を出す
     await page.waitForFunction(() => document.documentElement.dataset.rotateGuard === "true", null, { timeout: 5000 });
     const open = await rootState(page);
     assert.equal(open.hint, "grid");
@@ -449,14 +451,85 @@ await suite("look_neo_portrait", async (check) => {
     assert(open.replaced && open.hintText.includes(HINT_TEXT) && open.hintText.includes("端末を横にしてください"), `the hint text is replaced: ${open.hintText}`);
     assert(!open.hintText.includes("お楽しみください"), "the original hint line is hidden");
     assert.equal(await page.locator(t("retro-note")).isVisible(), false, "no extra note on top of the rotate hint");
-    // 店を出ると外枠へ戻り、案内が消える
-    await clickDom(page, "shop-entry-back");
+    // 閉じると外枠へ戻り、案内が消える
+    await clickDom(page, "board-close");
     await page.locator(shellFor("map")).waitFor();
     await page.waitForFunction(() => !document.documentElement.dataset.rotateGuard);
     const closed = await rootState(page);
     assert.equal(closed.hint, "none");
     assert.equal(closed.hold, "hold");
     assert.equal(await page.evaluate(() => window.dailyError || ""), "");
+  }, { ...TALL, pageEntry: entry });
+
+  await check("portrait-shop-in-sheet", async (page) => {
+    await page.locator(shellFor("title")).waitFor();
+    await setupDaily(page);
+    await page.locator(shellFor("map")).waitFor();
+    await watchGuard(page);
+    await page.locator(t("retro-row-shop")).tap();
+    await page.waitForFunction(() => document.querySelector('[data-test="retro-go"]').getAttribute("aria-disabled") === "false");
+    await page.locator(t("retro-go")).tap();
+    // 入口（1F・2F）→ 1階の売り場。店は縦長のシートで、本体のボタンは売り場のタブ
+    await page.locator(t("sheet-shop-enter")).tap({ timeout: 15000 });
+    await page.locator('.retro-sheet[data-kind="shop"] [data-test="sheet-shop-checkout"]').waitFor({ timeout: 15000 });
+    const keys = await page.evaluate(() => ({
+      classic: [...document.querySelectorAll("#screen .shop-tabs > .shop-tab")].map((n) => [`shop-${n.dataset.tab}`, String(n.classList.contains("on"))]),
+      shell: [...document.querySelectorAll(".retro-key")].map((n) => [n.dataset.key, n.getAttribute("aria-pressed")]),
+    }));
+    assert.deepEqual(keys.shell, keys.classic);
+    const rows = await page.evaluate(() => ({
+      classic: [...document.querySelectorAll("#screen .shop-body .shop-product")].map((n) => n.dataset.test),
+      sheet: [...document.querySelectorAll(".retro-sheet .s-shop-product")].map((n) => n.dataset.test.replace(/^sheet-/, "")),
+      art: [...document.querySelectorAll(".retro-sheet .s-shop-product .rs-crop > img")].filter((n) => n.getAttribute("src")).length,
+    }));
+    assert(rows.classic.length >= 5);
+    assert.deepEqual(rows.sheet, rows.classic);
+    assert(rows.art >= 5, "the product pictures are mirrored");
+    // 商品の詳しい小窓（絵・特徴の帯）も縦長のシートで開いて戻る
+    await page.locator(t("sheet-detail-mint")).tap();
+    await page.locator(t("sheet-shop-detail-close")).tap();
+    // ミントを1箱 → 購入: 元の売り場と同じく所持金が減り、在庫が増える
+    const before = await page.evaluate(() => ({ money: window.__remake.state.money, mint: window.__remake.state.flavorStock?.mint || 0 }));
+    await page.locator(t("sheet-buy-mint")).tap();
+    await page.waitForFunction(() => document.querySelector('[data-test="quantity-mint"]').textContent === "1"
+      && !document.querySelector('[data-test="sheet-shop-checkout"]').disabled);
+    await page.locator(t("sheet-shop-checkout")).tap();
+    await page.waitForFunction((money) => window.__remake.state.money < money, before.money);
+    const after = await page.evaluate(() => ({ money: window.__remake.state.money, mint: window.__remake.state.flavorStock?.mint || 0 }));
+    assert.equal(after.mint, before.mint + 50);
+    assert(before.money - after.money > 0 && before.money - after.money <= 3000, `paid one box: ${before.money} → ${after.money}`);
+    // 機材の売り場へ（本体のボタン）→ 店を出る
+    await page.locator(t("retro-key-shop-equip")).tap();
+    await page.waitForFunction(() => document.querySelector("#screen .shop-tab.on")?.dataset.tab === "equip"
+      && document.querySelector('[data-test="retro-key-shop-equip"]').getAttribute("aria-pressed") === "true");
+    await page.locator(t("sheet-shop-leave")).tap();
+    await page.locator(shellFor("map")).waitFor();
+    assert.deepEqual(await guardLog(page), [], "no rotate hint in the shop");
+    assert.equal(await page.evaluate(() => window.dailyError || ""), "");
+  }, { ...TALL, pageEntry: entry });
+
+  await check("portrait-first-errand-in-sheet", async (page) => {
+    await page.locator(shellFor("title")).waitFor();
+    // 初回の買い出し（レモン・1箱は店の経費）: 案内の順（＋ → 購入 → 店を出る）が写しの金色の枠でも示される
+    await page.evaluate(async () => {
+      const core = await import("./js/core/state.js"); core.newGame();
+      window.errandLeft = false;
+      void (await import("./js/daily/shop.js")).openShop({ errand: "lemon", expense: true, expenseFlag: "_errand_lemon_expensed" }).then(() => { window.errandLeft = true; });
+    });
+    await page.locator('.retro-sheet[data-kind="shop"] [data-test="sheet-buy-lemon"]').waitFor({ timeout: 15000 });
+    await watchGuard(page);
+    const target = () => page.evaluate(() => [...document.querySelectorAll('.retro-sheet [data-errand-target="true"]')].map((n) => n.dataset.test));
+    await page.waitForFunction(() => document.querySelector('.retro-sheet [data-errand-target="true"]')?.dataset.test === "sheet-buy-lemon");
+    await page.locator(t("sheet-buy-lemon")).tap();
+    await page.waitForFunction(() => document.querySelector('.retro-sheet [data-errand-target="true"]')?.dataset.test === "sheet-shop-checkout");
+    await page.locator(t("sheet-shop-checkout")).tap();
+    await page.waitForFunction(() => window.__remake.state.flavorStock?.lemon === 50);
+    await page.waitForFunction(() => document.querySelector('.retro-sheet [data-errand-target="true"]')?.dataset.test === "sheet-shop-leave");
+    assert.deepEqual(await target(), ["sheet-shop-leave"]);
+    assert.deepEqual(await page.evaluate(() => ({ money: window.__remake.state.money, paid: window.__remake.state.flags._errand_lemon_expensed })), { money: 30000, paid: true });
+    await page.locator(t("sheet-shop-leave")).tap();
+    await page.waitForFunction(() => window.errandLeft);
+    assert.deepEqual(await guardLog(page), [], "no rotate hint during the first errand");
   }, { ...TALL, pageEntry: entry });
 
   await check("portrait-menu-in-sheet", async (page) => {
@@ -503,9 +576,10 @@ await suite("look_neo_portrait", async (check) => {
 
   await check("portrait-lime-in-sheet", async (page) => {
     await page.locator(shellFor("title")).waitFor();
-    await setupDaily(page, { lime: true });
-    await page.locator(shellFor("map")).waitFor();
     await watchGuard(page);
+    await setupDaily(page, { lime: true, coach: true });
+    // 初めての LIME は地図の上の案内（吹き出し）から: 下画面の吹き出しと本体の「LIMEを開く」
+    await page.locator('.retro-sheet[data-kind="coach"] [data-test="sheet-coach-lime-bubble"]').waitFor({ timeout: 15000 });
     await page.locator(t("retro-key-lime")).tap();
     // LIME は上下の画面をつないだ縦長のシート: トーク一覧 → 相手 → 返信の選択肢 → 一覧 → 閉じる
     await page.locator('.retro-sheet[data-kind="lime"][data-tall="true"]').waitFor();
@@ -603,6 +677,48 @@ await suite("look_neo_portrait", async (check) => {
     assert.equal(await page.evaluate(() => window.dailyError || ""), "");
   }, { ...TALL, pageEntry: entry });
 
+  await check("portrait-save-transfer-and-levelup-in-sheet", async (page) => {
+    await page.locator(shellFor("title")).waitFor();
+    await page.evaluate(async () => { const core = await import("./js/core/state.js"); const s = core.newGame(); s.money = 12345; core.save(); });
+    await watchGuard(page);
+    // セーブの引っ越し: 書き出した文字列（読むだけの欄）と、読み込みの入力欄（打つと元の欄へ入る）
+    await page.locator(t("retro-title-config")).tap();
+    await page.locator(t("sheet-save-export")).tap();
+    await page.locator(t("sheet-export-text")).waitFor();
+    const exported = await page.evaluate(() => ({
+      classic: document.querySelector('#modal [data-test="export-text"]').value,
+      sheet: document.querySelector('[data-test="sheet-export-text"]').value,
+      readOnly: document.querySelector('[data-test="sheet-export-text"]').readOnly,
+    }));
+    assert(exported.classic.startsWith("SUIEN-SAVE"));
+    assert.equal(exported.sheet, exported.classic);
+    assert.equal(exported.readOnly, true);
+    await page.locator(t("sheet-export-close")).tap();
+    await page.locator(t("sheet-save-import")).tap();
+    await page.locator(t("sheet-import-text")).fill(exported.classic);
+    await page.waitForFunction((text) => document.querySelector('#modal [data-test="import-text"]').value === text, exported.classic);
+    await page.locator(t("sheet-import-go")).tap();
+    await page.locator(t("sheet-import-abort")).tap(); // 確認まで進めて、上書きはしない
+    await page.locator(t("sheet-cfg-close")).tap();
+    await page.locator(shellFor("title")).waitFor();
+    assert.equal(await page.evaluate(() => window.__remake.state.money), 12345);
+    // 夜のレベルアップ（演出の層の画面）も縦長のシートで写り、写しの OK で閉じる
+    await page.evaluate(async () => {
+      const g = await import("./js/core/growth.js"); g.gainExp(g.totalExpFor(3));
+      window.night = null; void (await import("./js/daily/levelup.js")).presentNightGrowth().then((r) => { window.night = r; });
+    });
+    await page.locator('.retro-sheet[data-kind="levelup"] [data-test="sheet-levelup-ok"]').waitFor();
+    // 数字は元の演出どおり Lv.1 から上がっていく
+    assert.match(await page.locator(".retro-sheet .rs-head").textContent(), /^Lv\.[123]$/);
+    await page.waitForFunction(() => document.querySelector(".levelup")?.classList.contains("lu-settled-state") || window.night, null, { timeout: 10000 });
+    await page.waitForFunction(() => window.night || document.querySelector(".retro-sheet .rs-head")?.textContent === "Lv.3");
+    // 検査の共通の仕組み（growth_ack.mjs）が先に元の OK を押すこともある
+    if (!(await page.evaluate(() => window.night))) await page.locator(t("sheet-levelup-ok")).tap({ timeout: 3000 }).catch(() => {});
+    await page.waitForFunction(() => window.night?.to === 3);
+    await page.locator(shellFor("title")).waitFor();
+    assert.deepEqual(await guardLog(page), [], "no rotate hint while the save transfer and level-up are open");
+  }, { ...TALL, pageEntry: entry });
+
   await check("portrait-log-in-sheet", async (page) => {
     await page.locator(shellFor("title")).waitFor();
     await playScene(page, "ch1_minto_second");
@@ -676,18 +792,16 @@ await suite("look_neo_portrait", async (check) => {
     await page.locator('.retro-sheet[data-kind="log"]').waitFor();
     await page.locator(t("retro-key-close")).click();
     await page.locator(shellFor("vn")).waitFor();
-    // タッチでない縦長の窓では回転案内が出ないので、未対応の場面（設定の上に重ねるセーブの引っ越し）は小さい画面＋一言（DS風と同じ）
-    await page.locator(t("retro-key-vn-config")).click();
-    await page.locator(t("sheet-save-import")).click();
+    // タッチでない縦長の窓では回転案内が出ないので、未対応の場面（心得の盤）は小さい画面＋一言（DS風と同じ）
+    await page.evaluate(async () => { window.boardRun = (await import("./js/core/growth.js")).openGrowthBoard(); });
+    await page.locator(t("board-close")).waitFor({ timeout: 10000 });
     await page.waitForFunction(() => document.querySelector(".retro-shell").hidden, null, { timeout: 5000 });
     await page.locator(t("retro-note")).waitFor();
     const state = await rootState(page);
     assert.equal(state.hint, "none");
     assert.equal(state.guard, "");
     assert.equal(state.viewportOpacity, "1");
-    await page.keyboard.press("Escape");
-    await page.locator('.retro-sheet[data-kind="modal"]').waitFor();
-    await page.locator(t("sheet-cfg-close")).click();
+    await page.locator(t("board-close")).click();
     await page.locator(shellFor("vn")).waitFor();
   }, { ...DESK_TALL, pageEntry: entry });
 
