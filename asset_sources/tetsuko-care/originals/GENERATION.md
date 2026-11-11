@@ -101,3 +101,72 @@ The final size and SHA-256 list is recorded below; it is generated from the deli
 | `ui_photo_frame.png` | 1161×1355 | 634708 | `0e48c544c23a267249fa62f6a0e2b3926c1d0a3761c0386b112ed4ce682e5040` |
 | `ui_photo_frame_candidate2.png` | 1161×1355 | 629427 | `b495048d7fa63f1eff927783bd3a1e92b2b354facb067c16bebc228bf7343da4` |
 | `ui_tape.png` | 2172×724 | 1141470 | `6f52bf49c4b7a8d9968a2c5be66f32f175695b9293a1e143d9109b954da25bd3` |
+
+
+# Issue #3213「茶トラと段ボール」UI 候補原画（2026-11-11）
+
+A 段 TK-UI01〜09 の14枚を Codex 内蔵画像生成で1点ずつ作成した。B 段は今回の対象外。透過、切り分け、ゲームへの組み込みはしていない。
+
+## 参照画像と役割
+
+| 役割 | パス | SHA-256 |
+|---|---|---|
+| ① 同じ画面で採用済みの段ボール箱。線と段ボールの描き方を固定 | `assets/ui/tetsuko/prop_box.png` | `17586dba0cf27f537f7d9819bdaec980937e5c909425038dcdb91b16d81ae869` |
+| ② てつこの立ち絵。茶トラの橙、胸の白、焦げ茶の輪郭を固定 | `assets/sprites/characters/tetsuko/chr_tetsuko_normal.png` | `9890e78c6b90f636861ddbabc5657191398dfbe3087bffb24d5704720b4f6f00` |
+
+全回で①②を役割ラベル付きで渡し、「画風固定の参照として使い、描く物は PART だけ」と指定した。ハート空の編集回のみ、満の原画を画像①（編集対象）とし、箱を画像②、てつこを画像③とした。
+
+## 指示文
+
+共通文と該当する PART 行を連結して1回1点を生成した。以下は Issue #3213 の「Codex へ渡す文」からの原文。組の各状態には、その回で描く状態名を末尾に指定した。 実際の各回では参照の役割文末に「画風固定の参照として使い、描く物はPARTだけ」と追記した（TK-UI01 では「構図や物体を複写しないでください」も追加）。
+
+```text
+ノベルゲーム「水煙前線」の、看板猫てつこと遊ぶミニゲーム画面のUI部品を1枚だけ描いてください。
+画面のテーマは「茶トラと段ボール」です。色は、てつこ本人（茶トラの橙・胸の白・輪郭の焦げ茶・鼻の桃色）と段ボールから取ります。
+添付①は同じ画面に置いてある採用済みの段ボール箱（線と段ボールの描き方の正本）、②はてつこの立ち絵（色と線の正本）です。
+
+STYLE: hand-drawn game UI in the same artist's hand as the attached cardboard box and Tetsuko sprite. Cream paper #fff5e4 surfaces with thick confident dark brown #3b2416 outlines (about 6 px at this size), tabby orange #f08a2e and deep orange #c25e1c accents, kraft cardboard #c9965c with faint corrugation and fiber, the back-door blue-grey #4e6b78 only where asked, and a touch of nose pink #f39aa6. Flat colors with one or two clean cel-shadow steps, light from the upper left. Warm, cozy and a little handmade, like stickers and cut cardboard. No lavender, no smoke curls, no glossy plastic, no glow, no airbrush gradients, no 3D render, no photo texture.
+Never bake in any text, letters, digits, logo or watermark (the game writes all text). No cat face drawn inside the parts unless asked.
+FORMAT: flat and front-facing. Plain solid magenta #FF00FF background around the part (the game keys it out); keep the magenta exactly #FF00FF. No drop shadow outside the part. For nine-slice parts, keep every decoration inside the stated border band, keep straight edges parallel to the canvas, and keep the center plain and evenly textured.
+
+PART: （下の一覧から1つを貼る）
+```
+
+```text
+TK-UI01 ui_tk_icons.png 1536x512 — A sheet of twelve simple icons in a 6 x 2 grid of 256 px cells, each icon centered in its cell with plenty of empty magenta between cells. Thick dark brown outlines with tabby orange and cream fills, the same look in every cell. Top row, left to right: an open hand palm (petting), a cat teaser wand with a fluffy feather tip, a cat slicker brush with a wooden handle, a small white dish with a treat, an open cardboard box (rearranging), a small notebook with a paw-print stamp on the cover. Bottom row: a small instant camera, a simple back door with a small window, a heart, a round thought bubble with three dots inside, a fingertip gently tapping a small box, a person sitting on a bench seen from the side (sitting quietly). No text.
+TK-UI02 ui_tk_token.png, ui_tk_token_pressed.png and ui_tk_token_active.png 384x384 each — A round button token about 320 px across, centered. Normal: cream paper face, thick dark brown rim, a solid dark brown "drop" under the bottom edge so it looks like a thick sticker standing up. Pressed: the same token pushed down, the drop almost gone. Active (the tool in hand): the face filled tabby orange with a few soft stripes near the rim, and two small folded cat ears on the top edge, like Tetsuko's head seen from the front. Plain center in all three (the game puts an icon on it). Make three images with exactly the same size and position.
+TK-UI03 ui_tk_tab.png, ui_tk_tab_pressed.png and ui_tk_tab_door.png 512x384 each, nine-slice (72 px border on all sides) — A rounded-rectangle paper tab: cream face, thick dark brown outline, a solid dark brown drop under the bottom edge. Pressed: pushed down, drop almost gone. Door: the same tab painted like an old blue-grey #4e6b78 metal back door with a few scuffs. Plain center.
+TK-UI04 ui_tk_heart.png and ui_tk_heart_empty.png 160x160 each — A plump hand-drawn heart about 140 px wide, thick dark brown outline. Full: warm pink-red fill with one small highlight. Empty: exactly the same outline and position, cream fill. The game reveals the full heart over the empty one from the bottom up, so both must line up perfectly.
+TK-UI05 ui_tk_pill.png 512x160, nine-slice (72 px left and right, 56 px top and bottom) — A rounded pill-shaped cream holder with a thick dark brown outline and a dark brown drop under it, for a row of hearts. Plain inside.
+TK-UI06 ui_tk_wish.png 384x320 — A round cream speech bubble that a cat "thinks" with, thick dark brown outline, a short pointed tail at the bottom right, a soft drop under it. Plain inside (the game puts an icon in it).
+TK-UI07 ui_tk_caption.png 1536x256, nine-slice (left 112 px, right 56 px, top and bottom 56 px) — A long cream paper strip with rounded corners and a thick dark brown outline, a dark brown drop under it, and on the left end a band of tabby orange and deep orange stripes (the band fits inside the left 112 px). Plain center for one line of text.
+TK-UI08 ui_tk_title.png 768x224 — A blank title plate: a rounded cream plate with a thick dark brown outline and drop, two small folded tabby cat ears sticking up from the top edge, a round tabby orange medallion with a cream paw print at the left end (inside the left 200 px), and a thin band of tabby stripes along the bottom edge. The middle stays plain (the game writes the title).
+TK-UI09 ui_tk_fx.png 1024x512 — A sheet of eight small effect marks in a 4 x 2 grid of 256 px cells, each centered, thick dark brown outlines: a small pink heart, a four-point yellow sparkle, a cream music note, a light blue sweat drop, a little tuft of orange and white cat fur, a cream paw print, three short curved lines like a purring vibration, a small grumpy puff of air. No text, no letters.
+```
+
+TK-UI02・03 は normal、pressed、active／door を個別に生成した。TK-UI04 は満を生成後、満を編集対象に指定し「外形、輪郭線、位置、サイズ、背景を完全に維持して内側のピンクだけクリーム色にする」と指示して空を生成した。TK-UI05・06 は初回に不要な装飾が入ったため、無地に限定する指示を追加して各1回再生成し、後者を採用した。
+
+## 候補の整形と検査
+
+生成器の原寸と背景のピンクには指定との差があった。各 PNG を指定画素寸法へ縮小し、画像外周につながるマゼンタ色領域を単色 `#FF00FF` に補正した。九分割用の札と反応帯は上下の輪郭が指定の境界帯へ収まるよう上下余白を調整した。ハート空は満の外形マスクと焦げ茶輪郭を転写し、外形の画素一致を確保した。透過化はしていない。
+
+機械検査: 全14枚の実寸、四辺全画素の `#FF00FF`、ハート満／空の外形マスク一致、アイコン12セルと粒8セルの非空を確認した。文字・擬似文字・ロゴ・機材の不在は目視確認した。
+
+## PNG 一覧
+
+| ファイル | 画素寸法 | SHA-256 |
+|---|---:|---|
+| `ui_tk_caption.png` | 1536×256 | `ab88105b965a47a785e78febbf9ab0f28ee6dd11c801d9848e75c7a47fb7ff7c` |
+| `ui_tk_fx.png` | 1024×512 | `80731dad01f12f57ac0620bd69f3c39c82ba25a4dbfdfc0984ec19c5011be128` |
+| `ui_tk_heart.png` | 160×160 | `bf0f3bea70d55fad0f448de2bc0140b644ff4a75da09e69584118a736d6a1359` |
+| `ui_tk_heart_empty.png` | 160×160 | `2b78729f55b2dd19f5dc2c870745ded67669e84a5931ef4aaf5e357ec772bb3c` |
+| `ui_tk_icons.png` | 1536×512 | `34cec0cddd1c04958dc16e79ac2efd9ea27ee80577cf8ef41013f161954acbf3` |
+| `ui_tk_pill.png` | 512×160 | `1e98236431193a509e497142a3d0a1b0dedb3f860c01c18e85c699e05e8647ba` |
+| `ui_tk_tab.png` | 512×384 | `b386f88530c7b9b4830e4307ec4d32075c306ec708b623c3125a7c2b75d64186` |
+| `ui_tk_tab_door.png` | 512×384 | `a675d3a5f8941f496b3f17d1bdf308507a76186bb47951e5bd1c1fe7c107dad7` |
+| `ui_tk_tab_pressed.png` | 512×384 | `10fafa4a457c988898b0c48223c396820b57517da8f02aecb8c05cd945f4a9eb` |
+| `ui_tk_title.png` | 768×224 | `f1a6fb2727d11eda254476b2f43fc6a490a049cc65ad8678e997cdfeccc1c90a` |
+| `ui_tk_token.png` | 384×384 | `b4e22b0da944b1da4bd6f3f225c8aca3154c13ca1f361a9565a50128f812feef` |
+| `ui_tk_token_active.png` | 384×384 | `1b854572072470e33adc44bb6fb190fd3b734fae7ca1f3ffae57e353b608d7ac` |
+| `ui_tk_token_pressed.png` | 384×384 | `f12b6659c7ae9542c9da7eecceb5a266254f581c2a6e1878a57ac4a39a92377e` |
+| `ui_tk_wish.png` | 384×320 | `94667dffab50a3b7cc2763dc54d991fd26d05a52bc7bc5be82597d5ccb2b165c` |

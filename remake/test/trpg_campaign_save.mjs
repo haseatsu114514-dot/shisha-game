@@ -50,6 +50,21 @@ assert.deepEqual(Object.keys(loaded.trpg.club.members), ["hiyori", "samechan"]);
 assert.deepEqual(loaded.trpg.club.founded, { chapter: 2, day: 2 });
 console.log("PASS: schema 13/14 auto/manual migration; schema 15 membership, books, clears and shifts");
 
+// しおり（TMX13）: a well-formed bookmark survives save/load; a broken one is dropped without touching anything else.
+const bookmark = { id: "ordinary-cup", version: "1", chapter: 2, day: 3, seed: 77, assignments: { hiyori: "hiyori", hajime: "hajime" },
+  pc: null, actions: [["start"], ["beginCheck", "listen", { support: false, approach: null }], ["settleCheck"]], phase: "interview", title: "旅人と話す" };
+const marked = core.newState(); Object.assign(marked, { chapter: 2, day: 3, slot: 1 });
+marked.trpg = { stock: [], owned: ["ordinary-cup"], cleared: {}, shifts: [], club: { founded: { chapter: 2, day: 2 }, members: {} }, bookmark };
+core.setState(marked); core.saveToSlot("suien_remake_slot2");
+assert.deepEqual(copy(core.loadFromSlot("suien_remake_slot2")).trpg.bookmark, bookmark);
+for (const broken of [{ ...bookmark, actions: [] }, { ...bookmark, seed: "77" }, { ...bookmark, actions: ["start"] }, "broken"]) {
+  marked.trpg = { ...marked.trpg, bookmark: broken };
+  core.setState(marked); core.saveToSlot("suien_remake_slot2");
+  const back = copy(core.loadFromSlot("suien_remake_slot2"));
+  assert.equal(back.trpg.bookmark, undefined); assert.deepEqual(back.trpg.owned, ["ordinary-cup"]);
+}
+console.log("PASS: TRPG bookmark kept when well formed, dropped when broken");
+
 // Malformed legacy TRPG data must not erase unrelated progress or invent purchases/read events.
 const emptyTrpg = { stock: [], owned: [], cleared: {}, shifts: [], club: { founded: null, members: {} } };
 const validClear = { chapter: 2, day: 3, gm: "hiyori", participants: ["hiyori", "hajime"], ending: "discovery" };
