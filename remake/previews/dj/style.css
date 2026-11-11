@@ -30,21 +30,22 @@ button:disabled{opacity:.45;cursor:default;transform:none}
 button.small{min-height:40px;font-size:13px;white-space:nowrap}
 button.gold{color:#2a1840;border-width:14px;border-image:var(--goldbtn) 36 fill / 14px / 0 stretch}
 /* ── 上: フロア ───────────────────────────────────────────────────────────────── */
-.floor{flex:none;position:relative;height:288px;overflow:hidden;background:#120c1e}
-/* フロア = 主人公（DJ）がブースから見た客席（DJS28）。奥に空の店内（floor-room）、手前に観客の帯（floor-pov-1〜4 = 熱の4段階で差し替え）。
+.floor{flex:none;position:relative;height:288px;overflow:hidden;background:#120c1e;container-type:inline-size}
+/* フロア = 主人公（DJ）がブースから見た客席（DJS28・DJS32）。Codex の5枚（Issue #3224）から: 奥に誰もいない店内（floor-room）、
+   手前にシルエットの客の帯（floor-pov-1〜4 = 熱の4段階で差し替え）。2枚は同じ構図の 3:1 の絵で、画面幅に合わせて重ね、絵の高さの 31% から下を映す
+   （100cqw = フロアの幅。絵の高さ = 100cqw / 3）。帯は元の絵の行 180 から下（make_parts.py の BAND_TOP）。
    観客の帯は、基準の1枚の上に縦の帯7本を重ねたもの。拍に合わせて帯ごとに少しずれて跳ねる（app.mjs の moveCrowd）。
-   動く層には filter を掛けない（毎フレーム掛け直しになって重い）。明るさの違いは画像の側で作ってある（make_parts.py の floor_pov）。 */
+   動く層には filter を掛けない（毎フレーム掛け直しになって重い）。熱ごとの明るさと照明は絵の側で描き分けてある。 */
 .floor{--band:url('../../img/ui/dj/floor-pov-2.webp')}
 .floor:is([data-mood="0"],[data-mood="1"]){--band:url('../../img/ui/dj/floor-pov-1.webp')}
 .floor[data-mood="3"]{--band:url('../../img/ui/dj/floor-pov-3.webp')}
 .floor[data-mood="4"]{--band:url('../../img/ui/dj/floor-pov-4.webp')}
 .floor-art{position:absolute;inset:0;overflow:hidden}
-.floor-art .room{position:absolute;inset:0;background:url('../../img/ui/dj/floor-room.webp') center bottom/cover no-repeat;transition:filter .8s}
-.floor:is([data-mood="0"],[data-mood="1"]) .room{filter:brightness(.58) saturate(.3)}
-.floor[data-mood="2"] .room{filter:brightness(.82) saturate(.85)}
-.floor[data-mood="3"] .room{filter:brightness(1.05) saturate(1.1)}
-.floor[data-mood="4"] .room{filter:brightness(1.3) saturate(1.35)}
-.band{position:absolute;left:0;right:0;bottom:-18px;aspect-ratio:1512/232}
+.floor-art .room{position:absolute;left:0;right:0;top:-132px;height:427px;top:calc(100cqw / 3 * -.31);height:calc(100cqw / 3);background:url('../../img/ui/dj/floor-room.webp') 0 0/100% 100% no-repeat;transition:filter .8s}
+.floor:is([data-mood="0"],[data-mood="1"]) .room{filter:brightness(.55) saturate(.45)}
+.floor[data-mood="2"] .room{filter:brightness(.8) saturate(.9)}
+.floor[data-mood="4"] .room{filter:brightness(1.25) saturate(1.2)}
+.band{position:absolute;left:0;right:0;top:-26px;top:calc(100cqw / 3 * (180 / 724 - .31));aspect-ratio:2172/592}
 .band .base,.band .strip>b{background:var(--band) center/100% 100% no-repeat}
 .band .base{position:absolute;inset:0;will-change:transform}
 .band .strip{position:absolute;top:0;bottom:0;overflow:hidden;will-change:transform;-webkit-mask-image:linear-gradient(90deg,transparent,#000 26%,#000 74%,transparent);mask-image:linear-gradient(90deg,transparent,#000 26%,#000 74%,transparent)}

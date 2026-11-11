@@ -24,7 +24,7 @@ const THUMB = document.documentElement.dataset.density === 'phone' ? 72 : 54; //
 const sideOf = id => id ? '右' : '左', deckOf = id => id ? 'B' : 'A';
 const pickOne = list => list[Math.floor(Math.random() * list.length)];
 let audio, disposed = false, frame = 0, view = { mode: 'idle' }, message = '', subMessage = '', toastUntil = 0, judgeUntil = 0, shownPlay = null, lastCount = '', shownTracks = [null, null], shownSelect = null;
-let moodShown = null, helpManual = null, missStreak = 0, awaySince = 0, awaySaid = false, clashSince = 0, clashSaid = false, comboSaid = 0, shown = {}, particles = [], hands = [];
+let moodShown = null, helpManual = null, missStreak = 0, awaySince = 0, awaySaid = false, clashSince = 0, clashSaid = false, comboSaid = 0, shown = {}, particles = [];
 const STRIPS = 7, STRIP_OVERLAP = 3; // the guests' band: 7 strips, each overlapping its neighbours by 3 % of the width (see buildBand)
 let strips = [], flash = 0;
 const status = text => { $('status').textContent = text; };
@@ -39,7 +39,7 @@ function create() {
   // SET 1 arrives already in tempo: PITCH and SYNC are dimmed so the eye goes to ▶ and the crossfader.
   $('dj-stage').dataset.pitch = SETS[setIndex].detune === 'match' ? 'off' : 'on';
   $('voices').replaceChildren(); $('heat-delta').className = 'heat-delta'; $('crossfader').value = '0';
-  view = { mode: 'idle' }; shownPlay = null; judgeUntil = 0; toastUntil = 0; moodShown = null; helpManual = null; missStreak = 0; awaySince = 0; awaySaid = false; clashSince = 0; clashSaid = false; comboSaid = 0; particles = []; hands = makeHands(); flash = 0;
+  view = { mode: 'idle' }; shownPlay = null; judgeUntil = 0; toastUntil = 0; moodShown = null; helpManual = null; missStreak = 0; awaySince = 0; awaySaid = false; clashSince = 0; clashSaid = false; comboSaid = 0; particles = []; flash = 0;
   shown = {}; message = ''; subMessage = ''; lastCount = ''; $('count').textContent = '';
   showDecks();
 }
@@ -212,27 +212,8 @@ function wave(canvas, id, now) {
   c.fillStyle = '#ffc857'; c.fillRect(x0 - 1, 0, 3, h); // いま
   c.beginPath(); c.moveTo(x0 - 9, 0); c.lineTo(x0 + 10, 0); c.lineTo(x0 + .5, 12); c.closePath(); c.fill();
 }
-// ── フロアの絵の上に重ねる光・手・音符（#crowd）。絵そのものは CSS（.floor-art）が気分で切り替える ──────
-function makeHands() {
-  let seed = 23 + setIndex; const rnd = () => { seed = (Math.imul(seed, 1664525) + 1013904223) >>> 0; return seed / 4294967296; };
-  // each hand goes up once the floor passes its own threshold: nobody below 40, almost everybody near 100
-  return Array.from({ length: 20 }, (_, i) => ({ x: (i + .15 + rnd() * .7) / 20, th: .42 + rnd() * .52, size: .8 + rnd() * .5, lean: (rnd() - .5) * .42, phase: rnd(), fist: rnd() < .22, up: 0 }));
-}
-/** A raised hand in front of the booth: a dark silhouette against the lit haze, with a thin backlight on its edge. */
-function drawHand(c, x, base, h, len, bob) {
-  const w = 8 * h.size;
-  c.save(); c.translate(x, base); c.rotate(h.lean); c.translate(0, -bob);
-  c.beginPath(); c.moveTo(-w * 1.35, 40); c.quadraticCurveTo(-w * .7, -len * .5, -w * .62, -len + 2); c.lineTo(w * .62, -len + 2); c.quadraticCurveTo(w * .7, -len * .5, w * 1.35, 40); c.closePath(); // forearm, narrow at the wrist
-  if (h.fist) c.ellipse(0, -len - w * .8, w * 1.2, w * 1.15, 0, 0, Math.PI * 2);
-  else { // open hand: palm, four fingers and a thumb
-    c.roundRect(-w * 1.05, -len - w * 1.5, w * 2.1, w * 1.8, w * .6);
-    for (const f of [-1.5, -.5, .5, 1.5]) { const fl = w * (1.75 - Math.abs(f) * .24); c.save(); c.translate(f * w * .53, -len - w * 1.3); c.rotate(f * .12); c.roundRect(-w * .22, -fl, w * .44, fl + 4, w * .22); c.restore(); }
-    c.save(); c.translate(-w * 1.0, -len - w * .55); c.rotate(-.95); c.roundRect(-w * .22, -w * 1.15, w * .46, w * 1.3, w * .22); c.restore();
-  }
-  c.fillStyle = '#06030c'; c.fill('nonzero');
-  c.lineWidth = 1.5; c.strokeStyle = 'rgba(255,170,225,.28)'; c.stroke();
-  c.restore();
-}
+// ── フロアの絵の上に重ねる光・音符（#crowd）。絵そのもの（シルエットの客）は CSS（.floor-art）が気分で切り替える ──────
+// DJS32: 客が絵の側でシルエットになったので、コードで描いていた手前の手のシルエットはやめた。
 // The guests are one painted band cut into 7 soft-edged vertical strips over a base copy: each strip bounces a little out of step with its
 // neighbours, so the room moves like people and not like one sheet. How much depends on the mood: still when cold, a slow sway while they
 // watch, a bounce on every beat once they dance, a jump at the peak.
@@ -268,7 +249,8 @@ function drawFloor(beat, floor, running) {
   c.globalCompositeOperation = 'lighter';
   for (const [at, dir, col] of [[.16, 1, '180,92,240'], [.38, -1, '63,208,232'], [.62, 1, '255,95,168'], [.84, -1, '180,92,240']]) {
     const x = at * W, tip = x + dir * sweep * 150 + (at - .5) * 200, spread = 50 + floor * 70, alpha = (.04 + floor * .2) * (mood >= 4 ? 1 + kick * .5 : 1);
-    const g = c.createLinearGradient(x, 0, tip, H); g.addColorStop(0, `rgba(${col},${alpha * 1.6})`); g.addColorStop(1, `rgba(${col},0)`);
+    // DJS32: the painted crowd already stands in its own beams, so these only sweep through the haze over the heads and are gone by mid-height
+    const g = c.createLinearGradient(x, 0, tip, H); g.addColorStop(0, `rgba(${col},${alpha * .9})`); g.addColorStop(.5, `rgba(${col},0)`);
     c.fillStyle = g; c.beginPath(); c.moveTo(x - 6, 0); c.lineTo(x + 6, 0); c.lineTo(tip + spread, H); c.lineTo(tip - spread, H); c.closePath(); c.fill();
   }
   if (!still && mood >= 3) { // thin lasers fanning over the heads; more of them, and a strobe on the beat, at the peak
@@ -281,13 +263,6 @@ function drawFloor(beat, floor, running) {
   }
   if (flash > .02) { c.fillStyle = `rgba(255,240,255,${(flash * .28).toFixed(3)})`; c.fillRect(0, 0, W, H); flash *= .86; } else flash = 0;
   c.globalCompositeOperation = 'source-over';
-  // hands of the guests right in front of the booth
-  for (const h of hands) {
-    h.up += ((floor >= h.th ? 1 : 0) - h.up) * (reduced.matches ? 1 : .08);
-    if (h.up < .02) continue;
-    const len = h.up * (44 + h.size * 34), bob = kick * (6 + floor * 18) * (.6 + h.phase * .6) + (still ? 0 : Math.sin((beat / 2 + h.phase) * Math.PI * 2) * 3);
-    drawHand(c, h.x * W, H + 8, h, len, bob);
-  }
   // notes rising from the crowd while the fader rides the line
   if (!reduced.matches) {
     particles = particles.filter(p => p.life > 0);
