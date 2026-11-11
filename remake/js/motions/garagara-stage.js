@@ -6,7 +6,7 @@
 // 部品は正面から見た絵で、胴は回転（CSS の変形）だけで動かす。毎フレームの描き直しをしないのでスマホでも軽い。
 import { el } from "../core/util.js";
 import { svg } from "../core/transition-kit.js";
-import { artPart } from "./kuji-art.js";
+import { artPart, gemPart, lookOf, KUJI_LOOKS } from "./kuji-art.js";
 
 // 玉の色が賞を表す（S＝金・A＝赤・B＝青・C＝白・ラストワン＝黒地に銀の輪）。配色は意味を持つので固定
 export const BALL = { S: "#f7c648", A: "#e2443c", B: "#3f82ea", C: "#f6f3ec", LAST: "#2a2648" };
@@ -175,11 +175,11 @@ export function ballPart(rank) {
   return { node, halo, rank: k, light: RANK_LIGHT[k] };
 }
 
-/** カウンターに立てた小さな黒板（賞と玉の色）。last はラストワン賞の案内 */
-function signPart(last) {
+/** カウンターに立てた小さな黒板（賞と玉の色）。last はラストワン賞の案内、title はそのくじの名前 */
+function signPart(last, title = "シーシャくじ") {
   const rows = last
     ? [el("b.kj-sign-title", { text: "ラストワン賞" }), el("div.kj-sign-big", [ballPart("LAST").node]), el("span.kj-sign-note", { text: "最後の1枚を引いた方へ" })]
-    : [el("b.kj-sign-title", { text: "シーシャくじ" }),
+    : [el("b.kj-sign-title", { text: title }),
       ...["S", "A", "B", "C"].map((k) => el("div.kj-sign-row", [ballPart(k).node, el("span", { text: `${k}賞` })])),
       el("span.kj-sign-note", { text: "ラストワン賞あり" })];
   const node = artPart("sign", "kj-sign", () => el("i.kj-sign-board"));
@@ -211,34 +211,126 @@ export function shopBackdrop() {
   return node;
 }
 
+// 光の筋の元絵（黒地の burst.webp）を「明るさ＝透明度」の白い絵に直したもの。読み込めたら一度だけ作る
+// （モジュールを読んだ時点で始まるので、ショップの「シーシャくじ」タブを開いた時に済む。daily/shop.js が先に読み込む）
+const RAY_SIZE = 512;
+let rayMask = null;
+if (typeof Image === "function" && typeof document !== "undefined") {
+  const rays = new Image();
+  rays.decoding = "async";
+  rays.onload = () => {
+    const mask = document.createElement("canvas");
+    mask.width = mask.height = RAY_SIZE;
+    const m = mask.getContext("2d");
+    m.drawImage(rays, 0, 0, RAY_SIZE, RAY_SIZE);
+    const pixels = m.getImageData(0, 0, RAY_SIZE, RAY_SIZE), d = pixels.data;
+    for (let i = 0; i < d.length; i += 4) { d[i + 3] = Math.max(d[i], d[i + 1], d[i + 2]); d[i] = d[i + 1] = d[i + 2] = 255; }
+    m.putImageData(pixels, 0, 0);
+    rayMask = mask;
+  };
+  rays.src = new URL("../../img/ui/kuji/burst.webp", import.meta.url).href;
+}
+
+/**
+ * 光の層（抽選器の後光と、受け皿の後ろの光）。描いた黒地の光の筋（burst.webp）を「明るさ＝透明度」に直して色を掛け、
+ * 舞台の半分の解像度の canvas に回して描く。CSS の合成（mix-blend-mode）は使わない
+ * （大きな面を毎フレーム合成し直すので重く、変形を掛けた束の中では黒地が消えない）。
+ */
+function lightLayer() {
+  const canvas = el("canvas.kj-light", { width: "640", height: "360", "aria-hidden": "true" });
+  const ctx = canvas.getContext("2d");
+  const tinted = new Map(); // 色 → その色を掛けた光の絵
+  const tint = (color) => {
+    let sprite = tinted.get(color);
+    if (sprite) return sprite;
+    sprite = document.createElement("canvas");
+    sprite.width = sprite.height = RAY_SIZE;
+    const g = sprite.getContext("2d");
+    g.drawImage(rayMask, 0, 0);
+    g.globalCompositeOperation = "source-in";
+    g.fillStyle = color;
+    g.fillRect(0, 0, RAY_SIZE, RAY_SIZE);
+    tinted.set(color, sprite);
+    return sprite;
+  };
+  let painted = false;
+  return {
+    canvas,
+    /** list: [{ x, y, size, deg, k, color }]（舞台の座標と大きさ。k が 0 のものは描かない） */
+    draw(list) {
+      const on = rayMask ? list.filter((l) => l.k > 0.004) : [];
+      if (!on.length && !painted) return;
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.clearRect(0, 0, 640, 360);
+      painted = on.length > 0;
+      for (const l of on) {
+        ctx.setTransform(0.5, 0, 0, 0.5, l.x * 0.5, l.y * 0.5);
+        ctx.rotate(l.deg * DEG);
+        ctx.globalAlpha = Math.min(1, l.k);
+        ctx.drawImage(tint(l.color), -l.size / 2, -l.size / 2, l.size, l.size);
+      }
+    },
+  };
+}
+
 /**
  * 舞台一式。scene＝カメラで寄る層に入れる部品（後ろの店・カウンター・黒板・抽選器・受け皿）、
  * overlays＝手前に重ねる幕（溜めの暗がり・賞の色の染まり・周辺減光）。
  * drum は回す胴（--th に角度を入れる）、handle は一緒に回るハンドル、rig は震えさせる抽選器の束。
  */
-export function stageParts({ last = false } = {}) {
+export function stageParts({ last = false, look: wanted = "", title } = {}) {
+  const look = lookOf(wanted);
   // 胴の厚み: 同じ六角を奥（右上）へ7枚ずらして重ねる
   const sides = [...Array(7)].map((_, i) => el("i.kj-drum-side", { style: { "--i": String(7 - i) } }));
-  const face = artPart("drum", "kj-drum-face", drumSketch);
-  const drum = el("div.kj-drum", { style: { left: `${AX}px`, top: `${AY}px` } }, [...sides, face, el("i.kj-drum-sheen")]);
-  const farFrame = artPart("frame", "kj-frame", frameSketch);
+  const face = artPart("drum", "kj-drum-face", drumSketch, look);
+  // 回転のぶれ: 速く回っているあいだ、ぶれた胴の絵を上に重ねる（止まっているあいだは出さない）
+  const blurFace = artPart("drum-blur", "kj-drum-face", () => el("i"), look);
+  blurFace.classList.add("kj-drum-blur");
+  const drum = el("div.kj-drum", { style: { left: `${AX}px`, top: `${AY}px` } }, [...sides, face, blurFace, el("i.kj-drum-sheen")]);
+  const farFrame = artPart("frame", "kj-frame", frameSketch, look);
   farFrame.classList.add("kj-frame-far");
-  const nearFrame = artPart("frame", "kj-frame", frameSketch);
-  const base = artPart("base", "kj-base", baseSketch);
-  const handle = artPart("handle", "kj-handle", handleSketch);
-  const tray = artPart("tray", "kj-tray", traySketch);
+  const nearFrame = artPart("frame", "kj-frame", frameSketch, look);
+  const base = artPart("base", "kj-base", baseSketch, look);
+  const handle = artPart("handle", "kj-handle", handleSketch, look);
+  const tray = artPart("tray", "kj-tray", traySketch, look);
+  const gem = gemPart(look);
   const exitGlow = el("i.kj-exit-glow", { style: { left: `${EXIT[0]}px`, top: `${EXIT[1]}px` } });
-  const rig = el("div.kj-rig", [el("i.kj-ground.kj-ground-base"), base, farFrame, drum, exitGlow, nearFrame, handle]);
+  const rig = el("div.kj-rig", [el("i.kj-ground.kj-ground-base"), base, farFrame, drum, exitGlow, nearFrame, handle, ...(gem ? [gem] : [])]);
   const counter = artPart("counter", "kj-counter", () => el("i.kj-counter-wood"));
   const pillar = el("i.kj-pillar", { style: { left: `${REST[0]}px`, top: `${REST[1] + 14}px` } });
+  // 抽選器の後ろの光（後光）と、当たりの玉が受け皿に落ちたときの光
+  const light = lightLayer();
+  const toplight = el("i.kj-toplight");
+  const AURA = { walnut: "#ffdcae", steel: "#dbe8ff", brass: "#ffd27a", marble: "#fff1c8", lacquer: "#ffc86a" }[look];
+  const glow = { aura: { x: AX, y: AY, size: 980, k: 0, deg: 0, color: AURA }, dish: { x: REST[0], y: REST[1], size: 1040, k: 0, deg: 0, color: "#fff" } };
+  let lightScale = 1;
+  const shine = (which, k, deg, scale, color, size) => Object.assign(glow[which], { k, deg, size: size * scale * lightScale, color });
   const dim = el("div.kj-dim", { "aria-hidden": "true" });
   const tint = el("div.kj-tint", { "aria-hidden": "true" });
   const vignette = el("div.kj-vignette", { "aria-hidden": "true" });
   return {
-    scene: [shopBackdrop(), el("i.kj-toplight"), counter, signPart(last)],
+    look, lux: KUJI_LOOKS[look].lux, auraColor: AURA,
+    scene: [shopBackdrop(), toplight, counter, signPart(last, title)],
+    lights: [light.canvas],
     machine: [rig, el("i.kj-ground.kj-ground-tray"), tray, pillar],
     overlays: [dim, tint, vignette],
     rig, drum, handle, pillar, exitGlow,
+    /** 抽選器の後ろの光（k: 濃さ 0〜1、deg: 回した角度、scale: 大きさ、color: 色。省くと抽選器の色）。描くのは paintLights */
+    aura(k, deg = 0, scale = 1, color = AURA) { shine("aura", k, deg, scale, color, 980); },
+    /** 受け皿の後ろの光（当たりの玉が落ちたとき） */
+    landRays(k, deg = 0, scale = 1, color = "#fff") { shine("dish", k, deg, scale, color, 1040); },
+    /** 光の層を描く（毎フレーム、aura・landRays を決めたあとに一度呼ぶ） */
+    paintLights() { light.draw([glow.aura, glow.dish]); },
+    /** 天井の灯り（k: 1 がふつう。登場で点く） */
+    spot(k) { toplight.style.opacity = k.toFixed(3); },
+    /** 光の置き場所（舞台の座標。axis＝胴の軸、dish＝受け皿の玉、scale＝抽選器の大きさ） */
+    placeLights([axisX, axisY], [dishX, dishY], scale = 1) {
+      lightScale = scale;
+      Object.assign(glow.aura, { x: axisX, y: axisY });
+      Object.assign(glow.dish, { x: dishX, y: dishY });
+    },
+    /** 回転のぶれ（k: 濃さ 0〜1） */
+    blur(k) { blurFace.style.opacity = k.toFixed(3); },
     /** 全面を賞の色で染める（k: 0〜1） */
     mood(k, color) {
       tint.style.background = color;

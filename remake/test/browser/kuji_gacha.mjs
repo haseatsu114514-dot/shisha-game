@@ -66,6 +66,13 @@ await suite("kuji-gacha", async check => {
       assert(leg.x + leg.w * 0.082 > rig.base.x + inset + 4, `${name}の左の足先が天板の内側`);
       assert(leg.x + leg.w * 0.917 < rig.base.x + rig.base.w - inset - 4, `${name}の右の足先が天板の内側`);
     }
+    // 抽選器は店のくじごとの見た目（GCH16）。東京店の上級機材くじ＝マホガニーと真鍮（brass）。黒板にはそのくじの名前
+    assert.equal(await page.locator(".mo-garagara").getAttribute("data-look"), "brass");
+    assert.match(await page.locator('.mo-garagara .kj-part[data-part="drum"] img').getAttribute("src"), /garagara-drum-brass\.webp$/);
+    assert.equal(await page.locator(".mo-garagara .kj-sign-title").innerText(), "上級機材くじ");
+    // 後ろの光の層と、回転でぶれた胴の絵がある（GCH17）
+    assert.equal(await page.locator(".mo-garagara canvas.kj-light").count(), 1, "後ろの光の層");
+    assert.equal(await page.locator('.mo-garagara .kj-part[data-part="drum-blur"]').count(), 1, "回転のぶれ");
     assert.equal(await page.locator(".kuji-card.reveal").count(), 0, "札はガラガラのあとに開く");
     assert((await page.locator('[data-test="kuji-skip"]').boundingBox()).height >= 40);
     await page.locator(".kuji-card.reveal.rank-C").waitFor({ timeout: 9000 });
@@ -118,6 +125,57 @@ await suite("kuji-gacha", async check => {
     await tap(page, "kuji-reveal");
     await gone(page, "kuji-reveal");
     assert((await saved(page)).owned.includes("home_rig_pro"));
+  });
+  // GCH16: 抽選器は店のくじごとに素材が変わる（上の店ほど豪華）。開発用のプレビュー（景品は渡さない）で5種類を順に見る
+  await check("machine-look-per-kuji", async page => {
+    await setup(page);
+    const LOOKS = [["g1000", "walnut", "シーシャくじ"], ["g3000", "steel", "機材くじ"], ["g5000", "brass", "上級機材くじ"], ["g10000", "marble", "特注台くじ"], ["g20000", "lacquer", "限定台くじ"]];
+    for (const [grade, look, title] of LOOKS) {
+      await page.evaluate(async spec => { (await import("./js/daily/kuji.js")).previewReveal(spec); }, `C@${grade}`);
+      const stage = page.locator(`.mo-garagara[data-look="${look}"]`);
+      await stage.waitFor();
+      assert.equal(await stage.locator(".kj-sign-title").innerText(), title, `${grade} の黒板`);
+      await page.waitForFunction(() => [...document.querySelectorAll(".mo-garagara .kj-part img, .mo-garagara .kj-gem")].every((img) => img.complete), null, { timeout: 8000 });
+      const parts = await stage.locator(".kj-part").evaluateAll((nodes) => nodes.map((n) => ({ part: n.dataset.part, art: n.dataset.art,
+        src: n.querySelector("img")?.getAttribute("src") || "", loaded: !!n.querySelector("img")?.naturalWidth })));
+      for (const part of ["drum", "drum-blur", "frame", "base", "handle", "tray"]) {
+        const found = parts.filter((x) => x.part === part);
+        assert(found.length && found.every((x) => x.art === "painted" && x.loaded), `${look} の ${part} が絵で出る: ${JSON.stringify(found)}`);
+        // 本店（walnut）は元の絵、ほかは色替えした絵（garagara-<部品>-<見た目>.webp）
+        const want = look === "walnut" ? new RegExp(`garagara-${part}\\.webp$`) : new RegExp(`garagara-${part}-${look}\\.webp$`);
+        assert(found.every((x) => want.test(x.src)), `${look} の ${part} の絵: ${found.map((x) => x.src)}`);
+      }
+      // 軸の宝石は上の2つ（ドバイ店・限定台くじ）だけ
+      const gems = await stage.locator(".kj-gem").evaluateAll((nodes) => nodes.map((n) => n.naturalWidth > 0));
+      assert.deepEqual(gems, ["marble", "lacquer"].includes(look) ? [true] : [], `${look} の宝石`);
+      await tap(page, "kuji-skip");
+      await page.locator(".kuji-card.reveal.rank-C").waitFor();
+      await page.locator(".mo-garagara").waitFor({ state: "detached" });
+      await page.waitForTimeout(250);
+      await tap(page, "kuji-reveal");
+      await gone(page, "kuji-reveal");
+    }
+  });
+  // GCH17: 玉が出る前の予告。蓋の光が、賞が上がるたびに一段ずつ色を上げる（A賞は 白 → 青 → 赤 で止まり、金までは上がらない）
+  await check("tease-steps-up-to-the-rank", async page => {
+    await setup(page);
+    const colors = await page.evaluate(async () => {
+      (await import("./js/daily/kuji.js")).previewReveal("A@g5000");
+      const seen = [];
+      await new Promise((done) => {
+        const watch = () => {
+          const stage = document.querySelector(".mo-garagara"), glow = stage?.querySelector(".kj-exit-glow");
+          if (glow && Number(glow.style.opacity) > 0.05) { const c = glow.style.getPropertyValue("--kj-halo"); if (seen.at(-1) !== c) seen.push(c); }
+          if (!stage && seen.length) done(); else requestAnimationFrame(watch);
+        };
+        requestAnimationFrame(watch);
+      });
+      return seen;
+    });
+    assert.deepEqual(colors, ["#ffffff", "#4f9bff", "#ff5a4e"], "A賞の予告は 白 → 青 → 赤");
+    await page.locator(".kuji-card.reveal.rank-A").waitFor();
+    await tap(page, "kuji-reveal");
+    await gone(page, "kuji-reveal");
   });
   await check("ten-pull-showcase-and-grid", async page => {
     await setup(page, { owned: ["lotos_plus"] });
