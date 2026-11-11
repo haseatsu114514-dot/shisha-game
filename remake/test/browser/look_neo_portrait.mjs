@@ -589,6 +589,10 @@ await suite("look_neo_portrait", async (check) => {
     }));
     assert.deepEqual(list.sheet, list.classic);
     assert(list.sheet.some(([id, unread]) => id === "lime-chat-sumi" && unread), "the unread chat is marked");
+    // LIME は実物のメッセージアプリをまねた色の役割（LK20）: ドット調のまま、緑の見出しに白いトーク一覧。
+    const tone = (selector) => page.evaluate((selector) => getComputedStyle(document.querySelector(selector)).backgroundColor, selector);
+    assert.equal(await tone('.retro-sheet[data-kind="lime"] .rs-head'), "rgb(31, 166, 74)", "LIME の見出しは緑");
+    assert.equal(await tone(".retro-sheet .s-lime-chat-row"), "rgb(255, 255, 255)", "トーク一覧の行は白");
     await page.locator(t("sheet-lime-chat-sumi")).tap();
     await page.locator(t("sheet-reply-0")).waitFor({ timeout: 10000 });
     const thread = await page.evaluate(() => ({
@@ -606,6 +610,8 @@ await suite("look_neo_portrait", async (check) => {
     }));
     assert.equal(answered.item.read, true);
     assert.deepEqual(answered.sheet, ["了解です。昼に行きます"]);
+    assert.equal(await tone(".retro-sheet .s-lime-row.s-me .s-lime-bubble"), "rgb(143, 226, 106)", "自分の吹き出しは緑");
+    assert.equal(await tone(".retro-sheet .s-lime-row:not(.s-me) .s-lime-bubble"), "rgb(255, 255, 255)", "相手の吹き出しは白");
     await page.locator(t("retro-key-back")).tap();
     await page.locator(t("sheet-phone-close")).waitFor();
     await page.locator(t("retro-key-close")).tap();
