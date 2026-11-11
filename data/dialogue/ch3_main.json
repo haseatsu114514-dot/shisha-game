@@ -808,7 +808,8 @@
         {
           "speaker": "",
           "face": "",
-          "text": "綾取は自分の煙の余韻を整えながら、はじめの炭を見た。"
+          "text": "綾取は自分の煙の余韻を整えながら、はじめの炭を見た。",
+          "id": "ch3_work_echo"
         },
         {
           "speaker": "hajime",
@@ -2034,7 +2035,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "全部、一台に入れようとしてた"
+          "text": "見てきた手つきを、いっぺんに真似しようとしてた"
         },
         {
           "speaker": "mashiro",
