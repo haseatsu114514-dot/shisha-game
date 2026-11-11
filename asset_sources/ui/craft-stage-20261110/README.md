@@ -6,7 +6,7 @@
 
 | 原画 | サイズ | bytes | SHA-256 | CHECK の結果 |
 |---|---:|---:|---|---|
-| （未生成） | | | | |
+| `raw/counter-stone.png`（Codex の B案） | 1536×1024 | 1872433 | `9345cae748a116b426377b71e3a779661745656141d198134ef5d91ee8283b14` | 合格（枠なし・境界約17%・中央は空・小物は右端）。採用 `assets/ui/craft-stage/counter-stone.png`（無加工）→ `remake/img/ui/craft-stage/counter-stone.webp` 1280×853 |
 
 ## 受け取った後の手順（実装側）
 

@@ -632,6 +632,17 @@
    "blob": "d51785b304c54936de9d15d04e18b9f9acd64d08",
    "accepted": "2026-11-02 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
   },
+  "bg_longlong_shop.png": {
+   "place": "longlong_shop",
+   "time": "",
+   "weather": "",
+   "size": [
+    1920,
+    1080
+   ],
+   "luma": 80,
+   "blob": "f622b60305837663410b706b2756acd796cef527"
+  },
   "bg_mukai_attic.png": {
    "place": "mukai_attic",
    "time": "",

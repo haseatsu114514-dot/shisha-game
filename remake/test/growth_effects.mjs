@@ -441,3 +441,115 @@ console.log("[grape lesson] PASS: family/unique-most, learned/off/failure, +2 on
  console.log("[K11 fire keeper] PASS: tong-fetched coals step one grade toward just, no double step, standard coals without a record");
 }
 growth.setGrowthPreview(false);
+
+
+// #3116: named squares describe their real perk; stage feature adds its own score.
+{
+ growth.setGrowthPreview(true); core.newGame(); growth.ensureGrowth();
+ const { FEATURES, NOTABLES } = await import("../js/core/growth-board-data.js");
+ const expected = { B3:{charm:1.5}, B19:{charm:3,stage:.3}, B21:{sleep:9},
+  S5:{dodge:1.5}, S21:{breath:18}, S25:{breath:27}, W9:{leaf:1.5}, W14:{tongue:3}, W24:{coal:4.5} };
+ assert.equal(board.NODES.filter(n=>n.notable).length,9);
+ for(const [id, perks] of Object.entries(expected)) {
+  assert.deepEqual(Object.fromEntries(Object.entries(effects.boardPerks([id])).filter(([,v])=>v!==0)),perks,id);
+  assert.deepEqual(effects.boardPerks([id,id]),effects.boardPerks([id]),`${id}: duplicate IDs do not stack`);
+ }
+ for(const feature of Object.keys(FEATURES)) {
+  const nodes=board.NODES.filter(n=>n.feature===feature); assert.equal(nodes.length,1,feature);
+  core.state.growth.nodes=[nodes[0].id]; assert(effects.growthFeature(core.state,feature),feature);
+  core.state.growth.nodes=[]; assert(!effects.growthFeature(core.state,feature),feature);
+ }
+ assert.match(NOTABLES.friendly.text,/交流/); assert.match(NOTABLES.friendly.text,/固定分は除く/);
+ assert.match(NOTABLES.ironsleep.text,/回復/); assert.match(NOTABLES.fire_eye.text,/蒸らし/);
+ assert.match(NOTABLES.hairbreadth.text,/リフレッシュ/); assert.match(NOTABLES.leaf_eye.text,/吸いすぎ/);
+ assert.match(FEATURES.stage.text,/0\.3/);
+ core.state.chapter=3;
+ const route=["B1","B4","B7","B18"];
+ const cup=()=>({mode:"tournament",chapter:3,pullDone:true,mix:{},holes:{score:80},heat:{score:80},
+  stats:{craftQuality:80},careHistory:[{score:80},{score:80}]});
+ const { finalize: score }=await import("../js/craft/score.js");
+ core.state.growth.nodes=route;
+ assert.equal(bonusOf(cup()).bonus,.6,"B18 keeps its existing score before stage feature");
+ const before=score(cup()).total;
+ core.state.growth.nodes=[...route,"B19"];
+ assert(Math.abs(bonusOf(cup()).bonus-.9)<1e-9);
+ const after=Math.round((before+.3)*10)/10;
+ assert.equal(score(cup()).total,after,"B19 alone increases actual final score by 0.3");
+ assert(Math.abs(effects.boardPerks(board.NODES.map(n=>n.id)).stage-5.1)<1e-9);
+ const capped=cup(); capped.holes.score=capped.heat.score=capped.stats.craftQuality=100; capped.careHistory.forEach(c=>c.score=100);
+ assert.equal(score(capped).total,100,"B19 does not exceed the score cap");
+ assert.equal(effects.boardPerks(["B19"]).charm,3,"keep existing charm instead of replacing it");
+ const once=score(cup()); for(let i=0;i<3;i++)assert.equal(score(once).total,after);
+ core.save(); core.load(); assert.equal(score(cup()).total,after,"SAVE/LOAD does not multiply stage bonus");
+ core.state.growth.nodes=["B19"];
+ assert.equal(bonusOf(cup()).bonus,.3,"stage also works on an old save without its approach route");
+ assert.equal(bonusOf({...cup(),mode:"practice"}).bonus,0);
+ growth.setGrowthPreview(false); assert.equal(bonusOf(cup()).bonus,0);
+ console.log("[notable contracts] PASS: all 9 named squares, 6 features, B19 +0.3 actual score, repeats/LOAD/off");
+}
+// #3117: 眠り1マスの+2%を端数として保存し、睡眠を重ねた時の実回復へ返す。
+{
+  const { buildCarryPackage } = await import("../js/core/carry.js");
+  const { startNextCycle } = await import("../js/core/cycle-start.js");
+  const sleepNodes = board.NODES.filter(n => n.kind === "stat" && n.perk === "sleep" && n.band === 1).slice(0, 2).map(n => n.id);
+  assert.equal(sleepNodes.length, 2);
+  const resetSleep = (count) => {
+    growth.setGrowthPreview(true); core.newGame();
+    growth.ensureGrowth().nodes = sleepNodes.slice(0, count);
+  };
+  const night = (amount = 14) => { core.state.stamina = 50; return stats.addStamina(amount, { sleep: true }); };
+  for (const [count, expected] of [[0, [14,14,14,14]], [1, [14,14,14,15]], [2, [14,15,14,15]]]) {
+    resetSleep(count);
+    assert.deepEqual(Array.from({ length: 4 }, () => night()), expected, `${count}マス: 毎晩増えたとは扱わず、整数になった夜だけ返す`);
+  }
+  resetSleep(1);
+  assert.equal(Array.from({ length: 100 }, () => night()).reduce((a,b) => a+b, 0), 1428, "100晩の+2%は合計28。丸めの積み増しをしない");
+  resetSleep(2);
+  assert.equal(Array.from({ length: 100 }, () => night()).reduce((a,b) => a+b, 0), 1456, "+4%も元の割合を維持");
+  resetSleep(1); night(); night(); night();
+  assert(Math.abs(core.state.growth.sleepCarry - .84) < 1e-9);
+  core.save(); core.load();
+  assert.equal(night(), 15, "SAVE/LOAD後も端数が実回復になる");
+  assert(Math.abs(core.state.growth.sleepCarry - .12) < 1e-9);
+  core.save(); core.load(); core.save(); core.load();
+  assert(Math.abs(core.state.growth.sleepCarry - .12) < 1e-9, "読み直すだけでは端数を増やさない");
+  resetSleep(1); night(); night(); night();
+  startNextCycle(buildCarryPackage(core.state));
+  assert.equal(night(), 15, "NG+の能力引継ぎで端数も一度だけ引き継ぐ");
+  resetSleep(1); night();
+  const carry = core.state.growth.sleepCarry;
+  assert.equal(stats.addStamina(0, { sleep: true }), 0);
+  assert.equal(core.state.growth.sleepCarry, carry, "回復0の前夜に端数を払い出さない");
+  core.state.stamina = 50; assert.equal(stats.addStamina(14), 14);
+  assert.equal(core.state.growth.sleepCarry, carry, "休憩では睡眠端数を使わない");
+  stats.addStamina(-4, { sleep: true });
+  assert.equal(core.state.growth.sleepCarry, carry, "消耗では端数を触らない");
+  growth.setGrowthPreview(false); assert.equal(night(), 14);
+  assert.equal(core.state.growth.sleepCarry, carry, "盤無効時は端数も凍結");
+  growth.setGrowthPreview(true); core.state.growth.nodes = [];
+  assert.equal(night(), 14); assert.equal(core.state.growth.sleepCarry, carry, "組み直して眠り無しの間は端数を払い出さない");
+  core.state.growth.nodes = sleepNodes.slice(0, 1);
+  core.state.stamina = stats.maxStamina(); assert.equal(stats.addStamina(14, { sleep: true }), 0);
+  assert.equal(core.state.growth.sleepCarry, 0, "満タンの余りは貯めない");
+  core.state.stamina = stats.maxStamina() - 1; assert.equal(stats.addStamina(14, { sleep: true }), 1);
+  assert.equal(core.state.growth.sleepCarry, 0, "上限に切られた回復の端数も残さない");
+  for (const invalid of [undefined, NaN, Infinity, -1, 1, "0.9"]) {
+    core.state.growth.sleepCarry = invalid;
+    assert.equal(night(), 14);
+    assert(Math.abs(core.state.growth.sleepCarry - .28) < 1e-9, "旧保存の欠落/不正な端数は0から始める");
+  }
+  for (const [nodes, lavender, base] of [[[], false, 14], [["K03"], false, 15.4], [["M-S3"], true, 16.8], [["K03", "M-S3"], true, 18.48]]) {
+    resetSleep(1); core.state.growth.nodes.push(...nodes);
+    core.state.growth.learned = nodes.filter(id => id === "M-S3");
+    if (lavender) core.state.flags._home_lavender_sleep = `${core.state.chapter}:${core.state.day}`;
+    const sum = Array.from({ length: 100 }, () => night()).reduce((a,b) => a+b, 0);
+    assert.equal(sum, Math.round(base) * 100 + Math.floor(base * .02 * 100 + 1e-9), "K03/ラベンダーの基礎回復丸めは維持、盤の上乗せだけ蓄積");
+  }
+  resetSleep(1); night();
+  startNextCycle(buildCarryPackage(core.state), {groups:{stats:false}});
+  assert.equal(core.state.growth?.sleepCarry, undefined, "能力を引き継がないNG+では睡眠端数も渡さない");
+  core.newGame(); assert.equal(core.state.growth, undefined, "NEW GAMEに前の保存の端数を漏らさない");
+  growth.setGrowthPreview(false);
+  console.log("[sleep carry] PASS: 0/1/2 nodes, repeated nights, SAVE/LOAD/NG+, cap, off, respec and K03/lavender");
+}
+

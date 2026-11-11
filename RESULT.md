@@ -58,6 +58,37 @@
 - 既存の `ch1_loading.mjs` 全件は参考として実行。先読み対象の LFS 実体不足を補った後、新規開始に近い PC・タッチの会話読み込みケースは通過した。既存の作業台キャッシュケース2件はタイトルの並行画像先読みを拾って失敗し、連続走行中に Chromium のタブが2件クラッシュした。単独の `touch-warm-scene` は PASS。今回の回帰は独立群で判定する。
 - `node tools/ci/run.mjs --kind quick`: 初回は sparse checkout で検査用資料・JSON・LFS画像・試遊コードを省いたため、`desert-ride-rules`、`loading-comics-spec`、`slim-deploy`、`docs`、`game-logic`、`tools` が失敗。欠けたファイルだけ追加後、各失敗コマンドを個別再実行しすべて PASS。quick 全体の初回終了コードは 1 のままと記録する。PR の CI では同じ quick 全体を確認する。
 
+---
+
+# モーショングラフィックス負荷改善（2026-11-10）
+
+## 棚卸しと優先順位
+
+`remake/` の実ゲーム CSS/JS/HTML（テスト fixture と試作プレビューを除く）で、RAF・タイマー・CSS keyframes・blur・will-change を含むファイルは85件。主な候補は制作の水入れ canvas と水位波、VN の煙（20/26px blur）、ローディングの大面積 haze、固定ステージの余白用ぼかし、ミニゲーム内のループ。GIF は `remake/` と `assets/` に見当たらない。WebP のアニメーション有無は未判定。
+
+390×844、DPR 3、タッチ有効の Chromium でタイトル・第2章会話プレビュー・制作プレビュー・ラクダレース・斧投げを開いた。縦向きでは横向き案内の覆いが表示されるため、初期状態の `document.getAnimations()` が0であることを演出の負荷評価には使わない。DOM 上の blur はタイトル6要素、会話5要素、制作7要素、各ミニゲーム1要素。縦向きのスクリーンショットは `/tmp/motion-{title,conversation,craft,camel,axe}.png`。iPhone Safari 実機のフレーム時間は未測定。
+
+横向き 844×390、DPR 3 の Chromium で水入れ canvas を測ると、入力待ちの1秒間は描画 API 呼び出し0回、注水中の700msは1,138回。変更前は入力待ちも RAF ごとに `draw()` を呼ぶ構造だった。画面の切断検知用 RAF は残るため、CPU 呼び出しそのものはゼロにならない。
+
+## 変更の記録
+
+| 表現 | 安くした方法 | 見た目への影響 |
+| --- | --- | --- |
+| 制作・水入れミニゲームの瓶と水面 canvas | 水・瓶・波が静止した間は `step()` と `draw()` を呼ばず、画像読込・寸法変更・次の一本・判定・テスト操作時に再描画する。 | 静止中は最後の描画を保持。操作中の更新頻度と判定待ち時間は変更なし。 |
+| 制作・水入れミニゲームのこぼした量・傾き表示 | 値が変化したときだけ DOM テキストと dataset を更新。 | 表示値と更新タイミングは同じ。 |
+| 制作・水位メーターの波 | 水量・波の表示値・快適帯・流れ状態が変わったときだけ DOM/style/ARIA を更新。波の表示値は 0.01px 単位で丸める。 | 最大0.005pxの位置差。水量と判定、操作時間は変更なし。 |
+
+余白のぼかし帯と1280×720固定構図は維持した。大面積のぼかしと他の場面のモーションは、視覚比較と実操作の計測が足りないため今回は編集していない。
+
+## 検証
+
+- `node --experimental-vm-modules remake/test/water_pour_lifecycle_743.mjs`: PASS
+- `node remake/test/water_pour.mjs`: PASS
+- `BASE_URL=http://127.0.0.1:8124/remake/ ARTIFACT_DIR=/tmp/motion-perf-water node remake/test/browser/water_pour.mjs`: PASS
+- `node tools/ci/run.mjs --kind quick`: 初回 FAIL。sparse checkout で `asset_sources/music/trpg-audio/sources.json` が欠け、`game-logic` 内の `trpg_audio_cues.mjs` が ENOENT。該当ファイルだけ sparse に追加し、同テスト単独は PASS。全体の再実行は PASS（全スイート成功、flaky 0）。
+- `BASE_URL=http://127.0.0.1:8124/remake/ ARTIFACT_DIR=/tmp/motion-perf-setup node remake/test/browser/setup_continuation.mjs`: PASS（PC・タッチ含む4ケース）
+
+---
 
 # PWA 仕上げの検証（2026-11-10）
 

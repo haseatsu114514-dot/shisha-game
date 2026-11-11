@@ -1,6 +1,6 @@
 import { el } from "../core/util.js";
 import { TrpgSession, HEAT, heatTier, DICE, STATS, PLAYER_SEAT, approachesOf, approachBase, buildPc, randomPc, phasesOf, checkKindsOf } from "./session.js";
-import { displayName, portraitUrl, portraitAx, portraitTop as topFor, sceneUrl } from "./presentation.js";
+import { displayName, portraitUrl, portraitAx, portraitHeadTop, portraitTop as topFor, sceneUrl } from "./presentation.js";
 import { costumeUrl } from "./costumes.js";
 import { faceIconStyle } from "./face-crops.js";
 import { createTrpgAudio } from "./audio.js";
@@ -24,9 +24,35 @@ const ICONS = {
 /** Mounts one isolated session; finished resolves only after the player leaves the table. */
 export function mountTrpg(host, { scenario, characters, manifest, tableTalk = null, tutorialLines = null, tutorial = false, onTutorialDone = () => {},
   seed, profileId = null, pc = null, companions = {}, closeLabel = "卓を片付ける", audio: providedAudio = null, allowReplay = true, onComplete = () => {},
-  warmStart = false }) {
+  warmStart = false, resume = null, onBookmark = null }) {
+  // しおり（TMX13）: the table is the seed plus the order of what was pressed. Every action is recorded, the caller keeps
+  // the list at each resting point, and a later visit replays it to land on the same scene (dice included).
+  const RECORDED = ["start", "ask", "endInterview", "inspect", "consult", "interpret", "plan", "beginCheck", "reroll", "settleCheck"];
+  let pressed = [];
+  function recording(target) {
+    for (const key of RECORDED) {
+      const original = target[key].bind(target);
+      target[key] = (...args) => { const out = original(...args); pressed.push([key, ...JSON.parse(JSON.stringify(args))]); return out; };
+    }
+    return target;
+  }
   // The player's character can be rebuilt on the cover; the session restarts from the same seed until the story begins.
-  let build = pc, session = new TrpgSession(scenario, { seed, profileId, pc: build, companions, warmStart });
+  let build = pc, session = recording(new TrpgSession(scenario, { seed, profileId, pc: build, companions, warmStart }));
+  let resumed = false;
+  if (Array.isArray(resume?.actions) && resume.actions.length) {
+    try {
+      for (const [key, ...args] of resume.actions) {
+        if (!RECORDED.includes(key)) throw new Error("Unknown bookmarked action");
+        session[key](...args);
+      }
+      const at = session.snapshot();
+      if (at.phase === "cover" || at.phase === "ending" || at.pending) throw new Error("Bookmark is not a resting point");
+      resumed = true;
+    } catch {
+      // A bookmark from an older version of the story: start again from the cover rather than guess.
+      pressed = []; session = recording(new TrpgSession(scenario, { seed, profileId, pc: build, companions, warmStart }));
+    }
+  }
   const cast = Object.fromEntries(scenario.cast.map(c => [c.id, c]));
   const gm = scenario.cast.find(c => c.part === "GM").id;
   const presentation = scenario.presentation;
@@ -41,6 +67,18 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
   function pcFace(seat, playerId) {
     return el("img", { src: portrait(playerId), alt: "", style: circleStyle(playerId, 150, 6) });
   }
+  // The role costume (same person, dressed as the PC) where we have one: sheets, cover, origins and declaration cards (TMX04).
+  // "bust" zooms on the upper body for small cards; "full" shows the whole figure. Falls back to the round face.
+  function pcFigure(seat, playerId, { role = sheets[seat]?.archetype || sheets[seat]?.option || null, shape = "bust" } = {}) {
+    const url = costumeUrl(scenario.id, playerId, role);
+    if (!url) return pcFace(seat, playerId);
+    if (shape !== "bust") return el("span.trpg-costume", { dataset: { shape }, style: { backgroundImage: `url("${url}")` } });
+    // Costume art shares the standing portrait's framing, so the head starts lower for short characters (つむぎ).
+    // Slide the zoomed picture by its own height so every bust shows the head just under the top edge.
+    const lift = Math.max(0, portraitHeadTop(manifest, playerId) - 0.03) * 100, ax = portraitAx(manifest, playerId) * 100;
+    return el("span.trpg-costume", { dataset: { shape } }, el("i", { style: { backgroundImage: `url("${url}")`, transform: `translate(-${ax}%, -${lift}%)` } }));
+  }
+  const hasFigure = (seat, playerId, role = sheets[seat]?.archetype || sheets[seat]?.option || null) => !!costumeUrl(scenario.id, playerId, role);
   /** Authored text names the player's character with {pc}; the built name fills it in. */
   // {pc} is the player's character, {pc:seat} a companion's, {pcTitle} the player's origin and {gm} tonight's GM.
   const pcText = text => String(text ?? "").replace(/\{pc:([a-z]+)\}/g, (_, seat) => sheets[seat]?.name || "")
@@ -419,6 +457,10 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     if (disposed) return;
     syncChrome();
     const state = session.snapshot();
+    if (onBookmark && !busy && !completed && !state.pending && state.phase !== "cover" && state.phase !== "ending") {
+      onBookmark({ actions: JSON.parse(JSON.stringify(pressed)), pc: build ? { ...build } : null, phase: state.phase,
+        title: presentation.phases[state.phase]?.title || "" });
+    }
     content.hidden = state.phase === "cover";
     root.querySelector(".trpg-cover")?.remove();
     if (state.phase === "cover") { cover(); return; }
@@ -683,16 +725,16 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
           talk(sequence(approach.declare), () => { renderBody(); openCheck(kind, approach.id); });
         },
       }, [
-        el("span.trpg-approach-face", { "aria-hidden": "true" }, pcFace(approach.sheet || approach.actor, approach.actor)),
+        el("span.trpg-approach-face", { "aria-hidden": "true", dataset: { costume: String(hasFigure(approach.sheet || approach.actor, approach.actor)) } }, pcFigure(approach.sheet || approach.actor, approach.actor)),
         el("span.trpg-approach-copy", [
           el("small", { text: (approach.npc ? "GM " + name(approach.actor) + " が演じる" : "PL " + name(approach.actor)) + " · " + (pc?.name || "") }),
           el("strong", { text: pcText(approach.label) }), el("span", { text: pcText(approach.detail) }),
         ]),
         el("span.trpg-approach-meta", [
           el("b", { text: statLabel(approach.stat) + " ＋" + base, dataset: { stat: approach.stat } }),
-          el("small", { text: "成功 約" + odds.success + "%" }),
-          approach.id === bestId ? el("i.trpg-approach-best", { text: "おすすめ · いちばん成功しやすい", dataset: { test: "trpg-approach-best" } }) : null,
-          first ? el("i", { text: "初めての見せ場 · 盛り上がり＋1" }) : null,
+          el("small", { text: "成功 約" + odds.success + "% · ひと手間 約" + odds.mixed + "%" }),
+          approach.id === bestId ? el("i.trpg-approach-best", { text: "おすすめ", title: "いちばん成功しやすい", dataset: { test: "trpg-approach-best" } }) : null,
+          first ? el("i.trpg-approach-first", { text: "見せ場 ＋1", title: "初めて前に出る仲間。盛り上がり＋1" }) : null,
         ].filter(Boolean)),
       ]);
     });
@@ -976,7 +1018,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
   function pcCard() {
     const me = session.pc;
     return el("div.trpg-cover-pc", { dataset: { test: "trpg-cover-pc" } }, [
-      el("span.trpg-cover-pc-face", { "aria-hidden": "true" }, pcFace(me.seat, PLAYER_SEAT)),
+      el("span.trpg-cover-pc-face", { "aria-hidden": "true", dataset: { costume: String(hasFigure(me.seat, PLAYER_SEAT)) } }, pcFigure(me.seat, PLAYER_SEAT)),
       el("div.trpg-cover-pc-copy", [
         el("small", { text: name(PLAYER_SEAT) + " が演じる" }),
         el("strong", { text: me.name, dataset: { test: "trpg-cover-pc-name" } }), el("span", { text: me.title }),
@@ -997,7 +1039,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
       .some(a => (a.sheet || a.actor) === PLAYER_SEAT && a.stat === key)).map(check => check.title))];
     const strengths = stats => STATS.slice().sort((a, b) => stats[b] - stats[a]).slice(0, 2).map(statLabel).join("・");
     const board = el("div.trpg-builder", { dataset: { test: "trpg-builder" } });
-    let pop, nameInput;
+    let pop;
     const preset = () => builder.archetypes.find(a => a.id === draft.archetype);
     const spent = () => STATS.reduce((n, key) => n + draft.stats[key], 0);
     const refocus = test => { const node = pop?.box.querySelector('[data-test="' + test + '"]'); if (node && !node.disabled) node.focus({ preventScroll: true }); };
@@ -1011,21 +1053,18 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
             class: draft.archetype === a.id ? "selected" : "", "aria-pressed": String(draft.archetype === a.id),
             "aria-label": a.title + "、" + a.name + "。" + a.trait, dataset: { test: "trpg-archetype-" + a.id },
             onclick: () => {
-              const previous = preset();
-              draft.archetype = a.id; draft.stats = { ...a.stats };
-              if (!draft.name || draft.name === previous?.name) draft.name = a.name;
+                            draft.archetype = a.id; draft.stats = { ...a.stats };
+              draft.name = a.name;
               audio.play("tap"); render("trpg-archetype-" + a.id);
             },
-          }, [el("strong", { text: a.title }), a.recommended ? el("em.trpg-builder-recommend", { text: "はじめてならこれ" }) : null,
-            el("span", { text: "得意 " + strengths(a.stats) + " · 例の名前 " + a.name }),
+          }, [costumeUrl(scenario.id, PLAYER_SEAT, a.id) ? el("span.trpg-builder-origin-art", { "aria-hidden": "true" }, pcFigure(PLAYER_SEAT, PLAYER_SEAT, { role: a.id })) : null,
+            el("strong", { text: a.title + " " + a.name }), a.recommended ? el("em.trpg-builder-recommend", { text: "はじめてならこれ" }) : null,
+            el("span", { text: "得意 " + strengths(a.stats) }),
             el("small", { text: a.trait })].filter(Boolean))))]),
         el("section.trpg-builder-stats", [
-          el("div.trpg-builder-head", [el("h3", { text: "名前と能力" }),
+          el("div.trpg-builder-head", [el("h3", { text: preset().name + "の能力", dataset: { test: "trpg-pc-name" } }),
             button("？", "trpg-builder-help", () => { explain = !explain; render("trpg-builder-help"); },
               { class: "small trpg-help-button", title: "能力の説明", "aria-label": "能力の説明", "aria-pressed": String(explain) })]),
-          el("label.trpg-builder-name", [el("span", { text: "名前（" + (builder.nameMax || 6) + "文字まで）" }),
-            nameInput = el("input", { type: "text", value: draft.name, maxlength: String(builder.nameMax || 6), dataset: { test: "trpg-pc-name" },
-              oninput: event => { draft.name = event.currentTarget.value; syncConfirm(); } })]),
           advanced ? el("p.trpg-builder-points", { dataset: { test: "trpg-stat-points", left: String(left) }, "aria-live": "polite" },
             [el("strong", { text: "残り " + left + " 点" }), el("span", { text: " · 合計 " + builder.points + " 点、各 " + builder.min + "〜" + builder.max })])
             : el("p.trpg-builder-easy", { text: "能力は、選んだ役どころで決まります。数字が大きいほど得意" }),
@@ -1054,7 +1093,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
       let built;
       try { built = buildPc(scenario, draft); } catch { syncConfirm(); return; }
       build = { archetype: built.archetype, name: built.name, stats: built.stats };
-      session = new TrpgSession(scenario, { seed, profileId, pc: build, companions, warmStart });
+      pressed = []; session = recording(new TrpgSession(scenario, { seed, profileId, pc: build, companions, warmStart }));
       sheets = session.sheets;
       pop.close(); renderBody();
       root.querySelector('[data-test="trpg-build"]')?.focus({ preventScroll: true });
@@ -1077,7 +1116,9 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
   function sheetCard(seat) {
     const pc = sheets[seat], player = scenario.cast.find(c => seatOf(c.id) === seat), state = session.snapshot();
     const portraitId = player ? player.id : gm;
-    return el("article.trpg-sheet", { dataset: { test: "trpg-sheet-" + seat, npc: String(!player) } }, [
+    const figure = hasFigure(seat, portraitId);
+    return el("article.trpg-sheet", { dataset: { test: "trpg-sheet-" + seat, npc: String(!player), costume: String(figure) } }, [
+      figure ? el("span.trpg-sheet-costume", { "aria-hidden": "true" }, pcFigure(seat, portraitId, { shape: "full" })) : null,
       el("div.trpg-sheet-head", [
         el("span.trpg-sheet-face", { "aria-hidden": "true" }, pcFace(seat, portraitId)),
         el("div", [el("small", { text: player ? "PL " + name(player.id) : "GM " + name(gm) + " が兼任" }),
@@ -1126,7 +1167,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
         ? "場面ごとに、誰が・どの能力で動くかを宣言します。判定は20面ダイス二つの合計に、そのキャラクターの能力値を足します。30以上は成功、19〜29はひと手間、18以下は思わぬ出来事。どの結果でも物語は続きます。"
         : "判定は20面ダイス二つの合計に＋3。30以上は成功、19〜29はひと手間、18以下は思わぬ出来事。どの結果でも物語は続きます。" }),
       ...(Object.keys(sheets).length ? [el("p", { text: "仲間のキャラクターが初めて前に出ると、卓の盛り上がりが1上がります。能力値はキャラクターシートで確認できます。" })] : []),
-      ...(scenario.builder ? [el("p", { text: "表紙の「キャラクターを作る」で、自分が演じる役の出自・名前と能力値（合計" + scenario.builder.points + "点）を決められます。" })] : []),
+      ...(scenario.builder ? [el("p", { text: "表紙の「キャラクターを作る」で、自分が演じる役の出自と能力値（合計" + scenario.builder.points + "点）を決められます。" })] : []),
       head("札と盛り上がり"),
       el("p", { text: "共有する連携札は2枚。切り札を使うたび1枚使います。20のゾロ目（クリティカル）が出ると、1枚戻ります。" }),
       el("p", { text: "卓の盛り上がりは、うまくいった判定・思わぬ出来事・ゾロ目・仲間の見せ場・初めての相談・見立ての話し合いで上がります。3・6・8に届くたび、次の判定に勢い1つ（補正＋4、最大2つ）。" }),
@@ -1194,7 +1235,8 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
   if (typeof window !== "undefined") window.addEventListener?.("resize", fitRoomCrop);
   visibility();
   renderBody(); root.focus({ preventScroll: true });
-  if (tutorial) playTutorial();
+  if (resumed) log.push({ speaker: gm, text: "（しおりから、前回の続き）" });
+  else if (tutorial) playTutorial();
   return { finished, snapshot: () => session.snapshot(),
     destroy: () => finish(completed || { cancelled: true, scenarioId: scenario.id }), get disposed() { return disposed; } };
 }

@@ -1389,7 +1389,7 @@
         {
           "speaker": "rio",
           "face": "surprise",
-          "text": "報告？……ああ、この前店用にって卸した、NIGHTSIDEのサンプル分？"
+          "text": "報告？ ……ああ、この前店用にって卸した、NIGHTSIDEのサンプル分？"
         },
         {
           "speaker": "hajime",
@@ -1399,7 +1399,7 @@
         {
           "speaker": "rio",
           "face": "normal",
-          "text": "ふうん、もう出したんだ。……で、どうだった？苦情でも出た？"
+          "text": "ふうん、もう出したんだ。……で、どうだった？ 苦情でも出た？"
         },
         {
           "speaker": "",
@@ -1439,7 +1439,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "凛想さんはホースを口に運ぶのをやめ、無色の爪が添えられたペン先を書類の上で止めた"
+          "text": "凛想さんはホースを口に運ぶのをやめ、ペン先を書類の上で止めた"
         },
         {
           "speaker": "rio",
@@ -1494,12 +1494,12 @@
         {
           "speaker": "",
           "face": "",
-          "text": "クールな横顔の目尻がいつもよりやわらかく緩み"
+          "text": "クールな横顔の目尻が、いつもよりやわらかく緩んだ"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "凛想さんはそれをごまかすようにクリップボードで口元を隠した"
+          "text": "凛想さんはそれをごまかすように、クリップボードで口元を隠した"
         },
         {
           "speaker": "rio",
@@ -1567,19 +1567,19 @@
           "text": "ん、モルモットくん。袋の字、読んでた？"
         },
         {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "三口目で、喉に引っかかった葉です"
+          "speaker": "rio",
+          "face": "smug",
+          "text": "覗き見してる顔、ちょっと可愛かったよ"
         },
         {
           "speaker": "hajime",
-          "face": "normal",
-          "text": "名前は、まだ無かった"
+          "face": "surprise",
+          "text": "……三口目で、喉に引っかかった葉ですよね"
         },
         {
           "speaker": "rio",
           "face": "normal",
-          "text": "そう。同じ袋が、もう一度だけ戻ってきた"
+          "text": "覚えてたんだ。同じ袋が、もう一度だけ戻ってきた"
         },
         {
           "speaker": "rio",
@@ -1613,8 +1613,8 @@
         },
         {
           "speaker": "rio",
-          "face": "normal",
-          "text": "うん。ここだけの熱なら、ね"
+          "face": "smile",
+          "text": "よく見てるね。私の眉なんか"
         },
         {
           "speaker": "rio",
@@ -1634,22 +1634,12 @@
         {
           "speaker": "rio",
           "face": "normal",
-          "text": "欄は「条件つき」に書き換える"
-        },
-        {
-          "speaker": "rio",
-          "face": "normal",
-          "text": "出すのは、熱を守れると分かってから"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "分からないうちは、棚には上げない"
+          "text": "欄は「条件つき」に書き換える。熱を守れる店にだけ出す"
         },
         {
           "speaker": "rio",
           "face": "smile",
-          "text": "そういうこと。線の内側に、戻ってきただけだよ"
+          "text": "線の内側に、戻ってきただけだよ"
         },
         {
           "speaker": "",
@@ -1659,12 +1649,42 @@
         {
           "speaker": "rio",
           "face": "normal",
-          "text": "……今夜は、ここまで"
+          "text": "……はい。確かめ終わったから、君もどうぞ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "差し出されたホースの吸い口は、さっきまで彼女がくわえていたものだった"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "え、これ、そのまま……"
+        },
+        {
+          "speaker": "rio",
+          "face": "smug",
+          "text": "新しい吸い口、要る？ ……顔、赤いよ"
         },
         {
           "speaker": "rio",
           "face": "smile",
-          "text": "君は待ってくれたから、報告は短くていい"
+          "text": "冗談。私が先に吸ったから、君は安全ってだけ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "結局、新しい吸い口に替えてもらって、低い熱の一口を吸った"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……喉、引っかかりません"
+        },
+        {
+          "speaker": "rio",
+          "face": "smile",
+          "text": "でしょ。君は待ってくれたから、報告は短くていい"
         },
         {
           "type": "apply",
@@ -1710,12 +1730,7 @@
         {
           "speaker": "rio",
           "face": "normal",
-          "text": "君の言葉は、もう訳して載せてる"
-        },
-        {
-          "speaker": "rio",
-          "face": "normal",
-          "text": "喉の引っかかりも、熱の話も"
+          "text": "君の言葉は、もう訳して載せてる。喉の引っかかりも、熱の話も"
         },
         {
           "speaker": "rio",
@@ -1730,27 +1745,17 @@
         {
           "speaker": "rio",
           "face": "serious",
-          "text": "正しくても、書かない"
+          "text": "正しくても、書かない。名前を足した瞬間、君は書類の一人になる"
         },
         {
           "speaker": "rio",
-          "face": "normal",
-          "text": "名前を足した瞬間、君は、書類の一人になる"
-        },
-        {
-          "speaker": "rio",
-          "face": "normal",
-          "text": "ここにある顔は、書類にしない。それが、私のルール"
+          "face": "smug",
+          "text": "それに、腕のいい鼻は引き抜かれるからね。向こうに知られたら困る"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（最初に、名前は伏せるって言ってた）"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "（ペン先が、その約束の上で止まってる）"
+          "text": "（冗談みたいな声なのに、ペン先は欄から動かない）"
         },
         {
           "speaker": "rio",
@@ -1760,12 +1765,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "いらないです"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "言葉が向こうに届いていれば、俺はそれでいい"
+          "text": "いらないです。言葉が向こうに届いていれば、俺はそれでいい"
         },
         {
           "speaker": "rio",
@@ -1773,24 +1773,16 @@
           "text": "……そう。じゃあ、この欄は空白のまま返す"
         },
         {
-          "speaker": "rio",
-          "face": "smug",
-          "text": "空白の欄に、値段はつけない。それだけ"
-        },
-        {
           "speaker": "",
           "face": "",
           "text": "凛想さんは欄を一度なぞって、ペンに蓋をした"
         },
         {
-          "speaker": "rio",
-          "face": "normal",
-          "text": "名前は、この2階に置いておく"
-        },
-        {
-          "speaker": "rio",
-          "face": "smile",
-          "text": "それ以上は、売らないよ"
+          "type": "condition",
+          "condition_type": "lover",
+          "char_id": "rio",
+          "next_true": "name_lover",
+          "next_false": "name_plain"
         },
         {
           "type": "apply",
@@ -1798,7 +1790,48 @@
             "sense": 1
           }
         }
-      ]
+      ],
+      "branches": {
+        "name_plain": [
+          {
+            "speaker": "rio",
+            "face": "smug",
+            "text": "空白の欄に、値段はつけない。君の名前は、この2階に置いておく"
+          },
+          {
+            "speaker": "rio",
+            "face": "smile",
+            "text": "私だけが知ってればいいの。それ以上は、売らないよ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "surprise",
+            "text": "（……今の、仕事の話だよな）"
+          }
+        ],
+        "name_lover": [
+          {
+            "speaker": "rio",
+            "face": "smug",
+            "text": "空白の欄に、値段はつけない。恋人の名前なら、なおさら"
+          },
+          {
+            "speaker": "rio",
+            "face": "smile",
+            "text": "その名前を呼ぶのは、私だけで十分"
+          },
+          {
+            "speaker": "rio",
+            "face": "smile",
+            "text": "……ね、はじめくん"
+          },
+          {
+            "speaker": "hajime",
+            "face": "surprise",
+            "text": "（不意打ちの呼び方に、返事が一拍遅れた）"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "ch1_rio_unsigned",
@@ -1825,23 +1858,28 @@
         },
         {
           "speaker": "rio",
-          "face": "normal",
-          "text": "今日は、ペンが先に走りたがってる"
+          "face": "smug",
+          "text": "今夜の私、ペンが先に走りたがってる。止めてくれる？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "俺が、ですか"
+        },
+        {
+          "speaker": "rio",
+          "face": "serious",
+          "text": "署名だけ先にくれって紙が来てるの。ロットを動かすには、私の名前が要るらしい"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "先に吸うんじゃないんですか"
+          "text": "いつもは、先に吸うんじゃないんですか"
         },
         {
           "speaker": "rio",
-          "face": "serious",
-          "text": "そう。なのに、署名だけ先にくれって紙が来てるの"
-        },
-        {
-          "speaker": "rio",
-          "face": "serious",
-          "text": "ロットを動かすには、私の名前が要るらしい"
+          "face": "smile",
+          "text": "そう、それ。その一言が欲しかった"
         },
         {
           "speaker": "",
@@ -1859,14 +1897,9 @@
           "text": "……二口目で、甘いところが荒れてる。これ、通さない"
         },
         {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "サインは、しないんですね"
-        },
-        {
           "speaker": "rio",
           "face": "normal",
-          "text": "しない。吸ってないものに、私の名前は乗せない"
+          "text": "吸ってないものに、私の名前は乗せない"
         },
         {
           "speaker": "rio",
@@ -1876,12 +1909,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "俺も、味を見る前には出したくないです"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "tonariでも、同じです"
+          "text": "俺も、味を見る前には出したくないです。tonariでも、同じです"
         },
         {
           "speaker": "rio",
@@ -1889,9 +1917,24 @@
           "text": "ふうん。机が違うだけで、線は同じね"
         },
         {
+          "speaker": "",
+          "face": "",
+          "text": "蓋を外したままのペンが、こつん、と俺の額をつついた"
+        },
+        {
           "speaker": "rio",
-          "face": "normal",
-          "text": "じゃあ今日の契約は、それ。線の手前で、止める"
+          "face": "smug",
+          "text": "いい子。止めてくれたお礼"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……インク、ついてませんよね"
+        },
+        {
+          "speaker": "rio",
+          "face": "smile",
+          "text": "ついてたら、君に私のサインが入ったってことで"
         },
         {
           "speaker": "",
@@ -1901,32 +1944,17 @@
         {
           "speaker": "rio",
           "face": "normal",
-          "text": "……待たせてごめんね"
-        },
-        {
-          "speaker": "rio",
-          "face": "smile",
-          "text": "魔女は、先に肺で確かめる人なの"
+          "text": "……待たせてごめんね。魔女は、先に肺で確かめる人なの"
         },
         {
           "speaker": "hajime",
           "face": "smile",
-          "text": "待っててよかったです"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
           "text": "その順番だから、信用できます"
         },
         {
           "speaker": "rio",
           "face": "smile",
           "text": "……今の順番は、二人だけの話にしておく"
-        },
-        {
-          "speaker": "rio",
-          "face": "normal",
-          "text": "レポートは、荒れてる、で足りる"
         },
         {
           "type": "apply",
@@ -1957,12 +1985,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "はい。店には出してません"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "自分の口だけで、吸いました"
+          "text": "はい。店には出さず、自分の口だけで吸いました"
         },
         {
           "speaker": "rio",
@@ -1972,22 +1995,37 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "一口目は、紅茶の香りが先に来ました"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "二口目で甘さが下がって、喉が楽でした"
+          "text": "一口目は、紅茶の香りが先に来ました。二口目で甘さが下がって、喉が楽でした"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "凛想さんはペンを持ったまま、まだ紙には書いていない"
+          "text": "凛想さんは椅子ごと寄ってきて、俺の顔を下から覗き込んだ"
+        },
+        {
+          "speaker": "rio",
+          "face": "smug",
+          "text": "……盛ってない顔か、確かめてるの。動かないで"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "ち、近いです"
+        },
+        {
+          "speaker": "rio",
+          "face": "smile",
+          "text": "嘘をつく子は、ここで目をそらすんだよ"
+        },
+        {
+          "speaker": "rio",
+          "face": "smile",
+          "text": "……うん、合格"
         },
         {
           "speaker": "rio",
           "face": "serious",
-          "text": "……楽、ね。熱を上げすぎなかった、ってことだよ"
+          "text": "楽、ってことは、熱を上げすぎなかったってこと"
         },
         {
           "speaker": "rio",
@@ -2012,22 +2050,22 @@
         {
           "speaker": "rio",
           "face": "serious",
-          "text": "君の口が、袋の先でどう変わったか"
-        },
-        {
-          "speaker": "rio",
-          "face": "normal",
-          "text": "それだけ、書いておく"
+          "text": "君の口が、袋の先でどう変わったか。それだけ、書いておく"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（お客さんの顔じゃなくて、自分の口の話でよかった）"
+          "text": "（お客さんの顔じゃなくて、俺の口の話を書いてくれるんだ）"
         },
         {
           "speaker": "rio",
           "face": "smile",
           "text": "……十分。次も、盛らずに持ってきて"
+        },
+        {
+          "speaker": "rio",
+          "face": "smug",
+          "text": "盛ったら、また覗き込むからね"
         },
         {
           "speaker": "",
@@ -2063,52 +2101,77 @@
         {
           "speaker": "",
           "face": "",
-          "text": "伸ばした指を、凛想さんが目で止めた"
+          "text": "拾おうと伸ばした指を、凛想さんの手がつかんで止めた"
         },
         {
           "speaker": "rio",
           "face": "serious",
-          "text": "……見た？"
-        },
-        {
-          "speaker": "rio",
-          "face": "serious",
-          "text": "今の、紙の匂いが葉に移る"
+          "text": "……触らないで"
         },
         {
           "speaker": "hajime",
-          "face": "normal",
-          "text": "移る前に、どかせば"
+          "face": "surprise",
+          "text": "す、すみません"
         },
         {
           "speaker": "rio",
           "face": "normal",
-          "text": "だめ。落ちた時点で、今日の鼻には分からない"
+          "text": "君が悪いんじゃない。今の、紙の匂いが葉に移る"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "落ちた時点で、今日の鼻には分からない"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "凛想さんは袋の口を閉じ、落ちた紙も脇へ置いた"
+          "text": "凛想さんは俺の手を離さないまま、片手で袋の口を閉じた"
         },
         {
           "speaker": "rio",
           "face": "serious",
-          "text": "葉の匂いなのか、紙の匂いなのか"
-        },
-        {
-          "speaker": "rio",
-          "face": "normal",
-          "text": "混ざったものは、判断しない"
+          "text": "葉の匂いなのか、紙の匂いなのか。混ざったものは、判断しない"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "胸につけておけば、落ちなかったんじゃ"
+          "text": "あの……手"
+        },
+        {
+          "speaker": "rio",
+          "face": "smug",
+          "text": "ん？ ……ああ、つかんだままだった"
+        },
+        {
+          "speaker": "rio",
+          "face": "smile",
+          "text": "紙に触ってないか、確かめてたの。……そういうことにしといて"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "手を離すかわりに、凛想さんは俺の指先へ鼻を寄せた"
         },
         {
           "speaker": "rio",
           "face": "normal",
-          "text": "つけないの。シャツに残ると、次の袋まで連れて歩く"
+          "text": "……うん、移ってない。君の指は、今日も無臭"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（指より、顔のほうがよっぽど熱い）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "胸ポケットに挿しておけば、落ちなかったんじゃ"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "挿さないの。シャツに残ると、次の袋まで連れて歩くから"
         },
         {
           "speaker": "rio",
@@ -2116,19 +2179,9 @@
           "text": "紙は、この板の上だけ"
         },
         {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "（試香紙は、クリップボードに挟むものだった）"
-        },
-        {
           "speaker": "rio",
           "face": "serious",
-          "text": "今日のこの袋は、無し"
-        },
-        {
-          "speaker": "rio",
-          "face": "normal",
-          "text": "次に嗅ぐとき、別の一口にする"
+          "text": "今日のこの袋は、無し。次に嗅ぐとき、別の一口にする"
         },
         {
           "speaker": "",
@@ -2159,12 +2212,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "凛想さんは袋を三つ吸ったあと、その瓶に鼻を寄せた"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "鼻を瓶に寄せたまま、少しのあいだ動かなかった"
+          "text": "凛想さんは袋を三つ吸ったあと、その瓶に鼻を寄せたまま動かなかった"
         },
         {
           "speaker": "rio",
@@ -2184,22 +2232,42 @@
         {
           "speaker": "rio",
           "face": "normal",
-          "text": "同じ匂いに慣れたままじゃ、通したのか止めたのか、私にも分からない"
-        },
-        {
-          "speaker": "rio",
-          "face": "normal",
-          "text": "豆を一回嗅いで、まだ甘いのが残るなら"
+          "text": "同じ匂いに慣れた鼻じゃ、通したのか止めたのか、私にも分からない"
         },
         {
           "speaker": "rio",
           "face": "serious",
-          "text": "今日の判断は、信用しないの"
+          "text": "豆を嗅いでも甘いのが残るなら、今日の判断は信用しないの"
         },
         {
           "speaker": "hajime",
           "face": "normal",
           "text": "（試香の合間に、豆で鼻を戻す人なんだ）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "凛想さんは椅子の背にもたれて、ゆっくり肩を回した"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "ん……三袋続くと、さすがに首にくるね"
+        },
+        {
+          "speaker": "rio",
+          "face": "smug",
+          "text": "揉みましょうか、とか言わないの？ ……冗談だよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "い、言ってません"
+        },
+        {
+          "speaker": "rio",
+          "face": "smile",
+          "text": "知ってる。言いそうな顔はしてた"
         },
         {
           "speaker": "",
@@ -2224,12 +2292,17 @@
         {
           "speaker": "rio",
           "face": "normal",
-          "text": "……君も、鼻が疲れたら席を立っていい"
+          "text": "……君も、鼻が疲れたら席を立っていい。無理に最後まで吸わなくていいから"
         },
         {
           "speaker": "rio",
           "face": "normal",
-          "text": "無理に最後まで吸わなくていいから"
+          "text": "ただ、帰るときは声をかけて"
+        },
+        {
+          "speaker": "rio",
+          "face": "smile",
+          "text": "黙っていなくなられるの、ちょっと寂しいから"
         },
         {
           "type": "apply",
@@ -2285,32 +2358,34 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "待ってから書けばよかった、ってことですか"
+          "text": "凛想さんが急ぐなんて、珍しいですね"
         },
         {
           "speaker": "rio",
           "face": "normal",
-          "text": "そういうこと。先に肺、あとからペン"
-        },
-        {
-          "speaker": "rio",
-          "face": "smile",
-          "text": "順番を逆にしたのは、私の方"
+          "text": "朝のうちに、机を空けたかったの。今夜は来る日だと思ったから"
         },
         {
           "speaker": "hajime",
-          "face": "normal",
-          "text": "消したあとは、どうするんですか"
+          "face": "surprise",
+          "text": "……誰が、ですか"
+        },
+        {
+          "speaker": "rio",
+          "face": "smug",
+          "text": "さあ。モルモットは、ほかにも飼ってるかもよ？"
+        },
+        {
+          "type": "condition",
+          "condition_type": "lover",
+          "char_id": "rio",
+          "next_true": "recheck_lover",
+          "next_false": "recheck_plain"
         },
         {
           "speaker": "rio",
           "face": "normal",
-          "text": "今夜は書かない"
-        },
-        {
-          "speaker": "rio",
-          "face": "serious",
-          "text": "まだ決めない、という印にしておく"
+          "text": "でも、先に肺、あとからペン。順番を逆にしたのは、私の方"
         },
         {
           "speaker": "",
@@ -2320,12 +2395,12 @@
         {
           "speaker": "rio",
           "face": "normal",
-          "text": "……急いだ自分も、残しておく"
+          "text": "今夜は書かない。まだ決めない、という印にしておく"
         },
         {
           "speaker": "rio",
           "face": "smile",
-          "text": "消した線が見えるようにね"
+          "text": "……急いだ自分も、残しておく。消した線が見えるようにね"
         },
         {
           "type": "apply",
@@ -2333,7 +2408,33 @@
             "sense": 1
           }
         }
-      ]
+      ],
+      "branches": {
+        "recheck_plain": [
+          {
+            "speaker": "rio",
+            "face": "smile",
+            "text": "……嘘。君の試香の分、夜を空けておきたかっただけ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（からかわれてるのに、うれしいのが悔しい）"
+          }
+        ],
+        "recheck_lover": [
+          {
+            "speaker": "rio",
+            "face": "smile",
+            "text": "……嘘。恋人が来る夜くらい、机を片付けておきたいでしょ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（そんな理由で急ぐ凛想さんを、初めて見た）"
+          }
+        ]
+      }
     }
   ]
 }

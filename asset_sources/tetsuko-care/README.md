@@ -10,6 +10,7 @@ Claude は画像を生成しない。下の「Codex へ渡す文」をそのま�
 仕様と遊びの正本は [docs/spec/tetsuko_time.md](../../docs/spec/tetsuko_time.md)。画面の設計（v2）は同じ文書の「6. UI の本格化（v2）」。
 
 Codex への依頼（2026-11-06）: 背景 #2689・猫のしぐさ #2690・小物と UI 部品 #2691。原画はこのフォルダの `originals/` に届く。
+2026-11-11 の追加の依頼（CSS で描いている部品をなくす・TKT25〜26）は、このファイルの末尾の「CSS で描いている部品をなくす」。
 
 ## 方針（なぜこの見た目か）
 
@@ -259,4 +260,95 @@ TKT-UI08 ui_button.png and ui_button_pressed.png 384x384 each — A round cream 
 
 元の原画の SHA-256 は [原画生成記録](originals/GENERATION.md) の表と同じ（例: `prop_bed.png` `0c036f35…`、`prop_ball.png` `c17b8e7b…`）。
 `remake/js/minigames/tetsuko-art.js` の `ART_READY.props` に box・ball・cushion・scratcher・tunnel・bed・plate・teaser・brush を書いた。lap（はじめの膝・B）は未生成なので CSS のまま。
+
+## CSS で描いている部品をなくす（2026-11-11・TKT25〜26）
+
+オーナー「CSS丸出しのパーツは無くしたい　代わりにイシューにコーデックスで画像生成依頼を投げて何か生成して」（2026-11-11）。
+
+Codex への依頼: UI の部品 #3213（TKT25）・場面と猫 #3214（TKT26）。
+
+手応えの作り直し（[仕様 §10](../../docs/spec/tetsuko_time.md)）の後も、画面の部品の多くは CSS の丸・四角・グラデーションと、細い線の SVG アイコンで描いている。採用済みの絵は小物9点（TKT13）だけ。残りを、**専用テーマ「茶トラと段ボール」**（仕様 §7）の手描きの部品と、猫・場面の絵に置き換える。
+
+### いま CSS・SVG で描いている物と、置き換える絵
+
+| 画面の物（CSS のクラス） | 置き換える絵 | 依頼 |
+|---|---|---|
+| 手元の道具・上の道具・おねだり・「？」の中のアイコン（`ICONS` の SVG） | `ui_tk_icons.png` | TKT25 |
+| 手元の道具の丸い札（`.tt-act-token`）・写真のカメラ（`.tt-shot`） | `ui_tk_token*.png` | TKT25 |
+| 上の道具の札（`.tt-tool`）・帰る | `ui_tk_tab*.png` | TKT25 |
+| ごきげんのハート（`.tt-heart` の SVG）とハートの台（`.tt-joy`） | `ui_tk_heart*.png`・`ui_tk_pill.png` | TKT25 |
+| おねだりの吹き出し（`.tt-wish`） | `ui_tk_wish.png` | TKT25 |
+| 反応の帯（`.tt-caption`。左端の茶トラのしま） | `ui_tk_caption.png` | TKT25 |
+| 題の札（`.tt-logo`。折れ耳・肉球の丸・しま） | `ui_tk_title.png` | TKT25 |
+| 小さな粒（♥・✦・♪ の文字、汗・毛・肉球・喉の波の CSS） | `ui_tk_fx.png` | TKT25 |
+| もようがえのトレー（`.tt-drawer`）・小物の札（`.tt-item`）・手帳の札（`.tt-card`） | `ui_tk_tray.png`・`ui_tk_card.png` | TKT25（B） |
+| あそびかたの紙（`.tt-help-card`） | `ui_tk_panel.png` | TKT25（B） |
+| てつこ手帳の見開き（`.tt-book-spread`）・写真の額（`.tt-polaroid`）・テープ | `ui_tk_book*.png`・`ui_tk_photo.png`・`ui_tk_tape.png` | TKT25（B） |
+| 段ボールの外枠（SVG）・入る時の箱のふた（`.tt-intro-flap`）・封のテープ | `ui_tk_frame.png`・`ui_tk_flap.png`・`ui_tk_packtape.png` | TKT25（B） |
+| はじめの膝（`.tt-lap`。青い楕円） | `prop_lap.png`（TKT-PROP10） | TKT26 |
+| トンネルから出るしっぽ（`.tt-prop-tail`。しまの四角） | `prop_tunnel_tail.png` | TKT26 |
+| 跳ぶ・空振り・鳴く・つつく（立ち絵を CSS で縮めて傾けている） | `cat_leap`・`cat_flop`・`cat_mew`・`cat_poke` | TKT26 |
+| 歩く・振り返る・伸び（#2690 の B 段・未生成） | `cat_walk_a`・`cat_walk_b`・`cat_lookback`・`cat_stretch` | TKT26（#2690 から移す） |
+| 香箱・狙う・前足・抱える・毛づくろい・あくび・へそ天・すりすり（へそ天は今、立ち絵を上下逆さにしている） | #2690 の A 段の候補（PR #2715） | Claude が検品して採否を決める（背景のマゼンタのずれは Claude 側で抜けるので、そのための作り直しは頼まない） |
+| 裏口の壁・戸・ベンチ・地面（`.tt-set`） | `bg_mukai_backdoor_{day,night}`（#2689・候補は PR #2695） | 候補が 1672×941 で、背景の規格（生成 2048×1152 以上・拡大しない）に届かず止まっている。オーナー判断待ち |
+
+**絵にしない物**: 擬音（「ごろごろ」など）・数字・名前・反応の文（コードの文字）、猫の足元の影・とっておきの光（光の表現）、動き（跳ぶ・揺れる・ハートが飛ぶ）。
+
+### UI の部品 TKT25（茶トラと段ボール）
+
+保存名は `ui_tk_*.png`（受け取り後、`assets/ui/tetsuko/` と `remake/img/ui/tetsuko/ui_tk_*.webp`。`tetsuko-art.js` の `ART_READY.ui` に `tk_icons` のように書く）。大きさは画面の大きさの約2倍。九分割の物は、飾りを縁の帯の中だけに置き、真ん中は無地で均一にする。
+
+参照画像（毎回・役割を書く）: ①線と段ボールの描き方 `assets/ui/tetsuko/prop_box.png`（採用済みの小物。同じ描き手）、②色と線 `assets/sprites/characters/tetsuko/chr_tetsuko_normal.png`（茶トラの橙・胸の白・焦げ茶の輪郭）。
+
+```
+ノベルゲーム「水煙前線」の、看板猫てつこと遊ぶミニゲーム画面のUI部品を1枚だけ描いてください。
+画面のテーマは「茶トラと段ボール」です。色は、てつこ本人（茶トラの橙・胸の白・輪郭の焦げ茶・鼻の桃色）と段ボールから取ります。
+添付①は同じ画面に置いてある採用済みの段ボール箱（線と段ボールの描き方の正本）、②はてつこの立ち絵（色と線の正本）です。
+
+STYLE: hand-drawn game UI in the same artist's hand as the attached cardboard box and Tetsuko sprite. Cream paper #fff5e4 surfaces with thick confident dark brown #3b2416 outlines (about 6 px at this size), tabby orange #f08a2e and deep orange #c25e1c accents, kraft cardboard #c9965c with faint corrugation and fiber, the back-door blue-grey #4e6b78 only where asked, and a touch of nose pink #f39aa6. Flat colors with one or two clean cel-shadow steps, light from the upper left. Warm, cozy and a little handmade, like stickers and cut cardboard. No lavender, no smoke curls, no glossy plastic, no glow, no airbrush gradients, no 3D render, no photo texture.
+Never bake in any text, letters, digits, logo or watermark (the game writes all text). No cat face drawn inside the parts unless asked.
+FORMAT: flat and front-facing. Plain solid magenta #FF00FF background around the part (the game keys it out); keep the magenta exactly #FF00FF. No drop shadow outside the part. For nine-slice parts, keep every decoration inside the stated border band, keep straight edges parallel to the canvas, and keep the center plain and evenly textured.
+
+PART: （下の一覧から1つを貼る）
+```
+
+```
+TK-UI01 ui_tk_icons.png 1536x512 — A sheet of twelve simple icons in a 6 x 2 grid of 256 px cells, each icon centered in its cell with plenty of empty magenta between cells. Thick dark brown outlines with tabby orange and cream fills, the same look in every cell. Top row, left to right: an open hand palm (petting), a cat teaser wand with a fluffy feather tip, a cat slicker brush with a wooden handle, a small white dish with a treat, an open cardboard box (rearranging), a small notebook with a paw-print stamp on the cover. Bottom row: a small instant camera, a simple back door with a small window, a heart, a round thought bubble with three dots inside, a fingertip gently tapping a small box, a person sitting on a bench seen from the side (sitting quietly). No text.
+TK-UI02 ui_tk_token.png, ui_tk_token_pressed.png and ui_tk_token_active.png 384x384 each — A round button token about 320 px across, centered. Normal: cream paper face, thick dark brown rim, a solid dark brown "drop" under the bottom edge so it looks like a thick sticker standing up. Pressed: the same token pushed down, the drop almost gone. Active (the tool in hand): the face filled tabby orange with a few soft stripes near the rim, and two small folded cat ears on the top edge, like Tetsuko's head seen from the front. Plain center in all three (the game puts an icon on it). Make three images with exactly the same size and position.
+TK-UI03 ui_tk_tab.png, ui_tk_tab_pressed.png and ui_tk_tab_door.png 512x384 each, nine-slice (72 px border on all sides) — A rounded-rectangle paper tab: cream face, thick dark brown outline, a solid dark brown drop under the bottom edge. Pressed: pushed down, drop almost gone. Door: the same tab painted like an old blue-grey #4e6b78 metal back door with a few scuffs. Plain center.
+TK-UI04 ui_tk_heart.png and ui_tk_heart_empty.png 160x160 each — A plump hand-drawn heart about 140 px wide, thick dark brown outline. Full: warm pink-red fill with one small highlight. Empty: exactly the same outline and position, cream fill. The game reveals the full heart over the empty one from the bottom up, so both must line up perfectly.
+TK-UI05 ui_tk_pill.png 512x160, nine-slice (72 px left and right, 56 px top and bottom) — A rounded pill-shaped cream holder with a thick dark brown outline and a dark brown drop under it, for a row of hearts. Plain inside.
+TK-UI06 ui_tk_wish.png 384x320 — A round cream speech bubble that a cat "thinks" with, thick dark brown outline, a short pointed tail at the bottom right, a soft drop under it. Plain inside (the game puts an icon in it).
+TK-UI07 ui_tk_caption.png 1536x256, nine-slice (left 112 px, right 56 px, top and bottom 56 px) — A long cream paper strip with rounded corners and a thick dark brown outline, a dark brown drop under it, and on the left end a band of tabby orange and deep orange stripes (the band fits inside the left 112 px). Plain center for one line of text.
+TK-UI08 ui_tk_title.png 768x224 — A blank title plate: a rounded cream plate with a thick dark brown outline and drop, two small folded tabby cat ears sticking up from the top edge, a round tabby orange medallion with a cream paw print at the left end (inside the left 200 px), and a thin band of tabby stripes along the bottom edge. The middle stays plain (the game writes the title).
+TK-UI09 ui_tk_fx.png 1024x512 — A sheet of eight small effect marks in a 4 x 2 grid of 256 px cells, each centered, thick dark brown outlines: a small pink heart, a four-point yellow sparkle, a cream music note, a light blue sweat drop, a little tuft of orange and white cat fur, a cream paw print, three short curved lines like a purring vibration, a small grumpy puff of air. No text, no letters.
+TK-UI10 (B) ui_tk_tray.png 1600x400, nine-slice (96 px left and right, 80 px top and bottom) — A shallow open cardboard tray seen from above, kraft cardboard with a dark brown outline and visible corrugated edges, plain flat bottom inside.
+TK-UI11 (B) ui_tk_card.png 384x384, nine-slice (64 px) — A small cream paper card with rounded corners, thick dark brown outline and a small drop. Plain center.
+TK-UI12 (B) ui_tk_panel.png 1536x1024, nine-slice (112 px) — A large cream paper sheet with rounded corners, thick dark brown outline and drop, a few faint paper fibers. Plain center.
+TK-UI13 (B) ui_tk_book.png 2048x1024, nine-slice (128 px), and ui_tk_book_spine.png 96x1024 — Book: an open notebook lying flat, kraft cardboard cover showing as a border around two cream pages, faint ruled lines, no spine in the middle (keep the center plain). Spine: only the middle binding strip, tabby orange and deep orange cloth stripes with a dark brown outline, seamless when tiled vertically. Make two images.
+TK-UI14 (B) ui_tk_photo.png 768x896 and ui_tk_tape.png 512x160 — Photo: the white border of an instant photo, wider at the bottom, warm white with a dark brown outline; the window inside is plain solid magenta #FF00FF. Tape: a torn piece of kraft paper tape, slightly see-through looking, jagged ends. Make two images.
+TK-UI15 (B) ui_tk_frame.png 1024x576, nine-slice (48 px) — A window cut out of a cardboard sheet: a 48 px band of kraft cardboard around the edge with rounded inner corners, the cut edge showing the wavy corrugated layer; the whole inside is plain solid magenta #FF00FF.
+TK-UI16 (B) ui_tk_flap.png 1024x1152 and ui_tk_packtape.png 256x1152 — Flap: one closed cardboard box flap filling the image, kraft cardboard with fiber, a faint stamped paw print, no text. Tape: a vertical strip of shiny-free brown packing tape, seamless when tiled vertically. Make two images.
+```
+
+### 場面と猫 TKT26
+
+- 膝・しっぽ: 下の文。参照は①画風 `assets/sprites/characters/tetsuko/chr_tetsuko_normal.png`、膝は②服の色 `assets/sprites/characters/hajime/chr_hajime_normal.png`（服の色だけ）、しっぽは②トンネル `assets/ui/tetsuko/prop_tunnel.png`（採用済み。奥の口の向きと大きさを合わせる）。
+- 猫のしぐさ: 上の「猫のしぐさ TKT-CAT01〜12」の共通の文（参照の3枚と STYLE STANDARD・IDENTITY・FORMAT）をそのまま使い、POSE だけ下の物を貼る。B 段の TKT-CAT09〜12 も同じ文で頼む。
+
+```
+TK-SC01 prop_lap.png 2048x768 — First-person view looking down at your own two knees while sitting on a bench, wearing dark work trousers in the same colors as the attached hajime sprite (use it for clothing colors only). Only the knees and the tops of the thighs side by side, a soft dip between them where a cat can curl up; no hands, no cat, no bench. Same artist's hand as the attached Tetsuko sprite (dark brown outlines, two to three cel-shadow steps). Plain solid magenta #FF00FF background, no floor, no text.
+TK-SC02 prop_tunnel_tail.png 512x512 — Only Tetsuko's thick striped orange tail, sticking out of a round dark opening and curling upward at the tip, as if she is hiding inside a cat tunnel. Match her tail stripes in the attached sprite. Draw the tail only from the point where it leaves the opening; no tunnel, no body. Plain solid magenta #FF00FF background.
+```
+
+```
+TKT-CAT13 cat_leap.png — Mid-air pounce seen from the side, facing right: the whole body stretched long, front legs reaching forward and up with toes spread, hind legs extended back, tail streaming behind, eyes wide and focused, ears forward. No ground.
+TKT-CAT14 cat_flop.png — Just landed after missing a pounce: sprawled on her belly, front legs splayed forward, hind legs tucked, looking back over her shoulder with a slightly ruffled, "that didn't happen" expression. Side view facing right.
+TKT-CAT15 cat_mew.png — Sitting upright and looking up at the viewer, mouth open in a short soft meow (small fangs, pink tongue), ears up, eyes round.
+TKT-CAT16 cat_poke.png — Sitting and lifting one front paw toward the viewer to poke, the pink paw pads clearly visible, head tilted a little, eyes curious.
+```
+
+**納品**（TKT25・TKT26 とも）: 候補の原画を `asset_sources/tetsuko-care/originals/` に置き、PR にする。生成の指示と参照画像のパス・SHA-256 を `originals/GENERATION.md` に追記する。1回の生成で1点（アイコン・粒のシートは1枚で12個・8個）。**透過・切り分け・ゲームへの組み込みはしない**（Claude が選び、マゼンタを抜いて組み込む）。
+
+**受け取った後（Claude）**: マゼンタを抜く（`remake/tools/build_tetsuko_art.py` の流儀）→ `assets/ui/tetsuko/` と WebP → `ART_READY` に名前を書き、その部品の CSS の描画を消す（`[data-art-ui~="tk_…"]` の時だけ絵を使う。届いていない物は今の CSS のまま動く）→ PC とスマホ横で撮って確かめる。スマホ横の下限（文字 実寸11px・押せる所 実寸38px）は絵にしても守る。
 
