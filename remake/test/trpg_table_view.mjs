@@ -229,16 +229,19 @@ test('seat rail measurement waits for preview resize outputs', async () => {
   assert.match(seatLoop, /assert\(seats\.visible&&seats\.inside,/);
   const previewSource = await readFile(new URL('../js/trpg/preview.js', import.meta.url), 'utf8');
   const listeners = {}, styles = new Map();
-  const stage = { style: { setProperty: (k, v) => styles.set(k, v), getPropertyValue: k => styles.get(k) },
-    getBoundingClientRect: () => ({ width: 1280 * Number(styles.get('--k')) }) };
+  const stage = { style: { setProperty: (k, v) => styles.set(k, v), getPropertyValue: k => styles.get(k), removeProperty: k => styles.delete(k) },
+    dataset: {}, getBoundingClientRect: () => ({ width: 1280 * Number(styles.get('--k')) }) };
   const rotate = { hidden: true };
   const port = vm.createContext({ URL, URLSearchParams,
     innerWidth: 1280, innerHeight: 720,
-    document: { getElementById: id => id === 'stage' ? stage : id === 'trpg-rotate' ? rotate : {}, querySelector: () => null },
-    window: { addEventListener: (event, fn) => { listeners[event] = fn; } },
+    document: { documentElement: { dataset: {} }, getElementById: id => id === 'stage' ? stage : id === 'trpg-rotate' ? rotate : {}, querySelector: () => null },
+    // The preview fits with the game's shared core/stage-fit.js, which reads the window's size.
+    window: { addEventListener: (event, fn) => { listeners[event] = fn; }, get innerWidth() { return port.innerWidth; },
+      get innerHeight() { return port.innerHeight; }, get visualViewport() { return port.visualViewport; } },
     matchMedia: () => ({ matches: reducedMotion }), location: { href: 'https://example.invalid/remake/trpg-preview.html', search: '' }, history: { replaceState() {} } });
   const preview = new vm.SourceTextModule(previewSource, { context: port });
-  await preview.link(() => new vm.SyntheticModule(['mountTrpgCollection'], function () {
+  const stageFit = new vm.SourceTextModule(await readFile(new URL('../js/core/stage-fit.js', import.meta.url), 'utf8'), { context: port });
+  await preview.link(specifier => specifier.endsWith('core/stage-fit.js') ? stageFit : new vm.SyntheticModule(['mountTrpgCollection'], function () {
     this.setExport('mountTrpgCollection', () => ({ snapshot() {}, audioSnapshot() {}, loaded: true }));
   }, { context: port }));
   await preview.evaluate();
