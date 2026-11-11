@@ -100,7 +100,8 @@ const ART_FILES = Object.freeze({
   dust: [1, 2, 3].map(i => `ui/camel_race/world/dust-${i}.webp`),
   // 門の幕の字（CR-WD09）と、手前を流れる旗の柱（CR-WD06）。#3217・2026-11-11 採用。
   words: { START: "ui/camel_race/world/word-start.webp", FINISH: "ui/camel_race/world/word-finish.webp" },
-  flag: "ui/camel_race/world/fg-flagpole.webp",
+  // キーの名前に flag を使わないこと（ngplus_carry.mjs が、flag という名前に文字列を入れた所をセーブのフラグとして拾う）。
+  pole: "ui/camel_race/world/fg-flagpole.webp",
   // 走路の砂（CR-WD04・#3217・2026-11-11 採用）。640×226 で横につながるタイル。読めなければコードで描く砂。
   sand: "ui/camel_race/world/ground-track.webp",
 });
@@ -133,11 +134,11 @@ export function loadCamelArt() {
   // 門の字は1枚ずつ（読めた字だけ絵、読めない字は従来の文字）。旗の柱は読めなければ立てない。
   const words = Promise.all(Object.entries(ART_FILES.words).map(([word, rel]) => load(rel).then(image => [word, image], () => [word, null])))
     .then(entries => Object.fromEntries(entries.filter(([, image]) => image)));
-  const flag = load(ART_FILES.flag).catch(() => null);
+  const pole = load(ART_FILES.pole).catch(() => null);
   const sand = load(ART_FILES.sand).catch(() => null);
-  artTask ||= Promise.all([Promise.all(ART_FILES.camel.map(load)), load(ART_FILES.jockey), load(ART_FILES.suv), load(ART_FILES.wheel), load(ART_FILES.track), balloon, dust, words, flag, sand])
-    .then(([camel, jockey, suv, wheel, track, balloonImage, dustImages, wordImages, flagImage, sandImage]) => ({ camel, jockey, suv, wheel, track, balloon: balloonImage, dust: dustImages,
-      words: wordImages, flag: flagImage, ground: groundTiles(sandImage), skins: camelSkins(camel) }))
+  artTask ||= Promise.all([Promise.all(ART_FILES.camel.map(load)), load(ART_FILES.jockey), load(ART_FILES.suv), load(ART_FILES.wheel), load(ART_FILES.track), balloon, dust, words, pole, sand])
+    .then(([camel, jockey, suv, wheel, track, balloonImage, dustImages, wordImages, poleImage, sandImage]) => ({ camel, jockey, suv, wheel, track, balloon: balloonImage, dust: dustImages,
+      words: wordImages, pole: poleImage, ground: groundTiles(sandImage), skins: camelSkins(camel) }))
     .catch(() => null);
   return artTask;
 }
@@ -1087,8 +1088,8 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
   }
   /** 手前の旗の柱（CR-WD06）: スタートの少し手前とゴールの先に立ち、走路より速く流れて速さの手がかりになる。 */
   function drawForegroundFlags(camX) {
-    if (!art?.flag || !race) return;
-    const image = art.flag, k = FLAG_ART.scale, w = image.width * k, h = image.height * k;
+    if (!art?.pole || !race) return;
+    const image = art.pole, k = FLAG_ART.scale, w = image.width * k, h = image.height * k;
     for (const m of FLAG_ART.at.map(at => at < 0 ? at : race.length + at)) {
       const x = PLAYER_SCREEN_X + (m - camX) * PX_PER_M * FLAG_ART.parallax;
       if (x < -w || x > W + w) continue;
