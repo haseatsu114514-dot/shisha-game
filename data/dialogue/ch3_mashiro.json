@@ -44,6 +44,26 @@
           "text": "じゃあ俺は、いつもの葉で待ってみる"
         },
         {
+          "speaker": "mashiro",
+          "face": "yawn",
+          "text": "……ふぁ。ごめんね。待つ時間って、僕、すぐ眠くなっちゃうの"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "寝ててもいいよ。鳴ったら起こすから"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "ほんと？ ……じゃあ、はじめくんの声で起きるねぇ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "タイマーの音より、そっちのほうが、びっくりしないから"
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "二人でタイマーを並べた。早く終わった方が、遅い方のお茶を入れた。"
@@ -52,6 +72,16 @@
           "speaker": "mashiro",
           "face": "normal",
           "text": "競争にしないと、待つ時間までおいしいねぇ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "次も、並べてやろうか"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "うん。はじめくんのタイマーの場所、僕の隣に空けとくねぇ"
         },
         {
           "type": "apply",
@@ -1062,7 +1092,7 @@
         {
           "speaker": "mashiro",
           "face": "smile",
-          "text": "覚えてるよぉ。軽いのも、重いのも、隣で待てるのが好きなの"
+          "text": "覚えてるよぉ。軽いのも重いのも、どっちも、ちゃんと待てる葉だから"
         },
         {
           "speaker": "hajime",
@@ -1073,11 +1103,6 @@
           "speaker": "mashiro",
           "face": "normal",
           "text": "……うん。今日は吸わなくていい。待つだけで、ここにいるから"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "二つのタイマーが、少しずれて鳴った。先に鳴った方が、カップへ手を伸ばす。"
         },
         {
           "speaker": "mashiro",
@@ -1112,6 +1137,18 @@
         {
           "speaker": "",
           "face": "",
+          "text": "二つのタイマーが、少しずれて鳴った。先に鳴った方が、カップへ手を伸ばす。"
+        },
+        {
+          "type": "condition",
+          "condition_type": "lover",
+          "char_id": "mashiro",
+          "next_true": "lover",
+          "next_false": "friend"
+        },
+        {
+          "speaker": "",
+          "face": "",
           "text": "湯気の向こうで、ましろは急がずに、葉の山を見ていた。"
         },
         {
@@ -1120,7 +1157,38 @@
             "mashiro": 2
           }
         }
-      ]
+      ],
+      "branches": {
+        "lover": [
+          {
+            "speaker": "mashiro",
+            "face": "smile",
+            "text": "……鳴ったねぇ。でも、話の途中だから、もう一回だけ押しちゃお"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "ましろはタイマーをもう一度回して、はじめの肩に、こつんと頭を預けた。"
+          },
+          {
+            "speaker": "mashiro",
+            "face": "normal",
+            "text": "……次に鳴るまで、ここ、僕の場所ねぇ"
+          }
+        ],
+        "friend": [
+          {
+            "speaker": "mashiro",
+            "face": "smile",
+            "text": "……ほらね。話の途中でも、焦らなかったでしょ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "うん。ましろちゃんの話のほうが、気になってた"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "ch3_mashiro_cup_warm",
@@ -1240,6 +1308,21 @@
           "speaker": "mashiro",
           "face": "smile",
           "text": "……そうしよ。冷えたら、また底から温めるね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "冷えるまで、いてもいいの？"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "surprise",
+          "text": "……え。冷えるまでいるつもり、だったの？"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "……ふふ。じゃあ、二杯目のお湯も、沸かしておくねぇ"
         },
         {
           "speaker": "",
@@ -1364,6 +1447,13 @@
           "text": "……うん。布巾は、ここに置いとく。はじめくんの印も、一緒に"
         },
         {
+          "type": "condition",
+          "condition_type": "lover",
+          "char_id": "mashiro",
+          "next_true": "lover",
+          "next_false": "friend"
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "カウンターの端で、畳んだ布巾だけが、店の明かりを少し受けていた。"
@@ -1374,7 +1464,33 @@
             "mashiro": 2
           }
         }
-      ]
+      ],
+      "branches": {
+        "lover": [
+          {
+            "speaker": "mashiro",
+            "face": "normal",
+            "text": "……ねぇ。手、まだ冷たいの。はじめくんので、あっためて"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "布巾をほどいたばかりの指が、はじめの手の中に、するりと入ってきた。"
+          },
+          {
+            "speaker": "mashiro",
+            "face": "smile",
+            "text": "……ふふ。最後の一個より、こっちのほうが、ずっといいねぇ"
+          }
+        ],
+        "friend": [
+          {
+            "speaker": "mashiro",
+            "face": "normal",
+            "text": "……手、冷たくなっちゃった。帰りに、温かい紅茶、買って帰ろ"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "ch3_mashiro_leaf_rest",
@@ -1459,6 +1575,21 @@
           "speaker": "mashiro",
           "face": "normal",
           "text": "だって、ほんとだもん。重いのが好きなのは、僕の方"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "……でもね、僕、はじめくんのお水みたいな煙、けっこう好きなの"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……え"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "あ、今、肩がまた上がった。ふわって、だよぉ"
         },
         {
           "speaker": "",
@@ -1650,7 +1781,7 @@
         {
           "speaker": "mashiro",
           "face": "normal",
-          "text": "ふふ。降りない日は、膝が温かいまま。それも、閉店のあと"
+          "text": "ふふ。降りない日は、膝が温かいまま。それも、悪くないの"
         },
         {
           "speaker": "",
@@ -1673,14 +1804,16 @@
           "text": "……うん。隣は、もうここにあるから"
         },
         {
-          "speaker": "mashiro",
-          "face": "normal",
-          "text": "膝の上で丸いままなら、店じまいも、急がなくていい"
-        },
-        {
           "speaker": "hajime",
           "face": "normal",
           "text": "てつこが起きるまで、ここで待とう"
+        },
+        {
+          "type": "condition",
+          "condition_type": "lover",
+          "char_id": "mashiro",
+          "next_true": "lover",
+          "next_false": "friend"
         },
         {
           "speaker": "",
@@ -1693,7 +1826,33 @@
             "mashiro": 2
           }
         }
-      ]
+      ],
+      "branches": {
+        "lover": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "てつこが膝から降りると、ましろはカップを置いて、はじめのほうへ少し寄った。"
+          },
+          {
+            "speaker": "mashiro",
+            "face": "smile",
+            "text": "……てつこちゃんの次は、僕の番ねぇ"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "小さな頭が、はじめの肩に、ことんと乗った。"
+          }
+        ],
+        "friend": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "てつこが膝から降りても、ましろはしばらく、ベンチの端から動かなかった。"
+          }
+        ]
+      }
     }
   ]
 }

@@ -1492,28 +1492,28 @@
         {
           "speaker": "samechan",
           "face": "serious",
-          "text": "……覚えておったか。わしが休む場所はあるのか、と聞いた夜じゃ"
+          "text": "……覚えておったか。わしが休む場所はあるのか、と聞かれた夜じゃな"
         },
         {
           "speaker": "samechan",
           "face": "normal",
-          "text": "あのときは座れたのに、お主がおらん日は、水を置く前に立ってしまう"
+          "text": "あの夜は座れたのに、お主がおらん日は、水を置く前に立ってしまうのじゃ"
         },
         {
           "speaker": "samechan",
           "face": "ventriloquism",
-          "text": "側近は、今日も立つ準備を終えていた",
+          "text": "側近は今日も、立つ準備を済ませていた。余は見ていたぞ",
           "voice": "korochan"
         },
         {
           "speaker": "samechan",
           "face": "surprise",
-          "text": "こ、コロちゃん。準備などしておらん。メモを見ておっただけじゃ"
+          "text": "こ、コロちゃん！ 準備などしておらん、メモを見ておっただけじゃ"
         },
         {
           "speaker": "hajime",
           "face": "smile",
-          "text": "メモは、座ってからでも見えます"
+          "text": "メモは、座ってからでも見えますよ"
         },
         {
           "speaker": "samechan",
@@ -1528,83 +1528,53 @@
         {
           "speaker": "samechan",
           "face": "normal",
-          "text": "今日は、お主の水が空くまで、ここにおる"
-        },
-        {
-          "speaker": "samechan",
-          "face": "smile",
-          "text": "試しじゃ。お主がおる日だけでよい"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "なら俺も、急がずに飲みます"
+          "text": "今日は、お主の水が空くまで、ここにおる、……試しじゃ"
         },
         {
           "speaker": "samechan",
           "face": "ventriloquism",
-          "text": "勇者はじめよ、側近が立つ前に、余の隣で待て",
+          "text": "勇者はじめよ、側近が立とうとしたら、袖をつかめ",
           "voice": "korochan"
         },
         {
           "speaker": "samechan",
           "face": "surprise",
-          "text": "ま、待つのじゃ。今、座ったばかりじゃぞ"
+          "text": "つ、つかまんでよい！ まだ座ったばかりじゃぞ"
         },
         {
           "speaker": "hajime",
           "face": "smile",
-          "text": "座ったままでいいです"
-        },
-        {
-          "speaker": "hajime",
-          "face": "smile",
-          "text": "サメちゃんが隣にいると、この店が、もっと落ち着くので"
-        },
-        {
-          "speaker": "samechan",
-          "face": "surprise",
-          "text": "……っ。そ、それは、席の話じゃろう"
+          "text": "じゃあ、つかまなくても座っててもらえるように、ゆっくり飲みます"
         },
         {
           "speaker": "samechan",
           "face": "smile",
-          "text": "じゃが、……悪くない。客の顔が、この距離ならよく見えるのじゃ"
-        },
-        {
-          "speaker": "samechan",
-          "face": "serious",
-          "text": "座ってみると、入口の通り道も、客の目で見える"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "通り道、その位置からだとどう見えますか"
-        },
-        {
-          "speaker": "samechan",
-          "face": "serious",
-          "text": "立って見たときより、少し広く見える。じゃが、まだ気になるのう"
-        },
-        {
-          "speaker": "samechan",
-          "face": "normal",
-          "text": "客がつまずかんかは、立って見るだけじゃ分からん"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "じゃあ俺が客のふりをして、もう一度歩いてみます"
+          "text": "……う、うむ。それなら、よい"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "俺は入口から、彼女の席まで歩いてみた"
+          "text": "座ったまま、サメちゃんは入口のほうへ目をやった"
+        },
+        {
+          "speaker": "samechan",
+          "face": "serious",
+          "text": "座ってみると、通り道が客の目で見えるのう。立って見たときより、広い"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "じゃが、客がつまずかんかは、見ているだけでは分からん"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "じゃあ俺が客のふりをして、歩いてみます"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "通り道は、肩をひねらずに通れた"
+          "text": "入口から、彼女の隣の席まで歩いてみる。肩をひねらずに、すっと通れた"
         },
         {
           "speaker": "samechan",
@@ -1625,7 +1595,7 @@
         {
           "speaker": "hajime",
           "face": "smile",
-          "text": "コロちゃんの命令、今日は聞いておきましょう"
+          "text": "今日は、コロちゃんの命令を聞いておきましょう"
         },
         {
           "speaker": "samechan",
@@ -1633,79 +1603,60 @@
           "text": "……わしも、今日は聞いておく"
         },
         {
-          "speaker": "samechan",
+          "speaker": "",
+          "face": "",
+          "text": "席へ戻ると、隣の椅子が小さくきしんだ。彼女は、立たなかった"
+        },
+        {
+          "speaker": "hajime",
           "face": "smile",
-          "text": "座っておる方が、店の音がよく聞こえるのじゃ"
+          "text": "サメちゃんが隣にいると、この店、もっと落ち着きます"
+        },
+        {
+          "speaker": "samechan",
+          "face": "surprise",
+          "text": "……っ。そ、それは、席の話じゃろう"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "座ったままでも、店のことは見てるんですね"
+          "text": "席の話も、です"
+        },
+        {
+          "speaker": "samechan",
+          "face": "surprise",
+          "text": "も、とはなんじゃ、も、とは……！"
+        },
+        {
+          "speaker": "samechan",
+          "face": "ventriloquism",
+          "text": "側近の耳が赤い。余は見逃さぬ",
+          "voice": "korochan"
+        },
+        {
+          "speaker": "samechan",
+          "face": "surprise",
+          "text": "コロちゃんは黙っておれ！"
         },
         {
           "speaker": "samechan",
           "face": "smile",
-          "text": "うむ。座ったままでも、気になる所は見えておるのじゃ"
-        },
-        {
-          "speaker": "hajime",
-          "face": "smile",
-          "text": "音が聞こえる席なら、俺も、またここに座ります"
-        },
-        {
-          "speaker": "samechan",
-          "face": "smile",
-          "text": "……なら、お主の席も、隣に残しておくのじゃ"
-        },
-        {
-          "speaker": "samechan",
-          "face": "serious",
-          "text": "直すメモは、明日の朝でよい"
+          "text": "……直すメモは、明日の朝でよい。今日は、この椅子の座り心地を覚えておく"
         },
         {
           "speaker": "samechan",
           "face": "normal",
-          "text": "今日は、この椅子の感触を覚えておきたいのじゃ"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "はい。明日のメモは、座ったまま一緒に見ましょう"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "水が空くまで、この席にいます"
+          "text": "お主が来るまで立って待つのも、今日で終わりにするのじゃ"
         },
         {
           "speaker": "samechan",
           "face": "smile",
-          "text": "……なら、急がんでよい。この席からは、逃げん"
-        },
-        {
-          "speaker": "samechan",
-          "face": "smile",
-          "text": "お主が通れたなら、今日の通り道は、このままでよいのじゃ"
-        },
-        {
-          "speaker": "hajime",
-          "face": "smile",
-          "text": "なら、このままにしましょう"
+          "text": "……じゃから、お主の席も、隣に残しておく"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "隣の椅子が、小さくきしむ。彼女は立ち上がらず、コロちゃんの頭を一度なでた"
-        },
-        {
-          "speaker": "samechan",
-          "face": "normal",
-          "text": "また来る日も、この席は空けておく"
-        },
-        {
-          "speaker": "samechan",
-          "face": "smile",
-          "text": "お主が来るまで立って待つのも、今日で終わりにするのじゃ"
+          "text": "彼女はコロちゃんの頭を一度なでて、俺の水が空くまで、本当に一度も立たなかった"
         }
       ]
     },
@@ -1727,32 +1678,32 @@
         {
           "speaker": "samechan",
           "face": "excited",
-          "text": "スピルバーグのサメはな、姿を見せぬのに"
+          "text": "スピルバーグのサメはな、なかなか姿を見せぬのじゃ"
         },
         {
           "speaker": "samechan",
           "face": "excited",
-          "text": "低い音だけで、海が深くなるのじゃ"
+          "text": "低い音が二つ、交互に鳴るだけで、海がぐっと深くなる"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "その音、気になります。もう少し、聞かせてください"
+          "text": "音だけで、ですか。もう少し聞かせてください"
         },
         {
           "speaker": "samechan",
           "face": "smile",
-          "text": "そうじゃろう。あの二つが鳴っただけで"
+          "text": "そうじゃろう、そうじゃろう。あの音が近づくとな"
         },
         {
           "speaker": "samechan",
           "face": "excited",
-          "text": "まだ見えぬサメが、すぐそこまで来た気がするのじゃ"
+          "text": "まだ見えぬサメが、すぐ足の下まで来た気がするのじゃ"
         },
         {
           "speaker": "samechan",
           "face": "serious",
-          "text": "……で、そのあとじゃ。水面が割れて、歯が画面いっぱいに来るのじゃ"
+          "text": "……で、そのあとじゃ。水面が割れて、歯が画面いっぱいに──"
         },
         {
           "speaker": "",
@@ -1777,13 +1728,13 @@
         {
           "speaker": "samechan",
           "face": "ventriloquism",
-          "text": "勇者はじめよ、歯の話で目線がポスターへ逃げたぞ",
+          "text": "勇者はじめよ、側近は歯の話で目が逃げた。毎回である",
           "voice": "korochan"
         },
         {
           "speaker": "samechan",
           "face": "surprise",
-          "text": "コ、コロちゃん！ 逃げる王が、どこにおるのじゃ"
+          "text": "コ、コロちゃん！ 毎回ではない、三回に一回じゃ！"
         },
         {
           "speaker": "hajime",
@@ -1798,72 +1749,52 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "平気なふりは、しなくていいです"
-        },
-        {
-          "speaker": "hajime",
-          "face": "smile",
-          "text": "音の続きからでいいので、聞かせてください"
+          "text": "平気なふりは、しなくていいです。音の続きから、聞かせてください"
         },
         {
           "speaker": "samechan",
           "face": "normal",
-          "text": "……なら、歯のあとは飛ばす"
-        },
-        {
-          "speaker": "samechan",
-          "face": "smile",
-          "text": "低い音が、もう一度鳴る所からにするのじゃ"
+          "text": "……なら、歯のあとは飛ばす。もう一度、音が鳴る所からじゃ"
         },
         {
           "speaker": "samechan",
           "face": "excited",
-          "text": "静まる間はな、観客まで息を止めるのじゃ"
+          "text": "その前にな、海がしんと静まる間がある。観客まで息を止めるのじゃ"
         },
         {
           "speaker": "samechan",
           "face": "normal",
-          "text": "わしも、つい止めてしまう"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "それで、音が鳴るんですね"
-        },
-        {
-          "speaker": "samechan",
-          "face": "serious",
-          "text": "うむ。鳴った瞬間、背筋がぞくりとする。あれが、好きなのじゃ"
+          "text": "わしも、毎回つい止めてしまう"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "彼女は指で、とん、とんと低い拍を刻んだ"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "壁のポスターには、もう目をやっていない"
+          "text": "彼女は指でカウンターを、とん、とんと低く叩いた。俺も、つられて息を止める"
         },
         {
           "speaker": "samechan",
           "face": "serious",
-          "text": "……さっきのは、傾きの確認ではない"
+          "text": "……鳴った瞬間、背筋がぞくりとする。あれが、好きなのじゃ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "気づけば、彼女の目はもうポスターを見ていなかった"
         },
         {
           "speaker": "samechan",
-          "face": "normal",
-          "text": "少しだけ、目をそらしたのじゃ"
+          "face": "serious",
+          "text": "……さっきのは、傾きの確認ではない。少しだけ、目をそらしたのじゃ"
         },
         {
           "speaker": "hajime",
           "face": "smile",
-          "text": "分かってます。それでも、続きが聞きたいです"
+          "text": "分かってます。それでも、続きが聞きたかったので"
         },
         {
           "speaker": "samechan",
           "face": "surprise",
-          "text": "お、お主、分かったうえで聞いておるのか"
+          "text": "お、お主、分かったうえで聞いておったのか"
         },
         {
           "speaker": "samechan",
@@ -1874,97 +1805,58 @@
         {
           "speaker": "samechan",
           "face": "surprise",
-          "text": "こ、コロちゃんまで納得するでない"
+          "text": "こ、コロちゃんまで納得するでない！"
         },
         {
           "speaker": "samechan",
           "face": "smile",
-          "text": "……じゃが、ありがとう。怖がっておることを、笑われなんだ"
+          "text": "……じゃが、ありがとう。怖がっておるのを、笑われなんだ"
         },
         {
           "speaker": "samechan",
           "face": "normal",
-          "text": "歯の場面は、まだ平気なふりをする"
+          "text": "歯の場面は、ほかの客の前では、まだ平気なふりをする"
         },
         {
           "speaker": "samechan",
           "face": "serious",
-          "text": "じゃが、お主の前では、少しだけ本当のことを言うておる"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "彼女の視線が、ポスターから俺のグラスへ戻った"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "コロちゃんは、何も言わずに口を閉じていた"
+          "text": "じゃが、お主の前でだけは、本当のことを言うておく"
         },
         {
           "speaker": "hajime",
           "face": "smile",
-          "text": "サメちゃんの話が聞きたいだけです。長い方が、うれしいです"
-        },
-        {
-          "speaker": "samechan",
-          "face": "excited",
-          "text": "うむ、よき客じゃ！"
-        },
-        {
-          "speaker": "samechan",
-          "face": "excited",
-          "text": "では次は、音の前の、海が静まる間の話じゃぞ"
-        },
-        {
-          "speaker": "samechan",
-          "face": "serious",
-          "text": "その間も、わしは目をそらさぬ、……たぶん、な"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "静まる間の話、次も聞かせてください"
-        },
-        {
-          "speaker": "samechan",
-          "face": "smile",
-          "text": "うむ、約束じゃ。お主が隣におるなら、わしも最後まで話せる"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "拍の音は小さい。それでも彼女は、立たずにその話を最後まで続けた"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "コロちゃんが小さく口を開けかけ、サメちゃんの左手に、そっと閉じられた"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "ポスターは、傾いていませんよ"
+          "text": "次に怖い所が来たら、ポスターじゃなくて、俺のほうを見てください"
         },
         {
           "speaker": "samechan",
           "face": "surprise",
-          "text": "わ、分かっておる。さっきのは、わしの目が逃げたのじゃ"
+          "text": "な、なっ……！ お主の顔を見ながら、サメの話をしろと言うのか"
+        },
+        {
+          "speaker": "samechan",
+          "face": "ventriloquism",
+          "text": "側近よ、良い案だと顔に書いてあるぞ",
+          "voice": "korochan"
+        },
+        {
+          "speaker": "samechan",
+          "face": "surprise",
+          "text": "書いておらん！ ……書いておらんが、……考えておく"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "コロちゃんの口を左手でそっと閉じて、サメちゃんは小さく咳払いをした"
         },
         {
           "speaker": "samechan",
           "face": "smile",
-          "text": "お主が隣で聞いてくれるなら、次はもう少し先まで話せる"
-        },
-        {
-          "speaker": "samechan",
-          "face": "smile",
-          "text": "今日は、これで十分じゃ"
+          "text": "……では次は、海が静まる間の話じゃ。今度は、最後まで目をそらさぬ"
         },
         {
           "speaker": "samechan",
           "face": "normal",
-          "text": "怖い所は、お主となら、あとで少しずつでよい"
+          "text": "……たぶん、な"
         }
       ]
     },
