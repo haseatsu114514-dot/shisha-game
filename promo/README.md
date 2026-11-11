@@ -26,7 +26,7 @@ python3 -m http.server 8124 --bind 127.0.0.1
 - **ちぎった紙の縁**（暗い面と紙の面の境目）、**マスキングテープ**（画面写真の上）、**短冊**（人物の一言）
 - **ボタン**はゲームのシーシャ作りの現行スキンのボタンの絵（金・白）をそのまま使う
 
-絵はすべてゲームの採用済み素材で、サイト用に描き足した人物やシーシャ機材は無い。
+絵はゲームの採用済み素材と、サイトのために描いた横長のキービジュアル（#3232。2026-11-11 オーナー採用。下の「サイトのために描いたキービジュアル」）だけ。
 
 ## 載せる絵は「ゲームの今の採用」だけ
 
@@ -35,6 +35,7 @@ python3 -m http.server 8124 --bind 127.0.0.1
 | サイトの絵 | 読む採用表 |
 |---|---|
 | トップのキービジュアル（1キャラ1枚） | `remake/js/core/title-art-unlock.js` の `TITLE_KEY_VISUALS` |
+| トップの横長のキービジュアル（サイトのために描いた絵） | `tools/build_images.py` の `WIDE_KEY_VISUALS`（ゲームには無い絵なので、ここが採用表） |
 | 立ち絵・顔 | 採用済みの新版 `remake/img/sprites/character_variants/new/`・`ui/face_icons/new/`（`portrait-style.js` の既定） |
 | 人物の背景とポスター調の絵・置き方 | 登場カットインの新しい絵柄（`remake/js/vn/intro-graphic.js` の `FRAME_OVERRIDES`） |
 | 人物の肩書き・一言・色 | `data/characters.json` の `intro_cutin`（`index.html` に書いてある。変えたら合わせる） |
@@ -49,6 +50,7 @@ python3 promo/tools/build_images.py --check   # ゲーム側の絵・採用が�
 ```
 
 **公開のたびに、公開用の手順がサイトの絵をゲームの今の採用から作り直す**ので、ゲーム側で立ち絵やキービジュアルを差し替えれば、公開されるサイトも次から同じ絵になる。
+横長のキービジュアルだけは、公開用の手順が原画（`asset_sources/`）を取得しないので作り直さず、リポジトリに入っている絵をそのまま公開する（`build_images.py` は原画が手元に無ければ書き出し済みの絵と記録を残す）。
 リポジトリに入っている `img/` は、手元やプレビューで見るための写し。採用を変えた（別の場面の絵にした・店の背景を替えた）ときは、絵に添えた説明文（`index.html` の `alt` と `data-caption`）が合っているかを見て、下の手順で写しも作り直す。画面写真（`img/system/`）は自動では変わらない。
 
 ## 更新のしかた
@@ -75,8 +77,11 @@ python3 promo/tools/build_images.py          # 全部（一部だけなら hero 
 ### 質感パーツ（紙・木目・縁・テープ・OGP・アイコン）
 
 ```bash
+git lfs pull --include="asset_sources/promo-site-20261111/keyvisual/kv-b-01.png"   # OGP の元の絵（初回だけ）
 python3 promo/tools/build_parts.py --textures asset_sources/promo-site-20261111/textures
 ```
+
+OGP（`ogp.jpg`）は、ヒーローの1枚目と同じ横長のキービジュアルにロゴを重ねた物。
 
 ### 画面写真（遊びかた）
 
@@ -109,6 +114,22 @@ python3 promo/tools/build_images.py --check   # ゲームの今の採用と合�
 
 `check.mjs` は、絵・フォントの参照切れ、ページ内リンク、人物と店の切り替えの対応、どこからも使っていない絵が `img/` に残っていないかを見る。
 
+## サイトのために描いたキービジュアル（#3232）
+
+原画は `asset_sources/promo-site-20261111/keyvisual/` の6枚（1536x1024・Git LFS。生成の記録は `asset_sources/promo-site-20261111/GENERATION.md`）。2026-11-11 にオーナーが案A・案Bの6枚を全採用し、使い分けはサイト側に任された。
+
+| 原画 | 使う場所 | 理由 |
+|---|---|---|
+| `kv-b-01`（案B 夜の商店街を歩く6人） | ヒーローの1枚目（`hero/kv-town*`）、OGP | 主な6人と街が1枚で伝わり、機材が写らない。3枚のうち人物がいちばん大きく、みんとが左4割（文の場所）に入らず、はじめの足先まで画面に入る |
+| `kv-a-02`（案A 夜のカウンター） | ヒーローの4枚目、スミさんの絵の前（`hero/kv-counter*`） | 「今夜の一台をつくる」場面。3枚のうち、はじめの体が左4割から最も離れていて（01は4割の線に掛かり、03はスミさんの顔が線の近く）、文と重ならない |
+| `kv-a-01`・`kv-a-03`・`kv-b-02`・`kv-b-03` | 使っていない（控え） | 同じ構図を描き直した3枚ずつなので、ヒーローで続けて見せると同じ絵が繰り返して見える。差し替えるときは `WIDE_KEY_VISUALS` の原画名を変えて `build_images.py hero` |
+
+置き方（`css/site.css`）:
+
+- PC: 絵の左4割は、ロゴと文を重ねる場所として描いてある。その4割の線が文の右端に来る幅で右に寄せ（広い画面では幅いっぱい）、左右は切らない。縦に長い画面では上に寄せ、余った左と下は夜の地へなじませる。縦書きのコピーは人物に掛かるので、横長の絵の間は出さない。
+- スマホ: 幅いっぱいの帯にしてロゴの上に置く。切るのは人物のいない左の空きだけで、縦書きのコピーはその空きに重なる。
+- 横長の絵は原寸（PC）と幅960（スマホ）の2つを `srcset` で出し分ける。2枚目以降は表示の直前に読む（`data-src`・`data-srcset`）。
+
 ## 「遊ぶ」ボタンと公開先
 
 - 「遊ぶ」は `../remake/`（公開先でサイトの隣にあるゲーム本体）へのリンク。サイトをドメインの直下へ置く場合は、`index.html` の `../remake/` 3か所を `./remake/` に変える。
@@ -129,6 +150,7 @@ python3 promo/tools/build_images.py --check   # ゲームの今の採用と合�
 | 素材 | 出典 | ライセンス |
 |---|---|---|
 | 絵（キービジュアル・人物・背景・店ロゴ・CG・ボタン・画面写真） | ゲームの採用済み素材（`remake/img/`・`assets/ui/store_logos/`）。1枚ずつの対応は `img/sources.json` | 本作 |
+| 横長のキービジュアル・OGP | サイトのために描いた絵（#3232・`asset_sources/promo-site-20261111/keyvisual/`） | 本作 |
 | 紙の地 | [ambientCG Paper001](https://ambientcg.com/view?id=Paper001)（1K-JPG・Color／Displacement） | CC0 1.0 |
 | クラフト紙の地 | [ambientCG Paper006](https://ambientcg.com/view?id=Paper006)（1K-JPG・Color） | CC0 1.0 |
 | カウンターの木目 | [ambientCG Wood067](https://ambientcg.com/view?id=Wood067)（1K-JPG・Color） | CC0 1.0 |

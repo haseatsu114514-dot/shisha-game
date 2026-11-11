@@ -19,7 +19,7 @@
 <link rel="icon" href="favicon.png" type="image/png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="preload" href="fonts/ZenOldMincho-Promo.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="img/hero/kv-minto.webp" as="image" fetchpriority="high">
+<link rel="preload" href="img/hero/kv-town.webp" imagesrcset="img/hero/kv-town-s.webp 960w, img/hero/kv-town.webp 1536w" imagesizes="100vw" as="image" fetchpriority="high">
 <link rel="stylesheet" href="css/site.css">
 </head>
 <body data-play="open">
@@ -42,11 +42,13 @@
 </header>
 
 <main>
-  <section class="hero" id="top" aria-label="キービジュアル">
+  <section class="hero is-wide" id="top" aria-label="キービジュアル">
     <img class="hero-lounge" src="img/hero/lounge.webp" srcset="img/hero/lounge-s.webp 1280w, img/hero/lounge.webp 2560w" sizes="100vw" alt="" decoding="async" width="2560" height="1440">
     <div class="hero-art">
-          <img class="kv is-on" data-kv="minto" src="img/hero/kv-minto.webp" alt="みんとのキービジュアル" decoding="async" fetchpriority="high" width="1024" height="1536">
+          <img class="kv kv-wide is-on" data-kv="town" src="img/hero/kv-town.webp" srcset="img/hero/kv-town-s.webp 960w, img/hero/kv-town.webp 1536w" sizes="100vw" alt="夜の橙須の商店街を歩く、はじめ・スミさん・つむぎ・なる・アダム・みんと" decoding="async" fetchpriority="high" width="1536" height="1024">
+          <img class="kv" data-kv="minto" data-src="img/hero/kv-minto.webp" alt="みんとのキービジュアル" decoding="async" width="1024" height="1536">
           <img class="kv" data-kv="tsumugi" data-src="img/hero/kv-tsumugi.webp" alt="猫洞 つむぎのキービジュアル" decoding="async" width="1024" height="1536">
+          <img class="kv kv-wide" data-kv="counter" data-src="img/hero/kv-counter.webp" data-srcset="img/hero/kv-counter-s.webp 960w, img/hero/kv-counter.webp 1536w" sizes="100vw" alt="閉店前の夜のtonari。仕上げた一台をカウンターに出すはじめと、ベースを拭きながら見ているスミさん" decoding="async" width="1536" height="1024">
           <img class="kv" data-kv="sumi" data-src="img/hero/kv-sumi.webp" alt="スミさんのキービジュアル" decoding="async" width="1024" height="1536">
           <img class="kv" data-kv="rio" data-src="img/hero/kv-rio.webp" alt="円頓寺 凛想のキービジュアル" decoding="async" width="1024" height="1536">
           <img class="kv" data-kv="naru" data-src="img/hero/kv-naru.webp" alt="なるのキービジュアル" decoding="async" width="1024" height="1536">
@@ -67,10 +69,12 @@
     </div>
     <p class="hero-catch"><span>その一台は、</span><span>誰のために。</span></p>
     <div class="hero-reel">
-      <p class="reel-now" aria-live="polite"><b>みんと</b><span>PEPPERMINT</span></p>
+      <p class="reel-now" aria-live="polite"><b>はじめと街の人たち</b><span>橙須の商店街</span></p>
       <ul>
-          <li><button type="button" class="reel-tab is-on" data-kv="minto" data-name="みんと" data-place="PEPPERMINT" aria-label="みんとの絵を見る"><img src="img/hero/kv-minto-thumb.webp" alt="" loading="lazy" decoding="async" width="144" height="192"></button></li>
+          <li><button type="button" class="reel-tab is-on" data-kv="town" data-name="はじめと街の人たち" data-place="橙須の商店街" aria-label="はじめと街の人たちの絵を見る"><img src="img/hero/kv-town-thumb.webp" alt="" loading="lazy" decoding="async" width="144" height="192"></button></li>
+          <li><button type="button" class="reel-tab" data-kv="minto" data-name="みんと" data-place="PEPPERMINT" aria-label="みんとの絵を見る"><img src="img/hero/kv-minto-thumb.webp" alt="" loading="lazy" decoding="async" width="144" height="192"></button></li>
           <li><button type="button" class="reel-tab" data-kv="tsumugi" data-name="猫洞 つむぎ" data-place="tonariの窓際席" aria-label="猫洞 つむぎの絵を見る"><img src="img/hero/kv-tsumugi-thumb.webp" alt="" loading="lazy" decoding="async" width="144" height="192"></button></li>
+          <li><button type="button" class="reel-tab" data-kv="counter" data-name="はじめとスミさん" data-place="tonari" aria-label="はじめとスミさんの絵を見る"><img src="img/hero/kv-counter-thumb.webp" alt="" loading="lazy" decoding="async" width="144" height="192"></button></li>
           <li><button type="button" class="reel-tab" data-kv="sumi" data-name="スミさん" data-place="tonari" aria-label="スミさんの絵を見る"><img src="img/hero/kv-sumi-thumb.webp" alt="" loading="lazy" decoding="async" width="144" height="192"></button></li>
           <li><button type="button" class="reel-tab" data-kv="rio" data-name="円頓寺 凛想" data-place="Dr.fookah" aria-label="円頓寺 凛想の絵を見る"><img src="img/hero/kv-rio-thumb.webp" alt="" loading="lazy" decoding="async" width="144" height="192"></button></li>
           <li><button type="button" class="reel-tab" data-kv="naru" data-name="なる" data-place="KEMURIKUSA" aria-label="なるの絵を見る"><img src="img/hero/kv-naru-thumb.webp" alt="" loading="lazy" decoding="async" width="144" height="192"></button></li>
@@ -314,7 +318,7 @@
           <div class="cast-stage">
             <img class="cast-bg" src="img/chara/ageha-bg.webp" alt="" decoding="async" loading="lazy" width="1600" height="900">
             <img class="cast-graphic" src="img/chara/ageha-graphic.webp" alt="" decoding="async" loading="lazy" width="880" height="880">
-            <img class="cast-stand" src="img/chara/ageha-stand.webp" alt="あげはの立ち絵" decoding="async" loading="lazy" width="399" height="1200">
+            <img class="cast-stand" src="img/chara/ageha-stand.webp" alt="あげはの立ち絵" decoding="async" loading="lazy" width="430" height="1200">
             <p class="cast-quote"><span>うち超感覚派なんだよね〜</span></p>
           </div>
           <div class="cast-info">
