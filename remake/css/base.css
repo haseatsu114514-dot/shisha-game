@@ -480,6 +480,11 @@ body[data-screen="bench"] .gain-card.out { animation-name: gain-out-l; }
   box-shadow: inset 0 -2px 4px rgba(0, 0, 0, 0.3), 0 0 14px color-mix(in srgb, var(--gc) 60%, transparent);
 }
 .gc-badge.face { object-fit: cover; image-rendering: pixelated; background: #1a1422; border: 2px solid var(--gc); padding: 0; }
+/* 絵の印（o.icon。盤のアイコン・火種。SBD125②）: 顔の印と同じ暗い丸に絵。絵が読めない時は字の印のまま */
+.gc-badge.face.art { position: relative; color: #f4e6c4; }
+.gc-badge.art img { display: none; position: absolute; inset: 13%; width: 74%; height: 74%; object-fit: contain; image-rendering: auto; filter: drop-shadow(0 0 4px var(--gc, #f4d27a)); }
+.gc-badge.art.has-img img { display: block; }
+.gc-badge.art.has-img span { visibility: hidden; }
 .gc-meta { display: flex; flex-direction: column; gap: 2px; }
 .gc-top { font-family: var(--font); font-size: 14px; letter-spacing: 0.04em; color: var(--gc); }
 .gc-main { font-size: 21px; font-weight: 700; text-shadow: 0 1px 6px rgba(0, 0, 0, 0.8); }
