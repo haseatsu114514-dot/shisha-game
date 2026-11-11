@@ -6,6 +6,8 @@ Claude は画像を生成しない。ここにある依頼文を Codex にコピ
 共通の画風: `tools/bg_prompts.txt` の先頭の指針（`bg_eden_shop.png` を基準にした温かい2Dドット絵〜ピクセルペインター調。写真調・滑らかな3D調にしない）。立ち絵は `.claude/skills/character-portrait-remaster/SKILL.md`（1回の生成で1人・1表情・人物の高さ1300px以上・マゼンタ #FF00FF 背景）と `docs/prompts/image_generation_guide.md`。
 焼き込み禁止（全素材共通）: 文字・ロゴ・数字・ゲージ・watermark。レース画面の順位・距離・スタミナ・合図の輪・PERFECT 等の表示はコードが描く。シーシャ台は写さない（この題材では機材の描写は不要）。実在の競走場・人物・車種のロゴを模写しない。
 
+> 2026-11-11 CR23〜CR25: 門・距離板・走路の砂・砂煙・並走する車・紋章の依頼は [world-request.md](world-request.md)（Issue #3217）。下の CR-GM03（砂煙・ゴールゲート・テント）はこれに置き換えた。
+>
 > 2026-11-02 CR08: レース画面のUI素材（順位の札・メダル・計器板・ゲージ・リモコンのボタン・出走表のカード・判子・遊び方の絵）の依頼は [ui-request.md](ui-request.md)。
 
 ## 採用の記録（2026-11-02）

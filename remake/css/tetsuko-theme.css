@@ -5,7 +5,7 @@
    この画面では日常の HUD を隠し、全画面を段ボールの窓（.tt-frame）で囲み、左上に題の札（.tt-logo）を置く。
    入った時は閉じた箱が開く（.tt-intro。tetsuko-theme.js）。演出は pointer-events を持たず、操作を止めない。
    ミニゲーム共通の方針（オーナー・2026-11-06）: 文字を密集させない／操作や遊び方は「？」を開いて見る（.tt-help。常時表示しない）／
-   基本画面は必要なUIだけ。常に見える文字は、題の札・反応の帯・道具の名前だけにする（今日の様子は入った時だけ）。 */
+   基本画面は必要なUIだけ。常に見える文字は、題の札・道具の名前だけにする（反応の一行は少しで消える。今日の様子は「？」で読める）。 */
 .tetsuko-time {
   --tk-cream: #fff5e4; --tk-cream-2: #fbe7c8; --tk-ink: #3b2416; --tk-ink-2: #6e4325;
   --tk-tabby: #f08a2e; --tk-tabby-deep: #c25e1c; --tk-tabby-text: #a24a12; --tk-pink: #f39aa6;
@@ -51,18 +51,6 @@ body[data-screen="tetsuko-time"]:has(.tetsuko-time[data-art-bg="false"]) #bg { f
 .tt-logo-title { font-size: 23px; font-weight: 900; line-height: 1.08; letter-spacing: .05em; color: var(--tk-ink); white-space: nowrap; }
 .tt-logo-roman { font-size: 14px; font-weight: 800; line-height: 1.15; letter-spacing: .28em; color: var(--tk-tabby-text); white-space: nowrap; }
 
-/* ---- 今日のてつこ: 題の札から出る吹き出し（題そのものは札にあるので、紙片の題は読み上げだけ残す） */
-.tetsuko-time .tt-memo { left: 34px; right: auto; top: 108px; max-width: 470px; padding: 7px 18px 8px; border: 2.5px solid var(--tk-ink); border-radius: 14px;
-  background: var(--tk-cream); transform: none; box-shadow: 0 3px 0 var(--tk-ink), 0 8px 14px rgba(32, 16, 6, .28); }
-.tetsuko-time .tt-memo::before { content: ""; position: absolute; left: 34px; top: -9px; width: 14px; height: 14px; background: var(--tk-cream);
-  border-left: 2.5px solid var(--tk-ink); border-top: 2.5px solid var(--tk-ink); transform: rotate(45deg); }
-.tetsuko-time .tt-memo-tape { display: none; }
-.tetsuko-time .tt-memo-title { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
-.tetsuko-time .tt-mood { margin: 0; font-size: 18px; color: var(--tk-ink); }
-/* 入った時だけ見せ、少しで消す（tetsuko-theme.js の MEMO_MS。「？」の中でも読める） */
-.tetsuko-time .tt-memo { transition: opacity .6s ease; }
-.tetsuko-time[data-memo="off"] .tt-memo { opacity: 0; }
-
 /* ---- 押せる札（右上の道具・右下の手元の道具・パネルのボタン）: 生成りに焦げ茶の太い線、下に落ちる影 */
 .tetsuko-time .tt-tools { top: 34px; right: 30px; gap: 10px; }
 .tetsuko-time .tt-tool { border: 3px solid var(--tk-ink); border-radius: 16px; background: var(--tk-cream); color: var(--tk-ink-2); box-shadow: var(--tk-drop), var(--tk-lift); }
@@ -86,7 +74,6 @@ body[data-screen="tetsuko-time"]:has(.tetsuko-time[data-art-bg="false"]) #bg { f
   border: 3px solid var(--tk-ink); border-bottom: 0; border-radius: 12px 12px 0 0; background: var(--tk-tabby); }
 .tetsuko-time .tt-act.active .tt-act-token::before { left: 6px; transform: rotate(-32deg); }
 .tetsuko-time .tt-act.active .tt-act-token::after { right: 6px; transform: rotate(32deg); }
-.tetsuko-time .tt-act[data-kind="catch"] .tt-act-token { background: var(--tk-pink); color: var(--tk-ink); border-color: var(--tk-ink); }
 .tetsuko-time .tt-act:disabled .tt-act-token { opacity: .5; box-shadow: 0 2px 0 rgba(59, 36, 22, .5); }
 .tetsuko-time .tt-act-label { border: 2px solid var(--tk-ink); border-radius: 10px; background: var(--tk-cream); color: var(--tk-ink); font-weight: 800; }
 
@@ -125,7 +112,7 @@ body[data-screen="tetsuko-time"]:has(.tetsuko-time[data-art-bg="false"]) #bg { f
 
 /* ---- てつこ手帳: 段ボールの表紙に生成りの中紙、真ん中に茶トラのしまの背 */
 .tetsuko-time .tt-book { left: 44px; right: 44px; top: 124px; bottom: 26px; }
-.tetsuko-time[data-panel="book"] .tt-memo { visibility: hidden; }
+.tetsuko-time:is([data-panel="book"], [data-panel="help"]) .tt-status { visibility: hidden; }
 .tetsuko-time .tt-book-spread { border: 3px solid var(--tk-ink); border-radius: 18px;
   background: repeating-linear-gradient(90deg, rgba(90, 52, 20, .07) 0 3px, transparent 3px 9px), linear-gradient(160deg, #d6a36a, #bb854f);
   box-shadow: 0 6px 0 var(--tk-ink), 0 16px 30px rgba(20, 10, 4, .45); }
@@ -146,21 +133,22 @@ body[data-screen="tetsuko-time"]:has(.tetsuko-time[data-art-bg="false"]) #bg { f
 /* ---- あそびかた（「？」を開いた時だけ）: 手元の道具と上の道具を、アイコン・名前・短い一文で並べる */
 .tt-help { position: absolute; left: 96px; right: 96px; top: 116px; bottom: 34px; z-index: 24; display: grid; place-items: center; }
 .tt-help[hidden] { display: none; }
-.tetsuko-time[data-panel="help"] :is(.tt-dock, .tt-caption, .tt-memo) { visibility: hidden; }
-.tt-help-card { position: relative; width: 100%; padding: 22px 34px 20px; border: 3px solid var(--tk-ink); border-radius: 20px; background: var(--tk-cream);
+.tetsuko-time[data-panel="help"] :is(.tt-dock, .tt-caption) { visibility: hidden; }
+.tt-help-card { position: relative; width: 100%; padding: 18px 34px 16px; border: 3px solid var(--tk-ink); border-radius: 20px; background: var(--tk-cream);
   box-shadow: 0 6px 0 var(--tk-ink), 0 16px 30px rgba(20, 10, 4, .45); }
-.tt-help-head { display: flex; align-items: baseline; gap: 18px; margin-bottom: 14px; }
+.tt-help-head { display: flex; align-items: baseline; gap: 18px; margin-bottom: 10px; }
 .tt-help-head h3 { margin: 0; padding-bottom: 2px; border-bottom: 3px dotted var(--tk-tabby); font-size: 24px; color: var(--tk-ink); letter-spacing: .06em; }
 .tt-help-mood { margin: 0; font-size: 16px; color: var(--tk-ink-2); }
-.tt-help-groups { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.tt-help-groups { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 34px; }
+.tt-help-group:nth-child(2) { grid-row: span 2; }
 .tt-help-group h4 { margin: 0 0 8px; font-size: 15px; font-weight: 800; color: var(--tk-tabby-text); letter-spacing: .04em; }
-.tt-help-rows { margin: 0; padding: 0; list-style: none; display: grid; gap: 9px; }
+.tt-help-rows { margin: 0; padding: 0; list-style: none; display: grid; gap: 7px; }
 .tt-help-row { display: grid; grid-template-columns: 38px 104px 1fr; align-items: center; column-gap: 10px; }
 .tt-help-ico { display: grid; place-items: center; width: 38px; height: 38px; border: 2px solid var(--tk-ink); border-radius: 50%; background: var(--tk-cream-2); color: var(--tk-ink-2); }
 .tt-help-ico .tt-ico { width: 24px; height: 24px; }
 .tt-help-name { font-size: 16px; font-weight: 800; color: var(--tk-ink); white-space: nowrap; }
 .tt-help-text { font-size: 16px; line-height: 1.45; color: var(--tk-ink); word-break: auto-phrase; }
-.tt-help-note { display: flex; align-items: center; gap: 10px; margin: 16px 0 0; padding-top: 12px; border-top: 2px dashed rgba(110, 67, 37, .3); font-size: 16px; color: var(--tk-ink-2); }
+.tt-help-note { display: flex; align-items: center; gap: 10px; margin: 12px 0 0; padding-top: 10px; border-top: 2px dashed rgba(110, 67, 37, .3); font-size: 16px; color: var(--tk-ink-2); }
 .tt-help-note .tt-stamp { width: 24px; height: 24px; flex: none; }
 .tt-help-close { position: absolute; right: 22px; bottom: 16px; min-width: 110px; min-height: 48px; }
 /* 撮った写真が飛ぶ先＝右上の「てつこ手帳」（道具を上へ詰めた分） */
@@ -215,7 +203,10 @@ body[data-screen="tetsuko-time"]:has(.tetsuko-time[data-art-bg="false"]) #bg { f
   .tetsuko-time .tt-help-btn { width: var(--tk-tap); height: var(--tk-tap); padding: 0; }
   .tetsuko-time .tt-help-q { font-size: calc(var(--tk-fs) * 1.4); }
   .tetsuko-time .tt-tool.new::after, .tetsuko-time .tt-new { font-size: var(--tk-fs-sub); }
-  .tetsuko-time .tt-mood { font-size: var(--tk-fs); }
+  /* ごきげんのハートと、猫のそばのカメラも押せる・見える大きさに */
+  .tetsuko-time .tt-heart { width: 46px; height: 46px; }
+  .tetsuko-time .tt-shot { width: var(--tk-tap); height: var(--tk-tap); margin: calc(var(--tk-tap) / -2) 0 0 calc(var(--tk-tap) / -2); }
+  .tetsuko-time .tt-shot-ico .tt-ico { width: calc(var(--tk-tap) * .55); height: calc(var(--tk-tap) * .55); }
   /* 反応の帯: 手元の道具の分だけ幅を詰める */
   .tetsuko-time .tt-caption { width: 540px; padding: 10px 20px 10px 32px; }
   .tetsuko-time .tt-text, .tetsuko-time .tt-line, .tetsuko-time .tt-toast b { font-size: var(--tk-fs); line-height: 1.35; }
@@ -223,7 +214,7 @@ body[data-screen="tetsuko-time"]:has(.tetsuko-time[data-art-bg="false"]) #bg { f
   .tetsuko-time .tt-toast { max-width: 100%; }
   .tetsuko-time .tt-toast p { flex-wrap: wrap; gap: 0 10px; }
   .tetsuko-time .tt-toast p > * { white-space: nowrap; }
-  /* 手元の道具: 丸い札は押せる大きさ、名前は 2 行まで（そっと／見守る） */
+  /* 手元の道具: 丸い札は押せる大きさ */
   .tetsuko-time .tt-dock { gap: var(--tk-gap); }
   .tetsuko-time .tt-act { width: auto; min-width: var(--tk-tap); max-width: calc(var(--tk-fs) * 3 + 20px); }
   .tetsuko-time .tt-act-token { width: var(--tk-tap); height: var(--tk-tap); }
