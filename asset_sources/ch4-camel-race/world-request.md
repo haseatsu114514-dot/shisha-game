@@ -12,7 +12,7 @@ Issue: [#3217](https://github.com/haseatsu114514-dot/shisha-game/issues/3217)（
 | スタートとゴールの門 | 木の柱と布の幕を四角と三角で描いた図形。背景の絵の隣で浮く | CR-WD01 |
 | 100mごとの距離板 | 四角3枚 | CR-WD02 |
 | 走路の砂・車の道 | 乱数で打った点と線のタイル。広い面積が単調 | CR-WD04 |
-| 砂煙 | 丸いぼかしの円 | CR-WD03 |
+| 砂煙 | 丸いぼかしの円 | CR-WD03（**2026-11-11 採用・組み込み済み**） |
 | 下の2つの操作ボタン | CSS の黒い角丸に SVG の記号 | CR-UI07（[ui-request.md](ui-request.md)。未生成） |
 | GO!・3・2・1・LAST SPURT・GOAL・GOOD・MISS | 画面の書体に縁取り（PERFECT だけ手描きの字） | CR-UI14 の残り9語（同上。未生成） |
 | 2〜4位のメダル | CSS の円（1位だけ絵） | CR-UI03 の銀・銅・鉄（同上。未生成） |
@@ -30,7 +30,7 @@ Claude は画像を生成しない。下の「Codex へ渡す文」をそのま�
 
 | 優先 | ID | ファイル名 | サイズ | 何に使うか | 中身 |
 |---|---|---|---|---|---|
-| A | CR-WD01 | `gate-start.png` / `gate-finish.png` | 各 480×800 | 走路をまたぐ門（0m とゴール）。手前の柱の根元を手前の柵に、奥の柱の根元を奥の柵に合わせて置く | 日に焼けた木の柱2本（手前が太く高い、奥は細く低く、手前の柱の左上にずれて見える）を上の横木でつなぎ、横木から布の幕を垂らす。幕の中央は**無地**（START／FINISH の字はコードか CR-WD09 が載せる）。スタートは深い緑の幕、ゴールは朱の幕で上下の縁が白黒の市松。柱の上に小さな三角の旗。手前の柱の根元がキャンバスの下端、奥の柱の根元は高さの47%あたり |
+| A | CR-WD01 | `post-start-near.png` / `post-start-far.png` / `post-finish-near.png` / `post-finish-far.png` | 手前 240×800・奥 160×400 | スタートとゴールの柱（2026-11-11 改訂。1枚の門をやめ、**手前の柵の柱と奥の柵の柱を別の絵**にした）。コードが手前の柱を手前の柵に、奥の柱を奥の柵に、**同じ横位置**で立てる。ゴールの線は地面にコードで引く | 1本ずつの柱。日に焼けた木の柱に、縄の縛り・真鍮の頭と足の金具・赤白の布の巻き（2026-11-11 の不合格の門の案と同じ質感）。柱の上の短い腕から、**こちらを向いた**布の幕が柱の左へ垂れる（幕の中央は**無地**。字はコードか CR-WD09）。柱の上に小さな三角の旗。手前は太く高く幕が大きい、奥は細く低く幕が小さい。スタートは深い緑、ゴールは朱で上下の縁が白黒の市松（旗も市松）。柱の根元がキャンバスの下端、柱の中心はキャンバスの右から 1/4 あたり。4枚で描き方をそろえる |
 | A | CR-WD02 | `marker-board.png` | 160×240 | 100mごとの距離板（奥の柵の外） | 細い木の杭に、上の縁が朱色のクリーム色の板。板の中央は無地（数字はコード）。杭の根元がキャンバスの下端 |
 | A | CR-WD04 | `ground-track.png` / `ground-road.png` | 1280×452 / 1280×152 | 走路の砂と、車が走る道（横に流すタイル） | 走路: ならした砂。蹄の跡がまばらに続き、手前ほど砂粒が大きい。上の辺（奥）は明るく霞み、下の辺（手前）は少し濃い。道: 踏み固めた砂にタイヤの轍が2本。**左右の端がつながる**（横にタイルして継ぎ目が見えない）。影・物・人なし |
 | B | CR-WD03 | `dust-1.png` / `dust-2.png` / `dust-3.png` | 各 256×256 | 蹄と車輪の砂煙 | 輪郭のはっきりした2〜3段の塊で描いた砂煙（小・中・大。左へ流れる形）。エアブラシのぼかしにしない。外は透過 |
@@ -54,7 +54,7 @@ STYLE: Game sprites for a Japanese pixel-painterly visual novel minigame set at 
 FORMAT: side view as seen from the trackside, flat with no strong perspective. Transparent background with real alpha. No drop shadow or ground shadow outside the object (the game adds shadows). The object fills the canvas to within about 2% of the edges.
 
 【作るもの】（ファイル名・サイズ・中身）
-CR-WD01 gate-start.png / gate-finish.png 各480x800: a racetrack gate that spans the track, seen from the trackside at a slight angle. Two sun-bleached wooden posts joined by a top beam: the NEAR post is thick and tall and its base touches the bottom edge of the canvas; the FAR post is thinner and shorter, appears up and to the left of the near post, and its base ends at about 47% of the canvas height. A cloth banner hangs from the top beam facing the viewer; the center of the banner is plain flat cloth (the game prints the word there). Small triangular flags on top of the posts. START: deep green banner. FINISH: racing-red banner with a black-and-white checkered strip along its top and bottom edges, and checkered flags. Keep the same post positions in both files.
+CR-WD01（2026-11-11 改訂。1枚の門ではなく、柱を1本ずつ4枚） post-start-near.png / post-finish-near.png 各240x800、post-start-far.png / post-finish-far.png 各160x400: ONE single upright trackside post per image, seen straight from the side (no perspective, no beam spanning the track, no second post). A sun-bleached wooden post with rope lashing, a dull brass cap and brass foot plate, and a red-and-white cloth wrap around its middle, the same materials and painting as the attached gate attempt. From a short arm near the top hangs a cloth banner that FACES THE VIEWER and extends to the LEFT of the post; the center of the banner is plain flat cloth (the game prints the word there). A small triangular flag on top. The base of the post touches the bottom edge of the canvas; the post's center line is about one quarter of the canvas width from the right edge. NEAR (240x800): thick, tall post with a large banner. FAR (160x400): thinner, shorter post with a small banner, the same design. START: deep green banner and flag. FINISH: racing-red banner with a black-and-white checkered strip along its top and bottom edges and a checkered flag. Draw all four in exactly the same hand and lighting.
 CR-WD02 marker-board.png 160x240: a thin wooden stake holding a small cream board with a racing-red strip along its top edge. The board face is plain (the game prints the distance). The base of the stake touches the bottom edge.
 CR-WD04 ground-track.png 1280x452: a horizontally seamless tile of a groomed sand racetrack seen from the side at a low angle: raked sand with sparse lines of camel hoof prints, grains larger toward the bottom (near) edge, the top (far) edge lighter and hazier, the bottom edge slightly darker. Opaque, no objects, no shadows of objects, no people. The left and right edges must match perfectly. ground-road.png 1280x152: a horizontally seamless tile of a packed sand service road with two tire ruts running left to right. Opaque. The left and right edges must match perfectly.
 CR-WD03 dust-1.png / dust-2.png / dust-3.png 各256x256: a puff of desert dust kicked up by hooves, drifting to the left, painted as two to three clearly shaped tone steps (not an airbrushed blur). Small, medium and large.
@@ -66,13 +66,43 @@ CR-WD06 fg-flagpole.png 256x720: a thin white pole with a string of three triang
 
 【まだ作っていない CR08 の部品も、この機会に】仕様と英文は asset_sources/ch4-camel-race/ui-request.md のまま: CR-UI07 remote-voice / remote-whip（normal と pressed）、CR-UI14 の残り9語、CR-UI03 medal-silver / medal-bronze / medal-plain、CR-UI06 track-rail。
 
-【参照（添付できれば添付。役割を書き添える）】画風と光: assets/backgrounds/bg_dubai_camel_track_morning.png。物の描き込みの密度: assets/ui/camel_race/camel_1.png と suv.png。CR-WD05 の寸法と車輪の位置: suv.png。CR-WD07 の描き方: assets/ui/camel_race/ui/howto-camel.png。CR-WD09 の字: assets/ui/camel_race/ui/word-perfect.png。
+【参照（添付できれば添付。役割を書き添える）】CR-WD01 の柱の質感（形は真似しない。横木と奥の柱は描かない）: asset_sources/ch4-camel-race/world/review/gate-start-attempts-rejected.jpg。画風と光: assets/backgrounds/bg_dubai_camel_track_morning.png。物の描き込みの密度: assets/ui/camel_race/camel_1.png と suv.png。CR-WD05 の寸法と車輪の位置: suv.png。CR-WD07 の描き方: assets/ui/camel_race/ui/howto-camel.png。CR-WD09 の字: assets/ui/camel_race/ui/word-perfect.png。
 【渡し方】原画をそのまま asset_sources/ch4-camel-race/world/originals/ に置き、生成の指示と日付を asset_sources/ch4-camel-race/world/generation.json に書いて push。各ファイルの SHA-256・実寸・アルファの有無を添えてください。候補が複数ある部品は -A/-B を付けて全部ください。生成の決まり（開始前のコピーの確認・寸法とアルファの機械確認・文字を描かない）は Issue #3055 と同じです。
 ```
+
+## 採用の記録
+
+### 2026-11-11 CR-WD03 砂煙（A を採用）
+
+Codex がオーナー経由で渡した `3217-dust-A-production.zip`（SHA-256 `4415af29…`）。同梱の `generation-dust-A.json` の SHA-256 と原画・候補の全ファイルが一致した。
+
+| 部品 | 採用 | 理由 | ゲーム用 |
+|---|---|---|---|
+| dust-1（小） | **A** | 輪郭のはっきりした2〜3段の塊で、左へ流れる尾と粒。外周は完全に透明（縁のアルファ 0）。砂色・暗い茶・市松・道の色のどれに置いても読める | `assets/ui/camel_race/world/dust-1.png`（256×256） |
+| dust-2（中） | **A** | 同上。右のふくらみと左の尾の形が小・大とそろう | `dust-2.png` |
+| dust-3（大） | **A** | 同上。ムチの砂の爆発・スタートの砂に使う | `dust-3.png` |
+
+- 3枚とも本体が半透明（不透明な画素は 1%未満）。砂煙なのでそのまま使う。ゲーム用は Codex の正寸の候補（均一の縮小だけ）そのもの。WebP は輪郭がにじまないよう**可逆**（3枚で約48KB。非可逆 q90 だと見える画素で色が最大45ずれた）。
+- コード（`camel-race.js`）: 絵が読めた時だけ、ぼかしの円をこの絵に替える（読めなければ従来の描画。画面の `data-dust` が `sprites`／`canvas`）。輪郭のある絵を毎フレーム重ねると線がつぶれるので、**蹄が地面を蹴る間隔（3.4m、ムチの間は 2.6m）ごとに1つ**出す。塊の右端を蹄の位置に、下の縁を地面に合わせ、**列ごとにそのラクダの直前に描く**（ぼかしの円の頃は全部をラクダの上に描いていて、絵にすると胴や前の列に重なった）。車の砂煙は車の直前。出た時の大きさで小・中・大を決め、消えるまで同じ絵のまま膨らませる。スタートとムチの砂の爆発は、数を 1/3.5 に減らす。
+- 原画は `world/originals/dust-{1,2,3}-A.png`（1254×1254）、生成記録は `world/generation-dust-A.json`、比較図は `world/review/dust-A-comparison.png`。
+
+| 原画（`world/originals/`） | 寸法 | SHA-256 |
+|---|---|---|
+| `dust-1-A.png` | 1254×1254 | `e2cd17862948ed6562bcf2504df81ca0d2860f6b6347d16d600f467621792bf4` |
+| `dust-2-A.png` | 1254×1254 | `e41fb39ae311cc587bd95b9e37c04c86e2e89e4bf9452d33bd597b2f68de1d10` |
+| `dust-3-A.png` | 1254×1254 | `8e20ebcb2b68331e2708300817c6b2770e52221ff7b79c674d3ae76470940af1` |
+
+### 2026-11-11 CR-WD01 門（2案とも不合格 → 指定を改訂）
+
+同じ ZIP の `rejected/gate-start-attempt-{A,B}.png`（971×1619）。Codex の判定は「奥の柱の根元が高さの54%で、指定の47%に届かない。ゴールの門が無い」。確認して同意し、もう一つ理由を足した:
+
+- **レース画面は、同じ距離のラクダが列によらず同じ横位置に並ぶ描き方**（奥行きを斜めにずらさない）。この案は奥の柱が手前の柱の左へ約 45°（画面で約 225px）ずれているので、門を置くと、奥の列のラクダが同じ距離でもう門を越えて見える。
+- そもそも走路をまたぐ門の幕はラクダの進む方向を向くので、横から見ると薄い線になる。今のコードの門も、手前と奥の柵に柱を立てて幕をこちらへ向ける描き方で、それなら柱は別の絵で足りる。
+- そこで CR-WD01 を「手前の柱・奥の柱を別の絵（スタートとゴールで計4枚）」に改訂した（上の一覧と依頼文）。2案の質感（縄・真鍮の金具・赤白の巻き）はよいので、参照に `world/review/gate-start-attempts-rejected.jpg` を付ける。原画の2枚は容量を節約するためリポジトリには入れず、並べた縮小図だけ残した。
 
 ## 届いた後（Claude の作業）
 
 1. 原画の SHA-256・寸法・アルファを確かめ、部品ごとに選ぶ（理由をこのファイルに追記）。CR-WD04 は左右のつなぎ目を、CR-WD05 は車輪の位置を測る。
 2. 縮小だけで `assets/ui/camel_race/world/` へ置き、WebP を `remake/img/ui/camel_race/world/` に作る（Git LFS）。
-3. `remake/js/minigames/camel-race.js` の `drawGates`・`drawMarkers`・`groundTiles`・`drawDust` を、絵が読めた時だけ絵に替える（読めなければ今の描画）。CR-WD05 は奥の柵の向こうに、群れと同じ速さで2〜3台を走らせる。
+3. `remake/js/minigames/camel-race.js` の `drawGates`・`drawMarkers`・`groundTiles` を、絵が読めた時だけ絵に替える（読めなければ今の描画。`drawDust` は CR-WD03 で済み）。CR-WD01 は奥の柱を奥の柵、手前の柱を手前の柵に同じ横位置で立てる。CR-WD05 は奥の柵の向こうに、群れと同じ速さで2〜3台を走らせる。
 4. PC（1280×720）とスマホ横（844×390）で、スタート・中盤・スパート・ゴールを目視し、`node remake/test/browser/ch4_camel_race.mjs` を通す。

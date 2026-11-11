@@ -94,7 +94,13 @@ const ART_FILES = Object.freeze({
   jockey: "ui/camel_race/jockey.webp", suv: "ui/camel_race/suv.webp", wheel: "ui/camel_race/wheel.webp",
   track: "backgrounds/bg_dubai_camel_track_morning.webp",
   balloon: "ui/camel_race/ui/balloon.webp",
+  // 砂煙（CR-WD03・#3217・2026-11-11 採用）。小・中・大の3枚（256×256・左へ流れる形）。
+  dust: [1, 2, 3].map(i => `ui/camel_race/world/dust-${i}.webp`),
 });
+// 砂煙の絵の置き方: 塊の右端（絵の幅の 0.9）を蹄の位置に、下の縁（絵の高さの 0.72）を地面に合わせる。size は puff.r に掛ける倍率。
+// 絵の砂煙は輪郭がはっきりしているので、毎フレームは出さず、蹄が地面を蹴る間隔（step m）ごとに1つ出す。
+// 描く順番は列ごと（そのラクダの直前、車の砂煙は車の直前）。輪郭のある絵が胴や前の列のラクダに重ならないように。
+const DUST_ART = Object.freeze({ size: 4.2, right: 0.9, bottom: 0.72, ground: 20, step: 3.4, suvStep: 4.5, whipStep: 1.3, alpha: 1.8, burst: 3.5 });
 // 奥の景色（レース場の朝の絵・1280×720）。1.25倍にして、絵の y=395（奥の柵の根元）を走路の奥の柵（y=398）にそろえ、
 // レースの進み具合で 0→320px だけ横へ流す（遠景のゆっくりした流れ）。走路から手前はコードで描く砂地。
 const BACKDROP = Object.freeze({ scale: 1.25, sourceGround: 395, ground: 398 });
@@ -112,10 +118,11 @@ let artTask = null;
 export function loadCamelArt() {
   if (typeof Image === "undefined") return Promise.resolve(null);
   const load = rel => { const image = new Image(); image.decoding = "async"; image.src = imgFileUrl(rel); return image.decode().then(() => image); };
-  // 吹き出しの絵（CR-UI13）は読めなくても他の絵は使う（吹き出しは従来の描画に戻す）。
+  // 吹き出しの絵（CR-UI13）と砂煙の絵（CR-WD03）は読めなくても他の絵は使う（それぞれ従来の描画に戻す）。
   const balloon = load(ART_FILES.balloon).catch(() => null);
-  artTask ||= Promise.all([Promise.all(ART_FILES.camel.map(load)), load(ART_FILES.jockey), load(ART_FILES.suv), load(ART_FILES.wheel), load(ART_FILES.track), balloon])
-    .then(([camel, jockey, suv, wheel, track, balloonImage]) => ({ camel, jockey, suv, wheel, track, balloon: balloonImage,
+  const dust = Promise.all(ART_FILES.dust.map(load)).catch(() => null);
+  artTask ||= Promise.all([Promise.all(ART_FILES.camel.map(load)), load(ART_FILES.jockey), load(ART_FILES.suv), load(ART_FILES.wheel), load(ART_FILES.track), balloon, dust])
+    .then(([camel, jockey, suv, wheel, track, balloonImage, dustImages]) => ({ camel, jockey, suv, wheel, track, balloon: balloonImage, dust: dustImages,
       ground: groundTiles(), skins: camelSkins(camel) }))
     .catch(() => null);
   return artTask;
@@ -337,6 +344,7 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     art = value;
     if (done) return;
     root.dataset.art = value ? "sprites" : "canvas";
+    root.dataset.dust = value?.dust ? "sprites" : "canvas";
     if (phase === "tutorial" || phase === "loading") draw();
   });
   let race = null, phase = "loading", raf = 0, last = null, goalAt = 0, feedbackTimer = 0, bannerTimer = 0, countdownLeft = 0, countdownShown = -1;
@@ -441,7 +449,7 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
       // 入れた瞬間: 画面が揺れ、ラクダの後ろで砂が爆ぜる。
       shake = Math.max(shake, result.type === "spurt" ? 0.5 : 0.32);
       const lane = laneOf("player");
-      for (let i = 0; i < 14; i++) dust.push({ x: playerX() - 40 + Math.random() * 30, y: lane.y + 24, r: 10 + Math.random() * 14, a: 0.55, vx: -(120 + Math.random() * 160), vy: -(30 + Math.random() * 60), s: lane.scale });
+      for (let i = 0; i < puffCount(14); i++) dust.push({ lane: "player", x: playerX() - 40 + Math.random() * 30, y: lane.y + 24, r: 10 + Math.random() * 14, a: 0.55, vx: -(120 + Math.random() * 160), vy: -(30 + Math.random() * 60), s: lane.scale });
     }
     if (result.type === "spurt") showFeedback("スパート！", "spurt", "残した息を使おう");
   };
@@ -573,7 +581,7 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     whip = 0; spurtShown = false; goalAt = 0; settleTimer = 0;
     shake = 0; slow = 0; goTime = -1; combo = 0; spurtTint = 0; lastCallAt = -9; lastPosition = 0; leaderId = null; marks = new Set();
     camShift = 0; lastStride = -1; hajimeTextTimer = 0;
-    frameX = PLAYER_SCREEN_X; draftFx = 0; duelFx = null; closingAt = -99; margins = null;
+    frameX = PLAYER_SCREEN_X; draftFx = 0; duelFx = null; closingAt = -99; margins = null; puffMarks.clear();
     signalButton.classList.remove("held");
     countdownLeft = RACE.countdown; countdownShown = -1; last = null;
     setPhase("countdown");
@@ -606,8 +614,8 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
           if (!reducedMotion) {
             // 柵が上がって4頭が一斉に飛び出す: 足元から砂が爆ぜ、画面が揺れる。
             shake = 0.45;
-            for (const lane of LANES) for (let i = 0; i < 10; i++) {
-              dust.push({ x: playerX() - 20 + Math.random() * 60, y: lane.y + 26 * lane.scale, r: 8 + Math.random() * 14, a: 0.6, vx: -(60 + Math.random() * 140), vy: -(20 + Math.random() * 50), s: lane.scale });
+            for (const lane of LANES) for (let i = 0; i < puffCount(10); i++) {
+              dust.push({ lane: lane.id, x: playerX() - 20 + Math.random() * 60, y: lane.y + 26 * lane.scale, r: 8 + Math.random() * 14, a: 0.6, vx: -(60 + Math.random() * 140), vy: -(20 + Math.random() * 50), s: lane.scale });
             }
           }
         }
@@ -768,14 +776,18 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
           const sx = screenX(camel);
           if (sx < -80 || sx > W + 80) continue;
           const me = camel.id === "player", big = me && boosting ? 1.6 : 1;
-          dust.push({ x: sx - 30 * lane.scale * BODY, y: lane.y + 10, r: (6 + Math.random() * 8) * big * BODY, a: 0.42, vx: -(40 + Math.random() * 40) * big, vy: -(14 + Math.random() * 18), s: lane.scale });
+          if (kickedUp(camel.id, viewDistance(camel), DUST_ART.step / Math.min(big, DUST_ART.whipStep))) {
+            dust.push({ lane: camel.id, x: sx - 30 * lane.scale * BODY, y: lane.y + 10, r: (6 + Math.random() * 8) * big * BODY, a: 0.42, vx: -(40 + Math.random() * 40) * big, vy: -(14 + Math.random() * 18), s: lane.scale });
+          }
           // 調子がいい間（調子の棒4本以上）は、自分の足元から金の粒がこぼれる。
           if (me && phase === "race" && race.player.rhythm >= 0.75 && Math.random() < 0.6) {
             sparks.push({ x: sx - 10 + Math.random() * 40, y: lane.y + 20 + Math.random() * 12, vx: -(80 + Math.random() * 80), vy: -(20 + Math.random() * 40), life: 0.5, age: 0, color: [255, 214, 102], r: 2 + Math.random() * 1.5 });
           }
         }
         const suv = suvPosition();
-        dust.push({ x: suv.x - 70, y: suv.y + 26, r: 10 + Math.random() * 12, a: 0.32, vx: -(90 + Math.random() * 60), vy: -(10 + Math.random() * 20), s: 1 });
+        if (kickedUp("suv", viewDistance(race.player), DUST_ART.suvStep)) {
+          dust.push({ lane: "suv", x: suv.x - 70, y: suv.y + 26, r: 10 + Math.random() * 12, a: 0.32, vx: -(90 + Math.random() * 60), vy: -(10 + Math.random() * 20), s: 1 });
+        }
       }
     }
     for (let i = dust.length - 1; i >= 0; i--) {
@@ -789,6 +801,16 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
       if (piece.y > H + 20) confetti.splice(i, 1);
     }
   }
+  // 絵の砂煙は、走った距離が step m 進むごとに1つ（ぼかしの円は従来どおり毎フレーム）。バーストは数を減らす。
+  const puffMarks = new Map();
+  const kickedUp = (id, distance, step) => {
+    if (!art?.dust) return true;
+    const mark = Math.floor(distance / step);
+    if (puffMarks.get(id) === mark) return false;
+    puffMarks.set(id, mark);
+    return true;
+  };
+  const puffCount = n => art?.dust ? Math.ceil(n / DUST_ART.burst) : n;
   const laneOf = id => LANES.find(lane => lane.id === id);
   // 見た目の位置（モデルはゴールで止まるが、画面では線を越えてからゆっくり速度を落として走り続ける）。
   const coast = (speed, since) => {
@@ -833,27 +855,26 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     drawMarkers(camX);
     drawGates(camX);
     drawSpeedLines(0);
-    // 砂煙（奥）。
-    drawDust(0.6);
-    // ラクダ（奥から手前）。
+    // ラクダ（奥から手前）。各列の砂煙はそのラクダの直前に描く。
     if (race) {
       const order = LANES.map(lane => lane.id === "player" ? race.player : race.rivals.find(r => r.id === lane.id)).filter(Boolean);
       for (const camel of order) {
         const lane = laneOf(camel.id);
         const sx = screenX(camel);
         if (camel.id === "player") drawPlayerRing(sx, lane.y, lane.scale, t);
+        drawDust(camel.id);
         drawCamel(sx, lane.y, lane.scale, camel, t);
       }
       drawStartBar(camX);
       drawFence(camX, 604, 1);
       drawOffscreen();
       drawWhipWind();
+      drawDust("suv");
       drawSuv();
       for (const camel of order) {
         const lane = laneOf(camel.id);
         drawNameTag(screenX(camel), lane.y, lane.scale, camel);
       }
-      drawDust(1);
       drawSpeedLines(1);
       drawDraft();
       drawDuel();
@@ -1242,14 +1263,25 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     ctx.restore();
   }
   function roundRect(x, y, w, h, r) { ctx.beginPath(); ctx.roundRect(x, y, w, h, r); ctx.fill(); }
-  function drawDust(layer) {
+  /** lane（列の id か "suv"）の砂煙を描く。 */
+  function drawDust(lane) {
+    const sprites = art?.dust;
     for (const puff of dust) {
-      if ((layer < 1) !== (puff.s < 0.9)) continue;
+      if (puff.lane !== lane) continue;
       const r = puff.r * puff.s, a = Math.max(0, puff.a);
+      if (sprites) {
+        // 出た時の大きさで小・中・大を決め、消えるまで同じ絵のまま膨らませる（途中で絵が替わると跳ねて見える）。
+        puff.k ??= puff.r < 10 ? 0 : puff.r < 17 ? 1 : 2;
+        const size = r * DUST_ART.size;
+        ctx.globalAlpha = Math.min(1, a * DUST_ART.alpha);
+        ctx.drawImage(sprites[puff.k], puff.x - size * DUST_ART.right, puff.y + DUST_ART.ground * puff.s - size * DUST_ART.bottom, size, size);
+        continue;
+      }
       const glow = ctx.createRadialGradient(puff.x, puff.y, 0, puff.x, puff.y, r);
       glow.addColorStop(0, `rgba(238, 210, 160, ${a})`); glow.addColorStop(0.6, `rgba(222, 186, 132, ${a * 0.55})`); glow.addColorStop(1, "rgba(222, 186, 132, 0)");
       ctx.fillStyle = glow; ctx.beginPath(); ctx.arc(puff.x, puff.y, r, 0, Math.PI * 2); ctx.fill();
     }
+    ctx.globalAlpha = 1;
   }
   /** 自分のラクダの頭の上: 輪が出ていない間は金の▼（自分の目印）、輪が出たら声かけの輪。 */
   function drawCue() {

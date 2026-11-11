@@ -307,6 +307,7 @@ await suite("ch4-camel-race-controls", async check => {
     const game = page.locator(dt("camel-game"));
     await page.waitForFunction(() => document.querySelector('[data-test="camel-game"]')?.dataset.phase === "race", null, { timeout: 15000 });
     assert.equal(await game.getAttribute("data-art"), "sprites");
+    assert.equal(await game.getAttribute("data-dust"), "sprites", "the dust art (CR-WD03) is loaded");
     const whip = page.locator(dt("camel-signal"));
     const stamina = async () => Number(await page.locator(".camel-stamina b").textContent());
     const full = await stamina();
@@ -336,5 +337,19 @@ await suite("ch4-camel-race-controls", async check => {
     await page.locator(dt("camel-close")).click();
     await page.locator(dt("camel-menu-quick")).waitFor();
   });
+  // 砂煙の絵（CR-WD03）が読めない環境: ラクダ・車の絵はそのまま、砂煙だけ従来のぼかしの円に戻り、レースは進む。
+  const dustArt = /\/ui\/camel_race\/world\/dust-\d\.webp/;
+  await check("dust-falls-back-to-soft-puffs-without-the-art", async page => {
+    await page.route(dustArt, route => route.abort());
+    await page.goto(new URL("camel-race.html?pilot=perfect", baseURL).href);
+    await page.locator(dt("camel-menu-quick")).click();
+    await page.waitForFunction(() => document.querySelector('[data-test="camel-game"]')?.dataset.phase === "race", null, { timeout: 15000 });
+    const game = page.locator(dt("camel-game"));
+    assert.equal(await game.getAttribute("data-art"), "sprites");
+    assert.equal(await game.getAttribute("data-dust"), "canvas");
+    await page.waitForFunction(() => Number(document.querySelector(".camel-clock-time")?.textContent.slice(2)) > 3, null, { timeout: 15000 });
+    await page.locator(dt("camel-close")).click();
+    await page.locator(dt("camel-menu-quick")).waitFor();
+  }, { ignoreFailedResource: failure => dustArt.test(failure) });
 }, { entry: new URL("camel-race.html", baseURL).href, readySelector: '[data-test="camel-menu-quick"]' });
 
