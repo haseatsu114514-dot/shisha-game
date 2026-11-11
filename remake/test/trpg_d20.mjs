@@ -32,11 +32,12 @@ test('actual die exposes every true face 1..20, not relabelled d6 outcomes',()=>
   assert.deepEqual(faces,Array.from({length:20},(_,i)=>i+1));
   assert.equal(DICE.sides,20);
 });
-test('d20 maximum/minimum pair keeps the existing effects, never creates automatic grade rules',()=>{
-  assert.equal(specialOf([20,20]),'critical');assert.equal(specialOf([1,1]),'fumble');assert.equal(specialOf([6,6]),'double');
+test('a natural 20 is a critical and always a success (TRF01); a 1 only fumbles a roll that ends in trouble',()=>{
+  assert.equal(specialOf([20,20]),'critical');assert.equal(specialOf([20,3]),'critical');assert.equal(specialOf([1,1]),'fumble');assert.equal(specialOf([6,6]),'double');
+  assert.equal(specialOf([1,19],3),null);
   const s=new TrpgSession(scenario,{seed:1});s.start();s.state.teamwork=1;
   s.state.pending={kind:'listen',dice:[20,20],bonus:-50,rerolled:false};
-  const result=s.settleCheck();assert.equal(result.grade,'trouble');assert.equal(result.special,'critical');assert.equal(s.state.teamwork,2);
+  const result=s.settleCheck();assert.equal(result.grade,'success');assert.equal(result.special,'critical');assert.equal(s.state.teamwork,2);
   assert.throws(()=>s.settleCheck());assert.equal(s.state.teamwork,2);
 });
 test('every supported old/new bonus combination has a measured probability difference',()=>{

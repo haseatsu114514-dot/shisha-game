@@ -74,8 +74,33 @@ export function randomPc(scenario, seed = Date.now()) {
 // Keep two dice and one-die rerolls; scale the old aids toward their original success rates.
 export const DICE = Object.freeze({ sides: 20, base: 3, support: 7, momentum: 4, hypothesis: 4, success: 30, mixed: 19 });
 export const gradeOf = total => total >= DICE.success ? "success" : total >= DICE.mixed ? "mixed" : "trouble";
-/** Doubles are table events: 20-20 critical, 1-1 fumble, any other pair a cheer. */
-export const specialOf = dice => dice[0] !== dice[1] ? null : dice[0] === DICE.sides ? "critical" : dice[0] === 1 ? "fumble" : "double";
+/**
+ * What the two dice mean on the table (TRF01). A 20 on either die is a critical and always a success; a 1 on a roll
+ * that ends in trouble is a fumble; any other pair is a cheer. The forecast and the reroll odds read the same rule.
+ */
+export function outcomeOf(dice, bonus = 0) {
+  const total = dice[0] + dice[1] + bonus;
+  const critical = dice.includes(DICE.sides);
+  const grade = critical ? "success" : gradeOf(total);
+  const special = critical ? "critical" : grade === "trouble" && dice.includes(1) ? "fumble" : dice[0] === dice[1] ? "double" : null;
+  return { total, grade, special };
+}
+export const specialOf = (dice, bonus = 0) => outcomeOf(dice, bonus).special;
+/** A roll that misses the target by one or two: the table groans together. */
+export const NEAR_MISS = 2;
+export const nearMissOf = result => result.grade === "mixed" && DICE.success - result.total <= NEAR_MISS ? DICE.success - result.total : 0;
+/**
+ * What a success buys (TRF02). Every check has a stake the GM names before the dice: one more question for the
+ * story's character, a GM hint on the next choices, or a mark on the ending. A miss costs nothing more than the prize.
+ */
+export const REWARDS = Object.freeze({ listen: "question", twist: "hint", prepare: "hint", serve: "finale" });
+/** The choices a hint from this check marks: the plan fields decided next. */
+export const hintFieldsOf = (scenario, kind) => {
+  const flow = scenario.flow || { prepare: ["aroma", "seat"], serve: ["approach"] };
+  return kind === "twist" ? flow.prepare || [] : kind === "prepare" ? flow.serve || [] : [];
+};
+/** The prize a check offers at this table: a scenario without an interview cannot offer one more question. */
+export const rewardKindOf = (scenario, kind) => REWARDS[kind] === "question" && !scenario.interview ? "cheer" : REWARDS[kind] || "cheer";
 const RATING_TITLES = ["にぎやかな卓", "よい卓", "名卓", "伝説の卓"];
 /** Table excitement. Each tier reached once gives one momentum: bonus +4 to the next roll (up to two). */
 export const HEAT = { max: 8, tiers: [3, 6, 8], momentumMax: 2,
@@ -122,7 +147,7 @@ export class TrpgSession {
       scenarioId: scenario.id, version: scenario.version, seed: Number(seed) >>> 0, phase: "cover",
       profileId: profile.id, clues: [], consulted: [], hypothesis: null,
       plan: Object.fromEntries(Object.values(this.flow).flat().map(field => [field, null])),
-      pressure: this.rules.initialPressure, teamwork: 2, heat: 0, momentum: 0, heatLog: [],
+      pressure: this.rules.initialPressure, teamwork: 2, heat: 0, momentum: 0, heatLog: [], extraQuestions: 0, hints: {},
       used: Object.fromEntries(scenario.cast.filter(c => c.part !== "GM").map(c => [c.id, false])),
       acted: {}, checks: [], pending: null, asked: [],
       pc: this.pc ? { name: this.pc.name, title: this.pc.title, archetype: this.pc.archetype, stats: { ...this.pc.stats } } : null,
@@ -155,6 +180,11 @@ export class TrpgSession {
     if (this.warmStart) this.cheer(1, "マイダイスを卓に並べた");
   }
 
+  /** How many questions the story's character answers tonight: one more after a successful first roll (TRF02). */
+  interviewPicks() {
+    const interview = this.scenario.interview;
+    return interview ? Math.min(interview.topics.length, (interview.picks || 2) + this.state.extraQuestions) : 0;
+  }
   /** Talking to the story's character: pick a few questions; each answer depends on the hidden profile. */
   ask(id) {
     this.require("interview");
@@ -163,7 +193,7 @@ export class TrpgSession {
     const answer = this.profile.answers?.[id];
     if (!answer) throw new Error("Missing answer for topic: " + id);
     const fresh = !this.state.asked.includes(id);
-    if (fresh && this.state.asked.length >= (this.scenario.interview.picks || 2)) throw new Error("No more questions");
+    if (fresh && this.state.asked.length >= this.interviewPicks()) throw new Error("No more questions");
     if (fresh) {
       this.state.asked.push(id);
       if (this.state.asked.length === 1) this.cheer(1, "物語の人物と話した");
@@ -247,8 +277,43 @@ export class TrpgSession {
   checkResult() {
     const p = this.state.pending;
     if (!p) throw new Error("No pending check");
-    const total = p.dice[0] + p.dice[1] + p.bonus;
-    return { ...copy(p), total, grade: gradeOf(total), special: specialOf(p.dice) };
+    return { ...copy(p), ...outcomeOf(p.dice, p.bonus) };
+  }
+
+  /**
+   * The GM's hint (TRF02): one choice per coming field that does not suit tonight's hidden profile. It is picked
+   * from the seed by a separate hash, so the dice never move, and it never marks a choice the profile likes.
+   */
+  hintFor(field) {
+    const liked = this.profile.likes?.[field];
+    if (!liked?.length) return null;
+    const wrong = (this.scenario.options[field] || []).filter(option => !liked.includes(option.id));
+    if (!wrong.length) return null;
+    let x = ((this.state.seed >>> 0) ^ [...field].reduce((n, ch) => Math.imul(n ^ ch.codePointAt(0), 16777619) >>> 0, 2166136261)) >>> 0;
+    x = Math.imul(x ^ (x >>> 16), 0x85ebca6b) >>> 0; x = Math.imul(x ^ (x >>> 13), 0xc2b2ae35) >>> 0; x = (x ^ (x >>> 16)) >>> 0;
+    return wrong[x % wrong.length].id;
+  }
+  /** Pay out what a successful check was rolled for. Returns what the table actually received. */
+  grant(kind) {
+    const prize = rewardKindOf(this.scenario, kind);
+    if (prize === "question") {
+      this.state.extraQuestions = 1;
+      return { type: "question" };
+    }
+    if (prize === "hint") {
+      const hints = {};
+      for (const field of hintFieldsOf(this.scenario, kind)) {
+        const id = this.hintFor(field);
+        if (id) hints[field] = id;
+      }
+      if (Object.keys(hints).length) {
+        Object.assign(this.state.hints, hints);
+        return { type: "hint", hints };
+      }
+    }
+    // The finale's prize is a mark on the ending, not more heat: the meter is already near its top by the last roll.
+    if (prize === "finale") return { type: "finale" };
+    return null;
   }
 
   reroll(index) {
@@ -269,11 +334,18 @@ export class TrpgSession {
       result.inspired = this.state.teamwork < TEAMWORK_MAX;
       if (result.inspired) this.state.teamwork++;
     }
+    const near = nearMissOf(result);
+    if (near) result.near = near;
     this.state.checks.push(result);
-    const lift = { critical: [3, "クリティカル！"], fumble: [2, "ファンブルに大笑い"], double: [1, "ゾロ目"] }[result.special];
+    // A critical is a one-in-ten roll now (TRF01), so it lifts the table two rather than three.
+    const lift = { critical: [2, "クリティカル！"], fumble: [2, "ファンブルに大笑い"], double: [1, "ゾロ目"] }[result.special];
     if (lift) this.cheer(lift[0], lift[1]);
     else if (result.grade === "success") this.cheer(1, "判定がうまくいった");
     else if (result.grade === "trouble") this.cheer(1, "思わぬ出来事に卓がざわつく");
+    if (result.grade === "success") {
+      const reward = this.grant(result.kind);
+      if (reward) result.reward = reward;
+    }
     this.state.pressure = Math.min(this.rules.pressureMax, this.state.pressure + this.rules.checkPressure[result.grade]);
     this.state.pending = null;
     this.state.phase = { listen: this.scenario.interview ? "interview" : "explore", twist: "prepare", prepare: "serve", serve: "ending" }[result.kind];
@@ -304,6 +376,7 @@ export class TrpgSession {
       variant: this.state.pressure >= this.rules.detourThreshold ? "with-detour" : "smooth",
       plan: copy(plan), hypothesis: this.state.hypothesis,
       clues: copy(this.state.clues), asked: copy(this.state.asked), checks: copy(this.state.checks), acted: copy(this.state.acted), pc: copy(this.state.pc),
+      hints: copy(this.state.hints), finale: this.state.checks.some(check => check.reward?.type === "finale"),
       companions: copy(this.state.companions),
       pressure: this.state.pressure, profileId: this.profile.id,
     };

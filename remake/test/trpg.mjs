@@ -3,7 +3,7 @@ import { readFile } from "node:fs/promises";
 import { test } from "node:test";
 
 const source = await readFile(new URL("../js/trpg/session.js", import.meta.url), "utf8");
-const { TrpgSession, specialOf, HEAT, heatTier, checkKindsOf } = await import("data:text/javascript;base64," + Buffer.from(source).toString("base64"));
+const { TrpgSession, specialOf, outcomeOf, HEAT, heatTier, checkKindsOf } = await import("data:text/javascript;base64," + Buffer.from(source).toString("base64"));
 
 // The scenes a full session adds between the old ones: two questions after the first roll, a twist after the guess.
 function interviewDone(s) {
@@ -222,9 +222,14 @@ test("a matching shark hypothesis improves preparation, and an unknown plan fiel
   assert.deepEqual(s.snapshot(), before);
 });
 
-test("doubles are table events: a critical returns one card up to two, never changing the grade", () => {
-  assert.equal(specialOf([20, 20]), "critical"); assert.equal(specialOf([1, 1]), "fumble");
+test("a 20 on either die is a critical and always a success; a 1 that ends in trouble is a fumble; a critical returns one card up to two", () => {
+  assert.equal(specialOf([20, 20]), "critical"); assert.equal(specialOf([20, 1]), "critical"); assert.equal(specialOf([1, 1]), "fumble");
+  assert.equal(specialOf([1, 9], 3), "fumble"); assert.equal(specialOf([1, 19], 3), null, "a 1 that still lands a mixed result is no fumble");
   assert.equal(specialOf([3, 3]), "double"); assert.equal(specialOf([2, 5]), null);
+  assert.deepEqual(outcomeOf([20, 1], 1), { total: 22, grade: "success", special: "critical" });
+  assert.deepEqual(outcomeOf([19, 10], 1), { total: 30, grade: "success", special: null });
+  assert.deepEqual(outcomeOf([19, 9], 1), { total: 29, grade: "mixed", special: null });
+  const seen = new Set();
   for (let seed = 1; seed < 400; seed++) {
     const session = new TrpgSession(scenario, { profileId: "quiet", seed });
     session.start();
@@ -232,15 +237,99 @@ test("doubles are table events: a critical returns one card up to two, never cha
     const rolled = session.beginCheck("listen");
     const settled = session.settleCheck();
     assert.equal(settled.grade, rolled.grade);
-    assert.equal(settled.special, specialOf(rolled.dice));
+    assert.equal(settled.special, specialOf(rolled.dice, rolled.bonus));
+    if (settled.special === "critical") assert.equal(settled.grade, "success", "a 20 always succeeds");
+    if (settled.special === "fumble") assert.equal(settled.grade, "trouble");
     assert.equal(session.snapshot().teamwork, settled.special === "critical" ? 2 : 1);
     assert.equal(!!settled.inspired, settled.special === "critical");
+    seen.add(settled.special);
   }
+  for (const special of ["critical", "fumble", "double", null]) assert(seen.has(special), "a few hundred tables meet every kind of roll: " + special);
   const full = new TrpgSession(scenario, { profileId: "quiet", seed: 1 });
   full.start();
   full.state.pending = { kind: "listen", dice: [20, 20], bonus: 1, hypothesisBonus: 0, helper: null, rerolled: false };
   const capped = full.settleCheck();
   assert.equal(capped.special, "critical"); assert.equal(capped.inspired, false); assert.equal(full.snapshot().teamwork, 2);
+});
+
+test("a success buys something the GM named before the dice: one more question, a hint on the next choices, a mark on the ending", () => {
+  for (const s of catalogScenarios) {
+    const rolling = (session, kind, dice) => {
+      session.beginCheck(kind);
+      session.state.pending.dice = dice;
+      return session.settleCheck();
+    };
+    for (const profile of s.profiles) {
+      // Every check lands exactly on a success, without a 20: the prizes come from the grade, not from the critical.
+      const won = new TrpgSession(s, { profileId: profile.id, seed: 11 });
+      won.start();
+      assert.equal(won.interviewPicks(), s.interview.picks, "before the first roll the interview is its authored size");
+      const listened = rolling(won, "listen", [19, 19]);
+      assert.equal(listened.grade, "success"); assert.deepEqual(listened.reward, { type: "question" });
+      assert.equal(won.interviewPicks(), s.interview.picks + 1);
+      for (const topic of s.interview.topics.slice(0, s.interview.picks + 1)) won.ask(topic.id);
+      assert.throws(() => won.ask(s.interview.topics[s.interview.picks + 1].id), /No more questions/);
+      won.endInterview();
+      for (const spot of s.spots.slice(0, 3)) won.inspect(spot.id);
+      won.interpret(profile.id);
+      for (const field of s.flow.twist) won.plan(field, s.options[field][0].id);
+      const twisted = rolling(won, "twist", [19, 19]);
+      assert.equal(twisted.reward.type, "hint");
+      assert.deepEqual(Object.keys(twisted.reward.hints).sort(), [...s.flow.prepare].sort(), "the twist marks one choice in each coming field");
+      for (const [field, id] of Object.entries(twisted.reward.hints)) {
+        assert(s.options[field].some(o => o.id === id), "the hint names a real choice");
+        assert(!profile.likes[field].includes(id), "the GM never marks a choice the hidden profile likes");
+      }
+      // A marked choice is advice, not a lock: the table may still pick it.
+      const [hintedField, hintedId] = Object.entries(twisted.reward.hints)[0];
+      won.plan(hintedField, hintedId);
+      for (const field of s.flow.prepare) won.plan(field, profile.likes[field][0]);
+      const prepared = rolling(won, "prepare", [19, 19]);
+      assert.deepEqual(Object.keys(prepared.reward.hints), s.flow.serve);
+      assert(!profile.likes[s.flow.serve[0]].includes(prepared.reward.hints[s.flow.serve[0]]));
+      assert.deepEqual(won.snapshot().hints, { ...twisted.reward.hints, ...prepared.reward.hints });
+      for (const field of s.flow.serve) won.plan(field, profile.likes[field][0]);
+      const heat = won.snapshot().heat;
+      const served = rolling(won, "serve", [19, 19]);
+      assert.deepEqual(served.reward, { type: "finale" });
+      assert.equal(won.snapshot().heat, Math.min(HEAT.max, heat + 1), "the finale's prize is a mark, not extra heat");
+      const result = won.result();
+      assert.equal(result.finale, true); assert.deepEqual(result.hints, won.snapshot().hints);
+      assert.deepEqual(result.checks.map(c => c.reward?.type), ["question", "hint", "hint", "finale"]);
+      // The same seed marks the same choices, whatever the dice did before.
+      const again = new TrpgSession(s, { profileId: profile.id, seed: 11 });
+      for (const field of [...s.flow.prepare, ...s.flow.serve]) assert.equal(again.hintFor(field), won.snapshot().hints[field]);
+
+      // A table that never succeeds loses nothing but the prizes.
+      const lost = new TrpgSession(s, { profileId: profile.id, seed: 11 });
+      lost.start();
+      assert.equal(rolling(lost, "listen", [9, 9]).reward, undefined);
+      assert.equal(lost.interviewPicks(), s.interview.picks);
+      for (const topic of s.interview.topics.slice(0, s.interview.picks)) lost.ask(topic.id);
+      assert.throws(() => lost.ask(s.interview.topics[s.interview.picks].id), /No more questions/);
+      lost.endInterview();
+      for (const spot of s.spots.slice(0, 3)) lost.inspect(spot.id);
+      lost.interpret(profile.id);
+      for (const field of s.flow.twist) lost.plan(field, s.options[field][0].id);
+      rolling(lost, "twist", [9, 9]);
+      for (const field of s.flow.prepare) lost.plan(field, profile.likes[field][0]);
+      rolling(lost, "prepare", [9, 9]);
+      for (const field of s.flow.serve) lost.plan(field, profile.likes[field][0]);
+      rolling(lost, "serve", [9, 9]);
+      assert.deepEqual(lost.snapshot().hints, {}); assert.equal(lost.result().finale, false);
+      assert.equal(lost.result().ending, won.result().ending, "the proposal still decides the ending");
+    }
+  }
+});
+
+test("a roll one or two short of the target is remembered as a near miss", () => {
+  const session = new TrpgSession(scenario, { profileId: "quiet", seed: 5 });
+  session.start();
+  const settle = dice => { session.state.pending = { kind: "listen", dice, bonus: 4, hypothesisBonus: 0, momentum: 0, helper: null, rerolled: false }; const r = session.settleCheck(); session.state.phase = "listen"; return r; };
+  assert.equal(settle([12, 13]).near, 1); assert.equal(settle([12, 12]).near, 2);
+  assert.equal(settle([12, 11]).near, undefined, "three short is an ordinary mixed result");
+  assert.equal(settle([13, 13]).near, undefined, "a success is not a near miss");
+  assert.equal(settle([20, 5]).near, undefined, "a 20 is a critical even when the total is 29");
 });
 
 test("the three-star rating reads the hypothesis, the true ending and two successful checks", () => {
@@ -257,7 +346,8 @@ test("the three-star rating reads the hypothesis, the true ending and two succes
 test("table chatter files only use the GM seats and the required player", async () => {
   const talk = JSON.parse(await readFile(new URL("../../data/" + catalog.tableTalk, import.meta.url), "utf8"));
   const gms = new Set(catalogScenarios.map(s => s.cast.find(c => c.part === "GM").id));
-  for (const gm of gms) for (const kind of ["critical", "critical_full", "fumble", "double", "heat_up", "heat_max"]) {
+  for (const gm of gms) for (const kind of ["critical", "critical_full", "fumble", "double", "heat_up", "heat_max",
+    "near1", "near2", "reward_question", "reward_hint", "reward_finale"]) {
     const block = talk.dialogues.find(d => d.dialogue_id === "trpg_talk_" + gm + "_" + kind);
     assert(block?.lines.length, gm + kind);
     for (const line of block.lines) {
@@ -267,6 +357,28 @@ test("table chatter files only use the GM seats and the required player", async 
   }
 });
 
+test("every GM on the shelf has the whole set of table chatter, in the GM's and the player's own short lines", async () => {
+  const talk = JSON.parse(await readFile(new URL("../../data/" + catalog.tableTalk, import.meta.url), "utf8"));
+  const shelf = await Promise.all(catalog.scenarios.map(async s => JSON.parse(await readFile(new URL("../../data/" + s.file, import.meta.url), "utf8"))));
+  const gms = new Set(shelf.map(s => s.cast.find(c => c.part === "GM").id));
+  assert(gms.size >= 6, "hiyori, samechan, adam, tsumugi, rei and sumi all run tables");
+  const faces = Object.fromEntries(characters.map(c => [c.id, c]));
+  for (const gm of gms) for (const kind of ["critical", "critical_full", "fumble", "double", "heat_up", "heat_max",
+    "near1", "near2", "reward_question", "reward_hint", "reward_finale"]) {
+    const block = talk.dialogues.find(d => d.dialogue_id === "trpg_talk_" + gm + "_" + kind);
+    assert(block?.lines.length, gm + " " + kind);
+    assert.equal(block.lines[0].speaker, gm, "the GM speaks first: " + gm + " " + kind);
+    for (const line of block.lines) {
+      assert([gm, "hajime"].includes(line.speaker) && faces[line.speaker], line.speaker);
+      assert(!/。$/.test(line.text) && !line.text.includes("\n"), line.text);
+      assert(Array.from(line.text).reduce((n, c) => n + (c.codePointAt(0) <= 255 ? 0.5 : 1), 0) <= 48, line.text);
+    }
+    // The dice rule changed (TRF01): a critical is any 20 and a fumble any 1 that ends in trouble, so the lines never say "ゾロ目" for them.
+    if (/^(critical|fumble)/.test(kind)) assert(!block.lines.some(line => /ゾロ/.test(line.text)), gm + " " + kind);
+  }
+  assert.equal(new Set(talk.dialogues.map(d => d.dialogue_id)).size, talk.dialogues.length, "no duplicated ids");
+});
+
 test("table excitement rises with shared moments, tiers give the next roll one momentum (bonus +4) and the night gets a name", () => {
   const session = new TrpgSession(scenario, { profileId: "quiet", seed: 3 });
   session.start();
@@ -274,12 +386,13 @@ test("table excitement rises with shared moments, tiers give the next roll one m
   assert.equal(start.heat, 0); assert.equal(start.momentum, 0);
   session.state.pending = { kind: "listen", dice: [20, 20], bonus: 1, hypothesisBonus: 0, momentum: 0, helper: null, rerolled: false };
   session.settleCheck();
-  assert.equal(session.snapshot().heat, 3, "a critical lifts the table three");
-  assert.equal(session.snapshot().momentum, 1, "reaching the first tier");
+  assert.equal(session.snapshot().heat, 2, "a critical lifts the table two");
+  assert.equal(session.snapshot().momentum, 0);
   interviewDone(session);
-  assert.equal(session.snapshot().heat, 4, "talking to the story's character lifts the table once");
+  assert.equal(session.snapshot().heat, 3, "talking to the story's character lifts the table once");
+  assert.equal(session.snapshot().momentum, 1, "reaching the first tier");
   session.consult("adam"); session.consult("adam");
-  assert.equal(session.snapshot().heat, 5, "only the first talk with each friend counts");
+  assert.equal(session.snapshot().heat, 4, "only the first talk with each friend counts");
   for (const id of ["menu", "window", "bag"]) session.inspect(id);
   session.interpret("quiet"); twistDone(session); session.plan("aroma", "tea"); session.plan("seat", "window");
   const before = session.snapshot().momentum;
