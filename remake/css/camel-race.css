@@ -68,8 +68,8 @@
 /* ---- 操作ボタン（調教師のリモコン）。左下と右下の角に重ね、真ん中の道と SUV は見せる ---- */
 .camel-controls { position: absolute; left: 1.6cqw; right: 1.6cqw; bottom: 1.6cqw; z-index: 2; display: flex; justify-content: space-between; align-items: flex-end; gap: 2cqw; pointer-events: none; }
 .camel-controls[hidden] { display: none; }
-.camel-control { --tone: var(--cr-gold); position: relative; overflow: hidden; pointer-events: auto; width: 31cqw; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 1cqw;
-  min-height: max(52px, 9.5cqh); padding: .6cqw 1.3cqw .6cqw .9cqw; border: 1px solid rgba(255,255,255,.16); border-radius: 1.4cqw; color: var(--cr-sand); font: inherit; text-align: left; cursor: pointer;
+.camel-control { --tone: var(--cr-gold); --rh: max(52px, 9.5cqh); position: relative; overflow: hidden; pointer-events: auto; width: 31cqw; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 1cqw;
+  min-height: var(--rh); padding: .6cqw 1.3cqw .6cqw .9cqw; border: 1px solid rgba(255,255,255,.16); border-radius: 1.4cqw; color: var(--cr-sand); font: inherit; text-align: left; cursor: pointer;
   background: linear-gradient(180deg, rgba(48,32,18,.9), rgba(20,13,7,.92)); box-shadow: inset 0 1px 0 rgba(255,255,255,.12), inset 0 -3px 0 rgba(0,0,0,.35), 0 6px 16px rgba(0,0,0,.4);
   touch-action: manipulation; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; transition: transform .08s, box-shadow .15s, border-color .15s; }
 .camel-signal { --tone: var(--cr-amber); }
@@ -111,10 +111,10 @@
 .camel-signal[data-state="whipping"] .camel-signal-note { color: #ffb09a; }
 @keyframes camel-spin { to { transform: rotate(360deg); } }
 .camel-control.hit::after { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; animation: camel-hit .35s ease-out both; }
-.camel-control.hit[data-hit="perfect"]::after { background: radial-gradient(circle at 12% 50%, rgba(255,226,122,.75), transparent 70%); }
-.camel-control.hit[data-hit="good"]::after { background: radial-gradient(circle at 12% 50%, rgba(184,240,255,.6), transparent 70%); }
-.camel-control.hit[data-hit="miss"]::after { background: radial-gradient(circle at 12% 50%, rgba(255,120,110,.55), transparent 70%); }
-.camel-control.hit[data-hit="boost"]::after { background: radial-gradient(circle at 12% 50%, rgba(255,179,71,.7), transparent 70%); }
+.camel-control.hit[data-hit="perfect"]::after { background: radial-gradient(circle at var(--hit-x, 12%) 50%, rgba(255,226,122,.75), transparent 70%); }
+.camel-control.hit[data-hit="good"]::after { background: radial-gradient(circle at var(--hit-x, 12%) 50%, rgba(184,240,255,.6), transparent 70%); }
+.camel-control.hit[data-hit="miss"]::after { background: radial-gradient(circle at var(--hit-x, 12%) 50%, rgba(255,120,110,.55), transparent 70%); }
+.camel-control.hit[data-hit="boost"]::after { background: radial-gradient(circle at var(--hit-x, 12%) 50%, rgba(255,179,71,.7), transparent 70%); }
 @keyframes camel-hit { from { opacity: 1; } to { opacity: 0; } }
 
 /* ---- 判定・バナー・カウントダウン ---- */
@@ -265,7 +265,7 @@
   .camel-feedback small { font-size: max(clamp(13px, 1.7cqw, 20px), var(--cr-min)); }
   .camel-banner[data-kind="tired"] { font-size: max(clamp(16px, 2.4cqw, 24px), var(--cr-min)); }
   /* 操作ボタン2つ: 高さ 96px（本編のステージ上）・幅は画面の 1/3。アイコン（🔊・⚡）を大きく、ゲージの字は 24px */
-  .camel-control { width: 33.3cqw; min-height: max(13.3cqh, var(--cr-tap)); gap: 1.4cqw; }
+  .camel-control { width: 33.3cqw; --rh: max(13.3cqh, var(--cr-tap)); min-height: var(--rh); gap: 1.4cqw; }
   .camel-control-stack { width: 33.3cqw; }
   .camel-control-icon { width: max(8.9cqh, calc(30px / var(--k, 1))); height: max(8.9cqh, calc(30px / var(--k, 1))); }
   .camel-control-text { font-size: max(min(24px, 3.3cqh), var(--cr-min)); }
@@ -606,3 +606,36 @@ html:root[data-density="phone"] .camel-game .camel-cup strong { font-size: max(2
 
 /* 試遊ページの題名 */
 .camel-menu-title { display: block; width: min(460px, 80vw); height: auto; margin: 0 auto; }
+
+/* ---- 調教師のリモコン（CR-UI07・#3227・2026-11-11 採用）----
+   絵（720×240・4枚とも同じ筐体）は、左 205px に丸いボタン（中心 102,118・直径 180）、右 32px に縁とネジ、その間は無地の黒いゴム。
+   九分割で真ん中だけを横に伸ばし、左右は縮尺を保つ。そのためボタンの高さを --rh に固定し、左右の幅を高さから決める。
+   絵の丸いボタンの上に透明な丸（.camel-control-icon）を重ね、声の合図の光る輪はその丸に出す。
+   押下（声は押した瞬間・ムチは押している間）は押下の絵に替える。4枚そろって読めた時だけ JS が cr-remote を付ける（読めなければ従来の CSS）。 */
+.camel-game.cr-remote .camel-control { --hit-x: calc(var(--rh) * 102 / 240); height: var(--rh); min-height: 0; padding: .3cqw 1.1cqw .3cqw calc(var(--rh) * 205 / 240 + .3cqw);
+  grid-template-columns: minmax(0, 1fr) auto; border: 2px solid transparent; border-radius: calc(var(--rh) * 14 / 240); background: none;
+  border-image: url("../img/ui/camel_race/ui/remote-voice-normal.webp") 0 32 0 205 fill / 0 calc(var(--rh) * 32 / 240) 0 calc(var(--rh) * 205 / 240) / 0 stretch; }
+.camel-game.cr-remote .camel-signal { border-image-source: url("../img/ui/camel_race/ui/remote-whip-normal.webp"); }
+.camel-game.cr-remote .camel-voice:active, .camel-game.cr-remote .camel-voice.held { border-image-source: url("../img/ui/camel_race/ui/remote-voice-pressed.webp"); }
+.camel-game.cr-remote .camel-signal:active, .camel-game.cr-remote .camel-signal.held,
+.camel-game.cr-remote .camel-signal[data-state="whipping"] { border-image-source: url("../img/ui/camel_race/ui/remote-whip-pressed.webp"); }
+.camel-game.cr-remote .camel-control-icon { position: absolute; left: calc(var(--rh) * 12 / 240 - 2px); top: calc(var(--rh) * 28 / 240 - 2px);
+  width: calc(var(--rh) * 180 / 240); height: calc(var(--rh) * 180 / 240); background: none; box-shadow: none; animation: none; filter: none; }
+.camel-game.cr-remote .camel-control-icon svg { display: none; }
+.camel-game.cr-remote .camel-voice[data-cue="on"] .camel-control-icon { animation: camel-remote-ring 1.25s ease-in-out infinite; }
+@keyframes camel-remote-ring {
+  0%, 100% { box-shadow: 0 0 0 calc(var(--rh) * 6 / 240) rgba(255,215,122,.55); }
+  50% { box-shadow: 0 0 0 calc(var(--rh) * 11 / 240) rgba(255,215,122,.9), 0 0 calc(var(--rh) * 40 / 240) calc(var(--rh) * 8 / 240) rgba(255,215,122,.65); } }
+/* 従来は枠の色で示していた状態（声の合図＝金・スパート＝橙・ムチ＝朱・息が少ない＝黄・息が空＝点滅）を、絵の縁に細い線で示す */
+.camel-game.cr-remote .camel-control { outline: 2px solid var(--remote-edge, transparent); outline-offset: -2px; }
+.camel-game.cr-remote .camel-control:focus-visible { outline: 2px solid var(--cr-gold); outline-offset: 2px; }
+.camel-voice[data-cue="on"] { --remote-edge: #ffd77a; }
+.camel-signal[data-stamina="low"] { --remote-edge: #ffd06a; }
+.camel-signal[data-state="spurt"] { --remote-edge: #ffb347; }
+.camel-signal.held, .camel-signal[data-state="whipping"] { --remote-edge: #ff6e46; }
+.camel-game.cr-remote .camel-signal[data-stamina="spent"] { animation: camel-remote-blink 1s steps(2) infinite; }
+@keyframes camel-remote-blink { 50% { outline-color: rgba(255,142,122,.85); } }
+@media (prefers-reduced-motion: reduce) {
+  .camel-game.cr-remote .camel-voice[data-cue="on"] .camel-control-icon { animation: none; box-shadow: 0 0 0 calc(var(--rh) * 11 / 240) rgba(255,215,122,.9); }
+  .camel-game.cr-remote .camel-signal[data-stamina="spent"] { animation: none; --remote-edge: rgba(255,142,122,.85); }
+}

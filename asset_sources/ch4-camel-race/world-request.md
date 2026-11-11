@@ -10,10 +10,10 @@ Issue: [#3217](https://github.com/haseatsu114514-dot/shisha-game/issues/3217)（
 | いまコードで描いている物 | どう見えるか | この依頼 |
 |---|---|---|
 | スタートとゴールの門 | 木の柱と布の幕を四角と三角で描いた図形。背景の絵の隣で浮く | CR-WD01（**2026-11-11 手前の柱2枚を採用・組み込み済み**。奥の柱は同じ絵を半分の大きさで描く） |
-| 100mごとの距離板 | 四角3枚 | CR-WD02 |
-| 走路の砂・車の道 | 乱数で打った点と線のタイル。広い面積が単調 | CR-WD04（走路の砂は**2026-11-11 採用・組み込み済み**。道は再依頼） |
+| 100mごとの距離板 | 四角3枚 | CR-WD02（**2026-11-11 採用・組み込み済み**。#3227） |
+| 走路の砂・車の道 | 乱数で打った点と線のタイル。広い面積が単調 | CR-WD04（走路の砂・道とも**2026-11-11 採用・組み込み済み**。道は #3227） |
 | 砂煙 | 丸いぼかしの円 | CR-WD03（**2026-11-11 採用・組み込み済み**） |
-| 下の2つの操作ボタン | CSS の黒い角丸に SVG の記号 | CR-UI07（[ui-request.md](ui-request.md)。2026-11-11 の4枚は不合格 → **指定を改訂して再依頼**） |
+| 下の2つの操作ボタン | CSS の黒い角丸に SVG の記号 | CR-UI07（[ui-request.md](ui-request.md)。最初の4枚は不合格 → 指定を改訂した版を**2026-11-11 採用・組み込み済み**。#3227） |
 | GO!・3・2・1・LAST SPURT・GOAL・GOOD・MISS | 画面の書体に縁取り（PERFECT だけ手描きの字） | CR-UI14 の残り9語（**2026-11-11 採用・組み込み済み**） |
 | 2〜4位のメダル | CSS の円（1位だけ絵） | CR-UI03 の銀・銅・鉄（**2026-11-11 採用・組み込み済み**。#3328） |
 | 進み具合の横木 | CSS の木の色 | CR-UI06 track-rail（**2026-11-11 採用・組み込み済み**。#3328） |
@@ -23,6 +23,8 @@ Issue: [#3217](https://github.com/haseatsu114514-dot/shisha-game/issues/3217)（
 
 Claude は画像を生成しない。下の「Codex へ渡す文」をそのまま渡す。届くまでは今のコードの描画のまま動く。
 
+**2026-11-11 の #3227 の組み込みで、この依頼の部品はすべて採用・組み込み済み**（下の依頼文は記録として残す）。
+
 ## 一覧
 
 保存先（採用後）は `assets/ui/camel_race/world/`、WebP は `remake/img/ui/camel_race/world/`。原画は `asset_sources/ch4-camel-race/world/originals/`。
@@ -31,8 +33,8 @@ Claude は画像を生成しない。下の「Codex へ渡す文」をそのま�
 | 優先 | ID | ファイル名 | サイズ | 何に使うか | 中身 |
 |---|---|---|---|---|---|
 | A | CR-WD01 | `post-start-near.png` / `post-start-far.png` / `post-finish-near.png` / `post-finish-far.png` | 手前 480×800・奥 240×400（同じ縦横比） | **2026-11-11 手前の2枚を採用。奥の2枚は作らなくてよい**（手前の絵を半分の大きさで描く）。スタートとゴールの柱（2026-11-11 改訂。1枚の門をやめ、**手前の柵の柱と奥の柵の柱を別の絵**にした）。コードが手前の柱を手前の柵に、奥の柱を奥の柵に、**同じ横位置**で立てる。ゴールの線は地面にコードで引く | 1本ずつの柱。日に焼けた木の柱に、縄の縛り・真鍮の頭と足の金具・赤白の布の巻き（2026-11-11 の不合格の門の案と同じ質感）。柱の上の短い腕から、**こちらを向いた**布の幕が柱の左へ垂れる（幕の中央は**無地**。字はコードか CR-WD09）。柱の上に小さな三角の旗。手前は太く高く幕が大きい、奥は細く低く幕が小さい。スタートは深い緑、ゴールは朱で上下の縁が白黒の市松（旗も市松）。柱の根元がキャンバスの下端、柱の中心はキャンバスの右から 1/4 あたり。4枚で描き方をそろえる |
-| A | CR-WD02 | `marker-board.png` | 160×240 | 100mごとの距離板（奥の柵の外） | 細い木の杭に、上の縁が朱色のクリーム色の板。板の中央は無地（数字はコード）。杭の根元がキャンバスの下端 |
-| A | CR-WD04 | `ground-track.png` / `ground-road.png` | 1280×452 / 1280×152 | 走路の砂と、車が走る道（横に流すタイル） | 走路: ならした砂。蹄の跡がまばらに続き、手前ほど砂粒が大きい。上の辺（奥）は明るく霞み、下の辺（手前）は少し濃い。道: 踏み固めた砂にタイヤの轍が2本。**左右の端がつながる**（横にタイルして継ぎ目が見えない）。影・物・人なし |
+| A | CR-WD02 | `marker-board.png` | 160×240 | **2026-11-11 採用（#3227）**。100mごとの距離板（奥の柵の外） | 細い木の杭に、上の縁が朱色のクリーム色の板。板の中央は無地（数字はコード）。杭の根元がキャンバスの下端 |
+| A | CR-WD04 | `ground-track.png` / `ground-road.png` | 1280×452 / 1280×152 | **2026-11-11 2枚とも採用**（道は #3227）。走路の砂と、車が走る道（横に流すタイル） | 走路: ならした砂。蹄の跡がまばらに続き、手前ほど砂粒が大きい。上の辺（奥）は明るく霞み、下の辺（手前）は少し濃い。道: 踏み固めた砂にタイヤの轍が2本。**左右の端がつながる**（横にタイルして継ぎ目が見えない）。影・物・人なし |
 | B | CR-WD03 | `dust-1.png` / `dust-2.png` / `dust-3.png` | 各 256×256 | 蹄と車輪の砂煙 | 輪郭のはっきりした2〜3段の塊で描いた砂煙（小・中・大。左へ流れる形）。エアブラシのぼかしにしない。外は透過 |
 | B | CR-WD05 | `suv-rival-a.png` / `suv-rival-b.png` | 各 720×360 | **2026-11-11 採用（#3328）**。奥の柵の向こうを並走する、ほかの調教師の車 | いまの `assets/ui/camel_race/suv.png` と同じ寸法・同じ向き（右）・同じ車輪の位置（後 153,282・前 583,282）の四角い SUV。a は銀がかった灰、b は砂色。窓は濃い色で中の人は描かない。屋根のアンテナは無し（2026-11-11 オーナー指示。初めの指定の「1本」より優先）。実在の車種の顔・エンブレムにしない |
 | B | CR-WD07 | `howto-tactics.png` | 640×480 | 遊び方の絵（風よけと競り合い） | CR-UI11 と同じ描き方の小さな絵。青い幕のラクダのすぐ後ろに、金の幕（赤い★）のハビーバが付く。前のラクダで割れた風の線が、後ろのラクダの上を流れる。背景は砂と空だけで、外側は透過 |
@@ -40,7 +42,7 @@ Claude は画像を生成しない。下の「Codex へ渡す文」をそのま�
 | B | CR-WD09 | `word-vs.png` / `word-start.png` / `word-finish.png` | 長辺1024以内 | **2026-11-11 3語とも採用**（VS は #3328）。競り合いの「VS」、門の幕の字 | CR-UI14 と同じ、ペンキで手描きした看板の字。VS は金に濃い茶の縁、START と FINISH は白にくっきりした濃い影。**綴りが違う案は不採用** |
 | C | CR-WD06 | `fg-flagpole.png` | 256×720 | 手前を速く流れる柱（速さの手がかり） | 白い細い柱の上に、金・朱・クリームの三角旗を3枚つないだ紐。柱の根元がキャンバスの下端 |
 
-未生成のまま残っている CR08 の部品（仕様は [ui-request.md](ui-request.md)）: CR-UI07 `remote-{voice,whip}-{normal,pressed}.png`（2026-11-11 に指定を改訂。下の依頼文の CR-UI07。改訂版の候補は Draft #3227 で検品待ち）。CR-UI03 の銀・銅・鉄と CR-UI06 の横木は 2026-11-11 に採用（#3328）、CR-UI14 の9語も採用済み。
+CR08 の部品（仕様は [ui-request.md](ui-request.md)）も、すべて採用済み: CR-UI07 `remote-{voice,whip}-{normal,pressed}.png` は改訂版を 2026-11-11 に採用（#3227）。CR-UI03 の銀・銅・鉄と CR-UI06 の横木は 2026-11-11 に採用（#3328）、CR-UI14 の9語も採用済み。
 
 ## Codex へ渡す文（コピペ用）
 
@@ -55,8 +57,8 @@ FORMAT: side view as seen from the trackside, flat with no strong perspective. T
 
 【作るもの】（ファイル名・サイズ・中身）
 CR-WD01（2026-11-11 改訂。1枚の門ではなく、柱を1本ずつ4枚） post-start-near.png / post-finish-near.png 各480x800、post-start-far.png / post-finish-far.png 各240x400: ONE single upright trackside post per image, seen straight from the side (no perspective, no beam spanning the track, no second post). A sun-bleached wooden post with rope lashing, a dull brass cap and brass foot plate, and a red-and-white cloth wrap around its middle, the same materials and painting as the attached gate attempt. From a short arm near the top hangs a cloth banner that FACES THE VIEWER and extends to the LEFT of the post; the center of the banner is plain flat cloth (the game prints the word there). A small triangular flag on top. The base of the post touches the bottom edge of the canvas; the post's center line is about one quarter of the canvas width from the right edge. NEAR (480x800): thick, tall post with a large banner about two thirds of the canvas wide. FAR (240x400): the same design at half the size (same proportions), so it reads as the matching post on the far rail. START: deep green banner and flag. FINISH: racing-red banner with a black-and-white checkered strip along its top and bottom edges and a checkered flag. Draw all four in exactly the same hand and lighting.
-CR-WD02 marker-board.png 160x240: a thin wooden stake holding a small cream board with a racing-red strip along its top edge. The board face is plain (the game prints the distance). The base of the stake touches the bottom edge.
-CR-WD04（ground-track は 2026-11-11 採用済み。ground-road だけ再依頼） ground-track.png 1280x452: a horizontally seamless tile of a groomed sand racetrack seen from the side at a low angle: raked sand with sparse lines of camel hoof prints, grains larger toward the bottom (near) edge, the top (far) edge lighter and hazier, the bottom edge slightly darker. Opaque, no objects, no shadows of objects, no people. The left and right edges must match perfectly. ground-road.png 1280x152: a horizontally seamless tile of a packed sand service road with two tire ruts running left to right. Opaque. The left and right edges must match perfectly. For ground-road: the previous attempt came back 1402x1122 with wide white margins above and below the strip and was rejected. Make the canvas itself the thin strip (1280x152, about 8.4:1) and fill the whole canvas with road texture edge to edge; no white, empty or transparent margins.
+CR-WD02（2026-11-11 採用済み。作らなくてよい） marker-board.png 160x240: a thin wooden stake holding a small cream board with a racing-red strip along its top edge. The board face is plain (the game prints the distance). The base of the stake touches the bottom edge.
+CR-WD04（ground-track・ground-road とも 2026-11-11 採用済み。作らなくてよい） ground-track.png 1280x452: a horizontally seamless tile of a groomed sand racetrack seen from the side at a low angle: raked sand with sparse lines of camel hoof prints, grains larger toward the bottom (near) edge, the top (far) edge lighter and hazier, the bottom edge slightly darker. Opaque, no objects, no shadows of objects, no people. The left and right edges must match perfectly. ground-road.png 1280x152: a horizontally seamless tile of a packed sand service road with two tire ruts running left to right. Opaque. The left and right edges must match perfectly. For ground-road: the previous attempt came back 1402x1122 with wide white margins above and below the strip and was rejected. Make the canvas itself the thin strip (1280x152, about 8.4:1) and fill the whole canvas with road texture edge to edge; no white, empty or transparent margins.
 CR-WD03 dust-1.png / dust-2.png / dust-3.png 各256x256: a puff of desert dust kicked up by hooves, drifting to the left, painted as two to three clearly shaped tone steps (not an airbrushed blur). Small, medium and large.
 CR-WD05（2026-11-11 採用済み。作らなくてよい） suv-rival-a.png / suv-rival-b.png 各720x360: a boxy generic desert SUV, side view facing right, the same size, proportions and wheel positions as the attached suv.png (rear wheel center at 153,282 and front wheel center at 583,282, tire diameter about 130). a: silver-grey body. b: sand-beige body. Dark tinted windows with no people visible. One thin antenna on the roof. Do not copy the grille, lights or badge of any real car model.
 CR-WD07 howto-tactics.png 640x480: a small spot illustration in the same style as the attached howto-camel.png, transparent outside a soft sand-and-sky vignette. Two racing camels with small box-shaped robot jockeys: the front camel wears a blue saddle blanket; the rear camel wears a gold saddle blanket with a red star and runs tucked right behind it. Wind lines split around the front camel and flow over the back of the rear camel.
@@ -64,9 +66,9 @@ CR-WD08 cup-practice.png / cup-rookie.png / cup-standard.png / cup-expert.png �
 CR-WD09（VS・START・FINISH とも 2026-11-11 採用済み。作らなくてよい） word-vs.png（長辺1024以内）: hand-painted sign-writer lettering of exactly these words, nothing else on the canvas, transparent outside the letters: "VS" (gold with a dark brown outline), "START" and "FINISH" (white with a crisp dark drop shadow painted as part of the letters). Bold, slightly irregular brush strokes like paint on a racecourse board; not a computer font, no gradients, no glow. Every letter must be spelled exactly as written. (This is the only item where letters are allowed.) For VS: the previous attempts left a dark rectangular panel and a glow behind the letters and were rejected. Draw ONLY the two letters; nothing behind them (no panel, plate, board, box, glow or vignette). Every pixel outside the letter shapes and their painted outline must be fully transparent (alpha 0).
 CR-WD06 fg-flagpole.png 256x720: a thin white pole with a string of three triangular pennants (gold, racing red, cream) at the top. The base of the pole touches the bottom edge.
 
-CR-UI07（2026-11-11 改訂。前の指定より優先） remote-voice-normal.png / remote-voice-pressed.png / remote-whip-normal.png / remote-whip-pressed.png 各960x240: the black rubber housing of ONE camel trainer's handheld remote with ONE big round push button, seen straight from the front. The game shows it about 70px tall and stretches only the plain middle horizontally; the left part (the button) and the right edge keep their scale, and the height is never stretched. So: (1) The housing fills the whole canvas, top to bottom and left to right, within 2%; no empty or transparent margins above or below it. (2) The button is BIG: its diameter is about 75% of the canvas height (about 180px at 960x240), centered vertically, with its left edge about 20px inside the housing's left edge. Keep the button and every other decoration inside the leftmost 240px; the rightmost 60px holds only the frame and two small screws; everything between x=240 and x=900 is plain, even matte black rubber with no seams, inner panels, symbols or screws (the game prints the label and the gauge there). (3) Paint remote-voice-normal first, then make the other three by editing that exact image: the housing, frame, screws, color and lighting stay identical in all four; only the button changes. Voice: a gold (dull brass) button with a speaker-grille pattern of dark holes. Whip: a red-amber button with an embossed curved riding-whip symbol (symbol only, no letters). (4) Pressed: the button face sinks deep into its socket: the raised rim disappears, the face is clearly darker, and a dark ring of shadow shows around it, so normal and pressed are easy to tell apart at 70px tall. If 960x240 cannot be made exactly, a canvas between 3:1 and 4:1 is acceptable as long as (1) to (4) hold.
+CR-UI07（2026-11-11 改訂。前の指定より優先。改訂版を 2026-11-11 採用済み。作らなくてよい） remote-voice-normal.png / remote-voice-pressed.png / remote-whip-normal.png / remote-whip-pressed.png 各960x240: the black rubber housing of ONE camel trainer's handheld remote with ONE big round push button, seen straight from the front. The game shows it about 70px tall and stretches only the plain middle horizontally; the left part (the button) and the right edge keep their scale, and the height is never stretched. So: (1) The housing fills the whole canvas, top to bottom and left to right, within 2%; no empty or transparent margins above or below it. (2) The button is BIG: its diameter is about 75% of the canvas height (about 180px at 960x240), centered vertically, with its left edge about 20px inside the housing's left edge. Keep the button and every other decoration inside the leftmost 240px; the rightmost 60px holds only the frame and two small screws; everything between x=240 and x=900 is plain, even matte black rubber with no seams, inner panels, symbols or screws (the game prints the label and the gauge there). (3) Paint remote-voice-normal first, then make the other three by editing that exact image: the housing, frame, screws, color and lighting stay identical in all four; only the button changes. Voice: a gold (dull brass) button with a speaker-grille pattern of dark holes. Whip: a red-amber button with an embossed curved riding-whip symbol (symbol only, no letters). (4) Pressed: the button face sinks deep into its socket: the raised rim disappears, the face is clearly darker, and a dark ring of shadow shows around it, so normal and pressed are easy to tell apart at 70px tall. If 960x240 cannot be made exactly, a canvas between 3:1 and 4:1 is acceptable as long as (1) to (4) hold.
 
-【CR08 の部品】CR-UI03 の銀・銅・鉄と CR-UI06 の横木、CR-UI14 の9語は 2026-11-11 に採用済み（作らなくてよい）。残りは上の CR-UI07 の改訂版だけ。
+【CR08 の部品】CR-UI03 の銀・銅・鉄と CR-UI06 の横木、CR-UI14 の9語、CR-UI07 の改訂版は 2026-11-11 に採用済み（作らなくてよい）。残りはない。
 
 【参照（添付できれば添付。役割を書き添える）】CR-WD01 の柱の質感（形は真似しない。横木と奥の柱は描かない）: asset_sources/ch4-camel-race/world/review/gate-start-attempts-rejected.jpg。画風と光: assets/backgrounds/bg_dubai_camel_track_morning.png。物の描き込みの密度: assets/ui/camel_race/camel_1.png と suv.png。CR-WD05 の寸法と車輪の位置: suv.png。CR-WD07 の描き方: assets/ui/camel_race/ui/howto-camel.png。CR-WD09 の字: assets/ui/camel_race/ui/word-perfect.png。
 【渡し方】原画をそのまま asset_sources/ch4-camel-race/world/originals/ に置き、生成の指示と日付を asset_sources/ch4-camel-race/world/generation.json に書いて push。各ファイルの SHA-256・実寸・アルファの有無を添えてください。候補が複数ある部品は -A/-B を付けて全部ください。生成の決まり（開始前のコピーの確認・寸法とアルファの機械確認・文字を描かない）は Issue #3055 と同じです。
@@ -230,9 +232,45 @@ Codex の Draft PR [#3328](https://github.com/haseatsu114514-dot/shisha-game/pul
 
 原画の SHA-256 は [remaining-20261111/README.md](world/remaining-20261111/README.md) の表。
 
+### 2026-11-11 #3227 道・距離板・リモコン4枚（オーナー決定で全採用）
+
+Codex の PR [#3227](https://github.com/haseatsu114514-dot/shisha-game/pull/3227)（`codex/3217-camel-world`。2026-11-11 にマージして main に保存済み）。オーナー決定（2026-11-11・#3217 のコメント）で候補を全部採用し、ここで組み込んだ。`world/SHA256SUMS-B.txt` と `world/generation.json` の SHA-256 は、使った候補6枚・比較図とも一致。
+
+| 部品 | 判定 | 確かめたこと | ゲーム用 |
+|---|---|---|---|
+| CR-WD02 marker-board | **採用**（オーナー決定） | 160×240・透過。杭の中心 x=79、根元が下端。板は y 24〜100（上の朱色の帯が y 26〜39、その下の無地が y 40〜96）。文字・数字なし | `assets/ui/camel_race/world/marker-board.png`（160×240） |
+| CR-WD04 ground-road-B | **採用**（オーナー決定） | 1280×152・不透過・上下の余白なし。左右の端の列は完全に一致。轍は高さの約1/3と2/3の2本。色は走路の砂とほぼ同じ（平均 RGB 240,164,96。走路は 235,164,99） | `assets/ui/camel_race/world/ground-road.png`（1280×152） |
+| CR-UI07 remote-{voice,whip}-{normal,pressed}-B | **採用**（オーナー決定。「ラクダはボタン大きいのがいい」に合う版） | 720×240（3:1）。4枚とも同じ筐体で、ボタンだけが違う（x=205 から右は4枚で画素が一致）。ボタンは中心 (102,118)・直径約180（高さの75%）。右の 32px に縁とネジ、その間は無地の黒いゴム。押下は面が暗く沈み、周りに太い影の輪 | `assets/ui/camel_race/ui/remote-{voice,whip}-{normal,pressed}.png`（各720×240） |
+
+- ゲーム用は Codex の正寸の候補そのもの（こちらでは加工していない）。Codex 側の加工は `generation.json` の記録どおり。
+  - リモコン: 原画 2172×724 を均一に 720×240 へ縮小。声の押下・ムチの2枚は、ボタンの楕円の内側だけを声の通常の筐体に重ねた。
+  - 道: 原画 2172×724 を 640×152 に縮め（縦横の比率は変わる）、左右反転した写しを右に並べた。
+- WebP は `build_images.py` の `encode()`（可逆と非可逆 q90 の小さい方）。
+- 置き方:
+  - 距離板（`camel-race.js` の `drawMarkers`・`MARKER_ART`）: 奥の柵の根元（y=397）に 0.36 倍で立てる（板の幅は約52px で、コードで描いていた板と同じくらい）。無地の中央に数字を 15px で書く。根元の右下の短い影は今のまま。
+  - 道（`groundTiles`）: 半分の 640×76 にして、走路の砂と同じく横に流すタイルにした。走路と道の間は手前の柵が分ける。轍は車輪の高さを通る。
+  - リモコン（`camel-race.css` の `cr-remote`）: 操作ボタンを `border-image` の九分割にした。
+    - 左 205px（ボタン）と右 32px（縁とネジ）は縦横比を保ち、間の無地だけを横に伸ばす。そのためボタンの高さを `--rh` に固定し、左右の幅を高さから決める。
+    - SVG の記号は隠す。絵のボタンの上に透明な丸を重ね、声の合図の光る輪をそこに出す。
+    - 押下（声は押した瞬間・ムチは押している間）は押下の絵に替える。声には押した瞬間だけ `held` を付けるようにした（キーの Space でも沈む）。
+    - 前は枠の色で示していた状態（声の合図＝金・スパート＝橙・ムチ＝朱・息が少ない＝黄・息が空＝点滅）は、絵の縁の細い線で示す。
+  - どれも読めなければ今の描画に戻る。距離板と道は画面の `data-marker`・`data-road`（`sprites`／`canvas`）で切り替わる。リモコンは4枚そろって読めた時だけ付くクラス `cr-remote` で切り替わる。
+- これで #3217 の部品はすべて採用・組み込み済み。
+
+| ゲーム用（`assets/ui/camel_race/`） | 寸法 | SHA-256 |
+|---|---|---|
+| `world/marker-board.png` | 160×240 | `2f3852c9060c1d68c6fc3216cc402ee66c1874c1570c4fa9e0354752ed486d2d` |
+| `world/ground-road.png` | 1280×152 | `aeb26826608e1cb42d6c0e3270724b417c3b7be72eab7113485a86a6e8548939` |
+| `ui/remote-voice-normal.png` | 720×240 | `cc98218a9a551adf2cb23329a839f56edcf6b1f1151c7427ec86bd2a686cbb57` |
+| `ui/remote-voice-pressed.png` | 720×240 | `1149e10d0628c6873405f7b1ac97bfea51716309112170b5a2447a75ab317cd4` |
+| `ui/remote-whip-normal.png` | 720×240 | `7c7c9f79f51c8885d9bcb3d9263bebf16563fdb4650a390d314781363cf3e583` |
+| `ui/remote-whip-pressed.png` | 720×240 | `26dc919bbb9269f53f76f870e260891bf37e92046519429df1b9616cb8f91177` |
+
+原画の SHA-256 は [world/SHA256SUMS-B.txt](world/SHA256SUMS-B.txt)（距離板の原画は [world/generation.json](world/generation.json)）。
+
 ## 届いた後（Claude の作業）
 
 1. 原画の SHA-256・寸法・アルファを確かめ、部品ごとに選ぶ（理由をこのファイルに追記）。CR-WD04 は左右のつなぎ目を、CR-WD05 は車輪の位置を測る。
 2. 縮小だけで `assets/ui/camel_race/world/` へ置き、WebP を `remake/img/ui/camel_race/world/` に作る（Git LFS）。
-3. `remake/js/minigames/camel-race.js` の `drawMarkers`・`groundTiles` の道を、絵が読めた時だけ絵に替える（読めなければ今の描画。`drawDust`・門の柱と字・旗の柱・紋章・手描きの字・走路の砂・遊び方の絵・並走車・VS・メダル・横木は 2026-11-11 に済み）。CR-UI07 は操作ボタンの枠を横だけ伸ばす九分割（`border-image`）にし、左のボタンと右の縁は縮尺を保つ。
+3. `remake/js/minigames/camel-race.js` の描画を、絵が読めた時だけ絵に替える（読めなければ今の描画）。2026-11-11 までに全部品が済んだ: 砂煙・門の柱と字・旗の柱・紋章・手描きの字・走路の砂と道・遊び方の絵・並走車・VS・メダル・横木・距離板・リモコン（操作ボタンの枠を横だけ伸ばす九分割）。
 4. PC（1280×720）とスマホ横（844×390）で、スタート・中盤・スパート・ゴールを目視し、`node remake/test/browser/ch4_camel_race.mjs` を通す。
