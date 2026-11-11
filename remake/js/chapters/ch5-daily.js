@@ -28,7 +28,7 @@ import { TOKYO, TOKYO_SPOTS, TO_TOKYO_SPOT, performTokyoSpot, inTokyo, tokyoNigh
   chapterFiveTokyoPin, tokyoSpotsNow, preloadTokyoScenes } from "./ch5-tokyo.js";
 import { DUBAI, DUBAI_SPOTS, TO_DUBAI_SPOT, performDubaiSpot, inDubai, dubaiNight, dubaiWakeBackground, chapterFiveDubaiPin,
   chapterFiveDubaiLeisureSpots, chapterFiveDubaiLeisureById, preloadNoorScenes, dubaiBondHasNew } from "./ch5-dubai.js";
-import { chapterFiveShops, chapterFiveCityShops, chapterFiveShopById, performChapterFiveShop } from "./ch5-shops.js";
+import { chapterFiveShops, chapterFiveCityShops, chapterFiveShopById, performChapterFiveShop, chapterFiveShowroom } from "./ch5-shops.js";
 import { chapterFiveCateringSpot, performCateringSpot, deliverCateringMorning } from "./ch5-catering.js";
 import { CATERING_SPOT_ID } from "./ch5-catering-model.js";
 import { noteShopStamp, shopStampsShortcut } from "./ch5-shop-stamps.js";
@@ -241,8 +241,17 @@ async function performChapterFiveSpot(spot, io, options = {}) {
     return { used: await io.readAndCommit("ch5_free_eden_adam"), exerted: false };
   }
   if (spot.kind === "shop") {
-    // 第5章は1階の買い物だけ（2階の相談＝凛想の場面は出さない）。時間は使わない。
-    // 階の選択を飛ばす指定は direct（errand は買い出し対象のフレーバーID専用）。
+    // 夜は2階のショールームで凛想と話せる（通いの小会話・BLC08。第1・2章の段階の会話や試作は出さない）。
+    // 1階の買い物は時間を使わない。階の選択を飛ばす指定は direct（errand は買い出し対象のフレーバーID専用）。
+    const showroom = chapterFiveShowroom(state);
+    if (showroom) {
+      const floor = await modal({ title: "Dr.fookah", body: "どちらへ行こう。", options: [
+        { label: "1F 買い物", value: "shop", test: "ch5-fookah-shop", primary: true },
+        { label: "2F ショールーム（凛想さん）", value: "showroom", test: "ch5-fookah-showroom" },
+        { label: "やめておく", value: null, test: "ch5-fookah-cancel" }] });
+      if (!floor) return { used: false, exerted: false };
+      if (floor === "showroom") return await performChapterFiveShop(showroom, options) || { used: false, exerted: false };
+    }
     await openShop({ direct: true });
     return { used: false, exerted: false };
   }

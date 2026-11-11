@@ -493,11 +493,7 @@ await suite("growth-levelup", async (runCheck) => {
     await page.locator(t("pull-serve")).click();await page.locator(t("step-next")).waitFor();await page.locator(t("step-next")).click();
     const completed=await page.evaluate(async()=>{await deepRun;return {pulls:lessonCs.pull.pulls,failed:lessonCs.failed||null};});
     assert.deepEqual(completed,{pulls:2,failed:null});
-    // 新しい配置（一枚の舞台・既定）は上のレールを詰めるため、モード名の横の補足（練習の種類）を画面に出さない
-    // （stage_src.css「上のレールを詰める」・docs/design/craft-stage-layout.md の上のレール）。見えるモード名と、作業台が持つ補足の文言を分けて確かめる
-    if(await page.evaluate(()=>document.body.matches(".craft-stage:not(.game-ds)"))){
-      assert.match(await page.locator(".bench-mode").innerText(),/PRACTICE/);assert.equal(await page.locator(".bench-mode small").textContent(),"手順の中間チェック");
-    }else assert.match(await page.locator(".bench-mode").innerText(),/PRACTICE.*手順の中間チェック/s);
+    assert.match(await page.locator(".bench-mode").innerText(),/PRACTICE.*手順の中間チェック/s);
     assert.match(await page.locator(".bench-hint").innerText(),/自分で吸って/);
   },{viewport:{width:591,height:1280}});
 
@@ -1415,8 +1411,8 @@ await suite("growth-levelup", async (runCheck) => {
     await page.locator("#modal.show button", { hasText: "答えを返しに行く" }).click();
     await readUntil("ch3_outing_enmaku_answer");
     await tokyoMap(1);
-    // 鉄の煙は初来店の後に「鉄の煙で一服する」（通いの外出・RVE07 #3270）も選べるので、選択肢から寄り道（二度目の来店）を選ぶ
     await page.locator(t("pin-ch3_tokyo_volk")).click(); await page.locator(t("map-go")).click();
+    // 初来店の後は通い（鉄の煙で一服する・#3270）も並ぶので、二度目の来店を選ぶ
     await page.locator("#modal.show button", { hasText: "鉄の煙の二度目" }).click();
     await readUntil("ch3_volk_second");
     const growth = await page.evaluate(() => structuredClone(__remake.state.growth));

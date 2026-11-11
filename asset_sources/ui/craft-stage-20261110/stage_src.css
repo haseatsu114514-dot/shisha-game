@@ -99,8 +99,6 @@
 & .bench-panel { background: none !important; border: 0 !important; box-shadow: none !important; border-image: none !important; }
 /* 「？」は右上の角に固定（中身に重ねない） */
 &[data-step] .bench-head { position: fixed !important; inset: 6px 12px auto auto !important; z-index: 9; margin: 0; padding: 0; border: 0; }
-/* 角には「？」だけ。工程名は上のレールにあるので、スマホ横の旧い見出し（craft-landscape.css の機材・詰め方・炭の配置）は出さない */
-&[data-step] .bench-head > .bench-heading { display: none !important; }
 & .bench-guide summary { width: 68px !important; height: 68px !important; font-size: 30px !important; font-weight: 800; border: 2px solid #8f78ab !important; background: #2e1d45e6 !important; color: #c9a7e6 !important; }
 & .bench-guide-tip { top: calc(100% + 10px) !important; bottom: auto !important; left: auto !important; right: 0 !important; }
 
@@ -175,14 +173,14 @@
 & .pull-btns > .btn { grid-row: 2; height: 100px; min-height: 0; margin: 0; }
 & .pull-btns > .btn.primary { grid-column: 3; }
 & .pull-btns > .btn:not(.primary) { grid-column: 2; }
-/* 覚えた技の追加操作（ズボー・味の名前を伏せる）は副ボタンの席に重ねず、下の列の真上に一段足して置く。
-   ズボー（もう一つの吸い方）は金の「吸う」の上、味の名前を伏せる（出し方）は「確かめる／提供する」の上。ダイヤルの段はその分だけ低くなる */
-& .pull-play:has(> .pull-btns.with-options) { grid-template-rows: minmax(0, 1fr) 80px 100px; }
-& .pull-play:has(> .pull-btns.with-options) > .pull-summary { grid-row: 3; }
-& .pull-btns.with-options > .btn { grid-row: 3; }
-& .pull-btns.with-options > .btn:is([data-test="pull-deep"], [data-test="pull-blind"]) { grid-row: 2; height: 80px; padding-block: 0; line-height: 1.15; }
-& .pull-btns.with-options > .btn[data-test="pull-deep"] { grid-column: 3; }
-& .pull-btns.with-options > .btn[data-test="pull-blind"] { grid-column: 2; }
+/* 心得で吸い方の札が増えた時（ズボー・目隠しなど・pull.js の .with-options）は、右下の二枠を上下二段にする。
+   上の段に増えた札（1枚なら横いっぱい）、下の段に「確かめる／提供する」と「吸う」。
+   以前は増えた札が「確かめる」と同じ枠に重なって押せなかった（growth_levelup の deep-pull・blind-service）。 */
+& .pull-btns.with-options { display: grid !important; grid-column: 2 / 4; grid-row: 2; grid-template-columns: repeat(2, minmax(0, 1fr)) !important; grid-template-rows: repeat(2, minmax(0, 1fr)); gap: 6px 8px; height: 100px; min-width: 0; }
+& .pull-btns.with-options > .btn { grid-row: 1; grid-column: auto; height: auto; min-height: 0; min-width: 0; padding: 0 8px; border-width: 8px; border-image-width: 8px; line-height: 1.1; }
+& .pull-btns.with-options > .btn:nth-child(2):nth-last-child(2) { grid-column: 1 / -1; }
+& .pull-btns.with-options > [data-test="pull-serve"] { grid-row: 2; grid-column: 1; }
+& .pull-btns.with-options > .btn.primary { grid-row: 2; grid-column: 2; }
 
 /* ---------- 舞台の天板: 枠を焼き込んだ旧い板の代わりに、枠なしの天板を舞台いっぱいに敷く ---------- */
 & .bench-panel::before { display: none !important; }
@@ -221,11 +219,12 @@
 & .mix-side { grid-column: 1; grid-row: 1; min-height: 0; overflow: hidden auto !important; gap: 6px !important; }
 & .mix-vessel { width: 250px !important; height: 190px !important; }
 & .mix-list { grid-column: 2; grid-row: 1; min-height: 0; overflow-y: auto; gap: 10px !important; }
-/* 葉の一覧の頭は、操作の案内文（常設しない・CSL15）だけのときは出さない。覚えた技（単体で勝負・香りの記憶）とひらめきは残す */
-& .mix-list-head:not(:has(> :not(.mix-list-caption))) { display: none !important; }
-/* 行の高さは116（4種が一度に見える）を下限にし、まかない（バイト後の練習）の行のように中身が多い時は伸ばす。
-   固定の高さだと中身が上下へはみ出して、上の行や「香りの記憶」に重なって押せなくなる */
-& .flavor-row { display: flex !important; min-height: 116px !important; height: auto !important; flex: none; padding: 4px 12px 4px 6px !important; gap: 12px !important; align-items: center !important; }
+& .mix-list-head { display: none !important; }
+/* 心得の「単体で勝負」と「香りの記憶」だけは一覧の頭に残す（見出しの文と助言は隠したまま）。
+   以前は見出しごと隠れて、覚えた心得が押せなかった（growth_levelup の single-leaf-style-lesson）。 */
+& .mix-list-head:has(> [data-test="mix-single-style"], > .mix-recall) { display: flex !important; flex: none; flex-wrap: wrap; align-items: center; gap: 8px; }
+& .mix-list-head > :not([data-test="mix-single-style"]):not(.mix-recall) { display: none !important; }
+& .flavor-row { display: flex !important; min-height: 0 !important; height: 116px !important; flex: none; padding: 4px 12px 4px 6px !important; gap: 12px !important; align-items: center !important; }
 & .flavor-row > * { grid-area: auto !important; }
 & .fr-name { padding-left: 0 !important; }
 & .fr-package { flex: none; width: 92px !important; height: 108px !important; display: grid; place-items: center; overflow: visible; }
@@ -246,7 +245,7 @@
 &phone .mix-taste :is(b, small, p, summary, .flavor-axis, .flavor-heat-choices, .flavor-heat-choices span) { font-size: 22px !important; line-height: 1.3 !important; }
 &phone .mix-taste .flavor-axis { min-height: 0 !important; }
 &phone .mix-temperature-preview > .mix-temperature-legend { left: auto !important; right: 408px !important; top: 0 !important; width: auto; flex-direction: column; gap: 0; align-items: flex-end; }
-&phone .flavor-row { display: grid !important; min-height: 0 !important; height: auto !important; grid-template-columns: 80px minmax(0, 1fr) 60px 52px 60px; grid-template-rows: auto auto auto auto; column-gap: 8px !important; row-gap: 2px !important; padding: 6px 10px 6px 6px !important; align-items: center !important; }
+&phone .flavor-row { display: grid !important; height: auto !important; grid-template-columns: 80px minmax(0, 1fr) 60px 52px 60px; grid-template-rows: auto auto auto auto; column-gap: 8px !important; row-gap: 2px !important; padding: 6px 10px 6px 6px !important; align-items: center !important; }
 &phone .flavor-row > .fr-name { display: contents !important; }
 &phone .fr-package { grid-row: 1 / -1 !important; grid-column: 1 !important; width: 80px !important; height: 104px !important; }
 &phone .fr-package > .shop-product-art { transform: scale(2); }
@@ -305,6 +304,8 @@
 & .bench-top > .ch2-tournament-menu { position: fixed !important; left: 16px; top: 84px; margin: 0 !important; z-index: 6; }
 & .bench-top > .rival-windows { gap: 4px !important; }
 & .bench-top .bench-mode small { display: none !important; }
+/* 大会以外はレールに余白があるので、練習の種類（手順の中間チェック等）を残す */
+&:not([data-mode="tournament"]) .bench-top .bench-mode small { display: inline !important; }
 & .bench-progress { flex: none !important; }
 & .bench-progress-track { gap: 18px !important; }
 & .bench-phase:not(:last-child)::after { width: 18px !important; }
@@ -325,6 +326,7 @@
 /* ---------- 吸い出しの金のボタン: 文字が一行で収まるように（絵の印は省く） ---------- */
 & .pull-btns > .btn .pull-btn-icon { display: none !important; }
 & .pull-btns > .btn .btn-label { font-size: 24px !important; white-space: nowrap; letter-spacing: 0; }
+& .pull-btns.with-options > .btn .btn-label { font-size: 18px !important; line-height: 1.1; }
 & .pull-btns > .btn .pull-serve-icon { display: none !important; }
 & .fr-name :is(.fr-reg, .fr-mastery, .fr-ratio) { font-size: 17px !important; line-height: 1.25 !important; margin: 0 !important; }
 

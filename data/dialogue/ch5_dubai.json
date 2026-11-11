@@ -19,7 +19,7 @@
       "lines": [
         { "speaker": "", "face": "", "text": "郵便受けに、また厚い封筒が届いていた。差出人は、シェイク・ナジュム・アル=ガリヤーン。" },
         { "speaker": "sheikh", "face": "normal", "text": "君が帰ってから、客間が空いたままだ" },
-        { "speaker": "sheikh", "face": "smile", "text": "切符を入れておく。王族の招待だと思わなくていい。友人の誘いだ" },
+        { "speaker": "sheikh", "face": "smile", "text": "切符を入れておく。王族の招待だと思わなくていい。旅人の誘いだ" },
         { "speaker": "hajime", "face": "smile", "text": "（今度は、tonariの葉をもう一袋持っていこう）" },
         { "speaker": "", "face": "", "text": "封筒の底に、また往復の切符が入っていた。" }
       ]
@@ -38,6 +38,11 @@
       "dialogue_id": "ch5_dubai_go",
       "lines": [
         { "speaker": "", "face": "", "text": "空港行きのバスに乗り、ドバイ行きの便に乗った。" },
+        { "speaker": "", "face": "", "text": "今回は、大会の控え室でも表彰台の前でもない。封筒の切符を握った、一人の客だ。" },
+        { "speaker": "", "face": "", "text": "座席に深く座ると、エンジンの低い音が床から伝わってきた。" },
+        { "speaker": "", "face": "", "text": "窓の外で、日本の灯が遠ざかっていく。荷物は少ない。" },
+        { "speaker": "", "face": "", "text": "持っていくのは、中庭でもう一度吸うための時間だけだ。" },
+        { "speaker": "", "face": "", "text": "機内は静かだった。" },
         { "speaker": "", "face": "", "text": "窓の下に、砂の色をした街の明かりが近づいてくる。" }
       ]
     },
@@ -45,6 +50,10 @@
       "dialogue_id": "ch5_dubai_back",
       "lines": [
         { "speaker": "", "face": "", "text": "迎えの車で空港へ送ってもらい、帰りの便に乗った。" },
+        { "speaker": "", "face": "", "text": "屋敷の門が、後ろの窓の中で小さくなっていった。噴水の音は、もう聞こえない。" },
+        { "speaker": "", "face": "", "text": "座席に身を預けると、荷物は来た時と変わらないのに、肩の力だけが少し抜けていた。" },
+        { "speaker": "", "face": "", "text": "雲を抜けると、暗い海の縁に、小さな灯りが細く並んでいる。" },
+        { "speaker": "", "face": "", "text": "ずっと探していた形に、やっと会えた気がした。" },
         { "speaker": "", "face": "", "text": "窓の下に、見慣れた海岸線が近づいてくる。" }
       ]
     },
@@ -92,7 +101,7 @@
         { "speaker": "sheikh", "face": "normal", "text": "ここでは、皆が私の機嫌を見て話す" },
         { "speaker": "sheikh", "face": "smile", "text": "君は、まずい時はまずいと言う。それが、ありがたい" },
         { "speaker": "hajime", "face": "normal", "text": "言わないと、次の一台が良くならないので" },
-        { "speaker": "sheikh", "face": "smile", "text": "職人の答えだな。……あとで一台、頼めるか" },
+        { "speaker": "sheikh", "face": "smile", "text": "職人の答えだな。……あとで、また一台頼めるか" },
         { "speaker": "hajime", "face": "smile", "text": "はい。今日は、ちゃんと客として座ってください" }
       ]
     },
@@ -160,6 +169,10 @@
       "dialogue_id": "ch5_dubai_guest_rest",
       "lines": [
         { "speaker": "", "face": "", "text": "客間の寝台に横になった。窓の外で、噴水の音がしている。" },
+        { "speaker": "", "face": "", "text": "水は同じ調子で落ち続けている。数えようとして、すぐにやめた。" },
+        { "speaker": "", "face": "", "text": "厚い壁が外の熱を遮って、部屋の空気はひんやりしている。" },
+        { "speaker": "", "face": "", "text": "吸って、吐く。息の長さが、少しずつ揃っていく。" },
+        { "speaker": "", "face": "", "text": "いつの間にか、噴水の音が遠くなっていた。考えごとも、水の音に混ざって消えていく。" },
         { "speaker": "", "face": "", "text": "少し眠ると、体が軽くなった。" }
       ]
     },
@@ -180,7 +193,7 @@
         { "speaker": "da_silva", "face": "smile", "text": "大会のときの、お前の一台。手拍子ひとつ無しで……見入った、ってやつだ" },
         { "speaker": "hajime", "face": "normal", "text": "静かすぎましたか" },
         { "speaker": "da_silva", "face": "normal", "text": "いいや。静かでも、あれはフェスタ。客が楽しんでる、それでいい" },
-        { "speaker": "da_silva", "face": "excited", "text": "でも次は、手拍子も入れてみろよ！" }
+        { "speaker": "da_silva", "face": "excited", "text": "でも、手拍子のフェスタも忘れんなよ！" }
       ]
     },
     {

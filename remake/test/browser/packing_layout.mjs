@@ -52,10 +52,7 @@ async function geometry(p) {
     const rect = n => { const r = n.getBoundingClientRect(); return { x:r.x, y:r.y, w:r.width, h:r.height, right:r.right, bottom:r.bottom }; };
     const pane = document.querySelector(".bench-right");
     const selectors = [".bench-head", ".bench-hint", ".bench-panel", ".pack-aroma", ".pack-vessel", ".pack-vessel-art", ".pack-vessel-art .art", ".pack-caption", ".pack-caption p", ".pack-choice", ".pack-choice b", ".pack-choice small", ".pack-footer small", ".pack-confirm"];
-    const heading = document.querySelector(".bench-head > .bench-heading");
-    return { windowX:scrollX, viewportWidth:innerWidth, craftStage:document.body.matches(".craft-stage:not(.game-ds)"),
-      stage:rect(document.getElementById("stage")), headingShown:!!heading?.getClientRects().length,
-      pane:{ ...rect(pane), clientWidth:pane.clientWidth, scrollWidth:pane.scrollWidth, scrollLeft:pane.scrollLeft, scrollTop:pane.scrollTop, clientHeight:pane.clientHeight, scrollHeight:pane.scrollHeight },
+    return { windowX:scrollX, viewportWidth:innerWidth, pane:{ ...rect(pane), clientWidth:pane.clientWidth, scrollWidth:pane.scrollWidth, scrollLeft:pane.scrollLeft, scrollTop:pane.scrollTop, clientHeight:pane.clientHeight, scrollHeight:pane.scrollHeight },
       nodes:selectors.flatMap(selector => [...document.querySelectorAll(selector)].filter(n => n.getClientRects().length).map(n => {
         const range = document.createRange(); range.selectNodeContents(n);
         // .bench-panel's selectNodeContents includes the packing temperature gauge
@@ -73,18 +70,9 @@ function horizontal(g) {
   assert(g.pane.x >= -1 && g.pane.right <= g.viewportWidth + 1,"control panel outside viewport");
   assert(g.pane.scrollWidth <= g.pane.clientWidth + 1, `packing scrolls horizontally: ${JSON.stringify(g.pane)}`);
   assert.equal(g.pane.scrollLeft, 0);
-  // 新しい配置（一枚の舞台・既定。docs/design/craft-stage-layout.md）では「？」（.bench-head）は上のレールの右上の角に固定で、
-  // 舞台（.bench-right。右端は画面の16px内側）より外の right:12px に置く（見本どおり）。その場合だけ画面（#stage）と表示域の中で確かめ、
-  // 角には「？」だけを置く（工程名は上のレール）。ほかの部品は今までどおり舞台の中で確かめる。
-  if (g.craftStage) {
-    assert.equal(g.headingShown, false, "new stage layout: the step heading belongs to the top rail, not the ? corner");
-    assert(g.stage.x >= -1 && g.stage.right <= g.viewportWidth + 1, `stage outside viewport: ${JSON.stringify(g.stage)}`);
-  }
   for (const n of g.nodes) {
-    const box = g.craftStage && n.selector === ".bench-head" ? g.stage : g.pane;
-    const where = box === g.pane ? "horizontal panel" : "stage";
-    assert(n.w > 0 && n.x >= box.x - 1 && n.right <= box.right + 1, `${n.selector} outside ${where}: ${JSON.stringify(n)}`);
-    for (const r of n.textRects) assert(r.x >= box.x - 1 && r.right <= box.right + 1, `${n.selector} text clipped`);
+    assert(n.w > 0 && n.x >= g.pane.x - 1 && n.right <= g.pane.right + 1, `${n.selector} outside horizontal panel: ${JSON.stringify(n)}`);
+    for (const r of n.textRects) assert(r.x >= g.pane.x - 1 && r.right <= g.pane.right + 1, `${n.selector} text clipped`);
   }
 }
 const devices = [

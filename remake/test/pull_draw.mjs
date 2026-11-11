@@ -96,9 +96,19 @@ try {
     const note = document.querySelector('.audience-note');
     return { left:box('.bench-left'), right:box('.bench-right'), worker:box('.bench-worker-stage'), thermo:box('.thermo'), button:box('[data-test="pull-stop"]'), buttonArt:getComputedStyle(document.querySelector('[data-test="pull-stop"]')).borderImageSource, summary:box('.pull-summary'), ring:box('.dial-ring'), optimal:box('.thermo-optimal'), ideal:box('.thermo-zone'), note:{bounds:box('.audience-note'), font:getComputedStyle(note).fontSize, white:getComputedStyle(note).whiteSpace}, white:white.backgroundColor, line:white.height, needle:body.height };
   });
-  assert(Math.abs(layout.left.top - layout.right.top) < 1 && Math.abs(layout.left.bottom - layout.right.bottom) < 1, JSON.stringify(layout));
-  assert(layout.left.width / layout.right.width > .50 && layout.left.width / layout.right.width < .56, 'window ratio differs from mockup');
-  assert(layout.thermo.left >= layout.worker.left && layout.thermo.right <= layout.left.right && layout.thermo.bottom <= layout.worker.bottom, 'temperature gauge must fit the left scene');
+  // 新しい配置（一枚の舞台・既定・#3196）は、はじめを枠なしで左に切り抜き、熱の柱をその右の境目に立て、
+  // 上のレールの下から作業の舞台を始める。旧配置（?craftStage=0）は左右の窓を並べたモックアップどおり。
+  const craftStage = await page.evaluate(() => document.body.classList.contains('craft-stage'));
+  if (craftStage) {
+    const rail = await page.locator('.bench-top').evaluate(n => n.getBoundingClientRect().bottom);
+    assert(layout.right.top >= rail - 1 && layout.thermo.top >= rail - 1, `the stage and gauge must start below the top rail: ${JSON.stringify({ rail, layout })}`);
+    assert(layout.thermo.left >= layout.worker.left && layout.thermo.right <= layout.right.left && layout.thermo.bottom <= layout.worker.bottom,
+      `temperature gauge must stand between Hajime and the stage: ${JSON.stringify(layout)}`);
+  } else {
+    assert(Math.abs(layout.left.top - layout.right.top) < 1 && Math.abs(layout.left.bottom - layout.right.bottom) < 1, JSON.stringify(layout));
+    assert(layout.left.width / layout.right.width > .50 && layout.left.width / layout.right.width < .56, 'window ratio differs from mockup');
+    assert(layout.thermo.left >= layout.worker.left && layout.thermo.right <= layout.left.right && layout.thermo.bottom <= layout.worker.bottom, 'temperature gauge must fit the left scene');
+  }
   assert.equal(layout.white, 'rgb(255, 255, 255)'); assert.equal(layout.line, '3px');
   assert.equal(layout.needle, 197, 'central wiper must reach the ring without extending beyond it');
   assert(Math.abs(layout.ring.width / (layout.ring.bottom-layout.ring.top) - 2) < .005, 'protractor arch must be a true circular semicircle');
@@ -113,10 +123,19 @@ try {
     await image.decode();
     if (!image.naturalWidth) throw new Error('button skin did not load');
   });
-  assert.equal(layout.button.bottom - layout.button.top, 96, 'mockup button height');
-  assert(layout.button.top > 585 && layout.button.top < 600, 'bottom controls must use the tightened spacing');
-  assert(layout.right.bottom - layout.button.bottom >= 10 && layout.right.bottom - layout.button.bottom <= 16, 'bottom button must keep a small inset inside the window');
-  assert.equal(layout.summary.bottom - layout.summary.top, 64, 'mockup information height');
+  if (craftStage) {
+    // 新しい配置: 下の操作列（情報・吸う）は半円の目盛りより下で、作業の舞台の中に収まる。
+    for (const [name, box] of [['button', layout.button], ['summary', layout.summary]]) {
+      assert(box.top >= layout.ring.bottom && box.left >= layout.right.left - 1 && box.right <= layout.right.right + 1 && box.bottom <= layout.right.bottom + 1,
+        `${name} must sit under the dial inside the stage: ${JSON.stringify(layout)}`);
+    }
+    assert(layout.button.bottom - layout.button.top >= 88, `the pull button must stay large: ${JSON.stringify(layout.button)}`);
+  } else {
+    assert.equal(layout.button.bottom - layout.button.top, 96, 'mockup button height');
+    assert(layout.button.top > 585 && layout.button.top < 600, 'bottom controls must use the tightened spacing');
+    assert(layout.right.bottom - layout.button.bottom >= 10 && layout.right.bottom - layout.button.bottom <= 16, 'bottom button must keep a small inset inside the window');
+    assert.equal(layout.summary.bottom - layout.summary.top, 64, 'mockup information height');
+  }
   assert.equal(await page.locator('.pull-pip').count(), 5, 'the information box counts up to five pulls');
   assert.equal(await page.locator('.flavor-leaf[data-stage="red"]').count(), 5, 'flavor must start with five red leaves');
   console.log(`Layout: ${JSON.stringify(layout)}`);

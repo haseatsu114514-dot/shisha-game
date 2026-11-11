@@ -1,6 +1,7 @@
 // 見た目の様式「DS風」（LK03・js/looks/retro.js）: 現行の画面を動かしたまま、上下2画面（256×192）の外枠へ写す。
 // 縦持ちのタッチ端末と PC で、タイトル・会話と選択肢・日常の地図に外枠が出ること、操作が現行へ中継されること、
-// 未対応の場面（MENU）では外枠が引っ込むこと、現行へ戻す・横持ち・第2章では現行のままであることを確かめる。
+// 全画面 MENU・設定はシート（retro/sheet.js）で外枠の中に写り、未対応の場面（店）では外枠が引っ込むこと、
+// 現行へ戻す・横持ち・第2章では現行のままであることを確かめる。
 // 上画面はドット絵の処方（色数を絞る・一人の場面は人物へ寄る・1ドット＝整数画素）で、場面転換・登場カットイン・
 // tonari の行動選びの間も外枠のまま続くこと（現行の画面へ行き来しないこと）も確かめる。
 import assert from "node:assert/strict";
@@ -277,27 +278,61 @@ await suite("look_retro", async (check) => {
     assert.equal(await page.evaluate(() => window.dailyError || ""), "");
   }, { ...TALL, pageEntry: entry });
 
-  await check("portrait-menu-falls-back", async (page) => {
+  await check("portrait-menu-in-sheet", async (page) => {
     await page.locator(shellFor("title")).waitFor();
     await setupDaily(page);
     await page.locator(shellFor("map")).waitFor();
     await page.locator(t("retro-key-menu")).tap();
-    await page.locator(t("menu")).waitFor();
+    // 全画面 MENU は外枠のシートへ写す（上画面はタブに合った絵、下画面は今のタブの中身、本体のボタンはタブと「閉じる」）
+    await page.locator(shellFor("sheet")).waitFor();
+    await page.locator('.retro-sheet[data-kind="menu"]').waitFor();
+    const open = await rootState(page);
+    assert.equal(open.shellOn, "on");
+    assert.equal(open.viewportOpacity, "0");
+    assert.equal(open.note, "");
+    await assertShellFits(page, "menu sheet");
+    await assertTopScreenPainted(page, "menu sheet");
+    await page.locator(t("retro-key-tab-people")).tap();
+    await page.waitForFunction(() => document.querySelector(".dmenu").dataset.tab === "people"
+      && document.querySelector('[data-test="retro-key-tab-people"]').getAttribute("aria-pressed") === "true");
+    const rows = await page.evaluate(() => ({
+      classic: [...document.querySelectorAll(".dmenu .dm-person")].map((n) => n.dataset.test),
+      sheet: [...document.querySelectorAll(".retro-sheet .s-dm-person")].map((n) => n.dataset.test.replace(/^sheet-/, "")),
+      font: getComputedStyle(document.querySelector(".retro-sheet .s-dm-person")).fontFamily,
+    }));
+    assert(rows.classic.length >= 2);
+    assert.deepEqual(rows.sheet, rows.classic);
+    assert(/Suien Dot/.test(rows.font));
+    await page.locator(t("retro-key-close")).tap();
+    await page.locator(shellFor("map")).waitFor();
+    assert.equal(await page.locator(".dmenu").count(), 0);
+    assert.equal(await page.evaluate(() => window.dailyError || ""), "");
+  }, { ...TALL, pageEntry: entry });
+
+  await check("portrait-shop-falls-back", async (page) => {
+    await page.locator(shellFor("title")).waitFor();
+    await setupDaily(page);
+    await page.locator(shellFor("map")).waitFor();
+    await page.locator(t("retro-row-shop")).tap();
+    await page.waitForFunction(() => document.querySelector('[data-test="retro-go"]').getAttribute("aria-disabled") === "false");
+    await page.locator(t("retro-go")).tap();
+    // 店（未対応の場面）では外枠を引っ込め、現行の画面を小さく見せて一言を添える
+    await page.locator(t("shop-entry-back")).waitFor({ timeout: 15000 });
     await page.waitForFunction(() => document.querySelector(".retro-shell").hidden);
     const open = await rootState(page);
-    assert.equal(open.shellOn, "", "the DS shell steps aside for MENU");
+    assert.equal(open.shellOn, "", "the DS shell steps aside for the shop");
     assert.equal(open.viewportOpacity, "1", "the classic screen is visible while the shell is away");
     assert.equal(open.hint, "none", "no rotate hint while the DS look is available");
     assert.equal(open.guard, "");
     await page.locator(t("retro-note")).waitFor();
     assert.match(await page.locator(t("retro-note")).textContent(), /横向き/);
-    // 現行の MENU がそのまま押せる
-    assert(await page.locator(t("menu-close")).evaluate((node) => {
+    // 現行の店の「街に戻る」がそのまま押せる
+    assert(await page.locator(t("shop-entry-back")).evaluate((node) => {
       const r = node.getBoundingClientRect();
       const top = document.elementFromPoint((r.left + r.right) / 2, (r.top + r.bottom) / 2);
       return node === top || node.contains(top);
-    }), "the classic MENU close button is reachable");
-    await page.locator(t("menu-close")).tap();
+    }), "the classic shop back button is reachable");
+    await page.locator(t("shop-entry-back")).tap();
     await page.locator(shellFor("map")).waitFor();
     const closed = await rootState(page);
     assert.equal(closed.shellOn, "on");
@@ -307,12 +342,11 @@ await suite("look_retro", async (check) => {
 
   await check("portrait-back-to-classic", async (page) => {
     await page.locator(shellFor("title")).waitFor();
-    // 設定から現行へ戻す（設定は未対応の場面なので、現行の画面で開く）
+    // 設定は外枠のシートで開き、写しの段ボタンから現行へ戻す（押すと元の段ボタンへ中継される）
     await page.locator(t("retro-title-config")).tap();
-    await page.locator(t("cfg-look")).waitFor();
-    await page.waitForFunction(() => document.querySelector(".retro-shell").hidden);
-    await page.locator(`${t("cfg-look")} button[value="classic"]`).tap();
-    await page.waitForFunction(() => document.documentElement.dataset.look === "classic" && !document.querySelector(".retro-shell, .retro-note"));
+    await page.locator('.retro-sheet[data-kind="modal"]').waitFor();
+    await page.locator(`${t("sheet-cfg-look")} button[value="classic"]`).tap();
+    await page.waitForFunction(() => document.documentElement.dataset.look === "classic" && !document.querySelector(".retro-shell, .retro-note, .retro-sheet"));
     await page.waitForFunction(() => document.documentElement.dataset.rotateGuard === "true");
     const classic = await rootState(page);
     assert.equal(classic.engaged, "");
@@ -324,7 +358,8 @@ await suite("look_retro", async (check) => {
     await page.locator(`${t("cfg-look")} button[value="retro"]`).evaluate((node) => node.click());
     await page.waitForFunction(() => document.documentElement.dataset.retro === "on" && !document.documentElement.dataset.rotateGuard);
     assert.equal((await rootState(page)).hint, "none");
-    await page.locator(t("cfg-close")).tap();
+    await page.locator('.retro-sheet[data-kind="modal"]').waitFor();
+    await page.locator(t("sheet-cfg-close")).tap();
     await page.locator(shellFor("title")).waitFor();
   }, { ...TALL, pageEntry: entry });
 
@@ -450,12 +485,18 @@ await suite("look_retro", async (check) => {
     assert.equal(await page.locator(".retro-vn-text").textContent(), before);
     await page.locator(t("retro-bottom")).click({ position: { x: 60, y: 60 } });
     await page.waitForFunction((text) => document.querySelector("#vn .vn-text").textContent !== text, before);
-    // LOG は未対応の場面: 現行の画面で開き、閉じると外枠が戻る
+    // LOG は外枠のシート（上下の画面をつないだ縦長の1枚）で開き、本体の「閉じる」で会話へ戻る
     await typed(page);
     await page.locator(t("retro-key-vn-log")).click();
-    await page.waitForFunction(() => document.querySelector("#vn .vn-log.show") && document.querySelector(".retro-shell").hidden);
+    await page.waitForFunction(() => document.querySelector("#vn .vn-log.show") && document.querySelector('.retro-sheet[data-kind="log"]'));
+    const log = await page.evaluate(() => ({
+      classic: [...document.querySelectorAll("#vn .vn-log .log-row")].map((n) => n.textContent),
+      sheet: [...document.querySelectorAll(".retro-sheet .s-log-row")].map((n) => n.textContent),
+    }));
+    assert(log.classic.length >= 2);
+    assert.deepEqual(log.sheet, log.classic);
     assert.equal((await rootState(page)).note, "", "no rotate advice on a landscape desktop window");
-    await page.keyboard.press("Escape");
+    await page.locator(t("retro-key-close")).click();
     await page.locator(shellFor("vn")).waitFor();
   }, { pageEntry: entry });
 
@@ -472,16 +513,4 @@ await suite("look_retro", async (check) => {
     await page.evaluate(() => { window.__remake.state.chapter = 1; });
     await page.locator(shellFor("vn")).waitFor();
   }, { pageEntry: entry });
-
-  await check("old-two-screen-layout-keeps-classic", async (page) => {
-    // 古い2画面表示（表示設定の「DS風」）が有効な端末では外枠を出さず、通常版へ戻す案内だけを出す。
-    // 古い2画面表示そのものが無くなった後は、この確認は不要になる。
-    if (!(await page.evaluate(() => !!document.querySelector('#screen .title[data-layout="ds"]')))) return;
-    await page.locator(t("retro-note")).waitFor();
-    const state = await rootState(page);
-    assert.equal(state.shellOn, "");
-    assert.equal(state.engaged, "");
-    assert.match(state.note, /通常版/);
-    assert.equal(state.viewportOpacity, "1");
-  }, { pageEntry: entry, storageState: { cookies: [], origins: [{ origin: new URL(baseURL).origin, localStorage: [{ name: "suien_title_layout", value: "ds" }] }] } });
 });
