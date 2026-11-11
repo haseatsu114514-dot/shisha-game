@@ -26,7 +26,9 @@ const INTERACTIVE = "button, a[href], [role='button'], [role='tab'], [role='radi
 const CROP = ".shop-product-art, .store-logo";
 // 絵文字（アイコン代わりの記号）は写さない。♥♡★☆♪ は文字として残す
 const PICTO = /(?![♡♥★☆♪])[\u{1F000}-\u{1FAFF}\u{2300}-\u{23FF}\u{2600}-\u{27BF}\u{2B00}-\u{2BFF}\u{FE0F}\u{200D}]/gu;
-const clean = (value) => String(value || "").replace(PICTO, "");
+// 意味を持つ記号は文字に置き換えてから外す（店の入口の「⏱ 0」＝時間を使わない）
+const WORDS = { "\u23F1": "時間" };
+const clean = (value) => String(value || "").replace(/[\u23F1]/gu, (mark) => WORDS[mark]).replace(PICTO, "");
 const text = (node) => clean(node?.textContent || "").replace(/\s+/g, " ").trim();
 const shown = (node) => !!node && node.getClientRects().length > 0;
 // 写しに引き継ぐ状態（押している・選んでいる・開いている）
