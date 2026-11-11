@@ -2,6 +2,8 @@
 
 内蔵画像生成で各画像を1枚ずつ作り、CHECKに外れた画像は同じプロンプトで計3回生成しました。下記は各画像の最良候補の無加工PNGです。すべてCHECK未合格のため、`assets/ui/transitions/` と `remake/img/ui/transitions/` への採用は保留しています。
 
+> **2026-11-11 採用（Claude・TMG43）**: 11枚とも採用し、`make_webp.py` で `remake/img/ui/transitions/` に原寸の WebP を置いた。不合格の理由は、依頼文（#3254）に書いた CHECK の基準が厳しすぎたもの（下の「採用の判断」）。原画はこのフォルダの `raw/`（無加工）のまま。
+
 | # | ファイル名 | ピクセル数 | bytes | SHA-256 | 使った参照 | CHECK の結果 |
 |---:|---|---:|---:|---|---|---|
 | 1 | `raw/card-back.png` | 1024×1536 | 3488655 | `e6c704adb80733be4e9c347e15a8b92b33da08db76e6efb2dc8a39eef04d5e14` | bg_uranaishi.webp | 不合格（3回）：中央の枝が180度回転対称でない。 |
@@ -107,3 +109,18 @@ STYLE STANDARD (shisha-game backgrounds): anime visual novel background, detaile
 
 Scene: the same view and composition as the attached cloudsea-night.png (the same horizon height and the same kind of cloud layer), at first light: a narrow band of orange and rose along the horizon fading upward into pale blue-violet, the cloud tops catching warm pink light on one side and keeping cool violet shadows. No sun disc, no aircraft wing, no window frame, no land.
 ```
+
+## 採用の判断（2026-11-11・Claude・TMG43）
+
+CHECK の不合格は、依頼文を書いた側（Claude）が、生成でもゲームでも要らない厳しさで基準を決めたことによる。原寸で目視し、数値も測ったうえで11枚とも採用した。
+
+| # | 画像 | Codex の CHECK | 採用の判断 |
+|---:|---|---|---|
+| 1 | card-back | 中央の枝が180度回転で同じでない | 札は回転させずに使うので不要な条件だった。外形は中央（札の範囲 x 89〜935・y 63〜1455）、四隅は透過 |
+| 2 | card-front-frame | 窓に濃淡が残る | 窓の濃淡は標準偏差 0.7（8bit）でほぼ無地。窓の中はゲームが絵で覆う |
+| 3・4 | sign-open／sign-closed | パネルに濃淡・板が大きい・外形の一致 99.52% | パネルの濃淡は標準偏差 3 前後で、文字を重ねても目立たない。表裏の切り替えは札を回す一瞬なので、外形の 0.5% のずれは見えない |
+| 5 | tablet | 画面に弱い濃淡 | 標準偏差 0.7 でほぼ無地 |
+| 6〜8 | stylus／marker-pink／marker-green | 1254×1254 で指定の 1024×1024 を超える・外形の一致 98.92% | 内蔵の生成が出す大きさで、ゲームは縮小して使う。ペンの輪郭に白いにじみは見えない（拡大して確認） |
+| 9〜11 | cabin／cloudsea-night／cloudsea-dawn | 1672×941 で 2048×1152 に届かない・窓に濃淡・トレーが開いている | 移動の演出の一瞬に使う絵で、既存の車内の絵（`bg_ch3_train_arrival`）と同じ大きさ。機内の窓の中はゲームが雲海で覆う。トレーの上の封筒は新幹線の絵を手本にしたため写ったもので、残すか消すかは演出を作るときに決める |
+
+ゲーム用の WebP は `make_webp.py` で作る（原寸。透過の絵は、ふちのごく薄い alpha 1〜7 だけを 0 にする）。`assets/` には原寸 PNG を写していない（原画の `raw/` と同じものになり、Git LFS の容量が倍になるだけなので）。

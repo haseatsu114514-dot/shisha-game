@@ -9,7 +9,7 @@
   モーション改善案（2026-11-11・docs/owner_requests.md の TMG35〜40）。提案用の見本で、本編のコードは読まず、本編にも接続していない。
   開き方: リポジトリのルートで python3 remake/tools/serve_preview.py --port 8123 → http://127.0.0.1:8123/remake/previews/motion-direction/
   「いま」は本編の録画（clips/）と静止画（stills/）、「改善案」はゲームの絵（remake/img）をその場で読んで動かす。
-  cards/ と stills/train-streak.webp は make_assets.py が採用済みの絵から作る（新しい絵は生成していない）。
+  cards/ と stills/train-streak.webp は make_assets.py が作る（札は Issue #3254 で Codex が作った札の裏と表の枠、車窓の流れは採用済みの車内の絵から）。
   page・fonts・body・script の印は、同じ内容を非公開ページ（アーティファクト）へ出すときの切り出し位置。
 -->
 <!--page-->
@@ -172,11 +172,17 @@ section { display: grid; gap: 28px; min-width: 0; }
 [data-demo="tarot"] .table { transform-origin: 30% 60%; }
 [data-demo="tarot"] .shade { background: linear-gradient(105deg, #0a0410d9 0%, #0a04108c 38%, transparent 64%); }
 [data-demo="tarot"] .lantern { background: radial-gradient(20cqw 18cqw at 97% 12%, #ffc97a80, transparent 70%); mix-blend-mode: screen; opacity: 0; }
-.card { position: absolute; left: 0; top: 0; width: 15.6cqw; aspect-ratio: 3 / 5; opacity: 0; }
+.card { position: absolute; left: 0; top: 0; width: 15.6cqw; aspect-ratio: 420 / 690; opacity: 0; }
 .card .face { position: absolute; inset: 0; border-radius: 0.9cqw; background-size: cover; background-position: center; backface-visibility: hidden; -webkit-backface-visibility: hidden; box-shadow: 0 0 0 1px #1a0d2466; overflow: hidden; }
 .card .front { transform: perspective(90cqw) rotateY(-180deg); }
 .card .front::after { content: ""; position: absolute; inset: -20% -60%; background: linear-gradient(100deg, transparent 42%, #fff6d9cc 50%, transparent 58%); translate: -70% 0; mix-blend-mode: screen; }
-.card-shadow { position: absolute; left: 0; top: 0; width: 15.6cqw; aspect-ratio: 3 / 5; border-radius: 1cqw; background: #05020a; filter: blur(1.2cqw); opacity: 0; }
+.card-shadow { position: absolute; left: 0; top: 0; width: 15.6cqw; aspect-ratio: 420 / 690; border-radius: 1cqw; background: #05020a; filter: blur(1.2cqw); opacity: 0; }
+/* 札の表: 絵が届くまで（#3278）は、表の枠の窓に札の名前を題字で組んだ仮の表 */
+.card .front .arc { position: absolute; left: 12.7%; right: 12.8%; top: 11.1%; bottom: 9.9%; display: grid; place-content: center; justify-items: center; gap: 0.5cqw; color: #3b1c43; text-align: center; }
+.card .front .arc b { font-family: var(--display); font-size: 1.7cqw; letter-spacing: 0.3em; color: #8a6424; }
+.card .front .arc em { font-family: var(--display); font-style: normal; font-size: 4.6cqw; line-height: 1; }
+.card .front .arc small { font-size: 0.75cqw; letter-spacing: 0.32em; font-weight: 700; color: #8a6424; }
+.card .front .arc span { margin-top: 1.4cqw; font-size: 0.62cqw; line-height: 1.5; color: #7b6688; }
 [data-demo="tarot"] .band { bottom: 10.5cqw; width: 45cqw; }
 [data-demo="tarot"] .band .t { font-size: 6.6cqw; letter-spacing: 0.14em; }
 
@@ -210,7 +216,7 @@ tbody th { font-weight: 700; color: var(--paper); white-space: nowrap; }
 td { color: var(--dim); }
 tr.group th { font-family: var(--display); font-size: 16px; color: var(--gold); padding-top: 22px; border-bottom-color: var(--line); }
 .v { display: inline-block; white-space: nowrap; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; padding: 1px 9px; border-radius: 999px; border: 1px solid currentColor; }
-.v.keep { color: #9fd3b2; } .v.fix { color: var(--lav); } .v.redo { color: var(--gold); } .v.drop { color: #e59aa6; }
+.v.out { color: var(--dim); } .v.keep { color: #9fd3b2; } .v.fix { color: var(--lav); } .v.redo { color: var(--gold); } .v.drop { color: #e59aa6; }
 .tally { display: flex; flex-wrap: wrap; gap: 8px 22px; font-size: 14px; color: var(--dim); }
 .tally b { font-family: var(--display); font-size: 22px; color: var(--paper); margin-right: 6px; }
 
@@ -236,7 +242,7 @@ footer { color: var(--dim); font-size: 13px; border-top: 1px solid var(--line); 
   <p class="eyebrow"><span>水煙前線 -EN:CODE-</span><span>モーション改善案</span><span>2026-11-11</span></p>
   <h1><span>演出を、</span><span><span class="gold">ゲームの絵</span>で</span><span>作り直す</span></h1>
   <p class="lead measure">いま入っている演出28種類を、実機で通常の速さで再生して見直しました。しょぼく、ちぐはぐに見える原因は共通です。背景もカットインも描き込まれた絵なのに、演出だけが紫の平らな図形でコードから描かれています。</p>
-  <p class="lead measure">直し方も共通です。図形をやめて、その場の背景と、採用済みの登場カットインの絵柄で作ります。下に動く見本を6つ置きました。新しい絵は1枚も作っていません。</p>
+  <p class="lead measure">直し方も共通です。図形をやめて、その場の背景と、採用済みの登場カットインの絵柄で作ります。下に動く見本を6つ置きました。占いの札のほかは、ゲームにすでにある絵だけで作っています。</p>
 </header>
 
 <section id="diagnosis">
@@ -295,7 +301,7 @@ footer { color: var(--dim); font-size: 13px; border-top: 1px solid var(--line); 
 <section id="samples">
   <div class="sec-head">
     <h2>動く見本</h2>
-    <p class="measure">左がいまの本編の録画、右が改善案です。画面を押すと再生します。右はすべて、ゲームにすでにある絵だけで作っています。</p>
+    <p class="measure">左がいまの本編の録画、右が改善案です。画面を押すと再生します。右は、ゲームにすでにある絵と、Codex に作ってもらった占いの札（Issue #3254）で作っています。</p>
   </div>
 
   <article class="sample" id="sample-cut">
@@ -313,7 +319,7 @@ footer { color: var(--dim); font-size: 13px; border-top: 1px solid var(--line); 
       <div class="seg" role="group" aria-label="改善案の型"><button data-opt="mode" data-val="smoke" aria-pressed="true">A　煙のにじみ</button><button data-opt="mode" data-val="dots" aria-pressed="false">B　網点</button></div></div>
     <ul class="notes">
       <li>紫の面で覆うのをやめ、前の背景が次の背景へ直接ほどけます。A は 0.7 秒、B は 0.55 秒（いまは 0.75 秒）。</li>
-      <li>A は煙が立ちのぼるように下から。B は登場カットインと同じ網点の質感で、日付や場所が大きく変わる区切り向き。</li>
+      <li>A は煙が立ちのぼるように下から。B は登場カットインと同じ網点の質感。<strong>A を標準に決めました</strong>（煙の店のゲームなので煙で切り替える。種類は増やさない）。B は比べる用に残しているだけです。</li>
       <li>同じ仕組みで「回想に色が戻る」「再挑戦で色が戻る」「フィナーレの混ざる煙」も作れます。</li>
     </ul>
   </article>
@@ -386,15 +392,15 @@ footer { color: var(--dim); font-size: 13px; border-top: 1px solid var(--line); 
           <div class="card c0"><i class="face back"></i></div>
           <div class="card c2"><i class="face back"></i></div>
           <i class="card-shadow s1"></i>
-          <div class="card c1"><i class="face back"></i><i class="face front"></i></div>
-          <div class="band"><small>占う相手</small><span class="t">つむぎ</span></div>
+          <div class="card c1"><i class="face back"></i><i class="face front"><span class="arc"><b>XVII</b><em>星</em><small>THE STAR</small><span>絵は Codex に依頼中<br>（Issue #3278）</span></span></i></div>
+          <div class="band"><small>つむぎを占った札</small><span class="t">XVII 星</span></div>
         </div></figure>
     </div>
     <div class="tools"><button class="btn main" data-play="both">見比べる</button></div>
     <ul class="notes">
-      <li>舞台は占い師の登場カットインの背景。札の裏は、その絵に描かれている札をそのまま使っています。</li>
-      <li>札の表は、占う相手の絵柄（ここではつむぎの藤棚）。顔は出さず、誰の札かが絵と帯で分かります。白紙の札はなくなります。</li>
-      <li>絵柄の切り出しは33人分できます。見本の札は切り出しなので少し粗く、鮮明な札の裏と表の枠を Codex へ依頼しました。約 5 秒（いまは 4.5 秒）。</li>
+      <li>舞台は占い師の登場カットインの背景。札の裏は、その絵に描かれている札を手本に Codex が描いたものです（Issue #3254）。</li>
+      <li>札の表は、占う相手ごとに「その人っぽい」大アルカナを1枚（つむぎなら XVII 星）。相手の絵柄・顔・名前は札に出しません。白紙の札はなくなります。</li>
+      <li>札の裏と表の枠は Codex が描いたもの（Issue #3254）。19人分の札の絵は Codex に依頼中（Issue #3278）で、見本の表は届くまでの仮として札の名前だけを組んでいます。約 5 秒（いまは 4.5 秒）。</li>
     </ul>
   </article>
 
@@ -452,7 +458,7 @@ footer { color: var(--dim); font-size: 13px; border-top: 1px solid var(--line); 
     <h2>28種類の判定</h2>
     <p class="measure">残すものは基準として使い、作り直すものは上の決まりで作ります。</p>
   </div>
-  <p class="tally"><span><b>5</b>残す</span><span><b>4</b>一部を直す</span><span><b>18</b>作り直す</span><span><b>1</b>やめる</span></p>
+  <p class="tally"><span><b>5</b>残す</span><span><b>3</b>一部を直す</span><span><b>18</b>作り直す</span><span><b>1</b>やめる</span><span><b>1</b>対象外</span></p>
   <div class="table-scroll" tabindex="0" role="region" aria-label="演出ごとの判定">
   <table>
     <thead><tr><th>演出</th><th>判定</th><th>いま</th><th>直し方</th><th>新しい絵</th></tr></thead>
@@ -463,19 +469,19 @@ footer { color: var(--dim); font-size: 13px; border-top: 1px solid var(--line); 
       <tr><th>帰宅の扉</th><td><span class="v redo">作り直す</span></td><td>線で描いた扉</td><td>見本2。部屋に灯りが点く。扉は描かない</td><td>不要</td></tr>
       <tr><th>就寝から翌朝へ</th><td><span class="v redo">作り直す</span></td><td>紫の幕、小さな DAY、太陽の図形</td><td>見本3。部屋の夜と朝の絵をつなぐ</td><td>不要</td></tr>
       <tr><th>DAY カード</th><td><span class="v redo">作り直す</span></td><td>暗い帯に小さな文字</td><td>見本3と同じ題字にそろえる</td><td>不要</td></tr>
-      <tr><th>バイト終業</th><td><span class="v redo">作り直す</span></td><td>紫の丸い札が回る。4.4 秒</td><td>店の閉店の札を1回返すだけ。1.2 秒。店内は隠さない</td><td>閉店の札（表と裏）</td></tr>
+      <tr><th>バイト終業</th><td><span class="v redo">作り直す</span></td><td>紫の丸い札が回る。4.4 秒</td><td>店の閉店の札を1回返すだけ。1.2 秒。店内は隠さない</td><td>閉店の札（表と裏・届いた）</td></tr>
       <tr><th>電車</th><td><span class="v fix">一部を直す</span></td><td>人混みの絵（良い）を紫1色で塗っている</td><td>絵は活かす。昼は日差し、夜は車内灯の色で塗り、窓の光を流す</td><td>不要</td></tr>
       <tr class="group"><th colspan="5">遠くへの移動</th></tr>
       <tr><th>新幹線</th><td><span class="v redo">作り直す</span></td><td>紫の線画の車内</td><td>見本6。本物の車内の絵で車窓を流す</td><td>不要</td></tr>
-      <tr><th>飛行機</th><td><span class="v redo">作り直す</span></td><td>暗い面に小さな窓が1つ</td><td>機内の窓の絵で、雲と空の色を流す。行き先は題字で</td><td>機内の窓の席、雲海（夜・夜明け）</td></tr>
+      <tr><th>飛行機</th><td><span class="v redo">作り直す</span></td><td>暗い面に小さな窓が1つ</td><td>機内の窓の絵で、雲と空の色を流す。行き先は題字で</td><td>機内の窓の席、雲海（夜・夜明け・届いた）</td></tr>
       <tr><th>配送便</th><td><span class="v drop">やめる</span></td><td>飛行機と同じ窓の図形</td><td>ふつうの切り替えと題字だけにする</td><td>不要</td></tr>
       <tr class="group"><th colspan="5">人との出来事</th></tr>
-      <tr><th>チェキ</th><td><span class="v redo">作り直す</span></td><td>紫の地、カメラの図形、写真が小さい。10 秒</td><td>みんとの絵柄を舞台に、写真を主役の大きさで。落書きの書き順はいまのものを活かす。5 秒</td><td>マーカー2本（あると良い）</td></tr>
-      <tr><th>占い</th><td><span class="v redo">作り直す</span></td><td>紫の札をめくると白紙</td><td>見本4</td><td>札の裏と表の枠（あると鮮明）</td></tr>
+      <tr><th>チェキ</th><td><span class="v redo">作り直す</span></td><td>紫の地、カメラの図形、写真が小さい。10 秒</td><td>みんとの絵柄を舞台に、写真を主役の大きさで。落書きの書き順はいまのものを活かす。5 秒</td><td>マーカー2本（届いた）</td></tr>
+      <tr><th>占い</th><td><span class="v redo">作り直す</span></td><td>紫の札をめくると白紙</td><td>見本4</td><td>札の裏と表の枠（届いた）</td></tr>
       <tr><th>贈り物</th><td><span class="v redo">作り直す</span></td><td>白い箱の図形と紙吹雪</td><td>見本5</td><td>不要</td></tr>
       <tr><th>サメちゃんとの出会い</th><td><span class="v redo">作り直す</span></td><td>紫の口と三角の牙</td><td>サメちゃんの絵柄と店の青で。牙の図形はやめる</td><td>不要</td></tr>
-      <tr><th>ガラガラくじ</th><td><span class="v fix">一部を直す</span></td><td>既定の配色が紫1色で、店の絵と合わない</td><td>実装済みの「場面ごとの色」（木のカウンター、漆と真鍮の抽選器）を既定に戻す</td><td>不要</td></tr>
-      <tr><th>スケッチ</th><td><span class="v fix">一部を直す</span></td><td>線画は良い。紙のスケッチブックとペンが紫の図形で、台本のタブレットとも合わない</td><td>台本どおりタブレットに替え、その画面に線画を描く</td><td>タブレットとペン</td></tr>
+      <tr><th>ガラガラくじ</th><td><span class="v out">対象外</span></td><td>既定の配色が紫1色で、店の絵と合わない</td><td>くじのチャットが、Codex の絵で作り直している（PR #3212・Issue #3228・PR #3251）。この計画では触らない</td><td>—</td></tr>
+      <tr><th>スケッチ</th><td><span class="v fix">一部を直す</span></td><td>線画は良い。紙のスケッチブックとペンが紫の図形で、台本のタブレットとも合わない</td><td>台本どおりタブレットに替え、その画面に線画を描く</td><td>タブレットとペン（届いた）</td></tr>
       <tr><th>LIME 交換</th><td><span class="v keep">残す</span></td><td>実際の画面と、ぼかした店内</td><td>そのまま</td><td>不要</td></tr>
       <tr><th>プリクラ</th><td><span class="v keep">残す</span></td><td>立ち絵・CG・店の柄</td><td>そのまま</td><td>不要</td></tr>
       <tr class="group"><th colspan="5">章の要所</th></tr>
@@ -493,7 +499,7 @@ footer { color: var(--dim); font-size: 13px; border-top: 1px solid var(--line); 
     </tbody>
   </table>
   </div>
-  <p class="aside measure">紫1色は既定の配色で、実装には「場面ごとの色」の版もあります。ガラガラくじは、その版が木のカウンターと漆の抽選器になっていて店の絵に合うので、配色を戻すだけにします。ほかの演出は、色を替えても平らな図形のままなので作り直します。</p>
+  <p class="aside measure">紫1色は既定の配色で、実装には「場面ごとの色」の版もあります。色を替えても平らな図形のままなので、判定は変わりません。ガラガラくじは、くじのチャットが絵から作り直しているので、この計画から外しました。</p>
 </section>
 
 <section id="next">
@@ -502,20 +508,21 @@ footer { color: var(--dim); font-size: 13px; border-top: 1px solid var(--line); 
     <p class="measure">作り直す18件のうち15件は、新しい絵なしで始められます。よく見るものから、1つずつ本編へ入れます。</p>
   </div>
   <ol class="steps">
-    <li><b>毎日見る5つ</b><p>場面の切り替え、マップから店へ、帰宅、就寝から翌朝へ、DAY カード。新しい絵は不要。ゲーム全体の印象がいちばん変わります。あわせて、ガラガラくじの配色を戻します。</p></li>
+    <li><b>毎日見る5つ</b><p>場面の切り替え、マップから店へ、帰宅、就寝から翌朝へ、DAY カード。新しい絵は不要。ゲーム全体の印象がいちばん変わります。</p></li>
     <li><b>人との出来事4つ</b><p>占い、贈り物、チェキ、サメちゃん。登場カットインの絵柄を舞台にします。新しい絵は不要。</p></li>
-    <li><b>絵が要る4つ</b><p>バイト終業（閉店の札）、スケッチ（タブレットとペン）、飛行機（機内の窓の席と雲海）、龍の煙（一枚絵）。龍の煙のほかは、占いの札とチェキのマーカーとあわせて11枚を Issue #3254 で Codex へ依頼しました。</p></li>
+    <li><b>絵が要る4つ</b><p>バイト終業（閉店の札）、スケッチ（タブレットとペン）、飛行機（機内の窓の席と雲海）、龍の煙（一枚絵）。龍の煙のほかの絵は、占いの札とチェキのマーカーとあわせて11枚とも Codex から届いています（Issue #3254・<code>remake/img/ui/transitions/</code>）。</p></li>
     <li><b>残りと資料</b><p>新幹線、電車、回想、フィナーレ、敗北と再挑戦、大会の2つ。配送便の窓はやめます。あわせて資料の「画像を使わない」「紫1色」の約束を、上の5つの決まりへ書き換えます。</p></li>
   </ol>
-  <div class="sec-head"><h3>決めてほしいこと</h3></div>
+  <div class="sec-head"><h3>決めたこと（2026-11-11）</h3><p class="measure">オーナーの返事「方向の決定は任せる」を受けて、残りはこちらで決めました。</p></div>
   <ol class="asks">
-    <li>この方向（ゲームの絵で作り直す）で進めてよいか。</li>
-    <li>場面の切り替えは A（煙のにじみ）と B（網点）のどちらにするか。ふだんは A、大きな区切りだけ B という使い分けもできます。</li>
-    <li>占いの札の表を「占う相手の絵柄」にしてよいか。</li>
-    <li>Codex への依頼（Issue #3254 の11枚）を、この内容で投げてよいか。龍の煙の一枚絵は CG なので、別に相談します。</li>
-    <li>「残す」とした5つ（LIME 交換・プリクラ・章題・登場カットイン・「???」の走査）に、気に入っていないものがあれば教えてください。同じ決まりで作り直します。</li>
+    <li>この方向（ゲームの絵で作り直す）で進める。</li>
+    <li>場面の切り替えは A（煙のにじみ）を標準にする。B（網点）は使わない。</li>
+    <li>占いの札の表に、占う相手の絵柄は使わない（オーナー指示）。相手ごとに「その人っぽい」大アルカナを1枚決め、人物・顔・名前のない札の絵を Codex に依頼した（Issue #3278・19枚）。</li>
+    <li>Codex から届いた11枚（Issue #3254）は採用する。</li>
+    <li>「残す」とした5つ（LIME 交換・プリクラ・章題・登場カットイン・「???」の走査）はそのまま残す。</li>
+    <li>ガラガラくじは、くじのチャットに任せてこの計画から外す。</li>
   </ol>
-  <footer>見本は本編に未接続です。新しい画像は作っていません（占いの札は、採用済みの登場カットインの絵から切り出しています）。いまの録画は 2026-11-11 の main を 1280×720・通常の速さで再生したものです。</footer>
+  <footer>見本は本編に未接続です。新しく作った絵は占いの札の裏と表の枠だけで、Codex が Issue #3254 で描きました。札の表の絵（19人分）は Issue #3278 で依頼中です。いまの録画は 2026-11-11 の main を 1280×720・通常の速さで再生したものです。</footer>
 </section>
 
 </div>
@@ -539,7 +546,7 @@ $$("[data-img]").forEach((n) => { n.src = url(n.dataset.img); n.draggable = fals
 $$("[data-bg]").forEach((n) => { n.style.backgroundImage = `url("${url(n.dataset.bg)}")`; });
 $$("[data-mask]").forEach((n) => { const u = `url("${url(n.dataset.mask)}")`; n.style.maskImage = u; n.style.webkitMaskImage = u; });
 $$(".card .back").forEach((n) => { n.style.backgroundImage = 'url("cards/back.webp")'; });
-$$(".card .front").forEach((n) => { n.style.backgroundImage = 'url("cards/front-tsumugi.webp")'; });
+$$(".card .front").forEach((n) => { n.style.backgroundImage = 'url("cards/front-frame.webp")'; });
 
 const loadImage = (src) => new Promise((resolve, reject) => { const im = new Image(); im.onload = () => resolve(im); im.onerror = reject; im.src = src; });
 const imageCache = new Map();
