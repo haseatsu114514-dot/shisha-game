@@ -387,7 +387,7 @@ for (;;) {
     if (!kujiDrawn) {
       await shoppingRequired('.shop-tab[data-tab="kuji"]');
       const before = await shoppingSnapshot();
-      await shoppingRequired('[data-test="kuji-g500"]');
+      await shoppingRequired('[data-test="kuji-g1000"]');
       const after = await shoppingSnapshot();
       log("shopping-kuji", JSON.stringify({ planIdx, pendingShopBuy, before, after }));
       if (firstErrandVisit) {
@@ -395,7 +395,7 @@ for (;;) {
           throw new Error("First lemon errand allowed a kuji purchase");
         firstKujiBlocked = true;
       } else {
-        if (after.kuji.g500.drawn !== before.kuji.g500.drawn + 1 || after.money !== before.money - 500)
+        if (after.kuji.g1000.drawn !== before.kuji.g1000.drawn + 1 || after.money !== before.money - 500)
           throw new Error("Kuji input did not produce expected draw/payment");
         kujiDrawn = true;
         await page.waitForSelector('.kuji-card.reveal', { timeout: 5000 });
@@ -505,7 +505,7 @@ for (const id of new Set([...Object.keys(stock0), ...Object.keys(s.flavorStock)]
   if (!["double_apple", "lemon"].includes(id) && (s.flavorStock[id] || 0) !== (stock0[id] || 0)) throw new Error(`unused ${id} should not be consumed`);
 // くじ: 1枚引いて箱が減っている
 if (!firstKujiBlocked) throw new Error("First lemon errand kuji refusal not verified");
-if (!(s.kuji.g500 && s.kuji.g500.drawn === 1)) throw new Error(`kuji not drawn: ${JSON.stringify(s.kuji)}`);
+if (!(s.kuji.g1000 && s.kuji.g1000.drawn === 1)) throw new Error(`kuji not drawn: ${JSON.stringify(s.kuji)}`);
 // ch1 のソフトキャップ（48）を超えていない
 for (const [k, v] of Object.entries(s.stats)) if (v > 48) throw new Error(`stat ${k}=${v} exceeds ch1 soft cap`);
 if (errors.length) { console.error(errors.join("\n")); throw new Error(`${errors.length} page errors`); }
