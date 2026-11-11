@@ -68,6 +68,26 @@
           "speaker": "ageha",
           "face": "smile",
           "text": "みんとちゃんにお任せ。次のひと口、当ててみて"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "テーブルの煙がこちらへ流れてくる。ミントの奥に、少しだけ酸っぱい香りがした。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……レモン系、ですか？"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "おしい〜！ ピンクグレープフルーツでした♡"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "ハジメっちも外したー！ うち、さっき二回当てたし"
         }
       ]
     },
@@ -153,6 +173,26 @@
           "speaker": "kumicho",
           "face": "smile",
           "text": "おう。次の電車まで、もう少しここにいるつもりでさ"
+        },
+        {
+          "speaker": "adam",
+          "face": "normal",
+          "text": "水は、煙の合間に飲め。喉が次の一服を迎えにいく"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "……ありがてえ講釈でさ。あんちゃん、ここの水はな、なぜか林檎の匂いがするんですわ"
+        },
+        {
+          "speaker": "adam",
+          "face": "smile",
+          "text": "林檎の皮を一枚、浮かべてある。当然だ"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "smile",
+          "text": "……当然だそうで。電車、一本見送ってもいい気がしてきやしたぜ"
         }
       ]
     },
@@ -228,6 +268,26 @@
           "speaker": "rei",
           "face": "smile",
           "text": "……古い曲。聴く？"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "片耳だけ借りたヘッドホンから、ゆっくりしたギターが流れてくる。"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……この曲、泡の音と同じくらいのテンポなんだ"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "炭、替えとくか。そのテンポのままでな"
+        },
+        {
+          "speaker": "rei",
+          "face": "smile",
+          "text": "……助かる。スミさんの炭替え、音がしないから好きだ"
         }
       ]
     }
