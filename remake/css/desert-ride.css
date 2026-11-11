@@ -271,11 +271,12 @@ html:root[data-density="phone"] .desert-ride .dr-card .dr-kicker { display: none
 
 /* #3175: 選別済み操作画像。読み込み中だけ文字ボタンを見せる。 */
 .desert-ride .dr-controls { align-items: flex-end; padding-bottom: 10px; }
-.desert-ride .dr-steer-group { display: flex; align-items: flex-end; gap: 8px; pointer-events: none; }
-.desert-ride .dr-touch-pair { align-items: flex-end; gap: 8px; }
-.desert-ride .dr-touch { position: relative; width: 112px; height: 112px; flex: 0 0 auto; overflow: visible; }
-.desert-ride .dr-touch.dr-boost { width: 112px; height: 112px; }
-.desert-ride .dr-touch.dr-jump { width: 138px; height: 138px; }
+/* 2026-11-11 オーナー「スティックはいらない。左右ボタンを大きく。ジャンプとブーストも大きく」: 左右 168・BOOST 160・ジャンプ 192（1280×720 の舞台の画素）。
+   左の2つは舞台の左 3割、右の2つは右 3割に収め、真ん中の走路と人物は空ける */
+.desert-ride .dr-touch-pair { align-items: flex-end; gap: 10px; }
+.desert-ride .dr-touch { position: relative; width: 168px; height: 168px; flex: 0 0 auto; overflow: visible; }
+.desert-ride .dr-touch.dr-boost { width: 160px; height: 160px; }
+.desert-ride .dr-touch.dr-jump { width: 192px; height: 192px; }
 .desert-ride .dr-touch.art-ready { padding: 0; border: 0; border-radius: 0; background: transparent; backdrop-filter: none; }
 .desert-ride .dr-touch.art-ready span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); }
 .desert-ride .dr-control-image { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; pointer-events: none; }
@@ -284,12 +285,7 @@ html:root[data-density="phone"] .desert-ride .dr-card .dr-kicker { display: none
 .desert-ride .dr-jump[data-air="true"] .dr-image-land { display: block; }
 .desert-ride .dr-touch.art-ready.on, .desert-ride .dr-touch.art-ready:active { background: transparent; filter: brightness(1.24) drop-shadow(0 0 14px rgba(255,220,125,.9)); transform: scale(.92) translateY(5px); }
 .desert-ride[data-gauge="full"] .dr-touch.dr-boost.art-ready, .desert-ride[data-gauge="boost"] .dr-touch.dr-boost.art-ready { background: transparent; filter: drop-shadow(0 0 12px rgba(255,157,49,.9)); }
-.desert-ride .dr-stick { position: relative; box-sizing: border-box; width: 144px; height: 144px; padding: 0; border: 0; border-radius: 50%; background: rgba(74,47,31,.18); pointer-events: auto; touch-action: none; cursor: pointer; --stick-x: 0px; --stick-y: 0px; }
-.desert-ride .dr-stick img { pointer-events: none; user-select: none; }
-.desert-ride .dr-stick-base { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: contain; clip-path: circle(49% at 50% 50%); }
-.desert-ride .dr-stick-knob { position: absolute; left: 50%; top: 50%; width: 74px; height: 74px; object-fit: contain; transform: translate(-50%, -50%) translate(var(--stick-x), var(--stick-y)); filter: drop-shadow(0 4px 5px rgba(55,30,13,.5)); }
-.desert-ride .dr-stick.on { filter: drop-shadow(0 0 12px rgba(255,202,94,.85)); }
-.desert-ride .dr-stick:focus-visible, .desert-ride .dr-touch:focus-visible, .desert-ride .dr-quit:focus-visible { outline: 3px solid #fff7cf; outline-offset: 3px; }
+.desert-ride .dr-touch:focus-visible, .desert-ride .dr-quit:focus-visible { outline: 3px solid #fff7cf; outline-offset: 3px; }
 
 /* メーター、バー、時計に独立した行を与える。やめるボタンは HUD の外側へ置く。 */
 .desert-ride .dr-hud-right { position: relative; display: grid; grid-template-rows: 118px 28px 26px; row-gap: 5px; box-sizing: border-box; width: 260px; min-width: 260px; }
@@ -297,9 +293,9 @@ html:root[data-density="phone"] .desert-ride .dr-card .dr-kicker { display: none
 .desert-ride .dr-boost-meter, .desert-ride .dr-clock { margin-top: 0; min-width: 0; }
 .desert-ride .dr-hud-right .dr-quit { top: calc(100% + 12px); right: 0; pointer-events: auto; }
 #stage[data-wide] .desert-ride .dr-hud-right .dr-quit { right: 0; }
-html:root[data-density="phone"] #stage[data-wide] .desert-ride .dr-touch { width: 112px; height: 112px; }
-html:root[data-density="phone"] #stage[data-wide] .desert-ride .dr-touch.dr-boost { width: 112px; height: 112px; }
-html:root[data-density="phone"] #stage[data-wide] .desert-ride .dr-touch.dr-jump { width: 138px; height: 138px; }
+html:root[data-density="phone"] #stage[data-wide] .desert-ride .dr-touch { width: 168px; height: 168px; }
+html:root[data-density="phone"] #stage[data-wide] .desert-ride .dr-touch.dr-boost { width: 160px; height: 160px; }
+html:root[data-density="phone"] #stage[data-wide] .desert-ride .dr-touch.dr-jump { width: 192px; height: 192px; }
 
 /* ---- 2026-11-11: カービングの印・最初のカーブの案内・裏の相手の名乗り ---- */
 /* カーブへ切り込んでいる間は、BOOST のゲージの縁が光る（貯まっていることが分かる） */

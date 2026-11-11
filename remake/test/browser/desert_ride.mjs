@@ -183,17 +183,12 @@ await suite("desert-ride", async check => {
     assert(quitBox.width >= 38 && quitBox.height >= 38, `quit is big enough (${quitBox.width}x${quitBox.height})`);
     assert(quitBox.y >= hudRight.y + hudRight.height && quitBox.y + quitBox.height <= jump.y, "quit sits between the HUD and the touch buttons");
     await page.waitForFunction(() => [...document.querySelectorAll(".dr-touch")].every(button => button.classList.contains("art-ready")));
-    assert.equal(await page.locator(".dr-stick img").count(), 2, "selected stick base and knob are present");
-    const stick = await page.locator(".dr-stick").boundingBox();
-    const cx = stick.x + stick.width / 2, cy = stick.y + stick.height / 2;
-    await page.mouse.move(cx, cy); await page.mouse.down();
-    await page.mouse.move(cx + stick.width * 0.14, cy);
-    const half = Number(await page.locator(".dr-stick").getAttribute("data-value"));
-    await page.mouse.move(cx + stick.width * 0.28, cy);
-    const full = Number(await page.locator(".dr-stick").getAttribute("data-value"));
-    await page.mouse.up();
-    assert(half >= 35 && half <= 65 && full >= 85, `stick gives analog deflection (${half}, ${full})`);
-    assert.equal(await page.locator(".dr-stick").getAttribute("data-value"), "0", "stick centers on release");
+    // 2026-11-11 オーナー「スティックはいらない。左右ボタンを大きく。ジャンプとブーストも大きく」
+    assert.equal(await page.locator(".dr-stick").count(), 0, "no stick: left/right are buttons only");
+    const k = stage.width / 1280, size = box => Math.min(box.width, box.height) / k;
+    assert(size(left) >= 160 && size(right) >= 160, `left/right are big (${size(left)}, ${size(right)})`);
+    assert(size(jump) >= 185 && size(boostButton) >= 150, `jump and boost are big (${size(jump)}, ${size(boostButton)})`);
+    assert(right.x + right.width <= stage.x + stage.width * 0.3 && boostButton.x >= stage.x + stage.width * 0.7, "the big buttons keep the middle 40% of the view clear");
     // 右を押している間だけ右へ。離すと入力が消える
     const press = async (box, hold) => {
       await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
