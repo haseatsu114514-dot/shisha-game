@@ -140,6 +140,8 @@
         { "speaker": "ageha", "face": "smile", "text": "ハジメっち！　世界一おめでと！　うち、記事めっちゃ保存した" },
         { "speaker": "hajime", "face": "smile", "text": "ありがとう。……そんなに保存するもの？" },
         { "speaker": "ageha", "face": "smile", "text": "するでしょ。ギャル友にも全員送ったし" },
+        { "speaker": "hajime", "face": "normal", "text": "全員って、何人に送ったの" },
+        { "speaker": "ageha", "face": "smile", "text": "二十人くらい。「もう見た」って返ってくるたびに、うちが誇らしくなった" },
         { "speaker": "ageha", "face": "normal", "text": "……で、今日はうちの一台、吸ってく？" }
       ]
     },
@@ -150,6 +152,8 @@
         { "speaker": "ageha", "face": "normal", "text": "……今日は、ちゃんと感覚ある日" },
         { "speaker": "hajime", "face": "normal", "text": "よかった" },
         { "speaker": "ageha", "face": "smile", "text": "でしょ。こういう日は、全力でバイブス出すって決めてんの" },
+        { "speaker": "", "face": "", "text": "ホースの継ぎ目を指でなぞって、フォイルの端を一つずつ確かめる。急がない手つきだった。" },
+        { "speaker": "ageha", "face": "normal", "text": "出すのは、うちの手が納得した一台だけ。そこは譲んない" },
         { "speaker": "", "face": "", "text": "出てきた一台は、甘さが軽くて、最後まで香りが続いた。" }
       ]
     },
@@ -159,6 +163,8 @@
         { "speaker": "", "face": "", "text": "MELTY PUFFは、今日もギャルとオタクで席が半分ずつ埋まっていた。" },
         { "speaker": "ageha", "face": "smile", "text": "見て見て。客層、相変わらずカオスでしょ" },
         { "speaker": "hajime", "face": "smile", "text": "みんな、楽しそうだね" },
+        { "speaker": "", "face": "", "text": "奥の席では、ギャルの子がオタクの子の推しの話に身を乗り出していた。" },
+        { "speaker": "ageha", "face": "smile", "text": "あの二人、さっき会ったばっか。うちの店だと、だいたい一本目で友達になってる" },
         { "speaker": "ageha", "face": "normal", "text": "それが一番。カワイイは最強、楽しいはもっと最強" },
         { "speaker": "ageha", "face": "smile", "text": "ハジメっちも、楽しい顔して帰ってよね" }
       ]
