@@ -4,6 +4,7 @@
   git lfs pull --include="asset_sources/tetsuko-care/originals/prop_*"   # 原画の実体（小物だけなら約8MB）
   python3 remake/tools/build_tetsuko_art.py                             # 小物を作り直す
   python3 remake/tools/build_tetsuko_art.py ui cats scene               # TKT25・26 の UI の部品・猫のしぐさ・膝としっぽ（#3213・#3214）
+  python3 remake/tools/build_tetsuko_art.py ui_b                        # TKT27 の UI の部品の B 段（#3243・PR #3248 の原画）
 
 - 原画は単色マゼンタ（#FF00FF）の背景。マゼンタを透過にする。縁（背景から3px以内）だけは、混ざったマゼンタの分を
   半透明に戻して色を引き戻す（輪郭が紫ににじまない）。絵の内側の色には触らない。
@@ -204,19 +205,48 @@ def build_ui():
 HEAD_PX = 160  # chr_tetsuko_normal.png の顔の幅（頬から頬。耳の先は含めない）
 POSE_CANVAS = (1024, 768, 512, 736)
 CATS = {  # 名前 → (原画, 原画の中の顔の幅 px, 足元を上げる px)
+    # #2690（PR #2715 の候補 a/b から1枚ずつ・2026-11-11 採用。理由は README の採用の記録）
+    "loaf": ("cat_loaf_b.png", 485, 0),
+    "crouch": ("cat_crouch_a.png", 430, 0),
+    "reach": ("cat_reach_a.png", 477, 0),
+    "hug": ("cat_hug_a.png", 420, 0),
+    "groom": ("cat_groom_a.png", 490, 0),
+    "yawn": ("cat_yawn_a.png", 477, 0),
+    "belly": ("cat_belly_a.png", 450, 0),
+    "rub": ("cat_rub_b.png", 400, 0),  # 横顔なので顔の幅が狭く見える分、少し小さめに測った
+    # #3214（TKT26）
     "leap": ("cat_leap.png", 370, 0),
     "flop": ("cat_flop.png", 420, 0),
     "mew": ("cat_mew.png", 500, 0),
     "poke": ("cat_poke.png", 525, 0),
+    # #3214 の残り（#2690 の B 段・オーナー経由の zip・2026-11-11 採用。Codex の推奨どおり。理由は README の採用の記録）
+    # この3しぐさは頭に比べて体が大きく描かれていて、顔の幅でそろえると体が立ち絵より大きくなる（振り返るは座った高さが
+    # 立ち絵の約1.4倍）。体の大きさがしぐさで変わって見えないよう、顔の幅ではなく体で合わせた値にしてある:
+    # 振り返る＝座った高さを立ち絵（約350px）に近く、歩く＝頭の上が座った時の8割ほど、伸び＝腰の高さが座った時の8割ほど。
+    "walk_a": ("cat_walk_a.png", 375, 0),
+    "walk_b": ("cat_walk_b_candidate3.png", 375, 0),
+    "lookback": ("cat_lookback_candidate2.png", 540, 0),
+    "stretch": ("cat_stretch.png", 430, 0),
 }
+# しぐさの絵は右向きにそろえる（画面は data-flip の時に左右を返して左向きにする）。左向きに描かれた原画は書き出しで返す。
+MIRROR = {"walk_a", "walk_b", "lookback"}
+# 交互に出す歩きの2枚は、同じ枠で切り出す（1枚ずつの枠だと、足の位置の違いで体が左右にぶれる）。
+SAME_BOX = [("walk_a", "walk_b")]
 
 
 def build_cats():
     W, H, AX, AY = POSE_CANVAS
+    keyed = {name: key_tolerant(SRC / src) for name, (src, _, _) in CATS.items()}
+    boxes = {name: crop_box(rgba) for name, rgba in keyed.items()}
+    for group in SAME_BOX:
+        x0, y0, x1, y1 = zip(*(boxes[name] for name in group))
+        for name in group:
+            boxes[name] = (min(x0), min(y0), max(x1), max(y1))
     for name, (src, head, lift) in CATS.items():
-        rgba = key_tolerant(SRC / src)
-        x0, y0, x1, y1 = crop_box(rgba)
-        part = Image.fromarray(rgba[y0:y1, x0:x1], "RGBA")
+        x0, y0, x1, y1 = boxes[name]
+        part = Image.fromarray(keyed[name][y0:y1, x0:x1], "RGBA")
+        if name in MIRROR:
+            part = part.transpose(Image.FLIP_LEFT_RIGHT)
         k = HEAD_PX / head
         part = part.resize((round(part.width * k), round(part.height * k)), Image.LANCZOS)
         canvas = Image.new("RGBA", (W, H), (0, 0, 0, 0))
@@ -237,8 +267,39 @@ def build_scene():
         save_as(name, scale_to(Image.fromarray(rgba[y0:y1, x0:x1], "RGBA"), width))
 
 
+# UI の部品の B 段（#3243・Codex の PR #3248 の原画・2026-11-11 採用）。名前 → (原画, 切り出し枠（原画の px・None は絵の大きさ）, 書き出しの幅)。
+# テープ2枚は、同じ絵に別の部品が混ざっていたので、その部品だけを切り出す（枠は ndimage で測った塊）。
+UI_B = {
+    "ui_tk_tray": ("ui_tk_tray.png", None, 1200),
+    "ui_tk_card": ("ui_tk_card.png", None, 384),
+    "ui_tk_panel": ("ui_tk_panel.png", None, 768),
+    "ui_tk_book": ("ui_tk_book.png", (16, 16, 1623, 868), 1600),          # 右の端の別の帯（背）は使わない
+    "ui_tk_book_spine": ("ui_tk_book_spine.png", None, 48),
+    "ui_tk_photo": ("ui_tk_photo.png", None, 460),
+    "ui_tk_tape": ("ui_tk_tape.png", (1209, 221, 2045, 504), 220),       # 左の小さな写真の枠は使わない
+    "ui_tk_frame": ("ui_tk_frame.png", None, 1280),
+    "ui_tk_flap": ("ui_tk_flap.png", None, 640),
+    "ui_tk_packtape": ("ui_tk_packtape.png", (997, 95, 1148, 1234), 80),  # 左の箱のふたは使わない（ふたは ui_tk_flap）
+    "ui_tk_slot": ("ui_tk_slot.png", None, 500),
+    "ui_tk_badge": ("ui_tk_badge.png", None, 96),
+    "ui_tk_nametag": ("ui_tk_nametag.png", None, 300),
+    "ui_tk_unknown": ("ui_tk_unknown.png", None, 192),
+}
+
+
+def build_ui_b():
+    for name, (src, box, width) in UI_B.items():
+        rgba = key_tolerant(SRC / src)
+        if box:
+            x0, y0, x1, y1 = box
+            rgba = rgba[y0:y1, x0:x1].copy()
+        x0, y0, x1, y1 = crop_box(rgba)
+        save_as(name, fit_width(Image.fromarray(rgba[y0:y1, x0:x1], "RGBA"), width))
+
+
 def main(groups=("props",)):
     if "ui" in groups: build_ui()
+    if "ui_b" in groups: build_ui_b()
     if "cats" in groups: build_cats()
     if "scene" in groups: build_scene()
     if "props" in groups: build_props()
