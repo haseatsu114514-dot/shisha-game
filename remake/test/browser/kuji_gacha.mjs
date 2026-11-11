@@ -80,7 +80,7 @@ await suite("kuji-gacha", async check => {
   });
   await check("last-one-follows", async page => {
     await setup(page);
-    // 上級機材くじ（55枚）の最後の1枚: 札を閉じると、もう一度回ってラストワン賞
+    // 上級機材くじ（40枚）の最後の1枚: 札を閉じると、もう一度回ってラストワン賞
     await page.evaluate(() => { const box = G.core.state.kuji.g5000; box.drawn = box.order.length - 1; });
     await page.locator('[data-tab="sell"]').click(); await page.locator('[data-tab="kuji"]').click();
     await tap(page, "kuji-g5000");

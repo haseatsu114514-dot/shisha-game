@@ -143,7 +143,7 @@ try {
       const index = b.order.indexOf(mint); [b.order[0], b.order[index]] = [b.order[index], b.order[0]];
       Q.stockBefore = Q.core.state.flavorStock.mint || 0;
     });
-    assert.equal(await page.evaluate(() => Q.core.state.kuji.g1000.order.length), 50);
+    assert.equal(await page.evaluate(() => Q.core.state.kuji.g1000.order.length), 40);
     assert.equal(await page.evaluate(() => Q.core.state.kuji.g1000.prizes.some(p => p.name.includes("ホース"))), false);
     await page.locator('[data-test="kuji-g1000"]').click();
     await page.locator(".kuji-card.reveal").waitFor();

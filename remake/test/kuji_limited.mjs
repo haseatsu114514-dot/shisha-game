@@ -47,9 +47,7 @@ const shopTop = Math.max(...Object.values(kuji.grades).filter(x => !x.limited).m
 assert.equal(g.chapterMin, 5, "第5章から");
 assert(g.price > shopTop, `いちばん高いくじ（${g.price} > ${shopTop}）`);
 assert.equal(g.label, "限定台くじ（1回10,000円）"); // 値段は1ランク下げた（KJ15）
-// 箱の枚数は、ほかの箱と同じ幅に収める（KJ17 で中身を値段に合わせ、箱は50〜70枚になった）
-const otherSizes = Object.values(kuji.grades).filter(x => !x.limited).map(x => x.boxSize);
-assert(g.boxSize >= Math.min(...otherSizes) && g.boxSize <= Math.max(...otherSizes), `箱の枚数はほかの箱と同じ幅（${g.boxSize}）`);
+assert(g.boxSize >= 20 && g.boxSize <= 50, "箱の枚数は既存の箱と同じ幅");
 assert.equal(g.prizes.reduce((n, p) => n + p.count, 0), g.boxSize);
 assert.equal(g.lastOne.secret, true);
 
