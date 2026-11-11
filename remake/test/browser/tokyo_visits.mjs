@@ -119,6 +119,8 @@ await suite("tokyo-visits", async check => {
     await assertFits(page, `${t("ch3-intro-scene")} button`);
     await page.evaluate(async () => {
       const { vnTest } = await import("./js/vn/engine.js"); vnTest.turbo = true; vnTest.choose = () => 0;
+      // 綾取への一台（DAY9・必須の店仕事）の調整は、既存の制作の自動操作で一度だけ行う。
+      (await import("./js/craft/session.js")).craftTest.auto = "good";
       const { state } = await import("./js/core/state.js");
       for (const id of ["mashiro", "mukai", "saku", "steve", "volk", "naru", "pakki"]) {
         state.met[id] = true; state.flags[`_intro_${id}`] = true;
@@ -136,6 +138,11 @@ await suite("tokyo-visits", async check => {
         await page.locator(`${t("rule-sheet")}[data-chapter="3"]`).waitFor();
         await assertFits(page, t("rule-sheet-close"));
         await page.locator(t("rule-sheet-close")).click();
+      }
+      // 綾取への一台は、注文→一度だけの調整→反応まで読み終えてから次のカードへ進む（調整は時間のかかる工程）。
+      if (id === "ch3_saku_mukai_visit") {
+        await page.waitForFunction(() => window.__remake.state.flags._ch3_intro.work?.service?.feedbackRead, null, { timeout: 60000 });
+        assert.equal((await get(page)).flags._ch3_intro.work.service.careDone, true);
       }
       await page.waitForFunction(() => !!document.querySelector('[data-test="ch3-intro-free"], [data-test="ch3-intro-scene"], [data-test="ch3-intro-ready"]'));
       if (id === "ch3_opening") assert.equal((await get(page)).flags._ch3_rules_read, true);
@@ -168,6 +175,7 @@ await suite("tokyo-visits", async check => {
           assert.deepEqual((await get(page)).tokyoVisits, current.tokyoVisits);
           await page.evaluate(async () => {
             const { vnTest } = await import("./js/vn/engine.js"); vnTest.turbo = true; vnTest.choose = () => 0;
+            (await import("./js/craft/session.js")).craftTest.auto = "good"; // LOAD で消えるので設定し直す
           });
         }
         await page.locator(t("ch3-intro-visit")).click();
