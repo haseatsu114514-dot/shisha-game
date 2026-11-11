@@ -77,7 +77,7 @@ await suite("growth-levelup", async (runCheck) => {
     await page.locator(t("kannon-reflect")).click();await page.locator(t("levelup")).waitFor({timeout:30000});
     assert.equal(await page.locator(t("growth-board")).count(),0,"ためた分の演出を見終えるまで盤は開かない");
     await page.waitForFunction(()=>document.querySelector(".levelup")?.classList.contains("lu-settled-state"));
-    assert.match(await page.locator(t("levelup")).innerText(),/Lv\.1 → Lv\.3[\s\S]*火種 ＋4/);
+    assert.match(await page.locator(t("levelup")).innerText(),/Lv\.1 → Lv\.3[\s\S]*×4[\s\S]*白火 ＋4/);
     await page.waitForTimeout(350);await page.locator(t("levelup-ok")).click();
     await page.locator(`${t("growth-board")}[data-mode="light"][data-art]`).waitFor();
     await page.locator(t("board-node-B1")).click();await page.locator(t("board-light")).click();await page.locator(t("board-decide")).click();
@@ -955,7 +955,7 @@ await suite("growth-levelup", async (runCheck) => {
       await page.waitForFunction(() => document.querySelector(".levelup")?.classList.contains("lu-settled-state"));
       const text = await panel.innerText();
       assert.match(text, /Lv\.1 → Lv\.3/);
-      assert.match(text, /火種 ＋4/, "レベル1つで火種2つ");
+      assert.match(text, /×4[\s\S]*白火 ＋4/, "レベル1つで火種2つ（大きな粒と ×4。文は読み上げ用・SBD116）");
       assert.doesNotMatch(text, /？？？/, "名乗っていない相手の名前は出さない");
       await assertFits(page, '[data-test="levelup-ok"]');
       await page.waitForTimeout(400);
@@ -981,7 +981,7 @@ await suite("growth-levelup", async (runCheck) => {
       await panel.waitFor();
       await tap(".levelup-backdrop");
       await page.waitForFunction(() => document.querySelector(".levelup")?.classList.contains("lu-settled-state"));
-      assert.match(await panel.innerText(), /Lv\.3 → Lv\.4[\s\S]*火種 ＋2/);
+      assert.match(await panel.innerText(), /Lv\.3 → Lv\.4[\s\S]*×2[\s\S]*白火 ＋2/);
       await tap(t("levelup-ok"));
       await page.waitForFunction(() => window.night?.to === 4, null, { timeout: 5000 });
       await panel.waitFor({ state: "detached" });
