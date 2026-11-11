@@ -1,7 +1,7 @@
 // 試遊ページ（ミニゲームなどの単体ページ）の起動。2026-11-11 オーナー「試遊リンクだと過去の仕様になってしまうので、
 // 最新版を本編同様遊べるようにして欲しい」: 本編（index.html の起動スクリプト）と同じく、公開版では次を行う。
 // - 開いた版が最新かを build.json（キャッシュなし）で確かめ、古い版がキャッシュから出ていたら版付きの URL で読み直す
-// - ページの本体は版の名前のフォルダ（js-<版>/）から読む＝古いモジュールがキャッシュから混ざらない
+// - ページの本体は版の名前のフォルダ（js-<版>/）から読む＝古いモジュールがキャッシュから混ざらない（手元は js/ から、今までと同じ時機に）
 // - 遊んでいる途中に新しい版が出たら、勝手に読み直さず、タブへ戻った時に上へ知らせるだけ
 // - 本編と同じ Service Worker を登録する（次から HTML・JS・CSS を毎回取り直す）
 // 使い方（HTML）: <meta name="suien-build" content="dev" data-built=""> と
@@ -69,18 +69,20 @@
       .catch((error) => console.warn("Service worker registration failed:", error));
   }
 
-  const load = async () => {
-    const plain = new URL(page, document.baseURI).href;
-    if (BUILD === "dev") return import(plain);
-    try {
-      return await import(new URL(page.replace(/^js\//, `js-${BUILD}/`), document.baseURI).href);
-    } catch (error) {
-      // 版のフォルダが無い（公開の切り替わり中など）ときだけ、いつもの js/ から読む。中身の失敗は二度読みしない
-      if (!/dynamically imported module|Importing a module script failed|error loading/i.test(String(error?.message))) throw error;
-      console.warn("page-boot: 版のフォルダから読めなかったので js/ から読む", error);
-      return import(plain);
-    }
+  // ページの本体は <script type="module"> を差し込んで読む（import() ではなく）。差し込んだ script はページの load を
+  // 本体が動くまで待たせるので、今までの <script type="module" src="js/…"> と同じく、load の時には本体が動いている。
+  const run = (src, fallback) => {
+    const tag = document.createElement("script");
+    tag.type = "module";
+    tag.src = new URL(src, document.baseURI).href;
+    // 版のフォルダが無い（公開の切り替わり中など）ときだけ、いつもの js/ から読む。中身の失敗では読み直さない
+    if (fallback) tag.addEventListener("error", () => { console.warn("page-boot: 版のフォルダから読めなかったので js/ から読む", src); run(fallback); }, { once: true });
+    document.head.append(tag);
   };
+  if (BUILD === "dev") {
+    run(page); // 手元は確かめずにすぐ読む
+    return;
+  }
   (async () => {
     const info = await latest(3000);
     // 新しい版の URL で開き直しても古いまま（配信の切り替え待ち）なら、繰り返さずにこの版で遊ぶ
@@ -88,6 +90,6 @@
       openBuild(info.build);
       return;
     }
-    await load();
+    run(page.replace(/^js\//, `js-${BUILD}/`), page);
   })().catch((error) => console.error("試遊ページの起動に失敗しました", error));
 })();
