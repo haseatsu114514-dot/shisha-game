@@ -31,7 +31,7 @@
 </section>
 
 <!-- ───────── 2 このゲームについて ───────── -->
-<section class="page" style="font-size:9.1pt;line-height:1.62">
+<section class="page" style="font-size:9.1pt;line-height:1.6">
   <div class="run"><span><b>一台勝負</b>　ルールブック 第0.4版</span><span>このゲームについて</span></div>
   <h1><span class="no">1</span>このゲームについて</h1>
   <p class="lead">あなたはシーシャの大会に出る作り手です。棚に並んだ葉から好きなものを選んで一台を詰め、炭で熱を入れ、審査員に吸ってもらいます。葉にはそれぞれ「いちばんおいしい温度」があります。熱は放っておくと冷めます。炭を焼いて足し、審査員の一口に合わせて熱を整えます。</p>
@@ -61,8 +61,7 @@
         <tr><td>プレイマット／得点ボード</td><td class="nw">2枚／1枚</td><td class="small">早見表つき</td></tr>
         <tr><td>得点コマ・主役マーカー</td><td class="nw">各2個</td><td class="small"></td></tr>
         <tr><td>先手・セッションのマーカー</td><td class="nw">各1個</td><td class="small"></td></tr>
-        <tr><td>火チップ／風防カウンター</td><td class="nw">20個／4個</td><td class="small">炭の火を数える</td></tr>
-        <tr><td>記録チップ</td><td class="nw">40個</td><td class="small">ジャスト20・焦げ20</td></tr>
+        <tr><td class="nw">火チップ／風防カウンター<br>記録チップ</td><td class="nw">20個／4個<br>40個</td><td class="small">炭の火を数える<br>ジャスト20・焦げ20</td></tr>
       </table>
     </div>
     <div>
@@ -273,14 +272,14 @@
       <p>炭には<b>火</b>があります。<b>熱は、火力ゾーンにある炭の火の合計</b>です。炭の数ではありません。</p>
       <div class="box ember">
         <h3>炭は4つまで</h3>
-        <p>火力ゾーン（HMDの上）に置ける炭は<b>4つまで</b>。5つ目は置けません。ふつうは2〜3個で、立ち上げは3個が多い。低温の葉は1〜2個、高温の葉は3〜4個がめやすです。</p>
+        <p>火力ゾーン（HMDの上）の<b>炭の枠は4つ</b>。5つ目の炭は置けません。ふつうは2〜3個で、立ち上げは3個が多い。低温の葉は1〜2個、高温の葉は3〜4個がめやすです。</p>
       </div>
       <h2>熱を上げる</h2>
-      <p><b>炭の火は戻りません。</b>熱を上げるには、空いている枠に新しい炭を足します。</p>
+      <p><b>炭の火は戻りません。</b>熱を上げるには、空いている炭の枠に新しい炭を足します。</p>
       <h3>チャージ（何回でも）</h3>
-      <p>手札のカードを1枚、裏向きで火力ゾーンに置きます。種火になり、すぐ熱+1。枠が空いていれば<b>何回でも</b>できます。<b>しなくてもかまいません。</b>手札は、熱に変えるか、使う1枚に残すかを選びます。</p>
+      <p>手札を1枚、裏向きで火力ゾーンに置きます。種火になり、すぐ熱+1。枠が空いていれば<b>何回でも</b>。<b>しなくてもかまいません。</b>手札は、熱に変えるか、使う1枚に残すかを選びます。</p>
       <h3>炭カードを焼いて、のせる</h3>
-      <p>炭カードは、自分のターンならいつでも炭焼き場に置けます。カードを使う1枚には数えません。枠が空いていれば、1ターンに何枚でも置けます。</p>
+      <p>炭カードは、自分のターンならいつでも炭焼き場に置けます（フラットは縦向き、キューブは横向き）。カードを使う1枚には数えません。枠があれば何枚でも置けます。</p>
       <div class="mat" style="margin-bottom:2.2mm">
         <div class="stove">
           <div><b>火おこし中</b><div class="cz"><i class="fl" style="opacity:.6">フラット<small>縦向き</small></i><i class="cu tap" style="opacity:.6">キューブ<small>横向き</small></i></div></div>
@@ -289,7 +288,6 @@
         <div style="margin-top:1.4mm">炭焼き場の枠は<b style="color:var(--ember2)">4つ</b>。火おこし中と焼けた炭を合わせて4枚まで。カードでは増えません。</div>
       </div>
       <ul style="margin-bottom:0">
-        <li><b>フラット炭</b>は縦向き、<b>キューブ炭</b>は横向きで「火おこし中」に置きます。</li>
         <li>自分のターンのはじめに炭焼き場を進めます。<b>縦向きの炭は「焼けた」へ。横向きの炭は縦向きに。</b>フラットは次のターン、キューブは2ターン後に焼けます。</li>
         <li>焼けた炭は、火力ゾーンの枠が空いていれば、自分のターンにいつでものせられます（表向き）。<b>置いたまま取っておくこともできます。</b></li>
       </ul>
@@ -316,17 +314,18 @@
         <li><b>熱を下げる</b>　熱すぎるときに、炭を1つ外します。</li>
         <li><b>入れ替える（炭交換）</b>　枠がいっぱいのとき、弱った炭や種火を外して、焼けた炭をのせます。立ち上げの種火も、こうして替えていきます。</li>
       </ul>
+      <p class="small" style="margin:2mm 0 0"><span class="tag k">ヒント</span>同じ熱6でも、キューブ炭2つ（火3＋火3）なら枠が2つ空いていて、次のターンにすぐ足せます。炭が4つだと、足す前に1つ灰にしなければなりません。</p>
     </div>
   </div>
   <div class="box dark" style="margin-top:2mm;margin-bottom:0">
     <h3>種火・フラット・キューブ</h3>
     <table style="margin:0 0 1.4mm;color:var(--ink)">
-      <tr><th>炭</th><th>向き</th><th class="c">着火</th><th class="c">新品の火</th><th class="c">灰になるまで</th><th>特徴と、向いている一台</th></tr>
-      <tr><td class="nw" style="background:#fff"><b>種火</b></td><td class="nw" style="background:#fff">裏向き</td><td class="c nw" style="background:#fff">すぐ</td><td class="c" style="background:#fff">1</td><td class="c nw" style="background:#fff">冷めて1回</td><td style="background:#fff">手札のどのカードでも置ける（チャージ）。すぐ熱になるが、すぐ消える</td></tr>
-      <tr><td class="nw" style="background:#f3ead9"><b>フラット炭</b></td><td class="nw" style="background:#f3ead9">表向き</td><td class="c nw" style="background:#f3ead9">1ターン</td><td class="c" style="background:#f3ead9">2</td><td class="c nw" style="background:#f3ead9">2回</td><td style="background:#f3ead9">【早い】置いた次の自分のターンに焼ける。低温〜中温の葉。すぐ足したいとき</td></tr>
-      <tr><td class="nw" style="background:#fff"><b>キューブ炭</b></td><td class="nw" style="background:#fff">表向き</td><td class="c nw" style="background:#fff">2ターン</td><td class="c" style="background:#fff">3</td><td class="c nw" style="background:#fff">3回</td><td style="background:#fff">【火持ち】火が大きく、長くもつ。高温の葉。少ない数で高い熱を作りたいとき</td></tr>
+      <tr><th>炭</th><th class="c">着火</th><th class="c">新品の火</th><th class="c">灰になるまで</th><th>特徴と、向いている一台</th></tr>
+      <tr><td class="nw" style="background:#fff"><b>種火</b>（裏向き）</td><td class="c nw" style="background:#fff">すぐ</td><td class="c" style="background:#fff">1</td><td class="c nw" style="background:#fff">冷めて1回</td><td style="background:#fff">手札のどのカードでも置ける。すぐ熱になるが、すぐ消える</td></tr>
+      <tr><td class="nw" style="background:#f3ead9"><b>フラット炭</b></td><td class="c nw" style="background:#f3ead9">1ターン</td><td class="c" style="background:#f3ead9">2</td><td class="c nw" style="background:#f3ead9">2回</td><td style="background:#f3ead9">【早い】次のターンに焼ける。低温〜中温の葉、すぐ足したいとき</td></tr>
+      <tr><td class="nw" style="background:#fff"><b>キューブ炭</b></td><td class="c nw" style="background:#fff">2ターン</td><td class="c" style="background:#fff">3</td><td class="c nw" style="background:#fff">3回</td><td style="background:#fff">【火持ち】火が大きく、長くもつ。高温の葉、少ない数で高い熱に</td></tr>
     </table>
-    <p class="small" style="margin:0;color:#d9c9b6">火は、炭カードの上の<b>火チップ</b>で数えます。のせるときに火の数だけ置き、火が下がったら1個取ります。種火は火1のままなので、置きません。</p>
+    <p class="small" style="margin:0;color:#d9c9b6">火は、炭カードの上の<b>火チップ</b>で数えます。のせるときに火の数だけ置き、下がったら1個取ります。種火には置きません（火1）。</p>
   </div>
   <div class="pno">6</div>
 </section>
@@ -388,7 +387,7 @@
         <tr><td><b>ジャストが広い</b></td><td class="nw">レモン<br>ダブルアップル</td><td>味値は低め（点も印象も控えめ）。判定熱がずれても、ジャストのまま</td></tr>
         <tr><td><b>帯が3マス</b></td><td class="nw">ブルーベリー<br>バニラ</td><td>真ん中がジャスト。1ずれても適温に残る</td></tr>
         <tr><td><b>味値4</b></td><td class="nw">ローズ<br>マンゴー</td><td>印象が強い。帯は2マスで、<b>ジャストのすぐ上が焦げ</b>。攻めるか、1つ下で待つか</td></tr>
-        <tr><td><b>高温</b></td><td class="nw">コーヒー<br>デスバイアイス</td><td>炭が3〜4個要るかわりに、帯の中で必要火力の大きいカードに届く</td></tr>
+        <tr><td><b>高温</b></td><td class="nw">コーヒー<br>デスバイアイス</td><td>火の大きい炭が要るかわりに、帯の中で必要火力の大きいカードに届く</td></tr>
       </table>
       <div class="box"><p><span class="tag k">ヒント</span>場の葉は各12枚。2人が同じ葉を主役にすると足りなくなります。相手の最初の一手を見て、主役を変えるのも手です。</p></div>
     </div>
@@ -598,22 +597,22 @@
         <tr><td class="c">2</td><td>詰める：レモン4</td><td class="c">8</td><td class="c">3</td><td class="c">4</td></tr>
         <tr><td class="c">3</td><td>詰める：ミント4</td><td class="c">12</td><td class="c">3</td><td class="c">4</td></tr>
         <tr><td class="c">4</td><td>蒸らす：1枚引く。フラット炭を2枚、炭焼き場へ</td><td class="c">12</td><td class="c">3</td><td class="c">3</td></tr>
-        <tr><td class="c">5</td><td>蒸らす：フラット2枚が焼ける。1枚引く。1枚のせる（炭4つ）。種火を1つ灰にして、もう1枚のせる。キューブ炭を炭焼き場へ</td><td class="c">12</td><td class="c">6</td><td class="c">3</td></tr>
+        <tr><td class="c">5</td><td>蒸らす：1枚引く。焼けたフラットを1枚のせる。種火を1つ灰にして、もう1枚。キューブを炭焼き場へ</td><td class="c">12</td><td class="c">6</td><td class="c">3</td></tr>
         <tr><td class="c">6</td><td>蒸らす：キューブが縦向きに。1枚引く。フラット炭を炭焼き場へ</td><td class="c">12</td><td class="c">6</td><td class="c">3</td></tr>
       </table>
       <div class="mat" style="padding:2mm;margin-bottom:2mm">
         <div class="cz"><i class="em">種火<b>火1</b></i><i class="em">種火<b>火1</b></i><i class="fl">フラット<b>火2</b></i><i class="fl">フラット<b>火2</b></i><span class="eq">熱6</span></div>
         <div style="margin-top:1.2mm">提供に入るときの火力ゾーン。炭焼き場には、あと1ターンで焼けるキューブ炭とフラット炭。</div>
       </div>
-      <p>レモンは適温4〜6のどこでもジャストです。最初のターンに炭が2つ冷めます。種火を2つ選べば、どちらも灰になって熱4。空いた枠に手札を1枚チャージして熱5。帯の真ん中なので、審査カードで1ずれてもジャストです。</p>
+      <p>レモンは適温4〜6のどこでもジャストです。最初のターンに炭が2つ冷めます。種火を2つ選べば、どちらも灰で熱4。空いた枠に手札を1枚チャージして熱5。帯の真ん中なので、審査カードで1ずれてもジャストです。</p>
       <div data-strip="lemon" data-cls="big" data-now="5"></div>
-      <p style="margin-top:1.6mm">一口は、味値2 + ジャスト2 + ミックス1 + 相性1 + 濃厚1 = <b>7点</b>。焼けたキューブとフラットは炭焼き場に取っておき、次のターンに冷めたぶんを足します。</p>
+      <p style="margin-top:1.6mm">一口は、味値2 + ジャスト2 + ミックス1 + 相性1 + 濃厚1 = <b>7点</b>。焼けたキューブとフラットは、次のターンに足します。</p>
       <h2>例3　キューブで高温を保つ</h2>
-      <p>主役はコーヒー（適温7〜8・ジャスト8）。火力ゾーンはキューブ炭2つ（火3・火3）とフラット炭1つ（火2）。炭3つで熱8です。</p>
+      <p>主役はコーヒー（適温7〜8・ジャスト8）。火力ゾーンはキューブ炭2つとフラット炭1つ（火3＋3＋2）で熱8です。</p>
       <div class="mat" style="padding:2mm;margin-bottom:1.6mm">
         <div class="cz"><i class="cu">キューブ<b>火3</b></i><i class="cu worn new">キューブ<b>火2</b></i><i class="fl worn new">フラット<b>火1</b></i><span class="eq">熱6</span><span class="eq" style="font-size:7pt">＋焼けたフラット（火2） → 熱8</span></div>
       </div>
-      <p>冷めるのは2つ。キューブ1つとフラットの火を1ずつ下げて熱6。空いている枠に、焼けていたフラット炭をのせれば熱8に戻ります。フラット炭だけだと、4つとも新品でやっと熱8。冷めたあとは枠がいっぱいで、1つ入れ替えても熱7です。キューブは火が大きいので、少ない数で高い熱になり、枠にゆとりが残ります。熱10にしておけば、アンコール（火力を2落として発動）を使っても熱8です。</p>
+      <p>冷めるのは2つ。キューブ1つとフラットの火を1ずつ下げて熱6。空いた枠に焼けたフラット炭をのせれば熱8に戻ります。フラット炭だけなら、新品4つでやっと熱8。冷めたら、1つ入れ替えても熱7どまりです。熱10にしておけば、アンコール（火力を2落として発動）を使っても熱8です。</p>
     </div>
     <div>
       <h2>例2　1ラウンドを追う</h2>
@@ -622,9 +621,9 @@
       <div class="mat" style="padding:2mm;margin-bottom:1.6mm">
         <div class="cz"><i class="cu worn">キューブ<b>火2</b></i><i class="fl">フラット<b>火2</b></i><i class="fl new">フラット<b>火2</b><small>のせた</small></i><i class="em new">種火<b>火1</b><small>チャージ</small></i><span class="eq">熱7</span></div>
       </div>
-      <p><b>火を見る</b>　ターンのはじめは、キューブ（火2）・フラット（火2）・フラット（火1）・種火の4つで熱6。冷めるのは2つ。種火と、火1のフラット炭を選びます。どちらも灰になり、熱は4。枠が2つ空きました。</p>
+      <p><b>火を見る</b>　ターンのはじめは、キューブ（火2）・フラット（火2・火1）・種火で熱6。冷める2つに種火と火1のフラットを選び、どちらも灰に。熱4で、枠が2つ空きました。</p>
       <p><b>引く</b>　「熱を逃がす吸い」と「渾身の一口」。</p>
-      <p><b>手を打つ</b>　焼けていたフラット炭（火2）をのせて熱6。ジャストですが、すぐ上は焦げ。「長く吸う」も、後手の煽りも怖い。残りの枠に手札を1枚チャージして熱7にし、<b>熱を逃がす吸い</b>（必要火力6）を仕込みます。判定熱は 7 − 2 = 5。+1されても6のジャストです。カードはこれで1枚。フラット炭を炭焼き場に置いて終わります。</p>
+      <p><b>手を打つ</b>　焼けていたフラット炭（火2）をのせて熱6。ジャストですが、すぐ上は焦げ。「長く吸う」も、後手の煽りも怖い。残りの枠に手札を1枚チャージして熱7にし、<b>熱を逃がす吸い</b>（必要火力6）を仕込みます。判定熱は 7 − 2 = 5。+1されても6のジャストです。カードはこれで1枚です。</p>
       <h3>相手のターン</h3>
       <p>相手はレモンとミントの一台（12枚）を熱5に整えました。あなたの仕込みは見えています。実況の煽りを使えば、あなたの判定熱は6のジャストになってしまう。相手は<b>見せ煙</b>（必要火力3）を仕込みました。葉を1枚減らして発動し、印象+4です。</p>
       <h3>審査</h3>
@@ -676,9 +675,9 @@
       </ul>
       <div class="box" style="margin-bottom:0">
         <h3>炭カードは何枚入れるか</h3>
-        <p>めやすは<b>8〜12枚</b>。種火は1回冷めると灰。フラット炭は2回、キューブ炭は3回もちます。入れすぎると、使えるカードが減ります。</p>
-        <p><b>低温の葉</b>（ローズ・ピーチ）は炭1〜2個。フラット中心で8枚ほど。必要火力0〜3のカードを多めに。熱を逃がす吸いは、熱6から4へ落とす大技です。</p>
-        <p><b>高温の葉</b>（コーヒー・ダブルアップル）は炭3〜4個。12枚以上、キューブを多めに。必要火力6〜7の大技に届きます。</p>
+        <p>めやすは<b>8〜12枚</b>。フラット炭は2回、キューブ炭は3回冷めるまでもちます。入れすぎると、使えるカードが減ります。</p>
+        <p><b>低温の葉</b>（ローズ・ピーチ）はフラット中心で8枚ほど。必要火力0〜3のカードを多めに。熱を逃がす吸いは、熱6から4へ落とす大技です。</p>
+        <p><b>高温の葉</b>（コーヒー・ダブルアップル）は12枚以上、キューブを多めに。必要火力6〜7の大技に届きます。</p>
         <p><b>味値4の葉</b>は印象が強い葉。焦げやすいので、吸い方を読む・ブロー・熱を逃がす吸いを切らさないこと。</p>
       </div>
     </div>
@@ -712,7 +711,7 @@
 </section>
 
 <!-- ───────── 15 デッキ・早見表 ───────── -->
-<section class="page" style="font-size:8.8pt;line-height:1.56">
+<section class="page" style="font-size:8.8pt;line-height:1.54">
   <div class="run"><span><b>一台勝負</b>　ルールブック 第0.4版</span><span>組み済みデッキ・早見表</span></div>
   <h1><span class="no">18</span>組み済みデッキ</h1>
   <div class="cols">
@@ -733,7 +732,7 @@
   <div class="cols3">
     <div class="box dark">
       <h3>準備のターン（6回）</h3>
-      <ol style="margin-bottom:1.4mm"><li>炭焼き場を進める</li><li>詰める（4枚・2種類まで）<br>または 蒸らす（1枚引く・チャージ・炭を置く／のせる／灰にする）</li><li>カードを1枚使える</li><li>手札は7枚まで</li></ol>
+      <ol style="margin-bottom:1.4mm"><li>炭焼き場を進める</li><li>詰める（4枚・2種類まで）<br>または 蒸らす（1枚引く・チャージ・炭を置く／のせる／灰に）</li><li>カードを1枚使える</li><li>手札は7枚まで</li></ol>
       <p class="small" style="color:#d9c9b6">蒸らすには8枚以上。蒸らしたら詰められない。</p>
     </div>
     <div class="box dark">
@@ -760,21 +759,19 @@
       <tr><td>ミックス +1</td><td>脇役（主役以外で2枚以上）がある</td></tr>
       <tr><td>相性 +1</td><td>主役の相性と同じ系統の脇役がある</td></tr>
       <tr><td>濃厚 +1</td><td>葉が合計10枚以上（印象も+1）</td></tr>
-      <tr><td>炭の火</td><td>種火1・フラット炭2・キューブ炭3（下がるだけ。0で灰）</td></tr>
+      <tr><td>炭の火</td><td>種火1・フラット炭2・キューブ炭3</td></tr>
       <tr><td>上限</td><td>熱10・炭4つ・手札7枚・炭焼き場4枠・器具3枚・人物1人</td></tr>
     </table>
   </div>
   <div class="box" style="margin-bottom:0">
     <h3>第0.4版で変えたところ（調整メモ）</h3>
     <ul class="chg small" style="margin:0;columns:2;column-gap:6mm">
-      <li><b>炭に火がある。</b>新品のフラット炭は2、キューブ炭は3、種火は1。熱は炭の火の合計で、炭の数ではない。</li>
-      <li><b>炭は4つまで。</b>チャージも、焼けた炭をのせるのも、枠が空いているときだけ。</li>
-      <li><b>火は下がるだけ。</b>冷めるときは炭を2つ選んで火を1ずつ。同じ炭は1ターンに1段階。0で灰。</li>
-      <li><b>フラットは【早い】、キューブは【火持ち】。</b>第0.3版の【小回り】と、冷める段階が減る決まりはなくした。</li>
-      <li><b>立ち上げは1〜4枚。</b>ふつうは3枚。灰にするのは、蒸らすターンにもできる。</li>
-      <li><b>火力を落として発動。</b>火のいちばん小さい炭から1ずつ。炭3種・追い炭・風防・すきま風は文を変えた。</li>
+      <li><b>炭に火がある。</b>フラット炭2・キューブ炭3・種火1。熱は炭の火の合計で、炭の数ではない。</li>
+      <li><b>炭は4つまで。</b>チャージものせるのも、枠が空いているときだけ。立ち上げは1〜4枚（ふつうは3枚）。</li>
+      <li><b>火は下がるだけ。</b>冷めるときは、炭2つの火を1ずつ。0で灰。蒸らすターンにも、炭を灰にできる。</li>
+      <li><b>炭カードの文。</b>フラットは【早い】、キューブは【火持ち】。追い炭・風防・すきま風も文を変えた。</li>
     </ul>
-    <p class="small" style="margin:1.2mm 0 0">第0.3版で変えたところ（必要火力・カードは1ラウンドに1枚・一口のカードは仕込む・一票は印象で・葉の体力・落として発動と「もう1枚」）は、そのままです。数値は、ゲーム内の規則で打つコンピュータどうしの対戦で粗く確かめたものです。人どうしの対戦はまだ行っていません。</p>
+    <p class="small" style="margin:1.2mm 0 0">第0.3版の決まり（必要火力・カードは1ラウンドに1枚・印象の一票など）はそのまま。数値はCPUどうしの対戦で粗く確かめたもの。</p>
   </div>
   <div class="pno">15</div>
 </section>

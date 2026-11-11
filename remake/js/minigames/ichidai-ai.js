@@ -218,7 +218,9 @@ function coalMove(G, p, { prep = false, turnsLeft = 0 } = {}) {
       for (let ch = 0; ch <= Math.min(canChargeNow ? room : 0, p.hand.length, 3); ch++) {
         const now = [...fires, ...on.map((x) => x.f), ...Array(ch).fill(1)], h1 = now.reduce((a, b) => a + b, 0);
         if (h1 > G.R.heatMax) continue;
-        let v = -ashCost - 0.05 * on.length - ch * 0.6 - 0.15 * ch * (ch - 1);
+        // チャージの値段: 手札1枚ぶん。そのターン最初のチャージは1枚引ける（チャージ＆ドロー）ので、ほぼただ
+        const cdFree = ch > 0 && !(p.turn.charges > 0) && G.R.chargeDraw > 0 ? 0.55 : 0;
+        let v = -ashCost - 0.05 * on.length - ch * 0.6 - 0.15 * ch * (ch - 1) + cdFree;
         if (!prep) v += expected(G, p, h1, guess, slot);
         if (!lastRound) {
           // 次の自分のターン: 冷めて（炭を2つまで・1つにつき1段階）、空いた枠に残りの炭と種火を足す。狙いに届くか・熱すぎないか

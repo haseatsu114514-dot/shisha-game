@@ -98,11 +98,12 @@ const fake = (over = {}) => ({ bowl: { mango: 6, vanilla: 3 }, main: "mango", bo
   // 手札を入れ替えて、炭の動きを決め打ちで確かめる
   p.hand = ["flat", "cube", "heat_in", "all_in"]; p.deck.push("blow", "blow", "blow", "blow", "blow", "blow");
   ok({ type: "steam" });
+  assert.equal(p.hand.length, 6, "蒸らす：2枚引く");
   ok({ type: "place", hand: p.hand.indexOf("flat") }); ok({ type: "place", hand: p.hand.indexOf("cube") });
   assert.deepEqual(p.stove.map((c) => c.stage), [1, 0], "フラットは縦向き、キューブは横向きで置く");
   no({ type: "puton", stove: 0 }, "まだ焼けていない");
   ok({ type: "charge", hand: p.hand.indexOf("blow") });
-  assert.equal(heatOf(p), 4);
+  assert.deepEqual([heatOf(p), p.hand.length], [4, 4], "チャージ＆ドロー: そのターン最初のチャージは、1枚置いて1枚引く（手札の枚数は変わらない）");
   no({ type: "charge", hand: 0 }, "炭は4つまで（種火も1つに数える）");
   ok({ type: "end" }); ok(aiAct(G, 1)); while (G.wait.player === 1) ok(aiAct(G, 1));
   assert.deepEqual(p.stove.map((c) => c.stage), [2, 1], "次のターンにフラットが焼け、キューブは縦向きに");
@@ -113,7 +114,10 @@ const fake = (over = {}) => ({ bowl: { mango: 6, vanilla: 3 }, main: "mango", bo
   assert.deepEqual([heatOf(p), p.zone.at(-1).up, coalHeat(p.zone.at(-1)), p.zone.length], [5, true, 2, 4], "種火3つ（火1）＋フラット炭（火2）で熱5");
   ok({ type: "end" }); while (G.wait.player === 1) ok(aiAct(G, 1));
   assert.deepEqual(p.stove.map((c) => c.stage), [2], "キューブは2ターンで焼ける");
-  ok({ type: "steam" }); ok({ type: "end" }); while (G.wait.player === 1 && G.phase === "prep") ok(aiAct(G, 1));
+  ok({ type: "steam" }); ok({ type: "end" });
+  assert.deepEqual([G.wait.type, p.hand.length], ["discard", 8], "手札は7枚まで。超えたぶんはターンの終わりに灰にする");
+  ok({ type: "discard", picks: [p.hand.length - 1] });
+  while (G.wait.player === 1 && G.phase === "prep") ok(aiAct(G, 1));
   assert.equal(G.phase, "serve");
   // 提供の最初のターン: キューブが焼けている
   if (G.wait.player !== 0) while (G.wait.player === 1) ok(aiAct(G, 1));
@@ -123,7 +127,7 @@ const fake = (over = {}) => ({ bowl: { mango: 6, vanilla: 3 }, main: "mango", bo
   assert.deepEqual([heatOf(p), coalHeat(p.zone[fi]), p.zone[fi].up], [4, 1, true], "フラット炭の火が2→1に下がる（裏返らない。炭は残る）");
   no({ type: "cool", zone: fi }, "同じ炭は1ターンに1段階まで");
   ok({ type: "cool", zone: 0 });
-  assert.deepEqual([heatOf(p), p.zone.length, G.wait.type], [3, 3, "main"], "火1の種火は灰になる");
+  assert.deepEqual([heatOf(p), p.zone.length, G.wait.type, p.hand.length], [3, 3, "main", 8], "火1の種火は灰になる。冷めたあと、普通のドローで1枚引く");
   ok({ type: "puton", stove: 0 });
   assert.deepEqual([heatOf(p), firepower(p), p.zone.length, coolStepsOf(p)], [6, 6, 4, 2], "キューブ炭は火3。熱＝炭の火の合計（炭の数ではない）。冷めるのは炭2つぶん");
   assert.equal(coolStepsOf({ zone: [p.zone[0]] }), 1, "炭が1つなら、冷めるのは1段階だけ");
@@ -142,6 +146,7 @@ const fake = (over = {}) => ({ bowl: { mango: 6, vanilla: 3 }, main: "mango", bo
   ok({ type: "charge", hand: 0 }); assert.equal(heatOf(p), before[0], "空いた枠には、カードを使ったあとでもチャージできる");
   no({ type: "charge", hand: 0 }, "枠が埋まったら、もうチャージできない");
   ok({ type: "end" });
+  if (G.wait.type === "discard") ok({ type: "discard", picks: Array.from({ length: p.hand.length - RULES.handMax }, (_, i) => i) });
   const round = G.round;
   while (G.wait && G.wait.player === 1 && G.round === round) ok(aiAct(G, 1));
   assert.notEqual(G.wait.type, "react", "めくったあとに使う時間は無い");
@@ -199,6 +204,10 @@ const fake = (over = {}) => ({ bowl: { mango: 6, vanilla: 3 }, main: "mango", bo
   p.zone.push({ id: "read", up: false });
   ok({ type: "play", hand: 0 });
   assert.deepEqual([heatOf(p), p.zone.map((c) => c.id)], [3, ["flat", "cube"]], "種火から先に落ちる");
+  // チャージ＆ドロー: そのターン最初のチャージだけ1枚引く（置かずに引くことはできない）。2回目からのチャージは引かない
+  p.zone = [{ id: "flat", up: true }]; p.hand = ["read", "read", "read"]; p.turn.charges = 0;
+  ok({ type: "charge", hand: 0 }); assert.deepEqual([heatOf(p), p.hand.length], [3, 3], "1枚置いて1枚引く");
+  ok({ type: "charge", hand: 0 }); assert.deepEqual([heatOf(p), p.hand.length], [4, 2], "2回目のチャージは引かない");
 }
 // 熱を入れる吸い（帯に入れば印象+1）・内寄せ（このセッションの印象+1）・ブロー（焦げを適温として採点）
 {

@@ -13,8 +13,12 @@
 import { FLAVOR, FLAVORS, CARD, BOWL, HMD, JUDGE, PUFFS, TOURNAMENT, KIT, FIRST_MARKET, expandDeck } from "./ichidai-data.js";
 
 export const RULES = Object.freeze({
-  startDraw: 7, startEmbers: 3, startEmbersMin: 1, startEmbersMax: 4, coalMax: 4, prepTurns: 6, packN: 4, firstPackCut: 2, steamDraw: 1, steamLeaves: 8,
-  draw: 2, cool: 2, slots: 4, heatMax: 10, handMax: 7, pile: 12, vote: 2, wear: 2, rich: 10, toolMax: 3,
+  startDraw: 7, startEmbers: 3, startEmbersMin: 1, startEmbersMax: 4, coalMax: 4, prepTurns: 6, packN: 4, firstPackCut: 2, steamDraw: 2, steamLeaves: 8,
+  // ドロー（2026-11-11 オーナー「チャージ＆ドローに加えて普通のドローもしたい。チャージ＆ドローはドローだけは無理だけど、
+  // チャージしないなら普通に1ドロー」）: 自分のターンに1枚引く（普通のドロー）。そのターン最初のチャージは「チャージ＆ドロー」で、
+  // 手札を1枚裏向きで置いて1枚引く（置かずに引くことはできない）。2回目からのチャージは引かない。
+  // 引く枚数が減るぶん、準備の「蒸らす」で引くのを2枚にして手札の量を保つ（steamDraw。計算は docs/design/card_game/v0.3_design.md）
+  draw: 1, chargeDraw: 1, cool: 2, slots: 4, heatMax: 10, handMax: 7, pile: 12, vote: 2, wear: 2, rich: 10, toolMax: 3,
   // 第0.3版: カードは必要火力を満たせば使える（払わない）。使えるのは1ラウンドに1枚（準備は1ターンに1枚）。
   // チャージと、炭を置く・のせるは何回でも。灰にするのは1ターンに1回。決めた理由は docs/design/card_game/v0.3_design.md
   cardsPerRound: 1, chargePerTurn: Infinity, ashPerTurn: 1,
@@ -138,7 +142,7 @@ function newPlayer(G, i, pc) {
     cardsUsed: 0, pend: 0, sessMod: 0, sessImp: 0, noCool: false, keepLeaves: false, usedSilicone: false, usedLotus: false, peek: null,
     steamed: false, packedOnce: false, turn: null, puff: null,
   };
-  drawCards(G, p, RULES.startDraw);
+  drawCards(G, p, G.R.startDraw);
   return p;
 }
 /**
@@ -344,15 +348,17 @@ const HANDLERS = {
   steam(G, p) {
     const c = canSteam(G, p); if (!c.ok) return c;
     p.turn.mode = "steam"; p.steamed = true; p.packedOnce = true;
-    drawCards(G, p, RULES.steamDraw);
-    say(G, "蒸らす：1枚引く。", p.index);
+    drawCards(G, p, G.R.steamDraw);
+    say(G, `蒸らす：${G.R.steamDraw}枚引く。`, p.index);
   },
 
   charge(G, p, a) {
     const c = canCharge(G, p); if (!c.ok) return c;
     if (!(a.hand >= 0 && a.hand < p.hand.length)) return fail("手札を選ぶ");
     p.zone.push(newCoal(p.hand.splice(a.hand, 1)[0], false)); p.turn.charges = (p.turn.charges || 0) + 1; p.turn.charged = true;
-    say(G, `チャージ：種火を1枚（熱${heatOf(p)}）`, p.index); emit(G, { t: "charge", p: p.index });
+    const cd = p.turn.charges === 1 && G.R.chargeDraw > 0; // そのターン最初のチャージ＝チャージ＆ドロー
+    say(G, `${cd ? "チャージ＆ドロー" : "チャージ"}：種火を1枚${cd ? "置いて、1枚引く" : ""}（熱${heatOf(p)}）`, p.index); emit(G, { t: "charge", p: p.index });
+    if (cd) drawCards(G, p, G.R.chargeDraw);
   },
   place(G, p, a) {
     const id = p.hand[a.hand]; if (!id) return fail("手札を選ぶ");
