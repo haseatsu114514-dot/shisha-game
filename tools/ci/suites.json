@@ -4440,9 +4440,27 @@
     },
     {
       "id": "look",
-      "title": "見た目の様式（現行／新版／DS風）の既定と章による制限",
+      "title": "見た目の様式（新版／旧版／DS風）の既定・章による制限・起動時の移行",
       "kind": "quick",
       "run": ["node remake/test/look.mjs"]
+    },
+    {
+      "id": "look-default",
+      "title": "見た目の様式の既定: プレイヤーの端末は新版・自動操作のブラウザは旧版・選び直しの保存と起動時の移行",
+      "kind": "browser",
+      "weight": 0.4,
+      "timeout": 4,
+      "paths": [
+        "remake/js/core/look.js",
+        "remake/js/looks/**",
+        "remake/js/main.js",
+        "remake/js/core/state.js",
+        "remake/js/scenes/title.js",
+        "remake/test/browser/look_default.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/look_default.mjs"
+      ]
     },
     {
       "id": "look-neo",

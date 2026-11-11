@@ -12,7 +12,7 @@ import { initLayers, imageReady, FRAME_ART, warmUiArt } from "./core/ui.js";
 import { loadConfig, saveConfig, state, load, consumeResumeOnBoot, tickPlayTime } from "./core/state.js";
 import { unlockAudio, preloadBgm } from "./core/audio.js";
 import { applyUiTheme } from "./core/ui-theme.js";
-import { initLook, normalizeLook } from "./core/look.js";
+import { initLook, migrateLook, normalizeLook } from "./core/look.js";
 import { installLooks } from "./looks/index.js";
 import { installRotateGuard } from "./core/rotate-guard.js";
 import { imgFileUrl } from "./core/img-file.js";
@@ -44,7 +44,9 @@ export async function boot() {
   initIchidaiSwitch(); // カードゲーム「一台勝負」の入口（?ichidai=1 で入・ICG）
   const cfg = loadConfig();
   applyUiTheme(cfg.uiTheme);
-  // 見た目の様式（現行／新版／DS風・LK01）。?look=neo などで端末の設定ごと切り替えられる。
+  // 見た目の様式（新版／旧版／DS風・LK01）。既定は新版で、まだ選んでいない端末は一度だけ既定へ移す（LK09）。
+  // ?look=neo などで端末の設定ごと切り替えられる。
+  migrateLook(cfg);
   const lookParam = new URLSearchParams(location.search).get("look");
   if (lookParam !== null && normalizeLook(lookParam) === lookParam) { cfg.look = lookParam; saveConfig(); }
   initLook({ look: cfg.look, chapter: () => (document.body.dataset.screen === "title" ? 1 : state?.chapter || 1) });
