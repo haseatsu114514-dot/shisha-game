@@ -127,8 +127,8 @@ void main() {
   vec2 p = vUv * vec2(uAspect, 1.);
   // 横に長い筋が、目の高さより上に層になって溜まる
   float n = fbm(p * vec2(1.1, 3.4) + uSeed) * (.45 + .9 * fbm(p * vec2(2.6, 7.) + uSeed * 1.7 + 4.));
-  float band = smoothstep(.22, .6, vUv.y) * smoothstep(1.02, .72, vUv.y);
-  o = texture(uSrc, vUv) + uColor * smoothstep(.1, .55, n) * band;
+  float band = smoothstep(.2, .62, vUv.y) * smoothstep(1.02, .7, vUv.y) * smoothstep(0., .12, vUv.x) * smoothstep(1., .88, vUv.x);
+  o = texture(uSrc, vUv) + uColor * smoothstep(.2, .62, n) * 1.5 * band;
 }`,
 };
 
@@ -167,25 +167,24 @@ void main() {
     vec2 buv = vec2(vUv.x, 1. - vUv.y);
     // 大きくぼかした背景＝その辺りの灯りの色。細かく拾うと、濃い煙が「背景のぼかし」に見えてしまう
     vec3 wide = textureLod(uBg, buv, 8.5).rgb, near = textureLod(uBg, buv, 5.).rgb;
-    amb = mix(vec3(1.), wide * 1.15 + .42, uSceneLight);
+    amb = mix(vec3(1.), wide + .64, uSceneLight * .8);
     glow = near * near * uSceneLight * .5 * op * (1. - op);
   }
   vec3 lit = base * amb;
-  vec3 shade = lit * vec3(.56, .54, .68);
-  vec3 col = mix(shade, lit, clamp(.6 + .4 * sh - .46 * relief(vUv, .012), .1, 1.12));
+  vec3 shade = lit * vec3(.64, .62, .76);
+  float full = smoothstep(.93, 1., op);
+  vec3 col = mix(shade, lit, clamp(.6 + .4 * mix(sh, .75, full) - .46 * relief(vUv, .012) * (1. - .75 * full), .1, 1.12));
   col = mix(col * vec3(.9, .94, 1.05), col, smoothstep(0., .55, op)) + glow;
   col += (hash12(gl_FragCoord.xy) - .5) * (2. / 255.);
   o = vec4(clamp(col, 0., 1.) * op, op);
 }`,
-  // ドット×リアル: 同じ煙を粗い升目で拾い、色数を絞って市松の網点で濃淡と透けを出す
+  // ドット×リアル: 同じ煙を升目で拾い、白に近い数色と4段の透けで描く（網点は使わない）
   pixel: `${HEAD}${VIEW_COMMON}
 uniform float uPx, uTones, uAlpha, uGain;
-// 2×2 の網点: 25%は4升に1つ、50%は市松、75%は4升に3つ
-float bayer2(vec2 p) { vec2 i = mod(p, 2.); return i.x == i.y ? (i.x < .5 ? .125 : .375) : (i.x > .5 ? .625 : .875); }
 vec3 ramp(vec3 base, float t) {
-  vec3 dark = base * vec3(.40, .38, .60) + vec3(.03, .0, .07);
-  vec3 mid = mix(base * vec3(.82, .80, .92), vec3(1.), .12);
-  vec3 hi = mix(base, vec3(1., .99, .96), .84);
+  vec3 dark = base * vec3(.74, .72, .88);
+  vec3 mid = mix(base * vec3(.90, .89, .97), vec3(1.), .25);
+  vec3 hi = mix(base, vec3(1.), .92);
   return t < .5 ? mix(dark, mid, t * 2.) : mix(mid, hi, t * 2. - 1.);
 }
 void main() {
@@ -193,21 +192,24 @@ void main() {
   vec2 uv = (cell + .5) * uPx / uRes;
   vec4 dye = texture(uDye, uv); float d = max(dye.a, 0.);
   float op = 1. - exp(-d * uDensK);
-  float b = bayer2(cell);
-  if (floor(clamp(op * uGain, 0., 1.) * 4. + .5) * .25 <= b) { o = vec4(0.); return; }
+  // 薄いところは、升目ごと薄くする
+  float lv = floor(clamp(op * uGain, 0., 1.) * 4. + .5) * .25;
+  if (lv <= 0.) { o = vec4(0.); return; }
   float sh = exp(-occl(uv, .013) * uShadowK);
   float v = clamp(((.62 - .5 * relief(uv, .02)) * (.8 + .2 * sh) + .1 * op) * 1.12, 0., 1.);
+  v = mix(v, .8, smoothstep(.95, 1., op));
   float n = uTones - 1.;
-  float t = clamp(floor(v * n + (b - .5) * .6 + .5), 0., n) / n;
+  float t = clamp(floor(v * n + .5), 0., n) / n;
   vec3 base = baseColor(dye);
   vec3 ab = uTintB - uTintA; float len = dot(ab, ab);
-  if (len > 1e-4) { float w = clamp(dot(base - uTintA, ab) / len, 0., 1.); base = mix(uTintA, uTintB, clamp(floor(w * 2. + b), 0., 2.) * .5); }
+  if (len > 1e-4) { float w = clamp(dot(base - uTintA, ab) / len, 0., 1.); base = mix(uTintA, uTintB, floor(w * 2. + .5) * .5); }
   else base = uTintA;
-  o = vec4(ramp(base, t) * uAlpha, uAlpha);
+  float a = lv * uAlpha;
+  o = vec4(ramp(base, t) * a, a);
 }`,
   // セル画: ドット×リアルと同じ塗り分けを、升目なしのなめらかな境目で。透けは3段、色は影・中間・明るい面の3色
   cel: `${HEAD}${VIEW_COMMON}
-uniform float uLine;
+uniform float uLine, uSolid;
 float blurD(vec2 uv, float r) {
   vec2 e = vec2(r / uAspect, r);
   float s = dens(uv) * .25;
@@ -216,18 +218,19 @@ float blurD(vec2 uv, float r) {
   return s;
 }
 void main() {
-  const float R = .0065;
+  const float R = .009;
   float d = blurD(vUv, R);
   float op = 1. - exp(-d * uDensK);
   float w = fwidth(op) * .9 + 1e-4;
   float a1 = smoothstep(.12 - w, .12 + w, op), a2 = smoothstep(.32 - w, .32 + w, op), a3 = smoothstep(.56 - w, .56 + w, op);
-  float alpha = a1 * .3 + a2 * .32 + a3 * .33;
+  float alpha = a1 * .3 + a2 * .32 + a3 * (.33 + .05 * uSolid);
   if (alpha < .004) { o = vec4(0.); return; }
   vec2 s = vec2(uLight.x / uAspect, uLight.y) * .02;
   float a = blurD(vUv + s, R), b = blurD(vUv - s, R);
   float rl = clamp((a - b) / (d + .5 * (a + b) + .04), -1., 1.);
   float sh = exp(-(a + blurD(vUv + s * 2.2, R)) * .5 * uShadowK);
   float v = clamp((.62 - .5 * rl) * (.8 + .2 * sh) + .1 * op, 0., 1.);
+  v = mix(v, .7, smoothstep(.95, 1., op));
   float aa = fwidth(v) * .8 + 1e-4;
   vec3 base = baseColor(texture(uDye, vUv));
   vec3 dark = base * vec3(.50, .48, .70) + vec3(.02, .0, .05);
@@ -334,11 +337,12 @@ export function createFluid(canvas, { simH = 128, dyeH = 432 } = {}) {
 
   const api = {
     // その場面の空気の性質（app.mjs の SCENES から入れる）
-    params: { dyeFade: .4, velFade: .9, buoy: .1, vort: 22, turb: .05, wind: [0, 0], densK: 2.2, shadowK: 1.5, sceneLight: .7, dotGain: 1.5 },
+    params: { dyeFade: .4, velFade: .9, buoy: .1, vort: 22, turb: .05, wind: [0, 0], densK: 2.2, shadowK: 1.5, sceneLight: .7, dotGain: 1.5, solid: false },
     light: [-.48, .88],
 
     /** 吐く口（emitter）から、このコマのぶんの煙と風を足す。k は吐く強さ 0〜1 */
     emit(e, k, dt) {
+      if (!e.rate) return;
       const n = e.splats || 2, col = e.colors;
       for (let i = 0; i < n; i++) {
         const side = Math.random() - .5;
@@ -352,7 +356,7 @@ export function createFluid(canvas, { simH = 128, dyeH = 432 } = {}) {
         // 吐き始めは、空気が動き出すまで煙を控える（止まった空気に溜まると、先頭だけ濃い輪になる）
         const amt = (e.rate * k * Math.min(1, e.t / .2) * dt) / n;
         queue.vel.push({ x, y, r: Math.max(r * 1.3, .022), v: [Math.cos(a) * sp * (e.push || 14) * dt, -Math.sin(a) * sp * (e.push || 14) * dt, 0, 0] });
-        queue.dye.push({ x, y, r, v: [c[0] * amt, c[1] * amt, c[2] * amt, amt] });
+        queue.dye.push({ x, y, r: r * (e.dyeWide || 1), v: [c[0] * amt, c[1] * amt, c[2] * amt, amt] });
       }
     },
 
@@ -435,10 +439,10 @@ export function createFluid(canvas, { simH = 128, dyeH = 432 } = {}) {
         gl.uniform1f(p.u("uHasBg"), hasBg ? 1 : 0);
         if (part.look === "pixel") {
           gl.uniform1f(p.u("uPx"), Math.max(1, Math.round(part.px * W / 1280)));
-          gl.uniform1f(p.u("uTones"), part.tones || 4); gl.uniform1f(p.u("uAlpha"), .96);
-          gl.uniform1f(p.u("uGain"), P.dotGain); // 網点の濃さ（薄く漂う場面では控える）
+          gl.uniform1f(p.u("uTones"), part.tones || 5); gl.uniform1f(p.u("uAlpha"), P.solid ? 1 : .92);
+          gl.uniform1f(p.u("uGain"), P.dotGain); // 透けの段の上がりやすさ（薄く漂う場面では控える）
         }
-        if (part.look === "cel") gl.uniform1f(p.u("uLine"), (part.line ?? 1.3) * W / 1280);
+        if (part.look === "cel") { gl.uniform1f(p.u("uLine"), (part.line ?? 1.3) * W / 1280); gl.uniform1f(p.u("uSolid"), P.solid ? 1 : 0); }
         gl.drawArrays(gl.TRIANGLES, 0, 3);
       }
       gl.disable(gl.SCISSOR_TEST);
