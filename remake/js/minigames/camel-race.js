@@ -378,6 +378,15 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     probe.onload = () => root.classList.add(cls);
     probe.src = imgFileUrl(rel);
   }
+  // リモコンのボタン（CR-UI07・#3217・2026-11-11 採用）: 通常と押下の2枚がそろって読めた時だけ絵にする
+  // （片方だけだと、押した瞬間に絵が消える）。読めなければ従来の CSS のボタンのまま。
+  for (const kind of ["voice", "whip"]) {
+    Promise.all(["normal", "pressed"].map(state => new Promise((resolve, reject) => {
+      const probe = new Image();
+      probe.onload = resolve; probe.onerror = reject;
+      probe.src = imgFileUrl(`ui/camel_race/ui/remote-${kind}-${state}.webp`);
+    }))).then(() => root.classList.add(`cr-remote-${kind}`), () => {});
+  }
 
   let art = null;
   void loadCamelArt().then(value => {
@@ -506,6 +515,16 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     button.addEventListener("keydown", event => { if (event.key === " " || event.key === "Enter") event.preventDefault(); });
   };
   press(voiceButton, onVoice);
+  // 声のボタンが沈んで見える間（リモコンの絵では押下の絵。held）。指を置いている間と、Space を押している間。
+  // 短いタップでも沈んだのが見えるよう、離してから少しだけ残す。
+  let voiceSinkTimer = 0;
+  const sinkVoice = on => {
+    clearTimeout(voiceSinkTimer);
+    if (on) voiceButton.classList.add("held");
+    else voiceSinkTimer = setTimeout(() => voiceButton.classList.remove("held"), 90);
+  };
+  voiceButton.addEventListener("pointerdown", () => sinkVoice(true));
+  for (const type of ["pointerup", "pointercancel", "pointerleave"]) voiceButton.addEventListener(type, () => sinkVoice(false));
   // ムチは押している間だけ。指が少しずれても離れないよう、押した要素に捕まえておく。
   signalButton.addEventListener("pointerdown", event => {
     event.preventDefault();
@@ -520,7 +539,7 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     if (sheet.hidden === false) return;
     if (isWhipKey(event)) { event.preventDefault(); event.stopPropagation(); if (!event.repeat) onWhip(true); return; }
     if (event.repeat) return;
-    if (event.code === "Space" || event.key === " ") { event.preventDefault(); event.stopPropagation(); onVoice(); }
+    if (event.code === "Space" || event.key === " ") { event.preventDefault(); event.stopPropagation(); sinkVoice(true); onVoice(); }
   };
   const onBlur = () => onWhip(false);
   window.addEventListener("blur", onBlur);
@@ -530,6 +549,7 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     && (root.contains(document.activeElement) || phase === "race" || phase === "countdown");
   const windowKey = event => { if (!ours(event)) return; armCamelAudio(); onKey(event); event.stopImmediatePropagation(); };
   const windowKeyUp = event => {
+    if (event.code === "Space" || event.key === " ") sinkVoice(false);
     if (!isWhipKey(event)) return;
     onWhip(false);
     if (ours(event)) { event.preventDefault(); event.stopImmediatePropagation(); }
@@ -630,7 +650,7 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     shake = 0; slow = 0; goTime = -1; combo = 0; spurtTint = 0; lastCallAt = -9; lastPosition = 0; leaderId = null; marks = new Set();
     camShift = 0; lastStride = -1; hajimeTextTimer = 0;
     frameX = PLAYER_SCREEN_X; draftFx = 0; duelFx = null; closingAt = -99; margins = null; puffMarks.clear();
-    signalButton.classList.remove("held");
+    signalButton.classList.remove("held"); voiceButton.classList.remove("held");
     countdownLeft = RACE.countdown; countdownShown = -1; last = null;
     setPhase("countdown");
     announce("スタートまで3秒。手前の金のゼッケンが自分のラクダ（ハビーバ）。");

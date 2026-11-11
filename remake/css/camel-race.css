@@ -111,10 +111,10 @@
 .camel-signal[data-state="whipping"] .camel-signal-note { color: #ffb09a; }
 @keyframes camel-spin { to { transform: rotate(360deg); } }
 .camel-control.hit::after { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; animation: camel-hit .35s ease-out both; }
-.camel-control.hit[data-hit="perfect"]::after { background: radial-gradient(circle at 12% 50%, rgba(255,226,122,.75), transparent 70%); }
-.camel-control.hit[data-hit="good"]::after { background: radial-gradient(circle at 12% 50%, rgba(184,240,255,.6), transparent 70%); }
-.camel-control.hit[data-hit="miss"]::after { background: radial-gradient(circle at 12% 50%, rgba(255,120,110,.55), transparent 70%); }
-.camel-control.hit[data-hit="boost"]::after { background: radial-gradient(circle at 12% 50%, rgba(255,179,71,.7), transparent 70%); }
+.camel-control.hit[data-hit="perfect"]::after { background: radial-gradient(circle at var(--hit-x, 12%) 50%, rgba(255,226,122,.75), transparent 70%); }
+.camel-control.hit[data-hit="good"]::after { background: radial-gradient(circle at var(--hit-x, 12%) 50%, rgba(184,240,255,.6), transparent 70%); }
+.camel-control.hit[data-hit="miss"]::after { background: radial-gradient(circle at var(--hit-x, 12%) 50%, rgba(255,120,110,.55), transparent 70%); }
+.camel-control.hit[data-hit="boost"]::after { background: radial-gradient(circle at var(--hit-x, 12%) 50%, rgba(255,179,71,.7), transparent 70%); }
 @keyframes camel-hit { from { opacity: 1; } to { opacity: 0; } }
 
 /* ---- 判定・バナー・カウントダウン ---- */
@@ -577,3 +577,54 @@ html:root[data-density="phone"] .camel-game .camel-cup strong { font-size: max(2
 
 /* 試遊ページの題名 */
 .camel-menu-title { display: block; width: min(460px, 80vw); height: auto; margin: 0 auto; }
+
+/* ---- リモコンのボタン（CR-UI07・#3217・2026-11-11 採用）----
+   通常と押下の2枚がそろって読めた時だけ、JS が .camel-game に cr-remote-voice／cr-remote-whip を付ける（読めなければ上の CSS のボタンのまま）。
+   絵は 960×240 の九分割: 左 160px（ボタン・ねじ・角。ムチは押しボタンの窪みと仕切りまでで約150pxあり、依頼の 120px に収まらない）・右 120px・上下 60px。
+   帯はすべて「高さ÷240」の倍率で描いてボタンを丸いまま保ち、無地の中央だけを横に伸ばす（帯の幅を高さ --remote-h から決めるのはそのため）。
+   ラベル・調子・スタミナ・キーは、これまでどおりコードが右の無地の上に描く。押している間（ムチは押し続ける間ずっと）は押下の絵。 */
+.camel-control { --remote-h: max(52px, 9.5cqh); }
+@media (orientation: landscape) and (max-width: 1024px) and (max-height: 520px) and (pointer: coarse) and (hover: none) {
+  .camel-control { --remote-h: max(13.3cqh, var(--cr-tap)); }
+}
+.camel-game.cr-remote-voice .camel-voice,
+.camel-game.cr-remote-whip .camel-signal {
+  --hit-x: calc(var(--remote-h) * .3);
+  height: var(--remote-h); min-height: 0; box-sizing: border-box; grid-template-columns: minmax(0, 1fr) auto;
+  padding: 0 calc(var(--remote-h) * .22) 0 calc(var(--remote-h) * 2 / 3 + .3cqw);
+  border: 0 solid transparent; border-radius: 0; box-shadow: none; transform: none;
+  border-image: url("../img/ui/camel_race/ui/remote-voice-normal.webp") 60 120 60 160 fill /
+    calc(var(--remote-h) / 4) calc(var(--remote-h) / 2) calc(var(--remote-h) / 4) calc(var(--remote-h) * 2 / 3) / 0 stretch;
+  /* 9枚の継ぎ目が端数の画素に来ると、すき間から後ろの砂色が細い線で透ける。筐体の内側だけ、筐体の色で裏打ちして隠す */
+  --remote-back: #202026;
+  background: linear-gradient(var(--remote-back), var(--remote-back)) center / calc(100% - 4px) calc(100% - 4px) no-repeat;
+  filter: drop-shadow(0 .3cqw .45cqw rgba(0,0,0,.5));
+}
+.camel-game.cr-remote-whip .camel-signal { border-image-source: url("../img/ui/camel_race/ui/remote-whip-normal.webp"); --remote-back: #211d1b; }
+/* ムチの筐体は縁が太く、内側の窓が高さの約半分しかないので、ラベルとゲージの行間を詰めて窓に収める */
+.camel-game.cr-remote-whip .camel-signal .camel-control-text { gap: .1em; }
+.camel-game.cr-remote-whip .camel-signal .camel-control-text strong { line-height: 1.05; }
+.camel-game.cr-remote-voice .camel-voice:is(.held, :active) { border-image-source: url("../img/ui/camel_race/ui/remote-voice-pressed.webp"); }
+.camel-game.cr-remote-whip .camel-signal:is(.held, [data-state="whipping"]) { border-image-source: url("../img/ui/camel_race/ui/remote-whip-pressed.webp");
+  filter: drop-shadow(0 0 .7cqw rgba(255,90,50,.6)) drop-shadow(0 .3cqw .45cqw rgba(0,0,0,.5)); }
+/* 光る合図は、四角い影ではなく筐体の形に沿う光で（声の輪・スパート・競り合い） */
+.camel-game.cr-remote-voice .camel-voice[data-cue="on"] { filter: drop-shadow(0 0 .6cqw rgba(255,215,122,.6)) drop-shadow(0 .3cqw .45cqw rgba(0,0,0,.5)); }
+.camel-game.cr-remote-whip .camel-signal[data-state="spurt"] { filter: drop-shadow(0 0 .6cqw rgba(255,179,71,.65)) drop-shadow(0 .3cqw .45cqw rgba(0,0,0,.5)); }
+.camel-game.cr-remote-voice .camel-voice[data-duel="on"],
+.camel-game.cr-remote-whip .camel-signal[data-duel="on"] { animation: camel-remote-duel .5s ease-in-out infinite alternate; }
+@keyframes camel-remote-duel { to { filter: drop-shadow(0 0 .8cqw rgba(255,110,70,.7)) drop-shadow(0 .3cqw .45cqw rgba(0,0,0,.5)); } }
+/* コードの丸いアイコンは、絵のボタンの上に透明な輪として重ねる（声の合図の輪だけ見せる） */
+.camel-game.cr-remote-voice .camel-voice .camel-control-icon,
+.camel-game.cr-remote-whip .camel-signal .camel-control-icon {
+  position: absolute; left: calc(var(--remote-h) * .3); top: 50%; width: calc(var(--remote-h) * .42); height: calc(var(--remote-h) * .42);
+  transform: translate(-50%, -50%); background: none; box-shadow: none; color: transparent; filter: none; animation: none; pointer-events: none;
+}
+.camel-game.cr-remote-voice .camel-voice .camel-control-icon svg,
+.camel-game.cr-remote-whip .camel-signal .camel-control-icon svg { display: none; }
+.camel-game.cr-remote-voice .camel-voice[data-cue="on"] .camel-control-icon { animation: camel-remote-ring 1.25s ease-in-out infinite; }
+@keyframes camel-remote-ring { 0%, 100% { box-shadow: 0 0 0 0 rgba(255,215,122,0); } 50% { box-shadow: 0 0 0 calc(var(--remote-h) * .07) rgba(255,215,122,.6); } }
+@media (prefers-reduced-motion: reduce) {
+  .camel-game.cr-remote-voice .camel-voice[data-duel="on"],
+  .camel-game.cr-remote-whip .camel-signal[data-duel="on"] { animation: none; filter: drop-shadow(0 0 .8cqw rgba(255,110,70,.7)) drop-shadow(0 .3cqw .45cqw rgba(0,0,0,.5)); }
+  .camel-game.cr-remote-voice .camel-voice[data-cue="on"] .camel-control-icon { animation: none; box-shadow: 0 0 0 calc(var(--remote-h) * .06) rgba(255,215,122,.6); }
+}

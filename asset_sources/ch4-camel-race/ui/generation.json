@@ -330,6 +330,114 @@
       "source_raw": "asset_sources/ch4-camel-race/ui/records/3055-raw/call-plate-A.png",
       "derivative": "assets/ui/camel_race/ui/call-plate.png + remake/img/ui/camel_race/ui/call-plate.webp",
       "selection": "合格見込み・ミューズ最終検品待ち"
+    },
+    {
+      "original": "remote-voice-normal-raw-A.png",
+      "spec": "CR-UI07",
+      "sha256": "d2224e4dd06d9cfe092af3cc0c28d3f68bc0abe4f9ebcc10362dd00519d29510",
+      "bytes": 1718449,
+      "size": [
+        2172,
+        724
+      ],
+      "mode": "RGBA",
+      "source_package": "3217-remotes-A-raw.zip（Codex・2026-11-11）",
+      "generation_record": "asset_sources/ch4-camel-race/world/generation-remotes-raw-A.json",
+      "derivative": "assets/ui/camel_race/ui/remote-voice-normal.png + remake/img/ui/camel_race/ui/remote-voice-normal.webp",
+      "derivative_size": [
+        960,
+        240
+      ],
+      "derivative_sha256": "bfcd05b5082e2357ecd0ec2927931abd40f797504196db1229beb3df6ef996b8",
+      "processing": "縮小だけではない（2026-11-11 の依頼で、九分割の素材に整えた）。アルファ128以上を筐体として外を完全透明・内側を不透明にし、筐体の外接 x20〜2152・y90〜635 を切り出し、高さ240へ均一に 0.44037 倍。左160px・右120pxはその倍率のまま、間の無地だけを横に 1.0321 倍して幅960に（3つの部分を原画の連続した座標から標本化し、継ぎ目なし）。色の加工なし。",
+      "nine_slice": {
+        "left": 160,
+        "right": 120,
+        "top": 60,
+        "bottom": 60
+      },
+      "selection": "採用（2026-11-11、Issue #3217。ui-request.md の「採用の記録」）"
+    },
+    {
+      "original": "remote-voice-pressed-raw-A.png",
+      "spec": "CR-UI07",
+      "sha256": "a4849ad9c5c627e8944a1a5432b2288bee1ed56abdfc81440804f1a7ebf625b8",
+      "bytes": 1618318,
+      "size": [
+        2172,
+        724
+      ],
+      "mode": "RGBA",
+      "source_package": "3217-remotes-A-raw.zip（Codex・2026-11-11）",
+      "generation_record": "asset_sources/ch4-camel-race/world/generation-remotes-raw-A.json",
+      "derivative": "assets/ui/camel_race/ui/remote-voice-pressed.png + remake/img/ui/camel_race/ui/remote-voice-pressed.webp",
+      "derivative_size": [
+        960,
+        240
+      ],
+      "derivative_sha256": "bb27c33690e26184adfa74ed43588154672b864167916688ce571bed205da25a",
+      "processing": "縮小だけではない（2026-11-11 の依頼で、九分割の素材に整えた）。アルファ128以上を筐体として外を完全透明・内側を不透明にし、筐体の外接 x19〜2156・y89〜634 を切り出し、高さ240へ均一に 0.44037 倍。左160px・右120pxはその倍率のまま、間の無地だけを横に 1.0286 倍して幅960に（3つの部分を原画の連続した座標から標本化し、継ぎ目なし）。色の加工なし。",
+      "nine_slice": {
+        "left": 160,
+        "right": 120,
+        "top": 60,
+        "bottom": 60
+      },
+      "selection": "採用（2026-11-11、Issue #3217。ui-request.md の「採用の記録」）"
+    },
+    {
+      "original": "remote-whip-normal-raw-A.png",
+      "spec": "CR-UI07",
+      "sha256": "a522b7497ed3f17e144daec6ae4d25f0a11ea7afaba8ac8bee312cfb5468bb38",
+      "bytes": 1905010,
+      "size": [
+        2172,
+        724
+      ],
+      "mode": "RGBA",
+      "source_package": "3217-remotes-A-raw.zip（Codex・2026-11-11）",
+      "generation_record": "asset_sources/ch4-camel-race/world/generation-remotes-raw-A.json",
+      "derivative": "assets/ui/camel_race/ui/remote-whip-normal.png + remake/img/ui/camel_race/ui/remote-whip-normal.webp",
+      "derivative_size": [
+        960,
+        240
+      ],
+      "derivative_sha256": "5f8a2afdd602037452cb64f2a4103b0f59ef21da24ba4d4ebce13657b283b92d",
+      "processing": "縮小だけではない（2026-11-11 の依頼で、九分割の素材に整えた）。アルファ128以上を筐体として外を完全透明・内側を不透明にし、筐体の外接 x0〜2172・y58〜665 を切り出し、高さ240へ均一に 0.39539 倍。左160px・右120pxはその倍率のまま、間の無地だけを横に 1.1749 倍して幅960に（3つの部分を原画の連続した座標から標本化し、継ぎ目なし）。色の加工なし。",
+      "nine_slice": {
+        "left": 160,
+        "right": 120,
+        "top": 60,
+        "bottom": 60
+      },
+      "selection": "採用（2026-11-11、Issue #3217。ui-request.md の「採用の記録」）"
+    },
+    {
+      "original": "remote-whip-pressed-raw-A.png",
+      "spec": "CR-UI07",
+      "sha256": "b08c92630a95f42682fb3287cd72aecea03ed1f3f15da65a37e9d2ff0ec6162a",
+      "bytes": 1832199,
+      "size": [
+        2172,
+        724
+      ],
+      "mode": "RGBA",
+      "source_package": "3217-remotes-A-raw.zip（Codex・2026-11-11）",
+      "generation_record": "asset_sources/ch4-camel-race/world/generation-remotes-raw-A.json",
+      "derivative": "assets/ui/camel_race/ui/remote-whip-pressed.png + remake/img/ui/camel_race/ui/remote-whip-pressed.webp",
+      "derivative_size": [
+        960,
+        240
+      ],
+      "derivative_sha256": "930a2cdd067627b5cea0e1b58f39a9b2bf30b4c965e16bdc63c09befb397a64e",
+      "processing": "縮小だけではない（2026-11-11 の依頼で、九分割の素材に整えた）。アルファ128以上を筐体として外を完全透明・内側を不透明にし、筐体の外接 x1〜2170・y58〜665 を切り出し、高さ240へ均一に 0.39539 倍。左160px・右120pxはその倍率のまま、間の無地だけを横に 1.1773 倍して幅960に（3つの部分を原画の連続した座標から標本化し、継ぎ目なし）。色の加工なし。",
+      "nine_slice": {
+        "left": 160,
+        "right": 120,
+        "top": 60,
+        "bottom": 60
+      },
+      "selection": "採用（2026-11-11、Issue #3217。ui-request.md の「採用の記録」）"
     }
   ],
   "remaining41_received": "2026-11-10、41枚の原画を受領。採用8枚のみこの台帳に追記。既存6件は維持。詳細は Issue #3053 / work/codex-a-cr08-41-1110/SELECTION.md。"

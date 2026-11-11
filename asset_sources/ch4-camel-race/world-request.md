@@ -13,7 +13,7 @@ Issue: [#3217](https://github.com/haseatsu114514-dot/shisha-game/issues/3217)（
 | 100mごとの距離板 | 四角3枚 | CR-WD02 |
 | 走路の砂・車の道 | 乱数で打った点と線のタイル。広い面積が単調 | CR-WD04（走路の砂は**2026-11-11 採用・組み込み済み**。道は再依頼） |
 | 砂煙 | 丸いぼかしの円 | CR-WD03（**2026-11-11 採用・組み込み済み**） |
-| 下の2つの操作ボタン | CSS の黒い角丸に SVG の記号 | CR-UI07（[ui-request.md](ui-request.md)。2026-11-11 の4枚は不合格 → **指定を改訂して再依頼**） |
+| 下の2つの操作ボタン | CSS の黒い角丸に SVG の記号 | CR-UI07（[ui-request.md](ui-request.md)。2026-11-11 の4枚（remotes-A）を九分割に整えて**採用・組み込み済み**。ボタンが小さいので、ボタンを大きくした改訂版を再依頼中） |
 | GO!・3・2・1・LAST SPURT・GOAL・GOOD・MISS | 画面の書体に縁取り（PERFECT だけ手描きの字） | CR-UI14 の残り9語（**2026-11-11 採用・組み込み済み**） |
 | 2〜4位のメダル | CSS の円（1位だけ絵） | CR-UI03 の銀・銅・鉄（同上。未生成） |
 | 進み具合の横木 | CSS の木の色 | CR-UI06 track-rail（同上。未生成） |
@@ -40,7 +40,7 @@ Claude は画像を生成しない。下の「Codex へ渡す文」をそのま�
 | B | CR-WD09 | `word-vs.png` / `word-start.png` / `word-finish.png` | 長辺1024以内 | 競り合いの「VS」、門の幕の字 | CR-UI14 と同じ、ペンキで手描きした看板の字。VS は金に濃い茶の縁、START と FINISH は白にくっきりした濃い影。**綴りが違う案は不採用** |
 | C | CR-WD06 | `fg-flagpole.png` | 256×720 | 手前を速く流れる柱（速さの手がかり） | 白い細い柱の上に、金・朱・クリームの三角旗を3枚つないだ紐。柱の根元がキャンバスの下端 |
 
-未生成のまま残っている CR08 の部品（仕様は [ui-request.md](ui-request.md)）: CR-UI03 `medal-{silver,bronze,plain}.png`、CR-UI06 `track-rail.png`、CR-UI07 `remote-{voice,whip}-{normal,pressed}.png`（2026-11-11 に指定を改訂。下の依頼文の CR-UI07）。優先は CR-UI07 → CR-UI03 → CR-UI06（CR-UI14 の9語は 2026-11-11 に採用済み）。
+未生成のまま残っている CR08 の部品（仕様は [ui-request.md](ui-request.md)）: CR-UI03 `medal-{silver,bronze,plain}.png`、CR-UI06 `track-rail.png`、CR-UI07 `remote-{voice,whip}-{normal,pressed}.png` の改訂版（2026-11-11 に remotes-A を採用・組み込み済み。ボタンを大きくした改訂版を下の依頼文の CR-UI07 で依頼）。優先は CR-UI07 → CR-UI03 → CR-UI06（CR-UI14 の9語は 2026-11-11 に採用済み）。
 
 ## Codex へ渡す文（コピペ用）
 
@@ -184,6 +184,7 @@ Codex がオーナー経由で渡した `3217-dust-A-production.zip`（SHA-256 `
 - **スタートは奥の柱だけ**: 手前の柱も立てると、幕が並んだラクダの頭と「あなたのラクダ」の札にかぶった（比較図の左下）。発馬の柵が奥の柱の根元から手前の柵まで渡るので、スタートの線は読める。ゴールは手前と奥の柱を立て、地面に白黒の市松の線を引く（手前の端は手前の柱のすぐ左で、柱に隠れない）。手前の柱はラクダより前・車より奥に描くので、ゴールの瞬間にラクダの鼻先が柱の向こうを通る。
 - 画面の `data-gate` が `sprites`／`canvas`（2枚そろって読めた時だけ絵。読めなければ従来の木の柱2本と布の幕）。WebP は約50KB ずつ。
 - 原画は `world/originals/post-{start,finish}-near-A.png`、比較図は `world/review/posts-A-comparison.jpg`。不合格の奥の柱2枚とリモコン4枚は、容量を節約するためリポジトリに入れず、縮小図だけ残した。
+- **追記（同日）: リモコン4枚は採用に変えた。** 依頼で、無地の中央だけを横に伸ばして 960×240 にし、九分割の左を 160px にして組み込んだ（原画は `ui/originals/` に保存。記録は [ui-request.md](ui-request.md) の「採用の記録」）。上の②③④（ボタンが小さい・声とムチで筐体が別物・押下の差が小さい）は絵の性質として残るので、ボタンを大きくした改訂版の依頼は続ける。
 
 | 原画 | 寸法 | SHA-256 |
 |---|---|---|
@@ -191,10 +192,10 @@ Codex がオーナー経由で渡した `3217-dust-A-production.zip`（SHA-256 `
 | `post-finish-near-A.png`（採用） | 971×1619 | `40209475c9c377ec0e38eae26a95ff5488b04df146ef6dd9307448a8a8cc914c` |
 | `post-start-far-A.png`（不合格・保存せず） | 971×1620 | `e453ae336afe10a559dab89ffd08aa053e5f2b8cffd41fc8402165700728bfd9` |
 | `post-finish-far-A.png`（不合格・保存せず） | 971×1619 | `e6e411272e8b0df337d0346d544ff0f664c124cec6d96c475987155d8c8c9dae` |
-| `remote-voice-normal-raw-A.png`（不合格・保存せず） | 2172×724 | `d2224e4dd06d9cfe092af3cc0c28d3f68bc0abe4f9ebcc10362dd00519d29510` |
-| `remote-voice-pressed-raw-A.png`（不合格・保存せず） | 2172×724 | `a4849ad9c5c627e8944a1a5432b2288bee1ed56abdfc81440804f1a7ebf625b8` |
-| `remote-whip-normal-raw-A.png`（不合格・保存せず） | 2172×724 | `a522b7497ed3f17e144daec6ae4d25f0a11ea7afaba8ac8bee312cfb5468bb38` |
-| `remote-whip-pressed-raw-A.png`（不合格・保存せず） | 2172×724 | `b08c92630a95f42682fb3287cd72aecea03ed1f3f15da65a37e9d2ff0ec6162a` |
+| `remote-voice-normal-raw-A.png`（同日に採用・`ui/originals/` に保存） | 2172×724 | `d2224e4dd06d9cfe092af3cc0c28d3f68bc0abe4f9ebcc10362dd00519d29510` |
+| `remote-voice-pressed-raw-A.png`（同日に採用・`ui/originals/` に保存） | 2172×724 | `a4849ad9c5c627e8944a1a5432b2288bee1ed56abdfc81440804f1a7ebf625b8` |
+| `remote-whip-normal-raw-A.png`（同日に採用・`ui/originals/` に保存） | 2172×724 | `a522b7497ed3f17e144daec6ae4d25f0a11ea7afaba8ac8bee312cfb5468bb38` |
+| `remote-whip-pressed-raw-A.png`（同日に採用・`ui/originals/` に保存） | 2172×724 | `b08c92630a95f42682fb3287cd72aecea03ed1f3f15da65a37e9d2ff0ec6162a` |
 
 ## 届いた後（Claude の作業）
 

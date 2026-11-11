@@ -330,17 +330,24 @@ await suite("ch4-camel-race-controls", async check => {
     await page.waitForFunction(words => words.every(word => document.querySelector('[data-test="camel-game"]').classList.contains(`cr-word-${word}`)),
       ["perfect", "good", "miss", "go", "3", "2", "1", "last-spurt", "goal", "title"]);
     const whip = page.locator(dt("camel-signal"));
+    // リモコンの絵（CR-UI07・#3217）: 声とムチのボタンが、通常と押下の2枚がそろった絵で描かれる。
+    await page.waitForFunction(() => ["voice", "whip"].every(kind => document.querySelector('[data-test="camel-game"]').classList.contains(`cr-remote-${kind}`)));
+    const remoteImages = () => page.evaluate(() => ["camel-voice", "camel-signal"]
+      .map(id => getComputedStyle(document.querySelector(`[data-test="${id}"]`)).borderImageSource.match(/remote-[a-z-]+\.webp/)?.[0]));
+    assert.deepEqual(await remoteImages(), ["remote-voice-normal.webp", "remote-whip-normal.webp"]);
     const stamina = async () => Number(await page.locator(".camel-stamina b").textContent());
     const full = await stamina();
     // キーボード: 押している間だけムチ。
     await page.keyboard.down("x");
     await page.waitForFunction(() => document.querySelector('[data-test="camel-signal"]').dataset.state === "whipping");
+    assert.deepEqual(await remoteImages(), ["remote-voice-normal.webp", "remote-whip-pressed.webp"], "the whip remote stays pressed while held");
     await page.waitForTimeout(700);
     assert.equal(await page.locator(".camel-speed").getAttribute("data-state"), "whip");
     const pressed = await stamina();
     assert(pressed < full - 5, `holding X spends stamina (${full} → ${pressed})`);
     await page.keyboard.up("x");
     await page.waitForFunction(() => document.querySelector('[data-test="camel-signal"]').dataset.state !== "whipping");
+    assert.deepEqual(await remoteImages(), ["remote-voice-normal.webp", "remote-whip-normal.webp"], "releasing the whip lifts the button");
     const released = await stamina();
     await page.waitForTimeout(500);
     assert(await stamina() >= released - 1, "releasing stops the drain");
@@ -374,5 +381,24 @@ await suite("ch4-camel-race-controls", async check => {
     await page.locator(dt("camel-close")).click();
     await page.locator(dt("camel-menu-quick")).waitFor();
   }, { ignoreFailedResource: failure => dustArt.test(failure) });
+
+  // リモコンの押下の絵（CR-UI07）が読めない環境: 通常の絵が読めても使わず（押した瞬間に絵が消えないように）、
+  // 2つのボタンは従来の CSS のボタンのまま。ムチは押している間だけ効く。
+  const remotePressedArt = /\/ui\/camel_race\/ui\/remote-(voice|whip)-pressed\.webp/;
+  await check("remote-buttons-stay-css-without-the-pressed-art", async page => {
+    await page.route(remotePressedArt, route => route.abort());
+    await page.goto(new URL("camel-race.html", baseURL).href);
+    await page.locator(dt("camel-menu-quick")).click();
+    await page.waitForFunction(() => document.querySelector('[data-test="camel-game"]')?.dataset.phase === "race", null, { timeout: 15000 });
+    const classes = await page.locator(dt("camel-game")).getAttribute("class");
+    assert.doesNotMatch(classes, /cr-remote-/, "no remote art without both images");
+    assert.equal(await page.evaluate(() => getComputedStyle(document.querySelector('[data-test="camel-signal"]')).borderImageSource), "none");
+    await page.keyboard.down("x");
+    await page.waitForFunction(() => document.querySelector('[data-test="camel-signal"]').dataset.state === "whipping");
+    await page.keyboard.up("x");
+    await page.waitForFunction(() => document.querySelector('[data-test="camel-signal"]').dataset.state !== "whipping");
+    await page.locator(dt("camel-close")).click();
+    await page.locator(dt("camel-menu-quick")).waitFor();
+  }, { ignoreFailedResource: failure => remotePressedArt.test(failure) });
 }, { entry: new URL("camel-race.html", baseURL).href, readySelector: '[data-test="camel-menu-quick"]' });
 
