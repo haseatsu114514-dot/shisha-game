@@ -2423,26 +2423,6 @@
       "chrome": "playwright"
     },
     {
-      "id": "tarot-arcana",
-      "title": "Fortune tarot: each person's major arcana in the card frame, card-name band and light-only fallback (#3278)",
-      "kind": "browser",
-      "weight": 1.2,
-      "timeout": 10,
-      "paths": [
-        "remake/js/motions/tarot.js",
-        "remake/js/core/tarot-arcana.js",
-        "remake/js/core/scene-motions.js",
-        "remake/js/vn/engine.js",
-        "remake/css/motions/tarot.css",
-        "remake/img/ui/transitions/tarot/**",
-        "remake/test/browser/tarot_arcana.mjs"
-      ],
-      "run": [
-        "node remake/test/browser/tarot_arcana.mjs"
-      ],
-      "chrome": "playwright"
-    },
-    {
       "id": "steam-forecast",
       "title": "Steam forecast",
       "kind": "browser",

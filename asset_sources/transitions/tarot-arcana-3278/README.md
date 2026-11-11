@@ -2,8 +2,6 @@
 
 内蔵画像生成で各回1枚。原画 PNG は未加工。WebP は原寸のまま可逆変換。参照画像は `card-back.webp`（#3254 原画 PNG から参照用に変換）、`card-front-frame.webp`（同）、`bg_uranaishi.webp`（main の既存画像）を毎回添付。
 
-> **2026-11-11 ゲームへ組み込み（Claude・#3278 の残り）**: `remake/img/ui/transitions/tarot/arcana/` の原寸・可逆の WebP（1枚約2.7MB・計約53MB）は、`make_webp.py` で表の枠の窓に入れて作り直したゲーム用の札の表（540×888・計約2.9MB）に置き換えた（下の「ゲームへの組み込み」）。原画はこのフォルダの `raw/`（無加工）のまま。
-
 | # | 原画 | 実寸 px | bytes | SHA-256 | CHECK |
 |---:|---|---:|---:|---|
 | 1 | `raw/09-hermit.png` | 1024×1536 | 3900537 | `bb3a65558ffe751f74cfe19e7199e7d780c0b116ad9a60cf42678e84f00625b9` | PASS |
@@ -32,15 +30,6 @@
 - `06-lovers`: 赤いりんごが画面左、緑が右。
 - `03-empress`: 3回とも星12個の条件を満たさず。1回目11個、2回目11個、3回目9個。2回目を最良候補として採用。
 - `10-wheel`: 1回目はサメ2匹。2回目は下側に別のサメの尾に見える形が残る。3回目は1匹のサメが車輪に沿って一続きに見えるため採用。
-
-## ゲームへの組み込み（make_webp.py）
-
-- 作り方: `python3 asset_sources/transitions/tarot-arcana-3278/make_webp.py`（Pillow・numpy）。原画 `raw/<名前>.png` と、表の枠の原画 `asset_sources/transitions/motion-props-3254/raw/card-front-frame.png` から、`remake/img/ui/transitions/tarot/arcana/<名前>.webp` を上書きで作る（ファイル名は原画と同じ）。
-- 窓: 枠の真ん中の生成りの面を、中心からの塗りつぶしで求めた範囲（1024×1536 の中の (195,215)–(829,1320)・634×1105・縦横比 0.574）。金の細線と枠は枠の絵のまま残し、その内側だけを札の絵に替える。
-- 絵: 窓の高さに合わせて縮め（×0.719）、左右を同じだけ切る（原画で左右 71px ずつ＝約7%）。依頼文どおり主役は横の中央80%にあり、19枚とも欠けていないことを並べて目視した。
-- 書き出し: 札の外形 (87,60)–(937,1457)（裏の `card-back.webp`・見本の `remake/previews/motion-direction/make_assets.py` と同じ）で切り、540×888 に縮めて WebP（quality 80・角の外は透過）。ゲームの札は 232×381（めくった後 1.16倍）なので、高精細の画面でもにじまない表示の約2倍。
-- 大きさ: 1枚 145〜168KB・19枚で約2.9MB（置き換える前の原寸の可逆 WebP は計約53MB）。
-- ゲームでの出し方: 相手のキャラID → 札（ファイル名・番号・名前）の対応表は `remake/js/core/tarot-arcana.js`。`remake/js/motions/tarot.js` が、めくった表にこの絵、下の生成りの帯に札の名前（例: XVII 星。相手の名前は出さない＝CI110）を出す。札の無い相手・絵が読めないときは、これまでの光だけの表。絵は結果の会話を始めたときに先読みし（`remake/js/vn/engine.js`）、札を出す前に読み終えておく。検査は `remake/test/browser/tarot_arcana.mjs`（CI の `tarot-arcana`）。
 
 ## 実際に使用したプロンプト
 

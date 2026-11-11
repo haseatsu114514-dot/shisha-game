@@ -26,7 +26,6 @@ import { rememberRelationship, relationshipReflectionLines } from "../core/relat
 import { needsIntro, playIntro, markIntroSeen, introSeenKey } from "./intro.js";
 import { buyKeepsake } from "../core/keepsakes.js";
 import { chekiShot, tarotFlip, limeExchange, purikuraShot, sceneMoment } from "../core/scene-motions.js";
-import { tarotArtUrls } from "../core/tarot-arcana.js";
 import { showShishaDiagram, hideShishaDiagram } from "./shisha-diagram.js";
 import { reducedMotion } from "../core/transition-kit.js";
 import { attachLoadingComic } from "../core/loading-comic-notice.js";
@@ -430,8 +429,6 @@ function prefetch(dlg) {
         if (p) urls.add(p.src);
       }
       if (l.type === "show_cg") urls.add(cgUrl(l.cg_id));
-      // 占いの結果の札（#3278）: 占った相手の札の裏と表を、めくる前に読み始める
-      if (l.type === "motion" && l.id === "tarot") tarotArtUrls(state?.fortune?.char).forEach((u) => urls.add(u));
     }
   };
   collect(dlg.lines);

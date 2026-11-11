@@ -26,7 +26,7 @@
 
 > 2026-11-11 TMG49: 専用ハガル（贈り物）と脚の無い器の作り直し23枚の依頼は [`asset_sources/hagal-bond-gifts-20261111/prompts.md`](../../asset_sources/hagal-bond-gifts-20261111/prompts.md)（Codex へは [Issue #3327](https://github.com/haseatsu114514-dot/shisha-game/issues/3327)）。オーナー「下がついてない皿みたいなのは生成ミスだから使わないで」→ `bowl_empty_clay.png`（素焼き）とファンネル型4枚は脚を足して同名で差し替え。専用ハガルは #504 の v1 で8人選定済み（ひよりだけ #497 で単体素材化済み）、残り7人は v1 シートから抜き出し、11人は正本の人物・贈り物の説明から新しく描く。見た目の基準は `assets/ui/making/bowl_empty_hiyori.png`。ハガルは「器＋細い脚」、脚の無い皿・浅い鉢にしない。
 >
-> 2026-11-11 TMG44: 占いの札の表の絵19枚（占う相手ごとの大アルカナ。人物・顔・名前・文字なし）の Codex 用依頼は [Issue #3278](https://github.com/haseatsu114514-dot/shisha-game/issues/3278)。相手の登場カットインの絵柄は使わない（オーナー指示）。札の裏と表の枠は #3254 のもの。PR #3283 で生成し、19枚とも採用（`03-empress` の星は11個のまま）。ゲームへは表の枠の窓に入れた 540×888 の札の表として組み込み済み（`remake/img/ui/transitions/tarot/arcana/`・作り方は `asset_sources/transitions/tarot-arcana-3278/make_webp.py`・対応表は `remake/js/core/tarot-arcana.js`）。
+> 2026-11-11 TMG44: 占いの札の表の絵19枚（占う相手ごとの大アルカナ。人物・顔・名前・文字なし）の Codex 用依頼は [Issue #3278](https://github.com/haseatsu114514-dot/shisha-game/issues/3278)。相手の登場カットインの絵柄は使わない（オーナー指示）。札の裏と表の枠は #3254 のもの。未生成。
 
 > 2026-11-11 TMG41: モーションの作り直し（PR #3245）で要る絵11枚の Codex 用依頼は [Issue #3254](https://github.com/haseatsu114514-dot/shisha-game/issues/3254)。占いの札の裏と表の枠・tonari の閉店の札の表と裏・つむぎのタブレットとペン・チェキのマーカー2本・機内の窓の席と雲海2枚。文字・人物・シーシャ機材は描かない（札の文字と札の表の絵はコードが重ねる）。PR #3259 で生成、TMG43 で11枚とも採用（`remake/img/ui/transitions/`）。依頼文の CHECK は厳しすぎた（180度回転で同じ・ピクセル単位の外形一致・完全な無地・指定の画素数は、内蔵の生成では満たせず、ゲームにも要らない）。次に頼むときは、ゲームで見える範囲の条件だけにする。
 
