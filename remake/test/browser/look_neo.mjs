@@ -17,9 +17,11 @@
 //      現行に無い看板の重なりを作らないことを見る。「出発まで」「勝負の日まで」は板の下の札、横持ちスマホは体力と Lv を上下2段。
 //      章ごとに増える MENU の上の帯。第3〜5章の場面カード（行程の札・東京の街の地図を含む）は夜紫の面と金の罫線で、文とボタンは現行と同じ。
 //      現行へ戻すと、場面カードと残り日数の札の計算済みスタイルが最初から現行の時と一致する。
-//  12. ショップ（入口・売り場・問い）・LIME（一覧・トーク・朝の通知）・レベルアップ（全面の札・短い帯）・ギャラリー（一覧・閲覧の帯）:
-//      夜紫の面と金の罫線で、文字（値段・所持・名前・未読・誘いの札・収集率）と押せる大きさは現行と同じ。実際に買える・返信できる・開閉できる。
+//  12. ショップ（入口・売り場・問い）・レベルアップ（全面の札・短い帯）・ギャラリー（一覧・閲覧の帯）:
+//      夜紫の面と金の罫線で、文字（値段・所持・収集率）と押せる大きさは現行と同じ。実際に買える・開閉できる。
 //      現行へ戻すと計算済みスタイルが最初から現行の時と一致する。
+//  13. LIME（一覧・トーク・朝の通知・HUD の印）は、実際のスマホのアプリをまねた見た目なので新版でも紫にしない（LK20）:
+//      緑の見出し・白い一覧・緑の自分の吹き出しのまま、計算済みスタイルが旧版と一致する。返信できる・開閉できる。
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import { suite, baseURL } from "./support.mjs";
@@ -499,6 +501,7 @@ const measureMap = (page) => page.evaluate((helpers) => {
     exp: text(q("#hud .hud-exp .hx-lv")), expShown: shown(q("#hud .hud-exp .hx-bar")), expBar: px(q("#hud .hud-exp .hx-bar")),
     inside: [...card.querySelectorAll(".dc-day, .dc-slot, .dc-row.money b, .hud-bar, .hx-lv, .hx-bar")].filter(shown).map((node) => px(node)),
     lime: px(lime), limeRadius: getComputedStyle(lime).borderRadius, limeLabel: text(q("span", lime)), limeLabelShown: shown(q("span", lime)),
+    limeFace: rgb(getComputedStyle(lime).backgroundColor), limeBubble: rgb(getComputedStyle(q("span", lime)).backgroundColor), limeInk: rgb(getComputedStyle(q("span", lime)).color),
     menu: px(menu), menuRadius: getComputedStyle(menu).borderRadius, menuIcon: shown(q("i", menu)),
     limeBadge: text(limeBadge), limeBadgeShown: shown(limeBadge), limeBadgeRect: px(limeBadge),
     // 「出発まで」「勝負の日まで」の行（第3・4章の出発前・第5章だけ）。新版では板の下の札。
@@ -548,13 +551,16 @@ async function dailyMap(page, { phone }) {
   for (const rect of m.hud.inside) assert(inside(rect, m.hud.card, 1), `HUD の中身が板に収まる ${JSON.stringify(rect)}`);
   const centers = m.hud.inside.map((rect) => (rect.top + rect.bottom) / 2);
   assert(Math.max(...centers) - Math.min(...centers) <= m.hud.card.height / 2, "HUD は1行");
-  // LIME と MENU: 同じ大きさの丸い札。未読の数は残す。
+  // LIME と MENU: 同じ大きさで並ぶ。MENU は丸い札。LIME は実際のスマホのアプリの印のオマージュ（緑の角丸四角・LK20）なので丸くしない。未読の数は残す。
   for (const [name, rect, radius] of [["LIME", m.hud.lime, m.hud.limeRadius], ["MENU", m.hud.menu, m.hud.menuRadius]]) {
     assert(inside(rect, STAGE), `${name} がステージの中`);
     assert(Math.abs(rect.width - rect.height) < .5 && rect.width >= tap - .5 && rect.real >= 38, `${name} の押せる大きさ ${JSON.stringify(rect)}`);
-    assert.equal(radius, "50%", `${name} は丸い札`);
+    if (name === "MENU") assert.equal(radius, "50%", "MENU は丸い札");
+    else assert(parseFloat(radius) > 6 && parseFloat(radius) < rect.width * .3 && !radius.includes("%"), `LIME は角丸の四角 ${radius}`);
     assert(!intersects(rect, m.hud.card), `${name} が HUD の板に重ならない`);
   }
+  assert(m.hud.limeFace[0] < 40 && m.hud.limeFace[1] > 180 && m.hud.limeFace[2] < 40, `LIME の印は緑の地 ${m.hud.limeFace}`);
+  assert(light(m.hud.limeBubble) && m.hud.limeInk[1] > 150 && m.hud.limeInk[0] < 40, `LIME の印は白い吹き出しに緑の字 ${JSON.stringify([m.hud.limeBubble, m.hud.limeInk])}`);
   assert(Math.abs(m.hud.lime.width - m.hud.menu.width) < .5 && Math.abs(m.hud.lime.top - m.hud.menu.top) < .5, "LIME と MENU は同じ形・同じ高さ");
   assert(!intersects(m.hud.lime, m.hud.menu));
   assert.equal(m.hud.limeBadge, "3");
@@ -1260,7 +1266,8 @@ async function chapterMap(page, { phone, chapter }) {
     assert(Math.abs(m.hud.staminaRow.top - m.hud.expRow.top) < 1 && m.hud.expRow.left >= m.hud.staminaRow.right - 1, `${label}: PC は体力と Lv が横に並ぶ`);
   }
   for (const [name, rect, radius] of [["LIME", m.hud.lime, m.hud.limeRadius], ["MENU", m.hud.menu, m.hud.menuRadius]]) {
-    assert(inside(rect, STAGE) && Math.abs(rect.width - rect.height) < .5 && rect.width >= tap - .5 && rect.real >= 38 && radius === "50%", `${label}: ${name} の丸い札 ${JSON.stringify(rect)}`);
+    assert(inside(rect, STAGE) && Math.abs(rect.width - rect.height) < .5 && rect.width >= tap - .5 && rect.real >= 38 && (name === "LIME" ? !radius.includes("%") : radius === "50%"),
+      `${label}: ${name} の札（MENU は丸、LIME はアプリの印の角丸四角） ${JSON.stringify(rect)} ${radius}`);
     assert(!intersects(rect, m.hud.card), `${label}: ${name} が HUD の板に重ならない`);
   }
   // 「出発まで」「勝負の日まで」: 板の下の小さな札（板を伸ばさない）。夜紫に明るい字。
@@ -1652,6 +1659,31 @@ const seedLime = (page) => page.evaluate(async () => {
   core.save();
 });
 
+// LIME は実際のスマホのメッセージアプリをまねた画面（緑の見出し・白い一覧・緑の自分の吹き出し。台帳 DUI06・LK20）。
+// わざと紫にしていないので、新版でも旧版と同じ見た目のままにする。
+const LIME_LIST_PARTS = [[".phone", ALL], [".phone-status", [""]], [".lime-header", ALL], [".lime-logo", [""]], [".lime-chat", [""]], [".lime-chat-row", ALL], [".lcr-name", [""]], [".lcr-preview", [""]],
+  [".lcr-side small", [""]], [".lime-actions", [""]], [".lime-reply.ghost", [""]]];
+const LIME_TALK_PARTS = [[".phone", ALL], [".lime-header", ALL], [".lime-chat", [""]], [".lime-row.peer .lime-bubble", ALL], [".lime-note", [""]], [".lime-actions", [""]],
+  [".lime-reply:not(.ghost)", [""]]];
+const LIME_PUSH_PARTS = [["#toasts .lime-push", ALL], ["#toasts .lime-push .lp-text", [""]], ["#toasts .lime-push .lp-top", [""]], ["#toasts .lime-push .lp-icon", [""]]];
+/** 計算済みスタイルから、色の定義の変数（様式ごとに違ってよい）を除く。 */
+const withoutVariables = (styles) => Object.fromEntries(Object.entries(styles).map(([key, values]) =>
+  [key, values && Object.fromEntries(Object.entries(values).filter(([property]) => !property.startsWith("--")))]));
+/** 新版と旧版で、同じ部品の計算済みの見た目が同じこと。 */
+async function assertSameAsClassic(page, parts, label) {
+  await page.mouse.move(2, 2);
+  await page.waitForTimeout(300);
+  assert.equal(await page.evaluate(() => document.documentElement.dataset.look), "neo");
+  const neo = withoutVariables(await stylesOf(page, parts));
+  for (const [selector] of parts) assert(neo[selector] !== null, `${label}: 比べる部品がある ${selector}`);
+  await setLook(page, "classic");
+  await page.waitForTimeout(400);
+  const classic = withoutVariables(await stylesOf(page, parts));
+  await setLook(page, "neo");
+  await page.waitForTimeout(400);
+  for (const key of Object.keys(classic)) assert.deepEqual(neo[key], classic[key], `${label}: ${key} は新版でも旧版と同じ見た目（LIME は紫にしない）`);
+}
+
 async function limeScreen(page, { phone }) {
   await openDaily(page);
   await seedLime(page);
@@ -1659,55 +1691,38 @@ async function limeScreen(page, { phone }) {
   await page.locator(".phone-overlay.show .lime-chat.list .lime-chat-row").first().waitFor();
   await page.waitForTimeout(500);
   const list = await measureLime(page);
-  await setLook(page, "classic");
-  await page.waitForTimeout(300);
-  const classic = await measureLime(page);
-  await setLook(page, "neo");
-  await page.waitForTimeout(300);
   assert.equal(list.look, "neo");
-  // 端末とトーク一覧: 夜紫の画面に白い名前。行の並び・未読の点・誘いの札は現行と同じ。
-  assert(inside(list.phone, STAGE) && list.list && dark(list.screen), `トーク一覧の画面は夜紫 ${list.screen}`);
-  assert(list.header.face.includes("46, 29, 69") && light(list.header.ink), `ヘッダーは夜紫に白い字 ${list.header.face}`);
-  assert.equal(list.headerLine, "rgb(33, 178, 78)", "ヘッダーの下の線に LIME の緑を残す");
-  assert.deepEqual(list.rows.map(({ name, dot, tag }) => [name, dot, tag]), classic.rows.map(({ name, dot, tag }) => [name, dot, tag]), "名前・未読の点・誘いの札が現行と同じ");
-  for (const [index, row] of list.rows.entries()) {
-    assert(light(row.nameInk) && dark(row.fill), `${row.name}: 夜紫の行に白い名前`);
-    assert(row.height >= classic.rows[index].height - .5 && row.width >= classic.rows[index].width - .5 && inside(row, list.phone, 1), `${row.name}: 押せる大きさは現行以上 ${JSON.stringify(row)}`);
-  }
-  for (const [index, reply] of list.replies.entries()) assert(reply.height >= classic.replies[index].height - .5 && reply.width >= classic.replies[index].width - .5, `閉じるの大きさは現行以上 ${JSON.stringify(reply)}`);
-  assert(list.replies.some((reply) => reply.ghost && reply.face.includes("linear-gradient")), "スマホを閉じるは LIME の緑のまま");
+  // 端末とトーク一覧: 緑の見出しに白い一覧（濃い字）。
+  assert(inside(list.phone, STAGE) && list.list && light(list.screen), `トーク一覧の画面は白 ${list.screen}`);
+  assert(/rgb\((\d+), (1[5-9]\d|2\d\d), (\d+)\)/.test(list.header.face) || (list.header.fill[1] > 150 && list.header.fill[0] < 80), `見出しは LIME の緑 ${JSON.stringify(list.header)}`);
+  for (const row of list.rows) assert(!light(row.nameInk) && light(row.fill) && inside(row, list.phone, 1), `${row.name}: 白い行に濃い名前 ${JSON.stringify(row)}`);
+  assert(list.rows.length >= 2 && list.rows.every((row) => row.dot), "未読の点が出る");
+  await assertSameAsClassic(page, LIME_LIST_PARTS, "トーク一覧");
 
-  // トーク: 相手の吹き出しは夜紫に白い字。返信の札も夜紫（押せる大きさは現行以上）。
+  // トーク: 相手の吹き出しは白に濃い字。
   await press(page, page.locator(".phone-overlay .lime-chat-row", { hasText: "つむぎ" }));
   await page.locator(".phone-overlay .lime-actions .lime-reply").first().waitFor({ timeout: 15000 });
   await page.waitForTimeout(600);
   const talk = await measureLime(page);
-  assert(!talk.list && talk.screenFace.includes("linear-gradient") && talk.peer.length >= 1, "トークの画面");
-  for (const bubble of talk.peer) assert(dark(bubble.fill) && light(bubble.ink) && inside(bubble, talk.phone, 1), `相手の吹き出しは夜紫に白い字 ${JSON.stringify(bubble)}`);
-  const plain = talk.replies.filter((reply) => !reply.ghost);
-  assert(plain.length >= 1);
-  for (const reply of plain) assert(dark(reply.fill) && light(reply.ink) && inside(reply, talk.phone, 1), `返信の札 ${JSON.stringify(reply)}`);
-  await setLook(page, "classic");
-  await page.waitForTimeout(300);
-  const talkClassic = await measureLime(page);
-  await setLook(page, "neo");
-  await page.waitForTimeout(300);
-  assert.deepEqual(talk.peer.map((bubble) => bubble.text), talkClassic.peer.map((bubble) => bubble.text), "吹き出しの文は現行と同じ");
-  assert.deepEqual(talk.replies.map((reply) => reply.text), talkClassic.replies.map((reply) => reply.text), "返信の札は現行と同じ");
-  for (const [index, reply] of talk.replies.entries()) assert(reply.height >= talkClassic.replies[index].height - .5 && reply.width >= talkClassic.replies[index].width - .5, `返信の札の大きさは現行以上 ${JSON.stringify([reply, talkClassic.replies[index]])}`);
-  // 返信して自分の吹き出しが出る（ラベンダーに墨の字）。
+  assert(!talk.list && talk.peer.length >= 1, "トークの画面");
+  for (const bubble of talk.peer) assert(light(bubble.fill) && !light(bubble.ink) && inside(bubble, talk.phone, 1), `相手の吹き出しは白に濃い字 ${JSON.stringify(bubble)}`);
+  assert(talk.replies.filter((reply) => !reply.ghost).length >= 1, "返信の札が出る");
+  for (const reply of talk.replies) assert(inside(reply, talk.phone, 1) && reply.height >= (phone ? 30 : 34), `返信の札の大きさ ${JSON.stringify(reply)}`);
+  await assertSameAsClassic(page, LIME_TALK_PARTS, "トーク");
+  // 返信して自分の吹き出しが出る（LIME の緑）。
   await press(page, page.locator(".phone-overlay .lime-reply:not(.ghost)", { hasText: "もちろん、見たい" }));
   await page.locator(".phone-overlay .lime-row.me .lime-bubble, .phone-overlay .lime-note").first().waitFor({ timeout: 15000 });
   await page.waitForTimeout(800);
   const replied = await measureLime(page);
   assert(replied.me.length >= 1, "自分の吹き出しが出る");
-  for (const bubble of replied.me) assert(!light(bubble.ink) && light(bubble.fill), `自分の吹き出しはラベンダーに墨の字 ${JSON.stringify(bubble)}`);
+  for (const bubble of replied.me) assert(bubble.fill[1] > 180 && bubble.fill[1] > bubble.fill[0] + 20 && bubble.fill[1] > bubble.fill[2] + 40 && !light(bubble.ink), `自分の吹き出しは緑に濃い字 ${JSON.stringify(bubble)}`);
+  await assertSameAsClassic(page, [[".lime-row.me .lime-bubble", ALL]], "自分の吹き出し");
   await press(page, page.locator(".phone-overlay .lime-back").first()).catch(() => {});
   await page.locator(".phone-overlay .lime-chat.list").waitFor({ timeout: 15000 });
   await press(page, page.locator('[data-test="phone-close"]'));
   await page.locator(".phone-overlay").waitFor({ state: "detached" });
 
-  // 朝の通知の札も夜紫に白い字（LIME の印は緑）。
+  // 朝の通知の札も、スマホの通知をまねた見た目のまま。
   await page.evaluate(async () => {
     const core = await import("./js/core/state.js");
     core.state.inbox.push({ id: "qa_neo_push", originId: "qa_neo_push", day: core.state.day, read: false, done: false, replyState: "none", log: [], msg: { sender: "minto", type: "message", messages: ["おはよ！"] } });
@@ -1716,10 +1731,11 @@ async function limeScreen(page, { phone }) {
   await page.locator("#toasts .lime-push.show").waitFor();
   await page.waitForTimeout(500);
   const push = await page.locator("#toasts .lime-push").evaluate((node, helpers) => {
-    const { px, rgb } = (0, eval)(helpers);
-    return { ...px(node), face: getComputedStyle(node).backgroundImage, ink: rgb(getComputedStyle(node.querySelector(".lp-text")).color), icon: getComputedStyle(node.querySelector(".lp-icon")).backgroundImage };
+    const { px } = (0, eval)(helpers);
+    return { ...px(node) };
   }, STAGE_PX);
-  assert(inside(push, STAGE) && push.face.includes("rgba(36, 22, 55") && light(push.ink) && push.icon.includes("linear-gradient"), `朝の通知の札 ${JSON.stringify(push)}`);
+  assert(inside(push, STAGE), `朝の通知の札がステージの中 ${JSON.stringify(push)}`);
+  await assertSameAsClassic(page, LIME_PUSH_PARTS, "朝の通知");
   assert.equal(await page.evaluate(() => window.lookNeoDailyError || ""), "");
 }
 
@@ -2105,7 +2121,15 @@ await suite("look-neo", async (check) => {
     await page.locator('[data-test="hud-phone"]').click();
     await page.locator(".phone-overlay.show .lime-chat-row").first().waitFor();
     await page.waitForTimeout(500);
-    await roundTrip(LIME_PARTS, [".phone", ".lime-header", ".lime-chat-row", ".lcr-name"]);
+    // LIME は新版でも見た目を変えない（往復しても、途中の新版でも、最初の旧版と同じ）。
+    await roundTrip(LIME_PARTS, []);
+    await setLook(page, "neo");
+    await page.waitForTimeout(500);
+    const limeBefore = withoutVariables(await stylesOf(page, LIME_PARTS));
+    await setLook(page, "classic");
+    await page.waitForTimeout(500);
+    const limeAfter = withoutVariables(await stylesOf(page, LIME_PARTS));
+    for (const key of Object.keys(limeAfter)) assert.deepEqual(limeBefore[key], limeAfter[key], `${key}: LIME は新版でも旧版と同じ見た目`);
   }, { pageEntry: `${baseURL}?look=classic` });
 
   await check("restore-classic-daily", async (page) => {
