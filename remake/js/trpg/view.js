@@ -1,5 +1,5 @@
 import { el } from "../core/util.js";
-import { TrpgSession, HEAT, heatTier, DICE, STATS, PLAYER_SEAT, approachesOf, approachBase, buildPc, randomPc, phasesOf, checkKindsOf, rewardKindOf, nearMissOf } from "./session.js";
+import { TrpgSession, HEAT, heatTier, DICE, STATS, PLAYER_SEAT, approachesOf, approachBase, buildPc, randomPc, grownStats, phasesOf, checkKindsOf, rewardKindOf, nearMissOf } from "./session.js";
 import { displayName, portraitUrl, portraitAx, portraitHeadTop, portraitTop as topFor, sceneUrl } from "./presentation.js";
 import { costumeUrl } from "./costumes.js";
 import { faceIconStyle } from "./face-crops.js";
@@ -32,7 +32,7 @@ const ICONS = {
 /** Mounts one isolated session; finished resolves only after the player leaves the table. */
 export function mountTrpg(host, { scenario, characters, manifest, tableTalk = null, tutorialLines = null, tutorial = false, onTutorialDone = () => {},
   seed, profileId = null, pc = null, companions = {}, closeLabel = "卓を片付ける", audio: providedAudio = null, allowReplay = true, onComplete = () => {},
-  warmStart = false, resume = null, onBookmark = null, costumeFrames = null }) {
+  warmStart = false, resume = null, onBookmark = null, costumeFrames = null, growth = 0 }) {
   // しおり（TMX13）: the table is the seed plus the order of what was pressed. Every action is recorded, the caller keeps
   // the list at each resting point, and a later visit replays it to land on the same scene (dice included).
   const RECORDED = ["start", "ask", "endInterview", "inspect", "consult", "interpret", "plan", "beginCheck", "reroll", "settleCheck"];
@@ -45,7 +45,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     return target;
   }
   // The player's character can be rebuilt on the cover; the session restarts from the same seed until the story begins.
-  let build = pc, session = recording(new TrpgSession(scenario, { seed, profileId, pc: build, companions, warmStart }));
+  let build = pc, session = recording(new TrpgSession(scenario, { seed, profileId, pc: build, companions, warmStart, growth }));
   let resumed = false;
   if (Array.isArray(resume?.actions) && resume.actions.length) {
     try {
@@ -58,7 +58,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
       resumed = true;
     } catch {
       // A bookmark from an older version of the story: start again from the cover rather than guess.
-      pressed = []; session = recording(new TrpgSession(scenario, { seed, profileId, pc: build, companions, warmStart }));
+      pressed = []; session = recording(new TrpgSession(scenario, { seed, profileId, pc: build, companions, warmStart, growth }));
     }
   }
   const cast = Object.fromEntries(scenario.cast.map(c => [c.id, c]));
@@ -132,7 +132,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
   let frames = [], cursor = 0, afterTalk = null, afterFocus = null, busy = false, disposed = false, choiceField = null;
   let overlay = null, modalCloser = null, timer = null, rollTicker = null, settleGuard = false;
   // 演出（TRF08〜10）: 転生は1卓に一度（しおりから再開した卓は、もう物語の中）。場面の題の札は場面ごとに一度。
-  let incarnated = resumed, staging = null, endingRevealed = false, sceneFx = null, clueFx = null;
+  let incarnated = resumed, staging = null, endingRevealed = false, sceneFx = null, clueFx = null, clubGained = null;
   const effects = [], carded = new Set();
   /** 重ねた演出を覚えておく（卓を片付ける時にまとめて止める）。終わったものは外す。 */
   function stageFx(...list) {
@@ -681,7 +681,12 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
             result.finale ? el("b.trpg-ending-finale", { dataset: { test: "trpg-ending-finale" }, text: "会心のクライマックス" }) : null].filter(Boolean)),
         el("div.trpg-ending-rating", { dataset: { test: "trpg-ending-rating" }, title: STAR_MARKS.map(([key, label]) => (result.rating.marks[key] ? "★" : "☆") + label).join(" · ") },
           [stars(result.rating), el("strong", { text: result.rating.title })]),
-      ]));
+        clubGained?.gained > 0 || clubGained?.rankUp ? el("p.trpg-ending-club", { dataset: { test: "trpg-ending-club", up: String(!!clubGained.rankUp) } }, [
+          el("b", { text: "部の実績 ＋" + clubGained.gained }),
+          clubGained.rankUp ? el("strong", { text: "ランク " + clubGained.rank + " · " + clubGained.name }) : clubGained.next ? el("span", { text: "次のランクまで あと " + clubGained.next.need }) : null,
+          clubGained.growthUp > 0 ? el("i", { text: "はじめの役 能力＋" + clubGained.growth }) : null,
+        ].filter(Boolean)) : null,
+      ].filter(Boolean)));
       actions.append(button("この卓を振り返る", "trpg-recap", openRecap, { disabled: busy }), ...(allowReplay ? [button("もう一度、この物語", "trpg-replay", () => finish({ ...result, replayRequested: true }),
         { disabled: busy })] : []), button(closeLabel, "trpg-finish", () => finish(result), { class: "primary", disabled: busy }));
       idle(presentation.endingIdle);
@@ -1090,7 +1095,8 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
           audio.play("ending");
           talk(sequence(...own("aside"), withCue(ending.dialogue, "ending"), scenario.debrief?.[result.variant], scenario.epilogue, ...own("after")), () => {
             completed = result;
-            onComplete(result);
+            // 本編の卓は、今夜の卓で部の実績がどれだけ増えたかを返す（TRF13）。試遊の卓は何も返さない。
+            clubGained = onComplete(result)?.club || null;
             renderBody();
           });
         }
@@ -1236,6 +1242,10 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
       el("p", { text: "どれでも物語は続く。失敗も、卓の楽しみ" })],
     build: () => [el("strong", { text: "あなたの役を作ろう" }), el("p", { text: "表紙の「キャラクターを作る」で、役どころを選ぶ。迷ったら、おすすめのままでOK" })],
   };
+  /** 成長点の札（TRF13）: 部のランクで、はじめの役の能力が上がっている。 */
+  function growthChip() {
+    return session.growth ? el("i.trpg-growth-chip", { dataset: { test: "trpg-growth" }, text: "成長点 ＋" + session.growth, title: "部のランクで、はじめの役の能力が上がっている" }) : null;
+  }
   /** The player's character on the cover: who you will play tonight, and the door to remake them. */
   function pcCard() {
     const me = session.pc;
@@ -1243,8 +1253,8 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
       el("span.trpg-cover-pc-face", { "aria-hidden": "true", dataset: { costume: String(hasFigure(me.seat, PLAYER_SEAT)) } }, pcFigure(me.seat, PLAYER_SEAT)),
       el("div.trpg-cover-pc-copy", [
         el("small", { text: name(PLAYER_SEAT) + " が演じる" }),
-        el("strong", { text: me.name, dataset: { test: "trpg-cover-pc-name" } }), el("span", { text: me.title }),
-      ]),
+        el("strong", { text: me.name, dataset: { test: "trpg-cover-pc-name" } }), el("span", { text: me.title }), growthChip(),
+      ].filter(Boolean)),
       button("キャラクターを作る", "trpg-build", openBuilder, { class: "small" }),
     ]);
   }
@@ -1266,7 +1276,8 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     const spent = () => STATS.reduce((n, key) => n + draft.stats[key], 0);
     const refocus = test => { const node = pop?.box.querySelector('[data-test="' + test + '"]'); if (node && !node.disabled) node.focus({ preventScroll: true }); };
     function render(focusTest = null) {
-      const left = builder.points - spent();
+      // 成長点（TRF13）: 部のランクの分だけ、振れる点が多い。役どころのままなら、いちばん得意な能力に足されている。
+      const budget = builder.points + session.growth, left = budget - spent();
       // 能力の説明・計算の一言は「？」を押した時だけ（#2719）。数字と点の残りはいつも見える。
       board.dataset.help = explain ? "open" : "closed";
       board.replaceChildren(
@@ -1275,7 +1286,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
             class: draft.archetype === a.id ? "selected" : "", "aria-pressed": String(draft.archetype === a.id),
             "aria-label": a.title + "、" + a.name + "。" + a.trait, dataset: { test: "trpg-archetype-" + a.id },
             onclick: () => {
-                            draft.archetype = a.id; draft.stats = { ...a.stats };
+              draft.archetype = a.id; draft.stats = grownStats(builder, a.stats, session.growth);
               draft.name = a.name;
               audio.play("tap"); render("trpg-archetype-" + a.id);
             },
@@ -1288,11 +1299,11 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
             button("？", "trpg-builder-help", () => { explain = !explain; render("trpg-builder-help"); },
               { class: "small trpg-help-button", title: "能力の説明", "aria-label": "能力の説明", "aria-pressed": String(explain) })]),
           advanced ? el("p.trpg-builder-points", { dataset: { test: "trpg-stat-points", left: String(left) }, "aria-live": "polite" },
-            [el("strong", { text: "残り " + left + " 点" }), el("span", { text: " · 合計 " + builder.points + " 点、各 " + builder.min + "〜" + builder.max })])
-            : el("p.trpg-builder-easy", { text: "能力は、選んだ役どころで決まります。数字が大きいほど得意" }),
+            [el("strong", { text: "残り " + left + " 点" }), el("span", { text: " · 合計 " + budget + " 点、各 " + builder.min + "〜" + builder.max }), growthChip()].filter(Boolean))
+            : el("p.trpg-builder-easy", ["能力は、選んだ役どころで決まります。数字が大きいほど得意", growthChip()].filter(Boolean)),
           button(advanced ? "役どころのおすすめに戻す" : "能力を自分で振る（慣れてきたら）", "trpg-builder-advanced", () => {
             advanced = !advanced;
-            if (!advanced) draft.stats = { ...preset().stats };
+            if (!advanced) draft.stats = grownStats(builder, preset().stats, session.growth);
             render("trpg-builder-advanced");
           }, { class: "small trpg-builder-mode", "aria-pressed": String(advanced) }),
           el("dl.trpg-builder-stat-rows", { dataset: { mode: advanced ? "advanced" : "easy" } }, STATS.flatMap(key => [el("dt", { text: statLabel(key) }), el("dd", [
@@ -1313,21 +1324,21 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     }
     const confirm = button("この役で卓につく", "trpg-build-confirm", () => {
       let built;
-      try { built = buildPc(scenario, draft); } catch { syncConfirm(); return; }
+      try { built = buildPc(scenario, draft, session.growth); } catch { syncConfirm(); return; }
       build = { archetype: built.archetype, name: built.name, stats: built.stats };
-      pressed = []; session = recording(new TrpgSession(scenario, { seed, profileId, pc: build, companions, warmStart }));
+      pressed = []; session = recording(new TrpgSession(scenario, { seed, profileId, pc: build, companions, warmStart, growth }));
       sheets = session.sheets;
       pop.close(); renderBody();
       root.querySelector('[data-test="trpg-build"]')?.focus({ preventScroll: true });
     }, { class: "primary" });
     function syncConfirm() {
       let ok = true;
-      try { buildPc(scenario, draft); } catch { ok = false; }
+      try { buildPc(scenario, draft, session.growth); } catch { ok = false; }
       confirm.disabled = !ok;
     }
     pop = modal(builder.title || "キャラクターを作る", [el("p.trpg-modal-intro", { text: builder.intro || "" }), board], [
       button("おまかせ", "trpg-build-random", () => {
-        const rolled = randomPc(scenario, (seed ^ Date.now()) >>> 0);
+        const rolled = randomPc(scenario, (seed ^ Date.now()) >>> 0, session.growth);
         Object.assign(draft, { archetype: rolled.archetype, name: rolled.name, stats: { ...rolled.stats } });
         audio.play("clue"); render("trpg-build-random");
       }),
@@ -1404,7 +1415,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
       el("p", { text: "判定の前に、GMが「成功すると何が起きるか」を告げます。" + (scenario.interview ? "最初の判定は、聞き込みで聞けることが1つ増えます。" : "")
         + "途中の判定は、次の選択でGMが「合わないもの」に印をつけてくれます（選ぶことはできます）。最後の判定は、結末に「会心のクライマックス」の印がつきます。失敗しても、ごほうびが無いだけです。" }),
       ...(Object.keys(sheets).length ? [el("p", { text: "自分の役も仲間の役も、初めて前に出ると卓の盛り上がりが1上がります。みんなに一度ずつ見せ場を。能力値はキャラクターシートで確認できます。" })] : []),
-      ...(scenario.builder ? [el("p", { text: "表紙の「キャラクターを作る」で、自分が演じる役の出自と能力値（合計" + scenario.builder.points + "点）を決められます。" })] : []),
+      ...(scenario.builder ? [el("p", { text: "表紙の「キャラクターを作る」で、自分が演じる役の出自と能力値（合計" + (scenario.builder.points + session.growth) + "点）を決められます。" + (session.growth ? "部のランクの成長点 ＋" + session.growth + " を含みます。" : "") })] : []),
       head("札と盛り上がり"),
       el("p", { text: "共有する連携札は2枚。切り札を使うたび1枚使います。クリティカル（20の目）が出ると、1枚戻ります。" }),
       el("p", { text: "卓の盛り上がりは、うまくいった判定・思わぬ出来事・クリティカル・ファンブル・ゾロ目・役の見せ場・初めての相談・見立ての話し合いで上がります。" + HEAT.tiers.join("・") + "に届くたび、次の判定に勢い1つ（補正＋" + DICE.momentum + "、最大" + HEAT.momentumMax + "つ）。" }),

@@ -23,21 +23,40 @@ export function approachBase(scenario, kind, approachId = null, sheets = null) {
  * The look is not chosen (#3050, owner 2026-11-09): the player's own face plays the role, so the built sheet
  * carries no portrait and the seat shows the player's portrait. Old saves may still pass a look; it is ignored.
  */
-export function buildPc(scenario, choices = {}) {
+export function buildPc(scenario, choices = {}, growth = 0) {
   const builder = scenario.builder;
   if (!builder) return null;
   const archetype = builder.archetypes.find(a => a.id === (choices.archetype || builder.archetypes[0].id));
   if (!archetype) throw new Error("Unknown archetype");
-  const stats = Object.fromEntries(STATS.map(key => [key, choices.stats?.[key] ?? archetype.stats[key]]));
+  const earned = growthOf(growth);
+  // Chosen stats are taken as written (within the grown budget); an archetype left as it is grows on its own.
+  const base = choices.stats ? archetype.stats : grownStats(builder, archetype.stats, earned);
+  const stats = Object.fromEntries(STATS.map(key => [key, choices.stats?.[key] ?? base[key]]));
   for (const key of STATS) {
     if (!Number.isInteger(stats[key]) || stats[key] < builder.min || stats[key] > builder.max) throw new Error("Stat out of range: " + key);
   }
   const points = STATS.reduce((n, key) => n + stats[key], 0);
-  if (points > builder.points) throw new Error("Too many stat points");
+  if (points > builder.points + earned) throw new Error("Too many stat points");
   const name = String(choices.name ?? archetype.name).trim();
   if (!name || [...name].length > (builder.nameMax || 6)) throw new Error("Invalid character name");
   return { seat: builder.seat || PLAYER_SEAT, name, title: archetype.title, trait: archetype.trait, stats, points,
     archetype: archetype.id };
+}
+/**
+ * 成長点（TRF13）: the club's rank lets the player's own character start with one or two more stat points.
+ * It is a whole number from 0 to GROWTH_MAX; anything else counts as none, so an old caller changes nothing.
+ */
+export const GROWTH_MAX = 2;
+export const growthOf = value => Number.isInteger(value) ? Math.max(0, Math.min(GROWTH_MAX, value)) : 0;
+/** Where an archetype's growth goes when the player does not place it: its best stat first, never past the maximum. */
+export function grownStats(builder, stats, growth = 0) {
+  const grown = { ...stats };
+  for (let n = growthOf(growth); n > 0; n--) {
+    const key = STATS.filter(k => grown[k] < builder.max).sort((a, b) => grown[b] - grown[a])[0];
+    if (!key) break;
+    grown[key]++;
+  }
+  return grown;
 }
 /**
  * Companions make their own characters: each seat's player picks one authored option (likes, a joke, a parody),
@@ -58,7 +77,7 @@ export function pickCompanions(scenario, seed = 1, chosen = {}) {
   return picks;
 }
 /** A deterministic "leave it to the dice" character: archetype from the seed, with one point moved between stats. */
-export function randomPc(scenario, seed = Date.now()) {
+export function randomPc(scenario, seed = Date.now(), growth = 0) {
   const builder = scenario.builder;
   if (!builder) return null;
   let x = Number(seed) >>> 0 || 1;
@@ -69,7 +88,7 @@ export function randomPc(scenario, seed = Date.now()) {
   const stats = { ...archetype.stats };
   const from = STATS[next() % STATS.length], to = STATS[next() % STATS.length];
   if (from !== to && stats[from] > builder.min && stats[to] < builder.max) { stats[from]--; stats[to]++; }
-  return buildPc(scenario, { archetype: archetype.id, stats });
+  return buildPc(scenario, { archetype: archetype.id, stats: grownStats(builder, stats, growth) }, growth);
 }
 // Keep two dice and one-die rerolls; scale the old aids toward their original success rates.
 export const DICE = Object.freeze({ sides: 20, base: 3, support: 7, momentum: 4, hypothesis: 4, success: 30, mixed: 19 });
@@ -118,11 +137,12 @@ export const phasesOf = scenario => ["listen", ...(scenario.interview ? ["interv
 export const checkKindsOf = scenario => ["listen", ...(scenario.flow?.twist ? ["twist"] : []), "prepare", "serve"];
 
 export class TrpgSession {
-  constructor(scenario, { seed = Date.now(), profileId = null, pc = null, companions = {}, warmStart = false } = {}) {
+  constructor(scenario, { seed = Date.now(), profileId = null, pc = null, companions = {}, warmStart = false, growth = 0 } = {}) {
     if (!scenario?.profiles?.length || scenario.profiles.length < 1) throw new Error("Missing traveler profiles");
     this.scenario = scenario;
     // The player's own character replaces the authored default on that seat; each companion brings the character they made.
-    this.pc = scenario.builder ? buildPc(scenario, pc || {}) : null;
+    this.growth = growthOf(growth);
+    this.pc = scenario.builder ? buildPc(scenario, pc || {}, this.growth) : null;
     this.sheets = { ...sheetsOf(scenario) };
     this.companions = pickCompanions(scenario, seed, companions);
     for (const [seat, option] of Object.entries(this.companions)) {

@@ -908,3 +908,44 @@ html:root .trpg-root.trpg-cinematic .trpg-clue-card strong { font-size: max(28px
 html:root .trpg-root.trpg-cinematic .trpg-heat-pips { gap: 3px; }
 html:root .trpg-root.trpg-cinematic .trpg-heat-pips i { width: 9px; }
 html:root .trpg-root.trpg-cinematic .trpg-heat-pips i.tier { margin-right: 5px; }
+
+/* ---- 部のランクと成長点（TRF13）---- */
+/* 本棚: ランクの札。数字の丸・名前・進み具合の帯・成長点の札。数え方は「？」に。 */
+html:root .trpg-campaign-club {
+  display: flex; align-items: center; gap: 14px; margin: 8px 0 10px; padding: 8px 14px; border: 1px solid #b48f4f; border-radius: 10px;
+  background: linear-gradient(170deg, #173b3af0, #0e2829f2); color: #fff4d6;
+}
+html:root .trpg-campaign-club[data-up="true"] { border-color: #ffd36e; box-shadow: 0 0 18px #ffcf6a55; }
+html:root .trpg-campaign-club-rank { flex: none; display: grid; justify-items: center; line-height: 1.1; }
+html:root .trpg-campaign-club-rank small { font-size: 11px; letter-spacing: .08em; color: #d2ae66; }
+html:root .trpg-campaign-club-rank b { display: grid; place-items: center; width: 40px; height: 40px; margin-top: 2px; border-radius: 50%; font-size: 22px; color: #2a1b0c;
+  background: linear-gradient(135deg, #f7dc8c, #dcae4a); box-shadow: inset 0 0 0 2px #fff3c4, 0 2px 5px #0006; }
+html:root .trpg-campaign-club-copy { flex: 1; min-width: 0; display: grid; gap: 4px; }
+html:root .trpg-campaign-club-copy strong { font-size: 16px; font-weight: 700; }
+html:root .trpg-campaign-club-copy small { font-size: 12px; color: #d8dccb; }
+html:root .trpg-campaign-club-bar { display: block; height: 8px; border-radius: 999px; border: 1px solid #d2ae6688;
+  background: linear-gradient(90deg, #e0b03e 0 var(--filled), #0006 var(--filled) 100%); }
+html:root .trpg-campaign-club-growth, html:root .trpg-root .trpg-growth-chip {
+  flex: none; padding: 2px 10px; border-radius: 999px; font-style: normal; font-weight: 700; font-size: 12px; white-space: nowrap;
+  color: #2a1b0c; background: linear-gradient(135deg, #cfeacb, #8fc79a); border: 1px solid #5e9a6c;
+}
+html:root .trpg-campaign-club-growth[data-up="true"] { box-shadow: 0 0 12px #9be0a8aa; }
+/* 横持ちスマホ: 字は規格の大きさ。「部のランク」と丸を横に、名前と「あと N」を1行に並べ、帯はその下。 */
+html:root[data-density="phone"] .trpg-campaign-club { gap: 18px; padding: 8px 16px; }
+html:root[data-density="phone"] .trpg-campaign-club-rank { display: flex; align-items: center; gap: 10px; }
+html:root[data-density="phone"] .trpg-campaign-club-rank small { font-size: var(--phone-sub); letter-spacing: 0; }
+html:root[data-density="phone"] .trpg-campaign-club-rank b { width: 52px; height: 52px; margin: 0; font-size: 28px; }
+html:root[data-density="phone"] .trpg-campaign-club-copy { grid-template-columns: auto 1fr; align-items: baseline; gap: 6px 16px; }
+html:root[data-density="phone"] .trpg-campaign-club-copy strong { font-size: var(--phone-text); }
+html:root[data-density="phone"] .trpg-campaign-club-copy small { order: 2; font-size: var(--phone-sub); }
+html:root[data-density="phone"] .trpg-campaign-club-bar { order: 3; grid-column: 1 / -1; height: 10px; }
+html:root[data-density="phone"] .trpg-campaign-club-growth { padding: 4px 14px; font-size: var(--phone-sub); }
+/* 卓: 表紙の役の札とキャラ作成に「成長点 ＋1」。 */
+html:root .trpg-root.trpg-cinematic .trpg-growth-chip { display: inline-block; margin-left: 8px; font-size: max(13px, var(--tt-min)); vertical-align: middle; }
+html:root .trpg-root.trpg-cinematic .trpg-cover-pc-copy .trpg-growth-chip { margin: 4px 0 0; width: fit-content; }
+/* 結末: 今夜の卓で増えた部の実績。 */
+html:root .trpg-root.trpg-cinematic .trpg-ending-club { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; margin: 10px 0 0; font-size: max(15px, var(--tt-min)); color: #e9e2cc; }
+html:root .trpg-root.trpg-cinematic .trpg-ending-club b { padding: 1px 12px; border-radius: 999px; color: #2a1b0c; background: linear-gradient(135deg, #f7dc8c, #dcae4a); font-size: max(14px, var(--tt-min)); }
+html:root .trpg-root.trpg-cinematic .trpg-ending-club strong { color: #ffe39a; font-size: max(17px, var(--tt-min)); }
+html:root .trpg-root.trpg-cinematic .trpg-ending-club i { padding: 1px 10px; border-radius: 999px; font-style: normal; font-weight: 700; color: #2a1b0c; background: linear-gradient(135deg, #cfeacb, #8fc79a); font-size: max(13px, var(--tt-min)); }
+html:root .trpg-root.trpg-cinematic .trpg-ending[data-reveal="true"] > .trpg-ending-club { animation-delay: 2.9s; }

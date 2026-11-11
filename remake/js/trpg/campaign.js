@@ -157,6 +157,39 @@ export function materializeTrpgCast(scenario, assignments) {
   return table;
 }
 
+/**
+ * 部の実績とランク（TRF13）。本棚の記録から数えるので、保存は増やさない: 周回の引き継ぎも、記録と一緒に付いてくる。
+ * 1冊につき 遊び終えた＋2・見た結末1つにつき＋1・星1つにつき＋1（1冊で最大 2＋4＋3＝9）。同じ結末を繰り返しても増えない。
+ * ランクが上がると、はじめの役の能力に成長点（growth）が付く。
+ */
+export const CLUB_RANKS = Object.freeze([
+  { at: 0, name: "かけだしの部", growth: 0 },
+  { at: 6, name: "なじみの部", growth: 1 },
+  { at: 16, name: "評判の部", growth: 1 },
+  { at: 30, name: "名物の部", growth: 2 },
+  { at: 50, name: "伝説の部", growth: 2 },
+]);
+const ENDINGS_PER_BOOK = 4;
+export function bookPoints(memory) {
+  if (!memory || typeof memory.ending !== "string") return 0;
+  const seen = Array.isArray(memory.endingsSeen) ? new Set(memory.endingsSeen).size : 1;
+  const stars = Number.isInteger(memory.stars) ? Math.max(0, Math.min(3, memory.stars)) : 0;
+  return 2 + Math.max(1, Math.min(ENDINGS_PER_BOOK, seen)) + stars;
+}
+export function clubRecord(state, catalog) {
+  const cleared = state?.trpg?.cleared || {};
+  const points = (catalog?.scenarios || []).reduce((n, book) => n + bookPoints(cleared[book.id]), 0);
+  const index = CLUB_RANKS.reduce((best, rank, i) => points >= rank.at ? i : best, 0);
+  const rank = CLUB_RANKS[index], next = CLUB_RANKS[index + 1] || null;
+  return { points, rank: index + 1, ranks: CLUB_RANKS.length, name: rank.name, growth: rank.growth, floor: rank.at,
+    next: next ? { rank: index + 2, name: next.name, at: next.at, need: next.at - points, growth: next.growth } : null };
+}
+/** What one finished table added to the club: for the ending screen and the note on the shelf. */
+export function clubGain(before, after) {
+  return { gained: after.points - before.points, points: after.points, rank: after.rank, name: after.name, growth: after.growth,
+    rankUp: after.rank > before.rank, growthUp: after.growth - before.growth, next: after.next };
+}
+
 /** A play beats the kept memory when it earns more stars, or as many stars with a livelier table. */
 function betterPlay(next, kept) {
   if (!kept) return true;
@@ -194,7 +227,9 @@ export function keepTrpgBookmark(state, scenario, ticket, mark) {
   if (!state?.trpg || !scenario || !ticket || !Array.isArray(mark?.actions) || !mark.actions.length) return false;
   state.trpg.bookmark = { id: scenario.id, version: scenario.version, chapter: ticket.chapter, day: ticket.day,
     seed: ticket.seed, assignments: clone(ticket.assignments), pc: mark.pc ? clone(mark.pc) : null,
-    actions: clone(mark.actions), phase: mark.phase, title: mark.title || "" };
+    actions: clone(mark.actions), phase: mark.phase, title: mark.title || "",
+    // 成長点（TRF13）: 続きから遊ぶ時は、しおりを挟んだ時と同じ能力で始める（押した順番の再生が同じ結果になる）。
+    ...(Number.isInteger(ticket.growth) && ticket.growth > 0 ? { growth: ticket.growth } : {}) };
   return true;
 }
 

@@ -3,7 +3,7 @@ import { readFile } from "node:fs/promises";
 import { test } from "node:test";
 
 const source = await readFile(new URL("../js/trpg/session.js", import.meta.url), "utf8");
-const { TrpgSession, specialOf, outcomeOf, HEAT, heatTier, checkKindsOf } = await import("data:text/javascript;base64," + Buffer.from(source).toString("base64"));
+const { TrpgSession, specialOf, outcomeOf, HEAT, heatTier, checkKindsOf, buildPc, randomPc, grownStats, growthOf, GROWTH_MAX, STATS } = await import("data:text/javascript;base64," + Buffer.from(source).toString("base64"));
 
 // The scenes a full session adds between the old ones: two questions after the first roll, a twist after the guess.
 function interviewDone(s) {
@@ -577,6 +577,50 @@ test("companions make their own characters: seeded variety, likes, own-voice mak
       assert.equal(forced.sheets[seat].name, s.companionBuilds[seat][seat][1].name);
       assert.equal(forced.snapshot().companions[seat], s.companionBuilds[seat][seat][1].id);
     }
+  }
+});
+
+test("growth from the club's rank gives the player's character one or two more stat points (TRF13)", () => {
+  assert.equal(GROWTH_MAX, 2);
+  assert.deepEqual([0, 1, 2, 3, -1, 1.5, "1", null, undefined].map(growthOf), [0, 1, 2, 2, 0, 0, 0, 0, 0]);
+  for (const s of catalogScenarios) {
+    const builder = s.builder, sum = stats => STATS.reduce((n, key) => n + stats[key], 0);
+    for (const archetype of builder.archetypes) {
+      const base = buildPc(s, { archetype: archetype.id });
+      assert.deepEqual(base.stats, archetype.stats, "no growth: the archetype as written");
+      assert.deepEqual(buildPc(s, { archetype: archetype.id }, 0).stats, archetype.stats);
+      for (const growth of [1, 2]) {
+        const grown = buildPc(s, { archetype: archetype.id }, growth);
+        assert.equal(sum(grown.stats), sum(archetype.stats) + growth);
+        for (const key of STATS) { assert(grown.stats[key] >= archetype.stats[key]); assert(grown.stats[key] <= builder.max); }
+        assert.deepEqual(grown.stats, grownStats(builder, archetype.stats, growth));
+        // The first point goes to the archetype's best stat (when it is not already at the maximum).
+        const best = STATS.slice().sort((a, b) => archetype.stats[b] - archetype.stats[a])[0];
+        if (archetype.stats[best] < builder.max) assert.equal(buildPc(s, { archetype: archetype.id }, 1).stats[best], archetype.stats[best] + 1);
+      }
+    }
+    // Chosen stats are taken as written, within the grown budget.
+    const first = builder.archetypes[0], over = { ...first.stats };
+    const room = STATS.find(key => over[key] < builder.max); over[room]++;
+    assert.throws(() => buildPc(s, { stats: over }), /Too many stat points/);
+    assert.deepEqual(buildPc(s, { stats: over }, 1).stats, over);
+    assert.deepEqual(buildPc(s, { stats: first.stats }, 2).stats, first.stats, "points may be left unspent");
+    const allMax = Object.fromEntries(STATS.map(key => [key, builder.max]));
+    assert.deepEqual(grownStats(builder, allMax, 2), allMax, "nothing grows past the maximum");
+    // The dice pick the same archetype and move the same point; growth is added on top.
+    for (const seed of [1, 7, 99]) {
+      const plain = randomPc(s, seed), grown = randomPc(s, seed, 2);
+      assert.equal(grown.archetype, plain.archetype); assert.equal(sum(grown.stats), sum(plain.stats) + 2);
+    }
+    // A session with growth: the sheet, the snapshot and the declared bonus all use the grown stat; the dice do not move.
+    const plain = new TrpgSession(s, { seed: 21 }), grown = new TrpgSession(s, { seed: 21, growth: 1 });
+    assert.equal(plain.growth, 0); assert.equal(grown.growth, 1);
+    assert.equal(sum(grown.sheets.hajime.stats), sum(plain.sheets.hajime.stats) + 1);
+    assert.deepEqual(grown.snapshot().pc.stats, grown.sheets.hajime.stats);
+    plain.start(); grown.start();
+    const a = plain.beginCheck("listen"), b = grown.beginCheck("listen");
+    assert.deepEqual(b.dice, a.dice); assert(b.base >= a.base);
+    assert.deepEqual(Object.keys(grown.snapshot().pc).sort(), Object.keys(plain.snapshot().pc).sort(), "the recorded character keeps its shape");
   }
 });
 

@@ -9,11 +9,12 @@ import { loadTrpgLibrary, preloadTrpgAssets, runTrpg } from "./index.js";
 import { playTrpgEntrance } from "./entrance.js";
 import { shelfHelpButton } from "./shelf-help.js";
 import { displayName, portraitUrl, portraitAx, portraitTop, sceneArt } from "./presentation.js";
-import { participantStatus, recruitmentStatus, foundTrpgClub, tableStatus, syncTrpgStock, buyTrpgBook, castTrpgTable, materializeTrpgCast, completeTrpgTable, keepTrpgBookmark, trpgBookmarkFor } from "./campaign.js";
+import { participantStatus, recruitmentStatus, foundTrpgClub, tableStatus, syncTrpgStock, buyTrpgBook, castTrpgTable, materializeTrpgCast, completeTrpgTable, keepTrpgBookmark, trpgBookmarkFor, clubRecord, clubGain } from "./campaign.js";
 
 // 店の決まりは画面に常に出さず、右上の「？」で読む（#2719・ミニゲーム共通のUI方針）。
 const SHOP_HELP = [
-  ["夜の卓", "営業が終わるまで待ってから、空いている部員と集まって遊びます（夜の1枠）。中断した本は、また遊べます。結末を迎えた本は一度きりです。"],
+  ["夜の卓", "営業が終わるまで待ってから、空いている部員と集まって遊びます（夜の1枠）。中断した本は、しおりから続きを遊べます。結末を迎えた本も、もう一度遊べます。"],
+  ["部のランク", "遊び終えた本・見た結末・星の数で、部の実績が貯まります（1冊につき 遊び終えた＋2、結末1つ＋1、星1つ＋1）。ランクが上がると、はじめの役の能力に成長点が付きます（ランク2で＋1、ランク4で＋2）。"],
   ["本を買う", "入荷したシナリオ本を本棚に加えると、仲間と遊べます。買い物は時間を使いません。"],
   ["部活と勧誘", "相手から部活の話を聞いたら、好感度に関係なく対面で誘えます。勧誘に追加の時間はかかりません。"],
   ["昼の試遊（七つの灯り）", "サイコロの合計を7に近づけます。振り足すか、止めるか。7を超えると失敗です。無料で、時間も使いません。"],
@@ -29,7 +30,7 @@ export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy =
   let reflection = null;
   let justFounded = false; // 設立した直後だけ、気づけば部長になっていた場面を出す
   let foundingChoice = null;
-  let disposed = false, resources = null, busy = false, completed = false, root = null, entrance = null;
+  let disposed = false, resources = null, busy = false, completed = false, root = null, entrance = null, lastGain = null;
   let resolveFinished;
   const finished = new Promise(r => { resolveFinished = r; });
   const button = (text, test, action, disabled = false) => el("button.trpg-button", {
@@ -73,6 +74,7 @@ export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy =
       : daytime ? "day" : "night"), resources));
     if (completed) {
       root.append(el("p.trpg-campaign-notice", { text: "誰と迎えた結末か、今夜の思い出を本棚にしまった。" }));
+      if (lastGain) root.append(clubBanner(clubRecord(state, catalog), lastGain));
       if (!reflection) root.append(el("div.trpg-trial-actions", [
         button("うまくいった場面を話す", "trpg-reflect-good", () => { reflection = "after_table_good"; render(); }),
         button("苦戦した場面を話す", "trpg-reflect-hard", () => { reflection = "after_table_hard"; render(); }),
@@ -141,6 +143,7 @@ export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy =
     }
     if (!party.children.length) party.append(el("p", { text: "街で部活の話を聞くと、一緒に遊べる物語が増えていきます。" }));
     root.append(party);
+    if (state?.trpg?.club?.founded) root.append(clubBanner(clubRecord(state, catalog)));
     if (!readOnly && !daytime && !completed && !scenarios.some(scenario =>
       state?.trpg?.owned?.includes(scenario.id) && !state?.trpg?.cleared?.[scenario.id]
       && castTrpgTable(state, catalog, scenario, options).ok)) {
@@ -212,6 +215,26 @@ export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy =
     host.replaceChildren(root); root.focus({ preventScroll: true });
   }
 
+  /**
+   * 部のランクの札（TRF13）: ランクの名前、実績の進み具合、はじめの役の成長点。数え方は「？」に。
+   * gain があれば、今夜の卓で増えた分も出す。
+   */
+  function clubBanner(record, gain = null) {
+    const span = record.next ? record.next.at - record.floor : 1, filled = record.next ? record.points - record.floor : 1;
+    return el("div.trpg-campaign-club", { dataset: { test: "trpg-club-rank", rank: String(record.rank), up: String(!!gain?.rankUp) },
+      "aria-label": "部のランク " + record.rank + "、" + record.name + "。実績 " + record.points
+        + (record.next ? "。次のランクまで あと" + record.next.need : "") + (record.growth ? "。はじめの役の成長点 ＋" + record.growth : "") }, [
+      el("span.trpg-campaign-club-rank", { "aria-hidden": "true" }, [el("small", { text: "部のランク" }), el("b", { text: String(record.rank) })]),
+      el("div.trpg-campaign-club-copy", { "aria-hidden": "true" }, [
+        el("strong", { text: record.name + (gain?.rankUp ? " になった！" : "") }),
+        el("span.trpg-campaign-club-bar", { style: { "--filled": Math.round(filled / span * 100) + "%" } }),
+        el("small", { text: (gain?.gained ? "今夜の実績 ＋" + gain.gained + " · " : "") + (record.next ? "次のランクまで あと " + record.next.need : "実績 " + record.points) }),
+      ]),
+      record.growth ? el("i.trpg-campaign-club-growth", { "aria-hidden": "true", dataset: { test: "trpg-club-growth", up: String(!!gain?.growthUp) },
+        text: "はじめの役 能力＋" + record.growth, title: "部のランクが上がると、はじめの役の能力に成長点が付く" }) : null,
+    ].filter(Boolean));
+  }
+
   /** The play buttons of a book: start, or continue from the bookmark (しおり・TMX13) when tonight's seats match it. */
   function playButtons(book, scenario, cast, label) {
     const state = getState();
@@ -233,12 +256,15 @@ export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy =
     const bookmark = resume ? trpgBookmarkFor(state, scenario, cast.assignments) : { mark: null };
     const mark = bookmark.ok ? bookmark.mark : null;
     const seed = mark ? mark.seed : ((state.seed || 1) ^ state.day * 7919 ^ state.chapter * 104729 ^ scenario.title.length * 997) >>> 0;
-    const ticket = { ...cast, chapter: state.chapter, day: state.day, slot: state.slot, seed };
+    // 成長点（TRF13）: 部のランクから。続きから遊ぶ時は、しおりを挟んだ時の値で始める。
+    const growth = mark ? (Number.isInteger(mark.growth) ? mark.growth : 0) : clubRecord(state, resources.catalog).growth;
+    const ticket = { ...cast, chapter: state.chapter, day: state.day, slot: state.slot, seed, growth };
+    lastGain = null;
     try {
       const table = materializeTrpgCast(scenario, cast.assignments);
       await runTrpg(host, { resources: { ...resources, scenario: table }, signal: abort.signal, seed,
         allowReplay: false, closeLabel: "思い出を本棚へ", warmStart: ownsGear(state, "gear_dice"),
-        pc: mark?.pc || null, resume: mark ? { actions: mark.actions } : null,
+        pc: mark?.pc || null, resume: mark ? { actions: mark.actions } : null, growth,
         // しおりは場面の区切りごとに保存する。夜の行動もお金も使わない。
         onBookmark: data => {
           if (!disposed && getState() === state && keepTrpgBookmark(state, scenario, ticket, data)) save();
@@ -246,10 +272,15 @@ export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy =
         // The shopkeeper explains the table until the first story is finished; the cover button replays it any time.
         tutorial: !state.flags?._trpg_tutorial_seen,
         onComplete: result => {
+          const before = clubRecord(state, resources.catalog);
           if (!disposed && getState() === state && completeTrpgTable(state, resources.catalog, scenario, ticket, result, { nightBusy: nightBusy() })) {
             state.flags ||= {}; state.flags._trpg_tutorial_seen = true;
             completed = true; save();
+            // 今夜の卓で部の実績がどれだけ増えたか。結末の画面と、本棚へ戻った時の札に出す。
+            lastGain = clubGain(before, clubRecord(state, resources.catalog));
+            return { club: lastGain };
           }
+          return null;
         } });
       if (disposed) return;
       busy = false;

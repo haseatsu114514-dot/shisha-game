@@ -62,7 +62,7 @@ function mount(scenario, extra = {}) {
   const manifest = { portraits: Object.fromEntries(scenario.cast.map(c => [c.id, { faces: ['normal'], h: .7, b: .1, aspect: 1 }])) };
   const audio = { enabled: false, available: true, setTheme() {}, play() {}, silence() {}, setEnabled() {} };
   let completions = 0, result = null;
-  const api = mod.namespace.mountTrpg(host, { ...extra, onComplete: r => { completions++; result = r; }, scenario, characters: [], manifest, seed: 9, profileId: scenario.profiles[0].id, audio });
+  const api = mod.namespace.mountTrpg(host, { ...extra, onComplete: r => { completions++; result = r; return extra.onComplete?.(r); }, scenario, characters: [], manifest, seed: 9, profileId: scenario.profiles[0].id, audio });
   const root = host.children[0];
   const q = id => { const node = root.querySelector('[data-test="' + id + '"]'); assert(node, id); return node; };
   const drain = () => { let n = 0; while (!q('trpg-next').hidden) { q('trpg-next').click(); assert(++n < 100); } };
@@ -153,6 +153,33 @@ for (const scenario of scenarios) {
     q('trpg-settle').click(); drain(); assert.equal(api.snapshot().phase, 'ending');
     assert.equal(root.querySelectorAll('.trpg-table-clue').length, 3); assert(!q('trpg-finish').disabled);
     assert.equal(api.snapshot().teamwork, 0); assert.equal(mounted.completions, 1); drain(); assert.equal(mounted.completions, 1, 'Fast advance cannot deliver completion twice'); api.destroy(); assert.equal(mounted.completions,1);
+  });
+  // 部の成長（TRF13）: 本編の卓は成長点を受け取り、結末で「今夜の卓で増えた部の実績」を出す。試遊の卓には何も出ない。
+  test(scenario.id + ': growth shows on the cover and the sheet, and the ending shows what the club gained', () => {
+    const play = extra => {
+      const mounted = mount(scenario, extra), { root, q, drain, roll, declare, interview, twist } = mounted;
+      const cover = { chip: root.querySelector('[data-test="trpg-growth"]')?.textContent ?? null, stats: { ...mounted.api.snapshot().pc.stats } };
+      q('trpg-start').click(); drain(); declare('listen'); roll(); q('trpg-settle').click(); drain(); interview();
+      for (const spot of scenario.spots.slice(0, 3)) { q('trpg-spot-' + spot.id).click(); drain(); }
+      q('trpg-interpret').click(); q('trpg-hypothesis-' + scenario.hypotheses[0].id).click(); drain(); twist();
+      for (const field of scenario.flow.prepare) { q('trpg-choice-tab-' + field).click(); q('trpg-plan-' + field + '-' + scenario.options[field][0].id).click(); }
+      q('trpg-prepare-open').click(); declare('prepare'); roll(); q('trpg-settle').click(); drain();
+      for (const field of scenario.flow.serve) q('trpg-plan-' + field + '-' + scenario.options[field][0].id).click();
+      q('trpg-serve-open').click(); declare('serve'); roll(); q('trpg-settle').click(); drain();
+      const club = root.querySelector('[data-test="trpg-ending-club"]');
+      const out = { cover, club: club && { up: club.dataset.up, text: club.textContent }, completions: mounted.completions };
+      mounted.api.destroy(); return out;
+    };
+    const base = scenario.builder.archetypes[0].stats, sum = stats => Object.values(stats).reduce((n, v) => n + v, 0);
+    const plain = play({});
+    assert.equal(plain.cover.chip, null); assert.deepEqual(plain.cover.stats, base); assert.equal(plain.club, null, 'a table outside the campaign shows no club line');
+    const next = { rank: 3, name: '評判の部', at: 16, need: 9, growth: 1 };
+    const grown = play({ growth: 1, onComplete: () => ({ club: { gained: 4, points: 7, rank: 2, name: 'なじみの部', growth: 1, rankUp: true, growthUp: 1, next } }) });
+    assert.equal(grown.cover.chip, '成長点 ＋1'); assert.equal(sum(grown.cover.stats), sum(base) + 1); assert.equal(grown.completions, 1);
+    assert.equal(grown.club.up, 'true'); assert.match(grown.club.text, /部の実績 ＋4/); assert.match(grown.club.text, /ランク 2 · なじみの部/); assert.match(grown.club.text, /能力＋1/);
+    const steady = play({ growth: 1, onComplete: () => ({ club: { gained: 1, points: 8, rank: 2, name: 'なじみの部', growth: 1, rankUp: false, growthUp: 0, next: { ...next, need: 8 } } }) });
+    assert.equal(steady.club.up, 'false'); assert.match(steady.club.text, /部の実績 ＋1次のランクまで あと 8/); assert.doesNotMatch(steady.club.text, /能力＋/);
+    assert.equal(play({ growth: 1, onComplete: () => ({ club: { gained: 0, rankUp: false, growthUp: 0, next } }) }).club, null, 'nothing gained, nothing shown');
   });
   test(scenario.id + ': a role against type says one line in the role before the ending and one as the player after the table (S17)', () => {
     const text = id => scenario.dialogues.find(d => d.dialogue_id === id).lines[0].text;
