@@ -552,6 +552,21 @@
       ]
     },
     {
+      "id": "ichidai-rules",
+      "title": "Card game Ichidai Shobu: data matches the rulebook, kits are legal, scoring and coal rules, CPU-vs-CPU matches finish without illegal moves (ICG)",
+      "kind": "quick",
+      "run": ["node remake/test/ichidai_rules.mjs", "python3 remake/tools/build_ichidai_art.py --check"]
+    },
+    {
+      "id": "ichidai",
+      "title": "Card game Ichidai Shobu: standalone page (setup, embers, prep, serve, judge, help, quit, touch) and the in-game tonari entry (off by default, record saved, no time used) (ICG)",
+      "kind": "browser",
+      "weight": 1,
+      "timeout": 5,
+      "paths": ["remake/js/minigames/ichidai*.js", "remake/js/daily/ichidai-table.js", "remake/js/ichidai-page.js", "remake/ichidai.html", "remake/css/ichidai.css", "remake/js/daily/tonari.js", "remake/test/browser/ichidai.mjs"],
+      "run": ["node remake/test/browser/ichidai.mjs"]
+    },
+    {
       "id": "dj-club",
       "title": "Club SEAM from the game: first meeting with the owner, embedded DJ, result recorded to state.dj, no time used (DJS10/DJS12)",
       "kind": "browser",

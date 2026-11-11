@@ -3,6 +3,7 @@
 オーナー未決定の提案。採用扱いにしない（ミニゲームにするか、本編の制作パートにするかも未定）。
 
 - `ichidai_shobu_rulebook_v0.2.pdf` … ルールブック（A4・15ページ）。読むのはこれ。
+- **ゲーム内のミニゲーム版**は `remake/js/minigames/ichidai*.js`（試遊は `remake/ichidai.html`）。規則はこのルールブックの第0.2版で、カードの名前・数値・文がここの `cards.js` とずれないことを `remake/test/ichidai_rules.mjs` が確かめる。絵の依頼と置き場は `asset_sources/card_game/README.md`。
 - `card_design_brief.md` … カードの見た目を決めるための、Codex 用の依頼書（方向3案・載せる情報・合否の物差し・そのまま貼る依頼文）。
 - `card_samples.html` … いまの仮のカードの見た目（載せる情報と読む順番の見本）。ブラウザで開く。
 - `rulebook.html` / `rulebook.css` / `render.js` … ルールブックの原稿と組版。
