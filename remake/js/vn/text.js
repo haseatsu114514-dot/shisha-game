@@ -15,7 +15,7 @@ const FILL_COST = 0.2;
 const QUOTE_COST = 1.5;
 // ページの切れ目は行の切れ目より重く見て、文末に合わせる。最後のページに残る短い1行（上限に対する割合）も避ける。
 const PAGE_BREAK_COST = 3;
-const LONE_PAGE = 0.4, LONE_PAGE_COST = 2;
+const LONE_PAGE = 0.4, LONE_PAGE_COST = 6;
 const BREAK_AFTER = "、。，．！？…‥」』）】〉》♡♪☆★─―—";
 const NO_LINE_START = "、。，．！？…‥ー〜ぁぃぅぇぉっゃゅょんゎ々ァィゥェォッャュョ」』）】〉》・";
 const OPENERS = "「『（【〈《";
