@@ -8,7 +8,7 @@
 
 | もの | 置き場 |
 |---|---|
-| Codex への依頼文 | `art-20261111/prompts.md`（第1弾: 卓の天板1・葉20・炭3） |
+| Codex への依頼文 | `art-20261111/prompts.md`（第1弾: 卓の天板1・葉20・炭3。依頼の Issue は #3221） |
 | 原画（生成したまま） | `art-20261111/raw/<種類>/<id>.png`（Git LFS） |
 | 採用した絵 | `assets/ui/ichidai/<種類>/<id>.png`（Git LFS） |
 | 画面用の WebP | `remake/img/ui/ichidai/<種類>/<id>.webp`（Git LFS。`remake/tools/build_ichidai_art.py` が作る） |
