@@ -4004,10 +4004,10 @@
     "role_id": "yura",
     "file": "costumes/regular-mail/sumi_yura.webp",
     "box": [
-      258,
-      33,
-      558,
-      333
+      308,
+      91,
+      508,
+      291
     ],
     "src": [
       896,
@@ -4044,7 +4044,13 @@
       ],
       "face_frac": 0.46,
       "eye_y_frac": 0.42
-    }
+    },
+    "box_exact": [
+      308.5,
+      91.08,
+      508.5,
+      291.08
+    ]
   },
   {
     "scenario": "regular-mail",
@@ -4052,10 +4058,10 @@
     "role_id": "neri",
     "file": "costumes/regular-mail/sumi_neri.webp",
     "box": [
-      244,
-      32,
-      544,
-      332
+      294,
+      86,
+      494,
+      286
     ],
     "src": [
       896,
@@ -4092,6 +4098,12 @@
       ],
       "face_frac": 0.46,
       "eye_y_frac": 0.42
-    }
+    },
+    "box_exact": [
+      294.5,
+      86.3,
+      494.5,
+      286.3
+    ]
   }
 ]
