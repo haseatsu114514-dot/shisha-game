@@ -52,7 +52,7 @@ async function geometry(p) {
     const rect = n => { const r = n.getBoundingClientRect(); return { x:r.x, y:r.y, w:r.width, h:r.height, right:r.right, bottom:r.bottom }; };
     const pane = document.querySelector(".bench-right");
     const selectors = [".bench-head", ".bench-hint", ".bench-panel", ".pack-aroma", ".pack-vessel", ".pack-vessel-art", ".pack-vessel-art .art", ".pack-caption", ".pack-caption p", ".pack-choice", ".pack-choice b", ".pack-choice small", ".pack-footer small", ".pack-confirm"];
-    return { windowX:scrollX, viewportWidth:innerWidth, pane:{ ...rect(pane), clientWidth:pane.clientWidth, scrollWidth:pane.scrollWidth, scrollLeft:pane.scrollLeft, scrollTop:pane.scrollTop, clientHeight:pane.clientHeight, scrollHeight:pane.scrollHeight },
+    return { windowX:scrollX, viewportWidth:innerWidth, viewportHeight:innerHeight, pane:{ ...rect(pane), clientWidth:pane.clientWidth, scrollWidth:pane.scrollWidth, scrollLeft:pane.scrollLeft, scrollTop:pane.scrollTop, clientHeight:pane.clientHeight, scrollHeight:pane.scrollHeight },
       nodes:selectors.flatMap(selector => [...document.querySelectorAll(selector)].filter(n => n.getClientRects().length).map(n => {
         const range = document.createRange(); range.selectNodeContents(n);
         // .bench-panel's selectNodeContents includes the packing temperature gauge
@@ -71,6 +71,14 @@ function horizontal(g) {
   assert(g.pane.scrollWidth <= g.pane.clientWidth + 1, `packing scrolls horizontally: ${JSON.stringify(g.pane)}`);
   assert.equal(g.pane.scrollLeft, 0);
   for (const n of g.nodes) {
+    // The help header is fixed to the viewport corner by craft-stage.css; it is
+    // intentionally outside the right-hand control panel on every device.
+    if (n.selector === ".bench-head") {
+      assert(n.w > 0 && n.x >= 0 && n.right <= g.viewportWidth && n.y >= 0 && n.bottom <= g.viewportHeight,
+        `.bench-head outside viewport: ${JSON.stringify(n)}`);
+      for (const r of n.textRects) assert(r.x >= 0 && r.right <= g.viewportWidth, ".bench-head text clipped");
+      continue;
+    }
     assert(n.w > 0 && n.x >= g.pane.x - 1 && n.right <= g.pane.right + 1, `${n.selector} outside horizontal panel: ${JSON.stringify(n)}`);
     for (const r of n.textRects) assert(r.x >= g.pane.x - 1 && r.right <= g.pane.right + 1, `${n.selector} text clipped`);
   }

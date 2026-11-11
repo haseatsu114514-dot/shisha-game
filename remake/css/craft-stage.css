@@ -100,6 +100,8 @@ html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-right > .panel-smok
 html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-panel { background: none !important; border: 0 !important; box-shadow: none !important; border-image: none !important; }
 /* 「？」は右上の角に固定（中身に重ねない） */
 html body.craft-stage:not(.game-ds) .bench[data-mode][data-step] .bench-head { position: fixed !important; inset: 6px 12px auto auto !important; z-index: 9; margin: 0; padding: 0; border: 0; }
+/* 角には「？」だけ。工程名は上のレールにあるので、スマホ横の旧い見出し（craft-landscape.css の機材・詰め方・炭の配置）は出さない */
+html body.craft-stage:not(.game-ds) .bench[data-mode][data-step] .bench-head > .bench-heading { display: none !important; }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-guide summary { width: 68px !important; height: 68px !important; font-size: 30px !important; font-weight: 800; border: 2px solid #8f78ab !important; background: #2e1d45e6 !important; color: #c9a7e6 !important; }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-guide-tip { top: calc(100% + 10px) !important; bottom: auto !important; left: auto !important; right: 0 !important; }
 

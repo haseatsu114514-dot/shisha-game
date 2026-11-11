@@ -263,6 +263,7 @@ export const FLAG_EXACT_RULES = [
   ["_ch5_match_scheduled", "progression"],
   ["_ch5_match_started", "progression"],
   ["_ch5_region_started", "progression"],
+  ["_ch5_sumi_trial", "progression"], // 第5章の決戦前の実制作練習（閉店後にスミさんが吸う一台・#2020 F。chapters/ch5-sumi-trial.js）。周回では作り直す
   ["_ch5_tokyo_attic", "progression"],
   ["_ch5_dubai_letter", "progression"],
   ["_ch5_dubai_guest", "progression"],

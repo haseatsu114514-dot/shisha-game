@@ -157,7 +157,7 @@ window.__remake = {
       if (name) kit.setMotionPalette(name);
       return kit.motionPalette();
     },
-    // 場面ごとの動きのパターン（a／b）。本編は採用（mg-kit.js の ADOPTED_VARIANT）。"auto" で採用に戻す。URLの ?movar=b でも切り替わる
+    // 場面ごとの動きのパターン（a／b。作り直した場面は c も）。本編は採用（mg-kit.js の ADOPTED_VARIANT）。"auto" で採用に戻す。URLの ?movar=b でも切り替わる
     async motionVariant(name) {
       const kit = await import("./core/mg-kit.js");
       if (name) kit.setMotionVariant(name);

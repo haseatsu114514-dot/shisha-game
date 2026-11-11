@@ -1,6 +1,6 @@
 // 場面ごとの一度きりのモーショングラフィックス（CI107〜CI109）。中身は remake/js/motions/ の場面ごとのファイル。
 // チェキ（PEPPERMINT）／占いのタロット／締めくくりの贈り物／バイトの終わり／サメちゃんとの出会い／つむぎのスケッチ。
-// 各場面に a／b の2パターンがあり、本編は場面ごとの採用（mg-kit.js の ADOPTED_VARIANT）。比べるときは ?movar=b か __remake.dev.motionVariant("b")、配色は紫1色／場面ごとの色（?mopal=free）。
+// 各場面に a／b の2パターン（作り直した場面は c も）があり、本編は場面ごとの採用（mg-kit.js の ADOPTED_VARIANT）。比べるときは ?movar=b か __remake.dev.motionVariant("b")、配色は紫1色／場面ごとの色（?mopal=free）。
 // 動きを減らす設定では省く（背景を替える mid() だけは呼ぶ）。SKIP中は省かず最後まで見せる（#1081 H05・一度きりの演出を飛ばして見逃さない）。
 import { state, config } from "./state.js";
 import { DB } from "./data.js";
@@ -51,7 +51,7 @@ const omitMotion = () => reducedMotion();
 const variant = async (scene, load) => {
   const mod = await withLoadingNotice(load(), { ...loadingNotice("演出を準備しています…"), delayMs: 500 })
     .catch((e) => { console.error(e); return null; });
-  return mod && (motionVariant(scene) === "b" ? mod.b : mod.a);
+  return mod && (mod[motionVariant(scene)] || mod.a);
 };
 
 /** placeCg(): 写真が仕上がった瞬間に会話のCGを同じ位置へ置く（省いたときは会話側がふつうに置く） */

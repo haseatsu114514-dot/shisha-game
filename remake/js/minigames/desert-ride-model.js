@@ -8,6 +8,14 @@ export const COURSE = Object.freeze({ length: 1700, practiceLength: 640, laneHal
 export const PLAYER = Object.freeze({ half: 0.1 });
 export const EDGE = 0.86;
 export const SPEED = Object.freeze({ start: 15, min: 8, max: 34, boost: 46, boostAccel: 26, overDecay: 12, accel: 1.5, fallFactor: 0.42, edgeDrag: 7, landingBoost: 3.5, plainLanding: 0.94, bounceLoss: 0.9 });
+// 画面に出す速さ・距離の縮尺（2026-11-11 オーナー「実際にサンドボードってこんな速度出るの？やや盛ってもいいけど現実離れはしたくない」）。
+// 内部の速さ（SPEED）は手触りのまま変えず、表示だけ現実に寄せる。出だし 約30・通常の最高速 約67・ブースト 約91 km/h。
+// 実物: 上手な人で約64 km/h（National Geographic）、サンドボードのギネス記録 82 km/h、砂のスキーの記録 127 km/h（2026年）。
+export const DISPLAY = Object.freeze({ scale: 0.55, dialMax: 100, redFrom: 70 });
+/** 内部の速さ（m/s 相当）→ 画面の km/h。 */
+export const toKmh = speed => speed * 3.6 * DISPLAY.scale;
+/** 内部の距離 → 画面の m（相手との差など）。速さと同じ縮尺にして、数字どうしの釣り合いを保つ。 */
+export const toMeters = units => units * DISPLAY.scale;
 export const JUMP = Object.freeze({ bigAir: 1.27, hopAir: 0.56, bounceAir: 0.26, landingWindow: 0.3, goodWindow: 0.6, bumpWindow: 0.36, bumpGrace: 0.14, steerInAir: 0.55, bigHeight: 1.7, speedHeight: 1.3, hopHeight: 0.85, hopSpeedHeight: 0.45 });
 export const FALL = Object.freeze({ recover: 1.1, points: -150 });
 // curveDrift: カーブの外へ流す力（c=1・通常最高速で、何もしないと毎秒 約0.25 レーン外へ流れる）。曲がる向きへ切っている間は流されない。
@@ -29,6 +37,13 @@ export const RIVALS = Object.freeze({
 export const SPIN = Object.freeze({ rate: 1.7, finishRate: 3.2, tolerance: 0.1, points: Object.freeze([0, 150, 400, 700, 1100, 1500, 2000, 2600, 3300]) });
 // ブースト: かすめ・大ジャンプの着地・トリックでゲージ（0〜1）が貯まり、残量に比例した時間だけ発動できる。duration 秒のあいだ速度の上限が SPEED.boost になり、
 // 当たった岩は砕ける（転倒しない）。転倒するとゲージが fallLoss 減る。岩に当たった直後（recoverWindow 秒）にゲージがあれば、ブーストで立て直せる（転倒を取り消して加速する）。
+// いい勝負（2026-11-11 オーナー「ライバルとの距離が離れすぎたらついてきたり、逆に離れすぎたら少し手加減してくれたり、いい勝負してる感を出したい」）:
+// 相手は記録した滑り（rivalRun）を、差に応じた速さで再生する（game.rivalClock）。差が gap メートルを超えると、
+// 離した時は最大 catchUp 倍まで速く（追いつく）、離された時は最低 easeOff 倍まで遅く（手加減）。span メートルで最大に届く。
+// ずれ（rivalClock − t）の上限は進み具合で変える: 追いついた分は lead 秒まで。holdUntil（6割）を過ぎたら、ゴールの少し手前（settleAt）で
+// 0 になるまで返す（終盤に相手がバテて引き離せる。勝ちは腕前のまま奪わない）。手加減は lag 秒まで、終盤（lastStretch）から keep 秒まで戻す（大きく離された時だけ少し勝ちやすい）。
+// 上限を超えた分は settle 秒/秒までの速さで戻す。
+export const RUBBER = Object.freeze({ gap: 20, span: 50, catchUp: 1.25, easeOff: 0.75, lead: 3, lag: 3, keep: 0.5, holdUntil: 0.6, settleAt: 0.95, lastStretch: 0.3, settle: 0.3, ease: 6 });
 export const BOOST = Object.freeze({ duration: 3, near: 0.12, land: 0.05, perfect: 0.22, good: 0.1, trickPerHalf: 0.1, fallLoss: 0.3, recoverWindow: 0.45 });
 // 評価の境目は DEFAULT_SEED（コース「稜線」）で合わせた: 空中で回って着地も決める＝S、回らないが着地を決めてブーストも使う＝A、
 // 着地が「良い」止まり＝B、ジャンプを使わず避けるだけ＝C（remake/test/desert_ride.mjs のボットで照合）。
@@ -219,7 +234,7 @@ export function pickCourse(runSeed) {
 /** rival: rivalRun() の結果（本番のヌール）。あれば、ゴールの順を競い、先着で加点する。 */
 export function createGame(course, { rival = null } = {}) {
   return {
-    course, rival, t: 0, z: 0, x: 0, vx: 0, speed: SPEED.start,
+    course, rival, t: 0, z: 0, x: 0, vx: 0, speed: SPEED.start, rivalClock: 0, rivalRate: 1, rivalFinishT: null,
     air: 0, airTotal: 0, airPeak: 0, airKind: null, landingPress: null, lastJumpT: -9,
     rot: 0, spinDir: 0, spinHold: false, spinArmed: null, lastTrick: null,
     gauge: 0, boostT: 0, carving: false, carveT: 0,
@@ -519,8 +534,35 @@ export function step(game, input, dt) {
       chargeBoost(game, BOOST.near);
     }
   }
+  if (game.rival) stepRival(game, dt);
   if (game.z >= game.course.length) finish(game);
   return game;
+}
+
+/** 相手の再生を進める（RUBBER）。差が開くと追いつく／手加減する。追いついた分はゴール手前までに返す。 */
+export function rubberCaps(progress) {
+  const R = RUBBER, p = Math.max(0, Math.min(1, progress));
+  return { lead: R.lead * Math.max(0, Math.min(1, (R.settleAt - p) / (R.settleAt - R.holdUntil))), lag: R.keep + (R.lag - R.keep) * Math.min(1, (1 - p) / R.lastStretch) };
+}
+function stepRival(game, dt) {
+  const rival = game.rival, R = RUBBER;
+  const rivalZ = rivalAt(rival, game.rivalClock).z;
+  const lead = game.z - rivalZ, dev = game.rivalClock - game.t;
+  const caps = rubberCaps(Math.max(game.z, rivalZ) / game.course.length);
+  let target = 1;
+  if (lead > R.gap) target = 1 + (R.catchUp - 1) * Math.min(1, (lead - R.gap) / R.span);
+  else if (lead < -R.gap) target = 1 - (1 - R.easeOff) * Math.min(1, (-lead - R.gap) / R.span);
+  // 前後が入れ替わったら、追い上げ（dev > 0）・手加減（dev < 0）の分はすぐ返す（記録より先へ逃げない・抜いた後まで手加減しない）
+  if (lead < 0 && dev > 0) target = Math.min(target, 1 - Math.min(R.settle, dev * 2));
+  else if (lead > 0 && dev < 0) target = Math.max(target, 1 + Math.min(R.settle, -dev * 2));
+  // 上限を超えないように（超えていれば戻す）
+  else if (dev > caps.lead) target = Math.min(target, 1 - Math.min(R.settle, (dev - caps.lead) * 2));
+  else if (dev < -caps.lag) target = Math.max(target, 1 + Math.min(R.settle, (-caps.lag - dev) * 2));
+  else if (target > 1) target = Math.min(target, 1 + (caps.lead - dev) * 2);
+  else if (target < 1) target = Math.max(target, 1 - (dev + caps.lag) * 2);
+  game.rivalRate += (target - game.rivalRate) * Math.min(1, dt * R.ease);
+  game.rivalClock += dt * game.rivalRate;
+  if (game.rivalFinishT === null && game.rivalClock >= rival.finishTime) game.rivalFinishT = game.t;
 }
 
 /** 大ジャンプ中の回転。steer は -1／0／1（画面の左／なし／右）。 */
@@ -547,9 +589,11 @@ function finish(game) {
   const bonus = Math.max(0, Math.round((SCORE.timePar - game.t) * SCORE.timeBonusPerSec));
   game.score += bonus;
   if (game.rival) {
-    const won = game.t < game.rival.finishTime, who = game.rival.who || "noor";
+    // 相手がゴールした時刻（再生の速さを変えているので、記録の finishTime ではなく実際の時刻）。まだなら残りの再生時間から見積もる
+    const who = game.rival.who || "noor", rivalT = game.rivalFinishT ?? game.t + Math.max(0, game.rival.finishTime - game.rivalClock);
+    const won = game.rivalFinishT === null;
     const bonus = won ? (who === "naru" ? SCORE.raceWinNaru : SCORE.raceWin) : 0;
-    game.race = { won, gap: Math.round(Math.abs(game.rival.finishTime - game.t) * 10) / 10, rivalTime: Math.round(game.rival.finishTime * 10) / 10, who };
+    game.race = { won, gap: Math.round(Math.abs(rivalT - game.t) * 10) / 10, rivalTime: Math.round(rivalT * 10) / 10, who };
     game.score += bonus;
     game.events.push({ kind: "race", t: game.t, ...game.race, points: bonus });
   }

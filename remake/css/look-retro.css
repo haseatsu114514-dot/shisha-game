@@ -661,7 +661,7 @@
   box-shadow: 0 0 0 calc(var(--d) * 1.6) var(--r-black), 0 0 0 calc(var(--d) * 3) var(--r-edge);
 }
 /* 知らせ（セーブした・報酬など）は縦長のシートの上にも出す */
-.retro-shell[data-scene="sheet"] .retro-notices { z-index: 3; }
+.retro-shell[data-scene="sheet"] .retro-notices { z-index: 3; top: auto; bottom: calc(var(--d) * 4); }
 .retro-shell[data-scene="sheet"] .retro-key { flex: 1 1 auto; padding: 0 calc(var(--d) * 3); letter-spacing: 0; }
 .retro-sheet .rs-region { flex: none; }
 .retro-sheet .rs-head {
@@ -736,6 +736,11 @@
 /* 量の帯・段の印・ハート */
 .retro-sheet .rs-gauge { position: relative; display: block; flex: 1 1 calc(var(--d) * 60); min-width: calc(var(--d) * 40); height: calc(var(--d) * 6); background: var(--r-black); border: calc(var(--d) * 1) solid var(--r-line); }
 .retro-sheet .rs-col > .rs-gauge { flex: none; width: 100%; }
+.retro-sheet .rs-meter { position: relative; display: block; flex: 1 1 calc(var(--d) * 60); min-width: calc(var(--d) * 40); height: calc(var(--d) * 6); background: var(--r-black); border: calc(var(--d) * 1) solid var(--r-line); }
+.retro-sheet .s-flavor-axis { display: grid; grid-template-columns: calc(var(--d) * 60) 1fr; align-items: center; gap: calc(var(--d) * 6); }
+.retro-sheet .s-flavor-guide-tags { gap: calc(var(--d) * 3); }
+.retro-sheet .s-flavor-guide-tags > .rs-inl { padding: 0 calc(var(--d) * 3); border: calc(var(--d) * 1) solid var(--r-line); color: var(--r-lilac); }
+.retro-sheet .s-flavor-guide-caption { color: var(--r-dim); }
 .retro-sheet .rs-fill { position: absolute; left: 0; top: 0; bottom: 0; background: var(--r-lilac); }
 .retro-sheet .rs-fill.s-today { background: var(--r-violet); }
 .retro-sheet .rs-pips { display: inline-flex; align-items: center; gap: calc(var(--d) * 1); }
@@ -832,6 +837,95 @@
 .retro-sheet .s-rule-sheet-eyebrow, .retro-sheet .s-rule-sheet-foot { color: var(--r-lilac); }
 .retro-sheet .s-rule-article { padding: calc(var(--d) * 4) calc(var(--d) * 6); background: var(--r-paper); color: var(--r-ink); }
 .retro-sheet .s-rule-article .rs-h { color: var(--r-violet); }
+
+/* 切り抜きの絵（商品の絵・店のロゴ）: 元の窓の比率で、高さを決めて写す */
+.retro-sheet .rs-crop { position: relative; display: block; flex: none; height: calc(var(--d) * 36); overflow: hidden; }
+.retro-sheet .rs-crop > img { position: absolute; display: block; max-width: none; height: auto; }
+.retro-sheet [data-errand-target="true"] { outline: calc(var(--d) * 2) solid var(--r-gold); outline-offset: calc(var(--d) * 1); }
+/* 文字の入力欄（セーブの引っ越し） */
+.retro-sheet .rs-area {
+  width: 100%;
+  min-height: calc(var(--d) * 60);
+  padding: calc(var(--d) * 3) calc(var(--d) * 5);
+  background: var(--r-paper);
+  border: calc(var(--d) * 1) solid var(--r-ink);
+  border-radius: 0;
+  color: var(--r-ink);
+  font: inherit;
+  font-size: calc(var(--d) * 12);
+  line-height: calc(var(--d) * 15);
+  resize: vertical;
+  overflow-wrap: anywhere;
+}
+
+/* 店（縦長のシート）: 見出しの店名・所持金、種類の絞り込み、商品の行、下の合計と購入 */
+.retro-sheet[data-kind="shop"] .rs-head { flex-direction: column; align-items: stretch; gap: calc(var(--d) * 4); }
+.retro-sheet .s-shop-head { justify-content: space-between; gap: calc(var(--d) * 2) calc(var(--d) * 6); }
+.retro-sheet .s-shop-head .rs-h { color: var(--r-gold); font-size: calc(var(--d) * 12); }
+.retro-sheet .s-shop-brand { display: flex; flex-direction: row; align-items: center; gap: calc(var(--d) * 4); }
+.retro-sheet .s-store-logo.rs-crop { height: calc(var(--d) * 18); }
+.retro-sheet .s-shop-sub { color: var(--r-lilac); }
+.retro-sheet .s-shop-money { display: inline-flex; flex-direction: row; gap: calc(var(--d) * 4); align-items: baseline; color: var(--r-gold); }
+.retro-sheet .s-shop-money > :first-child { color: var(--r-lilac); }
+.retro-sheet .s-shop-errand { padding: calc(var(--d) * 3) calc(var(--d) * 5); background: var(--r-paper); color: var(--r-ink); border: calc(var(--d) * 1) solid var(--r-gold); }
+.retro-sheet .s-shop-filters { gap: calc(var(--d) * 3); }
+.retro-shell .retro-sheet .rs-btn.s-shop-filter { min-height: calc(var(--d) * 22); padding: calc(var(--d) * 2) calc(var(--d) * 5); }
+.retro-sheet .s-shop-filters > .rs-inl { color: var(--r-dim); }
+.retro-sheet[data-kind="shop"] .rs-body { gap: calc(var(--d) * 5); }
+.retro-sheet .s-shop-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: calc(var(--d) * 3) calc(var(--d) * 6);
+  padding: calc(var(--d) * 3);
+  background: rgba(10, 6, 18, 0.55);
+  border: calc(var(--d) * 1) solid var(--r-line);
+}
+.retro-sheet .s-shop-row.s-selected { border-color: var(--r-gold); }
+.retro-sheet .s-shop-row.s-errand { border: calc(var(--d) * 2) solid var(--r-gold); }
+.retro-shell .retro-sheet .rs-btn.s-shop-product { grid-column: 1 / -1; flex-wrap: nowrap; flex-direction: row; align-items: center; background: none; border: 0; box-shadow: none; padding: 0; }
+.retro-sheet .s-shop-product .s-shop-product-art.rs-crop { height: calc(var(--d) * 40); }
+.retro-sheet .s-shop-main { display: flex; flex-direction: column; gap: calc(var(--d) * 2); min-width: 0; }
+.retro-sheet .s-shop-main > .rs-inl:first-child { color: var(--r-text); }
+.retro-sheet .s-shop-feature-tags { color: var(--r-lilac); }
+.retro-sheet .s-shop-stock { display: inline-flex; flex-direction: row; gap: calc(var(--d) * 3); color: var(--r-dim); }
+.retro-sheet .s-shop-price { color: var(--r-gold); text-align: right; }
+.retro-sheet .s-shop-quantity { display: inline-flex; flex-direction: row; align-items: center; gap: calc(var(--d) * 4); grid-column: 1 / -1; justify-self: end; }
+.retro-shell .retro-sheet .rs-btn.s-shop-step { min-width: calc(var(--d) * 28); justify-content: center; align-items: center; }
+.retro-shell .retro-sheet .rs-btn.s-shop-step.s-plus:not([disabled]) { background: var(--r-gold); color: var(--r-ink); border-color: var(--r-ink); }
+.retro-sheet .s-shop-quantity > .rs-inl { min-width: calc(var(--d) * 18); text-align: center; }
+.retro-sheet .s-shop-owned { color: var(--r-lilac); grid-column: 1 / -1; justify-self: end; }
+.retro-sheet[data-kind="shop"] .rs-foot { display: grid; grid-template-columns: auto 1fr; gap: calc(var(--d) * 4); }
+.retro-shell .retro-sheet[data-kind="shop"] .rs-foot > .rs-btn { flex: none; }
+.retro-shell .retro-sheet[data-kind="shop"] .rs-foot > .s-shop-checkout { grid-column: 1 / -1; }
+.retro-shell .retro-sheet .rs-btn.s-shop-summary { justify-content: space-between; }
+.retro-shell .retro-sheet .rs-btn.s-shop-checkout:not([disabled]) { background: var(--r-gold); border: calc(var(--d) * 2) solid var(--r-ink); color: var(--r-ink); }
+.retro-sheet .s-shop-floors { display: flex; flex-direction: column; gap: calc(var(--d) * 5); }
+.retro-shell .retro-sheet .rs-btn.s-shop-floor { flex-direction: column; align-items: stretch; width: 100%; padding: calc(var(--d) * 3); }
+.retro-sheet .s-shop-floor-picture { position: relative; display: block; }
+.retro-sheet .s-shop-floor-picture img { width: 100%; height: calc(var(--d) * 70); object-fit: cover; }
+.retro-sheet .s-shop-floor-number { position: absolute; left: calc(var(--d) * 3); top: calc(var(--d) * 3); padding: 0 calc(var(--d) * 4); background: var(--r-gold); color: var(--r-ink); }
+.retro-sheet .s-shop-floor-caption { display: flex; flex-direction: row; flex-wrap: wrap; align-items: center; gap: calc(var(--d) * 3) calc(var(--d) * 8); }
+.retro-sheet .s-shop-floor-arrow { display: none; }
+.retro-sheet .s-shop-detail { gap: calc(var(--d) * 5); }
+.retro-sheet .s-shop-detail > .s-shop-product-art.rs-crop { height: calc(var(--d) * 72); align-self: center; }
+.retro-sheet .s-kuji-row { padding: calc(var(--d) * 3); background: rgba(10, 6, 18, 0.55); border: calc(var(--d) * 1) solid var(--r-line); }
+
+/* 夜のレベルアップ・LIME の初回の案内・章のクリア（縦長のシート） */
+.retro-sheet[data-kind="levelup"] .rs-head { justify-content: center; color: var(--r-gold); font-size: calc(var(--d) * 24); line-height: calc(var(--d) * 28); }
+.retro-sheet[data-kind="levelup"] .rs-body > .rs-gauge { flex: none; width: 100%; height: calc(var(--d) * 8); }
+.retro-sheet .s-lu-change { color: var(--r-gold); font-size: calc(var(--d) * 16); line-height: calc(var(--d) * 19); }
+.retro-sheet .s-lu-details { gap: calc(var(--d) * 5); }
+.retro-sheet .s-lu-note { color: var(--r-dim); }
+.retro-sheet[data-kind="coach"] .rs-body { justify-content: center; }
+.retro-shell .retro-sheet .rs-btn.s-lc-bubble { flex-direction: column; align-items: stretch; padding: calc(var(--d) * 6) calc(var(--d) * 8); background: var(--r-paper); border: calc(var(--d) * 2) solid var(--r-ink); color: var(--r-ink); }
+.retro-sheet .s-lc-bubble > .rs-inl:first-child { color: var(--r-violet); font-size: calc(var(--d) * 16); line-height: calc(var(--d) * 19); }
+.retro-sheet[data-kind="end"] .rs-head { flex-direction: column; align-items: flex-start; gap: calc(var(--d) * 2); }
+.retro-sheet .s-end-title { color: var(--r-gold); font-size: calc(var(--d) * 16); line-height: calc(var(--d) * 19); }
+.retro-sheet .s-end-sub, .retro-sheet .s-clear-last-line { color: var(--r-lilac); }
+.retro-sheet .s-next-teaser { padding: calc(var(--d) * 4) calc(var(--d) * 6); border: calc(var(--d) * 1) solid var(--r-gold); }
+.retro-sheet .rs-svg { display: block; align-self: center; width: 100%; max-width: calc(var(--d) * 180); }
+.retro-sheet .rs-svg > svg { display: block; width: 100%; height: auto; }
 
 /* 会話の LOG（縦長のシート） */
 .retro-sheet .s-log-head { justify-content: space-between; }

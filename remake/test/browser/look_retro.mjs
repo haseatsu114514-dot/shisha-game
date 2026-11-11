@@ -1,6 +1,6 @@
 // 見た目の様式「DS風」（LK03・js/looks/retro.js）: 現行の画面を動かしたまま、上下2画面（256×192）の外枠へ写す。
 // 縦持ちのタッチ端末と PC で、タイトル・会話と選択肢・日常の地図に外枠が出ること、操作が現行へ中継されること、
-// 全画面 MENU・設定はシート（retro/sheet.js）で外枠の中に写り、未対応の場面（店）では外枠が引っ込むこと、
+// 全画面 MENU・設定はシート（retro/sheet.js）で外枠の中に写り、未対応の場面（心得の盤）では外枠が引っ込むこと、
 // 現行へ戻す・横持ち・第2章では現行のままであることを確かめる。
 // 上画面はドット絵の処方（色数を絞る・一人の場面は人物へ寄る・1ドット＝整数画素）で、場面転換・登場カットイン・
 // tonari の行動選びの間も外枠のまま続くこと（現行の画面へ行き来しないこと）も確かめる。
@@ -309,30 +309,29 @@ await suite("look_retro", async (check) => {
     assert.equal(await page.evaluate(() => window.dailyError || ""), "");
   }, { ...TALL, pageEntry: entry });
 
-  await check("portrait-shop-falls-back", async (page) => {
+  await check("portrait-growth-board-falls-back", async (page) => {
     await page.locator(shellFor("title")).waitFor();
     await setupDaily(page);
     await page.locator(shellFor("map")).waitFor();
-    await page.locator(t("retro-row-shop")).tap();
-    await page.waitForFunction(() => document.querySelector('[data-test="retro-go"]').getAttribute("aria-disabled") === "false");
-    await page.locator(t("retro-go")).tap();
-    // 店（未対応の場面）では外枠を引っ込め、現行の画面を小さく見せて一言を添える
-    await page.locator(t("shop-entry-back")).waitFor({ timeout: 15000 });
+    await page.locator(t("retro-key-menu")).tap();
+    await page.locator(t("sheet-menu-board")).tap();
+    // 心得の盤（動かして見る盤・未対応の場面）では外枠を引っ込め、現行の画面を小さく見せて一言を添える
+    await page.locator(t("board-close")).waitFor({ timeout: 15000 });
     await page.waitForFunction(() => document.querySelector(".retro-shell").hidden);
     const open = await rootState(page);
-    assert.equal(open.shellOn, "", "the DS shell steps aside for the shop");
+    assert.equal(open.shellOn, "", "the DS shell steps aside for the growth board");
     assert.equal(open.viewportOpacity, "1", "the classic screen is visible while the shell is away");
     assert.equal(open.hint, "none", "no rotate hint while the DS look is available");
     assert.equal(open.guard, "");
     await page.locator(t("retro-note")).waitFor();
     assert.match(await page.locator(t("retro-note")).textContent(), /横向き/);
-    // 現行の店の「街に戻る」がそのまま押せる
-    assert(await page.locator(t("shop-entry-back")).evaluate((node) => {
+    // 現行の盤の「閉じる」がそのまま押せる
+    assert(await page.locator(t("board-close")).evaluate((node) => {
       const r = node.getBoundingClientRect();
       const top = document.elementFromPoint((r.left + r.right) / 2, (r.top + r.bottom) / 2);
       return node === top || node.contains(top);
-    }), "the classic shop back button is reachable");
-    await page.locator(t("shop-entry-back")).tap();
+    }), "the classic board close button is reachable");
+    await page.locator(t("board-close")).tap();
     await page.locator(shellFor("map")).waitFor();
     const closed = await rootState(page);
     assert.equal(closed.shellOn, "on");
