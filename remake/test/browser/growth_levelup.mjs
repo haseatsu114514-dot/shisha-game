@@ -1156,15 +1156,18 @@ await suite("growth-levelup", async (runCheck) => {
       const before = g.readyLessons("sumi").map((l) => l.id);
       const done = await g.consultLessons("sumi");
       return { before, done: done.map((l) => l.id), learned: g.lessonLearned("M-W2"),
-        four: __remake.state.flags._coal_four_unlocked, mix: __remake.state.flags._coal_mix_unlocked, after: g.readyLessons("sumi").length };
+        four: __remake.state.flags._coal_four_unlocked, mix: __remake.state.flags._coal_mix_unlocked,
+        outer24: __remake.state.flags._hole_outer24_unlocked, after: g.readyLessons("sumi").length };
     });
     assert.deepEqual(r.before, ["M-W2"]);
     assert.deepEqual(r.done, ["M-W2"]);
     assert.equal(r.learned, true);
     assert.equal(r.four, true, "四つ置きが開く");
     assert.equal(r.mix, true, "混ぜ置きが開く");
+    assert.equal(r.outer24, true, "穴あけの外周24穴も開く（#2020 H）");
     assert.equal(r.after, 0);
     await page.locator(".gain-card", { hasText: "四つ置き" }).waitFor();
+    await page.locator(".gain-card", { hasText: "外周24穴" }).waitFor();
   }, { viewport: { width: 1331, height: 760 } });
   // 章末の「この章で伸びたもの」（SBD97）: 盤モードは才能・感覚・理論の三角。章のはじめの盤が淡い面、灯した分だけ明るい面が広がる
   await check("chapter-end-board-chart", async (page) => {
@@ -1408,7 +1411,9 @@ await suite("growth-levelup", async (runCheck) => {
     await page.locator("#modal.show button", { hasText: "答えを返しに行く" }).click();
     await readUntil("ch3_outing_enmaku_answer");
     await tokyoMap(1);
-    await page.locator(t("pin-ch3_tokyo_volk")).click(); await page.locator(t("map-go")).click(); // 寄り道は二度目の来店だけなので、そのまま読む
+    await page.locator(t("pin-ch3_tokyo_volk")).click(); await page.locator(t("map-go")).click();
+    // 初来店の後は通い（鉄の煙で一服する・#3270）も並ぶので、二度目の来店を選ぶ
+    await page.locator("#modal.show button", { hasText: "鉄の煙の二度目" }).click();
     await readUntil("ch3_volk_second");
     const growth = await page.evaluate(() => structuredClone(__remake.state.growth));
     assert.equal(growth.fresh.counts.saku, 1, "煙幕の外出は綾取の鍵");

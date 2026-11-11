@@ -2377,6 +2377,953 @@
       ]
     },
     {
+      "dialogue_id": "shift_flavor_ch3_cant_say_lemon_ginger",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "……駅前のジンジャーエールかな。ピリッとするやつ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "レモンの葉にジンジャーを少し重ねて量る。辛さが前に出すぎない火に整え、客へ出した。"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "あ、これだ。うまく言えなかったのに、ちゃんと出てきた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（舌で確かめられない分、聞けることは聞いておく）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_flavor_ch3_cant_say_peach_black_tea",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "甘ったるいのと、ミントの強いのは苦手かな"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ピーチに紅茶を合わせて葉を量る。甘さを紅茶の渋みで締めて、客へ出した。"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "甘いのに、しつこくない。苦手なものが入ってないの、分かるな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（好きなものは言えなくても、避けたいものは言える）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_recall_ch3_cant_say_same",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（好みをうまく言えない人に、一つ聞いて作る注文だ。前と同じことを聞こう）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_recall_ch3_cant_say_diff",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（好みをうまく言えない人に、一つ聞いて作る注文だ。今日は、前と違うことを聞く）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_flavor_ch3_prefectural_fan_strawberry_lime",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "苺にライムを少し添えて量る。大会の一台より熱を抑え、長く吸える軽さで客へ出した。"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "苺だ。……でも大会のより、ずっと軽いね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "大会のは、審査の席のための一台だったので。ここでは、最後まで吸える方に"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "へえ。同じ苺でも、出す場所で変えるんだ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_flavor_ch3_prefectural_fan_lychee_jasmine",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "苺がお好きなら、甘酸っぱい方向で。今日は、別の葉にしてみませんか"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ライチにジャスミンを少し重ねて量る。香りが先に立つ火に整え、客へ出した。"
+        },
+        {
+          "speaker": "customer",
+          "face": "surprise",
+          "text": "……あれ、これも好きだ。苺じゃないのに"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "大会の人のおすすめって、こういう感じなんだね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_recall_ch3_prefectural_fan_same",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（県大会を見た人に、苺の一台を頼まれる注文だ。前と同じ出し方でいこう）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_recall_ch3_prefectural_fan_diff",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（県大会を見た人に、苺の一台を頼まれる注文だ。今日は、前と違う方を勧める）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_flavor_ch3_send_off_double_apple_cardamom",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ダブルアップルにカルダモンを少し添えて量る。スミさんがよく組む配合で、客へ出した。"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "……これだよ。この店に来たって感じがする"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "東京でも、この店のこと忘れないでくれよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（忘れない。持っていくのは、この店で覚えた手順だ）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_flavor_ch3_send_off_black_tea_honey",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "今日、少し疲れてますよね。軽めにしておきます"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "紅茶にハニーを少し合わせて量る。熱は低めに整え、ゆっくり吸える一台を客へ出した。"
+        },
+        {
+          "speaker": "customer",
+          "face": "surprise",
+          "text": "……ばれたか。今週、ずっと残業でさ"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "送り出すつもりで来たのに、こっちが労われちゃったな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_recall_ch3_send_off_same",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（東京へ発つ前に、一台を任される注文だ。前と同じ受け取り方でいこう）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_recall_ch3_send_off_diff",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（東京へ発つ前に、一台を任される注文だ。今日は、前と違う受け取り方をする）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_flavor_ch4_saw_nationals_chocolate_orange",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "チョコにオレンジを合わせて量る。大会より熱を落とし、重くならない一台を客へ出した。"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "配信で見たのより、軽い。……でも、ちゃんとチョコだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "あの日のは、一口目で勝負する一台でした。今日のは、長く吸ってもらう一台です"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "なるほどね。同じチョコでも、役目が違うんだ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_flavor_ch4_saw_nationals_pistachio_vanilla",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "チョコは大会でたくさん作ったので。今日は、別の甘いのはどうですか"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ピスタチオにバニラを少し重ねて量る。香ばしさが先に来る火に整え、客へ出した。"
+        },
+        {
+          "speaker": "customer",
+          "face": "surprise",
+          "text": "……ナッツか。チョコじゃないのに、これはこれで好きだ"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "配信の一台より、俺はこっちかもしれないな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_recall_ch4_saw_nationals_same",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（全国大会を見た人に、チョコの一台を頼まれる注文だ。前と同じ出し方でいこう）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_recall_ch4_saw_nationals_diff",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（全国大会を見た人に、チョコの一台を頼まれる注文だ。今日は、前と違う方を勧める）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_return_ch4_returning_citrus_0",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……柑橘の注文。前に、レモンとミントで出した人だ）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_return_ch4_returning_citrus_1",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……柑橘の注文。前に、オレンジとレモンで出した人だ）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_flavor_ch4_returning_citrus_kiwi_mint",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "キウイにミントを重ねて量る。酸味は残して、柑橘とは違う青さが出る火に整えた。"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "さっぱりしてるのに、前のとは違う。キウイか"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "前のと被らないように、選んでくれたんだね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（同じ『さっぱり』でも、出し方は一つじゃない）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_flavor_ch4_returning_citrus_jasmine_peach",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "さっぱりがお好きなら、今日は香りの軽いのはどうですか"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ジャスミンにピーチを少し合わせて量る。花の香りが軽く立つ火に整え、客へ出した。"
+        },
+        {
+          "speaker": "customer",
+          "face": "surprise",
+          "text": "花の香りなのに、重くない。柑橘のときと同じ軽さだ"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "次も、違うのを頼んでみようかな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_recall_ch4_returning_citrus_same",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（前に柑橘を吸った人が、違う一台を頼む注文だ。前と同じ方でいこう）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_recall_ch4_returning_citrus_diff",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（前に柑橘を吸った人が、違う一台を頼む注文だ。今日は、前と違う方を勧める）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_return_ch4_returning_after_work_0",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……仕事帰りの人だ。前は、グレープフルーツとミントで出した）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_return_ch4_returning_after_work_1",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（……仕事帰りの人だ。前は、キウイとレモンで出した）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_flavor_ch4_returning_after_work_black_tea_vanilla",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "紅茶にバニラを合わせて葉を量る。熱は低く整え、時間をかけて吸える一台を客へ出した。"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "ミルクティーみたいだ。仕事の日には、頼まない味だな"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "休みの日の一台って、こういうのか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（頭を冴えさせる日と、ほどく日。同じ人でも、今日の一台は違う）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_flavor_ch4_returning_after_work_rose_lychee",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "今日は急がなくていい日なので。香りを楽しむ一台にしてみます"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ローズにライチを少し添えて量る。香りがゆっくり開く火に整え、客へ出した。"
+        },
+        {
+          "speaker": "customer",
+          "face": "surprise",
+          "text": "……花だ。仕事帰りの俺なら、絶対に選ばない"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "でも今日は、これがいい。休みだって、やっと思えた"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_recall_ch4_returning_after_work_same",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（仕事帰りだった人の、休みの日の注文だ。前と同じ方でいこう）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_recall_ch4_returning_after_work_diff",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（仕事帰りだった人の、休みの日の注文だ。今日は、前と違う方を勧める）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_flavor_ch5_tsumugi_explain_image",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "果物の林檎じゃなくて、香りで作った林檎。そう言えば、だいたい伝わる"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "baito_normal",
+          "text": "……香りで作った、林檎"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "つむぎは客席へ戻り、同じ言葉をゆっくり繰り返した。客が、ホースを受け取る。"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "ほんとだ。林檎っぽいのに、果物の味とは違う"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "baito_smile",
+          "text": "……シーシャにしかない林檎、です"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "（最後の一言は、つむぎが自分で足した）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_flavor_ch5_tsumugi_explain_spices",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "アニスとリコリス。二つのスパイスの香りで、林檎を作ってる"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "baito_surprise",
+          "text": "……スパイスで、林檎"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "だから一口で分かる。シーシャにしかない味だよ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "つむぎは客席へ戻り、指を二本立てて説明した。"
+        },
+        {
+          "speaker": "customer",
+          "face": "surprise",
+          "text": "スパイスで林檎……あ、ほんとだ。不思議な味"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "baito_smile",
+          "text": "一口で、覚えられる味です"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_recall_ch5_tsumugi_explain_same",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（前にも、つむぎにダブルアップルのことを聞かれた。同じ言い方で渡そう）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_recall_ch5_tsumugi_explain_diff",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（前にも、つむぎにダブルアップルのことを聞かれた。今日は、違う言い方で渡す）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_flavor_ch5_tsumugi_advise_remove_coal",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "つむぎの隣に立って、炭の上を指した。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "熱が先に走ってる。炭を一つ、下ろそう"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "baito_serious",
+          "text": "……はい"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "つむぎがトングで炭を一つ外す。次の一口には、煙の角が取れていた。"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "あ、楽になった。これなら最後まで吸える"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "しばらくしたら熱が落ちてくる。そのとき、戻せばいい"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "baito_normal",
+          "text": "……下ろした炭を戻す時間も、見ておきます"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_flavor_ch5_tsumugi_advise_edge_wait",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "炭を縁に寄せて、二口だけ待ってもらおう。葉を焦がさずに済む"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "baito_serious",
+          "text": "縁に……はい"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "つむぎがトングで炭を外側へずらし、客に少し待ってもらうよう頼んだ。"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "……あ、さっきより柔らかい。香りも残ってる"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "baito_smile",
+          "text": "待ってもらって、よかったです"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "（減らすより、逃がす。今日の葉には、そっちが合った）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_recall_ch5_tsumugi_advise_same",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（前にも、つむぎの台を見て声をかけた。同じ直し方を伝えよう）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_recall_ch5_tsumugi_advise_diff",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（前にも、つむぎの台を見て声をかけた。今日は、違う直し方を伝える）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_flavor_ch5_tsumugi_sumi_words_wait",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "足す前に、一回だけ待とう。熱は、足すより戻す方が難しいから"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "baito_normal",
+          "text": "……一回だけ、待つ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "つむぎはトングを置いて、客の次の一口を待った。煙は、ちゃんと太く戻ってきた。"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "うん、ちょうどいい"
+        },
+        {
+          "speaker": "sumi",
+          "face": "smile",
+          "text": "……俺なら『焦るな』の一言で済ませるとこだ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "それだと、つむぎが固まるんで"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "ふん。……今のは、お前の言い方だな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_flavor_ch5_tsumugi_sumi_words_face",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "炭より先に、吸ってる人を見よう。話に夢中なら、細いままでいい時もある"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "baito_surprise",
+          "text": "……あ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "つむぎが客席を振り返る。二人連れは話し込んでいて、ホースは置かれたままだった。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "baito_normal",
+          "text": "……今は、足さないでおきます。手が伸びたら、行きます"
+        },
+        {
+          "speaker": "sumi",
+          "face": "smile",
+          "text": "……『顔を見てから煙を作れ』か。ずいぶん噛み砕いたな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "俺も、最初はそのままじゃ分からなかったんで"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "baito_smile",
+          "text": "……はじめさんの言い方で、覚えました"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_recall_ch5_tsumugi_sumi_words_same",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（前にも、つむぎが炭に手を伸ばしてた。同じ言い方で渡そう）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_recall_ch5_tsumugi_sumi_words_diff",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（前にも、つむぎが炭に手を伸ばしてた。今日は、違う言い方で渡す）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_flavor_ch5_world_viewer_same_direction",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "あの日と同じ方向で葉を量る。会場より熱を落とし、店の席で長く吸える一台にした。"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "……動画で見てたのだ。思ってたより、ずっと優しい"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "会場のは、あの日の審査席の一台でした。今日のは、ここで吸う人の一台です"
+        },
+        {
+          "speaker": "customer",
+          "face": "surprise",
+          "text": "……同じ人が作っても、変わるんですね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_flavor_ch5_world_viewer_todays_face",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "遠くから来てくれたんですよね。今日は、肩の力が抜ける方を作らせてください"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ピーチにカモミールを少し重ねて量る。熱は低めに整え、ゆっくり吸える一台を客へ出した。"
+        },
+        {
+          "speaker": "customer",
+          "face": "surprise",
+          "text": "……動画のとは違うのに。来てよかったって、思えます"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "（あの日の一台は、あの日の席のもの。今日の一人には、今日の一台だ）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_recall_ch5_world_viewer_same",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（世界大会の動画を見て来た人の注文だ。前と同じ出し方でいこう）"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "shift_recall_ch5_world_viewer_diff",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png"
+      },
+      "lines": [
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（世界大会の動画を見て来た人の注文だ。今日は、前と違う方を勧める）"
+        }
+      ]
+    },
+    {
       "dialogue_id": "remake_fortune_first",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_street_day.png"

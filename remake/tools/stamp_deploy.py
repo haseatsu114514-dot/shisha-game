@@ -12,6 +12,9 @@ Pages はファイルを10分キャッシュさせ、スマホは開いたまま
 - index.html の <meta name="suien-build"> に版と公開日時を書く（タイトル画面の右下に出す）
 - remake/build.json に版と公開日時を書く。起動時とタブへ戻ったときにキャッシュなしで読み、
   開いている版が古ければ新しい版へ読み直す（index.html の起動スクリプト）
+- 試遊ページ（ミニゲームなどの単体ページ。<meta name="suien-build" content="dev"> を持つ remake/*.html）にも
+  同じ名札を付ける: meta に版、CSS と起動スクリプト js/page-boot.js に ?v=<版>。page-boot.js が build.json で
+  最新かを確かめ、ページの本体を js-<版>/ から読む（2026-11-11 オーナー「試遊リンクだと過去の仕様になってしまう」）
 
 画像・音の URL は変えない（同じ画像を先読みと表示で別の書き方で参照している所があり、
 片方だけ変えると二重に読んで表示が遅れる）。手元（python3 -m http.server）では使わない。
@@ -77,7 +80,27 @@ def stamp(site: Path, build: str, built_at: str) -> None:
         if new != text:
             css.write_text(new, encoding="utf-8")
 
+    for page in sorted(remake.glob("*.html")):
+        if page.name != "index.html":
+            stamp_trial_page(page, remake, build, built_at)
+
     (remake / "build.json").write_text(json.dumps({"build": build, "builtAt": built_at}, ensure_ascii=False), encoding="utf-8")
+
+
+PAGE_BOOT = re.compile(r'<script src="js/page-boot\.js" data-page="js/[\w./-]+\.js"></script>')
+
+
+def stamp_trial_page(page: Path, remake: Path, build: str, built_at: str) -> None:
+    """試遊ページ（版の meta を持つ単体ページ）に名札を付ける。meta の無いページ（開発用の見比べ等）は触らない。"""
+    html = page.read_text(encoding="utf-8")
+    if BUILD_META not in html:
+        return
+    if not PAGE_BOOT.search(html):
+        sys.exit(f"stamp_deploy: {page.name} に版の meta があるのに js/page-boot.js の起動が無い")
+    html = html.replace(BUILD_META, f'<meta name="suien-build" content="{build}" data-built="{built_at}">')
+    html = html.replace('<script src="js/page-boot.js"', f'<script src="js/page-boot.js?v={build}"')
+    html = version_css_refs(html, "", remake, build)
+    page.write_text(html, encoding="utf-8")
 
 
 def main() -> None:

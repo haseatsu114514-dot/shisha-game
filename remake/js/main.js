@@ -145,7 +145,7 @@ window.__remake = {
     // 心得の盤を開く（?growth=1 のときだけ）。火種が無ければ addHidane で足す
     board() { return openGrowthBoard(); },
     addHidane(n = 5, kind = "any") { const g = ensureGrowth(); g.hidane[kind] = (g.hidane[kind] || 0) + n; return { ...g.hidane }; },
-    // マップ→場所の移動トランジションの比較用（pin / steps / walk / door / noren / walkdoor。本編の既定は door）。URLの ?move=pin でも切り替わる
+    // マップ→場所の移動トランジションの比較用（zoom / lights / pin / steps / walk / door / noren / walkdoor。本編の既定は帰宅が lights、ほかは zoom）。URLの ?move=pin でも切り替わる
     async moveStyle(style) {
       const moves = await import("./core/transition-moves.js");
       if (style) moves.setMoveStyle(style);
@@ -157,7 +157,7 @@ window.__remake = {
       if (name) kit.setMotionPalette(name);
       return kit.motionPalette();
     },
-    // 場面ごとの動きのパターン（a／b）。本編は採用（mg-kit.js の ADOPTED_VARIANT）。"auto" で採用に戻す。URLの ?movar=b でも切り替わる
+    // 場面ごとの動きのパターン（a／b。作り直した場面は c も）。本編は採用（mg-kit.js の ADOPTED_VARIANT）。"auto" で採用に戻す。URLの ?movar=b でも切り替わる
     async motionVariant(name) {
       const kit = await import("./core/mg-kit.js");
       if (name) kit.setMotionVariant(name);

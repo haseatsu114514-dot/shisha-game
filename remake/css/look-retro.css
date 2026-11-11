@@ -42,7 +42,7 @@
 @media (prefers-reduced-motion: reduce) { .retro-hint-device { animation: none; transform: rotate(-90deg); } }
 /* 外枠を出している間は、隠れている現行の立ち絵の呼吸（新版の .vn-portraits の伸び縮み）を止める。
    見えない所の動きで、上画面を毎フレーム描き直さないため（見た目は変わらない）。 */
-:root[data-look="neo"][data-retro-shell="on"] body:not(.game-ds) #stage #vn .vn-portraits { animation: none; }
+:root[data-look="neo"][data-retro-shell="on"] body:not(:root) #stage #vn .vn-portraits { animation: none; }
 /* 高解像度の絵は、拡大の補間をふつうに（ドット絵の pixelated にしない） */
 .retro-shell[data-paint="hd"] .retro-canvas,
 .retro-shell[data-paint="hd"] .retro-face canvas { image-rendering: auto; }
@@ -255,6 +255,7 @@
   line-height: calc(var(--d) * 15);
   pointer-events: none;
 }
+.retro-caption { max-height: calc(var(--d) * 124); overflow: hidden; }
 .retro-caption b { margin-right: calc(var(--d) * 6); color: var(--r-gold); font-weight: 400; }
 
 /* ---- 会話（下画面） */
@@ -618,6 +619,344 @@
 .retro-shell .retro-option:active { transform: translate(calc(var(--d) * 2), calc(var(--d) * 2)); box-shadow: calc(var(--d) * 1) calc(var(--d) * 1) 0 var(--r-deep); }
 .retro-shell .retro-option[disabled] { background: var(--r-panel); border: calc(var(--d) * 1) solid var(--r-line); box-shadow: none; color: var(--r-dim); cursor: default; transform: none; }
 .retro-option[disabled] small { color: var(--r-dim); }
+
+/* ---- 新版の縦持ち: 地図の案内の箱のボタン（駅の行き先・配達メモなど）と、場面カード・確かめの小窓の主なボタン */
+.retro-shell .retro-row.retro-row-action { justify-content: center; background: var(--r-gold); border: calc(var(--d) * 2) solid var(--r-ink); color: var(--r-ink); }
+.retro-shell .retro-row.retro-row-action.alt { background: var(--r-panel); border: calc(var(--d) * 1) solid var(--r-line); color: var(--r-text); }
+.retro-shell .retro-row.retro-row-action[disabled] { background: var(--r-panel); border-color: var(--r-line); color: var(--r-dim); cursor: default; }
+.retro-row-action .retro-row-name { flex: 0 1 auto; text-align: center; font-size: calc(var(--d) * 12); }
+.retro-shell .retro-option.primary { background: var(--r-gold); }
+.retro-submenu[data-dense="true"] .retro-option { min-height: calc(var(--d) * 26); margin-bottom: calc(var(--d) * 3); padding: calc(var(--d) * 3) calc(var(--d) * 8); }
+.retro-submenu[data-dense="true"] .retro-option b { font-size: calc(var(--d) * 12); line-height: calc(var(--d) * 15); }
+.retro-shell .retro-option.primary small { color: var(--r-ink); }
+.retro-menu-lead {
+  flex: none;
+  width: calc(100% - var(--d) * 3);
+  margin: 0 0 calc(var(--d) * 4);
+  padding: calc(var(--d) * 4) calc(var(--d) * 6);
+  background: var(--r-deep);
+  border: calc(var(--d) * 1) solid var(--r-lilac);
+  color: var(--r-text);
+  font-size: calc(var(--d) * 12);
+  line-height: calc(var(--d) * 15);
+  overflow-wrap: anywhere;
+}
+
+/* ---- シート（全画面 MENU・LIME・小窓・会話の LOG。retro/sheet.js が現行の DOM をドット調の部品へ写す）
+   写しの部品は rs-*、元のクラスは s-元の名前。字は 12 ドット以上、押せる物は 22 ドット以上。 */
+.retro-sheet {
+  display: flex;
+  flex-direction: column;
+  color: var(--r-text);
+  font-size: calc(var(--d) * 12);
+  line-height: calc(var(--d) * 15);
+  overflow-wrap: anywhere;
+}
+/* 上画面と下画面をつないだ縦長のシート（LIME・小窓・LOG）。位置と大きさは sheet.js が画面の位置から置く */
+.retro-sheet[data-tall="true"] {
+  z-index: 2;
+  background-color: #2b1c44;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4' shape-rendering='crispEdges'%3E%3Crect width='4' height='4' fill='%232b1c44'/%3E%3Crect width='2' height='2' fill='%2333224f'/%3E%3Crect x='2' y='2' width='2' height='2' fill='%2333224f'/%3E%3C/svg%3E");
+  background-size: calc(var(--d) * 4) calc(var(--d) * 4);
+  box-shadow: 0 0 0 calc(var(--d) * 1.6) var(--r-black), 0 0 0 calc(var(--d) * 3) var(--r-edge);
+}
+/* 知らせ（セーブした・報酬など）は縦長のシートの上にも出す */
+.retro-shell[data-scene="sheet"] .retro-notices { z-index: 3; top: auto; bottom: calc(var(--d) * 4); }
+.retro-shell[data-scene="sheet"] .retro-key { flex: 1 1 auto; padding: 0 calc(var(--d) * 3); letter-spacing: 0; }
+.retro-sheet .rs-region { flex: none; }
+.retro-sheet .rs-head {
+  display: flex;
+  align-items: center;
+  gap: calc(var(--d) * 6);
+  min-height: calc(var(--d) * 26);
+  padding: calc(var(--d) * 3) calc(var(--d) * 6);
+  background: var(--r-deep);
+  border-bottom: calc(var(--d) * 1) solid var(--r-lilac);
+}
+.retro-sheet .rs-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--d) * 4);
+  padding: calc(var(--d) * 5) calc(var(--d) * 6) calc(var(--d) * 8);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+  scrollbar-width: none;
+}
+.retro-sheet .rs-body::-webkit-scrollbar { display: none; }
+.retro-sheet .rs-foot {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(var(--d) * 4);
+  padding: calc(var(--d) * 4) calc(var(--d) * 6) calc(var(--d) * 5);
+  background: var(--r-deep);
+  border-top: calc(var(--d) * 1) solid var(--r-line);
+}
+.retro-sheet .rs-foot > * { flex: 1 1 100%; }
+.retro-shell .retro-sheet .rs-foot > .rs-btn { flex: 1 1 0; justify-content: center; align-items: center; text-align: center; }
+.retro-shell .retro-sheet[data-kind="lime"] .rs-foot > .rs-btn { flex: 1 1 100%; justify-content: flex-start; align-items: flex-start; text-align: left; }
+.retro-sheet .rs-row { display: flex; flex-wrap: wrap; align-items: center; gap: calc(var(--d) * 3) calc(var(--d) * 6); }
+.retro-sheet .rs-col { display: flex; flex-direction: column; gap: calc(var(--d) * 3); }
+.retro-sheet .rs-inline { display: inline-flex; }
+.retro-sheet .rs-row > .rs-inl { flex: 0 1 auto; min-width: 0; }
+.retro-sheet .rs-h { color: var(--r-gold); }
+.retro-sheet .rs-h1, .retro-sheet .rs-h2 { font-size: calc(var(--d) * 16); line-height: calc(var(--d) * 19); }
+.retro-sheet .rs-h3, .retro-sheet .rs-h4 { font-size: calc(var(--d) * 12); line-height: calc(var(--d) * 15); }
+.retro-sheet img { display: block; max-width: 100%; height: auto; }
+.retro-shell[data-paint="dot"] .retro-sheet img { image-rendering: pixelated; }
+/* ボタン（元のボタン・タブ・行） */
+.retro-shell .retro-sheet .rs-btn,
+.retro-shell .retro-sheet .rs-check {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: calc(var(--d) * 3) calc(var(--d) * 6);
+  min-height: calc(var(--d) * 22);
+  padding: calc(var(--d) * 3) calc(var(--d) * 6);
+  background: var(--r-panel);
+  border: calc(var(--d) * 1) solid var(--r-line);
+  box-shadow: calc(var(--d) * 2) calc(var(--d) * 2) 0 var(--r-black);
+  color: var(--r-text);
+  text-align: left;
+}
+.retro-shell .retro-sheet .rs-btn.rs-row { flex-wrap: wrap; }
+.retro-shell .retro-sheet .rs-btn.rs-col { flex-direction: column; align-items: stretch; }
+.retro-shell .retro-sheet .rs-btn:active:not([disabled]),
+.retro-shell .retro-sheet .rs-check:active:not([disabled]) { transform: translate(calc(var(--d) * 1), calc(var(--d) * 1)); box-shadow: calc(var(--d) * 1) calc(var(--d) * 1) 0 var(--r-black); }
+.retro-shell .retro-sheet .rs-btn.s-primary { background: var(--r-gold); border: calc(var(--d) * 2) solid var(--r-ink); color: var(--r-ink); }
+.retro-shell .retro-sheet .rs-btn:is([aria-pressed="true"], [aria-checked="true"], [aria-selected="true"], .s-on),
+.retro-shell .retro-sheet .rs-check[aria-checked="true"] { background: var(--r-gold); border-color: var(--r-ink); color: var(--r-ink); }
+.retro-shell .retro-sheet .rs-btn[aria-expanded="true"] { border: calc(var(--d) * 2) solid var(--r-gold); }
+.retro-shell .retro-sheet :is(.rs-btn, .rs-check)[disabled] { background: var(--r-deep); border-color: var(--r-line); box-shadow: none; color: var(--r-dim); cursor: default; }
+.retro-shell .retro-sheet .rs-check { justify-content: center; min-width: calc(var(--d) * 44); }
+.retro-sheet .rs-select { display: flex; flex-wrap: wrap; gap: calc(var(--d) * 3); }
+.retro-sheet .rs-range { width: 100%; height: calc(var(--d) * 22); margin: 0; accent-color: var(--r-gold); }
+/* 量の帯・段の印・ハート */
+.retro-sheet .rs-gauge { position: relative; display: block; flex: 1 1 calc(var(--d) * 60); min-width: calc(var(--d) * 40); height: calc(var(--d) * 6); background: var(--r-black); border: calc(var(--d) * 1) solid var(--r-line); }
+.retro-sheet .rs-col > .rs-gauge { flex: none; width: 100%; }
+.retro-sheet .rs-meter { position: relative; display: block; flex: 1 1 calc(var(--d) * 60); min-width: calc(var(--d) * 40); height: calc(var(--d) * 6); background: var(--r-black); border: calc(var(--d) * 1) solid var(--r-line); }
+.retro-sheet .s-flavor-axis { display: grid; grid-template-columns: calc(var(--d) * 60) 1fr; align-items: center; gap: calc(var(--d) * 6); }
+.retro-sheet .s-flavor-guide-tags { gap: calc(var(--d) * 3); }
+.retro-sheet .s-flavor-guide-tags > .rs-inl { padding: 0 calc(var(--d) * 3); border: calc(var(--d) * 1) solid var(--r-line); color: var(--r-lilac); }
+.retro-sheet .s-flavor-guide-caption { color: var(--r-dim); }
+.retro-sheet .rs-fill { position: absolute; left: 0; top: 0; bottom: 0; background: var(--r-lilac); }
+.retro-sheet .rs-fill.s-today { background: var(--r-violet); }
+.retro-sheet .rs-pips { display: inline-flex; align-items: center; gap: calc(var(--d) * 1); }
+.retro-sheet .rs-pip { display: block; width: calc(var(--d) * 4); height: calc(var(--d) * 4); background: var(--r-line); }
+.retro-sheet .rs-pip.on { background: var(--r-gold); }
+.retro-sheet .rs-pip.heart { width: auto; height: auto; background: none; font-style: normal; }
+.retro-sheet .rs-pip.heart::before { content: "\2661"; color: var(--r-dim); }
+.retro-sheet .rs-pip.heart.on::before { content: "\2665"; color: #ff8fb4; }
+
+/* MENU（下画面）: 上の帯の要約・見出し・札・行 */
+.retro-sheet[data-kind="menu"] .rs-body { padding: calc(var(--d) * 4) calc(var(--d) * 5) calc(var(--d) * 8); }
+.retro-sheet .s-dm-summary { padding: calc(var(--d) * 3) calc(var(--d) * 5); background: var(--r-deep); border: calc(var(--d) * 1) solid var(--r-line); gap: calc(var(--d) * 2) calc(var(--d) * 8); }
+.retro-sheet .s-dm-sum { display: inline-flex; gap: calc(var(--d) * 3); align-items: center; }
+.retro-sheet .s-dm-sum :is(.rs-blk, .rs-inl) { display: inline; }
+.retro-sheet .s-dm-sum > .rs-inl:first-child { color: var(--r-lilac); }
+.retro-sheet .s-dm-amber { color: var(--r-gold); }
+.retro-sheet .s-dm-heading { justify-content: space-between; }
+.retro-shell .retro-sheet .rs-btn.s-dm-help { min-width: calc(var(--d) * 22); justify-content: center; padding: calc(var(--d) * 3) 0; }
+.retro-sheet .s-dm-tab-help, .retro-sheet .s-dm-health-tip, .retro-sheet .s-dm-note { padding: calc(var(--d) * 3) calc(var(--d) * 5); background: var(--r-deep); border: calc(var(--d) * 1) solid var(--r-lilac); }
+.retro-sheet .s-dm-card { padding: calc(var(--d) * 4); background: rgba(10, 6, 18, 0.55); border: calc(var(--d) * 1) solid var(--r-line); }
+.retro-sheet .s-dm-card-head, .retro-sheet .s-dm-strong { color: var(--r-gold); }
+.retro-sheet .s-dm-chip { padding: 0 calc(var(--d) * 3); border: calc(var(--d) * 1) solid var(--r-line); color: var(--r-lilac); }
+.retro-sheet .s-dm-chip.s-on { border-color: var(--r-gold); color: var(--r-gold); }
+.retro-sheet .s-dm-face, .retro-sheet .s-ss-face { flex: none; width: calc(var(--d) * 24); height: calc(var(--d) * 24); object-fit: cover; }
+.retro-sheet .s-dm-face.s-ph { display: grid; place-items: center; background: var(--r-ink); color: var(--r-lilac); }
+.retro-shell .retro-sheet .rs-btn.s-dm-person { width: 100%; }
+.retro-sheet .s-dm-person-item { gap: calc(var(--d) * 2); }
+.retro-sheet .s-dm-person-detail { padding: calc(var(--d) * 3) calc(var(--d) * 6); background: var(--r-deep); border-left: calc(var(--d) * 2) solid var(--r-gold); }
+.retro-sheet .s-dm-system { display: flex; flex-direction: column; align-items: stretch; gap: calc(var(--d) * 4); }
+.retro-shell .retro-sheet .s-dm-system > .rs-btn { justify-content: center; align-items: center; text-align: center; }
+.retro-sheet .s-dm-keepsake img { width: calc(var(--d) * 48); }
+.retro-shell .retro-sheet .rs-btn.s-keepsake-viewer { flex-direction: column; align-items: center; justify-content: center; width: 100%; }
+/* チェキの拡大: 絵は上画面に大きく出すので、下画面は「タップで閉じる」だけ */
+.retro-sheet .s-keepsake-viewer img { display: none; }
+.retro-sheet .s-dm-lv { display: inline-flex; flex-direction: row; gap: calc(var(--d) * 3); align-items: baseline; }
+.retro-sheet .s-dm-big, .retro-sheet .s-dm-lv > b { font-size: calc(var(--d) * 16); }
+
+/* LIME（縦長のシート）: 見出し・トーク一覧・吹き出し・返信の選択肢 */
+.retro-sheet[data-kind="lime"] .rs-head { color: var(--r-text); }
+.retro-sheet .s-lime-logo { color: #8fe3a8; }
+.retro-shell .retro-sheet .rs-btn.s-lime-back { min-width: calc(var(--d) * 26); justify-content: center; }
+.retro-sheet .s-lime-face { flex: none; width: calc(var(--d) * 22); height: calc(var(--d) * 22); object-fit: cover; }
+.retro-sheet .s-lime-face.s-blank { display: grid; place-items: center; background: var(--r-ink); color: var(--r-lilac); }
+.retro-sheet[data-kind="lime"] .rs-body { gap: calc(var(--d) * 5); }
+.retro-shell .retro-sheet .rs-btn.s-lime-chat-row { flex-wrap: nowrap; width: 100%; }
+.retro-sheet .s-lcr-face { position: relative; flex: none; }
+.retro-sheet .s-lcr-dot { position: absolute; right: calc(var(--d) * -2); top: calc(var(--d) * -2); width: calc(var(--d) * 6); height: calc(var(--d) * 6); background: #ff5a6e; border: calc(var(--d) * 1) solid var(--r-black); }
+.retro-sheet .s-lcr-main { flex: 1 1 auto; min-width: 0; }
+.retro-sheet .s-lcr-name { color: var(--r-gold); }
+.retro-sheet .s-lcr-preview { color: var(--r-lilac); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.retro-sheet .s-lcr-side { flex: none; align-items: flex-end; color: var(--r-dim); }
+.retro-sheet .s-lcr-tag { padding: 0 calc(var(--d) * 2); background: var(--r-gold); color: var(--r-ink); }
+.retro-sheet .s-lime-row { flex-wrap: nowrap; align-items: flex-start; gap: calc(var(--d) * 4); }
+.retro-sheet .s-lime-row.s-me { flex-direction: row-reverse; }
+.retro-sheet .s-lime-bubble, .retro-sheet .s-lime-media {
+  max-width: 78%;
+  padding: calc(var(--d) * 4) calc(var(--d) * 6);
+  background: var(--r-paper);
+  border: calc(var(--d) * 1) solid var(--r-ink);
+  box-shadow: calc(var(--d) * 2) calc(var(--d) * 2) 0 var(--r-black);
+  color: var(--r-ink);
+}
+.retro-sheet .s-lime-row.s-me .s-lime-bubble { background: #bfe8b0; }
+.retro-sheet .s-typing .s-lime-bubble::after { content: "…"; }
+.retro-sheet .s-lime-note { align-self: center; color: var(--r-dim); text-align: center; }
+.retro-sheet .s-lime-note.s-day { padding: 0 calc(var(--d) * 6); border: calc(var(--d) * 1) solid var(--r-line); }
+.retro-sheet .s-lime-tip, .retro-sheet .s-lime-hint { padding: calc(var(--d) * 3) calc(var(--d) * 5); background: var(--r-deep); border: calc(var(--d) * 1) solid var(--r-lilac); }
+.retro-sheet .s-lime-empty { color: var(--r-dim); text-align: center; }
+.retro-sheet .s-lime-actions { gap: calc(var(--d) * 4); }
+.retro-shell .retro-sheet .rs-btn.s-lime-reply { width: 100%; background: var(--r-paper); border: calc(var(--d) * 2) solid var(--r-ink); color: var(--r-ink); }
+.retro-shell .retro-sheet .rs-btn.s-lime-reply.s-ghost { background: var(--r-panel); border: calc(var(--d) * 1) solid var(--r-line); color: var(--r-text); justify-content: center; }
+/* LIME は実際のスマホのメッセージアプリをまねた見た目（台帳 DUI06・LK20）。わざと紫にしない画面なので、ドット調のまま
+   緑の見出し・白いトーク一覧・青みがかった灰のトーク・緑の自分の吹き出しにする（横長の画面の LIME と同じ色の役割）。 */
+.retro-sheet[data-kind="lime"][data-tall="true"] {
+  background-color: #8fa6c5;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4' shape-rendering='crispEdges'%3E%3Crect width='4' height='4' fill='%238fa6c5'/%3E%3Crect width='2' height='2' fill='%23889fbf'/%3E%3Crect x='2' y='2' width='2' height='2' fill='%23889fbf'/%3E%3C/svg%3E");
+}
+.retro-sheet[data-kind="lime"][data-tall="true"]:has(.s-lime-chat-row, .s-lime-empty) { background-color: #fbf9f4; background-image: none; }
+.retro-sheet[data-kind="lime"] .rs-head { color: #fff; background: #1fa64a; border-bottom-color: #14803a; }
+.retro-sheet[data-kind="lime"] .rs-head .s-lime-logo { padding: 0 calc(var(--d) * 3); color: #1fa64a; background: #fff; }
+.retro-shell .retro-sheet[data-kind="lime"] .rs-head .rs-btn { color: #fff; background: #178a3c; border-color: #bfe8c9; box-shadow: none; }
+.retro-shell .retro-sheet[data-kind="lime"] .rs-btn.s-lime-chat-row { color: #2a1d3a; background: #fff; border: 0; border-bottom: calc(var(--d) * 1) solid #d9d3e0; box-shadow: none; }
+.retro-sheet[data-kind="lime"] .s-lcr-name { color: #2a1d3a; }
+.retro-sheet[data-kind="lime"] .s-lcr-preview { color: #6f6580; }
+.retro-sheet[data-kind="lime"] .s-lcr-side { color: #8a7f96; }
+.retro-sheet[data-kind="lime"] .s-lcr-dot { border-color: #fff; }
+.retro-sheet[data-kind="lime"] .s-lime-bubble, .retro-sheet[data-kind="lime"] .s-lime-media { background: #fff; border-color: #5b6f8c; box-shadow: calc(var(--d) * 2) calc(var(--d) * 2) 0 #6f86a6; }
+.retro-sheet[data-kind="lime"] .s-lime-row.s-me .s-lime-bubble { background: #8fe26a; border-color: #3f8a2c; }
+.retro-sheet[data-kind="lime"] .s-lime-note { padding: 0 calc(var(--d) * 6); color: #fff; background: #6f86a6; }
+.retro-sheet[data-kind="lime"] .s-lime-note.s-day { border: 0; }
+.retro-sheet[data-kind="lime"] .s-lime-tip, .retro-sheet[data-kind="lime"] .s-lime-hint { color: #2a1d3a; background: #eaf7ee; border-color: #1fa64a; }
+.retro-sheet[data-kind="lime"] .s-lime-empty { color: #8a7f96; }
+.retro-sheet[data-kind="lime"] .rs-foot { background: #fff; border-top-color: #d9d3e0; }
+.retro-shell .retro-sheet[data-kind="lime"] .rs-btn.s-lime-reply { background: #fff; border: calc(var(--d) * 2) solid #1fa64a; color: #2a1d3a; box-shadow: none; }
+.retro-shell .retro-sheet[data-kind="lime"] .rs-btn.s-lime-reply.s-ghost { color: #fff; background: #1fa64a; border: calc(var(--d) * 1) solid #14803a; }
+
+/* 小窓（縦長のシート）: 設定の行・セーブの枠・用語集・規則の紙 */
+.retro-sheet[data-kind="modal"] .rs-head .rs-h, .retro-sheet[data-kind="log"] .rs-head { font-size: calc(var(--d) * 16); line-height: calc(var(--d) * 19); color: var(--r-gold); }
+.retro-sheet .s-modal-body { gap: calc(var(--d) * 5); }
+.retro-sheet .s-modal-actions { gap: calc(var(--d) * 4); }
+.retro-sheet .s-modal-actions > .rs-btn { flex: 1 1 0; justify-content: center; }
+.retro-sheet .s-cfg { gap: calc(var(--d) * 6); }
+.retro-sheet .s-cfg-row { display: flex; flex-direction: column; align-items: stretch; gap: calc(var(--d) * 3); padding-bottom: calc(var(--d) * 5); border-bottom: calc(var(--d) * 1) solid var(--r-line); }
+.retro-sheet .s-cfg-row > .rs-inl:first-child { color: var(--r-lilac); }
+.retro-sheet .s-cfg-seg { gap: calc(var(--d) * 3); }
+.retro-sheet .s-cfg-seg > .rs-btn { flex: 1 1 0; justify-content: center; }
+.retro-sheet .s-xfer-btns { display: flex; flex-wrap: wrap; gap: calc(var(--d) * 3); }
+.retro-shell .retro-sheet .rs-btn.s-save-slot { flex-direction: column; align-items: stretch; width: 100%; }
+.retro-sheet .s-ss-label { color: var(--r-gold); }
+.retro-sheet .s-ss-chapter, .retro-sheet .s-ss-phase { color: var(--r-gold); font-style: normal; }
+.retro-sheet .s-ss-faces { display: flex; flex-wrap: wrap; gap: calc(var(--d) * 2); }
+.retro-sheet .s-ss-faces .s-ss-face { width: calc(var(--d) * 18); height: calc(var(--d) * 18); }
+.retro-sheet .s-ss-stat { display: inline-flex; align-items: center; gap: calc(var(--d) * 2); }
+.retro-sheet .s-gl-tabs { gap: calc(var(--d) * 3); }
+.retro-sheet .s-gl-term { padding-bottom: calc(var(--d) * 4); border-bottom: calc(var(--d) * 1) solid var(--r-line); }
+.retro-sheet .s-gl-term > .rs-inl:first-child { color: var(--r-gold); }
+.retro-sheet .s-rule-sheet { gap: calc(var(--d) * 6); }
+.retro-sheet .s-rule-sheet-eyebrow, .retro-sheet .s-rule-sheet-foot { color: var(--r-lilac); }
+.retro-sheet .s-rule-article { padding: calc(var(--d) * 4) calc(var(--d) * 6); background: var(--r-paper); color: var(--r-ink); }
+.retro-sheet .s-rule-article .rs-h { color: var(--r-violet); }
+
+/* 切り抜きの絵（商品の絵・店のロゴ）: 元の窓の比率で、高さを決めて写す */
+.retro-sheet .rs-crop { position: relative; display: block; flex: none; height: calc(var(--d) * 36); overflow: hidden; }
+.retro-sheet .rs-crop > img { position: absolute; display: block; max-width: none; height: auto; }
+.retro-sheet [data-errand-target="true"] { outline: calc(var(--d) * 2) solid var(--r-gold); outline-offset: calc(var(--d) * 1); }
+/* 文字の入力欄（セーブの引っ越し） */
+.retro-sheet .rs-area {
+  width: 100%;
+  min-height: calc(var(--d) * 60);
+  padding: calc(var(--d) * 3) calc(var(--d) * 5);
+  background: var(--r-paper);
+  border: calc(var(--d) * 1) solid var(--r-ink);
+  border-radius: 0;
+  color: var(--r-ink);
+  font: inherit;
+  font-size: calc(var(--d) * 12);
+  line-height: calc(var(--d) * 15);
+  resize: vertical;
+  overflow-wrap: anywhere;
+}
+
+/* 店（縦長のシート）: 見出しの店名・所持金、種類の絞り込み、商品の行、下の合計と購入 */
+.retro-sheet[data-kind="shop"] .rs-head { flex-direction: column; align-items: stretch; gap: calc(var(--d) * 4); }
+.retro-sheet .s-shop-head { justify-content: space-between; gap: calc(var(--d) * 2) calc(var(--d) * 6); }
+.retro-sheet .s-shop-head .rs-h { color: var(--r-gold); font-size: calc(var(--d) * 12); }
+.retro-sheet .s-shop-brand { display: flex; flex-direction: row; align-items: center; gap: calc(var(--d) * 4); }
+.retro-sheet .s-store-logo.rs-crop { height: calc(var(--d) * 18); }
+.retro-sheet .s-shop-sub { color: var(--r-lilac); }
+.retro-sheet .s-shop-money { display: inline-flex; flex-direction: row; gap: calc(var(--d) * 4); align-items: baseline; color: var(--r-gold); }
+.retro-sheet .s-shop-money > :first-child { color: var(--r-lilac); }
+.retro-sheet .s-shop-errand { padding: calc(var(--d) * 3) calc(var(--d) * 5); background: var(--r-paper); color: var(--r-ink); border: calc(var(--d) * 1) solid var(--r-gold); }
+.retro-sheet .s-shop-filters { gap: calc(var(--d) * 3); }
+.retro-shell .retro-sheet .rs-btn.s-shop-filter { min-height: calc(var(--d) * 22); padding: calc(var(--d) * 2) calc(var(--d) * 5); }
+.retro-sheet .s-shop-filters > .rs-inl { color: var(--r-dim); }
+.retro-sheet[data-kind="shop"] .rs-body { gap: calc(var(--d) * 5); }
+.retro-sheet .s-shop-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: calc(var(--d) * 3) calc(var(--d) * 6);
+  padding: calc(var(--d) * 3);
+  background: rgba(10, 6, 18, 0.55);
+  border: calc(var(--d) * 1) solid var(--r-line);
+}
+.retro-sheet .s-shop-row.s-selected { border-color: var(--r-gold); }
+.retro-sheet .s-shop-row.s-errand { border: calc(var(--d) * 2) solid var(--r-gold); }
+.retro-shell .retro-sheet .rs-btn.s-shop-product { grid-column: 1 / -1; flex-wrap: nowrap; flex-direction: row; align-items: center; background: none; border: 0; box-shadow: none; padding: 0; }
+.retro-sheet .s-shop-product .s-shop-product-art.rs-crop { height: calc(var(--d) * 40); }
+.retro-sheet .s-shop-main { display: flex; flex-direction: column; gap: calc(var(--d) * 2); min-width: 0; }
+.retro-sheet .s-shop-main > .rs-inl:first-child { color: var(--r-text); }
+.retro-sheet .s-shop-feature-tags { color: var(--r-lilac); }
+.retro-sheet .s-shop-stock { display: inline-flex; flex-direction: row; gap: calc(var(--d) * 3); color: var(--r-dim); }
+.retro-sheet .s-shop-price { color: var(--r-gold); text-align: right; }
+.retro-sheet .s-shop-quantity { display: inline-flex; flex-direction: row; align-items: center; gap: calc(var(--d) * 4); grid-column: 1 / -1; justify-self: end; }
+.retro-shell .retro-sheet .rs-btn.s-shop-step { min-width: calc(var(--d) * 28); justify-content: center; align-items: center; }
+.retro-shell .retro-sheet .rs-btn.s-shop-step.s-plus:not([disabled]) { background: var(--r-gold); color: var(--r-ink); border-color: var(--r-ink); }
+.retro-sheet .s-shop-quantity > .rs-inl { min-width: calc(var(--d) * 18); text-align: center; }
+.retro-sheet .s-shop-owned { color: var(--r-lilac); grid-column: 1 / -1; justify-self: end; }
+.retro-sheet[data-kind="shop"] .rs-foot { display: grid; grid-template-columns: auto 1fr; gap: calc(var(--d) * 4); }
+.retro-shell .retro-sheet[data-kind="shop"] .rs-foot > .rs-btn { flex: none; }
+.retro-shell .retro-sheet[data-kind="shop"] .rs-foot > .s-shop-checkout { grid-column: 1 / -1; }
+.retro-shell .retro-sheet .rs-btn.s-shop-summary { justify-content: space-between; }
+.retro-shell .retro-sheet .rs-btn.s-shop-checkout:not([disabled]) { background: var(--r-gold); border: calc(var(--d) * 2) solid var(--r-ink); color: var(--r-ink); }
+.retro-sheet .s-shop-floors { display: flex; flex-direction: column; gap: calc(var(--d) * 5); }
+.retro-shell .retro-sheet .rs-btn.s-shop-floor { flex-direction: column; align-items: stretch; width: 100%; padding: calc(var(--d) * 3); }
+.retro-sheet .s-shop-floor-picture { position: relative; display: block; }
+.retro-sheet .s-shop-floor-picture img { width: 100%; height: calc(var(--d) * 70); object-fit: cover; }
+.retro-sheet .s-shop-floor-number { position: absolute; left: calc(var(--d) * 3); top: calc(var(--d) * 3); padding: 0 calc(var(--d) * 4); background: var(--r-gold); color: var(--r-ink); }
+.retro-sheet .s-shop-floor-caption { display: flex; flex-direction: row; flex-wrap: wrap; align-items: center; gap: calc(var(--d) * 3) calc(var(--d) * 8); }
+.retro-sheet .s-shop-floor-arrow { display: none; }
+.retro-sheet .s-shop-detail { gap: calc(var(--d) * 5); }
+.retro-sheet .s-shop-detail > .s-shop-product-art.rs-crop { height: calc(var(--d) * 72); align-self: center; }
+.retro-sheet .s-kuji-row { padding: calc(var(--d) * 3); background: rgba(10, 6, 18, 0.55); border: calc(var(--d) * 1) solid var(--r-line); }
+
+/* 夜のレベルアップ・LIME の初回の案内・章のクリア（縦長のシート） */
+.retro-sheet[data-kind="levelup"] .rs-head { justify-content: center; color: var(--r-gold); font-size: calc(var(--d) * 24); line-height: calc(var(--d) * 28); }
+.retro-sheet[data-kind="levelup"] .rs-body > .rs-gauge { flex: none; width: 100%; height: calc(var(--d) * 8); }
+.retro-sheet .s-lu-change { color: var(--r-gold); font-size: calc(var(--d) * 16); line-height: calc(var(--d) * 19); }
+.retro-sheet .s-lu-details { gap: calc(var(--d) * 5); }
+.retro-sheet .s-lu-note { color: var(--r-dim); }
+.retro-sheet[data-kind="coach"] .rs-body { justify-content: center; }
+.retro-shell .retro-sheet .rs-btn.s-lc-bubble { flex-direction: column; align-items: stretch; padding: calc(var(--d) * 6) calc(var(--d) * 8); background: var(--r-paper); border: calc(var(--d) * 2) solid var(--r-ink); color: var(--r-ink); }
+.retro-sheet .s-lc-bubble > .rs-inl:first-child { color: var(--r-violet); font-size: calc(var(--d) * 16); line-height: calc(var(--d) * 19); }
+.retro-sheet[data-kind="end"] .rs-head { flex-direction: column; align-items: flex-start; gap: calc(var(--d) * 2); }
+.retro-sheet .s-end-title { color: var(--r-gold); font-size: calc(var(--d) * 16); line-height: calc(var(--d) * 19); }
+.retro-sheet .s-end-sub, .retro-sheet .s-clear-last-line { color: var(--r-lilac); }
+.retro-sheet .s-next-teaser { padding: calc(var(--d) * 4) calc(var(--d) * 6); border: calc(var(--d) * 1) solid var(--r-gold); }
+.retro-sheet .rs-svg { display: block; align-self: center; width: 100%; max-width: calc(var(--d) * 180); }
+.retro-sheet .rs-svg > svg { display: block; width: 100%; height: auto; }
+
+/* 会話の LOG（縦長のシート） */
+.retro-sheet .s-log-head { justify-content: space-between; }
+.retro-sheet[data-kind="log"] .rs-head { justify-content: space-between; }
+.retro-sheet .s-log-row { padding-bottom: calc(var(--d) * 4); border-bottom: calc(var(--d) * 1) solid var(--r-line); }
+.retro-sheet .s-log-row > .rs-inl:first-child { color: var(--r-gold); }
+.retro-sheet .s-log-inner { color: var(--r-lilac); }
 
 /* ---- 外枠を引っ込めている間の一言（縦長の画面で、現行の横長の画面が小さく出ている時） */
 .retro-note {

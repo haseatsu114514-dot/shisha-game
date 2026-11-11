@@ -50,7 +50,7 @@ function puffGuess(G, p) {
  */
 function reactionValue(G, p, heat, q, id, opp) {
   const tk = id === "heat_in" ? 1 : id === "heat_out" ? -2 : 0, blow = id === "blow";
-  const paid = id ? CARD[id].pay?.ash || 0 : 0; // 追加コストで灰にする炭（熱が下がってから審査される）
+  const paid = id ? CARD[id].pay?.fire || 0 : 0; // 発動のために落とす火力（熱が下がってから審査される）
   const s = scorePuff(p, judgedHeat(p, q, tk, Math.max(0, heat - paid)), q, { blow, lastOfSession: isLastOfSession(G) });
   const good = s.zone === "just" || s.zone === "band";
   let pts = s.pts + (id === "heat_out" && good ? 1 : 0) + (id === "all_in" && s.zone === "just" ? 3 : 0);
@@ -320,7 +320,7 @@ function freeCard(G, p) {
   let best = null;
   for (const [id, n] of [["breath", 1], ["tongs", 2], ["reset", 3], ["add_coal", 0]]) {
     if (!cnt(p, id) || !canPlay(G, p, id).ok) continue;
-    const ash = CARD[id].pay?.ash || 0, up = id === "add_coal" ? 2 : 0;
+    const ash = CARD[id].pay?.fire || 0, up = id === "add_coal" ? 2 : 0;
     const v = drawV(n) + at(Math.min(G.R.heatMax, h - ash + up)) - at(h) + (id === "add_coal" ? 2 * CARDV * 0.5 : ash ? 0 : 0.05);
     if (v > 0.05 && (!best || v > best.v)) best = { v, act: { type: "play", hand: idx(p, id) } };
   }

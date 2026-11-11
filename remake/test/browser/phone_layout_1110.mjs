@@ -141,11 +141,17 @@ await suite("phone-layout-1110", async check => {
       if (device !== "desktop") {
         const steam = await page.evaluate(() => {
           const get = s => document.querySelector(s).getBoundingClientRect().toJSON();
+          const thermo = document.querySelector(".steam-temperature"), box = thermo.getBoundingClientRect();
+          const front = document.elementFromPoint(box.left + box.width / 2, box.top + box.height / 2);
           return { worker: get(".bench-left"), help: get(".bench-guide summary"),
-            thermometer: get(".steam-temperature"), clock: get(".steam-clock"),
-            forecast: get(".steam-forecast"), panel: get(".bench-panel") };
+            thermometer: box.toJSON(), clock: get(".steam-clock"),
+            forecast: get(".steam-forecast"), panel: get(".bench-panel"),
+            craftStage: document.body.classList.contains("craft-stage"), thermometerInFront: !!front && thermo.contains(front) };
         });
-        assert(steam.help.left >= steam.worker.right && steam.thermometer.left >= steam.worker.right, JSON.stringify(steam));
+        // 新しい配置（一枚の舞台・既定）は、はじめの切り抜きと舞台の境目に温度の柱を重ねて立てる。
+        // 旧配置（?craftStage=0）は温度計を左の窓より右へ出す。
+        if (steam.craftStage) assert(steam.help.left >= steam.worker.right && steam.thermometerInFront, JSON.stringify(steam));
+        else assert(steam.help.left >= steam.worker.right && steam.thermometer.left >= steam.worker.right, JSON.stringify(steam));
         assert(gap(steam.thermometer, steam.clock) >= 4 && within(steam.forecast, steam.panel), JSON.stringify(steam));
         for (const button of await page.locator(".steam-clock .timer-button").all()) {
           const box = await button.boundingBox();

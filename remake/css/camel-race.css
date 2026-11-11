@@ -428,6 +428,35 @@ html:root[data-density="phone"] .camel-game .camel-cup strong { font-size: max(2
 .camel-game.cr-medal-gold .camel-medal[data-rank="1"] span { position: absolute; top: 5%; color: #2b1808; line-height: 1; text-shadow: 0 1px #f8d276; }
 .camel-game.cr-medal-gold .camel-medal[data-rank="1"] strong { left: 42%; font-size: clamp(14px, 1.6cqw, 20px); }
 .camel-game.cr-medal-gold .camel-medal[data-rank="1"] span { left: 55%; font-size: clamp(11px, 1.1cqw, 14px); }
+/* 2〜4位のメダル（CR-UI03・#3328）: 銀・銅・くすんだ鉄。金と同じ型の絵で、円が金より約11%小さく描かれているので、
+   背景を 112.6% に拡大して金と同じ大きさに見せる。数字は金と同じく上の平らな輪に置く。 */
+.camel-game.cr-medal-silver .camel-medal[data-rank="2"],
+.camel-game.cr-medal-bronze .camel-medal[data-rank="3"],
+.camel-game.cr-medal-plain .camel-medal[data-rank="4"] {
+  position: relative; border-radius: 0; box-shadow: none; background: none center / 112.6% no-repeat;
+}
+.camel-game.cr-medal-silver .camel-medal[data-rank="2"] { background-image: url("../img/ui/camel_race/ui/medal-silver.webp"); }
+.camel-game.cr-medal-bronze .camel-medal[data-rank="3"] { background-image: url("../img/ui/camel_race/ui/medal-bronze.webp"); }
+.camel-game.cr-medal-plain .camel-medal[data-rank="4"] { background-image: url("../img/ui/camel_race/ui/medal-plain.webp"); }
+.camel-game.cr-medal-silver .camel-medal[data-rank="2"] :is(strong, span),
+.camel-game.cr-medal-bronze .camel-medal[data-rank="3"] :is(strong, span),
+.camel-game.cr-medal-plain .camel-medal[data-rank="4"] :is(strong, span) { position: absolute; top: 5%; line-height: 1; }
+.camel-game.cr-medal-silver .camel-medal[data-rank="2"] strong,
+.camel-game.cr-medal-bronze .camel-medal[data-rank="3"] strong,
+.camel-game.cr-medal-plain .camel-medal[data-rank="4"] strong { left: 42%; font-size: clamp(14px, 1.6cqw, 20px); }
+.camel-game.cr-medal-silver .camel-medal[data-rank="2"] span,
+.camel-game.cr-medal-bronze .camel-medal[data-rank="3"] span,
+.camel-game.cr-medal-plain .camel-medal[data-rank="4"] span { left: 55%; font-size: clamp(11px, 1.1cqw, 14px); }
+.camel-game.cr-medal-silver .camel-medal[data-rank="2"] :is(strong, span) { color: #26262a; text-shadow: 0 1px #f1f1ee; }
+.camel-game.cr-medal-bronze .camel-medal[data-rank="3"] :is(strong, span) { color: #2b1206; text-shadow: 0 1px #f0b48a; }
+.camel-game.cr-medal-plain .camel-medal[data-rank="4"] :is(strong, span) { color: #f4ead6; text-shadow: 0 1px #111; }
+
+/* 進み具合の横木（CR-UI06・#3328）: 1600×96 の絵。左右 64px の真鍮の金具は縦横比を保ち、中の木だけ横へ伸ばす。
+   金具の幅 = 横木の高さ（2.2em）× 64 / 96。 */
+.camel-game.cr-rail .camel-progress { border-color: transparent; border-radius: 0; background: none; box-shadow: 0 3px 8px rgba(0,0,0,.3);
+  border-image: url("../img/ui/camel_race/ui/track-rail.webp") 0 64 fill / 0 1.4667em / 0 stretch; }
+/* 横木の剥げたペンキの模様の上でも「SPURT」が読めるよう、字の周りにクリーム色の縁。 */
+.camel-game.cr-rail .camel-progress-spurt span { text-shadow: 0 0 2px #fff6e5, 0 0 3px #fff6e5, 0 1px 0 #fff6e5; }
 
 .camel-game.cr-gauge-frame :is(.camel-speed-bar, .camel-stamina-bar) {
   height: 1em; border: 3px solid transparent; border-radius: 0; box-sizing: border-box; overflow: hidden; background: none;

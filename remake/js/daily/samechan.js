@@ -3,7 +3,7 @@ import { DB, sceneBg, loadCinemaDialogue } from "../core/data.js";
 import { state, save, markMet, timeOfDay } from "../core/state.js";
 import { setBg } from "../core/ui.js";
 import { sharkSwim } from "../core/scene-motions.js";
-import { gainAffinity, affinityLevel, releaseAffinity, ensureAffinityLevel, earnStat, addMoney, addStamina, STAMINA_LOW } from "../core/stats.js";
+import { gainAffinity, visitAffinity, affinityLevel, releaseAffinity, ensureAffinityLevel, earnStat, addMoney, addStamina, STAMINA_LOW } from "../core/stats.js";
 import { play, isPlaying } from "../vn/engine.js";
 import { finaleAtVisit, playFinale, BOND_FINALES } from "./bonds.js";
 import { maybeRecruitTrpgMember } from "./trpg.js";
@@ -45,6 +45,18 @@ export function samechanPrepTalkDue(value = state) {
   return scene && !value.flags?.[`_talk_seen_${scene}`] && DB.dialogues[scene]?.lines?.length ? scene : null;
 }
 const isPrepTalk = id => Object.values(SAMECHAN_PREP_TALKS).includes(id);
+
+/**
+ * 来店で入る好感度の種類（BLC01）。ほかの店（daily/spots.js）と同じ分け方で、量は core/stats.js の visitAffinity。
+ * story＝初来店・段階の会話（静かな席・片付けの夜・♥4・♥5）・一度きりの来店の話・締めくくり。
+ * talk＝♥3の問いかけ・送り出しの会話・映画の感想・不調の日・いつもの来店。
+ * 以前は来店ごとに1ポイントで、第2章の行動数では♥3の問いかけより先（♥4・♥5・締めくくり・告白）に届かなかった。
+ */
+export function samechanVisitAffinityKind(dialogue) {
+  const story = dialogue === "samechan_shop_first" || dialogue === BOND_FINALES.samechan.dialogue
+    || [...entryEvents, ...SAMECHAN_HEART_EVENTS, ...laterVisits].some(event => event.dialogue === dialogue);
+  return story ? "story" : "talk";
+}
 
 /** 旧訪問回数は既存会話にだけ使う。新しい交流と問いかけの既読を推測しない。 */
 export function samechanVisitDialogue() {
@@ -206,7 +218,7 @@ export async function visitSamechan(spot, { signal = null } = {}) {
     }
     state.story.samechan = count + 1;
     releaseAffinity("samechan");
-    gainAffinity("samechan", count === 0 ? 2 : 1);
+    gainAffinity("samechan", visitAffinity(samechanVisitAffinityKind(dialogue)));
     earnStat("insight", 4);
     syncSamechanKnowledge();
     // 紹介・訪問の精算を同期的にまとめ、後続の任意勧誘では再課金しない。

@@ -657,30 +657,52 @@ body[data-screen="bench"] .gain-card.out { animation-name: gain-out-l; }
 .tr-svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; overflow: visible; }
 .tr-scale { transform-box: fill-box; transform-origin: center; }
 .tr-dawn { position: absolute; inset: 0; overflow: hidden; z-index: 100; pointer-events: auto; }
-.tr-dawn-veil { position: absolute; inset: 0; background: #34246a; }
-.tr-dawn.sick .tr-dawn-veil { background: linear-gradient(#34246a, #4a2346); }
-.tr-dawn-card { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; font-family: var(--font); color: #fff; }
-.tr-dawn-day { display: flex; align-items: baseline; gap: 20px; font-size: 112px; font-weight: 900; line-height: 1; letter-spacing: 0.06em; }
-.tr-dawn-day small { font-size: 46px; letter-spacing: 0.3em; color: #dcd1f4; }
-.tr-dawn-sub { display: flex; align-items: baseline; gap: 0.1em; font-size: 24px; font-weight: 700; letter-spacing: 0.2em; color: #dcd1f4; }
-.tr-flip { display: inline-grid; perspective: 480px; }
-.tr-flip > i { grid-area: 1 / 1; font-style: normal; backface-visibility: hidden; transform-origin: 50% 55%; }
-.tr-dawn-rain { position: absolute; inset: 0; }
-.tr-dawn-rain i { position: absolute; top: -30%; width: 1.5px; background: linear-gradient(transparent, #dcd1f4aa); transform: rotate(18deg); }
-.tr-dawn-horizon { position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: #dcd1f4; box-shadow: 0 0 18px 6px #dcd1f488; }
+/* 夜明け（core/transitions.js nightToMorning・TMG47）。眠る前の部屋の絵（写し）が暗く沈み、窓から朝の絵が広がる。
+   写しは #bg の .bg-img と同じ大きさ（.tr-dawn はワイドでは左右の余白まで広がる）。--dawn-at は光の出どころ（自室は窓） */
+.tr-dawn > .tr-dawn-pic { position: absolute; inset: 0; }
+.tr-dawn-pic.blank { background: #070912; }
+.tr-dawn-pic.day.masked {
+  -webkit-mask: radial-gradient(circle at var(--dawn-at, 50% 22%), #000 0 30%, transparent 60%) var(--dawn-at, 50% 22%) / 0% 0% no-repeat;
+  mask: radial-gradient(circle at var(--dawn-at, 50% 22%), #000 0 30%, transparent 60%) var(--dawn-at, 50% 22%) / 0% 0% no-repeat;
+}
+.tr-dawn-grade { position: absolute; inset: 0; background: radial-gradient(90% 85% at var(--dawn-at, 50% 22%), #0b0f3a99, #05061cf2 70%); opacity: 0; pointer-events: none; }
+.tr-dawn.sick .tr-dawn-grade { background: radial-gradient(90% 85% at var(--dawn-at, 50% 22%), #3a0b2a99, #12050ff2 70%); }
+.tr-dawn-sun { position: absolute; inset: 0; background: radial-gradient(24% 36% at var(--dawn-at, 50% 22%), #fff3cfe6, #ffd58a4d 45%, transparent 72%); mix-blend-mode: screen; opacity: 0; pointer-events: none; }
+/* 自室の窓から左下へ落ちる光の筋（右端が窓の中心） */
+.tr-dawn-beam { position: absolute; right: 39%; top: 23.8%; width: 50%; height: 14.2%; transform-origin: 100% 50%; rotate: -15deg; background: linear-gradient(to left, #fff1c873, #ffe2a726 60%, transparent); filter: blur(19px); mix-blend-mode: screen; opacity: 0; pointer-events: none; }
+.tr-dawn-beam.b2 { rotate: -31deg; height: 16%; top: 22.9%; }
+.tr-dawn-cool { position: absolute; inset: 0; background: #5b7fb5; mix-blend-mode: soft-light; opacity: 0; pointer-events: none; }
+/* 自室の窓ガラスの雨 */
+.tr-dawn-rainpane { position: absolute; inset: 0; clip-path: polygon(52.6% 16.6%, 69.2% 16.6%, 69.2% 45.6%, 52.6% 45.6%); background: repeating-linear-gradient(104deg, transparent 0 9.6px, #dfe9ff73 9.6px 11px, transparent 11px 19.2px); background-size: 77px 115px; opacity: 0; pointer-events: none; }
+/* 日付の題字（左下）。DAY と数字は明朝、数字は下から送られる */
+.tr-dawn-card { position: absolute; left: 80px; bottom: 82px; display: grid; justify-items: start; gap: 9px; font-family: var(--font); color: #fff; text-shadow: 0 3px 18px #05061ccc; }
+.tr-dawn-card::before { content: ""; position: absolute; inset: -90px -150px -110px -110px; background: radial-gradient(closest-side, #05061cb8, #05061c00); z-index: -1; }
+#stage[data-wide] .tr-dawn-card { left: calc(80px + var(--stage-gutter)); }
+.tr-dawn-day { display: flex; align-items: flex-end; gap: 20px; line-height: 1; font-family: "Suien Name", var(--font); font-weight: 700; }
+.tr-dawn-day small { font-size: 33px; letter-spacing: 0.5em; padding-bottom: 28px; }
+.tr-dawn-day > .tr-flip { font-size: 180px; min-width: 100px; }
+.tr-dawn-rule { display: block; width: 512px; height: 1px; background: linear-gradient(to right, #fff, #ffffff00); transform-origin: 0 50%; }
+.tr-dawn-sub { display: flex; align-items: baseline; gap: 0.1em; font-size: 26px; font-weight: 700; letter-spacing: 0.14em; white-space: nowrap; }
+.tr-dawn-sub > .tr-flip { font-family: "Suien Name", var(--font); font-size: 38px; letter-spacing: 0.04em; color: #ffe2a7; padding: 0 0.15em; }
+.tr-dawn-wx { margin-left: 1.4em; letter-spacing: 0.3em; color: #ffe2a7; }
+.tr-dawn-forecast { font-size: 20px; color: #f1e7d6; }
+.tr-flip { display: inline-grid; overflow: hidden; }
+.tr-flip > i { grid-area: 1 / 1; font-style: normal; }
 /* 波: 時間が過ぎる（つなぎの一行・#2688 F3 の時間経過の型）。一行は波の上を左から滑ってくる */
 .tr-wave { position: absolute; inset: 0; overflow: hidden; z-index: 100; pointer-events: auto; }
 .tr-wave.veil { background: #34246a; opacity: 0; }
 .tr-wave-line { position: absolute; left: 0; right: 0; top: 320px; text-align: center; font-family: var(--font); font-size: 30px; font-weight: 700; letter-spacing: 0.14em; color: #fff; text-shadow: 0 2px 0 #34246a, 0 0 24px #1a1238; }
-/* 大会前夜の当日版: 地平線を金に寄せ、ゆっくり昇らせる（#2688 F3 の時間経過の型） */
-.tr-dawn-horizon.eve { height: 4px; background: #f6dcaf; box-shadow: 0 0 24px 10px #f5d99d77; }
-.tr-dawn-glow { position: absolute; inset: 0; background: radial-gradient(circle at 50% 110%, #fff3d6cc, transparent 60%); pointer-events: none; }
 /* ワイドステージ（#2861）: 画面全体を覆う転換（翌朝・波・敗北）は左右の余白まで覆う。
    端へ出した HUD（日付の札・LIME・MENU）が紫の面の外に覗かないように。中身は中央寄せなので位置は変わらない。 */
 #stage[data-wide] :is(.tr-dawn, .tr-wave, .tr-defeat) { inset: 0 calc(-1 * var(--stage-gutter)); }
 
 /* マップ→場所の「移動」の型（core/transition-moves.js・CI103） */
 .scene-curtain.move { background: transparent; }
+/* 地図の絵そのものを動かす移動（zoom・lights・TMG46）。光は左右の余白まで届かせる */
+#stage[data-wide] .scene-curtain.move.on-bg { inset: 0 calc(-1 * var(--stage-gutter)); }
+.tr-zoom-glow { position: absolute; inset: -35% -22%; background: radial-gradient(closest-side, #fff8ea 0%, #fff8eaf7 42%, #fff8ea00 100%); opacity: 0; pointer-events: none; }
+/* 帰宅の部屋の灯り（家の背景の照明の位置。次の背景の中に一時的に置く） */
+.tr-lamp { position: absolute; inset: 0; background: radial-gradient(22% 22% at 94% 50%, #ffcf8a66, transparent 70%), radial-gradient(18% 19% at 24% 54%, #ffcf8a4d, transparent 70%); mix-blend-mode: screen; opacity: 0; pointer-events: none; }
 .tr-move-field { position: absolute; inset: 0; }
 .tr-move-label { position: absolute; left: 72px; top: 64px; display: flex; flex-direction: column; gap: 2px; font-family: var(--font); color: #fff; text-shadow: 0 3px 0 #150f26; }
 .tr-move-label small { font-size: 18px; font-weight: 700; letter-spacing: 0.3em; color: #dcd1f4; }

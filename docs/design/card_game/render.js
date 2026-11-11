@@ -22,9 +22,10 @@
   const kind = (k) => `<span class="kind ${k}">${KIND[k].k}</span>`;
   // 必要火力（自分の火力がこの数以上なら使える。払わない）
   const needHtml = (n) => (n === '—' ? '—' : `<span class="nw" style="display:inline-flex;align-items:center;gap:.5mm"><span class="fire" style="vertical-align:0" title="火力${n}以上で使える">${n}</span><span class="small">以上</span></span>`);
-  // 追加コスト（使うときに払う）と「もう1枚使える」の札。ゲームの画面と同じ「炭−1」「葉−1」
-  const payShort = (s) => (s.pay?.ash ? `炭−${s.pay.ash}` : s.pay?.leaf ? `葉−${s.pay.leaf}` : '');
-  const payTag = (s) => (payShort(s) ? `<span class="paytag" title="追加コスト">${payShort(s)}</span>` : '');
+  // 発動するために落とすもの（火力を落とす／葉を減らす）と「もう1枚使える」の札。ゲームの画面と同じ「火力−1」「葉−1」
+  const payShort = (s) => (s.pay?.fire ? `火力−${s.pay.fire}` : s.pay?.leaf ? `葉−${s.pay.leaf}` : '');
+  const payLong = (s) => (s.pay?.fire ? `火力を${s.pay.fire}落として発動` : s.pay?.leaf ? `葉を${s.pay.leaf}枚減らして発動` : '');
+  const payTag = (s) => (payShort(s) ? `<span class="paytag" title="${payLong(s)}">${payShort(s)}</span>` : '');
   const extraTag = (s) => (s.extra ? '<span class="extratag" title="このラウンド、カードをもう1枚使える">もう1枚</span>' : '');
   const whenTag = (w) => `<span class="when w-${w === '一口' ? 'puff' : w === '準備' ? 'prep' : w === 'いつでも' ? 'any' : 'turn'}">${w}</span>`;
 

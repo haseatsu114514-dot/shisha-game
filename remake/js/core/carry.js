@@ -249,6 +249,7 @@ export const FLAG_EXACT_RULES = [
   ["_ch4_cafe_orders", "progression"], // ドバイのカフェで頼んだ一台の回数（メニューごと・ch4-dubai-cafe.js）
   ["_ch4_cleared", "progression"],
   ["_ch4_dubai_talks", "progression"],
+  ["_visit_chains", "progression"], // 通いの続きの小さな出来事（第3〜5章・段の既読と選んだ答え。chapters/visit-chains.js）。周回では持ち越さない
   ["_ch4_dubai_nights", "progression"], // ドバイの夜がにぎわう店に夜に行った回数（店ごと・ch4-dubai-local.js）。周回では持ち越さない
   ["_ch4_longlong", "progression"], // 龍龍水煙所のドバイの店の段階の既読・通いの回数（ch4-longlong.js）
   ["_ch4_desert", "progression"],
@@ -263,6 +264,7 @@ export const FLAG_EXACT_RULES = [
   ["_ch5_match_scheduled", "progression"],
   ["_ch5_match_started", "progression"],
   ["_ch5_region_started", "progression"],
+  ["_ch5_sumi_trial", "progression"], // 第5章の決戦前の実制作練習（閉店後にスミさんが吸う一台・#2020 F。chapters/ch5-sumi-trial.js）。周回では作り直す
   ["_ch5_tokyo_attic", "progression"],
   ["_ch5_dubai_letter", "progression"],
   ["_ch5_dubai_guest", "progression"],
@@ -279,6 +281,8 @@ export const FLAG_EXACT_RULES = [
   ["_ch5_catering", "progression"], // 第5章の出張シーシャの依頼（次に届く日・今の依頼・作った回数。chapters/ch5-catering-model.js）。くじ券そのものは kujiTickets（持ち越さない）
   ["_ch5_shop_stamps", "progression"], // 第5章の店めぐり帳（判子を押した店・受け取ったくじ券・帳面を開いた印。chapters/ch5-shop-stamps-model.js）。周回では白紙から
   ["_mukai_shift_day", "progression"],
+  ["_mashiro_time", "person"],
+  ["_ch4_companion_time", "person"], // 第4章で同行した恋人と宿で過ごした場面と最後の日（chapters/companion-time.js・BLC08） // 恋人のましろと mukai で過ごした回数と最後の日（chapters/mashiro-time.js・BLC03）
   ["_ch5_tokyo_talks", "progression"],
   ["_cheat_go", "progression"],
   ["_cinema_visit", "progression"],
@@ -651,6 +655,7 @@ export const FLAG_FAMILY_RULES = [
   ["_noor_story_*", "person"], // #3081 カフェ・オアシスの物語。未読を周回へ持ち越さない
   ["_morning_*", "progression"],
   ["_note_*", "progression"],
+  ["_recipe_return_*", "person"], // 名前を付けた一台を、配合を教えてくれた人に返した（daily/recipe-finds-model.js・#2020 G）。ヒントのメモ（_note_*）と同じく周回では持ち越さない
   ["_outing_done_*", "person"],
   ["_rescheduled_*", "pending"],
   ["_samechan_date_*", "person"],

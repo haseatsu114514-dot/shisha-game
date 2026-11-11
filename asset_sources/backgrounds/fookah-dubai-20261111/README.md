@@ -1,0 +1,27 @@
+# Issue #3285 背景原画 — fookah-dubai
+
+- 生成経路: Codex 内蔵画像生成
+- 保存形式: 無加工 PNG、1672×941。2048×1152 未満のため採否はオーナー判断。
+- ゲームへの組み込み: オーナー採用後。
+
+## 画像台帳
+
+### C9 `bg_fookah_dubai.png`
+
+- 判定: 合格（2回目）
+- 参照画像の役割とパス:
+  - 同じチェーン: assets/backgrounds/bg_shop.png
+  - ドバイの色・画風: remake/img/backgrounds/bg_dubai_souq_day.webp
+  - 機材の構造・縮尺のみ: 非公開 siryou/shisha-hardware-reference/web-refs/images/stand-russian-01.jpg
+- 初稿は窓外に小さな人物が写ったため不採用。2稿目は人物なし。
+- 生成前指定: 人物なし／準備中・ボウル未装着／細いステンレスステム・広いガラスベース・小さな受け皿／HMDなし／炭なし／ホースなし／吸い口なし／入口からカウンターを見る構図。
+- §4.4 検品: 台はベース→ステム→受け皿→小さな凸型ポスト。ボウル・HMD・炭・ホース・煙なし。文字・ロゴ・透かしなし。
+
+#### 実際の生成依頼文（全文）
+
+```text
+Use case: stylized-concept. Asset type: visual novel background. Input roles: bg_shop.png = same Dr.fookah chain design; bg_dubai_souq_day.webp = Dubai colors and painting style; stand-russian-01.jpg = hookah structure and scale ONLY. Critical corrections: absolutely no human figures, even outside through the window or tiny figures in the street. Do not reproduce a real Dubai landmark. Three UNASSEMBLED display hookahs only, no bowl, no HMD, no coal, no hose, with a small convex metal post at top. Anime visual novel background, detailed digital painting, bright cool interior with warm accents, no people, 16:9, painterly brushwork. The Dubai branch of "Dr.fookah", a Japanese shisha wholesale and retail shop, on a hot afternoon in a modern shopping street of Dubai. It shares the chain's look with the attached bg_shop.png (black iron shelving, a walnut counter, warm bare-bulb pendants), adapted to Dubai: smooth white plaster walls and a pale stone floor, a tall arched shop window and glass door on the left with blazing white sunlight and the hot street outside, cool air-conditioned shade inside, a few brass lanterns and a woven rug in desert colors. Shelves are lined with neat rows of plain round flavor tins and small boxes without any print, colored only by their lids. On the top shelf on the left, three display hookahs in different colors stand unassembled: each stem ends in a small convex metal post, with NO bowl, NO heat management device, NO charcoal and NO hose. A walnut counter at the back with a small brass scale and a stack of plain paper bags. Clean, bright and busy-looking but empty of people. Keep the center foreground open for character overlays.
+Draw the hookah with correct structure. From top to bottom: a few small cube charcoals (about fingertip size, grey ash with a little red glow, no flames) → a heat management device (HMD), a separate low metal cup sitting on the bowl's rim, holding the coals → the ceramic tobacco bowl (a cup on a slim neck) → a wide ash tray → a vertical stem → a glass base with water only in its lower part. The stem goes straight down into the mouth of the base through a rubber grommet; the base is not an aquarium. Exactly one hose: it starts at the hose port on the side of the stem above the base, sags naturally with gravity, and connects to the base of a rigid handle held in the hand. The hose never forks, breaks, floats, loops around the character, or comes out of the purge valve, bowl, tray or base bottom. In a finished/smoking setup, coals sit inside the HMD, never directly on foil. Use one coherent HMD model; do not mix lids, chimneys or handles from different models. Keep the hookah to real scale: the whole hookah is 60–80 cm tall (on the floor its top reaches a seated person's chest or shoulder). The bowl is a small cup about 6–8 cm tall, with a mouth narrower than an adult's palm; the HMD has the same diameter as the bowl mouth and is only two fingers tall. Bowl + HMD + coals together are only 10–12 cm tall: about 1/6 to 1/7 of the hookah's height and about half the height of the character's face. The tray is about 2.5× the HMD width; coals are fingertip-sized. Do NOT draw an oversized bowl or HMD: the hookah is a modest prop, the character is the subject. Place the hookah at the same depth as the character, with the tray and the upper stem in frame, not in the foreground. Smoke comes from the character's mouth, not from the HMD or hose. If a neck-worn personal mouthpiece is shown, draw a real small mouthpiece body on the chain, not just a chain. Base the hookah and the room on present-day Japanese shisha bars: a slim stainless-steel stem with a wide glass base and a small tray, a silicone bowl with a lotus-type HMD (or another HMD named in the scene), in a Japanese shisha café or bar interior (sofa seating, bright café style or dim indirect lighting). No ornate Middle-Eastern engraved hookah unless asked. Colors and finishes are free; no real brands, logos or text.
+This scene is the "bowl not mounted" case: the top of each stem is a small convex metal post; draw no bowl, no HMD, no coals, no hose and no smoke.
+No people, no text, no Arabic or Latin letters, no labels with writing, no signboards, no logos, no numbers, no watermark. STYLE STANDARD (shisha-game backgrounds): anime visual novel background, detailed digital painting with painterly brushwork, in the same hand as the approved shisha-game backgrounds attached as style references. Realistic perspective and material textures, one clear light source, forms built from painted planes rather than outlines, warm lighting by default. No people, no text, no logos, no signboard lettering, no watermark, no UI. Keep night scenes readable: shadows still show detail, never a solid black area (the game adds its own night tint). Base interiors and equipment on present-day Japanese shisha bars. Output 2048x1152 or larger, 16:9.
+```

@@ -6,7 +6,8 @@ import { LOOKS, BASE_LOOK, PLAYER_DEFAULT_LOOK, LOOK_CHAPTERS, defaultLook, norm
 assert.deepEqual(LOOKS.map((look) => look.id), ["neo", "classic", "retro"]);
 assert.equal(BASE_LOOK, "classic", "何も重ねない素の様式は旧版");
 assert.equal(PLAYER_DEFAULT_LOOK, "neo", "プレイヤーの既定は新版");
-assert.deepEqual([...LOOK_CHAPTERS], [1], "新版とDS風は第1章だけ");
+assert.equal(LOOK_CHAPTERS.neo, null, "新版はすべての章（LK13）");
+assert.deepEqual([...LOOK_CHAPTERS.retro], [1], "DS風は第1章だけ");
 
 // 自動操作の印（navigator.webdriver）を差し替えて、両方の既定を確かめる
 const withWebdriver = (value, run) => {
@@ -31,12 +32,12 @@ for (const { id } of LOOKS) assert.equal(normalizeLook(id), id);
 
 // 旧版はどの章でも旧版
 for (const chapter of [undefined, 1, 2, 3, 4, 5]) assert.equal(effectiveLook("classic", chapter), "classic");
-// 新版・DS風は第1章（と、章が分からないタイトル）だけ
-for (const look of ["neo", "retro"]) {
-  assert.equal(effectiveLook(look, 1), look);
-  assert.equal(effectiveLook(look, undefined), look, "タイトルなど章が分からない場面は第1章として扱う");
-  for (const chapter of [2, 3, 4, 5]) assert.equal(effectiveLook(look, chapter), "classic", `第${chapter}章では旧版で表示する`);
-}
+// 新版はすべての章で効く（LK13）
+for (const chapter of [undefined, 1, 2, 3, 4, 5]) assert.equal(effectiveLook("neo", chapter), "neo", `新版は第${chapter ?? "?"}章でも新版`);
+// DS風は第1章（と、章が分からないタイトル）だけ
+assert.equal(effectiveLook("retro", 1), "retro");
+assert.equal(effectiveLook("retro", undefined), "retro", "タイトルなど章が分からない場面は第1章として扱う");
+for (const chapter of [2, 3, 4, 5]) assert.equal(effectiveLook("retro", chapter), "classic", `DS風は第${chapter}章では旧版で表示する`);
 
 // 起動時の移行（LK09）
 const migrate = (saved) => { const config = { ...saved }; const look = migrateLook(config); return [look, config.look, config.lookVersion]; };

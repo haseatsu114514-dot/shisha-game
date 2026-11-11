@@ -5,6 +5,8 @@
 //   prologue   : 橋渡し → 帰郷 → 自由行動へ
 //   free       : tonari の自由場面（任意）→「博士に連絡する」で日程の場面へ
 //     prep     : 「閉店後の練習」のあと、試作→スミさんの返答→再調整の選択（#1666。結果は試合と後日談に返る）
+//     trial    : prep を終えた夜の tonari で、任意で一度だけ本物の一台を作ってスミさんに吸ってもらう
+//                （#2020 F・ch5-sumi-trial.js。進行は止めない。講評は二杯目の前の試作の返りの後に一行で返る）
 //     decide   : 日程が決まる → scheduled へ（自由行動の日は挟まない。Q15）
 //     defer    : ch5_timeout を読んで free に戻る（日程は未定のまま）
 //   scheduled  : 「会場へ行く」の確認でだけ試合へ。取り消しは ch5_timeout を読んで free へ戻る
@@ -23,6 +25,7 @@
 //   ch5_reflection_placeholder はテスト専用なので接続しない。
 import { selectPostEndingConflict } from "../core/story-routes.js";
 import { STORY_BGM } from "../core/story-audio.js";
+import { SUMI_TRIAL_IDS, sumiTrialRecall } from "./ch5-sumi-trial.js";
 
 // ---- 背景の対応表（1か所に集約）----------------------------------------------------
 // 第5章の勝負会場は SMOKE LAB。その他は既存 bg を使用する。
@@ -50,6 +53,8 @@ export const CH5_SCENE_BG = Object.freeze({
   ch5_prep_adjust_pack: "bg_tonari_inside_night",
   ch5_prep_adjust_aroma: "bg_tonari_inside_night",
   ch5_prep_keep: "bg_tonari_inside_night",
+  // 決戦前の実制作練習（#2020 F・ch5-sumi-trial.js）: 閉店後の tonari。二台目の前に続く返りは親場面の bg で表示する
+  ...Object.fromEntries(SUMI_TRIAL_IDS.map(id => [id, id.includes("_recall_") ? "bg_tournament_stage" : "bg_tonari_inside_night"])),
   ch5_schedule_contact: "bg_tonari_inside_night",    // 仮置き bg（閉店後の場面）
   ch5_timeout: "bg_tonari_inside_night",             // 仮置き bg
   ch5_match_day_arrival: "bg_tonari_inside_day",      // 休業日の朝の店から始まる場面なので tonari・昼（会場 SMOKE LAB の背景と切り替えは #2222 待ち）
@@ -270,7 +275,7 @@ export const CH5_SCENE_FILES = Object.freeze({
     "ch5_unrecorded_day",
     ...CH5_FREE_SCENES.map(scene => scene.id),
     ...PREP_TRIAL_IDS.flatMap(trial => [chapterFivePrepScene("trial", trial), chapterFivePrepScene("adjust", trial)]),
-    chapterFivePrepScene("keep"), ...PREP_ECHO_IDS,
+    chapterFivePrepScene("keep"), ...PREP_ECHO_IDS, ...SUMI_TRIAL_IDS,
     ...Object.values(CH5_MASHIRO_LOVER_ECHO),
     "ch5_schedule_contact", "ch5_timeout",
     ...Object.values(CH5_MATCH_SCENES),
@@ -453,7 +458,8 @@ export function recordChapterFivePrepAdjustment(value, adjusted) {
 export function chapterFivePrepEcho(value, id) {
   const { prep } = chapterFiveProgress(value);
   if (!prep || prep.adjusted === null) return [];
-  if (id === CH5_MATCH_SCENES.beforeSecond) return [prepEchoId("recall", prep)];
+  // 決戦前の実制作練習（#2020 F）で講評まで読んだ一台は、試作の返りの後に一行続ける
+  if (id === CH5_MATCH_SCENES.beforeSecond) return [prepEchoId("recall", prep), ...sumiTrialRecall(value)];
   if (id === CH5_AFTERMATH[CH5_AFTERMATH.length - 1].id) return [prepEchoId("answer", prep)];
   return [];
 }

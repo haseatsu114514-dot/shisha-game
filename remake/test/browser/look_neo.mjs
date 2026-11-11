@@ -13,6 +13,15 @@
 //   8. 全画面 MENU: 4タブが収まり、ステータスと人間関係に人物の立ち絵が読み込めて出る。閉じられる。
 //   9. モーダル（設定・セーブ／ロード・確認の問い）: 収まり、段ボタン・スライダー・枠が操作できる。
 //  10. タイトル: メニューの札が収まり、押せる大きさが現行以上。選んだ行に金の線。
+//  11. 第2〜5章（LK13）: 各章の保存から実際の再開で地図と HUD を出し、情報が現行と同じ・押せる・ステージ内・HUD や札と重ならない・
+//      現行に無い看板の重なりを作らないことを見る。「出発まで」「勝負の日まで」は板の下の札、横持ちスマホは体力と Lv を上下2段。
+//      章ごとに増える MENU の上の帯。第3〜5章の場面カード（行程の札・東京の街の地図を含む）は夜紫の面と金の罫線で、文とボタンは現行と同じ。
+//      現行へ戻すと、場面カードと残り日数の札の計算済みスタイルが最初から現行の時と一致する。
+//  12. ショップ（入口・売り場・問い）・レベルアップ（全面の札・短い帯）・ギャラリー（一覧・閲覧の帯）:
+//      夜紫の面と金の罫線で、文字（値段・所持・収集率）と押せる大きさは現行と同じ。実際に買える・開閉できる。
+//      現行へ戻すと計算済みスタイルが最初から現行の時と一致する。
+//  13. LIME（一覧・トーク・朝の通知・HUD の印）は、実際のスマホのアプリをまねた見た目なので新版でも紫にしない（LK20）:
+//      緑の見出し・白い一覧・緑の自分の吹き出しのまま、計算済みスタイルが旧版と一致する。返信できる・開閉できる。
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import { suite, baseURL } from "./support.mjs";
@@ -492,8 +501,13 @@ const measureMap = (page) => page.evaluate((helpers) => {
     exp: text(q("#hud .hud-exp .hx-lv")), expShown: shown(q("#hud .hud-exp .hx-bar")), expBar: px(q("#hud .hud-exp .hx-bar")),
     inside: [...card.querySelectorAll(".dc-day, .dc-slot, .dc-row.money b, .hud-bar, .hx-lv, .hx-bar")].filter(shown).map((node) => px(node)),
     lime: px(lime), limeRadius: getComputedStyle(lime).borderRadius, limeLabel: text(q("span", lime)), limeLabelShown: shown(q("span", lime)),
+    limeFace: rgb(getComputedStyle(lime).backgroundColor), limeBubble: rgb(getComputedStyle(q("span", lime)).backgroundColor), limeInk: rgb(getComputedStyle(q("span", lime)).color),
     menu: px(menu), menuRadius: getComputedStyle(menu).borderRadius, menuIcon: shown(q("i", menu)),
     limeBadge: text(limeBadge), limeBadgeShown: shown(limeBadge), limeBadgeRect: px(limeBadge),
+    // 「出発まで」「勝負の日まで」の行（第3・4章の出発前・第5章だけ）。新版では板の下の札。
+    goal: shown(q("#hud .dc-row.goal")) ? { text: text(q("#hud .dc-row.goal")), rect: px(q("#hud .dc-row.goal")), value: px(q("#hud .dc-row.goal b")),
+      color: rgb(getComputedStyle(q("#hud .dc-row.goal b")).color), face: rgb(getComputedStyle(q("#hud .dc-row.goal")).backgroundColor) } : null,
+    staminaRow: px(q("#hud .hud-stamina")), expRow: px(q("#hud .hud-exp")),
   };
   const info = q("#screen .map .map-info");
   return { look: document.documentElement.dataset.look, pins, hud,
@@ -505,7 +519,7 @@ const measureMap = (page) => page.evaluate((helpers) => {
 const mapFacts = (m) => ({
   pins: m.pins.map((pin) => ({ id: pin.id, label: pin.label, cost: pin.cost, badge: pin.badge, status: pin.status, closedMark: pin.closedMark, people: pin.people,
     shown: [pin.labelShown, pin.costShown, pin.badgeShown, pin.statusShown, pin.peopleShown].every((flag) => flag !== false) })),
-  hud: { day: m.hud.day, slot: m.hud.slot, money: m.hud.money, exp: m.hud.exp, limeBadge: m.hud.limeBadge,
+  hud: { day: m.hud.day, slot: m.hud.slot, money: m.hud.money, exp: m.hud.exp, limeBadge: m.hud.limeBadge, goal: m.hud.goal?.text ?? null,
     shown: [m.hud.dayShown, m.hud.slotShown, m.hud.moneyShown, m.hud.staminaShown, m.hud.expShown, m.hud.limeBadgeShown, m.hud.limeLabelShown, m.hud.menuIcon].every(Boolean) },
 });
 
@@ -537,13 +551,16 @@ async function dailyMap(page, { phone }) {
   for (const rect of m.hud.inside) assert(inside(rect, m.hud.card, 1), `HUD の中身が板に収まる ${JSON.stringify(rect)}`);
   const centers = m.hud.inside.map((rect) => (rect.top + rect.bottom) / 2);
   assert(Math.max(...centers) - Math.min(...centers) <= m.hud.card.height / 2, "HUD は1行");
-  // LIME と MENU: 同じ大きさの丸い札。未読の数は残す。
+  // LIME と MENU: 同じ大きさで並ぶ。MENU は丸い札。LIME は実際のスマホのアプリの印のオマージュ（緑の角丸四角・LK20）なので丸くしない。未読の数は残す。
   for (const [name, rect, radius] of [["LIME", m.hud.lime, m.hud.limeRadius], ["MENU", m.hud.menu, m.hud.menuRadius]]) {
     assert(inside(rect, STAGE), `${name} がステージの中`);
     assert(Math.abs(rect.width - rect.height) < .5 && rect.width >= tap - .5 && rect.real >= 38, `${name} の押せる大きさ ${JSON.stringify(rect)}`);
-    assert.equal(radius, "50%", `${name} は丸い札`);
+    if (name === "MENU") assert.equal(radius, "50%", "MENU は丸い札");
+    else assert(parseFloat(radius) > 6 && parseFloat(radius) < rect.width * .3 && !radius.includes("%"), `LIME は角丸の四角 ${radius}`);
     assert(!intersects(rect, m.hud.card), `${name} が HUD の板に重ならない`);
   }
+  assert(m.hud.limeFace[0] < 40 && m.hud.limeFace[1] > 180 && m.hud.limeFace[2] < 40, `LIME の印は緑の地 ${m.hud.limeFace}`);
+  assert(light(m.hud.limeBubble) && m.hud.limeInk[1] > 150 && m.hud.limeInk[0] < 40, `LIME の印は白い吹き出しに緑の字 ${JSON.stringify([m.hud.limeBubble, m.hud.limeInk])}`);
   assert(Math.abs(m.hud.lime.width - m.hud.menu.width) < .5 && Math.abs(m.hud.lime.top - m.hud.menu.top) < .5, "LIME と MENU は同じ形・同じ高さ");
   assert(!intersects(m.hud.lime, m.hud.menu));
   assert.equal(m.hud.limeBadge, "3");
@@ -1082,6 +1099,768 @@ const MAP_PARTS = [["#hud .hud", [""]], ["#hud .hud-card", ALL], ["#hud .dc-main
   ['[data-test="pin-adam"]', [""]], ['[data-test="pin-adam"] .shield', ALL], ['[data-test="pin-adam"] .sub-label', [""]], ['[data-test="pin-adam"] .pin-cost', [""]], ['[data-test="pin-adam"] .pin-status', ALL],
   ['[data-test="pin-rest"]', [""]], ['[data-test="pin-rest"] .shield', ALL], ['[data-test="pin-rest"] .sub-label', [""]], ['[data-test="pin-kannon"] .evt-badge', [""]],
   ['[data-test="pin-tonari"] .shield', ALL], ['[data-test="pin-tonari"] .sub-label', [""]], ["#screen .map .map-info", ALL], ["#screen .map .mi-banner", [""]], ["#screen .map .mi-preview", [""]]];
+// ---------------------------------------------------------------- 第2〜5章（LK13・2026-11-11 オーナー「新版を広げる」）
+// 地図と HUD・章の場面カード・東京の街の地図を、各章の保存から実際の再開の流れで出して確かめる（PC と横持ちスマホ）。
+
+/** 章の保存を作り、タイトルの LOAD から再開する（章の側の再開の流れで地図やカードへ入る）。会話は早送り、選択肢は先頭。 */
+async function loadSeeded(page, seed, arg = null) {
+  await page.evaluate(seed, arg);
+  await page.reload();
+  await press(page, page.locator('[data-test="title-load"]'));
+  await page.evaluate(async () => { const vn = await import("./js/vn/engine.js"); vn.vnTest.turbo = true; vn.vnTest.choose = () => 0; });
+  await press(page, page.locator('[data-test="slot-0"]'));
+}
+/** 保存の共通の下ごしらえ（辻占のオババの出現は済み・文字は即時・音なし）。page.evaluate の中で使う。 */
+const SEED_COMMON = `async (core, value, chapter) => {
+  const plan = (await import("./js/daily/fortune-schedule.js")).fortunePlan({ seed: value.seed, chapter });
+  value.flags._fortune_wander = { chapter, shown: plan.map(() => null), used: plan.map(() => true) };
+  Object.assign(core.config, { textSpeed: 4, bgmVolume: 0, seVolume: 0, voiceBlip: false });
+  core.saveConfig();
+}`;
+/** 地図が出そろい、新しい行き先のお披露目と HUD・看板の出現が終わるまで待つ。 */
+async function mapSettled(page, pin) {
+  await page.waitForFunction((pin) => document.querySelector(`#screen .map:not(.done) [data-test="pin-${pin}"]`) && !document.querySelector("#modal.show")
+    && !document.querySelector('.map[data-revealing], .spot-pin.newly-revealed, .pin-reveal-label'), pin, { timeout: 90000 });
+  await page.mouse.move(640, 700);
+  await page.waitForTimeout(500);
+}
+
+/** 各章の地図。expect: その章の状態で出ているはずのもの（正しい章の地図を測っていることの確かめ）。 */
+const CHAPTER_MAPS = {
+  // 第2章: 地元（橙須）の朝 → 地図。
+  ch2: { expect: { day: "2/14", goal: null, pins: ["station", "tonari", "naru", "minto"] }, async open(page) {
+    await page.evaluate(async () => {
+      const core = await import("./js/core/state.js");
+      const value = core.newGame();
+      Object.assign(value, { chapter: 2, phase: "daily", day: 15, slot: 2, money: 36000, stamina: 100, weatherSeed: 7, lastBaitoDay: 15 });
+      value.flags = { _rei_trpg_introduced: true, _ch1_cleared: true, _ch2_day1: { startDay: 15, stage: "complete", titleSeen: true },
+        _ch2_city_visit_c_station: true, _lime_tut: 1, _lime_opened: true, _hiyori_meeting_done: true, _hiyori_message_delivered: true };
+      value.met = { hajime: true, sumi: true, naru: true, adam: true, minto: true, tsumugi: true, ageha: true, kumicho: true, rei: true, volk: true };
+      value.contacts = ["sumi", "naru"];
+      for (const id of ["ageha", "kumicho", "rei"]) value.flags[`_intro_${id}`] = true;
+      core.save();
+      window.__remake.vnTest.turbo = true;
+      (await import("./js/chapters/ch1.js")).setupHooks();
+      void (await import("./js/chapters/ch2.js")).resumeChapterTwo();
+    });
+    await press(page, page.locator('[data-test="ch2-morning-home"]'));
+    await mapSettled(page, "tonari");
+  } },
+  // 第3章の出発前の3日（地元の地図・HUD に「出発まで」）。
+  ch3prep: { expect: { day: "1/3", goal: "出発まであと3日", pins: ["naru", "rest", "station"], menu: ["DAY1/3", "出発まであと3日", "所持金30,000円"] }, async open(page) {
+    await loadSeeded(page, async (common) => {
+      const core = await import("./js/core/state.js"), progress = await import("./js/chapters/ch3-progress.js");
+      const value = core.newGame();
+      Object.assign(value, { chapter: 2, day: 28, slot: 0, phase: "cleared", money: 30000, stamina: 100, weatherSeed: 5, contacts: ["sumi"] });
+      value.flags = { _elapsed_calendar: true, _ch1_cleared: true, _ch2_cleared: true, _ch2_read_ch2_tournament_ageha_heart: true,
+        _ch2_preparation_started: true, _lime_opened: true, _lime_tut: 1, _ch2_tournament: { stage: "complete", attempts: 1, history: [{ rank: 1, total: 88 }] } };
+      for (const who of ["ageha", "kumicho", "rei", "hajime", "sumi"]) value.flags[`_intro_${who}`] = true;
+      Object.assign(value.met, { ageha: true, kumicho: true, rei: true, naru: true, adam: true, minto: true });
+      if (!progress.advanceToChapterThree(value)) throw new Error("第3章へ入れない");
+      value.flags._ch3_prep.step = 3;
+      Object.assign(value.flags._ch3_intro, { titleSeen: true, routeVersion: 2 });
+      await (0, eval)(common)(core, value, 3);
+      Object.assign(core.state, value); core.save();
+    }, SEED_COMMON);
+    await mapSettled(page, "rest");
+  } },
+  // 第3章の東京（DAY1 の受付と規則の紙 → DAY2 の夜の地図）。
+  ch3tokyo: { expect: { day: "2/14", goal: null, pins: ["ch3_tokyo_mukai", "ch3_tokyo_shop", "ch3_tokyo_park"] }, async open(page) {
+    await loadSeeded(page, async (common) => {
+      const core = await import("./js/core/state.js"), progress = await import("./js/chapters/ch3-progress.js");
+      const value = core.newGame();
+      Object.assign(value, { chapter: 2, day: 28, slot: 0, phase: "cleared", money: 30000, stamina: 100, weatherSeed: 5, contacts: ["sumi"] });
+      value.flags = { _elapsed_calendar: true, _ch1_cleared: true, _ch2_cleared: true, _ch2_read_ch2_tournament_ageha_heart: true,
+        _ch2_preparation_started: true, _lime_opened: true, _lime_tut: 1, _ch2_tournament: { stage: "complete", attempts: 1, history: [{ rank: 1, total: 88 }] } };
+      for (const who of ["hajime", "sumi", "pakki", "maezono", "dr_kemuri", "sui"]) value.flags[`_intro_${who}`] = true;
+      if (!progress.advanceToChapterThree(value)) throw new Error("第3章へ入れない");
+      value.day += 3;
+      if (!progress.departChapterThree(value)) throw new Error("東京へ出発できない");
+      value.flags._ch3_intro.titleSeen = true;
+      await (0, eval)(common)(core, value, 3);
+      Object.assign(core.state, value); core.save();
+    }, SEED_COMMON);
+    await page.locator('[data-test="rule-sheet"]').waitFor({ timeout: 90000 });
+    await press(page, page.locator('[data-test="rule-sheet-close"]'));
+    await mapSettled(page, "ch3_tokyo_mukai");
+  } },
+  // 第4章のドバイ DAY5（上端の FESTA に居る人の顔がある。HUD の板が長いと顔に掛かる）。
+  ch4: { expect: { day: "5/14", goal: null, pins: ["ch4_dubai_festa", "ch4_dubai_inn", "ch4_dubai_souq"], people: "ch4_dubai_festa", menu: ["DAY5/14", "所持金50,000円"] }, async open(page) {
+    await loadSeeded(page, async (common) => {
+      const core = await import("./js/core/state.js"), progress = await import("./js/chapters/ch4-progress.js");
+      const value = core.newGame();
+      Object.assign(value, { chapter: 3, day: 45, slot: 1, phase: "cleared", money: 50000, stamina: 100, weatherSeed: 5, lovers: [], contacts: ["sumi"] });
+      value.flags = { _elapsed_calendar: true, _ch1_cleared: true, _ch2_cleared: true, _ch3_cleared: true, _ch3_preview_seen: true,
+        _friend_ageha: true, _ch3_tournament_won: true, _lime_opened: true, _lime_tut: 1 };
+      for (const who of ["naru", "da_silva", "hajime", "sumi", "pakki", "sui", "dr_kemuri"]) value.flags[`_intro_${who}`] = true;
+      Object.assign(value.met, { naru: true, da_silva: true });
+      if (!progress.advanceToChapterFour(value)) throw new Error("第4章へ入れない");
+      value.flags._overseas_companion = { decided: true, companion: null, supports: [] };
+      value.flags._ch4.titleSeen = true;
+      for (const id of progress.CH4_PREP_SCENES) if (!progress.completeChapterFourScene(value, id)) throw new Error(id);
+      value.day += 3;
+      if (!progress.departChapterFour(value)) throw new Error("ドバイへ出発できない");
+      const p = value.flags._ch4;
+      for (const id of ["ch4_opening", "ch4_arrival_inn"]) progress.completeChapterFourScene(value, id);
+      for (const id of ["ch4_festa", "ch4_dubai_souq", "ch4_stranger_first", "ch4_stranger_second", "ch4_dubai_cafe", "ch4_inn_tool_care"]) p.read[id] = true;
+      p.firstDay = 1; p.secondDay = 3;
+      value.day = p.startDay + 4; value.slot = 0; p.day = 5;
+      await (0, eval)(common)(core, value, 4);
+      Object.assign(core.state, value); core.save();
+    }, SEED_COMMON);
+    await mapSettled(page, "ch4_dubai_inn");
+  } },
+  // 第5章の地元（HUD に「勝負の日まで」）。
+  ch5: { expect: { day: "3", goal: "勝負の日まで未定", pins: ["tonari", "c_station", "ch5_to_dubai"], menu: ["DAY3", "勝負の日まで未定", "所持金50,000円"] }, async open(page) {
+    await loadSeeded(page, async (common) => {
+      const core = await import("./js/core/state.js");
+      const value = core.newGame();
+      Object.assign(value, { chapter: 5, day: 51, slot: 0, phase: "daily", money: 50000, stamina: 100, weatherSeed: 5, seed: 0, lovers: [], contacts: ["sumi"], kujiTickets: 0 });
+      value.flags = { _elapsed_calendar: true, _ch1_cleared: true, _ch2_cleared: true, _ch3_cleared: true, _ch4_cleared: true,
+        _ch2_preparation_started: true, _ch2_region: "home", _lime_opened: true, _lime_tut: 1,
+        _ch5: { startDay: 49, stage: 2, part: "free", titleSeen: true, read: { ch5_bridge_after_return: true, ch5_opening: true }, scheduleDecision: null,
+          aftermath: 0, finale: 0, finaleScenes: null, won: null, secondCup: null },
+        _ch5_match_scheduled: false, _ch5_match_started: false, _ch5_after_party: true, _ch5_region_started: true, _spot_guide_naru: true,
+        _ch5_catering: { next: 81, offers: 0, offer: null, served: {}, last: null } };
+      Object.assign(value.met, { naru: true, adam: true, minto: true, ageha: true, kumicho: true, rei: true, steve: true, volk: true });
+      await (0, eval)(common)(core, value, 5);
+      core.save();
+    }, SEED_COMMON);
+    await mapSettled(page, "tonari");
+  } },
+};
+
+/** 看板どうしの重なり（看板の組）。縁が触れる程度（どちらかの向きに 3px 以下）は数えない。 */
+function pinOverlaps(m) {
+  const pairs = new Set();
+  for (let i = 0; i < m.pins.length; i++) for (let j = i + 1; j < m.pins.length; j++) {
+    for (const a of m.pins[i].parts) for (const b of m.pins[j].parts) {
+      const w = Math.min(a.right, b.right) - Math.max(a.left, b.left), h = Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top);
+      if (w > 3 && h > 3) pairs.add([m.pins[i].id, m.pins[j].id].sort().join(" × "));
+    }
+  }
+  return pairs;
+}
+
+async function chapterMap(page, { phone, chapter }) {
+  const spec = CHAPTER_MAPS[chapter];
+  await spec.open(page);
+  const m = await measureMap(page);
+  const label = `${chapter}${phone ? "（スマホ）" : ""}`;
+  assert.equal(m.look, "neo", `${label}: 新版が効いている`);
+  assert.equal(m.hud.day, spec.expect.day, `${label}: その章の地図を測っている`);
+  for (const id of spec.expect.pins) assert(m.pins.some((pin) => pin.id === id), `${label}: ${id} の看板がある`);
+  const tap = phone ? 72 : 48;
+
+  // HUD: 夜紫の細い板1本。板が長くなりすぎない（上端近くの看板と居る人の顔に掛けない）。
+  assert(inside(m.hud.card, STAGE) && m.hud.card.height <= (phone ? 64 : 50), `${label}: HUD は細い板 ${JSON.stringify(m.hud.card)}`);
+  assert(m.hud.card.right <= (phone ? 640 : 720), `${label}: HUD の板が長くなりすぎない ${m.hud.card.right}`);
+  assert(m.hud.cardFrame === "none" && m.hud.cardFace.includes("linear-gradient") && light(m.hud.dayColor) && light(m.hud.moneyColor), `${label}: HUD は夜紫の板に白い数字`);
+  for (const rect of m.hud.inside) assert(inside(rect, m.hud.card, 1), `${label}: HUD の中身が板に収まる ${JSON.stringify(rect)}`);
+  assert(Math.abs(m.hud.stamina.width - 120) < 1 && Math.abs(m.hud.expBar.width - 120) < 1, `${label}: ゲージは現行と同じ長さ`);
+  if (phone) {
+    // 横持ちスマホは体力と Lv を1つの区画に上下2段。2つのゲージの始まりはそろう。
+    assert(m.hud.expRow.top >= m.hud.staminaRow.bottom - 1 && Math.abs(m.hud.expRow.left - m.hud.staminaRow.left) < 1
+      && Math.abs(m.hud.stamina.left - m.hud.expBar.left) < 1.5, `${label}: 体力と Lv は上下2段 ${JSON.stringify([m.hud.staminaRow, m.hud.expRow, m.hud.stamina, m.hud.expBar])}`);
+  } else {
+    assert(Math.abs(m.hud.staminaRow.top - m.hud.expRow.top) < 1 && m.hud.expRow.left >= m.hud.staminaRow.right - 1, `${label}: PC は体力と Lv が横に並ぶ`);
+  }
+  for (const [name, rect, radius] of [["LIME", m.hud.lime, m.hud.limeRadius], ["MENU", m.hud.menu, m.hud.menuRadius]]) {
+    assert(inside(rect, STAGE) && Math.abs(rect.width - rect.height) < .5 && rect.width >= tap - .5 && rect.real >= 38 && (name === "LIME" ? !radius.includes("%") : radius === "50%"),
+      `${label}: ${name} の札（MENU は丸、LIME はアプリの印の角丸四角） ${JSON.stringify(rect)} ${radius}`);
+    assert(!intersects(rect, m.hud.card), `${label}: ${name} が HUD の板に重ならない`);
+  }
+  // 「出発まで」「勝負の日まで」: 板の下の小さな札（板を伸ばさない）。夜紫に明るい字。
+  if (spec.expect.goal) {
+    assert(m.hud.goal, `${label}: 残り日数の札が出ている`);
+    assert.equal(m.hud.goal.text, spec.expect.goal);
+    const pill = m.hud.goal.rect;
+    assert(inside(pill, STAGE) && pill.top >= m.hud.card.bottom && pill.top - m.hud.card.bottom <= 10 && pill.left >= m.hud.card.left - .5 && pill.right <= m.hud.card.right,
+      `${label}: 残り日数の札は板のすぐ下 ${JSON.stringify([pill, m.hud.card])}`);
+    assert(m.hud.goal.value.real >= 10 && light(m.hud.goal.color) && dark(m.hud.goal.face), `${label}: 残り日数が読める ${JSON.stringify(m.hud.goal)}`);
+  } else assert.equal(m.hud.goal, null, `${label}: 残り日数の札は出ない`);
+
+  // 看板: ステージの中。帯は夜紫に白い字。HUD・LIME・MENU・残り日数の札に掛からない（居る人の顔も）。
+  const fixed = [["HUD の板", m.hud.card], ["LIME", m.hud.lime], ["MENU", m.hud.menu], ...(m.hud.goal ? [["残り日数の札", m.hud.goal.rect]] : [])];
+  for (const pin of m.pins) {
+    for (const part of pin.parts) {
+      assert(inside(part, STAGE), `${label}: ${pin.id} の${part.what}がステージの中 ${JSON.stringify(part)}`);
+      for (const [name, rect] of fixed) assert(!intersects(part, rect), `${label}: ${pin.id} の${part.what}が${name}に重ならない ${JSON.stringify([part, rect])}`);
+    }
+    assert(pin.labelShown && pin.label && pin.band.frame === "none", `${label}: ${pin.id} の店名の帯`);
+    const off = pin.classes.includes("off") || pin.classes.includes("closed");
+    const ink = pin.labelColor.slice(0, 3).reduce((sum, v) => sum + v, 0);
+    assert(dark(pin.band.labelFace) && (off ? ink > 480 : light(pin.labelColor)), `${label}: ${pin.id} の帯は夜紫に白い字 ${pin.band.labelFace} / ${pin.labelColor}`);
+    if (pin.cost !== null) assert(pin.costShown && /^¥[\d,]+$/.test(pin.cost), `${label}: ${pin.id} の料金`);
+    if (pin.badge !== null) assert(pin.badgeShown, `${label}: ${pin.id} の「!」`);
+    assert(pin.peopleShown, `${label}: ${pin.id} の居る人の顔`);
+  }
+  if (spec.expect.people) assert(m.pins.find((pin) => pin.id === spec.expect.people).people.length, `${label}: ${spec.expect.people} に居る人の顔がある`);
+
+  // 現行と比べる: 情報は同じだけ残り、押せる範囲は現行以上、指す場所は同じ。看板どうしの重なりを新しく作らない。
+  await setLook(page, "classic");
+  await page.waitForTimeout(450);
+  const classic = await measureMap(page);
+  assert.equal(classic.look, "classic");
+  assert.deepEqual(mapFacts(m), mapFacts(classic), `${label}: 店名・料金・「!」・休み・居る人・日付・残り・所持金・Lv・残り日数・未読数が現行と同じ`);
+  assert(mapFacts(m).pins.every((pin) => pin.shown) && mapFacts(m).hud.shown, `${label}: どれも見えている`);
+  assert(m.hud.lime.width >= classic.hud.lime.width - .5 && m.hud.menu.width >= classic.hud.menu.width - .5, `${label}: LIME・MENU は現行以上の大きさ`);
+  for (const pin of m.pins) {
+    const before = classic.pins.find((other) => other.id === pin.id);
+    assert(pin.rect.width >= before.rect.width - .75 && pin.rect.height >= before.rect.height - .75, `${label}: ${pin.id} の押せる範囲は現行以上 ${JSON.stringify([pin.rect, before.rect])}`);
+    assert(Math.abs((pin.rect.left + pin.rect.right) / 2 - (before.rect.left + before.rect.right) / 2) < 1, `${label}: ${pin.id} の横の位置は現行と同じ`);
+    if (pin.classes.includes("facility-pin")) assert(Math.abs(pin.shield.top - before.shield.top) < 1, `${label}: ${pin.id} の施設の絵の位置は現行と同じ`);
+    else assert(Math.abs(pin.rect.bottom - before.rect.bottom) < 1, `${label}: ${pin.id} の看板の下端は現行と同じ`);
+  }
+  const allowed = pinOverlaps(classic);
+  for (const pair of pinOverlaps(m)) assert(allowed.has(pair), `${label}: 新版で新しく重なる看板 ${pair}（現行: ${[...allowed].join(", ") || "なし"}）`);
+  await setLook(page, "neo");
+  await page.waitForTimeout(450);
+
+  // 行き先を選ぶと案内の板（夜紫の面）が出て、HUD・LIME・MENU に掛からない。
+  const target = spec.expect.pins.find((id) => id !== "station") || spec.expect.pins[0];
+  await press(page, page.locator(`[data-test="pin-${target}"]`));
+  await page.locator("#screen .map .map-info.spot-selected").waitFor();
+  await page.mouse.move(640, 700);
+  await page.waitForTimeout(350);
+  const selected = await measureMap(page);
+  assert(selected.info && inside(selected.info.rect, STAGE) && selected.info.frame === "none" && selected.info.face.includes("linear-gradient"), `${label}: 案内の板 ${JSON.stringify(selected.info)}`);
+  for (const [name, rect] of [["LIME", selected.hud.lime], ["MENU", selected.hud.menu], ["HUD の板", selected.hud.card]]) assert(!intersects(selected.info.rect, rect), `${label}: 案内の板が${name}に重ならない`);
+  if (spec.expect.menu) await chapterMenu(page, label, spec.expect.menu, { phone });
+}
+
+/** 章ごとに増える MENU の上の帯（「出発まで」「勝負の日まで」）と人間関係の一覧が、面に収まる。 */
+async function chapterMenu(page, label, parts, { phone }) {
+  await press(page, page.locator('[data-test="hud-menu"]'));
+  await page.locator(".dmenu .dm-tab").nth(3).waitFor();
+  await page.locator(".dmenu .dm-sheet").evaluate((node) => Promise.all(node.getAnimations().map((a) => a.finished.catch(() => {}))));
+  const fits = (m, tab) => {
+    assert(inside(m.sheet, STAGE) && m.sheetFace.includes("gradient") && !m.sheetFace.includes("url(") && light(m.ink), `${label} MENU ${tab}: 夜紫の面`);
+    for (const part of parts) assert(m.summary.includes(part), `${label} MENU: 上の帯に ${part}（${m.summary}）`);
+    for (const row of m.summaryRows) assert(inside(row, m.head, 1) && row.right <= m.close.left, `${label} MENU: 上の帯の項目が「閉じる」に掛からない ${JSON.stringify(row)}`);
+    assert(!m.overflowX, `${label} MENU ${tab}: 中身が横にはみ出さない`);
+    for (const block of m.blocks) assert(block.left >= m.panel.left - 1 && block.right <= m.panel.right + 1, `${label} MENU ${tab}: ${block.what} が面に収まる`);
+    assert(m.close.height >= (phone ? 72 : 44) - .5 && m.close.real >= 38, `${label} MENU: 「閉じる」の押せる大きさ`);
+  };
+  fits(await measureMenu(page), "ステータス");
+  await press(page, page.locator('[data-test="menu-tab-people"]'));
+  await page.waitForFunction(() => document.querySelector(".dmenu")?.dataset.tab === "people" && document.querySelector(".dmenu .neo-figure.show img.in"), null, { timeout: 15000 });
+  await page.waitForTimeout(350);
+  const people = await measureMenu(page);
+  fits(people, "人間関係");
+  assert(people.people.length >= 3 && people.figure?.who === people.people[0].id, `${label} MENU: 人間関係の先頭の人の絵 ${people.figure?.who}`);
+  for (const row of people.people.filter((row) => row.rect.bottom <= people.panel.bottom)) {
+    for (const part of row.parts) assert(inside(part, row.rect, 1), `${label} MENU: ${row.id} の ${part.what} が行に収まる`);
+  }
+  await press(page, page.locator('[data-test="menu-close"]'));
+  await page.locator(".dmenu").waitFor({ state: "detached" });
+}
+
+/** 章の場面カード（main.ch2-contest）を測る。 */
+const measureCard = (page) => page.evaluate((helpers) => {
+  const { px, shown, text, rgb } = (0, eval)(helpers);
+  const card = document.querySelector("#screen .ch2-contest"), style = getComputedStyle(card), header = card.querySelector(".ch2-contest-header");
+  const color = (node) => rgb(getComputedStyle(node).color);
+  return { look: document.documentElement.dataset.look, rect: px(card), face: style.backgroundImage, fill: rgb(style.backgroundColor), border: style.borderTopWidth, color: color(card),
+    heading: text(header.querySelector("p")), headingColor: color(header.querySelector("p")), title: text(header.querySelector("h1")), titleColor: color(header.querySelector("h1")),
+    rule: getComputedStyle(header).backgroundImage, description: text(card.querySelector(".ch2-contest-description")),
+    descriptionColor: color(card.querySelector(".ch2-contest-description")),
+    wayfinding: card.querySelector(".ch3-wayfinding") ? { rect: px(card.querySelector(".ch3-wayfinding")), fill: rgb(getComputedStyle(card.querySelector(".ch3-wayfinding")).backgroundColor),
+      next: rgb(getComputedStyle(card.querySelector(".ch3-wayfinding-stop.next") || card.querySelector(".ch3-wayfinding-stop")).borderLeftColor),
+      strong: color(card.querySelector(".ch3-wayfinding-stop strong")) } : null,
+    buttons: [...card.querySelectorAll("button")].filter(shown).map((node) => ({ test: node.dataset.test, label: text(node), ...px(node), primary: node.classList.contains("primary"),
+      face: getComputedStyle(node).backgroundImage, fill: rgb(getComputedStyle(node).backgroundColor), ink: color(node), frame: getComputedStyle(node).borderImageSource })) };
+}, STAGE_PX);
+
+const gold = (color) => color[0] > 200 && color[1] > 160 && color[2] < 170;
+
+function assertCard(m, label, classic, { phone }) {
+  assert.equal(m.look, "neo", `${label}: 新版が効いている`);
+  assert(inside(m.rect, STAGE), `${label}: カードがステージの中 ${JSON.stringify(m.rect)}`);
+  // 紺の箱ではなく夜紫の半透明の面。見出しの下に金の細い罫線。章の名前は金、題と本文は白。
+  assert(m.face.includes("linear-gradient") && m.face.includes("rgba(36, 22, 55"), `${label}: 夜紫の面 ${m.face}`);
+  assert.equal(m.border, "0px", `${label}: 紺の箱の枠線を使わない`);
+  assert(m.rule.includes("227, 189, 110"), `${label}: 見出しの下に金の罫線 ${m.rule}`);
+  assert(gold(m.headingColor) && light(m.titleColor) && light(m.descriptionColor) && light(m.color), `${label}: 文字の色 ${JSON.stringify([m.headingColor, m.titleColor, m.descriptionColor])}`);
+  assert.deepEqual([m.heading, m.title, m.description], [classic.heading, classic.title, classic.description], `${label}: 文は現行と同じ`);
+  assert.deepEqual(m.buttons.map((button) => button.label), classic.buttons.map((button) => button.label), `${label}: ボタンは現行と同じ`);
+  assert(m.buttons.some((button) => button.primary), `${label}: 主のボタンがある`);
+  for (const [index, button] of m.buttons.entries()) {
+    const before = classic.buttons[index];
+    assert(inside(button, m.rect, 1) && button.real >= 38 && button.height >= before.height - 2.5 && button.width >= before.width - 2.5,
+      `${label}: ${button.label} の押せる大きさは現行と同じ ${JSON.stringify([button, before])}`);
+    assert.equal(button.frame, "none");
+    // 主のボタンは金に墨の字、ほかは夜紫に白い字。
+    assert(button.primary ? button.face.includes("linear-gradient") && !light(button.ink) : dark(button.fill) && light(button.ink), `${label}: ${button.label} の色 ${JSON.stringify(button)}`);
+  }
+  for (let i = 0; i < m.buttons.length; i++) for (let j = i + 1; j < m.buttons.length; j++) assert(!intersects(m.buttons[i], m.buttons[j]), `${label}: ボタンが重ならない`);
+  if (m.wayfinding) {
+    assert(inside(m.wayfinding.rect, m.rect, 1) && dark(m.wayfinding.fill.length === 4 ? [...m.wayfinding.fill.slice(0, 3), 1] : m.wayfinding.fill)
+      && light(m.wayfinding.strong) && gold(m.wayfinding.next), `${label}: 東京の行程は夜紫の札、次の場面は金の線 ${JSON.stringify(m.wayfinding)}`);
+  }
+  if (phone) assert(m.buttons.every((button) => button.real >= 38), `${label}: スマホでも押せる大きさ`);
+}
+
+/** 第4章のドバイ到着の場面カード（第4・5章の共通のカード）。 */
+async function openDubaiCard(page) {
+  await loadSeeded(page, async (common) => {
+    const core = await import("./js/core/state.js"), progress = await import("./js/chapters/ch4-progress.js");
+    const value = core.newGame();
+    Object.assign(value, { chapter: 3, day: 45, slot: 1, phase: "cleared", money: 50000, stamina: 100, weatherSeed: 5, lovers: [], contacts: ["sumi"] });
+    value.flags = { _elapsed_calendar: true, _ch1_cleared: true, _ch2_cleared: true, _ch3_cleared: true, _ch3_preview_seen: true,
+      _friend_ageha: true, _ch3_tournament_won: true, _lime_opened: true, _lime_tut: 1 };
+    for (const who of ["naru", "da_silva", "hajime", "sumi", "pakki", "sui", "dr_kemuri"]) value.flags[`_intro_${who}`] = true;
+    Object.assign(value.met, { naru: true });
+    if (!progress.advanceToChapterFour(value)) throw new Error("第4章へ入れない");
+    value.flags._overseas_companion = { decided: true, companion: null, supports: [] };
+    value.flags._ch4.titleSeen = true;
+    for (const id of progress.CH4_PREP_SCENES) if (!progress.completeChapterFourScene(value, id)) throw new Error(id);
+    value.day += 3;
+    if (!progress.departChapterFour(value)) throw new Error("ドバイへ出発できない");
+    await (0, eval)(common)(core, value, 4);
+    Object.assign(core.state, value); core.save();
+  }, SEED_COMMON);
+  await page.locator('[data-test="ch4-scene"][data-scene="ch4_opening"]').waitFor({ timeout: 90000 });
+  await page.mouse.move(5, 5);
+  await page.waitForTimeout(400);
+}
+
+/** 第3章の東京の行程カード（場面カードの東京・作業中の旧セーブの行程）と、東京の街の地図。 */
+async function openTokyoCard(page) {
+  await page.evaluate(async () => {
+    const core = await import("./js/core/state.js"), progress = await import("./js/chapters/ch3-progress.js");
+    const value = core.newGame();
+    Object.assign(value, { chapter: 2, day: 25, phase: "cleared", money: 20000, stamina: 80 });
+    value.flags = { _elapsed_calendar: true, _ch2_cleared: true, _ch2_read_ch2_tournament_ageha_heart: true, _ch2_tournament: { stage: "complete" } };
+    if (!progress.advanceToChapterThree(value)) throw new Error("第3章へ入れない");
+    value.day += 3;
+    if (!progress.departChapterThree(value)) throw new Error("東京へ出発できない");
+    Object.assign(value.flags._ch3_intro, { routeVersion: 2, titleSeen: true, prologueStep: 4 });
+    Object.assign(core.config, { textSpeed: 4, bgmVolume: 0, seVolume: 0, voiceBlip: false });
+    core.saveConfig(); core.save(); core.requestResumeOnBoot();
+  });
+  await page.reload();
+  await page.locator('[data-test="ch3-intro-scene"]').waitFor({ timeout: 90000 });
+  await page.mouse.move(5, 5);
+  await page.waitForTimeout(400);
+}
+
+async function chapterCards(page, { phone }) {
+  const label = phone ? "（スマホ）" : "";
+  // 第4章のドバイ到着: カードの見た目・文・ボタン。現行と比べてから、「続きを読む」で次の場面へ進む。
+  await openDubaiCard(page);
+  const neo = await measureCard(page);
+  await setLook(page, "classic");
+  await page.waitForTimeout(300);
+  const classic = await measureCard(page);
+  assert.equal(classic.look, "classic");
+  assert(!classic.face.includes("rgba(36, 22, 55"), "現行は紺の箱のまま");
+  await setLook(page, "neo");
+  await page.waitForTimeout(300);
+  assertCard(neo, `ドバイ到着の場面カード${label}`, classic, { phone });
+  await press(page, page.locator('[data-test="ch4-continue"]'));
+  await page.locator('[data-test="ch4-scene"][data-scene="ch4_arrival_inn"]').waitFor({ timeout: 60000 });
+
+  // 第3章の東京の行程カード: 行程の札と、東京の街の地図（ステージの外のダイアログ）。
+  await openTokyoCard(page);
+  const tokyo = await measureCard(page);
+  await setLook(page, "classic");
+  await page.waitForTimeout(300);
+  const tokyoClassic = await measureCard(page);
+  await setLook(page, "neo");
+  await page.waitForTimeout(300);
+  assertCard(tokyo, `東京の行程カード${label}`, tokyoClassic, { phone });
+  assert(tokyo.wayfinding, "東京の行程の札がある");
+  await press(page, page.locator('[data-test="ch3-map-open"]'));
+  await page.locator('[data-test="ch3-map"]').waitFor();
+  await page.waitForTimeout(300);
+  const dialog = await page.evaluate(() => {
+    const node = document.querySelector('[data-test="ch3-map"]'), style = getComputedStyle(node), r = node.getBoundingClientRect();
+    const close = node.querySelector('[data-test="ch3-map-close"]'), cr = close.getBoundingClientRect();
+    return { face: style.backgroundImage, border: style.borderTopWidth, inView: r.left >= -1 && r.top >= -1 && r.right <= innerWidth + 1 && r.bottom <= innerHeight + 1,
+      close: { height: cr.height, inView: cr.left >= r.left - 1 && cr.right <= r.right + 1 && cr.bottom <= r.bottom + 1, fill: getComputedStyle(close).backgroundColor, ink: getComputedStyle(close).color },
+      title: getComputedStyle(node.querySelector(".ch3-map-header h2")).color };
+  });
+  assert(dialog.face.includes("linear-gradient") && dialog.face.includes("rgba(36, 22, 55") && dialog.border === "0px" && dialog.inView, `東京の街の地図は夜紫の面${label} ${JSON.stringify(dialog)}`);
+  assert(dialog.close.inView && dialog.close.height >= (phone ? 34 : 38) && dialog.title === "rgb(255, 255, 255)", `東京の街の地図の「閉じる」${label} ${JSON.stringify(dialog)}`);
+  assert(dark(dialog.close.fill.match(/[\d.]+/g).slice(0, 3).map(Number)) && light(dialog.close.ink.match(/[\d.]+/g).slice(0, 3).map(Number)), `「閉じる」は夜紫の札に白い字 ${JSON.stringify(dialog.close)}`);
+  await press(page, page.locator('[data-test="ch3-map-close"]'));
+  await page.locator('[data-test="ch3-map"]').waitFor({ state: "detached" });
+}
+
+const CARD_PARTS = [["#screen .ch2-contest", ALL], ["#screen .ch2-contest-header", ALL], ["#screen .ch2-contest-header p", [""]], ["#screen .ch2-contest-header h1", [""]],
+  ["#screen .ch2-contest-description", [""]], ["#screen .ch2-contest-actions .btn", ALL], ["#screen .ch2-contest-header .btn", ALL]];
+const GOAL_MAP_PARTS = [["#hud .hud-card", ALL], ["#hud .dc-main", [""]], ["#hud .dc-meta", [""]], ["#hud .dc-row.money", ALL], ["#hud .dc-row.goal", ALL], ["#hud .dc-row.goal b", [""]],
+  ["#hud .hud-stamina", ALL], ["#hud .hud-stamina .hud-bar", [""]], ["#hud .hud-exp", [""]], ["#hud .hx-lv", [""]], ["#hud .hx-bar", ALL],
+  ['[data-test="pin-c_station"] .sub-label', [""]], ['[data-test="pin-c_station"] .pin-cost', [""]], ['[data-test="pin-ch5_to_dubai"]', [""]], ['[data-test="pin-ch5_to_dubai"] .shield', ALL]];
+
+// ---------------------------------------------------------------- ショップ・LIME・レベルアップ・ギャラリー（LK05 の残り）
+
+/** 1F ショップを開く（店の入口を経ずに売り場へ）。所持の葉と装備中の機材がある状態。 */
+async function openShopCounter(page, opts = { direct: true }) {
+  await page.evaluate(async (opts) => {
+    const core = await import("./js/core/state.js"), ui = await import("./js/core/ui.js"), hud = await import("./js/daily/hud.js");
+    const s = core.newGame();
+    Object.assign(s, { phase: "daily", chapter: 1, day: 5, slot: 0, money: 12800, stamina: 100 });
+    s.flavorStock = { mint: 15, double_apple: 50, vanilla: 20 }; s.flavors = Object.keys(s.flavorStock);
+    ui.clearScreen(); hud.initHud({}); hud.showHud();
+    window.lookNeoShop = (await import("./js/daily/shop.js")).openShop(opts);
+  }, opts);
+  await page.locator(opts.direct ? ".shop .shop-tabs" : '[data-test="shop-enter"]').waitFor();
+  await page.mouse.move(2, 2);
+  await page.waitForTimeout(400);
+}
+
+/** 売り場を測る（面・タブ・行・数量・下の帯）。 */
+const measureShop = (page) => page.evaluate((helpers) => {
+  const { px, shown, text, rgb } = (0, eval)(helpers);
+  const root = document.querySelector("#screen .shop-paper"), style = getComputedStyle(root);
+  const look = (node) => { const cs = getComputedStyle(node); return { ...px(node), face: cs.backgroundImage, fill: rgb(cs.backgroundColor), ink: rgb(cs.color), frame: cs.borderImageSource }; };
+  const rows = [...root.querySelectorAll(".shop-body .shop-row.product")].filter((row) => row.getBoundingClientRect().top < root.querySelector(".shop-body").getBoundingClientRect().bottom - 30).slice(0, 4);
+  return { look: document.documentElement.dataset.look, rect: px(root), face: style.backgroundImage, ink: rgb(style.color), frame: style.borderImageSource,
+    head: rgb(getComputedStyle(root.querySelector(".shop-head h2")).color), rule: getComputedStyle(root.querySelector(".shop-head")).backgroundImage,
+    money: text(root.querySelector(".shop-money")),
+    tabs: [...root.querySelectorAll(".shop-tab")].map((node) => ({ id: node.dataset.tab, on: node.classList.contains("on"), ...look(node) })),
+    rows: rows.map((row) => ({ name: text(row.querySelector(".shop-main b")), price: text(row.querySelector(".shop-price")), stock: text(row.querySelector(".shop-stock")),
+      art: look(row.querySelector(".shop-product-art")), img: shown(row.querySelector(".shop-product-art img")), name_ink: rgb(getComputedStyle(row.querySelector(".shop-main b")).color),
+      price_ink: rgb(getComputedStyle(row.querySelector(".shop-price")).color), rect: px(row),
+      steps: [...row.querySelectorAll(".shop-step")].map((node) => ({ test: node.dataset.test, ...look(node) })) })),
+    back: look(root.querySelector(".shop-back")), summary: text(root.querySelector(".shop-summary")), checkout: { ...look(root.querySelector(".shop-checkout")), disabled: root.querySelector(".shop-checkout").disabled, label: text(root.querySelector(".shop-checkout")) } };
+}, STAGE_PX);
+
+async function shopScreen(page, { phone }) {
+  await openShopCounter(page);
+  const m = await measureShop(page);
+  // 現行の売り場（紙）と比べるために、同じ状態を現行で測り直す。
+  await setLook(page, "classic");
+  await page.waitForTimeout(300);
+  const classic = await measureShop(page);
+  await setLook(page, "neo");
+  await page.waitForTimeout(300);
+  assert.equal(m.look, "neo");
+  assert(inside(m.rect, STAGE) && m.frame === "none" && m.face.includes("linear-gradient") && m.face.includes("rgba(36, 22, 55"), `ショップは夜紫の面 ${m.face}`);
+  assert(light(m.ink) && light(m.head) && m.rule.includes("227, 189, 110"), "店名は白、見出しの下に金の罫線");
+  assert(!classic.face.includes("rgba(36, 22, 55"), "現行は紙のまま");
+  // 情報（所持金・タブ・商品名・値段・所持数・購入の札）は現行と同じ。
+  assert.equal(m.money, classic.money);
+  assert.deepEqual(m.tabs.map((tab) => tab.id), classic.tabs.map((tab) => tab.id));
+  assert.deepEqual(m.rows.map(({ name, price, stock }) => [name, price, stock]), classic.rows.map(({ name, price, stock }) => [name, price, stock]), "商品名・値段・所持数が現行と同じ");
+  assert.equal(m.summary, classic.summary);
+  // 押せる大きさ（タブ・− ＋・店を出る・購入）は現行以上で、ステージの中。
+  for (const [index, tab] of m.tabs.entries()) {
+    assert(inside(tab, m.rect, 1) && tab.width >= classic.tabs[index].width - 1 && tab.height >= classic.tabs[index].height - 1 && tab.real >= 38, `タブ ${tab.id} の大きさ ${JSON.stringify(tab)}`);
+    assert(tab.on ? !light(tab.ink) && tab.face.includes("linear-gradient") : light(tab.ink), `タブ ${tab.id}: 選んだ売り場は金、ほかは白い字`);
+  }
+  assert(m.rows.length >= 3);
+  for (const [index, row] of m.rows.entries()) {
+    const before = classic.rows[index];
+    assert(light(row.name_ink) && light(row.price_ink), `${row.name}: 商品名と値段は白`);
+    // 商品の絵は生成りの札に載る（明るい台紙向けの絵が暗い面で沈まない）。絵そのものは出ている。
+    assert(light(row.art.fill) && row.img, `${row.name}: 商品の絵の札 ${JSON.stringify(row.art)}`);
+    assert(Math.abs(row.rect.height - before.rect.height) < 1, `${row.name}: 行の高さは現行と同じ`);
+    for (const [k, step] of row.steps.entries()) {
+      assert(step.width >= before.steps[k].width - .5 && step.height >= before.steps[k].height - .5 && step.real >= 38, `${row.name}: ${step.test} の押せる大きさ ${JSON.stringify([step, before.steps[k]])}`);
+      assert(dark(step.fill) || step.fill.slice(0, 3).reduce((a, b) => a + b, 0) < 420, `${row.name}: ${step.test} は夜紫の札 ${step.fill}`);
+    }
+  }
+  for (const key of ["back", "checkout"]) {
+    assert(inside(m[key], m.rect, 1) && m[key].height >= classic[key].height - .5 && m[key].width >= classic[key].width - .5 && m[key].real >= 38, `${key} の押せる大きさ ${JSON.stringify([m[key], classic[key]])}`);
+  }
+  assert(light(m.back.ink) && m.checkout.disabled, "店を出るは白い字、選ぶまで購入は押せない");
+
+  // 実際に選んで買える（＋ → 合計 → 購入）。購入の札は金。
+  const before = await page.evaluate(async () => (await import("./js/core/state.js")).state.money);
+  await press(page, page.locator('[data-test="buy-mint"]'));
+  await press(page, page.locator('[data-test="buy-mint"]'));
+  await page.mouse.move(2, 2);
+  let after = await measureShop(page);
+  assert(!after.checkout.disabled && after.checkout.face.includes("linear-gradient") && !light(after.checkout.ink), `購入の札は金に墨の字 ${JSON.stringify(after.checkout)}`);
+  assert.match(after.checkout.label, /^2箱を購入する/);
+  // 選んだ品の確認（.shop-dialog）もモーダルと同じ夜紫の面。
+  await press(page, page.locator('[data-test="shop-summary"]'));
+  await page.locator("#modal.show .shop-dialog").waitFor();
+  await page.waitForTimeout(350);
+  assertModal(await measureModal(page), "選択した商品", { phone });
+  await press(page, page.locator("#modal .modal-actions button").last());
+  await page.locator("#modal.show").waitFor({ state: "hidden" });
+  // 商品の詳細: 葉の特徴の字と棒が暗い面の上で読める。
+  await press(page, page.locator('[data-test="detail-mint"]'));
+  await page.locator("#modal.show .shop-dialog").waitFor();
+  await page.waitForTimeout(350);
+  assertModal(await measureModal(page), "商品の詳細", { phone });
+  const guide = await page.evaluate(() => {
+    const label = document.querySelector("#modal .flavor-axis-label"), bar = document.querySelector("#modal .flavor-axis-track i"), art = document.querySelector("#modal .shop-detail .shop-product-art");
+    const rgb = (value) => value.match(/[\d.]+/g).slice(0, 3).map(Number);
+    return { label: rgb(getComputedStyle(label).color), bar: rgb(getComputedStyle(bar).backgroundColor), art: rgb(getComputedStyle(art).backgroundColor) };
+  });
+  assert(light(guide.label) && gold(guide.bar) && light(guide.art), `葉の特徴は白い字に金の棒、絵は生成りの札 ${JSON.stringify(guide)}`);
+  await press(page, page.locator('[data-test="shop-detail-close"]'));
+  await page.locator("#modal.show").waitFor({ state: "hidden" });
+  await press(page, page.locator('[data-test="shop-checkout"]'));
+  await page.waitForFunction((before) => window.__remake.state.money < before, before);
+  after = await measureShop(page);
+  assert.equal(after.rows.find((row) => row.name.includes("ミント")).stock, "所持115g", "買った分が所持に入る");
+  // 売り場を移っても同じ面（機材・くじ・売却）。くじの景品の札も夜紫。
+  for (const tab of ["equip", "kuji", "sell"]) {
+    await press(page, page.locator(`.shop-tab[data-tab="${tab}"]`));
+    await page.waitForTimeout(250);
+    const on = await page.locator(`.shop-tab[data-tab="${tab}"]`).evaluate((node) => node.classList.contains("on") && getComputedStyle(node).backgroundImage.includes("linear-gradient"));
+    assert(on, `${tab} の売り場へ移れる`);
+  }
+  await press(page, page.locator('.shop-tab[data-tab="kuji"]'));
+  const lineup = await page.locator(".kuji-lineup-item").first().evaluate((node) => ({ fill: getComputedStyle(node).backgroundColor, ink: getComputedStyle(node.querySelector(".kuji-lineup-name")).color }));
+  assert(light(lineup.ink.match(/[\d.]+/g).slice(0, 3).map(Number)), `くじの景品の名前は白 ${JSON.stringify(lineup)}`);
+  // 店を出る。
+  await press(page, page.locator('[data-test="shop-leave"]'));
+  await page.waitForFunction(() => !document.querySelector("#screen .shop-paper") || document.querySelector("#screen .shop-paper.done"));
+  assert.equal(await page.evaluate(() => window.lookNeoShop.then((r) => r ?? "left")), "left");
+}
+
+/** 店の入口（1F・2F）。写真はそのまま、名前の帯と階の札が夜紫と金。 */
+async function shopEntry(page, { phone }) {
+  await openShopCounter(page, {});
+  const entry = await page.evaluate((helpers) => {
+    const { px, rgb } = (0, eval)(helpers);
+    const root = document.querySelector("#screen .shop-entry");
+    return { face: getComputedStyle(root).backgroundImage, floors: [...root.querySelectorAll(".shop-floor")].map((node) => ({ ...px(node), disabled: node.disabled,
+      caption: rgb(getComputedStyle(node.querySelector(".shop-floor-caption b")).color), photo: px(node.querySelector(".shop-floor-picture img")) })),
+    back: px(root.querySelector(".shop-back")) };
+  }, STAGE_PX);
+  assert(entry.face.includes("rgba(36, 22, 55"), "店の入口も夜紫の面");
+  assert.equal(entry.floors.length, 2);
+  for (const floor of entry.floors) assert(inside(floor, STAGE) && floor.real >= 38 && light(floor.caption) && floor.photo.height > 100, `階の札 ${JSON.stringify(floor)}`);
+  assert(entry.back.real >= 38, "街に戻るが押せる");
+  await press(page, page.locator('[data-test="shop-enter"]'));
+  await page.locator(".shop .shop-tabs").waitFor();
+  await press(page, page.locator('[data-test="shop-leave"]'));
+}
+
+/** LIME: 端末の枠・トーク一覧・トーク・返信の札。 */
+const measureLime = (page) => page.evaluate((helpers) => {
+  const { px, shown, text, rgb } = (0, eval)(helpers);
+  const phone = document.querySelector(".phone"), chat = phone.querySelector(".lime-chat");
+  const look = (node) => node && { ...px(node), fill: rgb(getComputedStyle(node).backgroundColor), face: getComputedStyle(node).backgroundImage, ink: rgb(getComputedStyle(node).color), text: text(node) };
+  return { look: document.documentElement.dataset.look, phone: look(phone), header: look(phone.querySelector(".lime-header")), headerLine: getComputedStyle(phone.querySelector(".lime-header")).borderBottomColor,
+    screen: rgb(getComputedStyle(chat).backgroundColor), screenFace: getComputedStyle(chat).backgroundImage, list: chat.classList.contains("list"),
+    rows: [...chat.querySelectorAll(".lime-chat-row")].map((node) => ({ ...look(node), name: text(node.querySelector(".lcr-name")), nameInk: rgb(getComputedStyle(node.querySelector(".lcr-name")).color), dot: shown(node.querySelector(".lcr-dot")), tag: text(node.querySelector(".lcr-tag")) })),
+    peer: [...chat.querySelectorAll(".lime-row.peer:not(.typing) .lime-bubble")].map(look), me: [...chat.querySelectorAll(".lime-row.me .lime-bubble")].map(look),
+    replies: [...phone.querySelectorAll(".lime-actions .lime-reply")].filter(shown).map((node) => ({ ...look(node), ghost: node.classList.contains("ghost") })) };
+}, STAGE_PX);
+
+/** 地図の状態に、トークを2件（返事を選べる雑談・ふつうの連絡）入れておく。 */
+const seedLime = (page) => page.evaluate(async () => {
+  const core = await import("./js/core/state.js");
+  const item = (id, sender, messages, replies = null) => ({ id, originId: id, day: core.state.day, chapter: core.state.chapter, read: false, done: false,
+    replyState: replies ? "waiting" : "none", log: [], msg: { id, sender, type: "message", messages, ...(replies ? { replies } : {}) } });
+  core.state.inbox.push(
+    item("qa_neo_lime_chat", "tsumugi", ["……昨日の絵、少し描き足しました。", "見てもらえますか。"],
+      [{ text: "もちろん、見たい", response: "……ありがとうございます。" }, { text: "また今度ね", response: "はい。" }]),
+    item("qa_neo_lime_note", "minto", ["今日は新作のフレーバー入ってるよ〜！"]));
+  core.save();
+});
+
+// LIME は実際のスマホのメッセージアプリをまねた画面（緑の見出し・白い一覧・緑の自分の吹き出し。台帳 DUI06・LK20）。
+// わざと紫にしていないので、新版でも旧版と同じ見た目のままにする。
+const LIME_LIST_PARTS = [[".phone", ALL], [".phone-status", [""]], [".lime-header", ALL], [".lime-logo", [""]], [".lime-chat", [""]], [".lime-chat-row", ALL], [".lcr-name", [""]], [".lcr-preview", [""]],
+  [".lcr-side small", [""]], [".lime-actions", [""]], [".lime-reply.ghost", [""]]];
+const LIME_TALK_PARTS = [[".phone", ALL], [".lime-header", ALL], [".lime-chat", [""]], [".lime-row.peer .lime-bubble", ALL], [".lime-note", [""]], [".lime-actions", [""]],
+  [".lime-reply:not(.ghost)", [""]]];
+const LIME_PUSH_PARTS = [["#toasts .lime-push", ALL], ["#toasts .lime-push .lp-text", [""]], ["#toasts .lime-push .lp-top", [""]], ["#toasts .lime-push .lp-icon", [""]]];
+/** 計算済みスタイルから、色の定義の変数（様式ごとに違ってよい）を除く。 */
+const withoutVariables = (styles) => Object.fromEntries(Object.entries(styles).map(([key, values]) =>
+  [key, values && Object.fromEntries(Object.entries(values).filter(([property]) => !property.startsWith("--")))]));
+/** 新版と旧版で、同じ部品の計算済みの見た目が同じこと。 */
+async function assertSameAsClassic(page, parts, label) {
+  await page.mouse.move(2, 2);
+  await page.waitForTimeout(300);
+  assert.equal(await page.evaluate(() => document.documentElement.dataset.look), "neo");
+  const neo = withoutVariables(await stylesOf(page, parts));
+  for (const [selector] of parts) assert(neo[selector] !== null, `${label}: 比べる部品がある ${selector}`);
+  await setLook(page, "classic");
+  await page.waitForTimeout(400);
+  const classic = withoutVariables(await stylesOf(page, parts));
+  await setLook(page, "neo");
+  await page.waitForTimeout(400);
+  for (const key of Object.keys(classic)) assert.deepEqual(neo[key], classic[key], `${label}: ${key} は新版でも旧版と同じ見た目（LIME は紫にしない）`);
+}
+
+async function limeScreen(page, { phone }) {
+  await openDaily(page);
+  await seedLime(page);
+  await press(page, page.locator('[data-test="hud-phone"]'));
+  await page.locator(".phone-overlay.show .lime-chat.list .lime-chat-row").first().waitFor();
+  await page.waitForTimeout(500);
+  const list = await measureLime(page);
+  assert.equal(list.look, "neo");
+  // 端末とトーク一覧: 緑の見出しに白い一覧（濃い字）。
+  assert(inside(list.phone, STAGE) && list.list && light(list.screen), `トーク一覧の画面は白 ${list.screen}`);
+  assert(/rgb\((\d+), (1[5-9]\d|2\d\d), (\d+)\)/.test(list.header.face) || (list.header.fill[1] > 150 && list.header.fill[0] < 80), `見出しは LIME の緑 ${JSON.stringify(list.header)}`);
+  for (const row of list.rows) assert(!light(row.nameInk) && light(row.fill) && inside(row, list.phone, 1), `${row.name}: 白い行に濃い名前 ${JSON.stringify(row)}`);
+  assert(list.rows.length >= 2 && list.rows.every((row) => row.dot), "未読の点が出る");
+  await assertSameAsClassic(page, LIME_LIST_PARTS, "トーク一覧");
+
+  // トーク: 相手の吹き出しは白に濃い字。
+  await press(page, page.locator(".phone-overlay .lime-chat-row", { hasText: "つむぎ" }));
+  await page.locator(".phone-overlay .lime-actions .lime-reply").first().waitFor({ timeout: 15000 });
+  await page.waitForTimeout(600);
+  const talk = await measureLime(page);
+  assert(!talk.list && talk.peer.length >= 1, "トークの画面");
+  for (const bubble of talk.peer) assert(light(bubble.fill) && !light(bubble.ink) && inside(bubble, talk.phone, 1), `相手の吹き出しは白に濃い字 ${JSON.stringify(bubble)}`);
+  assert(talk.replies.filter((reply) => !reply.ghost).length >= 1, "返信の札が出る");
+  for (const reply of talk.replies) assert(inside(reply, talk.phone, 1) && reply.height >= (phone ? 30 : 34), `返信の札の大きさ ${JSON.stringify(reply)}`);
+  await assertSameAsClassic(page, LIME_TALK_PARTS, "トーク");
+  // 返信して自分の吹き出しが出る（LIME の緑）。
+  await press(page, page.locator(".phone-overlay .lime-reply:not(.ghost)", { hasText: "もちろん、見たい" }));
+  await page.locator(".phone-overlay .lime-row.me .lime-bubble, .phone-overlay .lime-note").first().waitFor({ timeout: 15000 });
+  await page.waitForTimeout(800);
+  const replied = await measureLime(page);
+  assert(replied.me.length >= 1, "自分の吹き出しが出る");
+  for (const bubble of replied.me) assert(bubble.fill[1] > 180 && bubble.fill[1] > bubble.fill[0] + 20 && bubble.fill[1] > bubble.fill[2] + 40 && !light(bubble.ink), `自分の吹き出しは緑に濃い字 ${JSON.stringify(bubble)}`);
+  await assertSameAsClassic(page, [[".lime-row.me .lime-bubble", ALL]], "自分の吹き出し");
+  await press(page, page.locator(".phone-overlay .lime-back").first()).catch(() => {});
+  await page.locator(".phone-overlay .lime-chat.list").waitFor({ timeout: 15000 });
+  await press(page, page.locator('[data-test="phone-close"]'));
+  await page.locator(".phone-overlay").waitFor({ state: "detached" });
+
+  // 朝の通知の札も、スマホの通知をまねた見た目のまま。
+  await page.evaluate(async () => {
+    const core = await import("./js/core/state.js");
+    core.state.inbox.push({ id: "qa_neo_push", originId: "qa_neo_push", day: core.state.day, read: false, done: false, replyState: "none", log: [], msg: { sender: "minto", type: "message", messages: ["おはよ！"] } });
+    (await import("./js/daily/phone.js")).pushNotice(1, { onOpen: () => {} });
+  });
+  await page.locator("#toasts .lime-push.show").waitFor();
+  await page.waitForTimeout(500);
+  const push = await page.locator("#toasts .lime-push").evaluate((node, helpers) => {
+    const { px } = (0, eval)(helpers);
+    return { ...px(node) };
+  }, STAGE_PX);
+  assert(inside(push, STAGE), `朝の通知の札がステージの中 ${JSON.stringify(push)}`);
+  await assertSameAsClassic(page, LIME_PUSH_PARTS, "朝の通知");
+  assert.equal(await page.evaluate(() => window.lookNeoDailyError || ""), "");
+}
+
+/** レベルアップ（寝る前の全面の札・ふだんの短い帯）。 */
+async function levelUp(page, { phone }) {
+  await page.evaluate(async () => {
+    const core = await import("./js/core/state.js"), ui = await import("./js/core/ui.js"), data = await import("./js/core/data.js"), hud = await import("./js/daily/hud.js");
+    const s = core.newGame();
+    Object.assign(s, { phase: "daily", day: 3, slot: 1, stamina: 90 });
+    ui.showScreen("map", document.createElement("div"));
+    await ui.setBg(data.bgUrl("bg_home", "night"), { fast: true });
+    hud.initHud({ phone() {}, status() {}, menu() {} });
+    hud.showHud(true);
+    const g = await import("./js/core/growth.js");
+    g.setGrowthPreview(true);
+    g.gainExp(g.totalExpFor(3) + 10);
+    window.lookNeoNight = null;
+    void (await import("./js/daily/levelup.js")).presentNightGrowth().then((r) => { window.lookNeoNight = r; });
+  });
+  await page.locator('[data-test="levelup"]').waitFor();
+  // 検査の共通の仕掛け（growth_ack.mjs）が出そろった札の OK をすぐ押すので、出そろった瞬間（クラスが付いた時）に測っておく。
+  await page.evaluate((helpers) => {
+    const { px, rgb } = (0, eval)(helpers);
+    const look = (node) => ({ ...px(node), face: getComputedStyle(node).backgroundImage, ink: rgb(getComputedStyle(node).color) });
+    const take = () => {
+      const panel = document.querySelector(".levelup.lu-settled-state");
+      if (!panel || window.lookNeoLevelup) return;
+      window.lookNeoLevelup = { panel: look(panel), text: panel.innerText, lv: getComputedStyle(panel.querySelector(".lu-lv")).backgroundImage,
+        ok: look(panel.querySelector('[data-test="levelup-ok"]')), board: look(panel.querySelector('[data-test="levelup-board"]')) };
+    };
+    window.lookNeoLevelup = null;
+    new MutationObserver(take).observe(document.getElementById("fx"), { subtree: true, attributes: true, attributeFilter: ["class"] });
+    take();
+  }, STAGE_PX);
+  await page.locator(".levelup-backdrop").click({ position: { x: 5, y: 5 } });
+  await page.waitForFunction(() => window.lookNeoLevelup);
+  const full = await page.evaluate(() => window.lookNeoLevelup);
+  assert(inside(full.panel, STAGE) && full.panel.face.includes("rgba(36, 22, 55") && light(full.panel.ink), `レベルアップの札は夜紫の面 ${JSON.stringify(full.panel)}`);
+  assert(full.lv.includes("227, 189, 110"), "レベルの下に金の罫線");
+  assert.match(full.text, /Lv\.1 → Lv\.3/);
+  assert(full.ok.face.includes("linear-gradient") && !light(full.ok.ink) && light(full.board.ink), "OK は金、心得の盤は夜紫の札");
+  for (const button of [full.ok, full.board]) assert(inside(button, full.panel, 1) && button.height >= 44 - .5 && button.real >= (phone ? 30 : 38), `ボタンの押せる大きさ ${JSON.stringify(button)}`);
+  // OK で閉じる（共通の仕掛けが押す）。
+  await page.waitForFunction(() => window.lookNeoNight?.to === 3);
+  // ふだんの1レベルは短い帯。
+  await page.evaluate(async () => {
+    const g = await import("./js/core/growth.js"), core = await import("./js/core/state.js");
+    g.gainExp(g.totalExpFor(core.state.growth.level + 1) - core.state.growth.xp + 5);
+    window.lookNeoNight = null;
+    void (await import("./js/daily/levelup.js")).presentNightGrowth().then((r) => { window.lookNeoNight = r; });
+  });
+  await page.locator(".levelup-band.show").waitFor();
+  await page.waitForTimeout(260);
+  const band = await page.locator(".levelup-band").evaluate((node, helpers) => {
+    const { px, rgb } = (0, eval)(helpers);
+    return { ...px(node), face: getComputedStyle(node).backgroundImage, ink: rgb(getComputedStyle(node.querySelector(".lb-lv")).color), text: node.innerText };
+  }, STAGE_PX);
+  assert(inside(band, STAGE) && band.face.includes("227, 189, 110") && band.face.includes("rgba(36, 22, 55") && light(band.ink), `短い帯は夜紫に金の罫線 ${JSON.stringify(band)}`);
+  assert.match(band.text, /LEVEL UP/);
+  await page.waitForFunction(() => window.lookNeoNight?.to === 4, null, { timeout: 8000 });
+}
+
+/** ギャラリー（タイトルから）。一覧の面・タブ・閉じる・閲覧の帯。 */
+const measureGallery = (page) => page.evaluate((helpers) => {
+  const { px, rgb, text } = (0, eval)(helpers);
+  const box = document.querySelector(".gal"), look = (node) => ({ ...px(node), face: getComputedStyle(node).backgroundImage, fill: rgb(getComputedStyle(node).backgroundColor), ink: rgb(getComputedStyle(node).color), text: text(node) });
+  return { look: document.documentElement.dataset.look, box: look(box), frame: getComputedStyle(box).borderImageSource, title: rgb(getComputedStyle(box.querySelector("h2")).color),
+    rule: getComputedStyle(box.querySelector(".gal-head")).backgroundImage, rate: text(box.querySelector(".gal-rate")),
+    tabs: [...box.querySelectorAll(".gal-tab")].map((node) => ({ ...look(node), selected: node.getAttribute("aria-selected") === "true" })), close: look(box.querySelector(".gal-close")),
+    cells: [...box.querySelectorAll(".gal-cell")].slice(0, 8).map((node) => ({ ...px(node), locked: node.classList.contains("locked"), text: text(node) })) };
+}, STAGE_PX);
+
+async function galleryScreen(page, { phone }) {
+  await page.evaluate(() => localStorage.setItem("suien_remake_gallery", JSON.stringify(["cg_ch1_sumi_training"])));
+  await press(page, page.locator('[data-test="title-gallery"]'));
+  await page.locator(".gal").waitFor();
+  await page.waitForTimeout(500);
+  const m = await measureGallery(page);
+  await setLook(page, "classic");
+  await page.waitForTimeout(300);
+  const classic = await measureGallery(page);
+  await setLook(page, "neo");
+  await page.waitForTimeout(300);
+  assert.equal(m.look, "neo");
+  assert(inside(m.box, STAGE) && m.frame === "none" && m.box.face.includes("rgba(36, 22, 55") && light(m.box.ink) && light(m.title), `ギャラリーは夜紫の面 ${JSON.stringify(m.box)}`);
+  assert(m.rule.includes("227, 189, 110"), "見出しの下に金の罫線");
+  // 収集率・タブ・枠の中身は現行と同じ。押せる大きさも同じ。
+  assert.equal(m.rate, classic.rate);
+  assert.deepEqual(m.tabs.map((tab) => tab.text), classic.tabs.map((tab) => tab.text));
+  assert.deepEqual(m.cells.map(({ locked, text }) => [locked, text]), classic.cells.map(({ locked, text }) => [locked, text]));
+  for (const [index, tab] of m.tabs.entries()) {
+    assert(tab.width >= classic.tabs[index].width - .5 && tab.height >= classic.tabs[index].height - .5 && inside(tab, m.box, 1), `タブ ${tab.text} の大きさは現行以上`);
+    assert(tab.selected ? tab.face.includes("linear-gradient") && !light(tab.ink) : dark(tab.fill) && light(tab.ink), `タブ ${tab.text}: 選んだ札は金、ほかは夜紫に白い字`);
+  }
+  assert(m.close.height >= classic.close.height - .5 && light(m.close.ink), "閉じるの大きさと色");
+  for (const [index, cell] of m.cells.entries()) assert(Math.abs(cell.width - classic.cells[index].width) < 1 && Math.abs(cell.height - classic.cells[index].height) < 1, "枠の大きさは現行と同じ");
+  // タブが押せる。見た絵を開くと閲覧の帯（夜紫）、絵はそのまま。
+  await press(page, page.locator('[data-test="gallery-tab-cheki"]'));
+  assert(await page.locator('[data-test="gallery-tab-cheki"]').evaluate((node) => node.getAttribute("aria-selected") === "true"));
+  await press(page, page.locator('[data-test="gallery-tab-all"]'));
+  await press(page, page.locator(".gal button.gal-cell").first());
+  await page.locator(".gal-viewer.show").waitFor();
+  await page.waitForTimeout(400);
+  const viewer = await page.evaluate((helpers) => {
+    const { px, rgb } = (0, eval)(helpers);
+    const tools = document.querySelector(".gal-viewer-tools"), button = tools.querySelector(".btn");
+    return { tools: { ...px(tools), face: getComputedStyle(tools).backgroundImage }, button: { ...px(button), ink: rgb(getComputedStyle(button).color), fill: rgb(getComputedStyle(button).backgroundColor) },
+      content: getComputedStyle(document.querySelector(".gal-viewer")).backgroundColor };
+  }, STAGE_PX);
+  assert(viewer.tools.face.includes("227, 189, 110") && light(viewer.button.ink) && dark(viewer.button.fill) && viewer.button.real >= (phone ? 30 : 30), `閲覧の帯 ${JSON.stringify(viewer)}`);
+  await press(page, page.locator(".gal-viewer-tools .btn").last());
+  await page.locator(".gal-viewer.show").waitFor({ state: "hidden" });
+  await press(page, page.locator('[data-test="gallery-close"]'));
+  await page.locator(".gal-overlay").waitFor({ state: "detached" });
+}
+
+const SHOP_PARTS = [["#screen .shop-paper", ALL], ["#screen .shop-head", ALL], ["#screen .shop-head h2", [""]], ["#screen .shop-money", [""]], ['#screen .shop-tab[data-tab="flavor"]', ALL],
+  ['#screen .shop-tab[data-tab="equip"]', [""]], ["#screen .shop-filter.on", [""]], ["#screen .shop-row.product", ALL], ["#screen .shop-row.product .shop-product-art", [""]],
+  ["#screen .shop-row.product .shop-main b", [""]], ["#screen .shop-row.product .shop-price", [""]], ["#screen .shop-row.product .shop-step.plus", ALL], ["#screen .shop-foot", [""]],
+  ["#screen .shop-back", [""]], ["#screen .shop-checkout", [""]]];
+const LIME_PARTS = [[".phone", ALL], [".phone-status", [""]], [".lime-header", [""]], [".lime-logo", [""]], [".lime-chat", [""]], [".lime-chat-row", [""]], [".lcr-name", [""]], [".lcr-preview", [""]],
+  [".lime-actions", [""]], [".lime-reply", [""]]];
+const GALLERY_PARTS = [[".gal-overlay", [""]], [".gal", ALL], [".gal-head", [""]], [".gal-head h2", [""]], [".gal-tab[aria-selected=\"true\"]", [""]], [".gal-tab[aria-selected=\"false\"]", [""]],
+  [".gal-close", [""]], [".gal-cell.locked", [""]], [".gal-cell.locked span", [""]]];
+
 const MENU_PARTS = [["#modal > .dmenu", [""]], [".dmenu .dm-backdrop", [""]], [".dmenu .dm-sheet", ALL], [".dmenu .dm-side", [""]], [".dmenu .dm-title", [""]], [".dmenu .dm-tabs", [""]],
   [".dmenu .dm-tab.on", ALL], [".dmenu .dm-tab:not(.on)", ALL], [".dmenu .dm-tab .dm-icon", [""]], [".dmenu .dm-tab .dm-label", [""]], [".dmenu .dm-head", [""]], [".dmenu .dm-summary", [""]],
   [".dmenu .dm-sum > small", [""]], [".dmenu .dm-sum > b", [""]], [".dmenu .dm-health > b", [""]], [".dmenu .dm-help", ALL], [".dmenu .dm-close", [""]], [".dmenu .dm-panel", [""]],
@@ -1264,6 +2043,94 @@ await suite("look-neo", async (check) => {
   await check("modals-phone", onPhone(modals), { pageEntry: NEO, ...PHONE });
   await check("title-desktop", (page) => title(page, { phone: false }), { pageEntry: NEO });
   await check("title-phone", onPhone(title), { pageEntry: NEO, ...PHONE });
+
+  // ---- 第2〜5章（LK13）: 地図と HUD・MENU、章の場面カード、旧版へ戻した時の痕跡（PC と横持ちスマホ）
+  for (const chapter of Object.keys(CHAPTER_MAPS)) {
+    await check(`chapter-map-${chapter}-desktop`, (page) => chapterMap(page, { phone: false, chapter }), { pageEntry: NEO });
+    await check(`chapter-map-${chapter}-phone`, onPhone((page, options) => chapterMap(page, { ...options, chapter })), { pageEntry: NEO, ...PHONE });
+  }
+  await check("chapter-cards-desktop", (page) => chapterCards(page, { phone: false }), { pageEntry: NEO });
+  await check("chapter-cards-phone", onPhone(chapterCards), { pageEntry: NEO, ...PHONE });
+  await check("restore-classic-chapters", async (page) => {
+    touchPages.add(page);
+    // 最初から現行で、第4章の場面カードと第5章の地図（残り日数の行・スマホの HUD）を出し、基準を取る。
+    const roundTrip = async (parts, changed) => {
+      await page.mouse.move(2, 2);
+      await page.waitForTimeout(300);
+      assert.equal(await page.evaluate(() => document.documentElement.dataset.look), "classic");
+      assert.deepEqual(await neoTraces(page), []);
+      const before = await stylesOf(page, parts);
+      for (const [selector] of parts) assert(before[selector] !== null, `基準の部品がある: ${selector}`);
+      await setLook(page, "neo");
+      await page.waitForTimeout(600);
+      const neo = await stylesOf(page, parts);
+      for (const key of changed) assert.notDeepEqual(neo[key], before[key], `新版では ${key} が変わる`);
+      await setLook(page, "classic");
+      await page.waitForTimeout(600);
+      assert.deepEqual(await neoTraces(page), [], "現行へ戻したら、足した要素・クラス・style を残さない");
+      const after = await stylesOf(page, parts);
+      for (const key of Object.keys(before)) assert.deepEqual(after[key], before[key], `${key} の計算済みスタイルが最初から現行の時と一致する`);
+    };
+    await openDubaiCard(page);
+    await roundTrip(CARD_PARTS, ["#screen .ch2-contest", "#screen .ch2-contest-header", "#screen .ch2-contest-actions .btn"]);
+    await CHAPTER_MAPS.ch5.open(page);
+    await roundTrip(GOAL_MAP_PARTS, ["#hud .hud-card", "#hud .dc-meta", "#hud .dc-row.goal", '[data-test="pin-c_station"] .sub-label']);
+  }, { pageEntry: `${baseURL}?look=classic`, ...PHONE });
+
+  // ---- ショップ・LIME・レベルアップ・ギャラリー（LK05 の残り）
+  await check("shop-desktop", (page) => shopScreen(page, { phone: false }), { pageEntry: NEO });
+  await check("shop-phone", onPhone(shopScreen), { pageEntry: NEO, ...PHONE });
+  await check("shop-entry-desktop", (page) => shopEntry(page, { phone: false }), { pageEntry: NEO });
+  await check("shop-entry-phone", onPhone(shopEntry), { pageEntry: NEO, ...PHONE });
+  await check("lime-desktop", (page) => limeScreen(page, { phone: false }), { pageEntry: NEO });
+  await check("lime-phone", onPhone(limeScreen), { pageEntry: NEO, ...PHONE });
+  await check("levelup-desktop", (page) => levelUp(page, { phone: false }), { pageEntry: NEO });
+  await check("levelup-phone", onPhone(levelUp), { pageEntry: NEO, ...PHONE });
+  await check("gallery-desktop", (page) => galleryScreen(page, { phone: false }), { pageEntry: NEO });
+  await check("gallery-phone", onPhone(galleryScreen), { pageEntry: NEO, ...PHONE });
+  await check("restore-classic-extras", async (page) => {
+    // 最初から現行で、ショップ・LIME・ギャラリーを開いて基準を取り、新版→現行と往復しても計算済みスタイルと痕跡が戻ること。
+    const roundTrip = async (parts, changed) => {
+      await page.mouse.move(2, 2);
+      await page.waitForTimeout(300);
+      assert.equal(await page.evaluate(() => document.documentElement.dataset.look), "classic");
+      assert.deepEqual(await neoTraces(page), []);
+      const before = await stylesOf(page, parts);
+      for (const [selector] of parts) assert(before[selector] !== null, `基準の部品がある: ${selector}`);
+      await setLook(page, "neo");
+      await page.waitForTimeout(500);
+      const neo = await stylesOf(page, parts);
+      for (const key of changed) assert.notDeepEqual(neo[key], before[key], `新版では ${key} が変わる`);
+      await setLook(page, "classic");
+      await page.waitForTimeout(500);
+      assert.deepEqual(await neoTraces(page), [], "現行へ戻したら、足した要素・クラス・style を残さない");
+      const after = await stylesOf(page, parts);
+      for (const key of Object.keys(before)) assert.deepEqual(after[key], before[key], `${key} の計算済みスタイルが最初から現行の時と一致する`);
+    };
+    await page.evaluate(() => localStorage.setItem("suien_remake_gallery", JSON.stringify(["cg_ch1_sumi_training"])));
+    await page.locator('[data-test="title-gallery"]').click();
+    await page.locator(".gal").waitFor();
+    await roundTrip(GALLERY_PARTS, [".gal", ".gal-tab[aria-selected=\"true\"]", ".gal-close"]);
+    await page.locator('[data-test="gallery-close"]').click();
+    await page.locator(".gal-overlay").waitFor({ state: "detached" });
+    await openShopCounter(page);
+    await roundTrip(SHOP_PARTS, ["#screen .shop-paper", '#screen .shop-tab[data-tab="flavor"]', "#screen .shop-row.product .shop-step.plus", "#screen .shop-checkout"]);
+    await page.locator('[data-test="shop-leave"]').click();
+    await openDaily(page);
+    await seedLime(page);
+    await page.locator('[data-test="hud-phone"]').click();
+    await page.locator(".phone-overlay.show .lime-chat-row").first().waitFor();
+    await page.waitForTimeout(500);
+    // LIME は新版でも見た目を変えない（往復しても、途中の新版でも、最初の旧版と同じ）。
+    await roundTrip(LIME_PARTS, []);
+    await setLook(page, "neo");
+    await page.waitForTimeout(500);
+    const limeBefore = withoutVariables(await stylesOf(page, LIME_PARTS));
+    await setLook(page, "classic");
+    await page.waitForTimeout(500);
+    const limeAfter = withoutVariables(await stylesOf(page, LIME_PARTS));
+    for (const key of Object.keys(limeAfter)) assert.deepEqual(limeBefore[key], limeAfter[key], `${key}: LIME は新版でも旧版と同じ見た目`);
+  }, { pageEntry: `${baseURL}?look=classic` });
 
   await check("restore-classic-daily", async (page) => {
     // 最初から現行（neo.js をまだ読んでいない）で地図と MENU を出し、基準を取る。
