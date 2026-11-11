@@ -14,7 +14,8 @@ import { visitAffinity } from "../core/stats.js";
  * bg は場所の既定と違う背景（裏口＝街の道）。toast は読了後の一言（省略時は結果から決める）。
  *
  * 好感度のつり合い（2026-11-02 オーナー指定・台帳 AFB02）: 第3章でも、ライバル3人のうち2人を多少寄り道しても
- * ♥5にできるように、綾取の煙幕とスティーブ（客として来るmukai・Smoke & Glory）に何度でも通える。値は第1・2章と同じ
+ * ♥5にできるように、綾取の煙幕とスティーブ（客として来るmukai・Smoke & Glory）に何度でも通える。ヴォルクの鉄の煙も
+ * 初来店の後は同じく通える（RVE07）。値は第1・2章と同じ
  * visitAffinity（一度きりの話と通いの1回目は段階会話の +16、通いの2回目からは小会話の +8）。本筋の場面には付けない。
  */
 export const TOKYO_OUTINGS = Object.freeze([
@@ -42,6 +43,11 @@ export const TOKYO_OUTINGS = Object.freeze([
   { id: "steve_visit", place: "steve", after: "ch3_steve_low_heat", label: "Smoke & Glory で一服する", repeat: true, regular: true,
     talks: ["ch3_outing_steve_visit", "ch3_outing_steve_visit_b", "ch3_outing_steve_visit_c"],
     stamina: -10, stat: "technique", affinityWith: "steve", reason: "スティーブの店で、少し一緒に過ごす" },
+  // 鉄の煙に通う（2026-11-11 オーナー「推奨で全部」RVE07）。綾取・スティーブと同じく、初来店（DAY12夜）の後に何度でも寄れる。
+  // 大会の前後どちらでも読む小会話（再訪・LIME交換などの段階の寄り道は ch3-story-wiring.js の任意場面のまま）。
+  { id: "volk_visit", place: "volk", after: "ch3_volk_first", label: "鉄の煙で一服する", repeat: true, regular: true,
+    talks: ["ch3_outing_volk_visit", "ch3_outing_volk_visit_b", "ch3_outing_volk_visit_c"],
+    stamina: -10, stat: "technique", affinityWith: "volk", reason: "ヴォルクの店で、少し一緒に過ごす" },
   { id: "park_walk", place: "park", label: "公園を歩く", repeat: true, stamina: 20,
     reason: "何も決めずに歩いて、少し体を休める" },
   // mukaiの看板猫てつこ（#1993）。体力だけ少し戻す。能力・好感度は増やさない。
@@ -82,6 +88,7 @@ export const OUTING_DIALOGUE_IDS = Object.freeze(["ch3_outing_mukai_help_lost", 
   "ch3_outing_enmaku_visit", "ch3_outing_enmaku_visit_b", "ch3_outing_enmaku_visit_c",
   "ch3_outing_mukai_steve_b", "ch3_outing_mukai_steve_c", "ch3_outing_steve_visit", "ch3_outing_steve_visit_b",
   "ch3_outing_enmaku_visit_d", "ch3_outing_steve_visit_c",
+  "ch3_outing_volk_visit", "ch3_outing_volk_visit_b", "ch3_outing_volk_visit_c",
   ...["day", "night"].flatMap(time => ["b", "c"].map(suffix => `ch3_outing_park_walk_${time}_${suffix}`))]);
 
 /**

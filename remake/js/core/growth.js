@@ -541,7 +541,10 @@ export function claimPlayRewards(g, s = state) {
     if (KUJI_LIMITED_GRADES.includes(grade)) continue;
     if (!box || !Array.isArray(box.order) || box.drawn < box.order.length || box.emptyDay == null) continue;
     const key = `kuji:${grade}:${s.chapter}:${box.emptyDay}`;
-    if (g.rewards[key]) continue;
+    // 同じ箱（同じ引き切りの日）は、章が変わっても一度だけ。くじは店ごとに1種類なので（KJ11）、
+    // 行かなくなった街の店の箱は空のまま残る。記録の形（章つきのキー）は今までのセーブと同じ
+    const sameBox = (k) => { const [kind, id, , day] = k.split(":"); return kind === "kuji" && id === grade && day === String(box.emptyDay); };
+    if (g.rewards[key] || Object.keys(g.rewards).some(sameBox)) continue;
     g.rewards[key] = true;
     const low = BOARD_KEYS.reduce((best, k) => boardFill(g, k) < boardFill(g, best) ? k : best, BOARD_KEYS[0]);
     out.push({ label: "くじのラストワン賞", parts: giveSet(g, { [low]: KUJI_LAST_ONE_GIFT }) });

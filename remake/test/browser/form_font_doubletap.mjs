@@ -78,7 +78,7 @@ try {
     assert.deepEqual([out.first, out.second, out.third, out.far, out.slow], [false, true, false, false, false], JSON.stringify(out));
     assert.equal(out.clicks, 1, "the prevented second tap re-dispatches one click: " + JSON.stringify(out));
     // (3) body 直下の要素にも touch-action: manipulation が効く
-    const bodyTouch = await page.evaluate(() => [...document.body.children].filter(el => el.matches(".title-layout-toolbar, #rotate-hint")).map(el => getComputedStyle(el).touchAction + "|" + getComputedStyle(document.body).touchAction));
+    const bodyTouch = await page.evaluate(() => [...document.body.children].filter(el => el.matches("#rotate-hint")).map(el => getComputedStyle(el).touchAction + "|" + getComputedStyle(document.body).touchAction));
     assert(bodyTouch.every(v => v.includes("manipulation")), "body-level elements covered: " + bodyTouch);
     // (4) viewport meta はピンチ拡大を奪わない
     assert.doesNotMatch(await page.evaluate(() => document.querySelector('meta[name="viewport"]').content), /maximum-scale|user-scalable/);

@@ -206,6 +206,15 @@ export function setBg(url, { instant = false, tint = null, fast = false, brief =
     weatherTint = tint || "";
     refreshWeather();
     const olds = [...host.children].slice(0, -1);
+    if (curtain?.dissolve) {
+      // 煙のにじみ（TMG44）: 次の背景を前の背景の下にすぐ置き、前の背景は curtain.release() で煙の形にほどく
+      next.style.transition = "none";
+      next.classList.add("show");
+      host.insertBefore(next, olds[0] || null);
+      // 前の切り替えでほどけている途中の絵は、その幕に任せる（その下にある今の背景から次の背景へほどく）
+      curtain.dissolve(olds.filter((o) => !o.dataset.dissolving));
+      return;
+    }
     if (instant || curtain || coveredElsewhere) {
       next.classList.add("show");
       olds.forEach((o) => o.remove());
@@ -496,12 +505,11 @@ export async function bannersIdle() {
  * 文字・ボタン・クラス名は写さないので、次の画面・入力・テストの判定は本物だけを見る。
  * 箱がまだ見えている間（#modal を空にする前）に呼ぶ。面は #modal の一つ下に置き、続けて開いた画面より前へ出ない。
  * origin: 縮む起点（#modal 内の座標）。box: 面にする箱のセレクタ（省略時は一番大きく塗られた箱）。
- * 2画面（DS）表示・動きを減らす設定では何も出さずに閉じる。
+ * 動きを減らす設定では何も出さずに閉じる。
  */
 export function ghostOut(nodes, frames, ms = 180, { origin = null, box: pick = null } = {}) {
   const frame = layers.modal, host = frame?.parentElement;
-  const dsLayout = document.body.classList.contains("game-ds") || !!document.querySelector('.title[data-layout="ds"]');
-  if (!host || !frame.offsetWidth || reducedMotion() || dsLayout || !nodes.length) return;
+  if (!host || !frame.offsetWidth || reducedMotion() || !nodes.length) return;
   const f = frame.getBoundingClientRect(), k = f.width / frame.offsetWidth;
   if (!k) return;
   const shapes = [];
@@ -721,4 +729,5 @@ export async function roundCut(text, sub = "") {
 export function dayTurn(mid) {
   return nightToMorning(layers.fx, mid);
 }
+
 

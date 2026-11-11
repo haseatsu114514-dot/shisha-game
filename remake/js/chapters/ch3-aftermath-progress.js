@@ -6,10 +6,15 @@ export const CH3_AFTERMATH_SCENES = Object.freeze([
   { id: "ch3_mashiro_recovery", dayAfterWin: 1, slot: 0, label: "いつもの席", location: "mukai", bg: "bg_mukai_shop" },
   { id: "ch3_naru_reconcile", dayAfterWin: 1, slot: 1, label: "自分からの報告", location: "東京", bg: "bg_mukai_shop" },
   { id: "ch3_enmaku_cleanup", dayAfterWin: 2, slot: 0, label: "煙幕の片づけ", location: "煙幕", bg: "bg_yohaku_shop" },
-  { id: "ch3_home_customer", dayAfterWin: 2, slot: 1, label: "帰郷した夜", location: "tonari", bg: "bg_tonari_inside_night" },
+  // 帰郷した夜は三場面（STK23・全体講評C5）。新幹線を降りた足でMELTY PUFF、tonariでつむぎの絵、最後に帰郷の客。
+  // 章の最後の画を「客の返事を待つ」にする。homecoming=新幹線の車窓を見せる最初の地元の場面。
+  { id: "ch3_ageha_reunion", dayAfterWin: 2, slot: 1, label: "続いていた約束", location: "MELTY PUFF", bg: "bg_ageha_shop", homecoming: true },
   { id: "ch3_tsumugi_result", dayAfterWin: 2, slot: 1, label: "つむぎの絵", location: "tonari", bg: "bg_tonari_inside_night" },
-  { id: "ch3_ageha_reunion", dayAfterWin: 3, slot: 0, label: "続いていた約束", location: "MELTY PUFF", bg: "bg_ageha_shop" },
+  { id: "ch3_home_customer", dayAfterWin: 2, slot: 1, label: "帰郷した夜", location: "tonari", bg: "bg_tonari_inside_night" },
 ]);
+/** 版3の並び（帰郷の客→つむぎ→翌日のあげは）。版3の保存を版4へ読み替える時だけ使う。 */
+const V3_SCENE_IDS = Object.freeze(["ch3_abyss_hotel", "ch3_mashiro_recovery", "ch3_naru_reconcile", "ch3_enmaku_cleanup",
+  "ch3_home_customer", "ch3_tsumugi_result", "ch3_ageha_reunion"]);
 
 /**
  * 大会後の寄り道（#2028 残件3・#1658 ⑥）。優勝の翌日から煙幕の片づけまで、東京にいる間の場面カードから一度ずつ読める。
@@ -159,7 +164,7 @@ export function beginChapterThreeAftermath(value) {
   if (!canRunChapterThreeAftermath(value)) return false;
   if (value.flags._ch3_aftermath) return chapterThreeAftermathProgress(value);
   if (value.flags._ch3_cleared) throw new Error("第3章クリア記録に後日談の保存地点がありません");
-  const progress = value.flags._ch3_aftermath = { version: 3, winDay: value.day, stage: 0 };
+  const progress = value.flags._ch3_aftermath = { version: 4, winDay: value.day, stage: 0 };
   value.phase = "aftermath";
   value.slot = 1;
   return progress;
@@ -178,8 +183,20 @@ export function chapterThreeAftermathProgress(value) {
     if (progress.stage >= 3) progress.stage += 1;
     progress.version = 3;
   }
-  if (!progress || progress.version !== 3 || !Number.isInteger(progress.winDay) || progress.winDay < 1
+  // 帰郷した夜を並べ替えた（版4・STK23）。帰郷の夜を読みかけの保存は、まだ読んでいないあげはの再会から読み、
+  // 読み終えた場面は skip に残して二度読ませない。日時は戻さない。
+  if (progress?.version === 3 && Number.isInteger(progress.stage) && progress.stage >= 0 && progress.stage <= V3_SCENE_IDS.length) {
+    const home = V3_SCENE_IDS.indexOf("ch3_home_customer");
+    if (progress.stage > home && progress.stage < V3_SCENE_IDS.length) {
+      progress.skip = V3_SCENE_IDS.slice(home, progress.stage);
+      progress.stage = CH3_AFTERMATH_SCENES.findIndex(scene => scene.homecoming);
+    }
+    progress.version = 4;
+  }
+  if (!progress || progress.version !== 4 || !Number.isInteger(progress.winDay) || progress.winDay < 1
     || !Number.isInteger(progress.stage) || progress.stage < 0 || progress.stage > CH3_AFTERMATH_SCENES.length
+    || (progress.skip !== undefined && !(Array.isArray(progress.skip)
+      && progress.skip.every(id => CH3_AFTERMATH_SCENES.some(scene => scene.id === id))))
     || (value.flags._ch3_cleared === true) !== (progress.stage === CH3_AFTERMATH_SCENES.length)) {
     throw new Error("第3章後日談の保存地点を確認できません");
   }
@@ -191,6 +208,7 @@ export function completeChapterThreeAftermathScene(value, sceneId) {
   const progress = chapterThreeAftermathProgress(value);
   if (CH3_AFTERMATH_SCENES[progress.stage]?.id !== sceneId) return false;
   progress.stage += 1;
+  while (progress.skip?.includes(CH3_AFTERMATH_SCENES[progress.stage]?.id)) progress.stage += 1;
   const next = CH3_AFTERMATH_SCENES[progress.stage];
   if (next) {
     value.day = Math.max(value.day, progress.winDay + next.dayAfterWin);

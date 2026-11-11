@@ -101,7 +101,9 @@ console.log('PASS: real transition integration, normal/SKIP/reduced, one-shot cu
 
 // Real setBg + real transitions, with only DOM/image/device boundaries replaced.
 function domNode() {
-  const n = { children: [], dataset: {}, classList: { add() {}, contains: () => false }, append(c) { this.children.push(c); c.remove = () => { this.children = this.children.filter(x => x !== c); }; } };
+  const n = { children: [], dataset: {}, style: {}, classList: { add() {}, contains: () => false }, append(c) { this.children.push(c); c.remove = () => { this.children = this.children.filter(x => x !== c); }; } };
+  // 煙のにじみ（TMG44）は、次の背景を前の背景の下へ差し込む
+  n.insertBefore = (c, ref) => { n.append(c); if (ref) { n.children = n.children.filter(x => x !== c); n.children.splice(n.children.indexOf(ref), 0, c); } };
   return n;
 }
 let pendingImages = [], failImages = false;

@@ -697,7 +697,7 @@ export const config = {
   portraitStyle: "new", // 採用済みの新版が既定。現行も設定で選べる
   portraitStyleVersion: 1, // 旧版の既定値・廃止画風を一度だけ新版へ移行
   uiTheme: "paper",    // 会話枠と共通UI。ゲームの進行とは別の端末設定（既定は紙とラベンダー・DUI08）。
-  look: "classic",     // 見た目の様式（現行／新版／DS風・core/look.js）。新版とDS風は試作で、第1章だけに効く（LK01）。
+  look: "classic",     // 見た目の様式（新版／旧版／DS風・core/look.js）。ここは保存が無い時の素の値で、既定（新版）は起動時に main.js の migrateLook が決める（LK09）。
   mute: false,       // すべての音を一時的に消す（旧キー muted は読み込み時に mute へ統一）
   bgmVolume: 0.5,
   seVolume: 0.7,

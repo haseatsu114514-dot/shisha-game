@@ -524,7 +524,8 @@ await suite('ch2-tournament',async check=>{
     assert.equal(await page.locator('.flavor-row[data-flavor="strawberry"]').count(),0);
     assert.match(await page.locator('.worker-scene-tag').textContent(),/HAZE: OPEN CLOUD/);
     assert.deepEqual(await page.locator('.bench-phase-copy b').allTextContents(),['パッキング','炭焼き','蒸らし','吸い出し','提供','調整']);
-    await assertFits(page,'.bench-top > *');
+    // 新しい配置（既定）では「外観を選ぶ」は機材を選ぶ工程だけ出るので、見えている部品で確かめる。
+    await assertFits(page,'.bench-top > :visible');
     await assertCraftProgress(page);
     await capture(page,touch?'touch-mix-header':'pc-mix-header');
     for(let n=0;n<4;n++)await press(dt('mix-plus-afsahr_strawberry'));
@@ -657,7 +658,7 @@ await suite('ch2-tournament',async check=>{
     assert.match(await page.locator(dt('slot-0')).innerText(),/第3章\s*DAY 1(?!\d)/);
     await page.evaluate(async()=>{
       const vn=await import('./js/vn/engine.js');vn.vnTest.turbo=true;vn.vnTest.choose=()=>0;
-      // 綾取への一台（DAY9・必須の店仕事）の調整は、既存の制作の自動操作で一度だけ行う。
+      // 綾取への一台（DAY9・必須の店仕事、#3158）の調整は、既存の制作の自動操作で一度だけ行う。
       (await import('./js/craft/session.js')).craftTest.auto='good';
       window.__chapterThreeTrace=[];
       window.__pausedChapterThree={};
@@ -689,7 +690,7 @@ await suite('ch2-tournament',async check=>{
       assert.equal(s.day,31+day,`Wrong elapsed day before ${id}`);
       assert.equal(s.slot,slot,`Wrong time slot before ${id}`);
       await page.locator(continueButton).click();
-      // 綾取への一台は、注文→一度だけの調整→反応まで読み終えてから次のカードへ進む（調整は時間のかかる工程）。
+      // 綾取への一台は、注文→一度だけの調整→反応まで読み終えてから次の場面へ進む（#3158）。
       if(id==='ch3_saku_mukai_visit'){
         await page.waitForFunction(()=>window.__remake.state.flags._ch3_intro.work?.service?.feedbackRead,null,{timeout:60000});
         assert.equal((await get(page)).flags._ch3_intro.work.service.careDone,true);

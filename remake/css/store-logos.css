@@ -1,3 +1,4 @@
+/* body:not(:root)／.title:not(:root) は、DS風の廃止（横画面一本化）で外した :not(.game-ds)／:not([data-layout="ds"]) と同じ詳細度を保つための置き換え。 */
 /* 採用PNGの表示窓。画像を変形せず、採用部分の縦横比で表示する。 */
 .store-logo { position: relative; display: block; flex: none; overflow: hidden; }
 .store-logo > img { position: absolute; display: block; max-width: none; max-height: none; pointer-events: none; }
@@ -32,13 +33,6 @@
 .spot-pin .pin-unknown { position: relative; color: #f2e8d1; }
 .pin-unknown svg { display: block; width: 100%; height: 100%; fill: #666171; }
 .pin-unknown b { position: absolute; inset: 0; display: grid; place-items: center; font: bold 16px/1 var(--font); text-shadow: 0 1px 2px #000; }
-body.game-ds .map .spot-pin .pin-visual { display: contents; }
-body.game-ds .map .spot-pin .pin-people { position: static; flex-basis: 100%; justify-content: flex-start; padding: 2px; }
-body.game-ds .map .spot-pin .pin-person { flex: none; }
-/* DSのピンは看板と店名の下へ人物行を折り返す。縦方向flexの列送りにしない。 */
-body.game-ds .map .spot-pin { flex-direction: row; }
-body.game-ds .map .spot-pin .pin-people { order: 1; }
-body.game-ds .map .spot-pin .pin-status { order: 2; }
 /* 駅のピンは札（「駅・一律200円」）の幅まで広げる。スマホ規格（#2917）では札の文字が下限（実寸11px・#2853）まで大きくなり、
    daily.css の固定幅 112px から札がはみ出していた（play_spots の第2章の街の検査）。PC は札が 112px に収まるので今までどおり。 */
-body:not(.game-ds) .map .spot-pin.pin-station { width: auto; min-width: 112px; }
+body:not(:root) .map .spot-pin.pin-station { width: auto; min-width: 112px; }

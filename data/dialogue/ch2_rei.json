@@ -1445,6 +1445,179 @@
           "face": "smile"
         }
       ]
+    },
+    {
+      "dialogue_id": "ch3_prep_rei_live",
+      "comment": "RVE07（添削表の提案6）。第3章の出発前の準備3日に、柚ヶ谷の零-ZERO-へ行ったとき一度だけ読むレヰのライブの夜。前提は第2章で余ったチケットを受け取ったこと（ch2_rei_group_concert_prep の _ch2_rei_ticket）。大会前夜 remake_ch2_eve_rei の ticket 分岐「来週、隣は空けとく。この曲、そこでやるから」を回収する。ライブは地の文で短く回想し、場面は終演後に店へ戻ったレヰとの会話。チケットの回（常連の一曲目の予想・レヰの小声の「新曲」・「曲が始まってからでいい」）と前夜の曲（最後の音のあとの三秒）は前提にしてよい。ch2_rei_sixth の「一番後ろで、一人で立ってた」「一番後ろの席で」は、読んでいれば響き、読んでいなくても通る触れ方にとどめる（レヰが後ろで聴く癖はこの場面の中で本人が言う）。大会の結果・恋愛には触れない（レヰは友情のみ）。味覚の不調にも触れない。最後の set_flag で、最後まで読んだ時だけ既読にする。 台本は ch2_rei.json（チケットを渡す ch2_rei_group_concert_prep の続き）。柚ヶ谷の台本と一緒に ch2-city-data.js の loadPreparationDialogues が読み込み、第3章の準備期間の夜に零-ZERO-へ来た時だけ ch2-preparation.js の reiLiveDue で出す（RVE07）。",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_ch2_rei_entry.webp"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "終演後、レヰは休みにしてあった零-ZERO-の鍵を開けた。耳の奥で、まだギターが鳴っている。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "レヰの空けておいた隣は、フロアの一番後ろ、壁際の一人分だった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一曲目は常連さんたちの予想どおりで、二曲目は、レヰが小声で言ったとおりの新曲だった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "最後の曲は、大会の前の晩に、イヤホンの片方で聴かせてもらったあの曲だった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "最後の音が消えた。満員のフロアの誰も、手を叩かなかった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "思わず、口の中で三つ数えた。拍手が起きたのは、そのあとだった。"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "付き合わせて、悪い。まっすぐ帰ると、音が逃げる気がした"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "分かります。俺も、まだ耳の中で鳴ってます"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……始まる前、何も話さなくて、すまなかった"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "曲が始まってからでいい、って言ってたじゃないですか"
+        },
+        {
+          "speaker": "rei",
+          "face": "surprise",
+          "text": "……覚えてたのか"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "レヰはCDプレイヤーに手を伸ばしかけて、やめた。店の中は、換気扇の低い音だけになった。"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "二曲目、当たってた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "当たってましたね。常連さんたち、前の方からこっちを見てましたよ"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "手を振られた。振り返した。……たぶん、見えてない"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "見えてましたよ。みんな、もっと大きく手を振ってました"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "最後の曲。終わったあと、ちゃんと三秒あった"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "誰も手を叩きませんでしたね。あんなに人がいたのに"
+        },
+        {
+          "speaker": "rei",
+          "face": "smile",
+          "text": "イヤホンで聴くより、少し長かった。みんなで黙ると、長くなる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（イヤホンの三秒と、満員のフロアの三秒。同じ空白なのに、重さが違った）"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "ライブは、いつも一番後ろで聴く。後ろからだと、全員が見える"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "同じとこで、肩が揺れる。……今日は、隣も見えた"
+        },
+        {
+          "speaker": "rei",
+          "face": "smile",
+          "text": "三つ、口で数えてたろ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "え、声に出てました？"
+        },
+        {
+          "speaker": "rei",
+          "face": "smile",
+          "text": "……出てない。口だけ。俺も、同じとこで数えてた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "一番後ろでも、ちゃんと届いてましたね"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……うん。一番後ろまで、届いてた"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "東京、もうすぐだろ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい。支度が済んだら、発ちます"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "向こうでも、一番後ろの奴まで、届かせて"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "はい。一番後ろの席まで"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "帰りの駅の階段で、もう一度だけ、三つ数えた。"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_talk_seen_ch3_prep_rei_live"
+        }
+      ]
     }
   ]
 }

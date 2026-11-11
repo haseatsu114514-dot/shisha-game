@@ -1,0 +1,57 @@
+[
+  {
+    "file": "floor-room.png",
+    "size": [
+      2172,
+      724
+    ],
+    "format": "PNG",
+    "mode": "RGB",
+    "bytes": 2200057,
+    "sha256": "692690c2cca56958ebe81467a40dd62160806885f05396040e2c632e5e4c0140"
+  },
+  {
+    "file": "floor-sil-1.png",
+    "size": [
+      2172,
+      724
+    ],
+    "format": "PNG",
+    "mode": "RGB",
+    "bytes": 1804551,
+    "sha256": "e506ef7458fcf930961cfb72a528cd36ad51499a4d435aa8fadc7ad4f25cacff"
+  },
+  {
+    "file": "floor-sil-2.png",
+    "size": [
+      2172,
+      724
+    ],
+    "format": "PNG",
+    "mode": "RGB",
+    "bytes": 1898773,
+    "sha256": "3c7409f90a978abbe4c9e4fed7fc9f8e56ceb1a7394e6ac7d938bf7ed28e1699"
+  },
+  {
+    "file": "floor-sil-3.png",
+    "size": [
+      2172,
+      724
+    ],
+    "format": "PNG",
+    "mode": "RGB",
+    "bytes": 2021882,
+    "sha256": "6a369469cb539ac67a617d4afd2a87facf2b2527f1792bbe1eed1504a8524af9"
+  },
+  {
+    "file": "floor-sil-4.png",
+    "size": [
+      2172,
+      724
+    ],
+    "format": "PNG",
+    "mode": "RGB",
+    "bytes": 2273055,
+    "sha256": "b481bbce7b79ef39b41db9a2abc405bb70c63f22317d696b680b3344e40e164e"
+  }
+]

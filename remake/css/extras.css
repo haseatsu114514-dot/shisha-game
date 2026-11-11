@@ -10,93 +10,7 @@
 /* ---- シーシャくじ ---- */
 .kuji-note { margin: 0 0 6px; padding: 8px 12px; font-size: 14px; color: var(--gold-hi); background: rgba(244, 210, 122, 0.08); border-left: 3px solid var(--gold); border-radius: 4px; }
 .kuji-cat { border-color: #ff9ec4 !important; color: #ffc2da !important; }
-.kuji-overlay { position: absolute; inset: 0; display: grid; place-items: center; background: rgba(5, 4, 10, 0.72); backdrop-filter: blur(3px); cursor: pointer; animation: kj-fade 0.25s; }
-@keyframes kj-fade { from { opacity: 0; } }
-.kuji-card {
-  position: relative;
-  width: 440px;
-  min-height: 250px;
-  padding: 26px 30px;
-  text-align: center;
-  color: var(--text);
-  background: linear-gradient(160deg, rgba(20, 12, 30, 0.98), rgba(36, 22, 46, 0.98));
-  border: 1px solid rgba(244, 210, 122, 0.6);
-  border-radius: 10px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7);
-}
-.kuji-shelf { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin: 26px 0 18px; }
-.kuji-box {
-  height: 62px;
-  background: linear-gradient(180deg, #f4d27a, #c79a3c);
-  border: 2px solid #fff2c8;
-  border-radius: 4px;
-  box-shadow: inset 0 -8px 0 rgba(0, 0, 0, 0.18);
-  transition: transform 0.6s cubic-bezier(0.2, 1.4, 0.4, 1), box-shadow 0.3s;
-}
-.kuji-box.reach { transform: translateY(-18px) rotate(-4deg); box-shadow: 0 0 22px rgba(255, 220, 120, 0.9); }
-.kuji-label { font-size: 14px; letter-spacing: 0.1em; color: var(--text-dim); }
-.kuji-card.reveal { animation: kj-pop 0.45s cubic-bezier(0.2, 1.6, 0.4, 1); }
-@keyframes kj-pop { from { transform: scale(0.8); opacity: 0; } }
-.kuji-rank { font-family: var(--font); font-size: 64px; font-weight: 800; line-height: 1.1; color: var(--gold-hi); text-shadow: 0 0 20px rgba(244, 210, 122, 0.6); }
-.kuji-name { margin-top: 8px; font-size: 22px; font-weight: 700; }
-.kuji-desc { margin-top: 8px; font-size: 20px; line-height: 1.6; color: var(--text-dim); }
-.kuji-dupe { margin-top: 8px; font-size: 16px; font-weight: 700; color: var(--gold-hi); }
-/* 単発カードはカード全体のタップで閉じる。文の案内は置かず、右上の小さな ✕ だけ（#2835） */
-.kuji-close { position: absolute; top: 6px; right: 6px; display: grid; place-items: center; width: 44px; height: 44px; padding: 0; font-size: 20px; line-height: 1; color: var(--text-dim); background: transparent; border: 0; border-radius: 50%; cursor: pointer; }
-.kuji-close:hover, .kuji-close:focus-visible { color: var(--gold-hi); background: rgba(244, 210, 122, 0.12); }
-/* 重複は「同」バッジ＋買い取り額（#2835） */
-.kuji-dupe-badge { display: inline-grid; place-items: center; min-width: 1.6em; height: 1.6em; margin-right: 6px; padding: 0 4px; font-size: 1em; line-height: 1; color: #1b1208; background: var(--gold-hi); border-radius: 4px; vertical-align: middle; }
-.kuji-card.rank-S, .kuji-card.rank-LAST { border-color: #ffe9a8; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7), 0 0 40px rgba(255, 210, 90, 0.55); }
-.kuji-card.rank-S .kuji-rank, .kuji-card.rank-LAST .kuji-rank {
-  background: linear-gradient(90deg, #ff9ec4, #ffe27a, #8fe0ff, #ff9ec4);
-  background-size: 300% 100%;
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  animation: kj-rainbow 2s linear infinite;
-}
-@keyframes kj-rainbow { to { background-position: 300% 0; } }
-.kuji-card.rank-C .kuji-rank, .kuji-card.rank-B .kuji-rank { color: #cfd6e6; text-shadow: none; }
-.kuji-multi { cursor: default; padding: 20px; }
-.kuji-multi-panel { width: min(760px, 100%); max-height: 100%; padding: 20px; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; text-align: center; color: var(--text); background: #1c1427; border: 1px solid var(--gold); border-radius: 10px; }
-.kuji-multi-panel h2 { margin: 0 0 14px; color: var(--gold-hi); }
-/* 10連は 2列×5。10枚並べても読める大きさにし、パネルは縦スクロール（#2835） */
-.kuji-multi-cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-bottom: 18px; }
-.kuji-card.kuji-short { width: auto; min-height: 110px; padding: 12px 14px; }
-.kuji-short .kuji-rank { font-size: 32px; }
-.kuji-short .kuji-name { margin-top: 4px; font-size: 18px; line-height: 1.35; }
-.kuji-short .kuji-dupe { margin-top: 6px; font-size: 16px; }
-/* スマホ横持ち: stage が縮むぶん（--k）を戻し、実寸で文字 12px・押せる所 40px を下回らせない（#2835）。縦持ちは扱わない */
-@media (orientation: landscape) and (max-width: 1024px) and (max-height: 520px) and (pointer: coarse) and (hover: none) {
-  .kuji-card .kuji-desc, .kuji-short .kuji-name, .kuji-card .kuji-dupe { font-size: max(20px, calc(12px / var(--k, 1))); }
-  .kuji-short .kuji-rank { font-size: max(32px, calc(16px / var(--k, 1))); }
-  .kuji-card:not(.kuji-short) .kuji-name { font-size: max(22px, calc(13px / var(--k, 1))); }
-  .kuji-close { width: max(44px, calc(40px / var(--k, 1))); height: max(44px, calc(40px / var(--k, 1))); font-size: max(20px, calc(16px / var(--k, 1))); }
-  .kuji-multi-panel h2 { font-size: max(24px, calc(14px / var(--k, 1))); }
-  .kuji-multi-panel .btn { min-height: calc(40px / var(--k, 1)); font-size: max(18px, calc(12px / var(--k, 1))); justify-content: center; }
-}
-
-/* ワイドステージ（#2861）と見やすさ（#2729）:
-   - くじの暗幕（ガラガラ・結果）はステージの左右の余白まで覆う（端に出した MENU・LIME を演出中に押させない。ガラガラの壁も左右へ続く）。
-   - 単発の結果カードは一回り大きく（賞・賞品名・説明の文字 +2〜4px）。
-   - 6枚以上の連続の結果は横5列に並べ、10枚（ラストワン込み11枚）がスクロールなしで一度に見える。 */
-.kuji-overlay { inset: 0 calc(-1 * var(--stage-gutter, 0px)); }
-.kuji-card:not(.kuji-short) { width: 520px; min-height: 270px; padding: 30px 36px; }
-.kuji-card:not(.kuji-short) .kuji-rank { font-size: 76px; }
-.kuji-card:not(.kuji-short) .kuji-name { font-size: 26px; }
-.kuji-card:not(.kuji-short) .kuji-desc { font-size: 22px; }
-.kuji-card:not(.kuji-short) .kuji-dupe { font-size: 20px; }
-.kuji-card:not(.kuji-short) .kuji-close { top: 8px; right: 8px; width: max(56px, calc(40px / var(--k, 1))); height: max(56px, calc(40px / var(--k, 1))); font-size: 26px; }
-.kuji-multi-panel:has(.kuji-card:nth-child(6)) { width: min(1220px, 100%); }
-.kuji-multi-panel:has(.kuji-card:nth-child(6)) .kuji-multi-cards { display: flex; flex-wrap: wrap; justify-content: center; }
-.kuji-multi-panel:has(.kuji-card:nth-child(6)) .kuji-card.kuji-short { flex: 0 1 calc((100% - 40px) / 5); min-height: 120px; padding: 12px 10px; }
-/* スマホでは単発カードの賞品の説明（補足）を出さず、カードの title で読む（#2729・2026-11-08「文字が多い」）。賞・賞品名・重複の買い取りは出す */
-html:root[data-density="phone"] .kuji-card:not(.kuji-short) .kuji-desc { display: none; }
-html:root[data-density="phone"] .kuji-card:not(.kuji-short) { min-height: 0; }
-@media (orientation: landscape) and (max-width: 1024px) and (max-height: 520px) and (pointer: coarse) and (hover: none) {
-  .kuji-card:not(.kuji-short) .kuji-desc, .kuji-card:not(.kuji-short) .kuji-dupe { font-size: max(22px, calc(13px / var(--k, 1))); }
-  .kuji-card:not(.kuji-short) .kuji-name { font-size: max(26px, calc(14px / var(--k, 1))); }
-}
+/* くじの暗幕・賞の札・連続の結果は css/motions/garagara.css（2026-11-11 にガチャ風の演出へ作り直し） */
 
 /* ---- ギャラリー ---- */
 .gal-overlay { position: absolute; inset: 0; display: grid; place-items: center; background: rgba(5, 4, 10, 0.78); backdrop-filter: blur(3px); }
@@ -175,8 +89,3 @@ html:root[data-density="phone"] .kuji-card:not(.kuji-short) { min-height: 0; }
 @media (max-width: 600px) {
   .gal-viewer-tools strong { flex-basis: 100%; }
 }
-.kuji-card.kuji-short { transition: transform .22s ease, filter .22s ease; }
-.kuji-card.kuji-facedown { transform: rotateY(180deg); filter: brightness(.35); }
-.kuji-card.kuji-facedown > * { visibility: hidden; }
-.kuji-flip-all { margin-right: 8px; }
-@media (prefers-reduced-motion: reduce) { .kuji-card.kuji-short { transition: none; } }

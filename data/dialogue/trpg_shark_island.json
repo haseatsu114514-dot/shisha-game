@@ -74,43 +74,43 @@
     {
       "id": "hiyori",
       "part": "PLAYER",
-      "role": "{pc:hiyori}／か弱い船医",
+      "role": "{pc:hiyori}／大食いの船医",
       "color": "#c8a375",
       "ability": "積み荷の段取り",
       "abilityType": "prepare",
       "abilityText": "上陸の支度をするとき、判定に一度だけ＋7",
       "sheet": {
         "name": "ルリ",
-        "title": "か弱い船医",
+        "title": "大食いの船医",
         "stats": {
           "eye": 3,
           "hand": 4,
           "talk": 2,
           "nerve": 2
         },
-        "trait": "潮風に当たると倒れそう……な船医。薬箱は誰より重い",
-        "likes": "港の屋台の、背脂多めのラーメン"
+        "trait": "診察の前に、まずごはんの量を聞く。笑い声は甲板じゅうに響く",
+        "likes": "港の食堂の大盛り定食"
       }
     },
     {
       "id": "adam",
       "part": "PLAYER",
-      "role": "{pc:adam}／口上の副船長",
+      "role": "{pc:adam}／帳簿係の副船長",
       "color": "#c9463a",
       "ability": "大見得の口上",
       "abilityType": "serve",
       "abilityText": "王の前に出るとき、判定に一度だけ＋7",
       "sheet": {
         "name": "ドラン",
-        "title": "口上の副船長",
+        "title": "帳簿係の副船長",
         "stats": {
           "eye": 2,
           "hand": 2,
           "talk": 4,
           "nerve": 3
         },
-        "trait": "名言なら百は持っている。半分は、その場で作った",
-        "likes": "林檎の樽。宇宙はあの香りから始まった"
+        "trait": "名言は言わない。宝の取り分は、銀貨一枚まで数える",
+        "likes": "数字のそろった帳簿。静かな船倉"
       }
     }
   ],
@@ -567,7 +567,7 @@
           "speaker": "samechan",
           "role": "GM／場面",
           "face": "normal",
-          "text": "{pc:adam}は、誰も頼んでいない乾杯の音頭をとっている"
+          "text": "{pc:adam}は、酒場の樽に腰かけて、港の夕焼けを眺めている"
         },
         {
           "speaker": "samechan",
@@ -1369,7 +1369,7 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "intense",
-          "text": "{pc:adam}が口上を述べる。海の王よ、今宵の幕を開けよう"
+          "text": "{pc:adam}が王の前に出る。『海の王よ、話を聞いてくれ』"
         },
         {
           "speaker": "samechan",
@@ -1409,26 +1409,56 @@
         {
           "speaker": "hiyori",
           "role": "PL／卓の会話",
-          "face": "normal",
-          "text": "……私はルリ。潮風に当たると倒れちゃう、か弱い船医よ"
+          "face": "smile",
+          "text": "私はルリ。船医よ。……診察の前に、まずごはんの量を聞くの"
         },
         {
           "speaker": "hiyori",
-          "role": "PL／卓の会話",
-          "face": "smile",
-          "text": "上陸したら、港の屋台でラーメンを食べるの。背脂は多めで"
+          "role": "{pc:hiyori}／物語",
+          "face": "surprise",
+          "text": "はい、口開けてー！ 顔色よし！ 何杯食べた？ 二杯？ 少ないっ！"
         },
         {
           "speaker": "samechan",
           "role": "GM／卓の会話",
-          "face": "smile",
-          "text": "か弱いのに、背脂は多めなのじゃな"
+          "face": "excited",
+          "text": "豪快な船医じゃのう！ 船旅で一番頼れるのは、そういう者じゃ"
         },
         {
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "その船医さん、たぶん誰より元気だな"
+          "text": "ひよりさん、いい声出てるな……"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_island_aside_hiyori_hiyori_ruri",
+      "metadata": {
+        "preview_only": true,
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "{pc:hiyori}／物語",
+          "face": "smile",
+          "text": "王さまー！ 疲れたら、宝の上で寝ちゃっていいんだよー！ 私も帰ったら、有給とって寝るー！"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_island_after_hiyori_hiyori_ruri",
+      "metadata": {
+        "preview_only": true,
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "ルリの『有給』は、聞かなかったことにして。……船医の、ただのうわごとよ"
         }
       ]
     },
@@ -1475,26 +1505,56 @@
         {
           "speaker": "adam",
           "role": "PL／卓の会話",
-          "face": "smile",
-          "text": "俺の役はドラン。口上ひとつで船をまとめる副船長だ"
+          "face": "normal",
+          "text": "俺の役はドラン。副船長だ。……仕事は、主に帳簿だ"
         },
         {
           "speaker": "adam",
           "role": "PL／卓の会話",
-          "face": "intense",
-          "text": "宝とは、探す者の胸に最初から眠っているものだ"
+          "face": "serious",
+          "text": "名言は言わない。宝の取り分は、銀貨一枚まで数える"
         },
         {
           "speaker": "samechan",
           "role": "GM／卓の会話",
-          "face": "surprise",
-          "text": "出航前に名言で締めるでない！ 航海はこれからじゃぞ"
+          "face": "smile",
+          "text": "地味じゃのう。じゃが、そういう者が船を守るのじゃ"
         },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "アダムさんが、名言を封印した……"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_island_aside_adam_adam_doran",
+      "metadata": {
+        "preview_only": true,
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "{pc:adam}／物語",
+          "face": "serious",
+          "text": "俺は数えることしかできない。……だから数えさせてくれ。全員が無事に帰る数を"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_island_after_adam_adam_doran",
+      "metadata": {
+        "preview_only": true,
+        "making": true
+      },
+      "lines": [
         {
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "なお、船倉には林檎の樽を積んだ。宇宙は、あの香りから始まった"
+          "text": "ドランの帳簿、つけてみると落ち着くな。……店の在庫表、明日つけ直すか"
         }
       ]
     },
@@ -2833,7 +2893,7 @@
           "sheet": "adam",
           "stat": "hand",
           "label": "滑車を組んで、仕掛けにする",
-          "detail": "{pc:adam}が舞台の要領で、滑車と綱を組む",
+          "detail": "{pc:adam}が手順を確かめて、滑車と綱を組む",
           "declare": "trpg_shark_island_declare_prepare_pulley"
         }
       ]
@@ -2860,8 +2920,8 @@
           "actor": "adam",
           "sheet": "adam",
           "stat": "talk",
-          "label": "王に向けて、口上を述べる",
-          "detail": "{pc:adam}が大げさな身ぶりで、王に語りかける",
+          "label": "王に向けて、語りかける",
+          "detail": "{pc:adam}が王の前に出て、まっすぐ語りかける",
           "declare": "trpg_shark_island_declare_serve_speech"
         },
         {
@@ -2979,16 +3039,18 @@
         {
           "id": "ruri",
           "name": "ルリ",
-          "title": "か弱い船医",
-          "trait": "潮風に当たると倒れそう……な船医。薬箱は誰より重い",
-          "likes": "港の屋台の、背脂多めのラーメン",
+          "title": "大食いの船医",
+          "trait": "診察の前に、まずごはんの量を聞く。笑い声は甲板じゅうに響く",
+          "likes": "港の食堂の大盛り定食",
           "stats": {
             "eye": 3,
             "hand": 4,
             "talk": 2,
             "nerve": 2
           },
-          "making": "trpg_shark_island_make_hiyori_hiyori_ruri"
+          "making": "trpg_shark_island_make_hiyori_hiyori_ruri",
+          "aside": "trpg_shark_island_aside_hiyori_hiyori_ruri",
+          "after": "trpg_shark_island_after_hiyori_hiyori_ruri"
         },
         {
           "id": "nerine",
@@ -3011,16 +3073,18 @@
         {
           "id": "doran",
           "name": "ドラン",
-          "title": "口上の副船長",
-          "trait": "名言なら百は持っている。半分は、その場で作った",
-          "likes": "林檎の樽。宇宙はあの香りから始まった",
+          "title": "帳簿係の副船長",
+          "trait": "名言は言わない。宝の取り分は、銀貨一枚まで数える",
+          "likes": "数字のそろった帳簿。静かな船倉",
           "stats": {
             "eye": 2,
             "hand": 2,
             "talk": 4,
             "nerve": 3
           },
-          "making": "trpg_shark_island_make_adam_adam_doran"
+          "making": "trpg_shark_island_make_adam_adam_doran",
+          "aside": "trpg_shark_island_aside_adam_adam_doran",
+          "after": "trpg_shark_island_after_adam_adam_doran"
         },
         {
           "id": "jiruba",

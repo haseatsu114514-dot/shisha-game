@@ -12,7 +12,7 @@ import { initLayers, imageReady, FRAME_ART, warmUiArt } from "./core/ui.js";
 import { loadConfig, saveConfig, state, load, consumeResumeOnBoot, tickPlayTime } from "./core/state.js";
 import { unlockAudio, preloadBgm } from "./core/audio.js";
 import { applyUiTheme } from "./core/ui-theme.js";
-import { initLook, normalizeLook } from "./core/look.js";
+import { initLook, migrateLook, normalizeLook } from "./core/look.js";
 import { installLooks } from "./looks/index.js";
 import { installRotateGuard } from "./core/rotate-guard.js";
 import { imgFileUrl } from "./core/img-file.js";
@@ -24,8 +24,6 @@ import { createIsolatedEventPlayer } from "./core/dev-isolated-player.js";
 import { craftTest } from "./craft/session.js";
 import { showTitle } from "./scenes/title.js";
 import { prepareTitleArt } from "./scenes/title-art.js";
-import { isNormalTitleForced } from "./scenes/title-layout.js";
-import { initGameLayout } from "./scenes/game-layout.js";
 import { resumeGame } from "./chapters/ch1.js";
 import { setGrowthPreview, growthEnabled, gainExp, ensureGrowth, openGrowthBoard } from "./core/growth.js";
 installNoZoom(); // ダブルタップによる拡大を止める（#2826。ピンチは禁止しない）
@@ -35,16 +33,23 @@ enableSeenLinePersistence(); // 既読SKIPの記録は本編でだけ端末に�
 // リリース前に、この1行と remake/js/dev/ のフォルダを消す（remake/README.md「デバッグ用の道具」）
 try { const q = new URLSearchParams(location.search).get("debug"); if (q !== null) localStorage.setItem("suien_debug", q === "1" ? "1" : "0"); if (localStorage.getItem("suien_debug") === "1") import("./dev/debug-panel.js").then(m => m.mountDebugPanel()).catch(e => console.error(e)); } catch {}
 
+/** 廃止したDS風表示の選択（"normal"/"ds"）を保存していたキー。起動時に消す。 */
+export const LEGACY_TITLE_LAYOUT_KEY = "suien_title_layout";
+
 export async function boot() {
   initStageFit($("#stage")); // 画面の当て方は共通部品（core/stage-fit.js・#3076）
   installRotateGuard(); // 縦持ちの回転ガード中は、制作の時計と音を止める（#2941）
   initLayers();
-  initGameLayout();
+  // DS風表示（上下2画面）は廃止して横画面一本にした（オーナー決定 2026-11-04／11-10）。
+  // 以前に「DS風」を選んだ端末に残る表示設定は読まずに消すだけ（セーブ・設定には触れない）。
+  try { localStorage.removeItem(LEGACY_TITLE_LAYOUT_KEY); } catch { /* 保存できない環境は何もしない */ }
   initCraftStage(); // シーシャ作りの新しい配置（?craftStage=1 で入・CSL）
   initIchidaiSwitch(); // カードゲーム「一台勝負」の入口（?ichidai=1 で入・ICG）
   const cfg = loadConfig();
   applyUiTheme(cfg.uiTheme);
-  // 見た目の様式（現行／新版／DS風・LK01）。?look=neo などで端末の設定ごと切り替えられる。
+  // 見た目の様式（新版／旧版／DS風・LK01）。既定は新版で、まだ選んでいない端末は一度だけ既定へ移す（LK09）。
+  // ?look=neo などで端末の設定ごと切り替えられる。
+  migrateLook(cfg);
   const lookParam = new URLSearchParams(location.search).get("look");
   if (lookParam !== null && normalizeLook(lookParam) === lookParam) { cfg.look = lookParam; saveConfig(); }
   initLook({ look: cfg.look, chapter: () => (document.body.dataset.screen === "title" ? 1 : state?.chapter || 1) });
@@ -80,8 +85,7 @@ export async function boot() {
   }, { label: "ゲームを準備しています…", context: "boot", chapter: 1 });
   // ゲーム中にロードした直後は、タイトルを飛ばしてそのデータから再開する
   const resumeRequested = consumeResumeOnBoot();
-  // 復旧URLは通常タイトルを開く。セーブの読込・書換えは行わない。
-  if (!isNormalTitleForced() && resumeRequested && load()) resumeGame();
+  if (resumeRequested && load()) resumeGame();
   else showTitle(titleArt);
   // タイトルを描けたことを確認してから、読み込み画面を閉じる。
   $("#boot").classList.add("done");
@@ -160,7 +164,7 @@ window.__remake = {
       return Object.fromEntries(Object.keys(kit.ADOPTED_VARIANT).map((k) => [k, kit.motionVariant(k)]));
     },
     // 場面ごとのモーショングラフィックスを本来の背景・会話つきで見る（cheki / tarot / gift / shift / shark / sketch）。
-    // 夜明けの天気は dawn-sun / dawn-cloud / dawn-rain / dawn-sick（DAY3→4）。くじのガラガラは garagara-S / -A / -B / -C、ラストワン賞は garagara-LAST（C賞のあとに続けて見るなら garagara-C+LAST）。章題は chapter-1 / -2 / -4 / -5。※今のセーブを上書きする
+    // 夜明けの天気は dawn-sun / dawn-cloud / dawn-rain / dawn-sick（DAY3→4）。くじのガラガラは garagara-S / -A / -B / -C、ラストワン賞は garagara-LAST（C賞のあとに続けて見るなら garagara-C+LAST）。連続は garagara-10 / -10A / -10S / -10LAST（5回なら garagara-5S）。章題は chapter-1 / -2 / -4 / -5。※今のセーブを上書きする
     async motion(name = "cheki") {
       const core = await import("./core/state.js");
       const { play } = await import("./vn/engine.js");

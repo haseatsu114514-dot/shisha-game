@@ -1,7 +1,6 @@
 /* 全画面MENU（DUI03・#2097・設計 docs/design/daily-ui-menu-design.md §4）。
    どのUIテーマでも紙×ラベンダー＋琥珀。紙の絵は assets/ui/paper/menu-bg.png（build_ui_skin.py で 1536×838 へ）。
-   通常表示は 1280×720 の舞台に 1232×672 の紙を置く。左の帯（タブ）と枠線の位置は絵に合わせてある。
-   DS風は絵を引き伸ばさず、上下2画面ぶんの紙と線で描き、タブは下の帯に並べる。 */
+   1280×720 の舞台に 1232×672 の紙を置く。左の帯（タブ）と枠線の位置は絵に合わせてある。 */
 
 #modal > .dmenu {
   --dm-paper: #f7f3ed; --dm-card: #fffcf8; --dm-line: #d5c8dc; --dm-ink: #38283f; --dm-muted: #76667e;
@@ -275,99 +274,6 @@
   position: absolute; left: 50%; top: 50%; width: 22px; height: 22px; margin: -11px 0 0 -11px; border-radius: 50%;
   background: radial-gradient(circle, #fff 0 18%, var(--gain-color) 38%, transparent 72%); pointer-events: none;
 }
-
-/* ---------------------------------------------------------------- DS風：上下2画面ぶんを使い、タブは下の帯 */
-body.game-ds #modal:has(> .dmenu) {
-  left: var(--ds-vx); top: var(--ds-vy);
-  width: calc(var(--ds-cx) + var(--ds-cw) - var(--ds-vx)); height: calc(var(--ds-cy) + var(--ds-ch) - var(--ds-vy));
-}
-/* DS風は #stage を縮めず実寸で描くので、--k の戻し（#2859 の下限）は使わない */
-body.game-ds #modal > .dmenu { --dm-min: 0px; --dm-tap: 0px; }
-body.game-ds .dmenu .dm-backdrop { background: #0b0812e6; }
-body.game-ds .dmenu .dm-sheet {
-  inset: 0; width: auto; height: auto; padding: 10px 10px 8px; border-radius: 8px;
-  background: var(--dm-paper); box-shadow: inset 0 0 0 1px var(--dm-lav-line);
-  grid-template-columns: minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr) auto;
-  grid-template-areas: "head" "panel" "side"; row-gap: 8px;
-}
-body.game-ds .dmenu .dm-side { padding: 0; }
-body.game-ds .dmenu .dm-title { display: none; }
-body.game-ds .dmenu .dm-tabs { flex-direction: row; gap: 3px; padding: 4px; border-radius: 6px; background: var(--dm-band); border: 1px solid var(--dm-line); }
-body.game-ds .dmenu .dm-tab { flex: 1 1 0; min-width: 0; height: 50px; padding: 0 2px; align-items: center; text-align: center; }
 /* 幅320pxでも「ステータス」が隣のタブに付かない大きさ（13〜15px） */
-body.game-ds .dmenu .dm-tab .dm-label { font-size: clamp(13px, 3.9vw, 15px); font-weight: 700; letter-spacing: 0; white-space: nowrap; }
-body.game-ds .dmenu .dm-head { flex-wrap: nowrap; gap: 8px; padding-bottom: 6px; align-items: flex-start; }
-body.game-ds .dmenu .dm-summary { gap: 2px 12px; }
-body.game-ds .dmenu .dm-sum > small { font-size: 13px; }
-body.game-ds .dmenu .dm-sum > b { font-size: 16px; }
-body.game-ds .dmenu .dm-slot { font-size: 14px; }
-body.game-ds .dmenu .dm-close { min-height: 44px; padding: 0 12px; font-size: 15px; letter-spacing: .02em; }
-body.game-ds .dmenu .dm-heading h3 { font-size: 19px; }
-body.game-ds .dmenu .dm-card { padding: 10px 12px; }
-body.game-ds .dmenu .dm-sys { min-height: 56px; font-size: 16px; }
-body.game-ds .dmenu .dm-person-detail { padding: 6px 10px 10px 16px; }
 /* 「表示」の切替（ヒンジの小さな札）は MENU を閉じれば使える。開いている間は中身に重ねない */
-body.game-ds:has(#modal > .dmenu) .game-layout-toolbar { visibility: hidden; }
-/* 縦持ち（上下2画面）は幅が狭いので1列にし、行の中身を2段に組む */
-:root[data-ds-layout="stacked"] body.game-ds .dmenu .dm-grid-2,
-:root[data-ds-layout="stacked"] body.game-ds .dmenu .dm-items { grid-template-columns: minmax(0, 1fr); }
-:root[data-ds-layout="stacked"] body.game-ds .dmenu .dm-system { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
-:root[data-ds-layout="stacked"] body.game-ds .dmenu .dm-stat { grid-template-columns: 34px minmax(0, 1fr); column-gap: 10px; row-gap: 6px; padding: 8px 6px; }
-:root[data-ds-layout="stacked"] body.game-ds .dmenu .dm-stat .dm-next { grid-column: 2; }
-:root[data-ds-layout="stacked"] body.game-ds .dmenu .dm-stat-line .dm-strong { width: auto; }
 /* 縦持ち: 能力名と段位を1行目、丸を2行目、効き目の下に「次の段まで」を文字とゲージの1行で。1行 約130px → 約110px */
-:root[data-ds-layout="stacked"] body.game-ds .dmenu .dm-stat-line { gap: 2px 10px; }
-:root[data-ds-layout="stacked"] body.game-ds .dmenu .dm-stat-line .dm-rank { min-width: 0; }
-:root[data-ds-layout="stacked"] body.game-ds .dmenu .dm-stat .dm-pips { flex-basis: 100%; }
-:root[data-ds-layout="stacked"] body.game-ds .dmenu .dm-stat .dm-next { flex-direction: row; align-items: center; gap: 8px; }
-:root[data-ds-layout="stacked"] body.game-ds .dmenu .dm-stat .dm-next small { flex: none; white-space: nowrap; }
-:root[data-ds-layout="stacked"] body.game-ds .dmenu .dm-stat .dm-next .dm-gauge { flex: 1 1 0; min-width: 24px; }
-:root[data-ds-layout="stacked"] body.game-ds .dmenu .dm-board-row {
-  grid-template-columns: 28px minmax(0, 1fr) auto; grid-template-areas: "head name count" "bar bar bar"; row-gap: 6px;
-}
-:root[data-ds-layout="stacked"] body.game-ds .dmenu .dm-board-head { grid-area: head; }
-:root[data-ds-layout="stacked"] body.game-ds .dmenu .dm-board-name { grid-area: name; }
-:root[data-ds-layout="stacked"] body.game-ds .dmenu .dm-board-bar { grid-area: bar; }
-:root[data-ds-layout="stacked"] body.game-ds .dmenu .dm-count { grid-area: count; white-space: nowrap; }
-:root[data-ds-layout="stacked"] body.game-ds .dmenu .dm-person {
-  display: grid; grid-template-columns: 46px minmax(0, 1fr) auto; grid-template-areas: "face name lime" "face status status";
-  gap: 4px 10px; padding: 8px 6px;
-}
-:root[data-ds-layout="stacked"] body.game-ds .dmenu .dm-person .dm-face { grid-area: face; }
-:root[data-ds-layout="stacked"] body.game-ds .dmenu .dm-name { grid-area: name; width: auto; }
-:root[data-ds-layout="stacked"] body.game-ds .dmenu .dm-person-status { grid-area: status; gap: 4px 10px; }
-:root[data-ds-layout="stacked"] body.game-ds .dmenu .dm-person :is(.lime, .blank) { grid-area: lime; margin-left: 0; }
-body.game-ds .dmenu .dm-flavor {
-  grid-template-columns: minmax(0, 1fr) auto 40px; grid-template-areas: "name grams lv" "name pips lv"; column-gap: 8px; row-gap: 2px; padding: 4px 0;
-}
-body.game-ds .dmenu .dm-flavor-name { grid-area: name; font-size: 15px; }
-body.game-ds .dmenu .dm-grams { grid-area: grams; }
-body.game-ds .dmenu .dm-flavor .dm-pips { grid-area: pips; }
-body.game-ds .dmenu .dm-mastery { grid-area: lv; }
-/* 横持ちのDS風（左右2画面）は幅があるので、2列の並びとタブの縦の帯を残す */
-:root[data-ds-layout="side"] body.game-ds .dmenu .dm-sheet {
-  grid-template-columns: 150px minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr);
-  grid-template-areas: "side head" "side panel"; column-gap: 12px;
-  background: linear-gradient(90deg, var(--dm-band) 0 160px, transparent 160px), var(--dm-paper);
-}
-:root[data-ds-layout="side"] body.game-ds .dmenu .dm-tabs { flex-direction: column; padding: 0; background: none; border: 0; }
-:root[data-ds-layout="side"] body.game-ds .dmenu .dm-tab { flex: none; height: 52px; align-items: flex-start; text-align: left; padding: 0 12px; }
-:root[data-ds-layout="side"] body.game-ds .dmenu .dm-title { display: flex; font-size: 22px; margin: 2px 4px 8px; }
-:root[data-ds-layout="side"] body.game-ds .dmenu .dm-grid-2,
-:root[data-ds-layout="side"] body.game-ds .dmenu .dm-items { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
-:root[data-ds-layout="side"] body.game-ds .dmenu .dm-system { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-/* 小さいスマホの横持ち（幅700px未満。例 568×320・667×375）は本文の幅が縦持ちの2画面とほぼ同じで、人物の行の♥・関係の札が
-   LIME に重なり、568×320 では札や持ち物の2列が横にはみ出す。縦持ちと同じく持ち物を1列にし、人物の行を2段に組む
-   （#2789 で縦持ちを封じたので、小さいスマホも横持ちで MENU を使う） */
-@media (max-width: 699px) {
-  :root[data-ds-layout="side"] body.game-ds .dmenu .dm-grid-2,
-  :root[data-ds-layout="side"] body.game-ds .dmenu .dm-items { grid-template-columns: minmax(0, 1fr); }
-  :root[data-ds-layout="side"] body.game-ds .dmenu .dm-person {
-    display: grid; grid-template-columns: 46px minmax(0, 1fr) auto; grid-template-areas: "face name lime" "face status status";
-    gap: 4px 10px; padding: 8px 6px;
-  }
-  :root[data-ds-layout="side"] body.game-ds .dmenu .dm-person .dm-face { grid-area: face; }
-  :root[data-ds-layout="side"] body.game-ds .dmenu .dm-name { grid-area: name; width: auto; }
-  :root[data-ds-layout="side"] body.game-ds .dmenu .dm-person-status { grid-area: status; gap: 4px 10px; }
-  :root[data-ds-layout="side"] body.game-ds .dmenu .dm-person :is(.lime, .blank) { grid-area: lime; margin-left: 0; }
-}

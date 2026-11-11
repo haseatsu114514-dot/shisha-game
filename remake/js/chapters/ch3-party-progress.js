@@ -4,7 +4,7 @@ import { canRunChapterThreeAftermath } from "./ch3-aftermath-progress.js";
 // 大会翌日の和解を読み終えた夜だけ。帰郷済みの旧セーブを東京へ戻さない。
 export function chapterThreePartyWindow(value) {
   const progress = value?.flags?._ch3_aftermath;
-  return canRunChapterThreeAftermath(value) && progress?.version === 3 && progress.stage === 2
+  return canRunChapterThreeAftermath(value) && progress?.version >= 3 && progress.stage === 2
     && value.phase === "aftermath" && value.day === progress.winDay + 1 && value.slot === 1
     && value.flags._ch3_naru_party_ready === true && !value.flags._ch3_pizza_party
     && growthLesson(value, "M-S5")
