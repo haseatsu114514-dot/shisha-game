@@ -43,6 +43,8 @@ async function runShift(page) {
   const kind = await page.evaluate(() => {
     const n = document.querySelector("#fx .mo-shift");
     if (!n) return "gone";
+    // c（吊り札を返す・TMG55）は層の data-shift で見分ける。a／b は丸い札（full）と吊り札（brief）
+    if (n.dataset.shift) return n.dataset.shift;
     if (n.querySelector(".mo-coin")) return "full";
     return n.querySelector(".mo-sign") ? "brief" : "?";
   });
