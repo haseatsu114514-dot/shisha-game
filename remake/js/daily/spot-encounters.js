@@ -6,7 +6,7 @@ const ENCOUNTERS = {
     { id: "cafe_ch2_commute", chapter: 2 },
     // 味の不調（第2章DAY5の夜から）を知っている時だけ
     { id: "cafe_ch2_taste", chapter: 2, flag: "_ch2_taste_distant" },
-    { id: "cafe_naru_break", met: "naru" },
+    { id: "cafe_naru_break", met: "naru", rift: true },
     { id: "cafe_maezono_break" },
     { id: "cafe_master_quiz" },
   ],
@@ -20,7 +20,7 @@ const ENCOUNTERS = {
   choizap: [
     { id: "choizap_ch2_numbers", chapter: 2 },
     { id: "choizap_minto", met: "minto", flag: "_minto_identity_revealed" },
-    { id: "choizap_naru", met: "naru" },
+    { id: "choizap_naru", met: "naru", rift: true },
     { id: "choizap_oldman" },
   ],
   c_station: [
@@ -38,13 +38,18 @@ const FOLLOWUPS = {
 };
 
 const seenKey = (id) => `_spot_seen_${id}`;
+// #2090: 第2章の対峙（決裂）以降、なるは店を閉めて修行に出ている。施設でもばったり会わない（rift の回）。
+// daily/spots.js の naruRiftActive と同じ条件の写し（この部品は state を読まず、保存値だけで決める）。
+const naruRift = (save) => (save?.chapter || 1) >= 2 && !!(save?.flags?._ch2_read_ch2_naru_confrontation
+  || save?.flags?._ch2_night_11_done || save?.flags?._ch2_naru_listened || save?.flags?._ch2_naru_hurt);
 
 /** 初回は場所の紹介。再訪から未読を一つずつ、必ず一回以上の静かな訪問を挟む。 */
 export function spotEncounterDue(spotId, visit, save, dialogues, { wide = false } = {}) {
   if (visit < 2 || spotId === "choizap" && !save.flags._gym_member) return null;
   const last = Number(save.flags[`_spot_last_${spotId}`]) || 0;
   if (last && visit - last < (wide ? 1 : 2)) return null;
-  return ENCOUNTERS[spotId]?.find(({ id, met, flag, slot, chapter }) => dialogues[id] && (slot === undefined || (save.slot ?? 0) === slot)
+  return ENCOUNTERS[spotId]?.find(({ id, met, flag, slot, chapter, rift }) => dialogues[id] && (slot === undefined || (save.slot ?? 0) === slot)
+    && !(rift && naruRift(save))
     && (chapter === undefined || (save.chapter || 1) === chapter)
     && !save.flags[seenKey(id)] && (!met || save.met[met]) && (!flag || save.flags[flag]))?.id || null;
 }

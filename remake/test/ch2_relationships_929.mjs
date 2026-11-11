@@ -101,6 +101,84 @@ assert(!all(window).some((l) => l.speaker === "naru" && /明後日|来たよ/.te
 assert.match(window.branches.hurt.map((l) => l.text).join("\n"), /既読[\s\S]*電話に出なかった/);
 assert.match(window.branches.listened.map((l) => l.text).join("\n"), /もう一回[\s\S]*返事が来ない/);
 
+// 全体講評（2026-11-11）S6: 優勝目当ての客。DAY3に大会の一台を半分残し、DAY6に軽い一台を最後まで吸う。
+// 夜は増やさず、既存の夜の場面として足す。DAY3を見ていない保存には、続きの場面を足さない
+assert.deepEqual(ids(3), ["ch2_naru_warm", "remake_ch2_ageha_scout", "ch2_title_customer_half"]);
+assert.equal(night(3).steps[2].flag, "_stk_title_customer_half");
+assert.deepEqual(ids(6), ["ch2_title_customer_back", "ch2_coal_together", "ch2_lingering_smell"]);
+assert.equal(night(6).steps[0].flag, "_stk_title_customer_back");
+assert(!when(6, "ch2_title_customer_back", {}), "DAY3の場面を見ていない保存には足さない");
+assert(when(6, "ch2_title_customer_back", { _stk_title_customer_half: true }));
+assert(!when(6, "ch2_title_customer_back", { _stk_title_customer_half: true, _ch2_read_ch2_coal_together: true }), "炭替えの後へ差し込まない");
+const half = main.ch2_title_customer_half, back = main.ch2_title_customer_back, thermo = main.ch2_kemuri_thermometer;
+const metCheck = half.lines.find((l) => l.type === "condition" && l.flag === "_stk_title_customer_met");
+assert(metCheck && half.branches[metCheck.next_true].length && half.branches[metCheck.next_false].length, "第1章末を見た保存・見ていない保存の両方で読める");
+assert.match(half.branches[metCheck.next_false].map((l) => l.text).join("\n"), /初めて見る顔[\s\S]*大会のやつ、頼める/);
+// 第1章末で一度頼んでいる保存は二度目の来店。初めてのようには頼ませず、前回は帰ったあとの台を見ていなかったと受けてから、半分残った絵へ
+const knownText = half.branches[metCheck.next_true].map((l) => l.text).join("\n");
+assert.match(knownText, /優勝した人の店だよね[\s\S]*この前の、もう一回頼める/); assert.doesNotMatch(knownText, /初めて/);
+assert(!half.lines.some((l) => l.speaker === "customer" && /頼める/.test(l.text)), "注文の言い方は面識で分ける");
+const tableCheck = half.lines.filter((l) => l.type === "condition" && l.flag === "_stk_title_customer_met")[1];
+assert(tableCheck && !tableCheck.next_false, "面識のない保存は、初めての客の文のまま");
+assert.match(half.branches[tableCheck.next_true].map((l) => l.text).join("\n"), /この前は、帰ったあとの台を見ていなかった/);
+assert.equal(half.lines.indexOf(tableCheck) + 1, half.lines.findIndex((l) => /葉は、半分残っている/.test(l.text || "")), "台を見ていなかった一行の直後に、半分残った絵を置く");
+assert.match(half.lines.map((l) => l.text || "").join("\n"), /葉は、半分残っている[\s\S]*すごいのは、分かるんだけど[\s\S]*聞かなかった[\s\S]*組み直す/);
+assert.match(text(back), /半分残した人[\s\S]*最後までいけた[\s\S]*点をつけた/);
+assert.doesNotMatch(text(back), /おいし|甘|美味/, "味が遠い日のはじめに、味を語らせない");
+for (const scene of [half, back]) {
+  assert(all(scene).filter((l) => l.speaker && l.speaker !== "hajime").every((l) => l.speaker === "customer" && l.face === "normal"),
+    `${scene.dialogue_id}: 客は名無しの customer（第3章の帰郷の客と同じ）`);
+}
+// DAY4の事故は、半分残された一台の居残りから続く（DAY3を見た保存だけ一行で受ける）
+const practice = main.ch2_sofa_burn.lines.find((l) => l.type === "condition" && l.flag === "_stk_title_customer_half");
+assert(practice && !practice.next_false, "見ていない保存は元の場面のまま");
+assert.match(main.ch2_sofa_burn.branches[practice.next_true].map((l) => l.text).join("\n"), /残って、半分残された一台/);
+assert(main.ch2_sofa_burn.lines.indexOf(practice) < main.ch2_sofa_burn.lines.findIndex((l) => /炭を、落とした/.test(l.text || "")));
+
+// S13: DAY9の開場前、博士が吸う間隔から不調に気づき、温度計を貸そうとする。選択は記録だけ（効果なし）
+assert.deepEqual(ids(9), ["ch2_kemuri_thermometer", "remake_ch2_ageha_tasting", "ch2_strawberry_sample"]);
+assert(when(9, "ch2_kemuri_thermometer", {}) && !when(9, "ch2_kemuri_thermometer", { _ch2_read_remake_ch2_ageha_tasting: true }), "試煙会の後へ差し込まない");
+const doctor = all(thermo).filter((l) => l.speaker === "dr_kemuri");
+assert(doctor.length >= 3 && doctor.every((l) => ["normal", "smile"].includes(l.face)), "博士に悪い顔をさせない");
+assert.match(doctor.map((l) => l.text).join("\n"), /吸う間隔[\s\S]*逢縁くん[\s\S]*温度計/);
+assert.doesNotMatch(doctor.map((l) => l.text).join("\n"), /俺|私の舌|おいし|甘/, "博士は自分の舌の事情も、味の感想も言わない");
+assert.match(text(thermo), /台は頼まず/, "博士は吸わない");
+const offer = all(thermo).find((l) => l.type === "choice");
+assert.deepEqual(offer.choices.map((c) => c.next), ["borrow", "decline"]);
+const thermoFlags = (branch) => thermo.branches[branch].filter((l) => l.type === "set_flag").map((l) => l.flag);
+assert.deepEqual(thermoFlags("borrow"), ["_stk_kemuri_thermo_borrowed"]);
+assert.deepEqual(thermoFlags("decline"), ["_stk_kemuri_thermo_declined"]);
+// 選んだ後に中断しても、LOADで逆の記録を重ねない（DAY6の分担と同じ型）
+const borrowed = thermo.lines.find((l) => l.type === "condition" && l.flag === "_stk_kemuri_thermo_borrowed");
+assert.equal(borrowed.next_true, "borrow");
+const declined = thermo.branches[borrowed.next_false].find((l) => l.type === "condition" && l.flag === "_stk_kemuri_thermo_declined");
+assert.equal(declined.next_true, "decline");
+assert.equal(thermo.branches[declined.next_false][0], offer);
+for (const scene of [half, back, thermo]) {
+  assert(!all(scene).some((l) => ["apply", "note", "remember"].includes(l.type) || l.affinity || l.stats), `${scene.dialogue_id}: 強制場面に報酬を付けない`);
+  assert(!scene.metadata?.add_affinity && !scene.metadata?.add_stat && !scene.growth_stats, `${scene.dialogue_id}: metadata の報酬もなし`);
+  assert.doesNotMatch(text(scene), /が(少し|かなり|大きく)?上がった/, `${scene.dialogue_id}: 報酬の文を置かない`);
+}
+
+// C4: 顔色に気づいて水を出す役は、つむぎとレヰだけ。アダムは続けてきた人の言葉で返し、スミの訓示は手の動きへ
+const adam = isolation.ch2_adam_distance;
+assert.doesNotMatch(text(adam), /水|グラス|何点/);
+assert.match(text(adam), /また分かる日に吸え/, "第3章・第5章で回収する一言を残す");
+assert.match(text(adam), /昨日の正解/);
+assert.doesNotMatch(text(main.ch2_pre_tournament_realisation), /お茶|缶/);
+assert.match(text(isolation.ch2_tsumugi_color), /お水を飲みませんか/);
+assert.match(text(ageha.remake_ch2_ageha_tasting), /……水。一口目、強かったろ/);
+assert.doesNotMatch(text(main.ch2_slump_taste), /寝てるか|休むのも仕事|切り上げろ/);
+assert.match(text(main.ch2_slump_taste), /医者に診てもらえ[\s\S]*鞄をカウンターへ置いた/);
+assert.match(text(main.ch2_lingering_smell), /飯はうちで食ってけ[\s\S]*夕飯/, "食事の話は6日目の夕飯に残す");
+assert.doesNotMatch(text(remake.remake_ch2_day1_night), /休め/);
+
+// 食い違い4: みんとは、実際には交わしていないLIMEの返信を引かない。目の前で起きたことを言う
+const minto = isolation.ch2_minto_warning;
+assert.doesNotMatch(text(minto), /LIME|大会前なので|何も悪くない/);
+assert(!all(minto).some((l) => l.type === "condition"), "連絡先の有無で事実を変えない");
+assert.match(text(minto), /ミント祭り[\s\S]*本番も、絶対[\s\S]*素通り[\s\S]*頼みたかった/);
+
 // DAY14の入場後: 4台の前の掛け合い。神崎はあげはを『千代子の姉貴』と呼び、応援席は前夜の選択に従う。震えは秘密を知る保存だけ
 const stations = tournament.ch2_tournament_stations;
 assert.match(text(stations), /千代子の姉貴[\s\S]*本名で呼ぶな/);
@@ -122,8 +200,9 @@ assert.match(heart.branches.secret.map((l) => l.text).join("\n"), /震え/);
 assert(!all(heart).some((l) => ["apply", "note", "set_flag"].includes(l.type)));
 assert.match(craft.tournament_craft_waiting_2.lines.map((l) => l.text).join("\n"), /あげはの目が、こっちの手元/, "制作中の小さな伏線");
 
-// 第3章のライバルの偵察（#929）: 名乗らない「？？？」が顔だけ見せて所々に現れる。第2章では名前・面識・会話を持たせない
-for (const scene of [ageha.remake_ch2_ageha_tasting, remake.remake_ch2_eve_rei, tournament.ch2_tournament_entrance]) {
+// 第3章のライバルの偵察（#929）: 名乗らない「？？？」が顔だけ見せて現れる。第2章では名前・面識・会話を持たせない。
+// 目撃は試煙会と大会の客席の2回（全体講評S18・C4）。前夜は出さず、レヰの一曲からあげはの場面へそのまま続ける
+for (const scene of [ageha.remake_ch2_ageha_tasting, tournament.ch2_tournament_entrance]) {
   const lines = all(scene), said = lines.filter((l) => l.speaker === "volk").map((l) => l.text);
   assert(said.length >= 1 && said.every((t) => t === "……"), `${scene.dialogue_id}: 台詞は無言だけ`);
   assert(!lines.some((l) => l.flag === "_met_volk" || l.type === "intro"), `${scene.dialogue_id}: 面識・紹介を付けない`);
@@ -131,8 +210,12 @@ for (const scene of [ageha.remake_ch2_ageha_tasting, remake.remake_ch2_eve_rei, 
   const hide = lines.findIndex((l) => l.type === "hide_portrait" && l.char_id === "volk");
   assert(hide > lines.findIndex((l) => l.speaker === "volk"), `${scene.dialogue_id}: 去ったら立ち絵を下げる`);
 }
-for (const scene of [ageha.remake_ch2_ageha_tasting, remake.remake_ch2_eve_rei]) assert(scene.lines.some((l) => l.flag === "_ch2_scout_seen"));
-assert.match(text(main.ch2_pre_tournament_realisation), /うちの店にも来てた/);
+assert(ageha.remake_ch2_ageha_tasting.lines.some((l) => l.type === "set_flag" && l.flag === "_ch2_scout_seen"), "第3章の面識判定は、必ず読む試煙会の目撃で立つ");
+assert(!all(remake.remake_ch2_eve_rei).some((l) => l.speaker === "volk" || l.char_id === "volk" || l.flag === "_ch2_scout_seen"), "前夜に偵察の男を出さない");
+assert.match(remake.remake_ch2_eve_rei.lines.at(-1).text, /^レヰは.*歩いていった。$/, "一曲の余韻のまま、あげはの場面へ続く");
+assert.doesNotMatch(text(main.ch2_pre_tournament_realisation), /背の高い|うちの店にも来てた|メモだけ/, "前夜のあげはの噂話も外す");
+assert(!all(main.ch2_pre_tournament_realisation).some((l) => /^_ch2_scout/.test(l.flag || "")), "前夜は偵察の記録で分岐しない");
+assert.doesNotMatch(text(tournament.ch2_tournament_entrance), /会場の外/, "入場の独白は前夜の目撃を前提にしない");
 assert.match(text(ageha.remake_ch2_ageha_tasting), /人を見る訓練/);
 const meet = ch3volk.ch3_volk_first;
 const deliveryRecognition = meet.lines.find((l) => l.flag === "_ch3_delivery_volk" && l.next_false === "delivery_original_recognition");

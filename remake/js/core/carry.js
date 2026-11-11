@@ -84,6 +84,7 @@ export const STATE_KEY_RULES = {
 export const GIFT_EQUIPMENT_IDS = [
   "suyaki_adam", "suyaki_ageha", "suyaki_hiyori", "suyaki_kumicho", "suyaki_saku", "suyaki_mashiro", "suyaki_minto", "suyaki_naru", "suyaki_noor",
   "suyaki_rei", "suyaki_rio", "suyaki_samechan", "suyaki_steve", "suyaki_sumi", "suyaki_tsumugi", "suyaki_volk", "suyaki_master_hookah",
+  "suyaki_da_silva", "suyaki_sheikh",
 ];
 
 // 記念品の由来分類（core/keepsakes.js の KEEPSAKES と対応）。
@@ -108,6 +109,8 @@ export const FLAG_CATEGORY_VERDICT = {
 /** 正確名の flag 分類: [名前, カテゴリ] */
 export const FLAG_EXACT_RULES = [
   ["_adam_arcade_done", "person"],
+  ["_adam_fifth_light", "person"], // アダムの5回目の「今の軽い後味」。締めくくりで返す（RVE07）
+  ["_adam_fifth_strong", "person"], // アダムの5回目の「さっきの濃い感じ」。締めくくりで返す（RVE07）
   ["_ageha_aquarium_introduced", "person"],
   ["_ageha_bear_seat_done", "person"],
   ["_ageha_first_purikura", "person"],
@@ -177,6 +180,7 @@ export const FLAG_EXACT_RULES = [
   ["_ch2_read_ch2_rei_fifth", "person"],
   ["_ch2_read_ch2_rei_fourth", "person"],
   ["_ch2_read_ch2_rei_sixth", "person"],
+  ["_ch2_read_ch2_rei_third", "person"], // レヰの本名の回。LIME lime_rei_bond_a の条件
   ["_ch2_read_ch2_slump_taste", "progression"],
   ["_ch2_read_ch2_sofa_burn", "progression"],
   ["_ch2_read_ch2_strawberry_sample", "progression"],
@@ -370,6 +374,7 @@ export const FLAG_EXACT_RULES = [
   ["_home_shisha_day", "progression"],
   ["_home_lavender_sleep", "progression"],
   ["_dense_pack_legacy", "unlock"],
+  ["_dubai_bonds", "progression"], // 太陽・シェイクの段階・手紙の既読（chapters/dubai-bonds.js）
   ["_home_tonight", "progression"],
   ["_home_trial_plan", "progression"],
   ["_intro_", "progression"],
@@ -388,6 +393,8 @@ export const FLAG_EXACT_RULES = [
   ["_lime_contact_kumicho", "person"],
   ["_lime_contact_saku", "person"],
   ["_lime_contact_mashiro", "person"],
+  ["_lime_contact_master_hookah", "person"], // 王煙楼。龍龍水煙所の段階会話で交換する（第4章ドバイ）
+  ["_lime_contact_da_silva", "person"], // 太陽。FESTAの段階会話で交換する（第4章ドバイ）
   ["_lime_contact_minto", "person"],
   ["_lime_contact_naru", "person"],
   ["_lime_contact_noor", "person"],
@@ -513,6 +520,11 @@ export const FLAG_EXACT_RULES = [
   ["_spot_seen_kannon_adam_pakki", "person"],
   ["_spot_seen_kannon_ch2_wish", "progression"],
   ["_spot_seen_kannon_oldman", "progression"],
+  ["_stk_kemuri_thermo_borrowed", "progression"],
+  ["_stk_kemuri_thermo_declined", "progression"],
+  ["_stk_title_customer_back", "progression"],
+  ["_stk_title_customer_half", "progression"],
+  ["_stk_title_customer_met", "progression"],
   ["_story_shuraba_unresolved", "pending"],
   ["_sumi_double_apple_received", "person"],
   ["_sumi_rig_home_seen", "progression"],
@@ -520,6 +532,7 @@ export const FLAG_EXACT_RULES = [
   // 凛想が味の不調に気づいた回（第2章）を読んだか。第3・4章の出発前の凛想の会話が分岐に使う（data/dialogue/ch3_ch4_home.json）
   ["_talk_seen_ch2_rio_taste", "person"],
   // 第3章の出発前に凛想から「向こうの顔」を頼まれたか。第4章の出発前の凛想の会話が、その報告の分岐に使う
+  ["_talk_seen_ch3_prep_rei_live", "person"], // レヰのライブの夜（第3章の準備期間・RVE07）
   ["_talk_seen_ch3_prep_rio", "person"],
   ["_tsumugi_contest_art_seen", "person"],
   ["_tsumugi_contest_draft_hands", "person"],
@@ -618,6 +631,7 @@ export const FLAG_FAMILY_RULES = [
   ["_eve_reflect_*", "progression"], // 大会前夜の内省（心得の盤 SPEC 2.8）。章ごとに1回
   ["_ch3_trial_*", "progression"],
   ["_cafe_recall_*", "progression"],
+  ["_city_guest_count_*", "progression"], // 繰り返しの来店の巡回の位置（daily/city-guests.js・RVE07）
   ["_city_guest_seen_*", "progression"],
   ["_roam_seen_*", "person"],
   ["_trpg_topic_*", "person"], // 部活の話は周回ごとに対面し直す

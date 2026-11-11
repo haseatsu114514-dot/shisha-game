@@ -120,7 +120,12 @@
         {
           "speaker": "adam",
           "face": "normal",
-          "text": "無論。世界はリンゴに始まり、リンゴに帰する。……これぞ真理。存分に味わうがいい"
+          "text": "無論。世界はリンゴに始まり、リンゴに帰する"
+        },
+        {
+          "speaker": "adam",
+          "face": "smile",
+          "text": "……これぞ真理。存分に味わうがいい"
         },
         {
           "speaker": "hajime",
@@ -836,6 +841,10 @@
             "speaker": "adam",
             "face": "normal",
             "text": "……そうか。では、戻して確かめよう"
+          },
+          {
+            "type": "set_flag",
+            "flag": "_adam_fifth_strong"
           }
         ],
         "taste_after": [
@@ -848,6 +857,10 @@
             "speaker": "adam",
             "face": "normal",
             "text": "……ふむ。俺はさっきの濃さも残したいところだが"
+          },
+          {
+            "type": "set_flag",
+            "flag": "_adam_fifth_light"
           }
         ],
         "greeting_before": [
@@ -1102,7 +1115,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "夜の商店街に、ちょっとだけ普通の光景が広がっていた。"
+          "text": "街灯の下で、アダムのシャツが裏返しだと気づいた。今夜は、黙っておいた。"
         }
       ]
     },

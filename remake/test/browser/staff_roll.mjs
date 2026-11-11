@@ -176,7 +176,8 @@ await suite("staff-roll", async check => {
     let saved = await get(page);
     assert.equal(saved.flags._ch5_staff_roll_done, true);
     assert.deepEqual(saved.flags._ch5.postEnding, { step: 0, unresolved: lovers, scenes: ["shuraba_open", "shuraba_minto",
-      "shuraba_tsumugi", "shuraba_accountability", "ending_relationship_pending", talk("minto"), talk("tsumugi")] });
+      "shuraba_tsumugi", "shuraba_accountability", "ending_relationship_pending", talk("minto"), talk("tsumugi"),
+      "shuraba_sumi_cover"] });
     assert.equal((await cycleMeta(page)).unlocked, true, "The true end is the roll; the talks come after it");
     assert.match(await page.locator(dt("ch5-scene")).innerText(), /後日のtonari/);
     await loadMidRead(page);
@@ -200,7 +201,12 @@ await suite("staff-roll", async check => {
     assert.match(await page.locator(dt("ch5-scene")).innerText(), /2人目／2人/);
     assert.deepEqual((await get(page)).flags._ch5.postEnding.unresolved, ["tsumugi"]);
     await page.locator(dt("ch5-continue")).click();
-    // 話し直しまで読み終えた締めでリザルト。恋人は二人とも残る。
+    // 最後の話し直しの後は、閉店後のtonariでスミさんの締め（STK12）を自分のカードから読む。
+    await page.locator(scene("shuraba_sumi_cover")).waitFor({ timeout: 60000 });
+    assert.match(await page.locator(dt("ch5-scene")).innerText(), /閉店後のtonari/);
+    assert.deepEqual((await get(page)).flags._ch5.postEnding.unresolved, [], "Everyone talked before the closing");
+    await page.locator(dt("ch5-continue")).click();
+    // 締めまで読み終えたらリザルト。恋人は二人とも残る。
     await page.locator(dt("result")).waitFor({ timeout: 30000 });
     const result = await readResult(page);
     assert.equal(result.maxed, "2人");
@@ -208,7 +214,7 @@ await suite("staff-roll", async check => {
     await page.locator(dt("result-next")).click();
     await page.locator(dt("title-new")).waitFor({ timeout: 30000 });
     saved = await get(page);
-    assert.equal(saved.flags._ch5.postEnding.step, 7);
+    assert.equal(saved.flags._ch5.postEnding.step, 8);
     assert.deepEqual(saved.flags._ch5.postEnding.unresolved, []);
     assert.equal(saved.flags._story_shuraba_unresolved, undefined, "Released after both talks");
     assert.deepEqual(saved.lovers, lovers, "Nobody is dumped or forgiven by the talk");
@@ -227,7 +233,7 @@ await suite("staff-roll", async check => {
     await seed(page, { done: true, seen: true, lovers });
     await openSlot(page);
     await page.locator(scene("shuraba_open")).waitFor({ timeout: 60000 });
-    assert.equal((await get(page)).flags._ch5.postEnding.scenes.length, 9);
+    assert.equal((await get(page)).flags._ch5.postEnding.scenes.length, 10);
     const scenes = ["shuraba_open", "shuraba_rio", "shuraba_ageha", "shuraba_hiyori", "shuraba_accountability",
       "ending_relationship_pending", ...lovers.map(talk)];
     await seed(page, { done: true, seen: true, lovers, post: { scenes, step: 2, unresolved: lovers } });

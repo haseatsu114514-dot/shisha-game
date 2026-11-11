@@ -89,6 +89,7 @@
     "open": "shuraba_open",
     "close": "shuraba_accountability",
     "pending_ending": "ending_relationship_pending",
+    "aftercare": "shuraba_sumi_cover",
     "minimum_present_lovers": 2,
     "stage": "post_ending"
   },
@@ -165,9 +166,9 @@
         "ch3_mashiro_recovery",
         "ch3_naru_reconcile",
         "ch3_enmaku_cleanup",
-        "ch3_home_customer",
+        "ch3_ageha_reunion",
         "ch3_tsumugi_result",
-        "ch3_ageha_reunion"
+        "ch3_home_customer"
       ],
       "on_loss": [
         "ch3_national_defeat"
@@ -240,7 +241,16 @@
       ],
       "after_match": [
         "ch5_doctor_after_match",
+        "ch5_doctor_cocreation",
         "ch5_return_to_tonari"
+      ],
+      "after_match_loss_or_tie": [
+        "ch5_doctor_after_match_loss",
+        "ch5_doctor_after_match_loss_close",
+        "ch5_doctor_after_match_tie"
+      ],
+      "after_match_tail": [
+        "ch5_sui_after_match"
       ]
     }
   },
@@ -257,9 +267,9 @@
   },
   "progression_contract": {
     "ch3_romance": "既存の交友締めくくり・告白で実際に交際した人だけ。あげはの着地は帰郷後。友人・未読イベントをMAX好感度から捏造しない。",
-    "shuraba": "第3章の前夜は同じ場所の恋人2人以上とスティーブがいる時にnear_conflict。彼の茶化しで曖昧に流し、謝罪・破局・和解を確定しない。他の前夜は重なった予定を保留。本格的なconflictはending_daily_smokeとスタッフロール後にだけ選ぶ。",
-    "epilogue": "実際の恋人がちょうど1人かつ所在・会う約束が確認済みで、未解決の修羅場がない場合。複数交際は日常の共通エンディング→スタッフロール→本格的な修羅場。同席している恋人の反応だけを再生し、未到着者を出現させない。",
-    "loss": "第3・4章の敗北はその競技から再挑戦。第5章の負け/同数も後日談へ続く。大会結果を恋愛人数で書き換えない。"
+    "shuraba": "第3章の前夜は同じ場所の恋人2人以上とスティーブがいる時にnear_conflict。彼の茶化しで曖昧に流し、謝罪・破局・和解を確定しない。他の前夜は重なった予定を保留。本格的なconflict（反応と謝罪）は第5章冒頭の打ち上げで起き、起きなかった場合だけスタッフロール後に選ぶ。スタッフロール後は一人ずつの話し直し（talk）の後、conflict.aftercare（スミさんが裏で一人ずつ「本命はあんた一人だ」と説得していたと明かし「……気をつけろよ」と言う）で締める（2026-11-11 オーナー決定）。",
+    "epilogue": "実際の恋人がちょうど1人かつ所在・会う約束が確認済みで、未解決の修羅場がない場合。共通の賄い（ending.normal）は置き換えず、読んでからその人の後日談へ進む。複数交際は日常の共通エンディング→スタッフロール→本格的な修羅場。同席している恋人の反応だけを再生し、未到着者を出現させない。",
+    "loss": "第3・4章の敗北はその競技から再挑戦。第5章の負け/同数も後日談へ続く（after_matchの先頭だけ、after_match_loss_or_tieの台本に替わる。どれを読むかは二本の挙手で決まる。after_match_tailは先頭の場面の末尾に勝敗共通で続ける）。大会結果を恋愛人数で書き換えない。"
   },
   "optional_requirements": {
     "ch3_minto_small_lies": {

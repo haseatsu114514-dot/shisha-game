@@ -1,7 +1,7 @@
 // VOL13: 第2章の地元の会話を足す。
 // ① 施設の寄り道（実 spot-encounters.js）: 喫茶こはく・観音堂・CHOI-ZAP・C.STATIONに第2章だけの回。第1章・第3章では出ない
 // ② Dr.fookah 2階の凛想（実 spots.js の visitChar）: 第2章だけの会話2本。味の不調に気づく回を先に、一来店一本・一度だけ
-// ③ あげはの通い訪問（実 ch2-preparation.js）: 小会話4種を巡回し、昼夜の店のあいさつを挟む
+// ③ あげはの通い訪問（実 ch2-preparation.js）: 小会話5種を巡回し、昼夜の店のあいさつを挟む
 // ④ 台本: 大会を前提にする台詞には大会後の分岐、第2章の水族館の再訪は数行
 // node --experimental-vm-modules remake/test/ch2_home_talks.mjs
 import assert from "node:assert/strict";
@@ -43,6 +43,22 @@ assert.equal(encounters.spotEncounterDue("cafe", 5, save(2, { _spot_seen_cafe_ch
 assert.equal(encounters.spotEncounterDue("kannon", 5, save(2, {}, { slot: 1 }), all) === "kannon_ch2_wish", false);
 // 台本が読み込まれていない（第2章の準備期間の外）なら出さない
 assert.equal(encounters.spotEncounterDue("cafe", 5, save(2), {}), null);
+// #2090・RVE: なるとの決裂（第2章の対峙）以降は、店を閉めて修行に出ているので、喫茶こはく・ジムでもなるに会わない
+{
+  const ch2Seen = Object.fromEntries(Object.values(CH2).flat().map(id => [`_spot_seen_${id}`, true]));
+  const rifts = ["_ch2_read_ch2_naru_confrontation", "_ch2_night_11_done", "_ch2_naru_listened", "_ch2_naru_hurt"];
+  for (const [spot, id] of [["cafe", "cafe_naru_break"], ["choizap", "choizap_naru"]]) {
+    assert.equal(encounters.spotEncounterDue(spot, 5, save(1, ch2Seen), all), id, `${id}: chapter 1`);
+    assert.equal(encounters.spotEncounterDue(spot, 5, save(2, ch2Seen), all), id, `${id}: chapter 2 before the rift`);
+    for (const rift of rifts) {
+      for (const chapter of [2, 3, 5]) {
+        assert.notEqual(encounters.spotEncounterDue(spot, 5, save(chapter, { ...ch2Seen, [rift]: true }), all), id, `${id}: not during the rift (${rift}, chapter ${chapter})`);
+      }
+    }
+    // 第1章ではまだ決裂していない（同じ保存値でも章が1なら出る）
+    assert.equal(encounters.spotEncounterDue(spot, 5, save(1, { ...ch2Seen, _ch2_naru_hurt: true }), all), id, `${id}: chapter 1 is never a rift`);
+  }
+}
 
 // ---- 実モジュールを、名前付き import だけ差し替えて読み込む --------------------------------
 function namedImports(src) {
@@ -132,7 +148,7 @@ for (const chapter of [1, 3]) { state = rioSave({ chapter }); assert.equal(spots
 state = rioSave(); const saved = DB.dialogues; DB.dialogues = {}; assert.equal(spots.chapterTalkDue("rio"), null); DB.dialogues = saved;
 assert.equal(spots.chapterTalkDue("adam"), null);
 
-// ---- ③ あげはの通い訪問の小会話4種と昼夜のあいさつ（実 ch2-preparation.js） --------------------
+// ---- ③ あげはの通い訪問の小会話5種と昼夜のあいさつ（実 ch2-preparation.js） --------------------
 let prepState, prepPlayed, slotOfDay = "day";
 const prepContext = vm.createContext({ console, AbortController, setTimeout, clearTimeout });
 const ROOMS = { ageha: "room_ageha", kumicho: "room_kumicho", rei: "room_rei" };
@@ -164,15 +180,15 @@ prepModule.set("../core/state.js", "state", prepState);
 await prep.runChapterTwoPreparation();
 const agehaShop = prep.PREPARATION_SPOTS.find(spot => spot.charId === "ageha");
 const seen = [];
-for (let n = 0; n < 4; n++) {
+for (let n = 0; n < 5; n++) {
   slotOfDay = n % 2 ? "night" : "day"; prepPlayed = [];
   const result = await prepState.def.performSpot(agehaShop, { staminaGuard: async () => true });
   assert.equal(result.used, true);
   assert.equal(prepPlayed[0], `venue_ageha_${slotOfDay}`, "昼夜の店のあいさつを先に");
   seen.push(prepPlayed[1]);
 }
-assert.deepEqual(seen.slice().sort(), ["remake_ch2_ageha_repeat", "remake_ch2_ageha_repeat_b", "remake_ch2_ageha_repeat_c", "remake_ch2_ageha_repeat_d"],
-  "四回通えば、小会話4種を一巡する");
+assert.deepEqual(seen.slice().sort(), ["remake_ch2_ageha_repeat", "remake_ch2_ageha_repeat_b", "remake_ch2_ageha_repeat_c", "remake_ch2_ageha_repeat_d", "remake_ch2_ageha_repeat_e"],
+  "五回通えば、小会話5種を一巡する");
 
 // ---- ④ 台本 ----------------------------------------------------------------------
 const tournamentSafe = id => JSON.stringify(all[id]).includes('"tournament_finished"');
@@ -189,4 +205,5 @@ assert(/煙の褒め方が嘘だね/.test(taste)); assert(!/心因|気のせい|
 for (const id of ["remake_ch2_aquarium_repeat", "remake_ch2_aquarium_repeat_b", "remake_ch2_aquarium_repeat_c"]) {
   assert(all[id].lines.length >= 4, `${id} has a few more lines`);
 }
-console.log("PASS ch2 home talks: chapter 2 facility encounters, Rio's two talks, Ageha's four small talks with greetings, tournament-safe scripts, aquarium revisits");
+console.log("PASS ch2 home talks: chapter 2 facility encounters, Rio's two talks, Ageha's five small talks with greetings, tournament-safe scripts, aquarium revisits");
+

@@ -26,7 +26,7 @@ import { cityRegularSpots, visitCityRegular } from "./ch2-preparation.js";
 import { TOKYO, TOKYO_SPOTS, TO_TOKYO_SPOT, performTokyoSpot, inTokyo, tokyoNight, tokyoWakeBackground, chapterFiveMukaiShift,
   chapterFiveTokyoPin, tokyoSpotsNow, preloadTokyoScenes } from "./ch5-tokyo.js";
 import { DUBAI, DUBAI_SPOTS, TO_DUBAI_SPOT, performDubaiSpot, inDubai, dubaiNight, dubaiWakeBackground, chapterFiveDubaiPin,
-  chapterFiveDubaiLeisureSpots, chapterFiveDubaiLeisureById, preloadNoorScenes } from "./ch5-dubai.js";
+  chapterFiveDubaiLeisureSpots, chapterFiveDubaiLeisureById, preloadNoorScenes, dubaiBondHasNew } from "./ch5-dubai.js";
 import { chapterFiveShops, chapterFiveCityShops, chapterFiveShopById, performChapterFiveShop } from "./ch5-shops.js";
 import { chapterFiveCateringSpot, performCateringSpot, deliverCateringMorning } from "./ch5-catering.js";
 import { CATERING_SPOT_ID } from "./ch5-catering-model.js";
@@ -158,7 +158,10 @@ const currentRegion = () => ["widehanga", TOKYO, DUBAI].includes(state.flags._ch
 export const chapterFiveTokyoSpots = () => [...tokyoSpotsNow().filter(spot => (!spot.charId || spot.unknownLabel || state.met?.[spot.charId])
   && (!spot.gym || !!state.flags._gym_member) && (!spot.night || state.slot >= 1) && reflectable(spot)), fortuneSpot(TOKYO)].filter(Boolean);
 /** ドバイの行き先（モスクは灯せる火種がある時だけ）。 */
-export const chapterFiveDubaiSpots = () => [...DUBAI_SPOTS.filter(reflectable), ...chapterFiveDubaiLeisureSpots()];
+// シェイクの屋敷・中庭の太陽は、新しい段階の会話か締めくくりがある時に「！」（chapters/ch5-dubai.js の dubaiBondHasNew）。
+export const chapterFiveDubaiSpots = () => [...DUBAI_SPOTS.filter(reflectable)
+  .map(spot => spot.charId === "sheikh" || spot.charId === "da_silva" ? Object.freeze({ ...spot, hasNew: () => dubaiBondHasNew(spot) }) : spot),
+  ...chapterFiveDubaiLeisureSpots()];
 // ドバイにラクダレース（第4章で走っていなければ店先から）・カフェ・オアシス（締めくくりまで）・「ヌールと砂丘へ」（誘われていれば）も出す
 // （chapters/ch5-dubai.js の chapterFiveDubaiLeisureSpots）。
 // 内省の場所（東京の池の弁天堂・ドバイのモスク）は、心得の盤で灯せる火種がある時だけ地図に出す（第3・4章と同じ）。

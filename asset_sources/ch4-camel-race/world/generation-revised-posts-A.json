@@ -1,0 +1,111 @@
+{
+  "issue": 3217,
+  "date_utc": "2026-11-11",
+  "tool": "Codex built-in image_gen",
+  "authority": "Latest main asset_sources/ch4-camel-race/world-request.md SHA66440f3c8b8a9f7cb10c66a73b37c00f9d4a2ffd; revised separate single-post specification, not old two-post gate",
+  "style_reference": "Earlier gate-start attempt B used only for wood/rope/brass/redwhite cloth texture; geometry deliberately replaced with ONE post",
+  "processing": "Original generation files copied byte-identically only. No code resize, crop, alpha correction or image compositing. No exact-size derivatives made.",
+  "items": [
+    {
+      "part": "CR-WD01",
+      "filename": "post-start-near-A.png",
+      "prompt": "CR-WD01 REVISED post-start-near.png. ONE SINGLE TRACKSIDE POST, not a gate spanning track, no second post, no diagonal long crossbeam. Target 480x800 portrait3:5. Reference image is MATERIAL/PAINTING ONLY: sun-bleached wooden post, rope lashings, dull brass cap and foot plate, red-white cloth wrap. DO NOT copy reference gate geometry.\nOne tall thick wooden post has centerline exactly at x360 of480 (75% width). Its brass foot touches BOTTOM canvas edge. Pole rises upright almost to top. Near the TOP a short horizontal arm extends to LEFT, supporting one front-facing plain DEEP GREEN rectangular cloth banner hanging to left of post. Banner width about two thirds of canvas, clean blank flat cloth center, no lettering. Small green triangular flag on post top. Single post fills height; banner fully visible, almost to left edge. Lower half shows only single right-side post and empty transparent space.\nStyle same Japanese painterly pixel game: fine painterly pixel texture, confident dark silhouette contours, flat local color with2-3 clearly shaped shadow steps, warm sunrise light upperleft, worn honest wood/rope/brass/cloth. Palette cream#f4ead6 sand#e2c48c brass#c9963a deepgreen#2f8f6b ink#1a110a red#c8302a. REAL transparent alpha background. No ground, external cast shadow, people, text, digits, letters, pseudo-writing, logo or watermark. No glossy gradient, glow,bloom,neon,airbrush,photo realism or smooth3D. ONE SINGLE POST with a banner, not an arch, not two posts.",
+      "target_size": [
+        480,
+        800
+      ],
+      "status": "RAW ART CANDIDATE: target dimensions not met",
+      "visual_qa": "Single upright post with blank left banner, matching brass/rope/redwhite wrap; start green and finish red/checkered flags. Near pair geometry visually consistent. Canvas exceeds480x800 target. No code-based image processing used.",
+      "original": {
+        "path": "originals/post-start-near-A.png",
+        "size": [
+          971,
+          1619
+        ],
+        "mode": "RGBA",
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "sha256": "af2ffbb6cdd5445d87edc805a95ea5742862adedb402b9c31946f406d202b2a8",
+        "bytes": 1147190
+      }
+    },
+    {
+      "part": "CR-WD01",
+      "filename": "post-finish-near-A.png",
+      "prompt": "CR-WD01 revised post-finish-near.png. Edit this exact SINGLE post sprite into FINISH version. Preserve the exact geometry, position, silhouette, wood/rope/brass/redwhite wrapped pole, short arm and blank banner size. Change ONLY: deep green banner to racing red #c8302a, add BLACK-and-WHITE CHECKERED STRIPS along TOP and BOTTOM edges of the red banner. Red banner center remains completely blank unlettered flat red cloth. Change the small top triangular flag to black-white checkerboard. No other changes. Maintain same painterly pixel texture, dark outline,2-3 shaped shadows and warm light. ONE post only, no second post, no arch, no text/digits/logo/watermark. Real transparent alpha everywhere outside object, no glow/ground/external shadow. Required final output canvas EXACT480x800 pixels. Post center at x360 (75%width) and brass foot touches bottom edge. Do not introduce new canvas margins, no trim or cut off.",
+      "target_size": [
+        480,
+        800
+      ],
+      "status": "RAW ART CANDIDATE: target dimensions not met",
+      "visual_qa": "Single upright post with blank left banner, matching brass/rope/redwhite wrap; start green and finish red/checkered flags. Near pair geometry visually consistent. Canvas exceeds480x800 target. No code-based image processing used.",
+      "original": {
+        "path": "originals/post-finish-near-A.png",
+        "size": [
+          971,
+          1619
+        ],
+        "mode": "RGBA",
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "sha256": "40209475c9c377ec0e38eae26a95ff5488b04df146ef6dd9307448a8a8cc914c",
+        "bytes": 1131009
+      }
+    },
+    {
+      "part": "CR-WD01",
+      "filename": "post-start-far-A.png",
+      "prompt": "CR-WD01 revised post-start-far.png. Produce the FAR RAIL matching version of this exact SINGLE post design. Required final canvas EXACT240x400 pixels, half the near version480x800, same3:5 ratio. Preserve design, proportions, relative location (post center at75%canvas width), banner rectangle and matching flag/cloth colors. Uniform half-size rendering only; do not change geometry or add elements. Base of brass foot touches bottom canvas edge. This is a smaller matching far post, not another two-post gate. Keep exact painterly pixel hand, rope/brass cap/foot/redwhite wrap, blank front-facing cloth to LEFT. Background real transparent alpha, no ground/external shadow. No text/letters/digits/logo/watermark, no glow/bloom/smooth gradient. Canvas itself must be240x400 with no added margin.",
+      "target_size": [
+        240,
+        400
+      ],
+      "status": "REJECTED FAR ATTEMPT",
+      "visual_qa": "Background checker/speckle contamination, dimensions not240x400; unusable.",
+      "original": {
+        "path": "rejected/post-start-far-A.png",
+        "size": [
+          971,
+          1620
+        ],
+        "mode": "RGBA",
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "sha256": "e453ae336afe10a559dab89ffd08aa053e5f2b8cffd41fc8402165700728bfd9",
+        "bytes": 1071676
+      }
+    },
+    {
+      "part": "CR-WD01",
+      "filename": "post-finish-far-A.png",
+      "prompt": "CR-WD01 revised post-finish-far.png. Produce the FAR RAIL matching version of this exact SINGLE post design. Required final canvas EXACT240x400 pixels, half the near version480x800, same3:5 ratio. Preserve design, proportions, relative location (post center at75%canvas width), banner rectangle and matching flag/cloth colors. Uniform half-size rendering only; do not change geometry or add elements. Base of brass foot touches bottom canvas edge. This is a smaller matching far post, not another two-post gate. Keep exact painterly pixel hand, rope/brass cap/foot/redwhite wrap, blank front-facing cloth to LEFT. Background real transparent alpha, no ground/external shadow. No text/letters/digits/logo/watermark, no glow/bloom/smooth gradient. Canvas itself must be240x400 with no added margin.",
+      "target_size": [
+        240,
+        400
+      ],
+      "status": "REJECTED FAR ATTEMPT",
+      "visual_qa": "Extra empty upper/left margin; geometry/size not matching uniform half-size version, canvas not240x400. Not accepted.",
+      "original": {
+        "path": "rejected/post-finish-far-A.png",
+        "size": [
+          971,
+          1619
+        ],
+        "mode": "RGBA",
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "sha256": "e6e411272e8b0df337d0346d544ff0f664c124cec6d96c475987155d8c8c9dae",
+        "bytes": 743232
+      }
+    }
+  ],
+  "delivery_status": "Raw-art ZIP candidates only. No GitHub/LFS upload, no adoption or game integration. Far files not accepted. Near originals remain oversized and require authorized uniform reduction by receiving workflow."
+}

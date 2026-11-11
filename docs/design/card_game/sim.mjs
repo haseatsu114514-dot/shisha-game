@@ -1,4 +1,6 @@
-// 一台勝負 第0.2版のルールを動かし、決まった手筋で打つコンピュータどうしを対戦させて数値を確かめる。
+// 一台勝負 第0.2版の計算（記録）。第0.3版は sim_v03.mjs（ゲーム内の規則とCPUで比べる）と v0.3_design.md。
+// 第0.2版のルールを動かし、決まった手筋で打つコンピュータどうしを対戦させて数値を確かめる。
+// cards.js は第0.3版（必要火力 need）になったので、第0.2版の火力（払うコスト）はこのファイルの COST_V02 に残してある。
 // 使い方: node sim.mjs                 … 下の実験をすべて回して結果を表示
 //         node sim.mjs --games 400     … 1実験あたりの対戦数（既定 600）
 //         node sim.mjs --only decks    … 実験を選ぶ（decks,coals,rules,flavors,settings をカンマ区切り）
@@ -8,14 +10,19 @@
 import { createRequire } from 'node:module';
 const C = createRequire(import.meta.url)('./cards.js');
 const F = Object.fromEntries(C.FLAVORS.map((f) => [f.id, f]));
-const S = Object.fromEntries(C.SUPPORT.map((s) => [s.n, s]));
+// 第0.2版の火力（数字=払う火力 'B2'=燃焼2 '—'=炭カード）。cards.js の need（第0.3版の必要火力）は読まない
+const COST_V02 = { 熱を入れる吸い: 1, 熱を逃がす吸い: 1, ブロー: 1, 見せ煙: 2, 渾身の一口: 3, 勝負の一服: 2, 吸い方を読む: 0, 灰落とし: 1, 追い炭: 0,
+  トングさばき: 0, 火おこし: 1, 内寄せ: 2, 外寄せ: 1, 葉をほぐす: 2, ひと息: 1, 仕切り直し: 'B2', 風防: 2, チャコスタ: 2, キッチンタイマー: 1, アイスホース: 2,
+  ディフューザー: 2, 実況の煽り: 2, すきま風: 2, 会場の熱気: 1, 後の先: 1, 買い占め: 1, 詰め直し: 1, アンコール: 4,
+  スミさん: 3, なる: 2, アダム: 3, みんと: 2, ましろ: 2, つむぎ: 2, パッキー: 2 };
+const S = Object.fromEntries(C.SUPPORT.map((s) => [s.n, { ...s, cost: s.type === '炭' ? '—' : COST_V02[s.n] }]));
 const J = Object.fromEntries(C.JUDGES.map((j) => [j.id, j]));
 const PLAIN = { ...C.PUFF.normal };
 
 // ルールのつまみ（第0.2版の値）
 // cool: 自分のターンのはじめに冷める段階の数。'zone' にすると熱の高さで変わる（熱 z2 未満=1 / z2〜z3-1=2 / z3 以上=3。比較用）
 // reveal: 'after' = 審査カードは2人のターンのあとにめくる / 'before' = ラウンドのはじめにめくる
-export const RULES = { draw: 2, steamDraw: 1, cool: 2, z2: 4, z3: 8, firstPackCut: 2, reveal: 'after', prepTurns: 6, packN: 4, slots: 2, vote: 2, wear: 2,
+export const RULES = { draw: 2, steamDraw: 1, cool: 2, z2: 4, z3: 8, firstPackCut: 2, reveal: 'after', prepTurns: 6, packN: 4, slots: 4, vote: 2, wear: 2,
   startDraw: 7, startEmbers: 3, handMax: 7, heatMax: 10, pile: 12 };
 
 const mkRng = (seed) => { let s = seed >>> 0; return () => ((s = (Math.imul(s, 1664525) + 1013904223) >>> 0) / 4294967296); };
@@ -32,7 +39,7 @@ function newPlayer(cfg, rnd, R) {
   const p = { cfg, deck: shuffle(expand(cfg.deck), rnd), hand: [], ash: [], zone: [], stove: [], bowl: {}, got: {}, main: null, tools: [], person: null, wind: 0,
     score: 0, votes: 0, just: 0, scorch: 0, sess: [], lastPuff: 0, steamed: false, mana: 0, pend: 0, sessMod: 0, noCool: false, keepLeaves: false,
     usedSilicone: false, usedLotus: false, peek: null, st: { played: 0, charged: 0, coalOn: 0, turns: 0, zones: {}, handSum: 0, react: 0 } };
-  p.slots = R.slots + (cfg.hmd === 'タヌキッシュリッド' ? 1 : 0);
+  p.slots = R.slots; // 炭焼き場はだれでも4つ（カードでは増えない）
   draw(p, R.startDraw, rnd);
   for (let i = 0; i < R.startEmbers; i++) p.zone.push({ n: takeWorst(p, true), up: false }); // 最初の種火は値打ちの低いカードから
   return p;
@@ -142,6 +149,7 @@ function stoveAdvance(p, rnd) {
   let fired = false;
   for (const c of p.stove) { if (c.stage < 2) { c.stage++; if (c.stage === 2) fired = true; } }
   if (fired && has(p, 'キッチンタイマー')) draw(p, 1, rnd);
+  if (has(p, 'チャコスタ') && p.stove.length >= 3) draw(p, 1, rnd);
 }
 function placeCoals(p) {
   for (let i = p.hand.length - 1; i >= 0 && p.stove.length < p.slots; i--) {
@@ -184,7 +192,6 @@ function playPermanents(p, roundsLeft, keep = 0) {
     else if (s.type === '器具' && !p.tools.includes(n) && p.tools.length < 3 && p.mana - keep >= s.cost && roundsLeft >= 2) {
       p.hand.splice(p.hand.indexOf(n), 1); p.tools.push(n); p.mana -= s.cost; p.st.played++;
       if (n === '風防') p.wind = 2;
-      if (n === 'チャコスタ') p.slots += 2;
     }
   }
 }
@@ -280,6 +287,7 @@ function serveTurn(G, p, o, ctx) {
   if (a.oi) { useCard(p, '追い炭'); draw(p, 1, rnd); p.zone.push({ n: p.hand.pop(), up: false }); }
   if (a.charge) { p.zone.push({ n: takeWorst(p), up: false }); p.st.charged++; }
   for (let k = 0; k < a.ash; k++) p.ash.push(p.zone.splice(p.zone.findIndex((c) => !c.up), 1)[0].n);
+  if (a.ash && p.cfg.hmd === 'タヌキッシュリッド') draw(p, 1, rnd); // 【素直】灰にしたら1枚引く（1ターンに1回）
   p.mana = heatOf(p) - spent;
 
   // 次に備えるカード（一口の技に使う火力は残す）

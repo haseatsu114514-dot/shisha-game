@@ -1,0 +1,114 @@
+{
+  "issue": 3217,
+  "date_utc": "2026-11-11",
+  "tool": "Codex built-in image_gen",
+  "scope": "3 new raw art attempts (voice pressed, whip normal/pressed), plus prior rejected voice normal repeated only to keep pair source complete",
+  "processing": "Byte-identical file copies only. No code resize/crop/alpha edit or compositing. No exact-size derivatives.",
+  "items": [
+    {
+      "part": "CR-UI07",
+      "variant": "voice-normal",
+      "new_this_batch": false,
+      "prompt": "CR-UI07 remote-voice-normal.png. Target EXACT 960x240 pixels (4:1 horizontal belt), nine-slice UI sprite. ONE long rectangular black rubber/matte plastic housing of a camel trainer remote, perfectly FRONT-FACING with straight edges parallel to image edges. Transparent background, real alpha only OUTSIDE housing. Entire housing fills canvas to within 2% margin. Tiny dull brass corner screws inside border bands. Strict nine-slice margins LEFT120 RIGHT120 TOP60 BOTTOM60 target pixels. ALL decoration including the GOLD SPEAKER BUTTON must fit in the LEFT120 border band: a small 80px diameter gold circular push button centered x60,y120. Gold button has small speaker grille dots. No decorations extend past x110. The entire rest from x120 to x840 is plain even matte black rubber, including central stretchable area, for game text and gauge; absolutely no symbols there. This is NORMAL unpressed state, shallow gold lip raised slightly. Same fine painterly pixel texture and 2-3 crisp shaped shadow steps as attached sunrise game reference. Palette ink #1a110a, indigo #1c2236, dull brass #c9963a. No text, letters, digits, pseudo-writing, logos, watermark, people, scene, external drop shadow, gloss, smooth gradient, glow, bloom, neon, airbrush, 3D. Simple used physical object, not polished app UI.",
+      "status": "RAW ART ONLY, geometry not accepted",
+      "target_size": [
+        960,
+        240
+      ],
+      "original": {
+        "path": "originals/remote-voice-normal-raw-A.png",
+        "size": [
+          2172,
+          724
+        ],
+        "mode": "RGBA",
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "sha256": "d2224e4dd06d9cfe092af3cc0c28d3f68bc0abe4f9ebcc10362dd00519d29510",
+        "bytes": 1718449
+      },
+      "visual_qa": "Speaker grille/gold or whip emblem/red-amber, clear raised-versus-recessed difference, plain right housing, no text. Canvas3:1 instead4:1; cannot meet960x240 by uniform downscale. Whip left decoration/panel also extends beyond nominal120px slice boundary. Not accepted for nine-slice use."
+    },
+    {
+      "part": "CR-UI07",
+      "variant": "voice-pressed",
+      "new_this_batch": true,
+      "prompt": "CR-UI07 remote-voice-pressed.png. PRESSED STATE of this exact gold speaker remote. Preserve housing silhouette, woodless worn black rubber/brass material, corner screws, plain right area, and left speaker button position/design. Change only gold left speaker push button to sunk-deep state: raised rim almost disappears, gold circular top face lower in socket, shallower edge shadow. Speaker grille remains small dark dots, no text or symbols elsewhere. Required canvas EXACT960x240 (4:1), nine-slice left/right120 top/bottom60; gold button fully within left120 band, center black area plain/stretchable. Real transparent alpha outside housing. Same painterly pixel texture,2-3 crisp shaped shadows, warm upperleft light. No text/digits/pseudoletters/logo/watermark, no people/scene/exterior drop shadow, no glow/airbrush/3D/glossy gradient. Exact4:1 canvas, no excess margin above/below.",
+      "status": "RAW ART ONLY, geometry not accepted",
+      "target_size": [
+        960,
+        240
+      ],
+      "original": {
+        "path": "originals/remote-voice-pressed-raw-A.png",
+        "size": [
+          2172,
+          724
+        ],
+        "mode": "RGBA",
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "sha256": "a4849ad9c5c627e8944a1a5432b2288bee1ed56abdfc81440804f1a7ebf625b8",
+        "bytes": 1618318
+      },
+      "visual_qa": "Speaker grille/gold or whip emblem/red-amber, clear raised-versus-recessed difference, plain right housing, no text. Canvas3:1 instead4:1; cannot meet960x240 by uniform downscale. Whip left decoration/panel also extends beyond nominal120px slice boundary. Not accepted for nine-slice use."
+    },
+    {
+      "part": "CR-UI07",
+      "variant": "whip-normal",
+      "new_this_batch": true,
+      "prompt": "CR-UI07 remote-whip-normal.png, ONE camel trainer's physical handheld remote UI button housing, required final EXACT960x240 canvas,4:1 horizontal BELT. Front-facing long thin black rubber/matte plastic rectangle. Straight horizontal/vertical edges parallel to canvas, whole housing fills canvas within2% margin, real transparent alpha only outside.\nStrict NINE SLICE LEFT120 RIGHT120 TOP60 BOTTOM60: ALL distinctive decoration stays in bands. SMALL RED-ORANGE circular push button sits entirely in left120 band, centered x60,y120, diameter80px, with embossed CURVED RIDING WHIP PICTOGRAM only (no letters). This is NORMAL raised position. Entire right stretchable middle x120..840 is plain even matte black rubber for code text/gauge, no symbols there. Tiny brass screws only inside corner border bands. Same Japanese painterly pixel game texture as provided reference, confident dark outer outlines, flat worn materials with2-3 clearly shaped shadows, upperleft warm sunrise light. Colors black#1a110a indigo#1c2236 dull brass#c9963a redamber#e08a2c/#c8302a. No text,digits,pseudo-writing,logos,watermark,people,scene,external shadow,glossy gradient,glow,bloom,neon,airbrush,3D or photorealism. Canvas itself must be thin960x240, no extra empty margin.",
+      "status": "RAW ART ONLY, geometry not accepted",
+      "target_size": [
+        960,
+        240
+      ],
+      "original": {
+        "path": "originals/remote-whip-normal-raw-A.png",
+        "size": [
+          2172,
+          724
+        ],
+        "mode": "RGBA",
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "sha256": "a522b7497ed3f17e144daec6ae4d25f0a11ea7afaba8ac8bee312cfb5468bb38",
+        "bytes": 1905010
+      },
+      "visual_qa": "Speaker grille/gold or whip emblem/red-amber, clear raised-versus-recessed difference, plain right housing, no text. Canvas3:1 instead4:1; cannot meet960x240 by uniform downscale. Whip left decoration/panel also extends beyond nominal120px slice boundary. Not accepted for nine-slice use."
+    },
+    {
+      "part": "CR-UI07",
+      "variant": "whip-pressed",
+      "new_this_batch": true,
+      "prompt": "CR-UI07 remote-whip-pressed.png. Edit this exact remote housing to PRESSED STATE. Preserve housing geometry, corners/screws, left button center position and whip pictogram, materials/paint/style and blank right text area. Change ONLY the RED-ORANGE round left pushbutton to be sunk DEEP into its socket: top face sits lower, raised bevel nearly disappears, edge shadow becomes shallower. Keep same dark rubber housing. No text, letters, digits, pseudo-writing, logo, watermark. No scene or exterior shadow, no glow/gradient. Transparent alpha outside housing. Required final canvas EXACT960x240 (4:1) not3:1. Nine-slice left120/right120/top60/bottom60: button decoration entirely within x0..120, rest plain black. If rendering at larger resolution, keep this exact4:1 canvas ratio and proportional border limits. Button is held down while racing, make depressed state visually clear.",
+      "status": "RAW ART ONLY, geometry not accepted",
+      "target_size": [
+        960,
+        240
+      ],
+      "original": {
+        "path": "originals/remote-whip-pressed-raw-A.png",
+        "size": [
+          2172,
+          724
+        ],
+        "mode": "RGBA",
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "sha256": "b08c92630a95f42682fb3287cd72aecea03ed1f3f15da65a37e9d2ff0ec6162a",
+        "bytes": 1832199
+      },
+      "visual_qa": "Speaker grille/gold or whip emblem/red-amber, clear raised-versus-recessed difference, plain right housing, no text. Canvas3:1 instead4:1; cannot meet960x240 by uniform downscale. Whip left decoration/panel also extends beyond nominal120px slice boundary. Not accepted for nine-slice use."
+    }
+  ],
+  "delivery_status": "Raw-art ZIP only; no GitHub/LFS upload or game adoption. All four remain technically noncompliant with required4:1 canvas."
+}

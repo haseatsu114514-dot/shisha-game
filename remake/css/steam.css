@@ -12,7 +12,6 @@
 .bench[data-step="steam"] .bench-guide { margin-top: 0; }
 .bench[data-step="steam"] .bench-guide summary { width: calc(44px / var(--k, 1)); height: calc(44px / var(--k, 1)); }
 .bench[data-step="steam"] .bench-guide-tip { left: 0; right: auto; }
-body.game-ds .bench[data-step="steam"] .bench-right .bench-head { position: fixed; left: calc(var(--ds-vx) + 8px); top: calc(var(--ds-vy) + 48px); }
 
 /* タイマー設定・弾幕・吸い出しは同じ位置、同じ64×360pxの温度計。 */
 .bench[data-step="steam"] .steam-temperature { position: absolute; left: -128px; top: -48px; height: 360px; z-index: 3; }

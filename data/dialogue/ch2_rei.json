@@ -56,12 +56,17 @@
         {
           "speaker": "",
           "face": "",
+          "text": "炭を載せると、レヰは目を閉じた。指先が、カウンターの縁で小さく拍を取っている。"
+        },
+        {
+          "speaker": "",
+          "face": "",
           "text": "「イエス」という名のミックスが、静かにテーブルに置かれた。"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（花と甘さの奥に、お茶みたいな渋みがある）"
+          "text": "（花の香りの奥に、お茶みたいな渋みがある）"
         },
         {
           "speaker": "hajime",
@@ -106,12 +111,12 @@
         {
           "speaker": "rei",
           "face": "serious",
-          "text": "……そこを越えると、芳香剤みたいになる。それが苦手な奴は多い"
+          "text": "そこを越えると、芳香剤みたいになる。それが苦手な奴は多い"
         },
         {
           "speaker": "rei",
           "face": "serious",
-          "text": "……だから、上げない。中温の、ぎりぎりで止める"
+          "text": "だから、上げない。中温の、ぎりぎりで止める"
         },
         {
           "speaker": "hajime",
@@ -137,11 +142,6 @@
           "speaker": "rei",
           "face": "serious",
           "text": "……また来てもいい"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "（もう少し、あの煙の話を聞いてみたい）"
         },
         {
           "speaker": "hajime",
@@ -546,14 +546,9 @@
           "text": "じゃあ聞きます。レヰさんはどうしてそのスタイルにしたんですか。外見も店の雰囲気も、全部"
         },
         {
-          "speaker": "rei",
-          "face": "serious",
-          "text": "……っ"
-        },
-        {
           "speaker": "",
           "face": "",
-          "text": "レヰの手が、長めに止まった。"
+          "text": "レヰはトングを置いた。コートの袖の刺繍を、指で一度なぞる。"
         },
         {
           "speaker": "rei",
@@ -828,7 +823,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "煙が美味しかったから"
+          "text": "最初の「イエス」が、忘れられなかったから"
         },
         {
           "speaker": "hajime",
@@ -846,14 +841,9 @@
           "text": "笑顔の練習してたり、ミックスに曲のイメージ込めてたり。……話の続きが、聞きたくなって"
         },
         {
-          "speaker": "rei",
-          "face": "serious",
-          "text": "……っ"
-        },
-        {
           "speaker": "",
           "face": "",
-          "text": "レヰは顔を下に向けた。耳が少し赤かった。"
+          "text": "レヰは返事をせず、カウンターのCDケースの角を、指で何度もそろえた。"
         },
         {
           "type": "condition",
@@ -865,7 +855,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（……それは、レヰさんが言える最大級の言葉だと思った）"
+          "text": "……ちゃんと、受け取ります"
         },
         {
           "speaker": "",
@@ -935,7 +925,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（全然忘れない。……俺には、こういう話もしてくれるようになったんだ）"
+          "text": "（全然、忘れない）"
         },
         {
           "type": "remember",
@@ -1100,11 +1090,6 @@
           "text": "吸い終わったら、また最初の温かさが恋しくなる感じです"
         },
         {
-          "speaker": "rei",
-          "face": "normal",
-          "text": "……っ"
-        },
-        {
           "speaker": "",
           "face": "",
           "text": "レヰは目を閉じ、指でカウンターを一度だけ叩いた。拍を取るみたいに。"
@@ -1162,7 +1147,12 @@
         {
           "speaker": "hajime",
           "face": "smile",
-          "text": "俺も、最初に吸えてよかったです"
+          "text": "俺も、よかったです。……次は、一番後ろの席で頼んでみます"
+        },
+        {
+          "speaker": "rei",
+          "face": "smile",
+          "text": "……うん。そこ、空けとく"
         },
         {
           "speaker": "",
@@ -1190,19 +1180,24 @@
           "next_false": "before_tournament"
         },
         {
+          "speaker": "",
+          "face": "",
+          "text": "CDプレイヤーの横に、夜明け前みたいな薄い青のジャケットが立ててあった。"
+        },
+        {
           "speaker": "rei",
           "face": "normal",
-          "text": "……そうか"
+          "text": "……あの時の盤。感想は、曲が終わってからでいい"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "レヰはカウンターの下から、黒い布の包みを取り出した。"
+          "text": "カウンターの端に、飴色に焼けた素焼きのハガルが一つ、伏せて置いてあった。"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "布をほどくと、飴色に焼けた素焼きのハガルが出てきた。鼻を近づけると、薔薇が香った。"
+          "text": "レヰの手が、一度だけその縁に触れて、離れる。"
         },
         {
           "speaker": "rei",
@@ -1210,9 +1205,9 @@
           "text": "……ローズしか詰めてない一台。店を始めた頃から"
         },
         {
-          "speaker": "hajime",
-          "face": "surprise",
-          "text": "（……レヰさんの、一番大事な道具なんじゃないか）"
+          "speaker": "",
+          "face": "",
+          "text": "表に返して、カウンターの上をこちらへ滑らせる。薔薇が、ふっと香った。"
         },
         {
           "speaker": "rei",
@@ -1222,12 +1217,12 @@
         {
           "speaker": "hajime",
           "face": "surprise",
-          "text": "えっ、いいんですか"
+          "text": "……伏せてあったの、あのCDの時と同じですね"
         },
         {
           "speaker": "rei",
           "face": "serious",
-          "text": "……いい。ずっと誰かに渡したかった。でも、渡せる相手がいなかった"
+          "text": "……うん。渡す前に、やめようと思った。でも、ずっと誰かに渡したかった"
         },
         {
           "speaker": "rei",
@@ -1238,11 +1233,6 @@
           "speaker": "rei",
           "face": "normal",
           "text": "お前なら、棘の手前で止められる。何度も、話の続きを待ってくれたから"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "（言葉が出てくるまで、黙って待った時間のことだ）"
         },
         {
           "speaker": "rei",
@@ -1272,7 +1262,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "レヰはすぐには答えなかった。曲の最後の音が消えるのを、待つみたいに。"
+          "text": "レヰはすぐには答えなかった。流れていた曲の、最後の音が消えるまで。"
         },
         {
           "speaker": "rei",
@@ -1282,7 +1272,12 @@
         {
           "speaker": "hajime",
           "face": "smile",
-          "text": "分かります"
+          "text": "分かります。……あと、曲の感想。好きです"
+        },
+        {
+          "speaker": "rei",
+          "face": "smile",
+          "text": "……知ってた"
         },
         {
           "type": "apply",
@@ -1301,7 +1296,7 @@
           {
             "speaker": "hajime",
             "face": "smile",
-            "text": "忙しいからこそ、レヰさんの煙が吸いたくて"
+            "text": "忙しいからこそ、ここの音が聴きたくて"
           }
         ],
         "after_tournament": [
@@ -1313,7 +1308,7 @@
           {
             "speaker": "hajime",
             "face": "smile",
-            "text": "レヰさんの煙が、吸いたくなって"
+            "text": "今日は、曲を聴きに来ました"
           }
         ]
       }
@@ -1368,7 +1363,7 @@
         {
           "speaker": "rei",
           "text": "……あ、その……たぶん……新曲……",
-          "face": "nervous"
+          "face": "surprise"
         },
         {
           "speaker": "customer",
@@ -1448,6 +1443,179 @@
           "speaker": "rei",
           "text": "……うん。曲が始まってからでいい。その方が、話しなくて済む",
           "face": "smile"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_prep_rei_live",
+      "comment": "RVE07（添削表の提案6）。第3章の出発前の準備3日に、柚ヶ谷の零-ZERO-へ行ったとき一度だけ読むレヰのライブの夜。前提は第2章で余ったチケットを受け取ったこと（ch2_rei_group_concert_prep の _ch2_rei_ticket）。大会前夜 remake_ch2_eve_rei の ticket 分岐「来週、隣は空けとく。この曲、そこでやるから」を回収する。ライブは地の文で短く回想し、場面は終演後に店へ戻ったレヰとの会話。チケットの回（常連の一曲目の予想・レヰの小声の「新曲」・「曲が始まってからでいい」）と前夜の曲（最後の音のあとの三秒）は前提にしてよい。ch2_rei_sixth の「一番後ろで、一人で立ってた」「一番後ろの席で」は、読んでいれば響き、読んでいなくても通る触れ方にとどめる（レヰが後ろで聴く癖はこの場面の中で本人が言う）。大会の結果・恋愛には触れない（レヰは友情のみ）。味覚の不調にも触れない。最後の set_flag で、最後まで読んだ時だけ既読にする。 台本は ch2_rei.json（チケットを渡す ch2_rei_group_concert_prep の続き）。柚ヶ谷の台本と一緒に ch2-city-data.js の loadPreparationDialogues が読み込み、第3章の準備期間の夜に零-ZERO-へ来た時だけ ch2-preparation.js の reiLiveDue で出す（RVE07）。",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_ch2_rei_entry.webp"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "終演後、レヰは休みにしてあった零-ZERO-の鍵を開けた。耳の奥で、まだギターが鳴っている。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "レヰの空けておいた隣は、フロアの一番後ろ、壁際の一人分だった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一曲目は常連さんたちの予想どおりで、二曲目は、レヰが小声で言ったとおりの新曲だった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "最後の曲は、大会の前の晩に、イヤホンの片方で聴かせてもらったあの曲だった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "最後の音が消えた。満員のフロアの誰も、手を叩かなかった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "思わず、口の中で三つ数えた。拍手が起きたのは、そのあとだった。"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "付き合わせて、悪い。まっすぐ帰ると、音が逃げる気がした"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "分かります。俺も、まだ耳の中で鳴ってます"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……始まる前、何も話さなくて、すまなかった"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "曲が始まってからでいい、って言ってたじゃないですか"
+        },
+        {
+          "speaker": "rei",
+          "face": "surprise",
+          "text": "……覚えてたのか"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "レヰはCDプレイヤーに手を伸ばしかけて、やめた。店の中は、換気扇の低い音だけになった。"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "二曲目、当たってた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "当たってましたね。常連さんたち、前の方からこっちを見てましたよ"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "手を振られた。振り返した。……たぶん、見えてない"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "見えてましたよ。みんな、もっと大きく手を振ってました"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "最後の曲。終わったあと、ちゃんと三秒あった"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "誰も手を叩きませんでしたね。あんなに人がいたのに"
+        },
+        {
+          "speaker": "rei",
+          "face": "smile",
+          "text": "イヤホンで聴くより、少し長かった。みんなで黙ると、長くなる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（イヤホンの三秒と、満員のフロアの三秒。同じ空白なのに、重さが違った）"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "ライブは、いつも一番後ろで聴く。後ろからだと、全員が見える"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "同じとこで、肩が揺れる。……今日は、隣も見えた"
+        },
+        {
+          "speaker": "rei",
+          "face": "smile",
+          "text": "三つ、口で数えてたろ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "え、声に出てました？"
+        },
+        {
+          "speaker": "rei",
+          "face": "smile",
+          "text": "……出てない。口だけ。俺も、同じとこで数えてた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "一番後ろでも、ちゃんと届いてましたね"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……うん。一番後ろまで、届いてた"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "東京、もうすぐだろ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい。支度が済んだら、発ちます"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "向こうでも、一番後ろの奴まで、届かせて"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "はい。一番後ろの席まで"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "帰りの駅の階段で、もう一度だけ、三つ数えた。"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_talk_seen_ch3_prep_rei_live"
         }
       ]
     }

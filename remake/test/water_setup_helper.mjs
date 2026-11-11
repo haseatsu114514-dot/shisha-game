@@ -74,8 +74,8 @@ for (const [name, touch] of [["hidden-menu-not-clickable-on-bench", true], ["sto
 
 // Execute only the original packing entry-to-MIX sequence, keeping its real
 // helper calls and each configured device. Later geometry/input assertions stay
-// untouched in ds_packing.mjs and belong to the actual browser suite.
-const packingText = fs.readFileSync(new URL("./browser/ds_packing.mjs", import.meta.url), "utf8");
+// untouched in packing_layout.mjs and belong to the actual browser suite.
+const packingText = fs.readFileSync(new URL("./browser/packing_layout.mjs", import.meta.url), "utf8");
 assert.match(packingText, /^import \{ confirmWaterSetup \} from "\.\/water_setup\.mjs";$/m, "packing must import the actual water helper");
 const marker = '      await p.evaluate(() => { import("./js/craft/practice.js").then(m => m.runFullPractice()); });';
 const start = packingText.indexOf(marker), end = packingText.indexOf('await b(p,"mix-ok").waitFor();', start);
@@ -84,7 +84,7 @@ const deviceStart = packingText.indexOf("const devices = ["), deviceEnd = packin
 assert(deviceStart >= 0 && deviceEnd > deviceStart);
 const deviceSource = packingText.slice(deviceStart, deviceEnd + 3);
 // 縦持ちのスマホ（device.portrait）は、水の確認の前に guarded(...) で実ページを回転ガードに通す（#2789・#2794）。
-// この偽のページは回せないので、ここでは呼ばれた工程だけを記録し、ガードそのものは実ブラウザの ds_packing.mjs が確かめる。
+// この偽のページは回せないので、ここでは呼ばれた工程だけを記録し、ガードそのものは実ブラウザの packing_layout.mjs が確かめる。
 assert.match(packingText, /^async function guarded\(p, device, step, ids\) \{$/m, "packing keeps the guarded(p, device, step, ids) helper");
 const packing = new vm.SourceTextModule(`import { confirmAppearanceSetup } from "appearance";\nimport { confirmWaterSetup } from "water";\n${deviceSource}\nexport { devices };\nconst b = (p, id) => p.locator(\x60[data-test="\x24{id}"]\x60);\nasync function hit(p,id,touch) { const n=b(p,id); await n.scrollIntoViewIfNeeded(); if(touch) await n.tap(); else await n.click(); }\nasync function guarded(p, device, step) { if (device.portrait) (p.guardedSteps ||= []).push(step); }\nexport async function setup(p,device) {\n${packingText.slice(start, end + 'await b(p,"mix-ok").waitFor();'.length)}\n}`, { context });
 await packing.link(name => exportsModule(name === "appearance" ? { confirmAppearanceSetup } : { confirmWaterSetup }));

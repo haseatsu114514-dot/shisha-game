@@ -8,6 +8,7 @@ const GAMES = [
   { id: "camel", label: "ラクダレース", start: async (host, signal) => (await import("../minigames/camel-race.js")).runCamelRace({ host, signal, cups: CAMEL_CUPS.map(cup => cup.id) }) },
   { id: "desert", label: "DESERT RIDE（砂丘）", start: async (host, signal) => (await import("../minigames/desert-ride.js")).runDesertRide({ host, signal }) },
   ...DJ_SETS.map(set => ({ id: `dj-${set.id}`, label: `DJ ${set.name}`, start: async (host, signal) => (await import("../minigames/dj.js")).runDjSet({ host, signal, set: set.id }) })),
+  { id: "ichidai", label: "一台勝負（カード）", start: async (host, signal) => (await import("../minigames/ichidai.js")).runIchidai({ host, signal, opponent: { id: "sumi", name: "スミさん" } }) },
   { id: "tetsuko", label: "てつこといっしょ", start: async (_host, signal) => {
     const value = newState();
     value.chapter = 3; value.phase = "daily"; value.day = 5;
@@ -52,6 +53,7 @@ export function mountMiniGameDebug() {
       close.dataset.test = "debug-minigame-close";
       Object.assign(close.style, { position: "absolute", right: "12px", top: "12px", zIndex: "2147483001", padding: "8px", background: "#21162c", color: "#fff", border: "1px solid #f5c26b", borderRadius: "6px" });
       if (game.id === "desert") Object.assign(close.style, { left: "20px", right: "auto", top: "280px" });
+      if (game.id === "ichidai") Object.assign(close.style, { top: "100px" }); // 右上の「早送り・？・✕」に重ねない
       close.onclick = () => { controller.abort(); host.remove(); close.remove(); if (current === controller) current = null; location.reload(); };
       stage.append(close);
       document.querySelector("[data-test='debug-panel']").hidden = true;

@@ -38,6 +38,8 @@ async function harness(chapter, value) {
     play: async () => ({}), syncTokyoVisits: () => {},
     tournamentProgress: () => value.flags._ch3_tournament,
     TOURNAMENT_STORY_STEPS: new Map(), MUKAI_DELIVERY_STEPS: [], CH3_STORY_DIALOGUE_FILES: {},
+    CH3_SERVICE_IDS: ["ch3_saku_mukai_visit", "ch3_saku_mukai_served"],
+    chapterThreeWorkDialogue: (_value, source) => source,
   };
   async function synthetic(url, names) {
     const key = url.href;

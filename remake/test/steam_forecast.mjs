@@ -8,7 +8,7 @@ const { chromium } = createRequire(import.meta.url)('playwright');
 const browser = await chromium.launch({ headless: true, executablePath: process.env.CHROME_EXECUTABLE_PATH || '/usr/bin/chromium' });
 const errors = [], shots = process.env.SHOTS;
 if (shots) fs.mkdirSync(shots, { recursive: true });
-const open = async (viewport, mobile, insight = 10, ds = false) => {
+const open = async (viewport, mobile, insight = 10) => {
   const page = await browser.newPage({ viewport, isMobile: mobile, hasTouch: mobile });
   // 選ぶ工程の初回説明（#3028）はこの検査の対象外（support.mjs を使わない単独ハーネスのため、ここでも既定オフに合わせる）
   await page.addInitScript(() => { try { localStorage.setItem("suien_step_intro", "off"); } catch {} });
@@ -16,9 +16,7 @@ const open = async (viewport, mobile, insight = 10, ds = false) => {
   page.on('pageerror', e => errors.push(e.message));
   await page.goto(process.env.BASE_URL || 'http://127.0.0.1:8123/remake/');
   await page.waitForSelector('[data-test="title-new"]');
-  await page.evaluate(async ({ insight, ds }) => {
-    const { TITLE_LAYOUT_KEY } = await import('./js/scenes/title-layout.js');
-    localStorage.setItem(TITLE_LAYOUT_KEY, ds ? 'ds' : 'normal');
+  await page.evaluate(async ({ insight }) => {
     const core = await import('./js/core/state.js'); core.newGame(); core.state.stamina = 80;
     core.state.stats.insight = insight;
     const session = await import('./js/craft/session.js'), steps = await import('./js/craft/steps.js');
@@ -29,7 +27,7 @@ const open = async (viewport, mobile, insight = 10, ds = false) => {
     cs.heat = { heatPower: 70 }; cs.holes = { total: 24, minimumComplete: true };
     const bench = session.openBench(cs);
     while (!bench.root.isConnected) await new Promise(requestAnimationFrame);
-  }, { insight, ds });
+  }, { insight });
   return page;
 };
 const ready = async page => {
@@ -120,8 +118,8 @@ const checkHelp = async (page, name) => {
 };
 try {
   {
-    const page = await open({ width: 844, height: 390 }, true, 10, true);
-    assert.equal(await page.locator('body.game-ds').count(), 1);
+    // 横持ちタッチ（DS風は廃止・横画面一本化）。ヘルプが押せて、スティックが入力を受け続ける。
+    const page = await open({ width: 844, height: 390 }, true, 10);
     await page.evaluate(() => {
       window.steamFlow = (async () => {
         await T.steps.stepSteamTime(cs);
@@ -132,12 +130,12 @@ try {
     for (let i = 0; i < 6; i++) await page.locator('[data-test="timer-minute-up"]').click();
     await page.locator('[data-test="timer-start"]').click();
     await page.locator('.dodge').waitFor(); await ready(page);
-    await checkHelp(page, 'ds');
+    await checkHelp(page, 'touch-landscape');
     await page.waitForFunction(() => !document.querySelector('.countdown') && Number(document.querySelector('[data-test="steam-world"]').dataset.frame) > 0);
     const speed = await stickSpeed(page, true);
-    assert(speed > 100, `DS touch stick stopped receiving input: ${speed}`);
-    console.log(`[steam help] PASS: ds touch steering ${speed.toFixed(0)} px/s`);
-    await screenshot(page, 'steam-help-ds');
+    assert(speed > 100, `Landscape touch stick stopped receiving input: ${speed}`);
+    console.log(`[steam help] PASS: landscape touch steering ${speed.toFixed(0)} px/s`);
+    await screenshot(page, 'steam-help-touch-landscape');
     await page.close();
   }
   for (const [name, viewport, mobile] of [
@@ -183,11 +181,14 @@ try {
     await screenshot(page, `timer-rain-${name}`);
     const spacing = await page.evaluate(() => {
       const r = s => document.querySelector(s).getBoundingClientRect();
-      const left = r('.bench-left'), right = r('.bench-right'), bench = r('.bench');
+      const right = r('.bench-right'), bench = r('.bench');
       const scale = bench.width / 1280;
-      return { gap: (right.left - left.right) / scale, bottom: (bench.bottom - right.bottom) / scale };
+      // 新しい配置（一枚の舞台・既定）では、舞台は熱の柱のすぐ右から始まる。旧配置（?craftStage=0）は左右の窓が接する。
+      const stage = document.body.classList.contains('craft-stage');
+      const left = stage ? r('.bench-panel .thermo') : r('.bench-left');
+      return { stage, gap: (right.left - left.right) / scale, bottom: (bench.bottom - right.bottom) / scale };
     });
-    assert(spacing.gap > 0 && spacing.gap <= 8, `Window gap too wide: ${JSON.stringify(spacing)}`);
+    assert(spacing.gap > 0 && spacing.gap <= (spacing.stage ? 14 : 8), `Window gap too wide: ${JSON.stringify(spacing)}`);
     assert(spacing.bottom <= 14, `Bottom margin too large: ${JSON.stringify(spacing)}`);
     await page.locator('[data-test="timer-start"]').click(); await page.evaluate(() => window.timerRun);
     await page.evaluate(() => { window.steamRun = T.steam.runSteamDodge(cs); });
@@ -199,7 +200,9 @@ try {
     assert.equal(await page.locator('.bench-title').textContent(), '蒸らし');
     assert(await page.locator('.bench-title').isHidden());
     assert.equal(await page.locator('.bench-phase[aria-current="step"]').textContent(), '03蒸らし');
-    assert.equal(await page.locator('.bench-phase[aria-current="step"]').evaluate(n => n.offsetHeight), 49);
+    // 今の工程の札の高さ: 新しい配置（既定）は上のレールの札 44、旧配置は帯の札 49
+    assert.equal(await page.locator('.bench-phase[aria-current="step"]').evaluate(n => n.offsetHeight),
+      await page.evaluate(() => document.body.classList.contains('craft-stage')) ? 44 : 49);
     assert.deepEqual(await page.locator('.dodge-controls .refresh-copy').allTextContents(), ['リフレッシュ', 'アタック', '精密']);
     assert.equal(await page.locator('.dodge-world-title').count(), 0);
     const controls = await page.locator('.dodge-controls').evaluate(n => {

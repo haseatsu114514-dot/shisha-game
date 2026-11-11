@@ -1,0 +1,986 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#120a1c">
+<link rel="icon" href="../../../icon.svg">
+<!--
+  モーション改善案（2026-11-11・docs/owner_requests.md の TMG35〜40）。提案用の見本で、本編のコードは読まず、本編にも接続していない。
+  開き方: リポジトリのルートで python3 remake/tools/serve_preview.py --port 8123 → http://127.0.0.1:8123/remake/previews/motion-direction/
+  「いま」は本編の録画（clips/）と静止画（stills/）、「改善案」はゲームの絵（remake/img）をその場で読んで動かす。
+  cards/ と stills/train-streak.webp は make_assets.py が作る（札は Issue #3254 で Codex が作った札の裏と表の枠、車窓の流れは採用済みの車内の絵から）。
+  page・fonts・body・script の印は、同じ内容を非公開ページ（アーティファクト）へ出すときの切り出し位置。
+-->
+<!--page-->
+<title>モーション改善案</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<!--fonts-->
+<style>
+@font-face { font-family: "Zen Old Mincho"; src: url("../../fonts/ZenOldMincho-Name-Bold.woff2") format("woff2"); font-weight: 600 900; font-display: swap; }
+@font-face { font-family: "Zen Kaku Gothic New"; src: url("../../fonts/ZenKakuGothicNew-Medium.woff2") format("woff2"); font-weight: 100 599; font-display: swap; }
+@font-face { font-family: "Zen Kaku Gothic New"; src: url("../../fonts/ZenKakuGothicNew-Bold.woff2") format("woff2"); font-weight: 600 900; font-display: swap; }
+</style>
+<!--/fonts-->
+<style>
+/* 配置: 1列の読み物。見本は「いま」と「改善案」を左右に並べ、狭い画面では縦に積む。色はゲームのタイトル画面（茄子紺・生成り・くすんだ金）から。 */
+:root {
+  color-scheme: dark;
+  --ink: #120a1c;      /* 地: 茄子紺の黒 */
+  --panel: #1b1128;    /* 一段上の面 */
+  --line: #3b2a4e;     /* 罫 */
+  --paper: #f3ead8;    /* 生成りの文字 */
+  --dim: #b5a6c4;      /* 補足の文字 */
+  --gold: #d9b26a;     /* 差し色: くすんだ金 */
+  --lav: #b79be8;      /* 2番目の差し色: ラベンダー */
+  --now: #8d7f9c;      /* 「いま」の札 */
+  --display: "Zen Old Mincho", "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif JP", serif;
+  --body: "Zen Kaku Gothic New", "Hiragino Kaku Gothic ProN", "Yu Gothic", "Noto Sans JP", sans-serif;
+}
+* { box-sizing: border-box; }
+html { background: var(--ink); }
+body {
+  margin: 0; background: var(--ink); color: var(--paper);
+  font-family: var(--body); font-size: 16px; line-height: 1.85; font-weight: 500;
+  -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility;
+}
+.wrap { max-width: 1120px; margin: 0 auto; padding-block: 40px 96px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: grid; gap: 72px; }
+h1, h2, h3 { font-family: var(--display); font-weight: 700; line-height: 1.35; margin: 0; text-wrap: balance; letter-spacing: 0.02em; }
+h1 { font-size: clamp(30px, 6vw, 54px); }
+h2 { font-size: clamp(22px, 3.6vw, 30px); }
+h3 { font-size: clamp(19px, 3vw, 24px); }
+p { margin: 0; }
+.measure { max-width: 40em; }
+.eyebrow { font-size: 13px; letter-spacing: 0.16em; color: var(--gold); }
+.lead { font-size: clamp(16px, 2.2vw, 18px); color: var(--paper); }
+.dim { color: var(--dim); }
+strong { color: var(--gold); font-weight: 700; }
+a { color: var(--lav); }
+section { display: grid; gap: 28px; min-width: 0; }
+.sec-head { display: grid; gap: 10px; }
+.sec-head p { color: var(--dim); }
+
+/* ---- 冒頭 */
+.hero { display: grid; gap: 22px; padding-top: 24px; }
+.hero h1 span, .eyebrow span { display: inline-block; }
+.hero h1 .gold { color: var(--gold); }
+.eyebrow span + span { margin-left: 1em; }
+
+/* ---- 見比べ */
+.board { display: grid; gap: 18px; }
+.board h3 { font-size: 17px; font-family: var(--body); font-weight: 700; letter-spacing: 0.04em; display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.board h3 small { font-weight: 500; color: var(--dim); font-size: 14px; letter-spacing: 0; }
+.shots { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px 10px; }
+@media (min-width: 720px) { .good .shots { grid-template-columns: repeat(6, minmax(0, 1fr)); } .bad .shots { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
+.shots li { display: grid; gap: 6px; min-width: 0; }
+.shots img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 4px; background: #000; }
+.shots span { font-size: 13px; line-height: 1.5; color: var(--dim); }
+.good .shots img { outline: 1px solid color-mix(in srgb, var(--gold) 55%, transparent); outline-offset: -1px; }
+
+.causes { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 28px 32px; counter-reset: cause; }
+.causes li { display: grid; gap: 8px; align-content: start; border-top: 1px solid var(--line); padding-top: 16px; min-width: 0; }
+.causes b { font-family: var(--display); font-size: 19px; color: var(--paper); }
+.causes p { color: var(--dim); font-size: 15px; }
+.aside { border-left: 2px solid var(--gold); padding: 4px 0 4px 18px; color: var(--dim); font-size: 15px; }
+
+/* ---- 決まり */
+.rules { margin: 0; padding: 0; list-style: none; display: grid; gap: 0; counter-reset: rule; }
+.rules li { counter-increment: rule; display: grid; grid-template-columns: 2.6em 1fr; gap: 4px 12px; padding: 16px 0; border-top: 1px solid var(--line); }
+.rules li:last-child { border-bottom: 1px solid var(--line); }
+.rules li::before { content: counter(rule); font-family: var(--display); font-size: 26px; line-height: 1.2; color: var(--gold); }
+.rules b { font-family: var(--display); font-size: 18px; }
+.rules p { grid-column: 2; color: var(--dim); font-size: 15px; }
+
+/* ---- 見本 */
+.sample { display: grid; gap: 16px; padding-top: 28px; border-top: 1px solid var(--line); min-width: 0; }
+.sample-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 16px; }
+.sample-head .no { font-size: 13px; letter-spacing: 0.14em; color: var(--gold); }
+.sample-head .freq { font-size: 13px; color: var(--dim); margin-left: auto; }
+.pair { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+@media (max-width: 760px) { .pair { grid-template-columns: minmax(0, 1fr); } }
+.side { margin: 0; display: grid; gap: 8px; min-width: 0; align-content: start; }
+.side figcaption { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; font-size: 13px; letter-spacing: 0.06em; }
+.tag { display: inline-flex; align-items: center; gap: 8px; }
+.tag::before { content: ""; width: 9px; height: 9px; border-radius: 50%; background: var(--now); }
+.side.new .tag { color: var(--gold); }
+.side.new .tag::before { background: var(--gold); }
+.side.now .tag { color: var(--dim); }
+.btn {
+  appearance: none; font: inherit; font-size: 13px; font-weight: 700; letter-spacing: 0.06em; color: var(--paper); background: transparent;
+  border: 1px solid var(--line); border-radius: 999px; padding: 5px 14px 5px 12px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; min-height: 34px;
+}
+.btn::before { content: ""; border-left: 8px solid currentColor; border-block: 5px solid transparent; }
+.btn:hover { border-color: var(--dim); }
+.btn:focus-visible, .seg button:focus-visible, .stage:focus-visible { outline: 2px solid var(--lav); outline-offset: 2px; }
+.btn.main { background: var(--gold); border-color: var(--gold); color: #1c1206; }
+.btn.main:hover { filter: brightness(1.08); }
+.tools { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; }
+.seg { display: inline-flex; border: 1px solid var(--line); border-radius: 999px; padding: 2px; }
+.seg button { appearance: none; font: inherit; font-size: 13px; font-weight: 700; color: var(--dim); background: transparent; border: 0; border-radius: 999px; padding: 4px 12px; min-height: 30px; cursor: pointer; }
+.seg button[aria-pressed="true"] { background: var(--line); color: var(--paper); }
+.notes { margin: 0; padding: 0 0 0 1.2em; color: var(--dim); font-size: 15px; display: grid; gap: 4px; max-width: 52em; }
+.notes li::marker { color: var(--gold); }
+
+/* ---- 舞台（16:9）。中の寸法は cqw（舞台の幅の1%）で書く */
+.stage { position: relative; width: 100%; max-width: 100%; aspect-ratio: 16 / 9; overflow: hidden; border-radius: 6px; background: #07050c; container-type: size; isolation: isolate; cursor: pointer; user-select: none; -webkit-user-select: none; }
+.stage video, .stage .L { position: absolute; inset: 0; width: 100%; height: 100%; }
+.stage video { object-fit: cover; }
+.stage img.L { object-fit: cover; }
+.stage canvas.L { pointer-events: none; }
+.stage .t { font-family: var(--display); font-weight: 700; color: #fff; }
+.L { will-change: transform, opacity; }
+
+/* 見本1: 切り替え */
+[data-demo="cut"] .to { transform-origin: 50% 55%; }
+
+/* 見本2: 地図 → 店・帰宅 */
+[data-demo="map"] .glow { inset: -35% -22%; width: auto; height: auto; background: radial-gradient(closest-side, #fff8ea 0%, #fff8eaf7 42%, #fff8ea00 100%); opacity: 0; }
+/* 店ロゴ: 採用した1案の範囲（store-logos.js の frame [812, 15, 551, 684]／シート 2172×724）だけを、縦横比を保って出す */
+[data-demo="map"] .logo { position: absolute; left: 50%; top: 50%; width: 21cqw; aspect-ratio: 551 / 684; translate: -50% -50%; background-repeat: no-repeat; background-size: 394.19% 105.85%; background-position: 50.09% 37.5%; opacity: 0; }
+[data-demo="map"] .lamp { background: radial-gradient(22cqw 16cqw at 94% 50%, #ffcf8a66, transparent 70%), radial-gradient(18cqw 14cqw at 24% 54%, #ffcf8a4d, transparent 70%); mix-blend-mode: screen; opacity: 0; }
+
+/* 見本3: 就寝 → 翌朝 */
+@property --r { syntax: "<percentage>"; inherits: false; initial-value: 0%; }
+[data-demo="dawn"] .day { -webkit-mask-image: radial-gradient(circle at 61% 31%, #000 var(--r), transparent calc(var(--r) + 26%)); mask-image: radial-gradient(circle at 61% 31%, #000 var(--r), transparent calc(var(--r) + 26%)); --r: -30%; }
+[data-demo="dawn"].plain .day { -webkit-mask-image: none; mask-image: none; opacity: 0; }
+[data-demo="dawn"] .night-grade { background: radial-gradient(90cqw 60cqw at 61% 31%, #0b0f3a99, #05061cf2 70%); opacity: 0; }
+[data-demo="dawn"] .sun { background: radial-gradient(24cqw 20cqw at 61% 30%, #fff3cfe6, #ffd58a4d 45%, transparent 72%); mix-blend-mode: screen; opacity: 0; }
+/* 窓から左下へ落ちる光。右端が窓の中心（61cqw, 17.4cqw） */
+[data-demo="dawn"] .beam { position: absolute; right: 39cqw; top: 13.4cqw; width: 50cqw; height: 8cqw; transform-origin: 100% 50%; background: linear-gradient(to left, #fff1c873, #ffe2a726 60%, transparent); filter: blur(1.5cqw); mix-blend-mode: screen; opacity: 0; rotate: -15deg; }
+[data-demo="dawn"] .beam.b2 { rotate: -31deg; height: 9cqw; top: 12.9cqw; }
+[data-demo="dawn"] .rain { clip-path: polygon(52.6% 16.6%, 69.2% 16.6%, 69.2% 45.6%, 52.6% 45.6%); background: repeating-linear-gradient(104deg, transparent 0 0.75cqw, #dfe9ff73 0.75cqw 0.86cqw, transparent 0.86cqw 1.5cqw); background-size: 6cqw 9cqw; opacity: 0; }
+[data-demo="dawn"] .cool { background: #5b7fb5; mix-blend-mode: soft-light; opacity: 0; }
+.lockup { position: absolute; left: 6.2cqw; bottom: 6.4cqw; display: grid; gap: 0.7cqw; color: #fff; opacity: 0; text-shadow: 0 0.2cqw 1.4cqw #05061ccc; }
+.lockup::before { content: ""; position: absolute; inset: -7cqw -12cqw -9cqw -9cqw; background: radial-gradient(closest-side, #05061cb8, #05061c00); z-index: -1; }
+.lockup .day-row { display: flex; align-items: flex-end; gap: 1.6cqw; line-height: 1; }
+.lockup .day-label { font-family: var(--display); font-size: 2.6cqw; letter-spacing: 0.5em; padding-bottom: 2.3cqw; }
+.lockup .roll { position: relative; height: 14cqw; overflow: hidden; font-family: var(--display); font-size: 14cqw; line-height: 1; font-weight: 700; min-width: 8cqw; }
+.lockup .roll i { display: block; font-style: normal; height: 14cqw; }
+.lockup .rule { height: 1px; width: 40cqw; background: linear-gradient(to right, #fff, #ffffff00); transform-origin: 0 50%; }
+.lockup .sub { font-size: 2.05cqw; letter-spacing: 0.14em; font-weight: 700; display: flex; gap: 2cqw; align-items: baseline; white-space: nowrap; }
+.lockup .sub b { font-family: var(--display); font-size: 3cqw; letter-spacing: 0.04em; color: #ffe2a7; }
+.lockup .sub .wx { color: #ffe2a7; letter-spacing: 0.3em; }
+
+/* 見本4・5で共通: 絵柄の舞台（斜めに切り替わる）と、登場カットインと同じ生成りの帯 */
+.set { clip-path: polygon(0 0, 0 0, 0 100%, 0 100%); }
+.band { position: absolute; right: -4cqw; padding: 1.5cqw 9cqw 1.9cqw 4.2cqw; background: #f4ecda; rotate: -3deg; translate: 110% 0; box-shadow: 0 1cqw 2.4cqw #05020a80; }
+.band small { position: absolute; left: 4.2cqw; bottom: 100%; background: #2a1638; color: #f4ecda; font-size: 1.6cqw; line-height: 1.5; letter-spacing: 0.22em; font-weight: 700; padding: 0.3cqw 1.2cqw 0.35cqw; white-space: nowrap; }
+.band .pre { font-size: 1.9cqw; font-weight: 700; letter-spacing: 0.14em; color: #5b3f78; line-height: 1.3; }
+.stage .band .t { display: block; color: #1a0f24; font-size: 4.5cqw; line-height: 1.2; letter-spacing: 0.02em; white-space: nowrap; }
+
+/* 見本4: 占い */
+[data-demo="tarot"] .table { transform-origin: 30% 60%; }
+[data-demo="tarot"] .shade { background: linear-gradient(105deg, #0a0410d9 0%, #0a04108c 38%, transparent 64%); }
+[data-demo="tarot"] .lantern { background: radial-gradient(20cqw 18cqw at 97% 12%, #ffc97a80, transparent 70%); mix-blend-mode: screen; opacity: 0; }
+.card { position: absolute; left: 0; top: 0; width: 15.6cqw; aspect-ratio: 420 / 690; opacity: 0; }
+.card .face { position: absolute; inset: 0; border-radius: 0.9cqw; background-size: cover; background-position: center; backface-visibility: hidden; -webkit-backface-visibility: hidden; box-shadow: 0 0 0 1px #1a0d2466; overflow: hidden; }
+.card .front { transform: perspective(90cqw) rotateY(-180deg); }
+.card .front::after { content: ""; position: absolute; inset: -20% -60%; background: linear-gradient(100deg, transparent 42%, #fff6d9cc 50%, transparent 58%); translate: -70% 0; mix-blend-mode: screen; }
+.card-shadow { position: absolute; left: 0; top: 0; width: 15.6cqw; aspect-ratio: 420 / 690; border-radius: 1cqw; background: #05020a; filter: blur(1.2cqw); opacity: 0; }
+/* 札の表: 絵が届くまで（#3278）は、表の枠の窓に札の名前を題字で組んだ仮の表 */
+.card .front .arc { position: absolute; left: 12.7%; right: 12.8%; top: 11.1%; bottom: 9.9%; display: grid; place-content: center; justify-items: center; gap: 0.5cqw; color: #3b1c43; text-align: center; }
+.card .front .arc b { font-family: var(--display); font-size: 1.7cqw; letter-spacing: 0.3em; color: #8a6424; }
+.card .front .arc em { font-family: var(--display); font-style: normal; font-size: 4.6cqw; line-height: 1; }
+.card .front .arc small { font-size: 0.75cqw; letter-spacing: 0.32em; font-weight: 700; color: #8a6424; }
+.card .front .arc span { margin-top: 1.4cqw; font-size: 0.62cqw; line-height: 1.5; color: #7b6688; }
+[data-demo="tarot"] .band { bottom: 10.5cqw; width: 45cqw; }
+[data-demo="tarot"] .band .t { font-size: 6.6cqw; letter-spacing: 0.14em; }
+
+/* 見本5: 贈り物 */
+[data-demo="gift"] .dark { background: linear-gradient(to top, #0b0612e6 0%, #0b061280 40%, #0b061233 100%); }
+[data-demo="gift"] .pool { background: radial-gradient(30cqw 9cqw at 35% 76%, #05020ab3, transparent 70%), radial-gradient(36cqw 30cqw at 35% 44%, #fff0d24d, transparent 70%); }
+[data-demo="gift"] .item { position: absolute; left: 13cqw; top: 9cqw; width: 44cqw; aspect-ratio: 1280 / 935; opacity: 0; filter: drop-shadow(0 1.4cqw 1.8cqw #08040ecc); }
+[data-demo="gift"] .item i { position: absolute; inset: 0; background-size: contain; background-repeat: no-repeat; background-position: center; }
+[data-demo="gift"] .item .sheen { -webkit-mask-size: contain; mask-size: contain; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; -webkit-mask-position: center; mask-position: center; overflow: hidden; }
+[data-demo="gift"] .item .sheen::after { content: ""; position: absolute; inset: -10% -40%; background: linear-gradient(105deg, transparent 44%, #fff4d6d9 50%, transparent 56%); translate: -75% 0; mix-blend-mode: screen; }
+[data-demo="gift"] .band { bottom: 9.5cqw; width: 58cqw; }
+
+/* 見本6: 新幹線 */
+[data-demo="train"] .win { clip-path: polygon(33.4% 0, 100% 0, 100% 83%, 86% 75.5%, 72% 68%, 58% 60.6%, 46% 54.4%, 39% 50.6%, 35.6% 47.6%, 34.2% 43%, 33.6% 30%); }
+[data-demo="train"] .win .run { position: absolute; top: 0; left: -900%; width: 1000%; height: 100%; background: url("stills/train-streak.webp") 0 0 / 25% 100% repeat-x; }
+[data-demo="train"] .far { -webkit-mask-image: linear-gradient(to bottom, transparent 31%, #000 40%, #000 50%, transparent 60%); mask-image: linear-gradient(to bottom, transparent 31%, #000 40%, #000 50%, transparent 60%); opacity: 0; }
+[data-demo="train"] .near { -webkit-mask-image: linear-gradient(to bottom, transparent 43%, #000 55%); mask-image: linear-gradient(to bottom, transparent 43%, #000 55%); opacity: 0; }
+[data-demo="train"] .pole { position: absolute; left: 0; top: -4%; width: 6cqw; height: 108%; background: linear-gradient(to right, transparent, #1a2236 50%, transparent); filter: blur(0.8cqw); opacity: 0; skew: 4deg; }
+[data-demo="train"] .flick { background: linear-gradient(80deg, transparent 30%, #fff8e633 46%, transparent 60%); mix-blend-mode: soft-light; opacity: 0; }
+[data-demo="train"] .dest { position: absolute; left: 4.2cqw; top: 5.2cqw; display: grid; gap: 0.6cqw; color: #fff; text-shadow: 0 0.2cqw 1.4cqw #050a1ee6; opacity: 0; }
+[data-demo="train"] .dest small { font-size: 1.9cqw; letter-spacing: 0.3em; font-weight: 700; }
+[data-demo="train"] .dest .t { font-size: 7.6cqw; line-height: 1.05; letter-spacing: 0.08em; }
+[data-demo="train"] .dest .rule { height: 1px; width: 23cqw; background: linear-gradient(to right, #fff, #ffffff00); transform-origin: 0 50%; }
+
+/* ---- 判定表 */
+.table-scroll { overflow-x: auto; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+table { border-collapse: collapse; width: 100%; min-width: 760px; font-size: 14px; line-height: 1.6; }
+th, td { text-align: left; vertical-align: top; padding: 10px 14px 10px 0; border-bottom: 1px solid color-mix(in srgb, var(--line) 60%, transparent); }
+thead th { font-size: 12px; letter-spacing: 0.12em; color: var(--dim); font-weight: 700; white-space: nowrap; }
+tbody th { font-weight: 700; color: var(--paper); white-space: nowrap; }
+td { color: var(--dim); }
+tr.group th { font-family: var(--display); font-size: 16px; color: var(--gold); padding-top: 22px; border-bottom-color: var(--line); }
+.v { display: inline-block; white-space: nowrap; font-size: 12px; font-weight: 700; letter-spacing: 0.08em; padding: 1px 9px; border-radius: 999px; border: 1px solid currentColor; }
+.v.out { color: var(--dim); } .v.keep { color: #9fd3b2; } .v.fix { color: var(--lav); } .v.redo { color: var(--gold); } .v.drop { color: #e59aa6; }
+.tally { display: flex; flex-wrap: wrap; gap: 8px 22px; font-size: 14px; color: var(--dim); }
+.tally b { font-family: var(--display); font-size: 22px; color: var(--paper); margin-right: 6px; }
+
+/* ---- 進め方 */
+.steps { margin: 0; padding: 0; list-style: none; display: grid; gap: 0; counter-reset: step; }
+.steps li { counter-increment: step; display: grid; grid-template-columns: 5.2em 1fr; gap: 4px 12px; padding: 16px 0; border-top: 1px solid var(--line); }
+.steps li:last-child { border-bottom: 1px solid var(--line); }
+.steps li::before { content: "第" counter(step) "弾"; font-family: var(--display); font-size: 17px; color: var(--gold); }
+.steps b { font-size: 16px; }
+.steps p { grid-column: 2; color: var(--dim); font-size: 15px; }
+.asks { margin: 0; padding: 0 0 0 1.3em; display: grid; gap: 8px; max-width: 46em; }
+.asks li::marker { color: var(--gold); font-weight: 700; }
+footer { color: var(--dim); font-size: 13px; border-top: 1px solid var(--line); padding-top: 20px; }
+@media (prefers-reduced-motion: reduce) { .btn, .seg button { transition: none; } }
+</style>
+<!--/page-->
+</head>
+<body>
+<!--body-->
+<div class="wrap">
+
+<header class="hero">
+  <p class="eyebrow"><span>水煙前線 -EN:CODE-</span><span>モーション改善案</span><span>2026-11-11</span></p>
+  <h1><span>演出を、</span><span><span class="gold">ゲームの絵</span>で</span><span>作り直す</span></h1>
+  <p class="lead measure">いま入っている演出28種類を、実機で通常の速さで再生して見直しました。しょぼく、ちぐはぐに見える原因は共通です。背景もカットインも描き込まれた絵なのに、演出だけが紫の平らな図形でコードから描かれています。</p>
+  <p class="lead measure">直し方も共通です。図形をやめて、その場の背景と、採用済みの登場カットインの絵柄で作ります。下に動く見本を6つ置きました。占いの札のほかは、ゲームにすでにある絵だけで作っています。</p>
+</header>
+
+<section id="diagnosis">
+  <div class="sec-head">
+    <h2>浮いて見える演出には、共通点がある</h2>
+    <p class="measure">どちらもいまの本編の画面です。上はなじんでいるもの、下は浮いているもの。分かれ目は、ゲームの絵を使っているかどうかでした。</p>
+  </div>
+  <div class="board good">
+    <h3>なじんでいる6つ <small>ゲームの絵でできている</small></h3>
+    <ul class="shots">
+      <li><img src="stills/good-chapter.webp" alt="第4章の章題。キーアートに明朝の題字"><span>章題：キーアートと題字</span></li>
+      <li><img src="stills/good-intro-minto.webp" alt="みんとの登場カットイン。ミントとピンクの絵柄に白い帯の名前"><span>登場カットイン：その人の絵柄と帯</span></li>
+      <li><img src="stills/good-intro-tsumugi.webp" alt="つむぎの登場カットイン。藤と猫の絵柄"><span>登場カットイン：色も模様も本人のもの</span></li>
+      <li><img src="stills/good-lime.webp" alt="LIME交換。店内をぼかした上にゲーム内のスマホ画面"><span>LIME交換：実際の画面と店内</span></li>
+      <li><img src="stills/good-purikura.webp" alt="プリクラ。立ち絵と落書き"><span>プリクラ：立ち絵と店の柄</span></li>
+      <li><img src="stills/good-sketch.webp" alt="スケッチ。背景から起こした線画"><span>スケッチ：背景から起こした線画</span></li>
+    </ul>
+  </div>
+  <div class="board bad">
+    <h3>浮いている10個 <small>紫の面に、コードで描いた図形</small></h3>
+    <ul class="shots">
+      <li><img src="stills/now-tarot.webp" alt="占い。めくった札が白紙"><span>占い：めくった札が白紙</span></li>
+      <li><img src="stills/now-door.webp" alt="帰宅の扉。線で描いた四角い扉"><span>帰宅：線で描いた扉</span></li>
+      <li><img src="stills/now-shift.webp" alt="バイト終業。紫の丸い札に CLOSED"><span>バイト終業：店内が紫で隠れる</span></li>
+      <li><img src="stills/now-cheki.webp" alt="チェキ。紫の地に小さな写真と虫めがね"><span>チェキ：主役の写真が小さい</span></li>
+      <li><img src="stills/now-shark.webp" alt="サメちゃん。紫の口と三角の牙"><span>サメちゃん：青い店が紫の口に</span></li>
+      <li><img src="stills/now-garagara.webp" alt="ガラガラくじ。紫一色の抽選器"><span>くじ：店の絵が紫の舞台に替わる</span></li>
+      <li><img src="stills/now-plane.webp" alt="機窓。暗い面に小さな窓が1つ"><span>ドバイへ：小さな窓が1つ</span></li>
+      <li><img src="stills/now-dragon.webp" alt="龍の煙。白い線が1本"><span>龍の煙：白い線が1本</span></li>
+      <li><img src="stills/now-mixed.webp" alt="フィナーレの混ざる煙。細い色の線が5本"><span>フィナーレの煙：細い線が5本</span></li>
+      <li><img src="stills/now-round.webp" alt="ROUND 1 の帯。小さな文字"><span>ROUND 1：小さな文字の帯</span></li>
+    </ul>
+  </div>
+  <ol class="causes">
+    <li><b>描き方が違う</b><p>背景・立ち絵・カットインは描き込んだ絵。演出は1〜3色の平らな図形。演出が出るたびに、別のゲームの画面へ切り替わって見えます。</p></li>
+    <li><b>場面を紫で隠す</b><p>ほとんどの演出が、まず画面全体を紫で覆い、何もない面に図形を置きます。ミントとピンクの PEPPERMINT も、青い SHISHARK も、同じ紫に塗り替わります。</p></li>
+    <li><b>山場に見せる絵がない</b><p>めくった札は白紙、龍の煙は線1本、ROUND 1 は小さな文字。数秒待たせた先に、見せるものが用意されていません。</p></li>
+  </ol>
+  <p class="aside measure">これまでのご指摘「スケッチはいい感じ」「ハガルはちゃんと生成された絵で」「ペンだけダサい」「サメの顔がキモい」「ローディングの煙がダサい」も、同じ線で説明がつきます。絵を使った所は良く、コードで描いた物が悪い。10月から基準にしてきた2つの約束「画像を使わず図形で描く」「紫1色でそろえる」が、その原因でした。</p>
+</section>
+
+<section id="direction">
+  <div class="sec-head">
+    <h2>これからの5つの決まり</h2>
+    <p class="measure">そろえるのは色や形ではなく、作り方です。素材は場面ごとに、その場所とその人から取ります。</p>
+  </div>
+  <ol class="rules">
+    <li><b>場面の切り替えは、覆わない</b><p>前の絵が次の絵へ直接ほどける。紫の面を挟まず、カメラの寄り・光・にじみで背景そのものを動かします。</p></li>
+    <li><b>人にまつわる演出の舞台は、その人の絵柄</b><p>登場カットインの背景が33人分、採用済みであります。チェキはみんとの絵柄、贈り物は贈り主の絵柄の上で。色もそこから取ります。</p></li>
+    <li><b>物はコードで描かない</b><p>札・箱・扉・抽選器・窓。すでに絵があればそこから使い、なければ同じ絵柄で生成します。</p></li>
+    <li><b>文字は題字として組む</b><p>章題と同じ明朝で大きく、または登場カットインの帯に載せる。小さなゴシックの添え書きにしません。</p></li>
+    <li><b>数を絞り、山場に寄せる</b><p>毎日見るものは1〜2秒で静かに。時間を使うのは、物語の要所と一度きりの出来事だけ。</p></li>
+  </ol>
+</section>
+
+<section id="samples">
+  <div class="sec-head">
+    <h2>動く見本</h2>
+    <p class="measure">左がいまの本編の録画、右が改善案です。画面を押すと再生します。右は、ゲームにすでにある絵と、Codex に作ってもらった占いの札（Issue #3254）で作っています。</p>
+  </div>
+
+  <article class="sample" id="sample-cut">
+    <div class="sample-head"><span class="no">見本 1</span><h3>場面の切り替え</h3><span class="freq">背景が替わるたび。第1章だけで約90回</span></div>
+    <div class="pair">
+      <figure class="side now"><figcaption><span class="tag">いま（本編の録画）</span><button class="btn" data-play="now">再生</button></figcaption>
+        <div class="stage" tabindex="0" role="button" aria-label="いまの場面の切り替えを再生"><video muted playsinline preload="metadata" poster="clips/stroke.webp" src="clips/stroke.mp4"></video></div></figure>
+      <figure class="side new"><figcaption><span class="tag">改善案</span><button class="btn" data-play="new">再生</button></figcaption>
+        <div class="stage" data-demo="cut" tabindex="0" role="button" aria-label="改善案の場面の切り替えを再生">
+          <img class="L to" alt="" data-img="backgrounds/bg_tonari_inside_night.webp">
+          <canvas class="L fx"></canvas>
+        </div></figure>
+    </div>
+    <div class="tools"><button class="btn main" data-play="both">見比べる</button>
+      <div class="seg" role="group" aria-label="改善案の型"><button data-opt="mode" data-val="smoke" aria-pressed="true">A　煙のにじみ</button><button data-opt="mode" data-val="dots" aria-pressed="false">B　網点</button></div></div>
+    <ul class="notes">
+      <li>紫の面で覆うのをやめ、前の背景が次の背景へ直接ほどけます。A は 0.7 秒、B は 0.55 秒（いまは 0.75 秒）。</li>
+      <li>A は煙が立ちのぼるように下から。B は登場カットインと同じ網点の質感。<strong>A を標準に決めました</strong>（煙の店のゲームなので煙で切り替える。種類は増やさない）。B は比べる用に残しているだけです。</li>
+      <li>同じ仕組みで「回想に色が戻る」「再挑戦で色が戻る」「フィナーレの混ざる煙」も作れます。</li>
+    </ul>
+  </article>
+
+  <article class="sample" id="sample-map">
+    <div class="sample-head"><span class="no">見本 2</span><h3>マップから店へ・帰宅</h3><span class="freq">1日に2〜3回</span></div>
+    <div class="pair">
+      <figure class="side now"><figcaption><span class="tag">いま（本編の録画）</span><button class="btn" data-play="now">再生</button></figcaption>
+        <div class="stage" tabindex="0" role="button" aria-label="いまのマップからの移動を再生"><video muted playsinline preload="metadata" poster="clips/map-store.webp" src="clips/map-store.mp4" data-alt-src="clips/map-home.mp4" data-alt-poster="clips/map-home.webp"></video></div></figure>
+      <figure class="side new"><figcaption><span class="tag">改善案</span><button class="btn" data-play="new">再生</button></figcaption>
+        <div class="stage" data-demo="map" tabindex="0" role="button" aria-label="改善案のマップからの移動を再生">
+          <img class="L map" alt="" data-img="backgrounds/bg_osu_map_day.webp">
+          <img class="L room" alt="" data-img="backgrounds/bg_tonari_inside_day.webp" style="opacity:0">
+          <div class="L lamp"></div>
+          <div class="L glow"></div>
+          <div class="logo" data-bg="logo:tonari"></div>
+        </div></figure>
+    </div>
+    <div class="tools"><button class="btn main" data-play="both">見比べる</button>
+      <div class="seg" role="group" aria-label="行き先"><button data-opt="dest" data-val="store" aria-pressed="true">tonari へ</button><button data-opt="dest" data-val="home" aria-pressed="false">自宅へ（夜）</button></div></div>
+    <ul class="notes">
+      <li>地図の、押したその場所へカメラが寄り、採用済みの店ロゴを抜けて店内へ。紫の円と白い札はなくなります。長さはいまとほぼ同じです（約 1.9 秒）。</li>
+      <li>帰宅は扉の絵をやめ、暗い部屋に灯りが点きます。約 1.5 秒。扉は描かず、開ける音を1つ足すと伝わります（音は新しく要ります）。</li>
+    </ul>
+  </article>
+
+  <article class="sample" id="sample-dawn">
+    <div class="sample-head"><span class="no">見本 3</span><h3>就寝から翌朝へ</h3><span class="freq">毎日。1章で13回</span></div>
+    <div class="pair">
+      <figure class="side now"><figcaption><span class="tag">いま（本編の録画）</span><button class="btn" data-play="now">再生</button></figcaption>
+        <div class="stage" tabindex="0" role="button" aria-label="いまの夜明けを再生"><video muted playsinline preload="metadata" poster="clips/dawn.webp" src="clips/dawn.mp4"></video></div></figure>
+      <figure class="side new"><figcaption><span class="tag">改善案</span><button class="btn" data-play="new">再生</button></figcaption>
+        <div class="stage" data-demo="dawn" tabindex="0" role="button" aria-label="改善案の夜明けを再生">
+          <img class="L night" alt="" data-img="backgrounds/bg_home_night.webp">
+          <img class="L day" alt="" data-img="backgrounds/bg_home_day.webp">
+          <div class="L rain"></div>
+          <div class="L cool"></div>
+          <div class="L night-grade"></div>
+          <div class="L sun"></div>
+          <i class="beam b1"></i><i class="beam b2"></i>
+          <div class="lockup">
+            <div class="day-row"><span class="day-label">DAY</span><span class="roll"><i>3</i><i>4</i></span></div>
+            <div class="rule"></div>
+            <div class="sub"><span>SMOKE CROWN CUP まで あと <b>10</b> 日</span><span class="wx">晴れ</span></div>
+          </div>
+        </div></figure>
+    </div>
+    <div class="tools"><button class="btn main" data-play="both">見比べる</button>
+      <div class="seg" role="group" aria-label="天気"><button data-opt="wx" data-val="sun" aria-pressed="true">晴れ</button><button data-opt="wx" data-val="cloud" aria-pressed="false">くもり</button><button data-opt="wx" data-val="rain" aria-pressed="false">雨</button></div></div>
+    <ul class="notes">
+      <li>紫の幕をやめ、自室の夜の絵が、窓から差す光で朝の絵に替わります。昼夜と曇りの絵はすでに本編にあります。</li>
+      <li>日付は題字として大きく。天気は太陽の図形ではなく、窓の光・曇りの絵・窓の雨で伝えます。約 3 秒（いまと同じ）。</li>
+    </ul>
+  </article>
+
+  <article class="sample" id="sample-tarot">
+    <div class="sample-head"><span class="no">見本 4</span><h3>占い</h3><span class="freq">占うたび</span></div>
+    <div class="pair">
+      <figure class="side now"><figcaption><span class="tag">いま（本編の録画）</span><button class="btn" data-play="now">再生</button></figcaption>
+        <div class="stage" tabindex="0" role="button" aria-label="いまの占いを再生"><video muted playsinline preload="metadata" poster="clips/tarot.webp" src="clips/tarot.mp4"></video></div></figure>
+      <figure class="side new"><figcaption><span class="tag">改善案</span><button class="btn" data-play="new">再生</button></figcaption>
+        <div class="stage" data-demo="tarot" tabindex="0" role="button" aria-label="改善案の占いを再生">
+          <img class="L scene" alt="" data-img="backgrounds/bg_street_night.webp">
+          <div class="L set">
+            <img class="L table" alt="" data-img="ui/character_intros/graphic/bg_uranaishi.webp">
+            <div class="L shade"></div>
+            <div class="L lantern"></div>
+          </div>
+          <i class="card-shadow s0"></i><i class="card-shadow s2"></i>
+          <div class="card c0"><i class="face back"></i></div>
+          <div class="card c2"><i class="face back"></i></div>
+          <i class="card-shadow s1"></i>
+          <div class="card c1"><i class="face back"></i><i class="face front"><span class="arc"><b>XVII</b><em>星</em><small>THE STAR</small><span>絵は Codex に依頼中<br>（Issue #3278）</span></span></i></div>
+          <div class="band"><small>つむぎを占った札</small><span class="t">XVII 星</span></div>
+        </div></figure>
+    </div>
+    <div class="tools"><button class="btn main" data-play="both">見比べる</button></div>
+    <ul class="notes">
+      <li>舞台は占い師の登場カットインの背景。札の裏は、その絵に描かれている札を手本に Codex が描いたものです（Issue #3254）。</li>
+      <li>札の表は、占う相手ごとに「その人っぽい」大アルカナを1枚（つむぎなら XVII 星）。相手の絵柄・顔・名前は札に出しません。白紙の札はなくなります。</li>
+      <li>札の裏と表の枠は Codex が描いたもの（Issue #3254）。19人分の札の絵は Codex に依頼中（Issue #3278）で、見本の表は届くまでの仮として札の名前だけを組んでいます。約 5 秒（いまは 4.5 秒）。</li>
+    </ul>
+  </article>
+
+  <article class="sample" id="sample-gift">
+    <div class="sample-head"><span class="no">見本 5</span><h3>贈り物</h3><span class="freq">絆の締めくくりに1回ずつ</span></div>
+    <div class="pair">
+      <figure class="side now"><figcaption><span class="tag">いま（本編の録画）</span><button class="btn" data-play="now">再生</button></figcaption>
+        <div class="stage" tabindex="0" role="button" aria-label="いまの贈り物を再生"><video muted playsinline preload="metadata" poster="clips/gift.webp" src="clips/gift.mp4"></video></div></figure>
+      <figure class="side new"><figcaption><span class="tag">改善案</span><button class="btn" data-play="new">再生</button></figcaption>
+        <div class="stage" data-demo="gift" tabindex="0" role="button" aria-label="改善案の贈り物を再生">
+          <img class="L scene" alt="" data-img="backgrounds/bg_tonari_inside_night.webp">
+          <div class="L set">
+            <img class="L art" alt="" data-img="ui/character_intros/graphic/bg_tsumugi.webp">
+            <div class="L dark"></div>
+            <div class="L pool"></div>
+          </div>
+          <div class="item"><i data-bg="img:ui/making/bowl_empty_clay.webp"></i><i class="sheen" data-mask="img:ui/making/bowl_empty_clay.webp"></i></div>
+          <div class="band"><small>つむぎから</small><div class="pre">つむぎが育てた</div><span class="t">ラベンダー専用ハガル</span></div>
+        </div></figure>
+    </div>
+    <div class="tools"><button class="btn main" data-play="both">見比べる</button></div>
+    <ul class="notes">
+      <li>白い箱の図形と紙吹雪をやめ、贈り主の絵柄（つむぎの藤と猫）を舞台にします。誰からの贈り物かが、色と模様で伝わります。</li>
+      <li>品は大きく、名前は登場カットインと同じ帯で。約 4 秒（いまは 5.5 秒）。</li>
+    </ul>
+  </article>
+
+  <article class="sample" id="sample-train">
+    <div class="sample-head"><span class="no">見本 6</span><h3>新幹線</h3><span class="freq">第3章の行きと帰り</span></div>
+    <div class="pair">
+      <figure class="side now"><figcaption><span class="tag">いま（本編の録画）</span><button class="btn" data-play="now">再生</button></figcaption>
+        <div class="stage" tabindex="0" role="button" aria-label="いまの新幹線を再生"><video muted playsinline preload="metadata" poster="clips/shinkansen.webp" src="clips/shinkansen.mp4"></video></div></figure>
+      <figure class="side new"><figcaption><span class="tag">改善案</span><button class="btn" data-play="new">再生</button></figcaption>
+        <div class="stage" data-demo="train" tabindex="0" role="button" aria-label="改善案の新幹線を再生">
+          <img class="L car" alt="" data-img="backgrounds/bg_ch3_train_arrival.webp">
+          <div class="L win far"><i class="run"></i></div>
+          <div class="L win near"><i class="run"></i></div>
+          <div class="L win poles"><i class="pole"></i></div>
+          <div class="L flick"></div>
+          <div class="dest"><small>新幹線 のぞみ</small><span class="t">東京へ</span><div class="rule"></div></div>
+          <img class="L from" alt="" data-img="backgrounds/bg_tonari_inside_day.webp" style="opacity:0">
+          <canvas class="L fx"></canvas>
+        </div></figure>
+    </div>
+    <div class="tools"><button class="btn main" data-play="both">見比べる</button></div>
+    <ul class="notes">
+      <li>いまは紫の線画の車内を見せた直後に、本物の車内の絵が出ます。最初から本物の絵を使い、車窓の景色だけを流して、減速して止めます。</li>
+      <li>新しい絵は不要。飛行機は同じ作りで、機内の窓の絵が1枚あれば作れます。</li>
+    </ul>
+  </article>
+</section>
+
+<section id="verdicts">
+  <div class="sec-head">
+    <h2>28種類の判定</h2>
+    <p class="measure">残すものは基準として使い、作り直すものは上の決まりで作ります。</p>
+  </div>
+  <p class="tally"><span><b>5</b>残す</span><span><b>3</b>一部を直す</span><span><b>18</b>作り直す</span><span><b>1</b>やめる</span><span><b>1</b>対象外</span></p>
+  <div class="table-scroll" tabindex="0" role="region" aria-label="演出ごとの判定">
+  <table>
+    <thead><tr><th>演出</th><th>判定</th><th>いま</th><th>直し方</th><th>新しい絵</th></tr></thead>
+    <tbody>
+      <tr class="group"><th colspan="5">毎日見るもの</th></tr>
+      <tr><th>場面の切り替え</th><td><span class="v redo">作り直す</span></td><td>紫の一筆が画面を覆う</td><td>見本1。覆わずに前の絵がほどける</td><td>不要</td></tr>
+      <tr><th>マップから店へ</th><td><span class="v redo">作り直す</span></td><td>紫の円と、白い札のロゴ</td><td>見本2。地図へ寄って、ロゴを抜けて店内へ</td><td>不要</td></tr>
+      <tr><th>帰宅の扉</th><td><span class="v redo">作り直す</span></td><td>線で描いた扉</td><td>見本2。部屋に灯りが点く。扉は描かない</td><td>不要</td></tr>
+      <tr><th>就寝から翌朝へ</th><td><span class="v redo">作り直す</span></td><td>紫の幕、小さな DAY、太陽の図形</td><td>見本3。部屋の夜と朝の絵をつなぐ</td><td>不要</td></tr>
+      <tr><th>DAY カード</th><td><span class="v redo">作り直す</span></td><td>暗い帯に小さな文字</td><td>見本3と同じ題字にそろえる</td><td>不要</td></tr>
+      <tr><th>バイト終業</th><td><span class="v redo">作り直す</span></td><td>紫の丸い札が回る。4.4 秒</td><td>店の閉店の札を1回返すだけ。1.2 秒。店内は隠さない</td><td>閉店の札（表と裏・届いた）</td></tr>
+      <tr><th>電車</th><td><span class="v fix">一部を直す</span></td><td>人混みの絵（良い）を紫1色で塗っている</td><td>絵は活かす。昼は日差し、夜は車内灯の色で塗り、窓の光を流す</td><td>不要</td></tr>
+      <tr class="group"><th colspan="5">遠くへの移動</th></tr>
+      <tr><th>新幹線</th><td><span class="v redo">作り直す</span></td><td>紫の線画の車内</td><td>見本6。本物の車内の絵で車窓を流す</td><td>不要</td></tr>
+      <tr><th>飛行機</th><td><span class="v redo">作り直す</span></td><td>暗い面に小さな窓が1つ</td><td>機内の窓の絵で、雲と空の色を流す。行き先は題字で</td><td>機内の窓の席、雲海（夜・夜明け・届いた）</td></tr>
+      <tr><th>配送便</th><td><span class="v drop">やめる</span></td><td>飛行機と同じ窓の図形</td><td>ふつうの切り替えと題字だけにする</td><td>不要</td></tr>
+      <tr class="group"><th colspan="5">人との出来事</th></tr>
+      <tr><th>チェキ</th><td><span class="v redo">作り直す</span></td><td>紫の地、カメラの図形、写真が小さい。10 秒</td><td>みんとの絵柄を舞台に、写真を主役の大きさで。落書きの書き順はいまのものを活かす。5 秒</td><td>マーカー2本（届いた）</td></tr>
+      <tr><th>占い</th><td><span class="v redo">作り直す</span></td><td>紫の札をめくると白紙</td><td>見本4</td><td>札の裏と表の枠（届いた）</td></tr>
+      <tr><th>贈り物</th><td><span class="v redo">作り直す</span></td><td>白い箱の図形と紙吹雪</td><td>見本5</td><td>不要</td></tr>
+      <tr><th>サメちゃんとの出会い</th><td><span class="v redo">作り直す</span></td><td>紫の口と三角の牙</td><td>サメちゃんの絵柄と店の青で。牙の図形はやめる</td><td>不要</td></tr>
+      <tr><th>ガラガラくじ</th><td><span class="v out">対象外</span></td><td>既定の配色が紫1色で、店の絵と合わない</td><td>くじのチャットが、Codex の絵で作り直している（PR #3212・Issue #3228・PR #3251）。この計画では触らない</td><td>—</td></tr>
+      <tr><th>スケッチ</th><td><span class="v fix">一部を直す</span></td><td>線画は良い。紙のスケッチブックとペンが紫の図形で、台本のタブレットとも合わない</td><td>台本どおりタブレットに替え、その画面に線画を描く</td><td>タブレットとペン（届いた）</td></tr>
+      <tr><th>LIME 交換</th><td><span class="v keep">残す</span></td><td>実際の画面と、ぼかした店内</td><td>そのまま</td><td>不要</td></tr>
+      <tr><th>プリクラ</th><td><span class="v keep">残す</span></td><td>立ち絵・CG・店の柄</td><td>そのまま</td><td>不要</td></tr>
+      <tr class="group"><th colspan="5">章の要所</th></tr>
+      <tr><th>章題</th><td><span class="v keep">残す</span></td><td>キーアートと題字</td><td>そのまま。題字の基準にする</td><td>不要</td></tr>
+      <tr><th>登場カットイン</th><td><span class="v keep">残す</span></td><td>その人の絵柄と帯</td><td>そのまま。演出の舞台の基準にする</td><td>不要</td></tr>
+      <tr><th>回想から現在へ</th><td><span class="v redo">作り直す</span></td><td>紫の大きな葉の形</td><td>色の抜けた絵に、色がにじんで戻る（見本1の仕組み）</td><td>不要</td></tr>
+      <tr><th>龍の煙</th><td><span class="v redo">作り直す</span></td><td>白い線が1本</td><td>圧倒される場面なので一枚絵にする。線では足りない</td><td>CG 1枚</td></tr>
+      <tr><th>「???」の走査</th><td><span class="v keep">残す</span></td><td>横線のノイズ。短く控えめ</td><td>そのまま</td><td>不要</td></tr>
+      <tr><th>フィナーレの混ざる煙</th><td><span class="v redo">作り直す</span></td><td>細い色の線が5本</td><td>質感のある煙が本当に混ざる（見本1の仕組みに色をつける）</td><td>不要</td></tr>
+      <tr><th>敗北の入り</th><td><span class="v fix">一部を直す</span></td><td>会場の色が抜ける（良い）。白い線の煙</td><td>色が抜けるのは残す。線をやめ、照明が落ちる</td><td>不要</td></tr>
+      <tr><th>再挑戦</th><td><span class="v redo">作り直す</span></td><td>紫の一筆</td><td>色が戻る（見本1の仕組み）</td><td>不要</td></tr>
+      <tr class="group"><th colspan="5">大会</th></tr>
+      <tr><th>会場入り</th><td><span class="v redo">作り直す</span></td><td>ぼかした白い円が広がる</td><td>見本1のにじみを濃く、長く</td><td>不要</td></tr>
+      <tr><th>ROUND の帯</th><td><span class="v redo">作り直す</span></td><td>細い帯に小さな文字</td><td>登場カットインの帯の組み方で、大きく</td><td>不要</td></tr>
+    </tbody>
+  </table>
+  </div>
+  <p class="aside measure">紫1色は既定の配色で、実装には「場面ごとの色」の版もあります。色を替えても平らな図形のままなので、判定は変わりません。ガラガラくじは、くじのチャットが絵から作り直しているので、この計画から外しました。</p>
+</section>
+
+<section id="next">
+  <div class="sec-head">
+    <h2>進め方</h2>
+    <p class="measure">作り直す18件のうち15件は、新しい絵なしで始められます。よく見るものから、1つずつ本編へ入れます。</p>
+  </div>
+  <ol class="steps">
+    <li><b>毎日見る5つ</b><p>場面の切り替え、マップから店へ、帰宅、就寝から翌朝へ、DAY カード。新しい絵は不要。ゲーム全体の印象がいちばん変わります。</p></li>
+    <li><b>人との出来事4つ</b><p>占い、贈り物、チェキ、サメちゃん。登場カットインの絵柄を舞台にします。新しい絵は不要。</p></li>
+    <li><b>絵が要る4つ</b><p>バイト終業（閉店の札）、スケッチ（タブレットとペン）、飛行機（機内の窓の席と雲海）、龍の煙（一枚絵）。龍の煙のほかの絵は、占いの札とチェキのマーカーとあわせて11枚とも Codex から届いています（Issue #3254・<code>remake/img/ui/transitions/</code>）。</p></li>
+    <li><b>残りと資料</b><p>新幹線、電車、回想、フィナーレ、敗北と再挑戦、大会の2つ。配送便の窓はやめます。あわせて資料の「画像を使わない」「紫1色」の約束を、上の5つの決まりへ書き換えます。</p></li>
+  </ol>
+  <div class="sec-head"><h3>決めたこと（2026-11-11）</h3><p class="measure">オーナーの返事「方向の決定は任せる」を受けて、残りはこちらで決めました。</p></div>
+  <ol class="asks">
+    <li>この方向（ゲームの絵で作り直す）で進める。</li>
+    <li>場面の切り替えは A（煙のにじみ）を標準にする。B（網点）は使わない。</li>
+    <li>占いの札の表に、占う相手の絵柄は使わない（オーナー指示）。相手ごとに「その人っぽい」大アルカナを1枚決め、人物・顔・名前のない札の絵を Codex に依頼した（Issue #3278・19枚）。</li>
+    <li>Codex から届いた11枚（Issue #3254）は採用する。</li>
+    <li>「残す」とした5つ（LIME 交換・プリクラ・章題・登場カットイン・「???」の走査）はそのまま残す。</li>
+    <li>ガラガラくじは、くじのチャットに任せてこの計画から外す。</li>
+  </ol>
+  <footer>見本は本編に未接続です。新しく作った絵は占いの札の裏と表の枠だけで、Codex が Issue #3254 で描きました。札の表の絵（19人分）は Issue #3278 で依頼中です。いまの録画は 2026-11-11 の main を 1280×720・通常の速さで再生したものです。</footer>
+</section>
+
+</div>
+<!--/body-->
+<!--script-->
+<script>
+"use strict";
+/* 絵の置き場所。ゲームの絵（remake/img）をその場で読む。店ロゴだけは採用済みの原画（1枚）を直接指す */
+const IMG = "../../img/";
+const TONARI_LOGO = "../../../assets/ui/store_logos/tonari.webp";
+const url = (ref) => (ref === "logo:tonari" ? TONARI_LOGO : IMG + ref.replace(/^img:/, ""));
+const $ = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+const EASE = { out: "cubic-bezier(.16,1,.3,1)", inOut: "cubic-bezier(.65,0,.35,1)", in: "cubic-bezier(.5,0,.9,.4)", back: "cubic-bezier(.34,1.4,.64,1)", soft: "cubic-bezier(.4,0,.2,1)" };
+const anim = (node, frames, opts = {}) => node.animate(frames, { fill: "both", easing: EASE.out, ...opts });
+const fin = (a) => a.finished.catch(() => {});
+
+// 絵は先に展開しておく（押した瞬間に遅れて出ないように）
+$$("[data-img]").forEach((n) => { n.src = url(n.dataset.img); n.draggable = false; n.decode?.().catch(() => {}); });
+$$("[data-bg]").forEach((n) => { n.style.backgroundImage = `url("${url(n.dataset.bg)}")`; });
+$$("[data-mask]").forEach((n) => { const u = `url("${url(n.dataset.mask)}")`; n.style.maskImage = u; n.style.webkitMaskImage = u; });
+$$(".card .back").forEach((n) => { n.style.backgroundImage = 'url("cards/back.webp")'; });
+$$(".card .front").forEach((n) => { n.style.backgroundImage = 'url("cards/front-frame.webp")'; });
+
+const loadImage = (src) => new Promise((resolve, reject) => { const im = new Image(); im.onload = () => resolve(im); im.onerror = reject; im.src = src; });
+const imageCache = new Map();
+const image = (ref) => { if (!imageCache.has(ref)) imageCache.set(ref, loadImage(url(ref))); return imageCache.get(ref); };
+
+/* ---------------------------------------------------------------- 前の絵がほどける（WebGL）
+   前の背景を1枚の絵として持ち、進み t（0→1）に合わせて煙のにじみ／網点で消していく。下にある次の場面がそのまま見える */
+const VERT = "attribute vec2 p; varying vec2 v; void main(){ v = p * 0.5 + 0.5; v.y = 1.0 - v.y; gl_Position = vec4(p, 0.0, 1.0); }";
+const FRAG = `
+precision highp float;
+varying vec2 v;
+uniform sampler2D tex;
+uniform float t, mode, aspect, seed, tint;
+uniform vec2 dir;
+uniform vec3 ink, haze;
+float hash(vec2 p){ p = fract(p * vec2(123.34, 456.21)); p += dot(p, p + 45.32); return fract(p.x * p.y); }
+float noise(vec2 p){ vec2 i = floor(p), f = fract(p); f = f * f * (3.0 - 2.0 * f);
+  return mix(mix(hash(i), hash(i + vec2(1.0, 0.0)), f.x), mix(hash(i + vec2(0.0, 1.0)), hash(i + vec2(1.0, 1.0)), f.x), f.y); }
+float fbm(vec2 p){ float s = 0.0, a = 0.5; for (int i = 0; i < 5; i++) { s += a * noise(p); p = p * 2.03 + vec2(11.7, 5.3); a *= 0.5; } return s; }
+float sweep(vec2 uv){ vec2 d = normalize(dir); vec2 c = uv - 0.5; c.x *= aspect;
+  float span = 0.5 * (abs(d.x) * aspect + abs(d.y)); return clamp(dot(c, d) / (2.0 * span) + 0.5, 0.0, 1.0); }
+void main(){
+  vec2 uv = v;
+  if (mode < 0.5) {
+    vec2 p = vec2(uv.x * aspect, uv.y);
+    float n1 = fbm(p * 2.3 + vec2(seed, seed * 1.7) + vec2(0.0, t * 0.9));
+    float n2 = fbm(p * 6.5 - vec2(seed * 2.1, -t * 1.6));
+    float rule = sweep(uv) * 0.56 + n1 * 0.36 + n2 * 0.08;
+    float e = mix(-0.2, 1.14, t);
+    float keep = smoothstep(e - 0.085, e + 0.085, rule);
+    float front = exp(-pow((rule - e) / 0.14, 2.0));
+    vec2 warp = vec2(n2 - 0.5, n1 - 0.62) * 0.03 * front;
+    vec3 a = texture2D(tex, uv + warp).rgb;
+    a = mix(a, haze, front * 0.34);
+    float hz = front * (0.34 + 0.34 * n2) * (1.0 - keep);
+    gl_FragColor = vec4(a * keep + haze * hz, keep + hz);
+  } else {
+    float N = 24.0;
+    vec2 g = vec2(uv.x * aspect, uv.y) * N;
+    vec2 r = vec2(0.866 * g.x - 0.5 * g.y, 0.5 * g.x + 0.866 * g.y);
+    vec2 id = floor(r), f = fract(r) - 0.5;
+    vec2 cr = id + 0.5;
+    vec2 cg = vec2(0.866 * cr.x + 0.5 * cr.y, -0.5 * cr.x + 0.866 * cr.y) / N;
+    float rule = sweep(vec2(cg.x / aspect, cg.y)) + (hash(id) - 0.5) * 0.05;
+    float band = 0.36;
+    float e = mix(-band - 0.03, 1.03, t);
+    float k = clamp((rule - e) / band, 0.0, 1.0);
+    float rad = k * 0.76;
+    float m = k > 0.985 ? 1.0 : 1.0 - smoothstep(rad - 0.05, rad + 0.05, length(f));
+    vec3 a = texture2D(tex, uv).rgb;
+    float inky = (1.0 - smoothstep(0.25, 0.8, k)) * tint;
+    gl_FragColor = vec4(mix(a, ink, inky) * m, m);
+  }
+}`;
+function dissolver(canvas) {
+  const gl = canvas.getContext("webgl", { premultipliedAlpha: true, alpha: true, antialias: false });
+  if (!gl) return null;
+  const sh = (type, src) => { const s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); return s; };
+  const prog = gl.createProgram();
+  gl.attachShader(prog, sh(gl.VERTEX_SHADER, VERT)); gl.attachShader(prog, sh(gl.FRAGMENT_SHADER, FRAG)); gl.linkProgram(prog);
+  if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) return null;
+  gl.useProgram(prog);
+  const buf = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
+  const loc = gl.getAttribLocation(prog, "p"); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+  const U = Object.fromEntries(["tex", "t", "mode", "aspect", "seed", "tint", "dir", "ink", "haze"].map((n) => [n, gl.getUniformLocation(prog, n)]));
+  const tex = gl.createTexture();
+  gl.bindTexture(gl.TEXTURE_2D, tex);
+  for (const [k, val] of [[gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE], [gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE], [gl.TEXTURE_MIN_FILTER, gl.LINEAR], [gl.TEXTURE_MAG_FILTER, gl.LINEAR]]) gl.texParameteri(gl.TEXTURE_2D, k, val);
+  let raf = 0;
+  const fit = () => {
+    const w = Math.min(1280, Math.round(canvas.clientWidth * Math.min(2, window.devicePixelRatio || 1))) || 640;
+    const h = Math.round(w * 9 / 16);
+    if (canvas.width !== w || canvas.height !== h) { canvas.width = w; canvas.height = h; }
+    gl.viewport(0, 0, w, h);
+  };
+  const draw = (t, o) => {
+    fit();
+    gl.uniform1i(U.tex, 0); gl.uniform1f(U.t, t); gl.uniform1f(U.mode, o.mode === "dots" ? 1 : 0); gl.uniform1f(U.aspect, 16 / 9);
+    gl.uniform1f(U.seed, o.seed ?? 3.7); gl.uniform1f(U.tint, o.tint ?? 1); gl.uniform2fv(U.dir, o.dir ?? [0.22, -1]);
+    gl.uniform3fv(U.ink, o.ink ?? [0.07, 0.04, 0.11]); gl.uniform3fv(U.haze, o.haze ?? [0.95, 0.92, 0.97]);
+    gl.clearColor(0, 0, 0, 0); gl.clear(gl.COLOR_BUFFER_BIT); gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+  };
+  return {
+    load(img) { gl.bindTexture(gl.TEXTURE_2D, tex); gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, false); gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, img); },
+    still(t, o = {}) { cancelAnimationFrame(raf); canvas.style.visibility = "visible"; draw(t, o); },
+    clear() { cancelAnimationFrame(raf); canvas.style.visibility = "hidden"; },
+    play(ms, o = {}) {
+      cancelAnimationFrame(raf); canvas.style.visibility = "visible";
+      const ease = o.ease ?? ((x) => x < 0.5 ? 2 * x * x : 1 - Math.pow(-2 * x + 2, 2) / 2);
+      return new Promise((resolve) => {
+        const t0 = performance.now();
+        const tick = (now) => {
+          const k = Math.min(1, (now - t0) / ms);
+          draw(ease(k), o);
+          if (k < 1) raf = requestAnimationFrame(tick); else { canvas.style.visibility = "hidden"; resolve(); }
+        };
+        draw(0, o); raf = requestAnimationFrame(tick);
+      });
+    },
+  };
+}
+
+/* ---------------------------------------------------------------- 見本ごとの動き
+   それぞれ rest()＝押す前の決めの1枚、run()＝通しの再生。run の途中で押し直されたら古い方は降りる */
+const DEMOS = {};
+const state = new WeakMap();
+const st = (stage) => { if (!state.has(stage)) state.set(stage, { run: 0, opt: {} }); return state.get(stage); };
+const stop = (stage) => { stage.getAnimations({ subtree: true }).forEach((a) => a.cancel()); };
+
+// 見本1
+DEMOS.cut = {
+  A: "backgrounds/bg_tonari_inside_night.webp", B: "backgrounds/bg_street_night.webp",
+  opts(s) { return s.opt.mode === "dots" ? { mode: "dots", dir: [1, -0.42], ms: 560 } : { mode: "smoke", dir: [0.22, -1], ms: 700 }; },
+  async rest(stage) {
+    const s = st(stage); s.gl ??= dissolver($(".fx", stage)); s.at = "A";
+    const to = $(".to", stage); to.src = url(this.B);
+    if (!s.gl) return;
+    s.gl.load(await image(this.A)); s.gl.still(s.opt.mode === "dots" ? 0.5 : 0.46, this.opts(s));
+  },
+  async run(stage, live) {
+    const s = st(stage); const o = this.opts(s);
+    const from = s.at === "B" ? this.B : this.A, next = s.at === "B" ? this.A : this.B;
+    const to = $(".to", stage);
+    const [imgFrom] = await Promise.all([image(from), image(next)]);
+    if (!live()) return;
+    to.src = url(from);
+    if (s.gl) { s.gl.load(imgFrom); s.gl.still(0, o); }
+    await sleep(420); if (!live()) return;
+    to.src = url(next); s.at = s.at === "B" ? "A" : "B";
+    anim(to, [{ transform: "scale(1.045)" }, { transform: "scale(1)" }], { duration: 950 });
+    if (s.gl) await s.gl.play(o.ms, o); else await fin(anim(to, [{ opacity: 0 }, { opacity: 1 }], { duration: 400 }));
+  },
+};
+
+// 見本2
+DEMOS.map = {
+  async rest(stage) {
+    const s = st(stage); const home = s.opt.dest === "home";
+    stop(stage);
+    $(".map", stage).src = url(home ? "backgrounds/bg_osu_map_night.webp" : "backgrounds/bg_osu_map_day.webp");
+    $(".room", stage).src = url(home ? "backgrounds/bg_home_night.webp" : "backgrounds/bg_tonari_inside_day.webp");
+    const map = $(".map", stage); map.style.transformOrigin = home ? "89% 44%" : "86% 36%";
+    // 決めの1枚: 店は、地図へ寄ってロゴが出たところ。帰宅は、灯りが点いた直後
+    if (!home) {
+      anim(map, [{ transform: "scale(2.6)", filter: "blur(0.25cqw) brightness(1.2)" }], { duration: 0 });
+      anim($(".glow", stage), [{ opacity: 1 }], { duration: 0 }); anim($(".logo", stage), [{ opacity: 1 }], { duration: 0 });
+    } else {
+      anim($(".room", stage), [{ opacity: 1, filter: "brightness(.62)" }], { duration: 0 });
+      anim($(".lamp", stage), [{ opacity: 0.9 }], { duration: 0 });
+    }
+  },
+  async run(stage, live) {
+    const s = st(stage); const home = s.opt.dest === "home";
+    stop(stage);
+    const map = $(".map", stage), room = $(".room", stage), glow = $(".glow", stage), logo = $(".logo", stage), lamp = $(".lamp", stage);
+    map.style.transformOrigin = home ? "89% 44%" : "86% 36%";
+    await sleep(450); if (!live()) return;
+    if (!home) {
+      // 1. 押した場所へ寄る → 2. 光がふくらんで店のロゴ → 3. 光が引いて店内
+      anim(map, [{ transform: "scale(1)", filter: "blur(0) brightness(1)" }, { transform: "scale(2.7)", filter: "blur(0.25cqw) brightness(1.22)" }], { duration: 600, easing: EASE.in });
+      anim(glow, [{ opacity: 0 }, { opacity: 1 }], { duration: 300, delay: 300, easing: "ease-out" });
+      anim(logo, [{ opacity: 0, scale: 0.92 }, { opacity: 1, scale: 1 }], { duration: 320, delay: 380 });
+      await sleep(1060); if (!live()) return;
+      anim(logo, [{ opacity: 1, scale: 1 }, { opacity: 0, scale: 1.18 }], { duration: 300, easing: EASE.in });
+      anim(room, [{ opacity: 0 }, { opacity: 1 }], { duration: 200 });
+      anim(glow, [{ opacity: 1 }, { opacity: 0 }], { duration: 560, delay: 80, easing: "ease-out" });
+      await fin(anim(room, [{ transform: "scale(1.12)", filter: "brightness(1.28)" }, { transform: "scale(1)", filter: "brightness(1)" }], { duration: 820 }));
+    } else {
+      // 1. 押した場所へ寄りながら暗くなる → 2. 暗い部屋に灯りが点く（一度ついて、わずかに沈んでから落ち着く）
+      anim(map, [{ transform: "scale(1)", filter: "blur(0) brightness(1)" }, { transform: "scale(2.7)", filter: "blur(0.25cqw) brightness(0.1)" }], { duration: 600, easing: EASE.in });
+      await sleep(560); if (!live()) return;
+      anim(room, [{ opacity: 0 }, { opacity: 1 }], { duration: 160 });
+      anim(room, [{ transform: "scale(1.07)" }, { transform: "scale(1)" }], { duration: 900 });
+      anim(lamp, [{ opacity: 0 }, { opacity: 0, offset: 0.3 }, { opacity: 1, offset: 0.42 }, { opacity: 0.45, offset: 0.56 }, { opacity: 0.9, offset: 0.7 }, { opacity: 0 }], { duration: 1100, easing: "linear" });
+      await fin(anim(room, [{ filter: "brightness(.14)" }, { filter: "brightness(.14)", offset: 0.3 }, { filter: "brightness(.95)", offset: 0.42 }, { filter: "brightness(.6)", offset: 0.56 }, { filter: "brightness(1.08)", offset: 0.72 }, { filter: "brightness(1)" }], { duration: 800, easing: "linear" }));
+    }
+  },
+};
+
+// 見本3
+const WX = { sun: { art: "backgrounds/bg_home_day.webp", label: "晴れ" }, cloud: { art: "backgrounds/bg_home_overcast_day.webp", label: "くもり" }, rain: { art: "backgrounds/bg_home_overcast_day.webp", label: "雨" } };
+const CAN_MASK = !!(window.CSS && CSS.registerProperty && CSS.supports && (CSS.supports("mask-image", "radial-gradient(#000, transparent)") || CSS.supports("-webkit-mask-image", "radial-gradient(#000, transparent)")));
+DEMOS.dawn = {
+  setup(stage) {
+    const s = st(stage); const wx = WX[s.opt.wx] || WX.sun;
+    stage.classList.toggle("plain", !CAN_MASK);
+    $(".day", stage).src = url(wx.art); $(".wx", stage).textContent = wx.label;
+    return s.opt.wx || "sun";
+  },
+  /** 朝の絵を、窓を中心に p（0〜1）まで広げた状態にする。from を渡すとそこから動かす */
+  reveal(stage, p, from = null, opts = {}) {
+    const day = $(".day", stage);
+    const frame = (k) => (CAN_MASK ? { "--r": `${-30 + 160 * k}%` } : { opacity: k });
+    return anim(day, from === null ? [frame(p)] : [frame(from), frame(p)], from === null ? { duration: 0 } : opts);
+  },
+  async rest(stage) {
+    stop(stage); const kind = this.setup(stage);
+    // 決めの1枚: 窓から朝が入りはじめ、日付が出ているところ
+    this.reveal(stage, 0.4);
+    anim($(".night-grade", stage), [{ opacity: 0.6 }], { duration: 0 });
+    if (kind === "sun") { anim($(".sun", stage), [{ opacity: 0.9 }], { duration: 0 }); $$(".beam", stage).forEach((b) => anim(b, [{ opacity: 0.6 }], { duration: 0 })); }
+    if (kind === "rain") anim($(".rain", stage), [{ opacity: 0.8 }], { duration: 0 });
+    if (kind !== "sun") anim($(".cool", stage), [{ opacity: 0.35 }], { duration: 0 });
+    anim($(".lockup", stage), [{ opacity: 1 }], { duration: 0 });
+    $$(".roll i", stage).forEach((n) => anim(n, [{ transform: "translateY(-100%)" }], { duration: 0 }));
+  },
+  async run(stage, live) {
+    stop(stage); const kind = this.setup(stage);
+    const night = $(".night", stage), day = $(".day", stage), grade = $(".night-grade", stage), lock = $(".lockup", stage);
+    this.reveal(stage, 0);
+    anim(night, [{ transform: "scale(1)" }, { transform: "scale(1.035)" }], { duration: 3400, easing: "linear" });
+    anim(day, [{ transform: "scale(1)" }, { transform: "scale(1.035)" }], { duration: 3400, easing: "linear" });
+    await sleep(350); if (!live()) return;
+    // 1. 灯りが落ちて夜が深くなる
+    anim(grade, [{ opacity: 0 }, { opacity: 0.9 }], { duration: 520, easing: EASE.soft });
+    await sleep(380); if (!live()) return;
+    // 2. 日付: 前の日の数字が上へ抜け、今日の数字が下から入る
+    anim(lock, [{ opacity: 0, transform: "translateY(1.2cqw)" }, { opacity: 1, transform: "none" }], { duration: 420 });
+    anim($(".lockup .rule", stage), [{ transform: "scaleX(0)" }, { transform: "scaleX(1)" }], { duration: 700, delay: 120 });
+    await sleep(520); if (!live()) return;
+    $$(".roll i", stage).forEach((n) => anim(n, [{ transform: "translateY(0)" }, { transform: "translateY(-100%)" }], { duration: 520, easing: EASE.inOut }));
+    await sleep(640); if (!live()) return;
+    // 3. 窓から朝が広がる
+    const slow = kind === "sun" ? 1 : 1.25;
+    this.reveal(stage, 1, 0, { duration: 1150 * slow, easing: EASE.inOut });
+    anim(grade, [{ opacity: 0.9 }, { opacity: 0 }], { duration: 900 * slow, easing: EASE.soft });
+    if (kind === "sun") {
+      anim($(".sun", stage), [{ opacity: 0 }, { opacity: 1, offset: 0.35 }, { opacity: 0 }], { duration: 1700, easing: "ease-out" });
+      $$(".beam", stage).forEach((b, i) => anim(b, [{ opacity: 0 }, { opacity: 0.8, offset: 0.4 }, { opacity: 0 }], { duration: 1700, delay: 120 + i * 140, easing: "ease-out" }));
+    } else {
+      anim($(".cool", stage), [{ opacity: 0 }, { opacity: 0.4, offset: 0.4 }, { opacity: 0.12 }], { duration: 1900, easing: "ease-out" });
+    }
+    if (kind === "rain") {
+      const rain = $(".rain", stage);
+      anim(rain, [{ opacity: 0 }, { opacity: 0.85, offset: 0.25 }, { opacity: 0.85, offset: 0.8 }, { opacity: 0.5 }], { duration: 2400, easing: "linear" });
+      anim(rain, [{ backgroundPosition: "0 0" }, { backgroundPosition: "-6cqw 27cqw" }], { duration: 2400, easing: "linear" });
+    }
+    await sleep(1150 * slow); if (!live()) return;
+    // 4. 日付が抜けて朝の場面へ
+    await fin(anim(lock, [{ opacity: 1, transform: "none" }, { opacity: 0, transform: "translateY(-1cqw)" }], { duration: 420, easing: EASE.in }));
+  },
+};
+
+// 見本4・5で共通: 絵柄の舞台の出入り（斜めの縁で切り替わる）
+const SET_IN = [{ clipPath: "polygon(0 0, 0 0, -30% 100%, -30% 100%)" }, { clipPath: "polygon(0 0, 130% 0, 100% 100%, -30% 100%)" }];
+const SET_OUT = [{ clipPath: "polygon(0 0, 130% 0, 100% 100%, -30% 100%)" }, { clipPath: "polygon(130% 0, 130% 0, 100% 100%, 100% 100%)" }];
+const SET_ON = [{ clipPath: "polygon(0 0, 130% 0, 100% 100%, -30% 100%)" }];
+
+// 見本4
+const DEAL = [{ x: 12, y: 18.5, r: -8 }, { x: 27.2, y: 17, r: 2 }, { x: 42.4, y: 19, r: 9 }];   // 配った位置（左・中・右）
+const ASIDE = [{ x: 7.5, y: 20, r: -11 }, null, { x: 46, y: 20.5, r: 12 }];                     // 選ばれなかった2枚が退く位置
+const PICK = "translate(25.2cqw, 14.6cqw) rotate(-2deg) scale(1.5)";                             // めくった1枚の決めの位置
+const place = (p, extra = "") => `translate(${p.x}cqw, ${p.y}cqw) rotate(${p.r}deg) ${extra}`.trim();
+const under = (p) => place({ ...p, x: p.x + 0.5, y: p.y + 0.9 });
+const FACE = { back: (deg) => `perspective(90cqw) rotateY(${deg}deg)`, front: (deg) => `perspective(90cqw) rotateY(${deg - 180}deg)` };
+DEMOS.tarot = {
+  async rest(stage) {
+    stop(stage);
+    anim($(".set", stage), SET_ON, { duration: 0 });
+    anim($(".table", stage), [{ transform: "scale(1.06)" }], { duration: 0 });
+    anim($(".lantern", stage), [{ opacity: 0.8 }], { duration: 0 });
+    [0, 2].forEach((i) => {
+      anim($(`.c${i}`, stage), [{ opacity: 1, filter: "brightness(.5)", transform: place(ASIDE[i]) }], { duration: 0 });
+      anim($(`.s${i}`, stage), [{ opacity: 0.5, transform: under(ASIDE[i]) }], { duration: 0 });
+    });
+    anim($(".c1", stage), [{ opacity: 1, transform: PICK }], { duration: 0 });
+    anim($(".c1 .back", stage), [{ transform: FACE.back(180) }], { duration: 0 });
+    anim($(".c1 .front", stage), [{ transform: FACE.front(180) }], { duration: 0 });
+    anim($(".s1", stage), [{ opacity: 0.6, transform: "translate(27cqw, 17.6cqw) rotate(-2deg) scale(1.52)" }], { duration: 0 });
+    anim($(".band", stage), [{ translate: "0 0" }], { duration: 0 });
+  },
+  async run(stage, live) {
+    stop(stage);
+    const set = $(".set", stage), scene = $(".scene", stage), band = $(".band", stage);
+    await sleep(450); if (!live()) return;
+    // 1. 占い師の卓へ（斜めに切り替わる）
+    anim(scene, [{ filter: "brightness(1)" }, { filter: "brightness(.6)" }], { duration: 400 });
+    anim(set, SET_IN, { duration: 520, easing: EASE.inOut });
+    anim($(".table", stage), [{ transform: "scale(1.12)" }, { transform: "scale(1.06)" }], { duration: 4400, easing: "linear" });
+    anim($(".lantern", stage), [{ opacity: 0 }, { opacity: 0.85 }, { opacity: 0.6 }, { opacity: 0.9 }, { opacity: 0.7 }], { duration: 3800, delay: 300, easing: "ease-in-out" });
+    await sleep(430); if (!live()) return;
+    // 2. 札が3枚、卓の奥から配られる
+    DEAL.forEach((p, i) => {
+      const from = `translate(74cqw, 6cqw) rotate(${38 + i * 9}deg) scale(.82)`;
+      anim($(`.c${i}`, stage), [{ opacity: 0, transform: from }, { opacity: 1, offset: 0.2 }, { opacity: 1, transform: place(p) }], { duration: 520, delay: i * 120 });
+      anim($(`.s${i}`, stage), [{ opacity: 0, transform: `translate(76cqw, 9cqw) rotate(${38 + i * 9}deg)` }, { opacity: 0.5, transform: under(p) }], { duration: 520, delay: i * 120 });
+    });
+    await sleep(1020); if (!live()) return;
+    // 3. 両脇が退いて暗くなり、真ん中の1枚が持ち上がってめくられる
+    [0, 2].forEach((i) => {
+      anim($(`.c${i}`, stage), [{ opacity: 1, filter: "brightness(1)", transform: place(DEAL[i]) }, { opacity: 1, filter: "brightness(.5)", transform: place(ASIDE[i]) }], { duration: 520 });
+      anim($(`.s${i}`, stage), [{ opacity: 0.5, transform: under(DEAL[i]) }, { opacity: 0.5, transform: under(ASIDE[i]) }], { duration: 520 });
+    });
+    const c1 = $(".c1", stage);
+    anim($(".s1", stage), [
+      { opacity: 0.5, transform: under(DEAL[1]) },
+      { opacity: 0.3, transform: "translate(28cqw, 19.5cqw) rotate(-2deg) scale(1.66)", offset: 0.6 },
+      { opacity: 0.6, transform: "translate(27cqw, 17.6cqw) rotate(-2deg) scale(1.52)" },
+    ], { duration: 1080, easing: EASE.inOut });
+    anim($(".c1 .back", stage), [{ transform: FACE.back(0) }, { transform: FACE.back(180) }], { duration: 560, delay: 300, easing: EASE.inOut });
+    anim($(".c1 .front", stage), [{ transform: FACE.front(0) }, { transform: FACE.front(180) }], { duration: 560, delay: 300, easing: EASE.inOut });
+    await fin(anim(c1, [
+      { opacity: 1, transform: place(DEAL[1], "scale(1)"), easing: EASE.inOut },
+      { opacity: 1, transform: "translate(25.2cqw, 12.4cqw) rotate(0deg) scale(1.32)", offset: 0.32, easing: EASE.inOut },
+      { opacity: 1, transform: "translate(25.2cqw, 12.8cqw) rotate(-3deg) scale(1.6)", offset: 0.78, easing: EASE.out },
+      { opacity: 1, transform: PICK },
+    ], { duration: 1080, easing: "linear" }));
+    if (!live()) return;
+    // 4. 金の光が表を走り、誰の札かを帯で
+    $(".c1 .front", stage).animate([{ translate: "-70% 0" }, { translate: "70% 0" }], { duration: 750, easing: EASE.inOut, pseudoElement: "::after" });
+    anim(band, [{ translate: "110% 0" }, { translate: "0 0" }], { duration: 520, delay: 140 });
+    await sleep(1800); if (!live()) return;
+    // 5. 帯と札が退いて、元の場面へ戻る
+    anim(band, [{ translate: "0 0" }, { translate: "110% 0" }], { duration: 360, easing: EASE.in });
+    $$(".card, .card-shadow", stage).forEach((n) => anim(n, [{ opacity: getComputedStyle(n).opacity }, { opacity: 0 }], { duration: 300, delay: 80 }));
+    anim(scene, [{ filter: "brightness(.6)" }, { filter: "brightness(1)" }], { duration: 520, delay: 200 });
+    await fin(anim(set, SET_OUT, { duration: 520, delay: 200, easing: EASE.inOut }));
+  },
+};
+
+// 見本5
+DEMOS.gift = {
+  async rest(stage) {
+    stop(stage);
+    anim($(".set", stage), SET_ON, { duration: 0 });
+    anim($(".art", stage), [{ transform: "scale(1.05)" }], { duration: 0 });
+    anim($(".item", stage), [{ opacity: 1 }], { duration: 0 });
+    anim($(".band", stage), [{ translate: "0 0" }], { duration: 0 });
+  },
+  async run(stage, live) {
+    stop(stage);
+    const scene = $(".scene", stage), set = $(".set", stage), item = $(".item", stage), band = $(".band", stage);
+    await sleep(450); if (!live()) return;
+    // 1. 贈り主の絵柄へ（斜めに切り替わる）
+    anim(scene, [{ filter: "brightness(1)" }, { filter: "brightness(.55)" }], { duration: 380 });
+    anim(set, SET_IN, { duration: 500, easing: EASE.inOut });
+    anim($(".art", stage), [{ transform: "scale(1.1) translateX(1.5%)" }, { transform: "scale(1.05)" }], { duration: 4000, easing: "linear" });
+    await sleep(360); if (!live()) return;
+    // 2. 品が下から上がり、少し行きすぎて落ち着く
+    anim(item, [
+      { opacity: 0, transform: "translateY(14cqw) rotate(-9deg) scale(.82)", easing: EASE.out },
+      { opacity: 1, transform: "translateY(-1.2cqw) rotate(1.5deg) scale(1.03)", offset: 0.6, easing: EASE.inOut },
+      { opacity: 1, transform: "none" },
+    ], { duration: 820, easing: "linear" });
+    await sleep(520); if (!live()) return;
+    // 3. 名前の帯が右から入り、光が品をなでる
+    anim(band, [{ translate: "110% 0" }, { translate: "0 0" }], { duration: 520 });
+    $(".item .sheen", stage).animate([{ translate: "-75% 0" }, { translate: "75% 0" }], { duration: 900, delay: 420, easing: EASE.inOut, pseudoElement: "::after" });
+    await sleep(820); if (!live()) return;
+    anim(item, [{ opacity: 1, transform: "none" }, { opacity: 1, transform: "translateY(-0.7cqw)" }, { opacity: 1, transform: "none" }], { duration: 2000, easing: "ease-in-out" });
+    await sleep(1750); if (!live()) return;
+    // 4. 帯と品が退いて、元の場面へ戻る
+    anim(band, [{ translate: "0 0" }, { translate: "110% 0" }], { duration: 360, easing: EASE.in });
+    anim(item, [{ opacity: 1, transform: "none" }, { opacity: 0, transform: "translateY(3cqw) scale(.94)" }], { duration: 320, easing: EASE.in });
+    anim(scene, [{ filter: "brightness(.55)" }, { filter: "brightness(1)" }], { duration: 520, delay: 200 });
+    await fin(anim(set, SET_OUT, { duration: 500, delay: 200, easing: EASE.inOut }));
+  },
+};
+
+// 見本6
+DEMOS.train = {
+  async rest(stage) {
+    const s = st(stage); stop(stage); s.gl ??= dissolver($(".fx", stage)); s.gl?.clear();
+    // 決めの1枚: 走っている車窓と行き先
+    anim($(".far", stage), [{ opacity: 0.75 }], { duration: 0 }); anim($(".near", stage), [{ opacity: 1 }], { duration: 0 });
+    anim($(".dest", stage), [{ opacity: 1 }], { duration: 0 });
+  },
+  async run(stage, live) {
+    const s = st(stage); stop(stage); s.gl ??= dissolver($(".fx", stage));
+    const from = $(".from", stage), dest = $(".dest", stage);
+    const imgFrom = await image("backgrounds/bg_tonari_inside_day.webp"); if (!live()) return;
+    if (s.gl) { s.gl.load(imgFrom); s.gl.still(0, {}); } else anim(from, [{ opacity: 1 }], { duration: 0 });
+    await sleep(450); if (!live()) return;
+    // 走っている車内へ切り替わる。景色は左（進む先）から右へ流れ続け、減速して止まると、止まった景色がそのまま見える
+    const RUN = 3400, slowing = "cubic-bezier(.2,.55,.3,1)";
+    anim($(".near .run", stage), [{ transform: "translateX(0)" }, { transform: "translateX(72%)" }], { duration: RUN, easing: slowing });
+    anim($(".far .run", stage), [{ transform: "translateX(0)" }, { transform: "translateX(26%)" }], { duration: RUN, easing: slowing });
+    anim($(".near", stage), [{ opacity: 1 }, { opacity: 1, offset: 0.66 }, { opacity: 0 }], { duration: RUN, easing: "linear" });
+    anim($(".far", stage), [{ opacity: 0.75 }, { opacity: 0.75, offset: 0.6 }, { opacity: 0 }], { duration: RUN, easing: "linear" });
+    // 架線の柱が窓を横切る影（だんだん間が空いて、遅くなる）
+    const pole = $(".pole", stage);
+    [[150, 150], [640, 170], [1220, 210], [1940, 300]].forEach(([at, ms]) => anim(pole, [{ opacity: 0.34, translate: "28cqw 0" }, { opacity: 0.34, translate: "104cqw 0" }], { duration: ms, delay: at, easing: "linear", fill: "none" }));
+    anim($(".flick", stage), [{ opacity: 0, translate: "-70% 0" }, { opacity: 1, offset: 0.5 }, { opacity: 0, translate: "60% 0" }], { duration: 560, iterations: 4, easing: "linear" });
+    anim($(".car", stage), [{ transform: "translateY(0)" }, { transform: "translateY(-0.12cqw)" }, { transform: "translateY(0.1cqw)" }, { transform: "translateY(0)" }], { duration: 260, iterations: 9, easing: "linear" });
+    if (s.gl) s.gl.play(700, {}); else anim(from, [{ opacity: 1 }, { opacity: 0 }], { duration: 400 });
+    await sleep(380); if (!live()) return;
+    anim(dest, [{ opacity: 0, transform: "translateX(-1.6cqw)" }, { opacity: 1, transform: "none" }], { duration: 520 });
+    anim($(".dest .rule", stage), [{ transform: "scaleX(0)" }, { transform: "scaleX(1)" }], { duration: 700, delay: 140 });
+    await sleep(2400); if (!live()) return;
+    await fin(anim(dest, [{ opacity: 1 }, { opacity: 0 }], { duration: 420 }));
+  },
+};
+
+/* ---------------------------------------------------------------- 再生の操作 */
+async function playDemo(stage) {
+  const demo = DEMOS[stage.dataset.demo]; if (!demo) return;
+  const s = st(stage); const id = ++s.run; const live = () => s.run === id;
+  try { await demo.run(stage, live); } catch (e) { console.error(e); }
+  if (!live()) return;
+  // 見終えたら、少し置いて決めの1枚へ戻す（切り替えの見本は行き先の場面のまま）
+  if (stage.dataset.demo === "cut") return;
+  await sleep(1300); if (!live()) return;
+  demo.rest(stage);
+}
+function playVideo(stage) { const v = $("video", stage); if (!v) return; try { v.currentTime = 0; } catch { /* まだ読めていない */ } v.play().catch(() => {}); }
+const play = (stage) => (stage.dataset.demo ? playDemo(stage) : playVideo(stage));
+
+$$(".sample").forEach((sample) => {
+  const stages = $$(".stage", sample);
+  const [now, next] = stages;
+  stages.forEach((stage) => {
+    stage.addEventListener("click", () => play(stage));
+    stage.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); play(stage); } });
+  });
+  $$("[data-play]", sample).forEach((b) => b.addEventListener("click", () => {
+    if (b.dataset.play !== "new") play(now);
+    if (b.dataset.play !== "now") play(next);
+  }));
+  $$("[data-opt]", sample).forEach((b) => b.addEventListener("click", () => {
+    $$(`[data-opt="${b.dataset.opt}"]`, sample).forEach((o) => o.setAttribute("aria-pressed", String(o === b)));
+    const s = st(next); s.opt[b.dataset.opt] = b.dataset.val; s.run++;
+    // 行き先を替えたら「いま」の録画も同じ行き先へ
+    const v = $("video", now);
+    if (b.dataset.opt === "dest" && v?.dataset.altSrc) {
+      const home = b.dataset.val === "home";
+      v.dataset.main ??= v.getAttribute("src"); v.dataset.mainPoster ??= v.getAttribute("poster");
+      v.poster = home ? v.dataset.altPoster : v.dataset.mainPoster; v.src = home ? v.dataset.altSrc : v.dataset.main;
+    }
+    Promise.resolve(DEMOS[next.dataset.demo].rest(next)).then(() => playDemo(next));
+  }));
+});
+$$(".stage[data-demo]").forEach((stage) => { st(stage); DEMOS[stage.dataset.demo].rest(stage); });
+</script>
+<!--/script-->
+</body>
+</html>

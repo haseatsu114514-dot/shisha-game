@@ -13,8 +13,8 @@ import { clearLog } from "../vn/engine.js";
 import { openGallery } from "./gallery.js";
 import { loadWithRecovery } from "./saves.js";
 import { pickTitleArt, prepareTitleArt } from "./title-art.js";
-import { mountTitleLayout, createTitleLayoutSettings } from "./title-layout.js";
 import { createUiThemeSelect } from "../core/ui-theme.js";
+import { LOOKS, normalizeLook, setLook } from "../core/look.js";
 import { fullscreenButton, saveTransferRow } from "./save-transfer.js";
 
 let titleRevision = 0;
@@ -259,7 +259,6 @@ export function showTitle(preparedArt = null) {
   const fallbackLogo = () => { logo.hidden = true; fallback.hidden = false; };
   logo.addEventListener("error", fallbackLogo);
   if (logo.complete && !logo.naturalWidth) fallbackLogo();
-  mountTitleLayout(root, { art: artNode, brand, menu, left: root.querySelector(".title-left"), background: bgUrl("bg_title") });
   const requested = performance.now();
   const place = (loaded) => {
     // 幕の終了待ちでrootが未接続のときも、そのrootへ絵を準備する。
@@ -316,6 +315,9 @@ export async function openConfig(opts = {}) {
     String(config.autoSpeed), (v) => setConfig("autoSpeed", Number(v)));
   const skipMode = segRow("SKIPの範囲", "cfg-skip-mode", [["seen", "既読"], ["all", "全部"]],
     config.skipSeenOnly ? "seen" : "all", (v) => setConfig("skipSeenOnly", v === "seen"));
+  // 見た目の様式（LK01）。既定は新版（LK09）。新版とDS風は第1章にいる間だけ効く。旧版へはいつでも戻せる。
+  const look = segRow("見た目（新版・DS風は第1章のみ）", "cfg-look", LOOKS.map(({ id, label }) => [id, label]),
+    normalizeLook(config.look), (v) => { setConfig("look", v); setLook(v); });
   const portraits = segRow("会話の立ち絵", "cfg-portrait-style", [["classic", "旧"], ["new", "新"]],
     config.portraitStyle === "classic" ? "classic" : "new", (v) => setConfig("portraitStyle", v));
   const introArt = segRow("登場カットインの絵柄", "cfg-intro-art", [["classic", "旧"], ["graphic", "新"]],
@@ -356,14 +358,12 @@ export async function openConfig(opts = {}) {
       opts.onChange?.("mute", config.mute);
     },
   });
-  // タイトルの見た目（通常版／DS風）。タイトル画面から開いたときだけ出す（#2863: 右上の「表示設定」から移した）。
-  const titleLayout = createTitleLayoutSettings();
   const fullscreen = fullscreenButton();
   return modal({
     title: "設定",
     body: el("div.cfg", [
-      ...(titleLayout ? [el("div.cfg-row.cfg-title-layout", [el("span", { text: "表示設定（タイトル）" }), titleLayout])] : []),
       row("UIデザイン", createUiThemeSelect(config.uiTheme, value => { config.uiTheme = value; persist(); opts.onChange?.("uiTheme", value); })),
+      look,
       row("ミュート（すべての音を消す）", mute),
       row("BGM 音量", range("bgmVolume", 0, 1, 0.05, "cfg-bgm-volume")),
       row("効果音 音量", range("seVolume", 0, 1, 0.05, "cfg-se-volume")),

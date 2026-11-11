@@ -135,7 +135,8 @@ export function readTetsukoRecord(value) {
   const album = [];
   for (const entry of Array.isArray(record.album) ? record.album : []) {
     if (!MOMENT_IDS.includes(entry?.moment) || album.some(item => item.moment === entry.moment)) continue;
-    album.push({ moment: entry.moment, day: Number(entry.day) || 0, props: cleanProps(entry.props) });
+    // night: 夜に撮った写真（手帳で、夜の裏口を背にして見せる）。無い旧い記録は昼。
+    album.push({ moment: entry.moment, day: Number(entry.day) || 0, props: cleanProps(entry.props), ...(entry.night === true ? { night: true } : {}) });
   }
   return {
     v: RECORD_VERSION, props, found, album: album.slice(0, ALBUM_LIMIT),
@@ -164,12 +165,13 @@ export function createSession(value, { visitKey = null } = {}) {
   const stage = sessionStage(count);
   const metMashiro = !!value?.met?.mashiro;
   const metMukai = !!value?.met?.mukai_master;
+  const night = (Number(value?.slot) || 0) >= 1;
   const record = readTetsukoRecord(value);
   const props = { ...record.props };
   for (const slot of SLOTS) if (props[slot] && !propUnlocked(PROP[props[slot]], stage, metMashiro)) props[slot] = null;
   const before = new Set(unlockedProps(count ? relationStage(count) : -1, metMashiro).map(prop => prop.id));
   return {
-    day, count, stage, metMashiro, metMukai, visitKey,
+    day, count, stage, metMashiro, metMukai, visitKey, night,
     mood: moodOf(day).id,
     random: rng(day * 31 + count),
     timing: rng(day * 31 + count + 7),
@@ -350,7 +352,7 @@ const ACTIONS = {
     if (session.swings === 2) return react(session, "play", { text: "てつこが身を低くした。狙っている。", face: "serious", pose: "low", spot: "floor", fx: "toy", art: "crouch", pop: "じりっ", joy: JOY.stalk });
     if (session.swings === PLAY_PAW) return react(session, "play", { text: "前足が、さっと伸びた。", face: "surprise", pose: "paw", spot: "floor", fx: "toy", moment: "first_paw", art: "reach", pop: "ぺしっ", joy: JOY.paw });
     if (session.stage === 0) return react(session, "play", { text: "もう一度、前足が伸びた。", face: "serious", pose: "paw", spot: "floor", fx: "toy", art: "reach", pop: "ぺしっ", joy: JOY.look });
-    return react(session, "play", { text: "てつこが、じゃらしに飛びついた。", face: "surprise", pose: "paw", spot: "floor", fx: "toy", art: "reach", pop: "ばっ", joy: JOY.look, pounce: true });
+    return react(session, "play", { text: "てつこが、じゃらしに飛びついた。", face: "surprise", pose: "paw", spot: "floor", fx: "toy", art: "leap", pop: "ばっ", joy: JOY.look, pounce: true });
   },
   catch(session) {
     session.swings = 0;
@@ -366,7 +368,7 @@ const ACTIONS = {
     const again = session.misses >= 2;
     if (!again) session.swings = PLAY_PAW;
     return react(session, "miss", { text: again ? "また空振り。しっぽが、ぶんと揺れた。" : "空振り。てつこは、何事もなかった顔をしている。", face: again ? "serious" : "surprise",
-      spot: "floor", fx: "toy", pop: "すかっ", joy: JOY.miss });
+      spot: "floor", fx: "toy", pop: "すかっ", joy: JOY.miss, art: "flop" });
   },
   brush(session) {
     session.brushes += 1;
@@ -421,9 +423,9 @@ const AUTO = [
   { id: "stare", when: s => s.stage <= 1, weight: { calm: 1.2 },
     react: s => ({ text: "てつこが、横目でこちらを見ている。", face: "serious", pop: "じー" }) },
   { id: "mew", when: s => s.stage >= 1, weight: { clingy: 1.8, playful: 1.4 },
-    react: s => ({ text: "てつこが、こちらを見て短く鳴いた。", face: "surprise", fx: "mew", pop: "にゃ" }) },
+    react: s => ({ text: "てつこが、こちらを見て短く鳴いた。", face: "surprise", fx: "mew", pop: "にゃ", art: "mew" }) },
   { id: "poke", when: s => s.stage >= 2, weight: { clingy: 1.8, playful: 1.6 },
-    react: s => ({ text: "てつこが、前足でちょんとつついてきた。", pose: "paw", spot: "front", fx: "poke", art: "reach", pop: "ちょん" }) },
+    react: s => ({ text: "てつこが、前足でちょんとつついてきた。", pose: "paw", spot: "front", fx: "poke", art: "poke", pop: "ちょん" }) },
   { id: "doze", when: s => s.mood === "sleepy", weight: { sleepy: 2 },
     react: s => ({ text: "てつこがうとうとしている。", face: "sleep", pose: "curl", fx: "zzz" }) },
   { id: "come", when: s => s.stage >= 2, weight: { clingy: 2 },
@@ -492,7 +494,9 @@ function ask(session, { keep = false } = {}) {
   session.lastAuto = "ask";
   const cat = session.cat;
   const settled = ["sit", "box", "peek"].includes(cat.pose) ? cat.pose : "sit";
-  const look = { play: { face: "serious" }, brush: { flip: true }, decor: { face: "serious", pose: cat.inside ? settled : "paw" }, treat: { face: "surprise" } }[wish.kind] || {};
+  // 箱の中・寝ている時以外は、鳴いてねだる（しぐさの絵 mew。無ければ表情の絵）。
+  const meow = !cat.inside && wish.kind !== "watch" ? { art: "mew" } : {};
+  const look = { play: { face: "serious", ...meow }, brush: { flip: true }, decor: { face: "serious", pose: cat.inside ? settled : "paw" }, treat: { face: "surprise", ...meow }, pet: meow }[wish.kind] || {};
   const shape = keep ? { ...cat, moment: session.moment } : { spot: cat.spot, inside: cat.inside, pose: settled, ...look };
   const reaction = react(session, "auto", { text: WISH_TEXT[wish.kind], pop: wish.kind === "watch" ? null : "にゃ", ...shape });
   return { ...reaction, id: "ask", wish: { ...wish } };
@@ -633,7 +637,7 @@ export function autoDelay(session, { reduced = false } = {}) {
 export function takePhoto(session) {
   const moment = session.moment;
   if (!MOMENT_IDS.includes(moment)) return false;
-  const entry = { moment, day: session.day, props: { ...session.props } };
+  const entry = { moment, day: session.day, props: { ...session.props }, ...(session.night ? { night: true } : {}) };
   const index = session.album.findIndex(item => item.moment === moment);
   if (index >= 0) session.album[index] = entry;
   else if (session.album.length < ALBUM_LIMIT) session.album.push(entry);

@@ -1590,6 +1590,12 @@
           "text": "ちなみに勝負の七割は立ち上がりで決まります。根拠？ パッキーがそう言ってます！ ぷぷぷっ！"
         },
         {
+          "type": "condition",
+          "condition_type": "story_seen",
+          "dialogue": "ch1_naru_first",
+          "next_true": "naru_hands_seen"
+        },
+        {
           "speaker": "naru",
           "face": "normal",
           "text": "立ち上がりは全員決めてくる。差が出るのは、ここからの吸い出しと提供だよ"
@@ -1599,7 +1605,26 @@
           "face": "serious",
           "text": "……俺のダブルアップルレモン。ファースト・ドローで、完璧に仕上がる"
         }
-      ]
+      ],
+      "branches": {
+        "naru_hands_seen": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "さっき炭を置いたとき、トングは、KEMURIKUSAで指でなぞったあの動きをしていた。"
+          },
+          {
+            "speaker": "naru",
+            "face": "normal",
+            "text": "……試したな、それ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "はい。俺の台だと、少し違いました"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "ch1_tournament_r2_end",
@@ -1638,6 +1663,17 @@
           "speaker": "naru",
           "face": "normal",
           "text": "（挙動はノート通り。……焦るな、手順を信じろ）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "なるの目は、炭と手元のノートを行き来している。吸っている審査員の顔へは、一度も上がらない。"
+        },
+        {
+          "type": "condition",
+          "condition_type": "story_seen",
+          "dialogue": "ch1_naru_first",
+          "next_true": "naru_shop_ask_seen"
         },
         {
           "type": "condition",
@@ -1681,6 +1717,13 @@
             "speaker": "",
             "face": "",
             "text": "帰り際の「今日の、良かったよ」。ネクタイを緩めた肩が、ゆっくり下がるあの瞬間。"
+          }
+        ],
+        "naru_shop_ask_seen": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（店では『熱かったら遠慮なく言って』って、客に聞く人なのに）"
           }
         ]
       }

@@ -125,6 +125,7 @@ function makeFixture(opts = {}) {
     "../core/audio.js": { playBgm() {}, stopBgm() {}, SE: { select() {} }, applyVolumes() {} },
     "../core/ngplus-difficulty.js": { difficultyForRun },
     "../core/ui-theme.js": { createUiThemeSelect: () => el("select") },
+    "../core/look.js": { LOOKS: [{ id: "classic", label: "現行" }, { id: "neo", label: "新版" }, { id: "retro", label: "DS風" }], normalizeLook: (value) => value || "classic", setLook() {} },
     "./save-transfer.js": { fullscreenButton: () => null, saveTransferRow: () => el("div") },
     "../chapters/ch1.js": { startNewGame: () => { calls.startNewGame++; }, resumeGame() {} },
     "../vn/engine.js": { clearLog() {} },
@@ -134,7 +135,6 @@ function makeFixture(opts = {}) {
       pickTitleArt: () => ({ character: "sumi", file: "sumi.webp", url: "blob:sumi", ready: true }),
       prepareTitleArt: async (art) => art,
     },
-    "./title-layout.js": { mountTitleLayout() {}, createTitleLayoutSettings: () => null },
     "../core/cycle-meta.js": {
       readCycleMeta: () => (typeof opts.meta === "function" ? opts.meta() : opts.meta ?? null),
       recordCycleStarted: () => {},

@@ -225,6 +225,12 @@ for (const [plan, leaf] of [["sakura", "sakura"], ["peach", "peach"], ["tea", "b
   const glance = final.lines.findIndex(row => row.text.startsWith("ふと視線を感じた。"));
   assert(glance > 0 && /熱は落ち着いている/.test(final.lines[glance - 1].text));
   assert(final.lines.some(row => row.text.startsWith("シェイクも火を直す。")));
+  // STK10: 手が炭へ伸びる一拍は差し替え範囲の外。実プレイでも、止めるきっかけの客の一言と続けて読める。
+  const reach = final.lines.findIndex(row => row.text.endsWith("気づくと、手が炭へ伸びていた。"));
+  assert(reach > glance, "The reach for the coal must survive the served-line replacement");
+  assert.equal(final.lines[reach + 1].speaker, "customer");
+  assert.match(final.lines[reach + 1].text, /もう一口いいか/);
+  assert.match(final.lines[reach + 2].text, /^手が止まった。/);
   const failedPull = chapterFourFinalDialogue(finalScene, value, { ...cs, pull: { failed: "burnt" } });
   assert(!failedPull.lines.some(row => /まっすぐ立つ|熱は落ち着いている/.test(row.text)), "No invented taste for a failed pull");
   const defeatScene = read("dialogue/ch4_main").dialogues.find(row => row.dialogue_id === "ch4_defeat");
