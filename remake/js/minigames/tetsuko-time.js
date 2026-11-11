@@ -22,7 +22,7 @@ import {
   autonomous, autoDelay, placeProp, takePhoto, farewell, sessionResult, moodOf, moodLabel, propById, momentById, propUnlocked,
   MOMENTS, PROPS, SLOTS, SLOT_NAMES, discoveryGuide, invite, peakReaction, seekMoment, joyHearts, JOY_MAX, JOY_HEARTS, PLAY_AUTO_CATCH,
 } from "./tetsuko-model.js";
-import { ART_READY, hasPose, poseUrl, artAttrs } from "./tetsuko-art.js";
+import { ART_READY, hasPose, poseUrl, artAttrs, hasUi, tkIconUrl } from "./tetsuko-art.js";
 import { tetsukoTheme } from "./tetsuko-theme.js";
 import { HELP_TITLE, helpCard } from "./tetsuko-help.js";
 
@@ -95,10 +95,15 @@ const ICONS = Object.freeze({
   dots: '<path d="M6 12h.01M12 12h.01M18 12h.01" stroke-width="3.2"/>',
   tap: '<circle cx="12" cy="13" r="3.2"/><path d="M12 3.5v3M5.3 6.3l2.1 2.1M18.7 6.3l-2.1 2.1M3.5 13h3M17.5 13h3"/>',
 });
-const icon = name => `<svg class="tt-ico" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">${ICONS[name] || ""}</svg>`;
+// 専用テーマのアイコンの絵（#3213）が届いていれば絵、無ければ線の SVG。
+const icon = name => {
+  const art = tkIconUrl(name);
+  if (art) return `<img class="tt-ico tt-ico-art" src="${art}" alt="" aria-hidden="true" draggable="false" decoding="async">`;
+  return `<svg class="tt-ico" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">${ICONS[name] || ""}</svg>`;
+};
 const HEART_SVG = `<svg viewBox="0 0 24 24" aria-hidden="true">${ICONS.heart}</svg>`;
-// おねだりの吹き出しに出すアイコン（見守る＝「……」。何もせず待つ）
-const WISH_ICON = Object.freeze({ pet: "hand", play: "teaser", brush: "brush", treat: "treat", watch: "dots", decor: "decor" });
+// おねだりの吹き出しに出すアイコン（見守る＝隣に座る。何もせず待つ）
+const WISH_ICON = Object.freeze({ pet: "hand", play: "teaser", brush: "brush", treat: "treat", watch: "watch", decor: "decor" });
 const WISH_LABEL = Object.freeze({ pet: "なでてほしい", play: "じゃらしで遊びたい", brush: "ブラシをかけてほしい", treat: "おやつがほしい", watch: "そばにいてほしい", decor: "何か置いてほしい" });
 // 居場所の x（歩く向きと、じゃらしの先の初めの位置に使う。CSS の --x と同じ値）
 const SPOT_X = Object.freeze({ bench: 292, floor: 548, bed: 1012, front: 668, lap: 640, "slot-bench": 400, "slot-floor": 770, "slot-bed": 1012 });
@@ -143,6 +148,8 @@ const POUNCE_MS = 380, POUNCE_HIT_PX = 150, POUNCE_LEAD = 0.5, HEADING_FRESH_MS 
 const TOAST_MS = 3200, CAPTION_MS = 3800, PHOTO_HOLD_MS = 6500, PEAK_DELAY_MS = 900, PEAK_GLOW_MS = 2400, HEART_FLY_MS = 480, GHOST_MS = 1500;
 /** この長さだけ触らずにいると、隣で見守っていることになる（見守る＝操作と同じ扱い）。 */
 export const WATCH_IDLE_MS = 7000;
+// 一瞬だけのしぐさの絵（鳴く・つつく）は、この長さで表情の絵に戻す（口を開けたまま止まらない）。
+const FLEETING_ART = Object.freeze({ mew: 1500, poke: 1300 });
 // 体の小さな動き（.tt-cat-body に Web Animations で掛ける。姿勢の transform とは別の層）
 const MOVES = Object.freeze({
   squish: [[{ transform: "scale(1.07, .92)" }, { transform: "scale(.98, 1.03)", offset: .55 }, { transform: "none" }], 320],
@@ -206,7 +213,7 @@ export async function openTetsukoTime({ value = null, visitKey = null, bg = null
   return await new Promise(resolve => {
     let done = false, leaving = false, mounted = false, panel = null;
     let timer = 0, stepTimer = 0, fxTimer = 0, purrTimer = 0, walkTimer = 0, stillTimer = 0, heldTimer = 0, flashTimer = 0, quietUntil = 0;
-    let capTimer = 0, peakTimer = 0, peakGlowTimer = 0, pounceTimer = 0, ghostTimer = 0, shotTimer = 0, joyTimer = 0, wishTimer = 0, peerTimer = 0;
+    let capTimer = 0, peakTimer = 0, peakGlowTimer = 0, pounceTimer = 0, ghostTimer = 0, shotTimer = 0, joyTimer = 0, wishTimer = 0, peerTimer = 0, artTimer = 0;
     let tool = "hand", stroke = null, lastPetAt = 0, lastBrushAt = 0, lastSwingAt = 0, toyTravel = 0, held = false, pouncing = false;
     let toyTip = null, toyGoal = null, toyVel = { x: 0, y: 0 }, toyFrame = 0, heldFrame = 0, toyHeading = { x: 0, y: 0 }, toyMovedAt = 0;
     let selected = null, fresh = [], bookSel = null, lastAt = null, lastX = null, stepFrames = 0, walkFrame = "walk_a";
@@ -512,6 +519,8 @@ export async function openTetsukoTime({ value = null, visitKey = null, bg = null
       if (reaction.kind === "pet" && reaction.sweet) burst("spark", head, 4, 80);
       if (reaction.kind === "catch") burst("heart", chest, 4, 110);
       if (reaction.kind === "miss") burst("sweat", head, 2, 60);
+      // ぷいっ・ぱたん（触られたくない）は、小さな鼻息（粒の絵が届いた時だけ。文字の代わりが無いので CSS では描かない）
+      if ((reaction.pop === "ぷいっ" || reaction.pop === "ぱたん") && hasUi("tk_fx")) burst("puff", { x: head.x + 50, y: head.y + 60 }, 1, 30);
       if (reaction.fx === "zzz") burst("zzz", head, 2, 40);
       if (reaction.fx === "mew") burst("note", head, 1, 50);
       if (reaction.fx === "poke") burst("paw", { x: chest.x + 40, y: chest.y + 10 }, 1, 0);
@@ -566,6 +575,13 @@ export async function openTetsukoTime({ value = null, visitKey = null, bg = null
       renderWish(reaction);
       renderButtons();
       placeToy();
+      clearTimeout(artTimer);
+      const shown = session.cat;
+      if (FLEETING_ART[shown.art] && hasPose(shown.art)) artTimer = setTimeout(() => {
+        if (done || session.cat !== shown) return;
+        session.cat = { ...shown, art: null };
+        renderPose();
+      }, FLEETING_ART[shown.art]);
     }
     // 途中の様子（おやつの「匂いを確かめる→食べる」）を順に見せてから、反応の本体を出す。
     // 途中で別の操作をすれば、そちらの反応に切り替わる（待たせない）。
@@ -1087,7 +1103,7 @@ export async function openTetsukoTime({ value = null, visitKey = null, bg = null
       if (done) return;
       done = true;
       for (const t of [timer, stepTimer, fxTimer, purrTimer, walkTimer, stillTimer, heldTimer, flashTimer, capTimer, peakTimer, peakGlowTimer, pounceTimer,
-        ghostTimer, joyTimer, wishTimer, peerTimer]) clearTimeout(t);
+        ghostTimer, joyTimer, wishTimer, peerTimer, artTimer]) clearTimeout(t);
       clearInterval(stepFrames); clearInterval(shotTimer);
       cancelAnimationFrame(toyFrame); cancelAnimationFrame(heldFrame);
       motion?.cancel();

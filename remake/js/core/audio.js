@@ -753,20 +753,21 @@ const BGM_GAIN = { sweets_or_sweets: 0.55, bgm_tournament_edm: 0.51, bgm_tournam
 const bgmLevel = (key) => config.mute || config.muted || bgmPaused ? 0
   : config.bgmVolume * (BGM_GAIN[key] ?? 1) * bgmDuck;
 
-// ラクダレース中だけ、プレイヤー速度に合わせて再生速度を緩やかに変える。
+// ラクダレース中はプレイヤー速度に、サンドボード中はブーストに合わせて、再生速度を緩やかに変える。
 // ピッチは保つ（HTMLAudioElement の既定 / preservesPitch=true。continue 曲と同じ）。
 let bgmTempo = 1, bgmTempoTarget = 1;
 const TEMPO_EASE = 0.22;
+const TEMPO_BGM = new Set(["bgm_camel_race", "bgm_ethnic05", "bgm_ethnic08", "bgm_ethnic12"]);
 
 function applyBgmPlaybackRate() {
   if (!currentEl || currentKey === "bgm_continue_urgent") return;
-  currentEl.playbackRate = currentKey === "bgm_camel_race" ? bgmTempo : 1;
+  currentEl.playbackRate = TEMPO_BGM.has(currentKey) ? bgmTempo : 1;
   currentEl.preservesPitch = true;
 }
 
-/** 今の曲の目標再生倍率。1.00〜1.15。immediate ならその場で反映。 */
+/** 今の曲の目標再生倍率。1.00〜1.25。immediate ならその場で反映。 */
 export function setBgmPlaybackRate(rate, { immediate = false } = {}) {
-  const next = Math.max(1, Math.min(1.15, Number(rate) || 1));
+  const next = Math.max(1, Math.min(1.25, Number(rate) || 1));
   bgmTempoTarget = next;
   if (immediate) {
     bgmTempo = next;

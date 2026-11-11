@@ -352,3 +352,41 @@ TKT-CAT16 cat_poke.png — Sitting and lifting one front paw toward the viewer t
 
 **受け取った後（Claude）**: マゼンタを抜く（`remake/tools/build_tetsuko_art.py` の流儀）→ `assets/ui/tetsuko/` と WebP → `ART_READY` に名前を書き、その部品の CSS の描画を消す（`[data-art-ui~="tk_…"]` の時だけ絵を使う。届いていない物は今の CSS のまま動く）→ PC とスマホ横で撮って確かめる。スマホ横の下限（文字 実寸11px・押せる所 実寸38px）は絵にしても守る。
 
+## TKT25・26 の採用の記録（2026-11-11）
+
+#3213（UI の部品・A 段）と #3214（場面と猫）の原画を、Codex がオーナー経由（zip）で届けた。`originals/` に置き、生成の指示・参照・SHA-256 は `originals/GENERATION.md` の「Issue #3213 …別の生成」「Issue #3214」の節（Codex の記録をそのまま追記）。
+
+**#3213 は2回分ある**: Codex の PR #3223（マージ済み）が正規名 `ui_tk_*.png` で、依頼どおりの画素数・ちょうどの #FF00FF の原画を入れていた。オーナー経由の zip は別の生成で、大きめの原画（1254〜2172px）。zip の方を `ui_tk_*_candidate2.png` に改名して並べて保存し（不採用の戸は `ui_tk_tab_door_candidate3.png`）、**画面には candidate2 を使った**。理由: 手描きの細部（ちぎれた段ボールの縁・テープ・札の角の飾り）が多く、茶トラと段ボールの画面に合う。持っている道具の札（active）は、#3223 版は顔全体が茶トラのしまで札の上のアイコンが読みにくいが、candidate2 は縁だけがしまで中が無地。原画が大きいので縮めた絵もきれい。#3223 版は消さずに残す（比べ直す時のため）。
+
+**選んだ物**: zip のすべての正規の候補を採用した。`ui_tk_tab_door_candidate3.png`（元の名前は candidate1。ほぼ生成りで、青灰が小さな札だけ）は Codex の記録どおり不採用。B 段（トレー・札・紙・手帳・写真の額・外枠・箱のふた）と、#2690 の B 段（歩く・振り返る・伸び）は届いていない（CSS のまま）。
+
+**切り出し**: `python3 remake/tools/build_tetsuko_art.py ui cats scene`（原画の実体は `git lfs pull --include="asset_sources/tetsuko-care/originals/ui_tk_*_candidate2.png,asset_sources/tetsuko-care/originals/cat_*,asset_sources/tetsuko-care/originals/prop_lap.png,asset_sources/tetsuko-care/originals/prop_tunnel_tail.png"`、約30MB）。
+- 背景のマゼンタが #FF00FF ちょうどでなく (236,22,237)〜(244,14,243) と揺れるので、原画の周りの帯から背景の色を測り、その色からの近さで抜いた（`key_tolerant`。縁は測った色との混ざりを戻す）。抜いた後、絵の中にマゼンタの画素は残っていない。
+- 組の部品（札の3状態・ハートの満と空）は同じ切り出し枠にした（重ねても形がずれない）。アイコン（6×2）と粒（4×2）はシートを1つずつ切り出し、128px の正方形に置いた（`ui_tk_icon_*`・`ui_tk_fx_*`）。
+- 猫のしぐさは、顔の幅（頬から頬）を立ち絵 `chr_tetsuko_normal.png` の約160pxにそろえ、1024×768 の画面の中央下（足元 y=736）に置いた。原画の顔の幅: 跳ぶ 370・空振り 420・鳴く 500・つつく 525px。
+- 膝は画面の幅 560px、しっぽは 120px の2倍で書き出した。
+
+**画面での使い方**（`ART_READY` に名前を書き、CSS の描画を絵に替えた）: 手元の道具の丸い札（持っている道具は折れ耳の札）・カメラ・「？」の丸 → `tk_token`、上の道具の札・帰る → `tk_tab`、ごきげんのハートと台 → `tk_heart`・`tk_pill`、おねだりの吹き出し → `tk_wish`、反応の帯 → `tk_caption`（九分割）、題の札 → `tk_title`、アイコン → `tk_icons`、粒・喉の波・なでた時の ♡ → `tk_fx`（「ぷいっ」の鼻息は粒の絵がある時だけ出す）。跳ぶ・空振り・鳴く・つつく → しぐさの絵（鳴く・つつくは一瞬で表情の絵に戻す）、膝・トンネルのしっぽ → 小物の絵。
+
+**採用版**（実行時は同じ名前の `remake/img/ui/tetsuko/*.webp`。アイコン12枚・粒8枚は `ui_tk_icon_*`・`ui_tk_fx_*` の 128×128）:
+
+| ファイル | 画素 | SHA-256 |
+|---|---|---|
+| `assets/ui/tetsuko/ui_tk_token.png` | 320×341 | `29e97a7c2c1266203c72b7390693036c906db0568940f3495b8725cf51068845` |
+| `assets/ui/tetsuko/ui_tk_token_pressed.png` | 320×341 | `48e3d885ce66c2cba63293ac8790b458dd1aeffd40d29bfbfa461805387393b7` |
+| `assets/ui/tetsuko/ui_tk_token_active.png` | 320×341 | `9db2e222ec9202f3aa3727ae8edc8db6c0daf693b7543f25c06f3979c803e1dd` |
+| `assets/ui/tetsuko/ui_tk_tab.png` | 360×258 | `bb9a7febd4e7f0ba6648270317ef90754e034074fa2d48c2ed1570f81cbc815d` |
+| `assets/ui/tetsuko/ui_tk_tab_pressed.png` | 360×258 | `6111bf0ee5957ec9444358a02e781f1d9bfe2e5e378cd2a08e804323641f0ae9` |
+| `assets/ui/tetsuko/ui_tk_tab_door.png` | 360×258 | `39d26fd0324f346ef5e7db804f9b32c6fb55a2f24895f3ab9ed1a04f04c15194` |
+| `assets/ui/tetsuko/ui_tk_heart.png` | 112×99 | `29db44c99168105980db4ef50bfb0919e635dad6099f9edfd7df3f3375d52c8c` |
+| `assets/ui/tetsuko/ui_tk_heart_empty.png` | 112×99 | `d199532ddf7a3404a860b64d754f01bb3fc78fefce3fef0c90064c9dfae73084` |
+| `assets/ui/tetsuko/ui_tk_pill.png` | 480×132 | `136ba67786b33f6a6b406892999d0f106fc2b7fa8b46a3219834ae338448c251` |
+| `assets/ui/tetsuko/ui_tk_wish.png` | 240×208 | `65fe26e2a48796a867df57229185b995742388e4750061432f315608f43f0491` |
+| `assets/ui/tetsuko/ui_tk_caption.png` | 1200×191 | `30649d1ef9b25345cb0e262d2051b7fc311397a1a75f849e933895ad230a4709` |
+| `assets/ui/tetsuko/ui_tk_title.png` | 720×217 | `7c6f9c1e8303fee940a419bc249217747a4733216cc5620c8c57a585d7092178` |
+| `assets/ui/tetsuko/cat_leap.png` | 1024×768 | `6e32223f7f27afe84d4e7843b977df22327a9fe93915823bfc333577eb8a8e30` |
+| `assets/ui/tetsuko/cat_flop.png` | 1024×768 | `0acf69870ff3899f1227e208694a9ceb756c17a93d82c6a0998f434acd93c750` |
+| `assets/ui/tetsuko/cat_mew.png` | 1024×768 | `f0b23af834719715c37910c9f63a87117e41a3df09cfd62d595b0cb7930fec78` |
+| `assets/ui/tetsuko/cat_poke.png` | 1024×768 | `649df080f34bf544787f07e313a17258a4d3f22fd71e0154c7593a3515b43d30` |
+| `assets/ui/tetsuko/prop_lap.png` | 1120×402 | `33ecf48d71c10241c3cc6513f20197219d9772591551e58c299c06280edf8676` |
+| `assets/ui/tetsuko/prop_tunnel_tail.png` | 240×228 | `5ccd638a9851c8d6d4b383e7a5877f936ec6120a7664f353a63187e7049ff5b0` |

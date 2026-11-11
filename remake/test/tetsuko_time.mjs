@@ -639,7 +639,8 @@ assert.equal(classifyFlag(OUTINGS_FLAG), "progression");
     assert(/。$/.test(moment.memo) && [...moment.memo].length <= 48, `てつこメモは地の文・48字以内: ${moment.memo}`);
     assert(!/テツコ|ヤニネコ/.test(moment.memo));
   }
-  const POSES = ["loaf", "crouch", "reach", "hug", "groom", "yawn", "belly", "rub", "walk_a", "walk_b", "lookback", "stretch"];
+  // #2690 の12枚と、#3214（TKT26）の跳ぶ・空振り・鳴く・つつく
+  const POSES = ["loaf", "crouch", "reach", "hug", "groom", "yawn", "belly", "rub", "walk_a", "walk_b", "lookback", "stretch", "leap", "flop", "mew", "poke"];
   const hints = new Set(MOMENTS.map(moment => moment.art).filter(Boolean));
   for (const kind of ["pet", "play", "play", "play", "catch", "brush", "brush", "treat", "watch"]) {
     const reaction = act(createSession(save({ count: 4 })), kind);
@@ -658,7 +659,7 @@ assert.equal(classifyFlag(OUTINGS_FLAG), "progression");
   // 小物は、CSS が読むファイルが全部そろっていること（箱とベッドは手前の層も・おやつは前後2枚・じゃらしは先と棒・ブラシはカーソルも）。
   const PROP_FILES = { box: ["prop_box.webp", "prop_box_front.webp"], bed: ["prop_bed.webp", "prop_bed_front.webp"],
     plate: ["prop_plate_full.webp", "prop_plate_empty.webp"], teaser: ["prop_teaser_tip.webp", "prop_teaser_stick.webp"],
-    brush: ["prop_brush.webp", "prop_brush_cursor.png"], lap: ["prop_lap.webp"] };
+    brush: ["prop_brush.webp", "prop_brush_cursor.png"], lap: ["prop_lap.webp"], tunnel_tail: ["prop_tunnel_tail.webp"] };
   for (const prop of ART_READY.props) {
     assert(PROPS.some(item => item.id === prop) || PROP_FILES[prop], `小物の名前は依頼した物: ${prop}`);
     for (const file of PROP_FILES[prop] || [`prop_${prop}.webp`]) assert(exists(file), `届いた小物の絵がある: ${file}`);
@@ -666,7 +667,26 @@ assert.equal(classifyFlag(OUTINGS_FLAG), "progression");
   const css = fs.readFileSync(new URL("../css/tetsuko-time.css", import.meta.url), "utf8");
   for (const prop of ART_READY.props.filter(id => PROPS.some(item => item.id === id)))
     assert(css.includes(`[data-art-props~="${prop}"] .tt-prop[data-prop="${prop}"] > .tt-prop-back`), `小物の絵を出す CSS がある: ${prop}`);
-  for (const part of ART_READY.ui) assert(exists(`ui_${part}.webp`), `届いたUIの絵がある: ui_${part}.webp`);
+  // UI: 組の部品は全部の状態、シートは1つずつ切り出した絵が全部そろっていること（#3213）。
+  const { TK_ICONS } = await import("../js/minigames/tetsuko-art.js");
+  const UI_FILES = {
+    tk_icons: TK_ICONS.map(name => `ui_tk_icon_${name}.webp`),
+    tk_fx: ["heart", "spark", "note", "sweat", "fur", "paw", "purr", "puff"].map(name => `ui_tk_fx_${name}.webp`),
+    tk_token: ["ui_tk_token.webp", "ui_tk_token_pressed.webp", "ui_tk_token_active.webp"],
+    tk_tab: ["ui_tk_tab.webp", "ui_tk_tab_pressed.webp", "ui_tk_tab_door.webp"],
+    tk_heart: ["ui_tk_heart.webp", "ui_tk_heart_empty.webp"],
+  };
+  for (const part of ART_READY.ui) for (const file of UI_FILES[part] || [`ui_${part}.webp`]) assert(exists(file), `届いたUIの絵がある: ${file}`);
+  // CSS が読む小物・しぐさ・専用テーマの絵は、どれも登録済み（名前の書き間違いで 404 にしない）。
+  // 紙×ラベンダーの ui_*（#2691・採用しない）の規則は ART_READY に名前が無いので読まれない。ここでは数えない。
+  for (const file of ["../css/tetsuko-time.css", "../css/tetsuko-theme.css"]) {
+    const text = fs.readFileSync(new URL(file, import.meta.url), "utf8");
+    for (const [, name] of text.matchAll(/url\("\.\.\/img\/ui\/tetsuko\/((?:ui_tk_|cat_|prop_)[^"]+)"\)/g)) assert(exists(name), `${file} が読む絵がある: ${name}`);
+  }
+  // 新しい理由の書いてある素材は、CSS の描画を絵に替えている（膝・しっぽ・札・ハートなど）。
+  const themeCss = fs.readFileSync(new URL("../css/tetsuko-theme.css", import.meta.url), "utf8");
+  for (const part of ART_READY.ui.filter(name => name.startsWith("tk_"))) assert(themeCss.includes(`[data-art-ui~="${part}"]`), `専用テーマの絵を使う CSS がある: ${part}`);
+  assert(css.includes('[data-art-props~="tunnel_tail"]') && css.includes('[data-art-props~="lap"]'), "膝としっぽの絵を使う CSS がある");
   if (ART_READY.background) assert(tracked.has("remake/img/backgrounds/bg_mukai_backdoor_day.webp"), "裏口の絵がある");
   assert.deepEqual(Object.keys(artAttrs()).sort(), ["artBg", "artProps", "artUi"]);
 }
