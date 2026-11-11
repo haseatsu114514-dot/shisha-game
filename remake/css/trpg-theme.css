@@ -917,7 +917,7 @@ html:root .trpg-campaign-club {
 }
 html:root .trpg-campaign-club[data-up="true"] { border-color: #ffd36e; box-shadow: 0 0 18px #ffcf6a55; }
 html:root .trpg-campaign-club-rank { flex: none; display: grid; justify-items: center; line-height: 1.1; }
-html:root .trpg-campaign-club-rank small { font-size: 11px; letter-spacing: .08em; color: #d2ae66; }
+html:root .trpg-campaign-club-rank small { font-size: 12px; letter-spacing: .02em; color: #d2ae66; }
 html:root .trpg-campaign-club-rank b { display: grid; place-items: center; width: 40px; height: 40px; margin-top: 2px; border-radius: 50%; font-size: 22px; color: #2a1b0c;
   background: linear-gradient(135deg, #f7dc8c, #dcae4a); box-shadow: inset 0 0 0 2px #fff3c4, 0 2px 5px #0006; }
 html:root .trpg-campaign-club-copy { flex: 1; min-width: 0; display: grid; gap: 4px; }
