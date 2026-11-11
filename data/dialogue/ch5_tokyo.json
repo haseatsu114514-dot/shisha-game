@@ -70,7 +70,8 @@
         { "speaker": "hajime", "face": "surprise", "text": "いいんですか" },
         { "speaker": "mukai_master", "face": "smile", "text": "一人で飲むと、甘すぎる気がしてな" },
         { "speaker": "hajime", "face": "smile", "text": "じゃあ、遠慮なく" },
-        { "speaker": "", "face": "", "text": "カップを両手で持つ。ほんのり甘いラテは、思ったより体に染みた。高架の上を電車が通り過ぎるまで、二人とも何も言わなかった。" }
+        { "speaker": "", "face": "", "text": "カップを両手で持つ。ほんのり甘いラテは、思ったより体に染みた。" },
+        { "speaker": "", "face": "", "text": "高架の上を電車が通り過ぎるまで、二人とも何も言わなかった。" }
       ]
     },
     {
