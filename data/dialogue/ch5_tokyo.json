@@ -17,17 +17,23 @@
     {
       "dialogue_id": "ch5_tokyo_go",
       "lines": [
-        { "speaker": "", "face": "", "text": "Dr.fookahの配送の車に乗せてもらい、東京へ向かった。" },
-        { "speaker": "", "face": "", "text": "途中の店で箱を降ろすのを手伝ううちに、窓の外が暗くなっていく。" },
-        { "speaker": "hajime", "face": "normal", "text": "（着いたら、まずmukaiに顔を出そう）" }
+        { "speaker": "", "face": "", "text": "Dr.fookahの配送の車に乗せてもらい、東京へ向かった。助手席は、葉の箱の匂いがする。" },
+        { "speaker": "", "face": "", "text": "昼の問屋街を出て、最初の店で箱を降ろす。台車を押して戻ると、車の影が少し長くなっていた。" },
+        { "speaker": "", "face": "", "text": "二軒目、三軒目と寄るたびに、荷台は軽くなっていく。" },
+        { "speaker": "", "face": "", "text": "窓の外の空が、橙から群青へ変わっていく。道路の灯が、ひとつずつ点いた。" },
+        { "speaker": "hajime", "face": "normal", "text": "（着いたら、まずmukaiに顔を出そう）" },
+        { "speaker": "", "face": "", "text": "車は夜の東京へ入っていった。" }
       ]
     },
     {
       "dialogue_id": "ch5_tokyo_back",
       "lines": [
         { "speaker": "", "face": "", "text": "東京店の裏で、帰りの配送の車に乗せてもらった。" },
-        { "speaker": "", "face": "", "text": "空になった箱を積んで、車は高速を西へ走る。" },
-        { "speaker": "", "face": "", "text": "見慣れた街の明かりが見えた頃には、もう夜だった。" }
+        { "speaker": "", "face": "", "text": "空になった箱を積んで、車は高速を西へ走る。荷台で、箱が小さく鳴った。" },
+        { "speaker": "hajime", "face": "normal", "text": "（行きは重かった荷が、帰りは空か。座席だけが、やけに広い）" },
+        { "speaker": "", "face": "", "text": "途中の店に寄るたび、積み残しの箱を手伝って降ろした。そのたびに、窓の外が少しずつ暗くなる。" },
+        { "speaker": "", "face": "", "text": "見慣れた街の明かりが見えた頃には、もう夜だった。" },
+        { "speaker": "hajime", "face": "smile", "text": "（戻ってきたな）" }
       ]
     },
     {
@@ -48,18 +54,24 @@
       "dialogue_id": "ch5_tokyo_mukai_help",
       "lines": [
         { "speaker": "", "face": "", "text": "昼のmukai。カウンターの内側で、洗い上がったグラスを拭いた。" },
+        { "speaker": "", "face": "", "text": "高架を電車が通ると、棚のグラスがかすかに鳴る。コーヒーの匂いは、前に来た時と同じだった。" },
         { "speaker": "mukai_master", "face": "normal", "text": "はじめくん、そっちの棚。上から二段目だ" },
         { "speaker": "hajime", "face": "normal", "text": "前と同じ場所ですね" },
-        { "speaker": "mukai_master", "face": "smile", "text": "変えてない。変えると、手が迷う" }
+        { "speaker": "mukai_master", "face": "smile", "text": "変えてない。変えると、手が迷う" },
+        { "speaker": "", "face": "", "text": "言われた棚へ、拭いたグラスを一つずつ伏せていく。手は、迷わなかった。" }
       ]
     },
     {
       "dialogue_id": "ch5_tokyo_mukai_help_b",
       "lines": [
         { "speaker": "", "face": "", "text": "客が引いた時間に、ムカイさんが甘いラテを二つ淹れた。" },
+        { "speaker": "", "face": "", "text": "ミルクの湯気が、昼下がりのカウンターに薄く立つ。豆を挽く音も、今は止んでいる。" },
         { "speaker": "mukai_master", "face": "normal", "text": "一つは、はじめくんの" },
         { "speaker": "hajime", "face": "surprise", "text": "いいんですか" },
-        { "speaker": "mukai_master", "face": "smile", "text": "一人で飲むと、甘すぎる気がしてな" }
+        { "speaker": "mukai_master", "face": "smile", "text": "一人で飲むと、甘すぎる気がしてな" },
+        { "speaker": "hajime", "face": "smile", "text": "じゃあ、遠慮なく" },
+        { "speaker": "", "face": "", "text": "カップを両手で持つ。ほんのり甘いラテは、思ったより体に染みた。" },
+        { "speaker": "", "face": "", "text": "高架の上を電車が通り過ぎるまで、二人とも何も言わなかった。" }
       ]
     },
     {
@@ -69,7 +81,9 @@
         { "speaker": "mukai_master", "face": "normal", "text": "勝負が近いんだってな。スミから聞いた" },
         { "speaker": "hajime", "face": "normal", "text": "はい。日は、まだ決めてないんですけど" },
         { "speaker": "mukai_master", "face": "normal", "text": "決まる前に、ここで一服していけばいい" },
-        { "speaker": "", "face": "", "text": "ムカイさんはそれだけ言って、コーヒーの豆を量りに載せた。" }
+        { "speaker": "hajime", "face": "smile", "text": "はい。ここは、変わらないので落ち着きます" },
+        { "speaker": "", "face": "", "text": "ムカイさんはそれだけ言って、コーヒーの豆を量りに載せた。" },
+        { "speaker": "", "face": "", "text": "閉めた戸の向こうを、電車が通る。グラスは、全部いつもの棚に収まっていた。" }
       ]
     },
     {
