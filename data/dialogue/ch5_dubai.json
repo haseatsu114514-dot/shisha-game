@@ -225,7 +225,7 @@
         { "speaker": "sheikh", "face": "smile", "text": "君の店では、王族の顔をしなくていいからな" },
         { "speaker": "", "face": "", "text": "噴水の水音が、二人のあいだを、少しも気まずくしなかった。" },
         { "speaker": "sheikh", "face": "normal", "text": "客として座れる店は、案外少ない。私は、そういう店が好きだ" },
-        { "speaker": "da_silva", "face": "normal", "text": "ハジメ、お前の店も、そういう店にしろよ。誰が来ても……ただの客、いられる店" },
+        { "speaker": "da_silva", "face": "normal", "text": "ハジメ、お前の店も、そういう店にしろよ。誰が来ても……[pause]ただの客、いられる店" },
         { "speaker": "hajime", "face": "normal", "text": "（ただの客で、いられる店）" }
       ]
     },

@@ -440,6 +440,7 @@
         {
           "speaker": "",
           "face": "",
+          "duck": true,
           "text": "一拍。客席の誰かが、息を呑む音まで聞こえた。"
         }
       ]
@@ -450,6 +451,7 @@
         {
           "speaker": "pakki",
           "face": "excited",
+          "beat": 800,
           "text": "県代表は、tonariの逢縁はじめ選手です！"
         },
         {
@@ -490,6 +492,7 @@
         {
           "speaker": "sui",
           "face": "serious",
+          "duck": true,
           "text": "見事な正解だ。だが、その煙は誰の顔を見て作った？"
         },
         {
