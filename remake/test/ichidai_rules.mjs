@@ -6,7 +6,7 @@
 import assert from "node:assert/strict";
 import { createRequire } from "node:module";
 import { FLAVORS, FLAVOR, CARDS, CARD, BOWLS, HMDS, JUDGES, PUFFS, TOURNAMENTS, KITS, TYPE_LABEL, WHEN_LABEL, expandDeck } from "../js/minigames/ichidai-data.js";
-import { RULES, createGame, act, heatOf, leavesOf, firepower, coolStepsOf, scorePuff, judgedHeat, roundsOf, canPlay } from "../js/minigames/ichidai-rules.js";
+import { RULES, createGame, act, heatOf, leavesOf, firepower, coolStepsOf, slotsOf, scorePuff, judgedHeat, roundsOf, canPlay } from "../js/minigames/ichidai-rules.js";
 import { aiAct } from "../js/minigames/ichidai-ai.js";
 
 const DOC = createRequire(import.meta.url)("../../docs/design/card_game/cards.js");
@@ -128,6 +128,32 @@ const fake = (over = {}) => ({ bowl: { mango: 6, vanilla: 3 }, main: "mango", bo
   assert.deepEqual([G.wait.type, G.wait.player], ["react", G.order[0]]);
 }
 
+// ── 3b. 炭焼き場は4つまで（カードでは増えない）。タヌキッシュリッド【素直】とチャコスタ ──
+{
+  const G = createGame({ seed: 5, tournament: "practice", players: [{ name: "低温", kit: "c" }, { name: "単品", kit: "b", ai: true, level: 1 }] });
+  const p = G.P[0];
+  const ok = (a) => { const r = act(G, a); assert.ok(r.ok, `${a.type}: ${r.reason}`); };
+  const toMyMain = () => { for (let n = 0; n < 400 && !(G.phase === "serve" && G.wait.player === 0 && G.wait.type === "main"); n++) ok(aiAct(G, G.wait.player)); assert.equal(G.wait.type, "main"); };
+  assert.equal(RULES.slots, 4);
+  toMyMain();
+  assert.equal(p.hmd, "tanukish");
+  p.stove = []; p.hand = ["flat", "flat", "cube", "flat", "flat"]; p.tools = ["chacosta"];
+  assert.equal(slotsOf(p), 4, "タヌキッシュリッドでもチャコスタでも枠は増えない");
+  for (let k = 0; k < 4; k++) ok({ type: "place", hand: 0 });
+  assert.equal(p.stove.length, 4);
+  assert.deepEqual(act(G, { type: "place", hand: 0 }), { ok: false, reason: "炭焼き場がいっぱい" });
+  // 【素直】「灰にする」で炭を落としたら1枚引く（1ターンに1回）
+  p.zone = [{ id: "flat", up: true }, { id: "flat", up: false }, { id: "flat", up: false }]; p.spent = 0;
+  const hand0 = p.hand.length;
+  ok({ type: "ash", zone: 2 }); assert.equal(p.hand.length, hand0 + 1, "1回目は引く");
+  ok({ type: "ash", zone: 1 }); assert.equal(p.hand.length, hand0 + 1, "同じターンの2回目は引かない");
+  // チャコスタ: 自分のターンのはじめ、炭焼き場に炭が3つ以上あれば1枚引く
+  const logs = G.log.length;
+  ok({ type: "end" });
+  for (let n = 0; n < 400 && !G.over && !(G.wait.player === 0 && (G.wait.type === "cool" || G.wait.type === "main")); n++) ok(aiAct(G, G.wait.player));
+  assert.ok(G.log.slice(logs).some((l) => l.who === 0 && l.text.startsWith("チャコスタ：")), "炭焼き場に4つ置いたまま次のターンを迎えると、チャコスタで引く");
+}
+
 // ── 4. CPUどうしの対戦 ──
 function autoplay(cfg) {
   const G = createGame(cfg); let steps = 0;
@@ -139,7 +165,7 @@ function autoplay(cfg) {
     for (const p of G.P) {
       assert.ok(heatOf(p) <= RULES.heatMax && heatOf(p) >= 0, "熱は0〜10");
       assert.ok(firepower(p) >= 0, "火力は負にならない");
-      assert.ok(p.stove.length <= 5, "炭焼き場の枠");
+      assert.ok(p.stove.length <= RULES.slots, "炭焼き場は4つまで");
       assert.ok(Object.values(p.bowl).every((n) => n > 0), "0枚の葉は残さない");
     }
   }

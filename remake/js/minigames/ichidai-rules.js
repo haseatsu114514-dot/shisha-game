@@ -6,7 +6,7 @@ import { FLAVOR, FLAVORS, CARD, BOWL, HMD, JUDGE, PUFFS, TOURNAMENT, KIT, FIRST_
 
 export const RULES = Object.freeze({
   startDraw: 7, startEmbers: 3, prepTurns: 6, packN: 4, firstPackCut: 2, steamDraw: 1, steamLeaves: 8,
-  draw: 2, cool: 2, slots: 2, heatMax: 10, handMax: 7, pile: 12, vote: 2, wear: 2, rich: 10, toolMax: 3,
+  draw: 2, cool: 2, slots: 4, heatMax: 10, handMax: 7, pile: 12, vote: 2, wear: 2, rich: 10, toolMax: 3,
 });
 export const RANK = Object.freeze({ just: 4, band: 3, off: 2, cold: 1, scorch: 0 });
 export const ZONE_LABEL = Object.freeze({ just: "ジャスト", band: "適温", off: "ズレ", cold: "外れ", scorch: "焦げ" });
@@ -22,7 +22,8 @@ export const leavesOf = (p) => Object.values(p.bowl).reduce((a, b) => a + b, 0);
 export const firepower = (p) => Math.max(0, heatOf(p) - p.spent);
 export const sidesOf = (p) => Object.keys(p.bowl).filter((k) => k !== p.main && p.bowl[k] >= 2);
 export const hasTool = (p, id) => p.tools.includes(id) || p.person === id;
-export const slotsOf = (p) => RULES.slots + (p.hmd === "tanukish" ? 1 : 0) + (p.tools.includes("chacosta") ? 2 : 0);
+/** 炭焼き場の枠。だれでも4つで、カードでは増えない（2026-11-11 オーナー指示） */
+export const slotsOf = () => RULES.slots;
 const hasUpCube = (p) => p.zone.some((c) => c.up && CARD[c.id].heat === 2);
 /** このターンの冷める段階（キューブ炭【火持ち】で1つ減る） */
 export const coolStepsOf = (p) => Math.max(1, RULES.cool - (hasUpCube(p) ? 1 : 0));
@@ -170,6 +171,7 @@ function stoveAdvance(G, p) {
   let fired = false;
   for (const c of p.stove) if (c.stage < 2) { c.stage++; if (c.stage === 2) fired = true; }
   if (fired) { emit(G, { t: "fired", p: p.index }); if (hasTool(p, "timer")) { drawCards(G, p, 1); say(G, "キッチンタイマー：炭が焼けたので1枚引く。", p.index); } }
+  if (hasTool(p, "chacosta") && p.stove.length >= 3) { drawCards(G, p, 1); say(G, "チャコスタ：炭焼き場に炭が3つあるので1枚引く。", p.index); }
 }
 const other = (G, p) => G.P[1 - p.index];
 const fail = (reason) => ({ ok: false, reason });
@@ -333,6 +335,7 @@ const HANDLERS = {
     const coal = p.zone[a.zone]; if (!coal) return fail("炭を選ぶ");
     p.zone.splice(a.zone, 1); p.ash.push(coal.id); p.spent = Math.max(0, p.spent - coalHeat(coal));
     say(G, `炭を1枚灰にする（熱${heatOf(p)}）`, p.index); emit(G, { t: "ash", p: p.index });
+    if (p.hmd === "tanukish" && !p.turn.ashDraw) { p.turn.ashDraw = true; drawCards(G, p, 1); say(G, "タヌキッシュリッド：炭を落としたので1枚引く。", p.index); }
   },
 
   play(G, p, a, w) {

@@ -5,10 +5,12 @@
   python3 remake/tools/build_ichidai_art.py          # 作り直す
   python3 remake/tools/build_ichidai_art.py --check  # 一覧と WebP が採用した PNG とそろっているかだけ確かめる（何も書かない）
 
-- 採用した絵を assets/ui/ichidai/<種類>/<id>.png に置く。種類は flavor（葉）・card（デッキのカード）・table（卓の天板）。
-  id は remake/js/minigames/ichidai-data.js の FLAVORS / CARDS の id。卓の天板は counter。
-- flavor と card は正方形の絵。中央を正方形に切って 512×512 の WebP にする（画面では最大 120px 角ほど。2倍強）。
-- table は横長の絵。16:9 に切って 1280×720 の WebP にする。
+- 採用した絵を assets/ui/ichidai/<種類>/<id>.png に置く。種類は flavor（葉）・card（デッキのカード）・table（卓）・back（裏面）。
+  id は remake/js/minigames/ichidai-data.js の FLAVORS / CARDS の id。卓は mat、裏面は deck（デッキ）と judge（審査カード）。
+- flavor と card は正方形の絵。中央を正方形に切って 512×512 の WebP にする（画面では最大 140px 角ほど）。
+- table は横長の絵。16:9 に切って 1280×720 の WebP にする。back は縦長の絵。5:7 に切って 400×560 の WebP にする。
+- ここに絵が無いものは、本編の正規の絵（ショップの箱絵・シーシャ作りの炭とコンロ・顔アイコン・夜紫UI）か仮の線画で出る
+  （引き当ては remake/js/minigames/ichidai-art.js）。
 - remake/img/ui/ichidai/<種類>/<id>.webp を書き、remake/js/minigames/ichidai-art.js の一覧（ICHIDAI_ART）を置いた絵にそろえる。
   一覧に無い絵は読みに行かないので、絵が無いカードは色と1文字のまま出る。
 - どちらも新しい画像なので Git LFS になる（git add のあと git lfs ls-files で確かめる）。
@@ -22,8 +24,9 @@ PNG_DIR = ROOT / "assets" / "ui" / "ichidai"
 WEBP_DIR = ROOT / "remake" / "img" / "ui" / "ichidai"
 ART_JS = ROOT / "remake" / "js" / "minigames" / "ichidai-art.js"
 DATA_JS = ROOT / "remake" / "js" / "minigames" / "ichidai-data.js"
-KINDS = {"flavor": (512, 512), "card": (512, 512), "table": (1280, 720)}
-TABLE_IDS = {"counter"}
+KINDS = {"flavor": (512, 512), "card": (512, 512), "table": (1280, 720), "back": (400, 560)}
+TABLE_IDS = {"mat"}
+BACK_IDS = {"deck", "judge"}
 
 
 def known_ids():
@@ -32,7 +35,7 @@ def known_ids():
     flavors = text[text.index("export const FLAVORS"):text.index("export const BOWLS")]
     cards = text[text.index("export const CARDS"):text.index("export const TYPE_LABEL")]
     ids = lambda block: set(re.findall(r'\{ id: "([a-z0-9_]+)"', block))
-    return {"flavor": ids(flavors), "card": ids(cards), "table": TABLE_IDS}
+    return {"flavor": ids(flavors), "card": ids(cards), "table": TABLE_IDS, "back": BACK_IDS}
 
 
 def cover(image, size):

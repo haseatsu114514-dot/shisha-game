@@ -1,4 +1,4 @@
-// カードゲーム「一台勝負」（ICG）: 試遊ページ（設定→最初の火→準備→提供→審査→結果・遊び方・やめる・横持ちタッチ）と、
+// カードゲーム「一台勝負」（ICG）: 試遊ページ（設定→最初の火→準備→提供→審査→結果・一台と審査員の札・遊び方・やめる・横持ちタッチ）と、
 // 本編の入口（既定では tonari に出ない／?ichidai=1 で出る／最後まで打つと state.ichidai に残って保存される・時間は進まない）。
 import assert from "node:assert/strict";
 import { suite, baseURL } from "./support.mjs";
@@ -56,7 +56,7 @@ async function stepMine(page, plan, got) {
   } else if (wait === "react") {
     await page.locator(t("ichi-pass")).click();
   } else if (wait === "wear") {
-    for (let k = 0; k < 4 && !(await has(page, "ichi-wear")); k++) await page.locator(`${t("ichi-bowl")} button.ichi-leaf.can`).first().click();
+    for (let k = 0; k < 4 && !(await has(page, "ichi-wear")); k++) await page.locator(`${t("ichi-wear-picker")} button.ichi-leaf.can`).first().click();
     await page.locator(t("ichi-wear")).click();
   } else await page.waitForTimeout(120);
   return false;
@@ -97,13 +97,27 @@ await suite("ichidai", async (check) => {
       const phase = await data(page, "phase");
       if (phase === "prep" && !seenPrep) {
         seenPrep = true;
-        assert.match(await page.locator(t("ichi-bowl")).innerText(), /レモン ×3/, "課題の葉を受け取っている");
+        assert.match(await page.locator(t("ichi-bowl")).getAttribute("data-leaves"), /^lemon:3$/, "課題の葉を受け取っている");
         assert.equal(await heat(page), 3, "種火3枚で熱3");
+        assert.equal(await page.locator(`${t("ichi-stove")} .ichi-stove-grid > *`).count(), 4, "炭焼き場は4つ");
+        assert.equal(await page.locator(`${t("ichi-bowl")} .ichi-packed > span`).count(), 1, "準備のあいだは、詰めた葉を小さく出す");
       }
       if (phase === "serve" && !seenServe) {
         seenServe = true;
         assert.ok(await heat(page) >= 3, "提供に入るとき、炭が載っている");
-        assert.match(await page.locator(t("ichi-pile")).innerText(), /審査カード 残り12枚/);
+        assert.equal(await page.locator(t("ichi-pile")).getAttribute("data-left"), "12");
+        // 提供に入ったら、詰めた葉と場は卓に出さない（ボウルをタップすると札で見られる）
+        assert.equal(await page.locator(".ichi-packed").count(), 0, "ピックした葉は卓に出さない");
+        assert.equal(await page.locator(t("ichi-market")).count(), 0);
+        await page.locator(t("ichi-bowl")).click();
+        const rig = page.locator(t("ichi-info-sheet"));
+        assert.match(await rig.innerText(), /あなたの一台[\s\S]*主役[\s\S]*ブルーベリー ×\d/);
+        await page.locator(t("ichi-info-close")).click();
+        // 審査の山をタップすると、残りの吸い方と審査員の決め手が見られる
+        await page.locator(t("ichi-pile")).click();
+        assert.match(await rig.innerText(), /審査カード 残り12枚[\s\S]*決め手/);
+        await page.locator(t("ichi-info-close")).click();
+        assert.equal(await rig.count(), 0);
       }
       if (await stepMine(page, [["blueberry", 8], ["mint", 4]], got)) break;
     }
@@ -117,7 +131,7 @@ await suite("ichidai", async (check) => {
     }
     assert.match(await page.locator(".ichi-result-vote").innerText(), /一票|票は入らない/);
     await page.locator(t("ichi-next")).click();
-    assert.match(await page.locator(t("ichi-pile")).innerText(), /審査カード 残り11枚/, "めくった審査カードは山から減る");
+    assert.equal(await page.locator(t("ichi-pile")).getAttribute("data-left"), "11", "めくった審査カードは山から減る");
     // やめる: 確かめてから。記録は残らない
     await page.locator(t("ichi-close")).click();
     await page.locator(t("ichi-quit-sheet")).waitFor();
@@ -135,11 +149,14 @@ await suite("ichidai", async (check) => {
     await waitMine(page);
     const boxes = await page.evaluate(() => {
       const r = (sel) => { const b = document.querySelector(sel).getBoundingClientRect(); return { w: b.width, h: b.height, right: b.right, bottom: b.bottom }; };
-      return { stage: r("#stage"), close: r('[data-test="ichi-close"]'), help: r('[data-test="ichi-help"]'), card: r('[data-test="ichi-hand-0"]'), vw: innerWidth, vh: innerHeight };
+      return { stage: r("#stage"), close: r('[data-test="ichi-close"]'), help: r('[data-test="ichi-help"]'), fast: r('[data-test="ichi-fast"]'), card: r('[data-test="ichi-hand-0"]'),
+        stove: r('[data-test="ichi-stove"]'), mine: r('[data-test="ichi-score-me"]'), vw: innerWidth, vh: innerHeight };
     });
     // 40px を拡縮の倍率で割り戻して作るので、掛け戻した実寸には小数の誤差が出る（39.9987 など）
     assert.ok(boxes.close.w >= 39.99 && boxes.close.h >= 39.99 && boxes.help.w >= 39.99, `「？」「✕」の押せる範囲が40px未満: ${JSON.stringify(boxes.close)}`);
+    assert.ok(boxes.fast.w >= 39.99 && boxes.fast.h >= 39.99, "早送りの押せる範囲が40px未満");
     assert.ok(boxes.card.bottom <= boxes.vh + 1 && boxes.close.right <= boxes.vw + 1, "手札と右上のボタンが画面に収まる");
+    assert.ok(boxes.stove.right <= boxes.vw + 1 && boxes.stove.bottom <= boxes.vh + 1 && boxes.mine.bottom <= boxes.vh + 1, "炭焼き場と自分の顔が画面に収まる");
     for (const i of [0, 1, 2]) await page.locator(t(`ichi-hand-${i}`)).tap();
     await page.locator(t("ichi-embers")).tap();
     await page.waitForFunction(() => document.querySelector('[data-test="ichi-game"]').dataset.phase === "prep");

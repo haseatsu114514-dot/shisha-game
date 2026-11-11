@@ -41,7 +41,7 @@ export const BOWLS = Object.freeze([
 
 export const HMDS = Object.freeze([
   { id: "lotus", name: "ロートスHMD", ab: "【均一】各セッション1回、ズレの一口を適温として採点する。" },
-  { id: "tanukish", name: "タヌキッシュリッド", ab: "【素直】炭焼き場の枠+1。素焼きハガルとは組めない。" },
+  { id: "tanukish", name: "タヌキッシュリッド", ab: "【素直】「灰にする」で炭を落としたら、カードを1枚引く（1ターンに1回）。素焼きハガルとは組めない。" },
   { id: "amaburst", name: "アマバースト", ab: "【高火力】自分の判定熱はつねに+1。" },
   { id: "big_tanukish", name: "ビッグタヌキッシュリッド", ab: "【熱持ち】各セッション最初の自分のターンは冷めない。" },
 ]);
@@ -71,7 +71,7 @@ export const CARDS = Object.freeze([
   { id: "breath", name: "ひと息", type: "tech", cost: 1, when: "turn", tx: "カードを2枚引く。" },
   { id: "reset", name: "仕切り直し", type: "tech", burn: 2, when: "turn", tx: "カードを3枚引く。" },
   { id: "windguard", name: "風防", type: "tool", cost: 2, when: "any", tx: "風防カウンターを2個のせて出す。冷めるとき、1段階ぶんのかわりにカウンターを1個取ってよい。0個になったら灰へ。相手のカードで自分の炭は弱まらない。" },
-  { id: "chacosta", name: "チャコスタ", type: "tool", cost: 2, when: "any", tx: "炭焼き場の枠+2。" },
+  { id: "chacosta", name: "チャコスタ", type: "tool", cost: 2, when: "any", tx: "自分のターンのはじめ、炭焼き場に炭が3つ以上あれば、カードを1枚引く。" },
   { id: "timer", name: "キッチンタイマー", type: "tool", cost: 1, when: "any", tx: "自分のターンのはじめに炭が焼けたら、カードを1枚引く（1ターンに1枚まで）。" },
   { id: "ice_hose", name: "アイスホース", type: "tool", cost: 2, when: "any", tx: "上側のズレを適温として扱う。" },
   { id: "diffuser", name: "ディフューザー", type: "tool", cost: 2, when: "any", tx: "ズレの一口でも、ミックスと相性の加点を得る。" },
