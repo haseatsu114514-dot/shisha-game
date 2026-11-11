@@ -642,6 +642,11 @@ body[data-screen="bench"] .gain-card.out { animation-name: gain-out-l; }
 .scene-curtain { position: absolute; inset: 0; overflow: hidden; z-index: 100; pointer-events: auto; }
 /* 動きを減らす設定: 帯を描かず、夜の紫の面だけをフェードで重ねる */
 .scene-curtain.veil { background: #34246a; opacity: 0; }
+/* 標準の切り替え「煙のにじみ」（core/transitions.js smokeCurtain・TMG44）。幕は透明で、前の背景（#bg）をマスクでほどく。
+   境目と一緒に昇る薄い煙だけを、幕の中に描く（白い煙の絵を画面の明るさで重ねる） */
+.scene-curtain.smoke { background: transparent; }
+.smoke-haze { position: absolute; left: -4%; right: -4%; top: 125%; height: 50%; background: center / 100% 100% no-repeat; opacity: 0; mix-blend-mode: screen; pointer-events: none; }
+#stage[data-wide] .scene-curtain.smoke { inset: 0 calc(-1 * var(--stage-gutter)); }
 @media (prefers-reduced-motion: reduce) { .chapter-card { transition: none; } .cc-name { animation: none; } }
 
 /* 敗北→GAME OVER の入り（core/transitions.js defeatFade・#2688 A19）。中心から色が抜けて灰色になる */

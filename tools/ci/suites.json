@@ -2321,6 +2321,27 @@
       "chrome": "playwright"
     },
     {
+      "id": "smoke-dissolve",
+      "title": "Standard scene switch: smoke dissolve (TMG44)",
+      "kind": "browser",
+      "weight": 0.5,
+      "timeout": 10,
+      "paths": [
+        "remake/js/core/transitions.js",
+        "remake/js/core/transition-kit.js",
+        "remake/js/core/store-arrival.js",
+        "remake/js/core/ui.js",
+        "remake/js/vn/engine.js",
+        "remake/css/base.css",
+        "remake/img/ui/transitions/smoke/**",
+        "remake/test/browser/smoke_dissolve.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/smoke_dissolve.mjs"
+      ],
+      "chrome": "playwright"
+    },
+    {
       "id": "steam-forecast",
       "title": "Steam forecast",
       "kind": "browser",
