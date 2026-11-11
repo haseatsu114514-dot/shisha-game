@@ -191,6 +191,8 @@
         { "speaker": "da_silva", "face": "excited", "text": "来たな、世界一！　見てたぞ、審査席からな" },
         { "speaker": "hajime", "face": "surprise", "text": "太陽さん。どうして、ここに？" },
         { "speaker": "da_silva", "face": "smile", "text": "休暇。シェイクの家、氷が切れねえからな" },
+        { "speaker": "", "face": "", "text": "使用人の青年が照れて腰を揺らし、拍がずれるたびに笑いが起きた。" },
+        { "speaker": "da_silva", "face": "excited", "text": "ずれてもいい。笑えりゃ正解だ。お前も肩だけ揺らしてけ" },
         { "speaker": "da_silva", "face": "normal", "text": "座れよ。今日は審査じゃねえ。ただのフェスタだ" }
       ]
     },
@@ -201,6 +203,8 @@
         { "speaker": "da_silva", "face": "smile", "text": "大会のときの、お前の一台。手拍子ひとつ無しで……見入った、ってやつだ" },
         { "speaker": "hajime", "face": "normal", "text": "静かすぎましたか" },
         { "speaker": "da_silva", "face": "normal", "text": "いいや。静かでも、あれはフェスタ。客が楽しんでる、それでいい" },
+        { "speaker": "hajime", "face": "smile", "text": "ありがとうございます。あの一台、少し怖かったんです" },
+        { "speaker": "", "face": "", "text": "太陽は、ほぐした果肉を鼻に近づけて、にっと笑った。" },
         { "speaker": "da_silva", "face": "excited", "text": "でも、手拍子のフェスタも忘れんなよ！" }
       ]
     },
@@ -210,6 +214,8 @@
         { "speaker": "", "face": "", "text": "中庭の噴水の縁に、太陽とシェイクが並んで座っていた。" },
         { "speaker": "da_silva", "face": "smile", "text": "この王様、俺の店来ると、一番静かに笑うんだ" },
         { "speaker": "sheikh", "face": "smile", "text": "君の店では、王族の顔をしなくていいからな" },
+        { "speaker": "", "face": "", "text": "噴水の水音が、二人のあいだを、少しも気まずくしなかった。" },
+        { "speaker": "sheikh", "face": "normal", "text": "客として座れる店は、案外少ない。私は、そういう店が好きだ" },
         { "speaker": "da_silva", "face": "normal", "text": "ハジメ、お前の店も、そういう店にしろよ。誰が来ても……ただの客、いられる店" },
         { "speaker": "hajime", "face": "normal", "text": "（ただの客で、いられる店）" }
       ]
