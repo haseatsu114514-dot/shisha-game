@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-11-11 02:42 UTC",
+ "generated": "2026-11-11 11:21 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -2931,6 +2931,7 @@
   "sprites/character_variants/new/adam/chr_adam_smile.png",
   "sprites/character_variants/new/adam/chr_adam_surprise.png",
   "sprites/character_variants/new/ageha/chr_ageha_normal.png",
+  "sprites/character_variants/new/ageha/chr_ageha_sad.png",
   "sprites/character_variants/new/da_silva/chr_da_silva_excited.png",
   "sprites/character_variants/new/da_silva/chr_da_silva_normal.png",
   "sprites/character_variants/new/da_silva/chr_da_silva_serious.png",
@@ -2946,7 +2947,11 @@
   "sprites/character_variants/new/emil/chr_emil_smile.png",
   "sprites/character_variants/new/emil/chr_emil_surprise.png",
   "sprites/character_variants/new/emil/chr_emil_thinking.png",
+  "sprites/character_variants/new/faris/chr_faris_excited.png",
   "sprites/character_variants/new/faris/chr_faris_normal.png",
+  "sprites/character_variants/new/faris/chr_faris_smile.png",
+  "sprites/character_variants/new/faris/chr_faris_surprise.png",
+  "sprites/character_variants/new/faris/chr_faris_wink.png",
   "sprites/character_variants/new/hajime/chr_hajime_excited.png",
   "sprites/character_variants/new/hajime/chr_hajime_normal.png",
   "sprites/character_variants/new/hajime/chr_hajime_sad.png",
@@ -2968,6 +2973,7 @@
   "sprites/character_variants/new/hiyori/chr_hiyori_surprise.png",
   "sprites/character_variants/new/hiyori/chr_hiyori_tears.png",
   "sprites/character_variants/new/khalil/chr_khalil_normal.png",
+  "sprites/character_variants/new/khalil/chr_khalil_smile.png",
   "sprites/character_variants/new/kumicho/chr_kumicho_normal.png",
   "sprites/character_variants/new/kumicho/chr_kumicho_sad.png",
   "sprites/character_variants/new/kumicho/chr_kumicho_serious.png",
@@ -2985,6 +2991,8 @@
   "sprites/character_variants/new/maki/chr_maki_smile.png",
   "sprites/character_variants/new/maki/chr_maki_surprise.png",
   "sprites/character_variants/new/mashiro/chr_mashiro_normal.png",
+  "sprites/character_variants/new/mashiro/chr_mashiro_serious.png",
+  "sprites/character_variants/new/mashiro/chr_mashiro_surprise.png",
   "sprites/character_variants/new/mashiro/chr_mashiro_yawn.png",
   "sprites/character_variants/new/master_hookah/chr_master_hookah_angry.png",
   "sprites/character_variants/new/master_hookah/chr_master_hookah_laugh.png",
@@ -2994,11 +3002,15 @@
   "sprites/character_variants/new/master_hookah/chr_master_hookah_smile.png",
   "sprites/character_variants/new/master_hookah/chr_master_hookah_surprise.png",
   "sprites/character_variants/new/minto/chr_minto_normal.png",
+  "sprites/character_variants/new/minto/chr_minto_sad.png",
+  "sprites/character_variants/new/minto/chr_minto_smile.png",
+  "sprites/character_variants/new/minto/chr_minto_surprise.png",
   "sprites/character_variants/new/minto/chr_minto_ura_normal.png",
   "sprites/character_variants/new/minto/chr_minto_ura_sad.png",
   "sprites/character_variants/new/minto/chr_minto_ura_smile.png",
   "sprites/character_variants/new/minto/chr_minto_ura_smug.png",
   "sprites/character_variants/new/minto/chr_minto_ura_surprise.png",
+  "sprites/character_variants/new/minto/chr_minto_wink.png",
   "sprites/character_variants/new/mukai_master/chr_mukai_master_normal.png",
   "sprites/character_variants/new/mukai_master/chr_mukai_master_sad.png",
   "sprites/character_variants/new/mukai_master/chr_mukai_master_serious.png",
@@ -3015,6 +3027,7 @@
   "sprites/character_variants/new/noor/chr_noor_surprise.png",
   "sprites/character_variants/new/pakki/chr_pakki_angry.png",
   "sprites/character_variants/new/pakki/chr_pakki_evil.png",
+  "sprites/character_variants/new/pakki/chr_pakki_excited.png",
   "sprites/character_variants/new/pakki/chr_pakki_normal.png",
   "sprites/character_variants/new/pakki/chr_pakki_smile.png",
   "sprites/character_variants/new/pakki/chr_pakki_smoke.png",
@@ -3848,7 +3861,8 @@
    },
    "ageha": {
     "faces": [
-     "normal"
+     "normal",
+     "sad"
     ],
     "h": 0.8108,
     "b": 0.02,
@@ -3921,7 +3935,8 @@
    },
    "khalil": {
     "faces": [
-     "normal"
+     "normal",
+     "smile"
     ],
     "h": 0.9,
     "b": 0.05,
@@ -3944,6 +3959,8 @@
    "mashiro": {
     "faces": [
      "normal",
+     "serious",
+     "surprise",
      "yawn"
     ],
     "h": 0.9,
@@ -3954,11 +3971,15 @@
    "minto": {
     "faces": [
      "normal",
+     "sad",
+     "smile",
+     "surprise",
      "ura_normal",
      "ura_sad",
      "ura_smile",
      "ura_smug",
-     "ura_surprise"
+     "ura_surprise",
+     "wink"
     ],
     "h": 0.9008,
     "b": 0.0492,
@@ -3983,6 +4004,7 @@
     "faces": [
      "angry",
      "evil",
+     "excited",
      "normal",
      "smile",
      "smoke",
@@ -4051,7 +4073,11 @@
    },
    "faris": {
     "faces": [
-     "normal"
+     "excited",
+     "normal",
+     "smile",
+     "surprise",
+     "wink"
     ],
     "h": 0.9,
     "b": 0.05,
