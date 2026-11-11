@@ -267,6 +267,9 @@ await suite("ichidai", async (check) => {
       }
       if (phase === "serve" && !seenServe) {
         seenServe = true;
+        // 第0.5版: 提供に入ると、まずこのラウンドの審査カードがめくられる（札が出ているあいだは卓を押せない）。閉じるまで待つ
+        // （data-input="1"＝進行が人の入力を待っている。めくる演出のあいだは "0"）
+        await page.waitForFunction(() => { const g = document.querySelector('[data-test="ichi-game"]'); return document.querySelector(".ichi-sheet").hidden && g.dataset.turn === "me" && g.dataset.input === "1"; }, null, { timeout: 20000 });
         assert.ok(await heat(page) >= 3, "提供に入るとき、炭が載っている");
         // 熱＝炭の火の合計（炭の数ではない）。炭は4つまでで、火の段数ぶんの高さで積む
         const coals = await page.locator(`${t("ichi-zone")} .ichi-coal-btn`).evaluateAll((list) => list.map((n) => ({ fire: Number(n.dataset.fire), up: n.dataset.up, h: n.offsetHeight, label: n.querySelector(".ichi-coal-fire")?.textContent })));
@@ -275,7 +278,9 @@ await suite("ichidai", async (check) => {
         assert.ok(coals.every((c) => c.label === String(c.fire) && (c.up === "1" ? c.fire >= 1 && c.fire <= 3 : c.fire === 1)), "札の横に、いまの火が出る（種火は1）");
         const unit = Math.min(...coals.map((c) => c.h / c.fire));
         assert.ok(coals.every((c) => Math.abs(c.h - unit * c.fire) < 3), "炭は火の段数ぶんの高さ");
-        assert.equal(await page.locator(t("ichi-pile")).getAttribute("data-left"), "12");
+        // 第0.5版: 審査カードはラウンドのはじめに1枚めくってある（山は11枚）。今回の吸い方は左上に出る
+        assert.equal(await page.locator(t("ichi-pile")).getAttribute("data-left"), "11");
+        assert.match(await page.locator(t("ichi-now-judge")).innerText(), /今回の審査/);
         // 提供に入ったら場は出さない。葉の札の束と体力は出し続ける（相手の束も卓の奥に。HUD の相手の札には主役と体力）
         assert.equal(await page.locator(t("ichi-market")).count(), 0);
         const bowl = (await page.locator(t("ichi-bowl")).getAttribute("data-leaves")).split(",").map((x) => x.split(":")), leaves = bowl.reduce((a, [, n]) => a + Number(n), 0);
@@ -291,7 +296,7 @@ await suite("ichidai", async (check) => {
         await page.locator(t("ichi-info-close")).click();
         // 審査の山をタップすると、残りの吸い方と審査員の決め手が見られる
         await page.locator(t("ichi-pile")).click();
-        assert.match(await rig.innerText(), /審査カード 残り12枚[\s\S]*決め手/);
+        assert.match(await rig.innerText(), /審査カード 残り11枚[\s\S]*決め手/);
         await page.locator(t("ichi-info-close")).click();
         assert.equal(await rig.count(), 0);
       }
@@ -367,7 +372,11 @@ await suite("ichidai", async (check) => {
     await page.waitForFunction(() => ["joy", "shock", "down", "nod"].some((k) => window.__ichiMotion.has(k)), null, { timeout: 5000 });
     const motions = await page.evaluate(() => [...window.__ichiMotion]);
     assert.ok(motions.some((k) => ["reach", "play", "lean"].includes(k)), `相手が手を動かすと、席が動く: ${motions.join(",")}`);
-    assert.equal(await page.locator(t("ichi-pile")).getAttribute("data-left"), "11", "めくった審査カードは山から減る");
+    // 第0.5版: 次のラウンドのはじめに、次の審査カードがめくられる（山はもう1枚減って10枚）。めくる札が閉じるまで待つ
+    await page.locator(t("ichi-reveal")).waitFor({ timeout: 8000 });
+    assert.match(await page.locator(t("ichi-reveal")).innerText(), /このラウンドの審査/);
+    await page.locator(t("ichi-reveal")).waitFor({ state: "detached", timeout: 8000 });
+    assert.equal(await page.locator(t("ichi-pile")).getAttribute("data-left"), "10", "めくった審査カードは山から減る");
     // やめる: 確かめてから。記録は残らない
     await page.locator(t("ichi-close")).click();
     await page.locator(t("ichi-quit-sheet")).waitFor();

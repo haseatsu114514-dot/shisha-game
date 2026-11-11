@@ -494,6 +494,11 @@ export function runIchidai({ host = document.getElementById("stage"), signal = n
       if (!human(w.player) && G.log.length > before) ui.note = G.log.at(-1).text;
       // 自分の手で起きたこと（冷めた・火力を落とした・器具が押し出された など）を、案内の札に1行残す。ターンを終えたら消す
       if (w.player === ME) { const mineLog = G.log.slice(before).filter((l) => l.who === ME).at(-1); if (action.type === "end") ui.last = ""; else if (mineLog) ui.last = mineLog.text; }
+      // ガイド: 準備で葉を詰めたターンは、ほかにすることが無ければ、そのままターンを終える（「詰める → 終える」の2度押しをなくす）
+      if (human(w.player) && action.type === "pack" && ui.assist && G.wait?.type === "prep" && G.wait.player === ME) {
+        const me = G.P[ME];
+        if (!me.hand.some((id) => CARD[id].type !== "coal" && canPlay(G, me, id).ok)) queued = { action: { type: "end" }, at: acts };
+      }
       await playEvents(priorScores, from);
     }
   }
@@ -651,7 +656,7 @@ export function runIchidai({ host = document.getElementById("stage"), signal = n
       const said = speak(ev); // 相手の一言（カードを使った・審査の結果・勝ち負け）。待たずに進む
       const fl = from && !still();
       board.style.setProperty("--land", fl && ["charge", "place", "puton"].includes(ev.t) ? `${(human(ev.p) ? 0.3 : 0.36) / speed}s` : fl && ev.t === "play" ? `${(human(ev.p) ? 0.62 : 1.7) / speed}s` : "0s");
-      if (ev.t === "reveal") { sfx("card"); render(); await showReveal(ev.puff); }
+      if (ev.t === "reveal") { render(); if (ev.puff.judge) { sfx("card"); await showReveal(ev.puff); } } // 練習試合は審査カードを使わない
       else if (ev.t === "score") {
         ui.feed.unshift(feedEntry(ev)); // 審査員の声（掲示板）に足す。新しいものが上
         // 相手ごとに、結果に合わせて表情を替える（一言に表情が付いた人は、そちらを優先）
@@ -703,6 +708,9 @@ export function runIchidai({ host = document.getElementById("stage"), signal = n
     // 左上は相手の札とラウンドを縦に並べ、相手の顔の左（吹き出しの出る所）は空けておく（4人対戦は、相手の数字を顔の横に出す）
     table.replaceChildren(...[el("div.ichi-hud-left", many ? [clock(w)] : [foePanel(op), clock(w)]), el("div.ichi-guide", { dataset: { test: "ichi-guide" } }, lines), el("div.ichi-actions", buttons),
       heatRead(me), prepMarket(me, w, myTurn), handRow(me, w, myTurn)].filter(Boolean));
+    // 案内の札の高さは文の量で変わる。右のボタンの列は、札のすぐ下に置く（重ならないように。30px 刻みで、細かくは動かさない）
+    const guideBox = table.querySelector(".ichi-guide");
+    if (guideBox) root.style.setProperty("--ichi-actions-top", `${Math.max(242, Math.ceil((guideBox.offsetTop + guideBox.offsetHeight + 8) / 30) * 30)}px`);
     markHint(hintNow(w));
     // 自分の熱が変わったら、熱の数字のそばに差を浮かせる（何が起きたかを見落とさないように）
     const hNow = heatOf(me);
@@ -733,7 +741,7 @@ export function runIchidai({ host = document.getElementById("stage"), signal = n
   /** 4人対戦: 相手の顔の横の小さな札。名前・点・票／熱と帯（主役の葉の適温のどこか）／葉の体力と炭の数。細かい中身は顔をタップで開く */
   function rivalPlate(op) {
     const h = heatOf(op), f = op.main ? FLAVOR[op.main] : null, serve = G.phase === "serve";
-    const z = f && serve ? zoneCls(rawZone(f, judgedHeat(op, PUFFS.normal), scorchLineOf(op))) : null;
+    const z = f && serve ? zoneCls(rawZone(f, judgedHeat(op, judgeNow()), scorchLineOf(op))) : null;
     return [
       el("b.ichi-rival-name", { text: op.name }),
       el("span.ichi-rival-score", { dataset: { test: `ichi-rival-score-${op.index}`, score: String(op.score), votes: String(op.votes) } }, [el("b", { text: String(op.score) }), el("small", { text: "点" }), el("i.ichi-medal"), el("small", { text: String(op.votes) })]),
@@ -881,13 +889,17 @@ export function runIchidai({ host = document.getElementById("stage"), signal = n
     const rounds = roundsOf(G), serve = G.phase === "serve", judges = G.tour.judges;
     const phaseName = G.phase === "embers" ? "最初の火" : G.phase === "prep" ? `準備 ${w ? w.n ?? "" : ""}/${RULES.prepTurns}` : `ラウンド ${Math.min(G.round + 1, rounds)}/${rounds}`;
     const pips = serve ? el("span.ichi-pips", { "aria-hidden": "true" }, Array.from({ length: rounds }, (_, i) => el(`i${i < G.round ? ".is-done" : i === G.round ? ".is-now" : ""}${i % 3 === 2 ? ".is-gap" : ""}`))) : null;
-    const peek = ui.peek && serve && !G.judge ? el("span.ichi-peek", { dataset: { test: "ichi-peek" } }, [el("small", { text: "読んだ" }), el("b", { text: `${ui.peek.style} ${dhText(ui.peek.dh)}` })]) : null;
+    // 第0.5版: このラウンドの審査カードは、はじめにめくってある（全員が見ている）。「吸い方を読む」で見たのは次のラウンドの分
+    const first = G.R.revealFirst, pk = first ? G.P[ME].peek : ui.peek && !G.judge ? ui.peek : null;
+    const nowJudge = first && serve && G.judge?.judge && !G.over ? el(`span.ichi-now-judge${G.judge.dh > 0 ? ".is-up" : G.judge.dh < 0 ? ".is-down" : ""}`, { dataset: { test: "ichi-now-judge", dh: String(G.judge.dh || 0) }, title: G.judge.tx },
+      [el("small", { text: "今回の審査" }), el("b", { text: G.judge.style }), el("strong", { text: dhText(G.judge.dh || 0) })]) : null;
+    const peek = pk && serve ? el("span.ichi-peek", { dataset: { test: "ichi-peek" } }, [el("small", { text: first ? "次のラウンド" : "読んだ" }), el("b", { text: `${pk.style} ${dhText(pk.dh)}` })]) : null;
     return el("div.ichi-clock", [
       el("b", { text: phaseName, dataset: { test: "ichi-phase" } }), pips,
       el("small", { text: serve ? `${G.order?.[0] === ME ? "あなた" : G.P[G.order?.[0] ?? CPU].name}が先手` : G.tour.name }),
       // 審査員の顔: 提供では卓の「審査の山」の横に出す。準備のあいだはここに出す
       !serve && judges.length ? el("span.ichi-judges", judges.map((id) => faceNode(JUDGE_FACE[id], JUDGE[id].name, ".is-judge"))) : null,
-      peek,
+      nowJudge, peek,
     ]);
   }
   // 卓の中央: 「相手の一口」・審査の山と審査員・「自分の一口」（仕込んだ一口のカードを表向きに置く。相手のものも見える）。
@@ -906,7 +918,11 @@ export function runIchidai({ host = document.getElementById("stage"), signal = n
     };
     return el("div.ichi-center", [
       op ? slot(op, false) : turnOrder(),
-      serve ? zoneBox(judges.length ? "審査の山" : "練習", ".is-judge", {}, [pile, judges.length ? el("span.ichi-judges", judges.map((id) => faceNode(JUDGE_FACE[id], JUDGE[id].name, ".is-judge"))) : null])
+      serve ? zoneBox(judges.length ? "審査の山" : "練習", ".is-judge", {}, [pile, !judges.length ? null
+        // 第0.5版: このラウンドの審査カードは、はじめにめくって山の横に置く（めくった審査員の顔と、吸い方）
+        : G.R.revealFirst && G.judge?.judge && !G.over ? el(`span.ichi-open-puff${G.judge.dh > 0 ? ".is-up" : G.judge.dh < 0 ? ".is-down" : ""}`, { dataset: { test: "ichi-open-puff" }, title: `${JUDGE[G.judge.judge].name}「${G.judge.style}」：${G.judge.tx}` },
+          [faceNode(JUDGE_FACE[G.judge.judge], JUDGE[G.judge.judge].name, ".is-judge"), el("b", { text: G.judge.style }), el("strong", { text: dhText(G.judge.dh || 0) })])
+          : el("span.ichi-judges", judges.map((id) => faceNode(JUDGE_FACE[id], JUDGE[id].name, ".is-judge")))])
         : el("i.ichi-center-mark", { "aria-hidden": "true" }),
       slot(me, true),
     ]);
@@ -918,6 +934,53 @@ export function runIchidai({ host = document.getElementById("stage"), signal = n
     return zoneBox("手番の順", ".is-order", { dataset: { test: "ichi-order", order: order.join(",") } }, el("div.ichi-row", order.map((i) =>
       el(`span.ichi-order-chip${G.active === i && !G.over ? ".is-now" : ""}${i === ME ? ".is-me" : ""}`, { title: i === ME ? "あなた" : G.P[i].name }, faceNode(info[i]?.id, G.P[i].name)))));
   }
+  /** いまの審査カード（提供でめくられていれば、それ。準備のあいだと練習試合は「ふつうに吸う」） */
+  const judgeNow = () => (G.phase === "serve" && G.judge) || PUFFS.normal;
+  /**
+   * ねらう熱: 主役の葉のジャスト（無ければ適温のまんなか）を、いまの審査カード・HMD・寄せ・煽りを入れて「蓄える熱」に直した数。
+   * 返り値 { f, h（いまの熱）, d（判定熱−熱）, lo, hi（適温を熱に直した幅）, justs, target, diff（あといくつ）, zone（いまのままならどの帯か） }
+   */
+  function heatGoal(me) {
+    const f = me.main ? FLAVOR[me.main] : null;
+    if (!f) return null;
+    const h = heatOf(me), d = judgedHeat(me, judgeNow()) - h, top = Math.min(RULES.heatMax, coalMaxOf(me) * 3);
+    const lo = f.lo - d, hi = f.hi - d, justs = f.j.map((j) => j - d).filter((x) => x >= 0 && x <= top);
+    const mid = Math.max(0, Math.min(top, Math.round((lo + hi) / 2)));
+    const target = justs.length ? justs.reduce((a, b) => (Math.abs(b - h) < Math.abs(a - h) ? b : a)) : mid;
+    return { f, h, d, lo, hi, justs, target, diff: target - h, zone: zoneCls(rawZone(f, h + d, scorchLineOf(me))) };
+  }
+  /** 案内の「ねらい」の1行。いま何を目ざしているか（最初の火＝熱、準備＝葉の枚数と配合 → 提供までの熱、提供＝今回の審査に合う熱） */
+  function goalLine(me, w) {
+    const row = (strong, text, data = {}) => el("div.ichi-goal", { dataset: { test: "ichi-goal", ...data } }, [el("i", { text: "ねらい" }), el("b", { text: strong }), el("span", { text })]);
+    if (w.type === "embers") return row(`熱${Math.min(RULES.startEmbers, coalMaxOf(me))}`, "置いた枚数が、最初の熱になる。あとで焼けた炭と入れ替える");
+    if (w.type === "prep" && !me.steamed) {
+      const want = Math.min(BOWL[me.bowlId].cap, me.plan.reduce((a, [, n]) => a + n, 0) || 12), now = leavesOf(me);
+      const recipe = me.plan.map(([id, n]) => `${FLAVOR[id].name}${me.bowl[id] || 0}/${n}`).join("・");
+      return row(`葉${now}/${want}枚`, recipe, { leaves: String(now), want: String(want) });
+    }
+    const g = heatGoal(me);
+    if (!g) return null;
+    const q = judgeNow(), star = g.justs.includes(g.target) ? "★" : "";
+    const state = g.diff > 0 ? `いま${g.h}・あと+${g.diff}` : g.diff < 0 ? `いま${g.h}・${-g.diff}下げる` : `いま${g.h}・ぴったり`;
+    if (w.type === "prep") return row(`熱${g.target}${star}`, `${state}。提供までに合わせる（準備はあと${Math.max(0, RULES.prepTurns - (w.n || 1))}ターン）`, { target: String(g.target), now: String(g.h) });
+    return row(`熱${g.target}${star}`, `${state}${q.dh ? `（「${q.style}」の${dhText(q.dh)}を入れた数）` : ""}`, { target: String(g.target), now: String(g.h), dh: String(q.dh || 0) });
+  }
+  /** 案内の「流れ」: このターンにすることの順番と、いまどこか */
+  function flowSteps(w, me, hint) {
+    const t = hint?.action.type;
+    let steps = null, now = 0;
+    if (w.type === "embers") { steps = ["炭にする札を選ぶ", "立ち上げる"]; now = hint && !hint.targets.some((q) => q.includes("ichi-hand-")) ? 1 : 0; }
+    else if (w.type === "prep") {
+      const mode = me.turn.mode;
+      if (mode === "steam" || (!mode && t === "steam") || me.steamed) { steps = ["蒸らす", "炭を置く・のせる", "終える"]; now = !mode ? 0 : t === "end" ? 2 : 1; }
+      else { steps = ["葉を選ぶ", "詰める", "終える"]; now = mode === "pack" ? 2 : sum(ui.counts) > 0 && hint && hint.targets.some((q) => q.includes("ichi-pack")) ? 1 : 0; }
+    } else if (w.type === "cool") { steps = ["冷める", "熱を合わせる", "カード1枚", "終える"]; now = 0; }
+    else if (w.type === "main") { steps = ["冷める", "熱を合わせる", "カード1枚", "終える"]; now = t === "end" ? 3 : t === "play" ? 2 : 1; }
+    if (!steps) return null;
+    return el("div.ichi-steps", { dataset: { test: "ichi-steps", now: String(now) }, "aria-label": `このターンの流れ: ${steps.map((x, i) => `${i + 1} ${x}${i === now ? "（いま）" : ""}`).join("、")}` },
+      steps.map((x, i) => el(`span${i < now ? ".is-done" : i === now ? ".is-now" : ""}`, [el("i", { text: i < now ? "✓" : String(i + 1) }), x])));
+  }
+
   // ───────── 次にすること（ガイド） ─────────
   // いまの入力待ちに打つとよい1手を、CPU（つよい）と同じ考え方で決め、言葉と「押す場所」にする。相手の手札や山札の順は見ない。
   // 2手で打つもの（札を選ぶ → 置く・使う）は、選ぶ前は札を、選んだあとはボタンを指す。1手打つたびに次の手へ進む
@@ -939,13 +1002,14 @@ export function runIchidai({ host = document.getElementById("stage"), signal = n
     if (a.type === "pack") { const ps = Object.entries(a.picks).filter(([, n]) => n > 0);
       return { action: a, text: `葉を詰める：${ps.map(([id, n]) => `${FLAVOR[id].name}${n}枚`).join("・")}`, where: () => (sameCounts(a.picks) ? [T("ichi-pack")] : ps.filter(([id, n]) => (ui.counts[id] || 0) < n).map(([id]) => `${T(`ichi-market-${id}`)} .ichi-pile-main`)) }; }
     if (a.type === "steam") return { action: a, text: `「蒸らす」：${G.R.steamDraw}枚引いて、炭の準備に入る`, where: () => [T("ichi-steam")] };
-    if (a.type === "place") return { action: a, text: `「${name(a.hand)}」を炭焼き場に置く（焼けたら、のせられる）`, where: () => (sel(a.hand) ? [T("ichi-place-slot"), T("ichi-do-place")] : [T(`ichi-hand-${a.hand}`)]) };
+    if (a.type === "place") return { action: a, text: heatGoal(me)?.diff === 0 ? `次のターンにそなえて、「${name(a.hand)}」を炭焼き場に置く` : `「${name(a.hand)}」を炭焼き場に置く（焼けたら、のせられる）`, where: () => (sel(a.hand) ? [T("ichi-place-slot"), T("ichi-do-place")] : [T(`ichi-hand-${a.hand}`)]) };
     if (a.type === "puton") { const c = me.stove[a.stove]; return { action: a, text: `焼けた${CARD[c.id].name}をのせる（熱+${CARD[c.id].heat}）`, where: () => [T(`ichi-stove-${a.stove}`)] }; }
     if (a.type === "charge") return { action: a, text: `「${name(a.hand)}」を裏向きで置く（熱+1・1枚引く）`, where: () => (sel(a.hand) ? [T("ichi-charge-slot"), T("ichi-do-charge")] : [T(`ichi-hand-${a.hand}`)]) };
     if (a.type === "ash") return { action: a, text: "熱を下げる：火の小さい炭を1つ外す（灰にする）", where: () => (ui.sel?.type === "zone" && ui.sel.i === a.zone ? [T("ichi-do-ash")] : [T(`ichi-coal-${a.zone}`)]) };
     if (a.type === "play") { const c = CARD[me.hand[a.hand]], puff = c.when === "puff" && !G.R.reactAfterReveal;
       return { action: a, text: `「${c.name}」を${puff ? "この一口に仕込む" : "使う"}${a.target != null ? `（${G.P[a.target].name}に）` : ""}`, where: () => (sel(a.hand) ? [T(a.target != null && multi() ? `ichi-do-play-${a.target}` : "ichi-do-play")] : [T(`ichi-hand-${a.hand}`)]) }; }
-    if (a.type === "end") return { action: a, text: w.type === "prep" ? "このターンはここまで。「ターンを終える」" : "熱は合っている。「ターンを終える」と審査へ進む", where: () => [T("ichi-end")] };
+    if (a.type === "end") { const g = w.type === "main" ? heatGoal(me) : null;
+      return { action: a, text: w.type === "prep" ? "このターンはここまで。「ターンを終える」" : !g || g.diff === 0 ? "熱はねらいどおり。「ターンを終える」" : g.zone === "just" || g.zone === "band" ? "適温に入っている。「ターンを終える」" : "このターンは、これ以上合わせられない。「ターンを終える」", where: () => [T("ichi-end")] }; }
     if (a.type === "discard") return { action: a, text: `手札は7枚まで。光っている札を灰にする`, where: () => (sameSet(a.picks) ? [T("ichi-discard")] : a.picks.filter((i) => !ui.picks.has(i)).map((i) => T(`ichi-hand-${i}`))) };
     if (a.type === "wear") { const ps = Object.entries(a.picks).filter(([, n]) => n > 0);
       return { action: a, text: `減らす葉：${ps.map(([id, n]) => `${FLAVOR[id].name}${n}枚`).join("・")}`, where: () => (sameCounts(a.picks) ? [T("ichi-wear")] : ps.filter(([id, n]) => (ui.counts[id] || 0) < n).map(([id]) => T(`ichi-leaf-${id}`))) }; }
@@ -976,65 +1040,83 @@ export function runIchidai({ host = document.getElementById("stage"), signal = n
     const btn = (text, action, { primary = false, test = null, disabled = false, title = null } = {}) =>
       buttons.push(el(`button.ichi-btn${primary ? ".is-primary" : ""}`, { type: "button", text, disabled, title, dataset: { test }, onclick: () => { sfx("select"); typeof action === "function" ? action() : submit(action); } }));
     if (!w) return { lines, buttons };
-    const hint = hintNow(w), auto = human(w.player) && w.type === "cool" && ui.assist;
-    // 炭の手引き（あるときは、決まり文句のかわりにこれを出す）
-    // 「つぎ」が出ているあいだは、熱がいまどこか（熱）の1行だけにする（打つ手は「つぎ」が言う。札が長くなって、ボタンに重ならないように）
-    const allTips = human(w.player) && !auto ? coalTips(me, w) : [], tips = hint ? allTips.filter((t) => t.kind === "now").slice(0, 1) : allTips;
-    const say1 = (text) => { if (!tips.length && !hint) lines.push(el("span", { text })); };
-    if (!human(w.player)) {
-      lines.push(el("b", { text: `${G.P[w.player].name}の番` })); if (ui.note) lines.push(el("span", { text: ui.note }));
+    const mine = human(w.player), guided = ui.assist && mine;
+    const hint = hintNow(w), auto = mine && w.type === "cool" && ui.assist;
+    // 炭の手引き（ガイドを切っているとき。ガイドつきは「ねらい」と「つぎ」が同じことを言う）
+    const tips = mine && !auto && !guided ? coalTips(me, w) : [];
+    const head = (text) => lines.push(el("b", { text }));
+    const note = (text, attrs = {}) => lines.push(el("span", { text, ...attrs }));         // 場面の説明（ガイドつきでは「ねらい」「つぎ」に任せて出さない）
+    const keep = (node) => { node.classList.add("is-keep"); lines.push(node); };           // ガイドつきでも出す部品
+    const say1 = (text) => { if (!tips.length) note(text); };
+    if (!mine) {
+      head(`${G.P[w.player].name}の番`);
+      keep(el("span", { dataset: { test: "ichi-waiting" }, text: ui.note || "相手が手を進めている。あなたの番まで待つ" }));
     } else if (w.type === "embers") {
       // 立ち上げ: 1〜4枚を裏向きで置く（種火＝火1ずつ）。ふつうは3枚
       const n = ui.picks.size, maxN = Math.min(RULES.startEmbersMax, coalMaxOf(me)), okN = n >= RULES.startEmbersMin && n <= maxN;
-      lines.push(el("b", { text: "最初の火：立ち上げ" }));
-      if (!hint) lines.push(el("span", { text: `手札から${RULES.startEmbersMin}〜${maxN}枚を、立ち上げの炭（種火）にする。ふつうは${Math.min(RULES.startEmbers, maxN)}枚（いま${n}枚）` }));
+      head("最初の火：立ち上げ");
+      note(`手札から${RULES.startEmbersMin}〜${maxN}枚を、立ち上げの炭（種火）にする。ふつうは${Math.min(RULES.startEmbers, maxN)}枚（いま${n}枚）`);
       btn(okN ? `立ち上げる（${n}枚・熱${n}）` : "立ち上げる", { type: "embers", picks: [...ui.picks] }, { primary: true, test: "ichi-embers", disabled: !okN });
     } else if (w.type === "prep") {
-      const mode = me.turn.mode, total = sum(ui.counts);
+      const mode = me.turn.mode, total = sum(ui.counts), left = Math.max(0, RULES.prepTurns - (w.n || 1));
       if (!mode) {
         const cp = canPack(G, me), cs = canSteam(G, me);
-        lines.push(el("b", { text: "準備：詰めるか、蒸らすか" }), el("span", { text: cp.ok ? `葉を選ぶ（${total}/${packLimit(G, me)}枚・2種類まで）` : cp.reason }));
-        btn(`詰める${total ? `（${total}枚）` : ""}`, { type: "pack", picks: { ...ui.counts } }, { primary: true, test: "ichi-pack", disabled: !cp.ok || !total });
+        head(`準備 ${w.n || 1}/${RULES.prepTurns}：${me.steamed ? "蒸らして炭を育てる" : "葉を詰めるか、蒸らすか"}`);
+        // 選んだ枚数と、押せない理由は、葉の盆の見出しに字で出す（prepMarket。指で触る画面では、ボタンの上の説明が読めない）
+        if (!guided && cp.ok) note(`葉を選ぶ（${total}/${packLimit(G, me)}枚・2種類まで）`);
+        if (me.steamed || !cp.ok) keep(el("small.ichi-why", { dataset: { test: "ichi-why" }, text: cs.ok ? "葉は詰め終えた。蒸らして、炭の準備を進める" : `蒸らすには：${cs.reason}` }));
+        btn(`詰める${total ? `（${total}枚）` : ""}`, { type: "pack", picks: { ...ui.counts } }, { primary: true, test: "ichi-pack", disabled: !cp.ok || !total, title: cp.ok ? "選んだ葉をボウルに詰める" : cp.reason });
         btn("蒸らす", { type: "steam" }, { test: "ichi-steam", disabled: !cs.ok, title: cs.ok ? `${G.R.steamDraw}枚引いて、炭に触れる` : cs.reason });
         if (!cp.ok && !cs.ok) btn("ターンを終える", { type: "end" }, { test: "ichi-end" });
       } else {
-        lines.push(el("b", { text: mode === "steam" ? "蒸らす：立ち上げ" : "詰めた" })); say1(mode === "steam" ? "炭を焼いて、のせる。終わったらターンを終える" : "カードを使うか、ターンを終える");
+        head(mode === "steam" ? `準備 ${w.n || 1}/${RULES.prepTurns}：蒸らす（炭の準備）` : `準備 ${w.n || 1}/${RULES.prepTurns}：詰めた`);
+        say1(mode === "steam" ? "炭を焼いて、のせる。終わったらターンを終える" : "カードを使うか、ターンを終える");
         btn("ターンを終える", { type: "end" }, { primary: true, test: "ichi-end" });
       }
+      if (guided && !left && me.steamed) keep(el("small.ichi-why", { text: "準備はこのターンで終わり。次は提供（審査がはじまる）" }));
     } else if (auto) {
       // ガイド: 冷めるのは自動（火の小さい炭から）。ここでは押すものは無い
-      lines.push(el("b", { text: "ターンのはじめ：冷める" }), el("span", { dataset: { test: "ichi-auto-cool" }, text: `炭の火が、小さい炭から1ずつ下がる（あと${w.left}）。火が0になった炭は灰になる` }));
+      head("ターンのはじめ：冷める");
+      keep(el("span", { dataset: { test: "ichi-auto-cool" }, text: `火のいちばん小さい炭の火が、1下がる${w.left > 1 ? `（あと${w.left}）` : ""}。火が0になった炭は灰になる` }));
     } else if (w.type === "cool") {
-      lines.push(el("b", { text: `冷める：火を下げる炭を選ぶ（あと${w.left}）` }), el("span", { text: "選んだ炭の火が1下がる（0で灰）。同じ炭は1ターンに1回まで" }));
+      head(`冷める：火を下げる炭を選ぶ${w.left > 1 ? `（あと${w.left}）` : ""}`);
+      keep(el("span", { text: "選んだ炭の火が1下がる（0で灰）" }));
       if (me.wind > 0) btn(`風防で受ける（残り${me.wind}）`, { type: "cool", wind: true }, { test: "ichi-wind" });
     } else if (w.type === "main") {
-      lines.push(el("b", { text: "あなたのターン" })); say1("熱を合わせ、カードを1枚まで使って、ターンを終える");
+      head("あなたのターン"); say1("熱を合わせ、カードを1枚まで使って、ターンを終える");
       btn("ターンを終える", { type: "end" }, { primary: true, test: "ichi-end" });
     } else if (w.type === "discard") {
       const need = me.hand.length - RULES.handMax;
-      lines.push(el("b", { text: "手札は7枚まで" }), el("span", { text: `灰にする${need}枚を選ぶ（${ui.picks.size}/${need}）` }));
+      head("手札は7枚まで"); keep(el("span", { text: `灰にする${need}枚を選ぶ（${ui.picks.size}/${need}）` }));
       btn("灰にする", { type: "discard", picks: [...ui.picks] }, { primary: true, test: "ichi-discard", disabled: ui.picks.size !== need });
     } else if (w.type === "react") {
       const pv = puffPreview(G, me);
-      lines.push(el("b", { text: "審査：一口の技を使える" }), el("span.ichi-preview", { dataset: { test: "ichi-preview", zone: pv.zone } }, [`判定熱 ${pv.h} → `, el(`i.z-${pv.zone}`, { text: ZONE_LABEL[pv.zone] }), ` ${pv.pts}点`]));
+      head("審査：一口の技を使える"); keep(el("span.ichi-preview", { dataset: { test: "ichi-preview", zone: pv.zone } }, [`判定熱 ${pv.h} → `, el(`i.z-${pv.zone}`, { text: ZONE_LABEL[pv.zone] }), ` ${pv.pts}点`]));
       btn("このまま受ける", { type: "pass" }, { primary: true, test: "ichi-pass" });
     } else if (w.type === "wear") {
       const total = sum(ui.counts);
-      lines.push(el("b", { text: `セッションの区切り：葉を${w.n}枚減らす（${total}/${w.n}）` }), wearPicker(me, w, total));
+      head(`セッションの区切り：葉を${w.n}枚減らす（${total}/${w.n}）`); keep(wearPicker(me, w, total));
       btn("減らす", { type: "wear", picks: { ...ui.counts } }, { primary: true, test: "ichi-wear", disabled: total !== w.n });
     } else if (w.type === "weaken") {
-      lines.push(el("b", { text: "すきま風" }), el("span", { text: "弱める炭を1つ選ぶ" }));
+      head("すきま風"); keep(el("span", { text: "弱める炭を1つ選ぶ" }));
     }
-    // ガイド: 次にすること（1手）。「おすすめで進める」で、その手をそのまま打てる
-    if (hint) {
-      lines.splice(1, 0, el("div.ichi-next", { dataset: { test: "ichi-next-step", action: hint.action.type } }, [el("i", { text: "つぎ" }), el("span", { text: hint.text })]));
-      buttons.push(el("button.ichi-btn.is-assist", { type: "button", dataset: { test: "ichi-do-hint" }, title: "「つぎ」の手を、そのまま打つ", onclick: () => { sfx("select"); submit(hint.action); } }, [el("small", { text: "おすすめで" }), "進める"]));
+    // ガイドつき: 見出し →「流れ」（このターンの順番と、いまどこか）→「ねらい」（何を目ざすか）→「つぎ」（いま打つ1手）の順に並べる
+    let out = lines;
+    if (guided) {
+      out = [lines[0]];
+      const steps = flowSteps(w, me, hint), goal = ["embers", "prep", "main"].includes(w.type) ? goalLine(me, w) : null;
+      if (steps) out.push(steps);
+      if (goal) out.push(goal);
+      if (hint) out.push(el("div.ichi-next", { dataset: { test: "ichi-next-step", action: hint.action.type } }, [el("i", { text: "つぎ" }), el("span", { text: hint.text })]));
+      out.push(...lines.slice(1).filter((n) => n.classList.contains("is-keep")));
     }
+    // 「おすすめで進める」で、「つぎ」の手をそのまま打てる
+    if (hint) buttons.push(el("button.ichi-btn.is-assist", { type: "button", dataset: { test: "ichi-do-hint" }, title: "「つぎ」の手を、そのまま打つ", onclick: () => { sfx("select"); submit(hint.action); } }, [el("small", { text: "おすすめで" }), "進める"]));
     // 自分の手で起きたこと（冷めた・炭が灰になった など）
-    if (human(w.player) && ui.last) lines.push(el("small.ichi-last", { dataset: { test: "ichi-last" }, text: `↳ ${ui.last}` }));
-    if (ui.toast) lines.push(el("em.ichi-toast", { text: ui.toast, dataset: { test: "ichi-toast" } }));
-    if (tips.length) lines.push(el("div.ichi-tips", { dataset: { test: "ichi-tips" } }, tips.map((t) => el(`small.is-${t.kind}`, [el("i", { text: t.kind === "now" ? "熱" : t.kind === "next" ? "次" : "炭" }), t.text]))));
-    return { lines, buttons };
+    if (mine && ui.last) out.push(el("small.ichi-last", { dataset: { test: "ichi-last" }, text: `↳ ${ui.last}` }));
+    if (ui.toast) out.push(el("em.ichi-toast", { text: ui.toast, dataset: { test: "ichi-toast" } }));
+    if (tips.length) out.push(el("div.ichi-tips", { dataset: { test: "ichi-tips" } }, tips.map((t) => el(`small.is-${t.kind}`, [el("i", { text: t.kind === "now" ? "熱" : t.kind === "next" ? "次" : "炭" }), t.text]))));
+    return { lines: out, buttons };
   }
   /** セッションの区切りに減らす葉を選ぶ（詰めた葉はふだん卓に出さないので、ここでだけ並べる） */
   function wearPicker(me, w, total) {
@@ -1050,7 +1132,7 @@ export function runIchidai({ host = document.getElementById("stage"), signal = n
   /** 「ふつうに吸う」なら、いまの一台の印象はいくつか（仕込んだカードも入れる）。相手のぶんも出して、一票の見込みを見せる */
   function impressionNow(p) {
     if (!p.main) return 0;
-    const pf = p.puff || {}, q = PUFFS.normal, s = scorePuff(p, judgedHeat(p, q, pf.tk || 0), q, { blow: pf.blow });
+    const pf = p.puff || {}, q = judgeNow(), s = scorePuff(p, judgedHeat(p, q, pf.tk || 0), q, { blow: pf.blow });
     const good = s.zone === "just" || s.zone === "band";
     return impressionOf(p, s, (pf.impress || 0) + (s.zone === "just" ? 2 * (pf.allIn || 0) : 0) + (good ? pf.warm || 0 : 0) + (p.sessImp || 0), G.R.impress);
   }
@@ -1062,7 +1144,7 @@ export function runIchidai({ host = document.getElementById("stage"), signal = n
   }
   /** HUD 左: 自分の熱（＝火力）と、ふつうに吸われたときの判定熱、カードをあと何枚使えるか、葉の体力、寄せ・煽りの印 */
   function heatRead(me) {
-    const h = heatOf(me), base = judgedHeat(me, PUFFS.normal);
+    const h = heatOf(me), base = judgedHeat(me, judgeNow());
     return el("div.ichi-heat-read", { dataset: { test: "ichi-pillar", heat: String(h) }, "aria-label": `熱 ${h}` }, [
       el("div.ichi-fire-count", { dataset: { test: "ichi-firepower", left: String(firepower(me)), total: String(h) } }, [el("small", { text: "熱・火力" }), el("b", { text: String(h) })]),
       base !== h ? el("small.ichi-thermo-base", { text: `判定 ${base}` }) : null,
@@ -1135,7 +1217,13 @@ export function runIchidai({ host = document.getElementById("stage"), signal = n
     if (G.phase !== "prep" || me.steamed) return null;
     const canPick = myTurn && w.type === "prep" && !me.turn.mode && canPack(G, me).ok;
     const total = sum(ui.counts), kinds = Object.keys(ui.counts).filter((k) => ui.counts[k] > 0);
-    return el("div.ichi-market", { dataset: { test: "ichi-market" } }, G.market.map((id) => {
+    const limit = packLimit(G, me), cs = canSteam(G, me);
+    const headText = !myTurn ? "相手の番（葉の残りは、山の右上の数字）" : me.turn.mode ? "このターンは詰めた" : !canPick ? canPack(G, me).reason
+      : `葉を選ぶ：${total}/${limit}枚（2種類まで）${total ? "　選んだら右の「詰める」" : "　札を押すと1枚ずつ入る"}`;
+    return el("div.ichi-market", { dataset: { test: "ichi-market" } }, [el("div.ichi-market-head", { dataset: { test: "ichi-market-head" } }, [
+      el("b", { text: headText }),
+      myTurn && !me.turn.mode ? el("small", { text: cs.ok ? "葉が8枚以上あるので「蒸らす」も選べる（蒸らすと、もう詰められない）" : `蒸らすには：${cs.reason}` }) : null]),
+    ...G.market.map((id) => {
       const f = FLAVOR[id], left = G.supply[id] - (ui.counts[id] || 0), n = ui.counts[id] || 0;
       const can = canPick && left > 0 && total < packLimit(G, me) && (n > 0 || kinds.length < 2);
       return el(`div.ichi-pile-card${n ? ".is-on" : ""}${left > 1 ? ".is-stack" : ""}`, { dataset: { test: `ichi-market-${id}` } }, [
@@ -1146,7 +1234,7 @@ export function runIchidai({ host = document.getElementById("stage"), signal = n
         ]),
         n ? el("button.ichi-pile-minus", { type: "button", "aria-label": `${f.name}を1枚戻す`, text: `${n}枚 −`, onclick: () => { ui.counts[id] = n - 1; sfx("click"); render(); } }) : null,
       ]);
-    }));
+    })]);
   }
 
   // 自分の顔と点・手札
@@ -1196,7 +1284,7 @@ export function runIchidai({ host = document.getElementById("stage"), signal = n
     }
     if (!(w.type === "main" || w.type === "prep") || !f) return tips;
     // いまの熱が帯のどこか（アマバースト・寄せ・煽りを入れた判定で見る）
-    const d = judgedHeat(me, PUFFS.normal) - h, lo = f.lo - d, hi = f.hi - d, line = scorchLineOf(me) - d;
+    const d = judgedHeat(me, judgeNow()) - h, lo = f.lo - d, hi = f.hi - d, line = scorchLineOf(me) - d;
     const justs = f.j.map((j) => j - d), near = justs.length ? justs.reduce((a, b) => (Math.abs(b - h) < Math.abs(a - h) ? b : a)) : null;
     const band = `適温は熱${lo}〜${hi}${near === null ? "" : `（★${justs.join("・")}）`}`;
     let want = 0; // 上げたい（+）・下げたい（−）
@@ -1346,7 +1434,7 @@ export function runIchidai({ host = document.getElementById("stage"), signal = n
   async function showReveal(q) {
     // 審査の山のいちばん上が、めくられながら手前に来る
     await fly(puffCard(q), spot(board.querySelector('[data-test="ichi-pile"] .ichi-back')), { x: 640, y: 372, w: 250 }, { start: "back", end: "front", lay: 0, base: 250, dur: 520, judge: true });
-    openSheet("reveal", el("div.ichi-reveal", [el("small", { text: "審査" }), puffCard(q)]));
+    openSheet("reveal", el("div.ichi-reveal", { dataset: { test: "ichi-reveal" } }, [el("small", { text: G.R.revealFirst ? "このラウンドの審査（この吸い方に熱を合わせる）" : "審査" }), puffCard(q)]));
     await wait(1100);
     if (ui.sheet === "reveal") closeSheet();
   }

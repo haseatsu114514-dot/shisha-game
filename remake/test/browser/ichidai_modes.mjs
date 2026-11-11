@@ -23,12 +23,34 @@ await suite("ichidai-modes", async (check) => {
     await next.waitFor();
     assert.equal(await next.getAttribute("data-action"), "embers");
     assert.match(await next.innerText(), /手札から3枚えらんで「立ち上げる」/);
+    // 案内の札は、上から「流れ」（このターンの順番と、いまどこか）・「ねらい」（何を目ざすか）・「つぎ」
+    assert.deepEqual([await page.locator(`${t("ichi-steps")} span`).allInnerTexts().then((x) => x.map((y) => y.replace(/\s+/g, ""))), await page.locator(t("ichi-steps")).getAttribute("data-now")], [["1炭にする札を選ぶ", "2立ち上げる"], "0"]);
+    assert.match(await page.locator(t("ichi-goal")).innerText(), /ねらい[\s\S]*熱3/);
+    const order = await page.evaluate(() => ["ichi-steps", "ichi-goal", "ichi-next-step"].map((n) => document.querySelector(`[data-test="${n}"]`).getBoundingClientRect().top));
+    assert.ok(order[0] < order[1] && order[1] < order[2], "流れ → ねらい → つぎ の順に並ぶ");
     assert.equal(await page.locator(`${t("ichi-hand")} .ichi-hand-card.is-hint`).count(), 3, "選ぶとよい3枚が光る");
     assert.ok(await page.locator(t("ichi-pointer")).count() >= 1, "押す場所に矢印が出る");
     // 光っている札を自分で選ぶと、こんどは「立ち上げる」が光る（案内が1手ぶん進む）
     const hinted = await page.locator(`${t("ichi-hand")} .ichi-hand-card.is-hint`).evaluateAll((list) => list.map((n) => n.dataset.test));
     for (const name of hinted) await page.locator(t(name)).click(); // 押すたびに光る札が減るので、先に名前を控えてから押す
     assert.equal(await page.locator(`${t("ichi-embers")}.is-hint`).count(), 1, "選び終えたら、決めるボタンが光る");
+    assert.equal(await page.locator(t("ichi-steps")).getAttribute("data-now"), "1", "流れも「立ち上げる」へ進む");
+    // 準備の最初の自分のターン: ねらいは葉の枚数と配合。葉の盆の見出しに、選んだ枚数と、蒸らせない理由が字で出る
+    await page.locator(t("ichi-embers")).click();
+    await page.waitForFunction(() => { const g = document.querySelector('[data-test="ichi-game"]'); return g.dataset.phase === "prep" && g.dataset.turn === "me" && g.dataset.input === "1"; }, null, { timeout: 30000 });
+    assert.match(await page.locator(t("ichi-guide")).innerText(), /準備 1\/6/);
+    assert.deepEqual([await page.locator(t("ichi-goal")).getAttribute("data-leaves"), await page.locator(t("ichi-goal")).getAttribute("data-want")], ["0", "12"]);
+    assert.match(await page.locator(t("ichi-goal")).innerText(), /葉0\/12枚[\s\S]*ダブルアップル0\/12/);
+    assert.match(await page.locator(t("ichi-market-head")).innerText(), /葉を選ぶ：0\/\d枚（2種類まで）[\s\S]*蒸らすには：葉が8枚以上要る/);
+    const fit = await page.evaluate(() => { const g = document.querySelector('[data-test="ichi-guide"]').getBoundingClientRect(), m = document.querySelector('[data-test="ichi-market"]').getBoundingClientRect(); return g.bottom <= m.top + 1; });
+    assert.equal(fit, true, "案内の札は、葉の盆に隠れない");
+    // 葉を選んで「詰める」と、ほかにすることが無ければ、そのまま相手の番へ進む（「ターンを終える」を押さなくてよい）
+    const picks = await page.locator(`${t("ichi-market")} .ichi-pile-main.is-hint`).count();
+    assert.ok(picks >= 1, "詰めるとよい葉が光る");
+    for (let k = 0; k < 4 && !(await page.locator(`${t("ichi-pack")}.is-hint`).count()); k++) await page.locator(`${t("ichi-market")} .ichi-pile-main.is-hint`).first().click();
+    const usable = await page.evaluate(() => document.querySelectorAll('[data-test="ichi-hand"] .ichi-hand-card.can[data-card]:not([data-card="flat"]):not([data-card="cube"]):not([data-card="dense_flat"])').length);
+    await page.locator(t("ichi-pack")).click();
+    if (!usable) await page.waitForFunction(() => document.querySelector('[data-test="ichi-game"]').dataset.turn !== "me" || document.querySelector('[data-test="ichi-game"]').dataset.wait !== "prep" || !document.querySelector('[data-test="ichi-end"]'), null, { timeout: 8000 });
     // 炭が灰になる印と、案内の「起きたこと」を見張る
     await page.evaluate(() => {
       window.__ichiSeen = { burn: [], last: [], manualCool: 0 };
@@ -55,7 +77,9 @@ await suite("ichidai-modes", async (check) => {
       await page.waitForTimeout(did ? 60 : 90);
     }
     assert.equal(await page.locator(t("ichi-result")).count(), 1, `おすすめだけで最初の審査まで進む（打った手: ${acts.join(",")}）`);
-    for (const need of ["embers", "pack", "steam", "end"]) assert.ok(acts.includes(need), `案内に ${need} が出る（${acts.join(",")}）`);
+    for (const need of ["pack", "steam", "end"]) assert.ok(acts.includes(need), `案内に ${need} が出る（${acts.join(",")}）`);
+    // 提供では、流れが「冷める → 熱を合わせる → カード1枚 → 終える」、ねらいは熱（いまいくつ・あといくつ）
+    assert.ok(acts.some((x) => ["place", "puton", "charge"].includes(x)), `炭の手も案内に出る（${acts.join(",")}）`);
     const seen = await page.evaluate(() => window.__ichiSeen);
     assert.equal(seen.manualCool, 0, "冷めるのは自動で進む（炭を選ばせない）");
     assert.ok(seen.last.some((x) => /冷めた：熱\d+→\d+/.test(x)), `どう冷めたかが案内に出る: ${JSON.stringify(seen.last)}`);
@@ -65,9 +89,15 @@ await suite("ichidai-modes", async (check) => {
     // ガイドを切ると、案内・光・おすすめのボタンが消え、冷ます炭を自分で選ぶ流れに戻る
     await page.waitForFunction(() => { const g = document.querySelector('[data-test="ichi-game"]'); return g.dataset.turn === "me" && g.dataset.wait === "main" && document.querySelector(".ichi-sheet").hidden; }, null, { timeout: 30000 });
     await page.locator(t("ichi-next-step")).waitFor();
+    assert.deepEqual(await page.locator(`${t("ichi-steps")} span`).allInnerTexts().then((x) => x.map((y) => y.replace(/[\s✓\d]+/g, ""))), ["冷める", "熱を合わせる", "カード枚", "終える"]);
+    assert.equal(await page.locator(`${t("ichi-steps")} span.is-done`).count() >= 1, true, "冷めるは済み");
+    const goal = await page.locator(t("ichi-goal")).evaluate((n) => ({ ...n.dataset, text: n.innerText.replace(/\s+/g, "") }));
+    assert.match(goal.text, /^ねらい熱\d+★?いま\d+・(あと\+\d+|\d+下げる|ぴったり)/, `ねらいの熱が出る: ${goal.text}`);
+    assert.equal(Number(goal.now), await page.evaluate(() => window.__ichidai.game.P[0].zone.reduce((a, c) => a + c.f, 0)));
     await page.locator(t("ichi-assist")).click();
     assert.equal(await page.locator(t("ichi-assist")).getAttribute("aria-pressed"), "false");
-    assert.deepEqual([await page.locator(t("ichi-next-step")).count(), await page.locator(".is-hint").count(), await page.locator(t("ichi-do-hint")).count(), await page.locator(t("ichi-pointer")).count()], [0, 0, 0, 0], "ガイドを切ると、案内は出ない");
+    assert.deepEqual([await page.locator(t("ichi-next-step")).count(), await page.locator(".is-hint").count(), await page.locator(t("ichi-do-hint")).count(), await page.locator(t("ichi-pointer")).count(),
+      await page.locator(t("ichi-steps")).count(), await page.locator(t("ichi-goal")).count()], [0, 0, 0, 0, 0, 0], "ガイドを切ると、案内は出ない");
     await page.locator(t("ichi-end")).click();
     // 次の自分の番（冷めるところ）まで待つ。あいだに審査の結果が出たら「次へ」
     // data-input="1"＝進行が人の入力を待っている（審査の演出の途中は "0"。卓はもう次の番の見た目になっているので、これで見分ける）
@@ -79,6 +109,7 @@ await suite("ichidai-modes", async (check) => {
     const pick = page.locator(`${t("ichi-zone")} .ichi-coal-btn.can`);
     await pick.first().waitFor({ timeout: 8000 }); // ガイドを切ると、冷ます炭を自分で選ぶ
     assert.match(await page.locator(t("ichi-guide")).innerText(), /冷める：火を下げる炭を選ぶ/);
+    assert.equal(await page.evaluate(() => window.__ichidai.game.wait.left), 1, "冷めるのは1ターンに1段階（第0.5版）");
     // 演出の途中（炭の印を出している間）に押した操作も、捨てずに受け付ける（以前は、画面は押せる見た目なのに黙って捨てられていた）
     const left = await page.evaluate(() => window.__ichidai.game.wait.left);
     await pick.first().click();
@@ -135,6 +166,12 @@ await suite("ichidai-modes", async (check) => {
     await page.evaluate(() => { const h = window.__ichidai; h.autoplay(4); const id = setInterval(() => { const G = h.game; if (G && G.phase === "serve" && G.round >= 1 && G.wait?.player === 0 && G.wait.type === "main") { h.manual(); clearInterval(id); window.__stopped = true; } }, 1); });
     await page.waitForFunction(() => window.__stopped, null, { timeout: 120000 });
     await page.evaluate(() => { const G = window.__ichidai.game, me = G.P[0]; me.hand[0] = "hype"; me.cardsUsed = 0; me.zone = [{ id: "cube", up: true, f: 3 }, { id: "cube", up: true, f: 3 }]; window.__ichidai.manual(); });
+    // 第0.5版: このラウンドの審査カードは、はじめにめくってある。左上と卓の山の横に出て、「ねらい」の熱にも入る
+    const nowJudge = await page.locator(t("ichi-now-judge")).evaluate((n) => ({ dh: n.dataset.dh, text: n.innerText.replace(/\s+/g, "") }));
+    assert.match(nowJudge.text, /^今回の審査.+[±+−]\d$/);
+    assert.equal(await page.locator(t("ichi-open-puff")).count(), 1, "めくった審査カードが、山の横に表向きで置いてある");
+    assert.equal(await page.locator(t("ichi-goal")).getAttribute("data-dh"), nowJudge.dh, "ねらいの熱は、今回の吸い方を入れた数");
+    assert.equal(await page.evaluate(() => { const G = window.__ichidai.game; return G.judge.dh === Number(document.querySelector('[data-test="ichi-now-judge"]').dataset.dh) && G.pile.length + G.shown.length === 12; }), true);
     await page.locator(t("ichi-hand-0")).click();
     assert.deepEqual(await page.locator(`${t("ichi-detail")} .ichi-btn.is-primary`).allInnerTexts(), ["スミさん", "なる", "アダム"], "だれに使うかを選ぶボタンが出る");
     await page.locator(t("ichi-do-play-3")).click();
