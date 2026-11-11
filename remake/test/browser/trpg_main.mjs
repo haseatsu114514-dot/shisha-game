@@ -335,7 +335,8 @@ await suite("trpg-main", async check => {
     await hit(page, "trpg-finish"); await hit(page, "trpg-reflect-hard"); await hit(page, "trpg-campaign-close");
     await page.waitForFunction(() => window.__trpgBarResult?.completed);
     await page.evaluate(async () => { const core = await import("./js/core/state.js"); core.load(); core.state.day = 5; core.state.slot = 1; });
-    await open(page); assert.equal(await button(page, "trpg-play-" + id).count(), 0);
+    // TMX14 (owner 2026-11-11): a finished book can be played again on a later night.
+    await open(page); assert.equal(await button(page, "trpg-play-" + id).textContent(), "もう一度遊ぶ");
     assert((await button(page, "trpg-memory-" + id).textContent()).length > 0);
     assert.match(await button(page, "trpg-memory-pc").textContent(), /演じた役/);
     await assertShelfControls(page);
@@ -355,8 +356,46 @@ await suite("trpg-main", async check => {
     await lines(page); await hit(page, "trpg-start"); await lines(page); await roll(page);
     assert.equal(await page.locator('[data-test^="trpg-consult-"]').count(), 0);
     await hit(page, "trpg-exit"); await hit(page, "trpg-exit-confirm"); await button(page, "trpg-play-ordinary-cup").waitFor();
-    assert.deepEqual(await snapshot(page), before);
+    // Leaving keeps a bookmark (TMX13) and nothing else: no night, money or clear is spent.
+    const left = await snapshot(page);
+    assert.equal(left.trpg.bookmark?.id, "ordinary-cup"); delete left.trpg.bookmark;
+    // Saving the bookmark refreshes only the save's own clock.
+    for (const key of ["savedAt", "playMs"]) { delete left[key]; delete before[key]; }
+    assert.deepEqual(left, before);
     await play(page, "ordinary-cup"); assert((await snapshot(page)).trpg.cleared["ordinary-cup"]);
+  });
+  await check("bookmark-resume-and-replay", async page => {
+    await prepare(page); await page.evaluate(() => { __remake.state.flags._trpg_tutorial_seen = true; }); await open(page); await hit(page, "trpg-buy-ordinary-cup");
+    await hit(page, "trpg-play-ordinary-cup");
+    await lines(page); await hit(page, "trpg-start"); await lines(page); await roll(page); await interviewStep(page);
+    await hit(page, "trpg-spot-menu"); await lines(page);
+    const table = await page.evaluate(() => structuredClone(__remake.state.trpg.bookmark));
+    assert.equal(table.phase, "explore"); assert(table.actions.some(([key, id]) => key === "inspect" && id === "menu"));
+    await hit(page, "trpg-exit"); await hit(page, "trpg-exit-confirm");
+    const left = await snapshot(page);
+    assert.equal(left.slot, 1, "a bookmark does not spend the night"); assert.deepEqual(left.trpg.cleared, {});
+    assert.match(await button(page, "trpg-bookmark-ordinary-cup").textContent(), /しおり/);
+    // Continue: the same room with the same clue already found, then finish the story as usual.
+    await hit(page, "trpg-resume-ordinary-cup");
+    await button(page, "trpg-spot-window").waitFor();
+    assert(await button(page, "trpg-spot-menu").evaluate(n => n.classList.contains("checked")), "the bookmarked clue is still found");
+    for (const spot of ["window", "bag"]) { await hit(page, "trpg-spot-" + spot); await lines(page); }
+    await hit(page, "trpg-interpret"); await hit(page, "trpg-hypothesis-quiet"); await lines(page);
+    await twistStep(page);
+    for (const [field, value] of [["aroma", "tea"], ["seat", "window"]]) await hit(page, "trpg-plan-" + field + "-" + value);
+    await hit(page, "trpg-prepare-open"); await roll(page);
+    await hit(page, "trpg-plan-approach-quiet"); await hit(page, "trpg-serve-open"); await roll(page);
+    await button(page, "trpg-ending-title").waitFor();
+    const done = await snapshot(page);
+    assert.equal(done.slot, 2); assert(done.trpg.cleared["ordinary-cup"]); assert.equal(done.trpg.bookmark, undefined);
+    assert.equal(done.trpg.cleared["ordinary-cup"].plays, 1);
+    await hit(page, "trpg-finish"); await hit(page, "trpg-reflect-hard"); await hit(page, "trpg-campaign-close");
+    // TMX14: a finished book shows the endings seen and can be played again on another night.
+    await page.evaluate(() => { Object.assign(__remake.state, { day: 4, slot: 1 }); });
+    await open(page);
+    assert.match(await button(page, "trpg-memory-endings").textContent(), /見た結末 1 \/ 4/);
+    assert.equal(await button(page, "trpg-play-ordinary-cup").textContent(), "もう一度遊ぶ");
+    assert(await button(page, "trpg-play-ordinary-cup").isEnabled());
   });
   await check("authored-replacement-on-a-free-shift", async page => {
     await prepare(page, { day: 5 });

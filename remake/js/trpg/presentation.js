@@ -21,6 +21,12 @@ export function portraitTop(manifest, id, width, headY) {
   return (headY - (1 - p.h - p.b - p.topOverhang) * width / p.aspect) + "px";
 }
 
+/** Where the top of the head sits in a standing portrait, as a fraction of the image height (short characters start lower). */
+export function portraitHeadTop(manifest, id) {
+  const p = resolvePortrait(manifest, id, "normal", portraitStyle());
+  return p ? Math.max(0, 1 - p.h - p.b - p.topOverhang) : 0.05;
+}
+
 export function portraitAx(manifest, id) {
   return resolvePortrait(manifest, id, "normal", portraitStyle())?.ax ?? 0.5;
 }

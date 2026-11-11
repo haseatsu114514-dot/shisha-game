@@ -1961,11 +1961,28 @@
         "remake/js/minigames/tetsuko-theme.js",
         "remake/js/minigames/tetsuko-help.js",
         "remake/js/minigames/tetsuko-time.js",
+        "remake/js/minigames/tetsuko-model.js",
         "remake/css/tetsuko-theme.css",
         "remake/css/tetsuko-time.css",
         "remake/test/browser/tetsuko_theme.mjs"
       ],
       "run": ["node remake/test/browser/tetsuko_theme.mjs"]
+    },
+    {
+      "id": "tetsuko-feel",
+      "title": "Tetsuko Time feel: her wish bubble, petting zones, pounce and catch, the joy hearts and their peak, and just watching counts (spec section 10)",
+      "kind": "browser",
+      "weight": 0.2,
+      "timeout": 3,
+      "paths": [
+        "remake/js/minigames/tetsuko-time.js",
+        "remake/js/minigames/tetsuko-model.js",
+        "remake/js/minigames/tetsuko-help.js",
+        "remake/css/tetsuko-time.css",
+        "remake/css/tetsuko-theme.css",
+        "remake/test/browser/tetsuko_feel.mjs"
+      ],
+      "run": ["node remake/test/browser/tetsuko_feel.mjs"]
     },
     {
       "id": "ch3-full-flow",

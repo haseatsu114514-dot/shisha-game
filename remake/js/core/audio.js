@@ -533,6 +533,12 @@ export const SE = {
   // てつこといっしょ（#2454）: 喉を鳴らす低いゴロゴロ（約1.2秒。録音なし・合成）と、写真のシャッター。
   purr: () => { for (let i = 0; i < 26; i++) noise({ dur: 0.04, vol: 0.05 * Math.min(1, (i + 1) / 4, (26 - i) / 4), filter: 160 + Math.random() * 50, q: 1.1, type: "lowpass", delay: i * 0.046 }); },
   shutter: () => { noise({ dur: 0.04, vol: 0.12, filter: 3200 }); tone({ freq: 1800, to: 900, type: "square", dur: 0.03, vol: 0.03, delay: 0.01 }); noise({ dur: 0.05, vol: 0.09, filter: 2200, delay: 0.09 }); },
+  // てつこといっしょ（§10・手応えの改善）: 短い鳴き声／飛びつく風切り／空振り／ぽん（ハートが増える）／とっておきのきらきら。どれも合成。
+  mew: () => { tone({ freq: 640, to: 1010, type: "triangle", dur: 0.09, vol: 0.1 }); tone({ freq: 1010, to: 720, type: "triangle", dur: 0.17, vol: 0.085, delay: 0.085 }); },
+  swish: () => noise({ dur: 0.16, vol: 0.1, filter: 900, sweepTo: 3600, q: 0.7 }),
+  boing: () => { tone({ freq: 430, to: 170, type: "sine", dur: 0.24, vol: 0.12 }); tone({ freq: 215, to: 120, type: "triangle", dur: 0.18, vol: 0.05, delay: 0.05 }); },
+  pon: () => tone({ freq: 880, to: 1320, type: "sine", dur: 0.07, vol: 0.085 }),
+  twinkle: () => { [1047, 1319, 1568, 2093].forEach((freq, i) => tone({ freq, type: "sine", dur: 0.22, vol: 0.11, delay: i * 0.07 })); noise({ dur: 0.3, vol: 0.04, filter: 7000, type: "highpass", delay: 0.1 }); },
   // 日付カードなど短いUI音（録音が無ければ短いクリック）。
   card: () => tone({ freq: 880, to: 660, type: "triangle", dur: 0.08, vol: 0.1 }),
   // シーシャくじのガラガラ（motions/garagara.js）と賞の札（daily/kuji-reveal.js）
@@ -754,20 +760,21 @@ const BGM_GAIN = { sweets_or_sweets: 0.55, bgm_tournament_edm: 0.51, bgm_tournam
 const bgmLevel = (key) => config.mute || config.muted || bgmPaused ? 0
   : config.bgmVolume * (BGM_GAIN[key] ?? 1) * bgmDuck;
 
-// ラクダレース中だけ、プレイヤー速度に合わせて再生速度を緩やかに変える。
+// ラクダレース中はプレイヤー速度に、サンドボード中はブーストに合わせて、再生速度を緩やかに変える。
 // ピッチは保つ（HTMLAudioElement の既定 / preservesPitch=true。continue 曲と同じ）。
 let bgmTempo = 1, bgmTempoTarget = 1;
 const TEMPO_EASE = 0.22;
+const TEMPO_BGM = new Set(["bgm_camel_race", "bgm_ethnic05", "bgm_ethnic08", "bgm_ethnic12"]);
 
 function applyBgmPlaybackRate() {
   if (!currentEl || currentKey === "bgm_continue_urgent") return;
-  currentEl.playbackRate = currentKey === "bgm_camel_race" ? bgmTempo : 1;
+  currentEl.playbackRate = TEMPO_BGM.has(currentKey) ? bgmTempo : 1;
   currentEl.preservesPitch = true;
 }
 
-/** 今の曲の目標再生倍率。1.00〜1.15。immediate ならその場で反映。 */
+/** 今の曲の目標再生倍率。1.00〜1.25。immediate ならその場で反映。 */
 export function setBgmPlaybackRate(rate, { immediate = false } = {}) {
-  const next = Math.max(1, Math.min(1.15, Number(rate) || 1));
+  const next = Math.max(1, Math.min(1.25, Number(rate) || 1));
   bgmTempoTarget = next;
   if (immediate) {
     bgmTempo = next;
