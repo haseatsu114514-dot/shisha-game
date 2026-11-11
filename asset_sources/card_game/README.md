@@ -5,15 +5,15 @@
 
 ## いま画面に出ている絵（2026-11-11）
 
-卓は**本編の正規の絵**で組んである。引き当ては `remake/js/minigames/ichidai-art.js`。
+卓はプレイマットの枠に札を置く形で、**札の絵は本編の正規の絵**を使っている（現物の絵は卓に置かない）。引き当ては `remake/js/minigames/ichidai-art.js`。
 
 | もの | 使っている絵 |
 |---|---|
-| 卓・札の地・ボタン・温度計・票のメダル | 夜紫UI（`remake/img/ui/craft-night/`・`craft-stage/counter-stone.webp`） |
-| 葉（準備の場・一台の札） | ショップの箱絵（`remake/js/daily/shop-art*.js` と同じ引き方） |
-| 炭ゾーン・炭焼き場の炭、炭カード | シーシャ作りの炭（`remake/img/ui/making/coal_*.webp`） |
-| 炭焼き場 | シーシャ作りのコンロ（`heat_stove.webp`）。チャコスタのカードも同じ絵 |
-| ボウル・HMD | シーシャ作りのボウル（`bowl_*.webp`）・ショップのHMD（`remake/img/shop/equipment/`） |
+| マットの面・ボタン・温度計・票のメダル | 夜紫UI（`remake/img/ui/craft-night/`・`craft-stage/counter-stone.webp`）。札の枠は CSS（仮） |
+| 葉の札 | ショップの箱絵（`remake/js/daily/shop-art*.js` と同じ引き方） |
+| 炭カード | シーシャ作りの炭（`remake/img/ui/making/coal_*.webp`） |
+| チャコスタのカード | シーシャ作りのコンロ（`heat_stove.webp`） |
+| ボウル（ハガル）・HMD の札 | シーシャ作りのボウル（`bowl_*.webp`）・ショップのHMD（`remake/img/shop/equipment/`） |
 | 自分・相手・審査員・人物カード | 顔アイコン（`remake/img/ui/face_icons/`） |
 | 技・イベント・器具（チャコスタ以外） | **仮**: 成長盤の線画アイコン（`remake/img/ui/growth_board/icons/`） |
 | 裏面（デッキ・審査カード） | **仮**: 夜紫UIの札（`entry-rival.webp`・`entry-me.webp`） |
@@ -65,4 +65,4 @@
 
 - 第2弾（`gen.py` の27枚: 卓1・裏面2・技16・イベント7・キッチンタイマー1）と、機材が写る器具3枚、箱絵の無い葉: Issue #3221。
 - 相手の立ち絵・表情・演出で「対戦している感じ」を強める: Issue に分けた（`docs/owner_requests.md` ICG18）。
-- カードの枠そのものの見た目は、`docs/design/card_game/card_design_brief.md` の3案から方向を決めてから作り直す。
+- カードの枠・裏面・プレイマット・しるしのデザイン（トレカ風）: Issue #3257。依頼書は `docs/design/card_game/card_design_brief.md`、原画と記録は `asset_sources/card_game/design-20261111/`。

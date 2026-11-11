@@ -99,7 +99,14 @@ await suite("ichidai", async (check) => {
         seenPrep = true;
         assert.match(await page.locator(t("ichi-bowl")).getAttribute("data-leaves"), /^lemon:3$/, "課題の葉を受け取っている");
         assert.equal(await heat(page), 3, "種火3枚で熱3");
-        assert.equal(await page.locator(`${t("ichi-stove")} .ichi-stove-grid > *`).count(), 4, "炭焼き場は4つ");
+        assert.equal(await page.locator(`${t("ichi-stove")} .ichi-row.is-stove > *`).count(), 4, "炭焼き場は、マットの枠に4つ");
+        // プレイマットの上のカードゲームとして見せる: ボウル（ハガル）もHMDも札。コンロやボウルの現物の絵は置かない
+        assert.equal(await page.locator(`${t("ichi-bowl")} .ichi-card.t-bowl`).count(), 1, "ボウルは札");
+        assert.equal(await page.locator(`${t("ichi-bowl")} .ichi-card.t-hmd`).count(), 1, "HMDは札");
+        assert.equal(await page.locator(".ichi-stove-art, .ichi-rig").count(), 0, "現物の絵は置かない");
+        assert.equal(await page.locator(`${t("ichi-zone")} .ichi-on`).count(), 3, "種火3枚は炭ゾーンの札");
+        assert.ok(await page.locator(`${t("ichi-hand")} .ichi-card.s-hand`).count() >= 3, "手札はトレカの札");
+        assert.equal(await page.locator(`${t("ichi-market")} .ichi-card.t-flavor`).count(), 10, "場の葉も札");
         assert.equal(await page.locator(`${t("ichi-bowl")} .ichi-packed > span`).count(), 1, "準備のあいだは、詰めた葉を小さく出す");
       }
       if (phase === "serve" && !seenServe) {

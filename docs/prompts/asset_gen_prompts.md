@@ -18,6 +18,8 @@
 
 > 2026-11-11 TMX06: TRPGの判定で振る20面ダイスの立体の絵（止まった1枚・転がる途中の6コマ。数字はコードが描くので無地）の[Codex用依頼文](../../asset_sources/trpg-d20/README.md)。
 
+> 2026-11-11 ICG20: カードゲーム「一台勝負」のカードとプレイマットを**トレカ風**にデザインする[Codex用依頼書](../design/card_game/card_design_brief.md)（Issue #3257）。枠の形・文字・数字・温度の帯はコードで組み、画像生成で作るのは質感と絵だけ。案は `remake/ichidai.html?skin=<名前>` で実機に重ねて見比べる。原画と記録は `asset_sources/card_game/design-20261111/`。未着手。
+
 > 2026-11-11 ICG19: カードゲーム「一台勝負」のミニゲームに足す絵（卓1・裏面2・技16・イベント7・キッチンタイマー1）の[依頼文の説明](../../asset_sources/card_game/art-20261111/prompts.md)。文の正本は同じフォルダの `gen.py`（`--print <id>`）。枠・文字・数字はコードが描き、絵には描かない。葉・炭・コンロ・ボウル・HMD・人物は本編の正規の絵を使う。機材が写る器具3枚は `docs/shisha_reference.md` §4 に従う。置き場と受け取り後の手順は [README](../../asset_sources/card_game/README.md)。依頼の Issue は #3221。未生成。
 
 > 2026-11-11 ICG09: カードゲーム案「一台勝負」のカードの見た目を決めるための[Codex用依頼書](../design/card_game/card_design_brief.md)。枠・文字・数字・温度の帯はコードで組み、画像生成は絵と質感だけ。方向3案（熾火と真鍮／フレーバー缶／大会ポスター）を6枚ずつ作って並べて比べる。絵に文字・数字・機材・人物を描かない（キューブ炭だけ炭を描くので `docs/shisha_reference.md` §4 に従う）。未生成。

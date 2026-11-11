@@ -1,6 +1,7 @@
 // カードゲーム「一台勝負」の試遊ページ（remake/ichidai.html）。本編の保存は読み書きしない。
 // ?kit=a&tournament=practice&level=1 で設定の画面をとばす。?pilot=cpu&speed=8 で自分の席もCPUが打つ（ブラウザテスト用）。
 // ?seed=123 で同じ対戦を再現する。
+// ?skin=a で、見た目の案 css/ichidai-skin-a.css を重ねて見比べる（デザインの検討用。docs/design/card_game/card_design_brief.md）。
 import { el } from "./core/util.js";
 import { initStageFit } from "./core/stage-fit.js";
 initStageFit(document.getElementById("stage"));
@@ -11,6 +12,8 @@ window.addEventListener("keydown", unlockAudio);
 const host = document.getElementById("ichidai-app");
 const params = new URLSearchParams(location.search);
 const record = { wins: 0, losses: 0, draws: 0 };
+const skin = /^[a-z0-9-]{1,24}$/.test(params.get("skin") || "") ? params.get("skin") : null;
+if (skin) document.head.append(el("link", { rel: "stylesheet", href: `css/ichidai-skin-${skin}.css` }));
 
 function menu(outcome = null) {
   for (const g of outcome?.games || []) { if (g.winner === 0) record.wins++; else if (g.winner === 1) record.losses++; else record.draws++; }
@@ -20,7 +23,7 @@ function menu(outcome = null) {
     const config = params.has("kit") ? { kit: params.get("kit"), tournament: params.get("tournament") || "practice", level: Number(params.get("level") ?? 1), opponentKit: params.get("foe") || undefined } : null;
     try {
       const result = await runIchidai({ host, config, tutorial, pilot: params.get("pilot"), speed: Number(params.get("speed")) || 1,
-        seed: params.has("seed") ? Number(params.get("seed")) : null, opponent: { id: params.get("face") || "sumi", name: params.get("name") || "スミさん" } });
+        seed: params.has("seed") ? Number(params.get("seed")) : null, skin, opponent: { id: params.get("face") || "sumi", name: params.get("name") || "スミさん" } });
       menu(result);
     } catch (error) { console.error(error); menu(null); }
   };
