@@ -7,7 +7,7 @@
 // 含めた期待点で決める。rules.reactAfterReveal のときは、めくったあとに一口のカードを選ぶ（取っておく値打ちと比べる）。
 import { CARD, FLAVOR, FLAVORS, BOWL, JUDGE, PUFFS } from "./ichidai-data.js";
 import { RANK, heatOf, coalHeat, coalRoom, coalMaxOf, leavesOf, coolStepsOf, judgedHeat, scorePuff, impressionOf, unseenPuffs,
-  canPlay, canCharge, canPlace, canAsh, canPack, canSteam, packLimit, roundsOf, isLastSession, isLastOfSession, puffPreview } from "./ichidai-rules.js";
+  canPlay, canCharge, canPlace, canAsh, canPack, canSteam, packLimit, roundsOf, isLastSession, isLastOfSession, puffPreview, rivalsOf } from "./ichidai-rules.js";
 
 const cnt = (p, id) => p.hand.filter((x) => x === id).length;
 const idx = (p, id) => p.hand.indexOf(id);
@@ -271,11 +271,13 @@ function permanent(G, p) {
 }
 /** 自分のターンに使うカードの候補と値打ち（いちばん良いもの）。無ければ null */
 function turnCard(G, p) {
-  const o = G.P[1 - p.index], second = G.order[1] === p.index;
+  // 相手が3人までいる。見るのは「いちばん手ごわい相手」（点がいちばん高い人）。2人対戦なら、ただ1人の相手
+  const rivals = rivalsOf(G, p), o = rivals.reduce((a, b) => (b.score > a.score ? b : a));
+  const turnOf = (x) => G.order.indexOf(x.index), moved = (x) => turnOf(x) < turnOf(p); // このラウンド、もう手番を終えた相手
   const lastRound = G.round === roundsOf(G) - 1, lastOfSession = isLastOfSession(G);
   const ok = (id) => cnt(p, id) && canPlay(G, p, id).ok;
   const cands = [];
-  const add = (id, v) => { if (ok(id) && v > 0) cands.push({ v, act: { type: "play", hand: idx(p, id) } }); };
+  const add = (id, v, target = null) => { if (ok(id) && v > 0) cands.push({ v, act: target == null ? { type: "play", hand: idx(p, id) } : { type: "play", hand: idx(p, id), target } }); };
   const perm = permanent(G, p); if (perm) cands.push(perm);
   const hNow = heatOf(p), hasReact = REACT.some((id) => cnt(p, id));
   const guess0 = puffGuess(G, p);
@@ -306,16 +308,21 @@ function turnCard(G, p) {
   if (!isLastSession(G) && !p.keepLeaves && lastOfSession) add("loosen", 1.6);
   if (p.hand.length <= 2) add("breath", 0.9);
   if (p.level >= 1) {
-    const guess = puffGuess(G, p), calm = o.bowl.lavender >= 2;
-    const oppLoss = () => {
-      const view = { ...o, hand: [] }; // 相手の手札は見ない
-      const base = expected(G, view, heatOf(o), guess, false); view.pend = o.pend + 1; return base - expected(G, view, heatOf(o), guess, false);
+    const guess = puffGuess(G, p), calmOf = (x) => x.bowl.lavender >= 2;
+    const oppLoss = (x) => {
+      const view = { ...x, hand: [] }; // 相手の手札は見ない
+      const base = expected(G, view, heatOf(x), guess, false); view.pend = x.pend + 1; return base - expected(G, view, heatOf(x), guess, false);
     };
-    if (second && !calm) {
-      add("hype", oppLoss());
-      if (ok("venue_heat")) { const me2 = { ...p, pend: p.pend + 1 }; add("venue_heat", oppLoss() - (expected(G, p, hNow, guess, false) - expected(G, me2, hNow, guess, false))); }
+    // 煽り: もう手番を終えた相手（熱を合わせ直せない）のうち、いちばん手ごわい人をねらう
+    const hyped = rivals.filter((x) => moved(x) && !calmOf(x)).reduce((a, b) => (!a || b.score > a.score ? b : a), null);
+    if (hyped) add("hype", oppLoss(hyped), rivals.length > 1 ? hyped.index : null);
+    if (ok("venue_heat")) {
+      const hit = rivals.filter((x) => moved(x) && !calmOf(x));
+      if (hit.length) { const me2 = { ...p, pend: p.pend + 1 }; add("venue_heat", hit.reduce((a, x) => a + oppLoss(x), 0) / Math.sqrt(hit.length) - (expected(G, p, hNow, guess, false) - expected(G, me2, hNow, guess, false))); }
     }
-    if (o.zone.length && !o.tools.includes("windguard") && !calm) add("draft", 0.9);
+    // すきま風: 炭があり、守られていない相手のうち、いちばん手ごわい人
+    const drafty = rivals.filter((x) => x.zone.length && !x.tools.includes("windguard") && !calmOf(x)).reduce((a, b) => (!a || b.score > a.score ? b : a), null);
+    if (drafty) add("draft", 0.9, rivals.length > 1 ? drafty.index : null);
     if (!lastRound && p.level >= 2) add("go_second", 0.5);
   }
   cands.sort((a, b) => b.v - a.v);
@@ -368,8 +375,7 @@ function main(G, p) {
 // 審査: めくられたカードを見て、いちばん良い一口を1枚だけ使う（使わなくてもよい）
 function react(G, p) {
   if (!slotFree(G, p)) return { type: "pass" };
-  const o = G.P[1 - p.index];
-  const opp = p.level >= 1 ? puffPreview(G, o).imp : null;
+  const opp = p.level >= 1 ? Math.max(...rivalsOf(G, p).map((o) => puffPreview(G, o).imp)) : null; // 相手のうち、いちばん高い印象
   const b = bestReaction(G, p, heatOf(p), G.judge, { slot: true, opp });
   if (b.id && cnt(p, b.id) && canPlay(G, p, b.id).ok) return { type: "play", hand: idx(p, b.id) };
   return { type: "pass" };
