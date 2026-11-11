@@ -807,6 +807,7 @@
         {
           "speaker": "",
           "face": "",
+          "duck": true,
           "text": "歓声が、一瞬だけ止んだ。男は急ぐでもなく、自分の台の前に立つ。"
         },
         {
@@ -1051,7 +1052,7 @@
         {
           "speaker": "customer",
           "face": "normal",
-          "text": "……もう一口いいか。何の香りかは、そのあとで聞く"
+          "text": "……もう一口いいか。[pause]何の香りかは、そのあとで聞く"
         },
         {
           "speaker": "",
@@ -1087,6 +1088,7 @@
         {
           "speaker": "",
           "face": "",
+          "duck": true,
           "text": "最後の一口を見届けたパッキーが、マイクを下ろしたまま黙っていた。"
         },
         {
@@ -1107,6 +1109,7 @@
         {
           "speaker": "pakki",
           "face": "smile",
+          "beat": 800,
           "text": "勝者は……日本第一代表、逢縁はじめ！"
         },
         {
@@ -1264,6 +1267,7 @@
         {
           "speaker": "sheikh",
           "face": "normal",
+          "beat": 600,
           "text": "炭吉丈一郎。君の、スミさんだ"
         },
         {
@@ -1467,6 +1471,7 @@
         {
           "speaker": "sumi",
           "face": "serious",
+          "duck": true,
           "text": "救われたのは、俺の方だった"
         },
         {
@@ -1686,6 +1691,7 @@
         {
           "speaker": "sumi",
           "face": "serious",
+          "beat": 800,
           "text": "……お前が店長だ。店はお前が回せ"
         },
         {
@@ -2054,6 +2060,7 @@
         {
           "speaker": "sui",
           "face": "serious",
+          "beat": 600,
           "text": "勝った方が作る約束、まだ有効か"
         },
         {

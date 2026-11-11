@@ -4,7 +4,7 @@ import { spendableMoney } from "../core/travel-budget.js";
 // 2階のショールーム（凛想）へ上がると1行動使う。
 import { CITY_BACKGROUNDS } from "../core/city-locations.js";
 import { WIDEHANGA_FLAVORS, WIDEHANGA_SHOP_NAME, TOKYO_FLAVORS, TOKYO_SHOP_NAME, DUBAI_SHOP_NAME, tokyoShopFlavors } from "./shop-catalogs.js";
-import { el, yen } from "../core/util.js";
+import { el, yen, sleep } from "../core/util.js";
 import { shopText, shopProductName, groupShopFlavors } from "./shop-display.js";
 import { DB, bgUrl } from "../core/data.js";
 import { showScreen, setBg, toast, modal, retire } from "../core/ui.js";
@@ -168,10 +168,14 @@ export async function openShop(opts = {}) {
   refreshPlaceCue("shop");
   return openCounter(opts);
 }
+// 入口の写真は、入口を出す前に読み込みとデコードを待つ（#3203: 地図から入った直後のフレームで写真の枠が空白だった）。
+// 通信が遅くても入口は上限で出し、写真が届くまでは枠に下地を見せる（届いたら外す）。
+const FLOOR_PHOTO_WAIT_MS = 1500;
 function chooseShopFloor() {
   return new Promise((resolve) => {
     const session = state;
     let finished = false;
+    const photos = [];
     const finish = (destination) => {
       if (finished || state !== session || !root.isConnected) return;
       if (destination === "rio" && rioUnavailable()) return;
@@ -182,13 +186,20 @@ function chooseShopFloor() {
       retire(root); resolve(destination);
     };
     const unavailable = rioUnavailable();
-    const card = (floor, title, desc, bg, destination, disabled = false, label = "") => el(`button.shop-floor${floor === "2F" ? ".showroom" : ""}`, {
-      disabled, ...(label ? { "aria-label": `${title}・${label}` } : {}), dataset: { test: destination === "rio" ? "shop-upstairs" : "shop-enter" }, onclick: () => finish(destination),
-    }, [
-      el("span.shop-floor-picture", [el("img", { src: bgUrl(bg), alt: "", decoding: "async" }), el("span.shop-floor-number", { text: floor })]),
-      el("span.shop-floor-caption", [el("b", { text: title }), el("small.shop-badge", { text: desc }), el("span.shop-floor-arrow", { text: "↗", "aria-hidden": "true" })]),
-    ]);
-    const root = showScreen("shop-entry", el("section.shop-paper.shop-entry", { "aria-label": "Dr.fookahの行き先" }, [
+    const card = (floor, title, desc, bg, destination, disabled = false, label = "") => {
+      const photo = el("img", { src: bgUrl(bg), alt: "", decoding: "async" });
+      const picture = el("span.shop-floor-picture", { dataset: { loading: "true" } }, [photo, el("span.shop-floor-number", { text: floor })]);
+      const shown = () => { delete picture.dataset.loading; };
+      // 読めなかった写真は下地のまま残す（空白の枠にしない）。
+      photos.push(photo.decode().then(shown, () => { if (photo.complete && photo.naturalWidth) shown(); }));
+      return el(`button.shop-floor${floor === "2F" ? ".showroom" : ""}`, {
+        disabled, ...(label ? { "aria-label": `${title}・${label}` } : {}), dataset: { test: destination === "rio" ? "shop-upstairs" : "shop-enter" }, onclick: () => finish(destination),
+      }, [
+        picture,
+        el("span.shop-floor-caption", [el("b", { text: title }), el("small.shop-badge", { text: desc }), el("span.shop-floor-arrow", { text: "↗", "aria-hidden": "true" })]),
+      ]);
+    };
+    const root = el("section.shop-paper.shop-entry", { "aria-label": "Dr.fookahの行き先" }, [
       // 入口では HUD の札を隠すので、所持金はヘッダーに出す（#2958）。
       shopHeader("卸直営店", el("div.shop-money", [el("small", { text: "所持金" }), el("span", { text: priceText(state.money) })])),
       el("h3", { text: "今日は、どちらへ？" }),
@@ -197,7 +208,11 @@ function chooseShopFloor() {
         card("2F", "夜のショールーム", unavailable === "2階の相談は夜から" ? "🌙 夜" : unavailable || "相談受付中・1行動消費", "bg_fookah_showroom", "rio", !!unavailable, unavailable === "2階の相談は夜から" ? unavailable : ""),
       ]),
       el("footer.shop-entry-foot", [el("button.shop-back", { text: "← 街に戻る", dataset: { test: "shop-entry-back" }, onclick: () => finish(null) })]),
-    ]));
+    ]);
+    // 待っている間に別のセーブ・タイトルへ移ったら、古い入口は出さない（finish と同じく解決もしない）。
+    Promise.race([Promise.all(photos), sleep(FLOOR_PHOTO_WAIT_MS)]).then(() => {
+      if (state === session) showScreen("shop-entry", root);
+    });
   });
 }
 

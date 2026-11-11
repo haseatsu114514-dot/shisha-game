@@ -222,6 +222,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
+          "beat": 800,
           "text": "……付き合ってます。一人だけじゃ、ありません"
         },
         {
@@ -1221,6 +1222,7 @@
         {
           "speaker": "sumi",
           "face": "serious",
+          "duck": true,
           "text": "俺がついた嘘だ。本当にするか、嘘のまま終わらせるかは、お前が決めろ"
         },
         {

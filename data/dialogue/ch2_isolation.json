@@ -307,6 +307,7 @@
         {
           "speaker": "naru",
           "face": "normal",
+          "beat": 600,
           "text": "……今の話、点になるのか？"
         },
         {
@@ -425,6 +426,7 @@
           {
             "speaker": "naru",
             "face": "serious",
+            "duck": true,
             "text": "……でも、勝ち負けの話はしてない"
           },
           {

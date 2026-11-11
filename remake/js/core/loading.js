@@ -4,6 +4,9 @@ import { prepareImage } from "./loading-prefetch.js";
 import { LOADING_COMICS, eligibleLoadingComics } from "./loading-comics.js";
 
 let active = false, previousComic = null;
+// Reading hold: a tap or key is accepted only after the art has been on screen this long and this long
+// after preparation finished, so taps left over from the previous screen cannot skip an unread comic.
+const READ_GUARD_SHOWN_MS = 700, READ_GUARD_READY_MS = 250;
 let stylesheet;
 function loadStyle() {
   if (!stylesheet) stylesheet = new Promise((resolve, reject) => {
@@ -71,7 +74,8 @@ export async function withLoading(prepare, {
     const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
     path.setAttribute("class", cls); path.setAttribute("d", d); emblem.append(path);
   }
-  status.append(emblem, el("span", { text: "LOADING…" }));
+  const statusText = el("span", { text: "LOADING…" });
+  status.append(emblem, statusText);
   const logo = el("div.loading-logo", { "aria-hidden": "true" });
   const bar = el("div.loading-bar", { "aria-hidden": "true" }, [el("div.loading-bar-fill")]);
   // The gauge wrapper only carries the decorative smoke flourishes at both ends (css/loading.css).
@@ -79,8 +83,9 @@ export async function withLoading(prepare, {
   const proceed = el("p.loading-proceed", { "aria-hidden": "true", text: "タップ・クリック・キーで進む" });
   const content = el("div.loading-comic");
   overlay.classList.add("has-logo");
-  overlay.append(logo, el("div.loading-card", [content]), gauge, status, proceed);
-  let settled = false, comicShown = false, awaitingProceed = false, resolveProceed;
+  const card = el("div.loading-card", [content]);
+  overlay.append(logo, card, gauge, status, proceed);
+  let settled = false, comicShown = false, comicShownAt = 0, guardTimer = null, awaitingProceed = false, resolveProceed;
   const proceeded = new Promise(resolve => { resolveProceed = resolve; });
   const abort = () => controller.abort(signal.reason);
   signal?.addEventListener("abort", abort, { once: true });
@@ -103,12 +108,22 @@ export async function withLoading(prepare, {
     });
   }
   const comic = selectLoadingComic(comics, { context, chapter, isMet });
+  // The sheet (title, two 3:2 frames, note) is laid out as soon as a comic is chosen and kept hidden
+  // (.is-waiting) until the art is decoded: the logo and gauge then never jump when the panels arrive.
+  const frames = comic ? comic.panels.map(() => el("div.loading-panel-art")) : [];
+  if (comic) {
+    card.classList.add("is-waiting");
+    content.setAttribute("role", "group");
+    content.setAttribute("aria-label", comic.title);
+    content.append(el("h2.loading-comic-title", { text: comic.title }), el("div.loading-panels", frames.map(art => el("figure", [art]))));
+    if (comic.caption) content.append(el("p.loading-comic-caption", { text: comic.caption }));
+  }
   const comicReady = comic ? Promise.all(comic.panels.map(panel => prepareImage(panel.src, {
     timeoutMs: 4000, signal: controller.signal,
   }))).then(images => {
     if (settled || controller.signal.aborted) return;
-    const panels = el("div.loading-panels", images.map((img, i) => {
-      const panel = comic.panels[i], region = panel.region;
+    images.forEach((img, i) => {
+      const panel = comic.panels[i], region = panel.region, art = frames[i];
       img.alt = panel.alt;
       const crop = el("div.loading-panel-crop", [img]);
       if (region) {
@@ -124,7 +139,7 @@ export async function withLoading(prepare, {
       } else {
         crop.style.width = "100%"; crop.style.height = "100%";
       }
-      const art = el("div.loading-panel-art", [crop]);
+      art.append(crop);
       // Live text bubbles: shape is drawn in the art, words are DOM text so typos can be fixed.
       for (const bubble of panel.bubbles || []) {
         const node = el("p.loading-bubble", { text: bubble.text });
@@ -133,14 +148,14 @@ export async function withLoading(prepare, {
         if (bubble.fontSize != null) node.style.fontSize = `${bubble.fontSize}cqw`;
         art.append(node);
       }
-      return el("figure", [art]);
-    }));
-    content.setAttribute("role", "group");
-    content.setAttribute("aria-label", comic.title);
-    content.append(el("h2.loading-comic-title", { text: comic.title }), panels);
-    if (comic.caption) content.append(el("p.loading-comic-caption", { text: comic.caption }));
-    comicShown = true;
-  }).catch(() => {}) : Promise.resolve();
+    });
+    card.classList.remove("is-waiting");
+    comicShown = true; comicShownAt = performance.now();
+  }).catch(() => {
+    // Missing art: fall back to the plain gate (no sheet, no reading hold).
+    card.classList.remove("is-waiting");
+    content.replaceChildren(); content.removeAttribute("role"); content.removeAttribute("aria-label");
+  }) : Promise.resolve();
   // A quick task never flashes a loading screen. Styles are loaded only on use.
   const styleReady = loadStyle();
   styleReady.catch(error => controller.abort(error));
@@ -185,15 +200,22 @@ export async function withLoading(prepare, {
     // Only when a comic is actually on screen, hold for the reader: advance on tap/click/key.
     // No comic / failure / instant task returns immediately, exactly like before.
     if (comicShown && overlay.isConnected && !controller.signal.aborted) {
+      bar.classList.add("is-determinate");
       overlay.style.setProperty("--loading-progress", "1");
+      // Input is accepted only after the reading guard. The ready look (準備完了 and the prompt) appears
+      // at that same moment, so what the screen says always matches what a tap does.
+      const wait = Math.max(READ_GUARD_READY_MS, comicShownAt + READ_GUARD_SHOWN_MS - performance.now());
+      await Promise.race([new Promise(resolve => { guardTimer = setTimeout(resolve, wait); }), aborted]);
       overlay.classList.add("is-ready");
+      statusText.textContent = "準備完了";
+      status.setAttribute("aria-label", "準備完了");
       proceed.setAttribute("aria-hidden", "false");
       awaitingProceed = true;
       await Promise.race([proceeded, aborted]);
     }
     return result;
   } finally {
-    settled = true; clearTimeout(timer); controller.abort();
+    settled = true; clearTimeout(timer); clearTimeout(guardTimer); controller.abort();
     void comicReady;
     portraitMq?.removeEventListener?.("change", onOrient);
     leaveLoading(overlay, { cancelled: !!signal?.aborted });

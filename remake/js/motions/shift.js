@@ -158,3 +158,52 @@ export async function b() {
     await move(coin, [at(0, 0, 0, 1), at(1000, 0, 382, 1)], 640, { easing: ROLL_IN });
   });
 }
+
+// ---------------------------------------------------------------- c: 作り直し（TMG55・見本の表「バイト終業」）
+// 紫の丸い札と、店内を覆う暗い面をやめる。店内（背景）は隠さず、tonari の吊り札（#3254 で Codex が描いた表と裏）が
+// 上から下りてきて、1回だけ裏返って CLOSED になる。約1.2秒。brief: 「見た演出を短く」の2回目以降は初めから CLOSED。
+
+const SIGN_ART = {
+  open: new URL("../../img/ui/transitions/shift/sign-open.webp", import.meta.url).href,
+  closed: new URL("../../img/ui/transitions/shift/sign-closed.webp", import.meta.url).href,
+};
+/** 絵を先に読む（裏返したときに裏の絵が遅れて出ないように）。読めなくても 800ms で先へ進む */
+function preloadSign() {
+  const decode = (url) => { const img = new Image(); img.src = url; return img.decode().catch(() => {}); };
+  let timer;
+  return Promise.race([Promise.all(Object.values(SIGN_ART).map(decode)), new Promise((r) => { timer = setTimeout(r, 800); })]).finally(() => clearTimeout(timer));
+}
+/** 札の片面: 絵の上の、文字を書く面（絵の中のエナメルの板）に店の名前と OPEN／CLOSED */
+const signFace = (side, label) => el(`div.mo-shop-face.${side}`, [
+  el("img", { src: SIGN_ART[side], alt: "", draggable: false }),
+  el("div.mo-shop-text", [el("small", { text: "tonari" }), el("b", { text: label })]),
+]);
+
+export async function c({ brief = false } = {}) {
+  await preloadSign();
+  await stagePlay("shift", async (node) => {
+    node.dataset.shift = brief ? "brief" : "full";
+    const shade = el("div.mo-shop-shade");
+    const flip = el("div.mo-shop-flip", brief ? { style: { transform: "rotateY(180deg)" } } : {}, [signFace("open", "OPEN"), signFace("closed", "CLOSED")]);
+    const swing = el("div.mo-shop-swing", [flip]);
+    const sign = el("div.mo-shop-sign", [swing]);
+    node.append(shade, sign);
+    // 1. 上から下りてきて、吊り輪を軸に小さく揺れる
+    move(shade, [{ opacity: 0 }, { opacity: 1 }], 220, { easing: "ease" });
+    move(swing, [{ transform: "rotate(-5deg)" }, { transform: "rotate(3deg)", offset: 0.45 }, { transform: "rotate(-1.5deg)", offset: 0.75 }, { transform: "rotate(0deg)" }], brief ? 520 : 760, { easing: "ease-out" });
+    await move(sign, [{ transform: "translateY(-104%)" }, { transform: "translateY(0)" }], brief ? 240 : 260, { easing: E.out });
+    if (brief) {
+      SE.select();
+      await sleep(480);
+    } else {
+      // 2. 1回だけ裏返る（表の OPEN → 裏の CLOSED）
+      SE.whoosh();
+      await move(flip, [{ transform: "rotateY(0deg)" }, { transform: "rotateY(180deg)" }], 440, { easing: E.inOut });
+      SE.select();
+      await sleep(260);
+    }
+    // 3. 上へ戻る
+    move(shade, [{ opacity: 1 }, { opacity: 0 }], 240, { delay: 40, easing: "ease" });
+    await move(sign, [{ transform: "translateY(0)" }, { transform: "translateY(-104%)" }], 240, { easing: E.in });
+  });
+}

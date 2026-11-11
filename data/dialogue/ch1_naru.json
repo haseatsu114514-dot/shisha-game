@@ -897,6 +897,7 @@
         {
           "speaker": "naru",
           "face": "normal",
+          "beat": 600,
           "text": "……うちの実家さ、洋菓子屋だったんだよ。商店街の小さいやつ。俺が中2のとき、潰れた"
         },
         {
@@ -1108,6 +1109,7 @@
           {
             "speaker": "naru",
             "face": "serious",
+            "duck": true,
             "text": "勝った方が作る"
           },
           {
