@@ -54,6 +54,11 @@
   let kvTimer = 0;
   const loadKv = (img) => {
     if (!img || !img.dataset.src) return Promise.resolve();
+    const mobileSource = img.parentElement.querySelector("source[data-srcset]");
+    if (mobileSource) {
+      mobileSource.srcset = mobileSource.dataset.srcset;
+      delete mobileSource.dataset.srcset;
+    }
     if (img.dataset.srcset) { // 横長の絵は、スマホでは小さい絵を読む
       img.srcset = img.dataset.srcset;
       delete img.dataset.srcset;

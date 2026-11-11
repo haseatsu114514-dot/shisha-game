@@ -369,6 +369,9 @@ rt { font-size: .42em; letter-spacing: .08em; font-weight: 500; }
   .kv { width: 100%; object-position: 50% 8%; -webkit-mask-image: none; mask-image: none; }
   /* 横長の絵は幅いっぱいの帯にして、ロゴの上の空きの真ん中へ。切るのは人物のいない左の空きだけ */
   .kv-wide { top: calc(50% - 36px); height: auto; aspect-ratio: 1.17; max-height: calc(100% - 184px); translate: 0 -50%; object-position: 100% 40%; -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 9%, #000 91%, transparent 100%); mask-image: linear-gradient(to bottom, transparent 0, #000 9%, #000 91%, transparent 100%); }
+  /* 縦原画は左右を切らず、上から表示。下側はロゴへなじませる。 */
+  .kv-has-tall { top: 0; width: 100%; height: auto; max-height: none; aspect-ratio: 2 / 3; translate: none; object-position: 50% 0; transform: none; -webkit-mask-image: none; mask-image: none; }
+  .hero.is-wide:has(.kv-has-tall.is-on) .hero-catch { opacity: 0; }
   .hero-art::after { display: none; }
   .hero.is-wide .hero-catch { opacity: 1; }
   .hero::after { display: none; }
