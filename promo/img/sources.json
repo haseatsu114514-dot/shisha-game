@@ -1,6 +1,9 @@
 {
  "note": "promo/tools/build_images.py が書く記録。outputs＝サイトの絵が元にしたゲームの絵、sources＝書き出したときの版（Git の blob）。手で直さない。",
  "outputs": {
+  "chara/adam-bg-m.webp": [
+   "remake/img/ui/character_intros/graphic/bg_adam.webp"
+  ],
   "chara/adam-bg.webp": [
    "remake/img/ui/character_intros/graphic/bg_adam.webp"
   ],
@@ -12,6 +15,9 @@
   ],
   "chara/adam-stand.webp": [
    "remake/img/sprites/character_variants/new/adam/chr_adam_normal.webp"
+  ],
+  "chara/ageha-bg-m.webp": [
+   "remake/img/ui/character_intros/graphic/bg_ageha.webp"
   ],
   "chara/ageha-bg.webp": [
    "remake/img/ui/character_intros/graphic/bg_ageha.webp"
@@ -28,6 +34,9 @@
   "chara/dr_kemuri-bust.webp": [
    "remake/img/sprites/character_variants/new/dr_kemuri/chr_dr_kemuri_normal.webp"
   ],
+  "chara/hajime-bg-m.webp": [
+   "remake/img/ui/character_intros/graphic/bg_hajime.webp"
+  ],
   "chara/hajime-bg.webp": [
    "remake/img/ui/character_intros/graphic/bg_hajime.webp"
   ],
@@ -40,6 +49,9 @@
   "chara/hajime-stand.webp": [
    "remake/img/sprites/character_variants/new/hajime/chr_hajime_normal.webp"
   ],
+  "chara/hiyori-bg-m.webp": [
+   "remake/img/ui/character_intros/graphic/bg_hiyori.webp"
+  ],
   "chara/hiyori-bg.webp": [
    "remake/img/ui/character_intros/graphic/bg_hiyori.webp"
   ],
@@ -51,6 +63,9 @@
   ],
   "chara/hiyori-stand.webp": [
    "remake/img/sprites/character_variants/new/hiyori/chr_hiyori_normal.webp"
+  ],
+  "chara/kumicho-bg-m.webp": [
+   "remake/img/ui/character_intros/graphic/bg_kumicho.webp"
   ],
   "chara/kumicho-bg.webp": [
    "remake/img/ui/character_intros/graphic/bg_kumicho.webp"
@@ -67,6 +82,9 @@
   "chara/maezono-bust.webp": [
    "remake/img/sprites/character_variants/new/maezono/chr_maezono_normal.webp"
   ],
+  "chara/minto-bg-m.webp": [
+   "remake/img/ui/character_intros/graphic/bg_minto.webp"
+  ],
   "chara/minto-bg.webp": [
    "remake/img/ui/character_intros/graphic/bg_minto.webp"
   ],
@@ -78,6 +96,9 @@
   ],
   "chara/minto-stand.webp": [
    "remake/img/sprites/character_variants/new/minto/chr_minto_normal.webp"
+  ],
+  "chara/naru-bg-m.webp": [
+   "remake/img/ui/character_intros/graphic/bg_naru.webp"
   ],
   "chara/naru-bg.webp": [
    "remake/img/ui/character_intros/graphic/bg_naru.webp"
@@ -94,6 +115,9 @@
   "chara/pakki-bust.webp": [
    "remake/img/sprites/character_variants/new/pakki/chr_pakki_normal.webp"
   ],
+  "chara/rei-bg-m.webp": [
+   "remake/img/ui/character_intros/graphic/bg_rei.webp"
+  ],
   "chara/rei-bg.webp": [
    "remake/img/ui/character_intros/graphic/bg_rei.webp"
   ],
@@ -106,6 +130,9 @@
   "chara/rei-stand.webp": [
    "remake/img/sprites/character_variants/new/rei/chr_rei_normal.webp"
   ],
+  "chara/rio-bg-m.webp": [
+   "remake/img/ui/character_intros/graphic/bg_rio.webp"
+  ],
   "chara/rio-bg.webp": [
    "remake/img/ui/character_intros/graphic/bg_rio.webp"
   ],
@@ -117,6 +144,9 @@
   ],
   "chara/rio-stand.webp": [
    "remake/img/sprites/character_variants/new/rio/chr_rio_normal.webp"
+  ],
+  "chara/samechan-bg-m.webp": [
+   "remake/img/ui/character_intros/graphic/bg_samechan.webp"
   ],
   "chara/samechan-bg.webp": [
    "remake/img/ui/character_intros/graphic/bg_samechan.webp"
@@ -133,6 +163,9 @@
   "chara/sui-bust.webp": [
    "remake/img/sprites/character_variants/new/sui/chr_sui_normal.webp"
   ],
+  "chara/sumi-bg-m.webp": [
+   "remake/img/ui/character_intros/graphic/bg_sumi.webp"
+  ],
   "chara/sumi-bg.webp": [
    "remake/img/ui/character_intros/graphic/bg_sumi.webp"
   ],
@@ -144,6 +177,9 @@
   ],
   "chara/sumi-stand.webp": [
    "remake/img/sprites/character_variants/new/sumi/chr_sumi_normal.webp"
+  ],
+  "chara/tsumugi-bg-m.webp": [
+   "remake/img/ui/character_intros/graphic/bg_tsumugi.webp"
   ],
   "chara/tsumugi-bg.webp": [
    "remake/img/ui/character_intros/graphic/bg_tsumugi.webp"
@@ -294,6 +330,9 @@
   ],
   "story/strip-ch1.webp": [
    "remake/img/ui/poems/poem_ch1.webp"
+  ],
+  "story/tonari-night-s.webp": [
+   "remake/img/backgrounds/bg_tonari_inside_night.webp"
   ],
   "story/tonari-night.webp": [
    "remake/img/backgrounds/bg_tonari_inside_night.webp"
