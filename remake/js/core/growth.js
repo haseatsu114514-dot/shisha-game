@@ -6,7 +6,7 @@
 // 2026-11-11 オーナー「寝る前のレベルアップは不要」（SBD108）「一気にリザルトみたいに見せるのはいらない。都度経験値もらって達したらレベルアップがいい」（SBD122）:
 // 経験値が入ったその場でレベルが上がり、火種は手持ちに入る。画面はその場で短い演出を出す（操作は止めない）。火種を盤に灯すのは観音堂などで振り返った時。
 import { state, save } from "./state.js";
-import { emit } from "./bus.js";
+import { emit, on } from "./bus.js";
 import { setExpHooks, affinityLevel, AFFINITY_RANK_PTS } from "./stats.js";
 import { BOARD_KEYS, BOARD_PREFIX, BOARD_SHAPES, STAT_SQUARES, SKILLS, STAT_UPGRADES, LESSONS, CHAR_TYPE, PLAY_REWARDS, KUJI_LAST_ONE_GIFT } from "./growth-board-data.js";
 import { GROWTH_BOARD, growthEnabled, PREVIEW_KEY } from "./growth-mode.js";
@@ -14,6 +14,7 @@ import { growthPerks, growthSkill, growthLesson, SKILL_TUNING, LESSON_TUNING } f
 import { masteryHooks } from "./flavor-mastery.js";
 import { syncRespecOpportunity, closeRespecOpportunity } from "./growth-respec.js";
 import { KUJI_LIMITED_GRADES } from "./rules.js";
+import { syncPlayMastery, masteryRecord, masteryLine, PLAY_MASTERY } from "./play-mastery.js";
 export { GROWTH_BOARD, growthEnabled } from "./growth-mode.js";
 
 export function setGrowthPreview(on) {
@@ -395,7 +396,21 @@ export function awardActionExp(target) {
   log.people = strings(log.people); log.places = strings(log.places);
   const collection = target.person ? log.people : log.places, id = target.person || target.place || target.key;
   if (!collection.includes(id)) collection.push(id);
-  let got = gainExp(EXP.action * freshness(count), { key: target.key, tag: count >= 3 ? "なじみ" : null });
+  let base = EXP.action * freshness(count);
+  // 第5章の決戦前: 一日に最初の2枠だけ、確定した日常の学びを180XPまで底上げ。
+  // 同じ枠の再通知・無料リトライは補助を増やさない。章1〜4と決戦後は従来どおり。
+  let practice = false;
+  if (state.chapter === 5 && state.phase === "daily" && state.flags?._ch5 && !state.flags._ch5.matchDay
+      && Number.isInteger(state.day) && Number.isInteger(state.slot) && [0, 1].includes(state.slot)) {
+    const day = `${state.cycle || 1}:${state.day}`;
+    const ledger = g.practiceDay?.day === day ? g.practiceDay : { day, slots: [] };
+    if (!Array.isArray(ledger.slots)) ledger.slots = [];
+    if (!ledger.slots.includes(state.slot)) {
+      ledger.slots.push(state.slot); base = Math.max(base, 90); practice = true;
+    }
+    g.practiceDay = ledger;
+  }
+  let got = gainExp(base, { key: target.key, tag: practice ? "日々の学び" : count >= 3 ? "なじみ" : null });
   if (target.person && !g.firsts.people.includes(target.person)) {
     g.firsts.people.push(target.person);
     got += gainExp(EXP.firstPerson, { key: target.key, tag: "はじめて", first: true });
@@ -544,6 +559,7 @@ function bestAxeRank(s) {
   return best;
 }
 function playRewardMet(reward, s) {
+  if (reward.master) return masteryRecord(s, reward.game).done;
   if (reward.game === "axe") { const rank = bestAxeRank(s); return !!rank && atLeast(rank, reward.rank); }
   if (reward.game === "trpg") {
     const cleared = Object.values(s.trpg?.cleared || {});
@@ -551,7 +567,7 @@ function playRewardMet(reward, s) {
     return cleared.length >= reward.clears;
   }
   if (reward.game === "dj") { const rank = s.dj?.bestRank; return typeof rank === "string" && atLeast(rank, reward.rank); }
-  if (reward.game === "camel") { if (reward.master) return s.flags?._camel_cups?.standard?.mastered === true; const plays = s.flags?._ch4_camel?.plays; return Number.isInteger(plays) && plays >= (reward.clears || 1); }
+  if (reward.game === "camel") { const plays = s.flags?._ch4_camel?.plays; return Number.isInteger(plays) && plays >= (reward.clears || 1); }
   if (reward.game === "desert") { const rank = s.desert?.bestRank; return typeof rank === "string" && atLeast(rank, reward.rank); }
   return false;
 }
@@ -561,6 +577,7 @@ function playRewardMet(reward, s) {
  * 戻り値: [{ label, parts: [{ kind, n }] }]
  */
 export function claimPlayRewards(g, s = state) {
+  syncPlayMastery(s);
   const out = [];
   for (const reward of PLAY_REWARDS) {
     if (g.rewards[reward.id] || !playRewardMet(reward, s)) continue;
@@ -748,3 +765,10 @@ setExpHooks({ enabled: growthEnabled, hold: holdExpChip, action: awardActionExp,
     * (growthLesson(s, "M-S3") && s.flags?._home_lavender_sleep === `${s.chapter || 1}:${s.day}` ? 1 + LESSON_TUNING.lavenderSleep : 1) });
 masteryHooks.multiplier = s => (1 + (growthPerks(s)?.tongue || 0) / 100)
   * (growthSkill(s, "K09") ? 1 + SKILL_TUNING.mastery : 1);
+
+// 確定した遊びの認定をその場で精算。上限後も称号は通知し、架空の+1は出さない。
+on("play-mastery", ({ state: owner, game, newly }) => {
+  if (owner !== state) return;
+  settleGrowth();
+  emit("notice", { text: newly ? `認定：${PLAY_MASTERY[game].title}` : masteryLine(owner, game) });
+});
