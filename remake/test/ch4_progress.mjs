@@ -626,3 +626,6 @@ console.log("PASS: Chapter 4 runner state keeps the Dubai days, mandatory scenes
   assert.deepEqual(chapterFourProgress(JSON.parse(JSON.stringify(plain))), plain.flags._ch4, "Evening reads survive SAVE/LOAD");
   console.log("PASS: Chapter 4 arrival evenings: after the arrival, before the festival, once, never for the companion");
 }
+
+// 同じ日常・大会へ接続するスタッフ仕事の回帰。
+await import("./ch4_staff_work.mjs");

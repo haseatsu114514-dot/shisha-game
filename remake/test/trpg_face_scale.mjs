@@ -17,7 +17,7 @@ function cropStats(frame) {
 }
 
 test("costume frames cover every wired role with a consistent face scale", () => {
-  assert.equal(frames.length, 95); // 93枚＋店長スミの常連卓の役衣装2枚（#3162）
+  assert.equal(frames.length, 95);
   const keys = new Set(frames.map(f => `${f.scenario}/${f.character}/${f.role_id}`));
   for (const key of COSTUME_KEYS) {
     assert.ok(keys.has(key), `missing crop for ${key}`);
