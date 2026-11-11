@@ -24,7 +24,7 @@ const ICONS = {
 /** Mounts one isolated session; finished resolves only after the player leaves the table. */
 export function mountTrpg(host, { scenario, characters, manifest, tableTalk = null, tutorialLines = null, tutorial = false, onTutorialDone = () => {},
   seed, profileId = null, pc = null, companions = {}, closeLabel = "卓を片付ける", audio: providedAudio = null, allowReplay = true, onComplete = () => {},
-  warmStart = false, resume = null, onBookmark = null }) {
+  warmStart = false, resume = null, onBookmark = null, costumeFrames = null }) {
   // しおり（TMX13）: the table is the seed plus the order of what was pressed. Every action is recorded, the caller keeps
   // the list at each resting point, and a later visit replays it to land on the same scene (dice included).
   const RECORDED = ["start", "ask", "endInterview", "inspect", "consult", "interpret", "plan", "beginCheck", "reroll", "settleCheck"];
@@ -69,12 +69,23 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
   }
   // The role costume (same person, dressed as the PC) where we have one: sheets, cover, origins and declaration cards (TMX04).
   // "bust" zooms on the upper body for small cards; "full" shows the whole figure. Falls back to the round face.
+  // Bust framing shared by every costume card: cheek-to-cheek width as a share of the box width, eye line as a share of its height.
+  const BUST = { face: 0.26, eye: 0.36 };
+  // 頬の幅の測定に、頬へかかる青い髪まで入ってしまう2人（全身の絵と見比べて決めた補正・2026-11-11）。
+  const FACE_FIX = { samechan: 0.86, rei: 0.8 };
   function pcFigure(seat, playerId, { role = sheets[seat]?.archetype || sheets[seat]?.option || null, shape = "bust" } = {}) {
     const url = costumeUrl(scenario.id, playerId, role);
     if (!url) return pcFace(seat, playerId);
     if (shape !== "bust") return el("span.trpg-costume", { dataset: { shape }, style: { backgroundImage: `url("${url}")` } });
-    // Costume art shares the standing portrait's framing, so the head starts lower for short characters (つむぎ).
-    // Slide the zoomed picture by its own height so every bust shows the head just under the top edge.
+    // Every bust shows the same face size at the same eye line (オーナー 2026-11-11「みんな同じぐらいのバストアップに」):
+    // the measured cheek width and eye line of each costume picture (img/ui/trpg/costumes/frames.json) set the zoom and the offset.
+    const face = costumeFrames?.[scenario.id + "/" + playerId + "/" + role]?.face;
+    if (face?.w > 0) {
+      const [W, H] = [896, 1200], width = BUST.face * W / (face.w * (FACE_FIX[playerId] || 1)) * 100;
+      return el("span.trpg-costume", { dataset: { shape, framed: "face" } }, el("i", { style: { backgroundImage: `url("${url}")`,
+        width: width + "%", top: BUST.eye * 100 + "%", transform: `translate(-${face.cx / W * 100}%, -${face.eye_y / H * 100}%)` } }));
+    }
+    // Without measurements: line up the head top from the standing-portrait metrics.
     const lift = Math.max(0, portraitHeadTop(manifest, playerId) - 0.03) * 100, ax = portraitAx(manifest, playerId) * 100;
     return el("span.trpg-costume", { dataset: { shape } }, el("i", { style: { backgroundImage: `url("${url}")`, transform: `translate(-${ax}%, -${lift}%)` } }));
   }
@@ -103,9 +114,12 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
   const role = el("span");
   const speech = el("p", { "aria-live": "polite" });
   const next = button("次へ", "trpg-next", advanceDialogue, { class: "trpg-next" });
+  // テンポ（#3199 C4）: 今の会話を最後まで飛ばす。読んだことにしてログに残し、続きの処理はふだんどおり。
+  const skip = button("≫", "trpg-skip", skipTalk, { class: "trpg-skip", "aria-label": "この会話を最後まで飛ばす", title: "この会話を最後まで飛ばす" });
+  skip.hidden = true;
   const dock = el("div.trpg-dock", [art, el("div.trpg-speech", [
     el("div.trpg-speaker-label", [speaker, role]), speech,
-  ]), next]);
+  ]), skip, next]);
   const log = [];
   let frames = [], cursor = 0, afterTalk = null, afterFocus = null, busy = false, disposed = false, choiceField = null;
   let overlay = null, modalCloser = null, timer = null, rollTicker = null, settleGuard = false;
@@ -115,6 +129,23 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
   const teamwork = el("div.trpg-teamwork", { dataset: { test: "trpg-teamwork" } });
   let shownTeamwork = null;
   const heatMeter = el("div.trpg-heat", { dataset: { test: "trpg-heat" }, role: "meter", "aria-valuemin": "0", "aria-valuemax": String(HEAT.max) });
+  // 上の帯の印は絵だけ（#2839）。押すと、その印が何かを一行で出す（TMX05）。
+  const chromeTip = el("p.trpg-chrome-tip", { role: "status", dataset: { test: "trpg-chrome-tip" } });
+  chromeTip.hidden = true;
+  let tipTimer = null;
+  function showTip(text) {
+    chromeTip.textContent = text; chromeTip.hidden = false;
+    clearTimeout(tipTimer); tipTimer = setTimeout(() => { chromeTip.hidden = true; }, 3800);
+  }
+  teamwork.addEventListener("click", () => {
+    const n = session.snapshot().teamwork;
+    showTip("連携札 " + n + "/2：仲間の切り札（判定＋" + DICE.support + "）や、はじめの振り直しに1枚ずつ使う");
+  });
+  heatMeter.addEventListener("click", () => {
+    const { heat } = session.snapshot(), nextTier = HEAT.tiers.find(t => t > heat);
+    showTip("盛り上がり " + heat + "/" + HEAT.max + "：3・6・8に届くと勢い（次の判定に＋" + DICE.momentum + "）"
+      + (nextTier ? "。あと" + (nextTier - heat) + "で次の勢い" : "。最高潮"));
+  });
   let heatSeen = 0, heatChatter = [];
   const tableStatus = el("div.trpg-table-status", { dataset: { test: "trpg-table-status" }, "aria-label": "卓の進行と残りの札" });
   const table = el("div.trpg-table", { "aria-label": "卓の参加者" });
@@ -134,7 +165,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
   const headingStep = el("small", { dataset: { test: "trpg-heading-step" }, text: "小さな卓の冒険" });
   root.append(el("header.trpg-header", [
     el("div.trpg-heading", [headingStep,
-      el("strong", { text: scenario.title }), teamwork, heatMeter]), tools,
+      el("strong", { text: scenario.title }), teamwork, heatMeter, chromeTip]), tools,
   ]), progress, table, content, dock, tableStatus);
   host.replaceChildren(root);
   fitRoomCrop();
@@ -333,6 +364,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     syncHeat();
     frames = sequence(lines, heatChatter); heatChatter = []; cursor = 0; afterTalk = callback; afterFocus = focusTest; busy = true;
     root.classList.remove("trpg-idle"); root.classList.add("trpg-talking"); next.hidden = false; next.disabled = false;
+    skip.hidden = frames.length < 3;
     renderBody();
     showFrame();
     next.focus({ preventScroll: true });
@@ -359,12 +391,20 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     cursor++;
     if (cursor < frames.length) showFrame(); else finishTalk();
   }
+  function skipTalk() {
+    if (!busy || overlay || disposed) return;
+    for (cursor++; cursor < frames.length; cursor++) {
+      const frame = frames[cursor];
+      log.push({ speaker: frame.speaker, role: pcText(frame.role).replace(/^(?:GM|PL)／卓の会話$/, ""), text: pcText(frame.text) });
+    }
+    finishTalk();
+  }
   function finishTalk() {
     busy = false; frames = [];
     root.classList.remove("trpg-talking");
     showPanel(null);
     const callback = afterTalk, focusTest = afterFocus; afterTalk = null; afterFocus = null;
-    next.hidden = true; root.classList.add("trpg-idle");
+    next.hidden = true; skip.hidden = true; root.classList.add("trpg-idle");
     if (callback) callback(); else renderBody();
     if (!overlay && !busy) (focusTest && root.querySelector('[data-test="' + focusTest + '"]') || root).focus({ preventScroll: true });
   }
@@ -1196,6 +1236,7 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     disposed = true;
     entrance.cancel();
     if (timer) clearTimeout(timer);
+    clearTimeout(tipTimer);
     if (rollTicker) clearInterval(rollTicker);
     if (providedAudio) audio.silence(); else audio.destroy();
     document.removeEventListener("visibilitychange", visibility);
