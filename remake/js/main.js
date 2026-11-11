@@ -215,7 +215,7 @@ window.__remake = {
         const tokens = name.split("-").slice(1);
         const passenger = tokens.find(id => Object.hasOwn(PRIVATE_PASSENGERS, id));
         const destination = tokens.find(id => ["home", "widehanga"].includes(id));
-        return motions.trainRide(() => setBg(bgUrl("bg_street", tone), { instant: true }), {
+        return motions.trainRide(() => setBg(bgUrl("bg_street", tone), { instant: true }), { tone,
           ...(name.includes("halloween") ? { halloween: true } : {}), ...(passenger ? { cameo: passenger } : {}),
           ...(destination ? { to: destination } : {}),
         });
