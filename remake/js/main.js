@@ -194,8 +194,9 @@ window.__remake = {
         await setBg(bgUrl("bg_tonari_inside", "night"));
         return motions.limeExchange(id, context);
       }
-      if (name === "tarot") {
-        state.fortune = { char: "tsumugi" };
+      // 占いは tarot（つむぎ）／tarot-<キャラID>（その相手の札・#3278。札の無い相手は光だけの表）
+      if (name === "tarot" || name.startsWith("tarot-")) {
+        state.fortune = { char: name.slice("tarot-".length) || "tsumugi" };
         return play("remake_fortune_result", { bg: bgRef("bg_street") });
       }
       if (name === "gift") {

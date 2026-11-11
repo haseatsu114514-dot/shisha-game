@@ -24,3 +24,18 @@
 .mo-tarot-front.glow { box-shadow: 0 0 36px 8px #fff6; }
 .mo-tarot-flash { position: absolute; inset: -10%; opacity: 0; pointer-events: none; mix-blend-mode: screen; }
 .mo-tarot-flare { position: absolute; left: 50%; top: 330px; width: 1400px; height: 6px; border-radius: 3px; opacity: 0; transform: translate(-50%, -50%) rotate(var(--r)) scaleX(0); pointer-events: none; }
+/* 相手ごとの札（#3278・js の drawn）: 裏は #3254 の札の裏、表は表の枠の窓に大アルカナを入れた絵。縁・角・金の枠は絵のもの
+   札の外形は 1024x1536 の中の (87,60)-(937,1457)＝850x1397（make_webp.py の CARD_BOX）。面をその縦横比にする */
+.mo-tarot-card.art { width: 232px; height: 381px; }
+.mo-tb-card.art { left: -116px; top: -190.5px; width: 232px; height: 381px; }
+.mo-tarot-back.art, .mo-tarot-front.art, .mo-tb-face.art { border: 0; border-radius: 18px; background: none; }
+.mo-tarot-back.art::after { content: none; }
+.mo-tarot-pic { position: absolute; left: 0; top: 0; width: 100%; height: 100%; display: block; max-width: none; pointer-events: none; user-select: none; }
+/* 裏の絵は原寸（外は透過）。札の外形が面いっぱいになるよう、はみ出させて置く（1024/850・1536/1397・87/850・60/1397） */
+.mo-tarot-pic.back { left: -10.235%; top: -4.295%; width: 120.47%; height: 109.95%; }
+/* 札の名前の帯（TMG44）。登場カットインと同じ生成りの帯に、題字の明朝で番号と名前だけを組む（相手の名前は出さない＝CI110） */
+.mo-tarot-band { position: absolute; left: 50%; top: 588px; display: flex; align-items: baseline; justify-content: center; gap: 24px; min-width: 440px; padding: 10px 60px 14px;
+  background: #f4ecda; color: #2a1638; box-shadow: 0 10px 26px #05020a99; font-family: "Suien Name", var(--font); font-weight: 700; line-height: 1.15; white-space: nowrap;
+  transform: translateX(-50%) rotate(-3deg); opacity: 0; pointer-events: none; }
+.mo-tarot-band b { font-size: 30px; letter-spacing: 0.12em; color: #8a6424; }
+.mo-tarot-band span { font-size: 52px; letter-spacing: 0.14em; }

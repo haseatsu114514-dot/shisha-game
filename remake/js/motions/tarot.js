@@ -1,11 +1,16 @@
 // 路上占いの結果（remake_fortune_result の {"type":"motion","id":"tarot"}）。charId は占った相手（state.fortune.char）。
-// 相手の名前は直後の会話で出すので、絵には顔も名前も出さない。札も何の札かは見せず、表は光だけ（CI122）。
+// 相手の名前は直後の会話で出すので、絵には顔も名前も出さない（CI110）。
+// めくった表は相手ごとの大アルカナ（#3278・TMG44。対応表は core/tarot-arcana.js）で、帯に札の名前（例: XVII 星）だけを出す。
+// 札の絵は、結果の会話を始めたときに vn/engine.js の先読みで読み始め、ここで札を出す前に読み終えておく。札の無い相手・読めなかったときは、表は光だけ（CI122）。
 // a／b の2パターン（?movar=b）。配色は紫1色／場面ごとの色（?mopal=free・core/mg-kit.js の pick）。動きを減らす設定では core/scene-motions.js で省く（SKIP中は省かず最後まで再生）。
 import { el, sleep } from "../core/util.js";
 import { SE } from "../core/audio.js";
 import { W, svg, stageSvg, move } from "../core/transition-kit.js";
 import { MG_EASE as E, pick, burst, ring, twinkle } from "../core/mg-kit.js";
 import { stagePlay, backdrop } from "./stage.js";
+import { withLoadingNotice } from "../core/module-loading.js";
+import { loadingNotice } from "../core/ui.js";
+import { loadTarotArt } from "../core/tarot-arcana.js";
 
 // ---------------------------------------------------------------- 札の絵（表は 224x368 の枠の中に描く）
 
@@ -21,9 +26,35 @@ function starPath(x, y, ro, ri, n = 8, turn = -Math.PI / 2) {
 }
 const trim = (attrs) => ({ pathLength: 1, "stroke-dasharray": 1, "stroke-dashoffset": 1, fill: "none", "stroke-linecap": "round", ...attrs });
 
+// ---------------------------------------------------------------- 相手ごとの札（#3278）: 裏と表の絵・札の名前の帯（a／b で共通）
+
+/** 札を出す前に、相手の札の裏と表を読み終えておく（入力を止めた幕の中で待つ）。遅いときは「準備しています」を出し、
+ * 札の無い相手・読めなかったときは null（光だけの表で続ける） */
+const prepareArt = (charId) => withLoadingNotice(loadTarotArt(charId), { ...loadingNotice("演出を準備しています…"), delayMs: 500 });
+
+/** 読み終えた絵を面に置く（同じ絵を何枚にも使うので複製。読み込み済みなのですぐ描ける） */
+function pic(img, cls = "") {
+  const node = img.cloneNode();
+  node.className = `mo-tarot-pic${cls ? ` ${cls}` : ""}`;
+  node.alt = "";
+  node.draggable = false;
+  return node;
+}
+/** 札の名前の帯。番号と名前だけ（相手の名前は出さない＝CI110） */
+const arcanaBand = (arc, at) => el(`div.mo-tarot-band.at-${at}`, { dataset: { arcana: arc.file } }, [el("b", { text: arc.no }), el("span", { text: arc.name })]);
+const BAND_AT = "translateX(-50%) rotate(-3deg)";
+/** 帯が右から滑り込む */
+const bandIn = (band, delay) => move(band, [{ transform: "translateX(-10%) rotate(-3deg)", opacity: 0 }, { transform: BAND_AT, opacity: 1 }], 420, { easing: SOFT, delay });
+// 札の絵と帯が出たときは、光ってからの余韻を長めにして札と名前を見せる（光だけの表は従来どおり）
+const HOLD_ART = 1800;
+/** 表をなでる光の筋。絵の札では、斜めの筋が札の端に残らないよう札の外まで走らせる（光だけの表は白地に紛れるので従来どおり） */
+const glossSweep = (gloss, drawn, ms, opt) => (drawn
+  ? move(gloss, [{ transform: "translateX(-200%) skewX(-20deg)" }, { transform: "translateX(400%) skewX(-20deg)" }], Math.round(ms * 1.5), opt)
+  : move(gloss, [{ transform: "translateX(-140%) skewX(-20deg)" }, { transform: "translateX(240%) skewX(-20deg)" }], ms, opt));
+
 
 // ---------------------------------------------------------------- a: 占い: 星図の輪が描かれ、3枚の札が飛んできて、真ん中が裏返る。
-// 何の札かは見せず、表は光だけ。裏返った瞬間に画面ごと「ピカーン」と光る（札の名前や絵柄で占いの中身を決めつけない）
+// 裏返った瞬間に画面ごと「ピカーン」と光り、表に相手の札（#3278）、下に札の名前の帯。札の無い相手は表が光だけ（CI122）
 
 /** b の札の裏: 菱形と、光の輪を持つ星の紋 */
 function backArt(P) {
@@ -51,16 +82,19 @@ const TURN = "cubic-bezier(.65,0,.35,1)"; // 札の裏返し・光の走り（�
 
 const TAROT = { bg: "#101a3a", deep: "#080e22", main: "#24356e", mid: "#4a5fb4", light: "#f2c14e", white: "#fff6dc" };
 
-function tarotCard(P, i) {
-  return el("div.mo-tarot-card", { style: { "--i": String(i) } }, [el("div.mo-tarot-flip", [
-    el("div.mo-tarot-back", { style: { background: P.main, borderColor: P.light, "--l": P.light } }, [el("i.mo-tarot-moon"), el("b.mo-tarot-star"), el("b.mo-tarot-star.s2"), el("b.mo-tarot-star.s3")]),
-  ])]);
+/** drawn: 相手の札の絵（裏は #3254 の札の裏）。null なら従来の紫の札 */
+function tarotCard(P, i, drawn) {
+  const back = drawn
+    ? el("div.mo-tarot-back.art", [pic(drawn.back, "back")])
+    : el("div.mo-tarot-back", { style: { background: P.main, borderColor: P.light, "--l": P.light } }, [el("i.mo-tarot-moon"), el("b.mo-tarot-star"), el("b.mo-tarot-star.s2"), el("b.mo-tarot-star.s3")]);
+  return el(`div.mo-tarot-card${drawn ? ".art" : ""}`, { style: { "--i": String(i) } }, [el("div.mo-tarot-flip", [back])]);
 }
 
-/** 占った相手（charId）は直後の会話で名前を出すので、ここでは使わない */
-export async function a() {
+/** charId: 占った相手。名前は直後の会話で出すので、ここでは札を選ぶのにだけ使う */
+export async function a(charId = null) {
   const P = pick(TAROT);
   await stagePlay("tarot", async (node) => {
+    const drawn = await prepareArt(charId);
     const back = backdrop(P.bg);
     const art = stageSvg();
     const cx = W / 2, cy = 330;
@@ -74,14 +108,17 @@ export async function a() {
       return svg("line", { x1: cx + Math.cos(a) * 258, y1: cy + Math.sin(a) * 258, x2: cx + Math.cos(a) * 280, y2: cy + Math.sin(a) * 280, stroke: P.light, "stroke-width": 3, "stroke-linecap": "round", opacity: 0 });
     }));
     art.append(...dial, ticks);
-    const cards = [0, 1, 2].map((i) => tarotCard(P, i));
+    const cards = [0, 1, 2].map((i) => tarotCard(P, i, drawn));
     const gloss = el("i.mo-gloss");
-    // 表は光だけ（中心が白く、縁へ金色）。札の種類は分からない
-    const front = el("div.mo-tarot-front.glow", { style: { background: `radial-gradient(circle at 50% 46%, #ffffff 0 22%, ${P.white} 40%, ${P.light} 100%)`, borderColor: P.light } }, [gloss]);
+    // 表は相手の札（表の枠の窓に大アルカナ）。札の無い相手は光だけ（中心が白く、縁へ金色）で、札の種類は分からない
+    const front = drawn
+      ? el("div.mo-tarot-front.art.glow", { dataset: { arcana: drawn.arc.file } }, [pic(drawn.front), gloss])
+      : el("div.mo-tarot-front.glow", { style: { background: `radial-gradient(circle at 50% 46%, #ffffff 0 22%, ${P.white} 40%, ${P.light} 100%)`, borderColor: P.light } }, [gloss]);
     cards[1].firstChild.append(front);
+    const band = drawn ? arcanaBand(drawn.arc, "a") : null;
     const flash = el("div.mo-tarot-flash", { style: { background: `radial-gradient(circle at 50% 46%, #ffffff 0 18%, ${P.white} 38%, transparent 72%)` } });
     const flare = [0, 90].map((deg) => el("i.mo-tarot-flare", { style: { background: `linear-gradient(90deg, transparent, #ffffff, transparent)`, "--r": `${deg}deg` } }));
-    node.append(back, art, ...cards, ...flare, flash);
+    node.append(back, art, ...cards, ...(band ? [band] : []), ...flare, flash);
     // 1. 星図の輪が描かれる
     move(back, [{ opacity: 0 }, { opacity: 1 }], 240);
     move(dial[0], [{ strokeDashoffset: 1 }, { strokeDashoffset: 0 }], 700, { easing: SOFT });
@@ -115,11 +152,14 @@ export async function a() {
     burst(art, cx, cy, { n: 18, r0: 220, r1: 420, color: P.light, width: 5, dur: 620 });
     burst(art, cx, cy, { n: 18, r0: 260, r1: 360, color: P.white, width: 3, dur: 520, delay: 90, turn: Math.PI / 18 });
     move(front, [{ boxShadow: `0 0 0 0 ${P.light}`, easing: E.out }, { boxShadow: `0 0 80px 30px ${P.light}`, offset: 0.12, easing: SOFT }, { boxShadow: `0 0 36px 8px ${P.light}` }], 900, { easing: "linear" });
-    move(gloss, [{ transform: "translateX(-140%) skewX(-20deg)" }, { transform: "translateX(240%) skewX(-20deg)" }], 520, { easing: TURN, delay: 200 });
+    glossSweep(gloss, drawn, 520, { easing: TURN, delay: 200 });
     for (let i = 0; i < 6; i++) twinkle(art, cx + Math.cos(i) * (160 + i * 18), cy + Math.sin(i * 1.7) * 150, { color: P.white, size: 14 + (i % 3) * 6, delay: 160 + i * 70 });
+    // 光が引いたところへ、札の名前の帯が入る
+    if (band) bandIn(band, 360);
     await turn;
-    await sleep(960); // 光ってからの余韻は従来どおり約1.2秒
+    await sleep(band ? HOLD_ART : 960); // 光ってからの余韻は、光だけの表なら従来どおり約1.2秒
     // 5. 退場
+    if (band) move(band, [{ transform: BAND_AT, opacity: 1 }, { transform: "translateX(-50%) translateY(18px) rotate(-3deg)", opacity: 0 }], 320, { easing: LEAVE });
     move(art, [{ opacity: 1 }, { opacity: 0 }], 360);
     move(back, [{ opacity: 1 }, { opacity: 0 }], 380, { delay: 40 }); // 札が消えるのと同時に背景も消え切る（後から残って急に消えない）
     await move(cards[1], [{ transform: "translate(-50%, -16px) scale(1.16) rotate(0deg)", opacity: 1 }, { transform: "translate(-50%, -40px) scale(0.6) rotate(12deg)", opacity: 0 }], 420, { easing: LEAVE });
@@ -127,7 +167,7 @@ export async function a() {
 }
 
 // ---------------------------------------------------------------- b: 占い: 布の魔法陣に山札が置かれ、切って3枚を配り、真ん中の1枚が起き上がって裏返る。
-// a と同じく何の札かは見せず、表は光だけ。裏返った瞬間に「ピカーン」
+// a と同じく裏返った瞬間に「ピカーン」。表は相手の札と札の名前の帯（札の無い相手は光だけ）
 
 const TAROT_B = { bg: "#3a1420", deep: "#200a12", main: "#6e2236", mid: "#b5475f", light: "#efc77e", white: "#fbf4e2" };
 
@@ -137,8 +177,15 @@ const LIE = 0.62; // 布に置いた札の縮尺
 /** 布の上の札の姿勢。関数の並びを揃えて、角度をそのまま補間させる */
 const pose = (x, y, z, rz = 0, rx = 0, ry = 0, s = LIE) => ({ transform: `translate3d(${x}px, ${y}px, ${z}px) rotateZ(${rz}deg) rotateX(${rx}deg) rotateY(${ry}deg) scale(${s})` });
 
-function tableCard(P, front = null) {
+/** drawn: 相手の札の絵（裏は #3254 の札の裏）。null なら従来の紫の札 */
+function tableCard(P, front = null, drawn = null) {
   const face = (cls, kids, style) => el(`div.mo-tb-face.${cls}`, { style }, kids);
+  if (drawn) {
+    return el("div.mo-tb-card.art", [
+      face("back.art", [pic(drawn.back, "back")]),
+      front ? face("front.art", [pic(drawn.front), ...front]) : null,
+    ]);
+  }
   return el("div.mo-tb-card", [
     face("back", [backArt(P)], { background: P.main, borderColor: P.light }),
     front ? face("front", front, { background: P.white, borderColor: P.light }) : null,
@@ -171,9 +218,10 @@ function clothArt(P) {
   return { cloth, lines, dots };
 }
 
-export async function b() {
+export async function b(charId = null) {
   const P = pick(TAROT_B);
   await stagePlay("tarot", async (node) => {
+    const drawn = await prepareArt(charId);
     const back = backdrop(P.bg);
     const halo = el("i.mo-tb-halo", { style: { background: P.main } });
     const table = el("div.mo-tb-table");
@@ -181,15 +229,17 @@ export async function b() {
     const { cloth, lines, dots } = clothArt(P);
     const trails = svg("svg", { viewBox: "-420 -420 840 840", class: "mo-tb-cloth" });
     const gloss = el("i.mo-gloss");
-    const deck = [...Array(8)].map((_, i) => tableCard(P, i === 3 ? [gloss] : null));
+    const deck = [...Array(8)].map((_, i) => tableCard(P, i === 3 ? [gloss] : null, drawn));
     const glowFace = deck[3].querySelector(".mo-tb-face.front");
     glowFace.classList.add("glow");
-    glowFace.style.background = `radial-gradient(circle at 50% 46%, #ffffff 0 22%, ${P.white} 40%, ${P.light} 100%)`;
+    if (drawn) glowFace.dataset.arcana = drawn.arc.file;
+    else glowFace.style.background = `radial-gradient(circle at 50% 46%, #ffffff 0 22%, ${P.white} 40%, ${P.light} 100%)`;
+    const band = drawn ? arcanaBand(drawn.arc, "b") : null;
     table.append(cloth, trails, ...deck);
     const fx = stageSvg();
     const flash = el("div.mo-tarot-flash", { style: { background: `radial-gradient(circle at 50% 46%, #ffffff 0 18%, ${P.white} 38%, transparent 72%)` } });
     const flare = [0, 90].map((deg) => el("i.mo-tarot-flare", { style: { background: "linear-gradient(90deg, transparent, #ffffff, transparent)", "--r": `${deg}deg` } }));
-    node.append(back, halo, scene, fx, ...flare, flash);
+    node.append(back, halo, scene, fx, ...(band ? [band] : []), ...flare, flash);
     const faces = (c) => [...c.children];
     // 1. 布が広がり、魔法陣が線で描かれる
     move(back, [{ opacity: 0 }, { opacity: 1 }], 160);
@@ -257,8 +307,9 @@ export async function b() {
     burst(fx, W / 2, cy, { n: 18, r0: 270, r1: 370, color: P.white, width: 3, dur: 520, delay: 90, turn: Math.PI / 18 });
     move(glowFace, [{ boxShadow: `0 0 0 0 ${P.light}` }, { boxShadow: `0 0 80px 30px ${P.light}`, offset: 0.3 }, { boxShadow: `0 0 36px 8px ${P.light}` }], 900, { easing: E.out });
     [[430, 170], [860, 200], [400, 470], [880, 480]].forEach(([x, y], i) => twinkle(fx, x, y, { color: P.white, size: 12 + (i % 2) * 6, delay: 120 + i * 70, dur: 760 }));
-    move(gloss, [{ transform: "translateX(-140%) skewX(-20deg)" }, { transform: "translateX(240%) skewX(-20deg)" }], 560, { easing: E.inOut, delay: 200 });
-    await sleep(1100);
+    glossSweep(gloss, drawn, 560, { easing: E.inOut, delay: 200 });
+    if (band) bandIn(band, 300);
+    await sleep(band ? HOLD_ART : 1100);
     // 7. 札の中心へ、丸く窓が閉じて会話へ戻る
     await move(node, [{ clipPath: `circle(820px at ${W / 2}px ${cy}px)` }, { clipPath: `circle(0px at ${W / 2}px ${cy}px)` }], 480, { easing: E.in });
   });
