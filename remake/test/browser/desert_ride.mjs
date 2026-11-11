@@ -104,10 +104,11 @@ await suite("desert-ride", async check => {
     g = await game(page);
     assert(g.hops === 1 || g.bigJumps === 1, "Space jumps");
     assert(await page.locator(t("desert-left")).isVisible() && await page.locator(t("desert-jump")).isVisible(), "touch buttons are shown on PC too");
-    // Codex の採用画像（遠景の空・陸、主人公の背面、岩、旗、ゴール、砂煙）を読み込んで描いている
+    // Codex の採用画像（遠景の空・陸、主人公・ヌール・なるの背面、岩、旗、ゴール、砂煙）を読み込んで描いている
     const loaded = await page.evaluate(() => performance.getEntriesByType("resource").map(entry => entry.name).filter(name => name.includes("/img/ui/desert_ride/")).map(name => name.split("/").pop()).sort());
     assert.deepEqual(loaded, ["backdrop_day_land.webp", "backdrop_day_sky.webp", "backdrop_dusk_land.webp", "backdrop_dusk_sky.webp", "flag_pole.webp", "goal_banner.webp",
       "rider_brace.webp", "rider_fall.webp", "rider_jump.webp", "rider_lean_left.webp", "rider_lean_right.webp",
+      "rider_naru_brace.webp", "rider_naru_fall.webp", "rider_naru_jump.webp", "rider_naru_lean_left.webp", "rider_naru_lean_right.webp", "rider_naru_ride.webp",
       "rider_noor_brace.webp", "rider_noor_fall.webp", "rider_noor_jump.webp", "rider_noor_lean_left.webp", "rider_noor_lean_right.webp", "rider_noor_ride.webp",
       "rider_ride.webp", "rock_large.webp", "rock_small.webp", "sand_puff.webp"]);
     // 空中トリックとブーストを使う理想の滑り: S、ヌールに勝つ。360 以上を決めるとカットインが走る
@@ -238,6 +239,73 @@ await suite("desert-ride", async check => {
     await page.locator(t("desert-page-best")).waitFor();
   }, { viewport: { width: 844, height: 390 }, hasTouch: true, isMobile: true });
 
+  // 2026-11-11: カーブの案内とカービング、ブースト中の曲の速さ、裏の相手（なる）の名乗り
+  await check("curve-tip-carving-boost-tempo-and-the-hidden-boss-banner", async page => {
+    await page.evaluate(() => localStorage.setItem("suien_desert_ride_preview", JSON.stringify({ score: 1, rank: "C", rulesVersion: 2, beatNoor: true })));
+    await page.goto(new URL("desert-ride.html?course=left-bowl", page.url()).href);
+    await page.locator(t("desert-page-start")).click();
+    await page.locator(t("desert-menu")).waitFor();
+    await page.locator(t("desert-help")).click();
+    assert.match(await page.locator(t("desert-help-panel")).innerText(), /カーブでは外へ流される。曲がる向きへ切り込むと踏ん張れて、ブーストも貯まる/);
+    await page.locator(t("desert-help-close")).click();
+    // 裏の相手: スタートの合図の間だけ、人物と数字に重ならない画面の下に名乗りが出る
+    await page.locator(t("desert-start-naru")).click();
+    await phase(page, "run");
+    assert.equal((await page.locator(t("desert-versus")).innerText()).replace(/\s+/g, " "), "裏ボス VS なる");
+    const banner = await page.evaluate(() => {
+      const node = document.querySelector('[data-test="desert-versus"]'), root = document.querySelector('[data-test="desert-ride"]').getBoundingClientRect(), box = node.getBoundingClientRect();
+      return { shown: node.classList.contains("show") && getComputedStyle(node).opacity !== "0", top: (box.top - root.top) / root.height, counting: window.__desertRide.countdown > 0 };
+    });
+    assert(banner.counting && banner.shown, "the boss banner shows during the countdown");
+    assert(banner.top > 0.7, `the banner sits below the riders (${banner.top})`);
+    await page.waitForFunction(() => window.__desertRide.countdown <= 0);
+    assert.equal(await page.locator(t("desert-versus")).evaluate(node => node.classList.contains("show")), false, "the banner leaves at GO");
+    assert(await ride(page, () => window.__desertRide.rival.samples.some(s => s.boostT > 0) && window.__desertRide.rival.samples.some(s => Math.abs(s.rot) > 0.25)), "Naru's boosts and spins are in the playback");
+    // なるの滑る絵（#3222）を読みに行っている（読めない時は図形で描く）
+    assert(await page.evaluate(() => performance.getEntriesByType("resource").some(entry => /\/rider_naru_ride\.webp$/.test(entry.name))), "Naru's rider art is requested");
+    // 最初のカーブ: 一度だけ案内が出る。曲がる向きへ切り込むとカービング（ゲージが貯まり、印が出る）
+    assert.equal(await page.locator(t("desert-caption")).innerText(), "", "no caption on the straight");
+    await ride(page, () => { const r = window.__desertRide; while (r.game.z < 340) r.advance(1 / 60, {}); r.game.x = 0; r.game.vx = 0; });
+    await page.waitForFunction(() => /カーブ！/.test(document.querySelector('[data-test="desert-caption"]').textContent));
+    assert.equal(await page.locator(t("desert-caption")).getAttribute("data-kind"), "tip");
+    const tip = await page.evaluate(() => {
+      const rect = selector => document.querySelector(selector).getBoundingClientRect();
+      return { tip: rect('[data-test="desert-caption"]'), course: rect('[data-test="desert-course"]'), left: rect(".dr-hud-left"), right: rect(".dr-hud-right") };
+    });
+    assert(tip.tip.top >= tip.course.bottom && tip.tip.left >= tip.left.right && tip.tip.right <= tip.right.left, "the tip clears the course name and both HUD panels");
+    await ride(page, () => window.__desertRide.setInput(true, false)); // 左カーブへ左へ切り込む
+    await page.waitForFunction(() => document.querySelector('[data-test="desert-ride"]').dataset.carve === "on");
+    await page.waitForFunction(() => { const g = window.__desertRide.game; if (Math.abs(g.x) > 0.6) { g.x = 0; g.vx = 0; } return g.stats.carves >= 1; });
+    const carved = await ride(page, () => { const g = window.__desertRide.game; window.__desertRide.setInput(false, false); return { gauge: g.gauge, event: g.events.some(e => e.kind === "carve" && e.points > 0), falls: g.falls }; });
+    assert(carved.event && carved.gauge > 0.05, `carving charges the gauge (${carved.gauge})`);
+    await page.waitForFunction(() => document.querySelector('[data-test="desert-ride"]').dataset.carve === "");
+    // ブースト中は曲が速くなり、終わると戻る。やめてメニューへ戻っても元の速さ
+    const audioUrl = new URL("js/core/audio.js", page.url()).href;
+    await page.evaluate(async url => { window.__audio = await import(url); }, audioUrl);
+    assert.equal(await page.evaluate(() => window.__audio.bgmPlaybackRate()), 1, "normal tempo outside a boost");
+    await ride(page, () => { const r = window.__desertRide; r.game.x = 0; r.game.vx = 0; r.game.fallT = 0; r.game.gauge = 1; r.boost(); });
+    await page.waitForFunction(() => window.__audio.bgmPlaybackRate() > 1.15 && document.querySelector('[data-test="desert-ride"]').dataset.boost === "on");
+    assert(await page.evaluate(() => window.__audio.bgmPlaybackRate()) <= 1.18 + 1e-9, "the boost tempo is 1.18x at most");
+    await ride(page, () => { window.__desertRide.game.boostT = 0.02; });
+    await page.waitForFunction(() => window.__audio.bgmPlaybackRate() === 1);
+    await ride(page, () => { const r = window.__desertRide; r.game.fallT = 0; r.game.gauge = 1; r.boost(); });
+    await page.waitForFunction(() => window.__audio.bgmPlaybackRate() > 1.05);
+    await page.keyboard.press("Escape");
+    await phase(page, "menu");
+    assert.equal(await page.evaluate(() => window.__audio.bgmPlaybackRate()), 1, "quitting mid-boost restores the tempo");
+    // 次の滑走では、一度切り込めたので案内は出ない
+    await page.locator(t("desert-start")).click();
+    await phase(page, "run");
+    assert.equal(await page.locator(t("desert-versus")).evaluate(node => node.classList.contains("show")), false, "no boss banner against Noor");
+    await ride(page, () => window.__desertRide.skipCountdown());
+    await ride(page, () => { const r = window.__desertRide; while (r.game.z < 420) r.advance(1 / 60, {}); r.game.x = 0; r.game.vx = 0; });
+    await page.waitForFunction(() => window.__desertRide.game.z > 470);
+    assert.equal(await page.locator(t("desert-caption")).innerText(), "", "the curve tip is shown once");
+    await page.keyboard.press("Escape");
+    await phase(page, "menu");
+    await page.locator(t("desert-leave")).click();
+    await page.locator(t("desert-page-start")).waitFor();
+  });
   await check("chapter-four-desk-talks-outing-record-sunset-day-use-save-load-and-interrupt", async page => {
     page.setDefaultTimeout(30000);
     await page.evaluate(async () => {

@@ -1075,8 +1075,59 @@
 .trpg-root.trpg-cinematic .trpg-choice-tabs button.trpg-choice-tab { padding: 4px 16px 6px; border-radius: 12px; background: #0b1420c2; }
 .trpg-root.trpg-cinematic .trpg-choice-tabs button.trpg-choice-tab:is(:hover, :focus-visible, .selected, [aria-selected="true"], [aria-pressed="true"]):not(:disabled) { background: #0b1420d9; }
 /* 選択肢の絵に薄い暗い光彩を足し、霧・白壁など明るい背景でも物の輪郭が溶けないように。 */
-.trpg-root.trpg-cinematic .trpg-object-art { filter: drop-shadow(0 0 6px #0b1420b0) drop-shadow(0 13px 12px #0005); }
-.trpg-root.trpg-cinematic .trpg-object-choice:focus-visible .trpg-object-art { filter: drop-shadow(0 0 6px #0b1420b0) drop-shadow(0 0 18px #f2dba270) drop-shadow(0 13px 12px #0005); }
-.trpg-root.trpg-cinematic .trpg-object-choice:is(.selected, [aria-pressed="true"]) .trpg-object-art { filter: drop-shadow(0 0 6px #0b1420b0) drop-shadow(0 0 17px #ead49e5e) drop-shadow(0 10px 10px #0005); }
+/* シール風の白いふち（2026-11-10 オーナー要望）: 透過の絵の輪郭に沿って白を回し、その外に暗い光彩と影を重ねる。 */
+.trpg-root.trpg-cinematic .trpg-object-art { --sticker-edge: drop-shadow(3px 0 0 #fffaf0) drop-shadow(-3px 0 0 #fffaf0) drop-shadow(0 3px 0 #fffaf0) drop-shadow(0 -3px 0 #fffaf0); }
+.trpg-root.trpg-cinematic .trpg-object-art { filter: var(--sticker-edge) drop-shadow(0 0 6px #0b1420b0) drop-shadow(0 13px 12px #0005); }
+.trpg-root.trpg-cinematic .trpg-object-choice:focus-visible .trpg-object-art { filter: var(--sticker-edge) drop-shadow(0 0 6px #0b1420b0) drop-shadow(0 0 18px #f2dba270) drop-shadow(0 13px 12px #0005); }
+.trpg-root.trpg-cinematic .trpg-object-choice:is(.selected, [aria-pressed="true"]) .trpg-object-art { filter: var(--sticker-edge) drop-shadow(0 0 6px #0b1420b0) drop-shadow(0 0 17px #ead49e5e) drop-shadow(0 10px 10px #0005); }
 /* タッチ操作の配置では、タブの下線が2行目の文字を横切って取り消し線に見えていたので、札の下端へ。 */
 @media (pointer: coarse) { .trpg-root.trpg-cinematic .trpg-choice-tabs button.trpg-choice-tab::after { bottom: 3px; } }
+
+/* ---- 役衣装の姿（TMX04・2026-11-11）: 同じ人物が役の服を着た全身の絵（生成りの下地つき）を、シート・表紙・役どころ・宣言カードにも出す。
+   絵が無い役は従来の丸い顔のまま。 ---- */
+.trpg-root.trpg-cinematic .trpg-costume { display: block; width: 100%; height: 100%; background-repeat: no-repeat; background-color: #efe6d0; }
+.trpg-root.trpg-cinematic .trpg-costume[data-shape="bust"] { position: relative; overflow: hidden; }
+.trpg-root.trpg-cinematic .trpg-costume[data-shape="bust"] > i { position: absolute; left: 50%; top: 0; width: 200%; aspect-ratio: 896 / 1200; background-size: 100% 100%; background-repeat: no-repeat; }
+/* 測った顔で合わせる時は、幅・位置を view.js が入れる（顔の幅と目の高さを全員そろえる）。 */
+.trpg-root.trpg-cinematic .trpg-costume[data-framed="face"] > i { left: 50%; max-width: none; }
+.trpg-root.trpg-cinematic .trpg-costume[data-shape="full"] { background-size: cover; background-position: 50% 0; }
+.trpg-root.trpg-cinematic .trpg-approach-face[data-costume="true"] { width: 84px; height: 100px; border-radius: 8px; border: 2px solid #f4ead2; box-shadow: 0 3px 8px #0006; }
+.trpg-root.trpg-cinematic .trpg-cover-pc-face[data-costume="true"] { flex: 0 0 66px; width: 66px; height: 84px; border-radius: 8px; border: 2px solid #f4ead2; }
+.trpg-root.trpg-cinematic .trpg-sheet[data-costume="true"] { display: grid; grid-template-columns: 88px minmax(0, 1fr); column-gap: 12px; align-content: start; min-width: 0; }
+.trpg-root.trpg-cinematic .trpg-sheet[data-costume="true"] > * { grid-column: 1 / -1; }
+.trpg-root.trpg-cinematic .trpg-sheet[data-costume="true"] > .trpg-sheet-costume { grid-column: 1; grid-row: 1; align-self: start; width: 88px; height: 118px; overflow: hidden; border-radius: 6px; border: 1px solid #c9b58a; }
+.trpg-root.trpg-cinematic .trpg-sheet[data-costume="true"] > .trpg-sheet-head { grid-column: 2; }
+.trpg-root.trpg-cinematic .trpg-sheet[data-costume="true"] .trpg-sheet-face { display: none; }
+.trpg-root.trpg-cinematic .trpg-builder-origin:has(.trpg-builder-origin-art) { position: relative; padding-left: 92px; min-height: 92px; }
+.trpg-root.trpg-cinematic .trpg-builder-origin-art { position: absolute; left: 8px; top: 8px; bottom: 8px; width: 72px; overflow: hidden; border-radius: 6px; border: 1px solid #e3d7b66b; }
+
+/* ---- 立体の20面ダイス（TMX06・2026-11-11、オーナー「サイコロもリアルにしたい」）。
+   止まっている時は d20-rest（上の面が正面の三角。数字はこれまでどおり DOM がその面に描く）、宙では d20-tumble の6コマを送る。
+   投げる・跳ねる・止まる動きと影（外側の箱）はそのまま。絵は無地で、数字・影は焼き込んでいない（asset_sources/trpg-d20/）。 ---- */
+.trpg-root .trpg-die.trpg-d20 .trpg-die-body {
+  inset: -13%; clip-path: none;
+  background: url('../img/ui/trpg/d20-rest.webp') center / contain no-repeat;
+}
+.trpg-root .trpg-die.trpg-d20 .trpg-die-body::before { content: none; }
+.trpg-root .trpg-die.trpg-d20 .trpg-die-body svg { display: none; }
+.trpg-root .trpg-die.trpg-d20 .trpg-d20-value { transform: translateY(-2%); color: #2a2412; font-size: 24px; letter-spacing: -.05em; text-shadow: 0 1px 0 #fff8e2; }
+.trpg-root.trpg-cinematic .trpg-roll-stage[data-special="critical"] .trpg-die { box-shadow: none; filter: drop-shadow(0 0 14px #ffd36e) drop-shadow(3px 5px 3px #00171899); }
+@media (prefers-reduced-motion: no-preference) {
+  /* 宙にある間は転がる6コマ。数字は着地まで見せない。 */
+  .trpg-root.trpg-cinematic .trpg-roll-stage[data-roll-state="rolling"] .trpg-die .trpg-die-body {
+    background-image: url('../img/ui/trpg/d20-tumble.webp'); background-size: 300% 200%; background-position: 0 0;
+  }
+  .trpg-root.trpg-cinematic .trpg-roll-stage[data-roll-state="rolling"] .trpg-die[data-throw="a"] .trpg-die-body { animation: trpg-spin-a 1s cubic-bezier(.25,.6,.3,1) both, trpg-d20-frames .42s steps(1, end) 2 both; }
+  .trpg-root.trpg-cinematic .trpg-roll-stage[data-roll-state="rolling"] .trpg-die[data-throw="b"] .trpg-die-body { animation: trpg-spin-b 1.04s cubic-bezier(.25,.6,.3,1) .04s both, trpg-d20-frames .46s steps(1, end) .04s 2 both reverse; }
+  .trpg-root.trpg-cinematic .trpg-roll-stage .trpg-die.rethrown .trpg-die-body { animation: trpg-respin .82s cubic-bezier(.25,.6,.3,1) both, trpg-d20-reframes .82s steps(1, end) both; }
+  .trpg-root.trpg-cinematic .trpg-roll-stage[data-roll-state="rolling"] .trpg-die .trpg-d20-value { opacity: 0; }
+}
+@keyframes trpg-d20-frames {
+  0% { background-position: 0 0; } 16.6% { background-position: 50% 0; } 33.3% { background-position: 100% 0; }
+  50% { background-position: 0 100%; } 66.6% { background-position: 50% 100%; } 83.3% { background-position: 100% 100%; } 100% { background-position: 100% 100%; }
+}
+/* 振り直しの1個: 着地（最後のコマ）で止まった絵に戻る。100% に背景を書かないので、元の d20-rest に戻る。 */
+@keyframes trpg-d20-reframes {
+  0% { background-image: url('../img/ui/trpg/d20-tumble.webp'); background-size: 300% 200%; background-position: 0 0; } 14% { background-image: url('../img/ui/trpg/d20-tumble.webp'); background-size: 300% 200%; background-position: 50% 0; } 28% { background-image: url('../img/ui/trpg/d20-tumble.webp'); background-size: 300% 200%; background-position: 100% 0; }
+  42% { background-image: url('../img/ui/trpg/d20-tumble.webp'); background-size: 300% 200%; background-position: 0 100%; } 56% { background-image: url('../img/ui/trpg/d20-tumble.webp'); background-size: 300% 200%; background-position: 50% 100%; } 70% { background-image: url('../img/ui/trpg/d20-tumble.webp'); background-size: 300% 200%; background-position: 100% 100%; } 84% { }
+}

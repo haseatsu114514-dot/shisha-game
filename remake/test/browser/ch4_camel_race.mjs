@@ -102,7 +102,7 @@ await suite("ch4-camel-race", async check => {
     const enteredBefore = (await entered(page)).length;
     await page.locator(dt("camel-tutorial")).waitFor({ timeout: 20000 });
     assert.equal((await entered(page)).length, enteredBefore, "the watched scene must not replay");
-    for (let i = 0; i < 3; i++) await page.locator(dt("camel-tutorial-next")).click();
+    assert.equal(await readTutorial(page), 4, "the how-to has four pages (the fourth is the tactics page)");
     await page.locator(dt("camel-result")).waitFor({ timeout: 120000 });
     const result = await page.locator(dt("camel-result")).evaluate(node => ({ ...node.dataset }));
     assert.equal(result.rank, "1"); assert.equal(result.grade, "S");
@@ -234,7 +234,7 @@ await suite("ch4-camel-race-daily", async check => {
     await camelTest(page, { pilot: "perfect", timeScale: 8 });
     await go(page, "ch4_dubai_camel");
     await page.locator(dt("camel-tutorial")).waitFor({ timeout: 60000 });
-    for (let i = 0; i < 3; i++) await page.locator(dt("camel-tutorial-next")).click();
+    await readTutorial(page);
     await page.locator(dt("camel-result")).waitFor({ timeout: 120000 });
     await page.locator(dt("camel-finish")).click();
     // 昼の枠は一度だけ使い、同じ日の夜の地図へ（日常ループと二重に進めない）。
@@ -264,6 +264,8 @@ await suite("ch4-camel-cups", async check => {
     const before = await get(page);
     await go(page, "ch4_dubai_camel");
     await page.locator(dt("camel-cups")).waitFor();
+    // 大会の札の紋章（CR-WD08・#3217）は4枚とも読めている。
+    await page.waitForFunction(() => [...document.querySelectorAll('[data-test="camel-cup-badge"]')].filter(img => img.complete && img.naturalWidth > 0).length === 4);
     const cup = id => page.locator(`[data-test="camel-cup"][data-cup="${id}"]`);
     assert.equal(await cup("standard").isDisabled(), true);
     assert.equal(await cup("expert").isDisabled(), true);
@@ -294,6 +296,21 @@ await suite("ch4-camel-cups", async check => {
   });
 });
 
+// 遊び方を最後のページまで「次へ」で読み、閉じたらページ数を返す。どのページの絵も読めている（4ページ目は駆け引きの絵 CR-WD07）。
+async function readTutorial(page) {
+  let pages = 0;
+  while (await page.locator(dt("camel-tutorial")).count()) {
+    assert(pages < 8, "the how-to ends");
+    await page.waitForFunction(() => {
+      const art = document.querySelector('[data-test="camel-tutorial-art"]');
+      return art?.complete && art.naturalWidth > 0;
+    });
+    pages += 1;
+    await page.locator(dt("camel-tutorial-next")).click();
+  }
+  return pages;
+}
+
 async function expectLabel(locator, pattern) {
   await locator.waitFor();
   assert.match(await locator.textContent(), pattern);
@@ -307,6 +324,10 @@ await suite("ch4-camel-race-controls", async check => {
     const game = page.locator(dt("camel-game"));
     await page.waitForFunction(() => document.querySelector('[data-test="camel-game"]')?.dataset.phase === "race", null, { timeout: 15000 });
     assert.equal(await game.getAttribute("data-art"), "sprites");
+    assert.equal(await game.getAttribute("data-dust"), "sprites", "the dust art (CR-WD03) is loaded");
+    // 手描きの字（CR-UI14・#3217）: 判定・カウントダウン・バナー・題名の字の絵がすべて読めている。
+    await page.waitForFunction(words => words.every(word => document.querySelector('[data-test="camel-game"]').classList.contains(`cr-word-${word}`)),
+      ["perfect", "good", "miss", "go", "3", "2", "1", "last-spurt", "goal", "title"]);
     const whip = page.locator(dt("camel-signal"));
     const stamina = async () => Number(await page.locator(".camel-stamina b").textContent());
     const full = await stamina();
@@ -336,5 +357,19 @@ await suite("ch4-camel-race-controls", async check => {
     await page.locator(dt("camel-close")).click();
     await page.locator(dt("camel-menu-quick")).waitFor();
   });
+  // 砂煙の絵（CR-WD03）が読めない環境: ラクダ・車の絵はそのまま、砂煙だけ従来のぼかしの円に戻り、レースは進む。
+  const dustArt = /\/ui\/camel_race\/world\/dust-\d\.webp/;
+  await check("dust-falls-back-to-soft-puffs-without-the-art", async page => {
+    await page.route(dustArt, route => route.abort());
+    await page.goto(new URL("camel-race.html?pilot=perfect", baseURL).href);
+    await page.locator(dt("camel-menu-quick")).click();
+    await page.waitForFunction(() => document.querySelector('[data-test="camel-game"]')?.dataset.phase === "race", null, { timeout: 15000 });
+    const game = page.locator(dt("camel-game"));
+    assert.equal(await game.getAttribute("data-art"), "sprites");
+    assert.equal(await game.getAttribute("data-dust"), "canvas");
+    await page.waitForFunction(() => Number(document.querySelector(".camel-clock-time")?.textContent.slice(2)) > 3, null, { timeout: 15000 });
+    await page.locator(dt("camel-close")).click();
+    await page.locator(dt("camel-menu-quick")).waitFor();
+  }, { ignoreFailedResource: failure => dustArt.test(failure) });
 }, { entry: new URL("camel-race.html", baseURL).href, readySelector: '[data-test="camel-menu-quick"]' });
 

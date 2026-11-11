@@ -196,7 +196,8 @@ const camelOf = value => chapterFourMapModel(value).destinations.find(item => it
   assert(camelMastered(standard));
   recordCamelRaceResult(value, standard);
   assert.deepEqual(availableCamelCups(value), CAMEL_CUPS.map(cup => cup.id));
-  const expert = simulateRace({ cup: "expert", policy: "perfect" }).score;
+  // 上級は、お手本の操作でも勝てない seed がある（2026-11-11 の調整。camel_race_model.mjs が割合を確かめる）。ここは記録の流れを見るので、勝てる seed を使う。
+  const expert = simulateRace({ seed: 2, cup: "expert", policy: "perfect" }).score;
   assert(camelExpert(expert));
   recordCamelRaceResult(value, expert);
   assert(camelRaceRecord(value).cups.expert.mastered);

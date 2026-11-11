@@ -1565,7 +1565,7 @@ await suite("growth-levelup", async (runCheck) => {
     await page.locator(t(`board-node-${first}`)).click();
     const perk = await page.locator(t("board-perk")).innerText();
     const total = await page.locator(t("board-perk-total")).innerText();
-    assert.match(total, /の合計：.*＋0%?）? → .*[1-9]/, `いま→灯すと: ${total}`);
+    assert.match(total, /の合計：.*＋0%（端数は次の睡眠へ） → .*＋2%（端数は次の睡眠へ）/, `いま→灯すと: ${total}`);
     await page.locator(t("board-light")).click();
     await page.locator(t(`board-node-${first}`)).click(); // 仮置きで隣へ選択が進むので戻す
     assert.match(await page.locator(t("board-perk-total")).innerText(), /仮置き中/);

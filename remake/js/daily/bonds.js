@@ -25,6 +25,7 @@ import { VISIT_SEQ, storyCount, hasContact } from "./spots.js";
 import { hiyoriRoute, hiyoriStoriesDone, hiyoriFinaleReady } from "../core/hiyori-route.js";
 import { noorStoriesDone } from "../chapters/ch4-desert-progress.js";
 import { longlongStoriesDone } from "../chapters/ch4-longlong.js";
+import { DUBAI_BOND_FINALES, dubaiBondStoriesDone } from "../chapters/dubai-bonds.js";
 // #2090: 第2章の対峙（決裂・休業）以降か。spots.js / core/fortune-effects.js の naruRiftActive と同じ条件（試験の依存を増やさないため写し）
 const naruRiftActive = (save) => (save?.chapter || 1) >= 2 && !!(save?.flags?._ch2_read_ch2_naru_confrontation
   || save?.flags?._ch2_night_11_done || save?.flags?._ch2_naru_listened || save?.flags?._ch2_naru_hurt);
@@ -69,6 +70,11 @@ export const BOND_FINALES = {
   volk: { dialogue: "ch3_volk_bond_finale", tokyoDialogue: "ch5_volk_bond_finale", gift: "suyaki_volk" },
   // 王煙楼: 第4章ドバイの龍龍水煙所で、段階5本を読み終えた♥5の次の来店で一度だけ。恋愛対象外なので友情の着地だけ。
   master_hookah: { dialogue: "ch4_longlong_bond_finale", gift: "suyaki_master_hookah" },
+  // 太陽・シェイク（2026-11-11 オーナー「ルートを新設」RVE03）: 第5章のシェイクの屋敷で、屋敷の段階を読み終えた♥5の次の来店で一度だけ。
+  // 恋愛対象外なので友情の着地だけ。太陽は第4章のFESTAで仲良くなれるが、審査員だと明かすのは大会当日なので、締めくくりは大会の後の中庭で。
+  // シェイクの連絡は手紙（chapters/ch5-travel.js）。締めくくりの後にも一通届く（chapters/dubai-bonds.js の SHEIKH_BOND_LETTERS）。
+  da_silva: { dialogue: DUBAI_BOND_FINALES.da_silva, gift: "suyaki_da_silva" },
+  sheikh: { dialogue: DUBAI_BOND_FINALES.sheikh, gift: "suyaki_sheikh" },
   hiyori: {
     get dialogue() { return hiyoriRoute().finale?.dialogue || ""; },
     get gift() { return hiyoriRoute().finale?.gift || null; },
@@ -271,6 +277,7 @@ const storiesDone = (id) => id === "hiyori" ? hiyoriStoriesDone()
   : id === "volk" ? (state.chapter || 1) >= 5 || VOLK_VISITS.every((scene) => !!state.flags[`_ch3_read_${scene}`])
     && !!state.flags._ch3_read_ch3_volk_lime && !!state.flags._lime_contact_volk
   : id === "master_hookah" ? longlongStoriesDone(state)
+  : id === "da_silva" || id === "sheikh" ? dubaiBondStoriesDone(state, id)
   : id === "ageha" ? AGEHA_AFFINITY_VISITS.every((scene) => !!state.flags[`_ch2_read_${scene}`]) && questionComplete(state, id)
   : CH2_VISIT_STORIES[id] ? ch2VisitStoriesDone(state.flags, id)
   : storyCount(id) >= (VISIT_SEQ[id] || []).length
@@ -309,7 +316,8 @@ const TOKYO_SHOP_REACH = Object.freeze({
   volk: () => inChapterFiveTokyo() || tokyoShopInReach("volkBond", VOLK_LAST_AFTERMATH_STAGE),
 });
 /** 締めくくりの相手に、今の章・時点で会いに行けるか（MENU の「次に会うと」を、会えない間に約束しない）。 */
-export const finaleReachable = (id) => !TOKYO_SHOP_REACH[id] || TOKYO_SHOP_REACH[id]();
+export const finaleReachable = (id) => id === "da_silva" || id === "sheikh" ? (state.chapter || 1) === 5 // 第5章のシェイクの屋敷だけ
+  : !TOKYO_SHOP_REACH[id] || TOKYO_SHOP_REACH[id]();
 
 export function finaleDue(id) {
   if (id === "hiyori" && !hiyoriFinaleReady()) return false;
@@ -322,6 +330,8 @@ export function finaleDue(id) {
   if (id === "steve" && !TOKYO_SHOP_REACH.steve()) return false;
   if (id === "volk" && !TOKYO_SHOP_REACH.volk()) return false;
   if (id === "master_hookah" && (state.chapter || 1) !== 4) return false; // 龍龍水煙所は第4章ドバイの日常だけ
+  // シェイクの屋敷は第5章のドバイだけ（読むのは屋敷の行き先から。地元にいる間も MENU は「次に屋敷で会うと」を示す）
+  if ((id === "da_silva" || id === "sheikh") && (state.chapter || 1) !== 5) return false;
   const def = BOND_FINALES[id];
   if (!def || finaleSeen(id) || !DB.dialogues[finaleDialogue(id)] || !storiesDone(id)) return false;
   if (affinityLevel(id) < finaleHeart(id) || questionVisitDue(id)) return false;
@@ -338,7 +348,7 @@ export const isFinaleEvent = (dialogueId) => Object.values(BOND_FINALES).some((d
 
 /** 締めくくりを再生し、ルート（恋人／恋愛／友情）を記録して専用ハガルを渡す。一度だけ */
 export async function playFinale(id, { bg = null, deferSave = false, signal = null } = {}) {
-  if (["hiyori", "samechan", "mashiro", "saku", "noor", "steve", "volk", "master_hookah"].includes(id) && !finaleDue(id)) return false;
+  if (["hiyori", "samechan", "mashiro", "saku", "noor", "steve", "volk", "master_hookah", "da_silva", "sheikh"].includes(id) && !finaleDue(id)) return false;
   const def = BOND_FINALES[id];
   if (!def || finaleSeen(id) || !DB.dialogues[finaleDialogue(id)]) return false;
   const owner = state;

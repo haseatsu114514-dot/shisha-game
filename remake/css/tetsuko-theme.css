@@ -5,7 +5,7 @@
    この画面では日常の HUD を隠し、全画面を段ボールの窓（.tt-frame）で囲み、左上に題の札（.tt-logo）を置く。
    入った時は閉じた箱が開く（.tt-intro。tetsuko-theme.js）。演出は pointer-events を持たず、操作を止めない。
    ミニゲーム共通の方針（オーナー・2026-11-06）: 文字を密集させない／操作や遊び方は「？」を開いて見る（.tt-help。常時表示しない）／
-   基本画面は必要なUIだけ。常に見える文字は、題の札・反応の帯・道具の名前だけにする（今日の様子は入った時だけ）。 */
+   基本画面は必要なUIだけ。常に見える文字は、題の札・道具の名前だけにする（反応の一行は少しで消える。今日の様子は「？」で読める）。 */
 .tetsuko-time {
   --tk-cream: #fff5e4; --tk-cream-2: #fbe7c8; --tk-ink: #3b2416; --tk-ink-2: #6e4325;
   --tk-tabby: #f08a2e; --tk-tabby-deep: #c25e1c; --tk-tabby-text: #a24a12; --tk-pink: #f39aa6;
@@ -51,18 +51,6 @@ body[data-screen="tetsuko-time"]:has(.tetsuko-time[data-art-bg="false"]) #bg { f
 .tt-logo-title { font-size: 23px; font-weight: 900; line-height: 1.08; letter-spacing: .05em; color: var(--tk-ink); white-space: nowrap; }
 .tt-logo-roman { font-size: 14px; font-weight: 800; line-height: 1.15; letter-spacing: .28em; color: var(--tk-tabby-text); white-space: nowrap; }
 
-/* ---- 今日のてつこ: 題の札から出る吹き出し（題そのものは札にあるので、紙片の題は読み上げだけ残す） */
-.tetsuko-time .tt-memo { left: 34px; right: auto; top: 108px; max-width: 470px; padding: 7px 18px 8px; border: 2.5px solid var(--tk-ink); border-radius: 14px;
-  background: var(--tk-cream); transform: none; box-shadow: 0 3px 0 var(--tk-ink), 0 8px 14px rgba(32, 16, 6, .28); }
-.tetsuko-time .tt-memo::before { content: ""; position: absolute; left: 34px; top: -9px; width: 14px; height: 14px; background: var(--tk-cream);
-  border-left: 2.5px solid var(--tk-ink); border-top: 2.5px solid var(--tk-ink); transform: rotate(45deg); }
-.tetsuko-time .tt-memo-tape { display: none; }
-.tetsuko-time .tt-memo-title { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
-.tetsuko-time .tt-mood { margin: 0; font-size: 18px; color: var(--tk-ink); }
-/* 入った時だけ見せ、少しで消す（tetsuko-theme.js の MEMO_MS。「？」の中でも読める） */
-.tetsuko-time .tt-memo { transition: opacity .6s ease; }
-.tetsuko-time[data-memo="off"] .tt-memo { opacity: 0; }
-
 /* ---- 押せる札（右上の道具・右下の手元の道具・パネルのボタン）: 生成りに焦げ茶の太い線、下に落ちる影 */
 .tetsuko-time .tt-tools { top: 34px; right: 30px; gap: 10px; }
 .tetsuko-time .tt-tool { border: 3px solid var(--tk-ink); border-radius: 16px; background: var(--tk-cream); color: var(--tk-ink-2); box-shadow: var(--tk-drop), var(--tk-lift); }
@@ -86,7 +74,6 @@ body[data-screen="tetsuko-time"]:has(.tetsuko-time[data-art-bg="false"]) #bg { f
   border: 3px solid var(--tk-ink); border-bottom: 0; border-radius: 12px 12px 0 0; background: var(--tk-tabby); }
 .tetsuko-time .tt-act.active .tt-act-token::before { left: 6px; transform: rotate(-32deg); }
 .tetsuko-time .tt-act.active .tt-act-token::after { right: 6px; transform: rotate(32deg); }
-.tetsuko-time .tt-act[data-kind="catch"] .tt-act-token { background: var(--tk-pink); color: var(--tk-ink); border-color: var(--tk-ink); }
 .tetsuko-time .tt-act:disabled .tt-act-token { opacity: .5; box-shadow: 0 2px 0 rgba(59, 36, 22, .5); }
 .tetsuko-time .tt-act-label { border: 2px solid var(--tk-ink); border-radius: 10px; background: var(--tk-cream); color: var(--tk-ink); font-weight: 800; }
 
@@ -125,7 +112,7 @@ body[data-screen="tetsuko-time"]:has(.tetsuko-time[data-art-bg="false"]) #bg { f
 
 /* ---- てつこ手帳: 段ボールの表紙に生成りの中紙、真ん中に茶トラのしまの背 */
 .tetsuko-time .tt-book { left: 44px; right: 44px; top: 124px; bottom: 26px; }
-.tetsuko-time[data-panel="book"] .tt-memo { visibility: hidden; }
+.tetsuko-time:is([data-panel="book"], [data-panel="help"]) .tt-status { visibility: hidden; }
 .tetsuko-time .tt-book-spread { border: 3px solid var(--tk-ink); border-radius: 18px;
   background: repeating-linear-gradient(90deg, rgba(90, 52, 20, .07) 0 3px, transparent 3px 9px), linear-gradient(160deg, #d6a36a, #bb854f);
   box-shadow: 0 6px 0 var(--tk-ink), 0 16px 30px rgba(20, 10, 4, .45); }
@@ -146,21 +133,22 @@ body[data-screen="tetsuko-time"]:has(.tetsuko-time[data-art-bg="false"]) #bg { f
 /* ---- あそびかた（「？」を開いた時だけ）: 手元の道具と上の道具を、アイコン・名前・短い一文で並べる */
 .tt-help { position: absolute; left: 96px; right: 96px; top: 116px; bottom: 34px; z-index: 24; display: grid; place-items: center; }
 .tt-help[hidden] { display: none; }
-.tetsuko-time[data-panel="help"] :is(.tt-dock, .tt-caption, .tt-memo) { visibility: hidden; }
-.tt-help-card { position: relative; width: 100%; padding: 22px 34px 20px; border: 3px solid var(--tk-ink); border-radius: 20px; background: var(--tk-cream);
+.tetsuko-time[data-panel="help"] :is(.tt-dock, .tt-caption) { visibility: hidden; }
+.tt-help-card { position: relative; width: 100%; padding: 18px 34px 16px; border: 3px solid var(--tk-ink); border-radius: 20px; background: var(--tk-cream);
   box-shadow: 0 6px 0 var(--tk-ink), 0 16px 30px rgba(20, 10, 4, .45); }
-.tt-help-head { display: flex; align-items: baseline; gap: 18px; margin-bottom: 14px; }
+.tt-help-head { display: flex; align-items: baseline; gap: 18px; margin-bottom: 10px; }
 .tt-help-head h3 { margin: 0; padding-bottom: 2px; border-bottom: 3px dotted var(--tk-tabby); font-size: 24px; color: var(--tk-ink); letter-spacing: .06em; }
 .tt-help-mood { margin: 0; font-size: 16px; color: var(--tk-ink-2); }
-.tt-help-groups { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; }
+.tt-help-groups { display: grid; grid-template-columns: 1fr 1fr; gap: 14px 34px; }
+.tt-help-group:nth-child(2) { grid-row: span 2; }
 .tt-help-group h4 { margin: 0 0 8px; font-size: 15px; font-weight: 800; color: var(--tk-tabby-text); letter-spacing: .04em; }
-.tt-help-rows { margin: 0; padding: 0; list-style: none; display: grid; gap: 9px; }
+.tt-help-rows { margin: 0; padding: 0; list-style: none; display: grid; gap: 7px; }
 .tt-help-row { display: grid; grid-template-columns: 38px 104px 1fr; align-items: center; column-gap: 10px; }
 .tt-help-ico { display: grid; place-items: center; width: 38px; height: 38px; border: 2px solid var(--tk-ink); border-radius: 50%; background: var(--tk-cream-2); color: var(--tk-ink-2); }
 .tt-help-ico .tt-ico { width: 24px; height: 24px; }
 .tt-help-name { font-size: 16px; font-weight: 800; color: var(--tk-ink); white-space: nowrap; }
 .tt-help-text { font-size: 16px; line-height: 1.45; color: var(--tk-ink); word-break: auto-phrase; }
-.tt-help-note { display: flex; align-items: center; gap: 10px; margin: 16px 0 0; padding-top: 12px; border-top: 2px dashed rgba(110, 67, 37, .3); font-size: 16px; color: var(--tk-ink-2); }
+.tt-help-note { display: flex; align-items: center; gap: 10px; margin: 12px 0 0; padding-top: 10px; border-top: 2px dashed rgba(110, 67, 37, .3); font-size: 16px; color: var(--tk-ink-2); }
 .tt-help-note .tt-stamp { width: 24px; height: 24px; flex: none; }
 .tt-help-close { position: absolute; right: 22px; bottom: 16px; min-width: 110px; min-height: 48px; }
 /* 撮った写真が飛ぶ先＝右上の「てつこ手帳」（道具を上へ詰めた分） */
@@ -215,7 +203,10 @@ body[data-screen="tetsuko-time"]:has(.tetsuko-time[data-art-bg="false"]) #bg { f
   .tetsuko-time .tt-help-btn { width: var(--tk-tap); height: var(--tk-tap); padding: 0; }
   .tetsuko-time .tt-help-q { font-size: calc(var(--tk-fs) * 1.4); }
   .tetsuko-time .tt-tool.new::after, .tetsuko-time .tt-new { font-size: var(--tk-fs-sub); }
-  .tetsuko-time .tt-mood { font-size: var(--tk-fs); }
+  /* ごきげんのハートと、猫のそばのカメラも押せる・見える大きさに */
+  .tetsuko-time .tt-heart { width: 46px; height: 46px; }
+  .tetsuko-time .tt-shot { width: var(--tk-tap); height: var(--tk-tap); margin: calc(var(--tk-tap) / -2) 0 0 calc(var(--tk-tap) / -2); }
+  .tetsuko-time .tt-shot-ico .tt-ico { width: calc(var(--tk-tap) * .55); height: calc(var(--tk-tap) * .55); }
   /* 反応の帯: 手元の道具の分だけ幅を詰める */
   .tetsuko-time .tt-caption { width: 540px; padding: 10px 20px 10px 32px; }
   .tetsuko-time .tt-text, .tetsuko-time .tt-line, .tetsuko-time .tt-toast b { font-size: var(--tk-fs); line-height: 1.35; }
@@ -223,7 +214,7 @@ body[data-screen="tetsuko-time"]:has(.tetsuko-time[data-art-bg="false"]) #bg { f
   .tetsuko-time .tt-toast { max-width: 100%; }
   .tetsuko-time .tt-toast p { flex-wrap: wrap; gap: 0 10px; }
   .tetsuko-time .tt-toast p > * { white-space: nowrap; }
-  /* 手元の道具: 丸い札は押せる大きさ、名前は 2 行まで（そっと／見守る） */
+  /* 手元の道具: 丸い札は押せる大きさ */
   .tetsuko-time .tt-dock { gap: var(--tk-gap); }
   .tetsuko-time .tt-act { width: auto; min-width: var(--tk-tap); max-width: calc(var(--tk-fs) * 3 + 20px); }
   .tetsuko-time .tt-act-token { width: var(--tk-tap); height: var(--tk-tap); }
@@ -277,3 +268,95 @@ html:root[data-density="phone"] .tetsuko-time .tt-logo-roman { display: none; }
 .tetsuko-time .tt-tools > .tt-help-btn.tt-help-btn::before { content: ""; position: absolute; left: 50%; top: 50%; z-index: -1; box-sizing: border-box;
   width: var(--q-dot); height: var(--q-dot); transform: translate(-50%, -50%); border: 2px solid var(--tk-ink); border-radius: 50%; background: var(--tk-cream); pointer-events: none; }
 .tetsuko-time .tt-tools > .tt-help-btn.tt-help-btn .tt-help-q { font-size: var(--q-font); }
+
+/* ==== 専用テーマの部品の絵（#3213・TKT25・2026-11-11）====
+   Codex の手描きの部品を、CSS で描いていた丸・四角・SVG と入れ替える。絵が届いた部品だけ（tetsuko-art.js の ART_READY.ui →
+   画面の data-art-ui）。届いていない部品は上の CSS のまま動く。絵は remake/tools/build_tetsuko_art.py ui で切り出した @2x。
+   押せる大きさ・文字の大きさ（スマホ横持ちの下限）は変えない。 */
+/* アイコン: 線の SVG の代わりに、色のついた絵（<img class="tt-ico tt-ico-art">） */
+.tetsuko-time .tt-ico-art { display: block; object-fit: contain; pointer-events: none; -webkit-user-drag: none; }
+.tetsuko-time[data-art-ui~="tk_icons"] .tt-act-token .tt-ico-art { width: 42px; height: 42px; translate: 0 -2px; }
+.tetsuko-time[data-art-ui~="tk_icons"] .tt-tool-ico .tt-ico-art { width: 30px; height: 30px; }
+.tetsuko-time[data-art-ui~="tk_icons"] .tt-help-ico .tt-ico-art { width: 30px; height: 30px; }
+.tetsuko-time[data-art-ui~="tk_icons"] .tt-wish .tt-ico-art { width: 44px; height: 44px; }
+.tetsuko-time[data-art-ui~="tk_icons"] .tt-shot-ico .tt-ico-art { width: 46px; height: 46px; translate: 0 -3px; }
+.tetsuko-time[data-art-ui~="tk_icons"] .tt-ghost .tt-ico-art { width: 100%; height: 100%; }
+
+/* 手元の道具の丸い札（ふつう・押した・持っている道具＝折れ耳）と、写真のカメラ・「？」の丸 */
+.tetsuko-time[data-art-ui~="tk_token"] .tt-act-token { border: 0; border-radius: 0; box-shadow: none; background: url("../img/ui/tetsuko/ui_tk_token.webp") center / contain no-repeat; }
+.tetsuko-time[data-art-ui~="tk_token"] .tt-act:active:not(:disabled) .tt-act-token { box-shadow: none; transform: translateY(2px); background: url("../img/ui/tetsuko/ui_tk_token_pressed.webp") center / contain no-repeat; }
+.tetsuko-time[data-art-ui~="tk_token"] .tt-act.active .tt-act-token { box-shadow: none; background: url("../img/ui/tetsuko/ui_tk_token_active.webp") center / contain no-repeat; }
+.tetsuko-time[data-art-ui~="tk_token"] .tt-act.active .tt-act-token::before, .tetsuko-time[data-art-ui~="tk_token"] .tt-act.active .tt-act-token::after { display: none; }
+.tetsuko-time[data-art-ui~="tk_token"] .tt-act:disabled .tt-act-token { box-shadow: none; filter: grayscale(.6); }
+.tetsuko-time[data-art-ui~="tk_token"] .tt-act.asked .tt-act-token, .tetsuko-time[data-art-ui~="tk_tab"] .tt-tool.asked { outline: 0; filter: drop-shadow(0 0 5px #ffd27a) drop-shadow(0 0 2px #ffb347); }
+.tetsuko-time[data-art-ui~="tk_token"] .tt-shot { border: 0; border-radius: 0; box-shadow: none; background: url("../img/ui/tetsuko/ui_tk_token.webp") center / contain no-repeat; }
+.tetsuko-time[data-art-ui~="tk_token"] .tt-shot.ready { background-image: url("../img/ui/tetsuko/ui_tk_token_active.webp"); }
+.tetsuko-time[data-art-ui~="tk_token"] .tt-shot:not(.ready) { box-shadow: none; }
+.tetsuko-time[data-art-ui~="tk_token"] .tt-tools > .tt-help-btn.tt-help-btn::before { border: 0; border-radius: 0; background: url("../img/ui/tetsuko/ui_tk_token.webp") center / contain no-repeat;
+  width: calc(var(--q-dot) + 8px); height: calc(var(--q-dot) + 8px); }
+/* まだ撮っていないしぐさの時は、カメラの角できらきらが瞬く（粒の絵。無ければ上の CSS の輪） */
+.tetsuko-time[data-art-ui~="tk_fx"] .tt-shot.ready::after { inset: -16px -18px auto auto; width: 34px; height: 34px; border: 0; border-radius: 0;
+  background: url("../img/ui/tetsuko/ui_tk_fx_spark.webp") center / contain no-repeat; animation: tt-shot-spark 1.1s ease-in-out infinite; }
+@keyframes tt-shot-spark { 0%, 100% { opacity: .35; transform: scale(.7) rotate(0deg); } 50% { opacity: 1; transform: scale(1.1) rotate(18deg); } }
+
+/* 上の道具の札（ふつう・押した・帰る＝戸の青灰）。札の絵の縁の飾りは角にあるので、札の大きさに合わせて伸ばす */
+.tetsuko-time[data-art-ui~="tk_tab"] .tt-tool:not(.tt-help-btn) { border: 0; border-radius: 0; box-shadow: none; background: url("../img/ui/tetsuko/ui_tk_tab.webp") center / 100% 100% no-repeat; padding-bottom: 7px; }
+.tetsuko-time[data-art-ui~="tk_tab"] .tt-tool:not(.tt-help-btn):active:not(:disabled) { box-shadow: none; background-image: url("../img/ui/tetsuko/ui_tk_tab_pressed.webp"); }
+.tetsuko-time[data-art-ui~="tk_tab"] .tt-tool[data-test="tetsuko-time-back"], .tetsuko-time[data-art-ui~="tk_tab"] .tt-tool[data-test="tetsuko-time-back"]:active:not(:disabled) { background-image: url("../img/ui/tetsuko/ui_tk_tab_door.webp"); }
+.tetsuko-time[data-art-ui~="tk_tab"] .tt-tool:disabled { box-shadow: none; }
+
+/* ごきげんのハート（空の上に、満ちた分だけ下から満のハートを見せる）と、ハートの台 */
+.tetsuko-time[data-art-ui~="tk_heart"] .tt-heart svg, .tetsuko-time[data-art-ui~="tk_heart"] .tt-fly-heart svg, .tetsuko-time[data-art-ui~="tk_heart"] .tt-book-heart svg { display: none; }
+.tetsuko-time[data-art-ui~="tk_heart"] .tt-heart { background: url("../img/ui/tetsuko/ui_tk_heart_empty.webp") center / contain no-repeat; }
+.tetsuko-time[data-art-ui~="tk_heart"] .tt-heart::after { content: ""; position: absolute; inset: 0; background: url("../img/ui/tetsuko/ui_tk_heart.webp") center / contain no-repeat;
+  clip-path: inset(calc((1 - var(--f, 0)) * 100%) 0 0 0); transition: clip-path .35s ease-out; }
+.tetsuko-time[data-art-ui~="tk_heart"] :is(.tt-fly-heart, .tt-book-heart) { background: url("../img/ui/tetsuko/ui_tk_heart.webp") center / contain no-repeat; }
+.tetsuko-time[data-art-ui~="tk_pill"] .tt-joy { border-style: solid; border-color: transparent; border-width: 0 25px; border-radius: 0; padding: 6px 2px 9px; box-shadow: none;
+  background: none; border-image: url("../img/ui/tetsuko/ui_tk_pill.webp") 0 70 fill / 0 25px stretch; }
+
+/* おねだりの吹き出し（右に出す時は絵を左右に返して、しっぽを猫の頭へ向ける。アイコンは返さない） */
+.tetsuko-time[data-art-ui~="tk_wish"] .tt-wish { width: 86px; height: 75px; border: 0; border-radius: 0; background: none; box-shadow: none; }
+.tetsuko-time[data-art-ui~="tk_wish"] .tt-wish::after { display: none; }
+.tetsuko-time[data-art-ui~="tk_wish"] .tt-wish::before { content: ""; position: absolute; inset: 0; background: url("../img/ui/tetsuko/ui_tk_wish.webp") center / contain no-repeat; }
+.tetsuko-time[data-art-ui~="tk_wish"] .tt-wish[data-side="right"]::before { scale: -1 1; }
+.tetsuko-time[data-art-ui~="tk_wish"] .tt-wish .tt-ico { position: relative; z-index: 1; translate: 0 -4px; }
+
+/* 反応の帯（左端の茶トラのしまは絵の中。九分割） */
+.tetsuko-time[data-art-ui~="tk_caption"] .tt-caption { border-style: solid; border-color: transparent; border-width: 9px 10px 10px 34px; border-radius: 0; box-shadow: none;
+  background: none; padding: 4px 14px 2px 10px; border-image: url("../img/ui/tetsuko/ui_tk_caption.webp") 36 40 40 136 fill / 9px 10px 10px 34px stretch; }
+.tetsuko-time[data-art-ui~="tk_caption"] .tt-caption::before { display: none; }
+
+/* 左上の題の札（折れ耳・肉球の丸・しまは絵の中。文字はコードが書く） */
+.tetsuko-time[data-art-ui~="tk_title"] .tt-logo { display: flex; flex-direction: column; justify-content: center; width: 320px; height: 96px; padding: 22px 12px 20px 66px;
+  border: 0; border-radius: 0; box-shadow: none; background: url("../img/ui/tetsuko/ui_tk_title.webp") center / 100% 100% no-repeat; }
+.tetsuko-time[data-art-ui~="tk_title"] .tt-logo :is(.tt-logo-ear, .tt-logo-paw) { display: none; }
+.tetsuko-time[data-art-ui~="tk_title"] .tt-logo-title { font-size: 22px; }
+.tetsuko-time[data-art-ui~="tk_title"] .tt-status { top: 132px; }
+.tetsuko-time[data-art-ui~="tk_title"] .tt-logo-card.tt-logo { position: relative; }
+
+/* 小さな粒（文字の ♥ ✦ ♪、CSS の汗・毛・肉球の代わり）。Zzz と光の点は今までどおり */
+.tetsuko-time[data-art-ui~="tk_fx"] .tt-bit:is([data-kind="heart"], [data-kind="spark"], [data-kind="note"], [data-kind="sweat"], [data-kind="fur"], [data-kind="paw"], [data-kind="puff"]) {
+  width: 40px; height: 40px; font-size: 0; color: transparent; text-shadow: none; border: 0; border-radius: 0; box-shadow: none; filter: none; background: center / contain no-repeat; }
+.tetsuko-time[data-art-ui~="tk_fx"] .tt-bit[data-kind="heart"] { background-image: url("../img/ui/tetsuko/ui_tk_fx_heart.webp"); }
+.tetsuko-time[data-art-ui~="tk_fx"] .tt-bit[data-kind="spark"] { background-image: url("../img/ui/tetsuko/ui_tk_fx_spark.webp"); width: 36px; height: 36px; }
+.tetsuko-time[data-art-ui~="tk_fx"] .tt-bit[data-kind="note"] { background-image: url("../img/ui/tetsuko/ui_tk_fx_note.webp"); }
+.tetsuko-time[data-art-ui~="tk_fx"] .tt-bit[data-kind="sweat"] { background-image: url("../img/ui/tetsuko/ui_tk_fx_sweat.webp"); width: 32px; height: 32px; }
+.tetsuko-time[data-art-ui~="tk_fx"] .tt-bit[data-kind="fur"] { background-image: url("../img/ui/tetsuko/ui_tk_fx_fur.webp"); width: 34px; height: 34px; }
+.tetsuko-time[data-art-ui~="tk_fx"] .tt-bit[data-kind="paw"] { background-image: url("../img/ui/tetsuko/ui_tk_fx_paw.webp"); width: 64px; height: 64px; }
+.tetsuko-time[data-art-ui~="tk_fx"] .tt-bit[data-kind="puff"] { background-image: url("../img/ui/tetsuko/ui_tk_fx_puff.webp"); width: 52px; height: 52px; }
+/* 喉の波（3つの波が胸元から広がる）と、なでた時の ♡・ブラシの毛 */
+.tetsuko-time[data-art-ui~="tk_fx"] .tt-purr i { left: 6px; top: -46px; width: 48px; height: 48px; border: 0; border-radius: 0; rotate: 70deg;
+  background: url("../img/ui/tetsuko/ui_tk_fx_purr.webp") center / contain no-repeat; }
+.tetsuko-time[data-art-ui~="tk_fx"][data-fx="heart"] .tt-fx::before, .tetsuko-time[data-art-ui~="tk_fx"][data-fx="heart"] .tt-fx::after {
+  content: ""; width: 40px; height: 40px; text-shadow: none; background: url("../img/ui/tetsuko/ui_tk_fx_heart.webp") center / contain no-repeat; }
+.tetsuko-time[data-art-ui~="tk_fx"][data-fx="heart"] .tt-fx::after { width: 30px; height: 30px; }
+.tetsuko-time[data-art-ui~="tk_fx"][data-fx="fur"] .tt-fx::before { width: 34px; height: 34px; border-radius: 0; box-shadow: none; background: url("../img/ui/tetsuko/ui_tk_fx_fur.webp") center / contain no-repeat; }
+
+/* スマホ横持ち: 丸い札・ハートの台は大きくなった分に合わせる（押せる大きさ・文字の下限は上の @media のまま） */
+@media (orientation: landscape) and (max-width: 1024px) and (max-height: 520px) and (pointer: coarse) and (hover: none) {
+  .tetsuko-time[data-art-ui~="tk_icons"] .tt-act-token .tt-ico-art { width: calc(var(--tk-tap) * .64); height: calc(var(--tk-tap) * .64); }
+  .tetsuko-time[data-art-ui~="tk_icons"] .tt-tool-ico .tt-ico-art { width: calc(var(--tk-fs) * 1.3); height: calc(var(--tk-fs) * 1.3); }
+  .tetsuko-time[data-art-ui~="tk_icons"] .tt-shot-ico .tt-ico-art { width: calc(var(--tk-tap) * .62); height: calc(var(--tk-tap) * .62); }
+  .tetsuko-time[data-art-ui~="tk_pill"] .tt-joy { border-width: 0 32px; border-image-width: 0 32px; padding: 7px 2px 11px; }
+  .tetsuko-time[data-art-ui~="tk_caption"] .tt-caption { padding: 4px 14px 2px 10px; }
+}

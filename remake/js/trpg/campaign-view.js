@@ -9,7 +9,7 @@ import { loadTrpgLibrary, preloadTrpgAssets, runTrpg } from "./index.js";
 import { playTrpgEntrance } from "./entrance.js";
 import { shelfHelpButton } from "./shelf-help.js";
 import { displayName, portraitUrl, portraitAx, portraitTop, sceneArt } from "./presentation.js";
-import { participantStatus, recruitmentStatus, foundTrpgClub, tableStatus, syncTrpgStock, buyTrpgBook, castTrpgTable, materializeTrpgCast, completeTrpgTable } from "./campaign.js";
+import { participantStatus, recruitmentStatus, foundTrpgClub, tableStatus, syncTrpgStock, buyTrpgBook, castTrpgTable, materializeTrpgCast, completeTrpgTable, keepTrpgBookmark, trpgBookmarkFor } from "./campaign.js";
 
 // 店の決まりは画面に常に出さず、右上の「？」で読む（#2719・ミニゲーム共通のUI方針）。
 const SHOP_HELP = [
@@ -189,7 +189,12 @@ export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy =
           memory.night ? el("small.trpg-campaign-night", { text: memory.night + "（盛り上がり " + memory.heat + "）" }) : null,
           memory.pc?.name ? el("small.trpg-campaign-pc", { dataset: { test: "trpg-memory-pc" }, text: "演じた役 " + memory.pc.name + (memory.pc.title ? "（" + memory.pc.title + "）" : "") }) : null,
           el("small", { text: "この夜の結末を、みんなとの思い出に。" }),
+          el("small.trpg-campaign-endings", { dataset: { test: "trpg-memory-endings" },
+            text: "見た結末 " + (memory.endingsSeen?.length || 1) + " / " + Object.keys(scenario.endings).length
+              + (memory.plays > 1 ? " · " + memory.plays + "回遊んだ" : "") }),
         ]));
+        // もう一度遊ぶ（TMX14）: 夜の行動を1つ使う。記録は良い方（星、同じなら盛り上がり）を残す。
+        if (owned) copy.append(...playButtons(book, scenario, cast, "もう一度遊ぶ"));
       } else if (locked) {
         copy.append(el("p", { text: "🔒 まだ選べません" }));
       } else if (!owned) {
@@ -199,8 +204,7 @@ export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy =
           }, readOnly || spendableMoney(state) < book.price));
       } else {
         copy.append(el("p", { text: cast.ok ? "今夜の卓：" + cast.participants.map(name).join("・") : cast.reason }),
-          el("small", { text: scenario.duration }),
-          button("この仲間で遊ぶ", "trpg-play-" + book.id, () => play(scenario), readOnly || !cast.ok));
+          el("small", { text: scenario.duration }), ...playButtons(book, scenario, cast, "この仲間で遊ぶ"));
       }
       card.append(copy); books.append(card);
     }
@@ -208,17 +212,37 @@ export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy =
     host.replaceChildren(root); root.focus({ preventScroll: true });
   }
 
-  async function play(scenario) {
+  /** The play buttons of a book: start, or continue from the bookmark (しおり・TMX13) when tonight's seats match it. */
+  function playButtons(book, scenario, cast, label) {
+    const state = getState();
+    const { mark, ok, reason } = cast.ok ? trpgBookmarkFor(state, scenario, cast.assignments) : { mark: null };
+    const off = readOnly || !cast.ok;
+    if (!mark) return [button(label, "trpg-play-" + book.id, () => play(scenario), off)];
+    const note = el("p.trpg-campaign-bookmark", { dataset: { test: "trpg-bookmark-" + book.id },
+      text: "しおり：" + (mark.title || "途中") + (ok ? "" : " · " + reason) });
+    return ok ? [note, button("続きから遊ぶ", "trpg-resume-" + book.id, () => play(scenario, { resume: true }), off),
+      button("最初から", "trpg-play-" + book.id, () => play(scenario), off)]
+      : [note, button(label, "trpg-play-" + book.id, () => play(scenario), off)];
+  }
+
+  async function play(scenario, { resume = false } = {}) {
     const state = getState();
     const cast = castTrpgTable(state, resources.catalog, scenario, { nightBusy: nightBusy() });
     if (readOnly || !cast.ok) { render(cast.reason); return; }
     busy = true;
-    const ticket = { ...cast, chapter: state.chapter, day: state.day, slot: state.slot };
+    const bookmark = resume ? trpgBookmarkFor(state, scenario, cast.assignments) : { mark: null };
+    const mark = bookmark.ok ? bookmark.mark : null;
+    const seed = mark ? mark.seed : ((state.seed || 1) ^ state.day * 7919 ^ state.chapter * 104729 ^ scenario.title.length * 997) >>> 0;
+    const ticket = { ...cast, chapter: state.chapter, day: state.day, slot: state.slot, seed };
     try {
       const table = materializeTrpgCast(scenario, cast.assignments);
-      await runTrpg(host, { resources: { ...resources, scenario: table }, signal: abort.signal,
-        seed: ((state.seed || 1) ^ state.day * 7919 ^ state.chapter * 104729 ^ scenario.title.length * 997) >>> 0,
+      await runTrpg(host, { resources: { ...resources, scenario: table }, signal: abort.signal, seed,
         allowReplay: false, closeLabel: "思い出を本棚へ", warmStart: ownsGear(state, "gear_dice"),
+        pc: mark?.pc || null, resume: mark ? { actions: mark.actions } : null,
+        // しおりは場面の区切りごとに保存する。夜の行動もお金も使わない。
+        onBookmark: data => {
+          if (!disposed && getState() === state && keepTrpgBookmark(state, scenario, ticket, data)) save();
+        },
         // The shopkeeper explains the table until the first story is finished; the cover button replays it any time.
         tutorial: !state.flags?._trpg_tutorial_seen,
         onComplete: result => {
@@ -229,7 +253,8 @@ export function mountTrpgCampaign(host, { getState, save = () => {}, nightBusy =
         } });
       if (disposed) return;
       busy = false;
-      if (completed) render(); else render("卓を片付けました。本は未クリアのまま、また遊べます。");
+      if (completed) render(); else render(getState()?.trpg?.bookmark?.id === scenario.id
+        ? "卓を片付けました。しおりを挟んだので、次は続きから遊べます。" : "卓を片付けました。本は未クリアのまま、また遊べます。");
     } catch (error) {
       busy = false;
       if (!disposed) render("卓を開けませんでした。本と今夜の行動は残っています。");

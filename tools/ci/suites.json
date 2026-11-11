@@ -298,6 +298,21 @@
       "run": ["node remake/test/ch1_interval_connection.mjs"]
     },
     {
+      "id": "poem-panel-cut",
+      "title": "Opening-poem panel template, frame detection, panel fitting and delivery check (Pillow)",
+      "kind": "browser",
+      "weight": 0.2,
+      "timeout": 3,
+      "paths": [
+        "tools/poem_panel_cut.py",
+        "asset_sources/poem-panels/template/**"
+      ],
+      "run": [
+        "python3 tools/poem_panel_cut.py selftest"
+      ],
+      "pillow": true
+    },
+    {
       "id": "load-save-failure",
       "title": "Slot load persistence failure and state rollback",
       "kind": "quick",
@@ -550,6 +565,21 @@
       "run": [
         "node remake/test/browser/hobby_gear.mjs"
       ]
+    },
+    {
+      "id": "ichidai-rules",
+      "title": "Card game Ichidai Shobu: data matches the rulebook, kits are legal, scoring and coal rules, CPU-vs-CPU matches finish without illegal moves (ICG)",
+      "kind": "quick",
+      "run": ["node remake/test/ichidai_rules.mjs", "python3 remake/tools/build_ichidai_art.py --check"]
+    },
+    {
+      "id": "ichidai",
+      "title": "Card game Ichidai Shobu: standalone page (setup, embers, prep, serve, judge, help, quit, touch) and the in-game tonari entry (off by default, record saved, no time used) (ICG)",
+      "kind": "browser",
+      "weight": 1,
+      "timeout": 5,
+      "paths": ["remake/js/minigames/ichidai*.js", "remake/js/daily/ichidai-table.js", "remake/js/ichidai-page.js", "remake/ichidai.html", "remake/css/ichidai.css", "remake/js/daily/tonari.js", "remake/test/browser/ichidai.mjs"],
+      "run": ["node remake/test/browser/ichidai.mjs"]
     },
     {
       "id": "dj-club",
@@ -1961,11 +1991,28 @@
         "remake/js/minigames/tetsuko-theme.js",
         "remake/js/minigames/tetsuko-help.js",
         "remake/js/minigames/tetsuko-time.js",
+        "remake/js/minigames/tetsuko-model.js",
         "remake/css/tetsuko-theme.css",
         "remake/css/tetsuko-time.css",
         "remake/test/browser/tetsuko_theme.mjs"
       ],
       "run": ["node remake/test/browser/tetsuko_theme.mjs"]
+    },
+    {
+      "id": "tetsuko-feel",
+      "title": "Tetsuko Time feel: her wish bubble, petting zones, pounce and catch, the joy hearts and their peak, and just watching counts (spec section 10)",
+      "kind": "browser",
+      "weight": 0.2,
+      "timeout": 3,
+      "paths": [
+        "remake/js/minigames/tetsuko-time.js",
+        "remake/js/minigames/tetsuko-model.js",
+        "remake/js/minigames/tetsuko-help.js",
+        "remake/css/tetsuko-time.css",
+        "remake/css/tetsuko-theme.css",
+        "remake/test/browser/tetsuko_feel.mjs"
+      ],
+      "run": ["node remake/test/browser/tetsuko_feel.mjs"]
     },
     {
       "id": "ch3-full-flow",
@@ -2817,7 +2864,10 @@
         "remake/test/natural_wrap*",
         "remake/test/browser/natural_wrap.mjs",
         "tools/check_changed_dialogue_layout.mjs",
-        "remake/test/choice_oneline.mjs"
+        "remake/test/choice_oneline.mjs",
+        "data/lime_messages.json",
+        "remake/data/lover.json",
+        "remake/data/friends.json"
       ],
       "run": [
         "PLAYWRIGHT_MODULE=\"$PWD/remake/test/browser/node_modules/playwright\" node remake/test/browser/natural_wrap.mjs",
@@ -4367,6 +4417,12 @@
       "run": ["node remake/test/character_birthdays.mjs"]
     },
     {
+      "id": "dubai-bonds",
+      "title": "Taiyo and the Sheikh bond routes: stages per place, finale prerequisites, letters, scripts and wiring (RVE03)",
+      "kind": "quick",
+      "run": ["node remake/test/dubai_bonds.mjs"]
+    },
+    {
       "id": "board-notification-visibility-browser",
       "title": "Paper mastery/purchase notices and stable board selection, undo and saved lit markers",
       "kind": "browser",
@@ -4380,6 +4436,53 @@
       ],
       "run": [
         "node remake/test/browser/board_notification_visibility.mjs"
+      ]
+    },
+    {
+      "id": "look",
+      "title": "見た目の様式（現行／新版／DS風）の既定と章による制限",
+      "kind": "quick",
+      "run": ["node remake/test/look.mjs"]
+    },
+    {
+      "id": "look-neo",
+      "title": "新版: 会話の帯・右上の操作の札・選択肢の収まりと、現行へ戻した時に痕跡が残らないこと",
+      "kind": "browser",
+      "weight": 1.2,
+      "timeout": 5,
+      "paths": [
+        "remake/css/look-neo.css",
+        "remake/js/looks/**",
+        "remake/js/core/look.js",
+        "remake/css/vn.css",
+        "remake/css/phone-density.css",
+        "remake/css/daily-menu.css",
+        "remake/js/vn/engine.js",
+        "remake/js/scenes/title.js",
+        "remake/test/browser/look_neo.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/look_neo.mjs"
+      ]
+    },
+    {
+      "id": "look-retro",
+      "title": "DS風: 縦持ちの2画面・会話と地図の中継・未対応の場面と他章では現行のまま",
+      "kind": "browser",
+      "weight": 1.2,
+      "timeout": 5,
+      "paths": [
+        "remake/css/look-retro.css",
+        "remake/js/looks/**",
+        "remake/js/core/look.js",
+        "remake/js/core/rotate-guard.js",
+        "remake/js/vn/engine.js",
+        "remake/js/daily/map.js",
+        "remake/js/scenes/title.js",
+        "remake/test/browser/look_retro.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/look_retro.mjs"
       ]
     }
   ]

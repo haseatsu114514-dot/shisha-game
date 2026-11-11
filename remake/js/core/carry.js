@@ -84,6 +84,7 @@ export const STATE_KEY_RULES = {
 export const GIFT_EQUIPMENT_IDS = [
   "suyaki_adam", "suyaki_ageha", "suyaki_hiyori", "suyaki_kumicho", "suyaki_saku", "suyaki_mashiro", "suyaki_minto", "suyaki_naru", "suyaki_noor",
   "suyaki_rei", "suyaki_rio", "suyaki_samechan", "suyaki_steve", "suyaki_sumi", "suyaki_tsumugi", "suyaki_volk", "suyaki_master_hookah",
+  "suyaki_da_silva", "suyaki_sheikh",
 ];
 
 // 記念品の由来分類（core/keepsakes.js の KEEPSAKES と対応）。
@@ -177,6 +178,7 @@ export const FLAG_EXACT_RULES = [
   ["_ch2_read_ch2_rei_fifth", "person"],
   ["_ch2_read_ch2_rei_fourth", "person"],
   ["_ch2_read_ch2_rei_sixth", "person"],
+  ["_ch2_read_ch2_rei_third", "person"], // レヰの本名の回。LIME lime_rei_bond_a の条件
   ["_ch2_read_ch2_slump_taste", "progression"],
   ["_ch2_read_ch2_sofa_burn", "progression"],
   ["_ch2_read_ch2_strawberry_sample", "progression"],
@@ -238,6 +240,7 @@ export const FLAG_EXACT_RULES = [
   ["_ch3_trial_saku", "progression"],
   ["_ch3_trial_steve", "progression"],
   ["_ch3_tokyo_call_night", "progression"],
+  ["_ch3_room_rests", "progression"], // 東京の奥の部屋で休んだ回数（ch3-tokyo-daily.js の小品の巡回）。周回では持ち越さない
   ["_ch4", "progression"],
   ["_camel_cups", "unlock"], // 大会の解放・中級認定・上級称号を周回へ残す
   ["_ch4_camel", "progression"], // ドバイのラクダレース（段階・自己ベスト）。周回では持ち越さない
@@ -369,6 +372,7 @@ export const FLAG_EXACT_RULES = [
   ["_home_shisha_day", "progression"],
   ["_home_lavender_sleep", "progression"],
   ["_dense_pack_legacy", "unlock"],
+  ["_dubai_bonds", "progression"], // 太陽・シェイクの段階・手紙の既読（chapters/dubai-bonds.js）
   ["_home_tonight", "progression"],
   ["_home_trial_plan", "progression"],
   ["_intro_", "progression"],
@@ -387,6 +391,8 @@ export const FLAG_EXACT_RULES = [
   ["_lime_contact_kumicho", "person"],
   ["_lime_contact_saku", "person"],
   ["_lime_contact_mashiro", "person"],
+  ["_lime_contact_master_hookah", "person"], // 王煙楼。龍龍水煙所の段階会話で交換する（第4章ドバイ）
+  ["_lime_contact_da_silva", "person"], // 太陽。FESTAの段階会話で交換する（第4章ドバイ）
   ["_lime_contact_minto", "person"],
   ["_lime_contact_naru", "person"],
   ["_lime_contact_noor", "person"],

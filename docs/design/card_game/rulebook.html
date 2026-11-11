@@ -1,0 +1,775 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>一台勝負 ルールブック 第0.2版</title>
+<!-- 提案・未採用の設計案。PDFは `node build_pdf.mjs` で作る（書体は Noto Sans JP と Zen Antique）。 -->
+<link rel="stylesheet" href="rulebook.css">
+</head>
+<body>
+
+<!-- ───────── 1 表紙 ───────── -->
+<section class="page cover">
+  <div class="smoke"></div>
+  <div class="ring"></div><div class="ring r2"></div>
+  <div class="ttl">
+    <div class="kari">仮　題</div>
+    <div class="main">一台勝負</div>
+    <div class="ruby">いちだいしょうぶ</div>
+    <div class="sub">シーシャ・カードゲーム</div>
+  </div>
+  <div class="fan">
+    <div style="transform:rotate(-30deg)" data-card="rose"></div>
+    <div style="transform:rotate(-15deg)" data-sup="キューブ炭"></div>
+    <div style="transform:rotate(0deg)" data-back></div>
+    <div style="transform:rotate(15deg)" data-puff="sensu:1"></div>
+    <div style="transform:rotate(30deg)" data-card="lemon"></div>
+  </div>
+  <div class="catch">炭は、熱であり、火力であり、時間でもある。</div>
+  <div class="meta"><span>2人（1人用ルールつき）</span><span>30〜45分</span><span>炭を育てる・熱を読む・一口を競う</span></div>
+  <div class="ver">ルールブック　第0.2版（テストプレイ用・数値は調整中）</div>
+</section>
+
+<!-- ───────── 2 このゲームについて ───────── -->
+<section class="page" style="font-size:9.1pt;line-height:1.62">
+  <div class="run"><span><b>一台勝負</b>　ルールブック 第0.2版</span><span>このゲームについて</span></div>
+  <h1><span class="no">1</span>このゲームについて</h1>
+  <p class="lead">あなたはシーシャの大会に出る作り手です。棚に並んだ葉から好きなものを選んで一台を詰め、炭で熱を入れ、審査員に吸ってもらいます。葉にはそれぞれ「いちばんおいしい温度」があります。熱は放っておくと冷めます。炭を焼いて足し、審査員の一口に合わせて熱を整えます。</p>
+  <div class="box dark">
+    <h3>勝ち方</h3>
+    <p>審査員の<em>一口</em>ごとに入る点、相手より温度が合っていたときの<em>一票</em>、最後にもらう<em>決め手</em>のボーナスを合計します。大会が終わったとき、合計がいちばん高い作り手の勝ちです。</p>
+  </div>
+
+  <h2>覚えることは3つ</h2>
+  <div class="cols3">
+    <div class="box"><h3>炭の数が、熱で、火力</h3><p>炭ゾーンにある炭の数が、そのまま一台の熱です。カードを使うための火力にもなります。手札はどれでも、裏向きに置けば炭（種火）になります。</p></div>
+    <div class="box"><h3>熱は冷める。炭を焼いて足す</h3><p>自分のターンのたびに炭は弱まります。長持ちする炭カードは、まず炭焼き場に置きます。焼けるのは次のターン。先を読んで火を起こします。</p></div>
+    <div class="box"><h3>吸い方は、めくるまで分からない</h3><p>2人が熱を整えたあとで、審査カードをめくります。長く吸われれば熱は上がります。安全に真ん中へ置くか、いちばん上を攻めるかを選びます。</p></div>
+  </div>
+
+  <h2>葉は5つの系統</h2>
+  <div class="cardrow"><div data-card="lemon"></div><div data-card="mint"></div><div data-card="double_apple"></div><div data-card="rose"></div><div data-card="vanilla"></div></div>
+  <div class="cols">
+    <div>
+      <h2>入っているもの</h2>
+      <table>
+        <tr><td>フレーバーカード</td><td class="nw">240枚</td><td class="small">20種 × 各12枚</td></tr>
+        <tr><td>サポートカード</td><td class="nw">80枚</td><td class="small">そのまま遊べるデッキ2組</td></tr>
+        <tr><td>セッティングカード</td><td class="nw">8枚</td><td class="small">ボウル4・HMD4</td></tr>
+        <tr><td>審査カード</td><td class="nw">20枚</td><td class="small">審査員5人 × 各4枚</td></tr>
+        <tr><td>大会カード／審査員カード</td><td class="nw">5枚／5枚</td><td class="small"></td></tr>
+        <tr><td>プレイマット／得点ボード</td><td class="nw">2枚／1枚</td><td class="small">早見表つき</td></tr>
+        <tr><td>得点コマ・主役マーカー</td><td class="nw">各2個</td><td class="small"></td></tr>
+        <tr><td>先手・セッションのマーカー</td><td class="nw">各1個</td><td class="small"></td></tr>
+        <tr><td>風防カウンター／記録チップ</td><td class="nw">4個／40個</td><td class="small">ジャスト20・焦げ20</td></tr>
+      </table>
+    </div>
+    <div>
+      <h2>ことば</h2>
+      <dl class="kv">
+        <dt>熱</dt><dd>炭ゾーンにある炭の数。0〜10。</dd>
+        <dt>種火</dt><dd>裏向きに置いた炭。1枚で熱1。</dd>
+        <dt>火力</dt><dd>カードを使うために払うもの。炭を横向きにして払う。</dd>
+        <dt>判定熱</dt><dd>一口を採点するときの熱。審査カードとカードの効果で、熱から上下する。</dd>
+        <dt>主役</dt><dd>ボウルの中でいちばん枚数の多い葉。温度の帯と味値は主役のものを使う。</dd>
+        <dt>脇役</dt><dd>主役以外で、2枚以上ある葉。</dd>
+        <dt>ラウンド</dt><dd>2人が1ターンずつ行い、審査員が一口吸うまで。3ラウンドで1セッション。</dd>
+        <dt>灰にする</dt><dd>サポートカードは自分の灰置き場へ。葉カードは箱に戻す。</dd>
+      </dl>
+    </div>
+  </div>
+  <div class="pno">2</div>
+</section>
+
+<!-- ───────── 3 カードの見かた ───────── -->
+<section class="page" style="font-size:9pt;line-height:1.58">
+  <div class="run"><span><b>一台勝負</b>　ルールブック 第0.2版</span><span>カードの見かた</span></div>
+  <h1><span class="no">2</span>カードの見かた</h1>
+  <div class="cols w46">
+    <div style="position:relative;height:84mm">
+      <div style="transform:scale(1.3);transform-origin:0 0;position:absolute;left:5mm;top:1mm" data-card="mint"></div>
+      <span class="pin call" style="left:1mm;top:5.5mm">1</span>
+      <span class="pin call" style="left:57mm;top:-2mm">2</span>
+      <span class="pin call" style="left:63.5mm;top:28mm">3</span>
+      <span class="pin call" style="left:1mm;top:46mm">4</span>
+      <span class="pin call" style="left:1mm;top:53.5mm">5</span>
+      <span class="pin call" style="left:1mm;top:61mm">6</span>
+    </div>
+    <div>
+      <h2>フレーバーカード（葉）</h2>
+      <p><span class="call">1</span> <b>系統となまえ</b>　フルーツ・清涼・スパイス・フローラル・スイートの5系統。枠の色でも分かります。</p>
+      <p><span class="call">2</span> <b>1g</b>　葉カードは1枚が1g。ボウルに置いた枚数がその一台のグラム数です。</p>
+      <p><span class="call">3</span> <b>味値</b>　適温で吸ってもらえたときの基本の点。主役のものだけを使います。</p>
+      <p><span class="call">4</span> <b>温度の帯</b>　0〜10の判定熱のうち、どこがおいしいか。主役のものだけを使います。</p>
+      <p><span class="call">5</span> <b>相性</b>　このしるしと同じ系統の葉を脇役にすると、毎口+1。</p>
+      <p><span class="call">6</span> <b>能力</b>　【 】が能力名。「脇役のとき」と書かれた能力は、その葉が脇役（主役以外で2枚以上）のあいだだけ働きます。</p>
+      <div class="box">
+        <h3>温度の帯の5色</h3>
+        <table style="margin:0">
+          <tr><td><span class="zchip z-just">★ジャスト</span></td><td>いちばんおいしい。<b>味値+2</b></td></tr>
+          <tr><td><span class="zchip z-band">適温</span></td><td>おいしい。<b>味値どおり</b></td></tr>
+          <tr><td><span class="zchip z-off">ズレ</span></td><td>適温のすぐ外。<b>1点</b>だけ</td></tr>
+          <tr><td><span class="zchip z-cold">外れ</span></td><td>ぬるすぎ・熱すぎ。<b>0点</b></td></tr>
+          <tr><td><span class="zchip z-scorch">焦げ</span></td><td><b>0点</b>。主役の葉を1枚失う</td></tr>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="cols" style="margin-top:1mm;gap:5mm">
+    <div style="display:flex;gap:3mm;align-items:flex-start">
+      <div class="cardbox"><div data-sup="フラット炭" style="transform:scale(.74);transform-origin:0 0"></div></div>
+      <div><h3>炭カード</h3>
+        <p>デッキに入れる炭です。火力は払いません。自分のターンに炭焼き場へ置き、焼けたら炭ゾーンにのせます（6ページ）。</p>
+        <p><b>着火</b>は焼けるまでのターン数、<b>熱</b>は表向きでのせているあいだの熱です。</p></div>
+    </div>
+    <div style="display:flex;gap:3mm;align-items:flex-start">
+      <div class="cardbox"><div data-sup="熱を逃がす吸い" style="transform:scale(.74);transform-origin:0 0"></div></div>
+      <div><h3>サポートカード</h3>
+        <p><b>左上の数字</b>が火力。<b>種類</b>は技・器具・人物・イベント（10ページ）。どのカードも、裏向きに置けば種火になります。<b>使える時</b>は4つです。</p>
+        <p style="line-height:1.9"><span class="when w-turn" style="margin-left:0">手番</span> 自分のターン<br><span class="when w-puff" style="margin-left:0">一口</span> 審査カードをめくったあと<br><span class="when w-prep" style="margin-left:0">準備</span> 準備フェイズ<br><span class="when w-any" style="margin-left:0">いつでも</span> 自分のターンなら、どのフェイズでも</p></div>
+    </div>
+    <div style="display:flex;gap:3mm;align-items:flex-start">
+      <div class="cardbox"><div data-set="bowl:0" style="transform:scale(.74);transform-origin:0 0"></div></div>
+      <div><h3>セッティングカード</h3>
+        <p>ゲーム開始から場に出ている、あなたの道具です。<b>ボウル</b>1枚と<b>HMD</b>（ヒートマネジメント）1枚を組み合わせます。ボウルには<b>容量</b>（詰められる葉の上限）があります。</p></div>
+    </div>
+    <div style="display:flex;gap:3mm;align-items:flex-start">
+      <div class="cardbox"><div data-puff="sensu:1" style="transform:scale(.74);transform-origin:0 0"></div></div>
+      <div><h3>審査カード</h3>
+        <p>審査員の吸い方です。ラウンドごとに1枚めくり、<b>2人ともに</b>効きます。大きな数字は判定熱の変化。審査員1人につき4枚あり、大会に出る3人ぶんの12枚で山を作ります（12ページ）。</p></div>
+    </div>
+  </div>
+  <div class="pno">3</div>
+</section>
+
+<!-- ───────── 4 ゲームの準備 ───────── -->
+<section class="page">
+  <div class="run"><span><b>一台勝負</b>　ルールブック 第0.2版</span><span>ゲームの準備</span></div>
+  <h1><span class="no">3</span>ゲームの準備</h1>
+  <div class="mat">
+    <div style="display:grid;grid-template-columns:1fr 44mm;gap:2mm;margin-bottom:2mm">
+      <div class="zone"><b>フレーバー場（共通）</b>10種の葉を各12枚の山にして並べる
+        <div id="supply" style="display:grid;grid-template-columns:repeat(10,1fr);gap:1.2mm;margin-top:1.4mm"></div>
+      </div>
+      <div class="zone"><b>大会カード・審査員カード</b>セッション数と、決め手の条件<br><b style="margin-top:1mm">審査カードの山</b>めくったカードは表向きで横に並べる<br><b style="margin-top:1mm">得点ボード</b></div>
+    </div>
+    <div style="display:grid;grid-template-columns:29mm 1fr 27mm;gap:2mm">
+      <div class="zone"><b>セッティング</b>ボウル＋HMD（表向き）<br><b style="margin-top:1.4mm">人物</b>1人まで<br><b style="margin-top:1.4mm">器具</b>3枚まで</div>
+      <div class="zone" style="text-align:center"><b>ボウル</b>取った葉を種類ごとに重ねる。いちばん多い種類に主役マーカー
+        <div style="display:flex;justify-content:center;gap:3mm;margin-top:4.6mm;align-items:flex-end">
+          <div style="width:17mm;background:var(--fruit);border-radius:1mm;padding:1mm 0;color:#fff;font-weight:900;position:relative">レモン ×8<span style="position:absolute;top:-3.4mm;left:50%;transform:translateX(-50%);background:#fff;color:var(--coal);border-radius:1mm;font-size:5.6pt;padding:0 1.4mm;white-space:nowrap">主役</span></div>
+          <div style="width:17mm;background:var(--cool);border-radius:1mm;padding:1mm 0;color:#fff;font-weight:900">ミント ×4</div>
+        </div>
+      </div>
+      <div class="zone"><b>山札</b>デッキ40枚<br><b style="margin-top:1.4mm">灰置き場</b>使ったカードと灰になった炭<br><b style="margin-top:1.4mm">手札</b></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 52mm;gap:2mm;margin-top:2mm">
+      <div class="zone"><b>炭ゾーン（10枠）</b>ここにある炭の数が熱。裏向きは種火、表向きは炭カード
+        <div class="cz" style="margin-top:1.2mm"><i class="em">種火</i><i class="em">種火</i><i class="em">種火</i><i class="em">種火</i><i class="fl">フラット<small>熱1</small></i><i class="cu">キューブ<small>熱2</small></i><span class="eq">＝ 熱7</span></div>
+      </div>
+      <div class="zone"><b>炭焼き場（4枠）</b>炭カードを置いて火を起こす
+        <div class="stove" style="margin-top:1mm"><div><b>火おこし中</b><div class="cz"><i class="fl" style="opacity:.6">フラット</i></div></div><div class="rdy"><b>焼けた</b><div class="cz"><i class="fl">フラット</i></div></div></div>
+      </div>
+    </div>
+  </div>
+  <p class="small" style="margin-top:1.4mm">図は1人分。相手も同じ形で向かいに並べます。フレーバー場・大会カード・審査カードの山・得点ボードは2人の間に置きます。</p>
+
+  <div class="cols" style="margin-top:1mm">
+    <div>
+      <ol class="steps">
+        <li><b>大会を決める</b>　大会カードを1枚選びます。セッションの数、審査員3人、課題フレーバーが決まります（12ページ）。</li>
+        <li><b>審査カードの山を作る</b>　審査員3人の審査カード（各4枚）をよく切り、12枚の山にして裏向きで置きます。</li>
+        <li><b>フレーバー場を作る</b>　20種から10種を選び、各12枚の山にして並べます。</li>
+        <li><b>セッティングを選ぶ</b>　ボウル1枚とHMD1枚を選び、同時に表にします。</li>
+        <li><b>山札を作る</b>　自分のデッキ40枚をよく切って置きます。</li>
+      </ol>
+    </div>
+    <div>
+      <ol class="steps" start="6" style="counter-reset:s 5">
+        <li><b>先手を決める</b>　じゃんけんなどで決め、先手マーカーを渡します。</li>
+        <li><b>最初の火</b>　山札から7枚引きます。そのうち3枚を選び、裏向きで炭ゾーンに置きます。これが種火で、熱は3。残りの4枚が最初の手札です。</li>
+        <li><b>課題の葉を受け取る</b>　大会に課題フレーバーがあれば、その山から3枚ずつ取ってボウルに置きます。この3枚は外せません。</li>
+        <li><b>得点コマを0に</b>　セッションマーカーを「準備」に置いて始めます。</li>
+      </ol>
+    </div>
+  </div>
+  <div class="box"><p><span class="tag k">ヒント</span>最初に種火にする3枚は戻ってきません。炭カードと、あとで使いたい器具や人物は手札に残しましょう。</p></div>
+  <div class="box dark" style="margin-bottom:0">
+    <h3>はじめての一戦は、この組み合わせで</h3>
+    <div class="cols3" style="gap:5mm">
+      <p style="margin:0"><em>大会</em>　練習試合（3セッション）。審査カードは使わず、毎回「ふつうに吸う」として進めます。場は15ページの「はじめての場」。</p>
+      <p style="margin:0"><em>1人目</em>　デッキA。雲窯ファンネルハガルとロートスHMD。レモン8枚にミント4枚のミックスで。</p>
+      <p style="margin:0"><em>2人目</em>　デッキB。素焼きハガルとアマバースト。ダブルアップルだけを12枚、単品で。</p>
+    </div>
+  </div>
+  <div class="pno">4</div>
+</section>
+
+<!-- ───────── 5 ゲームの流れ ───────── -->
+<section class="page">
+  <div class="run"><span><b>一台勝負</b>　ルールブック 第0.2版</span><span>ゲームの流れ</span></div>
+  <h1><span class="no">4</span>ゲームの流れ</h1>
+  <div class="flow">
+    <div class="st b w"><b>準備</b>6ターン<br>詰める → 蒸らす</div>
+    <div class="st e w"><b>セッション 1</b>3ラウンド</div>
+    <div class="st g"><b>区切り</b>葉が減る</div>
+    <div class="st e w"><b>セッション 2</b>3ラウンド</div>
+    <div class="st g"><b>区切り</b>葉が減る</div>
+    <div class="st e w"><b>最終</b>3ラウンド</div>
+    <div class="st p"><b>結果</b>決め手</div>
+  </div>
+  <h3>1ラウンドの中身</h3>
+  <div class="round">
+    <div class="e"><b>先手のターン</b>冷める → 2枚引く → 炭とカードで熱を整える</div>
+    <div class="e"><b>後手のターン</b>同じ。先手の熱を見てから動ける</div>
+    <div><b>審査（一口）</b>審査カードをめくる → 一口の技 → 2人とも採点 → 一票</div>
+  </div>
+
+  <div class="cols">
+    <div>
+      <h2>2つのフェイズ</h2>
+      <p><b>準備フェイズ</b>（7ページ）　全員が6ターンずつ。場から葉を取ってボウルに詰め、詰め終えたら炭を焼いて蒸らします。この間、炭は冷めません。</p>
+      <p><b>提供フェイズ</b>（8ページ）　ラウンドをくり返します。自分のターンのはじめに炭が冷め、2人のターンのあとで審査員が一口吸います。3ラウンドごとに葉が2枚減ります。</p>
+      <h3>手番</h3>
+      <p>先手、後手の順に1ターンずつ行います。<b>先手マーカーは、ラウンドが終わるたびに相手へ渡します。</b>後手だった人は、次のラウンドの先手として続けてターンを行います。</p>
+      <div class="box" style="margin-bottom:0">
+        <h3>いつも守ること</h3>
+        <ul style="margin:0"><li>熱は<b>10まで</b>。それを超えるようには炭を置けません。</li><li>自分のターンの終わりに手札が8枚以上あれば、<b>7枚になるまで</b>灰にします。</li><li>山札がなくなったら、灰置き場を切り直して新しい山札にします。</li><li>カードの文とルールが食い違うときは、カードの文に従います。</li></ul>
+      </div>
+    </div>
+    <div>
+      <h2>カードを使う</h2>
+      <p>カードを使うには、左上の数字と同じ数の火力を払います。炭1枚を<b>横向き</b>にすると火力1です。</p>
+      <div class="mat" style="margin-bottom:2.4mm">
+        <div class="cz"><i class="em tap">種火</i><i class="em tap">種火</i><i class="em">種火</i><i class="em">種火</i><i class="fl">フラット</i><i class="fl">フラット</i></div>
+        <div style="margin-top:1.4mm">火力2のカードを使ったところ。<b style="color:var(--ember2)">熱は6のまま</b>で、残りの火力は4です。</div>
+      </div>
+      <ul>
+        <li>横向きの炭も、熱には数えます。自分の次のターンのはじめに縦に戻します。置いたばかりの炭も、すぐ火力に使えます。</li>
+                <li><b>「一口」のカードは、審査のときに縦向きで残っている炭で払います。</b>自分のターンに火力を使い切ると、一口の技は使えません。</li>
+        <li><span class="fire burn">2</span> のように赤い丸で書かれたコストは<b>燃焼</b>です。その数の炭を灰にして払います（熱が下がります）。</li>
+      </ul>
+    </div>
+  </div>
+  <h2 style="margin-top:3mm">熱の動き</h2>
+  <div class="heatfig" id="heatfig"></div>
+  <div class="pno">5</div>
+</section>
+
+<!-- ───────── 6 炭と熱 ───────── -->
+<section class="page">
+  <div class="run"><span><b>一台勝負</b>　ルールブック 第0.2版</span><span>炭と熱</span></div>
+  <h1><span class="no">5</span>炭と熱 <small>このゲームの中心</small></h1>
+  <div class="cols">
+    <div>
+      <h2>種火と炭カード</h2>
+      <table class="nwrap">
+        <tr><th>炭</th><th>向き</th><th class="c">熱</th><th>どこから来る</th></tr>
+        <tr><td><b>種火</b></td><td>裏向き</td><td class="c">1</td><td>手札のカードを裏向きで置く（チャージ）。裏返った炭カードも種火</td></tr>
+        <tr><td><b>フラット炭</b></td><td>表向き</td><td class="c">1</td><td rowspan="2">炭焼き場で焼いてからのせる</td></tr>
+        <tr><td><b>キューブ炭</b></td><td>表向き</td><td class="c">2</td></tr>
+      </table>
+      <h2>熱を上げる</h2>
+      <h3>チャージ（1ターンに1回）</h3>
+      <p>手札のカードを1枚、裏向きで炭ゾーンに置きます。種火になり、すぐ熱1。置いたターンから火力にも使えます。<b>しなくてもかまいません。</b>手札に残して、あとで効果を使うのも手です。</p>
+      <h3>炭カードを焼いて、のせる</h3>
+      <p>炭カードは、自分のターンならいつでも炭焼き場に置けます。火力は払いません。枠が空いていれば、1ターンに何枚でも置けます。</p>
+      <div class="mat" style="margin-bottom:2.2mm">
+        <div class="stove">
+          <div><b>火おこし中</b><div class="cz"><i class="fl" style="opacity:.6">フラット<small>縦向き</small></i><i class="cu tap" style="opacity:.6">キューブ<small>横向き</small></i></div></div>
+          <div class="rdy"><b>焼けた</b><div class="cz"><i class="fl">フラット</i><span class="eq" style="font-size:7pt">→ 炭ゾーンへ</span></div></div>
+        </div>
+        <div style="margin-top:1.4mm">炭焼き場の枠は<b style="color:var(--ember2)">4つ</b>。火おこし中と焼けた炭を合わせて4枚まで。カードでは増えません。</div>
+      </div>
+      <ul>
+        <li><b>フラット炭</b>は縦向きで「火おこし中」に置きます。</li>
+        <li><b>キューブ炭</b>は横向きで「火おこし中」に置きます。</li>
+        <li>自分のターンのはじめに炭焼き場を進めます。<b>縦向きの炭は「焼けた」へ。横向きの炭は縦向きに。</b>フラットは1ターン、キューブは2ターンで焼けます。</li>
+        <li>焼けた炭は、自分のターンならいつでも炭ゾーンにのせられます（表向き）。<b>置いたまま取っておくこともできます。</b></li>
+      </ul>
+    </div>
+    <div>
+      <h2>冷める</h2>
+      <p>提供フェイズでは、自分のターンのはじめに炭が冷めます。<b>炭ゾーンの炭を、合わせて2段階ぶん弱めます。</b>1段階ごとに、好きな炭を1つ選びます。</p>
+      <div class="chain"><div class="cz"><i class="fl">炭カード<small>表向き</small></i></div><span class="arrow-r">→</span><div class="cz"><i class="em">種火<small>裏返す</small></i></div><span class="arrow-r">→</span><div class="cz"><i class="gone">灰</i></div></div>
+      <ul>
+        <li>表向きの炭カードは、<b>裏返して種火に</b>します。</li>
+        <li>種火は、<b>灰に</b>します。</li>
+        <li>同じ炭を続けて2段階弱めてもかまいません。</li>
+      </ul>
+      <div class="box ember">
+        <h3>フラット炭は【小回り】</h3>
+        <p>フラット炭は表でも裏でも熱1。<b>フラット炭を裏返して受ければ、その段階では熱が下がりません。</b>熱を保ちたいときはフラットを裏返し、下げたいときは種火を灰にします。</p>
+        <h3>キューブ炭は【火持ち】</h3>
+        <p>表向きのキューブ炭が1枚でもあれば、<b>冷めるのは1段階だけ</b>になります。キューブ炭自身は、裏返ると熱2から熱1に下がり、火持ちもなくなります。</p>
+      </div>
+      <h3>例：熱6で自分のターンを迎えた</h3>
+      <div class="mat" style="padding:2mm;margin-bottom:1.6mm">
+        <div class="cz"><i class="em">種火</i><i class="em">種火</i><i class="em">種火</i><i class="em">種火</i><i class="fl">フラット</i><i class="fl">フラット</i><span class="eq">熱6</span></div>
+        <div class="cz" style="margin-top:1.6mm"><i class="em">種火</i><i class="em">種火</i><i class="em">種火</i><i class="em">種火</i><i class="em new">種火<small>裏返した</small></i><i class="em new">種火<small>裏返した</small></i><span class="eq">熱6のまま</span></div>
+        <div class="cz" style="margin-top:1.6mm"><i class="em">種火</i><i class="em">種火</i><i class="gone">灰</i><i class="gone">灰</i><i class="fl">フラット</i><i class="fl">フラット</i><span class="eq">熱4</span></div>
+      </div>
+      <p class="small">中段はフラット2枚で受けた場合、下段は種火2枚を灰にした場合。フラットと種火で1段階ずつ受ければ熱5です。</p>
+      <h2>熱を下げる</h2>
+      <p>自分のターンなら、炭ゾーンの炭を好きなだけ灰にできます。熱すぎるときは、種火を落として下げます。</p>
+    </div>
+  </div>
+  <div class="box dark" style="margin-top:1mm;margin-bottom:0">
+    <h3>フラットとキューブ</h3>
+    <table style="margin:0;color:var(--ink)">
+      <tr><th></th><th class="c">着火</th><th class="c">熱</th><th>冷めるとき</th><th>向いている一台</th></tr>
+      <tr><td style="background:#fff"><b>フラット炭</b></td><td class="c" style="background:#fff">1ターン</td><td class="c" style="background:#fff">1</td><td style="background:#fff">裏返しても熱が下がらない</td><td style="background:#fff">低温〜中温の葉。細かく合わせたいとき</td></tr>
+      <tr><td style="background:#f3ead9"><b>キューブ炭</b></td><td class="c" style="background:#f3ead9">2ターン</td><td class="c" style="background:#f3ead9">2</td><td style="background:#f3ead9">のせているあいだ、冷めるのが1段階</td><td style="background:#f3ead9">高温の葉。一度上げた熱を長く保ちたいとき</td></tr>
+    </table>
+  </div>
+  <div class="pno">6</div>
+</section>
+
+<!-- ───────── 7 準備フェイズ ───────── -->
+<section class="page">
+  <div class="run"><span><b>一台勝負</b>　ルールブック 第0.2版</span><span>準備フェイズ</span></div>
+  <h1><span class="no">6</span>準備フェイズ <small>葉を詰めて、蒸らす</small></h1>
+  <div class="cols">
+    <div>
+      <p>全員が<b>6ターン</b>ずつ、先手から交互に行います。自分のターンには次の順で進めます。</p>
+      <ol class="steps">
+        <li><b>火を見る</b>　横向きの炭を縦に戻し、炭焼き場を進めます。準備のあいだ、炭は冷めません。</li>
+        <li><b>「詰める」か「蒸らす」</b>　どちらか1つを行います。</li>
+        <li><b>カードを使う</b>　器具・人物と、「準備」「いつでも」のカードを使えます。2の前でも後でもかまいません。</li>
+        <li><b>手札の上限</b>　8枚以上なら7枚になるまで灰にします。</li>
+      </ol>
+      <h3>詰める</h3>
+      <p>フレーバー場の山から葉カードを<b>合計4枚まで</b>取り、自分のボウルに置きます。1ターンに取れるのは<b>2種類まで</b>。ボウルの容量を超えては取れません。先手の<b>最初の「詰める」だけ、2枚まで</b>です。</p>
+      <h3>蒸らす</h3>
+      <p>山札から<b>1枚引きます</b>。そのあと、チャージ（1回）と、炭カードを炭焼き場に置くこと、焼けた炭をのせることができます（6ページ）。</p>
+      <div class="box ember">
+        <h3>3つの決まり</h3>
+        <ul>
+          <li>蒸らすには、ボウルに葉が<b>8枚以上</b>必要です。</li>
+          <li>一度でも蒸らしたら、<b>もう詰められません</b>。</li>
+          <li>炭に触れるのは<b>蒸らすターンだけ</b>です。詰めるターンには、チャージも炭カードを置くこともできません。</li>
+        </ul>
+      </div>
+      <p>6ターンが終わったら、主役の葉に主役マーカーを置き、提供フェイズに進みます。</p>
+      <div class="box dark">
+        <h3>何グラム詰めるか</h3>
+        <table style="margin:0;color:var(--ink)">
+          <tr><th>詰める量</th><th class="c">詰める</th><th class="c">蒸らす</th><th>こうなる</th></tr>
+          <tr><td style="background:#fff">8g</td><td class="c" style="background:#fff">2</td><td class="c" style="background:#fff">4</td><td style="background:#fff">手札と炭にゆとり。葉は早く尽きる</td></tr>
+          <tr><td style="background:#f3ead9">9〜12g</td><td class="c" style="background:#f3ead9">3</td><td class="c" style="background:#f3ead9">3</td><td style="background:#f3ead9">はじめは「濃厚」。扱いやすい</td></tr>
+          <tr><td style="background:#fff">13〜16g</td><td class="c" style="background:#fff">4</td><td class="c" style="background:#fff">2</td><td style="background:#fff">濃厚が長く続く。キューブは1回しか焼けない</td></tr>
+          <tr><td style="background:#f3ead9">17〜20g</td><td class="c" style="background:#f3ead9">5</td><td class="c" style="background:#f3ead9">1</td><td style="background:#f3ead9">出だしはぬるい。長い大会向き</td></tr>
+        </table>
+      </div>
+    </div>
+    <div>
+      <h2>ミックスの決まり</h2>
+      <dl class="kv">
+        <dt>主役</dt><dd>いちばん枚数の多い種類。同数なら持ち主が選びます。主役マーカーは、ほかの種類が主役の枚数を<b>上回ったときだけ</b>移します。</dd>
+        <dt>脇役</dt><dd>主役以外で<b>2枚以上</b>ある種類。1枚だけの葉は枚数には数えますが、脇役ではありません。</dd>
+        <dt>ミックス</dt><dd>脇役が1種類でもあれば成立。<b>毎口+1</b>。</dd>
+        <dt>相性</dt><dd>主役の相性のしるしと同じ系統の脇役がいれば、<b>さらに+1</b>。</dd>
+        <dt>3種類以上</dt><dd>加点は増えません。そのかわり脇役それぞれの能力が働き、弱点を補えます。</dd>
+        <dt>単品</dt><dd>葉が1種類だけの一台。ミックスの加点はありませんが、単品を強くするカードがあります。</dd>
+        <dt>濃厚</dt><dd>ボウルの葉が合計<b>10枚以上</b>あるあいだ、<b>毎口+1</b>。</dd>
+      </dl>
+      <div class="box"><p><span class="tag k">例</span>レモン6枚、ミント3枚、ローズ1枚。</p>
+        <div class="bowlfig"><div class="lf fruit main">レモン ×6<small>主役</small></div><div class="lf cool">ミント ×3<small>脇役</small></div><div class="lf floral" style="min-width:15mm">ローズ ×1<small>脇役ではない</small></div></div>
+        <p>レモンの相性は清涼なので、ミックス+1、相性+1。合計10枚なので濃厚+1。適温なら毎口+3の加点です。ローズは枚数に数えるだけです。</p></div>
+      <h2>どの葉を選ぶか</h2>
+      <table>
+        <tr><th>葉のかたち</th><th>例</th><th>特徴</th></tr>
+        <tr><td><b>ジャストが広い</b></td><td class="nw">レモン<br>ダブルアップル</td><td>味値は低め。審査カードで判定熱がずれても、ジャストのまま</td></tr>
+        <tr><td><b>帯が3マス</b></td><td class="nw">ブルーベリー<br>バニラ</td><td>真ん中がジャスト。1ずれても適温に残る</td></tr>
+        <tr><td><b>味値4</b></td><td class="nw">ローズ<br>マンゴー</td><td>帯は2マスで、<b>ジャストのすぐ上が焦げ</b>。攻めるか、1つ下で待つか</td></tr>
+        <tr><td><b>高温</b></td><td class="nw">コーヒー<br>デスバイアイス</td><td>炭がたくさん要るかわりに、火力が多く大きなカードを使える</td></tr>
+      </table>
+      <div class="box"><p><span class="tag k">ヒント</span>場の葉は各12枚。2人が同じ葉を主役にすると足りなくなります。相手の最初の一手を見て、主役を変えるのも手です。</p></div>
+    </div>
+  </div>
+  <div class="pno">7</div>
+</section>
+
+<!-- ───────── 8 提供フェイズ ───────── -->
+<section class="page">
+  <div class="run"><span><b>一台勝負</b>　ルールブック 第0.2版</span><span>提供フェイズ</span></div>
+  <h1><span class="no">7</span>提供フェイズ <small>熱を整えて、一口を競う</small></h1>
+  <div class="cols">
+    <div>
+      <p>1ラウンドは、<b>先手のターン → 後手のターン → 審査</b>の順です。3ラウンドで1セッションになります。</p>
+      <h2>自分のターン</h2>
+      <ol class="steps">
+        <li><b>火を見る</b>　①横向きの炭を縦に戻す　②炭焼き場を進める　③<b>冷める</b>（炭を2段階ぶん弱める。キューブ炭が表向きなら1段階）</li>
+        <li><b>引く</b>　山札から<b>2枚</b>引きます。</li>
+        <li><b>手を打つ</b>　次のことを、好きな順で好きなだけ行えます。
+          <ul style="margin:1mm 0 0">
+            <li><b>チャージ</b>（1ターンに1回）</li>
+            <li><b>炭カードを炭焼き場に置く</b></li>
+            <li><b>焼けた炭を炭ゾーンにのせる</b></li>
+            <li><b>炭を灰にする</b>（熱を下げる）</li>
+            <li><b>カードを使う</b>（<span class="when w-turn">手番</span><span class="when w-any">いつでも</span>のカード）</li>
+          </ul>
+        </li>
+        <li><b>手札の上限</b>　8枚以上なら7枚になるまで灰にします。</li>
+      </ol>
+      <div class="box ember"><p><b>ターンを終えたときの熱が、そのまま審査に出ます。</b>審査カードはまだ見えません。めくられたあとに動かせるのは、「一口」のカードだけです。</p></div>
+      <h2>審査（一口）</h2>
+      <ol class="steps">
+        <li><b>めくる</b>　審査カードの山のいちばん上を表にします。書かれた吸い方は2人ともに効きます。</li>
+        <li><b>一口の技</b>　先手、後手の順に<b>1回ずつ</b>、<span class="when w-puff">一口</span>のカードを好きな枚数使えます。自分の一口にだけ効きます。</li>
+        <li><b>採点</b>　2人とも、右の方法で点を数えて得点コマを進めます。</li>
+        <li><b>一票</b>　帯の良かった方が+2点（右下）。</li>
+        <li><b>次へ</b>　先手マーカーを相手に渡します。</li>
+      </ol>
+      <p class="small">めくった審査カードは、表向きのまま横に並べておきます。山に何が残っているかは、だれでも数えられます。</p>
+    </div>
+    <div>
+      <h2>一口の採点</h2>
+      <p>まず<b>判定熱</b>を出し、<b>主役カードの温度の帯</b>に当てます。</p>
+      <div class="formula">判定熱 ＝ 熱 ＋ 審査カード ＋ カードの効果<small>熱は炭ゾーンの炭の数（表向きのキューブ炭は2）。横向きの炭も数える</small></div>
+      <div class="formula">点 ＝ 味値 ＋ ジャスト2 ＋ 加点<small>適温かジャストのときだけ。ズレは1点、外れと焦げは0点</small></div>
+      <table>
+        <tr><th>加点</th><th>条件</th><th class="c">点</th></tr>
+        <tr><td>ミックス</td><td>脇役が1種類以上ある</td><td class="c">+1</td></tr>
+        <tr><td>相性</td><td>主役の相性と同じ系統の脇役がある</td><td class="c">+1</td></tr>
+        <tr><td>濃厚</td><td>ボウルの葉が10枚以上</td><td class="c">+1</td></tr>
+        <tr><td>審査カード</td><td>「ジャストの一口+1」など</td><td class="c">—</td></tr>
+        <tr><td>カード</td><td>セッティング・人物・技などの効果</td><td class="c">—</td></tr>
+      </table>
+      <h3>採点の例</h3>
+      <p>主役はマンゴー（味値4・適温5〜6・ジャスト6）。脇役にバニラが3枚でミックス+1、相性+1。葉は9枚なので濃厚はなし。</p>
+      <div data-strip="mango" data-cls="big"></div>
+      <table style="margin-top:1.6mm">
+        <tr><th class="c">判定熱</th><th>帯</th><th>計算</th><th class="c">点</th></tr>
+        <tr><td class="c">6</td><td><span class="zchip z-just">★ジャスト</span></td><td>4 + 2 + 1 + 1</td><td class="c"><b>8</b></td></tr>
+        <tr><td class="c">5</td><td><span class="zchip z-band">適温</span></td><td>4 + 1 + 1</td><td class="c"><b>6</b></td></tr>
+        <tr><td class="c">4</td><td><span class="zchip z-off">ズレ</span></td><td>加点なし</td><td class="c"><b>1</b></td></tr>
+        <tr><td class="c">3以下</td><td><span class="zchip z-cold">外れ</span></td><td></td><td class="c"><b>0</b></td></tr>
+        <tr><td class="c">7以上</td><td><span class="zchip z-scorch">焦げ</span></td><td>主役の葉を1枚失う</td><td class="c"><b>0</b></td></tr>
+      </table>
+      <div class="box dark" style="margin-bottom:0">
+        <h3>一票</h3>
+        <p>採点のあと、2人の<em>帯</em>を比べます。良い帯だった作り手が<em>+2点</em>。同じ帯なら、どちらにも入りません。</p>
+        <p style="text-align:center;margin:0"><span class="zchip z-just">★ジャスト</span> ＞ <span class="zchip z-band">適温</span> ＞ <span class="zchip z-off">ズレ</span> ＞ <span class="zchip z-cold">外れ</span> ＞ <span class="zchip z-scorch">焦げ</span></p>
+      </div>
+    </div>
+  </div>
+  <div class="pno">8</div>
+</section>
+
+<!-- ───────── 9 審査カード・葉の消耗・終了 ───────── -->
+<section class="page">
+  <div class="run"><span><b>一台勝負</b>　ルールブック 第0.2版</span><span>審査カード・葉の消耗・ゲームの終わり</span></div>
+  <h1><span class="no">8</span>審査員の吸い方を読む</h1>
+  <div class="cols">
+    <div>
+      <p>審査カードは、2人がターンを終えたあとでめくります。熱を決めるときには、まだ見えていません。</p>
+      <table id="tbl-puffs" class="mid"><tr><th>吸い方</th><th class="c">判定熱</th><th>この一口の決まり</th></tr></table>
+    </div>
+    <div>
+      <div class="box dark">
+        <h3>真ん中に置くか、上を攻めるか</h3>
+        <p>ブルーベリー（適温4〜6・ジャスト5）なら、熱5でジャスト。「長く吸う」が出ても6で適温に残ります。</p>
+        <p>マンゴー（適温5〜6・ジャスト6・焦げ7）は、熱6でジャストですが、「長く吸う」が出ると7で<em>焦げ</em>ます。熱5で待てば、「長く吸う」でジャスト、それ以外は適温です。</p>
+        <p>山に「長く吸う」が何枚残っているかを数え、<em>熱を逃がす吸い</em>や<em>ブロー</em>を構えられるかで決めます。</p>
+      </div>
+      <div class="box" style="margin-bottom:0">
+        <h3>構える</h3>
+        <p>「一口」のカードのための火力を、自分のターンに残しておきます。縦向きの炭の数は相手にも見えています。構えていること自体が、相手への圧力になります。</p>
+      </div>
+    </div>
+  </div>
+
+  <h1 style="margin-top:2mm"><span class="no">9</span>セッションの区切りと、葉の消耗</h1>
+  <div class="cols">
+    <div>
+      <p>3ラウンド目の審査が終わったら、セッションの区切りです（最終セッションのあとを除く）。</p>
+      <ol class="steps">
+        <li><b>葉が減る</b>　全員、自分のボウルから葉を<b>2枚</b>選び、箱に戻します。</li>
+        <li><b>効果が切れる</b>　「このセッションの終わりまで」の効果が終わります。</li>
+        <li><b>進める</b>　セッションマーカーを1つ進め、次のラウンドに入ります。</li>
+      </ol>
+      <p class="small">どの葉を減らすかは自分で選べます。主役を多めに減らせば脇役が残り、ミックスが長く続きます。10枚を切ると濃厚がなくなります。</p>
+    </div>
+    <div>
+      <table>
+        <tr><th>葉を失う場面</th><th>いつ</th><th>失う葉</th></tr>
+        <tr><td><b>消耗</b></td><td>セッションの区切り</td><td>2枚（自分で選ぶ）</td></tr>
+        <tr><td><b>焦げ</b></td><td>判定熱が主役の焦げライン以上だった</td><td>主役を1枚</td></tr>
+      </table>
+      <ul>
+        <li>葉を失った結果、ほかの種類が主役の枚数を上回ったら、主役マーカーを移します。帯も味値も新しい主役のものに変わります。</li>
+        <li>焦げたら「焦げ」、ジャストなら「ジャスト」の記録チップを取ります。決め手で数えます。</li>
+      </ul>
+      <p style="margin-bottom:0"><b>燃え尽き</b>　ボウルの葉が0枚になったら、その一台は燃え尽きです。以後の一口はすべて0点で、帯は「外れ」として比べます。</p>
+    </div>
+  </div>
+
+  <h1 style="margin-top:1.5mm"><span class="no">10</span>ゲームの終わり</h1>
+  <div class="cols">
+    <div>
+      <p>最終セッションの3ラウンド目の審査が終わったら、ゲーム終了です。</p>
+      <ol class="steps">
+        <li><b>決め手</b>　場に出ている審査員カードを1枚ずつ確かめ、条件を満たした作り手に点を加えます（12ページ）。</li>
+        <li><b>勝敗</b>　合計点が高い作り手の勝ちです。</li>
+      </ol>
+    </div>
+    <div>
+      <div class="box" style="margin-bottom:0"><p><b>同点のとき</b>　ボウルに残った葉が多い方、次に手札が多い方の勝ち。それでも同じなら引き分けです。</p></div>
+    </div>
+  </div>
+  <div class="pno">9</div>
+</section>
+
+<!-- ───────── 10 カードの種類・FAQ ───────── -->
+<section class="page" style="font-size:8.9pt;line-height:1.6">
+  <div class="run"><span><b>一台勝負</b>　ルールブック 第0.2版</span><span>カードの種類</span></div>
+  <h1><span class="no">11</span>サポートカードの種類</h1>
+  <div style="display:flex;gap:3.2mm;justify-content:space-around;margin-bottom:3mm">
+    <div class="cardbox m82"><div data-sup="キューブ炭" style="transform:scale(.82);transform-origin:0 0"></div></div><div class="cardbox m82"><div data-sup="渾身の一口" style="transform:scale(.82);transform-origin:0 0"></div></div><div class="cardbox m82"><div data-sup="風防" style="transform:scale(.82);transform-origin:0 0"></div></div><div class="cardbox m82"><div data-sup="実況の煽り" style="transform:scale(.82);transform-origin:0 0"></div></div>
+  </div>
+  <div class="cols">
+    <div>
+      <h3>炭</h3>
+      <p>炭焼き場で焼いてからのせる、長持ちする炭です。火力は払いません。チャージして種火として置くこともできますが、その場合はふつうの種火と同じです。</p>
+      <h3>技</h3>
+      <p>使って効果を処理したら灰にします。<span class="when w-turn">手番</span>の技は炭の扱いや次への備え、<span class="when w-puff">一口</span>の技は吸わせ方で、審査カードをめくったあとに使います。</p>
+      <h3>器具</h3>
+      <p>使うと自分の場に残り、効果が続きます。場に置けるのは<b>3枚まで</b>。4枚目を出すときは、どれか1枚を灰にします。準備フェイズにも使えます。</p>
+      <h3>人物</h3>
+      <p>使うと自分の場に残ります。場に置けるのは<b>1人まで</b>。新しい人物を出したら、前の人物は灰にします。準備フェイズにも使えます。</p>
+      <h3>イベント</h3>
+      <p>使ったら灰にします。会場で起きる出来事で、相手に影響するものがあります。相手に効くカードはすべて<span class="when w-turn">手番</span>で、審査の最中には使えません。</p>
+      <div class="box">
+        <h3>「次の一口」と書かれた効果</h3>
+        <p>相手の「次の一口」に効くカードは、次の審査で働きます。先手が使えば、相手は自分のターンで熱を動かして受けられます。後手が使えば、相手に残るのは一口の技だけです。同じ効果が重なったら、すべて足します。</p>
+      </div>
+    </div>
+    <div>
+      <h2>よくある質問</h2>
+      <dl class="qa">
+        <dt>炭カードをチャージしてもいいですか。</dt>
+        <dd>かまいません。裏向きで置けば種火です。すぐ熱になりますが、裏返して受けることはできません。</dd>
+        <dt>焼けた炭を、炭焼き場に置いたままにできますか。</dt>
+        <dd>できます。ただし枠はふさがったままです。</dd>
+        <dt>冷める2段階を、同じ炭で受けられますか。</dt>
+        <dd>受けられます。表向きの炭カードを裏返し、続けて灰にしてもかまいません。</dd>
+        <dt>キューブ炭を裏返したあとの【火持ち】は。</dt>
+        <dd>なくなります。そのターンの冷める段階は、冷めはじめる前に数えます。途中でキューブ炭を裏返しても増えません。</dd>
+        <dt>判定熱が10を超えたり、0を下回ったりしたら。</dt>
+        <dd>その数のまま帯に当てます。焦げライン以上なら焦げ、帯の下なら外れです。</dd>
+        <dt>一口の技を、先手が使ったあとに後手が使いました。先手はもう一度使えますか。</dt>
+        <dd>使えません。1回ずつです。先手は、後手の技を見る前に決めます。</dd>
+        <dt>「ズレを適温として扱う」効果のとき、一票はどう比べますか。</dt>
+        <dd>適温として比べます。ジャストの+2はもらえません。</dd>
+        <dt>主役と脇役が同じ枚数になりました。</dt>
+        <dd>主役は変わりません。変わるのは、上回られたときだけです。</dd>
+        <dt>審査カードの山がなくなりました。</dt>
+        <dd>めくったカードをすべて集め、切り直して新しい山にします。</dd>
+      </dl>
+    </div>
+  </div>
+  <div class="pno">10</div>
+</section>
+
+<!-- ───────── 11 プレイ例 ───────── -->
+<section class="page">
+  <div class="run"><span><b>一台勝負</b>　ルールブック 第0.2版</span><span>遊び方の例</span></div>
+  <h1><span class="no">12</span>遊び方の例</h1>
+  <div class="cols">
+    <div>
+      <h2>例1　準備の6ターン</h2>
+      <p>あなたのセッティングは雲窯ファンネルハガル（容量16）とロートスHMD。<b>レモン8枚とミント4枚</b>の一台を作ります。最初の手札は4枚、熱は3です。</p>
+      <table>
+        <tr><th class="c">ターン</th><th>すること</th><th class="c">葉</th><th class="c">熱</th><th class="c">手札</th></tr>
+        <tr><td class="c">1</td><td>詰める：レモン4</td><td class="c">4</td><td class="c">3</td><td class="c">4</td></tr>
+        <tr><td class="c">2</td><td>詰める：レモン4</td><td class="c">8</td><td class="c">3</td><td class="c">4</td></tr>
+        <tr><td class="c">3</td><td>詰める：ミント4</td><td class="c">12</td><td class="c">3</td><td class="c">4</td></tr>
+        <tr><td class="c">4</td><td>蒸らす：1枚引く。フラット炭を2枚、炭焼き場へ。チャージ</td><td class="c">12</td><td class="c">4</td><td class="c">2</td></tr>
+        <tr><td class="c">5</td><td>蒸らす：フラット2枚が焼ける。1枚引く。2枚ともにのせる。キューブ炭を炭焼き場へ</td><td class="c">12</td><td class="c">6</td><td class="c">2</td></tr>
+        <tr><td class="c">6</td><td>蒸らす：キューブが縦向きに。1枚引く。フラット炭を炭焼き場へ</td><td class="c">12</td><td class="c">6</td><td class="c">2</td></tr>
+      </table>
+      <div class="mat" style="padding:2mm;margin-bottom:2mm">
+        <div class="cz"><i class="em">種火</i><i class="em">種火</i><i class="em">種火</i><i class="em">種火</i><i class="fl">フラット</i><i class="fl">フラット</i><span class="eq">熱6</span></div>
+        <div style="margin-top:1.2mm">提供に入るときの炭ゾーン。炭焼き場には、あと1ターンで焼けるキューブ炭とフラット炭。</div>
+      </div>
+      <p>レモンは適温4〜6のどこでもジャストです。最初のターンに2段階冷めます。フラットと種火で1段階ずつ受ければ熱5。帯の真ん中なので、審査カードで1ずれてもジャストです。</p>
+      <div data-strip="lemon" data-cls="big" data-now="5"></div>
+      <p style="margin-top:1.6mm">一口は、味値2 + ジャスト2 + ミックス1 + 相性1 + 濃厚1 = <b>7点</b>。次のターンにはキューブとフラットが焼けます。</p>
+      <h2>例3　キューブで高温を保つ</h2>
+      <p>主役はコーヒー（適温7〜8・ジャスト8）。炭ゾーンはキューブ炭2枚と種火4枚で熱8です。</p>
+      <div class="mat" style="padding:2mm;margin-bottom:1.6mm">
+        <div class="cz"><i class="cu">キューブ</i><i class="cu">キューブ</i><i class="em">種火</i><i class="em">種火</i><i class="em">種火</i><i class="gone">灰</i><span class="eq">熱7</span><span class="eq" style="font-size:7pt">＋焼けたフラット → 熱8</span></div>
+      </div>
+      <p>キューブが表向きなので、冷めるのは1段階だけ。種火を1枚灰にして熱7。焼けていたフラット炭をのせれば熱8に戻ります。キューブがなければ熱6まで下がり、戻すのに炭が2枚要りました。</p>
+    </div>
+    <div>
+      <h2>例2　1ラウンドを追う</h2>
+      <p>あなたは先手。主役は<b>マンゴー</b>（味値4・適温5〜6・ジャスト6・<b>焦げ7</b>）、脇役にバニラ3枚。山に残る審査カード7枚のうち、「長く吸う」（+1）は2枚です。</p>
+      <h3>あなたのターン</h3>
+      <div class="mat" style="padding:2mm;margin-bottom:1.6mm">
+        <div class="cz"><i class="em">種火</i><i class="em">種火</i><i class="em">種火</i><i class="em">種火</i><i class="em new">種火<small>裏返した</small></i><i class="em new">種火<small>裏返した</small></i><span class="eq">熱6</span></div>
+      </div>
+      <p><b>火を見る</b>　冷める2段階を、表向きのフラット炭2枚で受けます。熱は6のまま。</p>
+      <p><b>引く</b>　「熱を逃がす吸い」と「渾身の一口」。</p>
+      <p><b>手を打つ</b>　熱6はジャストですが、すぐ上は焦げです。「長く吸う」に備えて、熱を逃がす吸い（火力1）を構えます。ジャストなら渾身の一口（火力3）も使いたい。火力4を残すため、ほかのカードは使いません。フラット炭を1枚、炭焼き場に置いて終わります。</p>
+      <h3>相手のターン</h3>
+      <p>相手はレモンの一台を熱5に整え、<b>実況の煽り</b>を使いました。あなたの次の一口の判定熱+1です。</p>
+      <h3>審査</h3>
+      <p><b>めくる</b>　「ふつうに吸う」。判定熱は 6 + 0 + 1（煽り）= <b>7</b>。このままでは焦げです。</p>
+      <div data-strip="mango" data-cls="big" data-now="7"></div>
+      <p style="margin-top:1.6mm"><b>一口の技</b>　先手のあなたから。熱を逃がす吸いで判定熱6。ジャストに戻りました。続けて渾身の一口。火力は合わせて4、炭4枚を横向きにします。</p>
+      <p><b>採点</b>　味値4 + ジャスト2 + ミックス1 + 相性1 = 8点。渾身の一口で+3、合わせて<b>11点</b>。相手はジャストで7点。</p>
+      <p><b>一票</b>　2人ともジャストなので、票は入りません。</p>
+      <div class="box" style="margin-bottom:0">
+        <p>構えていなければ、焦げて0点、葉を1枚失い、相手に一票（+2）でした。相手から見れば、あなたが火力を4つ残した時点で、煽りが通らないことは読めました。</p>
+      </div>
+    </div>
+  </div>
+  <div class="pno">11</div>
+</section>
+
+<!-- ───────── 12 大会・審査員・1人用・デッキ ───────── -->
+<section class="page" style="font-size:8.8pt;line-height:1.56">
+  <div class="run"><span><b>一台勝負</b>　ルールブック 第0.2版</span><span>大会・審査員・1人用・デッキ</span></div>
+  <h1><span class="no">13</span>大会と審査員</h1>
+  <p>大会カードは、ゲームの長さと、審査員3人を決めます。審査員は2つのことをします。<b>審査カード</b>（吸い方）を山に入れることと、ゲームの終わりに<b>決め手</b>のボーナスを出すことです。</p>
+  <table id="tbl-tours"><tr><th>大会カード</th><th class="c">セッション</th><th class="c">一口</th><th class="c">消耗する葉</th><th class="c">めやす</th><th>審査員</th><th>課題</th></tr></table>
+  <p class="small">課題フレーバーのある大会では、その葉を必ずフレーバー場に入れ、各自3枚を受け取って始めます。4セッションの大会では、審査カード12枚をちょうど使い切ります。終盤は残りの吸い方を読み切れます。</p>
+  <table id="tbl-judges"><tr><th style="width:27mm">審査員</th><th style="width:66mm">審査カード（4枚）</th><th>決め手（ゲームの終わり）</th></tr></table>
+  <p class="small" style="margin-bottom:0">上園の決め手は、第1セッションが終わった時点の点で比べます。得点ボードに印を置いておきます。</p>
+
+  <div class="cols" style="margin-top:1mm">
+    <div>
+      <h1 style="font-size:17pt"><span class="no">14</span>1人で遊ぶ</h1>
+      <p>相手のかわりに<b>ライバル台</b>と点を競います。ライバル台はカードを使わず、決まった点を取ります。</p>
+      <ul>
+        <li>準備フェイズでは、あなたのターンが終わるたびに、<b>残り枚数がいちばん多い山から2枚</b>を箱に戻します。同数なら左の山です。</li>
+        <li>ライバル台は、審査のたびに下の点を得ます。帯は<b>適温</b>として一票を比べます。あなたがジャストなら一票、ズレ以下ならライバル台に一票です。</li>
+        <li>決め手は使いません。相手に影響するカードは、種火としてだけ使えます。</li>
+      </ul>
+      <table>
+        <tr><th>強さ</th><th class="c">1ラウンドの点</th><th class="c">3セッションの合計</th></tr>
+        <tr><td>やさしい</td><td class="c">6</td><td class="c">54</td></tr>
+        <tr><td>ふつう</td><td class="c">7</td><td class="c">63</td></tr>
+        <tr><td>つよい</td><td class="c">8</td><td class="c">72</td></tr>
+      </table>
+    </div>
+    <div>
+      <h1 style="font-size:17pt"><span class="no">15</span>デッキの組み方</h1>
+      <p>はじめは15ページの組み済みデッキをそのまま使ってください。慣れたら自分で組めます。</p>
+      <ul>
+        <li>デッキは<b>ちょうど40枚</b>。</li>
+        <li>同じ名前のカードは<b>3枚まで</b>。ただし<b>フラット炭とキューブ炭は何枚でも</b>入れられます。</li>
+        <li>人物は、同じ名前を<b>1枚まで</b>。</li>
+      </ul>
+      <div class="box" style="margin-bottom:0">
+        <h3>炭カードは何枚入れるか</h3>
+        <p>めやすは<b>8〜12枚</b>。炭カードは1枚で2段階ぶん冷めるのを受けられるので、種火だけで保つより手札が減りません。入れすぎると、使えるカードが減ります。</p>
+        <p><b>低温の葉</b>（ローズ・ピーチ）はフラット中心で8枚ほど。火力が少ないので、火力0〜1のカードを多めに。</p>
+        <p><b>高温の葉</b>（コーヒー・ダブルアップル）は12枚以上、キューブを多めに。火力が余るので、火力3以上のカードが使えます。</p>
+        <p><b>味値4の葉</b>には、熱を逃がす吸い・ブロー・吸い方を読む。焦げを受ける手段を切らさないこと。</p>
+      </div>
+    </div>
+  </div>
+  <div class="pno">12</div>
+</section>
+
+<!-- ───────── 13 フレーバー一覧 ───────── -->
+<section class="page dense">
+  <div class="run"><span><b>一台勝負</b>　ルールブック 第0.2版</span><span>カード一覧：フレーバー・セッティング</span></div>
+  <h1><span class="no">16</span>カード一覧 <small>フレーバー 20種・セッティング 8種</small></h1>
+  <p style="margin-bottom:1.2mm">毎回このうち10種を場に並べます。帯の数字は判定熱です。味値4の葉は、ジャストのすぐ上が焦げになっています。</p>
+  <p style="margin-bottom:1.6mm"><b>帯</b>　<span class="zchip z-just">★ジャスト</span> <span class="zchip z-band">適温</span> <span class="zchip z-off">ズレ</span> <span class="zchip z-cold">外れ</span> <span class="zchip z-scorch">焦げ</span>　<b>系統</b>&ensp;<span class="kind fruit">果</span>&nbsp;フルーツ&ensp;<span class="kind cool">涼</span>&nbsp;清涼&ensp;<span class="kind spice">香</span>&nbsp;スパイス&ensp;<span class="kind floral">花</span>&nbsp;フローラル&ensp;<span class="kind sweet">甘</span>&nbsp;スイート&ensp;<span class="kind none">—</span>&nbsp;なし</p>
+  <table id="tbl-flavors" class="mid"><tr><th style="width:7mm"></th><th style="width:47mm">なまえ</th><th class="c" style="width:9mm">味値</th><th style="width:45mm">温度の帯</th><th class="c" style="width:9mm">相性</th><th>能力</th></tr></table>
+  <h2 style="margin-top:3mm">セッティング <span style="font-family:'Noto Sans JP',sans-serif;font-size:7.4pt;color:var(--ink2)">　ボウル4種・HMD4種。1つずつ選んで組み合わせる</span></h2>
+  <div class="cols">
+    <div><table id="tbl-bowls" class="mid"><tr><th>ボウル</th><th class="c" style="width:9mm">容量</th><th>能力</th></tr></table></div>
+    <div><table id="tbl-hmds" class="mid"><tr><th style="width:30mm">HMD</th><th>能力</th></tr></table></div>
+  </div>
+  <div class="pno">13</div>
+</section>
+
+<!-- ───────── 14 サポート一覧 ───────── -->
+<section class="page dense" style="font-size:7.9pt;line-height:1.45">
+  <div class="run"><span><b>一台勝負</b>　ルールブック 第0.2版</span><span>カード一覧：サポート</span></div>
+  <h1><span class="no">17</span>カード一覧 <small>サポート 38種</small></h1>
+  <p>デッキに入れるカードです。種類ごとの決まりは10ページ、デッキの組み方は12ページ。</p>
+  <table id="tbl-support" class="tight"><tr><th class="c" style="width:17mm">種類</th><th style="width:31mm">なまえ</th><th class="c" style="width:17mm">火力</th><th class="c" style="width:18mm">使える時</th><th>効果</th></tr></table>
+  <p class="small">火力の欄の <span class="fire burn">2</span> は燃焼2（炭2枚を灰にして払う）。炭カードは火力を払いません。人物の能力は、その人物が育てたボウルの来歴などをもとにした仮のものです。</p>
+  <div class="pno">14</div>
+</section>
+
+<!-- ───────── 15 デッキ・早見表 ───────── -->
+<section class="page" style="font-size:8.8pt;line-height:1.56">
+  <div class="run"><span><b>一台勝負</b>　ルールブック 第0.2版</span><span>組み済みデッキ・早見表</span></div>
+  <h1><span class="no">18</span>組み済みデッキ</h1>
+  <div class="cols">
+    <div class="box">
+      <h3>A　ミックスの構え型</h3>
+      <p class="small">おすすめのセッティング：雲窯ファンネルハガル ＋ ロートスHMD。レモン8＋ミント4。帯の真ん中に置き、吸いの技で受ける。相手は煽りで揺さぶる。</p>
+      <ul class="deck" id="deck-a"></ul>
+    </div>
+    <div class="box">
+      <h3>B　単品の火持ち型</h3>
+      <p class="small">おすすめのセッティング：素焼きハガル ＋ アマバースト。ダブルアップルを単品で12枚。キューブ炭で高い熱を保ち、濃い煙で点を重ねる。</p>
+      <ul class="deck" id="deck-b"></ul>
+    </div>
+  </div>
+  <div class="box"><p><span class="tag b">はじめての場</span>レモン・ミント・ピーチ・ホワイトグミベア・バニラ・ダブルアップル・シナモン・ブラックティー・ローズ・スプリングウォーター</p></div>
+
+  <h1 style="margin-top:2mm"><span class="no">19</span>早見表</h1>
+  <div class="cols3">
+    <div class="box dark">
+      <h3>準備のターン（6回）</h3>
+      <ol style="margin-bottom:1.4mm"><li>炭を起こす・炭焼き場を進める</li><li>詰める（4枚・2種類まで）<br>または 蒸らす（1枚引く・チャージ・炭を置く／のせる）</li><li>カードを使う</li><li>手札は7枚まで</li></ol>
+      <p class="small" style="color:#d9c9b6">蒸らすには8枚以上。蒸らしたら詰められない。</p>
+    </div>
+    <div class="box dark">
+      <h3>提供のターン</h3>
+      <ol style="margin-bottom:1.4mm"><li>炭を起こす・炭焼き場を進める・<b>冷める（2段階）</b></li><li>2枚引く</li><li>チャージ（1回）・炭を置く／のせる・灰にする・カードを使う</li><li>手札は7枚まで</li></ol>
+      <p class="small" style="color:#d9c9b6">キューブ炭が表向きなら、冷めるのは1段階。</p>
+    </div>
+    <div class="box dark">
+      <h3>審査（2人のターンのあと）</h3>
+      <ol style="margin-bottom:1.4mm"><li>審査カードをめくる</li><li>一口の技（先手 → 後手、1回ずつ）</li><li>採点</li><li>一票（帯の良い方 +2）</li><li>先手マーカーを渡す</li></ol>
+      <p class="small" style="color:#d9c9b6">3ラウンドごとに葉が2枚減る。</p>
+    </div>
+  </div>
+  <div class="cols">
+    <table>
+      <tr><th>帯</th><th>一口の点</th></tr>
+      <tr><td><span class="zchip z-just">★ジャスト</span></td><td>味値 + 2 + 加点</td></tr>
+      <tr><td><span class="zchip z-band">適温</span></td><td>味値 + 加点</td></tr>
+      <tr><td><span class="zchip z-off">ズレ</span></td><td>1点</td></tr>
+      <tr><td><span class="zchip z-cold">外れ</span>／<span class="zchip z-scorch">焦げ</span></td><td>0点（焦げは主役の葉を1枚失う）</td></tr>
+    </table>
+    <table>
+      <tr><th>加点・上限</th><th>条件</th></tr>
+      <tr><td>ミックス +1</td><td>脇役（主役以外で2枚以上）がある</td></tr>
+      <tr><td>相性 +1</td><td>主役の相性と同じ系統の脇役がある</td></tr>
+      <tr><td>濃厚 +1</td><td>葉が合計10枚以上</td></tr>
+      <tr><td>上限</td><td>熱10・手札7枚・炭焼き場4枠・器具3枚・人物1人</td></tr>
+    </table>
+  </div>
+  <div class="box" style="margin-bottom:0">
+    <h3>第0.2版で変えたところ（調整メモ）</h3>
+    <ul class="chg small" style="margin:0;columns:2;column-gap:6mm">
+      <li><b>調整フェイズをなくした。</b>熱の管理は提供のターンの中で行う。葉はセッションの区切りに減る。</li>
+      <li><b>炭焼き場と炭カード。</b>火力なしで置け、フラットは1ターン後、キューブは2ターン後に焼ける。</li>
+      <li><b>チャージは1ターン1回で、しなくてもよい。</b>毎ターン2枚引き、1枚を熱に、1枚を効果に、が基本。</li>
+      <li><b>冷めるのは毎ターン2段階。</b>炭カードは2段階ぶん受けられる。</li>
+      <li><b>審査カードと一口の技。</b>吸い方はめくるまで分からない。帯の広い葉と味値の高い葉に役割ができた。</li>
+      <li><b>一票。</b>相手より良い帯なら+2点。</li>
+      <li><b>急加熱をなくした。</b>味値4の葉はジャストのすぐ上を焦げに。準備は6ターン、「詰める」は4枚まで。</li>
+    </ul>
+    <p class="small" style="margin:1.2mm 0 0">数値は、決まった手筋で打つコンピュータどうしの対戦（sim.mjs）で粗く確かめたものです。人どうしの対戦はまだ行っていません。</p>
+  </div>
+  <div class="pno">15</div>
+</section>
+
+<script src="cards.js"></script>
+<script src="render.js"></script>
+</body>
+</html>
