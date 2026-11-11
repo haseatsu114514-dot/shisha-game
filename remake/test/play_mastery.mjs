@@ -69,6 +69,11 @@ await stats.paidAction(async()=>true,{consumed:()=>true,exp:{key:'work'}});asser
 assert.equal(growth.awardActionExp({key:'work'}),24,'second notification in same slot gets no extra floor');
 core.state.slot=1;assert.equal(growth.awardActionExp({key:'work'}),180);
 core.state.flags._ch5.matchDay=81;core.state.day++;assert.equal(growth.awardActionExp({key:'work'}),24,'scheduled match ends the supplement');
+core.state.flags._ch5.matchDay=null;core.state.day++;core.state.slot=1;
+const beforeNight=daily.xp;
+await stats.paidAction(async()=>{core.state.slot=2;return true;},{consumed:()=>true,exp:{key:'work'}});
+assert.equal(daily.xp-beforeNight,180,'a self-consuming night action uses its starting slot');
+assert.deepEqual(daily.practiceDay.slots,[1]);
 // Benchmark exhausted first rewards, no mini-games/romance/lottery. Use the production functions.
 for(const initial of [140,155]){
  const v=core.newState();core.setState(v);Object.assign(v,{chapter:5,phase:'daily',day:80,slot:0});v.flags._ch5={};

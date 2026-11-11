@@ -384,7 +384,7 @@ export function awardSlotExp(role) {
  * @param target.key 新鮮さの鍵（相手のキャラID、スポットID、行動の種類）
  * @param target.person はじめての相手（X2）／ target.place はじめての場所・遊び（X3）
  */
-export function awardActionExp(target) {
+export function awardActionExp(target, actionTime = null) {
   if (!growthEnabled() || !state) return 0;
   const g = ensureGrowth();
   closeRespecOpportunity(g); // expの鍵が無い行動でも、実際に確定した最初の自由行動で閉じる。
@@ -400,13 +400,15 @@ export function awardActionExp(target) {
   // 第5章の決戦前: 一日に最初の2枠だけ、確定した日常の学びを180XPまで底上げ。
   // 同じ枠の再通知・無料リトライは補助を増やさない。章1〜4と決戦後は従来どおり。
   let practice = false;
-  if (state.chapter === 5 && state.phase === "daily" && state.flags?._ch5 && !state.flags._ch5.matchDay
-      && Number.isInteger(state.day) && Number.isInteger(state.slot) && [0, 1].includes(state.slot)) {
-    const day = `${state.cycle || 1}:${state.day}`;
+  // TRPG・移動など自分で時間を進める行動も、開始時の枠で数える。
+  const at = actionTime || { ...state, chapterFive: !!state.flags?._ch5, matchDay: state.flags?._ch5?.matchDay };
+  if (state.chapter === 5 && at.chapter === 5 && at.phase === "daily" && at.chapterFive && !at.matchDay
+      && Number.isInteger(at.day) && Number.isInteger(at.slot) && [0, 1].includes(at.slot)) {
+    const day = `${at.cycle || 1}:${at.day}`;
     const ledger = g.practiceDay?.day === day ? g.practiceDay : { day, slots: [] };
     if (!Array.isArray(ledger.slots)) ledger.slots = [];
-    if (!ledger.slots.includes(state.slot)) {
-      ledger.slots.push(state.slot); base = Math.max(base, 90); practice = true;
+    if (!ledger.slots.includes(at.slot)) {
+      ledger.slots.push(at.slot); base = Math.max(base, 90); practice = true;
     }
     g.practiceDay = ledger;
   }
