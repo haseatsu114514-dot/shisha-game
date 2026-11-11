@@ -264,7 +264,7 @@
       "id": "growth-levelup",
       "title": "Growth EXP, night level-up and hidane behind GROWTH_BOARD",
       "kind": "quick",
-      "run": ["node remake/test/growth_levelup.mjs", "node remake/test/growth_board.mjs", "node --experimental-vm-modules remake/test/slot_exp.mjs", "node --experimental-vm-modules remake/test/kannon_growth.mjs", "node remake/test/growth_effects.mjs", "node --experimental-vm-modules remake/test/growth_chapter_rewards.mjs", "node --experimental-vm-modules remake/test/growth_board_screen.mjs", "node remake/test/growth_chapter_notice.mjs", "node remake/test/proto_hmd_mw9.mjs"]
+      "run": ["node remake/test/growth_levelup.mjs", "node remake/test/growth_board.mjs", "node --experimental-vm-modules remake/test/slot_exp.mjs", "node --experimental-vm-modules remake/test/kannon_growth.mjs", "node remake/test/growth_effects.mjs", "node --experimental-vm-modules remake/test/growth_chapter_rewards.mjs", "node --experimental-vm-modules remake/test/growth_board_screen.mjs", "node remake/test/growth_chapter_notice.mjs", "node remake/test/proto_hmd_mw9.mjs", "node remake/test/outer24_lesson.mjs"]
     },
     {
       "id": "growth-starter-accounting",
@@ -842,6 +842,7 @@
         "node remake/test/ch4_longlong.mjs",
         "node remake/test/affection_fill.mjs",
         "node --experimental-vm-modules remake/test/ch5_progress.mjs",
+        "node remake/test/ch5_sumi_trial.mjs",
         "node remake/test/ch5_party.mjs",
         "node remake/test/ch5_travel.mjs",
         "node --experimental-vm-modules remake/test/ch3_activities.mjs",
@@ -1761,6 +1762,22 @@
       "run": [
         "node remake/test/browser/ch5_full_flow.mjs"
       ]
+    },
+    {
+      "id": "ch5-sumi-trial-browser",
+      "title": "Chapter 5 optional real cup after the prep talk: offer at night, craft, Sumi's answer, decline and resume (#2020 F)",
+      "kind": "browser",
+      "weight": 0.5,
+      "timeout": 6,
+      "paths": [
+        "remake/js/chapters/ch5-daily.js",
+        "remake/js/chapters/ch5-sumi-trial.js",
+        "remake/js/chapters/ch5-progress.js",
+        "remake/js/craft/practice.js",
+        "data/dialogue/ch5_main.json",
+        "remake/test/browser/ch5_sumi_trial.mjs"
+      ],
+      "run": ["node remake/test/browser/ch5_sumi_trial.mjs"]
     },
     {
       "id": "staff-roll",

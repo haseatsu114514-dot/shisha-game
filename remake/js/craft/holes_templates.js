@@ -1,5 +1,6 @@
 // テンプレートの正本。追加時は counts と説明を登録し、交流で解放する場合は
 // unlockFlag を付ける。既存の state.flags にそのフラグが立った一台から選べる。
+// 外周24穴は、心得の盤のスミさんの授業「四つ置き・混ぜ置き」（M-W2・第2章から）を習得すると開く（#2020 H）。
 import { RINGS } from "./holes_logic.js";
 
 export const HOLE_TEMPLATES = [
