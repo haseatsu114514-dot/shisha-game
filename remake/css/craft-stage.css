@@ -144,9 +144,10 @@ html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-panel .thermo.mix-t
 html body.craft-stage:not(.game-ds) .bench[data-mode] .pull > .thermo .pull-read {
   position: absolute !important; left: 50% !important; right: auto !important; top: -52px !important; transform: translateX(-50%);
   min-width: 124px; height: 42px; min-height: 0 !important; padding: 0 14px; justify-content: center; border-radius: 21px !important;
+  flex-wrap: nowrap; gap: 4px; /* 余熱の矢印（↓）を札の中の同じ行に置く */
   background: #1b112af2 !important; border-width: 1.5px !important; box-shadow: 0 4px 10px #0009;
 }
-html body.craft-stage:not(.game-ds) .bench[data-mode] .pull > .thermo .pull-state { font-size: 22px !important; font-weight: 900; letter-spacing: .06em; white-space: nowrap; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .pull > .thermo .pull-state { font-size: 22px !important; line-height: 1.4 !important; font-weight: 900; letter-spacing: .06em; white-space: nowrap; }
 /* 温度計を持たない工程（機材・炭の配置・穴あけ・炭焼き）は、消灯の柱を同じ場所に立てる */
 html body.craft-stage:not(.game-ds) .bench[data-mode]:is([data-step="setup"], [data-step="place"], [data-step="holes"], [data-step="heat"]) .bench-right::before {
   content: ""; position: fixed; left: 344px; top: 134px; width: 48px; height: 468px; z-index: 5; border-radius: 26px; pointer-events: none;
@@ -348,6 +349,8 @@ html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-panel .thermo.mix-t
 html body.craft-stage:not(.game-ds) .bench[data-mode] .pull > .thermo .pull-read { z-index: 3; }
 /* ---------- 工程の灯（lamp-*）: 輪は灯の箱いっぱい、光彩は外へ ---------- */
 html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-top > .rig-record .rig-lamp { isolation: isolate; overflow: visible; background: none !important; border: 0 !important; box-shadow: none !important; }
+/* 光彩（::before の外側18% ≒ 5px）を灯の列の箱の中に収める。余白と同じだけ外へ広げ、レールでの大きさと位置は変えない */
+html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-top > .rig-record { padding: 5px; margin: -5px -5px -5px -1px; }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .bench-top > .rig-record .rig-lamp::before {
   content: ""; position: absolute; inset: -18%; z-index: -1; pointer-events: none;
   background: url("../img/ui/craft-stage/lamp-off.webp") center / contain no-repeat;
