@@ -390,3 +390,49 @@ TKT-CAT16 cat_poke.png — Sitting and lifting one front paw toward the viewer t
 | `assets/ui/tetsuko/cat_poke.png` | 1024×768 | `649df080f34bf544787f07e313a17258a4d3f22fd71e0154c7593a3515b43d30` |
 | `assets/ui/tetsuko/prop_lap.png` | 1120×402 | `33ecf48d71c10241c3cc6513f20197219d9772591551e58c299c06280edf8676` |
 | `assets/ui/tetsuko/prop_tunnel_tail.png` | 240×228 | `5ccd638a9851c8d6d4b383e7a5877f936ec6120a7664f353a63187e7049ff5b0` |
+
+## #2690 の8しぐさ・#2689 の裏口の背景の採用の記録（2026-11-11）
+
+オーナー「推奨で行きます」（裏口の背景を規格に届かない 1672×941 のまま使う／猫の8しぐさの候補を検品して使う、の両方の提案に）。
+
+**しぐさ（#2690 の A 段・PR #2715 の候補）**: 16枚とも既存の立ち絵と同じ猫に見え、文字・小物なし。しぐさごとに1枚選んだ。
+
+| しぐさ | 採用 | 理由 |
+|---|---|---|
+| 香箱 loaf | `cat_loaf_b.png` | 体がまとまり、半分閉じた目が依頼どおり |
+| 狙う crouch | `cat_crouch_a.png` | 右上を見る目がはっきり（じゃらしの方向） |
+| 前足 reach | `cat_reach_a.png` | 右上へ伸ばす前足（じゃらしの方向） |
+| 抱える hug | `cat_hug_a.png` | 抱える前足と丸い目 |
+| 毛づくろい groom | `cat_groom_a.png` | 舌が見えて正面向き |
+| あくび yawn | `cat_yawn_a.png` | 正面向きで牙と舌が見える |
+| へそ天 belly | `cat_belly_a.png` | 前足をゆるく上げた寝相（今まで立ち絵を上下逆さにしていた所） |
+| すりすり rub | `cat_rub_b.png` | しっぽが上で先だけ曲がる（依頼どおり） |
+
+原画16枚と生成記録 `originals/GENERATION_RECORD_2690.md` は、PR #2715 のブランチと同じ中身でこのフォルダに置いた（後で #2715 がマージされても衝突しない）。顔の幅（頬から頬）: 香箱 485・狙う 430・前足 477・抱える 420・毛づくろい 490・あくび 477・へそ天 450・すりすり 400px（横顔なので少し小さめ）を立ち絵の 160px にそろえた（`remake/tools/build_tetsuko_art.py cats`）。B 段（歩く2枚・振り返る・伸び）は #3214 で依頼中。
+
+**裏口の背景（#2689・PR #2695）**: 案02の昼・夜を採用（Codex の推奨。案01の昼は右端に木箱があり「箱なし」に反する）。1672×941 のまま `assets/backgrounds/bg_mukai_backdoor_{day,night}.png` に置き、`python3 remake/tools/build_manifest.py --backgrounds-only …` で WebP と一覧、`tools/background_catalog.py` の台帳に「オーナー承認・この画面専用」の `accepted` を書いた。原画4枚と記録 `GENERATION_RECORD_BG_2689.md` は PR #2695 と同じ中身。
+- 画面では、背景を寄せる舞台の層（`.tt-cam-set` の `.tt-backdrop`）に置き、てつこと一緒に寄せる。CSS の壁・戸・ベンチ・地面（`.tt-set`）は出さない。
+- 絵のベンチの座面は y≈420 なので、ベンチの上の居場所と置き場所を y=424 に合わせた。床・寝床の置き場所は今の座標のまま絵の地面・ひさしの下に合う。
+- 裏口が出てくる会話の背景は替えていない（TKT15。この背景を使うのは、てつこといっしょの画面だけ）。
+- 撮った写真も、この背景を背にして見せる（TKT30。撮った時の昼・夜）。
+
+**手持ちの絵で置き換えた小さな部品**: 道具の名前の札（ハートの台の絵）、もようがえ・手帳・あそびかたの「おわる／閉じる」と「このしぐさを探す」（上の道具の札の絵）、「？」の中のアイコンの丸（丸い札の絵）。
+
+**トンネルのしっぽの置き方を直した（TKT29）**: 最初はトンネルの横の宙に浮き、切れた根元が見えていた。奥の口（トンネルの絵の右の縁）の後ろから地面に沿って出て上へ巻くように置き直し、トンネルの絵より奥の層にして根元を縁に隠した。絵（`prop_tunnel_tail.png`）は作り直していない。
+
+**採用版**（実行時は `remake/img/ui/tetsuko/*.webp`・`remake/img/backgrounds/*.webp`）:
+
+| ファイル | 画素 | SHA-256 |
+|---|---|---|
+| `assets/ui/tetsuko/cat_loaf.png` | 1024×768 | `0d5587f69eae1f652125074dc3cb2fc0e27ecd601a18d92a5bb785b8cfbc867a` |
+| `assets/ui/tetsuko/cat_crouch.png` | 1024×768 | `bb923295e89432749990d1fcf624e0207b6bbadbd56fafa00ee076be048bc6b5` |
+| `assets/ui/tetsuko/cat_reach.png` | 1024×768 | `dd4f9cafc16c927734719a08ed762958989e11eb26bf2e965a6a3a033e6a7b2b` |
+| `assets/ui/tetsuko/cat_hug.png` | 1024×768 | `dcf902c2b0c306c032a1ab0bf3e1bb2bafd4c3ed241907faf8bd679b1732c140` |
+| `assets/ui/tetsuko/cat_groom.png` | 1024×768 | `cc4414e74822c0de08327fc6c0dace5dc93e8382d30dd855d11526ea5480f089` |
+| `assets/ui/tetsuko/cat_yawn.png` | 1024×768 | `26c16113fffaea23cabad3a6f8f998464b00c0e3ae261d65b8e9921e0af424a9` |
+| `assets/ui/tetsuko/cat_belly.png` | 1024×768 | `fdf4a3ee9703948bf0f94f269217bd29226bbc2260d41042b5301b88881484e0` |
+| `assets/ui/tetsuko/cat_rub.png` | 1024×768 | `75636f1d8e81d7b1544b2bfb195116dd8429ae083558685f1956cf2899cfb648` |
+| `assets/backgrounds/bg_mukai_backdoor_day.png` | 1672×941 | `544d7ad649cc3f5cc79ad155fe6190fe288a1d189013d0f213c655d811c24163` |
+| `assets/backgrounds/bg_mukai_backdoor_night.png` | 1672×941 | `03f5b9077939cba33976dd2784c0bbac131ce746c1a3b1bcc2b6813ee4048042` |
+
+**まだ CSS の物**（#3243・TKT27 で依頼）: もようがえのトレー・小さな札・あそびかたの紙・手帳の見開き・写真の額とテープ・段ボールの外枠・入る時の箱のふた・置き場所のしるし・「新」のシール・名前の札・まだ見つけていないしぐさの札。
