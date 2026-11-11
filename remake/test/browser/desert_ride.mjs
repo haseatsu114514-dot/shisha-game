@@ -47,7 +47,7 @@ await suite("desert-ride", async check => {
     await page.locator(t("desert-page-tutorial")).click();
     await phase(page, "practice");
     // 長いキーボード・タッチ用の案内も、左右の HUD と重ならず帯の中で折り返す。
-    for (const text of ["← → で左右に動こう","岩に当たると転ぶ。先を見て、早めによけよう","起伏の手前で Space ── 大きく跳べる","着地の直前にもう一度 Space ── 姿勢を整える","惜しい。次の起伏で、もう一度跳んでみよう","次は、跳んだら空中で ← か → を押し続けて回ろう","離すと回り切る。着地より前に離そう","回った！ 回るほど点が大きい","回りかけで着地すると転ぶ。もう少し早く離そう","溜まったゲージで↓（BOOST）を押すと超加速 ── 岩も砕ける","そのまま、岩へ突っ込め！","いい感じ。あとは、滑るだけ","「左へ」「右へ」で動こう","起伏の手前で「ジャンプ」── 大きく跳べる","着地の直前にもう一度「ジャンプ」── 姿勢を整える","次は、跳んだら空中で「左へ」か「右へ」を押し続けて回ろう","溜まったゲージで「BOOST」を押すと超加速 ── 岩も砕ける"]) {
+    for (const text of ["← → で左右に動こう","岩に当たると転ぶ。先を見て、早めによけよう","起伏の手前で Space ── 大きく跳べる","着地の直前、輪がボタンに重なったら Space ── 着地が決まる","惜しい。次の起伏で、もう一度跳んでみよう","次は、跳んだら空中で ← か → を押し続けて回ろう","離すと回り切る。着地より前に離そう","回った！ 回るほど点が大きい","回りかけで着地すると転ぶ。もう少し早く離そう","溜まったゲージで↓（BOOST）を押すと超加速 ── 岩も砕ける","そのまま、岩へ突っ込め！","いい感じ。あとは、滑るだけ","「左へ」「右へ」で動こう","起伏の手前で「ジャンプ」── 大きく跳べる","空中ではジャンプが「LAND」に変わる。輪が重なったら押そう","次は、跳んだら空中で「左へ」か「右へ」を押し続けて回ろう","溜まったゲージで「BOOST」を押すと超加速 ── 岩も砕ける"]) {
       const fits = await page.locator(t("desert-caption")).evaluate((node, text) => {
         node.textContent = text;
         const box = node.getBoundingClientRect();
@@ -173,6 +173,15 @@ await suite("desert-ride", async check => {
     await phase(page, "practice");
     assert.equal(await page.locator(t("desert-ride")).getAttribute("data-reduced-motion"), "true");
     await assertSpeedo(page);
+    // 動き軽減では放電の稲妻を出さない（満タンの光だけ）
+    const calm = await page.evaluate(async () => {
+      const r = window.__desertRide; r.game.gauge = 1; await new Promise(resolve => setTimeout(resolve, 90)); r.redraw();
+      const lit = [...document.querySelectorAll(".dr-zap path")].filter(path => path.getAttribute("d")).length;
+      const shown = [...document.querySelectorAll(".dr-zap")].some(node => getComputedStyle(node).display !== "none");
+      r.game.gauge = 0; r.redraw();
+      return { lit, shown, charge: document.querySelector('[data-test="desert-ride"]').dataset.charge };
+    });
+    assert.equal(calm.lit + Number(calm.shown), 0, "reduced motion: no flickering bolts");
     // タッチ端末ではキーの名前を出さず、画面のボタンの名前で言う（#2838）
     assert.equal(await page.locator(t("desert-caption")).innerText(), "「左へ」「右へ」で動こう");
     // ボタンは下辺の左右に分かれ、真ん中の視界を隠さない
@@ -242,6 +251,67 @@ await suite("desert-ride", async check => {
   }, { viewport: { width: 844, height: 390 }, hasTouch: true, isMobile: true });
 
   // 2026-11-11: カーブの案内とカービング、ブースト中の曲の速さ、裏の相手（なる）の名乗り
+  // 2026-11-11 オーナー「ジャンプ中にタイミングよく押すと着地が決まる仕様が気づきづらい」「ブーストは溜まるとどんどん放電みたいな演出」
+  await check("landing-cue-on-the-jump-button-and-boost-discharge-grows-with-the-gauge", async page => {
+    await page.goto(new URL("desert-ride.html?course=ridge", page.url()).href);
+    await page.locator(t("desert-page-start")).click();
+    await page.locator(t("desert-start")).click();
+    await phase(page, "run");
+    await ride(page, () => { const r = window.__desertRide; r.skipCountdown(); r.pause(true); });
+    const cue = () => page.evaluate(() => {
+      const r = window.__desertRide; r.redraw();
+      const button = document.querySelector('[data-test="desert-jump"]'), tag = button.querySelector(".dr-land-tag"), ring = button.querySelector(".dr-land-ring");
+      return { state: button.dataset.land, ring: Number(button.style.getPropertyValue("--land")), tag: tag.textContent, shown: getComputedStyle(tag).opacity === "1" && getComputedStyle(ring).opacity === "1", air: r.game.air };
+    });
+    // 平地のホップは着地の採点が無いので、合図を出さない
+    await ride(page, () => { const r = window.__desertRide; r.advance(1, {}); r.press(); r.advance(0.05, {}); });
+    let c = await cue();
+    assert(c.air > 0 && c.state === "" && !c.shown, "a hop shows no landing cue");
+    // 大ジャンプ: 輪が外から縮み「重なったら押す」→ 完璧の窓で輪がボタンに重なり「今！」→ 押すと「構えた！」
+    await ride(page, async () => {
+      const r = window.__desertRide;
+      const { nextBumpDistance } = await import("./js/minigames/desert-ride-model.js");
+      while (r.game.air > 0) r.advance(1 / 60, {});
+      while (nextBumpDistance(r.game) > r.game.speed * 0.1) r.advance(1 / 60, {});
+      r.press(); r.advance(0.1, {});
+    });
+    c = await cue();
+    assert.equal(c.state, "wait"); assert.equal(c.tag, "重なったら押す"); assert(c.shown, "the ring and the tag show in the air");
+    assert(c.ring > 0.5 && c.ring <= 1, `the ring starts wide (${c.ring})`);
+    await ride(page, () => { const r = window.__desertRide; while (r.game.air > 0.45) r.advance(1 / 60, {}); });
+    const soon = await cue();
+    assert.equal(soon.state, "soon"); assert(soon.ring < c.ring, "the ring closes in");
+    await ride(page, () => { const r = window.__desertRide; while (r.game.air > 0.25) r.advance(1 / 60, {}); });
+    c = await cue();
+    assert.equal(c.state, "now"); assert.equal(c.tag, "今！"); assert.equal(c.ring, 0, "the ring sits on the button in the perfect window");
+    await ride(page, () => window.__desertRide.press());
+    c = await cue();
+    assert.equal(c.state, "set"); assert.equal(c.tag, "構えた！");
+    await ride(page, () => { const r = window.__desertRide; while (r.game.air > 0) r.advance(1 / 60, {}); });
+    c = await cue();
+    assert(c.state === "" && !c.shown, "the cue leaves on landing");
+    assert(await ride(page, () => window.__desertRide.game.stats.perfect >= 1), "pressing on the cue lands perfectly");
+    // 放電: 溜まるほど BOOST ボタンとゲージの稲妻が増え、満タンで最大。ブースト中は止まる
+    const zaps = level => page.evaluate(async level => {
+      const r = window.__desertRide; r.game.gauge = level;
+      await new Promise(resolve => setTimeout(resolve, 90)); r.redraw();
+      const lit = selector => [...document.querySelectorAll(`${selector} path`)].filter(path => path.getAttribute("d")).length;
+      return { charge: document.querySelector('[data-test="desert-ride"]').dataset.charge, button: lit(".dr-zap-button"), gauge: lit(".dr-zap-gauge") };
+    }, level);
+    assert.deepEqual(await zaps(0), { charge: "", button: 0, gauge: 0 }, "no discharge with an empty gauge");
+    let most = { button: 0, gauge: 0 };
+    for (let i = 0; i < 4; i++) { const z = await zaps(0.3); assert.equal(z.charge, "low"); most = { button: Math.max(most.button, z.button), gauge: Math.max(most.gauge, z.gauge) }; }
+    assert(most.button <= 3 && most.gauge <= 3, `a little charge, a little discharge (${JSON.stringify(most)})`);
+    const full = await zaps(1);
+    assert.equal(full.charge, "max");
+    assert(full.button >= 5 && full.gauge >= 5, `a full gauge discharges hard (${JSON.stringify(full)})`);
+    assert(full.button > most.button, "more bolts as the gauge fills");
+    await ride(page, () => { const r = window.__desertRide; r.game.fallT = 0; r.boost(); });
+    await page.waitForTimeout(90);
+    const during = await page.evaluate(() => { window.__desertRide.redraw(); return { charge: document.querySelector('[data-test="desert-ride"]').dataset.charge, lit: [...document.querySelectorAll(".dr-zap path")].filter(path => path.getAttribute("d")).length }; });
+    assert.deepEqual(during, { charge: "", lit: 0 }, "the charge is spent by the boost");
+  });
+
   await check("curve-tip-carving-boost-tempo-and-the-hidden-boss-banner", async page => {
     await page.evaluate(() => localStorage.setItem("suien_desert_ride_preview", JSON.stringify({ score: 1, rank: "C", rulesVersion: 2, beatNoor: true })));
     await page.goto(new URL("desert-ride.html?course=left-bowl", page.url()).href);
