@@ -107,6 +107,10 @@
   html[data-density="phone"] body:not(:root) .bench[data-step="steam"] .bench-left {
     width: 325px !important;
   }
+  /* 狭めた人物の枠では見守りの一言が3行になる。行間を少し詰めて、欄（高さ110px）からはみ出さないようにする。 */
+  html[data-density="phone"] body:not(:root) .bench[data-step="steam"] .bench-audience .audience-note {
+    line-height: 1.45 !important;
+  }
   /* 作業域は人物の枠のすぐ右から（窓の間は詰めたまま）。温度計は作業域を左へ広げた分だけ戻して、同じ場所に保つ。 */
   html[data-density="phone"] body:not(:root) .bench[data-step="steam"] .bench-right {
     left: 343px !important;
