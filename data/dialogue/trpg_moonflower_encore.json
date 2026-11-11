@@ -576,7 +576,7 @@
           "speaker": "rei",
           "role": "GM／場面",
           "face": "normal",
-          "text": "{pc:adam}は、柱の陰で林檎を磨きながら、客席を眺めている"
+          "text": "{pc:adam}は、柱の陰から、静かに客席を眺めている"
         },
         {
           "speaker": "rei",
@@ -1114,7 +1114,7 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "intense",
-          "text": "最初の客は、演者にとって宇宙の原点だ。林檎と同じくらいにな"
+          "text": "最初の客は、演者にとって一生の客だ。顔は、何年たっても忘れない"
         },
         {
           "speaker": "hajime",
@@ -1848,7 +1848,7 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "intense",
-          "text": "{pc:adam}が林檎を掲げ、群れの前に立ちはだかる"
+          "text": "{pc:adam}が両手を広げ、群れの前に立ちはだかる"
         },
         {
           "speaker": "rei",
@@ -2081,26 +2081,56 @@
         {
           "speaker": "adam",
           "role": "PL／卓の会話",
-          "face": "intense",
-          "text": "俺はジーク。伝説のギタリストだ、……自称だがな"
+          "face": "normal",
+          "text": "俺の役はジーク。……伝説のギタリスト、の弦を張り替える係だ"
         },
         {
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "弦は一本しかない。だが一本でも、宇宙は鳴らせる"
+          "text": "人前では弾かない。舞台袖で、誰かの一曲を待つのが好きな男だ"
         },
         {
           "speaker": "rei",
           "role": "GM／卓の会話",
           "face": "surprise",
-          "text": "……一本で。それは、ちょっと聴いてみたい"
+          "text": "……アダムが、袖に。それは、ちょっと見てみたい"
         },
         {
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "アダムさん、伝説の基準が独特だな"
+          "text": "アダムさんが脇役って、新鮮ですね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_moonflower_encore_aside_adam_adam_ziek",
+      "metadata": {
+        "preview_only": true,
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "{pc:adam}／物語",
+          "face": "normal",
+          "text": "伯爵。あんたの曲、袖からずっと聴いてた。……最後の一曲も、ここで聴いてる"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_moonflower_encore_after_adam_adam_ziek",
+      "metadata": {
+        "preview_only": true,
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "袖から見る舞台は、思ったより明るかったな。……ジーク、また借りよう"
         }
       ]
     },
@@ -2320,7 +2350,7 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "intense",
-          "text": "始まりは庭か。原点は、いつだって大切だ"
+          "text": "始まりは庭か。最初の舞台は、いつまでも残るものだ"
         }
       ]
     },
@@ -2821,8 +2851,8 @@
           "actor": "adam",
           "sheet": "adam",
           "stat": "talk",
-          "label": "名言で、客席の心をつかむ",
-          "detail": "{pc:adam}が大げさな名言で、最後の一曲への道をひらく",
+          "label": "ひと言で、客席の心をつかむ",
+          "detail": "{pc:adam}が短い言葉で、最後の一曲への道をひらく",
           "declare": "trpg_moonflower_encore_declare_serve_words"
         },
         {
@@ -2867,7 +2897,7 @@
           "sheet": "adam",
           "stat": "nerve",
           "label": "コウモリの群れの前に立つ",
-          "detail": "{pc:adam}が林檎を掲げ、群れの真ん中で動じずに立つ",
+          "detail": "{pc:adam}が両手を広げ、群れの真ん中で動じずに立つ",
           "declare": "trpg_moonflower_encore_declare_twist_stand"
         }
       ]
@@ -3022,16 +3052,18 @@
         {
           "id": "ziek",
           "name": "ジーク",
-          "title": "自称・伝説のギタリスト",
-          "trait": "弦は一本しか張っていない。それも演出だと言い張る",
-          "likes": "ダブルアップルと、大げさな決めポーズ",
+          "title": "舞台袖のギター係",
+          "trait": "人前では弾かない。他人の弦を張り替えるのは、誰より速い",
+          "likes": "開演前の舞台袖。チューニングの音",
           "stats": {
             "eye": 2,
             "hand": 3,
             "talk": 4,
             "nerve": 2
           },
-          "making": "trpg_moonflower_encore_make_adam_adam_ziek"
+          "making": "trpg_moonflower_encore_make_adam_adam_ziek",
+          "aside": "trpg_moonflower_encore_aside_adam_adam_ziek",
+          "after": "trpg_moonflower_encore_after_adam_adam_ziek"
         }
       ]
     }

@@ -36,6 +36,17 @@ const REPEAT_POOL = {
   kumicho: ["remake_ch2_kumicho_repeat", "remake_ch2_kumicho_repeat_b", "remake_ch2_kumicho_repeat_c", "remake_ch2_kumicho_repeat_d", "remake_ch2_kumicho_repeat_e"],
   rei: ["remake_ch2_rei_repeat", "remake_ch2_rei_repeat_b", "remake_ch2_rei_repeat_c", "remake_ch2_rei_repeat_d", "remake_ch2_rei_repeat_e"],
 };
+/** レヰのライブの夜（RVE07）。台本は data/dialogue/ch2_rei.json（柚ヶ谷の台本と一緒に ch2-city-data.js が読み込む）。 */
+export const REI_LIVE_SCENE = "ch3_prep_rei_live";
+/**
+ * 第3章の東京へ発つ前の準備期間（core/chapter-clock.js の departurePrep と同じ判定）の夜に、チケットを受け取っていて、まだ読んでいない。
+ * 場面は終演後の夜なので、昼の来店では出さない（その日の夜にまた寄れば読める）。
+ */
+export function reiLiveDue(value) {
+  const prep = value?.chapter === 3 ? value.flags?._ch3_prep : null;
+  return !!prep && !prep.departed && Number.isInteger(prep.startDay) && (value.slot ?? 0) >= 1 && !!value.flags._ch2_rei_ticket
+    && !value.flags[`_talk_seen_${REI_LIVE_SCENE}`] && !!DB.dialogues[REI_LIVE_SCENE]?.lines?.length;
+}
 function repeatScene(id) {
   const pool = (REPEAT_POOL[id] || []).filter(scene => DB.dialogues[scene]?.lines?.length);
   return pool.length ? pool[(state.flags._ch2_talks?.[id] || 0) % pool.length] : `remake_ch2_${id}_repeat`;
@@ -167,17 +178,20 @@ export async function visitPreparationSpot(spot, { staminaGuard }) {
   if (spot.kind === "trpg") return null;
   if (isClosed(spot) || spendableMoney(state) < (spot.cost || 0)) return { used: false, exerted: false };
   const first = !state.flags._ch2_talks?.[id];
+  // レヰのライブの夜（2026-11-11 オーナー「推奨で全部」RVE07）: 第2章で余りチケットを受け取った人（_ch2_rei_ticket）が、
+  // 第3章の東京へ発つ前の準備期間にレヰの店へ来たら、いつもの会話・段階・締めくくりより先に一度だけ。
+  const live = id === "rei" && !first && reiLiveDue(state) ? REI_LIVE_SCENE : null;
   // 旧セーブの総訪問・好感度・思い出から、新しい会話の読了を作らない。
   const stages = CH2_VISIT_STORIES[id];
   // 神崎・レヰは訪問列の最古の未読を、必要ハートに届いた時だけ読む。届くまではrepeat（#1648）。
   const pendingStage = !first && stages ? stages.find(entry => !ch2VisitDone(state.flags, id, entry)) : null;
   const chapterDayNow = state.day - dayOneProgress(state).startDay + 1;
   // 物語の出来事が前提の段階（組長の♥3「味は遠い」）は、その出来事の後まで待つ（#2720）。
-  const stage = pendingStage && affinityLevel(id) >= pendingStage.heart && ch2VisitReady(state.flags, pendingStage, chapterDayNow) ? pendingStage : null;
+  const stage = !live && pendingStage && affinityLevel(id) >= pendingStage.heart && ch2VisitReady(state.flags, pendingStage, chapterDayNow) ? pendingStage : null;
   const pendingFollowup = !first && !stages && !state.flags._ch2_followup_done?.[id];
   const followup = pendingFollowup && affinityLevel(id) >= 1;
   // 訪問列を読み終えた♥5の次の来店で、締めくくりを一度だけ（#2027）。
-  let finale = !first && stages && !pendingStage && finaleAtVisit(id);
+  let finale = !live && !first && stages && !pendingStage && finaleAtVisit(id);
   // あげはは続編のあと、店に通う回（ギャル友・初めての客・雑誌取材・ダメな日）を一度ずつ読む（#626）
   const story = id === "ageha" && !first && !pendingFollowup ? agehaStoryScene(state, chapterDayNow, DB.dialogues) : null;
   // あげは: 店に通う回と♥3の質問を読み終えた♥5の次の来店は、いつもの会話の代わりに締めくくり（#2023・一度だけ）。
@@ -185,8 +199,8 @@ export async function visitPreparationSpot(spot, { staminaGuard }) {
   // 締めくくりの次の来店から、グミ・店の言葉・白いクマの席を一度ずつ。小品の前に割り込む（#3081）
   const later = id === "ageha" && !first && !pendingFollowup && !story && !stage && !finale
     ? agehaLaterScene(state, DB.dialogues) : null;
-  const repeat = !first && !followup && !story && !stage && !finale && !later;
-  const scene = story || stage?.scene || (finale ? BOND_FINALES[id].dialogue
+  const repeat = !first && !followup && !story && !stage && !finale && !later && !live;
+  const scene = live || story || stage?.scene || (finale ? BOND_FINALES[id].dialogue
     : first ? `remake_ch2_${id}_chat` : followup ? `remake_ch2_${id}_followup` : later || repeatScene(id));
   const dialogue = DB.dialogues[scene];
   if (!dialogue?.lines?.length || (followup || stage?.done) && !dialogue.lines.every(line => line && !line.type
@@ -245,6 +259,7 @@ export async function visitPreparationSpot(spot, { staminaGuard }) {
   if (stage?.done) (state.flags[stage.done] ||= {})[id] = true;
   else if (stage) state.flags[`_ch2_read_${stage.scene}`] = true;
   if (story) { state.flags[`_ch2_read_${story}`] = true; syncAgehaVibes(state.flags); }
+  if (live) state.flags[`_talk_seen_${live}`] = true;
   if (later) {
     const extra = AGEHA_LATER_SCENES.find(item => item.id === later);
     if (extra) state.flags[extra.flag] = true;
@@ -259,7 +274,7 @@ export async function visitPreparationSpot(spot, { staminaGuard }) {
   if (id === "ageha" && state.flags._lime_contact_ageha) state.flags._ch2_ageha_contact = true;
   // 神崎・レヰの長い段階会話・あげはの店に通う回（VOL06）・締めくくりは、第1章の固有会話と同じ（#2027）。
   // 値は core/stats.js の visitAffinity（段階 +16・いつもの会話 +8。第5章は +10／+5。AFB01）。
-  gainAffinity(id, visitAffinity(first || finale || story || later || stages && stage?.file ? "story" : "talk")); earnStat(stat[id], 4);
+  gainAffinity(id, visitAffinity(first || finale || story || later || live || stages && stage?.file ? "story" : "talk")); earnStat(stat[id], 4);
   // 心得の盤で灯した授業があれば、その店で相談して習う（SBD61: 会った時だけ）
   if (state === owner) await consultLessons(id, { bg: ROOMS[id] });
   // 部活の勧誘（レヰ・あげは）も地元の訪問と同じく、会えた後にだけ。入部は暦の精算と一緒に保存する。

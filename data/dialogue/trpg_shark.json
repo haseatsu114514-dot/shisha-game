@@ -74,7 +74,7 @@
     {
       "id": "hiyori",
       "part": "PLAYER",
-      "role": "{pc:hiyori}／香りの研究員",
+      "role": "{pc:hiyori}／実況する研究員",
       "color": "#c8a375",
       "ability": "段取りの確認",
       "abilityType": "prepare",
@@ -87,15 +87,15 @@
       },
       "sheet": {
         "name": "オット",
-        "title": "香りの研究員",
+        "title": "実況する研究員",
         "stats": {
           "eye": 4,
           "hand": 4,
           "talk": 2,
           "nerve": 1
         },
-        "trait": "香りと道具に詳しい。サメは、見たくない",
-        "likes": "研究室で飲む紅茶"
+        "trait": "怖いと声が大きくなる。サメの動きを、全部実況してしまう",
+        "likes": "研究室の大鍋カレー。おかわりは三杯"
       }
     },
     {
@@ -1997,20 +1997,56 @@
         {
           "speaker": "hiyori",
           "role": "PL／卓の会話",
-          "face": "normal",
-          "text": "……私の役はオット。香りの研究員よ"
+          "face": "smile",
+          "text": "私の役はオット。研究員よ。……怖いと、声が大きくなるの"
         },
         {
           "speaker": "hiyori",
-          "role": "PL／卓の会話",
-          "face": "sad",
-          "text": "サメは見たくないの、……そういう役だから"
+          "role": "{pc:hiyori}／物語",
+          "face": "surprise",
+          "text": "背びれ発見！ 右から来ます！ 速い！ 大きい！ 怖ーい！"
         },
         {
           "speaker": "samechan",
           "role": "GM／卓の会話",
+          "face": "excited",
+          "text": "実況つきのサメ映画じゃ！ これは盛り上がるのう！"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "ひよりさん、すごく楽しそう……"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_aside_hiyori_hiyori_otto",
+      "metadata": {
+        "preview_only": true,
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "{pc:hiyori}／物語",
           "face": "smile",
-          "text": "怖がる役は大事じゃぞ。映画が締まるのじゃ"
+          "text": "ミラさーん！ 助けてくれてありがとう！ 私、ほんとは毎日だれかに助けてほしかったー！"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_after_hiyori_hiyori_otto",
+      "metadata": {
+        "preview_only": true,
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "……オットの声、まだ喉に残ってる。気持ちよかった……じゃなくて、儚くかすれてるの"
         }
       ]
     },
@@ -2058,19 +2094,55 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "オットの役は俺が引き受けた。香りの研究員だ"
+          "text": "オットの役は俺が引き受けた。端役の、香りの研究員だ"
         },
         {
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "serious",
-          "text": "サメは見たくない設定か。……俺にも弱点くらいある"
+          "text": "決めるのは人に任せる。台詞は『了解です』でいい"
         },
         {
           "speaker": "samechan",
           "role": "GM／卓の会話",
+          "face": "surprise",
+          "text": "お主が端役じゃと！？ 明日は空からサメが降るのじゃ"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
           "face": "smile",
-          "text": "頼もしいのか頼りないのか、分からんのう"
+          "text": "サメ映画なら、本当に降りそうだな"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_aside_hiyori_adam_otto",
+      "metadata": {
+        "preview_only": true,
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "{pc:hiyori}／物語",
+          "face": "normal",
+          "text": "……了解です。あ、でも一つだけ。僕、みんなの後ろを歩くの、けっこう好きなんです"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_shark_after_hiyori_adam_otto",
+      "metadata": {
+        "preview_only": true,
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "adam",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "端役も、悪くなかった。サメちゃん、次の卓にも端役を一つ空けておいてくれ"
         }
       ]
     },
@@ -3138,16 +3210,18 @@
         {
           "id": "otto",
           "name": "オット",
-          "title": "香りの研究員",
-          "trait": "香りと道具に詳しい。サメは、見たくない",
-          "likes": "研究室で飲む紅茶",
+          "title": "実況する研究員",
+          "trait": "怖いと声が大きくなる。サメの動きを、全部実況してしまう",
+          "likes": "研究室の大鍋カレー。おかわりは三杯",
           "stats": {
             "eye": 4,
             "hand": 4,
             "talk": 2,
             "nerve": 1
           },
-          "making": "trpg_shark_make_hiyori_hiyori_otto"
+          "making": "trpg_shark_make_hiyori_hiyori_otto",
+          "aside": "trpg_shark_aside_hiyori_hiyori_otto",
+          "after": "trpg_shark_after_hiyori_hiyori_otto"
         },
         {
           "id": "midori",
@@ -3168,16 +3242,18 @@
         {
           "id": "otto",
           "name": "オット",
-          "title": "香りの研究員",
-          "trait": "香りと道具に詳しい。サメは、見たくない",
-          "likes": "研究室で飲む紅茶",
+          "title": "端役志望の研究員",
+          "trait": "目立つのが苦手。決める役は、いつも人に譲る",
+          "likes": "研究室の隅の席。みんなと同じ紅茶",
           "stats": {
             "eye": 4,
             "hand": 4,
             "talk": 2,
             "nerve": 1
           },
-          "making": "trpg_shark_make_hiyori_adam_otto"
+          "making": "trpg_shark_make_hiyori_adam_otto",
+          "aside": "trpg_shark_aside_hiyori_adam_otto",
+          "after": "trpg_shark_after_hiyori_adam_otto"
         },
         {
           "id": "mackin",

@@ -429,7 +429,17 @@ test("companions make their own characters: seeded variety, likes, own-voice mak
           assert(talk?.metadata?.making, o.making);
           assert(talk.lines.some(l => l.speaker === player), "the player announces their own character");
           assert(talk.lines.every(l => [player, gm, "hajime"].includes(l.speaker)));
+          // S17: a role against type says one line in the role before the ending and one line as the player after the table.
+          assert.equal(o.aside === undefined, o.after === undefined, o.id + ": both lines or neither");
+          for (const key of ["aside", "after"].filter(k => o[k] !== undefined)) {
+            const scene = s.dialogues.find(d => d.dialogue_id === o[key]);
+            assert(scene?.metadata?.making, o.id + "." + key + " is the player's own talk");
+            assert(scene.lines.some(l => l.speaker === player), o[key]);
+            assert(scene.lines.every(l => [player, gm, "hajime"].includes(l.speaker)), o[key]);
+          }
         }
+        // S17: wherever Adam or Hiyori sits as a player, one of their two roles plays against their usual face.
+        if (["adam", "hiyori"].includes(player)) assert(options.some(o => o.aside), s.id + ": " + player + " has a role against type");
       }
     }
     // No companion or player character name is hard-coded outside the build options: everything goes through {pc}.

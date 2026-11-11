@@ -16,7 +16,8 @@ export function withStoreArrival(host, curtain, opts, { fast = false, reduced = 
     shownAt = performance.now();
     if (!fast && !reduced) move(node, [{ opacity: 0, transform: "translateY(8px)" }, { opacity: 1, transform: "none" }], 160, { easing: "ease-out" });
   });
-  return { covered, async release() {
+  // 煙のにじみ（transitions.js smokeCurtain）は、前の背景を受け取る dissolve() も中継する
+  return { covered, ...(curtain.dissolve ? { dissolve: (nodes) => curtain.dissolve(nodes) } : {}), async release() {
     if (released) return;
     released = true;
     try {

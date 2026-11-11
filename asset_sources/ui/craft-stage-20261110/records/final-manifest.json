@@ -1,0 +1,112 @@
+[
+  {
+    "file": "edited/counter-mat.png",
+    "bytes": 2073803,
+    "sha256": "d87361a8e392d5e11a3aec5d90a4108f0c972e827c585b08e10ca08e6f59ced2"
+  },
+  {
+    "file": "edited/dial-bezel.png",
+    "bytes": 1629571,
+    "sha256": "4399a41200ca26fc13409b246cf5875fea0c4c8e4135d17098ffb7f296c177dd"
+  },
+  {
+    "file": "edited/lamp-faint.png",
+    "bytes": 643115,
+    "sha256": "3429347570836f563ce36df5572d3c67bd425a1c35664917c59bfbfe9a666a39"
+  },
+  {
+    "file": "edited/lamp-fair.png",
+    "bytes": 691277,
+    "sha256": "6430beb92c0fd0ca96fc4a752d957b6ebb3fcd4086fec86314380b23eabed9db"
+  },
+  {
+    "file": "edited/lamp-good.png",
+    "bytes": 1272680,
+    "sha256": "efcbad251088d91de54a45d48b03185bb0f40bfa1aaa6c498014815fb99e71bc"
+  },
+  {
+    "file": "edited/lamp-off.png",
+    "bytes": 646615,
+    "sha256": "12666b6ec35d50b2d2f82aa76f691c343f624168daccabb76e6d6e59fe064c64"
+  },
+  {
+    "file": "edited/lamp-shine.png",
+    "bytes": 1622590,
+    "sha256": "b6078aa543c945547ec80f3ccc4588b85eaf1b719679458eb666b3884c315ad7"
+  },
+  {
+    "file": "edited/rail-now.png",
+    "bytes": 1420934,
+    "sha256": "5edfe10618e70c8ce2f3af012cef563d910fe73418200b202bef000793a54888"
+  },
+  {
+    "file": "edited/spine-housing.png",
+    "bytes": 1123261,
+    "sha256": "f13469c8ca381b119f8d65349c1b14eba3c29b3319b1b52bc07ff3edd9ab45ed"
+  },
+  {
+    "file": "edited/spine-plate.png",
+    "bytes": 1041202,
+    "sha256": "9722fa6409e073adf6733ea0dda6b54acabf3cdf95d475a4c1a99c14dfbade14"
+  },
+  {
+    "file": "edited/voice-plate.png",
+    "bytes": 1133880,
+    "sha256": "136f11019ca5560758f49146c6473278fc6b5a9d5f21866dec02cb3a2a7aaa33"
+  },
+  {
+    "file": "processed/counter-mat.png",
+    "bytes": 2003384,
+    "sha256": "64f367ebce801a9a05c97981e868f0035f5ed73e53e24ea5e1ed269a81a5d28e"
+  },
+  {
+    "file": "processed/dial-bezel.png",
+    "bytes": 444816,
+    "sha256": "730846102733e81cde544c6b8aea0870d9589f93fea740618b9c982dd1b81456"
+  },
+  {
+    "file": "processed/lamp-faint.png",
+    "bytes": 155650,
+    "sha256": "580fd98222f907e8d2b370d6311fd47de6f5e2377abb9a3eb9cd5126b2170327"
+  },
+  {
+    "file": "processed/lamp-fair.png",
+    "bytes": 169355,
+    "sha256": "f1b4e4b484f8daf1528f5321365a1c3dc8caad6348c557a7a8e69795b667cb37"
+  },
+  {
+    "file": "processed/lamp-good.png",
+    "bytes": 206452,
+    "sha256": "676c02decb39a558d76ad4fe052000840c0e96f1099bd9da974fbdcf63a422e5"
+  },
+  {
+    "file": "processed/lamp-off.png",
+    "bytes": 151972,
+    "sha256": "d4010fbe0dc01bb8fe7195f43cf238d856ed1fae6d1ab049df95a7d38148e0a2"
+  },
+  {
+    "file": "processed/lamp-shine.png",
+    "bytes": 222996,
+    "sha256": "883b4c2e5ae397b4bbebcc1e5ee0c7865a768f563f917fd152bdfa72a945f6c0"
+  },
+  {
+    "file": "processed/rail-now.png",
+    "bytes": 684332,
+    "sha256": "6d9e745591e193f27fbbb2fe25a0d978d25d1122ced675330a414e1461f1e803"
+  },
+  {
+    "file": "processed/spine-housing.png",
+    "bytes": 218991,
+    "sha256": "677523e5687637907d03fd89b41624289b435505b1f62af101d42ea89ee9b8c3"
+  },
+  {
+    "file": "processed/spine-plate.png",
+    "bytes": 15685,
+    "sha256": "0a8cb221a7fb8cd0afeed6e16c655f8212064058114d0244a9f600401ae4e217"
+  },
+  {
+    "file": "processed/voice-plate.png",
+    "bytes": 426689,
+    "sha256": "438a9fbeb1f7fc4971c81075742c62559dfde11f9945aa9b8322617051ff0e1d"
+  }
+]

@@ -841,6 +841,10 @@
             "speaker": "adam",
             "face": "normal",
             "text": "……そうか。では、戻して確かめよう"
+          },
+          {
+            "type": "set_flag",
+            "flag": "_adam_fifth_strong"
           }
         ],
         "taste_after": [
@@ -853,6 +857,10 @@
             "speaker": "adam",
             "face": "normal",
             "text": "……ふむ。俺はさっきの濃さも残したいところだが"
+          },
+          {
+            "type": "set_flag",
+            "flag": "_adam_fifth_light"
           }
         ],
         "greeting_before": [
