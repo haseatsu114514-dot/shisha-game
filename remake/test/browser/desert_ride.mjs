@@ -104,10 +104,11 @@ await suite("desert-ride", async check => {
     g = await game(page);
     assert(g.hops === 1 || g.bigJumps === 1, "Space jumps");
     assert(await page.locator(t("desert-left")).isVisible() && await page.locator(t("desert-jump")).isVisible(), "touch buttons are shown on PC too");
-    // Codex の採用画像（遠景の空・陸、主人公の背面、岩、旗、ゴール、砂煙）を読み込んで描いている
+    // Codex の採用画像（遠景の空・陸、主人公・ヌール・なるの背面、岩、旗、ゴール、砂煙）を読み込んで描いている
     const loaded = await page.evaluate(() => performance.getEntriesByType("resource").map(entry => entry.name).filter(name => name.includes("/img/ui/desert_ride/")).map(name => name.split("/").pop()).sort());
     assert.deepEqual(loaded, ["backdrop_day_land.webp", "backdrop_day_sky.webp", "backdrop_dusk_land.webp", "backdrop_dusk_sky.webp", "flag_pole.webp", "goal_banner.webp",
       "rider_brace.webp", "rider_fall.webp", "rider_jump.webp", "rider_lean_left.webp", "rider_lean_right.webp",
+      "rider_naru_brace.webp", "rider_naru_fall.webp", "rider_naru_jump.webp", "rider_naru_lean_left.webp", "rider_naru_lean_right.webp", "rider_naru_ride.webp",
       "rider_noor_brace.webp", "rider_noor_fall.webp", "rider_noor_jump.webp", "rider_noor_lean_left.webp", "rider_noor_lean_right.webp", "rider_noor_ride.webp",
       "rider_ride.webp", "rock_large.webp", "rock_small.webp", "sand_puff.webp"]);
     // 空中トリックとブーストを使う理想の滑り: S、ヌールに勝つ。360 以上を決めるとカットインが走る
@@ -260,6 +261,8 @@ await suite("desert-ride", async check => {
     await page.waitForFunction(() => window.__desertRide.countdown <= 0);
     assert.equal(await page.locator(t("desert-versus")).evaluate(node => node.classList.contains("show")), false, "the banner leaves at GO");
     assert(await ride(page, () => window.__desertRide.rival.samples.some(s => s.boostT > 0) && window.__desertRide.rival.samples.some(s => Math.abs(s.rot) > 0.25)), "Naru's boosts and spins are in the playback");
+    // なるの滑る絵（#3222）を読みに行っている（読めない時は図形で描く）
+    assert(await page.evaluate(() => performance.getEntriesByType("resource").some(entry => /\/rider_naru_ride\.webp$/.test(entry.name))), "Naru's rider art is requested");
     // 最初のカーブ: 一度だけ案内が出る。曲がる向きへ切り込むとカービング（ゲージが貯まり、印が出る）
     assert.equal(await page.locator(t("desert-caption")).innerText(), "", "no caption on the straight");
     await ride(page, () => { const r = window.__desertRide; while (r.game.z < 340) r.advance(1 / 60, {}); r.game.x = 0; r.game.vx = 0; });

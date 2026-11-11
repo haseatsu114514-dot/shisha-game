@@ -549,3 +549,12 @@
 .tt-book-joy { display: inline-flex; align-items: center; gap: 5px; margin-left: 18px; color: var(--tk-tabby-text, #a24a12); }
 .tt-book-heart { display: inline-block; width: 18px; height: 18px; }
 .tt-book-heart svg { display: block; width: 100%; height: 100%; fill: #f2607c; stroke: var(--tk-ink, #3b2416); stroke-width: 2; stroke-linejoin: round; }
+
+/* ==== 猫のしぐさ・膝・しっぽの絵（#3214・TKT26・2026-11-11）==== */
+/* しぐさの絵も、向きを変える時（data-flip）は左右に返す（跳ぶ・空振りは右向きの絵） */
+.tt-cat[data-flip="true"] .tt-cat-pose { scale: -1 1; }
+/* トンネルから出るしっぽ（奥の口＝右から、上へ巻く）。CSS のしまの四角の代わり */
+.tetsuko-time[data-art-props~="tunnel_tail"] .tt-prop[data-prop="tunnel"] > .tt-prop-tail { left: 112px; right: auto; bottom: 78px; width: 120px; height: 114px; border-radius: 0;
+  background: url("../img/ui/tetsuko/prop_tunnel_tail.webp") left bottom / contain no-repeat; transform-origin: 6% 94%; }
+.tetsuko-time[data-art-props~="tunnel_tail"] .tt-slot.holding .tt-prop[data-prop="tunnel"] > .tt-prop-tail { animation: tt-tail-art 1.8s ease-in-out infinite; }
+@keyframes tt-tail-art { 0%, 100% { rotate: 0deg; } 50% { rotate: -9deg; } }
