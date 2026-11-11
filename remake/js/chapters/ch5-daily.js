@@ -1,6 +1,6 @@
 // 第5章の自由行動を、第1・2章と同じ日常ループ（daily/calendar.js の runDaily）で遊ぶ（#2033）。
 // 日付・昼夜・体力・睡眠・天気・LIMEの受信箱・地図・育成（能力の上限は100）は日常ループが持つ。
-// ここでは第5章の行き先と、tonari の3場面・閉店後の試作・EDEN・博士への連絡だけを差し込む。
+// ここでは第5章の行き先と、tonari の3場面・閉店後の試作（と、その後の実制作の練習）・EDEN・博士への連絡だけを差し込む。
 // 地域は地元・橙須と隣町・柚ヶ谷（駅で行き来。夜は地元へ帰る。第2章と同じ電車の仕組み）と東京（Dr.fookah の配送便。
 // 昼に出て夜に着く。ムカイさんの屋根裏に好きなだけ泊まれる。chapters/ch5-tokyo.js）とドバイ（シェイクの手紙に同封の
 // 往復の切符で飛行機。シェイクの屋敷の客間に泊まれる。chapters/ch5-dubai.js）。交通の決まりは chapters/ch5-travel.js。
@@ -12,6 +12,7 @@
 import { state, save, timeOfDay } from "../core/state.js";
 import { bgUrl, displayName } from "../core/data.js";
 import { modal, toast } from "../core/ui.js";
+import { addStamina } from "../core/stats.js";
 import { rescheduleInvitation } from "../daily/phone.js";
 import { CH2_CITY_NAME, HOME_CITY_NAME } from "../core/city-locations.js";
 import { runDaily } from "../daily/calendar.js";
@@ -36,6 +37,8 @@ import {
   chapterFivePreparation, chapterFivePrepPending, recordChapterFivePrepTrial, recordChapterFivePrepAdjustment,
   chapterFivePrepScene, CH5_PREP_TRIALS,
 } from "./ch5-progress.js";
+import { SUMI_TRIAL_FLAG, SUMI_TRIAL_INTRO, SUMI_TRIAL_STAMINA, sumiTrialOffered, sumiTrialFeedbackPending,
+  sumiTrialResult, recordSumiTrial, finishSumiTrialFeedback, declineSumiTrialTonight, sumiTrialScene } from "./ch5-sumi-trial.js";
 
 // tonari の場面の時間帯（台本コメント: ましろの訪問は昼・初めての客は夕方・閉店後の練習は夜・つむぎの接客は夕方・つむぎの一台は昼）。
 // 昼と夜の2枠なので、夕方の場面はどちらでも読める。
@@ -222,6 +225,9 @@ async function performChapterFiveSpot(spot, io, options = {}) {
   if (spot.id === "tonari") {
     // 閉店後の試作が途中なら、まずその続き（LOAD 後など）。
     if (chapterFivePrepPending(state)) return { used: await runPrep(io), exerted: false };
+    // 試作の会話を終えた夜は、閉店後の作業台で本物の一台を作れる（任意・一度だけ。#2020 F）。断れば、いつもの tonari へ。
+    const trial = await offerSumiTrial(io, options);
+    if (trial) return trial;
     const scene = dueTonariScene();
     if (!scene) return null; // いつもの tonari（バイト・練習）
     if (!await io.readAndCommit(scene.id)) return { used: false, exerted: false };
@@ -265,6 +271,48 @@ async function contactDoctor(io) {
   }
   if (chapterFiveTimeoutPending(state)) await io.readAndCommit("ch5_timeout");
   return { used: true, exerted: false };
+}
+
+/**
+ * 閉店後の作業台（#2020 F）: 試作の会話（#1666）を終えた夜に、任意で一度だけダブルアップルを提供まで作り、
+ * スミさんに吸ってもらう。調整は本番に残す（第4章の宿の試作と同じ1行動・体力16。葉は店のものを使い、減らない）。
+ * 失敗しても講評を読んで終わり、進行は止めない。作り終えたら講評の前に保存し、講評だけ中断した保存は
+ * 次の tonari で講評から読む（作り直させない）。null＝出さない／今夜はいつもの tonari。
+ */
+async function offerSumiTrial(io, options = {}) {
+  const owner = state;
+  const unused = { used: false, exerted: false };
+  let crafted = false;
+  if (!sumiTrialFeedbackPending(state)) {
+    if (!sumiTrialOffered(state)) return null;
+    const choice = await modal({
+      title: "閉店後の作業台",
+      body: `ダブルアップル12グラムで、提供まで一台作れる。<br>できた一台は、スミさんが吸って返してくれる。1行動・体力${SUMI_TRIAL_STAMINA}。`,
+      options: [
+        { label: "一台作る", value: "craft", test: "ch5-sumi-trial", primary: true },
+        { label: "いつものtonariへ", value: "usual", test: "ch5-sumi-trial-usual" },
+        { label: "戻る", value: "cancel", test: "ch5-sumi-trial-cancel" },
+      ],
+    });
+    if (state !== owner || !choice || choice === "cancel") return unused;
+    if (choice === "usual") { declineSumiTrialTonight(state); return null; }
+    const staminaGuard = options.staminaGuard || (async () => true);
+    if (!(await staminaGuard(-SUMI_TRIAL_STAMINA)) || state !== owner) return unused;
+    if (!await io.readScene(SUMI_TRIAL_INTRO) || state !== owner) return unused;
+    const { runFullPractice } = await import("../craft/practice.js");
+    if (state !== owner) return unused;
+    const cs = await runFullPractice({ kind: "ch5_sumi_trial", adjustments: false, note: "閉店後の一台（スミさんが吸う）",
+      isCurrent: () => state === owner });
+    if (state !== owner || !cs || cs.cancelled || !cs.pullDone && !cs.failed) return unused;
+    if (!recordSumiTrial(owner, sumiTrialResult(cs))) return unused;
+    addStamina(-SUMI_TRIAL_STAMINA);
+    save(); // 講評中の LOAD でも、作り終えた一台を作り直させない
+    crafted = true;
+  }
+  if (!await io.readScene(sumiTrialScene(owner.flags[SUMI_TRIAL_FLAG].result)) || state !== owner) return unused;
+  finishSumiTrialFeedback(owner);
+  save();
+  return { used: true, exerted: crafted };
 }
 
 /** 閉店後の試作（#1666）: 何を試す → スミさんが吸って返す → 直すか、このまま覚えるか。true＝最後まで済んだ。 */
