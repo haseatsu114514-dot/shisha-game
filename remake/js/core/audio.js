@@ -150,6 +150,8 @@ export function createDesertRideSe() {
   const loops = new Map();
   const file = id => `desert_ride/${DESERT_SE[id]}${DESERT_SE[id].includes(".") ? "" : ".bgm"}`;
   const ready = () => Promise.all(Object.keys(DESERT_SE).map(id => loadSeBuffer(file(id))));
+  /** 効果音を全部読み終えているか（音を出せない間は読みに行かないので、待つ必要もない）。 */
+  const isReady = () => !ctx || Object.keys(DESERT_SE).every(id => seBuffers.has(file(id)));
   let levels = desertLoopLevels();
   let zaps = 0, lastZap = "";
   function play(id, gain = 0.65) {
@@ -188,7 +190,7 @@ export function createDesertRideSe() {
   }
   /** 今のループの音量と、鳴らした「ビリッ」の数（検査用。音が出せない環境でも、鳴らすつもりの音が分かる）。 */
   const loopLevels = () => ({ ...Object.fromEntries(Object.entries(levels).map(([id, { gain }]) => [id, gain])), zaps });
-  return { ready, play, motion, zap, stop, dispose, loopLevels };
+  return { ready, isReady, play, motion, zap, stop, dispose, loopLevels };
 }
 
 // ---------------------------------------------------------------- ミニゲームの仮SE
@@ -806,10 +808,14 @@ const TEMPO_BGM = new Set(["bgm_camel_race", "bgm_ethnic05", "bgm_ethnic08", "bg
 // 2026-11-11 オーナー「ブーストするとBGM止まったりもバグ」: iPhone の Safari は、再生倍率や preservesPitch を書くたびに
 // 音の処理を作り直し、短い間に何度も変えると曲が途切れたり止まったりする。毎フレーム書き直していたのをやめ、
 // 0.01 刻みで値が変わった時だけ書く。変えた拍子に止まっていたら、同じ所から続ける。
+// 指で操作する端末（スマホ・タブレット）では曲の速さを変えない（2026-11-11 オーナー「ラクダレースもサンドボードも加速すると処理重い」
+// 「ラクダもBGM止まった」）。音程を保ったまま速さを変える処理は iPhone では重く、加速している間ずっと処理を食い、変えた拍子に
+// 曲が止まることもある。速さの手応えはブースト・ムチの効果音で出す。PC（マウス）では今までどおり速くする。
+const tempoAllowed = () => !(typeof matchMedia === "function" && matchMedia("(pointer: coarse)").matches);
 function applyBgmPlaybackRate() {
   if (!currentEl || currentKey === "bgm_continue_urgent") return;
   const el = currentEl;
-  const rate = TEMPO_BGM.has(currentKey) ? Math.round(bgmTempo * 100) / 100 : 1;
+  const rate = TEMPO_BGM.has(currentKey) && tempoAllowed() ? Math.round(bgmTempo * 100) / 100 : 1;
   if (el.preservesPitch !== true) el.preservesPitch = true;
   if (Math.abs(el.playbackRate - rate) < 0.001) return;
   const wasPlaying = !el.paused;
