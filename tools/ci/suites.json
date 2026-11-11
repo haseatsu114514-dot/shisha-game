@@ -4465,25 +4465,53 @@
     },
     {
       "id": "look",
-      "title": "見た目の様式（現行／新版／DS風）の既定と章による制限",
+      "title": "見た目の様式（新版／旧版／DS風）の既定・章による制限・起動時の移行",
       "kind": "quick",
       "run": ["node remake/test/look.mjs"]
     },
     {
-      "id": "look-neo",
-      "title": "新版: 会話の帯・右上の操作の札・選択肢の収まりと、現行へ戻した時に痕跡が残らないこと",
+      "id": "look-default",
+      "title": "見た目の様式の既定: プレイヤーの端末は新版・自動操作のブラウザは旧版・選び直しの保存と起動時の移行",
       "kind": "browser",
-      "weight": 1.2,
-      "timeout": 5,
+      "weight": 0.4,
+      "timeout": 4,
+      "paths": [
+        "remake/js/core/look.js",
+        "remake/js/looks/**",
+        "remake/js/main.js",
+        "remake/js/core/state.js",
+        "remake/js/scenes/title.js",
+        "remake/test/browser/look_default.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/look_default.mjs"
+      ]
+    },
+    {
+      "id": "look-neo",
+      "title": "新版: 会話の帯と操作の札・地図とHUD・MENU・モーダル・タイトルの収まりと、現行へ戻した時に痕跡が残らないこと",
+      "kind": "browser",
+      "weight": 3.2,
+      "timeout": 9,
       "paths": [
         "remake/css/look-neo.css",
         "remake/js/looks/**",
         "remake/js/core/look.js",
         "remake/css/vn.css",
         "remake/css/phone-density.css",
+        "remake/css/daily.css",
         "remake/css/daily-menu.css",
+        "remake/css/settings.css",
+        "remake/css/ui-paper.css",
+        "remake/css/store-logos.css",
+        "remake/css/facility-icons.css",
         "remake/js/vn/engine.js",
+        "remake/js/daily/map.js",
+        "remake/js/daily/hud.js",
+        "remake/js/daily/menu.js",
         "remake/js/scenes/title.js",
+        "remake/js/scenes/saves.js",
+        "remake/js/core/ui.js",
         "remake/test/browser/look_neo.mjs"
       ],
       "run": [
@@ -4492,10 +4520,10 @@
     },
     {
       "id": "look-retro",
-      "title": "DS風: 縦持ちの2画面・会話と地図の中継・未対応の場面と他章では現行のまま",
+      "title": "DS風: 縦持ちの2画面・ドット絵の上画面・会話と地図の中継・場面転換と登場カットイン・未対応の場面と他章では現行のまま",
       "kind": "browser",
-      "weight": 1.2,
-      "timeout": 5,
+      "weight": 1.8,
+      "timeout": 6,
       "paths": [
         "remake/css/look-retro.css",
         "remake/js/looks/**",
@@ -4504,6 +4532,8 @@
         "remake/js/vn/engine.js",
         "remake/js/daily/map.js",
         "remake/js/scenes/title.js",
+        "remake/js/core/ui.js",
+        "remake/css/daily.css",
         "remake/test/browser/look_retro.mjs"
       ],
       "run": [
