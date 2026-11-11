@@ -1,5 +1,5 @@
 {
-  "comment": "第3・4章の任意前夜デート。story_routes.jsonとstory-routes.jsの条件を通して呼ぶ。第3章はch3.js、第4章はch4.jsの前夜に接続済み（実際に同じ場所にいる恋人だけ）。stayの帰り道は第3章の大会が終わったか（tournament_finished 3）で、東京前夜のmukaiの裏口と、ドバイ前夜の宿のロビーに分ける。あげはは第4章だけなので宿のロビー。能力・大会加点なし。",
+  "comment": "第3・4章の任意前夜デート。story_routes.jsonとstory-routes.jsの条件を通して呼ぶ。第3章はch3.js、第4章はch4.jsの前夜に接続済み（実際に同じ場所にいる恋人だけ）。stayの帰り道は第3章の大会が終わったか（tournament_finished 3）で、東京前夜のmukaiの裏口と、ドバイ前夜の宿のロビーに分ける。あげはは第4章だけなので宿のロビー。能力・大会加点なし。homeの別れ際は人ごとに書き分ける。凛想・サメちゃん・ひよりは持ち物が章で違うので、stayと同じ条件で東京（home_tokyo）とドバイ（home_dubai）に分ける。",
   "dialogues": [
     {
       "dialogue_id": "tournament_date_tsumugi",
@@ -117,7 +117,7 @@
           {
             "speaker": "",
             "face": "",
-            "text": "帰り道の角で、手を振った。明日の話はそれだけで足りた。"
+            "text": "つむぎは描きかけのページの角を小さく折って、握っていたほうの手を振った。"
           }
         ],
         "stay_tokyo": [
@@ -257,7 +257,7 @@
           {
             "speaker": "",
             "face": "",
-            "text": "帰り道の角で、手を振った。明日の話はそれだけで足りた。"
+            "text": "角まで、栞さんは俺の袖をつまんで歩いた。離す時は、指を一本ずつだった。"
           }
         ],
         "stay_tokyo": [
@@ -395,9 +395,25 @@
             "text": "会えて、うれしかったです"
           },
           {
+            "type": "condition",
+            "condition_type": "tournament_finished",
+            "tournament_chapter": 3,
+            "next_true": "home_dubai",
+            "next_false": "home_tokyo"
+          }
+        ],
+        "home_tokyo": [
+          {
             "speaker": "",
             "face": "",
-            "text": "帰り道の角で、手を振った。明日の話はそれだけで足りた。"
+            "text": "別れ際、凛想さんは絆創膏をもう一枚、俺の鞄の外ポケットに差し込んだ。"
+          }
+        ],
+        "home_dubai": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "別れ際、凛想さんはのど飴をひと粒、黙って俺の手のひらに置いた。"
           }
         ],
         "stay_tokyo": [
@@ -494,7 +510,7 @@
           {
             "speaker": "",
             "face": "",
-            "text": "帰り道の角で、手を振った。明日の話はそれだけで足りた。"
+            "text": "あげはは手を離す前に、一度だけ強く握った。震えたままの指で、ピースを作って見せた。"
           }
         ]
       }
@@ -625,7 +641,7 @@
           {
             "speaker": "",
             "face": "",
-            "text": "帰り道の角で、手を振った。明日の話はそれだけで足りた。"
+            "text": "ましろちゃんは空いたカップを二つ重ねて持ち、もう片方の手をゆっくり振った。"
           }
         ],
         "stay_tokyo": [
@@ -770,9 +786,25 @@
             "text": "お土産、大事にします。会えてよかったです"
           },
           {
+            "type": "condition",
+            "condition_type": "tournament_finished",
+            "tournament_chapter": 3,
+            "next_true": "home_dubai",
+            "next_false": "home_tokyo"
+          }
+        ],
+        "home_tokyo": [
+          {
             "speaker": "",
             "face": "",
-            "text": "帰り道の角で、手を振った。明日の話はそれだけで足りた。"
+            "text": "サメちゃんが手を離すと、コロちゃんが先にお辞儀をした。本人は、少し遅れて手を振った。"
+          }
+        ],
+        "home_dubai": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "サメちゃんは紙袋の底を一度確かめて、口を折り直した。それから、自分の手を振った。"
           }
         ],
         "stay_tokyo": [
@@ -917,9 +949,25 @@
             "text": "会えて、うれしかったです"
           },
           {
+            "type": "condition",
+            "condition_type": "tournament_finished",
+            "tournament_chapter": 3,
+            "next_true": "home_dubai",
+            "next_false": "home_tokyo"
+          }
+        ],
+        "home_tokyo": [
+          {
             "speaker": "",
             "face": "",
-            "text": "帰り道の角で、手を振った。明日の話はそれだけで足りた。"
+            "text": "ひよりさんは旅程表の空いた枠に小さく丸を付けてから、儚くない速さで手を振った。"
+          }
+        ],
+        "home_dubai": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "ひよりさんは俺に着せた上着の袖口を整えてから、儚くない速さで手を振った。"
           }
         ],
         "stay_tokyo": [

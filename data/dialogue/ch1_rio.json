@@ -1504,7 +1504,7 @@
         {
           "speaker": "rio",
           "face": "smile",
-          "text": "……ずるいね、モルモットくんは。そういうこと、さらっと言うんだから"
+          "text": "……ずるいね、モルモットくんは。今の顔、見なかったことにしといて"
         },
         {
           "speaker": "rio",
@@ -1545,7 +1545,7 @@
     },
     {
       "dialogue_id": "ch1_rio_lot_return",
-      "comment": "#3081 物語系の一度きり。試作回で見送った名前の無い試作品が戻る。場所は夜の2階。固有会話6本・試作回・ブルーベリーの土産話のあと、spots.js が一度だけ再生する。",
+      "comment": "#3081 物語系の一度きり。試作回で見送った名前の無い試作品が戻る。低い熱なら通ると確かめて「条件つき」に書き換え、仮の呼び名の欄で「名前を付けると情が移る」という凛想の距離の取り方を見せる（2026-11-11 講評C11で、線引きの実演から中身を替えた）。場所は夜の2階。固有会話6本・試作回・ブルーベリーの土産話のあと、spots.js が一度だけ再生する。",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_fookah_showroom.png",
         "topic": "見送った煙"
@@ -1592,11 +1592,6 @@
           "text": "凛想さんはホースを自分の側へ寄せた。一口、二口と、間を置いて吸う"
         },
         {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "（吐いてから、だ。口を開かない）"
-        },
-        {
           "speaker": "",
           "face": "",
           "text": "三口目でも、眉は寄らなかった"
@@ -1604,47 +1599,52 @@
         {
           "speaker": "rio",
           "face": "serious",
-          "text": "……低い熱のままなら、引っかからない"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "この前は、そこで眉が寄ったままでした"
-        },
-        {
-          "speaker": "rio",
-          "face": "smile",
-          "text": "よく見てるね。私の眉なんか"
-        },
-        {
-          "speaker": "rio",
-          "face": "serious",
-          "text": "でも、店の炭がいつもこの低さだとは限らない"
-        },
-        {
-          "speaker": "rio",
-          "face": "serious",
-          "text": "三口目で嫌われる葉を、一口目の良さで通したくないの"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "じゃあ、見送りのままですか"
-        },
-        {
-          "speaker": "rio",
-          "face": "normal",
-          "text": "欄は「条件つき」に書き換える。熱を守れる店にだけ出す"
-        },
-        {
-          "speaker": "rio",
-          "face": "smile",
-          "text": "線の内側に、戻ってきただけだよ"
+          "text": "……低い熱のままなら、引っかからない。欄は「条件つき」に書き換える"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "凛想さんは短く書いて、袋の口を閉じた。棚ではなく、デスクの端へ戻す"
+          "text": "短く書いたペンが、その下の行で止まった。「仮称」と刷ってある欄だ"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "番号だと電話で話しにくいから、呼び名を付けろってさ。本国が"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "凛想さんが、付けるんですか"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "付けない。いつも、番号のまま返してる"
+        },
+        {
+          "speaker": "rio",
+          "face": "serious",
+          "text": "名前を付けると、情が移るの。止めるときに、手が鈍る"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "俺は、会ってすぐモルモットでしたけど"
+        },
+        {
+          "speaker": "rio",
+          "face": "surprise",
+          "text": "……それは"
+        },
+        {
+          "speaker": "rio",
+          "face": "smug",
+          "text": "君は、止める予定がなかったからね。最初から"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "言ってから、凛想さんはクリップボードで口元を隠した。目尻だけが、隠れていない"
         },
         {
           "speaker": "rio",
@@ -1679,12 +1679,12 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "……喉、引っかかりません"
+          "text": "……喉、引っかかりません。この前より、ずっと静かです"
         },
         {
           "speaker": "rio",
           "face": "smile",
-          "text": "でしょ。君は待ってくれたから、報告は短くていい"
+          "text": "ふうん、「静かなほう」ね。……欄の端に、鉛筆で書いとく。ここだけの呼び名"
         },
         {
           "type": "apply",
@@ -1835,126 +1835,113 @@
     },
     {
       "dialogue_id": "ch1_rio_unsigned",
-      "comment": "#3081 物語系の一度きり。吸う前の署名はしない。場所は夜の2階。名前の欄の次の来店で一度だけ。",
+      "comment": "#3081 物語系の一度きり。用件なしで誘う一行を送れずにいる凛想（2026-11-11 講評C11で、吸う前の署名の実演から中身を替えた。正本「仕事の感想を持ってくるモニターから、業務外でも会いたい相手へ」）。恋人なら言い方が変わる（lover）。場所は夜の2階。名前の欄の次の来店で一度だけ。",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_fookah_showroom.png",
-        "topic": "吸う前の署名"
+        "topic": "用件のない誘い"
       },
       "lines": [
         {
           "speaker": "",
           "face": "",
-          "text": "作業台に、署名を求める紙が積んであった"
+          "text": "作業台には、袋が一つも出ていなかった"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "隣の袋は封のままで、ペンだけが蓋を外されている"
+          "text": "凛想さんはスマホを持ったまま、階段を上がってきた俺を見て、指を止めた"
+        },
+        {
+          "speaker": "rio",
+          "face": "surprise",
+          "text": "……来たんだ。今、送るところだったのに"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "俺に、ですか"
         },
         {
           "speaker": "rio",
           "face": "normal",
-          "text": "ん、悪いところに来たね"
+          "text": "うん。『今夜、寄れる？』まで打って、その先で止まってた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "その先？"
         },
         {
           "speaker": "rio",
           "face": "smug",
-          "text": "今夜の私、ペンが先に走りたがってる。止めてくれる？"
-        },
-        {
-          "speaker": "hajime",
-          "face": "surprise",
-          "text": "俺が、ですか"
-        },
-        {
-          "speaker": "rio",
-          "face": "serious",
-          "text": "署名だけ先にくれって紙が来てるの。ロットを動かすには、私の名前が要るらしい"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "いつもは、先に吸うんじゃないんですか"
-        },
-        {
-          "speaker": "rio",
-          "face": "smile",
-          "text": "そう、それ。その一言が欲しかった"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "凛想さんはペンを置き、封を切って、自分から吸った"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "一口目は甘い。二口目で、香りの角が立った"
-        },
-        {
-          "speaker": "rio",
-          "face": "serious",
-          "text": "……二口目で、甘いところが荒れてる。これ、通さない"
+          "text": "用件。サンプルが届いたとか、確かめたいロットがあるとか"
         },
         {
           "speaker": "rio",
           "face": "normal",
-          "text": "吸ってないものに、私の名前は乗せない"
-        },
-        {
-          "speaker": "rio",
-          "face": "serious",
-          "text": "一口で決めた書類は、あとから喉が覚えてるよ"
+          "text": "今日は、どれも無いの。無いものは、書けないでしょ"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "俺も、味を見る前には出したくないです。tonariでも、同じです"
-        },
-        {
-          "speaker": "rio",
-          "face": "smile",
-          "text": "ふうん。机が違うだけで、線は同じね"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "蓋を外したままのペンが、こつん、と俺の額をつついた"
-        },
-        {
-          "speaker": "rio",
-          "face": "smug",
-          "text": "いい子。止めてくれたお礼"
+          "text": "（画面は、まだ光っている。送信の上で、親指だけが浮いていた）"
         },
         {
           "speaker": "hajime",
-          "face": "surprise",
-          "text": "……インク、ついてませんよね"
+          "face": "normal",
+          "text": "用がなくても、来ますよ。今日みたいに"
         },
         {
-          "speaker": "rio",
-          "face": "smile",
-          "text": "ついてたら、君に私のサインが入ったってことで"
+          "type": "condition",
+          "condition_type": "lover",
+          "char_id": "rio",
+          "next_true": "unsigned_lover",
+          "next_false": "unsigned_plain"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "紙の束は、署名のないまま封筒へ戻った"
+          "text": "凛想さんは打ちかけの一行を消さずに、画面をこちらへ向けた"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "『今夜、寄れる？』。送信は、まだ押されていない"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "寄れます。……もう、来てますけど"
+        },
+        {
+          "speaker": "rio",
+          "face": "smile",
+          "text": "ふふ。返事が先に届くの、初めて"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "親指が、送信を押した。俺のポケットで、スマホが一度だけ震える"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "作業台の隅に、ブルーベリーの一台が組んであった。吸い口は、二つ出ている"
         },
         {
           "speaker": "rio",
           "face": "normal",
-          "text": "……待たせてごめんね。魔女は、先に肺で確かめる人なの"
+          "text": "座って。今日は、感想を取らないから"
         },
         {
           "speaker": "hajime",
-          "face": "smile",
-          "text": "その順番だから、信用できます"
+          "face": "normal",
+          "text": "じゃあ、吸うだけで"
         },
         {
           "speaker": "rio",
           "face": "smile",
-          "text": "……今の順番は、二人だけの話にしておく"
+          "text": "うん。……次は、押してから待ってみる"
         },
         {
           "type": "apply",
@@ -1962,7 +1949,33 @@
             "sense": 1
           }
         }
-      ]
+      ],
+      "branches": {
+        "unsigned_plain": [
+          {
+            "speaker": "rio",
+            "face": "normal",
+            "text": "……そう。なら、止まってた分だけ損したね"
+          },
+          {
+            "speaker": "rio",
+            "face": "serious",
+            "text": "用件なしで誘って断られたら、次の便まで口実がないからね"
+          }
+        ],
+        "unsigned_lover": [
+          {
+            "speaker": "rio",
+            "face": "normal",
+            "text": "……知ってる。それでも、打つたびに用件を探す癖が抜けないの"
+          },
+          {
+            "speaker": "rio",
+            "face": "smile",
+            "text": "恋人を呼ぶのに、理由の欄はいらないのにね"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "ch1_rio_practice_note",
@@ -2082,7 +2095,7 @@
     },
     {
       "dialogue_id": "ch1_rio_strip_spill",
-      "comment": "#3081 物語系の一度きり。試香紙が開いた袋に落ち、その袋は今日は判断しない。場所は夜の2階。練習の記録の次の来店で一度だけ。",
+      "comment": "#3081 物語系の一度きり。試香紙が開いた袋に落ち、その袋は今日は判断しない。そこから、香りを扱うために爪も香水も付けない凛想の、仕事の外で塗ってみたい色の話へ（2026-11-11 講評C11で、線引きの実演から中身を替えた）。場所は夜の2階。練習の記録の次の来店で一度だけ。",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_fookah_showroom.png",
         "topic": "落ちた試香紙"
@@ -2106,7 +2119,7 @@
         {
           "speaker": "rio",
           "face": "serious",
-          "text": "……触らないで"
+          "text": "……触らないで。紙の匂いが移った袋は、今日はもう判断しない"
         },
         {
           "speaker": "hajime",
@@ -2116,77 +2129,77 @@
         {
           "speaker": "rio",
           "face": "normal",
-          "text": "君が悪いんじゃない。今の、紙の匂いが葉に移る"
-        },
-        {
-          "speaker": "rio",
-          "face": "normal",
-          "text": "落ちた時点で、今日の鼻には分からない"
+          "text": "君が悪いんじゃないよ。落としたのは、私"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "凛想さんは俺の手を離さないまま、片手で袋の口を閉じた"
-        },
-        {
-          "speaker": "rio",
-          "face": "serious",
-          "text": "葉の匂いなのか、紙の匂いなのか。混ざったものは、判断しない"
+          "text": "袋の口を閉じても、凛想さんの手は俺の手首に乗ったままだった"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "あの……手"
+          "text": "（爪に、何も塗っていない。そういえば、いつもそうだ）"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "凛想さん、爪はいつも、そのままなんですね"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "ん、塗ると匂いが乗るからね。香水も、ハンドクリームも同じ"
         },
         {
           "speaker": "rio",
           "face": "smug",
-          "text": "ん？ ……ああ、つかんだままだった"
-        },
-        {
-          "speaker": "rio",
-          "face": "smile",
-          "text": "紙に触ってないか、確かめてたの。……そういうことにしといて"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "手を離すかわりに、凛想さんは俺の指先へ鼻を寄せた"
-        },
-        {
-          "speaker": "rio",
-          "face": "normal",
-          "text": "……うん、移ってない。君の指は、今日も無臭"
+          "text": "香りを売ってるのに、自分は無臭。変な仕事でしょ"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（指より、顔のほうがよっぽど熱い）"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "胸ポケットに挿しておけば、落ちなかったんじゃ"
-        },
-        {
-          "speaker": "rio",
-          "face": "normal",
-          "text": "挿さないの。シャツに残ると、次の袋まで連れて歩くから"
-        },
-        {
-          "speaker": "rio",
-          "face": "smile",
-          "text": "紙は、この板の上だけ"
-        },
-        {
-          "speaker": "rio",
-          "face": "serious",
-          "text": "今日のこの袋は、無し。次に嗅ぐとき、別の一口にする"
+          "text": "塗ってみたい色、ないんですか"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "閉じた袋は棚に戻さず、デスクの端へ寄せられた"
+          "text": "凛想さんは自分の指先を、初めて見るもののように眺めた"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "……あるよ。ブルーベリーの皮みたいな、暗い青"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "休みが二日続いたら、って思うんだけど。なかなか続かなくてね"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "続いたら、教えてください。見に行きます"
+        },
+        {
+          "speaker": "rio",
+          "face": "surprise",
+          "text": "……爪を？ わざわざ"
+        },
+        {
+          "speaker": "rio",
+          "face": "smile",
+          "text": "ふふ。じゃあ、連休の申請理由に書いとく。「爪」って"
+        },
+        {
+          "speaker": "rio",
+          "face": "smug",
+          "text": "見に来た君の指にも、一本だけ塗ってあげる、……冗談だよ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "手首から、ようやく手が離れた。閉じた袋は棚に戻さず、デスクの端へ寄せられる"
         },
         {
           "type": "apply",
@@ -2198,7 +2211,7 @@
     },
     {
       "dialogue_id": "ch1_rio_tired_nose",
-      "comment": "#3081 物語系の一度きり。豆で鼻を戻したあと、残った袋には印をつけない。場所は夜の2階。落ちた試香紙の次の来店で一度だけ。",
+      "comment": "#3081 物語系の一度きり。豆で鼻を戻しても甘さが抜けない夜、残った袋には印をつけず、代わりに「ただ吸っている人の顔」を見ようとする（2026-11-11 講評C11で、線引きの実演から中身を替えた。核は ch1_rio_fourth「吸ってる人の顔だけ、知らない」）。はじめの味の感想は書かない（第2章の味の不調と食い違わせない）。場所は夜の2階。落ちた試香紙の次の来店で一度だけ。",
       "metadata": {
         "bg": "res://assets/backgrounds/bg_fookah_showroom.png",
         "topic": "鼻の限界"
@@ -2227,22 +2240,7 @@
         {
           "speaker": "rio",
           "face": "serious",
-          "text": "残ってる。だから、印はつけない"
-        },
-        {
-          "speaker": "rio",
-          "face": "normal",
-          "text": "同じ匂いに慣れた鼻じゃ、通したのか止めたのか、私にも分からない"
-        },
-        {
-          "speaker": "rio",
-          "face": "serious",
-          "text": "豆を嗅いでも甘いのが残るなら、今日の判断は信用しないの"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "（試香の合間に、豆で鼻を戻す人なんだ）"
+          "text": "残ってる。でも、豆を嗅いでも甘いのが抜けない。今日の鼻は、もう信用しない"
         },
         {
           "speaker": "",
@@ -2252,57 +2250,72 @@
         {
           "speaker": "rio",
           "face": "normal",
-          "text": "ん……三袋続くと、さすがに首にくるね"
+          "text": "ん……鼻が休みなら、今夜は目を使おうかな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "目、ですか"
         },
         {
           "speaker": "rio",
           "face": "smug",
-          "text": "揉みましょうか、とか言わないの？ ……冗談だよ"
-        },
-        {
-          "speaker": "hajime",
-          "face": "surprise",
-          "text": "い、言ってません"
-        },
-        {
-          "speaker": "rio",
-          "face": "smile",
-          "text": "知ってる。言いそうな顔はしてた"
+          "text": "私物のブルーベリー。君が吸って、私は顔を見る。仕事じゃないよ"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "最後の袋は、印のないままデスクへ戻された"
+          "text": "ホースを受け取って吸う。凛想さんは頬杖をついて、まっすぐこっちを見ていた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……そんなに見られると、吸いにくいです"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "我慢して。試香の顔は何度も見たけど、ただ吸ってる顔は知らないの"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "二口目。煙を吐くと、凛想さんの眉が少しだけ寄った"
+        },
+        {
+          "speaker": "rio",
+          "face": "serious",
+          "text": "……分からない。今の、休めてる顔？ それとも、気をつかってる顔？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "休めてる顔です。肩が、さっきより下がってるので"
+        },
+        {
+          "speaker": "rio",
+          "face": "smile",
+          "text": "ふうん。顔だけじゃ読めないんだ。……訊けば、一言で済むのにね"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "鼻なら一口で分かるのに。人の顔は、まだ初心者"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "印をつけないのは、止めるのとは違うんですか"
+          "text": "練習なら、付き合いますよ。吸うだけでいいなら"
         },
         {
           "speaker": "rio",
-          "face": "normal",
-          "text": "違う。止めるのは、吸ってダメだと分かったとき"
-        },
-        {
-          "speaker": "rio",
-          "face": "smile",
-          "text": "今日のは、吸う鼻の方が先に限界だっただけ"
-        },
-        {
-          "speaker": "rio",
-          "face": "normal",
-          "text": "……君も、鼻が疲れたら席を立っていい。無理に最後まで吸わなくていいから"
-        },
-        {
-          "speaker": "rio",
-          "face": "normal",
-          "text": "ただ、帰るときは声をかけて"
+          "face": "smug",
+          "text": "言ったね。鼻が疲れた夜は、君の顔を借りる"
         },
         {
           "speaker": "rio",
           "face": "smile",
-          "text": "黙っていなくなられるの、ちょっと寂しいから"
+          "text": "帰るときは声をかけて。黙っていなくなられるの、ちょっと寂しいから"
         },
         {
           "type": "apply",

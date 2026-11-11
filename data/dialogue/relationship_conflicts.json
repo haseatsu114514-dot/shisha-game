@@ -257,7 +257,7 @@
         {
           "speaker": "minto",
           "face": "ura_sad",
-          "text": "……それを、この人たちには言ってなかったんだ"
+          "text": "……それを、この人たちには、自分の口で言ってなかったんだ"
         },
         {
           "speaker": "minto",
@@ -282,7 +282,7 @@
         {
           "speaker": "tsumugi",
           "face": "normal",
-          "text": "……私、知らなかったです"
+          "text": "……ちゃんと聞くのは、初めてです"
         },
         {
           "speaker": "tsumugi",
@@ -565,6 +565,16 @@
         {
           "speaker": "hajime",
           "face": "normal",
+          "text": "……栞さんといる時の俺は、嘘じゃなかった"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_normal",
+          "text": "本当なら、私の前で言えたよ。年のこと、私は自分の口で言った"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
           "text": "（言い返せることは、何もなかった）"
         },
         {
@@ -631,6 +641,16 @@
         {
           "speaker": "hajime",
           "face": "normal",
+          "text": "……でも、隣で見てた時の俺は、嘘じゃなかった"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "……本当なら、私の前でも言えたはずです"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
           "text": "つむぎちゃんは見せてくれたのに、俺は見せなかった、……ごめん"
         },
         {
@@ -683,6 +703,16 @@
           "speaker": "hajime",
           "face": "normal",
           "text": "凛想さんがどう思うか、聞こうともしませんでした"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "でも、凛想さんといる時の俺は、どれも嘘じゃなかったです"
+        },
+        {
+          "speaker": "rio",
+          "face": "serious",
+          "text": "本当なら、先に出せたはずだよ。同意書みたいに、私が読める形で"
         },
         {
           "speaker": "rio",
@@ -758,6 +788,16 @@
         {
           "speaker": "hajime",
           "face": "normal",
+          "text": "……でも、あげはといる時の俺は、嘘じゃなかった"
+        },
+        {
+          "speaker": "ageha",
+          "face": "serious",
+          "text": "嘘じゃないなら、言えたっしょ。うち、手、震えながら言ったよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
           "text": "……ごめん"
         },
         {
@@ -815,6 +855,16 @@
           "speaker": "hajime",
           "face": "normal",
           "text": "……してた。座っていいって言葉を、許してもらえたことにしてた"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "でも、ましろちゃんの隣にいた俺は、嘘じゃなかったよ"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "……嘘じゃないなら、隣で言えたよねぇ。黙ってていい席じゃ、ないよぉ"
         },
         {
           "speaker": "hajime",
@@ -891,6 +941,16 @@
         {
           "speaker": "hajime",
           "face": "normal",
+          "text": "でも、おはようを送った朝の俺は、嘘じゃありませんでした"
+        },
+        {
+          "speaker": "samechan",
+          "face": "serious",
+          "text": "まことなら、わしの前で言えたはずじゃ。隠した誓いを、誓いとは呼ばぬ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
           "text": "信じてくれてるのに、嫌われるのが怖くて、隠していました。ごめんなさい"
         },
         {
@@ -943,6 +1003,21 @@
           "speaker": "hajime",
           "face": "normal",
           "text": "……ひよりさんなら平気な顔で受け止めてくれるって、当てにしてました"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "でも、ひよりさんといた時の俺は、嘘じゃなかったです"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "serious",
+          "text": "私の儚いのはね、聞かれたら種を明かせるの。はじめくんのは、明かせた？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……明かせませんでした"
         },
         {
           "speaker": "hajime",
@@ -1005,7 +1080,17 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "本気でした。だから、ほかの人のことも言えなかった。それは、俺の逃げです"
+          "text": "本気でした。砂丘にいた俺は、嘘じゃなかったです"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "本気なら、画面ごしでも言えたよ。毎日、ちゃんとつながってたのに"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……はい。ほかの人のことを言えなかったのは、俺の逃げです"
         },
         {
           "speaker": "hajime",
