@@ -1,7 +1,7 @@
 // DESERT RIDE（第4章ドバイ・サンドボード）の規則: コースの決定性と公平さ、ジャンプ・着地・転倒、採点と評価の境目。
 import assert from "node:assert/strict";
 import test from "node:test";
-import { COURSE, SPEED, JUMP, FALL, SCORE, SPIN, BOOST, STEER, CARVE, EDGE, RULES_VERSION, RANKS, DEFAULT_SEED, COURSE_PACKS, CURVE_SCALE, generateCourse, practiceCourse, curveAt, headingAt, offsetAt, lateralAt, upcomingCurve, buildCourse, pickCourse, createGame, step, press, boost, chargeBoost, canRecover,
+import { COURSE, SPEED, JUMP, FALL, SCORE, SPIN, BOOST, STEER, CARVE, EDGE, RUBBER, rubberCaps, RULES_VERSION, RANKS, DEFAULT_SEED, COURSE_PACKS, CURVE_SCALE, generateCourse, practiceCourse, curveAt, headingAt, offsetAt, lateralAt, upcomingCurve, buildCourse, pickCourse, createGame, step, press, boost, chargeBoost, canRecover,
   summary, rankOf, readResult, botControl, botStep, nextBumpDistance, comboMultiplier, rivalRun, rivalAt, smashing, RIVALS, jumpPeak, jumpHeight } from "../js/minigames/desert-ride-model.js";
 
 const DT = 1 / 60;
@@ -814,5 +814,35 @@ test("Naru's rider art (Issue #3222) is rebuilt to the protagonist's scale with 
   for (const state of [{}, { vx: 0.5 }, { vx: -0.5 }, { air: 0.5, airTotal: 1, airKind: "big", landingPress: null }, { air: 0.2, airTotal: 1, airKind: "big", landingPress: 0.2 }, { fallT: 1 }]) {
     const pose = riderPose({ ...game, ...state });
     assert(DESERT_ART[pose.replace(/^rider/, "naruRider")], `Naru has art for ${pose}`);
+  }
+});
+
+test("a close race: the rival eases off when far ahead and catches up when far behind, but the result stays the rider's skill", () => {
+  // ずれの上限: 追いついた分は6割地点まで持てて、ゴール手前で 0。手加減は終盤に keep 秒まで戻す
+  assert.equal(rubberCaps(0).lead, RUBBER.lead); assert.equal(rubberCaps(RUBBER.holdUntil).lead, RUBBER.lead);
+  assert.equal(rubberCaps(RUBBER.settleAt).lead, 0); assert.equal(rubberCaps(1).lead, 0);
+  assert.equal(rubberCaps(0.5).lag, RUBBER.lag); assert(Math.abs(rubberCaps(1).lag - RUBBER.keep) < 1e-9);
+  for (const pack of COURSE_PACKS) {
+    const course = buildCourse({ id: pack.id });
+    for (const who of ["noor", "naru"]) {
+      const rival = rivalRun(course, { who });
+      for (const skill of ["expert", "perfect", "good", "none"]) {
+        const game = createGame(course, { rival }), memo = {};
+        let behindRaw = 0, behind = 0, maxDev = -Infinity, minDev = Infinity;
+        while (!game.finished && game.t < 200) {
+          botStep(game, skill, memo, DT);
+          const dev = game.rivalClock - game.t, p = game.z / course.length;
+          maxDev = Math.max(maxDev, dev - rubberCaps(p).lead); minDev = Math.min(minDev, dev + rubberCaps(Math.max(p, rivalAt(rival, game.rivalClock).z / course.length)).lag);
+          if (p < 0.85) { behindRaw = Math.min(behindRaw, game.z - rivalAt(rival, game.t).z); behind = Math.min(behind, game.z - rivalAt(rival, game.rivalClock).z); }
+        }
+        const label = `${pack.id} ${skill} vs ${who}`;
+        // 勝ち負けは記録どおりの相手と同じ（腕前で決まる）
+        assert.equal(game.race.won, game.finishTime < rival.finishTime, `${label}: the result is unchanged by the rubber band`);
+        assert(maxDev < 0.15 && minDev > -0.15, `${label}: the rival stays within its allowance (${maxDev.toFixed(2)}, ${minDev.toFixed(2)})`);
+        assert(behind >= behindRaw - 3, `${label}: the rival never runs further away than its recording (${behind.toFixed(1)} vs ${behindRaw.toFixed(1)} m)`);
+        // 手加減は最大 RUBBER.lag 秒分なので、大きく離された時は少なくとも 25m は待ってくれる
+        if (behindRaw < -80) assert(behind - behindRaw >= 25, `${label}: a rider left far behind sees the rival wait (${behind.toFixed(0)} vs ${behindRaw.toFixed(0)} m)`);
+      }
+    }
   }
 });
