@@ -46,6 +46,7 @@ import { CH5_SCENE_BG, CH5_SCENE_BGM, CH5_DEFAULT_BGM, CH5_PROLOGUE, CH5_MATCH_S
   chapterFivePostEndingPlan, chapterFivePostEndingUndecided, beginChapterFivePostEnding, chapterFivePostEndingNext,
   completeChapterFivePostEnding } from "./ch5-progress.js";
 import { readCycleMeta, recordTrueEndForRun } from "../core/cycle-meta.js";
+import { chapterFiveUnrecordedDialogue } from "./ch5-unrecorded.js";
 
 let session = null;
 const current = owner => session === owner && owner.active && owner.state === state;
@@ -163,7 +164,7 @@ async function openChapter(advance) {
 
 async function readScene(owner, id, { keepHud = false } = {}) {
   if (!current(owner)) return false;
-  const source = DB.dialogues[id];
+  const source = chapterFiveUnrecordedDialogue(state, DB.dialogues[id]);
   if (!source) throw new Error(`台本がありません: ${id}`);
   // 台本の metadata.bg は持ち込まず、ch5-progress.js の対応表（仮置き）で背景を決める。
   // 二本目の調整の行は、制作の後で実績に合わせて読む（ここでは外す）。
