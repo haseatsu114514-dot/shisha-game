@@ -616,8 +616,17 @@
       "kind": "browser",
       "weight": 1,
       "timeout": 5,
-      "paths": ["remake/js/minigames/ichidai*.js", "remake/js/daily/ichidai-table.js", "remake/js/ichidai-page.js", "remake/ichidai.html", "remake/css/ichidai.css", "remake/js/daily/tonari.js", "remake/test/browser/ichidai.mjs"],
+      "paths": ["remake/js/minigames/ichidai*.js", "remake/js/daily/ichidai-table.js", "remake/js/ichidai-page.js", "remake/ichidai.html", "remake/css/ichidai.css", "remake/css/ichidai-lines.css", "remake/js/daily/tonari.js", "remake/test/browser/ichidai.mjs", "remake/test/browser/ichidai_support.mjs"],
       "run": ["node remake/test/browser/ichidai.mjs"]
+    },
+    {
+      "id": "ichidai-modes",
+      "title": "Card game Ichidai Shobu: the guide (next-step hints, automatic cooling, burn-out marks) and the four-player table (rival faces, lines, target choice, ranking) (ICG52-54)",
+      "kind": "browser",
+      "weight": 1,
+      "timeout": 5,
+      "paths": ["remake/js/minigames/ichidai*.js", "remake/js/ichidai-page.js", "remake/ichidai.html", "remake/css/ichidai.css", "remake/css/ichidai-lines.css", "data/dialogue/ichidai_lines.json", "remake/test/browser/ichidai_modes.mjs", "remake/test/browser/ichidai_support.mjs"],
+      "run": ["node remake/test/browser/ichidai_modes.mjs"]
     },
     {
       "id": "dj-club",
