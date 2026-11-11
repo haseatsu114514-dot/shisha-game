@@ -22,7 +22,7 @@
 
 > 2026-11-11 ICG19: カードゲーム「一台勝負」のミニゲームに足す絵（卓1・裏面2・技16・イベント7・キッチンタイマー1）の[依頼文の説明](../../asset_sources/card_game/art-20261111/prompts.md)。文の正本は同じフォルダの `gen.py`（`--print <id>`）。枠・文字・数字はコードが描き、絵には描かない。葉・炭・コンロ・ボウル・HMD・人物は本編の正規の絵を使う。機材が写る器具3枚は `docs/shisha_reference.md` §4 に従う。置き場と受け取り後の手順は [README](../../asset_sources/card_game/README.md)。依頼の Issue は #3221。技16・イベント7・キッチンタイマー1 は 2026-11-11 に Codex の内蔵画像生成で作り採用済み（記録は `asset_sources/card_game/README.md`）。
 
-> 2026-11-11 TMG49: 専用ハガル（贈り物）と脚の無い器の作り直し23枚の依頼は [`asset_sources/hagal-bond-gifts-20261111/prompts.md`](../../asset_sources/hagal-bond-gifts-20261111/prompts.md)。オーナー「下がついてない皿みたいなのは生成ミスだから使わないで」→ `bowl_empty_clay.png`（素焼き）とファンネル型4枚は脚を足して同名で差し替え。専用ハガルは #504 の v1 で8人選定済み（ひよりだけ #497 で単体素材化済み）、残り7人は v1 シートから抜き出し、11人は正本の人物・贈り物の説明から新しく描く。見た目の基準は `assets/ui/making/bowl_empty_hiyori.png`。ハガルは「器＋細い脚」、脚の無い皿・浅い鉢にしない。
+> 2026-11-11 TMG49: 専用ハガル（贈り物）と脚の無い器の作り直し23枚の依頼は [`asset_sources/hagal-bond-gifts-20261111/prompts.md`](../../asset_sources/hagal-bond-gifts-20261111/prompts.md)（Codex へは [Issue #3327](https://github.com/haseatsu114514-dot/shisha-game/issues/3327)）。オーナー「下がついてない皿みたいなのは生成ミスだから使わないで」→ `bowl_empty_clay.png`（素焼き）とファンネル型4枚は脚を足して同名で差し替え。専用ハガルは #504 の v1 で8人選定済み（ひよりだけ #497 で単体素材化済み）、残り7人は v1 シートから抜き出し、11人は正本の人物・贈り物の説明から新しく描く。見た目の基準は `assets/ui/making/bowl_empty_hiyori.png`。ハガルは「器＋細い脚」、脚の無い皿・浅い鉢にしない。
 >
 > 2026-11-11 TMG44: 占いの札の表の絵19枚（占う相手ごとの大アルカナ。人物・顔・名前・文字なし）の Codex 用依頼は [Issue #3278](https://github.com/haseatsu114514-dot/shisha-game/issues/3278)。相手の登場カットインの絵柄は使わない（オーナー指示）。札の裏と表の枠は #3254 のもの。未生成。
 
