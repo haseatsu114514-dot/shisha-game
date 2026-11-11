@@ -57,7 +57,7 @@
 .ichi-taste { display: inline-flex; align-items: baseline; gap: 2px; padding: 0 6px; border-radius: 10px; background: #0f0819; border: 1px solid rgba(227, 189, 110, 0.5); font-size: 15px; font-weight: 900; color: var(--ichi-ember-hi); }
 .ichi-taste small { font-size: 12px; font-weight: 700; color: var(--ichi-dim); }
 .ichi-chip { display: inline-block; padding: 1px 9px; border-radius: 10px; background: rgba(21, 13, 34, 0.82); border: 1px solid rgba(201, 167, 230, 0.4); font-size: 13px; font-weight: 700; white-space: nowrap; }
-/* 追加コストの印（必要火力の丸の下、絵の左上に重ねる）。炭＝熱が下がる */
+/* 発動するために落とすものの印（必要火力の丸の下、絵の左上に重ねる）。「火力−2」「葉−1」 */
 .ichi-pay { position: absolute; z-index: 3; left: 0; top: 100%; margin-top: 2px; padding: 0 4px; border-radius: 6px; background: #8a2418; border: 1px solid #ff9c8c; color: #ffe2dc; font-size: 12px; font-weight: 900; line-height: 16px; white-space: nowrap; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.6); }
 .ichi-card-head:has(.ichi-pay) { z-index: 2; } /* 印は絵の上に重ねる */
 .ichi-card.s-mini .ichi-pay, .ichi-card.s-tiny .ichi-pay { display: none; }
@@ -154,14 +154,13 @@
 /* ── 炭ゾーンの札・炭焼き場の札 ── */
 .ichi-on { position: relative; display: block; transition: transform 0.16s var(--ease-out); }
 .ichi-board :is(.ichi-card, .ichi-back) { box-shadow: 0 3px 0 #0b0612, 0 9px 12px rgba(0, 0, 0, 0.55); }
-.ichi-coal-btn:not(:disabled):hover .ichi-on, .ichi-stove-coal.can:hover .ichi-card, .ichi-board .ichi-setting:hover .ichi-setting-card, .ichi-board .ichi-perm:hover .ichi-card { transform: translateZ(16px); }
+.ichi-coal-btn:not(:disabled):hover .ichi-on, .ichi-stove-coal.can:hover .ichi-card, .ichi-board .ichi-setting:hover .ichi-setting-card, .ichi-board .ichi-perm:hover .ichi-card { transform: translateY(-5px) scale(1.06); }
 .ichi-board :is(.ichi-setting-card, .ichi-perm .ichi-card) { transition: transform 0.16s var(--ease-out); }
 .ichi-on.is-up .ichi-card { box-shadow: 0 0 0 1px #ffb05c, 0 0 14px rgba(240, 138, 43, 0.8), 0 3px 0 #0b0612, 0 9px 12px rgba(0, 0, 0, 0.6); }
 .ichi-on.is-ember .ichi-back { box-shadow: inset 0 0 0 calc(var(--cw) * 0.04) rgba(227, 189, 110, 0.3), 0 0 9px rgba(200, 64, 47, 0.75), 0 3px 0 #0b0612, 0 9px 12px rgba(0, 0, 0, 0.55); }
 .ichi-on.is-ember::after { content: ""; position: absolute; left: 50%; top: 50%; width: 46%; aspect-ratio: 1; transform: translate(-50%, -50%); border-radius: 50%; background: radial-gradient(circle, rgba(255, 176, 92, 0.95), rgba(200, 64, 47, 0.7) 45%, transparent 70%); pointer-events: none; }
-.ichi-coal-btn { padding: 0; border: 0; background: none; border-radius: 6px; cursor: default; flex: none; }
-.ichi-coal-btn + .ichi-coal-btn { margin-left: var(--coal-gap, 6px); }
-.ichi-row.is-coals { gap: 0; }
+.ichi-coal-btn { position: relative; display: block; width: 100%; height: calc(var(--lv, 1) * 10%); flex: none; padding: 0; border: 0; background: none; border-radius: 6px; cursor: default; }
+.ichi-coal-btn > .ichi-on { position: absolute; left: 50%; top: 50%; translate: -50% -50%; rotate: -90deg; }
 .ichi-coal-btn:not(:disabled) { cursor: pointer; }
 .ichi-coal-btn.can { animation: ichi-pulse 1.2s ease-in-out infinite; }
 .ichi-coal-btn.is-sel { outline: 2px solid #fff; outline-offset: 2px; }
@@ -174,37 +173,55 @@
 .ichi-stove-coal.st-2 > .ichi-counter { background: var(--ichi-gold); color: #1d1206; border-color: #150d22; }
 .ichi-stove-coal.can { cursor: pointer; animation: ichi-pulse 1.3s ease-in-out infinite; }
 
-/* ── 炭焼き場 ➜ 火力ゾーン（自分）。炭焼き場で焼けた炭を火力ゾーンへのせる流れを、ひと続きの枠と矢印で見せる ── */
-.ichi-lane { display: grid; grid-template-columns: auto 30px minmax(0, 1fr); gap: 6px; align-items: stretch; min-width: 0; min-height: 0; }
+/* ── 火力ゾーン（卓の端に縦に積む柱）と、すぐ外側の判定のゲージ。1段＝熱1。自分は左端を手前から奥へ、相手は右端を奥から手前へ ──
+   積んだ高さが、ゲージの帯（主役の葉の適温・ジャスト★・焦げ）にそのまま当たる。札は横向きに重ねて積む（キューブ炭は2段ぶん） */
+.ichi-zone-box.is-coal { display: grid; grid-template-columns: 40px minmax(0, 1fr); grid-template-rows: minmax(0, 1fr); gap: 6px; padding: 16px 8px 8px; place-items: stretch; align-content: stretch; }
+.ichi-zone-box.is-coal.is-foe { grid-template-columns: minmax(0, 1fr) 40px; }
+.ichi-zone-box.is-coal.is-foe > .ichi-fire-gauge { order: 2; }
+.ichi-zone-box.is-coal .ichi-zone-tab { font-size: 15px; line-height: 19px; }
+.ichi-zone-box.is-coal.is-foe .ichi-zone-tab { left: auto; right: 10px; top: auto; bottom: 0; transform: translateY(50%); }
+.ichi-fire-gauge { display: flex; flex-direction: column-reverse; gap: 2px; min-height: 0; }
+.ichi-zone-box.is-coal.is-foe .ichi-fire-gauge { flex-direction: column; }
+.ichi-fire-gauge i { flex: 1; min-height: 0; display: grid; place-items: center; border-radius: 5px; font-style: normal; font-size: 17px; font-weight: 900; line-height: 1; color: rgba(0, 0, 0, 0.78); opacity: 0.42; }
+.ichi-fire-gauge i.is-lit { opacity: 1; }
+.ichi-fire-gauge i.is-now { opacity: 1; outline: 3px solid #fff; outline-offset: 0; z-index: 2; box-shadow: 0 0 14px rgba(255, 255, 255, 0.8); }
+.ichi-fire-gauge i.is-base { opacity: 1; outline: 3px dashed var(--ichi-ember-hi); outline-offset: 0; z-index: 1; }
+.ichi-fire-gauge i.is-judged { opacity: 1; box-shadow: 0 0 0 4px var(--ichi-ember), 0 0 14px var(--ichi-ember); z-index: 3; }
+.ichi-fire-gauge i.z-scorch { color: #fff; }
+.ichi-fire-stack { position: relative; display: flex; flex-direction: column-reverse; min-height: 0; border-radius: 8px; --cw: 54px;
+  background: repeating-linear-gradient(0deg, rgba(246, 241, 250, 0.07) 0 1px, transparent 1px 10%), rgba(8, 4, 14, 0.4); }
+.ichi-zone-box.is-coal.is-foe .ichi-fire-stack { flex-direction: column; }
+.ichi-zone-box.is-coal.is-foe .ichi-coal-btn > .ichi-on { rotate: 90deg; }
+.ichi-fire-stack .ichi-ghost { width: 100%; height: 10%; flex: none; padding: 0; gap: 4px; grid-auto-flow: column; border-radius: 8px; animation: ichi-pulse 1.2s ease-in-out infinite; }
+.ichi-fire-stack .ichi-ghost small { font-size: 13px; }
+/* 炭焼き場から火力ゾーンへ: 焼けた炭があると、柱の方を向いた矢印が光る */
 .ichi-row.is-stove { display: grid; grid-template-columns: repeat(2, auto); gap: 6px; }
-.ichi-game:is([data-phase="prep"], [data-phase="embers"]) .ichi-row.is-stove { gap: 4px; }
-.ichi-flow { display: grid; place-items: center; align-content: center; gap: 4px; color: rgba(246, 241, 250, 0.55); }
-.ichi-flow i { display: block; width: 26px; height: 34px; background: currentColor; clip-path: polygon(0 28%, 52% 28%, 52% 0, 100% 50%, 52% 100%, 52% 72%, 0 72%); }
-.ichi-flow small { font-size: 12px; font-weight: 700; color: inherit; writing-mode: vertical-rl; letter-spacing: 0.02em; }
-.ichi-flow.is-hot { color: var(--ichi-ember-hi); filter: drop-shadow(0 0 6px rgba(240, 138, 43, 0.9)); animation: ichi-pulse 1.3s ease-in-out infinite; }
-.ichi-zone-box.is-coal { grid-template-columns: auto minmax(0, 1fr); grid-template-rows: minmax(0, 1fr) auto; justify-items: start; column-gap: 10px; }
-.ichi-zone-box.is-coal > .ichi-mods { grid-column: 1 / -1; justify-self: center; }
+.ichi-flow { position: absolute; left: -9px; top: 50%; z-index: 3; width: 22px; height: 30px; margin-top: -15px; background: rgba(246, 241, 250, 0.4); clip-path: polygon(100% 28%, 48% 28%, 48% 0, 0 50%, 48% 100%, 48% 72%, 100% 72%); }
+.ichi-foe .ichi-flow { left: auto; right: -9px; rotate: 180deg; }
+.ichi-flow.is-hot { background: var(--ichi-ember-hi); filter: drop-shadow(0 0 6px rgba(240, 138, 43, 0.9)); animation: ichi-pulse 1.3s ease-in-out infinite; }
 .ichi-zone-box.is-target { border-color: var(--ichi-gold); box-shadow: inset 0 0 0 1px rgba(227, 189, 110, 0.5), 0 0 18px rgba(227, 189, 110, 0.35); }
-/* 火力の数: 使える火力 / 熱（＝火力ゾーンの札の数。表向きのキューブ炭は2） */
-.ichi-fire-count { display: grid; justify-items: center; align-content: center; min-width: 62px; padding: 6px 6px 8px; border-radius: 10px; background: rgba(8, 4, 14, 0.62); border: 1px solid rgba(255, 176, 92, 0.55); box-shadow: inset 0 0 14px rgba(240, 138, 43, 0.22); }
+/* 熱（＝火力）の読み（HUD 左）。大きい数字と、ふつうに吸われたときの判定熱・カードの残り・寄せや煽りの印 */
+.ichi-heat-read { position: absolute; left: 8px; top: 292px; width: 98px; display: grid; justify-items: center; gap: 4px; padding: 6px 4px 8px; border-radius: 12px; background: rgba(21, 13, 34, 0.78); border: 1px solid rgba(255, 176, 92, 0.5); box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5); }
+.ichi-heat-read .ichi-thermo-base { font-size: 13px; font-weight: 800; color: var(--ichi-ember-hi); white-space: nowrap; }
+.ichi-heat-read .ichi-mods { display: grid; justify-items: center; }
+.ichi-heat-read .ichi-chip { font-size: 12px; padding: 1px 5px; white-space: normal; text-align: center; }
+.ichi-fire-count { display: grid; justify-items: center; align-content: center; }
 .ichi-fire-count small { font-size: 13px; font-weight: 700; color: var(--ichi-ember-hi); }
 .ichi-fire-count b { font-size: 40px; font-weight: 900; line-height: 1; font-family: var(--font-dot); color: var(--ichi-ember-hi); text-shadow: 0 0 12px rgba(240, 138, 43, 0.75); }
-.ichi-card-left { display: inline-flex; align-items: center; gap: 3px; margin-top: 4px; padding: 1px 6px 1px 3px; border-radius: 8px; background: rgba(227, 189, 110, 0.18); border: 1px solid var(--ichi-gold); white-space: nowrap; }
+.ichi-card-left { display: inline-flex; align-items: center; gap: 3px; padding: 1px 4px 1px 3px; border-radius: 8px; background: rgba(227, 189, 110, 0.18); border: 1px solid var(--ichi-gold); white-space: nowrap; }
 .ichi-card-left small { font-size: 12px; font-weight: 800; color: #ffe7b8; }
 .ichi-card-left .ichi-back { width: 10px; height: 14px; }
 .ichi-card-left.is-used { background: rgba(0, 0, 0, 0.3); border-color: rgba(255, 255, 255, 0.2); }
 .ichi-card-left.is-used small { color: #9c8aab; }
-.ichi-game:is([data-phase="prep"], [data-phase="embers"]) .ichi-fire-count b { font-size: 30px; }
 /* 置き場（手札を選んだときだけ出る）: 火力ゾーンの「裏向きで置く」、炭焼き場の「ここに置く」 */
 .ichi-ghost { position: relative; display: grid; place-items: center; align-content: center; gap: 2px; width: var(--cw); height: calc(var(--cw) * 1.4); flex: none; padding: 2px; border-radius: calc(var(--cw) * 0.07);
   border: 2px dashed var(--ichi-gold); background: rgba(227, 189, 110, 0.12); color: var(--ichi-gold); cursor: pointer; animation: ichi-pulse 1.2s ease-in-out infinite; }
 .ichi-ghost b { font-size: 22px; font-weight: 900; line-height: 1; }
 .ichi-ghost small { font-size: 12px; font-weight: 700; line-height: 1.2; color: var(--ichi-gold); text-align: center; }
 .ichi-ghost:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
-.ichi-coal-btn + .ichi-ghost { margin-left: max(var(--coal-gap, 6px), 4px); }
 /* 置いたばかりの札は、卓の上に落ちて置かれる（飛んできた札が着くまで --land だけ待つ） */
 .ichi-on.is-new, .ichi-stove-coal.is-new { animation: ichi-place 0.3s var(--ease-out) var(--land, 0s) both; }
-@keyframes ichi-place { from { transform: translateZ(70px) scale(1.12); opacity: 0; } 30% { opacity: 1; } }
+@keyframes ichi-place { from { transform: translateY(-16px) scale(1.2); opacity: 0; } 30% { opacity: 1; } }
 
 /* ── 相手の火力のゲージ（HUD 左上の札の中） ── */
 .ichi-gauge-row { display: grid; grid-template-columns: 58px minmax(0, 1fr) 56px; align-items: center; gap: 6px; }
@@ -285,7 +302,7 @@
 @keyframes ichi-breathe { 50% { transform: scale(1.012) translateY(-1px); } }
 .ichi-seat.is-active .ichi-foe-bust.is-seat { filter: drop-shadow(0 0 12px rgba(255, 210, 122, 0.6)); }
 .ichi-seat-bust > .ichi-leader-ring { position: absolute; left: 50%; top: 22px; margin-left: -62px; width: 124px; height: 124px; }
-.ichi-seat-hand { position: absolute; left: 50%; top: 126px; transform: translateX(-50%); display: flex; align-items: flex-end; padding: 0 16px; pointer-events: none; }
+.ichi-seat-hand { position: absolute; left: 50%; top: 114px; transform: translateX(-50%); display: flex; align-items: flex-end; padding: 0 16px; pointer-events: none; }
 .ichi-seat-hand .ichi-back { --cw: 34px; transform-origin: 50% 130%; transform: translateY(var(--dy, 0)) rotate(var(--r, 0deg)); box-shadow: 0 2px 5px rgba(0, 0, 0, 0.7); }
 .ichi-seat-hand .ichi-back + .ichi-back { margin-left: -14px; }
 .ichi-seat-hand .ichi-count { position: absolute; right: -14px; bottom: -2px; }
@@ -293,8 +310,8 @@
 
 /* ── 卓（奥行きを付けて傾ける）。奥＝相手の札／中央＝審査の山と「この一口」（準備ではフレーバー場）／手前＝自分の札 ── */
 .ichi-view { position: absolute; inset: 0; z-index: 2; perspective: 1400px; perspective-origin: 50% 96px; pointer-events: none; }
-.ichi-board { position: absolute; left: 104px; right: 104px; bottom: 178px; height: 506px; transform-origin: 50% 100%; transform: rotateX(48deg); transform-style: preserve-3d; pointer-events: auto;
-  display: grid; grid-template-rows: 122px 102px minmax(0, 1fr); gap: 12px; padding: 18px 20px 14px; border-radius: 22px;
+.ichi-board { position: absolute; left: 104px; right: 104px; bottom: 178px; height: 522px; transform-origin: 50% 100%; transform: rotateX(48deg); transform-style: preserve-3d; pointer-events: auto;
+  display: grid; grid-template-columns: 146px minmax(0, 1fr) 146px; grid-template-rows: minmax(0, 1fr) 100px minmax(0, 1fr); gap: 10px 12px; padding: 18px 18px 14px; border-radius: 22px;
   background:
     radial-gradient(ellipse 58% 44% at 50% 46%, rgba(255, 206, 140, 0.2), transparent 72%),
     linear-gradient(180deg, rgba(6, 3, 10, 0.55), rgba(6, 3, 10, 0) 48%),
@@ -303,13 +320,18 @@
     0 0 0 3px #1c110b, 0 0 0 9px #7a4c2c, 0 0 0 14px #56341f, 0 0 0 16px #1c110b, 0 30px 54px 14px rgba(0, 0, 0, 0.7);
   transition: transform 0.7s var(--ease-out); }
 /* 番の側のマットが灯る */
-.ichi-mine, .ichi-foe { border-radius: 14px; transition: box-shadow 0.5s, background-color 0.5s; }
+.ichi-half { border-radius: 14px; transition: box-shadow 0.5s, background-color 0.5s; }
 .ichi-game[data-turn="me"] .ichi-mine { background-color: rgba(255, 210, 122, 0.07); box-shadow: 0 0 0 2px rgba(255, 210, 122, 0.45), 0 0 34px rgba(240, 138, 43, 0.3); }
 .ichi-game[data-turn="foe"] .ichi-foe { background-color: rgba(201, 167, 230, 0.08); box-shadow: 0 0 0 2px rgba(201, 167, 230, 0.5), 0 0 30px rgba(155, 120, 196, 0.35); }
 /* 卓の手前の側面（天板の木の縁は、上の外側の影で描く） */
 .ichi-board::after { content: ""; position: absolute; left: -16px; right: -16px; top: calc(100% + 15px); height: 58px; transform-origin: 50% 0; transform: rotateX(-90deg); border-radius: 0 0 8px 8px; background: linear-gradient(180deg, #6a4126, #2c180e 60%, #100806); pointer-events: none; }
-.ichi-game:is([data-phase="prep"], [data-phase="embers"]) .ichi-board { grid-template-rows: 104px 172px minmax(0, 1fr); gap: 10px; }
-.ichi-board :is(.ichi-foe, .ichi-center, .ichi-mine, .ichi-lane, .ichi-piles, .ichi-zone-box, .ichi-row, .ichi-coal-btn) { transform-style: preserve-3d; }
+.ichi-board > .is-coal.is-me { grid-column: 1; grid-row: 1 / -1; }
+.ichi-board > .is-coal.is-foe { grid-column: 3; grid-row: 1 / -1; }
+.ichi-board > .ichi-foe { grid-column: 2; grid-row: 1; }
+.ichi-board > .ichi-center { grid-column: 2; grid-row: 2; }
+.ichi-board > .ichi-mine { grid-column: 2; grid-row: 3; }
+/* 立体にするのは卓の板（と手前の側面）だけ。上の枠や札は板の面に載せる（1つずつ立体の面にすると、同じ高さの面どうしで
+   「どちらが手前か」がぶれて、押した点が板に吸われる） */
 /* 卓に着く: 対戦が始まると、卓が奥から手前に寄ってくる */
 .ichi-board { animation: ichi-board-in 0.9s var(--ease-out) backwards; } /* 透明度は動かさない（卓の奥行きが平らにされるため） */
 .ichi-seat { animation: ichi-seat-in 0.9s var(--ease-out) 0.15s both; }
@@ -318,23 +340,18 @@
 /* 番が替わると、卓の見え方が少し動く（相手の番は相手の方へ目を上げる） */
 .ichi-game[data-turn="foe"] .ichi-board { transform: translateY(7px) rotateX(50.5deg) scale(0.985); }
 .ichi-game[data-turn="foe"] .ichi-seat { transform: scale(1.06); }
-/* 卓の奥: 相手の札。向かい合わせなので、札は向こう向き。小さい数は HUD のゲージで読む */
-.s-far { --cw: 52px; }
-.ichi-game:is([data-phase="prep"], [data-phase="embers"]) .s-far { --cw: 44px; }
-.ichi-foe { display: grid; grid-template-columns: 78px 238px minmax(0, 1fr) 232px 132px; gap: 10px; align-items: stretch; min-height: 0; margin: 0 64px; }
-.ichi-foe .ichi-zone-box { padding: 14px 6px 6px; gap: 4px; }
-.ichi-foe .ichi-zone-tab { font-size: 16px; line-height: 20px; }
-.ichi-foe :is(.ichi-card, .ichi-back) { rotate: 180deg; }
-.ichi-foe .ichi-row.is-far { gap: 5px; }
-.ichi-foe .is-coal .ichi-row { justify-content: center; }
-.ichi-foe .is-coal .ichi-on + .ichi-on { margin-left: -30px; }
+/* マットの半分（相手と自分で同じ並び・同じ大きさ。卓のまんなかで点対称）。相手の札は向こう向き */
+.ichi-half { display: grid; gap: 10px; align-items: stretch; min-height: 0; }
+.ichi-mine { grid-template-columns: 146px minmax(0, 1fr) 146px 78px; }
+.ichi-foe { grid-template-columns: 78px 146px minmax(0, 1fr) 146px; }
+.ichi-half .ichi-zone-tab { font-size: 14px; line-height: 18px; }
+.ichi-half .s-mini { --cw: 52px; } .ichi-half .s-mid { --cw: 80px; }
+.ichi-foe .ichi-zone-tab { left: auto; right: 10px; top: auto; bottom: 0; transform: translateY(50%); }
+.ichi-foe :is(.ichi-card, .ichi-back), .ichi-zone-box.is-puff.is-foe .ichi-card { rotate: 180deg; }
 .ichi-foe .ichi-counter { display: none; }
-.ichi-foe .is-deck .ichi-count { position: absolute; right: 2px; bottom: 2px; min-width: 30px; height: 30px; font-size: 17px; }
-.ichi-foe .ichi-setting { gap: 5px; }
-.ichi-foe .ichi-stove-coal, .ichi-foe .ichi-perm { cursor: default; }
-.ichi-foe .ichi-perm { cursor: pointer; }
+.ichi-foe .ichi-stove-coal { cursor: default; }
 
-/* ── HUD 左上: 相手の点・票、火力のゲージ、主役の葉と体力 ── */
+/* ── HUD 左上: 相手の点・票、熱と帯、主役の葉と体力 ── */
 .ichi-foe-panel { position: absolute; left: 12px; top: 8px; width: 280px; display: grid; gap: 5px; padding: 8px 12px 9px; border-radius: 12px; background: rgba(21, 13, 34, 0.82); border: 1px solid rgba(201, 167, 230, 0.45); box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5); }
 .ichi-foe-panel > .ichi-leader { display: block; }
 .ichi-foe-panel .ichi-leader-plate { display: flex; align-items: baseline; gap: 10px; }
@@ -350,7 +367,7 @@
 .ichi-foe-panel .ichi-mix .ichi-mix-leaf b, .ichi-foe-panel .ichi-mix .ichi-hp b { font-size: 14px; }
 
 /* ── 卓の中央（提供）: 審査の山と審査員・「この一口」の置き場。HUD: ラウンド・案内・ボタン ── */
-.ichi-center { display: grid; grid-template-columns: 236px minmax(0, 1fr) 150px minmax(0, 1fr); gap: 12px; min-height: 0; }
+.ichi-center { display: grid; grid-template-columns: minmax(0, 1fr) 236px minmax(0, 1fr); gap: 12px; min-height: 0; }
 .ichi-center .ichi-zone-box { padding: 12px 8px 4px; grid-auto-flow: column; }
 .ichi-center .ichi-zone-tab { font-size: 15px; line-height: 19px; }
 .ichi-center .s-mini { --cw: 56px; }
@@ -360,10 +377,10 @@
 .ichi-set .ichi-card { box-shadow: 0 0 0 2px var(--ichi-gold), 0 0 16px rgba(255, 210, 122, 0.7), 0 3px 0 #0b0612, 0 8px 12px rgba(0, 0, 0, 0.6); }
 .ichi-set .ichi-counter { left: 100%; right: auto; top: 50%; bottom: auto; margin-left: 8px; transform: translateY(-50%); font-size: 15px; padding: 2px 10px; }
 /* 卓のまんなかの印（マットの柄） */
-.ichi-center-mark { display: block; align-self: center; justify-self: center; width: 150px; height: 74px; border-radius: 50%; border: 2px solid rgba(227, 189, 110, 0.28); box-shadow: inset 0 0 0 6px rgba(227, 189, 110, 0.06), 0 0 0 10px rgba(227, 189, 110, 0.05); background: radial-gradient(ellipse, rgba(255, 210, 122, 0.12), transparent 70%); }
+.ichi-center-mark { display: block; align-self: center; justify-self: center; width: 170px; height: 74px; border-radius: 50%; border: 2px solid rgba(227, 189, 110, 0.28); box-shadow: inset 0 0 0 6px rgba(227, 189, 110, 0.06), 0 0 0 10px rgba(227, 189, 110, 0.05); background: radial-gradient(ellipse, rgba(255, 210, 122, 0.12), transparent 70%); }
 .ichi-zone-box.is-judge { grid-auto-flow: column; gap: 14px; }
 .ichi-pile { position: relative; display: grid; justify-items: center; gap: 1px; padding: 0; border: 0; background: none; cursor: pointer; flex: none; transition: transform 0.16s var(--ease-out); }
-.ichi-pile:hover { transform: translateZ(10px); }
+.ichi-pile:hover { transform: translateY(-4px); }
 .ichi-pile .ichi-back { --cw: 56px; box-shadow: inset 0 0 0 2px rgba(42, 26, 5, 0.4), 3px 3px 0 #3a2a14, 6px 6px 0 #2a1d0e, 0 8px 12px rgba(0, 0, 0, 0.55); }
 .ichi-pile .ichi-count { position: absolute; right: -10px; top: -8px; }
 .ichi-pile:focus-visible { outline: 2px solid #fff; outline-offset: 4px; border-radius: 8px; }
@@ -408,8 +425,9 @@
 button.ichi-leaf.can { cursor: pointer; min-height: 44px; height: 44px; }
 button.ichi-leaf.can:hover { border-color: #fff; }
 
-/* ── 準備: フレーバー場（葉の札の山） ── */
-.ichi-market { display: grid; grid-template-columns: repeat(10, 1fr); gap: 6px; min-height: 0; justify-items: center; align-items: start; }
+/* ── 準備: フレーバー場（葉の札の山10種）。卓のまんなかに立てた棚として HUD に出す（傾いた卓の上では名前が読めないため）。蒸らしたら片付く ── */
+.ichi-market { position: absolute; left: 124px; right: 182px; top: 204px; display: grid; grid-template-columns: repeat(10, 1fr); gap: 6px; justify-items: center; align-items: start; padding: 12px 12px 16px; border-radius: 14px; background: linear-gradient(180deg, rgba(34, 21, 52, 0.94), rgba(21, 13, 34, 0.9)); border: 2px solid rgba(227, 189, 110, 0.6); box-shadow: 0 0 0 4px #1c110b, 0 18px 34px rgba(0, 0, 0, 0.7); transform-origin: 50% 100%; transform: perspective(1400px) rotateX(9deg); animation: ichi-rack-in 0.4s var(--ease-out) backwards; }
+@keyframes ichi-rack-in { from { transform: perspective(1400px) rotateX(64deg) translateY(40px); opacity: 0; } }
 .ichi-pile-card { position: relative; min-height: 0; }
 .ichi-pile-main { display: grid; justify-items: center; gap: 2px; padding: 0; border: 0; background: none; cursor: pointer; }
 .ichi-pile-main:disabled { cursor: default; }
@@ -422,38 +440,14 @@ button.ichi-leaf.can:hover { border-color: #fff; }
 .ichi-pile-foot .ichi-count { position: absolute; right: -4px; top: -8px; z-index: 3; min-width: 24px; height: 24px; font-size: 13px; font-weight: 900; }
 .ichi-pair { display: inline-flex; align-items: center; gap: 3px; }
 .ichi-pile-minus { position: absolute; left: 50%; bottom: -6px; transform: translateX(-50%); z-index: 4; white-space: nowrap; min-width: 64px; min-height: 30px; padding: 0 8px; border-radius: 15px; border: 2px solid #150d22; background: var(--ichi-gold); color: #1d1206; font-size: 14px; font-weight: 900; cursor: pointer; }
-.ichi-game:is([data-phase="prep"], [data-phase="embers"]) .s-pile { --cw: 92px; }
+.ichi-market .s-pile { --cw: 86px; }
 
-/* ── 卓の手前: 自分の札。熱の計りは卓の左に立てる（HUD） ── */
-.ichi-mine { display: grid; grid-template-columns: 204px minmax(0, 1fr) 150px 84px; gap: 10px; align-items: stretch; min-height: 0; padding-top: 4px; }
-.ichi-mine .ichi-zone-tab { font-size: 14px; line-height: 18px; }
-.ichi-thermo { position: absolute; left: 12px; top: 196px; width: 92px; height: 336px; display: grid; grid-template-rows: auto minmax(0, 1fr); justify-items: center; gap: 4px; padding: 6px 4px 8px; border-radius: 12px; background: rgba(21, 13, 34, 0.72); box-shadow: 0 6px 16px rgba(0, 0, 0, 0.5); }
-.ichi-thermo-body { position: relative; width: 66px; height: 100%; min-height: 0; }
-.ichi-thermo-frame { position: absolute; inset: 0; background: url("../img/ui/craft-night/thermo-frame.webp") center / 100% 100% no-repeat; pointer-events: none; }
-.ichi-thermo-tube { position: absolute; left: 33%; right: 34.5%; top: 8.2%; bottom: 8.1%; display: grid; grid-template-rows: repeat(11, 1fr); gap: 1px; }
-.ichi-thermo-tube i { position: relative; font-style: normal; display: grid; place-items: center; font-size: 12px; font-weight: 900; line-height: 1; color: rgba(0, 0, 0, 0.74); opacity: 0.5; min-height: 0; }
-.ichi-thermo-tube i:first-child { border-radius: 11px 11px 0 0; } .ichi-thermo-tube i:last-child { border-radius: 0 0 11px 11px; }
-.ichi-thermo-tube i.is-now { opacity: 1; outline: 2px solid #fff; outline-offset: 1px; z-index: 2; box-shadow: 0 0 12px rgba(255, 255, 255, 0.7); }
-.ichi-thermo-tube i.is-now::after { content: ""; position: absolute; left: calc(100% + 5px); top: 50%; margin-top: -7px; border: 7px solid transparent; border-right-color: #fff; }
-.ichi-thermo-tube i.is-base { opacity: 1; outline: 2px dashed var(--ichi-ember-hi); outline-offset: 1px; z-index: 1; }
-.ichi-thermo-tube i.is-judged { opacity: 1; box-shadow: 0 0 0 3px var(--ichi-ember), 0 0 12px var(--ichi-ember); z-index: 3; }
-.ichi-thermo-read { display: grid; grid-template-columns: auto auto; column-gap: 5px; align-items: baseline; justify-content: center; text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8); }
-.ichi-thermo-read .ichi-thermo-base { grid-column: 1 / -1; justify-self: center; }
-.ichi-thermo-read b { font-size: 40px; font-weight: 900; line-height: 1; font-family: var(--font-dot); color: var(--ichi-ember-hi); }
-.ichi-thermo-read small { font-size: 13px; font-weight: 700; white-space: nowrap; color: var(--ichi-text); }
-.ichi-thermo-read small.ichi-thermo-base { color: var(--ichi-ember-hi); }
+/* ── 山札と灰・ボウルとHMD ── */
 .ichi-piles { display: grid; grid-template-rows: 1fr auto; gap: 10px; min-height: 0; }
-.ichi-mine .ichi-zone-box.is-coal .s-mini { --cw: 66px; }
-.ichi-mine .ichi-zone-box.is-stove .s-mini { --cw: 56px; }
-.ichi-mine .s-mid { --cw: 88px; }
 .ichi-zone-box.is-deck { position: relative; }
 .ichi-zone-box.is-deck .ichi-back { box-shadow: inset 0 0 0 2px rgba(227, 189, 110, 0.3), 2px 2px 0 #1a1029, 4px 4px 0 #120a1d, 0 6px 10px rgba(0, 0, 0, 0.55); }
 .ichi-zone-box.is-deck .ichi-count { position: absolute; right: 2px; bottom: 2px; }
 .ichi-zone-box.is-ash { padding: 12px 6px 6px; }
-.ichi-game:is([data-phase="prep"], [data-phase="embers"]) .ichi-mine .s-mini { --cw: 50px; }
-.ichi-game:is([data-phase="prep"], [data-phase="embers"]) .ichi-mine .ichi-zone-box.is-stove .s-mini { --cw: 42px; }
-.ichi-game:is([data-phase="prep"], [data-phase="embers"]) .ichi-mine .s-mid { --cw: 70px; }
-.ichi-game:is([data-phase="prep"], [data-phase="embers"]) .ichi-zone-box.is-setting { align-content: start; padding-top: 16px; }
 
 /* ── HUD 下: 自分の顔と点・扇形に持った手札・選んだ札の説明 ── */
 .ichi-hand-row { position: absolute; left: 12px; right: 12px; bottom: 4px; height: 174px; display: grid; grid-template-columns: 200px minmax(0, 1fr) 312px; gap: 8px; align-items: end; min-height: 0; pointer-events: none !important; }

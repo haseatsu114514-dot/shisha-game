@@ -133,19 +133,41 @@ await suite("ichidai", async (check) => {
         assert.equal(await page.locator(".ichi-stove-art, .ichi-rig").count(), 0, "現物の絵は置かない");
         assert.equal(await page.locator(`${t("ichi-zone")} .ichi-on`).count(), 3, "種火3枚は火力ゾーンの札");
         assert.deepEqual(await fire(page), { left: 3, total: 3 }, "火力ゾーンの札を数えて、火力3（＝熱）");
-        // 炭焼き場と火力ゾーンは、ひと続きの枠（炭焼き場 ➜ 火力ゾーン）
-        assert.equal(await page.locator(`.ichi-lane ${t("ichi-stove")} ~ .ichi-flow ~ ${t("ichi-zone")}`).count(), 1, "炭焼き場から火力ゾーンへ流れる並び");
-        // 相手の数は HUD の簡易なゲージで読む（火力の目盛りと炭焼き場）。札そのものは卓の奥に並ぶ
+        // 火力ゾーンは卓の端に縦に積む柱で、すぐ外側に判定のゲージ（10段）が並ぶ。積んだ高さ＝熱
+        const column = await page.evaluate(() => {
+          const box = (n) => { const b = n.getBoundingClientRect(); return { l: b.left, r: b.right, t: b.top, b: b.bottom, cx: (b.left + b.right) / 2, cy: (b.top + b.bottom) / 2 }; };
+          const side = (sel) => {
+            const z = document.querySelector(sel), cells = [...z.querySelectorAll(".ichi-fire-gauge i")], cards = [...z.querySelectorAll(".ichi-fire-stack .ichi-coal-btn")];
+            return { zone: box(z), cells: cells.map(box), lit: cells.filter((c) => c.classList.contains("is-lit")).length, now: cells.findIndex((c) => c.classList.contains("is-now")) + 1,
+              cards: cards.map(box), gauge: box(z.querySelector(".ichi-fire-gauge")), stack: box(z.querySelector(".ichi-fire-stack")) };
+          };
+          return { me: side('[data-test="ichi-zone"]'), foe: side('[data-test="ichi-foe-zone"]'), stove: box(document.querySelector('[data-test="ichi-stove"]')), foeStove: box(document.querySelector('[data-test="ichi-foe-stove"]')),
+            board: box(document.querySelector('[data-test="ichi-board"]')), flow: document.querySelectorAll('[data-test="ichi-stove"] .ichi-flow, [data-test="ichi-foe-stove"] .ichi-flow').length };
+        });
+        assert.equal(column.me.cells.length, 10, "判定のゲージは10段");
+        assert.deepEqual([column.me.lit, column.me.now], [3, 3], "積んだ3枚ぶん、ゲージが3段目まで灯る");
+        assert.ok(column.me.cards[0].cy > column.me.cards[1].cy && column.me.cards[1].cy > column.me.cards[2].cy, "自分の札は手前から奥へ積み上がる");
+        assert.ok(Math.abs(column.me.cards[2].cy - column.me.cells[2].cy) < 12, "3枚目の札は、ゲージの3段目の横");
+        assert.ok(column.me.gauge.cx < column.me.stack.cx && column.me.stack.cx < column.stove.cx, "左から 判定のゲージ・積んだ札・炭焼き場（となり合う）");
+        assert.equal(column.flow, 2, "炭焼き場から火力ゾーンへの矢印（自分と相手）");
+        // 相手のマットも同じ作り（卓のまんなかで点対称）: 相手の柱は右端で、奥から手前へ積む
+        assert.equal(await page.locator(`${t("ichi-foe-zone")} .ichi-on`).count(), Number(await page.locator(t("ichi-foe-zone")).getAttribute("data-count")), "相手の火力ゾーンの札も積んである");
+        assert.deepEqual([column.foe.cells.length, column.foe.lit, column.foe.cards.length], [10, 3, 3], "相手のゲージ10段・種火3枚");
+        assert.ok(column.foe.cards[0].cy < column.foe.cards[1].cy && column.foe.cards[1].cy < column.foe.cards[2].cy, "相手の札は奥から手前へ積み上がる");
+        assert.ok(column.foe.gauge.cx > column.foe.stack.cx && column.foe.stack.cx > column.foeStove.cx, "相手は右から 判定のゲージ・積んだ札・炭焼き場");
+        assert.ok(column.me.zone.cx < column.board.cx && column.foe.zone.cx > column.board.cx, "自分の柱は左端、相手の柱は右端");
+        const order = (sel) => page.locator(`${sel} > *`).evaluateAll((list) => list.map((n) => (n.matches(".is-stove") ? "炭焼き場" : n.matches(".is-setting") ? "ボウル" : n.matches(".is-perms") ? "器具" : "山札")));
+        assert.deepEqual(await order(".ichi-mine"), ["炭焼き場", "ボウル", "器具", "山札"]);
+        assert.deepEqual(await order(t("ichi-foe")), ["山札", "器具", "ボウル", "炭焼き場"], "相手は同じ並びの逆順（向かい合わせ）");
+        assert.equal(await page.locator(`${t("ichi-foe")} .s-mini, ${t("ichi-foe")} .s-mid`).count() > 0 && await page.locator(`${t("ichi-foe")} .ichi-zone-box`).count(), await page.locator(".ichi-mine .ichi-zone-box").count(), "枠の数も同じ");
         const foeFire = page.locator(t("ichi-foe-fire"));
-        assert.equal(await foeFire.locator(".ichi-gauge i.is-lit").count(), Number(await foeFire.getAttribute("data-left")), "相手の火力のゲージ");
-        assert.equal(await page.locator(`${t("ichi-foe-zone")} .ichi-on`).count(), Number(await page.locator(t("ichi-foe-zone")).getAttribute("data-count")), "相手の火力ゾーンの札は、卓の奥に並ぶ");
-        assert.equal(await page.locator(`${t("ichi-foe-zone")} .ichi-on`).count(), 3, "相手の種火3枚");
+        assert.equal(await foeFire.getAttribute("data-heat"), "3", "相手の熱は HUD でも読める");
         // 対面の卓: 奥行きを付けて傾けた卓の向こうに相手が座り、手札の裏を持っている
         const scene = await page.evaluate(() => {
           const q = (sel) => document.querySelector(sel), w = (sel) => q(sel).getBoundingClientRect();
           return { board: getComputedStyle(q('[data-test="ichi-board"]')).transform, far: w('[data-test="ichi-foe"]'), near: w(".ichi-mine"), seat: w('[data-test="ichi-seat"]'),
             backs: document.querySelectorAll(".ichi-seat-hand .ichi-back").length, count: q(".ichi-seat-hand").dataset.count,
-            foeCard: getComputedStyle(q('[data-test="ichi-foe-zone"] .ichi-back')).rotate, bust: !!q('[data-test="ichi-foe-bust"] img, [data-test="ichi-seat"] .ichi-face') };
+            foeCard: getComputedStyle(q('[data-test="ichi-foe"] .is-deck .ichi-back')).rotate, bust: !!q('[data-test="ichi-foe-bust"] img, [data-test="ichi-seat"] .ichi-face') };
         });
         assert.match(scene.board, /^matrix3d\(/, "卓は奥行きを付けて傾けてある");
         assert.ok(scene.far.width < scene.near.width * 0.9 && scene.far.top < scene.near.top, `卓の奥（相手の札）は手前より小さく見える: ${scene.far.width} / ${scene.near.width}`);
