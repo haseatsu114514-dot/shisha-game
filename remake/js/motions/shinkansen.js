@@ -4,7 +4,7 @@
 import { SE } from "../core/audio.js";
 import { svg, stageSvg, move, EASE } from "../core/transition-kit.js";
 import { el, sleep } from "../core/util.js";
-import { smokeArt, warmSmoke } from "../core/transitions.js";
+import { smokeOut } from "../core/transitions.js";
 import { MONO } from "../core/mg-kit.js";
 import { stagePlay, backdrop } from "./stage.js";
 
@@ -195,20 +195,6 @@ function sceneCopy() {
   return copy;
 }
 
-const SMOKE_POS = (pos) => ({ maskPosition: pos, webkitMaskPosition: pos });
-/** 場面の切り替えと同じ煙のにじみで node をほどいて消す（煙の絵が無い環境では薄くするだけ） */
-async function smokeAway(node, ms) {
-  const ready = await Promise.race([Promise.resolve(warmSmoke()), sleep(300).then(() => false)]);
-  if (ready !== true) return move(node, [{ opacity: 1 }, { opacity: 0 }], ms * 0.6, { easing: "ease" });
-  const art = smokeArt();
-  const mask = `url("${art.a}"), url("${art.b}")`;
-  Object.assign(node.style, {
-    maskImage: mask, webkitMaskImage: mask, maskSize: "100% 300%", webkitMaskSize: "100% 300%",
-    maskRepeat: "no-repeat", webkitMaskRepeat: "no-repeat", maskComposite: "intersect", webkitMaskComposite: "source-in",
-  });
-  return move(node, [SMOKE_POS("50% 0%, 50% 0%"), { ...SMOKE_POS("50% 46%, 50% 56%"), offset: 0.5 }, SMOKE_POS("50% 100%, 50% 100%")], ms, { easing: "cubic-bezier(.45,0,.55,1)", fill: "forwards" });
-}
-
 export async function c(mid, opts = {}) {
   const img = new Image();
   img.src = CAR_ART;
@@ -241,7 +227,7 @@ export async function c(mid, opts = {}) {
       car.animate([{ transform: "translateY(0)" }, { transform: "translateY(-1.5px)" }, { transform: "translateY(1.2px)" }, { transform: "translateY(0)" }], { duration: 260, iterations: 9, easing: "linear" });
       const swapped = Promise.resolve().then(() => mid?.());
       swapped.catch(() => {}); // 失敗は下で待つときに投げ直す（待つまでの間に未処理の拒否として出さない）
-      if (from) smokeAway(from, 760).then(() => from.remove());
+      if (from) smokeOut(from, 760).then(() => from.remove());
       await sleep(380);
       // 2. 行き先の題字
       move(title.lastChild, [{ transform: "scaleX(0)" }, { transform: "scaleX(1)" }], 700, { delay: 140, easing: EASE.out });
@@ -250,7 +236,7 @@ export async function c(mid, opts = {}) {
       // 3. 止まる。往路は止まった車内がそのまま次の場面、復路は車内がほどけて地元の場面になる
       const out = move(title, [{ opacity: 1 }, { opacity: 0 }], 420, { easing: "ease" });
       if (outbound) await Promise.all([out, sleep(Math.max(0, RUN - 2780))]);
-      else await Promise.all([out, smokeAway(train, 780)]);
+      else await Promise.all([out, smokeOut(train, 780)]);
     }, { cover: true });
   } finally {
     if (streak) URL.revokeObjectURL(streak);
