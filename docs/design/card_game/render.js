@@ -1,7 +1,8 @@
-// rulebook.html の図と一覧を cards.js から組み立てる。
+// rulebook.html の図と一覧を cards.js から組み立てる（第0.2版）。
 (function () {
   const byId = Object.fromEntries(FLAVORS.map((f) => [f.id, f]));
   const supByName = Object.fromEntries(SUPPORT.map((s) => [s.n, s]));
+  const judgeById = Object.fromEntries(JUDGES.map((j) => [j.id, j]));
 
   function zone(f, h) {
     if (h >= f.s) return 'scorch';
@@ -24,6 +25,7 @@
     if (typeof c === 'string' && c[0] === 'B') return `<span class="fire burn">${c.slice(1)}</span>`;
     return `<span class="fire">${c}</span>`;
   }
+  const whenTag = (w) => `<span class="when w-${w === '一口' ? 'puff' : w === '準備' ? 'prep' : w === 'いつでも' ? 'any' : 'turn'}">${w}</span>`;
 
   function flavorCard(f) {
     return `<div class="card ${f.k}">
@@ -34,13 +36,22 @@
         <div class="pair"><span style="color:var(--ink2)">相性</span>${f.pair === 'none' ? '<span class="kind none">—</span> なし' : kind(f.pair) + ' ' + KIND[f.pair].n}</div>
         <div class="txt">${f.ab || '<span style="color:#a79b8d">（能力なし）</span>'}</div></div></div>`;
   }
+  function coalCard(s) {
+    const cube = s.heat === 2;
+    return `<div class="card coal ${cube ? 'cube' : 'flat'}">
+      <div class="top"><div class="nm" style="${s.n.length > 6 ? 'font-size:8pt' : ''}"><small>炭カード</small>${s.n}</div></div>
+      <div class="art"><span class="lump"></span></div>
+      <div class="stats"><span><small>着火</small><b>${s.ig}</b><small>ターン</small></span><span class="h"><small>熱</small><b>${s.heat}</b></span></div>
+      <div class="body"><div class="txt">${s.tx}</div></div></div>`;
+  }
   function supCard(s) {
+    if (s.type === '炭') return coalCard(s);
     const burn = typeof s.cost === 'string' && s.cost[0] === 'B';
-    const c = s.cost === '—' ? '炭' : burn ? s.cost.slice(1) : s.cost;
-    return `<div class="card sup">
-      <div class="top"><div class="cost" style="${burn ? 'background:#fff;color:var(--ember)' : ''}${s.cost === '—' ? 'font-size:7pt' : ''}">${c}</div><div class="nm">${s.n}</div></div>
+    const c = burn ? s.cost.slice(1) : s.cost;
+    return `<div class="card sup${s.when === '一口' ? ' puff' : ''}">
+      <div class="top"><div class="cost" style="${burn ? 'background:#fff;color:var(--ember)' : ''}">${c}</div><div class="nm" style="${s.n.length > 7 ? 'font-size:8pt' : ''}">${s.n}</div></div>
       <div class="art"><span class="glyph" style="font-size:20pt;color:rgba(243,154,60,.85)">${s.type}</span></div>
-      <div class="body"><div style="margin-top:.6mm"><span class="type">${s.type}</span><span class="when">${s.when === '炭' ? '炭として置く' : s.when}</span></div>
+      <div class="body"><div style="margin-top:.6mm"><span class="type">${s.type}</span>${whenTag(s.when)}</div>
         <div class="txt" style="margin-top:1.4mm">${s.tx}</div></div></div>`;
   }
   function setCard(kindName, o) {
@@ -49,7 +60,19 @@
       <div class="art" style="background:linear-gradient(135deg,#d6b46a,#8f6a22)"><span class="glyph">${kindName === 'ボウル' ? '器' : '蓋'}</span></div>
       <div class="body"><div class="txt" style="margin-top:1.6mm">${o.ab}</div></div></div>`;
   }
+  const dhMark = (q) => (q.dh > 0 ? `+${q.dh}` : q.dh < 0 ? `−${-q.dh}` : '±0');
+  function puffCard(j, q) {
+    return `<div class="card judge">
+      <div class="top"><div class="nm"><small>審査カード／${j.n}</small>${q.style}</div></div>
+      <div class="art"><span class="dh ${q.dh > 0 ? 'up' : q.dh < 0 ? 'down' : ''}">${dhMark(q)}</span></div>
+      <div class="body"><div class="lbl">判定熱の変化と、この一口の決まり</div><div class="txt" style="border:none;padding-top:0">${q.stx}</div></div></div>`;
+  }
 
+  // 元の要素の style（回転や拡大）をカードに引き継ぐ
+  function wrap(el, html) {
+    const st = el.getAttribute('style');
+    return st ? html.replace('class="card', `style="${st}" class="card`) : html;
+  }
   document.querySelectorAll('[data-card]').forEach((el) => { el.outerHTML = wrap(el, flavorCard(byId[el.dataset.card])); });
   document.querySelectorAll('[data-sup]').forEach((el) => { el.outerHTML = wrap(el, supCard(supByName[el.dataset.sup])); });
   document.querySelectorAll('[data-back]').forEach((el) => { el.outerHTML = wrap(el, '<div class="card back"><div class="emb"></div></div>'); });
@@ -57,11 +80,10 @@
     const [t, i] = el.dataset.set.split(':');
     el.outerHTML = wrap(el, setCard(t === 'bowl' ? 'ボウル' : 'HMD', (t === 'bowl' ? BOWLS : HMDS)[+i]));
   });
-  // 元の要素の style（回転や拡大）をカードに引き継ぐ
-  function wrap(el, html) {
-    const st = el.getAttribute('style');
-    return st ? html.replace('class="card', `style="${st}" class="card`) : html;
-  }
+  document.querySelectorAll('[data-puff]').forEach((el) => {
+    const [id, i] = el.dataset.puff.split(':'); const j = judgeById[id];
+    el.outerHTML = wrap(el, puffCard(j, j.puffs[+i]));
+  });
   document.querySelectorAll('[data-strip]').forEach((el) => {
     const now = el.dataset.now ? el.dataset.now.split(',').map(Number) : null;
     el.outerHTML = strip(byId[el.dataset.strip], el.dataset.cls, now);
@@ -73,32 +95,41 @@
     <td style="font-size:.9em;line-height:1.35">${f.ab}</td></tr>`));
   add('tbl-bowls', BOWLS.map((b) => `<tr><td class="nw"><b>${b.n}</b></td><td class="c">${b.cap}g</td><td>${b.ab}</td></tr>`));
   add('tbl-hmds', HMDS.map((b) => `<tr><td class="nw"><b>${b.n}</b></td><td>${b.ab}</td></tr>`));
-  add('tbl-support', SUPPORT.map((s) => `<tr><td class="c"><span class="tag ${s.type === '技' ? 'k' : s.type === '器具' ? 'b' : s.type === '人物' ? 'g' : s.type === '炭' ? 'k' : ''}" style="margin:0">${s.type}</span></td>
-    <td class="nw"><b>${s.n}</b></td><td class="c">${costHtml(s.cost)}</td><td class="c nw small">${s.when === '炭' ? '—' : s.when}</td><td style="line-height:1.35">${s.tx}</td></tr>`));
-  add('tbl-judges', JUDGES.map((j) => `<tr><td class="nw"><b>${j.n}</b></td><td>${j.t}</td><td>${j.tx}</td></tr>`));
-  const deck = (id, d) => { const u = document.getElementById(id); if (u) u.innerHTML = d.map(([n, c]) => `<li>${n}<span>×${c}</span></li>`).join(''); };
+  const typeTag = (t) => `<span class="tag ${t === '技' ? 'k' : t === '器具' ? 'b' : t === '人物' ? 'g' : t === '炭' ? 'c' : ''}" style="margin:0">${t}</span>`;
+  add('tbl-support', SUPPORT.map((s) => `<tr><td class="c">${typeTag(s.type)}</td>
+    <td class="nw"><b>${s.n}</b></td><td class="c">${s.type === '炭' ? `<span class="small nw">着火${s.ig}・熱${s.heat}</span>` : costHtml(s.cost)}</td><td class="c nw">${s.when === '炭' ? '<span class="small">自分のターン</span>' : whenTag(s.when)}</td><td style="line-height:1.35">${s.tx}</td></tr>`));
+  add('tbl-judges', JUDGES.map((j) => `<tr><td class="nw"><b>${j.n}</b><br><span class="small">${j.t}</span></td>
+    <td>${j.puffs.map((q) => `<span class="pchip ${q.dh > 0 ? 'up' : q.dh < 0 ? 'down' : ''}"><b>${q.style}</b>×${q.c}</span>`).join(' ')}</td><td>${j.tx}</td></tr>`));
+  add('tbl-puffs', Object.values(PUFF).map((q) => `<tr><td class="nw"><b>${q.style}</b></td><td class="c"><span class="pchip ${q.dh > 0 ? 'up' : q.dh < 0 ? 'down' : ''}"><b>${dhMark(q)}</b></span></td><td>${q.stx}</td></tr>`));
+  add('tbl-tours', TOURNAMENTS.map((t) => `<tr><td class="nw"><b>${t.n}</b></td><td class="c">${t.s}</td><td class="c">${t.s * 3}回</td><td class="c">${(t.s - 1) * 2}枚</td><td class="c">${t.min}分</td>
+    <td>${t.judges.length ? t.judges.map((id) => judgeById[id].n.split(' ')[0].replace('ダ・シルヴァ太陽', '太陽').replace('エミル・ユルマズ', 'エミル')).join('・') : 'なし（審査カードを使わない）'}</td><td>${t.task ? byId[t.task].n : 'なし'}</td></tr>`));
+  const deck = (id, d) => { const u = document.getElementById(id); if (u) u.innerHTML = d.map(([n, c]) => `<li${supByName[n].type === '炭' ? ' class="coal"' : ''}>${n}<span>×${c}</span></li>`).join(''); };
   deck('deck-a', DECK_A); deck('deck-b', DECK_B);
 
-  // 熱の動き（適温4〜6の葉を、短い大会で通した例）
+  // 熱の動き（適温4〜6の葉の例）。線=蓄えた熱、丸=判定熱
   const hf = document.getElementById('heatfig');
   if (hf) {
-    const seq = [3, 3, 3, 3, 6, 7, 7, 7, 6, 5, 4, 7, 6, 5, 4, 7, 6, 5, 4]; // 準備8 + (3ターン + 調整)…
-    const kinds = ['p', 'p', 'p', 'p', 'p', 'p', 'p', 'p', 's', 's', 's', 'a', 's', 's', 's', 'a', 's', 's', 's'];
-    const W = 680, H = 132, L = 34, R = 8, T = 8, B = 26, n = seq.length;
+    const prep = [3, 3, 3, 4, 6, 6];
+    const heat = [5, 5, 6, 5, 5, 5, 6, 5, 5];           // 自分のターンを終えたときの熱
+    const dh = [0, 1, 0, 0, -1, 0, 0, 1, 0];            // 審査カードの変化
+    const seq = [...prep, ...heat], n = seq.length;
+    const W = 680, H = 118, L = 34, R = 8, T = 6, B = 26;
     const x = (i) => L + (W - L - R) * (i + 0.5) / n, y = (v) => T + (H - T - B) * (1 - v / 10);
     let s = `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" font-family="Noto Sans JP, sans-serif">`;
     s += `<rect x="${L}" y="${y(6.5)}" width="${W - L - R}" height="${y(3.5) - y(6.5)}" fill="#7fbd66" opacity=".35"/>`;
     s += `<rect x="${L}" y="${T}" width="${W - L - R}" height="${y(7.5) - T}" fill="#b5302a" opacity=".16"/>`;
     for (const v of [0, 2, 4, 6, 8, 10]) s += `<line x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}" stroke="#cdbda2" stroke-width=".6"/><text x="${L - 6}" y="${y(v) + 3.5}" font-size="9.5" text-anchor="end" fill="#5d5148">${v}</text>`;
-    const seg = [[0, 8, '準備（8ターン）', '#a8802f'], [8, 11, '提供 1', '#e2591f'], [11, 12, '調整', '#6d6258'], [12, 15, '提供 2', '#e2591f'], [15, 16, '調整', '#6d6258'], [16, 19, '提供 3', '#e2591f']];
+    const seg = [[0, 6, '準備（6ターン）', '#a8802f'], [6, 9, 'セッション 1', '#e2591f'], [9, 12, 'セッション 2', '#c94a17'], [12, 15, 'セッション 3', '#e2591f']];
     for (const [a, b, t, c] of seg) { const xa = L + (W - L - R) * a / n, xb = L + (W - L - R) * b / n;
       s += `<rect x="${xa + 1}" y="${H - 20}" width="${xb - xa - 2}" height="14" rx="3" fill="${c}"/><text x="${(xa + xb) / 2}" y="${H - 9.5}" font-size="9" font-weight="700" text-anchor="middle" fill="#fff">${t}</text>`; }
     s += `<polyline fill="none" stroke="#1f1b19" stroke-width="2.2" stroke-linejoin="round" points="${seq.map((v, i) => `${x(i)},${y(v)}`).join(' ')}"/>`;
-    seq.forEach((v, i) => { const k = kinds[i];
-      s += `<circle cx="${x(i)}" cy="${y(v)}" r="${k === 's' ? 6.5 : 4}" fill="${k === 's' ? '#f5ad14' : k === 'a' ? '#6d6258' : '#fff'}" stroke="#1f1b19" stroke-width="1.6"/>`;
-      if (k === 's') s += `<text x="${x(i)}" y="${y(v) + 3.4}" font-size="8.5" font-weight="900" text-anchor="middle" fill="#1f1b19">${v}</text>`; });
+    seq.forEach((v, i) => { s += `<circle cx="${x(i)}" cy="${y(v)}" r="3.4" fill="#fff" stroke="#1f1b19" stroke-width="1.5"/>`; });
+    heat.forEach((v, k) => { const i = prep.length + k, j = v + dh[k];
+      if (dh[k]) s += `<line x1="${x(i)}" x2="${x(i)}" y1="${y(v)}" y2="${y(j)}" stroke="#e2591f" stroke-width="1.6" stroke-dasharray="3 2"/>`;
+      s += `<circle cx="${x(i)}" cy="${y(j)}" r="6.6" fill="#f5ad14" stroke="#1f1b19" stroke-width="1.6"/><text x="${x(i)}" y="${y(j) + 3.4}" font-size="8.5" font-weight="900" text-anchor="middle" fill="#1f1b19">${j}</text>`;
+      if (dh[k]) s += `<text x="${x(i) + 9}" y="${y(v + dh[k] / 2) + 3}" font-size="8.5" font-weight="900" fill="#e2591f">${dh[k] > 0 ? '+1' : '−1'}</text>`; });
     s += `<text x="${L + 5}" y="${y(5.6) + 3.5}" font-size="9.5" font-weight="700" fill="#3f7a2c">適温 4〜6</text><text x="${L + 5}" y="${y(9) + 3.5}" font-size="9.5" font-weight="700" fill="#b5302a">焦げ 8〜</text>`;
-    hf.innerHTML = s + '</svg><p class="small" style="margin:1mm 0 0">適温4〜6の葉を、短い大会で通した例。準備で熱7まで上げ、提供では毎ターン1ずつ下がり、調整で3枚足して戻します。丸の数字が一口の判定熱です。</p>';
+    hf.innerHTML = s + '</svg><p class="small" style="margin:1mm 0 0">適温4〜6の葉の例。黒い線は自分のターンを終えたときの熱、黄色い丸は一口の判定熱。審査カードが「長く吸う」（+1）や「ゆっくり吸う」（−1）だと、判定熱は熱からずれます。熱5にしておけば、どちらに1ずれても適温の中です。</p>';
   }
 
   const sup = document.getElementById('supply');
