@@ -1,0 +1,164 @@
+{
+  "rider_naru_brace.png": {
+    "size": [
+      1312,
+      1199
+    ],
+    "mode": "RGBA",
+    "alpha_bbox": [
+      73,
+      31,
+      1284,
+      1199
+    ],
+    "margin_percent": [
+      5.56,
+      2.59,
+      2.13,
+      0.0
+    ],
+    "margin_5_percent_pass": false,
+    "sha256": "fe203365527a406cf599cee9c453518a104b6cf3c6bb4cff02139eb68fc3a36f",
+    "corner_alpha": [
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  "rider_naru_fall.png": {
+    "size": [
+      1153,
+      1364
+    ],
+    "mode": "RGBA",
+    "alpha_bbox": [
+      0,
+      193,
+      1091,
+      1322
+    ],
+    "margin_percent": [
+      0.0,
+      14.15,
+      5.38,
+      3.08
+    ],
+    "margin_5_percent_pass": false,
+    "sha256": "fec9fd057af69f5795ae3cca07c7d27d585cea652b0e745d085e350c07e7eb27",
+    "corner_alpha": [
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  "rider_naru_jump.png": {
+    "size": [
+      1122,
+      1402
+    ],
+    "mode": "RGBA",
+    "alpha_bbox": [
+      79,
+      61,
+      1092,
+      1386
+    ],
+    "margin_percent": [
+      7.04,
+      4.35,
+      2.67,
+      1.14
+    ],
+    "margin_5_percent_pass": false,
+    "sha256": "495ec80b965c3a656d13ce89c2835dba07e6b361bbe73241da082edfe86bca43",
+    "corner_alpha": [
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  "rider_naru_lean_left.png": {
+    "size": [
+      1079,
+      1457
+    ],
+    "mode": "RGBA",
+    "alpha_bbox": [
+      81,
+      263,
+      1033,
+      1423
+    ],
+    "margin_percent": [
+      7.51,
+      18.05,
+      4.26,
+      2.33
+    ],
+    "margin_5_percent_pass": false,
+    "sha256": "87125793d34aa8e4154736f6088855a4ca96383743f773d605d7d4ab02a7c0ea",
+    "corner_alpha": [
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  "rider_naru_lean_right.png": {
+    "size": [
+      1263,
+      1246
+    ],
+    "mode": "RGBA",
+    "alpha_bbox": [
+      50,
+      22,
+      1219,
+      1092
+    ],
+    "margin_percent": [
+      3.96,
+      1.77,
+      3.48,
+      12.36
+    ],
+    "margin_5_percent_pass": false,
+    "sha256": "f901becaac6a02fe88c2526aa76a208a607ceb378527757f1e7c0538a3fa13be",
+    "corner_alpha": [
+      0,
+      0,
+      0,
+      0
+    ]
+  },
+  "rider_naru_ride.png": {
+    "size": [
+      1002,
+      1570
+    ],
+    "mode": "RGBA",
+    "alpha_bbox": [
+      0,
+      207,
+      937,
+      1450
+    ],
+    "margin_percent": [
+      0.0,
+      13.18,
+      6.49,
+      7.64
+    ],
+    "margin_5_percent_pass": false,
+    "sha256": "1166488707b6413c95e8f69d9669a5d54f0388499b5c3b32901f9308c513e4c3",
+    "corner_alpha": [
+      0,
+      0,
+      0,
+      0
+    ]
+  }
+}

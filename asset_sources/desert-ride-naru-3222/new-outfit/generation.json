@@ -1,0 +1,103 @@
+{
+  "issue": 3306,
+  "generator": "Codex built-in image_gen",
+  "base_ref": "682d75067ee504dad356285491ac9eec15a77cab",
+  "original_prompts": {
+    "ride": "Game sprite, back view of a 23-year-old Japanese man riding a cream-colored sandboard down a dune.\nSame character and the SAME NEW OUTFIT as the attached portrait (image 1, chr_naru_normal.png, new version): short spiky silver-gray hair, tanned skin; a cropped bomber jacket color-blocked in dark brown and cream with white stripes on the sleeves, stand-up collar, front open, ribbed cuffs and hem; a dark brown ribbed turtleneck sweater underneath; wide gray cargo pants with dark brown and cream panels and cream flap pockets on the thighs; chunky brown-and-cream sneakers strapped to the board with dark brown bindings. The back of the jacket follows the front color-blocking (mostly dark brown, cream panels, white sleeve stripes).\nDo NOT use the old outfit: no black bomber with white panels, no black T-shirt, no black cargo pants, no silver wallet chain, no white sneakers.\nKeep EXACTLY the pose, camera angle, framing, body proportions and board perspective of the attached pose reference (image 2, rider_naru_ride.png) - only the clothes change. Back view only, face not visible.\nClean Japanese anime style with clear outlines and soft cel shading, matching the attached protagonist sprite (image 3, rider_ride.webp).\nFully transparent background (real alpha, not a checkerboard). The whole figure, all fingers, the hair and the whole board inside the frame with at least 5% transparent margin. No ground, no sand, no dust, no shadow, no text, no logos, no other people, no hookah equipment.\nFile: rider_naru_ride.png",
+    "lean_left": "Game sprite, back view of a 23-year-old Japanese man riding a cream-colored sandboard down a dune.\nSame character and the SAME NEW OUTFIT as the attached portrait (image 1, chr_naru_normal.png, new version): short spiky silver-gray hair, tanned skin; a cropped bomber jacket color-blocked in dark brown and cream with white stripes on the sleeves, stand-up collar, front open, ribbed cuffs and hem; a dark brown ribbed turtleneck sweater underneath; wide gray cargo pants with dark brown and cream panels and cream flap pockets on the thighs; chunky brown-and-cream sneakers strapped to the board with dark brown bindings. The back of the jacket follows the front color-blocking (mostly dark brown, cream panels, white sleeve stripes).\nDo NOT use the old outfit: no black bomber with white panels, no black T-shirt, no black cargo pants, no silver wallet chain, no white sneakers.\nKeep EXACTLY the pose, camera angle, framing, body proportions and board perspective of the attached pose reference (image 2, rider_naru_lean_left.png) - only the clothes change. Back view only, face not visible.\nClean Japanese anime style with clear outlines and soft cel shading, matching the attached protagonist sprite (image 3, rider_lean_left.webp).\nFully transparent background (real alpha, not a checkerboard). The whole figure, all fingers, the hair and the whole board inside the frame with at least 5% transparent margin. No ground, no sand, no dust, no shadow, no text, no logos, no other people, no hookah equipment.\nFile: rider_naru_lean_left.png\nCorrection: remove ALL stray red/yellow fringe pixels and isolated faint alpha debris around the silhouette and board; use only clean neutral antialiased outline edges, with an entirely zero-alpha outer margin of at least 5% on all four sides. Keep the whole subject slightly smaller if necessary to ensure the 5% margin without clipping.\nPose: leaning hard to the screen's LEFT, carving a turn, exactly as image 2. Image 4 is the newly generated normal ride: copy its NEW outfit panel layout consistently. Match the diagonal tilt and board perspective of image 2.",
+    "lean_right": "Game sprite, back view of a 23-year-old Japanese man riding a cream-colored sandboard down a dune.\nSame character and the SAME NEW OUTFIT as the attached portrait (image 1, chr_naru_normal.png, new version): short spiky silver-gray hair, tanned skin; a cropped bomber jacket color-blocked in dark brown and cream with white stripes on the sleeves, stand-up collar, front open, ribbed cuffs and hem; a dark brown ribbed turtleneck sweater underneath; wide gray cargo pants with dark brown and cream panels and cream flap pockets on the thighs; chunky brown-and-cream sneakers strapped to the board with dark brown bindings. The back of the jacket follows the front color-blocking (mostly dark brown, cream panels, white sleeve stripes).\nDo NOT use the old outfit: no black bomber with white panels, no black T-shirt, no black cargo pants, no silver wallet chain, no white sneakers.\nKeep EXACTLY the pose, camera angle, framing, body proportions and board perspective of the attached pose reference (image 2, rider_naru_lean_right.png) - only the clothes change. Back view only, face not visible.\nClean Japanese anime style with clear outlines and soft cel shading, matching the attached protagonist sprite (image 3, rider_lean_right.webp).\nFully transparent background (real alpha, not a checkerboard). The whole figure, all fingers, the hair and the whole board inside the frame with at least 5% transparent margin. No ground, no sand, no dust, no shadow, no text, no logos, no other people, no hookah equipment.\nFile: rider_naru_lean_right.png\nCorrection: remove ALL stray red/yellow fringe pixels and isolated faint alpha debris around the silhouette and board; use only clean neutral antialiased outline edges, with an entirely zero-alpha outer margin of at least 5% on all four sides. Keep the whole subject slightly smaller if necessary to ensure the 5% margin without clipping.\nPose: leaning hard to the screen's RIGHT, exactly as image 2. Image 4 is the newly generated normal ride: copy its NEW outfit panel layout consistently. Preserve image 2's lean direction and board angle. Frame whole figure with 8% clear margin.",
+    "jump": "Game sprite, back view of a 23-year-old Japanese man riding a cream-colored sandboard down a dune.\nSame character and the SAME NEW OUTFIT as the attached portrait (image 1, chr_naru_normal.png, new version): short spiky silver-gray hair, tanned skin; a cropped bomber jacket color-blocked in dark brown and cream with white stripes on the sleeves, stand-up collar, front open, ribbed cuffs and hem; a dark brown ribbed turtleneck sweater underneath; wide gray cargo pants with dark brown and cream panels and cream flap pockets on the thighs; chunky brown-and-cream sneakers strapped to the board with dark brown bindings. The back of the jacket follows the front color-blocking (mostly dark brown, cream panels, white sleeve stripes).\nDo NOT use the old outfit: no black bomber with white panels, no black T-shirt, no black cargo pants, no silver wallet chain, no white sneakers.\nKeep EXACTLY the pose, camera angle, framing, body proportions and board perspective of the attached pose reference (image 2, rider_naru_jump.png) - only the clothes change. Back view only, face not visible.\nClean Japanese anime style with clear outlines and soft cel shading, matching the attached protagonist sprite (image 3, rider_jump.webp).\nFully transparent background (real alpha, not a checkerboard). The whole figure, all fingers, the hair and the whole board inside the frame with at least 5% transparent margin. No ground, no sand, no dust, no shadow, no text, no logos, no other people, no hookah equipment.\nFile: rider_naru_jump.png\nCorrection: remove ALL stray red/yellow fringe pixels and isolated faint alpha debris around the silhouette and board; use only clean neutral antialiased outline edges, with an entirely zero-alpha outer margin of at least 5% on all four sides. Keep the whole subject slightly smaller if necessary to ensure the 5% margin without clipping.\nPose: in the air, knees tucked, board tilted, exactly as image 2. Image 4 is the newly generated normal ride: copy its NEW outfit panel layout consistently. Preserve image 2's tucked knees and steep tilted board perspective. Both sneakers attached to bindings. Frame whole figure with 8% clear margin.",
+    "brace": "Game sprite, back view of a 23-year-old Japanese man riding a cream-colored sandboard down a dune.\nSame character and the SAME NEW OUTFIT as the attached portrait (image 1, chr_naru_normal.png, new version): short spiky silver-gray hair, tanned skin; a cropped bomber jacket color-blocked in dark brown and cream with white stripes on the sleeves, stand-up collar, front open, ribbed cuffs and hem; a dark brown ribbed turtleneck sweater underneath; wide gray cargo pants with dark brown and cream panels and cream flap pockets on the thighs; chunky brown-and-cream sneakers strapped to the board with dark brown bindings. The back of the jacket follows the front color-blocking (mostly dark brown, cream panels, white sleeve stripes).\nDo NOT use the old outfit: no black bomber with white panels, no black T-shirt, no black cargo pants, no silver wallet chain, no white sneakers.\nKeep EXACTLY the pose, camera angle, framing, body proportions and board perspective of the attached pose reference (image 2, rider_naru_brace.png) - only the clothes change. Back view only, face not visible.\nClean Japanese anime style with clear outlines and soft cel shading, matching the attached protagonist sprite (image 3, rider_brace.webp).\nFully transparent background (real alpha, not a checkerboard). The whole figure, all fingers, the hair and the whole board inside the frame with at least 5% transparent margin. No ground, no sand, no dust, no shadow, no text, no logos, no other people, no hookah equipment.\nFile: rider_naru_brace.png\nCorrection: remove ALL stray red/yellow fringe pixels and isolated faint alpha debris around the silhouette and board; use only clean neutral antialiased outline edges, with an entirely zero-alpha outer margin of at least 5% on all four sides. Keep the whole subject slightly smaller if necessary to ensure the 5% margin without clipping.\nPose: deep crouch bracing for the landing, exactly as image 2. Image 4 is the newly generated normal ride: copy its NEW outfit panel layout consistently. Preserve image 2's low torso, bent knees and broad board perspective. Both sneakers attached to bindings. Frame whole figure with 8% clear margin.",
+    "fall": "Game sprite, back view of a 23-year-old Japanese man riding a cream-colored sandboard down a dune.\nSame character and the SAME NEW OUTFIT as the attached portrait (image 1, chr_naru_normal.png, new version): short spiky silver-gray hair, tanned skin; a cropped bomber jacket color-blocked in dark brown and cream with white stripes on the sleeves, stand-up collar, front open, ribbed cuffs and hem; a dark brown ribbed turtleneck sweater underneath; wide gray cargo pants with dark brown and cream panels and cream flap pockets on the thighs; chunky brown-and-cream sneakers no longer attached to the board; dark brown bindings stay on the detached board. The back of the jacket follows the front color-blocking (mostly dark brown, cream panels, white sleeve stripes).\nDo NOT use the old outfit: no black bomber with white panels, no black T-shirt, no black cargo pants, no silver wallet chain, no white sneakers.\nKeep EXACTLY the pose, camera angle, framing, body proportions and board perspective of the attached pose reference (image 2, rider_naru_fall.png) - only the clothes change. Back view only, face not visible.\nClean Japanese anime style with clear outlines and soft cel shading, matching the attached protagonist sprite (image 3, rider_fall.webp).\nFully transparent background (real alpha, not a checkerboard). The whole figure, all fingers, the hair and the whole board inside the frame with at least 5% transparent margin. No ground, no sand, no dust, no shadow, no text, no logos, no other people, no hookah equipment.\nFile: rider_naru_fall.png\nCorrection: remove ALL stray red/yellow fringe pixels and isolated faint alpha debris around the silhouette and board; use only clean neutral antialiased outline edges, with an entirely zero-alpha outer margin of at least 5% on all four sides. Keep the whole subject slightly smaller if necessary to ensure the 5% margin without clipping.\nPose: tumbling sideways, the board COMPLETELY DETACHED and separated from both shoes by transparent gaps, exactly as image 2. Image 4 is the newly generated normal ride: copy its NEW outfit panel layout consistently. Preserve image 2's arms, raised legs, horizontal tumbling body and separate cream board. Frame whole figure and board with 8% clear margin."
+  },
+  "ride_correction_prompts": [
+    "Game sprite, back view of a 23-year-old Japanese man riding a cream-colored sandboard down a dune.\nSame character and the SAME NEW OUTFIT as the attached portrait (image 1, chr_naru_normal.png, new version): short spiky silver-gray hair, tanned skin; a cropped bomber jacket color-blocked in dark brown and cream with white stripes on the sleeves, stand-up collar, front open, ribbed cuffs and hem; a dark brown ribbed turtleneck sweater underneath; wide gray cargo pants with dark brown and cream panels and cream flap pockets on the thighs; chunky brown-and-cream sneakers strapped to the board with dark brown bindings. The back of the jacket follows the front color-blocking (mostly dark brown, cream panels, white sleeve stripes).\nDo NOT use the old outfit: no black bomber with white panels, no black T-shirt, no black cargo pants, no silver wallet chain, no white sneakers.\nKeep EXACTLY the pose, camera angle, framing, body proportions and board perspective of the attached pose reference (image 2, rider_naru_ride.png) - only the clothes change. Back view only, face not visible.\nClean Japanese anime style with clear outlines and soft cel shading, matching the attached protagonist sprite (image 3, rider_ride.webp).\nFully transparent background (real alpha, not a checkerboard). The whole figure, all fingers, the hair and the whole board inside the frame with at least 5% transparent margin. No ground, no sand, no dust, no shadow, no text, no logos, no other people, no hookah equipment.\nFile: rider_naru_ride.png\nCorrection: remove ALL stray red/yellow fringe pixels and isolated faint alpha debris around the silhouette and board; use only clean neutral antialiased outline edges, with an entirely zero-alpha outer margin of at least 5% on all four sides. Keep the whole subject slightly smaller if necessary to ensure the 5% margin without clipping.",
+    "Edit image 1 only: preserve this exact new-outfit sandboard rider, all pose and artwork, but remove the thin RED and YELLOW fringes and isolated translucent debris along the outer hair, skin and board contour. Those are corrupt pixels, not intentional artwork. Make the alpha boundary clean and neutral dark brown. Background true transparency. All four sides must have at least 5 percent completely transparent space. No other change, no added details. Output one transparent PNG.",
+    "Preserve this exact artwork, clothing, character, pose and board without any redesign. Reframe it substantially smaller in a transparent canvas: the ENTIRE visible figure AND board must fit within the central 75% of the canvas width AND central 75% of canvas height, leaving at least 12% completely transparent margin on ALL FOUR sides. No clipping. Remove all isolated faint alpha debris outside the silhouette. Keep the clean neutral outline and true alpha PNG. Do not add anything. This is a transparent margin/framing correction only."
+  ],
+  "final_framing_correction_prompt": "Preserve this exact artwork, clothing, character, pose and board without any redesign. Reframe it substantially smaller in a transparent canvas: the ENTIRE visible figure AND board must fit within the central 75% of the canvas width AND central 75% of canvas height, leaving at least 12% completely transparent margin on ALL FOUR sides. No clipping. Remove all isolated faint alpha debris outside the silhouette. Keep the clean neutral outline and true alpha PNG. Do not add anything. This is a transparent margin/framing correction only.",
+  "reference_roles": [
+    "new-version Naru portrait: identity and outfit",
+    "same-pose accepted old-outfit source: pose, proportions and board perspective",
+    "same-pose protagonist WebP: rendering style",
+    "newly generated ride before final margin correction: outfit consistency"
+  ],
+  "reference_paths": [
+    {
+      "pose": "ride",
+      "refs": [
+        "assets/sprites/character_variants/new/naru/chr_naru_normal.png",
+        "asset_sources/desert-ride-naru-3222/rider_naru_ride.png",
+        "remake/img/ui/desert_ride/rider_ride.webp"
+      ]
+    },
+    {
+      "pose": "lean_left",
+      "refs": [
+        "assets/sprites/character_variants/new/naru/chr_naru_normal.png",
+        "asset_sources/desert-ride-naru-3222/rider_naru_lean_left.png",
+        "remake/img/ui/desert_ride/rider_lean_left.webp"
+      ]
+    },
+    {
+      "pose": "lean_right",
+      "refs": [
+        "assets/sprites/character_variants/new/naru/chr_naru_normal.png",
+        "asset_sources/desert-ride-naru-3222/rider_naru_lean_right.png",
+        "remake/img/ui/desert_ride/rider_lean_right.webp"
+      ]
+    },
+    {
+      "pose": "jump",
+      "refs": [
+        "assets/sprites/character_variants/new/naru/chr_naru_normal.png",
+        "asset_sources/desert-ride-naru-3222/rider_naru_jump.png",
+        "remake/img/ui/desert_ride/rider_jump.webp"
+      ]
+    },
+    {
+      "pose": "brace",
+      "refs": [
+        "assets/sprites/character_variants/new/naru/chr_naru_normal.png",
+        "asset_sources/desert-ride-naru-3222/rider_naru_brace.png",
+        "remake/img/ui/desert_ride/rider_brace.webp"
+      ]
+    },
+    {
+      "pose": "fall",
+      "refs": [
+        "assets/sprites/character_variants/new/naru/chr_naru_normal.png",
+        "asset_sources/desert-ride-naru-3222/rider_naru_fall.png",
+        "remake/img/ui/desert_ride/rider_fall.webp"
+      ]
+    }
+  ],
+  "generation_counts": {
+    "ride": 4,
+    "lean_left": 2,
+    "lean_right": 2,
+    "jump": 2,
+    "brace": 2,
+    "fall": 2
+  },
+  "note": "Final source PNGs copied byte-for-byte from image_gen. No crop, scaling, alpha thresholding or pixel edits. QA composites used only for inspection, not committed as source.",
+  "intermediate_references": {
+    "poses_after_ride": "history/rider_naru_ride-3.png",
+    "final_margin_edits": "history/rider_naru_<pose>-1.png (ride uses ride-3)"
+  },
+  "reference_sha256": {
+    "rider_jump.webp": "b76c851c38d332d5d643a64e1f041f8722d0d7050eed6f55475580b443f6ba04",
+    "rider_naru_lean_right.png": "155fc3f5e0d3ec1d5d412575fc0c9f068f2762f5e00e189fe6eaf0c9ccd99ee8",
+    "rider_ride.webp": "72e80bc9e80fe5ea839b9a520c2a4a333d8217eef1c80fd2977122acd2674ded",
+    "rider_naru_jump.png": "b5f221f5ed90fbe08629efb1fe03be381e4d05cda2cde75c41f03dc65845df9f",
+    "chr_naru_normal.png": "6b5e89f1ded952ab60d3843df817fe1e9ee4774bc2bc79f06007ade6e2521ec8",
+    "rider_fall.webp": "62ecba99ab2231516703ec17cd057b60731ffe52a810f20100992c60f4171080",
+    "rider_naru_fall.png": "42819422b37b27abcaeb3f7442abc71890d5dc5ab8e50fb9257612f63e45b7bb",
+    "rider_naru_ride.png": "e37f31db739a8da58f2f0128091af1b74bbc14d75c0a3736aa1454e42ddb983d",
+    "rider_lean_left.webp": "c9cbc240ae3f8f51a10d6285029407b3f74a0ff50ffd6e66d6009c5e7d6a6ba6",
+    "rider_brace.webp": "5b1ed5d16002a78a880ed6b4c54c09e46d60291a5a6d1f69447a1beddf46b986",
+    "rider_naru_brace.png": "8bfb4e7d92ccccc8b96dda36baf7e04b8a1b3699c02894caf338e0cc3a3e8c10",
+    "rider_naru_lean_left.png": "2e53fd5a434393d17f16e3cdcac109bb6ef93c336fdfbc4bbbad082329d9ee65",
+    "rider_lean_right.webp": "5554fcb92484f4fb7fa376699491116c9e56a90dea253506e9487a93dd0976b1"
+  }
+}
