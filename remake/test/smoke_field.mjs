@@ -1,7 +1,7 @@
 // 人が吐く煙（js/core/smoke.js）の計算部分の検査。DOM を使わない。
 //   node remake/test/smoke_field.mjs
 import assert from "node:assert/strict";
-import { createSmokeField, firstPersonBreath, mouthBreath, ringBreath, coverBreath, hazeBreath, parseColor, smokeTint, smokeAllowed, GRID_W, GRID_H, SMOKE_WHITE } from "../js/core/smoke.js";
+import { createSmokeField, firstPersonBreath, mouthBreath, ringBreath, coverBreath, hazeBreath, hazeLayer, parseColor, smokeTint, smokeAllowed, GRID_W, GRID_H, SMOKE_WHITE } from "../js/core/smoke.js";
 import { hazeLevel } from "../js/core/shop-haze.js";
 
 // 同じ乱数列なら同じ煙になる（撮り直しても結果が変わらないようにする）
@@ -123,9 +123,9 @@ assert.equal(smokeAllowed(), false);
 {
   const random = rng(21), field = createSmokeField({ random });
   let wait = 0;
-  for (let t = 0; t < 30; t += 1 / 20) { wait -= 1 / 20; if (wait <= 0) { wait = 1.1 + 1.2 * random(); field.breath(hazeBreath(random)); } field.step(1 / 20); }
+  for (let t = 0; t < 30; t += 1 / 8) { wait -= 1 / 8; if (wait <= 0) { wait = 2.8 + 2.4 * random(); field.breath(hazeBreath(random)); } field.step(1 / 8); }
   const painted = field.paint(px), share = painted / px.length;
-  assert.ok(share > .05 && share < .3, `漂う煙は画面の1〜2割ほど（${(share * 100).toFixed(1)}%）`);
+  assert.ok(share > .005 && share < .15, `漂う煙は小さな房がまばらにある程度（${(share * 100).toFixed(1)}%）`);
   const alphas = [...new Set([...px].filter((v) => v).map(alphaOf))].sort((a, b) => a - b);
   assert.ok(alphas.length >= 3, `縁へ向かって段々に薄くなる（${alphas}）`);
   assert.ok(alphas.at(-1) < 200, "いちばん濃い所でも、人が吐く煙より薄い");
@@ -148,6 +148,56 @@ assert.equal(smokeAllowed(), false);
     assert.equal(hazeLevel(other && `${B}${other}.webp`, "", "", "night"), 0, `${other || "背景なし"} には出さない`);
   for (const screen of ["bench", "count", "result", "title", "end"])
     assert.equal(hazeLevel(`${B}bg_tonari_inside_night.webp`, screen, "", "night"), 0, `${screen} の画面では出さない`);
+}
+
+// ---- 漂う煙の常駐処理: 8コマだけ計算・描画し、退場時は即座に計算を止める。
+{
+  const names = ["document", "performance", "requestAnimationFrame", "cancelAnimationFrame", "setTimeout", "clearTimeout"];
+  const saved = names.map((name) => Object.getOwnPropertyDescriptor(globalThis, name));
+  const jobs = new Map(), children = [];
+  let now = 0, next = 1, draws = 0;
+  const schedule = (fn, ms) => { const id = next++; jobs.set(id, { fn, at: now + ms }); return id; };
+  const advance = (ms) => {
+    const end = now + ms;
+    while (jobs.size) {
+      const [id, job] = [...jobs].sort((a, b) => a[1].at - b[1].at)[0];
+      if (job.at > end) break;
+      jobs.delete(id); now = job.at; job.fn(now);
+    }
+    now = end;
+  };
+  const host = { append(canvas) { children.push(canvas); canvas.isConnected = true; } };
+  const doc = { hidden: false, createElement() { return {
+    style: {}, isConnected: false, setAttribute() {},
+    getContext() { return { createImageData: (w, h) => ({ data: new Uint8ClampedArray(w * h * 4) }), putImageData() { draws++; } }; },
+    remove() { this.isConnected = false; const i = children.indexOf(this); if (i >= 0) children.splice(i, 1); },
+  }; } };
+  try {
+    for (const [name, value] of Object.entries({ document: doc, performance: { now: () => now }, requestAnimationFrame: (fn) => schedule(fn, 16), cancelAnimationFrame: (id) => jobs.delete(id), setTimeout: schedule, clearTimeout: (id) => jobs.delete(id) }))
+      Object.defineProperty(globalThis, name, { configurable: true, value });
+    const haze = hazeLayer(host, { random: rng(21) });
+    assert.ok(haze.field.count > 0 && haze.field.count < 8, "入店時は小さな房だけを育て、煙を大量に先行計算しない");
+    advance(1000);
+    assert.ok(draws >= 8 && draws <= 9, `常駐中の描画は毎秒8回ほど（${draws}）`);
+    assert.equal(+haze.canvas.style.opacity, .07, "夜でも層の濃さは7%（従来44%）");
+    haze.setLevel(.55);
+    assert.ok(+haze.canvas.style.opacity < .06, "昼はさらに薄い");
+    haze.stop();
+    const stoppedDraws = draws;
+    assert.equal(haze.field.count, 0, "退場し始めた時点で煙の計算を片付ける");
+    advance(1000);
+    assert.equal(draws, stoppedDraws, "薄れている間は描き直さない");
+    assert.ok(haze.canvas.isConnected, "最後の絵は薄れ終わるまで残す");
+    const nextHaze = hazeLayer(host, { random: rng(22) });
+    assert.equal(children.length, 1, "素早い再入店でも、消えかけの煙を重ねない");
+    assert.equal(haze.canvas.isConnected, false);
+    doc.hidden = true;
+    advance(200);
+    assert.equal(nextHaze.canvas.isConnected, false, "非表示のタブでは常駐処理を止める");
+    assert.equal(jobs.size, 0, "計算・退場のタイマーを残さない");
+  } finally {
+    names.forEach((name, i) => saved[i] ? Object.defineProperty(globalThis, name, saved[i]) : delete globalThis[name]);
+  }
 }
 
 console.log("smoke field: PASS (色・吐き方・成績表・輪・覆う・2色・漂う煙・出す背景・後片付け)");

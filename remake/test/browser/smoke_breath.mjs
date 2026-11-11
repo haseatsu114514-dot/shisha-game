@@ -141,9 +141,9 @@ await suite("smoke-breath", async (check) => {
     await showBg(page, "bg_home");
     await showBg(page, "bg_tonari_inside");
     await page.locator("#haze canvas.smoke-haze").waitFor({ state: "attached" });
-    // 入った時点で、もう漂っている。画面の1〜2割ほどで、台詞の箱のあたりには溜まらない
+    // 入った時点で、もう漂っている。小さな房だけで、台詞の箱のあたりには溜まらない
     const night = await smokeOf(page, "#haze canvas");
-    assert.ok(night.n > 640 * 360 * .04 && night.n < 640 * 360 * .32, `うっすら（${(night.n / 2304).toFixed(1)}%）`);
+    assert.ok(night.n > 0 && night.n < 640 * 360 * .15, `うっすら（${(night.n / 2304).toFixed(1)}%）`);
     assert.ok(night.y < .5, `部屋の上半分に溜まる（重心の高さ ${night.y.toFixed(2)}）`);
     const look = await page.evaluate(async () => {
       await new Promise((r) => setTimeout(r, 1500)); // ふわっと出てくるのを待つ
@@ -152,12 +152,12 @@ await suite("smoke-breath", async (check) => {
         order: [stage.indexOf(document.getElementById("bg")), stage.indexOf(host), stage.indexOf(document.getElementById("screen"))],
         zs: ["bg", "screen", "vn"].map((id) => +getComputedStyle(document.getElementById(id)).zIndex) };
     });
-    assert.ok(look.opacity > .3 && look.opacity <= .5, `濃すぎない（${look.opacity}）`);
+    assert.ok(look.opacity > .04 && look.opacity <= .071, `濃すぎない（${look.opacity}）`);
     assert.equal(look.pointer, "none");
     assert.ok(look.zs[0] < look.z && look.z < look.zs[1] && look.z < look.zs[2], `背景より上、画面・立ち絵より下（${JSON.stringify(look)}）`);
     // 昼は控えめ
     await showBg(page, "bg_tonari_inside", { time: "day" });
-    await page.waitForFunction(() => +document.querySelector("#haze canvas").style.opacity < .36);
+    await page.waitForFunction(() => +document.querySelector("#haze canvas").style.opacity < .06);
     assert.equal(await page.locator("#haze canvas").count(), 1, "同じ店の昼と夜は、同じ煙のまま濃さだけ変える");
     // 作業台の画面では出さない。シーシャ屋でない場所でも出さない
     await showBg(page, "bg_tonari_inside", { screen: "bench" });

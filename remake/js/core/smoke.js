@@ -310,8 +310,8 @@ export function coverBreath(colors = null) {
  */
 export function hazeBreath(random = Math.random) {
   const right = random() < .5;
-  return { x: .04 + .92 * random(), y: .14 + .36 * random(), angle: (right ? 0 : Math.PI) + (random() - .5) * .7, spread: 1.4, speed: .04, width: .1,
-    dur: 1.6, rate: 2.6, size: .11, life: 11, buoy: .003, drag: .5, turb: .05, hold: .5, alpha: .8, swell: 3, soft: true };
+  return { x: .04 + .92 * random(), y: .12 + .27 * random(), angle: (right ? 0 : Math.PI) + (random() - .5) * .7, spread: 1.4, speed: .04, width: .1,
+    dur: 1.6, rate: 1.8, size: .09, life: 11, buoy: .003, drag: .5, turb: .05, hold: .5, alpha: .8, swell: 3, soft: true };
 }
 
 // ---------------------------------------------------------------- 画面に載せる層
@@ -386,12 +386,14 @@ export function smokeLayer(host, { zIndex = 30, className = "" } = {}) {
 }
 
 const HAZE_FRAME = 1 / 8; // 漂う煙は動きが遅いので、描くのは毎秒8コマ
+const hazeLayers = new WeakMap();
 
 /**
  * host いっぱいに、店に漂う煙の層を載せる（KMR21）。level（0〜1）で濃さと量を決める。開いた時点で、もう漂っている状態から始める。
  * 戻り値の setLevel で濃さを変え、stop でゆっくり消して外す。host は position が static 以外であること。
  */
 export function hazeLayer(host, { level = 1, random = Math.random } = {}) {
+  hazeLayers.get(host)?.destroy(); // 場面を素早く替えても、消えかけの煙を重ねない
   const canvas = document.createElement("canvas");
   canvas.width = GRID_W; canvas.height = GRID_H;
   canvas.className = "smoke-layer smoke-haze";
@@ -401,38 +403,53 @@ export function hazeLayer(host, { level = 1, random = Math.random } = {}) {
   const ctx = canvas.getContext("2d");
   const field = createSmokeField({ random });
   const image = ctx ? ctx.createImageData(GRID_W, GRID_H) : null, px = image ? new Uint32Array(image.data.buffer) : null;
-  let raf = 0, last = 0, acc = 0, sinceDraw = HAZE_FRAME, wait = 0, dead = false, stopping = false;
+  let timer = 0, fadeTimer = 0, raf = 0, last = 0, wait = 0, dead = false, stopping = false;
   const emit = (dt) => {
     wait -= dt;
     if (wait > 0 || stopping) return;
-    wait = (1.1 + 1.2 * random()) / Math.max(.35, level);
+    wait = (2.8 + 2.4 * random()) / Math.max(.35, level);
     field.breath(hazeBreath(random));
   };
   const draw = () => { if (ctx) { field.paint(px); ctx.putImageData(image, 0, 0); } };
-  const destroy = () => { if (dead) return; dead = true; cancelAnimationFrame(raf); field.clear(); canvas.remove(); };
-  const tick = (now) => {
+  const destroy = () => {
     if (dead) return;
-    if (!canvas.isConnected) { destroy(); return; }
-    const dt = Math.min(.1, (now - last) / 1000 || 0);
-    last = now; acc += dt; sinceDraw += dt;
-    let n = 0;
-    while (acc >= STEP && n < 4) { emit(STEP); field.step(STEP); acc -= STEP; n++; }
-    if (acc > STEP * 4) acc = 0;
-    if (sinceDraw >= HAZE_FRAME) { sinceDraw = 0; draw(); }
-    raf = requestAnimationFrame(tick);
+    dead = true;
+    clearTimeout(timer); clearTimeout(fadeTimer); cancelAnimationFrame(raf);
+    field.clear(); canvas.remove();
+    if (hazeLayers.get(host) === layer) hazeLayers.delete(host);
   };
-  const apply = () => { canvas.style.opacity = String(stopping ? 0 : .22 + .22 * level); };
-  // 入った時点で、もう店に煙がある状態にする（少し粗い刻みで先に進めておく）
-  for (let t = 0; t < 14; t += 1 / 20) { emit(1 / 20); field.step(1 / 20); }
-  draw();
-  last = performance.now();
-  raf = requestAnimationFrame(() => { apply(); raf = requestAnimationFrame(tick); });
-  return {
+  const tick = (now) => {
+    if (dead || stopping) return;
+    if (!canvas.isConnected || document.hidden) { destroy(); return; }
+    const dt = Math.min(.25, (now - last) / 1000 || 0);
+    last = now;
+    // 背景の煙は計算も8コマに合わせる。復帰時に遅れた時間を一気に計算しない。
+    emit(dt); field.step(dt); draw();
+    timer = setTimeout(() => tick(performance.now()), HAZE_FRAME * 1000);
+  };
+  // 最も濃い夜でも層は7%。背景を白く覆わず、気づく程度の薄さにする。
+  const apply = () => { canvas.style.opacity = String(stopping ? 0 : .04 + .03 * level); };
+  const layer = {
     canvas, field,
     get level() { return level; },
-    setLevel(value) { level = value; apply(); },
+    setLevel(value) { if (dead || stopping) return; level = value; apply(); },
     /** ゆっくり消して外す */
-    stop() { if (stopping) return; stopping = true; apply(); setTimeout(destroy, 1300); },
+    stop() {
+      if (dead || stopping) return;
+      stopping = true;
+      clearTimeout(timer); cancelAnimationFrame(raf); field.clear();
+      apply(); // 最後の絵を薄くするだけ。退場中の煙の計算は止める
+      fadeTimer = setTimeout(destroy, 1300);
+    },
     destroy,
   };
+  hazeLayers.set(host, layer);
+  if (!ctx) { destroy(); return layer; }
+  // 入店時は小さな一房だけを育てる。14秒ぶんの空気を毎回計算して入力を止めない。
+  for (let t = 0; t < 3; t += HAZE_FRAME) { emit(HAZE_FRAME); field.step(HAZE_FRAME); }
+  draw();
+  last = performance.now();
+  raf = requestAnimationFrame(() => { if (!dead && !stopping) apply(); });
+  timer = setTimeout(() => tick(performance.now()), HAZE_FRAME * 1000);
+  return layer;
 }
