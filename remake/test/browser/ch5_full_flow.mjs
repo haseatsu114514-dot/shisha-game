@@ -176,6 +176,15 @@ await suite("ch5-full-flow", async check => {
       assert.equal(state.flags._ch5.read[id], true);
 
     // 5. 博士に連絡（1回目）: 「記録に残らない一日」を先に読み、日を決める → その夜を越えて翌朝が勝負の日。
+    await page.evaluate(async () => {
+      const vn = await import("./js/vn/engine.js");
+      const previous = vn.hooks.onEnter;
+      window.__unrecordedLines = [];
+      vn.hooks.onEnter = (id, dialogue) => {
+        if (id === "ch5_unrecorded_day") window.__unrecordedLines = dialogue.lines;
+        previous?.(id, dialogue);
+      };
+    });
     await go(page, "ch5_call");
     await committed(page, "ch5_unrecorded_day");
     await committed(page, "ch5_schedule_contact");
@@ -185,6 +194,16 @@ await suite("ch5-full-flow", async check => {
     assert.equal(state.flags._ch5_match_scheduled, true);
     assert.equal(state.day, 54);
     assert.equal(state.flags._ch5.matchDay, 54);
+    const ordinaryWork = await page.evaluate(async () => {
+      const { DB } = await import("./js/core/data.js");
+      const source = DB.dialogues.ch5_unrecorded_day;
+      return { actual: window.__unrecordedLines.map(line => line.text || "").join("\n"),
+        expected: ["mashiro_seen", "visitor_seen", "practice_seen"].flatMap(key => source.branches[key]).map(line => line.text),
+        choices: window.__unrecordedLines.filter(line => line.type === "choice").map(line => line.id) };
+    });
+    for (const remembered of ordinaryWork.expected) assert(ordinaryWork.actual.includes(remembered), remembered);
+    assert.deepEqual(ordinaryWork.choices, ["ch5_unrecorded_task"], "The required scene keeps one ordinary work choice");
+    assert.match(ordinaryWork.actual, /日を決めるかどうかは、まだこれから/);
 
     // 6. 会場確認で「まだ行かない」→ 日程を取り消す: 先送りの場面を読んで、自由行動（同じ日）へ戻る。
     await page.locator(dt("ch5-go-venue")).click();

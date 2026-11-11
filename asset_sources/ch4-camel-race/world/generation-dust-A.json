@@ -1,0 +1,171 @@
+{
+  "issue": 3217,
+  "date_utc": "2026-11-11",
+  "tool": "Codex built-in image_gen",
+  "authority": "Issue #3217 body and user renewed creation request",
+  "reference": {
+    "path": "assets/backgrounds/bg_dubai_camel_track_morning.png",
+    "role": "Cached authoritative background, visually inspected for style and sunrise light"
+  },
+  "copy_probe": {
+    "bytes": 310566,
+    "sha256": "8e7045f660812aa5b1671259c76fd94915ae1355db666dc9319b2ce733db4af4",
+    "result": "source and destination matched"
+  },
+  "items": [
+    {
+      "id": "CR-WD03",
+      "variant": 1,
+      "status": "candidate, not adopted",
+      "prompt": "ONE game sprite, CR-WD03 dust-1.png, target 256x256 square canvas. A SMALL puff of desert dust kicked up by camel hooves drifting LEFT, isolated on REAL transparent alpha. Two to three crisp clearly shaped tone steps with confident irregular dark sand contour, a few sparse tiny detached dust flecks leftward. Compact low sweeping silhouette, substantial blank transparent space around puff. No airbrushed blur, no gradual fading, no glow, no shadow outside puff. Japanese pixel-painterly visual novel minigame set at Dubai sunrise. Fine painterly pixel texture, confident dark outer outlines, flat local colors with 2-3 shaped shadow steps, warm low light upper left. Worn natural desert sand palette #e2c48c #f4ead6 #c9963a with muted brown shadows. Match reference texture and light only. No scene or ground, no people, no text, letters, digits, pseudo-writing, logos, watermark, no photorealism, no 3D render, no glossy gradient.",
+      "original": {
+        "path": "originals/dust-1-A.png",
+        "sha256": "e2cd17862948ed6562bcf2504df81ca0d2860f6b6347d16d600f467621792bf4",
+        "bytes": 209571,
+        "size": [
+          1254,
+          1254
+        ],
+        "mode": "RGBA",
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "visible_bbox_alpha_gt_127": [
+          234,
+          635,
+          1027,
+          886
+        ]
+      },
+      "candidate": {
+        "path": "candidates/dust-1-A.png",
+        "sha256": "3ae036354dadf820258faa59971ceec92854a084cdf902b6279810f4f8985338",
+        "bytes": 12667,
+        "size": [
+          256,
+          256
+        ],
+        "mode": "RGBA",
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "visible_bbox_alpha_gt_127": [
+          48,
+          130,
+          210,
+          181
+        ]
+      },
+      "processing": "Uniform downscale to 256x256 only; real alpha preserved. No repainting or background removal."
+    },
+    {
+      "id": "CR-WD03",
+      "variant": 2,
+      "status": "candidate, not adopted",
+      "prompt": "CR-WD03 dust-2.png: ONE MEDIUM desert dust puff kicked up by camel hooves drifting LEFT. Target 256x256 square sprite, real transparent alpha. Match this dust reference's painterly pixel shapes, sand palette and light. Bigger than reference: main cloud spans about 75% width and 40% height, centered low-middle. Two or three clearly shaped crisp tone steps, not airbrushed blurry circles, warm pale sand highlights upper left, muted brown shadows. A few small flecks trail to LEFT, rising billowing lobes on RIGHT. No ground shadow, no scene, no text, digits, letters, logos, watermark, people, glow, gradients, 3D or photo realism. Single isolated dust cloud only, transparent outside silhouette.",
+      "original": {
+        "path": "originals/dust-2-A.png",
+        "sha256": "e41fb39ae311cc587bd95b9e37c04c86e2e89e4bf9452d33bd597b2f68de1d10",
+        "bytes": 339613,
+        "size": [
+          1254,
+          1254
+        ],
+        "mode": "RGBA",
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "visible_bbox_alpha_gt_127": [
+          86,
+          473,
+          1182,
+          864
+        ]
+      },
+      "candidate": {
+        "path": "candidates/dust-2-A.png",
+        "sha256": "3bda547e5bb27d7492b81573cd7eac351fa3958a4bdb52170c1f8589e216ae53",
+        "bytes": 23706,
+        "size": [
+          256,
+          256
+        ],
+        "mode": "RGBA",
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "visible_bbox_alpha_gt_127": [
+          18,
+          97,
+          241,
+          176
+        ]
+      },
+      "processing": "Uniform downscale to 256x256 only; real alpha preserved. No repainting or background removal."
+    },
+    {
+      "id": "CR-WD03",
+      "variant": 3,
+      "status": "candidate, not adopted",
+      "prompt": "CR-WD03 dust-3.png: ONE LARGE desert dust puff kicked up by camel hooves drifting LEFT. Target 256x256 square sprite, real transparent alpha. Match reference's painterly pixel shapes, sand palette, outlines and upper-left light. Large cloud spans about 90% width and 65% height, centered. Multiple large billowing lobes rise on RIGHT, low thin streaming tail and a few specks on LEFT. Exactly two to three clearly shaped crisp tone steps, not airbrush blurry circles. Warm pale sand highlight #f4ead6, main sand #e2c48c, muted brown shadow. Fine painterly pixel texture. No ground or object shadow, no scene, no text, digits, letters, logos, watermark, people, glow, smooth gradients, 3D or photo realism. Only a single isolated dust cloud, transparent outside silhouette.",
+      "original": {
+        "path": "originals/dust-3-A.png",
+        "sha256": "8e20ebcb2b68331e2708300817c6b2770e52221ff7b79c674d3ae76470940af1",
+        "bytes": 433968,
+        "size": [
+          1254,
+          1254
+        ],
+        "mode": "RGBA",
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "visible_bbox_alpha_gt_127": [
+          65,
+          382,
+          1201,
+          887
+        ]
+      },
+      "candidate": {
+        "path": "candidates/dust-3-A.png",
+        "sha256": "a3d5c91dc26141953e3ce9b9fb092b8ce6b04386cd254f0d1dd40b282e08e39b",
+        "bytes": 30640,
+        "size": [
+          256,
+          256
+        ],
+        "mode": "RGBA",
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "visible_bbox_alpha_gt_127": [
+          13,
+          78,
+          245,
+          181
+        ]
+      },
+      "processing": "Uniform downscale to 256x256 only; real alpha preserved. No repainting or background removal."
+    }
+  ],
+  "rejected": [
+    {
+      "path": "rejected/gate-start-attempt-A.png",
+      "prompt": "Generate ONE isolated transparent PNG game sprite: CR-WD01 gate-start. Reference image is ONLY the existing game's painterly pixel texture and warm sunrise light, do NOT reproduce the scenery.\nSTYLE: Game sprites for a Japanese pixel-painterly visual novel minigame set at a desert camel racetrack in Dubai at sunrise. Fine painterly pixel texture, confident dark outlines slightly heavier on outer silhouette, flat local colors with two to three clearly shaped shadow steps, warm low light from upper left. Honest sun-bleached wood and faded cloth. Palette sand #e2c48c, cream #f4ead6, brass #c9963a, deep indigo #1c2236, ink #1a110a, amber #e08a2c, racing red #c8302a, deep green #2f8f6b. NO glossy gradients, glow, bloom, neon, airbrush, photo realism, smooth 3D. Never draw any text, letters, digits, pseudo-writing, logos or watermark. No people.\nFORMAT: target 480x800 canvas (3:5 portrait), real transparent alpha background. No ground, no drop or ground shadow outside object. Trackside view of racetrack gate at slight angle, spanning track. Two sun-bleached wooden posts joined by top beam. NEAR post thick and tall at right around x=410; base touches bottom edge y=800. FAR post thin and shorter at left around x=65; base at y=376 (47% canvas height). Diagonal top beam from about x65,y50 to x410,y150; hangs a deep green cloth banner facing viewer. Banner center completely plain flat blank green cloth for code lettering. Small triangular deep-green flags atop posts. Object fills to about 2% canvas edges. Clearly preserve two post foot positions, wide open transparent space below diagonal banner, no floor, no extra poles.",
+      "reason": "Far post foot around 54% canvas height, not requested ~47%; no matching finish gate produced."
+    },
+    {
+      "path": "rejected/gate-start-attempt-B.png",
+      "prompt": "Edit this exact gate sprite. Preserve canvas dimensions, exact right near post geometry and all drawing style, green cloth blank banner, wood, flags, lighting and real transparent alpha. ONLY shorten the LEFT FAR post at its bottom: its current foot is about 54% down the canvas; move that entire foot upward so the bottom of left far post ends at exactly 47% canvas height (about y=761 on 1619 high original). Keep the beam and banner and upper part of left post completely fixed. Transparent pixels where removed post was. No text, no new objects, no external shadows. Target final proportional 480x800.",
+      "reason": "Edit failed to move far post foot to requested ~47%; not a candidate."
+    }
+  ],
+  "delivery_status": "Local production and QA only. Not uploaded to Git LFS or committed yet. Existing marker-board untouched."
+}

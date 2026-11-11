@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import vm from "node:vm";
 import { createChapterActions } from "../js/core/chapter-actions.js";
+import { CH3_SERVICE_IDS } from "../js/chapters/ch3-work-progress.js";
 
 const read = url => readFileSync(url, "utf8");
 const deferred = () => {
@@ -18,7 +19,7 @@ for (const [chapter, prefix, log, retry] of [
   const node = (selector, attrs = {}, children = []) => ({ selector,
     ...(Array.isArray(attrs) ? { children: attrs } : { ...attrs, children }) });
   const bindings = {
-    state, el: node, MUKAI_DELIVERY_STEPS: [], CH3_STORY_DIALOGUE_FILES: {}, CH4_SCENE_FILES: {},
+    state, el: node, MUKAI_DELIVERY_STEPS: [], CH3_STORY_DIALOGUE_FILES: {}, CH3_SERVICE_IDS, CH4_SCENE_FILES: {},
     layers: { hud: { replaceChildren() {}, classList: { remove() {}, toggle() {} } } },
     showScreen: (name, root) => screens.push({ name, root }),
   };

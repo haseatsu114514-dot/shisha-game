@@ -1,0 +1,600 @@
+{
+  "issue": 3217,
+  "date_utc": "2026-11-11",
+  "tool": "Codex built-in image_gen",
+  "references": [
+    {
+      "path": "assets/backgrounds/bg_dubai_camel_track_morning.png",
+      "role": "Cached authoritative texture and sunrise light reference, inspected visually; GOOD generated from it then used as letter style reference."
+    }
+  ],
+  "limits": [
+    "No access to adopted word-perfect.png bytes; same-painter comparison must occur before adoption.",
+    "No GitHub LFS upload route confirmed; this packet is not repository delivery.",
+    "No game integration or existing asset overwrite."
+  ],
+  "items": [
+    {
+      "id": "CR-UI14",
+      "word": "good",
+      "status": "technical candidate, adoption pending",
+      "prompt": "CR-UI14 word-good.png. ONE isolated hand-painted racecourse sign-writer word, exact text \"GOOD\", G O O D, no other letters or symbols. Light blue paint with a strong crisp dark ink outline. Bold chunky slightly irregular hand-brush strokes, not a computer font. Japanese pixel-painterly visual novel minigame set at Dubai desert racetrack sunrise: fine painted pixel texture, confident dark outlines slightly heavier outside, flat blue local color with only two to three clearly shaped shadow steps, warm upper-left illumination. Reference background is only texture/light/style reference, do not draw scenery. Real transparent alpha around and inside letters. Word only, no boards, no dust, no people, logos, watermarks, glossy gradient, glow, bloom, neon, airbrush, 3D. Target landscape word art longest edge <=1024 pixels, tightly framed but all outline fully visible, roughly 3:1 horizontal word.",
+      "original": {
+        "path": "originals/word-good-A.png",
+        "sha256": "bcac5aac6a34a0c361e9150cbdf2b943116df24fbdfd3a58cd31aa3d79b446de",
+        "bytes": 1409788,
+        "size": [
+          2172,
+          724
+        ],
+        "mode": "RGBA",
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "bbox_alpha_gt_127": [
+          29,
+          76,
+          2148,
+          698
+        ]
+      },
+      "candidate": {
+        "path": "candidates/word-good-A.png",
+        "sha256": "f88b98b0b356fb4e30960ef5ae1cf42b9e6e8ccdbb1bafe950720ab256463e46",
+        "bytes": 350123,
+        "size": [
+          1024,
+          341
+        ],
+        "mode": "RGBA",
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "bbox_alpha_gt_127": [
+          14,
+          36,
+          1013,
+          329
+        ]
+      },
+      "processing": "Uniform downscale only, alpha preserved; original exceeded requested maximum edge.",
+      "visual_qa": "Spelling and specified color match; no extra objects or letters. Existing adopted PERFECT comparison unavailable. Painted texture contains mild tonal variation, final flat-paint style acceptance pending."
+    },
+    {
+      "id": "CR-UI14",
+      "word": "miss",
+      "status": "technical candidate, adoption pending",
+      "prompt": "CR-UI14 word-miss.png. ONE isolated hand-painted racecourse sign-writer word, exact text \"MISS\", M I S S, no other letters or symbols. Greyish muted red paint, crisp dark ink outline. Same hand-lettered brush shapes and pixel-painterly texture as supplied GOOD reference, but greyish red. Bold chunky slightly irregular paint strokes, not computer font. FLAT RED paint with 2-3 hard-edged stepped shadows only: NO smooth gradients or shiny highlights. Warm light upper left. Real transparent alpha around and inside letters. Word only, no boards, scenery, dust, people, logos, watermark, glow, bloom, neon, airbrush, 3D. Longest edge target <=1024 pixels, landscape roughly 3:1, tightly framed but every stroke/outline fully inside canvas.",
+      "original": {
+        "path": "originals/word-miss-A.png",
+        "sha256": "08b830c9a83654c7d1171ff9baccbf634c6c5cbc853af822e7e91e092949871f",
+        "bytes": 1298633,
+        "size": [
+          2172,
+          724
+        ],
+        "mode": "RGBA",
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "bbox_alpha_gt_127": [
+          52,
+          65,
+          2108,
+          709
+        ]
+      },
+      "candidate": {
+        "path": "candidates/word-miss-A.png",
+        "sha256": "7251e5998c3f64fdc78f56710724e1299670d724007f7752972f3a83af2ec554",
+        "bytes": 344207,
+        "size": [
+          1024,
+          341
+        ],
+        "mode": "RGBA",
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "bbox_alpha_gt_127": [
+          25,
+          31,
+          994,
+          334
+        ]
+      },
+      "processing": "Uniform downscale only, alpha preserved; original exceeded requested maximum edge.",
+      "visual_qa": "Spelling and specified color match; no extra objects or letters. Existing adopted PERFECT comparison unavailable. Painted texture contains mild tonal variation, final flat-paint style acceptance pending."
+    },
+    {
+      "id": "CR-UI14",
+      "word": "go",
+      "status": "technical candidate, adoption pending",
+      "prompt": "CR-UI14 word-go.png. ONE isolated hand-painted racecourse sign-writer word, exactly \"GO!\" (capital G, capital O, exclamation mark). No other letters or symbols. Matte WHITE paint with crisp dark painted offset shadow attached to letters. Use the brush-hand of GOOD reference: bold chunky slightly irregular energetic brush strokes, painterly pixel texture, not a computer font. Two to three shaped hard-edged white/cream/grey color steps; no smooth gradients or glossy highlights. Real transparent alpha outside and inside letters. Nothing else: no boards, ground, scenery, dust, people, logos, watermark, glow, bloom, neon, airbrush, 3D. Longest edge target <=1024 pixels, landscape word, tightly framed but all strokes and dark shadow remain visible.",
+      "original": {
+        "path": "originals/word-go-A.png",
+        "sha256": "18cd32901139d8108c3ec95e4539a883d0d0a45ba84ce6dd58edf3fa0b41e506",
+        "bytes": 1170144,
+        "size": [
+          1774,
+          887
+        ],
+        "mode": "RGBA",
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "bbox_alpha_gt_127": [
+          20,
+          24,
+          1750,
+          871
+        ]
+      },
+      "candidate": {
+        "path": "candidates/word-go-A.png",
+        "sha256": "6b898992d48aebf52600e21709844d409881c0725ad2419b66df531f0b3b838a",
+        "bytes": 475885,
+        "size": [
+          1024,
+          512
+        ],
+        "mode": "RGBA",
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "bbox_alpha_gt_127": [
+          12,
+          14,
+          1010,
+          503
+        ]
+      },
+      "processing": "Uniform downscale only, alpha preserved; original exceeded requested maximum edge.",
+      "visual_qa": "Spelling and specified color match; no extra objects or letters. Existing adopted PERFECT comparison unavailable. Painted texture contains mild tonal variation, final flat-paint style acceptance pending."
+    },
+    {
+      "id": "CR-UI14",
+      "word": "3",
+      "status": "technical candidate, adoption pending",
+      "prompt": "CR-UI14 word-3.png. ONE isolated hand-painted racecourse sign-writer numeral, exact single digit \"3\", no other letters, symbols or numbers. Matte WHITE paint with crisp dark painted offset shadow attached to the digit. Same hand and brush shapes as supplied GO! reference: bold chunky slightly irregular energetic brush strokes, painterly pixel texture, not a computer font. Only two to three shaped hard-edged white/cream/grey color steps; no smooth gradients or shiny highlights. Real transparent alpha outside and inside the numeral. No boards, scene, dust, ground, people, logos, watermark, glow, bloom, neon, airbrush, 3D. Target longest edge <=1024 pixels, near-square or portrait canvas, tightly frame digit with all dark shadow visible.",
+      "original": {
+        "path": "originals/word-3-A.png",
+        "sha256": "6875435ed54a3e599324bc99d171c3711261ea9c805b37684590dad337f48349",
+        "bytes": 1144404,
+        "size": [
+          1230,
+          1278
+        ],
+        "mode": "RGBA",
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "bbox_alpha_gt_127": [
+          82,
+          32,
+          1139,
+          1272
+        ]
+      },
+      "candidate": {
+        "path": "candidates/word-3-A.png",
+        "sha256": "6b64f66ed1dc54daaa0ebae2a1bbd7b19bbb9154d89adbe7ad9829967401a782",
+        "bytes": 705641,
+        "size": [
+          986,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "bbox_alpha_gt_127": [
+          66,
+          25,
+          913,
+          1019
+        ]
+      },
+      "processing": "Uniform downscale only, alpha preserved; original exceeded requested maximum edge.",
+      "visual_qa": "Spelling and specified color match; no extra objects or letters. Existing adopted PERFECT comparison unavailable. Painted texture contains mild tonal variation, final flat-paint style acceptance pending."
+    },
+    {
+      "id": "CR-UI14",
+      "word": "2",
+      "status": "technical candidate, adoption pending",
+      "prompt": "CR-UI14 word-2.png. ONE isolated hand-painted racecourse sign-writer numeral, exact single digit \"2\", no other letters, symbols or numbers. Matte WHITE paint with crisp dark painted offset shadow attached to the digit. Same hand and brush shapes as supplied GO! reference: bold chunky slightly irregular energetic brush strokes, painterly pixel texture, not a computer font. Only two to three shaped hard-edged white/cream/grey color steps; no smooth gradients or shiny highlights. Real transparent alpha outside and inside the numeral. No boards, scene, dust, ground, people, logos, watermark, glow, bloom, neon, airbrush, 3D. Target longest edge <=1024 pixels, near-square or portrait canvas, tightly frame digit with all dark shadow visible.",
+      "original": {
+        "path": "originals/word-2-A.png",
+        "sha256": "8483bb5b739ab06c5afe23ad33d77bed183944faa5281ff1382beba5883c2849",
+        "bytes": 1166186,
+        "size": [
+          1210,
+          1300
+        ],
+        "mode": "RGBA",
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "bbox_alpha_gt_127": [
+          54,
+          31,
+          1156,
+          1291
+        ]
+      },
+      "candidate": {
+        "path": "candidates/word-2-A.png",
+        "sha256": "f40fc925e3372514cf8c71ea08a65806d0af213be281119f790eeda360c5032d",
+        "bytes": 708760,
+        "size": [
+          953,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "bbox_alpha_gt_127": [
+          43,
+          24,
+          911,
+          1017
+        ]
+      },
+      "processing": "Uniform downscale only, alpha preserved; original exceeded requested maximum edge.",
+      "visual_qa": "Spelling and specified color match; no extra objects or letters. Existing adopted PERFECT comparison unavailable. Painted texture contains mild tonal variation, final flat-paint style acceptance pending."
+    },
+    {
+      "id": "CR-UI14",
+      "word": "1",
+      "status": "technical candidate, adoption pending",
+      "prompt": "CR-UI14 word-1.png. ONE isolated hand-painted racecourse sign-writer numeral, exact single digit \"1\", no other letters, symbols or numbers. Matte WHITE paint with crisp dark painted offset shadow attached to the digit. Same hand and brush shapes as supplied GO! reference: bold chunky slightly irregular energetic brush strokes, painterly pixel texture, not a computer font. Only two to three shaped hard-edged white/cream/grey color steps; no smooth gradients or shiny highlights. Real transparent alpha outside and inside the numeral. No boards, scene, dust, ground, people, logos, watermark, glow, bloom, neon, airbrush, 3D. Target longest edge <=1024 pixels, near-square or portrait canvas, tightly frame digit with all dark shadow visible.",
+      "original": {
+        "path": "originals/word-1-A.png",
+        "sha256": "14b02fb7b3589b547eb6b1f2cb1f17d79179868bdda43ee46c6e9a0730d46cce",
+        "bytes": 809605,
+        "size": [
+          1199,
+          1312
+        ],
+        "mode": "RGBA",
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "bbox_alpha_gt_127": [
+          117,
+          34,
+          1110,
+          1303
+        ]
+      },
+      "candidate": {
+        "path": "candidates/word-1-A.png",
+        "sha256": "5ceeff536aff0f608e71603fd118c8a0995d7b32bbfa8abc350b0e687cfdf1ba",
+        "bytes": 496056,
+        "size": [
+          936,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "bbox_alpha_gt_127": [
+          91,
+          27,
+          866,
+          1017
+        ]
+      },
+      "processing": "Uniform downscale only, alpha preserved; original exceeded requested maximum edge.",
+      "visual_qa": "Spelling and specified color match; no extra objects or letters. Existing adopted PERFECT comparison unavailable. Painted texture contains mild tonal variation, final flat-paint style acceptance pending."
+    },
+    {
+      "id": "CR-UI14",
+      "word": "last-spurt",
+      "status": "technical candidate, adoption pending",
+      "prompt": "CR-UI14 word-last-spurt.png. ONE isolated hand-painted racecourse sign-writer lettering, exact words \"LAST SPURT\", no other text or symbols. vermilion racing red paint with a crisp dark ink outline. Same painter's hand and brush shapes as GOOD reference: bold chunky slightly irregular energetic brush strokes, fine painterly pixel texture, not computer font. Letters in ONE horizontal line. Two to three shaped hard-edged color steps; no smooth gradients or glossy highlights, no glow. Real transparent alpha outside and inside letters. No boards, ground, scene, dust, people, logos, watermark, bloom, neon, airbrush, 3D. Target longest edge <=1024 pixels, wide landscape word art; tightly frame lettering but every stroke/outline completely inside canvas. Every letter spelled exactly as written.",
+      "original": {
+        "path": "originals/word-last-spurt-A.png",
+        "sha256": "36811b3c7e794f37b3899ca6f284cf099c01f212971a906579abeffaf50fb8da",
+        "bytes": 1164972,
+        "size": [
+          2172,
+          724
+        ],
+        "mode": "RGBA",
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "bbox_alpha_gt_127": [
+          16,
+          162,
+          2156,
+          619
+        ]
+      },
+      "candidate": {
+        "path": "candidates/word-last-spurt-A.png",
+        "sha256": "4b1fdd8d6746a9825459a1ec46af79d6118de14b2850793001dadda07845d844",
+        "bytes": 295552,
+        "size": [
+          1024,
+          341
+        ],
+        "mode": "RGBA",
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "bbox_alpha_gt_127": [
+          7,
+          76,
+          1017,
+          292
+        ]
+      },
+      "processing": "Uniform downscale only, alpha preserved; original exceeded requested maximum edge.",
+      "visual_qa": "Spelling and specified color match; no extra objects or letters. Existing adopted PERFECT comparison unavailable. Painted texture contains mild tonal variation, final flat-paint style acceptance pending."
+    },
+    {
+      "id": "CR-UI14",
+      "word": "goal",
+      "status": "technical candidate, adoption pending",
+      "prompt": "CR-UI14 word-goal.png. ONE isolated hand-painted racecourse sign-writer lettering, exact words \"GOAL\", no other text or symbols. dull warm gold paint with a crisp dark brown outline. Same painter's hand and brush shapes as GOOD reference: bold chunky slightly irregular energetic brush strokes, fine painterly pixel texture, not computer font. Letters in ONE horizontal line. Two to three shaped hard-edged color steps; no smooth gradients or glossy highlights, no glow. Real transparent alpha outside and inside letters. No boards, ground, scene, dust, people, logos, watermark, bloom, neon, airbrush, 3D. Target longest edge <=1024 pixels, wide landscape word art; tightly frame lettering but every stroke/outline completely inside canvas. Every letter spelled exactly as written.",
+      "original": {
+        "path": "originals/word-goal-A.png",
+        "sha256": "70cb0df589005fe2487b53238fb6be0acddd0f2b9c25a102c6827ed7f77381fd",
+        "bytes": 1179180,
+        "size": [
+          2172,
+          724
+        ],
+        "mode": "RGBA",
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "bbox_alpha_gt_127": [
+          27,
+          70,
+          2149,
+          701
+        ]
+      },
+      "candidate": {
+        "path": "candidates/word-goal-A.png",
+        "sha256": "117906aa8c42bc70e18ede9b3618f05c5abd90f9711ba0696a8eef3a2baad994",
+        "bytes": 321295,
+        "size": [
+          1024,
+          341
+        ],
+        "mode": "RGBA",
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "bbox_alpha_gt_127": [
+          13,
+          33,
+          1013,
+          330
+        ]
+      },
+      "processing": "Uniform downscale only, alpha preserved; original exceeded requested maximum edge.",
+      "visual_qa": "Spelling and specified color match; no extra objects or letters. Existing adopted PERFECT comparison unavailable. Painted texture contains mild tonal variation, final flat-paint style acceptance pending."
+    },
+    {
+      "id": "CR-UI14",
+      "word": "title",
+      "status": "technical candidate, adoption pending",
+      "prompt": "CR-UI14 word-title.png. ONE isolated hand-painted racecourse sign-writer lettering, exact words \"CAMEL RACE\", no other text or symbols. sand-colored paint with a crisp deep indigo outline. Same painter's hand and brush shapes as GOOD reference: bold chunky slightly irregular energetic brush strokes, fine painterly pixel texture, not computer font. Letters in ONE horizontal line. Two to three shaped hard-edged color steps; no smooth gradients or glossy highlights, no glow. Real transparent alpha outside and inside letters. No boards, ground, scene, dust, people, logos, watermark, bloom, neon, airbrush, 3D. Target longest edge <=1024 pixels, wide landscape word art; tightly frame lettering but every stroke/outline completely inside canvas. Every letter spelled exactly as written.",
+      "original": {
+        "path": "originals/word-title-A.png",
+        "sha256": "381218bbdd26dd4b4a6d1248672a14d45ac39e9a9f1fdfe99cba0b6334e36a16",
+        "bytes": 1068654,
+        "size": [
+          2172,
+          724
+        ],
+        "mode": "RGBA",
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "bbox_alpha_gt_127": [
+          14,
+          165,
+          2161,
+          589
+        ]
+      },
+      "candidate": {
+        "path": "candidates/word-title-A.png",
+        "sha256": "05b166eb975b19d6f05f43bc2ef00a5216cd6248c599b291106fda1056f1bf8d",
+        "bytes": 301465,
+        "size": [
+          1024,
+          341
+        ],
+        "mode": "RGBA",
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "bbox_alpha_gt_127": [
+          7,
+          78,
+          1019,
+          277
+        ]
+      },
+      "processing": "Uniform downscale only, alpha preserved; original exceeded requested maximum edge.",
+      "visual_qa": "Spelling and specified color match; no extra objects or letters. Existing adopted PERFECT comparison unavailable. Painted texture contains mild tonal variation, final flat-paint style acceptance pending."
+    },
+    {
+      "id": "CR-WD09",
+      "word": "vs",
+      "status": "REJECTED",
+      "reason": "Rectangular dark/brown background and glow remain visible despite alpha channel; violates isolated transparent-lettering requirement.",
+      "prompt": "CR-WD09 word-vs.png. ONE isolated hand-painted racecourse sign-writer lettering, exact word \"VS\", no other text or symbols. dull gold paint with a crisp dark brown outline. Same hand and brush shapes as supplied GOOD reference: bold chunky slightly irregular energetic brush strokes, fine painterly pixel texture, not computer font. Letters in ONE horizontal line. Only two to three shaped hard-edged color steps; no smooth gradients or glossy highlights, no glow. Real transparent alpha outside and inside letters. No boards, scene, ground, dust, people, logos, watermark, bloom, neon, airbrush, 3D. Target longest edge <=1024 pixels, landscape word art; tightly frame lettering but every stroke/outline fully inside canvas. Every letter spelled exactly as written.",
+      "original": {
+        "path": "rejected/word-vs-A.png",
+        "sha256": "351a7f195141fb12633e1779f8f5773bb6a6fbf5c061bf09ea694f355069e2ae",
+        "bytes": 1462307,
+        "size": [
+          1536,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_extrema": [
+          0,
+          254
+        ],
+        "bbox_alpha_gt_127": [
+          24,
+          73,
+          1504,
+          993
+        ]
+      }
+    },
+    {
+      "id": "CR-WD09",
+      "word": "start",
+      "status": "technical candidate, adoption pending",
+      "prompt": "CR-WD09 word-start.png. ONE isolated hand-painted racecourse sign-writer lettering, exact word \"START\", no other text or symbols. matte white paint with a crisp dark painted offset shadow. Same hand and brush shapes as supplied GOOD reference: bold chunky slightly irregular energetic brush strokes, fine painterly pixel texture, not computer font. Letters in ONE horizontal line. Only two to three shaped hard-edged color steps; no smooth gradients or glossy highlights, no glow. Real transparent alpha outside and inside letters. No boards, scene, ground, dust, people, logos, watermark, bloom, neon, airbrush, 3D. Target longest edge <=1024 pixels, landscape word art; tightly frame lettering but every stroke/outline fully inside canvas. Every letter spelled exactly as written.",
+      "original": {
+        "path": "originals/word-start-A.png",
+        "sha256": "99a57ad8a752923e099d20cbdbc7425e24d559504c8af7704f385d70a488ee87",
+        "bytes": 1200520,
+        "size": [
+          2172,
+          724
+        ],
+        "mode": "RGBA",
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "bbox_alpha_gt_127": [
+          10,
+          73,
+          2167,
+          703
+        ]
+      },
+      "candidate": {
+        "path": "candidates/word-start-A.png",
+        "sha256": "c923dd40245db53b61d172b7edb393ec694114221ee3e6e702c0bce3d0fe4c2f",
+        "bytes": 343373,
+        "size": [
+          1024,
+          341
+        ],
+        "mode": "RGBA",
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "bbox_alpha_gt_127": [
+          5,
+          35,
+          1022,
+          331
+        ]
+      },
+      "processing": "Uniform downscale only, alpha preserved; original exceeded requested maximum edge.",
+      "visual_qa": "Spelling and specified color match; no extra objects or letters. Existing adopted PERFECT comparison unavailable. Painted texture contains mild tonal variation, final flat-paint style acceptance pending."
+    },
+    {
+      "id": "CR-WD09",
+      "word": "finish",
+      "status": "technical candidate, adoption pending",
+      "prompt": "CR-WD09 word-finish.png. ONE isolated hand-painted racecourse sign-writer lettering, exact word \"FINISH\", no other text or symbols. matte white paint with a crisp dark painted offset shadow. Same hand and brush shapes as supplied GOOD reference: bold chunky slightly irregular energetic brush strokes, fine painterly pixel texture, not computer font. Letters in ONE horizontal line. Only two to three shaped hard-edged color steps; no smooth gradients or glossy highlights, no glow. Real transparent alpha outside and inside letters. No boards, scene, ground, dust, people, logos, watermark, bloom, neon, airbrush, 3D. Target longest edge <=1024 pixels, landscape word art; tightly frame lettering but every stroke/outline fully inside canvas. Every letter spelled exactly as written.",
+      "original": {
+        "path": "originals/word-finish-A.png",
+        "sha256": "c4e26cf9c0e4c3b8c5bcee4ff5c29dcb62fb27e17704ce496c00bea40c659743",
+        "bytes": 1262681,
+        "size": [
+          2172,
+          724
+        ],
+        "mode": "RGBA",
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "bbox_alpha_gt_127": [
+          32,
+          75,
+          2163,
+          694
+        ]
+      },
+      "candidate": {
+        "path": "candidates/word-finish-A.png",
+        "sha256": "d6ec30941577b65cb84b7ba3ef1719418f8bdd7551dd8b1c62144ce163bdfdc7",
+        "bytes": 353944,
+        "size": [
+          1024,
+          341
+        ],
+        "mode": "RGBA",
+        "alpha_extrema": [
+          0,
+          255
+        ],
+        "bbox_alpha_gt_127": [
+          15,
+          35,
+          1020,
+          327
+        ]
+      },
+      "processing": "Uniform downscale only, alpha preserved; original exceeded requested maximum edge.",
+      "visual_qa": "Spelling and specified color match; no extra objects or letters. Existing adopted PERFECT comparison unavailable. Painted texture contains mild tonal variation, final flat-paint style acceptance pending."
+    },
+    {
+      "id": "CR-WD09",
+      "word": "vs-edit",
+      "status": "REJECTED",
+      "reason": "Rectangular dark/brown background and glow remain visible despite alpha channel; violates isolated transparent-lettering requirement.",
+      "prompt": "Edit ONLY the background of this exact VS lettering. Remove the entire brown/black rectangular background and any soft brown glow outside letters. Output REAL transparent alpha, completely transparent outside the crisp dark-brown outline of the two gold letters \"VS\", including the gap between V and S. Preserve letter shapes, positions, spelling, colors, pixel-painterly brush textures and hard outlines. No other changes, no new objects, no shadow or glow outside crisp outlines. Target longest edge <=1024px. Only isolated gold VS lettering.",
+      "original": {
+        "path": "rejected/word-vs-edit-A.png",
+        "sha256": "c20a607311c1abe8b24fd3b38938aee6f2b8b932af86c098a119cb3ba2e108a4",
+        "bytes": 1485505,
+        "size": [
+          1536,
+          1024
+        ],
+        "mode": "RGBA",
+        "alpha_extrema": [
+          0,
+          254
+        ],
+        "bbox_alpha_gt_127": [
+          40,
+          90,
+          1486,
+          973
+        ]
+      }
+    }
+  ]
+}

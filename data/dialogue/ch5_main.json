@@ -311,31 +311,175 @@
           "text": "博士が再生を止めた。画面の外で、湯の沸く音がした。"
         },
         {
+          "speaker": "",
+          "text": "博士が止めた画面を、俺も伏せた。店の入口で、鈴が鳴った。",
+          "id": "ch5_counter_work"
+        },
+        {
+          "speaker": "",
+          "text": "仕事帰りらしい客が一人、いつもの客席に腰を下ろす。博士は通路の椅子を引いた。"
+        },
+        {
           "speaker": "dr_kemuri",
-          "face": "serious",
+          "face": "normal",
+          "text": "続きは、あとにしましょう"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ありがとうございます。少しだけ待っててください"
+        },
+        {
+          "type": "choice",
+          "id": "ch5_unrecorded_task",
+          "choices": [
+            {
+              "text": "先に水を出す",
+              "next": "water_first"
+            },
+            {
+              "text": "注文を確かめる",
+              "next": "order_first"
+            }
+          ]
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "今日は、あまり長くはいられないんです"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "では、軽めにしましょう。吸ってみて気になるところがあれば、教えてください"
+        },
+        {
+          "speaker": "",
+          "text": "注文をスミさんへ伝え、水差しを戻した。博士の前にも、まだ水は出していなかった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "博士も、どうぞ。お茶もいれますね"
+        },
+        {
+          "speaker": "dr_kemuri",
+          "face": "normal",
+          "text": "私は、ただ待っていただけですが"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい。今は、お客さんなので"
+        },
+        {
+          "speaker": "",
+          "text": "博士はパソコンを少し奥へ寄せた。空いたところへ、湯のみを置く。"
+        },
+        {
+          "speaker": "dr_kemuri",
+          "face": "normal",
           "text": "失敗しなくて済む装置を、作っています。作れない日の職人ごと、救える装置を"
         },
         {
           "speaker": "hajime",
-          "face": "smile",
-          "text": "作らない日にも、座っていられる椅子があるといいです"
+          "face": "normal",
+          "text": "それがあると、助かる日もあると思います"
         },
         {
           "speaker": "dr_kemuri",
-          "face": "surprise",
-          "text": "……その注文は、まだ聞いたことがなかった"
-        },
-        {
-          "speaker": "dr_kemuri",
-          "face": "serious",
-          "text": "ですが、椅子だけでは、煙は出ません。当日、確かめましょう"
+          "face": "normal",
+          "text": "ええ。作れない日に来た客にも、一台を出せる"
         },
         {
           "speaker": "",
-          "face": "",
-          "text": "どちらが正しいかは決めないまま、お茶をいれた。博士は、湯のみを両手で包んでいた。"
+          "text": "カウンターの向こうで、スミさんが炭を並べた。俺は客へ水を足しに行く。"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "ありがとう。さっき話したくらいの軽さで、お願いします"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい。スミさんにも、伝えてあります"
+        },
+        {
+          "speaker": "",
+          "text": "戻ると、博士は湯のみを両手で包んでいた。大会の映像は止まったままだ。"
+        },
+        {
+          "speaker": "dr_kemuri",
+          "face": "normal",
+          "text": "……さて。勝負の日の話を、しましょうか"
+        },
+        {
+          "speaker": "",
+          "text": "どちらが正しいかは決めないまま、椅子を戻した。日を決めるかどうかは、まだこれからだった。"
         }
-      ]
+      ],
+      "branches": {
+        "water_first": [
+          {
+            "speaker": "",
+            "text": "水を置くと、客は一口飲み、肩から鞄を下ろした。"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "今日は、どんな一台にしましょうか"
+          },
+          {
+            "speaker": "customer",
+            "face": "normal",
+            "text": "軽めがいいです。あと、時間のことも聞いていいですか"
+          }
+        ],
+        "order_first": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "今日は、どんな一台にしましょうか"
+          },
+          {
+            "speaker": "customer",
+            "face": "normal",
+            "text": "軽めがいいです。今日は、仕事のあとで少し疲れていて"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "分かりました。先にお水をお持ちしますね"
+          },
+          {
+            "speaker": "",
+            "text": "注文を書き、水を置いた。客は鞄を下ろし、時計を確かめた。"
+          }
+        ],
+        "mashiro_seen": [
+          {
+            "speaker": "",
+            "text": "棚には、ましろちゃんが持ってきたお茶の袋がある。勝負のない日に、と言われて受け取ったものだ。"
+          }
+        ],
+        "visitor_seen": [
+          {
+            "speaker": "",
+            "text": "動画と同じ一台を頼んだ、初めての客を思い出した。あの時も、先にいられる時間を聞いた。"
+          }
+        ],
+        "practice_seen": [
+          {
+            "speaker": "",
+            "text": "閉店後にスミさんへ出した試作も、大会の映像にはない。"
+          },
+          {
+            "speaker": "",
+            "text": "スミさんの返事を聞き、今夜の一台をどうするか、自分で決めた。"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "ch5_copy_first_cup",

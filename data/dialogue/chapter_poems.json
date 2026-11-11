@@ -5,29 +5,39 @@
       "metadata": {
         "poem": true,
         "panel": "poem_ch1.webp",
-        "panel_alt": "夜のtonari。カウンター席に着いた客の背中と、水のグラスを置くスミさん"
+        "panel_alt": "店の中で、帽子のつばに手をかけて横を向くはじめ"
       },
       "lines": [
         {
           "speaker": "",
           "face": "",
-          "text": "隣の 台は 丸見えだった"
+          "text": "葉は 遠い 国の 畑から"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "手順も 葉も 隠さなかった"
+          "text": "炭は 南の 椰子の 殻から"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "隠すものが ない 強さを",
+          "text": "水は 今朝の 蛇口から"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一台の 煙は",
           "gap": true
         },
         {
           "speaker": "",
           "face": "",
-          "text": "俺は まだ 持っていない"
+          "text": "一度も 会わない ものたちの"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "待ち合わせだ"
         }
       ]
     },
@@ -36,24 +46,39 @@
       "metadata": {
         "poem": true,
         "panel": "poem_ch2.webp",
-        "panel_alt": "明るい店の窓の中で笑うあげはと、外の暗い通りから見つめるはじめの後ろ姿"
+        "panel_alt": "ソファの背もたれのあいだで、振り返って横を見るはじめ"
       },
       "lines": [
         {
           "speaker": "",
           "face": "",
-          "text": "勝って かぶった 王冠は"
+          "text": "勘で 煙を 立てる 者は"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "中から 見ると"
+          "text": "崩れた 日の 帰り道を 知らない"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "ただの 輪だった",
+          "text": "手順で 煙を 立てる 者は"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "手順の ない 道を 歩けない"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "壁は 一枚",
           "gap": true
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "両側から 高い"
         }
       ]
     },
@@ -62,39 +87,34 @@
       "metadata": {
         "poem": true,
         "panel": "poem_ch3.webp",
-        "panel_alt": "閉店後の路地。綾取・ましろ・はじめが並び、背後のガラス戸に三人の姿が映る"
+        "panel_alt": "暗い店の灯りの下で、目を伏せて小さく笑うましろ"
       },
       "lines": [
         {
           "speaker": "",
           "face": "",
-          "text": "分かったふりを した"
+          "text": "平気な 顔で"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "知らない 味の 名前を"
+          "text": "席を 一つ 空けておく"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "知っている 声で 言った"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "渡された 一台は",
+          "text": "何も 聞かないのは",
           "gap": true
         },
         {
           "speaker": "",
           "face": "",
-          "text": "何も 言わずに"
+          "text": "僕も 一つ"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "俺の 嘘を 煙にして 返した"
+          "text": "嘘を ついたからだ"
         }
       ]
     },
@@ -103,29 +123,29 @@
       "metadata": {
         "poem": true,
         "panel": "poem_ch4.webp",
-        "panel_alt": "路地裏のカフェで、年配の手から若い手へ渡る小さなガラスのグラス"
+        "panel_alt": "ドバイの朝の市場の通りと、扉を開ける年配の手"
       },
       "lines": [
         {
           "speaker": "",
           "face": "",
-          "text": "古い 器には"
+          "text": "言葉は 海を 渡れなかった"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "知らない 誰かの 指の 跡がある"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "俺の 指も いつか",
+          "text": "だから 俺は",
           "gap": true
         },
         {
           "speaker": "",
           "face": "",
-          "text": "知らない 誰かの 器に 残る"
+          "text": "生まれた 国の 匂いを"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一台に 詰めて 置いた"
         }
       ]
     },
@@ -134,29 +154,29 @@
       "metadata": {
         "poem": true,
         "panel": "poem_ch5.webp",
-        "panel_alt": "光の下、同じ量の葉を盛った二つの皿の上で止まる、人の手と機械の手"
+        "panel_alt": "研究室で、眼鏡を指で押し上げるチャコール博士"
       },
       "lines": [
         {
           "speaker": "",
           "face": "",
-          "text": "同じ葉 同じ器具 同じ十二グラム"
+          "text": "何を 吸っても 砂の 味が した"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "同じ手順 同じ温度 同じ時間"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "ただ 一つ",
+          "text": "だから 私は",
           "gap": true
         },
         {
           "speaker": "",
           "face": "",
-          "text": "記録に なかった 問い"
+          "text": "舌の いらない 神を"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "組み立てた"
         }
       ]
     }

@@ -3620,6 +3620,217 @@
       ]
     },
     {
+      "id": "lime_taiyo_01",
+      "sender": "da_silva",
+      "chapter": 4,
+      "trigger_condition": "flag",
+      "trigger_flag": "_lime_contact_da_silva",
+      "priority": 1,
+      "region": "dubai",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "da_silva",
+          "text": "太陽だ！　届いてるか？"
+        },
+        {
+          "sender": "da_silva",
+          "text": "裏の椅子の写真、見たな。あそこ座ると、みんな寝る"
+        },
+        {
+          "sender": "da_silva",
+          "text": "次、お前の店の椅子な。忘れるなよ！"
+        }
+      ],
+      "replies": [
+        {
+          "text": "届いてます！",
+          "response": "よし！　椅子の写真、待ってるぞ",
+          "affinity": 1
+        },
+        {
+          "text": "前に撮った写真、探します",
+          "response": "おう！　椅子だけ写ってれば、いい",
+          "affinity": 2
+        }
+      ]
+    },
+    {
+      "id": "lime_taiyo_02",
+      "sender": "da_silva",
+      "chapter": 4,
+      "trigger_condition": "flag",
+      "trigger_flag": "_lime_contact_da_silva",
+      "region": "dubai",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "da_silva",
+          "text": "壁のコースター、今日、日本の客が見つけた"
+        },
+        {
+          "sender": "da_silva",
+          "text": "「はじめ」って、声に出して読んでたぞ"
+        },
+        {
+          "sender": "da_silva",
+          "text": "お前、FESTAの有名人だな！"
+        }
+      ],
+      "replies": [
+        {
+          "text": "恥ずかしいです……",
+          "response": "いいだろ。次に来たら、俺が一番でかい声で呼ぶ",
+          "affinity": 1
+        },
+        {
+          "text": "太陽さんのも、隣ですよね",
+          "response": "当たり前だ。一番明るいとこに、二枚並んでる",
+          "affinity": 2
+        }
+      ]
+    },
+    {
+      "id": "lime_taiyo_03",
+      "sender": "da_silva",
+      "chapter": 4,
+      "trigger_condition": "flag",
+      "trigger_flag": "_lime_contact_da_silva",
+      "region": "dubai",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "da_silva",
+          "text": "今日の閉店、床拭き、店員に負けた"
+        },
+        {
+          "sender": "da_silva",
+          "text": "俺が行ったら、もうぴかぴか。最後の角だけ、残ってた"
+        },
+        {
+          "sender": "da_silva",
+          "text": "俺のぶん、残してくれたって。……やさしいな、あいつら"
+        }
+      ],
+      "replies": [
+        {
+          "text": "いい店員さんですね",
+          "response": "おう。明日は、俺が先に拭く",
+          "affinity": 1
+        },
+        {
+          "text": "最後の角、大事です",
+          "response": "分かってるな！　角が汚いと、全部汚く見える",
+          "affinity": 2
+        }
+      ]
+    },
+    {
+      "id": "lime_taiyo_04",
+      "sender": "da_silva",
+      "chapter": 4,
+      "trigger_condition": "affinity_level",
+      "trigger_value": 3,
+      "region": "dubai",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "da_silva",
+          "text": "今日、帰りぎわの客が、俺のグラスに水を注いでった"
+        },
+        {
+          "sender": "da_silva",
+          "text": "頼んでねえのに。……ちょっと、泣きそうになった"
+        },
+        {
+          "sender": "da_silva",
+          "text": "注がれるの、慣れてねえんだ"
+        }
+      ],
+      "replies": [
+        {
+          "text": "いつも注ぐ側ですもんね",
+          "response": "そう。たまには、注がれるのも、いいな",
+          "affinity": 1
+        },
+        {
+          "text": "その人、また来ますよ",
+          "response": "……おう。来たら、今度は俺が先に注ぐ",
+          "affinity": 2
+        }
+      ]
+    },
+    {
+      "id": "lime_taiyo_05",
+      "sender": "da_silva",
+      "chapter": 5,
+      "trigger_condition": "ch5_started",
+      "trigger_day": 7,
+      "region": "home",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "da_silva",
+          "text": "ハジメ！　大会の動画、店の連中に送った"
+        },
+        {
+          "sender": "da_silva",
+          "text": "俺が手振るとこ、何回も巻き戻されたって"
+        },
+        {
+          "sender": "da_silva",
+          "text": "お前の驚いた顔のとこで、止めてるやつもいたぞ"
+        }
+      ],
+      "replies": [
+        {
+          "text": "止めないでください……",
+          "response": "無理だ。いい顔だからな",
+          "affinity": 1
+        },
+        {
+          "text": "太陽さん、手を振りすぎです",
+          "response": "言った、だろ？　会おうって。だから、全力で振った",
+          "affinity": 2
+        }
+      ]
+    },
+    {
+      "id": "lime_taiyo_06",
+      "sender": "da_silva",
+      "chapter": 5,
+      "trigger_condition": "affinity_level",
+      "trigger_value": 4,
+      "region": "home",
+      "type": "chat",
+      "messages": [
+        {
+          "sender": "da_silva",
+          "text": "今日、年寄りの客に、静かな一台作った。手拍子なし"
+        },
+        {
+          "sender": "da_silva",
+          "text": "そしたら、じいさん、寝た"
+        },
+        {
+          "sender": "da_silva",
+          "text": "客を寝かせたの、初めてだ。……悪くねえな"
+        }
+      ],
+      "replies": [
+        {
+          "text": "最高の感想ですね",
+          "response": "だな。起きたら、もう一台って言われた",
+          "affinity": 2
+        },
+        {
+          "text": "起こさないであげてください",
+          "response": "起こさねえ。肩に、布かけといた",
+          "affinity": 1
+        }
+      ]
+    },
+    {
       "id": "lime_noor_after_sunset",
       "sender": "noor",
       "trigger_condition": "flag",
@@ -4014,7 +4225,7 @@
           "affinity": 1
         },
         {
-          "text": "スティーブさんの名前も、こちらに書きました",
+          "text": "スティーブさんの名前も、書きました",
           "response": "イエス。……変な字だったら、後で直せ。俺も直す。",
           "affinity": 2
         }
@@ -4555,7 +4766,7 @@
       ],
       "replies": [
         {
-          "text": "残していてくれたんですね。吸ったら寝ます",
+          "text": "残してくれたんですね。吸ったら寝ます",
           "response": "おう。残したことを、昼間の客に話すなよ。",
           "affinity": 2
         },
@@ -4697,7 +4908,7 @@
           "affinity": 2
         },
         {
-          "text": "席が広く見えた日のことも、聞かせてください",
+          "text": "席が広く見えた日も、聞かせてください",
           "response": "聞かせる。元気な日ばかりじゃないことも、隠さないから",
           "affinity": 1
         }
@@ -4761,7 +4972,7 @@
       ],
       "replies": [
         {
-          "text": "俺の店でも、メニューが飛んだことがあります",
+          "text": "俺の店でも、メニューが飛びました",
           "response": "同じだね。次は写真、間に合わなかったって後悔してる",
           "affinity": 2
         },
@@ -4795,7 +5006,7 @@
       ],
       "replies": [
         {
-          "text": "俺の方にも、カフェ・オアシスの場所がある",
+          "text": "俺の地図にも、カフェ・オアシスがある",
           "response": "それ、すごく嬉しい。次会う時、互いの地図を見せよう",
           "affinity": 2
         },
@@ -4834,7 +5045,7 @@
           "affinity": 2
         },
         {
-          "text": "父さんの店の一台、いつか俺も吸いたいです",
+          "text": "父さんの店の一台、俺も吸いたいです",
           "response": "案内する。ガイドの顔と、店の顔、どっちで出るかは当日のお楽しみ",
           "affinity": 1
         }
@@ -4899,7 +5110,7 @@
       ],
       "replies": [
         {
-          "text": "見ててくれたんだね。ありがとう。俺も会いたい",
+          "text": "見ててくれてありがとう。俺も会いたい",
           "response": "うん。友人の席、空けておく。急がなくていいから",
           "affinity": 2
         },
@@ -5003,7 +5214,7 @@
           "affinity": 2
         },
         {
-          "text": "レモンからライムまで、ちゃんと残りました？",
+          "text": "レモンからライムまで、残りました？",
           "response": "残った。それが、俺の一番好きな繋がりだ。",
           "affinity": 1
         }
@@ -5097,7 +5308,7 @@
       ],
       "replies": [
         {
-          "text": "ありがとうございます。次も同じ位置で作ります",
+          "text": "ありがとうございます。次も同じ位置で",
           "response": "おう。礼はいい。作れ。",
           "affinity": 2
         },
@@ -5131,7 +5342,7 @@
       ],
       "replies": [
         {
-          "text": "今、ちょうど開いたところだ。あとでまた書く",
+          "text": "ちょうど開いたところ。あとでまた書く",
           "response": "うん。その一言で、仕込みが終わる",
           "affinity": 2
         },

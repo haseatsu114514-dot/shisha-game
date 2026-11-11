@@ -791,3 +791,28 @@ test("rivals: Noor starts a touch quicker than the rider, Naru boosts and spins 
   const boosting = naru.samples.find(s => s.boostT > 1);
   assert(rivalAt(naru, boosting.t + 0.01).boostT > 0);
 });
+
+test("Naru's rider art (Issue #3222) is rebuilt to the protagonist's scale with board-centre anchors, and is committed", async () => {
+  const { readFileSync } = await import("node:fs");
+  const { execFileSync } = await import("node:child_process");
+  const root = new URL("../../", import.meta.url);
+  const tracked = path => execFileSync("git", ["ls-files", "--", path], { cwd: root }).toString().trim() === path;
+  const { DESERT_ART, riderPose } = await import("../js/minigames/desert-ride-art.js");
+  const record = JSON.parse(readFileSync(new URL("asset_sources/desert-ride-naru-3222/adoption.json", root), "utf8"));
+  const names = { ride: "naruRider", lean_left: "naruRiderLeft", lean_right: "naruRiderRight", jump: "naruRiderJump", brace: "naruRiderBrace", fall: "naruRiderFall" };
+  for (const [pose, name] of Object.entries(names)) {
+    const entry = record[`rider_naru_${pose}`], art = DESERT_ART[name];
+    assert.equal(`remake/img/${art.file}`, entry.webp, `${name} file`);
+    assert.deepEqual([...art.size], entry.size, `${name} size`);
+    assert.deepEqual({ ...art.anchor }, entry.anchor, `${name} anchor`);
+    assert(entry.scale > 0.45 && entry.scale < 0.7, `${name} is downscaled from the raw art (${entry.scale})`);
+    assert(art.size[1] > 600 && art.size[1] < 860, `${name} is about the protagonist's sprite height`);
+    assert(tracked(entry.webp) && tracked(entry.raw), `${name} files are committed`);
+  }
+  // 走りの姿勢（riderPose）のどれにも、なるの絵がある（drawRival は `<相手>Rider…` を探す）
+  const game = createGame(generateCourse(DEFAULT_SEED));
+  for (const state of [{}, { vx: 0.5 }, { vx: -0.5 }, { air: 0.5, airTotal: 1, airKind: "big", landingPress: null }, { air: 0.2, airTotal: 1, airKind: "big", landingPress: 0.2 }, { fallT: 1 }]) {
+    const pose = riderPose({ ...game, ...state });
+    assert(DESERT_ART[pose.replace(/^rider/, "naruRider")], `Naru has art for ${pose}`);
+  }
+});
