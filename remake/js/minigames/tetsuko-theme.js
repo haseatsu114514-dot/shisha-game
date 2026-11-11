@@ -4,7 +4,7 @@
 // - 左上の題: 折れ耳の付いた札「てつこといっしょ / TETSUKO TIME」（日常の HUD はこの画面では隠す）
 // - 入った時の演出: 閉じた箱のテープがはがれ、ふたが手前へ開き、真ん中の題が左上の札へ収まる（約1.2秒）
 // 演出は操作を止めない（pointer-events なし・開いてすぐ触れる）。動きを減らす設定では演出を出さない。
-// 基本画面は必要なUIだけ（ミニゲーム共通の方針）: 今日の様子の吹き出しは入った時だけ見せ、少しで消す（data-memo="off"。「？」でも読める）。
+// 基本画面は必要なUIだけ（ミニゲーム共通の方針）: 今日の様子は文で出さず、気分の小さなしるしだけ（文は「？」で読める）。
 // DOM の部品は呼び出し側の el（core/util.js）で作る。top-level は DOM 非依存（Node のテストから import できる）。
 
 const W = 1280, H = 720;
@@ -13,8 +13,6 @@ export const FRAME = Object.freeze({ inset: 14, radius: 22, edge: 6 });
 /** 演出の長さ。CSS の animation（1.2s）より少し長く、終わったら演出の層を外す。 */
 export const INTRO_MS = 1400;
 const INTRO_FALLBACK_MS = 4000;
-/** 今日の様子の吹き出しを見せておく長さ（入った時から）。 */
-export const MEMO_MS = 6000;
 const TAPE_SE_MS = 260;
 
 // 角を丸めた長方形（inset i・半径 r）のパス
@@ -83,10 +81,9 @@ export function tetsukoTheme({ el, title, roman, reduced = false, SE = {} }) {
   }
   return {
     nodes: [logo, frame, intro].filter(Boolean),
-    attrs: { intro: intro ? "1" : "", memo: "" },
+    attrs: { intro: intro ? "1" : "" },
     start(screen) {
       host = screen;
-      timers.push(setTimeout(() => { host.dataset.memo = "off"; }, MEMO_MS));
       if (ended) return;
       aim();
       // 箱の音は演出が実際に始まってから（幕の後ろで待たされた時に先に鳴らない）。
