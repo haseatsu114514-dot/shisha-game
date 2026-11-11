@@ -20,7 +20,7 @@ const source = fs.readFileSync(new URL("../js/chapters/ch4-tournament.js", impor
 const retrySource = fs.readFileSync(new URL("../js/chapters/retry-assist.js", import.meta.url), "utf8");
 
 async function run({ failure = null, abandon = false, invalidate = false, resume = null, ask = true, loadFails = false,
-  storyCancel = null, quality = 96, rulesVersion, assistChoice = false, assistInvalidate = false } = {}) {
+  storyCancel = null, quality = 96, rulesVersion, assistChoice = false, assistInvalidate = false, staffCancel = false } = {}) {
   const value = resume || newState();
   if (!resume) {
     value.chapter = 4; value.phase = "tournament";
@@ -34,6 +34,11 @@ async function run({ failure = null, abandon = false, invalidate = false, resume
     pack: "normal", place: "triangle", steamSeconds: 480, pullDone: false, total: 0 }; };
   const values = { ...match, ...score, ...verdict, ...growth, state: value, CRAFT_STEPS: [],
     maxStamina, applyAssistRecovery,
+    CH4_STAFF_IDS: { echo: "ch4_staff_match_echo" },
+    readChapterFourStaffCheckpoint: async () => {
+      if (staffCancel) { trace.push("staff-echo-cancel"); return false; }
+      return true; // 未体験の保存は本物のcheckpointでもそのまま続ける。
+    },
     startChapterFourCraft: (value, cs) => {
       const p = match.startChapterFourCraft(value, cs);
       if (rulesVersion !== undefined) p.rulesVersion = rulesVersion;
@@ -108,6 +113,20 @@ async function run({ failure = null, abandon = false, invalidate = false, resume
 const success = await run();
 assert.equal(success.error, undefined);
 assert.equal(success.result.win, true);
+// DAY9の実体験の回想で中断した時、次の制作へ進まず同じ工程前から再開できる。
+{
+  const stopped = await run({ staffCancel: true });
+  assert.equal(stopped.error, undefined);
+  assert.equal(stopped.result, false);
+  assert.equal(stopped.value.flags._ch4.match.step, 1);
+  assert(stopped.trace.includes("staff-echo-cancel"));
+  assert(!stopped.trace.includes("mix"));
+  assert.equal(stopped.value.flags._ch4.match.voted, 0);
+  const resumed = await run({ resume: stopped.value });
+  assert.equal(resumed.error, undefined);
+  assert.equal(resumed.result.win, true);
+  assert(!resumed.trace.includes("setup"), "A completed setup repeated after the memory interruption");
+}
 assert.equal(success.value.flags._ch4.match.step, 11);
 assert.deepEqual(success.trace.filter(item => ["setup", "water", "mix", "pack", "holes", "place", "heat", "steam-time", "steam", "pull", "care1", "care2"].includes(item)),
   ["setup", "water", "mix", "pack", "holes", "place", "heat", "steam-time", "steam", "pull", "care1", "care2"]);

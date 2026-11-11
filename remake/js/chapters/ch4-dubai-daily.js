@@ -47,6 +47,7 @@ import { computeShisha } from "../craft/score.js";
 import { INN_TRIAL_FLAG, INN_TRIAL_IDS, innTrialDue, innTrialResult } from "./ch4-inn-trial.js";
 import { REHEARSAL_FLAG, REHEARSAL_IDS, rehearsalDue, rehearsalResult } from "./ch4-rehearsal.js";
 import { COMPANION_TIME_FILE, COMPANION_TIME_IDS, companionLover, companionTimeOpen, spendCompanionTime } from "./companion-time.js";
+import { chapterFourStaffNightEvent } from "./ch4-staff-work.js";
 
 export const DUBAI = "dubai";
 const TALKS_FLAG = "_ch4_dubai_talks"; // 再訪の会話の巡回の回数（行き先ごと）
@@ -246,6 +247,8 @@ function dueMandatory() {
 }
 
 function dubaiNightEvent(io) {
+  const staff = chapterFourStaffNightEvent();
+  if (staff) return { ...staff, run: () => keepDailyHud(() => staff.run()) };
   const due = dueMandatory();
   if (!due) return null;
   const last = due[due.length - 1];
