@@ -305,6 +305,15 @@ for (const id of guestIds) {
   const repeat = cityGuests.cityGuestAtShop(spot);
   assert(repeat); assert(await cityGuests.visitCityGuestAtShop(spot, { scheduledVisit: repeat }));
   assert(plays.includes(`ch2_city_guest_${id}_repeat`));
+  // RVE07: 2回目からは繰り返しの回を巡回する（神崎・レヰは3本、あげはは1本のまま）。旧保存（巡回の記録なし）は _repeat から
+  assert.equal(state.flags[`_city_guest_count_${id}`], 1);
+  const pool = id === "ageha" ? ["repeat"] : ["repeat", "repeat_b", "repeat_c"];
+  for (let n = 0; n <= 4; n++) {
+    assert.equal(cityGuests.cityGuestScene({ flags: { [`_city_guest_seen_${id}`]: true, [`_city_guest_count_${id}`]: n } }, id),
+      `ch2_city_guest_${id}_${pool[n % pool.length]}`, `${id}: repeat ${n}`);
+    for (const suffix of pool) assert(guestScript.some(d => d.dialogue_id === `ch2_city_guest_${id}_${suffix}` && d.lines?.length), `${id}_${suffix} exists`);
+  }
+  assert.equal(cityGuests.cityGuestScene({ flags: {} }, id), `ch2_city_guest_${id}_first`);
   guestState(id); const stale = cityGuests.cityGuestAtShop(spot); state.day++;
   assert(!await cityGuests.visitCityGuestAtShop(spot, { scheduledVisit: stale }));
   assert.equal(state.flags._city_guest_day, undefined);

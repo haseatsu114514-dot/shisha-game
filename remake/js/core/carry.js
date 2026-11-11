@@ -109,6 +109,8 @@ export const FLAG_CATEGORY_VERDICT = {
 /** 正確名の flag 分類: [名前, カテゴリ] */
 export const FLAG_EXACT_RULES = [
   ["_adam_arcade_done", "person"],
+  ["_adam_fifth_light", "person"], // アダムの5回目の「今の軽い後味」。締めくくりで返す（RVE07）
+  ["_adam_fifth_strong", "person"], // アダムの5回目の「さっきの濃い感じ」。締めくくりで返す（RVE07）
   ["_ageha_aquarium_introduced", "person"],
   ["_ageha_bear_seat_done", "person"],
   ["_ageha_first_purikura", "person"],
@@ -628,6 +630,7 @@ export const FLAG_FAMILY_RULES = [
   ["_eve_reflect_*", "progression"], // 大会前夜の内省（心得の盤 SPEC 2.8）。章ごとに1回
   ["_ch3_trial_*", "progression"],
   ["_cafe_recall_*", "progression"],
+  ["_city_guest_count_*", "progression"], // 繰り返しの来店の巡回の位置（daily/city-guests.js・RVE07）
   ["_city_guest_seen_*", "progression"],
   ["_roam_seen_*", "person"],
   ["_trpg_topic_*", "person"], // 部活の話は周回ごとに対面し直す

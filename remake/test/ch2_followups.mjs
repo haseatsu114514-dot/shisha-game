@@ -445,3 +445,41 @@ for (const id of ids) {
   }
 }
 console.log("PASS: three everyday talks are loaded, rotate, retain normal fees/rewards, and leave no settlement on interruption");
+
+// RVE07: レヰのライブの夜。第2章で余りチケットを受け取った人が、第3章の東京へ発つ前の準備期間にレヰの店へ来たら、
+// いつもの会話・段階より先に一度だけ。チケットが無い・第2章・出発後は出さない。中断では既読にしない。
+{
+  const live = "ch3_prep_rei_live";
+  const homeScript = JSON.parse(fs.readFileSync(new URL("data/dialogue/ch3_ch4_home.json", root), "utf8")).dialogues
+    .find(d => d.dialogue_id === live);
+  assert(homeScript?.lines?.length, "the live night script exists in ch3_ch4_home.json");
+  assert(homeScript.lines.some(line => line.type === "set_flag" && line.flag === `_talk_seen_${live}`), "the script marks itself read");
+  const prepSave = (extra = {}) => {
+    state.chapter = 3; state.flags._ch3_prep = { startDay: 1, days: 3, departed: false }; Object.assign(state.flags, extra);
+  };
+  await setup(2); DB.dialogues[live] = homeScript; prepSave({ _ch2_rei_ticket: true });
+  assert.equal(module.namespace.reiLiveDue(state), true);
+  mode = "cancel"; const before = structuredClone(state);
+  assert.equal((await visit("rei")).used, false);
+  assert.equal(played.at(-1), live);
+  assert.deepEqual(state, before, "an interrupted live night leaves no fee, read mark or affinity");
+  mode = "ok";
+  assert.equal((await visit("rei")).used, true);
+  assert.equal(played.at(-1), live, "the live night comes before the ordinary talk");
+  assert.equal(state.flags[`_talk_seen_${live}`], true);
+  assert.equal(module.namespace.reiLiveDue(state), false, "only once");
+  await visit("rei"); assert.notEqual(played.at(-1), live, "the next visit is an ordinary one");
+  for (const [label, prepare] of [
+    ["no ticket", () => prepSave()],
+    ["chapter 2", () => { state.flags._ch2_rei_ticket = true; }],
+    ["after departure", () => { prepSave({ _ch2_rei_ticket: true }); state.flags._ch3_prep.departed = true; }],
+    ["script not loaded", () => { prepSave({ _ch2_rei_ticket: true }); delete DB.dialogues[live]; }],
+  ]) {
+    await setup(2); DB.dialogues[live] = homeScript; prepare();
+    assert.equal(module.namespace.reiLiveDue(state), false, label);
+  }
+  // 神崎の店には出ない
+  await setup(2); DB.dialogues[live] = homeScript; prepSave({ _ch2_rei_ticket: true });
+  await visit("kumicho"); assert.notEqual(played.at(-1), live);
+}
+console.log("PASS: Rei's live night appears once during the chapter 3 departure prep for ticket holders");
