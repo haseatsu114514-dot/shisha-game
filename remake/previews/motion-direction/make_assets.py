@@ -1,58 +1,48 @@
 #!/usr/bin/env python3
-"""モーション改善案の見本で使う派生画像を、採用済みの絵から作る（新しい絵は生成しない）。
-- cards/back.webp          占い師の登場カットインの背景に描かれた札（月と草花）を正面へ起こしたもの
-- cards/front-tsumugi.webp 札の金の縁はそのまま、中だけ占う相手（つむぎ）の登場カットインの絵柄
+"""モーション改善案の見本で使う派生画像を、採用済みの絵から作る。
+- cards/back.webp          占いの札の裏（Issue #3254 で Codex が作った札の裏。透過の外側を切り落として縮小）
+- cards/front-tsumugi.webp 札の表（#3254 の表の枠の窓に、占う相手＝つむぎの登場カットインの絵柄を入れる）
 - stills/train-streak.webp 新幹線の車窓の「流れ」。車内の絵の窓の中だけを行ごとに横へ引き伸ばしたもの
 使い方: python3 remake/previews/motion-direction/make_assets.py   （Pillow・numpy が必要）"""
 from pathlib import Path
 import numpy as np
-from PIL import Image, ImageDraw, ImageFilter
+from PIL import Image, ImageFilter
 
 ROOT = Path(__file__).resolve().parents[3]
 HERE = Path(__file__).parent
 INTRO = ROOT / "remake/img/ui/character_intros/graphic"
 BG = ROOT / "remake/img/backgrounds"
-W, H = 420, 700  # 札の大きさ（3:5）
-
-
-def coeffs(dst, src):
-    """dst の4点（出力）→ src の4点（元の絵）へ写す射影変換の係数"""
-    rows = []
-    for (x, y), (u, v) in zip(dst, src):
-        rows.append([x, y, 1, 0, 0, 0, -u * x, -u * y])
-        rows.append([0, 0, 0, x, y, 1, -v * x, -v * y])
-    return np.linalg.solve(np.array(rows, dtype=float), np.array(src, dtype=float).reshape(8)).tolist()
+TAROT = ROOT / "remake/img/ui/transitions/tarot"  # #3254 の札（原画は asset_sources/transitions/motion-props-3254/raw/）
+CARD_BOX = (87, 60, 937, 1457)  # 札の外形（1024x1536 の中。裏と表の枠で共通）
+W, H = 420, round(420 * (CARD_BOX[3] - CARD_BOX[1]) / (CARD_BOX[2] - CARD_BOX[0]))  # 420x690（index.html の .card の比率と同じ）
+WINDOW = (195, 215, 828, 1319)  # 表の枠の窓（生成りの無地の所）
 
 
 def card_back():
-    art = Image.open(INTRO / "bg_uranaishi.webp").convert("RGB")
-    # 手前の札の四隅（左上・右上・右下・左下）。丸い角の外側の交点
-    quad = [(1366.0, 141.5), (1518.5, 186.5), (1431.0, 446.0), (1258.5, 380.5)]
-    card = art.transform((W, H), Image.Transform.PERSPECTIVE, coeffs([(0, 0), (W, 0), (W, H), (0, H)], quad), Image.Resampling.BICUBIC)
-    return card.filter(ImageFilter.UnsharpMask(radius=1.4, percent=60, threshold=2))
+    card = Image.open(TAROT / "card-back.webp").convert("RGBA").crop(CARD_BOX)
+    return card.resize((W, H), Image.Resampling.LANCZOS)
 
 
-def card_front(back):
+def card_front():
+    frame = Image.open(TAROT / "card-front-frame.webp").convert("RGBA")
+    a = np.asarray(frame).astype(int)
+    # 窓＝生成りの無地の画素（窓の矩形の中だけ）。少しぼかして、金の細い線との継ぎ目をなじませる
+    ivory = (abs(a[..., 0] - 241) < 16) & (abs(a[..., 1] - 229) < 16) & (abs(a[..., 2] - 208) < 18) & (a[..., 3] > 250)
+    box = np.zeros_like(ivory)
+    x0, y0, x1, y1 = WINDOW
+    box[y0 - 6:y1 + 6, x0 - 6:x1 + 6] = True
+    mask = Image.fromarray(((ivory & box) * 255).astype("uint8")).filter(ImageFilter.MaxFilter(3)).filter(ImageFilter.GaussianBlur(0.8))
+    # 藤棚と遠景の縦長の一角（左側）を、窓と同じ縦横比で切る
     art = Image.open(INTRO / "bg_tsumugi.webp").convert("RGB")
-    out = back.copy()
-    ix, iy = round(W * 0.118), round(H * 0.072)  # 金の縁と細い内枠の内側
-    iw, ih = W - ix * 2, H - iy * 2
-    # 藤棚と遠景の縦長の一角（左側）を、内側と同じ縦横比で切る
-    ch = 880
-    cw = round(ch * iw / ih)
-    scene = art.crop((60, 30, 60 + cw, 30 + ch)).resize((iw, ih), Image.Resampling.LANCZOS)
-    # 角を丸く抜き、札の金と同じ色の細い内枠で継ぎ目を締める
-    k = 3
-    mask = Image.new("L", (iw * k, ih * k), 0)
-    ImageDraw.Draw(mask).rounded_rectangle([0, 0, iw * k - 1, ih * k - 1], radius=15 * k, fill=255)
-    out.paste(scene, (ix, iy), mask.resize((iw, ih), Image.Resampling.LANCZOS))
-    line = Image.new("RGBA", (W * k, H * k), (0, 0, 0, 0))
-    d = ImageDraw.Draw(line)
-    d.rounded_rectangle([(ix - 2) * k, (iy - 2) * k, (ix + iw + 2) * k, (iy + ih + 2) * k], radius=17 * k, outline=(38, 20, 52, 255), width=3 * k)
-    d.rounded_rectangle([(ix - 1) * k, (iy - 1) * k, (ix + iw + 1) * k, (iy + ih + 1) * k], radius=16 * k, outline=(214, 178, 106, 255), width=2 * k)
-    out = out.convert("RGBA")
-    out.alpha_composite(line.resize((W, H), Image.Resampling.LANCZOS))
-    return out.convert("RGB")
+    ww, wh = x1 - x0 + 12, y1 - y0 + 12
+    ch = 900
+    cw = round(ch * ww / wh)
+    scene = art.crop((60, 20, 60 + cw, 20 + ch)).resize((ww, wh), Image.Resampling.LANCZOS)
+    layer = Image.new("RGBA", frame.size, (0, 0, 0, 0))
+    layer.paste(scene, (x0 - 6, y0 - 6))
+    out = frame.copy()
+    out.paste(layer, (0, 0), mask)
+    return out.crop(CARD_BOX).resize((W, H), Image.Resampling.LANCZOS)
 
 
 def window_left(y):
@@ -107,8 +97,7 @@ def train_streak():
 if __name__ == "__main__":
     (HERE / "cards").mkdir(exist_ok=True)
     (HERE / "stills").mkdir(exist_ok=True)
-    back = card_back()
-    back.save(HERE / "cards/back.webp", quality=90, method=6)
-    card_front(back).save(HERE / "cards/front-tsumugi.webp", quality=90, method=6)
+    card_back().save(HERE / "cards/back.webp", quality=88, alpha_quality=100, method=6)
+    card_front().save(HERE / "cards/front-tsumugi.webp", quality=88, alpha_quality=100, method=6)
     train_streak().save(HERE / "stills/train-streak.webp", quality=82, method=6)
     print("ok")
