@@ -36,7 +36,7 @@ export const BOOST = Object.freeze({ duration: 3, near: 0.12, land: 0.05, perfec
 export const RULES_VERSION = 2; // 離陸加点なし・着地回復。旧記録とは点数を比較しない
 export const DEFAULT_SEED = 7;
 export const CURVE_STEP = 2; // heading/offset の焼きテーブル間隔（m）
-export const CURVE_SCALE = 0.0016; // c=1 のとき、1m あたりの向きの変化（レーン単位）
+export const CURVE_SCALE = 0.0045; // c=1 のとき、1m あたりの向きの変化（レーン単位）。見た目の曲がりだけに使う（横へ流す力は STEER.curveDrift）
 // 本番のコース。seed は配置、curves があればカーブだけ差し替える（稜線は従来の seed 7 のまま）。
 export const COURSE_PACKS = Object.freeze([
   Object.freeze({ id: "ridge", name: "稜線", seed: 7 }),
@@ -705,7 +705,7 @@ export function rivalRun(course, { who = "noor", maxTime = 200 } = {}) {
   const game = createGame(course), memo = { lane: startX, only360 }, samples = [];
   game.x = startX; game.speed = startSpeed;
   const snap = () => samples.push({ t: game.t, z: game.z, x: game.x, vx: game.vx, air: game.air, airTotal: game.airTotal, airPeak: game.airPeak, airKind: game.airKind,
-    landingPress: game.landingPress, fallT: game.fallT, landedAt: game.landedAt, rot: game.rot });
+    landingPress: game.landingPress, fallT: game.fallT, landedAt: game.landedAt, rot: game.rot, boostT: game.boostT });
   snap();
   let next = RIVAL_SAMPLE;
   while (!game.finished && game.t < maxTime) {
