@@ -40,8 +40,6 @@
 .axe-target image, .axe-target circle, .axe-target path, .axe-target g { pointer-events: none; }
 .axe-target { cursor: crosshair; outline: none; }
 .axe-target:focus-visible { outline-offset: -5px; border-radius: 12px; }
-.axe-target > image { filter: drop-shadow(0 8px 12px rgba(0,0,0,.45)); }
-.axe-impact-mark { filter: drop-shadow(0 0 3px #0a0d0e); }
 .axe-aim-guides { pointer-events: none; }
 .axe-fixed-aim { opacity: .8; }
 .axe-legend { order: -1; align-self: center; margin: 12px 8px 0; padding: 5px 12px; color: #d2c6b2; font-size: 12px; font-weight: 700; letter-spacing: .02em; text-align: center; border: 1px solid rgba(224,183,126,.16); border-radius: 100px; background: rgba(10,13,14,.75); }
@@ -77,14 +75,14 @@
 .axe-steps [data-state="waiting"] strong { color: #7e8782; }
 .axe-timing > span { display: block; margin-bottom: 8px; color: #d3d2c7; font-size: 12px; line-height: 1.4; }
 .axe-gauge { position: relative; height: 28px; border: 1px solid rgba(211,170,132,.35); border-radius: 5px; background: #563534; }
-.axe-stick { position: absolute; top: 0; bottom: 0; background: #9c784b; border-inline: 1px solid #dcba7c; }
-.axe-sweet { position: absolute; top: 0; bottom: 0; background: #8db98c; border-inline: 2px solid #ddf0c2; }
+.axe-stick { position: absolute; top: 0; bottom: 0; left: var(--from); width: var(--size); background: #9c784b; border-inline: 1px solid #dcba7c; }
+.axe-sweet { position: absolute; top: 0; bottom: 0; left: var(--from); width: var(--size); background: #8db98c; border-inline: 2px solid #ddf0c2; }
 .axe-needle { position: absolute; left: 0; top: -5px; bottom: -5px; width: 3px; transform: translateX(-50%); border-radius: 2px; background: #fff8e8; box-shadow: 0 0 9px rgba(255,244,194,.6); }
 .axe-timing[data-active="false"] { opacity: .42; }
 .axe-feedback { margin: 0; color: #b2c9b5; font-size: 12px; font-weight: 700; line-height: 1.5; }
 .axe-steadiness { margin: 0; color: #a9c1c5; font-size: 12px; font-weight: 700; line-height: 1.5; }
 .axe-stability-meter { height: 3px; overflow: hidden; border-radius: 4px; background: rgba(255,255,255,.09); }
-.axe-stability-meter i { display: block; width: var(--axe-steady,100%); height: 100%; border-radius: inherit; background: #aebfa9; transition: width .15s linear,background-color .2s; }
+.axe-stability-meter i { display: block; width: 100%; height: 100%; transform: scaleX(var(--axe-steady,1)); transform-origin: left center; border-radius: inherit; background: #aebfa9; transition: transform .15s linear,background-color .2s; }
 .axe-stability-meter[data-focused="true"] i { background: #bce7d0; box-shadow: 0 0 8px #bce7d0; }
 .axe-game[data-focused="true"] .axe-board-pane { border-color: rgba(172,218,192,.5); }
 
@@ -376,8 +374,7 @@
 .axe-declare { position: absolute; left: 50%; top: 34%; transform: translate(-50%,-50%); z-index: 5; pointer-events: none; display: grid; justify-items: center; gap: 2px; padding: 8px 18px; border: 1px solid #9cecff; border-radius: 6px; background: rgba(10,22,30,.82); color: #b3e4f4; text-align: center; animation: axe-declare-in .95s ease-out both; }
 .axe-declare strong { font-size: 1.1rem; letter-spacing: .08em; color: #9cecff; }
 .axe-declare span { font-size: .9rem; color: #d7f3fb; }
-/* !important: render() sets the called marker's inline yellow glow; the declaration flash briefly overrides it. */
-.axe-declare-flash { filter: drop-shadow(0 0 10px #9cecff) drop-shadow(0 0 3px #e9fbff) !important; }
+.axe-declare-flash circle { stroke: #e9fbff; stroke-width: 4; }
 @keyframes axe-declare-in { 0% { opacity: 0; transform: translate(-50%,-40%) scale(.9); } 20% { opacity: 1; transform: translate(-50%,-50%) scale(1.04); } 80% { opacity: 1; transform: translate(-50%,-50%) scale(1); } 100% { opacity: 0; transform: translate(-50%,-50%) scale(1); } }
 .axe-game[data-reduced-motion="true"] .axe-declare { animation: none; }
 .axe-game { background: linear-gradient(90deg,#0a0d0ec9 40%,#0b0d0ef2 80%),var(--axe-bg) center/cover; }
@@ -598,8 +595,7 @@ html:root[data-ui-theme="paper"] .axe-bar-menu .axe-bar-lesson { color: var(--la
 .axe-zone-halo[data-kind="kill"] { stroke: #b6f0ff; }
 .axe-zone-halo[data-kind="ring"] { stroke-width: 2.5; stroke-dasharray: 10 6; }
 .axe-ghost { pointer-events: none; }
-.axe-flight-trail { filter: blur(1.5px); }
-.axe-contact-shadow { filter: blur(3px); pointer-events: none; }
+.axe-contact-shadow { pointer-events: none; }
 .axe-gauge-label { pointer-events: none; letter-spacing: .02em; }
 .axe-zoom { position: absolute; bottom: 12px; z-index: 3; display: grid; justify-items: center; gap: 4px; width: clamp(108px, 27%, 176px); margin: 0; pointer-events: none;
   animation: axe-zoom-in .26s cubic-bezier(.2,.8,.2,1) .18s both; }
@@ -999,3 +995,92 @@ html:root[data-ui-theme="paper"] .axe-bar-menu .axe-bar-lesson { color: var(--la
 /* 投げる前（狙いを選ぶ場面）は右パネルの中身が少なく、下寄せにすると上に約140pxの空きが残っていた（2026-11-08 撮影で確認）。
    狙いの札（通常・左上の青…）の段をその高さまで伸ばし、札を大きく押しやすくする。中身が多い場面では伸びる余地がないので変わらない。 */
 .axe-game .axe-panel > .axe-calls { flex: 1 1 auto; max-height: 300px; }
+
+
+/* ===== 的に集中する配置（2026-11-10 オーナー指摘） =====
+   「処理が重い」「UI配置が悪く斧や的に集中しづらい」「狙う位置を決める所が常に右にあって没入感がない」への作り直し。
+   - 的は画面の中央で、本体の高さいっぱいの正方形。左右の枠（黒板の箱）はやめ、レーンの背景が見える。
+   - 狙いの札（通常・四つの青）は的の四隅と下に重ねる。出るのは投げる前だけで、構えたら消える（的の青を直接タップしても宣言できる）。
+   - 回転ゲージは的のすぐ右に縦で立つ。針が上がるほど刃先も上へずれるので、的から目を離さずに読める。
+   - 左は見守りの一言とチャレンジ（構えてから刺さるまでは消える）。右は今の刃先・結果・操作のボタンだけ。
+   - 結果のまとめ（summary）は的の上に重ねた1枚の札。
+   - 描画: 動かない的（.axe-target-art）と動く照準・斧（.axe-target）を別の層にし、ぼかし・影の filter を使わない。ゲージの針は transform で動かす。
+   寸法の下限（文字はステージ上 24px・押す部品 82px）は従来どおり。 */
+.axe-game.axe-in-stage { padding: 18px 14px 14px; background: radial-gradient(ellipse 62% 78% at 50% 56%, #0a121159, #0a1110eb 78%), var(--axe-bg) center / cover; }
+.axe-game.axe-in-stage::before { display: none; }
+.axe-game.axe-in-stage .axe-body { position: relative; display: flex; align-items: stretch; justify-content: center; gap: 14px; }
+.axe-game.axe-in-stage .axe-side { display: flex; flex: 1 1 0; flex-direction: column; justify-content: flex-end; gap: 10px; min-width: 0; min-height: 0; }
+.axe-game.axe-in-stage .axe-board-pane { flex: none; height: 100%; aspect-ratio: 1; border: 0; border-radius: 12px; background: #1d130b;
+  box-shadow: 0 0 0 3px var(--lane-wood-dark), 0 20px 46px #000000c7; }
+.axe-game.axe-in-stage :is(.axe-target-art, .axe-target) { position: absolute; inset: 0; display: block; width: 100%; height: 100%; }
+.axe-game.axe-in-stage .axe-target-art { pointer-events: none; will-change: transform; }
+.axe-game.axe-in-stage .axe-target { will-change: transform; }
+.axe-game.axe-in-stage .axe-board-pane::after { content: ""; position: absolute; inset: 0; z-index: 3; background: #050908c7; opacity: 0; pointer-events: none; transition: opacity .25s; }
+.axe-game.axe-in-stage[data-phase="summary"] .axe-board-pane::after { opacity: 1; }
+
+/* 狙いの札: 的の上。投げる前だけ（JS が choice 以外で hidden にする）。 */
+.axe-game.axe-in-stage .axe-board-pane > .axe-calls { position: absolute; inset: 0; z-index: 2; display: block; max-height: none; pointer-events: none; }
+.axe-game.axe-in-stage .axe-board-pane > .axe-calls[hidden] { display: none; }
+.axe-game.axe-in-stage .axe-calls .axe-button { position: absolute; width: 148px; min-height: var(--axe-tap); padding: 4px 6px; pointer-events: auto; box-shadow: inset 0 -2px #00000066, 0 6px 16px #000000a6; }
+.axe-game.axe-in-stage .axe-calls .axe-button:not([data-call="normal"]):not(:disabled):not([aria-pressed="true"]) { border-color: #7fc4ee; background: #153a5ce6; color: #dff2ff; }
+.axe-game.axe-in-stage .axe-calls .axe-button:not([data-call="normal"])[aria-pressed="true"] { border-color: #fff5b1; background: #2f7fc1; color: #fff; font-weight: 900; box-shadow: inset 0 -3px #163f78, 0 0 0 3px #fff5b199, 0 6px 16px #000000a6; }
+.axe-game.axe-in-stage .axe-calls .axe-button:disabled { opacity: .5; }
+.axe-game.axe-in-stage .axe-calls [data-call="upper-left"] { left: 10px; top: 10px; }
+.axe-game.axe-in-stage .axe-calls [data-call="upper-right"] { right: 10px; top: 10px; }
+.axe-game.axe-in-stage .axe-calls [data-call="lower-left"] { left: 10px; bottom: 10px; }
+.axe-game.axe-in-stage .axe-calls [data-call="lower-right"] { right: 10px; bottom: 10px; }
+.axe-game.axe-in-stage .axe-calls [data-call="normal"] { left: 50%; bottom: 10px; width: 132px; margin-left: -66px; }
+/* 宣言中の一言は上の2枚の札のあいだ（青い的や得点の円に重ねない）。サドンデスは札が出ないので1行で広く。 */
+.axe-game.axe-in-stage .axe-board-pane > .axe-call-status:not([data-kind="remaining"]) { position: absolute; left: 50%; top: 10px; z-index: 2; box-sizing: border-box; width: 262px; min-height: var(--axe-tap); margin: 0 0 0 -131px; padding: 4px 8px;
+  display: grid; place-items: center; border: 1px solid #7fc4ee; border-radius: 10px; background: #0b1211eb; color: #dff2ff; line-height: 1.35; text-align: center; pointer-events: none; }
+.axe-game.axe-in-stage .axe-board-pane > .axe-call-status[data-kind="sudden-death"] { top: 44px; width: auto; min-height: 0; margin: 0; padding: 4px 16px; transform: translateX(-50%); border-radius: 999px; white-space: nowrap; }
+.axe-game.axe-in-stage:is([data-phase="horizontal"],[data-phase="vertical"],[data-phase="power"],[data-phase="result"],[data-phase="summary"]) .axe-board-pane > .axe-call-status { display: none; }
+
+/* 回転ゲージ: 的の右に縦。場所は常に取っておき（的が左右に動かない）、出ていない間は見えないだけ。 */
+.axe-game.axe-in-stage .axe-body > .axe-timing { position: relative; display: block !important; flex: none; width: 46px; margin: 0; padding: 0; transition: opacity .15s; }
+.axe-game.axe-in-stage .axe-body > .axe-timing[hidden], .axe-game.axe-in-stage[data-phase="summary"] .axe-body > .axe-timing { visibility: hidden; }
+.axe-game.axe-in-stage .axe-timing[data-active="false"] { opacity: .45; }
+.axe-game.axe-in-stage .axe-timing .axe-power-readout { position: absolute !important; width: 1px !important; height: 1px !important; margin: -1px !important; padding: 0 !important;
+  overflow: hidden !important; clip-path: inset(50%) !important; white-space: nowrap !important; border: 0 !important; }
+.axe-game.axe-in-stage .axe-gauge { position: absolute; inset: 0; height: auto; border-radius: 8px; }
+.axe-game.axe-in-stage :is(.axe-stick, .axe-sweet) { left: 0; right: 0; top: auto; bottom: var(--from); width: auto; height: var(--size); border-inline: 0; }
+.axe-game.axe-in-stage .axe-stick { border-block: 1px solid #dcba7c; }
+.axe-game.axe-in-stage .axe-sweet { border-block: 2px solid #ddf0c2; }
+.axe-game.axe-in-stage .axe-sweet::after { writing-mode: vertical-rl; letter-spacing: .1em; }
+.axe-game.axe-in-stage .axe-power-fill { left: 0; top: 0; bottom: 0; width: 5px; height: auto; transform: scaleY(0); transform-origin: center bottom; }
+.axe-game.axe-in-stage .axe-needle { inset: 0; width: auto; border-radius: 0; background: none; box-shadow: none; transform: translateY(100%); pointer-events: none; will-change: transform; }
+.axe-game.axe-in-stage .axe-needle::before { left: -7px; right: -7px; top: -3px; height: 6px; border: 0; border-radius: 3px; background: #fff9e6; box-shadow: 0 0 0 1.5px #162018; }
+.axe-game.axe-in-stage .axe-needle::after { content: ""; position: absolute; left: -19px; top: -9px; border-block: 9px solid transparent; border-left: 12px solid #fff3d7; }
+
+/* 右: 枠のない操作の列。下から 投げる札 → 構え直す・息を整える → 今の刃先／結果。 */
+.axe-game.axe-in-stage .axe-panel { flex: 1 1 0; display: flex; flex-direction: column; justify-content: flex-end; gap: 10px; padding: 0; overflow: visible; border: 0; border-radius: 0; background: none; box-shadow: none; }
+.axe-game.axe-in-stage .axe-panel > .axe-throw { display: flex; gap: 10px; min-width: 0; }
+.axe-game.axe-in-stage .axe-throw-button { gap: .4em; padding: 8px 10px; font-size: 30px; letter-spacing: .05em; white-space: normal; line-height: 1.2; }
+.axe-game.axe-in-stage .axe-action-label { overflow: visible; }
+.axe-game.axe-in-stage .axe-controls { grid-template-columns: 1fr; gap: 8px; }
+.axe-game.axe-in-stage .axe-controls .axe-button { background: #17201ed9; }
+.axe-game.axe-in-stage .axe-live-score { padding: 4px 12px; border: 1px solid var(--lane-line); border-radius: 10px; background: #0b1211d9; }
+.axe-game.axe-in-stage .axe-note { margin: 0; padding: 6px 12px; border-radius: 10px; background: #0b1211c7; line-height: 1.4; }
+.axe-game.axe-in-stage .axe-note.axe-quiet { padding: 0; }
+.axe-game.axe-in-stage .axe-result-card { border-radius: 0 10px 10px 0; background: #0b1211e0; }
+.axe-game.axe-in-stage .axe-steps { position: absolute !important; width: 1px !important; height: 1px !important; margin: -1px !important; padding: 0 !important;
+  overflow: hidden !important; clip-path: inset(50%) !important; white-space: nowrap !important; border: 0 !important; }
+
+/* 左: 見守りの一言（顔の丸＋吹き出し）とチャレンジ。 */
+.axe-game.axe-in-stage .axe-side .axe-companion { display: flow-root; min-height: 0; padding: 10px 12px; border: 1px solid var(--lane-line); border-radius: 12px; background: #0b1211d9; }
+.axe-game.axe-in-stage:is([data-phase="horizontal"],[data-phase="vertical"],[data-phase="power"],[data-phase="flight"]) .axe-side .axe-companion { display: none; }
+.axe-game.axe-in-stage .axe-side .axe-portrait-frame { float: left; width: 64px; height: 66px; margin: 2px 12px 2px 0; }
+.axe-game.axe-in-stage .axe-side .axe-companion > div:last-child { display: contents; }
+.axe-game.axe-in-stage .axe-side .axe-comment { display: inline; margin: 0; font-size: var(--axe-text); line-height: 1.45; }
+.axe-game.axe-in-stage .axe-side .axe-challenges li { background: #0b1211d9; }
+.axe-game.axe-in-stage .axe-side .axe-match-score { margin: 0; padding: 6px 12px; border-radius: 10px; background: #0b1211d9; }
+
+/* 結果のまとめ: 的の上の札。右の列の場所は ::after で取っておき、的が動かないようにする。 */
+.axe-game.axe-in-stage[data-phase="summary"] .axe-body::after { content: ""; flex: 1 1 0; }
+.axe-game.axe-in-stage[data-phase="summary"] .axe-panel { position: absolute; left: calc(50% - 30px); top: 50%; z-index: 4; flex: none; width: 600px; max-height: 100%; transform: translate(-50%, -50%);
+  padding: 20px 22px 18px; gap: 10px 10px; overflow-y: auto; border: 1px solid var(--lane-wood-dark); border-radius: 12px; background: var(--lane-slate); box-shadow: var(--lane-frame), 0 20px 60px #000000d9; }
+.axe-game.axe-in-stage[data-phase="summary"] .axe-result-card { border-radius: 0; background: none; }
+
+/* 斧投げが開いている間、下に隠れている本編の背景と画面は描かない（煙・雨などの動きを止めて、その分を斧投げに回す）。閉じれば元に戻る。 */
+#stage:has(> .axe-game) > :is(#bg, #screen) { visibility: hidden; }
+.axe-game.axe-in-stage[data-phase="result"] .axe-result-label { letter-spacing: .04em; }

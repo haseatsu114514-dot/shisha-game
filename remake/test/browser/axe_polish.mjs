@@ -44,6 +44,11 @@ async function gauge(page, value, cycle) {
   assert(current < value, "Read the rising gauge before its stop point");
   await page.clock.runFor(Math.ceil((value - current) * cycle / 2));
 }
+async function gauge_(page, value) {
+  const current = Number(await root(page).getAttribute("data-timing"));
+  assert(current < value, "Read the rising gauge before its stop point");
+  await page.clock.runFor(Math.ceil((value - current) * 2400 / 2));
+}
 async function boardStop(page, value, cycle, next, touch) {
   await gauge(page, value, cycle);
   assert.equal(await page.locator(".axe-target").getAttribute("aria-disabled"), "false");
@@ -98,7 +103,7 @@ await suite("axe-polish", async check => {
       shown.push(Number(await page.locator(".axe-result-value > span").textContent()));
       assert.equal(Number(await page.locator(".axe-total strong").textContent()), shown.reduce((a, b) => a + b, 0));
       if (i === 1) {
-        const board = await page.locator(".axe-target .axe-plank image").boundingBox();
+        const board = await page.locator(".axe-target-art .axe-plank image").boundingBox();
         assert(board.width > minimum, `Usable wood target width: ${board.width}`);
         sizes.push({ label, viewport: page.viewportSize(), phase: "result", woodWidth: board.width, woodHeight: board.height });
         await capture(page, `${label}-bull-result`);
@@ -324,6 +329,77 @@ await suite("axe-polish", async check => {
     assert.deepEqual(result.series.wins, { player: 0, opponent: 1 }); assert.equal(result.series.winner, null);
     assert.equal(result.series.games[0].winner, "opponent");
   });
+  // 的に集中する配置（2026-11-10 オーナー指摘）: 的は中央で動かない／狙いの札は的の上に投げる前だけ／回転ゲージは的の右に縦／
+  // 見守りとチャレンジは構えたら消える／動かない的と動く照準は別の層で、filter を使わない。
+  for (const [label, context, touch] of [
+    ["pc", { viewport: { width: 1280, height: 720 } }, false],
+    ["touch-landscape", { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }, true],
+  ]) await check(`${label}-focus-layout`, async page => {
+    const before = await start(page, { mode: "league", opponent: "hiyori", seed: 11, division: "am" });
+    const box = selector => page.locator(selector).first().evaluate(node => { const r = node.getBoundingClientRect(); return { left: r.left, top: r.top, right: r.right, bottom: r.bottom, width: r.width, height: r.height }; });
+    const shown = selector => page.locator(selector).first().evaluate(node => node.getClientRects().length > 0 && getComputedStyle(node).visibility !== "hidden");
+    const close = (a, b, message) => assert(Math.abs(a - b) <= 1.5, `${message}: ${a} / ${b}`);
+    const game = await box('[data-test="axe-game"]'), pane = await box(".axe-board-pane");
+    close(pane.width, pane.height, "the board pane is square");
+    assert(pane.height >= game.height * .78, `the board uses the body height: ${pane.height} of ${game.height}`);
+    assert(Math.abs((pane.left + pane.right) / 2 - (game.left + game.right) / 2) <= game.width * .03, "the board sits in the middle of the stage");
+    // Before the throw: the five aim tags sit on the board, and no tag hides a blue killshot.
+    const calls = await page.locator(".axe-calls .axe-button").evaluateAll(nodes => nodes.map(node => { const r = node.getBoundingClientRect(); return { id: node.dataset.call, left: r.left, top: r.top, right: r.right, bottom: r.bottom }; }));
+    assert.deepEqual(calls.map(c => c.id).sort(), ["lower-left", "lower-right", "normal", "upper-left", "upper-right"]);
+    for (const c of calls) assert(c.left >= pane.left - 1 && c.right <= pane.right + 1 && c.top >= pane.top - 1 && c.bottom <= pane.bottom + 1, `the ${c.id} tag is on the board`);
+    for (const kill of KILLS) {
+      const x = pane.left + (.5 + kill.x * TARGET.radius / 400) * pane.width, y = pane.top + (.5 + kill.y * TARGET.radius / 400) * pane.height;
+      assert(!calls.some(c => x >= c.left - 4 && x <= c.right + 4 && y >= c.top - 4 && y <= c.bottom + 4), `no tag covers the ${kill.id} blue`);
+    }
+    assert.equal(await shown(".axe-companion"), true); assert.equal(await shown(".axe-challenges"), true);
+    assert.equal(await shown(".axe-timing"), false, "no gauge before the stance");
+    // Two layers: the wood and paint never move; sights, axe and effects are drawn above them. No filter anywhere on the board.
+    assert.equal(await page.locator(".axe-target-art .axe-plank image").count(), 1);
+    assert.equal(await page.locator(".axe-target image").count(), 0);
+    assert.equal(await page.locator(".axe-target-art .axe-crosshair, .axe-target-art .axe-flight").count(), 0);
+    const filtered = () => page.locator(".axe-board-pane :is(.axe-target-art, .axe-target), .axe-board-pane :is(.axe-target-art, .axe-target) *").evaluateAll(nodes =>
+      nodes.filter(node => getComputedStyle(node).filter !== "none" || node.style.filter).map(node => node.getAttribute("class") || node.tagName));
+    assert.deepEqual(await filtered(), []);
+    // Declaring a blue marks it with a ring and a short status between the upper tags.
+    await hit(page, '[data-call="upper-left"]', touch); await page.clock.runFor(300);
+    assert.equal(Number(await page.locator(".axe-called-ring").getAttribute("opacity")), 1);
+    const status = await box(".axe-call-status");
+    assert(status.left >= calls.find(c => c.id === "upper-left").right - 1 && status.right <= calls.find(c => c.id === "upper-right").left + 1, "the declared status sits between the upper tags");
+    assert.deepEqual(await filtered(), []);
+    await hit(page, '[data-call="normal"]', touch); await page.clock.runFor(300);
+    assert.equal(Number(await page.locator(".axe-called-ring").getAttribute("opacity")), 0);
+    // Once the stance is taken, only the board, the gauge and the stop buttons remain.
+    await action(page, touch); await phase(page, "horizontal");
+    for (const selector of [".axe-calls", ".axe-companion", ".axe-challenges", ".axe-call-status", ".axe-result-card"]) assert.equal(await shown(selector), false, selector + " is gone while aiming");
+    const aiming = await box(".axe-board-pane");
+    close(aiming.left, pane.left, "the board does not move"); close(aiming.width, pane.width, "the board keeps its size");
+    const gauge = await box(".axe-gauge");
+    assert(gauge.left >= aiming.right - 1 && gauge.left - aiming.right <= game.width * .03, "the gauge stands right next to the board");
+    assert(gauge.height >= aiming.height * .95 && gauge.width * 5 < gauge.height, "the gauge is a tall bar as high as the board");
+    for (const selector of ['[data-test="axe-action"]', '[data-test="axe-focus"]', '[data-test="axe-reaim"]']) {
+      const control = await box(selector);
+      assert(control.left >= gauge.right - 1 && control.right <= game.right + 1 && control.bottom <= game.bottom + 1, selector + " stays in the right column");
+    }
+    await boardStop(page, .5, 3600, "vertical", touch); await boardStop(page, .5, 3600, "power", touch);
+    // The needle rises with the rotation (bottom = 0%), moved by transform only.
+    const needleAt = () => page.locator('[data-test="axe-needle"]').evaluate(node => ({ transform: node.style.transform, left: node.style.left, y: node.getBoundingClientRect().top }));
+    await gauge_(page, .3); const low = await needleAt();
+    await gauge_(page, .6); const high = await needleAt();
+    assert.equal(low.left, ""); assert.match(low.transform, /^translateY\(/);
+    assert(high.y < low.y - gauge.height * .2, `the needle climbs: ${low.y} -> ${high.y}`);
+    const sweet = await box(".axe-sweet"), stick = await box(".axe-stick");
+    assert(sweet.top > stick.top && sweet.bottom < stick.bottom && sweet.width >= gauge.width * .9, "the green band lies inside the sticking band");
+    assert(high.y >= sweet.top - 2 && high.y <= sweet.bottom + 2, "60% is inside the green band");
+    await hit(page, ".axe-target", touch); await phase(page, "flight");
+    close((await box(".axe-board-pane")).left, pane.left, "the board does not move in flight");
+    assert.equal(await shown(".axe-companion"), false);
+    await page.clock.runFor(1320); await phase(page, "result");
+    close((await box(".axe-board-pane")).left, pane.left, "the board does not move on the result");
+    assert.equal(await shown(".axe-companion"), true); assert.equal(await shown(".axe-result-card"), true);
+    assert.deepEqual(await filtered(), []);
+    await fits(page); await capture(page, `${label}-focus-result`);
+    await cancel(page, before);
+  }, context);
 await check("touch-portrait-rotate-hint", async page => {
     // 縦持ちスマホは本編と同じく横向き案内で止める（2026-11-09 オーナー決定・#3035／試遊ページ共通化 #3076）
     await page.goto(new URL("axe-throw.html", page.url()).href);
