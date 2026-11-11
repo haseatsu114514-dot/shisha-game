@@ -2,6 +2,12 @@
 
 > このフォルダの決定は [ADDENDUM-BOARD-LAYOUT.md](ADDENDUM-BOARD-LAYOUT.md)、実装仕様は [SPEC.md](SPEC.md)（第2版）。**2026-11-02 から通常プレイで有効**（`GROWTH_BOARD=true`。オーナー「観音やモスクで割り振れるように実装して」SBD97）。開発・検査で旧しくみを見る時だけ `?growth=0`。下は 2026-11-02 に `remake/README.md` から移した実装メモ。
 
+## 2026-11-11 バランス調査と演出の強化（SBD101〜107）
+
+- 調査の結果と判断待ちは [BALANCE-REVIEW-20261111.md](BALANCE-REVIEW-20261111.md)。
+- レベルアップ・盤の演出の部品は `remake/js/daily/growth-fx.js`（火種の粒・火の粉・光の輪・道を走る光・飛ぶ火種・決定のカットイン）。規則・保存には触れず、動きを減らす設定では何も出さない。見せ方は SPEC 6.2・6.3。
+- 確認: `node --experimental-vm-modules remake/test/growth_board_screen.mjs`、`node remake/test/browser/growth_fx.mjs`（プレビューサーバーが必要）。
+
 ## 2026-10-30 経験値・レベル・火種（心得の盤 第二弾の芯・未公開）
 
 - （2026-11-02 更新）`core/growth-mode.js` の `GROWTH_BOARD` は `true`。旧しくみ（能力の直接成長）に戻すのは URL の `?growth=0` か `__remake.dev.growth(false)` で、その端末だけ（印 `suien_growth_preview=0`）。`?growth=1` で既定に戻す。以下の 10-30 の記述の「未公開」は当時のもの。`__remake.dev.addExp(400)` で経験値を足せる。
