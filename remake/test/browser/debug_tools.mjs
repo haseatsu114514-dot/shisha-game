@@ -25,7 +25,7 @@ await suite("debug-tools", async check => {
         ? [page.frameLocator(t("dj-frame")).locator("#restart"), page.frameLocator(t("dj-frame")).locator("#exit")]
         : id === "axe" ? [page.getByRole("button", { name: "遊び方・ルール", exact: true }), page.getByRole("button", { name: "やめる", exact: true })]
         : id === "tetsuko" ? [page.getByRole("button", { name: "あそびかた", exact: true }), page.getByRole("button", { name: "帰る", exact: true })]
-        : id === "ichidai" ? [page.getByRole("checkbox", { name: /^一つ火の低温型/ })] : [];
+        : id === "ichidai" ? [page.locator('[data-test^="ichi-kit-"]').last()] : [];
       const a = await close.boundingBox();
       for (const control of controls) {
         const b = await control.boundingBox();
@@ -34,7 +34,13 @@ await suite("debug-tools", async check => {
       if (id === "trpg-night") {
         assert.ok(await page.locator(t(screen)).isEnabled(), "night debug has an actual playable story");
         await page.locator(t(screen)).click();
+        await page.locator(t("trpg-skip")).click(); // 初回の店長の説明は残し、ここでは表紙へ進める
         await page.locator(t("trpg-start")).waitFor({ timeout: 30000 });
+        const returned = await close.boundingBox();
+        for (const name of ["遊び方", "本棚へ戻る"]) {
+          const control = await page.getByRole("button", { name, exact: true }).boundingBox();
+          assert.ok(returned && control && (returned.x + returned.width <= control.x || control.x + control.width <= returned.x || returned.y + returned.height <= control.y || control.y + control.height <= returned.y), "TRPG story controls remain exposed");
+        }
       }
       assert.equal(await page.evaluate(() => localStorage.getItem("suien_remake_save")), '{"debugSentinel":true}', id);
       await page.locator(t("debug-minigame-close")).click();

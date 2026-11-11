@@ -82,6 +82,7 @@ export function mountMiniGameDebug() {
       if (game.id === "axe") Object.assign(close.style, { top: "100px" }); // 見出しの「？・✕」を空ける
       if (game.id.startsWith("dj-")) Object.assign(close.style, { left: "20px", right: "auto", top: "120px" }); // フロア内。再開・終了を覆わない
       if (game.id === "ichidai" || game.id === "tetsuko") Object.assign(close.style, { left: "20px", right: "auto", top: "180px" }); // 右上の案内・帰るを覆わない
+      if (game.id === "trpg-night") Object.assign(close.style, { top: "180px" }); // 物語上部のヘルプ・本棚へ戻るを空ける
       close.onclick = () => { controller.abort(); host.remove(); close.remove(); if (current === controller) current = null; location.reload(); };
       stage.append(close);
       document.querySelector("[data-test='debug-panel']").hidden = true;
