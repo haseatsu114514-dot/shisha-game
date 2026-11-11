@@ -346,7 +346,16 @@
 .ichi-foe-bust { position: relative; display: block; width: 206px; height: 128px; overflow: hidden; pointer-events: none; mask-image: linear-gradient(#000 72%, transparent 100%); }
 .ichi-foe-bust img { position: absolute; height: auto; max-width: none; filter: drop-shadow(0 3px 8px #090411); }
 .ichi-foe-bust.is-seat { position: absolute; inset: 0; width: auto; height: auto; mask-image: linear-gradient(#000 84%, transparent 100%); transition: filter 0.4s; }
-.ichi-foe-bust.is-seat img { transform-origin: 50% 60%; animation: ichi-breathe 4.6s ease-in-out infinite; filter: drop-shadow(0 6px 14px rgba(5, 2, 10, 0.9)); }
+.ichi-foe-face { position: absolute; inset: 0; display: block; }
+.ichi-foe-bust.is-seat .ichi-foe-face { transform-origin: 50% 60%; animation: ichi-breathe 4.6s ease-in-out infinite; }
+.ichi-foe-bust.is-seat img { filter: drop-shadow(0 6px 14px rgba(5, 2, 10, 0.9)); }
+/* まばたき: まぶた（肌の色の面と、下の縁の閉じた目の線）を目の上に重ね、一瞬だけ出す。上から下りてくる */
+.ichi-eyelid { position: absolute; border-radius: 50% 50% 46% 46% / 62% 62% 38% 38%; background: linear-gradient(180deg, var(--shade, #d88e58), var(--skin, #f2b47c) 55%); box-shadow: inset 0 -1.6px 0 var(--lid-line, #3a2218); opacity: 0; transform-origin: 50% 0; transform: scaleY(0.2); transition: transform 0.05s ease-in, opacity 0.03s linear; pointer-events: none; }
+.ichi-seat.is-blink .ichi-eyelid { opacity: 1; transform: none; }
+/* 口: しゃべっているあいだ、開いた口（濃い色の小さな面）が不ぞろいに開け閉めする */
+.ichi-lips { position: absolute; border-radius: 46% 46% 50% 50% / 40% 40% 60% 60%; background: radial-gradient(ellipse at 50% 70%, #b0504a, var(--lips, #7a2f2b) 62%); box-shadow: 0 0 0 1px var(--lid-line, #3a2218); opacity: 0; transform-origin: 50% 20%; pointer-events: none; }
+.ichi-seat.is-talking .ichi-lips { animation: ichi-lips 0.62s steps(1) infinite; }
+@keyframes ichi-lips { 0% { opacity: 1; transform: scaleY(0.9); } 16% { opacity: 1; transform: scaleY(0.45); } 30% { opacity: 0; } 44% { opacity: 1; transform: scaleY(1); } 60% { opacity: 1; transform: scale(0.8, 0.55); } 76% { opacity: 0; } 88% { opacity: 1; transform: scaleY(0.7); } }
 @keyframes ichi-breathe { 50% { transform: scale(1.02) translateY(-2px); } }
 .ichi-seat.is-active .ichi-foe-bust.is-seat { filter: drop-shadow(0 0 12px rgba(255, 210, 122, 0.6)); }
 .ichi-seat-bust > .ichi-leader-ring { position: absolute; left: 50%; top: 22px; margin-left: -62px; width: 124px; height: 124px; }
@@ -745,13 +754,13 @@ button.ichi-leaf.can:hover { border-color: #fff; }
 .ichi-setup-head p { margin: 0; font-size: 18px; color: var(--ichi-dim); }
 .ichi-setup h2 { margin: 0 0 6px; font-size: 18px; font-weight: 900; color: var(--ichi-gold); }
 .ichi-picks { display: grid; gap: 10px; }
-.ichi-picks.is-kits { grid-template-columns: repeat(3, 1fr); } .ichi-picks.is-tours { grid-template-columns: repeat(5, 1fr); } .ichi-picks.is-levels { grid-template-columns: repeat(3, 150px); }
+.ichi-picks.is-kits { grid-template-columns: repeat(4, minmax(0, 1fr)); } .ichi-picks.is-tours { grid-template-columns: repeat(5, 1fr); } .ichi-picks.is-levels { grid-template-columns: repeat(3, 150px); }
 .ichi-pick { display: grid; gap: 4px; align-content: start; padding: 12px 16px; min-height: 48px; border-radius: 10px; border: 0; background: rgba(34, 21, 52, 0.94) var(--ichi-plaque) center / 100% 100% no-repeat; text-align: left; cursor: pointer; box-shadow: 0 5px 12px rgba(0, 0, 0, 0.45); }
 .ichi-pick b { font-size: 19px; font-weight: 900; }
 .ichi-pick span { font-size: 15px; color: #e9def2; }
 .ichi-pick.is-on { box-shadow: 0 0 0 2px var(--ichi-gold), 0 0 22px rgba(227, 189, 110, 0.4); }
 .ichi-kit-art { display: flex; align-items: center; gap: 6px; }
-.ichi-kit-art .s-mid { --cw: 72px; }
+.ichi-kit-art .s-mid { --cw: 60px; }
 .ichi-kit-leaf { display: flex; flex-wrap: wrap; gap: 8px; } .ichi-kit-leaf span { display: inline-flex; align-items: center; gap: 4px; font-weight: 700; }
 .ichi-tour b { font-size: 16px; } .ichi-tour span { font-size: 14px; }
 .ichi-level { justify-items: center; }

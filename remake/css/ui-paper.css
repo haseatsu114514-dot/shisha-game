@@ -237,6 +237,20 @@ html:root[data-ui-theme="paper"] .exp-chip { color: #fff; background: var(--lave
 html:root[data-ui-theme="paper"] .exp-chip :is(b, span) { color: #fff; }
 html:root[data-ui-theme="paper"] .gb-wallet { background: var(--paper); border: 1px solid var(--paper-line); }
 html:root[data-ui-theme="paper"] .gb-hidane.zero { opacity: .55; }
+/* 盤の部品の絵（GB04・SBD123。盤の絵が読めた時だけ）: 選んでいない札は紙の見出し札、選んでいる札は黒いガラス、丸いボタンは紙の丸、見出しの下に飾り罫。
+   上の border の指定が絵（border-image）を消すので、ここに書く。新版（look-neo-board.css）は夜紫の部品を使う。 */
+html:root[data-ui-theme="paper"] .gboard.has-art .gb-tab { border-color: transparent; background: none; border-image: url(../img/ui/growth_board/tab_off.webp) 26 40 6 fill / 13px 20px 3px stretch; }
+html:root[data-ui-theme="paper"] .gboard.has-art .gb-tab.on { border-color: transparent; background: none; border-image: url(../img/ui/growth_board/tab_on.webp) 30 40 0 fill / 15px 20px 0 stretch;
+  box-shadow: 0 -4px 12px -4px var(--c); }
+html:root[data-ui-theme="paper"] .gboard.has-art .gb-header .gb-icon { border-color: transparent; background: center / 100% 100% no-repeat url(../img/ui/growth_board/round_btn.webp); }
+html:root[data-ui-theme="paper"] .gboard.has-art .gb-header .gb-icon:is(:hover, :focus-visible) { color: var(--lavender); border-color: transparent; box-shadow: 0 0 0 2px var(--lavender); }
+html:root[data-ui-theme="paper"] .gboard.has-art .gb-hidane.zero { opacity: 1; }
+html:root[data-ui-theme="paper"] .gboard.has-art .gb-header { background: url(../img/ui/growth_board/title_rule.webp) left 12px bottom 3px / 352px auto no-repeat; }
+/* 近い目的地の行: 紙の札。左の帯は今までどおり盤の色（札の絵のラベンダーの帯の上に重ねる） */
+html:root[data-ui-theme="paper"] .gboard.has-art .gb-goal { position: relative; border-color: transparent; background: none; border-image: url(../img/ui/growth_board/card.webp) 30 34 30 36 fill / 15px 17px 15px 18px stretch; }
+html:root[data-ui-theme="paper"] .gboard.has-art .gb-goal::before { content: ""; position: absolute; left: 0; top: 1px; bottom: 2px; width: 6px; border-radius: 3px 0 0 3px; background: color-mix(in srgb, var(--c) 75%, var(--paper-ink)); }
+html:root[data-ui-theme="paper"] .gboard.has-art .gb-goal:is(:hover, :focus-visible) { border-color: transparent; box-shadow: 0 2px 8px #38283f33; }
+html:root[data-ui-theme="paper"] .gboard.has-art .gb-hidane i { filter: none; }
 
 /* 占いの「当たり」の選択肢は赤で示す。紙の札の上では淡い赤が読みにくいので、濃い赤にする（影なし）。 */
 html:root[data-ui-theme="paper"] .vn-choice.fortune-hint { color: #c2334a; text-shadow: none; }

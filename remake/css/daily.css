@@ -1255,6 +1255,19 @@ html:root[data-density="phone"] body:not(:root) .lvup-fire .hidane-icon { width:
 html:root[data-density="phone"] body:not(:root) .lvup-fire b { font-size: 42px; }
 html:root[data-density="phone"] body:not(:root) .lvup-tag { font-size: var(--phone-text) !important; }
 html:root[data-density="phone"] body:not(:root) .lvup-face { width: 64px; height: 64px; }
+/* 札の板と後ろの光は絵（GB04・SBD123。asset_sources/ui/growth-board-20261111/）。levelup.js が両方読めた時だけ has-art を付ける。読めない時は上の CSS の形のまま。
+   板は九分割: 上下を高さの半分ずつにして絵を高さに合わせて同じ比で縮め、左右の端の火花の飾りを伸ばさない。下に今の面の色を敷いたまま、角の丸みを絵に合わせる。 */
+.lvup { --plate-h: 86px; }
+.lvup.has-art .lvup-plate { box-sizing: border-box; height: var(--plate-h); align-content: center; padding: 0 calc(var(--plate-h) * 0.64) 0 calc(var(--plate-h) * 0.62);
+  border: 1px solid transparent; border-radius: calc(var(--plate-h) * 0.24); background-clip: padding-box;
+  border-image: url(../img/ui/growth_board/levelup_plate.webp) 49 56 fill / calc(var(--plate-h) * 0.49) calc(var(--plate-h) * 0.56) stretch;
+  box-shadow: 0 10px 34px rgba(0, 0, 0, 0.6), 0 0 34px rgba(255, 170, 60, 0.3); }
+.lvup.has-art .lvup-plate::before { display: none; }
+.lvup.has-art.milestone .lvup-plate { border-width: 1px; box-shadow: 0 10px 34px rgba(0, 0, 0, 0.6), 0 0 60px rgba(255, 170, 60, 0.55); }
+.lvup.has-art .lvup-rays { border-radius: 0; opacity: 0.8; background: url(../img/ui/growth_board/burst_rays.webp) center / contain no-repeat; -webkit-mask-image: none; mask-image: none; }
+.lvup.has-art.milestone .lvup-rays { opacity: 1; }
+.lvup.has-art.gift .lvup-rays { opacity: 0.45; }
+html:root[data-density="phone"] body:not(:root) .lvup { --plate-h: 116px; }
 
 /* ---------------------------------------------------------------- レベルアップと火種の演出の強化（2026-11-11 オーナー「見た目や演出など全面的にパワーアップさせて」SBD103）
    部品は js/daily/growth-fx.js。動くのは transform と opacity だけ（広い面のぼかし・ノイズは使わない）。動きを減らす設定では止める */
@@ -1539,10 +1552,15 @@ html:root[data-density="phone"] body:not(:root) .lvup-face { width: 64px; height
 .gboard.has-art .gb-node.gate.s-unlocked .gb-face, .gboard.has-art .gb-node.gate.s-available .gb-face { filter: drop-shadow(0 0 8px var(--c)); }
 .gboard.has-art .gb-node.gate.s-unlocked .gb-glyph { color: #fff; text-shadow: 0 0 6px var(--c); }
 /* 火種の粒 */
-.gboard.has-art .gb-hidane i { width: 18px; height: 18px; border-radius: 0; clip-path: none; transform: none; margin: 0; filter: none; background: center / contain no-repeat url(../img/ui/growth_board/hidane_any.webp); }
-.gboard.has-art .gb-hidane.k-body i { background-image: url(../img/ui/growth_board/hidane_body.webp); }
-.gboard.has-art .gb-hidane.k-sense i { background-image: url(../img/ui/growth_board/hidane_sense.webp); }
-.gboard.has-art .gb-hidane.k-wisdom i { background-image: url(../img/ui/growth_board/hidane_wisdom.webp); }
+/* 財布の火種は、黒い受け皿（socket.webp・GB04）の上に置く。0個の種類は皿だけが見える（数字は薄く） */
+.gboard.has-art .gb-hidane i { width: 26px; height: 26px; border-radius: 0; clip-path: none; transform: none; margin: 0; filter: none;
+  background: center / 76% 76% no-repeat url(../img/ui/growth_board/hidane_any.webp), center / contain no-repeat url(../img/ui/growth_board/socket.webp); }
+.gboard.has-art .gb-hidane.k-body i { background-image: url(../img/ui/growth_board/hidane_body.webp), url(../img/ui/growth_board/socket.webp); }
+.gboard.has-art .gb-hidane.k-sense i { background-image: url(../img/ui/growth_board/hidane_sense.webp), url(../img/ui/growth_board/socket.webp); }
+.gboard.has-art .gb-hidane.k-wisdom i { background-image: url(../img/ui/growth_board/hidane_wisdom.webp), url(../img/ui/growth_board/socket.webp); }
+.gboard.has-art .gb-hidane.zero i { background-image: none, url(../img/ui/growth_board/socket.webp); }
+.gboard.has-art .gb-hidane.zero { opacity: 1; }
+.gboard.has-art .gb-hidane.zero b { opacity: 0.45; }
 /* 右のパネルの縁（9スライス） */
 .gboard.has-art .gb-side { border: 22px solid transparent; border-image: url(../img/ui/growth_board/panel_frame.webp) 48 / 22px stretch; border-radius: 0; box-shadow: none; padding: 6px 8px 4px; }
 .gboard.has-art .gb-side::before, .gboard.has-art .gb-side::after { display: none; }
@@ -1924,6 +1942,26 @@ html:root[data-density="phone"] body:not(:root) .gfx-cutin-count { font-size: 16
 .gboard.has-art .gb-node.gate.s-locked .gb-face { opacity: 0.85; }
 @media (prefers-reduced-motion: reduce) { .gboard.has-art .gb-node.gate .gb-face::after, .gboard.has-art .gb-node.gate .gb-gate-gem { animation: none !important; } }
 .gboard.has-art .gb-node.gate.selected .gb-face, .gboard.has-art .gb-node.gate.target .gb-face { outline: none; filter: drop-shadow(0 0 2px #fff) drop-shadow(0 0 2px #fff) drop-shadow(0 0 8px var(--board-c)) !important; }
+
+/* ---------------------------------------------------------------- 盤の部品を絵に（GB04・SBD123。asset_sources/ui/growth-board-20261111/）
+   盤の絵が全部読めた時（has-art）だけ。読めない時は上の CSS の形のまま。箱の大きさと位置は変えず、絵を border-image／background で敷く。
+   紙の見た目（ui-paper.css）と新版（look-neo-board.css）は、札の縁の指定（border）が絵の指定を消すので、それぞれの中にも同じ絵を書く。 */
+/* 盤の札: 選んでいる札は黒いガラス（下の盤とつながる）、ほかは同じ札を暗くしたもの。盤の色は上の縁の光で */
+.gboard.has-art .gb-tab { border-color: transparent; background: none; border-image: url(../img/ui/growth_board/tab_dim.webp) 30 40 0 fill / 15px 20px 0 stretch; }
+.gboard.has-art .gb-tab.on { border-color: transparent; background: none; border-image: url(../img/ui/growth_board/tab_on.webp) 30 40 0 fill / 15px 20px 0 stretch;
+  box-shadow: 0 -4px 12px -4px var(--c); }
+/* マスの印の台: 値段（琥珀）・まだ分からない（けむった黒）・灯した（緑）。数字と記号はゲームが書く */
+.gboard.has-art .gb-nodes .gb-node > .gb-cost { min-width: 24px; width: 24px; height: 24px; padding: 0; border-radius: 50%; margin-top: -2px; font-size: 13px; color: #fff8e4;
+  text-shadow: 0 0 2px #2a1000, 0 0 3px #2a1000, 0 1px 1px #2a1000; background: center / 100% 100% no-repeat url(../img/ui/growth_board/badge_cost.webp); box-shadow: 0 0 0 1px rgba(10, 6, 16, 0.7), 0 0 7px rgba(255, 176, 60, 0.6); }
+.gboard.has-art .gb-nodes .gb-node > .gb-mystery { width: 24px; height: 24px; margin-top: -2px; color: #ffe6a8; text-shadow: 0 0 2px #000, 0 0 3px #000;
+  background: center / 100% 100% no-repeat url(../img/ui/growth_board/badge_unknown.webp); box-shadow: 0 0 0 1px rgba(10, 6, 16, 0.7); }
+.gboard.has-art .gb-node.s-unlocked > .gb-node-state { width: 20px; height: 20px; margin: -1px 0 0 -1px; border: 0; color: #0d2a1a;
+  background: center / 100% 100% no-repeat url(../img/ui/growth_board/badge_check.webp); box-shadow: 0 0 0 1px rgba(10, 6, 16, 0.7); }
+.gboard.has-art .gb-tab-ready { min-width: 22px; width: 22px; height: 22px; padding: 0; border-radius: 50%; right: 5px; top: 3px; color: #fff8e4; text-shadow: 0 0 2px #2a1000, 0 0 3px #2a1000, 0 1px 1px #2a1000;
+  background: center / 100% 100% no-repeat url(../img/ui/growth_board/badge_cost.webp); }
+/* 見出しの丸いボタン（？・×）: 黒い皿に細い金の縁 */
+.gboard.has-art .gb-header .gb-icon { border-color: transparent; background: center / 100% 100% no-repeat url(../img/ui/growth_board/socket.webp); box-shadow: none; }
+.gboard.has-art .gb-header .gb-icon:is(:hover, :focus-visible) { border-color: transparent; box-shadow: 0 0 12px rgba(244, 210, 122, 0.55); }
 
 /* 左上の日付カード（2026-10-31 DUI13）: 紙の色になる前の配置（左に日付、右に所持金・大会まで・体力の3行）を薄く組み直す。
    行ごとの枠は付けず、細い線で区切る。幅は固定（所持金の桁・時間帯・最大体力で板が動かない）。 */

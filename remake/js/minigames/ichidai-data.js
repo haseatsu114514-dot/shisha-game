@@ -44,6 +44,8 @@ export const HMDS = Object.freeze([
   { id: "tanukish", name: "タヌキッシュリッド", ab: "【素直】「灰にする」で炭を落としたら、カードを1枚引く（1ターンに1回）。素焼きハガルとは組めない。" },
   { id: "amaburst", name: "アマバースト", ab: "【高火力】自分の判定熱はつねに+1。" },
   { id: "big_tanukish", name: "ビッグタヌキッシュリッド", ab: "【熱持ち】各セッション最初の自分のターンは冷めない。" },
+  // 炭1個で回す低温用のHMD（2026-11-11 オーナー「機材によっては1個でいけるのとかある。低温用の」「実際にそういう機材あるから作る」）
+  { id: "one_coal", name: "ワンコールリッド", ab: "【一つ火】置ける炭は2つまで。炭が1つだけのあいだ、冷めない。" },
 ]);
 
 // type: coal=炭 / tech=技 / tool=器具 / person=人物 / event=イベント
@@ -142,6 +144,9 @@ export const KITS = Object.freeze([
   { id: "c", name: "低温の攻め型", bowl: "silicone", hmd: "tanukish", plan: [["rose", 7], ["peach", 4]],
     blurb: "味値4のローズ。ジャストのすぐ上が焦げ。読む・逃がす・ブローで攻めきる。",
     cards: [["flat", 9], ["dense_flat", 2], ["heat_out", 3], ["heat_in", 3], ["blow", 2], ["read", 3], ["inner", 1], ["ash_tap", 2], ["tongs", 2], ["breath", 2], ["show_smoke", 1], ["duel", 2], ["windguard", 2], ["timer", 1], ["venue_heat", 1], ["go_second", 1], ["fan", 2], ["packy", 1]] },
+  { id: "d", name: "一つ火の低温型", bowl: "funnel", hmd: "one_coal", plan: [["peach", 8], ["rose", 5]],
+    blurb: "キューブ炭1つで低い熱を保つ。炭を足す手間が少ないぶん、手札を技に回す。",
+    cards: [["cube", 5], ["flat", 4], ["dense_flat", 1], ["heat_in", 3], ["show_smoke", 2], ["duel", 2], ["blow", 1], ["read", 3], ["inner", 2], ["breath", 2], ["tongs", 1], ["loosen", 2], ["ash_tap", 2], ["fan", 1], ["windguard", 1], ["timer", 1], ["diffuser", 1], ["draft", 1], ["venue_heat", 1], ["go_second", 1], ["buyout", 1], ["minto", 1], ["packy", 1]] },
 ]);
 
 const byId = (list) => Object.freeze(Object.fromEntries(list.map((x) => [x.id, x])));

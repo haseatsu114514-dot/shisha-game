@@ -108,6 +108,9 @@ const ART_FILES = Object.freeze({
   sand: "ui/camel_race/world/ground-track.webp",
   // スタートとゴールの柱（CR-WD01 改訂・#3217・2026-11-11 採用）。手前の柱の絵を、奥の柵には半分の大きさで描く。
   posts: { START: "ui/camel_race/world/post-start-near.webp", FINISH: "ui/camel_race/world/post-finish-near.webp" },
+  // 100mごとの距離板（CR-WD02）と、車が走る道（CR-WD04 の道・1280×152 で横につながる）。#3227・2026-11-11 採用。
+  marker: "ui/camel_race/world/marker-board.webp",
+  road: "ui/camel_race/world/ground-road.webp",
 });
 // 柱の絵（480×800）: 柱の中心が x=357（太さ 55px）、根元が下端。幕は柱の左へ垂れ、字を置く無地の所は
 // スタートが x 14〜330・y 170〜370、ゴールが市松の帯の間の y 198〜350。
@@ -141,6 +144,9 @@ const RIVAL_SUV_ART = Object.freeze({ scale: 0.2, ground: 388, radius: 61, drift
   cars: [{ art: 0, at: -12, tint: "brightness(0.78) saturate(0.9)" }, { art: 1, at: 0 }, { art: 0, at: 12 }] });
 // 競り合いの「VS」の絵（1024×834。字は x 93〜930・y 141〜711）を描く幅。字の幅が書体の時の約1.4倍になる。
 const VS_ART = Object.freeze({ width: 72 });
+// 距離板の絵（160×240）: 杭の中心が x=79、根元が下端。板は y 24〜100 で、上の朱色の帯の下の無地（y 40〜96）に数字を書く。
+// 奥の柵の根元（y=397）に立てる。0.36 倍で板の幅が約52px（コードで描いていた板と同じくらい）。
+const MARKER_ART = Object.freeze({ scale: 0.36, stakeX: 79, face: [40, 96], ground: 397 });
 // AI のラクダの毛色の違い（ctx.filter が無い端末では同じ色のまま。名札の色で見分ける）。
 const RIVAL_TINT = Object.freeze({ front: "sepia(0.25) saturate(1.25) brightness(0.95)", closer: "brightness(1.12) saturate(0.85)", steady: "brightness(0.82) saturate(1.05)" });
 let artTask = null;
@@ -161,9 +167,12 @@ export function loadCamelArt() {
     .then(entries => Object.fromEntries(entries), () => null);
   // ほかの調教師の車は2色そろった時だけ走らせる（読めなければ車は自分の1台だけ）。
   const rivalSuvs = Promise.all(ART_FILES.rivalSuvs.map(load)).catch(() => null);
-  artTask ||= Promise.all([Promise.all(ART_FILES.camel.map(load)), load(ART_FILES.jockey), load(ART_FILES.suv), load(ART_FILES.wheel), load(ART_FILES.track), balloon, dust, words, pole, sand, posts, rivalSuvs])
-    .then(([camel, jockey, suv, wheel, track, balloonImage, dustImages, wordImages, poleImage, sandImage, postImages, rivalImages]) => ({ camel, jockey, suv, wheel, track, balloon: balloonImage, dust: dustImages,
-      words: wordImages, pole: poleImage, ground: groundTiles(sandImage), posts: postImages, rivalSuvs: rivalImages, skins: camelSkins(camel) }))
+  // 距離板と道は、読めなければそれぞれコードの描画のまま。
+  const marker = load(ART_FILES.marker).catch(() => null);
+  const road = load(ART_FILES.road).catch(() => null);
+  artTask ||= Promise.all([Promise.all(ART_FILES.camel.map(load)), load(ART_FILES.jockey), load(ART_FILES.suv), load(ART_FILES.wheel), load(ART_FILES.track), balloon, dust, words, pole, sand, posts, rivalSuvs, marker, road])
+    .then(([camel, jockey, suv, wheel, track, balloonImage, dustImages, wordImages, poleImage, sandImage, postImages, rivalImages, markerImage, roadImage]) => ({ camel, jockey, suv, wheel, track, balloon: balloonImage, dust: dustImages,
+      words: wordImages, pole: poleImage, ground: groundTiles(sandImage, roadImage), posts: postImages, rivalSuvs: rivalImages, marker: markerImage, skins: camelSkins(camel) }))
     .catch(() => null);
   return artTask;
 }
@@ -211,9 +220,9 @@ function camelSkins(frames) {
 
 /**
  * 走路の砂地と、SUV が走る道のタイル（横幅 TILE_W で左右がつながる）。蹄の跡・まだらの砂・轍を描き込む。
- * sandImage（CR-WD04 の絵）があれば、走路の砂はその絵を使う（道はコードのまま）。
+ * sandImage・roadImage（CR-WD04 の絵）があれば、走路の砂と道はその絵を使う（半分の大きさで、横幅 TILE_W のタイルになる）。
  */
-function groundTiles(sandImage = null) {
+function groundTiles(sandImage = null, roadImage = null) {
   const random = rng(20261102);
   const tile = (height, top, bottom, paint) => {
     const canvas = document.createElement("canvas");
@@ -227,14 +236,17 @@ function groundTiles(sandImage = null) {
     paint(g, height, wrap);
     return canvas;
   };
-  const painted = sandImage ? (() => {
+  const fromImage = (image, height) => {
+    if (!image) return null;
     const canvas = document.createElement("canvas");
-    canvas.width = TILE_W; canvas.height = TRACK_BOTTOM - TRACK_TOP;
+    canvas.width = TILE_W; canvas.height = height;
     const g = canvas.getContext("2d");
     g.imageSmoothingQuality = "high";
-    g.drawImage(sandImage, 0, 0, canvas.width, canvas.height);
+    g.drawImage(image, 0, 0, canvas.width, canvas.height);
     return canvas;
-  })() : null;
+  };
+  const painted = fromImage(sandImage, TRACK_BOTTOM - TRACK_TOP);
+  const paintedRoad = fromImage(roadImage, ROAD_BOTTOM - TRACK_BOTTOM);
   const sand = painted || tile(TRACK_BOTTOM - TRACK_TOP, "#d9b47c", "#c2894f", (g, h, wrap) => {
     // ならした砂の筋（横）。
     for (let i = 0; i < 70; i++) {
@@ -257,7 +269,7 @@ function groundTiles(sandImage = null) {
       });
     }
   });
-  const road = tile(ROAD_BOTTOM - TRACK_BOTTOM, "#a98457", "#8f6b43", (g, h, wrap) => {
+  const road = paintedRoad || tile(ROAD_BOTTOM - TRACK_BOTTOM, "#a98457", "#8f6b43", (g, h, wrap) => {
     for (let i = 0; i < 1400; i++) {
       const y = random() * h, x = random() * TILE_W;
       g.fillStyle = random() < 0.5 ? "rgba(255,230,190,0.16)" : "rgba(60,36,16,0.16)";
@@ -269,7 +281,7 @@ function groundTiles(sandImage = null) {
       for (let x = 0; x < TILE_W; x += 7) { g.fillStyle = "rgba(50,30,12,0.25)"; g.fillRect(x, y - 4, 3, 8); }
     }
   });
-  return { sand, road, painted: !!painted };
+  return { sand, road, painted: !!painted, paintedRoad: !!paintedRoad };
 }
 const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
 const fmtTime = seconds => `${Math.floor(seconds / 60)}:${(seconds % 60).toFixed(2).padStart(5, "0")}`;
@@ -391,10 +403,17 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     ["cr-word-perfect", "ui/camel_race/ui/word-perfect.webp"],
     // 手描きの字の残り（CR-UI14・#3217・2026-11-11 採用）。読めた字だけ絵、読めない字は従来の書体。
     ...["good", "miss", "go", "3", "2", "1", "last-spurt", "goal", "title"].map(word => [`cr-word-${word}`, `ui/camel_race/ui/word-${word}.webp`]),
+    // 操作ボタンのリモコン（CR-UI07・#3227・2026-11-11 採用）。声とムチの通常・押下の4枚がそろった時だけ絵にする
+    // （押下の絵を先に読んでおくので、押した瞬間に替わる）。
+    ["cr-remote", ["voice-normal", "voice-pressed", "whip-normal", "whip-pressed"].map(name => `ui/camel_race/ui/remote-${name}.webp`)],
   ]) {
-    const probe = new Image();
-    probe.onload = () => root.classList.add(cls);
-    probe.src = imgFileUrl(rel);
+    const files = [rel].flat();
+    let left = files.length;
+    for (const file of files) {
+      const probe = new Image();
+      probe.onload = () => { if (--left === 0) root.classList.add(cls); };
+      probe.src = imgFileUrl(file);
+    }
   }
 
   let art = null;
@@ -406,6 +425,8 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     root.dataset.sand = value?.ground.painted ? "sprites" : "canvas";
     root.dataset.gate = value?.posts ? "sprites" : "canvas";
     root.dataset.convoy = value?.rivalSuvs ? "sprites" : "none";
+    root.dataset.road = value?.ground.paintedRoad ? "sprites" : "canvas";
+    root.dataset.marker = value?.marker ? "sprites" : "canvas";
     if (phase === "tutorial" || phase === "loading") draw();
   });
   let race = null, phase = "loading", raf = 0, last = null, goalAt = 0, feedbackTimer = 0, bannerTimer = 0, countdownLeft = 0, countdownShown = -1;
@@ -484,8 +505,12 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
   };
 
   // ---- 入力 -----------------------------------------------------------------------------------------
+  // 声のボタンは押した瞬間だけ held を付けて、沈んだ見た目にする（キーの Space でも同じ。ムチは押している間ずっと held）。
+  let voiceHeld = 0;
   const onVoice = () => {
     if (phase !== "race" || !race) return;
+    voiceButton.classList.add("held"); clearTimeout(voiceHeld);
+    voiceHeld = setTimeout(() => voiceButton.classList.remove("held"), 140);
     const result = pressVoice(race);
     if (!result) return;
     flashButton(voiceButton, result.type);
@@ -561,6 +586,7 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     if (done) return;
     done = true;
     cancelAnimationFrame(raf);
+    clearTimeout(voiceHeld);
     resizer?.disconnect();
     window.removeEventListener("keydown", windowKey, true);
     window.removeEventListener("keyup", windowKeyUp, true);
@@ -1058,14 +1084,21 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     ctx.fillStyle = "rgba(255,190,110,0.35)"; ctx.fillRect(0, top - 3 * scale, W, 1);
     ctx.restore();
   }
-  /** 100mごとの距離板: 木の杭に、上が朱色のクリーム色の板。右下へ短い影。 */
+  /** 100mごとの距離板: 木の杭に、上が朱色のクリーム色の板。右下へ短い影。絵（CR-WD02）が読めれば、その板の無地に数字を書く。 */
   function drawMarkers(camX) {
     ctx.save();
     ctx.textAlign = "center"; ctx.textBaseline = "middle";
+    const image = art?.marker;
     for (let m = 100; m < (race?.length || 0); m += 100) {
       const sx = PLAYER_SCREEN_X + (m - camX) * PX_PER_M;
       if (sx < -50 || sx > W + 50) continue;
       ctx.fillStyle = "rgba(70,40,15,0.22)"; ctx.beginPath(); ctx.moveTo(sx - 2, 396); ctx.lineTo(sx + 3, 396); ctx.lineTo(sx + 22, 402); ctx.lineTo(sx + 16, 402); ctx.closePath(); ctx.fill();
+      if (image) {
+        const { scale: k, stakeX, face: [f0, f1], ground } = MARKER_ART, top = ground - image.height * k;
+        ctx.drawImage(image, sx - stakeX * k, top, image.width * k, image.height * k);
+        ctx.font = `900 15px ${FONT}`; ctx.fillStyle = "#2a1d14"; ctx.fillText(String(m), sx, top + (f0 + f1) / 2 * k + 1);
+        continue;
+      }
       ctx.fillStyle = "#6b4a2a"; ctx.fillRect(sx - 2, 350, 5, 47);
       ctx.fillStyle = "#8a6238"; ctx.fillRect(sx - 2, 350, 2, 47);
       ctx.fillStyle = "#3a2412"; ctx.beginPath(); ctx.roundRect(sx - 27, 327, 54, 31, 3); ctx.fill();

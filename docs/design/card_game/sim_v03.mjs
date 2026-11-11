@@ -41,7 +41,7 @@ function run(v) {
   let rounds = 0, slotUsed = 0, skillWins = 0, skillGames = 0, firstVotes = 0, votes = 0, impFlip = 0, cardVote = 0, score = 0, heatSum = 0, heatN = 0;
   const kitW = {}, kitN = {};
   for (let g = 0; g < GAMES; g++) {
-    const tour = TOURNAMENTS[1 + (g % (TOURNAMENTS.length - 1))].id, ka = KITS[g % 3].id, kb = KITS[(g + 1 + (g >> 2) % 2) % 3].id;
+    const tour = TOURNAMENTS[1 + (g % (TOURNAMENTS.length - 1))].id, ka = KITS[g % KITS.length].id, kb = KITS[(g + 1 + (g >> 2) % (KITS.length - 1)) % KITS.length].id;
     // 同じ強さどうし（帯・カードの使い方・一式の釣り合いを見る）
     const G = play({ seed: 1000 + g, tournament: tour, rules: v.rules, players: [{ name: "A", kit: ka, ai: true, level: 2 }, { name: "B", kit: kb, ai: true, level: 2 }] });
     for (const ev of G.events) {
@@ -86,7 +86,7 @@ function RANKD(res, voter) {
 function cardStats(games) {
   const st = {}, S = (id) => (st[id] ||= { held: 0, played: 0, heatSum: 0 });
   for (let g = 0; g < games; g++) {
-    const tour = TOURNAMENTS[1 + (g % (TOURNAMENTS.length - 1))].id, ka = KITS[g % 3].id, kb = KITS[(g + 1 + (g >> 2) % 2) % 3].id;
+    const tour = TOURNAMENTS[1 + (g % (TOURNAMENTS.length - 1))].id, ka = KITS[g % KITS.length].id, kb = KITS[(g + 1 + (g >> 2) % (KITS.length - 1)) % KITS.length].id;
     const G = createGame({ seed: 1000 + g, tournament: tour, players: [{ name: "A", kit: ka, ai: true, level: 2 }, { name: "B", kit: kb, ai: true, level: 2 }] });
     let last = null;
     while (!G.over) {
@@ -111,7 +111,7 @@ function coalStats(games) {
   let snaps = 0, firsts = 0, turns = 0; const moves = { charge: 0, puton: 0, ash: 0 };
   const inc = (o, k) => { o[k] = (o[k] || 0) + 1; };
   for (let g = 0; g < games; g++) {
-    const tour = TOURNAMENTS[1 + (g % (TOURNAMENTS.length - 1))].id, ka = KITS[g % 3].id, kb = KITS[(g + 1 + (g >> 2) % 2) % 3].id;
+    const tour = TOURNAMENTS[1 + (g % (TOURNAMENTS.length - 1))].id, ka = KITS[g % KITS.length].id, kb = KITS[(g + 1 + (g >> 2) % (KITS.length - 1)) % KITS.length].id;
     const G = createGame({ seed: 1000 + g, tournament: tour, players: [{ name: "A", kit: ka, ai: true, level: 2 }, { name: "B", kit: kb, ai: true, level: 2 }] });
     let reveals = 0;
     while (!G.over) {
