@@ -1,11 +1,13 @@
 // チェキ（PEPPERMINT 初来店・ch1_minto_first の cheki_taken の show_cg effect:"cheki"）。
-// a／b の2パターン（?movar=b）。配色は紫1色／場面ごとの色（?mopal=free・core/mg-kit.js の pick）。動きを減らす設定では core/scene-motions.js で省く（SKIP中は省かず最後まで再生）。
-// どちらも 撮る → 余白が真っ白なまま出てくる → 乾いて色がつく → マーカーで落書きを書く → 会話のCGと同じ位置に置く、の順。
+// 既定は c（みんとの絵柄を舞台に、写真を主役の大きさで・約5秒・見本の表「チェキ」）。作り直し前の a／b は見比べ用（?movar=a・?movar=b）。
+// 配色は紫1色／場面ごとの色（?mopal=free・core/mg-kit.js の pick）。動きを減らす設定では core/scene-motions.js で省く（SKIP中は省かず最後まで再生）。
+// どれも 撮る → 余白が真っ白なまま出てくる → 乾いて色がつく → マーカーで落書きを書く → 会話のCGと同じ位置に置く、の順。
 import { el, sleep } from "../core/util.js";
 import { SE } from "../core/audio.js";
 import { W, H, svg, stageSvg, move } from "../core/transition-kit.js";
 import { MG_EASE as E, pick, burst, ring, twinkle } from "../core/mg-kit.js";
 import { stagePlay, backdrop } from "./stage.js";
+import { graphicIntro } from "../vn/intro-graphic.js";
 
 // ---------------------------------------------------------------- 共通: 印画紙・落書きの書き順・マーカー
 
@@ -186,14 +188,15 @@ function penHop(pen, to, ms, { lift = 26, land = 0, spin = 0, ang = pen.at.ang, 
 
 /** マーカーで画を順に書く。画と画の間はペンを浮かせて移る。onFrame(x, y) で毎フレームの位置を知らせる */
 // 落書き全体の速さ（旧2.4）。#1081 H06: お絵描き演出が長いという報告を受けて短縮。
-function writeInk(pen, list, { speed = 5.2, base = 24, hop = 9, onFrame = null } = {}) {
+// pace・minStroke・minHop: 1画・画と画の間の最短の時間（c は約5秒に収めるため短くする。a／b は今までの値）
+function writeInk(pen, list, { speed = 5.2, base = 24, hop = 9, onFrame = null, pace = 1.6, minStroke = 90, minHop = 100 } = {}) {
   const plan = [];
   let t = 0, at = [pen.at.x, pen.at.y];
   for (const s of list) {
     const a = s.pts[0];
     const d = Math.hypot(a[0] - at[0], a[1] - at[1]);
-    if (d > 2) { const dur = Math.max(100, (12 + d / hop) * 1.6); plan.push({ t0: t, dur, from: at, to: a, d }); t += dur; }
-    const dur = Math.max(90, base + s.len / speed) * 1.6;
+    if (d > 2) { const dur = Math.max(minHop, (12 + d / hop) * pace); plan.push({ t0: t, dur, from: at, to: a, d }); t += dur; }
+    const dur = Math.max(minStroke, base + s.len / speed) * pace;
     plan.push({ t0: t, dur, s }); t += dur;
     at = s.pts[s.pts.length - 1];
   }
@@ -670,6 +673,102 @@ export async function b(url, placeCg = null) {
     await sleep(80);
     move(print.shadow, [{ opacity: 1 }, { opacity: 0 }], 340);
     await move(dark, [{ clipPath: fill(-40) }, { clipPath: fill(W + 440) }], 380, { easing: E.inOut });
+    placeCg?.();
+  });
+}
+
+
+// ---------------------------------------------------------------- c: みんとの絵柄を舞台に、写真を主役の大きさで（TMG51）
+// 紫の地・カメラの図形・ルーペをやめ、みんとの登場カットインの背景を斜めに差し込む。写真は画面の真ん中に大きく出し、
+// その上でマーカーが落書きを書く（書き順は b と同じ）。最後に会話のCGと同じ位置・大きさへ縮んで受け渡す。約5秒（b は約10秒）
+
+const SET_IN = [{ clipPath: "polygon(0 0, 0 0, -30% 100%, -30% 100%)" }, { clipPath: "polygon(0 0, 130% 0, 100% 100%, -30% 100%)" }];
+const BIG = 1.3; // 書いている間の写真の大きさ（会話のCGに対する倍率）。画面の高さいっぱい近く
+const BIG_CY = 360; // 書いている間の写真の中心の高さ
+
+/** placeCg(): 縮み終えた瞬間に会話のCGを同じ位置へ置く（重ねたフィルムを外す前に呼ぶ） */
+export async function c(url, placeCg = null) {
+  const img = await loadImage(url);
+  const stageUrl = graphicIntro("minto", "graphic")?.background || null;
+  if (stageUrl) await Promise.race([loadImage(stageUrl), sleep(1500)]);
+  await stagePlay("cheki", async (node) => {
+    node.classList.add("at-c");
+    const box = chekiBox(img);
+    const dim = el("i.mo-ck-c-dim");
+    const art = el("i.mo-ck-c-art", { style: stageUrl ? { backgroundImage: `url("${stageUrl}")` } : { backgroundColor: "#f6c9d8" } });
+    const set = el("div.mo-ck-c-set", [art, el("i.mo-ck-c-shade")]);
+    const dark = el("i.mo-ck-dark", { style: { background: VN_INK } });
+    const ink = { line1: inkStrokes("line1"), line2: inkStrokes("line2"), sign: inkStrokes("sign"), leaf: inkStrokes("leaf"), deco: inkStrokes("deco"), side: inkStrokes("side") };
+    const print = makePrint(url, ink, "linear-gradient(160deg, #eef2f3, #d5dde2)");
+    const fly = el("div.mo-ck-fly", { style: { left: `${box.left}px`, top: `${box.top}px`, width: `${box.width}px`, height: `${box.height}px`, transformOrigin: "50% 50%" } });
+    Object.assign(print.film.style, { left: "0", top: "0", width: "100%", height: "100%" });
+    fly.append(print.film);
+    const pens = { p: marker("#fffaf2", "#d9d4cf", INK_COLOR.p), g: marker("#fffaf2", "#d9d4cf", INK_COLOR.g) };
+    print.top.append(pens.p.g, pens.g.g);
+    const fxArt = stageSvg();
+    const flash = el("div.mo-ck-flash");
+    node.append(dim, set, dark, fly, fxArt, flash);
+    const fill = (x) => `polygon(-420px 0, ${x}px 0, ${x - 160}px 720px, -420px 720px)`;
+    dark.style.clipPath = fill(-40);
+    const dy = BIG_CY - (box.top + box.height / 2);
+    const big = `translate(0px, ${dy}px) scale(${BIG})`;
+    // 1. 元の場面が沈み、みんとの絵柄が斜めに差し込む
+    move(dim, [{ opacity: 0 }, { opacity: 0.45 }], 380, { easing: "ease" });
+    move(set, SET_IN, 500, { easing: E.inOut });
+    move(art, [{ transform: "scale(1.1) translateX(1.5%)" }, { transform: "scale(1.04)" }], 5200, { easing: "linear" });
+    await sleep(260);
+    // 2. シャッターの光。写真が下から大きく出てきて、乾いて色がつく
+    SE.punch();
+    move(flash, [{ opacity: 0.7 }, { opacity: 0 }], 320, { easing: E.out });
+    SE.pour();
+    move(fly, [
+      { transform: `translate(0px, ${dy + 460}px) rotate(-7deg) scale(${BIG * 0.9})`, easing: Q_OUT2 },
+      { transform: `translate(0px, ${dy - 12}px) rotate(1.5deg) scale(${BIG * 1.01})`, offset: 0.7, easing: SINE },
+      { transform: big },
+    ], 560, { easing: "linear" });
+    await sleep(220);
+    // 乾いて色がつく間に、もうペンが白い余白へ入る（余白は最初から白いので書ける）
+    const developed = develop(print, 820);
+    // 3. ピンクのペンが入ってキャップを外し、ピンク → 緑 → ピンクと持ち替えて書く（書き順は b と同じ）
+    const tip = ink.line1[0].pts[0];
+    const pp = pens.p;
+    pp.place(tip[0] + 420, tip[1] + 520, 70, 46);
+    pp.g.style.opacity = "1";
+    await penHop(pp, [tip[0] + 24, tip[1] - 34], 220, { lift: 30, land: 30, ang: 30, ease: easeOut });
+    capOff(pp, print.top, tip[0] + 24, tip[1] - 34, INK_COLOR.p, true);
+    await sleep(60);
+    await penHop(pp, tip, 70, { lift: 0 });
+    const handoff = async (from, to, next) => {
+      penHop(from, [from.at.x + 360, from.at.y + 520], 140, { lift: 30, ang: 50, ease: easeIn });
+      move(from.g, [{ opacity: 1 }, { opacity: 0 }], 100, { delay: 40 }).then(() => { from.g.style.opacity = "0"; from.g.getAnimations().forEach((x) => x.cancel()); });
+      to.place(next[0] + 420, next[1] + 520, 60, 50);
+      to.g.style.opacity = "1";
+      SE.tick();
+      await penHop(to, next, 150, { lift: 30, ang: 30, ease: easeOut });
+    };
+    const quick = { speed: 14, base: 4, hop: 30, pace: 1, minStroke: 30, minHop: 40 };
+    await writeInk(pp, ink.line1, quick);
+    pens.g.cap.style.display = "none";
+    await handoff(pp, pens.g, ink.line2[0].pts[0]);
+    await writeInk(pens.g, ink.line2, quick);
+    await handoff(pens.g, pp, ink.sign[0].pts[0]);
+    // 残りの落書き（葉・飾り・横の余白）は、サインを書いている間に次々に描かれる
+    const rest = Promise.all([
+      ...ink.leaf.map((s, i) => inkSelf(s, 300, 40 + i * 50, Q_OUT)),
+      ...ink.deco.map((s, i) => inkSelf(s, 280, 120 + i * 60, Q_OUT)),
+      ...ink.side.map((s, i) => inkSelf(s, 260, 200 + i * 40, Q_OUT)),
+    ]);
+    await writeInk(pp, ink.sign, quick);
+    await Promise.all([rest, developed]);
+    // 4. 仕上げ: ペンが抜け、光が横切る。暗い幕が斜めに横切りながら写真が会話のCGの位置へ縮み、同じ位置にCGを置く
+    penHop(pp, [pp.at.x + 360, pp.at.y + 520], 200, { lift: 30, ang: 50, ease: easeIn });
+    print.full.style.opacity = "1";
+    SE.perfect();
+    sweep(print, 380);
+    await sleep(260);
+    move(print.shadow, [{ opacity: 1 }, { opacity: 0 }], 340, { delay: 200 });
+    move(dark, [{ clipPath: fill(-40) }, { clipPath: fill(W + 440) }], 460, { easing: E.inOut });
+    await move(fly, [{ transform: big }, { transform: "translate(0px, 0px) scale(1)" }], 520, { easing: CAM });
     placeCg?.();
   });
 }
