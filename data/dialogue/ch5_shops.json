@@ -46,7 +46,10 @@
         { "speaker": "", "face": "", "text": "C.STATIONに入ると、受付のスタッフが目を丸くした。" },
         { "speaker": "shop_clerk", "face": "", "text": "あっ、世界大会の……！　席、すぐご用意します" },
         { "speaker": "hajime", "face": "surprise", "text": "（ここでも、顔を覚えられてる）" },
+        { "speaker": "shop_clerk", "face": "", "text": "炭、いちばんいいのを用意しますね。お水もすぐ！" },
         { "speaker": "", "face": "", "text": "案内された席の壁に、世界大会の記事の切り抜きが貼ってあった。" },
+        { "speaker": "", "face": "", "text": "一台を吸うあいだも、切り抜きの中の自分と目が合う気がした。" },
+        { "speaker": "hajime", "face": "normal", "text": "（味はいつもと変わらないのに）" },
         { "speaker": "hajime", "face": "normal", "text": "（……ちょっと、落ち着かないな）" }
       ]
     },
@@ -69,6 +72,8 @@
         { "speaker": "shop_clerk", "face": "", "text": "……出ないですよね？" },
         { "speaker": "hajime", "face": "smile", "text": "出ません。でも、見には来ます" },
         { "speaker": "shop_clerk", "face": "", "text": "よかった。出られたら、みんな困っちゃうので" },
+        { "speaker": "shop_clerk", "face": "", "text": "でも、見に来てくれるなら、ポスターは一番目立つ所に貼らないと" },
+        { "speaker": "hajime", "face": "normal", "text": "……目立たない所で、お願いします" },
         { "speaker": "", "face": "", "text": "新しいポスターには、去年より大きな字で「初出場歓迎」と書いてあった。" }
       ]
     },
