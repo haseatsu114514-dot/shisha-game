@@ -4,8 +4,6 @@
 #vn:not(.active) .vn-cutin-layer { visibility: hidden; }
 #vn.sepia .vn-cutin-layer { filter: sepia(0.75) contrast(0.95) brightness(0.92); }
 #vn.flashback .vn-cutin-layer { filter: grayscale(1) contrast(0.92); }
-/* 2画面の DS 表示は絵の枠が別の座標なので出さない */
-body.game-ds .vn-cutin-layer { display: none; }
 .vn-cutin { position: absolute; pointer-events: none; animation: .22s ease-out both; }
 .vn-cutin svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
 .vn-cutin svg polygon { fill: none; stroke: #c9b491; stroke-width: 2.5; }

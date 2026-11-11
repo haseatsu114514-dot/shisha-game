@@ -81,15 +81,15 @@
       "abilityText": "舞台を整えるとき、判定に一度だけ＋7",
       "sheet": {
         "name": "ミレイ",
-        "title": "月影の衣装係",
+        "title": "応援団の衣装係",
         "stats": {
           "eye": 3,
           "hand": 5,
           "talk": 2,
           "nerve": 1
         },
-        "trait": "光に透けそうな衣装係。針と糸で、何でも直せる",
-        "likes": "ゆるいキャラの刺繍ワッペン"
+        "trait": "幕が上がるたび、袖で誰より大きな拍手をする。針と糸も速い",
+        "likes": "楽屋の差し入れ。全員分の肉まん"
       }
     },
     {
@@ -539,20 +539,56 @@
         {
           "speaker": "hiyori",
           "role": "PL／卓の会話",
-          "face": "normal",
-          "text": "……私はミレイ。月影の衣装係よ"
+          "face": "smile",
+          "text": "私はミレイ。一座の衣装係よ。……袖では、応援団長なの"
         },
         {
           "speaker": "hiyori",
-          "role": "PL／卓の会話",
-          "face": "sad",
-          "text": "幽霊と並んだら、どちらが幽霊か分からないくらい儚いの"
+          "role": "{pc:hiyori}／物語",
+          "face": "surprise",
+          "text": "いいよー！ 今の間、最高ー！ 衣装も似合ってるー！"
         },
         {
           "speaker": "adam",
           "role": "GM／卓の会話",
           "face": "smile",
-          "text": "いい配役だ。衣装係は、舞台の魔法使いだからな"
+          "text": "袖から声援が飛ぶ一座か。役者が育つな"
+        },
+        {
+          "speaker": "hajime",
+          "role": "PL／卓の会話",
+          "face": "surprise",
+          "text": "ひよりさん、声援のほうが本番より大きい……"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_stage_ghost_aside_hiyori_hiyori_mirei",
+      "metadata": {
+        "preview_only": true,
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "{pc:hiyori}／物語",
+          "face": "smile",
+          "text": "エルさーん！ 拍手、ちょっと分けてー！ 私、一回くらい浴びてみたかったのー！"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_stage_ghost_after_hiyori_hiyori_mirei",
+      "metadata": {
+        "preview_only": true,
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "hiyori",
+          "role": "PL／卓の会話",
+          "face": "smile",
+          "text": "ミレイの拍手、手のひらがまだじんじんしてる。……今日は、それで十分"
         }
       ]
     },
@@ -2850,16 +2886,18 @@
         {
           "id": "mirei",
           "name": "ミレイ",
-          "title": "月影の衣装係",
-          "trait": "光に透けそうな衣装係。針と糸で、何でも直せる",
-          "likes": "ゆるいキャラの刺繍ワッペン",
+          "title": "応援団の衣装係",
+          "trait": "幕が上がるたび、袖で誰より大きな拍手をする。針と糸も速い",
+          "likes": "楽屋の差し入れ。全員分の肉まん",
           "stats": {
             "eye": 3,
             "hand": 5,
             "talk": 2,
             "nerve": 1
           },
-          "making": "trpg_stage_ghost_make_hiyori_hiyori_mirei"
+          "making": "trpg_stage_ghost_make_hiyori_hiyori_mirei",
+          "aside": "trpg_stage_ghost_aside_hiyori_hiyori_mirei",
+          "after": "trpg_stage_ghost_after_hiyori_hiyori_mirei"
         },
         {
           "id": "serena",

@@ -48,7 +48,7 @@ export function buildThermometer({ cs, compact = false, bandPreview = false, uns
   const skin = framed ? artImg("ui_temperature_frame.png", frameWidth, "thermo-skin", { h: height }) : null;
   const frameBox = DB.manifest.makingBox?.["ui_temperature_frame.png"];
   if (skin && frameBox) {
-    // 同じbboxの切り取りを比率で指定し、DSの短い管にも枠を追従させる。
+    // 同じbboxの切り取りを比率で指定し、管の長さが変わっても枠を追従させる。
     const [l, t, r, b] = frameBox, w = r - l, h = b - t;
     Object.assign(skin.style, { height: "100%", backgroundSize: `${100 / w}% ${100 / h}%`,
       backgroundPosition: `${w < 1 ? l / (1 - w) * 100 : 0}% ${h < 1 ? t / (1 - h) * 100 : 0}%` });

@@ -202,6 +202,69 @@
         { "speaker": "rei", "face": "normal", "text": "終わったら、また来て。どんな音だったか、聞かせて" },
         { "speaker": "rei", "face": "smile", "text": "感想は、急がなくていい" }
       ]
+    },
+    {
+      "dialogue_id": "ch5_rio_shop",
+      "comment": "第5章の通いの小会話（BLC08・chapters/ch5-shops.js の chapterFiveShowroom）。Dr.fookah の2階・夜だけ。世界大会の後・博士との勝負の前。恋人でも友人でも読めるよう、呼び方だけ恋人で分ける。",
+      "lines": [
+        {"speaker": "", "face": "", "text": "Dr.fookahの2階。黒いフィルム越しに、問屋街の灯りがにじんでいた。"},
+        {"type": "condition", "condition_type": "lover", "char_id": "rio", "next_true": "lover", "next_false": "friend"},
+        {"speaker": "", "face": "", "text": "机の上に、日本語の書いていない袋が三つ並んでいた。"},
+        {"speaker": "rio", "face": "normal", "text": "NIGHTSIDEの新作。世界大会のあと、問い合わせが三倍になったの"},
+        {"speaker": "rio", "face": "normal", "text": "でも今日は、売れる話はしない。疲れた日に吸いたいのはどれか、それだけ教えて"},
+        {"speaker": "", "face": "", "text": "一つずつ、袋の口から香りを確かめる。三つ目で、手が止まった。"},
+        {"speaker": "hajime", "face": "normal", "text": "これです。最初の一口が、急かさない"},
+        {"speaker": "rio", "face": "smile", "text": "……うん。私も、それに丸を付けてた"}
+      ],
+      "branches": {
+        "lover": [
+          {"speaker": "rio", "face": "smug", "text": "いらっしゃい、はじめくん。……世界一の人を、ここでは名前で呼ぶね"},
+          {"speaker": "hajime", "face": "smile", "text": "いつもどおりで、いいですよ"},
+          {"speaker": "rio", "face": "smile", "text": "いつもどおりだよ。二人の時は、ずっとこう"}
+        ],
+        "friend": [
+          {"speaker": "rio", "face": "smug", "text": "いらっしゃい、世界一のモルモットくん。……肩書きが長くなったね"},
+          {"speaker": "hajime", "face": "smile", "text": "モルモットは、取れないんですね"},
+          {"speaker": "rio", "face": "smile", "text": "取らないよ。肩書きが増えても、君の鼻は私の検品係"}
+        ]
+      }
+    },
+    {
+      "dialogue_id": "ch5_rio_shop_b",
+      "comment": "第5章の通いの小会話（BLC08・chapters/ch5-shops.js の chapterFiveShowroom）。Dr.fookah の2階・夜だけ。世界大会の後・博士との勝負の前。恋人でも友人でも読めるよう、呼び方だけ恋人で分ける。",
+      "lines": [
+        {"speaker": "", "face": "", "text": "夜の2階。凛想さんは、窓際の椅子で目を閉じて座っていた。"},
+        {"speaker": "rio", "face": "normal", "text": "……あ。寝てないよ。鼻を休ませてたの"},
+        {"speaker": "hajime", "face": "surprise", "text": "鼻を、休ませる？"},
+        {"speaker": "rio", "face": "normal", "text": "一日に嗅げる香りには、上限があるの。超えると、全部同じ匂いに聞こえる"},
+        {"speaker": "hajime", "face": "normal", "text": "今度の相手は、上限がないかもしれません。機械なので"},
+        {"speaker": "rio", "face": "serious", "text": "ふうん。……なら、上限のあるほうの強さを持っていけばいい"},
+        {"speaker": "rio", "face": "normal", "text": "休ませた鼻は、一口目をちゃんと覚えてる。疲れた鼻には、それができないの"},
+        {"speaker": "rio", "face": "smug", "text": "覚えなくていいよ。今夜は君も、鼻を休ませて帰って"}
+      ]
+    },
+    {
+      "dialogue_id": "ch5_rio_shop_c",
+      "comment": "第5章の通いの小会話（BLC08・chapters/ch5-shops.js の chapterFiveShowroom）。Dr.fookah の2階・夜だけ。世界大会の後・博士との勝負の前。恋人でも友人でも読めるよう、呼び方だけ恋人で分ける。",
+      "lines": [
+        {"speaker": "", "face": "", "text": "2階の机に、書類が一枚だけ置いてあった。見覚えのある、同意書の様式だった。"},
+        {"speaker": "hajime", "face": "surprise", "text": "また、新しいサンプルですか"},
+        {"speaker": "rio", "face": "smug", "text": "違う。読んでみて"},
+        {"speaker": "", "face": "", "text": "「試香モルモット契約　満了」。下の欄には、凛想さんの字で日付だけが入っていた。"},
+        {"speaker": "rio", "face": "normal", "text": "世界大会の前に作った書類。出しそびれてたの"},
+        {"speaker": "hajime", "face": "normal", "text": "満了、ってことは"},
+        {"speaker": "rio", "face": "smile", "text": "契約は、ここで終わり。その先は、書類なしで頼みたいの"},
+        {"type": "condition", "condition_type": "lover", "char_id": "rio", "next_true": "lover", "next_false": "friend"},
+        {"speaker": "hajime", "face": "smile", "text": "はい。書類なしで、また来ます"}
+      ],
+      "branches": {
+        "lover": [
+          {"speaker": "rio", "face": "smug", "text": "……恋人の分は、最初から書類にしてないけどね"}
+        ],
+        "friend": [
+          {"speaker": "rio", "face": "smile", "text": "友だちに同意書は、要らないでしょ"}
+        ]
+      }
     }
   ]
 }

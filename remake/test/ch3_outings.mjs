@@ -94,6 +94,25 @@ const ids = (value, window) => chapterThreeOutings(value, window.id).map(item =>
     assert(ids(late.value, late.window).includes(once) && !ids(late.value, late.window).includes(regular), `${regular} waits for ${once}`);
 }
 
+// RVE07: 鉄の煙にも通える。初来店（DAY12夜の ch3_volk_first）の後から、何度でも・3本を巡回・好感度は通いの値
+{
+  const volk = TOKYO_OUTINGS.find(item => item.id === "volk_visit");
+  assert.deepEqual([volk.place, volk.after, volk.affinityWith, volk.repeat, volk.regular, volk.talks.length],
+    ["volk", "ch3_volk_first", "volk", true, true, 3]);
+  for (const id of volk.talks) assert(OUTING_DIALOGUE_IDS.includes(id), `${id} is loaded`);
+  const before = at("d12-noon");
+  assert(!ids(before.value, before.window).includes("volk_visit"), "Not before the first visit to Iron Smoke");
+  const talkAfter = n => outingDialogueId({ ...before.value, flags: { ...before.value.flags, [OUTINGS_FLAG]: { volk_visit: n } } }, volk, before.window);
+  assert.deepEqual([0, 1, 2, 3, 4].map(talkAfter),
+    ["ch3_outing_volk_visit", "ch3_outing_volk_visit_b", "ch3_outing_volk_visit_c", "ch3_outing_volk_visit_b", "ch3_outing_volk_visit_c"]);
+  assert.deepEqual(outingAffinity(before.value, volk), { volk: 16 }, "The first visit gains like a stage talk");
+  const regulars = { ...before.value, flags: { ...before.value.flags, [OUTINGS_FLAG]: { volk_visit: 1 } } };
+  assert.deepEqual(outingAffinity(regulars, volk), { volk: 8 }, "Later visits gain like a small talk");
+  const after = { ...before.value, flags: { ...before.value.flags, _ch3_intro: { ...before.value.flags._ch3_intro,
+    stage: chapterThreeScenes(before.value).findIndex(scene => scene.id === "ch3_volk_first") + 1 } } };
+  assert(chapterThreeOutingCandidates(after).some(item => item.id === "volk_visit"), "Open after the first visit");
+}
+
 // 旧ルートの非会員は従来どおり空き時間を増やさない。
 {
   const value = departure({ legacy: true });

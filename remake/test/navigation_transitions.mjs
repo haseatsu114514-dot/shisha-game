@@ -22,7 +22,7 @@ async function prepare(page) {
 
 async function arm(page, selector) {
   await page.evaluate((selector) => {
-    window.audit = { types: [], overlap: [], frames: 0, started: null, ended: null, stop: false };
+    window.audit = { types: [], overlap: [], frames: 0, started: null, ended: null, stop: false, purple: false, zoomed: false, card: false };
     const sample = () => {
       if (audit.stop) return;
       const curtain = document.querySelector(".scene-curtain");
@@ -30,6 +30,11 @@ async function arm(page, selector) {
         audit.started ??= performance.now();
         audit.frames++;
         if (!audit.types.includes(curtain.dataset.transition)) audit.types.push(curtain.dataset.transition);
+        // 地図へ寄る移動（TMG46）: 紫の図形を描かず、地図の絵そのものを寄せる。店ロゴは白い札に載せない
+        if (curtain.querySelector(".tr-svg")) audit.purple = true;
+        if ([...document.querySelectorAll("#bg .bg-img")].some((b) => getComputedStyle(b).transform.startsWith("matrix(2"))) audit.zoomed = true;
+        const card = document.querySelector(".store-arrival-card");
+        if (card && getComputedStyle(card).backgroundColor === "rgb(255, 253, 247)") audit.card = true;
         if (document.querySelector(selector)) audit.overlap.push(performance.now() - audit.started);
       } else if (audit.started !== null) audit.ended ??= performance.now();
       requestAnimationFrame(sample);
@@ -111,7 +116,10 @@ await suite("navigation-transitions", async (check) => {
       await page.locator(".scene-curtain").waitFor();
       await page.keyboard.press("Enter");
       if (spot === "rest") assert.equal(await page.locator(".vn-text").textContent(), "");
-      const audit = await verify(page, selector, spot === "rest" ? "move-door" : "move-pin");
+      const audit = await verify(page, selector, spot === "rest" ? "move-lights" : "move-zoom");
+      assert.equal(audit.purple, false, "The move drew purple shapes");
+      assert.equal(audit.zoomed, true, "The map itself did not zoom toward the pin");
+      assert.equal(audit.card, false, "The store logo was shown on the white card");
       if (spot === "rest") {
         assert.ok(audit.ended - audit.started < 1800, "The warmed-up home transition still feels too long");
         await page.waitForFunction(() => document.querySelector(".vn-text").textContent.includes("今日は早めに家へ帰った"));
@@ -137,11 +145,11 @@ await suite("navigation-transitions", async (check) => {
         { type: "choice", choices: [{ text: "休む" }, { text: "窓を開ける" }] },
       ] });
     });
-    await page.locator('.scene-curtain[data-transition="move-door"]').waitFor();
+    await page.locator('.scene-curtain[data-transition="move-lights"]').waitFor();
     await page.waitForTimeout(750);
     assert.equal(await page.evaluate(() => backgroundDone), false, "Background resolved before the slow image/reveal");
     assert.equal(await page.locator(".vn-choice").count(), 0);
-    await verify(page, ".vn-choice", "move-door");
+    await verify(page, ".vn-choice", "move-lights");
     await page.evaluate(() => window.background);
     await page.locator('[data-test="choice-0"]').click();
     await page.evaluate(() => window.dialogue);
@@ -158,7 +166,7 @@ await suite("navigation-transitions", async (check) => {
       T.ui.showScreen("old-menu", old);
       T.ui.showScreen("new-menu", next);
     });
-    await verify(page, '[data-test="new-menu"]', "move-door");
+    await verify(page, '[data-test="new-menu"]', "move-lights");
     assert.equal(await page.locator('[data-test="old-menu"]').count(), 0);
     assert.equal(await page.evaluate(() => document.body.dataset.screen), "new-menu");
   });
@@ -171,6 +179,6 @@ await suite("navigation-transitions", async (check) => {
       window.visit = T.spots.restAtHome(T.spots.spotById("rest"));
     });
     const audit = await verify(page, "#vn.active .vn-text");
-    assert.ok(!audit.types.includes("move-door"), "Reduced motion played the full door");
+    assert.deepEqual(audit.types, ["fade"], "Reduced motion played the full move instead of a fade");
   }, { reducedMotion: "reduce" });
 });

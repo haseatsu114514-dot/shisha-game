@@ -325,6 +325,7 @@ await suite("ch4-camel-race-controls", async check => {
     await page.waitForFunction(() => document.querySelector('[data-test="camel-game"]')?.dataset.phase === "race", null, { timeout: 15000 });
     assert.equal(await game.getAttribute("data-art"), "sprites");
     assert.equal(await game.getAttribute("data-dust"), "sprites", "the dust art (CR-WD03) is loaded");
+    assert.equal(await game.getAttribute("data-gate"), "sprites", "the start/finish post art (CR-WD01) is loaded");
     // 手描きの字（CR-UI14・#3217）: 判定・カウントダウン・バナー・題名の字の絵がすべて読めている。
     await page.waitForFunction(words => words.every(word => document.querySelector('[data-test="camel-game"]').classList.contains(`cr-word-${word}`)),
       ["perfect", "good", "miss", "go", "3", "2", "1", "last-spurt", "goal", "title"]);
@@ -357,9 +358,10 @@ await suite("ch4-camel-race-controls", async check => {
     await page.locator(dt("camel-close")).click();
     await page.locator(dt("camel-menu-quick")).waitFor();
   });
-  // 砂煙の絵（CR-WD03）が読めない環境: ラクダ・車の絵はそのまま、砂煙だけ従来のぼかしの円に戻り、レースは進む。
-  const dustArt = /\/ui\/camel_race\/world\/dust-\d\.webp/;
-  await check("dust-falls-back-to-soft-puffs-without-the-art", async page => {
+  // 砂煙の絵（CR-WD03）とスタート・ゴールの柱の絵（CR-WD01）が読めない環境: ラクダ・車の絵はそのまま、
+  // 砂煙は従来のぼかしの円、門は従来の木の柱2本と布の幕に戻り、レースは進む。
+  const dustArt = /\/ui\/camel_race\/world\/(dust-\d|post-(start|finish)-near)\.webp/;
+  await check("dust-and-gate-fall-back-to-drawn-shapes-without-the-art", async page => {
     await page.route(dustArt, route => route.abort());
     await page.goto(new URL("camel-race.html?pilot=perfect", baseURL).href);
     await page.locator(dt("camel-menu-quick")).click();
@@ -367,6 +369,7 @@ await suite("ch4-camel-race-controls", async check => {
     const game = page.locator(dt("camel-game"));
     assert.equal(await game.getAttribute("data-art"), "sprites");
     assert.equal(await game.getAttribute("data-dust"), "canvas");
+    assert.equal(await game.getAttribute("data-gate"), "canvas");
     await page.waitForFunction(() => Number(document.querySelector(".camel-clock-time")?.textContent.slice(2)) > 3, null, { timeout: 15000 });
     await page.locator(dt("camel-close")).click();
     await page.locator(dt("camel-menu-quick")).waitFor();

@@ -1,3 +1,4 @@
+/* body:not(:root)／.title:not(:root) は、DS風の廃止（横画面一本化）で外した :not(.game-ds)／:not([data-layout="ds"]) と同じ詳細度を保つための置き換え。 */
 /* ============================================================
    水煙前線 リメイク版 — 土台（トークン・ステージ・共通UI）
    論理解像度 1280×720 の固定ステージを画面に合わせて拡縮する。
@@ -118,15 +119,15 @@ button { font: inherit; color: inherit; }
 /* 街マップ（#2855 → 2026-11-08 オーナー「マップがワイドになっていない」）: 絵と施設のピンを同じ倍率（ステージ幅 / 1280）で
    横いっぱいまで拡大する。ピンは絵に対する % で置かれているので、絵と同じ箱（幅 --stage-w・高さ 幅×9/16）に載せればずれない。
    拡大で上下にはみ出す分（絵の高さの約1割）は、どのピンも画面に入るよう map.js（fitMapCrop）が上から切る量 --map-crop を決める。
-   会話中（vn-open）は会話の背景としてふつうに cover で広げる。2画面表示（DS）は対象外。 */
-body:not(.game-ds)[data-screen="map"]:not(.vn-open) #stage[data-wide] #bg .bg-img {
+   会話中（vn-open）は会話の背景としてふつうに cover で広げる。 */
+body:not(:root)[data-screen="map"]:not(.vn-open) #stage[data-wide] #bg .bg-img {
   background-position: 50% calc(-1 * var(--map-crop, calc((var(--stage-w) * 9 / 16 - 720px) / 2)));
 }
-body:not(.game-ds) #stage[data-wide] .map-pins {
+body:not(:root) #stage[data-wide] .map-pins {
   left: calc(-1 * var(--stage-gutter)); right: calc(-1 * var(--stage-gutter)); bottom: auto;
   top: calc(-1 * var(--map-crop, calc((var(--stage-w) * 9 / 16 - 720px) / 2))); height: calc(var(--stage-w) * 9 / 16);
 }
-body:not(.game-ds) #stage[data-wide] .map-weather { left: calc(-1 * var(--stage-gutter)); right: calc(-1 * var(--stage-gutter)); }
+body:not(:root) #stage[data-wide] .map-weather { left: calc(-1 * var(--stage-gutter)); right: calc(-1 * var(--stage-gutter)); }
 /* ノッチにかかる端のピンだけ内側へ寄せる（map.js が必要な時だけ置く） */
 .map .spot-pin { translate: var(--pin-nudge-x, 0px) 0; }
 /* 画面全体を覆う暗幕・場面（中央1280の層に置かれる）は、左右の余白まで同じ色で塗り広げる。
@@ -642,6 +643,11 @@ body[data-screen="bench"] .gain-card.out { animation-name: gain-out-l; }
 .scene-curtain { position: absolute; inset: 0; overflow: hidden; z-index: 100; pointer-events: auto; }
 /* 動きを減らす設定: 帯を描かず、夜の紫の面だけをフェードで重ねる */
 .scene-curtain.veil { background: #34246a; opacity: 0; }
+/* 標準の切り替え「煙のにじみ」（core/transitions.js smokeCurtain・TMG44）。幕は透明で、前の背景（#bg）をマスクでほどく。
+   境目と一緒に昇る薄い煙だけを、幕の中に描く（白い煙の絵を画面の明るさで重ねる） */
+.scene-curtain.smoke { background: transparent; }
+.smoke-haze { position: absolute; left: -4%; right: -4%; top: 125%; height: 50%; background: center / 100% 100% no-repeat; opacity: 0; mix-blend-mode: screen; pointer-events: none; }
+#stage[data-wide] .scene-curtain.smoke { inset: 0 calc(-1 * var(--stage-gutter)); }
 @media (prefers-reduced-motion: reduce) { .chapter-card { transition: none; } .cc-name { animation: none; } }
 
 /* 敗北→GAME OVER の入り（core/transitions.js defeatFade・#2688 A19）。中心から色が抜けて灰色になる */
@@ -675,6 +681,11 @@ body[data-screen="bench"] .gain-card.out { animation-name: gain-out-l; }
 
 /* マップ→場所の「移動」の型（core/transition-moves.js・CI103） */
 .scene-curtain.move { background: transparent; }
+/* 地図の絵そのものを動かす移動（zoom・lights・TMG46）。光は左右の余白まで届かせる */
+#stage[data-wide] .scene-curtain.move.on-bg { inset: 0 calc(-1 * var(--stage-gutter)); }
+.tr-zoom-glow { position: absolute; inset: -35% -22%; background: radial-gradient(closest-side, #fff8ea 0%, #fff8eaf7 42%, #fff8ea00 100%); opacity: 0; pointer-events: none; }
+/* 帰宅の部屋の灯り（家の背景の照明の位置。次の背景の中に一時的に置く） */
+.tr-lamp { position: absolute; inset: 0; background: radial-gradient(22% 22% at 94% 50%, #ffcf8a66, transparent 70%), radial-gradient(18% 19% at 24% 54%, #ffcf8a4d, transparent 70%); mix-blend-mode: screen; opacity: 0; pointer-events: none; }
 .tr-move-field { position: absolute; inset: 0; }
 .tr-move-label { position: absolute; left: 72px; top: 64px; display: flex; flex-direction: column; gap: 2px; font-family: var(--font); color: #fff; text-shadow: 0 3px 0 #150f26; }
 .tr-move-label small { font-size: 18px; font-weight: 700; letter-spacing: 0.3em; color: #dcd1f4; }

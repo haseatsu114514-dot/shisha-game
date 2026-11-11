@@ -1,11 +1,7 @@
 import assert from 'node:assert/strict';
 import { suite, assertFits } from './support.mjs';
 async function forecastSummary(page) {
- const compact=page.locator('[data-test="mix-taste-compact"]');
- const host=await compact.isVisible()?compact:page.locator('[data-test="mix-taste"]');
- const details=host.locator('.flavor-forecast-compact');
- if (await details.count() && !await details.evaluate(node=>node.open)) await details.locator(':scope > summary').click();
- return host.locator('[data-test="mix-mastery-summary"]');
+ return page.locator('[data-test="mix-taste"]').locator('[data-test="mix-mastery-summary"]');
 }
 await suite('mastery-display', async check => {
  for (const touch of [false,true]) await check(touch?'touch':'pc', async page => {

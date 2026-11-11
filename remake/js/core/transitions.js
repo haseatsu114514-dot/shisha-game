@@ -1,6 +1,7 @@
-// 背景の読み込みを覆う、夜の紫とラベンダーのモーショングラフィックス。
-// 場面の意味ごとの型: 標準の切り替え＝一筆（#2688 F1）／就寝から翌朝＝波＋めくり（CI102）／マップから場所への移動（transition-moves.js・CI103）。
-// 型の一覧と残りの場面の案は asset_sources/transitions/scene-plan-20261009/README.md。
+// 場面の切り替えの型。標準の切り替え＝煙のにじみ（TMG44。前の背景を覆わず煙の形でほどく）／就寝から翌朝＝波＋めくり（CI102）／
+// マップから場所への移動（transition-moves.js・CI103）／敗北と再挑戦（#2688 A19）。
+// 2026-11-11 からの作り直しの方針（ゲームの絵で作る・紫の面で覆わない）は remake/previews/motion-direction/ と台帳 TMG35〜。
+// 紫の図形の型（一筆・波・夜明けの幕）は、作り直しが済むまでの旧型。旧型の一覧は asset_sources/transitions/scene-plan-20261009/README.md。
 import { el, sleep, nextFrame } from "./util.js";
 import { SE } from "./audio.js";
 import { W, H, COLOR, EASE, reducedMotion, svg, stageSvg, move, holdKeys } from "./transition-kit.js";
@@ -68,16 +69,114 @@ export function strokeBand({ angle = STROKE.angle, fill = COLOR.purple, edge = C
   return { art, mov };
 }
 
+// ---------------------------------------------------------------- 煙のにじみ: 標準の場面の切り替え（TMG44・A）
+
+// 前の背景を幕で覆わず、煙の形の境目で下から上へほどいて、下に置いた次の背景を見せる。境目と一緒に薄い煙が昇る。
+// マスクと煙は計算で作った小さな画像（asset_sources/transitions/smoke-dissolve-20261111/make_masks.py）。
+// 紫の一筆（下の strokeBand）は、DS風の2画面（黒の暗転）と再挑戦（retryStroke）だけに残る。
+let smokeUrls = null;
+/** マスク2枚と煙の絵の URL（js-<版>/ へ写しても同じ深さなので、このファイルからの相対で引く） */
+export function smokeArt() {
+  if (!smokeUrls) {
+    const dir = new URL("../../img/ui/transitions/smoke/", import.meta.url).href;
+    smokeUrls = { a: `${dir}wipe-a.webp`, b: `${dir}wipe-b.webp`, haze: `${dir}haze.webp` };
+  }
+  return smokeUrls;
+}
+let smokeReady = null; // null＝まだ読んでいない、Promise＝読み込み中、true／false＝結果
+const canMask = () => typeof CSS !== "undefined" && !!CSS.supports
+  && (CSS.supports("mask-image", 'url("x.png")') || CSS.supports("-webkit-mask-image", 'url("x.png")'));
+/** マスクと煙の絵を先に読む（このファイルを読み込んだ時に一度）。読めるまでの切り替えは、前の背景を薄くするだけ */
+export function warmSmoke() {
+  if (smokeReady !== null) return smokeReady;
+  if (typeof Image !== "function" || !canMask()) { smokeReady = false; return false; }
+  smokeReady = Promise.all(Object.entries(smokeArt()).map(([key, src]) => {
+    const img = new Image();
+    // CSS の mask-image は CORS で取りに行く。先読みも同じ取り方にしないと、ほどくたびに取り直す（煙の絵は普通の背景なのでそのまま）
+    if (key !== "haze") img.crossOrigin = "anonymous";
+    img.src = src;
+    return img.decode();
+  })).then(() => (smokeReady = true), () => (smokeReady = false));
+  return smokeReady;
+}
+// 起動の早い段階（ui.js がこのファイルを読む時）に読み始める。ブラウザでないテストの環境では何もしない。
+if (typeof window !== "undefined" && typeof document !== "undefined") warmSmoke();
+
+const MASK = (pos) => ({ maskPosition: pos, webkitMaskPosition: pos });
+
 /**
- * 背景を替えるときの標準の幕（CI101 の「一筆」・#2688 F1）。紫の帯が右下から一筆で画面を覆い、左上へ抜けて次の場面が出る。
- * 通常 約0.75秒、SKIP中・短い幕（brief）は 約0.35秒、動きを減らす設定では短いフェード。
- * 覆っている間は Enter・Space を受け付けない。素材の読み込みを待つ間は覆ったまま待つ（ui.setBg）。
+ * 煙のにじみの幕。覆わないので covered はすぐ解決し、ui.setBg が次の背景を前の背景の下に置いて dissolve() で前の背景を渡す。
+ * release() で前の背景を煙の形にほどいて消す。通常 約0.8秒、SKIP中・短い幕（brief）は 約0.42秒、
+ * 動きを減らす設定やマスクが使えない時は、前の背景を薄くするだけ（約0.22秒）。ほどけている間は Enter・Space を受け付けない。
+ */
+function smokeCurtain(host, { fast = false, reduced = false } = {}) {
+  const masked = !reduced && smokeReady === true;
+  const ms = !masked ? (reduced ? 220 : 320) : fast ? 420 : 780;
+  const node = el("div.scene-curtain.smoke", { "aria-hidden": "true", dataset: { transition: masked ? "smoke" : "fade" } });
+  const art = masked ? smokeArt() : null;
+  const haze = masked ? el("i.smoke-haze", { style: { backgroundImage: `url("${art.haze}")` } }) : null;
+  if (haze) node.append(haze);
+  const unhold = holdKeys();
+  host.append(node);
+  const covered = nextFrame();
+  let olds = [];
+  let released = false;
+  return {
+    covered,
+    /** ui.setBg から: 次の背景の上に残した前の背景（いちばん上だけをほどき、下に隠れている分はすぐ片付ける） */
+    dissolve(nodes) { olds = nodes; },
+    async release() {
+      if (released) return;
+      released = true;
+      try {
+        await covered;
+        // 次の背景・画面・台詞を描いてから、前の背景をほどき始める。
+        await nextFrame(); await nextFrame();
+        const old = olds.at(-1);
+        olds.slice(0, -1).forEach((o) => o.remove());
+        if (!old) return;
+        old.dataset.dissolving = "1";
+        if (!masked) {
+          await move(old, [{ opacity: 1 }, { opacity: 0 }], ms, { easing: "ease" });
+        } else {
+          const mask = `url("${art.a}"), url("${art.b}")`;
+          Object.assign(old.style, {
+            maskImage: mask, webkitMaskImage: mask,
+            maskSize: "100% 300%", webkitMaskSize: "100% 300%",
+            maskRepeat: "no-repeat", webkitMaskRepeat: "no-repeat",
+            maskComposite: "intersect", webkitMaskComposite: "source-in",
+          });
+          const easing = "cubic-bezier(.45,0,.55,1)";
+          // 2枚のマスクを少しずらして送り、境目の形を変えながら昇らせる。煙は境目の高さについていく。
+          const wipe = move(old, [MASK("50% 0%, 50% 0%"), { ...MASK("50% 46%, 50% 56%"), offset: 0.5 }, MASK("50% 100%, 50% 100%")], ms, { easing, fill: "forwards" });
+          move(haze, [{ top: "125%", opacity: 0 }, { top: "23%", opacity: 0.55, offset: 0.5 }, { top: "-75%", opacity: 0 }], ms, { easing, fill: "forwards" });
+          await wipe;
+        }
+        old.remove();
+      } finally {
+        olds.forEach((o) => o.isConnected && o.remove());
+        node.remove();
+        unhold();
+      }
+    },
+  };
+}
+
+/**
+ * 背景を替えるときの標準の切り替え。煙のにじみ（smokeCurtain・TMG44）。
+ * DS風の2画面では黒の暗転（game-ds.css。中身の紫の一筆は見せない）。マップ→場所は移動の型（transition-moves.js）。
+ * 素材の読み込みを待つ間は、前の背景のまま待つ（ui.setBg）。
  */
 export function createSceneCurtain(host, { fast = false, sceneArrival = takeSceneArrival() } = {}) {
   const reduced = reducedMotion();
   const { cued, commitArrival: entry } = sceneArrival;
   const arrival = (curtain) => Object.assign(curtain, { commitArrival: entry });
   if (cued?.kind === "place" && !fast && !reduced) return arrival(withStoreArrival(host, moveCurtain(host, moveStyle(cued.opts), cued.opts), cued.opts, { fast, reduced }));
+  if (!(typeof document !== "undefined" && document.body?.classList.contains("game-ds"))) {
+    warmSmoke();
+    const smoke = smokeCurtain(host, { fast, reduced });
+    return arrival(cued?.kind === "place" ? withStoreArrival(host, smoke, cued.opts, { fast, reduced }) : smoke);
+  }
   const coverMs = reduced ? 90 : fast ? 150 : 340;
   const revealMs = reduced ? 90 : fast ? 170 : 400;
   const node = el("div.scene-curtain.stroke", { "aria-hidden": "true", style: { "--st-ms": `${coverMs}ms` }, dataset: { transition: reduced ? "fade" : "stroke" } });

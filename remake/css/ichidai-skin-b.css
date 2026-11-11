@@ -15,7 +15,6 @@
 .ichi-game[data-skin="b"] .ichi-line-type { color: #211528; }
 .ichi-game[data-skin="b"] .ichi-gem { border: 2px solid #3b263c; border-radius: 2px 9px 2px 9px; background: #f8eadc; box-shadow: 2px 2px 0 var(--tc); }
 .ichi-game[data-skin="b"] .ichi-gem b { color: #24172c; }
-.ichi-game[data-skin="b"] .ichi-gem.is-burn { border-style: dashed; }
 .ichi-game[data-skin="b"] .ichi-gem.is-heat { border-radius: 3px; border-color: #a0391c; background: #ffe3bd; }
 .ichi-game[data-skin="b"] .ichi-gem.is-taste { border-radius: 50%; background: #fff2ce; }
 .ichi-game[data-skin="b"] .ichi-gem.is-cap { border-radius: 2px 2px 9px 9px; background: #efd0ba; }

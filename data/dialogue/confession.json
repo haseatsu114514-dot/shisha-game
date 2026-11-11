@@ -1784,6 +1784,44 @@
           "face": "love_blush"
         },
         {
+          "speaker": "",
+          "face": "",
+          "text": "街灯の下で、ひよりさんが立ち止まった。遠くの信号を見る、いつもの儚い角度だった。"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "normal",
+          "text": "夜風が、私をさらっていきそう……",
+          "inner": "角度よし。明かりよし。……心臓、うるさい"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "さらわれる前に、聞いてほしいことがあります"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "surprise",
+          "text": "……っ、先に言う気？",
+          "inner": "待って、それ私が言うつもりだった！"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "青い小さな的を狙う時の顔とか、ピーチの炭を物足りないくらいで待つところとか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "思い出すと、全部、また会いたい日の話でした"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "love_blush",
+          "text": "……それ、儚い女の話、一個も入ってない",
+          "inner": "素の私ばっかりじゃん。……ずるい"
+        },
+        {
           "speaker": "hajime",
           "text": "（遊ぶ時間も、何もしない時間も、もっと一緒にいたい、……ちゃんと言おう）"
         },
@@ -1924,6 +1962,33 @@
         {
           "speaker": "",
           "text": "俺から手を差し出すと、ひよりさんが笑って握った。駅まで、歩幅を合わせて歩いた。"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "love_blush",
+          "text": "……ねえ。ひとつだけ、儚くないお願いしていい？",
+          "inner": "言え。言うんだ私"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "smile",
+          "text": "次の休み、味噌ラーメン行こう。味玉、二人とも付けて",
+          "inner": "恋人っぽいかは知らない。でも、したいことだから"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "替え玉もしましょうか"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "surprise",
+          "text": "……それは、次の日の総務に響く"
         },
         {
           "type": "hide_cg"

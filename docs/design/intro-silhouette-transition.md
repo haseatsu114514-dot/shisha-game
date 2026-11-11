@@ -101,7 +101,7 @@
 - つなぎの間の Enter・クリックで、カットインが短くならない。
 - `SHOTS=<フォルダ>` で、80ms・240ms・400ms の3コマを保存し、オーナー確認用の連続画像にする。
 
-関連する回帰: `intro_art.mjs`（旧絵柄）、`browser/recent_intros.mjs`、DS の `browser/ds_overlay_layers.mjs`。
+関連する回帰: `intro_art.mjs`（旧絵柄）、`browser/recent_intros.mjs`（DS の `browser/ds_overlay_layers.mjs` は 2026-11-10 に DS風ごと削除）。
 
 ## 6. 進め方
 

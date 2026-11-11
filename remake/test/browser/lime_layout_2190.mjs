@@ -22,7 +22,7 @@ async function open(page, { id, money = 30000, read = false }) {
   }, { id, money, read });
   await page.locator('[data-test="reply-2"]').waitFor({ state: "visible" });
   assert.equal(await page.locator("body").getAttribute("data-screen"), "map");
-  assert.equal(await page.locator("body").evaluate(body => body.classList.contains("game-ds")), false, "normal landscape layout only; DS development is paused");
+  assert.equal(await page.locator("body").evaluate(body => body.classList.contains("game-ds")), false, "landscape layout only (DS mode removed)");
 }
 
 async function assertEndVisible(page, selector) {

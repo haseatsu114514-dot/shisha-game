@@ -275,3 +275,10 @@ td .when { margin-left: 0; }
 .cardbox { width: 33.4mm; height: 46.8mm; flex: none; }
 .cardbox.m82 { width: 37mm; height: 51.8mm; }
 table.nwrap td:first-child, table.nwrap td:nth-child(2) { white-space: nowrap; }
+
+/* ───────── 第0.3版で足したもの（追加コスト・もう1枚使える） ───────── */
+.paytag, .extratag { display: inline-block; font-size: 6.2pt; font-weight: 900; border-radius: .8mm; padding: 0 1.3mm; line-height: 1.5; white-space: nowrap; margin-left: 1mm; }
+.paytag { background: var(--coal); color: #ffd9a0; border: .25mm solid var(--ember); }
+.extratag { background: #fff; color: #3f7a2c; border: .25mm solid #7fbd66; }
+td .paytag, td .extratag { font-size: 5.6pt; padding: 0 .8mm; margin-left: .8mm; vertical-align: middle; }
+.card.sup .paytag, .card.sup .extratag { font-size: 5.2pt; padding: 0 .9mm; }

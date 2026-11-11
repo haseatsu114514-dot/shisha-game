@@ -11,7 +11,7 @@ import fs from 'node:fs';
 const { chromium } = createRequire(import.meta.url)('playwright');
 const here = path.dirname(fileURLToPath(import.meta.url));
 const fontDir = process.argv[2];
-const out = process.argv[3] || path.join(here, 'ichidai_shobu_rulebook_v0.2.pdf');
+const out = process.argv[3] || path.join(here, 'ichidai_shobu_rulebook_v0.3.pdf');
 
 const browser = await chromium.launch();
 const page = await browser.newPage();
