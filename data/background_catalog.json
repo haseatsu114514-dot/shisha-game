@@ -10,7 +10,7 @@
   "sheet_rows": 12
  },
  "anchors": [
-  "bg_eden_shop.png",
+  "kemurikusa.png",
   "bg_tonari_inside_day.png",
   "bg_street_night.png",
   "bg_dubai_souq_day.png"
@@ -21,12 +21,12 @@
    "time": "",
    "weather": "",
    "size": [
-    1280,
-    720
+    1672,
+    941
    ],
-   "luma": 88,
-   "blob": "d8796f400a968423bc238a59201e6c0b257a8c53",
-   "accepted": "2026-11-02 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
+   "luma": 139,
+   "blob": "ee9cdc46ee73b32f66e8d8eb7c632bc819aebdcc",
+   "accepted": "2026-11-11 オーナー全採用（#3282）。Codex の内蔵生成の上限 1672x941 の原寸で使う"
   },
   "bg_axe_lounge_night.png": {
    "place": "axe_lounge",
@@ -250,6 +250,18 @@
    "luma": 134,
    "blob": "69e377a1b265034019a2046780041079224358fe",
    "accepted": "2026-11-02 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
+  },
+  "bg_choizap_day.png": {
+   "place": "choizap",
+   "time": "day",
+   "weather": "",
+   "size": [
+    1672,
+    941
+   ],
+   "luma": 130,
+   "blob": "500a1755955998b5f1f225c5f4a9d1718d64a0bc",
+   "accepted": "2026-11-11 オーナー全採用（#3282）。Codex の内蔵生成の上限 1672x941 の原寸で使う"
   },
   "bg_choizap_night.png": {
    "place": "choizap",
@@ -589,12 +601,12 @@
    "time": "day",
    "weather": "",
    "size": [
-    1280,
-    720
+    1672,
+    941
    ],
-   "luma": 109,
-   "blob": "09f62390e5b299e667e485c2c213bbea8f9e37cb",
-   "accepted": "2026-11-02 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
+   "luma": 127,
+   "blob": "23fe48cea4beede9fd19167894216524693ff38c",
+   "accepted": "2026-11-11 オーナー全採用（#3282）。Codex の内蔵生成の上限 1672x941 の原寸で使う"
   },
   "bg_kannon_night.png": {
    "place": "kannon",
@@ -768,12 +780,12 @@
    "time": "",
    "weather": "",
    "size": [
-    1280,
-    720
+    1672,
+    941
    ],
-   "luma": 92,
-   "blob": "3704a3548ff0fd804c4daaeb4f9e4849623d7412",
-   "accepted": "2026-11-02 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
+   "luma": 90,
+   "blob": "12dfe2c6dd73f9681a1131a4a5d43b78be309458",
+   "accepted": "2026-11-11 オーナー全採用（#3282）。Codex の内蔵生成の上限 1672x941 の原寸で使う"
   },
   "bg_shishark.png": {
    "place": "shishark",
