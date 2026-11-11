@@ -18,6 +18,7 @@ import { visitChar } from "./spots.js";
 import { RIO_AWAY_DAY } from "../core/rules.js";
 import { rioUnavailable as rioVisitReason } from "./spot-hours.js";
 import { kujiRows, hasKuji, goodsSellRows } from "./kuji.js";
+import { resalePrice, kujiResaleCap, forgetKujiGear } from "./kuji-resale.js";
 import { SHOP_ART } from "./shop-art.js";
 import { AF_VANILLA_ART } from "./shop-art-af-vanilla.js";
 import { REMAINING_SHOP_ART } from "./shop-art-remaining.js";
@@ -77,12 +78,15 @@ export const forSale = (e, chapter = 1) => !!e && (SHOP_EQUIP_TYPES.includes(e.t
 /** 売れる機材か（贈り物は売れない・装備中も売れない） */
 export const sellable = (e) => !!e && !e.unsellable && !Object.values(state.equip || {}).includes(e.id);
 
-/** 機材を売る。贈り物（unsellable）・装備中・未所持は、ボタンの出し分けに関係なくここで断る */
+/** 機材を売る。贈り物（unsellable）・装備中・未所持は、ボタンの出し分けに関係なくここで断る。
+ * くじで手に入れた物の買い取りは、そのくじ1回の値段まで（KJ16・daily/kuji-resale.js） */
 export function sellEquipment(id) {
   const e = DB.equipById[id];
   if (!e || !state.owned.includes(id) || !sellable(e)) return false;
+  const price = resalePrice(e);
   state.owned = state.owned.filter((x) => x !== id);
-  addMoney(e.sell_price);
+  forgetKujiGear(id);
+  addMoney(price);
   return true;
 }
 
@@ -318,10 +322,11 @@ function openCounter({ errand = null, expense = false, minStock = 1, expenseFlag
     const sellRows = () => {
       const rows = state.owned.map((id) => DB.equipById[id]).filter((e) => e && !Object.values(state.equip).includes(e.id)).map((e) =>
         el("div.shop-row", [productArt(e, false),
-          el("div.shop-main", [el("b", { text: e.name }), el("small", { text: e.kuji_only ? "くじ限定の台なので売れない" : e.unsellable ? "贈り物なので売れない" : "中古買い取り" })]),
+          el("div.shop-main", [el("b", { text: e.name }), el("small", { text: e.kuji_only ? "くじ限定の台なので売れない" : e.unsellable ? "贈り物なので売れない"
+            : kujiResaleCap(e.id) != null && kujiResaleCap(e.id) < e.sell_price ? "くじの景品（買い取りはくじ1回分まで）" : "中古買い取り" })]),
           e.unsellable ? el("span.shop-owned", { text: "売却不可", dataset: { test: `sell-locked-${e.id}` } }) : el("button.btn.small", {
-            text: `${yen(e.sell_price)}で売る`, dataset: { test: `sell-${e.id}` }, onclick: async () => {
-              if (!await confirmSale(e.name, e.sell_price)) return;
+            text: `${yen(resalePrice(e))}で売る`, dataset: { test: `sell-${e.id}` }, onclick: async () => {
+              if (!await confirmSale(e.name, resalePrice(e))) return;
               if (sellEquipment(e.id)) { save(); SE.money(); }
               else { SE.error(); toast("これは売れない", { kind: "warn" }); }
               render();

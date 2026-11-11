@@ -46,7 +46,7 @@ const g = kuji.grades.g20000;
 const shopTop = Math.max(...Object.values(kuji.grades).filter(x => !x.limited).map(x => x.price));
 assert.equal(g.chapterMin, 5, "第5章から");
 assert(g.price > shopTop, `いちばん高いくじ（${g.price} > ${shopTop}）`);
-assert.equal(g.label, "限定台くじ（1回20,000円）");
+assert.equal(g.label, "限定台くじ（1回10,000円）"); // 値段は1ランク下げた（KJ15）
 assert(g.boxSize >= 20 && g.boxSize <= 50, "箱の枚数は既存の箱と同じ幅");
 assert.equal(g.prizes.reduce((n, p) => n + p.count, 0), g.boxSize);
 assert.equal(g.lastOne.secret, true);
@@ -131,7 +131,7 @@ assert.equal(core.state.kujiTickets, 2);
 // ---------------------------------------------------------------- 3. 実際の kuji.js: 重複はくじ券1枚、くじ券で1回引く
 const source = readText("remake/js/daily/kuji.js");
 const pick = (re, label) => { const m = source.match(re)?.[0]; assert(m, `kuji.js の ${label} が見つかる`); return m; };
-const grantSource = pick(/^function grant\(prize\) \{[\s\S]*?^\}\n/m, "grant()");
+const grantSource = pick(/^function grant\(prize, g\) \{[\s\S]*?^\}\n/m, "grant()");
 const takeSource = pick(/^function takeTicket\(g, box, pay = "money"\) \{[\s\S]*?^\}\n/m, "takeTicket()");
 const dupeSource = pick(/^const withDupe = [^\n]*\n/m, "withDupe");
 const ticketSource = readText("remake/js/daily/kuji-tickets.js").replace(/^import .*;\s*$/gm, "").replace(/\bexport /g, "");
@@ -143,15 +143,19 @@ function setup({ owned = [], money = 0, tickets = 0 } = {}) {
     addFlavorStock(id, grams) { ctx.state.flavorStock[id] = (ctx.state.flavorStock[id] || 0) + grams; },
     spendableMoney: st => st.money,
     save() { ctx.saves += 1; },
+    // くじで手に入れた台・機材の記録（買い取りの上限・KJ16。本体は daily/kuji-resale.js）
+    won: [], noteKujiGear(gradeId, equipId) { ctx.won.push([gradeId, equipId]); },
   };
   vm.runInNewContext(`${ticketSource}${grantSource}${dupeSource}${takeSource}this.grant = grant; this.withDupe = withDupe; this.takeTicket = takeTicket;`, ctx);
   return ctx;
 }
 const melty = sPrizes.find(p => p.equipId === "stand_custom_melty");
 let t = setup({ money: 1000 });
-assert.equal(t.grant(melty), null, "初めての限定の台は持ち物へ");
+const limited = { id: "g20000", ...g }; // 本体の grades() と同じく、くじのIDを添えて渡す
+assert.equal(t.grant(melty, limited), null, "初めての限定の台は持ち物へ");
 assert.deepEqual([...t.state.owned], ["stand_custom_melty"]);
-const dupe = t.grant(melty);
+assert.deepEqual(JSON.parse(JSON.stringify(t.won)), [["g20000", "stand_custom_melty"]], "このくじで手に入れた物として覚える");
+const dupe = t.grant(melty, limited);
 assert.deepEqual({ ...dupe }, { dupTicket: 1 }, "持っている限定の台はくじ券1枚");
 assert.equal(t.state.money, 1000, "お金にしない");
 assert.equal(t.state.kujiTickets, 1);
@@ -162,11 +166,12 @@ assert.equal(card.dupCash, undefined);
 assert.equal(t.withDupe(melty, null), melty);
 assert.equal(t.withDupe(melty, 7000).dupCash, 7000, "ほかの品は従来どおり買い取り額");
 t = setup({ owned: ["stand_custom_tosu"], tickets: KUJI_TICKET_MAX });
-assert.deepEqual({ ...t.grant(sPrizes.find(p => p.equipId === "stand_custom_tosu")) }, { dupTicket: 0 }, "上限ならくじ券は増えない");
+assert.deepEqual({ ...t.grant(sPrizes.find(p => p.equipId === "stand_custom_tosu"), limited) }, { dupTicket: 0 }, "上限ならくじ券は増えない");
 assert.equal(t.state.kujiTickets, KUJI_TICKET_MAX);
 assert.equal(t.state.money, 0, "上限でもお金にしない");
 t = setup({ owned: ["stand_walnut"] });
-assert.equal(t.grant(g.prizes.find(p => p.equipId === "stand_walnut")), 50000, "限定台くじの店の台は従来どおり中古買い取り額");
+assert.deepEqual({ ...t.grant(g.prizes.find(p => p.equipId === "stand_walnut"), limited) }, { dupCash: 10000, dupCapped: true }, "限定台くじの店の台は、中古買い取り額（50,000円）ではなくくじ1回分の10,000円まで（KJ16）");
+assert.equal(t.state.money, 10000);
 assert.equal(t.state.kujiTickets, 0);
 
 // くじ券で引く: 1枚減り、お金は動かない。0枚・ほかのくじには使えない。お金で引くのは従来どおり。
@@ -195,7 +200,7 @@ assert.equal(otherBox.drawn, 0);
 assert.equal(t.state.kujiTickets, 1, "使えないくじでは減らない");
 got = t.takeTicket(g, box);
 assert(got, "お金で引ける");
-assert.equal(t.state.money, 30000, "1回20,000円");
+assert.equal(t.state.money, 40000, "1回10,000円");
 assert.equal(t.state.kujiTickets, 1, "お金で引いてもくじ券は減らない");
 // 引き切った箱にはくじ券を使わない。
 box.drawn = box.order.length;

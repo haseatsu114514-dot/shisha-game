@@ -11,8 +11,9 @@ const flavors = Object.fromEntries(read("../../data/flavors.json").flavors.map(f
 const equipment = Object.fromEntries(read("../../data/equipment.json").equipment.map(e => [e.id, e]));
 const GEAR_TYPES = ["bowl", "hms", "charcoal"];
 
-// 1. 値段・並ぶ章・置いてある店（本店1,000円は第1章から、柚ヶ谷3,000円は第2章／東京5,000円は第3章／ドバイ10,000円は第4章／第5章の本店は20,000円の限定台くじ KJ05・KJ11）。
-const TIERS = { g1000: [1000, 1, "home"], g3000: [3000, 2, "widehanga"], g5000: [5000, 3, "tokyo"], g10000: [10000, 4, "dubai"], g20000: [20000, 5, "home"] };
+// 1. 値段・並ぶ章・置いてある店（本店500円は第1章から、柚ヶ谷1,000円は第2章／東京3,000円は第3章／ドバイ5,000円は第4章／第5章の本店は10,000円の限定台くじ KJ05・KJ11）。
+// 値段は 2026-11-11 に1ランクずつ下げた（KJ15。景品と枚数はそのまま）。くじのIDは箱を作った時の値段の名残で、セーブの箱の名前なので変えない。
+const TIERS = { g1000: [500, 1, "home"], g3000: [1000, 2, "widehanga"], g5000: [3000, 3, "tokyo"], g10000: [5000, 4, "dubai"], g20000: [10000, 5, "home"] };
 assert.deepEqual(Object.keys(kuji.grades), Object.keys(TIERS), "くじは5種類（旧500円の箱は廃止）");
 for (const [id, [price, chapter, shop]] of Object.entries(TIERS)) {
   const g = kuji.grades[id];
@@ -67,7 +68,7 @@ for (const section of ["grades", "legacyGrades"]) {
 
 // 3. 上位くじは台と機材が主役。S賞は台で、上の段ほど家シーシャで伸びる台。S・A賞はすべて台か機材。
 // 第5章の限定台くじ（KJ05）のS賞はくじ限定の台3種で、伸びは店で一番伸びる台と同じ（くじだけ強い台を作らない）。
-const upper = Object.entries(kuji.grades).filter(([, g]) => g.price >= 3000).sort((a, b) => a[1].price - b[1].price);
+const upper = Object.entries(kuji.grades).filter(([, g]) => g.price >= 1000).sort((a, b) => a[1].price - b[1].price);
 assert.deepEqual(upper.map(([id]) => id), ["g3000", "g5000", "g10000", "g20000"]);
 const topShopXp = Math.max(...Object.values(equipment).filter(e => e.type === "homeware" && !e.not_for_sale).map(e => e.home_xp || 0));
 let lastXp = 0;
@@ -110,10 +111,11 @@ assert.deepEqual(visible(3, "dubai"), [], "ドバイ店は第4章から");
 for (const chapter of [4, 5]) assert.deepEqual(visible(chapter, "dubai"), ["g10000"], "ドバイ店は特注台くじ");
 // どの店・どの章でも、並ぶくじは1種類まで。新しい街ほど値段が上がる。
 for (const shop of ["home", "widehanga", "tokyo", "dubai"]) for (const chapter of [1, 2, 3, 4, 5]) assert(visible(chapter, shop).length <= 1, `${shop} 第${chapter}章`);
-assert.deepEqual(["home", "widehanga", "tokyo", "dubai"].map(shop => kuji.grades[visible(4, shop)[0]].price), [1000, 3000, 5000, 10000], "新しい街ほど上位のくじ");
+assert.deepEqual(["home", "widehanga", "tokyo", "dubai"].map(shop => kuji.grades[visible(4, shop)[0]].price), [500, 1000, 3000, 5000], "新しい街ほど上位のくじ");
 
-// 5. 実際の grant(): 持っていない台・機材は持ち物へ。持っている物は中古買い取りの額をお金で（売れない台は景品評価の半額）。
-const grantSource = source.match(/^function grant\(prize\) \{[\s\S]*?^\}\n/m)?.[0];
+// 5. 実際の grant(): 持っていない台・機材は持ち物へ（そのくじで手に入れた物として覚える）。持っている物は中古買い取りの額をお金で
+// （売れない台は景品評価の半額）。ただし、どちらも「そのくじ1回の値段」まで（KJ16。値下げした箱を買い切って売っても、お金が増えない）。
+const grantSource = source.match(/^function grant\(prize, g\) \{[\s\S]*?^\}\n/m)?.[0];
 const dupeSource = source.match(/^const withDupe = [^\n]*\n/m)?.[0];
 assert(grantSource && dupeSource, "kuji.js の grant() と withDupe が見つかる");
 function setup(owned = []) {
@@ -123,37 +125,91 @@ function setup(owned = []) {
     FLAVOR_BOX_GRAMS: 50,
     addMoney(n) { ctx.state.money += n; },
     addFlavorStock(id, grams) { ctx.state.flavorStock[id] = (ctx.state.flavorStock[id] || 0) + grams; },
+    won: [], noteKujiGear(gradeId, equipId) { ctx.won.push([gradeId, equipId]); },
   };
   vm.runInNewContext(`${grantSource}${dupeSource}this.withDupe = withDupe;`, ctx);
   return ctx;
 }
-const custom = kuji.grades.g10000.prizes.find(p => p.rank === "S");
+// 本体の grades() と同じく、くじのIDを添えて渡す
+const graded = id => ({ id, ...kuji.grades[id] });
+const dubai = graded("g10000"), tokyo = graded("g5000"), yuzu = graded("g3000"), home = graded("g1000");
+const custom = dubai.prizes.find(p => p.rank === "S");
 let t = setup();
-assert.equal(t.grant(custom), null, "初めての台は替えない");
+assert.equal(t.grant(custom, dubai), null, "初めての台は替えない");
 assert.deepEqual(t.state.owned, ["stand_custom"]);
+assert.deepEqual(JSON.parse(JSON.stringify(t.won)), [["g10000", "stand_custom"]], "このくじで手に入れた物として覚える（売るときの上限）");
 assert.equal(t.state.money, 0);
-assert.equal(t.grant(custom), 150000, "持っている台は中古買い取り額");
+const capped = t.grant(custom, dubai);
+assert.deepEqual({ ...capped }, { dupCash: 5000, dupCapped: true }, "持っている台は、中古買い取り額（150,000円）ではなくくじ1回分の5,000円まで");
 assert.deepEqual(t.state.owned, ["stand_custom"], "同じ台を二つ持たない");
-assert.equal(t.state.money, 150000);
-assert.deepEqual(t.withDupe(custom, 150000).dupCash, 150000, "結果のカードに額を渡す");
+assert.equal(t.state.money, 5000);
+assert.equal(t.won.length, 1, "重複は覚え直さない");
+assert.deepEqual({ ...t.withDupe(custom, capped) }, { ...custom, dupCash: 5000, dupCapped: true }, "結果のカードに額と、1回分で頭打ちになった印を渡す");
+assert.deepEqual(t.withDupe(custom, 1500).dupCash, 1500, "頭打ちにならない額はそのまま渡す");
 assert.equal(t.withDupe(custom, null), custom, "替えていない景品はそのまま");
+// 中古買い取り額が1回の値段より安い品は、今までどおりその額（ドバイ店5,000円のくじの、ビッグタヌキッシュリッド1,500円）
+t = setup(["winkwink_hagal"]);
+assert.equal(t.grant(dubai.prizes.find(p => p.equipId === "winkwink_hagal"), dubai), 1500, "1回の値段より安い買い取り額はそのまま");
 t = setup(["home_rig_pro", "nightside_premier_hagal"]);
-assert.equal(t.grant(kuji.grades.g5000.lastOne), 1500, "売れない大会公式モデルの台は景品評価の半額（従来の補償）");
-assert.equal(t.grant(kuji.grades.g3000.lastOne), 3000, "ナイトサイドは中古買い取り額");
-assert.equal(t.state.money, 4500);
+assert.equal(t.grant(tokyo.lastOne, tokyo), 1500, "売れない大会公式モデルの台は景品評価の半額（従来の補償。東京店3,000円のくじでは頭打ちにならない）");
+assert.deepEqual({ ...t.grant(home.prizes.find(p => p.rank === "S"), home) }, { dupCash: 500, dupCapped: true }, "本店500円のくじでは、その補償も1回分の500円まで");
+assert.deepEqual({ ...t.grant(yuzu.lastOne, yuzu) }, { dupCash: 1000, dupCapped: true }, "ナイトサイド（中古買い取り3,000円）も柚ヶ谷店1,000円のくじでは1,000円まで");
+assert.equal(t.state.money, 3000);
+// どのくじでも、台・機材1つで戻るお金は1回の値段を超えない（買い切って売ってもお金が増えない）。
+for (const [id, g] of Object.entries(kuji.grades)) for (const p of [...g.prizes, g.lastOne].filter(x => x.equipId)) {
+  const own = setup([p.equipId]);
+  own.state.kujiTickets = 0; own.grantKujiTickets = () => 1;
+  const back = own.grant(p, { id, ...g });
+  assert((typeof back === "object" ? back.dupCash ?? 0 : back) <= g.price, `${id}「${p.name}」: 重複で戻るお金は1回の値段まで`);
+}
 t = setup();
 const set = kuji.grades.g10000.prizes.find(p => p.flavors);
-assert.equal(t.grant(set), null);
+assert.equal(t.grant(set, dubai), null);
 assert.deepEqual(t.state.flavorStock, { anise: 50, ginger: 50, cardamom: 50 }, "詰め合わせは全部の葉が加わる");
 assert.deepEqual(t.state.goods, [], "葉を小物にしない");
 // 古い箱の非売品の台（equipId なし）は今までどおり売れる小物。
 t = setup();
-assert.equal(t.grant({ type: "stand", name: "旧景品の台", sell: 3000 }), null);
+assert.equal(t.grant({ type: "stand", name: "旧景品の台", sell: 3000 }, home), null);
 assert.deepEqual(JSON.parse(JSON.stringify(t.state.goods)), [{ name: "旧景品の台", sell: 3000 }]);
+
+// 6. くじで手に入れた台・機材を売るときの上限（KJ16・daily/kuji-resale.js）。記録はその箱（state.kuji[くじのID].won）に持つ。
+{
+  const resaleSource = readFileSync(new URL("../js/daily/kuji-resale.js", import.meta.url), "utf8").replace(/^import .*;\s*$/gm, "").replace(/\bexport /g, "");
+  const ctx = { DB: { kuji }, state: { kuji: { g3000: { order: [], drawn: 0 }, g10000: { order: [], drawn: 0 }, g500: { order: [], drawn: 0, won: ["lotos_plus"] } } } };
+  vm.runInNewContext(`${resaleSource}; this.api = { noteKujiGear, kujiResaleCap, forgetKujiGear, resalePrice };`, ctx);
+  const R = ctx.api, stainless = equipment.stand_stainless, lotos = equipment.lotos_plus;
+  assert.equal(R.kujiResaleCap("stand_stainless"), null, "くじで手に入れていない物に上限は無い");
+  assert.equal(R.resalePrice(stainless), stainless.sell_price, "店で買った物・前から持っている物は今までどおりの買い取り額");
+  R.noteKujiGear("g10000", "stand_stainless"); R.noteKujiGear("g10000", "stand_stainless");
+  assert.deepEqual([...ctx.state.kuji.g10000.won], ["stand_stainless"], "同じ物を二重に覚えない");
+  assert.equal(R.resalePrice(stainless), 5000, "ドバイ店のくじで手に入れた台は、1回分の5,000円まで");
+  R.noteKujiGear("g3000", "stand_stainless");
+  assert.equal(R.kujiResaleCap("stand_stainless"), 1000, "複数のくじの記録にあれば安い方");
+  R.noteKujiGear("g3000", "winkwink_hagal");
+  assert.equal(R.resalePrice(equipment.winkwink_hagal), 1000, "中古買い取り1,500円の機材も、柚ヶ谷店1,000円のくじなら1,000円まで");
+  R.noteKujiGear("g10000", "dense_flat_charcoal");
+  assert.equal(R.resalePrice(equipment.dense_flat_charcoal), equipment.dense_flat_charcoal.sell_price, "1回の値段より安い買い取り額はそのまま");
+  assert.equal(R.resalePrice(lotos), lotos.sell_price, "今は無いくじ（廃止した箱）の記録は上限にしない");
+  R.noteKujiGear("g99999", "stand_walnut");
+  assert.equal(R.kujiResaleCap("stand_walnut"), null, "箱が無いくじには覚えない");
+  R.forgetKujiGear("stand_stainless");
+  assert.equal(R.kujiResaleCap("stand_stainless"), null, "手放したら記録を消す（店で買い直した物は店の買い取り額）");
+  assert.deepEqual([...ctx.state.kuji.g3000.won], ["winkwink_hagal"]);
+  // 上限つきなら、どの箱も「買い切って全部売る」でお金が増えない（上限が無いと柚ヶ谷店は増える）。
+  for (const [id, g] of Object.entries(kuji.grades)) {
+    const gear = [...g.prizes, g.lastOne].filter(p => p.equipId && !equipment[p.equipId].unsellable);
+    const st = { kuji: { [id]: { order: [], drawn: 0 } } };
+    const c2 = { DB: { kuji }, state: st };
+    vm.runInNewContext(`${resaleSource}; this.api = { noteKujiGear, resalePrice };`, c2);
+    for (const p of gear) c2.api.noteKujiGear(id, p.equipId);
+    const back = gear.reduce((n, p) => n + c2.api.resalePrice(equipment[p.equipId]), 0);
+    assert(back < g.price * g.boxSize / 2, `${id}: 箱を買い切って台・機材を全部売っても半分も戻らない（${back} / ${g.price * g.boxSize}）`);
+  }
+}
 
 // ドバイの葉（アフサール／ドバジのダブルアップル・ミント）は取りやめた（DBS03）ので、くじにも入れない。
 for (const [gradeId, g] of Object.entries(kuji.grades)) for (const prize of [...g.prizes, g.lastOne].filter(Boolean)) {
   for (const id of [prize.flavorId, ...(prize.flavors || []).map(f => f.id)].filter(Boolean))
     assert(!['absal_double_apple', 'absal_mint', 'dobaj_double_apple', 'dobaj_mint'].includes(id), `${gradeId} の ${prize.name} にドバイの葉を入れない`);
 }
-console.log(`[kuji tiers] PASS: ${Object.keys(kuji.grades).length} grades, chapter gates 1-5, gear prizes, duplicate cash, ch5 limited tier`);
+console.log(`[kuji tiers] PASS: ${Object.keys(kuji.grades).length} grades, chapter gates 1-5, gear prizes, duplicate cash capped at one draw, resale cap, ch5 limited tier`);

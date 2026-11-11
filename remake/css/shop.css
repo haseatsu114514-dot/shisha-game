@@ -93,6 +93,28 @@ body:not(.game-ds) .shop.shop-paper, body:not(.game-ds) .shop-entry { top: 24px;
 .shop-paper .kuji-help::before { content: ""; position: absolute; left: 50%; top: 50%; width: var(--help-hit); height: var(--help-hit); transform: translate(-50%, -50%); border-radius: 50%; }
 .shop-paper .kuji-row { cursor: pointer; }
 .shop-paper .kuji-cat { font-size: 26px; border: 0; }
+/* 景品の一覧（棚の案内・GCH13）: くじは店ごとに1種類なので、行の下の空いた所にその箱の景品とのこり枚数を並べる。
+   左の帯と賞の字の色は、ガラガラの玉と同じ賞の色（S＝金・A＝赤・B＝青・C＝白・ラストワン＝黒） */
+.shop-paper .kuji-lineup { flex: none; padding: 16px 8px 20px; }
+.kuji-lineup-head { display: flex; align-items: baseline; gap: 16px; margin: 0 0 12px; color: var(--shop-ink); font-size: 20px; font-weight: 500; letter-spacing: .06em; }
+.kuji-lineup-head small { color: var(--shop-muted); font-size: 15px; letter-spacing: 0; }
+.kuji-lineup-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 14px; margin: 0; padding: 0; list-style: none; }
+.kuji-lineup-item { --lineup-color: #b9b0a2; --lineup-ink: #5e554c; display: flex; align-items: center; gap: 12px; min-height: 68px; padding: 6px 14px 6px 8px; border: 1px solid var(--shop-line); border-left: 6px solid var(--lineup-color); border-radius: 4px; background: #fffcf8; }
+.kuji-lineup-item[data-rank="S"] { --lineup-color: #e9b233; --lineup-ink: #8a5a06; background: #fff7df; }
+.kuji-lineup-item[data-rank="A"] { --lineup-color: #e2443c; --lineup-ink: #b3261c; }
+.kuji-lineup-item[data-rank="B"] { --lineup-color: #3f82ea; --lineup-ink: #1f55b0; }
+.kuji-lineup-item[data-rank="LAST"] { --lineup-color: #2a2648; --lineup-ink: #2a2648; background: #efedf5; }
+.kuji-lineup-item[data-out] { opacity: .45; }
+.kuji-lineup-art { flex: none; display: grid; place-items: center; width: 56px; height: 56px; }
+.kuji-lineup-art > * { position: relative; }
+.kuji-lineup-art .kj-art-leaf { display: flex; align-items: center; justify-content: center; flex: none; margin: 0; background: none; }
+.kuji-lineup-art .kj-gift { --u: 5.6px; }
+.kuji-lineup-art .kj-art-fan .kj-gift { --u: 3.4px; }
+.kuji-lineup-secret { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; background: #2a2648; color: #e6e7f0; font-size: 24px; font-weight: 700; box-shadow: inset 0 0 0 3px #b9b4d8; }
+.kuji-lineup-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.kuji-lineup-rank { color: var(--lineup-ink); font-size: 15px; font-weight: 700; letter-spacing: .06em; }
+.kuji-lineup-name { color: var(--shop-ink); font-size: 18px; line-height: 1.3; }
+.kuji-lineup-left { flex: none; color: var(--shop-muted); font-size: 15px; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .shop-badge { align-self: flex-start; padding: 2px 12px; border: 1px solid currentColor; border-radius: 14px; font-size: 20px !important; }
 .shop-entry { position: absolute; left: 50%; top: 72px; transform: translateX(-50%); width: 1200px; height: 624px; padding: 24px 30px; display: flex; flex-direction: column; }
 .shop-entry .shop-head { padding: 0 0 18px; height: 60px; }
@@ -140,6 +162,10 @@ body:not(.game-ds) .shop.shop-paper, body:not(.game-ds) .shop-entry { top: 24px;
   .shop-paper .shop-row .btn, .shop-paper .shop-checkout { min-height: var(--shop-tap); font-size: var(--shop-label) !important; }
   .shop-paper .kuji-row, .shop-paper .kuji-actions { gap: 16px; }
   .shop-paper .kuji-row .btn, .shop-paper .kuji-ticket-row .btn { min-width: 150px; }
+  .kuji-lineup-head { font-size: var(--shop-label); }
+  .kuji-lineup-head small, .kuji-lineup-rank, .kuji-lineup-left { font-size: var(--shop-text); }
+  .kuji-lineup-name { font-size: var(--shop-label); }
+  .kuji-lineup-item { min-height: var(--shop-tap); }
   .shop-paper .kuji-help { --help-size: max(30px, calc(16px / var(--k, 1))); --help-hit: max(72px, calc(40px / var(--k, 1))); font-size: max(18px, calc(11px / var(--k, 1))) !important; }
   .shop-paper .shop-foot { height: auto; min-height: 92px; }
   .shop-paper .shop-summary { min-height: var(--shop-tap); }

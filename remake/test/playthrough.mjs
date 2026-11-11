@@ -395,7 +395,7 @@ for (;;) {
           throw new Error("First lemon errand allowed a kuji purchase");
         firstKujiBlocked = true;
       } else {
-        if (after.kuji.g1000.drawn !== before.kuji.g1000.drawn + 1 || after.money !== before.money - 1000)
+        if (after.kuji.g1000.drawn !== before.kuji.g1000.drawn + 1 || after.money !== before.money - 500)
           throw new Error("Kuji input did not produce expected draw/payment");
         kujiDrawn = true;
         await page.waitForSelector('.kuji-card.reveal', { timeout: 5000 });

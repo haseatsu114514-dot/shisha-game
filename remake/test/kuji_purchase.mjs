@@ -9,11 +9,12 @@ import path from "node:path";
 
 const read = file => readFile(new URL(file, import.meta.url), "utf8");
 const strip = source => source.replace(/^import .*;\s*$/gm, "").replace(/\bexport /g, "");
-const [kuji, core, util, stats, data, travelBudget, galleryProgress, kujiTickets, equipment, kujiReveal] = await Promise.all([
+const [kuji, core, util, stats, data, travelBudget, galleryProgress, kujiTickets, equipment, kujiReveal, kujiResale] = await Promise.all([
   read("../js/daily/kuji.js"), read("../js/core/state.js"), read("../js/core/util.js"),
   read("../js/core/stats.js"), read("../../data/kuji.json"), read("../js/core/travel-budget.js"),
   read("../js/core/gallery-progress.js"), read("../js/daily/kuji-tickets.js"), read("../../data/equipment.json"),
   read("../js/daily/kuji-reveal.js"), // 結果の札（賞・景品名・重複の表示）。ガラガラと粒子は高速送りでは読み込まない
+  read("../js/daily/kuji-resale.js"), // くじで手に入れた台・機材の記録（買い取りの上限・KJ16）
 ]);
 // くじ限定の台（KJ05）だけ実データを渡す（重複でくじ券に替わるかの判定に使う）
 const kujiOnly = Object.fromEntries(JSON.parse(equipment).equipment.filter(e => e.kuji_only).map(e => [e.id, e]));
@@ -41,6 +42,7 @@ function addFlavorStock(id, grams) {
 }
 ${strip(kujiTickets)}
 ${strip(kujiReveal)}
+${strip(kujiResale)}
 ${strip(kuji)}
 let root, old, oldTicket, shop = 'home';
 // くじは店ごとに1種類（KJ11）。調べる等級を置いている店を開く。
@@ -187,7 +189,7 @@ try {
   const beforeLast = await run("K.prepare({last:true})");
   await run("K.click(); K.burst()");
   const last = await run("K.snapshot()");
-  assert.equal(last.state.money,beforeLast.state.money-1000);
+  assert.equal(last.state.money,beforeLast.state.money-500);
   assert.equal(last.state.kuji.g1000.drawn,last.state.kuji.g1000.order.length);
   assert.equal(last.state.kuji.g1000.emptyDay,last.state.day);
   assert.equal(last.state.owned.filter(id=>id==='nightside_premier_hagal').length,1);
@@ -199,8 +201,11 @@ try {
   assert.deepEqual((await run("K.snapshot()")).state,last.state);
   const refilled = await run("K.refill()");
   assert.equal(refilled.state.kuji.g1000.drawn,0); assert.equal(refilled.state.kuji.g1000.emptyDay,null);
+  // 最後の1枚で付いたラストワン賞の機材は「このくじで手に入れた物」として覚え、箱が入れ替わっても引き継ぐ（買い取りの上限・KJ16）
+  assert.deepEqual(last.state.kuji.g1000.won,['nightside_premier_hagal']);
+  assert.deepEqual(refilled.state.kuji.g1000.won,['nightside_premier_hagal'],"新しい箱にも記録が残る");
   console.log("PASS last ticket / last-one / real save-load / refill");
-  for (const opts of [{money:999},{empty:true}]) {
+  for (const opts of [{money:499},{empty:true}]) { // 1回500円に1円足りない／売り切れ
     const before = await run(`K.prepare(${JSON.stringify(opts)})`);
     await run("K.forceOld()");
     assert.deepEqual(await run("K.snapshot()"),before,"empty/poor: no purchase, save or reveal");
@@ -231,7 +236,7 @@ try {
     await run(`K.batch('g1000', ${count}); K.batch('g1000', ${count});`);
     const bought = await run("K.snapshot()");
     assert.equal(bought.state.kuji.g1000.drawn, count);
-    assert.equal(bought.state.money, before.state.money - 1000 * count);
+    assert.equal(bought.state.money, before.state.money - 500 * count);
     assert.equal(bought.saves, count, "every ticket saved immediately");
     assert.equal((await run("K.batchResults()")).length, count);
     await run("K.finishBatch()");
@@ -242,7 +247,7 @@ try {
   await run("K.batch('g1000', 5)");
   const lastBatch = await run("K.snapshot()");
   assert.equal(lastBatch.state.kuji.g1000.drawn, beforeLastBatch.state.kuji.g1000.drawn + 3);
-  assert.equal(lastBatch.state.money, beforeLastBatch.state.money - 3000);
+  assert.equal(lastBatch.state.money, beforeLastBatch.state.money - 1500);
   assert.equal(lastBatch.state.owned.filter(id=>id==='nightside_premier_hagal').length, 1);
   assert.equal(lastBatch.saves, 3);
   assert.equal((await run("K.batchResults()")).length, 4, "last-one appears beside three tickets");
@@ -276,7 +281,7 @@ try {
     const before = await run("K.prepare({grade:'g20000',chapter:5,owned:['stand_custom_melty'],money:100000})");
     await run("K.click(); K.burst()");
     const dupe = await run("K.snapshot()");
-    assert.equal(dupe.state.money, before.state.money - 20000, "1回20,000円だけ払い、買い取りのお金は無い");
+    assert.equal(dupe.state.money, before.state.money - 10000, "1回10,000円だけ払い、買い取りのお金は無い");
     assert.equal(dupe.state.kujiTickets, 1);
     assert.equal(dupe.state.owned.filter(id => id === "stand_custom_melty").length, 1);
     assert.match(await run("(async()=>{await sleep(500);return K.revealText();})()"), /持っているので、くじ券を1枚受け取った/, "結果のカードにくじ券と出す");
