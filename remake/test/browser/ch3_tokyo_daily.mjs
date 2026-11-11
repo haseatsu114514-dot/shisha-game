@@ -540,6 +540,57 @@ await suite("ch3-tokyo-daily", async check => {
     assert.equal(state.slot, 0, "Answering the LIME uses no time");
   });
 
+  // 恋人のましろと mukai で過ごす時間（BLC03・chapters/mashiro-time.js）。一日に一度、行動1回・体力10で短い場面を読み、
+  // デート1回と同じ絆が入る。同じ日の二度目は、mukai の選択肢に出ない。
+  await check("a-lover-spends-time-with-mashiro-at-mukai-once-a-day", async page => {
+    await seed(page);
+    const day = await page.evaluate(async () => {
+      const core = await import("./js/core/state.js");
+      const progress = await import("./js/chapters/ch3-progress.js");
+      const value = core.state, intro = value.flags._ch3_intro;
+      // 東京DAY6の昼。ましろと交際していて、最初の節目（Lv1）は読んである。
+      intro.stage = progress.CH3_INTRO_SCENES.findIndex(scene => scene.id === "ch3_naru_contact_before_tournament");
+      value.day = intro.startDay + 5; value.slot = 0; value.phase = "daily"; value.stamina = 100;
+      Object.assign(value.met, { mashiro: true, mukai_master: true });
+      value.lovers = ["mashiro"]; value.contacts = [...new Set([...(value.contacts || []), "mashiro"])];
+      value.loveLevel.mashiro = 1; value.lovePts.mashiro = 9; value.loverSince.mashiro = value.day;
+      value.loverEventsSeen = ["lover_mashiro_lv1"];
+      for (const id of ["mashiro", "mukai_master"]) value.flags[`_intro_${id}`] = true;
+      value.limeRead = [...(value.limeRead || []), "_lover_private_account_mashiro"];
+      value.flags._ch3_opening_read = value.flags._ch3_registration_read = value.flags._ch3_rules_read = true;
+      core.save();
+      return value.day;
+    });
+    await loadSlot(page, 0);
+    await tokyoMap(page, { day, slot: 0 });
+    const before = await get(page);
+    await go(page, "ch3_tokyo_mukai");
+    const first = page.locator(dt("tokyo-mukai-0"));
+    await first.waitFor({ timeout: 30000 });
+    assert.match(await first.textContent(), /ましろちゃんと過ごす（恋人）/, "The lover option leads the mukai choices");
+    await first.click();
+    // mukai で行動を使った帰りは、裏口のてつこに会うかを聞かれる（ほかの mukai の行動と同じ）。
+    await page.locator(dt("tokyo-tetsuko-no")).waitFor({ timeout: 60000 });
+    await page.locator(dt("tokyo-tetsuko-no")).click();
+    await tokyoMap(page, { day, slot: 1 });
+    const state = await get(page);
+    assert.deepEqual(state.flags._mashiro_time, { count: 1, day }, "One short scene was read today");
+    assert.equal(state.lovePts.mashiro, before.lovePts.mashiro + 5, "A date-sized bond (10, halved for lovers)");
+    assert.equal(state.stamina, before.stamina - 10);
+    assert.deepEqual(state.loverEventsSeen, ["lover_mashiro_lv1"], "No milestone is due yet");
+    // 同じ日はもう選べない（mukai も「今日はもう行った」になる）。翌日にまた選べる。
+    const open = await page.evaluate(async () => {
+      const time = await import("./js/chapters/mashiro-time.js");
+      const value = structuredClone(window.__remake.state);
+      const today = time.mashiroTimeOpen(window.__remake.state);
+      value.day++;
+      return { today, spent: time.mashiroTimeSpentToday(window.__remake.state), nextScene: time.mashiroTimeScene(value) };
+    });
+    assert.equal(open.today, false, "Once a day");
+    assert.equal(open.spent, true);
+    assert.equal(open.nextScene, "mashiro_time_train", "The next day reads the next short scene");
+  });
+
   // 日常ループの東京の CHOI-ZAP も、旧行程（ch3-activity-progress.js）と同じく3日間「風邪をひきにくい」を付ける（spot.gym・daily/calendar.js）。
   await check("the-tokyo-choizap-grants-the-fit-days", async page => {
     await seed(page);
