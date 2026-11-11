@@ -108,6 +108,21 @@
         },
         {
           "speaker": "dr_kemuri",
+          "face": "normal",
+          "text": "炭の置き方はなるさん。待ち方はスティーブさん。記録で、全部たどれます"
+        },
+        {
+          "speaker": "dr_kemuri",
+          "face": "serious",
+          "text": "君の手も、借りものの集まりです。なら、9000と何が違いますか"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "（……違わない、のかもしれない）"
+        },
+        {
+          "speaker": "dr_kemuri",
           "face": "serious",
           "text": "ですから、比べましょう。同じ葉で二本勝負です"
         },
@@ -145,6 +160,45 @@
           "speaker": "",
           "face": "",
           "text": "博士はケースをしまい、今日の注文をした。まずは客として、一台吸っていくという。"
+        },
+        {
+          "type": "hide_portrait",
+          "char_id": "dr_kemuri"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "博士が帰ったあと、入れ違いに千須が来た。博士のいた席に、黙って座る。"
+        },
+        {
+          "speaker": "sui",
+          "face": "normal",
+          "text": "挑戦状の話は、聞いている"
+        },
+        {
+          "speaker": "sui",
+          "face": "normal",
+          "text": "うちの新人は、三ヶ月で一人の夜に立つ。隣に、師匠はいない"
+        },
+        {
+          "speaker": "sui",
+          "face": "serious",
+          "text": "その夜の客にも、外れのない一台を。私は、博士の側に立つ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "返事を探して、カウンター席を見た。スミさんは黙って、千須の前に水を置いた。"
+        },
+        {
+          "speaker": "sui",
+          "face": "normal",
+          "text": "当日は、客席にいる。吸ってから、また話そう"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……はい。当日、お願いします"
         }
       ],
       "branches": {
@@ -437,6 +491,11 @@
         {
           "speaker": "",
           "face": "",
+          "text": "9000がなぞるのは、大会の日の俺だ。店の声は、記録にない。"
+        },
+        {
+          "speaker": "",
+          "face": "",
           "text": "息を吐いた。手の震えが少し収まる。炭を寄せかけて、止めた。"
         },
         {
@@ -445,6 +504,31 @@
           "text": "温度を見直し、炭を一つ離す。客がもう一度ホースを持つまで、待った。",
           "cue": "second_cup_adjust",
           "comment": "二本目の制作（調整2回）を終えた直後に再生する行。runner が場面本体から外し、実際の調整実績（安定／立て直し／帯の外）に応じて差し替える。本文は安定時の文。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "隣の席は、初めて見る顔だった。ホースを持つ手が、まだ硬い。",
+          "cue": "second_cup_newcomer",
+          "comment": "STK02。この cue の4行も runner が場面本体から外し、二本目の制作のあと、上の調整の行に続けて再生する（提供できなかった一台では読まない）。同じ客が二台とも吸う形式なので、尋ねた結果は台の作り分けではなく、吸ってもらう順番に出す。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "初めてですよね。今日は、どのくらいゆっくりできますか",
+          "cue": "second_cup_newcomer"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "……三十分くらい。このあと、人と会うので",
+          "cue": "second_cup_newcomer"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "なら、先にどうぞ。いちばん香るのは、今なので",
+          "cue": "second_cup_newcomer"
         }
       ]
     },
@@ -596,6 +680,201 @@
           "speaker": "hajime",
           "face": "normal",
           "text": "要ると思います。俺も、あの一台から習いたいです"
+        }
+      ],
+      "comment": "勝負のあと・前半（勝ったとき）。STK04で試合後を二つに分けた。負けは ch5_doctor_after_match_loss / ch5_doctor_after_match_loss_close、同数は ch5_doctor_after_match_tie を読む（ch5-progress.js chapterFiveAftermathScene）。どの前半も末尾に ch5_sui_after_match を続け、次の場面は ch5_doctor_cocreation。"
+    },
+    {
+      "dialogue_id": "ch5_doctor_after_match_loss",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "片づけの途中。博士は、二台分の挙手の記録から目を離さなかった。"
+        },
+        {
+          "speaker": "dr_kemuri",
+          "face": "serious",
+          "text": "合計は、9000です。……なのに、二台目も票が割れました"
+        },
+        {
+          "speaker": "dr_kemuri",
+          "face": "normal",
+          "text": "同じ精度で出しました。割れる理由が、記録にありません"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "あの人、今日は時間があるって言ってました"
+        },
+        {
+          "speaker": "shisha_9000",
+          "face": "normal",
+          "text": "記録にない項目です。次回から、先に尋ねます"
+        },
+        {
+          "speaker": "dr_kemuri",
+          "face": "normal",
+          "text": "……項目は、足します。ですが、考えは変えません"
+        },
+        {
+          "speaker": "dr_kemuri",
+          "face": "serious",
+          "text": "誰にでも同じ一台を。失敗を怖がらずに作れる道具は、要る"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "要ると思います。俺も、あの一台から習いたいです"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "博士はうなずいた。記録の画面には、空白の欄が一つ、残ったままだった。"
+        }
+      ],
+      "comment": "勝負のあと・前半（負けたとき。STK03）。勝った博士は考えを曲げないが、読めない票に引っかかる。負けたはじめを慰めない。二台目の9000の挙手が一台目（21）より減っていない負けで読む。博士の一言は実際の挙手に合わせてあり、減った負けは ch5_doctor_after_match_loss_close、同数は ch5_doctor_after_match_tie。三つの台本は博士の最初の2行だけが違う。"
+    },
+    {
+      "dialogue_id": "ch5_doctor_after_match_loss_close",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "片づけの途中。博士は、二台分の挙手の記録から目を離さなかった。"
+        },
+        {
+          "speaker": "dr_kemuri",
+          "face": "serious",
+          "text": "合計は、9000です。……なのに、二台目の票が減りました"
+        },
+        {
+          "speaker": "dr_kemuri",
+          "face": "normal",
+          "text": "同じ精度で出しました。減る理由が、記録にありません"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "あの人、今日は時間があるって言ってました"
+        },
+        {
+          "speaker": "shisha_9000",
+          "face": "normal",
+          "text": "記録にない項目です。次回から、先に尋ねます"
+        },
+        {
+          "speaker": "dr_kemuri",
+          "face": "normal",
+          "text": "……項目は、足します。ですが、考えは変えません"
+        },
+        {
+          "speaker": "dr_kemuri",
+          "face": "serious",
+          "text": "誰にでも同じ一台を。失敗を怖がらずに作れる道具は、要る"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "要ると思います。俺も、あの一台から習いたいです"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "博士はうなずいた。記録の画面には、空白の欄が一つ、残ったままだった。"
+        }
+      ],
+      "comment": "勝負のあと・前半（負けたとき。STK03）。二台目の9000の挙手が一台目（21）より減った負け（合計は9000）で読む。ch5_doctor_after_match_loss と違うのは、博士の最初の2行だけ。"
+    },
+    {
+      "dialogue_id": "ch5_doctor_after_match_tie",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "片づけの途中。博士は、二台分の挙手の記録から目を離さなかった。"
+        },
+        {
+          "speaker": "dr_kemuri",
+          "face": "serious",
+          "text": "合計は、同数です。……二台目だけ、9000の票が減りました"
+        },
+        {
+          "speaker": "dr_kemuri",
+          "face": "normal",
+          "text": "同じ精度で出しました。減る理由が、記録にありません"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "あの人、今日は時間があるって言ってました"
+        },
+        {
+          "speaker": "shisha_9000",
+          "face": "normal",
+          "text": "記録にない項目です。次回から、先に尋ねます"
+        },
+        {
+          "speaker": "dr_kemuri",
+          "face": "normal",
+          "text": "……項目は、足します。ですが、考えは変えません"
+        },
+        {
+          "speaker": "dr_kemuri",
+          "face": "serious",
+          "text": "誰にでも同じ一台を。失敗を怖がらずに作れる道具は、要る"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "要ると思います。俺も、あの一台から習いたいです"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "博士はうなずいた。記録の画面には、空白の欄が一つ、残ったままだった。"
+        }
+      ],
+      "comment": "勝負のあと・前半（同数のとき。STK03）。同数は二台目で9000の挙手が必ず減っている（21→19）。ch5_doctor_after_match_loss と違うのは、博士の最初の2行だけ。"
+    },
+    {
+      "dialogue_id": "ch5_sui_after_match",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "客席から下りてきた千須が、はじめの台の前で足を止めた。"
+        },
+        {
+          "speaker": "sui",
+          "face": "normal",
+          "text": "一つだけ聞く。君が作れない夜に来た客は、どうする"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "俺が作れない日は、つむぎが作ります。つむぎが作れない日は、俺が"
+        },
+        {
+          "speaker": "sui",
+          "face": "normal",
+          "text": "……それを、店と呼ぶんだろうな"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "千須はそれだけ言って、スミさんと並んで出口へ歩いていった。"
+        }
+      ],
+      "comment": "STK05。開幕（ch5_opening）で博士の側に立った千須へ、はじめが返す。勝敗どちらでも同じ文で、勝負のあと・前半（ch5_doctor_after_match／_loss／_loss_close／_tie）の末尾に続けて再生する（ch5-progress.js chapterFiveSceneTail）。採点の言い方にしない。"
+    },
+    {
+      "dialogue_id": "ch5_doctor_cocreation",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "片づけが済んで、客席の灯りが半分落ちた。残ったのは、博士と9000と、はじめだけだった。"
         },
         {
           "speaker": "",
@@ -641,6 +920,22 @@
           "speaker": "dr_kemuri",
           "face": "serious",
           "text": "何を吸っても砂のように感じる時期があった。今も、戻ったとは言えない"
+        },
+        {
+          "speaker": "dr_kemuri",
+          "face": "serious",
+          "text": "私は三つの大会で、君に点を入れました。味は、分からないまま"
+        },
+        {
+          "speaker": "dr_kemuri",
+          "face": "normal",
+          "text": "熱と、煙と、吸った人の顔。それで、採点はできてしまった"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_stk_kemuri_thermo_borrowed",
+          "next_true": "thermo"
         },
         {
           "speaker": "dr_kemuri",
@@ -722,7 +1017,17 @@
           "face": "normal",
           "text": "……味は、まだ遠いです。でも、手は覚えていました"
         }
-      ]
+      ],
+      "branches": {
+        "thermo": [
+          {
+            "speaker": "dr_kemuri",
+            "face": "normal",
+            "text": "県大会の前に貸した温度計。あれが、9000のいちばん古い部品です"
+          }
+        ]
+      },
+      "comment": "勝負のあと・後半（勝敗共通。STK04）。検品札 → エンコード → 博士の過去 → 一緒に作る一台。前半（ch5_doctor_after_match ほか）と ch5_sui_after_match を読み終えてから、別の場面として読む。温度計の一言（branches.thermo）は、第2章で博士から温度計を借りた保存（_stk_kemuri_thermo_borrowed）だけ。読了後、心得の盤で灯していれば博士に相談できる（ch5.js LESSON_AFTER_SCENE）。"
     },
     {
       "dialogue_id": "ch5_return_to_tonari",
@@ -1676,6 +1981,11 @@
           "speaker": "",
           "face": "",
           "text": "スミさんは客席の端で腕を組んでいた。隣で、つむぎがスケッチブックを膝に置いている。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "反対の端には、千須が座っていた。博士の台に近い席だ。"
         },
         {
           "speaker": "",

@@ -47,9 +47,10 @@ export function selectStoryEnding(routes, state, context = {}) {
   const id = lovers[0];
   const reunion = lovers.length === 1 && (context.present || []).includes(id)
     && (context.accepted || []).includes(id);
-  const middle = pending ? routes.ending.normal
-    : reunion ? routes.romance[id].epilogue : routes.ending.normal;
-  return [routes.ending.start, middle, routes.ending.daily];
+  // 共通の賄い（ending.normal）は誰でも読む。恋人が一人で会える時は、置き換えずに、その後へ後日談を続ける（STK11）。
+  // 分岐の条件（複数交際・未解決の修羅場は後日談を読まない）は変えていない。
+  const epilogue = !pending && reunion ? [routes.romance[id].epilogue] : [];
+  return [routes.ending.start, routes.ending.normal, ...epilogue, routes.ending.daily];
 }
 
 // ending_daily_smoke とスタッフロールの後に呼ぶ。前夜の茶化しとは別の場面。

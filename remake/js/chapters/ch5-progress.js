@@ -10,8 +10,8 @@
 //   scheduled  : 「会場へ行く」の確認でだけ試合へ。取り消しは ch5_timeout を読んで free へ戻る
 //   match      : 会場入り → 一杯目 → 二杯目の前 → 二本目の制作（recordChapterFiveSecondCup）
 //                → 観客の挙手の合計で勝敗 →（勝ち）余韻／（負け・同数）そのまま後日談へ
-//   aftermath  : 博士の後日談 → tonari へ戻る
-//   finale     : ending の3場面（開始 → 中間 → 日常）→ cleared
+//   aftermath  : 勝負のあと・前半（勝敗で台本が分かれる＋千須への返事）→ 後半（検品札〜一緒に作る一台）→ tonari へ戻る
+//   finale     : ending の場面（開始 → 賄い →（恋人が一人ならその人の後日談）→ 日常 → 鉄仮面さんの名乗り）→ cleared
 //   cleared    : スタッフロール（#517）を最後まで流したら _ch5_staff_roll_done → 周回を解放してタイトルへ。以後の再開は完了カード
 //     post-ending: 恋人が2人以上なら、スタッフロールの後に修羅場→一人ずつの話し直しを読んでからタイトルへ（IR32。postEnding）
 //
@@ -65,6 +65,11 @@ export const CH5_SCENE_BG = Object.freeze({
   ch5_prep_recall_aroma_adjusted: "bg_tournament_stage",
   ch5_prep_recall_aroma_kept: "bg_tournament_stage",
   ch5_doctor_after_match: "bg_smoke_lab",
+  ch5_doctor_after_match_loss: "bg_smoke_lab",        // 勝負のあと・前半（負け。挙手に合わせて2通り）
+  ch5_doctor_after_match_loss_close: "bg_smoke_lab",
+  ch5_doctor_after_match_tie: "bg_smoke_lab",         // 勝負のあと・前半（同数）
+  ch5_sui_after_match: "bg_smoke_lab",                // 前半の末尾に続く千須への返事（表示は親場面の bg）
+  ch5_doctor_cocreation: "bg_smoke_lab",              // 勝負のあと・後半（検品札→一緒に作る一台。勝敗共通）
   ch5_return_to_tonari: "bg_tonari_inside_night",    // 仮置き bg
   ch5_prep_answer_heat_adjusted: "bg_tonari_inside_night", // 帰店後の末尾に続く（表示は親場面の bg）
   ch5_prep_answer_heat_kept: "bg_tonari_inside_night",
@@ -118,7 +123,11 @@ export const CH5_SCENE_BGM = Object.freeze({
   ch5_second_cup_result: STORY_BGM.judging,
   ch5_second_cup_result_afterglow: STORY_BGM.aftermath,
   ch5_second_cup_defeat: STORY_BGM.aftermath,
-  ch5_doctor_after_match: STORY_BGM.aftermath,
+  // 勝負のあと（前半は勝敗で台本が分かれる。後半は共通）
+  ...Object.fromEntries([
+    "ch5_doctor_after_match", "ch5_doctor_after_match_loss", "ch5_doctor_after_match_loss_close",
+    "ch5_doctor_after_match_tie", "ch5_doctor_cocreation",
+  ].map(id => [id, STORY_BGM.aftermath])),
   // エンディングの会話（スタッフロール前）。修羅場は沈んだ既存曲のまま。
   ...Object.fromEntries([
     "ending_start", "ending_normal",
@@ -192,11 +201,29 @@ export const CH5_MATCH_SCENES = Object.freeze({
   loss: "ch5_second_cup_defeat",
 });
 
-// 後日談（story_routes の after_match と同じ順）。
+// 後日談（story_routes の after_match と同じ順）。「勝負のあと」は前半（尋ねる・票が割れる・9000は止めない）と
+// 後半（検品札・エンコード・博士の過去・一緒に作る一台）の二場面（STK04）。
+// 前半は勝敗で台本が分かれる（下の CH5_AFTER_MATCH_OPENINGS）。この表の先頭は勝ったときの台本。
 export const CH5_AFTERMATH = Object.freeze([
   { id: "ch5_doctor_after_match", label: "勝負のあと", location: "会場" },
+  { id: "ch5_doctor_cocreation", label: "片づけのあと", location: "会場" },
   { id: "ch5_return_to_tonari", label: "tonariへ戻る", location: "tonari" },
 ].map(scene => Object.freeze(scene)));
+// 「勝負のあと」を二つに分ける前は、後日談が2場面だった。読み終えた旧保存の aftermath: 2 はそのまま受け入れる。
+// 旧保存が「tonariへ戻る」の手前（aftermath: 1）で止まっていた場合だけ、後半をもう一度読んでから戻る。
+const LEGACY_AFTERMATH_LENGTH = 2;
+
+// 「勝負のあと」前半の台本（story_routes の after_match[0] と after_match_loss_or_tie）。
+// 負け・同数では、勝った博士を折れさせない（STK03）。博士の最初の一言は実際の挙手に合わせる:
+// 二台目で9000の挙手が一台目より減った負けは「票が減りました」、減っていない負けは「票が割れました」。
+export const CH5_AFTER_MATCH_OPENINGS = Object.freeze({
+  win: "ch5_doctor_after_match",
+  loss: "ch5_doctor_after_match_loss",
+  lossClose: "ch5_doctor_after_match_loss_close",
+  tie: "ch5_doctor_after_match_tie",
+});
+// 前半の末尾に、勝敗共通で続ける千須への返事（STK05。読了の確定は親場面と一緒）。
+export const CH5_AFTER_MATCH_TAIL = "ch5_sui_after_match";
 
 // フィナーレで再生しうる ending の全場面。ending_relationship_pending は
 // スタッフロール後段（Q20）側なので含めない。
@@ -242,6 +269,7 @@ export const CH5_SCENE_FILES = Object.freeze({
     "ch5_schedule_contact", "ch5_timeout",
     ...Object.values(CH5_MATCH_SCENES),
     ...CH5_AFTERMATH.map(scene => scene.id),
+    ...Object.values(CH5_AFTER_MATCH_OPENINGS), CH5_AFTER_MATCH_TAIL,
   ].filter((id, index, all) => all.indexOf(id) === index)),
   ending: Object.freeze([...CH5_ENDING_IDS, CH5_POST_ENDING.pending]),
   relationship_conflicts: Object.freeze([...CONFLICT_CALLS, CH5_POST_ENDING.open, ...CONFLICT_REACTIONS, CH5_POST_ENDING.close,
@@ -274,12 +302,21 @@ function isValidPostEnding(post) {
   return unresolved.length === ahead.length && unresolved.every((id, index) => id === ahead[index]);
 }
 
-/** 旧保存の3場面も受け入れ、新規保存は本名の場面を最後に読む。 */
+const EPILOGUE_IDS = Object.freeze(CH5_ENDING_IDS.filter(id => id.startsWith("epilogue_")));
+
+/**
+ * フィナーレの並び: 開始 → 中間 → 日常 → 鉄仮面さんの名乗り。
+ * 中間は共通の賄い（ending_normal）。恋人が一人なら、賄いを読んでからその人の後日談を続ける（置き換えない。STK11）。
+ * 旧保存の並び（名乗りの無い3場面、賄いを読まずに後日談だけを挟む並び）も引き続き読める。
+ */
 function isValidFinaleScenes(scenes) {
-  return Array.isArray(scenes) && [3, FINALE_LENGTH].includes(scenes.length)
-    && scenes.every(id => CH5_ENDING_IDS.includes(id))
-    && scenes[0] === "ending_start" && scenes[2] === "ending_daily_smoke"
-    && (scenes.length === 3 || scenes[3] === "ending_salaryman_name");
+  if (!Array.isArray(scenes) || new Set(scenes).size !== scenes.length
+    || !scenes.every(id => CH5_ENDING_IDS.includes(id)) || scenes[0] !== "ending_start") return false;
+  const body = scenes.at(-1) === "ending_salaryman_name" ? scenes.slice(1, -1) : scenes.slice(1);
+  if (body.at(-1) !== "ending_daily_smoke") return false;
+  const middle = body.slice(0, -1);
+  if (middle.length === 1) return middle[0] === "ending_normal" || EPILOGUE_IDS.includes(middle[0]);
+  return middle.length === 2 && middle[0] === "ending_normal" && EPILOGUE_IDS.includes(middle[1]);
 }
 
 // ---- 章の入口 -----------------------------------------------------------------------
@@ -321,7 +358,8 @@ export function chapterFiveProgress(value) {
     && (progress.scheduleDecision === null || SCHEDULE_BRANCHES.includes(progress.scheduleDecision))
     && integer(progress.aftermath, 0, CH5_AFTERMATH.length)
     && (progress.part === "aftermath" ? progress.aftermath < CH5_AFTERMATH.length
-      : !["finale", "cleared"].includes(progress.part) || progress.aftermath === CH5_AFTERMATH.length)
+      : !["finale", "cleared"].includes(progress.part)
+        || [LEGACY_AFTERMATH_LENGTH, CH5_AFTERMATH.length].includes(progress.aftermath))
     && integer(progress.finale, 0, progress.finaleScenes?.length ?? FINALE_LENGTH)
     && (progress.part !== "finale" || progress.finale < (progress.finaleScenes?.length ?? FINALE_LENGTH))
     && (progress.part !== "cleared" || progress.finale === progress.finaleScenes?.length)
@@ -429,7 +467,7 @@ export function chapterFiveLoverEcho(value, id, { milestoneDue = false } = {}) {
 export const CH5_LIME_CONDITION = "ch5_milestone";
 export const CH5_LIME_MILESTONES = Object.freeze({
   prep: "prep",               // 日程が決まった夜（scheduled のカード）
-  afterMatch: "after_match",  // 勝負のあと、tonari へ戻る前（後日談の2場面目のカード）
+  afterMatch: "after_match",  // 勝負のあと、tonari へ戻る前（後日談の最後の場面のカード）
 });
 
 function limeMilestoneOpen(progress, milestone) {
@@ -558,6 +596,34 @@ export function chapterFiveMatchOutcome(value) {
   if (progress.secondCup != null) return secondCupOutcome(progress.secondCup);
   if (progress.read[CH5_MATCH_SCENES.win] === true) return "win";
   return null;
+}
+
+// ---- 勝負のあと（後日談）-------------------------------------------------------------
+/** 「勝負のあと」前半の台本。勝敗と、二台目で9000の挙手が一台目より減ったかで決まる（保存済みの挙手を読むだけ）。 */
+function afterMatchOpening(progress) {
+  const cup = progress.secondCup;
+  // 二本目の記録が無いのは勝ち固定の頃の旧保存だけ（負け・同数は記録なしでは確定できない）。
+  const outcome = cup != null ? secondCupOutcome(cup) : progress.won === false ? "loss" : "win";
+  if (outcome === "win") return CH5_AFTER_MATCH_OPENINGS.win;
+  if (outcome === "tie") return CH5_AFTER_MATCH_OPENINGS.tie;
+  return cup != null && cup.votes.machine < CH5_FIRST_CUP_VOTES.machine
+    ? CH5_AFTER_MATCH_OPENINGS.lossClose : CH5_AFTER_MATCH_OPENINGS.loss;
+}
+
+function aftermathScene(progress) {
+  const scene = CH5_AFTERMATH[progress.aftermath];
+  return progress.aftermath === 0 ? Object.freeze({ ...scene, id: afterMatchOpening(progress) }) : scene;
+}
+
+/** 後日談で今読む場面（{ id, label, location }）。前半は勝敗に合う台本のID。後日談の外では null。 */
+export function chapterFiveAftermathScene(value) {
+  const progress = chapterFiveProgress(value);
+  return progress.part === "aftermath" ? aftermathScene(progress) : null;
+}
+
+/** 場面の末尾に必ず続ける台本（勝敗で分かれる「勝負のあと」前半の、共通の締め）。読了の確定は親場面と一緒。 */
+export function chapterFiveSceneTail(id) {
+  return Object.values(CH5_AFTER_MATCH_OPENINGS).includes(id) ? [CH5_AFTER_MATCH_TAIL] : [];
 }
 
 // ---- フィナーレ ---------------------------------------------------------------------
@@ -796,7 +862,8 @@ export function completeChapterFiveScene(value, id) {
     return false;
   }
   if (part === "aftermath") {
-    if (CH5_AFTERMATH[progress.aftermath]?.id !== id) return false;
+    // 前半は勝敗に合う台本だけを確定できる（負けた保存で勝ちの台本を読んだことにしない）。
+    if (aftermathScene(progress).id !== id) return false;
     progress.read[id] = true;
     progress.aftermath += 1;
     if (progress.aftermath === CH5_AFTERMATH.length) {

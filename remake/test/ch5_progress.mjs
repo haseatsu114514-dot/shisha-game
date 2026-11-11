@@ -14,7 +14,8 @@ import { CH5_SCENE_BG, CH5_SCENE_BGM, CH5_DEFAULT_BGM, CH5_PROLOGUE, CH5_FREE_SC
   chapterFiveLimeDue, CH5_CREDITS_FLAG, chapterFiveCreditsPending, recordChapterFiveCredits,
   chapterFiveTrueEndReached, CH5_POST_ENDING, CH5_CONFLICT_SCENES, CH5_TALK_SCENES, chapterFivePostEndingContext,
   chapterFivePostEndingPlan, chapterFivePostEndingUndecided, beginChapterFivePostEnding, chapterFivePostEndingNext,
-  chapterFivePostEndingUnresolved, completeChapterFivePostEnding, CH5_CALL_SCENES, CH5_MASHIRO_LOVER_ECHO, chapterFiveLoverEcho } from "../js/chapters/ch5-progress.js";
+  chapterFivePostEndingUnresolved, completeChapterFivePostEnding, CH5_CALL_SCENES, CH5_MASHIRO_LOVER_ECHO, chapterFiveLoverEcho,
+  CH5_AFTER_MATCH_OPENINGS, CH5_AFTER_MATCH_TAIL, chapterFiveAftermathScene, chapterFiveSceneTail } from "../js/chapters/ch5-progress.js";
 
 const readData = name => JSON.parse(readFileSync(new URL(`../../data/${name}.json`, import.meta.url)));
 const manifest = JSON.parse(readFileSync(new URL("../data/manifest.json", import.meta.url)));
@@ -56,7 +57,15 @@ assert.equal(CH5_MATCH_SCENES.beforeSecond, r5.second_cup[0]);
 assert.equal(CH5_MATCH_SCENES.win, r5.on_win[0]);
 assert.equal(CH5_MATCH_SCENES.loss, r5.on_loss_or_tie[0]);
 assert.deepEqual(CH5_AFTERMATH.map(scene => scene.id), r5.after_match);
-for (const key of ["start", "normal", "daily"]) assert(CH5_ENDING_IDS.includes(routes.ending[key]), key);
+// 勝負のあと（STK03・STK04）: 前半は勝敗で台本が分かれ、後半と帰店は共通。千須への返事は前半の末尾に続ける。
+assert.deepEqual(r5.after_match, ["ch5_doctor_after_match", "ch5_doctor_cocreation", "ch5_return_to_tonari"]);
+assert.equal(CH5_AFTER_MATCH_OPENINGS.win, r5.after_match[0]);
+assert.deepEqual([CH5_AFTER_MATCH_OPENINGS.loss, CH5_AFTER_MATCH_OPENINGS.lossClose, CH5_AFTER_MATCH_OPENINGS.tie],
+  r5.after_match_loss_or_tie);
+assert.deepEqual([CH5_AFTER_MATCH_TAIL], r5.after_match_tail);
+for (const id of [...Object.values(CH5_AFTER_MATCH_OPENINGS), CH5_AFTER_MATCH_TAIL])
+  assert(connected.includes(id), `${id} is loaded by ch5`);
+for (const key of ["start", "normal", "daily", "salaryman_name"]) assert(CH5_ENDING_IDS.includes(routes.ending[key]), key);
 for (const id of routes.heroine_ids) assert(CH5_ENDING_IDS.includes(routes.romance[id].epilogue), id);
 // スタッフロールの後（IR32）: 修羅場と話し直しの場面は story_routes の conflict / romance と同じ。
 assert.deepEqual(CH5_POST_ENDING, { open: routes.conflict.open, close: routes.conflict.close, pending: routes.conflict.pending_ending });
@@ -118,9 +127,18 @@ function toAftermath() {
   assert.equal(completeChapterFiveScene(value, CH5_MATCH_SCENES.afterglow), true);
   return value;
 }
+/** 後日談を、今読む場面（前半は勝敗に合う台本）の順に最後まで読む。読んだIDを返す。 */
+function readAftermath(value) {
+  const order = [];
+  for (let scene; (scene = chapterFiveAftermathScene(value));) {
+    assert.equal(completeChapterFiveScene(value, scene.id), true, scene.id);
+    order.push(scene.id);
+  }
+  return order;
+}
 function toFinale() {
   const value = toAftermath();
-  for (const scene of CH5_AFTERMATH) assert.equal(completeChapterFiveScene(value, scene.id), true, scene.id);
+  assert.deepEqual(readAftermath(value), CH5_AFTERMATH.map(scene => scene.id), "A win reads the table as it is");
   return value;
 }
 
@@ -369,9 +387,158 @@ for (const [total, category, expected] of [[90, "steady", "win"], [76, "recovere
   rejects(tied, v => completeChapterFiveScene(v, CH5_MATCH_SCENES.win));
   assert.equal(completeChapterFiveScene(tied, CH5_MATCH_SCENES.loss), true);
   assert.equal(tied.flags._ch5.won, false);
-  for (const scene of CH5_AFTERMATH) assert.equal(completeChapterFiveScene(tied, scene.id), true, scene.id);
+  assert.deepEqual(readAftermath(tied), [CH5_AFTER_MATCH_OPENINGS.tie, "ch5_doctor_cocreation", "ch5_return_to_tonari"]);
   assert.equal(tied.flags._ch5.part, "finale");
   roundTrip(tied);
+}
+
+// 勝負のあと・前半（STK03）: 勝った博士を折れさせない。台本は勝敗と、二台目で9000の挙手が一台目より減ったかで決まる。
+{
+  const afterMatch = (cup, { legacy = false } = {}) => {
+    const match = toBeforeSecond();
+    if (legacy) { delete match.flags._ch5.secondCup; match.flags._ch5.read[CH5_MATCH_SCENES.win] = true; }
+    else assert.equal(recordChapterFiveSecondCup(match, cup), true);
+    const outcome = chapterFiveMatchOutcome(match);
+    for (const id of outcome === "win" ? [CH5_MATCH_SCENES.win, CH5_MATCH_SCENES.afterglow] : [CH5_MATCH_SCENES.loss]) {
+      if (match.flags._ch5.read[id] !== true) assert.equal(completeChapterFiveScene(match, id), true, id);
+    }
+    assert.equal(match.flags._ch5.part, "aftermath");
+    return match;
+  };
+  const cases = [
+    [{ total: 90, category: "steady" }, "win", CH5_AFTER_MATCH_OPENINGS.win],
+    [{ total: 76, category: "recovered" }, "tie", CH5_AFTER_MATCH_OPENINGS.tie],
+    // 合計は9000だが、二台目の9000の挙手は一台目（21）より少ない 20 → 「票が減りました」
+    [{ total: 74, category: "recovered" }, "loss", CH5_AFTER_MATCH_OPENINGS.lossClose],
+    // 二台目も9000の挙手が減っていない負け → 「票が割れました」（減ったとは言わない）
+    [{ total: 72, category: "offband" }, "loss", CH5_AFTER_MATCH_OPENINGS.loss],
+    [{ total: 55, category: "offband" }, "loss", CH5_AFTER_MATCH_OPENINGS.loss],
+    [{ total: 95, category: "steady", failed: true }, "loss", CH5_AFTER_MATCH_OPENINGS.loss],
+  ];
+  for (const [cup, outcome, opening] of cases) {
+    const save = afterMatch(cup);
+    assert.equal(chapterFiveMatchOutcome(save), outcome, JSON.stringify(cup));
+    const votes = chapterFiveVoteTally(save).second.machine;
+    assert.equal(opening === CH5_AFTER_MATCH_OPENINGS.lossClose || opening === CH5_AFTER_MATCH_OPENINGS.tie,
+      outcome !== "win" && votes < CH5_FIRST_CUP_VOTES.machine, `${opening} must match the recorded hands (${votes})`);
+    assert.deepEqual(chapterFiveAftermathScene(save), { ...CH5_AFTERMATH[0], id: opening });
+    // 勝敗に合わない前半は確定できない（負けた保存に、博士が折れる勝ちの台本を読ませない）。
+    for (const other of Object.values(CH5_AFTER_MATCH_OPENINGS).filter(id => id !== opening))
+      rejects(save, v => completeChapterFiveScene(v, other));
+    rejects(save, v => completeChapterFiveScene(v, CH5_AFTER_MATCH_TAIL));
+    rejects(save, v => completeChapterFiveScene(v, "ch5_doctor_cocreation"));
+    // 保存→読み込みしても同じ台本。後半と帰店は勝敗共通。
+    const resumed = JSON.parse(JSON.stringify(save));
+    assert.deepEqual(readAftermath(resumed), [opening, "ch5_doctor_cocreation", "ch5_return_to_tonari"]);
+    assert.equal(resumed.flags._ch5.part, "finale");
+    assert.equal(resumed.flags._ch5.aftermath, CH5_AFTERMATH.length);
+    assert.equal(chapterFiveAftermathScene(resumed), null, "No aftermath scene outside the aftermath");
+    roundTrip(resumed);
+  }
+  // 勝ち固定の頃の旧保存（二本目の記録なし）は勝ちの台本。
+  assert.equal(chapterFiveAftermathScene(afterMatch(null, { legacy: true })).id, CH5_AFTER_MATCH_OPENINGS.win);
+  assert.equal(chapterFiveAftermathScene(toBeforeSecond()), null);
+  // 千須への返事は、どの前半の末尾にも同じ台本を続ける。ほかの場面には足さない。
+  for (const id of Object.values(CH5_AFTER_MATCH_OPENINGS)) assert.deepEqual(chapterFiveSceneTail(id), [CH5_AFTER_MATCH_TAIL]);
+  for (const id of ["ch5_doctor_cocreation", "ch5_return_to_tonari", CH5_MATCH_SCENES.loss, CH5_AFTER_MATCH_TAIL])
+    assert.deepEqual(chapterFiveSceneTail(id), []);
+
+  // 台本: 負け・同数の三つは、博士の最初の2行だけが違う。勝った博士は折れない。9000 はどの結果でも「先に尋ねます」。
+  const lines = id => files.ch5_main.find(row => row.dialogue_id === id).lines;
+  const texts = id => lines(id).map(line => line.text);
+  const { win, loss, lossClose, tie } = CH5_AFTER_MATCH_OPENINGS;
+  for (const id of [lossClose, tie]) {
+    assert.equal(lines(id).length, lines(loss).length, id);
+    assert.deepEqual(lines(id).filter((_, index) => index !== 1 && index !== 2),
+      lines(loss).filter((_, index) => index !== 1 && index !== 2), `${id}: only the doctor's first two lines differ`);
+    for (const index of [1, 2]) assert.equal(lines(id)[index].speaker, "dr_kemuri", id);
+  }
+  assert.equal(texts(lossClose)[1], "合計は、9000です。……なのに、二台目の票が減りました");
+  assert.equal(texts(lossClose)[2], "同じ精度で出しました。減る理由が、記録にありません");
+  assert(/^合計は、同数です。/.test(texts(tie)[1]) && texts(tie)[1].includes("9000の票が減りました"), texts(tie)[1]);
+  assert(/^合計は、9000です。/.test(texts(loss)[1]) && !texts(loss)[1].includes("減"), "A wide loss must not claim 9000 lost hands");
+  assert(!texts(loss)[2].includes("減"), texts(loss)[2]);
+  for (const id of [loss, lossClose, tie]) {
+    assert(texts(id).includes("あの人、今日は時間があるって言ってました"), id);
+    assert(!texts(id).some(text => /正解の味|誤差だと思っていた|おめでとう/.test(text)), `${id}: the doctor must not concede`);
+    assert(!lines(id).some(line => line.face === "evil"), `${id}: no villain face`);
+    assert(!lines(id).some(line => line.speaker === "hajime" && /^（/.test(line.text)), `${id}: no added monologue`);
+  }
+  for (const id of [win, loss, lossClose, tie])
+    assert(lines(id).some(line => line.speaker === "shisha_9000" && line.text === "記録にない項目です。次回から、先に尋ねます"), id);
+  // 前半（勝ち）は元の11行のまま。検品札から先は後半へ移した（STK04）。
+  assert.equal(lines(win).length, 11);
+  assert.equal(texts(win).at(-1), "要ると思います。俺も、あの一台から習いたいです");
+  assert(!texts(win).some(text => /検品札|エンコード/.test(text)));
+  // 千須への返事（STK05）: 採点の言い方にしない。
+  const tail = lines(CH5_AFTER_MATCH_TAIL);
+  assert(tail.some(line => line.speaker === "hajime"
+    && line.text === "俺が作れない日は、つむぎが作ります。つむぎが作れない日は、俺が"));
+  assert(tail.some(line => line.speaker === "sui") && !tail.some(line => /点|合格|採点/.test(line.text)));
+  // 後半（勝敗共通）: 場面の区切りの地の文で始まり、検品札 → エンコード → 味の分からない審査員 → 一緒に作る一台。
+  const record = files.ch5_main.find(row => row.dialogue_id === "ch5_doctor_cocreation");
+  const recordTexts = record.lines.map(line => line.text);
+  assert.equal(record.lines[0].speaker, "");
+  assert.equal(recordTexts[1], "博士はケースを開けた。配線に、小さな検品札が付いている。");
+  const at = text => recordTexts.indexOf(text);
+  const order = ["記録を符号に変えることを、エンコードと言います",
+    "何を吸っても砂のように感じる時期があった。今も、戻ったとは言えない",
+    "私は三つの大会で、君に点を入れました。味は、分からないまま",
+    "熱と、煙と、吸った人の顔。それで、採点はできてしまった",
+    "だから、舌が利かなくても作れる一台が欲しかった。私のような作り手のためにも",
+    "……味は、まだ遠いです。でも、手は覚えていました"].map(at);
+  assert(order.every((index, i) => index >= 0 && (i === 0 || index > order[i - 1])), `order: ${order}`);
+  assert.equal(order.at(-1), record.lines.length - 1, "The scene still ends on the doctor's last line");
+  // 温度計の一言は、第2章で借りた保存だけ（フラグが無ければ分岐を読まない）。
+  const thermo = record.lines.find(line => line.type === "condition");
+  assert.deepEqual([thermo.condition_type, thermo.flag, thermo.next_true, thermo.next_false],
+    ["flag", "_stk_kemuri_thermo_borrowed", "thermo", undefined]);
+  assert.equal(record.lines.indexOf(thermo), order[3] + 1, "Right after the judging lines");
+  assert.deepEqual(record.branches.thermo.map(line => [line.speaker, line.text]),
+    [["dr_kemuri", "県大会の前に貸した温度計。あれが、9000のいちばん古い部品です"]]);
+  assert(!recordTexts.includes(record.branches.thermo[0].text), "The thermometer line is only in the branch");
+}
+
+// 二台目（STK02）: 初めて会う客に尋ねる4行は制作のあとに読む（場面本体から外す cue）。地の文の一行は場面本体に置く。
+{
+  const scene = files.ch5_main.find(row => row.dialogue_id === CH5_MATCH_SCENES.beforeSecond);
+  const held = scene.lines.filter(line => line.cue);
+  assert.deepEqual(held.map(line => line.cue), ["second_cup_adjust", ...Array(4).fill("second_cup_newcomer")]);
+  assert.deepEqual(scene.lines.slice(-5), held, "The held lines close the scene, in play order");
+  assert.deepEqual(held.slice(1).map(line => [line.speaker, line.text]), [
+    ["", "隣の席は、初めて見る顔だった。ホースを持つ手が、まだ硬い。"],
+    ["hajime", "初めてですよね。今日は、どのくらいゆっくりできますか"],
+    ["customer", "……三十分くらい。このあと、人と会うので"],
+    ["hajime", "なら、先にどうぞ。いちばん香るのは、今なので"],
+  ]);
+  const body = scene.lines.filter(line => !line.cue);
+  const voice = body.findIndex(line => line.text === "9000がなぞるのは、大会の日の俺だ。店の声は、記録にない。");
+  assert(voice > 0 && body[voice].speaker === "", "The line is narration, not Hajime's inner voice");
+  assert.equal(body[voice - 1].text, "うん。今日は時間、あるから");
+  // ch5.js は cue の行を場面本体から外し、制作のあとに読む。
+  const runner = readFileSync(new URL("../js/chapters/ch5.js", import.meta.url), "utf8");
+  for (const cue of ["second_cup_adjust", "second_cup_newcomer"]) assert(runner.includes(`"${cue}"`), cue);
+}
+
+// 開幕と決戦当日（STK01・STK05）: 博士が「借りものの集まり」と問い、千須が博士の側に立つ。当日は客席にいる。
+{
+  const lines = id => files.ch5_main.find(row => row.dialogue_id === id).lines;
+  const opening = lines("ch5_opening").map(line => [line.speaker || "", line.text || line.type]);
+  const at = text => opening.findIndex(([, body]) => body === text);
+  const s1 = ["（……言い返せない。でも、うなずけない）",
+    "炭の置き方はなるさん。待ち方はスティーブさん。記録で、全部たどれます",
+    "君の手も、借りものの集まりです。なら、9000と何が違いますか",
+    "（……違わない、のかもしれない）",
+    "ですから、比べましょう。同じ葉で二本勝負です"].map(at);
+  assert(s1.every((index, i) => index >= 0 && (i === 0 || index === s1[i - 1] + 1)), `S1 order: ${s1}`);
+  const sui = ["うちの新人は、三ヶ月で一人の夜に立つ。隣に、師匠はいない",
+    "その夜の客にも、外れのない一台を。私は、博士の側に立つ"].map(at);
+  assert(sui[0] > at("博士はケースをしまい、今日の注文をした。まずは客として、一台吸っていくという。") && sui[1] === sui[0] + 1);
+  for (const index of sui) assert.equal(opening[index][0], "sui");
+  // 第5章の独白は「（混ざったままで、俺だった）」の一度だけ。開幕に結論の独白を足さない。
+  const everyLine = files.ch5_main.flatMap(row => [...row.lines, ...Object.values(row.branches || {}).flat()]);
+  assert.equal(everyLine.filter(line => line.text === "（混ざったままで、俺だった）").length, 1);
+  assert(lines(CH5_MATCH_SCENES.arrival).some(line => line.speaker === "" && /千須/.test(line.text)), "Sensu sits in the audience");
 }
 
 // 勝ち固定の頃の保存（二本目の記録なしで勝ちの場面まで読んだ）は、そのまま余韻へ続けられる。
@@ -403,13 +570,47 @@ for (const [total, category, expected] of [[90, "steady", "win"], [76, "recovere
   roundTrip(lost);
 }
 
-// 後日談: 順序どおり2場面でフィナーレへ。phase は aftermath のまま。
+// 後日談: 順序どおり3場面（勝負のあと・前半 → 後半 → tonari へ戻る）でフィナーレへ。phase は aftermath のまま。
+assert.equal(CH5_AFTERMATH.length, 3);
 rejects(value, v => completeChapterFiveScene(v, CH5_AFTERMATH[1].id));
+rejects(value, v => completeChapterFiveScene(v, CH5_AFTERMATH[2].id));
 assert.equal(completeChapterFiveScene(value, CH5_AFTERMATH[0].id), true);
+rejects(value, v => completeChapterFiveScene(v, CH5_AFTERMATH[0].id));
+rejects(value, v => completeChapterFiveScene(v, CH5_AFTERMATH[2].id));
+roundTrip(value);
 assert.equal(completeChapterFiveScene(value, CH5_AFTERMATH[1].id), true);
+assert.equal(value.flags._ch5.part, "aftermath", "The second half does not end the aftermath");
+roundTrip(value);
+assert.equal(completeChapterFiveScene(value, CH5_AFTERMATH[2].id), true);
 assert.equal(value.flags._ch5.part, "finale");
 assert.equal(value.phase, "aftermath");
 roundTrip(value);
+
+// 旧保存（「勝負のあと」が一場面だった頃）: 読み終えた保存の aftermath: 2 はそのまま読める。
+// 「tonariへ戻る」の手前で止まっていた保存（aftermath: 1）は、後半を読んでから戻る。
+{
+  for (const reach of [save => save, save => {
+    assert.equal(beginChapterFiveFinale(save, ["ending_start", "ending_normal", "ending_daily_smoke"]), true);
+    for (const id of save.flags._ch5.finaleScenes) assert.equal(completeChapterFiveScene(save, id), true, id);
+    return save;
+  }]) {
+    const legacy = reach(toFinale());
+    legacy.flags._ch5.aftermath = 2;
+    delete legacy.flags._ch5.read.ch5_doctor_cocreation;
+    assert.doesNotThrow(() => chapterFiveProgress(JSON.parse(JSON.stringify(legacy))), legacy.flags._ch5.part);
+    for (const bad of [0, 1, 4]) {
+      const broken = JSON.parse(JSON.stringify(legacy));
+      broken.flags._ch5.aftermath = bad;
+      assert.throws(() => chapterFiveProgress(broken), `aftermath: ${bad} after the aftermath`);
+    }
+  }
+  const parked = toAftermath();
+  parked.flags._ch5.aftermath = 1;
+  parked.flags._ch5.read.ch5_doctor_after_match = true;
+  const resumed = JSON.parse(JSON.stringify(parked));
+  assert.deepEqual(readAftermath(resumed), ["ch5_doctor_cocreation", "ch5_return_to_tonari"]);
+  assert.equal(resumed.flags._ch5.part, "finale");
+}
 
 // フィナーレ: begin の検証を通った3場面だけが、順序どおり確定できる。
 rejects(value, v => completeChapterFiveScene(v, "ending_start"));
@@ -418,6 +619,14 @@ for (const bad of [
   ["ending_daily_smoke", "ending_normal", "ending_start"],
   ["ending_start", "ending_normal", "ch5_opening"],
   ["ending_start", "ending_normal", "ending_daily_smoke", "ending_start"],
+  // 中間は、賄い（ending_normal）か、賄いの後に恋人一人の後日談（STK11）。逆順・後日談2本・賄いの重複は受け付けない。
+  ["ending_start", "epilogue_minto", "ending_normal", "ending_daily_smoke", "ending_salaryman_name"],
+  ["ending_start", "epilogue_minto", "epilogue_rio", "ending_daily_smoke", "ending_salaryman_name"],
+  ["ending_start", "ending_normal", "ending_normal", "ending_daily_smoke", "ending_salaryman_name"],
+  ["ending_start", "ending_normal", "epilogue_minto", "epilogue_rio", "ending_daily_smoke", "ending_salaryman_name"],
+  ["ending_start", "ending_daily_smoke", "ending_salaryman_name"],
+  ["ending_start", "ending_salaryman_name", "ending_daily_smoke"],
+  ["ending_start", "ending_normal", "epilogue_minto", "ending_salaryman_name"],
 ]) rejects(value, v => beginChapterFiveFinale(v, bad));
 const FINALE = ["ending_start", "ending_normal", "ending_daily_smoke"];
 assert.equal(beginChapterFiveFinale(value, FINALE), true);
@@ -454,7 +663,7 @@ for (const won of [true, false]) {
   assert.equal(recordChapterFiveSecondCup(ended, won ? { total: 90, category: "steady" } : { total: 55, category: "offband" }), true);
   for (const id of won ? [CH5_MATCH_SCENES.win, CH5_MATCH_SCENES.afterglow] : [CH5_MATCH_SCENES.loss])
     assert.equal(completeChapterFiveScene(ended, id), true, id);
-  for (const scene of CH5_AFTERMATH) assert.equal(completeChapterFiveScene(ended, scene.id), true, scene.id);
+  assert.equal(readAftermath(ended).length, CH5_AFTERMATH.length);
   assert.equal(ended.flags._ch5.won, won);
   assert.equal(chapterFiveTrueEndReached(ended), false, `Not before the finale (won: ${won})`);
   assert.equal(beginChapterFiveFinale(ended, FINALE), true);
@@ -471,41 +680,75 @@ for (const won of [true, false]) {
   assert.equal(chapterFiveTrueEndReached(structuredClone(ended)), true, "Read back from the save");
 }
 
-// フィナーレ（恋人の epilogue が中間に来る分岐）も完走できる。
-{
+// フィナーレ（恋人の epilogue が入る分岐）も完走できる。賄い（ending_normal）を読んでから後日談へ進む（STK11）。
+// 賄いを読まずに後日談だけを挟む旧保存の並び（名乗りあり・なし）も、そのまま最後まで読める。
+for (const scenes of [
+  ["ending_start", "ending_normal", "epilogue_minto", "ending_daily_smoke", "ending_salaryman_name"],
+  ["ending_start", "epilogue_minto", "ending_daily_smoke", "ending_salaryman_name"],
+  ["ending_start", "epilogue_minto", "ending_daily_smoke"],
+]) {
   const withEpilogue = toFinale();
-  const scenes = ["ending_start", "epilogue_minto", "ending_daily_smoke"];
-  assert.equal(beginChapterFiveFinale(withEpilogue, scenes), true);
-  for (const id of scenes) assert.equal(completeChapterFiveScene(withEpilogue, id), true, id);
-  assert.equal(withEpilogue.flags._ch5.part, "cleared");
-  assert.equal(withEpilogue.flags._ch5_cleared, true);
+  assert.equal(beginChapterFiveFinale(withEpilogue, scenes), true, scenes.join());
+  for (const id of scenes.slice(0, -1)) assert.equal(completeChapterFiveScene(withEpilogue, id), true, id);
+  assert.equal(withEpilogue.flags._ch5.part, "finale");
+  const resumed = JSON.parse(JSON.stringify(withEpilogue));
+  roundTrip(resumed);
+  rejects(resumed, v => completeChapterFiveScene(v, scenes[0]));
+  assert.equal(completeChapterFiveScene(resumed, scenes.at(-1)), true);
+  assert.equal(resumed.flags._ch5.part, "cleared");
+  assert.equal(resumed.flags._ch5_cleared, true);
+  assert.equal(resumed.flags._ch5.finale, scenes.length);
+  roundTrip(resumed);
 }
 
-// 恋人の後日談の接続（#517）: 保存の lovers から中間の場面が決まる。恋人なし・複数・未解決は ending_normal。
+// 恋人の後日談の接続（#517・STK11）: 保存の lovers から中間の場面が決まる。賄い（ending_normal）は誰でも読み、
+// 恋人がちょうど一人ならその後に後日談を続ける。恋人なし・複数・未解決は賄いだけ（分岐の条件は変えていない）。
 {
   const routes = readData("story_routes");
   const ending = value => selectStoryEnding(routes, value, chapterFiveEndingContext(routes, value));
+  const COMMON = ["ending_start", "ending_normal", "ending_daily_smoke"];
   const single = toFinale();
   assert.deepEqual(chapterFiveEndingContext(routes, single), { present: [], accepted: [], unresolved: [] });
-  assert.deepEqual(ending(single), ["ending_start", "ending_normal", "ending_daily_smoke"], "No lover, no epilogue");
+  assert.deepEqual(ending(single), COMMON, "No lover, no epilogue");
   for (const id of routes.heroine_ids) {
     const loved = toFinale();
     loved.lovers = [id];
     const scenes = ending(loved);
-    assert.deepEqual(scenes, ["ending_start", routes.romance[id].epilogue, "ending_daily_smoke"], id);
-    assert(CH5_ENDING_IDS.includes(scenes[1]), `${scenes[1]} is loaded by ch5`);
-    assert.equal(beginChapterFiveFinale(loved, scenes), true, id);
+    assert.deepEqual(scenes, ["ending_start", "ending_normal", routes.romance[id].epilogue, "ending_daily_smoke"], id);
+    assert(CH5_ENDING_IDS.includes(scenes[2]), `${scenes[2]} is loaded by ch5`);
+    // ch5.js は、この並びの最後に鉄仮面さんの名乗りを足して固定する。
+    assert.equal(beginChapterFiveFinale(loved, [...scenes, routes.ending.salaryman_name]), true, id);
   }
   const duplicated = toFinale();
   duplicated.lovers = ["rio", "rio", "steve"];
-  assert.equal(ending(duplicated)[1], "epilogue_rio", "Duplicates and non-heroines are ignored");
+  assert.deepEqual(ending(duplicated), ["ending_start", "ending_normal", "epilogue_rio", "ending_daily_smoke"],
+    "Duplicates and non-heroines are ignored");
   const two = toFinale();
   two.lovers = ["minto", "tsumugi"];
-  assert.equal(ending(two)[1], "ending_normal", "Two lovers wait for the post-ending talk");
+  assert.deepEqual(ending(two), COMMON, "Two lovers wait for the post-ending talk");
   const unresolved = toFinale();
   unresolved.lovers = ["minto"];
   unresolved.flags._story_shuraba_unresolved = true;
-  assert.equal(ending(unresolved)[1], "ending_normal", "An unresolved conflict keeps the normal ending");
+  assert.deepEqual(ending(unresolved), COMMON, "An unresolved conflict keeps the normal ending");
+  // ending_normal: ペンを止めた理由（STK11）と、tonari の名前の由来の一往復。鉄仮面さんの名乗りと最後の画は変えない。
+  const endingLines = id => files.ending.find(row => row.dialogue_id === id).lines.map(line => [line.speaker || "", line.text]);
+  const normal = endingLines("ending_normal");
+  const at = text => normal.findIndex(([, body]) => body === text);
+  const order = ["裏返して、店の名前を書きかけたところで、ペンを止めた。",
+    "三ヶ月目に決めた名前は、もう書けなかった。あれは、俺ひとりの城の名前だった。",
+    "店はもう、お前が回してる。俺が言うことも、だいぶ減ったな",
+    "スミさん。tonariって、どうしてこの名前なんですか",
+    "客の隣に座れる店にしたかった、……それだけだ",
+    "tonariは任せた。お前の店の名前は、その先まで取っとけ"].map(at);
+  assert(order.every((index, i) => index >= 0 && (i === 0 || index === order[i - 1] + 1)), `ending_normal order: ${order}`);
+  assert.deepEqual(order.map(index => normal[index][0]), ["", "", "sumi", "hajime", "sumi", "sumi"]);
+  assert.deepEqual(endingLines("ending_salaryman_name").filter(([speaker]) => speaker).map(([, text]) => text), [
+    "ダブルアップルにミント少し、ですね", "……今日の、[pause]良かったよ", "……笑いました？",
+    "……表です。表克己。いつも、ありがとうございます", "ありがとうございます……また明日"]);
+  assert.deepEqual(endingLines("ending_salaryman_name").at(-1), ["", "客が帰ったあと、カウンターの一番古いトロフィーを拭いた。"]);
+  // 終幕を何度も閉じない（C9・STK27）: 日常の場面の次が名乗りなら、ch5.js はカードを挟まず続けて読む。並びと保存の形は変えない。
+  assert.match(readFileSync(new URL("../js/chapters/ch5.js", import.meta.url), "utf8"),
+    /FINALE_CONTINUES = Object\.freeze\(\{ ending_daily_smoke: "ending_salaryman_name" \}\)/);
 }
 
 // スタッフロールの後の修羅場と話し直し（IR32）: 恋人なし・1人は何も足さない。2人以上は共通のエンディング→スタッフロール→
@@ -539,7 +782,9 @@ for (const won of [true, false]) {
   // 恋人なし・1人: 並びは空で固定し、何も読まない（完了カード、初回はタイトルへ）。
   for (const lovers of [[], ["rio"]]) {
     const save = toCleared(lovers);
-    assert.equal(save.flags._ch5.finaleScenes[1], lovers.length ? "epilogue_rio" : "ending_normal");
+    assert.deepEqual(save.flags._ch5.finaleScenes, lovers.length
+      ? ["ending_start", "ending_normal", "epilogue_rio", "ending_daily_smoke"]
+      : ["ending_start", "ending_normal", "ending_daily_smoke"]);
     assert.equal(chapterFivePostEndingUndecided(save), false, "Not before the roll");
     rejects(save, v => beginChapterFivePostEnding(v, chapterFivePostEndingPlan(routes, v)));
     credits(save);
@@ -901,7 +1146,7 @@ for (const [base, change] of [
     save.inbox[0].done = true;
     assert.deepEqual(due(save, CH5_LIME_MILESTONES.prep), []);
   }
-  // 勝負のあと: 後日談の1場面目（博士）を読んでから、tonari へ戻る前だけ。勝ち・負けで同じ。
+  // 勝負のあと: 博士との二場面（前半・後半）を読んでから、tonari へ戻る前だけ。勝ち・負けで同じ。
   for (const save of [toAftermath(), (() => {
     const lost = toBeforeSecond();
     assert.equal(recordChapterFiveSecondCup(lost, { total: 55, category: "offband" }), true);
@@ -910,10 +1155,12 @@ for (const [base, change] of [
   })()]) {
     meet(save, "ch5_free_mashiro_visit", "ch5_free_eden_adam");
     assert.deepEqual(due(save, CH5_LIME_MILESTONES.afterMatch), [], "Not before the doctor's scene");
-    assert.equal(completeChapterFiveScene(save, CH5_AFTERMATH[0].id), true);
+    assert.equal(completeChapterFiveScene(save, chapterFiveAftermathScene(save).id), true);
+    assert.deepEqual(due(save, CH5_LIME_MILESTONES.afterMatch), [], "Not between the doctor's two scenes");
+    assert.equal(completeChapterFiveScene(save, CH5_AFTERMATH[1].id), true);
     assert.deepEqual(due(save, CH5_LIME_MILESTONES.afterMatch), ["lime_ch5_after_mashiro", "lime_ch5_after_adam"]);
     assert.deepEqual(due(save, CH5_LIME_MILESTONES.prep), []);
-    assert.equal(completeChapterFiveScene(save, CH5_AFTERMATH[1].id), true);
+    assert.equal(completeChapterFiveScene(save, CH5_AFTERMATH[2].id), true);
     assert.deepEqual(due(save, CH5_LIME_MILESTONES.afterMatch), [], "Not after returning to tonari");
   }
   // 第5章の場面で会っていない相手（つむぎ・みんと・凛想など）からは届かない。朝の配信条件にも乗らない。
