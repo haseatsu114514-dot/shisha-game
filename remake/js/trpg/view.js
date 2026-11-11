@@ -698,8 +698,8 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
         el("span.trpg-approach-meta", [
           el("b", { text: statLabel(approach.stat) + " ＋" + base, dataset: { stat: approach.stat } }),
           el("small", { text: "成功 約" + odds.success + "% · ひと手間 約" + odds.mixed + "%" }),
-          approach.id === bestId ? el("i.trpg-approach-best", { text: "おすすめ · いちばん成功しやすい", dataset: { test: "trpg-approach-best" } }) : null,
-          first ? el("i", { text: "初めての見せ場 · 盛り上がり＋1" }) : null,
+          approach.id === bestId ? el("i.trpg-approach-best", { text: "おすすめ", title: "いちばん成功しやすい", dataset: { test: "trpg-approach-best" } }) : null,
+          first ? el("i.trpg-approach-first", { text: "見せ場 ＋1", title: "初めて前に出る仲間。盛り上がり＋1" }) : null,
         ].filter(Boolean)),
       ]);
     });
