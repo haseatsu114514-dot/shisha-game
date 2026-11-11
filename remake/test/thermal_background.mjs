@@ -62,7 +62,11 @@ try {
   await page.evaluate(() => { T.session.stepPanel('pull','x'); T.session.setBenchTemperature(cs,.96); T.session.stepPanel('steam','蒸らし時間'); });
   assert.equal(await band(), 'cold');
   // 見出しは素材スキンより後の紫の帯で読める。台の上は煙だけで、ボウルは燃やさない。
-  assert.match(await page.locator('.bench-top').evaluate(e=>getComputedStyle(e).backgroundImage), /rgba\(46, 29, 69, 0\.96\d*\).*rgba\(34, 21, 52, 0\.96\d*\)/);
+  // 新しい配置（一枚の舞台・既定）は帯を消して背景の上に置き、見出しの影で読ませる。
+  const heading = await page.evaluate(() => ({ craftStage: document.body.classList.contains('craft-stage'),
+    band: getComputedStyle(document.querySelector('.bench-top')).backgroundImage, shadow: getComputedStyle(document.querySelector('.bench-mode')).textShadow }));
+  if (heading.craftStage) assert(heading.band === 'none' && heading.shadow !== 'none', JSON.stringify(heading));
+  else assert.match(heading.band, /rgba\(46, 29, 69, 0\.96\d*\).*rgba\(34, 21, 52, 0\.96\d*\)/);
   const layout = await page.evaluate(() => {
     const eq = document.querySelector('.worker-equipment'), pic = eq.querySelector('.thermal-picture').getBoundingClientRect(), bowl = eq.querySelector('.worker-bowl').getBoundingClientRect();
     return { first: eq.firstElementChild.classList.contains('thermal-picture'), base: pic.bottom, bowlTop: bowl.top, bowlBottom: bowl.bottom, top: pic.top, stage: document.querySelector('.bench-worker-stage').getBoundingClientRect().top };
@@ -225,8 +229,10 @@ try {
   await page.waitForFunction(() => parseFloat(document.querySelector('.pg-needle').dataset.pos) > 0);
   assert(await page.locator('[data-test="leaf-icon"]').isVisible(), 'the five-leaf life indicator must be visible');
   assert(await page.locator('[data-test="pull-count"]').isVisible(), 'the pull counter must be visible');
-  const boxes = await page.locator('.pull-summary > .pull-life').evaluateAll(ns => ns.map(n => n.getBoundingClientRect().left));
-  assert(boxes.length === 2 && boxes[0] < boxes[1], 'flavor life must sit left of the pull counter');
+  const boxes = await page.locator('.pull-summary > .pull-life').evaluateAll(ns => ns.map(n => n.getBoundingClientRect().toJSON()));
+  // 新しい配置（一枚の舞台・既定）は下の欄に2段で積む（上が葉の持ち、下が吸った回数）。旧配置は左右に並べる。
+  if (heading.craftStage) assert(boxes.length === 2 && boxes[0].bottom <= boxes[1].top + 1, `flavor life must sit above the pull counter: ${JSON.stringify(boxes)}`);
+  else assert(boxes.length === 2 && boxes[0].left < boxes[1].left, 'flavor life must sit left of the pull counter');
   await pullAt(45, 55); await pullAt(45, 55);
   assert.equal(await page.locator('[data-test="leaf-icon"]').getAttribute('data-hp'), '2', 'the first two pulls must not hurt the flavor');
   assert.equal(await page.locator('[data-test="pull-count"]').getAttribute('data-pulls'), '2');

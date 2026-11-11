@@ -1,6 +1,8 @@
 // 新版の縦持ち（LK11・2026-11-11 オーナー決定）: 縦長の画面では DS風の外枠を使い、上画面は新版と同じ高解像度の絵、
 // 下画面と本体のボタンはドット調のまま。横長の画面は今の新版のまま。未対応の場面では小さい横長の画面を出さず回転案内を出す。
 // 自動操作のブラウザの既定は旧版なので ?look=neo を付けて確かめる。
+// 第2〜5章（2026-11-11 オーナー「新版を広げる」）: 各章の会話・地図（第2章の初日の配達と店頭、日常の朝の行き先と駅、
+// 第3章の東京・場面カード、第4章のドバイ、第5章の地元）も外枠に写り、写せない画面（規則の紙など）は回転案内へ落ちる。
 import assert from "node:assert/strict";
 import { suite, baseURL } from "./support.mjs";
 
@@ -86,16 +88,22 @@ const watchShell = (page) => page.evaluate(() => {
 });
 const shellLog = (page) => page.evaluate(() => window.__shellLog.slice());
 
-async function playScene(page, id, { chapter = 1, bg = "res://assets/backgrounds/bg_tonari_inside_night.png" } = {}) {
-  await page.evaluate(async ([id, chapter, bg]) => {
+async function playScene(page, id, { chapter = 1, bg = "res://assets/backgrounds/bg_tonari_inside_night.png", file = "" } = {}) {
+  await page.evaluate(async ([id, chapter, bg, file]) => {
     const core = await import("./js/core/state.js");
     const s = core.newGame();
     Object.assign(s, { phase: "daily", chapter, day: 6, slot: 1 });
     for (const c of ["sumi", "tsumugi", "naru", "minto", "adam", "rio"]) s.met[c] = true;
+    // 第2章以降の台本は各章が後から読み込む（起動時は第1章の分だけ）ので、file の台本をここで読む
+    const { DB } = await import("./js/core/data.js");
+    if (file && !DB.dialogues[id]) {
+      const data = await (await fetch(`../data/dialogue/${file}.json`)).json();
+      for (const dialogue of data.dialogues) DB.dialogues[dialogue.dialogue_id] ||= dialogue;
+    }
     const { play } = await import("./js/vn/engine.js");
     (await import("./js/core/ui.js")).clearScreen();
     window.sceneRun = play(id, bg ? { bg } : {}).catch((error) => { window.sceneError = String(error.stack || error); });
-  }, [id, chapter, bg]);
+  }, [id, chapter, bg, file]);
   await page.locator("#vn.active .vn-text").waitFor({ state: "attached", timeout: 20000 });
 }
 
@@ -132,6 +140,163 @@ const residue = (page) => page.evaluate(() => {
     paint: document.querySelector(".retro-shell")?.dataset.paint || "",
   };
 });
+
+const arm = (page) => page.evaluate(async () => {
+  const vn = await import("./js/vn/engine.js");
+  vn.vnTest.turbo = true; vn.vnTest.choose = () => 0;
+});
+/** 外枠の下（回転案内の下）にある現行のボタンを押す。外枠が上に重なるので DOM の click で押す。 */
+const clickDom = (page, id) => page.evaluate((id) => document.querySelector(`[data-test="${id}"]`).click(), id);
+/** タイトルの「つづきから」で 1 番の枠を読み込む（保存は各章の seed が作る）。 */
+async function loadSlot(page) {
+  await page.reload();
+  await page.locator(shellFor("title")).waitFor({ timeout: 30000 });
+  await page.locator("#boot").waitFor({ state: "detached" });
+  await arm(page);
+  await page.locator(t("retro-title-load")).tap();
+  await page.locator(t("slot-0")).waitFor({ state: "attached" });
+  await clickDom(page, "slot-0");
+}
+
+/** 地図: 外枠の一覧が現行のピンと同じ行き先・同じ並びで、上の帯に日付とお金。上画面は高解像度の絵。 */
+async function assertMapMirrors(page, label, { picture = true } = {}) {
+  await page.locator(shellFor("map")).waitFor({ timeout: 60000 });
+  await page.waitForFunction(() => !document.querySelector('.map[data-revealing="true"]'), null, { timeout: 15000 });
+  const ids = () => page.evaluate(() => ({
+    pins: [...document.querySelectorAll("#screen > :not(.done) .map-pins > .spot-pin")].filter((pin) => pin.style.visibility !== "hidden").map((pin) => pin.dataset.spot),
+    rows: [...document.querySelectorAll(".retro-list > .retro-row:not(.retro-row-action)")].map((row) => row.dataset.spot),
+  }));
+  await page.waitForFunction(() => {
+    const pins = [...document.querySelectorAll("#screen > :not(.done) .map-pins > .spot-pin")].filter((pin) => pin.style.visibility !== "hidden").map((pin) => pin.dataset.spot);
+    const rows = [...document.querySelectorAll(".retro-list > .retro-row:not(.retro-row-action)")].map((row) => row.dataset.spot);
+    return pins.length > 0 && pins.join() === rows.join();
+  }, null, { timeout: 10000 }).catch(async () => assert.fail(`${label}: one row per pin ${JSON.stringify(await ids())}`));
+  const view = await page.evaluate(() => ({
+    names: [...document.querySelectorAll(".retro-list > .retro-row:not(.retro-row-action) .retro-row-name")].map((node) => node.textContent.trim()),
+    head: document.querySelector(".retro-maphead").textContent, money: window.__remake.state.money,
+  }));
+  assert(view.names.every(Boolean), `${label}: every row has a name ${JSON.stringify(view.names)}`);
+  assert(/DAY/.test(view.head) && view.head.includes(`¥${view.money.toLocaleString("ja-JP")}`), `${label}: the header band shows the day and money: ${view.head}`);
+  await assertShellFits(page, label);
+  if (picture) await assertHdTop(page, label);
+  assert.equal((await rootState(page)).hint, "none", `${label}: no rotate hint over the map`);
+  return (await ids()).pins;
+}
+
+/** 回転案内へ落ちていること（外枠を引っ込め、新版の文に差し替えた案内）。 */
+async function assertFallsBackToHint(page, label) {
+  await page.waitForFunction(() => document.documentElement.dataset.rotateGuard === "true", null, { timeout: 5000 });
+  const state = await rootState(page);
+  assert.equal(state.shell.hidden, true, `${label}: the shell is hidden`);
+  assert.equal(state.hint, "grid", `${label}: the rotate hint is shown`);
+  assert(state.replaced && state.hintText.includes(HINT_TEXT), `${label}: the hint text is replaced: ${state.hintText}`);
+}
+
+/** 第1章をクリアした直後から、第2章の初日（配達の地図）へ。 */
+async function seedChapterTwoFirstDay(page) {
+  await arm(page);
+  await page.evaluate(async () => {
+    const core = await import("./js/core/state.js");
+    const value = core.newGame();
+    Object.assign(value, { chapter: 1, phase: "cleared", day: 14, slot: 2, money: 45678, stamina: 67 });
+    value.owned.push("home_rig_set");
+    Object.assign(value.flags, { _ev_midcheck: true, _ch1_preview_seen: true, _minto_name_known: true, _minto_identity_known: true,
+      _lime_tut: 1, _lime_opened: true, _intro_dr_kemuri: true });
+    value.met = { hajime: true, sumi: true, minto: true, tsumugi: true, dr_kemuri: true };
+    Object.assign(core.config, { textSpeed: 4, bgmVolume: 0, seVolume: 0, voiceBlip: false }); core.saveConfig();
+    core.save();
+    (await import("./js/chapters/ch1.js")).setupHooks();
+    await (await import("./js/chapters/ch1.js")).showClear();
+  });
+  await page.locator(t("end-chapter2")).waitFor({ state: "attached" });
+  await clickDom(page, "end-chapter2");
+}
+
+/** 第2章の DAY2（配達を終えた後の日常）の朝から。 */
+async function seedChapterTwoDaily(page) {
+  await arm(page);
+  await page.evaluate(async () => {
+    const core = await import("./js/core/state.js");
+    const value = core.newGame();
+    Object.assign(value, { chapter: 2, phase: "daily", day: 15, slot: 2, money: 36000, stamina: 100, weatherSeed: 7, lastBaitoDay: 15 });
+    value.flags = { _rei_trpg_introduced: true, _ch1_cleared: true, _ch2_day1: { startDay: 15, stage: "complete", titleSeen: true },
+      _ch2_city_visit_c_station: true, _lime_tut: 1, _lime_opened: true, _hiyori_meeting_done: true, _hiyori_message_delivered: true };
+    value.stats = { technique: 31, sense: 31, guts: 31, charm: 31, insight: 31 };
+    value.met = { hajime: true, sumi: true, naru: true, adam: true, minto: true, tsumugi: true, ageha: true, kumicho: true, rei: true, volk: true };
+    value.contacts = ["sumi", "naru"];
+    for (const id of ["ageha", "kumicho", "rei"]) value.flags[`_intro_${id}`] = true;
+    Object.assign(core.config, { textSpeed: 4, bgmVolume: 0, seVolume: 0, voiceBlip: false }); core.saveConfig();
+    core.save();
+    (await import("./js/chapters/ch1.js")).setupHooks();
+    void (await import("./js/chapters/ch2.js")).resumeChapterTwo();
+  });
+}
+
+/** 第3章: 第2章をクリアして東京へ出発した朝の保存（ch3_tokyo_daily.mjs と同じ）。cards は旧い行程（場面カード）の自由時間の前。 */
+async function seedChapterThree(page, { cards = false } = {}) {
+  await page.evaluate(async (cards) => {
+    const core = await import("./js/core/state.js");
+    const progress = await import("./js/chapters/ch3-progress.js");
+    const value = core.newGame();
+    Object.assign(value, { chapter: 2, day: 28, slot: 0, phase: "cleared", money: 30000, stamina: 100, weatherSeed: 5, contacts: ["sumi"] });
+    value.flags = { _elapsed_calendar: true, _ch1_cleared: true, _ch2_cleared: true, _ch2_read_ch2_tournament_ageha_heart: true,
+      _ch2_preparation_started: true, _lime_opened: true, _lime_tut: 1,
+      _ch2_tournament: { stage: "complete", attempts: 1, history: [{ rank: 1, total: 88 }] } };
+    for (const who of ["hajime", "sumi", "pakki", "maezono", "dr_kemuri", "sui"]) value.flags[`_intro_${who}`] = true;
+    if (!progress.advanceToChapterThree(value)) throw new Error("Chapter boundary failed");
+    value.day += 3;
+    if (!progress.departChapterThree(value)) throw new Error("Departure failed");
+    value.flags._ch3_intro.titleSeen = true;
+    if (cards) Object.assign(value.flags._ch3_intro, { routeVersion: 2, prologueStep: 4 });
+    const plan = (await import("./js/daily/fortune-schedule.js")).fortunePlan({ seed: value.seed, chapter: 3 });
+    value.flags._fortune_wander = { chapter: 3, shown: plan.map(() => null), used: plan.map(() => true) };
+    Object.assign(core.config, { textSpeed: 4, bgmVolume: 0, seVolume: 0, voiceBlip: false }); core.saveConfig();
+    Object.assign(core.state, value); core.save();
+    if (cards) core.requestResumeOnBoot();
+  }, cards);
+}
+
+/** 第4章: ドバイに着いた朝の保存（ch4_dubai_daily.mjs と同じ。到着と宿の場面は読んだ後）。 */
+async function seedChapterFour(page) {
+  await page.evaluate(async () => {
+    const core = await import("./js/core/state.js");
+    const progress = await import("./js/chapters/ch4-progress.js");
+    const value = core.newGame();
+    Object.assign(value, { chapter: 3, day: 45, slot: 1, phase: "cleared", money: 50000, stamina: 100, weatherSeed: 5, lovers: [], contacts: ["sumi"] });
+    value.flags = { _elapsed_calendar: true, _ch1_cleared: true, _ch2_cleared: true, _ch3_cleared: true, _ch3_preview_seen: true,
+      _friend_ageha: true, _ch3_tournament_won: true, _lime_opened: true, _lime_tut: 1 };
+    value.stats = { technique: 60, sense: 60, guts: 60, charm: 60, insight: 60 };
+    for (const who of ["naru", "da_silva", "hajime", "sumi", "pakki", "sui", "dr_kemuri"]) value.flags[`_intro_${who}`] = true;
+    Object.assign(value.met, { naru: true });
+    if (!progress.advanceToChapterFour(value)) throw new Error("Chapter boundary failed");
+    value.flags._overseas_companion = { decided: true, companion: null, supports: [] };
+    value.flags._ch4.titleSeen = true;
+    for (const id of progress.CH4_PREP_SCENES) if (!progress.completeChapterFourScene(value, id)) throw new Error(id);
+    value.day += 3;
+    if (!progress.departChapterFour(value)) throw new Error("Departure failed");
+    for (const id of ["ch4_opening", "ch4_arrival_inn"]) progress.completeChapterFourScene(value, id);
+    Object.assign(core.config, { textSpeed: 4, bgmVolume: 0, seVolume: 0, voiceBlip: false }); core.saveConfig();
+    Object.assign(core.state, value); core.save();
+  });
+}
+
+/** 第5章: 地元の自由行動の日の保存。 */
+async function seedChapterFive(page) {
+  await page.evaluate(async () => {
+    const core = await import("./js/core/state.js");
+    const value = core.newGame();
+    Object.assign(value, { chapter: 5, day: 51, slot: 0, phase: "daily", money: 50000, stamina: 100, weatherSeed: 5, lovers: [], contacts: ["sumi"] });
+    value.flags = { _elapsed_calendar: true, _ch1_cleared: true, _ch2_cleared: true, _ch3_cleared: true, _ch4_cleared: true,
+      _ch2_preparation_started: true, _ch2_region: "home", _lime_opened: true, _lime_tut: 1,
+      _ch5: { startDay: 51, stage: 2, part: "free", titleSeen: true, read: { ch5_bridge_after_return: true, ch5_opening: true }, scheduleDecision: null,
+        aftermath: 0, finale: 0, finaleScenes: null, won: null, secondCup: null },
+      _ch5_match_scheduled: false, _ch5_match_started: false, _ch5_after_party: true, _ch5_region_started: true };
+    value.stats = { technique: 60, sense: 60, guts: 60, charm: 60, insight: 60 };
+    const plan = (await import("./js/daily/fortune-schedule.js")).fortunePlan({ seed: value.seed, chapter: 5 });
+    value.flags._fortune_wander = { chapter: 5, shown: plan.map(() => null), used: plan.map(() => true) };
+    Object.assign(core.config, { textSpeed: 4, bgmVolume: 0, seVolume: 0, voiceBlip: false }); core.saveConfig(); core.save();
+  });
+}
 
 await suite("look_neo_portrait", async (check) => {
   await check("portrait-title", async (page) => {
@@ -324,16 +489,206 @@ await suite("look_neo_portrait", async (check) => {
     await page.locator(shellFor("vn")).waitFor();
   }, { ...DESK_TALL, pageEntry: entry });
 
-  await check("chapter-two-keeps-the-original-rotate-hint", async (page) => {
+  await check("chapters-two-to-five-conversations-use-the-shell", async (page) => {
+    // 各章の保存の章で会話を出す（その章の場所の絵）。新版はどの章でも縦持ちの外枠（DS風は第1章だけ）
+    for (const [chapter, file, id, bg] of [
+      [2, "ch2_city", "ch2_city_ageha", "res://assets/backgrounds/bg_c_station_lobby.png"],
+      [3, "ch3_main", "ch3_opening", "res://assets/backgrounds/bg_mukai_shop.png"],
+      [4, "ch4_spots", "ch4_dubai_souq", "res://assets/backgrounds/bg_dubai_souq_day.png"],
+      [5, "ch5_tokyo", "ch5_tokyo_park_day", "res://assets/backgrounds/bg_home_day.png"],
+    ]) {
+      const label = `chapter ${chapter} conversation`;
+      if (chapter > 2) await page.reload();
+      await page.locator(shellFor("title")).waitFor({ timeout: 30000 });
+      await playScene(page, id, { chapter, bg, file });
+      await page.locator(shellFor("vn")).waitFor();
+      const state = await rootState(page);
+      assert.equal(await page.evaluate(() => window.__remake.state.chapter), chapter);
+      assert.equal(state.look, "neo", `${label}: stays on the new look`);
+      assert.equal(state.paint, "hd", `${label}: the high-resolution shell`);
+      assert.equal(state.guard, "", `${label}: no rotate hint`);
+      await assertShellFits(page, label);
+      await assertHdTop(page, label);
+      await typed(page);
+      const text = await page.evaluate(() => ({ classic: document.querySelector("#vn .vn-text").textContent, retro: document.querySelector(".retro-vn-text").textContent }));
+      assert(text.classic.length > 0);
+      assert.equal(text.retro, text.classic, `${label}: the same line`);
+      await page.locator(t("retro-bottom")).tap({ position: { x: 60, y: 60 } });
+      await page.waitForFunction((text) => document.querySelector("#vn .vn-text").textContent !== text || document.querySelector("#vn .vn-choices.show") || !document.body.classList.contains("in-vn"), text.classic);
+      assert.equal(await page.evaluate(() => window.sceneError || ""), "");
+    }
+  }, { ...TALL, pageEntry: entry });
+
+  await check("chapter-two-first-day-map-delivery-and-store-card", async (page) => {
     await page.locator(shellFor("title")).waitFor();
-    await playScene(page, "ch1_minto_second", { chapter: 2 });
+    await seedChapterTwoFirstDay(page);
+    await assertMapMirrors(page, "chapter 2 first day map");
+    // 配達先を選んで「行く」→ 配達の会話（幕も外枠のまま）→ 地図へ戻る
+    await page.locator(t("retro-row-ageha")).tap();
+    await page.waitForFunction(() => document.querySelector('[data-test="retro-go"]').getAttribute("aria-disabled") === "false");
+    await watchShell(page);
+    await page.locator(t("retro-go")).tap();
+    // 会話は速送り（vnTest.turbo）で進む。下画面は押さない（押した位置の行・ボタンを選んでしまうため）
+    await page.waitForFunction(() => window.__remake.state.flags._ch2_deliveries?.done?.ageha, null, { timeout: 30000 });
+    await assertMapMirrors(page, "chapter 2 map after the delivery");
+    const log = await shellLog(page);
+    assert(log.includes("vn") && !log.includes("off"), `the delivery conversation stays inside the shell: ${log}`);
+    assert.equal(await page.evaluate(() => window.__remake.state.flags._ch2_deliveries?.done?.ageha), true, "the delivery is done");
+    // 届けた店へもう一度: 店頭のカード（ボタンだけの画面）を下画面の選択肢に写す
+    await page.locator(t("retro-row-ageha")).tap();
+    await page.waitForFunction(() => document.querySelector('[data-test="retro-go"]').getAttribute("aria-disabled") === "false");
+    await page.locator(t("retro-go")).tap();
+    await page.locator(".retro-submenu[data-kind=\"stop\"]").waitFor({ timeout: 30000 });
+    const card = await page.evaluate(() => ({
+      classic: [...document.querySelectorAll("#screen .ch2-stop .ch2-actions button")].map((n) => [n.dataset.test, n.textContent.trim()]),
+      retro: [...document.querySelectorAll(".retro-menu-list > .retro-option")].map((n) => [n.dataset.test.replace(/^retro-/, ""), n.textContent.trim()]),
+      title: document.querySelector(".retro-status").textContent, h1: document.querySelector("#screen .ch2-stop h1").textContent,
+    }));
+    assert(card.classic.length >= 2);
+    assert.deepEqual(card.retro, card.classic);
+    assert(card.title.includes(card.h1), `the store name is the title: ${card.title}`);
+    await page.locator(t("retro-ch2-main-back-map")).tap();
+    await assertMapMirrors(page, "chapter 2 map after the store card");
+  }, { ...TALL, pageEntry: entry });
+
+  await check("chapter-two-daily-morning-dialog-and-station", async (page) => {
+    await page.locator(shellFor("title")).waitFor();
+    await seedChapterTwoDaily(page);
+    // 朝の行き先の小窓（文と選択肢だけ）は下画面の選択肢に写す
+    await page.locator(".retro-submenu[data-kind=\"dialog\"]").waitFor({ timeout: 30000 });
+    const dialog = await page.evaluate(() => ({
+      classic: [...document.querySelectorAll("#modal.show .modal-actions > button")].map((n) => n.textContent.trim()),
+      retro: [...document.querySelectorAll(".retro-menu-list > .retro-option")].map((n) => n.textContent.trim()),
+      title: document.querySelector(".retro-status").textContent, h3: document.querySelector("#modal.show h3").textContent,
+      caption: document.querySelector(".retro-caption").textContent, body: document.querySelector("#modal.show .modal-body").textContent.replace(/\s+/g, " ").trim(),
+    }));
+    assert.deepEqual(dialog.retro, dialog.classic);
+    assert(dialog.title.includes(dialog.h3));
+    assert.equal(dialog.caption, dialog.body);
+    assert.equal((await rootState(page)).hint, "none");
+    await page.locator(t("retro-ch2-morning-home")).tap();
+    const home = await assertMapMirrors(page, "chapter 2 home map");
+    assert(home.includes("station"), "the station is one of the rows");
+    // 駅: 行き先 → 乗車の確認 → 柚ヶ谷の地図（案内の箱のボタンを一覧の先頭に写す）
+    await watchShell(page);
+    await page.locator(t("retro-row-station")).tap();
+    await page.locator(t("retro-action-station-destination-widehanga")).tap();
+    await page.locator(t("retro-action-station-confirm")).tap();
+    await page.waitForFunction(() => document.querySelector('#screen > :not(.done).map[data-station-arrived="widehanga"]'), null, { timeout: 30000 });
+    const city = await assertMapMirrors(page, "chapter 2 widehanga map");
+    assert.notDeepEqual(city, home);
+    assert.equal(await page.evaluate(() => window.__remake.state.money), 35800);
+    const log = await shellLog(page);
+    assert(!log.includes("off"), `the train ride stays inside the shell: ${log}`);
+  }, { ...TALL, pageEntry: entry });
+
+  await check("chapter-three-rule-sheet-falls-back-and-tokyo-map", async (page) => {
+    await page.locator(shellFor("title")).waitFor();
+    await seedChapterThree(page);
+    await loadSlot(page);
+    // 規則の紙（読み物の小窓）は一言に縮められないので回転案内へ
+    await page.locator(t("rule-sheet")).waitFor({ state: "attached", timeout: 60000 });
+    await assertFallsBackToHint(page, "rule sheet");
+    await clickDom(page, "rule-sheet-close");
+    await page.waitForFunction(() => document.querySelector('.map:not(.done) [data-test="pin-ch3_tokyo_mukai"]'), null, { timeout: 60000 });
+    await assertMapMirrors(page, "chapter 3 tokyo map");
+    assert.equal((await rootState(page)).guard, "");
+  }, { ...TALL, pageEntry: entry });
+
+  await check("chapter-three-itinerary-card-and-tokyo-dialog", async (page) => {
+    await page.locator(shellFor("title")).waitFor();
+    await seedChapterThree(page, { cards: true });
+    await page.reload();
+    // 場面カード: 見出し・つぎの場所・ボタン（行程の「東京の地図」を含む）を写す
+    await page.locator(".retro-submenu[data-kind=\"card\"]").waitFor({ timeout: 40000 });
+    const card = await page.evaluate(() => ({
+      classic: [...document.querySelectorAll("#screen .ch3-wayfinding .ch3-wayfinding-map, #screen main.ch2-contest > .ch2-contest-actions button")]
+        .filter((n) => n.getClientRects().length).map((n) => n.dataset.test),
+      retro: [...document.querySelectorAll(".retro-menu-list > .retro-option")].map((n) => n.dataset.test.replace(/^retro-/, "")),
+      title: document.querySelector(".retro-status").textContent, h1: document.querySelector("#screen .ch2-contest-header h1").textContent,
+    }));
+    assert(card.classic.length >= 2);
+    assert.deepEqual(card.retro, card.classic);
+    assert(card.title.includes(card.h1));
+    await assertHdTop(page, "chapter 3 card");
+    // 東京の地図（最前面の <dialog>）は自分で出る。外枠を引っ込め、回転案内も出さない
+    await page.locator(t("retro-ch3-map-open")).tap();
+    await page.waitForFunction(() => document.querySelector("dialog[open]") && document.querySelector(".retro-shell").hidden);
+    await page.waitForTimeout(800);
+    const open = await rootState(page);
+    assert.equal(open.hint, "none", "no rotate hint over the Tokyo dialog");
+    assert.equal(open.guard, "");
+    assert.equal(open.hold, "hold");
+    await page.keyboard.press("Escape");
+    await page.locator(".retro-submenu[data-kind=\"card\"]").waitFor();
+    assert.equal(await page.locator(shellFor("menu")).count(), 1);
+  }, { ...TALL, pageEntry: entry });
+
+  await check("chapter-four-dubai-map", async (page) => {
+    await page.locator(shellFor("title")).waitFor();
+    await seedChapterFour(page);
+    await loadSlot(page);
+    await page.waitForFunction(() => document.querySelector('.map:not(.done) [data-test="pin-ch4_dubai_inn"]'), null, { timeout: 60000 });
+    await assertMapMirrors(page, "chapter 4 dubai map");
+    await page.locator(t("retro-row-ch4_dubai_souq")).tap();
+    await page.waitForFunction(() => document.querySelector('[data-test="retro-go"]').getAttribute("aria-disabled") === "false");
+    await watchShell(page);
+    await page.locator(t("retro-go")).tap();
+    // スークの会話（速送り）の後、屋台の小窓（文と選択肢だけ）も下画面の選択肢に写す
+    await page.locator(".retro-submenu[data-kind=\"dialog\"]").waitFor({ timeout: 30000 });
+    const log = await shellLog(page);
+    assert(log.includes("vn") && !log.includes("off"), `the trip to the souq stays inside the shell: ${log}`);
+    const stall = await page.evaluate(() => ({
+      classic: [...document.querySelectorAll("#modal.show .modal-actions > button")].map((n) => n.textContent.trim()),
+      retro: [...document.querySelectorAll(".retro-menu-list > .retro-option")].map((n) => n.textContent.trim()),
+    }));
+    assert(stall.classic.length >= 2);
+    assert.deepEqual(stall.retro, stall.classic);
+    await page.locator(".retro-menu-list > .retro-option").last().tap();
+    // 夜の地図の絵（bg_dubai_map_dusk）も写っていること（CI は remake/img の LFS を取得する）
+    await assertMapMirrors(page, "chapter 4 map after the souq");
+  }, { ...TALL, pageEntry: entry });
+
+  await check("chapter-five-home-map", async (page) => {
+    await page.locator(shellFor("title")).waitFor();
+    await seedChapterFive(page);
+    await loadSlot(page);
+    const pins = await assertMapMirrors(page, "chapter 5 home map");
+    assert(pins.includes("ch5_to_tokyo"), `the trip to Tokyo is a row: ${pins}`);
+  }, { ...TALL, pageEntry: entry });
+
+  await check("chapter-two-look-switching-restores-everything", async (page) => {
+    await page.locator(shellFor("title")).waitFor();
+    const setLook = (id) => page.evaluate(async (id) => (await import("./js/core/look.js")).setLook(id), id);
+    await playScene(page, "ch2_city_ageha", { chapter: 2, bg: "res://assets/backgrounds/bg_c_station_lobby.png", file: "ch2_city" });
+    await page.locator(shellFor("vn")).waitFor();
+    assert.deepEqual(await residue(page), { shells: 1, notes: 1, hints: 1, attrs: ["retro", "retroShell", "retroHint", "retroPaint"], paint: "hd" });
+    // 第2章の DS風は旧版で表示（DS風は第1章だけ）: 外枠も案内の差し替えも残らず、回転案内は元の文
+    await setLook("retro");
     await page.waitForFunction(() => document.documentElement.dataset.look === "classic" && !document.querySelector(".retro-shell"));
     await page.waitForFunction(() => document.documentElement.dataset.rotateGuard === "true");
-    const state = await rootState(page);
+    assert.deepEqual(await residue(page), { shells: 0, notes: 0, hints: 0, attrs: [], paint: "" });
+    let state = await rootState(page);
     assert.equal(state.hint, "grid");
     assert.equal(state.replaced, false);
     assert(state.hintText.includes("横向きでお楽しみください"), `the original hint text is back: ${state.hintText}`);
-    assert.deepEqual((await residue(page)).attrs, []);
+    assert.equal(state.viewportOpacity, "1");
+    // 新版へ戻すと、同じ会話のまま外枠へ戻る
+    await setLook("neo");
+    await page.locator(shellFor("vn")).waitFor();
+    await page.waitForFunction(() => !document.documentElement.dataset.rotateGuard);
+    assert.deepEqual(await residue(page), { shells: 1, notes: 1, hints: 1, attrs: ["retro", "retroShell", "retroHint", "retroPaint"], paint: "hd" });
+    assert.equal((await rootState(page)).hint, "none");
+    await assertHdTop(page, "back to the new look in chapter 2");
+    // 旧版: 何も残らない
+    await setLook("classic");
+    await page.waitForFunction(() => document.documentElement.dataset.look === "classic" && !document.querySelector(".retro-shell"));
+    await page.waitForFunction(() => document.documentElement.dataset.rotateGuard === "true");
+    assert.deepEqual(await residue(page), { shells: 0, notes: 0, hints: 0, attrs: [], paint: "" });
+    state = await rootState(page);
+    assert(state.hintText.includes("横向きでお楽しみください"));
+    assert.equal(state.viewportOpacity, "1");
+    assert.equal(await page.evaluate(() => window.sceneError || ""), "");
   }, { ...TALL, pageEntry: entry });
 
   await check("switching-looks-leaves-no-trace", async (page) => {

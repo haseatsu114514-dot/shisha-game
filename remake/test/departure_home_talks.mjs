@@ -201,7 +201,7 @@ const sharkModule = await loadWithStubs("remake/js/daily/samechan.js", {
   "../core/state.js": { save: () => {}, markMet: id => { shark.met[id] = true; }, timeOfDay: () => "night" },
   "../core/ui.js": { setBg: async () => {} },
   "../core/scene-motions.js": { sharkSwim: async swap => swap() },
-  "../core/stats.js": { gainAffinity: (id, n) => sharkAffinity.push([id, n]), affinityLevel: () => 2, releaseAffinity: () => 0,
+  "../core/stats.js": { gainAffinity: (id, n) => sharkAffinity.push([id, n]), visitAffinity: kind => ({ story: 16, talk: 8 })[kind], affinityLevel: () => 2, releaseAffinity: () => 0,
     ensureAffinityLevel: () => {}, earnStat: () => {}, addMoney: () => {}, addStamina: () => {}, STAMINA_LOW: 25 },
   "../vn/engine.js": { play: async scene => { sharkPlayed.push(typeof scene === "string" ? scene : scene.dialogue_id); return { id: scene }; }, isPlaying: () => false },
   "./bonds.js": { finaleAtVisit: () => false, playFinale: async () => false, BOND_FINALES: { samechan: { dialogue: "samechan_bond_finale" } } },
@@ -233,7 +233,7 @@ shark = sharkSave(3); sharkPlayed = []; sharkAffinity = [];
 assert.equal(await samechan.visitSamechan(spot), true);
 assert.deepEqual(sharkPlayed, ["ch3_prep_samechan"]);
 assert.equal(shark.flags._talk_seen_ch3_prep_samechan, true);
-assert.equal(shark.story.samechan, 3); assert.deepEqual(plain(sharkAffinity), [["samechan", 1]]);
+assert.equal(shark.story.samechan, 3); assert.deepEqual(plain(sharkAffinity), [["samechan", 8]]); // 送り出しの会話は通いの小会話と同じ（BLC01）
 shark.slot = 1; sharkPlayed = [];
 await samechan.visitSamechan(spot);
 assert(!sharkPlayed.includes("ch3_prep_samechan"), "read once");

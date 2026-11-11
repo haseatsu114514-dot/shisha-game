@@ -4465,6 +4465,18 @@
       "run": ["node remake/test/dubai_bonds.mjs"]
     },
     {
+      "id": "companion-time",
+      "title": "Later-chapter lover scenes: Dubai companion time at the inn, ch5 Rio showroom talks, ch5 Hiyori roaming (BLC08)",
+      "kind": "quick",
+      "run": ["node remake/test/companion_time.mjs"]
+    },
+    {
+      "id": "mashiro-time",
+      "title": "Mashiro lover time at mukai: once a day, rotating scenes, date-sized bond, milestones lv1-lv5 reachable (BLC03)",
+      "kind": "quick",
+      "run": ["node remake/test/mashiro_time.mjs"]
+    },
+    {
       "id": "board-notification-visibility-browser",
       "title": "Paper mastery/purchase notices and stable board selection, undo and saved lit markers",
       "kind": "browser",
@@ -4506,10 +4518,10 @@
     },
     {
       "id": "look-neo",
-      "title": "新版: 会話の帯と操作の札・地図とHUD・MENU・モーダル・タイトルの収まりと、現行へ戻した時に痕跡が残らないこと",
+      "title": "新版: 第1〜5章の会話の帯と操作の札・地図とHUD・MENU・場面カード・モーダル・タイトルの収まりと、旧版へ戻した時に痕跡が残らないこと",
       "kind": "browser",
-      "weight": 3.2,
-      "timeout": 9,
+      "weight": 5.5,
+      "timeout": 14,
       "paths": [
         "remake/css/look-neo.css",
         "remake/js/looks/**",
@@ -4529,6 +4541,11 @@
         "remake/js/scenes/title.js",
         "remake/js/scenes/saves.js",
         "remake/js/core/ui.js",
+        "remake/css/ch2-preview.css",
+        "remake/css/ch3-wayfinding.css",
+        "remake/js/core/chapter-card.js",
+        "remake/js/chapters/ch3-map.js",
+        "remake/js/chapters/ch3-wayfinding.js",
         "remake/test/browser/look_neo.mjs"
       ],
       "run": [
@@ -4537,18 +4554,29 @@
     },
     {
       "id": "look-neo-portrait",
-      "title": "新版の縦持ち: DS風の外枠と操作に高解像度の上画面・未対応の場面では回転案内・横長と第2章は今のまま",
+      "title": "新版の縦持ち: DS風の外枠と操作に高解像度の上画面・第1〜5章の会話と地図とカード・写せない画面では回転案内・横長は今のまま",
       "kind": "browser",
-      "weight": 1.6,
-      "timeout": 6,
+      "weight": 3.4,
+      "timeout": 10,
       "paths": [
         "remake/js/looks/**",
         "remake/css/look-retro.css",
         "remake/css/look-neo.css",
         "remake/js/core/look.js",
         "remake/js/core/rotate-guard.js",
+        "remake/js/core/chapter-card.js",
         "remake/js/vn/engine.js",
         "remake/js/daily/map.js",
+        "remake/js/daily/hud.js",
+        "remake/js/daily/station-travel.js",
+        "remake/js/chapters/ch2.js",
+        "remake/js/chapters/ch2-deliveries.js",
+        "remake/js/chapters/ch2-commute.js",
+        "remake/js/chapters/ch3-map.js",
+        "remake/js/chapters/ch3-scenes.js",
+        "remake/js/chapters/ch3-tokyo-daily.js",
+        "remake/js/chapters/ch4-dubai-daily.js",
+        "remake/js/chapters/ch5-daily.js",
         "remake/js/scenes/title.js",
         "remake/js/core/ui.js",
         "remake/test/browser/look_neo_portrait.mjs"

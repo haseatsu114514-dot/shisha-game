@@ -1408,7 +1408,9 @@ await suite("growth-levelup", async (runCheck) => {
     await page.locator("#modal.show button", { hasText: "答えを返しに行く" }).click();
     await readUntil("ch3_outing_enmaku_answer");
     await tokyoMap(1);
-    await page.locator(t("pin-ch3_tokyo_volk")).click(); await page.locator(t("map-go")).click(); // 寄り道は二度目の来店だけなので、そのまま読む
+    await page.locator(t("pin-ch3_tokyo_volk")).click(); await page.locator(t("map-go")).click();
+    // 初来店の後は通い（鉄の煙で一服する・#3270）も並ぶので、二度目の来店を選ぶ
+    await page.locator("#modal.show button", { hasText: "鉄の煙の二度目" }).click();
     await readUntil("ch3_volk_second");
     const growth = await page.evaluate(() => structuredClone(__remake.state.growth));
     assert.equal(growth.fresh.counts.saku, 1, "煙幕の外出は綾取の鍵");

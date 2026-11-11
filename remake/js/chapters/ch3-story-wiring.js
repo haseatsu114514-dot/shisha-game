@@ -2,6 +2,7 @@
 // DOMを持たないアダプタ（#1176 GAP 3-B）。再生・保存・UIは ch3.js が担う。
 import { canReadOptionalStory, selectStoryEvening } from "../core/story-routes.js";
 import { characterRegion, dueTokyoVisit, visitContacts } from "../core/tokyo-visits.js";
+import { TOKYO_EVE_WINDOW } from "../core/tokyo-clock.js";
 import { chapterThreeScenes, chapterThreeProgress } from "./ch3-progress.js";
 import { confessionLanded } from "./ch3-romance-entry.js";
 import { AFFINITY_RANK_PTS } from "../core/stats.js";
@@ -12,9 +13,11 @@ import { AFFINITY_RANK_PTS } from "../core/stats.js";
  * 差し替え・削除はこの定数だけ。
  */
 export const TOKYO_RESIDENT_IDS = Object.freeze(["steve", "mashiro"]);
+/** 東京に住むヒロイン。恋人なら、訪問の約束なしで前夜を一緒に過ごせる。 */
+const RESIDENT_LOVER_IDS = Object.freeze(["mashiro"]);
 
 /** 前夜の自由時間ウィンドウ（tokyo-clock.js）。訪問デートと前夜デートはここで一本化する。 */
-export const EVENING_WINDOW = "d13-night";
+export const EVENING_WINDOW = TOKYO_EVE_WINDOW;
 export const optionalReadFlag = id => `_ch3_read_${id}`;
 
 /** #3081 物語系の一度きり。既存5本の段階のあと、mukaiでこの順に一本ずつ。繰り返しには入れない。 */
@@ -136,7 +139,9 @@ export const CH3_STORY_DIALOGUE_FILES = Object.freeze({
   ch3_mashiro: ["ch3_mashiro_play_1", "ch3_mashiro_play_2", "ch3_mashiro_play_3", "ch3_mashiro_practice",
     "ch3_mashiro_black_tea", "ch3_mashiro_timer_side", "ch3_mashiro_cup_warm", "ch3_mashiro_glass_cloth",
     "ch3_mashiro_leaf_rest", "ch3_mashiro_bench_tea",
-    "ch3_mashiro_bond_question", "ch3_mashiro_bond_finale"],
+    "ch3_mashiro_bond_question", "ch3_mashiro_bond_finale",
+    // 恋人のましろと過ごす時間（BLC03・chapters/mashiro-time.js の MASHIRO_TIME_SCENES と同じ並び）。
+    "mashiro_time_counter", "mashiro_time_train", "mashiro_time_errand", "mashiro_time_braid"],
   ch3_saku_mashiro: ["ch3_saku_mashiro_tea_tin", "ch3_saku_mashiro_soon_back"],
   hiyori: ["hiyori_tokyo_contact"],
   ch3_tsumugi: ["ch3_tsumugi_slump"],
@@ -210,8 +215,13 @@ export function chapterThreeEveningContext(value, definitions, window) {
   const present = Object.keys(definitions.characters).filter(id => characterRegion(value, definitions, id) === "tokyo");
   for (const id of TOKYO_RESIDENT_IDS) if (value.met?.[id] && !present.includes(id)) present.push(id);
   const plan = window ? dueTokyoVisit(value, window) : null;
-  const selected = plan?.met && plan.date.id === EVENING_WINDOW && plan.date.id === window.id
+  const visitor = plan?.met && plan.date.id === EVENING_WINDOW && plan.date.id === window.id
     && visitContacts(value, definitions).includes(plan.characterId) ? plan.characterId : null;
+  // 東京に住む恋人（ましろ）は、会いに来る約束が要らない。訪問の約束が前夜に無い時は、そのまま一緒に過ごせる（BLC02）。
+  // 以前は訪問の約束だけが前夜の相手になり、ましろの前夜デートは第3章で読めなかった。
+  const resident = !visitor && window?.id === EVENING_WINDOW
+    ? RESIDENT_LOVER_IDS.find(id => (value.lovers || []).includes(id) && present.includes(id)) || null : null;
+  const selected = visitor || resident;
   return { present, selected, accepted: selected ? [selected] : [], unresolved: [] };
 }
 

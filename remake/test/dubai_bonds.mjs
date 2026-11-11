@@ -93,6 +93,28 @@ const save = (extra = {}) => ({ chapter: 5, flags: {}, finales: {}, lovers: [], 
   assert.deepEqual(sheikh[DUBAI_BOND_FINALES.sheikh].metadata?.bond_finale, "sheikh");
   // 太陽の連絡先はFESTAの♥2の段階で、分岐の外（必ず通る位置）で交換する
   assert(taiyo.ch4_festa_bond_2.lines.some(line => line.type === "set_flag" && line.flag === "_lime_contact_da_silva"));
+  // 第4章でFESTAに通わなかった人は、第5章の最初の段階で交換する（BLC05）。交換済みの人には交換し直さない。
+  {
+    const scene = taiyo.ch5_taiyo_bond_4, gate = scene.lines.at(-1);
+    assert.deepEqual([gate.type, gate.condition_type, gate.flag], ["condition", "flag", "_lime_contact_da_silva"]);
+    assert(scene.branches[gate.next_false].some(line => line.type === "set_flag" && line.flag === "_lime_contact_da_silva"));
+    assert.deepEqual(scene.branches[gate.next_true], [], "交換済みなら何も足さない");
+    assert(!scene.lines.some(line => line.type === "set_flag"), "分岐の外では交換しない");
+  }
+  // 既存の場面との食い違いを残さない（BLC05）
+  {
+    const body = dialogue => all(dialogue).map(line => line.text || "").join("\n");
+    const ch5 = byId("ch5_dubai");
+    // 屋敷のコーヒーは第4章の結末（ch4_ending）で一度出されている。初めての味として書かない
+    assert.doesNotMatch(body(sheikh.ch5_sheikh_bond_2), /思ったより苦くて/);
+    assert.match(body(sheikh.ch5_sheikh_bond_2), /大会のあとに頂いた時も/);
+    // 「友人」は締めくくりで初めて口にする。巡回の手紙で先に使わない
+    assert.match(body(sheikh.ch5_sheikh_bond_finale), /君は、私の友人だ/);
+    for (const id of ["ch5_dubai_letter", "ch5_dubai_letter_again", "ch5_dubai_letter_again_b"]) assert.doesNotMatch(body(ch5[id]), /友人/, id);
+    // 太陽の出身は、はじめが訊く前に本人が言う
+    const festa2 = taiyo.ch4_festa_bond_2.lines.map(line => line.text || "");
+    assert(festa2.findIndex(t => /ブラジルの生まれ/.test(t)) < festa2.findIndex(t => /ブラジルでも/.test(t)));
+  }
   // FESTA（大会前）の段階で、審査員だと明かさない（2026-11-07 オーナー指示）
   for (const id of FESTA_BOND_IDS) assert(!/審査/.test(JSON.stringify(all(taiyo[id]))), `${id}: 大会前に審査員だと言わない`);
   assert.deepEqual(SHEIKH_BOND_LETTERS.map(letter => letter.scene), ["ch5_dubai_letter_bond_1", "ch5_dubai_letter_bond_2", "ch5_dubai_letter_bond_3"]);
