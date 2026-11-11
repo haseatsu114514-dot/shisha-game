@@ -18,7 +18,7 @@ import { FLAVOR_CARTONS_3287_ART } from "../daily/shop-art-flavor-cartons-3287.j
 
 export const ICHIDAI_ART = Object.freeze({
   flavor: [],
-  card: ["add_coal", "all_in", "ash_tap", "blow", "breath", "buyout", "draft", "duel", "encore", "fan", "go_second", "heat_in", "heat_out", "hype", "inner", "loosen", "outer", "read", "repack", "reset", "show_smoke", "timer", "tongs", "venue_heat"],
+  card: ["add_coal", "all_in", "ash_tap", "blow", "breath", "buyout", "diffuser", "draft", "duel", "encore", "fan", "go_second", "heat_in", "heat_out", "hype", "ice_hose", "inner", "loosen", "outer", "read", "repack", "reset", "show_smoke", "timer", "tongs", "venue_heat", "windguard"],
   table: [],
   back: [],
 });
