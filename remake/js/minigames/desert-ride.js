@@ -8,7 +8,7 @@
 import { el } from "../core/util.js";
 import { SE, unlockAudio, createDesertRideSe, currentBgm, playBgm, preloadBgm, setBgmPlaybackRate, resetBgmTempo, tickBgmPlaybackRate } from "../core/audio.js";
 import { EDGE, SPEED, COURSE_PACKS, generateCourse, practiceCourse, pickCourse, buildCourse, createGame, step, press, boost, chargeBoost, canRecover, summary, curveAt, headingAt, lateralAt, botControl,
-  rivalRun, rivalAt, RULES_VERSION, jumpHeight, DISPLAY, toKmh, toMeters } from "./desert-ride-model.js";
+  rivalRun, rivalAt, RULES_VERSION, jumpHeight, DISPLAY, toKmh, toMeters, JUMP } from "./desert-ride-model.js";
 import { DESERT_ART, DESERT_CONTROL_ART, loadDesertArt, riderPose } from "./desert-ride-art.js";
 import { imgFileUrl } from "../core/img-file.js";
 
@@ -124,7 +124,7 @@ const TUTORIAL = {
   move: "← → で左右に動こう",
   rock: "岩に当たると転ぶ。先を見て、早めによけよう",
   bump: "起伏の手前で Space ── 大きく跳べる",
-  brace: "着地の直前にもう一度 Space ── 姿勢を整える",
+  brace: "着地の直前、輪がボタンに重なったら Space ── 着地が決まる",
   retryBump: "惜しい。次の起伏で、もう一度跳んでみよう",
   trick: "次は、跳んだら空中で ← か → を押し続けて回ろう",
   trickLetGo: "離すと回り切る。着地より前に離そう",
@@ -138,7 +138,7 @@ const TUTORIAL = {
 const TUTORIAL_TOUCH = {
   move: "「左へ」「右へ」で動こう",
   bump: "起伏の手前で「ジャンプ」── 大きく跳べる",
-  brace: "着地の直前にもう一度「ジャンプ」── 姿勢を整える",
+  brace: "空中ではジャンプが「LAND」に変わる。輪が重なったら押そう",
   trick: "次は、跳んだら空中で「左へ」か「右へ」を押し続けて回ろう",
   boost: "溜まったゲージで「BOOST」を押すと超加速 ── 岩も砕ける",
 };
@@ -150,7 +150,7 @@ const tutorialText = key => (touchUi() && TUTORIAL_TOUCH[key]) || TUTORIAL[key];
 const HOWTO = {
   keys: [
     "← → で左右。砂の上なので、少し遅れてついてくる",
-    "起伏の手前で Space で大ジャンプ。着地でブースト回復、直前にもう一度押すと加速",
+    "起伏の手前で Space で大ジャンプ。空中ではボタンが LAND に変わり、輪が重なった時に Space で着地が決まる（加速・ブースト回復）",
     "空中で ← → を押し続けると回転。回りかけで着地すると転ぶ",
     "ゲージが満タンで ↓（BOOST）。超加速して、岩も砕く",
     "岩に当たった直後にブーストを押すと、ゲージを使って立て直せる",
@@ -158,7 +158,7 @@ const HOWTO = {
   ],
   touch: [
     "「左へ」「右へ」で左右。砂の上なので、少し遅れてついてくる",
-    "起伏の手前で「ジャンプ」で大ジャンプ。着地でブースト回復、直前にもう一度押すと加速",
+    "起伏の手前で「ジャンプ」で大ジャンプ。空中ではボタンが「LAND」に変わり、輪が重なった時に押すと着地が決まる（加速・ブースト回復）",
     "空中で「左へ」「右へ」を押し続けると回転。回りかけで着地すると転ぶ",
     "ゲージが溜まったら「BOOST」。超加速して、岩も砕く",
     "岩に当たった直後に「BOOST」を押すと、ゲージを使って立て直せる",
@@ -278,16 +278,26 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       button.addEventListener("contextmenu", event => event.preventDefault());
       return button;
     };
+    // ブーストの放電の稲妻: 形を描き直す間隔（秒）と、ボタン・ゲージそれぞれの最大本数（下の updateZaps）
+    const ZAP_EVERY = 1 / 15;
+    const ZAP_SLOTS = 7;
+    let zapAt = 0;
     const jumpButton = holdButton("ジャンプ／着地", "dr-jump", "desert-jump", act, () => {}, "jump");
+    const boostButton = holdButton("BOOST", "dr-boost", "desert-boost", doBoost, () => {}, "boost");
+    // ブーストの放電（2026-11-11 オーナー「ブーストは溜まるとどんどん放電みたいな演出つけたい」）: ボタンの縁から稲妻
+    const buttonZap = makeZap("dr-zap dr-zap-button", "0 0 208 208");
+    boostButton.append(buttonZap.svg);
+    // 空中（大ジャンプ）では着地のボタンに変わったと一目で分かるように: 青く光り、外から縮んでくる輪が
+    // ボタンに重なった時（残り JUMP.landingWindow 秒）が押し時。上に「重なったら押す」→「今！」→「構えた！」の札。
+    const landRing = el("i.dr-land-ring", { "aria-hidden": "true" });
+    const landTag = el("b.dr-land-tag", { "aria-hidden": "true", dataset: { test: "desert-land-tag" } });
+    jumpButton.append(landRing, landTag);
     controls.append(
       el("div.dr-touch-pair.dr-steer-pair", [
         holdButton("左へ", "dr-left", "desert-left", () => { input.left = true; }, () => { input.left = false; }, "left"),
         holdButton("右へ", "dr-right", "desert-right", () => { input.right = true; }, () => { input.right = false; }, "right"),
       ]),
-      el("div.dr-touch-pair", [
-        holdButton("BOOST", "dr-boost", "desert-boost", doBoost, () => {}, "boost"),
-        jumpButton,
-      ]),
+      el("div.dr-touch-pair", [boostButton, jumpButton]),
     );
     root.append(el("span.dr-recover-hint", { text: "立て直せる！" }));
     // 画面の上の方をタップしてもジャンプ（ボタンの外に指が出ても続けられる）
@@ -422,7 +432,84 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       void node.offsetWidth; node.classList.add("show");
     }
 
+    // ---- ブーストの放電（2026-11-11 オーナー「ブーストは溜まるとどんどん放電みたいな演出つけたい」）-----------------
+    // ゲージが溜まるほど、BOOST ボタンの縁とゲージから稲妻が多く・長く・頻繁に走る（満タンで最大）。人物の板の周りにも走る（drawCharge）。
+    // 形は ZAP_EVERY 秒ごとに描き直してちらつかせる。ブースト中は放電しきって止まる。動き軽減では稲妻を出さず、満タンの光だけ。
+    function makeZap(cls, viewBox) {
+      const ns = "http://www.w3.org/2000/svg";
+      const svg = document.createElementNS(ns, "svg");
+      svg.setAttribute("class", cls); svg.setAttribute("viewBox", viewBox); svg.setAttribute("aria-hidden", "true");
+      if (cls.includes("gauge")) svg.setAttribute("preserveAspectRatio", "none");
+      const paths = Array.from({ length: ZAP_SLOTS }, () => {
+        const path = document.createElementNS(ns, "path");
+        path.setAttribute("fill", "none"); path.setAttribute("vector-effect", "non-scaling-stroke");
+        svg.append(path);
+        return path;
+      });
+      return { svg, paths };
+    }
+    /** ぎざぎざの稲妻（x0,y0 → x1,y1 を parts 個に折り、横へ最大 jitter ずらす）の SVG の path。 */
+    function zapBolt(x0, y0, x1, y1, parts, jitter) {
+      const dx = x1 - x0, dy = y1 - y0, len = Math.hypot(dx, dy) || 1, nx = -dy / len, ny = dx / len;
+      let d = `M${x0.toFixed(1)} ${y0.toFixed(1)}`;
+      for (let i = 1; i < parts; i++) {
+        const t = i / parts, off = (Math.random() * 2 - 1) * jitter;
+        d += ` L${(x0 + dx * t + nx * off).toFixed(1)} ${(y0 + dy * t + ny * off).toFixed(1)}`;
+      }
+      return `${d} L${x1.toFixed(1)} ${y1.toFixed(1)}`;
+    }
+    /** 溜まり具合 charge（0〜1）に応じて、ボタンとゲージの稲妻を描き直す。 */
+    function updateZaps(charge, gaugeZap) {
+      const now = performance.now() / 1000;
+      if (now - zapAt < ZAP_EVERY) return;
+      zapAt = now;
+      const zaps = [buttonZap, gaugeZap].filter(Boolean);
+      if (reducedMotion || charge <= 0.08) { for (const zap of zaps) for (const path of zap.paths) path.removeAttribute("d"); return; }
+      const full = charge >= 0.999;
+      const shown = Math.random; // 1本ずつ、溜まるほど高い割合で光る（ちらつき）
+      // ボタン（160×160 を 24 の余白で囲む）: 縁の一点から外へ跳ぶ稲妻と、縁を這う稲妻
+      const buttonCount = full ? ZAP_SLOTS : Math.round(1 + charge * 4);
+      buttonZap.paths.forEach((path, i) => {
+        if (i >= buttonCount || shown() > 0.45 + 0.55 * charge) { path.removeAttribute("d"); return; }
+        const side = Math.floor(Math.random() * 4), u = 0.12 + Math.random() * 0.76;
+        const along = [[24 + 160 * u, 26], [182, 24 + 160 * u], [24 + 160 * u, 182], [26, 24 + 160 * u]][side];
+        const out = [[0, -1], [1, 0], [0, 1], [-1, 0]][side], tan = [out[1], -out[0]];
+        const reach = (14 + Math.random() * 18) * (0.6 + 0.6 * charge);
+        const crawl = Math.random() < 0.4;
+        const end = crawl
+          ? [along[0] + tan[0] * (24 + Math.random() * 30) + out[0] * 6, along[1] + tan[1] * (24 + Math.random() * 30) + out[1] * 6]
+          : [along[0] + out[0] * reach + tan[0] * (Math.random() * 2 - 1) * 12, along[1] + out[1] * reach + tan[1] * (Math.random() * 2 - 1) * 12];
+        path.setAttribute("d", zapBolt(along[0], along[1], end[0], end[1], crawl ? 6 : 4, crawl ? 5 : 4));
+        path.dataset.core = i % 3 === 0 ? "thick" : "";
+      });
+      if (!gaugeZap) return;
+      // ゲージ（横 200・縦 40 に引き伸ばす。棒は真ん中の 10〜30）: 溜まった所から上下へ跳ぶ稲妻、満タンでは棒に沿って走る
+      const gaugeCount = full ? ZAP_SLOTS : Math.round(1 + charge * 3);
+      gaugeZap.paths.forEach((path, i) => {
+        if (i >= gaugeCount || shown() > 0.4 + 0.6 * charge) { path.removeAttribute("d"); return; }
+        const x = Math.random() * 200 * Math.min(1, charge);
+        if (full && i % 2 === 1) {
+          const x0 = Math.random() * 140;
+          path.setAttribute("d", zapBolt(x0, 20, x0 + 30 + Math.random() * 30, 20, 7, 9));
+        } else {
+          const up = Math.random() < 0.5 ? -1 : 1;
+          path.setAttribute("d", zapBolt(x, 20 + up * 4, x + (Math.random() * 2 - 1) * 16, 20 + up * (16 + Math.random() * 4), 4, 6));
+        }
+      });
+    }
+
     // ---- HUD ---------------------------------------------------------------------------
+    /**
+     * 着地のボタンの合図（大ジャンプの空中だけ）。state: wait（まだ）→ soon（良い）→ now（完璧）、押した後は set。
+     * ring: 輪の大きさ 1→0（0 でボタンに重なる＝残り JUMP.landingWindow 秒）。ホップ・跳ね返りでは出さない（着地の採点が無い）。
+     */
+    function landingCue(g) {
+      if (!(g.air > 0) || g.airKind !== "big" || g.fallT > 0) return { state: "", ring: 1, tag: "" };
+      const ring = Math.max(0, Math.min(1, (g.air - JUMP.landingWindow) / Math.max(0.01, g.airTotal - JUMP.landingWindow)));
+      if (g.landingPress !== null && g.landingPress <= JUMP.goodWindow) return { state: "set", ring: 0, tag: "構えた！" };
+      if (g.air <= JUMP.landingWindow) return { state: "now", ring: 0, tag: "今！" };
+      return { state: g.air <= JUMP.goodWindow ? "soon" : "wait", ring, tag: "重なったら押す" };
+    }
     let hudNodes = null, shownKmh = toKmh(SPEED.start);
     // 速度メーター（2026-11-11 作り直し）: 左に針の文字盤、右に大きな数字。数字は文字盤の外に置き、針・弧と重ねない。
     // 文字盤は 0〜100 km/h を左下から右下まで 240° で回る。70 から上は赤い帯（ブーストでだけ届く）。
@@ -480,7 +567,8 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
         speedo: el("div.dr-speedo", { dataset: { test: "desert-speedo" } }), speedFill: dial.fill, needle: dial.needle,
       };
       // BOOST は ⚡ とゲージだけ（% の文字は出さない。#2838）
-      hudNodes.gaugeBox = el("div.dr-gauge", { dataset: { test: "desert-gauge" }, title: "BOOST" }, [hudNodes.gauge]);
+      hudNodes.gaugeZap = makeZap("dr-zap dr-zap-gauge", "0 0 200 40");
+      hudNodes.gaugeBox = el("div.dr-gauge", { dataset: { test: "desert-gauge" }, title: "BOOST" }, [hudNodes.gauge, hudNodes.gaugeZap.svg]);
       hudNodes.speedo.append(el("div.dr-speedo-dial", [dial.svg]), el("div.dr-speedo-read", [hudNodes.kmh, el("small", { text: "km/h" })]));
       hud.replaceChildren(
         el("div.dr-hud-left", [el("small", { text: mode === "practice" ? "PRACTICE" : "SCORE" }), hudNodes.score, hudNodes.combo, feedback]),
@@ -518,9 +606,16 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       root.dataset.gauge = boosting ? "boost" : ready ? "full" : "";
       root.dataset.boost = boosting ? "on" : "";
       root.dataset.recover = canRecover(game) ? "ready" : "";
+      const charge = boosting ? 0 : Math.max(0, Math.min(1, game.gauge));
+      root.dataset.charge = charge >= 0.999 ? "max" : charge >= 0.5 ? "mid" : charge > 0 ? "low" : "";
+      updateZaps(charge, hudNodes.gaugeZap);
       const canBrace = game.air > 0 && game.airKind !== "bounce";
       jumpButton.dataset.air = canBrace ? "true" : "";
       jumpButton.setAttribute("aria-label", canBrace ? "着地" : "ジャンプ");
+      const landing = landingCue(game);
+      jumpButton.dataset.land = landing.state;
+      jumpButton.style.setProperty("--land", landing.ring.toFixed(3));
+      landTag.textContent = landing.tag;
       if (hudNodes.course) {
         hudNodes.course.textContent = mode === "practice" ? "" : (game.course.name || "");
         hudNodes.course.hidden = mode === "practice" || !game.course.name;
@@ -1355,6 +1450,51 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       }
     }
     function drawPlayer(dusk) {
+      drawPlayerBody(dusk);
+      drawCharge();
+    }
+    /**
+     * ブーストの放電（人物）: ゲージが半分を超えると板の周りに小さな稲妻、満タンでは数が増え、体を這い上がる。
+     * 形は 1/15 秒ごとに変わる（時刻から決まる乱数）。ブースト中・転倒中・動き軽減では出さない。人物の絵は隠さない細い線。
+     */
+    function drawCharge() {
+      const charge = game.boostT > 0 || game.fallT > 0 ? 0 : game.gauge;
+      if (reducedMotion || charge < 0.5) return;
+      const p = placeAt(game.z, game.x);
+      if (!p) return;
+      const unit = p.scale * (H / 2), cx = p.x, baseY = p.y - jumpHeight(game) * unit * 0.9;
+      const full = charge >= 0.999, tick = Math.floor(game.t * 15);
+      let n = 0;
+      const rand = () => { const v = Math.sin(++n * 91.7 + tick * 12.9898) * 43758.5453; return v - Math.floor(v); };
+      ctx.save();
+      ctx.lineCap = "round"; ctx.lineJoin = "round";
+      if (full) {
+        // 明るい砂の上でも白く飛ばないよう、足し算の合成は使わず青を薄く重ねる
+        const glow = ctx.createRadialGradient(cx, baseY, 0, cx, baseY, unit * 0.8);
+        glow.addColorStop(0, `rgba(80,180,255,${0.2 + 0.07 * Math.sin(game.t * 20)})`); glow.addColorStop(1, "rgba(80,180,255,0)");
+        ctx.fillStyle = glow; ctx.beginPath(); ctx.ellipse(cx, baseY, unit * 0.8, unit * 0.32, 0, 0, Math.PI * 2); ctx.fill();
+      }
+      const count = full ? 5 : charge >= 0.75 ? 2 : 1;
+      for (let i = 0; i < count; i++) {
+        if (rand() > 0.3 + 0.6 * charge) continue;
+        const side = rand() < 0.5 ? -1 : 1;
+        const x0 = cx + side * unit * (0.2 + rand() * 0.4), y0 = baseY - unit * 0.05 + (rand() - 0.5) * unit * 0.12;
+        const climb = full && i >= 3; // 満タンでは体を這い上がる
+        const x1 = climb ? cx + side * unit * (0.1 + rand() * 0.25) : x0 + side * unit * (0.25 + rand() * 0.35);
+        const y1 = climb ? baseY - unit * (0.45 + rand() * 0.5) : y0 - unit * rand() * 0.4;
+        const parts = 5, dx = x1 - x0, dy = y1 - y0, len = Math.hypot(dx, dy) || 1;
+        const pts = [[x0, y0]];
+        for (let k = 1; k < parts; k++) { const off = (rand() * 2 - 1) * unit * 0.09; pts.push([x0 + dx * k / parts - dy / len * off, y0 + dy * k / parts + dx / len * off]); }
+        pts.push([x1, y1]);
+        ctx.shadowColor = "rgba(70,180,255,0.95)"; ctx.shadowBlur = Math.max(4, unit * 0.12);
+        for (const [width, color] of [[Math.max(2.5, unit * 0.045), "rgba(50,150,255,0.9)"], [Math.max(1, unit * 0.016), "#f2fdff"]]) {
+          ctx.lineWidth = width; ctx.strokeStyle = color;
+          ctx.beginPath(); pts.forEach(([x, y], k) => (k ? ctx.lineTo(x, y) : ctx.moveTo(x, y))); ctx.stroke();
+        }
+      }
+      ctx.restore();
+    }
+    function drawPlayerBody(dusk) {
       const p = placeAt(game.z, game.x);
       if (!p) return;
       const airT = game.air > 0 ? 1 - game.air / game.airTotal : 0;

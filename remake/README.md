@@ -65,7 +65,7 @@ mukaiで行動を使った帰りの裏口では、ふれあいの画面「てつ
 ラクダレース（第4章ドバイの任意ミニゲーム）の試遊は `http://127.0.0.1:8123/remake/camel-race.html`。
 ラクダは自分で走り、車のリモコンから「声」（Space／左ボタン。騎手のまわりの輪が重なる瞬間）と「ムチ」（X／右ボタン。押している間だけ効いてスタミナを使う）を送るだけ。前のラクダのすぐ後ろは風よけで息が戻り、並びかけると相手が粘るので声かムチで抜き切る。4頭・1,000m・約50〜60秒、順位＋声かけ＋スタミナで0〜100点とS/A/B/C。`?pilot=perfect&speed=6` で自動操作のデモ。本編ではドバイの自由行動の地図から、Dr.fookah ドバイ店のファーリスと知り合い→誘い→朝の見学の順に解放し、レースは昼の行動を使う。本編セーブは読み書きしない。[仕様・接続・素材依頼](../docs/spec/camel_race.md)。
 サンドボード DESERT RIDE（第4章ドバイの昼の寄り道）は `http://127.0.0.1:8123/remake/desert-ride.html` で単体でも遊べる。本番はヌールと競走し、空中トリック（大ジャンプ中に ← →）とブースト（↓）がある。カーブでは外へ流されるので曲がる向きへ切り込む（ブーストも貯まる）。ヌールに勝つと裏ボスのなると勝負できる。`?course=left-bowl` などでコースを固定できる。
-後方視点の疑似3Dで砂丘を自動滑走し、← →（スマホは左右ボタン）で岩をよけ、起伏の手前で Space（ジャンプ）、着地の直前にもう一度 Space で姿勢を整える。転倒しても起き上がる。S／A／B／Cの評価と自己ベスト、練習（チュートリアル）、動き軽減に対応。
+後方視点の疑似3Dで砂丘を自動滑走し、← →（スマホは左右ボタン）で岩をよけ、起伏の手前で Space（ジャンプ）、空中ではボタンが LAND に変わり、縮む輪が重なった時にもう一度 Space で着地が決まる。ゲージが溜まるほど BOOST ボタンとゲージが放電する。転倒しても起き上がる。S／A／B／Cの評価と自己ベスト、練習（チュートリアル）、動き軽減に対応。
 本編では宿の隣のカフェ・オアシス（ヌールの父の店）で一台頼んでヌールと話し（3,000円・行動1つ）、♥3で誘われると「ヌールと砂丘へ」が出る（昼の行動1つ・初回は無料・2回目から6,000円・滑り直しは無料・初回完走だけ経験値）。[仕様・操作・Codex向け素材依頼](../docs/spec/desert_ride.md)。検証は `node --test remake/test/desert_ride.mjs remake/test/ch4_desert.mjs` と `node remake/test/browser/desert_ride.mjs`。
 
 斧投げの練習は `http://127.0.0.1:8123/remake/axe-throw.html`。
@@ -101,6 +101,8 @@ python3 remake/tools/serve_preview.py --port 8123
 `https://raw.githack.com/haseatsu114514-dot/shisha-game/<ブランチ名>/remake/index.html`
 ただし raw.githack では Git LFS の画像がポインタテキストで返るため、素材を含む見た目の合否は判断できない。
 素材も確認するときは、Git LFS の実体を取得したローカル checkout で上記の同梱サーバーを起動する。
+
+公開版（GitHub Pages）の試遊ページ（`desert-ride.html`・`camel-race.html`・`axe-throw.html`・`ichidai.html`・`trpg-preview.html`・`trpg-campaign-preview.html`）は、本編と同じく開くたびに最新の版かを確かめ、古ければ最新で開き直す（`js/page-boot.js`。2026-11-11 PV10・PV11）。新しい試遊ページを足す時は、`<meta name="suien-build" content="dev" data-built="">` を置き、本体を `<script src="js/page-boot.js" data-page="js/○○.js"></script>` で起動する（`<script type="module" src="js/…">` で直接読むと、古い版がキャッシュから出る）。
 
 同梱サーバーは同時接続の待ち数を増やし、HTML・JS・CSS・JSONの古いキャッシュが
 更新後のファイルに混ざらないようにする。データは4件ずつ読み、各通信は15秒で中断する。
