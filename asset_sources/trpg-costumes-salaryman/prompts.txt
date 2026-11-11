@@ -1,0 +1,92 @@
+===== salaryman_nico.png =====
+Full-body character illustration of a tabletop-RPG role costume for a Japanese visual-novel game. One person only: the man in reference 1 (Mr. Tekkamen, a 41-year-old Japanese office worker and the quiet regular of a shisha cafe), now dressed as the storybook fantasy character he is role-playing.
+Keep his identity exactly from reference 1: black hair slicked back with the same parting and silhouette, thick straight dark eyebrows, narrow half-lidded tired dark eyes, straight nose, firm jaw, light tan skin, no glasses, no beard or stubble, the same lean adult build and body proportions. Expression: deadpan and calm, mouth a closed straight line (he is known for never showing emotion). Not smiling, not younger, not prettier. Do not copy his business suit, shirt or necktie.
+Take the outfit from reference 2: copy its garment shapes, colors, materials, props and accessories as closely as possible, refitted to his body. Do not copy that wearer's face, red-and-green hair, amber eyes or build. Reference 3 is an approved picture from this same costume set, in which a different regular wears another character's role costume while keeping his own face; match its drawing style, line weight, shading, earthy palette, background color and full-body framing, but not its outfit or props.
+Composition: vertical canvas (2:3 or 3:4, at least 1024x1536). The whole figure from the top of the hair to the shoe soles is visible and centered, about 90% of the canvas height, with small even margins; nothing is cropped. A natural relaxed standing pose with the weight on one leg and a slight three-quarter turn, as in reference 2. Clean, natural hands with five fingers.
+Background: one flat solid cream color #EFE4CF from edge to edge. No gradient, no floor line, no cast or contact shadow, no vignette, no frame, no scenery.
+No text, letters, numbers, logos, signatures, watermarks or pseudo-writing anywhere, including labels, embroidery and buttons. No hookah or shisha equipment of any kind (no bowl, hose, coals or heat management device), no smoke, no cigarette.
+STYLE STANDARD (shisha-game cast): draw this character in the same artist's hand as the approved Minto, Ageha and Rio sprites. Japanese 2D visual-novel game art; confident dark outlines, slightly heavier on the outer silhouette and thinner inside; flat local colors with two to three clearly shaped cel-shadow steps; highlights only as a few deliberate bands on the hair and small catchlights in the eyes. No skin gloss, no airbrush gradients, no rim light or glow, no photographic texture, no pore or fabric micro-detail, no dense ornamental noise, no hundreds of thin hair strands. Limited palette: hair and skin plus three or four main colors. Keep this character's own eye, brow, nose and mouth shapes and natural age and gender differences; do not drift toward a generic AI pretty face.
+HEAD-TO-BODY STANDARD: the head from the top of the hair (not counting hats, hoods or ornaments) to the chin must be about one seventh of the full height from the top of the hair to the shoe soles (about 7 heads tall). For the petite cast (Tsumugi, Mashiro, Ageha, Same-chan) it is about 5.8 heads tall instead.
+For this costume set, the attached approved costume pictures (references 2 and 3) are the style target. Keep embroidery and patterns as simple and readable as in reference 2, never denser.
+
+参照②: remake/img/ui/trpg/costumes/ordinary-cup/adam_nico.webp
+ROLE: Nico, the scent guide of a harbor tea house. He prepares aromas and charcoal better than anyone, but he is scared of ghost stories.
+OUTFIT (as in reference 2): a cream band-collar linen shirt with the sleeves rolled up to the elbows; a dark olive-green waistcoat with five brass buttons, two lower welt pockets and a patch pocket on his left chest (screen right) holding a small pair of plain metal tongs that hold nothing; dark brown pleated trousers; a brown leather belt; brown leather lace-up shoes. Hands empty and relaxed at his sides. Do not copy the white smudge on the sleeve in reference 2.
+
+Attached actual images, in this order:
+Reference 1 — identity: assets/sprites/characters/salaryman/chr_salaryman_normal.png
+Reference 2 — costume: remake/img/ui/trpg/costumes/ordinary-cup/adam_nico.webp
+Reference 3 — approved style example: remake/img/ui/trpg/costumes/regular-mail/sumi_yura.webp
+
+
+===== salaryman_pippin.png =====
+Full-body character illustration of a tabletop-RPG role costume for a Japanese visual-novel game. One person only: the man in reference 1 (Mr. Tekkamen, a 41-year-old Japanese office worker and the quiet regular of a shisha cafe), now dressed as the storybook fantasy character he is role-playing.
+Keep his identity exactly from reference 1: black hair slicked back with the same parting and silhouette, thick straight dark eyebrows, narrow half-lidded tired dark eyes, straight nose, firm jaw, light tan skin, no glasses, no beard or stubble, the same lean adult build and body proportions. Expression: deadpan and calm, mouth a closed straight line (he is known for never showing emotion). Not smiling, not younger, not prettier. Do not copy his business suit, shirt or necktie.
+Take the outfit from reference 2: copy its garment shapes, colors, materials, props and accessories as closely as possible, refitted to his body. Do not copy that wearer's face, red-and-green hair, amber eyes or build. Reference 3 is an approved picture from this same costume set, in which a different regular wears another character's role costume while keeping his own face; match its drawing style, line weight, shading, earthy palette, background color and full-body framing, but not its outfit or props.
+Composition: vertical canvas (2:3 or 3:4, at least 1024x1536). The whole figure from the top of the hair to the shoe soles is visible and centered, about 90% of the canvas height, with small even margins; nothing is cropped. A natural relaxed standing pose with the weight on one leg and a slight three-quarter turn, as in reference 2. Clean, natural hands with five fingers.
+Background: one flat solid cream color #EFE4CF from edge to edge. No gradient, no floor line, no cast or contact shadow, no vignette, no frame, no scenery.
+No text, letters, numbers, logos, signatures, watermarks or pseudo-writing anywhere, including labels, embroidery and buttons. No hookah or shisha equipment of any kind (no bowl, hose, coals or heat management device), no smoke, no cigarette.
+STYLE STANDARD (shisha-game cast): draw this character in the same artist's hand as the approved Minto, Ageha and Rio sprites. Japanese 2D visual-novel game art; confident dark outlines, slightly heavier on the outer silhouette and thinner inside; flat local colors with two to three clearly shaped cel-shadow steps; highlights only as a few deliberate bands on the hair and small catchlights in the eyes. No skin gloss, no airbrush gradients, no rim light or glow, no photographic texture, no pore or fabric micro-detail, no dense ornamental noise, no hundreds of thin hair strands. Limited palette: hair and skin plus three or four main colors. Keep this character's own eye, brow, nose and mouth shapes and natural age and gender differences; do not drift toward a generic AI pretty face.
+HEAD-TO-BODY STANDARD: the head from the top of the hair (not counting hats, hoods or ornaments) to the chin must be about one seventh of the full height from the top of the hair to the shoe soles (about 7 heads tall). For the petite cast (Tsumugi, Mashiro, Ageha, Same-chan) it is about 5.8 heads tall instead.
+For this costume set, the attached approved costume pictures (references 2 and 3) are the style target. Keep embroidery and patterns as simple and readable as in reference 2, never denser.
+
+参照②: remake/img/ui/trpg/costumes/ordinary-cup/adam_pippin.webp
+ROLE: Pippin, a wandering aroma-maker who travels from port to port. His habit is to check the scent first.
+OUTFIT (as in reference 2): a long dark-green hooded cloak worn open with the hood down, thin gold edge trim and a little gold vine embroidery near the hem, closed at the chest with a braided cord, a round knot and a tassel; a small red apple brooch with one leaf on the cloak at his left chest (screen right); a tan inner tunic with a V collar and embroidered cuffs; a long dark-red open surcoat with simple gold vine embroidery at the hem; a brown leather belt with a brass buckle and three small corked glass vials hanging from it (amber, green and red liquid, no labels); dark trousers; brown cuffed leather boots. Hands empty and relaxed.
+
+Attached actual images, in this order:
+Reference 1 — identity: assets/sprites/characters/salaryman/chr_salaryman_normal.png
+Reference 2 — costume: remake/img/ui/trpg/costumes/ordinary-cup/adam_pippin.webp
+Reference 3 — approved style example: remake/img/ui/trpg/costumes/regular-mail/sumi_yura.webp
+
+
+===== salaryman_leon.png =====
+Full-body character illustration of a tabletop-RPG role costume for a Japanese visual-novel game. One person only: the man in reference 1 (Mr. Tekkamen, a 41-year-old Japanese office worker and the quiet regular of a shisha cafe), now dressed as the storybook fantasy character he is role-playing.
+Keep his identity exactly from reference 1: black hair slicked back with the same parting and silhouette, thick straight dark eyebrows, narrow half-lidded tired dark eyes, straight nose, firm jaw, light tan skin, no glasses, no beard or stubble, the same lean adult build and body proportions. Expression: deadpan and calm, mouth a closed straight line (he is known for never showing emotion). Not smiling, not younger, not prettier. Do not copy his business suit, shirt or necktie.
+Take the outfit from reference 2: copy its garment shapes, colors, materials, props and accessories as closely as possible, refitted to his body. Do not copy that wearer's face, red-and-green hair, amber eyes or build. Reference 3 is an approved picture from this same costume set, in which a different regular wears another character's role costume while keeping his own face; match its drawing style, line weight, shading, earthy palette, background color and full-body framing, but not its outfit or props.
+Composition: vertical canvas (2:3 or 3:4, at least 1024x1536). The whole figure from the top of the hair to the shoe soles is visible and centered, about 90% of the canvas height, with small even margins; nothing is cropped. A natural relaxed standing pose with the weight on one leg and a slight three-quarter turn, as in reference 2. Clean, natural hands with five fingers.
+Background: one flat solid cream color #EFE4CF from edge to edge. No gradient, no floor line, no cast or contact shadow, no vignette, no frame, no scenery.
+No text, letters, numbers, logos, signatures, watermarks or pseudo-writing anywhere, including labels, embroidery and buttons. No hookah or shisha equipment of any kind (no bowl, hose, coals or heat management device), no smoke, no cigarette.
+STYLE STANDARD (shisha-game cast): draw this character in the same artist's hand as the approved Minto, Ageha and Rio sprites. Japanese 2D visual-novel game art; confident dark outlines, slightly heavier on the outer silhouette and thinner inside; flat local colors with two to three clearly shaped cel-shadow steps; highlights only as a few deliberate bands on the hair and small catchlights in the eyes. No skin gloss, no airbrush gradients, no rim light or glow, no photographic texture, no pore or fabric micro-detail, no dense ornamental noise, no hundreds of thin hair strands. Limited palette: hair and skin plus three or four main colors. Keep this character's own eye, brow, nose and mouth shapes and natural age and gender differences; do not drift toward a generic AI pretty face.
+HEAD-TO-BODY STANDARD: the head from the top of the hair (not counting hats, hoods or ornaments) to the chin must be about one seventh of the full height from the top of the hair to the shoe soles (about 7 heads tall). For the petite cast (Tsumugi, Mashiro, Ageha, Same-chan) it is about 5.8 heads tall instead.
+For this costume set, the attached approved costume pictures (references 2 and 3) are the style target. Keep embroidery and patterns as simple and readable as in reference 2, never denser.
+
+参照②: remake/img/ui/trpg/costumes/leaf-mail/adam_leon.webp
+ROLE: Leon, the night-watch bell ringer of the clock tower. His voice carries as far as his bell.
+OUTFIT (as in reference 2): a moss-green long-sleeved tunic with a tan hood worn down behind the neck and a tan front panel with simple embroidered borders; a small brass hand bell hanging on a cord at the chest; a wide dark-brown cloth sash tied in a bow at the front with hanging ends; tan embroidered cuffs; brown leather work gloves; dark brown trousers; tall brown leather boots with folded cuffs. Arms hanging relaxed, hands loosely closed.
+
+Attached actual images, in this order:
+Reference 1 — identity: assets/sprites/characters/salaryman/chr_salaryman_normal.png
+Reference 2 — costume: remake/img/ui/trpg/costumes/leaf-mail/adam_leon.webp
+Reference 3 — approved style example: remake/img/ui/trpg/costumes/regular-mail/sumi_yura.webp
+
+
+===== salaryman_gran.png =====
+Full-body character illustration of a tabletop-RPG role costume for a Japanese visual-novel game. One person only: the man in reference 1 (Mr. Tekkamen, a 41-year-old Japanese office worker and the quiet regular of a shisha cafe), now dressed as the storybook fantasy character he is role-playing.
+Keep his identity exactly from reference 1: black hair slicked back with the same parting and silhouette, thick straight dark eyebrows, narrow half-lidded tired dark eyes, straight nose, firm jaw, light tan skin, no glasses, no beard or stubble, the same lean adult build and body proportions. Expression: deadpan and calm, mouth a closed straight line (he is known for never showing emotion). Not smiling, not younger, not prettier. Do not copy his business suit, shirt or necktie.
+Take the outfit from reference 2: copy its garment shapes, colors, materials, props and accessories as closely as possible, refitted to his body. Do not copy that wearer's face, red-and-green hair, amber eyes or build. Reference 3 is an approved picture from this same costume set, in which a different regular wears another character's role costume while keeping his own face; match its drawing style, line weight, shading, earthy palette, background color and full-body framing, but not its outfit or props.
+Composition: vertical canvas (2:3 or 3:4, at least 1024x1536). The whole figure from the top of the hair to the shoe soles is visible and centered, about 90% of the canvas height, with small even margins; nothing is cropped. A natural relaxed standing pose with the weight on one leg and a slight three-quarter turn, as in reference 2. Clean, natural hands with five fingers.
+Background: one flat solid cream color #EFE4CF from edge to edge. No gradient, no floor line, no cast or contact shadow, no vignette, no frame, no scenery.
+No text, letters, numbers, logos, signatures, watermarks or pseudo-writing anywhere, including labels, embroidery and buttons. No hookah or shisha equipment of any kind (no bowl, hose, coals or heat management device), no smoke, no cigarette.
+STYLE STANDARD (shisha-game cast): draw this character in the same artist's hand as the approved Minto, Ageha and Rio sprites. Japanese 2D visual-novel game art; confident dark outlines, slightly heavier on the outer silhouette and thinner inside; flat local colors with two to three clearly shaped cel-shadow steps; highlights only as a few deliberate bands on the hair and small catchlights in the eyes. No skin gloss, no airbrush gradients, no rim light or glow, no photographic texture, no pore or fabric micro-detail, no dense ornamental noise, no hundreds of thin hair strands. Limited palette: hair and skin plus three or four main colors. Keep this character's own eye, brow, nose and mouth shapes and natural age and gender differences; do not drift toward a generic AI pretty face.
+HEAD-TO-BODY STANDARD: the head from the top of the hair (not counting hats, hoods or ornaments) to the chin must be about one seventh of the full height from the top of the hair to the shoe soles (about 7 heads tall). For the petite cast (Tsumugi, Mashiro, Ageha, Same-chan) it is about 5.8 heads tall instead.
+For this costume set, the attached approved costume pictures (references 2 and 3) are the style target. Keep embroidery and patterns as simple and readable as in reference 2, never denser.
+
+参照②: remake/img/ui/trpg/costumes/leaf-mail/adam_gran.webp
+ROLE: Gran, a travelling astronomer who came to measure the moon.
+OUTFIT (as in reference 2): a long navy-blue frock coat with gold trim and scattered small gold stars and crescent moons (simple shapes only, no writing, no zodiac signs), dark red lining; a dark waistcoat with a faint star pattern over a cream shirt with a dark green high collar; a red cloth sash belt with a brass buckle; black trousers; brown lace-up boots with cuffs. He holds a closed brass spyglass in his right hand (screen left), raised near his shoulder as in reference 2, with a natural grip; the whole spyglass stays inside the canvas. His left hand hangs relaxed at his side.
+
+Attached actual images, in this order:
+Reference 1 — identity: assets/sprites/characters/salaryman/chr_salaryman_normal.png
+Reference 2 — costume: remake/img/ui/trpg/costumes/leaf-mail/adam_gran.webp
+Reference 3 — approved style example: remake/img/ui/trpg/costumes/regular-mail/sumi_yura.webp
+
+
+=== 実行時に各プロンプト末尾へ追加した文 ===
+ニコ初回: 追加なし。
+ニコ再生成:
+REGENERATION CORRECTION: The previous result failed because its canvas was only 1086x1448 and its background had uneven color. Output exactly 1024x1536 pixels, portrait 2:3. Fill every background pixel with the identical RGB value (239,228,207), hex #EFE4CF. No texture, no lighting variation. Keep the full figure at least 1300 pixels tall.
+ニコ背景編集:
+EDIT TARGET: The fourth attached image is the generated Nico candidate. Preserve the person, costume, pose and size exactly. Replace only the background with mathematically uniform, flat RGB (239,228,207), #EFE4CF. No variation in any background pixel, no texture, no gradient. Output 1024x1536.
+ピピン・レオン・グラン:
+OUTPUT CONTROL: Exactly 1024x1536 pixels, 2:3 portrait. Entire background must be a perfectly uniform fill of #EFE4CF (RGB 239,228,207), with no lighting or paper texture. Figure height at least 1300 pixels.
