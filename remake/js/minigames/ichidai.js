@@ -68,11 +68,11 @@ function cardView(kind, id) {
     return { cls: "t-hmd", name: h.name, gem: null, art: { url: hmdArt(id), mode: "sprite" }, glyph: "蓋", line: ["HMD", ""], text: h.ab };
   }
   const c = CARD[id], coal = c.type === "coal";
-  return { cls: `t-${c.type}${c.when === "puff" ? ".w-puff" : ""}`, name: c.name,
+  return { cls: `t-${c.type}${c.when ? `.w-${c.when}` : ""}`, name: c.name,
     gem: coal ? { text: String(c.heat), label: "熱", cls: "is-heat" } : { text: String(c.burn ?? c.cost), label: c.burn ? "燃焼" : "火力", cls: c.burn ? "is-burn" : "is-cost" },
     art: cardArt(id), glyph: TYPE_LABEL[c.type].slice(0, 1), line: coal ? ["炭", `着火${c.ig}`] : [TYPE_LABEL[c.type], WHEN_LABEL[c.when]], text: c.tx };
 }
-function tcg(kind, id, { size = "hand" } = {}) {
+export function tcg(kind, id, { size = "hand" } = {}) {
   const v = cardView(kind, id), rar = rarityOf(kind, id), big = size === "big", small = size === "mini" || size === "tiny";
   return el(`div.ichi-card.s-${size}.${v.cls}.r-${rar}`, { dataset: { card: id, kind } }, [
     el("div.ichi-card-head", [
