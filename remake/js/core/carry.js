@@ -513,6 +513,7 @@ export const FLAG_EXACT_RULES = [
   ["_spot_seen_kannon_adam_pakki", "person"],
   ["_spot_seen_kannon_ch2_wish", "progression"],
   ["_spot_seen_kannon_oldman", "progression"],
+  ["_stk_title_customer_met", "progression"],
   ["_story_shuraba_unresolved", "pending"],
   ["_sumi_double_apple_received", "person"],
   ["_sumi_rig_home_seen", "progression"],
