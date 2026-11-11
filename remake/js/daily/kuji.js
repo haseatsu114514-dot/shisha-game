@@ -2,16 +2,16 @@ import { spendableMoney } from "../core/travel-budget.js";
 // シーシャくじ（master_spec #25）。正本データは data/kuji.json（旧版と共通）。
 // ボックス制・上位集約。リセマラ防止: 箱の並びは作った時点で確定して保存し、引くたびに先頭から出す。
 // 引いた直後に保存するので、結果を見てからのロードでは変わらない。
-import { el, yen, sleep, shuffle } from "../core/util.js";
+import { el, yen, shuffle } from "../core/util.js";
 import { DB, displayName } from "../core/data.js";
-import { layers, toast, modal } from "../core/ui.js";
+import { layers, modal } from "../core/ui.js";
 import { state, save } from "../core/state.js";
 import { addMoney } from "../core/stats.js";
 import { SE } from "../core/audio.js";
-import { vnTest } from "../vn/engine.js";
 import { addFlavorStock, FLAVOR_BOX_GRAMS } from "./shop.js";
 import { RIO_AWAY_DAY, KUJI_TICKET_MAX } from "../core/rules.js";
 import { kujiTickets, grantKujiTickets, spendKujiTicket } from "./kuji-tickets.js";
+import { reveal, revealMany } from "./kuji-reveal.js";
 
 // 全等級で購入を共有ロック。表示・セーブには保存しない。
 let purchaseLock = null, currentRows = null;
@@ -68,13 +68,14 @@ function grant(prize) {
   if ((prize.type === "goods" || prize.type === "stand") && prize.sell) state.goods.push({ name: prize.name, sell: prize.sell });
   return null;
 }
-/** 持っていた機材をお金に替えた時は、結果のカードにその額を出す */
+/** 持っていた機材をお金に替えた時は、結果の札にその額を出す */
 const yen2 = (n) => `¥${Math.round(n).toLocaleString("ja-JP")}`;
 const withDupe = (prize, cash) => cash == null ? prize : typeof cash === "object" ? { ...prize, ...cash } : { ...prize, dupCash: cash };
-const isDupe = (prize) => prize.dupCash != null || prize.dupTicket != null;
-const dupeText = (prize) => prize.dupTicket == null ? `持っているので、中古買い取りの${yen(prize.dupCash)}を受け取った`
-  : prize.dupTicket > 0 ? "持っているので、くじ券を1枚受け取った" : `持っている（くじ券は${KUJI_TICKET_MAX}枚まで）`;
-const dupeShort = (prize) => prize.dupTicket == null ? yen(prize.dupCash) : `券+${prize.dupTicket}`;
+/** 結果の札に出す重複の文を賞に添える（dupText＝1回引きの札の文、dupShort＝連続の小さい札の短い表記。見せ方は kuji-reveal.js） */
+const noted = (prize) => prize.dupCash == null && prize.dupTicket == null ? prize : { ...prize,
+  dupText: prize.dupTicket == null ? `持っているので、中古買い取りの${yen(prize.dupCash)}を受け取った`
+    : prize.dupTicket > 0 ? "持っているので、くじ券を1枚受け取った" : `持っている（くじ券は${KUJI_TICKET_MAX}枚まで）`,
+  dupShort: prize.dupTicket == null ? yen(prize.dupCash) : `券+${prize.dupTicket}` };
 
 /** ショップの「くじ」タブの中身 */
 export function kujiRows(rerender) {
@@ -201,7 +202,7 @@ function takeTicket(g, box, pay = "money") {
 
 async function draw(g, box, pay = "money") {
   const result = takeTicket(g, box, pay);
-  if (result) await reveal(result.prize, result.extras);
+  if (result) await reveal(noted(result.prize), result.extras.map(noted));
 }
 
 async function drawMany(g, box, count) {
@@ -209,129 +210,28 @@ async function drawMany(g, box, count) {
   for (let i = 0; i < count; i++) {
     const result = takeTicket(g, box);
     if (!result) break;
-    results.push(result.prize, ...result.extras);
+    results.push(noted(result.prize), ...result.extras.map(noted));
   }
   if (results.length) await revealMany(results, count);
 }
 
-function revealMany(results, count) {
-  return new Promise(resolve => {
-    const close = el("button.btn", { text: "結果を閉じる", onclick: () => {
-      layers.modal.classList.remove("show");
-      layers.modal.replaceChildren();
-      resolve();
-    } });
-    // 10連ガチャ風: 裏向きのカードを1枚ずつめくる。「すべてめくる」かSKIP中・テスト高速送りでは即座に全部出す（#1905 オーナー要望）。
-    const instant = vnTest.turbo || document.body.classList.contains("vn-skip");
-    const cards = results.map(prize => el(`div.kuji-card.kuji-short.rank-${prize.rank}${instant ? "" : ".kuji-facedown"}`, [
-      el("div.kuji-rank", { text: prize.rank === "LAST" ? "ラストワン賞" : `${prize.rank}賞` }),
-      el("div.kuji-name", { text: prize.rank === "LAST" ? prize.name.replace(/^ラストワン賞・/, "") : prize.name }),
-      // 重複は「同」バッジと買い取り額（限定の台はくじ券）だけにして、2列のカードに文字を詰めない（#2835）
-      ...(isDupe(prize) ? [el("div.kuji-dupe", { title: `持っている → ${dupeShort(prize)}`, "aria-label": `持っている → ${dupeShort(prize)}` }, [
-        el("span.kuji-dupe-badge", { text: "同" }),
-        el("span", { text: dupeShort(prize) }),
-      ])] : []),
-    ]));
-    layers.modal.replaceChildren(el("div.kuji-overlay.kuji-multi", { dataset: { test: "kuji-multi-reveal" } }, [
-      el("div.kuji-multi-panel", [
-        el("h2", { text: `${count}回の結果` }),
-        el("div.kuji-multi-cards", cards),
-        close,
-      ]),
-    ]));
-    layers.modal.classList.add("show");
-    if (instant) return;
-    let index = 0, timer = 0;
-    const flipAll = () => { clearTimeout(timer); cards.forEach(c => c.classList.remove("kuji-facedown")); flipBtn.remove(); };
-    const flipBtn = el("button.btn.small.kuji-flip-all", { text: "すべてめくる", dataset: { test: "kuji-flip-all" }, onclick: flipAll });
-    close.before(flipBtn);
-    const step = () => {
-      if (!cards[index]?.isConnected) return;
-      cards[index].classList.remove("kuji-facedown");
-      index += 1;
-      if (index < cards.length) timer = setTimeout(step, results[index - 1].rank === "S" || results[index - 1].rank === "LAST" ? 650 : 220);
-      else flipBtn.remove();
-    };
-    timer = setTimeout(step, 300);
-  });
-}
-
-// 引き演出: ガラガラ（福引きの回転抽選器）を回し、賞の色の玉が出る → 賞のカードが開く。上位賞は係の人が鐘を鳴らす。
-// 箱の最後の1枚なら、カードを閉じたあとにもう一度ガラガラを回し、ラストワン賞の黒い玉とカードを見せる（extras）。
-// （motions/garagara.js。SKIP中とテストの高速送りでは回さずにカードだけ出し、ラストワン賞はトーストで知らせる）
-function reveal(prize, extras = []) {
-  return new Promise((resolve) => {
-    const ov = el("div.kuji-overlay", { dataset: { test: "kuji-reveal" } });
-    layers.modal.replaceChildren(ov);
-    layers.modal.classList.add("show");
-    const skip = vnTest.turbo || document.body.classList.contains("vn-skip");
-    const queue = skip ? [prize] : [prize, ...extras];
-    let open = false;
-    const next = async () => {
-      const p = queue.shift();
-      if (!p) {
-        layers.modal.classList.remove("show");
-        layers.modal.replaceChildren();
-        resolve();
-        return;
-      }
-      await revealOne(ov, p, skip);
-      open = true;
-      if (skip) for (const ex of extras) {
-        await sleep(500);
-        toast(isDupe(ex) ? `${ex.name} は${dupeText(ex)}` : `${ex.name} を手に入れた！`, { kind: "good" });
-      }
-    };
-    ov.onclick = () => {
-      if (!open) return;
-      open = false;
-      SE.click();
-      next();
-    };
-    next();
-  });
-}
-
-/** 1つの賞を引いて見せる。カードが開いたら解決する */
-function revealOne(ov, prize, skip) {
-  return new Promise((done) => {
-    const card = el("div.kuji-card.drawing", [el("div.kuji-label", { text: prize.rank === "LAST" ? "ラストワン賞！" : "ガラガラ……" })]);
-    // 前のカードが残っていれば、ガラガラが上に重なり切ってから入れ替える（いきなり消えて背景だけになる間を作らない）
-    const prev = [...ov.children];
-    if (skip || !prev.length) ov.replaceChildren(card);
-    else setTimeout(() => { prev.forEach((n) => n.remove()); ov.prepend(card); }, 360);
-    SE.select();
-    let shown = false;
-    const show = () => {
-      if (shown) return;
-      shown = true;
-      card.style.visibility = "";
-      const last = prize.rank === "LAST";
-      card.className = `kuji-card reveal rank-${prize.rank}`;
-      card.title = prize.desc || ""; // スマホでは説明を札に出さず、長押し・ポインタの title で読む（#2729）
-      card.replaceChildren(
-        el("div.kuji-rank", { text: last ? "ラストワン賞" : `${prize.rank}賞` }),
-        el("div.kuji-name", { text: last ? prize.name.replace(/^ラストワン賞・/, "") : prize.name }),
-        el("div.kuji-desc", { text: prize.desc || "" }),
-        ...(isDupe(prize) ? [el("div.kuji-dupe", { text: dupeText(prize) })] : []),
-        // カード全体のタップで閉じる（ov.onclick）。文の案内は置かず、右上の ✕ だけ見せる（#2835）
-        el("button.kuji-close", { type: "button", text: "✕", "aria-label": "閉じる", dataset: { test: "kuji-close" } }),
-      );
-      SE.stamp();
-      if (prize.rank === "S" || last) SE.fanfare();
-      done();
-    };
-    // ガラガラが消え始めたところでカードを下で開き、重ねて受け渡す（回っているあいだ札は隠す）
-    if (!skip) card.style.visibility = "hidden";
-    (skip ? sleep(300) : import("../motions/garagara.js").then((m) => m.garagara(ov, prize.rank, { onHandoff: show })).catch((e) => console.error(e))).then(show);
-  });
-}
-
 /** 開発用: 景品を渡さずに、指定の賞で引く演出だけ見る（__remake.dev.motion("garagara-S") など）。
- * "LAST" はラストワン賞の場面だけ、"C+LAST" のように書くと C賞のカードを閉じたあとにラストワン賞へ続く */
+ * "LAST" はラストワン賞の場面だけ、"C+LAST" のように書くと C賞の札を閉じたあとにラストワン賞へ続く。
+ * 数字で始めると連続の演出: "10"（B・C賞だけ）・"10A"・"10S"（その賞が1つ入る）・"10LAST"（最後にラストワン賞が付く）・"5S" など */
 export function previewReveal(rank = "S") {
   const g = grades()[0];
   const find = (r) => (r === "LAST" ? g?.lastOne : g?.prizes.find((p) => p.rank === r)) || { rank: r, name: r === "LAST" ? "ラストワン賞" : `${r}賞`, desc: "" };
+  const many = /^(\d+)(.*)$/.exec(String(rank));
+  if (many) {
+    const count = Math.max(2, Math.min(10, Number(many[1]))), best = many[2] || "";
+    const pool = (r) => g?.prizes.filter((p) => p.rank === r) || [];
+    const some = (r, i) => pool(r)[i % (pool(r).length || 1)] || find(r);
+    const results = [...Array(count)].map((_, i) => (i % 3 === 1 ? some("C", i) : some("B", i)));
+    if (best === "A" || best === "S") results[Math.floor(count * 0.6)] = some("A", 0);
+    if (best === "S") results[count - 2] = find("S");
+    if (best === "LAST") results.push(find("LAST"));
+    return revealMany(results, count);
+  }
   const [main, extra] = String(rank).split("+");
   return reveal(find(main), extra ? [find(extra)] : []);
 }

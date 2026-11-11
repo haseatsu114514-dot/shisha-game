@@ -138,7 +138,7 @@ body:not(.game-ds) #stage[data-wide] .map-weather { left: calc(-1 * var(--stage-
 #stage[data-wide] .trpg-overlay { box-shadow: 0 0 0 var(--stage-gutter) #081414c9; }
 #stage[data-wide] .fx-dim { box-shadow: 0 0 0 var(--stage-gutter) rgba(0, 0, 0, .72); }
 #stage[data-wide] .entrance { box-shadow: 0 0 0 var(--stage-gutter) rgba(0, 0, 0, .82); }
-#stage[data-wide] .mo-garagara { box-shadow: 0 0 0 var(--stage-gutter) #241a13; }
+#stage[data-wide] .mo-garagara { box-shadow: 0 0 0 var(--stage-gutter) #150c2e; }
 /* LIME とメニューの暗幕はぼかしも掛けるので、box-shadow ではなく暗幕そのものを左右の余白まで広げる（中身は grid の中央なので位置は変わらない） */
 #stage[data-wide] .phone-overlay, #stage[data-wide] .dmenu .dm-backdrop { inset: 0 calc(-1 * var(--stage-gutter)); }
 #bg { z-index: 0; }

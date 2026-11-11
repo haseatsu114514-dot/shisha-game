@@ -1,21 +1,289 @@
-/* シーシャくじのガラガラ（remake/js/motions/garagara.js）。くじの暗幕の上に全面で重ねる（地の色は場面の壁の色を JS で入れる） */
-.mo-garagara { position: absolute; inset: 0; overflow: hidden; z-index: 2; pointer-events: none; background: #4d3c2f; }
+/* シーシャくじのガラガラ（remake/js/motions/garagara.js）と賞の札（remake/js/daily/kuji-reveal.js）。
+   2026-11-11 オーナー「ソシャゲのガチャや10連ガチャみたいなリッチな演出に」。
+   舞台（紅白幕・提灯・カウンター）と抽選器は SVG、火花やきらめきは canvas（motions/kuji-fx.js）、札と光は下の CSS。 */
 
-/* ラストワン賞のカード（NIGHTSIDE の黒地に銀。虹色の文字はやめて落ち着かせる） */
-.kuji-overlay .kuji-card.rank-LAST {
-  background: linear-gradient(165deg, #15131f, #0a0910 70%);
-  border-color: rgba(214, 218, 228, 0.7);
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.75), inset 0 0 0 4px #0a0910, inset 0 0 0 5px rgba(214, 218, 228, 0.25);
+/* ---- ガラガラの層: くじの暗幕の上に全面で重ねる ---- */
+.mo-garagara { position: absolute; inset: 0; overflow: hidden; z-index: 2; pointer-events: none; background: #150c2e; }
+/* 舞台の絵は動かないので自分の層に置き、寄りは合成だけで掛ける（毎フレーム描き直さない） */
+.mo-garagara .kj-back { will-change: transform; }
+.kj-dim, .kj-tint, .kj-vignette { position: absolute; inset: 0; pointer-events: none; }
+.kj-dim { background: #07040f; opacity: 0; }
+.kj-tint { opacity: 0; mix-blend-mode: overlay; }
+.kj-vignette { background: radial-gradient(ellipse 78% 78% at 50% 46%, rgba(7, 4, 15, 0) 55%, rgba(7, 4, 15, 0.72) 100%); }
+.kj-fx { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.kj-flash { position: absolute; inset: 0; opacity: 0; background: #fff; pointer-events: none; mix-blend-mode: screen; }
+/* 演出を飛ばす。右下に小さく置き、押せる大きさはスマホでも実寸 40px を下回らせない */
+.kj-skip {
+  position: absolute; right: calc(28px + var(--stage-gutter, 0px)); bottom: 26px; z-index: 3; pointer-events: auto;
+  min-width: max(104px, calc(72px / var(--k, 1))); min-height: max(46px, calc(40px / var(--k, 1))); padding: 0 20px;
+  font-family: var(--font); font-size: max(18px, calc(12px / var(--k, 1))); font-weight: 700; letter-spacing: 0.16em;
+  color: #fff6dc; background: rgba(20, 12, 34, 0.62); border: 1.5px solid rgba(255, 233, 168, 0.75); border-radius: 999px;
+  cursor: pointer; backdrop-filter: blur(4px);
 }
-.kuji-overlay .kuji-card.rank-LAST .kuji-rank {
-  font-size: 44px;
-  letter-spacing: 0.08em;
-  background: linear-gradient(180deg, #f4f5f8, #aab0bd 60%, #e2e5ec);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  text-shadow: none;
-  animation: none;
+.kj-skip::after { content: " ▶▶"; letter-spacing: -0.12em; font-size: 0.8em; }
+.kj-skip:hover, .kj-skip:focus-visible { background: rgba(60, 36, 96, 0.82); border-color: #fff0b8; }
+
+/* ---- 暗幕と賞の色 ----
+   --kj-main 主の色 / --kj-hi 明るい側 / --kj-acc 差し色 / --kj-deep 影の側 / --kj-glow にじみ / --kj-ball 玉 / --kj-ray 放射の濃さ */
+.kuji-overlay {
+  position: absolute; inset: 0 calc(-1 * var(--stage-gutter, 0px)); display: grid; place-items: center; overflow: hidden;
+  background: rgba(8, 5, 18, 0.8); backdrop-filter: blur(3px); cursor: pointer; animation: kj-fade 0.25s;
 }
-.kuji-overlay .kuji-card.rank-LAST .kuji-name { margin-top: 14px; color: #f1f2f6; }
-.kuji-overlay .kuji-card.rank-LAST .kuji-desc { color: #a9adbb; }
+@keyframes kj-fade { from { opacity: 0; } }
+.kuji-overlay, .kuji-card, .kj-backdrop, .kj-showcase {
+  --kj-main: #cfc8e2; --kj-hi: #ffffff; --kj-acc: #b9a8e6; --kj-deep: #5d5179; --kj-glow: rgba(207, 200, 226, 0.35); --kj-ball: #f6f3ec; --kj-ray: 0.2;
+}
+.kuji-overlay[data-rank="S"], .kuji-card.rank-S, :is(.kj-backdrop, .kj-showcase)[data-rank="S"] {
+  --kj-main: #ffcf4a; --kj-hi: #fff6d0; --kj-acc: #ff9a3c; --kj-deep: #8a5206; --kj-glow: rgba(255, 207, 74, 0.7); --kj-ball: #f7c648; --kj-ray: 0.62;
+}
+.kuji-overlay[data-rank="A"], .kuji-card.rank-A, :is(.kj-backdrop, .kj-showcase)[data-rank="A"] {
+  --kj-main: #ff5a4e; --kj-hi: #ffd9c9; --kj-acc: #ffb02e; --kj-deep: #8c1a14; --kj-glow: rgba(255, 90, 78, 0.6); --kj-ball: #e2443c; --kj-ray: 0.44;
+}
+.kuji-overlay[data-rank="B"], .kuji-card.rank-B, :is(.kj-backdrop, .kj-showcase)[data-rank="B"] {
+  --kj-main: #4f9bff; --kj-hi: #d6ebff; --kj-acc: #7fe3ff; --kj-deep: #1c4ea6; --kj-glow: rgba(79, 155, 255, 0.5); --kj-ball: #3f82ea; --kj-ray: 0.3;
+}
+.kuji-overlay[data-rank="C"], .kuji-card.rank-C, :is(.kj-backdrop, .kj-showcase)[data-rank="C"] {
+  --kj-main: #cfc8e2; --kj-hi: #ffffff; --kj-acc: #b9a8e6; --kj-deep: #5d5179; --kj-glow: rgba(207, 200, 226, 0.35); --kj-ball: #f6f3ec; --kj-ray: 0.2;
+}
+.kuji-overlay[data-rank="LAST"], .kuji-card.rank-LAST, :is(.kj-backdrop, .kj-showcase)[data-rank="LAST"] {
+  --kj-main: #b8a5ff; --kj-hi: #f1f2f8; --kj-acc: #6f7cff; --kj-deep: #3a3470; --kj-glow: rgba(184, 165, 255, 0.65); --kj-ball: #2a2648; --kj-ray: 0.52;
+}
+
+/* ---- 札の後ろの光: 紫の地に七宝、賞の色の放射がゆっくり回る ---- */
+.kj-backdrop {
+  position: absolute; inset: 0; overflow: hidden; pointer-events: none; opacity: 0; transition: opacity 0.4s ease;
+  background: radial-gradient(ellipse 78% 88% at 50% 46%, #4a2f8c 0%, #26164f 42%, #0c061d 100%);
+}
+.kj-backdrop.on { opacity: 1; }
+.kj-backdrop::before {
+  content: ""; position: absolute; inset: 0; opacity: 0.07;
+  background:
+    radial-gradient(circle at 50% 50%, transparent 28.6px, #dcaa3e 28.6px 30px, transparent 30px) 0 0 / 60px 60px,
+    radial-gradient(circle at 50% 50%, transparent 28.6px, #dcaa3e 28.6px 30px, transparent 30px) 30px 30px / 60px 60px;
+}
+.kj-rays, .kj-halo { position: absolute; left: 50%; top: 46%; pointer-events: none; mix-blend-mode: screen; }
+.kj-rays {
+  width: 2000px; height: 2000px; margin: -1000px 0 0 -1000px; border-radius: 50%; opacity: var(--kj-ray); will-change: transform;
+  background: repeating-conic-gradient(from 0deg, var(--kj-main) 0deg 4deg, transparent 4deg 9deg, var(--kj-acc) 9deg 10.5deg, transparent 10.5deg 20deg);
+  -webkit-mask-image: radial-gradient(circle closest-side, transparent 8%, #000 20%, rgba(0, 0, 0, 0.3) 52%, transparent 76%);
+  mask-image: radial-gradient(circle closest-side, transparent 8%, #000 20%, rgba(0, 0, 0, 0.3) 52%, transparent 76%);
+  animation: kj-spin 38s linear infinite;
+}
+.kj-rays-b {
+  opacity: calc(var(--kj-ray) * 0.75);
+  background: repeating-conic-gradient(from 7deg, var(--kj-hi) 0deg 1.3deg, transparent 1.3deg 15deg);
+  animation: kj-spin 56s linear infinite reverse;
+}
+.kj-halo {
+  width: 1320px; height: 780px; margin: -390px 0 0 -660px; opacity: calc(0.22 + var(--kj-ray) * 0.75);
+  background: radial-gradient(closest-side, var(--kj-main), transparent);
+  animation: kj-breathe 2.4s ease-in-out infinite alternate;
+}
+@keyframes kj-spin { to { transform: rotate(360deg); } }
+@keyframes kj-breathe { from { transform: scale(0.94); } to { transform: scale(1.06); } }
+.kuji-multi > .kj-backdrop .kj-rays { opacity: calc(var(--kj-ray) * 0.42); }
+.kuji-multi > .kj-backdrop .kj-halo { opacity: calc(0.14 + var(--kj-ray) * 0.3); }
+.kj-fx-card { z-index: 5; }
+
+/* ---- 賞の札（1回引き・S賞の見せ場）: 黒い漆の札に、賞の色の箔の枠。左に景品、右に賞と名前 ---- */
+.kuji-card { position: relative; color: #fff8ea; font-family: var(--font); }
+.kuji-card:not(.kuji-short) {
+  width: 884px; min-height: 372px; display: grid; grid-template-columns: 336px minmax(0, 1fr); text-align: left;
+  border: 6px solid transparent; border-radius: 26px;
+  background:
+    linear-gradient(155deg, #31205c 0%, #1c1139 55%, #120a27 100%) padding-box,
+    linear-gradient(135deg, var(--kj-hi) 0%, var(--kj-main) 20%, var(--kj-deep) 46%, var(--kj-main) 70%, var(--kj-hi) 86%, var(--kj-main) 100%) border-box;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.62), 0 0 0 1px rgba(0, 0, 0, 0.5), 0 0 76px var(--kj-glow);
+}
+.kj-art {
+  position: relative; display: grid; place-items: center; overflow: hidden; border-radius: 20px 0 0 20px;
+  background: radial-gradient(circle at 50% 44%, #ffffff 0%, var(--kj-hi) 30%, var(--kj-main) 86%, var(--kj-deep) 140%);
+  box-shadow: inset -10px 0 22px -12px rgba(0, 0, 0, 0.45);
+}
+.kj-art::before {
+  content: ""; position: absolute; left: 50%; top: 44%; width: 720px; height: 720px; margin: -360px 0 0 -360px; opacity: 0.5;
+  background: repeating-conic-gradient(#fff 0deg 7deg, transparent 7deg 20deg);
+  -webkit-mask-image: radial-gradient(circle closest-side, #000 0%, transparent 78%); mask-image: radial-gradient(circle closest-side, #000 0%, transparent 78%);
+  animation: kj-spin 30s linear infinite;
+}
+.kj-art > * { position: relative; filter: drop-shadow(0 12px 12px rgba(40, 16, 0, 0.36)); }
+.kj-art-img { display: block; overflow: hidden; }
+.kj-art-img img { position: absolute; max-width: none; }
+.kj-art .kj-art-leaf { display: flex; align-items: center; justify-content: center; flex: none; margin: 0; background: none; }
+.kj-art-fan { display: flex; align-items: flex-end; justify-content: center; }
+.kj-art-pack { display: block; }
+.kj-art-fan > * { margin: 0 -13%; transform-origin: 50% 100%; }
+.kj-art-fan .kj-gift { --u: 10px; }
+.kj-art-fan > :nth-child(1) { transform: rotate(-13deg) translateY(4%); }
+.kj-art-fan > :nth-child(2) { z-index: 1; transform: translateY(-6%); }
+.kj-art-fan > :nth-child(3) { transform: rotate(13deg) translateY(4%); }
+.kj-art-fan[data-n="2"] > :nth-child(2) { transform: rotate(11deg); }
+/* 景品の包み（絵の無い景品）。紫の箱に賞の色のリボン。大きさは --u（一辺の 1/10）で決める */
+.kj-gift { --u: 19px; position: relative; display: block; width: calc(var(--u) * 10); height: calc(var(--u) * 10); }
+.kj-gift i { position: absolute; display: block; }
+.kj-gift-box {
+  left: calc(var(--u) * 1.4); right: calc(var(--u) * 1.4); bottom: calc(var(--u) * 0.7); height: calc(var(--u) * 5); border-radius: calc(var(--u) * 0.3);
+  background: linear-gradient(90deg, transparent 41%, var(--kj-acc) 41% 59%, transparent 59%), linear-gradient(155deg, #7a55d6 0%, #4a2c9a 55%, #2c195e 100%);
+  box-shadow: inset 0 calc(var(--u) * -0.7) calc(var(--u) * 1.2) rgba(0, 0, 0, 0.3);
+}
+.kj-gift-box::after { content: ""; position: absolute; left: 0; right: 0; top: 0; height: calc(var(--u) * 0.5); background: linear-gradient(180deg, rgba(0, 0, 0, 0.4), transparent); }
+.kj-gift-lid {
+  left: calc(var(--u) * 0.9); right: calc(var(--u) * 0.9); bottom: calc(var(--u) * 5.5); height: calc(var(--u) * 1.7); border-radius: calc(var(--u) * 0.3);
+  background: linear-gradient(90deg, transparent 42%, var(--kj-acc) 42% 58%, transparent 58%), linear-gradient(155deg, #9a78ee 0%, #5d3bb4 100%);
+  box-shadow: inset 0 calc(var(--u) * 0.2) 0 rgba(255, 255, 255, 0.35);
+}
+.kj-gift-lid::after { content: ""; position: absolute; left: calc(var(--u) * 0.4); top: calc(var(--u) * 0.3); width: calc(var(--u) * 2.6); height: calc(var(--u) * 0.3); border-radius: 99px; background: rgba(255, 255, 255, 0.45); }
+/* 結び目: 左右の輪（中は抜けて見える）と中央の結び */
+.kj-gift-bow {
+  left: 50%; bottom: calc(var(--u) * 7.05); width: calc(var(--u) * 1.3); height: calc(var(--u) * 1.2); margin-left: calc(var(--u) * -0.65); border-radius: calc(var(--u) * 0.3);
+  background: linear-gradient(180deg, var(--kj-hi), var(--kj-acc)); box-shadow: 0 calc(var(--u) * 0.1) calc(var(--u) * 0.2) rgba(0, 0, 0, 0.35);
+}
+.kj-gift-bow::before, .kj-gift-bow::after {
+  content: ""; position: absolute; bottom: calc(var(--u) * 0.1); width: calc(var(--u) * 2.5); height: calc(var(--u) * 1.75); box-sizing: border-box;
+  border: calc(var(--u) * 0.5) solid var(--kj-acc); background: transparent; box-shadow: 0 calc(var(--u) * 0.12) calc(var(--u) * 0.2) rgba(0, 0, 0, 0.25);
+}
+.kj-gift-bow::before { right: calc(var(--u) * 0.9); border-radius: 70% 30% 20% 70%; transform: rotate(18deg); transform-origin: 100% 100%; }
+.kj-gift-bow::after { left: calc(var(--u) * 0.9); border-radius: 30% 70% 70% 20%; transform: rotate(-18deg); transform-origin: 0 100%; }
+.kuji-short .kj-gift { --u: 10.4px; }
+
+.kj-body { position: relative; display: flex; flex-direction: column; justify-content: center; gap: 10px; min-width: 0; padding: 30px 62px 30px 38px; }
+.kuji-card:not(.kuji-short) .kj-body::before {
+  content: ""; position: absolute; inset: 0; border-radius: 0 20px 20px 0; opacity: 0.06; pointer-events: none;
+  background:
+    radial-gradient(circle at 50% 50%, transparent 22.6px, var(--kj-main) 22.6px 24px, transparent 24px) 0 0 / 48px 48px,
+    radial-gradient(circle at 50% 50%, transparent 22.6px, var(--kj-main) 22.6px 24px, transparent 24px) 24px 24px / 48px 48px;
+}
+.kuji-rank {
+  position: relative; width: fit-content; font-family: var(--font); font-size: 100px; font-weight: 900; line-height: 1.02; letter-spacing: 0.02em;
+  background: linear-gradient(180deg, #ffffff 4%, var(--kj-hi) 26%, var(--kj-main) 56%, var(--kj-acc) 96%);
+  -webkit-background-clip: text; background-clip: text; color: transparent;
+  filter: drop-shadow(0 3px 0 var(--kj-deep)) drop-shadow(0 0 16px var(--kj-glow));
+}
+.kuji-card.rank-LAST:not(.kuji-short) .kuji-rank { font-size: 64px; letter-spacing: 0.06em; }
+.kuji-name { position: relative; padding-top: 12px; font-size: 30px; font-weight: 800; line-height: 1.32; color: #fff8ea; border-top: 2px solid; border-image: linear-gradient(90deg, var(--kj-main), transparent 92%) 1; }
+.kj-nowrap { display: inline-block; }
+.kuji-desc { position: relative; font-size: 22px; line-height: 1.55; color: #d8cdee; }
+.kuji-dupe { position: relative; width: fit-content; padding: 6px 14px; font-size: 20px; font-weight: 700; line-height: 1.4; color: #ffe9a8; background: rgba(255, 207, 74, 0.12); border: 1px solid rgba(255, 207, 74, 0.5); border-radius: 10px; }
+.kuji-dupe-badge { display: inline-grid; place-items: center; min-width: 1.6em; height: 1.6em; margin-right: 6px; padding: 0 4px; font-size: 1em; line-height: 1; color: #2a1500; background: linear-gradient(180deg, #fff0b8, #ffcf4a); border-radius: 4px; vertical-align: middle; }
+/* 札全体のタップで閉じる。文の案内は置かず、右上の ✕ だけ（#2835） */
+.kuji-close {
+  position: absolute; top: 8px; right: 8px; display: grid; place-items: center; width: max(56px, calc(40px / var(--k, 1))); height: max(56px, calc(40px / var(--k, 1))); padding: 0;
+  font-size: 26px; line-height: 1; color: #cfc3e6; background: transparent; border: 0; border-radius: 50%; cursor: pointer;
+}
+.kuji-close:hover, .kuji-close:focus-visible { color: #fff; background: rgba(255, 255, 255, 0.14); }
+/* S賞の上の「大当たり」 */
+.kj-banner {
+  position: absolute; left: 50%; top: -36px; z-index: 2; transform: translateX(-50%); padding: 6px 40px 7px; white-space: nowrap;
+  font-size: 28px; font-weight: 900; letter-spacing: 0.34em; text-indent: 0.34em; color: #5a2a00;
+  background: linear-gradient(180deg, #fffbe6 0%, #ffd95e 46%, #f0a424 100%); border: 2px solid #fff6d0; border-radius: 999px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.45), 0 0 34px rgba(255, 207, 74, 0.8);
+}
+/* 札を斜めに走る照り */
+.kuji-card::after {
+  content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; mix-blend-mode: screen; opacity: 0;
+  background: linear-gradient(108deg, transparent 42%, rgba(255, 255, 255, 0.6) 50%, transparent 58%) 130% 0 / 260% 100% no-repeat;
+}
+
+/* 開く動き: 光の中から回り込んで出て、賞の文字が判のように押される */
+.kuji-card.reveal { animation: kj-card-in 0.62s cubic-bezier(0.2, 1.22, 0.32, 1) both; }
+.kuji-card.reveal::after { animation: kj-shine 1.05s 0.5s ease-out both; }
+.kuji-card.reveal:is(.rank-S, .rank-LAST)::after { animation: kj-shine 2.6s 0.5s ease-out infinite; }
+.kuji-card.reveal .kuji-rank { animation: kj-stamp 0.46s 0.26s cubic-bezier(0.2, 1.5, 0.4, 1) both; }
+.kuji-card.reveal .kj-art > * { animation: kj-art-in 0.56s 0.2s cubic-bezier(0.2, 1.4, 0.4, 1) both; }
+.kuji-card.reveal :is(.kuji-name, .kuji-desc, .kuji-dupe) { animation: kj-rise 0.42s 0.44s ease-out both; }
+.kuji-card.reveal .kuji-desc { animation-delay: 0.52s; }
+.kuji-card.reveal .kuji-dupe { animation-delay: 0.6s; }
+.kuji-card.reveal .kj-banner { animation: kj-banner-in 0.5s 0.5s cubic-bezier(0.2, 1.5, 0.4, 1) both; }
+@keyframes kj-card-in {
+  0% { transform: perspective(1500px) scale(0.2) rotateY(-160deg) rotateZ(-10deg); opacity: 0; filter: brightness(3.2); }
+  45% { opacity: 1; filter: brightness(1.8); }
+  100% { transform: perspective(1500px) scale(1) rotateY(0deg) rotateZ(0deg); opacity: 1; filter: brightness(1); }
+}
+@keyframes kj-shine { 0% { opacity: 1; background-position: 130% 0; } 40%, 100% { opacity: 1; background-position: -30% 0; } }
+@keyframes kj-stamp { from { transform: scale(2.7) rotate(-9deg); opacity: 0; } }
+@keyframes kj-art-in { from { transform: scale(0.3) rotate(-14deg); opacity: 0; } }
+@keyframes kj-rise { from { transform: translateY(16px); opacity: 0; } }
+@keyframes kj-banner-in { from { transform: translateX(-50%) translateY(20px) scale(0.5); opacity: 0; } }
+
+/* ---- 連続の結果: 玉の載った札が並び、1枚ずつ開く ---- */
+.kuji-multi { cursor: default; padding: 14px 20px; }
+.kuji-multi-panel { position: relative; width: min(1240px, 100%); max-height: 100%; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; text-align: center; color: #fff8ea; }
+.kuji-multi-panel.kj-wait { visibility: hidden; }
+.kuji-multi-panel h2 {
+  display: flex; align-items: center; justify-content: center; gap: 18px; margin: 0 0 12px; font-family: var(--font); font-size: 30px; font-weight: 900; letter-spacing: 0.14em; color: #ffe9a8;
+  text-shadow: 0 2px 0 #5a3a08, 0 0 18px rgba(255, 207, 74, 0.45);
+}
+.kuji-multi-panel h2::before, .kuji-multi-panel h2::after { content: ""; width: 150px; height: 2px; background: linear-gradient(90deg, transparent, #dcaa3e); }
+.kuji-multi-panel h2::after { transform: scaleX(-1); }
+.kuji-multi-cards { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin: 0 0 14px; perspective: 1500px; }
+.kuji-card.kuji-short {
+  flex: 0 0 calc((100% - 48px) / 5); min-width: 0; min-height: 244px; display: flex; flex-direction: column; overflow: hidden; text-align: center;
+  border: 3px solid transparent; border-radius: 16px;
+  background:
+    linear-gradient(160deg, #31205c 0%, #1b1038 60%, #120a27 100%) padding-box,
+    linear-gradient(135deg, var(--kj-hi) 0%, var(--kj-main) 24%, var(--kj-deep) 50%, var(--kj-main) 76%, var(--kj-hi) 100%) border-box;
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.5), 0 0 22px var(--kj-glow);
+}
+.kuji-multi-cards[data-n="11"] .kuji-card.kuji-short { flex-basis: calc((100% - 60px) / 6); }
+.kuji-short .kj-art { flex: none; height: 138px; border-radius: 0; box-shadow: inset 0 -8px 14px -10px rgba(0, 0, 0, 0.5); }
+.kuji-short .kj-art::before { width: 360px; height: 360px; margin: -180px 0 0 -180px; }
+.kuji-short .kj-body { position: static; flex: 1; justify-content: flex-start; align-items: center; gap: 6px; padding: 8px 8px 10px; }
+.kuji-short .kuji-rank {
+  position: absolute; left: 7px; top: 7px; z-index: 1; padding: 3px 11px 4px; font-size: 22px; line-height: 1.1; letter-spacing: 0.02em; border-radius: 999px;
+  color: #2a1300; -webkit-text-fill-color: #2a1300; background: linear-gradient(180deg, var(--kj-hi), var(--kj-main)); -webkit-background-clip: border-box; background-clip: border-box;
+  filter: none; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+.kuji-short.rank-LAST .kuji-rank { font-size: 17px; color: #f1f2f8; -webkit-text-fill-color: #f1f2f8; background: linear-gradient(180deg, #4a4390, #1c1838); }
+.kuji-short .kuji-name { padding: 0; border: 0; font-size: 19px; font-weight: 700; line-height: 1.34; }
+.kuji-short .kuji-dupe { margin-top: auto; padding: 3px 9px; font-size: 16px; }
+/* 伏せた札: 出た玉が載っている（玉の色が賞の予告） */
+.kj-ball {
+  position: absolute; left: 50%; top: 50%; z-index: 2; width: 86px; height: 86px; margin: -43px 0 0 -43px; border-radius: 50%; pointer-events: none;
+  background: radial-gradient(circle at 34% 30%, #ffffff 0%, var(--kj-hi) 14%, var(--kj-ball) 48%, var(--kj-deep) 100%);
+  box-shadow: 0 0 36px var(--kj-glow), 0 12px 16px rgba(0, 0, 0, 0.5), inset -8px -10px 16px rgba(0, 0, 0, 0.25);
+  opacity: 0; transform: scale(2.3); transition: opacity 0.26s ease-out, transform 0.26s ease-out;
+}
+.rank-LAST .kj-ball { background: radial-gradient(circle at 34% 30%, #b9baea 0%, #5a568c 16%, #2a2648 48%, #07060e 100%); }
+.rank-LAST .kj-ball::after { content: ""; position: absolute; inset: 34% -2% 30%; border: 3px solid #d8dce6; border-top-color: transparent; border-radius: 50%; transform: rotate(-16deg); }
+.kuji-short.kuji-facedown {
+  background: linear-gradient(160deg, #2b1b52 0%, #150c2c 100%) padding-box, linear-gradient(135deg, #7c68b6, #2c2050 55%, #6a58a0) border-box;
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.5);
+}
+.kuji-short.kuji-facedown > :not(.kj-ball) { visibility: hidden; }
+.kuji-short.kuji-facedown .kj-ball { opacity: 1; transform: none; animation: kj-bob 1.5s ease-in-out infinite alternate; animation-delay: calc(var(--i, 0) * -0.17s); }
+.kuji-multi-panel.kj-in .kuji-short { animation: kj-deal 0.42s cubic-bezier(0.2, 1.3, 0.4, 1) both; animation-delay: calc(var(--i, 0) * 45ms); }
+.kuji-multi-panel .kuji-short.kj-open { animation: kj-tile-open 0.44s cubic-bezier(0.2, 1.4, 0.4, 1) both; }
+.kuji-short.kj-open::after { animation: kj-shine 0.9s 0.1s ease-out both; }
+.kuji-multi-panel.kj-complete .kuji-short:is(.rank-S, .rank-LAST)::after { animation: kj-shine 2.6s ease-out infinite; }
+@keyframes kj-bob { from { transform: translateY(-4px); } to { transform: translateY(4px); } }
+@keyframes kj-deal { from { transform: translateY(60px) scale(0.6); opacity: 0; } }
+@keyframes kj-tile-open { 0% { transform: rotateY(92deg) scale(0.92); filter: brightness(2.6); } 100% { transform: rotateY(0deg) scale(1); filter: brightness(1); } }
+.kj-actions { display: flex; align-items: center; justify-content: center; gap: 14px; }
+/* 舞台に合わせた金のふちのボタン（紙のテーマの白いボタンを上書きする） */
+html:root .kuji-multi .kj-actions .btn.btn {
+  min-width: 210px; min-height: 52px; justify-content: center; font-size: 20px; font-weight: 700; letter-spacing: 0.08em; color: #fff6dc;
+  background: linear-gradient(180deg, #4a2f8c, #24154e); border: 2px solid #dcaa3e; border-image: none; border-radius: 999px; box-shadow: 0 6px 16px rgba(0, 0, 0, 0.45);
+}
+html:root .kuji-multi .kj-actions .btn.btn:is(:hover, :focus-visible) { color: #fff; background: linear-gradient(180deg, #6243b4, #33206c); border-color: #fff0b8; }
+html:root .kuji-multi .kj-actions .btn.kuji-flip-all { min-width: 170px; background: rgba(20, 12, 34, 0.7); border-color: rgba(255, 233, 168, 0.6); }
+html:root .kuji-multi .kuji-multi-panel.kj-complete .kj-done { color: #3a1c00; background: linear-gradient(180deg, #fffbe6 0%, #ffd95e 46%, #f0a424 100%); border-color: #fff6d0; box-shadow: 0 6px 16px rgba(0, 0, 0, 0.45), 0 0 26px rgba(255, 207, 74, 0.7); }
+/* S賞・ラストワン賞の見せ場（連続の途中で1枚ずつ大きく見せる。タップで戻る） */
+.kj-showcase { position: absolute; inset: 0; z-index: 4; display: grid; place-items: center; cursor: pointer; animation: kj-fade 0.2s; }
+
+/* スマホでは1回引きの札の説明（補足）を出さず、札の title で読む（#2729・2026-11-08「文字が多い」）。賞・景品名・重複の買い取りは出す */
+html:root[data-density="phone"] .kuji-card:not(.kuji-short) .kuji-desc { display: none; }
+/* スマホ横持ち: stage が縮むぶん（--k）を戻し、実寸で文字 12px・押せる所 40px を下回らせない（#2835）。縦持ちは扱わない */
+@media (orientation: landscape) and (max-width: 1024px) and (max-height: 520px) and (pointer: coarse) and (hover: none) {
+  .kuji-card:not(.kuji-short) .kuji-name { font-size: max(30px, calc(14px / var(--k, 1))); }
+  .kuji-card:not(.kuji-short) :is(.kuji-desc, .kuji-dupe) { font-size: max(22px, calc(13px / var(--k, 1))); }
+  .kuji-short .kuji-name, .kuji-short .kuji-dupe { font-size: max(19px, calc(12px / var(--k, 1))); }
+  .kuji-short .kuji-rank { font-size: max(22px, calc(13px / var(--k, 1))); }
+  .kuji-short.rank-LAST .kuji-rank { font-size: max(17px, calc(12px / var(--k, 1))); }
+  .kuji-close { font-size: max(26px, calc(16px / var(--k, 1))); }
+  .kuji-multi-panel h2 { font-size: max(30px, calc(14px / var(--k, 1))); }
+  html:root .kuji-multi .kj-actions .btn.btn { min-height: max(52px, calc(40px / var(--k, 1))); font-size: max(20px, calc(12px / var(--k, 1))); }
+}
+/* 動きを減らす設定: 札はその場に出し、光は回さない */
+@media (prefers-reduced-motion: reduce) {
+  .kuji-card.reveal, .kuji-card.reveal *, .kuji-card::after, .kuji-multi-panel .kuji-short, .kj-ball, .kj-rays, .kj-halo, .kj-art::before { animation: none !important; transition: none !important; }
+}

@@ -119,7 +119,7 @@ python3 remake/tools/serve_preview.py --port 8123
 ```
 remake/
   index.html
-  css/            base.css（トークン・共通UI）/ vn.css / daily.css / craft.css（大会＝黒×ネオン）/ reel.css（スロット）/ extras.css（恋人・くじ・ギャラリー）
+  css/            base.css（トークン・共通UI）/ vn.css / daily.css / craft.css（大会＝黒×ネオン）/ reel.css（スロット）/ extras.css（恋人・ギャラリー）/ motions/garagara.css（くじの演出と賞の札）
   js/
     main.js       起動（データ読込→タイトル）
     core/         util / data（ローダ・アセット解決）/ state（状態・セーブ）/ stats / audio / ui / stage
@@ -213,6 +213,8 @@ PR226の14種の専用イラスト背景と極太ゴシック・斜め帯を `vn
    - **シーシャくじ**（Dr.fookah の「シーシャくじ」タブ・`daily/kuji.js`）: `data/kuji.json` のボックス制。箱の並びは作った時点で保存＝ロードで変わらない。
      景品の小物は「売る」タブで換金できる。500円・1,000円に加え、第2章から3,000円・第3章から5,000円・第4章から10,000円の上位くじ（景品は主に台と機材・KJ02）。
      持っている台・機材が当たったら中古買い取りの額を受け取る（`remake/test/kuji_tiers.mjs`）。
+     引く演出はガチャ風（GCH・2026-11-11）: 紅白幕と提灯のくじコーナーでガラガラを回し、賞の色の玉 → 景品の絵つきの札。5回・10回は玉が玉置きに並んでから1枚ずつ開き、S賞・ラストワン賞は大きく見せる。右下の SKIP で飛ばせる
+     （`motions/garagara.js`・`garagara-stage.js`・`kuji-fx.js`、`daily/kuji-reveal.js`・`kuji-prize-art.js`、`css/motions/garagara.css`。確認は `node remake/test/browser/kuji_gacha.mjs`、演出だけ見るなら `__remake.dev.motion("garagara-10S")`）。
      第5章から20,000円の限定台くじ（S賞はくじ限定の台3種・性能は店の特注台と同じ）。持っている限定の台はくじ券1枚に替わり、くじ券1枚で1回引ける。
      限定の台・箱・くじ券は周回に持ち越さず、火種も付かない（KJ05〜KJ09・`daily/kuji-tickets.js`・`remake/test/kuji_limited.mjs`）
    - **出張シーシャの依頼**（第5章・DLV・`chapters/ch5-catering.js`）: 勝負の日が決まる前の自由行動で、数日おきにスミさんのLIMEで店への出張の頼みが届く（一度に一つ）。

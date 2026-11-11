@@ -9,10 +9,11 @@ import path from "node:path";
 
 const read = file => readFile(new URL(file, import.meta.url), "utf8");
 const strip = source => source.replace(/^import .*;\s*$/gm, "").replace(/\bexport /g, "");
-const [kuji, core, util, stats, data, travelBudget, galleryProgress, kujiTickets, equipment] = await Promise.all([
+const [kuji, core, util, stats, data, travelBudget, galleryProgress, kujiTickets, equipment, kujiReveal] = await Promise.all([
   read("../js/daily/kuji.js"), read("../js/core/state.js"), read("../js/core/util.js"),
   read("../js/core/stats.js"), read("../../data/kuji.json"), read("../js/core/travel-budget.js"),
   read("../js/core/gallery-progress.js"), read("../js/daily/kuji-tickets.js"), read("../../data/equipment.json"),
+  read("../js/daily/kuji-reveal.js"), // 結果の札（賞・景品名・重複の表示）。ガラガラと粒子は高速送りでは読み込まない
 ]);
 // くじ限定の台（KJ05）だけ実データを渡す（重複でくじ券に替わるかの判定に使う）
 const kujiOnly = Object.fromEntries(JSON.parse(equipment).equipment.filter(e => e.kuji_only).map(e => [e.id, e]));
@@ -31,7 +32,7 @@ function save() { saves++; persistState(); }
 ${strip(stats.match(/export function addMoney\(n\) \{[\s\S]*?\n\}/)[0])}
 const DB = {kuji:${data}, equipById:${JSON.stringify(kujiOnly)}}, displayName = () => 'リン';
 const layers = {screen:document.querySelector('#screen'), modal:document.querySelector('#modal')};
-const toast = () => {}, SE = {select(){},click(){},stamp(){},fanfare(){}};
+const toast = () => {}, SE = new Proxy({}, {get: () => () => {}}), prizeArt = () => null; // 音と景品の絵はこの検査の対象外
 const vnTest = {turbo:true}, FLAVOR_BOX_GRAMS = 50, RIO_AWAY_DAY = 3;
 function addFlavorStock(id, grams) {
   flavorGrants++;
@@ -39,6 +40,7 @@ function addFlavorStock(id, grams) {
   if (!state.flavors.includes(id)) state.flavors.push(id);
 }
 ${strip(kujiTickets)}
+${strip(kujiReveal)}
 ${strip(kuji)}
 let root, old, oldTicket;
 function paint() { renders++; root.replaceChildren(...kujiRows(paint)); }
