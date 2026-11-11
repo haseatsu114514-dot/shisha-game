@@ -132,7 +132,7 @@
 :root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard .gb-bar-line { background: rgba(255, 255, 255, .1); }
 :root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard .gb-bar-line b { background: var(--c); box-shadow: 0 0 8px color-mix(in srgb, var(--c) 70%, transparent); }
 
-/* 下の帯: 火種の数・凡例・決定。上に金の細い罫線。 */
+/* 下の帯: 火種の数・決定。上に金の細い罫線（凡例は「？」の見方へ移した・SBD117）。 */
 :root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard .gb-footer {
   border-top: 0;
   background:
@@ -144,10 +144,6 @@
 :root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard .gb-hidane b { color: color-mix(in srgb, var(--hc) 78%, #fff); }
 :root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard .gb-hidane i { filter: drop-shadow(0 0 3px color-mix(in srgb, var(--hc) 60%, transparent)); }
 :root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard .gb-hidane.zero { opacity: .45; }
-:root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard .gb-legend { color: var(--neo-ui-dim); font-weight: 500; letter-spacing: .02em; }
-:root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard .gb-legend-item i { border-color: var(--neo-ui-gold-hi); }
-:root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard .gb-legend-item i.s-available { border-color: var(--neo-ui-gold-hi); box-shadow: 0 0 6px var(--neo-ui-gold-hi); }
-:root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard .gb-legend-item i.s-sealed { border-color: #dcc4f2; }
 
 /* ボタン（灯す・やめる・目標にする・組み直す・取り消す・決定／閉じる）: 新版の札。主のボタンだけ金。 */
 :root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard .btn {
@@ -200,3 +196,7 @@
 }
 :root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard .gb-goal:focus-visible { outline: 2px solid var(--neo-ui-gold); outline-offset: 2px; }
 :root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard .gb-goal-cost { color: var(--neo-ui-gold-hi); font-weight: 700; }
+/* 文字を減らした部品（SBD116〜117）: 火種の粒の横の数・上の短い札。紙の色のままだと夜紫の面で読めない。 */
+:root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard .gb-goal-fire b { color: var(--neo-ui-ink); }
+:root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard .gb-place-chip { color: var(--neo-ui-ink); background: var(--neo-ui-card); border-color: rgba(201, 167, 230, .4); }
+:root[data-look="neo"] body:not(.game-ds) #stage #fx .gboard.can-light .gb-place-chip { color: #26160a; background: linear-gradient(180deg, #f3d48d, #d9a94f); border-color: #fbe6b4; }
