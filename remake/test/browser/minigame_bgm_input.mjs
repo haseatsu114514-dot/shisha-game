@@ -1,6 +1,7 @@
 // Standalone minigames: real page transitions, steering and media play calls.
 import assert from "node:assert/strict";
 import { createRequire } from "node:module";
+import { installLoadingComicReader } from "./loading_reader.mjs";
 
 const { chromium } = createRequire(import.meta.url)("playwright");
 const baseURL = process.env.BASE_URL || "http://127.0.0.1:8123/remake/";
@@ -11,6 +12,7 @@ async function open(path, rejectFirstBgm = false) {
   const context = await browser.newContext({ viewport: { width: 1280, height: 720 } });
   const page = await context.newPage();
   page.setDefaultTimeout(15000);
+  await installLoadingComicReader(page); // 始める前のロードに漫画が出たら読んで進む（本編と同じ）
   const errors = [];
   page.on("pageerror", error => errors.push(error.message));
   await page.addInitScript(rejectFirst => {

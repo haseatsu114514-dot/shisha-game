@@ -662,6 +662,7 @@
         "remake/js/minigames/desert-ride.js",
         "remake/js/minigames/desert-ride-model.js",
         "remake/js/minigames/desert-ride-art.js",
+        "remake/js/minigames/minigame-loading.js",
         "remake/img/ui/desert_ride/**",
         "remake/js/chapters/ch4-desert.js",
         "remake/js/chapters/ch4-desert-progress.js",
@@ -1204,7 +1205,8 @@
         "remake/img/ui/axe_throw/**",
         "remake/img/backgrounds/bg_axe_lounge_night.webp",
         "remake/test/browser/axe_bgm_788.mjs",
-        "remake/test/browser/axe_audio_performance.mjs"
+        "remake/test/browser/axe_audio_performance.mjs",
+        "assets/audio/se/axe_throw/**"
       ],
       "run": [
         "COMPARISON_DIR=.codex/artifacts/remake-browser/axe-poses node remake/test/browser/axe_throw.mjs",
@@ -1709,6 +1711,7 @@
         "remake/js/core/stage-fit.js",
         "remake/js/minigames/camel-race.js",
         "remake/js/minigames/camel-race-model.js",
+        "remake/js/minigames/minigame-loading.js",
         "remake/js/chapters/ch4-camel-race.js",
         "remake/js/chapters/ch4-camel-progress.js",
         "remake/js/chapters/ch4-dubai-daily.js",

@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { LOADING_COMICS, eligibleLoadingComics } from '../js/core/loading-comics.js';
 import { hasMetCharacter } from '../js/core/title-art-unlock.js';
+import { minigameLoadingOptions } from '../js/minigames/minigame-loading.js';
 
 // Registration guard: every comic offered to the loading screen must fit the fixed
 // display frame (3:2, css/loading.css --loading-panel-ratio; authoring spec:
@@ -120,4 +121,14 @@ for (const comic of spoilers) {
 }
 assert.equal(eligibleLoadingComics(LOADING_COMICS, { context: 'craft', chapter: 9 }).length, LOADING_COMICS.length, 'without isMet (previews) the cast is not checked');
 
-console.log(`loading comics spec: PASS (${LOADING_COMICS.length} comics fit the 3:2 frame band; cast-based unlock: fresh game ${freshIds.length})`);
+// Before a minigame starts (sandboard, camel race; 2026-11-11 owner "ゲーム開始前に漫画付きロードとか挟んでもいい"),
+// the same loading screen picks comics by the same rules: in the game, the save's chapter and the people met;
+// on a standalone trial page (no save) like the bench preview, the cast is not checked and spoilers stay hidden.
+const minigame = save => eligibleLoadingComics(LOADING_COMICS, minigameLoadingOptions(save)).map(c => c.id);
+assert.deepEqual(minigame({ ...fresh, chapter: 1 }), freshIds, 'in the game, a minigame shows the same comics as the bench');
+assert.deepEqual(minigame({ ...everyone, chapter: 4 }), craft(4, everyone), 'chapter 4 with everyone met: same as the bench');
+const trial = minigame(null);
+assert(trial.length > freshIds.length, 'a trial page has comics to show');
+assert(trial.every(id => LOADING_COMICS.find(c => c.id === id).minChapter === 1), 'a trial page never shows a spoiler comic');
+
+console.log(`loading comics spec: PASS (${LOADING_COMICS.length} comics fit the 3:2 frame band; cast-based unlock: fresh game ${freshIds.length}; minigame trial ${trial.length})`);
