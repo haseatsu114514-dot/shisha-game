@@ -1,0 +1,138 @@
+{
+  "issue": 3389,
+  "state": "OWNER_SELECTED_Y2",
+  "owner_approved": true,
+  "recommended": {
+    "model": "Y2",
+    "status": "selected_by_owner",
+    "repository": "haseatsu114514-dot/siryou",
+    "repo_path": "shisha-hardware-reference/web-refs/images/hmd-twoPiece-woodHandle-01.jpg",
+    "siryou_tree": "112d8e8ffca4671b39510411fa1ad39427294d53",
+    "git_blob_sha": "c706af32c1dc52cc31ca3461a333debc85861824",
+    "sha256": "7b939e0156b0f4be599c3da82f7059c5b2484afe591aaa801dd336d55381473d",
+    "bytes": 121891,
+    "source": {
+      "id": "hmd-twoPiece-woodHandle-01",
+      "note": "木の取手が付いた2部品のHMD",
+      "site": "www.official-eggshisha.com",
+      "page": "https://www.official-eggshisha.com/item-category/hmd",
+      "image": "https://cdn.prod.website-files.com/62484dbf7845614277b8a9bb/692ec29cc8867efe71a53fb9_0a586943e5b8e1147df327eb366c79f2.avif"
+    },
+    "detail_page_checked": "https://www.official-eggshisha.com/items/y2-heat-management-system",
+    "visually_inspected": true,
+    "photo_copied_to_game_repository": false
+  },
+  "other_reviewed_models": [
+    {
+      "model": "ONMO",
+      "status": "excluded_multiple_coals",
+      "repository": "haseatsu114514-dot/siryou",
+      "repo_path": "shisha-hardware-reference/web-refs/images/hmd-onmo-01.jpg",
+      "siryou_tree": "112d8e8ffca4671b39510411fa1ad39427294d53",
+      "git_blob_sha": "ff0cfaf52c667301315566b07ced6f06f79122cb",
+      "sha256": "1ce22e5a86d743a1faf89e34f19005ff2bf50b201f4a272d0f39267d69452c03",
+      "bytes": 107354,
+      "source": {
+        "id": "hmd-onmo-01",
+        "note": "ONMO（蓋なしの低い器）",
+        "site": "www.official-eggshisha.com",
+        "page": "https://www.official-eggshisha.com/item-category/hmd",
+        "image": "https://cdn.prod.website-files.com/62484dbf7845614277b8a9bb/686fac256ae123ac2e338d23_LINE_ALBUM_%E3%82%B7%E3%83%BC%E3%82%B7%E3%83%A3%E5%9B%B3%E9%91%91_250710_2.avif"
+      },
+      "detail_page_checked": "https://www.official-eggshisha.com/items/onmo-hmd-black",
+      "visually_inspected": true,
+      "photo_copied_to_game_repository": false
+    },
+    {
+      "model": "ロータス型ノーブランド",
+      "status": "excluded_existing_placeholder_family",
+      "repository": "haseatsu114514-dot/siryou",
+      "repo_path": "shisha-hardware-reference/web-refs/images/hmd-lotus-nobrand-01.jpg",
+      "siryou_tree": "112d8e8ffca4671b39510411fa1ad39427294d53",
+      "git_blob_sha": "69f63d6c13688fa304bf6ced7cc052dc79641163",
+      "sha256": "80e9b935c7fff886fed8f26715ebe451cd5529d5be5565478e1e8384436f53da",
+      "bytes": 117822,
+      "source": {
+        "id": "hmd-lotus-nobrand-01",
+        "note": "ロータス型ノーブランド。銀の蓋付きの低い器と黒い取手",
+        "site": "www.official-eggshisha.com",
+        "page": "https://www.official-eggshisha.com/item-category/hmd",
+        "image": "https://cdn.prod.website-files.com/62484dbf7845614277b8a9bb/6932a4e866741e8a2b1a5a37_61645338117fb846a42da0d73d09d7dd.avif"
+      },
+      "detail_page_checked": null,
+      "visually_inspected": true,
+      "photo_copied_to_game_repository": false
+    },
+    {
+      "model": "アマボースト",
+      "status": "excluded_direct_high_heat_family",
+      "repository": "haseatsu114514-dot/siryou",
+      "repo_path": "shisha-hardware-reference/web-refs/images/hmd-amaboost-open-01.jpg",
+      "siryou_tree": "112d8e8ffca4671b39510411fa1ad39427294d53",
+      "git_blob_sha": "aaa5737823a0ba3c523142fe74790ecefc0c9935",
+      "sha256": "7747d281891ea47bdbafefe80cd412d66100a90c4e080c111ab363eb5dacb392",
+      "bytes": 35385,
+      "source": {
+        "id": "hmd-amaboost-open-01",
+        "note": "アマボーストの蓋を外した状態。穴あきの薄い皿と蓋",
+        "site": "newemoshisha.com",
+        "page": "https://newemoshisha.com/products/nobrand-amavost",
+        "image": "https://newemoshisha.com/cdn/shop/products/product-nobrand-amavost-05_800x.jpg?v=1653914689"
+      },
+      "detail_page_checked": null,
+      "visually_inspected": true,
+      "photo_copied_to_game_repository": false
+    }
+  ],
+  "selection_evidence": {
+    "page": "https://www.official-eggshisha.com/items/y2-heat-management-system",
+    "short_quote": "使用する炭もキューブタイプなら1つ、フラットタイプなら2つ",
+    "outer_diameter_cm": 6.0,
+    "page_checked_utc": "2026-11-11",
+    "interpretation": "Y2 is a grounded candidate for the owner-described low-heat one-cube HMD. This does not establish owner selection or validate real-world thermal performance."
+  },
+  "style_references": {
+    "remake/img/shop/equipment/lotos_hagal.webp": {
+      "ref": "4d197952bb2d05908917ae48ee77496f33d9cd2d",
+      "blob_sha": "49783b8bbdc131b218783ad9a1a1c0cdcbda8292",
+      "bytes": 26976,
+      "sha256": "ee33939bfad083677d8e8a6fa82dbf219bbe55ec9f026b9e904ffc17f01ce498"
+    },
+    "remake/img/shop/equipment/tanukish_lid.webp": {
+      "ref": "4d197952bb2d05908917ae48ee77496f33d9cd2d",
+      "blob_sha": "f64793620dede7f95bdae74b0d9bafc14e6bb9fe",
+      "bytes": 37928,
+      "sha256": "58f4060eb1345832ae996d30664d132298e9bc27214350676a164f6e9d61d7f3"
+    },
+    "remake/img/shop/equipment/amaburst_hms.webp": {
+      "ref": "4d197952bb2d05908917ae48ee77496f33d9cd2d",
+      "blob_sha": "05c8dcc71d8d77b013b5977ed1c8af7fd540a56b",
+      "bytes": 42840,
+      "sha256": "5237068d76fc9b19b5c0030a14f2e93665531448a3b58941bb64a76df1a24e61"
+    },
+    "remake/js/minigames/ichidai-art.js": {
+      "ref": "4d197952bb2d05908917ae48ee77496f33d9cd2d",
+      "blob_sha": "feb2b8402e41e99689b6b7e11ff87bf9b9501fbf",
+      "bytes": 6147,
+      "sha256": "28df01c3413205f8b5d7b17bf3d1745bb57728f563ac324a1586754b7066ff3a"
+    },
+    "asset_sources/card_game/README.md": {
+      "ref": "4d197952bb2d05908917ae48ee77496f33d9cd2d",
+      "blob_sha": "c4e5365e102c535655fe0cdf1a79e9dd770af804",
+      "bytes": 13286,
+      "sha256": "b2f0fbd6846fe380c671a39d886f2cdea3975f5018daf1427d4205af458d35da"
+    }
+  },
+  "not_done": [
+    "image generation",
+    "runtime integration",
+    "76px in-game visual QA",
+    "owner acceptance"
+  ],
+  "owner_decision": {
+    "date": "2026-11-12",
+    "reference": "Y2",
+    "in_game_name": "C1",
+    "note": "オーナー「名前だけ変えたい C1とか」。手本は Y2、ゲーム内の機材名は「ワンコールリッド」から「C1」へ（書き換えは #3424 のマージ後）"
+  }
+}

@@ -28,6 +28,14 @@
       "run": ["node remake/test/side_area.mjs"]
     },
     {
+      "id": "neo-ambient",
+      "title": "新版の場所の光（BGU01）: 背景の色から立ち絵へ重ねる色を決める規則（明るい場所は変えない・暗さと色かぶりの下限・夜の色調補正）",
+      "kind": "quick",
+      "run": [
+        "node remake/test/neo_ambient.mjs"
+      ]
+    },
+    {
       "id": "chapter-poems",
       "title": "巻頭ポエムの台本・仕様・章タイトル直前の接続",
       "kind": "quick",
@@ -2422,6 +2430,23 @@
         "node remake/test/browser/smoke_dissolve.mjs"
       ],
       "chrome": "playwright"
+    },
+    {
+      "id": "visual-continuity-3203",
+      "title": "#3203 店の入口の写真を待ってから出す（遅い時は上限・下地）／背景の取得に失敗しても前の背景を残す",
+      "kind": "browser",
+      "weight": 0.4,
+      "timeout": 5,
+      "paths": [
+        "remake/js/core/ui.js",
+        "remake/js/core/scene-art.js",
+        "remake/js/daily/shop.js",
+        "remake/css/shop.css",
+        "remake/test/browser/visual_continuity_3203.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/visual_continuity_3203.mjs"
+      ]
     },
     {
       "id": "steam-forecast",

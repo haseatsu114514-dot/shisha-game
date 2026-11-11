@@ -546,6 +546,7 @@
         {
           "speaker": "naru",
           "face": "serious",
+          "duck": true,
           "text": "教える側と教わる側は、今日でおしまいだ"
         },
         {
@@ -717,6 +718,7 @@
         {
           "speaker": "adam",
           "face": "smile",
+          "duck": true,
           "text": "年月は、手入れの積み重ねでしか宿らぬ。それが継承の正体よ"
         },
         {
@@ -900,6 +902,7 @@
         {
           "speaker": "tsumugi",
           "face": "normal",
+          "beat": 500,
           "text": "……絵の煙は、この素焼きから上ってた煙です。スミさんに預けてた、私の一台"
         },
         {
@@ -1124,7 +1127,7 @@
         {
           "speaker": "minto",
           "face": "ura_normal",
-          "text": "だから、これは預けるんじゃなくて、あげる、……お礼、かな"
+          "text": "だから、これは預けるんじゃなくて、あげる、[pause]……お礼、かな"
         },
         {
           "speaker": "",
@@ -1304,6 +1307,7 @@
         {
           "speaker": "rio",
           "face": "normal",
+          "beat": 500,
           "text": "……個人から、君へのプレゼント。それだけ"
         },
         {
