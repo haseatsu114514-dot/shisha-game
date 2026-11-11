@@ -80,6 +80,8 @@
         { "speaker": "hajime", "face": "normal", "text": "その紹介、やめてほしいんだけど" },
         { "speaker": "minto", "face": "wink", "text": "だめー。今日だけ、みんとの店の自慢にさせて" },
         { "speaker": "", "face": "", "text": "カウンターの端に、世界大会の記事が小さく貼ってあった。" },
+        { "speaker": "hajime", "face": "normal", "text": "……いつの間に貼ったの、それ" },
+        { "speaker": "minto", "face": "smile", "text": "昨日の閉店のあとに、背伸びして貼ったの" },
         { "speaker": "minto", "face": "smile", "text": "……ちゃんと、おかえりも言わせてね。おかえり、はじめくん" }
       ]
     },
@@ -91,6 +93,8 @@
         { "speaker": "hajime", "face": "smile", "text": "キャスト、ずっと一人だよね" },
         { "speaker": "minto", "face": "wink", "text": "だから、ずっとNo.1なの" },
         { "speaker": "", "face": "", "text": "ミントの奥に、ほんのり柑橘が立つ一台だった。" },
+        { "speaker": "hajime", "face": "normal", "text": "ミントが先で、あとから柑橘が来る。二口目がやわらかい" },
+        { "speaker": "minto", "face": "smile", "text": "でしょ？　辛口のお客さまにも、帰りは笑ってほしくて" },
         { "speaker": "minto", "face": "normal", "text": "感想、正直にね。世界一の舌でしょ？" }
       ]
     },
@@ -101,6 +105,9 @@
         { "speaker": "minto", "face": "smile", "text": "ごめんね、今日ちょっと混んでて。カウンターの端でいい？" },
         { "speaker": "hajime", "face": "normal", "text": "うん。……みんな、誰かと話しに来てるんだね" },
         { "speaker": "minto", "face": "normal", "text": "そうだよ。一人ひとり、来た理由が違うの" },
+        { "speaker": "minto", "face": "normal", "text": "煙を吸いに来る人より、お話しに来る人のほうが多いかも" },
+        { "speaker": "", "face": "", "text": "奥のテーブルでは、二人連れが小さな声で笑っていた。" },
+        { "speaker": "hajime", "face": "normal", "text": "理由か、……うまく言えるかな" },
         { "speaker": "minto", "face": "smile", "text": "はじめくんの理由は、あとで聞かせてね" }
       ]
     },
