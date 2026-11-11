@@ -4,12 +4,14 @@
 //   "cover" … 見るだけの覆い（場面転換・日付の札・章タイトル・詩・登場カットイン・読み込みの一言）。外枠のまま暗くして、
 //             見えている文字と絵だけを写す（retro/cover.js）。pressable は、覆いがステージ中央でタップを受ける状態かどうか。
 //   "gap"   … 場面と場面のあいだの、何も出ていない短い間。外枠のまま少し待つ。
-//   "none"  … 未対応（MENU・LIME・設定・ロード画面・シーシャ作り・店など）。現行の画面をそのまま見せる。
+//   "none"  … 未対応（シーシャ作り・店・ミニゲームなど）。現行の画面をそのまま見せる（新版の縦持ちは回転案内）。
+// MENU・LIME・小窓（設定・用語集・セーブ／ロード・規則の紙・確認）・会話の LOG は "scene"（name: "sheet"）として
+// 下画面や縦長のシート（retro/sheet.js）へ写す。
 const byId = (id) => document.getElementById(id);
 const media = (query) => typeof window.matchMedia === "function" && window.matchMedia(query).matches;
 
 // 場面ごとに、現行ステージの一番上に来ていてよい層（#stage の直下の id）。
-const EXPECTED_LAYERS = { vn: ["vn", "bg"], map: ["screen", "hud"], title: ["screen"], menu: ["screen", "hud"], dialog: ["modal"] };
+const EXPECTED_LAYERS = { vn: ["vn", "bg"], map: ["screen", "hud"], title: ["screen"], menu: ["screen", "hud"], dialog: ["modal"], sheet: ["modal"], log: ["vn"] };
 // 場面ごとの確認点（ステージの幅・高さに対する割合）。HUD のボタンがある隅は避ける。
 const PROBES = {
   vn: [[0.5, 0.42], [0.3, 0.5], [0.7, 0.5], [0.5, 0.86]],
@@ -17,6 +19,8 @@ const PROBES = {
   title: [[0.5, 0.5], [0.2, 0.62], [0.8, 0.4]],
   menu: [[0.5, 0.5], [0.3, 0.6], [0.7, 0.4]],
   dialog: [[0.5, 0.5]],
+  sheet: [[0.5, 0.5]],
+  log: [[0.5, 0.5]],
 };
 // 演出の層（#fx）にあっても場面を止めない、短い効果。
 const FX_HARMLESS = ".flash, .stat-flight";
@@ -32,11 +36,9 @@ const NONE = Object.freeze({ kind: "none" }), GAP = Object.freeze({ kind: "gap" 
  * 外枠を使える端末・向きか。mode は "retro"（様式 DS風）か "portrait"（新版の縦持ち）。
  * "on": DS風は縦長の画面、またはタッチ端末でない（PC）。新版の縦持ちは縦長の画面だけ（タッチかどうかは問わない）。
  * "off": それ以外（現行のまま）。
- * "old": 古い2画面表示（表示設定の「DS風」）が有効。そちらを通常版へ戻すまで外枠は出さない。
+ * （古い2画面表示（表示設定の「DS風」・body.game-ds）は #3078 で無くなったので、その見分けはもう無い）
  */
 export function engageState(mode = "retro") {
-  const body = document.body;
-  if (body.classList.contains("game-ds") || body.dataset.gameLayout === "ds" || document.querySelector('#screen .title[data-layout="ds"]')) return "old";
   if (mode === "portrait") return media("(orientation: portrait)") ? "on" : "off";
   const touch = media("(hover: none) and (pointer: coarse)");
   return media("(orientation: portrait)") || !touch ? "on" : "off";
@@ -101,16 +103,33 @@ const simpleCard = (live) => {
 };
 /**
  * 確かめの小窓（core/ui.js の modal）のうち、文と選択肢のボタンだけのもの（第2章の朝の行き先・第4章のスークの屋台など）。
- * 本文に入力欄・ボタン・絵がある小窓（設定・保存の枠など）と、modal-box でない画面（LIME・MENU）は写さない。
+ * 本文に入力欄・ボタン・絵がある小窓（設定・保存の枠など）と、modal-box でない画面（LIME・MENU）はシートで出す。
  */
 function simpleDialog(modal) {
   const box = modal.querySelector(":scope > .modal-box");
   if (!box || modal.children.length !== 2 || !modal.querySelector(":scope > .modal-backdrop")) return false;
   const body = box.querySelector(":scope > .modal-body"), actions = box.querySelectorAll(":scope > .modal-actions > button");
   if (!actions.length || actions.length > 6) return false;
-  // 読み物（規則の紙・一覧・表・見出しのある文）は一言に縮められないので写さない
+  // 読み物（規則の紙・一覧・表・見出しのある文）は選択肢の画面に縮めず、シート（retro/sheet.js）で出す
   if (body && body.querySelector("button, input, select, textarea, canvas, img, svg, video, iframe, [contenteditable], article, section, ul, ol, table, h1, h2, h3, h4, h5, h6")) return false;
   return [...box.children].every((node) => node.matches("h3, .modal-body, .modal-actions"));
+}
+
+// シートに写せない部品（自由入力・描画・動画・ドラッグの操作）。これがある小窓は回転案内のまま（セーブの引っ越しなど）。
+const SHEET_BLOCKERS = "canvas, video, iframe, textarea, [contenteditable], [draggable='true'], input:not([type='range']):not([type='checkbox'])";
+/**
+ * #modal に出ている物のうち、シート（retro/sheet.js）に写せる種類。写せなければ ""。
+ *   "menu": 全画面 MENU（daily/menu.js の .dmenu。チェキの拡大を含む）
+ *   "lime": LIME（daily/phone.js の .phone-overlay）
+ *   "modal": core/ui.js の modal とセーブ／ロードの枠（.modal-box。設定・用語集・規則の紙・確認の問いなど）
+ */
+function sheetKind(modal) {
+  const kids = [...modal.children];
+  if (modal.querySelector(":scope > .dmenu")) return kids.every((node) => node.matches(".dmenu, .keepsake-viewer")) ? "menu" : "";
+  if (kids.length === 1 && kids[0].matches(".phone-overlay")) return kids[0].querySelector(SHEET_BLOCKERS) ? "" : "lime";
+  const box = modal.querySelector(":scope > .modal-box");
+  if (!box || kids.length !== 2 || !modal.querySelector(":scope > .modal-backdrop")) return "";
+  return box.querySelector(SHEET_BLOCKERS) ? "" : "modal";
 }
 
 /** 覆いの下の画面が、外枠に写せる種類か（会話・地図・タイトル・ボタンの画面・何も無い間）。 */
@@ -134,9 +153,14 @@ export function detectState(own = [], { extended = false } = {}) {
   const rect = stage.getBoundingClientRect();
   if (!rect.width || !rect.height) return NONE;
   if (modal?.classList.contains("show")) {
-    if (!extended || !simpleDialog(modal)) return NONE;
+    // 演出の層の操作する画面（心得の盤など）が上に出ていれば、そちらを現行の画面で見せる
+    if (byId("fx")?.querySelector(FX_INTERACTIVE)) return NONE;
     const layer = topLayer(stage, rect, 0.5, 0.5, own);
-    return !layer || EXPECTED_LAYERS.dialog.includes(layer) ? { kind: "scene", name: "menu", variant: "dialog" } : NONE;
+    if (layer && !EXPECTED_LAYERS.dialog.includes(layer)) return NONE;
+    // 文と選択肢だけの小窓は、新版の縦持ちでは下画面の選択肢に（上画面はその場の絵のまま）
+    if (extended && simpleDialog(modal)) return { kind: "scene", name: "menu", variant: "dialog" };
+    const kind = sheetKind(modal);
+    return kind ? { kind: "scene", name: "sheet", variant: kind } : NONE;
   }
 
   // 覆い: 演出の層に何か出ている・煙や暗転で覆っている・読み込みの一言が出ている
@@ -154,7 +178,10 @@ export function detectState(own = [], { extended = false } = {}) {
   let scene = null, variant = "";
   if (inVn && vn?.classList.contains("active")) {
     if (vn.classList.contains("intro-morph-dialog-hidden")) return { kind: "cover", pressable: false };
-    if (vn.querySelector(".vn-log.show")) return NONE;
+    if (vn.querySelector(".vn-log.show")) {
+      const layer = topLayer(stage, rect, 0.5, 0.5, own);
+      return !layer || EXPECTED_LAYERS.log.includes(layer) ? { kind: "scene", name: "sheet", variant: "log" } : NONE;
+    }
     for (const child of vn.children) if (!child.matches(VN_PARTS)) return NONE;
     scene = "vn";
   } else if (inVn || vnOpen) {

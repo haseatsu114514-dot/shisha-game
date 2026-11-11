@@ -4554,9 +4554,9 @@
     },
     {
       "id": "look-neo-portrait",
-      "title": "新版の縦持ち: DS風の外枠と操作に高解像度の上画面・第1〜5章の会話と地図とカード・写せない画面では回転案内・横長は今のまま",
+      "title": "新版の縦持ち: DS風の外枠と操作に高解像度の上画面・第1〜5章の会話と地図とカード・MENU・LIME・設定・LOG をシートで・写せない画面では回転案内・横長は今のまま",
       "kind": "browser",
-      "weight": 3.4,
+      "weight": 3.8,
       "timeout": 10,
       "paths": [
         "remake/js/looks/**",
@@ -4569,6 +4569,9 @@
         "remake/js/daily/map.js",
         "remake/js/daily/hud.js",
         "remake/js/daily/station-travel.js",
+        "remake/js/daily/menu.js",
+        "remake/js/daily/phone.js",
+        "remake/js/scenes/saves.js",
         "remake/js/chapters/ch2.js",
         "remake/js/chapters/ch2-deliveries.js",
         "remake/js/chapters/ch2-commute.js",
