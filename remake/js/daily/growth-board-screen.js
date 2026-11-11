@@ -85,7 +85,9 @@ const PANEL_FACE = {
   K09: "smile", K18: "serious", K19: "smile", K21: "smug", K22: "normal", K23: "smug", K24: "serious",
 };
 const ART_FILES = ["board_glass", "screen_backdrop", "hub_body", "hub_sense", "hub_wisdom", "frame_skill", "frame_lesson", "frame_gate", "frame_peak", "frame_seal",
-  "hidane_any", "hidane_body", "hidane_sense", "hidane_wisdom", "panel_frame", "wall_seal", "silhouette_unknown"];
+  "hidane_any", "hidane_body", "hidane_sense", "hidane_wisdom", "panel_frame", "wall_seal", "silhouette_unknown",
+  // GB04（SBD121・SBD123）: 火種の受け皿・盤の札・マスの印の台・丸いボタン・紙の札・飾り罫
+  "socket", "tab_on", "tab_dim", "tab_off", "badge_cost", "badge_check", "badge_unknown", "round_btn", "card", "title_rule"];
 let artReady = null;
 export function loadBoardArt() {
   if (artReady) return artReady;
