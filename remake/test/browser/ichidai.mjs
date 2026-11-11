@@ -1,4 +1,5 @@
-// カードゲーム「一台勝負」（ICG）: 試遊ページ（設定→最初の火→準備→提供→審査→結果・一台と審査員の札・遊び方・やめる・横持ちタッチ）と、
+// カードゲーム「一台勝負」（ICG）: 試遊ページ（設定→最初の火→準備→提供→審査→結果・一台と審査員の札・遊び方・やめる・横持ちタッチ・
+// 対面の卓＝相手の席と奥行きのある卓、札が飛んで置かれる動き）と、
 // 本編の入口（既定では tonari に出ない／?ichidai=1 で出る／最後まで打つと state.ichidai に残って保存される・時間は進まない）。
 import assert from "node:assert/strict";
 import { suite, baseURL } from "./support.mjs";
@@ -96,6 +97,16 @@ await suite("ichidai", async (check) => {
     await page.locator(t("ichi-level-0")).click();
     assert.equal(await page.locator(t("ichi-tour-crown")).getAttribute("aria-pressed"), "true");
     await page.locator(t("ichi-start")).click();
+    // 対戦の前に「VS」: 顔アイコンが向かい合い、あいだを電撃が走る。終わると卓に着く
+    const vs = page.locator(t("ichi-vs"));
+    await vs.waitFor();
+    assert.equal(await vs.getAttribute("data-count"), "2");
+    assert.deepEqual(await vs.locator(".ichi-vs-player > b").allInnerTexts(), ["はじめ", "スミさん"]);
+    assert.equal(await vs.locator(".ichi-vs-player .ichi-vs-ring").count(), 2, "2人の顔アイコン");
+    assert.ok((await vs.locator(".ichi-vs-bolts polyline.is-core").first().getAttribute("points")).split(" ").length > 6, "電撃はギザギザの線");
+    await page.locator(`${t("ichi-vs")}.is-clash .ichi-vs-mark`).waitFor();
+    assert.equal(await page.locator(t("ichi-board")).isVisible(), false, "VSのあいだは卓を出さない");
+    await vs.waitFor({ state: "detached", timeout: 8000 });
     await page.locator(t("ichi-foe")).waitFor();
     // 試遊ページでも顔アイコンは WebP を読む（manifest だけ差し替えて PNG を指し、顔が出なかった不具合の再発防止）
     await page.waitForFunction(() => [...document.querySelectorAll(".ichi-leader.is-me img.ichi-face, .ichi-judges img.ichi-face")]
@@ -124,10 +135,24 @@ await suite("ichidai", async (check) => {
         assert.deepEqual(await fire(page), { left: 3, total: 3 }, "火力ゾーンの札を数えて、火力3（＝熱）");
         // 炭焼き場と火力ゾーンは、ひと続きの枠（炭焼き場 ➜ 火力ゾーン）
         assert.equal(await page.locator(`.ichi-lane ${t("ichi-stove")} ~ .ichi-flow ~ ${t("ichi-zone")}`).count(), 1, "炭焼き場から火力ゾーンへ流れる並び");
-        // 相手は簡易なゲージ（火力の目盛りと炭焼き場）
+        // 相手の数は HUD の簡易なゲージで読む（火力の目盛りと炭焼き場）。札そのものは卓の奥に並ぶ
         const foeFire = page.locator(t("ichi-foe-fire"));
         assert.equal(await foeFire.locator(".ichi-gauge i.is-lit").count(), Number(await foeFire.getAttribute("data-left")), "相手の火力のゲージ");
-        assert.equal(await page.locator(`${t("ichi-foe")} .ichi-on`).count(), 0, "相手の火力ゾーンは札を並べず、ゲージで見せる");
+        assert.equal(await page.locator(`${t("ichi-foe-zone")} .ichi-on`).count(), Number(await page.locator(t("ichi-foe-zone")).getAttribute("data-count")), "相手の火力ゾーンの札は、卓の奥に並ぶ");
+        assert.equal(await page.locator(`${t("ichi-foe-zone")} .ichi-on`).count(), 3, "相手の種火3枚");
+        // 対面の卓: 奥行きを付けて傾けた卓の向こうに相手が座り、手札の裏を持っている
+        const scene = await page.evaluate(() => {
+          const q = (sel) => document.querySelector(sel), w = (sel) => q(sel).getBoundingClientRect();
+          return { board: getComputedStyle(q('[data-test="ichi-board"]')).transform, far: w('[data-test="ichi-foe"]'), near: w(".ichi-mine"), seat: w('[data-test="ichi-seat"]'),
+            backs: document.querySelectorAll(".ichi-seat-hand .ichi-back").length, count: q(".ichi-seat-hand").dataset.count,
+            foeCard: getComputedStyle(q('[data-test="ichi-foe-zone"] .ichi-back')).rotate, bust: !!q('[data-test="ichi-foe-bust"] img, [data-test="ichi-seat"] .ichi-face') };
+        });
+        assert.match(scene.board, /^matrix3d\(/, "卓は奥行きを付けて傾けてある");
+        assert.ok(scene.far.width < scene.near.width * 0.9 && scene.far.top < scene.near.top, `卓の奥（相手の札）は手前より小さく見える: ${scene.far.width} / ${scene.near.width}`);
+        assert.ok(scene.seat.bottom > scene.far.top - 40 && scene.seat.top < scene.far.top, "相手は卓の向こうに座る");
+        assert.ok(scene.bust, "相手の顔が出ている");
+        assert.equal(scene.backs, Math.min(7, Number(scene.count)), "相手は手札の裏を持っている");
+        assert.equal(scene.foeCard, "180deg", "相手の札は向こう向き");
         assert.ok(await page.locator(`${t("ichi-hand")} .ichi-card.s-hand`).count() >= 3, "手札はトレカの札");
         assert.equal(await page.locator(`${t("ichi-market")} .ichi-card.t-flavor`).count(), 10, "場の葉も札");
         // フレーバーミックスと葉の体力（ボウルの葉の枚数）を、ボウルの札の下に出す
@@ -164,6 +189,12 @@ await suite("ichidai", async (check) => {
       // 提供の最初の自分のターン: 手札を選ぶと火力ゾーンに「裏向きで置く」が出て、押すとチャージ（熱+1・火力+1）
       if (phase === "serve" && !chargedViaSlot && await data(page, "wait") === "main" && await data(page, "turn") === "me") {
         const before = await fire(page);
+        // 卓の上を飛ぶ札（.ichi-fly）が出たかを数える（すぐ消えるので、足された瞬間を見張る）
+        await page.evaluate(() => {
+          window.__ichiFly = 0;
+          new MutationObserver((list) => { for (const m of list) for (const n of m.addedNodes) if (n.classList?.contains("ichi-fly")) window.__ichiFly++; })
+            .observe(document.querySelector('[data-test="ichi-game"]'), { childList: true });
+        });
         await page.locator(t("ichi-hand-0")).click();
         await page.locator(t("ichi-charge-slot")).click();
         await page.waitForFunction((n) => Number(document.querySelector('[data-test="ichi-pillar"]').dataset.heat) === n, before.total + 1);
@@ -187,7 +218,8 @@ await suite("ichidai", async (check) => {
         await page.locator(`${t("ichi-card-left")}[data-left="0"]`).waitFor();
         assert.equal(await page.locator(usable).count(), 0, "1枚使ったら、ほかのカードは使えない");
         assert.ok(await heat(page) >= before.total + 1 || id === "reset" || id === "tongs", "払わないので熱は下がらない");
-        if (["heat_in", "heat_out", "blow", "duel", "all_in", "show_smoke"].includes(id)) assert.equal(await page.locator(`${t("ichi-set-card")}[data-card="${id}"]`).count(), 1, "仕込んだ一口のカードが見える");
+        if (["heat_in", "heat_out", "blow", "duel", "all_in", "show_smoke"].includes(id)) assert.equal(await page.locator(`${t("ichi-puff-me")} ${t("ichi-set-card")}[data-card="${id}"]`).count(), 1, "仕込んだ一口のカードが、卓の「自分の一口」に置かれる");
+        assert.ok(await page.evaluate(() => window.__ichiFly) >= 2, "チャージした札と使った札が、手札から卓へ飛ぶ");
         usedCard = id;
       }
       if (await stepMine(page, [["blueberry", 8], ["mint", 4]], got)) break;
@@ -217,6 +249,10 @@ await suite("ichidai", async (check) => {
     await page.locator(t("ichi-menu-quick")).tap();
     await page.locator(t("ichi-kit-c")).tap();
     await page.locator(t("ichi-start")).tap();
+    // VS演出はタップで飛ばせる
+    await page.locator(t("ichi-vs")).waitFor();
+    await page.locator(t("ichi-vs")).tap();
+    assert.equal(await page.locator(t("ichi-vs")).count(), 0, "タップで VS を飛ばす");
     await waitMine(page);
     const boxes = await page.evaluate(() => {
       const r = (sel) => { const b = document.querySelector(sel).getBoundingClientRect(); return { w: b.width, h: b.height, right: b.right, bottom: b.bottom }; };
@@ -232,6 +268,35 @@ await suite("ichidai", async (check) => {
     await page.locator(t("ichi-embers")).tap();
     await page.waitForFunction(() => document.querySelector('[data-test="ichi-game"]').dataset.phase === "prep");
   }, { ...page1("tournament=practice&seed=3"), viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true });
+
+  // VS演出の並べ方: 2人＝左右、3人＝横に3つ、4人＝四隅。あいだを電撃が走る（4人の対戦そのものはまだ無いので、見本で確かめる）
+  await check("versus-intro-lays-out-two-to-four", async (page) => {
+    for (const [n, boltCount] of [[2, 1], [3, 2], [4, 2]]) {
+      await page.goto(`${baseURL}ichidai.html?versus=${n}`);
+      await page.locator(t("ichi-menu-versus")).click();
+      const vs = page.locator(t("ichi-vs"));
+      await vs.waitFor();
+      assert.equal(await vs.getAttribute("data-count"), String(n));
+      assert.equal(await vs.locator(".ichi-vs-player").count(), n, `${n}人ぶんの顔アイコン`);
+      assert.equal(await vs.locator(".ichi-vs-bolts polyline.is-core").count(), boltCount, `${n}人のときの電撃の本数`);
+      await page.locator(`${t("ichi-vs")}.is-clash`).waitFor();
+      // 顔アイコンどうしは重ならず、画面に収まる
+      const boxes = await vs.locator(".ichi-vs-ring").evaluateAll((list) => list.map((r) => { const b = r.getBoundingClientRect(); return [b.left, b.top, b.right, b.bottom]; }));
+      const stage = await page.locator("#stage").evaluate((s) => { const b = s.getBoundingClientRect(); return [b.left, b.top, b.right, b.bottom]; });
+      for (const [i, a] of boxes.entries()) {
+        assert.ok(a[0] >= stage[0] && a[1] >= stage[1] && a[2] <= stage[2] && a[3] <= stage[3], `顔アイコン${i}が画面の中`);
+        for (const b of boxes.slice(i + 1)) assert.ok(a[2] <= b[0] || b[2] <= a[0] || a[3] <= b[1] || b[3] <= a[1], "顔アイコンが重ならない");
+      }
+      if (n === 4) {
+        const centers = boxes.map((b) => [(b[0] + b[2]) / 2 < (stage[0] + stage[2]) / 2 ? "左" : "右", (b[1] + b[3]) / 2 < (stage[1] + stage[3]) / 2 ? "上" : "下"].join(""));
+        assert.deepEqual(centers, ["左上", "右上", "左下", "右下"], "4人は四隅");
+      }
+      // 電撃の形は引き直される（ビリビリ）
+      const first = await vs.locator(".ichi-vs-bolts polyline.is-core").first().getAttribute("points");
+      await page.waitForFunction((was) => document.querySelector('[data-test="ichi-vs"] .ichi-vs-bolts polyline.is-core')?.getAttribute("points") !== was, first, { timeout: 3000 });
+      await vs.waitFor({ state: "detached", timeout: 8000 });
+    }
+  }, page1("versus=2"));
 
   await check("in-game-entry-is-off-by-default", async (page) => {
     const on = await page.evaluate(async () => (await import("./js/daily/ichidai-table.js")).ichidaiEnabled());
