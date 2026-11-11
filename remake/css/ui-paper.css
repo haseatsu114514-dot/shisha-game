@@ -219,6 +219,11 @@ html:root[data-ui-theme="paper"] .gb-p-state.s-pending { color: var(--lavender);
 html:root[data-ui-theme="paper"] .gb-bar-name { color: var(--paper-muted); }
 html:root[data-ui-theme="paper"] .gb-bar-line { background: #e6dcea; }
 html:root[data-ui-theme="paper"] .gb-bar-line b { background: color-mix(in srgb, var(--c) 80%, var(--paper-ink)); box-shadow: none; }
+/* 近い目的地（SBD104）: 紙の上の札 */
+html:root[data-ui-theme="paper"] .gb-goals-head { color: var(--paper-muted); }
+html:root[data-ui-theme="paper"] .gb-goal { color: var(--paper-ink); background: var(--paper-card); border: 1px solid var(--paper-line); border-left: 4px solid color-mix(in srgb, var(--c) 75%, var(--paper-ink)); }
+html:root[data-ui-theme="paper"] .gb-goal:is(:hover, :focus-visible) { border-color: var(--lavender); border-left-color: color-mix(in srgb, var(--c) 75%, var(--paper-ink)); box-shadow: 0 2px 8px #38283f22; }
+html:root[data-ui-theme="paper"] .gb-goal-cost { color: var(--amber-ink); font-weight: 700; }
 /* 下の帯: 火種の数と凡例 */
 html:root[data-ui-theme="paper"] .gb-footer { background: var(--paper-card); border-top: 1px solid var(--paper-line); }
 html:root[data-ui-theme="paper"] .gb-hidane { color: var(--paper-ink); }

@@ -480,6 +480,27 @@
       "run": ["node remake/test/browser/growth_chapter_notice.mjs"]
     },
     {
+      "id": "growth-fx-browser",
+      "title": "Growth level-up reward chips, colour-fire note, board light/commit effects, near goals and reduced motion (SBD102-105)",
+      "kind": "browser",
+      "weight": 0.5,
+      "timeout": 4,
+      "paths": [
+        "remake/js/daily/growth-fx.js",
+        "remake/js/daily/levelup.js",
+        "remake/js/daily/growth-board-screen.js",
+        "remake/js/core/growth-board.js",
+        "remake/js/core/growth.js",
+        "remake/css/daily.css",
+        "remake/css/ui-paper.css",
+        "remake/test/browser/growth_fx.mjs",
+        "remake/test/browser/support.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/growth_fx.mjs"
+      ]
+    },
+    {
       "id": "board-tutorial",
       "title": "Growth board first-time tutorial and starter fire (board_tutorial)",
       "kind": "browser",
