@@ -13,13 +13,29 @@ await suite("debug-tools", async check => {
     const games = [
       ["axe", "axe-game"], ["camel", "camel-game"], ["desert", "desert-ride"],
       ["dj-1", "dj-frame"], ["dj-2", "dj-frame"], ["dj-3", "dj-frame"],
-      ["tetsuko", "tetsuko-cat"], ["trpg", "trpg-day-trial"], ["ichidai", "ichi-game"],
+      ["tetsuko", "tetsuko-cat"], ["trpg", "trpg-day-trial"], ["trpg-night", "trpg-play-ordinary-cup"], ["ichidai", "ichi-game"],
     ];
     await page.evaluate(() => localStorage.setItem("suien_remake_save", '{"debugSentinel":true}'));
     for (const [id, screen] of games) {
       await openPanel(page);
       await page.locator(t(`debug-minigame-${id}`)).click();
       await page.locator(t(screen)).waitFor({ timeout: 30000 });
+      const close = page.locator(t("debug-minigame-close"));
+      const controls = id.startsWith("dj-")
+        ? [page.frameLocator(t("dj-frame")).locator("#restart"), page.frameLocator(t("dj-frame")).locator("#exit")]
+        : id === "axe" ? [page.getByRole("button", { name: "遊び方・ルール", exact: true }), page.getByRole("button", { name: "やめる", exact: true })]
+        : id === "tetsuko" ? [page.getByRole("button", { name: "あそびかた", exact: true }), page.getByRole("button", { name: "帰る", exact: true })]
+        : id === "ichidai" ? [page.getByRole("checkbox", { name: /^一つ火の低温型/ })] : [];
+      const a = await close.boundingBox();
+      for (const control of controls) {
+        const b = await control.boundingBox();
+        assert.ok(a && b && (a.x + a.width <= b.x || b.x + b.width <= a.x || a.y + a.height <= b.y || b.y + b.height <= a.y), `${id}: debug return must not cover game controls`);
+      }
+      if (id === "trpg-night") {
+        assert.ok(await page.locator(t(screen)).isEnabled(), "night debug has an actual playable story");
+        await page.locator(t(screen)).click();
+        await page.locator(t("trpg-start")).waitFor({ timeout: 30000 });
+      }
       assert.equal(await page.evaluate(() => localStorage.getItem("suien_remake_save")), '{"debugSentinel":true}', id);
       await page.locator(t("debug-minigame-close")).click();
       await page.locator(t("title-new")).waitFor({ timeout: 30000 });

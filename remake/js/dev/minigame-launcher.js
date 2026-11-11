@@ -2,6 +2,24 @@
 import { newState } from "../core/state.js";
 import { DJ_SETS } from "../minigames/dj.js";
 import { CAMEL_CUPS } from "../minigames/camel-race-model.js";
+import { foundTrpgClub, joinTrpgClub, syncTrpgStock, buyTrpgBook } from "../trpg/campaign.js";
+
+// The daytime shop stays available; the night entry prepares only this disposable state.
+export function createTrpgDebugState(catalog = null) {
+  const value = newState();
+  Object.assign(value, { chapter: 3, phase: "daily", day: 5, slot: catalog ? 1 : 0, money: 100000 });
+  if (catalog) {
+    foundTrpgClub(value, catalog);
+    for (const id of ["hiyori", "samechan", "tsumugi", "adam"]) {
+      value.met[id] = true;
+      value.flags[`_trpg_topic_${id}`] = true;
+      joinTrpgClub(value, catalog, id);
+    }
+    syncTrpgStock(value, catalog);
+    buyTrpgBook(value, catalog, "ordinary-cup");
+  }
+  return value;
+}
 
 const GAMES = [
   { id: "axe", label: "斧投げ", start: async (host, signal) => (await import("../minigames/axe.js")).runAxeThrow({ host, signal, mode: "practice", opponent: null }) },
@@ -14,11 +32,19 @@ const GAMES = [
     value.chapter = 3; value.phase = "daily"; value.day = 5;
     return (await import("../minigames/tetsuko-time.js")).openTetsukoTime({ value, visitKey: "debug", signal });
   } },
-  { id: "trpg", label: "TRPG・ボドゲカフェ", start: async (host, signal) => {
-    const value = newState();
-    value.chapter = 3; value.phase = "daily"; value.day = 5; value.slot = 0; value.money = 100000;
+  { id: "trpg", label: "ボドゲカフェ（昼・七つの灯り）", start: async (host, signal) => {
+    const value = createTrpgDebugState();
     const { mountTrpgCampaign } = await import("../trpg/campaign-view.js");
     const controller = mountTrpgCampaign(host, { getState: () => value, save: () => true, signal, closeLabel: "閉じる" });
+    await controller.ready;
+    return controller.finished;
+  } },
+  { id: "trpg-night", label: "TRPG（夜・物語）", start: async (host, signal) => {
+    const { loadTrpgLibrary } = await import("../trpg/index.js");
+    const resources = await loadTrpgLibrary({ signal, preloadAssets: false });
+    const value = createTrpgDebugState(resources.catalog);
+    const { mountTrpgCampaign } = await import("../trpg/campaign-view.js");
+    const controller = mountTrpgCampaign(host, { getState: () => value, save: () => true, signal, resources, closeLabel: "閉じる" });
     await controller.ready;
     return controller.finished;
   } },
@@ -53,7 +79,9 @@ export function mountMiniGameDebug() {
       close.dataset.test = "debug-minigame-close";
       Object.assign(close.style, { position: "absolute", right: "12px", top: "12px", zIndex: "2147483001", padding: "8px", background: "#21162c", color: "#fff", border: "1px solid #f5c26b", borderRadius: "6px" });
       if (game.id === "desert") Object.assign(close.style, { left: "20px", right: "auto", top: "280px" });
-      if (game.id === "ichidai") Object.assign(close.style, { top: "100px" }); // 右上の「早送り・？・✕」に重ねない
+      if (game.id === "axe") Object.assign(close.style, { top: "100px" }); // 見出しの「？・✕」を空ける
+      if (game.id.startsWith("dj-")) Object.assign(close.style, { left: "20px", right: "auto", top: "120px" }); // フロア内。再開・終了を覆わない
+      if (game.id === "ichidai" || game.id === "tetsuko") Object.assign(close.style, { left: "20px", right: "auto", top: "180px" }); // 右上の案内・帰るを覆わない
       close.onclick = () => { controller.abort(); host.remove(); close.remove(); if (current === controller) current = null; location.reload(); };
       stage.append(close);
       document.querySelector("[data-test='debug-panel']").hidden = true;
