@@ -813,6 +813,12 @@
       "run": ["node remake/test/ch4_rehearsal.mjs"]
     },
     {
+      "id": "visit-chains",
+      "title": "Visit chains after the revisit talks (#2020 D): ch3 mukai regular, ch4 cafe-inn-cafe, ch5 Smoke & Glory and Dubai alley; later-day gating, picks, memories, wiring",
+      "kind": "quick",
+      "run": ["node remake/test/visit_chains.mjs", "node --experimental-vm-modules remake/test/visit_chains_wiring.mjs"]
+    },
+    {
       "id": "manifest-dependencies",
       "title": "Manifest generator required dependency diagnostics",
       "kind": "quick",

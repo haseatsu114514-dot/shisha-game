@@ -249,6 +249,7 @@ export const FLAG_EXACT_RULES = [
   ["_ch4_cafe_orders", "progression"], // ドバイのカフェで頼んだ一台の回数（メニューごと・ch4-dubai-cafe.js）
   ["_ch4_cleared", "progression"],
   ["_ch4_dubai_talks", "progression"],
+  ["_visit_chains", "progression"], // 通いの続きの小さな出来事（第3〜5章・段の既読と選んだ答え。chapters/visit-chains.js）。周回では持ち越さない
   ["_ch4_dubai_nights", "progression"], // ドバイの夜がにぎわう店に夜に行った回数（店ごと・ch4-dubai-local.js）。周回では持ち越さない
   ["_ch4_longlong", "progression"], // 龍龍水煙所のドバイの店の段階の既読・通いの回数（ch4-longlong.js）
   ["_ch4_desert", "progression"],
