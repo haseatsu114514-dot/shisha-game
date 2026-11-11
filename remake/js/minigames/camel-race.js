@@ -96,7 +96,12 @@ const ART_FILES = Object.freeze({
   balloon: "ui/camel_race/ui/balloon.webp",
   // 砂煙（CR-WD03・#3217・2026-11-11 採用）。小・中・大の3枚（256×256・左へ流れる形）。
   dust: [1, 2, 3].map(i => `ui/camel_race/world/dust-${i}.webp`),
+  // 門の幕の字（CR-WD09）と、手前を流れる旗の柱（CR-WD06）。#3217・2026-11-11 採用。
+  words: { START: "ui/camel_race/world/word-start.webp", FINISH: "ui/camel_race/world/word-finish.webp" },
+  flag: "ui/camel_race/world/fg-flagpole.webp",
 });
+// 旗の柱（256×720・柱の中心 x=43）: 手前の地面より前を、走路より速く（parallax 倍）流れる。スタートの少し手前とゴールの先に立てる。
+const FLAG_ART = Object.freeze({ poleX: 43, scale: 0.62, ground: 744, parallax: 1.35, at: [-14, 26] });
 // 砂煙の絵の置き方: 塊の右端（絵の幅の 0.9）を蹄の位置に、下の縁（絵の高さの 0.72）を地面に合わせる。size は puff.r に掛ける倍率。
 // 絵の砂煙は輪郭がはっきりしているので、毎フレームは出さず、蹄が地面を蹴る間隔（step m）ごとに1つ出す。
 // 描く順番は列ごと（そのラクダの直前、車の砂煙は車の直前）。輪郭のある絵が胴や前の列のラクダに重ならないように。
@@ -121,9 +126,13 @@ export function loadCamelArt() {
   // 吹き出しの絵（CR-UI13）と砂煙の絵（CR-WD03）は読めなくても他の絵は使う（それぞれ従来の描画に戻す）。
   const balloon = load(ART_FILES.balloon).catch(() => null);
   const dust = Promise.all(ART_FILES.dust.map(load)).catch(() => null);
-  artTask ||= Promise.all([Promise.all(ART_FILES.camel.map(load)), load(ART_FILES.jockey), load(ART_FILES.suv), load(ART_FILES.wheel), load(ART_FILES.track), balloon, dust])
-    .then(([camel, jockey, suv, wheel, track, balloonImage, dustImages]) => ({ camel, jockey, suv, wheel, track, balloon: balloonImage, dust: dustImages,
-      ground: groundTiles(), skins: camelSkins(camel) }))
+  // 門の字は1枚ずつ（読めた字だけ絵、読めない字は従来の文字）。旗の柱は読めなければ立てない。
+  const words = Promise.all(Object.entries(ART_FILES.words).map(([word, rel]) => load(rel).then(image => [word, image], () => [word, null])))
+    .then(entries => Object.fromEntries(entries.filter(([, image]) => image)));
+  const flag = load(ART_FILES.flag).catch(() => null);
+  artTask ||= Promise.all([Promise.all(ART_FILES.camel.map(load)), load(ART_FILES.jockey), load(ART_FILES.suv), load(ART_FILES.wheel), load(ART_FILES.track), balloon, dust, words, flag])
+    .then(([camel, jockey, suv, wheel, track, balloonImage, dustImages, wordImages, flagImage]) => ({ camel, jockey, suv, wheel, track, balloon: balloonImage, dust: dustImages,
+      words: wordImages, flag: flagImage, ground: groundTiles(), skins: camelSkins(camel) }))
     .catch(() => null);
   return artTask;
 }
@@ -333,6 +342,8 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     ["cr-stamp-b", "ui/camel_race/ui/stamp-b.webp"],
     ["cr-stamp-c", "ui/camel_race/ui/stamp-c.webp"],
     ["cr-word-perfect", "ui/camel_race/ui/word-perfect.webp"],
+    // 手描きの字の残り（CR-UI14・#3217・2026-11-11 採用）。読めた字だけ絵、読めない字は従来の書体。
+    ...["good", "miss", "go", "3", "2", "1", "last-spurt", "goal", "title"].map(word => [`cr-word-${word}`, `ui/camel_race/ui/word-${word}.webp`]),
   ]) {
     const probe = new Image();
     probe.onload = () => root.classList.add(cls);
@@ -414,8 +425,11 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     }
     if (kind !== "miss") waves.push({ x, y, r: 22, age: 0, life: kind === "perfect" ? 0.5 : 0.38, color, width: kind === "perfect" ? 6 : 4 });
   };
-  const showBanner = (text, kind, seconds = 1.6, sub = "") => {
-    banner.replaceChildren(el("b", { text }), ...(sub ? [el("small", { text: sub })] : []));
+  // word: 手描きの字（CR-UI14）に替える英語の語（"last-spurt"／"goal"）。text はその前に付ける日本語（「1着」）。
+  const BANNER_WORDS = Object.freeze({ "last-spurt": "LAST SPURT", goal: "GOAL!" });
+  const showBanner = (text, kind, seconds = 1.6, sub = "", word = null) => {
+    const label = [text, word ? el("i.camel-word", { dataset: { word }, text: `${text ? " " : ""}${BANNER_WORDS[word]}` }) : null].filter(Boolean);
+    banner.replaceChildren(el("b", label), ...(sub ? [el("small", { text: sub })] : []));
     banner.dataset.kind = kind; banner.classList.add("show"); bannerTimer = seconds;
   };
 
@@ -556,6 +570,9 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
         const mastered = cupRecords[cup.id]?.mastered || runs.some(run => cup.id === "standard" ? camelMastered(run) : cup.id === "expert" && camelExpert(run));
         return el("button.camel-cup", { type: "button", disabled: !enabled,
           dataset: { test: "camel-cup", cup: cup.id }, onclick: () => { sfx("select"); selectedCup = cup.id; startRace(); } }, [
+          // 大会の紋章（CR-WD08・#3217）。読めなければ札は文字だけ。
+          el("img.camel-cup-badge", { src: imgFileUrl(`ui/camel_race/world/cup-${cup.id}.webp`), alt: "", dataset: { test: "camel-cup-badge" },
+            onerror: event => { event.currentTarget.remove(); } }),
           el("small", { text: index ? `CUP 0${index}` : "PRACTICE" }),
           el("strong", { text: cup.name }), el("span", { text: `${cup.length.toLocaleString("ja-JP")}m ・ 4頭` }),
           el("span", { text: enabled ? cup.note : cup.id === "standard" ? "入門大会3位以内で解放" : "標準大会の中級認定で解放" }),
@@ -606,9 +623,9 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
       const shown = Math.ceil(countdownLeft);
       if (shown !== countdownShown) {
         countdownShown = shown;
-        if (shown > 0) { countdownNode.textContent = String(shown); countdownNode.classList.add("show"); sfx("count"); }
+        if (shown > 0) { countdownNode.textContent = String(shown); countdownNode.dataset.word = String(shown); countdownNode.classList.add("show"); sfx("count"); }
         else {
-          countdownNode.textContent = "GO!"; sfx("count"); sfx("reelLever"); setPhase("race"); goTime = 0;
+          countdownNode.textContent = "GO!"; countdownNode.dataset.word = "go"; sfx("count"); sfx("reelLever"); setPhase("race"); goTime = 0;
           announce("スタート。輪が重なったら声をかける。"); setTimeout(() => countdownNode.classList.remove("show"), 500);
           say(CALLS.go, true);
           if (!reducedMotion) {
@@ -641,8 +658,8 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
         // 着差: 1着なら2着との差、それ以外はすぐ前の相手との差。0.15秒以内は写真判定。
         const edge = rank === 1 ? margins.behind : margins.ahead;
         const photo = !!edge && edge.seconds <= 0.15;
-        showBanner(rank === 1 ? "1着 GOAL!" : `${rank}着 GOAL`, rank === 1 ? "goal" : "goal-place", 2.6,
-          edge ? `${photo ? "写真判定 ・ " : ""}${edge.name}と ${edge.seconds.toFixed(2)}秒差` : "");
+        showBanner(`${rank}着`, rank === 1 ? "goal" : "goal-place", 2.6,
+          edge ? `${photo ? "写真判定 ・ " : ""}${edge.name}と ${edge.seconds.toFixed(2)}秒差` : "", "goal");
         sfx(rank === 1 ? "fanfare" : rank <= 3 ? "jingle" : "crowd");
         say(photo && rank === 1 ? `${CALLS.photo} ${CALLS.finish[0]}` : CALLS.finish[rank - 1] || CALLS.finish.at(-1), true);
         hajime(["やったー！", "くそっ、あと少し！", "まだまだ……", "うそだろ……"][rank - 1] || "……", rank === 1 ? "smile" : rank === 4 ? "sad" : "serious", 3);
@@ -675,7 +692,7 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     for (const event of race.events) {
       if (event.kind === "voice" && event.type === "lost") { combo = 0; sfx("miss"); showFeedback("見送った……", "lost"); }
       else if (event.kind === "spurt" && !spurtShown) {
-        spurtShown = true; showBanner("LAST SPURT", "spurt"); announce("ラストスパート。ムチを押し続けるなら今。");
+        spurtShown = true; showBanner("", "spurt", 1.6, "", "last-spurt"); announce("ラストスパート。ムチを押し続けるなら今。");
         say(CALLS.spurt, true); sfx("slotBonus"); if (Math.random() < 0.3) playCamelRaceSe("grunt");
         if (!reducedMotion) { spurtTint = 1; shake = Math.max(shake, 0.25); }
       }
@@ -875,6 +892,7 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
         const lane = laneOf(camel.id);
         drawNameTag(screenX(camel), lane.y, lane.scale, camel);
       }
+      drawForegroundFlags(camX);
       drawSpeedLines(1);
       drawDraft();
       drawDuel();
@@ -1037,10 +1055,27 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
         ctx.fillStyle = (i + row) % 2 ? "#1a120c" : "#fff6e5"; ctx.fillRect(bx + i * 8, row ? by + 6 : by, 8, 6);
       }
       ctx.strokeStyle = "rgba(30,14,4,0.55)"; ctx.lineWidth = 2; ctx.strokeRect(bx + 1, by + 1, bw - 2, bh - 2);
-      ctx.font = `900 24px ${FONT}`; ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.lineJoin = "round";
-      ctx.lineWidth = 5; ctx.strokeStyle = "rgba(30,14,4,0.7)"; ctx.strokeText(label, sx, by + (goal ? 30 : 25));
-      ctx.fillStyle = ink; ctx.fillText(label, sx, by + (goal ? 30 : 25));
+      const word = art?.words?.[label];
+      if (word) {
+        // 手描きの字（CR-WD09）: 幕の高さに合わせて縮める（市松の帯の間に収める）。
+        const h = goal ? 32 : 38, w = word.width * h / word.height;
+        ctx.drawImage(word, sx - w / 2, by + (goal ? 30 : 25) - h / 2, w, h);
+      } else {
+        ctx.font = `900 24px ${FONT}`; ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.lineJoin = "round";
+        ctx.lineWidth = 5; ctx.strokeStyle = "rgba(30,14,4,0.7)"; ctx.strokeText(label, sx, by + (goal ? 30 : 25));
+        ctx.fillStyle = ink; ctx.fillText(label, sx, by + (goal ? 30 : 25));
+      }
       ctx.restore();
+    }
+  }
+  /** 手前の旗の柱（CR-WD06）: スタートの少し手前とゴールの先に立ち、走路より速く流れて速さの手がかりになる。 */
+  function drawForegroundFlags(camX) {
+    if (!art?.flag || !race) return;
+    const image = art.flag, k = FLAG_ART.scale, w = image.width * k, h = image.height * k;
+    for (const m of FLAG_ART.at.map(at => at < 0 ? at : race.length + at)) {
+      const x = PLAYER_SCREEN_X + (m - camX) * PX_PER_M * FLAG_ART.parallax;
+      if (x < -w || x > W + w) continue;
+      ctx.drawImage(image, x - FLAG_ART.poleX * k, FLAG_ART.ground - h, w, h);
     }
   }
   /** 絵のラクダ（4コマ）とロボット騎手。足元を ground の線に、騎手をコブの後ろにそろえる。 */

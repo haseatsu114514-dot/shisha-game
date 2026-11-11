@@ -14,11 +14,11 @@ Issue: [#3217](https://github.com/haseatsu114514-dot/shisha-game/issues/3217)（
 | 走路の砂・車の道 | 乱数で打った点と線のタイル。広い面積が単調 | CR-WD04 |
 | 砂煙 | 丸いぼかしの円 | CR-WD03（**2026-11-11 採用・組み込み済み**） |
 | 下の2つの操作ボタン | CSS の黒い角丸に SVG の記号 | CR-UI07（[ui-request.md](ui-request.md)。未生成） |
-| GO!・3・2・1・LAST SPURT・GOAL・GOOD・MISS | 画面の書体に縁取り（PERFECT だけ手描きの字） | CR-UI14 の残り9語（同上。未生成） |
+| GO!・3・2・1・LAST SPURT・GOAL・GOOD・MISS | 画面の書体に縁取り（PERFECT だけ手描きの字） | CR-UI14 の残り9語（**2026-11-11 採用・組み込み済み**） |
 | 2〜4位のメダル | CSS の円（1位だけ絵） | CR-UI03 の銀・銅・鉄（同上。未生成） |
 | 進み具合の横木 | CSS の木の色 | CR-UI06 track-rail（同上。未生成） |
-| 競り合いの「VS」 | 画面の書体 | CR-WD09 |
-| 大会を選ぶ札 | 文字だけの札 | CR-WD08 |
+| 競り合いの「VS」 | 画面の書体 | CR-WD09（START・FINISH は**採用済み**。VS は不合格で再依頼） |
+| 大会を選ぶ札 | 文字だけの札 | CR-WD08（**2026-11-11 採用・組み込み済み**） |
 | 並走する車は自分の1台だけ | 実際のレースは調教師の車が何台も並走する。寂しい | CR-WD05 |
 
 Claude は画像を生成しない。下の「Codex へ渡す文」をそのまま渡す。届くまでは今のコードの描画のまま動く。
@@ -40,7 +40,7 @@ Claude は画像を生成しない。下の「Codex へ渡す文」をそのま�
 | B | CR-WD09 | `word-vs.png` / `word-start.png` / `word-finish.png` | 長辺1024以内 | 競り合いの「VS」、門の幕の字 | CR-UI14 と同じ、ペンキで手描きした看板の字。VS は金に濃い茶の縁、START と FINISH は白にくっきりした濃い影。**綴りが違う案は不採用** |
 | C | CR-WD06 | `fg-flagpole.png` | 256×720 | 手前を速く流れる柱（速さの手がかり） | 白い細い柱の上に、金・朱・クリームの三角旗を3枚つないだ紐。柱の根元がキャンバスの下端 |
 
-未生成のまま残っている CR08 の部品（仕様は [ui-request.md](ui-request.md) のまま）: CR-UI03 `medal-{silver,bronze,plain}.png`、CR-UI06 `track-rail.png`、CR-UI07 `remote-{voice,whip}-{normal,pressed}.png`、CR-UI14 の9語（GOOD・MISS・GO!・3・2・1・LAST SPURT・GOAL・CAMEL RACE）。優先は CR-UI07 → CR-UI14 → CR-UI03 → CR-UI06。
+未生成のまま残っている CR08 の部品（仕様は [ui-request.md](ui-request.md) のまま）: CR-UI03 `medal-{silver,bronze,plain}.png`、CR-UI06 `track-rail.png`、CR-UI07 `remote-{voice,whip}-{normal,pressed}.png`。優先は CR-UI07 → CR-UI03 → CR-UI06（CR-UI14 の9語は 2026-11-11 に採用済み）。
 
 ## Codex へ渡す文（コピペ用）
 
@@ -64,7 +64,7 @@ CR-WD08 cup-practice.png / cup-rookie.png / cup-standard.png / cup-expert.png �
 CR-WD09 word-vs.png / word-start.png / word-finish.png（長辺1024以内）: hand-painted sign-writer lettering of exactly these words, nothing else on the canvas, transparent outside the letters: "VS" (gold with a dark brown outline), "START" and "FINISH" (white with a crisp dark drop shadow painted as part of the letters). Bold, slightly irregular brush strokes like paint on a racecourse board; not a computer font, no gradients, no glow. Every letter must be spelled exactly as written. (This is the only item where letters are allowed.)
 CR-WD06 fg-flagpole.png 256x720: a thin white pole with a string of three triangular pennants (gold, racing red, cream) at the top. The base of the pole touches the bottom edge.
 
-【まだ作っていない CR08 の部品も、この機会に】仕様と英文は asset_sources/ch4-camel-race/ui-request.md のまま: CR-UI07 remote-voice / remote-whip（normal と pressed）、CR-UI14 の残り9語、CR-UI03 medal-silver / medal-bronze / medal-plain、CR-UI06 track-rail。
+【まだ作っていない CR08 の部品も、この機会に】仕様と英文は asset_sources/ch4-camel-race/ui-request.md のまま: CR-UI07 remote-voice / remote-whip（normal と pressed）、CR-UI03 medal-silver / medal-bronze / medal-plain、CR-UI06 track-rail（CR-UI14 の9語は 2026-11-11 に採用済み）。
 
 【参照（添付できれば添付。役割を書き添える）】CR-WD01 の柱の質感（形は真似しない。横木と奥の柱は描かない）: asset_sources/ch4-camel-race/world/review/gate-start-attempts-rejected.jpg。画風と光: assets/backgrounds/bg_dubai_camel_track_morning.png。物の描き込みの密度: assets/ui/camel_race/camel_1.png と suv.png。CR-WD05 の寸法と車輪の位置: suv.png。CR-WD07 の描き方: assets/ui/camel_race/ui/howto-camel.png。CR-WD09 の字: assets/ui/camel_race/ui/word-perfect.png。
 【渡し方】原画をそのまま asset_sources/ch4-camel-race/world/originals/ に置き、生成の指示と日付を asset_sources/ch4-camel-race/world/generation.json に書いて push。各ファイルの SHA-256・実寸・アルファの有無を添えてください。候補が複数ある部品は -A/-B を付けて全部ください。生成の決まり（開始前のコピーの確認・寸法とアルファの機械確認・文字を描かない）は Issue #3055 と同じです。
@@ -92,6 +92,52 @@ Codex がオーナー経由で渡した `3217-dust-A-production.zip`（SHA-256 `
 | `dust-2-A.png` | 1254×1254 | `e41fb39ae311cc587bd95b9e37c04c86e2e89e4bf9452d33bd597b2f68de1d10` |
 | `dust-3-A.png` | 1254×1254 | `8e20ebcb2b68331e2708300817c6b2770e52221ff7b79c674d3ae76470940af1` |
 
+### 2026-11-11 手描きの字（CR-UI14 の9語・CR-WD09 の START／FINISH を採用。VS は不合格）
+
+`3217-words-A-production.zip`（SHA-256 `a0c9ea3a…`）。同梱の `generation-words-A.json` の SHA-256 と原画・候補の24ファイルがすべて一致した。
+
+| 語 | 採用 | 理由 | 使う所 |
+|---|---|---|---|
+| GOOD・MISS・GO!・3・2・1・LAST SPURT・GOAL・CAMEL RACE | **A**（9語とも） | 綴りが正しく、色が指定どおり（GOOD 水色・MISS 灰がかった赤・GO! と数字は白に濃い影・LAST SPURT 朱・GOAL 金・題名は砂色に濃い縁）。採用済みの PERFECT とレース場の背景の上で並べ、同じ手に見えた。透明度は本体が 240〜254（ほぼ不透明）で、PERFECT と同じ作り | 声の判定（GOOD、輪を見送った時の MISS）、カウントダウン、LAST SPURT と GOAL のバナー、左上の計器と試遊ページの題名 |
+| START・FINISH | **A** | 同上（白に濃い影） | スタートとゴールの門の幕の字（Canvas） |
+| VS | 不合格（Codex の判定と同じ） | 字の後ろに四角い暗い背景と光が残る。2案とも | 競り合いの「VS」は書体のまま。再依頼 |
+
+- ゲーム用は Codex の正寸の候補（長辺1024への均一の縮小だけ）。CR-UI14 は `assets/ui/camel_race/ui/word-*.png`（PERFECT と同じ場所）、START／FINISH は `world/word-*.png`。WebP は PERFECT と同じく非可逆（1024×341 で約70KB）。数字と GO! は表示に足りる高さ 512 まで縮めて作った（約25〜80KB）。
+- 「無駄な声」「連打はダメ」は、何がいけなかったかを伝えるので日本語のまま。MISS は、輪を見送った時（これまでの「見送った……」）に使う。読み上げ用の文字は残る。
+- 原画は CR-UI14 が `ui/originals/`、START／FINISH が `world/originals/`。生成記録は `world/generation-words-A.json`、比較図は `world/review/words-A-comparison.jpg`。
+
+### 2026-11-11 大会の紋章（CR-WD08）・旗の柱（CR-WD06）を採用
+
+`3217-cups-flag-A-production.zip`（SHA-256 `a337f229…`）。同梱の `generation-cups-flag-A.json` の SHA-256 と原画・候補の10ファイルがすべて一致した。
+
+| 部品 | 採用 | 理由 | 使う所 |
+|---|---|---|---|
+| 紋章 練習・入門・標準・上級 | **A**（4枚とも） | 練習＝鉄・ラクダの2つに割れた足跡、入門＝銅・若いラクダの横顔と星1つ、標準＝銀・走るラクダと星2つ、上級＝くすんだ金・月桂の輪の中の横顔と星3つで、指定どおり。文字なし。64px でも見分けられる | 大会を選ぶ札の右上（未解放は色を抜く） |
+| 旗の柱 | **A** | 白い細い柱の上に、金・朱・クリームの三角旗3枚。柱がまっすぐで（中心 x=43）、置く位置を決めやすい | 手前の旗の柱（スタートの14m手前とゴールの26m先。走路の1.35倍の速さで流れる） |
+
+- Codex は紋章を「不透明さの修正が必要」としていたが、これは本体の透明度が 240〜254（95%以上）という意味だった。紙・暗い茶・市松のどれに置いても透けは見えないので、**手を加えずに採用**した（アルファの加工はしていない）。入門の紋章は縁がキャンバスの上端に触れているが、欠けて見えない。
+- 不合格: 金属の色を取り違えた入門・標準の2案（Codex の判定と同じ）。VS とあわせて縮小図だけ `world/review/rejected-vs-and-wrong-metal.jpg` に残した。
+- ゲーム用は `world/cup-*.png`（256×256）・`world/fg-flagpole.png`（256×720）。原画は `world/originals/`、生成記録は `world/generation-cups-flag-A.json`、比較図は `world/review/cups-flag-A-comparison.jpg`。
+
+| 原画 | 寸法 | SHA-256 |
+|---|---|---|
+| `word-good-A.png` | 2172×724 | `bcac5aac6a34a0c361e9150cbdf2b943116df24fbdfd3a58cd31aa3d79b446de` |
+| `word-miss-A.png` | 2172×724 | `08b830c9a83654c7d1171ff9baccbf634c6c5cbc853af822e7e91e092949871f` |
+| `word-go-A.png` | 1774×887 | `18cd32901139d8108c3ec95e4539a883d0d0a45ba84ce6dd58edf3fa0b41e506` |
+| `word-3-A.png` | 1230×1278 | `6875435ed54a3e599324bc99d171c3711261ea9c805b37684590dad337f48349` |
+| `word-2-A.png` | 1210×1300 | `8483bb5b739ab06c5afe23ad33d77bed183944faa5281ff1382beba5883c2849` |
+| `word-1-A.png` | 1199×1312 | `14b02fb7b3589b547eb6b1f2cb1f17d79179868bdda43ee46c6e9a0730d46cce` |
+| `word-last-spurt-A.png` | 2172×724 | `36811b3c7e794f37b3899ca6f284cf099c01f212971a906579abeffaf50fb8da` |
+| `word-goal-A.png` | 2172×724 | `70cb0df589005fe2487b53238fb6be0acddd0f2b9c25a102c6827ed7f77381fd` |
+| `word-title-A.png` | 2172×724 | `381218bbdd26dd4b4a6d1248672a14d45ac39e9a9f1fdfe99cba0b6334e36a16` |
+| `word-start-A.png` | 2172×724 | `99a57ad8a752923e099d20cbdbc7425e24d559504c8af7704f385d70a488ee87` |
+| `word-finish-A.png` | 2172×724 | `c4e26cf9c0e4c3b8c5bcee4ff5c29dcb62fb27e17704ce496c00bea40c659743` |
+| `cup-practice-A.png` | 1254×1254 | `06ea73bb60c8ac54db74ef8f1ad6a15570c8ddd019071f85748b08de5b826723` |
+| `cup-rookie-A.png` | 1254×1254 | `f83ce62e9473524d8b2408a9a3edaafabcaa132076b848e30b44f49443f59901` |
+| `cup-standard-A.png` | 1254×1254 | `db42aabc96c151b16b27706482f3cf9de20596123bf2945585894fa01ada76d4` |
+| `cup-expert-A.png` | 1254×1254 | `9ecf8b7fbbae40fd3f2aecb4e2b0b7796cb60860f7b338e13e5ec83216bb5450` |
+| `fg-flagpole-A.png` | 748×2103 | `23016a56879ef0cd317375419bd1158e4bb910de07f1097424915eff428edbe8` |
+
 ### 2026-11-11 CR-WD01 門（2案とも不合格 → 指定を改訂）
 
 同じ ZIP の `rejected/gate-start-attempt-{A,B}.png`（971×1619）。Codex の判定は「奥の柱の根元が高さの54%で、指定の47%に届かない。ゴールの門が無い」。確認して同意し、もう一つ理由を足した:
@@ -104,5 +150,5 @@ Codex がオーナー経由で渡した `3217-dust-A-production.zip`（SHA-256 `
 
 1. 原画の SHA-256・寸法・アルファを確かめ、部品ごとに選ぶ（理由をこのファイルに追記）。CR-WD04 は左右のつなぎ目を、CR-WD05 は車輪の位置を測る。
 2. 縮小だけで `assets/ui/camel_race/world/` へ置き、WebP を `remake/img/ui/camel_race/world/` に作る（Git LFS）。
-3. `remake/js/minigames/camel-race.js` の `drawGates`・`drawMarkers`・`groundTiles` を、絵が読めた時だけ絵に替える（読めなければ今の描画。`drawDust` は CR-WD03 で済み）。CR-WD01 は奥の柱を奥の柵、手前の柱を手前の柵に同じ横位置で立てる。CR-WD05 は奥の柵の向こうに、群れと同じ速さで2〜3台を走らせる。
+3. `remake/js/minigames/camel-race.js` の `drawGates`・`drawMarkers`・`groundTiles` を、絵が読めた時だけ絵に替える（読めなければ今の描画。`drawDust`・門の字・旗の柱・紋章・手描きの字は 2026-11-11 に済み）。CR-WD01 は奥の柱を奥の柵、手前の柱を手前の柵に同じ横位置で立てる。CR-WD05 は奥の柵の向こうに、群れと同じ速さで2〜3台を走らせる。
 4. PC（1280×720）とスマホ横（844×390）で、スタート・中盤・スパート・ゴールを目視し、`node remake/test/browser/ch4_camel_race.mjs` を通す。

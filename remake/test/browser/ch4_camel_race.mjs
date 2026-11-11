@@ -264,6 +264,8 @@ await suite("ch4-camel-cups", async check => {
     const before = await get(page);
     await go(page, "ch4_dubai_camel");
     await page.locator(dt("camel-cups")).waitFor();
+    // 大会の札の紋章（CR-WD08・#3217）は4枚とも読めている。
+    await page.waitForFunction(() => [...document.querySelectorAll('[data-test="camel-cup-badge"]')].filter(img => img.complete && img.naturalWidth > 0).length === 4);
     const cup = id => page.locator(`[data-test="camel-cup"][data-cup="${id}"]`);
     assert.equal(await cup("standard").isDisabled(), true);
     assert.equal(await cup("expert").isDisabled(), true);
@@ -308,6 +310,9 @@ await suite("ch4-camel-race-controls", async check => {
     await page.waitForFunction(() => document.querySelector('[data-test="camel-game"]')?.dataset.phase === "race", null, { timeout: 15000 });
     assert.equal(await game.getAttribute("data-art"), "sprites");
     assert.equal(await game.getAttribute("data-dust"), "sprites", "the dust art (CR-WD03) is loaded");
+    // 手描きの字（CR-UI14・#3217）: 判定・カウントダウン・バナー・題名の字の絵がすべて読めている。
+    await page.waitForFunction(words => words.every(word => document.querySelector('[data-test="camel-game"]').classList.contains(`cr-word-${word}`)),
+      ["perfect", "good", "miss", "go", "3", "2", "1", "last-spurt", "goal", "title"]);
     const whip = page.locator(dt("camel-signal"));
     const stamina = async () => Number(await page.locator(".camel-stamina b").textContent());
     const full = await stamina();
