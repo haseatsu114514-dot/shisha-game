@@ -249,6 +249,12 @@ export function pathTo(id, unlocked) {
   return pathsFrom(goal.board, unlocked)(id);
 }
 
+/**
+ * 盤の全マスへの費用をまとめて引く（盤の「次の目的地」の一覧用。1回の探索で全マス分。SBD104）。
+ * 戻り値は id → { cost, path }。極みは道につながらないので pathTo を使う。
+ */
+export const boardRoutes = (board, unlocked) => pathsFrom(board, unlocked);
+
 /** 紋から盤全体への最短経路。探索結果はこの灯した集合でだけ使う。 */
 function pathsFrom(board, unlocked) {
   const nodes = boardNodes(board);

@@ -41,10 +41,30 @@ await suite("kuji-gacha", async check => {
     // 回っているあいだ: 舞台と粒子の層と SKIP があり、札はまだ無い
     await page.locator('.mo-garagara[data-mode="single"]').waitFor();
     await page.locator(".mo-garagara canvas.kj-fx").waitFor();
-    // 舞台は今いる店の背景を写したもの。道具は1つずつ別の部品で、絵が未採用のあいだは下絵（sketch）
+    // 舞台は今いる店の背景を写したもの。道具は1つずつ別の部品で、描いた絵（#3228・remake/img/ui/kuji/）を使う
     assert.equal(await page.locator(".mo-garagara .kj-bg .kj-bg-img").count(), 1, "後ろにその店の背景");
     for (const part of ["drum", "frame", "base", "handle", "tray", "counter", "sign", "bell"]) {
       assert((await page.locator(`.mo-garagara .kj-part[data-part="${part}"]`).count()) >= 1, `部品 ${part}`);
+    }
+    // 絵が読み込めて、下絵に戻っていない（読み込めなかった部品は data-art="sketch" になる）
+    await page.waitForFunction(() => [...document.querySelectorAll(".mo-garagara .kj-part img")].every((img) => img.complete), null, { timeout: 8000 });
+    const art = await page.locator(".mo-garagara .kj-part").evaluateAll((parts) => parts.map((n) => ({ part: n.dataset.part, art: n.dataset.art,
+      loaded: !!n.querySelector("img")?.naturalWidth })));
+    for (const part of ["drum", "frame", "base", "handle", "tray", "counter", "sign", "bell"]) {
+      const found = art.filter((x) => x.part === part);
+      assert(found.length && found.every((x) => x.art === "painted" && x.loaded), `描いた絵の ${part}: ${JSON.stringify(found)}`);
+    }
+    // 脚の足先は、手前の2本も奥の2本も土台の天板に載っている（2026-11-11 オーナー「台と足の位置がズレてる」: 奥の足先が板の外に浮いていた）。
+    // 絵の中の位置: 脚の足先は左右 8.2%〜91.7%・下端 99.1%、土台の天板は上から 72.8%（奥の辺は左右 7.5% ずつ内側）
+    const rig = await page.evaluate(() => Object.fromEntries([["base", ".kj-base"], ["near", ".kj-frame:not(.kj-frame-far)"], ["far", ".kj-frame-far"]]
+      .map(([key, sel]) => { const r = document.querySelector(`.mo-garagara ${sel}`).getBoundingClientRect(); return [key, { x: r.x, y: r.y, w: r.width, h: r.height }]; })));
+    const face = rig.base.h * 0.728;
+    for (const [name, leg] of [["手前の脚", rig.near], ["奥の脚", rig.far]]) {
+      const foot = leg.y + leg.h * 0.991, depth = (foot - rig.base.y) / face; // 0＝天板の奥の辺、1＝手前の辺
+      assert(depth > 0.1 && depth < 0.9, `${name}の足先が天板の上（奥0〜手前1 の ${depth.toFixed(2)}）`);
+      const inset = rig.base.w * 0.075 * (1 - depth); // その奥行きでの天板の左右の端
+      assert(leg.x + leg.w * 0.082 > rig.base.x + inset + 4, `${name}の左の足先が天板の内側`);
+      assert(leg.x + leg.w * 0.917 < rig.base.x + rig.base.w - inset - 4, `${name}の右の足先が天板の内側`);
     }
     assert.equal(await page.locator(".kuji-card.reveal").count(), 0, "札はガラガラのあとに開く");
     assert((await page.locator('[data-test="kuji-skip"]').boundingBox()).height >= 40);
@@ -52,6 +72,8 @@ await suite("kuji-gacha", async check => {
     assert.match(await page.locator(".kuji-card.reveal").innerText(), /C賞[\s\S]*AF ライム（お試し10g）/);
     assert.equal(await page.locator(".kuji-card.reveal .kj-banner").count(), 0, "大当たりの帯はS賞だけ");
     assert((await page.locator(".kuji-card.reveal .kj-art").locator("img, .kj-gift").count()) >= 1, "景品の絵（無ければ包み）が載る");
+    // 札の地は描いた絵（C賞は白い箔の札）
+    assert.match(await page.locator(".kuji-card.reveal").evaluate((n) => getComputedStyle(n).backgroundImage), /img\/ui\/kuji\/card-c\.webp/);
     await page.locator(".mo-garagara").waitFor({ state: "detached" });
     assert.equal(await page.locator('[data-test="kuji-reveal"]').getAttribute("data-rank"), "C");
     await tap(page, "kuji-reveal");

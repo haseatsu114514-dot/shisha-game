@@ -264,7 +264,7 @@
       "id": "growth-levelup",
       "title": "Growth EXP, night level-up and hidane behind GROWTH_BOARD",
       "kind": "quick",
-      "run": ["node remake/test/growth_levelup.mjs", "node remake/test/growth_board.mjs", "node --experimental-vm-modules remake/test/slot_exp.mjs", "node --experimental-vm-modules remake/test/kannon_growth.mjs", "node remake/test/growth_effects.mjs", "node --experimental-vm-modules remake/test/growth_chapter_rewards.mjs", "node --experimental-vm-modules remake/test/growth_board_screen.mjs", "node remake/test/growth_chapter_notice.mjs", "node remake/test/proto_hmd_mw9.mjs"]
+      "run": ["node remake/test/growth_levelup.mjs", "node remake/test/growth_board.mjs", "node --experimental-vm-modules remake/test/slot_exp.mjs", "node --experimental-vm-modules remake/test/kannon_growth.mjs", "node remake/test/growth_effects.mjs", "node --experimental-vm-modules remake/test/growth_chapter_rewards.mjs", "node --experimental-vm-modules remake/test/growth_board_screen.mjs", "node remake/test/growth_chapter_notice.mjs", "node remake/test/proto_hmd_mw9.mjs", "node remake/test/outer24_lesson.mjs"]
     },
     {
       "id": "growth-starter-accounting",
@@ -289,6 +289,12 @@
       "title": "Shift mix recording, dialogue and tournament feedback (#1414, #1415)",
       "kind": "quick",
       "run": ["node remake/test/shift_mix_record.mjs"]
+    },
+    {
+      "id": "mukai-shift-orders",
+      "title": "Tokyo mukai shift orders: entrusted orders join from the day after the first shift (#2020 E)",
+      "kind": "quick",
+      "run": ["node remake/test/mukai_shift_orders.mjs"]
     },
     {
       "id": "ch1-interval-connection",
@@ -480,6 +486,27 @@
       "run": ["node remake/test/browser/growth_chapter_notice.mjs"]
     },
     {
+      "id": "growth-fx-browser",
+      "title": "Growth level-up reward chips, colour-fire note, board light/commit effects, near goals and reduced motion (SBD102-105)",
+      "kind": "browser",
+      "weight": 0.5,
+      "timeout": 4,
+      "paths": [
+        "remake/js/daily/growth-fx.js",
+        "remake/js/daily/levelup.js",
+        "remake/js/daily/growth-board-screen.js",
+        "remake/js/core/growth-board.js",
+        "remake/js/core/growth.js",
+        "remake/css/daily.css",
+        "remake/css/ui-paper.css",
+        "remake/test/browser/growth_fx.mjs",
+        "remake/test/browser/support.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/growth_fx.mjs"
+      ]
+    },
+    {
       "id": "board-tutorial",
       "title": "Growth board first-time tutorial and starter fire (board_tutorial)",
       "kind": "browser",
@@ -569,7 +596,7 @@
       "id": "ichidai-rules",
       "title": "Card game Ichidai Shobu: data matches the rulebook, kits are legal, scoring and coal rules, CPU-vs-CPU matches finish without illegal moves (ICG)",
       "kind": "quick",
-      "run": ["node remake/test/ichidai_rules.mjs", "python3 remake/tools/build_ichidai_art.py --check"]
+      "run": ["node remake/test/ichidai_rules.mjs", "node remake/test/ichidai_lines.mjs", "python3 remake/tools/build_ichidai_art.py --check"]
     },
     {
       "id": "ichidai",
@@ -763,7 +790,7 @@
     },
     {
       "id": "stamp-deploy",
-      "title": "Pages deploy version stamp on the real index.html and CSS",
+      "title": "Pages deploy version stamp on the real index.html, trial pages and CSS",
       "kind": "quick",
       "run": ["node remake/test/stamp_deploy.mjs"]
     },
@@ -807,6 +834,12 @@
       "run": ["node remake/test/ch4_rehearsal.mjs"]
     },
     {
+      "id": "visit-chains",
+      "title": "Visit chains after the revisit talks (#2020 D): ch3 mukai regular, ch4 cafe-inn-cafe, ch5 Smoke & Glory and Dubai alley; later-day gating, picks, memories, wiring",
+      "kind": "quick",
+      "run": ["node remake/test/visit_chains.mjs", "node --experimental-vm-modules remake/test/visit_chains_wiring.mjs"]
+    },
+    {
       "id": "manifest-dependencies",
       "title": "Manifest generator required dependency diagnostics",
       "kind": "quick",
@@ -842,6 +875,7 @@
         "node remake/test/ch4_longlong.mjs",
         "node remake/test/affection_fill.mjs",
         "node --experimental-vm-modules remake/test/ch5_progress.mjs",
+        "node remake/test/ch5_sumi_trial.mjs",
         "node remake/test/ch5_party.mjs",
         "node remake/test/ch5_travel.mjs",
         "node --experimental-vm-modules remake/test/ch3_activities.mjs",
@@ -868,6 +902,29 @@
         "node remake/test/dubai_weather.mjs",
         "node remake/test/ch3_aftermath.mjs"
       ]
+    },
+    {
+      "id": "recipe-finds",
+      "title": "Late-chapter recipe chain: hint → own craft → named recipe → return to the person (#2020 G)",
+      "kind": "quick",
+      "run": ["node remake/test/recipe_finds.mjs"]
+    },
+    {
+      "id": "recipe-finds-browser",
+      "title": "Late-chapter recipe chain on the real daily loop: Steve's hint, return after the recipe book, all scenes, LOAD (#2020 G)",
+      "kind": "browser",
+      "weight": 0.4,
+      "timeout": 5,
+      "paths": [
+        "remake/js/daily/recipe-finds.js",
+        "remake/js/daily/recipe-finds-model.js",
+        "remake/js/daily/calendar.js",
+        "data/recipes.json",
+        "data/dialogue/recipe_finds.json",
+        "remake/test/browser/recipe_finds.mjs",
+        "remake/test/browser/support.mjs"
+      ],
+      "run": ["node remake/test/browser/recipe_finds.mjs"]
     },
     {
       "id": "ch3-lover-entry",
@@ -1685,7 +1742,7 @@
       "title": "Chapter 4 Dubai days on the shared daily loop (VOL04), one shisha at the local cafes, the Longlong shop, the eve acquaintance branch, daytime heat, lively nights and the souq stall (DBS)",
       "kind": "browser",
       "weight": 0.8,
-      "timeout": 6,
+      "timeout": 9,
       "paths": [
         "remake/js/chapters/ch4-dubai-daily.js",
         "remake/js/chapters/ch4-dubai-cafe.js",
@@ -1761,6 +1818,22 @@
       "run": [
         "node remake/test/browser/ch5_full_flow.mjs"
       ]
+    },
+    {
+      "id": "ch5-sumi-trial-browser",
+      "title": "Chapter 5 optional real cup after the prep talk: offer at night, craft, Sumi's answer, decline and resume (#2020 F)",
+      "kind": "browser",
+      "weight": 0.5,
+      "timeout": 6,
+      "paths": [
+        "remake/js/chapters/ch5-daily.js",
+        "remake/js/chapters/ch5-sumi-trial.js",
+        "remake/js/chapters/ch5-progress.js",
+        "remake/js/craft/practice.js",
+        "data/dialogue/ch5_main.json",
+        "remake/test/browser/ch5_sumi_trial.mjs"
+      ],
+      "run": ["node remake/test/browser/ch5_sumi_trial.mjs"]
     },
     {
       "id": "staff-roll",
@@ -4057,8 +4130,17 @@
       "kind": "browser",
       "weight": 1,
       "timeout": 5,
-      "paths": ["remake/js/core/stage-fit.js", "remake/js/main.js", "remake/js/core/ui.js", "remake/camel-race.html", "remake/js/camel-race-page.js", "remake/css/camel-race.css", "remake/axe-throw.html", "remake/js/axe-throw-page.js", "remake/css/axe-throw.css", "remake/js/minigames/axe.js", "remake/desert-ride.html", "remake/js/desert-ride-page.js", "remake/craft-preview.html", "remake/js/craft/preview.js", "remake/test/browser/trial_stage_fit.mjs"],
+      "paths": ["remake/js/core/stage-fit.js", "remake/js/main.js", "remake/js/core/ui.js", "remake/js/page-boot.js", "remake/camel-race.html", "remake/js/camel-race-page.js", "remake/css/camel-race.css", "remake/axe-throw.html", "remake/js/axe-throw-page.js", "remake/css/axe-throw.css", "remake/js/minigames/axe.js", "remake/desert-ride.html", "remake/js/desert-ride-page.js", "remake/craft-preview.html", "remake/js/craft/preview.js", "remake/test/browser/trial_stage_fit.mjs"],
       "run": ["node remake/test/browser/trial_stage_fit.mjs"]
+    },
+    {
+      "id": "page-boot",
+      "title": "Trial pages (minigames, TRPG) reopen at the latest published build and read modules from its folder",
+      "kind": "browser",
+      "weight": 1,
+      "timeout": 5,
+      "paths": ["remake/js/page-boot.js", "remake/sw.js", "remake/desert-ride.html", "remake/camel-race.html", "remake/axe-throw.html", "remake/ichidai.html", "remake/trpg-preview.html", "remake/trpg-campaign-preview.html", "remake/tools/stamp_deploy.py", "remake/test/browser/page_boot.mjs"],
+      "run": ["node remake/test/browser/page_boot.mjs"]
     },
     {
       "id": "recent-intros",
@@ -4278,6 +4360,7 @@
         "remake/js/motions/kuji-art.js",
         "remake/js/motions/kuji-fx.js",
         "remake/css/motions/garagara.css",
+        "remake/img/ui/kuji/*",
         "data/kuji.json"
       ],
       "run": [
@@ -4518,10 +4601,10 @@
     },
     {
       "id": "look-neo",
-      "title": "新版: 第1〜5章の会話の帯と操作の札・地図とHUD・MENU・場面カード・モーダル・タイトルの収まりと、旧版へ戻した時に痕跡が残らないこと",
+      "title": "新版: 第1〜5章の会話の帯と操作の札・地図とHUD・MENU・場面カード・モーダル・タイトル・ショップ・LIME・レベルアップ・ギャラリーの収まりと、旧版へ戻した時に痕跡が残らないこと",
       "kind": "browser",
-      "weight": 5.5,
-      "timeout": 14,
+      "weight": 7,
+      "timeout": 16,
       "paths": [
         "remake/css/look-neo.css",
         "remake/js/looks/**",
@@ -4546,6 +4629,12 @@
         "remake/js/core/chapter-card.js",
         "remake/js/chapters/ch3-map.js",
         "remake/js/chapters/ch3-wayfinding.js",
+        "remake/css/shop.css",
+        "remake/js/daily/shop.js",
+        "remake/js/daily/shop-display.js",
+        "remake/js/daily/phone.js",
+        "remake/js/daily/levelup.js",
+        "remake/js/scenes/gallery.js",
         "remake/test/browser/look_neo.mjs"
       ],
       "run": [
@@ -4554,10 +4643,10 @@
     },
     {
       "id": "look-neo-portrait",
-      "title": "新版の縦持ち: DS風の外枠と操作に高解像度の上画面・第1〜5章の会話と地図とカード・MENU・LIME・設定・LOG をシートで・写せない画面では回転案内・横長は今のまま",
+      "title": "新版の縦持ち: DS風の外枠と操作に高解像度の上画面・第1〜5章の会話と地図とカード・MENU・LIME・設定・LOG・ショップ・セーブの引っ越し・レベルアップ・章のクリアをシートで・写せない画面では回転案内・横長は今のまま",
       "kind": "browser",
-      "weight": 3.8,
-      "timeout": 10,
+      "weight": 4.6,
+      "timeout": 12,
       "paths": [
         "remake/js/looks/**",
         "remake/css/look-retro.css",
@@ -4572,6 +4661,10 @@
         "remake/js/daily/menu.js",
         "remake/js/daily/phone.js",
         "remake/js/scenes/saves.js",
+        "remake/js/daily/shop.js",
+        "remake/js/daily/shop-display.js",
+        "remake/js/daily/levelup.js",
+        "remake/js/scenes/save-transfer.js",
         "remake/js/chapters/ch2.js",
         "remake/js/chapters/ch2-deliveries.js",
         "remake/js/chapters/ch2-commute.js",

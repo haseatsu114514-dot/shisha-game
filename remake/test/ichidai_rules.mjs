@@ -144,7 +144,7 @@ const fake = (over = {}) => ({ bowl: { mango: 6, vanilla: 3 }, main: "mango", bo
   assert.ok(Number.isInteger(mine.imp), "印象が出る");
   assert.equal(p.cardsUsed, 0, "次のラウンドでまた1枚使える");
 }
-// 追加コストと、枠を返すカード（第0.3版）
+// 火力を落として発動するカードと、枠を返すカード（第0.3版）
 {
   const G = createGame({ seed: 21, tournament: "open_cloud", players: [{ kit: "b" }, { kit: "a", ai: true, level: 1 }] });
   const p = G.P[0];
@@ -158,23 +158,38 @@ const fake = (over = {}) => ({ bowl: { mango: 6, vanilla: 3 }, main: "mango", bo
   p.zone = [{ id: "flat", up: false }, { id: "flat", up: false }, { id: "flat", up: false }, { id: "flat", up: false }, { id: "cube", up: true }];
   assert.equal(heatOf(p), 6);
   p.hand = ["reset", "tongs", "show_smoke", "add_coal", "breath", "heat_in"]; p.cardsUsed = 0;
-  // 仕切り直し: 必要火力5。追加コストで炭2つ（種火から）を灰に → 熱4。3枚引いて、枠は返る
+  // 仕切り直し: 必要火力5。火力を2落として発動（種火から灰になる）→ 熱4。3枚引いて、枠は返る
   const deck0 = p.deck.length;
   ok({ type: "play", hand: p.hand.indexOf("reset") });
-  assert.deepEqual([heatOf(p), p.zone.length, deck0 - p.deck.length, p.cardsUsed], [4, 3, 3, 0], "炭2つを灰にして熱4、3枚引き、もう1枚使える");
-  // トングさばきは必要火力3: 熱4なら使える。炭1つで熱3、2枚引いて、枠は返る
+  assert.deepEqual([heatOf(p), p.zone.length, deck0 - p.deck.length, p.cardsUsed], [4, 3, 3, 0], "火力を2落として熱4、3枚引き、もう1枚使える");
+  // トングさばきは必要火力3: 熱4なら使える。火力を1落として熱3、2枚引いて、枠は返る
   ok({ type: "play", hand: p.hand.indexOf("tongs") });
   assert.deepEqual([heatOf(p), p.cardsUsed], [3, 0]);
   // 追い炭: 山札から種火2枚で熱5。枠は返る
   ok({ type: "play", hand: p.hand.indexOf("add_coal") });
   assert.deepEqual([heatOf(p), p.cardsUsed], [5, 0]);
-  // 見せ煙: 必要火力3。追加コストで主役の葉が1枚減り、この一口の印象+4。これで枠を使い切る
+  // 見せ煙: 必要火力3。葉を1枚減らして発動、この一口の印象+4。これで枠を使い切る
   const main = p.main, leaves = p.bowl[main];
   ok({ type: "play", hand: p.hand.indexOf("show_smoke") });
   assert.deepEqual([p.bowl[main] ?? 0, p.puff.impress, p.cardsUsed], [leaves - 1, 4, 1]);
   assert.equal(canPlay(G, p, "breath").ok, false, "枠を使い切ったあとは、枠を返すカードも使えない");
   // 葉が無いと見せ煙は使えない
-  assert.deepEqual(canPlay(G, { ...p, cardsUsed: 0, main: null, bowl: {} }, "show_smoke"), { ok: false, reason: "追加コストの葉がない" });
+  assert.deepEqual(canPlay(G, { ...p, cardsUsed: 0, main: null, bowl: {} }, "show_smoke"), { ok: false, reason: "減らす葉がない" });
+  // 火力はちょうど落とした数だけ下がる。表向きのキューブ炭しか無ければ、灰にせず裏返す（熱2 → 1）
+  p.zone = [{ id: "cube", up: true }, { id: "cube", up: true }, { id: "cube", up: true }]; p.hand = ["reset"]; p.cardsUsed = 0;
+  assert.equal(heatOf(p), 6);
+  ok({ type: "play", hand: 0 });
+  assert.deepEqual([heatOf(p), p.zone.map((c) => c.up)], [4, [true, true]], "キューブ炭が裏返って種火になり、次にその種火が落ちる。火力はちょうど2落ちる");
+  p.hand = ["tongs"]; p.cardsUsed = 0;
+  ok({ type: "play", hand: 0 });
+  assert.deepEqual([heatOf(p), p.zone.map((c) => c.up)], [3, [false, true]], "1落とすだけなら、キューブ炭は裏返るだけ（熱2 → 1）");
+  // 表向きのフラット炭は、種火が無くなってから灰になる
+  p.zone = [{ id: "flat", up: true }, { id: "cube", up: true }, { id: "heat_in", up: false }]; p.hand = ["reset"]; p.cardsUsed = 0;
+  assert.equal(heatOf(p), 4);
+  assert.deepEqual(canPlay(G, p, "reset"), { ok: false, reason: "火力5以上で使える" });
+  p.zone.push({ id: "read", up: false });
+  ok({ type: "play", hand: 0 });
+  assert.deepEqual([heatOf(p), p.zone.map((c) => c.id)], [3, ["flat", "cube"]], "種火から先に落ちる");
 }
 // 熱を入れる吸い（帯に入れば印象+1）・内寄せ（このセッションの印象+1）・ブロー（焦げを適温として採点）
 {

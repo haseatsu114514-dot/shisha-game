@@ -228,7 +228,7 @@ export function stageParts({ last = false } = {}) {
   const handle = artPart("handle", "kj-handle", handleSketch);
   const tray = artPart("tray", "kj-tray", traySketch);
   const exitGlow = el("i.kj-exit-glow", { style: { left: `${EXIT[0]}px`, top: `${EXIT[1]}px` } });
-  const rig = el("div.kj-rig", [base, farFrame, drum, exitGlow, nearFrame, handle]);
+  const rig = el("div.kj-rig", [el("i.kj-ground.kj-ground-base"), base, farFrame, drum, exitGlow, nearFrame, handle]);
   const counter = artPart("counter", "kj-counter", () => el("i.kj-counter-wood"));
   const pillar = el("i.kj-pillar", { style: { left: `${REST[0]}px`, top: `${REST[1] + 14}px` } });
   const dim = el("div.kj-dim", { "aria-hidden": "true" });
@@ -236,7 +236,7 @@ export function stageParts({ last = false } = {}) {
   const vignette = el("div.kj-vignette", { "aria-hidden": "true" });
   return {
     scene: [shopBackdrop(), el("i.kj-toplight"), counter, signPart(last)],
-    machine: [rig, tray, pillar],
+    machine: [rig, el("i.kj-ground.kj-ground-tray"), tray, pillar],
     overlays: [dim, tint, vignette],
     rig, drum, handle, pillar, exitGlow,
     /** 全面を賞の色で染める（k: 0〜1） */

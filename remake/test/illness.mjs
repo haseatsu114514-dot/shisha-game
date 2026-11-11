@@ -35,6 +35,7 @@ const values = {
   "flavor-mastery.js": { masteryHooks: { multiplier: () => 1 } },
   "city-guests.js": { cityGuestAtShop: () => null, visitCityGuestAtShop: async () => false },
   "roamers.js": { roamerAt: () => null, meetRoamer: async () => false }, // よその店に居合わせる人。この検査では居合わせない
+  "recipe-finds.js": { recipeFindAfterVisit: async () => false }, // 第3章以降のレシピの連鎖（#2020 G）。この検査では話さない
   "hiyori.js": { hiyoriShopEncounterDue: () => false, visitHiyoriAtShop: async () => false, hiyoriShopLocation: () => null, playHiyoriEvent: async () => false, meetHiyoriAtTonari: async () => false, playHiyoriHangout: async () => false },
   "util.js": { el: elem, sleep: async () => {}, yen: (n) => `${n}円`, clamp: (v, a, b) => Math.max(a, Math.min(b, v)) },
   "state.js": { state, hasAffinity, save: () => saves.push({ day: state.day, slot: state.slot, cold: !!state.flags._cold_pending,

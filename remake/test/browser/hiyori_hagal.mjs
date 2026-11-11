@@ -271,5 +271,33 @@ await suite('hiyori-hagal', async allCheck => {
       await page.evaluate(() => { Element.prototype.animate = H.nativeAnimate; H.releasePresentation(); });
       await page.evaluate(() => H.running);
     }, options);
+    // c（本編の既定・TMG48）: ひよりの絵柄を舞台に、ひよりのハガルを大きく、名前は右下の帯で
+    await check(`${device}-gift-c-art-and-bounds`, async page => {
+      await setup(page); await page.emulateMedia({ reducedMotion: 'no-preference' });
+      await page.evaluate(() => { H.running = H.motions.c(H.data.DB.equipById.suyaki_hiyori); });
+      // 帯が入りきってから品が退くまで（約2.5秒）の間に測る
+      await page.waitForFunction(() => {
+        const tag = document.querySelector('.mo-gift-tag');
+        return tag && tag.getAnimations().every(a => a.playState === 'finished') && getComputedStyle(tag).translate.startsWith('0');
+      });
+      const shown = await page.evaluate(() => {
+        const box = s => document.querySelector(s).getBoundingClientRect();
+        const bowl = box('.mo-gift-bowl'), tag = box('.mo-gift-tag'), name = box('.mo-gift-tag .t');
+        return { bowlArt: document.querySelector('.mo-gift-bowl').style.backgroundImage,
+          setArt: document.querySelector('.mo-gift-set-art').style.backgroundImage,
+          name: document.querySelector('.mo-gift-tag .t').textContent,
+          apart: bowl.bottom <= tag.top || bowl.right <= tag.left,
+          nameOnScreen: name.right <= innerWidth + 1 && name.left >= 0 };
+      });
+      assert.match(shown.bowlArt, /bowl_empty_hiyori\.webp/);
+      assert.match(shown.setArt, /character_intros\/graphic\/bg_hiyori\.webp/, 'The stage is the giver\'s intro art');
+      assert.equal(shown.name, 'ひよりのハガル「素顔でひと休み」');
+      assert(shown.apart, 'The gift name band must not overlap the bowl');
+      assert(shown.nameOnScreen, 'The gift name must fit on screen');
+      await assertFits(page, '.mo-gift-bowl,.mo-gift-tag .t');
+      await page.screenshot({ path: `${process.env.ARTIFACT_DIR || '.codex/artifacts/remake-browser'}/hiyori-hagal-${device}-gift-c-visible.png` });
+      await page.evaluate(() => H.running);
+      assert.equal(await page.locator('.mo').count(), 0, 'The gift motion cleaned up');
+    }, options);
   }
 });

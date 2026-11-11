@@ -33,6 +33,8 @@ import { CH4_PLACE_BG, CH4_SCENE_BG, CH4_DAILY_EVE_DAY, CH4_FREE_SCENE_IDS, chap
   chapterFourSecondAvailable } from "./ch4-progress.js";
 import { CAMEL_DAILY_SPOT_ID, camelDailySpot, camelSceneBg } from "./ch4-camel-progress.js";
 import { overseasCompanion } from "../core/overseas-companion.js";
+import { chainStageAt } from "./visit-chains.js";
+import { chainVisitDue, playChainStage } from "./visit-chain-play.js";
 import { visitCamelRace } from "./ch4-camel-race.js";
 import { desertDailySpots, desertDailySpotById } from "./ch4-desert-progress.js";
 import { CAFE_MENU, CAFE_PLACES, CAFE_TASTE_IDS, OMAKASE, OMAKASE_LINE, SMOKED_IN_SCENE, TALKS_AFTER_ORDER,
@@ -113,6 +115,7 @@ export const CH4_DUBAI_SPOTS = Object.freeze([
 const festaBondDue = () => read("ch4_festa") ? nextDubaiBondStory(state, "da_silva", "festa", affinityLevel("da_silva")) : null;
 
 function spotHasNew(entry) {
+  if (chainStageAt(state, entry.place)) return true; // 通いの続きの次の段（chapters/visit-chains.js。中心地のカフェ・宿）
   // 訪問時と同じ初回条件・巡回記録を見る。一巡後は会話を続けても新着にはしない。
   if (entry.place === "festa" && festaBondDue()) return true;
   if (["souq", "festa", "center_cafe", "alley_cafe"].includes(entry.place))
@@ -283,6 +286,7 @@ async function performDubaiSpot(entry, io, { staminaGuard }) {
     return unused;
   }
   if (entry.place === "camel") return visitCamel(owner);
+  if (entry.place === "inn") { const chain = await visitInnChain(owner, staminaGuard); if (chain) return chain; }
   if ((entry.cost || 0) > spendableMoney(state)) { toast(`お金が足りない（${priceText(entry.cost)}）`); return unused; }
   if (entry.stamina < 0 && !(await staminaGuard(entry.stamina))) return unused;
   // 夜がにぎわう店（ch4-dubai-local.js）: 先に店の夜を読む。初めての夜は短い場面、二度目からは最初の一行だけ。
@@ -427,6 +431,10 @@ async function visitPlace(entry, io, owner) {
     for (const id of first) if (!await keepDailyHud(() => io.readAndCommit(id)) || state !== owner) return false;
     return cafe && !first.some(id => SMOKED_IN_SCENE.includes(id)) ? orderAtCafe(entry, owner) : true;
   }
+  // 再訪の会話を3本読んだ後は、通いの続き（chapters/visit-chains.js）の段を読む（巡回は進めない）
+  const chain = cafe ? await chainVisitDue(entry.place) : null;
+  if (state !== owner) return false;
+  if (chain) return readCafeChain(entry, chain, owner);
   const talk = nextTalk(entry.place);
   if (!talk) return false;
   const orderFirst = cafe && TALKS_AFTER_ORDER.includes(talk);
@@ -457,6 +465,42 @@ async function orderAtCafe(entry, owner) {
   if (!await readPlain({ ...scene, lines }, entry.preview, owner)) return false;
   recordCafeOrder(state, id);
   return true;
+}
+
+/**
+ * 通いの続き（chapters/visit-chains.js）のカフェの段。吸いながら話すので、先に一台頼む（代金・体力・能力はいつもの来店と同じ）。
+ * 宿の試作（ch4-inn-trial.js）の結果を、台本の条件 chain_fact inn_trial で読む（作っていなければ "none"）。
+ */
+async function readCafeChain(entry, due, owner) {
+  if (!await orderAtCafe(entry, owner)) return false;
+  const facts = { inn_trial: state.flags[INN_TRIAL_FLAG]?.result || "none" };
+  return await playChainStage(due, id => readPlain(id, entry.preview, owner), { facts }) && state === owner;
+}
+
+/**
+ * 通いの続きの宿の段: 中心地のカフェで知った「ボウルだけ替える」吸い方を、持ってきた台で試す（1行動・体力10・技術）。
+ * 道具の手入れ（DAY2）・前日リハーサル・試作の講評の途中はそちらが先。「いつもの宿」を選ぶと null（休む・試作などの、いつもの宿へ）。
+ */
+async function visitInnChain(owner, staminaGuard) {
+  const trial = state.flags[INN_TRIAL_FLAG];
+  if (!chainStageAt(state, "inn") || rehearsalDue(state) || dubaiDay() >= 2 && !read("ch4_inn_tool_care")
+    || trial?.result && !trial.feedbackRead) return null;
+  const due = await chainVisitDue("inn");
+  if (!due || state !== owner) return null;
+  const pick = await modal({ title: "宿", body: "カフェで見た、ボウルだけを替える吸い方を試せる。1行動・体力10。<br>いつもの宿なら、休むこともできる。",
+    options: [
+      { label: due.stage.label, value: "chain", test: "ch4-inn-chain", primary: true },
+      { label: "いつもの宿", value: "inn", test: "ch4-inn-chain-skip" },
+      { label: "戻る", value: null, test: "ch4-inn-chain-cancel" },
+    ] });
+  if (state !== owner || !pick) return unused;
+  if (pick === "inn") return null;
+  if (!(await staminaGuard(-10)) || state !== owner) return unused;
+  const bg = timeOfDay() === "night" ? "bg_dubai_inn_night" : "bg_dubai_inn_day";
+  if (!await playChainStage(due, id => readPlain(id, bg, owner)) || state !== owner) return unused;
+  addStamina(-10);
+  earnStat("technique", 4);
+  return { used: true, exerted: true };
 }
 
 /** 夜の店の場面。初めての夜は全部（スポット固有の場面の経験値の候補）、二度目からは最初の一行だけ。 */

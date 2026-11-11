@@ -178,12 +178,16 @@ function weaken(G, p, zi) {
   if (c.up) { c.up = false; emit(G, { t: "flip", p: p.index, id: c.id }); }
   else { p.zone.splice(zi, 1); p.ash.push(c.id); emit(G, { t: "ash", p: p.index }); }
 }
-function burn(G, p, n) { // 自分の炭を n 個灰にする（仕切り直し）: 種火 → フラット → キューブ の順
+/** 火力を n 落とす（カードを発動するために落とす分）。火力がちょうど n 下がる:
+ *  種火 → 表向きのフラット炭 の順に灰にし、表向きのキューブ炭しか無ければ裏返す（熱2 → 1） */
+function dropFire(G, p, n) {
   for (let k = 0; k < n; k++) {
     let i = p.zone.findIndex((c) => !c.up);
     if (i < 0) i = p.zone.findIndex((c) => CARD[c.id].heat === 1);
-    if (i < 0) i = 0;
-    const c = p.zone.splice(i, 1)[0]; p.ash.push(c.id);
+    if (i >= 0) { p.ash.push(p.zone.splice(i, 1)[0].id); continue; }
+    const cube = p.zone.find((c) => c.up);
+    if (!cube) break;
+    cube.up = false;
   }
 }
 function stoveAdvance(G, p) {
@@ -212,8 +216,8 @@ export function canPlay(G, p, id) {
   else if (!(inPrep || inMain)) return fail("自分のターンに使う");
   if ((p.cardsUsed || 0) >= G.R.cardsPerRound) return fail(G.phase === "prep" ? "カードはこのターンもう使った" : "カードはこのラウンドもう使った");
   if (heatOf(p) < (c.need || 0)) return fail(`火力${c.need}以上で使える`);
-  if (c.pay?.ash && p.zone.length < c.pay.ash) return fail(`追加コストの炭が${c.pay.ash}つ要る`);
-  if (c.pay?.leaf && (!p.main || p.bowl[p.main] < c.pay.leaf)) return fail("追加コストの葉がない");
+  if (c.pay?.fire && heatOf(p) < c.pay.fire) return fail(`落とす火力が${c.pay.fire}要る`);
+  if (c.pay?.leaf && (!p.main || p.bowl[p.main] < c.pay.leaf)) return fail("減らす葉がない");
   if (c.type === "tool" && p.tools.includes(id)) return fail("同じ器具はもう出ている");
   if (id === "add_coal" && heatOf(p) >= RULES.heatMax) return fail("熱は10まで");
   if (id === "fan" && !p.stove.some((x) => x.stage < 2)) return fail("火おこし中の炭がない");
@@ -442,15 +446,15 @@ const HANDLERS = {
   },
 };
 
-/** 追加コストを払う（炭を灰にする＝熱が下がる／主役の葉を減らす） */
+/** 発動するために落とす（火力を落とす＝火力ゾーンの札が減って熱が下がる／主役の葉を減らす） */
 function payCost(G, p, card) {
-  if (card.pay?.ash) { burn(G, p, card.pay.ash); say(G, `追加コスト：炭を${card.pay.ash}つ灰にする（熱${heatOf(p)}）`, p.index); emit(G, { t: "ash", p: p.index, n: card.pay.ash }); }
+  if (card.pay?.fire) { dropFire(G, p, card.pay.fire); say(G, `火力を${card.pay.fire}落として発動（熱${heatOf(p)}）`, p.index); emit(G, { t: "ash", p: p.index, n: card.pay.fire }); }
   if (card.pay?.leaf) {
     for (let k = 0; k < card.pay.leaf && p.main && p.bowl[p.main] > 0; k++) { p.bowl[p.main]--; fixMain(p); }
     emit(G, { t: "wear", p: p.index, n: card.pay.leaf });
   }
 }
-// カードごとの効果（使い切りのもの。追加コストは payCost で先に払う）
+// カードごとの効果（使い切りのもの。発動のために落とす分は payCost で先に落とす）
 const EFFECTS = {
   heat_in(G, p) { p.puff.tk += 1; p.puff.warm = (p.puff.warm || 0) + 1; },
   heat_out(G, p) { p.puff.tk -= 2; p.puff.cool++; },

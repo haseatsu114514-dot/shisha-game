@@ -276,7 +276,7 @@ td .when { margin-left: 0; }
 .cardbox.m82 { width: 37mm; height: 51.8mm; }
 table.nwrap td:first-child, table.nwrap td:nth-child(2) { white-space: nowrap; }
 
-/* ───────── 第0.3版で足したもの（追加コスト・もう1枚使える） ───────── */
+/* ───────── 第0.3版で足したもの（火力を落として発動「火力−1」「葉−1」・もう1枚使える） ───────── */
 .paytag, .extratag { display: inline-block; font-size: 6.2pt; font-weight: 900; border-radius: .8mm; padding: 0 1.3mm; line-height: 1.5; white-space: nowrap; margin-left: 1mm; }
 .paytag { background: var(--coal); color: #ffd9a0; border: .25mm solid var(--ember); }
 .extratag { background: #fff; color: #3f7a2c; border: .25mm solid #7fbd66; }

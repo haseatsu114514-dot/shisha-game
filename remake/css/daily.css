@@ -1255,6 +1255,93 @@ html:root[data-density="phone"] body:not(:root) .lu-details .lu-hidane { font-si
 html:root[data-density="phone"] body:not(:root) .lu-details .lu-note { font-size: var(--phone-sub) !important; }
 html:root[data-density="phone"] body:not(:root) .levelup-band :is(.lb-learned, .lb-gift) { font-size: var(--phone-sub); }
 
+/* ---------------------------------------------------------------- レベルアップと火種の演出の強化（2026-11-11 オーナー「見た目や演出など全面的にパワーアップさせて」SBD103）
+   部品は js/daily/growth-fx.js。動くのは transform と opacity だけ（広い面のぼかし・ノイズは使わない）。動きを減らす設定では止める */
+/* 火種の粒: 盤の絵（hidane_<色>.webp）。読めない時は色と形（白火＝丸、紅火＝炎、蒼火＝しずく、翠火＝角。SBD62） */
+.hidane-icon { --hc: #fff1d0; position: relative; flex: none; display: inline-block; width: 20px; height: 20px; vertical-align: middle; border-radius: 50%;
+  background: radial-gradient(circle at 50% 45%, #fff, var(--hc) 48%, color-mix(in srgb, var(--hc) 45%, #2a1406)); filter: drop-shadow(0 0 5px var(--hc)); }
+.hidane-icon.k-body { --hc: #ef8a5e; border-radius: 50% 50% 50% 50% / 62% 62% 38% 38%; }
+.hidane-icon.k-sense { --hc: #58a6ff; border-radius: 4px 50% 50% 50%; }
+.hidane-icon.k-wisdom { --hc: #7bd36d; border-radius: 4px; }
+.hidane-icon img { display: none; position: absolute; inset: -18%; width: 136%; height: 136%; object-fit: contain; pointer-events: none; }
+.hidane-icon.has-img { background: none; border-radius: 0; }
+.hidane-icon.has-img img { display: block; }
+.hidane-icon.hidane-flight { width: 22px; height: 22px; margin: -11px 0 0 -11px; box-shadow: none; }
+/* 昇る火の粉（飾り） */
+.gfx-embers { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+.gfx-embers i { position: absolute; left: var(--x); bottom: -12px; width: var(--s); height: var(--s); border-radius: 50%; opacity: 0;
+  background: radial-gradient(circle, #fff6dc, var(--ember, #ffb43c) 55%, transparent 72%); animation: gfx-ember var(--d) linear var(--w) infinite; }
+@keyframes gfx-ember { 0% { transform: translate(0, 0) scale(1); opacity: 0; } 12% { opacity: 0.85; } 70% { opacity: 0.5; } 100% { transform: translate(var(--sway), -560px) scale(0.3); opacity: 0; } }
+/* 火の粉・光の輪・走る光・飛ぶ火種（一度きり。JS が出して消す） */
+.gfx-spark { position: absolute; border-radius: 50%; pointer-events: none; z-index: 6; background: radial-gradient(circle, #fff, var(--c, #ffd38a) 55%, transparent 75%); box-shadow: 0 0 6px var(--c, #ffd38a); }
+.gfx-ring { position: absolute; border-radius: 50%; pointer-events: none; z-index: 6; border: 2px solid var(--c, #ffd38a); box-shadow: 0 0 14px var(--c, #ffd38a), inset 0 0 10px var(--c, #ffd38a); }
+.gfx-run { stroke-width: 5; stroke-linecap: round; fill: none; pointer-events: none; }
+.hidane-icon.gfx-fly { position: absolute; left: 0; top: 0; width: 24px; height: 24px; z-index: 30; pointer-events: none; }
+
+.levelup-backdrop { overflow: hidden; grid-template: minmax(0, 1fr) / minmax(0, 1fr); }
+.lu-rays { position: absolute; left: 50%; top: 50%; width: 1500px; height: 1500px; margin: -750px 0 0 -750px; border-radius: 50%; pointer-events: none; opacity: 0;
+  background: repeating-conic-gradient(from 0deg, rgba(255, 214, 130, 0.17) 0 7deg, transparent 7deg 20deg);
+  -webkit-mask-image: radial-gradient(circle, #000 14%, transparent 62%); mask-image: radial-gradient(circle, #000 14%, transparent 62%);
+  animation: lu-rays-spin 48s linear infinite; transition: opacity .6s; }
+.levelup-backdrop.show .lu-rays { opacity: 0.5; }
+.levelup-backdrop.show:has(.levelup.milestone) .lu-rays { opacity: 0.95; }
+@keyframes lu-rays-spin { to { transform: rotate(360deg); } }
+.lu-embers { opacity: 0; transition: opacity .6s; }
+.levelup-backdrop.show .lu-embers { opacity: 1; }
+.levelup { display: flex; flex-direction: column; justify-self: center; max-height: calc(100% - 20px); border-color: rgba(255, 214, 130, 0.9);
+  box-shadow: 0 14px 60px rgba(0, 0, 0, 0.7), inset 0 0 0 1px rgba(255, 214, 130, 0.14), 0 0 46px rgba(255, 170, 60, 0.24); }
+.levelup::before { content: ""; position: absolute; left: 12%; right: 12%; top: -1px; height: 2px; border-radius: 2px; pointer-events: none;
+  background: linear-gradient(90deg, transparent, #ffe8a8, transparent); box-shadow: 0 0 14px #ffd35e; }
+.levelup.milestone { border-width: 2px; box-shadow: 0 14px 60px rgba(0, 0, 0, 0.7), inset 0 0 26px rgba(255, 190, 90, 0.16), 0 0 70px rgba(255, 170, 60, 0.42); }
+.levelup .lu-head { flex: none; font-weight: 900; background: linear-gradient(180deg, #fff6d0, #ffd35e 48%, #e39a2a); -webkit-background-clip: text; background-clip: text; color: transparent; -webkit-text-fill-color: transparent; }
+.levelup.burst .lu-head, .levelup.lu-settled-state .lu-head { text-shadow: none; filter: drop-shadow(0 0 10px rgba(255, 196, 92, 0.75)); }
+.lu-lv-wrap { position: relative; flex: none; display: grid; place-items: center; margin: 2px 0 8px; }
+.levelup .lu-lv { margin: 0; font-size: 42px; font-weight: 900; line-height: 1.1; letter-spacing: 0.02em; color: #fff3c9; text-shadow: 0 0 16px rgba(255, 190, 90, 0.75), 0 2px 0 rgba(90, 50, 0, 0.6); font-variant-numeric: tabular-nums; }
+.levelup.burst .lu-lv { animation: lu-lv-pop .42s cubic-bezier(.2, 1.5, .4, 1); }
+@keyframes lu-lv-pop { 0% { transform: scale(0.6); opacity: 0.4; } 60% { transform: scale(1.22); opacity: 1; } 100% { transform: none; } }
+.lu-ring { position: absolute; left: 50%; top: 50%; width: 150px; height: 150px; margin: -75px 0 0 -75px; border-radius: 50%; border: 2px solid #ffd38a; opacity: 0; pointer-events: none;
+  box-shadow: 0 0 18px rgba(255, 196, 92, 0.8), inset 0 0 14px rgba(255, 196, 92, 0.5); }
+.levelup.burst .lu-ring { animation: lu-ring .62s ease-out; }
+@keyframes lu-ring { 0% { transform: scale(0.25); opacity: 0.95; } 100% { transform: scale(1.5); opacity: 0; } }
+.lu-gauge { flex: none; }
+.lu-gauge-shine { position: absolute; inset: 0; z-index: 2; pointer-events: none; opacity: 0; background: linear-gradient(100deg, transparent 35%, rgba(255, 255, 255, 0.7) 50%, transparent 65%); }
+.levelup.burst .lu-gauge-shine { animation: lu-shine .5s ease-out; }
+@keyframes lu-shine { 0% { transform: translateX(-100%); opacity: 1; } 100% { transform: translateX(100%); opacity: 0; } }
+.lu-next { flex: none; margin: 6px 0 0; font-size: 13px; color: #cdbfe0; }
+.lu-details { min-height: 0; overflow: auto; }
+.lu-actions { flex: none; }
+/* もらった火種の札 */
+.lu-chip { --hc: #fff1d0; display: inline-flex; align-items: center; gap: 7px; padding: 5px 14px 5px 9px; border-radius: 999px; white-space: nowrap; font-size: 18px; font-weight: 700; color: #fff6e2;
+  border: 1px solid color-mix(in srgb, var(--hc) 62%, transparent); background: color-mix(in srgb, var(--hc) 13%, rgba(10, 6, 16, 0.86)); box-shadow: 0 0 12px color-mix(in srgb, var(--hc) 32%, transparent); }
+.lu-chip.k-body { --hc: #ef8a5e; } .lu-chip.k-sense { --hc: #58a6ff; } .lu-chip.k-wisdom { --hc: #7bd36d; }
+.lu-chip.milestone { border-width: 2px; }
+.lu-chip.milestone::before { content: "節目"; padding: 1px 6px; border-radius: 4px; font-size: 12px; color: #2a1406; background: linear-gradient(180deg, #ffe8a8, #e8b04a); }
+.lu-chip.small { padding: 2px 10px 2px 6px; font-size: 14px; font-weight: 600; box-shadow: none; }
+.lu-chip.small .hidane-icon { width: 15px; height: 15px; }
+.lu-details p.lu-rewards, .lu-details p.lu-gift, .lu-details p.lu-wallet { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 6px 10px; }
+.levelup.lu-settled-state .lu-rewards .lu-chip { animation: lu-chip-pop .4s cubic-bezier(.2, 1.5, .4, 1) both; animation-delay: calc(var(--i, 0) * 120ms + 140ms); }
+@keyframes lu-chip-pop { 0% { transform: scale(0.3) translateY(8px); opacity: 0; } 100% { transform: none; opacity: 1; } }
+.lu-gift .lu-chip, .levelup-band .lu-chip { padding: 3px 12px 3px 8px; font-size: 16px; }
+.lu-gift-head { padding: 1px 8px; border-radius: 4px; border: 1px solid rgba(255, 208, 138, 0.6); font-size: 13px; color: #ffd08a; }
+.lu-gift-from { color: #ffd08a; }
+.lu-details p.lu-color-note { margin: 8px auto; padding: 6px 12px; max-width: 460px; border-radius: 8px; border: 1px dashed rgba(255, 214, 130, 0.4); background: rgba(255, 214, 130, 0.07); font-size: 14px; color: #ffe2a6; word-break: auto-phrase; text-wrap: pretty; }
+.lu-details p.lu-wallet { font-size: 14px; color: #cdbfe0; }
+/* 短い帯にも粒と一筋の光 */
+.levelup-band { overflow: hidden; }
+.levelup-band p { margin: 0; }
+.levelup-band .lb-hidane { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; }
+.levelup-band .lb-gift, .levelup-band.gift .lb-hidane { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 6px 8px; }
+.levelup-band .lb-note { grid-column: 1 / -1; font-size: 13px; color: #ffe2a6; word-break: auto-phrase; }
+.lb-shine { position: absolute; inset: 0; pointer-events: none; opacity: 0; background: linear-gradient(100deg, transparent 38%, rgba(255, 240, 200, 0.35) 50%, transparent 62%); }
+.levelup-band.show .lb-shine { animation: lu-shine .7s ease-out .1s; }
+@media (prefers-reduced-motion: reduce) {
+  .lu-rays, .gfx-embers i, .levelup.burst .lu-lv, .levelup.burst .lu-ring, .levelup.burst .lu-gauge-shine, .levelup.lu-settled-state .lu-rewards .lu-chip, .levelup-band.show .lb-shine { animation: none !important; }
+  .gfx-embers { display: none; }
+}
+html:root[data-density="phone"] body:not(:root) .lu-details :is(.lu-color-note, .lu-wallet), html:root[data-density="phone"] body:not(:root) .lu-next { font-size: var(--phone-sub); }
+html:root[data-density="phone"] body:not(:root) .levelup { padding-top: 16px; padding-bottom: 14px; }
+html:root[data-density="phone"] body:not(:root) .lu-details:has(.lu-color-note) .lu-note { display: none; }
+
 /* ---------------------------------------------------------------- 心得の盤（第2版の試作。図形だけ。画像は #1772 のデザインで後から差し替え） */
 .gboard { --stat-body: #ef8a5e; --stat-sense: #58a6ff; --stat-wisdom: #7bd36d; --board-c: var(--stat-sense); --white-fire: #f3e8cf; position: absolute; inset: 0; display: grid; grid-template-rows: 60px 548px 112px; pointer-events: auto; color: var(--text); font-family: var(--font);
   background: radial-gradient(ellipse 45% 55% at 30% 55%, rgba(120, 66, 20, 0.35), transparent 70%), linear-gradient(160deg, #120a1c, #1b1128 55%, #0c0714);
@@ -1592,6 +1679,74 @@ html:root[data-density="phone"] body:not(:root) .levelup-band :is(.lb-learned, .
 .gb-zoom { position: absolute; right: 10px; top: 10px; display: flex; gap: 6px; z-index: 2; }
 .gb-zoom .gb-icon { width: auto; min-width: 30px; height: 30px; padding: 0 9px; border-radius: 15px; font-size: 14px; line-height: 1; background: rgba(10, 6, 16, 0.8); }
 .gb-zoom .gb-icon:disabled { opacity: 0.35; cursor: default; }
+/* ================= 盤の演出の強化（2026-11-11 SBD104）: 仮置きで火種が飛ぶ・道を光が走る・決定のカットイン・昇る火の粉・近い目的地 =================
+   部品は js/daily/growth-fx.js。盤の面・札・台座・結界・顔のデザイン（#2129）は変えず、光を足すだけ */
+.gb-fx { position: absolute; inset: 0; pointer-events: none; }
+.gb-embers { --ember: var(--board-c); z-index: 1; border-radius: 0 0 14px 14px; mix-blend-mode: screen; }
+.gb-embers i { display: none; }
+.gb-embers[data-level="1"] i:nth-child(-n+5), .gb-embers[data-level="2"] i:nth-child(-n+9), .gb-embers[data-level="3"] i { display: block; }
+.gboard.view-only .gb-embers i:nth-child(n+7) { display: none; }
+/* 灯した瞬間: 札が弾んで、光の輪が一度広がる（今までの gb-lit を強めた） */
+.gb-node.lit-now .gb-face { animation: gb-lit-strong .55s cubic-bezier(.2, 1.4, .4, 1); }
+@keyframes gb-lit-strong { 0% { transform: scale(1.7); box-shadow: 0 0 34px #ffd38a; filter: brightness(2); } 55% { transform: scale(0.92); filter: brightness(1.2); } 100% { transform: none; } }
+.gboard.has-art .gb-node.gate.lit-now .gb-gate-gem { animation: gb-gem-set .6s cubic-bezier(.2, 1.5, .4, 1); }
+@keyframes gb-gem-set { 0% { transform: scale(2.2) rotate(-25deg); opacity: 0; } 60% { transform: scale(0.9); opacity: 1; } 100% { transform: none; } }
+/* 今灯せるマスの上に、小さな火が揺れる（どこを押せばいいかが遠目にも分かる） */
+.gboard.can-light .gb-node.stat.s-available::before { content: ""; position: absolute; left: 50%; top: -3px; width: 8px; height: 11px; margin-left: -4px; pointer-events: none;
+  border-radius: 50% 50% 50% 50% / 62% 62% 38% 38%; background: radial-gradient(circle at 50% 70%, #fff6dc, #ffb43c 60%, transparent 78%); animation: gb-wick 1.3s ease-in-out infinite; }
+@keyframes gb-wick { 0%, 100% { transform: translateY(0) scale(0.85); opacity: 0.65; } 50% { transform: translateY(-3px) scale(1.1); opacity: 1; } }
+/* 決定の間は盤を触れない（カットインだけ押して進められる） */
+.gboard.committing { pointer-events: none; }
+.gboard.committing .gfx-cutin-veil { pointer-events: auto; }
+.gfx-cutin-veil { position: absolute; inset: 0; z-index: 45; display: grid; place-items: center; cursor: pointer;
+  background: radial-gradient(ellipse 70% 46% at 50% 50%, rgba(6, 3, 12, 0.6), transparent 75%), rgba(6, 3, 12, 0.5); animation: gfx-veil-in .18s ease-out both; }
+@keyframes gfx-veil-in { from { opacity: 0; } }
+.gfx-cutin { --cc: #ffd38a; position: relative; display: flex; align-items: center; gap: 22px; width: 780px; max-width: calc(100% - 48px); box-sizing: border-box; padding: 20px 34px; overflow: hidden;
+  color: #fff6e2; border-top: 2px solid var(--cc); border-bottom: 2px solid var(--cc);
+  background: linear-gradient(90deg, rgba(14, 9, 22, 0.6), rgba(14, 9, 22, 0.97) 7%, rgba(14, 9, 22, 0.97) 93%, rgba(14, 9, 22, 0.6));
+  box-shadow: 0 0 40px color-mix(in srgb, var(--cc) 35%, transparent); animation: gfx-cutin-in .36s cubic-bezier(.2, 1.2, .3, 1) both; }
+.gfx-cutin.b-body { --cc: #ef8a5e; } .gfx-cutin.b-sense { --cc: #58a6ff; } .gfx-cutin.b-wisdom { --cc: #7bd36d; }
+.gfx-cutin.t-lesson, .gfx-cutin.t-peak, .gfx-cutin.t-notable { --cc: #f4d27a; }
+@keyframes gfx-cutin-in { 0% { transform: scaleY(0.1) translateX(-40px); opacity: 0; } 100% { transform: none; opacity: 1; } }
+.gfx-cutin-streak { position: absolute; inset: 0; pointer-events: none; background: linear-gradient(100deg, transparent 30%, color-mix(in srgb, var(--cc) 55%, #fff) 50%, transparent 70%); opacity: 0; animation: gfx-streak .7s ease-out .08s; }
+@keyframes gfx-streak { 0% { transform: translateX(-100%); opacity: 0.75; } 100% { transform: translateX(100%); opacity: 0; } }
+.gfx-cutin-icon { position: relative; flex: none; display: grid; place-items: center; width: 92px; height: 92px; border-radius: 50%; border: 2px solid var(--cc);
+  background: radial-gradient(circle, color-mix(in srgb, var(--cc) 34%, #120c1c), #0a0612 75%); box-shadow: 0 0 22px color-mix(in srgb, var(--cc) 60%, transparent), inset 0 0 16px color-mix(in srgb, var(--cc) 40%, transparent);
+  animation: gfx-icon-pop .5s cubic-bezier(.2, 1.6, .4, 1) .1s both; }
+@keyframes gfx-icon-pop { 0% { transform: scale(0.2) rotate(-20deg); opacity: 0; } 100% { transform: none; opacity: 1; } }
+.gfx-cutin-icon b { font-size: 44px; font-weight: 900; color: color-mix(in srgb, var(--cc) 60%, #fff); text-shadow: 0 0 14px var(--cc); }
+.gfx-cutin-icon img { display: none; position: absolute; inset: 14%; width: 72%; height: 72%; object-fit: contain; filter: drop-shadow(0 0 6px var(--cc)); }
+.gfx-cutin-icon.has-img img { display: block; }
+.gfx-cutin-icon.has-img b { display: none; }
+.gfx-cutin.t-lesson .gfx-cutin-icon img { inset: 0; width: 100%; height: 100%; border-radius: 50%; object-fit: cover; object-position: 50% 30%; filter: none; }
+.gfx-cutin-text { display: grid; gap: 2px; min-width: 0; text-align: left; }
+.gfx-cutin-text small { font-size: 14px; font-weight: 800; letter-spacing: 0.14em; color: var(--cc); }
+.gfx-cutin-text strong { font-size: 34px; font-weight: 900; line-height: 1.25; letter-spacing: 0.04em; text-shadow: 0 0 16px color-mix(in srgb, var(--cc) 70%, transparent); }
+.gfx-cutin-text span { font-size: 16px; line-height: 1.5; color: #eadff2; word-break: auto-phrase; text-wrap: pretty; }
+.gfx-cutin-count { position: absolute; right: 64px; bottom: 8px; font-size: 12px; font-style: normal; color: #b6a9c4; }
+/* スマホ横持ち（#2851 の規格）: カットインの文字は規格の大きさに、帯は少し広く */
+html:root[data-density="phone"] body:not(:root) .gfx-cutin { width: 960px; }
+html:root[data-density="phone"] body:not(:root) .gfx-cutin-text small { font-size: 18px; }
+html:root[data-density="phone"] body:not(:root) .gfx-cutin-text strong { font-size: 40px; }
+html:root[data-density="phone"] body:not(:root) .gfx-cutin-text span { font-size: var(--phone-sub); }
+html:root[data-density="phone"] body:not(:root) .gfx-cutin-count { font-size: 16px; }
+/* 右のパネル: 横棒は伸びる・近い目的地 */
+.gb-bar-line b { transition: width .55s cubic-bezier(.2, .8, .3, 1); }
+.gb-bar.grew .gb-bar-sum { animation: gb-sum-pop .5s ease-out; }
+@keyframes gb-sum-pop { 0% { transform: scale(1.25); filter: brightness(1.5); } 100% { transform: none; } }
+.gb-goals { display: grid; gap: 5px; margin: 4px 0 2px; }
+.gb-goals-head { margin: 0; font-size: 13px; font-weight: 700; color: var(--text-dim); }
+.gb-goal { display: grid; grid-template-columns: 1fr auto; align-items: baseline; gap: 2px 10px; min-height: 40px; padding: 6px 10px; text-align: left; cursor: pointer; font-family: var(--font);
+  border-radius: 8px; border: 1px solid color-mix(in srgb, var(--c) 40%, transparent); background: color-mix(in srgb, var(--c) 8%, rgba(10, 6, 16, 0.6)); color: var(--text); }
+.gb-goal:hover, .gb-goal:focus-visible { border-color: var(--c); box-shadow: 0 0 10px color-mix(in srgb, var(--c) 45%, transparent); outline: none; }
+.gb-goal.k-lesson { --c: #f4d27a; }
+.gb-goal-name { min-width: 0; font-size: 14px; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.gb-goal-cost { font-size: 13px; color: var(--gold-hi); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.gb-goal.ready .gb-goal-cost { font-weight: 800; }
+@media (prefers-reduced-motion: reduce) {
+  .gboard.can-light .gb-node.stat.s-available::before, .gboard.has-art .gb-node.gate.lit-now .gb-gate-gem, .gb-bar.grew .gb-bar-sum, .gfx-cutin, .gfx-cutin-streak, .gfx-cutin-icon, .gfx-cutin-veil { animation: none !important; }
+  .gb-bar-line b { transition: none; }
+}
 /* 盤の間隔を広げた（SBD78）: 世界の大きさは JS が決める。結界は道を横切る大きさで、暗い帯の上に置く */
 .gb-wall-back { fill: rgba(6, 4, 10, 0.82); stroke: rgba(244, 210, 122, 0.35); stroke-width: 1; }
 .gb-seal { stroke-width: 3.5; }
