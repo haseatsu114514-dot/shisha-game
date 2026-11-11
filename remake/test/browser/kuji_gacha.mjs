@@ -54,6 +54,18 @@ await suite("kuji-gacha", async check => {
       const found = art.filter((x) => x.part === part);
       assert(found.length && found.every((x) => x.art === "painted" && x.loaded), `描いた絵の ${part}: ${JSON.stringify(found)}`);
     }
+    // 脚の足先は、手前の2本も奥の2本も土台の天板に載っている（2026-11-11 オーナー「台と足の位置がズレてる」: 奥の足先が板の外に浮いていた）。
+    // 絵の中の位置: 脚の足先は左右 8.2%〜91.7%・下端 99.1%、土台の天板は上から 72.8%（奥の辺は左右 7.5% ずつ内側）
+    const rig = await page.evaluate(() => Object.fromEntries([["base", ".kj-base"], ["near", ".kj-frame:not(.kj-frame-far)"], ["far", ".kj-frame-far"]]
+      .map(([key, sel]) => { const r = document.querySelector(`.mo-garagara ${sel}`).getBoundingClientRect(); return [key, { x: r.x, y: r.y, w: r.width, h: r.height }]; })));
+    const face = rig.base.h * 0.728;
+    for (const [name, leg] of [["手前の脚", rig.near], ["奥の脚", rig.far]]) {
+      const foot = leg.y + leg.h * 0.991, depth = (foot - rig.base.y) / face; // 0＝天板の奥の辺、1＝手前の辺
+      assert(depth > 0.1 && depth < 0.9, `${name}の足先が天板の上（奥0〜手前1 の ${depth.toFixed(2)}）`);
+      const inset = rig.base.w * 0.075 * (1 - depth); // その奥行きでの天板の左右の端
+      assert(leg.x + leg.w * 0.082 > rig.base.x + inset + 4, `${name}の左の足先が天板の内側`);
+      assert(leg.x + leg.w * 0.917 < rig.base.x + rig.base.w - inset - 4, `${name}の右の足先が天板の内側`);
+    }
     assert.equal(await page.locator(".kuji-card.reveal").count(), 0, "札はガラガラのあとに開く");
     assert((await page.locator('[data-test="kuji-skip"]').boundingBox()).height >= 40);
     await page.locator(".kuji-card.reveal.rank-C").waitFor({ timeout: 9000 });

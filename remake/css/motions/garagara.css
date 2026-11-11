@@ -43,11 +43,16 @@
 .kj-sign .kj-ball-halo { display: none; }
 /* 抽選器: 台・脚・胴（厚みは同じ形を奥へ重ねて出す）・ハンドル・受け皿 */
 .kj-machine, .kj-rig { position: absolute; inset: 0; }
-.kj-base { left: 320px; top: 560px; width: 440px; height: 64px; }
+.kj-base { left: 331px; top: 568px; width: 440px; height: 64px; }
 .kj-frame { left: 375px; top: 274px; width: 330px; height: 330px; }
-.kj-frame-far { transform: translate(22px, -16px) scale(0.96); transform-origin: 50% 18px; filter: brightness(0.5); }
-/* 描いた脚（kuji-art.js の box）は、軸受けの丸が収まるよう枠を上へ広げてある。奥の脚の回転の中心も軸に合わせる */
-.kj-frame-far[data-art="painted"] { transform-origin: 50% 26.4px; }
+/* 奥の脚: 胴の厚み（.kj-drum-side を右上へ 22px・16px ずらして重ねる）と同じだけ奥へずらす。大きさは変えない
+   （縮めると足先だけ余計に上がり、土台の板の外へ浮く。2026-11-11 オーナー「台と足の位置がズレてる」）。
+   手前と奥の足先は、どちらも土台の天板の上に載る（土台の置き場所は kuji-art.js の base） */
+.kj-frame-far { transform: translate(22px, -16px); filter: brightness(0.5); }
+/* 土台と受け皿がカウンターに落とす影（絵には影が無い） */
+.kj-ground { position: absolute; display: block; pointer-events: none; border-radius: 50%; background: radial-gradient(closest-side, rgba(10, 7, 6, 0.62) 0%, rgba(10, 7, 6, 0.4) 55%, rgba(10, 7, 6, 0) 100%); }
+.kj-ground-base { left: 318px; top: 600px; width: 468px; height: 56px; }
+.kj-ground-tray { left: 758px; top: 606px; width: 228px; height: 50px; }
 .kj-drum { position: absolute; width: 0; height: 0; --th: 0deg; }
 .kj-drum-face, .kj-drum-side { left: -154px; top: -154px; width: 308px; height: 308px; }
 .kj-drum-face { transform: rotate(var(--th)); }
