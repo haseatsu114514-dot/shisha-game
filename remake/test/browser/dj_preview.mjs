@@ -152,7 +152,8 @@ try{
   let mixed=null,comboText='',onLine=false;
   for(let i=0;i<600;i++){
    const s=await snap(page);if(s.phase!=='mix')break;
-   if(!onLine&&s.hint==='いい感じ、そのまま'){onLine=true;assert(await page.locator('#fader-arrows').isHidden(),'no arrows while the cap rides the band');}
+   // hint and arrows are read in the same snapshot (the same frame): asking the page again a moment later raced the moving band on slow CI machines
+   if(!onLine&&s.hint==='いい感じ、そのまま'){onLine=true;assert.equal(s.arrows,false,'no arrows while the cap rides the band');}
    const target=s.guide==null?s.mix:s.guide,diff=target-s.mix;
    if(kind==='pc'){if(Math.abs(diff)>.03)await fader.press(diff>0?(diff>.12?'PageUp':'ArrowRight'):(diff<-.12?'PageDown':'ArrowLeft'));}
    else if(Math.abs(diff)>.06)await page.touchscreen.tap(fr.x+thumb/2+Math.min(1,target+.02)*(fr.width-thumb),fr.y+fr.height/2);
