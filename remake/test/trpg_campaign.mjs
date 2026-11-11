@@ -291,7 +291,61 @@ test("reading an ending records its cast and advances exactly one action; cancel
   assert.equal(s.slot, 2); assert.deepEqual(s.trpg.cleared[ordinary.id].participants, cast.participants);
   assert.deepEqual(s.trpg.cleared[ordinary.id].pc, result.pc, "the memory keeps the character the player built");
   assert(!rules.completeTrpgTable(s, catalog, ordinary, ticket, result)); assert.equal(s.slot, 2);
-  s.day = 5; s.slot = 1; assert(!rules.castTrpgTable(s, catalog, ordinary).ok);
+  // TMX14 (owner 2026-11-11): a finished book can be played again on a later night.
+  s.day = 5; s.slot = 1; assert(rules.castTrpgTable(s, catalog, ordinary).ok);
+});
+
+test("replaying a finished book uses the night, keeps the better memory and counts the endings seen (TMX14)", () => {
+  const s = own(friends(state()), ordinary.id);
+  const night = () => { const cast = rules.castTrpgTable(s, catalog, ordinary); return { cast, ticket: { ...cast, chapter: s.chapter, day: s.day, slot: s.slot } }; };
+  const result = finish(rules.materializeTrpgCast(ordinary, night().cast.assignments));
+  let { ticket } = night();
+  assert(rules.completeTrpgTable(s, catalog, ordinary, ticket, { ...result, rating: { stars: 2 }, heat: { value: 3, night: "和やかな夜" } }));
+  assert.equal(s.trpg.cleared[ordinary.id].plays, 1);
+  assert.deepEqual(s.trpg.cleared[ordinary.id].endingsSeen, [result.ending]);
+  const other = Object.keys(ordinary.endings).find(id => id !== result.ending);
+  // A worse play on the next night still spends the night and adds the ending, but the 2-star memory stays.
+  s.day = 4; s.slot = 1; ({ ticket } = night());
+  assert(rules.completeTrpgTable(s, catalog, ordinary, ticket, { ...result, ending: other, rating: { stars: 1 }, heat: { value: 8, night: "大盛況の夜" } }));
+  assert.equal(s.slot, 2);
+  assert.equal(s.trpg.cleared[ordinary.id].stars, 2); assert.equal(s.trpg.cleared[ordinary.id].ending, result.ending);
+  assert.equal(s.trpg.cleared[ordinary.id].plays, 2);
+  assert.deepEqual(new Set(s.trpg.cleared[ordinary.id].endingsSeen), new Set([result.ending, other]));
+  // A better play replaces the memory (same stars, livelier table).
+  s.day = 5; s.slot = 1; ({ ticket } = night());
+  assert(rules.completeTrpgTable(s, catalog, ordinary, ticket, { ...result, ending: other, rating: { stars: 2 }, heat: { value: 6, night: "沸いた夜" } }));
+  assert.equal(s.trpg.cleared[ordinary.id].ending, other); assert.equal(s.trpg.cleared[ordinary.id].heat, 6);
+  assert.equal(s.trpg.cleared[ordinary.id].day, 5); assert.equal(s.trpg.cleared[ordinary.id].plays, 3);
+});
+
+test("a bookmark continues only the same story with tonight's same seats, and finishing clears it (TMX13)", () => {
+  const s = own(friends(state()), ordinary.id);
+  const cast = rules.castTrpgTable(s, catalog, ordinary), ticket = { ...cast, chapter: 2, day: 3, slot: 1, seed: 77 };
+  assert(!rules.keepTrpgBookmark(s, ordinary, ticket, { actions: [] }), "nothing pressed, nothing kept");
+  assert(rules.keepTrpgBookmark(s, ordinary, ticket, { actions: [["start"]], pc: null, phase: "listen", title: "話を聞く" }));
+  assert.equal(s.slot, 1, "a bookmark spends nothing");
+  assert.equal(rules.trpgBookmarkFor(s, ordinary, cast.assignments).ok, true);
+  assert.equal(rules.trpgBookmarkFor(s, shark, cast.assignments).mark, null, "another book starts from its cover");
+  const other = Object.fromEntries(Object.entries(cast.assignments).map(([seat, id]) => [seat, seat === "hajime" ? id : null]));
+  assert.equal(rules.trpgBookmarkFor(s, ordinary, other).ok, false, "different seats start again");
+  assert.equal(rules.trpgBookmarkFor(s, { ...ordinary, version: "older" }, cast.assignments).mark, null, "an edited story starts again");
+  const result = finish(rules.materializeTrpgCast(ordinary, cast.assignments));
+  assert(rules.completeTrpgTable(s, catalog, ordinary, ticket, result));
+  assert.equal(s.trpg.bookmark, undefined, "a finished table removes its bookmark");
+});
+
+test("replaying the recorded presses on the same seed lands on the same scene, dice included (TMX13)", () => {
+  const table = rules.materializeTrpgCast(ordinary, rules.castTrpgTable(own(friends(state()), ordinary.id), catalog, ordinary).assignments);
+  const played = new TrpgSession(table, { seed: 31 }), log = [];
+  const press = (key, ...args) => { played[key](...args); log.push([key, ...JSON.parse(JSON.stringify(args))]); };
+  press("start"); press("beginCheck", "listen", { support: false, approach: null }); press("reroll", 0); press("settleCheck");
+  for (const topic of table.interview.topics.slice(0, 2)) press("ask", topic.id);
+  press("endInterview");
+  for (const spot of table.spots.slice(0, 2)) press("inspect", spot.id);
+  press("consult", Object.keys(table.consult)[0]);
+  const again = new TrpgSession(table, { seed: 31 });
+  for (const [key, ...args] of log) again[key](...args);
+  assert.deepEqual(again.snapshot(), played.snapshot());
 });
 test("alternate dialogue, small-table intro and cast have canonical actors and fit the line limits", () => {
   for (const scenario of [ordinary, shark]) for (const block of scenario.dialogues) for (const line of block.lines) {
