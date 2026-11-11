@@ -66,7 +66,9 @@ export function mountMiniGameDebug() {
       document.querySelector("[data-test='debug-minigame-host']")?.remove();
       document.querySelector("[data-test='debug-minigame-close']")?.remove();
       const stage = document.getElementById("stage");
-      if (!stage) return;
+      const panel = document.querySelector("[data-test='debug-panel']");
+      const toggle = document.querySelector("[data-test='debug-toggle']");
+      if (!stage || !panel) return;
       const controller = new AbortController();
       current = controller;
       const host = document.createElement("div");
@@ -75,17 +77,13 @@ export function mountMiniGameDebug() {
       if (game.id !== "tetsuko") stage.append(host);
       const close = document.createElement("button");
       close.type = "button";
-      close.textContent = "デバッグ一覧へ戻る";
+      close.textContent = "ミニゲームを閉じる（タイトルへ）";
       close.dataset.test = "debug-minigame-close";
-      Object.assign(close.style, { position: "absolute", right: "12px", top: "12px", zIndex: "2147483001", padding: "8px", background: "#21162c", color: "#fff", border: "1px solid #f5c26b", borderRadius: "6px" });
-      if (game.id === "desert") Object.assign(close.style, { left: "20px", right: "auto", top: "280px" });
-      if (game.id === "axe") Object.assign(close.style, { top: "100px" }); // 見出しの「？・✕」を空ける
-      if (game.id.startsWith("dj-")) Object.assign(close.style, { left: "20px", right: "auto", top: "120px" }); // フロア内。再開・終了を覆わない
-      if (game.id === "ichidai" || game.id === "tetsuko") Object.assign(close.style, { left: "20px", right: "auto", top: "180px" }); // 右上の案内・帰るを覆わない
-      if (game.id === "trpg-night") Object.assign(close.style, { top: "180px" }); // 物語上部のヘルプ・本棚へ戻るを空ける
+      close.style.marginBottom = "8px";
       close.onclick = () => { controller.abort(); host.remove(); close.remove(); if (current === controller) current = null; location.reload(); };
-      stage.append(close);
-      document.querySelector("[data-test='debug-panel']").hidden = true;
+      panel.prepend(close);
+      if (toggle) toggle.textContent = "DBG・終了";
+      panel.hidden = true;
       try { await game.start(host, controller.signal); }
       catch (error) { if (!controller.signal.aborted) { host.textContent = `開始できませんでした: ${error.message}`; if (!host.isConnected) stage.append(host); } return; }
       if (current === controller && !controller.signal.aborted) close.click();

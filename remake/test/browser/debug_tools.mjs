@@ -21,33 +21,38 @@ await suite("debug-tools", async check => {
       await page.locator(t(`debug-minigame-${id}`)).click();
       await page.locator(t(screen)).waitFor({ timeout: 30000 });
       const close = page.locator(t("debug-minigame-close"));
-      const controls = id.startsWith("dj-")
-        ? [page.frameLocator(t("dj-frame")).locator("#restart"), page.frameLocator(t("dj-frame")).locator("#exit")]
-        : id === "axe" ? [page.getByRole("button", { name: "遊び方・ルール", exact: true }), page.getByRole("button", { name: "やめる", exact: true })]
-        : id === "tetsuko" ? [page.getByRole("button", { name: "あそびかた", exact: true }), page.getByRole("button", { name: "帰る", exact: true })]
-        : id === "ichidai" ? [page.locator('[data-test^="ichi-kit-"]').last()] : [];
-      const a = await close.boundingBox();
-      for (const control of controls) {
-        const b = await control.boundingBox();
-        assert.ok(a && b && (a.x + a.width <= b.x || b.x + b.width <= a.x || a.y + a.height <= b.y || b.y + b.height <= a.y), `${id}: debug return must not cover game controls`);
-      }
+      assert.equal(await close.isVisible(), false, `${id}: no return button is overlaid on the game`);
+      assert.equal(await close.evaluate(node => node.parentElement.dataset.test), "debug-panel");
+      assert.match(await page.locator(t("debug-toggle")).innerText(), /終了/, "the visible toggle tells how to exit");
       if (id === "trpg-night") {
         assert.ok(await page.locator(t(screen)).isEnabled(), "night debug has an actual playable story");
         await page.locator(t(screen)).click();
         await page.locator(t("trpg-skip")).click(); // 初回の店長の説明は残し、ここでは表紙へ進める
         await page.locator(t("trpg-start")).waitFor({ timeout: 30000 });
-        const returned = await close.boundingBox();
-        for (const name of ["遊び方", "本棚へ戻る"]) {
-          const control = await page.getByRole("button", { name, exact: true }).boundingBox();
-          assert.ok(returned && control && (returned.x + returned.width <= control.x || control.x + control.width <= returned.x || returned.y + returned.height <= control.y || control.y + control.height <= returned.y), "TRPG story controls remain exposed");
-        }
       }
       assert.equal(await page.evaluate(() => localStorage.getItem("suien_remake_save")), '{"debugSentinel":true}', id);
-      await page.locator(t("debug-minigame-close")).click();
+      await page.locator(t("debug-toggle")).focus();
+      await page.keyboard.press("Enter");
+      await page.locator(t("debug-panel")).waitFor();
+      await close.focus();
+      await page.keyboard.press("Enter");
       await page.locator(t("title-new")).waitFor({ timeout: 30000 });
       assert.equal(await page.evaluate(() => localStorage.getItem("suien_remake_save")), '{"debugSentinel":true}', `${id} close`);
+      assert.equal(await page.locator(t("debug-toggle")).innerText(), "DBG");
+      assert.equal(await page.locator(t("debug-panel")).isVisible(), false);
     }
   });
+
+  await check("minigame-return-panel-on-touch", async page => {
+    await openPanel(page);
+    await page.locator(t("debug-minigame-ichidai")).tap();
+    await page.locator(t("ichi-game")).waitFor();
+    assert.equal(await page.locator(t("debug-minigame-close")).isVisible(), false);
+    await page.locator(t("debug-toggle")).tap();
+    await page.locator(t("debug-minigame-close")).tap();
+    await page.locator(t("title-new")).waitFor({ timeout: 30000 });
+    assert.equal(await page.locator(t("debug-toggle")).innerText(), "DBG");
+  }, { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true });
 
   await check("normal-minigame-gates-remain-active", async page => {
     await page.goto(`${baseURL}?debug=0`, { waitUntil: "load" });
