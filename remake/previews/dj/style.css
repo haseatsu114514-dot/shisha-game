@@ -1,5 +1,6 @@
 /* DJ — 1280×720 stage like the main game (remake/index.html #stage), scaled by controller-fx.mjs (wider up to 1600 on wide screens, like the main game).
-   2026-11-11 renewal (DJS20〜): 上から フロア（お客さんの反応）288px / 案内と曲の流れ 150px / ブース（残り）。
+   2026-11-11 renewal (DJS20〜): 上に フロア（お客さんの反応）288px、下に ブース。ブースは左右に大きなターンテーブル（296px・DJS26）、
+   中央の上に案内と曲の流れ、その下に PITCH・ミキサー（横フェーダー）・PITCH。
    見た目は絵で作る: 板・ボタン・ランプ・メダルはゲーム共通の夜のUIキット remake/img/ui/craft-night/（シーシャ作り・大会と同じ）、
    機材まわり（▶・フェーダーの台座・矢印・吹き出し・目印）は remake/img/ui/dj/（asset_sources/ui/dj-renewal-20261111/make_parts.py が描く）。
    枠線と塗りだけの箱は作らない。色: A = 紫、B = 水色、案内（いま触るところ）= 金、乗れている = ミント。 */
@@ -127,76 +128,67 @@ button.gold{color:#2a1840;border-width:14px;border-image:var(--goldbtn) 36 fill 
 .howto li p{font-size:14px;font-weight:700;line-height:1.3;color:#efe9f4}
 .how-foot{font-size:14px;font-weight:700;text-align:center;color:#d8cdea}
 .how-foot strong{color:var(--gold)}
-/* ── 中: 案内（いまやること）と曲の流れ ─────────────────────────────────────────── */
-.navi{flex:none;position:relative;height:150px;margin:6px 12px 0;padding:0 4px;display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-rows:52px 66px;gap:4px 18px;border:14px solid transparent;border-image:var(--kit) 40 fill / 14px / 0 stretch}
-.steps{display:flex;align-items:center;gap:4px}
+/* ── 下: ブース。左右に大きなターンテーブル（296px・DJS26）、中央の上に案内と曲の流れ、その下に PITCH・ミキサー・PITCH ───── */
+.console{flex:1;min-height:0;margin:6px 12px 8px;display:grid;grid-template-columns:320px minmax(0,1fr) 320px;grid-template-rows:180px minmax(0,1fr);gap:6px 10px;padding:8px 14px;
+ background:url('../../img/ui/dj/controller-body-duo.webp') center/100% 100% no-repeat,#16121f}
+.deck,.mixer,.mixrow,.navi{min-height:0;min-width:0}
+/* 中央の上: 案内（いまやること）と曲の流れ */
+.navi{grid-column:2;grid-row:1;position:relative;padding:0 2px;display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:32px minmax(0,1fr) 62px;gap:3px;border:14px solid transparent;border-image:var(--kit) 40 fill / 14px / 0 stretch}
+.steps{display:flex;align-items:center;gap:2px}
 .steps li{display:flex;align-items:center;gap:5px;padding-right:12px;font-size:14px;font-weight:800;letter-spacing:.04em;color:#8f84a6;white-space:nowrap}
-.steps li i{display:grid;place-items:center;width:34px;height:34px;font:800 15px/1 var(--mono);font-style:normal;color:#b9aecd;background:url('../../img/ui/craft-night/step-next.webp') center/contain no-repeat}
+.steps li i{display:grid;place-items:center;width:32px;height:32px;font:800 15px/1 var(--mono);font-style:normal;color:#b9aecd;background:url('../../img/ui/craft-night/step-next.webp') center/contain no-repeat}
 .steps li.done{color:#b9aecd}.steps li.done i{background-image:url('../../img/ui/craft-night/step-done.webp');color:#efe9f4}
 .steps li.now{color:var(--gold)}.steps li.now i{background-image:url('../../img/ui/craft-night/step-now.webp');color:#fff;filter:drop-shadow(0 0 6px #f0a64a);animation:lamp 1s ease-in-out infinite alternate}
 @keyframes lamp{to{filter:drop-shadow(0 0 12px #ffc857)}}
 .say{min-width:0;display:flex;flex-direction:column;justify-content:center}
-.coach{font-size:25px;font-weight:900;line-height:1.2;letter-spacing:.03em;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.coach{font-size:24px;font-weight:900;line-height:1.25;letter-spacing:.02em;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .coach.warn{color:var(--warn)}
-.coach-sub{font-size:14.5px;font-weight:700;line-height:1.35;color:#cfc4e2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.coach-sub{font-size:14px;font-weight:700;line-height:1.35;color:#cfc4e2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .coach-sub:empty{display:none}
-.lane{grid-column:1/-1;display:grid;grid-template-rows:1fr 1fr;gap:4px;padding-right:38px}
+.lane{display:grid;grid-template-rows:1fr 1fr;gap:4px;padding-right:38px}
 .lane>div{display:flex;gap:8px;align-items:center;min-height:0}
 .lane b{flex:none;display:grid;place-items:center;width:24px;height:24px;font-size:13px;font-weight:900;color:#150f22;background:url('../../img/ui/craft-night/step-done.webp') center/contain no-repeat}
 .lane b.a{color:var(--a)}.lane b.b{color:var(--b)}
-.lane canvas{flex:1;min-width:0;height:31px;display:block;border-radius:4px}
+.lane canvas{flex:1;min-width:0;height:29px;display:block;border-radius:4px}
 .navi>.credits{position:absolute;z-index:4;right:-2px;bottom:0;margin:0}
 .credits details{font-size:11px;line-height:1.8;color:#b6aacb}
 .credits summary{list-style:none;cursor:pointer;display:grid;place-items:center;width:34px;height:34px;font-size:14px;color:#d8cdea;background:url('../../img/ui/craft-night/step-next.webp') center/contain no-repeat;opacity:.85}
 .credits summary::-webkit-details-marker{display:none}
-.credits details[open] .pop{position:absolute;right:0;bottom:40px;width:560px;max-height:400px;overflow:auto;z-index:9;padding:2px 6px;border:14px solid transparent;border-image:var(--kit) 40 fill / 14px / 0 stretch;filter:drop-shadow(0 10px 20px #000c)}
+.credits details[open] .pop{position:absolute;right:0;bottom:40px;width:540px;max-height:400px;overflow:auto;z-index:9;padding:2px 6px;border:14px solid transparent;border-image:var(--kit) 40 fill / 14px / 0 stretch;filter:drop-shadow(0 10px 20px #000c)}
 .pop p{margin:0 0 6px}.pop a{color:var(--b)}
-/* ── 下: ブース ──────────────────────────────────────────────────────────────── */
-.console{flex:1;min-height:0;margin:6px 12px 8px;display:grid;grid-template-columns:minmax(0,1fr) 452px minmax(0,1fr);gap:10px;padding:10px 16px;
- background:url('../../img/ui/dj/controller-body-duo.webp') center/100% 100% no-repeat,#16121f}
-.deck,.mixer{min-height:0;min-width:0}
-.deck{--deck:var(--a);display:grid;grid-template-rows:26px minmax(0,1fr);gap:6px 8px}
-.deck.b{--deck:var(--b)}
-.deck.a{grid-template-columns:188px 64px minmax(0,1fr)}
-.deck.b{grid-template-columns:minmax(0,1fr) 64px 188px}
-.deck-head{grid-column:1/-1;display:flex;align-items:center;gap:10px;min-width:0;padding:0 4px}
+/* 左右のデッキ: 上に状態と曲名、大きなターンテーブル、外側の下に BPM と LOCK、内側の下（ミキサー寄り）に ▶ */
+.deck{--deck:var(--a);position:relative;grid-row:1/3;grid-column:1}
+.deck.b{--deck:var(--b);grid-column:3}
+.deck-head{position:absolute;left:0;right:0;top:0;height:26px;display:flex;align-items:center;gap:10px;min-width:0;padding:0 4px}
 .deck.b .deck-head{flex-direction:row-reverse}
 .deck-indicator{flex:none;display:flex;align-items:center;gap:6px;font-size:11px;font-weight:800;letter-spacing:.1em;color:#8f84a6}
 .deck-indicator:before{content:"";width:11px;height:11px;border-radius:50%;background:currentColor}
 .deck[data-playing=true] .deck-indicator{color:var(--deck)}.deck[data-playing=true] .deck-indicator:before{box-shadow:0 0 10px var(--deck),0 0 2px #fff}
 .deck[data-role=empty] .deck-indicator{color:#5d5670}
-.track-name{flex:1;min-width:0;font-size:15px;font-weight:800;color:#f2ecfa;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.track-name{flex:1;min-width:0;font-size:16px;font-weight:800;color:#f2ecfa;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .deck.b .track-name{text-align:right}
-.bpm{flex:none;font-variant-numeric:tabular-nums}
-.bpm output{font:700 17px/1 var(--mono);letter-spacing:-.03em;color:var(--deck)}
+.deck-meta{position:absolute;bottom:6px;left:8px;display:flex;flex-direction:column;align-items:flex-start;gap:5px}
+.deck.b .deck-meta{left:auto;right:8px;align-items:flex-end}
+.bpm{flex:none;font-variant-numeric:tabular-nums;white-space:nowrap}
+.bpm output{font:700 21px/1 var(--mono);letter-spacing:-.03em;color:var(--deck);text-shadow:0 1px 3px #000}
 .bpm:after{content:"BPM";margin-left:3px;font-size:9px;font-weight:700;letter-spacing:.1em;color:#b9aecd}
-.lock{flex:none;display:flex;align-items:center;gap:3px;font:800 10px/1 var(--mono);letter-spacing:.1em;color:#6c6480;transition:color .2s}
-.lock:before{content:"";width:14px;height:14px;background:url('../../img/ui/craft-night/step-next.webp') center/contain no-repeat}
+.lock{flex:none;display:flex;align-items:center;gap:4px;font:800 11px/1 var(--mono);letter-spacing:.1em;color:#6c6480;transition:color .2s}
+.lock:before{content:"";width:16px;height:16px;background:url('../../img/ui/craft-night/step-next.webp') center/contain no-repeat}
 .lock.on{color:var(--ok)}.lock.on:before{background-image:url('../../img/ui/craft-night/step-now.webp');filter:drop-shadow(0 0 5px #ffc857)}
-.deck.a .platter{grid-column:1;grid-row:2}.deck.b .platter{grid-column:3;grid-row:2}
-.deck .pitch-col{grid-column:2;grid-row:2}
-.deck.a .deck-controls{grid-column:3;grid-row:2}.deck.b .deck-controls{grid-column:1;grid-row:2}
-/* jog wheel: outer grip ring (radius > 62 %) = fine pitch; the centre shows the artwork */
-.platter{align-self:center;justify-self:center;position:relative;width:188px;height:188px;border-radius:50%;display:grid;place-items:center;touch-action:none;cursor:grab;--rim:transparent;
- background:radial-gradient(circle,transparent 61%,var(--rim) 62%,var(--rim) 100%);box-shadow:0 6px 10px #000a;transition:box-shadow .15s}
-.platter:before{content:"";position:absolute;inset:0;border-radius:50%;background:url('../../img/ui/dj/jog-wheel-purple.webp') center/100% 100% no-repeat;transform:rotate(calc(var(--rotation,0deg) + var(--spin,0deg)))}
+/* jog wheel: outer grip ring (radius > 62 %) = fine pitch; the centre shows the artwork. ▶ sits in the corner the circle leaves free. */
+.platter{position:absolute;top:30px;left:calc(50% - 148px);width:296px;height:296px;border-radius:50%;display:grid;place-items:center;touch-action:none;cursor:grab;--rim:transparent;
+ background:radial-gradient(circle,transparent 61%,var(--rim) 62%,var(--rim) 100%);box-shadow:0 8px 14px #000b;transition:box-shadow .15s}
+.platter:before{content:"";position:absolute;inset:0;border-radius:50%;background:url('../../img/ui/dj/jog-wheel-purple.webp') center/100% 100% no-repeat;transform:rotate(calc(var(--rotation,0deg) + var(--spin,0deg)));will-change:transform}
 .deck.b .platter:before{background-image:url('../../img/ui/dj/jog-wheel-cyan.webp')}
-.deck[data-playing=true] .platter{box-shadow:0 6px 10px #000a,0 0 16px color-mix(in srgb,var(--deck),transparent 40%)}
+.deck[data-playing=true] .platter{box-shadow:0 8px 14px #000b,0 0 22px color-mix(in srgb,var(--deck),transparent 40%)}
 .deck[data-role=empty] .platter{filter:brightness(.55) saturate(.4)}
 .platter.touching{cursor:grabbing;--rim:color-mix(in srgb,var(--deck),transparent 65%)}
 .platter.tick{--rim:color-mix(in srgb,var(--deck),transparent 35%)}
-.deck-display{position:relative;z-index:1;width:74px;height:74px;border-radius:50%;overflow:hidden;pointer-events:none;background:var(--art,none) center/cover no-repeat;transform:rotate(calc(var(--rotation,0deg) + var(--spin,0deg)))}
-/* PITCH (±8 %): plate + fader. SET 1 does not need it. */
-.pitch-col{position:relative;display:flex;flex-direction:column;align-items:center;gap:2px;min-height:0}
-.pitch-col small{font-size:10px;color:var(--deck)}
-.pitch-col:before{content:"";position:absolute;left:0;right:0;top:15px;bottom:15px;background:url('../../img/ui/dj/pitch-plate.webp') center/100% 100% no-repeat}
-.pitch-col input{position:relative;z-index:1}
-.pitch-value{font:700 10px/1 var(--mono);color:#cfc4e2;z-index:1}
-#dj-stage[data-pitch="off"] .pitch-col{opacity:.42}
-.deck-controls{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:2px;padding-bottom:2px}
-.play-cap{font-size:12px;letter-spacing:.08em;color:var(--deck)}
+.deck-display{position:relative;z-index:1;width:116px;height:116px;border-radius:50%;overflow:hidden;pointer-events:none;background:var(--art,none) center/cover no-repeat;transform:rotate(calc(var(--rotation,0deg) + var(--spin,0deg)));will-change:transform}
+.deck-controls{position:absolute;right:0;bottom:2px}
+.deck.b .deck-controls{right:auto;left:0}
 /* ▶: 丸いパッド（play-a / play-b）。次に押す側は金（play-go）に光り、入りに向かって輪が縮む */
-.deck-play{position:relative;width:104px;height:104px;min-height:0;padding:0;border:0;border-image:none;border-radius:50%;font-size:0;color:transparent;overflow:visible;
+.deck-play{position:relative;display:block;width:104px;height:104px;min-height:0;padding:0;border:0;border-image:none;border-radius:50%;font-size:0;color:transparent;overflow:visible;
  background:url('../../img/ui/dj/play-a.webp') center/100% 100% no-repeat;filter:drop-shadow(0 4px 5px #000a) saturate(.75) brightness(.8)}
 .deck.b .deck-play{background-image:url('../../img/ui/dj/play-b.webp')}
 .deck-play:hover{filter:drop-shadow(0 4px 5px #000a) brightness(1.05)}
@@ -207,15 +199,23 @@ button.gold{color:#2a1840;border-width:14px;border-image:var(--goldbtn) 36 fill 
 @keyframes go{to{filter:drop-shadow(0 4px 5px #000a) drop-shadow(0 0 22px #ffc857) brightness(1.35)}}
 .deck-play:after{content:"";position:absolute;inset:2px;border-radius:50%;border:4px solid var(--gold);box-shadow:0 0 14px #f0a64a,inset 0 0 8px #f0a64a88;opacity:0;transform:scale(var(--ap,1));pointer-events:none;transition:opacity .15s}
 .deck-play.cue-soon:after{opacity:.95}
+/* 中央の下: PITCH（±8 %。SET 1 では使わない）・ミキサー・PITCH */
+.mixrow{grid-column:2;grid-row:2;display:grid;grid-template-columns:58px minmax(0,460px) 58px;justify-content:center;gap:10px}
+.pitch-col{--deck:var(--a);position:relative;display:flex;flex-direction:column;align-items:center;gap:2px;min-height:0}
+.pitch-col.b{--deck:var(--b)}
+.pitch-col small{font-size:10px;color:var(--deck)}
+.pitch-col:before{content:"";position:absolute;left:0;right:0;top:15px;bottom:15px;background:url('../../img/ui/dj/pitch-plate.webp') center/100% 100% no-repeat}
+.pitch-col input{position:relative;z-index:1}
+.pitch-value{font:700 10px/1 var(--mono);color:#cfc4e2;z-index:1}
+#dj-stage[data-pitch="off"] .pitch-col{opacity:.42}
 /* 金色の矢印: いま触るところ */
 .point{position:absolute;z-index:5;width:56px;height:56px;background:url('../../img/ui/dj/arrow.webp') center/contain no-repeat;pointer-events:none;filter:drop-shadow(0 3px 4px #000a)}
 .point[hidden]{display:none}
-.point.play{left:calc(50% - 28px);bottom:128px;transform:rotate(90deg);animation:point-down .55s ease-in-out infinite alternate}
+.point.play{left:calc(50% - 28px);bottom:112px;transform:rotate(90deg);animation:point-down .55s ease-in-out infinite alternate}
 @keyframes point-down{to{transform:translateY(12px) rotate(90deg)}}
-.point.pitch{width:44px;height:44px;left:calc(100% - 12px)}
-.deck.b .point.pitch{left:auto;right:calc(100% - 12px)}
-.point.pitch.up{top:22px;transform:rotate(-90deg);animation:point-up .55s ease-in-out infinite alternate}
-.point.pitch.down{bottom:22px;transform:rotate(90deg);animation:point-down .55s ease-in-out infinite alternate}
+.point.pitch{width:30px;height:40px;left:calc(50% - 15px);background-image:url('../../img/ui/dj/chevron.webp')}
+.point.pitch.up{top:26px;transform:rotate(-90deg);animation:point-up .55s ease-in-out infinite alternate}
+.point.pitch.down{bottom:26px;transform:rotate(90deg);animation:point-down .55s ease-in-out infinite alternate}
 @keyframes point-up{to{transform:translateY(-12px) rotate(-90deg)}}
 .point.sync{width:36px;height:36px;left:calc(50% - 18px);top:-30px;transform:rotate(90deg);animation:point-down .55s ease-in-out infinite alternate}
 /* faders: transparent native track, generated cap */
@@ -224,21 +224,21 @@ input[type=range].dragging{cursor:grabbing}
 input[type=range]::-webkit-slider-runnable-track{background:transparent;border:0}
 input[type=range]::-moz-range-track{background:transparent;border:0}
 input[type=range]::-moz-range-progress{background:transparent}
-.vfader{writing-mode:vertical-lr;direction:rtl;flex:1 1 0;width:56px;height:auto;min-height:0}
+.vfader{writing-mode:vertical-lr;direction:rtl;flex:1 1 0;width:54px;height:auto;min-height:0}
 .vfader::-webkit-slider-thumb{-webkit-appearance:none;width:46px;height:27px;border:0;border-radius:4px;background:url('../../img/ui/dj/fader-cap-h-purple.webp') center/100% 100% no-repeat;filter:drop-shadow(0 3px 3px #000b);transition:transform .08s,filter .08s}
 .vfader::-moz-range-thumb{width:46px;height:27px;border:0;border-radius:4px;background:url('../../img/ui/dj/fader-cap-h-purple.webp') center/100% 100% no-repeat;filter:drop-shadow(0 3px 3px #000b)}
-.deck.b .vfader::-webkit-slider-thumb{background-image:url('../../img/ui/dj/fader-cap-h-cyan.webp')}
-.deck.b .vfader::-moz-range-thumb{background-image:url('../../img/ui/dj/fader-cap-h-cyan.webp')}
+.pitch-col.b .vfader::-webkit-slider-thumb{background-image:url('../../img/ui/dj/fader-cap-h-cyan.webp')}
+.pitch-col.b .vfader::-moz-range-thumb{background-image:url('../../img/ui/dj/fader-cap-h-cyan.webp')}
 input[type=range].dragging::-webkit-slider-thumb,input[type=range]:active::-webkit-slider-thumb{transform:scale(.95);filter:brightness(1.35) drop-shadow(0 0 7px var(--deck,var(--glow)))}
 input[type=range].dragging::-moz-range-thumb{filter:brightness(1.35)}
 /* mixer: automatic EQ knobs + meters (decorative), QUANTIZE / AUTO EQ lamps, SYNC, the big crossfader */
 .mixer{display:flex;flex-direction:column;gap:4px}
-.channels{flex:none;height:74px;display:grid;grid-template-columns:1fr 158px 1fr;gap:6px}
+.channels{flex:none;height:70px;display:grid;grid-template-columns:1fr 146px 1fr;gap:6px}
 .ch{display:flex;gap:8px;align-items:stretch;min-width:0}
 .ch.a{--deck:var(--a)}.ch.b{--deck:var(--b);justify-content:flex-end}
-.eqs{display:flex;gap:6px;align-items:center}
+.eqs{display:flex;gap:5px;align-items:center}
 .eq{display:flex;flex-direction:column;align-items:center;gap:1px}.eq small{font-size:9px;letter-spacing:.04em;color:#cfc4e2}
-.knob{display:block;width:36px;height:36px;border-radius:50%;background:url('../../img/ui/dj/eq-knob.webp') center/100% 100% no-repeat;filter:drop-shadow(0 2px 3px #000a);transform:rotate(var(--k,0deg));transition:transform .12s}
+.knob{display:block;width:34px;height:34px;border-radius:50%;background:url('../../img/ui/dj/eq-knob.webp') center/100% 100% no-repeat;filter:drop-shadow(0 2px 3px #000a);transform:rotate(var(--k,0deg));transition:transform .12s}
 .eq.low small{color:color-mix(in srgb,var(--deck),#cfc4e2 calc(100% - var(--cut,0)*100%))}
 .eq.low .knob{filter:drop-shadow(0 2px 3px #000a) drop-shadow(0 0 calc(var(--cut,0) * 7px) var(--deck))}
 .meter{flex:none;width:10px;border-radius:3px;background:#050409;box-shadow:inset 0 1px 3px #000,0 0 0 1px #4a4266;position:relative;overflow:hidden}
@@ -362,24 +362,25 @@ html[data-density=phone] .steps li.now{font-size:20px;gap:5px;padding-right:8px}
 html[data-density=phone] .steps li i{font-size:18px}
 html[data-density=phone] .coach{font-size:27px}
 html[data-density=phone] .coach-sub{font-size:20px}
-html[data-density=phone] .navi{grid-template-rows:64px 54px}
+html[data-density=phone] .navi{grid-template-columns:auto minmax(0,1fr);grid-template-rows:minmax(0,1fr) 54px;column-gap:14px}
+html[data-density=phone] .lane{grid-column:1/-1}
 html[data-density=phone] .lane canvas{height:25px}
 html[data-density=phone] .lane b{font-size:20px;width:26px;height:26px}
 html[data-density=phone] .credits details,html[data-density=phone] .credits summary{font-size:20px}
 html[data-density=phone] .deck-indicator{font-size:0;letter-spacing:0;gap:0}
 html[data-density=phone] .deck-indicator:before{width:18px;height:18px}
 html[data-density=phone] .track-name{font-size:20px}
-html[data-density=phone] .bpm output{font-size:20px}
+html[data-density=phone] .bpm output{font-size:24px}
 html[data-density=phone] .bpm:after{display:none}
 html[data-density=phone] .lock{font-size:0;gap:0}
-html[data-density=phone] .lock:before{width:22px;height:22px}
-html[data-density=phone] .pitch-col small,html[data-density=phone] .play-cap,html[data-density=phone] .eq small{display:none}
+html[data-density=phone] .lock:before{width:24px;height:24px}
+html[data-density=phone] .pitch-col small,html[data-density=phone] .eq small{display:none}
+html[data-density=phone] .mixrow{grid-template-columns:78px minmax(0,460px) 78px}
 html[data-density=phone] .pitch-col:before{top:0}
 html[data-density=phone] .pitch-value{font-size:20px}
-html[data-density=phone] .vfader::-webkit-slider-thumb{width:58px;height:38px}
-html[data-density=phone] .vfader::-moz-range-thumb{width:58px;height:38px}
-html[data-density=phone] .deck-play{width:118px;height:118px}
-html[data-density=phone] .point.play{bottom:120px}
+html[data-density=phone] .vfader{width:74px}
+html[data-density=phone] .vfader::-webkit-slider-thumb{width:62px;height:38px}
+html[data-density=phone] .vfader::-moz-range-thumb{width:62px;height:38px}
 html[data-density=phone] .eqs{display:none}
 html[data-density=phone] .ch{justify-content:center}
 html[data-density=phone] .ch.b{justify-content:center}

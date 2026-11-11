@@ -156,7 +156,11 @@ document.addEventListener('visibilitychange', () => { if (document.hidden) pause
 window.addEventListener('pagehide', event => { if (event.persisted) { pause(); return; } disposed = true; cancelAnimationFrame(frame); audio.dispose().catch(() => {}); });
 
 // ── 曲の流れ（上 A・下 B の実波形）。金の線が「いま」、金の旗が次の入り ──────────────────
+let laneWidth = 0, laneChecked = -1e9;
 function wave(canvas, id, now) {
+  const t0 = performance.now();
+  if (t0 - laneChecked > 500) { laneChecked = t0; laneWidth = Math.max(320, Math.round(canvas.clientWidth * 2)); } // read the layout twice a second, not every frame
+  if (canvas.width !== laneWidth) canvas.width = laneWidth;
   const c = canvas.getContext('2d'), w = canvas.width, h = canvas.height, x0 = Math.round(w * .3), scale = w / 7;
   c.clearRect(0, 0, w, h); c.fillStyle = '#0a0714cc'; c.fillRect(0, 0, w, h);
   const m = audio.mix, cue = m.cue, t = audio.tracks[id], d = m.decks[id];
@@ -189,7 +193,7 @@ function wave(canvas, id, now) {
       glow.addColorStop(0, 'transparent'); glow.addColorStop(.5, `rgba(255,200,87,${.2 + pulse * .5})`); glow.addColorStop(1, 'transparent');
       c.fillStyle = glow; c.fillRect(x - 34, 0, 68, h);
       c.fillStyle = '#ffc857'; c.fillRect(x - 2, 0, 4, h);
-      if (cue.to === id) { c.font = '900 26px sans-serif'; c.textBaseline = 'middle'; c.fillStyle = '#2a1840'; c.fillRect(x + 2, h / 2 - 17, 78, 34); c.fillStyle = '#ffc857'; c.fillText(`▶ ${deckOf(id)}`, x + 10, h / 2 + 2); }
+      if (cue.to === id) { c.font = '900 30px sans-serif'; c.textBaseline = 'middle'; c.fillStyle = '#2a1840'; c.fillRect(x + 2, h / 2 - 20, 86, 40); c.fillStyle = '#ffc857'; c.fillText(`▶ ${deckOf(id)}`, x + 10, h / 2 + 2); }
     }
   }
   c.fillStyle = '#ffc857'; c.fillRect(x0 - 1, 0, 3, h); // いま
@@ -310,16 +314,16 @@ function navi(m, now, away) {
   const cue = m.cue, out = { step: 0, main: '', sub: '', warn: false, points: [], count: '', untilHead: null };
   if (m.phase === 'done') return { ...out, step: 5, main: 'セット終了！ おつかれさま', sub: '最後の曲が流れている' };
   if (!m.running) {
-    if (m.phase === 'idle') return { ...out, step: 1, main: '左の ▶ を押して、1曲目をかけよう', sub: '曲をつないでフロアを盛り上げるゲーム。低音の調整は機材が自動でやってくれる', points: ['play-a'] };
+    if (m.phase === 'idle') return { ...out, step: 1, main: '左の ▶ を押して、1曲目をかけよう', sub: '曲をつないでフロアを盛り上げよう。低音は機材が自動で整える', points: ['play-a'] };
     const live = m.resumeDecks.length ? m.resumeDecks : [m.master];
     return { ...out, step: m.phase === 'mix' ? 3 : m.phase === 'select' ? 4 : 2, main: `一時停止中。${sideOf(live[0])}の ▶ で続きから`, sub: '止まったところから、流れていた曲がそのまま戻る', points: [`play-${live[0] ? 'b' : 'a'}`] };
   }
-  if (away) return { ...out, step: m.phase === 'select' ? 4 : 2, warn: true, main: `音が消えかけている！ 横フェーダーを${sideOf(m.master)}へ戻そう`, sub: `いま流れているのは ${deckOf(m.master)}。次の曲を入れるまで、フェーダーは${sideOf(m.master)}に置いておく`, points: ['fader'] };
+  if (away) return { ...out, step: m.phase === 'select' ? 4 : 2, warn: true, main: `音が消える！ 横フェーダーを${sideOf(m.master)}へ戻そう`, sub: `次の曲を入れるまで、フェーダーは${sideOf(m.master)}（${deckOf(m.master)}）に置いておく`, points: ['fader'] };
   if (m.phase === 'select') return { ...out, step: 4, main: 'お客さんの声を聞いて、次の曲をえらぼう', sub: '声に合うノリで、つながりも良い曲ならフロアが沸く', points: ['pick'] };
   if (m.phase === 'mix') {
     const to = cue.to, bar = Math.min(8, Math.floor(view.progress * 8) + 1);
     if (view.progress >= 1) return { ...out, step: 3, main: `最後まで${sideOf(to)}へ動かしきろう`, sub: `フェーダーが${sideOf(to)}の端に着くと、${deckOf(to)} に乗り換わる`, points: ['fader'] };
-    return { ...out, step: 3, main: `横フェーダーを${sideOf(to)}へ。光る枠を追いかけよう`, sub: `8小節かけて ${deckOf(to)} に乗り換える（${bar}／8 小節）。拍ごとに、枠に乗れているかを見る`, points: ['fader'] };
+    return { ...out, step: 3, main: `横フェーダーを${sideOf(to)}へ。光る枠を追いかけよう`, sub: `8小節かけて ${deckOf(to)} へ乗り換える（${bar}／8）。拍ごとに枠の中かを見る`, points: ['fader'] };
   }
   // cue: waiting for the phrase head, then ▶ on the incoming deck
   const to = cue.to, key = to ? 'b' : 'a', from = m.decks[cue.from], inc = m.decks[to], late = beatAt(from, now) - cue.start;
@@ -328,11 +332,11 @@ function navi(m, now, away) {
   if (late > 0 && late * 60 / from.bpm * 1000 <= 120 + (m.allowance || 0)) return { ...out, step: 2, untilHead: 0, count: '▶', main: `いま！ ${sideOf(to)}の ▶`, sub: '0 の瞬間に近いほど、フロアが沸く', points: [`play-${key}`] };
   if (bpmDiffPct(from, inc) > LOCK_PCT && untilHead > 4) {
     const up = inc.bpm < from.bpm;
-    return { ...out, step: 2, untilHead, main: `次の曲のテンポを合わせよう：${sideOf(to)}の PITCH を${up ? '上' : '下'}へ`, sub: `LOCK のランプが点けば OK（入りまで あと ${bars} 小節）。むずかしければ SYNC を押す`, points: [`pitch-${key}-${up ? 'up' : 'down'}`, 'sync'] };
+    return { ...out, step: 2, untilHead, main: `テンポ合わせ：${sideOf(to)}の PITCH を${up ? '上' : '下'}へ`, sub: `LOCK が点けば OK。むずかしければ SYNC を押す（あと ${bars} 小節）`, points: [`pitch-${key}-${up ? 'up' : 'down'}`, 'sync'] };
   }
   if (untilHead <= 4) return { ...out, step: 2, untilHead, count, main: `カウント 0 で、${sideOf(to)}の ▶ ！`, sub: '光の輪がボタンに重なる瞬間に押す', points: [`play-${key}`] };
   if (late > 0) return { ...out, step: 2, untilHead, main: '入りを逃した。次の頭を待とう', sub: `あと ${bars} 小節。カウントが出たら、0 で${sideOf(to)}の ▶`, points: [] };
-  return { ...out, step: 2, untilHead, main: `次は${sideOf(to)}の ▶。カウントが出るまで待とう`, sub: `入りまで あと ${bars} 小節。波形の金の旗が、金の線に重なる瞬間が入り`, points: [] };
+  return { ...out, step: 2, untilHead, main: `次は${sideOf(to)}の ▶。カウントが出るまで待とう`, sub: `入りまで あと ${bars} 小節。金の旗が金の線に重なる瞬間が入り`, points: [] };
 }
 function showNavi(n, m) {
   if (n.main !== message) { $('coaching').textContent = n.main; message = n.main; }

@@ -36,48 +36,52 @@
       <p class="how-foot">うまくつなぐほど<strong>フロアの熱</strong>が上がる。金色の矢印が、いま触るところ。</p>
     </section>
   </section>
-  <!-- 中: 案内（いまやること）と曲の流れ -->
-  <section class="navi waves" aria-label="いまやることの案内と、上段A下段Bの実PCM横波形（共通の秒スケール）">
-    <ol class="steps" id="steps" aria-label="つなぎの手順">
-      <li data-step="1"><i>1</i>かける</li><li data-step="2"><i>2</i>入れる</li><li data-step="3"><i>3</i>つなぐ</li><li data-step="4"><i>4</i>えらぶ</li>
-    </ol>
-    <div class="say"><p id="coaching" class="coach" aria-live="polite"></p><p id="coach-sub" class="coach-sub"></p></div>
-    <div class="lane">
-      <div><b class="a">A</b><canvas id="wave-a" width="1200" height="60" aria-label="Aの実PCM波形"></canvas></div>
-      <div><b class="b">B</b><canvas id="wave-b" width="1200" height="60" aria-label="Bの実PCM波形"></canvas></div>
-    </div>
-    <div class="credits"><details><summary aria-label="実曲クレジット（CC BY 4.0）">♪</summary><div class="pop"><p>Dance Monster / Kevin MacLeod / <a href="https://incompetech.com/">incompetech.com</a> / <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> / ISRC USUAN1100272</p><p>Digital Lemonade / Kevin MacLeod / <a href="https://incompetech.com/">incompetech.com</a> / <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> / ISRC USUAN1700010</p><p>Raving Energy / Kevin MacLeod / <a href="https://incompetech.com/">incompetech.com</a> / <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> / ISRC USUAN1900013</p><p>Cut and Dry / Kevin MacLeod / <a href="https://incompetech.com/">incompetech.com</a> / <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> / ISRC USUAN1100852</p><p>Rising Tide (faster) / Kevin MacLeod / <a href="https://incompetech.com/">incompetech.com</a> / <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> / ISRC USUAN1900011</p></div></details></div>
-  </section>
-  <!-- 下: ブース（左右デッキ・中央ミキサー）。触るのは ▶ と横フェーダー（SET 2・3 は PITCH か SYNC も） -->
-  <section class="console" aria-label="左右デッキ・中央ミキサー">
+  <!-- 下: ブース。左右に大きなターンテーブル、中央の上に案内（いまやること）と曲の流れ、その下にミキサー。
+       触るのは ▶ と横フェーダー（SET 2・3 は PITCH か SYNC も） -->
+  <section class="console" aria-label="左右デッキ・中央の案内とミキサー">
     <article class="deck a" id="deck-a" data-playing="false" data-role="master">
-      <div class="deck-head"><span class="deck-indicator" id="indicator-a">STANDBY</span><b class="track-name" id="track-a">Dance Monster</b><span class="bpm"><output id="bpm-a" aria-live="off">120.00</output></span><span class="lock" id="lock-a">LOCK</span></div>
+      <div class="deck-head"><span class="deck-indicator" id="indicator-a">STANDBY</span><b class="track-name" id="track-a">Dance Monster</b></div>
       <div class="platter" id="platter-a" role="slider" tabindex="0" aria-label="Aのジョグ。外周を回してBPM微調整（右回りで上げる・1目盛り0.01 BPM）" aria-valuemin="110" aria-valuemax="140" aria-valuenow="120.00"><div class="deck-display"><p id="beat-a" class="sr">停止中</p></div></div>
-      <div class="pitch-col"><small>PITCH</small><label for="pitch-a" class="sr">A PITCH ±8%</label><input id="pitch-a" class="vfader" orient="vertical" type="range" min="-8" max="8" step=".01" value="0"><output id="pitch-value-a" class="pitch-value">0.00%</output><i class="point pitch" id="point-pitch-a" hidden aria-hidden="true"></i></div>
-      <div class="deck-controls"><i class="point play" id="point-play-a" hidden aria-hidden="true"></i><button id="play-a" class="deck-play" aria-pressed="false" aria-label="Aを再生">▶</button><small class="play-cap">▶ A</small></div>
+      <div class="deck-meta"><span class="bpm"><output id="bpm-a" aria-live="off">120.00</output></span><span class="lock" id="lock-a">LOCK</span></div>
+      <div class="deck-controls"><i class="point play" id="point-play-a" hidden aria-hidden="true"></i><button id="play-a" class="deck-play" aria-pressed="false" aria-label="Aを再生">▶</button></div>
     </article>
-    <article class="mixer">
-      <div class="channels">
-        <div class="ch a" aria-hidden="true"><div class="meter" id="meter-a"><i></i></div><div class="eqs"><div class="eq"><i class="knob" id="eq-hi-a"></i><small>HI</small></div><div class="eq"><i class="knob" id="eq-mid-a"></i><small>MID</small></div><div class="eq low"><i class="knob" id="eq-low-a"></i><small>LOW</small></div></div></div>
-        <div class="center">
-          <div class="leds"><span class="led on" id="led-quantize">QUANTIZE</span><span class="led" id="led-autoeq">AUTO EQ</span></div>
-          <div class="sync-box"><i class="point sync" id="point-sync" hidden aria-hidden="true"></i><button id="sync" type="button" class="sync" aria-label="SYNC：次の曲のBPMを今の曲に合わせる">SYNC</button></div>
-          <div class="master-meters" aria-hidden="true"><div class="meter master" id="meter-m"><i></i></div><div class="meter master" id="meter-m2"><i></i></div></div>
+    <section class="navi waves" aria-label="いまやることの案内と、上段A下段Bの実PCM横波形（共通の秒スケール）">
+      <ol class="steps" id="steps" aria-label="つなぎの手順">
+        <li data-step="1"><i>1</i>かける</li><li data-step="2"><i>2</i>入れる</li><li data-step="3"><i>3</i>つなぐ</li><li data-step="4"><i>4</i>えらぶ</li>
+      </ol>
+      <div class="say"><p id="coaching" class="coach" aria-live="polite"></p><p id="coach-sub" class="coach-sub"></p></div>
+      <div class="lane">
+        <div><b class="a">A</b><canvas id="wave-a" width="960" height="58" aria-label="Aの実PCM波形"></canvas></div>
+        <div><b class="b">B</b><canvas id="wave-b" width="960" height="58" aria-label="Bの実PCM波形"></canvas></div>
+      </div>
+      <div class="credits"><details><summary aria-label="実曲クレジット（CC BY 4.0）">♪</summary><div class="pop"><p>Dance Monster / Kevin MacLeod / <a href="https://incompetech.com/">incompetech.com</a> / <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> / ISRC USUAN1100272</p><p>Digital Lemonade / Kevin MacLeod / <a href="https://incompetech.com/">incompetech.com</a> / <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> / ISRC USUAN1700010</p><p>Raving Energy / Kevin MacLeod / <a href="https://incompetech.com/">incompetech.com</a> / <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> / ISRC USUAN1900013</p><p>Cut and Dry / Kevin MacLeod / <a href="https://incompetech.com/">incompetech.com</a> / <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> / ISRC USUAN1100852</p><p>Rising Tide (faster) / Kevin MacLeod / <a href="https://incompetech.com/">incompetech.com</a> / <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a> / ISRC USUAN1900011</p></div></details></div>
+    </section>
+    <div class="mixrow">
+      <div class="pitch-col a"><small>PITCH</small><label for="pitch-a" class="sr">A PITCH ±8%</label><input id="pitch-a" class="vfader" orient="vertical" type="range" min="-8" max="8" step=".01" value="0"><output id="pitch-value-a" class="pitch-value">0.00%</output><i class="point pitch" id="point-pitch-a" hidden aria-hidden="true"></i></div>
+      <article class="mixer">
+        <div class="channels">
+          <div class="ch a" aria-hidden="true"><div class="meter" id="meter-a"><i></i></div><div class="eqs"><div class="eq"><i class="knob" id="eq-hi-a"></i><small>HI</small></div><div class="eq"><i class="knob" id="eq-mid-a"></i><small>MID</small></div><div class="eq low"><i class="knob" id="eq-low-a"></i><small>LOW</small></div></div></div>
+          <div class="center">
+            <div class="leds"><span class="led on" id="led-quantize">QUANTIZE</span><span class="led" id="led-autoeq">AUTO EQ</span></div>
+            <div class="sync-box"><i class="point sync" id="point-sync" hidden aria-hidden="true"></i><button id="sync" type="button" class="sync" aria-label="SYNC：次の曲のBPMを今の曲に合わせる">SYNC</button></div>
+            <div class="master-meters" aria-hidden="true"><div class="meter master" id="meter-m"><i></i></div><div class="meter master" id="meter-m2"><i></i></div></div>
+          </div>
+          <div class="ch b" aria-hidden="true"><div class="eqs"><div class="eq"><i class="knob" id="eq-hi-b"></i><small>HI</small></div><div class="eq"><i class="knob" id="eq-mid-b"></i><small>MID</small></div><div class="eq low"><i class="knob" id="eq-low-b"></i><small>LOW</small></div></div><div class="meter" id="meter-b"><i></i></div></div>
         </div>
-        <div class="ch b" aria-hidden="true"><div class="eqs"><div class="eq"><i class="knob" id="eq-hi-b"></i><small>HI</small></div><div class="eq"><i class="knob" id="eq-mid-b"></i><small>MID</small></div><div class="eq low"><i class="knob" id="eq-low-b"></i><small>LOW</small></div></div><div class="meter" id="meter-b"><i></i></div></div>
-      </div>
-      <p class="sr" id="auto-low"></p>
-      <div class="xfade" id="xfade">
-        <div class="mix-label"><b class="a" id="side-a">A</b><span class="mix-mid"><output id="fader-hint" class="fader-hint" aria-live="off"></output><output id="combo" class="combo" aria-live="off"></output></span><output id="mix-value" class="sr" aria-live="off"></output><b class="b" id="side-b">B</b></div>
-        <label class="sr" for="crossfader">横クロスフェーダー、左A・右B</label>
-        <div class="xtrack"><div id="guide" class="guide" hidden aria-hidden="true"></div><div id="fader-arrows" class="fader-arrows" hidden aria-hidden="true"><i></i><i></i><i></i></div><input id="crossfader" type="range" min="0" max="1" step=".005" value="0"></div>
-      </div>
-    </article>
+        <p class="sr" id="auto-low"></p>
+        <div class="xfade" id="xfade">
+          <div class="mix-label"><b class="a" id="side-a">A</b><span class="mix-mid"><output id="fader-hint" class="fader-hint" aria-live="off"></output><output id="combo" class="combo" aria-live="off"></output></span><output id="mix-value" class="sr" aria-live="off"></output><b class="b" id="side-b">B</b></div>
+          <label class="sr" for="crossfader">横クロスフェーダー、左A・右B</label>
+          <div class="xtrack"><div id="guide" class="guide" hidden aria-hidden="true"></div><div id="fader-arrows" class="fader-arrows" hidden aria-hidden="true"><i></i><i></i><i></i></div><input id="crossfader" type="range" min="0" max="1" step=".005" value="0"></div>
+        </div>
+      </article>
+      <div class="pitch-col b"><small>PITCH</small><label for="pitch-b" class="sr">B PITCH ±8%</label><input id="pitch-b" class="vfader" orient="vertical" type="range" min="-8" max="8" step=".01" value="0"><output id="pitch-value-b" class="pitch-value">0.00%</output><i class="point pitch" id="point-pitch-b" hidden aria-hidden="true"></i></div>
+    </div>
     <article class="deck b" id="deck-b" data-playing="false" data-role="next">
-      <div class="deck-head"><span class="deck-indicator" id="indicator-b">STANDBY</span><b class="track-name" id="track-b">Digital Lemonade</b><span class="bpm"><output id="bpm-b" aria-live="off">120.00</output></span><span class="lock" id="lock-b">LOCK</span></div>
+      <div class="deck-head"><span class="deck-indicator" id="indicator-b">STANDBY</span><b class="track-name" id="track-b">Digital Lemonade</b></div>
       <div class="platter" id="platter-b" role="slider" tabindex="0" aria-label="Bのジョグ。外周を回してBPM微調整（右回りで上げる・1目盛り0.01 BPM）" aria-valuemin="110" aria-valuemax="140" aria-valuenow="120.00"><div class="deck-display"><p id="beat-b" class="sr">停止中</p></div></div>
-      <div class="pitch-col"><small>PITCH</small><label for="pitch-b" class="sr">B PITCH ±8%</label><input id="pitch-b" class="vfader" orient="vertical" type="range" min="-8" max="8" step=".01" value="0"><output id="pitch-value-b" class="pitch-value">0.00%</output><i class="point pitch" id="point-pitch-b" hidden aria-hidden="true"></i></div>
-      <div class="deck-controls"><i class="point play" id="point-play-b" hidden aria-hidden="true"></i><button id="play-b" class="deck-play" aria-pressed="false" aria-label="Bを再生">▶</button><small class="play-cap">▶ B</small></div>
+      <div class="deck-meta"><span class="bpm"><output id="bpm-b" aria-live="off">120.00</output></span><span class="lock" id="lock-b">LOCK</span></div>
+      <div class="deck-controls"><i class="point play" id="point-play-b" hidden aria-hidden="true"></i><button id="play-b" class="deck-play" aria-pressed="false" aria-label="Bを再生">▶</button></div>
     </article>
   </section>
   <section id="pick" class="pick" hidden aria-label="次の曲を選ぶ"><p class="pick-title"><i>4</i>次の曲をえらぶ</p><p class="request" id="request"></p><p class="pick-tip">声に合うノリで、つながりも良い曲ならフロアが沸く</p><div class="pick-cards" id="pick-cards"></div></section>

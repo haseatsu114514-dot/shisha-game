@@ -19,7 +19,7 @@ const until=async(p,key,ready,errors,timeout=5000,step=50)=>{
  do{state=await snap(p);if(ready(state))return state;await p.waitForTimeout(step);}while(Date.now()<deadline);
  assert.fail(`Timed out waiting for ${key}: ${JSON.stringify({state,...await diagnostics(p,errors)})}`);
 };
-const hashWaves=p=>p.evaluate(()=>['wave-a','wave-b'].map(id=>document.getElementById(id).getContext('2d').getImageData(0,0,960,60).data.reduce((h,b)=>(Math.imul(h,31)+b)>>>0,7)));
+const hashWaves=p=>p.evaluate(()=>['wave-a','wave-b'].map(id=>{const c=document.getElementById(id);return c.getContext('2d').getImageData(0,0,c.width,c.height).data.reduce((h,b)=>(Math.imul(h,31)+b)>>>0,7);}));
 try{
  for(const kind of ['pc','touch','reduced']){
   const context=await browser.newContext({viewport:kind==='pc'?{width:1280,height:720}:{width:844,height:390},hasTouch:kind!=='pc',isMobile:kind!=='pc',reducedMotion:kind==='reduced'?'reduce':'no-preference'});
@@ -37,8 +37,8 @@ try{
   assert.equal((await snap(page)).state,'not-started');assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
   const stageScale=await page.evaluate(()=>Number(getComputedStyle(document.getElementById('dj-stage')).getPropertyValue('--s'))||1);
   for(const id of ['play-a','play-b']){const r=await page.locator('#'+id).boundingBox();assert(r.height/stageScale>=52&&r.width/stageScale>=88,'Large ▶ targets');}
-  // DJS20: the floor and the navi take the upper half, so the jogs are 188px; what the player touches (▶ 104px, crossfader 430px) is bigger than before.
-  for(const key of ['a','b']){assert.equal(await page.locator('#indicator-'+key).textContent(),'STANDBY');const j=await page.locator('#platter-'+key).boundingBox();assert(j.width/stageScale>=180&&j.height/stageScale>=180,'Jog wheels');}
+  // DJS20/DJS26: the floor takes the top 288px; below it the turntables stand 296px tall on both sides, and what the player touches (▶ 104px, crossfader 400px+) is bigger than before.
+  for(const key of ['a','b']){assert.equal(await page.locator('#indicator-'+key).textContent(),'STANDBY');const j=await page.locator('#platter-'+key).boundingBox();assert(j.width/stageScale>=290&&j.height/stageScale>=290,'Large turntables');}
   for(const id of ['play-a','play-b']){const r=await page.locator('#'+id).boundingBox();assert(r.height/stageScale>=100&&r.width/stageScale>=100,'▶ is a 104px pad');}
   {const r=await page.locator('#crossfader').boundingBox();assert(r.width/stageScale>=400&&r.height/stageScale>=70,'The crossfader is the widest control');}
   {const f=await page.locator('.floor').boundingBox();assert(f.height/stageScale>=280,'the floor (the guests) takes the top 288px');}
@@ -48,7 +48,11 @@ try{
   assert(await page.locator('#point-play-a').isVisible(),'gold arrow on ▶ A');assert(await page.locator('#point-play-b').isHidden());assert.deepEqual((await snap(page)).points,['play-a']);
   assert.equal(await page.locator('#mood').textContent(),'様子見');assert.equal(await page.locator('.floor').getAttribute('data-mood'),'2');
   await press('help');await page.locator('#howto').waitFor({state:'hidden'});await press('help');await page.locator('#howto').waitFor({state:'visible'});
-  assert(await page.evaluate(()=>{const f=document.querySelector('.floor'),w=document.querySelector('.waves'),c=document.querySelector('.console');const fr=f.getBoundingClientRect(),wr=w.getBoundingClientRect(),cr=c.getBoundingClientRect();return fr.bottom<=wr.top+1&&wr.bottom<=cr.top+1&&cr.bottom<=innerHeight+1;}),'floor / waveforms / controller stack top to bottom inside the viewport');
+  assert(await page.evaluate(()=>{const r=q=>document.querySelector(q).getBoundingClientRect(),fr=r('.floor'),cr=r('.console'),wr=r('.waves'),mr=r('.mixer'),a=r('#platter-a'),b=r('#platter-b'),pa=r('#play-a'),pb=r('#play-b'),x=r('#crossfader');
+   return fr.bottom<=cr.top+1&&cr.bottom<=innerHeight+1   // the floor above the booth, the booth inside the viewport
+    &&wr.top>=cr.top&&wr.bottom<=mr.top+1&&a.right<=wr.left+1&&wr.right<=b.left+1   // the navi and waveforms sit between the turntables, above the mixer
+    &&a.right<=x.left&&x.right<=b.left&&pa.right<=x.left+1&&x.right<=pb.left+1   // ▶ A | crossfader | ▶ B along the bottom, turntables outside
+    &&a.left>=cr.left&&b.right<=cr.right&&a.bottom<=cr.bottom+1&&b.bottom<=cr.bottom+1;}),'floor above the booth; turntables left and right, the navi over the mixer between them');
   const ready=await snap(page);assert.deepEqual(ready.playing,[false,false]);assert.equal(ready.voices,0);assert.deepEqual(ready.bpms,[120,120],'SET 1 needs no pitch match');assert.equal(ready.phase,'idle');near(ready.floor,.5);
   assert(await page.locator('#lock-a').evaluate(e=>e.classList.contains('on')),'LOCK lamp lit while BPMs match');
   // PITCH fader: ±8 %, keyboard steps of 0.01 %, only the chosen deck.
@@ -86,7 +90,7 @@ try{
   if(kind==='pc'){
    // Moving the fader away before the entry fades the playing track out: the navi warns and the arrows point back to A.
    await page.locator('#crossfader').focus();await page.locator('#crossfader').press('End');
-   await until(page,'away',s=>s.away===true,errors);assert.match(await page.locator('#coaching').textContent(),/音が消えかけている/);
+   await until(page,'away',s=>s.away===true,errors);assert.match(await page.locator('#coaching').textContent(),/音が消える！ 横フェーダーを左へ戻そう/);
    assert(await page.locator('#fader-arrows').isVisible());assert(await page.locator('#fader-arrows').evaluate(e=>e.classList.contains('left')),'arrows point back to the left (A)');
    await page.locator('#crossfader').press('Home');await until(page,'back',s=>s.away===false&&s.mix===0,errors);assert(await page.locator('#fader-arrows').isHidden());
    // An interruption (tab hidden) pauses the set. The navi points at the playing deck's ▶, and that one press brings the set back where it stopped.
