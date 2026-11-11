@@ -203,7 +203,8 @@ await suite("desert-ride", async check => {
     assert.equal(await page.locator(".dr-stick").count(), 0, "no stick: left/right are buttons only");
     const k = stage.width / 1280, size = box => Math.min(box.width, box.height) / k;
     assert(size(left) >= 160 && size(right) >= 160, `left/right are big (${size(left)}, ${size(right)})`);
-    assert(size(jump) >= 185 && size(boostButton) >= 150, `jump and boost are big (${size(jump)}, ${size(boostButton)})`);
+    // 同日「ブーストとジャンプボタンサイズ統一したい」: どちらも 176
+    assert(size(jump) >= 170 && Math.abs(size(jump) - size(boostButton)) < 1, `jump and boost are big and the same size (${size(jump)}, ${size(boostButton)})`);
     assert(right.x + right.width <= stage.x + stage.width * 0.3 && boostButton.x >= stage.x + stage.width * 0.7, "the big buttons keep the middle 40% of the view clear");
     // 右を押している間だけ右へ。離すと入力が消える
     const press = async (box, hold) => {
@@ -310,6 +311,9 @@ await suite("desert-ride", async check => {
     await page.waitForTimeout(90);
     const during = await page.evaluate(() => { window.__desertRide.redraw(); return { charge: document.querySelector('[data-test="desert-ride"]').dataset.charge, lit: [...document.querySelectorAll(".dr-zap path")].filter(path => path.getAttribute("d")).length }; });
     assert.deepEqual(during, { charge: "", lit: 0 }, "the charge is spent by the boost");
+    // 光は絵の形に沿う drop-shadow だけ。箱の形の光（box-shadow）は付けない（同日「うっすら水色の四角が見える」）
+    await page.waitForFunction(() => document.querySelector('[data-test="desert-boost"]').classList.contains("art-ready"));
+    assert.equal(await page.locator(t("desert-boost")).evaluate(node => getComputedStyle(node).boxShadow), "none", "no square glow while boosting");
     // 効果音（2026-11-11 オーナー「ビリビリなる効果音」→「わかりやすい雷みたいなビリビリ」「ブースト時も効果音、早そうな」）:
     // 溜まっている間は「ビリッ」が1発ずつ鳴り、鳴った瞬間にボタンとゲージが光る。ブースト中は鳴らず、風切りに替わる。
     // 音を出せない環境でも、鳴らすつもりの音（「ビリッ」の数・ループの音量）で確かめる
