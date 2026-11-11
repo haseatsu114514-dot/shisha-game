@@ -4197,7 +4197,7 @@
     },
     {
       "id": "kuji-gacha",
-      "title": "Kuji gacha presentation: garagara stage, prize cards, 10-pull grid, skip, last-one, touch sizes, reduced motion (GCH)",
+      "title": "Kuji gacha presentation: in-shop garagara stage with art slots, prize cards, 10-pull grid, skip, last-one, touch sizes, reduced motion (GCH)",
       "kind": "browser",
       "weight": 1.5,
       "timeout": 10,
@@ -4208,6 +4208,7 @@
         "remake/js/daily/kuji-prize-art.js",
         "remake/js/motions/garagara.js",
         "remake/js/motions/garagara-stage.js",
+        "remake/js/motions/kuji-art.js",
         "remake/js/motions/kuji-fx.js",
         "remake/css/motions/garagara.css",
         "data/kuji.json"

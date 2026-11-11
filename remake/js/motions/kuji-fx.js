@@ -5,6 +5,7 @@ import { el } from "../core/util.js";
 
 const TAU = Math.PI * 2;
 const MAX = 460; // 粒の上限（スマホでも重くならない数）
+const SCALE = 0.5; // canvas の解像度（ステージの半分。光の粒はにじんだ絵なので荒さは見えず、塗る画素が1/4で済む）
 const rnd = (a, b) => a + Math.random() * (b - a);
 const pickOf = (list) => list[Math.floor(Math.random() * list.length)];
 
@@ -40,7 +41,8 @@ export function createFx(host, { className = "kj-fx" } = {}) {
 
   function fit() {
     const w = Math.max(1, host.clientWidth || 1280), h = Math.max(1, host.clientHeight || 720);
-    if (canvas.width !== w || canvas.height !== h) { canvas.width = w; canvas.height = h; }
+    const cw = Math.round(w * SCALE), ch = Math.round(h * SCALE);
+    if (canvas.width !== cw || canvas.height !== ch) { canvas.width = cw; canvas.height = ch; }
     ox = (w - 1280) / 2;
   }
   const add = (p) => { if (parts.length < MAX) parts.push(p); };
@@ -136,13 +138,14 @@ export function createFx(host, { className = "kj-fx" } = {}) {
     }
     // 粒が無いあいだは描かない（何も変わらない canvas を毎フレーム合成させない）
     if (!parts.length) {
-      if (!blank) { ctx.clearRect(0, 0, canvas.width, canvas.height); blank = true; }
+      if (!blank) { ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.clearRect(0, 0, canvas.width, canvas.height); blank = true; }
       raf = requestAnimationFrame(frame);
       return;
     }
     blank = false;
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.setTransform(SCALE, 0, 0, SCALE, 0, 0); // 以降はステージの座標で描く
     let n = 0;
     for (const p of parts) {
       p.age += dt;

@@ -40,6 +40,11 @@ await suite("kuji-gacha", async check => {
     // 回っているあいだ: 舞台と粒子の層と SKIP があり、札はまだ無い
     await page.locator('.mo-garagara[data-mode="single"]').waitFor();
     await page.locator(".mo-garagara canvas.kj-fx").waitFor();
+    // 舞台は今いる店の背景を写したもの。道具は1つずつ別の部品で、絵が未採用のあいだは下絵（sketch）
+    assert.equal(await page.locator(".mo-garagara .kj-bg .kj-bg-img").count(), 1, "後ろにその店の背景");
+    for (const part of ["drum", "frame", "base", "handle", "tray", "counter", "sign", "bell"]) {
+      assert((await page.locator(`.mo-garagara .kj-part[data-part="${part}"]`).count()) >= 1, `部品 ${part}`);
+    }
     assert.equal(await page.locator(".kuji-card.reveal").count(), 0, "札はガラガラのあとに開く");
     assert((await page.locator('[data-test="kuji-skip"]').boundingBox()).height >= 40);
     await page.locator(".kuji-card.reveal.rank-C").waitFor({ timeout: 9000 });

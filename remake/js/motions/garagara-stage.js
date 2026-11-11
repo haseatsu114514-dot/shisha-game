@@ -1,9 +1,12 @@
-// シーシャくじの舞台（ガラガラを置く「くじコーナー」）。紫の壁に紅白幕と提灯、艶のある黒いカウンター。
-// 抽選器そのもの（motions/garagara.js）の後ろに敷く絵で、画像は使わずすべて SVG で描く。
-// 舞台は動かない絵なので、抽選器とは別の SVG に置いて一度だけ描かせる（毎フレーム描き直すのは抽選器だけ。スマホで重くしない）。
-// 賞の光（全面の染まり）・溜めの暗がり・周辺減光は SVG の上に重ねる div で、濃さを garagara.js が時刻で動かす。
+// シーシャくじの舞台: いま居る Dr.fookah の店内を背に、レジのカウンターへ置いた福引きの抽選器（ガラガラ）。
+// 2026-11-11 オーナー「CSS感がすごいので画像生成も含めて作りたい。お店の雰囲気と祭り感が合わないかも」:
+// - 紅白幕・提灯の祭りの飾りはやめ、店の素材（くるみ材・黒い鉄・くすんだ真鍮・黒板）に合わせた。
+// - 後ろは、その店の背景そのもの（今の場面の絵をぼかして暗くする）。店ごとに景色が変わる。
+// - 道具は1つずつ別の部品（kuji-art.js の差し込み口）。描いた絵が届けば差し替わり、無いあいだは下の下絵を出す。
+// 部品は正面から見た絵で、胴は回転（CSS の変形）だけで動かす。毎フレームの描き直しをしないのでスマホでも軽い。
 import { el } from "../core/util.js";
-import { svg, W } from "../core/transition-kit.js";
+import { svg } from "../core/transition-kit.js";
+import { artPart } from "./kuji-art.js";
 
 // 玉の色が賞を表す（S＝金・A＝赤・B＝青・C＝白・ラストワン＝黒地に銀の輪）。配色は意味を持つので固定
 export const BALL = { S: "#f7c648", A: "#e2443c", B: "#3f82ea", C: "#f6f3ec", LAST: "#2a2648" };
@@ -19,206 +22,227 @@ export const RANK_LIGHT = {
   LAST: ["#b8a5ff", "#f1f2f8", "#6f7cff"],
 };
 
-// 舞台の色。紫の壁・朱と白の幕・金の金具・提灯の灯り
-export const STAGE = {
-  wallHi: "#7a5ad6", wall0: "#33215f", wallLo: "#150c2e", shadow: "#07040f",
-  paper: "#f8f1e2", ink: "#2b1d2a", red: "#cf3423", redD: "#8f1d14", white: "#f7f1e6",
-  gold0: "#7a5416", gold1: "#dcaa3e", gold2: "#fff0b8",
-  lampHi: "#fff7d6", lamp1: "#ffd27a", lamp2: "#f08a2e", lamp3: "#b8501c",
-  counter0: "#1c1024", counter1: "#4b2b52", counterEdge: "#0f0816",
-  valance: "#22133f",
+// 店の素材の色
+export const SHOP = {
+  wood0: "#2f1c11", wood1: "#5b3a22", wood2: "#8a5d37", wood3: "#b98a58",
+  steel0: "#141316", steel1: "#2b292f", steel2: "#5d5963",
+  brass0: "#7a5a22", brass1: "#c9a24a", brass2: "#f3dc9a",
+  felt0: "#1d2a25", felt1: "#33473d", shadow: "#0a0706",
 };
 
-const hex = (c) => [1, 3, 5].map((i) => parseInt(c.slice(i, i + 2), 16));
-const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
-/** 2色を混ぜる（k=0 で a、1 で b） */
-export function mix(a, b, k) {
-  const A = hex(a), B = hex(b);
-  return `rgb(${A.map((v, i) => Math.round(v + (B[i] - v) * clamp(k))).join(",")})`;
-}
-export const pts = (list) => list.map(([x, y]) => `${x.toFixed(1)},${y.toFixed(1)}`).join(" ");
+// 道具の置き場所（抽選器まわりの座標。ステージ 1280×720 にそのまま置き、演出側で寄せ方を決める）
+export const AX = 540, AY = 292; // 胴の軸
+export const R = 150; // 胴（六角）の外接半径
+export const BALL_R = 16;
+export const EXIT = [AX + R * 0.73, AY + R * 0.62]; // 玉が出る所（胴の右下のふち）
+export const TRAY = { x: 872, y: 598 }; // 受け皿の中心
+export const LAND = [TRAY.x - 26, TRAY.y - BALL_R - 3]; // 玉が落ちる所
+export const REST = [TRAY.x + 6, TRAY.y - BALL_R - 1]; // 玉が止まる所
 
+const DEG = Math.PI / 180;
+const hexPts = (r, a0 = 0) => [...Array(6)].map((_, i) => [r * Math.cos((a0 + i * 60) * DEG), r * Math.sin((a0 + i * 60) * DEG)]);
+export const pts = (list) => list.map(([x, y]) => `${x.toFixed(1)},${y.toFixed(1)}`).join(" ");
 let serial = 0;
-export const uid = (prefix = "gg") => `${prefix}-${++serial}`;
+export const uid = (prefix = "kj") => `${prefix}-${++serial}`;
 /** グラデーションの定義を作り、url(#id) を返す */
 export function grad(defs, kind, attrs, stops) {
   const id = uid();
   defs.append(svg(kind, { id, ...attrs }, stops.map(([o, c, a = 1]) => svg("stop", { offset: o, "stop-color": c, "stop-opacity": a }))));
   return `url(#${id})`;
 }
+/** 下絵の SVG（viewBox の箱いっぱいに描く） */
+const sketchSvg = (box, kids) => svg("svg", { viewBox: box, class: "kj-sketch" }, kids);
 
-const M = 200; // ワイドステージ（#2861）で左右へ延ばす幅
-const CURTAIN_Y = 104; // 紅白幕の裾
+// ---- 下絵（描いた絵が届くまでの仮の絵） ----
 
-/** 壁に掛けた景品表（賞と玉の色）。last はラストワン賞の札 */
-function legendArt(C, defs, last) {
-  const x = 96, y = 168, w = 176, h = 236;
-  const font = { "font-family": "Suien Gothic, sans-serif", "font-weight": 700, fill: C.ink, "text-anchor": "middle" };
-  const dot = (cx, cy, k, r = 10) => svg("g", {}, [
-    svg("circle", { cx, cy, r, fill: grad(defs, "radialGradient", { cx: 0.36, cy: 0.32, r: 0.8 }, [[0, BALL_HI[k]], [0.45, BALL[k]], [1, BALL_EDGE[k]]]) }),
-    ...(k === "LAST" ? [svg("path", { d: `M ${cx - r} ${cy} A ${r} ${r * 0.32} 0 0 0 ${cx + r} ${cy}`, fill: "none", stroke: LAST_RING, "stroke-width": 1.6, transform: `rotate(-16 ${cx} ${cy})` })] : []),
-  ]);
-  const body = last ? [
-    svg("text", { ...font, x: w / 2, y: 52, "font-size": 22 }),
-    dot(w / 2, 112, "LAST", 26),
-    svg("text", { ...font, x: w / 2, y: 172, "font-size": 16, "font-weight": 500 }),
-    svg("text", { ...font, x: w / 2, y: 196, "font-size": 16, "font-weight": 500 }),
-  ] : [
-    svg("text", { ...font, x: w / 2, y: 42, "font-size": 21 }),
-    svg("line", { x1: 22, y1: 56, x2: w - 22, y2: 56, stroke: C.gold1, "stroke-width": 2 }),
-    ...["S", "A", "B", "C"].flatMap((k, i) => [dot(54, 84 + i * 34, k), svg("text", { ...font, x: 106, y: 91 + i * 34, "font-size": 19 })]),
-    svg("text", { ...font, x: w / 2, y: 218, "font-size": 13, fill: C.red }),
-  ];
-  const words = last ? ["ラストワン賞", "最後の1枚を", "引いた方へ"] : ["シーシャくじ", "S賞", "A賞", "B賞", "C賞", "ラストワン賞あり"];
-  body.filter((n) => n.tagName === "text").forEach((n, i) => { n.textContent = words[i] || ""; });
-  const paper = grad(defs, "linearGradient", { x1: 0, y1: 0, x2: 0.25, y2: 1 }, [[0, "#fffaf0"], [1, mix(C.paper, C.ink, 0.1)]]);
-  const frame = grad(defs, "linearGradient", { x1: 0, y1: 0, x2: 1, y2: 1 }, [[0, C.gold2], [0.35, C.gold1], [0.7, C.gold0], [1, C.gold1]]);
-  return svg("g", { transform: `translate(${x} ${y}) rotate(${last ? 1.2 : -1.6})` }, [
-    // 吊り紐と影
-    svg("path", { d: `M 26 0 L ${w / 2} -30 L ${w - 26} 0`, fill: "none", stroke: C.gold1, "stroke-width": 2, opacity: 0.85 }),
-    svg("circle", { cx: w / 2, cy: -30, r: 4, fill: C.gold1 }),
-    svg("rect", { x: 5, y: 8, width: w, height: h, rx: 6, fill: C.shadow, opacity: 0.4 }),
-    svg("rect", { x: -5, y: -5, width: w + 10, height: h + 10, rx: 8, fill: frame }),
-    svg("rect", { width: w, height: h, rx: 4, fill: paper }),
-    svg("rect", { x: 7, y: 7, width: w - 14, height: h - 14, rx: 2, fill: "none", stroke: last ? C.red : C.gold1, "stroke-width": 1.4, opacity: 0.7 }),
-    ...body,
-  ]);
-}
-
-/** 紅白幕: 朱と白の縦縞に布のひだの陰、上に紫の水引幕と金の房 */
-function curtainArt(C, defs) {
-  const x0 = -M, x1 = W + M, top = 22, STRIPE = 68;
-  const hem = (y, amp) => {
-    let d = "";
-    for (let x = x1; x >= x0; x -= 34) d += ` L ${x} ${(y + Math.sin((x / 136) * Math.PI * 2) * amp).toFixed(1)}`;
-    return d;
-  };
-  const clipId = uid("gg-clip");
-  defs.append(svg("clipPath", { id: clipId }, [svg("path", { d: `M ${x0} ${top} L ${x1} ${top}${hem(CURTAIN_Y, 5)} Z` })]));
-  const stripes = [];
-  for (let x = x0, i = 0; x < x1; x += STRIPE, i++) stripes.push(svg("rect", { x, y: top, width: STRIPE + 0.5, height: 100, fill: i % 2 ? C.white : C.red }));
-  // ひだ: 縞より少し長い周期で暗い帯を重ねる
-  const fold = grad(defs, "linearGradient", { gradientUnits: "userSpaceOnUse", x1: 0, y1: 0, x2: 136, y2: 0, spreadMethod: "repeat" },
-    [[0, C.shadow, 0.34], [0.22, C.shadow, 0.02], [0.5, "#ffffff", 0.1], [0.78, C.shadow, 0.04], [1, C.shadow, 0.34]]);
-  const hang = grad(defs, "linearGradient", { x1: 0, y1: 0, x2: 0, y2: 1 }, [[0, C.shadow, 0.5], [0.45, C.shadow, 0.06], [1, C.shadow, 0.22]]);
-  const cloth = svg("g", { "clip-path": `url(#${clipId})` }, [
-    ...stripes,
-    svg("rect", { x: x0, y: top, width: x1 - x0, height: 100, fill: fold }),
-    svg("rect", { x: x0, y: top, width: x1 - x0, height: 100, fill: hang }),
-  ]);
-  // 裾の下に落ちる影（壁から少し離れて掛かっている）
-  const drop = svg("rect", { x: x0, y: CURTAIN_Y - 6, width: x1 - x0, height: 70, fill: grad(defs, "linearGradient", { x1: 0, y1: 0, x2: 0, y2: 1 }, [[0, C.shadow, 0.5], [1, C.shadow, 0]]) });
-  // 水引幕（上の細い紫の帯）と金の房
-  const gold = grad(defs, "linearGradient", { x1: 0, y1: 0, x2: 0, y2: 1 }, [[0, C.gold2], [0.5, C.gold1], [1, C.gold0]]);
-  const swags = [], tassels = [];
-  for (let x = x0 + 20; x < x1; x += 180) {
-    swags.push(svg("path", { d: `M ${x} 24 Q ${x + 90} 58 ${x + 180} 24`, fill: "none", stroke: gold, "stroke-width": 3.2, "stroke-linecap": "round" }));
-    tassels.push(svg("g", {}, [
-      svg("circle", { cx: x, cy: 28, r: 6, fill: gold }),
-      svg("path", { d: `M ${x - 6} 34 L ${x + 6} 34 L ${x + 4} 62 L ${x - 4} 62 Z`, fill: gold }),
-      svg("line", { x1: x, y1: 36, x2: x, y2: 60, stroke: C.gold0, "stroke-width": 1, opacity: 0.6 }),
-    ]));
-  }
-  const valance = svg("g", {}, [
-    svg("rect", { x: x0, y: 0, width: x1 - x0, height: 26, fill: grad(defs, "linearGradient", { x1: 0, y1: 0, x2: 0, y2: 1 }, [[0, mix(C.valance, C.shadow, 0.5)], [1, C.valance]]) }),
-    svg("rect", { x: x0, y: 24, width: x1 - x0, height: 2.4, fill: gold }),
-    ...swags, ...tassels,
-  ]);
-  return svg("g", {}, [drop, cloth, valance]);
-}
-
-/** 提灯（動かさない。舞台の絵は一度だけ描く）。光の輪（halo）は幕の後ろ、本体は幕の前に置くので別に返す */
-function lanternArt(C, defs, x, y, s) {
-  const body = grad(defs, "radialGradient", { cx: 0.5, cy: 0.46, r: 0.62 }, [[0, C.lampHi], [0.42, C.lamp1], [0.85, C.lamp2], [1, C.lamp3]]);
-  const rx = 38 * s, ry = 44 * s;
-  const ribs = [-0.72, -0.48, -0.24, 0, 0.24, 0.48, 0.72].map((k) => {
-    const yy = y + ry * k, half = rx * Math.sqrt(1 - k * k);
-    return svg("path", { d: `M ${x - half} ${yy} Q ${x} ${yy + 7 * s} ${x + half} ${yy}`, fill: "none", stroke: C.lamp3, "stroke-width": 1.1, opacity: 0.4 });
+/** 胴の正面: くるみの板6枚を合わせた六角、黒い鉄の帯と角金具、真鍮の鋲と軸頭、玉の出口の小さな真鍮の蓋 */
+function drumSketch() {
+  const C = SHOP, defs = svg("defs");
+  const v = hexPts(R);
+  const planks = v.map((p, i) => {
+    const q = v[(i + 1) % 6], mid = [(p[0] + q[0]) / 2, (p[1] + q[1]) / 2];
+    const fill = grad(defs, "linearGradient", { gradientUnits: "userSpaceOnUse", x1: 0, y1: 0, x2: mid[0], y2: mid[1] }, i % 2 ? [[0, C.wood2], [1, C.wood1]] : [[0, C.wood3], [1, C.wood2]]);
+    // 木目: 外の辺に平行な細い線
+    const grain = [0.38, 0.55, 0.72, 0.86].map((k) => svg("line", { x1: p[0] * k, y1: p[1] * k, x2: q[0] * k, y2: q[1] * k, stroke: C.wood0, "stroke-width": 1.2, "stroke-opacity": 0.22 }));
+    return svg("g", {}, [svg("polygon", { points: pts([[0, 0], p, q]), fill }), ...grain]);
   });
-  const cap = (cy) => svg("g", {}, [
-    svg("rect", { x: x - 17 * s, y: cy - 5 * s, width: 34 * s, height: 10 * s, rx: 2, fill: "#190f17" }),
-    svg("rect", { x: x - 17 * s, y: cy - 1 * s, width: 34 * s, height: 1.6, fill: C.gold1, opacity: 0.9 }),
+  const seams = v.map((p) => svg("line", { x1: 0, y1: 0, x2: p[0], y2: p[1], stroke: C.wood0, "stroke-width": 2.4, "stroke-opacity": 0.75 }));
+  const brackets = v.map(([x, y], i) => {
+    const prev = v[(i + 5) % 6], next = v[(i + 1) % 6];
+    const d = (p) => { const dx = p[0] - x, dy = p[1] - y, l = Math.hypot(dx, dy); return [dx / l, dy / l]; };
+    const a = d(prev), b = d(next);
+    return svg("g", {}, [
+      svg("polygon", { points: pts([[x, y], [x + a[0] * 40, y + a[1] * 40], [x * 0.74, y * 0.74], [x + b[0] * 40, y + b[1] * 40]]), fill: C.steel1, stroke: C.steel0, "stroke-width": 1.4 }),
+      svg("circle", { cx: x * 0.88, cy: y * 0.88, r: 3.4, fill: C.brass1, stroke: C.brass0, "stroke-width": 1 }),
+    ]);
+  });
+  // 玉の出口の蓋（回っているのが分かる目印）
+  const hatch = svg("g", { transform: "rotate(30)" }, [
+    svg("rect", { x: 78, y: -17, width: 40, height: 34, rx: 5, fill: grad(defs, "linearGradient", { x1: 0, y1: 0, x2: 1, y2: 1 }, [[0, C.brass2], [0.5, C.brass1], [1, C.brass0]]), stroke: C.brass0, "stroke-width": 1.4 }),
+    svg("circle", { cx: 98, cy: 0, r: 8, fill: C.steel0 }),
   ]);
-  const halo = svg("circle", { cx: x, cy: y, r: 190 * s, fill: grad(defs, "radialGradient", {}, [[0, C.lamp1, 0.5], [0.35, C.lamp2, 0.2], [1, C.lamp2, 0]]) });
-  const lamp = svg("g", {}, [
-    svg("line", { x1: x, y1: CURTAIN_Y - 8, x2: x, y2: y - ry - 4 * s, stroke: "#190f17", "stroke-width": 2 }),
-    svg("ellipse", { cx: x, cy: y, rx, ry, fill: body }),
-    ...ribs,
-    // 上からの照り
-    svg("ellipse", { cx: x - rx * 0.3, cy: y - ry * 0.34, rx: rx * 0.34, ry: ry * 0.4, fill: "#fff", opacity: 0.22 }),
-    cap(y - ry), cap(y + ry),
-    svg("line", { x1: x, y1: y + ry + 5 * s, x2: x, y2: y + ry + 22 * s, stroke: C.red, "stroke-width": 2.4 }),
-    svg("path", { d: `M ${x - 5 * s} ${y + ry + 20 * s} L ${x + 5 * s} ${y + ry + 20 * s} L ${x + 3.5 * s} ${y + ry + 40 * s} L ${x - 3.5 * s} ${y + ry + 40 * s} Z`, fill: C.red }),
-  ]);
-  return { halo, lamp };
-}
-
-/** 景品の箱（リボン付き）。奥のカウンターに積んでおく。u×h の正面と、右上へ逃げる上面・右側面 */
-function giftArt(defs, x, y, w, h, body, ribbon) {
-  const dx = w * 0.16, dy = -w * 0.13; // 奥行きの逃げ
-  const front = grad(defs, "linearGradient", { x1: 0, y1: 0, x2: 1, y2: 1 }, [[0, mix(body, "#ffffff", 0.16)], [1, mix(body, "#000000", 0.22)]]);
-  const bx = x + w * 0.5;
-  return svg("g", {}, [
-    svg("ellipse", { cx: x + w * 0.56, cy: y + h + 3, rx: w * 0.62, ry: 9, fill: "#000", opacity: 0.35 }),
-    svg("polygon", { points: pts([[x + w, y], [x + w + dx, y + dy], [x + w + dx, y + h + dy], [x + w, y + h]]), fill: mix(body, "#000000", 0.45) }),
-    svg("polygon", { points: pts([[x, y], [x + dx, y + dy], [x + w + dx, y + dy], [x + w, y]]), fill: mix(body, "#ffffff", 0.3) }),
-    svg("rect", { x, y, width: w, height: h, fill: front }),
-    // リボン（正面の縦帯・上面へ続く帯・結び目）
-    svg("rect", { x: bx - w * 0.07, y, width: w * 0.14, height: h, fill: ribbon }),
-    svg("polygon", { points: pts([[bx - w * 0.07, y], [bx - w * 0.07 + dx, y + dy], [bx + w * 0.07 + dx, y + dy], [bx + w * 0.07, y]]), fill: mix(ribbon, "#ffffff", 0.25) }),
-    svg("rect", { x, y: y + h * 0.46, width: w, height: h * 0.12, fill: ribbon, opacity: 0.92 }),
-    svg("ellipse", { cx: bx - w * 0.13 + dx * 0.5, cy: y + dy * 0.5 - 5, rx: w * 0.15, ry: w * 0.085, fill: mix(ribbon, "#ffffff", 0.2), transform: `rotate(-20 ${bx - w * 0.13 + dx * 0.5} ${y + dy * 0.5 - 5})` }),
-    svg("ellipse", { cx: bx + w * 0.15 + dx * 0.5, cy: y + dy * 0.5 - 5, rx: w * 0.15, ry: w * 0.085, fill: ribbon, transform: `rotate(18 ${bx + w * 0.15 + dx * 0.5} ${y + dy * 0.5 - 5})` }),
-    svg("circle", { cx: bx + dx * 0.5, cy: y + dy * 0.5 - 3, r: w * 0.055, fill: mix(ribbon, "#000000", 0.2) }),
-    svg("rect", { x, y, width: w, height: 2, fill: "#fff", opacity: 0.3 }),
+  const hub = grad(defs, "radialGradient", { cx: 0.38, cy: 0.34, r: 0.8 }, [[0, C.brass2], [0.5, C.brass1], [1, C.brass0]]);
+  return sketchSvg(`${-R - 4} ${-R - 4} ${R * 2 + 8} ${R * 2 + 8}`, [defs,
+    ...planks, ...seams,
+    svg("polygon", { points: pts(hexPts(R * 0.5, 30)), fill: "none", stroke: C.wood0, "stroke-width": 1.6, "stroke-opacity": 0.35 }),
+    hatch,
+    svg("polygon", { points: pts(hexPts(R - 6)), fill: "none", stroke: C.steel1, "stroke-width": 12, "stroke-linejoin": "round" }),
+    svg("polygon", { points: pts(hexPts(R - 1.5)), fill: "none", stroke: C.steel2, "stroke-width": 1.4, "stroke-linejoin": "round", "stroke-opacity": 0.7 }),
+    ...brackets,
+    svg("circle", { r: 40, fill: C.steel1, stroke: C.steel0, "stroke-width": 1.5 }),
+    ...[...Array(8)].map((_, i) => svg("circle", { cx: 32 * Math.cos(i * 45 * DEG), cy: 32 * Math.sin(i * 45 * DEG), r: 2.6, fill: C.brass1 })),
+    svg("circle", { r: 24, fill: hub, stroke: C.brass0, "stroke-width": 1.5 }),
   ]);
 }
 
-/** 舞台一式。back＝抽選器の後ろに敷く絵（別の SVG に入れる）、overlays＝手前に重ねる幕 */
-export function stageArt(defs, { last = false } = {}) {
-  const C = STAGE;
-  const full = { x: -M, width: W + 2 * M };
-  const wall = svg("rect", { ...full, height: 470, fill: grad(defs, "linearGradient", { x1: 0, y1: 0, x2: 0, y2: 1 }, [[0, mix(C.wall0, C.wallLo, 0.35)], [0.55, C.wall0], [1, mix(C.wall0, C.wallLo, 0.55)]]) });
-  // 七宝つなぎ（壁の地紋）
-  const patId = uid("gg-pat");
-  const ring = (cx, cy) => svg("circle", { cx, cy, r: 30, fill: "none", stroke: C.gold1, "stroke-width": 1.1 });
-  defs.append(svg("pattern", { id: patId, width: 60, height: 60, patternUnits: "userSpaceOnUse" }, [ring(0, 0), ring(60, 0), ring(0, 60), ring(60, 60), ring(30, 30)]));
-  const pattern = svg("rect", { ...full, y: 0, height: 470, fill: `url(#${patId})`, opacity: 0.085 });
-  // 抽選器の後ろの明るみ（上からの灯りが壁に当たる）
-  const glow = svg("ellipse", { cx: 600, cy: 300, rx: 560, ry: 330, fill: grad(defs, "radialGradient", {}, [[0, C.wallHi, 0.75], [0.55, C.wallHi, 0.22], [1, C.wallHi, 0]]) });
-  const topLight = svg("ellipse", { cx: 600, cy: -60, rx: 420, ry: 720, fill: grad(defs, "radialGradient", {}, [[0, "#fff4dc", 0.2], [0.5, "#fff4dc", 0.07], [1, "#fff4dc", 0]]) });
-  const lamps = [[52, 222, 1.05], [-104, 286, 0.9], [1016, 214, 0.9], [1196, 250, 1.1], [1362, 300, 0.9]].map(([x, y, s]) => lanternArt(C, defs, x, y, s));
-  // 景品の箱（右奥）
-  const gifts = svg("g", {}, [
-    giftArt(defs, 1054, 372, 104, 86, "#5a3aa8", C.gold1),
-    giftArt(defs, 1168, 392, 78, 66, C.white, C.red),
-    giftArt(defs, 1078, 318, 62, 54, C.red, C.gold2),
-    giftArt(defs, 1262, 366, 96, 92, "#1c1430", "#cfd3dc"),
+/** A字の脚（黒い鉄の角材に、真鍮の軸受け）。箱 330×330、軸受けは上から 18 の中央 */
+function frameSketch() {
+  const C = SHOP, defs = svg("defs");
+  const steel = grad(defs, "linearGradient", { x1: 0, y1: 0, x2: 1, y2: 0 }, [[0, C.steel0], [0.45, C.steel2], [0.6, C.steel1], [1, C.steel0]]);
+  const leg = (side) => {
+    const top = [150 + side * 8, 18], foot = [150 + side * 112, 322];
+    return svg("g", {}, [
+      svg("polygon", { points: pts([[top[0] - 9, top[1]], [top[0] + 9, top[1]], [foot[0] + 10, foot[1]], [foot[0] - 10, foot[1]]]), fill: steel }),
+      svg("line", { x1: top[0] - 4, y1: top[1] + 12, x2: foot[0] - 5, y2: foot[1] - 6, stroke: C.steel2, "stroke-width": 1.4, "stroke-opacity": 0.55 }),
+      svg("rect", { x: foot[0] - 20, y: 318, width: 40, height: 10, rx: 2, fill: C.steel0 }),
+    ]);
+  };
+  return sketchSvg("-15 0 330 330", [defs,
+    svg("polygon", { points: pts([[82, 222], [218, 222], [224, 240], [76, 240]]), fill: steel }),
+    leg(-1), leg(1),
+    svg("circle", { cx: 150, cy: 18, r: 18, fill: C.steel1, stroke: C.steel0, "stroke-width": 1.5 }),
+    svg("circle", { cx: 150, cy: 18, r: 9, fill: C.brass1, stroke: C.brass0, "stroke-width": 1.2 }),
   ]);
-  // カウンター: 黒い漆の天板に灯りの映り込み、手前の縁に金の線
-  const counterTop = svg("rect", { ...full, y: 452, height: 228, fill: grad(defs, "linearGradient", { x1: 0, y1: 0, x2: 0, y2: 1 }, [[0, C.counter0], [0.5, mix(C.counter0, C.counter1, 0.6)], [1, C.counter1]]) });
-  const seam = svg("rect", { ...full, y: 452, height: 26, fill: grad(defs, "linearGradient", { x1: 0, y1: 0, x2: 0, y2: 1 }, [[0, C.shadow, 0.6], [1, C.shadow, 0]]) });
-  const pool = svg("ellipse", { cx: 620, cy: 574, rx: 520, ry: 104, fill: grad(defs, "radialGradient", {}, [[0, "#ffe9c4", 0.24], [0.6, "#c9a8ff", 0.08], [1, "#c9a8ff", 0]]) });
-  // 提灯と幕の映り込み（縦に伸びた淡い帯）
-  const reflect = svg("g", { opacity: 0.5 }, [[52, C.lamp1], [1016, C.lamp1], [1196, C.lamp1]].map(([x, c]) =>
-    svg("ellipse", { cx: x, cy: 500, rx: 46, ry: 60, fill: grad(defs, "radialGradient", {}, [[0, c, 0.3], [1, c, 0]]) })));
-  const front = svg("rect", { ...full, y: 680, height: 40, fill: grad(defs, "linearGradient", { x1: 0, y1: 0, x2: 0, y2: 1 }, [[0, mix(C.counter0, C.shadow, 0.3)], [1, C.counterEdge]]) });
-  const inlay = svg("rect", { ...full, y: 676, height: 3, fill: grad(defs, "linearGradient", { gradientUnits: "userSpaceOnUse", x1: 0, y1: 0, x2: W, y2: 0 }, [[0, C.gold0], [0.3, C.gold1], [0.5, C.gold2], [0.7, C.gold1], [1, C.gold0]]) });
-  const inlay2 = svg("rect", { ...full, y: 664, height: 1.2, fill: C.gold1, opacity: 0.45 });
-  const back = svg("g", {}, [
-    wall, pattern, glow, ...lamps.map((l) => l.halo), curtainArt(C, defs), ...lamps.map((l) => l.lamp),
-    legendArt(C, defs, last), topLight, counterTop, seam, reflect, pool, gifts, front, inlay2, inlay,
+}
+
+/** 土台の板（くるみ材）。箱 440×64 */
+function baseSketch() {
+  const C = SHOP, defs = svg("defs");
+  return sketchSvg("0 0 440 64", [defs,
+    svg("ellipse", { cx: 224, cy: 54, rx: 230, ry: 10, fill: C.shadow, opacity: 0.5 }),
+    svg("polygon", { points: pts([[34, 6], [406, 6], [432, 36], [8, 36]]), fill: grad(defs, "linearGradient", { x1: 0, y1: 0, x2: 0, y2: 1 }, [[0, C.wood1], [1, C.wood2]]) }),
+    svg("polygon", { points: pts([[8, 36], [432, 36], [432, 54], [8, 54]]), fill: grad(defs, "linearGradient", { x1: 0, y1: 0, x2: 0, y2: 1 }, [[0, C.wood1], [1, C.wood0]]) }),
+    svg("line", { x1: 8, y1: 36.5, x2: 432, y2: 36.5, stroke: C.wood3, "stroke-width": 1.6, "stroke-opacity": 0.8 }),
+    ...[[18, 45], [422, 45]].map(([x, y]) => svg("circle", { cx: x, cy: y, r: 3.2, fill: C.brass1 })),
   ]);
-  // SVG の上に重ねる幕（合成だけで済むので軽い）: 溜めの暗がり・賞の色の染まり・周辺減光
+}
+
+/** ハンドル（真鍮の腕と、こちらを向いた木の握り）。箱 280×280 の中心が軸 */
+function handleSketch() {
+  const C = SHOP, defs = svg("defs");
+  const brass = grad(defs, "linearGradient", { x1: 0, y1: 0, x2: 0, y2: 1 }, [[0, C.brass2], [0.5, C.brass1], [1, C.brass0]]);
+  const knob = grad(defs, "radialGradient", { cx: 0.38, cy: 0.34, r: 0.8 }, [[0, C.wood3], [0.55, C.wood2], [1, C.wood0]]);
+  return sketchSvg("-140 -140 280 280", [defs,
+    svg("rect", { x: -6, y: -9, width: 112, height: 18, rx: 9, fill: brass, stroke: C.brass0, "stroke-width": 1.4 }),
+    svg("circle", { r: 16, fill: brass, stroke: C.brass0, "stroke-width": 1.4 }),
+    svg("circle", { r: 5, fill: C.brass0 }),
+    svg("circle", { cx: 104, cy: 0, r: 21, fill: knob, stroke: C.wood0, "stroke-width": 1.6 }),
+    svg("ellipse", { cx: 98, cy: -7, rx: 8, ry: 5, fill: "#fff", opacity: 0.22 }),
+  ]);
+}
+
+/** 受け皿（くるみの縁に、濃い緑の布張り）。箱 220×84 */
+function traySketch() {
+  const C = SHOP, defs = svg("defs");
+  return sketchSvg("0 0 220 84", [defs,
+    svg("ellipse", { cx: 114, cy: 60, rx: 112, ry: 20, fill: C.shadow, opacity: 0.45 }),
+    svg("path", { d: "M 14 36 A 96 27 0 0 0 206 36 L 206 52 A 96 27 0 0 1 14 52 Z", fill: grad(defs, "linearGradient", { x1: 0, y1: 0, x2: 1, y2: 0 }, [[0, C.wood0], [0.4, C.wood2], [0.6, C.wood3], [1, C.wood0]]) }),
+    svg("ellipse", { cx: 110, cy: 36, rx: 96, ry: 27, fill: grad(defs, "linearGradient", { x1: 0, y1: 0, x2: 1, y2: 0 }, [[0, C.wood1], [0.5, C.wood3], [1, C.wood1]]), stroke: C.wood0, "stroke-width": 1.2 }),
+    svg("ellipse", { cx: 110, cy: 37, rx: 84, ry: 21, fill: grad(defs, "radialGradient", { cx: 0.5, cy: 0.4, r: 0.65 }, [[0, C.felt1], [1, C.felt0]]) }),
+    svg("path", { d: "M 26 37 A 84 21 0 0 1 194 37", fill: "none", stroke: C.shadow, "stroke-width": 4, "stroke-opacity": 0.35 }),
+  ]);
+}
+
+/** 玉の下絵（塗りの球）。ラストワンは黒地に銀の輪 */
+function ballSketch(k) {
+  const defs = svg("defs");
+  const fill = grad(defs, "radialGradient", { cx: 0.36, cy: 0.32, r: 0.82 }, [[0, BALL_HI[k]], [0.38, BALL[k]], [0.86, BALL_EDGE[k]], [1, BALL_EDGE[k]]]);
+  return sketchSvg("-17 -17 34 34", [defs,
+    svg("circle", { r: 16, fill }),
+    ...(k === "LAST" ? [svg("path", { d: "M -16 0 A 16 5.4 0 0 0 16 0", fill: "none", stroke: LAST_RING, "stroke-width": 1.9, transform: "rotate(-16)" })] : []),
+    svg("ellipse", { cx: 2, cy: 9.5, rx: 8.5, ry: 3.6, fill: "#fff", opacity: 0.14 }),
+    svg("ellipse", { cx: -5.4, cy: -6.4, rx: 6, ry: 3.8, fill: "#fff", opacity: k === "LAST" ? 0.5 : 0.78, transform: "rotate(-35 -5.4 -6.4)" }),
+    svg("circle", { cx: -8, cy: -2, r: 1.4, fill: "#fff", opacity: 0.7 }),
+  ]);
+}
+
+/** 玉。node を動かし、halo は賞の色のにじみ */
+export function ballPart(rank) {
+  const k = BALL[rank] ? rank : "C";
+  const node = artPart(`ball-${k.toLowerCase()}`, "kj-ball-s", () => ballSketch(k));
+  const halo = el("i.kj-ball-halo", { style: { "--kj-halo": RANK_LIGHT[k][0], "--kj-halo-hi": RANK_LIGHT[k][1] } });
+  node.prepend(halo);
+  return { node, halo, rank: k, light: RANK_LIGHT[k] };
+}
+
+/** カウンターに立てた小さな黒板（賞と玉の色）。last はラストワン賞の案内 */
+function signPart(last) {
+  const rows = last
+    ? [el("b.kj-sign-title", { text: "ラストワン賞" }), el("div.kj-sign-big", [ballPart("LAST").node]), el("span.kj-sign-note", { text: "最後の1枚を引いた方へ" })]
+    : [el("b.kj-sign-title", { text: "シーシャくじ" }),
+      ...["S", "A", "B", "C"].map((k) => el("div.kj-sign-row", [ballPart(k).node, el("span", { text: `${k}賞` })])),
+      el("span.kj-sign-note", { text: "ラストワン賞あり" })];
+  const node = artPart("sign", "kj-sign", () => el("i.kj-sign-board"));
+  node.append(el("div.kj-sign-text", rows));
+  return node;
+}
+
+/** 連続で引くときの玉置き（手前の細長い木の盆）。n 個の玉が順に並ぶ */
+export function railPart(n) {
+  const gap = Math.min(78, 920 / n), y = 652, width = (n - 1) * gap + 92, left = 640 - width / 2;
+  const xs = [...Array(n)].map((_, i) => 640 + (i - (n - 1) / 2) * gap);
+  const count = el("b.kj-rail-count", { text: `0 / ${n}` });
+  const node = artPart("rail", "kj-rail", () => el("i.kj-rail-wood", xs.map((x) => el("i.kj-rail-pit", { style: { left: `${x - left - 20}px` } }))));
+  Object.assign(node.style, { left: `${left}px`, top: `${y - 24}px`, width: `${width}px` });
+  node.append(count);
+  return { node, at: (i) => [xs[i], y - 12], count(k) { count.textContent = `${k} / ${n}`; } };
+}
+
+/** いまの場面の背景（その店の絵）を写して、ぼかして暗くした後ろの景色にする */
+export function shopBackdrop() {
+  const node = el("div.kj-bg", { "aria-hidden": "true" });
+  const now = document.querySelector("#bg .bg-img.show") || document.querySelector("#bg .bg-img:last-child");
+  if (now) {
+    const copy = now.cloneNode(true);
+    copy.removeAttribute("data-tint");
+    copy.className = "kj-bg-img";
+    node.append(copy);
+  }
+  return node;
+}
+
+/**
+ * 舞台一式。scene＝カメラで寄る層に入れる部品（後ろの店・カウンター・黒板・抽選器・受け皿）、
+ * overlays＝手前に重ねる幕（溜めの暗がり・賞の色の染まり・周辺減光）。
+ * drum は回す胴（--th に角度を入れる）、handle は一緒に回るハンドル、rig は震えさせる抽選器の束。
+ */
+export function stageParts({ last = false } = {}) {
+  // 胴の厚み: 同じ六角を奥（右上）へ7枚ずらして重ねる
+  const sides = [...Array(7)].map((_, i) => el("i.kj-drum-side", { style: { "--i": String(7 - i) } }));
+  const face = artPart("drum", "kj-drum-face", drumSketch);
+  const drum = el("div.kj-drum", { style: { left: `${AX}px`, top: `${AY}px` } }, [...sides, face, el("i.kj-drum-sheen")]);
+  const farFrame = artPart("frame", "kj-frame", frameSketch);
+  farFrame.classList.add("kj-frame-far");
+  const nearFrame = artPart("frame", "kj-frame", frameSketch);
+  const base = artPart("base", "kj-base", baseSketch);
+  const handle = artPart("handle", "kj-handle", handleSketch);
+  const tray = artPart("tray", "kj-tray", traySketch);
+  const exitGlow = el("i.kj-exit-glow", { style: { left: `${EXIT[0]}px`, top: `${EXIT[1]}px` } });
+  const rig = el("div.kj-rig", [base, farFrame, drum, exitGlow, nearFrame, handle]);
+  const counter = artPart("counter", "kj-counter", () => el("i.kj-counter-wood"));
+  const pillar = el("i.kj-pillar", { style: { left: `${REST[0]}px`, top: `${REST[1] + 14}px` } });
   const dim = el("div.kj-dim", { "aria-hidden": "true" });
   const tint = el("div.kj-tint", { "aria-hidden": "true" });
   const vignette = el("div.kj-vignette", { "aria-hidden": "true" });
   return {
-    back, overlays: [dim, tint, vignette],
+    scene: [shopBackdrop(), el("i.kj-toplight"), counter, signPart(last)],
+    machine: [rig, tray, pillar],
+    overlays: [dim, tint, vignette],
+    rig, drum, handle, pillar, exitGlow,
     /** 全面を賞の色で染める（k: 0〜1） */
     mood(k, color) {
       tint.style.background = color;
-      tint.style.opacity = (0.62 * k).toFixed(3);
+      tint.style.opacity = (0.5 * k).toFixed(3);
     },
     /** 舞台を暗くする（k: 0〜1。溜めのあいだ） */
     dim(k) { dim.style.opacity = k.toFixed(3); },

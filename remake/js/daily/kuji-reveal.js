@@ -22,7 +22,7 @@ const bestRank = (results) => ORDER.find((r) => results.some((p) => p.rank === r
 
 // 演出の部品は引くときに読み込む（高速送りでは読まない）
 const loadMotion = () => Promise.all([import("../motions/garagara.js"), import("../motions/kuji-fx.js"), import("../motions/garagara-stage.js")])
-  .then(([g, f, s]) => ({ garagara: g.garagara, createFx: f.createFx, light: s.RANK_LIGHT }));
+  .then(([g, f, s]) => ({ garagara: g.garagara, createFx: f.createFx, light: s.RANK_LIGHT, shopBackdrop: s.shopBackdrop }));
 
 /** 景品名は「（50g）」などの括弧の途中で折らない（折るなら括弧の前で） */
 const nameParts = (name) => name.split(/(（[^）]*）)/).filter(Boolean).map((part) => (part.startsWith("（") ? el("span.kj-nowrap", { text: part }) : part));
@@ -50,8 +50,9 @@ function prizeCard(prize, short = false) {
   return card;
 }
 
-/** 札の後ろの光（賞の色の放射と明るみ） */
-const backdrop = (rank, on = false) => el(`div.kj-backdrop${on ? ".on" : ""}`, { "aria-hidden": "true", dataset: { rank } }, [el("i.kj-rays"), el("i.kj-rays.kj-rays-b"), el("i.kj-halo")]);
+/** 札の後ろ: 暗くした店内（kit があれば今の場面の背景を写す）に、賞の色の光 */
+const backdrop = (rank, on = false, kit = null) => el(`div.kj-backdrop${on ? ".on" : ""}`, { "aria-hidden": "true", dataset: { rank } },
+  [...(kit ? [kit.shopBackdrop()] : []), el("i.kj-rays"), el("i.kj-rays.kj-rays-b"), el("i.kj-halo")]);
 
 function cardSound(rank) {
   SE.stamp();
@@ -75,7 +76,6 @@ function celebrate(fx, light, rank, x = 640, y = 330, w = 440, h = 190) {
   const edge = (n, delay) => { for (let i = 0; i < n; i++) { const [ex, ey] = rim(x, y, w, h); fx.stars(ex, ey, { n: 1, colors: [colors[1], colors[0]], rx: 26, ry: 26, size: [10, 20 + 14 * power], delay }); } };
   edge(Math.round(2 + 12 * power), 0.7);
   if (isTop(rank)) fx.confetti([colors[0], colors[1], colors[2], "#ffffff", "#de3b22"], { seconds: 2.8, perSecond: 44 });
-  fx.motes([colors[1], colors[0], "#ffffff"], 4 + 10 * power);
   // 札のふちのきらめき（上位ほど頻繁）
   const every = { S: 130, LAST: 130, A: 240, B: 520 }[rank];
   return every ? setInterval(() => edge(1, 0), every) : 0;
@@ -96,12 +96,15 @@ function revealOne(ov, prize, skip, prev) {
       shown = true;
       prev?.end(); // すぐ SKIP した時も、前の札と重ねて出さない
       ov.dataset.rank = prize.rank;
+      if (kit) back.prepend(kit.shopBackdrop());
       ov.prepend(back, card);
       card.classList.add("reveal");
       back.classList.add("on");
       cardSound(prize.rank);
       if (kit && !stillOnly()) {
+        // 光の粒は札の後ろ（明るい紙の上に重ねると濁って見える）。札のまわりにだけ見える
         fx = kit.createFx(ov, { className: "kj-fx kj-fx-card" });
+        back.after(fx.canvas);
         twinkle = celebrate(fx, kit.light, prize.rank);
       }
       done(stage);
@@ -153,11 +156,11 @@ export function revealMany(results, count) {
   return new Promise((resolve) => {
     const quick = instant();
     const best = bestRank(results);
-    let fx = null, kit = null, timer = 0, twinkle = 0, flipping = !quick, closeShow = null, started = false, index = 0;
+    let fx = null, showFx = null, kit = null, timer = 0, twinkle = 0, flipping = !quick, closeShow = null, started = false, index = 0;
     const finish = () => {
       flipping = false;
       clearTimeout(timer); clearInterval(twinkle);
-      fx?.destroy();
+      fx?.destroy(); showFx?.destroy();
       layers.modal.classList.remove("show");
       layers.modal.replaceChildren();
       resolve();
@@ -210,11 +213,13 @@ export function revealMany(results, count) {
     const showcase = (prize) => new Promise((shownDone) => {
       const big = prizeCard(prize);
       big.classList.add("reveal");
-      const layer = el("div.kj-showcase", { dataset: { rank: prize.rank, test: "kuji-showcase" } }, [backdrop(prize.rank, true), big]);
+      const glow = backdrop(prize.rank, true, kit);
+      const layer = el("div.kj-showcase", { dataset: { rank: prize.rank, test: "kuji-showcase" } }, [glow, big]);
       const end = () => {
         if (!closeShow) return;
         closeShow = null;
         clearInterval(twinkle);
+        showFx?.destroy(); showFx = null;
         layer.remove();
         shownDone();
       };
@@ -222,7 +227,11 @@ export function revealMany(results, count) {
       closeShow = end;
       ov.append(layer);
       cardSound(prize.rank);
-      if (fx) twinkle = celebrate(fx, kit.light, prize.rank);
+      if (fx) {
+        showFx = kit.createFx(layer, { className: "kj-fx kj-fx-card" });
+        glow.after(showFx.canvas);
+        twinkle = celebrate(showFx, kit.light, prize.rank);
+      }
     });
     const step = async () => {
       if (!flipping || !ov.isConnected) return;
@@ -252,10 +261,11 @@ export function revealMany(results, count) {
       kit = loaded;
       panel.classList.remove("kj-wait");
       panel.classList.add("kj-in");
+      if (kit) back.prepend(kit.shopBackdrop());
       back.classList.add("on");
       if (kit && !stillOnly()) {
         fx = kit.createFx(ov, { className: "kj-fx kj-fx-card" });
-        fx.motes(["#ffe9c4", "#d9c8ff", "#ffffff"], 6);
+        back.after(fx.canvas); // 粒は札の後ろ
       }
       timer = setTimeout(step, stillOnly() ? 200 : 300 + cards.length * 45);
     };
