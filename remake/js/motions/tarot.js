@@ -282,17 +282,16 @@ export const TAROT_ARCANA = Object.freeze({
   da_silva: ["20-judgement", "XX", "審判"], sheikh: ["21-world", "XXI", "世界"], master_hookah: ["11-justice", "XI", "正義"],
   noor: ["07-chariot", "VII", "戦車"],
 });
-const cardUrl = (name) => new URL(`../../img/ui/transitions/tarot/${name}.webp`, import.meta.url).href;
+// 表示用に縮めた札（display/。原寸 1024x1536 から札の範囲だけを切り出して縮めたもの。
+// 作り方は asset_sources/transitions/tarot-arcana-3278/make_display.py。原寸は1枚 約2.7MB なので使わない）
+const cardUrl = (name) => new URL(`../../img/ui/transitions/tarot/display/${name}.webp`, import.meta.url).href;
 const arcanaUrl = (file) => cardUrl(`arcana/${file}`);
 
-// 札の絵（1024x1536）の中で札が占める範囲と、表の枠の窓（札に対する比）。tools では作らず、絵を実測した値
+// 原寸の絵（1024x1536）の中で札が占める範囲と、表の枠の窓（札に対する比）。絵を実測した値
 const CARD_BOX = { x: 89, y: 62, w: 847, h: 1394 };
 const WINDOW = { left: 12.5, right: 12.75, top: 11.0, bottom: 9.8 };
 const CARD_W = 200, CARD_H = Math.round(CARD_W * CARD_BOX.h / CARD_BOX.w); // 画面の札の大きさ（1280 幅の舞台）
-const sheet = (url) => {
-  const k = CARD_W / CARD_BOX.w;
-  return { backgroundImage: `url("${url}")`, backgroundSize: `${1024 * k}px ${1536 * k}px`, backgroundPosition: `${-CARD_BOX.x * k}px ${-CARD_BOX.y * k}px` };
-};
+const sheet = (url) => ({ backgroundImage: `url("${url}")`, backgroundSize: "100% 100%" });
 // 配った位置（左・中・右）と、選ばれなかった2枚が退く位置、めくった1枚の決めの位置（舞台 1280x720 の px）
 const DEAL = [{ x: 154, y: 237, r: -8 }, { x: 348, y: 218, r: 2 }, { x: 543, y: 243, r: 9 }];
 const ASIDE = [{ x: 96, y: 256, r: -11 }, null, { x: 589, y: 262, r: 12 }];
