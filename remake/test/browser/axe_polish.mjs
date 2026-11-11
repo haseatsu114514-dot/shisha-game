@@ -213,8 +213,13 @@ await suite("axe-polish", async check => {
     await page.clock.runFor(1320); await phase(page, "result");
     assert.equal(await page.locator(".axe-total strong").textContent(), "0");
     assert.equal(Number(await page.locator(".axe-impact-fx").getAttribute("opacity")), 0);
-    assert.equal((await page.evaluate(() => window.axeSoundStarts)) - beforeImpact, 8,
-      "zero-point wood contact schedules the impact and miss layers, without the five cheer layers");
+    // 2026-11-11 効果音の作り直し（AXQ01）: 刺さる音は読めていればファイル1つ（読めるまでは合成の7層）。失敗音は合成の1層。歓声は鳴らさない。
+    const played = await page.evaluate(async () => (await import("./js/core/audio.js")).axeSePlayed());
+    assert.equal((played.stick?.recorded || 0) + (played.stick?.synth || 0), 1, "the zero-point axe thuds into the wood once");
+    assert.equal(played.miss?.synth, 1, "and the failure tone follows");
+    assert.equal(played.cheer, undefined, "no cheer for zero points");
+    assert.equal((await page.evaluate(() => window.axeSoundStarts)) - beforeImpact, (played.stick.recorded ? 1 : 7) + 1,
+      "zero-point wood contact schedules the impact and miss layers, without the cheer");
     await capture(page, "pc-zero-point-wood");
     // The five planks are wider than the sweep, so the corner is wood: the axe sticks for zero without any celebration.
     assert.equal(await page.locator(".axe-impacts > g").count(), 1);
