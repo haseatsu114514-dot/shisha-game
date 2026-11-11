@@ -19,7 +19,6 @@
 .ichi-game[data-skin="a"] .ichi-gem { border-radius: 3px; background: linear-gradient(150deg, color-mix(in srgb, var(--tc) 70%, #eee), #14101f 63%); border: 1px solid #f8e7c0; box-shadow: inset 0 0 0 1px #111, 0 1px 2px #000; }
 .ichi-game[data-skin="a"] .ichi-gem b { color: #fff; text-shadow: 0 1px 2px #000; }
 .ichi-game[data-skin="a"] .ichi-gem.is-heat { background: linear-gradient(145deg, #ffb15e, #8b3017); }
-.ichi-game[data-skin="a"] .ichi-gem.is-burn { border-style: double; border-width: 3px; }
 .ichi-game[data-skin="a"] .ichi-gem.is-taste { border-radius: 50%; background: linear-gradient(145deg, #ffebaa, #8c5e1f); }
 .ichi-game[data-skin="a"] .ichi-gem.is-cap { border-radius: 2px 2px 8px 8px; background: linear-gradient(145deg, #dbb18e, #6b3a22); }
 .ichi-game[data-skin="a"] .ichi-card.w-puff .ichi-card-head { background: linear-gradient(90deg, #9a382c, #28151f); }
