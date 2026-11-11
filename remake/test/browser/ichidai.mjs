@@ -339,7 +339,7 @@ await suite("ichidai", async (check) => {
         const tips = await page.locator(`${t("ichi-tips")} small`).allInnerTexts();
         assert.ok(tips.length >= 2 && /熱\d+は/.test(tips[0]) && tips.some((x) => /次のターンは冷めて熱−\d/.test(x)), `炭の手引き: ${JSON.stringify(tips)}`);
         assert.deepEqual(await overflowed(page), [], "提供の画面で、文字が枠からはみ出していない");
-        // チャージ＆ドロー: そのターン最初のチャージは、手札を1枚置いて1枚引く（手札の枚数は変わらない）。2回目からは引かない
+        // チャージ＆ドロー: 手札を1枚置いて1枚引く（手札の枚数は変わらない）。1ターンに1回
         const handCount = () => page.locator(`${t("ichi-hand")} .ichi-hand-card`).count(), hand0 = await handCount();
         await page.locator(t("ichi-hand-0")).click();
         assert.match(await page.locator(t("ichi-charge-slot")).innerText(), /置いて1枚引く/);
@@ -350,10 +350,9 @@ await suite("ichidai", async (check) => {
         await page.waitForFunction((n) => document.querySelectorAll('[data-test="ichi-hand"] .ichi-hand-card').length === n, hand0);
         assert.equal(await handCount(), hand0, "1枚置いて1枚引くので、手札の枚数は変わらない");
         await page.locator(t("ichi-hand-0")).click();
-        if (Number(await page.locator(t("ichi-coal-count")).getAttribute("data-n")) < 4) {
-          assert.equal(await page.locator(t("ichi-charge-slot")).count(), 1, "チャージは、空いた枠があれば何回でも");
-          assert.match(await page.locator(t("ichi-charge-slot")).innerText(), /裏向きで積む/, "2回目からは引かない");
-        } else assert.equal(await page.locator(t("ichi-charge-slot")).count(), 0, "炭が4つなら、もう置けない");
+        assert.equal(await page.locator(t("ichi-charge-slot")).count(), 0, "チャージ＆ドローは1ターンに1回（2枚目の置き場は出ない）");
+        assert.equal(await page.locator(t("ichi-do-charge")).isDisabled(), true);
+        assert.match(await page.locator(t("ichi-do-charge")).getAttribute("title"), /1ターンに1回/);
         await page.locator(t("ichi-hand-0")).click();
         chargedViaSlot = true;
         // 印象の見込み（自分と相手）
@@ -408,7 +407,7 @@ await suite("ichidai", async (check) => {
     await page.locator(t("ichi-close")).click();
     await page.locator(t("ichi-quit-yes")).click();
     assert.match(await page.locator(t("ichi-menu-result")).innerText(), /まだ対戦していません/);
-  }, page1("seed=11"));
+  }, page1("seed=11&foe=b")); // 相手の一式は b に決め打ち（炭4つまでの一式で、相手の火力ゾーンの並びを確かめるため）
 
   await check("touch-landscape-fits-and-buttons-are-tappable", async (page) => {
     await page.locator(t("ichi-menu-quick")).tap();

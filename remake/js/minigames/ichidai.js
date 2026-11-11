@@ -27,7 +27,7 @@ import { SE, unlockAudio } from "../core/audio.js";
 import { KINDS, FLAVOR, CARD, BOWL, HMD, JUDGE, PUFFS, TOURNAMENTS, KITS, KIT, TYPE_LABEL, WHEN_LABEL, RARITIES, SERIES_SIZE, numberOf, rarityOf } from "./ichidai-data.js";
 import { RULES, ZONE_LABEL, createGame, act, heatOf, leavesOf, firepower, sidesOf, slotsOf, roundsOf, sessionOf,
   judgedHeat, rawZone, scorchLineOf, scorePuff, impressionOf, puffPreview, unseenPuffs, packLimit,
-  canPlay, canCharge, canPlace, canPutOn, canAsh, canPack, canSteam, coalHeat, coalRoom, coolStepsOf } from "./ichidai-rules.js";
+  canPlay, canCharge, canPlace, canPutOn, canAsh, canPack, canSteam, coalHeat, coalRoom, coalMaxOf, coolStepsOf } from "./ichidai-rules.js";
 import { aiAct } from "./ichidai-ai.js";
 import { artUrl, flavorArt, cardArt, faceUrl, bowlArt, hmdArt, JUDGE_FACE } from "./ichidai-art.js";
 import { HELP_PAGES } from "./ichidai-help.js";
@@ -138,7 +138,7 @@ const zoneBox = (label, cls, attrs, children) => el(`div.ichi-zone-box${cls}`, {
  * 戻り値: { completed, cancelled, games:[{ winner（0=自分/1=相手/null=引き分け）, scores, votes, tournament, kit, level }], last }
  */
 export function runIchidai({ host = document.getElementById("stage"), signal = null, seed = null, config = null, opponent = null,
-  tutorial = false, pilot = null, speed = 1, allowRetry = true, skin = null } = {}) {
+  tutorial = false, pilot = null, speed = 1, allowRetry = true, skin = null, opponentKit = null } = {}) {
   if (!host?.isConnected) return Promise.reject(new Error("Connected game host required"));
   if (active.has(host)) return active.get(host);
   const games = [];
@@ -324,7 +324,7 @@ export function runIchidai({ host = document.getElementById("stage"), signal = n
     if (dead()) return;
     const others = KITS.map((k) => k.id).filter((id) => id !== cfg.kit);
     const s = (seed ?? (Date.now() ^ (Math.random() * 0xffffffff))) >>> 0;
-    const foeKit = cfg.opponentKit || others[s % others.length];
+    const foeKit = cfg.opponentKit || (KIT[opponentKit] ? opponentKit : null) || others[s % others.length]; // 相手の一式: 指定が無ければ、自分と違うものから
     G = createGame({ seed: s + games.length * 7919, tournament: cfg.tournament, market: cfg.market,
       players: [{ name: "はじめ", kit: cfg.kit, level: 2 }, { name: foe.name, kit: foeKit, ai: true, level: cfg.level }] });
     Object.assign(ui, { sel: null, picks: new Set(), counts: {}, note: "", toast: "", sheet: null, peek: null, lastLog: 0, turnKey: null, foeMood: "normal", seen: null });
@@ -703,8 +703,8 @@ export function runIchidai({ host = document.getElementById("stage"), signal = n
       lines.push(el("b", { text: `${op.name}の番` })); if (ui.note) lines.push(el("span", { text: ui.note }));
     } else if (w.type === "embers") {
       // 立ち上げ: 1〜4枚を裏向きで置く（種火＝火1ずつ）。ふつうは3枚
-      const n = ui.picks.size, okN = n >= RULES.startEmbersMin && n <= RULES.startEmbersMax;
-      lines.push(el("b", { text: "最初の火：立ち上げ" }), el("span", { text: `手札から${RULES.startEmbersMin}〜${RULES.startEmbersMax}枚を、立ち上げの炭（種火）にする。ふつうは${RULES.startEmbers}枚（いま${n}枚）` }));
+      const n = ui.picks.size, maxN = Math.min(RULES.startEmbersMax, coalMaxOf(me)), okN = n >= RULES.startEmbersMin && n <= maxN;
+      lines.push(el("b", { text: "最初の火：立ち上げ" }), el("span", { text: `手札から${RULES.startEmbersMin}〜${maxN}枚を、立ち上げの炭（種火）にする。ふつうは${Math.min(RULES.startEmbers, maxN)}枚（いま${n}枚）` }));
       btn(okN ? `立ち上げる（${n}枚・熱${n}）` : "立ち上げる", { type: "embers", picks: [...ui.picks] }, { primary: true, test: "ichi-embers", disabled: !okN });
     } else if (w.type === "prep") {
       const mode = me.turn.mode, total = sum(ui.counts);
@@ -773,7 +773,7 @@ export function runIchidai({ host = document.getElementById("stage"), signal = n
     return el("div.ichi-heat-read", { dataset: { test: "ichi-pillar", heat: String(h) }, "aria-label": `熱 ${h}` }, [
       el("div.ichi-fire-count", { dataset: { test: "ichi-firepower", left: String(firepower(me)), total: String(h) } }, [el("small", { text: "熱・火力" }), el("b", { text: String(h) })]),
       base !== h ? el("small.ichi-thermo-base", { text: `判定 ${base}` }) : null,
-      el(`small.ichi-coal-count${me.zone.length >= RULES.coalMax ? ".is-full" : ""}`, { dataset: { test: "ichi-coal-count", n: String(me.zone.length) }, title: `炭は${RULES.coalMax}つまで。熱は炭の火の合計`, text: `炭 ${me.zone.length}/${RULES.coalMax}` }),
+      el(`small.ichi-coal-count${me.zone.length >= coalMaxOf(me) ? ".is-full" : ""}`, { dataset: { test: "ichi-coal-count", n: String(me.zone.length), max: String(coalMaxOf(me)) }, title: `炭は${coalMaxOf(me)}つまで。熱は炭の火の合計`, text: `炭 ${me.zone.length}/${coalMaxOf(me)}` }),
       el("button.ichi-coal-help", { type: "button", dataset: { test: "ichi-coal-help" }, text: "炭の使い方", "aria-label": "炭の使い方を開く",
         onclick: () => { sfx("select"); openHelp(HELP_PAGES.findIndex((x) => x.title === "炭の活用法")); } }),
       cardLeft(me),
@@ -832,7 +832,7 @@ export function runIchidai({ host = document.getElementById("stage"), signal = n
           } }, card);
       }),
       chargeAt === null ? null : el("button.ichi-ghost.is-charge", { type: "button", style: { "--lv": "1" }, dataset: { test: "ichi-charge-slot" }, "aria-label": "選んだ札を裏向きで火力ゾーンに積む（チャージ・熱+1）",
-        onclick: () => { sfx("click"); submit({ type: "charge", hand: chargeAt }); } }, [el("b", { text: "＋" }), el("small", { text: chargeDraws(p) ? "置いて1枚引く" : "裏向きで積む" })]),
+        onclick: () => { sfx("click"); submit({ type: "charge", hand: chargeAt }); } }, [el("b", { text: "＋" }), el("small", { text: chargeDraws() ? "置いて1枚引く" : "裏向きで積む" })]),
     ]);
     return zoneBox("火力ゾーン", `.is-coal.is-${mine ? "me" : "foe"}${chargeAt === null ? "" : ".is-target"}`, { dataset: { test: mine ? "ichi-zone" : "ichi-foe-zone", count: String(p.zone.length), heat: String(h) } }, [gauge, stack]);
   }
@@ -880,7 +880,7 @@ export function runIchidai({ host = document.getElementById("stage"), signal = n
     return el("div.ichi-hand-row", [leader(me, "me"), el("div.ichi-hand", { dataset: { test: "ichi-hand" } }, cards), detail(me, w, myTurn) || forecast(me)]);
   }
   /** そのターン最初のチャージは「チャージ＆ドロー」（置いて1枚引く）か */
-  const chargeDraws = (p) => G.R.chargeDraw > 0 && !(p.turn?.charges > 0);
+  const chargeDraws = () => G.R.chargeDraw > 0; // チャージは「チャージ＆ドロー」（置いて1枚引く。1ターンに1回）
 
   // ───────── 炭の手引き（案内の札の下に出す短い助言） ─────────
   // 2026-11-11 オーナー「炭ってシステムがよくわからないので、活用法とかわかりやすくしたい」。
@@ -890,7 +890,7 @@ export function runIchidai({ host = document.getElementById("stage"), signal = n
     const f = me.main ? FLAVOR[me.main] : null, h = heatOf(me), room = coalRoom(me);
     const ready = me.stove.filter((c) => c.stage === 2), baking = me.stove.length - ready.length;
     const coalInHand = me.hand.some((id) => CARD[id].type === "coal"), stoveRoom = me.stove.length < slotsOf(me);
-    if (w.type === "embers") { tip("coal", "置いた札は「種火」（火1）。炭は4つまで"); return tips; }
+    if (w.type === "embers") { tip("coal", `置いた札は「種火」（火1）。炭は${coalMaxOf(me)}つまで`); return tips; }
     if (w.type === "cool") { tip("coal", "火の小さい炭から下げると、枠が空いて新しい炭をのせやすい"); return tips; }
     if (w.type === "prep" && me.turn.mode !== "steam") {
       if (!me.turn.mode && f) tip("now", `いまの熱${h}。${f.name}の適温は${f.lo}〜${f.hi}`);
@@ -910,16 +910,17 @@ export function runIchidai({ host = document.getElementById("stage"), signal = n
     // 炭の手
     if (want > 0) {
       if (ready.length && room) tip("coal", `焼けた炭をのせる（${[...new Set(ready.map((c) => `熱+${CARD[c.id].heat}`))].join("・")}）`);
-      else if (ready.length) tip("coal", "炭が4つ。火の小さい炭を外すと、焼けた炭をのせられる");
-      else if (room && me.hand.length && canCharge(G, me).ok) tip("coal", chargeDraws(me) ? "手札を1枚チャージ＆ドロー（熱+1・1枚引く）" : "手札をチャージ（種火・熱+1）");
-      else if (!room) tip("coal", "炭が4つ。上げるには、弱った炭を外して入れ替える");
+      else if (ready.length) tip("coal", `炭が${coalMaxOf(me)}つ。火の小さい炭を外すと、焼けた炭をのせられる`);
+      else if (room && me.hand.length && canCharge(G, me).ok) tip("coal", "手札を1枚チャージ＆ドロー（熱+1・1枚引く）");
+      else if (!room) tip("coal", `炭が${coalMaxOf(me)}つ。上げるには、弱った炭を外して入れ替える`);
       if (!ready.length && coalInHand && stoveRoom) tip("coal", "炭カードを炭焼き場へ（フラットは次のターン、キューブは2ターン後に焼ける）");
     } else if (want < 0) {
       tip("coal", canAsh(G, me).ok ? "炭を1つ選んで外す（灰にする・1ターンに1回）" : "炭を外せるのは1ターンに1回。冷めるのを待つ");
     } else if (coalInHand && stoveRoom) tip("coal", "いまのうちに炭カードを炭焼き場へ。次のターンにのせられる");
     else if (!me.stove.length && !coalInHand) tip("coal", "焼いている炭が無い。次は種火（チャージ）でつなぐ");
     // 次のターン
-    if (w.type === "main" && !me.noCool && me.zone.length) {
+    if (w.type === "main" && me.hmd === "one_coal" && me.zone.length === 1) tip("next", "炭が1つだけなので、次のターンも冷めない（ワンコールリッド）");
+    else if (w.type === "main" && !me.noCool && me.zone.length) {
       const lose = Math.max(0, coolStepsOf(me) - me.wind);
       if (lose) tip("next", `次のターンは冷めて熱−${lose}${baking + ready.length ? "。焼けた炭で戻す" : "。足す炭を用意しておく"}`);
     }
@@ -981,7 +982,7 @@ export function runIchidai({ host = document.getElementById("stage"), signal = n
     const reasons = [];
     if (coal) { const r = canPlace(G, me, id); btn("炭焼き場に置く", { type: "place", hand: i }, r, { primary: true, test: "ichi-do-place" }); if (!r.ok) reasons.push(r.reason); }
     else { const r = canPlay(G, me, id); btn(c.when === "puff" && !G.R.reactAfterReveal ? "この一口に仕込む" : "使う", { type: "play", hand: i }, r, { primary: true, test: "ichi-do-play" }); if (!r.ok) reasons.push(r.reason); }
-    if (w.type === "main" || w.type === "prep") btn(chargeDraws(me) ? "チャージ＆ドロー" : "チャージ（熱+1）", { type: "charge", hand: i }, canCharge(G, me), { test: "ichi-do-charge" });
+    if (w.type === "main" || w.type === "prep") btn(chargeDraws() ? "チャージ＆ドロー" : "チャージ（熱+1）", { type: "charge", hand: i }, canCharge(G, me), { test: "ichi-do-charge" });
     return el("div.ichi-detail", { dataset: { test: "ichi-detail" } }, [
       el("div.ichi-detail-text", [el("b", { text: c.name }), el("small", { text: coal ? `炭・火${c.heat}・着火${c.ig}ターン` : `${TYPE_LABEL[c.type]}・${WHEN_LABEL[c.when]}・必要火力${c.need || 0}（いま${heatOf(me)}）${payLabel(c) ? `・${payLabel(c).short}` : ""}` }), reasons.length ? el("em", { text: reasons[0] }) : null, el("p", { text: c.tx })]),
       el("div.ichi-detail-buttons", buttons),

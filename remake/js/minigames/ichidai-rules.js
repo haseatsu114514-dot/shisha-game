@@ -15,13 +15,13 @@ import { FLAVOR, FLAVORS, CARD, BOWL, HMD, JUDGE, PUFFS, TOURNAMENT, KIT, FIRST_
 export const RULES = Object.freeze({
   startDraw: 7, startEmbers: 3, startEmbersMin: 1, startEmbersMax: 4, coalMax: 4, prepTurns: 6, packN: 4, firstPackCut: 2, steamDraw: 2, steamLeaves: 8,
   // ドロー（2026-11-11 オーナー「チャージ＆ドローに加えて普通のドローもしたい。チャージ＆ドローはドローだけは無理だけど、
-  // チャージしないなら普通に1ドロー」）: 自分のターンに1枚引く（普通のドロー）。そのターン最初のチャージは「チャージ＆ドロー」で、
-  // 手札を1枚裏向きで置いて1枚引く（置かずに引くことはできない）。2回目からのチャージは引かない。
+  // チャージしないなら普通に1ドロー」「ターン1。バディファイトと同じ。引かないと置けない」）: 自分のターンに1枚引く（普通のドロー）。
+  // チャージは「チャージ＆ドロー」で、手札を1枚裏向きで置いて1枚引く。1ターンに1回。置かずに引くことも、引かずに置くこともできない。
   // 引く枚数が減るぶん、準備の「蒸らす」で引くのを2枚にして手札の量を保つ（steamDraw。計算は docs/design/card_game/v0.3_design.md）
   draw: 1, chargeDraw: 1, cool: 2, slots: 4, heatMax: 10, handMax: 7, pile: 12, vote: 2, wear: 2, rich: 10, toolMax: 3,
   // 第0.3版: カードは必要火力を満たせば使える（払わない）。使えるのは1ラウンドに1枚（準備は1ターンに1枚）。
   // チャージと、炭を置く・のせるは何回でも。灰にするのは1ターンに1回。決めた理由は docs/design/card_game/v0.3_design.md
-  cardsPerRound: 1, chargePerTurn: Infinity, ashPerTurn: 1,
+  cardsPerRound: 1, chargePerTurn: 1, ashPerTurn: 1,
   // 一口のカード: false＝提供の自分のターンに仕込む（第0.3版）。true＝審査カードをめくったあとに使う（第0.2版の受け方）
   reactAfterReveal: false,
   // 印象＝味値＋帯の分＋濃厚＋カード。ジャストも適温も同じにして、印象は味の強さで競う
@@ -42,7 +42,9 @@ export const coalHeat = (c) => c.f ?? (c.up ? CARD[c.id].heat : 1);
 /** 火力ゾーンに置く炭をつくる。up＝表向きの炭カード（新品の火）／裏向き＝種火（火1） */
 const newCoal = (id, up) => ({ id, up, f: up ? CARD[id].heat : 1 });
 /** 炭の枠が空いているか（HMDに載る炭は4つまで） */
-export const coalRoom = (p) => Math.max(0, RULES.coalMax - p.zone.length);
+/** 置ける炭の数。ふつうは4つ。ワンコールリッド（炭1個で回す低温用のHMD）は2つ */
+export const coalMaxOf = (p) => (p.hmd === "one_coal" ? 2 : RULES.coalMax);
+export const coalRoom = (p) => Math.max(0, coalMaxOf(p) - p.zone.length);
 export const leavesOf = (p) => Object.values(p.bowl).reduce((a, b) => a + b, 0);
 /** 火力＝熱（第0.3版はカードで火力を払わないので、使った分は無い） */
 export const firepower = (p) => heatOf(p);
@@ -231,7 +233,7 @@ export function canPlay(G, p, id) {
   if (c.pay?.fire && heatOf(p) < c.pay.fire) return fail(`落とす火力が${c.pay.fire}要る`);
   if (c.pay?.leaf && (!p.main || p.bowl[p.main] < c.pay.leaf)) return fail("減らす葉がない");
   if (c.type === "tool" && p.tools.includes(id)) return fail("同じ器具はもう出ている");
-  if (id === "add_coal" && !coalRoom(p)) return fail(`炭は${RULES.coalMax}つまで`);
+  if (id === "add_coal" && !coalRoom(p)) return fail(`炭は${coalMaxOf(p)}つまで`);
   if (id === "add_coal" && heatOf(p) >= RULES.heatMax) return fail("熱は10まで");
   if (id === "fan" && !p.stove.some((x) => x.stage < 2)) return fail("火おこし中の炭がない");
   if (id === "encore" && !isLastSession(G)) return fail("最終セッションだけ");
@@ -247,8 +249,10 @@ export function canCharge(G, p) {
   if (!w || w.player !== p.index) return fail("いまは自分の番ではない");
   if (w.type === "prep") { if (p.turn.mode !== "steam") return fail("蒸らすターンだけ"); }
   else if (w.type !== "main") return fail("自分のターンに行う");
-  if ((p.turn.charges || 0) >= G.R.chargePerTurn) return fail(G.R.chargePerTurn === 1 ? "チャージは1ターンに1回" : `チャージは1ターンに${G.R.chargePerTurn}回まで`);
-  if (!coalRoom(p)) return fail(`炭は${RULES.coalMax}つまで`);
+  if ((p.turn.charges || 0) >= G.R.chargePerTurn) return fail(G.R.chargePerTurn === 1 ? "チャージ＆ドローは1ターンに1回" : `チャージは1ターンに${G.R.chargePerTurn}回まで`);
+  // 置いたら必ず1枚引く（引かずに置くことはできない）。引く札がどこにも無ければ置けない
+  if (G.R.chargeDraw > 0 && !p.deck.length && !p.ash.length) return fail("引く札が無いので置けない");
+  if (!coalRoom(p)) return fail(`炭は${coalMaxOf(p)}つまで`);
   if (heatOf(p) >= RULES.heatMax) return fail("熱は10まで");
   if (!p.hand.length) return fail("手札がない");
   return OK;
@@ -269,7 +273,7 @@ export function canPutOn(G, p, si) {
   if (w.type === "prep") { if (p.turn.mode !== "steam") return fail("蒸らすターンだけ"); }
   else if (w.type !== "main") return fail("自分のターンに行う");
   if (c.stage < 2) return fail("まだ焼けていない");
-  if (!coalRoom(p)) return fail(`炭は${RULES.coalMax}つまで`);
+  if (!coalRoom(p)) return fail(`炭は${coalMaxOf(p)}つまで`);
   if (heatOf(p) + CARD[c.id].heat > RULES.heatMax) return fail("熱は10まで");
   return OK;
 }
@@ -322,7 +326,7 @@ const HANDLERS = {
   embers(G, p, a, w) {
     if (w.type !== "embers") return fail("いまは選べない");
     const picks = [...new Set(a.picks || [])];
-    if (picks.length < RULES.startEmbersMin || picks.length > RULES.startEmbersMax || picks.some((i) => !(i >= 0 && i < p.hand.length))) return fail(`立ち上げの炭にする${RULES.startEmbersMin}〜${RULES.startEmbersMax}枚を選ぶ`);
+    if (picks.length < RULES.startEmbersMin || picks.length > Math.min(RULES.startEmbersMax, coalMaxOf(p)) || picks.some((i) => !(i >= 0 && i < p.hand.length))) return fail(`立ち上げの炭にする${RULES.startEmbersMin}〜${RULES.startEmbersMax}枚を選ぶ`);
     for (const i of picks.sort((x, y) => y - x)) p.zone.push(newCoal(p.hand.splice(i, 1)[0], false));
     emit(G, { t: "embers", p: p.index });
     const o = other(G, p);
@@ -356,7 +360,7 @@ const HANDLERS = {
     const c = canCharge(G, p); if (!c.ok) return c;
     if (!(a.hand >= 0 && a.hand < p.hand.length)) return fail("手札を選ぶ");
     p.zone.push(newCoal(p.hand.splice(a.hand, 1)[0], false)); p.turn.charges = (p.turn.charges || 0) + 1; p.turn.charged = true;
-    const cd = p.turn.charges === 1 && G.R.chargeDraw > 0; // そのターン最初のチャージ＝チャージ＆ドロー
+    const cd = G.R.chargeDraw > 0; // チャージ＆ドロー: 置いたら1枚引く
     say(G, `${cd ? "チャージ＆ドロー" : "チャージ"}：種火を1枚${cd ? "置いて、1枚引く" : ""}（熱${heatOf(p)}）`, p.index); emit(G, { t: "charge", p: p.index });
     if (cd) drawCards(G, p, G.R.chargeDraw);
   },
@@ -541,9 +545,10 @@ function startServeTurn(G) {
   const p = G.P[G.order[G.serveStep]];
   G.active = p.index; p.turn = { mode: "serve", charged: false, charges: 0, ashes: 0 };
   stoveAdvance(G, p);
-  const skipBig = p.hmd === "big_tanukish" && G.round % 3 === 0;
-  if (p.noCool || skipBig || !p.zone.length) {
+  const skipBig = p.hmd === "big_tanukish" && G.round % 3 === 0, solo = p.hmd === "one_coal" && p.zone.length === 1;
+  if (p.noCool || skipBig || solo || !p.zone.length) {
     if (p.noCool && p.zone.length) say(G, "灰落とし：このターンは冷めない。", p.index);
+    else if (solo) say(G, "ワンコールリッド：炭が1つだけなので冷めない。", p.index);
     else if (skipBig && p.zone.length) say(G, "ビッグタヌキッシュリッド：セッション最初のターンは冷めない。", p.index);
     p.noCool = false; afterCool(G, p); return;
   }

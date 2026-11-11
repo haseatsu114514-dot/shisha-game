@@ -745,13 +745,13 @@ button.ichi-leaf.can:hover { border-color: #fff; }
 .ichi-setup-head p { margin: 0; font-size: 18px; color: var(--ichi-dim); }
 .ichi-setup h2 { margin: 0 0 6px; font-size: 18px; font-weight: 900; color: var(--ichi-gold); }
 .ichi-picks { display: grid; gap: 10px; }
-.ichi-picks.is-kits { grid-template-columns: repeat(3, 1fr); } .ichi-picks.is-tours { grid-template-columns: repeat(5, 1fr); } .ichi-picks.is-levels { grid-template-columns: repeat(3, 150px); }
+.ichi-picks.is-kits { grid-template-columns: repeat(4, minmax(0, 1fr)); } .ichi-picks.is-tours { grid-template-columns: repeat(5, 1fr); } .ichi-picks.is-levels { grid-template-columns: repeat(3, 150px); }
 .ichi-pick { display: grid; gap: 4px; align-content: start; padding: 12px 16px; min-height: 48px; border-radius: 10px; border: 0; background: rgba(34, 21, 52, 0.94) var(--ichi-plaque) center / 100% 100% no-repeat; text-align: left; cursor: pointer; box-shadow: 0 5px 12px rgba(0, 0, 0, 0.45); }
 .ichi-pick b { font-size: 19px; font-weight: 900; }
 .ichi-pick span { font-size: 15px; color: #e9def2; }
 .ichi-pick.is-on { box-shadow: 0 0 0 2px var(--ichi-gold), 0 0 22px rgba(227, 189, 110, 0.4); }
 .ichi-kit-art { display: flex; align-items: center; gap: 6px; }
-.ichi-kit-art .s-mid { --cw: 72px; }
+.ichi-kit-art .s-mid { --cw: 60px; }
 .ichi-kit-leaf { display: flex; flex-wrap: wrap; gap: 8px; } .ichi-kit-leaf span { display: inline-flex; align-items: center; gap: 4px; font-weight: 700; }
 .ichi-tour b { font-size: 16px; } .ichi-tour span { font-size: 14px; }
 .ichi-level { justify-items: center; }
