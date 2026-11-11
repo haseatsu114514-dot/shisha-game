@@ -746,7 +746,11 @@ p.gear-offer.owned b { color: var(--gold); }
   border-radius: 16px;
   font-size: 14px;
   line-height: 1.55;
+  /* 文節で折る（「人手が足／りん」のような語の途中の改行を防ぐ。TXW05）。
+     auto-phrase 未対応のブラウザは1行目の指定のまま。切れ目の無い長い語は吹き出しの幅で折る */
   word-break: break-word;
+  word-break: auto-phrase;
+  overflow-wrap: anywhere;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.18);
 }
 .lime-row.peer .lime-bubble { background: #fff; color: #222; border-bottom-left-radius: 4px; }
