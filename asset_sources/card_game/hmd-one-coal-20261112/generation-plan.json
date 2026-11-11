@@ -1,11 +1,11 @@
 {
-  "state": "CONDITIONAL_NOT_EXECUTED",
-  "requires": "Owner confirms Y2 as the intended physical reference in #3389 or the selection PR. If another model is chosen, replace all structural references and this model-specific prompt before generation.",
+  "state": "READY_TO_GENERATE",
+  "requires": "Owner confirmed Y2 on 2026-11-12 (in-game name: C1). Generate with Y2 as the structural reference.",
   "pre_generation_8_lines": {
     "人物": "なし。機材単体",
     "場面": "準備中。ボウルに装着する前のHMD単体",
     "台の型": "描かない",
-    "HMD": "Y2の写真を推奨。オーナー未確認のため確定ではない。6cmの金属筒・蓋・木製取っ手・通気口を同じ1モデルに統一",
+    "HMD": "Y2（2026-11-12 オーナー決定。ゲーム内の名前は C1）。6cmの金属筒・蓋・木製取っ手・通気口を同じ1モデルに統一",
     "炭": "描かない。形の基準はキューブ1個で運用する小型機材",
     "ホース": "描かない",
     "吸い口": "描かない",
@@ -14,7 +14,7 @@
   "references_in_order": [
     {
       "model": "Y2",
-      "status": "recommended_pending_owner_confirmation",
+      "status": "selected_by_owner",
       "repository": "haseatsu114514-dot/siryou",
       "repo_path": "shisha-hardware-reference/web-refs/images/hmd-twoPiece-woodHandle-01.jpg",
       "siryou_tree": "112d8e8ffca4671b39510411fa1ad39427294d53",

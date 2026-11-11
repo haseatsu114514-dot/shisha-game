@@ -1,10 +1,10 @@
 {
   "issue": 3389,
-  "state": "WAITING_FOR_OWNER_REFERENCE_SELECTION",
-  "owner_approved": false,
+  "state": "OWNER_SELECTED_Y2",
+  "owner_approved": true,
   "recommended": {
     "model": "Y2",
-    "status": "recommended_pending_owner_confirmation",
+    "status": "selected_by_owner",
     "repository": "haseatsu114514-dot/siryou",
     "repo_path": "shisha-hardware-reference/web-refs/images/hmd-twoPiece-woodHandle-01.jpg",
     "siryou_tree": "112d8e8ffca4671b39510411fa1ad39427294d53",
@@ -128,5 +128,11 @@
     "runtime integration",
     "76px in-game visual QA",
     "owner acceptance"
-  ]
+  ],
+  "owner_decision": {
+    "date": "2026-11-12",
+    "reference": "Y2",
+    "in_game_name": "C1",
+    "note": "オーナー「名前だけ変えたい C1とか」。手本は Y2、ゲーム内の機材名は「ワンコールリッド」から「C1」へ（書き換えは #3424 のマージ後）"
+  }
 }
