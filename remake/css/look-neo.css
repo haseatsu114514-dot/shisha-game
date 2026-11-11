@@ -3,7 +3,8 @@
    会話（1〜5）に続けて、地図と HUD・全画面 MENU・モーダル・タイトル・章の場面カードを同じ言葉づかい
    （夜紫の半透明の面・金の細い罫線・ラベンダーの縁・白い文字・小さめの角）へ揃える（7〜15）。
    ショップ・LIME・レベルアップ・日付の幕・ギャラリーも同じ言葉づかい（16〜）。商品の絵・写真・漫画・動画などの絵そのものは変えない。
-   専用のテーマを持つ画面（TRPG・斧投げ・てつこ・ミニゲーム・くじのガラガラ・シーシャ作り・大会の順位表・心得の盤）には当てない。
+   紙とラベンダーのまま残っていた部品（LK17）は末尾の 20〜。心得の盤は css/look-neo-board.css。
+   専用のテーマを持つ画面（TRPG・斧投げ・てつこ・ミニゲーム・くじのガラガラ・シーシャ作り・大会の順位表）には当てない。
    配色テーマ（data-ui-theme の7種）の枠・色の規則より必ず勝つよう、#stage と部品の id の2つで始める。
    動く部品（立ち絵の光・名前の色・MENU の人物の絵）は js/looks/neo.js。 */
 
@@ -1337,6 +1338,15 @@
   --paper-ink: var(--neo-ui-ink);
   --paper-muted: var(--neo-ui-dim);
   --panel-edge: var(--neo-ui-edge);
+  /* 面の中の部品が紙の色の変数で面を塗っても、白い札に白い文字にならないよう、面の色の変数も暗い面向けにする（LK17）。 */
+  --paper: #1b1029;
+  --paper-card: rgba(46, 29, 69, .6);
+  --paper-line: rgba(201, 167, 230, .24);
+  --lavender: var(--neo-ui-lav);
+  --lavender-soft: rgba(201, 167, 230, .16);
+  --lavender-line: rgba(201, 167, 230, .55);
+  --amber: var(--neo-ui-gold);
+  --amber-ink: var(--neo-ui-gold-hi);
   color: var(--neo-ui-ink);
   text-shadow: none;
   background: linear-gradient(180deg, rgba(34, 21, 52, .93), rgba(18, 9, 30, .9));
@@ -1762,8 +1772,8 @@
 :root[data-look="neo"] body:not(.game-ds) #stage #modal .saveload-modal .save-slot.auto .ss-stat i::after { background: linear-gradient(90deg, #c79a3c, var(--neo-ui-gold-hi)); }
 :root[data-look="neo"] body:not(.game-ds) #stage #modal .saveload-modal .ss-face { background: #1b1029; border-color: rgba(246, 241, 250, .6); }
 
-/* 用語集: 分類の札は丸い札、選んだ分類だけ金。 */
-:root[data-look="neo"] body:not(.game-ds) #stage #modal .gl-tab {
+/* 用語集: 分類の札は丸い札、選んだ分類だけ金。古い STATUS の窓（daily/status.js）のタブも同じ札（LK17）。 */
+:root[data-look="neo"] body:not(.game-ds) #stage #modal :is(.gl-tab, .st-tab) {
   color: var(--neo-ui-dim);
   background: rgba(46, 29, 69, .5);
   border: 1px solid rgba(201, 167, 230, .4);
@@ -1771,9 +1781,9 @@
   border-radius: 999px;
   box-shadow: none;
 }
-:root[data-look="neo"] body:not(.game-ds) #stage #modal .gl-tab:is(:hover, :focus-visible) { color: #fff; background: rgba(74, 49, 110, .82); border-color: var(--neo-ui-lav); box-shadow: none; }
-:root[data-look="neo"] body:not(.game-ds) #stage #modal .gl-tab.on { color: #26160a; font-weight: 700; background: linear-gradient(180deg, #f3d48d, #d9a94f); border-color: #fbe6b4; box-shadow: none; }
-:root[data-look="neo"] body:not(.game-ds) #stage #modal .gl-tab:focus-visible { outline: 2px solid var(--neo-ui-gold); outline-offset: 2px; }
+:root[data-look="neo"] body:not(.game-ds) #stage #modal :is(.gl-tab, .st-tab):is(:hover, :focus-visible) { color: #fff; background: rgba(74, 49, 110, .82); border-color: var(--neo-ui-lav); box-shadow: none; }
+:root[data-look="neo"] body:not(.game-ds) #stage #modal :is(.gl-tab, .st-tab).on { color: #26160a; font-weight: 700; background: linear-gradient(180deg, #f3d48d, #d9a94f); border-color: #fbe6b4; box-shadow: none; }
+:root[data-look="neo"] body:not(.game-ds) #stage #modal :is(.gl-tab, .st-tab):focus-visible { outline: 2px solid var(--neo-ui-gold); outline-offset: 2px; }
 :root[data-look="neo"] body:not(.game-ds) #stage #modal .gl-term { border-bottom-color: rgba(201, 167, 230, .14); }
 :root[data-look="neo"] body:not(.game-ds) #stage #modal .gl-term b { color: var(--neo-ui-gold-hi); }
 :root[data-look="neo"] body:not(.game-ds) #stage #modal .gl-term p { color: var(--neo-ui-ink); }
@@ -2359,3 +2369,101 @@
 }
 :root[data-look="neo"] body:not(.game-ds) #stage #modal .gal-viewer-tools .btn:is(:hover, :focus-visible):not(:disabled) { color: #fff; background: rgba(74, 49, 110, .82); border-color: var(--neo-ui-lav); }
 :root[data-look="neo"] body:not(.game-ds) #stage #modal .gal-viewer-tools .btn:focus-visible { outline: 2px solid var(--neo-ui-gold); outline-offset: 2px; }
+
+/* ================================================================ LK17: 紙とラベンダーのまま残っていた部品（心得の盤は css/look-neo-board.css） */
+/* ---------------------------------------------------------------- 20. 店の人の一言（core/venue-host.js。斧投げBar・クラブSEAM の行動の選択の中）
+   紙のテーマは淡いラベンダーの札に墨の文字。新版の面の中では文字が白くなり読めなかったので、夜紫の札にする。TRPG の店の中（専用のテーマ）には当てない。 */
+:root[data-look="neo"] body:not(.game-ds) #stage #screen .sub-menu .venue-host {
+  color: var(--neo-ui-ink);
+  background: linear-gradient(100deg, rgba(74, 49, 110, .5), rgba(33, 20, 52, .72));
+  border: 1px solid rgba(201, 167, 230, .3);
+  border-radius: 6px;
+}
+:root[data-look="neo"] body:not(.game-ds) #stage #screen .sub-menu .venue-host-copy small { color: var(--neo-ui-dim); }
+:root[data-look="neo"] body:not(.game-ds) #stage #screen .sub-menu .venue-host-copy strong { color: var(--neo-ui-gold-hi); }
+:root[data-look="neo"] body:not(.game-ds) #stage #screen .sub-menu .venue-host-copy p { color: var(--neo-ui-ink); }
+/* 斧投げBar: 教わるの札は金の縁、選んでいる部門は金の札、見出しと通算の行はラベンダー。 */
+:root[data-look="neo"] body:not(.game-ds) #stage #screen .sub-menu.axe-bar-menu .axe-bar-lesson { color: var(--neo-ui-gold-hi); border-color: rgba(227, 189, 110, .62); }
+:root[data-look="neo"] body:not(.game-ds) #stage #screen .sub-menu.axe-bar-menu .axe-bar-divisions .btn[aria-pressed="true"] {
+  color: #26160a;
+  font-weight: 700;
+  background: linear-gradient(180deg, #f3d48d, #d9a94f);
+  border-color: #fbe6b4;
+}
+:root[data-look="neo"] body:not(.game-ds) #stage #screen .sub-menu.axe-bar-menu :is(.axe-bar-division-label, .axe-bar-career) { color: var(--neo-ui-lav); }
+:root[data-look="neo"] body:not(.game-ds) #stage #screen .sub-menu.axe-bar-menu .axe-bar-division-note { color: var(--neo-ui-dim); }
+:root[data-look="neo"] body:not(.game-ds) #stage #screen .sub-menu.axe-bar-menu .axe-bar-records { border-top-color: rgba(201, 167, 230, .24); }
+
+/* ---------------------------------------------------------------- 21. 章のクリア（.end-screen。暗い幕の上の題字とレーダーはそのまま）: ボタンを新版の札に */
+:root[data-look="neo"] body:not(.game-ds) #stage #screen .end-screen:not(.gameover) .btn {
+  color: var(--neo-ui-ink);
+  text-shadow: none;
+  background: rgba(46, 29, 69, .82);
+  border: 1px solid var(--neo-ui-edge);
+  border-image: none;
+  border-radius: 4px;
+  box-shadow: none;
+  filter: none;
+  clip-path: none;
+}
+:root[data-look="neo"] body:not(.game-ds) #stage #screen .end-screen:not(.gameover) .btn:is(:hover, :focus-visible):not(:disabled) { color: #fff; background: rgba(74, 49, 110, .9); border-color: var(--neo-ui-lav); box-shadow: 0 0 0 3px rgba(201, 167, 230, .2); }
+:root[data-look="neo"] body:not(.game-ds) #stage #screen .end-screen:not(.gameover) .btn.primary { color: #26160a; font-weight: 700; background: linear-gradient(180deg, #f3d48d, #d9a94f); border-color: #fbe6b4; }
+:root[data-look="neo"] body:not(.game-ds) #stage #screen .end-screen:not(.gameover) .btn.primary:is(:hover, :focus-visible):not(:disabled) { color: #26160a; background: linear-gradient(180deg, #fbe2a6, #e6b95e); border-color: #fff; box-shadow: 0 0 0 3px rgba(227, 189, 110, .3); }
+:root[data-look="neo"] body:not(.game-ds) #stage #screen .end-screen:not(.gameover) .btn:focus-visible { outline: 2px solid var(--neo-ui-gold); outline-offset: 3px; }
+:root[data-look="neo"] body:not(.game-ds) #stage #screen .end-screen:not(.gameover) .btn:disabled { opacity: .5; }
+
+/* ---------------------------------------------------------------- 22. リザルト（scenes/result.js。スタッフロールの後の1枚）: 紙の板をやめて夜紫の面と金の罫線 */
+:root[data-look="neo"] body:not(.game-ds) #stage #screen .result-screen .result-panel {
+  --text: var(--neo-ui-ink);
+  --text-dim: var(--neo-ui-dim);
+  --gold: var(--neo-ui-gold);
+  --gold-hi: var(--neo-ui-gold-hi);
+  --panel-edge: var(--neo-ui-rule);
+  color: var(--neo-ui-ink);
+  text-shadow: none;
+  background: linear-gradient(180deg, rgba(36, 22, 55, .94), rgba(21, 13, 34, .92));
+  /* 紙の板は 22px の縁＋内側の余白で中身の位置を決めていた。縁をやめて、同じ位置になる余白にする。 */
+  border: 0;
+  border-image: none;
+  padding: 46px 70px 44px;
+  border-radius: 6px;
+  box-shadow: inset 0 0 0 1px var(--neo-ui-edge), 0 18px 48px rgba(8, 3, 16, .6);
+  filter: none;
+  backdrop-filter: none;
+}
+:root[data-look="neo"] body:not(.game-ds) #stage #screen .result-screen .result-title { color: #fff; font-weight: 700; }
+:root[data-look="neo"] body:not(.game-ds) #stage #screen .result-screen .result-hero-value { color: var(--neo-ui-gold-hi); }
+:root[data-look="neo"] body:not(.game-ds) #stage #screen .result-screen .result-next {
+  color: #26160a;
+  font-weight: 700;
+  text-shadow: none;
+  background: linear-gradient(180deg, #f3d48d, #d9a94f);
+  border: 1px solid #fbe6b4;
+  border-image: none;
+  border-radius: 4px;
+  box-shadow: none;
+  filter: none;
+  clip-path: none;
+}
+:root[data-look="neo"] body:not(.game-ds) #stage #screen .result-screen .result-next:is(:hover, :focus-visible) { background: linear-gradient(180deg, #fbe2a6, #e6b95e); border-color: #fff; box-shadow: 0 0 0 3px rgba(227, 189, 110, .3); }
+:root[data-look="neo"] body:not(.game-ds) #stage #screen .result-screen .result-next:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+
+/* ---------------------------------------------------------------- 23. ショップのくじの行の札（券の絵記号）: 淡い桃色の札をやめて、金の淡い札 */
+:root[data-look="neo"] body:not(.game-ds) #stage #screen .shop-paper .kuji-cat { background: rgba(227, 189, 110, .16); }
+
+/* ---------------------------------------------------------------- 24. 大会の会話の間、右上に出る MENU（第2・3章。chapters/ch2-tournament.js・ch3-tournament.js）
+   白い紙の札をやめて、HUD の MENU と同じ夜紫の札（文字つきの丸い札）。置き場所と大きさ・押せる範囲はそのまま。制作の画面の中の MENU には当てない。 */
+:root[data-look="neo"] body:not(.game-ds) #stage #hud .ch2-tournament-vn-menu .btn {
+  color: var(--neo-ui-ink);
+  text-shadow: none;
+  letter-spacing: .08em;
+  background: var(--neo-ui-face);
+  border: 0;
+  border-image: none;
+  border-radius: 999px;
+  box-shadow: inset 0 0 0 1px var(--neo-ui-edge), var(--neo-ui-shadow);
+  filter: none;
+  clip-path: none;
+}
+:root[data-look="neo"] body:not(.game-ds) #stage #hud .ch2-tournament-vn-menu .btn:is(:hover, :focus-visible) { color: #fff; box-shadow: inset 0 0 0 1px var(--neo-ui-lav), 0 0 0 3px rgba(201, 167, 230, .2), var(--neo-ui-shadow); }
+:root[data-look="neo"] body:not(.game-ds) #stage #hud .ch2-tournament-vn-menu .btn:focus-visible { outline: 2px solid var(--neo-ui-gold); outline-offset: 2px; }
