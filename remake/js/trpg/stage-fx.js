@@ -168,7 +168,7 @@ export function playResultCut(root, { figure = null, who = "", how = "", label =
   return fx;
 }
 
-/** 画面の衝撃（TRF09・TRF10）: 揺れ・光。kind = twist（思わぬ展開）／critical／fumble／arrive（物語に入った瞬間）。 */
+/** 画面の衝撃（TRF09・TRF10）: 部屋の絵の揺れ・光。kind = twist（思わぬ展開）／critical／fumble／arrive（物語に入った瞬間）。 */
 export function impact(root, kind) {
   if (!live(root)) return IDLE;
   const node = el("div.trpg-impact", { "aria-hidden": "true", dataset: { kind } });
@@ -179,8 +179,10 @@ export function impact(root, kind) {
   fx.animate(node, [{ opacity: 0 }, { opacity: kind === "fumble" ? .5 : .62, offset: .14 }, { opacity: 0 }], { duration: ms, easing: "ease-out" });
   if (!calm() && (kind === "twist" || kind === "critical" || kind === "fumble")) {
     const amp = kind === "fumble" ? 5 : 9;
-    const scene = root.querySelector(".trpg-content") || root;
-    fx.animate(scene, [0, 1, -1, .7, -.5, .3, 0].map((k, i, all) => ({ transform: `translate(${k * amp}px, ${(i % 2 ? -1 : 1) * Math.abs(k) * amp * .45}px)`, offset: i / (all.length - 1) })),
+    // 揺らすのは部屋の絵だけ（枠 .trpg-room が切り抜く）。舞台の中身ごと揺らすと、揺れた分だけ舞台の横スクロール幅が増え、
+    // 押せる所も一緒に動く。translate で動かすので、物語の層の寄り（transform: scale）とは重ならない。
+    const scene = root.querySelector(".trpg-room > img");
+    if (scene) fx.animate(scene, [0, 1, -1, .7, -.5, .3, 0].map((k, i, all) => ({ translate: `${k * amp}px ${(i % 2 ? -1 : 1) * Math.abs(k) * amp * .45}px`, offset: i / (all.length - 1) })),
       { duration: 460, easing: "linear", fill: "none" });
   }
   fx.at(ms + 40, fx.cancel);
