@@ -33,6 +33,7 @@ import { artUrl, flavorArt, cardArt, faceUrl, bowlArt, hmdArt, JUDGE_FACE } from
 import { HELP_PAGES } from "./ichidai-help.js";
 import { playVersus } from "./ichidai-versus.js";
 import { attachIchidaiLines } from "./ichidai-lines.js";
+import { faceParts } from "./ichidai-face.js";
 
 export const ICHIDAI_TITLE = "一台勝負";
 export const LEVELS = Object.freeze([{ id: 0, name: "やさしい" }, { id: 1, name: "ふつう" }, { id: 2, name: "つよい" }]);
@@ -179,7 +180,7 @@ export function runIchidai({ host = document.getElementById("stage"), signal = n
   // 対戦中、相手が一言しゃべる（2026-11-11 オーナー「対戦中は相手にセリフとか言わせたい」。台詞は data/dialogue/ichidai_lines.json）。
   // 一言に表情が付いていれば、相手の顔もそれに替える。早送りと CPU に打たせているあいだは出さない
   const lines = attachIchidaiLines({ root, charId: foe.id, quick: () => ui.fast || pilot === "cpu",
-    onLine: (line) => { if (line.face && G) { setFoeMood(line.face); renderSeat(G.P[CPU]); } seatMotion("talk"); } });
+    onLine: (line) => { if (line.face && G) { setFoeMood(line.face); renderSeat(G.P[CPU]); } talk(line.text); } });
   const arm = () => unlockAudio();
   root.addEventListener("pointerdown", arm); root.addEventListener("keydown", arm);
   // このゲーム用の卓・裏面の絵があれば差し替える（無ければ CSS の既定＝本編の夜紫UIの部品）
@@ -194,7 +195,7 @@ export function runIchidai({ host = document.getElementById("stage"), signal = n
   // 規則にも保存にも触れない。早送り・CPU同士の自動対戦・動きを減らす設定では動かさない
   const MOTION_MS = { play: 640, reach: 440, joy: 920, shock: 760, down: 1000, flinch: 520, talk: 1300, lean: 560, pop: 280, tilt: 1500, nod: 950, look: 1700 };
   const SMALL_MOTION = ["tilt", "nod", "look", "talk", "pop", "lean"]; // ほかの動きの最中には重ねない小さな動き
-  let motionTimer = 0, fidgetTimer = 0;
+  let motionTimer = 0, fidgetTimer = 0, blinkTimer = 0, talkTimer = 0;
   const calm = () => ui.fast || pilot === "cpu" || matchMedia("(prefers-reduced-motion: reduce)").matches;
   function seatMotion(kind) {
     if (calm() || !seat.isConnected || (seat.dataset.motion && SMALL_MOTION.includes(kind))) return;
@@ -219,6 +220,26 @@ export function runIchidai({ host = document.getElementById("stage"), signal = n
       fidget();
     }, 4200 + Math.random() * 3800);
   }
+  /** まばたき: 数秒おきに、まぶたを一瞬閉じる（たまに2回続ける）。目の位置が分かる表情のときだけ見える */
+  function blink() {
+    clearTimeout(blinkTimer);
+    blinkTimer = setTimeout(() => {
+      if (dead()) return;
+      if (!calm() && seat.isConnected && root.dataset.phase !== "setup") {
+        const once = (delay) => setTimeout(() => { seat.classList.add("is-blink"); setTimeout(() => seat.classList.remove("is-blink"), 130); }, delay);
+        once(0); if (Math.random() < 0.22) once(300);
+      }
+      blink();
+    }, 2300 + Math.random() * 3400);
+  }
+  /** しゃべる: 台詞の長さのぶんだけ、口を動かす */
+  function talk(text = "") {
+    seatMotion("talk");
+    if (calm() || !seat.isConnected) return;
+    clearTimeout(talkTimer);
+    seat.classList.add("is-talking");
+    talkTimer = setTimeout(() => seat.classList.remove("is-talking"), Math.min(2000, 420 + String(text).length * 95) / speed);
+  }
   /** 審査の結果への反応: 焦げたらのけぞる／ジャストや一票なら跳ねる／一票を取られたら沈む */
   function reactToScore(ev) {
     const r = ev.res[CPU];
@@ -242,7 +263,7 @@ export function runIchidai({ host = document.getElementById("stage"), signal = n
   function close(completed) {
     if (dead()) return;
     ctrl.abort(); pending?.(null);
-    lines.clear(); clearTimeout(motionTimer); clearTimeout(fidgetTimer);
+    lines.clear(); clearTimeout(motionTimer); clearTimeout(fidgetTimer); clearTimeout(blinkTimer); clearTimeout(talkTimer);
     root.remove(); active.delete(host);
     if (window.__ichidai === hook) delete window.__ichidai;
     try { previousFocus?.focus?.({ preventScroll: true }); } catch { /* 元の要素が無ければそのまま */ }
@@ -280,10 +301,15 @@ export function runIchidai({ host = document.getElementById("stage"), signal = n
     const { portrait, frame } = found;
     // 席: 顔の幅（frame.unit）を 86px にそろえ、目の高さを窓の上から 66px に置く。小さな窓: 0.46 倍で目を (108, 27) に
     const scale = seatSize ? 86 / frame.unit : 0.46, [ex, ey] = seatSize ? [210, 66] : [108, 27];
-    return el(`span.ichi-foe-bust${seatSize ? ".is-seat" : ""}`, { dataset: { test: seatSize ? "ichi-foe-bust" : null, face: portrait.face }, "aria-hidden": "true" },
-      el("img", { src: portrait.src, alt: "", draggable: "false", style: {
+    // 席では、まぶたと口の重ね絵を立ち絵の上に置く（まばたき・しゃべるときの口。位置は ichidai-face.js）。息づかいは顔ごと動かす
+    const parts = seatSize ? faceParts(foe.id, portrait.face) : null;
+    const at = ([x, y, w, h]) => ({ left: `${(ex + (x - frame.eye[0]) * scale - (w * scale) / 2).toFixed(1)}px`, top: `${(ey + (y - frame.eye[1]) * scale - (h * scale) / 2).toFixed(1)}px`, width: `${(w * scale).toFixed(1)}px`, height: `${(h * scale).toFixed(1)}px` });
+    const overlays = parts ? [...parts.eyes.map((e) => el("i.ichi-eyelid", { style: at(e) })), parts.mouth ? el("i.ichi-lips", { style: at(parts.mouth) }) : null] : [];
+    return el(`span.ichi-foe-bust${seatSize ? ".is-seat" : ""}`, { dataset: { test: seatSize ? "ichi-foe-bust" : null, face: portrait.face, parts: parts ? "1" : null }, "aria-hidden": "true",
+      style: parts ? { "--skin": parts.skin, "--shade": parts.shade, "--lid-line": parts.line, "--lips": parts.lips } : null },
+      el("span.ichi-foe-face", [el("img", { src: portrait.src, alt: "", draggable: "false", style: {
         width: `${896 * scale}px`, left: `${ex - frame.eye[0] * scale}px`, top: `${ey - frame.eye[1] * scale}px`,
-      }, onerror: (e) => { e.currentTarget.parentElement.replaceWith(el("span.ichi-leader-ring", faceNode(foe.id, name))); } }));
+      }, onerror: (e) => { e.currentTarget.closest(".ichi-foe-bust").replaceWith(el("span.ichi-leader-ring", faceNode(foe.id, name))); } }), ...overlays]));
   }
   function setFoeMood(...choices) {
     const faces = DB.manifest.portraits?.[foe.id]?.faces || [];
@@ -336,7 +362,7 @@ export function runIchidai({ host = document.getElementById("stage"), signal = n
       if (dead()) return;
     }
     root.dataset.phase = "play";
-    render(); lines.event({ t: "start" }); fidget();
+    render(); lines.event({ t: "start" }); fidget(); blink();
     if (tutorial && !games.length) { openHelp(); }
     await loop();
   }

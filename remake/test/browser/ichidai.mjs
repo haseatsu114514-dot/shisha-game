@@ -164,14 +164,19 @@ await suite("ichidai", async (check) => {
     await page.evaluate(() => {
       window.__ichiMotion = new Set();
       const seat = document.querySelector('[data-test="ichi-seat"]');
-      const note = () => { if (seat.dataset.motion) window.__ichiMotion.add(seat.dataset.motion); for (const n of seat.querySelectorAll('[data-test="ichi-emote"]')) window.__ichiMotion.add(`emote:${n.dataset.kind}`); };
-      note(); new MutationObserver(note).observe(seat, { attributes: true, attributeFilter: ["data-motion"], childList: true });
+      const note = () => { if (seat.dataset.motion) window.__ichiMotion.add(seat.dataset.motion); if (seat.classList.contains("is-blink")) window.__ichiMotion.add("blink"); for (const n of seat.querySelectorAll('[data-test="ichi-emote"]')) window.__ichiMotion.add(`emote:${n.dataset.kind}`); };
+      note(); new MutationObserver(note).observe(seat, { attributes: true, attributeFilter: ["data-motion", "class"], childList: true });
     });
     assert.match(await page.locator(".ichi-seat-bust").evaluate((n) => getComputedStyle(n).animationName), /ichi-(sway|m-)/, "相手は、ふだんからゆっくり揺れている");
+    // まばたきと口の動き（オーナー「いる」）: 立ち絵の目と口の上に、まぶたと開いた口の重ね絵がある
+    assert.deepEqual([await page.locator(`${t("ichi-foe-bust")} .ichi-eyelid`).count(), await page.locator(t("ichi-foe-bust")).getAttribute("data-parts")], [2, "1"], "まぶたは左右に1つずつ");
+    const eyes = await page.evaluate(() => { const b = document.querySelector('[data-test="ichi-foe-bust"]').getBoundingClientRect(); return [...document.querySelectorAll(".ichi-eyelid")].map((n) => { const r = n.getBoundingClientRect(); return { x: (r.left + r.right) / 2 - b.left, y: (r.top + r.bottom) / 2 - b.top, w: r.width }; }); });
+    assert.ok(eyes.every((e) => e.y > 40 && e.y < 90 && e.w > 10 && e.w < 30) && eyes[0].x < 210 && eyes[1].x > 210, `まぶたは顔の目の位置にある: ${JSON.stringify(eyes)}`);
     // 卓に着くと、相手が一言しゃべる（吹き出しは相手の顔の左横。指は通す）
     const say = page.locator(t("ichi-say"));
     await say.waitFor();
     assert.equal(await say.getAttribute("data-line"), "ichidai_sumi_start");
+    assert.equal(await page.locator(`${t("ichi-seat")}.is-talking`).count(), 1, "しゃべっているあいだ、口が動く");
     const talk = await page.evaluate(() => {
       const b = (sel) => document.querySelector(sel).getBoundingClientRect(), s = b('[data-test="ichi-say"]'), a = b(".ichi-say-anchor"), st = b("#stage");
       return { right: s.right, anchorLeft: a.left, midY: (s.top + s.bottom) / 2, anchorTop: a.top, anchorBottom: a.bottom, inside: s.left >= st.left && s.top >= st.top,
@@ -187,6 +192,7 @@ await suite("ichidai", async (check) => {
         .flatMap((sel) => [...document.querySelectorAll(sel)].filter((n) => hit(n.getBoundingClientRect())).map((n) => n.className || sel));
     });
     assert.deepEqual(overlaps, [], "吹き出しはほかの UI に重ならない");
+    await page.waitForFunction(() => window.__ichiMotion.has("blink"), null, { timeout: 9000 }); // 数秒おきに、まばたきする（一瞬なので、見張りの記録で確かめる）
     // 試遊ページでも顔アイコンは WebP を読む（manifest だけ差し替えて PNG を指し、顔が出なかった不具合の再発防止）
     await page.waitForFunction(() => [...document.querySelectorAll(".ichi-leader.is-me img.ichi-face, .ichi-judges img.ichi-face")]
       .every((i) => /\.webp(\?|$)/.test(i.getAttribute("src")) && i.complete && i.naturalWidth > 0) && document.querySelectorAll(".ichi-judges img.ichi-face").length === 3, null, { timeout: 15000 });
