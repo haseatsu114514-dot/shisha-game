@@ -1270,6 +1270,9 @@ html:root[data-density="phone"] body:not(:root) .lvup-face { width: 64px; height
 .lvup.has-art.milestone .lvup-plate { border-width: 1px; box-shadow: 0 10px 34px rgba(0, 0, 0, 0.6), 0 0 60px rgba(255, 170, 60, 0.55); }
 .lvup.has-art .lvup-rays { border-radius: 0; opacity: 0.8; background: url(../img/ui/growth_board/burst_rays.webp) center / contain no-repeat; -webkit-mask-image: none; mask-image: none; }
 .lvup.has-art.milestone .lvup-rays { opacity: 1; }
+/* 節目（Lv.10 ごと）の紋（GB05・SBD124 の levelup_crest）: 札の後ろに、金のネオンの炎の輪。回る光（lvup-rays）とは別に、動かさずに置く */
+.lvup.has-art.milestone::before { content: ""; position: absolute; left: 50%; top: 50%; width: 560px; height: 560px; margin: -280px 0 0 -280px; pointer-events: none;
+  background: url(../img/ui/growth_board/levelup_crest.webp) center / contain no-repeat; }
 .lvup.has-art.gift .lvup-rays { opacity: 0.45; }
 html:root[data-density="phone"] body:not(:root) .lvup { --plate-h: 116px; }
 
@@ -1642,6 +1645,14 @@ html:root[data-density="phone"] body:not(:root) .lvup { --plate-h: 116px; }
 .gh-flow li div > span { font-size: 14px; opacity: 0.85; }
 .gh-flow b { font-size: 16px; }
 .gh-step { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; font-size: 17px; font-weight: 900; color: #2a1406; background: linear-gradient(180deg, #ffe8a8, #e8b04a); }
+/* 「ながれ」の手順の絵（GB05・SBD124）: 丸い台の中に手順の絵。番号は台の右下の小さな札。絵が読めない時（.missing）は今までの番号の丸 */
+.gh-flow li { grid-template-columns: 48px 1fr; }
+.gh-step { position: relative; width: 44px; height: 44px; }
+.gh-step .gh-step-pic { position: absolute; inset: 0; width: 100%; height: 100%; }
+.gh-step:has(> .gh-step-pic:not(.missing)) { background: none; }
+.gh-step-no { font-style: normal; }
+.gh-step:has(> .gh-step-pic:not(.missing)) > .gh-step-no { position: absolute; right: -5px; bottom: -4px; display: grid; place-items: center; min-width: 18px; height: 18px; padding: 0 3px; border-radius: 9px;
+  font-size: 12px; line-height: 1; color: #2a1406; background: linear-gradient(180deg, #ffe8a8, #e8b04a); box-shadow: 0 0 0 1px rgba(20, 12, 30, .8); }
 .gh-inline { display: inline-flex; align-items: center; gap: 8px; }
 .gh-inline .gh-count { padding: 1px 8px; border-radius: 999px; background: #1a1224; color: #fff6e2; }
 .gh-perks { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
@@ -1988,7 +1999,7 @@ html:root[data-density="phone"] body:not(:root) .gboard .gb-tab { gap: 10px; pad
 html:root[data-density="phone"] body:not(:root) .gboard :is(.gb-tab-body, .gb-tab-body b) { font-size: var(--phone-sub); line-height: 1.42; }
 html:root[data-density="phone"] body:not(:root) .gboard .gb-tab-head { width: 34px; height: 34px; font-size: var(--phone-sub); }
 html:root[data-density="phone"] body:not(:root) .gboard .gb-tab-ready { min-width: 26px; height: 26px; font-size: 17px; }
-html:root[data-density="phone"] body:not(:root) .gboard .gb-zoom .gb-icon { min-width: 46px; height: 46px; border-radius: 23px; font-size: var(--phone-sub); }
+html:root[data-density="phone"] body:not(:root) .gboard .gb-zoom .gb-icon { min-width: 46px; height: 46px; border-radius: 23px; font-size: var(--phone-sub); --pill-cap: 23px; }
 html:root[data-density="phone"] body:not(:root) .gboard .gb-side { gap: 3px; font-size: var(--phone-sub); line-height: 1.42; }
 html:root[data-density="phone"] body:not(:root) .gboard .gb-p-title { font-size: var(--phone-text); line-height: 1.42; }
 html:root[data-density="phone"] body:not(:root) .gboard :is(.gb-p-sub, .gb-p-state, .gb-bar, .gb-bar-sum, .gb-bar-note, .gb-feat, .gb-goals-head, .gb-goal-name, .gb-goal-fire b, .gb-goal-lock, .gb-goal-now) { font-size: var(--phone-sub); }
