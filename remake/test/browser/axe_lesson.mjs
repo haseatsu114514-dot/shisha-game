@@ -59,12 +59,12 @@ async function stop(page, target, cycle, next, touch = false) {
   await gauge(page, target, cycle); await hit(page, ".axe-target", touch); await phase(page, next);
 }
 async function start(page, options = {}) {
-  await page.goto(new URL("axe-throw.html", page.url()).href);
+  await page.goto(new URL("axe-throw.html?input=gauges", page.url()).href);
   const before = await storageSnapshot(page);
   await page.evaluate(async options => {
     const { runAxeThrow } = await import("./js/minigames/axe.js");
     window.lessonAbort = new AbortController();
-    window.lessonPromise = runAxeThrow({ host: document.getElementById("axe-app"), signal: lessonAbort.signal, ...options });
+    window.lessonPromise = runAxeThrow({ inputMode: "gauges",  host: document.getElementById("axe-app"), signal: lessonAbort.signal, ...options });
   }, options);
   if (options.tutorial) await coach(page, "welcome").waitFor(); else await phase(page, "choice");
   await pauseClock(page);
@@ -92,6 +92,33 @@ async function completeLesson(page, { touch = false, captureName = null, freeze 
   assert(result.completed && !result.cancelled && result.tutorial);
   assert.equal(result.throwCount, 1); assert.equal(result.maximum, 8); assert.equal(result.total, total);
   assert.equal(result.throws.length, 1); assert.equal(result.throws[0].score, 6);
+  return result;
+}
+// The real bar now teaches tap-pull; the explicitly started cases above preserve legacy-gauge coverage.
+async function completeTapPullLesson(page) {
+  assert.equal(await game(page).getAttribute("data-input-mode"), "tap-pull");
+  await guide(page, "welcome", false, false); await guide(page, "target", false, false);
+  const target = await page.locator('.axe-target').evaluate(node => {
+    const point = new DOMPoint(330, 245).matrixTransform(node.getScreenCTM());
+    return { x: point.x, y: point.y };
+  });
+  await page.mouse.click(target.x, target.y); await phase(page, "power");
+  await guide(page, "power", false, false);
+  assert.equal(await coach(page, "horizontal").count(), 0);
+  assert.equal(await coach(page, "vertical").count(), 0);
+  const grip = await page.locator('[data-test="axe-pull-handle"]').boundingBox();
+  const bounds = await game(page).boundingBox(); assert(grip && bounds);
+  const x = grip.x + grip.width / 2, y = grip.y + grip.height / 2;
+  await page.mouse.move(x, y); await page.mouse.down();
+  await page.mouse.move(x, y + Math.max(80, Math.min(180, bounds.height * .26)) * .62, { steps: 8 });
+  await page.mouse.up(); await page.clock.runFor(1200);
+  await guide(page, "result", false, false); await phase(page, "result");
+  assert.equal(await game(page).getAttribute("data-player-throws"), "1");
+  await action(page); await guide(page, "finish", false, false);
+  const result = await page.evaluate(() => window.lessonPromise);
+  assert(result.completed && !result.cancelled && result.tutorial);
+  assert.equal(result.inputVersion, "tap-pull-v1");
+  assert.equal(result.throws.length, 1); assert.equal(result.maximum, 8);
   return result;
 }
 async function previewMatchesModel(page) {
@@ -166,7 +193,7 @@ await suite("axe-lesson", async check => {
     }
     const refused = await page.evaluate(async () => {
       const { runAxeThrow } = await import("./js/minigames/axe.js"), host = document.getElementById("axe-app");
-      return Promise.all([runAxeThrow({ host, tutorial: true, opponent: null, lessonContext: "party" }), runAxeThrow({ host, mode: "practice", lessonContext: "first" })]
+      return Promise.all([runAxeThrow({ inputMode: "gauges",  host, tutorial: true, opponent: null, lessonContext: "party" }), runAxeThrow({ inputMode: "gauges",  host, mode: "practice", lessonContext: "first" })]
         .map(p => p.then(() => false, e => e instanceof RangeError)));
     });
     assert.deepEqual(refused, [true, true], "an unknown context, or a context outside the lesson, is refused");
@@ -219,7 +246,7 @@ await suite("axe-lesson", async check => {
       const storageBefore = await storageSnapshot(page);
       await page.locator('[data-test="axe-bar-lesson"]').click(); await coach(page, "welcome").waitFor();
       await page.evaluate(async () => { window.lessonPromise = (await import("./js/minigames/axe.js")).runAxeThrow({ host: document.getElementById("stage") }); });
-      await pauseClock(page); await completeLesson(page, { freeze: false });
+      await pauseClock(page); await completeTapPullLesson(page);
       await page.locator('[data-test="axe-bar-menu"]').waitFor({ state: "visible" });
       assert.equal(await page.evaluate(() => window.lessonGuardCalls), 0);
       assert.equal(await page.evaluate(() => window.lessonVisitSettled), false);
@@ -237,7 +264,7 @@ await suite("axe-lesson", async check => {
   });
 await check("touch-portrait-rotate-hint", async page => {
     // 縦持ちスマホは本編と同じく横向き案内で止める（2026-11-09 オーナー決定・#3035／試遊ページ共通化 #3076）
-    await page.goto(new URL("axe-throw.html", page.url()).href);
+    await page.goto(new URL("axe-throw.html?input=gauges", page.url()).href);
     await page.locator(".axe-menu").waitFor();
     assert.equal(await page.locator("#rotate-hint").isVisible(), true);
   }, { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });

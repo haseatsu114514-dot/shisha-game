@@ -1034,7 +1034,7 @@
         "node --experimental-vm-modules remake/test/hiyori_showroom_806.mjs",
         "node --experimental-vm-modules remake/test/first_meeting_affinity.mjs",
         "node --experimental-vm-modules remake/test/samechan_story.mjs",
-        "node --test remake/test/axe_throw.mjs remake/test/axe_match.mjs remake/test/axe_presentation.mjs remake/test/axe_challenges.mjs remake/test/axe_pull.mjs remake/test/axe_pull_dom.mjs remake/test/axe_equipment.mjs",
+        "node --test remake/test/axe_throw.mjs remake/test/axe_match.mjs remake/test/axe_presentation.mjs remake/test/axe_challenges.mjs remake/test/axe_pull.mjs remake/test/axe_pull_dom.mjs remake/test/axe_equipment.mjs remake/test/axe_pull_input.mjs",
         "node remake/test/axe_bar_discovery.mjs",
         "node remake/test/mix_recognition.mjs",
         "node --experimental-vm-modules remake/test/foil_holes.mjs",
@@ -1196,6 +1196,7 @@
         "remake/test/axe_throw.mjs",
         "remake/test/axe_match.mjs",
         "remake/test/axe_presentation.mjs",
+        "remake/test/browser/axe_tap_pull.mjs",
         "remake/test/browser/axe_throw.mjs",
         "remake/test/browser/axe_versus.mjs",
         "remake/test/browser/axe_polish.mjs",
@@ -1211,6 +1212,7 @@
         "assets/audio/se/axe_throw/**"
       ],
       "run": [
+        "COMPARISON_DIR=.codex/artifacts/remake-browser/axe-tap-pull node remake/test/browser/axe_tap_pull.mjs",
         "COMPARISON_DIR=.codex/artifacts/remake-browser/axe-poses node remake/test/browser/axe_throw.mjs",
         "COMPARISON_DIR=.codex/artifacts/remake-browser/axe-versus-poses node remake/test/browser/axe_versus.mjs",
         "COMPARISON_DIR=.codex/artifacts/remake-browser/axe-polish-poses node remake/test/browser/axe_polish.mjs",
@@ -3349,6 +3351,7 @@
         "remake/test/axe_throw.mjs",
         "remake/test/axe_match.mjs",
         "remake/test/axe_presentation.mjs",
+        "remake/test/browser/axe_tap_pull.mjs",
         "remake/test/browser/axe_throw.mjs",
         "remake/test/browser/axe_versus.mjs",
         "remake/test/browser/axe_polish.mjs",

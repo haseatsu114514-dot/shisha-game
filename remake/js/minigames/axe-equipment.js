@@ -1,14 +1,13 @@
-// Draft three-tier personal hatchets. Purchase integration is not enabled in the main game yet.
+// Three-tier personal hatchets: the venue and preview share one purchase catalog.
 // Reuse the legacy item and return-fare budget; scoring geometry and points never depend on gear.
-import { HOBBY_GEAR, AXE_STEADY, buyGear } from '../core/hobby-gear.js';
-import { spendableMoney } from '../core/travel-budget.js';
+import { HOBBY_GEAR, AXE_STEADY, buyGear, gearStatus } from '../core/hobby-gear.js';
 import { POWER } from './axe-model.js';
 export const AXE_EQUIPMENT_VERSION = 1;
 export const HOUSE_AXE = Object.freeze({ id: 'house', name: '店の斧', tier: 0, price: 0, steady: 1, powerErrorScale: 1, handle: '#af7d45', grip: '#433f35' });
 export const PERSONAL_AXES = Object.freeze([
   Object.freeze({ ...HOBBY_GEAR.gear_hatchet, tier: 1, steady: AXE_STEADY, powerErrorScale: 1, handle: '#af7d45', grip: '#775133' }),
-  Object.freeze({ id: 'gear_hatchet_balanced', name: 'バランス・ハチェット', tier: 2, price: 30000, chapterMin: 1, steady: .8, powerErrorScale: .9, handle: '#8c5f38', grip: '#315c5a' }),
-  Object.freeze({ id: 'gear_hatchet_precision', name: 'プレシジョン・ハチェット', tier: 3, price: 50000, chapterMin: 1, steady: .7, powerErrorScale: .8, handle: '#64462f', grip: '#303c48' }),
+  Object.freeze({ ...HOBBY_GEAR.gear_hatchet_balanced, tier: 2, steady: .8, powerErrorScale: .9, handle: '#8c5f38', grip: '#315c5a' }),
+  Object.freeze({ ...HOBBY_GEAR.gear_hatchet_precision, tier: 3, steady: .7, powerErrorScale: .8, handle: '#64462f', grip: '#303c48' }),
 ]);
 export const AXE_EQUIPMENT = Object.freeze(Object.fromEntries([HOUSE_AXE, ...PERSONAL_AXES].map(g => [g.id, g])));
 export const ownsAxe = (s, id) => id === 'house' || Object.hasOwn(AXE_EQUIPMENT, id) && Array.isArray(s?.owned) && s.owned.includes(id);
@@ -19,19 +18,16 @@ export function axePurchaseStatus(s, id) {
   if (!gear || !s || !Array.isArray(s.owned) || !Number.isFinite(s.money) || s.money < 0 || !Number.isInteger(s.money)) return { ok: false, reason: 'invalid' };
   if (ownsAxe(s, id)) return { ok: false, reason: 'owned' };
   if (!Number.isInteger(s.chapter) || s.chapter < gear.chapterMin) return { ok: false, reason: 'chapter' };
-  if (spendableMoney(s) < gear.price) return { ok: false, reason: 'money' };
-  return { ok: true, reason: null };
+  return gearStatus(s, id);
 }
 export function buyAxe(s, id) {
   if (!axePurchaseStatus(s, id).ok) return false;
-  if (id === 'gear_hatchet') return buyGear(s, id); // Legacy price, ownership and transaction behavior stay authoritative.
-  s.money -= AXE_EQUIPMENT[id].price;
-  s.owned.push(id);
-  return true;
+  return buyGear(s, id); // Catalog is authoritative for every tier; ownership is never exchanged.
 }
 export function axePower(rawPower, id = 'house') {
   if (!Number.isFinite(rawPower) || rawPower < 0 || rawPower > 1 || !Object.hasOwn(AXE_EQUIPMENT, id)) throw new RangeError('Invalid axe power input');
-  return POWER.ideal + (rawPower - POWER.ideal) * AXE_EQUIPMENT[id].powerErrorScale;
+  const factor = AXE_EQUIPMENT[id].powerErrorScale;
+  return factor === 1 ? rawPower : POWER.ideal + (rawPower - POWER.ideal) * factor;
 }
 export function axeGreenBand(id = 'house') {
   if (!Object.hasOwn(AXE_EQUIPMENT, id)) throw new RangeError('Unknown axe');

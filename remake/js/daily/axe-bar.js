@@ -13,7 +13,9 @@ import { DIVISIONS } from "../minigames/axe-model.js";
 import { axeBarDiscovered, axeBarSightingDue } from "../core/axe-bar-discovery.js";
 import { playAxeBarSighting } from "./axe-bar-discovery.js";
 import { playBgm, currentBgm } from "../core/audio.js";
-import { gearOffer, ownsGear, AXE_STEADY } from "../core/hobby-gear.js";
+import { gearOffer } from "../core/hobby-gear.js";
+
+import { HOUSE_AXE, PERSONAL_AXES, bestOwnedAxe, ownsAxe, axeEffect } from "../minigames/axe-equipment.js";
 
 const modes = { practice: "3投練習", league: "10投ゲーム（WATL式）" };
 let active = false, division = "am";
@@ -30,6 +32,7 @@ export async function visitAxeBar({ staminaGuard = async () => true, signal } = 
   if (active || !state || !axeBarDiscovered(state) || state.chapter < 1 || state.phase !== "daily" || state.slot !== 1 || signal?.aborted) return false;
   active = true;
   const owner = state, day = state.day, slot = state.slot, chapter = state.chapter;
+  let gearId = bestOwnedAxe(owner).id; // Selection lasts for this visit, not a new save flag.
   const abort = new AbortController();
   const current = () => !abort.signal.aborted && state === owner && state.day === day && state.slot === slot && state.chapter === chapter;
   const cancel = () => abort.abort();
@@ -92,11 +95,29 @@ export async function visitAxeBar({ staminaGuard = async () => true, signal } = 
           for (const button of divisionButtons) button.setAttribute("aria-pressed", String(button.dataset.test === "axe-bar-division-" + id));
           divisionNote.textContent = d.note;
         } }));
-      // マイ斧（VOL07）: カウンターで一度だけ買える。店の3投・10投で構えの揺れが1割小さくなる（レッスンは店の斧のまま）。
-      const gear = gearOffer(owner, "gear_hatchet", { isCurrent: () => current() && !picked && !lessonOpen, onBought: item => {
-        save(); toast(`「${item.name}」を買った。${item.effect}`, { kind: "good" });
-        for (const button of host.querySelectorAll(".sub-choices .big-choice")) button.disabled = !available();
-      } });
+      // All tiers are optional. Purchases retain old ownership and never exchange/refund an axe.
+      const gear = el("div.axe-bar-gear", { dataset: { test: "axe-bar-gear" } });
+      const renderGear = () => {
+        const choices = [HOUSE_AXE, ...PERSONAL_AXES].filter(item => ownsAxe(owner, item.id));
+        const selection = el("div.axe-bar-gear-selection", { role: "group", "aria-label": "今回使う斧", dataset: { test: "axe-bar-gear-selection" } }, choices.map(item => el("button.btn.ghost.small", {
+          type: "button", text: `${item.name}（${axeEffect(item)}）`, "aria-pressed": String(gearId === item.id), dataset: { test: `axe-select-${item.id}` }, onclick: () => {
+            if (!current() || picked || lessonOpen || !ownsAxe(owner, item.id)) return;
+            gearId = item.id; renderGear();
+            gear.querySelector(`[data-test="axe-select-${item.id}"]`)?.focus();
+          },
+        })));
+        const offers = PERSONAL_AXES.map(item => {
+          if (ownsAxe(owner, item.id)) return el("p.gear-offer.owned", { text: `${item.name}：所持済み`, title: item.description, dataset: { test: `gear-owned-${item.id}` } });
+          return gearOffer(owner, item.id, { isCurrent: () => current() && !picked && !lessonOpen, onBought: bought => {
+            gearId = bought.id; save(); toast(`「${bought.name}」を買った。${bought.effect}`, { kind: "good" });
+            renderGear(); // Refresh every price button, including now-unaffordable offers.
+            for (const button of host.querySelectorAll(".sub-choices .big-choice")) button.disabled = !available();
+            gear.querySelector(`[data-test="axe-select-${bought.id}"]`)?.focus();
+          } });
+        });
+        gear.replaceChildren(el("p", { text: "マイ斧は任意購入。店の斧でも満点を狙えます。選択は今回の来店中だけ、無料レッスンは店の斧です。" }), ...offers, selection);
+      };
+      renderGear();
       const divisions = el("div.axe-bar-divisions", { role: "group", "aria-label": "10投ゲームの部門（閉じ方）" }, [el("span.axe-bar-division-label", { text: "10投の部門" }), ...divisionButtons, divisionNote]);
       host.append(el("h2.sub-title", { text: AXE_BAR.label }),
         venueHost("maki", DB.dialogues[welcome]?.lines?.[0]?.text || "", DB), el("p.sub-lead", { text: status }),
@@ -121,10 +142,11 @@ export async function visitAxeBar({ staminaGuard = async () => true, signal } = 
       if (!available()) return false;
     }
     const result = await runAxeThrow({ host: document.getElementById("stage"), mode, opponent: null, allowRetry: false, signal: abort.signal, division: mode === "league" ? division : "rec",
-      steady: ownsGear(owner, "gear_hatchet") ? AXE_STEADY : 1 });
+      gearId: ownsAxe(owner, gearId) ? gearId : "house" });
     if (!result.completed || !available()) return false;
     const records = owner.flags._axe_bar_records ||= {};
-    const entry = { chapter, day, total: result.total, maximum: result.maximum, ruleset: result.ruleset, division: result.division, throws: result.throws };
+    const entry = { chapter, day, total: result.total, maximum: result.maximum, ruleset: result.ruleset, division: result.division, throws: result.throws,
+      inputVersion: result.inputVersion, equipment: result.equipment ? { ...result.equipment } : undefined };
     addCareer(records, result);
     const previous = records[mode];
     const newBest = !previous?.best || result.total > previous.best.total;
@@ -142,3 +164,4 @@ export async function visitAxeBar({ staminaGuard = async () => true, signal } = 
     if (state === owner && currentBgm() === "bgm_axe") playBgm(bgmBefore); // #788 退店・中断で元の曲へ
   }
 }
+

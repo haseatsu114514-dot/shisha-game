@@ -31,8 +31,8 @@ test('kill declaration and focus buttons return to keyboard aiming',()=>{restart
 
 test('demo shop charges once, equips best owned after purchase and does not stack bonuses',()=>{
   restart();fire(nodes.settings,'click');
-  fire(nodes['axe-offers'].children[0],'click');assert.equal(nodes.wallet.textContent,'試作用所持金 85,000円');assert.equal(nodes.equipment.value,'gear_hatchet');
-  fire(nodes['axe-offers'].children[0],'click');assert.equal(nodes.wallet.textContent,'試作用所持金 85,000円');
-  fire(nodes['axe-offers'].children[2],'click');assert.equal(nodes.wallet.textContent,'試作用所持金 35,000円');assert.equal(nodes.equipment.value,'gear_hatchet_precision');
+  fire(nodes['axe-offers'].children[0],'click');assert.equal(nodes.wallet.textContent,'試作用所持金 95,000円');assert.equal(nodes.equipment.value,'gear_hatchet');
+  fire(nodes['axe-offers'].children[0],'click');assert.equal(nodes.wallet.textContent,'試作用所持金 95,000円');
+  fire(nodes['axe-offers'].children[2],'click');assert.equal(nodes.wallet.textContent,'試作用所持金 80,000円');assert.equal(nodes.equipment.value,'gear_hatchet_precision');
   restart();aim();assert.equal(nodes.grip.style.background,'#303c48');assert(Math.abs(parseFloat(nodes.track.querySelector('i').style.height)-20)<1e-8);
 });

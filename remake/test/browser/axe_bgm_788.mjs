@@ -75,8 +75,21 @@ await suite("axe-bgm-788", async check => {
     await waitPlaying(page, "bgm_axe");
     assert.equal(await page.evaluate(() => A.daily.playHiyoriEvent("axe_reveal")), false, "second start must not overlap");
     assert.equal(await bgm(page), "bgm_axe");
-    for (let n = 0; n < 3; n++) for (const p of ["choice", "horizontal", "vertical", "power", "result"]) {
-      await phase(page, p); await page.locator('[data-test="axe-action"]:not([disabled])').click();
+    for (let n = 0; n < 3; n++) {
+      await phase(page, "choice");
+      const target = await page.locator('.axe-target').evaluate(node => {
+        const point = new DOMPoint(330, 245).matrixTransform(node.getScreenCTM());
+        return { x: point.x, y: point.y };
+      });
+      await page.mouse.click(target.x, target.y); await phase(page, "power");
+      const box = await page.locator('[data-test="axe-pull-handle"]').boundingBox();
+      const rootBox = await page.locator('[data-test="axe-game"]').boundingBox();
+      assert(box && rootBox, "tap-pull controls must be visible");
+      const x = box.x + box.width / 2, y = box.y + box.height / 2;
+      await page.mouse.move(x, y); await page.mouse.down();
+      await page.mouse.move(x, y + Math.max(80, Math.min(180, rootBox.height * .26)) * .62, { steps: 8 });
+      await page.mouse.up(); await phase(page, "result");
+      await page.locator('[data-test="axe-action"]:not([disabled])').click();
     }
     await phase(page, "summary"); await page.locator('[data-test="axe-action"]:not([disabled])').click();
     assert.equal(await page.evaluate(() => A.run), true);

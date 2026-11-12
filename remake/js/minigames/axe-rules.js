@@ -2,7 +2,8 @@ import { el } from "../core/util.js";
 import { scoringGuide } from "./axe-coach.js";
 
 /** Shared by the practice entrance and the in-story game. No save/state dependencies. */
-export function axeRules(onClose) {
+export function axeRules(onClose, { inputMode = "tap-pull" } = {}) {
+  const tap = inputMode === "tap-pull";
   const close = el("button.axe-button.axe-primary", { text: "戻る", dataset: { test: "axe-rules-close" }, onclick: onClose });
   const section = (title, rows) => el("section", [el("h3", { text: title }), el("ul", rows.map(text => el("li", { text })))]);
   const panel = el("section.axe-rules", { role: "dialog", "aria-modal": "true", "aria-label": "斧投げの遊び方と得点ルール", dataset: { test: "axe-rules-panel" } }, [
@@ -10,10 +11,10 @@ export function axeRules(onClose) {
       el("div.axe-rules-scroll", { tabindex: "0" }, [
         scoringGuide(),
         section("まずこれだけ", [
-          "①横 → ②縦 → ③回転の順に、ボタン・的のタップ・Space・Enterで針を止める。",
+          tap ? "的をタップして狙いを決め、右の取っ手を下へ引いて緑の範囲で離す。元へ戻すとキャンセル。" : "①横 → ②縦 → ③回転の順に、ボタン・的のタップ・Space・Enterで針を止める。",
           "回転は54〜70%の緑の帯で放す。弱いと柄から当たり、強いと回りすぎて落下して0点。",
           "白い刃先（4インチの刃）が予測着地点。刃が触れた一番高い区画の点が入る。",
-          "↔ 横・↕ 縦・↻ 回転のチップは、金色が今止める工程。チップの下の値が止めた位置と回転。",
+          tap ? "矢印キーで照準、Space長押しで引き、離して投げる。Fで一度だけ集中。引く速さではなく距離で回転が決まる。" : "↔ 横・↕ 縦・↻ 回転のチップは、金色が今止める工程。チップの下の値が止めた位置と回転。",
           "上の帯は各投の点数。青い斧のバッジの数字が、キルショットを宣言できる残りの回数。",
         ]),
         section("的と得点（公式の寸法）", [
@@ -23,7 +24,7 @@ export function axeRules(onClose) {
           "板の外に投げると刺さらず0点。板の木でも、1のリングの外は0点。",
         ]),
         section("キルショット（青）", [
-          "投げる前に左上・右上・左下・右下の青を1つ宣言する。的の青を直接タップしても宣言できる。外側の青は7点、中心は8点。",
+          tap ? "青を狙う前に、左上・右上・左下・右下の宣言ボタンで1つ指定する。的の青をタップするだけでは宣言しない。外側7点、中心8点。" : "投げる前に左上・右上・左下・右下の青を1つ宣言する。的の青を直接タップしても宣言できる。外側の青は7点、中心は8点。",
           "宣言した投は、その青以外に刺さっても0点。宣言なしで青に刺さると1のリングの1点。",
           "宣言は1ゲーム2回。外れ・落下でも1回使う。成功した高さは左右とも閉じ、後半でも閉じたまま。",
           "落下（刺さらない）すると宣言が1回増える（最後の一投を除く）。増えたぶんは前の宣言と反対の高さの青にだけ使える。",
@@ -63,3 +64,4 @@ export function axeRules(onClose) {
   });
   return panel;
 }
+
