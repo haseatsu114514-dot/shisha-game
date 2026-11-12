@@ -418,7 +418,8 @@ await suite("trpg-main", async check => {
     const before = await snapshot(page);
     await hit(page, "trpg-play-ordinary-cup");
     assert.equal(await page.locator(".trpg-table-person").count(), 4);
-    await lines(page); await hit(page, "trpg-start"); await lines(page); await roll(page);
+    // 相談は旅人への2つの質問（interview）の後に出る。ほかの卓の検査と同じく質問を終えてから数える。
+    await lines(page); await hit(page, "trpg-start"); await lines(page); await roll(page); await interviewStep(page);
     assert.equal(await page.locator('[data-test^="trpg-consult-"]').count(), 2);
     assert.equal(await button(page, "trpg-consult-regulara").count(), 1);
     assert.equal(await button(page, "trpg-consult-regularb").count(), 1);
