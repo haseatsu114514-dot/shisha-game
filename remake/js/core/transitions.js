@@ -84,6 +84,7 @@ export function smokeArt() {
   return smokeUrls;
 }
 let smokeReady = null; // null＝まだ読んでいない、Promise＝読み込み中、true／false＝結果
+const smokeImages = []; // デコード済みの3枚を保持し、GC後の切り替えでも再取得させない
 const canMask = () => typeof CSS !== "undefined" && !!CSS.supports
   && (CSS.supports("mask-image", 'url("x.png")') || CSS.supports("-webkit-mask-image", 'url("x.png")'));
 /** マスクと煙の絵を先に読む（このファイルを読み込んだ時に一度）。読めるまでの切り替えは、前の背景を薄くするだけ */
@@ -94,9 +95,10 @@ export function warmSmoke() {
     const img = new Image();
     // CSS の mask-image は CORS で取りに行く。先読みも同じ取り方にしないと、ほどくたびに取り直す（煙の絵は普通の背景なのでそのまま）
     if (key !== "haze") img.crossOrigin = "anonymous";
+    smokeImages.push(img);
     img.src = src;
     return img.decode();
-  })).then(() => (smokeReady = true), () => (smokeReady = false));
+  })).then(() => (smokeReady = true), () => { smokeImages.length = 0; return (smokeReady = false); });
   return smokeReady;
 }
 // 起動の早い段階（ui.js がこのファイルを読む時）に読み始める。ブラウザでないテストの環境では何もしない。
