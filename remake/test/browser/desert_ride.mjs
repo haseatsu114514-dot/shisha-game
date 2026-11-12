@@ -91,9 +91,9 @@ await suite("desert-ride", async check => {
     const missing = await page.evaluate(async () => {
       const { DESERT_ART } = await import("./js/minigames/desert-ride-art.js");
       const loaded = performance.getEntriesByType("resource").map(entry => entry.name);
-      return Object.values(DESERT_ART).filter(def => def.file && !loaded.some(name => name.includes(def.file))).map(def => def.file);
+      return Object.entries(DESERT_ART).filter(([key, def]) => def.file && !key.startsWith("naruRider") && !loaded.some(name => name.includes(def.file))).map(([, def]) => def.file);
     });
-    assert.deepEqual(missing, [], "every piece of art finished loading before the run");
+    assert.deepEqual(missing, [], "all common and selected rival art finished loading before the run");
     // 2回目からは読み終わっているので、ロード画面を出さずにすぐ始まる。
     await page.keyboard.press("Escape");
     await phase(page, "menu");
@@ -137,7 +137,6 @@ await suite("desert-ride", async check => {
     const loaded = await page.evaluate(() => performance.getEntriesByType("resource").map(entry => entry.name).filter(name => name.includes("/img/ui/desert_ride/")).map(name => name.split("/").pop()).sort());
     assert.deepEqual(loaded, ["backdrop_day_land.webp", "backdrop_day_sky.webp", "backdrop_dusk_land.webp", "backdrop_dusk_sky.webp", "flag_pole.webp", "goal_banner.webp",
       "rider_brace.webp", "rider_fall.webp", "rider_jump.webp", "rider_lean_left.webp", "rider_lean_right.webp",
-      "rider_naru_brace.webp", "rider_naru_fall.webp", "rider_naru_jump.webp", "rider_naru_lean_left.webp", "rider_naru_lean_right.webp", "rider_naru_ride.webp",
       "rider_noor_brace.webp", "rider_noor_fall.webp", "rider_noor_jump.webp", "rider_noor_lean_left.webp", "rider_noor_lean_right.webp", "rider_noor_ride.webp",
       "rider_ride.webp", "rock_large.webp", "rock_small.webp", "sand_puff.webp"]);
     // 空中トリックとブーストを使う理想の滑り: S、ヌールに勝つ。360 以上を決めるとカットインが走る
@@ -197,7 +196,7 @@ await suite("desert-ride", async check => {
   });
 
   await check("phone-touch-buttons-reduced-motion-and-tutorial", async page => {
-    // タッチ端末も再生中の曲を加速する（重い音程補正は使わない）。
+    // タッチ端末でもブースト中の曲の速さは変えない。
     await page.addInitScript(() => {
       window.__rateWrites = [];
       const rate = Object.getOwnPropertyDescriptor(HTMLMediaElement.prototype, "playbackRate");
@@ -268,7 +267,7 @@ await suite("desert-ride", async check => {
     assert.equal(await page.evaluate(() => window.__desertRide.game.gauge), 0, "the BOOST button consumes the stocked gauge");
     assert(await page.evaluate(() => window.__desertRide.game.boostT > 0), "the partial gauge gives boost time");
     await page.waitForTimeout(200);
-    assert(await page.evaluate(() => window.__rateWrites.includes(1.18)), "touch boost accelerates the current music to 1.18x");
+    assert.deepEqual(await page.evaluate(() => window.__rateWrites.filter(value => value !== 1)), [], "touch boost keeps the music at its normal tempo");
     // 練習は説明つきで（回転・ブーストまで）、終わると本番へ進むカード
     await page.evaluate(() => {
       window.__captions = [];
@@ -417,7 +416,7 @@ await suite("desert-ride", async check => {
     assert.equal(await page.evaluate(() => window.__audio.bgmPlaybackRate()), 1, "normal tempo outside a boost");
     await ride(page, () => { const r = window.__desertRide; r.game.x = 0; r.game.vx = 0; r.game.fallT = 0; r.game.gauge = 1; r.boost(); });
     await page.waitForFunction(() => window.__audio.bgmPlaybackRate() > 1.15 && document.querySelector('[data-test="desert-ride"]').dataset.boost === "on");
-    assert(await page.evaluate(() => window.__audio.bgmPlaybackRate()) <= 1.18 + 1e-9, "the boost tempo is 1.18x at most");
+    assert.equal(await page.evaluate(() => window.__audio.bgmPlaybackRate()), 1, "boost keeps the music at its normal tempo");
     await ride(page, () => { window.__desertRide.game.boostT = 0.02; });
     await page.waitForFunction(() => window.__audio.bgmPlaybackRate() === 1);
     await ride(page, () => { const r = window.__desertRide; r.game.fallT = 0; r.game.gauge = 1; r.boost(); });

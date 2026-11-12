@@ -74,31 +74,35 @@ export function riderPose(game, previous = "rider") {
   return "rider";
 }
 
-let images = null, settled = null;
-/** 絵を読み始め、{ get(name) } を返す。get は読み終えた画像か null。何度呼んでも同じものを使い回す。 */
-export function loadDesertArt() {
-  if (!images) {
-    images = new Map();
-    if (typeof Image !== "undefined") {
-      for (const [name, def] of Object.entries(DESERT_ART)) {
-        if (!def.file) continue;
-        const image = new Image();
-        image.decoding = "async";
-        const entry = { image, ready: false };
-        entry.done = new Promise(resolve => {
-          image.onload = () => { (image.decode ? image.decode().catch(() => {}) : Promise.resolve()).then(() => { entry.ready = true; resolve(); }); };
-          image.onerror = () => { entry.ready = false; resolve(); };
-        });
-        image.src = imgFileUrl(def.file);
-        images.set(name, entry);
-      }
+let images = null;
+/**
+ * 共通画像と選んだ相手だけを準備する。rivals省略時は従来どおり全画像。
+ * Mapは共有し、後から相手を替えても取得・decodeを重複させない。
+ */
+export function loadDesertArt({ rivals = null } = {}) {
+  images ||= new Map();
+  const names = Object.entries(DESERT_ART).filter(([name, def]) => def.file
+    && (rivals === null || !/^(noor|naru)Rider/.test(name) || rivals.some(who => name.startsWith(who + "Rider")))).map(([name]) => name);
+  if (typeof Image !== "undefined") {
+    for (const name of names) {
+      if (images.has(name)) continue;
+      const image = new Image();
+      image.decoding = "async";
+      const entry = { image, ready: false, pending: true };
+      entry.done = new Promise(resolve => {
+        image.onload = () => { (image.decode ? image.decode().catch(() => {}) : Promise.resolve()).then(() => {
+          entry.ready = true; entry.pending = false; resolve();
+        }); };
+        image.onerror = () => { entry.ready = false; entry.pending = false; resolve(); };
+      });
+      images.set(name, entry);
+      image.src = imgFileUrl(DESERT_ART[name].file);
     }
   }
-  settled ||= Promise.all([...images.values()].map(entry => entry.done));
-  // whenReady: すべての絵が読み終わる（読めなかった絵も含めて決着する）まで待つ。pending: まだ読み中の絵があるか
+  const entries = names.map(name => images.get(name)).filter(Boolean);
   return {
     get: name => { const entry = images.get(name); return entry?.ready ? entry.image : null; },
-    whenReady: () => settled,
-    pending: () => [...images.values()].some(entry => !entry.ready && entry.image.complete === false),
+    whenReady: () => Promise.all(entries.map(entry => entry.done)),
+    pending: () => entries.some(entry => entry.pending),
   };
 }

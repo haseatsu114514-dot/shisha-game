@@ -865,3 +865,64 @@ test("the meter shows realistic sandboard speeds: a slight stretch over the real
   assert(top < DISPLAY.redFrom && boosted > DISPLAY.redFrom && boosted < DISPLAY.dialMax, "only the boost reaches the red band, and the needle never pins");
   assert.equal(toMeters(100), 100 * DISPLAY.scale, "distances on screen use the same scale as the speed");
 });
+
+test("rock and spin falls retain positive gauge without refilling an empty gauge", () => {
+  const course = generateCourse(DEFAULT_SEED);
+  const rock = course.features.find(f => f.kind === "rock");
+  for (const initial of [0, 0.01, 0.15, 0.3, 0.6, 1]) {
+    const game = createGame(course);
+    game.gauge = initial;
+    while (!game.passed.has(rock)) { game.x = rock.x; step(game, {}, DT); }
+    assert.equal(game.falls, 1);
+    assert.equal(game.gauge, Math.max(initial * 0.5, initial - BOOST.fallLoss));
+    assert.equal(canRecover(game), initial > 0);
+    const spin = createGame(course);
+    jumpAtNextBump(spin);
+    step(spin, {}, DT);
+    while (spin.air > 0.2) step(spin, {}, DT);
+    spin.gauge = initial;
+    while (spin.air > 0) step(spin, { left: true }, DT);
+    assert.equal(spin.events.at(-1).reason, "spin");
+    assert.equal(spin.gauge, Math.max(initial * 0.5, initial - BOOST.fallLoss));
+    assert.equal(canRecover(spin), false);
+  }
+});
+
+test("scoped art loading defers unselected rivals and waits through decode", async () => {
+  const NativeImage = globalThis.Image, requested = [], decode = [];
+  globalThis.Image = class {
+    set src(value) {
+      requested.push(value);
+      this.complete = true;
+      this.decode = () => new Promise(resolve => decode.push(resolve));
+      this.onload();
+    }
+  };
+  try {
+    const { DESERT_ART, loadDesertArt } = await import("../js/minigames/desert-ride-art.js?scoped");
+    const common = loadDesertArt({ rivals: [] });
+    const commonCount = Object.keys(DESERT_ART).filter(key => DESERT_ART[key].file && !/^(noor|naru)Rider/.test(key)).length;
+    assert.equal(requested.length, commonCount);
+    assert.equal(common.pending(), true, "HTTP completion is not decode completion");
+    decode.splice(0).forEach(resolve => resolve());
+    await common.whenReady();
+    assert.equal(common.pending(), false);
+    const noor = loadDesertArt({ rivals: ["noor"] });
+    assert.equal(requested.length, commonCount + 6);
+    assert.equal(common.pending(), false, "another scope does not delay common assets");
+    assert.equal(requested.some(url => /rider_naru/.test(url)), false);
+    decode.splice(0).forEach(resolve => resolve());
+    await noor.whenReady();
+    loadDesertArt({ rivals: ["noor"] });
+    assert.equal(requested.length, commonCount + 6, "retry reuses images");
+    const naru = loadDesertArt({ rivals: ["naru"] });
+    assert.equal(requested.length, commonCount + 12);
+    decode.splice(0).forEach(resolve => resolve());
+    await naru.whenReady();
+    assert(naru.get("naruRider"));
+    assert(naru.get("noorRider"), "previously decoded rivals remain available");
+  } finally {
+    if (NativeImage === undefined) delete globalThis.Image;
+    else globalThis.Image = NativeImage;
+  }
+});
