@@ -251,6 +251,8 @@ const { chainVisitDue, playChainStage, loadVisitChains } = playModule.ns;
     STALL_PLACE: "souq", dubaiSpotAt: entry => entry, nightVisit: () => null, stallChoices: () => [], priceText: n => `${n}`,
     INN_TRIAL_FLAG: "_ch4_inn_trial", INN_TRIAL_IDS: [], innTrialDue: () => false, REHEARSAL_FLAG: "_ch4_rehearsal", REHEARSAL_IDS: [],
     rehearsalDue: () => false, chapterFourStaffNightEvent: () => null,
+    // この試験は通いの優先順位を見る。通常の休憩は先頭の台本を返す（巡回自体は rest_variations.mjs）。
+    quietTurn: (id, pool) => ({ id: pool[0], key: `_spot_turn_${id}`, count: 0 }),
     companionTimeOpen: () => false, // 同行した恋人と過ごせる日（BLC08・companion-time.js）。この試験では開かない
     chainStageAt: chains.chainStageAt, chainVisitDue, playChainStage,
   });
