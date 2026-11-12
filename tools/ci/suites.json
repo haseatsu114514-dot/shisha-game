@@ -799,7 +799,6 @@
         "remake/js/core/ui.js",
         "remake/js/chapters/ch1.js",
         "remake/js/chapters/ch2-tournament.js",
-        "remake/js/chapters/ch3.js",
         "remake/js/chapters/ch3-aftermath.js",
         "remake/js/chapters/ch4.js",
         "remake/test/browser/resume_loading_a01.mjs"
