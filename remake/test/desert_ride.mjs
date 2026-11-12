@@ -260,7 +260,7 @@ test("air spins: hold ← or → in a big jump to rotate, letting go finishes th
   assert.equal(game.falls, 1);
   assert.equal(game.events.at(-1).kind, "fall"); assert.equal(game.events.at(-1).reason, "spin");
   assert.equal(game.stats.spinFalls, 1);
-  assert(Math.abs(game.gauge - (0.5 - BOOST.fallLoss)) < 1e-9, "a fall drains the gauge");
+  assert.equal(game.gauge, 0.25, "a fall drains the gauge but retains half");
   // 小さなホップでは回らない
   game = createGame(course);
   step(game, {}, DT); press(game); step(game, {}, DT);

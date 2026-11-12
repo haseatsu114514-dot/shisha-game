@@ -410,17 +410,19 @@ await suite("desert-ride", async check => {
     const carved = await ride(page, () => { const g = window.__desertRide.game; window.__desertRide.setInput(false, false); return { gauge: g.gauge, event: g.events.some(e => e.kind === "carve" && e.points > 0), falls: g.falls }; });
     assert(carved.event && carved.gauge > 0.05, `carving charges the gauge (${carved.gauge})`);
     await page.waitForFunction(() => document.querySelector('[data-test="desert-ride"]').dataset.carve === "");
-    // ブースト中は曲が速くなり、終わると戻る。やめてメニューへ戻っても元の速さ
+    // ブースト中・終了後・メニューへ戻った後も曲は通常の速さ
     const audioUrl = new URL("js/core/audio.js", page.url()).href;
     await page.evaluate(async url => { window.__audio = await import(url); }, audioUrl);
     assert.equal(await page.evaluate(() => window.__audio.bgmPlaybackRate()), 1, "normal tempo outside a boost");
     await ride(page, () => { const r = window.__desertRide; r.game.x = 0; r.game.vx = 0; r.game.fallT = 0; r.game.gauge = 1; r.boost(); });
-    await page.waitForFunction(() => window.__audio.bgmPlaybackRate() > 1.15 && document.querySelector('[data-test="desert-ride"]').dataset.boost === "on");
+    await page.waitForFunction(() => document.querySelector('[data-test="desert-ride"]').dataset.boost === "on");
     assert.equal(await page.evaluate(() => window.__audio.bgmPlaybackRate()), 1, "boost keeps the music at its normal tempo");
     await ride(page, () => { window.__desertRide.game.boostT = 0.02; });
-    await page.waitForFunction(() => window.__audio.bgmPlaybackRate() === 1);
+    await page.waitForFunction(() => window.__desertRide.game.boostT === 0);
+    assert.equal(await page.evaluate(() => window.__audio.bgmPlaybackRate()), 1, "boost end keeps normal tempo");
     await ride(page, () => { const r = window.__desertRide; r.game.fallT = 0; r.game.gauge = 1; r.boost(); });
-    await page.waitForFunction(() => window.__audio.bgmPlaybackRate() > 1.05);
+    await page.waitForFunction(() => window.__desertRide.game.boostT > 0);
+    assert.equal(await page.evaluate(() => window.__audio.bgmPlaybackRate()), 1, "a second boost also keeps normal tempo");
     await page.keyboard.press("Escape");
     await phase(page, "menu");
     assert.equal(await page.evaluate(() => window.__audio.bgmPlaybackRate()), 1, "quitting mid-boost restores the tempo");
