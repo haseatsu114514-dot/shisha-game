@@ -92,6 +92,10 @@ await suite('axe-tap-pull', async check => {
 
   await check('keyboard-repeat-focus-and-next-throw', async page => {
     const before = await start(page);
+    await aim(page);
+    await page.locator('[data-test="axe-reaim"]:not([disabled])').click();
+    await phase(page, 'choice');
+    assert.equal(await root(page).evaluate(node => node === document.activeElement), true, 'reaim restores keyboard focus');
     for (let i = 0; i < 3; i++) {
       await page.keyboard.press('ArrowRight'); await phase(page, 'power');
       await page.keyboard.down('Space'); await page.waitForTimeout(744); await page.keyboard.up('Space');
@@ -99,7 +103,13 @@ await suite('axe-tap-pull', async check => {
       assert.equal(await root(page).getAttribute('data-player-throws'), String(i + 1));
       await ready(page).click(); await phase(page, i === 2 ? 'summary' : 'choice');
     }
-    await ready(page).click(); await page.locator('[data-test="axe-start"]').waitFor();
+    await page.locator('[data-test="axe-retry"]:not([disabled])').click();
+    await phase(page, 'choice');
+    assert.equal(await root(page).evaluate(node => node === document.activeElement), true, 'retry restores keyboard focus');
+    await page.keyboard.press('ArrowRight'); await phase(page, 'power');
+    await page.keyboard.down('Space'); await page.waitForTimeout(744); await page.keyboard.up('Space');
+    await phase(page, 'result');
+    assert.equal(await root(page).getAttribute('data-player-throws'), '1', 'retry starts a fresh game');
     assert.deepEqual(await storageSnapshot(page), before);
   });
 

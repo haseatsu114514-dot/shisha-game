@@ -24,8 +24,39 @@ async function action(page,touch=false) {
   const button=page.locator('[data-test="axe-action"]:not([disabled])');await button.waitFor();
   if(touch)await button.tap();else await button.click();
 }
+// Drive the new default with real board taps and a real mouse/touch drag; never inject scores.
+async function aimAxe(page, touch = false) {
+  assert.equal(await page.locator('[data-test="axe-game"]').getAttribute('data-input-mode'), 'tap-pull');
+  const point = await page.locator('[data-test="axe-target"]').evaluate(node => {
+    const p = new DOMPoint(330, 245).matrixTransform(node.getScreenCTM());
+    return { x: p.x, y: p.y };
+  });
+  if (touch) await page.touchscreen.tap(point.x, point.y); else await page.mouse.click(point.x, point.y);
+  await page.waitForFunction(() => document.querySelector('[data-test="axe-game"]')?.dataset.phase === 'power');
+}
+async function pullAxe(page, touch = false, power = .62) {
+  const grip = await page.locator('[data-test="axe-pull-handle"]').boundingBox();
+  const stage = await page.locator('[data-test="axe-game"]').boundingBox();
+  assert(grip && stage, 'the actual pull handle and stage must be visible');
+  const x = grip.x + grip.width / 2, y = grip.y + grip.height / 2;
+  const endY = y + Math.max(80, Math.min(180, stage.height * .26)) * power;
+  if (touch) {
+    const session = await page.context().newCDPSession(page);
+    try {
+      await session.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x, y, id: 1 }] });
+      for (let i = 1; i <= 8; i++) await session.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x, y: y + (endY - y) * i / 8, id: 1 }] });
+      await session.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+    } finally { await session.detach(); }
+  } else {
+    await page.mouse.move(x, y); await page.mouse.down();
+    await page.mouse.move(x, endY, { steps: 8 }); await page.mouse.up();
+  }
+  await page.waitForFunction(() => document.querySelector('[data-test="axe-game"]')?.dataset.phase === 'result');
+  const actual = Number(await page.locator('[data-test="axe-game"]').getAttribute('data-power'));
+  assert(Math.abs(actual - power) < .06, `actual pull power ${actual} must match the gesture ${power}`);
+}
 async function finish(page,touch=false) {
-  for(let n=0;n<3;n++) for(const p of ["choice","horizontal","vertical","power","result"]){await phase(page,p);await action(page,touch);}
+  for(let n=0;n<3;n++){await phase(page,"choice");await aimAxe(page,touch);await pullAxe(page,touch);await action(page,touch);}
   await phase(page,"summary");await action(page,touch);
 }
 async function start(page){await page.evaluate(()=>{S.started=S.before();S.run=S.daily.playHiyoriEvent("axe_reveal");});await phase(page,"choice");}
@@ -158,3 +189,4 @@ await suite("hiyori-axe-story",async check=>{
     assert.equal(result.snapshot.money,90000);assert.equal(result.snapshot.stamina,80);assert.equal(result.snapshot.slot,1);assert(!result.snapshot.known&&!result.visited);
   });
 });
+

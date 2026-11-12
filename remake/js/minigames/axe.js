@@ -321,6 +321,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   const reaim = el("button.axe-button.axe-reaim", { text: "構え直す", dataset: { test: "axe-reaim" }, onclick: () => {
     if (actor === "player" && !isPaused() && performance.now() - lastAction >= 250 && ["horizontal", "vertical", "power"].includes(phase)) {
       pullInput?.cancel(); pullInput?.setAim({ x: 0, y: 0 }); rawPower = 0; lastAction = performance.now(); aim = { x: 0, y: 0 }; power = POWER.ideal; held = 0; focusUntil = -1; setPhase("choice");
+      if (tapPull && !isPaused()) root.focus();
     }
   } });
   function resetThrow() { pullInput?.cancel(); rawPower = 0; pullInput?.setAim({ x: 0, y: 0 }); aim = { x: 0, y: 0 }; power = POWER.ideal; held = 0; focusUntil = -1; focusUsed = false; impacts.replaceChildren(); quiver = null; }
@@ -334,6 +335,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
       lastAction = performance.now();
       if (series) { series.games = []; series.wins = { player: 0, opponent: 0 }; }
       newGame(0); setPhase("choice");
+      if (tapPull && !isPaused()) root.focus();
     }
   } });
   const controls = el("div.axe-controls", [focusButton, reaim]);

@@ -65,16 +65,42 @@ async function go(page, id) {
   await page.locator(t(id === "axe_bar" ? "axe-bar-practice" : "trpg-campaign-notice")).waitFor();
 }
 async function phase(page, phase) { await page.waitForFunction(p => document.querySelector('[data-test="axe-game"]')?.dataset.phase === p, phase); }
+// Drive the new default with real board taps and a real mouse/touch drag; never inject scores.
+async function aimAxe(page, touch = false) {
+  assert.equal(await page.locator('[data-test="axe-game"]').getAttribute('data-input-mode'), 'tap-pull');
+  const point = await page.locator('[data-test="axe-target"]').evaluate(node => {
+    const p = new DOMPoint(330, 245).matrixTransform(node.getScreenCTM());
+    return { x: p.x, y: p.y };
+  });
+  if (touch) await page.touchscreen.tap(point.x, point.y); else await page.mouse.click(point.x, point.y);
+  await page.waitForFunction(() => document.querySelector('[data-test="axe-game"]')?.dataset.phase === 'power');
+}
+async function pullAxe(page, touch = false, power = .62) {
+  const grip = await page.locator('[data-test="axe-pull-handle"]').boundingBox();
+  const stage = await page.locator('[data-test="axe-game"]').boundingBox();
+  assert(grip && stage, 'the actual pull handle and stage must be visible');
+  const x = grip.x + grip.width / 2, y = grip.y + grip.height / 2;
+  const endY = y + Math.max(80, Math.min(180, stage.height * .26)) * power;
+  if (touch) {
+    const session = await page.context().newCDPSession(page);
+    try {
+      await session.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x, y, id: 1 }] });
+      for (let i = 1; i <= 8; i++) await session.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x, y: y + (endY - y) * i / 8, id: 1 }] });
+      await session.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+    } finally { await session.detach(); }
+  } else {
+    await page.mouse.move(x, y); await page.mouse.down();
+    await page.mouse.move(x, endY, { steps: 8 }); await page.mouse.up();
+  }
+  await page.waitForFunction(() => document.querySelector('[data-test="axe-game"]')?.dataset.phase === 'result');
+  const actual = Number(await page.locator('[data-test="axe-game"]').getAttribute('data-power'));
+  assert(Math.abs(actual - power) < .06, `actual pull power ${actual} must match the gesture ${power}`);
+}
 async function finishAxe(page, count, confirm = true, aimed = false) {
-  for (let i = 0; i < count; i++) for (const p of ["choice", "horizontal", "vertical", "power", "result"]) {
-    await phase(page, p);
-    if (aimed && ["horizontal", "vertical", "power"].includes(p)) {
-      // 既存axe_throw.mjsと同じ、画面に描かれている針を読んで止める操作。
-      await page.waitForFunction(target => {
-        const root = document.querySelector('[data-test="axe-game"]'), n = Number(root.dataset.timing);
-        return !root.querySelector('[data-test="axe-action"]').disabled && n >= target - .02 && n <= target + .005;
-      }, p === "power" ? .62 : .5);
-    }
+  const touch = await page.evaluate(() => navigator.maxTouchPoints > 0);
+  for (let i = 0; i < count; i++) {
+    await phase(page, "choice"); await aimAxe(page, touch);
+    await pullAxe(page, touch, aimed ? .62 : .3);
     await hit(page, "axe-action");
   }
   await phase(page, "summary");
@@ -234,7 +260,7 @@ await suite("play-spots", async runCheck => {
     assert.equal(await page.evaluate(() => spotCore.state.flags._intro_maki), true, "Completed introduction is read in the live state");
     assert.equal(await page.evaluate(() => localStorage.getItem("suien_remake_save")), before, "The introduction itself does not settle the venue action");
     await hit(page, "axe-bar-practice");
-    await phase(page, "choice"); await hit(page, "axe-action"); await phase(page, "horizontal");
+    await phase(page, "choice"); await aimAxe(page);
     await page.reload(); await page.locator(t("title-new")).waitFor();
     assert.deepEqual(JSON.parse(await page.evaluate(() => localStorage.getItem("suien_remake_save"))), introduced,
       "Cancellation saves only the completed introduction, without committing the unfinished throws");
@@ -396,3 +422,4 @@ await suite("play-spots", async runCheck => {
     assert.equal((await value(page)).trpg.club.founded, null);
   });
 });
+

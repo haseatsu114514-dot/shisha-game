@@ -60,7 +60,7 @@
 - 新旧採点・対戦・演出・チャレンジ・新入力・装備のNode検査は92/92 PASS。購入/旧所持/運賃/不正値/二重購入、原入力キャンセル、緑帯/補正/採点、pointer/Space/blur/Abort等を確認。
 - 旧ブラウザ群はgaugesを明示して旧モードの回帰を維持。新ブラウザ群を既存axe-throw suiteへ登録し、PCと横スマホの実pointer/CDP touch、完走・複数指・中断・保存非変更を確認する。
 - 本編Barの購入/所有/選択/有料完走/記録と、無料レッスン/BGMのケースを新操作へ更新。
-- **実ブラウザはCI結果確認前には完了としない。** ローカルsandbox有効Chromiumはsocket制約、別クラウドブラウザは開発サーバーへ到達不可。本人承認後にPRをReadyとして既存CIを実行する。sandbox無効化やCIのDraft制限変更はしない。
+- **実ブラウザはCI結果確認前には完了としない。** ローカルsandbox有効Chromiumはsocket制約、別クラウドブラウザは開発サーバーへ到達不可。本人承認でPRをReadyへ変更し、最新main取り込み後のHEADで既存CIを実行中。結果と実画面は別途確認する。sandbox無効化やCIのDraft制限変更はしない。
 - `node --experimental-vm-modules remake/test/hobby_gear.mjs` PASS。実際のstate.save/loadとbuildCarryPackageで旧斧/上位2斧の所有保持、重複購入拒否、返金なしを確認。必要な13テキスト依存だけを固定mainから取得した（275,378 bytes）。
 - 画像3枚は候補確認中。低alpha残渣/縮小版/実表示/LFS入稿が未了で、本編採用しない。記録: `asset_sources/props/axe-personal-20261112/README.md`。
 - API経路でcheckout/hooksは対象外。フルclone、LFS一括取得、force/main直pushなし。

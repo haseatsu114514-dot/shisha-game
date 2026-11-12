@@ -17,6 +17,37 @@ const results = [];
 const giftGoal = process.env.GOAL_HIYORI_GIFT === '1';
 const workGoal = giftGoal || process.env.GOAL_HIYORI_WORK === '1';
 
+// Drive the new default with real board taps and a real mouse/touch drag; never inject scores.
+async function aimAxe(page, touch = false) {
+  assert.equal(await page.locator('[data-test="axe-game"]').getAttribute('data-input-mode'), 'tap-pull');
+  const point = await page.locator('[data-test="axe-target"]').evaluate(node => {
+    const p = new DOMPoint(330, 245).matrixTransform(node.getScreenCTM());
+    return { x: p.x, y: p.y };
+  });
+  if (touch) await page.touchscreen.tap(point.x, point.y); else await page.mouse.click(point.x, point.y);
+  await page.waitForFunction(() => document.querySelector('[data-test="axe-game"]')?.dataset.phase === 'power');
+}
+async function pullAxe(page, touch = false, power = .62) {
+  const grip = await page.locator('[data-test="axe-pull-handle"]').boundingBox();
+  const stage = await page.locator('[data-test="axe-game"]').boundingBox();
+  assert(grip && stage, 'the actual pull handle and stage must be visible');
+  const x = grip.x + grip.width / 2, y = grip.y + grip.height / 2;
+  const endY = y + Math.max(80, Math.min(180, stage.height * .26)) * power;
+  if (touch) {
+    const session = await page.context().newCDPSession(page);
+    try {
+      await session.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x, y, id: 1 }] });
+      for (let i = 1; i <= 8; i++) await session.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x, y: y + (endY - y) * i / 8, id: 1 }] });
+      await session.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+    } finally { await session.detach(); }
+  } else {
+    await page.mouse.move(x, y); await page.mouse.down();
+    await page.mouse.move(x, endY, { steps: 8 }); await page.mouse.up();
+  }
+  await page.waitForFunction(() => document.querySelector('[data-test="axe-game"]')?.dataset.phase === 'result');
+  const actual = Number(await page.locator('[data-test="axe-game"]').getAttribute('data-power'));
+  assert(Math.abs(actual - power) < .06, `actual pull power ${actual} must match the gesture ${power}`);
+}
 async function boot(page) {
   await page.goto(base);
   await page.locator('[data-test="title-new"]').waitFor({ timeout: 30000 });
@@ -122,8 +153,14 @@ try {
           }
           // AXR08: when Maki is already known, her one-throw lesson comes first. Read it through like a player.
           if(await click('[data-test="axe-coach-next"]')) continue;
-          const button=page.locator('[data-test="axe-action"]:not([disabled])');
-          if(await button.isVisible()) { await click('[data-test="axe-action"]:not([disabled])'); }
+          const inputPhase = await axe.getAttribute('data-phase');
+          // Let each tutorial panel be read above before the next gesture.
+          if (inputPhase === 'choice') await aimAxe(page, label === 'mobile');
+          else if (inputPhase === 'power') await pullAxe(page, label === 'mobile');
+          else {
+            const button=page.locator('[data-test="axe-action"]:not([disabled])');
+            if(await button.isVisible()) { await click('[data-test="axe-action"]:not([disabled])'); }
+          }
           continue;
         }
         if (snap.cutin) {
@@ -332,3 +369,4 @@ try {
 }
 assert(results.length > 0, 'No device was selected');
 assert.equal(results.filter(r => r.status !== 'passed').length, 0, 'Public walkthrough failures');
+
