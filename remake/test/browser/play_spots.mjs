@@ -271,10 +271,12 @@ await suite("play-spots", async runCheck => {
       assert.equal(await page.locator(t("pin-axe_bar")).count(), 0);
       await assertFits(page, ".spot-pin");
       assert.deepEqual(await value(page), before);
-      await go(page, "trpg_bar"); await page.locator(t("trpg-club-choice-time")).waitFor();
+      await go(page, "trpg_bar");
+      // The normal VN now finishes founding on entry, before the shelf opens.
+      assert((await value(page)).trpg.club.founded);
       assert.match(await page.locator(".trpg-campaign-meta").textContent(), /CH\.2 · DAY 2/);
       assert((await page.locator(".trpg-kicker").first().textContent()).includes("ボドゲカフェ"));
-      await hit(page, "trpg-club-choice-time"); await hit(page, "trpg-campaign-close");
+      await hit(page, "trpg-campaign-close");
       await page.locator(t("pin-trpg_bar")).waitFor();
       const after = await value(page); assert(after.trpg.club.founded);
       for (const key of ["money", "stamina", "slot", "stats", "reel"]) assert.deepEqual(after[key], before[key]);
@@ -345,7 +347,17 @@ await suite("play-spots", async runCheck => {
       assert.equal(bought.money, before.money - 800); assert.equal(bought.slot, 1); assert.equal(bought.stamina, before.stamina);
       assert.deepEqual(bought.trpg.owned, ["shark-last-order"]);
       await hit(page, "trpg-play-shark-last-order"); await lines(page); await hit(page, "trpg-start"); await lines(page); await roll(page);
-      assert.deepEqual(await value(page), bought, "An unfinished table must not commit its ending or night action");
+      const inProgress = await value(page);
+      const { bookmark, ...inProgressTrpg } = inProgress.trpg;
+      assert.deepEqual({ ...inProgress, trpg: inProgressTrpg }, bought,
+        "An unfinished table may save its bookmark, but must not commit its ending, rewards or night action");
+      assert.equal(bookmark.id, "shark-last-order");
+      assert.equal(bookmark.chapter, 2);
+      assert.equal(bookmark.day, bought.day);
+      assert(bookmark.actions.length > 0 && Number.isInteger(bookmark.seed));
+      assert.equal(bookmark.phase, await page.locator('.trpg-root:not(.trpg-campaign)').getAttribute("data-phase"));
+      assert.deepEqual(await page.evaluate(() => JSON.parse(localStorage.getItem("suien_remake_save")).trpg.bookmark), bookmark,
+        "The in-progress bookmark must reach the actual save");
       await interviewStep(page);
       for (const id of ["radio", "leaves", "fan"]) { await hit(page, "trpg-spot-" + id); await lines(page); }
       await hit(page, "trpg-interpret"); await hit(page, "trpg-hypothesis-scent"); await lines(page); await twistStep(page);
@@ -356,6 +368,7 @@ await suite("play-spots", async runCheck => {
       const saved = await page.evaluate(() => JSON.parse(localStorage.getItem("suien_remake_save")));
       assert.equal(saved.day, 22); assert.equal(saved.slot, 2); assert.equal(saved.money, before.money - 800);
       assert.equal(saved.trpg.cleared["shark-last-order"].gm, "samechan");
+      assert.equal(saved.trpg.bookmark, undefined, "Completing the story removes its in-progress bookmark");
       assert.deepEqual([...saved.trpg.cleared["shark-last-order"].participants].sort(), ["hajime", "hiyori", "samechan"]);
       assert.equal(saved.stamina, before.stamina); assert.deepEqual(saved.stats, before.stats);
       assert.deepEqual(withoutHostIntros(saved.met), before.met);
@@ -374,7 +387,10 @@ await suite("play-spots", async runCheck => {
       await travel(page, "widehanga");
       const revisit = await value(page); assert.deepEqual(revisit, { ...after, money: after.money - 200 }, "Revisit charges only one outbound ticket");
       await go(page, "trpg_bar");
-      assert.equal(await page.locator(t("trpg-play-shark-last-order")).count(), 0);
+      // TMX14 permits replay, but this return visit is daytime and cannot use a night action.
+      const replay = page.locator(t("trpg-play-shark-last-order"));
+      assert.equal(await replay.innerText(), "もう一度遊ぶ");
+      assert(await replay.isDisabled(), "A completed book cannot be replayed during the day");
       assert((await page.locator(t("trpg-memory-shark-last-order")).textContent()).length > 0);
       await hit(page, "trpg-campaign-close"); await page.locator(map).waitFor();
       assert.deepEqual(await value(page), revisit);
@@ -389,10 +405,11 @@ await suite("play-spots", async runCheck => {
       window.cafeResult = null;
       (await import("./js/daily/trpg.js")).openTrpgBar().then(result => { window.cafeResult = result; });
     });
-    await page.locator(t("trpg-club-choice-time")).waitFor();
+    await page.locator(t("trpg-campaign-notice")).waitFor();
+    assert((await value(page)).trpg.club.founded);
     await page.evaluate(() => { spotCore.newGame(); });
     await page.waitForFunction(() => window.cafeResult?.completed === false);
-    assert.equal(await page.locator(t("trpg-club-choice-time")).count(), 0);
+    assert.equal(await page.locator(t("trpg-campaign-notice")).count(), 0);
     assert.equal((await value(page)).trpg.club.founded, null);
   });
 });
