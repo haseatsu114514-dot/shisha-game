@@ -11,7 +11,7 @@
         { "speaker": "", "text": "近くの子が笑った。「お茶なのに？　嘘つき」" },
         { "type": "show_cg", "cg_id": "cg_ch3_childhood_offered_hand" },
         { "speaker": "", "text": "少年は絵を伏せた。少女は風に転がる落ち葉をぼんやり見ていたが、ふと隣にしゃがみ、手を差し出した。" },
-        { "speaker": "", "text": "少女「僕には、お茶。でも好き。いっしょに飲もう」" },
+        { "speaker": "", "duck": true, "text": "少女「僕には、お茶。でも好き。いっしょに飲もう」" },
         { "speaker": "", "text": "少年がその手を取ると、少女は当たり前のように隣へ座った。" },
         { "type": "show_cg", "cg_id": "cg_saku_mashiro_childhood" },
         { "speaker": "", "text": "少年は絵を半分に折り、片方を少女へ渡した。" },

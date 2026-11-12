@@ -408,31 +408,41 @@
   :root[data-look="neo"] body:not(.game-ds) #stage #vn .vn-portraits { animation: none; }
 }
 
-/* 場面の光: neo.js が立ち絵1枚ごとに同じ位置・同じ形（立ち絵の絵を型にする）の層を重ね、ここで色を乗せる。 */
-:root[data-look="neo"] body:not(.game-ds) #stage #vn .neo-light {
+/* 場面の光・場所の光: neo.js が立ち絵1枚ごとに同じ位置・同じ形（立ち絵の絵を型にする）の層を2枚重ね、ここで色を乗せる。
+   .neo-light＝時間帯の光（左上からの主光と右下からの補助光を soft-light で）。
+   .neo-amb＝場所の光（BGU01。いまの背景の絵から測った色を乗算で。白なら何も変わらない）。 */
+:root[data-look="neo"] body:not(.game-ds) #stage #vn :is(.neo-light, .neo-amb) {
   position: absolute;
   left: 50%;
   transform: translateX(var(--ax, -50%));
-  background:
-    linear-gradient(205deg, var(--neo-key), rgba(255, 255, 255, 0) 55%),
-    linear-gradient(20deg, var(--neo-fill), rgba(255, 255, 255, 0) 50%);
   -webkit-mask: var(--neo-mask) 0 0 / 100% 100% no-repeat;
   mask: var(--neo-mask) 0 0 / 100% 100% no-repeat;
-  mix-blend-mode: soft-light;
   opacity: .5;
   pointer-events: none;
   transition: left .35s var(--ease-out), opacity .3s ease, translate .35s var(--ease-out);
 }
-:root[data-look="neo"] body:not(.game-ds) #stage #vn .neo-light.active { opacity: 1; translate: 0 -3px; }
-:root[data-look="neo"] body:not(.game-ds) #stage #vn .neo-light[data-pos="left"] { left: 30%; }
-:root[data-look="neo"] body:not(.game-ds) #stage #vn .neo-light[data-pos="right"] { left: 70%; }
-:root[data-look="neo"] body:not(.game-ds) #stage #vn .neo-light.enter { opacity: 0; translate: 0 24px; }
-:root[data-look="neo"] body.vn-skip:not(.game-ds) #stage #vn .neo-light { transition-duration: .12s; }
+:root[data-look="neo"] body:not(.game-ds) #stage #vn .neo-light {
+  background:
+    linear-gradient(205deg, var(--neo-key), rgba(255, 255, 255, 0) 55%),
+    linear-gradient(20deg, var(--neo-fill), rgba(255, 255, 255, 0) 50%);
+  mix-blend-mode: soft-light;
+}
+/* 色は背景の切り替え（0.6 秒）と同じ速さで移る。話していない人は、もう暗くしてある（.portrait の brightness）ので半分だけ掛ける。 */
+:root[data-look="neo"] body:not(.game-ds) #stage #vn .neo-amb {
+  background-color: var(--neo-amb, #fff);
+  mix-blend-mode: multiply;
+  transition: left .35s var(--ease-out), opacity .3s ease, translate .35s var(--ease-out), background-color .6s ease;
+}
+:root[data-look="neo"] body:not(.game-ds) #stage #vn :is(.neo-light, .neo-amb).active { opacity: 1; translate: 0 -3px; }
+:root[data-look="neo"] body:not(.game-ds) #stage #vn :is(.neo-light, .neo-amb)[data-pos="left"] { left: 30%; }
+:root[data-look="neo"] body:not(.game-ds) #stage #vn :is(.neo-light, .neo-amb)[data-pos="right"] { left: 70%; }
+:root[data-look="neo"] body:not(.game-ds) #stage #vn :is(.neo-light, .neo-amb).enter { opacity: 0; translate: 0 24px; }
+:root[data-look="neo"] body.vn-skip:not(.game-ds) #stage #vn :is(.neo-light, .neo-amb) { transition-duration: .12s; }
 /* 回想・セピアは色を抜く演出なので光を重ねない。登場カットインへ変身する間は、立ち絵と一緒に消す。 */
-:root[data-look="neo"] body:not(.game-ds) #stage #vn:is(.sepia, .flashback) .neo-light { display: none; }
-:root[data-look="neo"] body:not(.game-ds) #stage #vn.intro-morph-dialog-hidden .neo-light { opacity: 0; transition-duration: .12s; }
+:root[data-look="neo"] body:not(.game-ds) #stage #vn:is(.sepia, .flashback) :is(.neo-light, .neo-amb) { display: none; }
+:root[data-look="neo"] body:not(.game-ds) #stage #vn.intro-morph-dialog-hidden :is(.neo-light, .neo-amb) { opacity: 0; transition-duration: .12s; }
 /* 2画面表示には新版を当てないので、光の層も出さない。 */
-:root[data-look="neo"] body.game-ds .neo-light { display: none; }
+:root[data-look="neo"] body.game-ds :is(.neo-light, .neo-amb) { display: none; }
 
 /* 時間帯の色（背景の絵の名前と、夜の色調補正 data-tint から判定。#bg の最後の絵がいまの場面） */
 :root[data-look="neo"] body:not(.game-ds) #stage:has(#bg > .bg-img:last-child:is([style*="_day."], [data-scene-bg*="_day."], [style*="_morning."])) #vn {
@@ -616,9 +626,9 @@
   line-height: 52px;
 }
 /* 猫（てつこ）は現行の会話枠の上に座る高さ（下から 30%）で出るので、帯の上へ座り直させる。 */
-:root[data-look="neo"] body:not(.game-ds) #stage #vn :is(.portrait[data-speaker="tetsuko"], .neo-light[data-of="tetsuko"]) { translate: 0 -36px; }
-:root[data-look="neo"] body:not(.game-ds) #stage #vn :is(.portrait[data-speaker="tetsuko"], .neo-light[data-of="tetsuko"]).active { translate: 0 -39px; }
-:root[data-look="neo"] body:not(.game-ds) #stage #vn :is(.portrait[data-speaker="tetsuko"], .neo-light[data-of="tetsuko"]).enter { translate: 0 -12px; }
+:root[data-look="neo"] body:not(.game-ds) #stage #vn :is(.portrait[data-speaker="tetsuko"], .neo-light[data-of="tetsuko"], .neo-amb[data-of="tetsuko"]) { translate: 0 -36px; }
+:root[data-look="neo"] body:not(.game-ds) #stage #vn :is(.portrait[data-speaker="tetsuko"], .neo-light[data-of="tetsuko"], .neo-amb[data-of="tetsuko"]).active { translate: 0 -39px; }
+:root[data-look="neo"] body:not(.game-ds) #stage #vn :is(.portrait[data-speaker="tetsuko"], .neo-light[data-of="tetsuko"], .neo-amb[data-of="tetsuko"]).enter { translate: 0 -12px; }
 
 /* ---------------------------------------------------------------- 6. MENU のタブ: 絵文字をやめ、同じ線の太さ（1.8）の線画の絵記号にする */
 /* 絵文字の字は箱の外へ送って隠し、インライン SVG を型にしてタブの文字色で塗る（選択中は白になる）。箱の大きさは字の大きさに比例。 */

@@ -64,6 +64,23 @@ for (const who of new Set([...opponents, ...owners])) {
   assert.deepEqual(triggersOf({ t: "end", result: { winner: 0 } }), ["foe_lose"]);
   assert.deepEqual(triggersOf({ t: "end", result: { winner: null } }), ["draw"]);
   assert.deepEqual(triggersOf({ t: "charge", p: 1 }), []);
+  // 4人対戦（相手が席1〜3）: 自分の席で見る。はじめは席0のまま。ほかの相手が勝ったときは喋らない
+  const res4 = (...z) => z.map((zone) => ({ zone }));
+  assert.deepEqual(triggersOf({ t: "play", p: 2, id: "hype" }, 2), ["play_card_hype", "play_event"]);
+  assert.deepEqual(triggersOf({ t: "play", p: 1, id: "hype" }, 2), [], "ほかの相手が使ったカードには喋らない");
+  assert.deepEqual(triggersOf({ t: "score", res: res4("just", "band", "scorch", "band"), voter: 0 }, 2), ["foe_scorch", "hajime_just", "hajime_vote"]);
+  assert.deepEqual(triggersOf({ t: "score", res: res4("band", "band", "just", "band"), voter: 2 }, 2), ["foe_just", "foe_vote"]);
+  assert.deepEqual(triggersOf({ t: "score", res: res4("band", "band", "band", "band"), voter: 3 }, 2), [], "ほかの相手の一票には喋らない");
+  assert.deepEqual(triggersOf({ t: "end", result: { winner: 2 } }, 2), ["foe_win"]);
+  assert.deepEqual(triggersOf({ t: "end", result: { winner: 0 } }, 2), ["foe_lose"]);
+  assert.deepEqual(triggersOf({ t: "end", result: { winner: 3 } }, 2), [], "ほかの相手が勝ったときは喋らない");
+  assert.deepEqual(triggersOf({ t: "end", result: { winner: null } }, 2), ["draw"]);
+  // だれに喋らせるかを決めるための has（画面に触れない）
+  const quiet = { isConnected: true, querySelector: () => { throw new Error("DOM に触れた"); }, append: () => { throw new Error("DOM に触れた"); } };
+  const naru = attachIchidaiLines({ root: quiet, charId: "naru", foe: 2, lines: LINES });
+  assert.equal(naru.has({ t: "end", result: { winner: 2 } }), true);
+  assert.equal(naru.has({ t: "end", result: { winner: 3 } }), false);
+  assert.equal(naru.has({ t: "charge", p: 2 }), false);
   // カードだけの一言が種類より先。台詞の無い相手は null
   assert.equal(pickLine(LINES, "sumi", triggersOf({ t: "play", p: 1, id: "sumi" }), () => 0).id, "ichidai_sumi_play_card_sumi");
   assert.equal(pickLine(LINES, "sumi", triggersOf({ t: "play", p: 1, id: "packy" }), () => 0).id, "ichidai_sumi_play_person");
@@ -95,4 +112,8 @@ for (const [seed, kits] of [[11, ["a", "b"]], [12, ["c", "a"]], [13, ["b", "c"]]
   assert.equal(attachIchidaiLines({ root: { isConnected: false }, charId: "sumi", lines: LINES }).event(ev), null);
   assert.equal(attachIchidaiLines({ root, charId: "nobody", lines: LINES }).event(ev), null);
 }
-console.log(`ichidai_lines: OK（相手 ${[...opponents].join("・")}／場面 ${DATA.dialogues.length}）`);
+// 4人対戦の相手（試遊ページの RIVALS）にも、全部の場面の台詞がある
+const rivals = [...read("remake/js/ichidai-page.js").matchAll(/\{ id: "([a-z_]+)", name: "[^"]+" \}/g)].map((m) => m[1]);
+assert.ok(rivals.length >= 3, "4人対戦の相手が見つからない");
+for (const who of rivals) for (const s of SCENES) assert.ok(LINES[`ichidai_${who}_${s}`]?.length, `${who} に場面 ${s} の台詞が無い`);
+console.log(`ichidai_lines: OK（相手 ${[...new Set([...opponents, ...rivals])].join("・")}／場面 ${DATA.dialogues.length}）`);

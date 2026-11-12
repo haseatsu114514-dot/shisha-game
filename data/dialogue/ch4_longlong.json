@@ -739,6 +739,7 @@
         },
         {
           "speaker": "",
+          "duck": true,
           "text": "黙って吸う時間が続く。",
           "face": ""
         },
@@ -1088,6 +1089,7 @@
         },
         {
           "speaker": "master_hookah",
+          "beat": 600,
           "text": "その土を、預ける。tonariで使っていい",
           "face": "smile"
         },

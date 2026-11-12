@@ -1,13 +1,15 @@
-// カードゲーム「一台勝負」のCPU（第0.4版）。規則（ichidai-rules.js）の act に渡す入力を、1つずつ返す。
+// カードゲーム「一台勝負」のCPU（第0.5版）。規則（ichidai-rules.js）の act に渡す入力を、1つずつ返す。
 // 相手の手札と山札の順は見ない。見るのは自分の手札・場に出ているもの・めくられた審査カードだけ。
-// level: 0=やさしい（審査カードを数えない・一口のために取っておかない・揺さぶらない） 1=ふつう 2=つよい（残りの審査カードを数えて期待値で決める）
+// level: 0=やさしい（めくられた吸い方に合わせない・一口のために取っておかない・揺さぶらない）
+//        1=ふつう（めくられた吸い方に熱を合わせる。次のラウンドの先読みと、相手を揺さぶるカードは使わない）
+//        2=つよい（次のラウンドを残りの審査カードから読んで炭を仕込み、相手を揺さぶる）
 //
 // 第0.3版の考え方: カードは1ラウンドに1枚。提供の自分のターンに、手番のカードを使う値打ちと、一口のカードを仕込む値打ち
 // （審査カードは見ずに、残りの吸い方の期待値）を比べて良いほうを使う。熱の狙いは「その熱で使える一口のカード（必要火力）」まで
 // 含めた期待点で決める。rules.reactAfterReveal のときは、めくったあとに一口のカードを選ぶ（取っておく値打ちと比べる）。
 import { CARD, FLAVOR, FLAVORS, BOWL, JUDGE, PUFFS } from "./ichidai-data.js";
 import { RANK, heatOf, coalHeat, coalRoom, coalMaxOf, leavesOf, coolStepsOf, judgedHeat, scorePuff, impressionOf, unseenPuffs,
-  canPlay, canCharge, canPlace, canAsh, canPack, canSteam, packLimit, roundsOf, isLastSession, isLastOfSession, puffPreview } from "./ichidai-rules.js";
+  canPlay, canCharge, canPlace, canAsh, canPack, canSteam, packLimit, roundsOf, isLastSession, isLastOfSession, puffPreview, rivalsOf } from "./ichidai-rules.js";
 
 const cnt = (p, id) => p.hand.filter((x) => x === id).length;
 const idx = (p, id) => p.hand.indexOf(id);
@@ -36,7 +38,19 @@ function worstIndex(G, p) {
 /** CPUが想定する審査カードの候補（重みつき）。自分で見たカードがあればそれだけ */
 function puffGuess(G, p) {
   if (G.judge && G.wait?.type === "react") return [{ q: G.judge, w: 1 }];
+  // 第0.5版: このラウンドの審査カードは、もうめくられている（全員が見ている）。やさしいCPUは、めくられた吸い方に合わせない
+  if (G.R.revealFirst && G.phase === "serve" && G.judge && !p.puff?.scored && p.level >= 1) return [{ q: G.judge, w: 1 }];
   if (p.peek) return [{ q: p.peek, w: 1 }];
+  return pileGuess(G, p);
+}
+/** 次のラウンドの吸い方の見込み。「吸い方を読む」で見ていればそれ。見ていなければ残りの山から */
+function nextGuess(G, p) {
+  if (!G.R.revealFirst) return p.level >= 1 ? puffGuess(G, { ...p, peek: null }) : normalGuess;
+  if (p.level < 2) return normalGuess; // ふつう・やさしいは、次のラウンドを先読みしない
+  if (p.peek) return [{ q: p.peek, w: 1 }];
+  return pileGuess(G, p);
+}
+function pileGuess(G, p) {
   if (p.level <= 0 || !G.tour.judges.length) return [{ q: PUFFS.normal, w: 1 }];
   // ふつう: 大会に入っている12枚の割合で考える（数えない）。つよい: 残りを数える
   const pool = p.level >= 2 ? unseenPuffs(G) : G.tour.judges.flatMap((jid) => JUDGE[jid].puffs.flatMap(([pid, n]) => Array(n).fill(PUFFS[pid])));
@@ -204,7 +218,7 @@ function coalMove(G, p, { prep = false, turnsLeft = 0 } = {}) {
   const canAshNow = canAsh(G, p).ok, canChargeNow = canCharge(G, p).ok || (!coalRoom(p) && p.hand.length > 0 && canAshNow && chargesLeft > 0);
   const guess = prep ? null : puffGuess(G, p), slot = slotFree(G, p);
   const lastRound = !prep && G.round === roundsOf(G) - 1;
-  const want = bestHeat(G, p, prep ? undefined : (p.level >= 1 ? puffGuess(G, { ...p, peek: null }) : normalGuess));
+  const want = bestHeat(G, p, prep ? undefined : nextGuess(G, p));
   // 灰にする候補: しない／火の小さい炭から、火の違うものを1つずつ
   const ashOpts = [-1];
   if (canAshNow) { const seen = new Set(); p.zone.map((c, i) => ({ f: coalHeat(c), i, up: c.up })).sort((a, b) => a.f - b.f || a.up - b.up).forEach((x) => { if (!seen.has(x.f)) { seen.add(x.f); ashOpts.push(x.i); } }); }
@@ -224,7 +238,7 @@ function coalMove(G, p, { prep = false, turnsLeft = 0 } = {}) {
         let v = -ashCost - 0.05 * on.length - ch * 0.6 - 0.15 * ch * (ch - 1) + cdFree;
         if (!prep) v += expected(G, p, h1, guess, slot);
         if (!lastRound) {
-          // 次の自分のターン: 冷めて（炭を2つまで・1つにつき1段階）、空いた枠に残りの炭と種火を足す。狙いに届くか・熱すぎないか
+          // 次の自分のターン: 冷めて（火の小さい炭から、規則の段階ぶん）、空いた枠に残りの炭と種火を足す。狙いに届くか・熱すぎないか
           const skipCool = prep && p.hmd === "big_tanukish";
           const solo = p.hmd === "one_coal" && now.length === 1; // ワンコールリッド: 炭が1つだけなら冷めない
           const steps = skipCool || solo ? 0 : Math.max(0, Math.min(G.R.cool, now.length) - p.wind);
@@ -271,11 +285,13 @@ function permanent(G, p) {
 }
 /** 自分のターンに使うカードの候補と値打ち（いちばん良いもの）。無ければ null */
 function turnCard(G, p) {
-  const o = G.P[1 - p.index], second = G.order[1] === p.index;
+  // 相手が3人までいる。見るのは「いちばん手ごわい相手」（点がいちばん高い人）。2人対戦なら、ただ1人の相手
+  const rivals = rivalsOf(G, p), o = rivals.reduce((a, b) => (b.score > a.score ? b : a));
+  const turnOf = (x) => G.order.indexOf(x.index), moved = (x) => turnOf(x) < turnOf(p); // このラウンド、もう手番を終えた相手
   const lastRound = G.round === roundsOf(G) - 1, lastOfSession = isLastOfSession(G);
   const ok = (id) => cnt(p, id) && canPlay(G, p, id).ok;
   const cands = [];
-  const add = (id, v) => { if (ok(id) && v > 0) cands.push({ v, act: { type: "play", hand: idx(p, id) } }); };
+  const add = (id, v, target = null) => { if (ok(id) && v > 0) cands.push({ v, act: target == null ? { type: "play", hand: idx(p, id) } : { type: "play", hand: idx(p, id), target } }); };
   const perm = permanent(G, p); if (perm) cands.push(perm);
   const hNow = heatOf(p), hasReact = REACT.some((id) => cnt(p, id));
   const guess0 = puffGuess(G, p);
@@ -283,9 +299,10 @@ function turnCard(G, p) {
   const heatDelta = (d) => expected(G, p, Math.max(0, Math.min(G.R.heatMax, hNow + d)), guess0, false) - expected(G, p, hNow, guess0, false);
   // 引いた札の値打ち（手札が7枚を超えるぶんは捨てる）
   const drawV = (n) => CARDV * Math.max(0, Math.min(n, G.R.handMax - (p.hand.length - 1)));
-  if (!p.peek && G.pile.length) add("read", p.level >= 1 ? (hasReact ? 1.1 : 0.6) : 0.3);
+  // 吸い方を読む: 第0.5版は次のラウンドの分を見る（先読みするのは、つよいCPUだけ）
+  if (!p.peek && G.pile.length) add("read", G.R.revealFirst ? (p.level >= 2 ? 0.8 : 0.25) : p.level >= 1 ? (hasReact ? 1.1 : 0.6) : 0.3);
   if (!lastRound) {
-    const want = bestHeat(G, p, p.level >= 1 ? puffGuess(G, { ...p, peek: null }) : normalGuess), cs = coolStepsOf(p);
+    const want = bestHeat(G, p, nextGuess(G, p)), cs = coolStepsOf(p);
     const loss = Math.max(0, cs - p.wind);
     // 灰落とし: 次のターンに冷めて足りなくなる熱を、チャージせずに済む
     if (!p.noCool) add("ash_tap", CARDV * Math.min(loss, Math.max(0, want - (hNow - loss))) + 0.2);
@@ -305,17 +322,22 @@ function turnCard(G, p) {
   }
   if (!isLastSession(G) && !p.keepLeaves && lastOfSession) add("loosen", 1.6);
   if (p.hand.length <= 2) add("breath", 0.9);
-  if (p.level >= 1) {
-    const guess = puffGuess(G, p), calm = o.bowl.lavender >= 2;
-    const oppLoss = () => {
-      const view = { ...o, hand: [] }; // 相手の手札は見ない
-      const base = expected(G, view, heatOf(o), guess, false); view.pend = o.pend + 1; return base - expected(G, view, heatOf(o), guess, false);
+  if (p.level >= (G.R.revealFirst ? 2 : 1)) { // 相手を揺さぶるカード（第0.5版では、つよいCPUだけ）
+    const guess = puffGuess(G, p), calmOf = (x) => x.bowl.lavender >= 2;
+    const oppLoss = (x) => {
+      const view = { ...x, hand: [] }; // 相手の手札は見ない
+      const base = expected(G, view, heatOf(x), guess, false); view.pend = x.pend + 1; return base - expected(G, view, heatOf(x), guess, false);
     };
-    if (second && !calm) {
-      add("hype", oppLoss());
-      if (ok("venue_heat")) { const me2 = { ...p, pend: p.pend + 1 }; add("venue_heat", oppLoss() - (expected(G, p, hNow, guess, false) - expected(G, me2, hNow, guess, false))); }
+    // 煽り: もう手番を終えた相手（熱を合わせ直せない）のうち、いちばん手ごわい人をねらう
+    const hyped = rivals.filter((x) => moved(x) && !calmOf(x)).reduce((a, b) => (!a || b.score > a.score ? b : a), null);
+    if (hyped) add("hype", oppLoss(hyped), rivals.length > 1 ? hyped.index : null);
+    if (ok("venue_heat")) {
+      const hit = rivals.filter((x) => moved(x) && !calmOf(x));
+      if (hit.length) { const me2 = { ...p, pend: p.pend + 1 }; add("venue_heat", hit.reduce((a, x) => a + oppLoss(x), 0) / Math.sqrt(hit.length) - (expected(G, p, hNow, guess, false) - expected(G, me2, hNow, guess, false))); }
     }
-    if (o.zone.length && !o.tools.includes("windguard") && !calm) add("draft", 0.9);
+    // すきま風: 炭があり、守られていない相手のうち、いちばん手ごわい人
+    const drafty = rivals.filter((x) => x.zone.length && !x.tools.includes("windguard") && !calmOf(x)).reduce((a, b) => (!a || b.score > a.score ? b : a), null);
+    if (drafty) add("draft", 0.9, rivals.length > 1 ? drafty.index : null);
     if (!lastRound && p.level >= 2) add("go_second", 0.5);
   }
   cands.sort((a, b) => b.v - a.v);
@@ -368,8 +390,7 @@ function main(G, p) {
 // 審査: めくられたカードを見て、いちばん良い一口を1枚だけ使う（使わなくてもよい）
 function react(G, p) {
   if (!slotFree(G, p)) return { type: "pass" };
-  const o = G.P[1 - p.index];
-  const opp = p.level >= 1 ? puffPreview(G, o).imp : null;
+  const opp = p.level >= 1 ? Math.max(...rivalsOf(G, p).map((o) => puffPreview(G, o).imp)) : null; // 相手のうち、いちばん高い印象
   const b = bestReaction(G, p, heatOf(p), G.judge, { slot: true, opp });
   if (b.id && cnt(p, b.id) && canPlay(G, p, b.id).ok) return { type: "play", hand: idx(p, b.id) };
   return { type: "pass" };

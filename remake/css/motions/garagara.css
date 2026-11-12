@@ -342,6 +342,28 @@
 .kj-actions { display: flex; align-items: center; justify-content: center; gap: 14px; }
 .kj-actions .btn { min-width: 200px; min-height: 52px; justify-content: center; }
 .kuji-flip-all { margin: 0; }
+/* 結果のボタンは、くじの木と真鍮の見た目に（共通の紙とラベンダーのボタンのままで、木の盤から浮いていた。LK22）。
+   配色テーマ・見た目の様式のどれでも同じ。並び・押せる範囲は変えない（縁は紙のテーマのボタンと同じ 2px。紙以外のテーマでは縁が 1px 太くなるだけ）。
+   紙のテーマのボタンの規則（ui-paper.css の :is(.btn, …)。詳細度 0,4,1）より強い指定にしてある */
+html:root .kuji-overlay.kuji-multi .kj-actions .btn {
+  color: #f6efe0; border: 2px solid transparent; border-radius: 10px; text-shadow: 0 1px 0 rgba(0, 0, 0, 0.55);
+  background: linear-gradient(168deg, #5b3a22 0%, #2f1c11 100%) padding-box, linear-gradient(135deg, #d6ae74, #6b4526 55%, #d6ae74) border-box;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.45); filter: none;
+}
+html:root .kuji-overlay.kuji-multi .kj-actions .btn:is(:hover, :focus-visible) {
+  color: #fff8e6; border-color: transparent;
+  background: linear-gradient(168deg, #74492a 0%, #3d2416 100%) padding-box, linear-gradient(135deg, #ffe2a6, #8a5a10 55%, #ffe2a6) border-box;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.45), 0 0 16px rgba(255, 207, 74, 0.35);
+}
+/* 「結果を閉じる」は主のボタン: 真鍮の面に濃い茶の文字 */
+html:root .kuji-overlay.kuji-multi .kj-actions .kj-done {
+  color: #2f1c11; font-weight: 700; text-shadow: 0 1px 0 rgba(255, 255, 255, 0.35);
+  background: linear-gradient(180deg, #f3d48a 0%, #cf9c3f 100%) padding-box, linear-gradient(135deg, #fff3c8, #8a5a10 55%, #fff3c8) border-box;
+}
+html:root .kuji-overlay.kuji-multi .kj-actions .kj-done:is(:hover, :focus-visible) {
+  color: #2f1c11;
+  background: linear-gradient(180deg, #fbe3a6 0%, #dcab4c 100%) padding-box, linear-gradient(135deg, #ffffff, #8a5a10 55%, #ffffff) border-box;
+}
 /* S賞・ラストワン賞の見せ場（連続の途中で1枚ずつ大きく見せる。タップで戻る） */
 .kj-showcase { position: absolute; inset: 0; z-index: 4; display: grid; place-items: center; cursor: pointer; animation: kj-fade 0.2s; }
 
