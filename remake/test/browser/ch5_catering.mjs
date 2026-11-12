@@ -1,6 +1,6 @@
 // 第5章の出張シーシャの依頼（DLV・chapters/ch5-catering.js）を、実際の朝のLIME・地図・場面で確かめる。
 // 1. 依頼のLIMEが届く → 「引き受けます」→ その日は地図に出ない → 翌日、決まった時間帯に「出張シーシャ」→ 葉の組み合わせを選ぶ
-//    → ぴったりならくじ券+2、合うなら+1（お金は動かない・行動1回・体力を使う）。
+//    → ぴったりならくじ券+2、合うなら+1（手取り入金・行動1回・体力を使う）。
 // 2. 「今回は見送ります」→ 何も減らず、地図にも出ない。次の依頼は数日後。
 // 3. 期限: 引き受けたまま日が過ぎたら、スミさんの「気にすんな」が届いて地図から消える。返事をしないまま締め切られた依頼は、返事のボタンが出ない。
 import assert from "node:assert/strict";
@@ -115,6 +115,7 @@ await suite("ch5-catering", async check => {
     await clearLog(page);
     await pin.click();
     await page.locator(dt("map-go")).click();
+    await page.locator(dt("catering-go")).click();
     const index = entry.options.findIndex(o => o.fit === fit);
     await page.locator(dt(`catering-option-${index}`)).click();
     // 夜の会なら、そのまま夜が明けて翌日の昼の地図へ
@@ -123,16 +124,47 @@ await suite("ch5-catering", async check => {
     const text = await logText(page);
     assert.match(text, /道具を返しに、tonariへ寄った/, "back at tonari with Sumi after the job");
     assert.equal(state.kujiTickets, fit === "best" ? 2 : 1, `${fit} → tickets`);
-    assert.equal(state.money, before.money, "no money for the job");
+    assert.equal(state.money, before.money + entry.payout, "the contract take-home pay is credited once");
     assert.equal(offerOf(state), null, "the request is done");
     assert.equal(state.flags._ch5_catering.served[entry.id], 1);
-    assert.deepEqual(state.flags._ch5_catering.last, { id: entry.id, day: 52, fit, tickets: fit === "best" ? 2 : 1 });
+    assert.deepEqual(state.flags._ch5_catering.last, { id: entry.id, day: 52, performer: "hajime", fit, tickets: fit === "best" ? 2 : 1, payout: entry.payout, paid: entry.payout });
     assert.equal(state.visitedDay.ch5_catering, 52, "one action on the map");
     // 体力は mukai のシフトと同じだけ使う（盤の恩恵で少し軽くなることがある）。夜の会は、そのあと眠って戻る
     if (entry.slot === 0) assert(state.stamina < before.stamina && state.stamina >= before.stamina + stamina,
       `the job uses stamina like a shift (${before.stamina} → ${state.stamina})`);
     assert.equal(state.flags._ch5.part, "free", "the story does not move");
     assert.equal(await page.locator(dt("pin-ch5_catering")).count(), 0, "gone from the map");
+  });
+
+  await check("delegate-keeps-player-free-and-survives-load", async page => {
+    await seed(page, { seedValue: 3 }); // 昼の引っ越し祝い
+    await mapReady(page, { day: 51, slot: 0 });
+    const before = await get(page);
+    const { requests } = await model(page);
+    const entry = requests.find(r => r.id === offerOf(before).id);
+    await replyToSumi(page, "つむぎに任せます", "つむぎに任せた");
+    let value = await get(page);
+    assert.equal(offerOf(value).assigned, "tsumugi");
+    assert.equal(offerOf(value).jobDay, 52);
+    assert.deepEqual([value.money, value.stamina, value.slot], [before.money, before.stamina, 0]);
+    await rewrite(page, "s.day = 52; s.slot = 0; s.flags._morning_52 = true;");
+    await mapReady(page, { day: 52, slot: 0 });
+    assert.equal(await page.evaluate(async () => (await import("./js/daily/tsumugi-schedule.js")).tsumugiAtTonari(window.__remake.state)), false);
+    // 依頼のピンは担当の案内だけ。プレイヤーは家で休むなど別の行動を選べる。
+    const spot = await page.evaluate(async () => (await import("./js/chapters/ch5-catering.js")).chapterFiveCateringSpot());
+    assert.match(spot.unavailable, /つむぎ/);
+    // 行動済みの夜の保存から再開。朝処理に依存せず一度だけ入金・復帰する。
+    await rewrite(page, "s.slot = 1;");
+    await mapReady(page, { day: 52, slot: 1 });
+    value = await get(page);
+    assert.equal(value.money, before.money + entry.payout);
+    assert.equal(value.kujiTickets, 0);
+    assert.equal(offerOf(value), null);
+    assert.equal(value.flags._ch5_catering.last.performer, "tsumugi");
+    assert.equal(await page.evaluate(async () => (await import("./js/daily/tsumugi-schedule.js")).tsumugiAtTonari(window.__remake.state)), true);
+    await reopen(page);
+    await mapReady(page, { day: 52, slot: 1 });
+    assert.equal((await get(page)).money, before.money + entry.payout);
   });
 
   await check("request-decline-changes-nothing", async page => {

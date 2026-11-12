@@ -1,3 +1,5 @@
+import { isTsumugiCateringAway } from "../chapters/ch5-catering-model.js";
+
 // 固定物語と通常在店で、同じ日程・読了条件を参照する。
 export const TSUMUGI_STORY = [
   { day: 1, dialogue: "ch1_tsumugi_research", flag: "_tsumugi_contest_research", level: 1 },
@@ -8,6 +10,8 @@ export const TSUMUGI_STORY = [
 
 /** 表示にも来店にも使う読み取り専用判定。固定回・延期の未読を通常会話で代替しない。 */
 export function tsumugiAtTonari(save) {
+  if (save.chapter === 5 && isTsumugiCateringAway(save)) return false;
+  if (save.chapter === 5) return save.slot === 0 || save.slot === 1; // 第5章は店のスタッフとして働く
   if (save.slot !== 0 && save.slot !== 1) return false;
   if (save.flags?._tsumugi_story_day === `${save.chapter}:${save.day}`) return false;
   if (save.chapter === 1 && TSUMUGI_STORY.some(step => step.day <= save.day
