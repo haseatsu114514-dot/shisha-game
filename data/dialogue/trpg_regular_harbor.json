@@ -707,7 +707,7 @@
         },
         {
           "speaker": "regulara",
-          "text": "一台の前に、客の望みを聞いてみましょう",
+          "text": "まずは客の希望を聞こう。香りを決めるのは、それからだね",
           "face": "normal"
         },
         {
@@ -766,7 +766,7 @@
         },
         {
           "speaker": "regularb",
-          "text": "……言葉を添えることも、少し待つことも、できると思います",
+          "text": "言葉を添えることも、少し待つことも、できると思います",
           "face": "normal"
         }
       ]
@@ -789,12 +789,12 @@
         },
         {
           "speaker": "regulara",
-          "text": "世界一普通……。私が言うと、妙な注文だな",
+          "text": "普通の一台か。何を普通と感じるか、人によって違いそうだね",
           "face": "normal"
         },
         {
           "speaker": "regularb",
-          "text": "……あの窓、描きたくなりました。雨の中に、灯りがありましたね",
+          "text": "雨の中の灯りが印象に残りました。あの窓の席も候補ですね",
           "face": "normal"
         },
         {
@@ -830,7 +830,7 @@
         },
         {
           "speaker": "regularb",
-          "text": "……急かさないと、話せることもあるんですね",
+          "text": "急かさないと、話せることもあるんですね",
           "face": "normal"
         }
       ]
@@ -935,7 +935,7 @@
         },
         {
           "speaker": "regularb",
-          "text": "……待ってる間の席なら、こっちで用意しますね",
+          "text": "待ってる間の席なら、こっちで用意しますね",
           "face": "normal"
         }
       ]
@@ -1042,7 +1042,7 @@
           "speaker": "regularb",
           "role": "",
           "face": "normal",
-          "text": "……同じ部屋でも、席によって見えるものが違う。窓、棚、人の顔"
+          "text": "同じ部屋でも、席によって窓や棚、人の顔の見え方が違いますね"
         },
         {
           "speaker": "hajime",
@@ -1112,7 +1112,7 @@
           "speaker": "regularb",
           "role": "",
           "face": "normal",
-          "text": "……この席から、旅人は何を見たいんでしょう"
+          "text": "この席から、旅人は何を見たいんでしょう"
         }
       ]
     },
@@ -1280,7 +1280,7 @@
           "speaker": "regularb",
           "role": "",
           "face": "normal",
-          "text": "……この席から、旅人は何を見たいんでしょう"
+          "text": "この席から、旅人は何を見たいんでしょう"
         }
       ]
     },
@@ -1454,7 +1454,7 @@
           "speaker": "regularb",
           "role": "",
           "face": "normal",
-          "text": "……この席から、旅人は何を見たいんでしょう"
+          "text": "この席から、旅人は何を見たいんでしょう"
         }
       ]
     },
@@ -1602,7 +1602,7 @@
           "speaker": "regularb",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……雨の音、きれいですね"
+          "text": "雨の音、きれいですね"
         },
         {
           "speaker": "hajime",
@@ -1640,7 +1640,7 @@
           "speaker": "regulara",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……思い出の香りか。帰る店があるのは、いい"
+          "text": "思い出の香りか。いつ、どこで吸ったのかも聞いてみよう"
         },
         {
           "speaker": "hajime",
@@ -1716,7 +1716,7 @@
           "speaker": "regularb",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……答えは、一緒に探してもいいんですね"
+          "text": "答えは、一緒に探してもいいんですね"
         },
         {
           "speaker": "hajime",
@@ -1765,7 +1765,7 @@
         {
           "speaker": "regularb",
           "role": "PL／卓の会話",
-          "text": "……雨を見る席。何も話さない時間も、ちゃんとあります",
+          "text": "雨を見る席。何も話さない時間も、ちゃんとあります",
           "face": "normal"
         }
       ]
@@ -1776,7 +1776,7 @@
         {
           "speaker": "regularb",
           "role": "PL／卓の会話",
-          "text": "……顔が見える距離。話したくなったら、話せますね",
+          "text": "顔が見える距離。話したくなったら、話せますね",
           "face": "normal"
         }
       ]
@@ -1787,7 +1787,7 @@
         {
           "speaker": "regularb",
           "role": "PL／卓の会話",
-          "text": "古い写真のそば。今の店と、前の店が少し重なる",
+          "text": "古い写真のそばなら、昔の店の話も聞けそうです",
           "face": "normal"
         }
       ]
@@ -1852,7 +1852,7 @@
           "speaker": "regularb",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……寄り道した分だけ、話が増えました"
+          "text": "寄り道した分だけ、話が増えました"
         }
       ]
     },
@@ -1886,7 +1886,7 @@
           "speaker": "regularb",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……{pc:regularb}は窓辺から、旅人の手元と視線を見ています"
+          "text": "{pc:regularb}は窓辺から、旅人の手元と視線を見ています"
         },
         {
           "speaker": "sai",
@@ -2006,7 +2006,7 @@
           "speaker": "regularb",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……{pc:regularb}は何も言わず、港のスケッチを一枚添えます"
+          "text": "{pc:regularb}は何も言わず、港のスケッチを一枚添えます"
         },
         {
           "speaker": "sai",
@@ -2246,7 +2246,7 @@
           "speaker": "regularb",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……声、少し休ませたいのかもしれません"
+          "text": "少し声を休めたいのかもしれません。急かさず聞きましょう"
         }
       ]
     },
@@ -2352,7 +2352,7 @@
           "speaker": "regularb",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……古いメニューの棚、ずっと見てましたね"
+          "text": "古いメニューの棚、ずっと見てましたね"
         }
       ]
     },
@@ -2438,7 +2438,7 @@
           "speaker": "regularb",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……にぎやかなのが、嫌じゃないんですね"
+          "text": "にぎやかなのが、嫌じゃないんですね"
         }
       ]
     },
@@ -2458,7 +2458,7 @@
           "speaker": "regularb",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……窓辺なら、雨の音だけが聞こえます"
+          "text": "窓辺なら、雨の音だけが聞こえます"
         },
         {
           "speaker": "sai",
@@ -2484,7 +2484,7 @@
           "speaker": "regularb",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……古いメニューの棚、思い出の席になりそうです"
+          "text": "古いメニューの棚、思い出の席になりそうです"
         },
         {
           "speaker": "sai",
@@ -2510,7 +2510,7 @@
           "speaker": "regularb",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……カウンターなら、誰かの声が届きますね"
+          "text": "カウンターなら、誰かの声が届きますね"
         },
         {
           "speaker": "sai",
@@ -2740,7 +2740,7 @@
           "speaker": "regularb",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……{pc:regularb}は、店全体を見て席を決めます"
+          "text": "{pc:regularb}は、店全体を見て席を決めます"
         },
         {
           "speaker": "sai",

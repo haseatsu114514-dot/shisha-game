@@ -792,13 +792,13 @@
           "speaker": "regulara",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "夜の見回りね。……私も夜風は苦手だが"
+          "text": "夜の見回りか。灯りを確かめながら、順に回ろう"
         },
         {
           "speaker": "regularb",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……夜番なら、慣れている"
+          "text": "夜番の役ですね。町の様子をよく見ておきます"
         },
         {
           "speaker": "sai",
@@ -834,7 +834,7 @@
           "speaker": "regulara",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "猫！？ ……あ、いえ。いい猫だな"
+          "text": "猫が配達を頼みに来るんだ。話を聞いてみよう"
         },
         {
           "speaker": "hajime",
@@ -872,7 +872,7 @@
           "speaker": "regularb",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……宛先がないと、困るな"
+          "text": "宛先がないと届けられませんね。残った字を確かめましょう"
         },
         {
           "speaker": "hajime",
@@ -924,7 +924,7 @@
           "speaker": "regulara",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……おや。でも、まだ読める字もあるわ"
+          "text": "字が全部消えたわけじゃないね。読める部分を拾おう"
         },
         {
           "speaker": "sai",
@@ -1168,7 +1168,7 @@
           "speaker": "regulara",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "完璧ね。……私が儚く消える前に、出発するか"
+          "text": "支度はそろったね。風が変わらないうちに出発しよう"
         }
       ]
     },
@@ -1214,7 +1214,7 @@
           "speaker": "regulara",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "えっ、暗い！？ ……あ、ううん。闇も儚くていいな"
+          "text": "暗くなったね。月明かりで足元が見えるか、確かめよう"
         },
         {
           "speaker": "sai",
@@ -1254,7 +1254,7 @@
           "speaker": "regulara",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "{pc:regulara}が支度するわ。段取りは任せろ"
+          "text": "{pc:regulara}が道具を並べるよ。使う順番に確かめよう"
         },
         {
           "speaker": "sai",
@@ -1274,7 +1274,7 @@
           "speaker": "regularb",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "{pc:regularb}は、届ける道をひと足先に見てこよう"
+          "text": "{pc:regularb}は、届ける道をひと足先に見てきます"
         },
         {
           "speaker": "sai",
@@ -1300,7 +1300,7 @@
           "speaker": "regularb",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……届いて、よかったな"
+          "text": "無事に届いて、よかったです"
         }
       ]
     },
@@ -1400,7 +1400,7 @@
           "speaker": "regularb",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "{pc:regularb}が口上を添えよう。月にふさわしい一言を"
+          "text": "{pc:regularb}が挨拶を添えます。手紙を届けに来ました、と"
         },
         {
           "speaker": "sai",
@@ -1446,13 +1446,13 @@
           "speaker": "regularb",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……まず、この手紙を待つ人を探そう"
+          "text": "まず、この手紙を待つ人を探しましょう"
         },
         {
           "speaker": "regularb",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "誰が書き、誰が待つか。それが分かれば、道は自然に決まる"
+          "text": "誰が書いて、誰が待っているのか。それが分かれば道を選べます"
         },
         {
           "speaker": "hajime",
@@ -1478,7 +1478,7 @@
           "speaker": "regularb",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……灯りをともす人も、一人だな"
+          "text": "灯りをともす人のところにも、手紙が届くんですね"
         },
         {
           "speaker": "sai",
@@ -1504,7 +1504,7 @@
           "speaker": "regularb",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……手紙が届けば、また話せる"
+          "text": "手紙が届けば、離れていても話せますね"
         },
         {
           "speaker": "sai",
@@ -1524,13 +1524,13 @@
           "speaker": "regulara",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "ミトンが自分で書いたの！？ ……なかなかやるな"
+          "text": "ミトンが自分で書いたのか。誰に届けたかったんだろう"
         },
         {
           "speaker": "regularb",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……描いた人への手紙か"
+          "text": "描いた人への手紙なんですね"
         },
         {
           "speaker": "sai",
@@ -1568,7 +1568,7 @@
           "speaker": "regulara",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……風。私も、飛ばされちゃう……"
+          "text": "風が強いね。手紙を押さえて、足場を確かめよう"
         },
         {
           "speaker": "hajime",
@@ -1620,7 +1620,7 @@
           "speaker": "regulara",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "凧揚げなら任せて！ ……じゃなくて、任せろ"
+          "text": "縄はこっちで持つよ。風を見て、合図を合わせよう"
         }
       ]
     },
@@ -1666,7 +1666,7 @@
           "speaker": "regulara",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "支度なら任せて。……まあ、段取りは得意なの"
+          "text": "縄と網はそろったね。出発前に結び目も確かめよう"
         }
       ]
     },
@@ -1692,7 +1692,7 @@
           "speaker": "regularb",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……渡し方は、考えよう"
+          "text": "渡し方も考えましょう。受け取る人を驚かせないように"
         }
       ]
     },
@@ -1712,7 +1712,7 @@
           "speaker": "regularb",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……屋根の上なら、よく見える"
+          "text": "屋根の上なら、町の灯りを見渡せそうです"
         }
       ]
     },
@@ -1772,7 +1772,7 @@
           "speaker": "regulara",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "きちんとした手紙ね。背すじが伸びるな"
+          "text": "きちんと封をした手紙だね。宛先にも理由がありそうだ"
         }
       ]
     },
@@ -1812,7 +1812,7 @@
           "speaker": "regulara",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "かわいい……！ あ、ううん。いいな"
+          "text": "猫の絵が目印になるね。ほかにも同じ絵がないか探そう"
         }
       ]
     },
@@ -1914,7 +1914,7 @@
           "speaker": "regularb",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……川で宛名が消えたのか"
+          "text": "川の水で宛名が消えたんですね"
         }
       ]
     },
@@ -2080,7 +2080,7 @@
           "speaker": "regularb",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "前足で？ 待て、それはつまり……"
+          "text": "前足で書いたんですか？ それなら、送り主は……"
         }
       ]
     },
@@ -2366,13 +2366,13 @@
           "speaker": "regulara",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "ミトンのぬいぐるみが出たら、三つ買う……じゃなくて、ほしいな"
+          "text": "ミトンも手紙を待っていたんだね。届けた後の顔が見たいな"
         },
         {
           "speaker": "regularb",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……描いた本人に聞けば、分かるか"
+          "text": "描いた本人に聞けば、分かるかもしれません"
         },
         {
           "speaker": "hajime",
@@ -2442,7 +2442,7 @@
           "speaker": "regularb",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……毎晩、同じ合図なのか"
+          "text": "毎晩、同じ合図を送っていたんですね"
         }
       ]
     },
@@ -2624,7 +2624,7 @@
           "speaker": "regularb",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……遠くても、月は同じだな"
+          "text": "遠くの町からも、同じ月が見えるんですね"
         }
       ]
     },
@@ -2676,7 +2676,7 @@
           "speaker": "regularb",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……パン屋の窓、覚えておこう"
+          "text": "パン屋の窓も、覚えておきましょう"
         }
       ]
     },
@@ -2754,7 +2754,7 @@
           "speaker": "regularb",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……この猫の絵、古いな"
+          "text": "この猫の絵、ずっと前からあるようです"
         }
       ]
     },
@@ -2832,7 +2832,7 @@
           "speaker": "regularb",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……この猫、パン屋にもいた"
+          "text": "この猫、パン屋にも描いてありましたね"
         }
       ]
     },
