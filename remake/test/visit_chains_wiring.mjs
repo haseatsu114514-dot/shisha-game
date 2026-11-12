@@ -315,7 +315,7 @@ const { chainVisitDue, playChainStage, loadVisitChains } = playModule.ns;
     TOKYO_VISIT_COST: 4000, spendableMoney: value => value.money, canReflect: () => false, consultLessons: async () => {},
     loadStoryRoutes: async () => ({}), availableOptionalScenes: () => [], chapterThreeOutingCandidates: () => [],
     availableChapterThreeTrials: () => [], loverMilestonesDue: () => [], questionVisitDue: () => false, finaleAtVisit: () => false,
-    OUTING_DIALOGUE_IDS: [], OUTINGS_FLAG: "_ch3_outings", outingCounts: value => value.flags._ch3_outings || {}, MUKAI_PAY: 6000,
+    OUTING_DIALOGUE_IDS: [], OUTINGS_FLAG: "_ch3_outings", outingCounts: value => value.flags._ch3_outings || {}, mukaiShiftPay: () => 10000,
     MUKAI_SHIFT_STAMINA: -14, TOKYO_FREE_TIMES_V3: [], CH3_DAILY_PLAN: {}, chapterThreeScenes: () => [], chapterThreeProgress: () => ({ stage: 0, startDay: 1 }),
     chainStageAt: chains.chainStageAt, chainVisitDue, playChainStage,
   });

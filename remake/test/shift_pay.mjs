@@ -26,7 +26,7 @@ for (const [value, id, bonus] of milestones) {
   assert.equal(shiftAchievement(value).id, id);
   assert.equal(shiftAchievementBonus(value), bonus);
   assert.equal(shiftBasePay(value), 8000 + bonus);
-  assert.equal(shiftBasePay(value, 6000), 6000 + bonus, "mukaiは軽いシフトとの差額を維持");
+  assert.equal(shiftBasePay(value, 8000), 8000 + bonus, "mukaiもtonariと同じ基本日当");
   assert.equal(shiftBasePay(JSON.parse(original)), 8000 + bonus, "JSON保存・再読でも同じ日当");
   assert.match(shiftPayNote(value), new RegExp((8000 + bonus).toLocaleString("ja-JP")));
   assert.equal(JSON.stringify(value), original, "照会・再読で実績や所持金を変えない");
