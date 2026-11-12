@@ -38,6 +38,48 @@ await suite('mobile-craft-layout', async check => {
         }, step);
         if(step === 'holes') await page.locator('[data-test="hole-start"]').click();
         await page.locator(selector).waitFor();
+        if (step === 'holes') {
+          const hint = page.locator('[data-test="hole-depth-hint"]');
+          assert.match(await hint.textContent(), /押す長さで深さが変わる/);
+          const geometry = await hint.evaluate(node => {
+            const hint = node.getBoundingClientRect().toJSON(), panel = node.closest('.bench-panel').getBoundingClientRect().toJSON();
+            const controls = [...node.parentNode.querySelectorAll('button')].map(b => b.getBoundingClientRect().toJSON());
+            return { hint, panel, controls, fits: node.scrollHeight <= node.clientHeight + 1 };
+          });
+          assert(geometry.fits && geometry.hint.top >= geometry.panel.top && geometry.hint.bottom <= geometry.panel.bottom, JSON.stringify(geometry));
+          assert(geometry.controls.every(b => b.top >= geometry.hint.bottom - 1), 'depth hint must not overlap controls');
+          // 実際に目印で長押しし、大きい穴の直後にも針が動き、盤面が拡大・停止しないことを確認する。
+          const punch = await page.evaluate(async () => {
+            const button = document.querySelector('[data-test="hole-punch"]');
+            const cursor = document.querySelector('[data-test="hole-needle"]');
+            const marker = document.querySelector('.foil-marker.next');
+            const foil = document.querySelector('.foil');
+            const frame = () => new Promise(requestAnimationFrame);
+            const deadline = performance.now() + 4000;
+            while (Math.hypot(parseFloat(cursor.style.left) - parseFloat(marker.style.left), parseFloat(cursor.style.top) - parseFloat(marker.style.top)) > .5) {
+              if (performance.now() > deadline) throw new Error('Needle did not approach its marker');
+              await frame();
+            }
+            const base = getComputedStyle(foil).transform;
+            button.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, cancelable: true }));
+            while (!document.querySelector('.foil-hole.large')) {
+              if (performance.now() > deadline) throw new Error('Long press did not open a large hole');
+              await frame();
+            }
+            button.dispatchEvent(new PointerEvent('pointerup', { bubbles: true, cancelable: true }));
+            const positions = [], transforms = [], stops = [], zooms = [];
+            for (let i = 0; i < 4; i++) {
+              positions.push(cursor.style.left + ',' + cursor.style.top);
+              transforms.push(getComputedStyle(foil).transform);
+              stops.push(Number(document.querySelector('.bench').dataset.hitStopUntil || 0) > performance.now());
+              zooms.push(foil.getAnimations().some(a => a.effect.getKeyframes().some(f => f.scale)));
+              await frame();
+            }
+            return { base, positions, transforms, stops, zooms };
+          });
+          assert.equal(new Set(punch.positions).size, 4, 'needle must keep moving after a large hole');
+          assert(punch.transforms.every(t => t === punch.base) && punch.stops.every(s => !s) && punch.zooms.every(s => !s), JSON.stringify(punch));
+        }
         const impact = await page.locator(selector).evaluate(async node => {
           const fx = await import('./js/craft/fx.js');
           const base = getComputedStyle(node).transform;
