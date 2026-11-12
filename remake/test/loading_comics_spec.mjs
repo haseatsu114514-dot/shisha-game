@@ -126,8 +126,13 @@ assert.equal(eligibleLoadingComics(LOADING_COMICS, { context: 'craft', chapter: 
 // on a standalone trial page (no save) like the bench preview, the cast is not checked and spoilers stay hidden.
 const minigame = save => eligibleLoadingComics(LOADING_COMICS, minigameLoadingOptions(save)).map(c => c.id);
 assert.deepEqual(minigame({ ...fresh, chapter: 1 }), freshIds, 'in the game, a minigame shows the same comics as the bench');
-assert.deepEqual(minigame({ ...everyone, chapter: 4 }), craft(4, everyone), 'chapter 4 with everyone met: same as the bench');
+for (const chapter of [1, 2, 3, 4, 5]) {
+  for (const [label, save] of [['fresh', fresh], ['met naru', { ...fresh, met: { naru: true } }], ['everyone met', everyone]]) {
+    assert.deepEqual(minigame({ ...save, chapter }), craft(chapter, save), `chapter ${chapter} ${label}: same as the bench`);
+  }
+}
 const trial = minigame(null);
+assert.deepEqual(trial, eligibleLoadingComics(LOADING_COMICS, { context: 'craft', chapter: 1 }).map(c => c.id), 'a standalone trial uses the bench preview pool');
 assert(trial.length > freshIds.length, 'a trial page has comics to show');
 assert(trial.every(id => LOADING_COMICS.find(c => c.id === id).minChapter === 1), 'a trial page never shows a spoiler comic');
 
