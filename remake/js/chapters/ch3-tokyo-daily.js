@@ -26,7 +26,7 @@ import { chapterDay } from "../core/chapter-clock.js";
 import { tokyoTime, TOKYO_FREE_TIMES_V3, timeNumber } from "../core/tokyo-clock.js";
 import { dueTokyoVisit, completeTokyoVisitAction, visitContacts, syncTokyoVisits } from "../core/tokyo-visits.js";
 import { CH3_DAILY_PLAN, chapterThreeScenes, chapterThreeProgress, completeChapterThreeScene } from "./ch3-progress.js";
-import { OUTINGS_FLAG, OUTING_DIALOGUE_IDS, outingCounts, outingDialogueId, outingAffinity, outingReason, chapterThreeOutingCandidates } from "./ch3-outing-progress.js";
+import { OUTINGS_FLAG, OUTING_DIALOGUE_IDS, outingCounts, outingDialogueId, outingAffinity, outingReason, chapterThreeOutingCandidates, recordChapterThreeOuting } from "./ch3-outing-progress.js";
 import { availableChapterThreeTrials } from "./ch3-trial-progress.js";
 import { runMukaiDeliveryWork } from "./ch3-deliveries.js";
 import { availableOptionalScenes, commitOptionalRead, selectChapterThreeEvening,
@@ -464,12 +464,13 @@ async function goOuting(outing, staminaGuard, owner) {
   const bg = outing.bg || visitBg[outing.place] || "bg_street";
   const gains = outingAffinity(state, outing); // 回数を数える前に（通いの1回目か2回目以降か）
   const sceneId = outingDialogueId(state, outing);
+  const outingSlot = state.slot;
   if (!await readPlain(sceneId, bg, owner)) return unused;
   addStamina(outing.stamina);
   if (outing.money) addMoney(outing.money);
   if (outing.stat) earnStat(outing.stat, 4);
   for (const [who, pts] of Object.entries(gains)) gainAffinity(who, pts);
-  state.flags[OUTINGS_FLAG] = { ...outingCounts(state), [outing.id]: (outingCounts(state)[outing.id] || 0) + 1 };
+  recordChapterThreeOuting(state, outing.id, outingSlot);
   if (outing.money) toast(`+${outing.money.toLocaleString("ja-JP")}円`, { kind: "good" });
   // 体力を使う外出だけ、話の初完読で X5（通いの小会話も話ごとに一度。第1・2章の店の会話と同じ）
   if (outing.stamina < 0) earnSceneCompletion(sceneId, owner);
