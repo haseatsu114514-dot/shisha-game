@@ -4224,6 +4224,15 @@
       "run": ["node remake/test/browser/stage_fit.mjs"]
     },
     {
+      "id": "mobile-craft-layout",
+      "title": "Mobile packing regions and foil/stove impact scale regression",
+      "kind": "browser",
+      "weight": 1,
+      "timeout": 5,
+      "paths": ["remake/css/craft-stage.css", "remake/css/phone-layout.css", "remake/js/craft/fx.js", "remake/test/browser/mobile_craft_layout.mjs"],
+      "run": ["node remake/test/browser/mobile_craft_layout.mjs"]
+    },
+    {
       "id": "side-area",
       "title": "左右の余白（YHK）: 煙と縁・縦書きの帯・親指ボタン（会話の AUTO／SKIP／LOG／次へ、地図の LIME／MENU）。主流のスマホの置き場所、モーダルの下では効かないこと、狭い画面・PC・DS風・設定「ぼかしだけ」・自動操作の既定は今までどおり",
       "kind": "browser",

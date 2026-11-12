@@ -266,9 +266,21 @@ await suite("ch3-full-flow", async check => {
     assert.equal(await page.locator(dt("ch3-aftermath-chapter-four")).count(), 0);
     assert.equal((await get(page)).day, reunionDay + 1, "The confession happens the day after the reunion");
     assert.equal((await get(page)).flags._ch3_cleared, true, "The homecoming night already closed the aftermath");
+    // みんとと交際中なので、告白を受ける前に2段階の確認が入る。
+    // 常に先頭を選ぶと「元の選択へ戻る」を繰り返すため、ここでは明示的に続行する。
+    await page.evaluate(async () => {
+      window.__confessionConfirmations = [];
+      (await import("./js/vn/engine.js")).vnTest.choose = (_id, labels) => {
+        const proceed = labels.findIndex(label => label.startsWith("それでも、"));
+        if (proceed >= 0) window.__confessionConfirmations.push(labels[proceed]);
+        return proceed >= 0 ? proceed : 0;
+      };
+    });
     await page.locator(dt("ch3-aftermath-ageha-confession-continue")).click();
     await page.locator(dt("ch3-aftermath-complete")).waitFor();
-    assert((await get(page)).lovers.includes("ageha"), "The first answer (turbo) accepts ageha's confession");
+    assert.deepEqual(await page.evaluate(() => window.__confessionConfirmations),
+      ["それでも、気持ちを確かめる", "それでも、付き合うと伝える"], "Both existing-partner confirmations must be read before accepting");
+    assert((await get(page)).lovers.includes("ageha"), "The accepted confession adds ageha after both confirmations");
 
     // 5. 最終state
     state = await get(page);

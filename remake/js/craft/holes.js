@@ -13,7 +13,7 @@ import { craftCondition } from "../core/condition.js";
 import { state as gameState } from "../core/state.js";
 import { growthSkill, settleGrowthPhase, SKILL_TUNING } from "../core/growth-effects.js";
 import { artImg } from "./art.js";
-import { impact, fxHolding } from "./fx.js";
+import { sparks } from "./fx.js";
 
 import { RINGS, circularAngleDistance, templateComplete, evaluateFoil, usesFoil, skippedFoilResult,
   NEEDLE, needleHalfArc, needleOffset, referenceDegrees, HOLE_SIZES, pressDepth, pressLimit } from "./holes_logic.js";
@@ -142,7 +142,9 @@ export async function runHoles(cs) {
     el("div.hr-side", [el("small.ht-current", { text: template.label }), ringLabel,
       effectVisible("technique") ? effectBadge("technique", "技") : null,
       senseBand(basePerfWin, 12), effectLine("technique", "技", "技術で針がゆっくり"),
-      el("div.hr-time", [el("span", { text: "TIME" }), timeBar]), feedback, plan, punchBtn, el("div.hr-row", [nextBtn, doneBtn])]),
+      el("div.hr-time", [el("span", { text: "TIME" }), timeBar]), feedback, plan,
+      el("p.hr-depth-hint", { dataset: { test: "hole-depth-hint" }, text: "押す長さで深さが変わる。短すぎると浅く、長いほど大きい穴に。" }),
+      punchBtn, el("div.hr-row", [nextBtn, doneBtn])]),
   ]));
 
   // ---- 状態
@@ -310,7 +312,7 @@ export async function runHoles(cs) {
     addHoleDot(a, ring.r, depth === "shallow" ? "rough" : kind, depth);
     if (depth !== "shallow" && (kind === "perfect" || kind === "good")) {
       const [hx, hy] = posOf(a, ring.r);
-      impact(plane, kind, { x: `${50 + hx * 50}%`, y: `${50 + hy * 50}%`, zoomNode: disc });
+      sparks(plane, { x: `${50 + hx * 50}%`, y: `${50 + hy * 50}%`, n: 5, spread: 55 });
     }
     setBenchHoleAction(cs, {
       dots: state.flatMap(rg => rg.holes.map(hole => posOf(hole.a, rg.r))), target: posOf(a, ring.r),
@@ -319,7 +321,7 @@ export async function runHoles(cs) {
     if (ring.taken.every(Boolean)) {
       const clean = ring.holes.every((hole) => hole.d <= perfWin && hole.size === HOLE_SIZES.small) && ring.extra === 0;
       report(clean ? "BEAUTIFUL RING" : "RING COMPLETE", "just");
-      impact(plane, "big", { color: clean ? "#ffc21a" : undefined, zoomNode: disc });
+      sparks(plane, { color: clean ? "#ffc21a" : undefined, n: 8, spread: 90 });
       SE.perfect();
       tickerSay(clean ? "パッキー「きれいに揃ったーッ！ 見てくださいこの輪！」" : "パッキー「リング完成！ 手が止まりませんね〜♪」");
       // 自動送りはしない。完成したリングは入力を止め、次のリングか仕上げを選んでもらう。
@@ -345,8 +347,8 @@ export async function runHoles(cs) {
     // 押しすぎは離さなくても刺し抜ける。押しっぱなしで止まらない。
     if (press && elapsed - press.start >= pressLimit(slow)) pressEnd();
     if (complete()) return;
-    // ヒットストップ中は針の絵だけ止める（時間と判定は進む）
-    if (!fxHolding(panel)) drawNeedle(elapsed);
+    // 一刺しのあとも針を止めない。描画だけ停止すると処理落ちや判定の飛びに見える。
+    drawNeedle(elapsed);
     highlightNext();
     drawTime();
     hud();

@@ -708,6 +708,8 @@ function onNote(line) {
 
 function runFx(line) {
   const id = line.id;
+  // 早送りでは一瞬の装飾を積まない。セピア等の場面状態と解除は通常どおり適用する。
+  if ((skipMode || vnTest.turbo) && ["shake", "flash", "imp", "gold", "cutin", "scent"].includes(id)) return;
   autoFxGap = 6;
   if (id === "shake") { shake(); SE.hit(); }
   else if (id === "flash" || id === "imp") flash(id === "imp" ? "gold" : "white");
@@ -797,7 +799,7 @@ async function showLine(line) {
   r.ready = false;
   clearTimeout(autoTimer);
   const images = linePortraits(line);
-  const cutinCue = line._romanceTransient ? null : conversationCutinCue(r.currentId || r.id, line);
+  const cutinCue = line._romanceTransient || skipMode || vnTest.turbo ? null : conversationCutinCue(r.currentId || r.id, line);
   const cutinSrc = cutinCue ? portraitInfo("hajime", cutinCue.face, "new")?.src : null;
   if (cutinSrc) images.push(cutinSrc);
   // 選択したUIの書体で折り返す。初回だけ代替フォントでページを決めない。
@@ -928,6 +930,7 @@ function applyCue(gains) {
 }
 
 function autoFx(line) {
+  if (skipMode || vnTest.turbo) return;
   if (autoFxGap > 0) { autoFxGap--; return; }
   const t = String(line.text || "");
   let id = null;
@@ -1053,10 +1056,11 @@ function updatePortraits(speaker, face, explicit = false) {
         dom.portraits.querySelector(`img[data-speaker="${oldest}"]`)?.remove();
       }
       r.slots[speaker] = slot;
-      img = el("img.portrait.enter", { alt: "", dataset: { speaker, slot: String(slot) }, draggable: "false" });
+      img = el(skipMode || vnTest.turbo ? "img.portrait" : "img.portrait.enter", { alt: "", dataset: { speaker, slot: String(slot) }, draggable: "false" });
       img.onerror = () => { img.remove(); delete r.slots[speaker]; layoutPortraits(); };
       dom.portraits.append(img);
-      entrance = (async () => {
+      // SKIP中は入場のためのフレーム待ちとアニメーションを作らず、名前・本文と一緒に出す。
+      if (!skipMode && !vnTest.turbo) entrance = (async () => {
         await nextFrame(); await nextFrame();
         if (running !== r || !img.isConnected) return;
         img.classList.remove("enter");

@@ -107,16 +107,23 @@ await suite("side-area", async check => {
     await toTalk(page);
     await live(page, "next").waitFor();
     const g = await geometry(page);
-    assert.deepEqual(g.buttons.map((b) => b.id).sort(), ["auto", "log", "next", "skip"]);
+    assert.deepEqual(g.buttons.map((b) => b.id).sort(), ["auto", "config", "glossary", "log", "next", "skip"]);
     assertPlacement(g, "会話");
     // 帯: 章・街・日付と時間帯。字は実寸 11.5px 以上、日付は 12.5px 以上
     assert.equal(g.chapter.text, "第一章");
     assert.equal(g.city.text, "橙須");
     assert.equal(g.when.text, "五日目・夜");
     assert(g.chapter.font >= 11.4 && g.when.font >= 12.4 && g.city.font >= 18, JSON.stringify([g.chapter.font, g.when.font, g.city.font]));
-    // ステージの中: 余白へ出した3つは隠れ、用語・設定は残る
-    const inStage = await page.evaluate(() => Object.fromEntries([...document.querySelectorAll("#vn .vn-ctl")].map((n) => [n.dataset.test, getComputedStyle(n).display !== "none" && n.getClientRects().length > 0])));
-    assert.deepEqual(inStage, { "vn-auto": false, "vn-skip": false, "vn-log": false, "vn-glossary": true, "vn-config": true });
+    // ステージの中: 用語・設定も含めて余白へ出した5つは隠れる
+    const inStage = await page.evaluate(() => Object.fromEntries([...document.querySelectorAll("#vn .vn-ctl")].map((n) => [n.dataset.test, getComputedStyle(n).visibility !== "hidden" && getComputedStyle(n).display !== "none" && n.getClientRects().length > 0])));
+    assert.deepEqual(inStage, { "vn-auto": false, "vn-skip": false, "vn-log": false, "vn-glossary": false, "vn-config": false });
+
+    // 用語も右上から開閉でき、開いている間は送りを止める。
+    await page.locator(t("side-glossary")).tap();
+    await page.locator(".glossary-modal").waitFor();
+    await idle(page, "next").waitFor({ state: "attached" });
+    await page.keyboard.press("Escape");
+    await live(page, "next").waitFor();
 
     // 次へ: 押すたびに会話が進む
     const first = await vnText(page);
@@ -139,8 +146,8 @@ await suite("side-area", async check => {
     await page.locator(".vn-next.show").waitFor();
     await page.locator(t("side-log")).tap();
     await page.locator("#vn .vn-log.show").waitFor();
-    await idle(page, "next").waitFor();
-    await idle(page, "auto").waitFor();
+    await idle(page, "next").waitFor({ state: "attached" });
+    await idle(page, "auto").waitFor({ state: "attached" });
     const held = await vnText(page);
     await page.evaluate(() => { for (const id of ["next", "auto", "skip"]) document.querySelector(`[data-test="side-${id}"]`).click(); });
     await page.waitForTimeout(250);
@@ -150,10 +157,10 @@ await suite("side-area", async check => {
     await page.locator("#vn .vn-log.show").waitFor({ state: "detached" }).catch(() => page.waitForFunction(() => !document.querySelector("#vn .vn-log.show")));
     await live(page, "next").waitFor();
 
-    // 設定（ステージの中に残した札）を開いている間も、余白のボタンは効かない
-    await page.locator(t("vn-config")).tap();
+    // 設定（右上の札）を開いている間も、余白のボタンは効かない
+    await page.locator(t("side-config")).tap();
     await page.locator(".cfg-modal").waitFor();
-    await idle(page, "next").waitFor();
+    await idle(page, "next").waitFor({ state: "attached" });
     const behind = await vnText(page);
     await page.evaluate(() => document.querySelector('[data-test="side-next"]').click());
     await page.waitForTimeout(200);
@@ -179,8 +186,8 @@ await suite("side-area", async check => {
     // MENU: 余白から開く。開いている間は余白のボタンを下げ、押しても LIME は開かない
     await page.locator(t("side-menu")).tap();
     await page.locator("#modal .dmenu").waitFor();
-    await idle(page, "menu").waitFor();
-    await idle(page, "lime").waitFor();
+    await idle(page, "menu").waitFor({ state: "attached" });
+    await idle(page, "lime").waitFor({ state: "attached" });
     await page.evaluate(() => document.querySelector('[data-test="side-lime"]').click());
     await page.waitForTimeout(250);
     assert.equal(await page.locator(".phone-overlay").count(), 0);
@@ -191,7 +198,7 @@ await suite("side-area", async check => {
     // LIME: 余白から開く。開いている間は MENU が開かない
     await page.locator(t("side-lime")).tap();
     await page.locator(".phone-overlay").waitFor();
-    await idle(page, "lime").waitFor();
+    await idle(page, "lime").waitFor({ state: "attached" });
     await page.evaluate(() => document.querySelector('[data-test="side-menu"]').click());
     await page.waitForTimeout(250);
     assert.equal(await page.locator("#modal .dmenu").count(), 0);
@@ -270,7 +277,7 @@ await suite("side-area", async check => {
     await page.waitForFunction((before) => document.querySelector("#vn .vn-text").textContent !== before, first);
     await page.locator(t("side-log")).tap();
     await page.locator("#vn .vn-log.show").waitFor();
-    await idle(page, "next").waitFor();
+    await idle(page, "next").waitFor({ state: "attached" });
   }, { ...PHONE, pageEntry: `${baseURL}?look=neo` });
 }, { initScript: padOn });
 

@@ -63,10 +63,11 @@ export function hitStop(node, ms = IMPACT.perfect.ms, { zoom = IMPACT.perfect.zo
     bench.dataset.hitStopUntil = String(Math.max(until, performance.now() + ms));
   }
   if (mode !== "full" || !zoom || typeof node?.animate !== "function") return;
+  // 独立した scale で寄せる。transform を置き換えると舞台側で指定した拡大率が消える。
   node.animate([
-    { transform: `scale(${zoom})`, filter: "brightness(1.18)" },
-    { transform: `scale(${zoom})`, filter: "brightness(1.18)", offset: Math.min(0.6, ms / (ms + 160)) },
-    { transform: "scale(1)", filter: "brightness(1)" },
+    { scale: String(zoom), filter: "brightness(1.18)" },
+    { scale: String(zoom), filter: "brightness(1.18)", offset: Math.min(0.6, ms / (ms + 160)) },
+    { scale: "1", filter: "brightness(1)" },
   ], { duration: ms + 160, easing: "cubic-bezier(.2,.8,.3,1)" });
 }
 
