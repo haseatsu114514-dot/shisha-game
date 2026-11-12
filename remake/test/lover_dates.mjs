@@ -71,6 +71,11 @@ for (const scene of hiyori) {
   assert.ok(!scene.metadata.preview_only && !scene.metadata.min_chapter, `${scene.dialogue_id}: playable in chapters 1-3`);
   assert.ok(!scene.branches, `${scene.dialogue_id}: no timeline branch needed`);
   for (const line of scene.lines) {
+    // 場面の途中の背景の切り替え（lv2 の暖簾の前 → ラーメン屋の店内・#3285 C5）は台詞ではない。絵が実在することだけ確かめる。
+    if (line.type === "bg") {
+      assert.ok(assetExists(String(line.bg).replace("res://", "")), `${scene.dialogue_id}: bg line ${line.bg}`);
+      continue;
+    }
     assert.ok(["", "hiyori", "hajime"].includes(line.speaker), `${scene.dialogue_id}: speaker ${line.speaker}`);
     if (line.speaker === "hiyori") {
       assert.ok(assetExists(`assets/sprites/characters/hiyori/chr_hiyori_${line.face}.png`), `${scene.dialogue_id}: face ${line.face}`);
