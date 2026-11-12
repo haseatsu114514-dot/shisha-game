@@ -242,8 +242,9 @@ assert.equal(M.cateringServedTotal(save({ flags: { [M.CATERING_FLAG]: { served: 
       `${file}: 火種・特別な経験値を付けない（経験値は日常ループの普通の行動と同じ）`);
     assert.doesNotMatch(src, /gainAffinity|affinity\[|lovers|romance/, `${file}: 好感度・恋愛を動かさない`);
     // pendingInvite は既存の約束を読むだけ。「ending」の部分一致とEDへの依存を混同しない。
-    const progression = /\btournament\w*|\bending\w*|chapterFiveProgress|completeChapterFiveScene/;
-    assert(progression.test("tournamentState") && progression.test("endingId") && progression.test("chapterFiveProgress"));
+    const progression = /(?:\b|_)tournament\w*|(?:\b|_)ending\w*|chapterFiveProgress|completeChapterFiveScene/;
+    for (const forbidden of ["tournamentState", "endingId", "_ch5_ending", "state.ending", "chapterFiveProgress", "completeChapterFiveScene"])
+      assert(progression.test(forbidden), `進行依存の禁止検査が働く: ${forbidden}`);
     assert(!progression.test("pendingInvite"));
     assert.doesNotMatch(src, progression, `${file}: 大会・エンディング・進行を動かさない`);
   }
@@ -286,8 +287,12 @@ await import("./ch5_catering_delegation.mjs");
   assert.equal(loaded.trpg.shifts[0].cateringMsg, "migration-request", "移行は委託の出所を残す");
   assert.equal(loaded.trpg.shifts[0].busy, true);
   assert.deepEqual(loaded.trpg.shifts[1], existing, "移行後も元の予定を保持する");
+  const { tsumugiAtTonari } = await import("../js/daily/tsumugi-schedule.js");
+  loaded.day++; loaded.slot = 1;
+  assert.equal(tsumugiAtTonari(loaded), false, "実LOAD後も委託枠は在店しない");
   assert(M.closeCatering(loaded));
   assert.deepEqual(loaded.trpg.shifts, [existing], "移行後の取消も委託由来だけを除く");
+  assert.equal(tsumugiAtTonari(loaded), true, "取消後は元の在店へ戻る");
 }
 
 // Rendering adapters are stubbed, but the actual chapter and catering modules execute.
