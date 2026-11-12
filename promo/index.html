@@ -6,6 +6,7 @@
 <title>水煙前線 -EN:CODE- 公式サイト</title>
 <meta name="description" content="路地裏のシーシャカフェ「tonari」の見習い・はじめが、街の人と出会い、一台をつくり、大会に挑む。シーシャ屋アドベンチャー＆シミュレーション『水煙前線 -EN:CODE-』公式サイト。">
 <meta name="theme-color" content="#150d1e">
+<meta name="format-detection" content="telephone=no">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="水煙前線 -EN:CODE-">
 <meta property="og:title" content="水煙前線 -EN:CODE- 公式サイト">
@@ -19,7 +20,8 @@
 <link rel="icon" href="favicon.png" type="image/png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="preload" href="fonts/ZenOldMincho-Promo.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="img/hero/kv-town.webp" imagesrcset="img/hero/kv-town-s.webp 960w, img/hero/kv-town.webp 1536w" imagesizes="100vw" as="image" fetchpriority="high">
+<link rel="preload" href="img/hero/kv-town-tall.webp" media="(max-width: 820px)" as="image" fetchpriority="high">
+<link rel="preload" media="(min-width: 821px)" href="img/hero/kv-town.webp" imagesrcset="img/hero/kv-town-s.webp 960w, img/hero/kv-town.webp 1536w" imagesizes="100vw" as="image" fetchpriority="high">
 <link rel="stylesheet" href="css/site.css">
 </head>
 <body data-play="open">
@@ -45,10 +47,10 @@
   <section class="hero is-wide" id="top" aria-label="キービジュアル">
     <img class="hero-lounge" src="img/hero/lounge.webp" srcset="img/hero/lounge-s.webp 1280w, img/hero/lounge.webp 2560w" sizes="100vw" alt="" decoding="async" width="2560" height="1440">
     <div class="hero-art">
-          <img class="kv kv-wide is-on" data-kv="town" src="img/hero/kv-town.webp" srcset="img/hero/kv-town-s.webp 960w, img/hero/kv-town.webp 1536w" sizes="100vw" alt="夜の橙須の商店街を歩く、はじめ・スミさん・つむぎ・なる・アダム・みんと" decoding="async" fetchpriority="high" width="1536" height="1024">
+          <picture><source media="(max-width: 820px)" srcset="img/hero/kv-town-tall.webp" width="1024" height="1536"><img class="kv kv-wide kv-has-tall is-on" data-kv="town" src="img/hero/kv-town.webp" srcset="img/hero/kv-town-s.webp 960w, img/hero/kv-town.webp 1536w" sizes="100vw" alt="夜の橙須の商店街を歩く、はじめ・スミさん・つむぎ・なる・アダム・みんと" decoding="async" fetchpriority="high" width="1536" height="1024"></picture>
           <img class="kv" data-kv="minto" data-src="img/hero/kv-minto.webp" alt="みんとのキービジュアル" decoding="async" width="1024" height="1536">
           <img class="kv" data-kv="tsumugi" data-src="img/hero/kv-tsumugi.webp" alt="猫洞 つむぎのキービジュアル" decoding="async" width="1024" height="1536">
-          <img class="kv kv-wide" data-kv="counter" data-src="img/hero/kv-counter.webp" data-srcset="img/hero/kv-counter-s.webp 960w, img/hero/kv-counter.webp 1536w" sizes="100vw" alt="閉店前の夜のtonari。仕上げた一台をカウンターに出すはじめと、ベースを拭きながら見ているスミさん" decoding="async" width="1536" height="1024">
+          <picture><source media="(max-width: 820px)" data-srcset="img/hero/kv-counter-tall.webp" width="1024" height="1536"><img class="kv kv-wide kv-has-tall" data-kv="counter" data-src="img/hero/kv-counter.webp" data-srcset="img/hero/kv-counter-s.webp 960w, img/hero/kv-counter.webp 1536w" sizes="100vw" alt="閉店前の夜のtonari。仕上げた一台をカウンターに出すはじめと、ベースを拭きながら見ているスミさん" decoding="async" width="1536" height="1024"></picture>
           <img class="kv" data-kv="sumi" data-src="img/hero/kv-sumi.webp" alt="スミさんのキービジュアル" decoding="async" width="1024" height="1536">
           <img class="kv" data-kv="rio" data-src="img/hero/kv-rio.webp" alt="円頓寺 凛想のキービジュアル" decoding="async" width="1024" height="1536">
           <img class="kv" data-kv="naru" data-src="img/hero/kv-naru.webp" alt="なるのキービジュアル" decoding="async" width="1024" height="1536">
@@ -58,7 +60,7 @@
           <img class="kv" data-kv="ageha" data-src="img/hero/kv-ageha.webp" alt="あげはのキービジュアル" decoding="async" width="1024" height="1536">
     </div>
     <div class="hero-copy">
-      <h1 class="hero-logo"><img src="img/logo.webp" alt="水煙前線 -EN:CODE-" width="1538" height="512"></h1>
+      <h1 class="hero-logo"><img src="img/logo.webp" srcset="img/logo-s.webp 640w, img/logo.webp 1538w" sizes="(max-width: 820px) 92vw, 41vw" alt="水煙前線 -EN:CODE-" width="1538" height="512"></h1>
       <p class="hero-genre">シーシャ屋アドベンチャー＆シミュレーション</p>
       <p class="hero-lead">路地裏のシーシャカフェで働く見習いが、<br>街の人に揉まれながら、今夜の一台をつくる。</p>
       <div class="hero-cta">
@@ -99,7 +101,7 @@
   </section>
 
   <section class="story night" id="story">
-    <img class="story-bg" src="img/story/tonari-night.webp" alt="" loading="lazy" decoding="async" width="1920" height="1080">
+    <picture class="story-pic"><source media="(max-width: 820px)" srcset="img/story/tonari-night-s.webp"><img class="story-bg" src="img/story/tonari-night.webp" alt="" loading="lazy" decoding="async" width="1920" height="1080"></picture>
     <div class="wrap">
       <header class="sec-head">
         <p class="sec-no">01</p>
@@ -151,10 +153,26 @@
         <h2 class="sec-title"><span lang="en">Character</span><small>登場人物</small></h2>
       </header>
     </div>
+    <div class="wrap cast-pick">
+      <ul class="cast-tabs" aria-label="人物を選ぶ">
+          <li><button type="button" class="cast-tab is-on" data-cast="hajime" style="--accent:#eee0bd" aria-controls="cast-hajime" aria-pressed="true"><img src="img/chara/hajime-face.webp" alt="" loading="lazy" decoding="async" width="160" height="160"><span>はじめ</span></button></li>
+          <li><button type="button" class="cast-tab" data-cast="sumi" style="--accent:#e0843e" aria-controls="cast-sumi" aria-pressed="false"><img src="img/chara/sumi-face.webp" alt="" loading="lazy" decoding="async" width="160" height="160"><span>スミさん</span></button></li>
+          <li><button type="button" class="cast-tab" data-cast="naru" style="--accent:#f0d8a0" aria-controls="cast-naru" aria-pressed="false"><img src="img/chara/naru-face.webp" alt="" loading="lazy" decoding="async" width="160" height="160"><span>なる</span></button></li>
+          <li><button type="button" class="cast-tab" data-cast="adam" style="--accent:#c9463a" aria-controls="cast-adam" aria-pressed="false"><img src="img/chara/adam-face.webp" alt="" loading="lazy" decoding="async" width="160" height="160"><span>アダム</span></button></li>
+          <li><button type="button" class="cast-tab" data-cast="minto" style="--accent:#7fe0c2" aria-controls="cast-minto" aria-pressed="false"><img src="img/chara/minto-face.webp" alt="" loading="lazy" decoding="async" width="160" height="160"><span>みんと</span></button></li>
+          <li><button type="button" class="cast-tab" data-cast="tsumugi" style="--accent:#b9a4e8" aria-controls="cast-tsumugi" aria-pressed="false"><img src="img/chara/tsumugi-face.webp" alt="" loading="lazy" decoding="async" width="160" height="160"><span>つむぎ</span></button></li>
+          <li><button type="button" class="cast-tab" data-cast="rio" style="--accent:#9b6cf2" aria-controls="cast-rio" aria-pressed="false"><img src="img/chara/rio-face.webp" alt="" loading="lazy" decoding="async" width="160" height="160"><span>凛想</span></button></li>
+          <li><button type="button" class="cast-tab" data-cast="hiyori" style="--accent:#cc8fa7" aria-controls="cast-hiyori" aria-pressed="false"><img src="img/chara/hiyori-face.webp" alt="" loading="lazy" decoding="async" width="160" height="160"><span>ひより</span></button></li>
+          <li><button type="button" class="cast-tab" data-cast="samechan" style="--accent:#5aa8e6" aria-controls="cast-samechan" aria-pressed="false"><img src="img/chara/samechan-face.webp" alt="" loading="lazy" decoding="async" width="160" height="160"><span>サメちゃん</span></button></li>
+          <li><button type="button" class="cast-tab" data-cast="ageha" style="--accent:#ff8fc8" aria-controls="cast-ageha" aria-pressed="false"><img src="img/chara/ageha-face.webp" alt="" loading="lazy" decoding="async" width="160" height="160"><span>あげは</span></button></li>
+          <li><button type="button" class="cast-tab" data-cast="kumicho" style="--accent:#b6a4cf" aria-controls="cast-kumicho" aria-pressed="false"><img src="img/chara/kumicho-face.webp" alt="" loading="lazy" decoding="async" width="160" height="160"><span>組長</span></button></li>
+          <li><button type="button" class="cast-tab" data-cast="rei" style="--accent:#b0102a" aria-controls="cast-rei" aria-pressed="false"><img src="img/chara/rei-face.webp" alt="" loading="lazy" decoding="async" width="160" height="160"><span>レヰ</span></button></li>
+      </ul>
+    </div>
     <div class="cast-deck">
         <article class="cast" id="cast-hajime" data-cast="hajime" style="--accent:#eee0bd;--gw:55.937%;--gl:-10.547%;--gt:-5.000%;--gfade:86%">
           <div class="cast-stage">
-            <img class="cast-bg" src="img/chara/hajime-bg.webp" alt="" decoding="async" fetchpriority="low" width="1600" height="900">
+            <picture><source media="(max-width: 820px)" srcset="img/chara/hajime-bg-m.webp"><img class="cast-bg" src="img/chara/hajime-bg.webp" alt="" decoding="async" fetchpriority="low" width="1600" height="900"></picture>
             <img class="cast-graphic" src="img/chara/hajime-graphic.webp" alt="" decoding="async" width="880" height="880">
             <img class="cast-stand" src="img/chara/hajime-stand.webp" alt="はじめの立ち絵" decoding="async" width="361" height="1200">
             <p class="cast-quote"><span>いつか自分の店を持ちたい</span></p>
@@ -172,7 +190,7 @@
         </article>
         <article class="cast" id="cast-sumi" data-cast="sumi" style="--accent:#e0843e;--gw:63.125%;--gl:-8.672%;--gt:-2.222%;--gright:92.9%" hidden>
           <div class="cast-stage">
-            <img class="cast-bg" src="img/chara/sumi-bg.webp" alt="" decoding="async" loading="lazy" width="1600" height="900">
+            <picture><source media="(max-width: 820px)" srcset="img/chara/sumi-bg-m.webp"><img class="cast-bg" src="img/chara/sumi-bg.webp" alt="" decoding="async" loading="lazy" width="1600" height="900"></picture>
             <img class="cast-graphic" src="img/chara/sumi-graphic.webp" alt="" decoding="async" loading="lazy" width="880" height="880">
             <img class="cast-stand" src="img/chara/sumi-stand.webp" alt="スミさんの立ち絵" decoding="async" loading="lazy" width="392" height="1200">
             <p class="cast-quote"><span>客が満足したなら、<br>それでいい</span></p>
@@ -190,7 +208,7 @@
         </article>
         <article class="cast" id="cast-naru" data-cast="naru" style="--accent:#f0d8a0;--gw:64.922%;--gl:-8.516%;--gt:0.000%;--gright:90.1%" hidden>
           <div class="cast-stage">
-            <img class="cast-bg" src="img/chara/naru-bg.webp" alt="" decoding="async" loading="lazy" width="1600" height="900">
+            <picture><source media="(max-width: 820px)" srcset="img/chara/naru-bg-m.webp"><img class="cast-bg" src="img/chara/naru-bg.webp" alt="" decoding="async" loading="lazy" width="1600" height="900"></picture>
             <img class="cast-graphic" src="img/chara/naru-graphic.webp" alt="" decoding="async" loading="lazy" width="880" height="880">
             <img class="cast-stand" src="img/chara/naru-stand.webp" alt="なるの立ち絵" decoding="async" loading="lazy" width="404" height="1200">
             <p class="cast-quote"><span>俺の台は<br>丸見えだ</span></p>
@@ -208,7 +226,7 @@
         </article>
         <article class="cast" id="cast-adam" data-cast="adam" style="--accent:#c9463a;--gw:64.922%;--gl:-8.594%;--gt:-0.556%;--gright:90.2%" hidden>
           <div class="cast-stage">
-            <img class="cast-bg" src="img/chara/adam-bg.webp" alt="" decoding="async" loading="lazy" width="1600" height="900">
+            <picture><source media="(max-width: 820px)" srcset="img/chara/adam-bg-m.webp"><img class="cast-bg" src="img/chara/adam-bg.webp" alt="" decoding="async" loading="lazy" width="1600" height="900"></picture>
             <img class="cast-graphic" src="img/chara/adam-graphic.webp" alt="" decoding="async" loading="lazy" width="880" height="880">
             <img class="cast-stand" src="img/chara/adam-stand.webp" alt="アダムの立ち絵" decoding="async" loading="lazy" width="399" height="1200">
             <p class="cast-quote"><span>煙は二種類。<br>ダブルアップルと、それ以外だ</span></p>
@@ -226,7 +244,7 @@
         </article>
         <article class="cast" id="cast-minto" data-cast="minto" style="--accent:#7fe0c2;--gw:58.984%;--gl:-8.516%;--gt:-0.278%;--gright:99.3%" hidden>
           <div class="cast-stage">
-            <img class="cast-bg" src="img/chara/minto-bg.webp" alt="" decoding="async" loading="lazy" width="1600" height="900">
+            <picture><source media="(max-width: 820px)" srcset="img/chara/minto-bg-m.webp"><img class="cast-bg" src="img/chara/minto-bg.webp" alt="" decoding="async" loading="lazy" width="1600" height="900"></picture>
             <img class="cast-graphic" src="img/chara/minto-graphic.webp" alt="" decoding="async" loading="lazy" width="880" height="880">
             <img class="cast-stand" src="img/chara/minto-stand.webp" alt="みんとの立ち絵" decoding="async" loading="lazy" width="395" height="1200">
             <p class="cast-quote"><span>みんとでーす♪<br>全員まとめてライバルね？</span></p>
@@ -244,7 +262,7 @@
         </article>
         <article class="cast" id="cast-tsumugi" data-cast="tsumugi" style="--accent:#b9a4e8;--gw:59.766%;--gl:-8.906%;--gt:0.000%;--gright:98.7%" hidden>
           <div class="cast-stage">
-            <img class="cast-bg" src="img/chara/tsumugi-bg.webp" alt="" decoding="async" loading="lazy" width="1600" height="900">
+            <picture><source media="(max-width: 820px)" srcset="img/chara/tsumugi-bg-m.webp"><img class="cast-bg" src="img/chara/tsumugi-bg.webp" alt="" decoding="async" loading="lazy" width="1600" height="900"></picture>
             <img class="cast-graphic" src="img/chara/tsumugi-graphic.webp" alt="" decoding="async" loading="lazy" width="880" height="880">
             <img class="cast-stand" src="img/chara/tsumugi-stand.webp" alt="つむぎの立ち絵" decoding="async" loading="lazy" width="268" height="1200">
             <p class="cast-quote"><span>……煙って、形がないから</span></p>
@@ -262,7 +280,7 @@
         </article>
         <article class="cast" id="cast-rio" data-cast="rio" style="--accent:#9b6cf2;--gw:63.125%;--gl:-10.625%;--gt:-0.556%;--gright:96.1%" hidden>
           <div class="cast-stage">
-            <img class="cast-bg" src="img/chara/rio-bg.webp" alt="" decoding="async" loading="lazy" width="1600" height="900">
+            <picture><source media="(max-width: 820px)" srcset="img/chara/rio-bg-m.webp"><img class="cast-bg" src="img/chara/rio-bg.webp" alt="" decoding="async" loading="lazy" width="1600" height="900"></picture>
             <img class="cast-graphic" src="img/chara/rio-graphic.webp" alt="" decoding="async" loading="lazy" width="880" height="880">
             <img class="cast-stand" src="img/chara/rio-stand.webp" alt="凛想の立ち絵" decoding="async" loading="lazy" width="319" height="1200">
             <p class="cast-quote"><span>ようこそ、夜の側へ</span></p>
@@ -280,7 +298,7 @@
         </article>
         <article class="cast" id="cast-hiyori" data-cast="hiyori" style="--accent:#cc8fa7;--gw:53.594%;--gl:0.000%;--gt:-0.833%;--gfade:86%;--gright:93.3%" hidden>
           <div class="cast-stage">
-            <img class="cast-bg" src="img/chara/hiyori-bg.webp" alt="" decoding="async" loading="lazy" width="1600" height="900">
+            <picture><source media="(max-width: 820px)" srcset="img/chara/hiyori-bg-m.webp"><img class="cast-bg" src="img/chara/hiyori-bg.webp" alt="" decoding="async" loading="lazy" width="1600" height="900"></picture>
             <img class="cast-graphic" src="img/chara/hiyori-graphic.webp" alt="" decoding="async" loading="lazy" width="880" height="880">
             <img class="cast-stand" src="img/chara/hiyori-stand.webp" alt="ひよりの立ち絵" decoding="async" loading="lazy" width="388" height="1200">
             <p class="cast-quote"><span>……煙みたいに、<br>もう遠い昔だけどね</span></p>
@@ -298,7 +316,7 @@
         </article>
         <article class="cast" id="cast-samechan" data-cast="samechan" style="--accent:#5aa8e6;--gw:59.766%;--gl:-9.844%;--gt:-7.083%;--gfade:86%" hidden>
           <div class="cast-stage">
-            <img class="cast-bg" src="img/chara/samechan-bg.webp" alt="" decoding="async" loading="lazy" width="1600" height="900">
+            <picture><source media="(max-width: 820px)" srcset="img/chara/samechan-bg-m.webp"><img class="cast-bg" src="img/chara/samechan-bg.webp" alt="" decoding="async" loading="lazy" width="1600" height="900"></picture>
             <img class="cast-graphic" src="img/chara/samechan-graphic.webp" alt="" decoding="async" loading="lazy" width="880" height="880">
             <img class="cast-stand" src="img/chara/samechan-stand.webp" alt="サメちゃんの立ち絵" decoding="async" loading="lazy" width="539" height="1200">
             <p class="cast-quote"><span>お主、サメは好きか？</span></p>
@@ -316,7 +334,7 @@
         </article>
         <article class="cast" id="cast-ageha" data-cast="ageha" style="--accent:#ff8fc8;--gw:53.984%;--gl:-7.344%;--gt:-1.528%;--gfade:86%" hidden>
           <div class="cast-stage">
-            <img class="cast-bg" src="img/chara/ageha-bg.webp" alt="" decoding="async" loading="lazy" width="1600" height="900">
+            <picture><source media="(max-width: 820px)" srcset="img/chara/ageha-bg-m.webp"><img class="cast-bg" src="img/chara/ageha-bg.webp" alt="" decoding="async" loading="lazy" width="1600" height="900"></picture>
             <img class="cast-graphic" src="img/chara/ageha-graphic.webp" alt="" decoding="async" loading="lazy" width="880" height="880">
             <img class="cast-stand" src="img/chara/ageha-stand.webp" alt="あげはの立ち絵" decoding="async" loading="lazy" width="430" height="1200">
             <p class="cast-quote"><span>うち超感覚派なんだよね〜</span></p>
@@ -334,7 +352,7 @@
         </article>
         <article class="cast" id="cast-kumicho" data-cast="kumicho" style="--accent:#b6a4cf;--gw:55.312%;--gl:-6.719%;--gt:0.000%;--gfade:86%" hidden>
           <div class="cast-stage">
-            <img class="cast-bg" src="img/chara/kumicho-bg.webp" alt="" decoding="async" loading="lazy" width="1600" height="900">
+            <picture><source media="(max-width: 820px)" srcset="img/chara/kumicho-bg-m.webp"><img class="cast-bg" src="img/chara/kumicho-bg.webp" alt="" decoding="async" loading="lazy" width="1600" height="900"></picture>
             <img class="cast-graphic" src="img/chara/kumicho-graphic.webp" alt="" decoding="async" loading="lazy" width="880" height="880">
             <img class="cast-stand" src="img/chara/kumicho-stand.webp" alt="組長の立ち絵" decoding="async" loading="lazy" width="446" height="1200">
             <p class="cast-quote"><span>火の前じゃ、<br>礼儀が先ですわ</span></p>
@@ -352,7 +370,7 @@
         </article>
         <article class="cast" id="cast-rei" data-cast="rei" style="--accent:#b0102a;--gw:80.000%;--gl:-17.812%;--gt:0.833%;--gright:84.8%" hidden>
           <div class="cast-stage">
-            <img class="cast-bg" src="img/chara/rei-bg.webp" alt="" decoding="async" loading="lazy" width="1600" height="900">
+            <picture><source media="(max-width: 820px)" srcset="img/chara/rei-bg-m.webp"><img class="cast-bg" src="img/chara/rei-bg.webp" alt="" decoding="async" loading="lazy" width="1600" height="900"></picture>
             <img class="cast-graphic" src="img/chara/rei-graphic.webp" alt="" decoding="async" loading="lazy" width="880" height="880">
             <img class="cast-stand" src="img/chara/rei-stand.webp" alt="レヰの立ち絵" decoding="async" loading="lazy" width="409" height="1200">
             <p class="cast-quote"><span>……一曲だけ、聴く？</span></p>
@@ -370,21 +388,6 @@
         </article>
     </div>
     <div class="wrap">
-      <ul class="cast-tabs" aria-label="人物を選ぶ">
-          <li><button type="button" class="cast-tab is-on" data-cast="hajime" style="--accent:#eee0bd" aria-controls="cast-hajime" aria-pressed="true"><img src="img/chara/hajime-face.webp" alt="" loading="lazy" decoding="async" width="160" height="160"><span>はじめ</span></button></li>
-          <li><button type="button" class="cast-tab" data-cast="sumi" style="--accent:#e0843e" aria-controls="cast-sumi" aria-pressed="false"><img src="img/chara/sumi-face.webp" alt="" loading="lazy" decoding="async" width="160" height="160"><span>スミさん</span></button></li>
-          <li><button type="button" class="cast-tab" data-cast="naru" style="--accent:#f0d8a0" aria-controls="cast-naru" aria-pressed="false"><img src="img/chara/naru-face.webp" alt="" loading="lazy" decoding="async" width="160" height="160"><span>なる</span></button></li>
-          <li><button type="button" class="cast-tab" data-cast="adam" style="--accent:#c9463a" aria-controls="cast-adam" aria-pressed="false"><img src="img/chara/adam-face.webp" alt="" loading="lazy" decoding="async" width="160" height="160"><span>アダム</span></button></li>
-          <li><button type="button" class="cast-tab" data-cast="minto" style="--accent:#7fe0c2" aria-controls="cast-minto" aria-pressed="false"><img src="img/chara/minto-face.webp" alt="" loading="lazy" decoding="async" width="160" height="160"><span>みんと</span></button></li>
-          <li><button type="button" class="cast-tab" data-cast="tsumugi" style="--accent:#b9a4e8" aria-controls="cast-tsumugi" aria-pressed="false"><img src="img/chara/tsumugi-face.webp" alt="" loading="lazy" decoding="async" width="160" height="160"><span>つむぎ</span></button></li>
-          <li><button type="button" class="cast-tab" data-cast="rio" style="--accent:#9b6cf2" aria-controls="cast-rio" aria-pressed="false"><img src="img/chara/rio-face.webp" alt="" loading="lazy" decoding="async" width="160" height="160"><span>凛想</span></button></li>
-          <li><button type="button" class="cast-tab" data-cast="hiyori" style="--accent:#cc8fa7" aria-controls="cast-hiyori" aria-pressed="false"><img src="img/chara/hiyori-face.webp" alt="" loading="lazy" decoding="async" width="160" height="160"><span>ひより</span></button></li>
-          <li><button type="button" class="cast-tab" data-cast="samechan" style="--accent:#5aa8e6" aria-controls="cast-samechan" aria-pressed="false"><img src="img/chara/samechan-face.webp" alt="" loading="lazy" decoding="async" width="160" height="160"><span>サメちゃん</span></button></li>
-          <li><button type="button" class="cast-tab" data-cast="ageha" style="--accent:#ff8fc8" aria-controls="cast-ageha" aria-pressed="false"><img src="img/chara/ageha-face.webp" alt="" loading="lazy" decoding="async" width="160" height="160"><span>あげは</span></button></li>
-          <li><button type="button" class="cast-tab" data-cast="kumicho" style="--accent:#b6a4cf" aria-controls="cast-kumicho" aria-pressed="false"><img src="img/chara/kumicho-face.webp" alt="" loading="lazy" decoding="async" width="160" height="160"><span>組長</span></button></li>
-          <li><button type="button" class="cast-tab" data-cast="rei" style="--accent:#b0102a" aria-controls="cast-rei" aria-pressed="false"><img src="img/chara/rei-face.webp" alt="" loading="lazy" decoding="async" width="160" height="160"><span>レヰ</span></button></li>
-      </ul>
-
       <div class="judges">
         <h3 class="judges-head"><span lang="en">Tournament</span>大会の人びと</h3>
         <ul>
@@ -418,7 +421,7 @@
       <ol class="flow">
         <li class="step">
           <div class="stack">
-            <figure class="print tape-lavender"><img src="img/system/map.webp" alt="昼の橙須の地図。行き先の店に、ロゴと料金の札が立っている" loading="lazy" decoding="async" width="1600" height="900"></figure>
+            <figure class="print tape-lavender"><img src="img/system/map.webp" srcset="img/system/map-s.webp 1080w, img/system/map.webp 1600w" sizes="(max-width: 820px) 92vw, 56vw" alt="昼の橙須の地図。行き先の店に、ロゴと料金の札が立っている" loading="lazy" decoding="async" width="1600" height="900"></figure>
             <figure class="print print-sub"><img src="img/system/map-night.webp" alt="夜の橙須の地図" loading="lazy" decoding="async" width="800" height="450"></figure>
           </div>
           <div class="step-text">
@@ -429,7 +432,7 @@
         </li>
         <li class="step">
           <div class="stack">
-            <figure class="print tape-amber"><img src="img/system/talk.webp" alt="夜のtonariで話すスミさん。「葉っぱだけじゃ煙にならねえ。炭も、水も、吸うやつも要る」" loading="lazy" decoding="async" width="1600" height="900"></figure>
+            <figure class="print tape-amber"><img src="img/system/talk.webp" srcset="img/system/talk-s.webp 1080w, img/system/talk.webp 1600w" sizes="(max-width: 820px) 92vw, 56vw" alt="夜のtonariで話すスミさん。「葉っぱだけじゃ煙にならねえ。炭も、水も、吸うやつも要る」" loading="lazy" decoding="async" width="1600" height="900"></figure>
             <figure class="print print-sub print-phone"><img src="img/system/talk-phone.webp" alt="スマホに届いた、みんとからのメッセージ" loading="lazy" decoding="async" width="520" height="978"></figure>
           </div>
           <div class="step-text">
@@ -440,7 +443,7 @@
         </li>
         <li class="step">
           <div class="stack">
-            <figure class="print tape-cream"><img src="img/system/craft.webp" alt="シーシャ作りの画面。アルミに針で穴を開けている" loading="lazy" decoding="async" width="1600" height="900"></figure>
+            <figure class="print tape-cream"><img src="img/system/craft.webp" srcset="img/system/craft-s.webp 1080w, img/system/craft.webp 1600w" sizes="(max-width: 820px) 92vw, 56vw" alt="シーシャ作りの画面。アルミに針で穴を開けている" loading="lazy" decoding="async" width="1600" height="900"></figure>
             <figure class="print print-sub"><img src="img/system/craft-coals.webp" alt="コンロで炭をおこす画面" loading="lazy" decoding="async" width="800" height="450"></figure>
             <figure class="print print-sub print-sub-2"><img src="img/system/craft-mix.webp" alt="フレーバーの配合を決める画面" loading="lazy" decoding="async" width="800" height="450"></figure>
           </div>
@@ -452,7 +455,7 @@
         </li>
         <li class="step">
           <div class="stack">
-            <figure class="print tape-lavender"><img src="img/system/tournament.webp" alt="大会のステージ。パッキーが開幕を告げている" loading="lazy" decoding="async" width="1600" height="900"></figure>
+            <figure class="print tape-lavender"><img src="img/system/tournament.webp" srcset="img/system/tournament-s.webp 1080w, img/system/tournament.webp 1600w" sizes="(max-width: 820px) 92vw, 56vw" alt="大会のステージ。パッキーが開幕を告げている" loading="lazy" decoding="async" width="1600" height="900"></figure>
             <figure class="print print-sub"><img src="img/system/tournament-vote.webp" alt="審査員の中間投票の画面" loading="lazy" decoding="async" width="800" height="450"></figure>
           </div>
           <div class="step-text">
@@ -504,6 +507,14 @@
             <button type="button" data-tone="night" aria-pressed="false">夜</button>
           </div>
         </div>
+        <ul class="shop-tabs" aria-label="店を選ぶ">
+          <li><button type="button" class="shop-tab is-on" data-shop="tonari" aria-controls="shop-tonari"><span>tonari</span></button></li>
+          <li><button type="button" class="shop-tab" data-shop="kemurikusa" aria-controls="shop-kemurikusa"><span>KEMURIKUSA</span></button></li>
+          <li><button type="button" class="shop-tab" data-shop="eden" aria-controls="shop-eden"><span>EDEN</span></button></li>
+          <li><button type="button" class="shop-tab" data-shop="peppermint" aria-controls="shop-peppermint"><span>ぺぱーみんと</span></button></li>
+          <li><button type="button" class="shop-tab" data-shop="dr-fookah" aria-controls="shop-dr-fookah"><span>Dr.fookah</span></button></li>
+          <li><button type="button" class="shop-tab" data-shop="c-station" aria-controls="shop-c-station"><span>C.STATION</span></button></li>
+        </ul>
         <div class="shops">
           <article class="shop" id="shop-tonari" data-shop="tonari">
             <img class="shop-room" src="img/world/shop-tonari.webp" alt="tonariの店内" loading="lazy" decoding="async" width="960" height="540">
@@ -639,6 +650,9 @@
     <img alt="">
     <figcaption></figcaption>
   </figure>
+  <p class="lightbox-count" aria-live="polite"></p>
+  <button type="button" class="lightbox-step lightbox-prev" aria-label="前の絵">←</button>
+  <button type="button" class="lightbox-step lightbox-next" aria-label="次の絵">→</button>
   <form method="dialog"><button class="lightbox-close" aria-label="閉じる">閉じる</button></form>
 </dialog>
 

@@ -1,3 +1,4 @@
+import { masteryLine } from "../core/play-mastery.js";
 import { CITY_BACKGROUNDS } from "../core/city-locations.js";
 import { state } from "../core/state.js";
 import { knowsTrpgBar } from "../core/trpg-discovery.js";
@@ -5,7 +6,7 @@ import { knowsTrpgBar } from "../core/trpg-discovery.js";
 export const trpgSpot = () => knowsTrpgBar(state) ? {
   id: "trpg_bar", kind: "trpg", label: "ボドゲカフェ", area: "隣町の遊び場", x: 48, y: 27,
   theme: "cafe", glyph: "卓", previewUrl: CITY_BACKGROUNDS.trpg, minChapter: 2,
-  desc: "六角サイのボドゲカフェ。夜はTRPG。",
+  desc: "六角サイのボドゲカフェ。夜はTRPG。" + masteryLine(state, "trpg"),
 } : null;
 
 let recruiting = false;

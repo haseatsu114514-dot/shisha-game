@@ -1,3 +1,4 @@
+import { recordPlayMastery, syncPlayMastery, masteryLine } from "../core/play-mastery.js";
 // 第4章ドバイ・砂丘のサンドボード（DESERT RIDE）の進み具合と記録。純粋関数だけ（UI・保存は ch4-desert.js）。
 // 進み具合は flags._ch4_desert（店で読んだ段階の数・雑談の数・最後に寄った日・外出回数・最後に出かけた日）、記録は state.desert。
 // 2026-11-02 オーナー「ヌールはシーシャ屋もしつつガイドもしてる。シーシャの方へ行くと交流が深まり、好感度3ぐらいでサンドボードに誘われる。
@@ -232,6 +233,7 @@ export function markNaruMet(value) {
 export function recordDesertResult(value, data, { awardExp = null } = {}) {
   const result = readResult(data);
   if (!value || typeof value !== "object" || !result) return null;
+  syncPlayMastery(value);
   const before = desertRecords(value);
   const sameRules = before.best && (before.best.rulesVersion ?? 1) === (result.rulesVersion ?? 1);
   // 旧ルールの高得点を残し、新ルールの初回は必ず新しいベストとして扱う。
@@ -251,6 +253,7 @@ export function recordDesertResult(value, data, { awardExp = null } = {}) {
   }
   desert.bestRank = before.bestRank && rankAtLeast(before.bestRank, desert.best.rank) ? before.bestRank : desert.best.rank;
   value.desert = desert;
+  recordPlayMastery(value, "desert", result, `${value.cycle || 1}:${desert.runs}`);
   return { entry: result, newBest, firstClear, exp, won, firstWin, who, firstNaruWin };
 }
 
@@ -314,9 +317,9 @@ export function desertDailySpots(value, day) {
   const tag = status.ok ? "" : status.why === "今日はもう砂丘へ行った" ? "今日はもう行った" : status.why.startsWith("お金") ? "お金が足りない" : "砂丘は昼だけ";
   spots.push(dailySpot({ id: DESERT_SPOT_IDS.dunes, place: "dunes", label: "ヌールと砂丘へ", area: "街の外の砂丘",
     x: DAILY_AT.dunes[0], y: DAILY_AT.dunes[1], theme: "park", glyph: "砂", preview: "bg_dubai_dunes_day",
-    desc: status.invited ? "ヌールとの約束。滑ったあと、夕日の砂丘に少しだけ残る（ツアー代はいらない）。昼の行動を使う。"
+    desc: (status.invited ? "ヌールとの約束。滑ったあと、夕日の砂丘に少しだけ残る（ツアー代はいらない）。昼の行動を使う。"
       : status.first ? "サンドボードを教わる（初回は無料）。昼の行動を使う（滑り直しは何度でも）。"
-      : `もう一度砂丘を滑る（ツアー代 6,000円・約140ディルハム）。昼の行動を使う。${best ? `自己ベスト ${best.score.toLocaleString("ja-JP")}点／${best.rank}。` : ""}`,
+      : `もう一度砂丘を滑る（ツアー代 6,000円・約140ディルハム）。昼の行動を使う。${best ? `自己ベスト ${best.score.toLocaleString("ja-JP")}点／${best.rank}。` : ""}`) + ` ${masteryLine(value, "desert")}。`,
     unavailable: status.ok ? "" : status.why === "今日はもう砂丘へ行った" ? "今日はもう砂丘へ行った。また明日" : status.why.startsWith("お金") ? status.why : "砂丘へは昼に出かける",
     unavailableTag: tag, hasNew: () => status.ok && (status.first || status.invited) }));
   return spots;

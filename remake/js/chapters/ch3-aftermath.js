@@ -370,7 +370,14 @@ async function renderStage(owner) {
 }
 
 function renderError(owner) {
-  card(owner, "error", "第3章の後日談を再開できませんでした", "通信と保存地点を確認して、もう一度お試しください。", [
-    button(owner, "もう一度読み込む", "retry", () => runChapterThreeAftermath(), true),
+  card(owner, "error", "第3章の後日談を再開できませんでした", "通信を確認してください。ページを読み直し、直前のオートセーブから再開します。", [
+    button(owner, "もう一度読み込む", "retry", () => {
+      // importの失敗は文書内でキャッシュされる。同じURLの再importでは復帰できない。
+      // 途中のstateは保存せず、最後に正常完了したcheckpointから新しい文書で再開する。
+      owner.active = false;
+      owner.controller?.abort();
+      requestResumeOnBoot();
+      location.reload();
+    }, true),
   ]);
 }

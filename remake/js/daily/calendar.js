@@ -204,7 +204,7 @@ async function morning() {
 /** HUD の LIME。行き先を選んでいるときだけ開ける。誘いに乗ったらマップを閉じてそのまま向かう */
 async function phoneButton({ sender = null } = {}) {
   if (!isChoosingDestination() || layers.modal.classList.contains("show")) {
-    SE.cancel();
+    SE.error();
     toast("LIME は行き先を選んでいるときに開ける");
     return;
   }

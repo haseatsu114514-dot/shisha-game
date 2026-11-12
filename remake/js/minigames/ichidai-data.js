@@ -1,4 +1,4 @@
-// カードゲーム「一台勝負」のカードと数値。ルールの正本は docs/design/card_game/（第0.4版のルールブックと cards.js）。
+// カードゲーム「一台勝負」のカードと数値。ルールの正本は docs/design/card_game/（第0.5版のルールブックと cards.js）。
 // ここはゲーム内で動かすための写しで、名前・数値・文がルールブックとずれないことを remake/test/ichidai_rules.mjs が確かめる。
 // 画面にも規則にも依らない純データ（DOM・保存に触れない）。
 
@@ -18,7 +18,7 @@ export const FLAVORS = Object.freeze([
   { id: "ice_grape", name: "アイスグレープ", brand: "アルファーヘブン", kind: "cool", t: 3, lo: 3, hi: 5, j: [4], s: 7, pair: "sweet", ab: "" },
   { id: "cool_mint", name: "クールミント", brand: "アルファーヘブン", kind: "cool", t: 3, lo: 4, hi: 7, j: [6], s: 9, pair: "fruit", ab: "【キレ】脇役のとき、上側のズレを適温として扱う。" },
   { id: "death_by_ice", name: "デスバイアイス", brand: "フォースフェクタ", kind: "cool", t: 4, lo: 6, hi: 8, j: [8], s: 9, pair: "none", ab: "【強烈】1枚でもボウルにあれば、枚数に関係なく主役になる。" },
-  { id: "double_apple", name: "ダブルアップル", brand: "アルファーヘブン", kind: "spice", t: 3, lo: 6, hi: 8, j: [6, 7, 8], s: 10, pair: "none", ab: "【表情】適温のどこでもジャスト。" },
+  { id: "double_apple", name: "ダブルアップル", brand: "アルファーヘブン", kind: "spice", t: 3, lo: 6, hi: 8, j: [7], s: 10, pair: "none", ab: "【原点】ボウルがこの葉だけなら、適温の一口+1。" },
   { id: "cinnamon", name: "シナモン", brand: "アルファーヘブン", kind: "spice", t: 3, lo: 6, hi: 8, j: [7], s: 99, pair: "sweet", ab: "【耐熱】焦げない。" },
   { id: "cardamom", name: "カルダモン", brand: "アフサール", kind: "spice", t: 4, lo: 5, hi: 6, j: [6], s: 7, pair: "floral", ab: "" },
   { id: "black_tea", name: "ブラックティー", brand: "アフサール", kind: "spice", t: 3, lo: 5, hi: 7, j: [6], s: 9, pair: "fruit", ab: "【下支え】脇役のとき、濃厚の条件が「8枚以上」になる。" },
@@ -66,7 +66,7 @@ export const CARDS = Object.freeze([
   { id: "show_smoke", name: "見せ煙", type: "tech", need: 3, pay: { leaf: 1 }, when: "puff", tx: "葉を1枚減らして発動。この一口の印象+4。" },
   { id: "all_in", name: "渾身の一口", type: "tech", need: 6, pay: { fire: 1 }, when: "puff", tx: "火力を1落として発動。この一口がジャストなら、さらに+3点・印象+2。" },
   { id: "duel", name: "勝負の一服", type: "tech", need: 3, when: "puff", tx: "この審査で一票を取ったら、さらに+3点。" },
-  { id: "read", name: "吸い方を読む", type: "tech", need: 0, when: "turn", tx: "審査カードの山のいちばん上を自分だけ見て、元に戻す。" },
+  { id: "read", name: "吸い方を読む", type: "tech", need: 0, when: "turn", tx: "次のラウンドの審査カードを、自分だけ先に見る。" },
   { id: "ash_tap", name: "灰落とし", type: "tech", need: 3, when: "turn", tx: "次の自分のターン、冷めない。" },
   { id: "add_coal", name: "追い炭", type: "tech", need: 0, extra: 1, when: "turn", tx: "山札の上から2枚までを、裏向きのまま種火（火1）として、空いている炭の枠に置く。このラウンド、カードをもう1枚使える。" },
   { id: "tongs", name: "トングさばき", type: "tech", need: 3, pay: { fire: 1 }, extra: 1, when: "turn", tx: "火力を1落として発動。カードを2枚引く。このラウンド、カードをもう1枚使える。" },
@@ -133,17 +133,19 @@ export const TOURNAMENTS = Object.freeze([
 export const FIRST_MARKET = Object.freeze(["lemon", "mint", "blueberry", "peach", "vanilla", "double_apple", "cinnamon", "black_tea", "rose", "mango"]);
 
 // 組み済みの一式（デッキ40枚＋セッティング＋詰める葉のめやす）。plan は CPU が詰める葉で、人には「おすすめ」として見せる。
-// ルールブックの組み済みデッキを元に、ゲーム内で3式が釣り合うように葉と数枚を入れ替えてある（確かめ方は remake/test/ichidai_rules.mjs）
+// ルールブックの組み済みデッキを元に、ゲーム内で4式が釣り合うように葉と数枚を入れ替えてある（確かめ方は remake/test/ichidai_rules.mjs）。
+// 第0.5版（冷める1・審査カードを先にめくる・ダブルアップルのジャスト1つ）に合わせて、a・b・c の札を1〜2枚ずつ入れ替えた
+// （つよいCPU同士・組み合わせと席と大会をそろえた1920局で a53・b45・c51・d51）
 export const KITS = Object.freeze([
   { id: "a", name: "ミックスの構え型", bowl: "funnel", hmd: "lotus", plan: [["blueberry", 8], ["mint", 4]],
     blurb: "帯の真ん中に置き、吸いの技で受ける。相手は煽りで揺さぶる。",
-    cards: [["flat", 8], ["dense_flat", 2], ["cube", 2], ["heat_in", 3], ["heat_out", 3], ["ash_tap", 2], ["add_coal", 2], ["breath", 1], ["read", 2], ["blow", 2], ["all_in", 2], ["duel", 2], ["windguard", 2], ["timer", 1], ["diffuser", 1], ["hype", 2], ["go_second", 1], ["mashiro", 1], ["packy", 1]] },
+    cards: [["flat", 8], ["dense_flat", 2], ["cube", 2], ["heat_in", 3], ["heat_out", 3], ["ash_tap", 2], ["add_coal", 2], ["breath", 1], ["inner", 2], ["blow", 2], ["all_in", 2], ["duel", 2], ["windguard", 2], ["timer", 1], ["diffuser", 1], ["hype", 2], ["go_second", 1], ["mashiro", 1], ["packy", 1]] },
   { id: "b", name: "単品の火持ち型", bowl: "clay", hmd: "amaburst", plan: [["double_apple", 12]],
     blurb: "キューブ炭で高い熱を保ち、濃い煙で点を重ねる。",
-    cards: [["cube", 8], ["flat", 4], ["dense_flat", 1], ["heat_in", 2], ["inner", 2], ["ash_tap", 2], ["fan", 2], ["reset", 1], ["breath", 1], ["show_smoke", 3], ["all_in", 3], ["heat_out", 2], ["chacosta", 2], ["draft", 2], ["hype", 2], ["encore", 1], ["adam", 1], ["sumi", 1]] },
+    cards: [["cube", 8], ["flat", 4], ["dense_flat", 1], ["heat_in", 2], ["inner", 2], ["ash_tap", 2], ["fan", 2], ["reset", 1], ["breath", 2], ["show_smoke", 3], ["all_in", 2], ["heat_out", 2], ["chacosta", 2], ["draft", 2], ["hype", 2], ["encore", 1], ["adam", 1], ["sumi", 1]] },
   { id: "c", name: "低温の攻め型", bowl: "silicone", hmd: "tanukish", plan: [["rose", 7], ["peach", 4]],
     blurb: "味値4のローズ。ジャストのすぐ上が焦げ。読む・逃がす・ブローで攻めきる。",
-    cards: [["flat", 9], ["dense_flat", 2], ["heat_out", 3], ["heat_in", 3], ["blow", 2], ["read", 3], ["inner", 1], ["ash_tap", 2], ["tongs", 2], ["breath", 2], ["show_smoke", 1], ["duel", 2], ["windguard", 2], ["timer", 1], ["venue_heat", 1], ["go_second", 1], ["fan", 2], ["packy", 1]] },
+    cards: [["flat", 9], ["dense_flat", 2], ["heat_out", 3], ["heat_in", 3], ["blow", 2], ["read", 2], ["inner", 2], ["ash_tap", 2], ["tongs", 2], ["breath", 2], ["show_smoke", 1], ["duel", 2], ["windguard", 2], ["timer", 1], ["venue_heat", 1], ["go_second", 1], ["fan", 2], ["packy", 1]] },
   { id: "d", name: "一つ火の低温型", bowl: "funnel", hmd: "one_coal", plan: [["peach", 8], ["rose", 5]],
     blurb: "キューブ炭1つで低い熱を保つ。炭を足す手間が少ないぶん、手札を技に回す。",
     cards: [["cube", 5], ["flat", 4], ["dense_flat", 1], ["heat_in", 3], ["show_smoke", 2], ["duel", 2], ["blow", 1], ["read", 3], ["inner", 2], ["breath", 2], ["tongs", 1], ["loosen", 2], ["ash_tap", 2], ["fan", 1], ["windguard", 1], ["timer", 1], ["diffuser", 1], ["draft", 1], ["venue_heat", 1], ["go_second", 1], ["buyout", 1], ["minto", 1], ["packy", 1]] },

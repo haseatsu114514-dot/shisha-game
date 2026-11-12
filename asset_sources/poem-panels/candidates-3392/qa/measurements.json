@@ -1,0 +1,218 @@
+[
+  {
+    "file": "poem_ch1_r1_2-attempt1.png",
+    "bytes": 1844158,
+    "sha256": "ccebd5ec5337722f17739dfdc5da3fb59509c9c38d88be3452c3c2e53790a00b",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "mode": "RGB",
+    "detected_frame_x0_x1_y0_y1": [
+      48,
+      1485,
+      379,
+      644
+    ],
+    "dry_run": "- 原画 1536x1024\n- 枠を検出: 外側 x=48〜1485 y=379〜644\n- 枠の内側 1433x262\n- 比率 5.469（横長の範囲 4〜5.6 の内）。絵を欠かさずそのまま使う\n- 出力 1424x260（5.48:1）→ remake/img/ui/poems/candidate.webp\n--dry-run: 書き込まない\n",
+    "strict_pass": false
+  },
+  {
+    "file": "poem_ch1_r1_2-attempt2.png",
+    "bytes": 1891297,
+    "sha256": "4c1f92dbf14544b1405bdc326174b03e535e86884da544a230de12a9b53394d4",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "mode": "RGB",
+    "detected_frame_x0_x1_y0_y1": [
+      49,
+      1485,
+      379,
+      645
+    ],
+    "dry_run": "- 原画 1536x1024\n- 枠を検出: 外側 x=49〜1485 y=379〜645\n- 枠の内側 1433x263\n- 比率 5.449（横長の範囲 4〜5.6 の内）。絵を欠かさずそのまま使う\n- 出力 1424x261（5.46:1）→ remake/img/ui/poems/candidate.webp\n--dry-run: 書き込まない\n",
+    "strict_pass": false
+  },
+  {
+    "file": "poem_ch1_r1_2b-attempt1.png",
+    "bytes": 1870010,
+    "sha256": "dca63a2c748872f5f28957a7f73f54b988d76fd4f742c2a6f82c7d97b4ea4ecc",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "mode": "RGB",
+    "detected_frame_x0_x1_y0_y1": [
+      49,
+      1485,
+      380,
+      705
+    ],
+    "dry_run": "- 原画 1536x1024\n- 枠を検出: 外側 x=49〜1485 y=380〜705\n- 枠の内側 1433x322\n- 比率 4.450（横長の範囲 4〜5.6 の内）。絵を欠かさずそのまま使う\n- 出力 1424x320（4.45:1）→ remake/img/ui/poems/candidate.webp\n--dry-run: 書き込まない\n",
+    "strict_pass": false
+  },
+  {
+    "file": "poem_ch1_r1_2b-attempt2.png",
+    "bytes": 2111496,
+    "sha256": "1285c5bf86b3c6d5bfa2d4521130722282b7e6610ef63b0b855cc6fe1ac3390a",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "mode": "RGB",
+    "detected_frame_x0_x1_y0_y1": [
+      49,
+      1486,
+      379,
+      747
+    ],
+    "dry_run": "- 原画 1536x1024\n- 枠を検出: 外側 x=49〜1486 y=379〜747\n- 枠の内側 1434x364\n- 比率 3.940（範囲から 1.5% 外れ）。上下を中央で切って 4:1 に整えた\n- 出力 1424x356（4.00:1）→ remake/img/ui/poems/candidate.webp\n--dry-run: 書き込まない\n",
+    "strict_pass": false
+  },
+  {
+    "file": "poem_ch2_r2_7-attempt1.png",
+    "bytes": 2228335,
+    "sha256": "24129f5f39b01509b8f7197f974523ed1146a648ed2f38537b8b07ed581d688e",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "mode": "RGB",
+    "detected_frame_x0_x1_y0_y1": [
+      48,
+      1486,
+      378,
+      764
+    ],
+    "dry_run": "- 原画 1536x1024\n- 枠を検出: 外側 x=48〜1486 y=378〜764\n- 枠の内側 1433x372\n- 比率 3.852（範囲から 3.7% 外れ）。上下を中央で切って 4:1 に整えた\n- 出力 1424x356（4.00:1）→ remake/img/ui/poems/candidate.webp\n--dry-run: 書き込まない\n",
+    "strict_pass": false
+  },
+  {
+    "file": "poem_ch3_r3_6a-attempt1.png",
+    "bytes": 2130685,
+    "sha256": "9a22d5cb223e359f3cfb03a747bd938791e33cb63b335116df1c9a89c20cfb7b",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "mode": "RGB",
+    "detected_frame_x0_x1_y0_y1": [
+      48,
+      1485,
+      379,
+      709
+    ],
+    "dry_run": "- 原画 1536x1024\n- 枠を検出: 外側 x=48〜1485 y=379〜709\n- 枠の内側 1433x326\n- 比率 4.396（横長の範囲 4〜5.6 の内）。絵を欠かさずそのまま使う\n- 出力 1424x324（4.40:1）→ remake/img/ui/poems/candidate.webp\n--dry-run: 書き込まない\n",
+    "strict_pass": false
+  },
+  {
+    "file": "poem_ch3_r3_6a-attempt2.png",
+    "bytes": 2084959,
+    "sha256": "73b653aaa56b4a9253cbfb87b138aed53869867236758746d8211390ef89f60a",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "mode": "RGB",
+    "detected_frame_x0_x1_y0_y1": [
+      48,
+      1485,
+      378,
+      687
+    ],
+    "dry_run": "- 原画 1536x1024\n- 枠を検出: 外側 x=48〜1485 y=378〜687\n- 枠の内側 1432x304\n- 比率 4.711（横長の範囲 4〜5.6 の内）。絵を欠かさずそのまま使う\n- 出力 1424x302（4.72:1）→ remake/img/ui/poems/candidate.webp\n--dry-run: 書き込まない\n",
+    "strict_pass": false
+  },
+  {
+    "file": "poem_ch3_r3_6b-attempt1.png",
+    "bytes": 1969574,
+    "sha256": "cf8c2057934b9e3d6fd5f15bb11694c29d59e84ebd9ee5321967a308c649e168",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "mode": "RGB",
+    "detected_frame_x0_x1_y0_y1": [
+      49,
+      1485,
+      378,
+      693
+    ],
+    "dry_run": "- 原画 1536x1024\n- 枠を検出: 外側 x=49〜1485 y=378〜693\n- 枠の内側 1433x312\n- 比率 4.593（横長の範囲 4〜5.6 の内）。絵を欠かさずそのまま使う\n- 出力 1424x310（4.59:1）→ remake/img/ui/poems/candidate.webp\n--dry-run: 書き込まない\n",
+    "strict_pass": false
+  },
+  {
+    "file": "poem_ch4_r4_6a-attempt1.png",
+    "bytes": 1962717,
+    "sha256": "074e53a07e7dd3963c9d9e4fa440ff83ba248ba2e24d7c6ed14153cee54b97ed",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "mode": "RGB",
+    "detected_frame_x0_x1_y0_y1": [
+      48,
+      1485,
+      379,
+      721
+    ],
+    "dry_run": "- 原画 1536x1024\n- 枠を検出: 外側 x=48〜1485 y=379〜721\n- 枠の内側 1434x339\n- 比率 4.230（横長の範囲 4〜5.6 の内）。絵を欠かさずそのまま使う\n- 出力 1424x337（4.23:1）→ remake/img/ui/poems/candidate.webp\n--dry-run: 書き込まない\n",
+    "strict_pass": false
+  },
+  {
+    "file": "poem_ch4_r4_6b-attempt1.png",
+    "bytes": 1996092,
+    "sha256": "0a64c9829c4f52e065a59fe531be8f871ec2f0f873544ec11baad8c1e40b38a2",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "mode": "RGB",
+    "detected_frame_x0_x1_y0_y1": [
+      49,
+      1485,
+      377,
+      703
+    ],
+    "dry_run": "- 原画 1536x1024\n- 枠を検出: 外側 x=49〜1485 y=377〜703\n- 枠の内側 1433x321\n- 比率 4.464（横長の範囲 4〜5.6 の内）。絵を欠かさずそのまま使う\n- 出力 1424x319（4.46:1）→ remake/img/ui/poems/candidate.webp\n--dry-run: 書き込まない\n",
+    "strict_pass": false
+  },
+  {
+    "file": "poem_ch4_r4_6b-attempt2.png",
+    "bytes": 1862681,
+    "sha256": "599747cc102f0445d4a01fffa70534ec2147beb9ab948b2dd1e18455a2af3e5f",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "mode": "RGB",
+    "detected_frame_x0_x1_y0_y1": [
+      48,
+      1485,
+      377,
+      692
+    ],
+    "dry_run": "- 原画 1536x1024\n- 枠を検出: 外側 x=48〜1485 y=377〜692\n- 枠の内側 1433x310\n- 比率 4.623（横長の範囲 4〜5.6 の内）。絵を欠かさずそのまま使う\n- 出力 1424x308（4.62:1）→ remake/img/ui/poems/candidate.webp\n--dry-run: 書き込まない\n",
+    "strict_pass": false
+  },
+  {
+    "file": "poem_ch4_r4_6b-attempt3.png",
+    "bytes": 1648613,
+    "sha256": "8849af3c0b0ca31fe37d7c7b8627515841a61dc4fd0d91d19dde7ef6b789b4cf",
+    "dimensions": [
+      1536,
+      1024
+    ],
+    "mode": "RGB",
+    "detected_frame_x0_x1_y0_y1": [
+      48,
+      1485,
+      377,
+      644
+    ],
+    "dry_run": "- 原画 1536x1024\n- 枠を検出: 外側 x=48〜1485 y=377〜644\n- 枠の内側 1433x263\n- 比率 5.449（横長の範囲 4〜5.6 の内）。絵を欠かさずそのまま使う\n- 出力 1424x261（5.46:1）→ remake/img/ui/poems/candidate.webp\n--dry-run: 書き込まない\n",
+    "strict_pass": false
+  }
+]

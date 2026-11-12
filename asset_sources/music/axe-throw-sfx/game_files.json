@@ -1,0 +1,57 @@
+[
+  {
+    "file": "assets/audio/se/axe_throw/throw.wav",
+    "sha256": "dc14ad57b71002cbb0e9c25eee51c0a955c6152c429032e8d26ac279fe5b53f9",
+    "source": "自作（numpy で合成）"
+  },
+  {
+    "file": "assets/audio/se/axe_throw/hit_1.wav",
+    "sha256": "c18f6f240ee0d585f6d613cc3c4877a56c11f4da6360780e5250a3b49260a2ae",
+    "source": "自作（numpy で合成）＋録音の芯 axe_thunk_01（craigsmith・CC0）"
+  },
+  {
+    "file": "assets/audio/se/axe_throw/hit_2.wav",
+    "sha256": "d8fe7ce64721d7090db0963a693f8b19ede23b39bd55f5727aca6675cefedc28",
+    "source": "自作（numpy で合成）＋録音の芯 axe_thunk_02（craigsmith・CC0）"
+  },
+  {
+    "file": "assets/audio/se/axe_throw/hit_3.wav",
+    "sha256": "fa16bd790545d7c77300f390cefe05009d8e24c3516bfa116f6f13c8c42a35ce",
+    "source": "自作（numpy で合成）＋録音の芯 axe_thunk_03（craigsmith・CC0）"
+  },
+  {
+    "file": "assets/audio/se/axe_throw/killshot.wav",
+    "sha256": "5a0a23888c9d01cfb96d99543198a30a15fd451c5fe8e77db34e6e964d8391bc",
+    "source": "自作（numpy で合成）＋録音の芯 axe_thunk_01（craigsmith・CC0）"
+  },
+  {
+    "file": "assets/audio/se/axe_throw/bounce.wav",
+    "sha256": "6b711872415a0351d07356a00f765235d9830bf928d915e208741fdc1332065a",
+    "source": "自作（numpy で合成）"
+  },
+  {
+    "file": "assets/audio/se/axe_throw/drop.wav",
+    "sha256": "58ae77d56c09bc690d364fd3124cd473617fe0cf2722009fd00fbbef8477e570",
+    "source": "自作（numpy で合成）"
+  },
+  {
+    "file": "assets/audio/se/axe_throw/stop.wav",
+    "sha256": "8730a6e9e3d29c7cb645187d525ef4a31c45d8186af0d456711caef8a081c194",
+    "source": "自作（numpy で合成）"
+  },
+  {
+    "file": "assets/audio/se/axe_throw/call.wav",
+    "sha256": "b947822a51e749380ca3e6d350fbdc1b20b701d7b2d989f904ec040c8eb4ca7a",
+    "source": "自作（numpy で合成）"
+  },
+  {
+    "file": "assets/audio/se/axe_throw/cue_drum.wav",
+    "sha256": "21335b8d9a2a84ccb8e3e54bbe6268f70c5335d510e90559623a89797a0b9436",
+    "source": "自作（numpy で合成）"
+  },
+  {
+    "file": "assets/audio/se/axe_throw/cue_clear.wav",
+    "sha256": "b2b0a48895562d68b9b34f2c88d5d36678151602d5eb48ef5cf326e367e20d22",
+    "source": "自作（numpy で合成）"
+  }
+]

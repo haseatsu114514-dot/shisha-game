@@ -59,6 +59,7 @@
         {
           "speaker": "dr_kemuri",
           "face": "evil",
+          "duck": true,
           "text": "ええ。そして、君の作り方を終わらせる装置でもあります"
         },
         {
@@ -716,6 +717,7 @@
         {
           "speaker": "dr_kemuri",
           "face": "serious",
+          "beat": 800,
           "text": "……二本の合計は、君です。おめでとうございます"
         },
         {
@@ -737,6 +739,7 @@
         {
           "speaker": "",
           "face": "",
+          "beat": 800,
           "text": "二本の挙手を合わせても、今日は勝ち切れなかった。"
         },
         {
@@ -1276,6 +1279,7 @@
         {
           "speaker": "hajime",
           "face": "serious",
+          "duck": true,
           "text": "『燃やす』んじゃない。『蒸らす』んだ"
         },
         {
@@ -1302,6 +1306,41 @@
           "speaker": "",
           "face": "",
           "text": "つむぎを先に上がらせて、シャッターを下ろす。店の中の音が、急に少なくなった。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "優勝した奴の店ってだけで、ずいぶん声が掛かるようになったな"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "会長ともまたつながったし、俺も外の用事が増えてきた"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "店はお前に任せる。もう、店長なんだからな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "俺が出かける日も、ありますけど"
+        },
+        {
+          "speaker": "sumi",
+          "face": "smile",
+          "text": "手が足りなきゃ俺が立つ。つむぎが出張に行く日もな"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "店を任せるのと、お前を閉じ込めるのは別だ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "……じゃあ、頼らせてもらいます"
         },
         {
           "speaker": "sumi",
@@ -3092,7 +3131,7 @@
         {
           "speaker": "tsumugi",
           "face": "baito_smile",
-          "text": "……じゃあ、私で三人目ですね"
+          "text": "……じゃあ、[pause]私で三人目ですね"
         },
         {
           "speaker": "",

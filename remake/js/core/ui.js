@@ -11,6 +11,7 @@ import { gainSeenKey, bannerHold } from "./gain-notice.js";
 import { nextStepProgress } from "./stat-progress.js";
 import { renderSceneArt, sceneArtUrls } from "./scene-art.js";
 import { rainScene, weatherSkyTone, weatherViewKind, renderWeatherLayer } from "../daily/weather.js";
+import { syncShopHaze } from "./shop-haze.js";
 import { createSceneCurtain, nightToMorning, isCovering, takeSceneArrival, takeParkedCover } from "./transitions.js";
 import { allStoreLogoUrls } from "./store-logos.js";
 import { chapterTitleArt } from "./chapter-title-art.js";
@@ -43,6 +44,7 @@ export function initLayers() {
       bond: !!bond,
       face: faceIconUrl(id, state, { context: bond ? "private" : null }),
       badge: [...displayName(id, state, { context: bond ? "private" : null })][0],
+      chime: levelUp ? "up" : "",
       top: bond ? (levelUp ? "BOND UP" : "BOND") : levelUp ? "AFFINITY UP" : "AFFINITY",
       main: displayName(id, state, { context: bond ? "private" : null }), // 恋人の絆は私的な場面でだけ深まる
       sub: bond
@@ -55,13 +57,14 @@ export function initLayers() {
   });
   on("notice", ({ text }) => toast(text, { ms: 3000 }));
   on("lovers", ({ id }) => {
-    gainCard({ kind: "affinity", bond: true, face: faceIconUrl(id, state, { context: "private" }), badge: "♥", top: "NEW RELATIONSHIP", main: displayName(id, state, { context: "private" }), sub: "恋人になった" });
+    gainCard({ kind: "affinity", bond: true, face: faceIconUrl(id, state, { context: "private" }), badge: "♥", top: "NEW RELATIONSHIP", chime: "up", main: displayName(id, state, { context: "private" }), sub: "恋人になった" });
   });
 }
 
 // ---------------------------------------------------------------- 背景（クロスフェード）
 
 let bgNow = "";
+let bgShown = ""; // 実際に #bg へ出した背景（読めずに見送った指定は含まない）
 let bgTask = Promise.resolve();
 let bgAssetsReady = Promise.resolve();
 let activeCurtain = null;
@@ -191,17 +194,27 @@ export function setBg(url, { instant = false, tint = null, fast = false, brief =
   if (curtain) activeCurtain = curtain;
   bgNow = key;
   bgAssetsReady = Promise.all([...sceneArtUrls(url, art), ...ready].map((u) => imageReady(u, 15000)));
-  bgTask = Promise.all([curtain?.covered, bgAssetsReady]).then(() => {
+  bgTask = Promise.all([curtain?.covered, bgAssetsReady]).then(([, loaded]) => {
     if (bgNow !== key) return; // 待っている間に別の背景が指定された
-    const next = el("div.bg-img");
-    renderSceneArt(next, url, art);
-    if (!url) next.classList.add("black");
-    if (fast) next.classList.add("fast");
-    if (tint) next.dataset.tint = tint;
-    host.append(next);
-    syncBackdrop(url, tint, instant);
+    // 背景の絵そのもの（先頭）が読めなかった（通信失敗・時間切れ）ときは、前の背景を残す。読めない絵の層を重ねて
+    // 前の背景を片付けると、黒一色の画面になる（#3203）。同じ背景をもう一度指定したら読み直すよう、記録は今出ている背景に戻す。
+    // 背景を消す指定（url なし＝暗転）と、まだ何も出ていない最初の背景は、これまでどおり差し替える。
+    const keep = !!url && loaded[0] === false && host.children.length > 0;
+    const next = keep ? null : el("div.bg-img");
+    if (keep) bgNow = bgShown;
+    else {
+      bgShown = key;
+      renderSceneArt(next, url, art);
+      if (!url) next.classList.add("black");
+      if (fast) next.classList.add("fast");
+      if (tint) next.dataset.tint = tint;
+      host.append(next);
+      syncBackdrop(url, tint, instant);
+    }
+    // 場面はここで確定する。絵が読めず前の背景を残したときも、入店の合図は落とさない（進行は止めない）。
     curtain?.commitArrival?.(url);
     if (!curtain) sceneArrival.commitArrival(url);
+    if (keep) return; // 背景・余白のぼかし・雨は前の場面のまま
     weatherBg = url || "";
     weatherTint = tint || "";
     refreshWeather();
@@ -249,6 +262,8 @@ export async function enterScene(url, { map = false, clear = true, ...opts } = {
 /** 背景だけに雨を重ねる。窓は1280×720の背景座標に限定する。 */
 export function refreshWeather() {
   if (!layers.weather) return;
+  // シーシャ屋の店内には、うっすら煙を漂わせる（KMR21）。背景・画面が替わるたびに、雨と同じ所で合わせる
+  syncShopHaze(weatherBg, document.body.dataset.screen, weatherTint);
   const scene = document.hidden ? null : rainScene(weatherBg, document.body.dataset.screen);
   const sky = scene ? weatherSkyTone(weatherBg, weatherTint) : "none";
   const view = scene ? weatherViewKind(weatherBg, scene) : "none";
@@ -332,7 +347,8 @@ export async function fadeBlack(mid, ms = 500) {
 
 // ---------------------------------------------------------------- トースト／通知
 
-export function toast(text, { ms = 2600, kind = "" } = {}) {
+export function toast(text, { ms = 2600, kind = "", se = "" } = {}) {
+  if (se) SE[se]?.(); // 通知と一緒に鳴らす効果音（「お金が足りない」のブザーなど）
   const effect = { "charm-bonus": ["魅", "魅力"], "insight-hint": ["察", "洞察"] }[kind];
   const t = el(`div.toast${kind ? "." + kind : ""}`, effect
     ? [el("span.toast-badge", { text: effect[0], "aria-label": `${effect[1]}の効果` }), el("span", { text })]
@@ -400,10 +416,24 @@ export function heartRow(values, { className = "gc-hearts", label = "好感度",
     values.map((fill) => el("i.ui-heart", { "aria-hidden": "true", style: { "--fill": `${fill}%` } })));
 }
 
+/**
+ * 絵の印（o.icon。心得の盤のアイコン・火種など。SBD125②）: 顔の印と同じ暗い丸に絵を載せる。
+ * 絵が読めるまで・読めない時は、字の印（o.badge）のまま見える。
+ */
+function artBadge(src, text) {
+  const badge = el("div.gc-badge.face.art", [el("span", { text: text || "+" })]);
+  const img = el("img", { src, alt: "", draggable: "false" });
+  img.addEventListener("load", () => badge.classList.add("has-img"));
+  img.addEventListener("error", () => img.remove());
+  badge.append(img);
+  return badge;
+}
+
 export function statBadge(key, className = "gc-badge") {
   return el(`div.${className}`, { text: STAT_BADGE[key], "aria-hidden": "true" });
 }
 
+let lastAffinityChime = -Infinity;
 function pumpBanners() {
   while (bannerBusy < 3 && bannerQueue.length) {
     const o = bannerQueue.shift();
@@ -412,7 +442,7 @@ function pumpBanners() {
     const hearts = o.hearts ? heartRow(o.hearts.from, { bond: !!o.bond, label: o.bond ? "恋人（♥5）" : "好感度" }) : null;
     const heading = o.top || (o.kind === "stat" ? "STATUS UP" : "");
     const b = el(`div.gain-card.${o.kind}${o.bond ? ".bond" : ""}${o.stat ? `.st-${o.stat}` : ""}${o.evolution ? ".evolved" : ""}${o.source === "slot" ? ".slot-bonus" : ""}`, [
-      o.face ? el("img.gc-badge.face", { src: o.face, alt: "" }) : o.stat ? statBadge(o.stat) : el("div.gc-badge", { text: o.badge || "+" }),
+      o.face ? el("img.gc-badge.face", { src: o.face, alt: "" }) : o.stat ? statBadge(o.stat) : o.icon ? artBadge(o.icon, o.badge) : el("div.gc-badge", { text: o.badge || "+" }),
       el("div.gc-meta", [
         heading ? el("span.gc-top", { text: heading, "aria-hidden": o.top ? "false" : "true" }) : null,
         el("div.gc-title", [el("span.gc-main", { text: o.main }),
@@ -437,6 +467,12 @@ function pumpBanners() {
     if (o.kind === "stat") {
       if (o.source === "slot") SE.slotBonus();
       else SE.select();
+    }
+    // 好感度・恋人の絆: ハートが動くのに合わせてベル。段階が上がった時と恋人になった時は2回（SE.affinityUp）。
+    // 何枚か同時に出る時は1回だけ（0.3秒あける）。
+    else if (o.kind === "affinity" && performance.now() - lastAffinityChime > 300) {
+      lastAffinityChime = performance.now();
+      (o.chime === "up" ? SE.affinityUp : SE.affinity)();
     }
     requestAnimationFrame(() => {
       b.classList.add("show");
@@ -712,9 +748,9 @@ export async function dayCard(title, sub, { ms = 1900, weather = null, forecast 
   card.remove();
 }
 
-/** 中央の見出し帯（「ROUND 2」など） */
+/** 中央の見出し帯（「ROUND 2」など）。登場カットインと同じ生成りの帯を大きく（TMG59） */
 export async function roundCut(text, sub = "") {
-  const c = el("div.round-cut", [el("b", { text }), sub ? el("small", { text: sub }) : null]);
+  const c = el("div.round-cut", [el("div.round-cut-band", [sub ? el("small", { text: sub }) : null, el("b", { text })])]);
   layers.fx.append(c);
   SE.whoosh();
   await nextFrame();

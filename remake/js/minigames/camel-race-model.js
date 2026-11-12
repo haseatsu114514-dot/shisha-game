@@ -22,12 +22,12 @@ export const RACE = Object.freeze({
 export const CAMEL_CUPS = Object.freeze([
   { id: "practice", name: "練習レース", length: 1000, rivalBoost: 0.2, note: "操作を練習。初回完走のご褒美はそのまま" },
   { id: "rookie", name: "入門大会", length: 700, rivalBoost: -0.9, note: "3位以内で標準大会へ" },
-  { id: "standard", name: "標準大会", length: 1000, rivalBoost: 0.2, note: "入賞・声20点・スタミナ20点・連打なしで中級認定" },
+  { id: "standard", name: "標準大会", length: 1000, rivalBoost: 0.2, note: "入賞・声20点・スタミナ20点・連打1回以内で中級認定" },
   { id: "expert", name: "上級大会", length: 1300, rivalBoost: 0.55, note: "1位・S評価・連打なしで砂漠の名調教師" },
 ].map(cup => Object.freeze(cup)));
 export const camelCup = id => CAMEL_CUPS.find(cup => cup.id === id) || CAMEL_CUPS[0];
 export const camelCupQualified = run => !!run && run.cup !== "practice" && run.rank <= 3 && Number.isFinite(run.total);
-export const camelMastered = run => run?.cup === "standard" && run.rank <= 3 && run.parts?.timing >= 20 && run.parts?.stamina >= 20 && run.stats?.spam === 0;
+export const camelMastered = run => run?.cup === "standard" && run.rank <= 3 && run.parts?.timing >= 20 && run.parts?.stamina >= 20 && Number.isInteger(run.stats?.spam) && run.stats.spam >= 0 && run.stats.spam <= 1;
 export const camelExpert = run => run?.cup === "expert" && run.rank === 1 && run.total >= 85 && run.stats?.spam === 0;
 
 export const PLAYER = Object.freeze({

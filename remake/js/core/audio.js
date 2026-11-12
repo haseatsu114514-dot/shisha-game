@@ -36,6 +36,18 @@ const RECORDED_SE = {
   coalPlace: { files: ["hms_knock_01.wav", "hms_knock_02.wav"], gain: 1 },
   foilPunch: { files: ["foil_puncture.wav"], gain: 1 },
   bubbling: { files: ["water_draw.wav"], gain: 1 },
+  // 2026-11-11 本編の効果音 第1弾（CC0・OpenGameArt）。出典・切り出し・再生成は asset_sources/music/main-se-20261111/。
+  // 耳での確認はオーナーの試聴待ち（remake/audio-preview.html で前の合成音と聴き比べられる）。合わない音はこの行を消せば合成音へ戻る。
+  // fit: 呼び出しの秒数（SE.crowd(1.6) など）に合わせ、その後 fit 秒で消す。
+  // minGap: この秒数のうちに続けて呼ばれた分は鳴らさない（所持金の増減と店の売り買いが同時にコインを呼んでも1回）。
+  crowd: { files: ["crowd_applause_01.mp3", "crowd_applause_02.mp3"], gain: 1, fit: .7 },
+  money: { files: ["coin_01.wav", "coin_02.wav"], gain: 1, minGap: .25 },
+  parin: { files: ["glass_break.wav"], gain: 1 },
+  shutter: { files: ["camera_shutter.wav"], gain: 1 },
+  mew: { files: ["cat_mew_01.wav", "cat_mew_02.wav"], gain: 1 },
+  crackle: { files: ["fire_crackle_01.wav", "fire_crackle_02.wav", "fire_crackle_03.wav"], gain: 1 },
+  affinity: { files: ["heart_bell.wav"], gain: 1 },
+  save: { files: ["ui_save.wav"], gain: 1 },
 };
 const WATER_LOOP = "water_loop.wav", WATER_END = "water_end.wav";
 
@@ -76,7 +88,7 @@ export function preloadSe() {
   return Promise.all([...files].map(loadSeBuffer)).then(buffers => buffers.every(Boolean));
 }
 
-function recordedVoice(file, { gain = 1, rate = 1, loop = false } = {}) {
+function recordedVoice(file, { gain = 1, rate = 1, loop = false, delay = 0 } = {}) {
   if (!seEnabled() || !seBuffers.has(file)) return null;
   const source = ctx.createBufferSource(), output = ctx.createGain();
   source.buffer = seBuffers.get(file);
@@ -94,19 +106,26 @@ function recordedVoice(file, { gain = 1, rate = 1, loop = false } = {}) {
   } };
   seVoices.add(voice);
   source.onended = () => { seVoices.delete(voice); source.disconnect(); output.disconnect(); };
-  source.start();
+  source.start(delay > 0 ? ctx.currentTime + delay : 0);
   return voice;
 }
 
-function recordedSe(id) {
+function recordedSe(id, sec) {
   if (!seEnabled()) return true; // ミュートや非表示中に代用音へ回さない。
-  const { files, gain } = RECORDED_SE[id];
+  const { files, gain, fit } = RECORDED_SE[id];
   const ready = files.filter(file => seBuffers.has(file));
   if (!ready.length) { files.forEach(loadSeBuffer); return false; }
   const choices = ready.filter(file => file !== lastVariant.get(id));
   const file = (choices.length ? choices : ready)[Math.floor(Math.random() * (choices.length || ready.length))];
   lastVariant.set(id, file);
-  recordedVoice(file, { gain });
+  const voice = recordedVoice(file, { gain });
+  // 長さの指定がある呼び出し（歓声など）は、その秒数まで鳴らしてから fit 秒で消す。録音より長い指定は録音の終わりまで。
+  if (voice && fit && sec > 0 && sec + fit < voice.source.buffer.duration) {
+    const end = ctx.currentTime + sec;
+    voice.output.gain.setValueAtTime(gain, end);
+    voice.output.gain.linearRampToValueAtTime(0, end + fit);
+    voice.source.stop(end + fit + .02);
+  }
   return true;
 }
 
@@ -150,6 +169,8 @@ export function createDesertRideSe() {
   const loops = new Map();
   const file = id => `desert_ride/${DESERT_SE[id]}${DESERT_SE[id].includes(".") ? "" : ".bgm"}`;
   const ready = () => Promise.all(Object.keys(DESERT_SE).map(id => loadSeBuffer(file(id))));
+  /** 効果音を全部読み終えているか（音を出せない間は読みに行かないので、待つ必要もない）。 */
+  const isReady = () => !ctx || Object.keys(DESERT_SE).every(id => seBuffers.has(file(id)));
   let levels = desertLoopLevels();
   let zaps = 0, lastZap = "";
   function play(id, gain = 0.65) {
@@ -188,14 +209,14 @@ export function createDesertRideSe() {
   }
   /** 今のループの音量と、鳴らした「ビリッ」の数（検査用。音が出せない環境でも、鳴らすつもりの音が分かる）。 */
   const loopLevels = () => ({ ...Object.fromEntries(Object.entries(levels).map(([id, { gain }]) => [id, gain])), zaps });
-  return { ready, play, motion, zap, stop, dispose, loopLevels };
+  return { ready, isReady, play, motion, zap, stop, dispose, loopLevels };
 }
 
 // ---------------------------------------------------------------- ミニゲームの仮SE
 // 2026-11-10 オーナー依頼「ミニゲーム全般に合う効果音を探して一旦入れて」の仮置き（grok/minigame-audio）。
 // 出典・ライセンス（すべてCC0）・加工は asset_sources/music/minigame-se/。差し替えはこの表のファイル名だけ変える。
 // 共通のSE音量・ミュート・非表示停止（recordedVoice）に乗せ、未読込・取得失敗の間は既存の合成SE（fallback）で鳴らす。
-// 斧投げの実プレイは #3176 の playAxeSe を使う。以下の録音キューは出典台帳付きの既存素材として保持する。
+// 斧投げの実プレイは playAxeSe（AXE_SE・2026-11-11 作り直し）を使い、ここの歓声・勝ち負けの録音と刺さる音の芯（axe_thunk）もそこで使う。以下の録音キューは出典台帳付きの既存素材として保持する。
 // TRPGの音（grok/trpg-audio）とは別の表にしてある。
 export const MINIGAME_SE = Object.freeze({
   axeThrow: { files: ["minigame/axe_throw.wav"], gain: .7, fallback: "whoosh" },
@@ -292,7 +313,7 @@ function ensureCtx() {
   return ctx;
 }
 
-/** 最初のユーザー操作で音を解禁する（ブラウザの自動再生制限） */
+/** ユーザー操作で音を解禁し、OSによる中断から同じ曲・位置へ復帰する。 */
 export function unlockAudio() {
   audioUnlocked = true;
   const c = ensureCtx();
@@ -302,8 +323,14 @@ export function unlockAudio() {
     // resume() is asynchronous. Read the latest request only after it succeeds;
     // stop/scene changes during unlock must not revive an old title request.
     if (pendingBgm) { const k = pendingBgm; pendingBgm = null; playBgm(k); }
+    else if (currentEl?.paused && currentEl.src && currentEl.readyState >= 2
+      && !bgmPaused && !rotateHeld && !document.hidden) {
+      // iOSの割込などで要素だけ止まることがある。同じキーのplayBgmは重複を
+      // 防ぐため再生し直さないので、次の操作でこの要素をその位置から再開する。
+      currentEl.play().catch(() => {});
+    }
   };
-  if (c && c.state === "suspended") c.resume().then(ready, () => {});
+  if (c && (c.state === "suspended" || c.state === "interrupted")) c.resume().then(ready, () => {});
   else ready();
   preloadSe();
 }
@@ -578,6 +605,9 @@ export const SE = {
   twinkle: () => { [1047, 1319, 1568, 2093].forEach((freq, i) => tone({ freq, type: "sine", dur: 0.22, vol: 0.11, delay: i * 0.07 })); noise({ dur: 0.3, vol: 0.04, filter: 7000, type: "highpass", delay: 0.1 }); },
   // 日付カードなど短いUI音（録音が無ければ短いクリック）。
   card: () => tone({ freq: 880, to: 660, type: "triangle", dur: 0.08, vol: 0.1 }),
+  // 好感度が上がった時のベル（録音が無ければ短い一音）と、セーブ完了（同じく短い二音）。
+  affinity: () => tone({ freq: 1319, type: "sine", dur: 0.3, vol: 0.1 }),
+  save: () => { tone({ freq: 784, type: "triangle", dur: 0.08, vol: 0.1 }); tone({ freq: 1175, type: "triangle", dur: 0.14, vol: 0.1, delay: 0.07 }); },
   // シーシャくじのガラガラ（motions/garagara.js）と賞の札（daily/kuji-reveal.js）
   kujiCharge: (sec = 1.4) => { tone({ freq: 196, to: 740, type: "triangle", dur: sec, vol: 0.05, attack: sec * 0.5 }); noise({ dur: sec, vol: 0.05, filter: 500, q: 0.7, sweepTo: 4200 }); },
   kujiShimmer: (n = 8) => { for (let i = 0; i < n; i++) tone({ freq: 2100 + Math.random() * 2600, type: "sine", dur: 0.2, vol: 0.045, delay: i * 0.05 + Math.random() * 0.03 }); },
@@ -587,10 +617,62 @@ export const SE = {
   kujiFlip: () => { noise({ dur: 0.07, vol: 0.09, filter: 2600, q: 0.9 }); tone({ freq: 700, to: 1100, type: "triangle", dur: 0.07, vol: 0.07 }); },
 };
 
-// 斧投げ専用の合成音。共通の音量・ミュート・非表示停止を通し、外部音源は使わない。
-// 風切り→木への衝突→割れ・軋みを別の帯域にして、短い録音SEより重さを出す。
+// 斧投げの効果音（2026-11-11 作り直し。オーナー「斧投げ……なんか効果音しょぼかったり」）。
+// assets/audio/se/axe_throw/ の .wav（作り方: asset_sources/music/axe-throw-sfx/build.py。刺さる音の芯は録音 axe_thunk_01〜03・CC0）と、
+// 歓声・勝ち負けの録音（下の MINIGAME_SE と同じ CC0 のファイル）。斧投げを始める時に preloadAxeSe で先に読み、
+// 読み込み前・取得失敗の間は、その場で作る合成音（axeSynth）で鳴らす。音量は、一番大きい0.15秒の大きさを測ってそろえた
+// （刺さる音 約-16dB・投げる音 約-21dB・ゲージを止める音 約-30dB。歓声とファンファーレは元の録音が小さいので 1 より上げる）。
+export const AXE_SE = Object.freeze({
+  throw: { files: ["axe_throw/throw.wav"], gain: .9 },
+  stick: { files: ["axe_throw/hit_1.wav", "axe_throw/hit_2.wav", "axe_throw/hit_3.wav"], gain: .8 },
+  killshot: { files: ["axe_throw/killshot.wav"], gain: .85 },
+  bounce: { files: ["axe_throw/bounce.wav"], gain: .9 },
+  drop: { files: ["axe_throw/drop.wav"], gain: .9 },
+  stop: { files: ["axe_throw/stop.wav"], gain: .7 },
+  call: { files: ["axe_throw/call.wav"], gain: .75 },
+  cueDrum: { files: ["axe_throw/cue_drum.wav"], gain: .55 },
+  cueClear: { files: ["axe_throw/cue_clear.wav"], gain: .65 },
+  cheer: { files: ["minigame/axe_cheer.wav"], gain: 1.8 },
+  win: { files: ["minigame/axe_win.wav", "minigame/axe_cheer.wav"], gain: 1.6, together: true },
+  lose: { files: ["minigame/axe_lose.wav"], gain: .7 },
+});
+const axePlayed = {};
+/** 斧投げの音を先に読む（最初の操作の後に呼ぶ）。全部読めたら true。 */
+export function preloadAxeSe() {
+  if (!audioUnlocked) return Promise.resolve(false);
+  const files = [...new Set(Object.values(AXE_SE).flatMap(cue => cue.files))];
+  return Promise.all(files.map(loadSeBuffer)).then(buffers => buffers.every(Boolean));
+}
+/** 検査用: 鳴らした音の数（id → { recorded, synth }）。音が出せない環境でも、鳴らすつもりの音が分かる。 */
+export const axeSePlayed = () => JSON.parse(JSON.stringify(axePlayed));
 export function playAxeSe(id, { scored = true } = {}) {
   if (!seEnabled()) return;
+  const cue = AXE_SE[id], weight = id === "stick" && !scored ? .75 : 1;
+  const ready = cue?.files.filter(file => seBuffers.has(file)) || [];
+  const count = axePlayed[id] ||= { recorded: 0, synth: 0 };
+  if (cue && ready.length === (cue.together ? cue.files.length : ready.length) && ready.length) {
+    if (cue.together) ready.forEach(file => recordedVoice(file, { gain: cue.gain * (file.endsWith("axe_cheer.wav") ? .7 : 1) }));
+    else {
+      const choices = ready.filter(file => file !== lastVariant.get("axe:" + id));
+      const file = (choices.length ? choices : ready)[Math.floor(Math.random() * (choices.length || ready.length))];
+      lastVariant.set("axe:" + id, file);
+      recordedVoice(file, { gain: cue.gain * weight });
+    }
+    count.recorded++;
+    return;
+  }
+  cue?.files.forEach(loadSeBuffer);
+  count.synth++;
+  axeSynth(id, { scored });
+}
+
+// 斧投げの合成音（録音が読めるまでの代わり）。共通の音量・ミュート・非表示停止を通す。
+// 風切り→木への衝突→割れ・軋みを別の帯域にする。
+function axeSynth(id, { scored = true } = {}) {
+  if (id === "killshot") { axeSynth("stick"); SE.perfect(); return; }
+  if (id === "bounce") { tone({ freq: 240, to: 150, type: "triangle", dur: .08, vol: .12 }); noise({ dur: .03, vol: .08, filter: 2600 }); return; }
+  if (id === "stop") { SE.select(); return; }
+  if (id === "call" || id === "cueDrum" || id === "cueClear") { SE.good(); return; }
   if (id === "throw") {
     noise({ dur: .43, vol: .19, filter: 380, sweepTo: 3100, q: .55 });
     noise({ dur: .19, vol: .07, delay: .13, filter: 4200, sweepTo: 1800, q: .6 });
@@ -623,10 +705,35 @@ export function playAxeSe(id, { scored = true } = {}) {
   }
 }
 
+/** 録音に差し替える前の合成音（試聴ページの聴き比べ用。ゲーム本編は SE を使う）。 */
+export const SYNTH_SE = {};
+/** 録音のある効果音のIDと、そのファイル（試聴ページ用）。 */
+export const recordedSeFiles = () => Object.fromEntries(Object.entries(RECORDED_SE).map(([id, cue]) => [id, [...cue.files]]));
+const lastPlayedAt = new Map();
 for (const id of Object.keys(RECORDED_SE)) {
-  const fallback = SE[id];
-  SE[id] = (...args) => { if (!recordedSe(id)) fallback(...args); };
+  const fallback = SYNTH_SE[id] = SE[id];
+  const { minGap } = RECORDED_SE[id];
+  SE[id] = (...args) => {
+    if (minGap) {
+      const now = Date.now();
+      if (now - (lastPlayedAt.get(id) ?? -Infinity) < minGap * 1000) return;
+      lastPlayedAt.set(id, now);
+    }
+    if (!recordedSe(id, Number(args[0]))) fallback(...args);
+  };
 }
+// 好感度の段階が上がった時・恋人になった時: 同じベルを高さを変えて2回（1回目→完全5度上）。
+SE.affinityUp = () => {
+  if (!seEnabled()) return;
+  const [file] = RECORDED_SE.affinity.files, { gain } = RECORDED_SE.affinity;
+  if (!seBuffers.has(file)) {
+    loadSeBuffer(file);
+    tone({ freq: 1319, type: "sine", dur: 0.22, vol: 0.1 }); tone({ freq: 1976, type: "sine", dur: 0.36, vol: 0.1, delay: 0.13 });
+    return;
+  }
+  recordedVoice(file, { gain });
+  recordedVoice(file, { gain, rate: 1.5, delay: .13 });
+};
 
 export function playSe(id, ...args) {
   const key = String(id || "").replace(/_([a-z])/g, (_, c) => c.toUpperCase());
@@ -806,10 +913,14 @@ const TEMPO_BGM = new Set(["bgm_camel_race", "bgm_ethnic05", "bgm_ethnic08", "bg
 // 2026-11-11 オーナー「ブーストするとBGM止まったりもバグ」: iPhone の Safari は、再生倍率や preservesPitch を書くたびに
 // 音の処理を作り直し、短い間に何度も変えると曲が途切れたり止まったりする。毎フレーム書き直していたのをやめ、
 // 0.01 刻みで値が変わった時だけ書く。変えた拍子に止まっていたら、同じ所から続ける。
+// 指で操作する端末（スマホ・タブレット）では曲の速さを変えない（2026-11-11 オーナー「ラクダレースもサンドボードも加速すると処理重い」
+// 「ラクダもBGM止まった」）。音程を保ったまま速さを変える処理は iPhone では重く、加速している間ずっと処理を食い、変えた拍子に
+// 曲が止まることもある。速さの手応えはブースト・ムチの効果音で出す。PC（マウス）では今までどおり速くする。
+const tempoAllowed = () => !(typeof matchMedia === "function" && matchMedia("(pointer: coarse)").matches);
 function applyBgmPlaybackRate() {
   if (!currentEl || currentKey === "bgm_continue_urgent") return;
   const el = currentEl;
-  const rate = TEMPO_BGM.has(currentKey) ? Math.round(bgmTempo * 100) / 100 : 1;
+  const rate = TEMPO_BGM.has(currentKey) && tempoAllowed() ? Math.round(bgmTempo * 100) / 100 : 1;
   if (el.preservesPitch !== true) el.preservesPitch = true;
   if (Math.abs(el.playbackRate - rate) < 0.001) return;
   const wasPlaying = !el.paused;
@@ -1030,7 +1141,7 @@ export function playBgm(key) {
   currentKey = key;
   if (!key) return;
   const c = ensureCtx();
-  if (!c || c.state === "suspended") { pendingBgm = key; currentKey = null; return; }
+  if (!c || c.state === "suspended" || c.state === "interrupted") { pendingBgm = key; currentKey = null; return; }
   const url = bgmUrl(key);
   if (url) {
     const packed = url.endsWith(".bgm");

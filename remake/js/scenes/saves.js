@@ -155,8 +155,8 @@ export async function saveFlow() {
       if (!ok) continue;
     }
     const { autoSaved, manualSaved } = saveToSlotResult(key);
-    if (manualSaved && autoSaved) { SE.money(); toast(`${slot.label} と AUTO に保存した`, { kind: "good", ms: 4000 }); }
-    else if (manualSaved) { SE.money(); toast(`${slot.label} は保存済み。AUTO 更新は失敗`, { kind: "warn", ms: 5000 }); }
+    if (manualSaved && autoSaved) { SE.save(); toast(`${slot.label} と AUTO に保存した`, { kind: "good", ms: 4000 }); }
+    else if (manualSaved) { SE.save(); toast(`${slot.label} は保存済み。AUTO 更新は失敗`, { kind: "warn", ms: 5000 }); }
     else if (autoSaved) toast(`${slot.label} は前のまま。AUTO は保存済み`, { kind: "warn", ms: 5000 });
     else toast(`${slot.label} は前のまま。AUTO も保存できませんでした`, { kind: "warn", ms: 5000 });
     return true;
