@@ -7,7 +7,7 @@ import vm from 'node:vm';
 import { fileURLToPath } from 'node:url';
 const root = fileURLToPath(new URL('../js/', import.meta.url));
 const sourceRoot = process.env.AFFINITY_SOURCE_ROOT || root;
-const realPaths = ['core/cinema-discovery.js','core/travel-budget.js','daily/cinema.js','core/state.js','core/portrait-style.js','core/gallery-progress.js','core/stats.js','core/affinity-stages.js','core/condition.js','core/hiyori-route.js','daily/spots.js','daily/bonds.js','daily/phone.js','daily/invitations.js','core/chapter-clock.js','core/chapter-features.js','daily/samechan.js','daily/romance.js','daily/samechan-bonds.js','chapters/ch4-desert-progress.js','minigames/desert-ride-model.js'];
+const realPaths = ['core/cinema-discovery.js','core/travel-budget.js','daily/cinema.js','core/state.js','core/portrait-style.js','core/gallery-progress.js','core/stats.js','core/stat-step-tables.js','core/affinity-stages.js','core/condition.js','core/hiyori-route.js','daily/spots.js','daily/bonds.js','daily/phone.js','daily/invitations.js','core/chapter-clock.js','core/chapter-features.js','daily/samechan.js','daily/romance.js','daily/samechan-bonds.js','chapters/ch4-desert-progress.js','minigames/desert-ride-model.js'];
 const scripts = ['ch1_sumi','ch1_tsumugi','ch1_minto','ch1_naru','ch1_adam','ch1_rio','ch1_bonds','samechan','hiyori','lover_events','confession','cinema'];
 const data = scripts.map(name => JSON.parse(fs.readFileSync(new URL(`../../data/dialogue/${name}.json`, import.meta.url))));
 const clone = value => JSON.parse(JSON.stringify(value));
@@ -210,6 +210,37 @@ for(const value of [0,1]) await check(`Rio neutral route ${value}: six stories a
   assert.equal(visits,7);assert.equal(s.story.rio,6);assert.equal(s.visits.rio,7);
   assert.equal(s.finales.rio.route,value?'romance':'friend');assert.equal(s.owned.filter(x=>x==='suyaki_rio').length,1);
   assert.equal(s.romanceChoices.bond_q1_rio.value,value);
+});
+await check('Rio actual shop: interrupted joined question keeps the visit boundary; next-day saved answer grants one sample',async f=>{
+  let s=f.core.state;Object.assign(s,{phase:'daily',day:5,slot:1,money:10000,stamina:100});
+  s.met.rio=true;s.story.rio=2;s.affinity.rio=20;
+  const context=vm.createContext({console,visitChar:f.spots.visitChar,addStamina:f.stats.addStamina,cueTransition:()=>{},toast:()=>{},RIO_AWAY_DAY:1,FLAVOR_BOX_GRAMS:50});
+  Object.defineProperty(context,'state',{get:()=>f.core.state});
+  const hours=fs.readFileSync(path.join(sourceRoot,'daily/spot-hours.js'),'utf8');
+  const a=hours.indexOf('export function rioUnavailable(save)'),b=hours.indexOf('export function spotTimeNote',a);
+  vm.runInContext(hours.slice(a,b).replace('export ','').replace('rioUnavailable(save)','rioVisitReason(save)')+'\nthis.rioUnavailable=()=>rioVisitReason(state);',context);
+  const source=fs.readFileSync(path.join(sourceRoot,'daily/shop.js'),'utf8');
+  const stock=source.slice(source.indexOf('export function addFlavorStock('),source.indexOf('export const ownsFlavor'));
+  const visit=source.slice(source.indexOf('export async function visitRio('));
+  vm.runInContext((stock+visit).replace(/\bexport /g,'')+'\nthis.visit=visitRio;',context);
+  f.setPlay(async scene=>{
+    const id=typeof scene==='string'?scene:scene.dialogue_id;
+    if(id==='ch1_rio_third'){s.flags._rio_sample=true;return done;}
+    f.bonds.recordRomanceChoice({id:'bond_q1_rio',romance_char:'rio'},{romance:0});return {cancelled:true};
+  });
+  assert.equal(await context.visit(),false);
+  assert.equal(s.stamina,86);assert.equal(s.visitedDay.rio,5);assert.equal(s.story.rio,3);assert.equal(s.affinity.rio,33);
+  assert.equal(s.romanceChoices.bond_q1_rio.value,0);assert(!s.flags._rio_sample_received);assert(!s.flavorStock.nightside_earlgrey);
+  f.roundTrip();s=f.core.state;const saved=clone(s);
+  assert.equal(await context.visit(),false);assert.deepEqual(clone(s),saved,'same-day retry is unavailable, not charged twice');
+  s.day=6;
+  f.setPlay(async scene=>{assert.equal(scene.dialogue_id,'ch1_rio_bond_question');assert(!scene.lines.some(x=>x.type==='choice'&&x.id==='bond_q1_rio'));return done;});
+  assert.equal(await context.visit(),true);
+  assert.equal(s.stamina,72);assert.equal(s.money,10000);assert.equal(s.story.rio,3);
+  assert.equal(s.affinity.rio,40);assert(s.flags._rio_affinity_question_done&&s.flags._rio_sample_received);
+  assert.equal(s.flavorStock.nightside_earlgrey,50);assert.equal(s.romanceChoices.bond_q1_rio.value,0);
+  f.roundTrip();s=f.core.state;s.day=7;f.setPlay(async()=>done);
+  assert.equal(await context.visit(),true);assert.equal(s.flavorStock.nightside_earlgrey,50,'later visits cannot refill the sample');
 });
 await check('legacy current/carry/history stay intact; deferred ordinary credit releases once without reading stages across SAVE/LOAD', async f => {
   let s=f.core.state;s.affinity.tsumugi=66;s.affinityCarry.tsumugi=.7;
