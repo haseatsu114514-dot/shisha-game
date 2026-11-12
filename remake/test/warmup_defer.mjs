@@ -58,9 +58,10 @@ const FACE_URLS = ["img/faces/face_sumi.webp", "img/faces/face_naru.webp"];
   await noFonts.namespace.loadVnFonts();
 }
 
-async function loadUi({ loadImage = image => image.onload?.() } = {}) {
+async function loadUi({ loadImage = image => image.onload?.(), imageSize = 0 } = {}) {
   const requested = [], idle = [];
   class Image {
+    constructor() { this.naturalWidth = this.naturalHeight = imageSize; }
     set src(url) { requested.push(url); queueMicrotask(() => loadImage(this, url)); }
     decode() { return Promise.resolve(); }
   }
@@ -196,31 +197,30 @@ const storeRequests = (requested) => requested.filter((u) => STORE_URLS.includes
   assert.equal(ui.storeLogosReady(), null, "once loaded, storeLogosReady does not wait");
 }
 
-// main.js 側の配線: タイトル直後は deferStores で呼び、大会ステージは逐次先読みから外れてアイドル行き。
+// main.js: speculative jobs stop when START/LOAD changes the state owner.
 {
   const main = await fs.readFile(new URL("../js/main.js", import.meta.url), "utf8");
-  assert.match(main, /warmUiArt\(\{ deferStores: true \}\)/);
-  const bgsLine = main.match(/const bgs = \[([^\]]*)\]/);
-  assert(bgsLine && !bgsLine[1].includes("bg_tournament_stage"), "stage bg left the sequential warm list");
-  assert.match(main, /requestIdleCallback\(warmStage, \{ timeout: 8000 \}\)/);
-  assert.match(main, /imageReady\(bgUrl\("bg_tournament_stage"\), 8000\)/);
+  const { warmInBackground } = await import('../js/core/loading-prefetch.js');
   const warmUpSource = main.slice(main.indexOf("async function warmUp()"), main.indexOf("// テスト・デバッグ用フック"));
-  assert(warmUpSource.includes("loadVnFonts().catch(() => {})"));
-  let started = 0;
-  const warmUp = vm.runInNewContext(`${warmUpSource}\nwarmUp`, {
-    loadDeferredDialogues: () => Promise.resolve(),
-    loadCinemaDialogue: () => Promise.resolve(),
-    loadTournamentCraftDialogue: () => Promise.resolve(),
-    loadVnFonts: () => { started++; return new Promise(() => {}); },
-    warmUiArt: () => Promise.resolve(),
-    imageReady: () => Promise.resolve(),
-    bgUrl: (name) => name,
-    portraitInfo: () => null,
-    makingUrl: (name) => name,
-    requestIdleCallback: () => {},
-  });
-  await warmUp();
-  assert.equal(started, 1, "warmUp starts the fonts without waiting for them");
+  for (const chapter of [1, 4]) {
+    const calls = [];
+    const ctx = {
+      state: { chapter },
+      loadVnFonts: async () => calls.push('fonts'),
+      loadDeferredDialogues: async () => calls.push('dialogue'),
+      warmUiArt: async () => calls.push('ui'),
+      imageReady: async u => calls.push(u), bgUrl: u => u,
+      warmInBackground: (jobs, options) => warmInBackground(jobs, { ...options, yieldTask: async () => {} }),
+    };
+    await vm.runInNewContext(`${warmUpSource}\nwarmUp()`, ctx);
+    assert.equal(calls.filter(u => u.startsWith('bg_')).length, chapter === 1 ? 3 : 0);
+    calls.length = 0;
+    ctx.warmInBackground = (jobs, options) => warmInBackground(jobs, {
+      ...options, yieldTask: async () => { ctx.state = { chapter: 5 }; },
+    });
+    await vm.runInNewContext(`${warmUpSource}\nwarmUp()`, ctx);
+    assert.equal(calls.length, 0, 'START/LOAD drops obsolete preparation before any I/O');
+  }
 
   const engine = await fs.readFile(new URL("../js/vn/engine.js", import.meta.url), "utf8");
   const entry = engine.slice(engine.indexOf("export function play("), engine.indexOf("function sceneBgm("));
@@ -229,4 +229,45 @@ const storeRequests = (requested) => requested.filter((u) => STORE_URLS.includes
   assert(entry.indexOf("const assetsReady") < entry.indexOf("next();"), "first line starts after the font gate");
 }
 
-console.log("[warmup defer] PASS: store logos defer to idle only on the title path; stage bg deferred in main.js");
+console.log("[warmup defer] PASS: store logos defer to idle only on the title path; bounded warm-up and obsolete/late-chapter work dropped");
+
+
+// UI speculation has two in-flight images; a foreground scene can load immediately.
+{
+  const pending = [];
+  const { ui, requested } = await loadUi({ loadImage: (image, url) => pending.push({ image, url }) });
+  const warm = ui.warmUiArt({ deferStores: true });
+  await new Promise(r => setImmediate(r));
+  // Two workers plus the selected frame, which is immediately necessary.
+  assert.equal(requested.length, 3);
+  const urgent = ui.imageReady('next-scene.webp');
+  await new Promise(r => setImmediate(r));
+  assert.equal(requested.at(-1), 'next-scene.webp', 'foreground bypasses speculative backlog');
+  pending.find(x => x.url === 'next-scene.webp').image.onload();
+  assert.equal(await urgent, true);
+  let finished = false;
+  warm.then(() => { finished = true; });
+  while (!finished) {
+    const batch = pending.splice(0);
+    for (const { image, url } of batch) if (url !== 'next-scene.webp') image.onload();
+    await new Promise(r => setImmediate(r));
+  }
+}
+// Four 16MiB images exceed the 48MiB decoded budget: only the oldest is released.
+{
+  const { ui, requested } = await loadUi({ imageSize: 2048 });
+  for (const u of ['a', 'b', 'c', 'd']) await ui.imageReady(u, 100, { keep: true });
+  await ui.imageReady('d', 100, { keep: true });
+  assert.equal(requested.length, 4, 'recent kept art is still reused');
+  await ui.imageReady('a', 100, { keep: true });
+  assert.equal(requested.length, 5, 'oldest decoded reference was released');
+}
+{
+  const { ui, requested } = await loadUi();
+  for (let i = 0; i < 150; i++) await ui.imageReady(`scene-${i}`, 100);
+  await ui.imageReady('scene-149', 100);
+  assert.equal(requested.length, 150);
+  await ui.imageReady('scene-0', 100);
+  assert.equal(requested.length, 151, 'completed URL metadata is bounded too');
+}
+console.log('image working set: PASS (two workers, foreground bypass, decoded and URL bounds)');

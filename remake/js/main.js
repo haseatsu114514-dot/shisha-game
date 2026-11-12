@@ -6,7 +6,7 @@ import { $, sleep } from "./core/util.js";
 import { initStageFit } from "./core/stage-fit.js";
 import { initCraftStage } from "./craft/stage-layout.js";
 import { initIchidaiSwitch } from "./daily/ichidai-table.js";
-import { loadAll, loadDeferredDialogues, loadCinemaDialogue, loadTournamentCraftDialogue, DB, bgUrl, portraitInfo, makingUrl } from "./core/data.js";
+import { loadAll, loadDeferredDialogues, DB, bgUrl } from "./core/data.js";
 import { loadVnFonts } from "./core/vn-fonts.js";
 import { initLayers, imageReady, FRAME_ART, warmUiArt } from "./core/ui.js";
 import { loadConfig, saveConfig, state, load, consumeResumeOnBoot, tickPlayTime } from "./core/state.js";
@@ -16,6 +16,7 @@ import { initLook, migrateLook, normalizeLook } from "./core/look.js";
 import { installLooks } from "./looks/index.js";
 import { installRotateGuard } from "./core/rotate-guard.js";
 import { imgFileUrl } from "./core/img-file.js";
+import { warmInBackground } from "./core/loading-prefetch.js";
 import { withLoading } from "./core/loading.js";
 import { vnTest, enableSeenLinePersistence, tapAdvance } from "./vn/engine.js";
 import { initSideArea } from "./core/side-area.js";
@@ -98,27 +99,23 @@ export async function boot() {
 
 /** タイトルを見ている間に、日常でよく出る絵を裏で読んでおく（初めて出る場面で絵が遅れないように） */
 async function warmUp() {
-  // 後段台詞はタイトル後に先読みする。失敗しても起動を妨げず、各入口で再試行する。
-  loadDeferredDialogues().catch(() => {});
-  loadCinemaDialogue().catch(() => {});
-  loadTournamentCraftDialogue().catch(() => {});
-  // 会話用の明朝2書体はタイトル後に先読みし、失敗時は会話開始時に再試行する。
-  loadVnFonts().catch(() => {});
-  // 先に小さなUIの絵（枠・看板・顔アイコン・スロットの図柄）を並行で。背景・立ち絵はそのあと1枚ずつ
-  // 店ロゴはマップまで要らないので、タイトル直後の帯域を空けるためアイドル時に回す（ui.js 側）。
-  await Promise.all([warmUiArt({ deferStores: true }), ...["bg_osu_map_day", "bg_osu_map_night"].map((bg) => imageReady(bgUrl(bg), 8000, { keep: true }))]);
-  const bgs = ["bg_osu_map_day", "bg_osu_map_night", "bg_tonari_inside_day", "bg_tonari_inside_night", "bg_home_day", "bg_home_night", "bg_shop"];
-  const faces = [["sumi", "normal"], ["tsumugi", "normal"], ["naru", "normal"], ["adam", "normal"], ["minto", "normal"], ["rio", "normal"], ["pakki", "normal"]];
-  const urls = [
-    ...bgs.map((b) => bgUrl(b)),
-    ...faces.map(([c, f]) => portraitInfo(c, f)?.src),
-    ...["bench_base.png", "stove_coil.png", "hookah_base.png"].map((m) => makingUrl(m)),
-  ].filter(Boolean);
-  for (const u of urls) await imageReady(u, 8000);
-  // 大会ステージは大会当日にしか出ないので、最後にアイドル時へ回す（遅くとも8秒で必ず始める）。
-  const warmStage = () => imageReady(bgUrl("bg_tournament_stage"), 8000);
-  if (typeof requestIdleCallback === "function") requestIdleCallback(warmStage, { timeout: 8000 });
-  else setTimeout(warmStage, 4000);
+  const owner = state;
+  const chapter = state?.chapter || 1;
+  const isCurrent = () => state === owner && (state?.chapter || 1) === chapter;
+  // Foreground scene entry already requests its own fonts/data/images. Speculation
+  // must yield before each job, and stop if START/LOAD changes its owner.
+  const jobs = [
+    () => loadVnFonts(),
+    () => loadDeferredDialogues(),
+    () => warmUiArt({ deferStores: true }),
+  ];
+  if (chapter === 1) {
+    const bgs = ["bg_osu_map_day", "bg_tonari_inside_day", "bg_home_day"];
+    jobs.push(...bgs.map(bg => () => imageReady(bgUrl(bg), 8000)));
+  }
+  // Cinema/tournament data and distant chapter art remain demand-loaded at their
+  // existing entrances. No all-chapter download on title or a late-game resume.
+  await warmInBackground(jobs, { isCurrent });
 }
 
 // テスト・デバッグ用フック（見た目を変えてもテストが壊れないよう、ここだけに依存させる）
@@ -301,4 +298,5 @@ window.__remake = {
     },
   },
 };
+
 

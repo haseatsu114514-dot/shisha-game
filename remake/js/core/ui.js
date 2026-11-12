@@ -72,12 +72,26 @@ let weatherBg = "";
 let weatherTint = "";
 let weatherKey = "";
 const bgReady = new Map(); // url -> { promise, image, keep }（一度読んだ絵は即座に出す）
+// Retain only a bounded decoded working set. CSS/DOM own visible images separately.
+const IMAGE_CACHE_ENTRIES = 128, KEPT_IMAGE_BYTES = 48 * 1024 * 1024;
+function trimImages() {
+  let bytes = [...bgReady.values()].reduce((n, e) => n + (e.bytes || 0), 0);
+  for (const [url, entry] of bgReady) {
+    if (!entry.done) continue; // never evict shared in-flight requests
+    if (entry.image && bytes > KEPT_IMAGE_BYTES) {
+      bytes -= entry.bytes || 0;
+      entry.image = null; entry.bytes = 0;
+    }
+    if (bgReady.size > IMAGE_CACHE_ENTRIES) bgReady.delete(url);
+  }
+}
 const expiredImageWaits = new WeakMap(); // 同じ通信に対し、使い切った待ち時間を繰り返さない
 
 /** 画像を読み込み＋デコードし終えるまで待つ（最大 ms）。成功時 true、失敗・時間切れは false。 */
 export function imageReady(url, ms = 1500, { keep = false } = {}) {
   if (!url) return Promise.resolve(false);
   let entry = bgReady.get(url);
+  if (entry) { bgReady.delete(url); bgReady.set(url, entry); }
   // 通常の場面で読んだ後に固定UIの先読みへ昇格する場合も、Image 自体を保持する。
   // すでに手放していたらここで読み直し、制作画面を開く前にデコードまで待つ。
   if (!entry || (keep && !entry.image)) {
@@ -86,7 +100,10 @@ export function imageReady(url, ms = 1500, { keep = false } = {}) {
     entry.promise = new Promise((resolve) => {
       const i = entry.image;
       i.onload = () => (i.decode ? i.decode().catch(() => {}) : Promise.resolve()).then(() => {
+        entry.done = true;
         if (!entry.keep) entry.image = null;
+        else entry.bytes = (i.naturalWidth || 0) * (i.naturalHeight || 0) * 4;
+        trimImages();
         resolve(true);
       });
       i.onerror = () => { bgReady.delete(url); entry.image = null; resolve(false); };
@@ -149,7 +166,21 @@ function deferStoreLogos() {
 function warmCoreArt() {
   if (!uiArt) {
     const urls = [...LOUNGE_ART, ...PAPER_ART, ...SLOT_ART, chapterTitleArt("第一章"), ...allFaceIconUrls()];
-    uiArt = Promise.all(urls.map((u) => imageReady(u, 15000, { keep: true }))).then(() => { uiArtDone = true; });
+    // Two workers instead of launching every icon/texture together. Foreground
+    // imageReady calls bypass this list and share any request already in flight.
+    let index = 0;
+    const worker = async () => {
+      let ok = true;
+      while (index < urls.length) {
+        const url = urls[index++];
+        if (!await imageReady(url, 15000, { keep: true })) ok = false;
+      }
+      return ok;
+    };
+    uiArt = Promise.all([worker(), worker()]).then(results => {
+      uiArtDone = results.every(Boolean);
+      if (!uiArtDone) uiArt = null; // retry failed assets at the next entrance
+    });
   }
   // 選ばれた会話枠も先読みする。設定変更後は新しい枠だけを追加で読む。
   return Promise.all([uiArt, imageReady(uiThemeFrame(document.documentElement.dataset.uiTheme), 15000, { keep: true })]);
@@ -769,5 +800,6 @@ export async function roundCut(text, sub = "") {
 export function dayTurn(mid) {
   return nightToMorning(layers.fx, mid);
 }
+
 
 

@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { createPrefetchQueue, prepareImage } from '../js/core/loading-prefetch.js';
+import { createPrefetchQueue, prepareImage, warmInBackground } from '../js/core/loading-prefetch.js';
 
 const queue = createPrefetchQueue({ concurrency: 1, capacity: 2 });
 let release, starts = 0;
@@ -58,3 +58,28 @@ try {
   else globalThis.Image = originalImage;
 }
 console.log('image preparation: PASS (abort, timeout, queued load, decoded retention)');
+
+
+// A slow background job cannot start the next job; each boundary yields and
+// rechecks ownership/visibility. Failures must not become unhandled rejections.
+{
+  const starts = [], yields = [];
+  let finish, current = true;
+  const run = warmInBackground([
+    () => { starts.push(1); return new Promise(r => { finish = r; }); },
+    () => starts.push(2),
+  ], { isCurrent: () => current, yieldTask: () => new Promise(r => yields.push(r)) });
+  assert.equal(starts.length, 0);
+  yields.shift()();
+  await Promise.resolve();
+  assert.deepEqual(starts, [1]);
+  assert.equal(yields.length, 0, 'second job waits for first');
+  current = false; finish(); await run;
+  assert.deepEqual(starts, [1], 'new scene cancels remaining speculation');
+  for (const flag of ['isHidden', 'saveData']) {
+    await warmInBackground([() => assert.fail(flag)], { [flag]: () => true, yieldTask: async () => {} });
+  }
+  await warmInBackground([() => { throw Error('offline'); }, () => starts.push(3)], { yieldTask: async () => {} });
+  assert.deepEqual(starts, [1, 3], 'optional failure does not stop later tasks');
+}
+console.log('background preparation: PASS (yield, serial, stale, hidden, save-data, failure)');
