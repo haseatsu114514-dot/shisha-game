@@ -84,6 +84,16 @@ const PANEL_FACE = {
   K10: "serious", K16: "smug", K11: "serious", K14: "surprise", K01: "serious", K02: "smile", K05: "surprise", K17: "normal",
   K09: "smile", K18: "serious", K19: "smile", K21: "smug", K22: "normal", K23: "smug", K24: "serious",
 };
+/** スキル説明の白黒漫画コマ。共用する日常スキルは同じ場面を使う（#3425・SBD129）。 */
+const SKILL_ART = {
+  K15: "sk_k15", K04: "sk_k04", K07: "sk_k07", K21: "sk_k21", K16: "sk_k16",
+  K10: "sk_k10", K19: "sk_k19", K08: "sk_k08", K12: "sk_k12", K13: "sk_k13",
+  K11: "sk_k11", K14: "sk_k14", K09: "sk_k09",
+  K03: "sk_morning", K05: "sk_morning",
+  K01: "sk_prep", K18: "sk_prep", K17: "sk_prep",
+  K02: "sk_notebook", K24: "sk_notebook", K23: "sk_notebook",
+  K06: "sk_steam_calm", K22: "sk_steam_calm",
+};
 const ART_FILES = ["board_glass", "screen_backdrop", "hub_body", "hub_sense", "hub_wisdom", "frame_skill", "frame_lesson", "frame_gate", "frame_peak", "frame_seal",
   "hidane_any", "hidane_body", "hidane_sense", "hidane_wisdom", "panel_frame", "wall_seal", "silhouette_unknown",
   // GB04（SBD121・SBD123）: 火種の受け皿・盤の札・マスの印の台・丸いボタン・紙の札・飾り罫
@@ -480,14 +490,22 @@ export function openBoard({ place = null } = {}) {
     const st = status(node, v), shown = revealOf(node);
     const lines = [];
     const portrait = panelPortrait(node, shown);
+    const skillArt = node.kind === "skill" && shown !== "hidden" && SKILL_ART[node.id]
+      ? el("img.gb-skill-art", { src: `${ART_DIR}skill_art/${SKILL_ART[node.id]}.webp`, alt: "", dataset: { test: "board-skill-art" } }) : null;
     if (portrait) portrait.addEventListener("error", () => { portrait.remove(); art.classList.remove("has-portrait"); });
+    if (skillArt) skillArt.addEventListener("error", () => {
+      if (portrait) skillArt.replaceWith(portrait);
+      else skillArt.remove();
+      art.classList.remove("has-skill-art");
+      if (portrait) art.classList.add("has-portrait");
+    });
     // 立ち絵の無い能力・関門・極みは、右のパネルにも漢字でなくアイコンを大きく（SBD85）
     const artIcon = !portrait && root.classList.contains("has-art") && iconOf(node) && (node.kind !== "skill" || shown !== "hidden")
       ? el("img.gb-art-icon", { src: node.kind === "gate" ? `${ART_DIR}hidane_${node.board}.webp` : `${ART_DIR}icons/${iconOf(node)}.webp`, alt: "" }) : null;
-    const art = el(`div.gb-art.k-${node.kind}${shown !== "open" || st === "sealed" ? ".shadow" : ""}${portrait ? ".has-portrait" : ""}${artIcon ? ".has-icon" : ""}`, { "aria-hidden": "true" }, [
+    const art = el(`div.gb-art.k-${node.kind}${shown !== "open" || st === "sealed" ? ".shadow" : ""}${skillArt ? ".has-skill-art" : portrait ? ".has-portrait" : ""}${artIcon ? ".has-icon" : ""}`, { "aria-hidden": "true" }, [
       artIcon,
       el("span", { text: node.kind === "stat" ? BOARD_HEAD[node.board] : node.kind === "gate" ? "関" : node.kind === "lesson" ? (lessonKnown(node, g) ? "授" : "？") : shown === "hidden" ? "？" : node.glyph }),
-      portrait || (node.kind === "lesson" ? lessonFace(node, st) : null),
+      skillArt || portrait || (node.kind === "lesson" ? lessonFace(node, st) : null),
       portrait && node.kind === "lesson" && !lessonKnown(node, g) ? el("b.gb-art-mystery", { text: "?" }) : null,
     ]);
     lines.push(art, el("h3.gb-p-title", { text: nodeTitle(node, shown) }));
@@ -836,13 +854,17 @@ export function openBoard({ place = null } = {}) {
     current = null;
     if (owner === state && committed.length) {
       emit("hud");
-      const squares = committed.filter((n) => n.kind === "stat").length;
-      if (squares) gainCard({ kind: "info", badge: "火", top: "LIGHT", main: `能力の火を${squares}つ灯した`, sub: perkDeltaText(committed, before) });
-      const gates = committed.filter((n) => n.kind === "gate").length;
-      if (gates) gainCard({ kind: "info", badge: "関", top: "BREAK", main: `色の台座に${gates}つはめた`, sub: "この先の道が開き、台座の能力が手に入った" });
-      for (const node of committed) if (node.feature) gainCard({ kind: "info", badge: "✦", top: "NEW", main: FEATURES[node.feature].name, sub: FEATURES[node.feature].text });
-      for (const node of committed) if (node.peak) gainCard({ kind: "info", badge: "極", top: "COMPLETE", main: `${BOARD_JA[node.board]}を極めた`, sub: "盤の能力のマスを全部灯した" });
-      for (const node of committed) if (node.kind === "skill") gainCard({ kind: "info", badge: node.glyph, top: "SKILL", main: node.name, sub: node.text });
+      // 知らせの印は盤と同じ絵（SBD125②）。絵が読めない時は今までの字（火・関・極）のまま
+      const iconUrl = (node) => iconOf(node) ? `${ART_DIR}icons/${iconOf(node)}.webp` : null;
+      const squares = committed.filter((n) => n.kind === "stat");
+      const perks = [...new Set(squares.filter((n) => !n.peak && n.perk).map((n) => n.perk))];
+      if (squares.length) gainCard({ kind: "info", badge: "火", icon: perks.length === 1 ? `${ART_DIR}icons/perk_${perks[0]}.webp` : `${ART_DIR}hidane_any.webp`,
+        top: "LIGHT", main: `能力の火を${squares.length}つ灯した`, sub: perkDeltaText(committed, before) });
+      const gates = committed.filter((n) => n.kind === "gate");
+      if (gates.length) gainCard({ kind: "info", badge: "関", icon: `${ART_DIR}hidane_${gates[0].board}.webp`, top: "BREAK", main: `色の台座に${gates.length}つはめた`, sub: "この先の道が開き、台座の能力が手に入った" });
+      for (const node of committed) if (node.feature) gainCard({ kind: "info", badge: "✦", icon: iconUrl(node), top: "NEW", main: FEATURES[node.feature].name, sub: FEATURES[node.feature].text });
+      for (const node of committed) if (node.peak) gainCard({ kind: "info", badge: "極", icon: `${ART_DIR}icons/peak.webp`, top: "COMPLETE", main: `${BOARD_JA[node.board]}を極めた`, sub: "盤の能力のマスを全部灯した" });
+      for (const node of committed) if (node.kind === "skill") gainCard({ kind: "info", badge: node.glyph, icon: iconUrl(node), top: "SKILL", main: node.name, sub: node.text });
       // 授業: 今のゲームの場面がある授業はその場面を見せる（読み終えたら習得。場面が無い授業はカードで）
       for (const node of committed) if (node.kind === "lesson") await presentLesson(node);
     }

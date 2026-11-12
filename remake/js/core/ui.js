@@ -11,6 +11,7 @@ import { gainSeenKey, bannerHold } from "./gain-notice.js";
 import { nextStepProgress } from "./stat-progress.js";
 import { renderSceneArt, sceneArtUrls } from "./scene-art.js";
 import { rainScene, weatherSkyTone, weatherViewKind, renderWeatherLayer } from "../daily/weather.js";
+import { syncShopHaze } from "./shop-haze.js";
 import { createSceneCurtain, nightToMorning, isCovering, takeSceneArrival, takeParkedCover } from "./transitions.js";
 import { allStoreLogoUrls } from "./store-logos.js";
 import { chapterTitleArt } from "./chapter-title-art.js";
@@ -260,6 +261,8 @@ export async function enterScene(url, { map = false, clear = true, ...opts } = {
 /** 背景だけに雨を重ねる。窓は1280×720の背景座標に限定する。 */
 export function refreshWeather() {
   if (!layers.weather) return;
+  // シーシャ屋の店内には、うっすら煙を漂わせる（KMR21）。背景・画面が替わるたびに、雨と同じ所で合わせる
+  syncShopHaze(weatherBg, document.body.dataset.screen, weatherTint);
   const scene = document.hidden ? null : rainScene(weatherBg, document.body.dataset.screen);
   const sky = scene ? weatherSkyTone(weatherBg, weatherTint) : "none";
   const view = scene ? weatherViewKind(weatherBg, scene) : "none";
@@ -411,6 +414,19 @@ export function heartRow(values, { className = "gc-hearts", label = "好感度",
     values.map((fill) => el("i.ui-heart", { "aria-hidden": "true", style: { "--fill": `${fill}%` } })));
 }
 
+/**
+ * 絵の印（o.icon。心得の盤のアイコン・火種など。SBD125②）: 顔の印と同じ暗い丸に絵を載せる。
+ * 絵が読めるまで・読めない時は、字の印（o.badge）のまま見える。
+ */
+function artBadge(src, text) {
+  const badge = el("div.gc-badge.face.art", [el("span", { text: text || "+" })]);
+  const img = el("img", { src, alt: "", draggable: "false" });
+  img.addEventListener("load", () => badge.classList.add("has-img"));
+  img.addEventListener("error", () => img.remove());
+  badge.append(img);
+  return badge;
+}
+
 export function statBadge(key, className = "gc-badge") {
   return el(`div.${className}`, { text: STAT_BADGE[key], "aria-hidden": "true" });
 }
@@ -423,7 +439,7 @@ function pumpBanners() {
     const hearts = o.hearts ? heartRow(o.hearts.from, { bond: !!o.bond, label: o.bond ? "恋人（♥5）" : "好感度" }) : null;
     const heading = o.top || (o.kind === "stat" ? "STATUS UP" : "");
     const b = el(`div.gain-card.${o.kind}${o.bond ? ".bond" : ""}${o.stat ? `.st-${o.stat}` : ""}${o.evolution ? ".evolved" : ""}${o.source === "slot" ? ".slot-bonus" : ""}`, [
-      o.face ? el("img.gc-badge.face", { src: o.face, alt: "" }) : o.stat ? statBadge(o.stat) : el("div.gc-badge", { text: o.badge || "+" }),
+      o.face ? el("img.gc-badge.face", { src: o.face, alt: "" }) : o.stat ? statBadge(o.stat) : o.icon ? artBadge(o.icon, o.badge) : el("div.gc-badge", { text: o.badge || "+" }),
       el("div.gc-meta", [
         heading ? el("span.gc-top", { text: heading, "aria-hidden": o.top ? "false" : "true" }) : null,
         el("div.gc-title", [el("span.gc-main", { text: o.main }),
@@ -723,9 +739,9 @@ export async function dayCard(title, sub, { ms = 1900, weather = null, forecast 
   card.remove();
 }
 
-/** 中央の見出し帯（「ROUND 2」など） */
+/** 中央の見出し帯（「ROUND 2」など）。登場カットインと同じ生成りの帯を大きく（TMG59） */
 export async function roundCut(text, sub = "") {
-  const c = el("div.round-cut", [el("b", { text }), sub ? el("small", { text: sub }) : null]);
+  const c = el("div.round-cut", [el("div.round-cut-band", [sub ? el("small", { text: sub }) : null, el("b", { text })])]);
   layers.fx.append(c);
   SE.whoosh();
   await nextFrame();

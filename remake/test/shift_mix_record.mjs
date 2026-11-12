@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import vm from "node:vm";
+import { tsumugiAtTonari } from "../js/daily/tsumugi-schedule.js";
 
 const root = new URL("../../", import.meta.url);
 const read = path => fs.readFileSync(new URL(path, root), "utf8");
@@ -14,9 +15,9 @@ const orders = ["citrus", "fruit_mint_free", "sweet_round", "double_apple"];
 const dialogues = Object.fromEntries(JSON.parse(read("data/dialogue/remake_ch1.json")).dialogues.map(d => [d.dialogue_id, d]));
 
 async function run(seed, choice, { cancelled = false, switchAt = null, flags = {}, chapter = 1 } = {}) {
-  const owner = { chapter, day: 2, weatherSeed: seed, flags };
+  const owner = { chapter, day: 2, slot: 0, weatherSeed: seed, flags };
   const calls = [];
-  const context = { state: owner, TONARI_BG: "tonari", DB: { dialogues },
+  const context = { state: owner, tsumugiAtTonari, TONARI_BG: "tonari", DB: { dialogues },
     modal: async options => {
       calls.push({ type: "modal", options });
       if (switchAt === "modal") context.state = { ...owner, flags: {} };

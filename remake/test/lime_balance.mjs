@@ -398,3 +398,21 @@ console.log("[lime balance] PASS");
   assert(phone.morningMessages({ fixedNight: () => false }).some((m) => m.id === id), "still arrives if the morning has moved on");
   console.log("[#3081] PASS mashiro cloth LIME once after the scene flag");
 }
+
+// ムカイさんは通常好感度がない。面識と連絡先取得で1通だけ、登場章のみ。
+{
+  const casual = (await load("casual-lime.js")).namespace;
+  for (const chapter of [3, 5]) {
+    reset({ chapter, day: 20, contacts: ["mukai_master"], met: { mukai_master: true } });
+    const messages = casual.casualMessages({ sceneChapter: true });
+    assert.equal(messages.length, 1);
+    assert.equal(messages[0].messages.at(-1).stamp, "st_mukai_master_latte");
+    deliver(messages); state.day += 10;
+    assert.equal(casual.casualMessages({ sceneChapter: true }).length, 0);
+  }
+  for (const overrides of [{ chapter: 4 }, { contacts: [] }, { met: {} }]) {
+    reset({ chapter: 3, day: 20, contacts: ["mukai_master"], met: { mukai_master: true }, ...overrides });
+    assert.equal(casual.casualMessages({ sceneChapter: true }).length, 0);
+  }
+  console.log("PASS Mukai latte note: no affinity required, known contact, chapters 3/5, once only");
+}

@@ -4,7 +4,7 @@ import { imgFileUrl } from "../core/img-file.js";
 import { portraitStyle } from "../core/portrait-style.js";
 import { portraitAsset } from "../core/portrait-resolver.js";
 import { svg } from "../core/transition-kit.js";
-import { SE, unlockAudio, playAxeSe } from "../core/audio.js";
+import { SE, unlockAudio, playAxeSe, preloadAxeSe } from "../core/audio.js";
 import { RINGS, KILLS, CLUSTERS, LINE, BLADE, POWER, SWAY, MODES, DIVISIONS, BOARD, RULESET, gaugeAt, axisAt, releaseAimAt, resolveThrow, totalOf, gradeOf, killState, canCall, closuresOf, halfOf } from "./axe-model.js";
 import { createMatch, takeTurn, turnOf, planOpponent, matchResult, resolveTurn, inSuddenDeath, suddenDeathTarget, DIFFICULTIES } from "./axe-match.js";
 import { COMPANIONS, reaction, matchReaction, portraitFocus } from "./axe-companions.js";
@@ -25,9 +25,13 @@ function decodeArt(url) {
 }
 // The WATL board (five 2x10 planks, calm light centre) from Codex, #2198 / AXR06. The older square board stays in the repository.
 const ART = { bg: imgFileUrl("backgrounds/bg_axe_lounge_night.webp"), board: imgFileUrl("ui/axe_throw/target_board_watl_c_800.webp") };
-// ゲージ・札の絵の部品（#3207・AXR14）。CSS の border-image で描く。読み込み中に先に解いておき、構えた瞬間の出遅れを防ぐ。
-const UI_ART = ["gauge-frame", "gauge-needle", "button-throw-orange", "button-throw-green", "tag-slate", "tag-slate-blue", "tag-selected", "tag-selected-amber"]
+// ゲージ・札の絵の部品（#3207・AXR14）と、見出しの板・投げ数の溝・黒板の窓・ランクの丸・帯・木片（#3423・AXQ03）。
+// 木片以外は CSS の border-image で描く。読み込み中に先に解いておき、構えた瞬間や結果の出遅れを防ぐ。
+const UI_ART = ["gauge-frame", "gauge-needle", "button-throw-orange", "button-throw-green", "tag-slate", "tag-slate-blue", "tag-selected", "tag-selected-amber",
+  "hud-plate", "score-slot", "chalk-window", "rank-medallion", "banner-orange", "banner-green", "wood-chips"]
   .map(name => imgFileUrl("ui/axe_throw/" + name + ".webp"));
+// 木片の絵（wood-chips.webp 512×256・4×2 のマス、1マス128）。刺さった所から飛ぶ破片を、マスごとに切り出して描く。
+const CHIPS = { src: imgFileUrl("ui/axe_throw/wood-chips.webp"), cell: 128, cols: 4, rows: 2, size: 26 };
 // Only the target is decoded early so it appears without a late pop-in; other art waits for the loading step.
 if (typeof Image !== "undefined") decodeArt(ART.board).catch(() => {});
 const { x: CX, y: CY, radius: R } = TARGET;
@@ -83,7 +87,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   const callerScreen = (versus || tutorial) && host.id === "stage" ? host.querySelector("#screen") : null;
   const callerContent = callerScreen ? [...callerScreen.childNodes] : [];
   let phase = "loading", elapsed = 0, stamp = null, frame = 0, lastHudRender = -Infinity, aim = { x: 0, y: 0 }, power = POWER.ideal;
-  let shots = match?.player || [], pending = null, called = null, lastAction = -Infinity;
+  let shots = match?.player || [], pending = null, bounced = null, called = null, lastAction = -Infinity;
   let actor = "player", matchLines = null, gameRecorded = false;
   let portraitKey = null;
   let portraitManifest = null;
@@ -192,9 +196,14 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   const echoRing = svg("circle", { r: 18, fill: "none", "stroke-width": 1.5 });
   const impactFlash = svg("circle", { r: 30, fill: "#fff5da" });
   const dust = Array.from({ length: 10 }, () => svg("circle", { r: 3, fill: "#d8b477" }));
-  const splinters = Array.from({ length: 24 }, (_, i) => svg("path", {
-    d: "M0 -3L" + (i % 2 ? 10 : 6) + " 0L0 3Z", fill: i % 3 ? "#e6ba70" : "#fff3d5",
-  }));
+  // 木片: 8種の絵を順に使い回す。動き（飛ぶ向き・回転・縮み）は drawImpact がこれまでどおり g に掛ける。
+  const splinters = Array.from({ length: 24 }, (_, i) => {
+    const chip = i % (CHIPS.cols * CHIPS.rows), half = CHIPS.size / 2;
+    return svg("g", { class: "axe-chip" }, [svg("svg", {
+      x: -half, y: -half, width: CHIPS.size, height: CHIPS.size, overflow: "hidden",
+      viewBox: `${chip % CHIPS.cols * CHIPS.cell} ${Math.floor(chip / CHIPS.cols) * CHIPS.cell} ${CHIPS.cell} ${CHIPS.cell}`,
+    }, [svg("image", { href: CHIPS.src, width: CHIPS.cell * CHIPS.cols, height: CHIPS.cell * CHIPS.rows })])]);
+  });
   const burst = svg("text", { class: "axe-score-burst", "text-anchor": "middle", "font-size": 38,
     "font-weight": 900, "paint-order": "stroke", stroke: "#17120e", "stroke-width": 4 });
   const impactFx = svg("g", { class: "axe-impact-fx", opacity: 0, "aria-hidden": "true", "pointer-events": "none" }, [impactFlash, impactRing, echoRing, ...dust, ...splinters, burst]);
@@ -423,7 +432,8 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
       el("strong", { text: cue.label }), el("span", { text: cue.place }),
     ]);
     root.append(declareNode);
-    SE.good();
+    // 宣言は刃を構える「チャキッ」、最後の1投・持ち替え・延長戦は太鼓、目標達成は「シャーン」（2026-11-11 オーナー「効果音しょぼかったり」）
+    playAxeSe(cue.kind === "goal" ? "cueClear" : cue.kind === "last" || cue.kind === "half" ? "cueDrum" : "call");
     declareTimer = setTimeout(clearDeclareCue, cue.duration || 950);
   }
   function switching() { return rules.half > 0 && actor === "player" && shots.length === rules.half; }
@@ -483,11 +493,11 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   function act() {
     if (isPaused() || !["choice", "horizontal", "vertical", "power", "result", "summary", "failed"].includes(phase)
       || cycles[phase] && elapsed < 250 || performance.now() - lastAction < 250) return;
-    lastAction = performance.now(); unlockAudio();
+    lastAction = performance.now(); unlockAudio(); void preloadAxeSe();
     if (phase === "failed") loadArt();
     else if (phase === "choice") { held = 0; SE.select(); setPhase("horizontal"); }
-    else if (phase === "horizontal") { aim.x = axisAt(gaugeAt(elapsed, cycles.horizontal)); SE.select(); setPhase("vertical"); }
-    else if (phase === "vertical") { aim.y = axisAt(gaugeAt(elapsed, cycles.vertical)); SE.select(); setPhase("power"); }
+    else if (phase === "horizontal") { aim.x = axisAt(gaugeAt(elapsed, cycles.horizontal)); playAxeSe("stop"); setPhase("vertical"); }
+    else if (phase === "vertical") { aim.y = axisAt(gaugeAt(elapsed, cycles.vertical)); playAxeSe("stop"); setPhase("power"); }
     else if (phase === "power") {
       power = gaugeAt(elapsed, cycles.power);
       const release = releaseAimAt(aim, held, power, shots.length, held < focusUntil, steady);
@@ -874,6 +884,8 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
       const slow = root.dataset.slowMotion === "true";
       const display = reducedMotion ? FLIGHT.travel + FLIGHT.fall : flightTime(elapsed, slow);
       const pose = flightPose(pending, display);
+      // 柄から当たる・回りすぎ: 板に当たって跳ね返る瞬間に「コンッ」。床に落ちた時の「ガシャン」は下の drop（板の外は跳ね返らない）。
+      if (!pending.stuck && pending.dropReason !== "off-board" && display >= FLIGHT.travel && bounced !== pending) { bounced = pending; playAxeSe("bounce"); }
       if (!reducedMotion && display < FLIGHT.travel) {
         const points = [160, 110, 60, 0].map(offset => flightPose(pending, Math.max(0, display - offset)));
         trail.setAttribute("d", points.map((p, i) => `${i ? "L" : "M"}${p.bladeX} ${p.bladeY}`).join(" "));
@@ -898,8 +910,8 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
           shots = match.player; shot = latest(actor);
         } else shots.push(shot);
         pending = null;
-        // 刃が木に刺さったら0点でも衝突音を鳴らす。得点と失敗の合図は別に重ねる。
-        if (shot.stuck) playAxeSe("stick", { scored: shot.score > 0 });
+        // 刃が木に刺さったら0点でも衝突音を鳴らす。得点と失敗の合図は別に重ねる。キルショットは刃が鳴る「キィーン」付き。
+        if (shot.stuck) playAxeSe(shot.outcome === "killshot" ? "killshot" : "stick", { scored: shot.score > 0 });
         else playAxeSe("drop");
         if (shot.score >= 6) playAxeSe("cheer");
         else if (!shot.score) playAxeSe("miss");

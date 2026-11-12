@@ -384,9 +384,11 @@ button, .btn { touch-action: manipulation; }
   .hero-lounge { height: 100%; filter: brightness(.5); }
   .hero-art { position: relative; inset: auto; flex: none; width: 100%; height: clamp(300px, 54vh, 560px); height: clamp(300px, 54svh, 560px); touch-action: pan-y; -webkit-mask-image: linear-gradient(to bottom, #000 78%, transparent 100%); mask-image: linear-gradient(to bottom, #000 78%, transparent 100%); }
   .kv { width: 100%; object-position: 50% 8%; -webkit-mask-image: none; mask-image: none; }
-  /* 横長の絵は、人物のいる右の6割を画面いっぱいに見せる（左の空きはロゴを重ねるための場所なので、スマホでは切る）。
-     縦は絵の高さまで。枠がそれより高いときは上に寄せ、下は夜の地へなじませる */
+  /* 縦原画は幅いっぱいに表示し、少なくとも上70%を見せる。 */
   .kv-wide { top: 0; width: 100%; height: min(100%, 114.9vw); object-position: 100% 50%; -webkit-mask-image: linear-gradient(to bottom, #000 82%, transparent 100%); mask-image: linear-gradient(to bottom, #000 82%, transparent 100%); }
+  .hero-art:has(.kv-has-tall.is-on) { height: max(clamp(300px, 54svh, 560px), 105vw); }
+  .kv-has-tall { top: 0; width: 100%; height: auto; max-height: none; aspect-ratio: 2 / 3; object-position: 50% 0; transform: none; -webkit-mask-image: none; mask-image: none; }
+
   .hero-art::after { display: none; }
   .hero::after { display: none; }
   .hero-copy { display: contents; }

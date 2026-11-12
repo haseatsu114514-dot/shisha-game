@@ -3,6 +3,7 @@
 // 本編の入口（既定では tonari に出ない／?ichidai=1 で出る／最後まで打つと state.ichidai に残って保存される・時間は進まない）。
 import assert from "node:assert/strict";
 import { suite, baseURL } from "./support.mjs";
+import { overflowed } from "./ichidai_support.mjs";
 
 const t = (name) => `[data-test="${name}"]`;
 const page1 = (query) => ({ pageEntry: `${baseURL}ichidai.html?${query}`, pageReadySelector: t("ichi-menu-start") });
@@ -15,44 +16,6 @@ const waitMine = (page) => page.waitForFunction(() => {
 const COAL = ["flat", "cube", "dense_flat"].map((id) => `${t("ichi-hand")} button[data-card="${id}"]`).join(", ");
 const heat = async (page) => Number(await page.locator(t("ichi-pillar")).getAttribute("data-heat"));
 const fire = async (page) => { const c = page.locator(t("ichi-firepower")); return { left: Number(await c.getAttribute("data-left")), total: Number(await c.getAttribute("data-total")) }; };
-/**
- * 対戦画面の文字が、枠からはみ出していないか・切れていないか（2026-11-11 オーナー「プレイ画面で文字が枠から飛び出してたり
- * 見づらいとこは直して」）。見えている文字だけを数える（スクロールで隠れている行は数えない）。わざと枠に重ねている印
- * （枚数の丸・枠の名前・火の数字・束の帯など）は除く。返り値は見つけたものの一覧（無ければ空）
- */
-const overflowed = (page) => page.evaluate(() => {
-  const root = document.querySelector('[data-test="ichi-game"]'), stage = document.querySelector("#stage").getBoundingClientRect(), out = [];
-  const SKIP = ".ichi-count, .ichi-counter, .ichi-zone-tab, .ichi-coal-fire, .ichi-bundle-band, .ichi-bundle-band *, .ichi-rar, .ichi-say, .ichi-float, .ichi-banner *, .ichi-fly *, .ichi-vs *, .ichi-played > small, .ichi-pile-minus, .ichi-cutin-band *";
-  const PANELS = ".ichi-guide, .ichi-heat-read, .ichi-foe-panel, .ichi-clock, .ichi-detail, .ichi-feed, .ichi-btn, .ichi-card, .ichi-post, .ichi-result-row, .ichi-zone-box, .ichi-market, .ichi-pile-card, .ichi-result";
-  const name = (n) => `${n.tagName.toLowerCase()}.${[...n.classList].join(".")}`;
-  for (const n of root.querySelectorAll("*")) {
-    if (n.matches(SKIP) || ![...n.childNodes].some((c) => c.nodeType === 3 && c.textContent.trim())) continue;
-    const cs = getComputedStyle(n), r0 = n.getBoundingClientRect();
-    if (!r0.width || !r0.height || cs.visibility === "hidden") continue;
-    let hidden = false; for (let a = n; a && a !== root; a = a.parentElement) { const o = getComputedStyle(a); if (o.display === "none" || o.opacity === "0" || a.hidden) hidden = true; }
-    if (hidden) continue;
-    const label = `${name(n)}「${n.textContent.trim().slice(0, 12)}」`;
-    if (cs.overflowX !== "visible" && n.scrollWidth > n.clientWidth + 1) out.push(`切れ ${label}`);
-    else if (cs.overflowY !== "visible" && cs.overflowY !== "auto" && n.scrollHeight > n.clientHeight + 3) out.push(`切れ ${label}`);
-    const range = document.createRange(); range.selectNodeContents(n); const t = range.getBoundingClientRect();
-    if (!t.width) continue;
-    const outside = (b) => Math.max(b.left - t.left, t.right - b.right, b.top - t.top, t.bottom - b.bottom);
-    // いちばん内側の切り抜く枠で判断する: すっかり外なら見えていない。スクロールできる枠なら送れば読める。隠す枠で一部だけ見えていれば「切れ」
-    let unseen = false;
-    for (let a = n.parentElement; a && a !== root.parentElement; a = a.parentElement) {
-      const o = getComputedStyle(a); if (o.overflowX === "visible" && o.overflowY === "visible") continue;
-      const b = a.getBoundingClientRect(); if (outside(b) <= 1) continue;
-      const part = t.bottom > b.top + 2 && t.top < b.bottom - 2 && t.right > b.left + 2 && t.left < b.right - 2;
-      if (part && o.overflowY !== "auto" && o.overflowY !== "scroll") out.push(`切れ（一部だけ見える） ${label} ← ${name(a)}`);
-      unseen = true; break;
-    }
-    if (unseen) continue;
-    const panel = n.closest(PANELS);
-    if (panel && panel !== n && outside(panel.getBoundingClientRect()) > 1.5) out.push(`はみ出し ${label} ← ${name(panel)}`);
-    if (outside(stage) > 1) out.push(`画面の外 ${label}`);
-  }
-  return [...new Set(out)];
-});
 let placedViaSlot = false;
 /** 手札の炭カードを炭焼き場に置けるだけ置く。炭カードを選ぶと炭焼き場の空き枠が「ここに置く」になるので、1回目はそこを押し、あとは詳しい札のボタンで置く */
 async function placeCoals(page) {
@@ -304,6 +267,9 @@ await suite("ichidai", async (check) => {
       }
       if (phase === "serve" && !seenServe) {
         seenServe = true;
+        // 第0.5版: 提供に入ると、まずこのラウンドの審査カードがめくられる（札が出ているあいだは卓を押せない）。閉じるまで待つ
+        // （data-input="1"＝進行が人の入力を待っている。めくる演出のあいだは "0"）
+        await page.waitForFunction(() => { const g = document.querySelector('[data-test="ichi-game"]'); return document.querySelector(".ichi-sheet").hidden && g.dataset.turn === "me" && g.dataset.input === "1"; }, null, { timeout: 20000 });
         assert.ok(await heat(page) >= 3, "提供に入るとき、炭が載っている");
         // 熱＝炭の火の合計（炭の数ではない）。炭は4つまでで、火の段数ぶんの高さで積む
         const coals = await page.locator(`${t("ichi-zone")} .ichi-coal-btn`).evaluateAll((list) => list.map((n) => ({ fire: Number(n.dataset.fire), up: n.dataset.up, h: n.offsetHeight, label: n.querySelector(".ichi-coal-fire")?.textContent })));
@@ -312,7 +278,9 @@ await suite("ichidai", async (check) => {
         assert.ok(coals.every((c) => c.label === String(c.fire) && (c.up === "1" ? c.fire >= 1 && c.fire <= 3 : c.fire === 1)), "札の横に、いまの火が出る（種火は1）");
         const unit = Math.min(...coals.map((c) => c.h / c.fire));
         assert.ok(coals.every((c) => Math.abs(c.h - unit * c.fire) < 3), "炭は火の段数ぶんの高さ");
-        assert.equal(await page.locator(t("ichi-pile")).getAttribute("data-left"), "12");
+        // 第0.5版: 審査カードはラウンドのはじめに1枚めくってある（山は11枚）。今回の吸い方は左上に出る
+        assert.equal(await page.locator(t("ichi-pile")).getAttribute("data-left"), "11");
+        assert.match(await page.locator(t("ichi-now-judge")).innerText(), /今回の審査/);
         // 提供に入ったら場は出さない。葉の札の束と体力は出し続ける（相手の束も卓の奥に。HUD の相手の札には主役と体力）
         assert.equal(await page.locator(t("ichi-market")).count(), 0);
         const bowl = (await page.locator(t("ichi-bowl")).getAttribute("data-leaves")).split(",").map((x) => x.split(":")), leaves = bowl.reduce((a, [, n]) => a + Number(n), 0);
@@ -328,7 +296,7 @@ await suite("ichidai", async (check) => {
         await page.locator(t("ichi-info-close")).click();
         // 審査の山をタップすると、残りの吸い方と審査員の決め手が見られる
         await page.locator(t("ichi-pile")).click();
-        assert.match(await rig.innerText(), /審査カード 残り12枚[\s\S]*決め手/);
+        assert.match(await rig.innerText(), /審査カード 残り11枚[\s\S]*決め手/);
         await page.locator(t("ichi-info-close")).click();
         assert.equal(await rig.count(), 0);
       }
@@ -404,7 +372,11 @@ await suite("ichidai", async (check) => {
     await page.waitForFunction(() => ["joy", "shock", "down", "nod"].some((k) => window.__ichiMotion.has(k)), null, { timeout: 5000 });
     const motions = await page.evaluate(() => [...window.__ichiMotion]);
     assert.ok(motions.some((k) => ["reach", "play", "lean"].includes(k)), `相手が手を動かすと、席が動く: ${motions.join(",")}`);
-    assert.equal(await page.locator(t("ichi-pile")).getAttribute("data-left"), "11", "めくった審査カードは山から減る");
+    // 第0.5版: 次のラウンドのはじめに、次の審査カードがめくられる（山はもう1枚減って10枚）。めくる札が閉じるまで待つ
+    await page.locator(t("ichi-reveal")).waitFor({ timeout: 8000 });
+    assert.match(await page.locator(t("ichi-reveal")).innerText(), /このラウンドの審査/);
+    await page.locator(t("ichi-reveal")).waitFor({ state: "detached", timeout: 8000 });
+    assert.equal(await page.locator(t("ichi-pile")).getAttribute("data-left"), "10", "めくった審査カードは山から減る");
     // やめる: 確かめてから。記録は残らない
     await page.locator(t("ichi-close")).click();
     await page.locator(t("ichi-quit-sheet")).waitFor();
@@ -413,7 +385,7 @@ await suite("ichidai", async (check) => {
     await page.locator(t("ichi-close")).click();
     await page.locator(t("ichi-quit-yes")).click();
     assert.match(await page.locator(t("ichi-menu-result")).innerText(), /まだ対戦していません/);
-  }, page1("seed=11&foe=b")); // 相手の一式は b に決め打ち（炭4つまでの一式で、相手の火力ゾーンの並びを確かめるため）
+  }, page1("seed=11&foe=b&assist=0")); // 相手の一式は b に決め打ち（炭4つまでの一式で、相手の火力ゾーンの並びを確かめるため）。ガイドは切る（冷ます炭を自分で選ぶ流れを確かめる）
 
   await check("touch-landscape-fits-and-buttons-are-tappable", async (page) => {
     await page.locator(t("ichi-menu-quick")).tap();
