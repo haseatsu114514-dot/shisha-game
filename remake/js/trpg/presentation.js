@@ -1,5 +1,6 @@
 import { portraitStyle } from "../core/portrait-style.js";
 import { portraitAsset, resolvePortrait } from "../core/portrait-resolver.js";
+import { regularPortrait } from "./regulars.js";
 
 export function displayName(characters, id) {
   const c = characters.find(c => c.id === id);
@@ -12,10 +13,11 @@ export function displayName(characters, id) {
 }
 
 export function portraitUrl(manifest, id, face = "normal") {
-  return portraitAsset(manifest, id, face, portraitStyle())?.src || "";
+  return regularPortrait(id) || portraitAsset(manifest, id, face, portraitStyle())?.src || "";
 }
 
 export function portraitTop(manifest, id, width, headY) {
+  if (regularPortrait(id)) return (headY - width / 6) + "px";
   const p = resolvePortrait(manifest, id, "normal", portraitStyle());
   if (!p) return "0px";
   return (headY - (1 - p.h - p.b - p.topOverhang) * width / p.aspect) + "px";
@@ -23,6 +25,7 @@ export function portraitTop(manifest, id, width, headY) {
 
 /** Where the top of the head sits in a standing portrait, as a fraction of the image height (short characters start lower). */
 export function portraitHeadTop(manifest, id) {
+  if (regularPortrait(id)) return 0.125;
   const p = resolvePortrait(manifest, id, "normal", portraitStyle());
   return p ? Math.max(0, 1 - p.h - p.b - p.topOverhang) : 0.05;
 }

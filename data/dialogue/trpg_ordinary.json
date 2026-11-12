@@ -1,6 +1,6 @@
 {
   "id": "ordinary-cup",
-  "version": 5,
+  "version": 6,
   "title": "世界一普通の一台",
   "subtitle": "港町の茶房と、ひとりの旅人",
   "author": "汐見しお",
@@ -58,6 +58,12 @@
         },
         "trait": "香りと炭の支度は店一番。声が小さく、すぐ謝る",
         "likes": "閉店後の片づけ。客の『ごちそうさま』"
+      },
+      "alternatives": {
+        "regulara": {
+          "role": "{pc:adam}／小声の案内役",
+          "color": "#bb9c72"
+        }
       }
     },
     {
@@ -79,6 +85,12 @@
         },
         "trait": "よく見て、よく描く。口数は少ない",
         "likes": "雨の日の窓。描きかけのスケッチ"
+      },
+      "alternatives": {
+        "regularb": {
+          "role": "{pc:tsumugi}／窓辺の絵描き",
+          "color": "#8faeaa"
+        }
       }
     }
   ],
@@ -708,7 +720,14 @@
         {
           "speaker": "adam",
           "text": "一台の前に、客の望みを聞こう。名店の幕開けだ",
-          "face": "normal"
+          "face": "normal",
+          "variants": {
+            "regulara": {
+              "text": "一台の前に、客の望みを聞こう。名店の幕開けだ",
+              "face": "normal",
+              "role": ""
+            }
+          }
         },
         {
           "speaker": "hajime",
@@ -738,12 +757,26 @@
         {
           "speaker": "adam",
           "text": "三つの香り、三つの可能性。旅人の顔を思い出して選ぼう",
-          "face": "normal"
+          "face": "normal",
+          "variants": {
+            "regulara": {
+              "text": "三つの香り、三つの可能性。旅人の顔を思い出して選ぼう",
+              "face": "normal",
+              "role": ""
+            }
+          }
         },
         {
           "speaker": "tsumugi",
           "text": "席も、三つ。……集めたメモを、もう一度見てもいいですよ",
-          "face": "normal"
+          "face": "normal",
+          "variants": {
+            "regularb": {
+              "text": "席も、三つ。……集めたメモを、もう一度見てもいいですよ",
+              "face": "normal",
+              "role": ""
+            }
+          }
         }
       ]
     },
@@ -767,7 +800,14 @@
         {
           "speaker": "tsumugi",
           "text": "……言葉を添えることも、少し待つことも、できると思います",
-          "face": "normal"
+          "face": "normal",
+          "variants": {
+            "regularb": {
+              "text": "……言葉を添えることも、少し待つことも、できると思います",
+              "face": "normal",
+              "role": ""
+            }
+          }
         }
       ]
     },
@@ -790,12 +830,26 @@
         {
           "speaker": "adam",
           "text": "世界一普通……。俺が言うと、世界一普通じゃなく聞こえるな",
-          "face": "normal"
+          "face": "normal",
+          "variants": {
+            "regulara": {
+              "text": "世界一普通……。私が言うと、世界一普通じゃなく聞こえるな",
+              "face": "normal",
+              "role": ""
+            }
+          }
         },
         {
           "speaker": "tsumugi",
           "text": "……あの窓、描きたくなりました。雨の中に、灯りがありましたね",
-          "face": "normal"
+          "face": "normal",
+          "variants": {
+            "regularb": {
+              "text": "……あの窓、描きたくなりました。雨の中に、灯りがありましたね",
+              "face": "normal",
+              "role": ""
+            }
+          }
         },
         {
           "speaker": "hiyori",
@@ -831,7 +885,14 @@
         {
           "speaker": "tsumugi",
           "text": "……急かさないと、話せることもあるんですね",
-          "face": "normal"
+          "face": "normal",
+          "variants": {
+            "regularb": {
+              "text": "……急かさないと、話せることもあるんですね",
+              "face": "normal",
+              "role": ""
+            }
+          }
         }
       ]
     },
@@ -850,7 +911,14 @@
         {
           "speaker": "adam",
           "text": "まずは客を座らせよう。舞台を整えるのも、俺らの役目だ",
-          "face": "normal"
+          "face": "normal",
+          "variants": {
+            "regulara": {
+              "text": "まずは客を座らせよう。舞台を整えるのも、私たちの役目だ",
+              "face": "normal",
+              "role": ""
+            }
+          }
         }
       ]
     },
@@ -893,7 +961,14 @@
         {
           "speaker": "adam",
           "text": "香りの幕は上がった。あとは、この一夜をどう彩るか",
-          "face": "normal"
+          "face": "normal",
+          "variants": {
+            "regulara": {
+              "text": "香りの幕は上がった。あとは、この一夜をどう彩るか",
+              "face": "normal",
+              "role": ""
+            }
+          }
         }
       ]
     },
@@ -931,12 +1006,26 @@
         {
           "speaker": "adam",
           "text": "名店にも修正はある。俺も、道具を見直そう",
-          "face": "normal"
+          "face": "normal",
+          "variants": {
+            "regulara": {
+              "text": "名店にも修正はある。私も、道具を見直そう",
+              "face": "normal",
+              "role": ""
+            }
+          }
         },
         {
           "speaker": "tsumugi",
           "text": "……待ってる間の席なら、こっちで用意しますね",
-          "face": "normal"
+          "face": "normal",
+          "variants": {
+            "regularb": {
+              "text": "……待ってる間の席なら、こっちで用意しますね",
+              "face": "normal",
+              "role": ""
+            }
+          }
         }
       ]
     },
@@ -1010,13 +1099,27 @@
           "speaker": "adam",
           "role": "",
           "face": "normal",
-          "text": "{pc:adam}は言う。香りの名だけで、客の望みを決めてはいけない"
+          "text": "{pc:adam}は言う。香りの名だけで、客の望みを決めてはいけない",
+          "variants": {
+            "regulara": {
+              "text": "{pc:adam}は言う。香りの名だけで、客の望みを決めてはいけない",
+              "face": "normal",
+              "role": ""
+            }
+          }
         },
         {
           "speaker": "adam",
           "role": "",
           "face": "normal",
-          "text": "メニューと飲み物を見よう。そこに、この店の日常がある"
+          "text": "メニューと飲み物を見よう。そこに、この店の日常がある",
+          "variants": {
+            "regulara": {
+              "text": "メニューと飲み物を見よう。そこに、この店の日常がある",
+              "face": "normal",
+              "role": ""
+            }
+          }
         },
         {
           "speaker": "hajime",
@@ -1028,7 +1131,14 @@
           "speaker": "adam",
           "role": "",
           "face": "normal",
-          "text": "そう。俺らがこの一台を選ぶ、その理由を探そう"
+          "text": "そう。俺らがこの一台を選ぶ、その理由を探そう",
+          "variants": {
+            "regulara": {
+              "text": "そう。私たちがこの一台を選ぶ、その理由を探そう",
+              "face": "normal",
+              "role": ""
+            }
+          }
         }
       ]
     },
@@ -1042,7 +1152,14 @@
           "speaker": "tsumugi",
           "role": "",
           "face": "normal",
-          "text": "……同じ部屋でも、席によって見えるものが違う。窓、棚、人の顔"
+          "text": "……同じ部屋でも、席によって見えるものが違う。窓、棚、人の顔",
+          "variants": {
+            "regularb": {
+              "text": "……同じ部屋でも、席によって見えるものが違う。窓、棚、人の顔",
+              "face": "normal",
+              "role": ""
+            }
+          }
         },
         {
           "speaker": "hajime",
@@ -1054,7 +1171,14 @@
           "speaker": "tsumugi",
           "role": "",
           "face": "normal",
-          "text": "はい。旅人が、どこを見てるかも気になります"
+          "text": "はい。旅人が、どこを見てるかも気になります",
+          "variants": {
+            "regularb": {
+              "text": "はい。旅人が、どこを見てるかも気になります",
+              "face": "normal",
+              "role": ""
+            }
+          }
         }
       ]
     },
@@ -1080,7 +1204,14 @@
           "speaker": "adam",
           "role": "",
           "face": "normal",
-          "text": "紅茶の行を、指でなぞっていたな。さて、どの香りで旅人を迎えようか"
+          "text": "紅茶の行を、指でなぞっていたな。さて、どの香りで旅人を迎えようか",
+          "variants": {
+            "regulara": {
+              "text": "紅茶の行を、指でなぞっていたな。さて、どの香りで旅人を迎えようか",
+              "face": "normal",
+              "role": ""
+            }
+          }
         }
       ]
     },
@@ -1112,7 +1243,14 @@
           "speaker": "tsumugi",
           "role": "",
           "face": "normal",
-          "text": "……この席から、旅人は何を見たいんでしょう"
+          "text": "……この席から、旅人は何を見たいんでしょう",
+          "variants": {
+            "regularb": {
+              "text": "……この席から、旅人は何を見たいんでしょう",
+              "face": "normal",
+              "role": ""
+            }
+          }
         }
       ]
     },
@@ -1202,7 +1340,14 @@
           "speaker": "adam",
           "role": "",
           "face": "normal",
-          "text": "飲み物を選ぶ一言にも、この旅人の望みが潜んでいそうだ"
+          "text": "飲み物を選ぶ一言にも、この旅人の望みが潜んでいそうだ",
+          "variants": {
+            "regulara": {
+              "text": "飲み物を選ぶ一言にも、この旅人の望みが潜んでいそうだ",
+              "face": "normal",
+              "role": ""
+            }
+          }
         }
       ]
     },
@@ -1254,7 +1399,14 @@
           "speaker": "adam",
           "role": "",
           "face": "normal",
-          "text": "家でも淹れる紅茶、か。さて、どの香りで旅人を迎えようか"
+          "text": "家でも淹れる紅茶、か。さて、どの香りで旅人を迎えようか",
+          "variants": {
+            "regulara": {
+              "text": "家でも淹れる紅茶、か。さて、どの香りで旅人を迎えようか",
+              "face": "normal",
+              "role": ""
+            }
+          }
         }
       ]
     },
@@ -1280,7 +1432,14 @@
           "speaker": "tsumugi",
           "role": "",
           "face": "normal",
-          "text": "……この席から、旅人は何を見たいんでしょう"
+          "text": "……この席から、旅人は何を見たいんでしょう",
+          "variants": {
+            "regularb": {
+              "text": "……この席から、旅人は何を見たいんでしょう",
+              "face": "normal",
+              "role": ""
+            }
+          }
         }
       ]
     },
@@ -1376,7 +1535,14 @@
           "speaker": "adam",
           "role": "",
           "face": "normal",
-          "text": "飲み物を選ぶ一言にも、この旅人の望みが潜んでいそうだ"
+          "text": "飲み物を選ぶ一言にも、この旅人の望みが潜んでいそうだ",
+          "variants": {
+            "regulara": {
+              "text": "飲み物を選ぶ一言にも、この旅人の望みが潜んでいそうだ",
+              "face": "normal",
+              "role": ""
+            }
+          }
         }
       ]
     },
@@ -1428,7 +1594,14 @@
           "speaker": "adam",
           "role": "",
           "face": "normal",
-          "text": "果実に興味あり、か。さて、どの香りで旅人を迎えようか"
+          "text": "果実に興味あり、か。さて、どの香りで旅人を迎えようか",
+          "variants": {
+            "regulara": {
+              "text": "果実に興味あり、か。さて、どの香りで旅人を迎えようか",
+              "face": "normal",
+              "role": ""
+            }
+          }
         }
       ]
     },
@@ -1454,7 +1627,14 @@
           "speaker": "tsumugi",
           "role": "",
           "face": "normal",
-          "text": "……この席から、旅人は何を見たいんでしょう"
+          "text": "……この席から、旅人は何を見たいんでしょう",
+          "variants": {
+            "regularb": {
+              "text": "……この席から、旅人は何を見たいんでしょう",
+              "face": "normal",
+              "role": ""
+            }
+          }
         }
       ]
     },
@@ -1544,7 +1724,14 @@
           "speaker": "adam",
           "role": "",
           "face": "normal",
-          "text": "飲み物を選ぶ一言にも、この旅人の望みが潜んでいそうだ"
+          "text": "飲み物を選ぶ一言にも、この旅人の望みが潜んでいそうだ",
+          "variants": {
+            "regulara": {
+              "text": "飲み物を選ぶ一言にも、この旅人の望みが潜んでいそうだ",
+              "face": "normal",
+              "role": ""
+            }
+          }
         }
       ]
     },
@@ -1602,7 +1789,14 @@
           "speaker": "tsumugi",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "……雨の音、きれいですね"
+          "text": "……雨の音、きれいですね",
+          "variants": {
+            "regularb": {
+              "text": "……雨の音、きれいですね",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "hajime",
@@ -1640,7 +1834,14 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "思い出の香りか。俺の原点と同じだな"
+          "text": "思い出の香りか。俺の原点と同じだな",
+          "variants": {
+            "regulara": {
+              "text": "思い出の香りか。私の原点と同じだな",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "hajime",
@@ -1716,7 +1917,14 @@
           "speaker": "tsumugi",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……答えは、一緒に探してもいいんですね"
+          "text": "……答えは、一緒に探してもいいんですね",
+          "variants": {
+            "regularb": {
+              "text": "……答えは、一緒に探してもいいんですね",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "hajime",
@@ -1733,7 +1941,14 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "text": "紅茶という静かな主役。今夜は、そこに任せてみよう",
-          "face": "normal"
+          "face": "normal",
+          "variants": {
+            "regulara": {
+              "text": "紅茶という静かな主役。今夜は、そこに任せてみよう",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -1744,7 +1959,14 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "text": "果実の甘さ。この店の原点が、ここにあるのかもしれない",
-          "face": "normal"
+          "face": "normal",
+          "variants": {
+            "regulara": {
+              "text": "果実の甘さ。この店の原点が、ここにあるのかもしれない",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -1755,7 +1977,14 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "text": "スパイスで幕を開ける。客の表情を見逃さないようにしよう",
-          "face": "normal"
+          "face": "normal",
+          "variants": {
+            "regulara": {
+              "text": "スパイスで幕を開ける。客の表情を見逃さないようにしよう",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -1765,7 +1994,14 @@
         {
           "speaker": "tsumugi",
           "role": "PL／卓の会話",
-          "text": "……雨を見る席。何も話さない時間も、ちゃんとあります"
+          "text": "……雨を見る席。何も話さない時間も、ちゃんとあります",
+          "variants": {
+            "regularb": {
+              "text": "……雨を見る席。何も話さない時間も、ちゃんとあります",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -1775,7 +2011,14 @@
         {
           "speaker": "tsumugi",
           "role": "PL／卓の会話",
-          "text": "……顔が見える距離。話したくなったら、話せますね"
+          "text": "……顔が見える距離。話したくなったら、話せますね",
+          "variants": {
+            "regularb": {
+              "text": "……顔が見える距離。話したくなったら、話せますね",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -1785,7 +2028,14 @@
         {
           "speaker": "tsumugi",
           "role": "PL／卓の会話",
-          "text": "古い写真のそば。今の店と、前の店が少し重なる"
+          "text": "古い写真のそば。今の店と、前の店が少し重なる",
+          "variants": {
+            "regularb": {
+              "text": "古い写真のそば。今の店と、前の店が少し重なる",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -1847,7 +2097,14 @@
           "speaker": "tsumugi",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……寄り道した分だけ、話が増えました"
+          "text": "……寄り道した分だけ、話が増えました",
+          "variants": {
+            "regularb": {
+              "text": "……寄り道した分だけ、話が増えました",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -1881,7 +2138,14 @@
           "speaker": "tsumugi",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……{pc:tsumugi}は窓辺から、旅人の手元と視線を見ています"
+          "text": "……{pc:tsumugi}は窓辺から、旅人の手元と視線を見ています",
+          "variants": {
+            "regularb": {
+              "text": "……{pc:tsumugi}は窓辺から、旅人の手元と視線を見ています",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "hiyori",
@@ -1901,7 +2165,14 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "{pc:adam}はお冷やを出しながら、天気の話から入るよ"
+          "text": "{pc:adam}はお冷やを出しながら、天気の話から入るよ",
+          "variants": {
+            "regulara": {
+              "text": "{pc:adam}はお冷やを出しながら、天気の話から入るよ",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "hiyori",
@@ -1941,7 +2212,14 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "ここは{pc:adam}の出番だな。香りを量って、炭を整える"
+          "text": "ここは{pc:adam}の出番だな。香りを量って、炭を整える",
+          "variants": {
+            "regulara": {
+              "text": "ここは{pc:adam}の出番だな。香りを量って、炭を整える",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "hiyori",
@@ -1961,7 +2239,14 @@
           "speaker": "tsumugi",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "{pc:tsumugi}は席の光と風を見て、一台の置き場所を決めます"
+          "text": "{pc:tsumugi}は席の光と風を見て、一台の置き場所を決めます",
+          "variants": {
+            "regularb": {
+              "text": "{pc:tsumugi}は席の光と風を見て、一台の置き場所を決めます",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "hiyori",
@@ -2001,7 +2286,14 @@
           "speaker": "tsumugi",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……{pc:tsumugi}は何も言わず、港のスケッチを一枚添えます"
+          "text": "……{pc:tsumugi}は何も言わず、港のスケッチを一枚添えます",
+          "variants": {
+            "regularb": {
+              "text": "……{pc:tsumugi}は何も言わず、港のスケッチを一枚添えます",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "hiyori",
@@ -2021,7 +2313,14 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "{pc:adam}は香りの説明を少しだけして、静かに下がるよ"
+          "text": "{pc:adam}は香りの説明を少しだけして、静かに下がるよ",
+          "variants": {
+            "regulara": {
+              "text": "{pc:adam}は香りの説明を少しだけして、静かに下がるよ",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "hiyori",
@@ -2289,7 +2588,14 @@
           "speaker": "tsumugi",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……声、少し休ませたいのかもしれません"
+          "text": "……声、少し休ませたいのかもしれません",
+          "variants": {
+            "regularb": {
+              "text": "……声、少し休ませたいのかもしれません",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -2309,7 +2615,14 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "serious",
-          "text": "静けさに惹かれた客か。覚えておこう"
+          "text": "静けさに惹かれた客か。覚えておこう",
+          "variants": {
+            "regulara": {
+              "text": "静けさに惹かれた客か。覚えておこう",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -2395,7 +2708,14 @@
           "speaker": "tsumugi",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……古いメニューの棚、ずっと見てましたね"
+          "text": "……古いメニューの棚、ずっと見てましたね",
+          "variants": {
+            "regularb": {
+              "text": "……古いメニューの棚、ずっと見てましたね",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -2435,7 +2755,14 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "おすすめを聞く客か。腕が鳴るな"
+          "text": "おすすめを聞く客か。腕が鳴るな",
+          "variants": {
+            "regulara": {
+              "text": "おすすめを聞く客か。腕が鳴るな",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -2481,7 +2808,14 @@
           "speaker": "tsumugi",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……にぎやかなのが、嫌じゃないんですね"
+          "text": "……にぎやかなのが、嫌じゃないんですね",
+          "variants": {
+            "regularb": {
+              "text": "……にぎやかなのが、嫌じゃないんですね",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -2495,13 +2829,27 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "serious",
-          "text": "静けさを求める客か。ならば、香りも控えめに"
+          "text": "静けさを求める客か。ならば、香りも控えめに",
+          "variants": {
+            "regulara": {
+              "text": "静けさを求める客か。ならば、香りも控えめに",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "tsumugi",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……窓辺なら、雨の音だけが聞こえます"
+          "text": "……窓辺なら、雨の音だけが聞こえます",
+          "variants": {
+            "regularb": {
+              "text": "……窓辺なら、雨の音だけが聞こえます",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "hiyori",
@@ -2521,13 +2869,27 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "懐かしさ、か。香りは記憶の扉だからな"
+          "text": "懐かしさ、か。香りは記憶の扉だからな",
+          "variants": {
+            "regulara": {
+              "text": "懐かしさ、か。香りは記憶の扉だからな",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "tsumugi",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……古いメニューの棚、思い出の席になりそうです"
+          "text": "……古いメニューの棚、思い出の席になりそうです",
+          "variants": {
+            "regularb": {
+              "text": "……古いメニューの棚、思い出の席になりそうです",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "hiyori",
@@ -2547,13 +2909,27 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "intense",
-          "text": "話し相手が欲しい、か。ならば俺らの出番だ"
+          "text": "話し相手が欲しい、か。ならば俺らの出番だ",
+          "variants": {
+            "regulara": {
+              "text": "話し相手が欲しい、か。ならば私たちの出番だ",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "tsumugi",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……カウンターなら、誰かの声が届きますね"
+          "text": "……カウンターなら、誰かの声が届きますね",
+          "variants": {
+            "regularb": {
+              "text": "……カウンターなら、誰かの声が届きますね",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "hiyori",
@@ -2597,7 +2973,7 @@
           "speaker": "hiyori",
           "role": "GM／卓の会話",
           "face": "smile",
-          "text": "さあ、店番たち。どうする？"
+          "text": "では、店番の皆さん。どうしますか？"
         }
       ]
     },
@@ -2763,7 +3139,14 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "intense",
-          "text": "{pc:adam}が五人分の支度にかかる。腕の見せどころだ"
+          "text": "{pc:adam}が五人分の支度にかかる。腕の見せどころだ",
+          "variants": {
+            "regulara": {
+              "text": "{pc:adam}が五人分の支度にかかる。腕の見せどころだ",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "hiyori",
@@ -2783,13 +3166,100 @@
           "speaker": "tsumugi",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……{pc:tsumugi}は、店全体を見て席を決めます"
+          "text": "……{pc:tsumugi}は、店全体を見て席を決めます",
+          "variants": {
+            "regularb": {
+              "text": "……{pc:tsumugi}は、店全体を見て席を決めます",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "hiyori",
           "role": "GM／卓の会話",
           "face": "smile",
           "text": "観察で判定。全員の居場所、見えるかな。目標は30"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_ordinary_make_adam_adam_nico_regulara",
+      "metadata": {
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "regulara",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "今回はニコ。小声の案内役を演じます"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "では、その役で始めましょう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_ordinary_make_adam_adam_pippin_regulara",
+      "metadata": {
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "regulara",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "今回はピピン。流しの香り師を演じます"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "では、その役で始めましょう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_ordinary_make_tsumugi_tsumugi_luca_regularb",
+      "metadata": {
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "regularb",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "今回はルカ。窓辺の絵描きを演じます"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "では、その役で始めましょう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_ordinary_make_tsumugi_tsumugi_leaf_regularb",
+      "metadata": {
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "regularb",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "今回はリーフ。絵を描く看板猫を演じます"
+        },
+        {
+          "speaker": "hiyori",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "では、その役で始めましょう"
         }
       ]
     }
@@ -2953,14 +3423,16 @@
       {
         "actor": "adam",
         "candidates": [
-          "adam"
+          "adam",
+          "regulara"
         ],
         "required": false
       },
       {
         "actor": "tsumugi",
         "candidates": [
-          "tsumugi"
+          "tsumugi",
+          "regularb"
         ],
         "required": false
       }
@@ -3053,6 +3525,36 @@
           },
           "making": "trpg_ordinary_make_adam_adam_pippin"
         }
+      ],
+      "regulara": [
+        {
+          "id": "nico",
+          "name": "ニコ",
+          "title": "小声の案内役",
+          "trait": "香りと炭の支度は店一番。声が小さく、すぐ謝る",
+          "likes": "閉店後の片づけ。客の『ごちそうさま』",
+          "stats": {
+            "eye": 2,
+            "hand": 5,
+            "talk": 3,
+            "nerve": 1
+          },
+          "making": "trpg_ordinary_make_adam_adam_nico_regulara"
+        },
+        {
+          "id": "pippin",
+          "name": "ピピン",
+          "title": "流しの香り師",
+          "trait": "どんな注文にも、まず林檎の話から入る。腕は確か",
+          "likes": "林檎。すべての香りの始まり",
+          "stats": {
+            "eye": 2,
+            "hand": 5,
+            "talk": 2,
+            "nerve": 2
+          },
+          "making": "trpg_ordinary_make_adam_adam_pippin_regulara"
+        }
       ]
     },
     "tsumugi": {
@@ -3084,6 +3586,36 @@
             "nerve": 4
           },
           "making": "trpg_ordinary_make_tsumugi_tsumugi_leaf"
+        }
+      ],
+      "regularb": [
+        {
+          "id": "luca",
+          "name": "ルカ",
+          "title": "窓辺の絵描き",
+          "trait": "よく見て、よく描く。口数は少ない",
+          "likes": "雨の日の窓。描きかけのスケッチ",
+          "stats": {
+            "eye": 5,
+            "hand": 2,
+            "talk": 1,
+            "nerve": 3
+          },
+          "making": "trpg_ordinary_make_tsumugi_tsumugi_luca_regularb"
+        },
+        {
+          "id": "leaf",
+          "name": "リーフ",
+          "title": "絵を描く看板猫",
+          "trait": "人の言葉は話せない。よく見て、絵で伝える",
+          "likes": "窓辺の日だまり。煮干し",
+          "stats": {
+            "eye": 5,
+            "hand": 1,
+            "talk": 1,
+            "nerve": 4
+          },
+          "making": "trpg_ordinary_make_tsumugi_tsumugi_leaf_regularb"
         }
       ]
     }

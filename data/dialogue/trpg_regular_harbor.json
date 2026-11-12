@@ -1,12 +1,12 @@
 {
   "id": "regular-harbor",
-  "version": 1,
+  "version": 2,
   "title": "閉店後の港町",
   "subtitle": "スミと常連が囲む、港町の小さな卓",
   "author": "汐見しお",
   "collection": "常連卓 01",
   "duration": "約10分",
-  "premise": "閉店前の喫煙茶房。旅人は『世界一普通の一台を』と頼んだ。レシピ帳に、その名前はない。店番たちは、何を用意するだろう。 閉店後、tonariのスミと常連たちがこの本を開く。",
+  "premise": "閉店前の喫煙茶房。旅人は『世界一普通の一台を』と頼んだ。レシピ帳に、その名前はない。店番たちは、何を用意するだろう。 サイの店の常連たちと、気軽に遊ぶ一冊。",
   "fiction": {
     "town": "港町ノーラ",
     "shop": "波止場の灯",
@@ -14,7 +14,7 @@
   },
   "cast": [
     {
-      "id": "sumi",
+      "id": "sai",
       "part": "GM",
       "role": "案内と、旅人オル",
       "color": "#dab978"
@@ -40,9 +40,9 @@
       }
     },
     {
-      "id": "salaryman",
+      "id": "regulara",
       "part": "PLAYER",
-      "role": "{pc:salaryman}／香りの案内役",
+      "role": "{pc:regulara}／香りの案内役",
       "color": "#c8a375",
       "ability": "舞台の支度",
       "abilityText": "一台を準備するとき、判定に一度だけ＋7",
@@ -57,13 +57,13 @@
           "nerve": 1
         },
         "trait": "香りと炭の支度なら店一番。怖い話は苦手",
-        "likes": "林檎の香り。原点の味"
+        "likes": "新しい香りを確かめること"
       }
     },
     {
-      "id": "tsumugi",
+      "id": "regularb",
       "part": "PLAYER",
-      "role": "{pc:tsumugi}／窓辺の絵描き",
+      "role": "{pc:regularb}／窓辺の絵描き",
       "color": "#b8a3cc",
       "ability": "席の気配",
       "abilityText": "提供するとき、判定に一度だけ＋7",
@@ -78,7 +78,7 @@
           "nerve": 3
         },
         "trait": "よく見て、よく描く。口数は少ない",
-        "likes": "雨の日の窓。描きかけのスケッチ"
+        "likes": "雨の日の窓"
       }
     }
   ],
@@ -103,20 +103,20 @@
         },
         {
           "id": "listen_watch",
-          "actor": "tsumugi",
-          "sheet": "tsumugi",
+          "actor": "regularb",
+          "sheet": "regularb",
           "stat": "eye",
           "label": "少し離れて、様子を見る",
-          "detail": "{pc:tsumugi}が窓辺から、旅人の手元と視線を追う",
+          "detail": "{pc:regularb}が窓辺から、旅人の手元と視線を追う",
           "declare": "trpg_regular_harbor_declare_listen_watch"
         },
         {
           "id": "listen_serve",
-          "actor": "salaryman",
-          "sheet": "salaryman",
+          "actor": "regulara",
+          "sheet": "regulara",
           "stat": "talk",
           "label": "お冷やを出しながら、世間話",
-          "detail": "{pc:salaryman}がカウンター越しに、気楽な話題から",
+          "detail": "{pc:regulara}がカウンター越しに、気楽な話題から",
           "declare": "trpg_regular_harbor_declare_listen_serve"
         }
       ]
@@ -127,7 +127,7 @@
       "success": "trpg_regular_harbor_prepare_success",
       "mixed": "trpg_regular_harbor_prepare_mixed",
       "trouble": "trpg_regular_harbor_prepare_trouble",
-      "helper": "salaryman",
+      "helper": "regulara",
       "approaches": [
         {
           "id": "prepare_self",
@@ -140,20 +140,20 @@
         },
         {
           "id": "prepare_craft",
-          "actor": "salaryman",
-          "sheet": "salaryman",
+          "actor": "regulara",
+          "sheet": "regulara",
           "stat": "hand",
-          "label": "{pc:salaryman}が香りを量って整える",
+          "label": "{pc:regulara}が香りを量って整える",
           "detail": "店一番の手際で、一台を仕上げる",
           "declare": "trpg_regular_harbor_declare_prepare_craft"
         },
         {
           "id": "prepare_light",
-          "actor": "tsumugi",
-          "sheet": "tsumugi",
+          "actor": "regularb",
+          "sheet": "regularb",
           "stat": "eye",
           "label": "席の光と風を見て整える",
-          "detail": "{pc:tsumugi}が席の雰囲気を読み、一台を合わせる",
+          "detail": "{pc:regularb}が席の雰囲気を読み、一台を合わせる",
           "declare": "trpg_regular_harbor_declare_prepare_light"
         }
       ]
@@ -164,7 +164,7 @@
       "success": "trpg_regular_harbor_serve_success",
       "mixed": "trpg_regular_harbor_serve_mixed",
       "trouble": "trpg_regular_harbor_serve_trouble",
-      "helper": "tsumugi",
+      "helper": "regularb",
       "approaches": [
         {
           "id": "serve_word",
@@ -177,20 +177,20 @@
         },
         {
           "id": "serve_sketch",
-          "actor": "tsumugi",
-          "sheet": "tsumugi",
+          "actor": "regularb",
+          "sheet": "regularb",
           "stat": "nerve",
           "label": "黙って、絵を一枚添える",
-          "detail": "{pc:tsumugi}が言葉の代わりに、港の小さなスケッチを",
+          "detail": "{pc:regularb}が言葉の代わりに、港の小さなスケッチを",
           "declare": "trpg_regular_harbor_declare_serve_sketch"
         },
         {
           "id": "serve_host",
-          "actor": "salaryman",
-          "sheet": "salaryman",
+          "actor": "regulara",
+          "sheet": "regulara",
           "stat": "talk",
           "label": "一台の説明をして、下がる",
-          "detail": "{pc:salaryman}が香りの話を少しだけ。あとは任せる",
+          "detail": "{pc:regulara}が香りの話を少しだけ。あとは任せる",
           "declare": "trpg_regular_harbor_declare_serve_host"
         }
       ]
@@ -213,20 +213,20 @@
         },
         {
           "id": "twist_craft",
-          "actor": "salaryman",
-          "sheet": "salaryman",
+          "actor": "regulara",
+          "sheet": "regulara",
           "stat": "hand",
           "label": "大急ぎで五人分を支度する",
-          "detail": "{pc:salaryman}が棚から香りを出し、手早く支度する",
+          "detail": "{pc:regulara}が棚から香りを出し、手早く支度する",
           "declare": "trpg_regular_harbor_declare_twist_craft"
         },
         {
           "id": "twist_watch",
-          "actor": "tsumugi",
-          "sheet": "tsumugi",
+          "actor": "regularb",
+          "sheet": "regularb",
           "stat": "eye",
           "label": "店全体を見て、席を割り振る",
-          "detail": "{pc:tsumugi}が、誰がどこに座るといいか見て決める",
+          "detail": "{pc:regularb}が、誰がどこに座るといいか見て決める",
           "declare": "trpg_regular_harbor_declare_twist_watch"
         }
       ]
@@ -277,8 +277,8 @@
     }
   ],
   "consult": {
-    "salaryman": "trpg_regular_harbor_consult_adam",
-    "tsumugi": "trpg_regular_harbor_consult_tsumugi"
+    "regulara": "trpg_regular_harbor_consult_adam",
+    "regularb": "trpg_regular_harbor_consult_tsumugi"
   },
   "hypotheses": [
     {
@@ -630,10 +630,10 @@
       },
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "",
           "face": "normal",
-          "text": "今夜は、俺が語り手……。寝る前に、短い物語を一本だけ"
+          "text": "今夜は、この店の常連さんたちと港町の物語を遊びましょう"
         },
         {
           "speaker": "hajime",
@@ -642,45 +642,45 @@
           "text": "『世界一普通の一台』……シーシャを作る話？"
         },
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "",
           "face": "normal",
-          "text": "架空の港町が舞台。俺がGM、みんなは茶房の店番だ",
+          "text": "私がGM、皆さんは茶房の店番です",
           "castIntro": true,
-          "smallTableText": "私はGM、はじめくんは店番。空いた役は私が兼ねるね"
+          "smallTableText": "私がGMを務めます。空いた役もお手伝いしますね"
         },
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "港町ノーラ。茶房『波止場の灯』には、雨を避けた人たちが残っている"
         },
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "{pc}はカウンターで、最後のカップを拭いている"
         },
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "{pc:salaryman}は棚の前で、明日の香りを並べている"
+          "text": "{pc:regulara}は棚の前で、明日の香りを並べている"
         },
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
-          "text": "{pc:tsumugi}は窓辺で、雨のしずくを目で追っている"
+          "text": "{pc:regularb}は窓辺で、雨のしずくを目で追っている"
         },
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "閉店の札を裏返しかけたとき、濡れた外套の旅人が戸口に立った"
         },
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "旅人オル",
           "face": "normal",
           "text": "……まだ、いいかな。世界一普通の一台を、お願いしたい"
@@ -700,14 +700,14 @@
       },
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "GM／場面",
           "text": "旅人は荷物を足元に置く。店の奥では、まだ誰かの笑い声がしている",
           "face": "normal"
         },
         {
-          "speaker": "salaryman",
-          "text": "一台の前に、客の望みを聞こう。……まずは話を聞こう",
+          "speaker": "regulara",
+          "text": "一台の前に、客の望みを聞いてみましょう",
           "face": "normal"
         },
         {
@@ -717,7 +717,7 @@
           "face": "normal"
         },
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "旅人オル",
           "face": "normal",
           "text": "ありがとう、……何から話そうかな"
@@ -731,17 +731,17 @@
       },
       "lines": [
         {
-          "speaker": "sumi",
-          "text": "さて、みんなの仮説を、一台と席にしてみよう。途中で考え直してもいい",
+          "speaker": "sai",
+          "text": "では、見立てに合う一台と席を用意しましょう。考え直しても大丈夫です",
           "face": "normal"
         },
         {
-          "speaker": "salaryman",
+          "speaker": "regulara",
           "text": "三つの香り、三つの可能性。どれもありそうだな",
           "face": "normal"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "regularb",
           "text": "席も、三つ。……集めたメモを、もう一度見てもいいですよ",
           "face": "normal"
         }
@@ -754,7 +754,7 @@
       },
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "GM／場面",
           "text": "一台の準備ができた。店の客も減り、雨音が少し近く聞こえる",
           "face": "normal"
@@ -765,7 +765,7 @@
           "face": "normal"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "regularb",
           "text": "……言葉を添えることも、少し待つことも、できると思います",
           "face": "normal"
         }
@@ -778,8 +778,8 @@
       },
       "lines": [
         {
-          "speaker": "sumi",
-          "text": "これで、この晩は終いだ。世界一のレシピは、出てこなかったな",
+          "speaker": "sai",
+          "text": "これで、この晩の物語はおしまいです。どんな一台が残りましたか？",
           "face": "normal"
         },
         {
@@ -788,31 +788,31 @@
           "face": "normal"
         },
         {
-          "speaker": "salaryman",
-          "text": "世界一普通……。俺が言うと、妙な注文だな",
+          "speaker": "regulara",
+          "text": "世界一普通……。私が言うと、妙な注文だな",
           "face": "normal"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "regularb",
           "text": "……あの窓、描きたくなりました。雨の中に、灯りがありましたね",
           "face": "normal"
         },
         {
-          "speaker": "sumi",
-          "text": "……いい夜だったな。本を閉じても、雨の音が残ってるみたい",
+          "speaker": "sai",
+          "text": "では、本を閉じましょう。続きも気になりますね",
           "face": "normal"
         },
         {
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "スミさんのGM、すごく話しやすかったです"
+          "text": "サイさんのGM、すごく話しやすかったです"
         },
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "GM／卓の会話",
-          "face": "smile",
-          "text": "はは、そりゃ光栄だな"
+          "face": "normal",
+          "text": "ありがとうございます。落ち着いて話せる卓になりましたね"
         }
       ]
     },
@@ -823,13 +823,13 @@
       },
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "GM／場面",
           "text": "旅人は外套を脱ぎ、肩の力を少し抜いた。最後まで話を聞けそうだ",
           "face": "normal"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "regularb",
           "text": "……急かさないと、話せることもあるんですね",
           "face": "normal"
         }
@@ -842,13 +842,13 @@
       },
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "GM／場面",
           "text": "奥の客が席を立ち、旅人の言葉が一度途切れる。続きは、ゆっくり聞けばいい",
           "face": "normal"
         },
         {
-          "speaker": "salaryman",
+          "speaker": "regulara",
           "text": "まずは客を座らせよう。落ち着ける席がいい",
           "face": "normal"
         }
@@ -861,7 +861,7 @@
       },
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "GM／場面",
           "text": "{pc}は思わず『一番人気なら』と言う。旅人は、少しだけ首を振った",
           "face": "normal"
@@ -872,8 +872,8 @@
           "face": "normal"
         },
         {
-          "speaker": "sumi",
-          "text": "そうだ。店にも客にも、見られるものはまだある",
+          "speaker": "sai",
+          "text": "そうですね。店にもお客さんにも、まだ手がかりがあります",
           "face": "normal"
         }
       ]
@@ -885,13 +885,13 @@
       },
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "GM／場面",
-          "text": "{pc:salaryman}が棚を整え、{pc}が一台を用意する。選んだ香りが、静かに開いた",
+          "text": "{pc:regulara}が棚を整え、{pc}が一台を用意する。選んだ香りが、静かに開いた",
           "face": "normal"
         },
         {
-          "speaker": "salaryman",
+          "speaker": "regulara",
           "text": "……あとは、客に出そう",
           "face": "normal"
         }
@@ -904,7 +904,7 @@
       },
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "GM／場面",
           "text": "最初は香りが強すぎた。少し落ち着かせてから、旅人の席へ運ぶ",
           "face": "normal"
@@ -923,18 +923,18 @@
       },
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "GM／場面",
           "text": "用意した一台は、思った仕上がりにならない。店の道具で整え直すことにした",
           "face": "normal"
         },
         {
-          "speaker": "salaryman",
+          "speaker": "regulara",
           "text": "……やり直せばいい。道具を見直そう",
           "face": "normal"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "regularb",
           "text": "……待ってる間の席なら、こっちで用意しますね",
           "face": "normal"
         }
@@ -947,15 +947,15 @@
       },
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "GM／場面",
-          "text": "{pc:tsumugi}が椅子を引き、{pc}が旅人を案内する。落ち着いたところで、一台を置いた",
+          "text": "{pc:regularb}が椅子を引き、{pc}が旅人を案内する。落ち着いたところで、一台を置いた",
           "face": "normal"
         },
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "旅人オル",
-          "face": "smile",
+          "face": "normal",
           "text": "……いい席だね。ありがとう"
         }
       ]
@@ -967,7 +967,7 @@
       },
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "GM／場面",
           "text": "席の説明が少し長くなる。旅人と顔を見合わせ、二人とも小さく笑った",
           "face": "normal"
@@ -987,13 +987,13 @@
       },
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "GM／場面",
           "text": "{pc}が声をかけると、椅子がこつんと鳴った。気まずい間のあと、旅人が先に口を開く",
           "face": "normal"
         },
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "旅人オル",
           "text": "そんなに構えなくていいよ。俺も、普通が何か、うまく言えないんだ",
           "face": "normal"
@@ -1007,13 +1007,13 @@
       },
       "lines": [
         {
-          "speaker": "salaryman",
+          "speaker": "regulara",
           "role": "",
           "face": "normal",
-          "text": "{pc:salaryman}は言う。香りの名だけで、客の望みを決めてはいけない"
+          "text": "{pc:regulara}は言う。香りの名だけで、客の望みを決めてはいけない"
         },
         {
-          "speaker": "salaryman",
+          "speaker": "regulara",
           "role": "",
           "face": "normal",
           "text": "メニューと飲み物を見よう。そこに、この店の日常がある"
@@ -1025,7 +1025,7 @@
           "text": "『普通』っていうフレーバーを探すんじゃないんだな"
         },
         {
-          "speaker": "salaryman",
+          "speaker": "regulara",
           "role": "",
           "face": "normal",
           "text": "……そう。この一台を選ぶ理由を、探そう"
@@ -1039,7 +1039,7 @@
       },
       "lines": [
         {
-          "speaker": "tsumugi",
+          "speaker": "regularb",
           "role": "",
           "face": "normal",
           "text": "……同じ部屋でも、席によって見えるものが違う。窓、棚、人の顔"
@@ -1051,7 +1051,7 @@
           "text": "座る場所も、一台の一部か"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "regularb",
           "role": "",
           "face": "normal",
           "text": "はい。旅人が、どこを見てるかも気になります"
@@ -1065,19 +1065,19 @@
       },
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "手書きのメニューには、紅茶、果実、スパイス。どれも普段の一台だ"
         },
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "旅人は『穏やかな紅茶』の行を指でなぞり、値段より説明を読んでいた"
         },
         {
-          "speaker": "salaryman",
+          "speaker": "regulara",
           "role": "",
           "face": "normal",
           "text": "紅茶の行を、指でなぞっていたな。さて、どの香りで旅人を迎えようか"
@@ -1091,25 +1091,25 @@
       },
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "窓の外では、港の灯りが雨ににじむ。ここは、人の声から少し離れている"
         },
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "旅人は、窓の雨音に耳を澄ませている"
         },
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "旅人は、雨を眺める空いた席を見ている"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "regularb",
           "role": "",
           "face": "normal",
           "text": "……この席から、旅人は何を見たいんでしょう"
@@ -1123,19 +1123,19 @@
       },
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "旅人が置いた荷物には、小さな荷札。外から、通ってきた場所が見える"
         },
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "荷札には乗り継ぎの印がいくつもある"
         },
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "旅人は『今日は、ずっと人の中だった』と話した"
@@ -1155,13 +1155,13 @@
       },
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "店番や隣の客と話せるカウンター。棚のそばにも、椅子が置いてある"
         },
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "カウンターの笑い声には微笑むが、旅人は椅子を引かなかった"
@@ -1181,25 +1181,25 @@
       },
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "旅人には、先に飲み物を選んでもらった。一台を待つ間、何を飲むだろう"
         },
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "旅人の選んだ飲み物は、薄い紅茶"
         },
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "急いで飲まず、手を温めている"
         },
         {
-          "speaker": "salaryman",
+          "speaker": "regulara",
           "role": "",
           "face": "normal",
           "text": "飲み物を選ぶ一言にも、この旅人の望みが潜んでいそうだ"
@@ -1213,13 +1213,13 @@
       },
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "店番のノートには、一台と一緒に過ごした客の話が残っている"
         },
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "店番のノートに『呼べる距離で、少し待つ。それも接客』とある"
@@ -1239,19 +1239,19 @@
       },
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "手書きのメニューには、紅茶、果実、スパイス。どれも普段の一台だ"
         },
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "旅人は『紅茶の香りが好きなんだ。家でもよく淹れる』と話した"
         },
         {
-          "speaker": "salaryman",
+          "speaker": "regulara",
           "role": "",
           "face": "normal",
           "text": "家でも淹れる紅茶、か。さて、どの香りで旅人を迎えようか"
@@ -1265,19 +1265,19 @@
       },
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "窓の外では、港の灯りが雨ににじむ。ここは、人の声から少し離れている"
         },
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "港の灯りには目を向けず、旅人は古い店内写真を見ている"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "regularb",
           "role": "",
           "face": "normal",
           "text": "……この席から、旅人は何を見たいんでしょう"
@@ -1291,19 +1291,19 @@
       },
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "旅人が置いた荷物には、小さな荷札。外から、通ってきた場所が見える"
         },
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "荷札は帰りの便"
         },
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "旅人は『帰る前に、いつもの時間を思い出したくて』と言った"
@@ -1323,19 +1323,19 @@
       },
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "店番や隣の客と話せるカウンター。棚のそばにも、椅子が置いてある"
         },
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "棚のそばには古いメニューが残る"
         },
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "旅人は思い出話ができそうな席を見ている"
@@ -1355,25 +1355,25 @@
       },
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "旅人には、先に飲み物を選んでもらった。一台を待つ間、何を飲むだろう"
         },
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "飲み物は温かい紅茶"
         },
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "『結局、これに戻ってくる』と旅人が笑った"
         },
         {
-          "speaker": "salaryman",
+          "speaker": "regulara",
           "role": "",
           "face": "normal",
           "text": "飲み物を選ぶ一言にも、この旅人の望みが潜んでいそうだ"
@@ -1387,13 +1387,13 @@
       },
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "店番のノートには、一台と一緒に過ごした客の話が残っている"
         },
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "ノートに『何を好きかに加え、なぜ戻ってくるかも聞いてみる』とある"
@@ -1413,19 +1413,19 @@
       },
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "手書きのメニューには、紅茶、果実、スパイス。どれも普段の一台だ"
         },
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "旅人は『ここでは普段、何が出るの？』と尋ね、果実の香りに興味を持った"
         },
         {
-          "speaker": "salaryman",
+          "speaker": "regulara",
           "role": "",
           "face": "normal",
           "text": "果実に興味あり、か。さて、どの香りで旅人を迎えようか"
@@ -1439,19 +1439,19 @@
       },
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "窓の外では、港の灯りが雨ににじむ。ここは、人の声から少し離れている"
         },
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "窓辺が空いていても、旅人は店の会話へ顔を向けている"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "regularb",
           "role": "",
           "face": "normal",
           "text": "……この席から、旅人は何を見たいんでしょう"
@@ -1465,19 +1465,19 @@
       },
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "旅人が置いた荷物には、小さな荷札。外から、通ってきた場所が見える"
         },
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "荷札の道は、人の少ない道"
         },
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "旅人は『最後に話したのは、朝だったかな』と言う"
@@ -1497,13 +1497,13 @@
       },
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "店番や隣の客と話せるカウンター。棚のそばにも、椅子が置いてある"
         },
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "カウンターの客が椅子を引くと、旅人も荷物を近くへ寄せた"
@@ -1523,25 +1523,25 @@
       },
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "旅人には、先に飲み物を選んでもらった。一台を待つ間、何を飲むだろう"
         },
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "旅人は飲み物も店番に尋ねた"
         },
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "味を知るまでの会話も楽しんでいる"
         },
         {
-          "speaker": "salaryman",
+          "speaker": "regulara",
           "role": "",
           "face": "normal",
           "text": "飲み物を選ぶ一言にも、この旅人の望みが潜んでいそうだ"
@@ -1555,13 +1555,13 @@
       },
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "店番のノートには、一台と一緒に過ごした客の話が残っている"
         },
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "ノートに『隣に座って、一台を話の入口にした日』という記録がある"
@@ -1581,27 +1581,27 @@
       },
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "GM／場面",
           "text": "旅人は窓へ目を向ける。少しの間、店には雨の音と、静かな息遣いだけがあった",
           "face": "normal"
         },
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "旅人オル",
           "text": "……ありがとう。今日の普通は、こういうことだったみたいだ",
           "face": "normal"
         },
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "GM／場面",
           "text": "{pc}たちは呼べる距離に戻る。閉店の札は、もう少しだけ、そのままにした",
           "face": "normal"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "regularb",
           "role": "PL／卓の会話",
-          "face": "smile",
+          "face": "normal",
           "text": "……雨の音、きれいですね"
         },
         {
@@ -1619,25 +1619,25 @@
       },
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "旅人オル",
           "text": "家の近くにも、こんな店があったんだ。そこで、よく紅茶の話をしていた",
           "face": "normal"
         },
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "GM／場面",
           "text": "旅人の話には、見知らぬ店の窓と椅子が現れる。今の茶房に、もう一つの店が重なった",
           "face": "normal"
         },
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "旅人オル",
           "text": "帰ったら、また寄ってみようかな。今日は、帰り道の途中みたいだ",
           "face": "normal"
         },
         {
-          "speaker": "salaryman",
+          "speaker": "regulara",
           "role": "PL／卓の会話",
           "face": "normal",
           "text": "……思い出の香りか。帰る店があるのは、いい"
@@ -1657,27 +1657,27 @@
       },
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "旅人オル",
           "text": "長い道だったよ。橋を渡るときにね、面白い鳥がいて……",
           "face": "normal"
         },
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "GM／場面",
           "text": "一台を囲み、旅人の道のりが少しずつ言葉になる。隣の客も、話に加わった",
           "face": "normal"
         },
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "旅人オル",
           "text": "普通って、こうやって一日を誰かに話すことだったのかもしれないな",
           "face": "normal"
         },
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "GM／場面",
-          "face": "smile",
+          "face": "normal",
           "text": "漁師の親方も身を乗り出し、鳥の話で盛り上がった"
         },
         {
@@ -1695,25 +1695,25 @@
       },
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "旅人オル",
           "text": "考えてくれたんだね。ありがとう。少し、俺の話をしてもいいかな",
           "face": "normal"
         },
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "GM／場面",
           "text": "旅人の話を聞き、{pc}たちは席や言葉を少し変える。一台は、その相談の入口になった",
           "face": "normal"
         },
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "旅人オル",
           "text": "頼んだ俺も、何が欲しいか分かっていなかったんだ。一緒に考えられて、よかった",
           "face": "normal"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "regularb",
           "role": "PL／卓の会話",
           "face": "normal",
           "text": "……答えは、一緒に探してもいいんですね"
@@ -1730,7 +1730,7 @@
       "dialogue_id": "trpg_regular_harbor_choice_aroma_tea",
       "lines": [
         {
-          "speaker": "salaryman",
+          "speaker": "regulara",
           "role": "PL／卓の会話",
           "text": "紅茶という静かな主役。今夜は、そこに任せてみよう",
           "face": "normal"
@@ -1741,7 +1741,7 @@
       "dialogue_id": "trpg_regular_harbor_choice_aroma_fruit",
       "lines": [
         {
-          "speaker": "salaryman",
+          "speaker": "regulara",
           "role": "PL／卓の会話",
           "text": "果実の甘さ。この店の原点が、ここにあるのかもしれない",
           "face": "normal"
@@ -1752,7 +1752,7 @@
       "dialogue_id": "trpg_regular_harbor_choice_aroma_spice",
       "lines": [
         {
-          "speaker": "salaryman",
+          "speaker": "regulara",
           "role": "PL／卓の会話",
           "text": "スパイスで始める。客の表情を見逃さないようにしよう",
           "face": "normal"
@@ -1763,9 +1763,10 @@
       "dialogue_id": "trpg_regular_harbor_choice_seat_window",
       "lines": [
         {
-          "speaker": "tsumugi",
+          "speaker": "regularb",
           "role": "PL／卓の会話",
-          "text": "……雨を見る席。何も話さない時間も、ちゃんとあります"
+          "text": "……雨を見る席。何も話さない時間も、ちゃんとあります",
+          "face": "normal"
         }
       ]
     },
@@ -1773,9 +1774,10 @@
       "dialogue_id": "trpg_regular_harbor_choice_seat_counter",
       "lines": [
         {
-          "speaker": "tsumugi",
+          "speaker": "regularb",
           "role": "PL／卓の会話",
-          "text": "……顔が見える距離。話したくなったら、話せますね"
+          "text": "……顔が見える距離。話したくなったら、話せますね",
+          "face": "normal"
         }
       ]
     },
@@ -1783,9 +1785,10 @@
       "dialogue_id": "trpg_regular_harbor_choice_seat_shelf",
       "lines": [
         {
-          "speaker": "tsumugi",
+          "speaker": "regularb",
           "role": "PL／卓の会話",
-          "text": "古い写真のそば。今の店と、前の店が少し重なる"
+          "text": "古い写真のそば。今の店と、前の店が少し重なる",
+          "face": "normal"
         }
       ]
     },
@@ -1823,9 +1826,9 @@
       "dialogue_id": "trpg_regular_harbor_debrief_smooth",
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "GM／卓の会話",
-          "text": "静かな夜だったな。旅人も、少しは休めたろ",
+          "text": "静かな夜でしたね。旅人も、少しは休めたでしょう",
           "face": "normal"
         },
         {
@@ -1840,13 +1843,13 @@
       "dialogue_id": "trpg_regular_harbor_debrief_with_detour",
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "GM／卓の会話",
-          "text": "聞き直した時間も、この一台に入ってる。……そういうの、悪くねえ",
+          "text": "聞き直した時間も、この一台に残りましたね",
           "face": "normal"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "regularb",
           "role": "PL／卓の会話",
           "face": "normal",
           "text": "……寄り道した分だけ、話が増えました"
@@ -1866,10 +1869,10 @@
           "text": "{pc}は旅人の向かいに座る。『長い旅でした？』って聞いてみる"
         },
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "GM／卓の会話",
-          "face": "smile",
-          "text": "じゃあ話術で判定だ。目標は30。サイコロ二つ、どうぞ"
+          "face": "normal",
+          "text": "話術で判定です。目標は30"
         }
       ]
     },
@@ -1880,16 +1883,16 @@
       },
       "lines": [
         {
-          "speaker": "tsumugi",
+          "speaker": "regularb",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……{pc:tsumugi}は窓辺から、旅人の手元と視線を見ています"
+          "text": "……{pc:regularb}は窓辺から、旅人の手元と視線を見ています"
         },
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "GM／卓の会話",
-          "face": "smile",
-          "text": "観察で判定。{pc:tsumugi}の得意分野だな。目標は30"
+          "face": "normal",
+          "text": "観察で判定です。目標は30"
         }
       ]
     },
@@ -1900,16 +1903,16 @@
       },
       "lines": [
         {
-          "speaker": "salaryman",
+          "speaker": "regulara",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "{pc:salaryman}はお冷やを出しながら、天気の話から入るよ"
+          "text": "{pc:regulara}はお冷やを出しながら、天気の話から入るよ"
         },
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "GM／卓の会話",
-          "face": "smile",
-          "text": "話術で判定。気楽な入り方だな。目標は30"
+          "face": "normal",
+          "text": "話術で判定です。目標は30"
         }
       ]
     },
@@ -1926,10 +1929,10 @@
           "text": "{pc}は教わった通りに、自分の手で一台を作ります"
         },
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "GM／卓の会話",
           "face": "normal",
-          "text": "手際で判定だ。慌てるなよ。目標は30"
+          "text": "手際で判定です。目標は30"
         }
       ]
     },
@@ -1940,16 +1943,16 @@
       },
       "lines": [
         {
-          "speaker": "salaryman",
+          "speaker": "regulara",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "ここは{pc:salaryman}の出番だな。香りを量って、炭を整える"
+          "text": "ここは{pc:regulara}の出番だな。香りを量って、炭を整える"
         },
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "GM／卓の会話",
-          "face": "smile",
-          "text": "手際で判定。店一番の腕前、見せてもらおうか。目標30"
+          "face": "normal",
+          "text": "手際で判定です。目標は30"
         }
       ]
     },
@@ -1960,16 +1963,16 @@
       },
       "lines": [
         {
-          "speaker": "tsumugi",
+          "speaker": "regularb",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "{pc:tsumugi}は席の光と風を見て、一台の置き場所を決めます"
+          "text": "{pc:regularb}は席の光と風を見て、一台の置き場所を決めます"
         },
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "GM／卓の会話",
           "face": "normal",
-          "text": "観察で判定。席の雰囲気も一台の一部だ。目標30"
+          "text": "観察で判定です。目標は30"
         }
       ]
     },
@@ -1986,10 +1989,10 @@
           "text": "{pc}が席へ案内して、選んだ言葉を添えます"
         },
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "GM／卓の会話",
-          "face": "smile",
-          "text": "話術で判定。最後の一言、大事にな。目標は30"
+          "face": "normal",
+          "text": "話術で判定です。目標は30"
         }
       ]
     },
@@ -2000,16 +2003,16 @@
       },
       "lines": [
         {
-          "speaker": "tsumugi",
+          "speaker": "regularb",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……{pc:tsumugi}は何も言わず、港のスケッチを一枚添えます"
+          "text": "……{pc:regularb}は何も言わず、港のスケッチを一枚添えます"
         },
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "GM／卓の会話",
-          "face": "surprise",
-          "text": "度胸で判定。言葉なしは勇気がいるぞ。目標は30"
+          "face": "normal",
+          "text": "度胸で判定です。目標は30"
         }
       ]
     },
@@ -2020,16 +2023,16 @@
       },
       "lines": [
         {
-          "speaker": "salaryman",
+          "speaker": "regulara",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "{pc:salaryman}は香りの説明を少しだけして、静かに下がるよ"
+          "text": "{pc:regulara}は香りの説明を少しだけして、静かに下がるよ"
         },
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "GM／卓の会話",
-          "face": "smile",
-          "text": "話術で判定。引き際が肝心だ。目標は30"
+          "face": "normal",
+          "text": "話術で判定です。目標は30"
         }
       ]
     },
@@ -2041,22 +2044,22 @@
       },
       "lines": [
         {
-          "speaker": "salaryman",
+          "speaker": "regulara",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "俺の役はニコ。客を香りへ導く、茶房の案内役だ"
+          "text": "今回はニコ。香りの案内役を演じます"
         },
         {
-          "speaker": "salaryman",
+          "speaker": "regulara",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "弱点も決めた。腕は店一番だが、怖い話が苦手だ"
+          "text": "好きなものは、新しい香りを確かめること"
         },
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "GM／卓の会話",
-          "face": "smile",
-          "text": "弱点まで用意してくるの、よく考えたな"
+          "face": "normal",
+          "text": "では、その役で。物語を始めましょう"
         }
       ]
     },
@@ -2068,28 +2071,22 @@
       },
       "lines": [
         {
-          "speaker": "salaryman",
+          "speaker": "regulara",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "俺の役はピピン。港を渡り歩く、流しの香り師だ"
+          "text": "今回はピピン。流しの香り師を演じます"
         },
         {
-          "speaker": "salaryman",
+          "speaker": "regulara",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "口ぐせは『まず、香りを確かめる』"
+          "text": "好きなものは、旅先で見つけた香り"
         },
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "GM／卓の会話",
-          "face": "surprise",
-          "text": "……それ、うちの奥の席の常連じゃねえか"
-        },
-        {
-          "speaker": "salaryman",
-          "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……この役、少し分かる"
+          "text": "では、その役で。物語を始めましょう"
         }
       ]
     },
@@ -2101,22 +2098,22 @@
       },
       "lines": [
         {
-          "speaker": "tsumugi",
+          "speaker": "regularb",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……私はルカ。窓辺で絵を描いてる人です"
+          "text": "今回はルカ。窓辺の絵描きを演じます"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "regularb",
           "role": "PL／卓の会話",
-          "face": "smile",
-          "text": "好きなものは、雨の日の窓。猫も、描きます"
+          "face": "normal",
+          "text": "好きなものは、雨の日の窓"
         },
         {
-          "speaker": "hajime",
-          "role": "PL／卓の会話",
-          "face": "smile",
-          "text": "猫は描くんだな。つむぎらしい"
+          "speaker": "sai",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "では、その役で。物語を始めましょう"
         }
       ]
     },
@@ -2128,28 +2125,22 @@
       },
       "lines": [
         {
-          "speaker": "tsumugi",
+          "speaker": "regularb",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……私の役は、リーフ。茶房の看板猫です"
+          "text": "今回はリーフ。絵を描く看板猫を演じます"
         },
         {
-          "speaker": "sumi",
+          "speaker": "regularb",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "好きなものは、窓辺の日だまり"
+        },
+        {
+          "speaker": "sai",
           "role": "GM／卓の会話",
-          "face": "surprise",
-          "text": "猫！？ ……まあ、いい。GMが許す"
-        },
-        {
-          "speaker": "hajime",
-          "role": "PL／卓の会話",
-          "face": "surprise",
-          "text": "猫が、店番を……？"
-        },
-        {
-          "speaker": "tsumugi",
-          "role": "PL／卓の会話",
-          "face": "smile",
-          "text": "絵も描けます、……肉球で"
+          "face": "normal",
+          "text": "では、その役で。物語を始めましょう"
         }
       ]
     },
@@ -2160,10 +2151,10 @@
       },
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "GM／卓の会話",
-          "face": "smile",
-          "text": "物語の前に、キャラ作りの時間だ。役はもう決まったか？"
+          "face": "normal",
+          "text": "物語の前に、役を決めましょう。どんな人物にしますか？"
         }
       ]
     },
@@ -2180,10 +2171,10 @@
           "text": "俺は{pc}。{pcTitle}でいく"
         },
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "GM／卓の会話",
-          "face": "smile",
-          "text": "いい卓になりそうだ。じゃあ、はじめよう"
+          "face": "normal",
+          "text": "役がそろいましたね。では、始めましょう"
         }
       ]
     },
@@ -2194,13 +2185,13 @@
       },
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "旅人は少し考えてから、指を折って数える"
         },
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "旅人オル",
           "face": "normal",
           "text": "朝から船と汽車を三つ。どこも、人でいっぱいだったよ"
@@ -2220,15 +2211,15 @@
       },
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "旅人オル",
           "face": "normal",
           "text": "普段？ 薄い紅茶かな。香りが強すぎないのがいい"
         },
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "旅人オル",
-          "face": "smile",
+          "face": "normal",
           "text": "飲みながら、何も考えない時間が好きなんだ"
         }
       ]
@@ -2240,19 +2231,19 @@
       },
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "旅人オル",
           "face": "normal",
           "text": "仕事の打ち合わせが続いてね。ずっと話してた"
         },
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "旅人は喉に手を当て、小さく笑った"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "regularb",
           "role": "PL／卓の会話",
           "face": "normal",
           "text": "……声、少し休ませたいのかもしれません"
@@ -2266,13 +2257,13 @@
       },
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "旅人オル",
-          "face": "smile",
+          "face": "normal",
           "text": "外から見たら、灯りが静かでね。ここなら、と思った"
         },
         {
-          "speaker": "salaryman",
+          "speaker": "regulara",
           "role": "PL／卓の会話",
           "face": "normal",
           "text": "静けさに惹かれた客か。覚えておこう"
@@ -2286,15 +2277,15 @@
       },
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "旅人オル",
           "face": "normal",
           "text": "明日の朝の便で、生まれた町へ帰るんだ"
         },
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "旅人オル",
-          "face": "smile",
+          "face": "normal",
           "text": "帰る前に、一息つきたくてね"
         }
       ]
@@ -2306,13 +2297,13 @@
       },
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "旅人オル",
-          "face": "smile",
+          "face": "normal",
           "text": "家では毎晩、同じ紅茶を淹れてた。母の真似でね"
         },
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "旅人の声が、少しだけやわらかくなる"
@@ -2326,7 +2317,7 @@
       },
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "旅人オル",
           "face": "normal",
           "text": "昼間、昔よく行った店を探したんだ。もう、なかったけど"
@@ -2338,9 +2329,9 @@
           "text": "……そうだったんですか"
         },
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "旅人オル",
-          "face": "smile",
+          "face": "normal",
           "text": "だから、似た灯りを見つけて、つい入っちゃった"
         }
       ]
@@ -2352,13 +2343,13 @@
       },
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "旅人オル",
-          "face": "smile",
+          "face": "normal",
           "text": "この店、窓と棚の感じが、昔の店に似てるんだ"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "regularb",
           "role": "PL／卓の会話",
           "face": "normal",
           "text": "……古いメニューの棚、ずっと見てましたね"
@@ -2372,13 +2363,13 @@
       },
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "旅人オル",
           "face": "normal",
           "text": "山の道を、ずっと一人で歩いてきたよ。静かだった"
         },
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "旅人オル",
           "face": "normal",
           "text": "最後に人と話したのは、朝だったかな"
@@ -2392,13 +2383,13 @@
       },
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "旅人オル",
-          "face": "smile",
+          "face": "normal",
           "text": "いつも？ 店の人に、おすすめを聞くのが好きなんだ"
         },
         {
-          "speaker": "salaryman",
+          "speaker": "regulara",
           "role": "PL／卓の会話",
           "face": "normal",
           "text": "……おすすめを聞く客か。責任重大だな"
@@ -2412,13 +2403,13 @@
       },
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "旅人オル",
-          "face": "smile",
+          "face": "normal",
           "text": "今日ね、橋で面白い鳥を見たんだ。誰にも言えなくて"
         },
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "旅人は話の続きを、言いかけてやめた"
@@ -2438,13 +2429,13 @@
       },
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "旅人オル",
-          "face": "smile",
+          "face": "normal",
           "text": "奥から笑い声が聞こえてね。楽しそうだなって"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "regularb",
           "role": "PL／卓の会話",
           "face": "normal",
           "text": "……にぎやかなのが、嫌じゃないんですね"
@@ -2458,22 +2449,22 @@
       },
       "lines": [
         {
-          "speaker": "salaryman",
+          "speaker": "regulara",
           "role": "PL／卓の会話",
           "face": "normal",
           "text": "……静けさを求める客か。香りも控えめがいい"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "regularb",
           "role": "PL／卓の会話",
           "face": "normal",
           "text": "……窓辺なら、雨の音だけが聞こえます"
         },
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "GM／卓の会話",
-          "face": "smile",
-          "text": "いい読みだな。じゃあ、その線で行ってみよう"
+          "face": "normal",
+          "text": "なるほど。では、その見立てで進めましょう"
         }
       ]
     },
@@ -2484,22 +2475,22 @@
       },
       "lines": [
         {
-          "speaker": "salaryman",
+          "speaker": "regulara",
           "role": "PL／卓の会話",
           "face": "normal",
           "text": "……懐かしい匂いは、覚えている"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "regularb",
           "role": "PL／卓の会話",
           "face": "normal",
           "text": "……古いメニューの棚、思い出の席になりそうです"
         },
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "GM／卓の会話",
-          "face": "smile",
-          "text": "なるほどな。思い出は、見えるところに置くもんだ"
+          "face": "normal",
+          "text": "思い出を見えるところに置くのですね。では、その見立てで"
         }
       ]
     },
@@ -2510,22 +2501,22 @@
       },
       "lines": [
         {
-          "speaker": "salaryman",
+          "speaker": "regulara",
           "role": "PL／卓の会話",
           "face": "normal",
           "text": "……話し相手が欲しい、か。それなら、座って聞こう"
         },
         {
-          "speaker": "tsumugi",
+          "speaker": "regularb",
           "role": "PL／卓の会話",
           "face": "normal",
           "text": "……カウンターなら、誰かの声が届きますね"
         },
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "GM／卓の会話",
-          "face": "smile",
-          "text": "賑やかな方へ、ね。いいと思うぞ"
+          "face": "normal",
+          "text": "にぎやかな方へ、ですね。では、その見立てで"
         }
       ]
     },
@@ -2536,19 +2527,19 @@
       },
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "GM／場面",
-          "face": "surprise",
+          "face": "normal",
           "text": "その時、戸口の鈴が鳴った。雨宿りの漁師たちが、どっと入ってくる"
         },
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "漁師の親方",
-          "face": "smile",
+          "face": "normal",
           "text": "おう、閉める前に一杯頼むぜ！ 五人だ！"
         },
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "急に店が賑やかになる。旅人は、少しだけ目を丸くした"
@@ -2560,10 +2551,10 @@
           "text": "まずい、このままだと旅人の一台どころじゃない……"
         },
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "GM／卓の会話",
-          "face": "smile",
-          "text": "さあ、店番たち。どうする？"
+          "face": "normal",
+          "text": "では、店番の皆さん。どうしますか？"
         }
       ]
     },
@@ -2574,15 +2565,15 @@
       },
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "{pc}たちは、漁師たちを奥の大きな卓へ案内する"
         },
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "漁師の親方",
-          "face": "smile",
+          "face": "normal",
           "text": "おう、奥か。いい席じゃねえか"
         }
       ]
@@ -2594,15 +2585,15 @@
       },
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "{pc}は旅人に、漁師たちの話の輪をそっと示す"
         },
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "旅人オル",
-          "face": "surprise",
+          "face": "normal",
           "text": "……俺も、混ざっていいのかな"
         }
       ]
@@ -2614,15 +2605,15 @@
       },
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "灯りを一段落とすと、漁師たちも声をひそめた"
         },
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "漁師の親方",
-          "face": "smile",
+          "face": "normal",
           "text": "なんだ、いい雰囲気じゃねえか"
         }
       ]
@@ -2634,15 +2625,15 @@
       },
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "GM／場面",
-          "face": "smile",
+          "face": "normal",
           "text": "漁師たちはすぐに落ち着き、店に心地よいざわめきが戻る"
         },
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "漁師の親方",
-          "face": "smile",
+          "face": "normal",
           "text": "いい店だな、ここは。また来るぜ"
         },
         {
@@ -2660,15 +2651,15 @@
       },
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "少し手間取ったが、漁師たちは席に収まった。旅人を待たせてしまう"
         },
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "旅人オル",
-          "face": "smile",
+          "face": "normal",
           "text": "大丈夫。賑やかなのも、たまにはいいね"
         }
       ]
@@ -2680,21 +2671,21 @@
       },
       "lines": [
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "GM／場面",
-          "face": "surprise",
+          "face": "normal",
           "text": "注文が混ざり、親方の前に旅人の紅茶が置かれてしまった"
         },
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "漁師の親方",
-          "face": "surprise",
+          "face": "normal",
           "text": "……紅茶？ まあ、これもうまいな"
         },
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "GM／場面",
-          "face": "smile",
+          "face": "normal",
           "text": "店じゅうが笑いに包まれる。旅人も、肩を揺らして笑った"
         }
       ]
@@ -2712,10 +2703,10 @@
           "text": "{pc}が親方の前に出る。『ご注文、まとめて伺います！』"
         },
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "GM／卓の会話",
-          "face": "smile",
-          "text": "話術で判定。親方、声が大きいぞ。目標は30"
+          "face": "normal",
+          "text": "話術で判定です。目標は30"
         }
       ]
     },
@@ -2726,16 +2717,16 @@
       },
       "lines": [
         {
-          "speaker": "salaryman",
+          "speaker": "regulara",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "{pc:salaryman}が五人分の支度にかかる。腕の見せどころだ"
+          "text": "{pc:regulara}が五人分の支度にかかる。腕の見せどころだ"
         },
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "GM／卓の会話",
           "face": "normal",
-          "text": "手際で判定。急ぐと崩れるぞ。目標は30"
+          "text": "手際で判定です。目標は30"
         }
       ]
     },
@@ -2746,16 +2737,16 @@
       },
       "lines": [
         {
-          "speaker": "tsumugi",
+          "speaker": "regularb",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……{pc:tsumugi}は、店全体を見て席を決めます"
+          "text": "……{pc:regularb}は、店全体を見て席を決めます"
         },
         {
-          "speaker": "sumi",
+          "speaker": "sai",
           "role": "GM／卓の会話",
-          "face": "smile",
-          "text": "観察で判定。全員の居場所、見えるか。目標は30"
+          "face": "normal",
+          "text": "観察で判定です。目標は30"
         }
       ]
     }
@@ -2902,9 +2893,9 @@
   "campaign": {
     "seats": [
       {
-        "actor": "sumi",
+        "actor": "sai",
         "candidates": [
-          "sumi"
+          "sai"
         ],
         "required": true
       },
@@ -2916,16 +2907,16 @@
         "required": true
       },
       {
-        "actor": "salaryman",
+        "actor": "regulara",
         "candidates": [
-          "salaryman"
+          "regulara"
         ],
         "required": true
       },
       {
-        "actor": "tsumugi",
+        "actor": "regularb",
         "candidates": [
-          "tsumugi"
+          "regularb"
         ],
         "required": true
       }
@@ -2986,14 +2977,14 @@
     }
   },
   "companionBuilds": {
-    "salaryman": {
-      "salaryman": [
+    "regulara": {
+      "regulara": [
         {
           "id": "nico",
           "name": "ニコ",
           "title": "香りの案内役",
           "trait": "香りと炭の支度なら店一番。怖い話は苦手",
-          "likes": "林檎の香り。原点の味",
+          "likes": "新しい香りを確かめること",
           "stats": {
             "eye": 2,
             "hand": 5,
@@ -3006,8 +2997,8 @@
           "id": "pippin",
           "name": "ピピン",
           "title": "流しの香り師",
-          "trait": "どんな注文にも、まず林檎の話から入る。腕は確か",
-          "likes": "林檎。すべての香りの始まり",
+          "trait": "旅先の香りに詳しい。初めての注文にも、まず香りを確かめる",
+          "likes": "旅先で見つけた香り",
           "stats": {
             "eye": 2,
             "hand": 5,
@@ -3018,14 +3009,14 @@
         }
       ]
     },
-    "tsumugi": {
-      "tsumugi": [
+    "regularb": {
+      "regularb": [
         {
           "id": "luca",
           "name": "ルカ",
           "title": "窓辺の絵描き",
           "trait": "よく見て、よく描く。口数は少ない",
-          "likes": "雨の日の窓。描きかけのスケッチ",
+          "likes": "雨の日の窓",
           "stats": {
             "eye": 5,
             "hand": 2,
@@ -3039,7 +3030,7 @@
           "name": "リーフ",
           "title": "絵を描く看板猫",
           "trait": "人の言葉は話せない。よく見て、絵で伝える",
-          "likes": "窓辺の日だまり。煮干し",
+          "likes": "窓辺の日だまり",
           "stats": {
             "eye": 5,
             "hand": 1,
@@ -3086,8 +3077,8 @@
     "intro": "trpg_regular_harbor_twist_intro"
   },
   "zeroMemberCast": [
-    "sumi",
-    "tsumugi",
-    "salaryman"
+    "sai",
+    "regulara",
+    "regularb"
   ]
 }
