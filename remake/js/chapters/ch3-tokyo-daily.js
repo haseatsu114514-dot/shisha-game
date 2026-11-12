@@ -524,7 +524,7 @@ async function visitRivalShop(entry, io, staminaGuard, owner) {
   const cost = entry.fee || 0;
   // 締めくくりは代金がかからないので、お金が足りない日もそれだけは選べる（客の一台の寄り道・外出は出さない）
   const short = cost > spendableMoney(state);
-  if (short && !finale) { toast(`お金が足りない（${cost.toLocaleString("ja-JP")}円）`); return unused; }
+  if (short && !finale) { toast(`お金が足りない（${cost.toLocaleString("ja-JP")}円）`, { se: "error" }); return unused; }
   const choices = [...finale ? [{ label: finale.label, value: `finale:${finale.who}` }] : [], ...short ? [] : paid];
   const pick = choices.length === 1 ? choices[0].value : await modal({ title: entry.label, className: "tokyo-visit-choice",
     body: "何をしに行こう。", options: [...choices.map((choice, index) => ({ ...choice, test: `tokyo-${entry.place}-${index}` })),

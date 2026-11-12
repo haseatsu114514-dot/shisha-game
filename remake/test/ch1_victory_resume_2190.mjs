@@ -24,7 +24,7 @@ const real = new Set(["chapters/ch1.js", "core/state.js","core/portrait-style.js
 const SLOT = "suien_remake_slot1";
 const OTHER_SLOT = "suien_remake_slot2";
 const startingMoney = 45813;
-const prize = 30000;
+const prize = 50000;
 const sceneNames = ["bg_c_station_lobby", "bg_c_station_lobby", "bg_tonari_inside_night",
   "bg_tonari_inside_night", "bg_tonari_inside_night", "bg_tonari_inside_night",
   "bg_home_day", "kemurikusa", "kemurikusa", "kemurikusa", "bg_tonari_inside_night"];
@@ -249,6 +249,12 @@ for (let step = 0; step <= 10; step++) for (const paid of [false, true]) for (co
 }
 
 // Reopen checkpoints actually written by the runner, not only constructed current-schema inputs.
+const legacyWinner = await harness({ paid: true });
+legacyWinner.current().money = startingMoney + 30000;
+await legacyWinner.run();
+assert.equal(legacyWinner.current().money, startingMoney + 30000, "old paid save receives no retroactive difference");
+assert.deepEqual(legacyWinner.money, [], "old paid save is not paid again");
+
 const complete = await harness({ paid: false, revealed: false });
 await checkRun(complete);
 const checkpointByStep = new Map(complete.writes.filter(saved => saved.tournament.victory?.paid)

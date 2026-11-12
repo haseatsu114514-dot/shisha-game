@@ -22,7 +22,7 @@ class Audio {
     this.paused = true;
     elements.push(this);
   }
-  play() { this.paused = false; return Promise.resolve(); }
+  play() { this.plays = (this.plays || 0) + 1; this.paused = false; return Promise.resolve(); }
   pause() { this.paused = true; }
   load() {}
   addEventListener() {}
@@ -37,7 +37,9 @@ class AudioContext {
   resume() { this.state = "running"; return Promise.resolve(); }
 }
 const config = { bgmVolume: .4, seVolume: .5, mute: false, muted: false };
-const context = vm.createContext({ Audio, window: { AudioContext }, document: { hidden: false }, console, Math, Promise,
+const document = { hidden: false, documentElement: { dataset: {} }, listeners: {},
+  addEventListener(type, fn) { this.listeners[type] = fn; } };
+const context = vm.createContext({ Audio, window: { AudioContext }, document, console, Math, Promise,
   performance: { now: () => now },
   requestAnimationFrame: fn => { frames.push(fn); return frames.length; },
   setTimeout: fn => { timers.push(fn); return timers.length; }, clearTimeout() {},
@@ -89,4 +91,35 @@ assert.equal(audio.currentBgm(), "bgm_tournament_wait");
 assert(elements.length > beforeUnlock, "操作後に実曲を再開する");
 audio.stopBgm(0);
 
-console.log("[BGM tournament wait] PASS: manifest mp3, playback, volume, mute, stop and unlock");
+// iOSから戻った時、曲の要素だけが止まっていても次の操作で同じ位置から再開する。
+// 同じキーのplayBgmは二重再生を防ぐため何もしないので、音声解禁側が回復を担当する。
+audio.playBgm("bgm_tournament_wait"); step(1500);
+const interrupted = elements.at(-1), beforeRecovery = elements.length;
+interrupted.currentTime = 23.5;
+interrupted.pause(); AudioContext.last.state = "interrupted";
+audio.unlockAudio(); await Promise.resolve();
+assert.equal(AudioContext.last.state, "running", "Safariのinterrupted状態もresumeする");
+assert.equal(interrupted.paused, false, "OSに止められた曲を再開する");
+assert.equal(interrupted.currentTime, 23.5, "曲を最初から鳴らし直さない");
+assert.equal(elements.length, beforeRecovery, "復帰用に別のプレイヤーを増やさない");
+const plays = interrupted.plays;
+audio.unlockAudio(); await Promise.resolve();
+assert.equal(interrupted.plays, plays, "鳴っている曲へplayを繰り返さない");
+
+// 非表示・回転ガード中の操作で、意図した一時停止を解除しない。
+interrupted.pause(); document.hidden = true;
+audio.unlockAudio(); await Promise.resolve(); assert.equal(interrupted.paused, true);
+document.hidden = false; document.documentElement.dataset.rotateGuard = "true";
+document.listeners.rotateguardchange();
+audio.unlockAudio(); await Promise.resolve(); assert.equal(interrupted.paused, true);
+document.documentElement.dataset.rotateGuard = "false"; document.listeners.rotateguardchange();
+assert.equal(interrupted.paused, false);
+
+// resumeの待機中に停止した曲を、遅い完了で復活させない。
+let releaseResume;
+AudioContext.last.state = "interrupted"; interrupted.pause();
+AudioContext.last.resume = () => new Promise(resolve => { releaseResume = () => { AudioContext.last.state = "running"; resolve(); }; });
+audio.unlockAudio(); audio.stopBgm(0); releaseResume(); await Promise.resolve();
+assert.equal(audio.currentBgm(), null); assert.equal(interrupted.paused, true);
+
+console.log("[BGM tournament wait] PASS: playback, volume, mute, unlock, interrupted recovery and pause ownership");

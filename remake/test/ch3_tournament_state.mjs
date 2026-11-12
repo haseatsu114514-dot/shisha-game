@@ -124,7 +124,7 @@ assert.equal(p.voted, 0);
 assert.equal(p.defeatRead, false, "A new failed attempt must be able to read its own defeat scene");
 assert.deepEqual(resources(value), resources(before));
 assert.equal(p.history.length, 1);
-assert.equal(CH3_PRIZE, 100000, "decided chapter 3 prize");
+assert.equal(CH3_PRIZE, 200000, "decided chapter 3 prize");
 assert.equal(value.money, before.money + (result.win ? CH3_PRIZE : 0), "prize follows the recorded result and survives retry");
 for (const key of ["tournament", "lovers", "contacts", "inbox", "keepsakes", "relationshipMemories"]) {
   assert.deepEqual(value[key], before[key], key);
@@ -193,7 +193,7 @@ assert.deepEqual(RIVAL_QUALITY, { saku: 86, steve: 85, volk: 88 });
 }
 console.log("PASS: chapter3 four-person 3x10 voting, conditional citrus, save rollback, retry and honest ranking");
 
-// #2031: 賞金の共通化は、章別の結果確定・支払済みフラグ・丸めと上限を変えない。
+// #2031: 賞金の共通化は、章別の結果確定・支払済みフラグ・丸めと上限を変えない。新規支払いは実加算額も記録する。
 // 旧支払ブロックを同じ章モジュールへ戻し、公開recordResultの返却値・例外・全stateを比較する。
 const { readFile } = await import("node:fs/promises");
 const { MAX_MONEY } = await import("../js/core/rules.js");
@@ -208,8 +208,11 @@ for (const chapter of [2, 3]) {
   let source = await readFile(url, "utf8");
   const rank = chapter === 2 ? "p.result.rank" : "rank";
   const legacy = `if (${rank} === 1 && !p.prizePaid) {
+    const before = value.money;
+    const next = Math.min(legacyMaxMoney, Math.max(0, Math.round((before || 0) + CH${chapter}_PRIZE)));
     p.prizePaid = true;
-    value.money = Math.min(legacyMaxMoney, Math.max(0, Math.round((value.money || 0) + CH${chapter}_PRIZE)));
+    value.money = next;
+    p.prizeReceived = Math.max(0, next - Math.max(0, Math.round(Number(before) || 0)));
   }`;
   const award = new RegExp(`payTournamentPrize\\(value, p, ${rank.replaceAll(".", "\\.")}, CH${chapter}_PRIZE\\);|if \\(${rank.replaceAll(".", "\\.")} === 1 && !p\\.prizePaid\\) \\{[\\s\\S]*?\\n  \\}`, "g");
   assert.equal([...source.matchAll(award)].length, 1, "replace only the chapter's prize block");
@@ -217,7 +220,7 @@ for (const chapter of [2, 3]) {
     .replace(/from "(\.[^"]+)"/g, (_, path) => `from "${new URL(path, url).href}"`);
   source += `\nimport { MAX_MONEY as legacyMaxMoney } from "${new URL("../core/rules.js", url).href}";\n`;
   const oracle = await import(`data:text/javascript;base64,${Buffer.from(source).toString("base64")}`);
-  const amount = chapter === 2 ? 50000 : 100000;
+  const amount = chapter === 2 ? 100000 : 200000;
   const prizeBase = newState();
   for (const money of [undefined, null, 0, -1000000, -amount, -1, 0.4, 0.5, 100, MAX_MONEY - amount,
     MAX_MONEY - 0.5, MAX_MONEY, MAX_MONEY + 1, NaN, Infinity, -Infinity, "100", "", false, true, 1n, Symbol("money")])
@@ -252,3 +255,19 @@ for (const chapter of [2, 3]) {
     }
 }
 console.log(`PASS: ${prizeCases} chapter2/3 legacy prize comparisons, repeat and JSON LOAD`);
+
+// Receipt tracks the credited amount at the cap. Old paid saves have no receipt and stay untouched.
+const { payTournamentPrize } = await import("../js/chapters/tournament-prize.js");
+for (const amount of [100000, 200000]) {
+  const capped = { money: MAX_MONEY - 99 }, progress = { prizePaid: false };
+  payTournamentPrize(capped, progress, 1, amount);
+  assert.equal(capped.money, MAX_MONEY);
+  assert.equal(progress.prizeReceived, 99);
+  const loaded = copy({ capped, progress });
+  payTournamentPrize(loaded.capped, loaded.progress, 1, amount);
+  assert.deepEqual(loaded, { capped, progress }, "LOAD never grants the unpaid remainder");
+  const legacy = { money: 25000 }, oldProgress = { prizePaid: true };
+  payTournamentPrize(legacy, oldProgress, 1, amount);
+  assert.equal(legacy.money, 25000, "old winner gets no retroactive award");
+  assert.equal(oldProgress.prizeReceived, undefined, "old receipt remains unknown");
+}

@@ -30,6 +30,7 @@ import { DUBAI, DUBAI_SPOTS, TO_DUBAI_SPOT, performDubaiSpot, inDubai, dubaiNigh
   chapterFiveDubaiLeisureSpots, chapterFiveDubaiLeisureById, preloadNoorScenes, dubaiBondHasNew } from "./ch5-dubai.js";
 import { chapterFiveShops, chapterFiveCityShops, chapterFiveShopById, performChapterFiveShop, chapterFiveShowroom } from "./ch5-shops.js";
 import { chapterFiveCateringSpot, performCateringSpot, deliverCateringMorning, settleCateringWork, cateringBusyContacts, finishCateringSeason } from "./ch5-catering.js";
+import { introduceCateringBusiness } from "./ch5-catering-origin.js";
 import { CATERING_SPOT_ID, isTsumugiCateringAway } from "./ch5-catering-model.js";
 import { noteShopStamp, shopStampsShortcut } from "./ch5-shop-stamps.js";
 import {
@@ -156,6 +157,8 @@ export async function runChapterFiveDaily(io) {
   const owner = state;
   await Promise.all([preloadTokyoScenes(), preloadNoorScenes()]);
   if (state !== owner) return;
+  // 帰郷後の新事業は最初の依頼より先に相談する。旧海外セーブは帰国後のtonariで補完。
+  if (!await introduceCateringBusiness() || state !== owner) return;
   await runDaily(chapterFiveDailyDefinition(io));
 }
 
@@ -231,6 +234,9 @@ async function performChapterFiveSpot(spot, io, options = {}) {
     if (visited) return visited;
   }
   if (spot.id === "tonari") {
+    // 海外・隣町から戻った旧セーブも、既存の接客/練習より先に一度だけ相談する。
+    const owner = state;
+    if (!await introduceCateringBusiness() || state !== owner) return { used: false, exerted: false };
     // 閉店後の試作が途中なら、まずその続き（LOAD 後など）。
     if (chapterFivePrepPending(state)) return { used: await runPrep(io), exerted: false };
     // 試作の会話を終えた夜は、閉店後の作業台で本物の一台を作れる（任意・一度だけ。#2020 F）。断れば、いつもの tonari へ。
