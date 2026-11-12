@@ -243,6 +243,8 @@ let prepState, captured = null, readCalls = [], readFails = false;
 const prepDB = { dialogues: {} };
 const homeSpots = [...spots.SPOTS, { ...samechanData.spot, region: "home" }, { id: "trpg", kind: "trpg" }];
 const prepModule = await loadWithStubs("remake/js/chapters/departure-prep.js", {
+  // 店頭・未面識の納品紹介はshop_greeting.mjsで実runnerとともに検査する。
+  "../daily/shop-greeting.js": { ensureRioBeforeTokyo: async () => true },
   "../core/state.js": { save: () => {}, timeOfDay: () => "day" },
   "../core/data.js": { DB: prepDB, bgUrl: x => x },
   "../core/chapter-data.js": { readDialogues: async (name, required) => {
