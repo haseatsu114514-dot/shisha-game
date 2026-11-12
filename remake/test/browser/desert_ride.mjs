@@ -9,6 +9,7 @@ const ride = (page, code) => page.evaluate(code);
 const game = page => page.evaluate(() => { const g = window.__desertRide?.game; return g ? { z: g.z, x: g.x, air: g.air, airKind: g.airKind, t: g.t, score: g.score, falls: g.falls, finished: g.finished, hops: g.stats.hops, bigJumps: g.stats.bigJumps } : null; });
 const phase = (page, value) => page.waitForFunction(value => document.querySelector('[data-test="desert-ride"]')?.dataset.phase === value, value, { timeout: 90000 });
 const autoplayToResult = async (page, skill = "expert") => {
+  await phase(page, "run"); // 初回/相手変更の画像準備が終わってから自動操縦を設定する。
   await page.evaluate(skill => { window.__desertRide.autoplay(skill); window.__desertRide.setSpeedUp(8); }, skill);
   await phase(page, "result");
 };
@@ -383,6 +384,10 @@ await suite("desert-ride", async check => {
     await page.locator(t("desert-start-naru")).click();
     await phase(page, "run");
     assert.equal((await page.locator(t("desert-versus")).innerText()).replace(/\s+/g, " "), "裏ボス VS なる");
+    await page.waitForFunction(() => {
+      const node = document.querySelector('[data-test="desert-versus"]');
+      return window.__desertRide.countdown > 0 && node.classList.contains("show") && Number(getComputedStyle(node).opacity) > 0;
+    });
     const banner = await page.evaluate(() => {
       const node = document.querySelector('[data-test="desert-versus"]'), root = document.querySelector('[data-test="desert-ride"]').getBoundingClientRect(), box = node.getBoundingClientRect();
       return { shown: node.classList.contains("show") && getComputedStyle(node).opacity !== "0", top: (box.top - root.top) / root.height, counting: window.__desertRide.countdown > 0 };
