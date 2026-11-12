@@ -46,6 +46,7 @@ try {
       await page.evaluate(() => { window.__desertRide.setInput(true, false); window.__desertRide.setSpeedUp(8); });
       await page.waitForFunction(() => document.querySelector('[data-test="desert-ride"]')?.dataset.phase === "practiced", null, { timeout: 30000 });
       await page.locator('[data-test="desert-start"]').click();
+      await page.waitForFunction(() => document.querySelector('[data-test="desert-ride"]')?.dataset.phase === "run");
       assert.equal(await page.evaluate(() => window.__desertRide.course.id), "left-bowl");
       assert.equal(await page.evaluate(() => window.__desertRide.game.x), 0);
       await page.evaluate(() => window.__desertRide.skipCountdown());
