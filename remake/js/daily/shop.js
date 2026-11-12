@@ -29,6 +29,7 @@ import { SHOP_EQUIPMENT_ART } from "./shop-equipment-art.js";
 import { flavorThermalGuide } from "../craft/temperature-model.js";
 import { flavorFeatureCard, flavorTags, equipmentUse, equipmentGuide } from "../craft/flavor-guide.js";
 import { homeRig } from "./home-rig.js";
+import { greetHomeShop } from "./shop-greeting.js";
 
 // 店頭に並ぶフレーバー（ch1）。定番＋レシピ帳のヒントで出てくる組み合わせの材料
 export const SHOP_FLAVORS = [
@@ -142,6 +143,7 @@ function shopHeader(sub, money, name = "Dr.fookah", branded = false) {
   return el("header.shop-head", [branded ? el("h2.shop-brand", [storeLogo("shop", { width: 100, height: 44 }), el("span", { text: name })]) : el("h2", { text: name }), el("span.shop-sub", { text: sub }), money]);
 }
 const rioUnavailable = () => rioVisitReason(state);
+const homeShopInFlight = new WeakSet();
 
 /** 入店前に行き先を選ぶ。買い出し・大会準備の案内では、そのまま1Fへ進む。戻り値は従来どおり。 */
 export async function openShop(opts = {}) {
@@ -161,12 +163,21 @@ export async function openShop(opts = {}) {
     if (state.chapter < 2) return null;
     return openCounter({ flavorIds: WIDEHANGA_FLAVORS, stockChapter: 2, shopName: WIDEHANGA_SHOP_NAME, background: CITY_BACKGROUNDS.shop, kujiShop: "widehanga" });
   }
-  if (!opts.errand && !opts.direct) {
-    const destination = await chooseShopFloor();
-    if (destination !== "shop") return destination;
-  }
-  refreshPlaceCue("shop");
-  return openCounter(opts);
+  const owner = state;
+  if (homeShopInFlight.has(owner)) return null;
+  homeShopInFlight.add(owner);
+  try {
+    const greeted = await greetHomeShop(opts);
+    // LOAD・タイトルで捨てた買い出しの呼出し元を再開しない。旧counter/入口と同じ境界。
+    if (state !== owner) return new Promise(() => {});
+    if (!greeted) return null;
+    if (!opts.errand && !opts.direct) {
+      const destination = await chooseShopFloor();
+      if (destination !== "shop") return destination;
+    }
+    refreshPlaceCue("shop");
+    return await openCounter(opts);
+  } finally { homeShopInFlight.delete(owner); }
 }
 // 入口の写真は、入口を出す前に読み込みとデコードを待つ（#3203: 地図から入った直後のフレームで写真の枠が空白だった）。
 // 通信が遅くても入口は上限で出し、写真が届くまでは枠に下地を見せる（届いたら外す）。
