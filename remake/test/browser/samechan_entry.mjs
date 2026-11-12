@@ -17,6 +17,7 @@ async function setup(page, { restore = false } = {}) {
     else {
       const s = K.core.newGame();
       Object.assign(s, { chapter: 2, phase: "daily", day: 1, slot: 0, money: 100000 });
+      s.met.samechan = true; // The existing chapter-one encounter already introduced her.
       Object.assign(s.flags, { _intro_samechan: true, _samechan_first_encounter: true, _samechan_nickname_known: true });
     }
     K.ch1.setupHooks(); K.vn.vnTest.turbo = true;
@@ -62,11 +63,11 @@ await suite("samechan-entry", async check => {
       await check(`${mode}-${value ? "romance" : "friend"}-sequence`, async page => {
         await setup(page);
         const r = await page.evaluate(async value => {
-          const s = K.core.state, events = []; s.affinity.samechan = 32;
+          const s = K.core.state, events = []; s.affinity.samechan = 9; s.stats.charm = 10;
           const enter = K.vn.hooks.onEnter;
           K.vn.hooks.onEnter = (id, scene) => { events.push(id); enter?.(id, scene); };
           K.vn.vnTest.choose = id => id === "samechan_shop_bond_question" ? 1 - value : value;
-          for (let i = 0; i < 4; i++) await K.visit();
+          for (let i = 0; i < 2; i++) await K.visit();
           const afterSeat = K.snapshot();
           await K.visit(); // an afternoon cannot play the closing scene
           const beforeClosing = K.snapshot();
@@ -85,11 +86,13 @@ await suite("samechan-entry", async check => {
           return { events, afterSeat, beforeClosing, afterClosing, capped, afterQuestion,
             replay, repeated, loaded, log, confession, name: K.data.displayName("samechan", K.core.state) };
         }, value);
-        assert.deepEqual(r.events.slice(0, 4), ["samechan_shop_first", "samechan_shop_repeat_0",
-          "samechan_shop_repeat_1", "samechan_shop_quiet_seat"]);
+        assert.deepEqual(r.events.slice(0, 2), ["samechan_shop_first", "samechan_shop_quiet_seat"]);
+        const closingAt = r.events.indexOf("samechan_shop_closing_check");
+        assert.equal(r.events[closingAt + 1], "samechan_shop_bond_question", "question follows closing in the same visit");
         assert(r.afterSeat.flags._samechan_quiet_seat_done);
         assert(!r.beforeClosing.flags._samechan_closing_check_done);
         assert(r.afterClosing.flags._samechan_closing_check_done);
+        assert(r.afterClosing.flags._samechan_bond_question_done, "closing and question complete together");
         assert.equal(r.capped.affinity.samechan, r.afterClosing.affinity.samechan + 85);
         assert.equal(r.capped.flags._samechan_affinity_waiting_pts || 0,0);
         assert(r.afterQuestion.flags._samechan_bond_question_done);
@@ -97,7 +100,7 @@ await suite("samechan-entry", async check => {
         assert.equal(r.afterQuestion.romance.samechan || 0, value);
         assert.equal(r.afterQuestion.flags._samechan_affinity_stage_released_pts || 0,0);
         assert(r.afterQuestion.affinity.samechan >= 48);
-        assert.equal(r.afterQuestion.money, 100000 - 7 * 3000);
+        assert.equal(r.afterQuestion.money, 100000 - 5 * 3000);
         assert(r.replay); assert.deepEqual(r.repeated, r.afterQuestion);
         assert.equal(r.loaded.affinity.samechan, r.afterQuestion.affinity.samechan);
         assert.deepEqual(r.loaded.romanceChoices, r.afterQuestion.romanceChoices);
@@ -164,28 +167,32 @@ await suite("samechan-entry", async check => {
       assert.deepEqual(r.repeated, r.after);
     }, options);
 
-    await check(`${mode}-saved-answer-finishes-without-changing-relationship`, async page => {
+    for (const receiptDialogue of ["samechan_shop_bond_question", "samechan_shop_closing_check"]) {
+    await check(`${mode}-${receiptDialogue}-saved-answer-finishes-without-changing-relationship`, async page => {
       await setup(page);
-      const r = await page.evaluate(async () => {
+      const r = await page.evaluate(async receiptDialogue => {
         const s = K.core.state;
-        s.story.samechan = 5; s.affinity.samechan = 33;
-        s.flags._samechan_quiet_seat_done = s.flags._samechan_closing_check_done = true;
+        s.story.samechan = 5; s.affinity.samechan = 33; s.slot = 1;
+        s.flags._samechan_quiet_seat_done = true;
+        s.flags._samechan_closing_check_done = receiptDialogue !== "samechan_shop_closing_check";
         s.flags._samechan_affinity_waiting_pts = 40;
         // A choice really made before an interrupted question; completion is still unread.
         s.romanceChoices.bond_q1_samechan = { char: "samechan", value: 0, day: s.day };
         s.flags._samechan_visit = { stamp: `${s.chapter}:${s.day}:${s.slot}`,
-          dialogue: "samechan_shop_bond_question", complete: false };
+          dialogue: receiptDialogue, complete: false };
         K.core.save(); K.core.load();
         K.vn.vnTest.choose = () => { throw Error("A saved answer must not be asked again"); };
         await K.samechan.visitSamechan(K.samechan.samechanSpot());
         return { state: K.snapshot(), log: K.vn.backlog().map(x => x.text).join(" ") };
-      });
+      }, receiptDialogue);
       assert.equal(r.state.romanceChoices.bond_q1_samechan.value, 0);
       assert.equal(r.state.romance.samechan || 0, 0); assert(r.log.includes("友として"));
       assert(r.state.flags._samechan_bond_question_done);
       assert.equal(r.state.flags._samechan_affinity_stage_released_pts, 40);
       assert.deepEqual(r.state.lovers, []); assert(!r.state.flags._friend_samechan);
     }, options);
+
+    }
 
     await check(`${mode}-chapter-missing-script-and-existing-relationship-boundaries`, async page => {
       await setup(page);
@@ -210,3 +217,4 @@ await suite("samechan-entry", async check => {
     }, options);
   }
 });
+

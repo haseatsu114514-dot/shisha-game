@@ -58,10 +58,10 @@ const FACE_URLS = ["img/faces/face_sumi.webp", "img/faces/face_naru.webp"];
   await noFonts.namespace.loadVnFonts();
 }
 
-async function loadUi() {
+async function loadUi({ loadImage = image => image.onload?.() } = {}) {
   const requested = [], idle = [];
   class Image {
-    set src(url) { requested.push(url); queueMicrotask(() => this.onload?.()); }
+    set src(url) { requested.push(url); queueMicrotask(() => loadImage(this, url)); }
     decode() { return Promise.resolve(); }
   }
   const context = vm.createContext({
@@ -113,6 +113,43 @@ async function loadUi() {
   return { ui: module.namespace, requested, idle };
 }
 const storeRequests = (requested) => requested.filter((u) => STORE_URLS.includes(u));
+
+// 場面で一度読んだ画像も、後から固定UI用に keep へ昇格できる。
+{
+  const { ui, requested } = await loadUi();
+  assert.equal(await ui.imageReady('bench.webp'), true);
+  assert.equal(await ui.imageReady('bench.webp', 1500, { keep: true }), true);
+  assert.equal(requested.length, 2, 'released image is prepared again before keep resolves');
+  await ui.imageReady('bench.webp', 1500, { keep: true });
+  await ui.imageReady('bench.webp');
+  assert.equal(requested.length, 2, 'kept image remains reusable');
+}
+
+// 読み込み中の昇格は通信を増やさず、時間切れ後も元の通信を受け取る。
+{
+  const pending = [];
+  const { ui, requested } = await loadUi({ loadImage: image => pending.push(image) });
+  const first = ui.imageReady('slow.webp', 5);
+  const kept = ui.imageReady('slow.webp', 5, { keep: true });
+  assert.deepEqual(await Promise.all([first, kept]), [false, false]);
+  assert.equal(await ui.imageReady('slow.webp', 5, { keep: true }), false);
+  assert.equal(requested.length, 1, 'pending upgrade and expired wait share one request');
+  const longer = ui.imageReady('slow.webp', 1500, { keep: true });
+  pending.shift().onload();
+  assert.equal(await longer, true);
+  assert.equal(await ui.imageReady('slow.webp', 5, { keep: true }), true);
+  assert.equal(requested.length, 1, 'late completion clears the expired wait');
+}
+
+// 保持するつもりの画像も、取得に失敗したらキャッシュから除いて再試行する。
+{
+  let calls = 0;
+  const { ui } = await loadUi({ loadImage: image => ++calls === 1 ? image.onerror() : image.onload() });
+  assert.equal(await ui.imageReady('retry.webp', 1500, { keep: true }), false);
+  assert.equal(await ui.imageReady('retry.webp', 1500, { keep: true }), true);
+  assert.equal(await ui.imageReady('retry.webp', 1500, { keep: true }), true);
+  assert.equal(calls, 2);
+}
 
 // 既定: 店ロゴも含めて即時に読む（従来どおり）。2回呼んでも二重に読まない。
 {

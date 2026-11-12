@@ -77,7 +77,7 @@ const INDOOR_WINDOWS_BY_BG = [
   [/^bg_tonari_inside_(?:day|night)\.png$/, TONARI_WINDOWS],
   [/^bg_home_(?:day|night)\.png$/, HOME_WINDOWS],
   [/^bg_c_station_(?:day|night)\.png$/, C_STATION_WINDOWS],
-  [/^bg_choizap(?:_night)?\.png$/, CHOIZAP_WINDOWS],
+  [/^bg_choizap(?:_day|_night)?\.png$/, CHOIZAP_WINDOWS],
   [/^bg_cafe_(?:day|night)\.png$/, CAFE_WINDOWS],
   [/^bg_yuzugaya_c_station(?:_night)?\.png$/, YUZUGAYA_C_STATION_WINDOWS],
   [/^bg_yuzugaya_shop\.png$/, YUZUGAYA_SHOP_WINDOWS],

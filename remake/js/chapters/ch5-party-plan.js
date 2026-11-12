@@ -35,15 +35,24 @@ export function partyBeforeSeat(routes, value) {
   return conflictBound(routes, guests) ? guests.remote.map(id => `ch5_party_${id}_call`) : [];
 }
 
+/**
+ * 修羅場の引き金になる場面（席ごと。2026-11-11 オーナー「最後の修羅場は演出をしっかり・やってしまった感」）。
+ * 恋人の隣: その人が恋人らしく振る舞ったところを見られる（一人ずつ）。スミさんの隣・友人の隣: それぞれ共通の場面。
+ */
+export const partyTrigger = (lovers, seat) => seat === "sumi" ? "ch5_party_trigger_sumi"
+  : lovers.includes(seat) ? `ch5_party_trigger_${seat}` : "ch5_party_trigger_friend";
+
 /** 席を選んだ後に読む場面（純粋。テスト用に公開）。 */
 export function partyScenes(routes, value, seat) {
   const { present, lovers, remote } = partyGuests(routes, value);
   // テレビ電話の恋人も数える（席にいる恋人と合わせて2人以上で修羅場）。着信は席の前（partyBeforeSeat）で済んでいる
   if (conflictBound(routes, { lovers, remote })) {
     const conflict = selectPostEndingConflict(routes, value, { present: [...present, ...remote] });
-    return { kind: "conflict", participants: conflict.participants,
-      scenes: ["ch5_party_shuraba_open", ...conflict.participants.map(id => routes.romance[id].conflict),
-        routes.conflict.close, "ch5_party_shuraba_close"] };
+    // 隣に座った恋人の反応は最後に読む（さっきまで隣で笑っていた人が、いちばん後に口を開く）。記録する並び（participants）は変えない
+    const order = [...conflict.participants.filter(id => id !== seat), ...conflict.participants.filter(id => id === seat)];
+    const reactions = order.map(id => routes.romance[id].conflict);
+    return { kind: "conflict", participants: conflict.participants, remote: conflict.participants.filter(id => remote.includes(id)), reactions,
+      scenes: [partyTrigger(lovers, seat), "ch5_party_shuraba_open", ...reactions, routes.conflict.close, "ch5_party_shuraba_close"] };
   }
   const seatScene = seat === "sumi" ? "ch5_party_seat_sumi" : lovers.includes(seat) ? "ch5_party_seat_lover" : "ch5_party_seat_friend";
   const away = lovers.length === 1 && seat !== lovers[0] ? ["ch5_party_seat_away"] : [];

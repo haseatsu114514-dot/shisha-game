@@ -17,7 +17,8 @@ const KINDS = Object.keys(HIDANE_COLOR);
  * 札の板と後ろの光の絵（GB04・SBD123）。両方読めた時だけ札に has-art を付ける。読めない時は CSS の形のまま出る。
  * はじめの一度だけ読み込みを少し待つ（待つのは最大 300ms。その後は読めていれば待たない）。
  */
-const ART = ["img/ui/growth_board/levelup_plate.webp", "img/ui/growth_board/burst_rays.webp"];
+// 節目（Lv.10 ごと）の紋 levelup_crest は第2弾（GB05・SBD124）。全部読めた時だけ has-art（絵の見た目）にする
+const ART = ["img/ui/growth_board/levelup_plate.webp", "img/ui/growth_board/burst_rays.webp", "img/ui/growth_board/levelup_crest.webp"];
 let art = null, artOk = false;
 function loadArt() {
   if (typeof Image !== "function") return Promise.resolve(false);

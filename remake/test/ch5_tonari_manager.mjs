@@ -1,3 +1,4 @@
+import * as shiftPay from "../js/core/shift-pay.js";
 // 店長表示と、出張中のつむぎを接客に二重配置しないこと。画面/音だけ差し替え、tonari本体を実行する。
 // node --experimental-vm-modules remake/test/ch5_tonari_manager.mjs
 import assert from "node:assert/strict";
@@ -10,6 +11,7 @@ let present = true, screen, order;
 const played = [];
 const noop = () => {};
 const values = {
+  ...shiftPay,
   state, config: {}, DB: { dialogues: {} }, SE: { select: noop, cancel: noop },
   el: (tag, attrs = {}, children = []) => Array.isArray(attrs) ? ({ tag, children: attrs }) : ({ tag, ...attrs, children }),
   showScreen: (_id, root) => (screen = root),
@@ -71,3 +73,4 @@ assert.match(text(screen), /常連席にはつむぎがいる/);
 await module.namespace.serveShiftOrder();
 assert.doesNotMatch(played.at(-1), /ch5_/);
 console.log("ch5 tonari manager: menu, absent/present orders, chapter-one regression passed");
+
