@@ -462,7 +462,9 @@ await suite("ch4-dubai-daily", async check => {
     await go(page, "ch4_dubai_creek");
     await dubaiMap(page, { day: 51, slot: 0 });
     await page.locator(dt("pin-ch4_dubai_longlong")).click();
-    assert.equal(await page.locator(dt("map-go")).isDisabled(), true, "the next ordinary shisha still requires 6,000 yen");
+    assert.equal(await page.locator(`${dt("pin-ch4_dubai_longlong")}.off`).count(), 1, "the next ordinary visit is unavailable");
+    assert.match(await page.locator(".map-info").getAttribute("aria-label"), /お金が足りない.*6,000/, "blocked by the restored 6,000-yen price, not a daily visit lock");
+    assert.equal(await page.locator(dt("map-go")).count(), 0, "unavailable destinations do not expose the map-go action");
     assert.equal((await get(page)).money, money);
   });
 
