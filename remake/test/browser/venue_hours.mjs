@@ -91,7 +91,8 @@ await suite("venue-hours", async runCheck => {
       assert.match(await page.locator(t("venue-host-line")).innerText(), /越えましたね/);
       await assertFits(page, ".venue-host, .trpg-trial-actions button");
       assert.equal(await snapshot(page), before);
-      await hit(page, "trpg-trial-back"); await hit(page, "trpg-club-choice-time");
+      await hit(page, "trpg-trial-back");
+      // Founding is now the VN played on entry, before the trial shelf opens.
       assert(await page.evaluate(() => !!V.core.state.trpg.club.founded));
       await hit(page, "trpg-trial-open");
     }, options);
@@ -117,7 +118,8 @@ await suite("venue-hours", async runCheck => {
 
   await check("night-cafe-has-no-free-day-trial", async page => {
     await setup(page, { chapter: 2, slot: 1 }); await page.evaluate(() => V.openCafe());
-    await portraitReady(page, "sai"); await page.locator(t("trpg-club-choice-time")).waitFor();
+    await portraitReady(page, "sai"); await page.locator(t("trpg-campaign-notice")).waitFor();
+    assert(await page.evaluate(() => !!V.core.state.trpg.club.founded));
     assert.equal(await page.locator(t("trpg-trial-open")).count(), 0);
     assert.match(await page.locator(t("venue-host-line")).innerText(), /今夜/);
   });
