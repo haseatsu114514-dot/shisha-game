@@ -3,6 +3,7 @@ import { AIM_RANGE, MODES, DIVISIONS, POWER, RULESET, resolveThrow, releaseAimAt
 import { createMatch, takeTurn, turnOf, resolveTurn, planOpponent, matchResult, inSuddenDeath, suddenDeathTarget } from './axe-match.js';
 import { pickChallenges, evaluateChallenges, rankOf, titleOf } from './axe-challenges.js';
 import { sessionStats } from './axe-presentation.js';
+import { AXE_EQUIPMENT, AXE_EQUIPMENT_VERSION, axePower } from './axe-equipment.js';
 
 export const SCENE = Object.freeze({ width: 1600, height: 900, cx: 800, cy: 430, radius: 260, pullDistance: 230 });
 export const INPUT_VERSION = 'tap-pull-preview-v1';
@@ -27,7 +28,10 @@ export function pullPower(start, p) {
 }
 
 export class AxePullSession {
-  constructor({ mode = 'practice', division = 'rec', difficulty = 'normal', seed = 11, steady = 1 } = {}) {
+  constructor({ mode = 'practice', division = 'rec', difficulty = 'normal', seed = 11, steady, equipmentId = 'house' } = {}) {
+    if (!Object.hasOwn(AXE_EQUIPMENT, equipmentId)) throw new RangeError('Unknown axe');
+    this.equipment = AXE_EQUIPMENT[equipmentId];
+    steady ??= this.equipment.steady;
     if (!['practice', 'league', 'versus'].includes(mode) || !Object.hasOwn(DIVISIONS, division) || !Number.isInteger(seed) || seed < 0 || seed > 0xffffffff || !Number.isFinite(steady) || steady < .5 || steady > 1) throw new RangeError('Invalid axe preview options');
     if (mode === 'versus' && !['easy', 'normal', 'hard'].includes(difficulty)) throw new RangeError('This preview does not unlock the secret opponent');
     this.mode = mode; this.division = division; this.difficulty = difficulty; this.seed = seed; this.steady = steady;
@@ -69,7 +73,8 @@ export class AxePullSession {
     this.held += milliseconds;
     if (this.phase === 'pull' && this.pull.keyboard) { this.pull.clock += milliseconds; this.power = clamp(this.pull.clock / 1200, 0, 1); }
   }
-  preview(power = this.phase === 'pull' ? this.power : POWER.ideal) {
+  preview(rawPower = this.phase === 'pull' ? this.power : POWER.ideal) {
+    const power = axePower(rawPower, this.equipment.id);
     const release = releaseAimAt(this.aim, this.held, power, this.shots.length, this.held < this.focusUntil, this.steady);
     const input = { x: release.x, y: release.y, power, called: this.called };
     const shot = this.match ? resolveTurn(this.match, 'player', input) : resolveThrow(input, this.shots, { division: this.division, throws: this.rules.throws });
@@ -105,6 +110,7 @@ export class AxePullSession {
       opponent: this.match ? 'hiyori' : null, division: this.division, throwCount: this.rules.throws, maximum: this.rules.max,
       challenges: evaluateChallenges(this.challengeIds, this.shots, done), rank: done ? rankOf(total, this.rules.max) : null,
       title: done ? titleOf(this.shots, this.rules.max) : null, stats: sessionStats(this.shots), inputVersion: INPUT_VERSION,
+      equipment: { id: this.equipment.id, version: AXE_EQUIPMENT_VERSION, steady: this.steady, powerErrorScale: this.equipment.powerErrorScale },
       ...(this.match ? { match: { ...matchResult(this.match), winner: done ? matchResult(this.match).winner : null,
         player: structuredClone(this.match.player), opponent: structuredClone(this.match.opponent), suddenDeathThrows: structuredClone(this.match.suddenDeath), difficulty: this.difficulty, division: this.division, seed: this.seed },
         series: { bestOf: 1, games: done ? [matchResult(this.match)] : [], wins: { player: Number(done && matchResult(this.match).winner === 'player'), opponent: Number(done && matchResult(this.match).winner === 'opponent') }, winner: done ? matchResult(this.match).winner : null } } : {}) };

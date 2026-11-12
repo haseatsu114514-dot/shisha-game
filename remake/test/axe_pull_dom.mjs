@@ -3,11 +3,12 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 class Element extends EventTarget {
  constructor(tag='div'){super();this.tagName=tag.toUpperCase();this.children=[];this.attrs={};this.dataset={};this.style={setProperty(k,v){this[k]=v}};this.hidden=false;this.disabled=false;this.open=false;this.value='';this.textContent='';this.captures=new Set();}
+ querySelector(selector){if(selector==='i')return this.band ||= new Element('i');return null}
  setAttribute(k,v){this.attrs[k]=String(v)} append(n){this.children.push(n)} replaceChildren(){this.children=[]} focus(){document.activeElement=this} hasPointerCapture(id){return this.captures.has(id)} setPointerCapture(id){this.captures.add(id)} releasePointerCapture(id){this.captures.delete(id);this.dispatchEvent(new Event('lostpointercapture'))}
  showModal(){this.open=true} close(){if(this.open){this.open=false;this.dispatchEvent(new Event('close'))}}
  getBoundingClientRect(){return {left:0,top:0,width:innerWidth,height:innerHeight}} get clientWidth(){return innerWidth}get clientHeight(){return innerHeight}
 }
-const ids=['scene','calls','score','instruction','next','pull','grip','focus','track','power-label','power','menu','summary','mode','division','difficulty','settings','restart','again','summary-settings','result'];
+const ids=['scene','calls','score','instruction','next','pull','grip','focus','track','power-label','power','menu','summary','mode','division','difficulty','settings','restart','again','summary-settings','result','wallet','equipment','axe-offers','axe-effect'];
 const nodes=Object.fromEntries(ids.map(id=>[id,new Element(['grip','next','focus','settings','restart','again','summary-settings'].includes(id)?'button':id==='scene'?'svg':'div')]));
 nodes.mode.value='practice';nodes.division.value='rec';nodes.difficulty.value='normal';
 globalThis.window=new EventTarget();globalThis.document=Object.assign(new EventTarget(),{hidden:false,hasFocus:()=>true,getElementById:id=>nodes[id],createElement:tag=>new Element(tag),createElementNS:(_,tag)=>new Element(tag)});
@@ -27,3 +28,11 @@ test('keyboard stays usable after next and restart, and buttons regain scene foc
 test('opening settings cancels pull and paused frames never release it',()=>{restart();aim();down(780,170);fire(nodes.settings,'click');advance(5000);up(780,230);nodes.menu.close();advance(500);assert.equal(nodes.next.hidden,true);assert.equal(document.activeElement,nodes.scene);assert.match(nodes.score.textContent,/0 pt · 1\/3/);});
 
 test('kill declaration and focus buttons return to keyboard aiming',()=>{restart();aim();nodes.calls.children[0].focus();fire(nodes.calls.children[0],'click');assert.equal(document.activeElement,nodes.scene);nodes.focus.focus();fire(nodes.focus,'click');assert.equal(document.activeElement,nodes.scene);key('keydown','Space');advance(740);key('keyup','Space');advance(1000);assert.equal(nodes.next.hidden,false);});
+
+test('demo shop charges once, equips best owned after purchase and does not stack bonuses',()=>{
+  restart();fire(nodes.settings,'click');
+  fire(nodes['axe-offers'].children[0],'click');assert.equal(nodes.wallet.textContent,'試作用所持金 85,000円');assert.equal(nodes.equipment.value,'gear_hatchet');
+  fire(nodes['axe-offers'].children[0],'click');assert.equal(nodes.wallet.textContent,'試作用所持金 85,000円');
+  fire(nodes['axe-offers'].children[2],'click');assert.equal(nodes.wallet.textContent,'試作用所持金 35,000円');assert.equal(nodes.equipment.value,'gear_hatchet_precision');
+  restart();aim();assert.equal(nodes.grip.style.background,'#303c48');assert(Math.abs(parseFloat(nodes.track.querySelector('i').style.height)-20)<1e-8);
+});

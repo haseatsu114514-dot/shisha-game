@@ -2,8 +2,11 @@ import { AxePullSession, SCENE, scenePoint, boardPoint } from './minigames/axe-p
 import { BOARD, RINGS, LINE, CLUSTERS, KILLS, BLADE, closuresOf, canCall, totalOf } from './minigames/axe-model.js';
 import { flightPose, flightTime, flightDuration, TARGET } from './minigames/axe-flight.js';
 import { projectedAxe } from './minigames/axe-geometry.js';
+import { AXE_EQUIPMENT, PERSONAL_AXES, HOUSE_AXE, bestOwnedAxe, ownsAxe, axePurchaseStatus, buyAxe, axeGreenBand, axeEffect } from './minigames/axe-equipment.js';
 const $ = id => document.getElementById(id), svg = $('scene'), ns = 'http://www.w3.org/2000/svg';
 const el = (tag, attrs, parent = svg) => { const n = document.createElementNS(ns, tag); for (const [k, v] of Object.entries(attrs)) n.setAttribute(k, v); parent.append(n); return n; };
+// This wallet is deliberately memory-only. No main-game state or save API is imported.
+const demoWallet = { chapter: 1, money: 100000, owned: [] };
 let game, last = 0, flight = 0, blocked = false, pointer = null, space = false;
 const fingers = new Set(), labels = ['左上', '右上', '左下', '右下'];
 const point = event => scenePoint(svg.getBoundingClientRect(), event.clientX, event.clientY);
@@ -33,7 +36,7 @@ function drawAxe(shot, ms) {
 }
 for (const [i,k] of KILLS.entries()) { const b=document.createElement('button'); b.textContent=`青 ${labels[i]}`; b.dataset.call=k.id; b.addEventListener('click',()=>{ if(game.declare(game.called===k.id?null:k.id)) {focusScene();update();} }); $('calls').append(b); }
 function cancel() { game?.cancelPull(); space=false; if(pointer!==null) { const id=pointer; pointer=null; if($('grip').hasPointerCapture(id)) $('grip').releasePointerCapture(id); } }
-function start() { cancel(); game=new AxePullSession({mode:$('mode').value,division:$('division').value,difficulty:$('difficulty').value}); flight=0; marks.replaceChildren(); axe.replaceChildren(); $('menu').close(); $('summary').close(); blocked=false; last=0; update(); focusScene(); }
+function start() { cancel(); game=new AxePullSession({mode:$('mode').value,division:$('division').value,difficulty:$('difficulty').value,equipmentId:ownsAxe(demoWallet,$('equipment').value)?$('equipment').value:bestOwnedAxe(demoWallet).id}); flight=0; marks.replaceChildren(); axe.replaceChildren(); $('menu').close(); $('summary').close(); blocked=false; last=0; update(); focusScene(); }
 function update() {
   const active=game.canAim()||game.phase==='pull'; $('score').textContent=`${totalOf(game.shots)} pt · ${Math.min(game.shots.length+1,game.rules.throws)}/${game.rules.throws}${game.match?`\nひより ${totalOf(game.match.opponent)} pt`:''}`;
   $('instruction').textContent=game.phase==='result'?`${game.actor==='opponent'?'ひより · ':''}${game.last.score}点${game.last.stuck?'':' / 落下'}`:game.phase==='flight'?(game.actor==='opponent'?'ひよりの投球':''):game.suddenDeath?'サドンデス · 指定の青を狙う':!game.selected?'的をタップして、狙いを決める':game.phase==='pull'?'緑の位置で、離す':'右のハンドルを引く';
@@ -45,6 +48,7 @@ function update() {
   renderAim();
 }
 function renderAim() { const active=game.actor==='player'&&['aim','pull'].includes(game.phase); hands.setAttribute('visibility',active?'visible':'hidden'); hands.setAttribute('transform',`translate(0 ${game.power*90})`); reticle.setAttribute('visibility',active&&game.selected?'visible':'hidden'); predicted.setAttribute('visibility',active&&game.selected?'visible':'hidden'); if(active&&game.selected) { reticle.setAttribute('transform',`translate(${SCENE.cx+game.aim.x*SCENE.radius} ${SCENE.cy+game.aim.y*SCENE.radius})`); const p=game.preview(); predicted.setAttribute('cx',SCENE.cx+p.aim.x*SCENE.radius); predicted.setAttribute('cy',SCENE.cy+p.aim.y*SCENE.radius); }
+  const band=axeGreenBand(game.equipment.id); $('track').querySelector('i').style.top=`${band.min*100}%`; $('track').querySelector('i').style.height=`${(band.max-band.min)*100}%`; $('grip').style.background=game.equipment.grip;
   const distance=SCENE.pullDistance*scale(); $('track').style.height=`${distance}px`; $('power-label').style.top=`${distance+55}px`; $('power').style.height=`${game.power*100}%`; $('grip').style.setProperty('--pull',`${game.power*distance}px`); $('power-label').textContent=`${Math.round(game.power*100)}%`; }
 function beginFlight() { flight=0; axe.replaceChildren(); bladeFlash.setAttribute('visibility','hidden'); update(); }
 function release(id,p) { if(game.release(id,p)) beginFlight(); else update(); }
@@ -57,7 +61,7 @@ $('grip').addEventListener('pointermove',e=>{if(pointer!==e.pointerId)return; ga
 $('grip').addEventListener('pointerup',e=>{if(pointer!==e.pointerId)return; const id=pointer; pointer=null; release(id,pullPoint(e)); if($('grip').hasPointerCapture(id))$('grip').releasePointerCapture(id);});
 $('grip').addEventListener('lostpointercapture',()=>{if(pointer!==null){cancel();update();}});
 $('focus').addEventListener('click',()=>{game.focus();focusScene();update();});
-$('next').addEventListener('click',()=>{ if(!game.next())return; bladeFlash.setAttribute('visibility','hidden'); axe.replaceChildren(); if(game.phase==='summary') {const r=game.result(true); $('result').textContent=`${r.total} / ${r.maximum}点\nランク ${r.rank}${r.match?`\n${r.match.winner==='player'?'あなたの勝ち':'ひよりの勝ち'}`:''}\nセーブ・報酬には反映しません`; $('summary').showModal();blocked=true;} else if(game.phase==='flight')beginFlight(); update(); if(game.phase==='aim')focusScene(); });
+$('next').addEventListener('click',()=>{ if(!game.next())return; bladeFlash.setAttribute('visibility','hidden'); axe.replaceChildren(); if(game.phase==='summary') {const r=game.result(true); $('result').textContent=`${r.total} / ${r.maximum}点\nランク ${r.rank} · ${game.equipment.name}${r.match?`\n${r.match.winner==='player'?'あなたの勝ち':'ひよりの勝ち'}`:''}\nセーブ・報酬には反映しません`; $('summary').showModal();blocked=true;} else if(game.phase==='flight')beginFlight(); update(); if(game.phase==='aim')focusScene(); });
 function menu() {cancel();blocked=true;$('menu').showModal();update();}
 $('settings').addEventListener('click',menu); $('restart').addEventListener('click',start); $('again').addEventListener('click',start); $('summary-settings').addEventListener('click',()=>{$('summary').close();menu();});
 $('menu').addEventListener('close',()=>{blocked=$('summary').open;last=0;if(!blocked)focusScene();}); $('summary').addEventListener('cancel',e=>e.preventDefault());
@@ -66,4 +70,23 @@ window.addEventListener('keyup',e=>{if(e.code==='Space'&&space){e.preventDefault
 function suspend(){cancel();fingers.clear();last=0;update();}
 window.addEventListener('blur',suspend); window.addEventListener('resize',suspend); document.addEventListener('visibilitychange',suspend);
 function frame(now) { const dt=last?Math.min(now-last,100):0;last=now; if(!blocked&&!document.hidden&&document.hasFocus()){ game.tick(dt); if(game.phase==='flight'){flight+=dt;drawAxe(game.pending,flight);if(flight>=flightDuration(game.pending,Boolean(game.pending.called))){const s=game.pending;game.impact();if(s.stuck){el('path',{d:`M${s.landing.x} ${s.landing.y-BLADE.halfLength}V${s.landing.y+BLADE.halfLength}`,stroke:s.score?'#3b3124':'#70634d','stroke-width':.012},marks);bladeFlash.setAttribute('cx',SCENE.cx+s.landing.x*SCENE.radius);bladeFlash.setAttribute('cy',SCENE.cy+s.landing.y*SCENE.radius);bladeFlash.setAttribute('visibility',s.score?'visible':'hidden');}update();}} renderAim();} requestAnimationFrame(frame); }
-start();requestAnimationFrame(frame);
+function renderShop(preferred) {
+  $('wallet').textContent = `試作用所持金 ${demoWallet.money.toLocaleString('ja-JP')}円`;
+  const previous = typeof preferred === 'string' ? preferred : $('equipment').value;
+  $('equipment').replaceChildren();
+  for (const gear of [HOUSE_AXE, ...PERSONAL_AXES]) if (ownsAxe(demoWallet, gear.id)) {
+    const option = document.createElement('option'); option.value = gear.id; option.textContent = gear.name; $('equipment').append(option);
+  }
+  $('equipment').value = ownsAxe(demoWallet, previous) ? previous : bestOwnedAxe(demoWallet).id;
+  $('axe-offers').replaceChildren();
+  for (const gear of PERSONAL_AXES) {
+    const button = document.createElement('button'); button.type = 'button';
+    const status = axePurchaseStatus(demoWallet, gear.id); button.disabled = !status.ok;
+    button.textContent = `${gear.name} · ${gear.price.toLocaleString('ja-JP')}円${status.reason === 'owned' ? ' · 所持済み' : status.reason === 'money' ? ' · 残高不足' : ''} / ${axeEffect(gear)}`;
+    button.addEventListener('click', () => { if (buyAxe(demoWallet, gear.id)) { renderShop(bestOwnedAxe(demoWallet).id); } });
+    $('axe-offers').append(button);
+  }
+  $('axe-effect').textContent = axeEffect(AXE_EQUIPMENT[$('equipment').value] || HOUSE_AXE) + '。この設定で最初から、で反映。点数・刃の大きさは共通。';
+}
+$('equipment').addEventListener('change', renderShop);
+renderShop(); start(); requestAnimationFrame(frame);
