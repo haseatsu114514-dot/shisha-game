@@ -407,7 +407,7 @@ async function readDialogueScene(owner, scene) {
   };
   hooks.onChoice = choiceHook;
   try {
-    const result = await play(dialogue, { signal: controller.signal });
+    const result = await play(dialogue, { signal: controller.signal, ...(scene.cast?.length ? { cast: scene.cast } : {}) });
     finished = current(owner) && !controller.signal.aborted && !!result && !result.cancelled;
     if (finished && strategyChoice) state.flags._ch3_strategy = strategyChoice;
     if (finished) recordChapterThreeWorkChoice(state, scene.id, selected);
@@ -675,7 +675,8 @@ async function readOptional(owner, id) {
 /** 前夜の再生と確定。ウィンドウを通る場合は訪問の完了・自由時間の消費も同じ一回で行う。 */
 async function playEvening(owner, result, { plan = null, window = null, definitions = null } = {}) {
   for (const id of result.scenes) {
-    if (!await readScene(owner, { id, bg: "bg_street_night" })) return false;
+    // cast: 視線のカットイン（台本の motion "gaze" の短い版）に出すのは、その場にいる恋人だけ
+    if (!await readScene(owner, { id, bg: "bg_street_night", cast: result.participants })) return false;
   }
   // 前夜デートは訪問デートと同じ一回の行動。ch3_visit_*_date は再生せず、完了だけを訪問の記録へ渡す。
   if (result.kind === "date" && !completeTokyoVisitAction(state, definitions, plan.id, window)) return false;

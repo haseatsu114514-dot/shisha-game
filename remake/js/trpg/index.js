@@ -1,6 +1,7 @@
 import { mountTrpg } from "./view.js";
 import { portraitUrl, sceneUrl } from "./presentation.js";
 import { costumeUrlsFor } from "./costumes.js";
+import { isTrpgRegular } from "./regulars.js";
 
 async function json(url, signal) {
   const controller = new AbortController();
@@ -49,7 +50,7 @@ function trpgAssetUrls({ characters, manifest, tableTalk, tutorialLines = [] }, 
     if (s.presentation.choiceArt?.src) urls.add(new URL(s.presentation.choiceArt.src, new URL("./view.js", import.meta.url)).href);
     costumeUrlsFor([s]).forEach(url => urls.add(url));
     s.cast.forEach(c => {
-      if (!people.has(c.id) || !manifest.portraits[c.id]) throw new Error("Missing canonical character: " + c.id);
+      if (!people.has(c.id) || !manifest.portraits[c.id] && !isTrpgRegular(c.id)) throw new Error("Missing canonical character: " + c.id);
       urls.add(portraitUrl(manifest, c.id));
     });
     s.dialogues.forEach(d => d.lines.forEach(l => urls.add(portraitUrl(manifest, l.speaker, l.face))));

@@ -9,6 +9,8 @@ TRPGの効果音・シナリオ別BGM（CC0・2026-11-10の仮採用）は [trpg
 
 本編の仮BGM・UI効果音（CC0・2026-11-10。あとで差し替えやすい中央対応表）は [main-placeholder-audio/README.md](main-placeholder-audio/README.md)。
 
+本編の効果音 第1弾（CC0・2026-11-11。拍手・コイン・ガラス・シャッター・猫・炭・好感度のベル・セーブ。オーナー試聴待ち）は [main-se-20261111/README.md](main-se-20261111/README.md)。
+
 | ファイル | 曲名 | 出典 | 使用先 |
 |---|---|---|---|
 | `kansetsu_shomei_to_black_coffee.mp3` | 間接照明とブラックコーヒー | フリーBGM（配布元・作曲者は未記入） | 日常パート（`assets/audio/bgm/kansetsu_shomei_to_black_coffee.mp3`） |

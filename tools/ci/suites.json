@@ -790,7 +790,7 @@
     },
     {
       "id": "resume-loading-a01",
-      "title": "Resume into a later chapter recovers from a failed module fetch (#1081 A01)",
+      "title": "Resume recovers from failed module fetches and removed deployment JS (#1081 A01, #3463)",
       "kind": "browser",
       "weight": 0.5,
       "timeout": 3,
@@ -799,6 +799,8 @@
         "remake/js/core/ui.js",
         "remake/js/chapters/ch1.js",
         "remake/js/chapters/ch2-tournament.js",
+        "remake/js/chapters/ch3-aftermath.js",
+        "remake/js/chapters/ch4.js",
         "remake/test/browser/resume_loading_a01.mjs"
       ],
       "run": ["node remake/test/browser/resume_loading_a01.mjs"]
@@ -919,6 +921,7 @@
         "node --experimental-vm-modules remake/test/ch5_progress.mjs",
         "node remake/test/ch5_sumi_trial.mjs",
         "node remake/test/ch5_party.mjs",
+        "node remake/test/petit_shuraba.mjs",
         "node remake/test/ch5_travel.mjs",
         "node --experimental-vm-modules remake/test/ch3_activities.mjs",
         "node remake/test/ch3_trials.mjs",
@@ -1035,6 +1038,7 @@
         "node remake/test/chapter_feature_gates_2035.mjs",
         "node remake/test/tournament_entrance.mjs",
         "node --experimental-vm-modules remake/test/rio_sample.mjs",
+        "node --experimental-vm-modules remake/test/shop_greeting.mjs",
         "node --experimental-vm-modules remake/test/invites_781.mjs",
         "node --experimental-vm-modules remake/test/stamina_condition.mjs",
         "node --experimental-vm-modules remake/test/lime_consistency.mjs",
@@ -1046,7 +1050,7 @@
         "node --experimental-vm-modules remake/test/hiyori_showroom_806.mjs",
         "node --experimental-vm-modules remake/test/first_meeting_affinity.mjs",
         "node --experimental-vm-modules remake/test/samechan_story.mjs",
-        "node --test remake/test/axe_throw.mjs remake/test/axe_match.mjs remake/test/axe_presentation.mjs remake/test/axe_challenges.mjs",
+        "node --test remake/test/axe_throw.mjs remake/test/axe_match.mjs remake/test/axe_presentation.mjs remake/test/axe_challenges.mjs remake/test/axe_pull.mjs remake/test/axe_pull_dom.mjs remake/test/axe_equipment.mjs remake/test/axe_pull_input.mjs",
         "node remake/test/axe_bar_discovery.mjs",
         "node remake/test/mix_recognition.mjs",
         "node --experimental-vm-modules remake/test/foil_holes.mjs",
@@ -1121,6 +1125,7 @@
       "kind": "quick",
       "run": [
         "node --experimental-vm-modules remake/test/recorded_se.mjs",
+        "node --experimental-vm-modules remake/test/main_se_20261111.mjs",
         "node --experimental-vm-modules remake/test/minigame_se.mjs", "node --experimental-vm-modules remake/test/desert_ride_sfx.mjs",
         "node --experimental-vm-modules remake/test/story_audio.mjs",
         "node --experimental-vm-modules remake/test/entry_phone_audio.mjs",
@@ -1208,6 +1213,7 @@
         "remake/test/axe_throw.mjs",
         "remake/test/axe_match.mjs",
         "remake/test/axe_presentation.mjs",
+        "remake/test/browser/axe_tap_pull.mjs",
         "remake/test/browser/axe_throw.mjs",
         "remake/test/browser/axe_versus.mjs",
         "remake/test/browser/axe_polish.mjs",
@@ -1223,6 +1229,7 @@
         "assets/audio/se/axe_throw/**"
       ],
       "run": [
+        "COMPARISON_DIR=.codex/artifacts/remake-browser/axe-tap-pull node remake/test/browser/axe_tap_pull.mjs",
         "COMPARISON_DIR=.codex/artifacts/remake-browser/axe-poses node remake/test/browser/axe_throw.mjs",
         "COMPARISON_DIR=.codex/artifacts/remake-browser/axe-versus-poses node remake/test/browser/axe_versus.mjs",
         "COMPARISON_DIR=.codex/artifacts/remake-browser/axe-polish-poses node remake/test/browser/axe_polish.mjs",
@@ -1882,6 +1889,30 @@
         "remake/test/browser/ch5_sumi_trial.mjs"
       ],
       "run": ["node remake/test/browser/ch5_sumi_trial.mjs"]
+    },
+    {
+      "id": "petit-shuraba",
+      "title": "Petit shuraba: one scene after a date or a visit while two lovers are hidden, the LIME misfire, the short stare cut-in, and the recall at the final shuraba",
+      "kind": "browser",
+      "weight": 0.3,
+      "timeout": 8,
+      "paths": [
+        "remake/js/core/petit-shuraba.js",
+        "remake/js/daily/petit-shuraba.js",
+        "data/dialogue/petit_shuraba.json",
+        "remake/data/lover.json",
+        "remake/js/daily/romance.js",
+        "remake/js/daily/samechan-date.js",
+        "remake/js/daily/phone.js",
+        "remake/js/motions/gaze.js",
+        "remake/css/motions/gaze.css",
+        "data/dialogue/ch5_party.json",
+        "data/dialogue/relationship_conflicts.json",
+        "remake/test/browser/petit_shuraba.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/petit_shuraba.mjs"
+      ]
     },
     {
       "id": "staff-roll",
@@ -3361,6 +3392,7 @@
         "remake/test/axe_throw.mjs",
         "remake/test/axe_match.mjs",
         "remake/test/axe_presentation.mjs",
+        "remake/test/browser/axe_tap_pull.mjs",
         "remake/test/browser/axe_throw.mjs",
         "remake/test/browser/axe_versus.mjs",
         "remake/test/browser/axe_polish.mjs",
@@ -4352,11 +4384,17 @@
       "timeout": 5,
       "paths": [
         "remake/js/daily/shop.js",
+        "remake/js/daily/shop-greeting.js",
+        "remake/js/chapters/departure-prep.js",
+        "data/dialogue/ch1_rio.json",
+        "remake/test/browser/rio_shop_entry.mjs",
+        "remake/test/browser/shop_greeting_reader.mjs",
         "remake/js/daily/calendar.js",
         "remake/test/browser/shopping_tutorial.mjs"
       ],
       "run": [
-        "node remake/test/browser/shopping_tutorial.mjs"
+        "node remake/test/browser/shopping_tutorial.mjs",
+        "node remake/test/browser/rio_shop_entry.mjs"
       ]
     },
     {
@@ -4827,9 +4865,36 @@
       "run": [
         "node remake/test/browser/look_retro.mjs"
       ]
+    },
+    {
+      "id": "romance-hesitation",
+      "title": "New romance hesitation model and VN controller: eight heroines, cancel, apology, LOAD and duplicate clicks",
+      "kind": "quick",
+      "run": [
+        "node remake/test/romance_hesitation.mjs",
+        "node remake/test/romance_hesitation_engine.mjs"
+      ]
+    },
+    {
+      "id": "romance-hesitation-browser",
+      "title": "Eight confession transitions, real lover memory portraits, two-step return and SAVE/LOAD",
+      "kind": "browser",
+      "weight": 2,
+      "timeout": 8,
+      "paths": [
+        "remake/js/core/romance-hesitation.js",
+        "remake/js/vn/engine.js",
+        "remake/js/daily/romance.js",
+        "remake/js/chapters/ch4-desert.js",
+        "remake/test/browser/romance_hesitation.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/romance_hesitation.mjs"
+      ]
     }
   ]
 }
+
 
 
 

@@ -259,7 +259,8 @@ assert.equal(M.cateringServedTotal(save({ flags: { [M.CATERING_FLAG]: { served: 
   };
   const files = [...walk("remake/js/"), ...walk("remake/data/"), ...walk("data/")];
   const allowed = ["remake/js/chapters/ch5-catering.js", "remake/js/chapters/ch5-catering-model.js", "remake/js/chapters/ch5-daily.js",
-    "remake/js/core/carry.js", "remake/js/daily/tsumugi-schedule.js", "data/dialogue/ch5_catering.json"];
+    "remake/js/core/carry.js", "remake/js/daily/tsumugi-schedule.js", "data/dialogue/ch5_catering.json",
+    "remake/js/chapters/ch5-catering-origin.js", "data/dialogue/ch5_catering_origin.json"];
   const hits = files.filter(f => /ch5[-_]catering|CATERING_|Catering/.test(readText(f)));
   assert.deepEqual(hits.filter(f => !allowed.includes(f)), [], "ほかの仕組み（心得の盤・大会・エンディング・進行）から参照しない");
 }
@@ -295,7 +296,16 @@ await import("./ch5_catering_delegation.mjs");
   assert.equal(tsumugiAtTonari(loaded), true, "取消後は元の在店へ戻る");
 }
 
+// 事業の相談は同じ周回だけ既読。既存の導入flag familyを使い、NG+へ持ち越さない。
+assert.equal(carry.classifyFlag("_intro_ch5_catering_business"), "progression");
+assert.equal(carry.flagVerdict("_intro_ch5_catering_business"), "reset");
+{
+  const s = newGame();
+  s.flags._intro_ch5_catering_business = true;
+  assert.equal(carry.buildCarryPackage(s).flags._intro_ch5_catering_business, undefined);
+}
+
 // Rendering adapters are stubbed, but the actual chapter and catering modules execute.
-for (const file of ["ch5_catering_integration.mjs", "ch5_tonari_manager.mjs"]) {
+for (const file of ["ch5_catering_integration.mjs", "ch5_tonari_manager.mjs", "ch5_catering_origin.mjs"]) {
   execFileSync(process.execPath, ["--experimental-vm-modules", new URL(file, import.meta.url).pathname], { stdio: "inherit" });
 }

@@ -64,8 +64,10 @@ export const STAFF_MUSIC = Object.freeze([
 // TRPGの卓の効果音（CC0・asset_sources/music/trpg-audio/）。
 export const STAFF_SOUND_TRPG = Object.freeze(["効果音（TRPG）：Kenney – Casino Audio / RPG Audio / Music Jingles（CC0） – https://kenney.nl/"]);
 export const STAFF_SOUND_CREDIT = "効果音：ポケットサウンド – https://pocket-se.info/";
+// 2行目は本編の効果音 第1弾（2026-11-11。CC0。出典は asset_sources/music/main-se-20261111/）。CC0 で義務はないが載せる（オーナー「クレジットは載せる」2026-11-10）。
 export const STAFF_SOUND_MAIN = Object.freeze([
   "効果音（本編UI・場面転換）：Kenney – Interface Sounds / Music Jingles（CC0） – https://kenney.nl/",
+  "効果音（本編）：OpenGameArt – eXpl0it3r「Applause in a large hall or church」/ Spring Spring「Purchasing Sound Effect」「Pleasing Bell Sound Effect」/ syncopika「coin sounds」/ Till Behrend「Glass Break」/ themightyglider「Camera」/ Kerzoven「Cat Purr & Meow」/ IgnasD「Meow」/ AntumDeluge「Fire Crackling」（CC0） – https://opengameart.org/",
 ]);
 export const STAFF_ROLL_CLOSING = "Thank you for playing";
 // 斧投げの効果音（CC0・asset_sources/music/minigame-se/）。オーナー「クレジットは載せる」2026-11-10。

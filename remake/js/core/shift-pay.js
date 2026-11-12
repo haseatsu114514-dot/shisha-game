@@ -5,7 +5,7 @@ const recorded = value => value === true || value === 1;
 export const SHIFT_ACHIEVEMENTS = Object.freeze([
   Object.freeze({ id: "local", label: "地元大会優勝", bonus: 1000 }),
   Object.freeze({ id: "prefectural", label: "県大会優勝", bonus: 2000 }),
-  Object.freeze({ id: "asia", label: "アジア大会優勝", bonus: 3000 }),
+  Object.freeze({ id: "asia", label: "全国大会優勝", bonus: 3000 }),
   Object.freeze({ id: "world", label: "世界大会優勝", bonus: 4000 }),
 ]);
 

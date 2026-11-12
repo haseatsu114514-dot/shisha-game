@@ -63,13 +63,6 @@
           "text": "（話してくれた分、俺も正直に返したい。……俺は、どう答えたい？）"
         },
         {
-          "type": "condition",
-          "condition_type": "lover",
-          "char_id": "tsumugi",
-          "next_true": "other_lover",
-          "next_false": "other_lover_check_rio"
-        },
-        {
           "type": "choice",
           "choices": [
             {
@@ -82,69 +75,7 @@
             }
           ]
         }
-      ],
-      "branches": {
-        "other_lover_check_rio": [
-          {
-            "type": "condition",
-            "condition_type": "lover",
-            "char_id": "rio",
-            "next_true": "other_lover",
-            "next_false": "other_lover_check_ageha"
-          }
-        ],
-        "other_lover_check_ageha": [
-          {
-            "type": "condition",
-            "condition_type": "lover",
-            "char_id": "ageha",
-            "next_true": "other_lover",
-            "next_false": "other_lover_check_mashiro"
-          }
-        ],
-        "other_lover_check_mashiro": [
-          {
-            "type": "condition",
-            "condition_type": "lover",
-            "char_id": "mashiro",
-            "next_true": "other_lover",
-            "next_false": "other_lover_check_samechan"
-          }
-        ],
-        "other_lover_check_samechan": [
-          {
-            "type": "condition",
-            "condition_type": "lover",
-            "char_id": "samechan",
-            "next_true": "other_lover",
-            "next_false": "other_lover_check_hiyori"
-          }
-        ],
-        "other_lover_check_hiyori": [
-          {
-            "type": "condition",
-            "condition_type": "lover",
-            "char_id": "hiyori",
-            "next_true": "other_lover",
-            "next_false": "other_lover_check_noor"
-          }
-        ],
-        "other_lover_check_noor": [
-          {
-            "type": "condition",
-            "condition_type": "lover",
-            "char_id": "noor",
-            "next_true": "other_lover"
-          }
-        ],
-        "other_lover": [
-          {
-            "speaker": "hajime",
-            "face": "normal",
-            "text": "（……正直に、と思ったばかりだ。なのに、付き合っている人のことは喉の奥へ戻した）"
-          }
-        ]
-      }
+      ]
     },
     {
       "dialogue_id": "confession_minto_accept",
@@ -369,13 +300,6 @@
           "text": "（いつも隣で、静かに見ていてくれた。……だったら、俺から言おう）"
         },
         {
-          "type": "condition",
-          "condition_type": "lover",
-          "char_id": "minto",
-          "next_true": "other_lover",
-          "next_false": "other_lover_check_rio"
-        },
-        {
           "type": "choice",
           "choices": [
             {
@@ -388,69 +312,7 @@
             }
           ]
         }
-      ],
-      "branches": {
-        "other_lover_check_rio": [
-          {
-            "type": "condition",
-            "condition_type": "lover",
-            "char_id": "rio",
-            "next_true": "other_lover",
-            "next_false": "other_lover_check_ageha"
-          }
-        ],
-        "other_lover_check_ageha": [
-          {
-            "type": "condition",
-            "condition_type": "lover",
-            "char_id": "ageha",
-            "next_true": "other_lover",
-            "next_false": "other_lover_check_mashiro"
-          }
-        ],
-        "other_lover_check_mashiro": [
-          {
-            "type": "condition",
-            "condition_type": "lover",
-            "char_id": "mashiro",
-            "next_true": "other_lover",
-            "next_false": "other_lover_check_samechan"
-          }
-        ],
-        "other_lover_check_samechan": [
-          {
-            "type": "condition",
-            "condition_type": "lover",
-            "char_id": "samechan",
-            "next_true": "other_lover",
-            "next_false": "other_lover_check_hiyori"
-          }
-        ],
-        "other_lover_check_hiyori": [
-          {
-            "type": "condition",
-            "condition_type": "lover",
-            "char_id": "hiyori",
-            "next_true": "other_lover",
-            "next_false": "other_lover_check_noor"
-          }
-        ],
-        "other_lover_check_noor": [
-          {
-            "type": "condition",
-            "condition_type": "lover",
-            "char_id": "noor",
-            "next_true": "other_lover"
-          }
-        ],
-        "other_lover": [
-          {
-            "speaker": "hajime",
-            "face": "normal",
-            "text": "（……付き合っている人がいる。この帰り道では言わない。そう決めてから、口を開く）"
-          }
-        ]
-      }
+      ]
     },
     {
       "dialogue_id": "confession_tsumugi_accept",
@@ -676,13 +538,6 @@
           "text": "（ノリでごまかさない声だった。……ちゃんと、言葉で返したい）"
         },
         {
-          "type": "condition",
-          "condition_type": "lover",
-          "char_id": "tsumugi",
-          "next_true": "other_lover",
-          "next_false": "other_lover_check_minto"
-        },
-        {
           "type": "choice",
           "choices": [
             {
@@ -695,69 +550,7 @@
             }
           ]
         }
-      ],
-      "branches": {
-        "other_lover_check_minto": [
-          {
-            "type": "condition",
-            "condition_type": "lover",
-            "char_id": "minto",
-            "next_true": "other_lover",
-            "next_false": "other_lover_check_rio"
-          }
-        ],
-        "other_lover_check_rio": [
-          {
-            "type": "condition",
-            "condition_type": "lover",
-            "char_id": "rio",
-            "next_true": "other_lover",
-            "next_false": "other_lover_check_mashiro"
-          }
-        ],
-        "other_lover_check_mashiro": [
-          {
-            "type": "condition",
-            "condition_type": "lover",
-            "char_id": "mashiro",
-            "next_true": "other_lover",
-            "next_false": "other_lover_check_samechan"
-          }
-        ],
-        "other_lover_check_samechan": [
-          {
-            "type": "condition",
-            "condition_type": "lover",
-            "char_id": "samechan",
-            "next_true": "other_lover",
-            "next_false": "other_lover_check_hiyori"
-          }
-        ],
-        "other_lover_check_hiyori": [
-          {
-            "type": "condition",
-            "condition_type": "lover",
-            "char_id": "hiyori",
-            "next_true": "other_lover",
-            "next_false": "other_lover_check_noor"
-          }
-        ],
-        "other_lover_check_noor": [
-          {
-            "type": "condition",
-            "condition_type": "lover",
-            "char_id": "noor",
-            "next_true": "other_lover"
-          }
-        ],
-        "other_lover": [
-          {
-            "speaker": "hajime",
-            "face": "normal",
-            "text": "（……言葉で返す。ただ、付き合っている人のことだけは、言葉にしないと決めた）"
-          }
-        ]
-      }
+      ]
     },
     {
       "dialogue_id": "confession_ageha_accept",
@@ -988,13 +781,6 @@
           "text": "（急がなくていいと言われて、今、言いたくなった）"
         },
         {
-          "type": "condition",
-          "condition_type": "lover",
-          "char_id": "tsumugi",
-          "next_true": "other_lover",
-          "next_false": "other_lover_check_minto"
-        },
-        {
           "type": "choice",
           "choices": [
             {
@@ -1007,69 +793,7 @@
             }
           ]
         }
-      ],
-      "branches": {
-        "other_lover_check_minto": [
-          {
-            "type": "condition",
-            "condition_type": "lover",
-            "char_id": "minto",
-            "next_true": "other_lover",
-            "next_false": "other_lover_check_rio"
-          }
-        ],
-        "other_lover_check_rio": [
-          {
-            "type": "condition",
-            "condition_type": "lover",
-            "char_id": "rio",
-            "next_true": "other_lover",
-            "next_false": "other_lover_check_ageha"
-          }
-        ],
-        "other_lover_check_ageha": [
-          {
-            "type": "condition",
-            "condition_type": "lover",
-            "char_id": "ageha",
-            "next_true": "other_lover",
-            "next_false": "other_lover_check_samechan"
-          }
-        ],
-        "other_lover_check_samechan": [
-          {
-            "type": "condition",
-            "condition_type": "lover",
-            "char_id": "samechan",
-            "next_true": "other_lover",
-            "next_false": "other_lover_check_hiyori"
-          }
-        ],
-        "other_lover_check_hiyori": [
-          {
-            "type": "condition",
-            "condition_type": "lover",
-            "char_id": "hiyori",
-            "next_true": "other_lover",
-            "next_false": "other_lover_check_noor"
-          }
-        ],
-        "other_lover_check_noor": [
-          {
-            "type": "condition",
-            "condition_type": "lover",
-            "char_id": "noor",
-            "next_true": "other_lover"
-          }
-        ],
-        "other_lover": [
-          {
-            "speaker": "hajime",
-            "face": "normal",
-            "text": "（……付き合っている人がいる。急がなくていい、という声に甘えて、それは言わずにおく）"
-          }
-        ]
-      }
+      ]
     },
     {
       "dialogue_id": "confession_mashiro_accept",
@@ -1273,13 +997,6 @@
           "text": "試すような笑い方ではなかった。凛想さんが俺の返事を待っていた。"
         },
         {
-          "type": "condition",
-          "condition_type": "lover",
-          "char_id": "tsumugi",
-          "next_true": "other_lover",
-          "next_false": "other_lover_check_minto"
-        },
-        {
           "type": "choice",
           "choices": [
             {
@@ -1292,69 +1009,7 @@
             }
           ]
         }
-      ],
-      "branches": {
-        "other_lover_check_minto": [
-          {
-            "type": "condition",
-            "condition_type": "lover",
-            "char_id": "minto",
-            "next_true": "other_lover",
-            "next_false": "other_lover_check_ageha"
-          }
-        ],
-        "other_lover_check_ageha": [
-          {
-            "type": "condition",
-            "condition_type": "lover",
-            "char_id": "ageha",
-            "next_true": "other_lover",
-            "next_false": "other_lover_check_mashiro"
-          }
-        ],
-        "other_lover_check_mashiro": [
-          {
-            "type": "condition",
-            "condition_type": "lover",
-            "char_id": "mashiro",
-            "next_true": "other_lover",
-            "next_false": "other_lover_check_samechan"
-          }
-        ],
-        "other_lover_check_samechan": [
-          {
-            "type": "condition",
-            "condition_type": "lover",
-            "char_id": "samechan",
-            "next_true": "other_lover",
-            "next_false": "other_lover_check_hiyori"
-          }
-        ],
-        "other_lover_check_hiyori": [
-          {
-            "type": "condition",
-            "condition_type": "lover",
-            "char_id": "hiyori",
-            "next_true": "other_lover",
-            "next_false": "other_lover_check_noor"
-          }
-        ],
-        "other_lover_check_noor": [
-          {
-            "type": "condition",
-            "condition_type": "lover",
-            "char_id": "noor",
-            "next_true": "other_lover"
-          }
-        ],
-        "other_lover": [
-          {
-            "speaker": "hajime",
-            "face": "normal",
-            "text": "（……俺の言葉で、か。付き合っている人の名前は、その言葉から先に抜いておいた）"
-          }
-        ]
-      }
+      ]
     },
     {
       "dialogue_id": "confession_rio_accept",
@@ -1537,13 +1192,6 @@
           "text": "なら……続きを聞かせてほしいのじゃ"
         },
         {
-          "type": "condition",
-          "condition_type": "lover",
-          "char_id": "tsumugi",
-          "next_true": "other_lover",
-          "next_false": "other_lover_check_minto"
-        },
-        {
           "type": "choice",
           "choices": [
             {
@@ -1556,69 +1204,7 @@
             }
           ]
         }
-      ],
-      "branches": {
-        "other_lover_check_minto": [
-          {
-            "type": "condition",
-            "condition_type": "lover",
-            "char_id": "minto",
-            "next_true": "other_lover",
-            "next_false": "other_lover_check_rio"
-          }
-        ],
-        "other_lover_check_rio": [
-          {
-            "type": "condition",
-            "condition_type": "lover",
-            "char_id": "rio",
-            "next_true": "other_lover",
-            "next_false": "other_lover_check_ageha"
-          }
-        ],
-        "other_lover_check_ageha": [
-          {
-            "type": "condition",
-            "condition_type": "lover",
-            "char_id": "ageha",
-            "next_true": "other_lover",
-            "next_false": "other_lover_check_mashiro"
-          }
-        ],
-        "other_lover_check_mashiro": [
-          {
-            "type": "condition",
-            "condition_type": "lover",
-            "char_id": "mashiro",
-            "next_true": "other_lover",
-            "next_false": "other_lover_check_hiyori"
-          }
-        ],
-        "other_lover_check_hiyori": [
-          {
-            "type": "condition",
-            "condition_type": "lover",
-            "char_id": "hiyori",
-            "next_true": "other_lover",
-            "next_false": "other_lover_check_noor"
-          }
-        ],
-        "other_lover_check_noor": [
-          {
-            "type": "condition",
-            "condition_type": "lover",
-            "char_id": "noor",
-            "next_true": "other_lover"
-          }
-        ],
-        "other_lover": [
-          {
-            "speaker": "hajime",
-            "face": "normal",
-            "text": "（……続きの前に、言うべきことがある。付き合っている人のことを、俺は飲み込んだ）"
-          }
-        ]
-      }
+      ]
     },
     {
       "dialogue_id": "confession_samechan_accept",
@@ -1826,13 +1412,6 @@
           "text": "（遊ぶ時間も、何もしない時間も、もっと一緒にいたい、……ちゃんと言おう）"
         },
         {
-          "type": "condition",
-          "condition_type": "lover",
-          "char_id": "tsumugi",
-          "next_true": "other_lover",
-          "next_false": "other_lover_check_minto"
-        },
-        {
           "type": "choice",
           "choices": [
             {
@@ -1845,69 +1424,7 @@
             }
           ]
         }
-      ],
-      "branches": {
-        "other_lover_check_minto": [
-          {
-            "type": "condition",
-            "condition_type": "lover",
-            "char_id": "minto",
-            "next_true": "other_lover",
-            "next_false": "other_lover_check_rio"
-          }
-        ],
-        "other_lover_check_rio": [
-          {
-            "type": "condition",
-            "condition_type": "lover",
-            "char_id": "rio",
-            "next_true": "other_lover",
-            "next_false": "other_lover_check_ageha"
-          }
-        ],
-        "other_lover_check_ageha": [
-          {
-            "type": "condition",
-            "condition_type": "lover",
-            "char_id": "ageha",
-            "next_true": "other_lover",
-            "next_false": "other_lover_check_mashiro"
-          }
-        ],
-        "other_lover_check_mashiro": [
-          {
-            "type": "condition",
-            "condition_type": "lover",
-            "char_id": "mashiro",
-            "next_true": "other_lover",
-            "next_false": "other_lover_check_samechan"
-          }
-        ],
-        "other_lover_check_samechan": [
-          {
-            "type": "condition",
-            "condition_type": "lover",
-            "char_id": "samechan",
-            "next_true": "other_lover",
-            "next_false": "other_lover_check_noor"
-          }
-        ],
-        "other_lover_check_noor": [
-          {
-            "type": "condition",
-            "condition_type": "lover",
-            "char_id": "noor",
-            "next_true": "other_lover"
-          }
-        ],
-        "other_lover": [
-          {
-            "speaker": "hajime",
-            "face": "",
-            "text": "（……付き合っている人のことは、言わない。ひよりさんなら平気な顔をしてくれる、と思った）"
-          }
-        ]
-      }
+      ]
     },
     {
       "dialogue_id": "confession_hiyori_accept",
@@ -2088,12 +1605,6 @@
           "text": "（約束の時と同じ小指。でも今日は、少し震えている）"
         },
         {
-          "type": "condition",
-          "condition_type": "flag",
-          "flag": "_noor_confession_other_lover",
-          "next_true": "other_lover"
-        },
-        {
           "type": "choice",
           "choices": [
             {
@@ -2151,13 +1662,6 @@
             "speaker": "noor",
             "face": "normal",
             "text": "でも、言わないまま帰したら、きっと毎日ここで後悔する"
-          }
-        ],
-        "other_lover": [
-          {
-            "speaker": "hajime",
-            "face": "normal",
-            "text": "（……日本には、待っている人がいる。この小指に応えたら、隠しごとがひとつ増える）"
           }
         ]
       }
@@ -2318,3 +1822,4 @@
     }
   ]
 }
+

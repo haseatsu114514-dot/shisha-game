@@ -69,7 +69,8 @@ export function samechanVisitDialogue() {
   if (count === 0) return "samechan_shop_first";
   const prepTalk = samechanPrepTalkDue();
   if (prepTalk) return prepTalk;
-  if (count >= 3) {
+  // 初来店の次から、実際の♥と既読で進める。回数だけの空振り訪問は挟まない。
+  if (count >= 1) {
     for (const event of entryEvents) {
       if (state.flags[event.flag]) continue;
       if (event.night && state.slot < 1) break;
@@ -182,6 +183,12 @@ export async function visitSamechan(spot, { signal = null } = {}) {
   const count = state.story.samechan || 0;
   const dialogue = pending ? receipt.dialogue : samechanVisitDialogue();
   if (!DB.dialogues[dialogue]?.lines?.length) return false;
+  // 片付けのあと、同じ席で話を聞く流れのまま問いかける。別の来店や追加報酬には数えない。
+  // 既存の回答は visitScript が引き継ぎ、反応を読み終えるまで質問済みにはしない。
+  const appendQuestion = dialogue === "samechan_shop_closing_check" && affinityLevel("samechan") >= 3
+    && !state.flags[questionDoneKey("samechan")] && !state.finales?.samechan
+    && !state.flags._friend_samechan && !(state.lovers || []).includes("samechan")
+    && !!DB.dialogues.samechan_shop_bond_question?.lines?.length;
   // 静かな席を読む当日には先取りせず、成立後の次の自主訪問に添える。
   const introduceCinema = pending && typeof receipt.cinemaIntroduction === "boolean"
     ? receipt.cinemaIntroduction : cinemaIntroductionDue(state);
@@ -207,7 +214,12 @@ export async function visitSamechan(spot, { signal = null } = {}) {
       if ((!result || result.cancelled)) return false;
     }
     if (!current()) return false;
-    if (dialogue === "samechan_shop_bond_question"
+    if (appendQuestion) {
+      const result = await play(visitScript("samechan_shop_bond_question"), { signal, growthScene: true });
+      if (!current() || !result || result.cancelled) return false;
+    }
+    const readQuestion = appendQuestion || dialogue === "samechan_shop_bond_question";
+    if (readQuestion
       && state.romanceChoices?.[SAMECHAN_BOND_CHOICE]?.char !== "samechan") return false;
     if (introduceCinema && !await readCinemaIntroduction({ signal })) return false;
     if (!current()) return false;
@@ -217,7 +229,7 @@ export async function visitSamechan(spot, { signal = null } = {}) {
     const event = [...entryEvents, ...SAMECHAN_HEART_EVENTS, cinemaImpression, unwellVisit, mintoGift, ...laterVisits].find(e => e.dialogue === dialogue);
     if (event) state.flags[event.flag] = true;
     if (isPrepTalk(dialogue)) state.flags[`_talk_seen_${dialogue}`] = true;
-    if (dialogue === "samechan_shop_bond_question") {
+    if (readQuestion) {
       state.flags[questionDoneKey("samechan")] = true;
       releaseAffinity("samechan");
     }
@@ -235,3 +247,4 @@ export async function visitSamechan(spot, { signal = null } = {}) {
     return true;
   } finally { visiting = false; }
 }
+

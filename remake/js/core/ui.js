@@ -44,6 +44,7 @@ export function initLayers() {
       bond: !!bond,
       face: faceIconUrl(id, state, { context: bond ? "private" : null }),
       badge: [...displayName(id, state, { context: bond ? "private" : null })][0],
+      chime: levelUp ? "up" : "",
       top: bond ? (levelUp ? "BOND UP" : "BOND") : levelUp ? "AFFINITY UP" : "AFFINITY",
       main: displayName(id, state, { context: bond ? "private" : null }), // 恋人の絆は私的な場面でだけ深まる
       sub: bond
@@ -56,7 +57,7 @@ export function initLayers() {
   });
   on("notice", ({ text }) => toast(text, { ms: 3000 }));
   on("lovers", ({ id }) => {
-    gainCard({ kind: "affinity", bond: true, face: faceIconUrl(id, state, { context: "private" }), badge: "♥", top: "NEW RELATIONSHIP", main: displayName(id, state, { context: "private" }), sub: "恋人になった" });
+    gainCard({ kind: "affinity", bond: true, face: faceIconUrl(id, state, { context: "private" }), badge: "♥", top: "NEW RELATIONSHIP", chime: "up", main: displayName(id, state, { context: "private" }), sub: "恋人になった" });
   });
 }
 
@@ -70,25 +71,49 @@ let activeCurtain = null;
 let weatherBg = "";
 let weatherTint = "";
 let weatherKey = "";
-const bgReady = new Map(); // url -> Promise（一度読んだ絵は即座に出す）
+const bgReady = new Map(); // url -> { promise, image, keep }（一度読んだ絵は即座に出す）
+// Retain only a bounded decoded working set. CSS/DOM own visible images separately.
+const IMAGE_CACHE_ENTRIES = 128, KEPT_IMAGE_BYTES = 48 * 1024 * 1024;
+function trimImages() {
+  let bytes = [...bgReady.values()].reduce((n, e) => n + (e.bytes || 0), 0);
+  for (const [url, entry] of bgReady) {
+    if (!entry.done) continue; // never evict shared in-flight requests
+    if (entry.image && bytes > KEPT_IMAGE_BYTES) {
+      bytes -= entry.bytes || 0;
+      entry.image = null; entry.bytes = 0;
+    }
+    if (bgReady.size > IMAGE_CACHE_ENTRIES) {
+      bytes -= entry.bytes || 0;
+      bgReady.delete(url);
+    }
+  }
+}
 const expiredImageWaits = new WeakMap(); // 同じ通信に対し、使い切った待ち時間を繰り返さない
-
-const keptImages = []; // 何度も出るUIの小さな絵は Image を持ち続ける（デコード済みのまま置いておく）
 
 /** 画像を読み込み＋デコードし終えるまで待つ（最大 ms）。成功時 true、失敗・時間切れは false。 */
 export function imageReady(url, ms = 1500, { keep = false } = {}) {
   if (!url) return Promise.resolve(false);
-  let p = bgReady.get(url);
-  if (!p) {
-    p = new Promise((resolve) => {
-      const i = new Image();
-      if (keep) keptImages.push(i);
-      i.onload = () => (i.decode ? i.decode().catch(() => {}) : Promise.resolve()).then(() => resolve(true));
-      i.onerror = () => { bgReady.delete(url); resolve(false); };
+  let entry = bgReady.get(url);
+  if (entry) { bgReady.delete(url); bgReady.set(url, entry); }
+  // 通常の場面で読んだ後に固定UIの先読みへ昇格する場合も、Image 自体を保持する。
+  // すでに手放していたらここで読み直し、制作画面を開く前にデコードまで待つ。
+  if (!entry || (keep && !entry.image)) {
+    entry = { promise: null, image: new Image(), keep };
+    bgReady.set(url, entry);
+    entry.promise = new Promise((resolve) => {
+      const i = entry.image;
+      i.onload = () => (i.decode ? i.decode().catch(() => {}) : Promise.resolve()).then(() => {
+        entry.done = true;
+        if (!entry.keep) entry.image = null;
+        else entry.bytes = (i.naturalWidth || 0) * (i.naturalHeight || 0) * 4;
+        trimImages();
+        resolve(true);
+      });
+      i.onerror = () => { bgReady.delete(url); entry.image = null; resolve(false); };
       i.src = url;
     });
-    bgReady.set(url, p);
-  }
+  } else if (keep) entry.keep = true;
+  const p = entry.promise;
   if (expiredImageWaits.has(p) && expiredImageWaits.get(p) >= ms) return Promise.resolve(false);
   return new Promise((resolve) => {
     const timer = setTimeout(() => {
@@ -144,7 +169,25 @@ function deferStoreLogos() {
 function warmCoreArt() {
   if (!uiArt) {
     const urls = [...LOUNGE_ART, ...PAPER_ART, ...SLOT_ART, chapterTitleArt("第一章"), ...allFaceIconUrls()];
-    uiArt = Promise.all(urls.map((u) => imageReady(u, 15000, { keep: true }))).then(() => { uiArtDone = true; });
+    // Two workers instead of launching every icon/texture together. Foreground
+    // imageReady calls bypass this list and share any request already in flight.
+    let index = 0;
+    // Preserve the old batch's 15s ceiling: serial timeouts must not multiply it.
+    const deadline = Date.now() + 15000;
+    const worker = async () => {
+      let ok = true;
+      while (index < urls.length) {
+        const remaining = deadline - Date.now();
+        if (remaining <= 0) return false;
+        const url = urls[index++];
+        if (!await imageReady(url, remaining, { keep: true })) ok = false;
+      }
+      return ok;
+    };
+    uiArt = Promise.all([worker(), worker()]).then(results => {
+      uiArtDone = results.every(Boolean);
+      if (!uiArtDone) uiArt = null; // retry failed assets at the next entrance
+    });
   }
   // 選ばれた会話枠も先読みする。設定変更後は新しい枠だけを追加で読む。
   return Promise.all([uiArt, imageReady(uiThemeFrame(document.documentElement.dataset.uiTheme), 15000, { keep: true })]);
@@ -346,7 +389,8 @@ export async function fadeBlack(mid, ms = 500) {
 
 // ---------------------------------------------------------------- トースト／通知
 
-export function toast(text, { ms = 2600, kind = "" } = {}) {
+export function toast(text, { ms = 2600, kind = "", se = "" } = {}) {
+  if (se) SE[se]?.(); // 通知と一緒に鳴らす効果音（「お金が足りない」のブザーなど）
   const effect = { "charm-bonus": ["魅", "魅力"], "insight-hint": ["察", "洞察"] }[kind];
   const t = el(`div.toast${kind ? "." + kind : ""}`, effect
     ? [el("span.toast-badge", { text: effect[0], "aria-label": `${effect[1]}の効果` }), el("span", { text })]
@@ -431,6 +475,7 @@ export function statBadge(key, className = "gc-badge") {
   return el(`div.${className}`, { text: STAT_BADGE[key], "aria-hidden": "true" });
 }
 
+let lastAffinityChime = -Infinity;
 function pumpBanners() {
   while (bannerBusy < 3 && bannerQueue.length) {
     const o = bannerQueue.shift();
@@ -464,6 +509,12 @@ function pumpBanners() {
     if (o.kind === "stat") {
       if (o.source === "slot") SE.slotBonus();
       else SE.select();
+    }
+    // 好感度・恋人の絆: ハートが動くのに合わせてベル。段階が上がった時と恋人になった時は2回（SE.affinityUp）。
+    // 何枚か同時に出る時は1回だけ（0.3秒あける）。
+    else if (o.kind === "affinity" && performance.now() - lastAffinityChime > 300) {
+      lastAffinityChime = performance.now();
+      (o.chime === "up" ? SE.affinityUp : SE.affinity)();
     }
     requestAnimationFrame(() => {
       b.classList.add("show");
@@ -756,5 +807,6 @@ export async function roundCut(text, sub = "") {
 export function dayTurn(mid) {
   return nightToMorning(layers.fx, mid);
 }
+
 
 

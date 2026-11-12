@@ -54,7 +54,7 @@ const result = recordResult(s,96); assert.deepEqual(recordResult(s,96),result); 
 assert.equal(result.careHistory.length,2);
 startAttempt(s,craft); assert.equal(p.attempts,2); assert.equal(p.history.length,1);
 assert.deepEqual(s.flavorStock,before.flavorStock); assert.equal(s.stamina,79);
-assert.equal(CH2_PRIZE,50000,'decided chapter 2 prize');
+assert.equal(CH2_PRIZE,100000,'decided chapter 2 prize');
 assert.equal(s.money, before.money + (result.rank === 1 ? CH2_PRIZE : 0), 'prize follows the recorded result and survives retry');
 for(const key of ['tournament','lovers','loverSince','lastDate','inbox','contacts','keepsakes','relationshipMemories']) assert.deepEqual(s[key],before[key],key);
 for(const [quality,expected] of [[98,1],[20,4]]) {

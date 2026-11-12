@@ -1,5 +1,9 @@
 import assert from "node:assert/strict";
+import fs from "node:fs";
 import { suite, storageSnapshot, assertFits, baseURL } from "./support.mjs";
+
+const book = name => JSON.parse(fs.readFileSync(new URL("../../../data/dialogue/" + name + ".json", import.meta.url), "utf8"));
+const ordinary = book("trpg_ordinary"), shark = book("trpg_shark");
 
 // 店長の案内を加えた本棚はスクロール可能。各操作へ実際に到達できることを調べる。
 async function assertShelfControls(page) {
@@ -151,9 +155,37 @@ await suite("trpg-main", async check => {
     await play(page, "regular-harbor", { expectTutorial: true });
     const done = await snapshot(page);
     assert(done.trpg.cleared["regular-harbor"]);
-    assert.deepEqual(new Set(done.trpg.cleared["regular-harbor"].participants), new Set(["sumi", "hajime", "tsumugi", "salaryman"]));
+    assert.deepEqual(new Set(done.trpg.cleared["regular-harbor"].participants), new Set(["sai", "hajime", "regulara", "regularb"]));
     assert.deepEqual(done.trpg.club.members, {});
   });
+  await check("nine-books-and-sai-finale", async page => {
+    await prepare(page);
+    const catalog = JSON.parse(fs.readFileSync(new URL("../../../data/trpg_catalog.json", import.meta.url), "utf8"));
+    const finale = catalog.scenarios.find(b => b.finale);
+    const memories = Object.fromEntries(catalog.scenarios.filter(b => b.member).map(b => {
+      const story = book(b.file.split("/").at(-1).replace(/\.json$/, ""));
+      const ending = Object.keys(story.endings)[0];
+      return [b.id, { chapter: 2, day: 2, participants: ["hajime", b.member], gm: story.cast[0].id,
+        ending, endingTitle: story.endings[ending].title }];
+    }));
+    const last = finale.clearRequires.at(-1);
+    await page.evaluate(({ memories, last }) => {
+      __remake.state.trpg.cleared = structuredClone(memories);
+      delete __remake.state.trpg.cleared[last];
+    }, { memories, last });
+    await open(page);
+    assert.equal(await page.locator(".trpg-campaign-book").count(), 9);
+    assert.match(await button(page, "trpg-book-" + finale.id).innerText(), /5／6/);
+    assert.equal(await button(page, "trpg-buy-" + finale.id).count(), 0);
+    await hit(page, "trpg-campaign-close");
+    await page.evaluate(({ memories, last }) => { __remake.state.trpg.cleared[last] = memories[last]; }, { memories, last });
+    await open(page);
+    await hit(page, "trpg-buy-" + finale.id);
+    assert(await button(page, "trpg-play-" + finale.id).isEnabled());
+    await hit(page, "trpg-play-" + finale.id);
+    await lines(page);
+    assert.match(await page.locator(".trpg-table-person").first().textContent(), /六角サイ/);
+  }, { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true });
   for (const [label, options] of [
     ["club-recruit-pc", { viewport: { width: 1280, height: 720 } }],
     ["club-recruit-touch", { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }],
@@ -317,6 +349,9 @@ await suite("trpg-main", async check => {
   ]) await check(label, async page => {
     await prepare(page); const baseline = await storageSnapshot(page);
     await open(page); await assertShelfControls(page);
+    // TRF13: a new club starts at rank 1 with no growth point yet.
+    assert.equal(await button(page, "trpg-club-rank").getAttribute("data-rank"), "1");
+    assert.equal(await button(page, "trpg-club-growth").count(), 0);
     await hit(page, "trpg-buy-ordinary-cup"); await hit(page, "trpg-buy-shark-last-order");
     const bought = await snapshot(page); assert.equal(bought.money, 1700); assert.equal(bought.slot, 1);
     assert.equal(bought.stamina, 52); assert.equal(bought.reel.count, 3); assert.equal(bought.flavorStock.double_apple, 37);
@@ -332,7 +367,12 @@ await suite("trpg-main", async check => {
     assert.equal(storage.local.suien_remake_slot1, baseline.local.suien_remake_slot1);
     assert.equal(storage.local.qa_unrelated, "keep"); assert.equal(storage.session.qa_unrelated, "keep");
     assert(JSON.parse(storage.local.suien_remake_save).trpg.cleared[id], "Ending must save before the finish button");
-    await hit(page, "trpg-finish"); await hit(page, "trpg-reflect-hard"); await hit(page, "trpg-campaign-close");
+    // TRF13: the ending tells what the night added to the club (a first clear is 2 + 1 ending + 0-3 stars), and the shelf shows it.
+    assert.match(await button(page, "trpg-ending-club").textContent(), /部の実績 ＋[3-6]/);
+    await hit(page, "trpg-finish");
+    assert.match(await button(page, "trpg-club-rank").getAttribute("aria-label"), /実績 [3-6]。/);
+    await assertFits(page, '[data-test="trpg-club-rank"]');
+    await hit(page, "trpg-reflect-hard"); await hit(page, "trpg-campaign-close");
     await page.waitForFunction(() => window.__trpgBarResult?.completed);
     await page.evaluate(async () => { const core = await import("./js/core/state.js"); core.load(); core.state.day = 5; core.state.slot = 1; });
     // TMX14 (owner 2026-11-11): a finished book can be played again on a later night.
@@ -343,7 +383,32 @@ await suite("trpg-main", async check => {
     await page.screenshot({ path: (process.env.ARTIFACT_DIR || ".codex/artifacts/trpg") + "/trpg-campaign-memory-" + label + ".png" });
     await hit(page, "trpg-campaign-close");
   }, options);
-  await check("purchase-cancel-and-small-table", async page => {
+  // TRF13: the rank is counted from the shelf (no new save field), and its growth point reaches the player's first role.
+  await check("club-rank-growth-on-the-sheet", async page => {
+    await prepare(page);
+    await page.evaluate(({ version, endings }) => {
+      const s = __remake.state; s.flags._trpg_tutorial_seen = true;
+      s.trpg.stock = ["ordinary-cup", "shark-last-order"]; s.trpg.owned = ["ordinary-cup", "shark-last-order"];
+      // 2 (cleared) + 2 (endings seen) + 2 (stars) = 6 points: rank 2, growth +1.
+      s.trpg.cleared["shark-last-order"] = { chapter: 2, day: 2, gm: "samechan", participants: ["hajime", "hiyori", "samechan"],
+        ending: endings[0], endingTitle: "", variant: "smooth", plan: {}, version, stars: 2, heat: 6, night: "盛り上がった夜", endingsSeen: endings, plays: 2 };
+    }, { version: shark.version, endings: Object.keys(shark.endings).slice(0, 2) });
+    await open(page);
+    const banner = button(page, "trpg-club-rank");
+    assert.equal(await banner.getAttribute("data-rank"), "2");
+    assert.equal(await banner.getAttribute("aria-label"), "部のランク 2、なじみの部。実績 6。次のランクまで あと10。はじめの役の成長点 ＋1");
+    assert.match(await button(page, "trpg-club-growth").textContent(), /能力＋1/);
+    await banner.scrollIntoViewIfNeeded(); await assertFits(page, '[data-test="trpg-club-rank"]');
+    await hit(page, "trpg-play-ordinary-cup"); await lines(page);
+    assert.match(await page.locator('[data-test="trpg-cover-pc"] [data-test="trpg-growth"]').textContent(), /成長点 ＋1/);
+    await hit(page, "trpg-build"); await hit(page, "trpg-builder-advanced");
+    assert.match(await button(page, "trpg-stat-points").textContent(), new RegExp("残り 0 点 · 合計 " + (ordinary.builder.points + 1) + " 点"),
+      "the recommended sheet already spends the growth point");
+    await hit(page, "trpg-build-back"); await hit(page, "trpg-start"); await lines(page); await roll(page);
+    // A bookmark keeps the growth the table started with, so "continue" replays to the same numbers.
+    assert.equal((await snapshot(page)).trpg.bookmark.growth, 1);
+  }, { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true });
+  await check("purchase-cancel-and-regular-fill", async page => {
     await prepare(page); await open(page); await hit(page, "trpg-buy-ordinary-cup");
     await page.evaluate(() => {
       delete __remake.state.trpg.club.members.tsumugi;
@@ -352,9 +417,12 @@ await suite("trpg-main", async check => {
     await hit(page, "trpg-campaign-close"); await open(page);
     const before = await snapshot(page);
     await hit(page, "trpg-play-ordinary-cup");
-    assert.equal(await page.locator(".trpg-table-person").count(), 2);
-    await lines(page); await hit(page, "trpg-start"); await lines(page); await roll(page);
-    assert.equal(await page.locator('[data-test^="trpg-consult-"]').count(), 0);
+    assert.equal(await page.locator(".trpg-table-person").count(), 4);
+    // 相談は旅人への2つの質問（interview）の後に出る。ほかの卓の検査と同じく質問を終えてから数える。
+    await lines(page); await hit(page, "trpg-start"); await lines(page); await roll(page); await interviewStep(page);
+    assert.equal(await page.locator('[data-test^="trpg-consult-"]').count(), 2);
+    assert.equal(await button(page, "trpg-consult-regulara").count(), 1);
+    assert.equal(await button(page, "trpg-consult-regularb").count(), 1);
     await hit(page, "trpg-exit"); await hit(page, "trpg-exit-confirm"); await button(page, "trpg-play-ordinary-cup").waitFor();
     // Leaving keeps a bookmark (TMX13) and nothing else: no night, money or clear is spent.
     const left = await snapshot(page);

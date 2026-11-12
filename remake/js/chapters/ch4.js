@@ -22,7 +22,7 @@ import { CHAPTER_TITLE_ART } from "../core/chapter-title-art.js";
 import { CH4_PROLOGUE, CH4_RESOLUTION, CH4_SCENE_BG, CH4_SCENE_BGM, CH4_DEFAULT_BGM, CH4_SCENE_FILES, CH4_TOURNAMENT_SCENES,
   CH4_VISITOR_SCENE_FILES, canAdvanceToChapterFour, advanceToChapterFour, chapterFourProgress, completeChapterFourScene,
   endChapterFourDay, finishChapterFourEve, chapterFourMandatory, revealChapterFourSheikh,
-  chapterFourTournamentOutcome, chapterFourAfterDefeat, recordChapterFourStrategy, CH4_PRIZE,
+  chapterFourTournamentOutcome, chapterFourAfterDefeat, recordChapterFourStrategy,
   CH4_PREP_SCENES, chapterFourPrepPending, departChapterFour, chapterFourRead,
   chapterFourDaily, enterChapterFourEve, chapterFourEveDay, chapterFourTournamentDay, chapterFourArrivalsDue,
   CH4_ARRIVAL_SCENES, CH4_FRIEND_ARRIVAL_SCENES, chapterFourArrivalEveningsDue } from "./ch4-progress.js";
@@ -538,7 +538,8 @@ async function runTournament(owner) {
   if (chapterFourTournamentOutcome(state) === "win") {
     clearContinueHistory(state);
     if (!await readAndCommit(owner, win)) return;
-    toast(`大会の賞金 ${CH4_PRIZE.toLocaleString("ja-JP")}円を受け取った`, { kind: "good" });
+    const received = chapterFourProgress(state).prizeReceived;
+    toast(Number.isFinite(received) ? (received > 0 ? `大会の賞金 ${received.toLocaleString("ja-JP")}円を受け取った` : "賞金は所持金の上限に達したため加算されなかった") : "大会の賞金を受け取った", { kind: "good" });
   } else {
     if (!await readAndCommit(owner, loss)) return;
     // 2026-11-02 オーナー決定: 第1〜3章と同じ20秒のCONTINUE画面を出す（#1909）。再挑戦は大会の最初から（Q5）。

@@ -747,6 +747,19 @@ export function chapterFivePostEndingNext(value) {
   return { id, talk: TALK_OWNER[id] || null, index: talks.indexOf(id) + 1, total: talks.length };
 }
 
+/**
+ * スタッフロールの後の修羅場に同席している恋人（反応の場面が並びにある人。修羅場が無い並びでは空）。
+ * 視線のカットイン（motions/gaze.js）に出す人。遠くの恋人（ヌール）はテレビ電話の画面越し（remote）。
+ */
+export function chapterFivePostEndingCast(value) {
+  const scenes = chapterFiveProgress(value).postEnding?.scenes || [];
+  return Object.entries(CH5_CONFLICT_SCENES).filter(([, scene]) => scenes.includes(scene))
+    .map(([id]) => ({ id, remote: !!CH5_CALL_SCENES[id] }));
+}
+
+/** 修羅場の空気（core/scene-mood.js の "dread"）で読む場面: 開始・恋人ごとの反応・謝罪。 */
+export const chapterFivePostEndingTense = (id) => id === CH5_POST_ENDING.open || id === CH5_POST_ENDING.close || CONFLICT_REACTIONS.includes(id);
+
 /** まだ話し直していない恋人（location_contract.unresolved）。並びを決める前は空。 */
 export function chapterFivePostEndingUnresolved(value) {
   return [...(chapterFiveProgress(value).postEnding?.unresolved || [])];

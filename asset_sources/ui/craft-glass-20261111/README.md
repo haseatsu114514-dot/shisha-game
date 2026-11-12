@@ -8,7 +8,7 @@
 
 生成原画17枚を未加工で保存。47回生成し、各種類は最大3回で打ち切った。**PASS 2枚、未達15枚**。全件合格・そのまま差し替え可能という納品ではない。指定寸法の不一致、重ねる組の輪郭ずれ、窓の微小alphaなどを下表に記録した。未達品は採用前の確認・修正が必要。
 
-- 原画ZIP: [craft-glass-originals.zip](craft-glass-originals.zip)（17 PNG、README、元の依頼文・実際のプロンプト、全47回の寸法・ハッシュ・CHECK記録、確認用一覧）。不採用の30 PNGは含めない。
+- 原画ZIP（`craft-glass-originals.zip`・約27MB）は、中身が下の原画17枚・この README・依頼文・記録・確認用画像と同じだったので、2026-11-12 にオーナー「3414は良いけして」で消した（CSL19）。不採用の30 PNGは最初から保存していない。
 - 確認用: [一覧](qa/contact-sheet.jpg) / [重ね合わせ](qa/alignment-review.jpg)。確認用画像だけを縮小・合成しており、`raw/` は未加工。
 - 詳細: [generation.json](generation.json)、[prompts-used.json](prompts-used.json)、[alpha測定](qa/alpha-probes.json)。alpha 0のRGB値がプレビューに見える場合があるため、実alphaとグレー合成で確認した。
 - 元の依頼文は main `bf79baa3d84b172753ff33e477c0c482ec7c118e` の `prompts.md`。STYLEと各画像段落（CHECKを含む）をそのまま使用。すべてに `pull-B.png` を素材・色の参照として添付し、2・8・15・16には指定の形の原画を先に添付した。

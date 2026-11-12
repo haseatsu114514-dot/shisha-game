@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="suien-build" content="dev" data-built="">
+<meta name="theme-color" content="#170e26">
+<title>効果音の試聴 — 水煙前線 -EN:CODE-</title>
+<link rel="icon" href="../icon.svg">
+<style>
+:root { color-scheme: dark; }
+body { margin: 0; background: #14101f; color: #f3ecdf; font: 15px/1.6 "Hiragino Sans", "Noto Sans JP", system-ui, sans-serif; }
+main { max-width: 860px; margin: 0 auto; padding: 20px 16px 60px; }
+h1 { font-size: 20px; margin: 0 0 4px; }
+p.lead { margin: 0 0 14px; color: #c9bfd6; font-size: 13px; }
+#status { margin: 0 0 14px; padding: 8px 12px; border: 1px solid #f2b86655; border-radius: 8px; background: #1d1830; font-size: 13px; }
+.row { display: grid; grid-template-columns: 1fr auto; gap: 6px 12px; align-items: center; padding: 12px 0; border-top: 1px solid #ffffff1c; }
+.row h2 { font-size: 16px; margin: 0; }
+.row .where { margin: 2px 0 0; color: #c9bfd6; font-size: 13px; }
+.row .src { margin: 2px 0 0; color: #9d93ad; font-size: 12px; }
+.row .buttons { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+button { min-height: 44px; padding: 8px 14px; border-radius: 8px; border: 1px solid #e2b97f99; background: #b88325; color: #120d05; font: 700 14px/1.2 inherit; cursor: pointer; }
+button.old { background: #2a243d; color: #f3ecdf; }
+button:active { transform: translateY(1px); }
+@media (max-width: 560px) { .row { grid-template-columns: 1fr; } .row .buttons { justify-content: flex-start; } }
+</style>
+</head>
+<body>
+<main>
+<h1>効果音の試聴</h1>
+<p class="lead">新しく入れた録音の音と、前の音（合成音）を聴き比べるページです。合わない音があれば、名前を伝えてもらえれば前の音へ戻すか、別の音に替えます。ゲームの保存データは変えません。</p>
+<p id="status" role="status">どれかのボタンを押すと音が出るようになります。</p>
+<div id="list"></div>
+</main>
+<script src="js/page-boot.js" data-page="js/audio-preview.js"></script>
+</body>
+</html>

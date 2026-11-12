@@ -2,7 +2,7 @@
 // tonari のシフト（daily/tonari.js の今日の注文）と同じく、その日の注文に合う配合を二つから選び、客の反応を見る。
 // 一度シフトに入った次の日からは、知らない客に何を聞くか・あいまいな注文をどう読むかを選ぶ注文も混ざる（#2020 E）。
 // 店の業務用の葉なので私物は減らず、お客さんへの提供は熟練度を稼がない（2026-10-26 の規則）。
-// 日当は従来の mukai の手伝いと同じ 6,000円。ムカイさんの LIME で呼ばれた日は上乗せ（VOL10。daily/phone.js の誘い）。
+// 基本日当と実績昇給は tonari と同額。ムカイさんの LIME で呼ばれた日は上乗せ（VOL10）。
 // 台詞は data/dialogue/mukai_shift.json（注文ごとの客の反応）。導入の一言は章の側（第3章は手伝いの場面、第5章は手伝いの小会話）。
 import { state, save, timeOfDay } from "../core/state.js";
 import { DB, bgUrl } from "../core/data.js";
@@ -10,9 +10,11 @@ import { modal, toast } from "../core/ui.js";
 import { play } from "../vn/engine.js";
 import { addMoney, addStamina, earnStat } from "../core/stats.js";
 import { readDialogues } from "../core/chapter-data.js";
+import { shiftBasePay } from "../core/shift-pay.js";
 
-export const MUKAI_PAY = 6000;
-export const MUKAI_CALLED_BONUS = 3000;
+export const MUKAI_PAY = 8000;
+export const MUKAI_CALLED_BONUS = 5000;
+export const mukaiShiftPay = (value, called = false) => shiftBasePay(value, MUKAI_PAY) + (called ? MUKAI_CALLED_BONUS : 0);
 export const MUKAI_SHIFT_STAMINA = -14;
 export const MUKAI_SHIFT_FLAG = "_mukai_shift_day"; // 最後に mukai のシフトに入った通算日（誘いの間隔に使う）
 
@@ -71,7 +73,7 @@ export async function runMukaiShift({ intro, called = false } = {}) {
   if (state !== owner || !Number.isInteger(index) || !order.mixes[index]) return false;
   const result = await play(DB.dialogues[`mukai_shift_${order.id}_${index}`], { bg: bgUrl("bg_mukai_shop", timeOfDay()) });
   if (state !== owner || !result || result.cancelled) return false;
-  const pay = MUKAI_PAY + (called ? MUKAI_CALLED_BONUS : 0);
+  const pay = mukaiShiftPay(owner, called);
   addMoney(pay);
   addStamina(MUKAI_SHIFT_STAMINA);
   earnStat("charm", 4);

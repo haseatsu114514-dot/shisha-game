@@ -9,7 +9,7 @@ async function capture(page, name) {
   await page.screenshot({ path: `${output}/${name}.png` });
 }
 async function entrance(page) {
-  await page.goto(new URL("axe-throw.html", page.url()).href);
+  await page.goto(new URL("axe-throw.html?input=gauges", page.url()).href);
   await page.locator(".axe-menu").waitFor();
   await page.evaluate(() => document.fonts.ready);
 }

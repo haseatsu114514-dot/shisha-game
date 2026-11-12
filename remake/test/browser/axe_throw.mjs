@@ -94,7 +94,7 @@ async function standalone(page, { touch = false, keyboard = false, league = fals
       inbox:[{id:"keep",read:true}], pendingInvite:{sender:"hiyori",day:10,slot:1}, affinity:{hiyori:66} }));
     localStorage.setItem("unrelated","keep"); sessionStorage.setItem("unrelated","keep");
   });
-  await page.goto(new URL("axe-throw.html",page.url()).href);
+  await page.goto(new URL("axe-throw.html?input=gauges",page.url()).href);
   await press(page,'[data-companion="' + opponent + '"]',touch);
   const selector=league?'[data-test="axe-league"]':'[data-test="axe-start"]';
   if (keyboard) { await page.locator(selector).focus(); await page.keyboard.press("Enter"); } else await press(page,selector,touch);
@@ -193,7 +193,7 @@ await suite("axe-throw", async run => {
     ['rules-pc',{viewport:{width:1280,height:720}},false],
     ['rules-touch-landscape',{viewport:{width:844,height:390},isMobile:true,hasTouch:true},true],
   ]) await check(label,async page=>{
-    await page.goto(new URL('axe-throw.html',page.url()).href);
+    await page.goto(new URL('axe-throw.html?input=gauges',page.url()).href);
     await press(page,'[data-test="axe-menu-rules"]',touch);
     const help=page.locator('[data-test="axe-rules-panel"]');await help.waitFor();
     assert.match(await help.textContent(),/外れ・落下でも1回/);assert.match(await help.textContent(),/外側4か所にも5のリングと赤い6点/);
@@ -218,7 +218,7 @@ await suite("axe-throw", async run => {
     await page.keyboard.press('Escape');assert.equal(await game(page).count(),0);
   },options);
   await check('visible-sway-focus-budget-and-release',async page=>{
-    await page.evaluate(async()=>{const mini=await import('./js/minigames/axe.js');window.swayGame=mini.runAxeThrow({reducedMotion:true});});
+    await page.evaluate(async()=>{const mini=await import('./js/minigames/axe.js');window.swayGame=mini.runAxeThrow({ inputMode: "gauges", reducedMotion:true});});
     await phase(page,'choice');await pressReady(page);await phase(page,'horizontal');
     await stopGauge(page,.5);await phase(page,'vertical');await stopGauge(page,.5);await phase(page,'power');
     const base=await game(page).getAttribute('data-aim-x'),first=await game(page).getAttribute('data-release-x');await page.waitForTimeout(180);
@@ -319,11 +319,11 @@ await suite("axe-throw", async run => {
   await check("pre-abort-and-host-detach",async page => {
     await page.evaluate(async()=>{
       const mini=await import("./js/minigames/axe.js"),signal=new AbortController(); signal.abort();
-      window.cancelledGame=await mini.runAxeThrow({signal:signal.signal});
-      const host=document.createElement("div");document.body.append(host);window.detachedGame=mini.runAxeThrow({host});host.remove();
+      window.cancelledGame=await mini.runAxeThrow({ inputMode: "gauges", signal:signal.signal});
+      const host=document.createElement("div");document.body.append(host);window.detachedGame=mini.runAxeThrow({ inputMode: "gauges", host});host.remove();
       const connected=document.createElement("div");document.body.append(connected);
-      window.replacedGame=mini.runAxeThrow({host:connected});connected.replaceChildren();
-      window.invalidMode=await mini.runAxeThrow({mode:"fake"}).then(()=>false,e=>e instanceof RangeError);
+      window.replacedGame=mini.runAxeThrow({ inputMode: "gauges", host:connected});connected.replaceChildren();
+      window.invalidMode=await mini.runAxeThrow({ inputMode: "gauges", mode:"fake"}).then(()=>false,e=>e instanceof RangeError);
     });
     const result=await page.evaluate(async()=>[cancelledGame,await detachedGame,await replacedGame]);
     assert(result.every(r=>r.cancelled&&!r.completed&&r.throws.length===0));assert(await page.evaluate(()=>invalidMode));assert.equal(await game(page).count(),0);
@@ -369,7 +369,7 @@ await suite("axe-throw", async run => {
       else { s.lovers = ["hiyori","rio"]; s.lovePts.hiyori = 12; s.loveLevel.hiyori = 2; }
       localStorage.setItem(core.SAVE_KEY, JSON.stringify(s)); core.load();
       A.before = JSON.stringify(core.state); A.abort = new AbortController();
-      A.flow = A.mini.runAxeThrow({ signal: A.abort.signal });
+      A.flow = A.mini.runAxeThrow({ inputMode: "gauges",  signal: A.abort.signal });
       A.duplicate = A.flow === A.mini.runAxeThrow();
       A.friendBefore = A.route.hiyoriIsFriend();
     }, relationship);
@@ -385,7 +385,7 @@ await suite("axe-throw", async run => {
     assert.equal(await page.locator('[data-test="axe-rules-panel"]').count(),0,'Owner abort removes the help dialog too');
     assert(await page.evaluate(() => JSON.stringify(A.core.state) === A.before));
     assert(await page.evaluate(() => A.route.hiyoriIsFriend() === A.friendBefore));
-    await page.evaluate(() => { A.flow = A.mini.runAxeThrow({ reducedMotion: true }); });
+    await page.evaluate(() => { A.flow = A.mini.runAxeThrow({ inputMode: "gauges",  reducedMotion: true }); });
     for (let n = 0; n < 3; n++) { await shoot(page); if (n < 2) await pressReady(page); }
     await pressReady(page); await phase(page, "summary"); await pressReady(page); const complete = await page.evaluate(() => A.flow);
     assert(complete.completed && !complete.cancelled); assert.equal(complete.throws.length, 3);
@@ -394,8 +394,8 @@ await suite("axe-throw", async run => {
   }, { pageEntry: baseURL, pageReadySelector: '[data-test="title-new"]', ignoreFailedResource: ignoreTitleSeResourceLimit });
 await check("touch-portrait-rotate-hint", async page => {
     // 縦持ちスマホは本編と同じく横向き案内で止める（2026-11-09 オーナー決定・#3035／試遊ページ共通化 #3076）
-    await page.goto(new URL("axe-throw.html", page.url()).href);
+    await page.goto(new URL("axe-throw.html?input=gauges", page.url()).href);
     await page.locator(".axe-menu").waitFor();
     assert.equal(await page.locator("#rotate-hint").isVisible(), true);
   }, { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
-}, { entry: new URL("axe-throw.html", baseURL).href, readySelector: '[data-test="axe-start"]', freshBrowserPerCase: true });
+}, { entry: new URL("axe-throw.html?input=gauges", baseURL).href, readySelector: '[data-test="axe-start"]', freshBrowserPerCase: true });

@@ -113,3 +113,20 @@ GBP-17 / levelup_crest.png 1024x1024, on a pure black #000000 background instead
 - 検品: 文字・数字・記号が無い／マゼンタが `#FF00FF` の単色で、にじみ・影が外に出ていない（GBP-17 は真っ黒の地）／第1弾の絵と並べて同じ作りに見える／九分割の中央が一様。
 - 変換して `remake/img/ui/growth_board/` へ（`panel_dark.webp`・`row_dark.webp`・`chip_gold.webp`・`pill_dark.webp`・`flow_1〜4.webp`・`levelup_crest.webp`）。CSS は新版（`look-neo-board.css`・`look-neo.css`）と「？」の見方（`daily.css`）。絵が読めない時は今の形のまま動くようにする。
 - 新版の検査（`look_neo_more.mjs`）は「暗い面で、紙の絵を使わない」を見ているので、面の色は絵の下に敷いたままにする（第1弾と同じ）。
+
+## 8. 組み込み（2026-11-12・Claude・PR #3455）
+
+9枚とも採用（原画は無加工のまま `originals/`）。`convert.py`（第1弾の `../growth-board-20261111/convert.py` の関数をそのまま使う）で、マゼンタを抜いて切り、`remake/img/ui/growth_board/` へ（合計約200KB）。確認用の一覧は `contact_sheet.png`。
+
+| 表示用 | 寸法 | 使う場所 |
+|---|---|---|
+| `panel_dark.webp` | 512×512・縁 64 | 新版の右のパネル（`.gb-side::before`・縁の幅 24px） |
+| `row_dark.webp` | 384×95・縁 32 | 近い目的地の行（`.gb-goal::after`。左の盤の色の帯は `::before` で絵の上）と財布の箱（`.gb-wallet::before`）。縁の幅 12px |
+| `chip_gold.webp` | 384×78 | 「灯せる」（灯せる時）と、付いている ✦ の札（`.gb-feat.on`） |
+| `pill_dark.webp` | 384×82 | 盤の倍率（−・全体・＋）と ✦ の札。両端の丸の幅は高さの半分（倍率はスマホで 23px、`daily.css` の `--pill-cap`） |
+| `flow_1〜4.webp` | 128×128 | 「？」の見方「ながれ」の手順の丸（`.gh-step`）。番号は右下の小さな札。絵が読めない時は今までの番号の丸 |
+| `levelup_crest.webp` | 512×512 | 節目のレベルアップの札の後ろ（`.lvup.has-art.milestone::before`・560px）。回る光（`lvup-rays`）とは別に動かさない |
+
+- 盤の4枚（panel・row・chip・pill）は `growth-board-screen.js` の `ART_FILES` に足した。全部読めた時だけ `.gboard.has-art` になり、その時だけ絵を当てる。紋は `levelup.js` の `ART` に足した。
+- 新版の面の色（夜紫のグラデーション）は絵の下に敷いたまま（`look_neo_more.mjs` の「暗い面で紙の絵を使わない」）。CSS は `look-neo-board.css` の「第2弾の絵」節。
+- 検査: `look_neo_more.mjs`（盤の PC・スマホ・テーマ7種・旧版へ戻す）、`growth_fx.mjs`（節目のレベルアップ・「？」のながれ）で確認。
