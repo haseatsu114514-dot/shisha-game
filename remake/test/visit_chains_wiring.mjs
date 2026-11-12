@@ -130,7 +130,7 @@ const { chainVisitDue, playChainStage, loadVisitChains } = playModule.ns;
     addMoney: n => { state.money += n; money.spent -= n; }, addStamina: n => { state.stamina += n; },
     earnStat: (key, n) => { stats[key] = (stats[key] || 0) + n; }, gainAffinity: (id, n) => { affinity[id] = (affinity[id] || 0) + n; },
     visitAffinity: kind => kind === "talk" ? 5 : 10, earnSceneCompletion() {}, spendableMoney: value => value.money,
-    tokyoVanBlock: () => null, TOKYO_VAN_SLOTS: 2, TOKYO_VISIT_COST: 4000, MUKAI_SHIFT_STAMINA: -14, loadMukaiShift: async () => {},
+    tokyoVanBlock: () => null, TOKYO_VAN_SLOTS: 2, TOKYO_VISIT_COST: 4000, MUKAI_SHIFT_STAMINA: -14, mukaiShiftPay: () => 12000, loadMukaiShift: async () => {},
     TOKYO_OUTINGS: [{ id: "tetsuko", stages: [], loop: [] }], OUTINGS_FLAG: "_ch3_outings", outingCounts: () => ({}),
     consultLessons: async () => {}, finaleAtVisit: () => false,
     // ましろと過ごす時間（BLC03・mashiro-time.js）。台本の一覧は配列で読むので、空で差し込む
@@ -139,6 +139,7 @@ const { chainVisitDue, playChainStage, loadVisitChains } = playModule.ns;
   });
   const { performTokyoSpot, tokyoSpotsNow, TOKYO_SPOTS } = tokyo.ns;
   setState({ chapter: 5, day: 80, slot: 0, money: 100000, stamina: 100, flags: { _ch2_region: "tokyo" }, met: { steve: true } });
+  assert.match(tokyoSpotsNow().find(entry => entry.id === "ch5_tokyo_mukai").desc, /12,000円/, "world champion mukai map shows the tonari wage");
   const steve = () => tokyoSpotsNow().find(entry => entry.id === "ch5_tokyo_steve");
   const visit = () => performTokyoSpot(steve(), { staminaGuard: async () => true });
   const talks = ["ch5_tokyo_steve", "ch5_tokyo_steve_b", "ch5_tokyo_steve_c"];
