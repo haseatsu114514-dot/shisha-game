@@ -8,69 +8,11 @@
       },
       "lines": [
         {
-          "speaker": "",
-          "face": "",
-          "text": "問屋街の店『Dr.fookah』。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "1階は機材とフレーバーの物販に、申し訳程度の試飲席が2つ。卸会社の直営店だ。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "会計を待っていると、店の奥の暗がり、階段の上から声が降ってきた。"
-        },
-        {
-          "speaker": "rio",
-          "face": "normal",
-          "text": "そこの君。……うん、君だよ。いい顔してる、吸い慣れた顔だ"
-        },
-        {
-          "speaker": "hajime",
-          "face": "surprise",
-          "text": "え、顔……ですか？"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "階段の上から、白いシャツの袖をまくり、黒いスラックスをはいた女性がこちらを見下ろしている。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "抱えたクリップボードに細い試香紙が何本も挟んであって、煙とは違う、複雑な香りがした。"
-        },
-        {
-          "speaker": "rio",
-          "face": "serious",
-          "text": "毎日シーシャを吸ってる顔だよ。それも、遊びじゃなくて仕事でね"
-        },
-        {
-          "speaker": "rio",
-          "face": "serious",
-          "text": "……tonariの子だね。前掛けの折り目でわかっちゃう"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "（……観察されてた）"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "は、はい。tonariでバイトしてる、逢縁です"
-        },
-        {
-          "speaker": "rio",
-          "face": "normal",
-          "text": "円頓寺凛想。この店の2階で、海外メーカーNIGHTSIDEの代理店デスクをやってる。……聞いたこと、ない？"
-        },
-        {
-          "speaker": "rio",
-          "face": "normal",
-          "text": "まあ、いいよ。せっかく来たんだ、歓迎くらいするよ"
+          "type": "condition",
+          "condition_type": "met",
+          "char_id": "rio",
+          "next_true": "shop_known_open",
+          "next_false": "shop_new_open"
         },
         {
           "type": "set_flag",
@@ -89,7 +31,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "ついて行った2階は、薄暗いショールームだった。棚一面に、日本語表記のないフレーバーの袋。"
+          "text": "2階は、薄暗いショールームだった。棚一面に、日本語表記のないフレーバーの袋。"
         },
         {
           "speaker": "",
@@ -243,6 +185,95 @@
             "speaker": "hajime",
             "face": "normal",
             "text": "……わかりました。感想を返すんですね"
+          }
+        ],
+        "shop_new_open": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "問屋街の店『Dr.fookah』。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "1階は機材とフレーバーの物販に、申し訳程度の試飲席が2つ。卸会社の直営店だ。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "会計を待っていると、店の奥の暗がり、階段の上から声が降ってきた。"
+          },
+          {
+            "speaker": "rio",
+            "face": "normal",
+            "text": "そこの君。……うん、君だよ。いい顔してる、吸い慣れた顔だ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "surprise",
+            "text": "え、顔……ですか？"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "階段の上から、白いシャツの袖をまくり、黒いスラックスをはいた女性がこちらを見下ろしている。"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "抱えたクリップボードに細い試香紙が何本も挟んであって、煙とは違う、複雑な香りがした。"
+          },
+          {
+            "speaker": "rio",
+            "face": "serious",
+            "text": "毎日シーシャを吸ってる顔だよ。それも、遊びじゃなくて仕事でね"
+          },
+          {
+            "speaker": "rio",
+            "face": "serious",
+            "text": "……tonariの子だね。前掛けの折り目でわかっちゃう"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（……観察されてた）"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "は、はい。tonariでバイトしてる、逢縁です"
+          },
+          {
+            "speaker": "rio",
+            "face": "normal",
+            "text": "円頓寺凛想。この店の2階で、海外メーカーNIGHTSIDEの代理店デスクをやってる。……聞いたこと、ない？"
+          },
+          {
+            "speaker": "rio",
+            "face": "normal",
+            "text": "まあ、いいよ。せっかく来たんだ、歓迎くらいするよ"
+          }
+        ],
+        "shop_known_open": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "Dr.fookahの階段を上がった。1階の明かりが、背中で遠くなる。"
+          },
+          {
+            "speaker": "rio",
+            "face": "normal",
+            "text": "ああ、tonariのはじめくん。今日は上まで来たんだ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "未発売のサンプル、見せてもらえますか"
+          },
+          {
+            "speaker": "rio",
+            "face": "smile",
+            "text": "……ふふ。じゃあ、売り場にはないものを見せようか"
           }
         ]
       }
@@ -2449,7 +2480,244 @@
           }
         ]
       }
+    },
+    {
+      "dialogue_id": "ch1_shop_rio_first",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_shop.png",
+        "forced_event": true,
+        "topic": "店頭の応対"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "Dr.fookahの入口で、箱を抱えた女性と行き合った。店内の階段から降りてきたところらしい。"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "いらっしゃい。……あ、買い物？ 箱は脇へ寄せるから、入っていいよ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "白いシャツの袖をまくり、納品書と箱のラベルを指で照らし合わせている。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "ありがとうございます。tonariで働いてる逢縁です。葉を買いに来ました"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "スミさんのとこか。2階の担当、円頓寺凛想。よろしくね"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_met_rio"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "品名と数、会計の前に確かめよ。似た袋、多いからさ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "箱の上に載った黒い袋には、日本語のラベルがなかった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "その袋も、売り物ですか？"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "これはまだ。海外メーカーの、未発売サンプル。私が先に確かめる分"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "売る前にも、吸うんですね"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "売ったあとで、知らない味でしたじゃ困るでしょ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "袋を箱へ戻すと、凛想さんは階段の上を指した。"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "2階でナイトサイドの代理店の仕事をしてる。夜は、試香の相談もね"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "興味あったら、今度は夜に2階へおいで。知らない香り、あると思うよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……気になります。でも今日は、買い出しが先なので"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "うん、今日は買い物だけでいいよ。仕事の邪魔はしない"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "凛想さんは箱を脇へ寄せ、1階の売り場へ手を向けた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch1_shop_rio_return",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_shop.png",
+        "forced_event": true,
+        "topic": "店頭の応対"
+      },
+      "lines": [
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "いらっしゃい、はじめくん。今日は買い物？ それとも2階の用事？"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch1_shop_rio_errand",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_shop.png",
+        "forced_event": true,
+        "topic": "店頭の応対"
+      },
+      "lines": [
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "お、はじめくん。買い出しだね。品名と数、会計の前に確かめよ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch1_shop_rio_monitor",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_shop.png",
+        "forced_event": true,
+        "topic": "店頭の応対"
+      },
+      "lines": [
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "いらっしゃい、モルモットくん。買い物も、ちゃんと見ていきなね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch1_shop_clerk",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_shop.png",
+        "forced_event": true,
+        "topic": "店頭の応対"
+      },
+      "lines": [
+        {
+          "speaker": "shop_clerk",
+          "face": "normal",
+          "text": "いらっしゃいませ。お買い物はこちらです"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "1階の店員さんが、機材とフレーバーの売り場を案内してくれた。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch1_shop_rio_delivery",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_tonari_inside.png",
+        "forced_event": true,
+        "topic": "東京出発前の顔合わせ"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "東京へ発つ準備の合間、tonariへ戻ると、仕入れの箱が届いていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "白いシャツの女性が、納品書と箱の数を確かめている。"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "スミさん、この箱で全部。……あ、その子が東京へ行く子？"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "はじめだ。うちで働いてる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "逢縁はじめです。いつも葉を、ありがとうございます"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "Dr.fookahの円頓寺凛想。1階のお店には、来たことあるかな"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "私は2階で、海外メーカーのナイトサイドを担当してる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "お店の上にも、仕事場があったんですね"
+        },
+        {
+          "speaker": "rio",
+          "face": "smile",
+          "text": "未発売のサンプルを、自分で確かめる仕事。売る前には、吸っておかないとね"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "興味があったら、夜に2階へおいで。東京から戻ってからでもいいよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "はい。知らない香り、気になります"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "凛想さんは納品書をスミさんへ渡した。今日はそれ以上引き止めず、箱から手を離す。"
+        },
+        {
+          "type": "set_flag",
+          "flag": "_met_rio"
+        }
+      ]
     }
   ]
 }
-

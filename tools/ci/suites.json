@@ -1035,6 +1035,7 @@
         "node remake/test/chapter_feature_gates_2035.mjs",
         "node remake/test/tournament_entrance.mjs",
         "node --experimental-vm-modules remake/test/rio_sample.mjs",
+        "node --experimental-vm-modules remake/test/shop_greeting.mjs",
         "node --experimental-vm-modules remake/test/invites_781.mjs",
         "node --experimental-vm-modules remake/test/stamina_condition.mjs",
         "node --experimental-vm-modules remake/test/lime_consistency.mjs",
@@ -4353,11 +4354,17 @@
       "timeout": 5,
       "paths": [
         "remake/js/daily/shop.js",
+        "remake/js/daily/shop-greeting.js",
+        "remake/js/chapters/departure-prep.js",
+        "data/dialogue/ch1_rio.json",
+        "remake/test/browser/rio_shop_entry.mjs",
+        "remake/test/browser/shop_greeting_reader.mjs",
         "remake/js/daily/calendar.js",
         "remake/test/browser/shopping_tutorial.mjs"
       ],
       "run": [
-        "node remake/test/browser/shopping_tutorial.mjs"
+        "node remake/test/browser/shopping_tutorial.mjs",
+        "node remake/test/browser/rio_shop_entry.mjs"
       ]
     },
     {

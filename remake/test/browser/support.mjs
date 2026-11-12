@@ -5,6 +5,7 @@ import { createRequire } from "node:module";
 import { fileURLToPath } from "node:url";
 import { installLoadingComicReader } from "./loading_reader.mjs";
 import { installGrowthAcknowledger } from "./growth_ack.mjs";
+import { installShopGreetingReader } from "./shop_greeting_reader.mjs";
 
 const { chromium } = createRequire(import.meta.url)("playwright");
 const root = fileURLToPath(new URL("../../../", import.meta.url));
@@ -18,6 +19,7 @@ export async function suite(name, run, {
   initScript = null,
   readLoadingComics = true,
   acknowledgeGrowth = true,
+  readShopGreeting = true,
   // 心得の盤のはじめての案内と最初の火種（growth-board-tutorial.js）。他の検査の火種の数を変えないよう既定は出さない
   boardTutorial = false,
   roamers = false,
@@ -65,6 +67,7 @@ export async function suite(name, run, {
       // 起動時は書体と選んだタイトル画像を待つ。工程中の操作とは別の上限。
       await page.locator(pageReadySelector).waitFor({ timeout: 30000 });
       await page.locator("#boot").waitFor({ state: "detached" });
+      if (readShopGreeting) await installShopGreetingReader(page);
       await body(page);
       assert.deepEqual(errors, [], "Unexpected browser errors");
       assert.deepEqual(failedResources.filter(failure => !ignoreFailedResource(failure)), [], "Failed resource requests");
