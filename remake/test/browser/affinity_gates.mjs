@@ -44,6 +44,7 @@ await suite("affinity-gates", async check => {
         G.city = await import("./js/chapters/ch2-city-data.js");
         G.prep = await import("./js/chapters/ch2-preparation.js");
         await G.city.loadCityDialogues(); await G.city.loadChapterTwoDialogues();
+        await G.city.loadPreparationDialogues();
         const s = G.core.newGame();
         Object.assign(s, { chapter: 2, phase: "daily", day: 16, slot: 0, money: 100000 });
         s.met.ageha = true; s.affinity.ageha = 9; s.stats.charm = 10;
@@ -53,7 +54,8 @@ await suite("affinity-gates", async check => {
         G.vn.hooks.onEnter = (id, scene) => { G.agehaEvents.push(id); enter?.(id, scene); };
         G.agehaVisit = () => G.stats.paidAction(() => G.prep.visitPreparationSpot(
           G.prep.PREPARATION_SPOTS.find(x => x.charId === "ageha"), { staminaGuard: async () => true }));
-        await G.agehaVisit();
+        const first = await G.agehaVisit();
+        if (!first.value.used || !G.core.state.flags._ageha_first_purikura) throw Error("Initial Ageha visit did not complete");
         G.core.save(); G.core.newGame(); G.core.load();
         G.beforeAgeha = structuredClone(G.core.state);
         G.core.state.day++;
