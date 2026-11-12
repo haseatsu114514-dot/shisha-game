@@ -539,7 +539,7 @@ async function runTournament(owner) {
     clearContinueHistory(state);
     if (!await readAndCommit(owner, win)) return;
     const received = chapterFourProgress(state).prizeReceived;
-    toast(received > 0 ? `大会の賞金 ${received.toLocaleString("ja-JP")}円を受け取った` : "賞金は所持金の上限に達したため加算されなかった", { kind: "good" });
+    toast(Number.isFinite(received) ? (received > 0 ? `大会の賞金 ${received.toLocaleString("ja-JP")}円を受け取った` : "賞金は所持金の上限に達したため加算されなかった") : "大会の賞金を受け取った", { kind: "good" });
   } else {
     if (!await readAndCommit(owner, loss)) return;
     // 2026-11-02 オーナー決定: 第1〜3章と同じ20秒のCONTINUE画面を出す（#1909）。再挑戦は大会の最初から（Q5）。
