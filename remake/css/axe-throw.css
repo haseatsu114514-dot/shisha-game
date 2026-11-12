@@ -1129,3 +1129,54 @@ html:root[data-ui-theme="paper"] .axe-bar-menu .axe-bar-lesson { color: var(--la
 .axe-game.axe-in-stage .axe-calls [data-call="normal"][aria-pressed="true"] { color: var(--lane-orange-ink); }
 .axe-game.axe-in-stage :is(.axe-throw .axe-retry, .axe-controls .axe-button, .axe-calls .axe-button):hover:not(:disabled) { color: #fff8dc; }
 .axe-game.axe-in-stage .axe-calls [data-call="normal"][aria-pressed="true"]:hover:not(:disabled) { color: var(--lane-orange-ink); }
+
+/* ===== 見出し・枠・黒板の窓・ランク・帯の絵（2026-11-12・#3423・AXQ03） =====
+   PR #3448 の Codex の部品（asset_sources/ui/axe-quality-ui-20261111/）。文字・点数・ランクの字・押せる範囲はこれまでどおりコードが描く。
+   上の「絵の部品」と同じく、絵は ::before／::after に 9分割（border-image）で描き、透明な余白の分は border-image-outset で外へ出す。
+   寸法は tools/geometry.json（表示用WebPの外接範囲）から。k は「表示の大きさ÷絵の画素」で、縁の幅＝切り位置×k、外へ出す分＝余白×k。
+   - 見出しの板（hud-plate 2048×192、絵は y24〜168）: 高さ88pxに144を合わせ k=0.611。切り位置 上下48・左右104（角の鋲と金具は伸ばさない）。
+   - 投げ数の溝（score-slot 512×192、絵は y24〜168）: 枠は高さ39pxで k=0.271、合計点は高さ76pxで k=0.528。切り位置 上下54・左右68。
+   - 黒板の窓（chalk-window 1152×768、絵は 36〜1115×37〜731）: 切り位置120（角の金具まで）。結果と一言は k=0.19（木の縁 約12px）、まとめは k=0.27（約17px）。
+   - 帯（banner 1024×256、絵は 32〜992×33〜223、燕尾の切れ込み54）: k=0.52。切り位置 上下55・左右112（切れ込みと鋲は伸ばさない）。字は切れ込みと鋲より内側（左右46px）。
+   - ランクの丸（rank-medallion 384×384）: 字の後ろに 84px で敷く。焼き印の輪の内側の明るい所（半径の約7割）に字が入る。
+   画像は axe.js の UI_ART で読み込み中に先に解く（読めなければ今までどおり「もう一度読み込む」になる）。 */
+.axe-game.axe-in-stage :is(.axe-header, .axe-total, .axe-result-card, .axe-side .axe-companion, .axe-declare) { isolation: isolate; }
+.axe-game.axe-in-stage :is(.axe-header, .axe-total, .axe-result-card, .axe-side .axe-companion) { position: relative; }
+.axe-game.axe-in-stage :is(.axe-header, .axe-total, .axe-result-card, .axe-side .axe-companion, .axe-declare)::before,
+.axe-game.axe-in-stage[data-phase="summary"] .axe-panel::before,
+.axe-game.axe-in-stage .axe-tile::after {
+  content: ""; position: absolute; inset: 0; z-index: -1; box-sizing: border-box; border-style: solid; border-color: transparent; border-width: 0; border-radius: 0; pointer-events: none; }
+/* 見出しの板 */
+/* 板の両端は斜めの鉄の金具（縦の真ん中で約22〜35px、上下の端で約77px）。題字と × は金具の内側に置く */
+.axe-game.axe-in-stage .axe-header { padding-left: 46px; padding-right: 34px; border-color: transparent; background: none; box-shadow: none; }
+.axe-game.axe-in-stage .axe-header::before { inset: -1px; border-image: url("../img/ui/axe_throw/hud-plate.webp") 48 104 fill / 29.3px 63.6px / 14.7px 20.2px; }
+/* 投げ数の溝。今の投は溝の外を橙に光らせる */
+.axe-game.axe-in-stage .axe-tile { isolation: isolate; border-color: transparent; background: none; box-shadow: none; }
+.axe-game.axe-in-stage .axe-tile::after { inset: -1px; border-image: url("../img/ui/axe_throw/score-slot.webp") 54 68 fill / 14.6px 18.4px / 6.5px 8.7px; }
+.axe-game.axe-in-stage .axe-tile[data-current="true"] { border-radius: 5px; box-shadow: 0 0 0 2px var(--lane-orange), 0 0 12px #ff8c3a99; }
+.axe-game.axe-in-stage .axe-total { border-color: transparent; background: none; box-shadow: none; }
+.axe-game.axe-in-stage .axe-total::before { border-image: url("../img/ui/axe_throw/score-slot.webp") 54 68 fill / 28.5px 35.9px / 12.7px 16.9px; }
+/* 黒板の窓: 投げた後の結果・見守る人の一言（木の縁 約12px の内側に字） */
+.axe-game.axe-in-stage :is(.axe-result-card, .axe-side .axe-companion) { border-color: transparent; border-radius: 0; background: none; box-shadow: none; }
+.axe-game.axe-in-stage .axe-result-card { padding: 14px 18px; }
+.axe-game.axe-in-stage[data-phase="result"] .axe-result-card { padding-block: 14px; }
+.axe-game.axe-in-stage .axe-side .axe-companion { padding: 14px 16px; }
+.axe-game.axe-in-stage :is(.axe-result-card, .axe-side .axe-companion)::before { border-image: url("../img/ui/axe_throw/chalk-window.webp") 120 fill / 22.8px / 7px; }
+.axe-game.axe-in-stage[data-phase="result"][data-special="true"] .axe-result-card { box-shadow: 0 0 34px #ffcd7859; }
+/* まとめ: 的の上に出す大きい黒板（木の縁 約17px）。中のランクの欄には窓を重ねない */
+.axe-game.axe-in-stage[data-phase="summary"] .axe-panel { padding: 24px 26px 22px; border-color: transparent; border-radius: 4px; background: none; box-shadow: 0 20px 60px #000000d9; }
+.axe-game.axe-in-stage[data-phase="summary"] .axe-panel::before { inset: -1px; border-image: url("../img/ui/axe_throw/chalk-window.webp") 120 fill / 32.4px / 10px; }
+.axe-game.axe-in-stage[data-phase="summary"] .axe-result-card { padding: 0; }
+.axe-game.axe-in-stage[data-phase="summary"] .axe-result-card::before { content: none; }
+/* ランク: 焼き印の丸の上に字 */
+.axe-game.axe-in-stage[data-phase="summary"] .axe-rank { align-items: center; }
+.axe-game.axe-in-stage .axe-rank strong { display: inline-grid; place-items: center; width: 84px; height: 84px; flex: none;
+  background: url("../img/ui/axe_throw/rank-medallion.webp") center / 100% 100% no-repeat; color: #4a2410; font-size: 40px; text-shadow: 0 1px 0 #fff3dc99; }
+.axe-game.axe-in-stage .axe-rank[data-rank="S"] strong { color: #7a1f00; text-shadow: 0 0 8px #ffd27acc, 0 1px 0 #fff3dc; }
+.axe-game.axe-in-stage .axe-rank[data-rank="A"] strong { color: #5e2a0a; }
+/* 帯: 最後の1投・持ち替え・延長戦は橙、目標達成は緑。字は帯の面に濃い色で */
+.axe-game.axe-in-stage .axe-declare:is([data-kind="last"], [data-kind="half"], [data-kind="goal"]) { padding: 12px 46px; border-color: transparent; border-radius: 0; background: none; }
+.axe-game.axe-in-stage .axe-declare:is([data-kind="last"], [data-kind="half"])::before { border-image: url("../img/ui/axe_throw/banner-orange.webp") 55 112 fill / 28.6px 58.2px / 17.2px 16.6px; }
+.axe-game.axe-in-stage .axe-declare[data-kind="goal"]::before { border-image: url("../img/ui/axe_throw/banner-green.webp") 55 112 fill / 28.6px 58.2px / 17.2px 16.6px; }
+.axe-game.axe-in-stage .axe-declare:is([data-kind="last"], [data-kind="half"]) :is(strong, span) { color: var(--lane-orange-ink); text-shadow: 0 1px 0 #ffd0a666; }
+.axe-game.axe-in-stage .axe-declare[data-kind="goal"] :is(strong, span) { color: #0d2716; text-shadow: 0 1px 0 #d6f5c866; }

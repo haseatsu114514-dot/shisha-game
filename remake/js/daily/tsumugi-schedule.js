@@ -8,6 +8,12 @@ export const TSUMUGI_STORY = [
 
 /** 表示にも来店にも使う読み取り専用判定。固定回・延期の未読を通常会話で代替しない。 */
 export function tsumugiAtTonari(save) {
+  // 出張の予約はTRPGとも共用する個別予定に記録され、精算・取消時に同じマーカーを除く。
+  // 通常在店の照会で、第5章の出張依頼データ一式を読み込まない。
+  if (save.chapter === 5 && (Array.isArray(save.trpg?.shifts) ? save.trpg.shifts : []).some(shift =>
+    shift?.id === "tsumugi" && shift.chapter === 5 && shift.day === save.day && shift.slot === save.slot
+    && shift.busy === true && typeof shift.cateringMsg === "string")) return false;
+  if (save.chapter === 5) return save.slot === 0 || save.slot === 1; // 第5章は店のスタッフとして働く
   if (save.slot !== 0 && save.slot !== 1) return false;
   if (save.flags?._tsumugi_story_day === `${save.chapter}:${save.day}`) return false;
   if (save.chapter === 1 && TSUMUGI_STORY.some(step => step.day <= save.day

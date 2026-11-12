@@ -119,7 +119,7 @@ export async function performChapterFiveShop(spot, { staminaGuard } = {}) {
   if (state !== owner) return unused;
   if (entry.firstTalk && isClosed(spot)) return unused;
   if ((entry.cost || 0) > spendableMoney(state)) {
-    toast("お金が足りない");
+    toast("お金が足りない", { se: "error" });
     return unused;
   }
   if (staminaGuard && !(await staminaGuard(entry.stamina))) return unused;

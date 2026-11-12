@@ -29,8 +29,9 @@ import { TOKYO, TOKYO_SPOTS, TO_TOKYO_SPOT, performTokyoSpot, inTokyo, tokyoNigh
 import { DUBAI, DUBAI_SPOTS, TO_DUBAI_SPOT, performDubaiSpot, inDubai, dubaiNight, dubaiWakeBackground, chapterFiveDubaiPin,
   chapterFiveDubaiLeisureSpots, chapterFiveDubaiLeisureById, preloadNoorScenes, dubaiBondHasNew } from "./ch5-dubai.js";
 import { chapterFiveShops, chapterFiveCityShops, chapterFiveShopById, performChapterFiveShop, chapterFiveShowroom } from "./ch5-shops.js";
-import { chapterFiveCateringSpot, performCateringSpot, deliverCateringMorning } from "./ch5-catering.js";
-import { CATERING_SPOT_ID } from "./ch5-catering-model.js";
+import { chapterFiveCateringSpot, performCateringSpot, deliverCateringMorning, settleCateringWork, cateringBusyContacts, finishCateringSeason } from "./ch5-catering.js";
+import { introduceCateringBusiness } from "./ch5-catering-origin.js";
+import { CATERING_SPOT_ID, isTsumugiCateringAway } from "./ch5-catering-model.js";
 import { noteShopStamp, shopStampsShortcut } from "./ch5-shop-stamps.js";
 import {
   chapterFiveProgress, chapterFiveFreeRemaining, chapterFiveRead, chapterFiveTimeoutPending,
@@ -82,6 +83,7 @@ export function chapterFiveHomeSpots() {
 /** 次に tonari で読む場面（並びの順・時間帯が合うときだけ）。無ければ null＝いつもの tonari。 */
 export function dueTonariScene(value = state) {
   const [next] = chapterFiveFreeRemaining(value).filter(scene => scene.location === "tonari");
+  if (isTsumugiCateringAway(value)) return null; // 出張中のつむぎをtonariの場面へ呼び戻さない
   return next && (TONARI_SLOTS[next.id] || [0, 1]).includes(value.slot) ? next : null;
 }
 
@@ -100,7 +102,8 @@ export function chapterFiveDailyDefinition(io) {
     // 出張シーシャの依頼（スミさんのLIME）と、期限の過ぎた依頼の片付け
     morningLime: () => deliverCateringMorning(),
     // 店めぐり帳: 行き先の行動を終えたら判子（帳面の店だけ）。帳面は右上の LIME の一番上の行から開く
-    afterSpot: spot => { noteShopStamp(spot); },
+    afterSpot: spot => { noteShopStamp(spot); settleCateringWork({ throughDay: state.day, throughSlot: state.slot }); },
+    withLovers: () => cateringBusyContacts(), // 朝の配信除外だけ。同行者や恋愛状態は変更しない
     limeShortcuts: () => [shopStampsShortcut()],
     tournamentName: "博士との勝負",
     undatedNote: "博士との勝負の日は、まだ決まっていない",
@@ -108,7 +111,9 @@ export function chapterFiveDailyDefinition(io) {
     // romance.js の romanceRouteOpen）。第3・4章の出発前と東京・ドバイで持ち越した告白が、帰郷後の地元の夜に届く
     // （IR33・#2024。東京・ドバイへ出ている夜は romance.js の confessionHeld が持ち越す）。恋人の誘いとデートも開いている（IR16）。
     // ヌールだけは第5章のドバイで迎えた締めくくりでも、砂丘の夕日で告白できる（夜の帰り道ではない・2026-11-07 オーナー決定）。
-    mapOptions: () => ({
+    mapOptions: () => {
+      settleCateringWork(); // 約束の行動で枠が進んだ場合も、次の地図の前に精算
+      return ({
       regionId: currentRegion(),
       regions: [
         { id: "home", label: `地元・${HOME_CITY_NAME}`, background: () => bgUrl(`bg_osu_map_${timeOfDay()}`), spots: chapterFiveHomeSpots },
@@ -118,9 +123,12 @@ export function chapterFiveDailyDefinition(io) {
         { id: DUBAI, label: "ドバイ", background: () => bgUrl(timeOfDay() === "night" ? "bg_dubai_map_dusk" : "bg_dubai_map"), spots: chapterFiveDubaiSpots },
       ],
       onRegionChange: id => { state.flags._ch2_region = id; save(); },
-    }),
+    }); },
     // 夜は地元へ帰ってから（柚ヶ谷にいれば帰りの電車。第2章と同じ）。東京にいれば屋根裏で寝る。
-    beforeHomecoming: () => inTokyo() ? tokyoNight() : inDubai() ? dubaiNight() : returnCityHome(),
+    beforeHomecoming: () => {
+      settleCateringWork({ throughDay: state.day, throughSlot: 1 }); // 休養で昼夜を飛ばしても精算
+      return inTokyo() ? tokyoNight() : inDubai() ? dubaiNight() : returnCityHome();
+    },
     // 東京・ドバイにいる間は恋人のデートの約束が成り立たない（daily/phone.js が予定を改める）。仕事の約束などで
     // 東京にいる時も、地元へ瞬間移動させない（false はループを止めるので返さない）。
     beforeInvitation: destination => inTokyo() || inDubai() ? true
@@ -137,6 +145,7 @@ export function chapterFiveDailyDefinition(io) {
 
 /** 第5章の自由行動を日常ループで回す。勝負の日の朝（または LOAD）で戻る。 */
 export async function runChapterFiveDaily(io) {
+  settleCateringWork(); // 翌朝・LOADでも前の予約を失効させない
   // 現在地は第2章と同じ flags._ch2_region。第5章は地元から始める（第2章の保存の柚ヶ谷を持ち込まない）。
   if (!state.flags._ch5_region_started) {
     state.flags._ch2_region = "home";
@@ -148,6 +157,8 @@ export async function runChapterFiveDaily(io) {
   const owner = state;
   await Promise.all([preloadTokyoScenes(), preloadNoorScenes()]);
   if (state !== owner) return;
+  // 帰郷後の新事業は最初の依頼より先に相談する。旧海外セーブは帰国後のtonariで補完。
+  if (!await introduceCateringBusiness() || state !== owner) return;
   await runDaily(chapterFiveDailyDefinition(io));
 }
 
@@ -223,6 +234,9 @@ async function performChapterFiveSpot(spot, io, options = {}) {
     if (visited) return visited;
   }
   if (spot.id === "tonari") {
+    // 海外・隣町から戻った旧セーブも、既存の接客/練習より先に一度だけ相談する。
+    const owner = state;
+    if (!await introduceCateringBusiness() || state !== owner) return { used: false, exerted: false };
     // 閉店後の試作が途中なら、まずその続き（LOAD 後など）。
     if (chapterFivePrepPending(state)) return { used: await runPrep(io), exerted: false };
     // 試作の会話を終えた夜は、閉店後の作業台で本物の一台を作れる（任意・一度だけ。#2020 F）。断れば、いつもの tonari へ。
@@ -269,6 +283,7 @@ async function contactDoctor(io) {
   if (!await io.readAndCommit("ch5_schedule_contact")) return { used: false, exerted: false };
   const progress = chapterFiveProgress(state);
   if (progress.part === "scheduled") {
+    finishCateringSeason();
     // 日を決めた日の残りは勝負の準備。今夜の恋人との約束は、別の日に改める。
     const invite = todaysDate();
     if (invite) {

@@ -1,3 +1,4 @@
+import { recordPlayMastery, syncPlayMastery, masteryLine } from "../core/play-mastery.js";
 // 「てつこといっしょ / TETSUKO TIME」（#2454）の画面と本編との確定点。猫の状態・反応・自律行動は tetsuko-model.js。
 //
 // 動線（オーナー判断 2026-11-04・実装計画 §1）: mukai で行動を使う → 帰りに裏口をのぞく（ch3-tokyo-daily.js の
@@ -41,7 +42,8 @@ export const TETSUKO_STAMINA = TOKYO_OUTINGS.find(outing => outing.id === "tetsu
  * この一回の処理の中で (a) 来訪記録 _ch3_outings.tetsuko を +1、(b) _tetsuko_time に小物の配置・発見・
  * アルバム・おやつの日・ごきげんの通算回数・訪問キーを書き、{ committed:true, stamina:12 } を返す。呼び出し側が同じ処理の中で
  * addStamina(12) と toast を出す。それ以外は { committed:false } で、保存には一切触らない。
- * 増やさないもの: 経験値・能力・火種・好感度・お金・日付・時間帯（ここでは書けない API しか使わない）。
+ * #2455: 確定後に共通の達人進捗を記録し、認定時の火種は growth の購読先で精算する。
+ * 直接増やさないもの: 経験値・能力・好感度・お金・日付・時間帯。
  * 「少し構っていく」（台本だけ読む短い経路）も同じ確定点を通る（result に小物・発見が無ければ記録を保つ）。
  * @param {object} value 現在のセーブ
  * @param {{ meaningful?: boolean, visitKey?: string, props?: object, found?: string[], album?: object[], treatDay?: number|null, peaks?: number }} [result]
@@ -51,6 +53,7 @@ export function settleTetsukoTime(value, result) {
   if (!value?.flags || !result?.meaningful || typeof result.visitKey !== "string" || !result.visitKey) return { committed: false };
   const record = readTetsukoRecord(value);
   if (record.lastKey === result.visitKey) return { committed: false };
+  syncPlayMastery(value);
   const counts = value.flags[OUTINGS_FLAG] && typeof value.flags[OUTINGS_FLAG] === "object" ? value.flags[OUTINGS_FLAG] : {};
   value.flags[OUTINGS_FLAG] = { ...counts, tetsuko: tetsukoVisits(value) + 1 };
   // 新しい記録は正規化してから書く（壊れた値・未知の id・同じ瞬間の重複を残さない）。
@@ -63,6 +66,7 @@ export function settleTetsukoTime(value, result) {
     peaks: record.peaks + Math.max(0, Math.floor(Number(result.peaks) || 0)),
   } } });
   value.flags[TETSUKO_TIME_FLAG] = { ...next, sessions: record.sessions + 1, lastKey: result.visitKey };
+  recordPlayMastery(value, "tetsuko", result, `${value.cycle || 1}:${result.visitKey}`);
   return { committed: true, stamina: TETSUKO_STAMINA };
 }
 
@@ -1064,6 +1068,7 @@ export async function openTetsukoTime({ value = null, visitKey = null, bg = null
       book.hidden = false;
       book.replaceChildren(el("div.tt-book-spread", [
         el("div.tt-page.left", [el("h3", { text: "てつこ手帳" }),
+          el("p.tt-book-count", { text: masteryLine(value, "tetsuko"), dataset: { test: "tetsuko-mastery" } }),
           el("p.tt-book-count", [`見つけたしぐさ　${count} / ${MOMENTS.length}`,
             peaks > 0 ? el("span.tt-book-joy", { dataset: { test: "tetsuko-book-joy" } }, [el("i.tt-book-heart", { "aria-hidden": "true", html: HEART_SVG }), `ごきげん　${peaks}回`]) : null]),
           el("div.tt-cards", cards)]),

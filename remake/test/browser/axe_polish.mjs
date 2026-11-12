@@ -107,11 +107,25 @@ await suite("axe-polish", async check => {
         assert(board.width > minimum, `Usable wood target width: ${board.width}`);
         sizes.push({ label, viewport: page.viewportSize(), phase: "result", woodWidth: board.width, woodHeight: board.height });
         await capture(page, `${label}-bull-result`);
+        // #3423: the throw result sits on the painted chalkboard window.
+        assert.match(await page.locator(".axe-result-card").evaluate(node => getComputedStyle(node, "::before").borderImageSource), /chalk-window\.webp/);
       }
       await action(page, touch);
       if (i < 2) await phase(page, "choice");
+      if (i === 1) {
+        // #3423: the LAST THROW cue is the painted orange lane sign, and its words stay inside the sign.
+        const cue = page.locator('[data-test="axe-last-cue"]');
+        await cue.waitFor();
+        assert.match(await cue.evaluate(node => getComputedStyle(node, "::before").borderImageSource), /banner-orange\.webp/);
+        const words = await cue.evaluate(node => [...node.children].map(child => child.scrollWidth <= child.clientWidth + 1));
+        assert.deepEqual(words, [true, true]);
+        await capture(page, `${label}-last-throw`);
+      }
     }
     await phase(page, "summary"); await fits(page);
+    // #3423: the summary is the large chalkboard window and the rank letter is branded on the pine medallion.
+    assert.match(await page.locator(".axe-panel").evaluate(node => getComputedStyle(node, "::before").borderImageSource), /chalk-window\.webp/);
+    assert.match(await page.locator(".axe-rank strong").evaluate(node => getComputedStyle(node).backgroundImage), /rank-medallion\.webp/);
     assert.match(await page.locator(".axe-result-tip").textContent(), /平均 4\.00点\/投 · ブル 2 · キル 0\/0 · 落下 1/);
     const displayedTotal = Number(await page.locator(".axe-total strong").textContent());
     await capture(page, `${label}-summary`); await action(page, touch);
@@ -341,7 +355,7 @@ await suite("axe-polish", async check => {
     ["touch-landscape", { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }, true],
   ]) await check(`${label}-focus-layout`, async page => {
     const parts = new Set();
-    page.on("response", response => { const name = response.url().match(/ui\/axe_throw\/((?:gauge|button-throw|tag)-[a-z-]+\.webp)$/)?.[1]; if (name && response.ok()) parts.add(name); });
+    page.on("response", response => { const name = response.url().match(/ui\/axe_throw\/((?:gauge|button-throw|tag|hud|score|chalk|rank|banner|wood)-[a-z-]+\.webp)$/)?.[1]; if (name && response.ok()) parts.add(name); });
     const before = await start(page, { mode: "league", opponent: "hiyori", seed: 11, division: "am" });
     const box = selector => page.locator(selector).first().evaluate(node => { const r = node.getBoundingClientRect(); return { left: r.left, top: r.top, right: r.right, bottom: r.bottom, width: r.width, height: r.height }; });
     const shown = selector => page.locator(selector).first().evaluate(node => node.getClientRects().length > 0 && getComputedStyle(node).visibility !== "hidden");
@@ -362,7 +376,9 @@ await suite("axe-polish", async check => {
     assert.equal(await shown(".axe-timing"), false, "no gauge before the stance");
     // Two layers: the wood and paint never move; sights, axe and effects are drawn above them. No filter anywhere on the board.
     assert.equal(await page.locator(".axe-target-art .axe-plank image").count(), 1);
-    assert.equal(await page.locator(".axe-target image").count(), 0);
+    // 動く層には板の絵を置かない。そこにある image は刺さった時に飛ぶ木片の絵（#3423）だけ。
+    assert.equal(await page.locator(".axe-target image:not(.axe-chip image)").count(), 0);
+    assert.deepEqual(await page.locator(".axe-target .axe-chip image").evaluateAll(nodes => [...new Set(nodes.map(node => node.getAttribute("href").split("/").pop()))]), ["wood-chips.webp"]);
     assert.equal(await page.locator(".axe-target-art .axe-crosshair, .axe-target-art .axe-flight").count(), 0);
     const filtered = () => page.locator(".axe-board-pane :is(.axe-target-art, .axe-target), .axe-board-pane :is(.axe-target-art, .axe-target) *").evaluateAll(nodes =>
       nodes.filter(node => getComputedStyle(node).filter !== "none" || node.style.filter).map(node => node.getAttribute("class") || node.tagName));
@@ -388,7 +404,17 @@ await suite("axe-polish", async check => {
     assert.match((await art('[data-call="upper-left"]', "::after")).image, /tag-slate-blue\.webp/);
     assert.match((await art('[data-test="axe-throw"] .axe-throw-button', "::before")).image, /button-throw-orange\.webp/);
     assert.equal((await art('[data-test="axe-throw"] .axe-throw-button', "::after")).opacity, 0);
-    assert.deepEqual([...parts].sort(), ["button-throw-green.webp", "button-throw-orange.webp", "gauge-frame.webp", "gauge-needle.webp", "tag-selected-amber.webp", "tag-selected.webp", "tag-slate-blue.webp", "tag-slate.webp"], "all parts are loaded before the first throw");
+    assert.deepEqual([...parts].sort(), ["banner-green.webp", "banner-orange.webp", "button-throw-green.webp", "button-throw-orange.webp", "chalk-window.webp", "gauge-frame.webp", "gauge-needle.webp",
+      "hud-plate.webp", "rank-medallion.webp", "score-slot.webp", "tag-selected-amber.webp", "tag-selected.webp", "tag-slate-blue.webp", "tag-slate.webp", "wood-chips.webp"], "all parts are loaded before the first throw");
+    // #3423: the header plate, the score slots, the total and the companion's chalkboard are drawn from the generated art, not flat CSS boxes.
+    assert.match((await art(".axe-header", "::before")).image, /hud-plate\.webp/);
+    assert.match((await art(".axe-tile", "::after")).image, /score-slot\.webp/);
+    assert.match((await art(".axe-total", "::before")).image, /score-slot\.webp/);
+    assert.match((await art(".axe-side .axe-companion", "::before")).image, /chalk-window\.webp/);
+    for (const selector of [".axe-header", ".axe-tile", ".axe-side .axe-companion"]) {
+      const flat = await page.locator(selector).first().evaluate(node => getComputedStyle(node).backgroundColor);
+      assert.equal(flat, "rgba(0, 0, 0, 0)", selector + " has no flat CSS fill behind the art");
+    }
     await hit(page, '[data-call="upper-left"]', touch); await page.clock.runFor(300);
     assert.equal(Number(await page.locator(".axe-called-ring").getAttribute("opacity")), 1);
     await chosen("upper-left", ["normal", "upper-right", "lower-left"]);
