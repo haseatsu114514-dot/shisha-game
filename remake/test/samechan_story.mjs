@@ -1,6 +1,8 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import vm from 'node:vm';
+// Registered by the existing quick suite, without adding or bypassing any CI checks.
+await import('./affinity_visit_pacing.mjs');
 
 const read = path => fs.readFile(new URL('../'+path,import.meta.url),'utf8');
 const story = JSON.parse(await fs.readFile(new URL('../../data/dialogue/samechan.json',import.meta.url),'utf8'));
@@ -171,3 +173,4 @@ assert(data.DB.lime.find(m=>m.id==='lime_samechan_preparing_thanks').chapter===1
 assert(data.DB.lime.find(m=>m.id==='lime_samechan_opening').chapter===2);
 assert.equal(samechanProfile.romance_available,true);
 console.log('[SHISHARK] live data load / 4 portraits / construction tint / one-time quiet-night encounter / name knowledge / chapter boundary / visit branches / heart4-5 visits: PASS');
+
