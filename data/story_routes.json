@@ -153,9 +153,7 @@
         "ch3_mashiro_cup_warm",
         "ch3_mashiro_glass_cloth",
         "ch3_mashiro_leaf_rest",
-        "ch3_mashiro_bench_tea",
-        "ch3_mashiro_bond_question",
-        "ch3_mashiro_bond_finale"
+        "ch3_mashiro_bench_tea"
       ],
       "after_eve": [
         "ch3_tournament_day",
@@ -290,8 +288,7 @@
         "ch5_doctor_after_match_tie"
       ],
       "after_match_tail": [
-        "ch5_sui_after_match",
-        "ch5_bridge_after_return"
+        "ch5_sui_after_match"
       ]
     },
     "1": {
