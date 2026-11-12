@@ -82,7 +82,10 @@ function trimImages() {
       bytes -= entry.bytes || 0;
       entry.image = null; entry.bytes = 0;
     }
-    if (bgReady.size > IMAGE_CACHE_ENTRIES) bgReady.delete(url);
+    if (bgReady.size > IMAGE_CACHE_ENTRIES) {
+      bytes -= entry.bytes || 0;
+      bgReady.delete(url);
+    }
   }
 }
 const expiredImageWaits = new WeakMap(); // 同じ通信に対し、使い切った待ち時間を繰り返さない
@@ -169,11 +172,15 @@ function warmCoreArt() {
     // Two workers instead of launching every icon/texture together. Foreground
     // imageReady calls bypass this list and share any request already in flight.
     let index = 0;
+    // Preserve the old batch's 15s ceiling: serial timeouts must not multiply it.
+    const deadline = Date.now() + 15000;
     const worker = async () => {
       let ok = true;
       while (index < urls.length) {
+        const remaining = deadline - Date.now();
+        if (remaining <= 0) return false;
         const url = urls[index++];
-        if (!await imageReady(url, 15000, { keep: true })) ok = false;
+        if (!await imageReady(url, remaining, { keep: true })) ok = false;
       }
       return ok;
     };

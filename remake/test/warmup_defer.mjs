@@ -58,7 +58,7 @@ const FACE_URLS = ["img/faces/face_sumi.webp", "img/faces/face_naru.webp"];
   await noFonts.namespace.loadVnFonts();
 }
 
-async function loadUi({ loadImage = image => image.onload?.(), imageSize = 0 } = {}) {
+async function loadUi({ loadImage = image => image.onload?.(), imageSize = 0, now = () => Date.now() } = {}) {
   const requested = [], idle = [];
   class Image {
     constructor() { this.naturalWidth = this.naturalHeight = imageSize; }
@@ -66,7 +66,7 @@ async function loadUi({ loadImage = image => image.onload?.(), imageSize = 0 } =
     decode() { return Promise.resolve(); }
   }
   const context = vm.createContext({
-    Image, console, setTimeout, clearTimeout, queueMicrotask,
+    Image, console, setTimeout, clearTimeout, queueMicrotask, Date: { now },
     document: { hidden: false, documentElement: { dataset: {} }, addEventListener() {} },
     window: { addEventListener() {} },
     requestIdleCallback: (fn) => { idle.push(fn); return idle.length; },
@@ -271,3 +271,18 @@ console.log("[warmup defer] PASS: store logos defer to idle only on the title pa
   assert.equal(requested.length, 151, 'completed URL metadata is bounded too');
 }
 console.log('image working set: PASS (two workers, foreground bypass, decoded and URL bounds)');
+
+// Bounded concurrency must not turn one 15s batch into N successive 15s waits.
+{
+  let clock = 0, slow = true;
+  const { ui, requested } = await loadUi({ now: () => clock, loadImage: image => {
+    if (slow) clock = 15001;
+    image.onload();
+  } });
+  await ui.warmUiArt({ deferStores: true });
+  assert.equal(requested.length, 3, 'deadline drops unstarted work after two workers + frame');
+  slow = false;
+  await ui.warmUiArt({ deferStores: true });
+  assert(requested.length > 3, 'unfinished batch retries at the next entrance');
+}
+console.log('warm-up deadline: PASS (batch budget preserved, next entrance retries)');
