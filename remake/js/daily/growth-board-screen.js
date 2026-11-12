@@ -97,7 +97,9 @@ const SKILL_ART = {
 const ART_FILES = ["board_glass", "screen_backdrop", "hub_body", "hub_sense", "hub_wisdom", "frame_skill", "frame_lesson", "frame_gate", "frame_peak", "frame_seal",
   "hidane_any", "hidane_body", "hidane_sense", "hidane_wisdom", "panel_frame", "wall_seal", "silhouette_unknown",
   // GB04（SBD121・SBD123）: 火種の受け皿・盤の札・マスの印の台・丸いボタン・紙の札・飾り罫
-  "socket", "tab_on", "tab_dim", "tab_off", "badge_cost", "badge_check", "badge_unknown", "round_btn", "card", "title_rule"];
+  "socket", "tab_on", "tab_dim", "tab_off", "badge_cost", "badge_check", "badge_unknown", "round_btn", "card", "title_rule",
+  // GB05（SBD124）: 新版の右のパネルの板・近い目的地の行と財布の箱・金の札・暗い札
+  "panel_dark", "row_dark", "chip_gold", "pill_dark"];
 let artReady = null;
 export function loadBoardArt() {
   if (artReady) return artReady;
