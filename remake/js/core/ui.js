@@ -11,6 +11,7 @@ import { gainSeenKey, bannerHold } from "./gain-notice.js";
 import { nextStepProgress } from "./stat-progress.js";
 import { renderSceneArt, sceneArtUrls } from "./scene-art.js";
 import { rainScene, weatherSkyTone, weatherViewKind, renderWeatherLayer } from "../daily/weather.js";
+import { syncShopHaze } from "./shop-haze.js";
 import { createSceneCurtain, nightToMorning, isCovering, takeSceneArrival, takeParkedCover } from "./transitions.js";
 import { allStoreLogoUrls } from "./store-logos.js";
 import { chapterTitleArt } from "./chapter-title-art.js";
@@ -260,6 +261,8 @@ export async function enterScene(url, { map = false, clear = true, ...opts } = {
 /** 背景だけに雨を重ねる。窓は1280×720の背景座標に限定する。 */
 export function refreshWeather() {
   if (!layers.weather) return;
+  // シーシャ屋の店内には、うっすら煙を漂わせる（KMR21）。背景・画面が替わるたびに、雨と同じ所で合わせる
+  syncShopHaze(weatherBg, document.body.dataset.screen, weatherTint);
   const scene = document.hidden ? null : rainScene(weatherBg, document.body.dataset.screen);
   const sky = scene ? weatherSkyTone(weatherBg, weatherTint) : "none";
   const view = scene ? weatherViewKind(weatherBg, scene) : "none";

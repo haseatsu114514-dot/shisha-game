@@ -10,6 +10,12 @@
   ],
   "suites": [
     {
+      "id": "play-mastery",
+      "title": "Mini-game mastery, cumulative progress, save/NG+ rewards and chapter-five paid growth",
+      "kind": "quick",
+      "run": ["node remake/test/play_mastery.mjs"]
+    },
+    {
       "id": "promo-site",
       "title": "公式プロモーションサイト（promo/）の参照切れ・ページ内リンク・人物と店の対応・使っていない絵",
       "kind": "quick",
@@ -291,6 +297,12 @@
       "title": "Starter fire accounting, cap, legacy saves, full board and NG+ (#3118)",
       "kind": "quick",
       "run": ["node remake/test/growth_starter_accounting.mjs"]
+    },
+    {
+      "id": "smoke-field",
+      "title": "Breath smoke and shop haze (KMR11・KMR21): palette, breath styles, quality tiers, ring, cover, haze amount, which backgrounds",
+      "kind": "quick",
+      "run": ["node remake/test/smoke_field.mjs"]
     },
     {
       "id": "vent-lid",
@@ -4278,6 +4290,15 @@
       "run": ["node remake/test/browser/conversation_effects_2828.mjs"]
     },
     {
+      "id": "smoke-breath",
+      "title": "Breath smoke and shop haze in the game (KMR11・KMR21): VN exhale, craft exhale tiers, result cover, faint haze in shisha shops",
+      "kind": "browser",
+      "weight": 1,
+      "timeout": 5,
+      "paths": ["remake/js/core/smoke.js", "remake/js/core/shop-haze.js", "remake/js/core/ui.js", "remake/js/vn/breath.js", "remake/js/vn/engine.js", "remake/js/craft/fx.js", "remake/js/craft/result.js", "remake/test/browser/smoke_breath.mjs"],
+      "run": ["node remake/test/browser/smoke_breath.mjs"]
+    },
+    {
       "id": "conversation-cutin",
       "title": "Conversation cut-ins in the main VN engine (#2990, #3417): every placement plays, enter/leave, SKIP/LOG",
       "kind": "browser",
@@ -4806,9 +4827,36 @@
       "run": [
         "node remake/test/browser/look_retro.mjs"
       ]
+    },
+    {
+      "id": "romance-hesitation",
+      "title": "New romance hesitation model and VN controller: eight heroines, cancel, apology, LOAD and duplicate clicks",
+      "kind": "quick",
+      "run": [
+        "node remake/test/romance_hesitation.mjs",
+        "node remake/test/romance_hesitation_engine.mjs"
+      ]
+    },
+    {
+      "id": "romance-hesitation-browser",
+      "title": "Eight confession transitions, real lover memory portraits, two-step return and SAVE/LOAD",
+      "kind": "browser",
+      "weight": 2,
+      "timeout": 8,
+      "paths": [
+        "remake/js/core/romance-hesitation.js",
+        "remake/js/vn/engine.js",
+        "remake/js/daily/romance.js",
+        "remake/js/chapters/ch4-desert.js",
+        "remake/test/browser/romance_hesitation.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/romance_hesitation.mjs"
+      ]
     }
   ]
 }
+
 
 
 

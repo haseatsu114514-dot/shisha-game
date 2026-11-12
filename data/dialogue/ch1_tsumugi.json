@@ -1287,6 +1287,17 @@
           "next_false": "color_before"
         },
         {
+          "type": "fx",
+          "id": "exhale",
+          "x": 0.74,
+          "y": 0.7,
+          "style": "up",
+          "scale": 1.5,
+          "tint": 0.72,
+          "color": "#5a66d6",
+          "color2": "#f2a878"
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "彼女の見ている世界を、ほんの少しだけ覗いた気がした。同じ煙が、彼女には光って見えている。"
@@ -2394,6 +2405,11 @@
           "speaker": "tsumugi",
           "face": "normal",
           "text": "……はい。線が、煙に負けてたので"
+        },
+        {
+          "type": "fx",
+          "id": "exhale",
+          "who": "tsumugi"
         },
         {
           "speaker": "",

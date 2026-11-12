@@ -1,5 +1,5 @@
 // 新しい相手へ踏み出す前の迷い。会話・保存・恋人成立は呼び出し側が行う。
-// #3426 の会話エンジン変更とは独立して検証する。接続前の準備段階。
+// 共通VNの一時フローから呼び出す。承認状態はセーブへ記録しない。
 // 正本: confession.json のはじめの呼称、brand/character_profiles.md の呼称規約。
 const CALLS = Object.freeze({
   tsumugi: "つむぎちゃん", rio: "凛想さん", ageha: "あげはさん",

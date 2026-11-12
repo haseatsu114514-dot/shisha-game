@@ -4,6 +4,7 @@ import { awardLoverSceneExp } from "../core/lover-rewards.js";
 import { growthChoiceIndex } from "../core/growth-effects.js";
 import { tournamentFinished } from "../core/story-context.js";
 import { basicsExperienced } from "../craft/practice-history.js";
+import { romanceIntent, createRomanceHesitation } from "../core/romance-hesitation.js";
 // 会話エンジン。data/dialogue/*.json のスキーマをそのまま解釈する。
 //   play(idOrDialogue, opts) → Promise（会話が終わると解決）
 // 分岐（condition / choice）の行は「残りの行の前」に差し込む（旧版・Godot版と同じ挙動）。
@@ -29,6 +30,7 @@ import { chekiShot, tarotFlip, limeExchange, purikuraShot, sceneMoment } from ".
 import { showShishaDiagram, hideShishaDiagram } from "./shisha-diagram.js";
 import { reducedMotion } from "../core/transition-kit.js";
 import { attachLoadingComic } from "../core/loading-comic-notice.js";
+import { vnBreath } from "./breath.js";
 
 // 立ち絵を出さない話者（主人公は一人称視点）
 const NO_PORTRAIT = new Set(["hajime", "hazime", "", "everyone", "customer", "shop_clerk", "old_man", "traveler"]);
@@ -285,6 +287,7 @@ export function play(idOrDlg, opts = {}) {
     layers.fx.querySelector(".vn-loading")?.remove();
     running = {
       owner: state,
+      romanceWarningGuilt: opts.romanceWarningGuilt === true, // 夜の告白の旧警告goと同じ罪悪感。承認読了後だけ
       metAtStart: { ...state?.met },
       encountered: new Set(),
       affinityKnown,
@@ -503,6 +506,7 @@ function advance() {
 function next() {
   const r = running;
   if (!r) return;
+  if (r.hesitation && !r.hesitation.model.current(state)) return finish(true);
   if (!skipMode && !vnTest.turbo) markSeenLine(r.activeSeenKey);
   r.activeSeenKey = null;
   cutin?.leave({ still: reducedMotion() });
@@ -516,6 +520,11 @@ function next() {
     const line = r.queue.shift();
     if (line === undefined) return introThenShow();
     const type = line.type || "";
+    if (type === "romance_hesitation") { resumeRomanceHesitation(line.action); return; }
+    if (type === "romance_memory") {
+      dom.portraits.replaceChildren(); r.slots = {};
+      continue;
+    }
     if (!type) return introThenShow(line);
     if (type === "choice") return introThenShow(line, showChoices);
     if (type === "game_over") return finish();
@@ -605,6 +614,15 @@ function next() {
       return;
     }
     if (type === "sfx") { playSe(line.id); continue; }
+    // 一服の「間」（KMR11）: 口元から煙を吐き、煙が顔の前に広がるまで短く待ってから次の行へ（晴れると表情が変わっている）。
+    // 早送り中は煙も間も出さない
+    if (type === "fx" && line.id === "exhale") {
+      const hold = skipMode || vnTest.turbo ? 0 : vnBreath(line, { host: layers.vn, portraits: dom.portraits });
+      if (!hold) continue;
+      r.ready = false;
+      sleep(hold).then(() => { if (running === r) { r.ready = true; next(); } });
+      return;
+    }
     if (type === "fx") { runFx(line); continue; }
     // 未知の行タイプは黙って飛ばす（データ先行で書けるように）
   }
@@ -751,6 +769,8 @@ function queueIntro(cue) {
 // 読み進めた時点で、本人の立ち絵と発話を見た紹介だけを出す。
 function introThenShow(line, show = showLine) {
   const r = running;
+  // 回想は面識・紹介・相手の発話を発生させない。
+  if (line?._romanceTransient) return show(line);
   const due = r.pendingIntros.filter(({ id, variant }) => r.spoken.has(id) && !state.flags[introSeenKey(id, variant || "")]);
   r.pendingIntros = r.pendingIntros.filter((cue) => !due.includes(cue));
   if (!due.length) return line ? show(line) : finish();
@@ -773,7 +793,7 @@ async function showLine(line) {
   r.ready = false;
   clearTimeout(autoTimer);
   const images = linePortraits(line);
-  const cutinCue = conversationCutinCue(r.currentId || r.id, line);
+  const cutinCue = line._romanceTransient ? null : conversationCutinCue(r.currentId || r.id, line);
   const cutinSrc = cutinCue ? portraitInfo("hajime", cutinCue.face, "new")?.src : null;
   if (cutinSrc) images.push(cutinSrc);
   // 選択したUIの書体で折り返す。初回だけ代替フォントでページを決めない。
@@ -786,7 +806,8 @@ async function showLine(line) {
   const frameReady = imageReady(uiThemeFrame(document.documentElement.dataset.uiTheme), 15000, { keep:true });
   await waitSceneAssets(Promise.all([fontReady, frameReady, ...images.map((url) => imageReady(url, 15000))]), r);
   if (running !== r) return;
-  if (hooks.onLine) hooks.onLine(r.currentId || r.id, line);
+  if (line._romanceTransient && !r.hesitation?.model.current(state)) return finish(true);
+  if (!line._romanceTransient && hooks.onLine) hooks.onLine(r.currentId || r.id, line);
   const speaker = String(line.speaker || "");
   const face = String(line.face || "");
   r.speaker = speaker;
@@ -802,7 +823,7 @@ async function showLine(line) {
   if (!vnTest.turbo) await Promise.all(entrances);
   if (running !== r) return;
   r.ready = true;
-  speakerBgm(speaker);
+  if (!line._romanceTransient) speakerBgm(speaker);
   // 行付き演出（"fx":"shake" 等）／自動の軽演出（驚き・叫び）
   if (line.fx) runFx({ id: line.fx });
   else autoFx(line);
@@ -1074,6 +1095,7 @@ function layoutPortraits() {
 function showChoices(line) {
   const r = running;
   r.waitingChoice = true;
+  r.choiceLine = line;
   // 実回答の記録はpickChoiceのフックへ。占いは対象/期限/台詞照合済みの2択だけ示す。
   const fortuneHint = fortuneChoiceIndex(state, r.id, line, DB.fortuneHints);
   const growthHint = growthChoiceIndex(state, r.currentId || r.id, line, DB.fortuneHints, r.growthScene);
@@ -1116,10 +1138,87 @@ function autoChoose() {
 
 function pickChoice(line, c) {
   const r = running;
+  // 取り外したボタンの二度押しも、LOAD前の選択も適用しない。
+  if (!r || !r.waitingChoice || r.choiceLine !== line || !line.choices?.includes(c)) return;
+  if (r.owner !== state) return finish(true);
   SE.select();
   r.waitingChoice = false;
   dom.choices.classList.remove("show");
   dom.choices.replaceChildren();
+  if (line._romanceTransient) return resumeRomanceHesitation(c.action);
+  const model = createRomanceHesitation(state, romanceIntent(state, r.currentId || r.id, line, c, DB.dialogues));
+  if (model) {
+    setAuto(false); setSkip(false);
+    r.hesitation = {
+      model, line, choice: c, queue: r.queue,
+      slots: { ...r.slots }, portraits: [...dom.portraits.childNodes],
+      boxClass: dom.box.className,
+      display: [dom.name, dom.text, dom.inner, dom.next].map(node => ({
+        node, html: node.innerHTML, className: node.className, style: node.style.cssText, title: node.title,
+      })),
+    };
+    // 元の立ち絵ノードは退避したまま保ち、回想中のactive/表情更新を当てない。
+    dom.portraits.replaceChildren(); r.slots = {};
+    return showRomanceHesitation();
+  }
+  applyChoice(line, c);
+}
+
+// 同じ running の中に一時的な行だけを差し込む。play() をネストせず、保存も会話フックも呼ばない。
+function showRomanceHesitation() {
+  const r = running;
+  const view = r.hesitation.model.view();
+  const transient = line => ({ ...line, _romanceTransient: true });
+  r.queue = [
+    ...view.lines.map(transient),
+    ...(view.memories || []).flatMap(memory => [
+      { type: "romance_memory" },
+      transient({ ...memory.line, ...(memory.portrait ? { portrait: memory.portrait.id, portrait_face: memory.portrait.face } : {}) }),
+    ]),
+    transient({ type: "choice", choices: view.choices }),
+  ];
+  next();
+}
+
+function restoreRomanceHesitation() {
+  const r = running, saved = r.hesitation;
+  r.queue = saved.queue;
+  r.slots = saved.slots;
+  dom.portraits.replaceChildren(...saved.portraits);
+  refreshPortraits(); // 回想中に画風を変えていたら、元の相手も現在の設定へ合わせる。
+  layoutPortraits();
+  dom.box.className = saved.boxClass;
+  for (const { node, html, className, style, title } of saved.display) {
+    node.innerHTML = html; node.className = className; node.style.cssText = style; node.title = title;
+  }
+  r.hesitation = null;
+  return saved;
+}
+
+function resumeRomanceHesitation(action) {
+  const r = running, saved = r?.hesitation;
+  if (!saved) return;
+  if (r.owner !== state || !saved.model.current(state)) return finish(true);
+  if (action === "apply") {
+    restoreRomanceHesitation();
+    if (saved.model.kind === "commit" && r.romanceWarningGuilt && !r.romanceWarningGuiltPaid) {
+      state.guilt = (state.guilt || 0) + 1;
+      r.romanceWarningGuiltPaid = true;
+    }
+    return applyChoice(saved.line, saved.choice);
+  }
+  const result = saved.model.choose(action, state);
+  if (result.status === "pending") return showRomanceHesitation();
+  if (result.status === "accepted") {
+    r.queue = [...result.apology.map(line => ({ ...line, _romanceTransient: true })), { type: "romance_hesitation", action: "apply" }];
+    return next();
+  }
+  restoreRomanceHesitation();
+  showChoices(saved.line);
+}
+
+function applyChoice(line, c) {
+  const r = running;
   const key = String(c.next || "");
   let waitForScene = false;
   if (key && r.branches[key]) insertBranch(r, key);
@@ -1205,5 +1304,6 @@ export { refreshPortraits };
 export const backlog = () => log;
 /** タイトルからの「はじめから」「LOAD」で前の周の会話LOGを消す（#1912）。 */
 export function clearLog() { log.length = 0; }
+
 
 

@@ -74,6 +74,15 @@ jobs:
           python3 -m pip install --quiet Pillow==12.3.0
           python3 promo/tools/build_images.py --check || echo "::notice::公式サイトの絵がゲームの今の採用と違っていたので、公開物では作り直します（promo/README.md「ゲームの絵が差し替わったら」）"
           python3 promo/tools/build_images.py
+      # The existing pages concurrency cancels older runs; cache loss/eviction
+      # merely falls back to the current JS. Never download the Pages artifact.
+      - name: Restore recent deployed JS builds
+        uses: actions/cache/restore@v4
+        continue-on-error: true
+        with:
+          path: .deploy-js-history
+          key: deploy-js-v1-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: deploy-js-v1-
       - name: Prepare site
         run: |
           mkdir -p _site/tools
@@ -105,6 +114,8 @@ jobs:
           # 公開のたびに版の名札を付け替える（JSフォルダ名・CSSの ?v=・build.json・タイトル右下の ver.）。
           # 名札が同じだとブラウザが古い版をキャッシュから出し続ける（自分で開いたリンクだけ古い）
           python3 remake/tools/stamp_deploy.py _site --build "${GITHUB_SHA::7}"
+          # Keep old lazy imports available for already-open tabs, within bounded retention.
+          python3 remake/tools/retain_deploy_js.py _site .deploy-js-history --build "${GITHUB_SHA::7}"
           # 外観の正本メタデータだけ公開。原画・写真・生成指示は配信しない。
           appearance_source=asset_sources/shisha-hardware-reference/skin-candidates-issue374
           mkdir -p "_site/$appearance_source"
@@ -122,6 +133,15 @@ jobs:
           # 公開物は 1GB までが目安（2026-11 に約1.5GB で警告）。見た目・内容は変えない。最後に置く
           # （公開物の中の assets/ の直接の参照を全部見てから外すため）
           python3 remake/tools/slim_deploy.py _site
+      # Save before publishing: cancellation immediately after deploy must not
+      # leave a successfully published JS version absent from the next cache.
+      # Failed/cancelled unpublished builds may occupy a bounded history slot.
+      - name: Cache prepared JS before publishing
+        uses: actions/cache/save@v4
+        continue-on-error: true
+        with:
+          path: .deploy-js-history
+          key: deploy-js-v1-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
       - uses: actions/configure-pages@v5
         with:
           enablement: true
@@ -167,3 +187,4 @@ jobs:
         uses: actions/deploy-pages@v4
         with:
           timeout: 1200000
+

@@ -111,23 +111,6 @@ const gateScene = (id) => ({
   },
 });
 
-const cheatScene = (id) => ({
-  dialogue_id: `remake_cheat_warning_${id}`,
-  metadata: { private_scene: true },
-  lines: [
-    { speaker: "", text: `（……今、${state.lovers.map(privateCall).join("、")}と付き合っている）` },
-    { speaker: "", text: "（この気持ちに応えれば、隠しごとがひとつ増える。それでも？）" },
-    { type: "choice", choices: [
-      { text: "それでも、気持ちに応えたい", next: "go" },
-      { text: "……今は、目の前の人を大切にする", next: "stay" },
-    ] },
-  ],
-  branches: {
-    go: [{ type: "set_flag", flag: "_cheat_go" }, { speaker: "", text: "（胸の奥が、少しだけ重くなった気がした）" }],
-    stay: [{ speaker: "", text: "（気づかないふりをした。……この想いには、まだ答えを出さない）" }],
-  },
-});
-
 // 告白の台本が自分の場面を持つ相手（daily/bonds.js の BOND_FINALES.ownConfession）。夜の帰り道では始めない。
 // ましろは第3章の寄り道（休日の部屋。chapters/ch3-story-wiring.js の confession_mashiro・IR20）だけで告白する。
 // ヌールはドバイの砂丘の夕日（chapters/ch4-desert.js の confession_noor・DSR20。第4章と第5章のドバイ）だけで告白する。
@@ -166,14 +149,8 @@ export async function maybeConfession(beat, { busyNight = false, companion = nul
   if ((state.flags._confession_wait || 0) > state.day || busyNight && companion !== id) return false;
   delete state.flags._confession_due;
   await beat(companion === id ? "——別れ際、もう少しだけ話したくなった。" : id === "ageha" ? "——と、そのとき。" : `（……${privateCall(id)}の顔が、ふと浮かんだ）`);
-  // すでに恋人がいるなら、応える前に一度立ち止まる
-  if (state.lovers.length) {
-    delete state.flags._cheat_go;
-    await play(cheatScene(id), { bg: STREET });
-    if (!state.flags._cheat_go) { state.flags._confession_wait = state.day + 3; save(); return true; }
-    delete state.flags._cheat_go;
-    state.guilt = (state.guilt || 0) + 1;
-  } else if (id !== "ageha") {
+  // 恋人がいる時の迷いは、正式な返事の直前に共通VNで確認する。
+  if (!state.lovers.length && id !== "ageha") {
     // あげは以外は、主人公が踏み出すかどうかから（あげはだけは向こうから来る）
     delete state.flags._confession_go;
     await play(gateScene(id), { bg: STREET });
@@ -202,7 +179,7 @@ export async function maybeConfession(beat, { busyNight = false, companion = nul
     state.flags._minto_name_known = true;
     save();
   }
-  await play(`confession_${id}`, DB.dialogues[`confession_${id}`]?.metadata?.bg ? {} : { bg: STREET });
+  await play(`confession_${id}`, { ...(DB.dialogues[`confession_${id}`]?.metadata?.bg ? {} : { bg: STREET }), romanceWarningGuilt: true });
   if (id === "samechan" && isLover(id)) await playSamechanMilestone();
   save();
   return true;
@@ -444,3 +421,4 @@ export async function maybeShuraba() {
   save();
   return true;
 }
+

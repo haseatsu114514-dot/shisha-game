@@ -988,13 +988,6 @@
           "text": "（急がなくていいと言われて、今、言いたくなった）"
         },
         {
-          "type": "condition",
-          "condition_type": "lover",
-          "char_id": "tsumugi",
-          "next_true": "other_lover",
-          "next_false": "other_lover_check_minto"
-        },
-        {
           "type": "choice",
           "choices": [
             {
@@ -1007,69 +1000,7 @@
             }
           ]
         }
-      ],
-      "branches": {
-        "other_lover_check_minto": [
-          {
-            "type": "condition",
-            "condition_type": "lover",
-            "char_id": "minto",
-            "next_true": "other_lover",
-            "next_false": "other_lover_check_rio"
-          }
-        ],
-        "other_lover_check_rio": [
-          {
-            "type": "condition",
-            "condition_type": "lover",
-            "char_id": "rio",
-            "next_true": "other_lover",
-            "next_false": "other_lover_check_ageha"
-          }
-        ],
-        "other_lover_check_ageha": [
-          {
-            "type": "condition",
-            "condition_type": "lover",
-            "char_id": "ageha",
-            "next_true": "other_lover",
-            "next_false": "other_lover_check_samechan"
-          }
-        ],
-        "other_lover_check_samechan": [
-          {
-            "type": "condition",
-            "condition_type": "lover",
-            "char_id": "samechan",
-            "next_true": "other_lover",
-            "next_false": "other_lover_check_hiyori"
-          }
-        ],
-        "other_lover_check_hiyori": [
-          {
-            "type": "condition",
-            "condition_type": "lover",
-            "char_id": "hiyori",
-            "next_true": "other_lover",
-            "next_false": "other_lover_check_noor"
-          }
-        ],
-        "other_lover_check_noor": [
-          {
-            "type": "condition",
-            "condition_type": "lover",
-            "char_id": "noor",
-            "next_true": "other_lover"
-          }
-        ],
-        "other_lover": [
-          {
-            "speaker": "hajime",
-            "face": "normal",
-            "text": "（……付き合っている人がいる。急がなくていい、という声に甘えて、それは言わずにおく）"
-          }
-        ]
-      }
+      ]
     },
     {
       "dialogue_id": "confession_mashiro_accept",
@@ -2318,3 +2249,4 @@
     }
   ]
 }
+

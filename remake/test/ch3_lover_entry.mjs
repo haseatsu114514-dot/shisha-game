@@ -467,8 +467,10 @@ await check('Noor lives in Dubai: no hometown dates, morning LIME everywhere, lo
     }
   }
   const lines = kind => pool.filter(v => !!v.hometown === kind).map(v => JSON.stringify(v.m));
+  const stamp = lover.morningStamp.noor;
+  const stampedMorning = JSON.stringify([stamp.text, { sender: 'noor', stamp: stamp.stamp }]);
   assert(seen.home.size > 0 && seen.dubai.size > 0, 'morning notes arrive in both places');
-  for (const text of seen.dubai) assert(lines(false).includes(text), 'in Dubai, only notes that do not assume the distance');
+  for (const text of seen.dubai) assert(lines(false).includes(text) || text === stampedMorning, 'in Dubai, only notes that do not assume the distance');
   assert([...seen.home].some(text => lines(true).includes(text)), 'at home, the long-distance notes arrive too');
   // 記念日（10日ごと）。離れた街の差し替えは無く、いつもの文面（ヌールとはドバイで会える）
   assert.equal(lover.anniversary_away.noor, undefined);
