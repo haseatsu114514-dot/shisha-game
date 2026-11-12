@@ -132,7 +132,12 @@ function spotHasNew(entry) {
 const camelSpot = () => camelDailySpot(state, { region: DUBAI, kind: "ch4_dubai", stamina: 0 });
 
 /** 今の時間（昼の暑さ）に合わせた行き先（ch4-dubai-local.js）。 */
-const spotNow = entry => dubaiSpotAt(entry, state.slot);
+const spotNow = entry => {
+  const current = dubaiSpotAt(entry, state.slot);
+  // 締めくくりは一台を頼む来店ではない。地図の所持金判定にも無料を伝える。
+  return current?.place === "longlong" && finaleAtVisit(LONGLONG_CHAR)
+    ? { ...current, cost: 0, desc: "王煙楼との締めくくり。今回は一台を頼まないので無料。" } : current;
+};
 
 /** 今の時間・物語の時点で地図に出す行き先。 */
 export function chapterFourDubaiSpots() {
@@ -287,6 +292,8 @@ async function performDubaiSpot(entry, io, { staminaGuard }) {
   }
   if (entry.place === "camel") return visitCamel(owner);
   if (entry.place === "inn") { const chain = await visitInnChain(owner, staminaGuard); if (chain) return chain; }
+  // 読了・LOADなどで地図の無料表示が古くなっても、通常の一台を無料にしない。
+  if (entry.place === "longlong") entry = spotNow(CH4_DUBAI_SPOTS.find(spot => spot.place === "longlong"));
   if ((entry.cost || 0) > spendableMoney(state)) { toast(`お金が足りない（${priceText(entry.cost)}）`, { se: "error" }); return unused; }
   if (entry.stamina < 0 && !(await staminaGuard(entry.stamina))) return unused;
   // 夜がにぎわう店（ch4-dubai-local.js）: 先に店の夜を読む。初めての夜は短い場面、二度目からは最初の一行だけ。
@@ -537,3 +544,4 @@ function firstScenes(place) {
   if (place === "alley_cafe") return read("ch4_stranger_second") ? [] : chapterFourSecondAvailable(state) ? ["ch4_stranger_second"] : [];
   return [];
 }
+
