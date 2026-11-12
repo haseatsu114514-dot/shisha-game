@@ -44,7 +44,7 @@
       "accept_text": "入ります",
       "accept_reply": {
         "sender": "mukai_master",
-        "text": "助かる。待ってる"
+        "stamp": "st_mukai_master_ack"
       },
       "hint": "乗るとそのまま昼のmukaiのシフトへ（行動を1回使う）。いつもの日当に上乗せがつく",
       "messages": [

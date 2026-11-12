@@ -256,7 +256,7 @@ function validateLimeMedia(messages, catalog) {
 }
 const catalog = all.DB.manifest.limeMedia;
 assert.deepEqual(JSON.parse(JSON.stringify(catalog)), realJSON("data/lime_media.json"));
-assert.equal(Object.keys(catalog).length, 29);
+assert.equal(Object.keys(catalog).length, 38);
 // CI quick は画像を含まない sparse checkout のため、画像が展開されている環境でのみ実在チェックを行う
 const imgDir = path.resolve(documentRoot, "img");
 const hasImageTree = fs.existsSync(imgDir) && Object.values(catalog).some(asset => fs.existsSync(path.resolve(documentRoot, asset.src)));

@@ -422,6 +422,10 @@
     "samechan": {
       "text": "おはようなのじゃ。今日も無理するでないぞ",
       "stamp": "st_samechan_rest"
+    },
+    "noor": {
+      "text": "おはよう、ハジメ！",
+      "stamp": "st_noor_morning"
     }
   },
   "anniversary": {
