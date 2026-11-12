@@ -163,6 +163,9 @@ await suite("play-spots", async runCheck => {
     // ピンの装飾はボタン枠から出るため、文字そのものの収まりを検査する。
     await assertFits(page, ".spot-pin .sub-label");
     await go(page, "axe_bar"); await assertFits(page, ".axe-bar-menu button");
+    await hit(page, "axe-bar-gear-open"); await assertFits(page, ".axe-bar-menu button");
+    await capture(page, label + "-axe-shop");
+    await hit(page, "axe-bar-gear-back"); await assertFits(page, ".axe-bar-menu button");
     await page.locator('[data-test="venue-host-maki"] img').evaluate(img => img.decode());
     await capture(page, label + "-axe-entry");
     assert.deepEqual(await value(page), before);
@@ -197,6 +200,9 @@ await suite("play-spots", async runCheck => {
     await page.evaluate(async () => { window.spotCore = await import("./js/core/state.js"); });
     assert.deepEqual(await value(page), nextNight);
     await go(page, "axe_bar"); await assertFits(page, ".axe-bar-menu button");
+    await hit(page, "axe-bar-gear-open"); await assertFits(page, ".axe-bar-menu button");
+    await capture(page, label + "-axe-shop");
+    await hit(page, "axe-bar-gear-back"); await assertFits(page, ".axe-bar-menu button");
   }, options);
 
   await check("first-play-owner-lesson-then-paid-game", async page => {

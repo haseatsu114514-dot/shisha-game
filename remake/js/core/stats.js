@@ -141,7 +141,7 @@ export async function paidAction(run, { budget = ACTION_GROWTH_BUDGET, points = 
   const parent = earningAction;
   const metBefore = { ...state.met };
   for (const key of Object.keys(state.flags)) if (key.startsWith("_affinity_first_meeting_pending_") && state.flags[key]) delete metBefore[key.slice("_affinity_first_meeting_pending_".length)];
-  const action = { owner: state, parent, metBefore, affinityBefore: { ...state.affinity }, firstAffinity: new Set(), gains: {}, recipes: Object.create(null), scenes: new Set(), spent: 0 };
+  const action = { owner: state, parent, at: { chapter: state.chapter, phase: state.phase, cycle: state.cycle, day: state.day, slot: state.slot, chapterFive: !!state.flags?._ch5, matchDay: state.flags?._ch5?.matchDay }, metBefore, affinityBefore: { ...state.affinity }, firstAffinity: new Set(), gains: {}, recipes: Object.create(null), scenes: new Set(), spent: 0 };
   earningAction = action;
   const releaseChip = expHooks?.hold?.() || noop;
   let value;
@@ -166,7 +166,7 @@ function settleAction(action, parent, value, { budget, points, primary, consumed
       for (const k of STAT_KEYS) if (state.stats[k] > before[k]) rewarded.push(k);
     }
     if (expHooks?.enabled()) {
-      expHooks.action(typeof exp === "function" ? exp(value) : exp);
+      expHooks.action(typeof exp === "function" ? exp(value) : exp, action.at);
       for (const [id, result] of Object.entries(action.recipes)) expHooks.recipe?.(id, result);
       for (const id of action.scenes) expHooks.scene?.(id);
     }

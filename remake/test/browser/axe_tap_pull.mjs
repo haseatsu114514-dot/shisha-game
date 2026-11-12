@@ -16,6 +16,7 @@ async function start(page, touch = false) {
   const before = await storageSnapshot(page);
   if (touch) await page.locator('[data-test="axe-start"]').tap(); else await page.locator('[data-test="axe-start"]').click();
   await phase(page, 'choice');
+  await page.locator('.axe-cutin').waitFor({ state: 'detached' });
   return before;
 }
 async function aim(page, touch = false) {
@@ -65,6 +66,11 @@ await suite('axe-tap-pull', async check => {
       await phase(page, i === 2 ? 'summary' : 'choice');
     }
     await capture(page, `${label}-summary`);
+    const stage = await root(page).boundingBox(), summary = await page.locator('.axe-panel').boundingBox();
+    assert(stage && summary);
+    assert(summary.x >= stage.x - 1 && summary.y >= stage.y - 1
+      && summary.x + summary.width <= stage.x + stage.width + 1
+      && summary.y + summary.height <= stage.y + stage.height + 1, 'summary stays inside the first-person stage');
     if (touch) await ready(page).tap(); else await ready(page).click();
     await page.locator('[data-test="axe-start"]').waitFor();
     assert.deepEqual(await storageSnapshot(page), before, 'standalone input must not alter save data');

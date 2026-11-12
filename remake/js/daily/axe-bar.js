@@ -1,3 +1,4 @@
+import { recordPlayMastery, syncPlayMastery, masteryLine } from "../core/play-mastery.js";
 // 自由来店のソロ斧投げ。正式なひよりイベントの読了・関係には触れない。
 import { state, save } from "../core/state.js";
 import { on } from "../core/bus.js";
@@ -65,8 +66,8 @@ export async function visitAxeBar({ staminaGuard = async () => true, signal } = 
     }
     const mode = await new Promise(resolve => {
       host.hidden = false;
-      let lessonOpen = false, picked = false;
-      const pick = value => { if (!lessonOpen && !picked) { picked = true; resolve(value); } };
+      let lessonOpen = false, gearOpen = false, picked = false;
+      const pick = value => { if (!lessonOpen && !gearOpen && !picked) { picked = true; resolve(value); } };
       abort.signal.addEventListener("abort", () => { picked = true; resolve(null); }, { once: true });
       const records = owner.flags._axe_bar_records || {};
       const welcome = Object.keys(records).length ? "venue_maki_return" : "venue_maki_greet";
@@ -75,7 +76,7 @@ export async function visitAxeBar({ staminaGuard = async () => true, signal } = 
         : owner.stamina <= 0 ? "今日は体を休めよう。記録を見るだけなら無料。"
         : `参加 ${yen(AXE_BAR.playCost)}・体力を使う・1行動。途中でやめた場合は消費しません。`;
       const lesson = el("button.btn.ghost.axe-bar-lesson", { type: "button", text: "マキに教わる・無料1投", dataset: { test: "axe-bar-lesson" }, onclick: async () => {
-        if (lessonOpen || picked || !current()) return;
+        if (lessonOpen || gearOpen || picked || !current()) return;
         lessonOpen = true; host.hidden = true; host.inert = true;
         try {
           const lesson = await runAxeThrow({ host: document.getElementById("stage"), tutorial: true, opponent: null, signal: abort.signal, allowRetry: true });
@@ -95,42 +96,64 @@ export async function visitAxeBar({ staminaGuard = async () => true, signal } = 
           for (const button of divisionButtons) button.setAttribute("aria-pressed", String(button.dataset.test === "axe-bar-division-" + id));
           divisionNote.textContent = d.note;
         } }));
-      // All tiers are optional. Purchases retain old ownership and never exchange/refund an axe.
-      const gear = el("div.axe-bar-gear", { dataset: { test: "axe-bar-gear" } });
-      const renderGear = () => {
-        const choices = [HOUSE_AXE, ...PERSONAL_AXES].filter(item => ownsAxe(owner, item.id));
-        const selection = el("div.axe-bar-gear-selection", { role: "group", "aria-label": "今回使う斧", dataset: { test: "axe-bar-gear-selection" } }, choices.map(item => el("button.btn.ghost.small", {
-          type: "button", text: `${item.name}（${axeEffect(item)}）`, "aria-pressed": String(gearId === item.id), dataset: { test: `axe-select-${item.id}` }, onclick: () => {
-            if (!current() || picked || lessonOpen || !ownsAxe(owner, item.id)) return;
-            gearId = item.id; renderGear();
-            gear.querySelector(`[data-test="axe-select-${item.id}"]`)?.focus();
-          },
-        })));
-        const offers = PERSONAL_AXES.map(item => {
-          if (ownsAxe(owner, item.id)) return el("p.gear-offer.owned", { text: `${item.name}：所持済み`, title: item.description, dataset: { test: `gear-owned-${item.id}` } });
-          return gearOffer(owner, item.id, { isCurrent: () => current() && !picked && !lessonOpen, onBought: bought => {
-            gearId = bought.id; save(); toast(`「${bought.name}」を買った。${bought.effect}`, { kind: "good" });
-            renderGear(); // Refresh every price button, including now-unaffordable offers.
-            for (const button of host.querySelectorAll(".sub-choices .big-choice")) button.disabled = !available();
-            gear.querySelector(`[data-test="axe-select-${bought.id}"]`)?.focus();
-          } });
-        });
-        gear.replaceChildren(el("p", { text: "マイ斧は任意購入。店の斧でも満点を狙えます。選択は今回の来店中だけ、無料レッスンは店の斧です。" }), ...offers, selection);
+      // Equipment has its own bounded view: keep the main venue's playable controls on screen.
+      // Every tier is optional; purchases never exchange or refund existing ownership.
+      const gear = el("section.axe-bar-gear", { "aria-label": "マイ斧の購入と選択", dataset: { test: "axe-bar-gear" } });
+      let menuNodes = [];
+      const currentAxe = () => [HOUSE_AXE, ...PERSONAL_AXES].find(item => item.id === gearId) || HOUSE_AXE;
+      const gearButton = el("button.btn.ghost.axe-bar-gear-open", { type: "button", dataset: { test: "axe-bar-gear-open" }, onclick: () => {
+        if (!current() || picked || lessonOpen || gearOpen) return;
+        gearOpen = true; host.dataset.view = "gear"; renderGear(); host.replaceChildren(gear); host.scrollTop = 0;
+        gear.querySelector("button")?.focus();
+      } });
+      const updateGearButton = () => { gearButton.textContent = `マイ斧を見る・選ぶ（${currentAxe().short || currentAxe().name}）`; };
+      const closeGear = () => {
+        if (!gearOpen || !current() || picked) return;
+        gearOpen = false; delete host.dataset.view; updateGearButton();
+        host.replaceChildren(...menuNodes); host.scrollTop = 0; gearButton.focus();
       };
-      renderGear();
+      const renderGear = () => {
+        const cards = [HOUSE_AXE, ...PERSONAL_AXES].map(item => {
+          const owned = ownsAxe(owner, item.id);
+          const content = owned ? [
+            item.id !== "house" ? el("p.gear-offer.owned", { text: `${item.short}：所持済み`, dataset: { test: `gear-owned-${item.id}` } }) : null,
+            el("button.btn.ghost.axe-bar-gear-select", { type: "button", text: `${item.short || item.name}を使う（${axeEffect(item)}）`,
+              "aria-pressed": String(gearId === item.id), dataset: { test: `axe-select-${item.id}` }, onclick: () => {
+                if (!current() || picked || lessonOpen || !gearOpen || !ownsAxe(owner, item.id)) return;
+                gearId = item.id; renderGear(); gear.querySelector(`[data-test="axe-select-${item.id}"]`)?.focus();
+              } }),
+          ] : [gearOffer(owner, item.id, { isCurrent: () => current() && !picked && !lessonOpen && gearOpen, onBought: bought => {
+            gearId = bought.id; save(); toast(`「${bought.name}」を買った。${bought.effect}`, { kind: "good" });
+            renderGear();
+            for (const button of playButtons) button.disabled = !available();
+            gear.querySelector(`[data-test="axe-select-${bought.id}"]`)?.focus();
+          } })];
+          return el("div.axe-bar-gear-card", { title: item.description || "無料の店の斧でも満点を狙えます。" }, content);
+        });
+        gear.replaceChildren(el("h2.sub-title", { text: "マイ斧" }),
+          el("p.axe-bar-gear-note", { text: `所持金 ${yen(owner.money)}。購入は任意、下位斧なしで上位を買えます。選んだ斧は今回の有料プレイ用。無料レッスンは店の斧です。` }),
+          el("div.axe-bar-gear-grid", { role: "group", "aria-label": "購入または今回使う斧を選択" }, cards),
+          el("button.btn.ghost.sub-back", { type: "button", text: "← 店に戻る", dataset: { test: "axe-bar-gear-back" }, onclick: closeGear }));
+      };
+      gear.addEventListener("keydown", event => {
+        if (event.key === "Escape") { event.preventDefault(); event.stopPropagation(); closeGear(); }
+      }, { signal: abort.signal });
+      updateGearButton();
+      const playButtons = Object.entries(modes).map(([id, label]) => el("button.big-choice", {
+        disabled: !available(), dataset: { test: "axe-bar-" + id }, onclick: () => { if (available()) pick(id); },
+      }, [el("b", { text: label }), el("small", { text: records[id] ? `自己ベスト ${records[id].best.total}点 · ${records[id].plays}回プレイ` : "まだ記録はありません" })]));
       const divisions = el("div.axe-bar-divisions", { role: "group", "aria-label": "10投ゲームの部門（閉じ方）" }, [el("span.axe-bar-division-label", { text: "10投の部門" }), ...divisionButtons, divisionNote]);
       host.append(el("h2.sub-title", { text: AXE_BAR.label }),
         venueHost("maki", DB.dialogues[welcome]?.lines?.[0]?.text || "", DB), el("p.sub-lead", { text: status }),
-        el("div.axe-bar-tools", [lesson, gear]),
-        el("div.sub-choices", Object.entries(modes).map(([id, label]) => el("button.big-choice", {
-          disabled: !available(), dataset: { test: "axe-bar-" + id }, onclick: () => { if (available()) pick(id); },
-        }, [el("b", { text: label }), el("small", { text: records[id] ? `自己ベスト ${records[id].best.total}点 · ${records[id].plays}回プレイ` : "まだ記録はありません" })]))),
-        divisions,
+        el("div.axe-bar-tools", [lesson, gearButton]),
+        el("div.sub-choices", playButtons),
+        divisions, el("p", { text: masteryLine(owner, "axe"), dataset: { test: "axe-mastery" } }),
         el("div.axe-bar-records", [Object.keys(records).some(key => key !== "career") ? el("strong", { text: "マキがつけた、はじめの記録" }) : null, ...Object.entries(modes).map(([id, label]) => {
           const last = records[id]?.last;
           return el("p", { text: last ? `${label}の前回：${last.total}点（各投 ${last.throws.map(shot => shot.score).join(" / ")}${last.division ? " · " + DIVISIONS[last.division]?.name : ""}）` : `${label}：完走すると各投の結果が残ります。` });
         }), careerLine(records.career) ? el("p.axe-bar-career", { text: careerLine(records.career), dataset: { test: "axe-bar-career" } }) : null]),
         el("button.btn.ghost.small.sub-back", { text: "← マップに戻る", dataset: { test: "axe-bar-back" }, onclick: () => pick(null) }));
+      menuNodes = [...host.childNodes];
     });
     if (!mode || !available() || !await staminaGuard(AXE_BAR.stamina) || !available()) return false;
     host.hidden = true;
@@ -144,6 +167,7 @@ export async function visitAxeBar({ staminaGuard = async () => true, signal } = 
     const result = await runAxeThrow({ host: document.getElementById("stage"), mode, opponent: null, allowRetry: false, signal: abort.signal, division: mode === "league" ? division : "rec",
       gearId: ownsAxe(owner, gearId) ? gearId : "house" });
     if (!result.completed || !available()) return false;
+    syncPlayMastery(owner);
     const records = owner.flags._axe_bar_records ||= {};
     const entry = { chapter, day, total: result.total, maximum: result.maximum, ruleset: result.ruleset, division: result.division, throws: result.throws,
       inputVersion: result.inputVersion, equipment: result.equipment ? { ...result.equipment } : undefined };
@@ -152,6 +176,7 @@ export async function visitAxeBar({ staminaGuard = async () => true, signal } = 
     const newBest = !previous?.best || result.total > previous.best.total;
     records[mode] = { plays: (previous?.plays || 0) + 1, last: entry,
       best: newBest ? entry : previous.best };
+    recordPlayMastery(owner, "axe", result, `${owner.cycle || 1}:${chapter}:${day}:${mode}:${records[mode].plays}`);
     addMoney(-AXE_BAR.playCost); addStamina(AXE_BAR.stamina); earnStat("guts", 1);
     const reply = result.total === 0 ? "venue_maki_miss" : previous && newBest ? "venue_maki_record" : "venue_maki_finish";
     const goals = (result.challenges || []).filter(goal => goal.state === "done").length;

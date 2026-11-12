@@ -5,7 +5,10 @@ const source=fs.readFileSync(new URL('../js/trpg/session.js',import.meta.url),'u
 const {TrpgSession,specialOf,DICE}=await import('data:text/javascript;base64,'+Buffer.from(source).toString('base64'));
 const scenario=JSON.parse(fs.readFileSync(new URL('../../data/dialogue/trpg_ordinary.json',import.meta.url)));
 const travelURL='data:text/javascript;base64,'+Buffer.from(fs.readFileSync(new URL('../js/core/travel-budget.js',import.meta.url))).toString('base64');
-const campaignSource=fs.readFileSync(new URL('../js/trpg/campaign.js',import.meta.url),'utf8').replace('"../core/travel-budget.js"',JSON.stringify(travelURL));
+const busURL='data:text/javascript;base64,'+Buffer.from(fs.readFileSync(new URL('../js/core/bus.js',import.meta.url))).toString('base64');
+const masterySource=fs.readFileSync(new URL('../js/core/play-mastery.js',import.meta.url),'utf8').replace("'./bus.js'",JSON.stringify(busURL));
+const masteryURL='data:text/javascript;base64,'+Buffer.from(masterySource).toString('base64');
+const campaignSource=fs.readFileSync(new URL('../js/trpg/campaign.js',import.meta.url),'utf8').replace('"../core/travel-budget.js"',JSON.stringify(travelURL)).replace('"../core/play-mastery.js"',JSON.stringify(masteryURL));
 const campaign=await import('data:text/javascript;base64,'+Buffer.from(campaignSource).toString('base64'));
 
 // The scenes a full session adds between the old ones: two questions after the first roll, a twist after the guess.

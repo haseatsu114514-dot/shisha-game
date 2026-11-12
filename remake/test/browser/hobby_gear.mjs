@@ -1,6 +1,6 @@
 // VOL07: 斧投げBar・クラブSEAM・ボドゲカフェで自分の道具を一度だけ買い、ミニゲームの画面で効き目が見える。
 import assert from "node:assert/strict";
-import { suite } from "./support.mjs";
+import { suite, assertFits } from "./support.mjs";
 const t = id => `[data-test="${id}"]`;
 
 async function setup(page, values, flags = {}) {
@@ -29,6 +29,17 @@ async function openAxeBar(page) {
     G.flow = G.bar.visitAxeBar({ signal: G.abort.signal });
   });
   await page.locator(t("axe-bar-menu")).waitFor();
+  await openGear(page);
+}
+async function openGear(page) {
+  await assertFits(page, ".axe-bar-menu button");
+  await page.locator(t("axe-bar-gear-open")).click();
+  await page.locator(t("axe-bar-gear")).waitFor();
+  await assertFits(page, ".axe-bar-menu button");
+}
+async function closeGear(page) {
+  await page.locator(t("axe-bar-gear-back")).click();
+  await assertFits(page, ".axe-bar-menu button");
 }
 async function axeThrow(page) {
   await axePhase(page, "choice");
@@ -60,6 +71,7 @@ await suite("hobby-gear", async check => {
       G.abort = new AbortController();
       G.flow = G.bar.visitAxeBar({ signal: G.abort.signal });
     });
+    await page.locator(t("axe-bar-menu")).waitFor(); await openGear(page);
     const buy = page.locator(t("gear-buy-gear_hatchet"));
     await buy.waitFor();
     assert.match(await buy.innerText(), /5,000.*構えの揺れが1割小さい/);
@@ -67,6 +79,7 @@ await suite("hobby-gear", async check => {
     await page.locator(t("gear-owned-gear_hatchet")).waitFor();
     assert.deepEqual(await saved(page), { money: 15000, owned: ["silicone_bowl", "lotos_hagal", "flat_charcoal", "gear_hatchet"] });
     assert.equal(await page.locator(t("gear-buy-gear_hatchet")).count(), 0, "買った後はボタンが消える");
+    await closeGear(page);
     assert.equal(await page.locator(t("axe-bar-practice")).isDisabled(), false, "残り15,000円で3,000円の3投はできる");
     await page.locator(t("axe-bar-practice")).click();
     await page.waitForFunction(() => document.querySelector('[data-test="axe-game"]')?.dataset.phase === "choice");
@@ -90,6 +103,7 @@ await suite("hobby-gear", async check => {
     assert.equal(await page.locator(t('axe-select-gear_hatchet_precision')).getAttribute('aria-pressed'), 'true');
     assert.equal(await page.locator(t('gear-buy-gear_hatchet_precision')).count(), 0);
     assert.deepEqual((await saved(page)).owned, [...initialOwned, 'gear_hatchet', 'gear_hatchet_precision']);
+    await closeGear(page);
     await page.locator(t('axe-bar-practice')).click(); await axePhase(page, 'choice');
     assert.equal(await page.locator(t('axe-game')).getAttribute('data-gear-id'), 'gear_hatchet_precision');
     for (let i = 0; i < 3; i++) await axeThrow(page);
@@ -116,6 +130,7 @@ await suite("hobby-gear", async check => {
     assert.equal(await page.locator(t('axe-select-gear_hatchet_precision')).getAttribute('aria-pressed'), 'true');
     assert.equal(await page.locator(t('gear-buy-gear_hatchet')).count(), 0);
     assert.equal(await page.locator(t('gear-buy-gear_hatchet_precision')).count(), 0);
+    await closeGear(page);
     await page.locator(t('axe-bar-back')).click(); assert.equal(await page.evaluate(() => G.flow), false);
     assert.equal((await saved(page)).money, 7000, 'viewing owned equipment never charges again');
   });
@@ -133,12 +148,40 @@ await suite("hobby-gear", async check => {
     await openAxeBar(page);
     assert.equal(await page.locator(t('gear-buy-gear_hatchet')).count(), 0);
     assert.equal(await page.locator(t('axe-select-gear_hatchet')).getAttribute('aria-pressed'), 'true');
+    await closeGear(page);
     await page.locator(t('axe-bar-practice')).click(); await axePhase(page, 'choice');
     assert.equal(await page.locator(t('axe-game')).getAttribute('data-gear-id'), 'gear_hatchet');
     await page.evaluate(() => G.abort.abort()); assert.equal(await page.evaluate(() => G.flow), false);
     const after = await page.evaluate(() => ({money:G.core.state.money,owned:G.core.state.owned,records:G.core.state.flags._axe_bar_records}));
     assert.deepEqual(after, before, 'legacy ownership and old scores survive actual load and interrupted play');
   });
+
+  for (const [device, context] of [["pc", {}], ["touch", { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }]]) {
+    await check(`axe-shop-${device}-all-owned-fits-and-back`, async page => {
+      await setup(page, { chapter: 1, day: 5, slot: 1, money: 100000 }, axeFlags);
+      await openAxeBar(page);
+      for (const id of ["gear_hatchet", "gear_hatchet_balanced", "gear_hatchet_precision"]) {
+        const buy = page.locator(t(`gear-buy-${id}`));
+        if (device === "touch") await buy.tap(); else await buy.click();
+        await assertFits(page, ".axe-bar-menu button");
+        assert.equal(await page.locator(t(`axe-select-${id}`)).getAttribute("aria-pressed"), "true");
+      }
+      assert.equal((await saved(page)).money, 71000);
+      assert.equal(await page.locator('.axe-bar-gear-select').count(), 4);
+      const metrics = await page.locator('.axe-bar-gear-card button').evaluateAll(nodes => nodes.map(node => ({
+        size: Number.parseFloat(getComputedStyle(node).fontSize), height: node.offsetHeight,
+      })));
+      assert(metrics.every(m => m.size >= 24 && m.height >= 82), 'shop keeps readable type and touch controls');
+      await page.keyboard.press("Escape");
+      await assertFits(page, ".axe-bar-menu button");
+      assert.equal(await page.locator(t('axe-bar-gear-open')).evaluate(node => node === document.activeElement), true);
+      if (device === "touch") await page.locator(t('axe-bar-gear-open')).tap(); else await page.locator(t('axe-bar-gear-open')).click();
+      await assertFits(page, ".axe-bar-menu button");
+      assert.equal((await saved(page)).money, 71000, 'reopening never buys anything');
+      await closeGear(page); await page.locator(t('axe-bar-back')).click();
+      assert.equal(await page.evaluate(() => G.flow), false);
+    }, context);
+  }
 
   await check("club-headphones", async page => {
     await setup(page, { chapter: 3, day: 3, slot: 1, money: 30000 }, { _club_yoru_first_done: true });

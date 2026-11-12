@@ -421,12 +421,15 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     const last = shots.at(-1);
     const key = lessonContext && coachLines[lessonContext + "_" + id] ? lessonContext + "_" + id : id;
     const tapLesson = {
-      welcome: "まずは一投、ゆっくりいこう。的をタップして狙いを決めて、右の取っ手を下に引いて離すよ。",
-      target: "赤は6点、外から1・2・3・4点。白い刃先が当たる場所を見てね。青はボタンで先に宣言したときだけ7・8点になるよ。",
-      power: "狙いが決まったね。右の取っ手を下へ引いて、緑の帯で離してみよう。元へ戻すと中止できる。Space長押しでも同じだよ。",
+      power: "狙いが決まったね。右の取っ手を下へ引いて、緑の帯で離してみよう。元へ戻すと中止できる。Space長押しでも同じだよ。弱いと柄から当たる、強いと回りすぎる。どっちも落ちて0点だ。白い刃先が着地点。息を整えるかFで、1投に1回だけ揺れを抑えられるよ。",
     };
     if (tapPull) titles.power = "引いて、緑で離す";
-    const text = (tapPull && tapLesson[id] || coachLines[key]) + (id === "result" && last ? ` 今回は${last.score}点。${shotFeedback(last).tip}` : "");
+    // Keep the canonical first/event greeting, free-lesson terms and scoring explanation.
+    // Only the old input instructions change; the relationship context must not disappear.
+    const canonicalLine = tapPull ? coachLines[key]
+      .replace("横、縦、回転の順で止める。", "的をタップして狙いを決め、右の取っ手を下へ引いて離すよ。")
+      .replace("横、縦、回転の順でよく投げたね。", "狙って、引いて、よく投げたね。") : coachLines[key];
+    const text = (tapPull && tapLesson[id] || canonicalLine) + (id === "result" && last ? ` 今回は${last.score}点。${shotFeedback(last).tip}` : "");
     const close = () => {
       coachPanel.remove(); coachPanel = null; heading.inert = body.inert = scoreboard.inert = false;
       stamp = null; render(); root.focus();

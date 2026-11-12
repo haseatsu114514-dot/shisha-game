@@ -97,6 +97,9 @@ async function completeLesson(page, { touch = false, captureName = null, freeze 
 // The real bar now teaches tap-pull; the explicitly started cases above preserve legacy-gauge coverage.
 async function completeTapPullLesson(page) {
   assert.equal(await game(page).getAttribute("data-input-mode"), "tap-pull");
+  assert.match(await coach(page, "welcome").innerText(), /お金も体力も使わない/);
+  assert.match(await coach(page, "welcome").innerText(), /取っ手を下へ引いて/);
+  assert.doesNotMatch(await coach(page, "welcome").innerText(), /横、縦、回転/);
   await guide(page, "welcome", false, false); await guide(page, "target", false, false);
   const target = await page.locator('.axe-target').evaluate(node => {
     const point = new DOMPoint(330, 245).matrixTransform(node.getScreenCTM());
@@ -114,7 +117,9 @@ async function completeTapPullLesson(page) {
   await page.mouse.up(); await page.clock.runFor(1200);
   await guide(page, "result", false, false); await phase(page, "result");
   assert.equal(await game(page).getAttribute("data-player-throws"), "1");
-  await action(page); await guide(page, "finish", false, false);
+  await action(page); await coach(page, "finish").waitFor();
+  assert.doesNotMatch(await coach(page, "finish").innerText(), /横、縦、回転/);
+  await guide(page, "finish", false, false);
   const result = await page.evaluate(() => window.lessonPromise);
   assert(result.completed && !result.cancelled && result.tutorial);
   assert.equal(result.inputVersion, "tap-pull-v1");

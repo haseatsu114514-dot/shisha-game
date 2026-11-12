@@ -237,6 +237,20 @@ def build_wide_key_visuals() -> None:
                 save(make(art.convert("RGB")), rel, quality=quality)
 
 
+# #3431: スマホ用の縦長原画。PC用の採用は WIDE_KEY_VISUALS のまま。
+TALL_KEY_VISUALS = {"town": "kv-b-tall-01", "counter": "kv-a-tall-04"}
+
+
+def build_tall_key_visuals() -> None:
+    for name, file in TALL_KEY_VISUALS.items():
+        rel = f"hero/kv-{name}-tall.webp"
+        art = load_site_art(PROMO_KEY_ART / f"{file}.png")
+        if art is None:
+            keep(rel)
+        else:
+            save(fit_width(art.convert("RGB"), 1024), rel, quality=78)
+
+
 def build_hero() -> None:
     # タイトル画面の背景（1280x720のドット絵）。ぼかさず整数倍に拡大して、ドットの角を保つ。
     lounge = load(GAME / "backgrounds" / "bg_title.webp").convert("RGB")
@@ -244,6 +258,7 @@ def build_hero() -> None:
     lounge = load(GAME / "backgrounds" / "bg_title.webp").convert("RGB")
     save(lounge.resize((1280, 720), Image.NEAREST), "hero/lounge-s.webp", quality=74)
     build_wide_key_visuals()
+    build_tall_key_visuals()
     for cid, name in key_visuals().items():
         art = load(GAME / "ui" / "title_arts" / f"{name}.webp").convert("RGB")
         save(art, f"hero/kv-{cid}.webp", quality=80)

@@ -16,20 +16,28 @@ export function attachAxePullInput({ root, board, handle, signal, canAim, canPul
     return true;
   }
   function available() { return !dead && !doc.hidden && canPull(); }
+  function geometry() {
+    const rect = root.getBoundingClientRect();
+    return [win.innerWidth, win.innerHeight, rect.x, rect.y, rect.width, rect.height];
+  }
+  function unchangedGeometry() {
+    const now = geometry();
+    return pull && now.every((value, index) => value === pull.geometry[index]);
+  }
   function begin(id, point) {
     if (pull || !available()) return false;
-    pull = { id, start: point, elapsed: 0, distance: clamp(root.getBoundingClientRect().height * .26, 80, 180) };
+    pull = { id, start: point, elapsed: 0, geometry: geometry(), distance: clamp(root.getBoundingClientRect().height * .26, 80, 180) };
     power = 0; onPower(0); return true;
   }
   function move(e) {
     if (!pull || pull.id !== e.pointerId) return false;
-    if (!available() || !Number.isFinite(e.clientX) || !Number.isFinite(e.clientY) || e.clientX < 0 || e.clientY < 0 || e.clientX > win.innerWidth || e.clientY > win.innerHeight || Math.abs(e.clientX - pull.start.x) > pull.distance * 1.2) { cancel(); return false; }
+    if (!available() || !unchangedGeometry() || !Number.isFinite(e.clientX) || !Number.isFinite(e.clientY) || e.clientX < 0 || e.clientY < 0 || e.clientX > win.innerWidth || e.clientY > win.innerHeight || Math.abs(e.clientX - pull.start.x) > pull.distance * 1.2) { cancel(); return false; }
     power = clamp((e.clientY - pull.start.y) / pull.distance, 0, 1);
     onPower(power); return true;
   }
   function release() {
     if (!pull) return;
-    if (!available() || power < .06) { cancel(); return; }
+    if (!available() || !unchangedGeometry() || power < .06) { cancel(); return; }
     const previous = pull; pull = null;
     if (previous.id !== 'keyboard' && handle.hasPointerCapture(previous.id)) handle.releasePointerCapture(previous.id);
     // Re-check after callbacks/capture changes before committing a throw.
@@ -99,7 +107,7 @@ export function attachAxePullInput({ root, board, handle, signal, canAim, canPul
     tick(delta) {
       if (!Number.isFinite(delta) || delta < 0) throw new RangeError('Invalid active input time');
       if (!pull) return;
-      if (!available()) { cancel(); return; }
+      if (!available() || !unchangedGeometry()) { cancel(); return; }
       if (pull.id === 'keyboard') { pull.elapsed += delta; power = clamp(pull.elapsed / 1200, 0, 1); onPower(power); }
     },
     get pulling() { return pull !== null; },

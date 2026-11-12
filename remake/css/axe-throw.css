@@ -1214,7 +1214,7 @@ html:root[data-ui-theme="paper"] .axe-bar-menu .axe-bar-lesson { color: var(--la
 .axe-game[data-input-mode="tap-pull"].axe-first-person:not([data-phase="choice"]):not([data-phase="power"]) .axe-fps-hands { display: none; }
 .axe-game[data-input-mode="tap-pull"].axe-first-person[data-actor="opponent"] .axe-fps-hands { display: none; }
 .axe-game[data-input-mode="tap-pull"].axe-first-person .axe-zoom { z-index: 3; left: 29%; bottom: 4%; top: auto; width: 150px; }
-.axe-game[data-input-mode="tap-pull"].axe-first-person[data-phase="summary"] .axe-panel { top: 18%; bottom: 3%; left: 27%; right: 20%; width: auto; max-height: none; padding: 24px; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person[data-phase="summary"] .axe-panel { top: 18%; bottom: 3%; left: 27%; right: 20%; width: auto; max-height: none; padding: 24px; transform: none; }
 .axe-game[data-input-mode="tap-pull"].axe-first-person [hidden] { display: none !important; }
 
 .axe-game[data-input-mode="tap-pull"].axe-first-person .axe-calls .axe-button { position: static; inset: auto; width: auto; margin: 0; transform: none; }
@@ -1224,3 +1224,14 @@ html:root[data-ui-theme="paper"] .axe-bar-menu .axe-bar-lesson { color: var(--la
 .axe-bar-menu .axe-bar-gear-selection { display: flex; flex-wrap: wrap; gap: 8px; }
 .axe-bar-menu .axe-bar-gear .gear-offer { white-space: normal; text-align: left; }
 .axe-bar-menu .axe-bar-tools { flex-wrap: wrap; }
+/* The shop replaces, rather than extends, the venue menu. Four cards always fit
+   inside the 720px logical stage while preserving 24px type and 82px controls. */
+.sub-menu.axe-bar-menu[data-view="gear"] { height: 650px; max-height: 96%; overflow: hidden; }
+.axe-bar-menu .axe-bar-gear { display: grid; grid-template-rows: 82px auto minmax(0, 1fr); gap: 12px; height: 100%; min-height: 0; }
+.axe-bar-menu .axe-bar-gear > .sub-title { margin: 0; padding-right: 260px; }
+.axe-bar-menu .axe-bar-gear-note { margin: 0; font-size: 24px; line-height: 1.4; }
+.axe-bar-menu .axe-bar-gear-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: repeat(2, minmax(0, 1fr)); gap: 12px; min-height: 0; }
+.axe-bar-menu .axe-bar-gear-card { display: flex; flex-direction: column; justify-content: center; gap: 6px; min-width: 0; min-height: 0; padding: 12px; border: 1px solid currentColor; border-radius: 12px; }
+.axe-bar-menu .axe-bar-gear-card .btn { width: 100%; min-height: 82px; height: auto; padding: 8px 12px; font-size: 24px; line-height: 1.35; white-space: normal; overflow-wrap: anywhere; }
+.axe-bar-menu .axe-bar-gear-card p.gear-offer { margin: 0; font-size: 24px; line-height: 1.35; }
+.axe-bar-menu .axe-bar-gear-select[aria-pressed="true"] { outline: 3px solid currentColor; outline-offset: 2px; }

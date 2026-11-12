@@ -1860,6 +1860,10 @@ html:root[data-density="phone"] body:not(:root) .gfx-cutin-count { font-size: 16
 /* 授業の札の顔（SBD81）: 立ち絵から目の高さと顔の大きさをそろえて切り出した正方形 */
 .gb-node.lesson .gb-face-icon { object-fit: cover; object-position: 50% 45%; }
 /* 右のパネルの立ち絵（SBD82）: 授業は教える人、スキルははじめ。顔の幅と目の高さをそろえ、胸から上だけ見せる */
+.gb-art.has-skill-art { overflow: hidden; border: 1px solid #f4f1eb; background: #fff; }
+.gb-art.has-skill-art > span { display: none; }
+.gb-skill-art { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center; pointer-events: none; user-select: none; }
+.gb-art.shadow .gb-skill-art { filter: brightness(0.13) contrast(1.2); }
 .gb-art.has-portrait { overflow: hidden; }
 .gb-art.has-portrait > span { display: none; }
 .gb-portrait { position: absolute; left: 50%; max-width: none; height: auto; pointer-events: none; user-select: none;

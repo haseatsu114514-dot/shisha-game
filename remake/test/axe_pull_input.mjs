@@ -34,3 +34,17 @@ test('runtime aim reset synchronizes keyboard origin without callbacks or focus 
 test('Space passes through to runtime result/summary actions when pulling is unavailable',()=>{const s=setup();s.pullAllowed=false;assert(!s.key('keydown','Space').defaultPrevented);assert(!s.key('keyup','Space').defaultPrevented);assert(!s.input.pulling);s.pullAllowed=true;s.key('keydown','Space');s.input.tick(744);s.pullAllowed=false;assert(s.key('keyup','Space').defaultPrevented);assert.equal(s.releases,0);assert.equal(s.cancels,1);s.signal.abort();});
 test('window capture releases board touch IDs despite runtime stopping pointerup bubbling',()=>{const s=setup();for(const type of ['pointerup','pointercancel'])assert.equal(s.win.listeners.find(l=>l.type===type).options.capture,true);fire(s.win,'pointerdown',{pointerId:11});fire(s.board,'pointerdown',{button:0,isPrimary:true,clientX:680,clientY:520,pointerId:11}); // Browser capture runs before the runtime root stops bubbling.
 fire(s.win,'pointerup',{pointerId:11});s.root.addEventListener('pointerup',e=>e.stopPropagation());fire(s.root,'pointerup',{pointerId:11});s.pointer('pointerdown',780,160,12);assert(s.input.pulling);s.pointer('pointerup',780,230,12);assert.equal(s.releases,1);s.signal.abort();});
+
+test('synchronous viewport or stage geometry changes cancel before resize event delivery',()=>{
+  for(const mode of ['pointer','keyboard']) for(const change of ['viewport','stage']) {
+    const s=setup();
+    if(mode==='pointer'){s.pointer('pointerdown');s.pointer('pointermove',780,223);}
+    else{s.key('keydown','Space');s.input.tick(744);}
+    if(change==='viewport')s.win.innerWidth=932;
+    else s.root.getBoundingClientRect=()=>({height:400});
+    // Do not dispatch resize or insert a timer: release must itself notice the change.
+    if(mode==='pointer')s.pointer('pointerup',780,223);else s.key('keyup','Space');
+    assert.equal(s.releases,0,mode+' '+change);assert.equal(s.cancels,1);assert.equal(s.input.pulling,false);
+    s.signal.abort();
+  }
+});
