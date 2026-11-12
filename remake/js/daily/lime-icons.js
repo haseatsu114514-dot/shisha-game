@@ -4,9 +4,17 @@
 // 素材: asset_sources/lime-icons-1081-i01（PR #1175 の候補から採用: アダム=B案／みんと=B案／つむぎ=A案）
 //       asset_sources/lime-icons-picker-20261030（Issue #1768 の選別で決定した15人分。1人1枚）
 //       asset_sources/picker-refill-20261030（ヴォルク。補充分から採用、256pxに縮小）
+//       asset_sources/lime-icons-20261111（Issue #3420、2026-11-12 オーナー採用の6人）
 import { img } from "../core/data.js";
 
 const CUSTOM_LIME_ICONS = {
+  noor: "noor-b.png",
+  saku: "saku-a.png",
+  steve: "steve-a.png",
+  master_hookah: "master_hookah-b.png",
+  da_silva: "da_silva-a.png",
+  mukai_master: "mukai_master-b.png",
+
   adam: "adam-b.png",
   minto: "minto-b.png",
   tsumugi: "tsumugi-a.png",

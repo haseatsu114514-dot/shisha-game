@@ -4,9 +4,22 @@
 
 ![A・Bの丸抜き比較（136・52・32・28px）](comparison.png)
 
-採用案はオーナーの画像確認待ち。ゲームのアイコン登録は未変更。
+2026-11-12 オーナー「太陽とスティーブ、あやとり以外は物で」。太陽・スティーブ・綾取はA（本人）、ヌール・王煙楼・ムカイさんはB（物）を採用し、ゲームへ登録。
 
-6人の本人寄り A 案と物モチーフ B 案。PNG 原画を無加工・不透明で保存。オーナーが各人1枚を選ぶ。ゲームへの組み込みは Claude 側。
+## 採用した案
+
+| キャラID | 決定ファイル | 原画 SHA-256 | ゲーム用 |
+|---|---|---|---|
+| `noor` | `noor-b.png` | `dd2b9303a61a8db60fdcda35df940f094bd0148999076b79e1231c5cae3e15b8` | `assets/ui/lime/noor-b.png` |
+| `saku` | `saku-a.png` | `726584c796a89dc8cdf1f07e00623544a3e7e410ea4c238df1f3b96828eb1605` | `assets/ui/lime/saku-a.png` |
+| `steve` | `steve-a.png` | `9892643e285d16745d036852537458f72c41f8fe9aaa8c6c5b1e681ec1c10f95` | `assets/ui/lime/steve-a.png` |
+| `master_hookah` | `master_hookah-b.png` | `6e9499569a6fb33d910f6c07ea2d469822206d6436e225ba32075ef5af77b85f` | `assets/ui/lime/master_hookah-b.png` |
+| `da_silva` | `da_silva-a.png` | `1d83e15126f1a13752cf23f33480970bd4797bcd7617fd51d17d668614cc2cda` | `assets/ui/lime/da_silva-a.png` |
+| `mukai_master` | `mukai_master-b.png` | `769283e19820d4958d3ef6f7cbd593831d4295134f7c2fbcbf971cc40598daa1` | `assets/ui/lime/mukai_master-b.png` |
+
+ゲーム用は原画をトリミングせず256×256・RGB・LANCZOSで縮小。原画は無加工のまま保持。
+
+6人の本人寄り A 案と物モチーフ B 案。PNG 原画を無加工・不透明で保存。上の採用表が最終決定。ゲームへの組み込みも同じPRで実施。
 
 ## ファイル・参照画像・SHA-256
 
