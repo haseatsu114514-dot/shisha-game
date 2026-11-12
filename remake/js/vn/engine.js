@@ -758,10 +758,9 @@ async function showCg(id, effect = "") {
   if (hooks.onCg) hooks.onCg(id);
 }
 
-/** 通常は表示・退場を待つ。SKIPでは即表示し、一画面は描いてから次へ送る。 */
+/** CSSの表示・退場が終わるまで待つ。SKIPでも途中の透明な絵を次の行で消さない。 */
 async function visualSettled(node) {
   await nextFrame();
-  if (skipMode || vnTest.turbo) return;
   await Promise.all(node.getAnimations().map((animation) => animation.finished.catch(() => {})));
 }
 
