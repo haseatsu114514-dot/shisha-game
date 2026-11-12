@@ -1,6 +1,6 @@
 {
   "id": "mist-kingdom",
-  "version": 1,
+  "version": 2,
   "title": "朝霧の王国と、最後の一台",
   "subtitle": "霧の王女と、煙の選手権",
   "author": "宵原ねむ",
@@ -46,7 +46,7 @@
   },
   "cast": [
     {
-      "id": "hiyori",
+      "id": "sai",
       "part": "GM",
       "role": "案内と、霧の王国",
       "color": "#c9b8de"
@@ -90,6 +90,12 @@
         },
         "trait": "選手権の常連。毎回、林檎の香りで勝負する。腕は本物",
         "likes": "林檎。この宇宙の最初の一個"
+      },
+      "alternatives": {
+        "regulara": {
+          "role": "{pc:adam}／林檎の紋章の騎士",
+          "color": "#bb9c72"
+        }
       }
     },
     {
@@ -111,6 +117,12 @@
         },
         "trait": "選手権には興味がない。王宮の椅子と通路を見に来ただけ",
         "likes": "座り心地のいい椅子と、サメの彫り物"
+      },
+      "alternatives": {
+        "regularb": {
+          "role": "{pc:samechan}／会場見物の大工",
+          "color": "#8faeaa"
+        }
       }
     }
   ],
@@ -502,10 +514,10 @@
       },
       "lines": [
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "GM／卓の会話",
-          "face": "smile",
-          "text": "……物語の前に、キャラ作りの時間。霧が晴れる前に、役を決めて"
+          "face": "normal",
+          "text": "最後の物語の前に、役を決めましょう。どんな出場者にしますか？"
         }
       ]
     },
@@ -522,10 +534,10 @@
           "text": "俺は{pc}。{pcTitle}でいく"
         },
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "GM／卓の会話",
-          "face": "smile",
-          "text": "……出場者がそろったわ。では、霧の向こうへ"
+          "face": "normal",
+          "text": "出場者がそろいましたね。では、霧の向こうへ"
         }
       ]
     },
@@ -536,82 +548,103 @@
       },
       "lines": [
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "GM／卓の会話",
           "face": "normal",
-          "text": "……今夜は、朝霧の中にだけある王国の物語。消えちゃう前に、一本だけ"
+          "text": "今夜は、朝霧の中にだけある王国の物語です"
         },
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "face": "normal",
-          "text": "私がGM、みんなは選手権の出場者。短い朝の、短いお話よ",
+          "text": "ここまで、いろいろな物語を遊びましたね。最後は私がGMを務めます",
           "castIntro": true,
-          "smallTableText": "私がGM、はじめくんは出場者。空いた役は、私が兼ねるわ"
+          "smallTableText": "私がGMを務めます。空いた役もお手伝いしますね"
         },
         {
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "朝霧の王国って……ひよりさんらしいですね"
+          "text": "朝霧の王国ですか。最後は、どんな物語になるんだろう"
         },
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "GM／卓の会話",
-          "face": "surprise",
-          "text": "でしょ！？ ……こほん。儚いものは、みんな朝霧に包まれるの"
+          "face": "normal",
+          "text": "朝霧に包まれた王国です。どんな一台が残るでしょうね"
         },
         {
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "選手権と聞いては黙っていられない。腕が、もう騒いでいる"
+          "text": "選手権と聞いては黙っていられない。腕が、もう騒いでいる",
+          "variants": {
+            "regulara": {
+              "text": "選手権と聞いては黙っていられない。腕が、もう騒いでいる",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "samechan",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "わしは勝ち負けに興味はないのじゃ。王宮の椅子が見たい"
+          "text": "わしは勝ち負けに興味はないのじゃ。王宮の椅子が見たい",
+          "variants": {
+            "regularb": {
+              "text": "私は勝ち負けに興味はないのです。王宮の椅子が見たい",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "samechan",
           "role": "コロちゃん／卓の会話",
           "face": "ventriloquism",
-          "text": "余も王である。霧の国の王族には、王として礼を尽くそう"
+          "text": "余も王である。霧の国の王族には、王として礼を尽くそう",
+          "variants": {
+            "regularb": {
+              "text": "そんな役なのですね。続きも気になります",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "夜明け前。白い霧の中から、塔と城壁がゆっくり浮かび上がる"
         },
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "朝霧の出る朝だけ、霧の外とつながる王国。今朝は『煙の選手権』の日"
         },
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "{pc}は、出場者の列で、胸の番号札を握りしめている"
         },
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "{pc:adam}は、審査員席の前で、背すじをぴんと伸ばしている"
         },
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "{pc:samechan}は、出場そっちのけで王宮の柱を叩いて回っている"
         },
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "実況の伝令／物語",
-          "face": "smile",
+          "face": "normal",
           "text": "さあ始まりました、煙の選手権！ 霧が晴れるまでの一本勝負！"
         },
         {
@@ -621,10 +654,10 @@
           "text": "霧が晴れるまでって、時間制限つきなの！？"
         },
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "GM／卓の会話",
-          "face": "sad",
-          "text": "……そう。この国は、霧が晴れたら消えちゃうから"
+          "face": "normal",
+          "text": "そうです。この国は、霧が晴れたら消えてしまいます"
         }
       ]
     },
@@ -635,27 +668,27 @@
       },
       "lines": [
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "審査員席には霧の大臣と料理長。玉座では、白い髭の老王が目を細めている"
         },
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "王の隣に、霧と同じ色の髪をした、小さな王女が座っていた"
         },
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "霧の王女ミナ／物語",
-          "face": "smile",
+          "face": "normal",
           "text": "来てくれて、ありがとう。わたし、ミナ。……最後の一台を、探してるの"
         },
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "GM／場面",
-          "face": "sad",
+          "face": "normal",
           "text": "そう言って微笑むと、王女の輪郭が、ほんの少し霧ににじんだ"
         },
         {
@@ -665,15 +698,15 @@
           "text": "今、透けた……。王女さま、儚すぎませんか"
         },
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "GM／卓の会話",
-          "face": "surprise",
-          "text": "でしょ！？ 守りたくなるでしょ！？ ……こほん。続けるわね"
+          "face": "normal",
+          "text": "王女の願いが気になりますね。続きをどうぞ"
         },
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "侍従長ミルテ／物語",
-          "face": "sad",
+          "face": "normal",
           "text": "姫さまは、霧のある間しかおられません。今朝は、今年最後の朝霧なのです"
         }
       ]
@@ -685,7 +718,7 @@
       },
       "lines": [
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "ミルテの肩の力が抜けた。霧はまだ濃い。ゆっくり話を聞けそうだ"
@@ -705,7 +738,7 @@
       },
       "lines": [
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "話の途中で、遠くの鐘が一つ鳴る。霧が、ほんの少し薄くなった"
@@ -725,9 +758,9 @@
       },
       "lines": [
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "GM／場面",
-          "face": "surprise",
+          "face": "normal",
           "text": "控えの間の扉が勢いよく開き、朝の風が霧をさらっていく"
         },
         {
@@ -737,10 +770,10 @@
           "text": "扉、閉めて閉めて！ 霧が逃げる！"
         },
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "GM／卓の会話",
           "face": "normal",
-          "text": "霧晴れが二つ進むわ。……でも、調べる時間はまだ残ってる"
+          "text": "霧晴れが二つ進みます。まだ調べる時間はありますよ"
         }
       ]
     },
@@ -751,9 +784,9 @@
       },
       "lines": [
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "GM／場面",
-          "face": "smile",
+          "face": "normal",
           "text": "……間に合った。王宮の真ん中は、まだ白い霧の中にある"
         },
         {
@@ -771,16 +804,16 @@
       },
       "lines": [
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "GM／場面",
-          "face": "sad",
+          "face": "normal",
           "text": "回廊の端は、消えてしまった。霧晴れが一つ進む"
         },
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "GM／卓の会話",
-          "face": "sad",
-          "text": "……儚いでしょう。でも、王宮の真ん中はまだ大丈夫"
+          "face": "normal",
+          "text": "王宮の真ん中には、まだ霧が残っています"
         }
       ]
     },
@@ -791,9 +824,9 @@
       },
       "lines": [
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "GM／場面",
-          "face": "surprise",
+          "face": "normal",
           "text": "慌てた拍子に、香り棚の瓶が一つ転がる。霧晴れが二つ進む"
         },
         {
@@ -803,10 +836,10 @@
           "text": "ごめん！ 割れてない、割れてない！"
         },
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "GM／卓の会話",
-          "face": "smile",
-          "text": "……誰も消えてないわ。物語は続くの"
+          "face": "normal",
+          "text": "誰も消えていませんよ。物語を続けましょう"
         }
       ]
     },
@@ -817,7 +850,7 @@
       },
       "lines": [
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "選んだ香りが、霧の中でやわらかく開いた。審査員席から、小さなため息"
@@ -826,7 +859,14 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "見たか。香りの幕は、完璧に上がった"
+          "text": "見たか。香りの幕は、完璧に上がった",
+          "variants": {
+            "regulara": {
+              "text": "見たか。香りの幕は、完璧に上がった",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -837,7 +877,7 @@
       },
       "lines": [
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "最初は香りが強すぎた。落ち着かせる間に、霧晴れが一つ進む"
@@ -857,9 +897,9 @@
       },
       "lines": [
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "GM／場面",
-          "face": "surprise",
+          "face": "normal",
           "text": "審査員の大臣が、大きなくしゃみ。霧がふわっと散って、霧晴れが二つ進む"
         },
         {
@@ -869,10 +909,10 @@
           "text": "審査員、今それ！？"
         },
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "GM／卓の会話",
-          "face": "smile",
-          "text": "……一台は無事よ。作戦は、まだ使えるわ"
+          "face": "normal",
+          "text": "一台は無事です。作戦も、まだ使えますよ"
         }
       ]
     },
@@ -883,7 +923,7 @@
       },
       "lines": [
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "言葉も一台も、まっすぐミナのもとへ届いた"
@@ -892,12 +932,19 @@
           "speaker": "samechan",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "椅子の高さも、ぴったりじゃ"
+          "text": "椅子の高さも、ぴったりじゃ",
+          "variants": {
+            "regularb": {
+              "text": "椅子の高さも、ぴったりです",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "GM／場面",
-          "face": "smile",
+          "face": "normal",
           "text": "ミナは一台の前に座り、ゆっくりと目を閉じる"
         }
       ]
@@ -909,7 +956,7 @@
       },
       "lines": [
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "言葉が少しつかえた。ミナはくすっと笑って、続きを待ってくれる"
@@ -929,21 +976,28 @@
       },
       "lines": [
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "GM／場面",
-          "face": "surprise",
+          "face": "normal",
           "text": "ミナの裾が椅子の脚に引っかかり、一台がかたんと揺れる"
         },
         {
           "speaker": "samechan",
           "role": "PL／卓の会話",
           "face": "surprise",
-          "text": "椅子の脚じゃと！？ わしとしたことが！"
+          "text": "椅子の脚じゃと！？ わしとしたことが！",
+          "variants": {
+            "regularb": {
+              "text": "椅子の脚じゃと！？ 失礼しました！",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "霧の王女ミナ／物語",
-          "face": "smile",
+          "face": "normal",
           "text": "ふふ。にぎやかな朝って、いいね"
         }
       ]
@@ -958,19 +1012,33 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "全部は調べられない。ならば、主役の居場所から見よう"
+          "text": "全部は調べられない。ならば、主役の居場所から見よう",
+          "variants": {
+            "regulara": {
+              "text": "全部は調べられない。ならば、主役の居場所から見よう",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "serious",
-          "text": "玉座の隣と、香り棚。王女の望みは、そのどちらかに眠っているはずだ"
+          "text": "玉座の隣と、香り棚。王女の望みは、そのどちらかに眠っているはずだ",
+          "variants": {
+            "regulara": {
+              "text": "玉座の隣と、香り棚。王女の望みは、そのどちらかに眠っているはずだ",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "GM／卓の会話",
           "face": "normal",
-          "text": "……相談とメモは、霧を晴らさないわ。何度でもどうぞ"
+          "text": "相談とメモでは霧は晴れません。何度でもどうぞ"
         }
       ]
     },
@@ -984,19 +1052,33 @@
           "speaker": "samechan",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "あの子がどこで長く過ごしたか、椅子の減り方で分かるのじゃ"
+          "text": "あの子がどこで長く過ごしたか、椅子の減り方で分かるのじゃ",
+          "variants": {
+            "regularb": {
+              "text": "あの子がどこで長く過ごしたか、椅子の減り方で分かるのです",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "samechan",
           "role": "コロちゃん／卓の会話",
           "face": "ventriloquism",
-          "text": "余が助言する。窓と回廊、王女の足が向く先を見よ"
+          "text": "余が助言する。窓と回廊、王女の足が向く先を見よ",
+          "variants": {
+            "regularb": {
+              "text": "そんな役なのですね。続きも気になります",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "GM／卓の会話",
-          "face": "smile",
-          "text": "……さすが、椅子の目利きね。相談は、何度でも"
+          "face": "normal",
+          "text": "椅子にも手がかりがありそうですね。相談は何度でもどうぞ"
         }
       ]
     },
@@ -1007,10 +1089,10 @@
       },
       "lines": [
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "GM／卓の会話",
           "face": "normal",
-          "text": "……王女の望み、見えてきたかしら。香りと、一台を置く場所を選んで"
+          "text": "香りと、一台を置く場所を選びましょう。王女は何を望んでいるでしょうね"
         },
         {
           "speaker": "hajime",
@@ -1022,13 +1104,27 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "香りは物語の第一声だ。始まりを間違えなければ、霧も応える"
+          "text": "香りは物語の第一声だ。始まりを間違えなければ、霧も応える",
+          "variants": {
+            "regulara": {
+              "text": "香りは物語の第一声だ。始まりを間違えなければ、霧も応える",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "samechan",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "置き場所はわしに任せよ。座り心地なら、もう三つは確かめたのじゃ"
+          "text": "置き場所はわしに任せよ。座り心地なら、もう三つは確かめたのじゃ",
+          "variants": {
+            "regularb": {
+              "text": "置き場所は私に任せてください。座り心地なら、もう三つは確かめたのです",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -1039,7 +1135,7 @@
       },
       "lines": [
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "一台の香りが、霧の中にゆっくり広がる。ミナが、そっと近づいてくる"
@@ -1048,7 +1144,14 @@
           "speaker": "samechan",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "椅子は用意したぞ。あとは、お主の言葉じゃ"
+          "text": "椅子は用意したぞ。あとは、お主の言葉じゃ",
+          "variants": {
+            "regularb": {
+              "text": "椅子は用意したぞ。あとは、あなたの言葉です",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "hajime",
@@ -1065,34 +1168,41 @@
       },
       "lines": [
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "GM／場面",
-          "face": "serious",
+          "face": "normal",
           "text": "そのとき、窓の外が白く光った。霧が、晴れ始めている"
         },
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "GM／場面",
-          "face": "sad",
+          "face": "normal",
           "text": "回廊の端の柱が、朝日に透けて、すうっと薄くなる"
         },
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "霧の王女ミナ／物語",
-          "face": "sad",
+          "face": "normal",
           "text": "……もう、晴れちゃうの？ まだ、最後の一台を見てないのに"
         },
         {
           "speaker": "samechan",
           "role": "PL／卓の会話",
           "face": "surprise",
-          "text": "柱が消えておる！ まだ座り心地を確かめておらんのに！"
+          "text": "柱が消えておる！ まだ座り心地を確かめておらんのに！",
+          "variants": {
+            "regularb": {
+              "text": "柱が消えている！ まだ座り心地を確かめておらんのに！",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "GM／卓の会話",
-          "face": "serious",
-          "text": "……さあ、出場者たち。消えちゃう前に、どうする？"
+          "face": "normal",
+          "text": "では、出場者の皆さん。霧が晴れる前に、どうしますか？"
         }
       ]
     },
@@ -1103,10 +1213,10 @@
       },
       "lines": [
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "GM／卓の会話",
           "face": "normal",
-          "text": "……これで、朝霧の王国の物語はおしまい"
+          "text": "これで、朝霧の王国の物語はおしまいです"
         },
         {
           "speaker": "hajime",
@@ -1118,31 +1228,52 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "勝敗は霧と共に晴れた。残ったのは、林檎の……いや、一台の香りだ"
+          "text": "勝敗は霧と共に晴れた。残ったのは、林檎の……いや、一台の香りだ",
+          "variants": {
+            "regulara": {
+              "text": "勝敗は霧と共に晴れた。残ったのは、林檎の……いや、一台の香りだ",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "samechan",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "わしは満足じゃ。審査員席、なかなかの座り心地じゃったぞ"
+          "text": "わしは満足じゃ。審査員席、なかなかの座り心地じゃったぞ",
+          "variants": {
+            "regularb": {
+              "text": "私は満足です。審査員席、なかなかの座り心地でしたぞ",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "samechan",
           "role": "コロちゃん／卓の会話",
           "face": "ventriloquism",
-          "text": "余も満足である。小さな王女に、また会いたいものだ"
+          "text": "余も満足である。小さな王女に、また会いたいものだ",
+          "variants": {
+            "regularb": {
+              "text": "そんな役なのですね。続きも気になります",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "hajime",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "ひよりさんのGM、最後ちょっと泣きそうでした"
+          "text": "最後の一台、ちゃんと届けられてよかったです"
         },
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "GM／卓の会話",
-          "face": "surprise",
-          "text": "ほんと！？ やった！ ……こほん。光栄だわ、消えちゃいそうなくらい"
+          "face": "normal",
+          "text": "ありがとうございます。皆さんのおかげで、よい卓になりました"
         }
       ]
     },
@@ -1153,10 +1284,10 @@
       },
       "lines": [
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "GM／卓の会話",
-          "face": "smile",
-          "text": "……霧が濃いうちに、みんな間に合ったわね。きれいな朝だった"
+          "face": "normal",
+          "text": "霧が濃いうちに間に合いましたね。きれいな朝でした"
         },
         {
           "speaker": "hajime",
@@ -1173,16 +1304,23 @@
       },
       "lines": [
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "GM／卓の会話",
           "face": "normal",
-          "text": "……霧はずいぶん晴れちゃった。でも、急いだ朝も物語のうちよ"
+          "text": "ずいぶん霧が晴れましたね。急いだ朝も物語のうちです"
         },
         {
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "間に合うか分からない。それこそが、最高の演出だ"
+          "text": "間に合うか分からない。それこそが、最高の演出だ",
+          "variants": {
+            "regulara": {
+              "text": "間に合うか分からない。それこそが、最高の演出だ",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -1196,19 +1334,33 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "serious",
-          "text": "生まれた庭の香りを、生まれた庭で。花は、咲いた場所で一番香る"
+          "text": "生まれた庭の香りを、生まれた庭で。花は、咲いた場所で一番香る",
+          "variants": {
+            "regulara": {
+              "text": "生まれた庭の香りを、生まれた庭で。花は、咲いた場所で一番香る",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "samechan",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "棚の上の瓶なら、わしが踏み台を作るのじゃ"
+          "text": "棚の上の瓶なら、わしが踏み台を作るのじゃ",
+          "variants": {
+            "regularb": {
+              "text": "棚の上の瓶なら、私が踏み台を作るのです",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "GM／卓の会話",
-          "face": "smile",
-          "text": "……いい読みね。じゃあ、その線で行ってみましょう"
+          "face": "normal",
+          "text": "では、その見立てで進めましょう"
         }
       ]
     },
@@ -1222,19 +1374,33 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "serious",
-          "text": "霧が晴れるまで香る一台。終幕を、少しでも遠くへ"
+          "text": "霧が晴れるまで香る一台。終幕を、少しでも遠くへ",
+          "variants": {
+            "regulara": {
+              "text": "霧が晴れるまで香る一台。終幕を、少しでも遠くへ",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "samechan",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "霧の溜まるバルコニーなら、最後まで並んで座れるのじゃ"
+          "text": "霧の溜まるバルコニーなら、最後まで並んで座れるのじゃ",
+          "variants": {
+            "regularb": {
+              "text": "霧の溜まるバルコニーなら、最後まで並んで座れるのです",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "GM／卓の会話",
-          "face": "sad",
-          "text": "……隣にいてあげて。そういうの、弱いのよ"
+          "face": "normal",
+          "text": "隣にいることを望んでいるのですね。では、その見立てで"
         }
       ]
     },
@@ -1248,19 +1414,33 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "serious",
-          "text": "覚えていてほしい。……その願いに応えるのが、作り手の務めだ"
+          "text": "覚えていてほしい。……その願いに応えるのが、作り手の務めだ",
+          "variants": {
+            "regulara": {
+              "text": "覚えていてほしい。……その願いに応えるのが、作り手の務めだ",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "samechan",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "教わったことは残るのじゃろ？ なら、教わればよい"
+          "text": "教わったことは残るのじゃろ？ なら、教わればよい",
+          "variants": {
+            "regularb": {
+              "text": "教わったことは残るのでしょう？ なら、教わればよい",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "GM／卓の会話",
-          "face": "smile",
-          "text": "……持ち帰れるもの、ね。その線でいきましょう"
+          "face": "normal",
+          "text": "持ち帰れるものですね。では、その見立てで"
         }
       ]
     },
@@ -1274,7 +1454,14 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "生まれた庭の花か。香りは、記憶の扉をいちばん静かに開ける"
+          "text": "生まれた庭の花か。香りは、記憶の扉をいちばん静かに開ける",
+          "variants": {
+            "regulara": {
+              "text": "生まれた庭の花か。香りは、記憶の扉をいちばん静かに開ける",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -1288,7 +1475,14 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "霧の果実か。ゆっくり長く、終幕を遠ざける香りだな"
+          "text": "霧の果実か。ゆっくり長く、終幕を遠ざける香りだな",
+          "variants": {
+            "regulara": {
+              "text": "霧の果実か。ゆっくり長く、終幕を遠ざける香りだな",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -1302,7 +1496,14 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "intense",
-          "text": "王女の合わせた茶。……林檎以外で、初めて原点の匂いがした"
+          "text": "王女の合わせた茶。……林檎以外で、初めて原点の匂いがした",
+          "variants": {
+            "regulara": {
+              "text": "王女の合わせた茶。……林檎以外で、初めて原点の匂いがした",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -1316,7 +1517,14 @@
           "speaker": "samechan",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "庭の長椅子は子ども用じゃ。……隣に、もう一脚置いておこう"
+          "text": "庭の長椅子は子ども用じゃ。……隣に、もう一脚置いておこう",
+          "variants": {
+            "regularb": {
+              "text": "庭の長椅子は子ども用です。……隣に、もう一脚置いておこう",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -1330,7 +1538,14 @@
           "speaker": "samechan",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "バルコニーなら、手すりの高さもちょうどよい。並んで座れるのじゃ"
+          "text": "バルコニーなら、手すりの高さもちょうどよい。並んで座れるのじゃ",
+          "variants": {
+            "regularb": {
+              "text": "バルコニーなら、手すりの高さもちょうどよい。並んで座れるのです",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -1344,7 +1559,14 @@
           "speaker": "samechan",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "舞台か。客席の椅子を全部、王女の方へ向けておくのじゃ"
+          "text": "舞台か。客席の椅子を全部、王女の方へ向けておくのじゃ",
+          "variants": {
+            "regularb": {
+              "text": "舞台か。客席の椅子を全部、王女の方へ向けておくのです",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -1397,7 +1619,7 @@
       },
       "lines": [
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "塔の鐘を力いっぱい鳴らす。低い音に誘われて、霧がまた流れ込む"
@@ -1417,7 +1639,7 @@
       },
       "lines": [
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "迷う時間を、手を動かす時間に。三人の段取りが、ぐっと速くなる"
@@ -1437,15 +1659,15 @@
       },
       "lines": [
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "ミナの手を引いて、霧の残る奥の間へ。小さな手は、ひんやりしていた"
         },
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "霧の王女ミナ／物語",
-          "face": "smile",
+          "face": "normal",
           "text": "……誰かに手を引かれるの、久しぶり"
         }
       ]
@@ -1457,46 +1679,53 @@
       },
       "lines": [
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "王妃の庭に、白い花の香りがふわりと広がる"
         },
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "霧の王女ミナ／物語",
-          "face": "smile",
+          "face": "normal",
           "text": "……この香り。わたし、ここで生まれたんだよ"
         },
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "ミナは庭の思い出を、一つずつ話した。霧が、その声をやさしく包む"
         },
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "GM／場面",
-          "face": "sad",
+          "face": "normal",
           "text": "やがて霧が晴れる。ミナは花の中で笑ったまま、白く透けていった"
         },
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "霧の王女ミナ／物語",
-          "face": "smile",
+          "face": "normal",
           "text": "ありがとう、……また、霧の朝に"
         },
         {
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "生まれた場所の香りか。帰る場所は、鼻が覚えているものだ"
+          "text": "生まれた場所の香りか。帰る場所は、鼻が覚えているものだ",
+          "variants": {
+            "regulara": {
+              "text": "生まれた場所の香りか。帰る場所は、鼻が覚えているものだ",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "GM／卓の会話",
-          "face": "sad",
-          "text": "……庭には、花の香りだけが残ったの。ほかより、少しだけ長く"
+          "face": "normal",
+          "text": "庭には花の香りだけが、ほかより少し長く残りました"
         }
       ]
     },
@@ -1507,40 +1736,47 @@
       },
       "lines": [
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "朝霧のバルコニーで、霧の果実の一台がゆっくり香り続ける"
         },
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "霧の王女ミナ／物語",
-          "face": "smile",
+          "face": "normal",
           "text": "隣にいてくれるの？ ……じゃあ、霧が晴れるまで、ここにいて"
         },
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "{pc}たちは、ミナと並んで城下を眺めた。誰も、急がなかった"
         },
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "GM／場面",
-          "face": "sad",
+          "face": "normal",
           "text": "最後の霧が晴れる。ミナは袖をつかんだまま、光の中へ溶けていった"
         },
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "霧の王女ミナ／物語",
-          "face": "smile",
+          "face": "normal",
           "text": "……楽しかった。また、霧の朝に"
         },
         {
           "speaker": "samechan",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "よい席じゃった。わしは、また霧の朝に座りに来るぞ"
+          "text": "よい席じゃった。わしは、また霧の朝に座りに来るぞ",
+          "variants": {
+            "regularb": {
+              "text": "よい席でした。私は、また霧の朝に座りに来るぞ",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "hajime",
@@ -1557,15 +1793,15 @@
       },
       "lines": [
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "選手権の舞台。ミナは自分で合わせた茶の香りを、一つずつ教えてくれた"
         },
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "霧の王女ミナ／物語",
-          "face": "smile",
+          "face": "normal",
           "text": "覚えた？ 霧の外でも、作れる？"
         },
         {
@@ -1575,28 +1811,35 @@
           "text": "作れるよ。作るたびに、ミナのこと思い出す"
         },
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "GM／場面",
-          "face": "sad",
+          "face": "normal",
           "text": "霧が晴れる。王国も舞台も、ミナの笑顔も、白い光にほどけていく"
         },
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "霧の王女ミナ／物語",
-          "face": "smile",
+          "face": "normal",
           "text": "その一台に、わたしの名前をつけてね、……また、霧の朝に"
         },
         {
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "serious",
-          "text": "名前のついた一台は、作り手がいる限り消えない。俺が保証しよう"
+          "text": "名前のついた一台は、作り手がいる限り消えない。俺が保証しよう",
+          "variants": {
+            "regulara": {
+              "text": "名前のついた一台は、作り手がいる限り消えない。私が保証しよう",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "GM／卓の会話",
-          "face": "smile",
-          "text": "……霧の外に持ち出せるのは、教わったことだけ。ね、素敵でしょう"
+          "face": "normal",
+          "text": "教わったことは、霧の外にも持ち出せるようですね"
         }
       ]
     },
@@ -1607,7 +1850,7 @@
       },
       "lines": [
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "ミナの望みとは、少し違ったのかもしれない。王女は一台を前に、首をかしげた"
@@ -1619,28 +1862,35 @@
           "text": "あれ、外した……？"
         },
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "霧の王女ミナ／物語",
-          "face": "smile",
+          "face": "normal",
           "text": "……でも、みんなで作ってくれたんだね。にぎやかな香り"
         },
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "GM／場面",
-          "face": "sad",
+          "face": "normal",
           "text": "霧が晴れ、王国は光に溶けた。けれど一台の香りの中に、ミナの気配が残る"
         },
         {
           "speaker": "samechan",
           "role": "コロちゃん／卓の会話",
           "face": "ventriloquism",
-          "text": "余は感じる。この香りに、小さな王女がまだいる"
+          "text": "余は感じる。この香りに、小さな王女がまだいる",
+          "variants": {
+            "regularb": {
+              "text": "そんな役なのですね。続きも気になります",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "GM／卓の会話",
           "face": "normal",
-          "text": "……消えても、残るものはあるの。ちゃんとね"
+          "text": "消えてしまっても、残るものがあるのですね"
         }
       ]
     },
@@ -1657,10 +1907,10 @@
           "text": "{pc}は番号札を胸に、侍従長さんに王女さまのことを聞きます"
         },
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "GM／卓の会話",
-          "face": "smile",
-          "text": "話術で判定ね。……やさしく聞いてあげて。目標は30"
+          "face": "normal",
+          "text": "話術で判定です。目標は30"
         }
       ]
     },
@@ -1674,13 +1924,20 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "intense",
-          "text": "{pc:adam}は審査員席の前に進み出て、高らかに名乗る！"
+          "text": "{pc:adam}は審査員席の前に進み出て、高らかに名乗る！",
+          "variants": {
+            "regulara": {
+              "text": "{pc:adam}は審査員席の前に進み出て、高らかに名乗る！",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "GM／卓の会話",
-          "face": "surprise",
-          "text": "えっ、いきなり！？ ……こほん。度胸で判定。目標は30"
+          "face": "normal",
+          "text": "度胸で判定です。目標は30"
         }
       ]
     },
@@ -1694,13 +1951,20 @@
           "speaker": "samechan",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "{pc:samechan}は柱と椅子を見て回るのじゃ。王女の居場所が分かる"
+          "text": "{pc:samechan}は柱と椅子を見て回るのじゃ。王女の居場所が分かる",
+          "variants": {
+            "regularb": {
+              "text": "{pc:samechan}は柱と椅子を見て回るのです。王女の居場所が分かる",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "GM／卓の会話",
-          "face": "smile",
-          "text": "観察で判定ね。椅子は、嘘をつかないもの。目標は30"
+          "face": "normal",
+          "text": "観察で判定です。目標は30"
         }
       ]
     },
@@ -1717,10 +1981,10 @@
           "text": "{pc}が薄れる回廊へ走る。みんな、こっち！"
         },
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "GM／卓の会話",
-          "face": "serious",
-          "text": "度胸で判定。足元が消えかけてるわ。目標は30"
+          "face": "normal",
+          "text": "度胸で判定です。目標は30"
         }
       ]
     },
@@ -1734,13 +1998,20 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "intense",
-          "text": "{pc:adam}の段取りは、選手権で鍛えた。手は止めない"
+          "text": "{pc:adam}の段取りは、選手権で鍛えた。手は止めない",
+          "variants": {
+            "regulara": {
+              "text": "{pc:adam}の段取りは、選手権で鍛えた。手は止めない",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "GM／卓の会話",
           "face": "normal",
-          "text": "手際で判定。……急ぐほど丁寧に、ね。目標は30"
+          "text": "手際で判定です。目標は30"
         }
       ]
     },
@@ -1754,13 +2025,20 @@
           "speaker": "samechan",
           "role": "PL／卓の会話",
           "face": "serious",
-          "text": "{pc:samechan}は霧の溜まる場所を探すのじゃ。造りを見れば分かる"
+          "text": "{pc:samechan}は霧の溜まる場所を探すのじゃ。造りを見れば分かる",
+          "variants": {
+            "regularb": {
+              "text": "{pc:samechan}は霧の溜まる場所を探すのです。造りを見れば分かる",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "GM／卓の会話",
           "face": "normal",
-          "text": "観察で判定。霧の流れを読んでね。目標は30"
+          "text": "観察で判定です。目標は30"
         }
       ]
     },
@@ -1777,10 +2055,10 @@
           "text": "{pc}は番号札を外して、自分の手で一台を作ります"
         },
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "GM／卓の会話",
           "face": "normal",
-          "text": "手際で判定ね。慌てないで。目標は30"
+          "text": "手際で判定です。目標は30"
         }
       ]
     },
@@ -1794,13 +2072,20 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "ここは{pc:adam}の出番だ。選手権の香り、見せてやろう"
+          "text": "ここは{pc:adam}の出番だ。選手権の香り、見せてやろう",
+          "variants": {
+            "regulara": {
+              "text": "ここは{pc:adam}の出番だ。選手権の香り、見せてやろう",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "GM／卓の会話",
-          "face": "smile",
-          "text": "手際で判定。審査員も見てるわよ。目標は30"
+          "face": "normal",
+          "text": "手際で判定です。目標は30"
         }
       ]
     },
@@ -1814,13 +2099,20 @@
           "speaker": "samechan",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "{pc:samechan}は光と風を見て、一台の置き場所を決めるのじゃ"
+          "text": "{pc:samechan}は光と風を見て、一台の置き場所を決めるのじゃ",
+          "variants": {
+            "regularb": {
+              "text": "{pc:samechan}は光と風を見て、一台の置き場所を決めるのです",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "GM／卓の会話",
           "face": "normal",
-          "text": "観察で判定。席も一台のうちね。目標は30"
+          "text": "観察で判定です。目標は30"
         }
       ]
     },
@@ -1837,10 +2129,10 @@
           "text": "{pc}がミナの隣に座って、選んだ言葉を添えます"
         },
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "GM／卓の会話",
-          "face": "smile",
-          "text": "話術で判定。……最後の一言、大事にね。目標は30"
+          "face": "normal",
+          "text": "話術で判定です。目標は30"
         }
       ]
     },
@@ -1854,13 +2146,20 @@
           "speaker": "samechan",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "{pc:samechan}は黙って、ミナの椅子をちょうどよい向きに直すのじゃ"
+          "text": "{pc:samechan}は黙って、ミナの椅子をちょうどよい向きに直すのじゃ",
+          "variants": {
+            "regularb": {
+              "text": "{pc:samechan}は黙って、ミナの椅子をちょうどよい向きに直すのです",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "GM／卓の会話",
           "face": "normal",
-          "text": "観察で判定。言葉より届くこともあるわ。目標は30"
+          "text": "観察で判定です。目標は30"
         }
       ]
     },
@@ -1874,13 +2173,20 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "intense",
-          "text": "{pc:adam}がひざまずき、一台を恭しく王女へ捧げる"
+          "text": "{pc:adam}がひざまずき、一台を恭しく王女へ捧げる",
+          "variants": {
+            "regulara": {
+              "text": "{pc:adam}がひざまずき、一台を恭しく王女へ捧げる",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "GM／卓の会話",
-          "face": "surprise",
-          "text": "度胸で判定。……ちょっと格好いいじゃない。目標は30"
+          "face": "normal",
+          "text": "度胸で判定です。目標は30"
         }
       ]
     },
@@ -1904,10 +2210,10 @@
           "text": "毎回、林檎で勝負する。宇宙の最初の一個に、敬意を払ってな"
         },
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "GM／卓の会話",
-          "face": "smile",
-          "text": "……毎回なのね。審査員も、もう覚えてるわよ"
+          "face": "normal",
+          "text": "常連の騎士ですね。審査員も覚えていそうです"
         }
       ]
     },
@@ -1931,10 +2237,10 @@
           "text": "得意なのは拍手だ。ほかの出場者の一台を、誰より先に褒める"
         },
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "GM／卓の会話",
-          "face": "surprise",
-          "text": "待って、アダムさんが最下位！？ ……こほん。謙虚な騎士ね"
+          "face": "normal",
+          "text": "今回は最下位の役ですか。拍手の出番もありそうですね"
         },
         {
           "speaker": "adam",
@@ -2000,10 +2306,10 @@
           "text": "余が補足する。側近は、審査員席の座り心地しか見ていない"
         },
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "GM／卓の会話",
-          "face": "smile",
-          "text": "……出場の理由が、一番平和ね"
+          "face": "normal",
+          "text": "椅子を確かめに来たのですね。では、その役で"
         }
       ]
     },
@@ -2033,10 +2339,10 @@
           "text": "余は知っている。堀にサメがいるかは、まだGMに聞いていない"
         },
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "GM／卓の会話",
-          "face": "smile",
-          "text": "……堀にサメ。いないとは、言ってないわよ"
+          "face": "normal",
+          "text": "堀の様子も気になりますね。物語の中で確かめましょう"
         },
         {
           "speaker": "samechan",
@@ -2053,9 +2359,9 @@
       },
       "lines": [
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "GM／場面",
-          "face": "sad",
+          "face": "normal",
           "text": "……触れたら崩れそうな、白い押し花。王妃の庭の花よ"
         },
         {
@@ -2068,7 +2374,14 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "玉座より大事なものが、肘掛けに挟まっている。粋な王だ"
+          "text": "玉座より大事なものが、肘掛けに挟まっている。粋な王だ",
+          "variants": {
+            "regulara": {
+              "text": "玉座より大事なものが、肘掛けに挟まっている。粋な王だ",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -2079,7 +2392,7 @@
       },
       "lines": [
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "肖像の王妃は、花に囲まれて、小さな赤子を抱いている"
@@ -2088,7 +2401,14 @@
           "speaker": "samechan",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "額に字が彫ってあるのじゃ。『庭で生まれた子へ』……"
+          "text": "額に字が彫ってあるのじゃ。『庭で生まれた子へ』……",
+          "variants": {
+            "regularb": {
+              "text": "額に字が彫ってあるのです。『庭で生まれた子へ』……",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "hajime",
@@ -2105,7 +2425,7 @@
       },
       "lines": [
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "霧の窓辺に、小さな椅子が一脚。向きは、花の庭の方"
@@ -2114,7 +2434,14 @@
           "speaker": "samechan",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "膝を抱えて座った跡じゃ。毎朝、ここから庭を眺めておったのじゃな"
+          "text": "膝を抱えて座った跡じゃ。毎朝、ここから庭を眺めておったのじゃな",
+          "variants": {
+            "regularb": {
+              "text": "膝を抱えて座った跡です。毎朝、ここから庭を眺めていたのですな",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "hajime",
@@ -2131,7 +2458,7 @@
       },
       "lines": [
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "審査員席に、王女の審査票。香りの欄だけが、ひときわ大きい"
@@ -2140,7 +2467,14 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "serious",
-          "text": "審査基準は香り一本か。……隅の小さな字は、読み上げるのが野暮だな"
+          "text": "審査基準は香り一本か。……隅の小さな字は、読み上げるのが野暮だな",
+          "variants": {
+            "regulara": {
+              "text": "審査基準は香り一本か。……隅の小さな字は、読み上げるのが野暮だな",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "hajime",
@@ -2157,7 +2491,7 @@
       },
       "lines": [
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "棚のいちばん上に、王妃の庭の花の香りの小瓶"
@@ -2166,7 +2500,14 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "王女の背では届かない高さだ。だが、俺らなら届く"
+          "text": "王女の背では届かない高さだ。だが、俺らなら届く",
+          "variants": {
+            "regulara": {
+              "text": "王女の背では届かない高さだ。だが、私たちなら届く",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "hajime",
@@ -2183,16 +2524,23 @@
       },
       "lines": [
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "GM／場面",
-          "face": "sad",
+          "face": "normal",
           "text": "薄れかけた回廊の先に、小さな花の庭が見える"
         },
         {
           "speaker": "samechan",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "庭の長椅子は子ども用じゃな。誰かが毎朝、拭いておる"
+          "text": "庭の長椅子は子ども用じゃな。誰かが毎朝、拭いておる",
+          "variants": {
+            "regularb": {
+              "text": "庭の長椅子は子ども用ですね。誰かが毎朝、拭いている",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "hajime",
@@ -2209,7 +2557,7 @@
       },
       "lines": [
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "侍従長ミルテ／物語",
           "face": "normal",
           "text": "今朝は、姫さまが王妃さまの庭でお生まれになった朝と、同じ日なのです"
@@ -2229,15 +2577,15 @@
       },
       "lines": [
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "侍従長ミルテ／物語",
           "face": "normal",
           "text": "近ごろの姫さまは、窓から王妃さまの庭ばかり眺めておられます"
         },
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "侍従長ミルテ／物語",
-          "face": "sad",
+          "face": "normal",
           "text": "庭へ下りようとして、途中でやめてしまわれるのです"
         }
       ]
@@ -2249,22 +2597,29 @@
       },
       "lines": [
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "侍従長ミルテ／物語",
           "face": "normal",
           "text": "霧が晴れれば、王国は消えます。次の朝霧が来るまで"
         },
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "侍従長ミルテ／物語",
-          "face": "smile",
+          "face": "normal",
           "text": "ただ、王妃さまの庭だけは、いつも少し遅れて消えるのです"
         },
         {
           "speaker": "samechan",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "庭が粘るのか。よい土なのじゃろうな"
+          "text": "庭が粘るのか。よい土なのじゃろうな",
+          "variants": {
+            "regularb": {
+              "text": "庭が粘るのか。よい土なのでしょうな",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -2275,16 +2630,23 @@
       },
       "lines": [
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "侍従長ミルテ／物語",
-          "face": "smile",
+          "face": "normal",
           "text": "姫さまは小さな頃から、庭の白い花の香りがお好きでした"
         },
         {
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "serious",
-          "text": "生まれた庭の香り、か。それは彼女の、最初の記憶だな"
+          "text": "生まれた庭の香り、か。それは彼女の、最初の記憶だな",
+          "variants": {
+            "regulara": {
+              "text": "生まれた庭の香り、か。それは彼女の、最初の記憶だな",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -2295,7 +2657,7 @@
       },
       "lines": [
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "玉座の隣に、王女の小さな椅子。肘掛けだけが、すり減っている"
@@ -2304,7 +2666,14 @@
           "speaker": "samechan",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "誰かの手を探して、何度も撫でた跡じゃな"
+          "text": "誰かの手を探して、何度も撫でた跡じゃな",
+          "variants": {
+            "regularb": {
+              "text": "誰かの手を探して、何度も撫でた跡ですね",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "hajime",
@@ -2321,7 +2690,7 @@
       },
       "lines": [
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "肖像の裏に、子どもの絵が一枚。霧の晴れた空の下に、二人"
@@ -2330,7 +2699,14 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "serious",
-          "text": "隣の人影に、顔がない。……まだ、配役が決まっていないんだ"
+          "text": "隣の人影に、顔がない。……まだ、配役が決まっていないんだ",
+          "variants": {
+            "regulara": {
+              "text": "隣の人影に、顔がない。……まだ、配役が決まっていないんだ",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "hajime",
@@ -2347,9 +2723,9 @@
       },
       "lines": [
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "GM／場面",
-          "face": "sad",
+          "face": "normal",
           "text": "窓辺の帳面に、霧の晴れた時刻。……毎朝、少しずつ早くなってる"
         },
         {
@@ -2362,7 +2738,14 @@
           "speaker": "samechan",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "急がねばのう。じゃが、慌てると椅子を蹴るぞ"
+          "text": "急がねばのう。じゃが、慌てると椅子を蹴るぞ",
+          "variants": {
+            "regularb": {
+              "text": "急がねばのう。ですが、慌てると椅子を蹴るぞ",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -2373,7 +2756,7 @@
       },
       "lines": [
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "王女の審査票には、たった一項目。『長く香るか』"
@@ -2382,7 +2765,14 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "intense",
-          "text": "一項目だけの審査！ 潔い。審査とは、本来こうあるべきだ"
+          "text": "一項目だけの審査！ 潔い。審査とは、本来こうあるべきだ",
+          "variants": {
+            "regulara": {
+              "text": "一項目だけの審査！ 潔い。審査とは、本来こうあるべきだ",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "hajime",
@@ -2399,7 +2789,7 @@
       },
       "lines": [
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "棚の真ん中に、霧の果実の瓶。説明書きが添えてある"
@@ -2408,7 +2798,14 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "ゆっくり長く香る、か。急がない香りは、嫌いじゃない"
+          "text": "ゆっくり長く香る、か。急がない香りは、嫌いじゃない",
+          "variants": {
+            "regulara": {
+              "text": "ゆっくり長く香る、か。急がない香りは、嫌いじゃない",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "hajime",
@@ -2425,7 +2822,7 @@
       },
       "lines": [
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "薄れる回廊の先は、霧のいちばん濃いバルコニー"
@@ -2434,7 +2831,14 @@
           "speaker": "samechan",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "ここだけ霧が溜まっておる。風の通り道から外れておるのじゃ"
+          "text": "ここだけ霧が溜まっておる。風の通り道から外れておるのじゃ",
+          "variants": {
+            "regularb": {
+              "text": "ここだけ霧が溜まっている。風の通り道から外れているのです",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "hajime",
@@ -2451,7 +2855,7 @@
       },
       "lines": [
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "侍従長ミルテ／物語",
           "face": "normal",
           "text": "姫さまは、霧が晴れる瞬間を、いつもお一人で迎えてこられました"
@@ -2471,15 +2875,15 @@
       },
       "lines": [
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "侍従長ミルテ／物語",
           "face": "normal",
           "text": "霧が薄くなるたび、姫さまは近くの者の袖を、そっとつかまれるのです"
         },
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "侍従長ミルテ／物語",
-          "face": "sad",
+          "face": "normal",
           "text": "すぐに離して、何でもないと笑われますが"
         }
       ]
@@ -2491,22 +2895,29 @@
       },
       "lines": [
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "侍従長ミルテ／物語",
-          "face": "serious",
+          "face": "normal",
           "text": "このところ、霧の晴れる時刻が日ごとに早くなっているのです"
         },
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "侍従長ミルテ／物語",
-          "face": "sad",
+          "face": "normal",
           "text": "今朝は、とりわけ早く晴れそうで……"
         },
         {
           "speaker": "samechan",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "急がねばならんのう。じゃが、急ぎすぎもいかん"
+          "text": "急がねばならんのう。じゃが、急ぎすぎもいかん",
+          "variants": {
+            "regularb": {
+              "text": "急がねばならんのう。ですが、急ぎすぎもいかん",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -2517,16 +2928,23 @@
       },
       "lines": [
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "侍従長ミルテ／物語",
-          "face": "smile",
+          "face": "normal",
           "text": "姫さまのお好きなのは、誰かとゆっくり囲める、長く香る一台です"
         },
         {
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "長く香る一台か。終幕を引き延ばすのも、また芸だ"
+          "text": "長く香る一台か。終幕を引き延ばすのも、また芸だ",
+          "variants": {
+            "regulara": {
+              "text": "長く香る一台か。終幕を引き延ばすのも、また芸だ",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -2537,7 +2955,7 @@
       },
       "lines": [
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "玉座の脇に、王女の帳面。出場者の名前が、丁寧に並んでいる"
@@ -2552,7 +2970,14 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "serious",
-          "text": "覚えていてほしい、か。それは、誰もが抱く願いだ"
+          "text": "覚えていてほしい、か。それは、誰もが抱く願いだ",
+          "variants": {
+            "regulara": {
+              "text": "覚えていてほしい、か。それは、誰もが抱く願いだ",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -2563,16 +2988,23 @@
       },
       "lines": [
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "GM／場面",
-          "face": "sad",
+          "face": "normal",
           "text": "王妃の肖像の隣に、空っぽの額がひとつ"
         },
         {
           "speaker": "samechan",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "札には『王女』とあるのに、絵がない。描いても霧に溶けるのじゃな"
+          "text": "札には『王女』とあるのに、絵がない。描いても霧に溶けるのじゃな",
+          "variants": {
+            "regularb": {
+              "text": "札には『王女』とあるのに、絵がない。描いても霧に溶けるのですな",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "hajime",
@@ -2589,7 +3021,7 @@
       },
       "lines": [
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "窓辺の机に、王女の字の覚え書きが一枚"
@@ -2598,7 +3030,14 @@
           "speaker": "samechan",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "『教えたことは、霧が晴れても消えない』……と書いてあるのじゃ"
+          "text": "『教えたことは、霧が晴れても消えない』……と書いてあるのじゃ",
+          "variants": {
+            "regularb": {
+              "text": "『教えたことは、霧が晴れても消えない』……と書いてあるのです",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "hajime",
@@ -2615,7 +3054,7 @@
       },
       "lines": [
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "審査員席の端に、空いた椅子。札には『霧の外の人』"
@@ -2624,7 +3063,14 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "surprise",
-          "text": "選ぶのは勝者ではなく、霧の外へ持ち帰る者……？"
+          "text": "選ぶのは勝者ではなく、霧の外へ持ち帰る者……？",
+          "variants": {
+            "regulara": {
+              "text": "選ぶのは勝者ではなく、霧の外へ持ち帰る者……？",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "hajime",
@@ -2641,7 +3087,7 @@
       },
       "lines": [
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "棚の隅に、小さな字の札を結んだ茶の瓶がある"
@@ -2650,7 +3096,14 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "serious",
-          "text": "『この香りの合わせ方を、だれかに』。……宿題を託された気分だ"
+          "text": "『この香りの合わせ方を、だれかに』。……宿題を託された気分だ",
+          "variants": {
+            "regulara": {
+              "text": "『この香りの合わせ方を、だれかに』。……宿題を託された気分だ",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "hajime",
@@ -2667,7 +3120,7 @@
       },
       "lines": [
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "GM／場面",
           "face": "normal",
           "text": "薄れた回廊は、ぐるりと回って選手権の舞台へ戻ってくる"
@@ -2676,7 +3129,14 @@
           "speaker": "samechan",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "舞台の客席は、王国じゅうの者が座れる広さじゃな"
+          "text": "舞台の客席は、王国じゅうの者が座れる広さじゃな",
+          "variants": {
+            "regularb": {
+              "text": "舞台の客席は、王国じゅうの者が座れる広さですね",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "hajime",
@@ -2693,7 +3153,7 @@
       },
       "lines": [
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "侍従長ミルテ／物語",
           "face": "normal",
           "text": "霧の外の方をお招きできるのは、選手権の日だけなのです"
@@ -2713,7 +3173,7 @@
       },
       "lines": [
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "侍従長ミルテ／物語",
           "face": "normal",
           "text": "近ごろの姫さまは、出場者の名前を一人ずつ書き留めておられます"
@@ -2722,7 +3182,14 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "serious",
-          "text": "名を記す、か。覚えておきたいのか、覚えていてほしいのか"
+          "text": "名を記す、か。覚えておきたいのか、覚えていてほしいのか",
+          "variants": {
+            "regulara": {
+              "text": "名を記す、か。覚えておきたいのか、覚えていてほしいのか",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -2733,15 +3200,15 @@
       },
       "lines": [
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "侍従長ミルテ／物語",
           "face": "normal",
           "text": "霧の国のものは、霧の外へ持ち出せません。ただ……"
         },
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "侍従長ミルテ／物語",
-          "face": "smile",
+          "face": "normal",
           "text": "人に教えたことだけは、霧が晴れても残る、と言われております"
         },
         {
@@ -2759,16 +3226,103 @@
       },
       "lines": [
         {
-          "speaker": "hiyori",
+          "speaker": "sai",
           "role": "侍従長ミルテ／物語",
-          "face": "smile",
+          "face": "normal",
           "text": "姫さまは、ご自分で合わせた茶の香りを大事にしておられます"
         },
         {
           "speaker": "samechan",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "自分で合わせた香りか。誰かに教えたことはあるのかの"
+          "text": "自分で合わせた香りか。誰かに教えたことはあるのかの",
+          "variants": {
+            "regularb": {
+              "text": "自分で合わせた香りか。誰かに教えたことはあるのかの",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_mist_kingdom_make_adam_adam_orchard_regulara",
+      "metadata": {
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "regulara",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "今回はオルド。林檎の紋章の騎士を演じます"
+        },
+        {
+          "speaker": "sai",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "では、その役で始めましょう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_mist_kingdom_make_adam_adam_grants_regulara",
+      "metadata": {
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "regulara",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "今回はグランツ。自称・前回最下位を演じます"
+        },
+        {
+          "speaker": "sai",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "では、その役で始めましょう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_mist_kingdom_make_samechan_samechan_koban_regularb",
+      "metadata": {
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "regularb",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "今回はコバン。会場見物の大工を演じます"
+        },
+        {
+          "speaker": "sai",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "では、その役で始めましょう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_mist_kingdom_make_samechan_samechan_sharuku_regularb",
+      "metadata": {
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "regularb",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "今回はシャルク。霧のサメ研究家を演じます"
+        },
+        {
+          "speaker": "sai",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "では、その役で始めましょう"
         }
       ]
     }
@@ -2778,9 +3332,19 @@
     "theme": "mist",
     "number": "06",
     "genre": "剣と魔法 / 霧の選手権",
-    "tagline": "霧が晴れるまでに、王女に最後の一台を。",
+    "tagline": "部員の物語を遊び終えたら、サイが開く最後の一冊。",
     "image": "../../img/backgrounds/trpg_mist-kingdom_room.webp",
-    "choiceArt": {"src": "../../img/ui/trpg/choices-mist-kingdom.webp", "rowCount": 5, "rows": {"flavor": 0, "place": 1, "words": 2, "tactic": 3, "hypotheses": 4}},
+    "choiceArt": {
+      "src": "../../img/ui/trpg/choices-mist-kingdom.webp",
+      "rowCount": 5,
+      "rows": {
+        "flavor": 0,
+        "place": 1,
+        "words": 2,
+        "tactic": 3,
+        "hypotheses": 4
+      }
+    },
     "sceneAlt": "霧に包まれた王宮の広間。玉座、王妃の肖像、霧の窓、審査員席、香り棚と、薄れかけた回廊。",
     "location": "朝霧の王国 / 霧の王宮",
     "atmosphere": "白い霧。薄れていく回廊。小さな王女の、透けそうな笑顔。",
@@ -3033,9 +3597,9 @@
   "campaign": {
     "seats": [
       {
-        "actor": "hiyori",
+        "actor": "sai",
         "candidates": [
-          "hiyori"
+          "sai"
         ],
         "required": true
       },
@@ -3049,14 +3613,16 @@
       {
         "actor": "adam",
         "candidates": [
-          "adam"
+          "adam",
+          "regulara"
         ],
         "required": false
       },
       {
         "actor": "samechan",
         "candidates": [
-          "samechan"
+          "samechan",
+          "regularb"
         ],
         "required": false
       }
@@ -3149,6 +3715,36 @@
           "aside": "trpg_mist_kingdom_aside_adam_adam_grants",
           "after": "trpg_mist_kingdom_after_adam_adam_grants"
         }
+      ],
+      "regulara": [
+        {
+          "id": "orchard",
+          "name": "オルド",
+          "title": "林檎の紋章の騎士",
+          "trait": "選手権の常連。毎回、林檎の香りで勝負する。腕は本物",
+          "likes": "林檎。この宇宙の最初の一個",
+          "stats": {
+            "eye": 2,
+            "hand": 5,
+            "talk": 2,
+            "nerve": 2
+          },
+          "making": "trpg_mist_kingdom_make_adam_adam_orchard_regulara"
+        },
+        {
+          "id": "grants",
+          "name": "グランツ",
+          "title": "自称・前回最下位",
+          "trait": "前回の最下位を名乗る。人の一台を、誰より先に褒める",
+          "likes": "表彰台の端。拍手する側の席",
+          "stats": {
+            "eye": 2,
+            "hand": 4,
+            "talk": 2,
+            "nerve": 3
+          },
+          "making": "trpg_mist_kingdom_make_adam_adam_grants_regulara"
+        }
       ]
     },
     "samechan": {
@@ -3180,6 +3776,36 @@
             "nerve": 3
           },
           "making": "trpg_mist_kingdom_make_samechan_samechan_sharuku"
+        }
+      ],
+      "regularb": [
+        {
+          "id": "koban",
+          "name": "コバン",
+          "title": "会場見物の大工",
+          "trait": "選手権には興味がない。王宮の椅子と通路を見に来ただけ",
+          "likes": "座り心地のいい椅子と、サメの彫り物",
+          "stats": {
+            "eye": 4,
+            "hand": 3,
+            "talk": 1,
+            "nerve": 3
+          },
+          "making": "trpg_mist_kingdom_make_samechan_samechan_koban_regularb"
+        },
+        {
+          "id": "sharuku",
+          "name": "シャルク",
+          "title": "霧のサメ研究家",
+          "trait": "王宮の堀にサメがいると信じて出場した。選手権は、ついで",
+          "likes": "サメの出る話。怖い場面は、目を細めて見る",
+          "stats": {
+            "eye": 4,
+            "hand": 2,
+            "talk": 2,
+            "nerve": 3
+          },
+          "making": "trpg_mist_kingdom_make_samechan_samechan_sharuku_regularb"
         }
       ]
     }
@@ -3217,5 +3843,8 @@
   },
   "twist": {
     "intro": "trpg_mist_kingdom_twist_intro"
-  }
+  },
+  "zeroMemberCast": [
+    "sai"
+  ]
 }

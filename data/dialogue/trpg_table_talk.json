@@ -1260,6 +1260,116 @@
           "text": "決まったな。会心のクライマックスだ。結末に印をつけとく"
         }
       ]
+    },
+    {
+      "dialogue_id": "trpg_talk_sai_critical",
+      "lines": [
+        {
+          "speaker": "sai",
+          "face": "normal",
+          "text": "20です。見事な成功ですね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_talk_sai_critical_full",
+      "lines": [
+        {
+          "speaker": "sai",
+          "face": "normal",
+          "text": "20です。切り札も、よいところで効きましたね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_talk_sai_fumble",
+      "lines": [
+        {
+          "speaker": "sai",
+          "face": "normal",
+          "text": "思わぬ出来事ですね。では、この先を見てみましょう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_talk_sai_double",
+      "lines": [
+        {
+          "speaker": "sai",
+          "face": "normal",
+          "text": "同じ目がそろいましたね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_talk_sai_heat_up",
+      "lines": [
+        {
+          "speaker": "sai",
+          "face": "normal",
+          "text": "皆さん、役がなじんできましたね"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_talk_sai_heat_max",
+      "lines": [
+        {
+          "speaker": "sai",
+          "face": "normal",
+          "text": "よい卓になりましたね。続きをどうぞ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_talk_sai_near1",
+      "lines": [
+        {
+          "speaker": "sai",
+          "face": "normal",
+          "text": "あと1でしたね。惜しい出目です"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_talk_sai_near2",
+      "lines": [
+        {
+          "speaker": "sai",
+          "face": "normal",
+          "text": "あと2でしたね。惜しい出目です"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_talk_sai_reward_question",
+      "lines": [
+        {
+          "speaker": "sai",
+          "face": "normal",
+          "text": "成功です。もう一つ、質問できますよ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_talk_sai_reward_hint",
+      "lines": [
+        {
+          "speaker": "sai",
+          "face": "normal",
+          "text": "成功です。次の選択の手がかりをお渡しします"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_talk_sai_reward_finale",
+      "lines": [
+        {
+          "speaker": "sai",
+          "face": "normal",
+          "text": "成功です。今夜の結末に、よい余韻が残りますね"
+        }
+      ]
     }
   ]
 }

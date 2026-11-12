@@ -286,7 +286,7 @@ const BG_ALIASES = {
 };
 
 // 昼夜の差分がある場所（無印・_day は時間帯で切り替える。明示の _night は演出なのでそのまま）
-const BG_TIME_BASE = new Set(["bg_tonari_inside", "bg_tonari_outside", "bg_home", "bg_c_station", "bg_cafe", "bg_street", "bg_kannon", "bg_choizap", "bg_tokyo_park", "bg_mukai_backdoor"]); // bg_mukai_backdoor: てつこといっしょの裏口（TKT01・未着。届くまでは sceneBg が null を返し、画面は bg_street に戻る）
+const BG_TIME_BASE = new Set(["bg_tonari_inside", "bg_tonari_outside", "bg_home", "bg_c_station", "bg_cafe", "bg_street", "bg_kannon", "bg_choizap", "bg_tokyo_park", "bg_mukai_backdoor", "bg_shiori_room"]); // bg_mukai_backdoor: てつこといっしょの裏口（TKT01・未着。届くまでは sceneBg が null を返し、画面は bg_street に戻る）
 // 窓の無い店内は外光が入らない＝夜も昼の絵のまま（オーナー指定・旧版と同じ）
 // bg_ageha_shop.png は 2026-11-12 に窓から昼の光が入る絵へ描き直した（#3282 B7）ので、ここから外した（夜は色調補正が掛かる）。
 const BG_NO_NIGHT_TINT = new Set([

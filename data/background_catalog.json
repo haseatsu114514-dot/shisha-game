@@ -16,6 +16,18 @@
   "bg_dubai_souq_day.png"
  ],
  "backgrounds": {
+  "bg_ageha_cafe_day.png": {
+   "place": "ageha_cafe",
+   "time": "day",
+   "weather": "",
+   "size": [
+    1672,
+    941
+   ],
+   "luma": 166,
+   "blob": "d3b824a92a2341e22064b703cf4ac83de2d90288",
+   "accepted": "2026-11-11 オーナー全採用（#3285）。Codex の内蔵生成の上限 1672x941 の原寸で使う"
+  },
   "bg_ageha_shop.png": {
    "place": "ageha_shop",
    "time": "",
@@ -727,6 +739,18 @@
    "blob": "05df2729f7003a00b58bfa567159deb070ad4663",
    "accepted": "2026-11-02 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
   },
+  "bg_ramen_counter_night.png": {
+   "place": "ramen_counter",
+   "time": "night",
+   "weather": "",
+   "size": [
+    1672,
+    941
+   ],
+   "luma": 77,
+   "blob": "54341a6dfb121c4277fa5a3be4f68503ab218dbb",
+   "accepted": "2026-11-11 オーナー全採用（#3285）。Codex の内蔵生成の上限 1672x941 の原寸で使う"
+  },
   "bg_rojiura_cinema.png": {
    "place": "rojiura_cinema",
    "time": "",
@@ -787,6 +811,30 @@
    "blob": "12dfe2c6dd73f9681a1131a4a5d43b78be309458",
    "accepted": "2026-11-11 オーナー全採用（#3282）。Codex の内蔵生成の上限 1672x941 の原寸で使う"
   },
+  "bg_shiori_room_day.png": {
+   "place": "shiori_room",
+   "time": "day",
+   "weather": "",
+   "size": [
+    1672,
+    941
+   ],
+   "luma": 123,
+   "blob": "1fa2e6e1d22ecf52f5357b20cdd16d64a5931910",
+   "accepted": "2026-11-11 オーナー全採用（#3285）。Codex の内蔵生成の上限 1672x941 の原寸で使う"
+  },
+  "bg_shiori_room_night.png": {
+   "place": "shiori_room",
+   "time": "night",
+   "weather": "",
+   "size": [
+    1672,
+    941
+   ],
+   "luma": 87,
+   "blob": "a154d2e89e15beebc1fb0fb87cb3012ab239d3a5",
+   "accepted": "2026-11-11 オーナー全採用（#3285）。Codex の内蔵生成の上限 1672x941 の原寸で使う"
+  },
   "bg_shishark.png": {
    "place": "shishark",
    "time": "",
@@ -832,6 +880,18 @@
    ],
    "luma": 139,
    "blob": "3553f3b18ca24d0723246bec28ffacdc7d834231"
+  },
+  "bg_station_walk_night.png": {
+   "place": "station_walk",
+   "time": "night",
+   "weather": "",
+   "size": [
+    1672,
+    941
+   ],
+   "luma": 67,
+   "blob": "deee9a1b51406861d724beddec1c05d9a8397166",
+   "accepted": "2026-11-11 オーナー全採用（#3285）。Codex の内蔵生成の上限 1672x941 の原寸で使う"
   },
   "bg_steve_shop.png": {
    "place": "steve_shop",
@@ -1028,6 +1088,18 @@
    "luma": 58,
    "blob": "4787273e0c68bbf5835b62071d640559d924de86",
    "accepted": "2026-11-02 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
+  },
+  "bg_toosu_park_day.png": {
+   "place": "toosu_park",
+   "time": "day",
+   "weather": "",
+   "size": [
+    1672,
+    941
+   ],
+   "luma": 107,
+   "blob": "bec234a79e0edfb97463629287a4a3dba440159d",
+   "accepted": "2026-11-11 オーナー全採用（#3285）。Codex の内蔵生成の上限 1672x941 の原寸で使う"
   },
   "bg_tournament_stage.png": {
    "place": "tournament_stage",

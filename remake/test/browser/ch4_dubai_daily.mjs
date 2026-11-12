@@ -428,6 +428,46 @@ await suite("ch4-dubai-daily", async check => {
     assert(!(await backlog(page)).filter(text => text.includes("王煙楼だ。")).slice(1).length, "No second self-introduction");
   });
 
+  // 無料の締めくくりは所持金に関係なく読める。翌日の普通の一台は6,000円に戻る。
+  for (const money of [0, 5999]) await check(`longlong-free-finale-with-${money}-yen`, async page => {
+    await seed(page, (value, progress) => {
+      const p = value.flags._ch4;
+      for (const id of ["ch4_opening", "ch4_arrival_inn"]) progress.completeChapterFourScene(value, id);
+      p.read.ch4_inn_tool_care = true;
+      value.day = p.startDay + 1; value.slot = 0; p.day = 2;
+      value.met.master_hookah = true; value.affinity.master_hookah = 66;
+      value.flags._intro_master_hookah = true;
+      value.flags._ch4_longlong = { read: Object.fromEntries([
+        "ch4_longlong_first", "ch4_longlong_second", "ch4_longlong_third", "ch4_longlong_fourth", "ch4_longlong_fifth",
+      ].map(id => [id, true])), talks: 0 };
+    });
+    await page.evaluate(async money => {
+      const core = await import("./js/core/state.js"); core.state.money = money; core.save();
+    }, money);
+    await loadSlot(page, 0);
+    await dubaiMap(page, { day: 50, slot: 0 });
+    await page.locator(dt("pin-ch4_dubai_longlong")).click();
+    assert.equal(await page.locator(dt("map-go")).isEnabled(), true, "map lets a free finale through the affordability gate");
+    await page.locator(dt("map-go")).click();
+    await dubaiMap(page, { day: 50, slot: 1 });
+    let state = await get(page);
+    assert.equal(state.money, money);
+    assert(state.finales.master_hookah, "actual bonds runner recorded the completed finale");
+    assert(state.owned.includes("suyaki_master_hookah"));
+    assert.equal(state.flags._ch4_longlong.talks, 0, "a free finale is not an ordinary paid revisit");
+    await loadSlot(page, 0);
+    await dubaiMap(page, { day: 50, slot: 1 });
+    state = await get(page);
+    assert.equal(state.money, money); assert(state.finales.master_hookah);
+    await go(page, "ch4_dubai_creek");
+    await dubaiMap(page, { day: 51, slot: 0 });
+    await page.locator(dt("pin-ch4_dubai_longlong")).click();
+    assert.equal(await page.locator(`${dt("pin-ch4_dubai_longlong")}.off`).count(), 1, "the next ordinary visit is unavailable");
+    assert.match(await page.locator(".map-info").getAttribute("aria-label"), /お金が足りない.*6,000/, "blocked by the restored 6,000-yen price, not a daily visit lock");
+    assert.equal(await page.locator(dt("map-go")).count(), 0, "unavailable destinations do not expose the map-go action");
+    assert.equal((await get(page)).money, money);
+  });
+
   // 先に龍龍水煙所で会っていれば（面識）、前夜祭の王煙楼は顔見知りとして迎え、初対面の地の文・名乗りを繰り返さない。
   await check("eve-reception-greets-wang-as-an-acquaintance-after-the-shop", async page => {
     await seed(page, (value, progress) => {
@@ -567,3 +607,4 @@ await suite("ch4-dubai-daily", async check => {
     assert.deepEqual(state.flags._ch4_evening, { kind: "date", participants: ["samechan"] });
   });
 });
+

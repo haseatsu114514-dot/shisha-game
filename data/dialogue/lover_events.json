@@ -4,7 +4,7 @@
     {
       "dialogue_id": "lover_tsumugi_lv1",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_street_night.png",
+        "bg": "res://assets/backgrounds/bg_station_walk_night.png",
         "private_scene": true
       },
       "lines": [
@@ -183,7 +183,7 @@
     {
       "dialogue_id": "lover_tsumugi_lv4",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_street_day.png",
+        "bg": "res://assets/backgrounds/bg_toosu_park_day.png",
         "private_scene": true
       },
       "lines": [
@@ -430,7 +430,7 @@
     {
       "dialogue_id": "lover_minto_lv3",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_home.png",
+        "bg": "res://assets/backgrounds/bg_shiori_room_day.png",
         "private_scene": true,
         "hometown": true
       },
@@ -510,7 +510,7 @@
     {
       "dialogue_id": "lover_minto_lv4",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_home.png",
+        "bg": "res://assets/backgrounds/bg_shiori_room_day.png",
         "private_scene": true,
         "hometown": true
       },
@@ -585,7 +585,7 @@
     {
       "dialogue_id": "lover_minto_lv5",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_home.png",
+        "bg": "res://assets/backgrounds/bg_shiori_room_day.png",
         "private_scene": true,
         "hometown": true
       },
@@ -746,7 +746,7 @@
     {
       "dialogue_id": "lover_rio_lv2",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_street_night.png",
+        "bg": "res://assets/backgrounds/bg_station_walk_night.png",
         "private_scene": true
       },
       "lines": [
@@ -886,7 +886,7 @@
     {
       "dialogue_id": "lover_rio_lv4",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_street_night.png",
+        "bg": "res://assets/backgrounds/bg_station_walk_night.png",
         "private_scene": true
       },
       "lines": [
@@ -1046,7 +1046,7 @@
     {
       "dialogue_id": "lover_ageha_lv1",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_street_night.png",
+        "bg": "res://assets/backgrounds/bg_station_walk_night.png",
         "private_scene": true
       },
       "lines": [
@@ -1095,7 +1095,7 @@
     {
       "dialogue_id": "lover_ageha_lv2",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_street_day.png",
+        "bg": "res://assets/backgrounds/bg_ageha_cafe_day.png",
         "private_scene": true
       },
       "lines": [
@@ -1139,7 +1139,7 @@
     {
       "dialogue_id": "lover_ageha_lv2_b",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_street_day.png",
+        "bg": "res://assets/backgrounds/bg_ageha_cafe_day.png",
         "private_scene": true
       },
       "lines": [
@@ -1558,7 +1558,7 @@
     {
       "dialogue_id": "lover_mashiro_lv3",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_street_night.png",
+        "bg": "res://assets/backgrounds/bg_mukai_backdoor_night.png",
         "private_scene": true
       },
       "lines": [
@@ -1878,7 +1878,7 @@
       "dialogue_id": "lover_hiyori_lv1_b",
       "comment": "恋人Lv1の続き（#3081）。斧投げの帰り道。大会には触れない。地元で読む。",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_street_night.png",
+        "bg": "res://assets/backgrounds/bg_station_walk_night.png",
         "private_scene": true,
         "hometown": true
       },
@@ -2127,6 +2127,10 @@
           "text": "なんで分かるの！？ ……あ、前に言ったんだっけ"
         },
         {
+          "type": "bg",
+          "bg": "res://assets/backgrounds/bg_ramen_counter_night.png"
+        },
+        {
           "speaker": "",
           "face": "",
           "text": "カウンターに並んで座る。ひよりさんはポニーテールを結び直して、真剣な顔でレンゲを構えた。"
@@ -2182,7 +2186,7 @@
     {
       "dialogue_id": "lover_hiyori_lv3",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_street_night.png",
+        "bg": "res://assets/backgrounds/bg_station_walk_night.png",
         "private_scene": true
       },
       "lines": [
@@ -2267,7 +2271,7 @@
     {
       "dialogue_id": "lover_hiyori_lv4",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_street_night.png",
+        "bg": "res://assets/backgrounds/bg_station_walk_night.png",
         "private_scene": true
       },
       "lines": [
@@ -2429,7 +2433,7 @@
     {
       "dialogue_id": "lover_samechan_lv1",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_street_night.png",
+        "bg": "res://assets/backgrounds/bg_station_walk_night.png",
         "private_scene": true,
         "min_chapter": 2,
         "bgm": "sweets_or_sweets",
@@ -2498,7 +2502,7 @@
     {
       "dialogue_id": "lover_samechan_lv2",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_street_night.png",
+        "bg": "res://assets/backgrounds/bg_station_walk_night.png",
         "private_scene": true,
         "min_chapter": 2,
         "bgm": "sweets_or_sweets",
@@ -2632,7 +2636,7 @@
     {
       "dialogue_id": "lover_samechan_lv4",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_street_night.png",
+        "bg": "res://assets/backgrounds/bg_station_walk_night.png",
         "private_scene": true,
         "min_chapter": 2,
         "bgm": "sweets_or_sweets",

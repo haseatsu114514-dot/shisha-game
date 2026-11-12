@@ -1,6 +1,6 @@
 {
   "id": "apple-thief",
-  "version": 1,
+  "version": 2,
   "title": "怪盗と原点の林檎",
   "subtitle": "白林檎館、予告状の夜",
   "author": "茜原トキ",
@@ -90,6 +90,12 @@
         },
         "trait": "館じゅうに響く声で、客を起こしてしまう。シーツ替えは一番速い",
         "likes": "厨房のまかない。大盛りで"
+      },
+      "alternatives": {
+        "regulara": {
+          "role": "{pc:hiyori}／大声の客室係",
+          "color": "#bb9c72"
+        }
       }
     },
     {
@@ -111,6 +117,12 @@
         },
         "trait": "一度見た顔は忘れない。話すより、描く方が早い",
         "likes": "葉っぱの耳の猫と、ラベンダーの香り"
+      },
+      "alternatives": {
+        "regularb": {
+          "role": "{pc:tsumugi}／似顔絵係",
+          "color": "#8faeaa"
+        }
       }
     }
   ],
@@ -528,13 +540,27 @@
           "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……月明かりの館で怪盗の夜。私に似合いすぎて、怖いわ"
+          "text": "……月明かりの館で怪盗の夜。私に似合いすぎて、怖いわ",
+          "variants": {
+            "regulara": {
+              "text": "……月明かりの館で怪盗の夜。私に似合いすぎて、怖いわ",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "tsumugi",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……怪盗の衣装、あとで描きたいです"
+          "text": "……怪盗の衣装、あとで描きたいです",
+          "variants": {
+            "regularb": {
+              "text": "……怪盗の衣装、あとで描きたいです",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "adam",
@@ -651,7 +677,14 @@
           "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "sad",
-          "text": "……ざわめきって、耳に残るのよね。早く調べましょう"
+          "text": "……ざわめきって、耳に残るのよね。早く調べましょう",
+          "variants": {
+            "regulara": {
+              "text": "……ざわめきって、耳に残るのよね。早く調べましょう",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -691,7 +724,14 @@
           "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "完璧……。シーツの角くらい、ぴしっと決まったわ"
+          "text": "完璧……。シーツの角くらい、ぴしっと決まったわ",
+          "variants": {
+            "regulara": {
+              "text": "完璧……。シーツの角くらい、ぴしっと決まったわ",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -708,7 +748,14 @@
           "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "直せたなら大丈夫。きっと、たぶん、おそらく"
+          "text": "直せたなら大丈夫。きっと、たぶん、おそらく",
+          "variants": {
+            "regulara": {
+              "text": "直せたなら大丈夫。きっと、たぶん、おそらく",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -725,7 +772,14 @@
           "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "surprise",
-          "text": "猫！？ かわいい……じゃなくて、待ちなさい！"
+          "text": "猫！？ かわいい……じゃなくて、待ちなさい！",
+          "variants": {
+            "regulara": {
+              "text": "猫！？ かわいい……じゃなくて、待ちなさい！",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "adam",
@@ -748,7 +802,14 @@
           "speaker": "tsumugi",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "……描けました。優しい顔です"
+          "text": "……描けました。優しい顔です",
+          "variants": {
+            "regularb": {
+              "text": "……描けました。優しい顔です",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "adam",
@@ -794,7 +855,14 @@
           "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "surprise",
-          "text": "えっ、そこ閉まってるの！？"
+          "text": "えっ、そこ閉まってるの！？",
+          "variants": {
+            "regulara": {
+              "text": "えっ、そこ閉まってるの！？",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "adam",
@@ -811,13 +879,27 @@
           "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "全部は調べられないのね……。怪盗の狙いを、先に絞りましょう"
+          "text": "全部は調べられないのね……。怪盗の狙いを、先に絞りましょう",
+          "variants": {
+            "regulara": {
+              "text": "全部は調べられないのね……。怪盗の狙いを、先に絞りましょう",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "配合帳か、林檎の木か、主人の椅子か。本命はどれかしら"
+          "text": "配合帳か、林檎の木か、主人の椅子か。本命はどれかしら",
+          "variants": {
+            "regulara": {
+              "text": "配合帳か、林檎の木か、主人の椅子か。本命はどれかしら",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "adam",
@@ -834,13 +916,27 @@
           "speaker": "tsumugi",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……怪盗さんが、何を持っていって、何を置いていくか。気になります"
+          "text": "……怪盗さんが、何を持っていって、何を置いていくか。気になります",
+          "variants": {
+            "regularb": {
+              "text": "……怪盗さんが、何を持っていって、何を置いていくか。気になります",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "tsumugi",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……予告状と香りの棚、比べると分かるかもしれません"
+          "text": "……予告状と香りの棚、比べると分かるかもしれません",
+          "variants": {
+            "regularb": {
+              "text": "……予告状と香りの棚、比べると分かるかもしれません",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "adam",
@@ -869,13 +965,27 @@
           "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "仕掛けなら任せて。か弱い手つきで、確実に組むわ"
+          "text": "仕掛けなら任せて。か弱い手つきで、確実に組むわ",
+          "variants": {
+            "regulara": {
+              "text": "仕掛けなら任せて。か弱い手つきで、確実に組むわ",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "tsumugi",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……館の見取り図、描いておきます"
+          "text": "……館の見取り図、描いておきます",
+          "variants": {
+            "regularb": {
+              "text": "……館の見取り図、描いておきます",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -898,7 +1008,14 @@
           "speaker": "tsumugi",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……来ます。足音、一つだけ"
+          "text": "……来ます。足音、一つだけ",
+          "variants": {
+            "regularb": {
+              "text": "……来ます。足音、一つだけ",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "hajime",
@@ -933,13 +1050,27 @@
           "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "アダムさんのGM、芝居はちょっと長いけど……楽しかったわ"
+          "text": "アダムさんのGM、芝居はちょっと長いけど……楽しかったわ",
+          "variants": {
+            "regulara": {
+              "text": "アダムさんのGM、芝居はちょっと長いけど……楽しかったわ",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "tsumugi",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……怪盗さんの仮面、葉っぱの耳をつけて描きます"
+          "text": "……怪盗さんの仮面、葉っぱの耳をつけて描きます",
+          "variants": {
+            "regularb": {
+              "text": "……怪盗さんの仮面、葉っぱの耳をつけて描きます",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "adam",
@@ -974,7 +1105,14 @@
           "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "最後の頁だけ白紙……書けなかった言葉があるのね"
+          "text": "最後の頁だけ白紙……書けなかった言葉があるのね",
+          "variants": {
+            "regulara": {
+              "text": "最後の頁だけ白紙……書けなかった言葉があるのね",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "hajime",
@@ -997,7 +1135,14 @@
           "speaker": "tsumugi",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……足跡、書斎の方へ続いてます"
+          "text": "……足跡、書斎の方へ続いてます",
+          "variants": {
+            "regularb": {
+              "text": "……足跡、書斎の方へ続いてます",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "hajime",
@@ -1020,13 +1165,27 @@
           "speaker": "tsumugi",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……ここ、二人並んだ絵があった形です"
+          "text": "……ここ、二人並んだ絵があった形です",
+          "variants": {
+            "regularb": {
+              "text": "……ここ、二人並んだ絵があった形です",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "外しても、壁は覚えてるのね"
+          "text": "外しても、壁は覚えてるのね",
+          "variants": {
+            "regulara": {
+              "text": "外しても、壁は覚えてるのね",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -1049,7 +1208,14 @@
           "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "瓶まで残してあるなんて……主人、待ってるのね"
+          "text": "瓶まで残してあるなんて……主人、待ってるのね",
+          "variants": {
+            "regulara": {
+              "text": "瓶まで残してあるなんて……主人、待ってるのね",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -1066,7 +1232,14 @@
           "speaker": "tsumugi",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……怪盗さん、書斎に入ったことがあるみたいです"
+          "text": "……怪盗さん、書斎に入ったことがあるみたいです",
+          "variants": {
+            "regularb": {
+              "text": "……怪盗さん、書斎に入ったことがあるみたいです",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "hajime",
@@ -1112,7 +1285,14 @@
           "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "もう一度……。叶ってないから、書いてあるのね"
+          "text": "もう一度……。叶ってないから、書いてあるのね",
+          "variants": {
+            "regulara": {
+              "text": "もう一度……。叶ってないから、書いてあるのね",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "hajime",
@@ -1135,7 +1315,14 @@
           "speaker": "tsumugi",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……誰かを、待ってる椅子です"
+          "text": "……誰かを、待ってる椅子です",
+          "variants": {
+            "regularb": {
+              "text": "……誰かを、待ってる椅子です",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "hajime",
@@ -1158,13 +1345,27 @@
           "speaker": "tsumugi",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……隣の人、帽子をかぶってます"
+          "text": "……隣の人、帽子をかぶってます",
+          "variants": {
+            "regularb": {
+              "text": "……隣の人、帽子をかぶってます",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "主役の主人より、隅の二人の方が楽しそう"
+          "text": "主役の主人より、隅の二人の方が楽しそう",
+          "variants": {
+            "regulara": {
+              "text": "主役の主人より、隅の二人の方が楽しそう",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -1187,7 +1388,14 @@
           "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "香りって、誰かと分けると長く残るのよね"
+          "text": "香りって、誰かと分けると長く残るのよね",
+          "variants": {
+            "regulara": {
+              "text": "香りって、誰かと分けると長く残るのよね",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -1204,7 +1412,14 @@
           "speaker": "tsumugi",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……怪盗さん、温室を通って来たみたいです"
+          "text": "……怪盗さん、温室を通って来たみたいです",
+          "variants": {
+            "regularb": {
+              "text": "……怪盗さん、温室を通って来たみたいです",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "hajime",
@@ -1227,7 +1442,14 @@
           "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "隣を空けて待つ夜……儚いわ。私の次くらいに"
+          "text": "隣を空けて待つ夜……儚いわ。私の次くらいに",
+          "variants": {
+            "regulara": {
+              "text": "隣を空けて待つ夜……儚いわ。私の次くらいに",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "hajime",
@@ -1256,7 +1478,14 @@
           "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "怒ってるっていうより、心配してる字ね"
+          "text": "怒ってるっていうより、心配してる字ね",
+          "variants": {
+            "regulara": {
+              "text": "怒ってるっていうより、心配してる字ね",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -1273,7 +1502,14 @@
           "speaker": "tsumugi",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……温室の扉の鈴、古いのに、ちゃんと鳴ります"
+          "text": "……温室の扉の鈴、古いのに、ちゃんと鳴ります",
+          "variants": {
+            "regularb": {
+              "text": "……温室の扉の鈴、古いのに、ちゃんと鳴ります",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "hajime",
@@ -1296,7 +1532,14 @@
           "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "便箋に香り……。手紙を書いた人がいるのね"
+          "text": "便箋に香り……。手紙を書いた人がいるのね",
+          "variants": {
+            "regulara": {
+              "text": "便箋に香り……。手紙を書いた人がいるのね",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "hajime",
@@ -1319,7 +1562,14 @@
           "speaker": "tsumugi",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……瓶の横に、便箋の紙くず。香りを移したみたいです"
+          "text": "……瓶の横に、便箋の紙くず。香りを移したみたいです",
+          "variants": {
+            "regularb": {
+              "text": "……瓶の横に、便箋の紙くず。香りを移したみたいです",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "hajime",
@@ -1342,7 +1592,14 @@
           "speaker": "tsumugi",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……丁寧すぎる字。習いたての字みたいです"
+          "text": "……丁寧すぎる字。習いたての字みたいです",
+          "variants": {
+            "regularb": {
+              "text": "……丁寧すぎる字。習いたての字みたいです",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "hajime",
@@ -1365,7 +1622,14 @@
           "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "林檎を、返しに来たの……？"
+          "text": "林檎を、返しに来たの……？",
+          "variants": {
+            "regulara": {
+              "text": "林檎を、返しに来たの……？",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "hajime",
@@ -1382,7 +1646,14 @@
           "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "鈴が鳴ったら、出迎えの合図ね。推しのキーホルダーと同じ音"
+          "text": "鈴が鳴ったら、出迎えの合図ね。推しのキーホルダーと同じ音",
+          "variants": {
+            "regulara": {
+              "text": "鈴が鳴ったら、出迎えの合図ね。推しのキーホルダーと同じ音",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -1393,7 +1664,14 @@
           "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "偽物の帳面は私が書くわ。字を似せるのは得意なの"
+          "text": "偽物の帳面は私が書くわ。字を似せるのは得意なの",
+          "variants": {
+            "regulara": {
+              "text": "偽物の帳面は私が書くわ。字を似せるのは得意なの",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -1404,7 +1682,14 @@
           "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "香りで道を作るのね。迷子の怪盗さんも、これで安心"
+          "text": "香りで道を作るのね。迷子の怪盗さんも、これで安心",
+          "variants": {
+            "regulara": {
+              "text": "香りで道を作るのね。迷子の怪盗さんも、これで安心",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -1415,7 +1700,14 @@
           "speaker": "tsumugi",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……書斎の本棚の陰、二人くらいなら隠れられます"
+          "text": "……書斎の本棚の陰、二人くらいなら隠れられます",
+          "variants": {
+            "regularb": {
+              "text": "……書斎の本棚の陰、二人くらいなら隠れられます",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -1426,7 +1718,14 @@
           "speaker": "tsumugi",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……温室は、月がよく見えます。待つのにいい場所"
+          "text": "……温室は、月がよく見えます。待つのにいい場所",
+          "variants": {
+            "regularb": {
+              "text": "……温室は、月がよく見えます。待つのにいい場所",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -1437,7 +1736,14 @@
           "speaker": "tsumugi",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……大広間なら、主人の椅子がよく見えます"
+          "text": "……大広間なら、主人の椅子がよく見えます",
+          "variants": {
+            "regularb": {
+              "text": "……大広間なら、主人の椅子がよく見えます",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -1511,7 +1817,14 @@
           "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "最後の頁が埋まったのね……泣かないわよ。儚いけど"
+          "text": "最後の頁が埋まったのね……泣かないわよ。儚いけど",
+          "variants": {
+            "regulara": {
+              "text": "最後の頁が埋まったのね……泣かないわよ。儚いけど",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "adam",
@@ -1552,7 +1865,14 @@
           "speaker": "tsumugi",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "……二つの椅子、やっと両方埋まりました"
+          "text": "……二つの椅子、やっと両方埋まりました",
+          "variants": {
+            "regularb": {
+              "text": "……二つの椅子、やっと両方埋まりました",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "hajime",
@@ -1593,7 +1913,14 @@
           "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "謝るために怪盗になるなんて……不器用で、素敵"
+          "text": "謝るために怪盗になるなんて……不器用で、素敵",
+          "variants": {
+            "regulara": {
+              "text": "謝るために怪盗になるなんて……不器用で、素敵",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "hajime",
@@ -1634,7 +1961,14 @@
           "speaker": "tsumugi",
           "role": "PL／卓の会話",
           "face": "evil",
-          "text": "……続編、ありますね"
+          "text": "……続編、ありますね",
+          "variants": {
+            "regularb": {
+              "text": "……続編、ありますね",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "adam",
@@ -1674,7 +2008,14 @@
           "speaker": "tsumugi",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……騒がしい夜も、いい絵になりました"
+          "text": "……騒がしい夜も、いい絵になりました",
+          "variants": {
+            "regularb": {
+              "text": "……騒がしい夜も、いい絵になりました",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -1708,7 +2049,14 @@
           "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "{pc:hiyori}がにっこり微笑んで、お客さまの噂を集めるわ"
+          "text": "{pc:hiyori}がにっこり微笑んで、お客さまの噂を集めるわ",
+          "variants": {
+            "regulara": {
+              "text": "{pc:hiyori}がにっこり微笑んで、お客さまの噂を集めるわ",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "adam",
@@ -1728,7 +2076,14 @@
           "speaker": "tsumugi",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……{pc:tsumugi}は、扉の向こうに見えた影を描きます"
+          "text": "……{pc:tsumugi}は、扉の向こうに見えた影を描きます",
+          "variants": {
+            "regularb": {
+              "text": "……{pc:tsumugi}は、扉の向こうに見えた影を描きます",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "adam",
@@ -1768,7 +2123,14 @@
           "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "serious",
-          "text": "{pc:hiyori}が銀の盆で一杯ずつ配るわ。静かに、でも速く"
+          "text": "{pc:hiyori}が銀の盆で一杯ずつ配るわ。静かに、でも速く",
+          "variants": {
+            "regulara": {
+              "text": "{pc:hiyori}が銀の盆で一杯ずつ配るわ。静かに、でも速く",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "adam",
@@ -1788,7 +2150,14 @@
           "speaker": "tsumugi",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……{pc:tsumugi}は、騒ぎの中で動かない人を探します"
+          "text": "……{pc:tsumugi}は、騒ぎの中で動かない人を探します",
+          "variants": {
+            "regularb": {
+              "text": "……{pc:tsumugi}は、騒ぎの中で動かない人を探します",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "adam",
@@ -1828,7 +2197,14 @@
           "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "{pc:hiyori}が組むわ。シーツ替えと同じ、三秒で終わるの"
+          "text": "{pc:hiyori}が組むわ。シーツ替えと同じ、三秒で終わるの",
+          "variants": {
+            "regulara": {
+              "text": "{pc:hiyori}が組むわ。シーツ替えと同じ、三秒で終わるの",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "adam",
@@ -1848,7 +2224,14 @@
           "speaker": "tsumugi",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……{pc:tsumugi}が見取り図を描いて、置く場所を決めます"
+          "text": "……{pc:tsumugi}が見取り図を描いて、置く場所を決めます",
+          "variants": {
+            "regularb": {
+              "text": "……{pc:tsumugi}が見取り図を描いて、置く場所を決めます",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "adam",
@@ -1888,7 +2271,14 @@
           "speaker": "tsumugi",
           "role": "PL／卓の会話",
           "face": "serious",
-          "text": "……{pc:tsumugi}が、仮面の奥の顔を描きます"
+          "text": "……{pc:tsumugi}が、仮面の奥の顔を描きます",
+          "variants": {
+            "regularb": {
+              "text": "……{pc:tsumugi}が、仮面の奥の顔を描きます",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "adam",
@@ -1908,7 +2298,14 @@
           "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "serious",
-          "text": "{pc:hiyori}が語りかけるわ。今夜は誰も追わない、って"
+          "text": "{pc:hiyori}が語りかけるわ。今夜は誰も追わない、って",
+          "variants": {
+            "regulara": {
+              "text": "{pc:hiyori}が語りかけるわ。今夜は誰も追わない、って",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "adam",
@@ -2170,7 +2567,14 @@
           "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……二人で作ったのに、今は一人なのね"
+          "text": "……二人で作ったのに、今は一人なのね",
+          "variants": {
+            "regulara": {
+              "text": "……二人で作ったのに、今は一人なのね",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -2190,7 +2594,14 @@
           "speaker": "tsumugi",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……空いた椅子、描いておきます"
+          "text": "……空いた椅子、描いておきます",
+          "variants": {
+            "regularb": {
+              "text": "……空いた椅子、描いておきます",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -2250,7 +2661,14 @@
           "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "若い日の一台……。そういう話、弱いのよ"
+          "text": "若い日の一台……。そういう話、弱いのよ",
+          "variants": {
+            "regulara": {
+              "text": "若い日の一台……。そういう話、弱いのよ",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -2270,7 +2688,14 @@
           "speaker": "tsumugi",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……その帽子、描いておきます"
+          "text": "……その帽子、描いておきます",
+          "variants": {
+            "regularb": {
+              "text": "……その帽子、描いておきます",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -2330,7 +2755,14 @@
           "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "盗まれた年に、原点が生まれたのね……不思議"
+          "text": "盗まれた年に、原点が生まれたのね……不思議",
+          "variants": {
+            "regulara": {
+              "text": "盗まれた年に、原点が生まれたのね……不思議",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -2350,7 +2782,14 @@
           "speaker": "tsumugi",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……封筒、林檎の色でした"
+          "text": "……封筒、林檎の色でした",
+          "variants": {
+            "regularb": {
+              "text": "……封筒、林檎の色でした",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -2364,13 +2803,27 @@
           "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "配合帳が、本当の持ち主のところへ帰りたがってるのね"
+          "text": "配合帳が、本当の持ち主のところへ帰りたがってるのね",
+          "variants": {
+            "regulara": {
+              "text": "配合帳が、本当の持ち主のところへ帰りたがってるのね",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "tsumugi",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……白紙の頁、二人で埋めるためかもしれません"
+          "text": "……白紙の頁、二人で埋めるためかもしれません",
+          "variants": {
+            "regularb": {
+              "text": "……白紙の頁、二人で埋めるためかもしれません",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "adam",
@@ -2390,13 +2843,27 @@
           "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "一台を二人で囲む夜……。短くて、いちばん贅沢な夜ね"
+          "text": "一台を二人で囲む夜……。短くて、いちばん贅沢な夜ね",
+          "variants": {
+            "regulara": {
+              "text": "一台を二人で囲む夜……。短くて、いちばん贅沢な夜ね",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "tsumugi",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……温室の椅子、二つとも座られたいはずです"
+          "text": "……温室の椅子、二つとも座られたいはずです",
+          "variants": {
+            "regularb": {
+              "text": "……温室の椅子、二つとも座られたいはずです",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "adam",
@@ -2416,13 +2883,27 @@
           "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "盗むんじゃなくて、渡しに来たのね……泣かせる怪盗"
+          "text": "盗むんじゃなくて、渡しに来たのね……泣かせる怪盗",
+          "variants": {
+            "regulara": {
+              "text": "盗むんじゃなくて、渡しに来たのね……泣かせる怪盗",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "tsumugi",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……今度は逃げない、って書いてました"
+          "text": "……今度は逃げない、って書いてました",
+          "variants": {
+            "regularb": {
+              "text": "……今度は逃げない、って書いてました",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "adam",
@@ -2486,7 +2967,14 @@
           "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "……騒ぎのあとの静けさ。私の得意分野よ"
+          "text": "……騒ぎのあとの静けさ。私の得意分野よ",
+          "variants": {
+            "regulara": {
+              "text": "……騒ぎのあとの静けさ。私の得意分野よ",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -2506,7 +2994,14 @@
           "speaker": "tsumugi",
           "role": "PL／卓の会話",
           "face": "evil",
-          "text": "……人混みは、いい隠れ場所です"
+          "text": "……人混みは、いい隠れ場所です",
+          "variants": {
+            "regularb": {
+              "text": "……人混みは、いい隠れ場所です",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -2546,7 +3041,14 @@
           "speaker": "tsumugi",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "……みんな、また笑ってます"
+          "text": "……みんな、また笑ってます",
+          "variants": {
+            "regularb": {
+              "text": "……みんな、また笑ってます",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -2566,7 +3068,14 @@
           "speaker": "hiyori",
           "role": "PL／卓の会話",
           "face": "sad",
-          "text": "……視線が刺さるわ。私、見られると溶けちゃうの"
+          "text": "……視線が刺さるわ。私、見られると溶けちゃうの",
+          "variants": {
+            "regulara": {
+              "text": "……視線が刺さるわ。私、見られると溶けちゃうの",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -2595,6 +3104,86 @@
           "text": "怪盗の名を冠した菓子の悲劇だ。警戒は進むが、全員無事だ"
         }
       ]
+    },
+    {
+      "dialogue_id": "trpg_apple_thief_make_hiyori_hiyori_rosa_regulara",
+      "metadata": {
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "regulara",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "今回はローザ。大声の客室係を演じます"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "では、その役で始めましょう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_apple_thief_make_hiyori_hiyori_marta_regulara",
+      "metadata": {
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "regulara",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "今回はマルタ。か弱いメイド長を演じます"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "では、その役で始めましょう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_apple_thief_make_tsumugi_tsumugi_shion_regularb",
+      "metadata": {
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "regularb",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "今回はシオン。似顔絵係を演じます"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "では、その役で始めましょう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_apple_thief_make_tsumugi_tsumugi_nocto_regularb",
+      "metadata": {
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "regularb",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "今回はノクト。黒幕っぽい案内係を演じます"
+        },
+        {
+          "speaker": "adam",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "では、その役で始めましょう"
+        }
+      ]
     }
   ],
   "_comment": "作中の短編をキャラが遊ぶTRPG。campaignは配役枠。GMのアダムが執事・怪盗・主人の声も兼ねる。",
@@ -2604,7 +3193,17 @@
     "genre": "館の怪盗もの / 謎解き",
     "tagline": "予告状は一枚。狙いは、原点の香り。",
     "image": "../../img/backgrounds/trpg_apple-thief_room.webp",
-    "choiceArt": {"src": "../../img/ui/trpg/choices-apple-thief.webp", "rowCount": 5, "rows": {"trap": 0, "post": 1, "confront": 2, "tactic": 3, "hypotheses": 4}},
+    "choiceArt": {
+      "src": "../../img/ui/trpg/choices-apple-thief.webp",
+      "rowCount": 5,
+      "rows": {
+        "trap": 0,
+        "post": 1,
+        "confront": 2,
+        "tactic": 3,
+        "hypotheses": 4
+      }
+    },
     "sceneAlt": "湖畔の館の夜会。書斎の配合帳、温室の林檎の木、大広間の肖像画、厨房の香りの棚、玄関の予告状、主人の椅子。",
     "location": "ミルト湖畔 / 白林檎館",
     "atmosphere": "燭台の灯り。林檎の香り。どこかに、怪盗。",
@@ -2873,14 +3472,16 @@
       {
         "actor": "hiyori",
         "candidates": [
-          "hiyori"
+          "hiyori",
+          "regulara"
         ],
         "required": false
       },
       {
         "actor": "tsumugi",
         "candidates": [
-          "tsumugi"
+          "tsumugi",
+          "regularb"
         ],
         "required": false
       }
@@ -2973,6 +3574,36 @@
           },
           "making": "trpg_apple_thief_make_hiyori_hiyori_marta"
         }
+      ],
+      "regulara": [
+        {
+          "id": "rosa",
+          "name": "ローザ",
+          "title": "大声の客室係",
+          "trait": "館じゅうに響く声で、客を起こしてしまう。シーツ替えは一番速い",
+          "likes": "厨房のまかない。大盛りで",
+          "stats": {
+            "eye": 3,
+            "hand": 4,
+            "talk": 3,
+            "nerve": 1
+          },
+          "making": "trpg_apple_thief_make_hiyori_hiyori_rosa_regulara"
+        },
+        {
+          "id": "marta",
+          "name": "マルタ",
+          "title": "か弱いメイド長",
+          "trait": "か弱いメイド長……のはず。薪割りの斧さばきは、館の誰より正確",
+          "likes": "斧投げと、夜食のラーメン",
+          "stats": {
+            "eye": 2,
+            "hand": 5,
+            "talk": 2,
+            "nerve": 2
+          },
+          "making": "trpg_apple_thief_make_hiyori_hiyori_marta_regulara"
+        }
       ]
     },
     "tsumugi": {
@@ -3004,6 +3635,36 @@
             "nerve": 3
           },
           "making": "trpg_apple_thief_make_tsumugi_tsumugi_nocto"
+        }
+      ],
+      "regularb": [
+        {
+          "id": "shion",
+          "name": "シオン",
+          "title": "似顔絵係",
+          "trait": "一度見た顔は忘れない。話すより、描く方が早い",
+          "likes": "葉っぱの耳の猫と、ラベンダーの香り",
+          "stats": {
+            "eye": 4,
+            "hand": 2,
+            "talk": 1,
+            "nerve": 4
+          },
+          "making": "trpg_apple_thief_make_tsumugi_tsumugi_shion_regularb"
+        },
+        {
+          "id": "nocto",
+          "name": "ノクト",
+          "title": "黒幕っぽい案内係",
+          "trait": "怪しくない。たぶん。地下室の鍵だけ、なぜか持っている",
+          "likes": "推理小説の最後の頁と、ラベンダー",
+          "stats": {
+            "eye": 4,
+            "hand": 3,
+            "talk": 1,
+            "nerve": 3
+          },
+          "making": "trpg_apple_thief_make_tsumugi_tsumugi_nocto_regularb"
         }
       ]
     }

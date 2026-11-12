@@ -8,6 +8,7 @@ import { fileURLToPath } from "node:url";
 import { execFileSync } from "node:child_process";
 import { TrpgSession, STATS, phasesOf, checkKindsOf, pickCompanions } from "../remake/js/trpg/session.js";
 import { materializeTrpgCast } from "../remake/js/trpg/campaign.js";
+import { isTrpgRegular } from "../remake/js/trpg/regulars.js";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const read = rel => JSON.parse(fs.readFileSync(path.join(root, rel), "utf8"));
@@ -82,7 +83,7 @@ function validate(rel) {
   // Campaign seats.
   const cs = s.campaign.seats;
   need(cs.find(x => x.actor === gm)?.required === true && cs.find(x => x.actor === "hajime")?.required === true, "campaign.seats: GMとはじめは required");
-  for (const x of cs) need(x.candidates.every(id => MEMBERS.has(id) || id === "hajime" || s.zeroMemberCast?.includes(id))
+  for (const x of cs) need(x.candidates.every(id => MEMBERS.has(id) || id === "hajime" || isTrpgRegular(id) || s.zeroMemberCast?.includes(id))
     && !x.candidates.some(id => id === "naru" || id === "sumi" && !s.zeroMemberCast?.includes(id)), "seat " + x.actor + " の候補は部員か常連卓の配役だけ");
   need(cs.length === s.cast.length, "campaign.seats は cast と同じ席数");
   // Flow and checks.
@@ -161,7 +162,7 @@ function validate(rel) {
     for (const l of d.lines || []) {
       const where = d.dialogue_id + ": " + (l.text || "").slice(0, 20);
       need(people.has(l.speaker), where + " 話者 '" + l.speaker + "' が characters.json にない");
-      const faces = manifest.portraits[l.speaker]?.faces || [];
+      const faces = isTrpgRegular(l.speaker) ? ["normal"] : manifest.portraits[l.speaker]?.faces || [];
       need(faces.includes(l.face || "normal"), where + " 表情 '" + l.face + "' は " + l.speaker + " にない（" + faces.join("/") + "）");
       need(typeof l.text === "string" && !l.text.includes("\n"), where + " 改行を入れない");
       need(width(l.text.replace(/\{pc(:[a-z]+)?\}|\{pcTitle\}/g, "あああああ").replace("{gm}", "サメちゃん")) <= 48, where + " 全角48字（{pc}は5字で計算）を超える");
@@ -229,8 +230,11 @@ function validate(rel) {
   if (entry) {
     need(entry.id === s.id, "catalog の id と scenario.id が違う");
     need(Number.isInteger(entry.price) && entry.price >= 300 && entry.price <= 1500, "catalog.price は300〜1500円");
-    need(s.zeroMemberCast ? entry.zeroMemberCast?.includes(gm) && entry.stockRequires?.length === 0
+    need(s.zeroMemberCast ? gm === "sai" && (entry.zeroMemberCast?.includes(gm) || entry.member === "ageha")
       : entry.stockRequires?.includes(gm) && entry.stockRequires.every(id => MEMBERS.has(id)), "catalog の入荷条件とGM");
+    need(!s.campaign.seats.some(seat => seat.candidates.some(id => ["salaryman", "sumi", "naru"].includes(id))), "鉄仮面・スミ・なるをTRPGの配役に含めない");
+    if (entry.finale) need(entry.clearRequires?.length === MEMBERS.size
+      && entry.clearRequires.every(id => catalog.scenarios.some(b => b.id === id && MEMBERS.has(b.member))), "最終シナリオは全員の物語を遊び終えてから");
   } else warn("catalog に未登録");
   return { errors, warns, total };
 }

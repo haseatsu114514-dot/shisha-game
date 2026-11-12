@@ -1,3 +1,4 @@
+import "./ch4_longlong_free.mjs";
 // 龍龍水煙所のドバイの店（2026-11-02 オーナー「ドバイ編でマスターフーカーの店に行けたり」「普通に他の章のライバルと同じ扱い」）。
 // 段階の会話の順・必要ハート・好感度のつり合い（5回で♥5）・記録・周回、台本（名乗り・面識・大会後の分岐・人物の決まり）、
 // 前夜祭の面識の分岐（交流の時系列ルール）。実際の画面の流れは remake/test/browser/ch4_dubai_daily.mjs。
@@ -153,3 +154,4 @@ assert.match(daily, /if \(entry\.place === "festa"\) gainAffinity\("da_silva", v
 assert.doesNotMatch(daily, /gainAffinity\("da_silva", \d/, "no fixed number for Taiyo");
 
 console.log("PASS ch4 Longlong Dubai shop: stages, hearts, records, scripts, eve-of-tournament acquaintance branch");
+
