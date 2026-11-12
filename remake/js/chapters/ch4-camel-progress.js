@@ -1,3 +1,4 @@
+import { recordPlayMastery, syncPlayMastery } from "../core/play-mastery.js";
 import { CAMEL_CUPS, camelCupQualified, camelMastered, camelExpert } from "../minigames/camel-race-model.js";
 // 第4章ドバイ編・任意イベント「ラクダレース」の進み具合・行き先・記録（純粋関数。DOM・保存・音を持たない）。
 // 画面と訪問の流れは ch4-camel-race.js、遊びの本体は minigames/camel-race.js。
@@ -162,6 +163,7 @@ export function recordCamelRaceResult(value, run, runs = 1) {
   if (!value || !record(run) || !Number.isFinite(run.total)) return null;
   const cup = run.cup || "practice";
   if (!availableCamelCups(value).includes(cup)) return null;
+  syncPlayMastery(value);
   const camel = ensureRecord(value);
   const firstClear = camel.plays === 0;
   const entry = { total: Math.round(run.total), rank: integer(run.rank, 4), grade: typeof run.grade === "string" ? run.grade : "C",
@@ -177,6 +179,7 @@ export function recordCamelRaceResult(value, run, runs = 1) {
   if (newBest) camel.best = entry;
   camel.lastPlayDay = value.day;
   if (camel.stage < CAMEL_STAGES.unlocked) camel.stage = CAMEL_STAGES.unlocked;
+  recordPlayMastery(value, "camel", run, `${value.cycle || 1}:${camel.plays}`);
   return { firstClear, newBest, plays: camel.plays };
 }
 

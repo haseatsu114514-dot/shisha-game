@@ -311,7 +311,8 @@ for (let seed = 1; seed <= 60; seed++) {
   assert(!camelMastered({ ...qualified, rank: 4 }));
   assert(!camelMastered({ ...qualified, parts: { timing: 19, stamina: 20 } }));
   assert(!camelMastered({ ...qualified, parts: { timing: 20, stamina: 19 } }));
-  assert(!camelMastered({ ...qualified, stats: { spam: 1 } }));
+  assert(camelMastered({ ...qualified, stats: { spam: 1 } }), "one accidental extra cue is allowed");
+  assert(!camelMastered({ ...qualified, stats: { spam: 2 } }));
   assert(!camelMastered({ ...qualified, cup: "practice" }));
   assert(!camelMastered({ ...qualified, stats: undefined }));
   assert(!camelExpert({ cup: "expert", rank: 1, total: 84, stats: { spam: 0 } }));

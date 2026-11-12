@@ -2,7 +2,7 @@
 // （実UIの到達・確定は browser/ch3_tokyo_daily.mjs）。
 // 入口の足場（PR #2521）の「保存を一切変えない」契約は、正ゲーム化で次の新しい契約に置き換えた:
 //   確定点 settleTetsukoTime は、意味のあるふれあいで未確定の訪問キーのときだけ、来訪記録 +1 と _tetsuko_time を書き、
-//   回復 12 を返す（体力の加算は呼び出し側）。それ以外は保存に触らない。能力・お金・好感度・日付・時間帯は書かない。
+//   回復 12 を返す（体力の加算は呼び出し側）。#2455 の認定進捗も保存する。能力・お金・好感度・日付・時間帯は書かない。
 import assert from "node:assert/strict";
 import fs from "node:fs";
 import { execFileSync } from "node:child_process";
@@ -558,7 +558,11 @@ assert.equal(classifyFlag(OUTINGS_FLAG), "progression");
   delete rest.flags[OUTINGS_FLAG]; delete rest.flags[TETSUKO_TIME_FLAG];
   const was = structuredClone(before);
   delete was.flags[OUTINGS_FLAG]; delete was.flags[TETSUKO_TIME_FLAG];
-  assert.deepEqual(rest, was, "能力・経験値・お金・好感度・面識・日付・時間帯・体力は一切変わらない");
+  assert.deepEqual(rest.growth.playMastery.tetsuko.items.sort(), ["first_rub", "waiting"]);
+  assert.equal(rest.growth.playMastery.tetsuko.done, false, "2種類では未認定");
+  delete rest.growth.playMastery;
+  if (!Object.keys(rest.growth).length && !was.growth) delete rest.growth;
+  assert.deepEqual(rest, was, "認定の途中経過以外、能力・経験値・お金・好感度・面識・日付・時間帯・体力は不変");
   // 次の訪問は回数が進んだので別のキー。
   assert.notEqual(tetsukoVisitKey(value), key);
   // 「少し構っていく」（台本だけ）も同じ確定点を通る。記録した配置・発見は保たれる。
