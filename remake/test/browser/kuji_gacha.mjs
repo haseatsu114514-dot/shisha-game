@@ -213,6 +213,10 @@ await suite("kuji-gacha", async check => {
     await stack(page, "g5000", [S, B, C, C, B, 6, 6, 7, 8, B]);
     await tap(page, "kuji-g5000-10");
     await tap(page, "kuji-skip");
+    // 結果のボタンは、くじの木と真鍮の見た目（共通の紙とラベンダーのボタンのままにしない。LK22）
+    const ink = (selector) => page.locator(selector).evaluate((node) => getComputedStyle(node).color);
+    assert.equal(await ink('[data-test="kuji-flip-all"]'), "rgb(246, 239, 224)", "すべてめくるは木の面に生成りの文字");
+    assert.equal(await ink(".kuji-multi-panel .kj-done"), "rgb(47, 28, 17)", "結果を閉じるは真鍮の面に濃い茶の文字");
     await tap(page, "kuji-flip-all");
     await page.locator(".kuji-multi-panel.kj-complete").waitFor();
     assert.equal(await page.locator(".kuji-short.kuji-facedown").count(), 0);

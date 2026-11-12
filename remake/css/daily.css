@@ -1207,6 +1207,10 @@ body[data-weather="outdoor"] .map-weather { display: none; }
 .hidane-badge { position: absolute; right: -7px; top: -7px; min-width: 20px; height: 20px; padding: 0 4px; box-sizing: border-box; display: grid; place-items: center;
   border-radius: 50% 50% 50% 50% / 58% 58% 42% 42%; font: 700 12px/1 var(--font); font-style: normal; color: #3a1a00;
   background: radial-gradient(circle at 50% 70%, #fff1b8, #ffb43c 55%, #e86a12); box-shadow: 0 0 8px rgba(255, 150, 40, 0.8); pointer-events: none; }
+/* 火種の数の丸は、盤の値段の印と同じ絵（badge_cost.webp・SBD125③）。絵が読めない時は上の琥珀の丸のまま（絵の下に敷いてある）。
+   丸い絵に合わせて丸くし、数字は値段の印と同じく明るい字に暗い縁 */
+.hidane-badge { border-radius: 50%; color: #fff8e4; text-shadow: 0 0 2px #2a1000, 0 0 3px #2a1000, 0 1px 1px #2a1000;
+  background: center / 100% 100% no-repeat url(../img/ui/growth_board/badge_cost.webp), radial-gradient(circle at 50% 70%, #fff1b8, #ffb43c 55%, #e86a12); }
 
 
 /* ---------------------------------------------------------------- その場のレベルアップ（2026-11-11 オーナー「都度経験値もらって達したらレベルアップがいい」SBD122）
@@ -1962,6 +1966,48 @@ html:root[data-density="phone"] body:not(:root) .gfx-cutin-count { font-size: 16
 /* 見出しの丸いボタン（？・×）: 黒い皿に細い金の縁 */
 .gboard.has-art .gb-header .gb-icon { border-color: transparent; background: center / 100% 100% no-repeat url(../img/ui/growth_board/socket.webp); box-shadow: none; }
 .gboard.has-art .gb-header .gb-icon:is(:hover, :focus-visible) { border-color: transparent; box-shadow: 0 0 12px rgba(244, 210, 122, 0.55); }
+
+/* 知らせの絵の印（gainCard の icon。心得の盤の決定の知らせ・SBD127）: 顔の印（base.css の .gc-badge.face）と同じ暗い丸に盤の絵。
+   絵が読めない時は字の印（火・関・極）のまま */
+.gc-badge.face.art { position: relative; color: #f4e6c4; }
+.gc-badge.art img { display: none; position: absolute; inset: 13%; width: 74%; height: 74%; object-fit: contain; image-rendering: auto; filter: drop-shadow(0 0 4px var(--gc, #f4d27a)); }
+.gc-badge.art.has-img img { display: block; }
+.gc-badge.art.has-img span { visibility: hidden; }
+
+/* ---------------------------------------------------------------- スマホ横の盤（SBD114・SBD120・SBD125①）
+   PC と同じ配置をステージごと縮めていたので、上の帯・札・右のパネル・近い目的地の文字が実寸 7〜8px だった。
+   規格（#2851。phone-density.css）の補助文の大きさ（--phone-sub。実寸 約11.5px）にそろえる。並びと押せる所は変えない。
+   右のパネルは絵の高さを詰めて、マスの説明とボタンが送らずに収まるようにする。行間はこの書体の字の高さ（約1.4）より詰めない（字の上下が行からはみ出す）（wide-screens.css の盤の規則はワイド表示の廃止 #3035 で効かない） */
+html:root[data-density="phone"] body:not(:root) .gboard .gb-level, html:root[data-density="phone"] body:not(:root) .gboard .gb-level small, html:root[data-density="phone"] body:not(:root) .gboard .gb-place-chip { font-size: var(--phone-sub); }
+html:root[data-density="phone"] body:not(:root) .gboard .gb-place-chip { padding: 3px 16px; }
+html:root[data-density="phone"] body:not(:root) .gboard .gb-tab { gap: 10px; padding-inline: 10px 30px; }
+html:root[data-density="phone"] body:not(:root) .gboard :is(.gb-tab-body, .gb-tab-body b) { font-size: var(--phone-sub); line-height: 1.42; }
+html:root[data-density="phone"] body:not(:root) .gboard .gb-tab-head { width: 34px; height: 34px; font-size: var(--phone-sub); }
+html:root[data-density="phone"] body:not(:root) .gboard .gb-tab-ready { min-width: 26px; height: 26px; font-size: 17px; }
+html:root[data-density="phone"] body:not(:root) .gboard .gb-zoom .gb-icon { min-width: 46px; height: 46px; border-radius: 23px; font-size: var(--phone-sub); }
+html:root[data-density="phone"] body:not(:root) .gboard .gb-side { gap: 3px; font-size: var(--phone-sub); line-height: 1.42; }
+html:root[data-density="phone"] body:not(:root) .gboard .gb-p-title { font-size: var(--phone-text); line-height: 1.42; }
+html:root[data-density="phone"] body:not(:root) .gboard :is(.gb-p-sub, .gb-p-state, .gb-bar, .gb-bar-sum, .gb-bar-note, .gb-feat, .gb-goals-head, .gb-goal-name, .gb-goal-fire b, .gb-goal-lock, .gb-goal-now) { font-size: var(--phone-sub); }
+html:root[data-density="phone"] body:not(:root) .gboard .gb-art { height: 84px; }
+html:root[data-density="phone"] body:not(:root) .gboard .gb-art span { font-size: 44px; }
+html:root[data-density="phone"] body:not(:root) .gboard .gb-art-icon { width: 64px; height: 64px; }
+/* 立ち絵の右下の「?」（まだ分からない授業）は、詰めた絵の枠の下端に合わせる（PC は 150px の枠の上から 78px） */
+html:root[data-density="phone"] body:not(:root) .gboard .gb-art-mystery { top: auto; bottom: 6px; left: calc(50% + 34px); }
+/* 台座の補足（ほかの色の火・上限の後の白火）は「？」の見方（火種・決まり）にもあるので、スマホ横では出さない（規格の「説明文は ? に逃がす」） */
+html:root[data-density="phone"] body:not(:root) .gboard .gb-art.k-gate ~ .gb-p-sub { display: none; }
+html:root[data-density="phone"] body:not(:root) .gboard .gb-bars { gap: 2px; margin: 2px 0; }
+html:root[data-density="phone"] body:not(:root) .gboard .gb-bar { grid-template-columns: 38px 1fr auto; min-height: 40px; }
+html:root[data-density="phone"] body:not(:root) .gboard .gb-bar-name { width: 36px; height: 36px; }
+html:root[data-density="phone"] body:not(:root) .gboard .gb-goals { gap: 4px; }
+/* 近い目的地はスマホ横では近い2つまで（3つ目は盤の上の光るマスと「目標にする」で分かる） */
+html:root[data-density="phone"] body:not(:root) .gboard .gb-goals > .gb-goal:nth-of-type(n+3) { display: none; }
+html:root[data-density="phone"] body:not(:root) .gboard .gb-goal { grid-template-columns: 40px 1fr auto; min-height: 48px; padding-block: 3px; }
+html:root[data-density="phone"] body:not(:root) .gboard .gb-goal-icon { width: 40px; height: 40px; }
+html:root[data-density="phone"] body:not(:root) .gboard .gb-goal-fire i { width: 22px; height: 22px; }
+html:root[data-density="phone"] body:not(:root) .gboard .gb-hidane { gap: 6px; }
+html:root[data-density="phone"] body:not(:root) .gboard .gb-hidane b { font-size: var(--phone-text); }
+html:root[data-density="phone"] body:not(:root) .gboard.has-art .gb-hidane i { width: 32px; height: 32px; }
+html:root[data-density="phone"] body:not(:root) .gboard.has-art .gb-nodes .gb-node > :is(.gb-cost, .gb-mystery) { min-width: 28px; width: 28px; height: 28px; font-size: 17px; }
 
 /* 左上の日付カード（2026-10-31 DUI13）: 紙の色になる前の配置（左に日付、右に所持金・大会まで・体力の3行）を薄く組み直す。
    行ごとの枠は付けず、細い線で区切る。幅は固定（所持金の桁・時間帯・最大体力で板が動かない）。 */

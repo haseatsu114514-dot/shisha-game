@@ -461,7 +461,7 @@ await suite("ch4-dubai-daily", async check => {
 
   // 同行なしで、凛想（恋人）とましろ（第3章クリア）が別便で応援に来る。前夜祭の日に凛想→ましろちゃんの到着を読み、
   // 前夜祭の後、到着した凛想を前夜に誘える。到着の場面を読む途中でロードしても、同じ到着から読み直し二重に確定しない。
-  // 2人目の到着カードは「もう一人」の文になる。
+  // 2人目の到着カードは「もう一人」の文になる。到着の後・前夜祭の前は、二人と夕方を過ごせる（#3097）。
   await check("a-separate-flight-lover-arrives-on-the-festival-day-and-can-be-invited", async page => {
     await seed(page, (value, progress) => {
       const p = value.flags._ch4;
@@ -495,17 +495,30 @@ await suite("ch4-dubai-daily", async check => {
     assert.equal((await get(page)).flags._ch4.read.ch4_rio_dubai_girlfriend, true);
     assert.match(await page.locator(dt("ch4-arrival")).innerText(), /もう一人着いたらしい/);
     await page.locator(dt("ch4-continue")).click();
-    for (const id of ["ch4_wang_reception", "ch4_stranger_third"]) {
-      await page.locator(`${dt("ch4-eve")}[data-scene="${id}"]`).waitFor();
-      await page.locator(dt("ch4-continue")).click();
-    }
+    // #3097: 到着した凛想（恋人版）と、視察で来たましろちゃん（友人版）とも、前夜祭の前に夕方を一度ずつ過ごせる。
+    const eveCard = `${dt("ch4-eve")}[data-scene="ch4_wang_reception"]`;
+    await page.locator(eveCard).waitFor({ timeout: 60000 });
+    assert.equal(await page.locator(dt("ch4-arrival-evening-rio")).innerText(), "凛想と夕方を過ごす");
+    assert.equal(await page.locator(dt("ch4-arrival-evening-mashiro")).innerText(), "ましろちゃんと夕方を過ごす");
+    await page.locator(dt("ch4-arrival-evening-mashiro")).click();
+    await page.waitForFunction(() => window.__remake.state.flags._ch4.read.ch4_mashiro_dubai_friend_evening === true, null, { timeout: 60000 });
+    await page.locator(eveCard).waitFor({ timeout: 60000 });
+    assert.equal(await page.locator(dt("ch4-arrival-evening-mashiro")).count(), 0, "The friend evening is read once");
+    assert.equal(await page.locator(dt("ch4-arrival-evening-rio")).count(), 1, "Rio's evening stays optional");
+    assert((await backlog(page)).some(text => text.includes("食べ物の写真が多い")), "The friend evening scene was played");
+    assert.equal((await get(page)).flags._ch4.read.ch4_mashiro_dubai_evening, undefined, "No lover evening for a friend");
+    await page.locator(dt("ch4-continue")).click();
+    await page.locator(`${dt("ch4-eve")}[data-scene="ch4_stranger_third"]`).waitFor();
+    assert.equal(await page.locator(dt("ch4-arrival-evening-rio")).count(), 0, "The evening ends when the festival starts");
+    await page.locator(dt("ch4-continue")).click();
     await page.locator(dt("ch4-evening")).waitFor();
     assert.match(await page.locator(dt("ch4-evening")).innerText(), /と過ごす時間がある/);
     await page.locator(dt("ch4-evening-date")).click();
     await page.waitForFunction(() => !!window.__remake.state.flags._ch4_evening, null, { timeout: 60000 });
     const state = await get(page);
-    assert.deepEqual(state.flags._ch4_evening, { kind: "date", participants: ["rio"] });
+    assert.deepEqual(state.flags._ch4_evening, { kind: "date", participants: ["rio"] }, "The friend evening is not the eve date");
     assert.equal(state.flags._ch4.read.ch4_mashiro_dubai_friend, true);
+    assert.equal(state.flags._ch4.read.ch4_rio_dubai_evening, undefined, "An unread evening stays unread");
   });
 
   // IR18: 別便で着いたサメちゃん（恋人）とは、到着の後、前夜祭の前に夕方を任意で一度過ごせる。読むと同じカードに戻り、
