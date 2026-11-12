@@ -5,6 +5,7 @@ import path from 'node:path';
 import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
 import { installLoadingComicReader } from './loading_reader.mjs';
+import { flickFromHandle } from "./axe_flick_input.mjs";
 
 const dir = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(dir, '../../../');
@@ -17,6 +18,23 @@ const results = [];
 const giftGoal = process.env.GOAL_HIYORI_GIFT === '1';
 const workGoal = giftGoal || process.env.GOAL_HIYORI_WORK === '1';
 
+// Drive the new default with real board taps and a real mouse/touch drag; never inject scores.
+async function aimAxe(page, touch = false) {
+  assert.equal(await page.locator('[data-test="axe-game"]').getAttribute('data-input-mode'), 'tap-pull');
+  const point = await page.locator('[data-test="axe-target"]').evaluate(node => {
+    const p = new DOMPoint(330, 245).matrixTransform(node.getScreenCTM());
+    return { x: p.x, y: p.y };
+  });
+  if (touch) await page.touchscreen.tap(point.x, point.y); else await page.mouse.click(point.x, point.y);
+  await page.waitForFunction(() => document.querySelector('[data-test="axe-game"]')?.dataset.phase === 'power');
+}
+async function pullAxe(page, touch = false, power = .62) {
+  // 2026-11-12: 投げ方は「上へ弾く」。右の取っ手から、power になる速さで弾く（axe_flick_input.mjs）。
+  await flickFromHandle(page, { touch, power });
+  await page.waitForFunction(() => document.querySelector('[data-test="axe-game"]')?.dataset.phase === 'result');
+  const actual = Number(await page.locator('[data-test="axe-game"]').getAttribute('data-power'));
+  assert(Math.abs(actual - power) < .06, `actual flick power ${actual} must match the gesture ${power}`);
+}
 async function boot(page) {
   await page.goto(base);
   await page.locator('[data-test="title-new"]').waitFor({ timeout: 30000 });
@@ -122,8 +140,14 @@ try {
           }
           // AXR08: when Maki is already known, her one-throw lesson comes first. Read it through like a player.
           if(await click('[data-test="axe-coach-next"]')) continue;
-          const button=page.locator('[data-test="axe-action"]:not([disabled])');
-          if(await button.isVisible()) { await click('[data-test="axe-action"]:not([disabled])'); }
+          const inputPhase = await axe.getAttribute('data-phase');
+          // Let each tutorial panel be read above before the next gesture.
+          if (inputPhase === 'choice') await aimAxe(page, label === 'mobile');
+          else if (inputPhase === 'power') await pullAxe(page, label === 'mobile');
+          else {
+            const button=page.locator('[data-test="axe-action"]:not([disabled])');
+            if(await button.isVisible()) { await click('[data-test="axe-action"]:not([disabled])'); }
+          }
           continue;
         }
         if (snap.cutin) {
@@ -332,3 +356,4 @@ try {
 }
 assert(results.length > 0, 'No device was selected');
 assert.equal(results.filter(r => r.status !== 'passed').length, 0, 'Public walkthrough failures');
+
