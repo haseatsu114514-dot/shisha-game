@@ -147,3 +147,31 @@ assert.equal(M.cateringState(current).offer, null); assert.equal(current.money, 
 assert.equal(messages.filter(m => /catering-close/.test(m.id)).length, 1);
 C.finishCateringSeason(); assert.equal(messages.filter(m => /catering-close/.test(m.id)).length, 1);
 console.log('ch5 catering integration: replies, delegation, personal action, cancellation/LOAD, hooks, presence and finale passed');
+
+// 固有20件の後は、会場・条件・手取りを保って短い汎用会話へ。
+const completeRound = () => { current.flags[M.CATERING_FLAG] = { offers: 20, next: 42, offer: null,
+  served: Object.fromEntries(M.CATERING_REQUESTS.map(e => [e.id, 1])) }; };
+reset(); completeRound();
+C.deliverCateringMorning();
+assert(messages[0].messages.some(t => /また出張の予約/.test(t)));
+assert(!messages[0].messages.some(t => M.CATERING_REQUESTS.some(e => e.lime.includes(t))));
+reset(); completeRound(); ({ entry } = reserve('housewarming')); current.day++;
+choices = ['go', entry.options.findIndex(o => o.fit === 'best')];
+assert.equal((await C.performCateringSpot({ id: M.CATERING_SPOT_ID })).used, true);
+assert.equal(scenes[0], 'ch5_catering_repeat_intro');
+assert.equal(scenes[1].dialogue_id, 'ch5_catering_repeat_best');
+assert.equal(scenes[1].lines.length, DB.dialogues.ch5_catering_repeat_best.lines.length, '長い固有会話と店への帰還を繰り返さない');
+assert.equal(current.money, 1000 + entry.payout);
+assert.equal(M.cateringState(current).last.repeat, true);
+reset(); completeRound(); ({ entry } = reserve('housewarming', true)); current.day++; current.slot = 1;
+C.settleCateringWork();
+const report = messages.find(m => /catering-done/.test(m.id));
+assert.equal(report.sender, 'tsumugi');
+assert(report.messages.some(t => /また呼んで/.test(t)));
+assert(report.messages.some(t => /楽しんで/.test(t)));
+assert(!report.messages.some(t => entry.report.includes(t)));
+assert.equal(report.replies[0].affinity, 0);
+assert.equal(current.money, 1000 + entry.payout);
+C.settleCateringWork();
+assert.equal(messages.filter(m => /catering-done/.test(m.id)).length, 1);
+console.log('ch5 catering integration: generic repeat replaces unique conversations only after all 20 passed');

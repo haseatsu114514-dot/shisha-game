@@ -16,7 +16,7 @@ import {
   CATERING_SPOT_ID, CATERING_PIN, CATERING_STAMINA, CATERING_SCENE_IDS, JOB_DAYS,
   cateringState, cateringRequestById, cateringRequestDue, recordCateringOffer, expireCatering, acceptCatering, declineCatering,
   cateringJob, cateringSlotBlock, cateringFit, settleCatering, cateringSceneId, cateringCloseId, cateringServedTotal, cateringDelegation, cateringDelegationBlock, delegateCatering,
-  settleDelegatedCatering, closeCatering, isTsumugiCateringAway,
+  settleDelegatedCatering, closeCatering, isTsumugiCateringAway, cateringFirstRoundComplete,
 } from "./ch5-catering-model.js";
 
 const unused = Object.freeze({ used: false, exerted: false });
@@ -29,12 +29,14 @@ const sumiUnread = value => (value.inbox || []).some(item => !item.read && (item
 function requestMessage(entry, value) {
   const record = cateringState(value);
   const first = record.offers === 0;
+  const repeat = cateringFirstRoundComplete(value);
   const opening = first ? "店のLIMEに、出張の頼みが来てる。お前に回すぞ"
     : (record.served[entry.id] || 0) > 0 ? "店のLIMEに、また出張の頼みが来てる。前にも似た頼みがあったな" : "店のLIMEに、また出張の頼みが来てる";
   return {
     id: `ch5-catering:${entry.id}:d${value.day}`, sender: "sumi", type: "chat", ch5Catering: entry.id,
     messages: [
-      opening, ...entry.lime, `手取りは${entry.payout.toLocaleString()}円だ`,
+      ...(repeat ? [`${entry.place}から、また出張の予約だ。${slotWord(entry)}の会な`, "前と同じ好みで頼みたいそうだ"] : [opening, ...entry.lime]),
+      `手取りは${entry.payout.toLocaleString()}円だ`,
       "自分で行っても、つむぎに任せてもいい。店の段取りは、お前に任せる",
       ...(first ? ["自分で届けて喜んでもらえたら、店のくじ券も回す", "何人いても同じだ。目の前の一人に届けてこい"] : []),
       "受けるかどうか、明日までに返事をくれ",
@@ -130,8 +132,10 @@ export function settleCateringWork(options = {}) {
   if (!result) return null;
   const entry = cateringRequestById(result.id);
   deliverLimeMessage({ id: `ch5-catering-done:${result.id}:d${result.day}`, sender: "tsumugi", type: "chat",
-    messages: [...entry.report, `精算しました。手取りは${result.paid.toLocaleString()}円です`],
-    replies: [{ text: "お疲れさま。ありがとう", response: entry.reportReply, affinity: 0 }] });
+    messages: [...(result.repeat ? [`${entry.place}の出張、終わりました`,
+      "また呼んでくださってありがとうございますって、お伝えしました", "皆さん、最後までゆっくり楽しんでくださったみたいです"] : entry.report),
+      `精算しました。手取りは${result.paid.toLocaleString()}円です`],
+    replies: [{ text: "お疲れさま。ありがとう", response: result.repeat ? "また次も、って言ってもらえました" : entry.reportReply, affinity: 0 }] });
   save();
   return result;
 }
@@ -201,6 +205,7 @@ export async function performCateringSpot(spot, { staminaGuard } = {}) {
   if (spot?.id !== CATERING_SPOT_ID) return null;
   const owner = state;
   const entry = cateringJob(state);
+  const repeat = cateringState(state).offer?.repeat === true;
   if (!entry) { toast("この依頼は、もう終わっている"); return unused; }
   const block = cateringSlotBlock(entry, state);
   if (block) { toast(block.why); return unused; }
@@ -230,16 +235,16 @@ export async function performCateringSpot(spot, { staminaGuard } = {}) {
   if (staminaGuard && !(await staminaGuard(CATERING_STAMINA))) return unused;
   await showBg(entry.bg);
   if (state !== owner) return unused;
-  const intro = await play(cateringSceneId(entry.id, "intro"));
+  const intro = await play(cateringSceneId(repeat ? "repeat" : entry.id, "intro"));
   if (state !== owner || !intro || intro.cancelled) return unused;
   const index = await modal({ title: `出張の一台（${entry.title}）`, className: "catering-order",
     body: `持ってきた葉で、一台を作る。<br>${entry.conditions.map(text => `・${text}`).join("<br>")}`,
     options: entry.options.map((option, i) => ({ label: option.label, value: i, test: `catering-option-${i}` })) });
   const fit = cateringFit(entry, index);
   if (state !== owner || !fit) return unused;
-  const scene = DB.dialogues[cateringSceneId(entry.id, fit)];
+  const scene = DB.dialogues[cateringSceneId(repeat ? "repeat" : entry.id, fit)];
   const close = DB.dialogues[cateringCloseId(fit, cateringServedTotal(state))];
-  const result = await play({ ...scene, lines: [...scene.lines, ...close.lines] });
+  const result = await play({ ...scene, lines: [...scene.lines, ...(repeat ? [] : close.lines)] });
   if (state !== owner || !result || result.cancelled) return unused;
   const settled = settleCatering(state, index, n => grantKujiTickets(n, "delivery"), payCatering);
   if (!settled) return unused;

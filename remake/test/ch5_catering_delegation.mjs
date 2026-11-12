@@ -10,7 +10,7 @@ const offer = (id = "wedding_party") => {
 };
 const pay = value => amount => { value.money += amount; return amount; };
 
-assert.equal(M.CATERING_REQUESTS.length, 8);
+assert.equal(M.CATERING_REQUESTS.length, 20);
 for (const entry of M.CATERING_REQUESTS) {
   assert(Number.isInteger(entry.payout) && entry.payout >= 15000 && entry.payout <= 25000);
   const value = offer(entry.id);
@@ -165,3 +165,73 @@ for (const entry of M.CATERING_REQUESTS) {
     assert.doesNotMatch(text, /好感度|上がった|手当|売上|円/);
   }
 }
+
+// 固有20件は実完了をもって一巡。未読・見送り・期限切れは一巡に数えない。
+for (const seed of [0, 7, -17, 123456]) {
+  let value = { ...make(), seed };
+  const completed = new Set();
+  for (let i = 0; i < M.CATERING_REQUESTS.length; i++) {
+    const entry = M.nextCateringRequest(value);
+    assert(!completed.has(entry.id), '一巡前に完了済みの固有依頼を繰り返さない');
+    assert.equal(M.cateringFirstRoundComplete(value), false);
+    const msg = `first-${i}`;
+    assert(M.recordCateringOffer(value, entry.id, msg));
+    assert.notEqual(M.cateringState(value).offer.repeat, true, '固有20件完了前に汎用は出ない');
+    // 本人と委託のどちらも同じ完了履歴を進める。
+    if (i % 2) {
+      assert(M.delegateCatering(value, msg, { day: value.day + 1 }));
+      value.day++; value.slot = entry.slot;
+      assert(M.settleDelegatedCatering(value, { throughSlot: entry.slot, pay: pay(value) }));
+    } else {
+      assert(M.acceptCatering(value, msg));
+      value.day++; value.slot = entry.slot;
+      assert(M.settleCatering(value, entry.options.findIndex(o => o.fit === 'best'), n => n, pay(value)));
+    }
+    completed.add(entry.id);
+    value = JSON.parse(JSON.stringify(value));
+    value.day = M.cateringState(value).next; value.slot = 0;
+  }
+  assert.equal(completed.size, 20);
+  assert(M.cateringFirstRoundComplete(value));
+  // デッキが枯れず、LOAD後も同会場への短い汎用リピートになる。
+  for (let i = 0; i < 25; i++) {
+    const entry = M.cateringRequestDue(value);
+    assert(entry);
+    const msg = `repeat-${i}`;
+    assert(M.recordCateringOffer(value, entry.id, msg));
+    assert.equal(M.cateringState(value).offer.repeat, true);
+    const before = value.money;
+    assert(M.delegateCatering(value, msg, { day: value.day + 1 }));
+    value = JSON.parse(JSON.stringify(value));
+    value.day++; value.slot = 2;
+    const result = M.settleDelegatedCatering(value, { pay: pay(value) });
+    assert.equal(result.repeat, true);
+    assert.equal(value.money, before + entry.payout);
+    assert.equal(M.settleDelegatedCatering(value, { pay: pay(value) }), null);
+    assert.equal(value.money, before + entry.payout);
+    value.day = M.cateringState(value).next; value.slot = 0;
+  }
+}
+{
+  const value = make();
+  for (let i = 0; i < 25; i++) {
+    const entry = M.nextCateringRequest(value), msg = `decline-${i}`;
+    assert(M.recordCateringOffer(value, entry.id, msg));
+    if (i % 2) {
+      value.day += M.REPLY_DAYS;
+      assert(M.expireCatering(value));
+    } else assert(M.declineCatering(value, msg));
+    value.day = M.cateringState(value).next;
+    assert.equal(M.cateringFirstRoundComplete(value), false);
+  }
+  assert.equal(M.cateringServedTotal(value), 0);
+  // 旧8件完了済みセーブは、追加された12件を先に読む。
+  value.flags[M.CATERING_FLAG].served = Object.fromEntries(M.CATERING_REQUESTS.slice(0, 8).map(e => [e.id, 1]));
+  assert.equal(M.cateringFirstRoundComplete(value), false);
+  assert(M.CATERING_REQUESTS.slice(8).some(e => e.id === M.nextCateringRequest(value).id));
+  value.flags[M.CATERING_FLAG].served = Object.fromEntries(M.CATERING_REQUESTS.map(e => [e.id, 1]));
+  value.flags[M.CATERING_FLAG].served.wedding_party = '1';
+  assert.equal(M.cateringFirstRoundComplete(value), false, '壊れた完了数は一巡扱いにしない');
+  assert.equal(M.nextCateringRequest(value).id, 'wedding_party');
+}
+console.log('[ch5 catering repeat] PASS: 20 unique completions, declines/expiry, old 8-event saves, endless repeats and reload-safe payouts');

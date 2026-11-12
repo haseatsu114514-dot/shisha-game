@@ -167,6 +167,34 @@ await suite("ch5-catering", async check => {
     assert.equal((await get(page)).money, before.money + entry.payout);
   });
 
+  await check("completed-round-uses-short-repeat-scenes", async page => {
+    const { requests } = await model(page);
+    const served = Object.fromEntries(requests.map(entry => [entry.id, 1]));
+    await seed(page, { seedValue: 3, flags: { _ch5_catering: { next: 51, offers: 20, offer: null, served } } });
+    await mapReady(page, { day: 51, slot: 0 });
+    const before = await get(page), booking = offerOf(before);
+    assert.equal(booking.repeat, true);
+    const entry = requests.find(r => r.id === booking.id);
+    assert(before.inbox.find(i => i.id === booking.msg).msg.messages.some(t => /また出張の予約/.test(t)));
+    await replyToSumi(page, "引き受けます", "引き受けた");
+    await rewrite(page, `s.day = 52; s.slot = ${entry.slot}; s.flags._morning_52 = true;`);
+    await mapReady(page, { day: 52, slot: entry.slot });
+    await clearLog(page);
+    await page.locator(dt("pin-ch5_catering")).click();
+    await page.locator(dt("map-go")).click();
+    await page.locator(dt("catering-go")).click();
+    await page.locator(dt(`catering-option-${entry.options.findIndex(o => o.fit === "best")}`)).click();
+    await (entry.slot === 0 ? mapReady(page, { day: 52, slot: 1 }) : mapReady(page, { day: 53, slot: 0 }));
+    const after = await get(page), text = await logText(page);
+    assert.match(text, /予約ありがとうございます/);
+    assert.doesNotMatch(text, /道具を返しに、tonariへ寄った/, "リピートでは固有の帰還会話を繰り返さない");
+    assert.equal(after.money, before.money + entry.payout);
+    assert.equal(after.flags._ch5_catering.last.repeat, true);
+    await reopen(page);
+    await mapReady(page);
+    assert.equal((await get(page)).money, after.money, "リピートもLOADで二重入金しない");
+  });
+
   await check("request-decline-changes-nothing", async page => {
     await seed(page);
     await mapReady(page, { day: 51, slot: 0 });

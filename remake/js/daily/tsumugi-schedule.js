@@ -1,5 +1,3 @@
-import { isTsumugiCateringAway } from "../chapters/ch5-catering-model.js";
-
 // 固定物語と通常在店で、同じ日程・読了条件を参照する。
 export const TSUMUGI_STORY = [
   { day: 1, dialogue: "ch1_tsumugi_research", flag: "_tsumugi_contest_research", level: 1 },
@@ -10,7 +8,11 @@ export const TSUMUGI_STORY = [
 
 /** 表示にも来店にも使う読み取り専用判定。固定回・延期の未読を通常会話で代替しない。 */
 export function tsumugiAtTonari(save) {
-  if (save.chapter === 5 && isTsumugiCateringAway(save)) return false;
+  // 出張の予約はTRPGとも共用する個別予定に記録され、精算・取消時に同じマーカーを除く。
+  // 通常在店の照会で、第5章の出張依頼データ一式を読み込まない。
+  if (save.chapter === 5 && (Array.isArray(save.trpg?.shifts) ? save.trpg.shifts : []).some(shift =>
+    shift?.id === "tsumugi" && shift.chapter === 5 && shift.day === save.day && shift.slot === save.slot
+    && shift.busy === true && typeof shift.cateringMsg === "string")) return false;
   if (save.chapter === 5) return save.slot === 0 || save.slot === 1; // 第5章は店のスタッフとして働く
   if (save.slot !== 0 && save.slot !== 1) return false;
   if (save.flags?._tsumugi_story_day === `${save.chapter}:${save.day}`) return false;

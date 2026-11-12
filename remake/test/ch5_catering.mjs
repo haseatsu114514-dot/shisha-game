@@ -37,7 +37,7 @@ const scenes = new Map(readJson("data/dialogue/ch5_catering.json").dialogues.map
 // quick CI の sparse checkout では背景画像の実体を取得しない。追跡ファイル名を検証する。
 const backgrounds = new Set(execFileSync("git", ["ls-files", "--cached", "--", "assets/backgrounds/"],
   { cwd: root, encoding: "utf8" }).trim().split("\n").map(path => path.slice("assets/backgrounds/".length)));
-assert(M.CATERING_REQUESTS.length >= 6 && M.CATERING_REQUESTS.length <= 8, "依頼は6〜8種");
+assert.equal(M.CATERING_REQUESTS.length, 20, "固有の依頼は20種");
 assert.equal(new Set(M.CATERING_REQUESTS.map(r => r.id)).size, M.CATERING_REQUESTS.length, "ID が重ならない");
 const fullWidth = text => [...text].reduce((n, ch) => n + (ch.codePointAt(0) <= 0xff ? 0.5 : 1), 0);
 for (const r of M.CATERING_REQUESTS) {
@@ -65,7 +65,7 @@ for (const r of M.CATERING_REQUESTS) {
 }
 // ぴったりの組み合わせの位置は依頼ごとにばらす（いつも同じ場所を押せば当たる、にしない）
 assert.equal(new Set(M.CATERING_REQUESTS.map(r => r.options.findIndex(o => o.fit === "best"))).size, 3, "ぴったりの位置が散らばる");
-assert.equal(M.CATERING_SCENE_IDS.length, M.CATERING_REQUESTS.length * 4 + 6);
+assert.equal(M.CATERING_SCENE_IDS.length, M.CATERING_REQUESTS.length * 4 + 4 + 6);
 for (const id of M.CATERING_SCENE_IDS) assert(scenes.get(id)?.lines?.length, `台本 ${id}`);
 assert.deepEqual([...scenes.keys()].sort(), [...M.CATERING_SCENE_IDS].sort(), "台本の過不足なし");
 // 台詞に報酬・お金を書かない（コードが付ける）。チップ・現金の受け渡しを描かない
@@ -241,7 +241,11 @@ assert.equal(M.cateringServedTotal(save({ flags: { [M.CATERING_FLAG]: { served: 
     assert.doesNotMatch(src, /growth|hidane|火種|giveColored|PLAY_REWARDS|claimPlayRewards|award\w*Exp|earnSceneCompletion/,
       `${file}: 火種・特別な経験値を付けない（経験値は日常ループの普通の行動と同じ）`);
     assert.doesNotMatch(src, /gainAffinity|affinity\[|lovers|romance/, `${file}: 好感度・恋愛を動かさない`);
-    assert.doesNotMatch(src, /tournament|ending|chapterFiveProgress|completeChapterFiveScene/, `${file}: 大会・エンディング・進行を動かさない`);
+    // pendingInvite は既存の約束を読むだけ。「ending」の部分一致とEDへの依存を混同しない。
+    const progression = /\btournament\w*|\bending\w*|chapterFiveProgress|completeChapterFiveScene/;
+    assert(progression.test("tournamentState") && progression.test("endingId") && progression.test("chapterFiveProgress"));
+    assert(!progression.test("pendingInvite"));
+    assert.doesNotMatch(src, progression, `${file}: 大会・エンディング・進行を動かさない`);
   }
   // 依頼の記録・場面を参照してよいのは、依頼の仕組みと第5章の日常ループ・周回の分類だけ
   const walk = (dir, out = []) => {

@@ -49,11 +49,7 @@ const plays = [], saves = [];
 const context = vm.createContext({ console });
 const scheduleSource = await fs.readFile(new URL("../js/daily/tsumugi-schedule.js", import.meta.url), "utf8");
 const schedule = new vm.SourceTextModule(scheduleSource, { context });
-const cateringModel = new vm.SourceTextModule(await fs.readFile(new URL("../js/chapters/ch5-catering-model.js", import.meta.url), "utf8"), { context });
-await schedule.link(specifier => {
-  assert.equal(specifier, "../chapters/ch5-catering-model.js");
-  return cateringModel;
-});
+await schedule.link(() => { throw Error("Unexpected schedule import"); });
 await schedule.evaluate();
 const mocks = {
   "state.js": { state, save: () => saves.push(JSON.stringify(state)) },
@@ -113,7 +109,7 @@ console.log("[782] 昼夜/固定日/延期/旧セーブ/一度きり/既存文�
     hiyoriAxeReady: () => false, questionVisitDue: () => false, finaleAtVisit: () => false,
     setStoryAffinityCap: noop, AFFINITY_RANK_PTS: [0, 17, 34, 51, 68, 85],
   };
-  const real = ["daily/tonari.js", "daily/spots.js", "daily/tsumugi-schedule.js", "chapters/ch5-catering-model.js", "core/affinity-stages.js"];
+  const real = ["daily/tonari.js", "daily/spots.js", "daily/tsumugi-schedule.js", "core/affinity-stages.js"];
   const modules = new Map(), imports = new Map();
   for (const id of real) {
     const source = await fs.readFile(new URL(`../js/${id}`, import.meta.url), "utf8");

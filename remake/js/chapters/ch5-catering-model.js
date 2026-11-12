@@ -5,6 +5,7 @@
 //   はじめへ回す（送り主はスミさん。依頼主は名前の無い客）。同時に来る依頼は一つだけ。返事は「引き受けます／つむぎに任せます／今回は見送ります」。
 //   引き受けると、翌日から JOB_DAYS 日のうちに、地元の地図の「出張シーシャ」から向かえる（昼の会・夜の会は時間帯が決まっている）。
 //   現地では客の様子を見て、依頼の条件に合う葉の組み合わせを三つから一つ選ぶ（第3章の mukai・tonari の「今日の注文」の二択を広げた形）。
+//   固有20件が実完了した後は、同じ地元会場への予約を短い汎用会話で続ける。見送り・期限切れは未完として残す。
 // 報酬: 依頼ごとの手取り。本人が行くと限定台くじのくじ券も従来どおり（ぴったり＝2枚・合う＝1枚・外した＝0枚）。
 //   つむぎに任せる場合は翌日以降の1枠を予約し、その枠を過ぎてから同じ手取りを精算する。はじめの行動・体力は使わない。
 //   行動は1回・体力は mukai のシフトと同じ。経験値は普通の行動と同じ（体力を使った行動の経験値と、初めての場所。日常ループが付ける）。
@@ -14,9 +15,9 @@
 //   next   : 次の依頼が届く日（通算日。この日の朝から）。無い保存は第5章の FIRST_REQUEST_DAY 日目
 //   offers : 届いた依頼の数（依頼の巡回の順に使う）
 //   offer  : 今の依頼 { id, msg, day, accepted, until } か null。accepted＝引き受けた日（未返事は null）、until＝返事か作りに行ける最後の日
-//   served : 作りに行った回数（依頼ごと）
+//   served : 完了した回数（依頼ごと。全20件が1回以上で、以降は短い汎用リピート）
 //   last   : 最後の結果 { id, day, fit, tickets, performer, payout, paid }（確認用）
-//   offer の任意項目 assigned="tsumugi", jobDay は委託予約。旧保存は本人の依頼のまま。
+//   offer の任意項目 assigned="tsumugi", jobDay は委託予約、repeat=true は一巡後の汎用予約。旧保存は本人の依頼のまま。
 
 export const CATERING_FLAG = "_ch5_catering";
 export const CATERING_SPOT_ID = "ch5_catering";
@@ -55,7 +56,7 @@ export const CATERING_REQUESTS = Object.freeze([
       option("ブラックティー＋オレンジ", { black_tea: 8, orange: 4 }, "best"),
       option("レモン＋ミント", { lemon: 9, mint: 3 }, "off"),
     ] }),
-  request({ id: "office_wrapup", payout: 20000, title: "会社の打ち上げ", client: "設計事務所の人", place: "駅裏のレンタルラウンジ", slot: 1, bg: "bg_hideaway",
+  request({ id: "office_wrapup", payout: 20000, title: "会社の打ち上げ", client: "設計事務所の人", place: "駅裏のレンタルラウンジ", slot: 1, bg: "bg_cafe",
     report: ["打ち上げ、終わりました。桃に少しだけミントを合わせました", "甘いのとさっぱり、どっちも欲しいって言われて……", "最後は皆さん、同じ味をもう一台って"],
     reportReply: "次に来てくださったら、私も顔を覚えていられるといいな",
     lime: ["駅裏のラウンジで、設計事務所の打ち上げだ。夜の会な", "甘い派とさっぱり派で、割れてるらしい"],
@@ -125,6 +126,126 @@ export const CATERING_REQUESTS = Object.freeze([
       option("デスバイアイス＋クールミント", { death_by_ice: 8, cool_mint: 4 }, "off"),
       option("グレープ＋ミント", { grape: 9, mint: 3 }, "best"),
     ] }),
+  request({ id: "seaside_sunset", payout: 20000, title: "海辺の夕涼み", client: "海沿いに住む常連", place: "地元の海沿いのテラス", slot: 0, bg: "bg_street",
+    report: ["海沿いの会、終わりました", "レモンとライムで、甘さを控えめにしました", "夕日が沈むまで、皆さん席を動かなかったです"],
+    reportReply: "……帰る前に、海の色を少し描いてきました",
+    lime: ["海沿いのテラスで、夕方までの集まりだ", "柑橘が好きな連中だ。甘い菓子みたいな味は避けたいと"],
+    conditions: ["柑橘の香りがほしい", "甘い菓子のような味は避ける", "冷たさは控えめに"],
+    options: [
+      option("レモン＋ライム", {"lemon": 8, "lime": 4}, "best"),
+      option("オレンジ＋ミント", {"orange": 10, "mint": 2}, "ok"),
+      option("バニラ＋キャラメル", {"vanilla": 8, "caramel": 4}, "off"),
+    ] }),
+  request({ id: "beach_house_closing", payout: 25000, title: "海の家の閉店会", client: "海の家の店主", place: "地元の海の家のテラス", slot: 1, bg: "bg_cafe",
+    report: ["海の家、片付けまで終わりました", "パイナップルとココナッツを合わせました", "皆さん、やっと客の椅子に座れたって笑ってました"],
+    reportReply: "店主さんだけ最後まで立っていて、皆さんに呼ばれてました",
+    lime: ["海の家の営業が終わってから、店員たちの会だ", "南国っぽい甘さがいいそうだ。ココナッツを入れてくれと"],
+    conditions: ["ココナッツを入れる", "果物の甘酸っぱさもほしい", "ミントなしで、ゆっくり吸いたい"],
+    options: [
+      option("マンゴー＋ココナッツ", {"mango": 8, "coconut": 4}, "ok"),
+      option("レモン＋ミント", {"lemon": 8, "mint": 4}, "off"),
+      option("パイナップル＋ココナッツ", {"pineapple": 8, "coconut": 4}, "best"),
+    ] }),
+  request({ id: "local_dj", payout: 25000, title: "地元クラブのDJ会", client: "地元クラブの企画担当", place: "地元のクラブの休憩ラウンジ", slot: 1, bg: "bg_cafe",
+    report: ["地元のクラブの会、終わりました", "グレープフルーツに、ミントを少し入れました", "休憩の席でも、皆さん足だけは拍子を取ってました"],
+    reportReply: "大きい音は苦手だけど、休憩室はちゃんと静かでした",
+    lime: ["地元のクラブからだ。踊る所とは別の休憩席に台を出す", "果物と少しミントがいいと。甘ったるいのは避けたいそうだ"],
+    conditions: ["果物と、少しだけミント", "甘ったるくしない", "苦い味は苦手な人が多い"],
+    options: [
+      option("エスプレッソ＋ダークチョコ", {"espresso": 8, "dark_chocolate": 4}, "off"),
+      option("グレープフルーツ＋ミント", {"grapefruit": 10, "mint": 2}, "best"),
+      option("ピーチ＋ミント", {"peach": 10, "mint": 2}, "ok"),
+    ] }),
+  request({ id: "live_house_wrapup", payout: 20000, title: "ライブハウスの打ち上げ", client: "地元のライブハウスのスタッフ", place: "地元ライブハウスの控室", slot: 1, bg: "bg_home",
+    report: ["ライブの打ち上げ、終わりました", "紅茶にハニーを少しだけ合わせました", "歌っていた方が、今度は客席で聴きたいって"],
+    reportReply: "帰りに、今日の出演者のチラシをいただきました",
+    lime: ["地元のライブハウスで、終演後の打ち上げだ", "歌い終えた連中だから、強い冷たさはなし。紅茶が好きだと"],
+    conditions: ["紅茶の香りが好き", "強い冷たさは避ける", "甘さを少し添えてほしい"],
+    options: [
+      option("ブラックティー＋ハニー", {"black_tea": 10, "honey": 2}, "best"),
+      option("レモンティー単体", {"lemon_tea": 12}, "ok"),
+      option("ブラックティー＋クールミント", {"black_tea": 6, "cool_mint": 6}, "off"),
+    ] }),
+  request({ id: "photo_exhibition", payout: 15000, title: "写真展の懇親会", client: "地元の写真サークルの幹事", place: "商店街のギャラリーの談話室", slot: 0, bg: "bg_cafe",
+    report: ["写真展の会、終わりました", "レモンに、ジャスミンを少しだけ合わせました", "写真の前では無口だった方も、撮った時の話をしてました"],
+    reportReply: "私も、同じ道を違う時間に歩いてみたくなりました",
+    lime: ["商店街の写真展で、出展者の懇親会だ", "柑橘と花の香りを少しずつ。花が強すぎるのは苦手だと"],
+    conditions: ["柑橘の香りを中心に", "花の香りは少しだけ", "濃い甘さは避ける"],
+    options: [
+      option("ローズ＋バニラ", {"rose": 8, "vanilla": 4}, "off"),
+      option("レモン＋ジャスミン", {"lemon": 10, "jasmine": 2}, "best"),
+      option("オレンジ＋ブラックティー", {"orange": 8, "black_tea": 4}, "ok"),
+    ] }),
+  request({ id: "pottery_kiln", payout: 20000, title: "陶芸工房の窯開き", client: "地元の陶芸工房の主宰者", place: "地元の工房の休憩室", slot: 0, bg: "bg_home",
+    report: ["工房の会、終わりました", "ヘーゼルナッツとミルクにしました", "窯から出た器を、皆さん順番に見せてくれました"],
+    reportReply: "同じ土でも、あんなに違う色になるんですね",
+    lime: ["地元の陶芸工房で、窯開きのあとの会だ", "香ばしい甘さが好きらしい。果物の酸っぱさはなしで頼むと"],
+    conditions: ["ナッツの香ばしさがほしい", "甘さはある方がいい", "酸っぱい果物は避ける"],
+    options: [
+      option("バニラ＋キャラメル", {"vanilla": 8, "caramel": 4}, "ok"),
+      option("ヘーゼルナッツ＋ミルク", {"hazelnut": 9, "milk": 3}, "best"),
+      option("グレープフルーツ＋ライム", {"grapefruit": 8, "lime": 4}, "off"),
+    ] }),
+  request({ id: "record_listening", payout: 15000, title: "レコード試聴会", client: "商店街のレコード店主", place: "商店街のレコード店の奥", slot: 1, bg: "bg_cafe",
+    report: ["レコードの会、終わりました", "カプチーノにチョコを少し合わせました", "針を落とす時だけ、皆さんぴたっと話をやめるんです"],
+    reportReply: "最後の曲は、店主さんが私にも選ばせてくれました",
+    lime: ["レコード屋の閉店後に、試聴会をやるそうだ", "コーヒーにチョコを少し。苦すぎるのは避けたいってよ"],
+    conditions: ["コーヒーの香りを中心に", "チョコを少し合わせる", "苦さを強くしすぎない"],
+    options: [
+      option("エスプレッソ＋ダークチョコ", {"espresso": 8, "dark_chocolate": 4}, "off"),
+      option("カプチーノ単体", {"cappuccino": 12}, "ok"),
+      option("カプチーノ＋チョコレート", {"cappuccino": 9, "chocolate": 3}, "best"),
+    ] }),
+  request({ id: "reading_circle", payout: 15000, title: "読書会の休憩", client: "地元の読書会の世話役", place: "地元の喫茶店の貸切席", slot: 0, bg: "bg_cafe",
+    report: ["読書会の休憩、終わりました", "お菓子のあとだったので、レモンティーにしました", "同じ結末なのに、皆さん違うところで笑ってました"],
+    reportReply: "帰りに書名をメモしました。私も読んでみたいです",
+    lime: ["地元の喫茶店で、大人だけの読書会だ", "紅茶が好きで、ミントはなし。甘い菓子のあとに吸うそうだ"],
+    conditions: ["紅茶の香りが好き", "ミントなし", "甘い菓子のあとでも、重くならない味"],
+    options: [
+      option("レモンティー単体", {"lemon_tea": 12}, "best"),
+      option("ブラックティー＋バニラ", {"black_tea": 10, "vanilla": 2}, "ok"),
+      option("ピーチ＋ミント", {"peach": 8, "mint": 4}, "off"),
+    ] }),
+  request({ id: "film_discussion", payout: 20000, title: "上映会の感想会", client: "地元の映画サークルの幹事", place: "地元の上映会場の談話室", slot: 1, bg: "bg_home",
+    report: ["上映会の感想会、終わりました", "ポップコーンにヘーゼルナッツを合わせました", "映画の食べ物の場面を、皆さん思い出してました"],
+    reportReply: "結末の話で盛り上がって、片付けの時もまだ意見が違ってました",
+    lime: ["地元の映画サークルからだ。上映後の、大人だけの感想会な", "ポップコーンの味が気になると。甘すぎず、香ばしいのがいいそうだ"],
+    conditions: ["ポップコーンを試したい", "甘すぎない方がいい", "香ばしさを重ねたい"],
+    options: [
+      option("ポップコーン＋バニラ", {"popcorn": 8, "vanilla": 4}, "ok"),
+      option("コットンキャンディ＋キャラメル", {"cotton_candy": 8, "caramel": 4}, "off"),
+      option("ポップコーン＋ヘーゼルナッツ", {"popcorn": 9, "hazelnut": 3}, "best"),
+    ] }),
+  request({ id: "florist_anniversary", payout: 20000, title: "花屋の周年会", client: "商店街の花屋の店主", place: "商店街の花屋の中庭", slot: 0, bg: "bg_street",
+    report: ["花屋さんの会、終わりました", "桃にローズを、ほんの少し合わせました", "店主さんが、花を選ぶ時も主役を決めるんだって"],
+    reportReply: "……お話を聞いてから、花束の見え方が変わりました",
+    lime: ["花屋の周年会だ。店の中庭に、大人の常連が集まる", "桃に花の香りを少し。花ばかりの強い味にはしないでくれと"],
+    conditions: ["桃を中心にする", "花の香りを少しだけ添える", "花だけの強い香りは避ける"],
+    options: [
+      option("ピーチ＋ローズ", {"peach": 10, "rose": 2}, "best"),
+      option("ローズ＋ジャスミン", {"rose": 8, "jasmine": 4}, "off"),
+      option("ピーチ＋レモン", {"peach": 9, "lemon": 3}, "ok"),
+    ] }),
+  request({ id: "rooftop_reunion", payout: 25000, title: "屋上の同窓会", client: "地元の同窓会の幹事", place: "駅前のビルの屋上テラス", slot: 0, bg: "bg_street",
+    report: ["屋上の同窓会、終わりました", "ぶどうに紅茶を少し合わせました", "昔の呼び名で呼ばれると、皆さん声まで変わるんですね"],
+    reportReply: "最後の集合写真だけ、私が撮らせてもらいました",
+    lime: ["駅前の屋上テラスで、大人の同窓会だ", "ぶどうが好きで、冷たいのは苦手らしい。軽く紅茶を混ぜたいと"],
+    conditions: ["ぶどうを中心にする", "紅茶を少し合わせる", "ミントの冷たさは避ける"],
+    options: [
+      option("グレープ＋レモン", {"grape": 10, "lemon": 2}, "ok"),
+      option("グレープ＋ブラックティー", {"grape": 9, "black_tea": 3}, "best"),
+      option("グレープ＋クールミント", {"grape": 8, "cool_mint": 4}, "off"),
+    ] }),
+  request({ id: "game_watch", payout: 25000, title: "地元大会の観戦会", client: "地元のゲーム大会の運営者", place: "地元イベント会場の休憩室", slot: 0, bg: "bg_home",
+    report: ["観戦会の休憩室、終わりました", "コーラにライムを合わせました", "試合が動くと、皆さんホースを置いて画面を見てました"],
+    reportReply: "応援していた方が負けても、最後は拍手していました",
+    lime: ["地元のゲーム大会だ。観戦の大人だけが入る休憩室に台を出す", "コーラに柑橘が合いそうだと。ミントはなしで頼むそうだ"],
+    conditions: ["コーラの香りを中心に", "柑橘を合わせてさっぱりと", "ミントなし"],
+    options: [
+      option("レモン＋ミント", {"lemon": 8, "mint": 4}, "off"),
+      option("コーラ＋バニラ", {"cola": 10, "vanilla": 2}, "ok"),
+      option("コーラ＋ライム", {"cola": 9, "lime": 3}, "best"),
+    ] }),
 ]);
 
 export const cateringRequestById = id => CATERING_REQUESTS.find(entry => entry.id === id) || null;
@@ -134,6 +255,7 @@ export const cateringSceneId = (id, part) => `ch5_catering_${id}_${part}`;
 export const cateringCloseId = (fit, index) => `ch5_catering_close_${fit}_${["a", "b"][index % 2]}`;
 export const CATERING_SCENE_IDS = Object.freeze([
   ...CATERING_REQUESTS.flatMap(entry => ["intro", "best", "ok", "off"].map(part => cateringSceneId(entry.id, part))),
+  ...["intro", "best", "ok", "off"].map(part => cateringSceneId("repeat", part)),
   ...["best", "ok", "off"].flatMap(fit => [0, 1].map(index => cateringCloseId(fit, index))),
 ]);
 
@@ -190,10 +312,22 @@ export function cateringRequestDue(value) {
   return nextCateringRequest(value);
 }
 
-/** 次に届く依頼（周回ごとの種で始まりをずらし、届いた順に巡回する。断った・期限が過ぎた依頼も、また巡ってくる）。 */
+/** 固有の依頼をすべて終えたか。見送り・期限切れ・受注しただけでは一巡に数えない。 */
+export function cateringFirstRoundComplete(value) {
+  const { served } = cateringState(value);
+  return CATERING_REQUESTS.every(entry => integer(served[entry.id]) && served[entry.id] > 0);
+}
+
+/** 次に届く依頼。未完の会を優先し、一巡した後は同じ地元会場への汎用リピートになる。 */
 export function nextCateringRequest(value) {
   const seed = Math.abs(Math.trunc(Number(value?.seed) || 0));
-  return CATERING_REQUESTS[(seed + cateringState(value).offers) % CATERING_REQUESTS.length];
+  const record = cateringState(value);
+  const start = (seed + record.offers) % CATERING_REQUESTS.length;
+  for (let offset = 0; offset < CATERING_REQUESTS.length; offset++) {
+    const entry = CATERING_REQUESTS[(start + offset) % CATERING_REQUESTS.length];
+    if (!integer(record.served[entry.id]) || record.served[entry.id] < 1) return entry;
+  }
+  return CATERING_REQUESTS[start];
 }
 
 /** 依頼が届いた（LIMEを受信箱に入れた後に記録する）。msg＝受信箱の項目ID。 */
@@ -201,7 +335,8 @@ export function recordCateringOffer(value, id, msg) {
   const record = cateringState(value);
   if (record.offer || !cateringRequestById(id)) return false;
   store(value, { ...record, offers: record.offers + 1,
-    offer: { id, msg, day: value.day, accepted: null, until: value.day + REPLY_DAYS - 1 } });
+    offer: { id, msg, day: value.day, accepted: null, until: value.day + REPLY_DAYS - 1,
+      ...(cateringFirstRoundComplete(value) ? { repeat: true } : {}) } });
   return true;
 }
 
@@ -260,7 +395,7 @@ export function settleCatering(value, index, grant, pay) {
   const want = CATERING_TICKETS[fit];
   const tickets = want > 0 ? Math.max(0, grant(want) | 0) : 0;
   const paid = payCatering(entry, pay);
-  const result = { fit, tickets, payout: entry.payout, paid };
+  const result = { fit, tickets, payout: entry.payout, paid, ...(record.offer.repeat === true ? { repeat: true } : {}) };
   store(value, { ...record, offer: null, next: value.day + REQUEST_GAP_DAYS,
     served: { ...record.served, [entry.id]: (record.served[entry.id] || 0) + 1 },
     last: { id: entry.id, day: value.day, performer: "hajime", ...result } });
@@ -330,7 +465,8 @@ export function settleDelegatedCatering(value, { throughDay = value?.day, throug
   const entry = cateringRequestById(booking.id);
   const record = cateringState(value);
   const paid = payCatering(entry, pay);
-  const result = { id: entry.id, day: booking.jobDay, performer: "tsumugi", fit: "delegated", tickets: 0, payout: entry.payout, paid };
+  const result = { id: entry.id, day: booking.jobDay, performer: "tsumugi", fit: "delegated", tickets: 0, payout: entry.payout, paid,
+    ...(booking.repeat === true ? { repeat: true } : {}) };
   store(value, { ...record, offer: null, next: Math.max(value.day, booking.jobDay) + REQUEST_GAP_DAYS,
     served: { ...record.served, [entry.id]: (record.served[entry.id] || 0) + 1 }, last: result });
   removeCateringShift(value, booking);
