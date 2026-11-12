@@ -169,6 +169,8 @@ let artTask = null;
 /** 絵をすべて読み終えたら { camel: [..4], jockey, suv, wheel }。1枚でも読めなければ null（Canvas の描画に戻す）。 */
 export function loadCamelArt() {
   if (typeof Image === "undefined") return Promise.resolve(null);
+  // Optional art must share the same request too (import, tutorial and START).
+  if (artTask) return artTask;
   const load = rel => { const image = new Image(); image.decoding = "async"; image.src = imgFileUrl(rel); return image.decode().then(() => image); };
   // 吹き出しの絵（CR-UI13）と砂煙の絵（CR-WD03）は読めなくても他の絵は使う（それぞれ従来の描画に戻す）。
   const balloon = load(ART_FILES.balloon).catch(() => null);
@@ -1870,5 +1872,6 @@ function shade(hex, amount) {
 }
 
 export { PLAYER_CAMEL, RIVAL_PROFILES };
+
 
 

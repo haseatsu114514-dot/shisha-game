@@ -79,3 +79,26 @@ export function prepareImage(src, { timeoutMs = 8000, signal } = {}) {
 }
 
 export const loadingPrefetch = createPrefetchQueue();
+
+
+/** Best-effort, one-at-a-time speculative preparation. Never blocks scene entry.
+ * Recheck ownership after yielding: a new save/chapter must not inherit old work.
+ * Returning false drops the remaining jobs, but does not abort shared in-flight assets.
+ */
+export async function warmInBackground(tasks, {
+  isCurrent = () => true,
+  yieldTask = () => new Promise(resolve => {
+    if (typeof requestIdleCallback === "function") requestIdleCallback(resolve, { timeout: 1000 });
+    else setTimeout(resolve, 100);
+  }),
+  isHidden = () => globalThis.document?.hidden === true,
+  saveData = () => globalThis.navigator?.connection?.saveData === true,
+} = {}) {
+  for (const task of tasks) {
+    if (!isCurrent() || saveData()) return;
+    await yieldTask();
+    // Hidden pages do not need speculative work; foreground entry still loads on demand.
+    if (!isCurrent() || isHidden() || saveData()) return;
+    try { await task(); } catch { /* Foreground loaders own errors and retries. */ }
+  }
+}
