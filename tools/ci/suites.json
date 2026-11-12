@@ -4855,9 +4855,36 @@
       "run": [
         "node remake/test/browser/look_retro.mjs"
       ]
+    },
+    {
+      "id": "romance-hesitation",
+      "title": "New romance hesitation model and VN controller: eight heroines, cancel, apology, LOAD and duplicate clicks",
+      "kind": "quick",
+      "run": [
+        "node remake/test/romance_hesitation.mjs",
+        "node remake/test/romance_hesitation_engine.mjs"
+      ]
+    },
+    {
+      "id": "romance-hesitation-browser",
+      "title": "Eight confession transitions, real lover memory portraits, two-step return and SAVE/LOAD",
+      "kind": "browser",
+      "weight": 2,
+      "timeout": 8,
+      "paths": [
+        "remake/js/core/romance-hesitation.js",
+        "remake/js/vn/engine.js",
+        "remake/js/daily/romance.js",
+        "remake/js/chapters/ch4-desert.js",
+        "remake/test/browser/romance_hesitation.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/romance_hesitation.mjs"
+      ]
     }
   ]
 }
+
 
 
 

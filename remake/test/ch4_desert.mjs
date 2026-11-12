@@ -357,10 +357,9 @@ test("Noor's finale, confession and gift data line up with bonds.js / romance.js
   const choice = scene(NOOR_CONFESSION).lines.find(line => line.type === "choice");
   assert.deepEqual(choice.choices.map(c => c.next_id), [`${NOOR_CONFESSION}_accept`, `${NOOR_CONFESSION}_reject`]);
   assert.equal(scene(`${NOOR_CONFESSION}_accept`).metadata.set_romance, "noor");
-  // ほかに恋人がいれば、返事の前に一度だけ立ち止まる（一時の印は再生の前に立て、後で消す）
-  const aside = scene(NOOR_CONFESSION).lines.find(line => line.type === "condition" && line.condition_type === "flag");
-  assert.deepEqual([aside.condition_type, aside.flag], ["flag", NOOR_OTHER_LOVER_FLAG]);
-  assert(scene(NOOR_CONFESSION).branches[aside.next_true]?.length);
+  // 恋人への迷いは共通VNの二段確認へ集約。旧一段警告を重ねない。
+  assert(!scene(NOOR_CONFESSION).lines.some(line => line.type === "condition" && line.flag === NOOR_OTHER_LOVER_FLAG));
+  assert.equal(scene(NOOR_CONFESSION).branches.other_lover, undefined);
   // 締めくくり・告白は大会に触れない（大会の前後どちらで読んでも成り立つ）
   for (const id of [NOOR_FINALE, NOOR_CONFESSION, `${NOOR_CONFESSION}_accept`, `${NOOR_CONFESSION}_reject`]) {
     assert.doesNotMatch(JSON.stringify([scene(id).lines, scene(id).branches || {}]), /大会|本番/, id);
@@ -378,27 +377,33 @@ test("Noor's finale, confession and gift data line up with bonds.js / romance.js
   assert.match(desert, /delete owner\.flags\[NOOR_OTHER_LOVER_FLAG\]/);
 });
 
-test("the other seven confessions also pause once when another lover exists (2026-11-11 講評 S12)", () => {
-  // ヌール以外の告白は、ほかの7人を lover 条件で順に確かめる（新しい印もコードも足さない）。
-  // 誰か一人でも恋人なら other_lover の内心を一行だけ読み、誰もいなければ何も読まずに選択肢へ進む。
+test("all eight confessions pause in the shared two-stage flow without a premature decision", async () => {
   const heroines = JSON.parse(readFileSync(new URL("../../data/story_routes.json", import.meta.url), "utf8")).heroine_ids;
-  const scenes = new Map(JSON.parse(readFileSync(new URL("../../data/dialogue/confession.json", import.meta.url), "utf8"))
+  const scenes = Object.fromEntries(JSON.parse(readFileSync(new URL("../../data/dialogue/confession.json", import.meta.url), "utf8"))
     .dialogues.map(d => [d.dialogue_id, d]));
-  for (const who of heroines.filter(id => id !== "noor")) {
-    const scene = scenes.get(`confession_${who}`);
-    const at = scene.lines.findIndex(line => line.type === "condition" && line.condition_type === "lover");
-    assert.equal(scene.lines[at + 1]?.type, "choice", `${who}: the aside sits right before the answer`);
-    const asked = [];
-    for (let line = scene.lines[at]; line; line = scene.branches[line.next_false]?.[0]) {
-      assert.deepEqual([line.type, line.condition_type, line.next_true], ["condition", "lover", "other_lover"], who);
-      if (line.next_false) assert.equal(scene.branches[line.next_false].length, 1, `${who}: ${line.next_false}`);
-      asked.push(line.char_id);
+  const model = readFileSync(new URL("../js/core/romance-hesitation.js", import.meta.url), "utf8");
+  const { romanceIntent, createRomanceHesitation } = await import(`data:text/javascript;base64,${Buffer.from(model).toString("base64")}`);
+  for (const who of heroines) {
+    const scene = scenes[`confession_${who}`];
+    const line = scene.lines.find(line => line.type === "choice");
+    const accept = line.choices.find(choice => choice.next_id === `confession_${who}_accept`);
+    assert(accept, who);
+    assert(!scene.lines.some(line => line.next_true === "other_lover"), `${who}: no legacy aside before the common confirmation`);
+    assert(!Object.keys(scene.branches || {}).some(key => key === "other_lover" || key.startsWith("other_lover_check_")), who);
+    for (const partner of heroines.filter(id => id !== who)) {
+      const value = { lovers: [partner], flags: { _minto_name_known: true }, romanceChoices: {} };
+      const before = JSON.stringify(value);
+      const intent = romanceIntent(value, scene.dialogue_id, line, accept, scenes);
+      const flow = createRomanceHesitation(value, intent);
+      assert.equal(flow.stage, "remember", who);
+      assert.deepEqual(flow.partners, [partner]);
+      assert.equal(flow.view().memories[0].id, partner);
+      assert.equal(flow.choose("continue", value).status, "pending");
+      assert.equal(flow.stage, "decide");
+      assert.equal(JSON.stringify(value), before, "first confirmation never applies the romance answer");
+      assert.equal(flow.choose("cancel", value).status, "cancelled");
+      assert.equal(JSON.stringify(value), before, "returning to the original answer never settles friendship or romance");
     }
-    assert.deepEqual(asked.sort(), heroines.filter(id => id !== who).sort(), `${who}: every other heroine is asked once`);
-    const aside = scene.branches.other_lover;
-    assert.equal(aside.length, 1, who);
-    assert.equal(aside[0].speaker, "hajime");
-    assert.match(aside[0].text, /^（.*付き合っている人.*）$/, `${who}: one inner line about the lover he does not mention`);
   }
 });
 
