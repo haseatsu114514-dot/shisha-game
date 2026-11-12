@@ -264,8 +264,10 @@ export function morningMessages(opts = {}) {
   const delivered = new Set(inbox.map((i) => i.id));
   // 未読が残っている相手からは重ねて届かない（読むまで溜まっていく一方にしない）
   // 今いっしょにいる人（opts.exclude・第4章のドバイの同行者）からは、恋人のLIMEも物語のLIMEも届かない（#2024）
+  // 修羅場が未解決のあいだは、恋人の誰からも届かない（恋人のLIMEは romance.js が止め、物語・お出かけの誘い・雑談はここで止める。
+  // 2026-11-11 オーナー「やってしまった感を出せるように」）。一人ずつの話し直しが済めば、元どおり届く
   const senders = new Set([...(opts.tournamentDay ? [] : inbox.filter((i) => !i.read && !canRetry(i)).map((i) => i.msg.sender)),
-    ...(opts.exclude || [])]);
+    ...(opts.exclude || []), ...(state.flags?._story_shuraba_unresolved ? state.lovers || [] : [])]);
   for (const m of loverMessages(opts)) {
     // 初めての私服の約束など、まだ見ていない大事な話題を同じ相手の定期LIMEで押し流さない。
     const storyInvite = DB.lime.some((candidate) => candidate.sender === m.sender && candidate.priority > 0
@@ -890,7 +892,8 @@ async function runItem(item, ui, accepted, { forced = false } = {}) {
   const from = accountOf(item);
   if (!item.read) {
     for (const msg of m.messages || []) {
-      await drawMessage(ui, msg, false, from);
+      // { me: true, text } は、はじめが先に送っていた一通（LIMEの誤爆・daily/petit-shuraba.js）。自分の吹き出しで出す
+      await drawMessage(ui, msg, msg?.me === true, from);
       if (!alive()) break;
     }
     if (!alive()) return; // 読み終える前に戻ったら、既読・報酬を付けない
@@ -1036,7 +1039,7 @@ function drawHistory(items, ui) {
     for (const it of items) {
       if (!lastItem || it.day !== lastItem.day || it.chapter !== lastItem.chapter) { ui.note(dayLabel(it), ".day"); lastItem = it; }
       if (!it.read) continue;
-      for (const msg of it.msg.messages || []) drawMessage(ui, msg, false, accountOf(it), false);
+      for (const msg of it.msg.messages || []) drawMessage(ui, msg, msg?.me === true, accountOf(it), false);
       const missed = missedInvitationNote(it);
       if (missed) { ui.note(missed); continue; }
       for (const l of it.log || []) {

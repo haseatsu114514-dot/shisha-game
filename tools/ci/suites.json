@@ -921,6 +921,7 @@
         "node --experimental-vm-modules remake/test/ch5_progress.mjs",
         "node remake/test/ch5_sumi_trial.mjs",
         "node remake/test/ch5_party.mjs",
+        "node remake/test/petit_shuraba.mjs",
         "node remake/test/ch5_travel.mjs",
         "node --experimental-vm-modules remake/test/ch3_activities.mjs",
         "node remake/test/ch3_trials.mjs",
@@ -1885,6 +1886,30 @@
         "remake/test/browser/ch5_sumi_trial.mjs"
       ],
       "run": ["node remake/test/browser/ch5_sumi_trial.mjs"]
+    },
+    {
+      "id": "petit-shuraba",
+      "title": "Petit shuraba: one scene after a date or a visit while two lovers are hidden, the LIME misfire, the short stare cut-in, and the recall at the final shuraba",
+      "kind": "browser",
+      "weight": 0.3,
+      "timeout": 8,
+      "paths": [
+        "remake/js/core/petit-shuraba.js",
+        "remake/js/daily/petit-shuraba.js",
+        "data/dialogue/petit_shuraba.json",
+        "remake/data/lover.json",
+        "remake/js/daily/romance.js",
+        "remake/js/daily/samechan-date.js",
+        "remake/js/daily/phone.js",
+        "remake/js/motions/gaze.js",
+        "remake/css/motions/gaze.css",
+        "data/dialogue/ch5_party.json",
+        "data/dialogue/relationship_conflicts.json",
+        "remake/test/browser/petit_shuraba.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/petit_shuraba.mjs"
+      ]
     },
     {
       "id": "staff-roll",

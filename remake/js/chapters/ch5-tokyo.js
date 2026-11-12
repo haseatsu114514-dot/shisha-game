@@ -31,6 +31,7 @@ import { consultLessons } from "../core/growth.js";
 import { keepDailyHud } from "../daily/hud.js";
 import { finaleAtVisit, playFinale } from "../daily/bonds.js";
 import { mashiroTimeOpen, spendMashiroTime, MASHIRO_TIME_FILE, MASHIRO_TIME_SCENES } from "./mashiro-time.js";
+import { petitAfterDate } from "../daily/petit-shuraba.js";
 
 export const TOKYO = "tokyo";
 const ATTIC_FLAG = "_ch5_tokyo_attic"; // ムカイさんに屋根裏を貸してもらった（最初の到着の場面を読んだ）
@@ -233,6 +234,8 @@ export async function performTokyoSpot(spot, { staminaGuard } = {}) {
         if (staminaGuard && !(await staminaGuard(MASHIRO_TIME_STAMINA))) return { used: false, exerted: false };
         if (!await spendMashiroTime({ read: scene => read(scene, spot.preview, owner), milestoneDue: mashiroMilestoneDue,
           readMilestone: () => readLoverMilestone("mashiro") }) || state !== owner) return { used: false, exerted: false };
+        await petitAfterDate("mashiro"); // プチ修羅場（恋人が2人以上・一度きり。daily/petit-shuraba.js）
+        if (state !== owner) return { used: false, exerted: false };
         addStamina(MASHIRO_TIME_STAMINA);
         return { used: true, exerted: true };
       }

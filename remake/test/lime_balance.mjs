@@ -58,6 +58,7 @@ const values = {
   "story-knowledge.js": { syncMintoKnowledge: noop },
   // サメちゃんのデート（samechan-date.js）が読む心得の盤。LIMEの検査なので旧しくみ（盤は無効）の代役にする
   "growth.js": { growthEnabled: () => false, awardActionExp: () => 0 },
+  "petit-shuraba.js": { petitAfterDate: async () => false }, // プチ修羅場（デートの後の寄り道）は remake/test/petit_shuraba.mjs
   "gallery-progress.js": { recordRouteLover: noop, recordRouteEvent: noop }, // コレクションのルート記録（恋人成立・閲覧した段階）は remake/test/gallery_route_records.mjs
 };
 const coreFiles = { "stat-step-tables.js": "stat-step-tables.js", "production-stats.js": "stats.js", "condition.js": "condition.js", "affinity-stages.js": "affinity-stages.js", "travel-budget.js": "travel-budget.js" };
