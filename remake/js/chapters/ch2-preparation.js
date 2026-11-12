@@ -19,7 +19,7 @@ import { MAP, STOPS, ROOMS } from "./ch2-city-data.js";
 import { dayOneProgress, recordCityVisit } from "./ch2-progress.js";
 import { chapterTwoNights, storyVisitDue, readStoryVisit } from "./ch2-story.js";
 import { craftPrepDue, offerCraftPrep } from "./ch2-craft-prep.js";
-import { agehaStoryScene, agehaLaterScene, AGEHA_LATER_SCENES, syncAgehaVibes } from "./ch2-story-data.js";
+import { agehaStoryScene, agehaLaterScene, AGEHA_BADDAY, AGEHA_LATER_SCENES, syncAgehaVibes } from "./ch2-story-data.js";
 import { CH2_VISIT_STORIES, ch2VisitDone, ch2VisitReady } from "../core/affinity-stages.js";
 import { BOND_QUESTIONS, BOND_FINALES, playQuestionVisit, questionVisitDue, finaleAtVisit, playFinale } from "../daily/bonds.js";
 import { consultLessons } from "../core/growth.js";
@@ -192,8 +192,11 @@ export async function visitPreparationSpot(spot, { staminaGuard }) {
   const followup = pendingFollowup && affinityLevel(id) >= 1;
   // 訪問列を読み終えた♥5の次の来店で、締めくくりを一度だけ（#2027）。
   let finale = !live && !first && stages && !pendingStage && finaleAtVisit(id);
-  // あげはは続編のあと、店に通う回（ギャル友・初めての客・雑誌取材・ダメな日）を一度ずつ読む（#626）
-  const story = id === "ageha" && !first && !pendingFollowup ? agehaStoryScene(state, chapterDayNow, DB.dialogues) : null;
+  // あげはの短い続編は次の来店の冒頭に。♥が届いていれば、そのまま店に通う回へ続ける。
+  // 初回来店や未読は推測せず、「この前」の話を同じ初日に繰り上げない。
+  const nextStory = id === "ageha" && !first ? agehaStoryScene(state, chapterDayNow, DB.dialogues) : null;
+  // 「ダメな日」は入店時から様子が違う独立した場面。明るい続編と同じ来店には束ねない。
+  const story = !pendingFollowup || followup && nextStory !== AGEHA_BADDAY.id ? nextStory : null;
   // あげは: 店に通う回と♥3の質問を読み終えた♥5の次の来店は、いつもの会話の代わりに締めくくり（#2023・一度だけ）。
   if (!finale && id === "ageha" && !first && !pendingFollowup && !story) finale = finaleAtVisit("ageha");
   // 締めくくりの次の来店から、グミ・店の言葉・白いクマの席を一度ずつ。小品の前に割り込む（#3081）
@@ -203,7 +206,8 @@ export async function visitPreparationSpot(spot, { staminaGuard }) {
   const scene = live || story || stage?.scene || (finale ? BOND_FINALES[id].dialogue
     : first ? `remake_ch2_${id}_chat` : followup ? `remake_ch2_${id}_followup` : later || repeatScene(id));
   const dialogue = DB.dialogues[scene];
-  if (!dialogue?.lines?.length || (followup || stage?.done) && !dialogue.lines.every(line => line && !line.type
+  const followupDialogue = followup ? DB.dialogues[`remake_ch2_${id}_followup`] : null;
+  if (!dialogue?.lines?.length || (followup || stage?.done) && !(followupDialogue || dialogue)?.lines?.every(line => line && !line.type
     && typeof line.text === "string" && line.text.length > 0 && typeof line.speaker === "string" && typeof line.face === "string")) {
     toast("会話を読み込めませんでした。代金と行動は使っていません。地図からもう一度選べます");
     return { used: false, exerted: false };
@@ -224,6 +228,11 @@ export async function visitPreparationSpot(spot, { staminaGuard }) {
   // cancelled/途中LOAD/例外で、追加の街紹介の前に費用だけが残らない。
   await withScenePreparation(setBg(ROOMS[id]));
   if (state !== owner) return { used: false, exerted: false };
+  // 続編と段階を束ねても、既読・代金・来店数・好感度は下の共通精算で一度だけ確定する。
+  if (followup && story) {
+    const result = await play(`remake_ch2_${id}_followup`, { growthScene: true });
+    if (state !== owner || !result || result.cancelled) return { used: false, exerted: false };
+  }
   // 通い訪問の小会話の前だけ、昼夜の店のあいさつを挟む（段階会話・締めくくりは自前の導入がある）。
   const welcome = repeat && REPEAT_POOL[id] ? `venue_${id}_${timeOfDay()}` : null;
   if (welcome && DB.dialogues[welcome]?.lines?.length) {
@@ -321,5 +330,6 @@ export async function runChapterTwoPreparation() {
     nightEvents: chapterTwoNights(startDay),
   });
 }
+
 
 

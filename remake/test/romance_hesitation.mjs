@@ -46,7 +46,7 @@ check("呼称・名乗りの境界・凛想の立ち絵ID", () => {
   assert.equal(loverCallName("minto", { flags: {} }), "みんとさん");
   assert.deepEqual(ids.map(id => loverCallName(id, base())), ["栞さん", "つむぎちゃん", "凛想さん", "あげはさん", "ましろちゃん", "サメちゃん", "ひよりさん", "ヌールさん"]);
   const p = createRomanceHesitation(base(["rio", "unknown"]), { target: "noor", kind: "commit" });
-  assert.equal(p.view().memories[0].portrait.id, "rin");
+  assert.equal(p.view().memories[0].portrait.id, "rio");
   assert.equal(p.view().memories[1].portrait, null);
   assert.equal(p.view().memories[1].name, "あの人");
 });
@@ -104,6 +104,20 @@ check("1〜8人の全員を順序どおりに保持し、画像なしでも文�
       assert.ok(l.text.startsWith("（") && l.text.endsWith("）"));
       assert.ok(!l.text.includes("\n"));
     }
+  }
+});
+const manifest = JSON.parse(fs.readFileSync(new URL("../data/manifest.json", import.meta.url)));
+const resolverSource = fs.readFileSync(new URL("../js/core/portrait-resolver.js", import.meta.url), "utf8");
+const { resolvePortrait } = await import(`data:text/javascript;base64,${Buffer.from(resolverSource).toString("base64")}`);
+check("8人の回想IDを実manifestと本番resolverで両画風とも解決できる", () => {
+  for (const id of ids) for (const style of ["classic", "new"]) {
+    const value = base([id]);
+    const flow = createRomanceHesitation(value, { target: id === "ageha" ? "noor" : "ageha", kind: "commit" });
+    const portrait = flow.view().memories[0].portrait;
+    const resolved = resolvePortrait(manifest, portrait.id, portrait.face, style);
+    assert(resolved, `${id} ${style}: unresolved portrait`);
+    assert.equal(resolved.folder, id);
+    assert(manifest.portraits[resolved.folder]);
   }
 });
 console.log(`${count} groups passed (model only; VN integration and browser coverage pending)`);

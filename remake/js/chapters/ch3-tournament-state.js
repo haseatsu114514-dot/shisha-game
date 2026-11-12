@@ -5,8 +5,8 @@ import { initialBaseVotes } from "./tournament-base-votes.js";
 import { payTournamentPrize } from "./tournament-prize.js";
 import { liftRivalScore, observeRivalScore } from "../core/ngplus-difficulty.js";
 
-// 大会賞金（2026-10-30 決定の階段式: 第1章30,000円／第2章50,000円／第3章100,000円／第4章200,000円／第5章は賞金なし）。
-export const CH3_PRIZE = 100000;
+// 新規優勝のみ: 第1章50,000円／第2章100,000円／第3章200,000円／第4章500,000円／第5章は賞金なし。
+export const CH3_PRIZE = 200000;
 
 // HAZE: NATIONAL TOKYO。県大会とは別の一試合・一台・四人同時の保存状態。
 export const CONTESTANTS = Object.freeze(["hajime", "saku", "steve", "volk"]);

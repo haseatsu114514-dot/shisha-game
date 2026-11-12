@@ -12,7 +12,7 @@ async function prepare(page, id = "ageha", many = false) {
     const s = H.core.newGame(); Object.assign(s, { phase: "daily", chapter: 2, day: 10, slot: 1 });
     s.lovers = many ? ids.filter(other => other !== id) : [id === "tsumugi" ? "rio" : "tsumugi"];
     s.flags._minto_name_known = true;
-    for (const char of [...ids, "rin", "hajime"]) { s.met[char] = true; intro.markIntroSeen(char); }
+    for (const char of [...ids, "hajime"]) { s.met[char] = true; intro.markIntroSeen(char); }
     s.finales[id] = { route: "romance", chapter: 2, day: 9 };
     for (const n of [1, 2]) s.romanceChoices[`bond_q${n}_${id}`] = { char: id, value: 1, day: 9 };
     s.flags[stages.questionDoneKey(id)] = true;
@@ -30,7 +30,7 @@ async function prepare(page, id = "ageha", many = false) {
     H.vn.hooks.onChoice = (...args) => { H.choices.push(args[4].text); choice?.(...args); };
     const scene = H.data.DB.dialogues[`confession_${id}`];
     H.choice = scene.lines.find(line => line.type === "choice");
-    H.before = JSON.stringify(s); H.pictures = [];
+    H.before = JSON.stringify(s); H.confirmationSnapshotTaken = false; H.pictures = [];
     H.core.saveToSlot("suien_remake_slot1");
     H.done = false; H.run = H.vn.play(`confession_${id}`).then(result => { H.done = true; H.result = result; });
   }, { id, many, ids });
@@ -51,6 +51,7 @@ async function readToChoice(page) {
   throw Error("VN did not reach a choice or finish");
 }
 const choose = async (page, index) => {
+  await page.evaluate(() => { if (!H.confirmationSnapshotTaken) { H.before = JSON.stringify(H.core.state); H.confirmationSnapshotTaken = true; } });
   await page.locator(`#vn.active .vn-choice:nth-child(${index + 1})`).click();
   await readToChoice(page);
 };
@@ -63,7 +64,7 @@ await suite("romance-hesitation", async check => {
     await assertFits(page, ".vn-choice");
     assert(await page.evaluate(() => H.before === JSON.stringify(H.core.state)));
     const pictured = await page.evaluate(() => [...new Set(H.pictures)]);
-    for (const partner of ids.filter(other => other !== id)) assert(pictured.includes(partner === "rio" ? "rin" : partner), `missing real portrait: ${partner}`);
+    for (const partner of ids.filter(other => other !== id)) assert(pictured.includes(partner), `missing real portrait: ${partner}`);
     await choose(page, 1);
     assert.match(await page.locator(".vn-choice").last().innerText(), /付き合うと伝える/);
     assert(await page.evaluate(() => H.before === JSON.stringify(H.core.state)));

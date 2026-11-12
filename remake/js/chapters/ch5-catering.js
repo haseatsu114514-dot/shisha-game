@@ -11,6 +11,7 @@ import { play } from "../vn/engine.js";
 import { readDialogues } from "../core/chapter-data.js";
 import { addMoney, addStamina, earnStat } from "../core/stats.js";
 import { deliverLimeMessage, registerLimeReplyAction } from "../daily/phone.js";
+import { cateringBusinessOpen } from "./ch5-catering-origin.js";
 import { grantKujiTickets } from "../daily/kuji-tickets.js";
 import {
   CATERING_SPOT_ID, CATERING_PIN, CATERING_STAMINA, CATERING_SCENE_IDS, JOB_DAYS,
@@ -76,7 +77,8 @@ export function deliverCateringMorning(value = state) {
     deliverLimeMessage(lapseMessage(cateringRequestById(expired.id), value));
     delivered += 1;
   }
-  const entry = cateringRequestDue(value);
+  // 新規依頼は事業の相談を読んでから。旧依頼の失効/委託精算は上で継続する。
+  const entry = cateringBusinessOpen(value) ? cateringRequestDue(value) : null;
   if (entry && !sumiUnread(value)) {
     const message = requestMessage(entry, value);
     deliverLimeMessage(message);

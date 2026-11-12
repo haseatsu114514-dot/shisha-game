@@ -82,6 +82,13 @@ def measure(png: Path, anchor="feet"):
     return {"top": y0 / h, "bottom": y1 / h, "ax": feet / w, "aspect": w / h}
 
 
+# 頭で横位置を合わせる人（spriteAnchor: "head"）のうち、表情ごとのポーズの差で頭の重心が左右に動く人。
+# 「通常」だけを基準にすると、ほかの表情の頭が画面の中央から1pxを超えて外れるので、
+# 全表情の頭の重心の最小と最大の中間に合わせる（どの表情も中央から同じ幅に収まる。絵は動かさない）。
+# 新版のあげは: 5表情で約1.5pxの差がある（remake/test/browser/portrait_framing.mjs が「中央から1px以内」を確かめる）。
+HEAD_ANCHOR_MIDRANGE = {("new", "ageha")}
+
+
 def portraits(character_ids=None, base=None, style=None):
     """キャラごとに表情一覧と共通の framing 値（全表情で同じ＝表情を変えても絵が動かない）。"""
     out = {}
@@ -109,13 +116,17 @@ def portraits(character_ids=None, base=None, style=None):
             top = min(r["top"] for r in metrics.values())
             bottom = max(r["bottom"] for r in metrics.values())
             ref = metrics.get("normal") or next(iter(metrics.values()))
+            ax = ref["ax"]
+            if (style, d.name) in HEAD_ANCHOR_MIDRANGE and anchor_modes.get(d.name) == "head":
+                spread = [r["ax"] for r in metrics.values()]
+                ax = (min(spread) + max(spread)) / 2
             # 新絵は通常の人物高を保つ。高く掲げた小物で本人を縮めない。
             frame_top = ref["top"] if style else top
             frame_bottom = ref["bottom"] if style else bottom
             entry.update({
                 "h": round(frame_bottom - frame_top, 4),
                 "b": round(1 - frame_bottom, 4),
-                "ax": round(ref["ax"], 4),       # normal の横アンカー（全表情共通）
+                "ax": round(ax, 4),              # normal の横アンカー（全表情共通。HEAD_ANCHOR_MIDRANGE の人は全表情の中間）
                 "aspect": round(ref["aspect"], 4),
             })
             if style and frame_top - top > 0.002:

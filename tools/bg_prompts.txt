@@ -1,7 +1,25 @@
 水煙前線 -EN:CODE- 第1章 背景画像生成プロンプト集
-規格（2026-11-02〜）: docs/background_standard.md が正本。1920x1080 で保存（生成は 2048x1152 以上から縮小）／画風は基準画像4枚（bg_eden_shop・bg_tonari_inside_day・bg_street_night・bg_dubai_souq_day）と規格2節の英文／保存後に python3 tools/background_catalog.py sync で台帳へ記録。
+規格（2026-11-02〜）: docs/background_standard.md が正本。1920x1080 で保存（生成は 2048x1152 以上から縮小）／画風は基準画像4枚（kemurikusa・bg_tonari_inside_day・bg_street_night・bg_dubai_souq_day）と規格2節の英文2つ（STYLE STANDARD と COMPOSITION STANDARD）／保存後に python3 tools/background_catalog.py sync で台帳へ記録。
 このファイルは依頼文の書式と過去の依頼文の置き場。下の各ブロックにある「1280x720」「ドット絵調」は制作当時の指定で、新しい依頼は規格に従う。
 シーシャ台の先端は小さい凸型の金属ポストにし、凹んだカップ型・ボウル一体型・大きな先端パーツにしない（機材が写るときは docs/shisha_reference.md §4）。
+
+==========
+EDEN の描き直し（2026-11-12・要望台帳 BGU03・BGU05・Issue #3446）: 画風の基準だった絵を規格の画風へ
+==========
+手順は docs/background_standard.md 4.1節。場所の作りは今の絵から引き継ぎ、画風・大きさ・構図だけを規格へ寄せる。
+添付①＝画風の見本（真似るのは塗り・光・質感だけ。部屋の中身は写さない）、添付②＝場所の見本（真似るのは間取り・家具・小物・配色。塗り・質感は真似しない）。
+文のあとに、規格2節の STYLE STANDARD をそのまま貼る（b案は COMPOSITION STANDARD も）。出力は 2048x1152 以上・16:9・PNG（Codex の内蔵生成で 1672x941 までしか出ないときは、その原寸のまま）。
+候補は2案: a＝添付②の配置に忠実（COMPOSITION STANDARD は貼らない）／b＝[b] の一文と COMPOSITION STANDARD を足し、灯りと家具の位置を動かす。
+（観音堂の昼・CHOI-ZAP の昼・神崎煙草店・隠れ家・MELTY PUFF・大会会場と、mukai・煙幕・鉄の煙・Smoke & Glory の昼は Issue #3282 で描き直して採用済み。原画と依頼文は asset_sources/backgrounds/*-20261111/）
+
+--- U1: bg_eden_shop.png（EDEN 店内。網点の質感・1280x720 → 規格の画風）---
+添付①: assets/backgrounds/kemurikusa.png ／ 添付②: assets/backgrounds/bg_eden_shop.png ／ 機材: siryou の web-refs/images/ から、台の全体（ベースの口・ステム・受け皿が一続きで読める）の写真1枚。構造と縮尺だけを見る
+機材の8行（docs/shisha_reference.md §4.3）: 人物＝なし／場面＝準備・展示（ボウル未装着）／台の型＝EDEN の採用済みデザイン（真鍮と赤の伝統型。この店だけの指定）／HMD＝なし／炭＝なし／ホース＝なし（展示なので外す）／吸い口＝なし／構図＝店内の全景・台は棚と卓の上に置いてあるだけ
+Redraw the room in attachment 2 as a smooth painterly anime background in the hand of attachment 1: the same shop, the same furniture and colors, but with clean brushwork instead of the pixel/dither texture of attachment 2. EDEN, a small shisha lounge themed on the Garden of Eden, evening, no windows. Cream plaster walls above dark green wood wainscoting; low wooden bench sofas with deep red and moss green cushions, one cushion with a small diamond embroidery; small low wooden tables; dark herringbone wood floor with a small red Persian rug; a tall cream curtain tied back, left of center; ivy trailing along the top of the walls; red kilim wall hangings; one potted fern. Three framed still-life paintings (a larger one on the left wall, one on the far wall, a small one on the right wall), each showing a green apple on the left and a red apple on the right. Hanging Turkish mosaic lamps and brass lanterns in mixed shapes, sizes and chain lengths, warm amber light as the single main light. On a wall shelf at the back right, a row of five display hookahs; three more stand on side tables; a few small brass candle lanterns.
+Hookahs are on display only and not in use: traditional engraved brass stems with red accents on clear glass bases (this shop's approved style), about table-lamp height, NO bowl, NO heat management device, NO charcoal and NO hose; the top of each stem ends in a small convex metal post. Each stem goes straight down into the mouth of its glass base.
+（ここに docs/shisha_reference.md §4.2 の英文をそのまま貼り、続けて: This scene is the "bowl not mounted" display case: the top of each stem is a small convex metal post; draw no bowl, no HMD, no coals, no hose and no smoke. The engraved brass style of the stems is asked for here (this shop only).）
+[b] Move the cluster of mosaic lamps toward the upper left and upper right so that the middle of the far wall, where a character's head will be, is plain softly lit plaster; keep the lower third as open floor.
+【生成後チェック】りんごの絵は左が緑・右が赤（CI30）／台はボウル・HMD・炭・ホースなしで先端は小さな凸型のポスト、ステムがベースの口に真っ直ぐ差さる／網点・輪郭線が無い／文字・人物が無い／中央（左右30〜70%・上から10〜65%）に一番明るい灯りが無い（b）
 
 ==========
 第5章 SMOKE LAB（2026-11-02・Issue #2222）

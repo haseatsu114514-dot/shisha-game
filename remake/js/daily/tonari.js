@@ -1,3 +1,4 @@
+import { shiftBasePay, shiftPayNote } from "../core/shift-pay.js";
 import { CHARM_BONUS } from "../core/stat-step-tables.js";
 import { chapterFeatureEnabled } from "../core/chapter-features.js";
 import { callingSalesBonus } from "../core/growth-effects.js";
@@ -62,7 +63,7 @@ export function tonariMenu() {
         // #2213 B04: 「まかないで練習」はシフト上がりのメニューへ移した（独立の行動にしない）
         // #1650: 第2章の試煙会のあと、一度だけ。試供品の苺で熱を確かめ、スミさんに吸ってもらう
         strawberryTrialOpen() ? opt("苺を試す（まかない）", "体力を使う・1行動。試煙会の苺で一台。確かめるのは熱だけ", "strawberry", "tonari-strawberry") : null,
-        opt(manager ? "店長として店に立つ" : "シフトに入る（バイト）", `${shiftStory ? `【新しい話（${state.slot === 0 ? "シフト後" : "夜のシフト後"}）】` : ""}${manager ? "今日の営業を引き受ける。仕事終わりにはスミさんと話せる" : "接客で稼ぐ。上がったあとはスミさんと話せる。まかないで練習もできる"}`, "baito", "tonari-baito"),
+        opt(manager ? "店長として店に立つ" : "シフトに入る（バイト）", `${shiftStory ? `【新しい話（${state.slot === 0 ? "シフト後" : "夜のシフト後"}）】` : ""}${manager ? "今日の営業を引き受ける。仕事終わりにはスミさんと話せる" : "接客で稼ぐ。上がったあとはスミさんと話せる。まかないで練習もできる"}。${shiftPayNote(state)}＋各種ボーナス`, "baito", "tonari-baito"),
         hiyoriAxeReady() && axeThrowExposed() ? opt("ひよりと斧投げへ", hiyoriAxeAffordable()
           ? "夜の寄り道。参加3000円・体力を使う・行動1回。3投を一緒に楽しむ"
           : "参加には3000円と体力が必要。先にLIMEの約束を済ませよう", "hiyori_axe", "tonari-hiyori-axe") : null,
@@ -160,7 +161,8 @@ async function baitoShift({ called, story, owner, signal }) {
   const bonus = Math.round(CHARM_BONUS[step("charm") - 1] * condition.bonusRate);
   const extra = called ? CALLED_BONUS : 0;
   const rainPay = rainy ? RAIN_BAITO_BONUS : 0; // 雨の日は長居客の追加注文ぶん
-  const pay = 8000 + bonus + extra + rainPay + condition.shiftBonus + callingBonus;
+  const basePay = shiftBasePay(owner);
+  const pay = basePay + bonus + extra + rainPay + condition.shiftBonus + callingBonus;
   await shiftClose();
   const closing = state.chapter >= 5 ? { lines: [
     { speaker: "", face: "", text: "今日の仕事を終えて、手取りを帳面に記した。" },
@@ -169,6 +171,7 @@ async function baitoShift({ called, story, owner, signal }) {
   if (!current() || !await read(closing, { bg: TONARI_BG })) return false;
   if (called && !await read("remake_sumi_call_thanks", { bg: TONARI_BG })) return false;
   addMoney(pay);
+  toast(`シフトの日当 +${pay.toLocaleString("ja-JP")}円（${shiftPayNote(owner)}・各種ボーナス込み）`, { kind: "good" });
   if (callingBonus) owner.flags._minto_calling_paid = shiftKey; // 同じ行動枠の再開・再入力で上乗せを重ねない。
   if (callingBonus) toast(`呼び込みの追加注文。店からの売上ボーナス +${callingBonus.toLocaleString()}円`, { kind: "good" });
   if (bonus) toast(`指名ボーナス（魅力）＋${bonus.toLocaleString()}円`, { kind: config.statEffectColors !== false ? "charm-bonus" : "good" });
@@ -380,7 +383,7 @@ const SHIFT_ORDERS = [
     reactions: ["shift_flavor_ch2_night_deep_black_tea_lemon", "shift_flavor_ch2_night_deep_caramel_black_tea"] },
   { id: "ch2_tropical_compare", chapter: 2, text: "柚ヶ谷で濃いのを飲んできた。ここは、違う良さがほしい", mixes: [{ mango: 8, passion_fruit: 4 }, { watermelon: 9, mint: 3 }], labels: ["マンゴー＋パッションフルーツ", "スイカ＋ミント"],
     reactions: ["shift_flavor_ch2_tropical_compare_mango_passion_fruit", "shift_flavor_ch2_tropical_compare_watermelon_mint"] },
-  // #2020 E: 第3章以降は給料や回数でなく、任される中身を変える。二択の選び方は第2章と同じで、選ぶものが配合から
+  // #2020 E: 第3章以降は、任される中身も変える。二択の選び方は第2章と同じで、選ぶものが配合から
   // 「何を聞くか」「どう受け取るか」「どう伝えるか」へ広がる（labels がその言葉。mixes は出来上がった一台）。
   // 任意の項目: title＝窓の見出し、lead＝注文の前の一文、ask＝注文の後の問い。
   // 第3章（東京へ発つ前の3日）。県大会のあとで、舌はまだ遠い。確かめられない分、聞いてから組み立てる。
@@ -454,3 +457,4 @@ async function serveShiftOrder() {
   state.flags[key] = true; // シフトの給料・行動消費と一緒にcalendarで保存する。
   state.flags[`_shift_mix_${order.id}`] = index;
 }
+

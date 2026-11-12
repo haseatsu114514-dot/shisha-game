@@ -73,8 +73,8 @@ export function createRomanceHesitation(value, intent) {
     && !(intent.choiceId && value.romanceChoices?.[intent.choiceId]);
   const memories = ids.map((id, i) => ({
     id, name: names[i],
-    // 凛想は恋人IDが rio、立ち絵IDが rin。みんとの私服は名乗り済みだけ。
-    portrait: HEROES.has(id) ? { id: id === "rio" ? "rin" : id,
+    // manifest / resolvePortrait と同じ正式ID。みんとの私服は名乗り済みだけ。
+    portrait: HEROES.has(id) ? { id,
       face: id === "minto" && value.flags?._minto_name_known ? "ura_normal" : "normal" } : null,
     line: inner(`${names[i]}の顔が、浮かんだ`),
   }));

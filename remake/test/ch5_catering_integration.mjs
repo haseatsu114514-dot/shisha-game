@@ -7,12 +7,13 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../js');
 const original = JSON.parse(fs.readFileSync(new URL('../../data/dialogue/ch5_catering.json', import.meta.url), 'utf8'));
-const DB = { dialogues: Object.fromEntries(original.dialogues.map(d => [d.dialogue_id, d])) };
+const origin = JSON.parse(fs.readFileSync(new URL('../../data/dialogue/ch5_catering_origin.json', import.meta.url), 'utf8'));
+const DB = { dialogues: Object.fromEntries([...original.dialogues, ...origin.dialogues].map(d => [d.dialogue_id, d])) };
 const context = vm.createContext({ console });
 const callbacks = new Map(), notices = [], messages = [], modals = [];
 let current, choices = [], playing = [], saved = 0, scenes = [], onModal, onPlay;
 const fresh = () => ({ chapter: 5, day: 42, slot: 0, phase: 'daily', money: 1000, stamina: 100, kujiTickets: 0,
-  flags: { _ch5: { startDay: 40, part: 'free' }, _ch2_region: 'home' }, inbox: [] });
+  flags: { _intro_ch5_catering_business: true, _ch5: { startDay: 40, part: 'free' }, _ch2_region: 'home' }, inbox: [] });
 const noop = () => {};
 const reset = () => { current = fresh(); stateModule.setExport('state', current); choices = []; playing = []; messages.length = 0;
   notices.length = 0; modals.length = 0; saved = 0; scenes = []; onModal = onPlay = null; };
@@ -38,11 +39,11 @@ const stateModule = new vm.SyntheticModule(['state', 'save', 'timeOfDay'], funct
 }, { context });
 current = fresh();
 const modules = new Map();
-const real = new Set(['chapters/ch5-catering-model.js', 'chapters/ch5-catering.js', 'chapters/ch5-daily.js', 'daily/tsumugi-schedule.js']);
+const real = new Set(['chapters/ch5-catering-origin.js', 'chapters/ch5-catering-model.js', 'chapters/ch5-catering.js', 'chapters/ch5-daily.js', 'daily/tsumugi-schedule.js']);
 async function load(rel) {
   if (modules.has(rel)) return modules.get(rel);
   let source = fs.readFileSync(path.join(root, rel), 'utf8');
-  if (rel === 'chapters/ch5-daily.js') source += '\nexport { contactDoctor };';
+  if (rel === 'chapters/ch5-daily.js') source += '\nexport { contactDoctor, performChapterFiveSpot };';
   const mod = new vm.SourceTextModule(source, { context, identifier: rel });
   modules.set(rel, mod);
   await mod.link(async spec => {
@@ -175,3 +176,23 @@ assert.equal(current.money, 1000 + entry.payout);
 C.settleCateringWork();
 assert.equal(messages.filter(m => /catering-done/.test(m.id)).length, 1);
 console.log('ch5 catering integration: generic repeat replaces unique conversations only after all 20 passed');
+
+// First-ever offers wait for the business conversation; existing offers/delegation still settle above.
+reset(); delete current.flags._intro_ch5_catering_business;
+assert.equal(C.deliverCateringMorning(), 0); assert.equal(messages.length, 0);
+assert.equal(current.flags._ch5_catering?.offers || 0, 0);
+await D.runChapterFiveDaily({});
+assert.equal(scenes[0], 'ch5_catering_business'); assert.equal(current.flags._intro_ch5_catering_business, true);
+assert.equal(C.deliverCateringMorning(), 1);
+assert.equal(messages.length, 1); assert.equal(current.slot, 0); assert.equal(current.stamina, 100);
+// Abroad LOAD does not replay or relocate. Returning to tonari places the free consultation before its next story.
+reset(); delete current.flags._intro_ch5_catering_business; current.flags._ch5_region_started = true;
+current.flags._ch2_region = 'tokyo';
+await D.runChapterFiveDaily({}); assert.equal(scenes.length, 0); assert.equal(C.deliverCateringMorning(), 0);
+current.flags._ch2_region = 'home';
+const order = [];
+onPlay = () => order.push('business');
+await D.performChapterFiveSpot({ id: 'tonari' }, { readAndCommit: async id => { order.push(id); return true; } });
+assert.deepEqual(order, ['business', 'ch5_tsumugi_serving']);
+assert.equal(current.flags._intro_ch5_catering_business, true);
+console.log('ch5 catering integration: business consultation before first offer, overseas LOAD and returning tonari story order passed');

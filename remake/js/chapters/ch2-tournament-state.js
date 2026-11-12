@@ -5,8 +5,8 @@ import { initialBaseVotes } from "./tournament-base-votes.js";
 // 第2章の保存境界と持ち点。第1章のstate.tournament/固定逆転票には触れない。
 import { payTournamentPrize } from "./tournament-prize.js";
 
-// 大会賞金（2026-10-30 決定の階段式: 第1章30,000円／第2章50,000円／第3章100,000円／第4章200,000円／第5章は賞金なし）。
-export const CH2_PRIZE = 50000;
+// 新規優勝のみ: 第1章50,000円／第2章100,000円／第3章200,000円／第4章500,000円／第5章は賞金なし。
+export const CH2_PRIZE = 100000;
 export const CONTESTANTS = ["hajime", "ageha", "kumicho", "rei"];
 export const JUDGES = ["maezono", "dr_kemuri", "sui"];
 export const SPEND = [2, 3, 2, 3];

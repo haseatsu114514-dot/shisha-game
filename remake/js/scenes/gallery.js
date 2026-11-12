@@ -223,6 +223,6 @@ export function openGallery() {
     document.addEventListener("keydown", onKey);
     observer = new MutationObserver(() => { if (!overlay.isConnected) close(); });
     observer.observe(layers.modal, { childList: true });
-    closeButton.focus({ preventScroll: true }); SE.phone();
+    closeButton.focus({ preventScroll: true }); SE.card(); // 開く音（LIMEの着信音は使わない）
   });
 }

@@ -219,6 +219,23 @@ export const FLAG_EXACT_RULES = [
   ["_ch3_mukai_work_intro_read", "person"],
   ["_ch3_opening_read", "progression"],
   ["_ch3_outings", "progression"],
+  ["_petit_count", "progression"], // プチ修羅場（core/petit-shuraba.js）。読んだ数・最後に読んだ日・読んだ場面。周回では持ち越さない
+  ["_petit_last_day", "progression"],
+  ["_petit_seen_cinema", "progression"],
+  ["_petit_seen_cross", "progression"],
+  ["_petit_seen_date_call", "progression"],
+  ["_petit_seen_lime_misfire", "progression"],
+  ["_petit_seen_naru", "progression"],
+  ["_petit_seen_notice", "progression"],
+  ["_petit_seen_notice_ageha", "progression"],
+  ["_petit_seen_notice_hiyori", "progression"],
+  ["_petit_seen_notice_mashiro", "progression"],
+  ["_petit_seen_notice_minto", "progression"],
+  ["_petit_seen_notice_noor", "progression"],
+  ["_petit_seen_notice_rio", "progression"],
+  ["_petit_seen_notice_samechan", "progression"],
+  ["_petit_seen_notice_tsumugi", "progression"],
+  ["_petit_seen_sumi", "progression"],
   ["_tetsuko_time", "progression"], // てつこといっしょ（#2454）: 小物の配置・しぐさ図鑑・アルバム。来訪記録 _ch3_outings と同じく周回で持ち越さない
   ["_ch3_naru_party_ready", "progression"],
   ["_ch3_pizza_party", "progression"],
@@ -645,6 +662,7 @@ export const FLAG_FAMILY_RULES = [
   ["_cafe_recall_*", "progression"],
   ["_city_guest_count_*", "progression"], // 繰り返しの来店の巡回の位置（daily/city-guests.js・RVE07）
   ["_city_guest_seen_*", "progression"],
+  ["_petit_seen_*", "progression"], // プチ修羅場の読んだ場面（core/petit-shuraba.js の petitSeenFlag）
   ["_roam_seen_*", "person"],
   ["_trpg_topic_*", "person"], // 部活の話は周回ごとに対面し直す
   ["_date_inv_*", "person"],
