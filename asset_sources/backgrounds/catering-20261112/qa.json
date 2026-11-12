@@ -1,0 +1,97 @@
+{
+  "status": "owner selection pending; candidates only",
+  "images": [
+    {
+      "file": "originals/bg_catering_birthday_home_night.png",
+      "width": 1672,
+      "height": 941,
+      "mode": "RGB",
+      "bytes": 2077220,
+      "sha256": "846b1be47ee9bdbb2e386525e176a780845edb35413a947c309f8e8c32db9eb9",
+      "mean_luma": 102.6,
+      "native_unedited": true,
+      "generation_target": "2048x1152 or larger",
+      "native_below_target": true,
+      "scale_measurement": {
+        "head_top_y": 390,
+        "head_bottom_y": 438,
+        "base_bottom_y": 682,
+        "hmd_width_px": 36,
+        "tray_width_px": 114,
+        "head_to_rig": 0.164,
+        "hmd_to_tray": 0.316,
+        "method": "Manual pixel-coordinate estimate on original; about ±2 px. No person in original, so face ratio is not applicable."
+      },
+      "visual_qa": {
+        "no_people_text_logo_watermark": true,
+        "base_stem_bowl_connections_reviewed": true,
+        "single_hose_traced_both_directions": true,
+        "separate_purge_and_hose_port": true,
+        "closed_lotus_hmd": true,
+        "coal_count": "Not visually observable under closed lid; prompt specifies two inside.",
+        "no_smoke_or_fire": true,
+        "background_style_reference_reviewed": true
+      },
+      "game_preview": {
+        "base_main": "6c156f1c4793263178b5ab40a9cfd30ef83e6b96",
+        "browser": "Chromium via Playwright",
+        "viewport": [
+          1280,
+          720
+        ],
+        "actual_vn_engine": true,
+        "single_and_two_characters": true,
+        "production_integration": false,
+        "method": "Playwright routes candidate PNG only in an isolated context; real vn.play with previewProtagonist and existing portrait/UI assets. Preview dialogue is not game dialogue.",
+        "manual_review": "Cake stays above dialogue band in 1/2-character views. Meteor and telescope remain visible; central characters readable. Two-character birthday view naturally occludes left-side hookah.",
+        "night_tint_test": "No independent extra night tint overlay was forced; verify the final chapter atmosphere on adoption."
+      }
+    },
+    {
+      "file": "originals/bg_catering_stargazing_night.png",
+      "width": 1672,
+      "height": 941,
+      "mode": "RGB",
+      "bytes": 2251944,
+      "sha256": "afea1d84ae3a02f3270c97b6dc93e71d1b9e23140c40c07cfade89a7ce9cc4f8",
+      "mean_luma": 56.95,
+      "native_unedited": true,
+      "generation_target": "2048x1152 or larger",
+      "native_below_target": true,
+      "scale_measurement": {
+        "head_top_y": 434,
+        "head_bottom_y": 478,
+        "base_bottom_y": 686,
+        "hmd_width_px": 38,
+        "tray_width_px": 120,
+        "head_to_rig": 0.175,
+        "hmd_to_tray": 0.317,
+        "method": "Manual pixel-coordinate estimate on original; about ±2 px. No person in original, so face ratio is not applicable."
+      },
+      "visual_qa": {
+        "no_people_text_logo_watermark": true,
+        "base_stem_bowl_connections_reviewed": true,
+        "single_hose_traced_both_directions": true,
+        "separate_purge_and_hose_port": true,
+        "closed_lotus_hmd": true,
+        "coal_count": "Not visually observable under closed lid; prompt specifies two inside.",
+        "no_smoke_or_fire": true,
+        "background_style_reference_reviewed": true
+      },
+      "game_preview": {
+        "base_main": "6c156f1c4793263178b5ab40a9cfd30ef83e6b96",
+        "browser": "Chromium via Playwright",
+        "viewport": [
+          1280,
+          720
+        ],
+        "actual_vn_engine": true,
+        "single_and_two_characters": true,
+        "production_integration": false,
+        "method": "Playwright routes candidate PNG only in an isolated context; real vn.play with previewProtagonist and existing portrait/UI assets. Preview dialogue is not game dialogue.",
+        "manual_review": "Cake stays above dialogue band in 1/2-character views. Meteor and telescope remain visible; central characters readable. Two-character birthday view naturally occludes left-side hookah.",
+        "night_tint_test": "No independent extra night tint overlay was forced; verify the final chapter atmosphere on adoption."
+      }
+    }
+  ]
+}

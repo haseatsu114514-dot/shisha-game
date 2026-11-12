@@ -1,0 +1,41 @@
+{
+  "base_main": "6c156f1c4793263178b5ab40a9cfd30ef83e6b96",
+  "references": [
+    {
+      "repository": "haseatsu114514-dot/shisha-game",
+      "path": "assets/backgrounds/kemurikusa.png",
+      "sha256": "fc9286709f93cf0ff475aa008d52c861c6ba8b32e80edc6739703ea5b463262e",
+      "role": "approved background style only"
+    },
+    {
+      "repository": "haseatsu114514-dot/shisha-game",
+      "path": "assets/backgrounds/bg_street_night.png",
+      "sha256": "29424b48c8ba10982a6f5e88024687bab1c0901fbcc935332f407a00beb2cc63",
+      "role": "approved background style only"
+    },
+    {
+      "repository": "haseatsu114514-dot/siryou (private)",
+      "path": "shisha-hardware-reference/web-refs/images/stand-onTable-neon-01.jpg",
+      "sha256": "621f138a2bea839d65b338693016da8851f44de9230d967182bbafd5c384be88",
+      "role": "Japanese hardware structure/scale only; photograph not included"
+    },
+    {
+      "repository": "haseatsu114514-dot/siryou (private)",
+      "path": "shisha-hardware-reference/web-refs/images/hmd-lotus-open-01.jpg",
+      "sha256": "77cb9824d0884195fc6c7df7417d0954abe37fd6455b3810d0b91d3d6ffea813",
+      "role": "Japanese hardware structure/scale only; photograph not included"
+    },
+    {
+      "repository": "haseatsu114514-dot/siryou (private)",
+      "path": "shisha-hardware-reference/web-refs/images/bowl-silicone-black-01.jpg",
+      "sha256": "44a0eb72e5cf41ca8e281a8f3784ecd776b8f6092809571a6db10c314ceeb00d",
+      "role": "Japanese hardware structure/scale only; photograph not included"
+    },
+    {
+      "repository": "haseatsu114514-dot/siryou (private)",
+      "path": "shisha-hardware-reference/web-refs/images/hmd-lotus-shopVideo-01.jpg",
+      "sha256": "fd692e63fce67f9e006c3b75ac9b4c107789c930174e8e890980f5ea86083ff6",
+      "role": "Japanese hardware structure/scale only; photograph not included"
+    }
+  ]
+}
