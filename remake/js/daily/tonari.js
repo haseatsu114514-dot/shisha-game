@@ -45,6 +45,7 @@ export function tonariMenu() {
     playBgm("tonari");
     const tsumugiKnown = !!(state.met.tsumugi || state.flags._met_tsumugi || (state.story.tsumugi || 0) > 0);
     const tsumugiPresent = tsumugiAtTonari(state);
+    const manager = state.chapter >= 5;
     const customerStory = state.visitedDay.tonari_customer !== state.day && tsumugiPresent && hasNewStory("tsumugi");
     const shiftStory = state.visitedDay.tonari_baito !== state.day && hasNewStory("sumi");
     const pickIt = (value) => { retire(root); resolve(value); };
@@ -54,14 +55,14 @@ export function tonariMenu() {
       ]);
     const root = showScreen("tonari", el("div.sub-menu", [
       el("h2.sub-title", { text: "tonari" }),
-      el("p.sub-lead", { text: state.slot === 0 ? "昼のtonari。窓際でスミさんが道具を整えている。今日はどうする？" : "夜のtonari。客席から常連の笑い声が聞こえる。今日はどうする？" }),
+      el("p.sub-lead", { text: manager ? "店長として任されたtonari。出かける時は、人手に合わせてスミさんが店に立ってくれる。今日はどうする？" : state.slot === 0 ? "昼のtonari。窓際でスミさんが道具を整えている。今日はどうする？" : "夜のtonari。客席から常連の笑い声が聞こえる。今日はどうする？" }),
       el("div.sub-choices", [
         opt("お客さんとして一服", `${customerStory ? "【新しい話】" : ""}${!tsumugiPresent ? "客席でゆっくり一服する"
-          : tsumugiKnown ? "客席でゆっくり。常連席にはつむぎがいる" : "客席でゆっくり。常連席にはいつもの子がいる"}`, "customer", "tonari-customer"),
+          : manager ? "客席でゆっくり。つむぎが接客をしている" : tsumugiKnown ? "客席でゆっくり。常連席にはつむぎがいる" : "客席でゆっくり。常連席にはいつもの子がいる"}`, "customer", "tonari-customer"),
         // #2213 B04: 「まかないで練習」はシフト上がりのメニューへ移した（独立の行動にしない）
         // #1650: 第2章の試煙会のあと、一度だけ。試供品の苺で熱を確かめ、スミさんに吸ってもらう
         strawberryTrialOpen() ? opt("苺を試す（まかない）", "体力を使う・1行動。試煙会の苺で一台。確かめるのは熱だけ", "strawberry", "tonari-strawberry") : null,
-        opt("シフトに入る（バイト）", `${shiftStory ? `【新しい話（${state.slot === 0 ? "シフト後" : "夜のシフト後"}）】` : ""}接客で稼ぐ。上がったあとはスミさんと話せる。まかないで練習もできる`, "baito", "tonari-baito"),
+        opt(manager ? "店長として店に立つ" : "シフトに入る（バイト）", `${shiftStory ? `【新しい話（${state.slot === 0 ? "シフト後" : "夜のシフト後"}）】` : ""}${manager ? "今日の営業を引き受ける。仕事終わりにはスミさんと話せる" : "接客で稼ぐ。上がったあとはスミさんと話せる。まかないで練習もできる"}`, "baito", "tonari-baito"),
         hiyoriAxeReady() && axeThrowExposed() ? opt("ひよりと斧投げへ", hiyoriAxeAffordable()
           ? "夜の寄り道。参加3000円・体力を使う・行動1回。3投を一緒に楽しむ"
           : "参加には3000円と体力が必要。先にLIMEの約束を済ませよう", "hiyori_axe", "tonari-hiyori-axe") : null,
@@ -161,7 +162,11 @@ async function baitoShift({ called, story, owner, signal }) {
   const rainPay = rainy ? RAIN_BAITO_BONUS : 0; // 雨の日は長居客の追加注文ぶん
   const pay = 8000 + bonus + extra + rainPay + condition.shiftBonus + callingBonus;
   await shiftClose();
-  if (!current() || !await read("remake_baito_end", { bg: TONARI_BG })) return false;
+  const closing = state.chapter >= 5 ? { lines: [
+    { speaker: "", face: "", text: "今日の仕事を終えて、手取りを帳面に記した。" },
+    { speaker: "", face: "", text: "片付けの手伝いに来たスミさんが、カウンターの内側へ回る。" },
+  ] } : "remake_baito_end";
+  if (!current() || !await read(closing, { bg: TONARI_BG })) return false;
   if (called && !await read("remake_sumi_call_thanks", { bg: TONARI_BG })) return false;
   addMoney(pay);
   if (callingBonus) owner.flags._minto_calling_paid = shiftKey; // 同じ行動枠の再開・再入力で上乗せを重ねない。
@@ -425,7 +430,8 @@ async function serveShiftOrder() {
   if (state.flags[key]) return;
   const seed = (state.weatherSeed || 0) ^ Math.imul(state.day + state.chapter * 31, 0x45d9f3b);
   // 章付きの注文はその章だけ。章付きが無い章は、章指定なしの4種から出す。
-  const pool = SHIFT_ORDERS.filter((o) => o.chapter === state.chapter);
+  const pool = SHIFT_ORDERS.filter((o) => o.chapter === state.chapter
+    && (!o.id.startsWith("ch5_tsumugi_") || tsumugiAtTonari(state)));
   const orders = pool.length ? pool : SHIFT_ORDERS.filter((o) => !o.chapter);
   const order = orders[((seed ^ (seed >>> 16)) >>> 0) % orders.length];
   const index = await modal({ title: order.title || "今日の注文",
