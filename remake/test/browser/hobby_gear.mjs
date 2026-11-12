@@ -1,6 +1,7 @@
 // VOL07: 斧投げBar・クラブSEAM・ボドゲカフェで自分の道具を一度だけ買い、ミニゲームの画面で効き目が見える。
 import assert from "node:assert/strict";
 import { suite, assertFits } from "./support.mjs";
+import { flickFromHandle } from "./axe_flick_input.mjs";
 const t = id => `[data-test="${id}"]`;
 
 async function setup(page, values, flags = {}) {
@@ -47,15 +48,8 @@ async function axeThrow(page) {
     const p = new DOMPoint(330, 245).matrixTransform(node.getScreenCTM()); return {x:p.x,y:p.y};
   });
   await page.mouse.click(point.x, point.y); await axePhase(page, "power");
-  const handle = await page.locator(t('axe-pull-handle')).boundingBox();
-  const distance = await page.locator(t('axe-game')).evaluate(node => {
-    const rect = node.getBoundingClientRect();
-    return Math.max(80, Math.min(180, rect.height * .26));
-  });
-  assert(handle && distance > 0);
-  const x = handle.x + handle.width / 2, y = handle.y + handle.height / 2;
-  await page.mouse.move(x, y); await page.mouse.down();
-  await page.mouse.move(x, y + distance * .62, {steps:8}); await page.mouse.up();
+  // 2026-11-12: 投げ方は「上へ弾く」。右の取っ手から、適正の速さで弾く
+  await flickFromHandle(page, { power: .62 });
   await axePhase(page, "result"); await page.locator(t('axe-action') + ':not([disabled])').click();
 }
 
@@ -115,7 +109,7 @@ await suite("hobby-gear", async check => {
     assert.equal(finished.records.practice.plays, 1);
     assert.equal(finished.records.career.games, 1);
     assert.equal(finished.records.practice.last.equipment.id, 'gear_hatchet_precision');
-    assert.equal(finished.records.practice.last.inputVersion, 'tap-pull-v1');
+    assert.equal(finished.records.practice.last.inputVersion, 'tap-flick-v1');
     assert.equal(finished.records.practice.last.throws.length, 3);
     assert.equal(finished.owned.filter(id => id === 'gear_hatchet').length, 1);
     assert.equal(finished.owned.filter(id => id === 'gear_hatchet_precision').length, 1);

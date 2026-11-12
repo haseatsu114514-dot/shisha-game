@@ -2,6 +2,7 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import { suite, baseURL, storageSnapshot } from './support.mjs';
+import { flick, flickFromHandle, flickFromBoard } from './axe_flick_input.mjs';
 const root = page => page.locator('[data-test="axe-game"]');
 const phase = (page, value) => page.waitForFunction(value => document.querySelector('[data-test="axe-game"]')?.dataset.phase === value, value);
 const handle = page => page.locator('[data-test="axe-pull-handle"]');
@@ -27,28 +28,14 @@ async function aim(page, touch = false) {
   if (touch) await page.touchscreen.tap(p.x, p.y); else await page.mouse.click(p.x, p.y);
   await phase(page, 'power');
 }
-async function pullPoints(page, power = .62) {
-  const grip = await handle(page).boundingBox(), bounds = await root(page).boundingBox();
-  assert(grip && bounds, 'pull handle and stage must be visible');
-  const x = grip.x + grip.width / 2, y = grip.y + grip.height / 2;
-  return { x, y, endY: y + Math.max(80, Math.min(180, bounds.height * .26)) * power };
-}
-async function throwAxe(page, { touch = false, power = .62 } = {}) {
-  await aim(page, touch);
-  const p = await pullPoints(page, power);
-  if (touch) {
-    const cdp = await page.context().newCDPSession(page);
-    try {
-      await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x: p.x, y: p.y, id: 1 }] });
-      for (let i = 1; i <= 8; i++) await cdp.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x: p.x, y: p.y + (p.endY - p.y) * i / 8, id: 1 }] });
-      await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
-    } finally { await cdp.detach(); }
-  } else {
-    await page.mouse.move(p.x, p.y); await page.mouse.down();
-    await page.mouse.move(p.x, p.endY, { steps: 8 }); await page.mouse.up();
-  }
+// 2026-11-12: 投げ方は「的に触れた所が狙い → そのまま上へ弾く」（右の取っ手からも弾ける）。強さは弾く速さ。
+async function throwAxe(page, { touch = false, power = .62, from = 'board', lean = 0 } = {}) {
+  if (from === 'board') await flickFromBoard(page, { touch, power, lean });
+  else { await aim(page, touch); await flickFromHandle(page, { touch, power, lean }); }
   await phase(page, 'result');
 }
+// 着地点（刃先の印）と、触れて決めた狙い（金の輪）の横の差（的の絵の座標。半径164）
+const driftX = page => page.evaluate(() => { const x = s => Number(/translate\(([-\d.]+)/.exec(document.querySelector(s).getAttribute('transform'))?.[1]); return x('.axe-impact-mark') - x('.axe-fixed-aim'); });
 await suite('axe-tap-pull', async check => {
   for (const [label, context, touch] of [
     ['pc', { viewport: { width: 1280, height: 720 } }, false],
@@ -58,9 +45,10 @@ await suite('axe-tap-pull', async check => {
     const before = await start(page, touch);
     await capture(page, `${label}-aim`);
     for (let i = 0; i < 3; i++) {
-      await throwAxe(page, { touch });
+      // 1・3投目は的に触れてそのまま弾く、2投目はタップで狙ってから右の取っ手で弾く
+      await throwAxe(page, { touch, from: i === 1 ? 'handle' : 'board' });
       const power = Number(await root(page).getAttribute('data-power'));
-      assert(Number.isFinite(power) && Math.abs(power - .62) < .06, `visible pull power ${power}`);
+      assert(Number.isFinite(power) && Math.abs(power - .62) < .06, `visible flick power ${power}`);
       if (i === 0) await capture(page, `${label}-result`);
       if (touch) await ready(page).tap(); else await ready(page).click();
       await phase(page, i === 2 ? 'summary' : 'choice');
@@ -76,18 +64,43 @@ await suite('axe-tap-pull', async check => {
     assert.deepEqual(await storageSnapshot(page), before, 'standalone input must not alter save data');
   }, context);
 
+  await check('flick-speed-lean-and-tap-only', async page => {
+    await start(page);
+    // 触れて離すだけ（弾かない）なら、狙いを決めるだけで投げない
+    await aim(page);
+    await page.waitForTimeout(300);
+    assert.equal(await root(page).getAttribute('data-phase'), 'power', 'a tap only sets the aim');
+    assert.equal(await root(page).getAttribute('data-player-throws'), '0');
+    // 遅い弾きは柄から当たって落ちる、速すぎる弾きは回りすぎて落ちる
+    for (const [power, reason] of [[.3, '柄から当たって落下'], [.95, '回りすぎて落下']]) {
+      await flickFromHandle(page, { power }); await phase(page, 'result');
+      const actual = Number(await root(page).getAttribute('data-power'));
+      assert(Math.abs(actual - power) < .06, `flick speed sets the power: ${actual} / ${power}`);
+      assert.match(await page.locator('.axe-note').innerText(), new RegExp(reason));
+      await ready(page).click(); await phase(page, 'choice'); await aim(page);
+    }
+    // 斜めに弾くと横へ流れる（右へ傾けた弾きは、まっすぐより右に刺さる）
+    await flickFromHandle(page, { power: .62, lean: .6 }); await phase(page, 'result');
+    const drift = await driftX(page);
+    assert(drift > 10, `a flick leaning right lands right of the aim: ${drift}`);
+  });
+
   await check('cancel-and-resize-never-spend-throw', async page => {
     const before = await start(page);
-    for (const operation of ['return', 'escape', 'pointercancel', 'resize']) {
+    for (const operation of ['return', 'sideways', 'escape', 'pointercancel', 'resize']) {
       await aim(page);
-      const p = await pullPoints(page);
-      await page.mouse.move(p.x, p.y); await page.mouse.down();
-      await page.mouse.move(p.x, p.endY, { steps: 4 });
-      if (operation === 'return') await page.mouse.move(p.x, p.y, { steps: 4 });
-      if (operation === 'escape') await page.keyboard.press('Escape');
-      if (operation === 'pointercancel') await handle(page).dispatchEvent('pointercancel', { pointerId: 1, pointerType: 'mouse', isPrimary: true, bubbles: true });
-      if (operation === 'resize') await page.setViewportSize({ width: 1200, height: 700 });
-      await page.mouse.up();
+      const grip = await handle(page).boundingBox(), stage = await root(page).boundingBox();
+      const x = grip.x + grip.width / 2, y = grip.y + grip.height / 2, rise = stage.height * .2;
+      if (operation === 'sideways') await flick(page, { x, y, height: stage.height, rise: rise * .5, lean: 3 });
+      else {
+        await page.mouse.move(x, y); await page.mouse.down();
+        await page.mouse.move(x, y - rise, { steps: 4 });
+        if (operation === 'return') await page.mouse.move(x, y, { steps: 4 });
+        if (operation === 'escape') await page.keyboard.press('Escape');
+        if (operation === 'pointercancel') await handle(page).dispatchEvent('pointercancel', { pointerId: 1, pointerType: 'mouse', isPrimary: true, bubbles: true });
+        if (operation === 'resize') await page.setViewportSize({ width: 1200, height: 700 });
+        await page.mouse.up();
+      }
       await page.waitForTimeout(1000);
       const current = await root(page).getAttribute('data-phase');
       assert(['choice', 'power'].includes(current), `${operation} must not launch a throw: ${current}`);
@@ -123,11 +136,12 @@ await suite('axe-tap-pull', async check => {
     await start(page, true);
     for (const operation of ['cancel', 'second-finger']) {
       await aim(page, true);
-      const p = await pullPoints(page), cdp = await page.context().newCDPSession(page);
+      const grip = await handle(page).boundingBox(), stage = await root(page).boundingBox(), cdp = await page.context().newCDPSession(page);
+      const p = { x: grip.x + grip.width / 2, y: grip.y + grip.height / 2 }, endY = p.y - stage.height * .2;
       try {
         await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x: p.x, y: p.y, id: 1 }] });
-        await cdp.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x: p.x, y: p.endY, id: 1 }] });
-        if (operation === 'second-finger') await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x: p.x, y: p.endY, id: 1 }, { x: p.x - 70, y: p.y, id: 2 }] });
+        await cdp.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x: p.x, y: endY, id: 1 }] });
+        if (operation === 'second-finger') await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x: p.x, y: endY, id: 1 }, { x: p.x - 70, y: p.y, id: 2 }] });
         await cdp.send('Input.dispatchTouchEvent', { type: 'touchCancel', touchPoints: [] });
       } finally { await cdp.detach(); }
       await page.waitForTimeout(1000);

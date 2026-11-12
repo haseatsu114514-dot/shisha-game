@@ -5,7 +5,7 @@ import { portraitStyle } from "../core/portrait-style.js";
 import { portraitAsset } from "../core/portrait-resolver.js";
 import { svg } from "../core/transition-kit.js";
 import { SE, unlockAudio, playAxeSe, preloadAxeSe } from "../core/audio.js";
-import { RINGS, KILLS, CLUSTERS, LINE, BLADE, POWER, SWAY, MODES, DIVISIONS, BOARD, RULESET, gaugeAt, axisAt, releaseAimAt, resolveThrow, totalOf, gradeOf, killState, canCall, closuresOf, halfOf } from "./axe-model.js";
+import { RINGS, KILLS, CLUSTERS, LINE, BLADE, POWER, SWAY, AIM_RANGE, MODES, DIVISIONS, BOARD, RULESET, gaugeAt, axisAt, releaseAimAt, resolveThrow, totalOf, gradeOf, killState, canCall, closuresOf, halfOf } from "./axe-model.js";
 import { createMatch, takeTurn, turnOf, planOpponent, matchResult, resolveTurn, inSuddenDeath, suddenDeathTarget, DIFFICULTIES } from "./axe-match.js";
 import { COMPANIONS, reaction, matchReaction, portraitFocus } from "./axe-companions.js";
 import { axeRules } from "./axe-rules.js";
@@ -79,7 +79,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     grade: completed ? gradeOf(totalOf(shots), rules.max) : null, ruleset: RULESET, mode, opponent, division, throwCount: rules.throws, maximum: rules.max,
     challenges: evaluateChallenges(challengeIds, shots, completed), rank: completed ? rankOf(totalOf(shots), rules.max) : null,
     title: completed && !tutorial ? titleOf(shots, rules.max) : null, stats: sessionStats(shots),
-    inputVersion: tapPull ? "tap-pull-v1" : "gauges-v1", equipment: { id: gearId, version: AXE_EQUIPMENT_VERSION, steady, powerErrorScale: equipment.powerErrorScale },
+    inputVersion: tapPull ? "tap-flick-v1" : "gauges-v1", equipment: { id: gearId, version: AXE_EQUIPMENT_VERSION, steady, powerErrorScale: equipment.powerErrorScale },
     ...(tutorial ? { tutorial: true, lessonContext } : {}),
     ...(versus ? { match: { ...matchResult(match), winner: completed ? matchResult(match).winner : null,
       player: structuredClone(match.player), opponent: structuredClone(match.opponent), suddenDeathThrows: structuredClone(match.suddenDeath), difficulty, division, seed: match.seed },
@@ -301,10 +301,10 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
   const gauge = el("div.axe-gauge", { role: "img", "aria-label": "回転ゲージ。緑の帯が刃から当たる回転" }, [
     el("span.axe-stick", { style: { "--from": POWER.stickMin * 100 + "%", "--size": (POWER.stickMax - POWER.stickMin) * 100 + "%" } }),
     el("span.axe-sweet", { style: { "--from": POWER.sweetMin * 100 + "%", "--size": (POWER.sweetMax - POWER.sweetMin) * 100 + "%" } }), powerFill, needle]);
-  const pullHandle = el("button.axe-pull-handle", { type: "button", text: "↓", "aria-label": "下へ引いて、緑で離す。Space長押しでも投げられます", dataset: { test: "axe-pull-handle" } });
+  const pullHandle = el("button.axe-pull-handle", { type: "button", text: "↑", "aria-label": "上へ素早く弾いて投げる（狙いはそのまま）。Space長押しでも投げられます", dataset: { test: "axe-pull-handle" } });
   const green = axeGreenBand(gearId);
   const pullTrack = el("div.axe-pull-track", [el("i.axe-pull-green", { style: { top: green.min * 100 + "%", height: (green.max - green.min) * 100 + "%" } }), pullHandle]);
-  const pullLabel = el("p.axe-pull-label", { text: "下へ引く → 緑で離す" });
+  const pullLabel = el("p.axe-pull-label", { text: "上へ弾いて投げる" });
   const timing = el("div.axe-timing", [powerLabel, powerReadout, gauge, ...(tapPull ? [pullLabel, pullTrack] : [])]);
   const feedback = el("p.axe-feedback", { dataset: { test: "axe-feedback" } });
   // #2729 (2026-11-08): the throw button stands on its own below the panel, with an axe on it, so the place to throw reads at a glance.
@@ -377,10 +377,12 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     canPull: () => actor === "player" && phase === "power" && !isPaused(),
     onAim: position => { aim = position; if (phase === "choice") { held = 0; setPhase("power"); } else render(); },
     onPower: raw => { rawPower = raw; power = axePower(raw, gearId); render(); },
-    onRelease: () => {
+    // lean: 弾いた向きの傾きで、狙いの横へ足すぶれ（まっすぐ弾けば 0）。狙いの記録（baseAim）は触れた所のまま
+    onRelease: (lean = 0) => {
       if (actor !== "player" || phase !== "power" || isPaused()) return;
       lastAction = performance.now(); unlockAudio(); void preloadAxeSe();
-      const release = releaseAimAt(aim, held, power, shots.length, held < focusUntil, steady);
+      const thrown = { x: Math.max(-AIM_RANGE, Math.min(AIM_RANGE, aim.x + lean)), y: aim.y };
+      const release = releaseAimAt(thrown, held, power, shots.length, held < focusUntil, steady);
       pending = { ...preview({ x: release.x, y: release.y, power, called }), baseAim: { ...aim }, sway: release.sway };
       playAxeSe("throw"); setPhase("flight");
     },
@@ -421,14 +423,14 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     const last = shots.at(-1);
     const key = lessonContext && coachLines[lessonContext + "_" + id] ? lessonContext + "_" + id : id;
     const tapLesson = {
-      power: "狙いが決まったね。右の取っ手を下へ引いて、緑の帯で離してみよう。元へ戻すと中止できる。Space長押しでも同じだよ。弱いと柄から当たる、強いと回りすぎる。どっちも落ちて0点だ。白い刃先が着地点。息を整えるかFで、1投に1回だけ揺れを抑えられるよ。",
+      power: "狙いが決まったね。触れた所から、指をそのまま上へ素早く弾いて離してみよう。右の取っ手から弾いてもいい。Space長押しでも同じだよ。遅いと柄から当たる、速すぎると回りすぎる。どっちも落ちて0点だ。斜めに弾くと横へ流れる。白い刃先が着地点。息を整えるかFで、1投に1回だけ揺れを抑えられるよ。",
     };
-    if (tapPull) titles.power = "引いて、緑で離す";
+    if (tapPull) titles.power = "上へ弾いて投げる";
     // Keep the canonical first/event greeting, free-lesson terms and scoring explanation.
     // Only the old input instructions change; the relationship context must not disappear.
     const canonicalLine = tapPull ? coachLines[key]
-      .replace("横、縦、回転の順で止める。", "的をタップして狙いを決め、右の取っ手を下へ引いて離すよ。")
-      .replace("横、縦、回転の順でよく投げたね。", "狙って、引いて、よく投げたね。") : coachLines[key];
+      .replace("横、縦、回転の順で止める。", "的に触れて狙いを決め、そこから上へ弾いて投げるよ。")
+      .replace("横、縦、回転の順でよく投げたね。", "狙って、弾いて、よく投げたね。") : coachLines[key];
     const text = (tapPull && tapLesson[id] || canonicalLine) + (id === "result" && last ? ` 今回は${last.score}点。${shotFeedback(last).tip}` : "");
     const close = () => {
       coachPanel.remove(); coachPanel = null; heading.inert = body.inert = scoreboard.inert = false;
@@ -619,7 +621,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     if (tapPull) {
       const rect = root.getBoundingClientRect(), cssScale = rect.height / root.clientHeight || 1;
       const distance = Math.max(80, Math.min(180, rect.height * .26)) / cssScale;
-      pullTrack.style.height = distance + "px"; pullHandle.style.transform = `translateY(${rawPower * distance}px)`;
+      pullTrack.style.height = distance + "px"; // 弾く台: 取っ手は下に置いたまま（強さは右の回転ゲージに出る）
       pullHandle.disabled = actor !== "player" || phase !== "power" || isPaused();
       pullHandle.style.backgroundColor = equipment.grip;
       root.dataset.rawPower = String(rawPower); root.dataset.pulling = String(Boolean(pullInput?.pulling));
@@ -866,16 +868,16 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
     if (steadiness.textContent !== steadyText) steadiness.textContent = steadyText;
     keyhint.hidden = !moving;
     keyhint.textContent = phase === "power" ? "緑の帯でタップ / Space・Enter · Fで集中" : "的をタップ / Space・Enterで止める · Fで集中";
-    if (tapPull) keyhint.textContent = "的をタップ → 下へ引いて離す / 矢印・Space / Fで集中";
+    if (tapPull) keyhint.textContent = "的に触れて狙う → 上へ弾く / 矢印・Space / Fで集中";
     board.setAttribute("aria-disabled", String(!moving && !(phase === "choice" && actor === "player" && !sd) || actor !== "player" || isPaused()));
     board.setAttribute("aria-label", moving ? ({ horizontal: "横", vertical: "縦", power: "回転" })[phase] + "ゲージ。タップまたはSpaceで止める" : "斧投げの的。赤6点・5の円・リング4〜1点・宣言した青7／8点。青をタップで宣言");
-    if (tapPull) board.setAttribute("aria-label", "的をタップして狙う。右の取っ手を下へ引いて緑で離す。青は宣言ボタンで指定");
+    if (tapPull) board.setAttribute("aria-label", "的に触れて狙う。そのまま上へ素早く弾くと投げる。青は宣言ボタンで指定");
     reaim.disabled = retry.disabled = isPaused() || performance.now() - lastAction < 250;
     action.disabled = isPaused() || ["loading", "flight", "opponent-ready"].includes(phase) || cycles[phase] && elapsed < 250 || performance.now() - lastAction < 250;
     const nextAction = { loading: "読み込み中…", failed: "もう一度読み込む", choice: "構える", horizontal: "横を止める", vertical: "縦を止める", power: strength === "適正" ? "いま放す！" : "緑の帯で放す",
       "opponent-ready": rivalName + "が構えています…", flight: "飛んでいく…", result: versus ? turnOf(match) === "opponent" ? rivalName + "の番へ" : turnOf(match) === null ? "結果を見る" : "あなたの番へ" : shots.length === rules.throws ? "結果を見る" : "次の投へ",
       summary: series && !seriesWinner() ? "第" + (gameIndex + 2) + "ゲームへ" : "終了" }[phase] || "";
-    const label = tapPull && phase === "choice" ? "中央に構える" : tapPull && phase === "power" ? "取っ手を下へ引く" : nextAction;
+    const label = tapPull && phase === "choice" ? "中央に構える" : tapPull && phase === "power" ? "上へ弾いて投げる" : nextAction;
     if (actionLabel.textContent !== label) actionLabel.textContent = label;
     if (tapPull && phase === "power") action.disabled = true;
     const last = shown;
@@ -907,7 +909,7 @@ export function runAxeThrow({ host = document.getElementById("stage") || documen
       : phase === "result" ? !last ? "" : last.outcome === "drop" ? (last.dropReason === "weak" ? "柄から当たって落下 · 0点" : "回りすぎて落下 · 0点") : last.outcome === "killshot" ? "キルショット！ " + last.score + "点"
       : last.outcome === "killshot-miss" ? (last.stuck ? "宣言した青い的から外れた · 0点" : "板の外 · 0点") : last.score ? (last.outcome === "bull" ? "ど真ん中！ " : "命中！ ") + last.score + "点" : last.zone?.kind === "closed" ? "閉じた円に触れた · 0点" : "的の外 · 0点"
       : "合計 " + totalOf(shots) + " / " + rules.max + "点";
-    const inputNote = tapPull && ["choice", "power"].includes(phase) ? phase === "choice" ? "的をタップして狙いを決める" : "取っ手を下へ引き、緑で離す。元へ戻すと中止" : nextNote;
+    const inputNote = tapPull && ["choice", "power"].includes(phase) ? phase === "choice" ? "的に触れて狙いを決める" : "触れた所から上へ弾く。遅いと柄から、速すぎると回りすぎ" : nextNote;
     const finalNote = versus && phase === "summary" ? ({ player: "あなたの勝ち", opponent: rivalName + "の勝ち", draw: "引き分け" })[matchResult(match).winner] + (matchResult(match).suddenDeath ? " · サドンデス" + matchResult(match).suddenDeath.rounds + "本" : "") + (bestOf > 1 ? " · マッチ " + series.wins.player + "-" + series.wins.opponent : "") : inputNote;
     if (note.textContent !== finalNote) note.textContent = finalNote;
     if (announcement.textContent !== finalNote) announcement.textContent = finalNote;

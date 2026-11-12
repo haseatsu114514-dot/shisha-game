@@ -1,6 +1,7 @@
 // #788: 斧投げBARとひよりの斧投げで、開始時に斧投げ曲、終了・中断で元の曲へ戻る。再入場で二重に鳴らさない。
 import assert from "node:assert/strict";
 import { suite } from "./support.mjs";
+import { flickFromHandle } from "./axe_flick_input.mjs";
 const t = id => `[data-test="${id}"]`;
 const bgm = page => page.evaluate(() => A.audio.currentBgm());
 const waitPlaying = (page, key) => page.waitForFunction(key => window.__axeMedia?.some(({ track, audio }) =>
@@ -82,13 +83,8 @@ await suite("axe-bgm-788", async check => {
         return { x: point.x, y: point.y };
       });
       await page.mouse.click(target.x, target.y); await phase(page, "power");
-      const box = await page.locator('[data-test="axe-pull-handle"]').boundingBox();
-      const rootBox = await page.locator('[data-test="axe-game"]').boundingBox();
-      assert(box && rootBox, "tap-pull controls must be visible");
-      const x = box.x + box.width / 2, y = box.y + box.height / 2;
-      await page.mouse.move(x, y); await page.mouse.down();
-      await page.mouse.move(x, y + Math.max(80, Math.min(180, rootBox.height * .26)) * .62, { steps: 8 });
-      await page.mouse.up(); await phase(page, "result");
+      // 2026-11-12: 投げ方は「上へ弾く」。右の取っ手から、適正の速さで弾く
+      await flickFromHandle(page, { power: .62 }); await phase(page, "result");
       await page.locator('[data-test="axe-action"]:not([disabled])').click();
     }
     await phase(page, "summary"); await page.locator('[data-test="axe-action"]:not([disabled])').click();

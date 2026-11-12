@@ -1241,3 +1241,7 @@ html:root[data-density="phone"] body:not(:root) .axe-bar-menu[data-view="gear"] 
   min-height: max(82px, var(--phone-tap, 82px));
   font-size: max(24px, var(--phone-text, 24px));
 }
+/* 投げ方を「上へ弾く」に（2026-11-12）: 取っ手は台の下に置き、ここから上へ弾く。引いた長さの緑の帯は使わない（強さは回転ゲージ） */
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-pull-handle { top: auto; bottom: -41px; cursor: pointer; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-pull-green { display: none; }
+.axe-game[data-input-mode="tap-pull"].axe-first-person .axe-pull-track { background: linear-gradient(0deg, #172323, #2b3a36); }

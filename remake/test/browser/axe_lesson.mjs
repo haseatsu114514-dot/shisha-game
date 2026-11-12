@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import fs from "node:fs/promises";
 import { suite, storageSnapshot } from "./support.mjs";
+import { flickFromHandle } from "./axe_flick_input.mjs";
 
 const game = page => page.locator('[data-test="axe-game"]');
 const coach = (page, kind) => page.locator(`[data-test="axe-coach"][data-kind="${kind}"]`);
@@ -98,7 +99,7 @@ async function completeLesson(page, { touch = false, captureName = null, freeze 
 async function completeTapPullLesson(page) {
   assert.equal(await game(page).getAttribute("data-input-mode"), "tap-pull");
   assert.match(await coach(page, "welcome").innerText(), /お金も体力も使わない/);
-  assert.match(await coach(page, "welcome").innerText(), /取っ手を下へ引いて/);
+  assert.match(await coach(page, "welcome").innerText(), /上へ弾いて投げる/);
   assert.doesNotMatch(await coach(page, "welcome").innerText(), /横、縦、回転/);
   await guide(page, "welcome", false, false); await guide(page, "target", false, false);
   const target = await page.locator('.axe-target').evaluate(node => {
@@ -109,12 +110,8 @@ async function completeTapPullLesson(page) {
   await guide(page, "power", false, false);
   assert.equal(await coach(page, "horizontal").count(), 0);
   assert.equal(await coach(page, "vertical").count(), 0);
-  const grip = await page.locator('[data-test="axe-pull-handle"]').boundingBox();
-  const bounds = await game(page).boundingBox(); assert(grip && bounds);
-  const x = grip.x + grip.width / 2, y = grip.y + grip.height / 2;
-  await page.mouse.move(x, y); await page.mouse.down();
-  await page.mouse.move(x, y + Math.max(80, Math.min(180, bounds.height * .26)) * .62, { steps: 8 });
-  await page.mouse.up(); await page.clock.runFor(1200);
+  // 2026-11-12: 投げ方は「上へ弾く」。右の取っ手から、適正の速さで弾く
+  await flickFromHandle(page, { power: .62 }); await page.clock.runFor(1200);
   await guide(page, "result", false, false); await phase(page, "result");
   assert.equal(await game(page).getAttribute("data-player-throws"), "1");
   await action(page); await coach(page, "finish").waitFor();
@@ -122,7 +119,7 @@ async function completeTapPullLesson(page) {
   await guide(page, "finish", false, false);
   const result = await page.evaluate(() => window.lessonPromise);
   assert(result.completed && !result.cancelled && result.tutorial);
-  assert.equal(result.inputVersion, "tap-pull-v1");
+  assert.equal(result.inputVersion, "tap-flick-v1");
   assert.equal(result.throws.length, 1); assert.equal(result.maximum, 8);
   return result;
 }

@@ -1,13 +1,34 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import { AxePullSession, SCENE, scenePoint, boardPoint, pullPower } from '../js/minigames/axe-pull-model.js';
+import { AxePullSession, SCENE, scenePoint, boardPoint, pullPower, FLICK, flickPower, flickSpeedFor } from '../js/minigames/axe-pull-model.js';
 import { resolveThrow, releaseAimAt, KILLS, totalOf } from '../js/minigames/axe-model.js';
 import { createMatch, takeTurn, turnOf, planOpponent } from '../js/minigames/axe-match.js';
 const pull=(s,p=.62)=>{assert(s.beginPull(1,{x:1300,y:400}));return s.release(1,{x:1300,y:400+230*p});};
 test('landscape and portrait letterboxing resolve the same real board point',()=>{
  for(const [width,height] of [[844,390],[932,430],[390,844],[1600,900],[667,375]]) { const rect={left:11,top:7,width,height},k=Math.min(width/1600,height/900);const p={x:SCENE.cx+.4*SCENE.radius,y:SCENE.cy-.5*SCENE.radius}; const got=scenePoint(rect,11+(width-1600*k)/2+p.x*k,7+(height-900*k)/2+p.y*k);assert(Math.abs(boardPoint(got).x-.4)<1e-12);assert(Math.abs(boardPoint(got).y+.5)<1e-12); }
  assert.equal(scenePoint({left:0,top:0,width:390,height:844},5,5),null);assert.equal(boardPoint({x:0,y:0}),null);assert.equal(scenePoint({left:0,top:0,width:0,height:2},1,1),null);
+});
+// 本編の投げ方（2026-11-12）: 上へ弾く速さで強さ、傾きで左右のぶれ。
+const stroke=(speed,{height=390,ms=80,lean=0,steps=4}={})=>Array.from({length:steps+1},(_,i)=>({t:1000+ms*i/steps,x:400+speed*height*ms/1000*lean*i/steps,y:300-speed*height*ms/1000*i/steps}));
+test('flick power follows the upward speed on a log scale, with the sweet band at about x0.7-x1.4 of the base speed',()=>{
+ assert(Math.abs(flickPower(stroke(FLICK.base),390).raw-.62)<1e-9);
+ for(const raw of [.3,.54,.62,.7,.95])assert(Math.abs(flickPower(stroke(flickSpeedFor(raw),{ms:200}),390).raw-raw)<1e-9,String(raw));
+ assert(Math.abs(flickSpeedFor(.54)/FLICK.base-2**-.5)<1e-9);assert(Math.abs(flickSpeedFor(.70)/FLICK.base-2**.5)<1e-9);
+ // 画面の高さで割るので、同じ「画面に対する速さ」なら端末が違っても同じ強さ
+ assert(Math.abs(flickPower(stroke(3,{height:720}),720).raw-flickPower(stroke(3,{height:390}),390).raw)<1e-9);
+ // 速さは離す直前 window ms で測る（ゆっくり始めて最後に速く弾けば、最後の速さ）
+ const late=[{t:0,x:400,y:300},{t:400,x:400,y:290},{t:440,x:400,y:290-3*390*.04},{t:490,x:400,y:290-3*390*.09}];
+ assert(Math.abs(flickPower(late,390).raw-.62)<.02,'the last ~90 ms decide the strength');
+});
+test('flick lean drifts sideways; taps, downward, sideways and malformed strokes are not throws',()=>{
+ const right=flickPower(stroke(3,{lean:.4}),390);assert(Math.abs(right.lean-.4*FLICK.lean)<1e-9);assert(right.lean>0);
+ assert(flickPower(stroke(3,{lean:-.4}),390).lean<0);
+ assert.equal(flickPower([{t:0,x:0,y:300},{t:80,x:0,y:300-390*.05}],390),null,'shorter than minRise');
+ assert.equal(flickPower([{t:0,x:0,y:300},{t:80,x:0,y:380}],390),null,'downward');
+ assert.equal(flickPower(stroke(3,{lean:2}),390),null,'more sideways than upward');
+ assert.equal(flickPower([{t:0,x:0,y:300}],390),null);assert.equal(flickPower(stroke(3),0),null);assert.equal(flickPower([{t:0,x:0,y:NaN},{t:1,x:0,y:0}],390),null);
+ assert.equal(flickPower([{t:80,x:0,y:300},{t:80,x:0,y:200}],390),null,'no elapsed time');
 });
 test('pull is distance-based, direction and bounds safe',()=>{assert.equal(pullPower({x:0,y:0},{x:0,y:142.6}),.62);assert.equal(pullPower({x:0,y:10},{x:0,y:0}),0);assert.equal(pullPower({x:0,y:0},{x:400,y:160}),null);assert.equal(pullPower(null,null),null);});
 test('tap alone, unselected pull, wrong pointer, cancellation and duplicate release never spend throws',()=>{const s=new AxePullSession();assert.equal(s.beginPull(1,{x:0,y:0}),false);assert(s.aimAt({x:0,y:0}));assert(s.beginPull(1,{x:0,y:0}));assert.equal(s.release(2,{x:0,y:140}),null);assert.equal(s.release(1,{x:0,y:0}),null);assert.equal(s.shots.length,0);assert.equal(s.phase,'aim');assert(s.beginPull(1,{x:0,y:0}));s.movePull(1,{x:1,y:140});assert(s.cancelPull());assert.equal(s.release(1,{x:1,y:140}),null);assert.equal(s.shots.length,0);});

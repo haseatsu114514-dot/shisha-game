@@ -5,6 +5,7 @@ import path from 'node:path';
 import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
 import { installLoadingComicReader } from './loading_reader.mjs';
+import { flickFromHandle } from "./axe_flick_input.mjs";
 
 const dir = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(dir, '../../../');
@@ -28,25 +29,11 @@ async function aimAxe(page, touch = false) {
   await page.waitForFunction(() => document.querySelector('[data-test="axe-game"]')?.dataset.phase === 'power');
 }
 async function pullAxe(page, touch = false, power = .62) {
-  const grip = await page.locator('[data-test="axe-pull-handle"]').boundingBox();
-  const stage = await page.locator('[data-test="axe-game"]').boundingBox();
-  assert(grip && stage, 'the actual pull handle and stage must be visible');
-  const x = grip.x + grip.width / 2, y = grip.y + grip.height / 2;
-  const endY = y + Math.max(80, Math.min(180, stage.height * .26)) * power;
-  if (touch) {
-    const session = await page.context().newCDPSession(page);
-    try {
-      await session.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x, y, id: 1 }] });
-      for (let i = 1; i <= 8; i++) await session.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x, y: y + (endY - y) * i / 8, id: 1 }] });
-      await session.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
-    } finally { await session.detach(); }
-  } else {
-    await page.mouse.move(x, y); await page.mouse.down();
-    await page.mouse.move(x, endY, { steps: 8 }); await page.mouse.up();
-  }
+  // 2026-11-12: 投げ方は「上へ弾く」。右の取っ手から、power になる速さで弾く（axe_flick_input.mjs）。
+  await flickFromHandle(page, { touch, power });
   await page.waitForFunction(() => document.querySelector('[data-test="axe-game"]')?.dataset.phase === 'result');
   const actual = Number(await page.locator('[data-test="axe-game"]').getAttribute('data-power'));
-  assert(Math.abs(actual - power) < .06, `actual pull power ${actual} must match the gesture ${power}`);
+  assert(Math.abs(actual - power) < .06, `actual flick power ${actual} must match the gesture ${power}`);
 }
 async function boot(page) {
   await page.goto(base);

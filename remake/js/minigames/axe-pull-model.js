@@ -20,6 +20,33 @@ export function boardPoint(p) {
   const x = (p.x - SCENE.cx) / SCENE.radius, y = (p.y - SCENE.cy) / SCENE.radius;
   return Math.abs(x) <= AIM_RANGE && Math.abs(y) <= AIM_RANGE ? { x, y } : null;
 }
+/** 本編の投げ方（2026-11-12 オーナー「最後に投げる時はフリップで弾いて前に弾く感じ。実際に斧を投げるような感じで」）:
+ *  的に触れた所が狙い。そこから上（前）へ素早く弾いて離すと投げる。
+ *  - 強さ: 離す直前 window ms の上向きの速さ（画面の高さ／秒）。base で回転がちょうど（POWER.ideal）、速さが2倍・半分になるごとに perDouble だけ強く・弱く。
+ *    速さは見た目の量なので対数で取る（適正の帯 0.54〜0.70 ＝ base の 0.71〜1.41 倍の速さ）。
+ *  - 左右のぶれ: 弾いた向きの傾き（tan）× lean を、狙いの横へ足す（10°で約0.8インチ）。
+ *  - 投げにならない: 上へ minRise（画面の高さの割合）に届かない・下や横へ動いた（傾き45°超）。
+ *  時刻は event.timeStamp（入力が起きた時刻）。検査は CDP の timestamp で同じ値を再現できる。 */
+export const FLICK = Object.freeze({ window: 90, minRise: .06, base: 3, perDouble: .16, lean: .25, maxLean: 1 });
+export function flickPower(samples, height) {
+  if (!Array.isArray(samples) || samples.length < 2 || !Number.isFinite(height) || height <= 0) return null;
+  if (!samples.every(s => s && [s.t, s.x, s.y].every(Number.isFinite))) return null;
+  const first = samples[0], last = samples[samples.length - 1];
+  const rise = (first.y - last.y) / height;
+  if (rise < FLICK.minRise) return null;
+  // 離す直前 window ms の区間（その区間より前の最後の点から）で速さと向きを測る。点が1つしか無ければ全体で測る。
+  let from = 0;
+  for (let i = samples.length - 1; i >= 0; i--) if (last.t - samples[i].t >= FLICK.window) { from = i; break; }
+  const a = samples[from], dt = last.t - a.t, dy = a.y - last.y, dx = last.x - a.x;
+  if (!(dt > 0) || !(dy > 0)) return null;
+  const lean = dx / dy;
+  if (Math.abs(lean) > FLICK.maxLean) return null;
+  const speed = dy / height / (dt / 1000);
+  const raw = clamp(POWER.ideal + FLICK.perDouble * Math.log2(speed / FLICK.base), 0, 1);
+  return { raw, speed, rise, lean: clamp(lean, -FLICK.maxLean, FLICK.maxLean) * FLICK.lean };
+}
+/** 指定の強さ（raw）になる速さ（画面の高さ／秒）。検査と説明で使う */
+export const flickSpeedFor = raw => FLICK.base * 2 ** ((raw - POWER.ideal) / FLICK.perDouble);
 export function pullPower(start, p) {
   if (!start || !p || ![start.x, start.y, p.x, p.y].every(Number.isFinite)) return null;
   // Length, not release speed or event frequency. Upward/back-to-origin releases cancel.
