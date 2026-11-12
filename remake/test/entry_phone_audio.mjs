@@ -150,3 +150,6 @@ transitions.cueTransition('place', { spotId: 'tonari' });
 await integrated.setBg('bg_tonari_inside_night.png');
 assert.equal(transitionRings, base + 1, 'image failure preserves DOM-commit progression contract');
 console.log('PASS: production setBg/transition first, instant, fast, cover, redraw, interruption and image-failure integration');
+
+// The shared curtain must keep its animation lifetime and keyboard guard through nested/failing transitions.
+await import('./transition_lifecycle.mjs');
