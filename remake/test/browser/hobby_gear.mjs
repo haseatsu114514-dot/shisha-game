@@ -169,9 +169,9 @@ await suite("hobby-gear", async check => {
       assert.equal((await saved(page)).money, 71000);
       assert.equal(await page.locator('.axe-bar-gear-select').count(), 4);
       const metrics = await page.locator('.axe-bar-gear-card button').evaluateAll(nodes => nodes.map(node => ({
-        size: Number.parseFloat(getComputedStyle(node).fontSize), height: node.offsetHeight,
+        test: node.dataset.test, size: Number.parseFloat(getComputedStyle(node).fontSize), height: node.offsetHeight,
       })));
-      assert(metrics.every(m => m.size >= 24 && m.height >= 82), 'shop keeps readable type and touch controls');
+      assert(metrics.every(m => m.size >= 24 && m.height >= 82), `shop keeps readable type and touch controls: ${JSON.stringify(metrics)}`);
       await page.keyboard.press("Escape");
       await assertFits(page, ".axe-bar-menu button");
       assert.equal(await page.locator(t('axe-bar-gear-open')).evaluate(node => node === document.activeElement), true);

@@ -1235,3 +1235,9 @@ html:root[data-ui-theme="paper"] .axe-bar-menu .axe-bar-lesson { color: var(--la
 .axe-bar-menu .axe-bar-gear-card .btn { width: 100%; min-height: 82px; height: auto; padding: 8px 12px; font-size: 24px; line-height: 1.35; white-space: normal; overflow-wrap: anywhere; }
 .axe-bar-menu .axe-bar-gear-card p.gear-offer { margin: 0; font-size: 24px; line-height: 1.35; }
 .axe-bar-menu .axe-bar-gear-select[aria-pressed="true"] { outline: 3px solid currentColor; outline-offset: 2px; }
+/* phone-density.css loads later and applies a 72px (wide: 80px) generic .btn floor.
+   These shop controls intentionally use the venue's larger 82px/24px contract. */
+html:root[data-density="phone"] body:not(:root) .axe-bar-menu[data-view="gear"] .btn {
+  min-height: max(82px, var(--phone-tap, 82px));
+  font-size: max(24px, var(--phone-text, 24px));
+}
