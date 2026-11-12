@@ -4,6 +4,7 @@ import { chapterThreeScenes, chapterThreeProgress, completeChapterThreeFreeTime 
 import { chapterThreeActivityWindow } from "./ch3-activity-progress.js";
 import { tokyoWindowReserved, tokyoGymWindowAllowed } from "../core/tokyo-clock.js";
 import { visitAffinity } from "../core/stats.js";
+import { shiftBasePay } from "../core/shift-pay.js";
 
 /**
  * after=この必須場面を読んでから、before=この場面を読む前まで。met=この人物と面識がある時だけ。repeat=自由時間ごとに選べる。
@@ -19,7 +20,7 @@ import { visitAffinity } from "../core/stats.js";
  * visitAffinity（一度きりの話と通いの1回目は段階会話の +16、通いの2回目からは小会話の +8）。本筋の場面には付けない。
  */
 export const TOKYO_OUTINGS = Object.freeze([
-  { id: "mukai_help", place: "mukai", label: "mukaiを手伝う", repeat: true, stamina: -14, money: 6000, stat: "charm",
+  { id: "mukai_help", place: "mukai", label: "mukaiを手伝う", repeat: true, stamina: -14, money: 8000, stat: "charm",
     reason: { lost: "味が戻るまでは、煙の量と客の顔で手伝える", back: "戻った舌で、客席の調整を任せてもらう" } },
   // 綾取の好感度は煙幕への外出で付く（#2028・AFB02）。♥1でLIME交換の任意場面が開く（ch3-story-wiring.js）。
   { id: "enmaku_notes", place: "enmaku", after: "ch3_saku_first", before: "ch3_saku_advice", label: "煙幕に顔を出す",
@@ -134,7 +135,8 @@ export function chapterThreeOutingCandidates(value) {
     && (!outing.met || !!value.met?.[outing.met])
     && (outing.repeat || !counts[outing.id]));
   // 通いの行き先は、同じ場所の一度きりの話を読み終えてから（読める話がある間はそちらだけ）。
-  return open.filter(outing => !outing.regular || !open.some(other => other.place === outing.place && !other.repeat));
+  return open.filter(outing => !outing.regular || !open.some(other => other.place === outing.place && !other.repeat))
+    .map(outing => outing.id === "mukai_help" ? { ...outing, money: shiftBasePay(value) } : outing);
 }
 
 /** 今の自由時間で選べるか。読取のみで保存を変えない。 */

@@ -160,6 +160,7 @@ function nextWindow(value) {
   const next = nextWindow(value);
   assert.equal(next.id, "d9-night");
   assert(!ids(value, next).includes("enmaku_notes"), "A one-time visit repeated");
+  assert.equal(chapterThreeOutings(value, next.id).find(item => item.id === "mukai_help").money, 10000, "mukai and tonari share the chapter 3 wage");
   assert(claimChapterThreeOuting(value, next.id, "mukai_help"));
   const later = nextWindow(value);
   assert(claimChapterThreeOuting(value, later.id, "mukai_help"));

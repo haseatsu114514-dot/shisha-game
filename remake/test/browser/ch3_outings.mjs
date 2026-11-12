@@ -86,7 +86,7 @@ await suite("ch3-outings", async check => {
     await choose(page, "mukai", "mukai_help");
     await readUntilCard(page);
     const mid = await get(page);
-    assert.equal(mid.money, before.money + 6000);
+    assert.equal(mid.money, before.money + 10000);
     assert.equal(mid.stamina, before.stamina - 14);
     assert.deepEqual(mid.flags._ch3_outings, { mukai_help: 1 });
     // 次の自由時間で公園を歩くと、能力は増やさず体力だけ戻る。

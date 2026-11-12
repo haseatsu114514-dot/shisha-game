@@ -45,7 +45,7 @@ const values = {
 const context = vm.createContext({ Math, Set, Promise, console, AbortController }); const mods = new Map();
 async function load(name) { if (mods.has(name)) return mods.get(name); const mod = values[name]
   ? new vm.SyntheticModule(Object.keys(values[name]), function () { for (const [key, value] of Object.entries(values[name])) this.setExport(key, value); }, { context, identifier: name })
-  : new vm.SourceTextModule(await fs.readFile(new URL(`js/${name === "train-passengers.js" ? "motions" : ["coals.js", "attack-training.js"].includes(name) ? "craft" : ["chapter-features.js", "stat-step-tables.js", "flavor-mastery.js", "cinema-discovery.js", "rules.js", "affinity-stages.js", "axe-bar-discovery.js", "city-locations.js", "trpg-discovery.js", "ryuji-visit.js", "travel-budget.js", "chapter-clock.js", "play-mastery.js"].includes(name) ? "core" : "daily"}/${name}`, root), "utf8"), { context, identifier: name });
+  : new vm.SourceTextModule(await fs.readFile(new URL(`js/${name === "train-passengers.js" ? "motions" : ["coals.js", "attack-training.js"].includes(name) ? "craft" : ["shift-pay.js", "chapter-features.js", "stat-step-tables.js", "flavor-mastery.js", "cinema-discovery.js", "rules.js", "affinity-stages.js", "axe-bar-discovery.js", "city-locations.js", "trpg-discovery.js", "ryuji-visit.js", "travel-budget.js", "chapter-clock.js", "play-mastery.js"].includes(name) ? "core" : "daily"}/${name}`, root), "utf8"), { context, identifier: name });
   mods.set(name, mod); await mod.link((specifier) => load(specifier.split("/").at(-1))); return mod; }
 const module = await load("tonari.js"); await module.evaluate(); const tonari = module.namespace;
 const byid = Object.fromEntries(events.map((e) => [e.id, e]));
@@ -324,3 +324,4 @@ guestState("ageha"); state.slot = 2; assert.equal(cityGuests.cityGuestVisit(), n
 guestState("ageha"); state.phase = "tournament"; assert.equal(cityGuests.cityGuestVisit(), null);
 guestState("ageha"); state.pendingInvite = { sender: "ageha", day: state.day, slot: 1 }; assert.equal(cityGuests.cityGuestVisit(), null);
 console.log("[city guests] PASS: three matching map/shop schedules, known/closed/date guards, first/repeat, once daily, no added resources");
+
