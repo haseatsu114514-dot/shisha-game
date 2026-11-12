@@ -38,6 +38,52 @@ await suite("affinity-gates", async check => {
   const run = check;
   check = (...args) => !process.env.TEST_CASES || args[0].includes(process.env.TEST_CASES) ? run(...args) : Promise.resolve();
   for (const [label, options] of [["pc", {}], ["touch", { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }]]) {
+    await check(`${label}-ageha-followup-shares-one-visit-with-the-next-story`, async page => {
+      await setup(page);
+      await page.evaluate(async () => {
+        G.city = await import("./js/chapters/ch2-city-data.js");
+        G.prep = await import("./js/chapters/ch2-preparation.js");
+        await G.city.loadCityDialogues(); await G.city.loadChapterTwoDialogues();
+        const s = G.core.newGame();
+        Object.assign(s, { chapter: 2, phase: "daily", day: 16, slot: 0, money: 100000 });
+        s.met.ageha = true; s.affinity.ageha = 9; s.stats.charm = 10;
+        G.vn.vnTest.choose = () => 0;
+        G.agehaEvents = [];
+        const enter = G.vn.hooks.onEnter;
+        G.vn.hooks.onEnter = (id, scene) => { G.agehaEvents.push(id); enter?.(id, scene); };
+        G.agehaVisit = () => G.stats.paidAction(() => G.prep.visitPreparationSpot(
+          G.prep.PREPARATION_SPOTS.find(x => x.charId === "ageha"), { staminaGuard: async () => true }));
+        await G.agehaVisit();
+        G.core.save(); G.core.newGame(); G.core.load();
+        G.beforeAgeha = structuredClone(G.core.state);
+        G.core.state.day++;
+        G.agehaEvents.length = 0;
+        G.pendingAgeha = G.agehaVisit();
+      });
+      // The photo is still offered once per visit, but is not an extra paid interaction.
+      await page.locator('[data-test="purikura-skip"]').waitFor();
+      await page.locator('[data-test="purikura-skip"]')[options.hasTouch ? "tap" : "click"]();
+      const result = await page.evaluate(async () => {
+        const result = await G.pendingAgeha;
+        const after = structuredClone(G.core.state);
+        G.core.save(); G.core.newGame(); G.core.load();
+        return { used: result.value.used, before: G.beforeAgeha, after, loaded: structuredClone(G.core.state), events: G.agehaEvents };
+      });
+      assert(result.used);
+      assert(result.events.indexOf("remake_ch2_ageha_followup") < result.events.indexOf("remake_ch2_ageha_gyaru"));
+      assert.equal(result.events.filter(x => x === "remake_ch2_ageha_followup").length, 1);
+      assert(result.after.flags._ch2_followup_done.ageha);
+      assert(result.after.flags._ch2_read_remake_ch2_ageha_gyaru);
+      assert.equal(result.after.money, result.before.money - 3000);
+      assert.equal(result.after.visits.ageha, result.before.visits.ageha + 1);
+      assert.equal(result.after.flags._ch2_talks.ageha, result.before.flags._ch2_talks.ageha + 1);
+      const points = x => x.affinity.ageha + (x.affinityCarry.ageha || 0);
+      assert(Math.abs(points(result.after) - points(result.before) - 16 * .85) < 1e-9, "one story reward, no additional followup reward");
+      assert.deepEqual(result.loaded.romanceChoices, result.after.romanceChoices);
+      assert.equal(points(result.loaded), points(result.after));
+      assert(result.loaded.flags._ch2_followup_done.ageha && result.loaded.flags._ch2_read_remake_ch2_ageha_gyaru);
+    }, options);
+
     await check(`${label}-lime-fraction-feedback-and-load`, async page => {
       await setup(page);
       await page.evaluate(async () => {
@@ -336,3 +382,4 @@ await suite("affinity-gates", async check => {
     }, { ...options, reducedMotion: "reduce" });
   }
 });
+
