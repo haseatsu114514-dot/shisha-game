@@ -465,7 +465,8 @@ await suite("craft-materials", async check => {
         });
         // 金の地は画像が読めない時の下地。透明な枠の内側だけに塗り、丸い角の外へ四角く出さない（#2359 最終QA）。
         assert.deepEqual(paint, { background: "rgb(227, 189, 110)", clip: "padding-box", image: paint.image, width: "14px" });
-        assert.match(paint.image, /button-gold\.webp/);
+        // 金のボタンの絵: 旧配置は夜紫の金の札、新しい配置（既定）は CSL18 ガラスと革の琥珀の鍵。
+        assert.match(paint.image, /craft-night\/button-gold\.webp|craft-glass\/key-amber\.webp/);
         // 作業台の上の通知は日常の紙の札ではなく夜紫の窓で出す（#2359 最終QA）。
         const note = await page.evaluate(async () => {
           const { toast } = await import("./js/core/ui.js");
@@ -479,7 +480,9 @@ await suite("craft-materials", async check => {
         assert.equal(note.color, "rgb(255, 163, 172)");
       }
       if (step === "holes") {
-        assert.equal(await page.locator('.ht-option[aria-pressed="true"]').evaluate(n => getComputedStyle(n).color), "rgb(46, 29, 69)");
+        // 選んでいる型の字: 旧配置は白い札に濃い字、新しい配置（既定）は CSL18 の紫に灯るガラスの札に明るい字。
+        const craftStage = await page.evaluate(() => document.body.classList.contains("craft-stage"));
+        assert.equal(await page.locator('.ht-option[aria-pressed="true"]').evaluate(n => getComputedStyle(n).color), craftStage ? "rgb(246, 241, 250)" : "rgb(46, 29, 69)");
         // 白いボタン（選択中の型・穴あけ開始）も、地の色は透明な枠の内側だけ。
         for (const selector of ['.ht-option[aria-pressed="true"]', '[data-test="hole-start"]']) {
           assert.equal(await page.locator(selector).evaluate(n => getComputedStyle(n).backgroundClip), "padding-box", selector);

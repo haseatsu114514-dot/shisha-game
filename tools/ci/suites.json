@@ -28,6 +28,14 @@
       "run": ["node remake/test/side_area.mjs"]
     },
     {
+      "id": "neo-ambient",
+      "title": "新版の場所の光（BGU01）: 背景の色から立ち絵へ重ねる色を決める規則（明るい場所は変えない・暗さと色かぶりの下限・夜の色調補正）",
+      "kind": "quick",
+      "run": [
+        "node remake/test/neo_ambient.mjs"
+      ]
+    },
+    {
       "id": "chapter-poems",
       "title": "巻頭ポエムの台本・仕様・章タイトル直前の接続",
       "kind": "quick",
@@ -622,8 +630,17 @@
       "kind": "browser",
       "weight": 1,
       "timeout": 5,
-      "paths": ["remake/js/minigames/ichidai*.js", "remake/js/daily/ichidai-table.js", "remake/js/ichidai-page.js", "remake/ichidai.html", "remake/css/ichidai.css", "remake/js/daily/tonari.js", "remake/test/browser/ichidai.mjs"],
+      "paths": ["remake/js/minigames/ichidai*.js", "remake/js/daily/ichidai-table.js", "remake/js/ichidai-page.js", "remake/ichidai.html", "remake/css/ichidai.css", "remake/css/ichidai-lines.css", "remake/js/daily/tonari.js", "remake/test/browser/ichidai.mjs", "remake/test/browser/ichidai_support.mjs"],
       "run": ["node remake/test/browser/ichidai.mjs"]
+    },
+    {
+      "id": "ichidai-modes",
+      "title": "Card game Ichidai Shobu: the guide (turn flow, goal, next-step hints, automatic cooling, burn-out marks, prep tray captions) and the four-player table (rival faces, lines, target choice, this round's judge card, ranking) (ICG52-57)",
+      "kind": "browser",
+      "weight": 1,
+      "timeout": 5,
+      "paths": ["remake/js/minigames/ichidai*.js", "remake/js/ichidai-page.js", "remake/ichidai.html", "remake/css/ichidai.css", "remake/css/ichidai-lines.css", "data/dialogue/ichidai_lines.json", "remake/test/browser/ichidai_modes.mjs", "remake/test/browser/ichidai_support.mjs"],
+      "run": ["node remake/test/browser/ichidai_modes.mjs"]
     },
     {
       "id": "dj-club",
@@ -651,6 +668,7 @@
         "remake/js/minigames/desert-ride.js",
         "remake/js/minigames/desert-ride-model.js",
         "remake/js/minigames/desert-ride-art.js",
+        "remake/js/minigames/minigame-loading.js",
         "remake/img/ui/desert_ride/**",
         "remake/js/chapters/ch4-desert.js",
         "remake/js/chapters/ch4-desert-progress.js",
@@ -1018,6 +1036,7 @@
         "node --experimental-vm-modules remake/test/hiyori_frequency.mjs",
         "node --experimental-vm-modules remake/test/hiyori_quiet_visit.mjs",
         "node remake/test/spot_encounter_doctor.mjs",
+        "node remake/test/town_ties.mjs",
         "node --experimental-vm-modules remake/test/hiyori_showroom_806.mjs",
         "node --experimental-vm-modules remake/test/first_meeting_affinity.mjs",
         "node --experimental-vm-modules remake/test/samechan_story.mjs",
@@ -1113,7 +1132,8 @@
         "node --experimental-vm-modules remake/test/lime_fit_774.mjs",
         "node --experimental-vm-modules remake/test/lime_save_774.mjs",
         "node --experimental-vm-modules remake/test/purikura_motion.mjs",
-        "node remake/test/text_wrap.mjs --fixed-only",
+        "node remake/test/text_wrap.mjs",
+        "node remake/test/css_wrap_guard.mjs",
         "node remake/test/natural_wrap.mjs",
         "node remake/test/conversation_effects_marks.mjs",
         "node remake/test/conversation_cutin.mjs"
@@ -1193,7 +1213,8 @@
         "remake/img/ui/axe_throw/**",
         "remake/img/backgrounds/bg_axe_lounge_night.webp",
         "remake/test/browser/axe_bgm_788.mjs",
-        "remake/test/browser/axe_audio_performance.mjs"
+        "remake/test/browser/axe_audio_performance.mjs",
+        "assets/audio/se/axe_throw/**"
       ],
       "run": [
         "COMPARISON_DIR=.codex/artifacts/remake-browser/axe-poses node remake/test/browser/axe_throw.mjs",
@@ -1698,6 +1719,7 @@
         "remake/js/core/stage-fit.js",
         "remake/js/minigames/camel-race.js",
         "remake/js/minigames/camel-race-model.js",
+        "remake/js/minigames/minigame-loading.js",
         "remake/js/chapters/ch4-camel-race.js",
         "remake/js/chapters/ch4-camel-progress.js",
         "remake/js/chapters/ch4-dubai-daily.js",
@@ -1779,6 +1801,7 @@
         "data/dialogue/ch4_main.json",
         "data/dialogue/ch4_visitors.json",
         "data/dialogue/ch4_*_dubai.json",
+        "data/dialogue/ch4_arrival_daily.json",
         "data/dialogue/tournament_dates.json",
         "remake/test/browser/ch4_dubai_daily.mjs"
       ],
@@ -1800,6 +1823,7 @@
         "data/dialogue/ch4_spots.json",
         "data/dialogue/ch4_visitors.json",
         "data/dialogue/ch4_*_dubai.json",
+        "data/dialogue/ch4_arrival_daily.json",
         "remake/test/browser/ch4_full_flow.mjs"
       ],
       "run": [
@@ -2427,6 +2451,23 @@
         "node remake/test/browser/smoke_dissolve.mjs"
       ],
       "chrome": "playwright"
+    },
+    {
+      "id": "visual-continuity-3203",
+      "title": "#3203 店の入口の写真を待ってから出す（遅い時は上限・下地）／背景の取得に失敗しても前の背景を残す",
+      "kind": "browser",
+      "weight": 0.4,
+      "timeout": 5,
+      "paths": [
+        "remake/js/core/ui.js",
+        "remake/js/core/scene-art.js",
+        "remake/js/daily/shop.js",
+        "remake/css/shop.css",
+        "remake/test/browser/visual_continuity_3203.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/visual_continuity_3203.mjs"
+      ]
     },
     {
       "id": "steam-forecast",
@@ -3816,10 +3857,12 @@
         "remake/js/daily/spot-encounters.js",
         "remake/js/vn/**",
         "remake/js/core/state.js",
-        "remake/test/browser/spot_encounters.mjs"
+        "remake/test/browser/spot_encounters.mjs",
+        "remake/test/browser/town_ties.mjs"
       ],
       "run": [
-        "node remake/test/browser/spot_encounters.mjs"
+        "node remake/test/browser/spot_encounters.mjs",
+        "node remake/test/browser/town_ties.mjs"
       ],
       "env": {
         "ARTIFACT_DIR": ".codex/artifacts/remake-browser/spot-encounters"
@@ -4217,7 +4260,7 @@
     },
     {
       "id": "conversation-effects-demo",
-      "title": "Conversation effects demo (#2732): 12 candidates, ON/OFF, one at a time",
+      "title": "Conversation effects demo (#2732): 12 candidates and 6 new faces (#3417), ON/OFF, one at a time",
       "kind": "browser",
       "weight": 1.5,
       "timeout": 5,
@@ -4251,9 +4294,9 @@
     },
     {
       "id": "conversation-cutin",
-      "title": "Conversation cut-ins in the main VN engine (#2990): adopted placements, enter/leave, SKIP/LOG",
+      "title": "Conversation cut-ins in the main VN engine (#2990, #3417): every placement plays, enter/leave, SKIP/LOG",
       "kind": "browser",
-      "weight": 0.5,
+      "weight": 1.2,
       "timeout": 4,
       "paths": ["remake/js/vn/engine.js", "remake/js/vn/conversation-cutin.js", "remake/css/vn/conversation-cutin.css", "remake/test/browser/conversation_cutin_2990.mjs"],
       "run": ["node remake/test/browser/conversation_cutin_2990.mjs"]
@@ -4613,7 +4656,7 @@
     },
     {
       "id": "look",
-      "title": "見た目の様式（新版／旧版／DS風）の既定・章による制限・起動時の移行",
+      "title": "見た目の様式（新版／旧版／DS風）の既定・全章で効くこと・起動時の移行",
       "kind": "quick",
       "run": ["node remake/test/look.mjs"]
     },
@@ -4744,6 +4787,7 @@
         "remake/js/chapters/ch5-daily.js",
         "remake/js/scenes/title.js",
         "remake/js/core/ui.js",
+        "remake/test/browser/look_chapter_seeds.mjs",
         "remake/test/browser/look_neo_portrait.mjs"
       ],
       "run": [
@@ -4752,10 +4796,10 @@
     },
     {
       "id": "look-retro",
-      "title": "DS風: 縦持ちの2画面・ドット絵の上画面・会話と地図の中継・場面転換と登場カットイン・未対応の場面と他章では現行のまま",
+      "title": "DS風: 縦持ちの2画面・ドット絵の上画面・会話と地図の中継・場面転換と登場カットイン・第2〜5章の会話と地図とカードと小窓・未対応の場面では現行のまま",
       "kind": "browser",
-      "weight": 1.8,
-      "timeout": 6,
+      "weight": 2.8,
+      "timeout": 8,
       "paths": [
         "remake/css/look-retro.css",
         "remake/js/looks/**",
@@ -4766,6 +4810,12 @@
         "remake/js/scenes/title.js",
         "remake/js/core/ui.js",
         "remake/css/daily.css",
+        "remake/js/daily/station-travel.js",
+        "remake/js/core/chapter-card.js",
+        "remake/js/chapters/ch2.js",
+        "remake/js/chapters/ch3-scenes.js",
+        "remake/js/chapters/ch5-daily.js",
+        "remake/test/browser/look_chapter_seeds.mjs",
         "remake/test/browser/look_retro.mjs"
       ],
       "run": [

@@ -1,13 +1,14 @@
 // 会話カットイン（立ち絵版・#2990）を本編の会話エンジンと実際の台本で確かめる。
 // 置いた行で、はじめの既存の立ち絵（new）の切り抜きが左側に出て、次の行で消える（案4は薄れて消える・2c は0.9秒で消える）。
 // LOG・SKIP で即座に消え、SKIP 中は出さない。置き場と条件の表は remake/test/conversation_cutin.mjs が見る。
+// #3417: 同じ型の別場面（第2〜5章へ広げた置き場など）も、実際の台本の再生で出て次の行で片付くことを1件ずつ確かめる。
 import assert from "node:assert/strict";
 import path from "node:path";
 import { suite } from "./support.mjs";
 
 const SHOTS = process.env.SHOTS ? path.resolve(process.env.SHOTS) : null;
 
-/** 置き場の行の少し前から本物の台本を再生し、カットインの層の出入りを時刻つきで記録する */
+/** 置き場の行の少し前から本物の台本を再生し、カットインの層の出入りを時刻つきで記録する。id は案の番号か CUES の添字 */
 async function start(page, id) {
   await page.evaluate(async (id) => {
     const core = await import("./js/core/state.js"), ui = await import("./js/core/ui.js"), data = await import("./js/core/data.js");
@@ -16,9 +17,9 @@ async function start(page, id) {
     ui.clearScreen();
     Object.assign(core.config, { textSpeed: 4, skipSeenOnly: false, bgmVolume: 0, seVolume: 0, voiceBlip: false, portraitStyle: "new" });
     vn.vnTest.turbo = false;
-    const cue = cut.CUES.find((c) => c.id === id);
-    // 第2章・第4章の台本は章に入る時に読む。ここでは本物の JSON をそのまま登録する
-    for (const file of ["ch2_isolation", "ch2_main", "ch4_main"]) {
+    const cue = typeof id === "number" ? cut.CUES[id] : cut.CUES.find((c) => c.id === id);
+    // 第2〜5章の台本は章に入る時に読む。ここでは本物の JSON をそのまま登録する
+    for (const file of ["ch2_isolation", "ch2_main", "ch2_tournament", "ch3_main", "ch3_volk", "ch4_main", "ch4_dubai_daily", "ch5_main"]) {
       if (data.DB.dialogues[cue.dialogue]) break;
       const json = await (await fetch(`../data/dialogue/${file}.json`)).json();
       for (const d of json.dialogues || []) data.DB.dialogues[d.dialogue_id] ??= d;
@@ -78,6 +79,27 @@ await suite("conversation-cutin-2990", async (check) => {
       }
       await page.locator(".vn-box").click();
       await page.waitForFunction(() => !document.querySelector(".vn-cutin"));
+      assert.equal(await page.evaluate(() => cutinQA.events.filter((e) => e.type === "add").length), 1, "1会話1回");
+      await page.evaluate(() => cutinQA.controller.abort());
+    });
+  }
+
+  // 同じ型の別場面（各案の先頭は上で詳しく見る）。置いた行で正しい案が1回出て、次の行（2c は0.9秒）で片付く
+  const others = await (async () => {
+    const { CUES } = await import("../../js/vn/conversation-cutin.js");
+    return CUES.map((cue, index) => ({ ...cue, index })).filter((cue) => CUES.findIndex((c) => c.id === cue.id) !== cue.index);
+  })();
+  for (const cue of others) {
+    await check(`${cue.id}（${cue.dialogue}）：置いた行で出て、片付く`, async (page) => {
+      await start(page, cue.index);
+      await reachCue(page);
+      await page.waitForFunction(() => document.querySelector(".vn-cutin img")?.complete);
+      const shown = await nowShown(page);
+      assert.equal(shown?.cue, cue.id);
+      assert(shown.decoded, "立ち絵が読めている");
+      assert.match(shown.src, new RegExp(`chr_hajime_${cue.face}\\.`), `表情 ${cue.face}`);
+      if (cue.id !== "2c") await page.locator(".vn-box").click();
+      await page.waitForFunction(() => !document.querySelector(".vn-cutin"), null, { timeout: 5000 });
       assert.equal(await page.evaluate(() => cutinQA.events.filter((e) => e.type === "add").length), 1, "1会話1回");
       await page.evaluate(() => cutinQA.controller.abort());
     });

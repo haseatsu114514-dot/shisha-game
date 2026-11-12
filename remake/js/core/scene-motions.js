@@ -89,7 +89,8 @@ export async function shiftClose() {
   const short = shortenSeen("shift");
   const mod = await shift().catch((e) => { console.error(e); return null; });
   if (!mod || state !== owner) return;
-  const run = short ? mod.brief : (motionVariant("shift") === "b" ? mod.b : mod.a);
+  const v = motionVariant("shift");
+  const run = short ? (v === "c" ? () => mod.c({ brief: true }) : mod.brief) : (mod[v] || mod.a);
   if (run) await run();
   if (state === owner) markSeen("shift"); // 見せ終えてから記録
 }
@@ -102,32 +103,33 @@ export async function sharkSwim(mid) {
 }
 
 /** 乗り物の演出の共通の入口。テストの高速送り・動きを減らす設定では省いて mid() だけ（engine の vnTest は window.__remake 経由で見る。循環 import を避ける） */
-async function ride(load, mid, opts) {
+async function ride(load, mid, opts, scene = null) {
   if (omitMotion() || window.__remake?.vnTest?.turbo) { await mid?.(); return; }
   const mod = await load().catch((e) => { console.error(e); return null; });
-  if (mod) await mod.a(mid, opts);
+  const run = mod && ((scene && mod[motionVariant(scene)]) || mod.a);
+  if (run) await run(mid, opts);
   else await mid?.();
 }
 
-/** 電車に乗る（Issue #891）。mid(): 車内の絵が覆っている間に次の背景へ替える。tone: "day"|"night"（省略で今の時間帯） */
+/** 電車に乗る（Issue #891・作り直し TMG54）。mid(): 車両が覆っている間に次の背景へ替える。tone: "day"|"night"（省略で今の時間帯） */
 export async function trainRide(mid, opts = {}) {
-  await ride(train, mid, opts);
+  await ride(train, mid, opts, "train");
 }
 
 /** 新幹線に乗る（Issue #1059）。mid(): 車窓が覆っている間に次の背景へ替える。
  * opts.from/to: "home"|"tokyo"。第2章の隣町行き電車(#891 trainRide)とは別の演出。 */
 export async function shinkansenRide(mid, opts = {}) {
-  await ride(shinkansen, mid, opts);
+  await ride(shinkansen, mid, opts, "shinkansen");
 }
 
-/** 飛行機に乗る（#2688 A4）。丸い機窓の外が時差の色へ移り、着く土地が見えたところで窓が広がる。opts.to: "dubai" | "home" */
+/** 飛行機に乗る（#2688 A4・作り直し TMG57）。機内の窓の外の雲海が時差の色へ移り、行き先の題字のあと窓へ寄って次の場面になる。opts.to: "dubai" | "home" */
 export async function planeRide(mid, opts = {}) {
-  await ride(plane, mid, { ...opts, kind: "plane" });
+  await ride(plane, mid, { ...opts, kind: "plane" }, "plane");
 }
 
-/** 配送便（車）に乗る（#2688 A4）。横長の車窓の外を道路の灯が流れる。opts.to: "tokyo" | "town" */
+/** 配送便（車）に乗る（#2688 A4・TMG57）。ふつうの切り替えと行き先の題字だけ（車窓の演出はやめた）。opts.to: "tokyo" | "town" */
 export async function vanRide(mid, opts = {}) {
-  await ride(plane, mid, { ...opts, kind: "van" });
+  await ride(plane, mid, { ...opts, kind: "van" }, "plane");
 }
 
 /** mid(): 覆っている間に背景を替える。bgUrl はその背景の絵（線画の元） */

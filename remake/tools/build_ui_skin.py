@@ -192,6 +192,42 @@ def build_craft_stage():
             print(f"{path.relative_to(ROOT)}: {image.width}×{image.height}, {path.stat().st_size:,} bytes")
 
 
+CRAFT_GLASS_SOURCES = ROOT / "assets/ui/craft-glass"
+CRAFT_GLASS_OUT = ROOT / "remake/img/ui/craft-glass"
+# シーシャ作りの部品「ガラスと革」（CSL18 方向B）。原画は asset_sources/ui/craft-glass-20261111/raw/、
+# 切り出しの枠は同フォルダの README。実行時の絵はどれも切り出しの半分（stage-leather だけ幅1280）。
+CRAFT_GLASS_PARTS = {
+    **{name: {"source_size": (2071, 586), "width": 1036} for name in ("tile", "tile-on", "tile-off")},
+    **{name: {"source_size": (1892, 677), "width": 946} for name in ("key", "key-amber")},
+    "panel": {"source_size": (1477, 947), "width": 739},
+    "frame": {"source_size": (1699, 806), "width": 850},
+    "strip": {"source_size": (2049, 166), "width": 1025},
+    "plaque": {"source_size": (1921, 487), "width": 961},
+    "bead": {"source_size": (783, 818), "width": 392},
+    "badge": {"source_size": (973, 1015), "width": 487},
+    "rail-now": {"source_size": (2085, 563), "width": 1043},
+    "voice-plate": {"source_size": (2034, 476), "width": 1017},
+    "spine-housing": {"source_size": (251, 1421), "width": 126},
+    "dial-bezel": {"source_size": (1462, 806), "width": 731},
+    "dial-glass": {"source_size": (1321, 686), "width": 661},
+    "stage-leather": {"source_size": (1536, 1024), "width": 1280, "alpha": False},
+}
+
+
+def build_craft_glass():
+    CRAFT_GLASS_OUT.mkdir(parents=True, exist_ok=True)
+    for name, spec in CRAFT_GLASS_PARTS.items():
+        with Image.open(CRAFT_GLASS_SOURCES / f"{name}.png") as source:
+            if source.size != spec["source_size"]:
+                raise ValueError(f"craft-glass {name}: expected {spec['source_size']}, got {source.size}")
+            alpha = spec.get("alpha", True)
+            width = spec["width"]
+            image = source.convert("RGBA" if alpha else "RGB").resize((width, round(width * source.height / source.width)), Image.Resampling.LANCZOS)
+            path = CRAFT_GLASS_OUT / f"{name}.webp"
+            image.save(path, "WEBP", quality=90 if alpha else 84, alpha_quality=100, method=6, exact=alpha)
+            print(f"{path.relative_to(ROOT)}: {image.width}×{image.height}, {path.stat().st_size:,} bytes")
+
+
 NEO_SOURCES = ROOT / "assets/ui/neo"
 NEO_OUT = ROOT / "remake/img/ui/neo"
 NEO_PARTS = {
@@ -502,6 +538,7 @@ def main():
     build_craft_night()
     build_craft_stage()
     build_neo()
+    build_craft_glass()
     OUT.mkdir(parents=True, exist_ok=True)
     for name, spec in SPRITES.items():
         with Image.open(SOURCES / f"{spec.get('source', name)}.png") as source:
