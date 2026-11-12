@@ -197,7 +197,7 @@ await suite("desert-ride", async check => {
   });
 
   await check("phone-touch-buttons-reduced-motion-and-tutorial", async page => {
-    // 曲の再生の速さを書いた値を記録する（スマホ・タブレットではブーストでも変えない。2026-11-11 オーナー「加速すると処理重い」「BGM止まった」）
+    // タッチ端末も再生中の曲を加速する（重い音程補正は使わない）。
     await page.addInitScript(() => {
       window.__rateWrites = [];
       const rate = Object.getOwnPropertyDescriptor(HTMLMediaElement.prototype, "playbackRate");
@@ -268,7 +268,7 @@ await suite("desert-ride", async check => {
     assert.equal(await page.evaluate(() => window.__desertRide.game.gauge), 0, "the BOOST button consumes the stocked gauge");
     assert(await page.evaluate(() => window.__desertRide.game.boostT > 0), "the partial gauge gives boost time");
     await page.waitForTimeout(200);
-    assert.deepEqual(await page.evaluate(() => window.__rateWrites.filter(value => value !== 1)), [], "a touch device keeps the music at its normal speed during a boost");
+    assert(await page.evaluate(() => window.__rateWrites.includes(1.18)), "touch boost accelerates the current music to 1.18x");
     // 練習は説明つきで（回転・ブーストまで）、終わると本番へ進むカード
     await page.evaluate(() => {
       window.__captions = [];

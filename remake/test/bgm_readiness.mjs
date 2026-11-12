@@ -97,3 +97,22 @@ assert.notEqual(mediaRetry, mediaError);
 assert.equal(mediaRetry.plays, 1, "the next gesture retries the failed music");
 assert.equal(timers.size, 0);
 console.log("[BGM readiness] PASS: MP3 canplay gate, no autoplay, reuse, active request, failure/retry, timeout and bounded cache");
+
+// A rejected play() must retry the same media, including a nonzero position,
+// rather than replace it at the next boost/whip gesture.
+// Exercise the original start rejection using a preloaded player.
+audio.stopBgm(0);
+const prepRetry = audio.preloadBgm("bgm_ethnic08"); await flush();
+const rejected = elements.at(-1);
+rejected.currentTime = 12;
+rejected.play = () => Promise.reject(new Error("gesture required"));
+ready(rejected); await prepRetry;
+audio.playBgm("bgm_ethnic08"); await flush();
+const beforeRetry = elements.length;
+rejected.play = () => { rejected.plays++; rejected.paused = false; return Promise.resolve(); };
+audio.unlockAudio(); await flush();
+assert.equal(elements.length, beforeRetry, "gesture retry must not create a new player");
+assert.equal(rejected.currentTime, 12, "gesture retry keeps the current position");
+assert.equal(rejected.paused, false);
+assert.equal(audio.currentBgm(), "bgm_ethnic08");
+console.log("[BGM readiness] PASS: rejected playback resumes the same media and position");

@@ -322,7 +322,16 @@ export function unlockAudio() {
     syncRain(); syncPulls();
     // resume() is asynchronous. Read the latest request only after it succeeds;
     // stop/scene changes during unlock must not revive an old title request.
-    if (pendingBgm) { const k = pendingBgm; pendingBgm = null; playBgm(k); }
+    if (pendingBgm) {
+      const k = pendingBgm; pendingBgm = null;
+      if (k === currentKey && currentEl) {
+        // play() の拒否は読み込み失敗ではない。次の操作でも同じ曲・位置を使う。
+        const a = currentEl;
+        if (!bgmPaused && !rotateHeld && !document.hidden) a.play().catch(() => {
+          if (currentEl === a && currentKey === k) pendingBgm = k;
+        });
+      } else playBgm(k);
+    }
     else if (currentEl?.paused && currentEl.src && currentEl.readyState >= 2
       && !bgmPaused && !rotateHeld && !document.hidden) {
       // iOSの割込などで要素だけ止まることがある。同じキーのplayBgmは重複を
@@ -905,23 +914,21 @@ const bgmLevel = (key) => config.mute || config.muted || bgmPaused ? 0
   : config.bgmVolume * (BGM_GAIN[key] ?? 1) * bgmDuck;
 
 // ラクダレース中はプレイヤー速度に、サンドボード中はブーストに合わせて、再生速度を緩やかに変える。
-// ピッチは保つ（HTMLAudioElement の既定 / preservesPitch=true。continue 曲と同じ）。
+// PCでは音程を保ち、タッチ端末では音程補正の負荷を避ける。
 let bgmTempo = 1, bgmTempoTarget = 1;
 const TEMPO_EASE = 0.22;
 const TEMPO_BGM = new Set(["bgm_camel_race", "bgm_ethnic05", "bgm_ethnic08", "bgm_ethnic12"]);
 
-// 2026-11-11 オーナー「ブーストするとBGM止まったりもバグ」: iPhone の Safari は、再生倍率や preservesPitch を書くたびに
-// 音の処理を作り直し、短い間に何度も変えると曲が途切れたり止まったりする。毎フレーム書き直していたのをやめ、
-// 0.01 刻みで値が変わった時だけ書く。変えた拍子に止まっていたら、同じ所から続ける。
-// 指で操作する端末（スマホ・タブレット）では曲の速さを変えない（2026-11-11 オーナー「ラクダレースもサンドボードも加速すると処理重い」
-// 「ラクダもBGM止まった」）。音程を保ったまま速さを変える処理は iPhone では重く、加速している間ずっと処理を食い、変えた拍子に
-// 曲が止まることもある。速さの手応えはブースト・ムチの効果音で出す。PC（マウス）では今までどおり速くする。
-const tempoAllowed = () => !(typeof matchMedia === "function" && matchMedia("(pointer: coarse)").matches);
+// 再生中の要素・src・currentTime は変えず、倍率だけ0.01刻みで反映する。
+// タッチ端末は重い音程補正を使わず、音程も上がる再生で加速する。
+const touchAudio = () => typeof matchMedia === "function" && matchMedia("(pointer: coarse)").matches;
+const keepBgmPitch = key => !TEMPO_BGM.has(key) || !touchAudio();
 function applyBgmPlaybackRate() {
   if (!currentEl || currentKey === "bgm_continue_urgent") return;
   const el = currentEl;
-  const rate = TEMPO_BGM.has(currentKey) && tempoAllowed() ? Math.round(bgmTempo * 100) / 100 : 1;
-  if (el.preservesPitch !== true) el.preservesPitch = true;
+  const rate = TEMPO_BGM.has(currentKey) ? Math.round(bgmTempo * 100) / 100 : 1;
+  const pitch = keepBgmPitch(currentKey);
+  if (el.preservesPitch !== pitch) el.preservesPitch = pitch;
   if (Math.abs(el.playbackRate - rate) < 0.001) return;
   const wasPlaying = !el.paused;
   el.playbackRate = rate;
@@ -1162,7 +1169,7 @@ export function playBgm(key) {
     a.volume = 0;
     resetBgmTempo();
     a.playbackRate = key === "bgm_continue_urgent" ? 1.08 : 1; // EMGコール(BPM115)を少しだけ高速化
-    a.preservesPitch = true;
+    a.preservesPitch = keepBgmPitch(key);
     currentEl = a;
     const fallBackContinue = () => {
       if (currentEl !== a || key !== "bgm_continue_urgent") return false;
@@ -1185,7 +1192,7 @@ export function playBgm(key) {
       if (rotateHeld) { a.volume = bgmLevel(key); return; } // 回転ガード中に替わった曲は、横に戻した時に鳴らし始める
       a.play().catch(() => {
         if (!fallBackContinue() && currentEl === a) {
-          pendingBgm = key; currentKey = null;
+          pendingBgm = key;
         }
       });
       fadeEl(a, () => bgmLevel(key), key === "bgm_continue_urgent" ? 160 : 1200);
