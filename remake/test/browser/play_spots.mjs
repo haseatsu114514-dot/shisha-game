@@ -388,7 +388,8 @@ await suite("play-spots", async runCheck => {
       assert.equal(saved.day, 22); assert.equal(saved.slot, 2); assert.equal(saved.money, before.money - 800);
       assert.equal(saved.trpg.cleared["shark-last-order"].gm, "samechan");
       assert.equal(saved.trpg.bookmark, undefined, "Completing the story removes its in-progress bookmark");
-      assert.deepEqual([...saved.trpg.cleared["shark-last-order"].participants].sort(), ["hajime", "hiyori", "samechan"]);
+      // TRF16–18: the absent Tsumugi seat is filled by cafe regular B; all four participants are saved.
+      assert.deepEqual([...saved.trpg.cleared["shark-last-order"].participants].sort(), ["hajime", "hiyori", "regularb", "samechan"]);
       assert.equal(saved.stamina, before.stamina); assert.deepEqual(saved.stats, before.stats);
       assert.deepEqual(withoutHostIntros(saved.met), before.met);
       for (const key of ["affinity", "story", "lovers", "relationshipMemories"]) assert.deepEqual(saved[key], before[key]);
