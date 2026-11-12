@@ -265,7 +265,21 @@ html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .fr-
 html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .fr-btn:last-of-type { grid-column: 5 !important; }
 
 /* ---------- 詰め方: 決めるボタンは右下 ---------- */
-html body.craft-stage:not(.game-ds) .bench[data-mode] .packing { height: 100% !important; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .packing { height: 100% !important; padding-top: 0 !important; display: grid !important; grid-template-columns: 260px minmax(0, 1fr) !important; grid-template-rows: auto auto minmax(0, 1fr) 88px !important; gap: 16px 20px !important; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .packing > .pack-aroma { grid-column: 1 / -1 !important; grid-row: 1 !important; margin: 0 !important; font-size: 24px !important; line-height: 1.4 !important; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .packing > .pack-vessel { grid-column: 1 !important; grid-row: 2 / 4 !important; min-height: 0 !important; overflow: hidden !important; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .packing .pack-vessel-art { transform: scale(.8) !important; transform-origin: center !important; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .packing > .pack-choices { grid-column: 2 !important; grid-row: 2 !important; display: grid !important; grid-template-columns: 1fr !important; gap: 10px !important; padding: 4px !important; overflow: visible !important; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .packing .pack-choice { min-height: 84px !important; padding: 10px 16px !important; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .packing .pack-choice b { font-size: 26px !important; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .packing .pack-choice small { display: none !important; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .packing > .pack-caption { grid-column: 2 !important; grid-row: 3 !important; min-height: 0 !important; text-align: left !important; overflow-y: auto !important; padding: 0 8px !important; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .packing .pack-caption b { font-size: 26px !important; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .packing .pack-caption p { font-size: 23px !important; line-height: 1.45 !important; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .packing > .pack-footer { grid-column: 1 / -1 !important; grid-row: 4 !important; position: static !important; display: flex !important; justify-content: flex-end !important; margin: 0 !important; background: none !important; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .packing .pack-footer > small { display: none !important; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .packing .pack-confirm { flex: 0 1 558px !important; height: 88px !important; min-height: 0 !important; font-size: 26px !important; }
+
 
 /* ---------- 穴あけ: アルミを大きく、「穴を開ける」は右下の親指の位置 ---------- */
 html body.craft-stage:not(.game-ds) .bench[data-mode] .holes { height: 100%; display: grid !important; grid-template-columns: minmax(0, 1fr) 300px; gap: 12px; align-items: center; }
@@ -277,8 +291,8 @@ html body.craft-stage:not(.game-ds) .bench[data-mode] .hr-side > .hr-row { order
 
 /* ---------- 炭焼き: 決定ボタンが無いので下の列まで使い、コンロと炭を大きく（CSL08）。炭壺は上の帯に ---------- */
 html body.craft-stage:not(.game-ds) .bench[data-mode] .heat { position: relative; height: 100% !important; display: block !important; }
-html body.craft-stage:not(.game-ds) .bench[data-mode] .heat-stage { position: absolute !important; left: 0; top: 118px; margin: 0 !important; }
-html body.craft-stage:not(.game-ds) .bench[data-mode] .heat-stage > .stove { transform: scale(1.38); transform-origin: 0 0; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .heat-stage { position: absolute !important; left: 0; top: 128px; margin: 0 !important; }
+html body.craft-stage:not(.game-ds) .bench[data-mode] .heat-stage > .stove { margin: 0 !important; transform: scale(1.28); transform-origin: 0 0; }
 html body.craft-stage:not(.game-ds) .bench[data-mode] .heat-info {
   position: absolute !important; left: 0; right: 0; top: 0; height: 108px; display: flex !important; align-items: center; gap: 18px;
   padding: 8px 18px !important; margin: 0 !important; border-radius: 16px;

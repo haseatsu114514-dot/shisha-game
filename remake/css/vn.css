@@ -299,7 +299,7 @@ body:is(.reduce-shake, .vn-skip) .tx-shiver { animation: none; }
 }
 .vn-choices.show { display: flex; }
 /* 2択は質問・操作札から離して上へ寄せる。 */
-.vn-choices:has(> .vn-choice:nth-child(2):last-child) { bottom: 338px; }
+.vn-choices:has(> .vn-choice:nth-child(2):last-child) { bottom: 386px; }
 /* 6択以上は画面上端と操作欄の間でスクロールさせる。短い選択肢の配置は維持する。 */
 body:not(:root) .vn-choices:has(> .vn-choice:nth-child(6)) {
   top: 16px;

@@ -85,6 +85,29 @@ try {
     assert(Math.abs(faceGap) < 2, `${id}/${viewport.width}: 影とカットインの顔がずれる（${faceGap}px）`);
     await page.waitForFunction(() => document.getElementById("status").textContent.startsWith("再生終了"), null, { timeout: 20000 });
   }
+  // お姉さんの初登場: スマホでも形の変化が出て、終了後に会話へ戻る。
+  await page.setViewportSize({ width: 852, height: 393 });
+  await page.selectOption("#character", "oneesan");
+  await page.waitForTimeout(400);
+  await page.evaluate(() => {
+    window.__morphSize = null;
+    window.__phoneObs = new MutationObserver(() => {
+      const canvas = document.querySelector("canvas.ci-tr-morph");
+      if (canvas) window.__morphSize = [canvas.width, canvas.height];
+    });
+    __phoneObs.observe(document.getElementById("fx"), { childList: true, subtree: true });
+  });
+  await page.click("#play");
+  await page.waitForSelector('.cutin.in[data-char="oneesan"]');
+  await page.waitForFunction(() => document.getElementById("status").textContent.startsWith("再生終了"), null, { timeout: 20000 });
+  const phone = await page.evaluate(() => {
+    __phoneObs.disconnect();
+    return { size: __morphSize, left: document.querySelectorAll(".ci-transition,.cutin,.intro-fit-surface").length,
+      hidden: document.querySelector("#vn").classList.contains("intro-morph-dialog-hidden") };
+  });
+  assert(phone.size && phone.size[0] < 800 && phone.size[1] < 600, `phone pixel budget: ${JSON.stringify(phone)}`);
+  assert.equal(phone.left, 0);
+  assert.equal(phone.hidden, false);
   assert.deepEqual(errors, []);
   console.log("OK intro_transition: 3案とも立ち絵からカットインへつながり、部品が残らず、動きを減らす設定ではフェードだけ");
 } finally {
