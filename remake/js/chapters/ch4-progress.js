@@ -15,8 +15,8 @@ import { resetChapterFourCraft } from "./ch4-tournament-state.js";
 import { OVERSEAS_HEROINES, overseasCompanion } from "../core/overseas-companion.js";
 import { STORY_BGM } from "../core/story-audio.js";
 
-// 大会賞金（2026-10-30 決定の階段式: 第1章30,000円／第2章50,000円／第3章100,000円／第4章200,000円／第5章は賞金なし）。
-export const CH4_PRIZE = 200000;
+// 新規優勝のみ: 第1章50,000円／第2章100,000円／第3章200,000円／第4章500,000円／第5章は賞金なし。
+export const CH4_PRIZE = 500000;
 
 // ---- 背景の対応表（1か所に集約）----------------------------------------------------
 // 第4章の場所と場面の背景対応。
@@ -442,8 +442,11 @@ export function completeChapterFourScene(value, id) {
     if (id === CH4_TOURNAMENT_SCENES.win) {
       // 賞金は勝利の確定と同じ更新で一度だけ渡す（再読・LOADで二重に付けない）。
       if (!progress.prizePaid) {
+        const before = value.money;
+        const next = Math.min(MAX_MONEY, Math.max(0, Math.round((before || 0) + CH4_PRIZE)));
         progress.prizePaid = true;
-        value.money = Math.min(MAX_MONEY, Math.max(0, Math.round((value.money || 0) + CH4_PRIZE)));
+        value.money = next;
+        progress.prizeReceived = Math.max(0, next - Math.max(0, Math.round(Number(before) || 0)));
       }
       progress.part = "resolution";
       progress.resolution = 0;

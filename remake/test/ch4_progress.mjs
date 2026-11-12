@@ -445,7 +445,7 @@ for (const dialogue of files.ch4_spots.filter(row => ["ch4_dubai_souq", "ch4_dub
 
 // #1660: 大会に勝ったとき賞金を一度だけ付与する（敗北では付けない）。
 {
-  assert.equal(CH4_PRIZE, 200000, "decided chapter 4 prize");
+  assert.equal(CH4_PRIZE, 500000, "decided chapter 4 prize");
   const prizeSave = clearedSave();
   advanceToChapterFour(prizeSave);
   delete prizeSave.flags._ch4.routeVersion; // 旧行程
@@ -464,7 +464,28 @@ for (const dialogue of files.ch4_spots.filter(row => ["ch4_dubai_souq", "ch4_dub
   progress.part = "tournament"; progress.resolution = 0; // 再読・LOAD相当
   assert.equal(completeChapterFourScene(prizeSave, "ch4_final"), true);
   assert.equal(prizeSave.money, 1000 + CH4_PRIZE, "The prize is paid once");
+  assert.equal(progress.prizeReceived, CH4_PRIZE);
 }
+for (const oldPaid of [false, true]) {
+  const cappedSave = clearedSave();
+  advanceToChapterFour(cappedSave);
+  delete cappedSave.flags._ch4.routeVersion;
+  const progress = chapterFourProgress(cappedSave);
+  Object.assign(progress, { part: "tournament", day: CH4_TOURNAMENT_DAY, stage: CH4_PROLOGUE.length });
+  cappedSave.phase = "tournament";
+  cappedSave.money = oldPaid ? 201000 : 999900;
+  completeChapterFourScene(cappedSave, "ch4_tournament_start");
+  progress.match = { result: { win: true } };
+  if (oldPaid) progress.prizePaid = true;
+  assert.equal(completeChapterFourScene(cappedSave, "ch4_final"), true);
+  assert.equal(cappedSave.money, oldPaid ? 201000 : 999999);
+  assert.equal(progress.prizeReceived, oldPaid ? undefined : 99);
+  const saved = JSON.parse(JSON.stringify(cappedSave));
+  progress.part = "tournament";
+  assert.equal(completeChapterFourScene(cappedSave, "ch4_final"), true);
+  assert.equal(cappedSave.money, saved.money, "replay does not pay twice");
+}
+
 
 // 保存の検証: 壊れた保存・part と日付の食い違いは throw。
 for (const change of [
