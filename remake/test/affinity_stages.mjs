@@ -7,7 +7,7 @@ import vm from 'node:vm';
 import { fileURLToPath } from 'node:url';
 const root = fileURLToPath(new URL('../js/', import.meta.url));
 const sourceRoot = process.env.AFFINITY_SOURCE_ROOT || root;
-const realPaths = ['core/cinema-discovery.js','core/travel-budget.js','daily/cinema.js','core/state.js','core/portrait-style.js','core/gallery-progress.js','core/stats.js','core/affinity-stages.js','core/condition.js','core/hiyori-route.js','daily/spots.js','daily/bonds.js','daily/phone.js','daily/invitations.js','core/chapter-clock.js','core/chapter-features.js','daily/samechan.js','daily/romance.js','daily/samechan-bonds.js','chapters/ch4-desert-progress.js','minigames/desert-ride-model.js'];
+const realPaths = ['core/cinema-discovery.js','core/travel-budget.js','daily/cinema.js','core/state.js','core/portrait-style.js','core/gallery-progress.js','core/stats.js','core/stat-step-tables.js','core/affinity-stages.js','core/condition.js','core/hiyori-route.js','daily/spots.js','daily/bonds.js','daily/phone.js','daily/invitations.js','core/chapter-clock.js','core/chapter-features.js','daily/samechan.js','daily/romance.js','daily/samechan-bonds.js','chapters/ch4-desert-progress.js','minigames/desert-ride-model.js'];
 const scripts = ['ch1_sumi','ch1_tsumugi','ch1_minto','ch1_naru','ch1_adam','ch1_rio','ch1_bonds','samechan','hiyori','lover_events','confession','cinema'];
 const data = scripts.map(name => JSON.parse(fs.readFileSync(new URL(`../../data/dialogue/${name}.json`, import.meta.url))));
 const clone = value => JSON.parse(JSON.stringify(value));
@@ -149,12 +149,98 @@ for (const outcome of ['missing','abort','load','throw']) await check(`question 
   if(outcome==='throw')await assert.rejects(p,/expected/); else assert.equal(await p,false);
   assert.equal(s.flags[f.stages.questionDoneKey('rio')],undefined);
 });
-await check('Rio third story completes at heart2 and reaches heart3; question is due only at heart3',async f=>{
-  const s=f.core.state;s.story.rio=2;s.affinity.rio=20;
-  f.setPlay(async()=>done);assert.equal(await f.spots.visitChar('rio'),true);
-  assert.equal(s.story.rio,3);assert.equal(s.affinity.rio,33);assert.equal(f.bonds.questionVisitDue('rio'),true);
-  s.affinity.rio=32;assert.equal(f.bonds.questionVisitDue('rio'),false);
-  f.stats.gainAffinity('rio',2);assert.equal(s.affinity.rio,34);assert.equal(f.bonds.questionVisitDue('rio'),true);
+await check('Rio third story at heart2 reaches heart3 and asks in the same visit, with one normal reward',async f=>{
+  const s=f.core.state;s.story.rio=2;s.affinity.rio=20;s.met.rio=true;
+  f.setPlay(async scene=>{
+    if((typeof scene==='string'?scene:scene.dialogue_id)==='ch1_rio_bond_question') {
+      assert.equal(s.affinity.rio,33,'ordinary story reward opens the question before it is played');
+      f.bonds.recordRomanceChoice({id:'bond_q1_rio',romance_char:'rio'},{romance:1});
+    }
+    return done;
+  });
+  assert.equal(await f.spots.visitChar('rio'),true);
+  assert.equal(s.story.rio,3);assert.equal(s.affinity.rio,33);assert.equal(s.visits.rio,1);
+  close(s.affinityCarry.rio,.6);
+  assert.equal(f.bonds.questionVisitDue('rio'),false);
+  assert(s.flags[f.stages.questionDoneKey('rio')]);
+  assert.deepEqual(f.plays.map(([x])=>typeof x==='string'?x:x.dialogue_id),['ch1_rio_third','ch1_rio_bond_question']);
+  const loaded=f.roundTrip();assert.equal(loaded.affinity.rio,33);assert.equal(loaded.romanceChoices.bond_q1_rio.value,1);
+});
+for(const outcome of ['cancel','missing','throw','abort','load']) await check(`Rio joined question ${outcome}: no second story reward or invented answer`,async f=>{
+  const s=f.core.state;s.story.rio=2;s.affinity.rio=20;s.met.rio=true;const controller=new AbortController();
+  f.setPlay(async scene=>{
+    const id=typeof scene==='string'?scene:scene.dialogue_id;
+    if(id==='ch1_rio_third')return done;
+    if(outcome==='throw')throw Error('expected joined failure');
+    if(outcome==='abort')controller.abort();
+    if(outcome==='load')f.core.newGame();
+    return outcome==='missing'?undefined:outcome==='cancel'?{cancelled:true}:done;
+  });
+  const p=f.spots.visitChar('rio',{signal:controller.signal});
+  if(outcome==='throw')await assert.rejects(p,/expected joined failure/);else assert.equal(await p,false);
+  // The completed sample retains the existing afterStory boundary, also used by Tsumugi.
+  assert.equal(s.story.rio,3);assert.equal(s.affinity.rio,33);close(s.affinityCarry.rio,.6);
+  assert(!s.flags[f.stages.questionDoneKey('rio')]);assert(!s.romanceChoices.bond_q1_rio);assert.equal(s.visits.rio||0,0);
+  if(outcome!=='load'){
+    f.roundTrip();const before=f.core.state.affinity.rio;
+    f.setPlay(async()=>{f.bonds.recordRomanceChoice({id:'bond_q1_rio',romance_char:'rio'},{romance:0});return done;});
+    assert.equal(await f.spots.visitChar('rio'),true);
+    assert.equal(f.core.state.story.rio,3,'old unfinished question resumes without repeating the sample');
+    assert.equal(f.core.state.affinity.rio-before,7,'the retry is the existing standalone talk, not another story reward');
+    assert.equal(f.core.state.romanceChoices.bond_q1_rio.value,0);
+  }
+});
+await check('Rio joined question: below heart3 waits, old completed question never reopens',async f=>{
+  const s=f.core.state;s.story.rio=3;s.affinity.rio=32;
+  assert.equal(await f.bonds.afterStory('ch1_rio_third'),true);assert.equal(f.plays.length,0);
+  f.stats.gainAffinity('rio',2);assert.equal(f.bonds.questionVisitDue('rio'),true);
+  s.flags[f.stages.questionDoneKey('rio')]=true;s.romanceChoices.bond_q1_rio={char:'rio',value:0};
+  assert.equal(await f.bonds.afterStory('ch1_rio_third'),true);assert.equal(f.plays.length,0);
+});
+for(const value of [0,1]) await check(`Rio neutral route ${value}: six stories and finale take seven interactions`,async f=>{
+  const s=f.core.state;s.met.rio=true;s.affinity.rio=9;s.stats.charm=10;f.db.equipById.suyaki_rio={name:'gift'};
+  f.setPlay(async scene=>{
+    const id=typeof scene==='string'?scene:scene.dialogue_id;
+    if(id==='ch1_rio_bond_question')f.bonds.recordRomanceChoice({id:'bond_q1_rio',romance_char:'rio'},{romance:value});
+    if(id==='ch1_rio_bond_finale')f.bonds.recordRomanceChoice({id:'bond_q2_rio',romance_char:'rio'},{romance:value});
+    return done;
+  });
+  let visits=0;
+  while(!s.finales.rio&&visits<10){s.day++;assert.equal(await f.spots.visitChar('rio'),true);visits++;}
+  assert.equal(visits,7);assert.equal(s.story.rio,6);assert.equal(s.visits.rio,7);
+  assert.equal(s.finales.rio.route,value?'romance':'friend');assert.equal(s.owned.filter(x=>x==='suyaki_rio').length,1);
+  assert.equal(s.romanceChoices.bond_q1_rio.value,value);
+});
+await check('Rio actual shop: interrupted joined question keeps the visit boundary; next-day saved answer grants one sample',async f=>{
+  let s=f.core.state;Object.assign(s,{phase:'daily',day:5,slot:1,money:10000,stamina:100});
+  s.met.rio=true;s.story.rio=2;s.affinity.rio=20;
+  const context=vm.createContext({console,visitChar:f.spots.visitChar,addStamina:f.stats.addStamina,cueTransition:()=>{},toast:()=>{},RIO_AWAY_DAY:1,FLAVOR_BOX_GRAMS:50});
+  Object.defineProperty(context,'state',{get:()=>f.core.state});
+  const hours=fs.readFileSync(path.join(sourceRoot,'daily/spot-hours.js'),'utf8');
+  const a=hours.indexOf('export function rioUnavailable(save)'),b=hours.indexOf('export function spotTimeNote',a);
+  vm.runInContext(hours.slice(a,b).replace('export ','').replace('rioUnavailable(save)','rioVisitReason(save)')+'\nthis.rioUnavailable=()=>rioVisitReason(state);',context);
+  const source=fs.readFileSync(path.join(sourceRoot,'daily/shop.js'),'utf8');
+  const stock=source.slice(source.indexOf('export function addFlavorStock('),source.indexOf('export const ownsFlavor'));
+  const visit=source.slice(source.indexOf('export async function visitRio('));
+  vm.runInContext((stock+visit).replace(/\bexport /g,'')+'\nthis.visit=visitRio;',context);
+  f.setPlay(async scene=>{
+    const id=typeof scene==='string'?scene:scene.dialogue_id;
+    if(id==='ch1_rio_third'){s.flags._rio_sample=true;return done;}
+    f.bonds.recordRomanceChoice({id:'bond_q1_rio',romance_char:'rio'},{romance:0});return {cancelled:true};
+  });
+  assert.equal(await context.visit(),false);
+  assert.equal(s.stamina,86);assert.equal(s.visitedDay.rio,5);assert.equal(s.story.rio,3);assert.equal(s.affinity.rio,33);
+  assert.equal(s.romanceChoices.bond_q1_rio.value,0);assert(!s.flags._rio_sample_received);assert(!s.flavorStock.nightside_earlgrey);
+  f.roundTrip();s=f.core.state;const saved=clone(s);
+  assert.equal(await context.visit(),false);assert.deepEqual(clone(s),saved,'same-day retry is unavailable, not charged twice');
+  s.day=6;
+  f.setPlay(async scene=>{assert.equal(scene.dialogue_id,'ch1_rio_bond_question');assert(!scene.lines.some(x=>x.type==='choice'&&x.id==='bond_q1_rio'));return done;});
+  assert.equal(await context.visit(),true);
+  assert.equal(s.stamina,72);assert.equal(s.money,10000);assert.equal(s.story.rio,3);
+  assert.equal(s.affinity.rio,40);assert(s.flags._rio_affinity_question_done&&s.flags._rio_sample_received);
+  assert.equal(s.flavorStock.nightside_earlgrey,50);assert.equal(s.romanceChoices.bond_q1_rio.value,0);
+  f.roundTrip();s=f.core.state;s.day=7;f.setPlay(async()=>done);
+  assert.equal(await context.visit(),true);assert.equal(s.flavorStock.nightside_earlgrey,50,'later visits cannot refill the sample');
 });
 await check('legacy current/carry/history stay intact; deferred ordinary credit releases once without reading stages across SAVE/LOAD', async f => {
   let s=f.core.state;s.affinity.tsumugi=66;s.affinityCarry.tsumugi=.7;
@@ -1227,3 +1313,4 @@ await check('Issue #2750: schema 26 save migrates without losing earned hearts',
 });
 
 console.log(`affinity stages: ${count} PASS; browser/real LOAD not executed`);
+
