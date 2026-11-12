@@ -39,7 +39,7 @@ import { readDialogues } from "../core/chapter-data.js";
 import { chapterTwoCheers, chapterTwoCongratulations, recordSentLime } from "./ch2-lime.js";
 import { CH2_SCENE_BACKGROUNDS } from "../core/city-locations.js";
 import { JUDGES, CONTESTANTS, tournamentProgress, restoreResources,
-  startAttempt, recoverStep, beginStep, finishStep, castVotes, standings, recordResult, CH2_PRIZE } from "./ch2-tournament-state.js";
+  startAttempt, recoverStep, beginStep, finishStep, castVotes, standings, recordResult } from "./ch2-tournament-state.js";
 
 const REQUIRED = ["lobby", "entrance", "stations", "rules", "verdict", "farewell", "tasteless", "ageha_heart"].map(id => `ch2_tournament_${id}`);
 // SETUPの確定境界に水を含める。途中LOADはSETUP先頭から、確定後はMIXから。
@@ -282,7 +282,9 @@ function renderComplete(owner) {
     button(owner, "タイトルへ", "complete-title", () => { save(); location.reload(); }),
   ], [
     // 賞金は recordResult で優勝確定時に一度だけ加算済み。ここでは受け取ったことだけを見せる。
-    state.flags._ch2_tournament?.prizePaid ? el("p.ch2-contest-note", { dataset: { test: id("prize") }, text: `優勝賞金 ${yen(CH2_PRIZE)} を受け取った。` }) : null,
+    state.flags._ch2_tournament?.prizePaid ? el("p.ch2-contest-note", { dataset: { test: id("prize") }, text: Number.isFinite(state.flags._ch2_tournament.prizeReceived)
+      ? state.flags._ch2_tournament.prizeReceived > 0 ? `優勝賞金 ${yen(state.flags._ch2_tournament.prizeReceived)} を受け取った。` : "優勝賞金は所持金の上限に達したため加算されなかった。"
+      : "優勝賞金を受け取った。" }) : null,
     // 第1章のクリア画面と同じ成長レーダー。淡い面が章のはじめ、明るい面がいま。
     el("div.ch2-contest-growth", { dataset: { test: id("growth") } }, [
       chapterGrowthChart(state, 220),

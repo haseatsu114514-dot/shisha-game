@@ -837,8 +837,54 @@ try {
   }
   log("#2025 hiyori friend hangouts: 2 variants alternate across save/load in chapters 1/2, before/after tournament");
 
+  // Same-visit Rio question: the live shop entrypoint grants the sample and charges stamina once.
+  for (const options of [
+    { viewport: { width: 1280, height: 720 } },
+    { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true },
+  ]) for (const value of [0, 1]) {
+    const rioPage = await browser.newPage(options);
+    rioPage.on("pageerror", e => errors.push(e.message));
+    try {
+      await rioPage.addInitScript(() => localStorage.setItem("suien_step_intro", "off"));
+      await rioPage.goto(process.env.BASE_URL || "http://127.0.0.1:8123/remake/", { waitUntil: "load" });
+      await rioPage.waitForSelector('[data-test="title-new"]', { timeout: 20000 });
+      const result = await rioPage.evaluate(async value => {
+        const core = await import("./js/core/state.js"), stats = await import("./js/core/stats.js");
+        const vn = await import("./js/vn/engine.js"), shop = await import("./js/daily/shop.js");
+        const ch1 = await import("./js/chapters/ch1.js"), rules = await import("./js/core/rules.js");
+        ch1.setupHooks(); vn.vnTest.turbo = true;
+        vn.vnTest.choose = (id, labels) => id === "ch1_rio_bond_question" ? 1 - value : 0;
+        const s = core.newGame();
+        Object.assign(s, { phase: "daily", day: rules.RIO_AWAY_DAY === 5 ? 6 : 5, slot: 1, money: 10000, stamina: 100 });
+        s.met.rio = true; s.story.rio = 2; s.affinity.rio = 20; s.stats.charm = 10;
+        const events = [], enter = vn.hooks.onEnter;
+        vn.hooks.onEnter = (id, scene) => { events.push(id); enter?.(id, scene); };
+        const used = (await stats.paidAction(() => shop.visitRio())).value;
+        const after = structuredClone(core.state), log = vn.backlog().map(x => x.text).join(" ");
+        core.save(); core.newGame(); core.load();
+        const loaded = structuredClone(core.state), again = await shop.visitRio();
+        return { used, events, after, loaded, again, repeated: structuredClone(core.state), log };
+      }, value);
+      assert(result.used);
+      assert.deepEqual(result.events, ["ch1_rio_third", "ch1_rio_bond_question"]);
+      assert.equal(result.after.money, 10000, "showroom consultation remains free");
+      assert.equal(result.after.stamina, 86, "one showroom visit, not two");
+      assert.equal(result.after.story.rio, 3); assert.equal(result.after.visits.rio, 1);
+      assert.equal(result.after.affinity.rio, 33);
+      assert(Math.abs(result.after.affinityCarry.rio - .6) < 1e-9);
+      assert.equal(result.after.romanceChoices.bond_q1_rio.value, value);
+      assert(result.after.flags._rio_affinity_question_done && result.after.flags._rio_sample_received);
+      assert.equal(result.after.flavorStock.nightside_earlgrey, 50);
+      assert(!result.log.includes("黒い袋を前掛けのポケットに沈めて、店を出た"));
+      assert.deepEqual(result.loaded.romanceChoices, result.after.romanceChoices);
+      assert.equal(result.again, false); assert.deepEqual(result.repeated, result.loaded);
+    } finally { await rioPage.close(); }
+  }
+  log("Rio question: live showroom, PC/touch, romance/friend, one visit/reward/sample, SAVE/LOAD, no same-day repeat");
+
   assert.deepEqual(errors, []);
   log("PASS");
 } finally {
   await browser.close();
 }
+

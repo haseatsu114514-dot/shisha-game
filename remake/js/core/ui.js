@@ -71,25 +71,29 @@ let activeCurtain = null;
 let weatherBg = "";
 let weatherTint = "";
 let weatherKey = "";
-const bgReady = new Map(); // url -> Promise（一度読んだ絵は即座に出す）
+const bgReady = new Map(); // url -> { promise, image, keep }（一度読んだ絵は即座に出す）
 const expiredImageWaits = new WeakMap(); // 同じ通信に対し、使い切った待ち時間を繰り返さない
-
-const keptImages = []; // 何度も出るUIの小さな絵は Image を持ち続ける（デコード済みのまま置いておく）
 
 /** 画像を読み込み＋デコードし終えるまで待つ（最大 ms）。成功時 true、失敗・時間切れは false。 */
 export function imageReady(url, ms = 1500, { keep = false } = {}) {
   if (!url) return Promise.resolve(false);
-  let p = bgReady.get(url);
-  if (!p) {
-    p = new Promise((resolve) => {
-      const i = new Image();
-      if (keep) keptImages.push(i);
-      i.onload = () => (i.decode ? i.decode().catch(() => {}) : Promise.resolve()).then(() => resolve(true));
-      i.onerror = () => { bgReady.delete(url); resolve(false); };
+  let entry = bgReady.get(url);
+  // 通常の場面で読んだ後に固定UIの先読みへ昇格する場合も、Image 自体を保持する。
+  // すでに手放していたらここで読み直し、制作画面を開く前にデコードまで待つ。
+  if (!entry || (keep && !entry.image)) {
+    entry = { promise: null, image: new Image(), keep };
+    bgReady.set(url, entry);
+    entry.promise = new Promise((resolve) => {
+      const i = entry.image;
+      i.onload = () => (i.decode ? i.decode().catch(() => {}) : Promise.resolve()).then(() => {
+        if (!entry.keep) entry.image = null;
+        resolve(true);
+      });
+      i.onerror = () => { bgReady.delete(url); entry.image = null; resolve(false); };
       i.src = url;
     });
-    bgReady.set(url, p);
-  }
+  } else if (keep) entry.keep = true;
+  const p = entry.promise;
   if (expiredImageWaits.has(p) && expiredImageWaits.get(p) >= ms) return Promise.resolve(false);
   return new Promise((resolve) => {
     const timer = setTimeout(() => {

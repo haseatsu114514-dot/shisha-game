@@ -384,10 +384,10 @@ await suite("ch4-full-flow", async check => {
     assert.equal(value.flags._ch4.match.craft.mix.black_tea, 12);
     await page.locator(dt("ch4-verdict-continue")).click();
     await page.locator(scene("ch4_result")).waitFor();
-    assert.equal((await get(page)).money, before.money + 200000);
+    assert.equal((await get(page)).money, before.money + 500000);
     await loadSlot(page, 0);
     await page.locator(scene("ch4_result")).waitFor({ timeout: 60000 });
-    assert.equal((await get(page)).money, before.money + 200000, "LOAD must not pay the prize twice");
+    assert.equal((await get(page)).money, before.money + 500000, "LOAD must not pay the prize twice");
   }, { reducedMotion: "reduce" });
 });
 
