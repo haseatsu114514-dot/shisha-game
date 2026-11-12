@@ -287,7 +287,7 @@ async function performDubaiSpot(entry, io, { staminaGuard }) {
   }
   if (entry.place === "camel") return visitCamel(owner);
   if (entry.place === "inn") { const chain = await visitInnChain(owner, staminaGuard); if (chain) return chain; }
-  if ((entry.cost || 0) > spendableMoney(state)) { toast(`お金が足りない（${priceText(entry.cost)}）`); return unused; }
+  if ((entry.cost || 0) > spendableMoney(state)) { toast(`お金が足りない（${priceText(entry.cost)}）`, { se: "error" }); return unused; }
   if (entry.stamina < 0 && !(await staminaGuard(entry.stamina))) return unused;
   // 夜がにぎわう店（ch4-dubai-local.js）: 先に店の夜を読む。初めての夜は短い場面、二度目からは最初の一行だけ。
   const night = nightVisit(state, entry.place);

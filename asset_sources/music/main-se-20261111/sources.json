@@ -1,0 +1,37 @@
+{
+  "license": "CC0 1.0",
+  "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+  "retrieved": "2026-11-11",
+  "commercial_use": true,
+  "modification": true,
+  "github_redistribution": true,
+  "credit_required": false,
+  "note": "Main-game sound effects, round 1 (2026-11-11). Every source is CC0 on OpenGameArt. Source masters are not stored in the repo; prepare.py downloads them from `file`, checks `sha256`, and rebuilds the game files. Selection was made from the authors' descriptions and waveform measurements; nobody has auditioned them by ear yet (owner audition pending, see README).",
+  "originals": [
+    {"key": "applause", "title": "Applause in a large hall or church", "author": "eXpl0it3r", "license": "CC0", "page": "https://opengameart.org/content/applause-in-a-large-hall-or-church", "file": "https://opengameart.org/sites/default/files/applause-clapping-church-crowd-immersive.wav", "bytes": 6905324, "sha256": "0d3bfde5a050f3c5e6685bd7f1efc7ab1d289fbad65c88c1ce9b4691228c69c9", "author_note": "Immersive applause by a crowd inside a church shortly before the beginning of a concert."},
+    {"key": "purchase", "title": "Purchasing Sound Effect", "author": "Spring Spring", "license": "CC0", "page": "https://opengameart.org/content/purchasing-sound-effect", "file": "https://opengameart.org/sites/default/files/snd_purchase_0.wav", "bytes": 622170, "sha256": "091bfc1a3ee7ebd7713636ec631c940b79de715e141856e6c0daf09e8868486e", "author_note": "Sound effect made by jingling coins."},
+    {"key": "coins", "title": "coin sounds", "author": "syncopika", "license": "CC0", "page": "https://opengameart.org/content/coin-sounds", "file": "https://opengameart.org/sites/default/files/coinsounds011015_0.ogg", "bytes": 382619, "sha256": "bcc062e880e98dc9999ccff281494d5fed03423c4594b349ab97aec23ae5d859", "author_note": "Some coin sounds recorded with real coins."},
+    {"key": "glass", "title": "Glass Break", "author": "Till Behrend", "license": "CC0", "page": "https://opengameart.org/content/glass-break", "file": "https://opengameart.org/sites/default/files/glass_breaking.wav", "bytes": 230924, "sha256": "37d29069c885afe3f7ca639293fa679fb6511a6a1e54316f0e403e4493f502b3", "author_note": "Glass break sound created for the game Duckstruction; uploaded with the author's permission."},
+    {"key": "camera", "title": "Camera", "author": "themightyglider", "license": "CC0", "page": "https://opengameart.org/content/camera", "file": "https://opengameart.org/sites/default/files/photo.ogg", "bytes": 20520, "sha256": "029dfcb981fdf375fb0ae4657962b3d470e1a073932c3d3aefb15d3d9ba38670", "author_note": "A camera shutter SFX, rearranged from a CC0 original (archive.org/details/CameraShutterSound)."},
+    {"key": "cat_soft", "title": "Cat Purr & Meow (cat_softmew.wav)", "author": "Kerzoven", "license": "CC0", "page": "https://opengameart.org/content/cat-purr-meow", "file": "https://opengameart.org/sites/default/files/cat_softmew.wav", "bytes": 218620, "sha256": "7de9fed4401b677ccbf072781182857d875093a8e9b5727fc21b38028cfd5a90", "author_note": "Own recordings of a cat; the meows have some background noise."},
+    {"key": "cat_meow", "title": "Meow", "author": "IgnasD", "license": "CC0", "page": "https://opengameart.org/content/meow", "file": "https://opengameart.org/sites/default/files/Meow.ogg", "bytes": 9787, "sha256": "ae35c578eb7e7bc33d1dc7b2532cf4cdc8dac27f8cf28c6d574fb3027be83d5f"},
+    {"key": "fire", "title": "Fire Crackling", "author": "AntumDeluge", "license": "CC0", "page": "https://opengameart.org/content/fire-crackling", "file": "https://opengameart.org/sites/default/files/fire-1_0.ogg", "bytes": 22784, "sha256": "f922929805bc6afdf0a35727fa3998033db544c1b6f62ed3aeab94341ed6ddeb", "author_note": "A popping and crackling fireplace."},
+    {"key": "bell", "title": "Pleasing Bell Sound Effect", "author": "Spring Spring", "license": "CC0", "page": "https://opengameart.org/content/pleasing-bell-sound-effect", "file": "https://opengameart.org/sites/default/files/pleasing-bell.wav", "bytes": 109392, "sha256": "3c851939ccf9146e49c1be0272386fdca1b1442bb034a5e6dcdfb3e0e144a411", "author_note": "Tags: pleasing bell ding vibraphone."},
+    {"key": "kenney_interface", "title": "Interface Sounds (confirmation_002.ogg)", "author": "Kenney", "license": "CC0", "page": "https://opengameart.org/content/interface-sounds", "file": "https://opengameart.org/sites/default/files/kenney_interfaceSounds.zip", "member": "Audio/confirmation_002.ogg", "bytes": 834536, "sha256": "f2193d072726d6758a5f7871b2dcc54dcce0d5c35c6f0a62f92549b327c81232", "license_text": "asset_sources/music/main-placeholder-audio/Kenney_Interface_Sounds_License.txt"}
+  ],
+  "game": [
+    {"file": "crowd_applause_01.mp3", "from": "applause", "se": "crowd", "role": "大会の結果発表・開幕前の拍手（その1）", "edit": "2.0s から 4.2s。150Hz 以下を切り、頭 0.04s・尻 1.4s をフェード。モノラル"},
+    {"file": "crowd_applause_02.mp3", "from": "applause", "se": "crowd", "role": "同（その2。続けて同じ切り出しを鳴らさないための別区間）", "edit": "14.0s から 4.2s。加工は同じ"},
+    {"file": "coin_01.wav", "from": "purchase", "se": "money", "role": "お金が動いた時のコイン（その1）", "edit": "0.27s から 0.80s（コインが3回ほど触れ合う区間）。200Hz 以下を切る"},
+    {"file": "coin_02.wav", "from": "coins", "se": "money", "role": "同（その2）", "edit": "7.04s から 0.40s（コインが続けて当たる区間）。200Hz 以下を切る"},
+    {"file": "glass_break.wav", "from": "glass", "se": "parin", "role": "大会で負けた時に画面が割れる音", "edit": "頭から 1.05s"},
+    {"file": "camera_shutter.wav", "from": "camera", "se": "shutter", "role": "てつこの写真を撮るシャッター", "edit": "0.09s から 0.75s"},
+    {"file": "cat_mew_01.wav", "from": "cat_soft", "se": "mew", "role": "てつこの鳴き声（その1）", "edit": "0.36s から 0.64s。250Hz 以下（マイクの低い雑音）を切る"},
+    {"file": "cat_mew_02.wav", "from": "cat_meow", "se": "mew", "role": "同（その2）", "edit": "頭から 0.45s。250Hz 以下を切る"},
+    {"file": "fire_crackle_01.wav", "from": "fire", "se": "crackle", "role": "炭のはぜる音（その1）", "edit": "0.90s から 0.22s。400Hz 以下（炎の低いうなり）を切る"},
+    {"file": "fire_crackle_02.wav", "from": "fire", "se": "crackle", "role": "同（その2）", "edit": "1.58s から 0.44s。加工は同じ"},
+    {"file": "fire_crackle_03.wav", "from": "fire", "se": "crackle", "role": "同（その3）", "edit": "2.26s から 0.44s。加工は同じ"},
+    {"file": "heart_bell.wav", "from": "bell", "se": "affinity / affinityUp", "role": "好感度が上がった時のベル（段階が上がる時・恋人になった時は、高さを変えて2回）", "edit": "全体 0.62s。尻 0.1s をフェード"},
+    {"file": "ui_save.wav", "from": "kenney_interface", "se": "save", "role": "セーブ完了", "edit": "全体。モノラル化のみ"}
+  ]
+}

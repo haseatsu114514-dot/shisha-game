@@ -1121,6 +1121,7 @@
       "kind": "quick",
       "run": [
         "node --experimental-vm-modules remake/test/recorded_se.mjs",
+        "node --experimental-vm-modules remake/test/main_se_20261111.mjs",
         "node --experimental-vm-modules remake/test/minigame_se.mjs", "node --experimental-vm-modules remake/test/desert_ride_sfx.mjs",
         "node --experimental-vm-modules remake/test/story_audio.mjs",
         "node --experimental-vm-modules remake/test/entry_phone_audio.mjs",

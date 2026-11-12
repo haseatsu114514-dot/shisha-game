@@ -79,7 +79,7 @@ export async function visitDesert(destination, { day, isCurrent = () => true, si
       const legacy = destination.legacy === true;
       const visit = desertCafeVisit(owner, day, { legacy });
       if (!visit) return false;
-      if (paid && DESERT_CAFE_PRICE > spendableMoney(owner)) { toast(`お金が足りない（${DESERT_CAFE_PRICE.toLocaleString("ja-JP")}円）`); return false; }
+      if (paid && DESERT_CAFE_PRICE > spendableMoney(owner)) { toast(`お金が足りない（${DESERT_CAFE_PRICE.toLocaleString("ja-JP")}円）`, { se: "error" }); return false; }
       // ♥5の締めくくり（DSR20）: 再生・ルートの記録・専用ハガルは bonds.js の playFinale。読み終えたら今日の来店として確定する
       if (visit.kind === "finale") {
         const { finaleDue, playFinale } = await import("../daily/bonds.js");

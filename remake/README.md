@@ -81,6 +81,8 @@ python3 remake/tools/serve_preview.py --port 8123
 # → http://127.0.0.1:8123/remake/ を開く
 ```
 
+効果音の試聴は `http://127.0.0.1:8123/remake/audio-preview.html`（2026-11-11 に入れた録音の音と、前の合成音をボタンで聴き比べる。保存データは変えない。出典は [asset_sources/music/main-se-20261111/](../asset_sources/music/main-se-20261111/README.md)）。
+
 大会のコンティニューだけを確認する場合は `http://127.0.0.1:8123/remake/continue-preview.html`。
 コンティニューは声なし。初回（その大会で1回目の敗北）は時間制限なしでカウントは演出だけ、2回目以降は20秒でGAME OVER。BGMは BGMer「EMGコール」（以前はプレビュー画面の最下段に出していた制作メモ。#2863 でここへ移した）。
 

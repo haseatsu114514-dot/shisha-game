@@ -244,7 +244,7 @@ export async function performTokyoSpot(spot, { staminaGuard } = {}) {
   const finale = finaleVisit(spot);
   const fee = spot.cost || 0;
   if (fee > spendableMoney(state)) {
-    toast("お金が足りない");
+    toast("お金が足りない", { se: "error" });
     return { used: false, exerted: false };
   }
   if (staminaGuard && !(await staminaGuard(spot.stamina))) return { used: false, exerted: false };
