@@ -1,7 +1,7 @@
 // 見た目の様式（新版／旧版／DS風）。2026-11-11 オーナー依頼（docs/owner_requests.md の LK）。
 // 配色のテーマ（ui-theme.js）とは別の切り替えで、進行・判定・報酬・セーブには触れない。
-// 既定は新版（LK09）。旧版（これまでの様式）は設定で選べる。新版はすべての章で効く（LK13）。DS風は対応済みの章
-// （LOOK_CHAPTERS）にいる間だけ効き、それ以外の章では旧版で表示する。
+// 既定は新版（LK09）。旧版（これまでの様式）と DS風は設定で選べる。新版も DS風もすべての章で効く（LK13・LK21）。
+// 章を限る様式を足す時は LOOK_CHAPTERS に書く（その章の外では旧版で表示する）。
 // 効いている様式は <html data-look="…">、選んだ様式は <html data-look-choice="…">。切り替わるたびに document へ "lookchange" を送る。
 export const LOOKS = Object.freeze([
   { id: "neo", label: "新版" },
@@ -12,8 +12,8 @@ export const LOOKS = Object.freeze([
 export const BASE_LOOK = "classic";
 /** プレイヤーの端末で、何も選んでいない時の様式。 */
 export const PLAYER_DEFAULT_LOOK = "neo";
-/** 様式ごとに効く章。null はすべての章。新版は全章（LK13・2026-11-11 オーナー「新版を広げる」）、DS風は第1章だけ。 */
-export const LOOK_CHAPTERS = Object.freeze({ neo: null, retro: Object.freeze([1]) });
+/** 様式ごとに効く章。null はすべての章。新版は LK13（2026-11-11「新版を広げる」）、DS風は LK21（2026-11-12「DS版にも戻せるように」）で全章。 */
+export const LOOK_CHAPTERS = Object.freeze({ neo: null, retro: null });
 export const LOOK_EVENT = "lookchange";
 
 /**

@@ -8,6 +8,7 @@
 // 写せない画面（心得の盤など）は回転案内へ落ちる。
 import assert from "node:assert/strict";
 import { suite, baseURL } from "./support.mjs";
+import { arm, seedChapterTwoFirstDay, seedChapterTwoDaily, seedChapterThree, seedChapterFour, seedChapterFive } from "./look_chapter_seeds.mjs";
 
 const t = (id) => `[data-test="${id}"]`;
 const entry = `${baseURL}${baseURL.includes("?") ? "&" : "?"}look=neo`;
@@ -162,10 +163,6 @@ const residue = (page) => page.evaluate(() => {
   };
 });
 
-const arm = (page) => page.evaluate(async () => {
-  const vn = await import("./js/vn/engine.js");
-  vn.vnTest.turbo = true; vn.vnTest.choose = () => 0;
-});
 /** 外枠の下（回転案内の下）にある現行のボタンを押す。外枠が上に重なるので DOM の click で押す。 */
 const clickDom = (page, id) => page.evaluate((id) => document.querySelector(`[data-test="${id}"]`).click(), id);
 /** タイトルの「つづきから」で 1 番の枠を読み込む（保存は各章の seed が作る）。 */
@@ -202,113 +199,6 @@ async function assertMapMirrors(page, label, { picture = true } = {}) {
   if (picture) await assertHdTop(page, label);
   assert.equal((await rootState(page)).hint, "none", `${label}: no rotate hint over the map`);
   return (await ids()).pins;
-}
-
-/** 第1章をクリアした直後から、第2章の初日（配達の地図）へ。 */
-async function seedChapterTwoFirstDay(page) {
-  await arm(page);
-  await page.evaluate(async () => {
-    const core = await import("./js/core/state.js");
-    const value = core.newGame();
-    Object.assign(value, { chapter: 1, phase: "cleared", day: 14, slot: 2, money: 45678, stamina: 67 });
-    value.owned.push("home_rig_set");
-    Object.assign(value.flags, { _ev_midcheck: true, _ch1_preview_seen: true, _minto_name_known: true, _minto_identity_known: true,
-      _lime_tut: 1, _lime_opened: true, _intro_dr_kemuri: true });
-    value.met = { hajime: true, sumi: true, minto: true, tsumugi: true, dr_kemuri: true };
-    Object.assign(core.config, { textSpeed: 4, bgmVolume: 0, seVolume: 0, voiceBlip: false }); core.saveConfig();
-    core.save();
-    (await import("./js/chapters/ch1.js")).setupHooks();
-    await (await import("./js/chapters/ch1.js")).showClear();
-  });
-  // 第1章のクリアの画面（成長のグラフ・次の章へ）も縦長のシートで写り、写しのボタンから第2章へ進む
-  await page.locator('.retro-sheet[data-kind="end"] svg').waitFor({ timeout: 20000 });
-  await page.locator(t("sheet-end-chapter2")).tap();
-}
-
-/** 第2章の DAY2（配達を終えた後の日常）の朝から。 */
-async function seedChapterTwoDaily(page) {
-  await arm(page);
-  await page.evaluate(async () => {
-    const core = await import("./js/core/state.js");
-    const value = core.newGame();
-    Object.assign(value, { chapter: 2, phase: "daily", day: 15, slot: 2, money: 36000, stamina: 100, weatherSeed: 7, lastBaitoDay: 15 });
-    value.flags = { _rei_trpg_introduced: true, _ch1_cleared: true, _ch2_day1: { startDay: 15, stage: "complete", titleSeen: true },
-      _ch2_city_visit_c_station: true, _lime_tut: 1, _lime_opened: true, _hiyori_meeting_done: true, _hiyori_message_delivered: true };
-    value.stats = { technique: 31, sense: 31, guts: 31, charm: 31, insight: 31 };
-    value.met = { hajime: true, sumi: true, naru: true, adam: true, minto: true, tsumugi: true, ageha: true, kumicho: true, rei: true, volk: true };
-    value.contacts = ["sumi", "naru"];
-    for (const id of ["ageha", "kumicho", "rei"]) value.flags[`_intro_${id}`] = true;
-    Object.assign(core.config, { textSpeed: 4, bgmVolume: 0, seVolume: 0, voiceBlip: false }); core.saveConfig();
-    core.save();
-    (await import("./js/chapters/ch1.js")).setupHooks();
-    void (await import("./js/chapters/ch2.js")).resumeChapterTwo();
-  });
-}
-
-/** 第3章: 第2章をクリアして東京へ出発した朝の保存（ch3_tokyo_daily.mjs と同じ）。cards は旧い行程（場面カード）の自由時間の前。 */
-async function seedChapterThree(page, { cards = false } = {}) {
-  await page.evaluate(async (cards) => {
-    const core = await import("./js/core/state.js");
-    const progress = await import("./js/chapters/ch3-progress.js");
-    const value = core.newGame();
-    Object.assign(value, { chapter: 2, day: 28, slot: 0, phase: "cleared", money: 30000, stamina: 100, weatherSeed: 5, contacts: ["sumi"] });
-    value.flags = { _elapsed_calendar: true, _ch1_cleared: true, _ch2_cleared: true, _ch2_read_ch2_tournament_ageha_heart: true,
-      _ch2_preparation_started: true, _lime_opened: true, _lime_tut: 1,
-      _ch2_tournament: { stage: "complete", attempts: 1, history: [{ rank: 1, total: 88 }] } };
-    for (const who of ["hajime", "sumi", "pakki", "maezono", "dr_kemuri", "sui"]) value.flags[`_intro_${who}`] = true;
-    if (!progress.advanceToChapterThree(value)) throw new Error("Chapter boundary failed");
-    value.day += 3;
-    if (!progress.departChapterThree(value)) throw new Error("Departure failed");
-    value.flags._ch3_intro.titleSeen = true;
-    if (cards) Object.assign(value.flags._ch3_intro, { routeVersion: 2, prologueStep: 4 });
-    const plan = (await import("./js/daily/fortune-schedule.js")).fortunePlan({ seed: value.seed, chapter: 3 });
-    value.flags._fortune_wander = { chapter: 3, shown: plan.map(() => null), used: plan.map(() => true) };
-    Object.assign(core.config, { textSpeed: 4, bgmVolume: 0, seVolume: 0, voiceBlip: false }); core.saveConfig();
-    Object.assign(core.state, value); core.save();
-    if (cards) core.requestResumeOnBoot();
-  }, cards);
-}
-
-/** 第4章: ドバイに着いた朝の保存（ch4_dubai_daily.mjs と同じ。到着と宿の場面は読んだ後）。 */
-async function seedChapterFour(page) {
-  await page.evaluate(async () => {
-    const core = await import("./js/core/state.js");
-    const progress = await import("./js/chapters/ch4-progress.js");
-    const value = core.newGame();
-    Object.assign(value, { chapter: 3, day: 45, slot: 1, phase: "cleared", money: 50000, stamina: 100, weatherSeed: 5, lovers: [], contacts: ["sumi"] });
-    value.flags = { _elapsed_calendar: true, _ch1_cleared: true, _ch2_cleared: true, _ch3_cleared: true, _ch3_preview_seen: true,
-      _friend_ageha: true, _ch3_tournament_won: true, _lime_opened: true, _lime_tut: 1 };
-    value.stats = { technique: 60, sense: 60, guts: 60, charm: 60, insight: 60 };
-    for (const who of ["naru", "da_silva", "hajime", "sumi", "pakki", "sui", "dr_kemuri"]) value.flags[`_intro_${who}`] = true;
-    Object.assign(value.met, { naru: true });
-    if (!progress.advanceToChapterFour(value)) throw new Error("Chapter boundary failed");
-    value.flags._overseas_companion = { decided: true, companion: null, supports: [] };
-    value.flags._ch4.titleSeen = true;
-    for (const id of progress.CH4_PREP_SCENES) if (!progress.completeChapterFourScene(value, id)) throw new Error(id);
-    value.day += 3;
-    if (!progress.departChapterFour(value)) throw new Error("Departure failed");
-    for (const id of ["ch4_opening", "ch4_arrival_inn"]) progress.completeChapterFourScene(value, id);
-    Object.assign(core.config, { textSpeed: 4, bgmVolume: 0, seVolume: 0, voiceBlip: false }); core.saveConfig();
-    Object.assign(core.state, value); core.save();
-  });
-}
-
-/** 第5章: 地元の自由行動の日の保存。 */
-async function seedChapterFive(page) {
-  await page.evaluate(async () => {
-    const core = await import("./js/core/state.js");
-    const value = core.newGame();
-    Object.assign(value, { chapter: 5, day: 51, slot: 0, phase: "daily", money: 50000, stamina: 100, weatherSeed: 5, lovers: [], contacts: ["sumi"] });
-    value.flags = { _elapsed_calendar: true, _ch1_cleared: true, _ch2_cleared: true, _ch3_cleared: true, _ch4_cleared: true,
-      _ch2_preparation_started: true, _ch2_region: "home", _lime_opened: true, _lime_tut: 1,
-      _ch5: { startDay: 51, stage: 2, part: "free", titleSeen: true, read: { ch5_bridge_after_return: true, ch5_opening: true }, scheduleDecision: null,
-        aftermath: 0, finale: 0, finaleScenes: null, won: null, secondCup: null },
-      _ch5_match_scheduled: false, _ch5_match_started: false, _ch5_after_party: true, _ch5_region_started: true };
-    value.stats = { technique: 60, sense: 60, guts: 60, charm: 60, insight: 60 };
-    const plan = (await import("./js/daily/fortune-schedule.js")).fortunePlan({ seed: value.seed, chapter: 5 });
-    value.flags._fortune_wander = { chapter: 5, shown: plan.map(() => null), used: plan.map(() => true) };
-    Object.assign(core.config, { textSpeed: 4, bgmVolume: 0, seVolume: 0, voiceBlip: false }); core.saveConfig(); core.save();
-  });
 }
 
 await suite("look_neo_portrait", async (check) => {
@@ -809,7 +699,7 @@ await suite("look_neo_portrait", async (check) => {
   }, { ...DESK_TALL, pageEntry: entry });
 
   await check("chapters-two-to-five-conversations-use-the-shell", async (page) => {
-    // 各章の保存の章で会話を出す（その章の場所の絵）。新版はどの章でも縦持ちの外枠（DS風は第1章だけ）
+    // 各章の保存の章で会話を出す（その章の場所の絵）。新版はどの章でも縦持ちの外枠（DS風の同じ流れは look_retro.mjs）
     for (const [chapter, file, id, bg] of [
       [2, "ch2_city", "ch2_city_ageha", "res://assets/backgrounds/bg_c_station_lobby.png"],
       [3, "ch3_main", "ch3_opening", "res://assets/backgrounds/bg_mukai_shop.png"],
@@ -983,16 +873,14 @@ await suite("look_neo_portrait", async (check) => {
     await playScene(page, "ch2_city_ageha", { chapter: 2, bg: "res://assets/backgrounds/bg_c_station_lobby.png", file: "ch2_city" });
     await page.locator(shellFor("vn")).waitFor();
     assert.deepEqual(await residue(page), { shells: 1, notes: 1, hints: 1, attrs: ["retro", "retroShell", "retroHint", "retroPaint"], paint: "hd" });
-    // 第2章の DS風は旧版で表示（DS風は第1章だけ）: 外枠も案内の差し替えも残らず、回転案内は元の文
+    // 第2章でも DS風はそのまま効く（LK21）: 同じ会話のまま外枠がドット絵の描き方に替わり、新版の案内の差し替えは残らない
     await setLook("retro");
-    await page.waitForFunction(() => document.documentElement.dataset.look === "classic" && !document.querySelector(".retro-shell"));
-    await page.waitForFunction(() => document.documentElement.dataset.rotateGuard === "true");
-    assert.deepEqual(await residue(page), { shells: 0, notes: 0, hints: 0, attrs: [], paint: "" });
+    await page.locator(".retro-shell:not([hidden])[data-paint=\"dot\"][data-scene=\"vn\"]").waitFor();
+    assert.deepEqual(await residue(page), { shells: 1, notes: 1, hints: 0, attrs: ["retro", "retroShell", "retroPaint"], paint: "dot" });
     let state = await rootState(page);
-    assert.equal(state.hint, "grid");
+    assert.equal(state.look, "retro", "the DS look stays on in chapter 2");
+    assert.equal(state.guard, "", "no rotate hint in the DS look");
     assert.equal(state.replaced, false);
-    assert(state.hintText.includes("横向きでお楽しみください"), `the original hint text is back: ${state.hintText}`);
-    assert.equal(state.viewportOpacity, "1");
     // 新版へ戻すと、同じ会話のまま外枠へ戻る
     await setLook("neo");
     await page.locator(shellFor("vn")).waitFor();

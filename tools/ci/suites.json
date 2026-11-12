@@ -1030,6 +1030,7 @@
         "node --experimental-vm-modules remake/test/hiyori_frequency.mjs",
         "node --experimental-vm-modules remake/test/hiyori_quiet_visit.mjs",
         "node remake/test/spot_encounter_doctor.mjs",
+        "node remake/test/town_ties.mjs",
         "node --experimental-vm-modules remake/test/hiyori_showroom_806.mjs",
         "node --experimental-vm-modules remake/test/first_meeting_affinity.mjs",
         "node --experimental-vm-modules remake/test/samechan_story.mjs",
@@ -1125,7 +1126,8 @@
         "node --experimental-vm-modules remake/test/lime_fit_774.mjs",
         "node --experimental-vm-modules remake/test/lime_save_774.mjs",
         "node --experimental-vm-modules remake/test/purikura_motion.mjs",
-        "node remake/test/text_wrap.mjs --fixed-only",
+        "node remake/test/text_wrap.mjs",
+        "node remake/test/css_wrap_guard.mjs",
         "node remake/test/natural_wrap.mjs",
         "node remake/test/conversation_effects_marks.mjs",
         "node remake/test/conversation_cutin.mjs"
@@ -1793,6 +1795,7 @@
         "data/dialogue/ch4_main.json",
         "data/dialogue/ch4_visitors.json",
         "data/dialogue/ch4_*_dubai.json",
+        "data/dialogue/ch4_arrival_daily.json",
         "data/dialogue/tournament_dates.json",
         "remake/test/browser/ch4_dubai_daily.mjs"
       ],
@@ -1814,6 +1817,7 @@
         "data/dialogue/ch4_spots.json",
         "data/dialogue/ch4_visitors.json",
         "data/dialogue/ch4_*_dubai.json",
+        "data/dialogue/ch4_arrival_daily.json",
         "remake/test/browser/ch4_full_flow.mjs"
       ],
       "run": [
@@ -3847,10 +3851,12 @@
         "remake/js/daily/spot-encounters.js",
         "remake/js/vn/**",
         "remake/js/core/state.js",
-        "remake/test/browser/spot_encounters.mjs"
+        "remake/test/browser/spot_encounters.mjs",
+        "remake/test/browser/town_ties.mjs"
       ],
       "run": [
-        "node remake/test/browser/spot_encounters.mjs"
+        "node remake/test/browser/spot_encounters.mjs",
+        "node remake/test/browser/town_ties.mjs"
       ],
       "env": {
         "ARTIFACT_DIR": ".codex/artifacts/remake-browser/spot-encounters"
@@ -4635,7 +4641,7 @@
     },
     {
       "id": "look",
-      "title": "見た目の様式（新版／旧版／DS風）の既定・章による制限・起動時の移行",
+      "title": "見た目の様式（新版／旧版／DS風）の既定・全章で効くこと・起動時の移行",
       "kind": "quick",
       "run": ["node remake/test/look.mjs"]
     },
@@ -4766,6 +4772,7 @@
         "remake/js/chapters/ch5-daily.js",
         "remake/js/scenes/title.js",
         "remake/js/core/ui.js",
+        "remake/test/browser/look_chapter_seeds.mjs",
         "remake/test/browser/look_neo_portrait.mjs"
       ],
       "run": [
@@ -4774,10 +4781,10 @@
     },
     {
       "id": "look-retro",
-      "title": "DS風: 縦持ちの2画面・ドット絵の上画面・会話と地図の中継・場面転換と登場カットイン・未対応の場面と他章では現行のまま",
+      "title": "DS風: 縦持ちの2画面・ドット絵の上画面・会話と地図の中継・場面転換と登場カットイン・第2〜5章の会話と地図とカードと小窓・未対応の場面では現行のまま",
       "kind": "browser",
-      "weight": 1.8,
-      "timeout": 6,
+      "weight": 2.8,
+      "timeout": 8,
       "paths": [
         "remake/css/look-retro.css",
         "remake/js/looks/**",
@@ -4788,6 +4795,12 @@
         "remake/js/scenes/title.js",
         "remake/js/core/ui.js",
         "remake/css/daily.css",
+        "remake/js/daily/station-travel.js",
+        "remake/js/core/chapter-card.js",
+        "remake/js/chapters/ch2.js",
+        "remake/js/chapters/ch3-scenes.js",
+        "remake/js/chapters/ch5-daily.js",
+        "remake/test/browser/look_chapter_seeds.mjs",
         "remake/test/browser/look_retro.mjs"
       ],
       "run": [

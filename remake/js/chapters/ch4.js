@@ -271,7 +271,7 @@ async function renderScene(owner, scene, dayLabel) {
 /**
  * 恋人の入口（#2024）。第1・2章と同じ処理（lover-entry.js → daily/romance.js）を使う。
  * 日本にいる間（出発前・帰国後のtonari）は恋人LIMEと節目。ドバイ滞在中は遠くの恋人からのLIMEだけで、
- * 節目は進めない（IR17）。到着した恋人と過ごす夕方（dubai_evening 系）は、前夜祭の日の renderEve で読む（IR18）。
+ * 節目は進めない（IR17）。到着した恋人・ましろと過ごす夕方（dubai_evening 系）は、前夜祭の日の renderEve で読む（IR18・#3097）。
  * 同行した恋人は一緒にいるのでLIMEを送ってこない。東京在住のましろとは地元では会えない。
  * 地元にいるかは home で渡す（帰国後のtonariでも現在地の印はドバイのまま。離れている間は地元前提の文面を送ってこない・#2024）。
  */
@@ -420,8 +420,10 @@ async function renderEve(owner) {
     await renderStage(owner);
     return;
   }
-  // 到着した恋人と過ごす夕方（任意で一度・IR18）。前夜祭が始まると、もう出ない。
+  // 到着した恋人・ましろと過ごす夕方（任意で一度・IR18・#3097）。前夜祭が始まると、もう出ない。
+  // ましろはほかの章の入口と同じく「ましろちゃん」と呼ぶ（恋人版・友人版とも）。
   const evenings = chapterFourArrivalEveningsDue(state);
+  const eveningName = id => id === "mashiro" ? "ましろちゃん" : displayName(id, state, { context: "private" });
   await enterScene(bgUrl(CH4_SCENE_BG[next.lead || next.id]));
   if (!current(owner)) return;
   card(owner, "eve", `DAY ${chapterFourEveDay(state)}・${evenings.length ? "前夜祭の日" : "前夜"}`,
@@ -432,7 +434,7 @@ async function renderEve(owner) {
         }
         await renderStage(owner);
       }, true),
-      ...evenings.map(evening => button(owner, `${displayName(evening.id, state, { context: "private" })}と夕方を過ごす`,
+      ...evenings.map(evening => button(owner, `${eveningName(evening.id)}と夕方を過ごす`,
         `arrival-evening-${evening.id}`, async () => {
           // 最後まで読んだ時だけ確定・保存する。読んだ後は同じカードに戻り、前夜祭へ進む。
           if (!await readAndCommit(owner, evening.scene)) return;
