@@ -208,10 +208,16 @@ test('media snapshots preserve templates and enforce chapter, account, owner, co
   assert.equal(receive().msg.messages.length, 3);
   assert.equal(JSON.stringify(template), original);
   f.original.chapter = 2;
-  // The second asset has no explicit chapter limit and can appear in chapters 1–3.
+  // The second asset has no explicit chapter limit and can appear in chapters 1–5.
   assert.equal(receive().msg.messages[1].image, 'im_adam_moon');
-  f.original.chapter = 4;
-  assert.equal(receive().msg.messages.length, 2);
+  for (const chapter of [4, 5]) {
+    f.original.chapter = chapter;
+    assert.equal(receive().msg.messages[1].image, 'im_adam_moon');
+  }
+  for (const chapter of [0, 6, '4', undefined]) {
+    f.original.chapter = chapter;
+    assert.equal(receive().msg.messages.length, 2);
+  }
   f.original.chapter = 1;
   const first = receive(); f.original.inbox.push(first);
   f.original.day += 4;
@@ -279,7 +285,7 @@ test('reply acknowledgement obeys owner, account and recent-media spacing limits
 test('reply acknowledgement is suppressed outside media chapters and when a thread already has media', async () => {
   const f = await fixture({ invitation: true });
   f.item.msg.accept_reply = { sender: 'minto', stamp: 'st_minto_cheer' };
-  f.original.chapter = 4;
+  f.original.chapter = 6;
   let run = f.run(); f.picks[0].resolve({ text: '行く！', go: true }); await flush(); await f.finish(); await run;
   assert.equal(f.item.log.some(line => line.stamp), false);
   const g = await fixture({ invitation: true });
@@ -423,4 +429,14 @@ test('forced story LIME wraps custom closing replies and preserves ordinary clos
   }
   const css = await fs.readFile(new URL('../css/daily.css', import.meta.url), 'utf8');
   assert.match(css, /\.lime-reply\.multiline\s*\{[^}]*white-space:\s*normal;[^}]*text-overflow:\s*clip;/);
+});
+
+for (const chapter of [3, 5]) test(`Mukai accepted shift replies with one owned stamp in chapter ${chapter}`, async () => {
+  const f = await fixture({ invitation: true });
+  f.original.chapter = chapter;
+  f.item.msg = { ...JSON.parse(JSON.stringify(limeTemplates.mukai_baito)), id: 'mukai-stamp', messages: ['はじめくん。今日の昼、店に入れるか'] };
+  const run = f.run(); f.picks[0].resolve({ text: '入ります', go: true });
+  await flush(); await f.finish(); await run;
+  assert.equal(f.item.log.filter(line => line.stamp === 'st_mukai_master_ack').length, 1);
+  assert.equal(f.media[0].content.asset.owner, 'mukai_master');
 });

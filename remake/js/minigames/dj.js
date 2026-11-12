@@ -1,3 +1,4 @@
+import { recordPlayMastery, syncPlayMastery } from "../core/play-mastery.js";
 // DJ ミニゲームを本編から開く部品（2026-11-01 DJS10・クラブSEAM DJS12）。遊びの本体は remake/previews/dj/ をそのまま同じ画面に重ねて使う。
 // ミニゲームは時間を使わない（#2113）: 行動・日付・お金・体力は変えない。記録は state.dj に残し、
 // 心得の盤の「遊びのご褒美」（SBD39・growth.js の claimPlayRewards）が state.dj.bestRank を読んで、寝る前に感覚の火種を1つ渡す。
@@ -45,6 +46,7 @@ export function djSetOpen(s, id) {
 export function recordDjResult(s, data) {
   const result = readDjResult(data);
   if (!s || typeof s !== "object" || !result) return null;
+  syncPlayMastery(s);
   const before = djRecords(s), previous = before.sets[result.set];
   const entry = { rank: result.rank, total: result.total, floor: result.floor,
     chapter: Number.isInteger(s.chapter) ? s.chapter : null, day: Number.isInteger(s.day) ? s.day : null };
@@ -53,6 +55,7 @@ export function recordDjResult(s, data) {
   sets[result.set] = { plays: previous.plays + 1, best: newBest ? entry : previous.best };
   const after = djRecords({ dj: { sets } });
   s.dj = { sets, bestRank: after.bestRank };
+  recordPlayMastery(s, "dj", result, `${s.cycle || 1}:${result.set}:${sets[result.set].plays}`);
   return { entry, newBest, rankUp: before.bestRank === null || rankIndex(after.bestRank) > rankIndex(before.bestRank) };
 }
 

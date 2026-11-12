@@ -1,3 +1,4 @@
+import { recordPlayMastery, syncPlayMastery } from "../core/play-mastery.js";
 import { spendableMoney } from "../core/travel-budget.js";
 // Campaign rules only. All mutations are explicit; this module has no DOM/storage.
 const clone = value => JSON.parse(JSON.stringify(value));
@@ -171,6 +172,7 @@ export function completeTrpgTable(state, catalog, scenario, ticket, result, opti
     || state.chapter !== ticket.chapter || state.day !== ticket.day || state.slot !== ticket.slot) return false;
   const current = castTrpgTable(state, catalog, scenario, options);
   if (!current.ok || JSON.stringify(current.assignments) !== JSON.stringify(ticket.assignments)) return false;
+  syncPlayMastery(state);
   const kept = state.trpg.cleared[scenario.id] || null;
   const seen = [...new Set([...(Array.isArray(kept?.endingsSeen) ? kept.endingsSeen : kept ? [kept.ending] : []), result.ending])];
   const plays = (Number.isInteger(kept?.plays) ? kept.plays : kept ? 1 : 0) + 1;
@@ -186,6 +188,7 @@ export function completeTrpgTable(state, catalog, scenario, ticket, result, opti
   state.trpg.cleared[scenario.id] = { ...(betterPlay(memory, kept) ? memory : kept), endingsSeen: seen, plays };
   if (state.trpg.bookmark?.id === scenario.id) delete state.trpg.bookmark;
   state.slot++;
+  recordPlayMastery(state, "trpg", result, `${state.cycle || 1}:${scenario.id}:${plays}`);
   return true;
 }
 
