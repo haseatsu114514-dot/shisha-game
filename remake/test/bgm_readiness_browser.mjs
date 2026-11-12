@@ -32,3 +32,5 @@ await suite("bgm-readiness", async check => {
     assert.equal(requests, 1, "Reusing prepared media must not download a second copy");
   });
 });
+
+await import("./browser/bgm_tempo_continuity.mjs");

@@ -776,7 +776,7 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
         zapClock -= real;
         if (zapClock <= 0) { rideSe.zap(charge); zapBurstT = 0.14; zapClock = desertZapGap(charge); }
       } else zapClock = 0.35; // 溜まり始めたら少しして最初の1発
-      // ブースト中は曲が速くなる（音程は保ち、約0.2秒で滑らかに切り替わる）
+      // ブースト中は再生中の曲が速くなる。曲の先頭へ戻さない。
       // ブーストの始まりと終わりに一度だけ切り替える（少しずつ変えると iPhone で曲が止まる。2026-11-11）
       const bgmRate = game.boostT > 0 && !game.finished ? BOOST_BGM_RATE : 1;
       if (bgmPlaybackRate() !== bgmRate) setBgmPlaybackRate(bgmRate, { immediate: true });
