@@ -109,7 +109,7 @@ console.log("[782] 昼夜/固定日/延期/旧セーブ/一度きり/既存文�
     hiyoriAxeReady: () => false, questionVisitDue: () => false, finaleAtVisit: () => false,
     setStoryAffinityCap: noop, AFFINITY_RANK_PTS: [0, 17, 34, 51, 68, 85],
   };
-  const real = ["daily/tonari.js", "daily/spots.js", "daily/tsumugi-schedule.js", "core/affinity-stages.js"];
+  const real = ["core/shift-pay.js","daily/tonari.js", "daily/spots.js", "daily/tsumugi-schedule.js", "core/affinity-stages.js"];
   const modules = new Map(), imports = new Map();
   for (const id of real) {
     const source = await fs.readFile(new URL(`../js/${id}`, import.meta.url), "utf8");
@@ -164,3 +164,4 @@ console.log("[782] 昼夜/固定日/延期/旧セーブ/一度きり/既存文�
   await inspect({ sumi: true, night: true }); // 固定イベント日は通常在店なし
   console.log("[1901] tonariの印: 昼夜・在店・未面識・既読・利用済み・無変更・選択先 PASS");
 }
+
