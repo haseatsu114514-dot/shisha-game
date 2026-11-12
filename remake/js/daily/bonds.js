@@ -91,7 +91,7 @@ export const BOND_FINALES = {
 export const BOND_QUESTIONS = {
   tsumugi: { dialogue: "ch1_tsumugi_bond_question", choice: AFFINITY_GATE_CHOICES.tsumugi, host: "ch1_tsumugi_fourth", when: "after" },
   minto: { dialogue: "ch1_minto_bond_question", choice: AFFINITY_GATE_CHOICES.minto, host: "ch1_minto_private_1", alsoAfter: ["ch1_minto_fifth"], when: "after" },
-  rio: { dialogue: "ch1_rio_bond_question", choice: AFFINITY_GATE_CHOICES.rio, host: "ch1_rio_third", when: "visit" },
+  rio: { dialogue: "ch1_rio_bond_question", choice: AFFINITY_GATE_CHOICES.rio, host: "ch1_rio_third", when: "after" },
   // あげは（#1988）: 第2章の店に通う回「初めての客」（♥3）を読んだ直後。第3章の帰郷後の告白はこの答えが恋愛寄りで♥5のときだけ。
   ageha: { dialogue: "ch2_ageha_bond_question", choice: AFFINITY_GATE_CHOICES.ageha, host: "remake_ch2_ageha_newcomer", when: "after" },
   // ましろ（#2022）: 第3章の寄り道「閉店後の練習」を読んだ後、♥3で場面カードから。
@@ -524,4 +524,5 @@ export async function playFriendHangout(id) {
   save();
   return true;
 }
+
 
