@@ -47,7 +47,7 @@
       "buy_price": 1000,
       "sell_price": 500,
       "price": 1000,
-      "value": "suyaki",
+      "value": "suyaki_hagal",
       "description": "同じ味を使うほど育つ。最初は土の味が少しする。大容量20g。",
       "capacity": 20
     },
@@ -82,7 +82,7 @@
       "buy_price": 1500,
       "sell_price": 750,
       "price": 1500,
-      "value": "amaburst",
+      "value": "amaburst_hms",
       "art": "amaburst_hms",
       "description": "素焼きハガルにも装着可能。温度が上がりやすく、直炭に近い高火力を出しやすい。"
     },
