@@ -33,7 +33,7 @@ import { availableOptionalScenes, commitOptionalRead, selectChapterThreeEvening,
 import { loverMilestonesDue, readLoverMilestone, pendingLoverLime } from "./lover-entry.js";
 import { mashiroTimeOpen, spendMashiroTime } from "./mashiro-time.js";
 import { questionVisitDue, playQuestionVisit, finaleAtVisit, playFinale } from "../daily/bonds.js";
-import { runMukaiShift, loadMukaiShift, MUKAI_PAY, MUKAI_SHIFT_STAMINA } from "./tokyo-mukai.js";
+import { runMukaiShift, loadMukaiShift, mukaiShiftPay, MUKAI_SHIFT_STAMINA } from "./tokyo-mukai.js";
 import { addRoamerSpots } from "../daily/roamers.js";
 import { openTetsukoTime, settleTetsukoTime, tetsukoVisitKey } from "../minigames/tetsuko-time.js";
 import { chainStageAt } from "./visit-chains.js";
@@ -556,7 +556,7 @@ async function visitMukai(io, staminaGuard, owner) {
   const options = [
     ...(bond ? [{ label: bond === "lover" ? "ましろちゃんと過ごす（恋人）" : bond === "question" ? "ましろちゃんと話す" : "ましろちゃんに呼ばれる", value: `bond:${bond}` }] : []),
     ...scenes.map(scene => ({ label: scene.label, value: `scene:${scene.id}` })),
-    ...outings.map(outing => ({ label: outing.id === "mukai_help" ? `シフトに入る（バイト・日当 ${MUKAI_PAY.toLocaleString("ja-JP")}円）` : outing.label, value: `outing:${outing.id}` })),
+    ...outings.map(outing => ({ label: outing.id === "mukai_help" ? `シフトに入る（バイト・日当 ${mukaiShiftPay(state).toLocaleString("ja-JP")}円）` : outing.label, value: `outing:${outing.id}` })),
     ...trials.map(trial => ({ label: `作業台で${trial.label}（時間は進まない）`, value: `trial:${trial.id}` })),
     ...chainOptions("mukai"),
   ];

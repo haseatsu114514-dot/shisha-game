@@ -23,7 +23,7 @@ import { tokyoVanBlock, TOKYO_VAN_SLOTS } from "./ch5-travel.js";
 import { openShop } from "../daily/shop.js";
 import { TOKYO_VISIT_COST } from "../daily/spots.js";
 import { modal } from "../core/ui.js";
-import { runMukaiShift, loadMukaiShift, MUKAI_SHIFT_STAMINA, MUKAI_PAY } from "./tokyo-mukai.js";
+import { runMukaiShift, loadMukaiShift, MUKAI_SHIFT_STAMINA, mukaiShiftPay } from "./tokyo-mukai.js";
 import { loverMilestonesDue, readLoverMilestone } from "./lover-entry.js";
 import { reflectAt } from "../daily/reflection.js";
 import { TOKYO_OUTINGS, outingDialogueId, outingCounts, OUTINGS_FLAG } from "./ch3-outing-progress.js";
@@ -54,7 +54,7 @@ const rivalSpot = fields => Object.freeze(Object.defineProperty({ region: TOKYO,
 export const TOKYO_SPOTS = Object.freeze([
   spot({ id: "ch5_tokyo_mukai", label: "mukai", area: "高架下の商店街", x: 29.6, y: 62.7, theme: "baito", glyph: "店", face: "mukai_master",
     preview: "bg_mukai_shop", stamina: MUKAI_SHIFT_STAMINA, shift: true, talks: ["ch5_tokyo_mukai_help", "ch5_tokyo_mukai_help_b", "ch5_tokyo_mukai_help_c"],
-    desc: "ムカイさんの店のシフト（日当6,000円）。帰りに裏口のてつこにも会える。" }),
+    desc: "ムカイさんの店のシフト。日当は大会実績で変わる。帰りに裏口のてつこにも会える。" }),
   rivalSpot({ id: "ch5_tokyo_steve", charId: "steve", label: "Smoke & Glory", area: "スティーブの店", x: 23.3, y: 36.1, theme: "rival", glyph: "煙", face: "steve",
     preview: "bg_steve_shop", stamina: -16, stat: "technique",
     talks: ["ch5_tokyo_steve", "ch5_tokyo_steve_b", "ch5_tokyo_steve_c"], desc: "タイマーの並ぶ店。二口目までの一台。" }),
@@ -107,7 +107,9 @@ const chainPin = (entry, value) => chainStageAt(value, entry.id)
   ? Object.freeze(Object.defineProperties({}, { ...Object.getOwnPropertyDescriptors(entry), hasNew: { value: () => true, enumerable: true } }))
   : entry;
 /** 東京の地図に出す今の行き先（帰りの配送便は昼だけ）。 */
-export const tokyoSpotsNow = (value = state) => TOKYO_SPOTS.map(entry => entry.id === HOME_ID ? vanPin(entry, value) : chainPin(entry, value));
+export const tokyoSpotsNow = (value = state) => TOKYO_SPOTS.map(entry => entry.id === HOME_ID ? vanPin(entry, value)
+  : entry.id === "ch5_tokyo_mukai" ? Object.freeze({ ...chainPin(entry, value), desc: `ムカイさんの店のシフト（日当${mukaiShiftPay(value).toLocaleString("ja-JP")}円）。帰りに裏口のてつこにも会える。` })
+  : chainPin(entry, value));
 
 export const inTokyo = (value = state) => value?.flags?._ch2_region === TOKYO;
 const SCENES = TOKYO_SPOTS.flatMap(entry => entry.talks || []).concat(["ch5_tokyo_van_first", "ch5_tokyo_go", "ch5_tokyo_back", "ch5_tokyo_arrival", "ch5_tokyo_park_day", "ch5_tokyo_attic_rest", "ch5_tokyo_fortune",
@@ -224,7 +226,7 @@ export async function performTokyoSpot(spot, { staminaGuard } = {}) {
     if (mashiroTimeOpen(state, { milestoneDue: mashiroMilestoneDue() })) {
       const pick = await modal({ title: "mukai", className: "tokyo-visit-choice", body: "何をしよう。", options: [
         { label: "ましろちゃんと過ごす（恋人）", value: "lover", test: "tokyo-mukai-lover", primary: true },
-        { label: `シフトに入る（バイト・日当 ${MUKAI_PAY.toLocaleString("ja-JP")}円）`, value: "shift", test: "tokyo-mukai-shift" },
+        { label: `シフトに入る（バイト・日当 ${mukaiShiftPay(state).toLocaleString("ja-JP")}円）`, value: "shift", test: "tokyo-mukai-shift" },
         { label: "やめておく", value: null, test: "tokyo-visit-cancel" }] });
       if (!pick || state !== owner) return { used: false, exerted: false };
       if (pick === "lover") {
