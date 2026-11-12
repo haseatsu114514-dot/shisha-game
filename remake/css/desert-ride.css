@@ -284,7 +284,9 @@ html:root[data-density="phone"] .desert-ride .dr-card .dr-kicker { display: none
 .dr-speedo-tick.red { stroke: #d03a18; }
 .dr-speedo-needle path { fill: #c0281a; stroke: #4e1006; stroke-width: .9; stroke-linejoin: round; }
 .dr-speedo-hub { stroke: #5a3510; stroke-width: 1; }
-.dr-speedo[data-fast="boost"] .dr-speedo-gauge { filter: drop-shadow(0 0 4px rgba(255, 140, 50, .9)); }
+/* ブースト中は針と弧の色で知らせる（drop-shadow は針が毎フレーム動くたびにぼかし直すので使わない。2026-11-11） */
+.dr-speedo[data-fast="boost"] .dr-speedo-needle path { fill: #ff4a1a; }
+.dr-speedo[data-fast="boost"] .dr-speedo-track { stroke: rgba(255, 120, 40, .3); }
 .dr-speedo[data-fast="boost"] .dr-speedo-red { opacity: 1; }
 .desert-ride .dr-speedo-read { display: flex; flex-direction: column; align-items: flex-end; justify-content: center; gap: 4px; min-width: 0; }
 .desert-ride .dr-kmh { font-size: 62px; line-height: .86; letter-spacing: -.02em; }
@@ -345,9 +347,12 @@ html:root[data-density="phone"] #stage[data-wide] .desert-ride .dr-touch.dr-jump
 /* ---- ブーストの放電（2026-11-11 オーナー「ブーストは溜まるとどんどん放電みたいな演出つけたい」）:
    溜まるほど BOOST ボタンの縁とゲージから稲妻が多く走る（形と本数は JS の updateZaps）。白い芯に青い光。
    満タン（data-charge="max"）ではボタンが青白く光って小刻みに震える。動き軽減では稲妻を出さず、光だけ。 ---- */
-.desert-ride .dr-zap { position: absolute; pointer-events: none; overflow: visible; filter: drop-shadow(0 0 3px rgba(150, 225, 255, .95)) drop-shadow(0 0 7px rgba(70, 170, 255, .8)); }
-.desert-ride .dr-zap path { stroke: #f2fdff; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
-.desert-ride .dr-zap path[data-core="thick"] { stroke-width: 3.5; }
+/* 光は drop-shadow ではなく、同じ形の太く薄い線（.glow）を下に敷く（描き直すたびのぼかしは重い。2026-11-11） */
+.desert-ride .dr-zap { position: absolute; pointer-events: none; overflow: visible; }
+.desert-ride .dr-zap path { stroke-linecap: round; stroke-linejoin: round; }
+.desert-ride .dr-zap path.glow { stroke: rgba(110, 200, 255, .5); stroke-width: 9; }
+.desert-ride .dr-zap path.core { stroke: #f2fdff; stroke-width: 2.5; }
+.desert-ride .dr-zap path.core[data-core="thick"] { stroke-width: 3.5; }
 .desert-ride .dr-zap-button { inset: -24px; width: calc(100% + 48px); height: calc(100% + 48px); z-index: 2; }
 .desert-ride .dr-zap-gauge { left: 0; right: 0; top: -9px; bottom: -9px; width: 100%; height: calc(100% + 18px); z-index: 2; }
 .desert-ride[data-charge="mid"] .dr-touch.dr-boost.art-ready { filter: drop-shadow(0 0 12px rgba(120, 210, 255, .75)); }
