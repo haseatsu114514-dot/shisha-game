@@ -2,8 +2,8 @@ import assert from "node:assert/strict";
 import { suite, assertFits } from "./support.mjs";
 
 const ids = ["minto", "tsumugi", "rio", "ageha", "mashiro", "samechan", "hiyori", "noor"];
-async function prepare(page, id = "ageha", many = false) {
-  await page.evaluate(async ({ id, many, ids }) => {
+async function prepare(page, id = "ageha", many = false, start = true) {
+  await page.evaluate(async ({ id, many, ids, start }) => {
     window.H = { core: await import("./js/core/state.js"), vn: await import("./js/vn/engine.js"),
       data: await import("./js/core/data.js"), romance: await import("./js/daily/romance.js") };
     const stages = await import("./js/core/affinity-stages.js");
@@ -32,8 +32,8 @@ async function prepare(page, id = "ageha", many = false) {
     H.choice = scene.lines.find(line => line.type === "choice");
     H.before = JSON.stringify(s); H.confirmationSnapshotTaken = false; H.pictures = [];
     H.core.saveToSlot("suien_remake_slot1");
-    H.done = false; H.run = H.vn.play(`confession_${id}`).then(result => { H.done = true; H.result = result; });
-  }, { id, many, ids });
+    H.done = !start; if (start) H.run = H.vn.play(`confession_${id}`).then(result => { H.done = true; H.result = result; });
+  }, { id, many, ids, start });
 }
 
 async function readToChoice(page) {
@@ -98,4 +98,77 @@ await suite("romance-hesitation", async check => {
     assert.deepEqual(result.lovers, ["tsumugi"]); assert.equal(result.choices, 0);
     assert(!result.enter.includes("confession_ageha_accept"));
   });
+  await check("settings-style-cancel-restores-current-style-and-bgm", async page => {
+    await prepare(page); await readToChoice(page);
+    const bgm = await page.evaluate(async () => (await import("./js/core/audio.js")).currentBgm());
+    await choose(page, 0);
+    await page.locator('[data-test="vn-config"]').click();
+    await page.locator('[data-test="cfg-portrait-style"] button[value="classic"]').click();
+    await page.locator('[data-test="cfg-close"]').click();
+    await choose(page, 0);
+    await page.waitForFunction(() => [...document.querySelectorAll("#vn .vn-portraits img")].every(img => img.complete && img.naturalWidth > 0));
+    const restored = await page.evaluate(async () => ({
+      bgm: (await import("./js/core/audio.js")).currentBgm(),
+      portraits: [...document.querySelectorAll("#vn .vn-portraits img")].map(img => ({
+        src: img.src, expected: H.data.portraitInfo(img.dataset.speaker, img.dataset.face).src,
+      })),
+      unchanged: H.before === JSON.stringify(H.core.state),
+    }));
+    assert.equal(restored.bgm, bgm); assert(restored.unchanged);
+    assert(restored.portraits.length > 0);
+    for (const portrait of restored.portraits) {
+      assert.equal(portrait.src, portrait.expected); assert(portrait.src.includes("/characters/"));
+    }
+  });
+
+  await check("normal-motion-skip-cannot-answer-either-confirmation", async page => {
+    await page.emulateMedia({ reducedMotion: "no-preference" });
+    await prepare(page); await page.evaluate(() => { H.core.config.reduceShake = false; H.core.config.skipSeenOnly = false; });
+    await readToChoice(page); await choose(page, 0);
+    const first = await page.locator(".vn-choice").allTextContents();
+    await page.locator('[data-test="vn-skip"]').click();
+    assert.deepEqual(await page.locator(".vn-choice").allTextContents(), first);
+    assert(await page.evaluate(() => H.before === JSON.stringify(H.core.state)));
+    await choose(page, 1);
+    const second = await page.locator(".vn-choice").allTextContents();
+    await page.locator('[data-test="vn-skip"]').click();
+    assert.deepEqual(await page.locator(".vn-choice").allTextContents(), second);
+    await choose(page, 0);
+    assert(await page.evaluate(() => H.before === JSON.stringify(H.core.state)));
+  });
+
+  await check("actual-night-caller-charges-old-warning-guilt-once-after-apology", async page => {
+    await prepare(page, "rio", false, false);
+    await page.evaluate(() => {
+      H.core.state.slot = 2; H.core.state.flags._confession_due = "rio";
+      H.guiltBefore = H.core.state.guilt || 0; H.done = false;
+      H.run = H.romance.maybeConfession(async () => {}).then(result => { H.done = true; H.result = result; });
+    });
+    await readToChoice(page); await choose(page, 0); await choose(page, 1);
+    assert.equal(await page.evaluate(() => H.core.state.guilt || 0), await page.evaluate(() => H.guiltBefore));
+    await choose(page, 1);
+    const result = await page.evaluate(() => ({ guilt: H.core.state.guilt, before: H.guiltBefore, lovers: H.core.state.lovers, flag: H.core.state.flags._cheat_go }));
+    assert.equal(result.guilt, result.before + 3); assert(result.lovers.includes("rio")); assert.equal(result.flag, undefined);
+  });
+
+  await check("actual-heart-question-writes-production-answer-only-after-confirmations", async page => {
+    await prepare(page, "rio", false, false);
+    await page.evaluate(() => {
+      const found = Object.values(H.data.DB.dialogues).flatMap(scene => [...(scene.lines || []), ...Object.values(scene.branches || {}).flat()]
+        .filter(line => line.type === "choice" && line.romance_char === "rio" && line.id && line.choices.some(choice => choice.romance > 0))
+        .map(line => ({ scene, line })))[0];
+      if (!found) throw Error("Rio production heart question missing");
+      H.questionKey = found.line.id; delete H.core.state.romanceChoices[H.questionKey];
+      H.questionValue = found.line.choices.find(choice => choice.romance > 0).romance;
+      H.questionIndex = found.line.choices.findIndex(choice => choice.romance > 0);
+      H.done = false; H.run = H.vn.play({ ...found.scene, lines: [found.line] }).then(result => { H.done = true; H.result = result; });
+    });
+    await readToChoice(page); await choose(page, await page.evaluate(() => H.questionIndex)); await choose(page, 1);
+    assert.equal(await page.evaluate(() => H.core.state.romanceChoices[H.questionKey]), undefined);
+    await choose(page, 1);
+    const result = await page.evaluate(() => ({ answer: H.core.state.romanceChoices[H.questionKey], expected: H.questionValue, lovers: H.core.state.lovers, friend: H.core.state.flags._friend_rio, choices: H.choices.length }));
+    assert.equal(result.answer.char, "rio"); assert.equal(result.answer.value, result.expected);
+    assert.deepEqual(result.lovers, ["tsumugi"]); assert(!result.friend); assert.equal(result.choices, 1);
+  });
+
 });
