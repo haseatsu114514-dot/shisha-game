@@ -6,6 +6,7 @@ async function prepare(page, id = "ageha", many = false, start = true) {
   await page.evaluate(async ({ id, many, ids, start }) => {
     window.H = { core: await import("./js/core/state.js"), vn: await import("./js/vn/engine.js"),
       data: await import("./js/core/data.js"), romance: await import("./js/daily/romance.js") };
+    await H.data.loadDeferredDialogues();
     const stages = await import("./js/core/affinity-stages.js");
     const intro = await import("./js/vn/intro.js");
     (await import("./js/chapters/ch1.js")).setupHooks();
@@ -61,12 +62,14 @@ await suite("romance-hesitation", async check => {
     await page.emulateMedia({ reducedMotion: "reduce" });
     await prepare(page, id, true); await readToChoice(page); await choose(page, 0);
     assert.match(await page.locator(".vn-choice").first().innerText(), /言葉を飲み込む/);
+    await page.screenshot({ path: `${process.env.ARTIFACT_DIR || ".codex/artifacts/remake-browser"}/romance-${id}-remember.png` });
     await assertFits(page, ".vn-choice");
     assert(await page.evaluate(() => H.before === JSON.stringify(H.core.state)));
     const pictured = await page.evaluate(() => [...new Set(H.pictures)]);
     for (const partner of ids.filter(other => other !== id)) assert(pictured.includes(partner), `missing real portrait: ${partner}`);
     await choose(page, 1);
     assert.match(await page.locator(".vn-choice").last().innerText(), /付き合うと伝える/);
+    await page.screenshot({ path: `${process.env.ARTIFACT_DIR || ".codex/artifacts/remake-browser"}/romance-${id}-decide.png` });
     assert(await page.evaluate(() => H.before === JSON.stringify(H.core.state)));
     await choose(page, 1);
     await page.waitForFunction(id => H.enter.includes(`confession_${id}_accept`), id);
@@ -110,7 +113,7 @@ await suite("romance-hesitation", async check => {
     const restored = await page.evaluate(async () => ({
       bgm: (await import("./js/core/audio.js")).currentBgm(),
       portraits: [...document.querySelectorAll("#vn .vn-portraits img")].map(img => ({
-        src: img.src, expected: H.data.portraitInfo(img.dataset.speaker, img.dataset.face).src,
+        src: img.src, expected: new URL(H.data.portraitInfo(img.dataset.speaker, img.dataset.face).src, document.baseURI).href,
       })),
       unchanged: H.before === JSON.stringify(H.core.state),
     }));
