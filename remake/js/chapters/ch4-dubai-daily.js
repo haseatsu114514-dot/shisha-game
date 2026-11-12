@@ -53,6 +53,7 @@ import { COMPANION_TIME_FILE, COMPANION_TIME_IDS, companionLover, companionTimeO
 import { chapterFourStaffNightEvent } from "./ch4-staff-work.js";
 
 export const DUBAI = "dubai";
+const INN_REST_SCENES = ["ch4_inn_rest", "ch4_inn_rest_b", "ch4_inn_rest_c"];
 const TALKS_FLAG = "_ch4_dubai_talks"; // 再訪の会話の巡回の回数（行き先ごと）
 
 // 必須の出会いの期限（ドバイDAY。この日の夜までに寄らなければ、その夜に読む）。路地裏は出会いの2日後から。
@@ -75,7 +76,7 @@ const TALK_BG = Object.freeze({
 });
 export const DUBAI_DAILY_IDS = Object.freeze([
   ...["souq", "festa", "center_cafe", "alley_cafe", "naru", "practice"].flatMap(id => TALKS[id].filter(scene => /_(talk_[b-d]|dubai_\d|hall_\d|culture_[a-z]+)$/.test(scene))),
-  "ch4_creek_walk_day", "ch4_creek_walk_night", "ch4_inn_rest", ...INN_TRIAL_IDS, ...REHEARSAL_IDS, ...CAFE_TASTE_IDS, ...NIGHT_SCENE_IDS, ...STALL_SCENE_IDS,
+  "ch4_creek_walk_day", "ch4_creek_walk_night", ...INN_REST_SCENES, ...INN_TRIAL_IDS, ...REHEARSAL_IDS, ...CAFE_TASTE_IDS, ...NIGHT_SCENE_IDS, ...STALL_SCENE_IDS,
 ]);
 
 const read = id => chapterFourProgress(state).read[id] === true;
@@ -360,6 +361,14 @@ async function visitCamel(owner) {
   return result.used && state === owner ? { used: true, exerted: false, slotsUsed: 0 } : unused;
 }
 
+// 通常・試作メニュー・前日リハーサルの「休む」は同じ巡回を使う。中断やLOADでは進めない。
+async function readInnRest(bg, owner) {
+  const turn = quietTurn("ch4_dubai_inn", INN_REST_SCENES);
+  if (!turn || !await readPlain(turn.id, bg, owner)) return false;
+  owner.flags[turn.key] = turn.count + 1;
+  return true;
+}
+
 /** 宿で休むか、持ってきた葉で一台試すかを選ぶ。最初の道具の手入れは従来どおり先に読む。 */
 async function visitInn(io, owner, staminaGuard) {
   if (rehearsalDue(state)) return visitRehearsal(owner, staminaGuard);
@@ -368,7 +377,7 @@ async function visitInn(io, owner, staminaGuard) {
   const pending = state.flags[INN_TRIAL_FLAG]?.result;
   // 同じ便で来た恋人と過ごす（BLC08・一日に一度・体力は戻らない）。試作の講評の途中（pending）は、先に講評を読む。
   const companion = !pending && companionTimeOpen(state) ? companionLover(state) : null;
-  if (!innTrialDue(state) && !companion) return { done: await readPlain("ch4_inn_rest", "bg_dubai_inn_night", owner), trial: false };
+  if (!innTrialDue(state) && !companion) return { done: await readInnRest("bg_dubai_inn_night", owner), trial: false };
   if (!pending) {
     const trialOpen = innTrialDue(state);
     const choice = await modal({ title: trialOpen ? "宿の作業台" : "宿",
@@ -380,7 +389,7 @@ async function visitInn(io, owner, staminaGuard) {
         { label: "戻る", value: "cancel", test: "ch4-inn-cancel" },
       ] });
     if (state !== owner || !choice || choice === "cancel") return { done: false, trial: false };
-    if (choice === "rest") return { done: await readPlain("ch4_inn_rest", "bg_dubai_inn_night", owner), trial: false };
+    if (choice === "rest") return { done: await readInnRest("bg_dubai_inn_night", owner), trial: false };
     if (choice === "companion") {
       const bg = timeOfDay() === "night" ? "bg_dubai_inn_night" : "bg_dubai_inn_day";
       return { done: await spendCompanionTime({ read: id => readPlain(id, bg, owner) }), trial: false, companion: true };
@@ -411,7 +420,7 @@ async function visitRehearsal(owner, staminaGuard) {
         { label: "戻る", value: "cancel", test: "ch4-rehearsal-cancel" },
       ] });
     if (state !== owner || !choice || choice === "cancel") return { done: false, trial: false };
-    if (choice === "rest") return { done: await readPlain("ch4_inn_rest", bg, owner), trial: false };
+    if (choice === "rest") return { done: await readInnRest(bg, owner), trial: false };
     if (!(await staminaGuard(-16)) || state !== owner) return { done: false, trial: false };
     if (!await readPlain("ch4_rehearsal_intro", bg, owner)) return { done: false, trial: false };
     const cs = await runFullPractice({ kind: "rehearsal", isCurrent: () => state === owner });

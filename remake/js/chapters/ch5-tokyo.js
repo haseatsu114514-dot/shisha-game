@@ -110,7 +110,8 @@ const chainPin = (entry, value) => chainStageAt(value, entry.id)
 export const tokyoSpotsNow = (value = state) => TOKYO_SPOTS.map(entry => entry.id === HOME_ID ? vanPin(entry, value) : chainPin(entry, value));
 
 export const inTokyo = (value = state) => value?.flags?._ch2_region === TOKYO;
-const SCENES = TOKYO_SPOTS.flatMap(entry => entry.talks || []).concat(["ch5_tokyo_van_first", "ch5_tokyo_go", "ch5_tokyo_back", "ch5_tokyo_arrival", "ch5_tokyo_park_day", "ch5_tokyo_attic_rest", "ch5_tokyo_fortune",
+const REST_SCENES = ["ch5_tokyo_attic_rest", "ch5_tokyo_attic_rest_b", "ch5_tokyo_attic_rest_c"];
+const SCENES = TOKYO_SPOTS.flatMap(entry => entry.talks || []).concat(["ch5_tokyo_van_first", "ch5_tokyo_go", "ch5_tokyo_back", "ch5_tokyo_arrival", "ch5_tokyo_park_day", ...REST_SCENES, "ch5_tokyo_fortune",
   "ch5_tokyo_gym_day", "ch5_tokyo_gym_night", "ch5_steve_bond_finale", "ch5_volk_bond_finale"]);
 // てつこのお世話は第3章の続き（通うほど懐いていく。回数も第3章と同じ記録。ch3-outing-progress.js の stages・loop）
 const TETSUKO = TOKYO_OUTINGS.find(outing => outing.id === "tetsuko");
@@ -202,7 +203,9 @@ export async function performTokyoSpot(spot, { staminaGuard } = {}) {
     return { used: false, exerted: false };
   }
   if (spot.id === "ch5_tokyo_attic") {
-    if (!await read("ch5_tokyo_attic_rest", ATTIC_BG, owner)) return { used: false, exerted: false };
+    const turn = quietTurn(spot.id, REST_SCENES);
+    if (!turn || !await read(turn.id, ATTIC_BG, owner)) return { used: false, exerted: false };
+    owner.flags[turn.key] = turn.count + 1;
     addStamina(spot.stamina);
     return { used: true, exerted: false };
   }

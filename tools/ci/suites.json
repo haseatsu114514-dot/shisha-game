@@ -10,6 +10,12 @@
   ],
   "suites": [
     {
+      "id": "rest-variations",
+      "title": "Rest dialogue rotation, SAVE/LOAD and interrupted chapter visits",
+      "kind": "quick",
+      "run": ["node --experimental-vm-modules remake/test/rest_variations.mjs"]
+    },
+    {
       "id": "play-mastery",
       "title": "Mini-game mastery, cumulative progress, save/NG+ rewards and chapter-five paid growth",
       "kind": "quick",

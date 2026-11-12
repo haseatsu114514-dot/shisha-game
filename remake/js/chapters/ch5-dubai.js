@@ -124,8 +124,9 @@ export function chapterFiveDubaiLeisureSpots(value = state) {
 /** 地図で選んだ行き先を、今行ける時だけ返す（行けない行き先は処理しない）。 */
 export const chapterFiveDubaiLeisureById = id => chapterFiveDubaiLeisureSpots().find(entry => entry.id === id && !entry.unavailable) || null;
 
+const REST_SCENES = ["ch5_dubai_guest_rest", "ch5_dubai_guest_rest_b", "ch5_dubai_guest_rest_c"];
 const SCENES = DUBAI_SPOTS.flatMap(entry => entry.talks || [])
-  .concat(["ch5_dubai_letter", ...DUBAI_LETTER_AGAIN, "ch5_dubai_go", "ch5_dubai_back", "ch5_dubai_arrival", "ch5_dubai_guest_rest",
+  .concat(["ch5_dubai_letter", ...DUBAI_LETTER_AGAIN, "ch5_dubai_go", "ch5_dubai_back", "ch5_dubai_arrival", ...REST_SCENES,
     CAMEL_AGAIN.scene, DUNES_AGAIN.scene, CH5_CAMEL_MEET.scene, NOOR_CAFE_AGAIN, ...Object.values(CH5_NOOR_SCENES)]);
 const CH4_SCENES = ["ch4_creek_walk_day", "ch4_creek_walk_night"];
 // クリーク沿いは第4章と同じ場面を、同じ順番の続きから読む（SPV03）
@@ -189,7 +190,9 @@ export async function performDubaiSpot(spot, { staminaGuard } = {}) {
     return unused;
   }
   if (spot.id === "ch5_dubai_guest") {
-    if (!await read("ch5_dubai_guest_rest", RESIDENCE_BG, owner)) return unused;
+    const turn = quietTurn(spot.id, REST_SCENES);
+    if (!turn || !await read(turn.id, RESIDENCE_BG, owner)) return unused;
+    owner.flags[turn.key] = turn.count + 1;
     addStamina(spot.stamina);
     return { used: true, exerted: false };
   }
