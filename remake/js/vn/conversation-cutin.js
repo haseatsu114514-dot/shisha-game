@@ -41,6 +41,16 @@ export const CUES = [
   { id: "4", kind: "4", dialogue: "ch1_tournament_defeat", speaker: "hajime", face: "sad", text: "（……そうか。届かなかった）" },
   { id: "4m", kind: "4", dialogue: "ch2_abyss_baito", speaker: "hajime", face: "sad", text: "……俺、シーシャ、向いてないのかな" },
   { id: "3", kind: "3", dialogue: "ch4_tournament_start", speaker: "hajime", face: "serious", text: "うん。全員に、勝ちたい" },
+  // #3417: 第1章に寄っていた置き場を全章へ広げる（各章3回前後・1会話1回・会話演出の印と同じ行には置かない）。同じ型の別場面
+  { id: "3", kind: "3", dialogue: "ch2_tournament_stations", speaker: "hajime", face: "serious", text: "……よろしくお願いします。最後まで、手順通りに作ります" },
+  { id: "3", kind: "3", dialogue: "ch3_tournament_day", speaker: "hajime", face: "serious", text: "作ってから、決めます。よろしくお願いします" },
+  { id: "5", kind: "5", dialogue: "ch3_volk_bond_finale", speaker: "hajime", face: "smile", text: "はい、大事に使います" },
+  { id: "4", kind: "4", dialogue: "ch3_national_defeat", speaker: "hajime", face: "sad", text: "……もう少し、待てた気がする" },
+  { id: "2a", kind: "2a", dialogue: "ch4_rehearsal_good", speaker: "naru", face: "serious", text: "その顔なら大丈夫だ" },
+  { id: "3", kind: "3", dialogue: "ch5_relationship_before_second_cup", speaker: "hajime", face: "serious", text: "……はい" },
+  { id: "2c", kind: "2c", dialogue: "ch5_tsumugi_makes_for_hajime", speaker: "tsumugi", face: "surprise", text: "……寝不足ですね。目の下、ちょっと暗いです" },
+  { id: "4", kind: "4", dialogue: "ch5_second_cup_defeat", speaker: "hajime", face: "sad", text: "……はい。店へ帰って、一服します" },
+  { id: "5", kind: "5", dialogue: "ch5_second_cup_result", speaker: "hajime", face: "smile", text: "ありがとうございます。最初の一台、また吸わせてください" },
 ];
 
 /** この行に置いたカットイン（無ければ null）。分岐・演出の行や、立ち絵の指定を差し替えた行には出さない */

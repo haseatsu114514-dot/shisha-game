@@ -169,6 +169,8 @@ export function createDesertRideSe() {
   const loops = new Map();
   const file = id => `desert_ride/${DESERT_SE[id]}${DESERT_SE[id].includes(".") ? "" : ".bgm"}`;
   const ready = () => Promise.all(Object.keys(DESERT_SE).map(id => loadSeBuffer(file(id))));
+  /** 効果音を全部読み終えているか（音を出せない間は読みに行かないので、待つ必要もない）。 */
+  const isReady = () => !ctx || Object.keys(DESERT_SE).every(id => seBuffers.has(file(id)));
   let levels = desertLoopLevels();
   let zaps = 0, lastZap = "";
   function play(id, gain = 0.65) {
@@ -207,14 +209,14 @@ export function createDesertRideSe() {
   }
   /** 今のループの音量と、鳴らした「ビリッ」の数（検査用。音が出せない環境でも、鳴らすつもりの音が分かる）。 */
   const loopLevels = () => ({ ...Object.fromEntries(Object.entries(levels).map(([id, { gain }]) => [id, gain])), zaps });
-  return { ready, play, motion, zap, stop, dispose, loopLevels };
+  return { ready, isReady, play, motion, zap, stop, dispose, loopLevels };
 }
 
 // ---------------------------------------------------------------- ミニゲームの仮SE
 // 2026-11-10 オーナー依頼「ミニゲーム全般に合う効果音を探して一旦入れて」の仮置き（grok/minigame-audio）。
 // 出典・ライセンス（すべてCC0）・加工は asset_sources/music/minigame-se/。差し替えはこの表のファイル名だけ変える。
 // 共通のSE音量・ミュート・非表示停止（recordedVoice）に乗せ、未読込・取得失敗の間は既存の合成SE（fallback）で鳴らす。
-// 斧投げの実プレイは #3176 の playAxeSe を使う。以下の録音キューは出典台帳付きの既存素材として保持する。
+// 斧投げの実プレイは playAxeSe（AXE_SE・2026-11-11 作り直し）を使い、ここの歓声・勝ち負けの録音と刺さる音の芯（axe_thunk）もそこで使う。以下の録音キューは出典台帳付きの既存素材として保持する。
 // TRPGの音（grok/trpg-audio）とは別の表にしてある。
 export const MINIGAME_SE = Object.freeze({
   axeThrow: { files: ["minigame/axe_throw.wav"], gain: .7, fallback: "whoosh" },
@@ -615,10 +617,62 @@ export const SE = {
   kujiFlip: () => { noise({ dur: 0.07, vol: 0.09, filter: 2600, q: 0.9 }); tone({ freq: 700, to: 1100, type: "triangle", dur: 0.07, vol: 0.07 }); },
 };
 
-// 斧投げ専用の合成音。共通の音量・ミュート・非表示停止を通し、外部音源は使わない。
-// 風切り→木への衝突→割れ・軋みを別の帯域にして、短い録音SEより重さを出す。
+// 斧投げの効果音（2026-11-11 作り直し。オーナー「斧投げ……なんか効果音しょぼかったり」）。
+// assets/audio/se/axe_throw/ の .wav（作り方: asset_sources/music/axe-throw-sfx/build.py。刺さる音の芯は録音 axe_thunk_01〜03・CC0）と、
+// 歓声・勝ち負けの録音（下の MINIGAME_SE と同じ CC0 のファイル）。斧投げを始める時に preloadAxeSe で先に読み、
+// 読み込み前・取得失敗の間は、その場で作る合成音（axeSynth）で鳴らす。音量は、一番大きい0.15秒の大きさを測ってそろえた
+// （刺さる音 約-16dB・投げる音 約-21dB・ゲージを止める音 約-30dB。歓声とファンファーレは元の録音が小さいので 1 より上げる）。
+export const AXE_SE = Object.freeze({
+  throw: { files: ["axe_throw/throw.wav"], gain: .9 },
+  stick: { files: ["axe_throw/hit_1.wav", "axe_throw/hit_2.wav", "axe_throw/hit_3.wav"], gain: .8 },
+  killshot: { files: ["axe_throw/killshot.wav"], gain: .85 },
+  bounce: { files: ["axe_throw/bounce.wav"], gain: .9 },
+  drop: { files: ["axe_throw/drop.wav"], gain: .9 },
+  stop: { files: ["axe_throw/stop.wav"], gain: .7 },
+  call: { files: ["axe_throw/call.wav"], gain: .75 },
+  cueDrum: { files: ["axe_throw/cue_drum.wav"], gain: .55 },
+  cueClear: { files: ["axe_throw/cue_clear.wav"], gain: .65 },
+  cheer: { files: ["minigame/axe_cheer.wav"], gain: 1.8 },
+  win: { files: ["minigame/axe_win.wav", "minigame/axe_cheer.wav"], gain: 1.6, together: true },
+  lose: { files: ["minigame/axe_lose.wav"], gain: .7 },
+});
+const axePlayed = {};
+/** 斧投げの音を先に読む（最初の操作の後に呼ぶ）。全部読めたら true。 */
+export function preloadAxeSe() {
+  if (!audioUnlocked) return Promise.resolve(false);
+  const files = [...new Set(Object.values(AXE_SE).flatMap(cue => cue.files))];
+  return Promise.all(files.map(loadSeBuffer)).then(buffers => buffers.every(Boolean));
+}
+/** 検査用: 鳴らした音の数（id → { recorded, synth }）。音が出せない環境でも、鳴らすつもりの音が分かる。 */
+export const axeSePlayed = () => JSON.parse(JSON.stringify(axePlayed));
 export function playAxeSe(id, { scored = true } = {}) {
   if (!seEnabled()) return;
+  const cue = AXE_SE[id], weight = id === "stick" && !scored ? .75 : 1;
+  const ready = cue?.files.filter(file => seBuffers.has(file)) || [];
+  const count = axePlayed[id] ||= { recorded: 0, synth: 0 };
+  if (cue && ready.length === (cue.together ? cue.files.length : ready.length) && ready.length) {
+    if (cue.together) ready.forEach(file => recordedVoice(file, { gain: cue.gain * (file.endsWith("axe_cheer.wav") ? .7 : 1) }));
+    else {
+      const choices = ready.filter(file => file !== lastVariant.get("axe:" + id));
+      const file = (choices.length ? choices : ready)[Math.floor(Math.random() * (choices.length || ready.length))];
+      lastVariant.set("axe:" + id, file);
+      recordedVoice(file, { gain: cue.gain * weight });
+    }
+    count.recorded++;
+    return;
+  }
+  cue?.files.forEach(loadSeBuffer);
+  count.synth++;
+  axeSynth(id, { scored });
+}
+
+// 斧投げの合成音（録音が読めるまでの代わり）。共通の音量・ミュート・非表示停止を通す。
+// 風切り→木への衝突→割れ・軋みを別の帯域にする。
+function axeSynth(id, { scored = true } = {}) {
+  if (id === "killshot") { axeSynth("stick"); SE.perfect(); return; }
+  if (id === "bounce") { tone({ freq: 240, to: 150, type: "triangle", dur: .08, vol: .12 }); noise({ dur: .03, vol: .08, filter: 2600 }); return; }
+  if (id === "stop") { SE.select(); return; }
+  if (id === "call" || id === "cueDrum" || id === "cueClear") { SE.good(); return; }
   if (id === "throw") {
     noise({ dur: .43, vol: .19, filter: 380, sweepTo: 3100, q: .55 });
     noise({ dur: .19, vol: .07, delay: .13, filter: 4200, sweepTo: 1800, q: .6 });
@@ -859,10 +913,14 @@ const TEMPO_BGM = new Set(["bgm_camel_race", "bgm_ethnic05", "bgm_ethnic08", "bg
 // 2026-11-11 オーナー「ブーストするとBGM止まったりもバグ」: iPhone の Safari は、再生倍率や preservesPitch を書くたびに
 // 音の処理を作り直し、短い間に何度も変えると曲が途切れたり止まったりする。毎フレーム書き直していたのをやめ、
 // 0.01 刻みで値が変わった時だけ書く。変えた拍子に止まっていたら、同じ所から続ける。
+// 指で操作する端末（スマホ・タブレット）では曲の速さを変えない（2026-11-11 オーナー「ラクダレースもサンドボードも加速すると処理重い」
+// 「ラクダもBGM止まった」）。音程を保ったまま速さを変える処理は iPhone では重く、加速している間ずっと処理を食い、変えた拍子に
+// 曲が止まることもある。速さの手応えはブースト・ムチの効果音で出す。PC（マウス）では今までどおり速くする。
+const tempoAllowed = () => !(typeof matchMedia === "function" && matchMedia("(pointer: coarse)").matches);
 function applyBgmPlaybackRate() {
   if (!currentEl || currentKey === "bgm_continue_urgent") return;
   const el = currentEl;
-  const rate = TEMPO_BGM.has(currentKey) ? Math.round(bgmTempo * 100) / 100 : 1;
+  const rate = TEMPO_BGM.has(currentKey) && tempoAllowed() ? Math.round(bgmTempo * 100) / 100 : 1;
   if (el.preservesPitch !== true) el.preservesPitch = true;
   if (Math.abs(el.playbackRate - rate) < 0.001) return;
   const wasPlaying = !el.paused;

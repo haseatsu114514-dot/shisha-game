@@ -1,4 +1,5 @@
 // 会話演出デモ（#2732）。#2666 の候補12件を、サンプル会話で1件ずつ・ON/OFFつきで再生して見比べる。
+// #3417: 章ごとの新顔6件（10・9・5・37・38・32）を別の段に足した。選別済みの12件の挙動は変えない。
 // 判断用のデモ: 本編の台本・進行・保存には触れない。実際の会話UI（CSS・立ち絵・背景・文字送りの音）を使い、
 // 文字送りだけデモ専用のプレイヤーで行う（演出が文字送りの速さを変えるため）。新しい画像・音の収録なし。
 import { loadAll, portraitInfo, sceneBg, displayName, DB } from "../core/data.js";
@@ -7,7 +8,7 @@ import { initLayers, layers, setBg } from "../core/ui.js";
 import { SE, unlockAudio } from "../core/audio.js";
 import { applyUiTheme } from "../core/ui-theme.js";
 import { markIntroSeen } from "./intro.js";
-import { EFFECTS, EFFECT_ORDER } from "./conversation-effects-data.js";
+import { EFFECTS, EFFECT_ORDER, NEW_FACE_ORDER } from "./conversation-effects-data.js";
 
 const $ = (s) => document.querySelector(s);
 const status = $("#preview-status"), stage = $("#stage");
@@ -16,6 +17,7 @@ const byNo = new Map(EFFECTS.map((e) => [e.no, e]));
 const FRAMING = { target: 1.675, sink: 0.58 }; // engine.js の立ち絵の枠取りと同じ値
 const INTERVAL = { 1: 46, 2: 26, 3: 12 };       // 文字送りの1字あたり（engine.js と同じ基準）
 const PAUSE_MS = 400, DECL_MS = 90, SLOW_RATE = 2.4, DIM_MS = 120;
+const HOLD_LEVEL = 0.03, LEAVE_MS = 400; // 37 息を止める（約 −30dB）／32 退場の薄れ
 
 const query = new URL(location.href).searchParams;
 let current = byNo.has(Number(query.get("fx"))) ? Number(query.get("fx")) : EFFECT_ORDER[0];
@@ -27,25 +29,29 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const reduced = () => fxReduce.checked || matchMedia("(prefers-reduced-motion: reduce)").matches;
 /** 演出 no が今この再生で効くか（SKIP中は省く） */
 const active = (no) => fxOn.checked && current === no && !fxSkip.checked;
+/** テスト用の記録（32 の効果音など）。画面には出さない */
+const fxLog = (event) => { (window.__demoFx ||= []).push(event); };
 
 // ---------------------------------------------------------------- 本文
 
 /** 印つきの本文 → 1文字ごとの単位。「……」の区間・震え区間を持たせる */
 function parseUnits(text) {
   const units = [];
-  let shiver = false, pause = false;
+  let shiver = false, whisper = false, blur = false, pause = false, pauseMs = 0;
   for (let i = 0; i < text.length;) {
     const rest = text.slice(i);
-    const tag = /^\[(pause|shiver|\/shiver)\]/.exec(rest);
+    const tag = /^\[(?:(pause)(?:=(\d+))?|(\/?)(shiver|whisper|blur))\]/.exec(rest);
     if (tag) {
-      if (tag[1] === "pause") pause = true;
-      else shiver = tag[1] === "shiver";
+      if (tag[1]) { pause = true; pauseMs = tag[2] ? Math.min(800, Math.max(300, Number(tag[2]))) : 0; }
+      else if (tag[4] === "shiver") shiver = !tag[3];
+      else if (tag[4] === "whisper") whisper = !tag[3];
+      else blur = !tag[3];
       i += tag[0].length;
       continue;
     }
     const ch = String.fromCodePoint(text.codePointAt(i));
-    units.push({ ch, shiver, pause });
-    pause = false;
+    units.push({ ch, shiver, whisper, blur, pause, pauseMs });
+    pause = false; pauseMs = 0;
     i += ch.length;
   }
   // 「…」が2つ以上続く区間を言いよどみとして印づける（2）
@@ -60,11 +66,20 @@ function parseUnits(text) {
 }
 
 function htmlOf(units, n) {
-  let html = "", open = false;
+  let html = "", open = "";
   for (let i = 0; i < n; i++) {
-    const u = units[i], on = u.shiver && active(8) && !reduced();
-    if (on && !open) { html += '<span class="shiver">'; open = true; }
-    if (!on && open) { html += "</span>"; open = false; }
+    const u = units[i];
+    // 8 震え・10 ささやき・9 にじみ。区間の見た目が変わる所で span を閉じて開き直す
+    const cls = [
+      u.shiver && active(8) && !reduced() && "shiver",
+      u.whisper && active(10) && "demo-whisper",
+      u.blur && active(9) && !reduced() && "demo-nijimi",
+    ].filter(Boolean).join(" ");
+    if (cls !== open) {
+      if (open) html += "</span>";
+      if (cls) html += `<span class="${cls}">`;
+      open = cls;
+    }
     html += u.ch === "\n" ? "<br>" : esc(u.ch);
   }
   return html + (open ? "</span>" : "");
@@ -172,7 +187,7 @@ function padStop() { try { pad?.ctx.close(); } catch {} pad = null; }
 function duck(level, sec) {
   pad?.master.gain.setTargetAtTime(level, pad.ctx.currentTime, sec / 3);
   dom.meter.querySelector(".bar b").style.width = `${level * 100}%`;
-  dom.meter.querySelector("#demo-bgm-db").textContent = level < 1 ? "−6 dB" : "0 dB";
+  dom.meter.querySelector("#demo-bgm-db").textContent = level < 0.1 ? "無音（−30 dB）" : level < 1 ? "−6 dB" : "0 dB";
 }
 
 // ---------------------------------------------------------------- 再生
@@ -183,6 +198,7 @@ function blip(line, unit, idx) {
     if (active(11) && line.decl) SE.tick();
     else if (active(2) && unit.hesitate) return;
     else if (active(7) && /^（/.test(line.text)) return;
+    else if (active(10) && unit.whisper && idx % 6) return;
     else SE.blip(line.speaker);
   } catch {}
 }
@@ -198,6 +214,33 @@ async function playLine(line, token) {
   dom.vignette.classList.toggle("on", active(22) && !!line.vignette);
   $("#bg").classList.toggle("demo-blur", active(23) && !!line.focus);
   if (current === 29) duck(active(29) && line.duck ? 0.5 : 1, active(29) && line.duck ? 0.15 : 0.4);
+  // 37 息を止める: ON はほぼ無音、OFF は採用済みの息継ぎ（−6dB）。戻りは0.8秒
+  if (current === 37) duck(line.duck ? (active(37) ? HOLD_LEVEL : 0.5) : 1, line.duck ? 0.15 : 0.8);
+  // 5 無言の一コマ: 台詞欄を薄くして、立ち絵と背景だけを見せる
+  const silent = active(5) && !!line.silent;
+  dom.box.classList.toggle("demo-silent", silent);
+  // 32 扉の合図: 退場は風の音と0.4秒の薄れ（OFF は音なしで即座に外す）
+  if (line.exit) {
+    const gone = dom.portraits.querySelector(`img[data-speaker="${line.exit}"]`);
+    if (gone) {
+      if (active(32)) {
+        fxLog("whoosh");
+        try { SE.whoosh(); } catch {}
+        if (!reduced()) { gone.classList.add("demo-leave"); await sleep(LEAVE_MS); }
+        if (run?.token !== token) return;
+      }
+      gone.remove();
+      faceSeen.delete(line.exit);
+      const rest = [...dom.portraits.querySelectorAll("img")];
+      dom.portraits.dataset.count = String(rest.length);
+      for (const i of rest) i.dataset.pos = "center";
+    }
+  }
+  // 32 扉の合図: 入場は店のベル（立ち絵がまだ無い人の行だけ）
+  if (line.door === "in" && active(32) && line.speaker && !dom.portraits.querySelector(`img[data-speaker="${line.speaker}"]`)) {
+    fxLog("doorbell");
+    try { SE.doorbell(); } catch {}
+  }
   await showPortrait(line, token);
   if (run?.token !== token) return;
   const img = line.speaker && dom.portraits.querySelector(`img[data-speaker="${line.speaker}"]`);
@@ -212,6 +255,12 @@ async function playLine(line, token) {
   if (active(1) && line.beat) await run.wait(line.beat);
   if (run?.token !== token) return;
   if (active(7) && /^（/.test(line.text)) dom.text.classList.add("demo-inner");
+  if (silent) { // 本文は出さない。▼は薄れた台詞欄の中に残し、クリックで次へ
+    showName("");
+    run.typing = false; run.instant = false;
+    dom.next.classList.add("show");
+    return;
+  }
   const speed = Number(fxSpeed.value);
   for (let i = 0; i < units.length && !run.instant && !fxSkip.checked; i++) {
     const u = units[i];
@@ -225,6 +274,8 @@ async function playLine(line, token) {
     // 3: 文中ポーズ（▼を出さずに止まる）
     const nextUnit = units[i + 1];
     if (nextUnit?.pause && active(3)) await run.wait(PAUSE_MS);
+    // 38 文中ポーズの長さ指定: ON は書いた長さ、OFF は採用済みの0.4秒（SKIP中は止まらない）
+    else if (nextUnit?.pause && current === 38 && !fxSkip.checked) await run.wait(active(38) ? nextUnit.pauseMs || PAUSE_MS : PAUSE_MS);
     if (run?.token !== token) return;
   }
   dom.text.innerHTML = htmlOf(units, units.length);
@@ -259,6 +310,8 @@ async function start() {
   faceSeen.clear();
   dom.portraits.replaceChildren();
   dom.end.classList.remove("show");
+  dom.box.classList.remove("demo-silent");
+  window.__demoFx = [];
   dom.vignette.classList.remove("on");
   $("#bg").classList.remove("demo-blur");
   dom.label.innerHTML = `<i>${effect.no}</i>${effect.name}`;
@@ -273,6 +326,7 @@ async function start() {
     if (run?.token !== token) return;
   }
   dom.vignette.classList.remove("on");
+  dom.box.classList.remove("demo-silent");
   $("#bg").classList.remove("demo-blur");
   if (effect.bgm) { duck(1, 0.4); setTimeout(padStop, 900); }
   dom.next.classList.remove("show");
@@ -283,8 +337,11 @@ async function start() {
 // ---------------------------------------------------------------- UI
 
 function renderChips() {
-  const chips = $("#fx-chips");
-  chips.replaceChildren(...EFFECT_ORDER.map((no) => {
+  renderChipRow($("#fx-chips"), EFFECT_ORDER);
+  renderChipRow($("#fx-chips-new"), NEW_FACE_ORDER);
+}
+function renderChipRow(chips, order) {
+  chips.replaceChildren(...order.map((no) => {
     const e = byNo.get(no);
     const b = Object.assign(document.createElement("button"), { type: "button" });
     b.dataset.fx = String(no);
@@ -297,7 +354,7 @@ function renderChips() {
 }
 function renderDesc() {
   const e = byNo.get(current);
-  $("#fx-desc").innerHTML = `<b>${e.no} ${e.name}</b>（${e.tag}・${e.weight}）${esc(e.summary)} <b>見どころ:</b> ${esc(e.watch)}`;
+  $("#fx-desc").innerHTML = `<b>${e.no} ${e.name}</b>（${e.tag}${e.chapter ? `・${esc(e.chapter)}` : ""}・${e.weight}）${esc(e.summary)} <b>見どころ:</b> ${esc(e.watch)}`;
 }
 function select(no) {
   current = no;

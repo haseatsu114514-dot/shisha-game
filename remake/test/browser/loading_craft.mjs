@@ -46,12 +46,16 @@ await suite('loading-craft', async check => {
       assert.equal(await page.locator('.loading-gate').count(), 1, 'Cannot skip the preparation');
       const regions = await page.locator('.loading-panel-art').evaluateAll(nodes => nodes.map(node => {
         const box = node.getBoundingClientRect(), image = node.querySelector('img');
-        const stage = document.querySelector('#stage').getBoundingClientRect();
-        return { inside: box.left >= stage.left && box.right <= stage.right && box.bottom <= stage.bottom,
+        // The gate's own frame: #stage on wide screens, the real screen on a phone held sideways (see below).
+        const frame = node.closest('.loading-gate').getBoundingClientRect();
+        return { inside: box.left >= frame.left && box.right <= frame.right && box.bottom <= frame.bottom,
           ratio: box.width / box.height, decoded: image.complete && image.naturalWidth > 0,
           naturalWidth: image.naturalWidth, naturalHeight: image.naturalHeight,
           overflow: getComputedStyle(node).overflow, src: image.getAttribute('src') };
       }));
+      // A short landscape screen (the mobile case) shows the gate at viewport scale, outside the letterboxed #stage.
+      assert.equal(await page.locator('.loading-gate').evaluate(gate => gate.classList.contains('is-viewport') && gate.parentElement === document.body),
+        label === 'mobile', 'Only the phone-sized landscape screen leaves #stage');
       assert(regions.every(region => region.inside && region.decoded && region.overflow === 'hidden'));
       assert(regions.every(region => Math.abs(region.ratio - 3 / 2) < 0.03), 'Every panel uses the fixed 3:2 display frame');
       // The decoded image must be the shown comic's registered sheet, at its registered size.
@@ -79,7 +83,7 @@ await suite('loading-craft', async check => {
       }), true, 'The comic sheet stays horizontal, including after its entrance');
       await page.locator("#stage").screenshot({ path: path.resolve(`.codex/artifacts/remake-browser/loading-ingame-${label}.png`) });
       const indicator = await page.locator('.loading-status').evaluate(node => {
-        const box = node.getBoundingClientRect(), stage = document.querySelector('#stage').getBoundingClientRect();
+        const box = node.getBoundingClientRect(), stage = node.closest('.loading-gate').getBoundingClientRect();
         const center = box.left + box.width / 2;
         return { right: stage.right - box.right, bottom: stage.bottom - box.bottom, left: box.left - stage.left,
           inside: box.top > stage.top + stage.height * .8 && Math.abs(center - (stage.left + stage.width / 2)) < stage.width * .2,

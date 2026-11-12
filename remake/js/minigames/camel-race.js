@@ -9,6 +9,7 @@
 import { el } from "../core/util.js";
 import { SE, currentBgm, playBgm, preloadBgm, unlockAudio, playCamelRaceSe, preloadCamelRaceSe, setBgmPlaybackRate, resetBgmTempo, tickBgmPlaybackRate } from "../core/audio.js";
 import { imgFileUrl } from "../core/img-file.js";
+import { withMinigameLoading } from "./minigame-loading.js";
 import { faceIconUrl } from "../core/data.js";
 import { RACE, CUE, PLAYER, WHIP, CAMEL_CUPS, camelCup, camelCupQualified, camelMastered, camelExpert, rng, createRace, stepRace, pressVoice, setWhip, whipReady, activeCue, inSpurt, standings, scoreRace,
   whipDrain, finishMargins, POLICIES, PLAYER_CAMEL, RIVAL_PROFILES } from "./camel-race-model.js";
@@ -149,6 +150,21 @@ const VS_ART = Object.freeze({ width: 72 });
 const MARKER_ART = Object.freeze({ scale: 0.36, stakeX: 79, face: [40, 96], ground: 397 });
 // AI のラクダの毛色の違い（ctx.filter が無い端末では同じ色のまま。名札の色で見分ける）。
 const RIVAL_TINT = Object.freeze({ front: "sepia(0.25) saturate(1.25) brightness(0.95)", closer: "brightness(1.12) saturate(0.85)", steady: "brightness(0.82) saturate(1.05)" });
+const suvTints = new Map();
+/** 色違いの車の絵（tint は CSS の filter の書き方）。一度だけ色を変えた絵を作る。filter の無い端末では元の絵のまま。 */
+function tintedSuv(image, tint) {
+  if (!tint || typeof document === "undefined") return image;
+  const key = `${image.src}|${tint}`;
+  if (!suvTints.has(key)) {
+    const canvas = document.createElement("canvas");
+    canvas.width = image.naturalWidth || image.width; canvas.height = image.naturalHeight || image.height;
+    const g = canvas.getContext("2d");
+    if (!g || !("filter" in g)) { suvTints.set(key, image); return image; }
+    g.filter = tint; g.drawImage(image, 0, 0); g.filter = "none";
+    suvTints.set(key, canvas);
+  }
+  return suvTints.get(key);
+}
 let artTask = null;
 /** 絵をすべて読み終えたら { camel: [..4], jockey, suv, wheel }。1枚でも読めなければ null（Canvas の描画に戻す）。 */
 export function loadCamelArt() {
@@ -610,9 +626,9 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     const step = TUTORIAL[page];
     const lastPage = page === TUTORIAL.length - 1;
     const next = el("button.btn.primary", { type: "button", text: lastPage ? back ? "閉じる" : "スタート" : "次へ", dataset: { test: "camel-tutorial-next" },
-      onclick: () => { sfx(lastPage && !back ? "select" : "click"); lastPage ? back ? back() : startRace() : openTutorial(page + 1, back); } });
+      onclick: () => { sfx(lastPage && !back ? "select" : "click"); lastPage ? back ? back() : prepareRace() : openTutorial(page + 1, back); } });
     const skip = back ? el("button.btn.ghost", { type: "button", text: "閉じる", dataset: { test: "camel-tutorial-close" }, onclick: () => { sfx("cancel"); back(); } })
-      : el("button.btn.ghost", { type: "button", text: "とばしてスタート", dataset: { test: "camel-tutorial-skip" }, onclick: () => { sfx("select"); startRace(); } });
+      : el("button.btn.ghost", { type: "button", text: "とばしてスタート", dataset: { test: "camel-tutorial-skip" }, onclick: () => { sfx("select"); prepareRace(); } });
     sheet.replaceChildren(el("div.camel-card.camel-tutorial", { dataset: { test: "camel-tutorial", page: String(page) } }, [
       // 遊び方の絵（CR-UI11・#3046）。読めなければアイコンに戻す。
       el("div.camel-tutorial-visual", [
@@ -645,7 +661,7 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
         const enabled = unlocked.has(cup.id);
         const mastered = cupRecords[cup.id]?.mastered || runs.some(run => cup.id === "standard" ? camelMastered(run) : cup.id === "expert" && camelExpert(run));
         return el("button.camel-cup", { type: "button", disabled: !enabled,
-          dataset: { test: "camel-cup", cup: cup.id }, onclick: () => { sfx("select"); selectedCup = cup.id; startRace(); } }, [
+          dataset: { test: "camel-cup", cup: cup.id }, onclick: () => { sfx("select"); selectedCup = cup.id; prepareRace(); } }, [
           // 大会の紋章（CR-WD08・#3217）。読めなければ札は文字だけ。
           el("img.camel-cup-badge", { src: imgFileUrl(`ui/camel_race/world/cup-${cup.id}.webp`), alt: "", dataset: { test: "camel-cup-badge" },
             onerror: event => { event.currentTarget.remove(); } }),
@@ -660,6 +676,19 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     ]));
     sheet.hidden = false;
     sheet.querySelector(".camel-cup:not(:disabled)")?.focus();
+  }
+  /**
+   * レースの前に絵を読み終えるまで待つ（2026-11-11 オーナー「加速すると処理重い。ゲーム開始前に漫画付きロードとか挟んでもいい」）。
+   * 読み終わっていれば待たない。時間がかかる時（0.22秒より長い）だけ、本編と同じ漫画つきのロード画面を出す。
+   */
+  let preparingRace = false;
+  async function prepareRace() {
+    if (preparingRace) return;
+    preparingRace = true;
+    try {
+      if (!art) await withMinigameLoading(() => loadCamelArt(), { host, label: "レース場へ向かっています…" }).catch(() => {});
+      if (!done) startRace();
+    } finally { preparingRace = false; }
   }
   function startRace() {
     armCamelAudio();
@@ -1419,6 +1448,7 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
   function drawRivalSuvs(camX) {
     const images = art?.rivalSuvs;
     if (!images) return;
+    // 色違いの車は一度だけ色を変えた絵を作って使い回す（毎フレーム ctx.filter で描くと、Safari では重い。2026-11-11）
     const { scale: k, ground, radius: r, drift, cars } = RIVAL_SUV_ART;
     const t = (race?.t || 0) + afterGoal();
     const pack = race ? race.rivals.reduce((sum, rival) => sum + viewDistance(rival), 0) / race.rivals.length : 0;
@@ -1429,16 +1459,15 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
       const left = x - SUV_ART.centerX * k, top = ground - SUV_ART.ground * k + (reducedMotion ? 0 : Math.sin(t * 9 + i * 1.7) * 0.8);
       if (left > W || left + image.width * k < 0) return;
       ctx.fillStyle = "rgba(40,25,10,0.24)"; ctx.beginPath(); ctx.ellipse(x, ground - 1, 312 * k, 22 * k, 0, 0, Math.PI * 2); ctx.fill();
-      if (car.tint) ctx.filter = car.tint;
-      ctx.drawImage(image, left, top, image.width * k, image.height * k);
+      const body = tintedSuv(image, car.tint);
+      ctx.drawImage(body, left, top, image.width * k, image.height * k);
       const angle = reducedMotion ? 0 : (m * PX_PER_M) / (SUV_ART.radius * k);
       for (const [wx, wy] of SUV_ART.wheels) {
         ctx.save(); ctx.translate(left + wx * k, top + wy * k);
         ctx.beginPath(); ctx.arc(0, 0, r * k, 0, Math.PI * 2); ctx.clip(); ctx.rotate(angle);
-        ctx.drawImage(image, wx - r, wy - r, r * 2, r * 2, -r * k, -r * k, r * 2 * k, r * 2 * k);
+        ctx.drawImage(body, wx - r, wy - r, r * 2, r * 2, -r * k, -r * k, r * 2 * k, r * 2 * k);
         ctx.restore();
       }
-      ctx.filter = "none";
     });
     ctx.restore();
   }
@@ -1792,7 +1821,7 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
     }
     if (run.cup === "rookie" && camelCupQualified(run)) unlocked.add("standard");
     if (camelMastered(run)) unlocked.add("expert");
-    const again = el("button.btn.primary", { type: "button", text: "もう一度", dataset: { test: "camel-retry" }, onclick: () => { sfx("select"); startRace(); } });
+    const again = el("button.btn.primary", { type: "button", text: "もう一度", dataset: { test: "camel-retry" }, onclick: () => { sfx("select"); prepareRace(); } });
     const choose = el("button.btn", { type: "button", text: "大会を選ぶ", dataset: { test: "camel-choose-cup" }, onclick: () => { sfx("click"); openCups(); } });
     const leave = el("button.btn", { type: "button", text: "終える", dataset: { test: "camel-finish" }, onclick: () => { sfx("click"); cleanup(true); } });
     const card = el("div.camel-card.camel-result", { dataset: { test: "camel-result", rank: String(score.rank), grade: score.grade, total: String(score.total) } }, [
@@ -1810,7 +1839,7 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
         ["無駄な声", score.stats.spam ? `${score.stats.miss}（連打${score.stats.spam}）` : score.stats.miss], ["競り合い", `${score.stats.duelsWon}勝／${score.stats.duels}回`], ["ムチ", `${score.stats.whipTime}秒（スパート${score.stats.spurtWhip}秒）`]]
         .map(([label, value]) => el("li", [el("small", { text: label }), el("b", { text: String(value) })]))),
       isBest && (best !== null || runs.length > 1) ? el("p.camel-best", { text: "自己ベスト更新！", dataset: { test: "camel-new-best" } }) : null,
-      camelMastered(run) ? el("p.camel-best", { text: "中級認定！ 連打に頼らず、声と息を合わせた走り。追加の火種は初回のみ夜に精算。" })
+      camelMastered(run) ? el("p.camel-best", { text: "中級認定！ 連打に頼らず、声と息を合わせた走り。追加の火種は初回認定時のみ。" })
         : camelExpert(run) ? el("p.camel-best", { text: "称号獲得：砂漠の名調教師" }) : null,
       el("div.camel-card-actions", allowRetry ? [again, choose, leave] : [leave]),
     ]);
@@ -1829,7 +1858,7 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
 
   // ---- 開始 -----------------------------------------------------------------------------------------
   draw();
-  if (tutorial) openTutorial(0); else if (cups) openCups(); else startRace();
+  if (tutorial) openTutorial(0); else if (cups) openCups(); else prepareRace();
   return promise;
 }
 

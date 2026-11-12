@@ -29,7 +29,8 @@ export function casualMessages({ tournamentDay = false, sceneChapter = false } =
     if (!(p.chapters || []).includes(chapter) || !state.met?.[id] || !hasContact(id) || (state.lovers || []).includes(id)) continue;
     // 締めくくりを読んだ相手は、友人のLIME（友情）か告白（恋愛）の段階に進んでいる
     if (state.finales?.[id]) continue;
-    if (affinityLevel(id) < (cfg.minLevel ?? 3)) continue;
+    // 好感度を持たないムカイさんは、面識・連絡先の取得後に1通だけ届く（個別指定）。
+    if (affinityLevel(id) < (p.minLevel ?? cfg.minLevel ?? 3)) continue;
     const mine = all.filter((i) => i.msg?.sender === id);
     const k = mine.length;
     // 第3〜5章では、第1・2章の分を使い切ったあとに離れた場所からの雑談（later）が続く

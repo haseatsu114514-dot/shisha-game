@@ -1,3 +1,4 @@
+import { recordPlayMastery, syncPlayMastery, masteryLine } from "../core/play-mastery.js";
 // 自由来店のソロ斧投げ。正式なひよりイベントの読了・関係には触れない。
 import { state, save } from "../core/state.js";
 import { on } from "../core/bus.js";
@@ -104,7 +105,7 @@ export async function visitAxeBar({ staminaGuard = async () => true, signal } = 
         el("div.sub-choices", Object.entries(modes).map(([id, label]) => el("button.big-choice", {
           disabled: !available(), dataset: { test: "axe-bar-" + id }, onclick: () => { if (available()) pick(id); },
         }, [el("b", { text: label }), el("small", { text: records[id] ? `自己ベスト ${records[id].best.total}点 · ${records[id].plays}回プレイ` : "まだ記録はありません" })]))),
-        divisions,
+        divisions, el("p", { text: masteryLine(owner, "axe"), dataset: { test: "axe-mastery" } }),
         el("div.axe-bar-records", [Object.keys(records).some(key => key !== "career") ? el("strong", { text: "マキがつけた、はじめの記録" }) : null, ...Object.entries(modes).map(([id, label]) => {
           const last = records[id]?.last;
           return el("p", { text: last ? `${label}の前回：${last.total}点（各投 ${last.throws.map(shot => shot.score).join(" / ")}${last.division ? " · " + DIVISIONS[last.division]?.name : ""}）` : `${label}：完走すると各投の結果が残ります。` });
@@ -123,6 +124,7 @@ export async function visitAxeBar({ staminaGuard = async () => true, signal } = 
     const result = await runAxeThrow({ host: document.getElementById("stage"), mode, opponent: null, allowRetry: false, signal: abort.signal, division: mode === "league" ? division : "rec",
       steady: ownsGear(owner, "gear_hatchet") ? AXE_STEADY : 1 });
     if (!result.completed || !available()) return false;
+    syncPlayMastery(owner);
     const records = owner.flags._axe_bar_records ||= {};
     const entry = { chapter, day, total: result.total, maximum: result.maximum, ruleset: result.ruleset, division: result.division, throws: result.throws };
     addCareer(records, result);
@@ -130,6 +132,7 @@ export async function visitAxeBar({ staminaGuard = async () => true, signal } = 
     const newBest = !previous?.best || result.total > previous.best.total;
     records[mode] = { plays: (previous?.plays || 0) + 1, last: entry,
       best: newBest ? entry : previous.best };
+    recordPlayMastery(owner, "axe", result, `${owner.cycle || 1}:${chapter}:${day}:${mode}:${records[mode].plays}`);
     addMoney(-AXE_BAR.playCost); addStamina(AXE_BAR.stamina); earnStat("guts", 1);
     const reply = result.total === 0 ? "venue_maki_miss" : previous && newBest ? "venue_maki_record" : "venue_maki_finish";
     const goals = (result.challenges || []).filter(goal => goal.state === "done").length;

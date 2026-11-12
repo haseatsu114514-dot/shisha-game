@@ -232,6 +232,9 @@
   "hero/kv-counter-s.webp": [
    "asset_sources/promo-site-20261111/keyvisual/kv-a-02.png"
   ],
+  "hero/kv-counter-tall.webp": [
+   "asset_sources/promo-site-20261111/keyvisual/kv-a-tall-04.png"
+  ],
   "hero/kv-counter-thumb.webp": [
    "asset_sources/promo-site-20261111/keyvisual/kv-a-02.png"
   ],
@@ -276,6 +279,9 @@
   ],
   "hero/kv-town-s.webp": [
    "asset_sources/promo-site-20261111/keyvisual/kv-b-01.png"
+  ],
+  "hero/kv-town-tall.webp": [
+   "asset_sources/promo-site-20261111/keyvisual/kv-b-tall-01.png"
   ],
   "hero/kv-town-thumb.webp": [
    "asset_sources/promo-site-20261111/keyvisual/kv-b-01.png"
@@ -382,7 +388,9 @@
  },
  "sources": {
   "asset_sources/promo-site-20261111/keyvisual/kv-a-02.png": "065376ec68ebf9b0303f6c86317ef77fbbc5f9e0",
+  "asset_sources/promo-site-20261111/keyvisual/kv-a-tall-04.png": "9e717d36d83a28735449bdeb9681dc99df504f02",
   "asset_sources/promo-site-20261111/keyvisual/kv-b-01.png": "ab785e6782e966e3576f09847656a41ab4c98462",
+  "asset_sources/promo-site-20261111/keyvisual/kv-b-tall-01.png": "d16fd80fc79e0e0a2885b6dcaf83dd97cecc7717",
   "assets/ui/store_logos/c-station.webp": "1b1fba808a855da1a70b02da8ffd52b20db314a6",
   "assets/ui/store_logos/dr-fookah.webp": "4dacdc762d200301633bbb859e6f16a2395d3c20",
   "assets/ui/store_logos/eden.webp": "6612b4109c18ec455b88aebe614d710a097e921b",

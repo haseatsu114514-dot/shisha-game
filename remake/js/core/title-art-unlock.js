@@ -41,6 +41,10 @@ const EXTRA_MET_SIGNALS = {
   // スミさんは勤務開始時から LIME 交換済みの上司で、名乗り記録（met）の対象外
   // （core/state.js の初期 contacts と core/data.js の ALWAYS_KNOWN が根拠）。連絡先にある＝すでに知っている相手として扱う。
   sumi: (s) => !!s.contacts?.includes?.("sumi"),
+  // 鉄仮面さん（tonariの常連）は第1章冒頭の tonari で「今日の、良かったよ」と声をかける（ch1_opening。立ち絵も名乗りもないので met は付かない）。
+  // 冒頭を読み終えた記録（chapters/ch1.js の _ch1_opening.introDone）と、常連の話を読んだ記録（_ev_salaryman）を会った扱いにする。
+  // ロード漫画の鉄仮面さんの話の解放用。タイトルアートの名簿（TITLE_ART_CHARACTERS）には入っていない。
+  salaryman: (s) => !!(s.flags?._ch1_opening?.introDone || s.flags?._ev_salaryman),
 };
 
 /** 純粋関数。そのセーブで id のキャラと出会っているか（state.met と、上の等価な既存記録）。

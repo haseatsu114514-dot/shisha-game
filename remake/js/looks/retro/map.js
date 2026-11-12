@@ -51,7 +51,7 @@ export function createMapScene(shell, painter) {
     pin?.click(); // 選択中のピンをもう一度押す＝現行の「行く」
   });
 
-  // 地図の案内の箱にあるボタン（新版の縦持ち）: 第2章の配達メモ、駅の行き先・確認・キャンセル、第2章の初日の「行く」など。
+  // 地図の案内の箱にあるボタン: 第2章の配達メモ、駅の行き先・確認・キャンセル、第2章の初日の「行く」など。
   // 選んだ行き先へ「行く」1つだけのボタンは決定ボタンへ、それ以外は一覧の上に並べて、押したら現行のボタンを押す。
   const shown = (node) => node.getClientRects().length > 0;
   const infoButtons = (map) => [...(map?.querySelectorAll(".map-info button") || [])].filter(shown);

@@ -91,11 +91,41 @@ assert.match(sceneText(hiyori[2]), /総務、これにて閉店/);
 assert.match(sceneText(hiyori[2]), /延長申請/);
 assert.match(sceneText(hiyori[3]), /儚い/);
 assert.match(sceneText(hiyori[3]), /見つけ/);
-// 後日談 epilogue_hiyori の「総務、閉店」「半透明」「肩、五分」「捕まえて」へ自然につなぐ。
+// Lv5は休む場所の確立。後日談では同じ「半透明・肩五分」を繰り返さず、
+// 仕事を区切ったひよりも相手を気遣い、必要な日は迎えを頼める関係へ。
+for (const motif of ["総務、閉店", "半透明", "肩、五分", "捕まえて"]) {
+  assert.ok(sceneText(hiyori[4]).includes(motif), `Lv5 keeps its rest motif ${motif}`);
+}
 const epilogue = JSON.parse(readFileSync(new URL("../../data/dialogue/ending.json", import.meta.url), "utf8"))
   .dialogues.find(scene => scene.dialogue_id === "epilogue_hiyori");
+assert.equal(epilogue.metadata.private_scene, true);
 const epilogueText = sceneText(epilogue);
-for (const motif of ["総務、閉店", "半透明", "肩、五分", "捕まえて"]) {
-  assert.ok(epilogueText.includes(motif) && sceneText(hiyori[4]).includes(motif), `Lv5 sets up epilogue motif ${motif}`);
+assert.match(epilogueText, /明日の私に任せる/, "Hiyori sets her own work boundary");
+assert.match(epilogueText, /相談したい？.*ご飯にする？/, "Hiyori asks instead of deciding for Hajime");
+assert.match(epilogueText, /今日は俺が、見つけてもらう番/, "Hajime can receive care too");
+assert.match(epilogueText, /食べたあとの片づけは、二人で/, "They share the meal cleanup");
+assert.match(epilogueText, /来週は締め日.*迎えはお願い/, "Hiyori still asks for support on busy days");
+assert.match(epilogueText, /ラーメン屋/);
+assert.match(epilogueText, /味玉.*二つ/);
+for (const line of epilogue.lines) {
+  assert.ok(["", "hiyori", "hajime"].includes(line.speaker), `epilogue_hiyori: speaker ${line.speaker}`);
+  if (line.speaker === "hiyori") {
+    assert.ok(assetExists(`assets/sprites/characters/hiyori/chr_hiyori_${line.face}.png`), `epilogue_hiyori: face ${line.face}`);
+    assert.doesNotMatch(line.text, /はじめさん|ハジメ/);
+  } else assert.ok(!line.inner, "Only Hiyori has inner lines");
+  if (line.speaker === "hajime") assert.doesNotMatch(line.text, /ひより(?!さん)/);
 }
-console.log("OK: Hiyori lover Lv1-5 cover the owner themes and lead into epilogue_hiyori");
+console.log("OK: Hiyori lover Lv1-5 keep the owner themes and the epilogue makes care reciprocal");
+
+// ましろは触れ合いのために好みを曲げず、重さの噂ではなく本人の感想を話せる。
+const mashiroLv2 = milestones.find(scene => scene.dialogue_id === "lover_mashiro_lv2");
+const mashiroLv3 = milestones.find(scene => scene.dialogue_id === "lover_mashiro_lv3");
+assert.match(sceneText(mashiroLv2), /好きな濃さ/);
+assert.match(sceneText(mashiroLv2), /タイマーが鳴った.*手をほどき.*お茶を仕上げた/);
+assert.match(sceneText(mashiroLv2), /飲み終わったら、また貸す/);
+assert.match(sceneText(mashiroLv2), /タイマーなしで借りる/);
+assert.match(sceneText(mashiroLv3), /どんな重さが好き.*教えてくれる/);
+assert.match(sceneText(mashiroLv3), /重ければ、何でもいいわけじゃない/);
+assert.match(sceneText(mashiroLv3), /紅茶も残るのが好き/);
+assert.match(sceneText(mashiroLv3), /もう少し付き合ってくれる/);
+console.log("OK: Mashiro keeps her tea preferences and speaks about her own taste");

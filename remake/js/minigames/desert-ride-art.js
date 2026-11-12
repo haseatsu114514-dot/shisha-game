@@ -74,7 +74,7 @@ export function riderPose(game, previous = "rider") {
   return "rider";
 }
 
-let images = null;
+let images = null, settled = null;
 /** 絵を読み始め、{ get(name) } を返す。get は読み終えた画像か null。何度呼んでも同じものを使い回す。 */
 export function loadDesertArt() {
   if (!images) {
@@ -85,12 +85,20 @@ export function loadDesertArt() {
         const image = new Image();
         image.decoding = "async";
         const entry = { image, ready: false };
-        image.onload = () => { (image.decode ? image.decode().catch(() => {}) : Promise.resolve()).then(() => { entry.ready = true; }); };
-        image.onerror = () => { entry.ready = false; };
+        entry.done = new Promise(resolve => {
+          image.onload = () => { (image.decode ? image.decode().catch(() => {}) : Promise.resolve()).then(() => { entry.ready = true; resolve(); }); };
+          image.onerror = () => { entry.ready = false; resolve(); };
+        });
         image.src = imgFileUrl(def.file);
         images.set(name, entry);
       }
     }
   }
-  return { get: name => { const entry = images.get(name); return entry?.ready ? entry.image : null; } };
+  settled ||= Promise.all([...images.values()].map(entry => entry.done));
+  // whenReady: すべての絵が読み終わる（読めなかった絵も含めて決着する）まで待つ。pending: まだ読み中の絵があるか
+  return {
+    get: name => { const entry = images.get(name); return entry?.ready ? entry.image : null; },
+    whenReady: () => settled,
+    pending: () => [...images.values()].some(entry => !entry.ready && entry.image.complete === false),
+  };
 }
