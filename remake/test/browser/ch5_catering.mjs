@@ -23,7 +23,7 @@ const model = page => page.evaluate(async () => {
 
 const START = 49; // 第5章の1日目。51日目＝第5章の3日目の朝に、最初の依頼が届く
 /** 第5章の自由行動の保存を作って LOAD する（朝の LIME は LOAD の後に届く）。 */
-async function seed(page, { day = 51, slot = 0, seedValue = 0, flags = {}, inbox = [], met = {} } = {}) {
+async function seed(page, { day = 51, slot = 0, seedValue = 0, flags = {}, inbox = [], met = {}, turbo = true } = {}) {
   page.setDefaultTimeout(30000);
   await page.evaluate(async ({ day, slot, seedValue, flags, inbox, met, START }) => {
     const core = await import("./js/core/state.js");
@@ -45,15 +45,15 @@ async function seed(page, { day = 51, slot = 0, seedValue = 0, flags = {}, inbox
     value.flags._fortune_wander = { chapter: 5, shown: fortunePlan.map(() => null), used: fortunePlan.map(() => true) };
     core.saveConfig(); core.save();
   }, { day, slot, seedValue, flags, inbox, met, START });
-  await reopen(page);
+  await reopen(page, { turbo });
 }
-async function reopen(page) {
+async function reopen(page, { turbo = true } = {}) {
   await page.reload();
   await page.locator(dt("title-load")).click();
-  await page.evaluate(async () => {
+  await page.evaluate(async turbo => {
     const vn = await import("./js/vn/engine.js");
-    vn.vnTest.turbo = true; vn.vnTest.choose = () => 0;
-  });
+    vn.vnTest.turbo = turbo; vn.vnTest.choose = () => 0;
+  }, turbo);
   await page.locator(dt("slot-0")).click();
 }
 /** 今の保存を書き換えて保存し、LOAD し直す（日を進める等）。 */
@@ -78,6 +78,30 @@ async function replyToSumi(page, text, note) {
 const offerOf = state => state.flags._ch5_catering?.offer ?? null;
 
 await suite("ch5-catering", async check => {
+  await check("business-origin-skip-and-save-load-once", async page => {
+    await seed(page, { day: START, turbo: false });
+    await page.locator(".vn-text", { hasText: "申込用紙" }).waitFor();
+    await page.evaluate(async () => {
+      const core = await import("./js/core/state.js");
+      core.config.skipSeenOnly = false;
+    });
+    await page.locator(dt("vn-skip")).click();
+    await mapReady(page, { day: START, slot: 0 });
+    let value = await get(page);
+    assert.equal(value.flags._intro_ch5_catering_business, true, "SKIP完読も相談は一度だけ確定する");
+    assert.equal(value.money, 50000); assert.equal(value.stamina, 100); assert.equal(value.slot, 0);
+    assert.equal(value.flags._ch5_catering?.offers || 0, 0, "相談だけで依頼日を前倒ししない");
+    assert.match(await logText(page), /ちゃっかりしてますね/);
+    assert.match(await logText(page), /俺も乗ったんです/);
+    await clearLog(page);
+    await reopen(page);
+    await mapReady(page, { day: START, slot: 0 });
+    value = await get(page);
+    assert.equal(value.flags._intro_ch5_catering_business, true);
+    assert.doesNotMatch(await logText(page), /申込用紙|ちゃっかり|俺も乗った/);
+    assert.equal(value.money, 50000); assert.equal(value.stamina, 100); assert.equal(value.slot, 0);
+  });
+
   for (const fit of ["best", "ok"]) await check(`request-accept-then-serve-${fit}`, async page => {
     // 地元の店の行き先がそろった地図で、ピンの重なりも見る（昼の会・夜の会の両方）
     await seed(page, { seedValue: fit === "best" ? 0 : 3, met: { naru: true, adam: true, minto: true } });
@@ -247,3 +271,4 @@ await suite("ch5-catering", async check => {
     await page.locator(dt("phone-close")).click();
   });
 });
+
