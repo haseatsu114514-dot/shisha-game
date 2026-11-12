@@ -363,3 +363,8 @@ Sitesで配信する場合も、この出力は配信スナップショットだ
 `node --experimental-vm-modules remake/test/trpg_campaign_save.mjs`、
 `node remake/test/browser/trpg_main.mjs`、`node remake/test/browser/trpg.mjs`。
 
+
+
+## #2455 達人認定の調整（2026-11-11）
+
+異なる2冊で見立て・提案を両方達成すると「物語の読み手」。出目は問わず、既存の★3報酬も維持。 累積進捗は失敗で消さずNG+へ継承し、認定で白火1つを一度だけ付与（198上限）。以前の「追加報酬なし」等はこの認定分だけ更新する。全体の基準・旧セーブの扱いは [ADDENDUM-0349](../stat-design/ADDENDUM-0349.md#2455-採用したバランス2026-11-11-オーナーそれでバランス調整を実装して) を参照。

@@ -117,9 +117,16 @@ const SCENES = TOKYO_SPOTS.flatMap(entry => entry.talks || []).concat(["ch5_toky
 const TETSUKO = TOKYO_OUTINGS.find(outing => outing.id === "tetsuko");
 const CH3_SCENES = ["ch3_outing_park_walk_night", ...TETSUKO.stages, ...TETSUKO.loop];
 async function careForTetsuko(owner) {
-  if (!await read(outingDialogueId(state, TETSUKO), "bg_street", owner)) return false;
-  state.flags[OUTINGS_FLAG] = { ...outingCounts(state), tetsuko: (outingCounts(state).tetsuko || 0) + 1 };
-  return true;
+  const { openTetsukoTime, settleTetsukoTime, tetsukoVisitKey } = await import("../minigames/tetsuko-time.js");
+  if (state !== owner) return false;
+  const visitKey = tetsukoVisitKey(owner);
+  const stageRead = (outingCounts(owner).tetsuko || 0) < TETSUKO.stages.length;
+  if (stageRead && !await read(outingDialogueId(owner, TETSUKO), "bg_street", owner)) return false;
+  if (state !== owner) return false;
+  const result = await openTetsukoTime({ value: owner, visitKey,
+    bg: sceneBg("bg_street", timeOfDay()).url, isCurrent: () => state === owner });
+  if (state !== owner || result?.cancelled) return false;
+  return settleTetsukoTime(owner, { ...result, visitKey, meaningful: stageRead || !!result?.meaningful }).committed;
 }
 
 let loading = null;
@@ -240,7 +247,7 @@ export async function performTokyoSpot(spot, { staminaGuard } = {}) {
   const finale = finaleVisit(spot);
   const fee = spot.cost || 0;
   if (fee > spendableMoney(state)) {
-    toast("お金が足りない");
+    toast("お金が足りない", { se: "error" });
     return { used: false, exerted: false };
   }
   if (staminaGuard && !(await staminaGuard(spot.stamina))) return { used: false, exerted: false };
@@ -323,7 +330,7 @@ export async function chapterFiveMukaiShift(owner = state, { called = false } = 
 /** シフトの帰りに裏口のてつこへ（行動を使わない。体力が少し戻る・VOL11）。 */
 async function offerTetsuko(owner) {
   const go = await modal({ title: "裏口のてつこ", body: "帰りに裏口をのぞくと、看板猫のてつこがベンチで丸くなっている。",
-    options: [{ label: "少し構っていく", value: true, test: "tokyo-tetsuko-yes", primary: true }, { label: "今日はそっとしておく", value: false, test: "tokyo-tetsuko-no" }] });
+    options: [{ label: "てつこといっしょ", value: true, test: "tokyo-tetsuko-yes", primary: true }, { label: "今日はそっとしておく", value: false, test: "tokyo-tetsuko-no" }] });
   if (!go || state !== owner) return;
   if (!await careForTetsuko(owner)) return;
   addStamina(12);

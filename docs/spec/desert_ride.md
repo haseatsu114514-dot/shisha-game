@@ -173,3 +173,8 @@ Game sprite, back view of a 22-year-old Japanese man riding a bright orange sand
 - ラクダレース（別チャット）とは、人物ID（`noor`）・地図ID（`tour_desk`/`dunes`）・保存キー（`flags._ch4_desert`・`state.desert`）・台詞ファイル（`ch4_desert.json`）を分けた。共通ファイルの変更は `ch4-map-model.js`（1行）・`ch4.js`（`visit()` の分岐1つ）・`growth-board-data.js`（`PLAY_REWARDS` 1行）・`growth.js`（判定1行）・`index.html`（CSS 1行）・`tools/ci/suites.json`（2件）だけ。
 
 
+
+
+## #2455 達人認定の調整（2026-11-11）
+
+ヌールに1勝、またはA以上を累計3回で「砂丘の乗り手」。なるへの勝利や追加トリックは必須にしない。 累積進捗は失敗で消さずNG+へ継承し、認定で白火1つを一度だけ付与（198上限）。以前の「追加報酬なし」等はこの認定分だけ更新する。全体の基準・旧セーブの扱いは [ADDENDUM-0349](../stat-design/ADDENDUM-0349.md#2455-採用したバランス2026-11-11-オーナーそれでバランス調整を実装して) を参照。

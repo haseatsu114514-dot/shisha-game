@@ -44,7 +44,7 @@ import { readTournamentCheers } from "./lover-entry.js";
 import { TOKYO_RESIDENT_IDS } from "./ch3-story-wiring.js";
 import { syncTokyoVisits, visitingTokyo } from "../core/tokyo-visits.js";
 import { JUDGES, CONTESTANTS, tournamentProgress, restoreResources,
-  startAttempt, recoverStep, beginStep, finishStep, castVotes, standings, recordResult, CH3_PRIZE } from "./ch3-tournament-state.js";
+  startAttempt, recoverStep, beginStep, finishStep, castVotes, standings, recordResult } from "./ch3-tournament-state.js";
 
 const REQUIRED = ["tournament_day", "national_craft", "national_adjustment", "national_result", "national_defeat"]
   .map(id => `ch3_${id}`);
@@ -407,7 +407,9 @@ function renderComplete(owner) {
     button(owner, "タイトルへ", "complete-title", () => { save(); location.reload(); }),
   ], [
     // 賞金は recordResult で優勝確定時に一度だけ加算済み。ここでは受け取ったことだけを見せる（#1658 ⑦）。
-    p.prizePaid ? el("p.ch2-contest-note", { dataset: { test: id("prize") }, text: `優勝賞金 ${yen(CH3_PRIZE)} を受け取った。` }) : null,
+    p?.prizePaid ? el("p.ch2-contest-note", { dataset: { test: id("prize") }, text: Number.isFinite(p.prizeReceived)
+      ? p.prizeReceived > 0 ? `優勝賞金 ${yen(p.prizeReceived)} を受け取った。` : "優勝賞金は所持金の上限に達したため加算されなかった。"
+      : "優勝賞金を受け取った。" }) : null,
   ]);
 }
 

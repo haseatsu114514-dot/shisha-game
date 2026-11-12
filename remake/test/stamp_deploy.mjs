@@ -10,6 +10,8 @@ import { fileURLToPath } from "node:url";
 
 const remake = fileURLToPath(new URL("../", import.meta.url));
 const script = path.join(remake, "tools/stamp_deploy.py");
+// Keep the retention regression in the existing quick CI suite.
+execFileSync("python3", [path.join(remake, "test/deploy_history.py")], { stdio: "inherit" });
 const site = fs.mkdtempSync(path.join(os.tmpdir(), "stamp-deploy-"));
 // ミニゲームなどの試遊ページ（2026-11-11 オーナー「試遊リンクだと過去の仕様になってしまう」）。本編と同じ名札を付ける
 const TRIAL_PAGES = ["desert-ride.html", "camel-race.html", "axe-throw.html", "ichidai.html", "trpg-preview.html", "trpg-campaign-preview.html"];
@@ -83,3 +85,4 @@ try {
 } finally {
   fs.rmSync(site, { recursive: true, force: true });
 }
+

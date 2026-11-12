@@ -29,6 +29,7 @@ import { chekiShot, tarotFlip, limeExchange, purikuraShot, sceneMoment, gazeCuti
 import { showShishaDiagram, hideShishaDiagram } from "./shisha-diagram.js";
 import { reducedMotion } from "../core/transition-kit.js";
 import { attachLoadingComic } from "../core/loading-comic-notice.js";
+import { vnBreath } from "./breath.js";
 
 // 立ち絵を出さない話者（主人公は一人称視点）
 const NO_PORTRAIT = new Set(["hajime", "hazime", "", "everyone", "customer", "shop_clerk", "old_man", "traveler"]);
@@ -609,6 +610,15 @@ function next() {
       return;
     }
     if (type === "sfx") { playSe(line.id); continue; }
+    // 一服の「間」（KMR11）: 口元から煙を吐き、煙が顔の前に広がるまで短く待ってから次の行へ（晴れると表情が変わっている）。
+    // 早送り中は煙も間も出さない
+    if (type === "fx" && line.id === "exhale") {
+      const hold = skipMode || vnTest.turbo ? 0 : vnBreath(line, { host: layers.vn, portraits: dom.portraits });
+      if (!hold) continue;
+      r.ready = false;
+      sleep(hold).then(() => { if (running === r) { r.ready = true; next(); } });
+      return;
+    }
     if (type === "fx") { runFx(line); continue; }
     // 未知の行タイプは黙って飛ばす（データ先行で書けるように）
   }
