@@ -942,7 +942,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "カウンターの端に、柚ヶ谷の水族館のパンフレットが、サメの写真のページで開いたまま置いてあった。"
+          "text": "カウンターの端に、柚ヶ谷の水族館のパンフレット。サメの写真のページで開いたまま置いてあった。"
         },
         {
           "speaker": "samechan",
@@ -1466,6 +1466,69 @@
           "speaker": "samechan",
           "face": "smile",
           "text": "うむ、お主の感想をもろうたからの。今度は、わしが泣いた回の話をするのじゃ"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "samechan_shop_minto_gift",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_shishark.png",
+        "min_chapter": 2,
+        "bgm": "sweets_or_sweets",
+        "bgm_on_speaker": "samechan",
+        "setting": "みんとの開店祝い（REL03）。いつもの来店の代わりに一度だけ。みんとと面識のある時だけ（daily/samechan.js）。"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "カウンターの端に、ミントの鉢植えが増えていた。札には「祝開店 ぺぱーみんと」。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "みんとから、ですか"
+        },
+        {
+          "speaker": "samechan",
+          "face": "smile",
+          "text": "うむ。開店の祝いにと、本人が抱えて来てくれたのじゃ"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "席にも座っていっての。盆を持って、通路を二往復しおった"
+        },
+        {
+          "speaker": "samechan",
+          "face": "serious",
+          "text": "一人で回す店は、自分が転ばぬ道から作るものじゃ、と"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "それで、テーブルの位置が変わったんですね"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "同い年と聞いたが、あれは店を長う見てきた者の目じゃ"
+        },
+        {
+          "speaker": "samechan",
+          "face": "ventriloquism",
+          "text": "側近よ。余には、歴戦の将に見えたぞ",
+          "voice": "korochan"
+        },
+        {
+          "speaker": "samechan",
+          "face": "surprise",
+          "text": "こ、これ！ 同い年に向かって、失礼じゃろう"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（コロちゃんは、ときどき鋭い）"
         }
       ]
     },

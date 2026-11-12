@@ -411,6 +411,19 @@ export function heartRow(values, { className = "gc-hearts", label = "好感度",
     values.map((fill) => el("i.ui-heart", { "aria-hidden": "true", style: { "--fill": `${fill}%` } })));
 }
 
+/**
+ * 絵の印（o.icon。心得の盤のアイコン・火種など。SBD125②）: 顔の印と同じ暗い丸に絵を載せる。
+ * 絵が読めるまで・読めない時は、字の印（o.badge）のまま見える。
+ */
+function artBadge(src, text) {
+  const badge = el("div.gc-badge.face.art", [el("span", { text: text || "+" })]);
+  const img = el("img", { src, alt: "", draggable: "false" });
+  img.addEventListener("load", () => badge.classList.add("has-img"));
+  img.addEventListener("error", () => img.remove());
+  badge.append(img);
+  return badge;
+}
+
 export function statBadge(key, className = "gc-badge") {
   return el(`div.${className}`, { text: STAT_BADGE[key], "aria-hidden": "true" });
 }
@@ -423,7 +436,7 @@ function pumpBanners() {
     const hearts = o.hearts ? heartRow(o.hearts.from, { bond: !!o.bond, label: o.bond ? "恋人（♥5）" : "好感度" }) : null;
     const heading = o.top || (o.kind === "stat" ? "STATUS UP" : "");
     const b = el(`div.gain-card.${o.kind}${o.bond ? ".bond" : ""}${o.stat ? `.st-${o.stat}` : ""}${o.evolution ? ".evolved" : ""}${o.source === "slot" ? ".slot-bonus" : ""}`, [
-      o.face ? el("img.gc-badge.face", { src: o.face, alt: "" }) : o.stat ? statBadge(o.stat) : el("div.gc-badge", { text: o.badge || "+" }),
+      o.face ? el("img.gc-badge.face", { src: o.face, alt: "" }) : o.stat ? statBadge(o.stat) : o.icon ? artBadge(o.icon, o.badge) : el("div.gc-badge", { text: o.badge || "+" }),
       el("div.gc-meta", [
         heading ? el("span.gc-top", { text: heading, "aria-hidden": o.top ? "false" : "true" }) : null,
         el("div.gc-title", [el("span.gc-main", { text: o.main }),

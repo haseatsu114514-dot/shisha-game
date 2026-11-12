@@ -88,7 +88,7 @@ function reelBusy(map, now) {
   return !!widget.querySelector(".rw-strip.spinning, .rw-bubble.show") || now - reelChangedAt < 1500;
 }
 
-// 新版の縦持ち（extended）で写せる、ボタンが並ぶだけの画面。中にこれ以外の物（順位表・図・入力欄など）があれば写さない。
+// ボタンが並ぶだけの画面（外枠の下画面に選択肢として写す）。中にこれ以外の物（順位表・図・入力欄など）があれば写さない。
 // 第3〜5章の場面カード・大会の案内カード（main.ch2-contest）と、第2章の店頭カード（main.ch2-stop）。
 const CARD_PARTS = ".ch2-contest-header, .ch2-contest-description, .ch2-contest-note, .ch2-contest-reason, .ch3-wayfinding, .ch2-contest-actions";
 const STOP_PARTS = ".ch2-kicker, .store-logo, h1, p, .ch2-room-warning, .ch2-actions";
@@ -138,19 +138,19 @@ function sheetKind(modal) {
 }
 
 /** 覆いの下の画面が、外枠に写せる種類か（会話・地図・タイトル・ボタンの画面・何も無い間）。 */
-function knownBase(extended) {
+function knownBase() {
   const body = document.body;
   if (body.classList.contains("in-vn") || body.classList.contains("vn-open")) return true;
   const live = byId("screen")?.querySelector(":scope > :not(.done)");
   if (!live || !live.childElementCount && !live.textContent.trim()) return true;
-  return live.matches(".map, .title, .sub-menu, section.shop-paper, .end-screen") || (extended && simpleCard(live));
+  return live.matches(".map, .title, .sub-menu, section.shop-paper, .end-screen") || simpleCard(live);
 }
 
 /**
  * いまの状態。own は自分の外枠の要素（重なりの確認から除く）。
- * extended（新版の縦持ち）: 第2〜5章の地図の案内の箱のボタン、場面カード、確かめの小窓も写せる場面として扱う。
+ * 第2〜5章の地図の案内の箱のボタン、場面カード、確かめの小窓も写せる場面として扱う（新版の縦持ち・DS風とも。LK13・LK21）。
  */
-export function detectState(own = [], { extended = false } = {}) {
+export function detectState(own = []) {
   const body = document.body, stage = byId("stage");
   if (!stage || byId("boot")) return NONE;
   if (document.querySelector(".loading-gate")) return NONE;
@@ -162,8 +162,8 @@ export function detectState(own = [], { extended = false } = {}) {
     if (byId("fx")?.querySelector(FX_INTERACTIVE)) return NONE;
     const layer = topLayer(stage, rect, 0.5, 0.5, own);
     if (layer && !EXPECTED_LAYERS.dialog.includes(layer)) return NONE;
-    // 文と選択肢だけの小窓は、新版の縦持ちでは下画面の選択肢に（上画面はその場の絵のまま）
-    if (extended && simpleDialog(modal)) return { kind: "scene", name: "menu", variant: "dialog" };
+    // 文と選択肢だけの小窓は、下画面の選択肢に（上画面はその場の絵のまま）
+    if (simpleDialog(modal)) return { kind: "scene", name: "menu", variant: "dialog" };
     const kind = sheetKind(modal);
     return kind ? { kind: "scene", name: "sheet", variant: kind } : NONE;
   }
@@ -181,7 +181,7 @@ export function detectState(own = [], { extended = false } = {}) {
   if (overlays.length || (wipe && (wipe.classList.contains("black") || wipe.classList.contains("cover")))) {
     const layer = topLayer(stage, rect, 0.5, 0.5, own);
     // base: 覆いの下が写せる場面（会話・地図・タイトル・ボタンの画面・空き）か。新版の縦持ちは、回転案内から外枠へ戻すかをこれで決める
-    return { kind: "cover", pressable: layer === "fx" || layer === "wipe" || layer === "unknown", base: knownBase(extended) };
+    return { kind: "cover", pressable: layer === "fx" || layer === "wipe" || layer === "unknown", base: knownBase() };
   }
 
   const vn = byId("vn"), screen = byId("screen");
@@ -201,15 +201,15 @@ export function detectState(own = [], { extended = false } = {}) {
     const live = screen?.querySelector(":scope > :not(.done)");
     if (!live || !live.childElementCount && !live.textContent.trim()) return GAP; // 前の画面を片付けて、次が出るまでの間
     if (body.dataset.screen === "map" && live.matches(".map")) {
-      // 案内の箱のボタン（駅の行き先・第2章の配達メモなど）は、新版の縦持ちでは一覧に写す（DS風は第1章だけで、出てこない）
-      if (live.dataset.revealing === "true" || (!extended && live.querySelector(".map-info button")) || reelBusy(live, performance.now())) return NONE;
+      // 案内の箱のボタン（駅の行き先・第2章の配達メモなど）は、一覧に写す（retro/map.js）
+      if (live.dataset.revealing === "true" || reelBusy(live, performance.now())) return NONE;
       if (!live.querySelector(".map-pins > .spot-pin")) return NONE; // ピンの無い作りの地図は写さない
       scene = "map";
     } else if (body.dataset.screen === "title" && live.matches(".title") && live.querySelector(".title-menu")) {
       scene = "title";
     } else if (live.matches(".sub-menu") && live.querySelector(".sub-choices .big-choice")) {
       scene = "menu"; // tonari の行動選びなど、ボタンが並ぶだけの画面（daily/tonari.js の .sub-menu）
-    } else if (extended && simpleCard(live)) {
+    } else if (simpleCard(live)) {
       scene = "menu"; variant = live.matches("main.ch2-stop") ? "stop" : "card";
     } else if (live.matches("section.shop-paper") && !live.querySelector(SHEET_BLOCKERS)) {
       scene = "sheet"; variant = "shop"; // 店（daily/shop.js の入口と1階の売り場）はシートで写す
