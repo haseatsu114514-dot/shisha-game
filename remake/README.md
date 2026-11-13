@@ -154,7 +154,7 @@ remake/
 この実測値から位置を計算して組む。制作画面には独立した一台のパネルを表示しない。それ以外の変更にビルドは要らない。
 文字だけの仮置きCG（無地に説明文の画像）は一覧に載せない＝場面では飛ばし、ギャラリーにも出さない。本物の絵に差し替えて再実行すれば出る。
 同じコマンドの最後に `tools/build_images.py` が走り、表示用の軽い WebP を `remake/img/` に作る（元の PNG 91MB → 約15MB。
-1枚ずつ可逆と非可逆q90の小さいほう・作業台素材は長辺1280pxまで）。ゲームは一覧にある画像だけ WebP を読み、無ければ assets/ の PNG を読む。
+1枚ずつ可逆と非可逆q90の小さいほう・作業台素材は長辺1280pxまで。会話の立ち絵は可逆と「非可逆q92＋透明は劣化なし」の小さいほう＝2026-11-13 から・LD03）。ゲームは一覧にある画像だけ WebP を読み、無ければ assets/ の PNG を読む。
 変換済みで元より新しい画像は作り直さないので、2回目以降は数秒で終わる。
 
 **トランジション・場面の演出**（2026-10-09〜10）: 就寝→翌朝は夜の紫が降りて、朝のDAYと残り日数のカードがめくれる。数字は表示開始から更新後のHUDと同じ値（`core/transitions.js`）。マップ→場所の移動は6つの型を `core/transition-moves.js` に持ち、既定は帰宅だけ door、ほかは pin。`?move=door` や `__remake.dev.moveStyle("door")` で切り替える。チェキ・占い・贈り物・バイトの終わり・サメちゃんとの出会い・つむぎのスケッチは `core/scene-motions.js` が窓口で、中身は場面ごとの `js/motions/<場面>.js`・`css/motions/<場面>.css`（扉の型も `motions/door.js`）。各場面に a／b の2パターンがあり、本編はオーナーが選んだ採用（`core/mg-kit.js` の `ADOPTED_VARIANT`: 扉a・チェキb・占いa・贈り物a・バイトb・サメb・スケッチb。帰宅だけ短くしたdoor、ほかはpin。2026-10-11 CI125〜127）。比べるときは `?movar=a|b`（全場面をそろえる）・`?move=pin`・`__remake.dev.motionVariant("b")`（`"auto"` で採用に戻す）。配色は紫1色（既定）／場面ごとの色（`?mopal=free`・`__remake.dev.motionPalette("free")`）。`__remake.dev.motion("cheki")` などで再生、夜明けの天気は `dawn-sun`／`dawn-cloud`／`dawn-rain`／`dawn-sick`。DAYカードの天気（晴れ・くもり・雨）は `daily/weather.js` の `weatherOf()` で、くもりは見た目だけ。会話の中では `show_cg` の `"effect": "cheki"` と `{"type": "motion", "id": "tarot"}` で呼ぶ。SKIP中と動きを減らす設定では省く。録画は `asset_sources/transitions/`。
