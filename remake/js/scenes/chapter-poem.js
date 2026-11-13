@@ -1,7 +1,8 @@
 // 巻頭ポエム（序詩と第1〜5章の章頭詩）。会話ウインドウではなく、専用の「読ませる」画面で出す。
 // 詩の本文と意図は brand/chant_poems.md、台本は data/dialogue/chapter_poems.json（1行 = 詩の1行。gap:true は連の切れ目）。
 // 置き場所: 各章の詩＝その章の章タイトルの直前（第1章の詩は序詩を兼ねる。コールドオープンの後）。
-// 見せ方: 詩の上に、横長の漫画風のコマ絵（metadata.panel。img/ui/poems/）を細い枠つきで出す。絵が無い・読めない詩は、詩だけを全面に出す。
+// 見せ方: 詩の上に、横長の漫画風のコマ絵（metadata.panel。img/ui/poems/）を細い枠つきで出す（必ず出す。届くまで待つ）。
+//        絵の指定が無い・壊れていて読めない詩だけは、詩だけを全面に出す。
 //        詩を連ごとの「場面」に分け、1場面ずつ読ませる。暗い面に縦書きの明朝で、右の行から1行ずつ、ぼかしが晴れて浮かぶ。
 //        読み終えた場面は消え、次の連が浮かぶ。最後の連を読み終えたら全体が暗く閉じ、続けて章タイトルが出る。
 //        漢字には「漢字《よみ》」のふりがな。タップ／Enter／Space で、読んでいる途中なら その場面の残りを出し、読み終えていれば次の場面へ。
@@ -23,6 +24,43 @@ export const poemTest = { shown: [] };
 
 /** 詩の上に出す横長のコマ絵（img/ui/poems/）。本物の絵に差し替えるときは、台本の metadata.panel のファイル名を替える */
 const panelUrl = (name) => new URL(`../../img/ui/poems/${name}`, import.meta.url).href;
+/**
+ * コマ絵は必ず出す（2026-11-13 オーナー「ブリーチ風を大事にしてるから横長の漫画はマストで出したい」・OSP20）。
+ * 以前は2.5秒で読めなければ詩だけにしていたため、回線が混んでいると絵が出なかった。
+ * 今は届くまで待つ（0.5秒を超えたら小さな案内）。読めなかった（通信の失敗）ときは1回だけ読み直す。
+ * それでも読めない（壊れた絵・つながらない）ときだけ、詩だけを全面に出す（ゲームを止めない）。
+ */
+const PANEL_WAITS = Object.freeze([30000, 60000]);
+const PANEL_NOTICE_MS = 500;
+const poemPanelUrl = (key) => {
+  const name = DB.dialogues[CHAPTER_POEM_IDS[key]]?.metadata?.panel;
+  return name ? panelUrl(name) : null;
+};
+
+/** 詩のコマ絵を先に読み始める（取得とデコード）。詩を出す前の、余裕のあるところで呼ぶ。進行は変えない。 */
+export function preparePoemPanel(key) {
+  const url = poemPanelUrl(key);
+  return url ? imageReady(url, PANEL_WAITS[0]) : Promise.resolve(false);
+}
+
+/** コマ絵が届くまで待つ。0.5秒を超えたら小さな案内を出す。読めたら true。 */
+async function waitPoemPanel(url, aborted) {
+  let notice = null;
+  const timer = setTimeout(() => {
+    notice = el("div.vn-loading", { role: "status", "aria-live": "polite", text: "詩を準備しています…", dataset: { test: "chapter-poem-loading" } });
+    layers.fx.append(notice);
+  }, PANEL_NOTICE_MS);
+  try {
+    for (const ms of PANEL_WAITS) {
+      const loaded = await Promise.race([imageReady(url, ms), aborted.then(() => null)]);
+      if (loaded !== false) return loaded === true;
+    }
+    return false;
+  } finally {
+    clearTimeout(timer);
+    notice?.remove();
+  }
+}
 /** コマ絵の比率の範囲（横:縦）。範囲の内なら絵の比率のまま、外なら端の比率の枠に収める（tools/poem_panel_cut.py と同じ） */
 export const PANEL_RATIO = Object.freeze({ min: 4, max: 5.6, fallback: 16 / 3 });
 
@@ -98,12 +136,13 @@ async function showChapterPoem(key, { owner = null, current = () => true } = {})
   const controller = new AbortController();
   if (owner) owner.controller = controller;
   const { signal } = controller;
+  const aborted = new Promise((resolve) => signal.addEventListener("abort", resolve, { once: true }));
   const lines = poem.lines;
-  // コマ絵: 読み込んで・デコードし終えたものだけを出す。読めなければ（失敗・時間切れ）詩だけを全面に出す。
+  // コマ絵: 届くまで待ち、デコードし終えたものを出す（必ず出す・OSP20）。読めない絵のときだけ詩だけを全面に出す。
   let panel = null;
   if (poem.metadata?.panel) {
     const url = panelUrl(poem.metadata.panel);
-    if (await imageReady(url, 2500) && !signal.aborted) {
+    if (await waitPoemPanel(url, aborted) && !signal.aborted) {
       const img = el("img", { src: url, alt: poem.metadata.panel_alt || "", draggable: false });
       await img.decode?.().catch(() => {});
       // 枠は絵の比率のまま（生成AIの絵は 16:3 から縦に少し伸びることがあり、切ると顔や小物が欠ける）
@@ -112,6 +151,8 @@ async function showChapterPoem(key, { owner = null, current = () => true } = {})
       panel = el("figure.cp-panel", { "data-test": "chapter-poem-panel", style: { aspectRatio: String(ratio) } }, [img]);
     }
   }
+  // 次の章の詩の絵も、いまのうちにブラウザへ取っておく（次の章の始まりで待たせない）。
+  if (typeof key === "number" && CHAPTER_POEM_IDS[key + 1]) void preparePoemPanel(key + 1);
   if (signal.aborted || (owner && !current(owner))) {
     if (owner && owner.controller === controller) owner.controller = null;
     return false;
@@ -134,7 +175,6 @@ async function showChapterPoem(key, { owner = null, current = () => true } = {})
   let skipReveal = () => {}, turnPage = () => {}, fastNow = () => {};
   let fast = false;
   const fastSignal = new Promise((resolve) => { fastNow = resolve; });
-  const aborted = new Promise((resolve) => signal.addEventListener("abort", resolve, { once: true }));
   const linesOf = (page) => [...page.querySelectorAll(".cp-line")];
   const showAllIn = (page) => linesOf(page).forEach((node) => node.classList.add("on"));
   // 読んでいる途中ならその場面の残りの行を出し、読み終えていれば次の場面へ（直後の誤タップは無視）。

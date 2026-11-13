@@ -46,7 +46,7 @@ const mocks = {
   "core/growth.js": { growthEnabled: () => false, hidaneTotal: () => 0 },
   "core/scene-motions.js": { trainRide: async (mid, opts) => { rides++; lastRide = opts; await mid(); } },
   "core/util.js": { el: (...a) => new Element(...a), yen: n => `${n}円` },
-  "core/data.js": { bgUrl: x => x, sceneBg: () => ({}), faceIconUrl: noop, displayName: noop },
+  "core/data.js": { bgUrl: x => x, sceneBg: () => ({}), faceIconUrl: noop, displayName: noop, portraitInfo: noop },
   "core/ui.js": { showScreen: (_, node) => screen.replaceChildren(node), setBg: async () => { backgrounds++; if (transitionRelease) await transitionRelease.promise; },
     retire: n => n.classList.add("done"), uiArtReady: noop, storeLogosReady: noop, imageReady: yes, layers: { fx: new Element() }, toast: t => toasts.push(t) },
   "core/transitions.js": { cueTransition: noop }, "core/scene-art.js": { renderSceneArt: noop, sceneArtUrls: () => [] },
