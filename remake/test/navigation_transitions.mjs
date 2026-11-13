@@ -7,6 +7,9 @@ const desktop = { width: 1280, height: 720 }, mobile = { width: 844, height: 390
 async function prepare(page) {
   await page.evaluate(async () => {
     const core = await import("./js/core/state.js"); core.newGame(); core.state.day = 4;
+    // 晴れの日に固定する。雨の日は家で休む場面が雨の回になり（SPV03）、背景もくもり・雨の絵に替わるため
+    const weather = await import("./js/daily/weather.js");
+    for (let seed = 0; seed < 200 && weather.weatherOf() !== "sun"; seed++) core.state.weatherSeed = seed;
     const ui = await import("./js/core/ui.js");
     const data = await import("./js/core/data.js");
     const map = await import("./js/daily/map.js");
@@ -119,9 +122,6 @@ await suite("navigation-transitions", async (check) => {
       await page.locator('[data-test="map-go"]').click();
       await page.locator(".scene-curtain").waitFor();
       await page.keyboard.press("Enter");
-      // 店は、幕のあとにリオの紹介（#3491・読み取りは support.mjs の installShopGreetingReader）が入ってから入口が出る。
-      // 入口を先に待つと、その頃には幕が終わっていて、幕を待って時間切れになる
-      if (spot === "shop") await page.locator('[data-test="shop-enter"]').click();
       if (spot === "rest") assert.equal(await page.locator(".vn-text").textContent(), "");
       const audit = await verify(page, selector, spot === "rest" ? "move-lights" : "move-zoom");
       assert.equal(audit.purple, false, "The move drew purple shapes");
@@ -132,7 +132,8 @@ await suite("navigation-transitions", async (check) => {
         await page.waitForFunction(() => document.querySelector(".vn-text").textContent.includes("今日は早めに家へ帰った"));
       }
       if (spot === "shop") {
-        // 応対を読み終えると入口が出て、入ると売り場が開く（買い物そのものは変わらない）
+        // 応対を読み終えると入口が出て、入ると売り場が開く（買い物そのものは変わらない）。
+        // この組は応対の自動送り（support.mjs）を切ってあり、幕の後に台詞が出たのを確かめてから送る
         await page.evaluate(() => { T.engine.vnTest.turbo = true; });
         await page.locator('[data-test="shop-enter"]').click();
         await page.locator(".shop-tabs").waitFor();
@@ -194,4 +195,6 @@ await suite("navigation-transitions", async (check) => {
     const audit = await verify(page, "#vn.active .vn-text");
     assert.deepEqual(audit.types, ["fade"], "Reduced motion played the full move instead of a fade");
   }, { reducedMotion: "reduce" });
-});
+// 店の応対（daily/shop-greeting.js）は shop-mobile の中で自分で送る。自動送りを入れると、幕の後に出る台詞を
+// 確かめる前に読み進めてしまい、入口のボタンの操作ともぶつかる
+}, { readShopGreeting: false });
