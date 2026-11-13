@@ -857,13 +857,23 @@ export function rivalRun(course, { who = "noor", maxTime = 200 } = {}) {
   return Object.freeze({ who: RIVALS[who] ? who : "noor", finishTime: game.finishTime ?? game.t, samples, falls: game.falls, easeOff });
 }
 
-/** 時刻 t のヌール（rivalRun の結果）。ゴールの後は旗の先で止まる。 */
+/**
+ * ゴールした相手の滑り抜け（2026-11-13 オーナー「ライバルとの時差も距離に対してリアリティがない」）: ゴールの速さのまま、coast 秒かけて
+ * 一定の割合で減速して止まる（それまでは約13m 先ですぐ止まり、後から来た主人公が線の手前で追いつくように見えていた）。
+ * 止まりながらコースの脇（side）へ寄せ、後から来る主人公の前をふさがない。
+ */
+export const RIVAL_COAST = Object.freeze({ coast: 4, side: 0.75 });
+/** 時刻 t のヌール（rivalRun の結果）。ゴールの後は減速しながら脇へ抜ける（RIVAL_COAST）。 */
 export function rivalAt(rival, t) {
   const s = rival.samples;
   if (!s.length) return null;
   if (t >= rival.finishTime) {
-    const last = s[s.length - 1], after = t - rival.finishTime;
-    return { ...last, z: last.z + Math.min(24, after * 14 - after * after * 2.5 * Math.min(1, after / 2.8)), air: 0, airKind: null, fallT: 0, finished: true, t };
+    // ゴールの速さは、最後の1つ手前の2つの記録から（最後の記録は位置をゴールの線にそろえてあるので、速さが小さく出る）
+    const last = s[s.length - 1], prev = s[Math.max(0, s.length - 2)], prev2 = s[Math.max(0, s.length - 3)], after = t - rival.finishTime, T = RIVAL_COAST.coast;
+    const v0 = prev.t > prev2.t ? Math.max(0, (prev.z - prev2.z) / (prev.t - prev2.t)) : SPEED.max;
+    const a = Math.min(after, T), ease = Math.min(1, after / (T * 0.6)), side = (Math.sign(last.x) || 1) * RIVAL_COAST.side;
+    return { ...last, z: last.z + v0 * a - v0 * a * a / (2 * T), x: last.x + (side - last.x) * ease * ease * (3 - 2 * ease), vx: 0,
+      air: 0, airKind: null, fallT: 0, boostT: 0, rot: 0, finished: true, t };
   }
   const i = Math.min(s.length - 1, Math.max(1, Math.ceil(t / RIVAL_SAMPLE)));
   const a = s[i - 1], b = s[i];

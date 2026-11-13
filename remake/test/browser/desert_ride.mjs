@@ -126,7 +126,8 @@ await suite("desert-ride", async check => {
     // 本番はスタートの合図（3・2・1・GO）から。合図の間は進まず、ヌールが左に並んでいる
     assert(await page.evaluate(() => window.__desertRide.countdown > 0), "the run starts with a countdown");
     await assertSpeedo(page);
-    assert.equal(await page.locator(t("desert-kmh")).innerText(), "30", "the start reads about 30 km/h during the countdown");
+    // スタートの合図の間は止まっている（2026-11-13 オーナー「スタートのカウントのときも30キロあるのおかしい」）。GO で約30 km/h へ跳ね上がる
+    assert.equal(await page.locator(t("desert-kmh")).innerText(), "0", "standing still during the countdown");
     assert.equal(await page.locator(t("desert-race-gap")).innerText(), "VS ヌール");
     assert(await page.evaluate(() => window.__desertRide.rival.finishTime > 45), "Noor races the same course");
     // PC: → を押し続けると慣性で右へ、Space はホップ（起伏が無い所）
@@ -298,6 +299,9 @@ await suite("desert-ride", async check => {
     assert(goal.confetti > 0, "confetti from the goal poles");
     await page.waitForFunction(() => window.__desertRide.fx.goal > 0.4 && window.__desertRide.game.z > window.__desertRide.game.course.length + 4);
     assert.equal(await page.locator(".dr-time").innerText(), goal.finish.toFixed(1), "the clock shows the finish time while the rider glides on");
+    // ゴールした後の差は、距離ではなく結果と同じ秒差で出す（2026-11-13 オーナー「ライバルとの時差も距離に対してリアリティがない」）
+    const gapLabel = await page.locator(t("desert-race-gap")).innerText(), result = await ride(page, () => window.__desertRide.game.race);
+    assert.equal(gapLabel, result.won ? `ヌールに ${result.gap.toFixed(1)}秒差` : `ヌールの勝ち ＋${result.gap.toFixed(1)}秒`, "the HUD shows the same gap as the result");
     await page.keyboard.press("Space"); // 余韻は飛ばせる
     await phase(page, "result");
     assert.equal(await ride(page, () => window.__desertRide.results.length), 1, "skipping does not record twice");

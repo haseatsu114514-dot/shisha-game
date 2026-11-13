@@ -1,7 +1,7 @@
 // DESERT RIDE（第4章ドバイ・サンドボード）の規則: コースの決定性と公平さ、ジャンプ・着地・転倒、採点と評価の境目。
 import assert from "node:assert/strict";
 import test from "node:test";
-import { CHARGE, COURSE, LAYOUT, NEAR, GATE, SLALOM, PRACTICE_WALL, PLAYER, nearReward, recoverWindow, SPEED, JUMP, FALL, SCORE, SPIN, BOOST, STEER, CARVE, EDGE, RUBBER, rubberCaps, DISPLAY, toKmh, toMeters, RULES_VERSION, RANKS, DEFAULT_SEED, COURSE_PACKS, CURVE_SCALE, generateCourse, practiceCourse, curveAt, headingAt, offsetAt, lateralAt, upcomingCurve, buildCourse, pickCourse, createGame, step, press, boost, chargeBoost, canRecover,
+import { RIVAL_COAST, CHARGE, COURSE, LAYOUT, NEAR, GATE, SLALOM, PRACTICE_WALL, PLAYER, nearReward, recoverWindow, SPEED, JUMP, FALL, SCORE, SPIN, BOOST, STEER, CARVE, EDGE, RUBBER, rubberCaps, DISPLAY, toKmh, toMeters, RULES_VERSION, RANKS, DEFAULT_SEED, COURSE_PACKS, CURVE_SCALE, generateCourse, practiceCourse, curveAt, headingAt, offsetAt, lateralAt, upcomingCurve, buildCourse, pickCourse, createGame, step, press, boost, chargeBoost, canRecover,
   summary, rankOf, readResult, botControl, botStep, nextBumpDistance, comboMultiplier, rivalRun, rivalAt, smashing, RIVALS, jumpPeak, jumpHeight } from "../js/minigames/desert-ride-model.js";
 
 const DT = 1 / 60;
@@ -578,6 +578,18 @@ test("race: Noor runs the same course deterministically; finishing first wins a 
   assert.equal(start.z, 0); assert(start.x < -0.3, "Noor starts on the left");
   assert(mid.z > 300 && mid.z < course.length);
   assert(end.finished && end.z >= course.length, "after the goal she coasts past the flags");
+  // 2026-11-13: ゴールした相手は、ゴールの速さのまま RIVAL_COAST.coast 秒かけて減速して止まり、脇へ寄る（すぐ止まって、後から来た主人公に追いつかれない）
+  const line = rivalAt(a, a.finishTime), v0 = (rivalAt(a, a.finishTime).z - rivalAt(a, a.finishTime - 0.1).z) / 0.1;
+  let last = line.z, lastStep = Infinity;
+  for (let k = 1; k <= 10; k++) {
+    const at = rivalAt(a, a.finishTime + RIVAL_COAST.coast * k / 10), step = at.z - last;
+    assert(step >= -1e-9 && step <= lastStep + 1e-6, "she keeps sliding forward and slows down smoothly");
+    last = at.z; lastStep = step;
+  }
+  const stopped = rivalAt(a, a.finishTime + RIVAL_COAST.coast + 5);
+  assert(stopped.z - line.z > v0 * RIVAL_COAST.coast * 0.4, `she slides well past the line (${(stopped.z - line.z).toFixed(0)} with ${v0.toFixed(0)}/s at the line)`);
+  assert(Math.abs(Math.abs(stopped.x) - RIVAL_COAST.side) < 1e-6, "and moves to the side, out of the rider's way");
+  assert.equal(stopped.z, rivalAt(a, a.finishTime + RIVAL_COAST.coast + 20).z, "then stops");
   assert(rivalAt(a, 10).z < rivalAt(a, 10.5).z, "she keeps moving");
   // 速くゴールすれば勝ち。加点と差が残る
   const win = createGame(course, { rival: { ...a, finishTime: 999 } });

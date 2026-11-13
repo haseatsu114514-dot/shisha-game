@@ -32,8 +32,8 @@ const RIVAL_TITLES = Object.freeze({ naru: "好敵手" });
 const RIVAL_ART_SCALE = Object.freeze({ noor: 0.977, naru: 1.02 });
 
 const W = 1280, H = 720;
-// ゴールの竿の高さ（m）。2026-11-13 オーナー「ゴールの旗が低すぎる」で 2.6 → 5.2（幕が人物の頭よりずっと上に掛かる）
-const GOAL_POLE = 5.2;
+// ゴールの竿の高さ（m）。2026-11-13 オーナー「ゴールの旗が低すぎる」で 2.6 → 5.2、同「まだ低い」で 9（人物の約3.5倍。遠くからも門だと分かる）
+const GOAL_POLE = 9;
 const HORIZON = 262;             // 地平線の高さ
 const CAM = { depth: 1.5, height: 2.0, back: 4.5, meterPerLane: 1.6 }; // 疑似3Dのカメラ（人物の4.5m後ろ・高さ2m。lane 1 = 1.6m）
 const COUNTDOWN = 2.4;           // 本番のスタートの合図（3・2・1・GO）の秒数（その相手との最初の一本）
@@ -68,6 +68,8 @@ const FEEL = {
   auraBurst: 0.4, auraHold: 0.5, auraLength: 0.6, auraTrail: 2,
   // ゲージへ飛ぶ光の粒（2026-11-13）: ゲージがこれだけ貯まるごとに粒を1つ
   orbEach: 0.012,
+  // 回転（2026-11-13）: 体のひねり（rad）、残像の枚数と1枚ごとの遅れ（回転）、横向きの瞬間の最小の横幅
+  spinTilt: 0.14, spinGhosts: 3, spinGhostStep: 0.045, spinMinWidth: 0.3,
 };
 /** 効果音の音量は、勝敗・得点への影響が大きい出来事ほど大きく（滑走・風のループはこれより小さい）。 */
 const SE_GAIN = Object.freeze({ fall: 0.7, goal: 0.7, leadChange: 0.6, perfect: 0.6, smash: 0.55, recover: 0.55, countdown: 0.55, boost: 0.5, thunder: 0.5,
@@ -488,7 +490,7 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       particles = []; rings = []; floaters = []; clearTimeout(cutinTimer); cutin.classList.remove("show"); cutin.replaceChildren(); popT = 0; slowT = 0; halfShown = 0; bot = null; botMemo = {}; botLag = 0; zapClock = 0.35; zapBurstT = 0; zapBurstShown = false;
       hitStopT = 0; shake = { t: 0, life: 1, ax: 0, ay: 0 }; flash = { t: 0, life: 1, peak: 0 }; flashDarkT = 0; lastLand = null; auraStartT = -1; pendingChips = []; orbs = []; orbBank = 0; lastGauge = 0; gaugePulseT = 0; rivalFx = { dust: [], rings: [], last: null, boostStartT: -9 }; fxCtx.clearRect(0, 0, W, H); smashFlash.clear(); goal = null; pendingResult = null;
       Object.assign(view, { depth: CAM.depth, back: CAM.back, roll: 0, kick: 0, boost: 0 });
-      shownKmh = toKmh(SPEED.start);
+      shownKmh = 0; // スタートの合図の間は止まっている（2026-11-13 オーナー「スタートのカウントのときも30キロあるのおかしい」）
       // スタートの合図: その相手との最初の一本は 3・2・1・GO を COUNTDOWN 秒で。2本目からは同じ合図を短く（すぐ滑り直せる）
       countdownTotal = kind === "practice" ? 0 : raced.has(raceWith) ? Math.min(COUNTDOWN, Math.max(0.3, FEEL.countdownRetry)) : COUNTDOWN;
       if (kind !== "practice") raced.add(raceWith);
@@ -718,7 +720,8 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       hudNodes.combo.textContent = game.combo >= 2 ? `${game.combo} COMBO ×${(Math.min(3, 1 + 0.15 * game.combo)).toFixed(2).replace(/0$/, "")}` : "";
       hudNodes.combo.dataset.hot = game.combo >= 10 ? "2" : game.combo >= 5 ? "1" : "";
       hudNodes.time.textContent = (game.finishTime ?? game.t).toFixed(1); // ゴールの余韻の間も、止まった時計を出す
-      const targetKmh = toKmh(game.speed);
+      // 合図の間は 0 km/h。GO で針が跳ね上がる（板はその瞬間に滑り出す）
+      const targetKmh = countdown > 0 ? 0 : toKmh(game.speed);
       shownKmh += (targetKmh - shownKmh) * (countdown > 0 ? 1 : 0.22);
       hudNodes.kmh.textContent = String(Math.round(shownKmh));
       const boosting = game.boostT > 0;
@@ -758,8 +761,14 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
         const gap = game.z - Math.min(noor.z, game.course.length);
         const side = Math.abs(gap) < 3, shownGap = Math.max(1, Math.round(toMeters(Math.abs(gap)))); // 差は画面の縮尺の m で出す
         const name = RIVAL_NAMES[raceWith];
-        hudNodes.race.textContent = countdown > 0 ? `VS ${name}` : side ? `${name}と並走` : gap > 0 ? `${name}に ${shownGap}m 差` : `${name}まで ${shownGap}m`;
-        hudNodes.race.dataset.lead = countdown > 0 || side ? "" : gap > 0 ? "you" : "noor";
+        // どちらかがゴールしたら、差は距離ではなく時間で出す（2026-11-13 オーナー「ライバルとの時差も距離に対してリアリティがない」。
+        // それまでは相手がゴールの先ですぐ止まるので、後から来ると距離が縮んで見え、結果の秒差と合わなかった）
+        const raceDone = game.race, rivalDone = game.rivalFinishT !== null;
+        hudNodes.race.textContent = countdown > 0 ? `VS ${name}`
+          : raceDone ? (raceDone.won ? `${name}に ${raceDone.gap.toFixed(1)}秒差` : `${name}の勝ち ＋${raceDone.gap.toFixed(1)}秒`)
+          : rivalDone ? `${name} ゴール ＋${Math.max(0, game.t - game.rivalFinishT).toFixed(1)}秒`
+          : side ? `${name}と並走` : gap > 0 ? `${name}に ${shownGap}m 差` : `${name}まで ${shownGap}m`;
+        hudNodes.race.dataset.lead = countdown > 0 ? "" : raceDone ? (raceDone.won ? "you" : "noor") : rivalDone ? "noor" : side ? "" : gap > 0 ? "you" : "noor";
         // 前後が入れ替わった瞬間（内部の距離で3以上の差がついた時）に一言。スタート直後の並びは数えない
         const now = countdown > 0 || game.finished || side ? lead : Math.sign(gap);
         if (now !== lead) {
@@ -1944,20 +1953,12 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       const shownVx = steerLean ? steerLean * Math.max(FEEL.leanNow, Math.abs(game.vx)) : game.vx + carveDir * 0.4;
       pose = riderPose({ fallT: game.fallT, air: game.air, airKind: game.airKind, landingPress: game.landingPress, landedAt: game.landedAt, t: game.t, vx: shownVx }, pose);
       const poseArt = art.get(pose), baseArt = art.get("rider");
-      // 空中トリック: 縦の軸で回る（絵を横に縮めて裏返す）。回っている間は周りに風の弧
+      // 空中トリック: 縦の軸で回る（絵を横に縮めて裏返す）。2026-11-13 オーナー「左右に向くだけであんまり回ってる感がない」で、
+      // 体を巻くつむじ風の輪（奥の半分は人物の後ろ、手前の半分は前）、少し前の向きの残像、回転に合わせた体のひねりを足した
       const spinning = game.spinDir !== 0 || Math.abs(game.rot) > 0.001;
-      let spinX = spinning ? Math.cos(game.rot * Math.PI * 2) : 1;
-      if (Math.abs(spinX) < 0.14) spinX = spinX < 0 ? -0.14 : 0.14;
-      if (spinning && !reducedMotion) {
-        ctx.save();
-        ctx.strokeStyle = "rgba(255,255,255,0.75)"; ctx.lineCap = "round";
-        for (let i = 0; i < 3; i++) {
-          const a0 = game.rot * Math.PI * 4 * game.spinDir + i * 2.1;
-          ctx.lineWidth = Math.max(2, unit * (0.08 - i * 0.02));
-          ctx.beginPath(); ctx.ellipse(cx, baseY - unit * (0.9 + i * 0.35), unit * (0.85 - i * 0.1), unit * 0.22, 0, a0, a0 + 1.5); ctx.stroke();
-        }
-        ctx.restore();
-      }
+      const spinX = spinScaleX(game.rot, spinning);
+      const spinTilt = spinning && !reducedMotion ? Math.sin(game.rot * Math.PI * 2) * FEEL.spinTilt * (game.spinDir || 1) : 0;
+      if (spinning) drawSpinWhirl(cx, baseY, unit, game.rot, game.spinDir || Math.sign(game.rot) || 1, "back");
       if (poseArt && baseArt) {
         const def = DESERT_ART[pose];
         // 大きさは背面Bの高さ（unit×2.45）に対する比。どの姿勢も同じ縮尺で描かれている
@@ -1968,16 +1969,26 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
           ctx.translate(cx + dx, baseY + dy);
           if (game.fallT > 0) ctx.rotate((game.x > 0 ? 1 : -1) * 0.25 * (game.fallT / 1.1));
           else {
-            ctx.rotate(lean * (pose === "rider" ? 0.45 : 0.12));
+            ctx.rotate(lean * (pose === "rider" ? 0.45 : 0.12) + spinTilt);
             if (game.air > 0) ctx.translate(0, -Math.sin(airT * Math.PI) * unit * 0.1);
           }
-          ctx.scale(spinX * grow * squash[0], grow * squash[1]);
+          ctx.scale((spinXOverride ?? spinX) * grow * squash[0], grow * squash[1]);
           ctx.drawImage(image, -def.anchor.x * dw, -def.anchor.y * dh, dw, dh);
           ctx.restore();
         };
+        let spinXOverride = null;
         // 炎色の残像（手前・外側へずれて大きく薄く）。動き軽減では出さない
         boostAfterimages(poseArt, cx, baseY, unit, boostFeel, AURAS.player, (image, alpha, dx, dy, grow) => sprite(alpha, dy, grow, image, dx));
+        // 回転の残像: 少し前の向きの絵を薄く重ねる（回転のぶれ）
+        if (spinning && !reducedMotion && game.spinDir !== 0) {
+          for (let k = FEEL.spinGhosts; k >= 1; k--) {
+            spinXOverride = spinScaleX(game.rot - Math.sign(game.rot || game.spinDir) * FEEL.spinGhostStep * k, true);
+            sprite(0.32 - 0.08 * k, 0, 1);
+          }
+          spinXOverride = null;
+        }
         sprite(1, 0, 1);
+        if (spinning) drawSpinWhirl(cx, baseY, unit, game.rot, game.spinDir || Math.sign(game.rot) || 1, "front");
         return;
       }
       ctx.save();
@@ -2149,6 +2160,47 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       ctx.restore();
     }
     /** 本番の競走相手。ヌールは専用画像、なると画像未読込時は図形を使う。 */
+    /** 回転中の横幅の倍率（cos）。横向きの瞬間でも細い線にならないよう FEEL.spinMinWidth で止める。 */
+    function spinScaleX(rot, spinning) {
+      if (!spinning) return 1;
+      const c = Math.cos(rot * Math.PI * 2), min = FEEL.spinMinWidth;
+      return Math.abs(c) < min ? (c < 0 ? -min : min) : c;
+    }
+    /**
+     * 回転のつむじ風: 腰と胸の高さで体を巻く2本の輪。輪の上を明るい弧が回転の向きへ走る。
+     * half="back" は奥の半分（人物の後ろ）、"front" は手前の半分（人物の前）を描き、輪が人物を巻いて見える。動き軽減では細い輪だけ。
+     */
+    function drawSpinWhirl(cx, baseY, unit, rot, dir, half) {
+      const front = half === "front", turn = rot * Math.PI * 2;
+      ctx.save();
+      ctx.lineCap = "round";
+      for (const [h, rx, ry, w] of [[0.75, 0.95, 0.24, 0.09], [1.35, 0.8, 0.2, 0.07]]) {
+        const y = baseY - unit * h;
+        // 輪の芯（薄く）
+        ctx.strokeStyle = `rgba(255,255,255,${front ? 0.22 : 0.14})`; ctx.lineWidth = Math.max(1.5, unit * w * 0.5);
+        ctx.beginPath(); ctx.ellipse(cx, y, unit * rx, unit * ry, 0, front ? 0 : Math.PI, front ? Math.PI : Math.PI * 2); ctx.stroke();
+        if (reducedMotion) continue;
+        // 回転の向きへ走る明るい弧（3本）。手前の半分と奥の半分で、見えている所だけ描く
+        for (let i = 0; i < 3; i++) {
+          const a0 = (dir * turn * 1.6 + i * (Math.PI * 2 / 3) + h) % (Math.PI * 2), len = 1.1;
+          for (const [width, color] of [[w * 1.8, "rgba(255,255,255,0.22)"], [w, "rgba(255,255,255,0.85)"]]) {
+            ctx.strokeStyle = color; ctx.lineWidth = Math.max(2, unit * width);
+            const from = a0, to = a0 + len * dir;
+            const lo = Math.min(from, to), hi = Math.max(from, to);
+            // 画面の下側（sin>0）が手前、上側が奥
+            const steps = 10; let open = false;
+            ctx.beginPath();
+            for (let k = 0; k <= steps; k++) {
+              const a = lo + (hi - lo) * k / steps, isFront = Math.sin(a) >= 0;
+              if (isFront === front) { const px = cx + Math.cos(a) * unit * rx, py = y + Math.sin(a) * unit * ry; if (!open) { ctx.moveTo(px, py); open = true; } else ctx.lineTo(px, py); }
+              else open = false;
+            }
+            ctx.stroke();
+          }
+        }
+      }
+      ctx.restore();
+    }
     /** カーブの合図: 人物の横に、切り込む向き（カーブの内側）の矢印3つと短い一言。矢印は内側へ流れる。 */
     function drawCurveCue(cx, cy, unit, dir) {
       if (!dir) return;
@@ -2232,17 +2284,26 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       if (rivalBoost > 0) drawBoostAura(p.x, rivalY, unit * artScale, { palette, strength: rivalBoost, time: noor.t, seed: 2.1 });
       ctx.save();
       ctx.translate(p.x, rivalY);
-      // 空中の回転（なるの 360）は、主人公と同じく絵を横に縮めて裏返す
-      let spinX = Math.abs(noor.rot || 0) > 0.001 ? Math.cos(noor.rot * Math.PI * 2) : 1;
-      if (Math.abs(spinX) < 0.14) spinX = spinX < 0 ? -0.14 : 0.14;
+      // 空中の回転（なるの 720）は、主人公と同じく絵を横に縮めて裏返し、つむじ風の輪と残像を付ける
+      const rivalSpinning = Math.abs(noor.rot || 0) > 0.001;
+      const spinX = spinScaleX(noor.rot || 0, rivalSpinning);
       // 滑る姿の絵は `<相手>Rider…`（DESERT_ART）にあれば使う。読み込み前・失敗した時は下の図形で描く。
       // 絵は主人公の背面と同じ縮尺（rider の高さ768に対する比）で、身長の差は RIVAL_ART_SCALE で付ける
       if (noorArt) {
         const def = DESERT_ART[noorPose];
         const dh = unit * 2.45 * artScale * noorArt.naturalHeight / DESERT_ART.rider.size[1];
         const dw = dh * noorArt.naturalWidth / noorArt.naturalHeight;
+        const rivalDir = Math.sign(noor.rot || 0) || 1, rivalTilt = rivalSpinning && !reducedMotion ? Math.sin(noor.rot * Math.PI * 2) * FEEL.spinTilt * rivalDir : 0;
+        if (rivalSpinning) { ctx.save(); ctx.translate(-p.x, -rivalY); drawSpinWhirl(p.x, rivalY, unit * artScale, noor.rot, rivalDir, "back"); ctx.restore(); }
         if (noor.fallT > 0) ctx.rotate((noor.x > 0 ? 1 : -1) * 0.25 * (noor.fallT / 1.1));
-        else ctx.rotate(lean * (noorPose.endsWith("Rider") ? 0.45 : 0.12));
+        else ctx.rotate(lean * (noorPose.endsWith("Rider") ? 0.45 : 0.12) + rivalTilt);
+        if (rivalSpinning && !reducedMotion) {
+          for (let k = FEEL.spinGhosts; k >= 1; k--) {
+            ctx.save(); ctx.globalAlpha *= 0.32 - 0.08 * k;
+            ctx.scale(spinScaleX(noor.rot - rivalDir * FEEL.spinGhostStep * k, true) * squash[0], squash[1]);
+            ctx.drawImage(noorArt, -def.anchor.x * dw, -def.anchor.y * dh, dw, dh); ctx.restore();
+          }
+        }
         ctx.scale(spinX * squash[0], squash[1]);
         boostAfterimages(noorArt, p.x, rivalY, unit * artScale, rivalBoost, palette, (image, alpha, dx, dy, grow) => {
           ctx.save(); ctx.globalAlpha *= alpha; ctx.translate(dx, dy); ctx.scale(grow, grow);
@@ -2250,6 +2311,7 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
         });
         ctx.drawImage(noorArt, -def.anchor.x * dw, -def.anchor.y * dh, dw, dh);
         ctx.restore();
+        if (rivalSpinning) drawSpinWhirl(p.x, rivalY, unit * artScale, noor.rot, rivalDir, "front");
         ctx.restore();
         if (p.dz < 70) drawRivalName(name, look, p, height, unit);
         return;
