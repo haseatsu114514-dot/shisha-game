@@ -278,7 +278,8 @@ for (const [lines, error] of [
 validateLimeMedia([{ sender: "adam", messages: ["legacy", { text: "text" }, stamp] }], catalog);
 console.log("[LIME media] catalog, files, unknown ID, owner, mixed kinds, count, adjacency: PASS");
 
-// HTTP・通信・JSONの各失敗にはファイル名が付き、以後の組は読まず、DBも公開しない。
+// HTTP・通信・JSONの各失敗にはファイル名が付き、失敗の後は新しいファイルを読み始めず、DBも公開しない。
+// 失敗する1本を、同時に始まった残り3本より先に返す。残りが後から終わっても次を始めないことを見る（#3500 A-18）。
 const badPath = "../data/relationship_memories.json";
 for (const [response, expected] of [
   [async () => ({ ok: false, status: 404 }), /relationship_memories\.json: HTTP 404/],
@@ -288,10 +289,10 @@ for (const [response, expected] of [
   const started = [];
   const failed = await loader(async (url) => {
     started.push(url);
-    return url === badPath ? response() : fixtureFetch(url);
+    return url === badPath ? response() : pause(5).then(() => fixtureFetch(url));
   });
   await assert.rejects(failed.loadAll(), expected);
-  await pause(1); // 同じ組の残りのリクエストを片付ける
+  await pause(20); // 同時に始まった残りのリクエストを終わらせる
   assert.equal(started.length, 4);
   assert.equal(Object.keys(failed.DB.characters).length, 0);
   assert.equal(Object.keys(failed.DB.dialogues).length, 0);
@@ -323,10 +324,14 @@ for (const phase of ["headers", "body"]) {
     return phase === "headers" ? waitForAbort() : { ok: true, status: 200, json: waitForAbort };
   }, timers);
   await assert.rejects(stalled.loadAll(), /relationship_memories\.json: .*15秒.*タイムアウト/);
+  // 1本が止まっても、残りは同時4本の枠で読み進める（組ごとの全員待ちをしない）。中断の後は新しく始めない（#3500 A-18）。
+  const startedAtFailure = started.length;
+  await pause(50); // 中断の時点で読んでいた残りを終わらせる
   assert(aborted, `${phase} was not aborted`);
   assert(scheduled.every((ms) => ms === 15000));
   assert.equal(pending.size, 0);
-  assert.equal(started.length, 4);
+  assert(startedAtFailure > 4, `${phase}: the stalled file held back the others (${startedAtFailure} started)`);
+  assert.equal(started.length, startedAtFailure);
 }
 
 console.log("[remake data] 43 boot JSON files, deferred hiyori/cinema/tournament_craft and retry, max 4 requests, gallery catalog, venue hosts, progress, HTTP/network/JSON errors, headers/body timeout: PASS");
