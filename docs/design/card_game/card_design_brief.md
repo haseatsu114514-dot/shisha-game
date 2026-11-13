@@ -9,7 +9,7 @@
 この依頼書は、ゲーム内のミニゲーム「一台勝負」（`remake/ichidai.html`）のカードとプレイマットを、Codex が**トレーディングカードゲームとしてデザインする**ためのものです。
 **いちばん下のコードブロックを、そのまま Codex に貼ります。** その上は、依頼の考え方と、オーナーが出来上がりを選ぶときの物差しです。
 
-- 規則: [第0.5版ルールブック](ichidai_shobu_rulebook_v0.5.pdf)。カードの数値と文は [`cards.js`](cards.js)（ゲーム内は `remake/js/minigames/ichidai-data.js`）。
+- 規則: [第0.6版ルールブック](ichidai_shobu_rulebook_v0.6.pdf)。カードの数値と文は [`cards.js`](cards.js)（ゲーム内は `remake/js/minigames/ichidai-data.js`）。
 - 同じ日の朝に書いた「卓上（印刷）向けの3方向の見本」の依頼は、この決定で置き換えました（前の版は Git の履歴にあります）。
 
 ## 1. いまの状態（仮の見た目）

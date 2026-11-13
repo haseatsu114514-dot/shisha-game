@@ -1,4 +1,4 @@
-// rulebook.html の図と一覧を cards.js から組み立てる（第0.5版）。
+// rulebook.html の図と一覧を cards.js から組み立てる（第0.6版）。
 (function () {
   const byId = Object.fromEntries(FLAVORS.map((f) => [f.id, f]));
   const supByName = Object.fromEntries(SUPPORT.map((s) => [s.n, s]));

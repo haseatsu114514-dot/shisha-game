@@ -1,4 +1,4 @@
-// rulebook.html（第0.5版）を A4 の PDF にする。出力は ichidai_shobu_rulebook_v0.5.pdf。
+// rulebook.html（第0.6版）を A4 の PDF にする。出力は ichidai_shobu_rulebook_v0.6.pdf。
 // 使い方: node build_pdf.mjs [書体フォルダ] [出力先]
 //   書体フォルダには @fontsource/noto-sans-jp と @fontsource/zen-antique を展開しておく
 //   （`npm pack @fontsource/noto-sans-jp @fontsource/zen-antique` を展開したもの。リポジトリには入れない）。
@@ -11,7 +11,7 @@ import fs from 'node:fs';
 const { chromium } = createRequire(import.meta.url)('playwright');
 const here = path.dirname(fileURLToPath(import.meta.url));
 const fontDir = process.argv[2];
-const out = process.argv[3] || path.join(here, 'ichidai_shobu_rulebook_v0.5.pdf');
+const out = process.argv[3] || path.join(here, 'ichidai_shobu_rulebook_v0.6.pdf');
 
 const browser = await chromium.launch();
 const page = await browser.newPage();
