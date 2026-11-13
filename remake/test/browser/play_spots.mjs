@@ -250,6 +250,8 @@ await suite("play-spots", async runCheck => {
     const before = await page.evaluate(() => localStorage.getItem("suien_remake_save"));
     await go(page, "axe_bar");
     const introduced = JSON.parse(before); introduced.flags._intro_maki = true; introduced.met.maki = true; // 登場カットインで面識も付く（8100c4f6）
+    // 初めての来店の会話を読んだ時間帯の印（VAR01・daily/venue-arrivals.js）。同じ夜に入り直した時に来店の会話を重ねない
+    introduced.flags._venue_arrival_at_axe_bar = `${introduced.chapter || 1}:${introduced.day}:${introduced.slot}`;
     assert.equal(await page.evaluate(() => spotCore.state.flags._intro_maki), true, "Completed introduction is read in the live state");
     assert.equal(await page.evaluate(() => localStorage.getItem("suien_remake_save")), before, "The introduction itself does not settle the venue action");
     await hit(page, "axe-bar-practice");
