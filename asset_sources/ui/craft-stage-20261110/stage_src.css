@@ -518,3 +518,11 @@
   border-style: solid; border-color: transparent !important;
   border-image: url("../img/ui/craft-glass/frame.webp") 50 60 50 60 / 20px 24px 20px 24px / 8px stretch !important;
 }
+/* ---------- スマホ横持ち: 上のレールと見守る人の一言の文字は実寸 11.5px 以上（#3517） ----------
+   ステージは --k（横持ちで 0.47〜0.54）で縮むので、ステージ寸法の px のままだと実寸 6〜10px になる。
+   wide-craft.css の下限は !important のこれらの指定に負けるため、ここで割り戻した値を下限にする。 */
+&phone .bench-top > .rig-record .rig-lamp { width: max(26px, calc(17.5px / var(--k, 1))) !important; height: max(26px, calc(17.5px / var(--k, 1))) !important; }
+&phone .bench-top > .rig-record .rig-lamp b { font-size: max(13px, calc(11.5px / var(--k, 1))) !important; }
+&phone .bench-progress-track > .bench-phase.now .bench-phase-copy small { font-size: max(13px, calc(11.5px / var(--k, 1))) !important; }
+&phone .bench-audience .audience-name { font-size: max(20px, calc(11.5px / var(--k, 1))) !important; }
+&phone .bench-audience .audience-note { font-size: max(20px, calc(13px / var(--k, 1))) !important; }

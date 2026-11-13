@@ -91,9 +91,38 @@ function syncLight(img, light, name) {
     if (!light.style.getPropertyValue(MASK_VAR)) setIfChanged(light, "display", "none");
     return;
   }
-  setIfChanged(light, "display", "");
-  setIfChanged(light, "aspect-ratio", `${img.naturalWidth} / ${img.naturalHeight}`);
-  setIfChanged(light, MASK_VAR, `url("${src.replace(/["\\\n]/g, encodeURIComponent)}")`);
+  setMask(light, src, `${img.naturalWidth} / ${img.naturalHeight}`);
+}
+
+/**
+ * 型（mask）を新しい表情の絵へ替える。絵のデコードを済ませてから替え、それまでは前の表情の型のまま光を出しておく。
+ * iPhone の Safari は大きな絵を型にすると裏でデコードし、その間は型が空（光が消える）になる。表情が替わるたびに
+ * 「光の無い普通の色 → すぐ暖色」と色が跳ねて見えていた（2026-11-13 オーナー「普通の色の後に暖色にすぐなる」・LD08）。
+ * デコードし終えた絵（probe）は、型に替えてから2フレームのあいだ手元に持ち、型の描画が同じデコード結果を使えるようにする。
+ */
+const pendingMasks = new WeakMap(); // 光の層 → { src, probe }
+function setMask(light, src, ratio) {
+  const mask = `url("${src.replace(/["\\\n]/g, encodeURIComponent)}")`;
+  if (light.style.getPropertyValue(MASK_VAR) === mask) {
+    setIfChanged(light, "display", "");
+    setIfChanged(light, "aspect-ratio", ratio);
+    return;
+  }
+  if (pendingMasks.get(light)?.src === src) return;
+  const probe = new Image();
+  probe.src = src;
+  const pending = { src, probe };
+  pendingMasks.set(light, pending);
+  const apply = () => {
+    if (pendingMasks.get(light) !== pending || !light.isConnected) return; // 待つ間に別の表情へ替わった・片付けられた
+    setIfChanged(light, "display", "");
+    setIfChanged(light, "aspect-ratio", ratio);
+    setIfChanged(light, MASK_VAR, mask);
+    portraitObserver?.takeRecords();
+    requestAnimationFrame(() => requestAnimationFrame(() => { if (pendingMasks.get(light) === pending) pendingMasks.delete(light); }));
+  };
+  // decode() が無い・失敗した時（壊れた絵など）は、すぐ替える（今までと同じ）。
+  (typeof probe.decode === "function" ? probe.decode() : Promise.resolve()).then(apply, apply);
 }
 
 function syncLights() {

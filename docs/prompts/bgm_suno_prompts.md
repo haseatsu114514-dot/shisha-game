@@ -265,6 +265,8 @@ sudden loud hits. About 3 minutes.
 
 ## 2026-11-02 第2章の街 柚ヶ谷（J04・IR28）
 
+> **2026-11-12 追記（OTO06）**: Suno の曲が届くまでの仮として、CC0 の曲（Pro Sensory「Mocha Frapp」）を `bgm_yuzugaya` に当て、下の「組み込み先」のとおり第2章へつないだ。曲が届いたら `assets/audio/bgm/bgm_yuzugaya.mp3` を差し替え、スタッフロール（`STAFF_MUSIC`）と `asset_sources/music/main-placeholder-audio/sources.json` の行を直すだけでよい（コードの接続はそのまま使える）。
+
 第2章の隣町・**柚ヶ谷**（高いビル・広い交差点・大型ビジョン、全国から選手が集まる都会）は今、第1章の日常曲 `kansetsu_shomei_to_black_coffee`（間接照明とブラックコーヒー）の仮当て。地元の橙須（気だるい商店街）と温度を変え、第2章の「才能の壁」の少し張った空気を出す。調査は `docs/reports/issue1081-j04-ch2-town-bgm-20261028.md`。
 
 - 共通: **Instrumental（歌なし）**。ボーカル・ボーカルチョップ・語りが混ざったテイクは不採用。ループで鳴らすので、フェードアウト・完全終止を付けない。1曲につき2〜3テイク作って選ぶ。

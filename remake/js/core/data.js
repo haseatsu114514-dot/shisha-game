@@ -427,9 +427,56 @@ export function assetUrl(rel) {
   return img(rel.replace(/^res:\/\//, "").replace(/^assets\//, ""));
 }
 
-/** 画像を先読みする（遷移の前に読み込み待ちを挟んで、白飛び・ちらつきを防ぐ） */
+/**
+ * 待たない先読み（preload の timeoutMs 0。会話の立ち絵・CG）の列。
+ * 一度に全部を頼むと、スマホの回線では十数枚（立ち絵は1枚約300KB）が帯域を分け合い、すぐ次の行で要る1枚や、
+ * 会話の入口で待っている背景・最初の立ち絵が遅れて「場面を準備しています…」が出ていた（2026-11-13 オーナー指摘）。
+ * そこで、頼まれた順に1枚ずつ読む（2枚ずつより、次に要る1枚が早く届く。スマホ相当の回線で会話の入口の待ちが
+ * 約0.35秒→約0.1秒）。新しく頼まれた組（新しい会話・jump 先）を、前の会話の読み残しより先にする。
+ * 実際に表示する行は ui.js の imageReady が直接読むので、この列の順番を待たない。
+ */
+const BACKGROUND_PRELOAD = { concurrency: 1, pendingMax: 32, rememberMax: 256 };
+const backgroundPending = [];
+const backgroundLoaded = new Set();
+const backgroundLoading = new Set();
+
+function pumpBackgroundPreload() {
+  while (backgroundLoading.size < BACKGROUND_PRELOAD.concurrency && backgroundPending.length) {
+    const url = backgroundPending.shift();
+    backgroundLoading.add(url);
+    const image = new Image();
+    image.onload = image.onerror = () => {
+      image.onload = image.onerror = null;
+      backgroundLoading.delete(url);
+      backgroundLoaded.add(url);
+      if (backgroundLoaded.size > BACKGROUND_PRELOAD.rememberMax) backgroundLoaded.delete(backgroundLoaded.values().next().value);
+      pumpBackgroundPreload();
+    };
+    image.src = url;
+  }
+}
+
+function queueBackgroundPreload(list) {
+  const fresh = [...new Set(list)].filter((url) => !backgroundLoaded.has(url) && !backgroundLoading.has(url));
+  if (!fresh.length) return;
+  const queued = new Set(fresh);
+  // 同じ絵がもう列にあれば、新しい組の位置へ移す（今の会話の順番で読む）。
+  const rest = backgroundPending.filter((url) => !queued.has(url));
+  backgroundPending.splice(0, backgroundPending.length, ...fresh, ...rest);
+  backgroundPending.length = Math.min(backgroundPending.length, BACKGROUND_PRELOAD.pendingMax); // 古い読み残しから捨てる
+  pumpBackgroundPreload();
+}
+
+/**
+ * 画像を先読みする（遷移の前に読み込み待ちを挟んで、白飛び・ちらつきを防ぐ）。
+ * timeoutMs が 0 のときは待たない先読み: 上の列に入れて順に読み、すぐ解決する。
+ */
 export function preload(urls, timeoutMs = 4000) {
   const list = urls.filter(Boolean);
+  if (timeoutMs === 0) {
+    queueBackgroundPreload(list);
+    return Promise.resolve();
+  }
   return Promise.race([
     Promise.all(list.map((u) => new Promise((r) => { const i = new Image(); i.onload = i.onerror = r; i.src = u; }))),
     new Promise((r) => setTimeout(r, timeoutMs)),

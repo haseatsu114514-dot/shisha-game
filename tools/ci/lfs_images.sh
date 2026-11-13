@@ -64,6 +64,12 @@ case "${1:-}" in
       exit 1
     fi
     echo "Git LFS assets to fetch: ${#files[@]}"
+    # Ask the LFS API once per 100 objects first; the per-file smudge below then finds them locally.
+    # One API request per file hit "LFS: API rate limit exceeded" (CI has no credentials) when a PR
+    # re-encoded hundreds of images (2026-11-13). A failure here only falls back to the per-file download.
+    if [ "${#files[@]}" -gt 0 ]; then
+      python3 tools/ci/lfs_batch_fetch.py "${files[@]}" || echo "Git LFS batch download failed; falling back to per-file download" >&2
+    fi
     for f in "${files[@]}"; do
       git lfs smudge -- "$f" < "$f" > "$f.lfs-tmp"
       mv "$f.lfs-tmp" "$f"

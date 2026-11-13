@@ -6,7 +6,7 @@ import { playEntrance, CH1_EVE_NOTES } from "./tournament-entrance.js";
 import { playTournamentArrival } from "./ch1-arrival.js";
 import { DB, bgUrl, faceIconUrl, realName, displayName, loadTournamentCraftDialogue } from "../core/data.js";
 import { mountColdOpen } from "../scenes/coldopen.js";
-import { playChapterPoem } from "../scenes/chapter-poem.js";
+import { playChapterPoem, preparePoemPanel } from "../scenes/chapter-poem.js";
 import { playTonariOpening } from "../scenes/tonari-opening.js";
 import { layers, showScreen, clearScreen, setBg, smokeWipe, dayCard, roundCut, toast, bannersIdle, retire, retireScreen, loadingNotice, withChapterLoading } from "../core/ui.js";
 import { sceneMoment } from "../core/scene-motions.js";
@@ -148,6 +148,7 @@ async function openingPart() {
   clearScreen();
   if (!progress.introDone) {
     stopBgm();
+    void preparePoemPanel(1); // コールドオープンを読んでいる間に、続く巻頭ポエムの横長の漫画を読んでおく（OSP20）
     await setBg(null, { instant: true }); // 先に暗転を置いてから場面を重ねる（後から来た暗転に場面が隠れないように）
     // コールドオープン: 1年後の世界大会の決勝の一瞬（顔も会場の全景も見せない）。
     // 場面は背景レイヤーに置く＝会話の文字より奥（手前に置くと文字が隠れて真っ暗に見えていた）

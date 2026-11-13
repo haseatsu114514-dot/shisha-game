@@ -5,7 +5,8 @@
 // - 便利: 体力を満タン・お金＋10万円・経験値＋200・火種＋6
 // - 今の状態（章・日・時間帯・体力・お金）
 // 会話の早送りは、会話の操作バーの SKIP（設定で未読も飛ばせる）を使う。
-// リリース前に消す: remake/js/dev/ のフォルダと、main.js の「デバッグ用の道具」の1行（remake/README.md）。
+// ホーム画面に追加したiPhoneなど URL を変えられない時は、タイトルの版の表示を5回続けて押すと出し入れできる（scenes/title.js の debugTapToggle）。
+// リリース前に消す: remake/js/dev/ のフォルダと、main.js の「デバッグ用の道具」の1行、title.js の debugTapToggle（remake/README.md）。
 import { state, newState, setState, save, loadFromSlot, requestResumeOnBoot, SCHEMA, config, saveConfig } from "../core/state.js";
 import { addStamina, addMoney, maxStamina, ROMANCEABLE, AFFINITY_RANK_PTS, affinityLevel } from "../core/stats.js";
 import { chapterDay, chapterFinalDay } from "../core/chapter-clock.js";

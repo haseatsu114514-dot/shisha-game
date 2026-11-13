@@ -538,3 +538,11 @@ html body.craft-stage:not(.game-ds) .bench[data-mode][data-step="holes"] .vent-p
 html body.craft-stage:not(.game-ds) .bench[data-mode][data-step="holes"] .vent-preview p { margin: 0; display: flex; flex-direction: column; align-items: center; gap: 2px; color: #f6f1fa; text-shadow: 0 1px 4px #000; }
 html body.craft-stage:not(.game-ds) .bench[data-mode][data-step="holes"] .vent-preview p b { font-size: 24px; letter-spacing: .06em; }
 html body.craft-stage:not(.game-ds) .bench[data-mode][data-step="holes"] .vent-preview p span { font-size: 18px; color: #e7dbf3; }
+/* ---------- スマホ横持ち: 上のレールと見守る人の一言の文字は実寸 11.5px 以上（#3517） ----------
+   ステージは --k（横持ちで 0.47〜0.54）で縮むので、ステージ寸法の px のままだと実寸 6〜10px になる。
+   wide-craft.css の下限は !important のこれらの指定に負けるため、ここで割り戻した値を下限にする。 */
+html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .bench-top > .rig-record .rig-lamp { width: max(26px, calc(17.5px / var(--k, 1))) !important; height: max(26px, calc(17.5px / var(--k, 1))) !important; }
+html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .bench-top > .rig-record .rig-lamp b { font-size: max(13px, calc(11.5px / var(--k, 1))) !important; }
+html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .bench-progress-track > .bench-phase.now .bench-phase-copy small { font-size: max(13px, calc(11.5px / var(--k, 1))) !important; }
+html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .bench-audience .audience-name { font-size: max(20px, calc(11.5px / var(--k, 1))) !important; }
+html[data-density="phone"] body.craft-stage:not(.game-ds) .bench[data-mode] .bench-audience .audience-note { font-size: max(20px, calc(13px / var(--k, 1))) !important; }

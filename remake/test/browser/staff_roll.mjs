@@ -296,12 +296,13 @@ await suite("staff-roll", async check => {
         "作曲 魔王魂（魔王魂）", "作曲 魔王魂（魔王魂）", "作曲 魔王魂（魔王魂）", "作曲 魔王魂（魔王魂）", "作曲 甘茶（甘茶の音楽工房）",
         "作曲 Kevin MacLeod（incompetech.com・CC BY 4.0）",
         ...["Eldritch Grim", "Aureolus_Omicron", "congusbongus", "TAD", "controllerhead", "yd", "Kistol", "northivanastan", "Bobjt", "Aureolus_Omicron",
-            "omfgdude", "Umplix", "Kistol", "MintoDog", "DJ CrisP", "Spring Spring", "Centurion_of_war", "tebruno99"]
+            "omfgdude", "Umplix", "Kistol", "MintoDog", "yd", "Spring Spring", "Centurion_of_war", "tebruno99", "Pro Sensory"]
           .map(name => `作曲 ${name}（OpenGameArt・CC0）`)]);
     assert.equal(await page.locator(".staff-roll-sound").textContent(), "効果音：ポケットサウンド – https://pocket-se.info/");
     assert.deepEqual(await page.locator(".staff-roll-sound-main p").allTextContents(),
       ["効果音（本編UI・場面転換）：Kenney – Interface Sounds / Music Jingles（CC0） – https://kenney.nl/",
-        "効果音（本編）：OpenGameArt – eXpl0it3r「Applause in a large hall or church」/ Spring Spring「Purchasing Sound Effect」「Pleasing Bell Sound Effect」/ syncopika「coin sounds」/ Till Behrend「Glass Break」/ themightyglider「Camera」/ Kerzoven「Cat Purr & Meow」/ IgnasD「Meow」/ AntumDeluge「Fire Crackling」（CC0） – https://opengameart.org/"]);
+        "効果音（本編）：OpenGameArt – eXpl0it3r「Applause in a large hall or church」/ Spring Spring「Purchasing Sound Effect」「Pleasing Bell Sound Effect」/ syncopika「coin sounds」/ Till Behrend「Glass Break」/ themightyglider「Camera」/ Kerzoven「Cat Purr & Meow」/ IgnasD「Meow」/ AntumDeluge「Fire Crackling」（CC0） – https://opengameart.org/",
+        "効果音（本編）：OpenGameArt – Iwan Gabovitch「Door open, door close」/ Brandon Morris「Completion sound.」/ isaiah658「Ambient Bird Sounds」（CC0） – https://opengameart.org/"]);
     assert.deepEqual((await page.locator(".staff-roll-sound-axe p").allTextContents()).map(t => t.split("：")[1].split(" – ")[0]),
       ["Kenney", "Freesound"]);
     for (const name of ["Jofae", "craigsmith", "qubodup", "plasterbrain", "IndyArts"]) assert(text.includes(name), name + " is credited");

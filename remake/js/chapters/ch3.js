@@ -241,7 +241,7 @@ async function openChapter(advance) {
   });
 }
 
-/** 公園の回想 → 現在（綾取の調べもの）。落ち葉の波が覆っている間に背景を替える（#2688 A3） */
+/** 公園の回想 → 現在（綾取の調べもの）。灰色になった回想が煙のにじみでほどける間に背景を替える（#2688 A3・TMG60） */
 const leavesToPresent = () => sceneMoment("leafWave", () => setBg(bgUrl("bg_ch3_saku_video"), { instant: true }));
 
 async function readPrologue(owner, id, bg, ride = null) {
@@ -271,7 +271,7 @@ async function renderPrologue(owner) {
     save();
   }
   if (progress.prologueStep === 1) {
-    // 色の抜けた公園の回想から、葉の形の面が流れて現在へ（#2688 A3）
+    // 色の抜けた公園の回想が煙のにじみでほどけて現在へ（#2688 A3・TMG60）
     if (!await readPrologue(owner, "ch3_saku_research", "bg_ch3_saku_video", fromChildhood ? leavesToPresent : null)) return;
     progress.prologueStep = 2;
     save();
@@ -312,7 +312,7 @@ async function renderPrep(owner) {
     save();
   }
   if (prep.step === 1) {
-    // 色の抜けた公園の回想から、葉の形の面が流れて現在へ（#2688 A3）
+    // 色の抜けた公園の回想が煙のにじみでほどけて現在へ（#2688 A3・TMG60）
     if (!await readPrologue(owner, "ch3_saku_research", "bg_ch3_saku_video", fromChildhood ? leavesToPresent : null)) return;
     prep.step = 2;
     save();

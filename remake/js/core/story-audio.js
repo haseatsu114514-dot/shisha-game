@@ -8,7 +8,9 @@ export const STORY_BGM = Object.freeze({
   staffRoll: "title",
   shopHome: "tonari",
   dailyCity: "kansetsu_shomei_to_black_coffee",
-  // 実ファイルあり。第1〜3章の街・地図は J04 と既存テストのため dailyCity のまま。
+  // 第2章の街・柚ヶ谷（2026-11-12 仮。CC0 の「Mocha Frapp」。J04 の曲ができたら、このキーのファイルだけ差し替える）。
+  yuzugaya: "bgm_yuzugaya",
+  // 実ファイルあり（未使用）。第1・3章の街・地図は dailyCity のまま。
   map: "bgm_map",
   rivalShop: "bgm_rival_shop",
   tournamentWait: "bgm_tournament_wait",
@@ -33,12 +35,18 @@ export function storyBgm(role) {
 
 /**
  * 章の地図・朝のハブで鳴らす曲。
- * 第1〜3章は既存の街の曲（kansetsu）を維持する。第4章はドバイ、第5章は店の曲。
+ * 第1・3章は既存の街の曲（kansetsu）。第2章は柚ヶ谷、第4章はドバイ、第5章は店の曲。
  */
 export function chapterHubBgm(chapter) {
+  if (Number(chapter) === 2) return STORY_BGM.yuzugaya;
   if (Number(chapter) === 4) return STORY_BGM.dubai;
   if (Number(chapter) === 5) return STORY_BGM.shopHome;
   return STORY_BGM.dailyCity;
+}
+
+/** 店や施設から街へ戻った時に鳴らす曲。第2章は柚ヶ谷の曲、ほかの章は今までどおり日常の曲。 */
+export function cityBgm(chapter) {
+  return Number(chapter) === 2 ? STORY_BGM.yuzugaya : STORY_BGM.dailyCity;
 }
 
 /** UI／転換の役割 → SE 識別子（audio.js の SE / RECORDED_SE） */
