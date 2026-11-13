@@ -12,6 +12,8 @@ import { adamUnlocked, recordAdamUnlock } from "./minigames/axe-secret-boss.js";
 import { DB } from "./core/data.js";
 import { unlockAudio, preloadBgm, playBgm, stopBgm } from "./core/audio.js";
 const inputMode = new URLSearchParams(location.search).get("input") === "gauges" ? "gauges" : "tap-pull";
+// 対戦の自動送り（2026-11-13）。?auto=0 で手動だけにする（一投ずつ手で進める検査用）
+const autoAdvance = new URLSearchParams(location.search).get("auto") !== "0";
 const host = document.getElementById("axe-app");
 // This standalone page does not run the main game's data loader. Register its one
 // packaged track before the first click so bgmUrl() can resolve it immediately.
@@ -32,7 +34,7 @@ function menu(result = null) {
     if (mode !== "practice" && !confirmed) { openSetup(mode, button); return; }
     buttons.forEach(b => { b.disabled = true; }); lesson.disabled = true;
     playBgm("bgm_axe");
-    try { const result = await runAxeThrow({ host, inputMode, mode, opponent: mode === "versus" ? rival : opponent,
+    try { const result = await runAxeThrow({ host, inputMode, autoAdvance, mode, opponent: mode === "versus" ? rival : opponent,
       difficulty: mode === "versus" && rival === "adam" ? "secret" : difficulty,
       division: mode === "practice" ? "rec" : division, bestOf: mode === "versus" ? bestOf : 1 });
       stopBgm(); menu(result);

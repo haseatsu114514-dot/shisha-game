@@ -1,10 +1,12 @@
 // DESERT RIDE（第4章ドバイ・サンドボード）の規則: コースの決定性と公平さ、ジャンプ・着地・転倒、採点と評価の境目。
 import assert from "node:assert/strict";
 import test from "node:test";
-import { COURSE, SPEED, JUMP, FALL, SCORE, SPIN, BOOST, STEER, CARVE, EDGE, RUBBER, rubberCaps, DISPLAY, toKmh, toMeters, RULES_VERSION, RANKS, DEFAULT_SEED, COURSE_PACKS, CURVE_SCALE, generateCourse, practiceCourse, curveAt, headingAt, offsetAt, lateralAt, upcomingCurve, buildCourse, pickCourse, createGame, step, press, boost, chargeBoost, canRecover,
+import { CHARGE, COURSE, LAYOUT, NEAR, PRACTICE_WALL, PLAYER, nearReward, recoverWindow, SPEED, JUMP, FALL, SCORE, SPIN, BOOST, STEER, CARVE, EDGE, RUBBER, rubberCaps, DISPLAY, toKmh, toMeters, RULES_VERSION, RANKS, DEFAULT_SEED, COURSE_PACKS, CURVE_SCALE, generateCourse, practiceCourse, curveAt, headingAt, offsetAt, lateralAt, upcomingCurve, buildCourse, pickCourse, createGame, step, press, boost, chargeBoost, canRecover,
   summary, rankOf, readResult, botControl, botStep, nextBumpDistance, comboMultiplier, rivalRun, rivalAt, smashing, RIVALS, jumpPeak, jumpHeight } from "../js/minigames/desert-ride-model.js";
 
 const DT = 1 / 60;
+/** ゲージを置く（使わないと減る仕組みを止めて、量そのものを確かめる）。 */
+const hold = (game, gauge) => { game.gauge = gauge; game.chargedAt = Infinity; };
 function play(course, skill, { maxTime = 200, race = false } = {}) {
   const game = createGame(course, { rival: race ? rivalRun(course) : null }), memo = {};
   while (!game.finished && game.t < maxTime) botStep(game, skill, memo, DT);
@@ -22,8 +24,11 @@ test("the course is deterministic per seed, sorted, fair: rocks leave a gap and 
   assert.notDeepEqual(a.features, other.features);
   assert.equal(a.length, COURSE.length);
   for (let i = 1; i < a.features.length; i++) assert(a.features[i].z >= a.features[i - 1].z, "features sorted by z");
-  assert(a.features[0].z >= 120, "the first seconds are a straight run");
+  // 2026-11-13: 最初の要素は岩の無い起伏（走り出して約5秒で最初の「跳ぶ」）。岩は 160m から
+  assert.deepEqual({ kind: a.features[0].kind, z: a.features[0].z }, { kind: "bump", z: LAYOUT.firstBump });
+  assert(LAYOUT.firstBump >= 80 && LAYOUT.firstBump <= 100, "the first jump comes about five seconds in, with time to read it");
   const bumps = a.features.filter(f => f.kind === "bump"), rocks = a.features.filter(f => f.kind === "rock");
+  assert(rocks[0].z >= LAYOUT.start, "no rock before the random layout starts");
   assert(bumps.length >= 5 && rocks.length >= 10, `enough jumps (${bumps.length}) and rocks (${rocks.length})`);
   for (const bump of bumps) {
     for (const rock of rocks) assert(rock.z <= bump.z || rock.z - bump.z >= 50, `no rock in the landing zone after the bump at ${bump.z}`);
@@ -41,11 +46,18 @@ test("the course is deterministic per seed, sorted, fair: rocks leave a gap and 
   for (let z = 0; z < a.length; z += 7) assert(Math.abs(curveAt(a, z)) <= 1);
 });
 
-test("the practice course is short, fixed and in the lesson order (rock, bump, rock, bump for a spin, rocks to smash)", () => {
+test("the practice course is short, fixed and in the lesson order (rock, bump, rock, bump for a spin, rocks to smash, a wall to recover from)", () => {
   const course = practiceCourse();
   assert.equal(course.practice, true);
   assert.equal(course.length, COURSE.practiceLength);
-  assert.deepEqual(course.features.map(f => f.kind), ["rock", "bump", "rock", "bump", "rock", "rock"]);
+  assert.deepEqual(course.features.map(f => f.kind), ["rock", "bump", "rock", "bump", "rock", "rock", "rock", "rock", "rock", "rock"]);
+  // 2026-11-13: 最後は岩の壁（立て直しを一度やってみる所）。コースの中（端の深い砂の内側）ではよけられない
+  const wall = course.features.filter(f => f.z === PRACTICE_WALL);
+  assert.equal(wall.length, 4);
+  for (const r of wall) assert(Math.abs(r.x) + r.w <= 1, "the wall stays inside the course");
+  for (let x = -EDGE; x <= EDGE + 1e-9; x += 0.01) assert(wall.some(r => Math.abs(x - r.x) < r.w + PLAYER.half), `the wall cannot be dodged inside the course (x=${x.toFixed(2)})`);
+  assert(PRACTICE_WALL - 590 > SPEED.boost * (BOOST.duration - BOOST.smashCost * 2) * 0.7, "the wall sits past the smash lesson");
+  assert(COURSE.practiceLength - PRACTICE_WALL >= 60, "room to coast after the wall");
   assert.equal(rivalRun(course).samples.length > 0, true, "the rival can run any course (the screen only races in the main run)");
 });
 
@@ -168,7 +180,188 @@ test("passing close to a rock scores a near miss and extends the combo", () => {
   assert.equal(game.falls, 0);
   assert.equal(game.stats.nearMiss, 1);
   assert.equal(game.combo, 1);
-  assert(game.score >= SCORE.nearMiss);
+  assert(game.score >= NEAR.minPoints && game.score <= NEAR.maxPoints);
+});
+
+test("near misses are graded: closer to the rock pays more, and the safe middle of a rock pair pays less than one close shave (2026-11-13)", () => {
+  const course = generateCourse(DEFAULT_SEED);
+  const rock = course.features.find(f => f.kind === "rock" && course.features.filter(o => o.z === f.z).length === 1);
+  const pass = margin => {
+    const game = createGame(course);
+    while (game.z < rock.z - 10) step(game, {}, DT);
+    const side = rock.x > 0 ? -1 : 1;
+    while (!game.passed.has(rock)) { game.x = rock.x + side * (rock.w + PLAYER.half + margin); step(game, {}, DT); }
+    return game;
+  };
+  const shave = pass(0.01), mid = pass(0.11), wide = pass(NEAR.width - 0.01), outside = pass(NEAR.width + 0.01), hit = pass(-0.01);
+  assert.equal(hit.falls, 1, "inside the hit box is a fall, not a near miss");
+  assert.equal(hit.stats.nearMiss, 0);
+  assert.equal(outside.stats.nearMiss, 0, "outside the band is nothing");
+  for (const game of [shave, mid, wide]) { assert.equal(game.falls, 0); assert.equal(game.stats.nearMiss, 1); }
+  assert(shave.score > mid.score && mid.score > wide.score, `closer pays more (${shave.score} > ${mid.score} > ${wide.score})`);
+  assert(shave.gauge > mid.gauge && mid.gauge > wide.gauge, "and charges more boost");
+  assert(shave.score >= NEAR.maxPoints - 5 && wide.score <= NEAR.minPoints + 5);
+  assert(Math.abs(shave.gauge - NEAR.maxGauge * CHARGE) < 0.01 && Math.abs(wide.gauge - NEAR.minGauge * CHARGE) < 0.01, "the band's gauge, scaled by CHARGE");
+  assert.deepEqual(nearReward(1), { points: NEAR.maxPoints, gauge: NEAR.maxGauge });
+  assert.deepEqual(nearReward(0), { points: NEAR.minPoints, gauge: NEAR.minGauge });
+  // 2つ岩の真ん中（いちばん安全な線）: 2つ合わせても、1つをぎりぎりでかすめた時のゲージに届かない程度
+  const pairMargin = 0.42 - (0.17 + PLAYER.half), each = nearReward(1 - pairMargin / NEAR.width);
+  assert(each.points < 60 && each.gauge < 0.08, `the middle of a pair pays ${each.points} / ${each.gauge.toFixed(3)} per rock`);
+  assert(each.gauge * 2 <= NEAR.maxGauge + 0.01, "the safe line through a pair is not worth more boost than one close shave");
+  // 跳び越えた岩は、横の危険を取っていないので真ん中の値
+  const over = createGame(course);
+  while (over.z < rock.z - 20) step(over, {}, DT);
+  over.x = rock.x; over.air = 1; over.airTotal = 1; over.airKind = "big";
+  while (!over.passed.has(rock)) { over.x = rock.x; step(over, {}, DT); }
+  assert.equal(over.falls, 0);
+  assert.equal(over.score, nearReward(NEAR.airCloseness).points);
+});
+
+test("boost has a price: every smashed rock shortens it, and the deep sand at the edge ends it (2026-11-13)", () => {
+  const course = generateCourse(DEFAULT_SEED);
+  const rocks = course.features.filter(f => f.kind === "rock" && course.features.filter(o => o.z === f.z).length === 1);
+  const through = (rock, boostT) => {
+    const game = createGame(course);
+    while (game.z < rock.z - 20) step(game, {}, DT);
+    game.boostT = boostT; game.speed = SPEED.boost;
+    let before = null;
+    while (!game.passed.has(rock)) { game.x = rock.x; before = game.boostT; step(game, {}, DT); }
+    return { game, before, event: game.events.find(e => e.kind === "smash") };
+  };
+  // 砕くたびに smashCost 秒減る
+  const full = through(rocks[0], 2.5);
+  assert.equal(full.game.stats.smashed, 1); assert.equal(full.game.falls, 0);
+  assert(Math.abs(full.before - DT - BOOST.smashCost - full.game.boostT) < 1e-9, `one smash costs ${BOOST.smashCost}s (${full.before} → ${full.game.boostT})`);
+  assert(Math.abs(full.event.boostLost - BOOST.smashCost) < 1e-9, "the event reports what was lost");
+  assert.equal(full.event.points, SCORE.smash, "the points are unchanged");
+  // 残り smashFloor 秒までは削らない（砕いた直後に切れて、次の岩で転ばない）。増やしもしない
+  const low = through(rocks[0], 0.9);
+  assert(low.game.boostT >= BOOST.smashFloor - 1e-9 && low.game.boostT < low.before, `the cost never cuts below the floor (${low.before} → ${low.game.boostT})`);
+  const nearEnd = createGame(course);
+  while (nearEnd.z < rocks[0].z - 1) step(nearEnd, {}, DT);
+  nearEnd.speed = SPEED.boost; nearEnd.boostT = BOOST.smashFloor + 0.1; nearEnd.x = rocks[0].x;
+  while (!nearEnd.passed.has(rocks[0])) { nearEnd.x = rocks[0].x; step(nearEnd, {}, DT); }
+  assert.equal(nearEnd.stats.smashed, 1);
+  assert(nearEnd.boostT <= BOOST.smashFloor + 1e-9 && nearEnd.boostT > 0, `a nearly spent boost keeps its last moment (${nearEnd.boostT})`);
+  // ブーストが終わった後の勢いで砕いても、ブーストは増えない
+  const coasting = createGame(course);
+  while (coasting.z < rocks[0].z - 1) step(coasting, {}, DT);
+  coasting.speed = SPEED.boost; coasting.boostT = 0; coasting.x = rocks[0].x;
+  assert(smashing(coasting));
+  while (!coasting.passed.has(rocks[0])) { coasting.x = rocks[0].x; step(coasting, {}, DT); }
+  assert.equal(coasting.stats.smashed, 1); assert.equal(coasting.boostT, 0, "smashing on leftover speed never grants boost time");
+  // 端の深い砂: 入ったその場でブーストが切れる（コースの中なら切れない）
+  const edge = createGame(course);
+  edge.boostT = 2; edge.x = EDGE - 0.02;
+  step(edge, {}, DT);
+  assert(edge.boostT > 1.9, "inside the course the boost runs on");
+  edge.x = EDGE + 0.02;
+  step(edge, {}, DT);
+  assert.equal(edge.boostT, 0, "the deep sand ends the boost");
+  assert.equal(edge.stats.boostsLost, 1);
+  assert.deepEqual(edge.events.filter(e => e.kind === "boostEnd").map(e => e.reason), ["edge"], "announced once, with the reason");
+  step(edge, {}, DT);
+  assert.equal(edge.events.filter(e => e.kind === "boostEnd").length, 1);
+  // 大ジャンプの空中は、端の上でも切れない（地面の砂に触れていない）
+  const air = createGame(course);
+  air.boostT = 2; air.x = EDGE + 0.1; air.air = 1; air.airTotal = 1; air.airKind = "big";
+  step(air, {}, DT);
+  assert(air.boostT > 1.9, "airborne over the edge keeps the boost");
+  // 理想の滑りは、どのコースでも端でブーストを失わない（切り込めば流されない）
+  for (const pack of COURSE_PACKS) for (const skill of ["expert", "perfect"]) assert.equal(play(buildCourse({ id: pack.id }), skill).stats.boostsLost, 0, `${pack.id} ${skill} keeps its boosts`);
+});
+
+test("the boost gauge charges a little slower everywhere, and drains slowly when it is not used (2026-11-13)", () => {
+  // 溜まり方: 滑りの中で貯まる分には一律に CHARGE を掛ける（練習の説明が渡す量には掛けない）
+  assert(CHARGE >= 0.8 && CHARGE < 0.95, "a little slower, not a lot");
+  const game = createGame(generateCourse(DEFAULT_SEED));
+  chargeBoost(game, 0.5);
+  assert.equal(game.gauge, 0.5, "a direct charge (the practice lesson) is not scaled");
+  // 使わないと減る: 最後に貯まってから decayDelay 秒は減らず、その後は毎秒 decay ずつ
+  const fresh = createGame(generateCourse(DEFAULT_SEED));
+  chargeBoost(fresh, 1);
+  for (let i = 0; i < Math.round((BOOST.decayDelay - 0.1) / DT); i++) step(fresh, {}, DT);
+  assert.equal(fresh.gauge, 1, "a fresh charge waits before it drains");
+  for (let i = 0; i < 60; i++) step(fresh, {}, DT);
+  assert(fresh.gauge < 1 && fresh.gauge > 1 - BOOST.decay * 1.2, `then it drains slowly (${fresh.gauge})`);
+  const full = 1 / BOOST.decay + BOOST.decayDelay;
+  assert(full > 25 && full < 45, `a full gauge lasts about half a run if never used (${full.toFixed(0)}s)`);
+  // 貯まるたびに、減り始めるまでの間がやり直しになる
+  const topped = createGame(generateCourse(DEFAULT_SEED));
+  chargeBoost(topped, 0.5);
+  for (let i = 0; i < Math.round((BOOST.decayDelay + 1) / DT); i++) step(topped, {}, DT);
+  const before = topped.gauge;
+  chargeBoost(topped, 0.1);
+  for (let i = 0; i < Math.round((BOOST.decayDelay - 0.1) / DT); i++) step(topped, {}, DT);
+  assert(Math.abs(topped.gauge - (before + 0.1)) < 1e-9, "charging again resets the wait");
+  // ブースト中は減らない（貯めた分は次に回せる）
+  const boosting = createGame(generateCourse(DEFAULT_SEED));
+  boosting.boostT = 10; boosting.gauge = 0.4; boosting.chargedAt = -100;
+  for (let i = 0; i < 120; i++) step(boosting, {}, DT);
+  assert.equal(boosting.gauge, 0.4, "no drain while boosting");
+  // 空になったら止まる（負にならない）
+  const empty = createGame(generateCourse(DEFAULT_SEED));
+  empty.gauge = 0.01; empty.chargedAt = -100;
+  for (let i = 0; i < 120; i++) step(empty, {}, DT);
+  assert.equal(empty.gauge, 0);
+});
+
+test("Naru is a real final rival: only the ideal spinning run beats him, by a small margin, and he never eases off (2026-11-13)", () => {
+  for (const pack of COURSE_PACKS) {
+    const course = buildCourse({ id: pack.id }), naru = rivalRun(course, { who: "naru" }), noor = rivalRun(course);
+    assert.equal(naru.easeOff, false); assert.equal(noor.easeOff, true);
+    assert(naru.finishTime < noor.finishTime - 2.5, `${pack.id}: Naru is well ahead of Noor (${naru.finishTime.toFixed(1)} vs ${noor.finishTime.toFixed(1)})`);
+    const expert = play(course, "expert"), perfect = play(course, "perfect");
+    const margin = naru.finishTime - expert.finishTime;
+    assert(margin > 0 && margin < 1.6, `${pack.id}: the ideal spinning run wins, but only just (${margin.toFixed(2)}s)`);
+    assert(perfect.finishTime > naru.finishTime + 1, `${pack.id}: clean landings without spins lose clearly`);
+  }
+});
+
+test("practice gives a longer window to recover after hitting the wall; the main run keeps the short one (2026-11-13)", () => {
+  assert(BOOST.practiceRecoverWindow >= BOOST.recoverWindow * 1.8);
+  const hit = course => {
+    const rock = course.features.find(f => f.kind === "rock" && (course.practice ? f.z === PRACTICE_WALL : true));
+    const game = createGame(course);
+    game.z = rock.z - 20; game.x = rock.x; // 手前の岩は飛ばして、その岩の前から
+    game.gauge = 0.6;
+    while (!game.passed.has(rock)) { game.x = rock.x; step(game, {}, DT); }
+    assert.equal(game.falls, 1);
+    return game;
+  };
+  const practice = hit(practiceCourse()), run = hit(generateCourse(DEFAULT_SEED));
+  assert.equal(recoverWindow(practice), BOOST.practiceRecoverWindow); assert.equal(recoverWindow(run), BOOST.recoverWindow);
+  const wait = BOOST.recoverWindow + 0.2;
+  for (let i = 0; i < Math.round(wait / DT); i++) { step(practice, {}, DT); step(run, {}, DT); }
+  assert.equal(canRecover(run), false, "the main run's window has closed");
+  assert.equal(canRecover(practice), true, "practice still lets the learner recover");
+  assert.equal(boost(practice), "recover");
+  assert.equal(practice.falls, 0);
+  const late = hit(practiceCourse());
+  for (let i = 0; i < Math.round((BOOST.practiceRecoverWindow + 0.05) / DT); i++) step(late, {}, DT);
+  assert.equal(canRecover(late), false, "but not forever");
+});
+
+test("the course has a flat and a mountain: a chain of rock-free bumps mid-run, then a denser rocky finish (2026-11-13)", () => {
+  const sum = { before: 0, after: 0 };
+  for (const course of [...COURSE_PACKS.map(pack => buildCourse({ id: pack.id })), ...Array.from({ length: 30 }, (_, i) => generateCourse(i + 1))]) {
+    const bumps = course.features.filter(f => f.kind === "bump"), rocks = course.features.filter(f => f.kind === "rock");
+    // 連続起伏: chainGap おきに chainCount 個。間と着地帯に岩が無い
+    const start = bumps.find((b, i) => Array.from({ length: LAYOUT.chainCount }, (_, k) => bumps[i + k]?.z === b.z + LAYOUT.chainGap * k).every(Boolean));
+    assert(start, `${course.id} has a chain of ${LAYOUT.chainCount} bumps`);
+    const from = start.z, to = start.z + LAYOUT.chainGap * (LAYOUT.chainCount - 1) + LAYOUT.landing;
+    assert(from / course.length >= LAYOUT.chainFrom && from / course.length < LAYOUT.chainFrom + 0.12, `${course.id}: the chain starts mid-run (${from})`);
+    assert(!rocks.some(r => r.z > from && r.z < to), `${course.id}: no rock inside the chain`);
+    // 山: 連続起伏の先は、手前より岩が詰まっている（100m あたりの岩の数）。本番の4本はどれも。乱数の30本は平均で
+    const density = (a, b) => rocks.filter(r => r.z >= a && r.z < b).length / (b - a) * 100;
+    const before = density(LAYOUT.start, from), after = density(to, course.length - 100);
+    if (COURSE_PACKS.some(pack => pack.id === course.id)) assert(after > before, `${course.id}: the finish is rockier than the run-up (${before.toFixed(2)} → ${after.toFixed(2)})`);
+    sum.before += before; sum.after += after;
+  }
+  assert(sum.after > sum.before * 1.3, `on average the finish is clearly rockier (${sum.before.toFixed(1)} → ${sum.after.toFixed(1)})`);
+  // 起伏の間隔は、通常の最高速の大ジャンプの飛距離より長い（着地してから次を押せる）
+  const flight = SPEED.max * JUMP.bigAir * (JUMP.airFloor + JUMP.airGain);
+  assert(LAYOUT.chainGap > flight + SPEED.max * 0.5, `chain gap ${LAYOUT.chainGap} leaves half a second after a ${flight.toFixed(0)}m flight`);
 });
 
 test("the single course rates S / A / B / C by skill: spins = S, clean landings without spins = A, late landings = B, no jumps = C, clumsy = C", () => {
@@ -194,7 +387,10 @@ test("the single course rates S / A / B / C by skill: spins = S, clean landings 
   assert.equal(good.race.won, false); assert.equal(none.race.won, false);
   // 同じ seed・同じ操作なら同じ結果
   assert.deepEqual(run("expert"), expert);
-  assert(lazy.falls >= 1, "the clumsy rider falls but still finishes");
+  // 2026-11-13 にコースを組み替えた（最初の起伏・連続起伏・終盤の山）ので、不器用な人は本番の4本で見る: どれも完走して C、どこかで転ぶ
+  const clumsy = COURSE_PACKS.map(pack => summary(play(buildCourse({ id: pack.id }), "lazy", { race: true })));
+  for (const result of clumsy) { assert.equal(result.finished, true); assert.equal(result.rank, "C"); }
+  assert(clumsy.some(result => result.falls >= 1), "the clumsy rider falls but still finishes");
   assert.deepEqual(RANKS.map(([rank]) => rank), ["S", "A", "B", "C"]);
   assert.equal(rankOf(RANKS[0][1]), "S"); assert.equal(rankOf(RANKS[0][1] - 1), "A"); assert.equal(rankOf(0), "C");
   assert.equal(comboMultiplier(0), 1); assert.equal(comboMultiplier(100), SCORE.comboMax);
@@ -252,7 +448,7 @@ test("air spins: hold ← or → in a big jump to rotate, letting go finishes th
   assert.equal(game.rot, 0, "the board faces forward again");
   // 着地の直前に回り始めると回り切れずに転倒（ゲージも減る）
   game = createGame(course);
-  game.gauge = 0.5;
+  hold(game, 0.5);
   jumpAtNextBump(game);
   step(game, {}, DT);
   while (game.air > 0.2) step(game, {}, DT);
@@ -302,7 +498,7 @@ test("boost: the gauge fills from near misses, successful big landings and spins
   while (fill.air > JUMP.landingWindow * 0.5) step(fill, {}, DT);
   press(fill);
   while (fill.air > 0) step(fill, {}, DT);
-  assert(Math.abs(fill.gauge - BOOST.land - BOOST.perfect) < 1e-9);
+  assert(Math.abs(fill.gauge - (BOOST.land + BOOST.perfect) * CHARGE) < 1e-9);
 });
 
 test("boost spends any stocked gauge proportionally, even during recovery or an active boost", () => {
@@ -457,7 +653,7 @@ test("repeated flat hops cannot farm score, combo, speed or gauge, including the
 });
 
 test("landing recovery is capped, awarded once and absent on a failed spin or bounce", () => {
-  for (const [grade, braceAt, gain] of [["plain", null, BOOST.land], ["good", 0.45, BOOST.land + BOOST.good]]) {
+  for (const [grade, braceAt, gain] of [["plain", null, BOOST.land * CHARGE], ["good", 0.45, (BOOST.land + BOOST.good) * CHARGE]]) {
     const game = createGame(generateCourse(DEFAULT_SEED));
     jumpAtNextBump(game);
     if (braceAt !== null) { while (game.air > braceAt) step(game, {}, DT); press(game); }
@@ -467,12 +663,12 @@ test("landing recovery is capped, awarded once and absent on a failed spin or bo
   }
   for (const initial of [0, 0.99, 1]) {
     const game = createGame(generateCourse(DEFAULT_SEED));
-    game.gauge = initial; jumpAtNextBump(game);
+    hold(game, initial); jumpAtNextBump(game);
     assert.equal(game.gauge, initial);
     while (game.air > JUMP.landingWindow * 0.5) step(game, {}, DT);
     press(game); press(game);
     while (game.air > 0) step(game, {}, DT);
-    const expected = Math.min(1, initial + BOOST.land + BOOST.perfect);
+    const expected = Math.min(1, initial + (BOOST.land + BOOST.perfect) * CHARGE);
     assert(Math.abs(game.gauge - expected) < 1e-9);
     const landing = game.events.find(e => e.kind === "land" && e.grade === "perfect");
     assert(Math.abs(landing.gaugeGained - (expected - initial)) < 1e-9);
@@ -733,10 +929,10 @@ test("carving: steering into a curve on the ground charges the boost gauge and s
   const carve = start(1);
   for (let i = 0; i < 30; i++) step(carve, { steer: 0.5 }, DT);
   assert.equal(carve.carving, true);
-  assert(Math.abs(carve.gauge - CARVE.gaugePerSec * 0.5 * 0.5) < 1e-6, `half tilt for half a second charges a quarter of the rate (${carve.gauge})`);
+  assert(Math.abs(carve.gauge - CARVE.gaugePerSec * CHARGE * 0.5 * 0.5) < 1e-6, `half tilt for half a second charges a quarter of the rate (${carve.gauge})`);
   const full = start(1);
   for (let i = 0; i < 30; i++) step(full, { right: true }, DT);
-  assert(Math.abs(full.gauge - CARVE.gaugePerSec * 0.5) < 1e-6, "full tilt charges at the full rate");
+  assert(Math.abs(full.gauge - CARVE.gaugePerSec * CHARGE * 0.5) < 1e-6, "full tilt charges at the full rate");
   // 0.8秒ぶん切り込むごとに少し得点（コンボは増やさない）
   const scored = start(1);
   while (scored.stats.carves < 1) { scored.x = 0; step(scored, { right: true }, DT); }
@@ -791,7 +987,9 @@ test("the autopilot looks ahead: it holds its line through curves, never dithers
 
 test("rivals: Noor starts a touch quicker than the rider, Naru boosts and spins in the recorded run", () => {
   assert(RIVALS.noor.startSpeed > SPEED.start && RIVALS.noor.startSpeed < SPEED.start + 1.5);
-  assert.equal(RIVALS.naru.startSpeed, SPEED.start);
+  // 2026-11-13 オーナー「なるが弱かった」: なるは 720 まで回る腕前。出だしだけ少し遅くして、理想の滑りでやっと勝てる差にした
+  assert(RIVALS.naru.startSpeed < SPEED.start && RIVALS.naru.startSpeed >= SPEED.start - 2);
+  assert.equal(RIVALS.naru.only360, false, "Naru spins up to 720");
   const course = generateCourse(DEFAULT_SEED), noor = rivalRun(course), naru = rivalRun(course, { who: "naru" });
   assert(rivalAt(noor, 1).z > rivalAt(naru, 1).z, "Noor is ahead of Naru off the line");
   assert(naru.samples.some(s => s.boostT > 0), "the playback knows when Naru is boosting (aura)");
@@ -837,20 +1035,28 @@ test("a close race: the rival eases off when far ahead and catches up when far b
       const rival = rivalRun(course, { who });
       for (const skill of ["expert", "perfect", "good", "none"]) {
         const game = createGame(course, { rival }), memo = {};
-        let behindRaw = 0, behind = 0, maxDev = -Infinity, minDev = Infinity;
+        let behindRaw = 0, behind = 0, earlyRaw = 0, early = 0, maxDev = -Infinity, minDev = Infinity;
         while (!game.finished && game.t < 200) {
           botStep(game, skill, memo, DT);
           const dev = game.rivalClock - game.t, p = game.z / course.length;
           maxDev = Math.max(maxDev, dev - rubberCaps(p).lead); minDev = Math.min(minDev, dev + rubberCaps(Math.max(p, rivalAt(rival, game.rivalClock).z / course.length)).lag);
           if (p < 0.85) { behindRaw = Math.min(behindRaw, game.z - rivalAt(rival, game.t).z); behind = Math.min(behind, game.z - rivalAt(rival, game.rivalClock).z); }
+          // 手加減の持ち分が満額（lag 秒）の間: 記録どおりの相手が終盤（残り lastStretch）へ入るまで
+          if (rivalAt(rival, game.t).z / course.length < 1 - RUBBER.lastStretch) { earlyRaw = Math.min(earlyRaw, game.z - rivalAt(rival, game.t).z); early = Math.min(early, game.z - rivalAt(rival, game.rivalClock).z); }
         }
         const label = `${pack.id} ${skill} vs ${who}`;
         // 勝ち負けは記録どおりの相手と同じ（腕前で決まる）
         assert.equal(game.race.won, game.finishTime < rival.finishTime, `${label}: the result is unchanged by the rubber band`);
         assert(maxDev < 0.15 && minDev > -0.15, `${label}: the rival stays within its allowance (${maxDev.toFixed(2)}, ${minDev.toFixed(2)})`);
         assert(behind >= behindRaw - 3, `${label}: the rival never runs further away than its recording (${behind.toFixed(1)} vs ${behindRaw.toFixed(1)} m)`);
-        // 手加減は最大 RUBBER.lag 秒分なので、大きく離された時は少なくとも 25m は待ってくれる
-        if (behindRaw < -80) assert(behind - behindRaw >= 25, `${label}: a rider left far behind sees the rival wait (${behind.toFixed(0)} vs ${behindRaw.toFixed(0)} m)`);
+        // 手加減は最大 RUBBER.lag 秒分なので、大きく離された時は少なくとも 25m は待ってくれる（持ち分が満額の間）。
+        // 終盤は keep 秒まで返すので、いちばん離れた所（相手がゴールした後を含む）でも keep 秒ぶんは待つ。
+        // 2026-11-13: 起伏が増えて跳ばない人がなるから 250m 以上離されるようになり、いちばん離れた所が「相手のゴール後」になった。
+        // そこは設計上 keep 秒ぶん（最高速で約17m〜ブーストで約23m）なので、25m は持ち分が満額の区間で確かめる
+        // なる（2026-11-13 オーナー「なるが弱かった」）は手加減しない: 大きく離されても待たない
+        if (rival.easeOff === false) { assert(behind - behindRaw < 3, `${label}: Naru never waits (${behind.toFixed(0)} vs ${behindRaw.toFixed(0)} m)`); continue; }
+        if (earlyRaw < -80) assert(early - earlyRaw >= 25, `${label}: a rider left far behind sees the rival wait (${early.toFixed(0)} vs ${earlyRaw.toFixed(0)} m)`);
+        if (behindRaw < -80) assert(behind - behindRaw >= RUBBER.keep * SPEED.max - 1, `${label}: even at the widest gap the rival keeps its last allowance (${behind.toFixed(0)} vs ${behindRaw.toFixed(0)} m)`);
       }
     }
   }
@@ -871,7 +1077,7 @@ test("rock and spin falls retain positive gauge without refilling an empty gauge
   const rock = course.features.find(f => f.kind === "rock");
   for (const initial of [0, 0.01, 0.15, 0.3, 0.6, 1]) {
     const game = createGame(course);
-    game.gauge = initial;
+    hold(game, initial);
     while (!game.passed.has(rock)) { game.x = rock.x; step(game, {}, DT); }
     assert.equal(game.falls, 1);
     assert.equal(game.gauge, Math.max(initial * 0.5, initial - BOOST.fallLoss));
@@ -880,7 +1086,7 @@ test("rock and spin falls retain positive gauge without refilling an empty gauge
     jumpAtNextBump(spin);
     step(spin, {}, DT);
     while (spin.air > 0.2) step(spin, {}, DT);
-    spin.gauge = initial;
+    hold(spin, initial);
     while (spin.air > 0) step(spin, { left: true }, DT);
     assert.equal(spin.events.at(-1).reason, "spin");
     assert.equal(spin.gauge, Math.max(initial * 0.5, initial - BOOST.fallLoss));

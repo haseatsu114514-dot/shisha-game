@@ -1,18 +1,19 @@
-// 会話の「間」の一服（docs/owner_requests.md の KMR11）。台本の {"type":"fx","id":"exhale"} で、立ち絵の口元から煙を吐く。
-//   who   … 吐く人（話者の id）。省くと、いま話している人（いなければ出ている一人）。"self" は自分（はじめ）＝画面の下から
+// 会話の「間」の一服（docs/owner_requests.md の KMR11・KMR23〜）。台本の {"type":"fx","id":"exhale"} で、立ち絵の口元から煙を吐く。
+//   who   … 吐く人（話者の id）。省くと、いま話している人（いなければ出ている一人）
 //   style … 吐き方: "long"＝細く長く／"twice"＝小さく二度／"up"＝ふわっと上へ／""＝ひと息。省くと人物ごとの身ぶり
-//   color・color2 … 煙にうっすら移す色（ふだんは白。色を付けるのは意味のある場面だけ）。tint は色の濃さ（0〜1・既定 0.5）
-//   side  … 吐く向き（1＝右、-1＝左）。省くと、立ち位置から空いている側
-//   x・y  … 立ち絵の口元ではなく、画面の決まった位置（0〜1）から出す（一枚絵の上に煙を立てるとき）。scale で大きさ
-// 煙の描き方は core/smoke.js（もこもこの房・細かい升目・白に近い4色）。煙は口元からだけ出す。
+//   side  … 吐く向き（1＝右、-1＝左）。省くと、その人の顔の向いている側（決めていない人は、立ち位置から空いている側）
+// 煙は、画面に見えている人の口元からだけ出す（吐く人が画面にいない場面では出さない。機材からも出さない）。
+// 口元では細く、顔の外へ流れてからふくらみ、透けたまま消える。顔は覆わない。描き方は core/smoke.js（もこもこの房・細かい升目）。
 // 早送り・「動きを減らす」・DS風の表示中は出さない（DS風は現行の画面を写す方式で、足した層は写らない）。
 import { portraitInfo, faceFrame } from "../core/data.js";
-import { smokeLayer, smokeAllowed, smokeTint, mouthBreath } from "../core/smoke.js";
+import { smokeLayer, smokeAllowed, mouthBreath } from "../core/smoke.js";
 
 /** 人物ごとの吐き方（身ぶり）。ここに無い人は、ひと息 */
 export const BREATH_STYLE = Object.freeze({ sumi: "long", minto: "twice", tsumugi: "up" });
-/** 吐いてから次の行へ進むまでの「間」（ミリ秒）。煙が顔の前に広がるのを待つ */
-export const BREATH_HOLD = Object.freeze({ mouth: 650, self: 1100 });
+/** 人物ごとの顔の向き（立ち絵で顔が向いている側。1＝右、-1＝左）。煙は顔の向いている側へ吐く（後ろ頭の側へは流さない） */
+export const BREATH_SIDE = Object.freeze({ sumi: -1, minto: -1, tsumugi: -1 });
+/** 吐いてから次の行へ進むまでの「間」（ミリ秒）。煙が口元を離れるのを見せてから、地の文へ進む */
+export const BREATH_HOLD = 500;
 
 /**
  * 立ち絵の口の位置と顔の大きさ（絵の幅・高さに対する割合）。顔アイコンと同じ顔の枠（manifest の faceFrames）から、
@@ -31,41 +32,23 @@ export function mouthInPortrait(speaker, face) {
 const FACE_BASE = .144;
 const fit = (specs, k) => specs.map((b) => ({ ...b, size: b.size * k, speed: b.speed * Math.sqrt(k), width: b.width * k }));
 
-/** 自分（はじめ）が吐く煙。台詞の箱の向こう（手前の下）から出て、右上へゆっくり流れ、長めに残る。部屋を透かす薄さ */
-function selfBreath(colors) {
-  return [{ x: .4, y: .8, angle: -1.05, spread: .7, width: .12, speed: .5, dur: 2.0, rate: 20, size: .09, life: 4.4, buoy: .035, drag: 1.2, turb: .1, hold: .45, alpha: .78, sway: .12, colors }];
-}
-
 /**
  * 煙を吐く。戻り値は、次の行へ進む前に待つ時間（ミリ秒）。出さなかったら 0。
  * host は会話の層（#vn）、portraits は立ち絵の入れ物。
  */
 export function vnBreath(line, { host, portraits }) {
   if (!host || !smokeAllowed() || document.documentElement.dataset.retroShell === "on") return 0;
-  // 色の濃さ: 自分の煙は葉の色を「うっすら」、それ以外で色を指定したときは、その色が分かる濃さ
-  const tint = Number.isFinite(line.tint) ? line.tint : line.who === "self" ? .3 : .5;
-  const colors = line.color ? [line.color, line.color2].filter(Boolean).map((c) => smokeTint(c, tint)) : null;
-  const layer = () => smokeLayer(host, { zIndex: 4, className: "vn-breath" });
-  if (line.who === "self") {
-    layer().breathe(selfBreath(colors));
-    return BREATH_HOLD.self;
-  }
-  if (Number.isFinite(line.x) && Number.isFinite(line.y)) {
-    const k = Number.isFinite(line.scale) ? line.scale : 1;
-    // 位置を決めて立てる煙は、色が主役（つむぎに見えている色）なので、色を残す塗りにする
-    layer().breathe(fit(mouthBreath(line.style || "", { x: line.x, y: line.y, side: line.side ? Math.sign(line.side) : 1, colors }), k).map((b) => ({ ...b, vivid: !!colors })));
-    return BREATH_HOLD.mouth;
-  }
   const imgs = [...(portraits?.querySelectorAll("img.portrait") || [])];
   const img = line.who ? imgs.find((i) => i.dataset.speaker === line.who) : imgs.find((i) => i.classList.contains("active")) || (imgs.length === 1 ? imgs[0] : null);
   if (!img || img.classList.contains("enter")) return 0;
-  const mouth = mouthInPortrait(img.dataset.speaker, img.dataset.face);
+  const speaker = img.dataset.speaker;
+  const mouth = mouthInPortrait(speaker, img.dataset.face);
   const box = img.getBoundingClientRect(), stage = host.getBoundingClientRect();
   if (!mouth || !box.width || !stage.width) return 0;
   const x = (box.left + box.width * mouth.x - stage.left) / stage.width, y = (box.top + box.height * mouth.y - stage.top) / stage.height;
   if (x < 0 || x > 1 || y < 0 || y > 1) return 0;
-  const side = line.side ? Math.sign(line.side) : img.dataset.pos === "right" ? -1 : 1;
+  const side = line.side ? Math.sign(line.side) : BREATH_SIDE[speaker] ?? (img.dataset.pos === "right" ? -1 : 1);
   const scale = Math.max(.7, Math.min(2.2, (mouth.face * box.height / stage.height) / FACE_BASE));
-  layer().breathe(fit(mouthBreath(line.style ?? BREATH_STYLE[img.dataset.speaker] ?? "", { x, y, side, colors }), scale));
-  return BREATH_HOLD.mouth;
+  smokeLayer(host, { zIndex: 4, className: "vn-breath" }).breathe(fit(mouthBreath(line.style ?? BREATH_STYLE[speaker] ?? "", { x, y, side }), scale));
+  return BREATH_HOLD;
 }

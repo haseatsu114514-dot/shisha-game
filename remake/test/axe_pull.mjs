@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import { AxePullSession, SCENE, scenePoint, boardPoint, pullPower, FLICK, flickPower, flickSpeedFor } from '../js/minigames/axe-pull-model.js';
+import { AxePullSession, SCENE, scenePoint, boardPoint, pullPower, FLICK, flickPower, flickRead, flickSpeedFor } from '../js/minigames/axe-pull-model.js';
 import { resolveThrow, releaseAimAt, KILLS, totalOf } from '../js/minigames/axe-model.js';
 import { createMatch, takeTurn, turnOf, planOpponent } from '../js/minigames/axe-match.js';
 const pull=(s,p=.62)=>{assert(s.beginPull(1,{x:1300,y:400}));return s.release(1,{x:1300,y:400+230*p});};
@@ -24,9 +24,21 @@ test('flick power follows the upward speed on a log scale, with the sweet band a
 test('flick lean drifts sideways; taps, downward, sideways and malformed strokes are not throws',()=>{
  const right=flickPower(stroke(3,{lean:.4}),390);assert(Math.abs(right.lean-.4*FLICK.lean)<1e-9);assert(right.lean>0);
  assert(flickPower(stroke(3,{lean:-.4}),390).lean<0);
- assert.equal(flickPower([{t:0,x:0,y:300},{t:80,x:0,y:300-390*.05}],390),null,'shorter than minRise');
+ assert.equal(flickPower([{t:0,x:0,y:300},{t:80,x:0,y:300-390*.03}],390),null,'shorter than shortRise');
  assert.equal(flickPower([{t:0,x:0,y:300},{t:80,x:0,y:380}],390),null,'downward');
  assert.equal(flickPower(stroke(3,{lean:2}),390),null,'more sideways than upward');
+ // 2026-11-13 指摘3: 弾き損ねは理由を返す。触れただけ・戻しただけは理由なし
+ assert.deepEqual(flickRead([{t:0,x:0,y:300},{t:80,x:0,y:300-390*.03}],390),{miss:'shallow'});
+ assert.deepEqual(flickRead([{t:0,x:0,y:300},{t:80,x:0,y:380}],390),{miss:'down'});
+ assert.deepEqual(flickRead(stroke(3,{lean:2}),390),{miss:'lean'});
+ assert.deepEqual(flickRead([{t:0,x:0,y:300},{t:80,x:1,y:301}],390),{miss:null},'a tap only aims');
+ assert.deepEqual(flickRead([{t:0,x:0,y:300},{t:40,x:0,y:200},{t:80,x:0,y:300}],390),{miss:null},'up and back is a deliberate cancel');
+ // 浅い弾き（shortRise〜minRise）は弱い投げとして結果を返す（柄から当たる強さ）
+ const short=flickPower([{t:0,x:0,y:300},{t:80,x:0,y:300-390*.05}],390);
+ assert(short&&short.short&&short.raw<=FLICK.shortRaw&&short.raw<.42,'a shallow flick still throws, too weak to stick');
+ // 45〜54°の斜めは、横のぶれを最大に張り付けて投げる
+ const wild=flickPower(stroke(3,{lean:1.2}),390);assert(wild&&wild.wild);assert(Math.abs(wild.lean-FLICK.maxLean*FLICK.lean)<1e-9);
+ assert.equal(flickPower(stroke(3,{lean:1.5}),390),null,'beyond wildLean is not a throw');
  assert.equal(flickPower([{t:0,x:0,y:300}],390),null);assert.equal(flickPower(stroke(3),0),null);assert.equal(flickPower([{t:0,x:0,y:NaN},{t:1,x:0,y:0}],390),null);
  assert.equal(flickPower([{t:80,x:0,y:300},{t:80,x:0,y:200}],390),null,'no elapsed time');
 });

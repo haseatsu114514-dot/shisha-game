@@ -12,7 +12,6 @@ import { SE, stopBgm } from "../core/audio.js";
 import { autoSkill, CRAFT_RANK_THRESHOLDS } from "./common.js";
 import { craftRankProgress } from "./rank-hud.js";
 import { mixColor } from "./art.js";
-import { smokeLayer, smokeAllowed, smokeTint, coverBreath } from "../core/smoke.js";
 import { SUI_BAR } from "./score.js";
 import { castCh1Votes } from "./ch1-votes.js";
 import { evaluationOf, judgeComment, judgeDeductionReason } from "./feedback.js";
@@ -220,7 +219,7 @@ export async function resultCountdown(cs, kind, attempt = null) {
       cuts.append(c);
       setTimeout(() => c.remove(), 900);
     }
-    if (kind === "premium" && n === 3) { await puchun(screen, true, mixColor(cs.mix)); return; }
+    if (kind === "premium" && n === 3) { await puchun(screen, true); return; }
     if (n === 1 && kind === "close") {
       screen.classList.add("almost");
       SE.puchun();
@@ -230,26 +229,16 @@ export async function resultCountdown(cs, kind, attempt = null) {
     }
     await sleep(tick);
   }
-  if (kind === "win") await puchun(screen, false, mixColor(cs.mix));
+  if (kind === "win") await puchun(screen, false);
   else if (kind === "disaster") await parin(screen, true);
   else await parin(screen, false);
 }
 
-async function puchun(screen, flying, color = null) {
+async function puchun(screen, flying) {
   screen.classList.add("puchun");
   if (flying) screen.classList.add("flying");
   SE.puchun();
   await sleep(700);
-  // 審査員の一服（KMR11）: 暗転のあと、吐いた煙が下から画面を覆い、晴れると結果が見えてくる。
-  // 煙は演出の層に載せるので、この画面を片付けても残り、次の画面（千須のカットイン）の上で晴れる。色は自分の一台の色をうっすら
-  if (smokeAllowed() && !autoSkill()) {
-    smokeLayer(layers.fx, { zIndex: 60, className: "result-breath" }).breathe(coverBreath(color ? [smokeTint(color, .28)] : null));
-    await sleep(1000);
-    screen.classList.add("smoke-white");
-    await sleep(150);
-    return;
-  }
-  // 煙を出さない設定（動きを減らす・自動操作）は、これまでどおり白く飛ばす
   screen.classList.add("smoke-white");
   flash("white", 500);
   await sleep(900);
