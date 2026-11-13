@@ -148,7 +148,8 @@ function coalStats(games) {
  * 大会は練習試合以外の4つを順に、一式は上と同じ組み合わせ、先手は局ごとに交互、種は 20000+局番号（改変案 ICHIDAI-REDESIGN の計りと同じ）
  */
 function leadStats(games, levels, rules, ids = KITS.map((k) => k.id), tourId = null) {
-  const s = { r3n: 0, r3w: 0, midn: 0, midrev: 0, changes: 0, never: 0, margin: 0, close: 0, both: 0, rounds: 0, firstW: 0, decided: 0, tasteN: 0, tasteW: 0, aW: 0 };
+  const s = { r3n: 0, r3w: 0, midn: 0, midrev: 0, changes: 0, never: 0, margin: 0, close: 0, both: 0, rounds: 0, firstW: 0, decided: 0, tasteN: 0, tasteW: 0, aW: 0, pts: 0, leaves: 0, burnt: 0, firstPts: 0 };
+  const z = { just: 0, band: 0, off: 0, cold: 0, scorch: 0 }, kitPts = {};
   const kitW = {}, kitN = {}, pc = (a, b) => `${((100 * a) / Math.max(1, b)).toFixed(1)}%`;
   for (let g = 0; g < games; g++) {
     const kn = ids.length, tour = tourId || TOURNAMENTS[1 + (g % (TOURNAMENTS.length - 1))].id, ka = ids[g % kn], kb = kn > 1 ? ids[(g + 1 + (g >> 2) % (kn - 1)) % kn] : ids[0];
@@ -160,7 +161,8 @@ function leadStats(games, levels, rules, ids = KITS.map((k) => k.id), tourId = n
       if (!r.ok) throw new Error(r.reason);
       for (const ev of G.events.slice(before)) {
         if (ev.t !== "score") continue;
-        ev.res.forEach((x, i) => { cum[i] += x.pts + (x.vote || 0); });
+        ev.res.forEach((x, i) => { cum[i] += x.pts + (x.vote || 0); z[x.zone]++; if (x.parts[0]?.label === "燃え尽き") s.burnt++; });
+        if (ev.round === 0) s.firstPts += ev.res.reduce((a, x) => a + x.pts, 0);
         s.rounds++; if (ev.res.every((x) => x.zone === "just")) s.both++;
         leaders.push(cum[0] > cum[1] ? 0 : cum[1] > cum[0] ? 1 : null);
       }
@@ -168,7 +170,7 @@ function leadStats(games, levels, rules, ids = KITS.map((k) => k.id), tourId = n
     const W = G.result.winner, n = leaders.length;
     if (W != null) { s.decided++; if (W === g % 2) s.firstW++; }
     if (W === 0) s.aW++;
-    for (const p of G.P) { kitN[p.kit] = (kitN[p.kit] || 0) + 1; if (W === p.index) kitW[p.kit] = (kitW[p.kit] || 0) + 1; }
+    for (const p of G.P) { kitN[p.kit] = (kitN[p.kit] || 0) + 1; if (W === p.index) kitW[p.kit] = (kitW[p.kit] || 0) + 1; kitPts[p.kit] = (kitPts[p.kit] || 0) + p.score; s.pts += p.score; s.leaves += Object.values(p.bowl).reduce((a, b) => a + b, 0); }
     if (leaders[2] != null) { s.r3n++; if (leaders[2] === W) s.r3w++; }
     const mid = leaders[Math.floor(n / 2) - 1]; if (mid != null) { s.midn++; if (mid !== W) s.midrev++; }
     let last = null, ch = 0; for (const l of leaders) { if (l == null) continue; if (last != null && l !== last) ch++; last = l; }
@@ -180,6 +182,8 @@ function leadStats(games, levels, rules, ids = KITS.map((k) => k.id), tourId = n
   console.log(`第1セッション首位の最終勝率 ${pc(s.r3w, s.r3n)}／中盤の首位が逆転される ${pc(s.midrev, s.midn)}／リード入替 ${(s.changes / games).toFixed(2)}回・一度も入れ替わらない ${pc(s.never, games)}`);
   console.log(`最終点差 ${(s.margin / games).toFixed(1)}・5点以内 ${pc(s.close, games)}／両者ジャストのラウンド ${pc(s.both, s.rounds)}／最初の先手の勝ち ${pc(s.firstW, s.decided)}`);
   console.log(`主役の味値が高い側の勝ち ${pc(s.tasteW, s.tasteN)}／一式の勝率 ${ids.map((id) => `${id}:${pc(kitW[id] || 0, kitN[id])}`).join(" ")}／A側（強さ${levels[0]}）の勝ち ${pc(s.aW, games)}`);
+  const puffs = s.rounds * 2;
+  console.log(`帯 ${Object.entries(z).map(([k, n]) => `${k}:${pc(n, puffs)}`).join(" ")}／燃え尽きた一口 ${pc(s.burnt, puffs)}／最初の一口の点 ${(s.firstPts / (games * 2)).toFixed(1)}／平均点 ${(s.pts / (games * 2)).toFixed(1)}（${ids.map((id) => `${id}:${((kitPts[id] || 0) / Math.max(1, kitN[id])).toFixed(1)}`).join(" ")}）／終わりの葉 ${(s.leaves / (games * 2)).toFixed(1)}枚`);
 }
 if (process.argv.includes("--lead")) {
   const lv = process.argv.includes("--levels") ? process.argv[process.argv.indexOf("--levels") + 1].split(",").map(Number) : [2, 2];

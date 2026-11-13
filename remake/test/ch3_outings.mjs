@@ -1,11 +1,11 @@
 // 東京の自由時間に地図から選ぶ行き先（#1655）: 出る時期・予約との関係・一度性・台本・地図への投影。
 import assert from "node:assert/strict";
 import fs from "node:fs";
-import { newState } from "../js/core/state.js";
+import { newState, setState, saveToSlot, loadFromSlot } from "../js/core/state.js";
 import { advanceToChapterThree, departChapterThree, chapterThreeScenes, completeChapterThreeScene,
   chapterThreeFreeTime, completeChapterThreeFreeTime } from "../js/chapters/ch3-progress.js";
 import { TOKYO_OUTINGS, OUTING_DIALOGUE_IDS, OUTINGS_FLAG, chapterThreeOutings, chapterThreeOutingCandidates,
-  claimChapterThreeOuting, outingDialogueId, outingAffinity, tasteRecovered } from "../js/chapters/ch3-outing-progress.js";
+  claimChapterThreeOuting, outingDialogueId, outingAffinity, tasteRecovered, recordChapterThreeOuting } from "../js/chapters/ch3-outing-progress.js";
 import { chapterThreeMapModel } from "../js/chapters/ch3-map-model.js";
 import { classifyFlag } from "../js/core/carry.js";
 import { AFFINITY_RANK_PTS } from "../js/core/stats.js";
@@ -409,6 +409,27 @@ assert.equal(classifyFlag(OUTINGS_FLAG), "progression");
 console.log("ch3 outings: ok");
 
 
+// SPV04: 昼夜を挟んでも各時間帯の初回→b→cを飛ばさない。完読前・二重確定は数えない。
+{
+  const { value, window } = at("d5-noon");
+  const park = TOKYO_OUTINGS.find(item => item.id === "park_walk");
+  let current = window;
+  for (const suffix of ["day", "night", "night_b", "night_c", "day_b", "day_c"]) {
+    assert(current);
+    const before = structuredClone(value);
+    const expected = `ch3_outing_park_walk_${suffix}`;
+    assert.equal(outingDialogueId(value, park, current), expected);
+    assert.equal(outingDialogueId(value, park, current), expected, "An unread/cancelled visit must not advance the next scene");
+    assert.deepEqual(value, before);
+    assert(claimChapterThreeOuting(value, current.id, "park_walk"));
+    const once = structuredClone(value);
+    assert.equal(claimChapterThreeOuting(value, current.id, "park_walk"), null);
+    assert.deepEqual(value, once, "A repeated completion must not advance either counter");
+    current = nextWindow(value);
+  }
+  assert.equal(value.flags[OUTINGS_FLAG].park_walk, 6, "Keep the existing total visit count");
+}
+
 // #3097: park revisits vary by visit count and actual slot without changing state or recovery.
 {
   const park = TOKYO_OUTINGS.find(item => item.id === "park_walk");
@@ -419,7 +440,7 @@ console.log("ch3 outings: ok");
   for (const slot of [0, 1]) {
     const base = `ch3_outing_park_walk_${slot ? "night" : "day"}`;
     for (const count of [0, 1, 2, 3, 4, 81]) {
-      value.flags[OUTINGS_FLAG] = { park_walk: count };
+      value.flags[OUTINGS_FLAG] = { park_walk: count + 7, [`park_walk_${slot ? "night" : "day"}`]: count };
       value.slot = 1 - slot;
       const before = structuredClone(value);
       assert.equal(outingDialogueId(value, park, { slot }), count ? `${base}_${count % 2 ? "b" : "c"}` : base);
@@ -452,3 +473,30 @@ console.log("ch3 outings: ok");
   }
 }
 console.log("PASS: six everyday scenes load and rotate; park recovery and ordinary visit affinity remain unchanged");
+
+// 日常ループの完読記録: 昼夜交互でもb/cを両方読み、実SAVE/LOADでも続きが残る。
+{
+  const storage = new Map();
+  globalThis.localStorage = { getItem: key => storage.get(key) ?? null,
+    setItem: (key, value) => storage.set(key, String(value)) };
+  let value = at("d5-noon").value;
+  const park = TOKYO_OUTINGS.find(item => item.id === "park_walk");
+  value.flags[OUTINGS_FLAG] = { park_walk: 81, mukai_help: 4 };
+  const stamina = value.stamina, money = value.money;
+  for (const suffix of ["", "_b", "_c", "_b", "_c"]) {
+    for (const slot of [0, 1]) {
+      value.slot = slot;
+      const expected = `ch3_outing_park_walk_${slot ? "night" : "day"}${suffix}`;
+      assert.equal(outingDialogueId(value, park), expected, "Old totals must not be guessed as day/night history");
+      recordChapterThreeOuting(value, park.id, slot);
+      setState(value);
+      assert(saveToSlot("suien_remake_slot1"));
+      value = loadFromSlot("suien_remake_slot1");
+      assert(value);
+    }
+  }
+  assert.deepEqual(value.flags[OUTINGS_FLAG], { park_walk: 91, mukai_help: 4, park_walk_day: 5, park_walk_night: 5 });
+  assert.equal(value.stamina, stamina);
+  assert.equal(value.money, money);
+}
+console.log("PASS: park day/night rotation, old saves, SAVE/LOAD and duplicate completion");

@@ -20,7 +20,7 @@ export function workerSceneKey(step, draw) {
 // 画面へ出す Image 自体も decode する。先読みの別 Image が終わっただけで
 // ミニゲームを始めない。失敗・15秒超過ではその一台の間は既存絵へ戻す。
 export async function readyWorkerImage(img, url) {
-  if (!url || !await imageReady(url, 15000, { keep: true })) return false;
+  if (!url || !await imageReady(url, 15000, { keep: true, pin: true })) return false;
   if (img.getAttribute("src") !== url) img.src = url;
   let timer;
   let finishLoad;

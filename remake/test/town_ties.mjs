@@ -1,5 +1,6 @@
 // REL01〜03・06・07: 街の人同士のつながり（なる→凛想とその第5章の続き、なる→アダム、みんと→サメちゃん、ひより×みんと）の寄り道会話。
 // #3468 B案: ひより×みんとの続き（ぺぱーみんとの夜の相席と、次の来店での後日の一言）。
+// #3468 E案: なる→凛想の第5章の続き（お茶の場面の後、Dr.fookah の2階での仕入れ相談）。
 // 出る条件（面識・順番・一度きり・なるの修行中は出ない・凛想の出張の日は出ない）と、台本の決まりを検査する。
 // 相関の正本は brand/character_profiles.md「キャラ同士のつながり」。
 // node remake/test/town_ties.mjs
@@ -33,6 +34,7 @@ const SCENES = {
   samechan_minto_followup: { cast: ["minto"], end: "_spot_follow_minto_samechan" },
   // 既読は呼び出し側（chapters/ch5-shops.js・daily/hiyori.js）が来店の精算で付ける
   ch5_rio_naru_tea: { cast: ["naru", "rio"], end: null },
+  ch5_rio_naru_order: { cast: ["naru", "rio"], end: null },
   hiyori_shop_minto: { cast: ["hiyori", "minto"], end: null },
   hiyori_shop_minto_seat: { cast: ["hiyori", "minto"], end: null },
   hiyori_minto_seat_followup: { cast: ["hiyori", "minto"], end: "_spot_follow_minto_hiyori" },
@@ -81,6 +83,38 @@ check("the secrets stay secret: no age, no confession, and Rio never learns why 
   assert(lovers.every((l) => l.char_id === "rio" && tea.branches[l.next_true]?.length));
   assert(!/好き|告白|惚れ/.test(text("ch5_rio_naru_tea")));
   assert(text("ch5_rio_naru_tea").includes("ケムリクサさん") && text("ch5_rio_naru_tea").includes("円頓寺さん"));
+});
+
+check("Naru and Rio, the order (#3468 E): names unchanged, Rio never reads it as more than work, Naru says what he needs", () => {
+  const dlg = dialogues.ch5_rio_naru_order;
+  const rows = dlg.lines.filter((l) => !l.type), all = [...rows, ...Object.values(dlg.branches).flat()];
+  const whole = all.map((l) => l.text).join("");
+  // 呼び名は変えない（屋号と、敬語の苗字）。好意・恋の進展を思わせる言葉は出さない。旧名・マニキュアの話は持ち込まない
+  assert(whole.includes("ケムリクサさん") && whole.includes("円頓寺さん"));
+  assert(!/好き|告白|惚れ|憧れ|照れ|赤く|亮太|鳴切|凛想さんって|くゆり|マニキュア|爪/.test(whole));
+  assert(all.filter((l) => l.speaker === "naru").every((l) => !/凛想/.test(l.text)), "Naru keeps calling her by her family name");
+  // 凛想が覚えていたのは仕事の記録（焼き菓子の台・焦げ）。なるは伝票をそろえかけて止め、自分の条件を先に言う
+  const remember = rows.findIndex((l) => l.speaker === "rio" && l.text.includes("焦げた砂糖"));
+  const stop = rows.findIndex((l) => l.text.includes("そろえかけて"));
+  const terms = rows.findIndex((l) => l.speaker === "naru" && l.text.includes("条件を先に"));
+  const tea = rows.findIndex((l) => l.text.includes("湯のみを二つ"));
+  assert(remember >= 0 && stop > remember && terms > stop && tea > terms, "remembered → stops tidying → states his terms → tea");
+  // お茶は相談を続けるため。座った後も、二人の話は仕入れのまま
+  assert(rows[tea + 1].speaker === "rio" && rows[tea + 1].text.includes("座って話そう"));
+  // なるが帰った後の控えには、本人の要望が書いてある。その後になるは出ない
+  const left = rows.findIndex((l) => l.text.includes("階段を降りていった"));
+  const slip = rows.findIndex((l) => l.text.includes("丁寧な字で三行"));
+  assert(left > tea && slip > left && rows.slice(left).every((l) => l.speaker !== "naru"));
+  // 恋人の時は、なるは仕事の敬意だけを言って帰る（再アプローチしない）。凛想の最後の一言も分ける
+  const lovers = dlg.lines.filter((l) => l.condition_type === "lover");
+  assert.equal(lovers.length, 2);
+  assert(lovers.every((l) => l.char_id === "rio" && dlg.branches[l.next_true]?.length));
+  assert(dlg.branches.naru_lover.every((l) => l.speaker === "naru" && l.text.includes("仕事")));
+});
+
+check("Naru and Rio, the order (#3468 E): wired after the tea at the chapter-five showroom", () => {
+  const source = fs.readFileSync(new URL("../js/chapters/ch5-shops.js", import.meta.url), "utf8");
+  assert.match(source, /\{ scene: "ch5_rio_naru_tea", after: 1, met: "naru" \}\),\s*Object\.freeze\(\{ scene: "ch5_rio_naru_order", after: 2, met: "naru", seen: "ch5_rio_naru_tea" \}\)/);
 });
 
 check("Hiyori and Minto: Minto plays along and never says so to her; her own age stays a joke", () => {

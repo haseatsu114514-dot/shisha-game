@@ -56,7 +56,10 @@ await suite("setup-continuation", async check => {
       window.before = structuredClone({ equip: s.equip, owned: s.owned, stats: s.stats, money: s.money });
       ui.clearScreen();
       window.S = { core, cs: session.newSession("rehearsal") };
-      session.openBench(S.cs, { steps: [["setup", "機材"]] });
+      await session.openBench(S.cs, { steps: [["setup", "機材"]] }).ready;
+      // The chooser belongs to the equipment step; enter it through the same
+      // production API as normal setup, rather than leaving the bench unstarted.
+      session.stepPanel("setup", "機材");
     });
     await page.locator('[data-test="worker-appearance"] [data-id="handle-01-yoshio"]').waitFor();
     await page.locator('[data-test="worker-appearance"] [data-id="mouthpiece-01-crystal-drop"]').waitFor();

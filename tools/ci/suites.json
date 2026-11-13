@@ -10,6 +10,12 @@
   ],
   "suites": [
     {
+      "id": "rest-variations",
+      "title": "Rest dialogue rotation, SAVE/LOAD and interrupted chapter visits",
+      "kind": "quick",
+      "run": ["node --experimental-vm-modules remake/test/rest_variations.mjs"]
+    },
+    {
       "id": "play-mastery",
       "title": "Mini-game mastery, cumulative progress, save/NG+ rewards and chapter-five paid growth",
       "kind": "quick",
@@ -711,8 +717,8 @@
       "id": "desert-ride",
       "title": "DESERT RIDE on PC and touch, reduced motion, and the chapter 4 outing with save/load and interruption",
       "kind": "browser",
-      "weight": 1.5,
-      "timeout": 5,
+      "weight": 3.5,
+      "timeout": 8,
       "paths": [
         "remake/js/core/stage-fit.js",
         "remake/js/minigames/desert-ride.js",
@@ -732,6 +738,26 @@
         "remake/test/browser/desert_ride.mjs"
       ],
       "run": ["node remake/test/browser/desert_ride.mjs"]
+    },
+    {
+      "id": "desert-ride-feel",
+      "title": "DESERT RIDE feel: hit stops, recover cue, instant lean, squash and stretch, goal afterglow, short restart, next goal, reduced motion",
+      "kind": "browser",
+      "weight": 1,
+      "timeout": 5,
+      "paths": [
+        "remake/js/core/stage-fit.js",
+        "remake/js/minigames/desert-ride.js",
+        "remake/js/minigames/desert-ride-model.js",
+        "remake/js/minigames/desert-ride-art.js",
+        "remake/js/minigames/minigame-loading.js",
+        "remake/img/ui/desert_ride/**",
+        "remake/js/desert-ride-page.js",
+        "remake/desert-ride.html",
+        "remake/css/desert-ride.css",
+        "remake/test/browser/desert_ride_feel.mjs"
+      ],
+      "run": ["node remake/test/browser/desert_ride_feel.mjs"]
     },
     {
       "id": "minigame-bgm-input",
@@ -4395,6 +4421,24 @@
       ],
       "run": [
         "node remake/test/conversation_effects_demo.mjs"
+      ]
+    },
+    {
+      "id": "continue-looks",
+      "title": "Continue look candidates (#2524 CV58): A ember / C manga, touch sizes, retry, timeout, ?continueLook switch",
+      "kind": "browser",
+      "weight": 1.5,
+      "timeout": 5,
+      "paths": [
+        "remake/test/continue_looks.mjs",
+        "remake/js/chapters/continue-looks.js",
+        "remake/js/chapters/continue-view.js",
+        "remake/js/chapters/gameover.js",
+        "remake/css/continue*.css",
+        "remake/continue-preview.html"
+      ],
+      "run": [
+        "node remake/test/continue_looks.mjs"
       ]
     },
     {
