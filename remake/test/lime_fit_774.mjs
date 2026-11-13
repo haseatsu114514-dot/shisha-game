@@ -14,7 +14,7 @@ async function fixture(width, height, fail = false) {
   }
   const values = {
     'util.js': {el, sleep:async()=>{if(fail) throw Error('animation failure');}}, 'state.js':{state:{}},
-    'data.js':{DB:{}, displayName:()=> 'なる', faceIconUrl:()=> 'existing-face'},
+    'data.js':{DB:{}, displayName:()=> 'なる', limeAccountName:()=> 'なる', faceIconUrl:()=> 'existing-face'},
     'lime-icons.js':{customLimeIconUrl:()=> null},
     'ui.js':{imageReady:async()=>true}, 'audio.js':{SE:{phone(){phones++;}}},
     'transition-kit.js':{svg:el,move:async()=>{ transforms.push(scene?.style.transform); }},

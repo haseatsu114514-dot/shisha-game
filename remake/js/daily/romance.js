@@ -17,6 +17,7 @@ import { dateScene, dateVenue, relationshipDayTotal } from "./date-scene.js";
 import { playSamechanDate, samechanDateGap, samechanDateReady } from "./samechan-date.js";
 import { questionDoneKey } from "../core/affinity-stages.js";
 import { petitAfterDate } from "./petit-shuraba.js";
+import { strainOf, STRAIN_SIGN2 } from "../core/lover-strain.js";
 import { recordRouteLover, recordRouteEvent } from "../core/gallery-progress.js";
 
 // 告白は「帰り道」の場面。背景を持たない台本は通りの絵で（前の場面の背景を引き継がない）
@@ -76,6 +77,17 @@ function becomeLovers(id) {
   try { recordRouteLover(id); } catch { /* 記録の失敗で交際の成立を妨げない */ }
   emit("lovers", { id });
   save();
+}
+
+/**
+ * 友達に戻った相手と、もう一度付き合う（すれ違いの別れ話の後のやり直し。daily/lover-strain.js・台帳 STR11）。
+ * 絆の段・記念日の起点・読んだ場面は前のまま。「友達のまま」の印を外して、付き合う処理をもう一度通す
+ */
+export function rejoinLover(id) {
+  if (isLover(id) || !state.flags[`_friend_${id}`]) return false;
+  delete state.flags[`_friend_${id}`];
+  becomeLovers(id);
+  return true;
 }
 
 /** 会話に入るたびに呼ばれる（engine の hooks.onEnter）。告白の返事は分岐先の dialogue_id で決まる */
@@ -403,7 +415,8 @@ export function loverMessages({ tournamentDay = false, fixedNight = () => false,
     // 日常の朝（carryMorning）は、前のひとことから3日あいていれば届けられる。ほかの連絡で朝の枠が埋まった日は
     // 次の朝へ回り、3日後まで待たされない（LM09）。場面カードの章の入口は、従来どおり3日ごとの決まった日だけ
     const due = carryMorning ? state.day - lastMorning >= LOVER_MORNING_GAP : turn % LOVER_MORNING_GAP === 0;
-    if (pool?.length && due && !read(msgId)) {
+    // すれ違いが「話したい」の段まで溜まった恋人からは、いつもの朝のひとことが来なくなる（core/lover-strain.js。誘いは届く）
+    if (pool?.length && due && !read(msgId) && strainOf(state, id) < STRAIN_SIGN2) {
       const k = Math.floor(turn / LOVER_MORNING_GAP);
       const stamp = (L().morningStamp || {})[id];
       const v = stamp && k % 2 === 1 ? { m: [stamp.text, { sender: id, stamp: stamp.stamp }] } : { m: pool[Math.floor(k / (stamp ? 2 : 1)) % pool.length].m };

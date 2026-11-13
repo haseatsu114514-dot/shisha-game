@@ -365,9 +365,12 @@ test('seat rail measurement waits for preview resize outputs', async () => {
     matchMedia: () => ({ matches: reducedMotion }), location: { href: 'https://example.invalid/remake/trpg-preview.html', search: '' }, history: { replaceState() {} } });
   const preview = new vm.SourceTextModule(previewSource, { context: port });
   const stageFit = new vm.SourceTextModule(await readFile(new URL('../js/core/stage-fit.js', import.meta.url), 'utf8'), { context: port });
-  await preview.link(specifier => specifier.endsWith('core/stage-fit.js') ? stageFit : new vm.SyntheticModule(['mountTrpgCollection'], function () {
-    this.setExport('mountTrpgCollection', () => ({ snapshot() {}, audioSnapshot() {}, loaded: true }));
-  }, { context: port }));
+  await preview.link(specifier => specifier.endsWith('core/stage-fit.js') ? stageFit
+    // 左右の余白の煙と縁（YHK12）。この検査は画面当ての倍率だけを見るので、層は作らない
+    : specifier.endsWith('core/side-area.js') ? new vm.SyntheticModule(['initSideArea'], function () { this.setExport('initSideArea', () => {}); }, { context: port })
+    : new vm.SyntheticModule(['mountTrpgCollection'], function () {
+      this.setExport('mountTrpgCollection', () => ({ snapshot() {}, audioSnapshot() {}, loaded: true }));
+    }, { context: port }));
   await preview.evaluate();
   const { settledPreview } = await import('./browser/trpg_layout.mjs');
   let readiness;
