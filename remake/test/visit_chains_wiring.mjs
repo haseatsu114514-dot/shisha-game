@@ -194,6 +194,8 @@ const { chainVisitDue, playChainStage, loadVisitChains } = playModule.ns;
     consultLessons: async () => {}, nextDubaiBondStory: () => null, DUBAI_LETTER_AGAIN: [], DUBAI_LETTER_DAYS: 2,
     CH5_CAMEL_MEET: { scene: "ch5_camel_meet" }, CH4_CAMEL_SCENE_FILES: { ch4_camel_race: [] }, SHEIKH_BOND_IDS: [], TAIYO_BOND_IDS: [],
     DESERT_SPOT_IDS: { dunes: "dunes", desk: "desk" }, CAMEL_DAILY_SPOT_ID: "camel", MOSQUE_VISITING_HOURS: {},
+    // クリーク沿いの場面の束（SPV03・ch4-dubai-local.js）。台本の一覧は配列で読むので、空で差し込む
+    CREEK_SCENES: { day: [], night: [] }, CREEK_SPOT_IDS: [], CREEK_TURN: "dubai_creek", creekSpotScenes: () => ({}), quietTurn: () => null,
     chainStageAt: chains.chainStageAt, chainVisitDue, playChainStage,
   });
   const { performDubaiSpot, DUBAI_SPOTS } = dubai.ns;
@@ -250,6 +252,8 @@ const { chainVisitDue, playChainStage, loadVisitChains } = playModule.ns;
     STALL_PLACE: "souq", dubaiSpotAt: entry => entry, nightVisit: () => null, stallChoices: () => [], priceText: n => `${n}`,
     INN_TRIAL_FLAG: "_ch4_inn_trial", INN_TRIAL_IDS: [], innTrialDue: () => false, REHEARSAL_FLAG: "_ch4_rehearsal", REHEARSAL_IDS: [],
     rehearsalDue: () => false, chapterFourStaffNightEvent: () => null,
+    // この試験は通いの優先順位を見る。通常の休憩は先頭の台本を返す（巡回自体は rest_variations.mjs）。
+    quietTurn: (id, pool) => ({ id: pool[0], key: `_spot_turn_${id}`, count: 0 }),
     companionTimeOpen: () => false, // 同行した恋人と過ごせる日（BLC08・companion-time.js）。この試験では開かない
     chainStageAt: chains.chainStageAt, chainVisitDue, playChainStage,
   });

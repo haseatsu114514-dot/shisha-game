@@ -56,9 +56,9 @@ await suite("setup-continuation", async check => {
       window.before = structuredClone({ equip: s.equip, owned: s.owned, stats: s.stats, money: s.money });
       ui.clearScreen();
       window.S = { core, cs: session.newSession("rehearsal") };
-      session.openBench(S.cs, { steps: [["setup", "機材"]] });
-      // 「外観を選ぶ」は機材を選ぶ工程の間だけ出る（#3196 の一枚の舞台）。本番と同じく機材の工程に入る。
-      await session.waitBenchReady(S.cs, "setup");
+      await session.openBench(S.cs, { steps: [["setup", "機材"]] }).ready;
+      // The chooser belongs to the equipment step; enter it through the same
+      // production API as normal setup, rather than leaving the bench unstarted.
       session.stepPanel("setup", "機材");
     });
     await page.locator('[data-test="worker-appearance"] [data-id="handle-01-yoshio"]').waitFor();

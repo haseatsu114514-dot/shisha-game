@@ -327,8 +327,8 @@
 & .bench-top .bench-mode small { display: none !important; }
 /* 大会以外はレールに余白があるので、練習の種類（手順の中間チェック等）を残す */
 &:not([data-mode="tournament"]) .bench-top .bench-mode small { display: inline !important; }
-/* 3回負けた後のやり直しの「今回のみ操作補助」は、補助が効いていると分かる唯一の表示なので大会でも残す（first_brew の third-recorded-loss） */
-& .bench-top .bench-mode small.bench-assist { display: inline !important; }
+/* 3回負けて選んだ「今回のみ操作補助」は、大会でも消さない（補助が効いていることを知らせる札） */
+& .bench-top .bench-mode small.retry-assist { display: inline !important; }
 & .bench-progress { flex: none !important; }
 & .bench-progress-track { gap: 18px !important; }
 & .bench-phase:not(:last-child)::after { width: 18px !important; }

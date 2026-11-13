@@ -4,13 +4,13 @@ import { state, save } from "../core/state.js";
 import { addStamina, earnStat, paidAction, earnSceneCompletion } from "../core/stats.js";
 import { layers, showScreen, setBg, enterScene, toast } from "../core/ui.js";
 import { play } from "../vn/engine.js";
-import { facilityGrowth } from "../daily/spots.js";
+import { facilityGrowth, quietTurn } from "../daily/spots.js";
 import { readDialogues } from "../core/chapter-data.js";
-import { TOKYO_GYM, TOKYO_REST_STAMINA, chapterThreeGymAvailability,
+import { TOKYO_GYM, TOKYO_GYM_SCENES, TOKYO_GYM_IDS, TOKYO_GYM_TURN, TOKYO_REST_STAMINA, chapterThreeGymAvailability,
   claimChapterThreeGym, claimChapterThreeRest } from "./ch3-activity-progress.js";
 
 export { chapterThreeGymAvailability } from "./ch3-activity-progress.js";
-const IDS = ["ch3_choizap_day", "ch3_choizap_night"];
+const IDS = TOKYO_GYM_IDS;
 let dialogueTask = null;
 let session = null;
 
@@ -39,7 +39,9 @@ export async function visitChapterThreeGym(windowId, { signal = null, isCurrent 
     if (!current()) return false;
     const eligible = chapterThreeGymAvailability(state, windowId);
     if (!eligible.ok) return false;
-    const id = eligible.window.slot ? "ch3_choizap_night" : "ch3_choizap_day";
+    // 昼・夜それぞれの小品を順番に読む（SPV03。日常ループの goGym と同じ鍵）
+    const turn = quietTurn(TOKYO_GYM_TURN, TOKYO_GYM_SCENES[eligible.window.slot ? "night" : "day"], eligible.window.slot ? "night" : "");
+    const id = turn?.id || (eligible.window.slot ? "ch3_choizap_night" : "ch3_choizap_day");
     await enterScene(bgUrl("bg_choizap", eligible.window.slot ? "night" : "day"));
     if (!current()) return false;
     showScreen("none", null);
@@ -51,6 +53,7 @@ export async function visitChapterThreeGym(windowId, { signal = null, isCurrent 
       if (!current()) return false;
       const window = claimChapterThreeGym(state, windowId);
       if (!window) return false;
+      if (turn) state.flags[turn.key] = turn.count + 1;
       addStamina(TOKYO_GYM.stamina);
       earnStat(TOKYO_GYM.stat, 4);
       earnSceneCompletion(id, owner.value);
