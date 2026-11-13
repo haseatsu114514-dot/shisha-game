@@ -1066,12 +1066,22 @@
         {
           "speaker": "noor",
           "face": "smile",
-          "text": "じゃあ、少しだけ。私は、ハジメの煙がもう好き。それは明日も変わらないよ"
+          "text": "じゃあ、ガイドの質問をひとつだけ、……怖い？"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（それだけで、肩の力が抜けた）"
+          "text": "……少し、怖いです"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "よし、合格。そう言える人は、ちゃんと楽しめるの"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（ツアーの客と同じ扱いなのに、肩の力が抜けた）"
         },
         {
           "type": "choice",

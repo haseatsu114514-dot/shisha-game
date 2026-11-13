@@ -237,7 +237,7 @@
         { "speaker": "", "face": "", "text": "朝のレース場。ハリールの白い車の横で、見覚えのある顔が両手を大きく振った。" },
         { "speaker": "faris", "face": "excited", "text": "ハジメ！　日本に帰ったんじゃなかったの？" },
         { "speaker": "hajime", "face": "smile", "text": "また来ました。……ハビーバに、会いたくなって" },
-        { "speaker": "faris", "face": "smile", "text": "ハビーバ、きっと喜ぶよ。ハリールも、顔には出さないけど絶対嬉しいんだから" },
+        { "speaker": "faris", "face": "smile", "text": "ハビーバ、きっと喜ぶよ。叔父さんも、顔には出さないけど絶対嬉しいんだから" },
         { "speaker": "", "face": "", "text": "柵の向こうで、ラクダの長い首が、こちらへゆっくり向いた。" },
         { "speaker": "khalil", "face": "normal", "text": "……戻ったか。乗りなさい。ハビーバが待っている" },
         { "speaker": "faris", "face": "smile", "text": "今日も連打しないでよ。リモコン、はい" }
@@ -341,7 +341,7 @@
         { "speaker": "noor", "face": "surprise", "text": "シーシャのお店の人！ 父が聞いたら喜ぶよ。毎晩、奥の席で吸ってるから" },
         { "speaker": "noor", "face": "smile", "text": "日本のお店の話、今度聞かせて。息抜きしたくなったら、また吸いに来て" },
         { "speaker": "hajime", "face": "smile", "text": "はい、また来ます" },
-        { "speaker": "noor", "face": "smile", "text": "約束！ ……あ、今の顔、ちょっとかわいい" },
+        { "speaker": "noor", "face": "smile", "text": "約束！ ……あ、今の顔、ちょっとカワイイ" },
         { "speaker": "hajime", "face": "surprise", "text": "（……からかわれてる。たぶん）" }
       ]
     },
@@ -437,12 +437,12 @@
         },
         {
           "speaker": "",
-          "text": "俺は、朝のまだ客の少ない通りと、使い込んだ店の暖簾を思い浮かべた。",
+          "text": "俺は、朝のまだ客の少ない通りと、tonariの扉を思い浮かべた。",
           "face": ""
         },
         {
           "speaker": "hajime",
-          "text": "なら、俺の店の近くの通りから案内します。朝は、静かで、煙の匂いが少し残ってます",
+          "text": "なら、うちの店の前の通りから。朝は静かで、煙の匂いが少し残ってます",
           "face": "normal"
         },
         {
@@ -481,28 +481,8 @@
           "face": "normal"
         },
         {
-          "speaker": "",
-          "text": "画面のリストは閉じられた。約束の方が、写真より先に残った。",
-          "face": ""
-        },
-        {
           "speaker": "hajime",
-          "text": "リストの町は、駅の名前、覚えておきます。また帰ってから、道を確認するので",
-          "face": "normal"
-        },
-        {
-          "speaker": "noor",
-          "text": "覚えてくれるの？ ……ありがとう。写真だけだと、実際の曲がり角が分からなくて",
-          "face": "normal"
-        },
-        {
-          "speaker": "noor",
-          "text": "ハジメが先に歩いて、私が写真を見る。ガイドって、そういうのでしょ",
-          "face": "normal"
-        },
-        {
-          "speaker": "hajime",
-          "text": "そうです。迷ったら、俺が先に迷います",
+          "text": "リストの町は、また帰ってから道を調べます。迷ったら、俺が先に迷います",
           "face": "normal"
         },
         {

@@ -3000,7 +3000,7 @@
         "bg": "res://assets/backgrounds/bg_dubai_dunes_dusk.png",
         "private_scene": true
       },
-      "comment": "#3081 ヌールの恋人の絆。砂丘での私的な外出の後に一度。帰りの手。",
+      "comment": "#3081 ヌールの恋人の絆。砂丘での私的な外出の後に一度。手を離さないと運転できない。",
       "lines": [
         {
           "speaker": "",
@@ -3025,52 +3025,47 @@
         {
           "speaker": "",
           "face": "",
-          "text": "ヌールさんはいつものように笑おうとして、途中でやめた。"
-        },
-        {
-          "speaker": "noor",
-          "face": "normal",
-          "text": "ガイドなら、迷わない顔ができる。でも今日は、ハジメに見せてもいい？"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "はい。俺も、うまくできるふりはしません"
-        },
-        {
-          "speaker": "noor",
-          "face": "normal",
-          "text": "よかった。遠くにいる日も、分からないことはちゃんと聞く"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "俺も。返事を待つだけじゃなくて、言葉にします"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "彼女は小指を一本だけ離して、また、指を絡め直した。"
-        },
-        {
-          "speaker": "noor",
-          "face": "smile",
-          "text": "じゃあ、最初の約束。会えない日に、会いたいって言ってもいい"
-        },
-        {
-          "speaker": "hajime",
-          "face": "smile",
-          "text": "言ってください。俺も言います"
+          "text": "ヌールさんは運転席のドアに手をかけて、そこで止まった。"
         },
         {
           "speaker": "noor",
           "face": "surprise",
-          "text": "……あ、今の顔"
+          "text": "……困った。手を離さないと、運転できない"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "離しましょうか"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "だめ。……あと十、数えるまで。ガイドの指示"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "彼女は声に出さずに数えはじめた。唇の動きは、七のあたりで一度、二に戻った。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "今、戻りましたよね"
         },
         {
           "speaker": "noor",
           "face": "smile",
-          "text": "ちょっとカワイイ。恋人になったら、からかうの、我慢しなくていいよね？"
+          "text": "戻ってない。砂丘では、ガイドの数え方が正しいの"
+        },
+        {
+          "speaker": "noor",
+          "face": "surprise",
+          "text": "……あ、今の顔。ちょっとカワイイ"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "恋人になったら、からかうの、我慢しなくていいよね？"
         },
         {
           "speaker": "hajime",
@@ -3080,12 +3075,12 @@
         {
           "speaker": "noor",
           "face": "smile",
-          "text": "考えておく。……車に乗る前に、もう少しだけ、こうしてる"
+          "text": "考えておく。……はい、十。乗って、恋人さん"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "夕日の影が二人の足元で重なり、離れなかった。"
+          "text": "手が離れたのは、エンジンがかかる直前だった。"
         }
       ]
     },
@@ -3095,7 +3090,7 @@
         "bg": "res://assets/backgrounds/bg_dubai_dunes_dusk.png",
         "private_scene": true
       },
-      "comment": "#3081 ヌールの恋人の絆。砂丘での私的な外出の後に一度。声の届き方。",
+      "comment": "#3081 ヌールの恋人の絆。砂丘での私的な外出の後に一度。二つの時計（合う時間がほとんど無い）。",
       "lines": [
         {
           "speaker": "",
@@ -3113,9 +3108,54 @@
           "text": "いつの間に"
         },
         {
+          "speaker": "",
+          "face": "",
+          "text": "彼女は二つの時計を、指で順番に叩いた。"
+        },
+        {
           "speaker": "noor",
           "face": "normal",
-          "text": "離れて話す時、声が途切れたら、私きっと大きな声になる"
+          "text": "私が店を閉める頃、ハジメは夜明け前"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "ハジメが店を閉める頃、私はお盆を持って走ってる"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……合う時間、ほとんどないですね"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "ほとんどない！ 並べてみて、ちょっと笑っちゃった"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "……だから、起こさない日があってもいい？ かわりに、朝に一言だけ置いとく"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "はい。俺も、出られなかった夜は、次の朝に書きます"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "「寝てた」の一言でも、怒らないから。……三回続いたら、怒る"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "彼女はスマホをしまい、肩が触れるところへ座り直した。"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "……本当はね。声が途切れたら、私きっと、大きな声になる"
         },
         {
           "speaker": "hajime",
@@ -3128,36 +3168,6 @@
           "text": "そこは否定して！"
         },
         {
-          "speaker": "noor",
-          "face": "normal",
-          "text": "……元気にしてないと、距離まで大きくなる気がして"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "彼女はスマホをしまい、肩が触れるところへ座り直した。"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "声が小さい日も、俺は聞きます"
-        },
-        {
-          "speaker": "noor",
-          "face": "normal",
-          "text": "本当？ 言葉にならない日でも？"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "はい。黙ってる時間も、切らずにいられます"
-        },
-        {
-          "speaker": "noor",
-          "face": "smile",
-          "text": "……じゃあ、私もそうする。急いで面白い話を探さない"
-        },
-        {
           "speaker": "",
           "face": "",
           "text": "風が強まり、聞こえるのは砂の細い音だけになった。"
@@ -3165,17 +3175,12 @@
         {
           "speaker": "noor",
           "face": "normal",
-          "text": "今は隣にいるから、もっとよく聞こえる"
+          "text": "……今は隣にいるから、小さい声でも届くね"
         },
         {
           "speaker": "",
           "face": "",
           "text": "ヌールさんは俺の肩に頭を預けて、目を閉じた。"
-        },
-        {
-          "speaker": "noor",
-          "face": "smile",
-          "text": "……画面の向こうでも、今日のこの静けさ、覚えておく"
         }
       ]
     },
@@ -3275,7 +3280,7 @@
         "bg": "res://assets/backgrounds/bg_dubai_dunes_dusk.png",
         "private_scene": true
       },
-      "comment": "#3081 ヌールの恋人の絆。砂丘での私的な外出の後に一度。板を置く場所。",
+      "comment": "#3081 ヌールの恋人の絆。砂丘での私的な外出の後に一度。黙った理由と、名前の呼び方。",
       "lines": [
         {
           "speaker": "",
@@ -3300,22 +3305,27 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "まだ教えてほしいこと、あります"
-        },
-        {
-          "speaker": "noor",
-          "face": "surprise",
-          "text": "砂の読み方？ ……あ、競走の勝ち方は教えないよ"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "それも、ですけど。ヌールさんが黙った時、どう声をかけたらいいか"
+          "text": "……さっき、車の中で静かでしたね。俺、何か言いましたか"
         },
         {
           "speaker": "",
           "face": "",
           "text": "彼女の手が、板の上で止まった。"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "……ううん。ハジメが帰る日まで、あと何回走れるか、数えちゃっただけ"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "数えると黙っちゃうの、私の悪い癖。お客さんの前では、やらないのに"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "そういう時、どう声をかけたらいいですか"
         },
         {
           "speaker": "noor",
@@ -3348,11 +3358,6 @@
           "text": "謝らないで。普段は、ヌールさんのままでいい。黙った時だけ、それで呼んで"
         },
         {
-          "speaker": "noor",
-          "face": "normal",
-          "text": "私も、ハジメの返事を待つ"
-        },
-        {
           "speaker": "",
           "face": "",
           "text": "二人で板を並べ直した。今度はどちらも、すぐには手を離さなかった。"
@@ -3365,37 +3370,57 @@
         "bg": "res://assets/backgrounds/bg_dubai_dunes_dusk.png",
         "private_scene": true
       },
-      "comment": "#3081 ヌールの恋人の絆。砂丘での私的な外出の後に一度。戻る線。",
+      "comment": "#3081 ヌールの恋人の絆。砂丘での私的な外出の後に一度。父に送り出された、初めての夜の線。",
       "lines": [
         {
           "speaker": "",
           "face": "",
-          "text": "夕日の砂丘で、ヌールさんが指先で地面に二本の線を引いた。"
+          "text": "夕日が沈みきっても、ヌールさんは車のキーを出さなかった。"
         },
         {
           "speaker": "noor",
           "face": "normal",
-          "text": "出る道は違っても、戻る印は同じ。店の地図にも、小さな丸を書いてるの"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "ここへ戻る印なんですね"
+          "text": "今日はね、父が先に言ったの。「夜の砂は、見てきたのか」って"
         },
         {
           "speaker": "noor",
-          "face": "smile",
-          "text": "今は、紙の上だけじゃない。ハジメの声がするところも、私の戻る場所"
+          "face": "normal",
+          "text": "ガイドなのに、夜の線は一本も引いたことがなかった。夜は、お盆を持ってるから"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "風で線の端が崩れ、彼女は描き直さずに手を止めた。"
+          "text": "空の色が落ちると、砂丘がゆっくり青くなっていった。"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "……子どもの頃に見たのと、同じ色"
+        },
+        {
+          "speaker": "noor",
+          "face": "smile",
+          "text": "ハジメ、最初のお客さんになって。埋まったら、押す係もお願い"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "朝まででも、押します"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "彼女は指先で、足元の砂に短い線を一本引いた。風が、端からすぐに崩していく。"
+        },
+        {
+          "speaker": "noor",
+          "face": "normal",
+          "text": "夜の線は、すぐ消えるね。……でも、引いた。今日、ハジメと"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "俺も、日本に帰っても、ヌールさんのことを思います"
+          "text": "日本に帰っても、今日の砂の色は思い出します"
         },
         {
           "speaker": "noor",
@@ -3403,19 +3428,14 @@
           "text": "それだけでいい。次に会う日を、無理に決めなくていいから"
         },
         {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "決められない日も、連絡します"
-        },
-        {
           "speaker": "noor",
           "face": "normal",
-          "text": "私も。会いたい時は、会いたいって、ちゃんと言う"
+          "text": "……会いたい時は、その時に言う。だから、今言う"
         },
         {
           "speaker": "noor",
           "face": "smile",
-          "text": "……だから、今言う。ハジメ、会いたかった。隣にいるのに"
+          "text": "ハジメ、会いたかった。隣にいるのに"
         },
         {
           "speaker": "hajime",
@@ -3425,27 +3445,12 @@
         {
           "speaker": "",
           "face": "",
-          "text": "ヌールさんは笑って、崩れた二本の線の真ん中に、小さな丸をひとつ描いた。"
-        },
-        {
-          "speaker": "noor",
-          "face": "normal",
-          "text": "戻る印。今日は、ここ"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "そう言って、彼女は俺の首に腕を回した。唇が触れたのは、夕日が稜線に沈む少し前だった。"
+          "text": "彼女は俺の首に腕を回した。唇が触れた時、砂はもう、すっかり青かった。"
         },
         {
           "speaker": "noor",
           "face": "smile",
-          "text": "……さあ、戻ろう。今日は二人で、同じ線を歩ける"
-        },
-        {
-          "speaker": "hajime",
-          "face": "smile",
-          "text": "はい。また違う線になっても、一緒に探します"
+          "text": "……さあ、戻ろう。帰りの線は、二人で決める"
         },
         {
           "speaker": "",
