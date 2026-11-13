@@ -91,7 +91,7 @@ async function loadUi({ loadImage = image => image.onload?.(), imageSize = 0, no
     "chapter-title-art.js": { chapterTitleArt: () => "img/ui/chapter_title_ch1.webp" },
     "ui-theme.js": { uiThemeFrame: () => "img/ui/frame.webp" },
     "module-loading.js": { withLoadingNotice: (p) => p },
-    "loading.js": { withLoading: (prepare) => Promise.resolve().then(() => prepare({})), comicLoadingRequired: () => false },
+    "loading.js": { withLoading: (prepare) => Promise.resolve().then(() => prepare({})), comicLoadingRequired: () => false, loadingContinues: () => false },
     "loading-context.js": { gameLoadingOptions: () => ({}) },
     "stage-fit.js": { syncBackdrop: () => {} },
     "dom-write.js": await import("../js/core/dom-write.js"), // 変化時だけ書く部品は、本物をそのまま使う（#3500）

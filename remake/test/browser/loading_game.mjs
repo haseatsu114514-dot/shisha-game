@@ -15,10 +15,12 @@ const { chromium } = createRequire(import.meta.url)("playwright");
 const base = process.env.BASE_URL || "http://127.0.0.1:8123/remake/";
 const browser = await chromium.launch({ headless: true, ...(process.env.CHROME_EXECUTABLE_PATH ? { executablePath: process.env.CHROME_EXECUTABLE_PATH } : {}) });
 let failed = 0;
-async function check(label, body, { mode = null, viewport = { width: 1280, height: 720 }, touch = false } = {}) {
+async function check(label, body, { mode = null, viewport = { width: 1280, height: 720 }, touch = false, delayGame = 0 } = {}) {
   const context = await browser.newContext({ viewport, hasTouch: touch, isMobile: touch });
   if (mode) await context.addInitScript(value => localStorage.setItem("suien_loading_comics", value), mode);
   const page = await context.newPage();
+  // Hold the game's entry module so the static boot screen (index.html) stays up long enough to look at.
+  if (delayGame) await page.route("**/js/main.js*", async route => { await new Promise(resolve => setTimeout(resolve, delayGame)); await route.continue(); });
   const errors = [];
   page.on("pageerror", error => errors.push(error.message));
   page.setDefaultTimeout(30000);
@@ -55,6 +57,24 @@ for (const [label, options] of [["pc", {}], ["phone-touch", { viewport: { width:
     assert.deepEqual(await page.evaluate(() => JSON.parse(localStorage.getItem("suien_remake_loading_comics_read"))), [freshTitles.get(title)],
       "The boot comic counts as read once the reader moves on");
   }, { mode: "always", ...options });
+}
+// While the game itself downloads (index.html #boot, before any module runs), the boot screen already
+// shows a new-game comic; the loading screen that follows goes on with the same episode and its art.
+for (const [label, options] of [["pc", {}], ["phone-touch", { viewport: { width: 844, height: 390 }, touch: true }]]) {
+  await check(`static-boot-screen-shows-the-comic-${label}`, async page => {
+    await page.locator("#boot.has-comic .boot-comic.is-ready").waitFor();
+    const staticTitle = await page.locator(".boot-comic-title").innerText();
+    assert(freshTitles.has(staticTitle), `The boot screen shows a new-game comic, got ${staticTitle}`);
+    const fits = await page.evaluate(() => {
+      const box = document.querySelector(".boot-comic").getBoundingClientRect();
+      return box.left >= -1 && box.top >= -1 && box.right <= innerWidth + 1 && box.bottom <= innerHeight + 1;
+    });
+    assert(fits, "The boot screen's comic sheet fits the screen before the stage is fitted");
+    await page.locator(".loading-gate.is-ready").waitFor();
+    assert.equal(await page.locator(".loading-comic-title").innerText(), staticTitle, "The loading screen goes on with the same comic");
+    await page.keyboard.press("Enter");
+    await page.locator('[data-test="title-new"]').waitFor();
+  }, { mode: "always", delayGame: 2500, ...options });
 }
 const openTitle = async page => {
   await page.locator(".loading-gate.is-ready").waitFor();
@@ -122,6 +142,7 @@ await check("scene-waits-use-the-same-loading-screen", async page => {
 }, { mode: "always" });
 await check("automated-boot-stays-plain", async page => {
   await page.locator('[data-test="title-new"]').waitFor();
+  assert.equal(await page.locator("#boot.has-comic").count(), 0, "No comic on the static boot screen for automated browsers");
   await page.locator("#boot").waitFor({ state: "detached" });
   assert.equal(await page.evaluate(() => localStorage.getItem("suien_remake_loading_comics_read")), null, "No comic was shown or recorded");
   // The old small notice and the old chapter wait stay for the existing checks.

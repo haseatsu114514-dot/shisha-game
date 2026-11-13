@@ -389,6 +389,46 @@ await suite("loading-gate", async check => {
     assert.equal(result.always.ready, true, 'A shown gate waits for its comic and holds for reading');
     assert(result.always.ms >= 1250, `The hold starts after the late art (600 ms) plus the reading guard, got ${result.always.ms} ms`);
   });
+  // The comic is a must for players: a comic whose art cannot be fetched gives way to the comic read last
+  // (already in the cache), and art handed over from the boot screen is used as it is (no second download).
+  await check("comic-always-shows", async page => {
+    const result = await page.evaluate(async () => {
+      const { withLoading, primeLoadingArt } = await import('./js/core/loading.js');
+      localStorage.setItem('suien_loading_comics', 'always');
+      const host = document.querySelector('#loading-demo');
+      const src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="300" height="200"/>';
+      const ok = id => ({ id, title: id, minChapter: 1, panels: [{ src, alt: 'one' }, { src, alt: 'two' }] });
+      const broken = { id: 'broken', title: 'broken', minChapter: 1, panels: [{ src, alt: 'one' }, { src: 'data:image/png,invalid', alt: 'two' }] };
+      const readGate = async comics => {
+        const reads = [];
+        const gate = withLoading(async () => {}, { host, comics, fixed: true, onRead: comic => reads.push(comic.id) });
+        await new Promise(resolve => { const poll = () => host.querySelector('.loading-gate.is-ready') ? resolve() : setTimeout(poll, 20); poll(); });
+        const title = host.querySelector('.loading-comic-title')?.textContent;
+        const images = [...host.querySelectorAll('.loading-panels img')];
+        host.querySelector('.loading-gate').dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }));
+        await gate;
+        return { title, reads: reads.join(), images };
+      };
+      const first = await readGate([ok('first')]);
+      await new Promise(resolve => setTimeout(resolve, 2100)); // past the continuing gap
+      const fallback = await readGate([broken]);
+      await new Promise(resolve => setTimeout(resolve, 2100));
+      const primed = [new Image(), new Image()];
+      primed.forEach(img => { img.src = src; });
+      await Promise.all(primed.map(img => img.decode()));
+      primeLoadingArt('boot-comic', primed);
+      const reused = await readGate([{ ...ok('boot-comic'), panels: [{ src: src + '#a', alt: 'one' }, { src: src + '#b', alt: 'two' }] }]);
+      // The gate that goes on right after a read (continuing) shows the same decoded images at once: no blink.
+      let carried = null;
+      await withLoading(async () => {
+        const images = [...host.querySelectorAll('.loading-panels img')];
+        carried = !host.querySelector('.loading-card.is-waiting') && images.length === 2 && images.every((img, i) => img === reused.images[i]);
+      }, { host, comics: [ok('other')], delayMs: 0 });
+      return { first: first.title, fallback: fallback.title, fallbackRead: fallback.reads,
+        sameElements: reused.images.length === 2 && reused.images.every((img, i) => img === primed[i]), carried };
+    });
+    assert.deepEqual(result, { first: 'first', fallback: 'first', fallbackRead: 'first', sameElements: true, carried: true });
+  });
   await check("next-comic-is-fetched-ahead", async page => {
     const result = await page.evaluate(async () => {
       const { warmNextLoadingComic, selectLoadingComic } = await import('./js/core/loading.js');
