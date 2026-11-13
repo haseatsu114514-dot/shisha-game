@@ -116,7 +116,8 @@ async function finishSuddenDeath(page, options = {}, shootInput = { x: 0, y: 0 }
   await phase(page, "summary");
 }
 async function start(page, difficulty = "normal", options = {}) {
-  await page.goto(new URL("axe-throw.html?input=gauges", page.url()).href);
+  // 一投ずつ手で進める検査なので、対戦の自動送り（2026-11-13）は ?auto=0 で止める。自動送りは axe_tap_pull.mjs で確かめる
+  await page.goto(new URL("axe-throw.html?input=gauges&auto=0", page.url()).href);
   await page.evaluate(() => {
     localStorage.setItem("suien_remake_save", JSON.stringify({ schema: 5, money: 45678, stamina: 71,
       lovers: ["rio"], flags: { _friend_hiyori: true }, inbox: [{ id: "keep", read: true }],

@@ -216,18 +216,18 @@ const fake = (over = {}) => ({ bowl: { mango: 6, vanilla: 3 }, main: "mango", bo
   // 引かずに置くことはできない: 山札も灰も空なら、チャージできない
   { const keep = [p.deck, p.ash]; p.turn.charges = 0; p.deck = []; p.ash = [];
     assert.deepEqual(act(G, { type: "charge", hand: 0 }), { ok: false, reason: "引く札が無いので置けない" }); [p.deck, p.ash] = keep; }
-  // ワンコールリッド（炭1個で回す低温用のHMD）: 置ける炭は2つまで。炭が1つだけのあいだ、冷めない
+  // C1（炭1個で回す低温用のHMD）: 置ける炭は2つまで。炭が1つだけのあいだ、冷めない
   { const hmd = p.hmd; p.hmd = "one_coal"; p.turn.charges = 0;
     p.zone = [{ id: "cube", up: true }, { id: "flat", up: true }]; p.stove = [{ id: "flat", stage: 2 }];
     assert.deepEqual([coalMaxOf(p), act(G, { type: "puton", stove: 0 }).reason, act(G, { type: "charge", hand: 0 }).reason], [2, "炭は2つまで", "炭は2つまで"]);
     p.hmd = hmd; p.stove = []; }
 }
-// 一式d「一つ火の低温型」（ワンコールリッド）: 立ち上げは2枚まで。炭が1つだけなら、自分のターンのはじめに冷めない
+// 一式d「一つ火の低温型」（C1）: 立ち上げは2枚まで。炭が1つだけなら、自分のターンのはじめに冷めない
 {
   const G = createGame({ seed: 5, tournament: "open_cloud", first: 0, players: [{ kit: "d" }, { kit: "a", ai: true, level: 1 }] });
   const p = G.P[0];
   assert.deepEqual([p.hmd, coalMaxOf(p), coalMaxOf(G.P[1])], ["one_coal", 2, 4]);
-  assert.equal(act(G, { type: "embers", picks: [0, 1, 2] }).ok, false, "ワンコールリッドは、立ち上げの炭も2つまで");
+  assert.equal(act(G, { type: "embers", picks: [0, 1, 2] }).ok, false, "C1は、立ち上げの炭も2つまで");
   assert.equal(act(G, { type: "embers", picks: [0, 1] }).ok, true);
   for (let n = 0; n < 900 && !(G.phase === "serve" && G.wait.player === 0 && G.wait.type === "main"); n++) assert.ok(act(G, aiAct(G, G.wait.player)).ok);
   p.zone = [{ id: "cube", up: true }]; p.wind = 0; p.noCool = false;
@@ -236,7 +236,7 @@ const fake = (over = {}) => ({ bowl: { mango: 6, vanilla: 3 }, main: "mango", bo
   if (G.wait.type === "discard") assert.ok(act(G, { type: "discard", picks: Array.from({ length: p.hand.length - RULES.handMax }, (_, i) => i) }).ok);
   for (let n = 0; n < 400 && !G.over && !(G.wait.player === 0 && G.round > round); n++) assert.ok(act(G, aiAct(G, G.wait.player)).ok);
   assert.deepEqual([G.wait.type, heatOf(p), p.zone.length], ["main", 3, 1], "炭が1つだけなので冷めない（火3のまま、すぐ自分の手番）");
-  assert.ok(G.log.some((l) => /ワンコールリッド：炭が1つだけなので冷めない/.test(l.text)));
+  assert.ok(G.log.some((l) => /C1：炭が1つだけなので冷めない/.test(l.text)));
   p.zone.push({ id: "flat", up: true });
   const r2 = G.round;
   assert.ok(act(G, { type: "end" }).ok);

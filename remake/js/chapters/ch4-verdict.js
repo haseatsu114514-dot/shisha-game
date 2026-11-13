@@ -66,7 +66,7 @@ export function chapterFourReviewLines(value, cs) {
  * 操作に左右されない「ふと視線を感じた」以降と、対戦相手の場面は既存台本のまま。
  */
 export function chapterFourFinalDialogue(source, value, cs) {
-  const start = source.lines.findIndex(row => row.text === "はじめは普通のブロンドをほぐす。和の配合は、何度も試したものだ。");
+  const start = source.lines.findIndex(row => row.text === "俺は普通のブロンドをほぐす。和の配合は、何度も試したものだ。");
   const end = source.lines.findIndex(row => row.text?.startsWith("ふと視線を感じた。"));
   const served = cs.pullDone && !cs.pull?.failed ? servedEvaluationLines(cs) : [];
   return { ...source, lines: start >= 0 && end > start
