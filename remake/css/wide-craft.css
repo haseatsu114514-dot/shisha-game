@@ -50,45 +50,47 @@ html:root[data-density="phone"] body #stage .bench .rig-lamp b { font-size: var(
    枠を名前の幅まで広げる（工程の列が少し縮む。名前が枠に入る時は今までどおり） */
 html:root[data-density="phone"] body #stage .bench .bench-mode { white-space: nowrap; min-width: max-content; }
 /* #3010: 詰め方は右欄を二分すると選択肢の説明が細くなる。
-   上から一行ずつ積み、器だけ残りの高さを使う。決定ボタンも通常フロー内に置く。 */
-html:root[data-density="phone"] body #stage .bench[data-step="pack"] .packing {
+   上から一行ずつ積み、器だけ残りの高さを使う。決定ボタンも通常フロー内に置く。
+   （#3517: 文字の下限は常に効かせるが、ここから下の詰め方の並べ替えはワイド拡張の配置なので [data-wide] の時だけ。
+   常に効かせると、一枚の舞台では決定欄「この詰め方で決める」の文字が欄からはみ出す） */
+html:root[data-density="phone"] body #stage[data-wide] .bench[data-step="pack"] .packing {
   display: flex; flex-direction: column; gap: 8px; min-height: 0;
 }
 /* #3036: 器の絵は高さ最大300px。残り高さ（約150px）の欄へそのまま中央に置くと、
    上の香り文と下の詰め方の見出し・説明へはみ出して文字が隠れる。
    絵を欄に収まる大きさへ縮め（配合画面の .45 と同じ考え方）、欄の高さは固定で確保する。
    香り文が2行になる等で収まらない時は、板のスクロールで読める（重なりは作らない）。 */
-html:root[data-density="phone"] body #stage .bench[data-step="pack"] .pack-vessel {
+html:root[data-density="phone"] body #stage[data-wide] .bench[data-step="pack"] .pack-vessel {
   flex: none; height: 142px; min-height: 0;
 }
-html:root[data-density="phone"] body #stage .bench[data-step="pack"] .pack-vessel-art {
+html:root[data-density="phone"] body #stage[data-wide] .bench[data-step="pack"] .pack-vessel-art {
   transform: scale(.45);
 }
-html:root[data-density="phone"] body #stage .bench[data-step="pack"] .pack-caption {
+html:root[data-density="phone"] body #stage[data-wide] .bench[data-step="pack"] .pack-caption {
   flex: none; min-height: 0;
 }
-html:root[data-density="phone"] body #stage .bench[data-step="pack"] .pack-choices {
+html:root[data-density="phone"] body #stage[data-wide] .bench[data-step="pack"] .pack-choices {
   flex: none; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); overflow: visible; padding: 0;
 }
-html:root[data-density="phone"] body #stage .bench[data-step="pack"] .pack-choice {
+html:root[data-density="phone"] body #stage[data-wide] .bench[data-step="pack"] .pack-choice {
   min-width: 0; padding: 8px; text-align: center;
 }
-html:root[data-density="phone"] body #stage .bench[data-step="pack"] .pack-choice small {
+html:root[data-density="phone"] body #stage[data-wide] .bench[data-step="pack"] .pack-choice small {
   display: block; overflow-wrap: normal; line-height: 1.35;
 }
-html:root[data-density="phone"] body #stage .bench[data-step="pack"] .pack-footer {
+html:root[data-density="phone"] body #stage[data-wide] .bench[data-step="pack"] .pack-footer {
   flex: none; position: static; min-height: 0; padding-top: 4px;
 }
-html:root[data-density="phone"] body #stage .bench[data-step="pack"] .pack-footer .pack-confirm {
+html:root[data-density="phone"] body #stage[data-wide] .bench[data-step="pack"] .pack-footer .pack-confirm {
   flex: none; min-width: 240px;
 }
 /* 上帯は長い工程名とボタンを優先し、工程タブの余白を均等に縮める。 */
-html:root[data-density="phone"] body #stage .bench[data-step="pack"] .bench-top { gap: 8px; }
-html:root[data-density="phone"] body #stage .bench[data-step="pack"] .bench-progress-track { gap: 4px; }
-html:root[data-density="phone"] body #stage .bench[data-step="pack"] .bench-progress-track > .bench-phase {
+html:root[data-density="phone"] body #stage[data-wide] .bench[data-step="pack"] .bench-top { gap: 8px; }
+html:root[data-density="phone"] body #stage[data-wide] .bench[data-step="pack"] .bench-progress-track { gap: 4px; }
+html:root[data-density="phone"] body #stage[data-wide] .bench[data-step="pack"] .bench-progress-track > .bench-phase {
   min-width: 0; gap: 3px; padding-inline: 3px;
 }
-html:root[data-density="phone"] body #stage .bench[data-step="pack"] .bench-phase:not(:last-child)::after { display: none; }
+html:root[data-density="phone"] body #stage[data-wide] .bench[data-step="pack"] .bench-phase:not(:last-child)::after { display: none; }
 /* 左のカードの台詞: 窓の高さを中身に合わせて伸ばし（上の絵に少し重なる）、心の声の最大幅（232px）も外す。
    それでも長い時は窓の中でスクロールする（craft.css の .audience-note と同じ） */
 html:root[data-density="phone"] body #stage .bench .bench-left .bench-audience { height: auto; min-height: 112px; max-height: 58%; }
