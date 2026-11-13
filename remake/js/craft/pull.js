@@ -675,9 +675,9 @@ async function pullGame(cs, mode) {
     exhale(panel.closest?.(".bench") || panel, { color: mixColor(cs.mix), grand: inZone && (optimal || criticals > 0), quality: inZone ? "good" : T > ideal[1] ? "harsh" : "thin" });
     await resultCard(panel, {
       title: context.title,
-      summary: [context.summary],
+      // 攻めの帯の上積み（桜井式）は、畳まれた「詳しく見る」ではなくカードの表に出す（#095 ほめてやれ）。
+      summary: [context.summary, ...(attackLine ? [attackLine] : [])],
       lines: [
-        ...(attackLine ? [attackLine] : []),
         ...(naruFinished ? ["焼き際を見極めた。仕上げの評価に小さな手応え"] : []),
         inZone && bands.expressionWeight >= .999 ? "適温で、味の表情を整えられた" : optimal ? "最適温に合わせられた" : inZone ? "適温に整えられた" : T > ideal[1] ? "少し熱いままだった" : "まだぬるかった",
         tasteCard,
@@ -690,8 +690,8 @@ async function pullGame(cs, mode) {
   tickerSay(attack ? "パッキー「攻めの帯で止めたーッ！ 審査員が身を乗り出すーッ！」" : inZone ? "パッキー「最後の一口まで崩れない！ 守り切ったーッ！」" : "パッキー「おっと、熱がぶれているか〜！？」");
   await resultCard(panel, {
     title: `${mode.title} 結果`,
+    summary: attackLine ? [attackLine] : [],
     lines: [
-      ...(attackLine ? [attackLine] : []),
       inZone ? `適温に整えて、${context.returned}` : T > ideal[1] ? cs.mode==="tournament"?"熱いまま審査員に任せてしまった":"まだ熱い。次は炭を減らすか、外寄りに置こう" : cs.mode==="tournament"?"冷めたまま審査員に任せてしまった":"まだぬるい。次は炭を多めに替えるか、内寄りに寄せよう",
       tasteCard,
       waterComfortLine(cs.water),
