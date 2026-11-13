@@ -33,7 +33,7 @@
         {
           "speaker": "sumi",
           "face": "smile",
-          "text": "店の現場も、ライバルの店も、全部お前の武器になる"
+          "text": "店の現場も、よその店も、全部お前の手に残る"
         },
         {
           "speaker": "sumi",
@@ -78,17 +78,17 @@
         {
           "speaker": "sumi",
           "face": "normal",
-          "text": "はじめ。お前、そもそもなんでシーシャから煙が出るか分かって作ってるか？"
+          "text": "はじめ。お前、なんでシーシャから煙が出るか分かって作ってるか？"
         },
         {
           "speaker": "hajime",
           "face": "surprise",
-          "text": "えっ？ ……えっと、上の炭でフレーバーを温めて、出た煙を水に通して吸う……からですよね？"
+          "text": "えっ？ 上の炭で葉を温めて、出た煙を水に通して吸う……ですよね？"
         },
         {
           "speaker": "sumi",
           "face": "normal",
-          "text": "まあ80点だ。正解には違いねえが、もう少し解像度を上げろ"
+          "text": "合ってる。だが、それは吸う側の説明だ。作る側は、もう一段見ろ"
         },
         {
           "speaker": "",
@@ -104,7 +104,7 @@
         {
           "speaker": "sumi",
           "face": "normal",
-          "text": "一番上のボウルに詰めたフレーバー、タバコの葉っぱは、直接火に当てない"
+          "text": "ボウルに詰めた葉っぱは、直接火に当てない"
         },
         {
           "speaker": "sumi",
@@ -120,8 +120,13 @@
         {
           "speaker": "sumi",
           "face": "serious",
-          "text": "そうだ。温められた葉っぱから出た煙は、ステムを通って下のボトルに行き、水の中をくぐる",
+          "text": "そうだ。出た煙はステムを通って、下のボトルで水をくぐる",
           "diagram": "smoke"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんがボトルを指で弾いた。水面が、小さく揺れる。"
         },
         {
           "speaker": "sumi",
@@ -144,17 +149,12 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（なるほど……なんとなく作ってたけど、ちゃんと理屈があるんだ）"
+          "text": "（なんとなく作ってたけど、ちゃんと理屈があるんだ）"
         },
         {
           "speaker": "sumi",
           "face": "normal",
           "text": "熱が高すぎれば焦げてイガイガする。低すぎれば煙が出ねえ"
-        },
-        {
-          "speaker": "sumi",
-          "face": "normal",
-          "text": "炭の調整と吸い方、全部が噛み合って初めて『美味い煙』になる"
         },
         {
           "speaker": "sumi",
@@ -170,21 +170,6 @@
           "speaker": "sumi",
           "face": "normal",
           "text": "ああ。まず、今ここにある一台を見ろ"
-        },
-        {
-          "speaker": "sumi",
-          "face": "normal",
-          "text": "ただ煙を出すだけなら誰でもできる"
-        },
-        {
-          "speaker": "sumi",
-          "face": "normal",
-          "text": "客が『ずっと吸っていたい』と思う煙は、仕組みを手が覚えてからだ"
-        },
-        {
-          "speaker": "hajime",
-          "face": "serious",
-          "text": "はい……！ ありがとうございます、スミさん"
         },
         {
           "speaker": "",
@@ -228,7 +213,12 @@
         {
           "speaker": "",
           "face": "",
-          "text": "スミさんがボウルと炭とトングを並べた。"
+          "text": "スミさんがボウルと炭を並べ、最後に自分のトングを俺の前に置いた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "指の当たる所だけ、色が変わっている。握ると、店のトングより少し重い。"
         },
         {
           "speaker": "",
@@ -253,7 +243,7 @@
         {
           "speaker": "sumi",
           "face": "serious",
-          "text": "客の顔を見て、必要な熱だけ入れろ。それが全てだ"
+          "text": "熱は、客の顔を見て決めろ。足す時も、引く時もだ"
         },
         {
           "speaker": "hajime",
@@ -268,9 +258,9 @@
           "next_false": "st_face_default"
         },
         {
-          "speaker": "",
-          "face": "",
-          "text": "吸うのがゆっくりなら、熱を一段下げる。眉間にシワが寄ったら、炭を引く。"
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "吸うのが遅けりゃ、一段下げる。眉間が寄ったら、引く"
         },
         {
           "speaker": "hajime",
@@ -290,12 +280,12 @@
         {
           "speaker": "",
           "face": "",
-          "text": "スミさんは何も言わなかった。ただ、ほんのわずかに口角を動かした。"
+          "text": "スミさんは何も言わなかった。黙って、次の炭をコンロに置いた。"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（あの人、今……少しだけ笑った？）"
+          "text": "（……もう一個、ってことだ）"
         },
         {
           "speaker": "",
@@ -379,6 +369,11 @@
           "text": "笑うとむせる。むせながら、また笑う。……うるさかった"
         },
         {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "一口ごとに感想が長え。聞いてると、炭を見る暇がねえんだ"
+        },
+        {
           "speaker": "hajime",
           "face": "smile",
           "text": "スミさんの、友達ですか"
@@ -410,10 +405,10 @@
         },
         {
           "type": "condition",
-          "condition_type": "flag",
-          "flag": "_ev_day5",
-          "next_true": "ask_after_day5",
-          "next_false": "ask_before_day5"
+          "condition_type": "tournament_finished",
+          "tournament_chapter": 1,
+          "next_true": "ask_after_tournament",
+          "next_false": "ask_before_tournament"
         },
         {
           "speaker": "",
@@ -428,17 +423,22 @@
         {
           "speaker": "sumi",
           "face": "normal",
-          "text": "今はまだ早い。だが、お前が最後まで作り切るなら、いずれ話す"
-        },
-        {
-          "speaker": "hajime",
-          "face": "serious",
-          "text": "分かりました。まずは目の前の一台を、ちゃんと作り切ります"
+          "text": "その話には、相手がいる。俺ひとりで勝手に喋るわけにいかん"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "スミさんは小さく頷いて、また深く吸い込み……軽くむせた。"
+          "text": "返事の代わりに、借りていたホースをスミさんの方へ返した。"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "……まだ残ってる。お前が吸え"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "スミさんは自分の一台を深く吸い込み……軽くむせた。"
         },
         {
           "speaker": "",
@@ -457,6 +457,27 @@
         }
       ],
       "branches": {
+        "ask_before_tournament": [
+          {
+            "type": "condition",
+            "condition_type": "flag",
+            "flag": "_ev_day5",
+            "next_true": "ask_after_day5",
+            "next_false": "ask_before_day5"
+          }
+        ],
+        "ask_after_tournament": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "地元大会のあと、会長に「懐かしい店の味だ」って言われて"
+          },
+          {
+            "speaker": "hajime",
+            "face": "sad",
+            "text": "……あれ、どういう意味だったんでしょう"
+          }
+        ],
         "ask_before_day5": [
           {
             "speaker": "hajime",
@@ -611,19 +632,9 @@
           "text": "いえ、何でもないです。……今日も遅くまでありがとうございます"
         },
         {
-          "speaker": "sumi",
-          "face": "normal",
-          "text": "……はじめ"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "はい？"
-        },
-        {
           "speaker": "",
           "face": "",
-          "text": "スミさんがいつものように自分用のシーシャを作り始めた。"
+          "text": "スミさんがいつものように、自分用の一台を作り始めた。"
         },
         {
           "speaker": "",
@@ -633,22 +644,27 @@
         {
           "speaker": "sumi",
           "face": "normal",
-          "text": "……俺がこの店を開いたのには、理由があるんだ"
+          "text": "……はじめ"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "理由？"
+          "text": "はい"
         },
         {
           "speaker": "sumi",
           "face": "serious",
-          "text": "……昔、シーシャに救われたことがある。それだけだ"
+          "text": "昔、シーシャに救われたことがある"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "スミさんはそこで口を閉じ、炭の位置を直した。いつもより少しだけ、遠い目をしていた。"
+          "text": "続きを待った。スミさんはトングで、炭を指一本ぶん縁へ寄せただけだった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "誰も見ていない自分の一台なのに、客に出す時と同じ寄せ方だった。"
         },
         {
           "speaker": "sumi",
@@ -678,7 +694,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（救われた、か。……あの写真も、その頃のものなんだろうか。今日は、聞かないでおこう）"
+          "text": "（あの写真のことは、今日は聞かないでおこう）"
         },
         {
           "speaker": "",
@@ -779,17 +795,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "手順の出来を言う声じゃなかった。出された一台に、客が返す声だった。"
-        },
-        {
-          "speaker": "",
-          "face": "",
           "text": "スミさんはホースを置かず、三口目を吸った。"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "（……客として、そう言ってもらえたんだ）"
         },
         {
           "speaker": "sumi",
@@ -809,12 +815,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "スミさんがまた煙を吸った。俺の作ったシーシャの煙が、天井へゆっくり昇っていく。"
-        },
-        {
-          "speaker": "",
-          "face": "",
-          "text": "師匠が、弟子のシーシャを吸っている。その光景だけで、もう、十分だった。"
+          "text": "スミさんは返事の代わりに、四口目を吸った。炭を足せ、とは言われなかった。"
         },
         {
           "type": "remember",

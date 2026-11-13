@@ -25,7 +25,12 @@
         {
           "speaker": "mukai_master",
           "face": "normal",
-          "text": "俺はムカイ。うちも皿洗いからだ、分からないことは聞いてくれ。……まあ、まずは一杯やってけ"
+          "text": "俺はムカイ。うちも皿洗いからだ。分からないことは聞いてくれ"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "……座ってくれ。先に、豆を挽く"
         },
         {
           "type": "set_flag",
@@ -363,7 +368,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "夜。mukaiの裏口で、みんとさんからの通話を取った。"
+          "text": "夜。mukaiの裏口で、みんとからの通話を取った。"
         },
         {
           "speaker": "minto",

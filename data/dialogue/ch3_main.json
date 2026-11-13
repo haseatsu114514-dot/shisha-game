@@ -620,7 +620,7 @@
           {
             "speaker": "",
             "face": "",
-            "text": "スマホのメモを開いた。みんとさんとの通話のあとに書いた一行が、まだ残っている。"
+            "text": "スマホのメモを開いた。みんとと通話したあとに書いた一行が、まだ残っている。"
           },
           {
             "speaker": "",
@@ -1970,9 +1970,11 @@
           "text": "はい。グミベア、楽しみにしてました"
         },
         {
-          "speaker": "ageha",
-          "face": "normal",
-          "text": "……あの日さ、手、けっこう震えてたの。笑ってごまかしてたけど"
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_ch2_ageha_secret",
+          "next_true": "tremor_known",
+          "next_false": "tremor_told"
         },
         {
           "speaker": "ageha",
@@ -1982,12 +1984,12 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "相手ごとに違うの、全部あげはさんだと思います"
+          "text": "今日は、どのあげはさんで座りたいですか"
         },
         {
           "speaker": "ageha",
-          "face": "normal",
-          "text": "……じゃ、今日は静かにしてたい、もアリ？"
+          "face": "smile",
+          "text": "……聞いてくれんだ。じゃ、静かなやつ。それもアリ？"
         },
         {
           "speaker": "hajime",
@@ -2015,6 +2017,22 @@
           "text": "そ。うちも、してほしいこと言う練習中"
         }
       ],
+      "branches": {
+        "tremor_told": [
+          {
+            "speaker": "ageha",
+            "face": "normal",
+            "text": "……あの日さ、手、けっこう震えてたの。笑ってごまかしてたけど"
+          }
+        ],
+        "tremor_known": [
+          {
+            "speaker": "ageha",
+            "face": "normal",
+            "text": "……あの日の水、ありがと。手、朝からずっと震えてたんだ"
+          }
+        ]
+      },
       "comment": "友情・恋愛共通（#929）。県大会のあとも関係は続いている。離脱・謝罪・和解を前提にしない。県大会の約束どおり店で会い、手の震えや相手ごとの顔の話を本人が自分から話す。交際着地・前夜デートはこの再会以降。"
     },
     {

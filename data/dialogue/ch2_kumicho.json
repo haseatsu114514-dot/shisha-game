@@ -325,32 +325,12 @@
         {
           "speaker": "kumicho",
           "face": "normal",
-          "text": "吸いながら、腹ぁ決めて一気に立ち上げるやり方もありやしてね"
-        },
-        {
-          "speaker": "kumicho",
-          "face": "normal",
-          "text": "ただし、0分は最初から火を強めに置く。吸って熱を下まで回さなきゃ、上の葉だけ焼ける"
+          "text": "吸って、熱を下まで回す。回し切らなきゃ、上の葉だけ焼けやす"
         },
         {
           "speaker": "kumicho",
           "face": "normal",
           "text": "やると決めたら、煙が乗り切るまで吸い続けな。半端に止めるのが一番いけねえ"
-        },
-        {
-          "speaker": "kumicho",
-          "face": "normal",
-          "text": "このドラゴンフルーツは崩れ方が穏やかでさ。0分で立ち上げるにゃ、ちょうどいい相手ですわ"
-        },
-        {
-          "speaker": "kumicho",
-          "face": "normal",
-          "text": "……攻めすぎりゃ、トゲが立つ。そこだけは、しくじりなさんな"
-        },
-        {
-          "speaker": "kumicho",
-          "face": "normal",
-          "text": "……それだけの話でさ"
         },
         {
           "speaker": "hajime",
@@ -540,11 +520,6 @@
           "text": "俺のせいでさ。俺の判断が、間違ってたんでね"
         },
         {
-          "speaker": "kumicho",
-          "face": "normal",
-          "text": "……それ以来、人に穏やかな時間を作ることだけが、俺の仕事だと決めたんですわ"
-        },
-        {
           "type": "condition",
           "condition_type": "tournament_finished",
           "tournament_chapter": 2,
@@ -559,7 +534,12 @@
         {
           "speaker": "kumicho",
           "face": "normal",
-          "text": "……あんちゃんみてえに、何も背負わずに『いつもの』と言える奴。たまに、うらやましくなりやすわ"
+          "text": "……『いつもの』と言える店があるのは、いいもんでさ"
+        },
+        {
+          "speaker": "kumicho",
+          "face": "normal",
+          "text": "俺ぁ、言われる側にしか回れなかった"
         },
         {
           "speaker": "",
@@ -664,9 +644,11 @@
           "text": "回し飲みでさ。吸い口は、一人ずつ新しいのに替えやす"
         },
         {
-          "speaker": "",
-          "face": "",
-          "text": "一口吸う。味は遠い。それでも、重くて静かな煙だと分かった。"
+          "type": "condition",
+          "condition_type": "tournament_finished",
+          "tournament_chapter": 3,
+          "next_true": "taste_back",
+          "next_false": "taste_away"
         },
         {
           "speaker": "kumicho",
@@ -708,11 +690,6 @@
         {
           "speaker": "kumicho",
           "face": "normal",
-          "text": "俺はあんちゃんに穏やかな時間を作れた。あんちゃんは、俺の煙を吸ってくれた"
-        },
-        {
-          "speaker": "kumicho",
-          "face": "normal",
           "text": "兄弟分だの何だの言っても、来るかはあんちゃんが決めりゃいい"
         },
         {
@@ -736,6 +713,20 @@
         }
       ],
       "branches": {
+        "taste_away": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "一口吸う。味は遠い。それでも、重くて静かな煙だと分かった。"
+          }
+        ],
+        "taste_back": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "一口吸う。重くて静かな煙で、甘みはずっと後ろから遅れて来る。"
+          }
+        ],
         "question_before": [
           {
             "speaker": "hajime",
@@ -942,7 +933,7 @@
         {
           "speaker": "kumicho",
           "face": "smile",
-          "text": "そいつを『だけ』と言えるのが、あんちゃんの器でさ"
+          "text": "……『だけ』かい。俺ぁその『だけ』に、三十年かかりやした"
         },
         {
           "speaker": "",
@@ -1304,7 +1295,7 @@
         {
           "speaker": "kumicho",
           "face": "normal",
-          "text": "スジってのは、勝ち負けじゃねえ。煙を渡す相手への、誠実さなんですわ"
+          "text": "スジってのは、勝った奴が通すもんじゃねえんでさ"
         },
         {
           "speaker": "kumicho",

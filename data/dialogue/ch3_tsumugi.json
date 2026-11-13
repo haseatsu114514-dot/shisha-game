@@ -19,52 +19,67 @@
         {
           "speaker": "tsumugi",
           "face": "normal",
-          "text": "……絵の続きを描いてて。はじめさんの煙の色が、見たくなったんです"
+          "text": "……絵の続きを描いてて。はじめさんの煙が、見たくなったんです"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "画面の向こうで、つむぎがスケッチブックを開いた。"
+          "text": "作りかけの台を、カメラの前へ寄せた。画面の向こうで、つむぎが首をかしげる。"
         },
         {
           "speaker": "tsumugi",
           "face": "normal",
-          "text": "……画面越しでも、今日の色は、いつもと違いますね"
+          "text": "……だめですね。画面ごしだと、色、見えないです"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "……やっぱり、変かな。自分じゃ分からなくて"
+          "text": "そっか。……見えなくて、よかったかも"
         },
         {
           "speaker": "tsumugi",
           "face": "normal",
-          "text": "変わること自体は、いつものことです"
-        },
-        {
-          "speaker": "tsumugi",
-          "face": "normal",
-          "text": "でも今日の色は、ずっと息を止めてるみたい"
+          "text": "見えないので、手を見てます"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "煙の線の横で、葉の耳の猫が丸くなって寝ていた。"
+          "text": "つむぎはそれきり黙って、こちらの手元を見ていた。俺は、炭を置いては外した。"
         },
         {
           "speaker": "tsumugi",
           "face": "normal",
-          "text": "……この絵、描き終わりました。見ますか"
+          "text": "……同じところで、三回、止まりました"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……数えてたんだ"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "はい。描く時も、止まるところは数えるので"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "つむぎがスケッチブックを立てた。煙の線の横で、葉の耳の猫が丸くなっている。"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "前に見た煙を、一枚に描きました。右の端は、空けてあります"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "今日も、窓辺で寝てるね"
+          "text": "そこは？"
         },
         {
           "speaker": "tsumugi",
-          "face": "normal",
-          "text": "……はい。前に見た煙も、今日の煙も、同じ一枚に描きました"
+          "face": "smile",
+          "text": "……今日の分です。帰ってきたら、見て足します"
         },
         {
           "speaker": "hajime",
@@ -74,7 +89,7 @@
         {
           "speaker": "tsumugi",
           "face": "normal",
-          "text": "……今日はもう、少しだけ休みませんか。煙の色、また見せてください"
+          "text": "……今日はもう、少しだけ休みませんか。四回目は、明日で"
         },
         {
           "speaker": "",
