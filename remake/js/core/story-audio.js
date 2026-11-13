@@ -49,6 +49,13 @@ export function cityBgm(chapter) {
   return Number(chapter) === 2 ? STORY_BGM.yuzugaya : STORY_BGM.dailyCity;
 }
 
+/** 家に帰った時・家で休む時の曲。店の曲は持ち帰らない（第5章も家では店の曲にしない）。第2章は柚ヶ谷、第4章はドバイ。 */
+export function homeBgm(chapter) {
+  if (Number(chapter) === 2) return STORY_BGM.yuzugaya;
+  if (Number(chapter) === 4) return STORY_BGM.dubai;
+  return STORY_BGM.dailyCity;
+}
+
 /** UI／転換の役割 → SE 識別子（audio.js の SE / RECORDED_SE） */
 export const STORY_SE = Object.freeze({
   click: "click",

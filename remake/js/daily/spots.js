@@ -648,6 +648,8 @@ export const REST_RAIN_SCENES = Object.freeze(["remake_rest_rain"]);
 
 export async function restAtHome(spot, { fullDay = false } = {}) {
   const owner = state;
+  // 家で休む間は、直前の店の曲（tonari・ライバル店など）を流し続けない。帰宅と同じ街の曲へ戻す。
+  playBgm(state.chapter === 2 ? "bgm_yuzugaya" : state.chapter === 4 ? "bgm_dubai" : "kansetsu_shomei_to_black_coffee");
   addStamina(spot.stamina);
   delete state.flags._cold_pending;
   delete state.flags._overwork;
