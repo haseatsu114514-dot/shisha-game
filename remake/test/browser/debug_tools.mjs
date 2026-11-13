@@ -1,4 +1,4 @@
-// デバッグ用の道具（remake/js/dev/）: ?debug=1 で出る・?debug=0 で消える・何倍速・シーシャ作りの自動・便利ボタン。
+// デバッグ用の道具（remake/js/dev/）: ?debug=1 で出る・?debug=0 で消える・タイトルの版の表示を5回押して出し入れ・何倍速・シーシャ作りの自動・便利ボタン。
 import assert from "node:assert/strict";
 import { suite, baseURL } from "./support.mjs";
 
@@ -188,6 +188,35 @@ await suite("debug-tools", async check => {
     await page.locator(t("title-new")).waitFor({ timeout: 30000 });
     await page.waitForTimeout(800);
     assert.equal(await page.locator(t("debug-toggle")).count(), 0);
+  });
+
+  // ホーム画面に追加したiPhoneなど URL を変えられない時（DBG01）: タイトルの版の表示を5回続けて押すと出し入れできる
+  await check("version-label-five-taps-toggle-debug-without-url", async page => {
+    await page.goto(`${baseURL}?debug=0`, { waitUntil: "load" });
+    await page.locator(t("title-new")).waitFor({ timeout: 30000 });
+    await page.goto(baseURL, { waitUntil: "load" });
+    await page.locator(t("title-new")).waitFor({ timeout: 30000 });
+    assert.equal(await page.locator(t("debug-toggle")).count(), 0);
+    const ver = page.locator(".title .title-ver");
+    // 4回では出ない・間が空くと数え直す
+    for (let i = 0; i < 4; i++) await ver.click();
+    await page.waitForTimeout(1700);
+    await ver.click();
+    await page.waitForTimeout(300);
+    assert.equal(await page.locator(t("debug-toggle")).count(), 0);
+    for (let i = 0; i < 5; i++) await ver.click();
+    await page.locator(t("debug-toggle")).waitFor();
+    assert.equal(await page.evaluate(() => localStorage.getItem("suien_debug")), "1");
+    // 開き直しても出る（端末に覚える）
+    await page.goto(baseURL, { waitUntil: "load" });
+    await page.locator(t("title-new")).waitFor({ timeout: 30000 });
+    await page.locator(t("debug-toggle")).waitFor();
+    // もう一度5回で消える（読み直す）
+    await Promise.all([page.waitForNavigation(), (async () => { for (let i = 0; i < 5; i++) await page.locator(".title .title-ver").click(); })()]);
+    await page.locator(t("title-new")).waitFor({ timeout: 30000 });
+    await page.waitForTimeout(800);
+    assert.equal(await page.locator(t("debug-toggle")).count(), 0);
+    assert.equal(await page.evaluate(() => localStorage.getItem("suien_debug")), "0");
   });
 
   await check("speed-runs-timers-and-animations-faster-and-is-remembered", async page => {
