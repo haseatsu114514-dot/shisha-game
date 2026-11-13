@@ -4,7 +4,7 @@ import { el } from "../core/util.js";
 import { createChapterActions } from "../core/chapter-actions.js";
 import { chapterGrowthNight } from "../core/chapter-growth.js";
 import { awardSceneExp, consultLessons, readyLessons } from "../core/growth.js";
-import { state, save, loadFromSlot, requestResumeOnBoot } from "../core/state.js";
+import { state, save, loadFromSlot, requestResumeOnBoot, timeOfDay } from "../core/state.js";
 import { layers, showScreen, setBg, enterScene, chapterTitle, modal, withScenePreparation, loadingNotice } from "../core/ui.js";
 import { chapterTitleEntry } from "../core/chapter-title-art.js";
 import { withLoadingNotice } from "../core/module-loading.js";
@@ -379,7 +379,7 @@ async function readDialogueScene(owner, scene) {
   // 旧台本に仮置きされた tonari 等の metadata.bg は、東京の場面へ持ち込まない。
   const dialogue = { ...source, metadata: { ...source.metadata, bg: "" } };
   const restoreMeeting = meetingCheckpoint(dialogue);
-  const background = bgUrl(scene.bg);
+  const background = bgUrl(scene.bg, timeOfDay());
   // 行き先を決めた時点で前のカードを外し、背景待ちを同じ自由時間と誤認させない（背景は標準の幕で替える）。
   showScreen("none", null);
   hud(owner);
@@ -473,7 +473,7 @@ async function renderStage(owner) {
     ], "受付で受け取った規則は、あとからMENUでも読み返せる。", "ch3_registration");
     return;
   }
-  const background = bgUrl(scene.bg);
+  const background = bgUrl(scene.bg, timeOfDay());
   await withScenePreparation(enterScene(background));
   if (!current(owner)) return;
   card(owner, "scene", `DAY ${scene.day}・${scene.label}`, `${scene.location}へ向かう。`, [
@@ -535,7 +535,7 @@ function readyVolkLessons() {
 
 async function consultVolk(owner) {
   if (!current(owner) || !readyVolkLessons().length) return;
-  const background = bgUrl("bg_volk_shop");
+  const background = bgUrl("bg_volk_shop", timeOfDay());
   showScreen("none", null); hud(owner);
   await withScenePreparation(setBg(background));
   if (!current(owner)) return;
@@ -595,7 +595,7 @@ function bondActions(owner) {
 
 async function readBond(owner, kind, id = "mashiro") {
   if (!current(owner)) return;
-  const background = bgUrl({ saku: "bg_yohaku_shop", steve: "bg_steve_shop", volk: "bg_volk_shop" }[id] || "bg_mukai_shop");
+  const background = bgUrl({ saku: "bg_yohaku_shop", steve: "bg_steve_shop", volk: "bg_volk_shop" }[id] || "bg_mukai_shop", timeOfDay());
   showScreen("none", null);
   hud(owner);
   await withScenePreparation(setBg(background));
@@ -623,7 +623,7 @@ async function renderTrials(owner) {
   if (!current(owner)) return;
   const trials = availableChapterThreeTrials(state);
   if (!trials.length) { await renderStage(owner); return; }
-  await withScenePreparation(enterScene(bgUrl("bg_mukai_shop")));
+  await withScenePreparation(enterScene(bgUrl("bg_mukai_shop", timeOfDay())));
   if (!current(owner)) return;
   card(owner, "trial", "mukaiの作業台", "聞いたことを、自分の一台で確かめる。作っても、予定は進まない。", [
     ...trials.map(trial => button(owner, trial.label, `trial-${trial.id}`, () => runTrial(owner, trial.id))),
