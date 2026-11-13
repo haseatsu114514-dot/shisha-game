@@ -212,6 +212,7 @@ function setSkip(v) {
 }
 
 let autoTimer = 0;
+const AUTO_BASE_MS = 900, AUTO_PER_CHAR_MS = 34;
 // 会話の操作バーから開いた用語集・設定の表示中だけ自動送りを止める（他の画面のモーダルでは止めない）
 let vnModalOpen = 0;
 function kickAuto() {
@@ -225,7 +226,9 @@ function kickAuto() {
     return;
   }
   const autoFactor = ({ 1: 1.5, 2: 1, 3: 0.6 })[config.autoSpeed] || 1;
-  const delay = vnTest.turbo ? 5 : skipMode ? 25 : running.typing ? 200 : (1200 + visibleLength((running.fullHtml || "") + (running.fullInnerHtml || "")) * 45) * autoFactor;
+  // 文字を出し終えてから次の行へ進むまで。2026-11-13 オーナー「オート文字送りはもう少し全体的に早く」で
+  // 1200ms＋1字45ms から 900ms＋1字34ms へ（約25%速く。30字の行で 2.55秒→1.92秒。速さの設定3段の比は同じ・AUT01）。
+  const delay = vnTest.turbo ? 5 : skipMode ? 25 : running.typing ? 200 : (AUTO_BASE_MS + visibleLength((running.fullHtml || "") + (running.fullInnerHtml || "")) * AUTO_PER_CHAR_MS) * autoFactor;
   autoTimer = setTimeout(() => {
     if (!running || dom.log.classList.contains("show") || vnModalOpen) return;
     if (running.typing && !vnTest.turbo && !skipMode) return kickAuto();

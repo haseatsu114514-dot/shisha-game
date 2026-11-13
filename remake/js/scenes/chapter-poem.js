@@ -86,20 +86,23 @@ export function poemPages(lines = []) {
   return pages;
 }
 
-// 時間の決まり（ms）。短い詩を、急かさず・長引かせずに読ませる。
+// 時間の決まり（ms）。短い詩を、急かさずに読ませる。
+// 2026-11-13 オーナー「詩のスピードが早くて読みづらかった」で全体を約1.5倍ゆっくりに（1章ぶん 約10〜12秒→約15〜19秒・OSP21）。
+// 行の出方・場面の分け方・タップで先へ進めることは変えていない。
 const FADE_IN = 700;         // 暗い面が現れる
 const FADE_OUT = 900;        // 最後の場面のあと、全体が暗く閉じる（続けて章タイトル）
-const PANEL_BEAT = 800;      // コマ絵が浮かんでから、詩の最初の行が出るまで
-const TURN = 650;            // 場面から場面へ（消えて、次が浮かぶ）
-const LINE_BASE = 460;       // 1行ぶんの間（基本）
-const LINE_PER_CHAR = 26;    // 字数に応じた読みの間
-const HOLD_MID = 1100;       // 読み終えてから次の場面へ進むまで（基本）
-const HOLD_LAST = 2000;      // 最後の場面は長めに余韻を置く
-const HOLD_PER_CHAR = 40;
+const PANEL_BEAT = 1200;     // コマ絵が浮かんでから、詩の最初の行が出るまで
+const TURN = 900;            // 場面から場面へ（消えて、次が浮かぶ）
+const LINE_BASE = 760;       // 1行ぶんの間（基本）
+const LINE_PER_CHAR = 42;    // 字数に応じた読みの間
+const LINE_MIN = 1050, LINE_MAX = 1900; // 1行ぶんの間の下限・上限
+const HOLD_MID = 1800;       // 読み終えてから次の場面へ進むまで（基本）
+const HOLD_LAST = 3200;      // 最後の場面は長めに余韻を置く
+const HOLD_PER_CHAR = 65;
 const GUARD = 280;           // 段の切り替え直後の誤タップで飛ばさない
 
 const charsOf = (line) => [...plainPoemLine(line.text).replaceAll(" ", "")].length;
-const lineDelay = (line) => Math.min(1200, Math.max(650, LINE_BASE + LINE_PER_CHAR * charsOf(line)));
+const lineDelay = (line) => Math.min(LINE_MAX, Math.max(LINE_MIN, LINE_BASE + LINE_PER_CHAR * charsOf(line)));
 const holdFor = (group, last) => (last ? HOLD_LAST : HOLD_MID) + HOLD_PER_CHAR * group.reduce((sum, line) => sum + charsOf(line), 0);
 
 /**
