@@ -7,7 +7,7 @@ import assert from "node:assert/strict";
 import { suite } from "./support.mjs";
 
 const FLOOR_PHOTOS = /\/img\/backgrounds\/bg_(?:shop|fookah_showroom)\.webp(?:[?#]|$)/;
-const SHOWROOM_PHOTO = /\/img\/backgrounds\/bg_fookah_showroom\.webp(?:[?#]|$)/;
+const SHOWROOM_PHOTO = /\/img\/backgrounds\/bg_fookah_showroom\.webp(?:[?#]|$)/; // 入口にだけ出る2Fの写真
 const FAILING_BG = /\/img\/backgrounds\/bg_eden_shop\.webp(?:[?#]|$)/; // 起動時の先読みに入っていない背景
 
 async function setup(page, values = {}) {
@@ -103,24 +103,25 @@ await suite("visual-continuity-3203", async check => {
 
   await check("slow-photo-entry-not-blank", async page => {
     await setup(page);
-    // #3491: 入口の前に店頭の応対（背景は1階の bg_shop）を読むので、入口を出す時には1Fの写真は届いている。
-    // まだ読んでいない2Fの写真だけを止め、入口の待ちは応対を読み終えた時から数える。
+    // 2026-11-12 から、入口の前に店頭の応対（凛想。daily/shop-greeting.js）を読む。応対の背景は1Fの写真と同じ
+    // bg_shop なので、遅らせるのは入口にしか出ない2Fの写真だけにし、入口を待つ時間は応対を読み終えた時から測る。
     const photos = await holdFloorPhotos(page, SHOWROOM_PHOTO);
     await watchEntry(page);
     await page.evaluate(() => {
-      S.result = "pending";
-      const observer = new MutationObserver(() => {
-        if (document.body.classList.contains("vn-open")) S.greeting = true;
-        else if (S.greeting) { S.openedAt = performance.now(); observer.disconnect(); }
-      });
-      observer.observe(document.body, { attributes: true, attributeFilter: ["class"] });
+      S.greetedAt = null; S.result = "pending";
+      let opened = false;
+      new MutationObserver((_, observer) => {
+        const open = document.body.classList.contains("vn-open");
+        if (open) opened = true;
+        else if (opened && S.greetedAt === null) { S.greetedAt = performance.now(); observer.disconnect(); }
+      }).observe(document.body, { attributes: true, attributeFilter: ["class"] });
       S.shop.openShop().then(r => { S.result = r; });
     });
-    await page.waitForFunction(() => S.openedAt != null, null, { timeout: 30000 });
+    await page.waitForFunction(() => S.greetedAt !== null, null, { timeout: 30000 });
     // 調査の再現と同じ 3000ms の遅れ。入口は上限で出て、写真が届くまでは枠に下地が見える。
     setTimeout(photos.release, 3000);
     const entry = await firstEntry(page);
-    const waited = entry.at - await page.evaluate(() => S.openedAt);
+    const waited = entry.at - await page.evaluate(() => S.greetedAt);
     assert(waited >= 1400 && waited < 2600, `entry should wait for the photos up to the limit: ${Math.round(waited)}ms`);
     assert.equal(entry.pictures.length, 2);
     for (const picture of [...entry.pictures, ...entry.frame]) assert(visible(picture), `blank photo frame: ${JSON.stringify(picture)}`);

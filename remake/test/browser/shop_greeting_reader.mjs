@@ -1,25 +1,29 @@
 // 商品・地図等の検査では、店頭の応対だけをプレイヤーと同じ送り操作で読む。
 // 接客そのものの専用回帰は suite の readShopGreeting: false で自分で操作する。
+// 検査の途中で章の仕組み（chapters/ch1.js の setupHooks など）が hooks.onEnter を差し替えても、
+// 店頭の応対に入ったことを取りこぼさない（差し替えた関数を内側に入れて包み直す）。
 export async function installShopGreetingReader(page) {
   await page.evaluate(async () => {
     const { hooks, tapAdvance } = await import("./js/vn/engine.js");
     let reading = false;
-    // 章の開始（ch1.js の setupHooks 等）や各検査は hooks.onEnter を後から差し替える。
-    // 差し替えた関数もそのまま呼びつつ包み直し、店頭の応対に入ったことを見失わない。
-    const wrap = (handler) => {
-      if (handler?.shopGreetingReader) return handler;
-      const wrapped = (id, scene) => {
-        reading = /^ch1_shop_(?:rio_|clerk$)/.test(id);
-        return handler?.(id, scene);
-      };
-      wrapped.shopGreetingReader = true;
-      return wrapped;
+    let current = hooks.onEnter || null;
+    const wrappers = new Map(), inners = new WeakMap();
+    const wrapperOf = (fn) => {
+      if (!wrappers.has(fn)) {
+        const wrapper = (id, scene) => {
+          reading = /^ch1_shop_(?:rio_|clerk$)/.test(id);
+          return fn?.(id, scene);
+        };
+        wrappers.set(fn, wrapper);
+        inners.set(wrapper, fn);
+      }
+      return wrappers.get(fn);
     };
-    let onEnter = wrap(hooks.onEnter);
+    // 読み出した値を後で戻す書き方（prev = hooks.onEnter; …; hooks.onEnter = prev）でも、元の関数へ戻る
     Object.defineProperty(hooks, "onEnter", {
       configurable: true, enumerable: true,
-      get: () => onEnter,
-      set: (handler) => { onEnter = wrap(handler); },
+      get: () => wrapperOf(current),
+      set: (fn) => { current = inners.has(fn) ? inners.get(fn) : fn || null; },
     });
     setInterval(() => {
       if (!reading || !document.body.classList.contains("vn-open")) return;
