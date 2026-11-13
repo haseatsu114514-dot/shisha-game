@@ -623,6 +623,8 @@ async function pullGame(cs, mode) {
   stopBubbles();
   setBenchDraw(cs, null);
   render();
+  // 針が止まった後の札は、結果カード（下端に重なる）の裏に半分隠れるだけなので畳む。
+  currentZone.hidden = true;
   unkey();
   if (abandoned) return false;
   if (failed) {

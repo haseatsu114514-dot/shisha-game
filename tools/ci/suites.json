@@ -250,6 +250,7 @@
         "remake/css/flavor-guide.css",
         "remake/js/craft/common.js",
         "remake/js/craft/flavor-guide.js",
+        "remake/js/craft/pull.js",
         "remake/js/daily/status.js",
         "remake/test/browser/craft_layout_2190.mjs"
       ],
