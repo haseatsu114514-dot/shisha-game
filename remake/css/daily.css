@@ -172,6 +172,8 @@
   .title.enter .title-item, .title-item.is-picked .ti-en { animation: none; }
 }
 body.reduce-shake .title-ember, body.reduce-shake .title.enter .title-item, body.reduce-shake .title-item.is-picked .ti-en { animation: none; }
+/* 版の表示を5回続けて押すとデバッグの道具を出し入れする（title.js の debugTapToggle）。押しやすいよう周りに余白を取る */
+.title-ver { pointer-events: auto; padding: 10px; margin: -10px; cursor: default; user-select: none; -webkit-user-select: none; -webkit-tap-highlight-color: transparent; }
 .cfg { display: flex; flex-direction: column; gap: 14px; min-width: 420px; }
 .cfg-row { display: flex; justify-content: space-between; align-items: center; gap: 20px; }
 .cfg-row input[type="range"] { width: 220px; accent-color: var(--gold); }

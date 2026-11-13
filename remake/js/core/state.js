@@ -716,6 +716,8 @@ export const config = {
   staffRollSeen: false, // スタッフロールを一度最後まで見たか。見た端末では2回目から飛ばせる（#517）
   // 左右の余白（横長のスマホでステージの外に余る所・YHK）。"full"＝煙と縁・縦書きの帯・親指ボタン／"plain"＝これまでどおり、ぼかしだけ
   sideArea: "full",
+  // 大会の審査の方式（第1章・core/vote-style.js・SKR04）。未選択（null）は既定（プレイヤーは桜井式）。"classic" でいままでの審査
+  voteStyle: null,
 };
 
 setPortraitStyleSource(() => config.portraitStyle);

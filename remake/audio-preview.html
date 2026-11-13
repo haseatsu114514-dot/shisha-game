@@ -5,13 +5,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="suien-build" content="dev" data-built="">
 <meta name="theme-color" content="#170e26">
-<title>効果音の試聴 — 水煙前線 -EN:CODE-</title>
+<title>効果音・BGMの試聴 — 水煙前線 -EN:CODE-</title>
 <link rel="icon" href="../icon.svg">
 <style>
 :root { color-scheme: dark; }
 body { margin: 0; background: #14101f; color: #f3ecdf; font: 15px/1.6 "Hiragino Sans", "Noto Sans JP", system-ui, sans-serif; }
 main { max-width: 860px; margin: 0 auto; padding: 20px 16px 60px; }
 h1 { font-size: 20px; margin: 0 0 4px; }
+h1.section { margin-top: 36px; }
+audio { width: 100%; max-width: 420px; height: 44px; }
+.row.bgm { grid-template-columns: 1fr; }
 p.lead { margin: 0 0 14px; color: #c9bfd6; font-size: 13px; }
 #status { margin: 0 0 14px; padding: 8px 12px; border: 1px solid #f2b86655; border-radius: 8px; background: #1d1830; font-size: 13px; }
 .row { display: grid; grid-template-columns: 1fr auto; gap: 6px 12px; align-items: center; padding: 12px 0; border-top: 1px solid #ffffff1c; }
@@ -27,10 +30,13 @@ button:active { transform: translateY(1px); }
 </head>
 <body>
 <main>
-<h1>効果音の試聴</h1>
+<h1>効果音・BGMの試聴</h1>
 <p class="lead">新しく入れた録音の音と、前の音（合成音）を聴き比べるページです。合わない音があれば、名前を伝えてもらえれば前の音へ戻すか、別の音に替えます。ゲームの保存データは変えません。</p>
 <p id="status" role="status">どれかのボタンを押すと音が出るようになります。</p>
 <div id="list"></div>
+<h1 class="section">BGM</h1>
+<p class="lead">新しく当てた曲です。再生ボタンで聴けます（1曲ずつ鳴ります）。合わなければ曲名を伝えてください。別の曲に替えるか、前の曲へ戻します。</p>
+<div id="bgm-list"></div>
 </main>
 <script src="js/page-boot.js" data-page="js/audio-preview.js"></script>
 </body>

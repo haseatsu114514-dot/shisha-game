@@ -31,26 +31,28 @@ body #stage[data-wide] .bench .bench-right { margin-left: 60px; }
 body #stage[data-wide] .standings.tournament-board { width: 1200px; }
 
 /* ---------------------------------------------------------------- 3) スマホでの文字の下限 */
-html:root[data-density="phone"] body #stage[data-wide] {
+html:root[data-density="phone"] body #stage {
   --wide-small: calc(11.5px / var(--k, 1)); /* 名札・補足・単位など */
   --wide-text: calc(13px / var(--k, 1));    /* 台詞・説明など読ませる文 */
 }
 /* 作業台の上の帯・左のカード */
-html:root[data-density="phone"] body #stage[data-wide] .bench :is(
-  .bench-mode, .bench-mode small, .craft-rank-status, .bench-phase-copy b, .bench-phase:not(.seen) .bench-phase-copy small,
+html:root[data-density="phone"] body #stage .bench :is(
+  .bench-mode, .bench-mode small, .craft-rank-status, .bench-phase-copy b, .bench-phase:not(.seen) .bench-phase-copy small, .bench-phase-step,
   .worker-scene-tag, .audience-name, .rival-name, .bench-guide summary
 ) { font-size: var(--wide-small); }
-html:root[data-density="phone"] body #stage[data-wide] .bench .audience-note { font-size: var(--wide-text); line-height: 1.45; }
+html:root[data-density="phone"] body #stage .bench .audience-note { font-size: var(--wide-text); line-height: 1.45; }
 /* 済んだ工程は番号を消して ✓ だけ（CUI09）。番号は 0 のまま、✓ を同じ大きさにする */
-html:root[data-density="phone"] body #stage[data-wide] .bench .bench-phase.seen .bench-phase-copy small::after { font-size: var(--wide-small); }
-html:root[data-density="phone"] body #stage[data-wide] .bench .rig-lamp { width: calc(var(--wide-small) * 1.9); height: calc(var(--wide-small) * 1.9); }
-html:root[data-density="phone"] body #stage[data-wide] .bench .rig-lamp b { font-size: var(--wide-small); }
+html:root[data-density="phone"] body #stage .bench .bench-phase.seen .bench-phase-copy small::after { font-size: var(--wide-small); }
+html:root[data-density="phone"] body #stage .bench .rig-lamp { width: calc(var(--wide-small) * 1.9); height: calc(var(--wide-small) * 1.9); }
+html:root[data-density="phone"] body #stage .bench .rig-lamp b { font-size: var(--wide-small); }
 /* 上の帯の「PRACTICE｜練習モード」「SMOKE CROWN CUP｜大会」は1行のまま。
    文字を大きくした分、「SMOKE CROWN CUP」「HAZE: OPEN CLOUD」などの大会名は枠（160px）に入らず隣のランクへ重なるので、
    枠を名前の幅まで広げる（工程の列が少し縮む。名前が枠に入る時は今までどおり） */
-html:root[data-density="phone"] body #stage[data-wide] .bench .bench-mode { white-space: nowrap; min-width: max-content; }
+html:root[data-density="phone"] body #stage .bench .bench-mode { white-space: nowrap; min-width: max-content; }
 /* #3010: 詰め方は右欄を二分すると選択肢の説明が細くなる。
-   上から一行ずつ積み、器だけ残りの高さを使う。決定ボタンも通常フロー内に置く。 */
+   上から一行ずつ積み、器だけ残りの高さを使う。決定ボタンも通常フロー内に置く。
+   （#3517: 文字の下限は常に効かせるが、ここから下の詰め方の並べ替えはワイド拡張の配置なので [data-wide] の時だけ。
+   常に効かせると、一枚の舞台では決定欄「この詰め方で決める」の文字が欄からはみ出す） */
 html:root[data-density="phone"] body #stage[data-wide] .bench[data-step="pack"] .packing {
   display: flex; flex-direction: column; gap: 8px; min-height: 0;
 }
@@ -91,52 +93,57 @@ html:root[data-density="phone"] body #stage[data-wide] .bench[data-step="pack"] 
 html:root[data-density="phone"] body #stage[data-wide] .bench[data-step="pack"] .bench-phase:not(:last-child)::after { display: none; }
 /* 左のカードの台詞: 窓の高さを中身に合わせて伸ばし（上の絵に少し重なる）、心の声の最大幅（232px）も外す。
    それでも長い時は窓の中でスクロールする（craft.css の .audience-note と同じ） */
-html:root[data-density="phone"] body #stage[data-wide] .bench .bench-left .bench-audience { height: auto; min-height: 112px; max-height: 58%; }
-html:root[data-density="phone"] body #stage[data-wide] .bench .bench-audience .audience-note { max-width: none; }
+html:root[data-density="phone"] body #stage .bench .bench-left .bench-audience { height: auto; min-height: 112px; max-height: 58%; }
+html:root[data-density="phone"] body #stage .bench .bench-audience .audience-note { max-width: none; }
 /* 配合: 「温度帯」「フレーバーの持ち」の見出し（温度帯の凡例は細い列に収める既存の作りのまま） */
-html:root[data-density="phone"] body #stage[data-wide] .bench :is(.mix-life-preview > b, .mix-temperature-preview > b) { font-size: var(--wide-small); }
+html:root[data-density="phone"] body #stage .bench :is(.mix-life-preview > b, .mix-temperature-preview > b) { font-size: var(--wide-small); }
 /* 穴あけの型の説明 */
-html:root[data-density="phone"] body #stage[data-wide] .bench :is(.ht-counts, .ht-help summary, .ht-note) { font-size: var(--wide-small); }
-html:root[data-density="phone"] body #stage[data-wide] .bench .ht-description { font-size: var(--wide-text); line-height: 1.45; }
+html:root[data-density="phone"] body #stage .bench :is(.ht-counts, .ht-help summary, .ht-note) { font-size: var(--wide-small); }
+html:root[data-density="phone"] body #stage .bench .ht-description { font-size: var(--wide-text); line-height: 1.45; }
 /* 炭焼き */
-html:root[data-density="phone"] body #stage[data-wide] .bench :is(
+html:root[data-density="phone"] body #stage .bench :is(
   .heat-carrier-head small, .heat-picks b, .heat-picks span
 ) { font-size: var(--wide-small); }
 /* 蒸らし（飛んでくる言葉は当たり判定があるので変えない） */
-html:root[data-density="phone"] body #stage[data-wide] .bench :is(
+html:root[data-density="phone"] body #stage .bench :is(
   .refresh-copy, .slash-count, .precision-state, .pull-state
 ) { font-size: var(--wide-small); }
 /* 吸い出し */
-html:root[data-density="phone"] body #stage[data-wide] .bench :is(
+html:root[data-density="phone"] body #stage .bench :is(
   .pull-zone-label span, .pull-current-zone small, .pull-life-label, .pull-count-num
 ) { font-size: var(--wide-small); }
 
+/* 工程の結果カードと見守る人の札（#3517）。実寸 11.5px 以上 */
+html:root[data-density="phone"] body #stage .bench :is(.audience-caption, .audience-rating) { font-size: max(var(--wide-small), 1em); }
+html:root[data-density="phone"] body #stage .bench .result-card :is(.rc-title, .rc-summary, .rc-details) { font-size: var(--wide-text); }
+html:root[data-density="phone"] body #stage .bench .result-card .rc-lines { font-size: var(--wide-text); line-height: 1.6; }
+
 /* 大会: 中間投票 */
-html:root[data-density="phone"] body #stage[data-wide] :is(.standings, .count-screen, .sui-cut, .result-table) :is(
+html:root[data-density="phone"] body #stage :is(.standings, .count-screen, .sui-cut, .result-table) :is(
   .tournament-live, .tournament-eyebrow, .judge-legend span
 ) { font-size: var(--wide-small); }
-html:root[data-density="phone"] body #stage[data-wide] :is(.standings, .count-screen, .sui-cut, .result-table) .tournament-heading p { font-size: var(--wide-text); }
-html:root[data-density="phone"] body #stage[data-wide] .standings :is(.sd-rank, .sd-points small, .judge-name, .judge-left) { font-size: var(--wide-small); }
-html:root[data-density="phone"] body #stage[data-wide] .standings .sd-name { font-size: var(--wide-text); }
-html:root[data-density="phone"] body #stage[data-wide] .standings :is(.sd-status > span, .sd-feed-tag) { font-size: var(--wide-small); }
-html:root[data-density="phone"] body #stage[data-wide] .standings .sd-feed-lines > div { font-size: var(--wide-text); }
+html:root[data-density="phone"] body #stage :is(.standings, .count-screen, .sui-cut, .result-table) .tournament-heading p { font-size: var(--wide-text); }
+html:root[data-density="phone"] body #stage .standings :is(.sd-rank, .sd-points small, .judge-name, .judge-left) { font-size: var(--wide-small); }
+html:root[data-density="phone"] body #stage .standings .sd-name { font-size: var(--wide-text); }
+html:root[data-density="phone"] body #stage .standings :is(.sd-status > span, .sd-feed-tag) { font-size: var(--wide-small); }
+html:root[data-density="phone"] body #stage .standings .sd-feed-lines > div { font-size: var(--wide-text); }
 /* 大会: カウントダウン・千須のカットイン */
-html:root[data-density="phone"] body #stage[data-wide] .count-screen :is(.rc-cut, .rc-card span) { font-size: var(--wide-small); }
-html:root[data-density="phone"] body #stage[data-wide] .sui-cut :is(.nc-rank, .nc-cut-text small, .nc-cut-pt span) { font-size: var(--wide-small); }
-html:root[data-density="phone"] body #stage[data-wide] .sui-cut .nc-name { font-size: var(--wide-text); }
+html:root[data-density="phone"] body #stage .count-screen :is(.rc-cut, .rc-card span) { font-size: var(--wide-small); }
+html:root[data-density="phone"] body #stage .sui-cut :is(.nc-rank, .nc-cut-text small, .nc-cut-pt span) { font-size: var(--wide-small); }
+html:root[data-density="phone"] body #stage .sui-cut .nc-name { font-size: var(--wide-text); }
 /* 大会: 結果表 */
-html:root[data-density="phone"] body #stage[data-wide] .result-table :is(
+html:root[data-density="phone"] body #stage .result-table :is(
   .rt-emblem small, .rt-ranking-head h2, .rt-rank, .rt-votes, .rt-detail h4, .rt-part span, .rt-part small,
   .rt-judge-comment, .rt-judge-deduction
 ) { font-size: var(--wide-small); }
-html:root[data-density="phone"] body #stage[data-wide] .result-table .rt-name { font-size: var(--wide-text); }
+html:root[data-density="phone"] body #stage .result-table .rt-name { font-size: var(--wide-text); }
 /* 大会: 入場 */
-html:root[data-density="phone"] body #stage[data-wide] .entrance :is(.ent-tag, .ent-ring) { font-size: var(--wide-small); }
-html:root[data-density="phone"] body #stage[data-wide] .entrance .ent-note { font-size: var(--wide-text); }
+html:root[data-density="phone"] body #stage .entrance :is(.ent-tag, .ent-ring) { font-size: var(--wide-small); }
+html:root[data-density="phone"] body #stage .entrance .ent-note { font-size: var(--wide-text); }
 
 /* 844×340（Safari のバーあり）で 11px を割る見出し・通知 */
-html:root[data-density="phone"] body #stage[data-wide] .bench :is(.ht-title, .pull-current-zone b) { font-size: max(var(--wide-small), 1em); }
-html:root[data-density="phone"] body #stage[data-wide] #toasts .toast { font-size: var(--wide-text); }
+html:root[data-density="phone"] body #stage .bench :is(.ht-title, .pull-current-zone b) { font-size: max(var(--wide-small), 1em); }
+html:root[data-density="phone"] body #stage #toasts .toast { font-size: var(--wide-text); }
 
 /* 「詳しく見る」「お手本を見る」は採点の根拠・手本を開く入口。横持ちスマホでは実寸の高さ 32px 以上の押せる箱にする（#3518） */
 html:root[data-density="phone"] body #stage .bench :is(.rc-details > summary, .bench-demo-link) {

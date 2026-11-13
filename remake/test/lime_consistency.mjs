@@ -622,6 +622,46 @@ for (const [id, sender, chapter, flag] of [
   assert.equal(phone.deliverMorning(), 1, `${id}: a late chapter 5 confession also delivers`);
 }
 
+// 帰国後の時差の2通（第5章・はじめが地元にいる朝・恋人だけ）。行き違い→朝の三十分の順に、1通目を読んでから2通目。
+{
+  const ids = ["lime_noor_missed_call", "lime_noor_noon_call"];
+  const [missed, noon] = ids.map(id => allMessages.find(m => m.id === id));
+  assert(missed && noon, ids.join(","));
+  for (const m of [missed, noon]) {
+    assert.equal(m.route, "romance", `${m.id}: lovers only`);
+    assert.equal(m.region, "home", `${m.id}: only while hajime is home`);
+  }
+  // 第5章の1日目は通算55日目（章内日 = day - 54）
+  const setup = (overrides = {}, flags = {}) => {
+    reset({ chapter: 5, day: 57, contacts: ["noor"], lovers: ["noor"], ...overrides,
+      flags: { _lime_contact_noor: true, _ch5: { startDay: 55 }, _ch2_region: "home", ...flags } });
+    db.lime = [missed, noon];
+  };
+  setup({ day: 56 });
+  assert.equal(phone.deliverMorning(), 0, "missed_call: not before chapter day 3");
+  setup();
+  assert.equal(phone.deliverMorning(), 1, "missed_call: delivered at home on chapter day 3");
+  assert.equal(state.inbox[0].id, missed.id);
+  assert.equal(phone.deliverMorning(), 0, "missed_call: unread is not stacked");
+  setup({}, { _ch2_region: "dubai" });
+  assert.equal(phone.deliverMorning(), 0, "missed_call: not while hajime is in Dubai");
+  setup({}, { _friend_noor: true });
+  assert.equal(phone.deliverMorning(), 0, "missed_call: not on the friend landing");
+  setup({ contacts: [], lovers: [] }, { _lime_contact_noor: false });
+  assert.equal(phone.deliverMorning(), 0, "missed_call: not before the confession");
+  setup({ chapter: 4 });
+  assert.equal(phone.deliverMorning(), 0, "missed_call: chapter 5 only");
+  // 2通目は章内7日目から。1通目が先に届き、読んだ後の朝に届く
+  setup({ day: 61 });
+  assert.equal(phone.deliverMorning(), 1);
+  assert.equal(state.inbox[0].id, missed.id, "missed_call comes first");
+  state.inbox[0].read = true; state.limeRead.push(missed.id); state.day = 62;
+  assert.equal(phone.deliverMorning(), 1, "noon_call: next morning after reading the first");
+  assert.equal(state.inbox[1].id, noon.id);
+  setup({ day: 60, limeRead: [missed.id] });
+  assert.equal(phone.deliverMorning(), 0, "noon_call: not before chapter day 7");
+}
+
 // ヌールの砂丘の節目は既存の恋人Lvと既読判定を使い、飛ばし読み・再読をしない。
 {
   reset({ chapter: 4, lovers: ["noor"], loveLevel: { noor: 1 }, lovePts: { noor: 9 } });

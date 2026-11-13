@@ -80,8 +80,12 @@ for (const original of ledger.originals) {
 // 対応表: 台帳のファイルと、鳴らす側の一覧が同じ。
 const game = await boot();
 const table = game.audio.recordedSeFiles();
-const ids = ["crowd", "money", "parin", "shutter", "mew", "crackle", "affinity", "save"];
-assert.deepEqual(ids.flatMap(id => table[id]).sort(), ledger.game.map(entry => entry.file).sort());
+// 第1弾（2026-11-11）と第2弾（2026-11-13: door・get・birds）。page は TRPG のページめくりと同じ録音を使う（台帳は trpg-audio）。
+const ledgerIds = ["crowd", "money", "parin", "shutter", "mew", "crackle", "affinity", "save", "door", "get", "birds"];
+assert.deepEqual(ledgerIds.flatMap(id => table[id]).sort(), ledger.game.map(entry => entry.file).sort());
+assert.deepEqual([...table.page], ["trpg/page_flip_01.wav", "trpg/page_flip_02.wav"]); // 別の実行環境の配列なので写して比べる
+for (const file of table.page) assert((await fs.stat(new URL(`assets/audio/se/${file}`, ROOT))).size > 100, file);
+const ids = [...ledgerIds, "page"];
 for (const id of ids) assert.equal(typeof game.audio.SYNTH_SE[id], "function", `${id} keeps its synthetic fallback`);
 
 // 録音が読めたら録音で鳴る（合成音は使わない）。
@@ -92,7 +96,7 @@ for (const id of ids) {
   game.clock.now += 1000;
   game.audio.SE[id]();
   assert.equal(game.sources.length, before + 1, `${id} plays one recording`);
-  assert(table[id].includes(game.sources.at(-1).buffer.file), `${id} plays its own file`);
+  assert(table[id].map(file => file.split("/").at(-1)).includes(game.sources.at(-1).buffer.file), `${id} plays its own file`);
 }
 assert.equal(game.oscillators(), 0, "no synthetic tone once the recordings are loaded");
 
@@ -146,4 +150,30 @@ assert.match(await read("remake/js/scenes/saves.js"), /SE\.save\(\)/);
 assert.match(await read("remake/js/daily/hud.js"), /on\("money"[\s\S]{0,400}SE\.money\(\)/, "the money change plays the coin");
 assert.match(await read("remake/js/core/ui.js"), /o\.chime === "up" \? SE\.affinityUp : SE\.affinity/);
 
-console.log("PASS: main SE 2026-11-11 (ledger, credits, recorded playback, variants, fitted applause, bell pair, synthetic fallback, call sites)");
+// 第2弾の呼び出し側。
+// 店のロゴが出る時に扉（早送り中は鳴らさない）。晴れた朝だけ小鳥。
+assert.match(await read("remake/js/core/store-arrival.js"), /if \(!fast\) SE\.door\?\.\(\);/);
+assert.match(await read("remake/js/core/transitions.js"), /if \(weather === "sun"\) SE\.birds\?\.\(\);/);
+// 第2〜4章の結果発表: 最終結果は拍手、1位はファンファーレも。途中の持ち点は判の一打。
+for (const path of ["remake/js/chapters/ch2-tournament.js", "remake/js/chapters/ch3-tournament.js"]) {
+  assert.match(await read(path), /if \(final\) \{ SE\.crowd\?\.\(2\.4\); if \(progress\(\)\.result\?\.rank === 1\) SE\.fanfare\?\.\(\); \}\n  else SE\.stamp\?\.\(\);/, path);
+}
+assert.match(await read("remake/js/chapters/ch4.js"), /if \(!result\.failure\) \{ SE\.crowd\?\.\(2\.4\); if \(result\.rank === 1\) SE\.fanfare\?\.\(\); \}/);
+// 通知に添える音: レシピ帳・メモはページ、黄金比はきらきら、手に入れたものは入手の音、判子は判の音。
+const toastSe = async (path, text, se) => assert((await read(path)).split("\n").some(line => line.includes(text) && line.includes(`se: "${se}"`)), `${path}: ${text} → ${se}`);
+await toastSe("remake/js/craft/steps.js", "レシピ帳に書き加えた", "page");
+await toastSe("remake/js/craft/steps.js", "黄金比！", "twinkle");
+await toastSe("remake/js/daily/home-shisha.js", "レシピ帳に書き加えた", "page");
+await toastSe("remake/js/daily/home-shisha.js", "黄金比！", "twinkle");
+await toastSe("remake/js/daily/spots.js", "試したい配合をメモした", "page");
+await toastSe("remake/js/vn/engine.js", "メモした", "page");
+await toastSe("remake/js/daily/shop.js", "限定フレーバー", "get");
+await toastSe("remake/js/chapters/ch5-catering.js", "くじ券を", "get");
+await toastSe("remake/js/chapters/ch5-shop-stamps.js", "店めぐり帳に判子をもらった", "stamp");
+// 通知の音は、実在する効果音の名前だけ（書き間違いは無音になるので、ここで止める）。
+for (const path of ["remake/js/craft/steps.js", "remake/js/daily/home-shisha.js", "remake/js/daily/spots.js", "remake/js/vn/engine.js", "remake/js/daily/shop.js",
+  "remake/js/chapters/ch5-catering.js", "remake/js/chapters/ch5-shop-stamps.js", "remake/js/chapters/ch5-tokyo.js", "remake/js/chapters/ch5-shops.js", "remake/js/chapters/ch5-dubai.js"]) {
+  for (const [, name] of (await read(path)).matchAll(/\bse: "([A-Za-z]+)"/g)) assert.equal(typeof game.audio.SE[name], "function", `${path}: SE.${name}`);
+}
+
+console.log("PASS: main SE 2026-11-11 / 11-13 (ledger, credits, recorded playback, variants, fitted applause, bell pair, synthetic fallback, call sites, round 2 wiring)");

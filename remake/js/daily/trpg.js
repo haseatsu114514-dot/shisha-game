@@ -142,7 +142,7 @@ export async function openTrpgBar({ nightBusy = () => false } = {}) {
   } finally {
     observer.disconnect(); unsubscribe(); window.removeEventListener("pagehide", cancel); cancel();
     if (state === owner && host.isConnected && document.body.dataset.screen === "trpg") {
-      showHud(hadHud); playBgm("kansetsu_shomei_to_black_coffee");
+      showHud(hadHud); playBgm(state.chapter === 2 ? "bgm_yuzugaya" : "kansetsu_shomei_to_black_coffee"); // 街の曲へ戻す（第2章は柚ヶ谷。story-audio.js の cityBgm と同じ）
     }
   }
 }

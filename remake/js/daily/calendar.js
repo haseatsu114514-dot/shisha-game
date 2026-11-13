@@ -185,8 +185,8 @@ function announceChapterBoard() {
 
 async function morning() {
   refreshWeather();
-  // 第1〜3章は既存の街の曲。第4章はドバイの仮曲、第5章は店の曲（対応表は story-audio.js）。
-  playBgm(state.chapter === 4 ? "bgm_dubai" : state.chapter === 5 ? "tonari" : "kansetsu_shomei_to_black_coffee");
+  // 第1・3章は既存の街の曲。第2章は柚ヶ谷、第4章はドバイ、第5章は店の曲（対応表は story-audio.js の chapterHubBgm と同じ）。
+  playBgm(state.chapter === 2 ? "bgm_yuzugaya" : state.chapter === 4 ? "bgm_dubai" : state.chapter === 5 ? "tonari" : "kansetsu_shomei_to_black_coffee");
   // 就寝から続けて来た朝は、夜明けの幕でDAYを見せ終えている（見せた印はここで使い切る）
   if (dawnShownDay === state.day) dawnShownDay = null;
   else await dayCard(dayTitle(), countdownText(), { weather: weatherOf(), forecast: tomorrowForecast() });

@@ -5,7 +5,7 @@ import { createChapterActions } from "../core/chapter-actions.js";
 import { chapterGrowthNight } from "../core/chapter-growth.js";
 import { awardSceneExp, consultLessons, readyLessons } from "../core/growth.js";
 import { state, save, loadFromSlot, requestResumeOnBoot, timeOfDay } from "../core/state.js";
-import { layers, showScreen, setBg, enterScene, chapterTitle, modal, withScenePreparation, loadingNotice } from "../core/ui.js";
+import { layers, showScreen, setBg, enterScene, chapterTitle, modal, withScenePreparation, loadingNotice, withSceneLoading } from "../core/ui.js";
 import { chapterTitleEntry } from "../core/chapter-title-art.js";
 import { withLoadingNotice } from "../core/module-loading.js";
 import { saveFlow, loadFlow } from "../scenes/saves.js";
@@ -208,7 +208,8 @@ async function openChapter(advance) {
   window.addEventListener("pagehide", () => { owner.active = false; owner.controller?.abort(); owner.rollbackMeeting?.(); }, { once: true });
   await perform(owner, async () => {
     // 台本不足のまま第2章のクリアセーブを進めない。
-    await loadIntroDialogues();
+    // 文字だけの画面の待ち。プレイヤーの既定では、長いと漫画のロード画面にする（core/ui.js の withSceneLoading）。
+    await withSceneLoading(loadIntroDialogues(), "東京の場面を準備しています…");
     if (!current(owner)) return;
     if (advance) {
       if (!advanceToChapterThree(state)) return;
@@ -240,7 +241,7 @@ async function openChapter(advance) {
   });
 }
 
-/** 公園の回想 → 現在（綾取の調べもの）。落ち葉の波が覆っている間に背景を替える（#2688 A3） */
+/** 公園の回想 → 現在（綾取の調べもの）。灰色になった回想が煙のにじみでほどける間に背景を替える（#2688 A3・TMG60） */
 const leavesToPresent = () => sceneMoment("leafWave", () => setBg(bgUrl("bg_ch3_saku_video"), { instant: true }));
 
 async function readPrologue(owner, id, bg, ride = null) {
@@ -270,7 +271,7 @@ async function renderPrologue(owner) {
     save();
   }
   if (progress.prologueStep === 1) {
-    // 色の抜けた公園の回想から、葉の形の面が流れて現在へ（#2688 A3）
+    // 色の抜けた公園の回想が煙のにじみでほどけて現在へ（#2688 A3・TMG60）
     if (!await readPrologue(owner, "ch3_saku_research", "bg_ch3_saku_video", fromChildhood ? leavesToPresent : null)) return;
     progress.prologueStep = 2;
     save();
@@ -311,7 +312,7 @@ async function renderPrep(owner) {
     save();
   }
   if (prep.step === 1) {
-    // 色の抜けた公園の回想から、葉の形の面が流れて現在へ（#2688 A3）
+    // 色の抜けた公園の回想が煙のにじみでほどけて現在へ（#2688 A3・TMG60）
     if (!await readPrologue(owner, "ch3_saku_research", "bg_ch3_saku_video", fromChildhood ? leavesToPresent : null)) return;
     prep.step = 2;
     save();

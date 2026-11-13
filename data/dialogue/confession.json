@@ -20,47 +20,47 @@
         {
           "speaker": "minto",
           "face": "ura_normal",
-          "text": "……今日は、その。一緒にいてくれて、ありがと。……まだ、心臓がうるさいの"
+          "text": "……今日は、一緒にいてくれて、ありがと"
         },
         {
           "speaker": "minto",
           "face": "ura_normal",
-          "text": "あのね。……ずっと、言えずにいたことがあるの。……笑わないで、聞いてくれる？"
+          "text": "あのね。ひとつ、自分の口で言いたいことがあるの"
         },
         {
           "speaker": "minto",
           "face": "ura_sad",
-          "text": "身分証、見られちゃってるもんね。……でも、自分の口で言いたかったの"
+          "text": "身分証、見られちゃってるもんね。……答え合わせ、させて"
         },
         {
           "speaker": "minto",
           "face": "ura_sad",
-          "text": "お店では『はたち』で通してるけど。……ほんとは、今年で29歳なの……"
+          "text": "お店では『はたち』で通してるけど。……ほんとは、今年で29歳"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "耳まで赤くして、消え入りそうな声だった。川風が、二人の間を静かに抜けていく。"
+          "text": "声は小さかった。けれど言い終わるまで、栞さんは目を逸らさなかった。"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_normal",
+          "text": "二十代はね、ほとんど、あのお店を取り返すのに使っちゃった"
         },
         {
           "speaker": "minto",
           "face": "ura_sad",
-          "text": "ずっと、怖かったの。……年上だって知った途端、引かれちゃう気がして"
+          "text": "後悔はしてないの。ただ、はじめくんに引かれるのだけ、怖かった"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（知っていた。でも、本人の口から聞くのは初めてだ。ちゃんと受け止めたい）"
+          "text": "（知っていた。でも、本人の口から聞くのは初めてだ）"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（年上でも、何でも。目の前にいる栞さんは、何ひとつ変わらない）"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "（話してくれた分、俺も正直に返したい。……俺は、どう答えたい？）"
+          "text": "（……俺は、どう答えたい？）"
         },
         {
           "type": "choice",
@@ -101,13 +101,23 @@
         },
         {
           "speaker": "minto",
-          "face": "ura_smile",
-          "text": "……私も。ずっと前から、はじめくんが好きだった"
+          "face": "ura_surprise",
+          "text": "……どうしよう。お店の声が、出そう"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "出していいよ"
         },
         {
           "speaker": "minto",
           "face": "ura_smile",
-          "text": "……言えた。ずっと、言いたかったの"
+          "text": "……はじめくんっ、だーいすきっ♡"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_smug",
+          "text": "……今のは、営業じゃないからね。『たぶん』も、なし"
         },
         {
           "speaker": "minto",
@@ -122,17 +132,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "川風に乗って、チョコミントの匂いがかすかに届いた。"
-        },
-        {
-          "speaker": "",
-          "face": "",
           "text": "店で見る笑顔より、ずっと控えめな笑い方だった。"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
-          "text": "（甘えてもいい？って聞いて、結局、袖の端をつまむだけなんだな）"
         },
         {
           "speaker": "minto",
@@ -150,19 +150,14 @@
           "text": "街灯の下に、二人の影が並んで伸びた。"
         },
         {
-          "speaker": "",
-          "face": "",
-          "text": "自分の鼓動が、さっきからうるさかった。"
-        },
-        {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（……緊張してるの、手から伝わってないといいけど）"
+          "text": "……ごめん。手、緊張してる"
         },
         {
           "speaker": "minto",
           "face": "ura_smug",
-          "text": "……はじめくん、手、あったかい。……私まで、どきどきしてきちゃった"
+          "text": "知ってる。……私のも、伝わってるでしょ"
         },
         {
           "speaker": "minto",
@@ -337,22 +332,37 @@
         {
           "speaker": "tsumugi",
           "face": "sad",
-          "text": "[shiver]……私も……ずっと、ずっと……[/shiver]はじめさんのことが……"
+          "text": "[shiver]……私も、です[/shiver]"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "つむぎは顔を上げられないまま、俺の服の裾を小さくつまんだ。"
+          "text": "俺の服の裾を、指が小さくつまんだ。つまんだまま、つむぎはゆっくり顔を上げた。"
         },
         {
           "speaker": "tsumugi",
-          "face": "smile",
-          "text": "……言えなくて、ごめんなさい。でも……嬉しい、です。すごく……"
+          "face": "normal",
+          "text": "……先に、言われました。今日、言うつもりで、ついてきたのに"
         },
         {
           "speaker": "hajime",
           "face": "smile",
-          "text": "謝らなくていいよ。……俺も、つむぎちゃんが好きだ"
+          "text": "家と逆のほうまで？"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "smile",
+          "text": "……逆のほうまで、です"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "じゃあ、聞かせて。俺は、もう言ったから"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "smile",
+          "text": "……好きです。はじめさんが"
         },
         {
           "speaker": "",
@@ -440,27 +450,32 @@
         {
           "speaker": "tsumugi",
           "face": "normal",
-          "text": "……そう、ですか"
-        },
-        {
-          "speaker": "tsumugi",
-          "face": "normal",
-          "text": "……言いかけたこと、聞いてくれて、ありがとうございます"
+          "text": "……はい。また、明日"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "つむぎはタブレットの端を握り、少しだけうつむいた。"
+          "text": "つむぎは開きかけた口を閉じて、タブレットの端を握った。"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "しばらくして、つむぎは小さく息を吐き、俺の方を見た。"
+          "text": "しばらくして、小さく息を吐き、俺の方を見た。"
         },
         {
           "speaker": "tsumugi",
           "face": "normal",
-          "text": "……少しだけ、時間をください。絵の話は、また、したいです"
+          "text": "……言いかけたことは、絵のほうに入れておきます"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "絵の話は、また、したいです。いつもの席で"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "小さく頭を下げて、つむぎは来た道を戻っていった。家は、やっぱり逆のほうだった。"
         }
       ]
     },
@@ -699,6 +714,7 @@
     },
     {
       "dialogue_id": "confession_mashiro",
+      "comment": "第3章の寄り道（ch3-story-wiring.js）。締めくくり（ch3_mashiro_bond_finale）の後に読み、そこで部屋での一台の誘いを受けていた時だけ（finale_seen かつ romance_open）、もらったハガルと約束のお茶に触れる2行（invited）を読む。締めくくりの前に読む場合は読まない。",
       "lines": [
         {
           "speaker": "",
@@ -718,12 +734,18 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "うん。問屋で、ましろちゃんに似合いそうなのを選んだ"
+          "text": "うん。俺の手に合うやつを、ひとつ"
         },
         {
           "speaker": "",
           "face": "",
           "text": "ローテーブルに、形の違うカップが二つ並ぶ。ましろちゃんが、ゆっくり紅茶を注いだ。"
+        },
+        {
+          "type": "condition",
+          "condition_type": "finale_seen",
+          "char_id": "mashiro",
+          "next_true": "finale_read"
         },
         {
           "speaker": "mashiro",
@@ -793,7 +815,29 @@
             }
           ]
         }
-      ]
+      ],
+      "branches": {
+        "finale_read": [
+          {
+            "type": "condition",
+            "condition_type": "romance_open",
+            "char_id": "mashiro",
+            "next_true": "invited"
+          }
+        ],
+        "invited": [
+          {
+            "speaker": "",
+            "face": "",
+            "text": "鞄には、ましろちゃんにもらった素焼きのハガルを入れてきた。約束の一台のために。"
+          },
+          {
+            "speaker": "mashiro",
+            "face": "smile",
+            "text": "約束のお茶。僕のいちばん好きなやつ。……一台は、話のあとにしよ"
+          }
+        ]
+      }
     },
     {
       "dialogue_id": "confession_mashiro_accept",
@@ -984,7 +1028,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "仕事の話なら、いくらでもできるんですけどね"
+          "text": "俺もです。感想があるって言えば、階段を上がれたので"
         },
         {
           "speaker": "rio",
@@ -1159,7 +1203,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "はい。手伝いたいから来る日と、会いたいから来る日があって"
+          "text": "はい。一服したくて来る日と、サメちゃんに会いたくて来る日があって"
         },
         {
           "speaker": "hajime",
@@ -1320,17 +1364,28 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "SHISHARKで過ごした時間は、俺の宝物です"
+          "text": "あの奥の席で過ごす時間が、好きです"
         },
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "でも、今の気持ちは、友達としてのものです"
+          "text": "でも今は、友達として、あの席に座っていたいです"
         },
         {
           "speaker": "samechan",
           "face": "normal",
-          "text": "……正直に言うてくれて、ありがとの。今は、少しだけ寂しいのじゃ"
+          "text": "……正直に言うてくれて、ありがとの"
+        },
+        {
+          "speaker": "samechan",
+          "face": "ventriloquism",
+          "text": "側近は今、笑っている。余が保証する",
+          "voice": "korochan"
+        },
+        {
+          "speaker": "samechan",
+          "face": "normal",
+          "text": "……うむ。今夜だけ、そういうことにしておいてくれ"
         },
         {
           "speaker": "samechan",
@@ -1340,7 +1395,7 @@
         {
           "speaker": "hajime",
           "face": "smile",
-          "text": "はい。また、顔を出しに行きます"
+          "text": "はい。また、座りに行きます"
         },
         {
           "speaker": "",
@@ -1708,12 +1763,12 @@
         {
           "speaker": "noor",
           "face": "smile",
-          "text": "おはようとおやすみ、ずれちゃうけど。……テレビ電話、毎日かけていい？"
+          "text": "おはようとおやすみ、ずれちゃうけど。……テレビ電話、しょっちゅうかけていい？"
         },
         {
           "speaker": "hajime",
           "face": "smile",
-          "text": "毎日、待ってます"
+          "text": "はい。出られない夜は、LIMEを送ります"
         },
         {
           "speaker": "noor",

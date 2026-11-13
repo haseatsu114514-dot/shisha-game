@@ -602,6 +602,7 @@
           "speaker": "samechan",
           "role": "コロちゃん／卓の会話",
           "face": "ventriloquism",
+          "voice": "korochan",
           "text": "余も王である。霧の国の王族には、王として礼を尽くそう",
           "variants": {
             "regularb": {
@@ -1065,6 +1066,7 @@
           "speaker": "samechan",
           "role": "コロちゃん／卓の会話",
           "face": "ventriloquism",
+          "voice": "korochan",
           "text": "余が助言する。窓と回廊、王女の足が向く先を見よ",
           "variants": {
             "regularb": {
@@ -1254,6 +1256,7 @@
           "speaker": "samechan",
           "role": "コロちゃん／卓の会話",
           "face": "ventriloquism",
+          "voice": "korochan",
           "text": "余も満足である。小さな王女に、また会いたいものだ",
           "variants": {
             "regularb": {
@@ -1877,6 +1880,7 @@
           "speaker": "samechan",
           "role": "コロちゃん／卓の会話",
           "face": "ventriloquism",
+          "voice": "korochan",
           "text": "余は感じる。この香りに、小さな王女がまだいる",
           "variants": {
             "regularb": {
@@ -2303,6 +2307,7 @@
           "speaker": "samechan",
           "role": "コロちゃん／卓の会話",
           "face": "ventriloquism",
+          "voice": "korochan",
           "text": "余が補足する。側近は、審査員席の座り心地しか見ていない"
         },
         {
@@ -2336,6 +2341,7 @@
           "speaker": "samechan",
           "role": "コロちゃん／卓の会話",
           "face": "ventriloquism",
+          "voice": "korochan",
           "text": "余は知っている。堀にサメがいるかは、まだGMに聞いていない"
         },
         {

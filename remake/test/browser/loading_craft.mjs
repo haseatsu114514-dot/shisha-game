@@ -141,11 +141,12 @@ await suite('loading-craft', async check => {
       await page.locator('.loading-gate').waitFor({ state: 'detached' });
       return eligibleComics.find(comic => comic.title === title)?.id ?? `unknown title: ${title}`;
     };
-    const enter = options => page.evaluate(async options => {
+    // Each entry waits past the gap in which a gate goes on with the comic just read (core/loading.js FIXED_GAP_MS).
+    const enter = options => page.waitForTimeout(2100).then(() => page.evaluate(async options => {
       const { prepareBenchEntry } = await import('./js/craft/loading.js');
       window.__benchEntry = prepareBenchEntry(new Promise(resolve => setTimeout(resolve, 1200)), 1, [], options);
       window.__benchEntry.catch(() => {});
-    }, options);
+    }, options));
     await readShown();
     assert.equal(await record(), null, 'The bench preview never writes the reading record');
     await enter({ preview: true });

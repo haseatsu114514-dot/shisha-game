@@ -86,6 +86,8 @@ function recoveryHarness() {
   const buttons = new Map(), events = [];
   const context = vm.createContext({
     withLoadingNotice, singleFlight, loadingNotice: () => ({}),
+    // Automated default of core/ui.js withChapterLoading: the module import with the small notice.
+    withChapterLoading: (load, label) => withLoadingNotice(load(), {}),
     requestResumeOnBoot: () => events.push('resume-on-boot'),
     location: { reload: () => events.push('reload') },
     el: (spec, attrs) => {
@@ -144,7 +146,8 @@ function recoveryHarness() {
   const nodes = new Set(), added = [];
   const fx = { append(node) { nodes.add(node); added.push(node); } };
   const el = (spec, attrs) => ({ spec, ...attrs, remove() { nodes.delete(this); } });
-  const context = vm.createContext({ withLoadingNotice, layers: { fx }, el,
+  // The automated default (core/loading.js comicLoadingRequired is false under webdriver): the small notices.
+  const context = vm.createContext({ withLoadingNotice, layers: { fx }, el, comicLoadingRequired: () => false,
     running: {}, setTimeout, clearTimeout });
   vm.runInContext(uiSource.slice(uiStart, uiEnd).replaceAll('export ', '')
     + '\n' + engineSource.slice(vnStart, vnEnd), context);

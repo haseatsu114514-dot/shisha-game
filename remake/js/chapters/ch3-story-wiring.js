@@ -105,7 +105,7 @@ export const CH3_OPTIONAL_SCENES = Object.freeze({
     met: ["tsumugi"], away: ["tsumugi"] },
   // ヴォルクの再訪（#2026）。初来店（DAY12夜）の後は自由時間の枠が無いので、寄り道として一度ずつ順に読む。
   ch3_volk_second: { file: "ch3_volk", label: "鉄の煙の二度目", location: "鉄の煙", bg: "bg_volk_shop", met: ["volk"] },
-  ch3_volk_third: { file: "ch3_volk", label: "七年分の記録", location: "鉄の煙", bg: "bg_volk_shop", met: ["volk"] },
+  ch3_volk_third: { file: "ch3_volk", label: "七冊の記録", location: "鉄の煙", bg: "bg_volk_shop", met: ["volk"] },
   ch3_volk_fourth: { file: "ch3_volk", label: "頷く順番", location: "鉄の煙", bg: "bg_volk_shop", met: ["volk"] },
   // ヴォルクとLIMEを交換する（#2028）。四度目の来店の後（routes の seen）、♥2で。締めくくり（daily/bonds.js）の条件。
   // 版3の日常ループでは大会までに読む枠が無いので、実際は大会後の寄り道（ch3-aftermath-progress.js）から読む。
@@ -122,7 +122,7 @@ export const CH3_OPTIONAL_SCENES = Object.freeze({
   ch3_saku_first_reply: { file: "ch3_rivals", label: "最初の返事", location: "煙幕",
     after: ["ch3_saku_liar"], heart: { saku: 4 } },
   // 好感度補充（A05–A07）。低温の話のあと Smoke & Glory で♥1・♥3・♥4。締めくくりの条件。
-  ch3_steve_two_timers: { file: "ch3_rivals", label: "二つのタイマー", location: "Smoke & Glory", bg: "bg_steve_shop",
+  ch3_steve_two_timers: { file: "ch3_rivals", label: "待たせたピザ", location: "Smoke & Glory", bg: "bg_steve_shop",
     met: ["steve"], heart: { steve: 1 }, after: ["ch3_steve_low_heat"], host: "steve" },
   ch3_steve_empty_seat: { file: "ch3_rivals", label: "空の席の秒数", location: "Smoke & Glory", bg: "bg_steve_shop",
     met: ["steve"], heart: { steve: 3 }, after: ["ch3_steve_two_timers"], host: "steve" },

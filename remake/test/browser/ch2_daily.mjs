@@ -190,7 +190,7 @@ await suite('ch2-daily',async check=>{
     assert.equal(new Set(before.inbox.map(item => item.id)).size, before.inbox.length);
     assert.equal(await page.evaluate(async () => (await import('./js/daily/weather.js')).isRainy()), weatherSeed === 4);
     assert.match(await page.locator('#bg > .bg-img').last().getAttribute('style'), /bg_home/);
-    assert.equal(await page.evaluate(async () => (await import('./js/core/audio.js')).currentBgm()), 'kansetsu_shomei_to_black_coffee');
+    assert.equal(await page.evaluate(async () => (await import('./js/core/audio.js')).currentBgm()), 'bgm_yuzugaya'); // 第2章の朝は柚ヶ谷の曲
     await begin(page);
     await page.locator(t('hud-menu')).click(); await page.locator(t('menu-tab-system')).click(); await page.locator(t('menu-save')).click();
     await page.locator(t('slot-1')).click(); await page.locator(t('confirm-overwrite')).click();

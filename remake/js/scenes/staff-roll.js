@@ -56,10 +56,12 @@ export const STAFF_MUSIC = Object.freeze([
   { title: "Tension Theme", composer: "Umplix", source: "OpenGameArt・CC0" },
   { title: "Daisy", composer: "Kistol", source: "OpenGameArt・CC0" },
   { title: "Cool City", composer: "MintoDog", source: "OpenGameArt・CC0" },
-  { title: "Desert Travel (Loop)", composer: "DJ CrisP", source: "OpenGameArt・CC0" },
+  { title: "Desert theme", composer: "yd", source: "OpenGameArt・CC0" },
   { title: "Dare The Bustloro Way", composer: "Spring Spring", source: "OpenGameArt・CC0" },
   { title: "Dark Horse", composer: "Centurion_of_war", source: "OpenGameArt・CC0" },
   { title: "The Rush", composer: "tebruno99", source: "OpenGameArt・CC0" },
+  // 第2章の街・柚ヶ谷の仮BGM（2026-11-12。J04 の曲ができたら差し替える）
+  { title: "Mocha Frapp", composer: "Pro Sensory", source: "OpenGameArt・CC0" },
 ].map(song => Object.freeze(song)));
 // TRPGの卓の効果音（CC0・asset_sources/music/trpg-audio/）。
 export const STAFF_SOUND_TRPG = Object.freeze(["効果音（TRPG）：Kenney – Casino Audio / RPG Audio / Music Jingles（CC0） – https://kenney.nl/"]);
@@ -68,6 +70,8 @@ export const STAFF_SOUND_CREDIT = "効果音：ポケットサウンド – http
 export const STAFF_SOUND_MAIN = Object.freeze([
   "効果音（本編UI・場面転換）：Kenney – Interface Sounds / Music Jingles（CC0） – https://kenney.nl/",
   "効果音（本編）：OpenGameArt – eXpl0it3r「Applause in a large hall or church」/ Spring Spring「Purchasing Sound Effect」「Pleasing Bell Sound Effect」/ syncopika「coin sounds」/ Till Behrend「Glass Break」/ themightyglider「Camera」/ Kerzoven「Cat Purr & Meow」/ IgnasD「Meow」/ AntumDeluge「Fire Crackling」（CC0） – https://opengameart.org/",
+  // 3行目は第2弾（2026-11-13。同じ台帳）。
+  "効果音（本編）：OpenGameArt – Iwan Gabovitch「Door open, door close」/ Brandon Morris「Completion sound.」/ isaiah658「Ambient Bird Sounds」（CC0） – https://opengameart.org/",
 ]);
 export const STAFF_ROLL_CLOSING = "Thank you for playing";
 // 斧投げの効果音（CC0・asset_sources/music/minigame-se/）。オーナー「クレジットは載せる」2026-11-10。

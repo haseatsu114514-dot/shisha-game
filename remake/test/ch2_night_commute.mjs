@@ -109,7 +109,7 @@ for (const chapter of [1, 2]) for (const weather of ['sun', 'rain']) {
   assert.deepEqual(trace.filter(x => !x.startsWith('save:')), [
     'night', 'confession', 'return-home', 'encounter', 'remake_homecoming_0', 'rig-homecoming', 'home-shisha',
     'night-growth', 'dawn', 'recovery', 'weather:16', 'bg_home:day', 'recovery-ui',
-    'weather:16', 'kansetsu_shomei_to_black_coffee', 'lime', 'notice',
+    'weather:16', chapter === 2 ? 'bgm_yuzugaya' : 'kansetsu_shomei_to_black_coffee', 'lime', 'notice', // 朝の曲: 第2章は柚ヶ谷
   ]);
   assert.equal(trace.filter(x => x === 'lime').length, 1);
   assert(snapshots.some(s => s.day === 15 && s.stamina === 60), 'Night checkpoint precedes sleep');

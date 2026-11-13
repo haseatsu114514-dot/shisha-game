@@ -32,7 +32,7 @@ export const CH3_AFTERMATH_DETOURS = Object.freeze([
   // 鉄の煙の再訪（IR23）。初来店（DAY12夜）から大会までは行動が一つしかないので、大会前に読めなかった分を大会後にも順に読める。
   // 台本は大会に触れない店の話なので、大会の前後どちらで読んでも通る。好感度は台本の報酬（任意の場面だけ。必須の初来店には付けない）。
   { id: "ch3_volk_second", file: "ch3_volk", label: "鉄の煙の二度目", location: "鉄の煙", bg: "bg_volk_shop", met: ["volk"] },
-  { id: "ch3_volk_third", file: "ch3_volk", label: "七年分の記録", location: "鉄の煙", bg: "bg_volk_shop", met: ["volk"], after: ["ch3_volk_second"] },
+  { id: "ch3_volk_third", file: "ch3_volk", label: "七冊の記録", location: "鉄の煙", bg: "bg_volk_shop", met: ["volk"], after: ["ch3_volk_second"] },
   { id: "ch3_volk_fourth", file: "ch3_volk", label: "頷く順番", location: "鉄の煙", bg: "bg_volk_shop", met: ["volk"], after: ["ch3_volk_third"] },
   { id: "ch3_volk_after_ch3", file: "ch3_volk", label: "大会のあとの記録", location: "鉄の煙", bg: "bg_volk_shop", met: ["volk"] },
   // ヴォルクとLIMEを交換する（#2028）。大会前の寄り道と同じく、四度目の来店の後・♥2で（ヴォルクの締めくくりの条件）。
@@ -57,7 +57,7 @@ export const CH3_AFTERMATH_DETOURS = Object.freeze([
     after: ["ch3_saku_cleanup"], heart: { saku: 4 } },
   { id: "ch3_saku_first_reply", file: "ch3_rivals", label: "最初の返事", location: "煙幕", bg: "bg_yohaku_shop",
     after: ["ch3_saku_liar"], heart: { saku: 4 } },
-  { id: "ch3_steve_two_timers", file: "ch3_rivals", label: "二つのタイマー", location: "Smoke & Glory", bg: "bg_steve_shop",
+  { id: "ch3_steve_two_timers", file: "ch3_rivals", label: "待たせたピザ", location: "Smoke & Glory", bg: "bg_steve_shop",
     met: ["steve"], heart: { steve: 1 } },
   { id: "ch3_steve_empty_seat", file: "ch3_rivals", label: "空の席の秒数", location: "Smoke & Glory", bg: "bg_steve_shop",
     met: ["steve"], after: ["ch3_steve_two_timers"], heart: { steve: 3 } },

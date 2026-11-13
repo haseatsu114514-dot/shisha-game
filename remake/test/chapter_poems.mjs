@@ -159,7 +159,7 @@ const WIRING = [
 ];
 for (const [file, titleCall, poemCall, count] of WIRING) {
   const source = read(file);
-  assert.match(source, /import \{ playChapterPoem \} from "\.\.\/scenes\/chapter-poem\.js";/, `${file}: import がない`);
+  assert.match(source, /import \{ playChapterPoem(, preparePoemPanel)? \} from "\.\.\/scenes\/chapter-poem\.js";/, `${file}: import がない`);
   const titles = indexesOf(source, titleCall);
   const poems = indexesOf(source, poemCall);
   assert.equal(titles.length, count, `${file}: 章タイトルの呼び出し数`);

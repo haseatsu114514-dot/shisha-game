@@ -1,4 +1,6 @@
 /** SPEC 8.2: offline Chapter 1 tournament sampler. Run with `node remake/tools/balance/measure.mjs --board --n 200 --seed 1`.
+ * `--votes sakurai` scores the same plays with the trial Sakurai-style votes (SKR04); `--aim attack` makes the player aim
+ * the serve and both adjustments at the attack band (same input error), so overshooting costs points as in the game.
  * Uses the game's mix, heat, steam, temperature and final scoring. The Gaussian input
  * model is an explicit approximation of human operation, not a frame simulation.
  */
@@ -14,6 +16,12 @@ const option = (name, fallback) => {
   return index < 0 ? fallback : Number(process.argv[index + 1]);
 };
 const samples = option('--n', 1000);
+const textOption = (name, fallback) => { const index = process.argv.indexOf(name); return index < 0 ? fallback : process.argv[index + 1]; };
+const voteStyle = textOption('--votes', 'classic');
+const aim = textOption('--aim', 'center');
+assert(['classic', 'sakurai'].includes(voteStyle), '--votes must be classic or sakurai');
+assert(['center', 'attack'].includes(aim), '--aim must be center or attack');
+assert(!(aim === 'attack' && voteStyle !== 'sakurai'), '--aim attack needs --votes sakurai');
 const seedStart = option('--seed', 1);
 assert(Number.isSafeInteger(samples) && samples > 0, '--n must be a positive integer');
 assert(Number.isSafeInteger(seedStart) && seedStart > 0, '--seed must be a positive integer');
@@ -56,6 +64,7 @@ const growth = await import('../../js/core/growth.js');
 const board = await import('../../js/core/growth-board.js');
 const steam = await import('../../js/craft/steam.js');
 const ch1Votes = await import('../../js/craft/ch1-votes.js');
+const attackBand = await import('../../js/craft/attack-band.js');
 // Central Chapter 1 model before tournament/clear/breadth rewards: about Lv.9, 16 fire.
 // These are deterministic examples of legal allocations, not an optimized build search.
 const boardBuilds = {};
@@ -145,19 +154,37 @@ export function runOne(id, operation, seed, config = plan, skillLookup = hasSkil
   }
   cs.steam={seconds:360,min:6,hits,score:clamp(100-hits*14,0,100),temp:conditions.temperatureAfterSteam(cs,360,cs.steamVariation)};
   const bands=thermal.temperatureBands(cs);
+  const range=voteStyle==='sakurai'?attackBand.attackRange(bands):null;
   const finishThermal=round=>{
     const residual=cfg.temperatureSigma*normal(rng);
     const focus=round===0?conditions.pullFocusFromSteam(cs).slow:1;
-    const temp=bands.center+residual/(slow*focus);
+    const target=aim==='attack'?(range.low+range.high)/2:bands.center;
+    const temp=target+residual/(slow*focus);
     const pulls=round===0?3:1;
     const safe=(round===0?3:2)+thermal.makerMixProfile(cs).safePullsBonus;
-    return {round,temp,pulls,...conditions.pullResult(temp,pulls,0,bands,safe)};
+    const result={round,temp,pulls,...conditions.pullResult(temp,pulls,0,bands,safe)};
+    // pull.js と同じ: 桜井式の大会では、攻めの帯の中で終えた一口は温度を満点として扱い、審査に上積みする。
+    if(range){result.attack=attackBand.inAttackRange(temp,range);if(result.attack)result.score=Math.max(result.score,attackBand.attackScore(pulls,safe));}
+    return result;
   };
-  cs.pull=finishThermal(0);
-  cs.careHistory=[finishThermal(1),finishThermal(2)];
-  score.finalize(cs);
   const attempt={};
-  for(let round=0;round<4;round++) assert.equal(ch1Votes.castCh1Votes(attempt,round,cs),true);
+  if(voteStyle==='sakurai') {
+    // 桜井式は各回をその回の工程で決めるので、ch1.js と同じ順で投票する（提供の回は調整前の完成品）。
+    ch1Votes.beginCh1Votes(attempt,{style:'sakurai'});
+    assert.equal(ch1Votes.castCh1Votes(attempt,0,cs),true);
+    cs.pull=finishThermal(0);
+    cs.stats=score.computeShisha(cs);
+    assert.equal(ch1Votes.castCh1Votes(attempt,1,cs),true);
+    cs.stats=null;
+    cs.careHistory=[finishThermal(1),finishThermal(2)];
+    score.finalize(cs);
+    for(let round=2;round<4;round++) assert.equal(ch1Votes.castCh1Votes(attempt,round,cs),true);
+  } else {
+    cs.pull=finishThermal(0);
+    cs.careHistory=[finishThermal(1),finishThermal(2)];
+    score.finalize(cs);
+    for(let round=0;round<4;round++) assert.equal(ch1Votes.castCh1Votes(attempt,round,cs),true);
+  }
   const outcome=attempt.voteAttempt.result;
   assert.equal(cs.foilSkipped,true);
   assert.equal(typeof skillLookup(scenario,'K11'),'boolean');
@@ -165,6 +192,7 @@ export function runOne(id, operation, seed, config = plan, skillLookup = hasSkil
     points:outcome.rows.find(row=>row.id==='hajime').points,
     leaderPoints:outcome.rows[0].points,
     parts:cs.parts,heatPhases:timings.map(t=>t.phase),steamHits:hits,
+    ...(voteStyle==='sakurai'?{attacks:attempt.voteAttempt.attacks,lastPoint:attempt.voteAttempt.lastPoint}:{}),
     playStats:scenario.playStats,tierMode:mode};
 }
 function rowsFor(id,operation,config=plan) { return Array.from({length:samples},(_,i)=>runOne(id,operation,seedStart+i,config)); }
@@ -199,7 +227,7 @@ if (process.argv.includes('--calibrate-poor')) {
       loserTotalMax:losers.length?Math.max(...losers.map(x=>x.total)):null,
       sha256:sha(rows),repeatSha256:sha(again)});
   }
-  console.log(JSON.stringify({tierMode:mode,seedStart,samples,ranking:'ch1-votes-v2',model:boardMode
+  console.log(JSON.stringify({tierMode:mode,seedStart,samples,ranking:voteStyle==='sakurai'?`ch1-votes-sakurai-v3/aim-${aim}`:'ch1-votes-v2',model:boardMode
     ? 'gaussian-input-approximation; legal Lv9/16-fire examples; excludes manual refresh, replacement coal, fatigue and skill input decisions; not integrated acceptance'
     : 'gaussian-input-approximation; legacy-stats-only; no growth-board acceptance',
     ...(boardMode?{builds:Object.fromEntries(Object.entries(boardBuilds).map(([id,g])=>[id,{nodes:g.nodes,remaining:growth.hidaneTotal(g)}]))}:{}),
