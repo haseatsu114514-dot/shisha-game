@@ -114,7 +114,7 @@
           <tr><td><span class="zchip z-band">適温</span></td><td>おいしい。<b>味値どおり</b></td></tr>
           <tr><td><span class="zchip z-off">ズレ</span></td><td>適温のすぐ外。<b>1点</b>だけ</td></tr>
           <tr><td><span class="zchip z-cold">外れ</span></td><td>ぬるすぎ・熱すぎ。<b>0点</b></td></tr>
-          <tr><td><span class="zchip z-scorch">焦げ</span></td><td><b>0点</b>。主役の葉を1枚失う</td></tr>
+          <tr><td><span class="zchip z-scorch">焦げ</span></td><td><b>0点</b>。主役の葉を2枚失う</td></tr>
         </table>
       </div>
     </div>
@@ -454,7 +454,7 @@
         <tr><td class="c">5</td><td><span class="zchip z-band">適温</span></td><td>4 + 1 + 1</td><td class="c"><b>6</b></td><td class="c">5</td></tr>
         <tr><td class="c">4</td><td><span class="zchip z-off">ズレ</span></td><td>加点なし</td><td class="c"><b>1</b></td><td class="c">3</td></tr>
         <tr><td class="c">3以下</td><td><span class="zchip z-cold">外れ</span></td><td></td><td class="c"><b>0</b></td><td class="c">2</td></tr>
-        <tr><td class="c">7以上</td><td><span class="zchip z-scorch">焦げ</span></td><td>主役の葉を1枚失う</td><td class="c"><b>0</b></td><td class="c">1</td></tr>
+        <tr><td class="c">7以上</td><td><span class="zchip z-scorch">焦げ</span></td><td>主役の葉を2枚失う</td><td class="c"><b>0</b></td><td class="c">1</td></tr>
       </table>
       <div class="box dark" style="margin-bottom:0">
         <h3>一票は印象で</h3>
@@ -508,8 +508,8 @@
       <table>
         <tr><th>体力が減る場面</th><th>いつ</th><th>減る葉</th></tr>
         <tr><td><b>消耗</b></td><td>セッションの区切り</td><td>2枚（自分で選ぶ）</td></tr>
-        <tr><td><b>焦げ</b></td><td>判定熱が主役の焦げライン以上だった</td><td>主役を1枚</td></tr>
-        <tr><td><b>見せ煙</b></td><td>葉を減らして発動するとき</td><td>主役を1枚</td></tr>
+        <tr><td><b>焦げ</b></td><td>判定熱が主役の焦げライン以上だった</td><td><b>主役を2枚</b></td></tr>
+        <tr><td><b>見せ煙</b></td><td>葉を減らして使うとき</td><td>主役を1枚</td></tr>
       </table>
       <ul>
         <li>葉を失った結果、ほかの種類が主役の枚数を上回ったら、主役マーカーを移します。帯も味値も新しい主役のものに変わります。</li>
@@ -757,7 +757,7 @@
       <tr><td><span class="zchip z-just">★ジャスト</span></td><td>味値 + 2 + 加点</td><td class="c">+1</td></tr>
       <tr><td><span class="zchip z-band">適温</span></td><td>味値 + 加点</td><td class="c">+1</td></tr>
       <tr><td><span class="zchip z-off">ズレ</span></td><td>1点</td><td class="c">−1</td></tr>
-      <tr><td><span class="zchip z-cold">外れ</span>／<span class="zchip z-scorch">焦げ</span></td><td>0点（焦げは主役の葉を1枚失う）</td><td class="c nw">−2／−3</td></tr>
+      <tr><td><span class="zchip z-cold">外れ</span>／<span class="zchip z-scorch">焦げ</span></td><td>0点（焦げは主役の葉を2枚失う）</td><td class="c nw">−2／−3</td></tr>
     </table>
     <table>
       <tr><th>加点・上限</th><th>条件</th></tr>
@@ -823,6 +823,7 @@
       <li><b>炭は1ターンに、1つ足せて、1つ外せる。</b>回数の決まりを1つにそろえた。</li>
       <li><b>準備の決まりを減らした。</b>2種類まで・先手の2枚をやめ、場の山は各16枚。</li>
       <li><b>言葉をそろえた。</b>火力→熱、灰にする→外す、1ラウンドに1枚→自分のターンに1枚。</li>
+      <li><b>焦げは重く。</b>0点のうえ、主役の葉を2枚失う（第0.6版までは1枚）。</li>
     </ul>
     <p class="small" style="margin:1.2mm 0 0"><b>第0.6版</b>　一票は点で負けている方なら+3／上園の決め手は「伸び」／パッキーは相手の一票で引く。<b>第0.5版</b>　冷めるのは炭1つ・火1／審査カードはラウンドのはじめにめくる／吸い方を読むは次のラウンドの分。</p>
     <p class="small" style="margin:1.2mm 0 0"><b>第0.4版で変えたところ</b>　炭に火がある（フラット炭2・キューブ炭3・種火1。熱は火の合計）／炭は4つまで・火は下がるだけ／引くのは1枚とチャージ＆ドロー（1ターンに1回）・蒸らすときは2枚／HMDにC1／3〜4人で遊べる。</p>
