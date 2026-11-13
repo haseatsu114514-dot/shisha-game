@@ -111,7 +111,7 @@ export const CH3_OPTIONAL_SCENES = Object.freeze({
   ch3_saku_first_reply: { file: "ch3_rivals", label: "最初の返事", location: "煙幕",
     after: ["ch3_saku_liar"], heart: { saku: 4 } },
   // 好感度補充（A05–A07）。低温の話のあと Smoke & Glory で♥1・♥3・♥4。締めくくりの条件。
-  ch3_steve_two_timers: { file: "ch3_rivals", label: "二つのタイマー", location: "Smoke & Glory", bg: "bg_steve_shop",
+  ch3_steve_two_timers: { file: "ch3_rivals", label: "待たせたピザ", location: "Smoke & Glory", bg: "bg_steve_shop",
     met: ["steve"], heart: { steve: 1 }, after: ["ch3_steve_low_heat"], host: "steve" },
   ch3_steve_empty_seat: { file: "ch3_rivals", label: "空の席の秒数", location: "Smoke & Glory", bg: "bg_steve_shop",
     met: ["steve"], heart: { steve: 3 }, after: ["ch3_steve_two_timers"], host: "steve" },

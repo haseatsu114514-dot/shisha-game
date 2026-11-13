@@ -92,11 +92,12 @@
     {
       "dialogue_id": "ch5_tokyo_steve",
       "lines": [
-        { "speaker": "", "face": "", "text": "Smoke & Glory。カウンターの端で、スティーブがキッチンタイマーを並べていた。" },
+        { "speaker": "", "face": "", "text": "Smoke & Glory。カウンターの端で、スティーブがタイマーのつまみを回していた。" },
         { "speaker": "steve", "face": "smile", "text": "ヘイ、ハジメ！　世界から帰ってきた顔だ" },
         { "speaker": "hajime", "face": "smile", "text": "そんな顔、してますか" },
         { "speaker": "steve", "face": "normal", "text": "してる。少し日に焼けて、少し落ち着いた" },
-        { "speaker": "hajime", "face": "normal", "text": "相変わらず、全部で待つんですね。俺は向こうで、待つのが少し下手になりました" },
+        { "speaker": "hajime", "face": "normal", "text": "相変わらず、そのタイマーで待つんですね。俺は向こうで、待つのが少し下手になりました" },
+        { "speaker": "steve", "face": "smile", "text": "イエス、同じ一つだ。つまみが、少しゆるくなった" },
         { "speaker": "steve", "face": "smile", "text": "ノー、ノー。急いだ日があるから、待つ日が効くんだ" },
         { "speaker": "steve", "face": "smile", "text": "一台どうぞ。今日も、二口目までが勝負" }
       ]
@@ -121,14 +122,14 @@
         { "speaker": "steve", "face": "smile", "text": "イエス。たまには、自分の鼻を信じる" },
         { "speaker": "steve", "face": "normal", "text": "タイマーは止めてくれる。でも、先に動く日も要る" },
         { "speaker": "steve", "face": "normal", "text": "ほとんどの日は、タイマーに任せる。それも腕のうちだ" },
-        { "speaker": "hajime", "face": "normal", "text": "世界の舞台で、俺もそうでした。時計より、煙の方が先に答えてくれた" },
-        { "speaker": "steve", "face": "smile", "text": "そうか。その感覚、店に戻っても忘れるなよ" },
+        { "speaker": "hajime", "face": "normal", "text": "先に動いて、外した日はどうするんですか" },
+        { "speaker": "steve", "face": "smile", "text": "カードに書く。「鼻、早すぎ」ってな。……今月、もう三枚ある" },
         { "speaker": "hajime", "face": "normal", "text": "（待つのも動くのも、同じ一台のためか）" }
       ]
     },
     {
       "dialogue_id": "ch5_steve_bond_finale",
-      "comment": "#2705 スティーブの好感度の締めくくり（第5章の東京版・友情のみ）。第3章の ch3_steve_bond_finale と同じ節目で、第3章で♥5に届かず見逃した人が Smoke & Glory で受け直す（daily/bonds.js の BOND_FINALES.steve.tokyoDialogue）。第3章で見た人は finales.steve で二度は出ない。第3章の外出・LIMEの記憶を前提にしない（見ていない人も読める）。第5章では第3章のLIME交換の寄り道を前提にしないので、まだ交換していない人は「顔の知らせ」を頼まれたその場で交換する（contact の分岐 lime_exchange。第3章の ch3_steve_lime と同じ set_flag で、交換後は友人のLIME remake/data/friends.json が届く）。交換済みの人は分岐を通らない。世界を回って帰ったはじめに、練習に使ってきた素焼きを預ける。報酬（専用ハガル）は playFinale が渡す。昼にも夜にも読めるので時間帯を言わない。",
+      "comment": "#2705 スティーブの好感度の締めくくり（第5章の東京版・友情のみ）。第3章の ch3_steve_bond_finale と同じ節目で、第3章で♥5に届かず見逃した人が Smoke & Glory で受け直す（daily/bonds.js の BOND_FINALES.steve.tokyoDialogue）。第3章で見た人は finales.steve で二度は出ない。第3章の外出・LIMEの記憶を前提にしない（見ていない人も読める）。第5章では第3章のLIME交換の寄り道を前提にしないので、まだ交換していない人は「顔の知らせ」を頼まれたその場で交換する（contact の分岐 lime_exchange。第3章の ch3_steve_lime と同じ set_flag で、交換後は友人のLIME remake/data/friends.json が届く）。交換済みの人は分岐を通らない。世界を回って帰ったはじめに、練習に使ってきた素焼きを預ける。看板のマウンテンミスト（葉と秒数）は預けない（2026-11-13 オーナー訂正）。報酬（専用ハガル）は playFinale が渡す。昼にも夜にも読めるので時間帯を言わない。",
       "metadata": { "bond_finale": "steve" },
       "lines": [
         { "speaker": "", "text": "Smoke & Glory。スティーブは棚の一番上から、小さな紙袋を下ろした。" },
@@ -151,8 +152,10 @@
         { "type": "condition", "condition_type": "contact", "char_id": "steve", "next_false": "lime_exchange" },
         { "speaker": "hajime", "face": "smile", "text": "送ります。気づいた日だけ" },
         { "speaker": "steve", "face": "smile", "text": "オーケー。その一行が、一番の礼だ" },
-        { "speaker": "", "text": "スティーブはマウンテンミストの箱を一つ、紙袋に足した。" },
-        { "speaker": "steve", "face": "normal", "text": "葉もつけとく。最初は、俺の秒数で一度吸ってみろ。外すのは、それからだ" },
+        { "speaker": "hajime", "face": "normal", "text": "最初は、マウンテンミストを詰めればいいですか" },
+        { "speaker": "steve", "face": "serious", "text": "ノー、ノー。葉はつけない。あれは、俺の看板だ" },
+        { "speaker": "steve", "face": "smile", "text": "吸いたくなったら、店に来い。こいつに何を詰めるかは、ハジメが決めろ" },
+        { "speaker": "", "face": "", "text": "紙袋は、ハガル一つ分の重さだった。" },
         { "speaker": "", "face": "", "text": "空いた棚に、スティーブはレシピカードを一枚立てた。余白まで、客の言葉で埋まっている。" },
         { "speaker": "steve", "face": "smile", "text": "新しいのが焼けるまで、こいつが見張り役だ" },
         { "type": "apply", "stats": { "technique": 2 } }

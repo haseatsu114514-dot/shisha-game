@@ -50,7 +50,7 @@ export const CH3_AFTERMATH_DETOURS = Object.freeze([
     after: ["ch3_saku_cleanup"], heart: { saku: 4 } },
   { id: "ch3_saku_first_reply", file: "ch3_rivals", label: "最初の返事", location: "煙幕", bg: "bg_yohaku_shop",
     after: ["ch3_saku_liar"], heart: { saku: 4 } },
-  { id: "ch3_steve_two_timers", file: "ch3_rivals", label: "二つのタイマー", location: "Smoke & Glory", bg: "bg_steve_shop",
+  { id: "ch3_steve_two_timers", file: "ch3_rivals", label: "待たせたピザ", location: "Smoke & Glory", bg: "bg_steve_shop",
     met: ["steve"], heart: { steve: 1 } },
   { id: "ch3_steve_empty_seat", file: "ch3_rivals", label: "空の席の秒数", location: "Smoke & Glory", bg: "bg_steve_shop",
     met: ["steve"], after: ["ch3_steve_two_timers"], heart: { steve: 3 } },

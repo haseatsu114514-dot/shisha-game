@@ -1,5 +1,5 @@
 {
-  "comment": "第3章はスティーブの茶化しで曖昧に終わる未遂。shuraba_*の本格的な話し合いはエンディング後のみ。実際の交際と所在を確認し、出席者の反応だけを読む。ch3_shuraba_*とtournament_evening_overlapは第3章前夜（ch3.js）に接続済み。shuraba_*の反応とshuraba_accountabilityは第5章の打ち上げ（ch5-party.js）で接続済み。打ち上げで起きていなければ、第5章のスタッフロールの後にshuraba_openから読む（ch5.js・IR32。ヌールが加わる時はその前にshuraba_noor_callでテレビ電話をつなぐ・#2815）。shuraba_talk_*はその後、未解決の恋人ごとに一人ずつ読む。",
+  "comment": "第3章はスティーブの冗談（「ハジメはガールにモテモテだな！」）で場が凍り、本人が気づいて箱だけ置いて去る未遂（2026-11-13 オーナー訂正）。説明も問いも出ないまま終わる。shuraba_*の本格的な話し合いはエンディング後のみ。実際の交際と所在を確認し、出席者の反応だけを読む。ch3_shuraba_*とtournament_evening_overlapは第3章前夜（ch3.js）に接続済み。shuraba_*の反応とshuraba_accountabilityは第5章の打ち上げ（ch5-party.js）で接続済み。打ち上げで起きていなければ、第5章のスタッフロールの後にshuraba_openから読む（ch5.js・IR32。ヌールが加わる時はその前にshuraba_noor_callでテレビ電話をつなぐ・#2815）。shuraba_talk_*はその後、未解決の恋人ごとに一人ずつ読む。",
   "dialogues": [
     {
       "dialogue_id": "ch3_shuraba_open",
@@ -87,7 +87,7 @@
         {
           "speaker": "steve",
           "face": "smile",
-          "text": "ヘイ、ハジメ！　ガール達にモテモテだな！"
+          "text": "ヘイ！　ハジメはガールにモテモテだな！"
         },
         {
           "speaker": "hajime",
@@ -95,19 +95,34 @@
           "text": "ちょ、スティーブさん……！"
         },
         {
-          "speaker": "steve",
-          "face": "smile",
-          "text": "ノー、ノー、うらやましいぜ。こっちはピザ一枚と二人きりだってのに"
+          "speaker": "",
+          "face": "",
+          "text": "誰も笑わなかった。ロビーの空調の音だけが、急に大きく聞こえる。"
         },
         {
           "speaker": "steve",
           "face": "normal",
-          "text": "ちょうどいい。全員で切り分けようぜ"
+          "text": "……ヘイ？　今の、ジョークだぜ"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "箱が開くと、誰かが小さく吹き出した。言いかけた言葉は、皿を配る声に紛れた。"
+          "text": "スティーブは俺の顔を見て、彼女たちの顔を順に見た。眼鏡の奥で、目が丸くなる。"
+        },
+        {
+          "speaker": "steve",
+          "face": "sad",
+          "text": "……オー。ノー、ノー。今のは、俺が急ぎすぎた"
+        },
+        {
+          "speaker": "steve",
+          "face": "sad",
+          "text": "ピザ、ここに置いとく。……熱いうちに、とは言わない"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "箱だけを残して、大きな背中が珍しく早足で離れていった。"
         },
         {
           "type": "motion",
@@ -117,7 +132,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "俺は説明しそびれたまま、紙皿を配った。さっきの視線だけが、背中に残っていた。"
+          "text": "誰も箱を開けなかった。俺は説明しそびれたまま、チーズの匂いの中に立っていた。"
         },
         {
           "type": "set_flag",

@@ -487,7 +487,7 @@
       "sell_price": 0,
       "price": 0,
       "value": "suyaki_saku",
-      "description": "綾取が福岡から持ってきて、煙幕の閉店後に客の答えを確かめるたび使い込んだ素焼き。アールグレイの柑橘と紅茶の香りが土まで染み付いている。容量20g。",
+      "description": "綾取が福岡から持ってきた素焼き。入っていない菓子を焼く稽古にも、煙幕の閉店後に客の答えを確かめる時にも使い込んだ。アールグレイの柑橘と紅茶の香りが土まで染み付いている。容量20g。",
       "capacity": 20,
       "art": "suyaki_hagal",
       "not_for_sale": true,
@@ -543,7 +543,7 @@
         "from": "steve",
         "reason": "待つ練習台を、顔を見る手に",
         "flavor": "mountain_mist",
-        "leaf_grams": 50,
+        "leaf_grams": 0,
         "min_grams": 3,
         "aroma": 4,
         "bonus": 1
