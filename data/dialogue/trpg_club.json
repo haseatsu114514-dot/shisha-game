@@ -177,6 +177,20 @@
         "text": "皆さんの営業が終わるまで、お待ちしていました。今夜の席は、こちらです"
       }
     ],
+    "host_day_seated": [
+      {
+        "speaker": "sai",
+        "face": "normal",
+        "text": "試遊でも、本選びでも。お決まりになったら、お声がけください"
+      }
+    ],
+    "host_night_seated": [
+      {
+        "speaker": "sai",
+        "face": "normal",
+        "text": "今夜の一冊と顔ぶれを、こちらからどうぞ"
+      }
+    ],
     "host_trial": [
       {
         "speaker": "sai",
