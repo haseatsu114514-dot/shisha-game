@@ -4,7 +4,7 @@ import { state, save } from "../core/state.js";
 import { paidAction } from "../core/stats.js";
 import { toast } from "../core/ui.js";
 import { growthEnabled } from "../core/growth.js";
-import { runCamelRace } from "../minigames/camel-race.js";
+import { runCamelRace, loadCamelArt } from "../minigames/camel-race.js";
 import { playArrival } from "../daily/venue-arrivals.js";
 import { CAMEL_SCENES, CAMEL_STAGES, camelRaceRecord, camelRaceDestination, recordCamelRaceResult, consumeCamelRaceDaytime,
   advanceCamelRaceStage, resultSceneFor, availableCamelCups } from "./ch4-camel-progress.js";
@@ -31,6 +31,8 @@ export async function visitCamelRace({ read, signal = null, isCurrent = () => tr
     if (advanceCamelRaceStage(value, id)) save();
     return { used: false, exerted: false };
   }
+  // ここからはレースへ進む訪問。レースの絵は、前の会話を読んでいる間に読み始める（#3500 E-2）。
+  void loadCamelArt();
   const first = camel.stage === CAMEL_STAGES.invited;
   if (first) {
     // 本番を見る場面は一度だけ。途中で中断・LOADしても、読み終えていれば次はレースから。
