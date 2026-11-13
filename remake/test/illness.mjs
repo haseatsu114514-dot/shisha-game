@@ -37,6 +37,7 @@ const values = {
   "roamers.js": { roamerAt: () => null, meetRoamer: async () => false }, // よその店に居合わせる人。この検査では居合わせない
   "recipe-finds.js": { recipeFindAfterVisit: async () => false }, // 第3章以降のレシピの連鎖（#2020 G）。この検査では話さない
   "petit-shuraba.js": { petitAfterVisit: async () => false, petitAfterDate: async () => false }, // プチ修羅場（恋人が2人以上の時の寄り道）。この検査では起きない
+  "lover-strain.js": { strainMorning: () => 0, maybeStrainTalk: async () => false, strainAfterVisit() {}, strainOf: () => 0, STRAIN_SIGN2: 7 }, // すれ違い（恋人の裏の数値）は remake/test/lover_strain.mjs。この検査では動かない
   "hiyori.js": { hiyoriShopEncounterDue: () => false, visitHiyoriAtShop: async () => false, hiyoriShopLocation: () => null, playHiyoriEvent: async () => false, meetHiyoriAtTonari: async () => false, playHiyoriHangout: async () => false },
   "util.js": { el: elem, sleep: async () => {}, yen: (n) => `${n}円`, clamp: (v, a, b) => Math.max(a, Math.min(b, v)) },
   "state.js": { state, hasAffinity, save: () => saves.push({ day: state.day, slot: state.slot, cold: !!state.flags._cold_pending,

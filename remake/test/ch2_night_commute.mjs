@@ -81,6 +81,7 @@ for (const chapter of [1, 2]) for (const weather of ['sun', 'rain']) {
     restingToday: () => false, bannersIdle: async () => {},
     runNightPlan: async () => { trace.push('night'); return 0; },
     maybeConfession: async () => { trace.push('confession'); return false; },
+    strainMorning: () => 0, maybeStrainTalk: async () => false, // すれ違い（恋人の裏の数値）は remake/test/lover_strain.mjs。この検査では動かない
     maybeSamechanEncounter: async () => { trace.push('encounter'); },
     play: async id => { trace.push(id); return {}; }, beat() {},
     showSumiRigAtHome: async () => { trace.push('rig-homecoming'); return false; },
@@ -187,6 +188,7 @@ const invitationContext = vm.createContext({
   save: () => saves++, restingToday: () => restedForInvite,
   runNightPlan: async () => 0, bannersIdle: async () => {}, beat: async () => log.push('beat'),
   maybeConfession: async () => { throw appointmentStop; },
+  maybeStrainTalk: async () => false,
 });
 Object.defineProperty(invitationContext, 'state', { configurable: true, get: () => state });
 const invitationStats = fixed(['earnStat'], { earnStat: (key, amount) => rewardTrace.push(`stat:${key}:${amount}`) });
