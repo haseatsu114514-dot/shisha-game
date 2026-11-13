@@ -292,6 +292,148 @@
           {"speaker": "rio", "face": "smile", "text": "友だちに同意書は、要らないでしょ"}
         ]
       }
+    },
+    {
+      "dialogue_id": "ch5_rio_naru_tea",
+      "metadata": {
+        "setting": "なる→凛想の続き（REL06）。第5章のDr.fookahの2階で、通いの小会話の代わりに一度だけ（chapters/ch5-shops.js の extras）。第1章の喫茶こはくの場面（cafe_naru_rio）と2階の続き（cafe_naru_rio_followup_rio「次は、お茶でも出そうか」）の回収。"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "2階に上がると、先客がいた。応接の椅子で、なるが背すじを伸ばしている。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "前には、湯気の立つ湯のみ。注文書の控えを、膝の上で握ったままだ。"
+        },
+        {
+          "speaker": "naru",
+          "face": "surprise",
+          "text": "……よう、はじめ"
+        },
+        {
+          "speaker": "rio",
+          "face": "smile",
+          "text": "いらっしゃい。今日は、ケムリクサさんを帰さなかったの"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "納品の確認だけで、すぐ帰ろうとするから。お茶くらい、飲んでいきなって"
+        },
+        {
+          "speaker": "naru",
+          "face": "serious",
+          "text": "……いただいてます、円頓寺さん"
+        },
+        {
+          "type": "condition",
+          "condition_type": "flag",
+          "flag": "_spot_follow_rio_naru",
+          "next_true": "heard"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "なるは湯のみを両手で包んで、少しずつ飲んでいる。"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "旅先の店の話を聞いてたの。客の吸う速さに合わせて、甘さを組み直す話"
+        },
+        {
+          "speaker": "rio",
+          "face": "smile",
+          "text": "……いい仕事だね。数字より先に、人の顔を見てる"
+        },
+        {
+          "speaker": "naru",
+          "face": "surprise",
+          "text": "……っ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "なるの耳の先が、少し赤くなった。"
+        },
+        {
+          "speaker": "naru",
+          "face": "normal",
+          "text": "ご、ごちそうさまでした。店に戻ります"
+        },
+        {
+          "type": "condition",
+          "condition_type": "lover",
+          "char_id": "rio",
+          "next_true": "naru_lover"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "なるは湯のみを置いて頭を下げると、早足で階段を降りていった。"
+        },
+        {
+          "speaker": "rio",
+          "face": "smug",
+          "text": "今日は、六分もった"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……数えてたんですか"
+        },
+        {
+          "speaker": "rio",
+          "face": "normal",
+          "text": "数えるのは、仕事だから"
+        },
+        {
+          "type": "condition",
+          "condition_type": "lover",
+          "char_id": "rio",
+          "next_true": "lover",
+          "next_false": "friend"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "机の上の湯のみは、きれいに空になっていた。"
+        }
+      ],
+      "branches": {
+        "heard": [
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（前に聞いた時は、三分で帰るって話だった）"
+          }
+        ],
+        "naru_lover": [
+          {
+            "speaker": "naru",
+            "face": "smile",
+            "text": "……はじめ。ちゃんと、大事にしろよ"
+          }
+        ],
+        "friend": [
+          {
+            "speaker": "rio",
+            "face": "smile",
+            "text": "次は、十分を目指してもらおうかな"
+          }
+        ],
+        "lover": [
+          {
+            "speaker": "rio",
+            "face": "smile",
+            "text": "……君を待つ時間は、数えてないけどね"
+          }
+        ]
+      }
     }
   ]
 }
