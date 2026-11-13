@@ -308,6 +308,10 @@ const BG_ALIASES = {
 
 // 昼夜の差分がある場所（無印・_day は時間帯で切り替える。明示の _night は演出なのでそのまま）
 const BG_TIME_BASE = new Set(["bg_tonari_inside", "bg_tonari_outside", "bg_home", "bg_c_station", "bg_cafe", "bg_street", "bg_kannon", "bg_choizap", "bg_tokyo_park", "bg_mukai_backdoor", "bg_shiori_room"]); // bg_mukai_backdoor: てつこといっしょの裏口（TKT01・未着。届くまでは sceneBg が null を返し、画面は bg_street に戻る）
+// 昼の版だけが別にある店（第3章の東京の4店。#3282 B3・B4・B8・B9）。無印の絵は窓の外が夕方〜夜で、そのまま夜に使う。
+// 昼の版を使うのは、時間帯が「昼」と**明示された**時だけ（時間帯を渡さない呼び出しは今までどおり無印の絵）:
+//   時間帯を渡さない呼び出しは、昼か夜かを知らないまま呼んでいる（第3章の夜の場面にも使われる）。昼の絵へ替えると夜の場面が昼になる。
+const BG_DAY_VARIANT = new Set(["bg_mukai_shop", "bg_yohaku_shop", "bg_volk_shop", "bg_steve_shop"]);
 // 窓の無い店内は外光が入らない＝夜も昼の絵のまま（オーナー指定・旧版と同じ）
 // bg_ageha_shop.png は 2026-11-12 に窓から昼の光が入る絵へ描き直した（#3282 B7）ので、ここから外した（夜は色調補正が掛かる）。
 const BG_NO_NIGHT_TINT = new Set([
@@ -321,7 +325,10 @@ const BG_NO_NIGHT_TINT = new Set([
  * 背景の参照（"res://assets/backgrounds/x.png" / "x.png" / "bg_x"）→ { url, tint }。
  * 昼夜差分があれば時間帯で選び、差分の無い外光のある場所だけ夜に色調補正（tint="night"）を掛ける
  */
-export function sceneBg(ref, timeOfDay = "day") {
+export function sceneBg(ref, time) {
+  // time は "day"／"night"。省くと従来どおり昼として扱うが、昼の版だけの店（BG_DAY_VARIANT）は昼と明示された時だけ昼の絵にする。
+  const explicitDay = time === "day";
+  const timeOfDay = time === undefined ? "day" : time;
   if (!ref) return { url: null, tint: null };
   let name = String(ref).split("/").pop();
   if (!name.endsWith(".png")) name += ".png";
@@ -333,6 +340,7 @@ export function sceneBg(ref, timeOfDay = "day") {
     const variant = `${base}_${timeOfDay}.png`;
     if (list.includes(variant)) name = variant;
   }
+  if (BG_DAY_VARIANT.has(base) && !m[2] && explicitDay && list.includes(`${base}_day.png`)) name = `${base}_day.png`;
   if (!list.includes(name)) return { url: null, tint: null };
   // 曇り・雨は同じ曇天画。雨粒は既存weatherレイヤーだけが描く。
   // 差分の用意された場所だけ切り替え、未制作の場所は従来の絵を維持する。
@@ -345,7 +353,7 @@ export function sceneBg(ref, timeOfDay = "day") {
   return { url: img(`backgrounds/${name}`), tint };
 }
 
-export const bgUrl = (ref, timeOfDay = "day") => sceneBg(ref, timeOfDay).url;
+export const bgUrl = (ref, timeOfDay) => sceneBg(ref, timeOfDay).url;
 
 export function portraitInfo(speaker, face, style = portraitStyle()) {
   const resolved = resolvePortrait(DB.manifest, speaker, face, style);

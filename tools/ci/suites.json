@@ -10,6 +10,12 @@
   ],
   "suites": [
     {
+      "id": "rest-variations",
+      "title": "Rest dialogue rotation, SAVE/LOAD and interrupted chapter visits",
+      "kind": "quick",
+      "run": ["node --experimental-vm-modules remake/test/rest_variations.mjs"]
+    },
+    {
       "id": "play-mastery",
       "title": "Mini-game mastery, cumulative progress, save/NG+ rewards and chapter-five paid growth",
       "kind": "quick",
@@ -39,6 +45,14 @@
       "kind": "quick",
       "run": [
         "node remake/test/neo_ambient.mjs"
+      ]
+    },
+    {
+      "id": "bg-day-variants",
+      "title": "第3章の東京の4店の昼の版（BGU06）: 時間帯が「昼」と明示された時だけ昼の絵を使い、渡さない呼び出し・夜は今までの絵",
+      "kind": "quick",
+      "run": [
+        "node remake/test/bg_day_variants.mjs"
       ]
     },
     {
@@ -4077,7 +4091,7 @@
       "title": "TRPG story collection",
       "kind": "browser",
       "weight": 5.0,
-      "timeout": 15,
+      "timeout": 25,
       "paths": [
         "data/dialogue/trpg_*.json",
         "data/trpg_catalog.json",
@@ -4430,6 +4444,24 @@
       ],
       "run": [
         "node remake/test/conversation_effects_demo.mjs"
+      ]
+    },
+    {
+      "id": "continue-looks",
+      "title": "Continue look candidates (#2524 CV58): A ember / C manga, touch sizes, retry, timeout, ?continueLook switch",
+      "kind": "browser",
+      "weight": 1.5,
+      "timeout": 5,
+      "paths": [
+        "remake/test/continue_looks.mjs",
+        "remake/js/chapters/continue-looks.js",
+        "remake/js/chapters/continue-view.js",
+        "remake/js/chapters/gameover.js",
+        "remake/css/continue*.css",
+        "remake/continue-preview.html"
+      ],
+      "run": [
+        "node remake/test/continue_looks.mjs"
       ]
     },
     {

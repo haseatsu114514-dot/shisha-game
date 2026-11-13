@@ -129,12 +129,12 @@ python3 tools/background_catalog.py report    # 全件の表
 |---|---|---|---|
 | 旧ドット絵 | 7 | 上の表の7枚 | 観音堂の昼・CHOI-ZAP の昼・あげはの店は #3282 で描き直して採用済み（2026-11-12 に組み込み）。`bg_home.png`・`bg_tonari_inside.png`・`eden.png` は昼夜差分や別名で本編に出ない。残りは `bg_title.png` |
 | 網点や線が残る（色数は多いので 11-02 の測り方では拾えなかった） | 3 | `bg_eden_shop.png`・`bg_hideaway.png`・`bg_ryuji_shop.png` | 3枚とも描き直して採用済み（竜二の店・隠れ家は #3282、EDEN は #3446）。EDEN は 2026-11-13 に描き直して採用済み（Issue #3446 のa案。1672×941。原画は `asset_sources/backgrounds/eden-shop-20261112/`） |
-| 写真・3DCG 寄り | 10前後 | `bg_volk_shop.png`・`bg_yohaku_shop.png`・`bg_yuzugaya_kumicho.webp`・`bg_ch2_*_entry.webp`・`bg_shop.png` など | mukai・煙幕・鉄の煙・Smoke & Glory は #3282 で昼の版を採用済み（夜は今の絵のまま）。ほかは未依頼 |
+| 写真・3DCG 寄り | 10前後 | `bg_volk_shop.png`・`bg_yohaku_shop.png`・`bg_yuzugaya_kumicho.webp`・`bg_ch2_*_entry.webp`・`bg_shop.png` など | mukai・煙幕・鉄の煙・Smoke & Glory は #3282 で昼の版を採用し、2026-11-13 に `_day` の絵として組み込み済み（無印の絵は夕方〜夜のまま。`sceneBg()` は時間帯が「昼」と明示された時だけ昼の版を使う）。ほかは未依頼 |
 | TRPG の部屋（描き込みが飛び抜けて多い） | 13 | `trpg_*_room.png` | 別世界の演出なのでそのまま（ミニゲームは固有の見た目でよい・LK18） |
 
 順番:
 
-1. **採用済みの絵を組み込む**（生成は要らない）。#3282 の10枚: 観音堂の昼・CHOI-ZAP の昼・神崎煙草店・MELTY PUFF（2026-11-12 に組み込み）→ mukai・煙幕・鉄の煙・Smoke & Glory の昼（今の絵を夜の版へ改名）。続けて #3285 の専用背景13枚。隠れ家と大会会場は 2026-11-13 に組み込んだ（台を描いていない絵なので、台の絵 `assets/ui/scene_props/shisha_hideaway.png`・`shisha_c_station.png` を `remake/js/core/scene-art.js` の `SCENE_PROPS` で重ねる。座標は新しい絵の卓・作業台の天板に合わせてある）。
+1. **採用済みの絵を組み込む**（生成は要らない）。#3282 の10枚: 観音堂の昼・CHOI-ZAP の昼・神崎煙草店・MELTY PUFF（2026-11-12 に組み込み）→ mukai・煙幕・鉄の煙・Smoke & Glory の昼（2026-11-13 に組み込み済み。昼の版を `_day` として足し、無印は今のまま）。続けて #3285 の専用背景13枚。隠れ家と大会会場は 2026-11-13 に組み込んだ（台を描いていない絵なので、台の絵 `assets/ui/scene_props/shisha_hideaway.png`・`shisha_c_station.png` を `remake/js/core/scene-art.js` の `SCENE_PROPS` で重ねる。座標は新しい絵の卓・作業台の天板に合わせてある）。
 2. ~~EDEN を描き直す~~ → 2026-11-13 に完了（a案。b案は中央の壁が広く空きすぎて EDEN らしさが薄れるため採らなかった）。
 3. 1280×720 のまま出番の多い所の底上げ（第2章の店の入口4枚・柚ヶ谷8枚・クラブSEAM・ドバイ16枚。それぞれの中では画風がそろっているので後）。
 4. 写真・3DCG 寄りの夜の絵と `bg_title.png`。

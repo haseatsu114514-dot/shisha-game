@@ -254,15 +254,19 @@ function homecomingRide(scene) {
   return !!scene.homecoming && !chapterThreeAftermathProgress(state).skip?.length;
 }
 
+// 場面の昼夜は、場面そのものの slot で決める（描く時点の state.slot は前の場面のまま。優勝の夜の最初の場面は、まだ昼の slot）。
+// 昼夜の差分がある店（mukai・煙幕など）は、昼と明示された時だけ昼の絵になる。
+const sceneTime = (scene) => (scene.slot ? "night" : "day");
+
 async function playScene(owner, scene) {
   const source = DB.dialogues[scene.id];
   if (!source) throw new Error(`台本がありません: ${scene.id}`);
   if (homecomingRide(scene)) {
     // 東京→地元の復路。帰郷した夜の最初の場面へ入る直前だけ新幹線の車窓を見せる（#1059）。
-    await shinkansenRide(async () => { await setBg(scene.bg ? bgUrl(scene.bg) : null, { instant: true }); },
+    await shinkansenRide(async () => { await setBg(scene.bg ? bgUrl(scene.bg, sceneTime(scene)) : null, { instant: true }); },
       { from: "tokyo", to: "home" });
   } else {
-    await enterScene(scene.bg ? bgUrl(scene.bg) : null);
+    await enterScene(scene.bg ? bgUrl(scene.bg, sceneTime(scene)) : null);
   }
   if (!live(owner)) return false;
   showScreen("none", null);
@@ -350,7 +354,7 @@ async function renderStage(owner) {
   }
   // 帰郷の夜(#1059)は、新幹線の車窓が覆うまで東京側の背景のままにし、地元の店を先見せしない。
   const preBg = homecomingRide(scene) ? "bg_mukai_shop" : scene.bg;
-  await enterScene(preBg ? bgUrl(preBg) : null);
+  await enterScene(preBg ? bgUrl(preBg, sceneTime(scene)) : null);
   if (!live(owner)) return;
   card(owner, "scene", `DAY ${chapterDay(state)}・${scene.slot ? "夜" : "昼"} ／ ${scene.label}`,
     `${scene.location}で、次の話を聞く。`, [

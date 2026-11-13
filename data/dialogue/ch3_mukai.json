@@ -303,6 +303,285 @@
         }
       ],
       "comment": "大会後のmukai（#2028 残件3・#1658 ⑥）。ムカイさんが、食事と休みで生活を立て直させる保護者役を見せる。大会後の寄り道（ch3-aftermath-progress.js の CH3_AFTERMATH_DETOURS）から一度だけ。屋根裏と鍵の申し出は第5章の場面にあるので、ここでは言わせない。"
+    },
+    {
+      "dialogue_id": "ch3_mukai_yoru_playlist",
+      "comment": "#3468 G案。ムカイさん×針間ヨル「昼のBGMを選んでいたはず」。開店前のmukaiで、いつもの甘いお茶を飲みに来たヨルと、昼の曲順を選んでいたムカイさんが、二人の好きな夜の曲へ脱線する。はじめは居合わせるだけ。ヨルと面識があり、mukaiの二日目（ch3_mukai_intro）の後に一度だけ。大会前は寄り道（ch3-story-wiring.js）、大会後は ch3-aftermath-progress.js の寄り道から同じ既読で読む。台本は大会に触れない。実在曲名・共演歴・昔の恋愛・DJの操作説明は出さない。好感度・フラグは動かさない。",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_mukai_shop.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "開店前のmukai。俺はテーブルを拭いていた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "カウンターでは、ムカイさんが紙に曲の名前を書いては、小さなスピーカーで一曲ずつ流している。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ドアベルが鳴った。首にヘッドフォンをかけたヨルさんが、慣れた足取りで入ってくる。"
+        },
+        {
+          "speaker": "yoru",
+          "face": "smile",
+          "text": "おはよ、ムカイ。いつもの、ある？"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "淹れてある。端に置いた"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "カウンターの端に、湯気の立つカップが二つ並んでいた。中身は、甘いフルーツティーだ。"
+        },
+        {
+          "speaker": "yoru",
+          "face": "normal",
+          "text": "はじめくんも、おはよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "おはようございます、ヨルさん"
+        },
+        {
+          "speaker": "yoru",
+          "face": "normal",
+          "text": "で、その紙は？　昼の曲順？"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "ああ。昼の客席に、少し音を足したくてな。一曲目は、これにした"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ムカイさんが再生を押した。午後の窓辺みたいな、やわらかいピアノの曲だった。"
+        },
+        {
+          "speaker": "yoru",
+          "face": "smile",
+          "text": "いいじゃん。ちゃんと昼の顔してる"
+        },
+        {
+          "speaker": "yoru",
+          "face": "normal",
+          "text": "じゃあ、その後ろは……あれ、なんだっけ。雨の日の、ギターのやつ"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "あれか"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ムカイさんは紙を見ずに、次の曲を探し当てた。"
+        },
+        {
+          "speaker": "yoru",
+          "face": "smile",
+          "text": "そうそう、それ"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "なら、その次はこれだな"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "三曲目は、少し暗かった。四曲目は、もっと暗かった。"
+        },
+        {
+          "speaker": "yoru",
+          "face": "normal",
+          "text": "……ムカイ、それ、夜中の三時の曲"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "分かってる。……でも、この次はこれしかないだろう"
+        },
+        {
+          "speaker": "yoru",
+          "face": "smile",
+          "text": "しかないね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "五曲目はヨルさんが選んで、六曲目はムカイさんが選んだ。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "どちらも、昼の客席に流れる気はしなかった。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（あの紙、もう昼の曲順じゃないよな）"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ヨルさんが、紫の爪でカウンターを軽く叩きはじめた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ムカイさんは何も言わない。ただ、カップの横に置いた指が、同じ拍で小さく動いていた。"
+        },
+        {
+          "speaker": "yoru",
+          "face": "smile",
+          "text": "ほら。指、動いてる"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "動いてない"
+        },
+        {
+          "speaker": "yoru",
+          "face": "smile",
+          "text": "動いてる"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "二人の手元のカップからは、甘い匂いがしていた。流れる曲だけが、どんどん夜へ下りていく。"
+        },
+        {
+          "speaker": "yoru",
+          "face": "normal",
+          "text": "次、どうする？"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "serious",
+          "text": "……これの後ろに、入れたいのがある"
+        },
+        {
+          "speaker": "yoru",
+          "face": "surprise",
+          "text": "え、それ出すの？"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "今日は、出す"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "曲の頭が鳴ると、ヨルさんは黙って目を閉じた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "俺は「OPEN」の札を持ったまま、入口の前で、声をかける頃合いを探していた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "曲が終わった。ムカイさんが顔を上げて、壁の時計を見る。"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "surprise",
+          "text": "……開ける時間だ"
+        },
+        {
+          "speaker": "yoru",
+          "face": "surprise",
+          "text": "うそ、……ほんとだ"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "昼の曲順を作ってたはずなんだがな"
+        },
+        {
+          "speaker": "yoru",
+          "face": "smile",
+          "text": "一曲目までは、ちゃんと昼だったよ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ムカイさんは紙を見下ろした。一曲目の下に、夜の曲がずらりと並んでいる。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "消しゴムを手に取って、少し止まって、また置いた。"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "これは、閉店後に聴く方にする"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "一番上に「閉店後」と書き足して、ムカイさんは紙をカウンターの下にしまった。"
+        },
+        {
+          "speaker": "yoru",
+          "face": "smile",
+          "text": "いい並びだったもんね。消すのはもったいない"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "昼の分は、どうするかな"
+        },
+        {
+          "speaker": "yoru",
+          "face": "normal",
+          "text": "一曲目を、もう一回かければ？"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "smile",
+          "text": "……そうする"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "やわらかいピアノが、もう一度流れはじめた。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ヨルさんはカップを空にして、手を振って出ていった。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "俺は、ようやく札を裏返した。"
+        },
+        {
+          "speaker": "mukai_master",
+          "face": "normal",
+          "text": "はじめくん。今日の昼は、この一曲で回す"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "はい、……いい曲ですもんね"
+        }
+      ]
     }
   ]
 }
