@@ -95,11 +95,14 @@ try {
       // runHeatは素材の準備を待ってから炭ごとの時刻を抽選する。
       // 抽選が終わるまで固定し、非同期の準備中に元へ戻さない。
       window.heatRun = T.heat.runHeat(cs);
+      // CRN09: 炭 i の取り頃は 5.8＋readyGap×i 秒に開く（同じ秒に抽選されても重ならない）
       window.coalIdeal = 5.8 + (.5 * T.common.skill.window(cs)) / 2;
+      window.coalGap = .75;
     });
     await page.waitForFunction(() => document.querySelector('[data-test="coal-0"]')?.dataset.phase === "raw");
     await page.evaluate(() => { Math.random = window.originalRandom; });
-    await page.evaluate(() => { window.coalClock = 1000 + (window.coalIdeal - .35) * 1000; });
+    await page.evaluate(async () => { window.coalGap = (await import("./js/craft/heat_logic.js")).HEAT_TUNING.readyGap; });
+    await page.evaluate(() => { window.coalClock = 1000 + (window.coalIdeal + 2 * window.coalGap - .35) * 1000; });
     await page.locator('[data-test="coal-2"]').click();
     const heatFeedback = page.locator('[data-test="heat-feedback"]');
     assert.equal(await heatFeedback.locator(".stamp").count(), 1, "Each rating uses the feedback strip");
@@ -116,7 +119,7 @@ try {
     assert.match(await page.locator('[data-test="coal-timing-0"]').textContent(), /PERFECT.*0\.08秒早い/);
     const first = await page.locator('[data-test="coal-timing-0"]').textContent();
     await insidePanel(page, [".heat-info", ".heat-feedback"]); await capture(page, `coal-live-${name}`);
-    await page.evaluate(() => { window.coalClock = 1000 + (window.coalIdeal + .35) * 1000; });
+    await page.evaluate(() => { window.coalClock = 1000 + (window.coalIdeal + window.coalGap + .35) * 1000; });
     await page.locator('[data-test="coal-1"]').click();
     await page.waitForSelector('[data-test="step-summary"]');
     const summary = await page.locator('[data-test="step-summary"]').textContent();

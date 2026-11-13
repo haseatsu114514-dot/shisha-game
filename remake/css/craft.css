@@ -1413,7 +1413,7 @@ html .bench[data-mode] .pull-tag.focus[data-tone="rush"] { color: #ffd2b8; borde
 /* ---------- CRN09: 取り頃の窓が開く直前の構え（一度だけ瞬く） ---------- */
 .coal.ready-cue .coal-corners { animation: coal-ready-cue .3s ease-out 1; }
 @keyframes coal-ready-cue { 0% { border-color: #fff3bf; filter: drop-shadow(0 0 5px #ffb45c); } 100% { filter: none; } }
-/* 炭焼きの判定文字も、出た瞬間だけ少し大きく（場所は動かさない） */
-.heat-feedback .stamp { animation: heat-stamp-in .18s ease-out !important; }
-@keyframes heat-stamp-in { from { transform: scale(1.15); } }
+/* 炭焼きの判定文字も、出た瞬間だけ明るく光らせる（大きさと場所は変えない。札の幅に収まったまま） */
+.heat-feedback .stamp { animation: heat-stamp-in .22s ease-out !important; }
+@keyframes heat-stamp-in { from { filter: brightness(2.2) drop-shadow(0 0 6px #ffd27a); } }
 @media (prefers-reduced-motion: reduce) { .coal.ready-cue .coal-corners, .heat-feedback .stamp { animation: none !important; } }
