@@ -237,9 +237,12 @@
 & .care-coals .care-places .btn.care-place { min-height: 84px; font-size: 19px; }
 & .care-coals .care-coals-ask { font-size: 30px; }
 & .care-coals .care-coal-btns { gap: 14px; }
-& .care-coals .btn.care-coal { min-height: 250px; font-size: 24px; }
-/* 炭の絵（craft-paper.css の ::before）も箱に合わせて大きく。2個・3個の絵は背景の大きさが別指定なので、同じ割合で拡大する */
-& .care-coals .btn.care-coal::before { transform: scale(1.45); transform-origin: center 70%; }
+& .care-coals .btn.care-coal { min-height: 250px; }
+/* 炭の絵（craft-paper.css の ::before）も箱に合わせて約1.4倍に。拡大は背景の大きさと位置で行う（transform だと箱からはみ出す扱いになる） */
+& .care-coals .btn.care-coal::before { min-height: 140px; background-size: 90px; }
+& .care-coals .btn.care-coal[data-test="care-coal-2"]::before { background: url("../img/ui/making/coal_just.webp") calc(50% - 42px) 70% / 81px no-repeat, url("../img/ui/making/coal_just.webp") calc(50% + 42px) 70% / 81px no-repeat; }
+& .care-coals .btn.care-coal[data-test="care-coal-3"]::before { background: url("../img/ui/making/coal_just.webp") 50% 18% / 70px no-repeat, url("../img/ui/making/coal_just.webp") calc(50% - 39px) 88% / 70px no-repeat, url("../img/ui/making/coal_just.webp") calc(50% + 39px) 88% / 70px no-repeat; }
+& .care-coals .btn.care-coal[data-test="care-coal-4"]::before { background: url("../img/ui/making/coal_just.webp") calc(50% - 35px) 18% / 64px no-repeat, url("../img/ui/making/coal_just.webp") calc(50% + 35px) 18% / 64px no-repeat, url("../img/ui/making/coal_just.webp") calc(50% - 35px) 88% / 64px no-repeat, url("../img/ui/making/coal_just.webp") calc(50% + 35px) 88% / 64px no-repeat; }
 /* 水入れは舞台の真ん中に、大きく（上に小さく寄って下が空くのを避ける） */
 & .bench-panel:has(> .craft-water) { display: grid !important; place-items: center; }
 & .bench-panel > .craft-water { transform: scale(1.32); transform-origin: center; }
