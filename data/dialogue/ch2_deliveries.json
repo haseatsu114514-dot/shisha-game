@@ -966,6 +966,296 @@
       ]
     },
     {
+      "dialogue_id": "remake_ch2_rei_melty_greeting",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "入口のベルが鳴った。ピンクと豹柄の店内に、黒いロングコートの裾が入ってくる。"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "こんにちは。零-ZERO-の、レヰです"
+        },
+        {
+          "speaker": "ageha",
+          "face": "surprise",
+          "text": "え、レヰくん？ どしたの、こっちの店まで"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "同じ柚ヶ谷の店なのに、挨拶がまだだったから。これ、うちのショップカード"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "うそ、わざわざ？ ありがと！ レジの横、一番見えるとこに置くね"
+        },
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "レヰは俺に気づくと、小さく会釈した。俺も会釈を返して、ソファに座り直す。"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "長居はしない。お客さん、来てるし"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "待って待って。せっかく来てくれたんだし、一枚撮ってかない？ うちのプリ"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "あ、写真苦手だったら全然いいよ。そしたらカードだけ、ありがたく飾っとく"
+        },
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "レヰはプリクラ機の看板を見上げた。白い光と、ハートの吹き出しと、目の大きな見本写真。"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……撮る。こういうの、ちゃんと入ったことない"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "やった！ じゃ、こっち。コートの裾、カーテンに挟まないでね"
+        },
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "カーテンが閉まって、中から明るい機械の声が聞こえはじめた。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "明るさは、いつもの「ふんわり白肌」っと。はい、さん、に、いち！"
+        },
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "シャッターの音。少しして、あげはの声が止まった。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "……あ、ちょい待ち。これ、なし"
+        },
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "画面を叩く音が、何度か続く。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "白くするやつ、切った。レヰくんの黒、ちゃんと黒で写したいじゃん。髪の赤も、ワインのまま"
+        },
+        {
+          "speaker": "rei",
+          "face": "surprise",
+          "text": "いいの？ いつもの設定なんでしょ"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "盛るって、白くすることじゃないし。その人の好きな色が残ってる方が、絶対盛れてる"
+        },
+        {
+          "speaker": "rei",
+          "face": "smile",
+          "text": "……ありがとう。じゃあ、あげはさんのピンクも、そのままで"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "当然！ はい、もう一回いくよー"
+        },
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "次のシャッターの音は、さっきより少しだけ長く聞こえた。"
+        },
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "撮り終えた二人は、機械の横の落書きの画面へ移った。ソファからでも、画面の端が少し見える。"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "この縁、使っていい？ 小さい薔薇の"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "かわいい！ じゃ、うちはキラキラ足すね"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "あ、薔薇の上には乗せないようにする"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "うん。その星、もう半歩だけ右"
+        },
+        {
+          "speaker": "ageha",
+          "face": "surprise",
+          "text": "半歩？ ……ここ？"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "そこ。薔薇の葉と、角がそろう"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "分かる〜。じゃ、このハートはレヰくんの肩に一個だけ"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "……いや、二ミリ下"
+        },
+        {
+          "speaker": "rei",
+          "face": "serious",
+          "text": "二ミリ"
+        },
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "ペン先が、画面の上を行ったり来たりする。"
+        },
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "口数はぜんぜん違うのに、置く場所を決める時だけ、二人とも同じくらい細かい。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（画面の隅で、残り時間がどんどん減ってる……）"
+        },
+        {
+          "speaker": "ageha",
+          "face": "surprise",
+          "text": "やば、あと十秒！ 文字、文字！"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "……黒も盛れた、で"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "採用！"
+        },
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "出てきたシールでは、黒いコートは黒いまま、髪の赤い筋もそのまま写っていた。"
+        },
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "縁には小さな薔薇。そのすき間に、あげはの星が光っている。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "はい、半分こ。レヰくんの好きなとこに貼ってね"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "うん。貼る場所、考えておく"
+        },
+        {
+          "speaker": "rei",
+          "face": "smile",
+          "text": "今度は、ちゃんと一台吸いに来る"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "待ってる！ カード、ちゃんと飾っとくから"
+        },
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "レヰは扉の前で一度振り返って、また小さく会釈した。あげははもう、レジの横にカードを立てている。"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "remake_ch2_rei_purikura_after",
+      "lines": [
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "レヰが今日の一枚を棚から抜いて、ケースを開いた。"
+        },
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "盤を外すと、透けたトレイの下に、小さなシールが一枚。"
+        },
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "黒いコートと、薔薇の縁と、星。MELTY PUFFで撮っていた、あの一枚だ。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "そこに貼ったんですね"
+        },
+        {
+          "speaker": "rei",
+          "face": "normal",
+          "text": "うん。ここなら日に焼けない。盤を出した時だけ、見える"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "いい場所ですね"
+        },
+        {
+          "speaker": "rei",
+          "face": "smile",
+          "text": "貼る時、二ミリずれた。……あげはさんには、言わないで"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "言いません"
+        },
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "レヰはケースを開いたまま、盤をプレイヤーへ入れた。"
+        },
+        {
+          "speaker": "",
+          "face": "normal",
+          "text": "カウンターの上で、シールの薔薇の縁が照明を受けて光っている。"
+        }
+      ]
+    },
+    {
       "dialogue_id": "remake_ch2_chain_look",
       "lines": [
         {

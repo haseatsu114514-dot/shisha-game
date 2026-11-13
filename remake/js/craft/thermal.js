@@ -4,6 +4,7 @@
 // 温度計の一番上で爆発して焦げる（TH06・TH12・TH13）。炎はイメージなので台やボウルには付けない（TH04）。
 // 見た目は温度に沿って連続的に移り、温度帯は呼び名・陽炎・照らしの段階にだけ使う。
 import { el, clamp } from "../core/util.js";
+import { setData } from "../core/dom-write.js";
 import { IDEAL, DANGER_TEMP, temperatureBands, isIdealTemperature, isRainbowTemperature, visualTemperature } from "./temperature-model.js";
 
 // 倍率1での演出位置。判定/補間するときに一台の温度帯へ写し、危険.90以降は固定する。
@@ -382,7 +383,7 @@ export function buildThermalAtmosphere(host, worker, cs) {
     update(value) {
       bands = temperatureBands(cs);
       temp = clamp(Number.isFinite(value) ? value : 0, 0, 1);
-      canvas.dataset.temperature = temp.toFixed(4);
+      setData(canvas, "temperature", temp.toFixed(4)); // 毎フレーム呼ばれるので、表示の値が変わった時だけ書く
       if (!active || ruined) return;
       const band = thermalBand(temp, bands);
       if (phase !== band.id) paint(band);
