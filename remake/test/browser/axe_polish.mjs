@@ -161,7 +161,7 @@ await suite("axe-polish", async check => {
   });
 
   await check("impact-pauses-in-rules-and-opponent-rejects-shortcuts", async page => {
-    const before = await start(page, { mode: "versus", difficulty: "hard", seed: 9 });
+    const before = await start(page, { mode: "versus", autoAdvance: false, difficulty: "hard", seed: 9 });
     await throwWithBoard(page, { finish: 960 });
     const effect = page.locator(".axe-impact-fx");
     assert(Number(await effect.getAttribute("opacity")) > 0, "Scoring impact starts visibly");
@@ -224,7 +224,13 @@ await suite("axe-polish", async check => {
     const beforeImpact = await page.evaluate(() => window.axeSoundStarts);
     assert(beforeImpact > 0, "the throw must schedule sound layers");
     const predicted = await root(page).evaluate(n => ({ x: Number(n.dataset.landingX), y: Number(n.dataset.landingY) }));
-    await page.clock.runFor(1320); await phase(page, "result");
+    // 2026-11-13 手応えレビュー指摘6: 木に刺さった事実には物理の反応（木片・暗い閃光・揺れ）だけを返し、祝福（色の輪・+N・歓声）は出さない
+    await page.clock.runFor(700); await phase(page, "result");
+    assert.equal(await root(page).getAttribute("data-impact"), "physical");
+    assert(Number(await page.locator(".axe-impact-fx").getAttribute("opacity")) > 0, "the wood reacts to the bite");
+    assert.equal(await page.locator(".axe-score-burst").textContent(), "MISS");
+    assert.equal(Number(await page.locator(".axe-impact-fx circle[stroke-width='3']").getAttribute("opacity")), 0, "no coloured celebration ring");
+    await page.clock.runFor(620);
     assert.equal(await page.locator(".axe-total strong").textContent(), "0");
     assert.equal(Number(await page.locator(".axe-impact-fx").getAttribute("opacity")), 0);
     // 2026-11-11 効果音の作り直し（AXQ01）: 刺さる音は読めていればファイル1つ（読めるまでは合成の7層）。失敗音は合成の1層。歓声は鳴らさない。
@@ -258,7 +264,12 @@ await suite("axe-polish", async check => {
     await page.clock.runFor(240);
     assert(Number(await page.locator(".axe-ghost").first().getAttribute("opacity")) > 0, "afterimages follow the axe mid-flight");
     assert(Number(await page.locator(".axe-contact-shadow").getAttribute("opacity")) > 0, "the contact shadow is on the wood");
-    await page.clock.runFor(400); await phase(page, "result");
+    // 2026-11-13 手応えレビュー指摘1: 赤に刺さった瞬間は接触の姿で一拍止める（6点は80ms）。残像はその間に消える
+    await page.clock.runFor(400);
+    assert.equal(await root(page).getAttribute("data-phase"), "flight", "the bull holds its contact for a beat");
+    assert.equal(await root(page).getAttribute("data-hitstop"), "true");
+    assert.equal(Number(await page.locator(".axe-ghost").first().getAttribute("opacity")), 0);
+    await page.clock.runFor(100); await phase(page, "result");
     assert.equal(Number(await page.locator(".axe-ghost").first().getAttribute("opacity")), 0);
     const zoom = page.locator('[data-test="axe-zoom"]');
     await zoom.waitFor();
@@ -278,7 +289,9 @@ await suite("axe-polish", async check => {
     await boardStop(page, .62, 2400, "flight", false);
     assert.equal(await root(page).getAttribute("data-slow-motion"), "true");
     await page.clock.runFor(700); assert.equal(await root(page).getAttribute("data-phase"), "flight", "slow motion stretches the approach");
-    await page.clock.runFor(200); await phase(page, "result");
+    // 板に届くのは0.84秒（飛ぶ時計は最初のフレームの分だけ遅れて始まる）。結果はそこから接触の止め（0点で刺されば50ms）の後
+    await page.clock.runFor(180); assert.equal(await root(page).getAttribute("data-hitstop"), "true", "the slow throw meets the board within 0.9s");
+    await page.clock.runFor(100); await phase(page, "result");
     const result = await cancel(page, before);
     assert.equal(result.throws.length, 2); assert.equal(result.throws[0].score, 6); assert.equal(result.throws[1].called, "upper-left");
   });
@@ -328,7 +341,7 @@ await suite("axe-polish", async check => {
   });
 
   await check("best-of-three-series-opens-a-second-game", async page => {
-    const before = await start(page, { mode: "versus", difficulty: "hard", seed: 0, bestOf: 3 });
+    const before = await start(page, { mode: "versus", autoAdvance: false, difficulty: "hard", seed: 0, bestOf: 3 });
     for (let i = 0; i < 10; i++) {
       await throwWithBoard(page, { power: .93, focus: false });
       await action(page); await phase(page, "opponent-ready"); await page.clock.runFor(2200); await phase(page, "result"); await action(page);

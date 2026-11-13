@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { RINGS, BULLS, KILLS, CLUSTERS, MODES, POWER, LINE, BLADE, INCH, AIM_RANGE, BOARD, DIVISIONS, scoreAt, scoreBlade, resolveThrow, gaugeAt, axisAt, swayAt, releaseAimAt, totalOf, gradeOf, canCall, killState, closuresOf, halfOf, bladeDistance } from "../js/minigames/axe-model.js";
+import { RINGS, BULLS, KILLS, CLUSTERS, MODES, POWER, LINE, BLADE, INCH, AIM_RANGE, BOARD, DIVISIONS, scoreAt, scoreBlade, resolveThrow, gaugeAt, axisAt, swayAt, releaseAimAt, totalOf, gradeOf, canCall, killState, closuresOf, halfOf, bladeDistance, liftFor } from "../js/minigames/axe-model.js";
 import { reaction } from "../js/minigames/axe-companions.js";
 import { TARGET, CAMERA, AXE, AXE_SCALE, FLIGHT, flightPose, flightTime, flightDuration, impactPose, projectAxePoint, worldPoint } from "../js/minigames/axe-flight.js";
 import { projectedAxe } from "../js/minigames/axe-geometry.js";
@@ -60,6 +60,23 @@ test("three independently stopped gauges determine aim and rotation deterministi
   assert.deepEqual(resolveThrow(input), resolveThrow(input)); assert.equal(resolveThrow(input).score, 6);
   assert.equal(shot(1, 1).score, 0); assert.notEqual(shot(0, .25, .45).landing.y, shot(0, .25, .7).landing.y);
   assert.notEqual(shot(0, 0, .45).rotation, shot(0, 0, .7).rotation);
+});
+// 2026-11-13 手応えレビュー指摘7（桜井 #236）: 緑の帯の内側は今までどおりの小さなずれ、外側は急に大きくずれる。
+// 刺さる窓の端では約2インチ（4インチの刃でも区画をまたぎ得る大きさ）。
+test("the green band pays: the cut barely moves inside it and drops or rises about 2in at the edge of the stick window", () => {
+  assert.equal(liftFor(POWER.ideal), 0);
+  near(liftFor(POWER.sweetMin), (POWER.ideal - POWER.sweetMin) * POWER.lift); near(liftFor(POWER.sweetMax), (POWER.ideal - POWER.sweetMax) * POWER.lift);
+  assert(liftFor(POWER.sweetMin) / INCH < .5 && -liftFor(POWER.sweetMax) / INCH < .5, "inside the band the shift stays under half an inch");
+  for (const edge of [POWER.stickMin, POWER.stickMax]) assert(Math.abs(liftFor(edge)) / INCH > 2.75, "edge " + edge + ": " + liftFor(edge) / INCH);
+  assert(liftFor(POWER.stickMin) > 0 && liftFor(POWER.stickMax) < 0, "under-rotation cuts low, over-rotation cuts high");
+  for (let p = 0; p < 1; p += .01) assert(liftFor(p) >= liftFor(p + .01), "monotone");
+  assert.equal(shot(0, 0, .5).landing.y, liftFor(.5));
+  // 刺さる窓の端の投は、中心を狙っても刃（4インチ）が赤に届かない
+  assert.equal(shot(0, 0, .62).score, 6);
+  for (const edge of [POWER.stickMin, POWER.stickMax]) assert(shot(0, 0, edge).stuck && shot(0, 0, edge).score < 6, String(edge));
+  // 帯の外は腕も揺れる（力み）。帯の中は今までどおり
+  assert.equal(swayAt(4000, POWER.sweetMin).amplitude, swayAt(4000, POWER.ideal).amplitude);
+  assert(swayAt(4000, POWER.stickMin).amplitude > swayAt(4000, POWER.ideal).amplitude * 1.4);
 });
 test("under-rotated and over-rotated axes drop rather than earning centre points", () => {
   for (const [power, reason] of [[0, "weak"], [.41999, "weak"], [.82001, "rotation"], [1, "rotation"]]) {

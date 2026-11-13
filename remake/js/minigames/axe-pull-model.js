@@ -25,25 +25,37 @@ export function boardPoint(p) {
  *  - 強さ: 離す直前 window ms の上向きの速さ（画面の高さ／秒）。base で回転がちょうど（POWER.ideal）、速さが2倍・半分になるごとに perDouble だけ強く・弱く。
  *    速さは見た目の量なので対数で取る（適正の帯 0.54〜0.70 ＝ base の 0.71〜1.41 倍の速さ）。
  *  - 左右のぶれ: 弾いた向きの傾き（tan）× lean を、狙いの横へ足す（10°で約0.8インチ）。
- *  - 投げにならない: 上へ minRise（画面の高さの割合）に届かない・下や横へ動いた（傾き45°超）。
+ *  - 投げにならない: 上へ shortRise（画面の高さの割合）に届かない・傾きが wildLean（約54°）を超える・下へ動いた。
+ *    ただし何も言わずに取り消すと「弾いたのに何も起きない」になるので（2026-11-13 手応えレビュー指摘3・桜井 #104）、
+ *    取り消しには理由（miss）を返す。触れて離しただけ（tapRise 未満）と、上へ弾いて元へ戻した時は理由なし（狙いを決めただけ）。
+ *  - 浅い弾き（shortRise〜minRise）は弱い投げ（shortRaw ＝ 柄から当たる強さ）として成立させ、結果を返す。
+ *  - 斜め（maxLean〜wildLean）は横のぶれを最大に張り付けて投げは成立させる（下手な投げになるが無反応にはならない）。
  *  時刻は event.timeStamp（入力が起きた時刻）。検査は CDP の timestamp で同じ値を再現できる。 */
-export const FLICK = Object.freeze({ window: 90, minRise: .06, base: 3, perDouble: .16, lean: .25, maxLean: 1 });
-export function flickPower(samples, height) {
-  if (!Array.isArray(samples) || samples.length < 2 || !Number.isFinite(height) || height <= 0) return null;
-  if (!samples.every(s => s && [s.t, s.x, s.y].every(Number.isFinite))) return null;
+export const FLICK = Object.freeze({ window: 90, minRise: .06, shortRise: .04, tapRise: .015, shortRaw: .34,
+  base: 3, perDouble: .16, lean: .25, maxLean: 1, wildLean: 1.4 });
+/** 弾きの読み取り: 投げになるなら { throw: { raw, speed, rise, lean, short, wild } }、ならないなら { miss: 理由 | null }。
+ *  理由: "shallow"（浅い）・"lean"（斜めすぎ）・"down"（下へ動いた）。null は触れただけ・戻しただけ・読めない入力。 */
+export function flickRead(samples, height) {
+  if (!Array.isArray(samples) || samples.length < 2 || !Number.isFinite(height) || height <= 0) return { miss: null };
+  if (!samples.every(s => s && [s.t, s.x, s.y].every(Number.isFinite))) return { miss: null };
   const first = samples[0], last = samples[samples.length - 1];
   const rise = (first.y - last.y) / height;
-  if (rise < FLICK.minRise) return null;
+  if (rise <= -FLICK.minRise) return { miss: "down" };
+  if (rise < FLICK.shortRise) return { miss: rise >= FLICK.tapRise ? "shallow" : null };
   // 離す直前 window ms の区間（その区間より前の最後の点から）で速さと向きを測る。点が1つしか無ければ全体で測る。
   let from = 0;
   for (let i = samples.length - 1; i >= 0; i--) if (last.t - samples[i].t >= FLICK.window) { from = i; break; }
   const a = samples[from], dt = last.t - a.t, dy = a.y - last.y, dx = last.x - a.x;
-  if (!(dt > 0) || !(dy > 0)) return null;
+  if (!(dt > 0) || !(dy > 0)) return { miss: null };
   const lean = dx / dy;
-  if (Math.abs(lean) > FLICK.maxLean) return null;
-  const speed = dy / height / (dt / 1000);
-  const raw = clamp(POWER.ideal + FLICK.perDouble * Math.log2(speed / FLICK.base), 0, 1);
-  return { raw, speed, rise, lean: clamp(lean, -FLICK.maxLean, FLICK.maxLean) * FLICK.lean };
+  if (Math.abs(lean) > FLICK.wildLean) return { miss: "lean" };
+  const speed = dy / height / (dt / 1000), short = rise < FLICK.minRise, wild = Math.abs(lean) > FLICK.maxLean;
+  let raw = clamp(POWER.ideal + FLICK.perDouble * Math.log2(speed / FLICK.base), 0, 1);
+  if (short) raw = Math.min(raw, FLICK.shortRaw);
+  return { throw: { raw, speed, rise, lean: clamp(lean, -FLICK.maxLean, FLICK.maxLean) * FLICK.lean, short, wild } };
+}
+export function flickPower(samples, height) {
+  return flickRead(samples, height).throw || null;
 }
 /** 指定の強さ（raw）になる速さ（画面の高さ／秒）。検査と説明で使う */
 export const flickSpeedFor = raw => FLICK.base * 2 ** ((raw - POWER.ideal) / FLICK.perDouble);

@@ -278,6 +278,7 @@
         "remake/css/flavor-guide.css",
         "remake/js/craft/common.js",
         "remake/js/craft/flavor-guide.js",
+        "remake/js/craft/pull.js",
         "remake/js/daily/status.js",
         "remake/test/browser/craft_layout_2190.mjs"
       ],
@@ -686,6 +687,21 @@
       "run": ["node remake/test/browser/dj_club.mjs"]
     },
     {
+      "id": "venue-arrivals-rules",
+      "title": "遊び場の来店のやり取り（VAR）: 台本の照合・巡回・一度きり・メモ・遊べない来店・周回の扱い",
+      "kind": "quick",
+      "run": ["node remake/test/venue_arrivals.mjs"]
+    },
+    {
+      "id": "venue-arrivals",
+      "title": "遊び場の来店のやり取り（VAR）: 斧投げBar・クラブSEAM・ボドゲカフェ・ラクダレース場で、会話を読んでからメニューやゲームへ",
+      "kind": "browser",
+      "weight": 1,
+      "timeout": 6,
+      "paths": ["remake/js/daily/venue-arrivals.js", "data/dialogue/venue_arrivals.json", "remake/js/daily/axe-bar.js", "remake/js/daily/dj-club.js", "remake/js/daily/trpg.js", "remake/js/trpg/campaign-view.js", "remake/js/trpg/campaign.js", "remake/js/chapters/ch4-camel-race.js", "remake/js/chapters/ch4-camel-progress.js", "data/dialogue/trpg_club.json", "data/dialogue/ch3_club.json", "data/dialogue/ch4_camel_race.json", "remake/test/browser/venue_arrivals.mjs"],
+      "run": ["node remake/test/browser/venue_arrivals.mjs"]
+    },
+    {
       "id": "desert-ride-rules",
       "title": "DESERT RIDE course fairness, jump/landing/fall rules, ranks and the chapter 4 desk/outing/record rules",
       "kind": "quick",
@@ -835,7 +851,7 @@
     },
     {
       "id": "loading-gate",
-      "title": "Loading gate and two-panel comic lifecycle",
+      "title": "Loading gate, two-panel comic lifecycle and fixed points (bench, minigame, boot)",
       "kind": "browser",
       "weight": 0.5,
       "timeout": 3,
@@ -850,9 +866,12 @@
         "remake/js/craft/session.js",
         "remake/js/craft/preview.js",
         "remake/craft-preview.html",
-        "remake/img/loading/*"
+        "remake/img/loading/*",
+        "remake/test/browser/loading_boot.mjs",
+        "remake/js/minigames/minigame-loading.js",
+        "remake/js/main.js"
       ],
-      "run": ["node remake/test/browser/loading_gate.mjs", "node remake/test/browser/loading_craft.mjs"]
+      "run": ["node remake/test/browser/loading_gate.mjs", "node remake/test/browser/loading_craft.mjs", "node remake/test/browser/loading_boot.mjs"]
     },
     {
       "id": "slim-deploy",
@@ -1071,6 +1090,7 @@
         "node --experimental-vm-modules remake/test/stamina_condition.mjs",
         "node --experimental-vm-modules remake/test/lime_consistency.mjs",
         "node --experimental-vm-modules remake/test/lime_balance.mjs",
+        "node remake/test/lime_pacing.mjs",
         "node --experimental-vm-modules remake/test/hiyori_frequency.mjs",
         "node --experimental-vm-modules remake/test/hiyori_quiet_visit.mjs",
         "node remake/test/spot_encounter_doctor.mjs",
