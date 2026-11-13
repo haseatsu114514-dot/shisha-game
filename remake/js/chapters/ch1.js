@@ -625,7 +625,12 @@ function prepareTournamentAttempt(newTournament) {
   // 版の無い旧SAVEは旧配点で完走。敗北後の再挑戦は新しい試合として始める。
   if (!newTournament && state.tournament.rulesVersion == null) state.tournament.rulesVersion = state.tournament.lastRank == null ? 1 : 2;
   if (state.tournament.lastRank != null) state.tournament.rulesVersion = 2;
-  state.tournament.attempts++;
+  // 挑戦の回数は、初めての入場と、前の挑戦が敗北で終わった後の再挑戦でだけ数える（#3558）。
+  // 途中で再読み込みして同じ挑戦を大会当日の頭からやり直した時まで数えると、周回の通算記録（cycle-meta）が水増しされていた。
+  // 敗北の記録（lastLossAttempt）を持たない旧セーブは、挑戦が終わったか分からないので従来どおり数える。
+  const t = state.tournament;
+  const resumedSameAttempt = !newTournament && t.attempts > 0 && t.lastLossAttempt !== undefined && t.lastLossAttempt !== t.attempts;
+  if (!resumedSameAttempt) t.attempts++;
   state.tournament.voteAttempt = state.tournament.rulesVersion >= 2 ? null : undefined;
   // 審査の方式（いままで／桜井式・SKR04）は、この試合を始める時の設定で決め、試合の途中では変えない。
   if (state.tournament.rulesVersion >= 2) beginCh1Votes(state.tournament, { style: voteStyleFrom(config) });

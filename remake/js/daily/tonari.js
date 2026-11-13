@@ -50,10 +50,23 @@ export function tonariMenu() {
     const customerStory = state.visitedDay.tonari_customer !== state.day && tsumugiPresent && hasNewStory("tsumugi");
     const shiftStory = state.visitedDay.tonari_baito !== state.day && hasNewStory("sumi");
     const pickIt = (value) => { retire(root); resolve(value); };
-    const opt = (title, desc, value, test) =>
-      el("button.big-choice", { dataset: { test }, disabled: value === "hiyori_axe" && !hiyoriAxeAffordable(), onclick: () => { SE.select(); pickIt(value); } }, [
-        el("b", { text: title }), el("small", { text: desc }),
+    // 今日もう済ませた行動は押せない札にして理由を見せる（押すとメニューが閉じて地図へ戻っていた・#3555）。
+    // 体力の消費は数字で見せない（ゲージでなんとなく把握するゲーム性・MAP04）。
+    const today = state.visitedDay;
+    const makanaiDone = today.tonari_practice === state.day || today.tonari_strawberry === state.day;
+    const DONE = {
+      customer: today.tonari_customer === state.day ? "今日はもう客席で一服した" : null,
+      baito: today.tonari_baito === state.day ? "今日のシフトはもう終わった" : null,
+      strawberry: makanaiDone ? "今日はもうまかないで練習した" : null,
+    };
+    const opt = (title, desc, value, test) => {
+      const done = DONE[value] || null;
+      return el(`button.big-choice${done ? ".done" : ""}`, { dataset: { test }, disabled: !!done || (value === "hiyori_axe" && !hiyoriAxeAffordable()),
+        onclick: () => { SE.select(); pickIt(value); } }, [
+        // 済んだ行動も、店の様子（つむぎがいる 等）の説明は残し、その後ろに理由を添える。
+        el("b", { text: title }), el("small", { text: done ? `${desc} ── ${done}` : desc }),
       ]);
+    };
     const root = showScreen("tonari", el("div.sub-menu", [
       el("h2.sub-title", { text: "tonari" }),
       el("p.sub-lead", { text: manager ? "店長として任されたtonari。出かける時は、人手に合わせてスミさんが店に立ってくれる。今日はどうする？" : state.slot === 0 ? "昼のtonari。窓際でスミさんが道具を整えている。今日はどうする？" : "夜のtonari。客席から常連の笑い声が聞こえる。今日はどうする？" }),

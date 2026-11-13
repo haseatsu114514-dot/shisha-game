@@ -1253,15 +1253,31 @@ export function openNote() {
       el("span.ri-next", { text: "▼ タップで閉じる" }),
     ]);
     const box = el("div.reel-intro.reel-note", { role: "dialog", "aria-label": "パッキースロットノート", dataset: { test: "reel-note" } }, [panel]);
+    // 記録だけ見たい時に3回タップしないと閉じられなかったので、どのページからでも閉じられる札と Esc を足す（#3555）。
+    const close = () => {
+      window.removeEventListener("keydown", onKey);
+      layers.modal.classList.remove("show");
+      layers.modal.replaceChildren();
+      resolve();
+    };
+    const onKey = (e) => {
+      if (e.key !== "Escape" || e.repeat || !box.isConnected) return;
+      e.preventDefault();
+      SE.cancel?.();
+      close();
+    };
+    for (const page of [panel, guide, details]) {
+      page.prepend(el("button.rn-close", { type: "button", text: "閉じる", "aria-label": "スロットノートを閉じる", dataset: { test: "reel-note-close" },
+        onclick: (e) => { e.stopPropagation(); SE.cancel?.(); close(); } }));
+    }
     layers.modal.replaceChildren(box);
     layers.modal.classList.add("show");
+    window.addEventListener("keydown", onKey);
     let page = 0;
     box.onclick = () => {
       page += 1;
       if (page <= 2) { SE.click?.(); box.replaceChildren(page === 1 ? guide : details); return; }
-      layers.modal.classList.remove("show");
-      layers.modal.replaceChildren();
-      resolve();
+      close();
     };
   });
 }

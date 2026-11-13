@@ -438,3 +438,13 @@
 #stage[data-wide] .reel-note .rn-cols { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); grid-template-rows: auto 1fr; column-gap: 40px; }
 #stage[data-wide] .reel-note .rn-cols > section:first-child { grid-row: 1 / span 2; }
 html:root[data-density="phone"] .reel-widget { scale: 1.2; transform-origin: left bottom; }
+
+/* どのページからでも閉じる札（#3555。3回タップしないと閉じられなかった） */
+.reel-note .rn-close {
+  position: absolute; top: 12px; right: 14px; z-index: 1;
+  min-height: 44px; padding: 0 18px;
+  border: 1px solid rgba(244, 210, 122, 0.6); border-radius: 999px;
+  background: rgba(20, 15, 30, 0.92); color: #f4d27a;
+  font: 700 16px/1 var(--font); letter-spacing: 0.08em; cursor: pointer;
+}
+html:root[data-density="phone"] body:not(:root) .reel-note .rn-close { min-height: var(--phone-tap); font-size: var(--phone-sub); }
