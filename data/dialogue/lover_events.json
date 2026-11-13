@@ -1976,14 +1976,68 @@
     {
       "dialogue_id": "lover_mashiro_lv5",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_mukai_shop.png",
+        "bg": "res://assets/backgrounds/bg_hideaway.png",
         "private_scene": true
       },
       "lines": [
         {
           "speaker": "",
           "face": "",
-          "text": "深夜のmukai。カウンターに、形の違うカップが二つ並んでいた。"
+          "text": "約束のお休み。ましろちゃんが選んだのは、駅から少し歩く、小さな店だった。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "normal",
+          "text": "シガーリーフで、重めに。紅茶を、ほんの少しだけ足して"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "店の人の手が、一瞬止まった。目が、ましろちゃんと俺の顔を行き来する。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "俺は隣で、ブロンドの軽いのを頼んだ。約束どおり、普通の顔で。"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "店の人はうなずいて、ましろちゃんに紅茶の量を聞き返した。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "surprise",
+          "text": "……あ。最後のひと口に、ふわって残るくらい"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "運ばれてきた一台を三口吸って、ましろちゃんは小さく首をかしげた。"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "serious",
+          "text": "最初の三口、ちょっと熱い。……次は、炭を一つ少なくって頼む"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "自分の一台には、厳しいんだね"
+        },
+        {
+          "speaker": "mashiro",
+          "face": "smile",
+          "text": "自分のだけね。……でも今日は、紅茶のこと、聞いてもらえた"
+        },
+        {
+          "type": "bg",
+          "bg": "res://assets/backgrounds/bg_mukai_shop.png"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "帰りに寄った深夜のmukai。ましろちゃんはカウンターの内側で、形の違うカップを二つ並べた。"
         },
         {
           "speaker": "mashiro",
