@@ -9,7 +9,7 @@
 import { el } from "../core/util.js";
 import { SE, currentBgm, playBgm, preloadBgm, unlockAudio, playCamelRaceSe, preloadCamelRaceSe, setBgmPlaybackRate, resetBgmTempo, tickBgmPlaybackRate } from "../core/audio.js";
 import { imgFileUrl } from "../core/img-file.js";
-import { withMinigameLoading } from "./minigame-loading.js";
+import { withMinigameLoading, minigameLoadingFixed } from "./minigame-loading.js";
 import { faceIconUrl } from "../core/data.js";
 import { RACE, CUE, PLAYER, WHIP, CAMEL_CUPS, camelCup, camelCupQualified, camelMastered, camelExpert, rng, createRace, stepRace, pressVoice, setWhip, whipReady, activeCue, inSpurt, standings, scoreRace,
   whipDrain, finishMargins, POLICIES, PLAYER_CAMEL, RIVAL_PROFILES } from "./camel-race-model.js";
@@ -681,14 +681,17 @@ export function runCamelRace({ host = document.getElementById("stage"), signal =
   }
   /**
    * レースの前に絵を読み終えるまで待つ（2026-11-11 オーナー「加速すると処理重い。ゲーム開始前に漫画付きロードとか挟んでもいい」）。
-   * 読み終わっていれば待たない。時間がかかる時（0.22秒より長い）だけ、本編と同じ漫画つきのロード画面を出す。
+   * ゲームの中では、この訪問の最初のレースの前は、絵が揃っていても漫画のロード画面を出す（決まった場面・minigame-loading.js）。
+   * それ以外は、読み終わっていれば待たない。時間がかかる時（0.22秒より長い）だけ、本編と同じ漫画つきのロード画面を出す。
    */
-  let preparingRace = false;
+  let preparingRace = false, firstRace = true;
   async function prepareRace() {
     if (preparingRace) return;
     preparingRace = true;
     try {
-      if (!art) await withMinigameLoading(() => loadCamelArt(), { host, label: "レース場へ向かっています…" }).catch(() => {});
+      const fixed = minigameLoadingFixed(firstRace);
+      firstRace = false;
+      if (!art || fixed) await withMinigameLoading(() => loadCamelArt(), { host, label: "レース場へ向かっています…", fixed }).catch(() => {});
       if (!done) startRace();
     } finally { preparingRace = false; }
   }

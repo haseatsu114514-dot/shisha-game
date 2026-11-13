@@ -48,12 +48,23 @@ export const KILLS = [-1, 1].flatMap(y => [-1, 1].map(x => ({
 })));
 /** Clockwise sudden-death rotation, starting upper-left. */
 export const KILL_ROTATION = ["upper-left", "upper-right", "lower-right", "lower-left"];
-export const POWER = { ideal: .62, sweetMin: .54, sweetMax: .70, stickMin: .42, stickMax: .82 };
+/** lift / liftOutside: how far the cut drops (power below ideal) or rises (above) per unit of power, in board units.
+ *  Inside the green band it is the gentle .28 of the original game; outside the band it is steeper, so the band the UI asks for
+ *  actually pays: a throw at the edge of the stick window lands about 2.8 in off, enough to lose a bull through the 4 in blade
+ *  (2026-11-13 手応えレビュー指摘7・桜井 #236). */
+export const POWER = { ideal: .62, sweetMin: .54, sweetMax: .70, stickMin: .42, stickMax: .82, lift: .28, liftOutside: 1.1 };
+/** Vertical shift of the cut for this rotation power: positive is down (under-rotated), negative is up. */
+export function liftFor(power) {
+  const inside = Math.max(POWER.sweetMin, Math.min(POWER.sweetMax, power)), outside = power - inside;
+  return (POWER.ideal - inside) * POWER.lift - outside * POWER.liftOutside;
+}
 /** Five 2x10 planks (46.25 in) by 48 in, centred on the bullseye. Outside is air. */
 export const BOARD = { left: -23.125 * INCH, right: 23.125 * INCH, top: -24 * INCH, bottom: 24 * INCH };
 /** Gauges sweep this far from the centre, so misses into plain wood exist. */
 export const AIM_RANGE = 1.2;
-export const SWAY = { min: .03, max: .17, fatigueStart: 1500, fatigueFull: 8000, focusDuration: 1200, focusScale: .18 };
+/** strain: how much a rotation outside the green band shakes the arm (power off the band by .12, the stick window's edge, sways 1.48x).
+ *  Visible on the white blade marker while the power is live (2026-11-13 指摘7: 「帯内＝揺れが収まる」). */
+export const SWAY = { min: .03, max: .17, fatigueStart: 1500, fatigueFull: 8000, focusDuration: 1200, focusScale: .18, strain: 4 };
 export const CALLS = 2;
 export function finite(...values) {
   if (!values.every(Number.isFinite)) throw new RangeError("Finite gauge values required");
@@ -73,7 +84,7 @@ export function swayAt(milliseconds, power = POWER.ideal, throwIndex = 0, focuse
     throw new RangeError("Invalid stance values");
   const fatigue = Math.min(1, Math.max(0, (milliseconds - SWAY.fatigueStart) / (SWAY.fatigueFull - SWAY.fatigueStart)));
   const strain = Math.max(0, POWER.sweetMin - power, power - POWER.sweetMax);
-  const amplitude = (SWAY.min + (SWAY.max - SWAY.min) * fatigue) * (1 + strain) * (focused ? SWAY.focusScale : 1) * steady;
+  const amplitude = (SWAY.min + (SWAY.max - SWAY.min) * fatigue) * (1 + strain * SWAY.strain) * (focused ? SWAY.focusScale : 1) * steady;
   const t = milliseconds / 1000, offset = throwIndex * 1.73;
   return { x: amplitude * (.75 * Math.sin(t * 4.7 + offset) + .25 * Math.sin(t * 10.3 + offset)),
     y: amplitude * (.75 * Math.cos(t * 3.9 + offset) + .25 * Math.sin(t * 8.1 - offset)), amplitude, fatigue, focused };
@@ -154,7 +165,7 @@ export function resolveThrow({ x, y, power, called = null }, history = [], optio
   if (suddenDeath ? !KILLS.some(k => k.id === called) : called !== null && !canCall(called, history, throws))
     throw new RangeError("Unavailable Killshot call");
   const index = history.length, half = halfOf(index, throws);
-  const landing = { x, y: y + (POWER.ideal - power) * .28 };
+  const landing = { x, y: y + liftFor(power) };
   const onBoard = landing.x >= BOARD.left && landing.x <= BOARD.right && landing.y >= BOARD.top && landing.y <= BOARD.bottom;
   const validPower = power >= POWER.stickMin && power <= POWER.stickMax;
   const stuck = validPower && onBoard;
