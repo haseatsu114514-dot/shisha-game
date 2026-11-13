@@ -1,0 +1,134 @@
+/* CONTINUE の見た目の候補 A 熾火（おきび・data-layout="ember"・CV58）。共通の土台は continue-looks.css。
+   neon の構図（中央の顔・筆文字・右上の時計・下の2択）はそのまま、色を炭火へ。
+   時計は燃え尽きていく炭の輪。火の粉が上がり、残り時間とともに足元の火が弱まる。時間切れは火が消えて灰色。 */
+.end-screen.gameover[data-layout="ember"] { background: #090504; --go-ink: #1c0a02; }
+.end-screen.gameover[data-layout="ember"] .go-veil { background: linear-gradient(0deg, #0a030066, transparent 30%), radial-gradient(ellipse 60% 70% at 50% 36%, #ff8a2a1c, transparent 70%), radial-gradient(ellipse at 50% 50%, transparent 52%, #000000a8 100%); }
+/* 人物の箱を左右対称に画面幅まで広げる（大きい衣装・小物が横で切れないように）。中央は元のまま。 */
+.end-screen.gameover[data-layout="ember"] .go-portrait { inset: 0 -170px; }
+/* 暗い会場の絵を炭の色へ寄せて敷く（画面全体を橙に塗らない。明るいのは足元の火だけ）。 */
+.end-screen.gameover[data-layout="ember"] .go-ember-tint {
+  position: absolute; inset: 0; background: var(--go-backdrop) center / cover no-repeat;
+  filter: sepia(1) saturate(2.2) hue-rotate(-24deg) brightness(.5); opacity: .8;
+}
+.end-screen.gameover[data-layout="ember"] .go-ember-coal {
+  position: absolute; left: -14%; right: -14%; bottom: -250px; height: 560px; mix-blend-mode: screen;
+  background: radial-gradient(ellipse at 50% 100%, #ffc27a 0, #ff7a1ad0 20%, #c4370e70 42%, #5a160830 60%, transparent 72%);
+  opacity: calc(1 - var(--go-look-p) * .6); animation: go-ember-breathe 2.6s ease-in-out infinite alternate;
+}
+.end-screen.gameover[data-layout="ember"] .go-ember-sparks { position: absolute; inset: 0; opacity: calc(1 - var(--go-look-p) * .5); }
+.end-screen.gameover[data-layout="ember"] .go-ember-sparks i {
+  position: absolute; left: var(--x); bottom: -14px; width: var(--s); height: var(--s); border-radius: 50%;
+  background: #ffe2a6; box-shadow: 0 0 6px 2px #ff8a2a, 0 0 16px 5px #ff4d0055; opacity: 0;
+  animation: go-ember-rise var(--d) linear var(--delay) infinite;
+}
+/* 足元の火が人物を下から照らす（人物の形にだけ重ねる）。残り時間とともに弱まる。 */
+.end-screen.gameover[data-layout="ember"] .go-look-light {
+  position: absolute; translate: -50% 0; pointer-events: none; mix-blend-mode: screen;
+  -webkit-mask-size: 100% 100%; mask-size: 100% 100%; -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+  background: linear-gradient(0deg, #ff7a1ae0 0, #ff5a1470 16%, #ff5a1422 30%, transparent 44%);
+  opacity: calc(1 - var(--go-look-p) * .55); animation: go-portrait-enter .55s .25s var(--ease-out) both;
+}
+.end-screen.gameover[data-layout="ember"] .go-look-light.go-beat { animation: go-portrait-beat .38s var(--ease-out) both; }
+.end-screen.gameover[data-layout="ember"][data-effect="shark"] .go-look-light { animation: go-plush-nod .6s .4s ease-out both; }
+.end-screen.gameover[data-layout="ember"] .go-count-back:not([hidden]) { display: grid; inset: 0; height: auto; grid-template-rows: minmax(0, 1fr); grid-template-columns: minmax(0, 1fr); }
+.end-screen.gameover[data-layout="ember"] .go-count-echo { font-size: 1000px; color: #ff7a1a; opacity: .075; }
+/* 筆文字は同じ絵を炭火の色へ（h1 に掛ける。絵自身の入場の動きは filter を none に戻すため）。 */
+.end-screen.gameover[data-layout="ember"] .go-title {
+  left: 196px; top: 20px; width: 752px; height: 178px; transform: rotate(-2deg);
+  filter: sepia(1) saturate(3.6) hue-rotate(-16deg) brightness(1.1) drop-shadow(0 0 10px #ff6a14aa) drop-shadow(0 0 30px #ff3d0050);
+}
+.end-screen.gameover[data-layout="ember"] .go-sumi-img { filter: drop-shadow(0 0 26px #ff6a1430) drop-shadow(5px 4px 0 #1408009c); }
+.end-screen.gameover[data-layout="ember"] .go-clock { left: 966px; top: -2px; width: 218px; height: 218px; animation: go-look-enter .7s .18s ease-out both; }
+.end-screen.gameover[data-layout="ember"] .go-ember-ring { position: absolute; inset: 20px; filter: drop-shadow(0 0 7px #ff7a1acc) drop-shadow(0 0 20px #ff4d0066); }
+.end-screen.gameover[data-layout="ember"] .go-ember-ring > i {
+  position: absolute; inset: 0; border-radius: 50%;
+  background: conic-gradient(from 0deg, #4a3a33 0 calc(var(--go-look-p) * 360deg), #ffd58a calc(var(--go-look-p) * 360deg), #ff8a2a 62%, #ff5a1f 100%);
+  -webkit-mask: radial-gradient(circle closest-side, transparent 0 84%, #000 86% 96%, transparent 98%);
+  mask: radial-gradient(circle closest-side, transparent 0 84%, #000 86% 96%, transparent 98%);
+}
+.end-screen.gameover[data-layout="ember"] .go-ember-spark { position: absolute; inset: 20px; transform: rotate(calc(var(--go-look-p) * 360deg)); }
+.end-screen.gameover[data-layout="ember"] .go-ember-spark::before {
+  content: ""; position: absolute; left: 50%; top: 4.5%; width: 12px; height: 12px; margin: -6px 0 0 -6px; border-radius: 50%;
+  background: #fff8e0; box-shadow: 0 0 10px 4px #ffc66b, 0 0 26px 9px #ff5a1f; animation: go-ember-flicker .28s steps(2) infinite alternate;
+}
+.end-screen.gameover[data-layout="ember"] .go-count {
+  position: absolute; inset: 22px 0 0; width: 100%; height: 172px; padding-right: 10px;
+  font: italic 400 138px / 1.22 Georgia, "Times New Roman", serif; text-align: center; letter-spacing: -.08em;
+  background: linear-gradient(180deg, #fff8dc 22%, #ffd07a 48%, #ff7a1a 86%);
+  background-clip: text; -webkit-background-clip: text; color: transparent; filter: drop-shadow(0 0 9px #ff6a1499);
+}
+.end-screen.gameover[data-layout="ember"] .go-count-tick { animation: go-ember-tick .3s ease-out; }
+.end-screen.gameover[data-layout="ember"] .go-limit-note {
+  top: 214px; right: 44px; width: 320px; padding: 8px 12px; border: 1px solid #ffb34755; background: #140a05e0; color: #ffe9c9;
+  font-size: max(22px, calc(12.5px / var(--k, 1)));
+}
+.end-screen.gameover[data-layout="ember"] .go-dialogue { left: 156px; right: 156px; top: 535px; height: var(--go-look-tap); padding-bottom: calc(var(--go-look-tap) - 48px); gap: 22px; }
+.end-screen.gameover[data-layout="ember"] .go-dialogue::before,
+.end-screen.gameover[data-layout="ember"] .go-dialogue::after {
+  content: ""; flex: 1 1 0; min-width: 44px; height: 1px; background: linear-gradient(90deg, transparent, #ffd9a0); box-shadow: 0 0 5px #ff8a2a88; pointer-events: none;
+}
+.end-screen.gameover[data-layout="ember"] .go-dialogue::after { background: linear-gradient(90deg, #ffd9a0, transparent); }
+/* 台詞の後ろだけ炭の黒を薄く敷く（白い衣装の上でも読めるように）。 */
+.end-screen.gameover[data-layout="ember"] .go-speech-text {
+  padding: 3px 26px 5px; border-radius: 30px;
+  background: radial-gradient(ellipse 60% 100% at 50% 50%, #0a0402d9 0, #0a0402b3 60%, transparent 100%);
+}
+.end-screen.gameover[data-layout="ember"] .go-speech-text {
+  flex: 0 0 auto; font-size: 32px; letter-spacing: .035em; -webkit-text-stroke: .65px #1c0a02; text-shadow: 0 2px 3px #0a0300, 0 0 14px #2a0d00;
+}
+.end-screen.gameover[data-layout="ember"] mark.go-letter { color: #ffe9b8; }
+.end-screen.gameover[data-layout="ember"] .end-actions { left: 194px; right: 194px; top: calc(699px - var(--go-look-tap, 106px)); gap: 28px; z-index: 1; --go-look-tap: max(106px, calc(44.1px / var(--k, 1))); }
+.end-screen.gameover[data-layout="ember"] .go-choice {
+  --go-look-tap: max(106px, calc(44.1px / var(--k, 1)));
+  height: var(--go-look-tap); min-height: var(--go-look-tap); padding: 12px 68px; border: 0; border-radius: 0; background: none; box-shadow: none;
+  font-size: 38px; color: #f1ddc8; text-shadow: 0 0 8px #7a3a1a, 0 2px 2px #140800;
+}
+.end-screen.gameover[data-layout="ember"] .go-choice-frame { display: block; }
+.end-screen.gameover[data-layout="ember"] .go-choice-frame:not(.go-choice-frame-selected) { filter: sepia(1) saturate(1.5) hue-rotate(-28deg) brightness(.72); }
+.end-screen.gameover[data-layout="ember"] .go-choice-frame-selected { filter: saturate(1.25) drop-shadow(0 0 10px #ff8a2a88); }
+.end-screen.gameover[data-layout="ember"] .go-choice-label { position: relative; z-index: 1; transform: skewX(-4deg); }
+.end-screen.gameover[data-layout="ember"] .go-choice:not(:disabled):is(:focus-visible, :active),
+.end-screen.gameover[data-layout="ember"][data-choice="retry"] .go-retry,
+.end-screen.gameover[data-layout="ember"][data-choice="quit"] .go-quit { color: #fff3d1; text-shadow: 0 0 10px #ff8a2a, 0 2px 2px #140800; }
+@media (hover: hover) {
+  .end-screen.gameover[data-layout="ember"] .end-actions:not(:has(.go-choice:focus-visible)) .go-choice:not(:disabled):hover { color: #fff3d1; text-shadow: 0 0 10px #ff8a2a, 0 2px 2px #140800; }
+}
+.end-screen.gameover[data-layout="ember"] .go-choice:focus-visible { outline: 2px solid #ffe9c9; outline-offset: -12px; }
+.end-screen.gameover[data-layout="ember"] .go-playback { left: 50%; bottom: 21px; width: 432px; transform: translateX(-50%); }
+.end-screen.gameover[data-layout="ember"] .go-proceed {
+  width: 100%; min-height: max(106px, calc(44.1px / var(--k, 1))); border: 2px solid #ffb347; border-radius: 10px; background: #26120af2;
+  color: #fff3d1; box-shadow: 0 0 20px #ff7a1a44;
+}
+.end-screen.gameover[data-layout="ember"][data-choice] .go-dialogue { top: calc(699px - max(106px, calc(44.1px / var(--k, 1))) - var(--go-look-tap) - 6px); padding-bottom: 0; }
+.end-screen.gameover[data-layout="ember"][data-choice] .go-count-back { visibility: hidden; }
+.end-screen.gameover[data-layout="ember"][data-choice]:not([data-timed-out="true"]) .go-title { opacity: .55; }
+.end-screen.gameover[data-layout="ember"] .go-ember-flare {
+  position: absolute; left: 50%; bottom: -260px; width: 1500px; height: 760px; margin-left: -750px; opacity: 0; mix-blend-mode: screen;
+  background: radial-gradient(ellipse at 50% 100%, #fff1c9 0, #ffb347cc 22%, #ff5a1f66 46%, transparent 68%);
+}
+.end-screen.gameover[data-layout="ember"][data-choice="retry"] .go-ember-flare { animation: go-ember-flare 1.1s ease-out both; }
+.end-screen.gameover[data-layout="ember"][data-choice="quit"] :is(.go-ember-coal, .go-ember-sparks) { opacity: .25; transition: opacity 1.2s; }
+/* 残り5秒: 火が消えかけて脈を打つ。 */
+.end-screen.gameover[data-layout="ember"].go-urgent .go-ember-coal { animation: go-ember-gasp .5s ease-in-out infinite alternate; }
+.end-screen.gameover[data-layout="ember"].go-urgent .go-count { background-image: linear-gradient(180deg, #fff1e0 20%, #ff9a6b 52%, #ff3d1f 90%); }
+.end-screen.gameover[data-layout="ember"].go-urgent .go-veil { box-shadow: inset 0 0 110px #ff3d1f2e; }
+/* 時間切れ: 火が消える。灰色の文字に、最後の残り火だけがしばらく灯る。 */
+.end-screen.gameover[data-layout="ember"][data-timed-out="true"] :is(.go-ember-coal, .go-ember-sparks) { opacity: 0; transition: opacity .5s; }
+.end-screen.gameover[data-layout="ember"][data-timed-out="true"] .go-ember-tint { filter: grayscale(1) brightness(.4); transition: filter .5s; }
+.end-screen.gameover[data-layout="ember"][data-timed-out="true"] .go-title { filter: none; }
+.end-screen.gameover[data-layout="ember"][data-timed-out="true"] .go-title-art { filter: grayscale(1) brightness(.9); animation: go-ember-last 1.5s ease-out both; }
+@keyframes go-ember-last {
+  from { filter: grayscale(.2) sepia(1) saturate(3) hue-rotate(-16deg) drop-shadow(0 0 22px #ff5a1f); }
+  to { filter: grayscale(1) brightness(.9) drop-shadow(0 0 0 #ff5a1f00); }
+}
+@keyframes go-ember-breathe { from { transform: scaleY(.94); filter: brightness(.86); } to { transform: scaleY(1.04); filter: brightness(1.08); } }
+@keyframes go-ember-gasp { from { filter: brightness(.45); } to { filter: brightness(1.25); } }
+@keyframes go-ember-rise {
+  0% { transform: translate(0, 0) scale(1); opacity: 0; }
+  10% { opacity: .95; }
+  70% { opacity: .55; }
+  100% { transform: translate(var(--dx), calc(var(--h) * -1)) scale(.25); opacity: 0; }
+}
+@keyframes go-ember-flicker { from { opacity: .75; } to { opacity: 1; } }
+@keyframes go-ember-tick { from { opacity: .6; filter: drop-shadow(0 0 22px #ffb347) brightness(1.5); } to { opacity: 1; } }
+@keyframes go-ember-flare { 0% { opacity: 0; transform: scale(.6); } 25% { opacity: .95; } 100% { opacity: 0; transform: scale(1.25); } }

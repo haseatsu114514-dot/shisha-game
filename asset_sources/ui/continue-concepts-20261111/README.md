@@ -1,14 +1,17 @@
-# ゲームオーバー画面の見た目 4案（2026-11-12・CV57）
+# ゲームオーバー画面の見た目 4案（2026-11-12・CV57・CV58）
 
 オーナー「ゲームオーバー画面をいくつかの案を出して見た目を考えて　今のも悪くはないんだけどもっといいの作れたら嬉しいから」への案出し。
-**判断待ち。本編の表示は変えていない**（既定は neon のまま）。
 
-## 見方
+**2026-11-12 オーナー決定「AとCを両方作りたい　実際のできを見て決める」（CV58）**: A 熾火と C 漫画の大ゴマを本編の配置（`layout: "ember"` / `"manga"`）として入れた。B・D は作らない。
+既定は neon のまま。どちらかに決まったら既定を替え、選ばなかった方を消す。
 
-プレビューサーバーを起動して `http://127.0.0.1:8123/remake/continue-concepts-demo.html` を開く。
-上の欄で「見た目の案」「出演」「負けた回数」を切り替えられる（URL でも指定できる: `?concept=ember|versus|manga|sign|current&character=0|1|2|lover:<id>&loss=1|2`、`&tools=0` で操作欄を隠す）。
+- プレビュー: `http://127.0.0.1:8123/remake/continue-preview.html?layout=ember` / `?layout=manga`
+- 本編のゲーム: URL に `?continueLook=ember` / `?continueLook=manga`（端末に覚える。`?continueLook=neon` で戻す）
+- 作り: `remake/js/chapters/continue-looks.js`（飾りの部品と切り替え）、`remake/css/continue-looks.css`（共通）・`continue-ember.css`・`continue-manga.css`。検査は `remake/test/continue_looks.mjs`
 
-4案とも、本物の CONTINUE（`buildGameOver` の neon 配置）を作ってから見た目だけを着せ替えている。
+以下は案出しの時点の記録（見比べページ `continue-concepts-demo.html` は CV58 で本編の配置に置き換えて削除した）。
+
+4案とも、本物の CONTINUE（`buildGameOver` の neon 配置）を作ってから見た目だけを着せ替えた。
 台詞・20秒の時計・2択・選んだあとの反応・遷移は本編の処理がそのまま動く。新しい画像は使っていない（筆文字・枠・立ち絵は今の素材、ほかは CSS と SVG）。
 
 | 画像 | 内容 |
@@ -27,15 +30,8 @@
 
 推し: **B**（人物・残り秒数・2択・台詞が重ならず、スマホ横持ちでも読みやすい）。A の炭火の色と火の粉を B に足す組み合わせもできる。
 
-## 採用が決まったら
+## 決めたあと
 
-- 選んだ案を `remake/js/chapters/continue-view.js` の配置として作り直し、`remake/css/continue*.css` へ移す（このデモの CSS は見比べ用で、本編からは読まない）。
-- 既存の `continue_neon.mjs` などの検査を新しい配置に合わせる。
-- 絵を足すなら: A は炭と火の粉、B は斜めの面の地模様、C は紙の質感と効果線、D はネオン管と壁。どれも今は図形で描いているので、Codex へ依頼すれば質感を上げられる。
-
-## ファイル
-
-- `remake/continue-concepts-demo.html` … 見比べページ
-- `remake/js/chapters/continue-concepts-demo.js` … 着せ替え（部品の追加だけ。本編の処理に触れない）
-- `remake/css/continue-concepts-demo.css` … 4案の見た目
-- `remake/test/continue_concepts_demo.mjs` … 4案 × PC／スマホ横で、2択・台詞・「進む」が実寸44px以上で画面内、再挑戦と時間切れが最後まで進むことの検査
+- 選んだ案を既定にする（`gameover.js` の `continueLayoutSetting()` の既定値）。選ばなかった方の CSS・飾り・分岐を消す。
+- neon の検査（`continue_neon.mjs` など）を新しい既定に合わせる。
+- 絵を足すなら: A は炭と火の粉、C は紙の質感と効果線。どちらも今は図形で描いているので、Codex へ依頼すれば質感を上げられる。

@@ -1,0 +1,42 @@
+/* CONTINUE の見た目の候補（CV58・#2524）の共通の土台。A 熾火＝continue-ember.css、C 漫画の大ゴマ＝continue-manga.css。
+   2026-11-12 オーナー「AとCを両方作りたい　実際のできを見て決める」。本編の既定は neon のまま（continue-neon.css）。
+   部品は neon と同じ（continue-view.js が組み、continue-looks.js が飾りを足す）。data-layout が ember / manga なので neon の規則は当たらず、
+   continue.css の土台の規則（.gameover …）の上に書く。continue.css より先に読み込まれるため、同じ強さの土台の規則に負けないよう
+   .end-screen.gameover から書き始める。座標は 1280×720 のステージ基準。 */
+.end-screen.gameover:is([data-layout="ember"], [data-layout="manga"]) {
+  /* 残り時間の進み 0→1。本編が背面の数字用に更新している --go-count-scale（.75→1.80）から求める。 */
+  --go-look-p: clamp(0, calc((var(--go-count-scale, .75) - .75) / 1.05), 1);
+  background: #07070f; animation: go-look-enter .5s ease-out both;
+}
+.end-screen.gameover:is([data-layout="ember"], [data-layout="manga"]) :is(.go-look-back, .go-look-fore) { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+.end-screen.gameover:is([data-layout="ember"], [data-layout="manga"]) .go-look-back { z-index: 0; }
+.end-screen.gameover:is([data-layout="ember"], [data-layout="manga"]) .go-look-fore { z-index: 2; }
+.end-screen.gameover:is([data-layout="ember"], [data-layout="manga"]) :is(.go-look-back, .go-look-fore) i { display: block; font-style: normal; }
+.end-screen.gameover:is([data-layout="ember"], [data-layout="manga"]) .go-heading { inset: 0; display: block; text-align: left; animation: none; pointer-events: none; }
+.end-screen.gameover:is([data-layout="ember"], [data-layout="manga"]) .go-title { position: absolute; display: block; height: auto; }
+.end-screen.gameover:is([data-layout="ember"], [data-layout="manga"]) .go-title-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.end-screen.gameover:is([data-layout="ember"], [data-layout="manga"]) .go-left { top: 0; height: 720px; }
+.end-screen.gameover:is([data-layout="ember"], [data-layout="manga"]) .go-right { inset: 0; }
+.end-screen.gameover:is([data-layout="ember"], [data-layout="manga"]) :is(.go-atmosphere, .go-title-slash, .go-count-back, .go-choice-frame, .go-count-ring, .go-next, .go-look-name) { display: none; }
+.end-screen.gameover:is([data-layout="ember"], [data-layout="manga"]) .go-clock { position: absolute; display: block; height: auto; }
+.end-screen.gameover:is([data-layout="ember"], [data-layout="manga"]) .go-clock[hidden] { display: none; }
+.end-screen.gameover:is([data-layout="ember"], [data-layout="manga"]) .go-clock > i { display: block; font-style: normal; }
+.end-screen.gameover:is([data-layout="ember"], [data-layout="manga"]) .go-dialogue { --go-look-tap: max(48px, calc(44.1px / var(--k, 1))); }
+.end-screen.gameover:is([data-layout="ember"], [data-layout="manga"]) .go-choice { --go-look-tap: max(88px, calc(44.1px / var(--k, 1))); }
+.end-screen.gameover:is([data-layout="ember"], [data-layout="manga"]) .go-choice:not(:disabled):hover { filter: none; transform: none; }
+.end-screen.gameover:is([data-layout="ember"], [data-layout="manga"]) .go-playback { top: auto; right: auto; }
+.end-screen.gameover:is([data-layout="ember"], [data-layout="manga"]) .go-proceed { min-height: max(88px, calc(44.1px / var(--k, 1))); font-size: 32px; font-weight: 900; }
+.end-screen.gameover:is([data-layout="ember"], [data-layout="manga"])[data-phase="reaction"] .go-clock { opacity: 1; visibility: hidden; }
+.end-screen.gameover:is([data-layout="ember"], [data-layout="manga"])[data-timed-out="true"] .go-heading { inset: 0; display: grid; place-items: center; animation: none; }
+.end-screen.gameover:is([data-layout="ember"], [data-layout="manga"])[data-timed-out="true"] .go-title {
+  position: relative; inset: auto; width: 760px; height: 220px; transform: none; opacity: 1; animation: go-look-final .5s ease-out both;
+}
+.end-screen.gameover:is([data-layout="ember"], [data-layout="manga"])[data-timed-out="true"] .go-title-art { width: 100%; height: 100%; }
+.end-screen.gameover:is([data-layout="ember"], [data-layout="manga"])[data-paused="true"] *,
+.end-screen.gameover:is([data-layout="ember"], [data-layout="manga"])[data-paused="true"] *::before,
+.end-screen.gameover:is([data-layout="ember"], [data-layout="manga"])[data-paused="true"] *::after { animation-play-state: paused !important; }
+@keyframes go-look-enter { from { opacity: 0; } to { opacity: 1; } }
+@keyframes go-look-final { from { opacity: 0; filter: brightness(1.8); transform: translateY(6px); } to { opacity: 1; transform: none; } }
+/* 3敗目以降は入場の動きを省く（neon と同じ）。 */
+.end-screen.gameover:is([data-layout="ember"], [data-layout="manga"])[data-skip-entry="true"],
+.end-screen.gameover:is([data-layout="ember"], [data-layout="manga"])[data-skip-entry="true"] :is(.go-neon-title, .go-clock, .go-sumi-img, .go-look-light) { animation: none; }

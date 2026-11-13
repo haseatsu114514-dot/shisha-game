@@ -10,6 +10,7 @@ import { createContinueAudio, preloadBgm } from "../core/audio.js";
 import { DB, img, portraitInfo } from "../core/data.js";
 import { imageReady } from "../core/ui.js";
 import { createContinueView, continuePortraitStyle } from "./continue-view.js";
+import { continueLayoutSetting } from "./continue-looks.js";
 
 
 // at = 開始からの秒数。全体の台詞表示は約20秒。テロップは1キュー1行（全角22字以内）に小分けする。
@@ -97,7 +98,7 @@ let nextScript = 0;
 let previousContinueSpeaker = null;
 // 初回はカウント演出だけを見せ、選択期限を設けない。再挑戦以降は20秒で終了する。
 export function buildGameOver({ reason = "rank", rank = 0, variant = null, onRetry, onTitle,
-  soundEffects = true, reducedMotion = false, layout = "neon", background = "stage", context = null } = {}) {
+  soundEffects = true, reducedMotion = false, layout = continueLayoutSetting(), background = "stage", context = null } = {}) {
   // variant: 整数=スミさんの台本番号、"lover:<id>"=その恋人、null=通常（スミさんか恋人を同じ確率で選ぶ）。
   const forced = typeof variant === "string" && variant.startsWith("lover:") ? LOVER_CONTINUE_SCRIPTS[variant.slice(6)] : null;
   const chosen = !forced && variant == null

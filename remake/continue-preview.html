@@ -39,7 +39,9 @@
  <label for="preview-layout">配置</label>
  <select id="preview-layout" aria-label="コンティニューの配置">
  <option value="neon" selected>筆文字・円形HUD（採用中）</option>
- <option value="inner">記憶の暗室（比較）</option>
+ <option value="ember">A 熾火（候補）</option>
+<option value="manga">C 漫画の大ゴマ（候補）</option>
+<option value="inner">記憶の暗室（比較）</option>
  <option value="bottom">王道・下にボタン（比較）</option>
  <option value="bottom-back-count">王道＋迫る背面カウント（実験）</option>
  <option value="top">上にボタン（実験）</option>
@@ -78,7 +80,7 @@ const stage = document.getElementById("stage"), screen = document.getElementById
   motion = document.getElementById("preview-motion"), retry = document.getElementById("preview-retry"),
   quit = document.getElementById("preview-quit");
 const params = new URLSearchParams(location.search);
-if (["neon", "inner", "bottom", "top", "back-count", "bottom-back-count"].includes(params.get("layout"))) layout.value = params.get("layout");
+if (["neon", "ember", "manga", "inner", "bottom", "top", "back-count", "bottom-back-count"].includes(params.get("layout"))) layout.value = params.get("layout");
 if (["purple", "stage"].includes(params.get("background"))) background.value = params.get("background");
 function fit() {
  const top = tools.offsetHeight + 22;

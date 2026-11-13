@@ -92,6 +92,7 @@ python3 remake/tools/serve_preview.py --port 8123
 20秒でGAME OVERを表示してタイトルへ戻り、期限内の「大会に戻る」は反応後に大会冒頭へ戻る。字幕送りは期限に影響しない。
 プレビューはセーブに書き込まない。[V4仕様と検証](../docs/spec/continue_button_reactions_sfx_20261010.md)。
 2026-11-07（#2524・オーナー決定）: 本編の既定は前バージョンの neon（筆文字・円形HUD・金と紫のボタン「最初から再挑戦／諦める」）と前バージョンの台本に戻した。立ち絵だけ新バージョン（台本の全表情が新版にそろう人物）。台詞は敗因・順位・弱点で差し替えず、どの負け方でも同じ台本（2敗目以降は4行に短縮）。出演者はスミさんか成立済みの恋人を同じ確率で選ぶ（恋人の「プレミア20%」は廃止のまま）。2026-11-06 に一度既定にした「記憶の暗室」（inner）は `continue-preview.html?layout=inner` で比較できる。[V5仕様](../docs/spec/continue_inner_voice_20261106.md)・[制作記録とCodexプロンプト](../asset_sources/ui/continue-v5-20261106/README.md)。
+2026-11-12（CV58・オーナー「AとCを両方作りたい　実際のできを見て決める」）: 見た目の候補 A 熾火（`layout=ember`）と C 漫画の大ゴマ（`layout=manga`）を本編の配置として入れた。既定は neon のまま。プレビューは `continue-preview.html?layout=ember` / `?layout=manga`、本編のゲームでは URL に `?continueLook=ember` / `?continueLook=manga` を付けると切り替わる（端末に覚える・`?continueLook=neon` で戻す）。台詞・時計・2択・遷移は neon と同じ。[案出しの記録](../asset_sources/ui/continue-concepts-20261111/README.md)。
 
 プレビューの既定は「筆文字・円形HUD（採用中）」と「暗いステージ（採用中）」。過去の王道／王道＋迫る数字／上段ボタン／上段ボタン＋背面カウントも比較用に保持する。
 実験版は「コンティニュー？ 15 ［する］［諦める］」を上部へ集め、下のセリフを大きくする。背面カウント版は人物の後ろの薄い数字が残り時間に沿って拡大する。動き軽減ではサイズを固定。「背景」で紫の煙と、添付画像を参考に生成した暗いステージを切り替えられる。

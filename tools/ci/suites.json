@@ -4226,22 +4226,21 @@
       ]
     },
     {
-      "id": "continue-concepts-demo",
-      "title": "Game over look concepts demo (#2524): 4 reskins of the real continue screen",
+      "id": "continue-looks",
+      "title": "Continue look candidates (#2524 CV58): A ember / C manga, touch sizes, retry, timeout, ?continueLook switch",
       "kind": "browser",
       "weight": 1.5,
       "timeout": 5,
       "paths": [
-        "remake/test/continue_concepts_demo.mjs",
-        "remake/js/chapters/continue-concepts-demo.js",
-        "remake/css/continue-concepts-demo.css",
-        "remake/continue-concepts-demo.html",
-        "remake/js/chapters/gameover.js",
+        "remake/test/continue_looks.mjs",
+        "remake/js/chapters/continue-looks.js",
         "remake/js/chapters/continue-view.js",
-        "remake/css/continue*.css"
+        "remake/js/chapters/gameover.js",
+        "remake/css/continue*.css",
+        "remake/continue-preview.html"
       ],
       "run": [
-        "node remake/test/continue_concepts_demo.mjs"
+        "node remake/test/continue_looks.mjs"
       ]
     },
     {
