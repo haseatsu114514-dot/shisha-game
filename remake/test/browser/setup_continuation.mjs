@@ -57,6 +57,9 @@ await suite("setup-continuation", async check => {
       ui.clearScreen();
       window.S = { core, cs: session.newSession("rehearsal") };
       session.openBench(S.cs, { steps: [["setup", "機材"]] });
+      // 「外観を選ぶ」は機材を選ぶ工程の間だけ出る（#3196 の一枚の舞台）。本番と同じく機材の工程に入る。
+      await session.waitBenchReady(S.cs, "setup");
+      session.stepPanel("setup", "機材");
     });
     await page.locator('[data-test="worker-appearance"] [data-id="handle-01-yoshio"]').waitFor();
     await page.locator('[data-test="worker-appearance"] [data-id="mouthpiece-01-crystal-drop"]').waitFor();
