@@ -165,6 +165,10 @@ async function run(label, params, options, body, beforeLoad = null) {
     await page.goto(url.href);
     if (label !== "loading-retry") await page.waitForFunction(() => window.__trpg?.ready === true);
     await body(page, errors);
+    // 最後に押したボタンにマウスが乗ったままだと、そのボタンの名前の吹き出し（.trpg-tool-label。乗せた時だけ出る）が
+    // ボタンの外へ出て、切れと数えてしまう（CI で「遊び方」を押した直後に 64px の札で scrollWidth 68）。
+    // 吹き出しは乗せている間だけの表示なので、マウスを卓の外へ外してから、置いたままの札と台詞を見る。
+    await page.mouse.move(0, 0);
     await fits(page);
     assert.deepEqual(errors, []);
     const storage = await page.evaluate(() => ({
