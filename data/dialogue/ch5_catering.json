@@ -312,13 +312,26 @@
           "text": "友だちの部屋のテーブルに、ケーキの箱が置いてあった。主役の三十歳の誕生日らしい。"
         },
         {
+          "speaker": "",
+          "text": "皿には、苺のへたが端に寄せてあった。"
+        },
+        {
           "speaker": "customer",
           "face": "smile",
           "text": "主役、ストロベリーが大好きなんです。あ、ケーキのあとに吸います"
         },
         {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "みんな喋ってるので、気にせずどうぞ"
+        },
+        {
           "speaker": "",
           "text": "窓を開けて、換気扇を回してもらった。六畳ほどの部屋で、香りがこもりやすい。"
+        },
+        {
+          "speaker": "",
+          "text": "台は窓の近くに据えた。"
         },
         {
           "speaker": "hajime",
@@ -335,14 +348,31 @@
           "text": "苺に、レモンを少しだけ足した。"
         },
         {
+          "speaker": "",
+          "text": "一口目は苺の甘さで、あとからレモンの切れがすっと立った。"
+        },
+        {
           "speaker": "customer",
           "face": "smile",
           "text": "苺だ！ ケーキのあとなのに、口がさっぱりする"
         },
         {
+          "speaker": "",
+          "text": "主役がもう一口、ゆっくり吸い込んで目を細めた。"
+        },
+        {
           "speaker": "customer",
           "face": "normal",
           "text": "部屋も、甘ったるくならない。すごい"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "これなら、このあと何本でも吸えそう"
+        },
+        {
+          "speaker": "",
+          "text": "窓の外へ流れる煙に、甘い匂いは残らなかった。"
         },
         {
           "speaker": "hajime",
@@ -359,9 +389,22 @@
           "text": "苺にバニラを重ねて、ショートケーキみたいな一台にした。"
         },
         {
+          "speaker": "",
+          "text": "吸った人たちが、一瞬だけ顔を見合わせた。"
+        },
+        {
           "speaker": "customer",
           "face": "smile",
           "text": "苺だ！ ……ケーキのあとだと、ちょっと甘すぎるかも"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "ケーキの味がまだ口に残ってたので、重なっちゃって"
+        },
+        {
+          "speaker": "",
+          "text": "主役はそれでも、二口目を笑って吸っていた。"
         },
         {
           "speaker": "customer",
@@ -389,7 +432,21 @@
         },
         {
           "speaker": "",
+          "text": "主役の笑顔が、ほんの一瞬だけ止まった。"
+        },
+        {
+          "speaker": "",
           "text": "窓を開けていても、香りが部屋の奥まで残った。"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "いい匂いだよ。ちょっとびっくりしただけ"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "歯医者さんで嗅いだことある匂い、これだったんだ"
         },
         {
           "speaker": "customer",
