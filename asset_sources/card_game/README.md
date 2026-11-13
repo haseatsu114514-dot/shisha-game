@@ -17,7 +17,7 @@
 | 自分・相手・審査員・人物カード | 顔アイコン（`remake/img/ui/face_icons/`） |
 | 技16・イベント7・キッチンタイマー | **このゲーム用の絵**（2026-11-11 Codex 生成・#3221。`remake/img/ui/ichidai/card/`） |
 | 器具3枚（風防・アイスホース・ディフューザー） | **このゲーム用の絵**（2026-11-11 Codex 生成・#3332。`remake/img/ui/ichidai/card/`） |
-| HMD「ワンコールリッド」（炭1個で回す低温用。一式d） | **仮**: ロートスHMDの絵（`remake/img/shop/equipment/lotos_hagal.webp`）。絵が届いたら `ichidai-art.js` の `HMD_ART` に足す |
+| HMD「C1」（炭1個で回す低温用。一式d） | **仮**: ロートスHMDの絵（`remake/img/shop/equipment/lotos_hagal.webp`）。絵が届いたら `ichidai-art.js` の `HMD_ART` に足す |
 | 裏面（デッキ・審査カード） | **仮**: 夜紫UIの札（`entry-rival.webp`・`entry-me.webp`） |
 
 葉の札は全種に箱絵がある。クールミント・ジャスミン・チョコレートは #3287 の箱、コーヒー（ドバジ）は #3221 C で作った箱（原画 `coffee-20261111/`、PR #3329）を本編のショップと同じ `remake/js/daily/shop-art-flavor-cartons-3287.js` から引く（`tools/build_flavor_cartons_3287.py` が WebP と一覧を作る）。アイスグレープはグレープの箱を借りている。

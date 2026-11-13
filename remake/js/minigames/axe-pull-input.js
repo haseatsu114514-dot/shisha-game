@@ -4,9 +4,10 @@
 // - 右の取っ手（handle）からも弾ける（狙いを動かさずに投げたい時）。
 // - 強さは離す直前の上向きの速さ、左右のぶれは弾いた向きの傾き（axe-pull-model.js の flickPower）。時刻は event.timeStamp。
 // - キーボード: 矢印で狙い、Space を押している長さで強さ、離すと投げる（今までどおり）。
-import { flickPower } from './axe-pull-model.js';
+import { flickPower, flickRead } from './axe-pull-model.js';
 
-export function attachAxePullInput({ root, board, handle, signal, canAim, canPull, onAim, onPower, onRelease, onCancel, target = { x: 330, y: 245, radius: 164 } }) {
+// prepare: 的に触れた時、狙う前に呼ぶ（結果の表示中に的へ触れたら、次の投へ進めてそのまま狙う。2026-11-13 指摘8）。
+export function attachAxePullInput({ root, board, handle, signal, canAim, canPull, onAim, onPower, onRelease, onCancel, prepare = () => {}, target = { x: 330, y: 245, radius: 164 } }) {
   const doc = root.ownerDocument, win = doc.defaultView;
   const lifetime = new AbortController(), options = { signal: lifetime.signal };
   const listen = (node, type, fn, extra = {}) => node.addEventListener(type, fn, { ...options, ...extra });
@@ -18,13 +19,14 @@ export function attachAxePullInput({ root, board, handle, signal, canAim, canPul
     if (!previous || previous.id === 'keyboard') return;
     for (const node of [handle, board]) if (node.hasPointerCapture?.(previous.id)) node.releasePointerCapture(previous.id);
   }
-  /** 投げずに終える（触れて離しただけ＝狙いを決めただけ、も同じ。強さの表示を元に戻す） */
-  function cancel() {
+  /** 投げずに終える（触れて離しただけ＝狙いを決めただけ、も同じ。強さの表示を元に戻す）。
+   *  reason は弾き損ねの理由（"shallow"・"lean"・"down"・"hold"）。理由なし（null）は黙って取り消す（2026-11-13 指摘3） */
+  function cancel(reason = null) {
     const previous = flick;
     flick = null; power = 0;
     if (!previous) return false;
     releaseCapture(previous);
-    onPower(0); onCancel();
+    onPower(0); onCancel(reason);
     return true;
   }
   function available() { return !dead && !doc.hidden && canPull(); }
@@ -56,9 +58,9 @@ export function attachAxePullInput({ root, board, handle, signal, canAim, canPul
     if (!flick || flick.id !== e.pointerId) return;
     e.preventDefault(); e.stopPropagation(); pointers.delete(e.pointerId);
     if (!track(e)) return;
-    const result = flickPower(flick.samples, height());
-    if (!result) { cancel(); return; }
-    throwNow(result.raw, result.lean);
+    const read = flickRead(flick.samples, height());
+    if (!read.throw) { cancel(read.miss); return; }
+    throwNow(read.throw.raw, read.throw.lean);
   }
   function throwNow(raw, lean = 0) {
     if (!flick) return;
@@ -76,7 +78,9 @@ export function attachAxePullInput({ root, board, handle, signal, canAim, canPul
     onAim({ ...aim }); focused(); return true;
   }
   listen(board, 'pointerdown', e => {
-    if (e.button !== 0 || !e.isPrimary || pointers.size > 1 || dead || !canAim()) return;
+    if (e.button !== 0 || !e.isPrimary || pointers.size > 1 || dead) return;
+    if (!canAim()) prepare();
+    if (!canAim()) return;
     const ctm = board.getScreenCTM();
     if (!ctm) return;
     let p;
@@ -121,7 +125,7 @@ export function attachAxePullInput({ root, board, handle, signal, canAim, canPul
   listen(root, 'keyup', e => {
     if (e.code !== 'Space' || flick?.id !== 'keyboard') return;
     e.preventDefault(); e.stopImmediatePropagation();
-    if (power < .06) { cancel(); return; }
+    if (power < .06) { cancel("hold"); return; }
     throwNow(power, 0);
   }, { capture: true });
   const suspend = () => { pointers.clear(); cancel(); };

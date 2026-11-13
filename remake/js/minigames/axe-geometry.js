@@ -27,7 +27,24 @@ function normal(points) {
   const length = Math.hypot(n.x,n.y,n.z);
   return { x: n.x / length, y: n.y / length, z: n.z / length };
 }
-export function projectedAxe(pose) {
+// 買った斧の色（2026-11-13 手応えレビュー指摘11）: 柄・握り・頭の色を斧ごとに差し替える。飛ぶ斧と刺さった斧に同じ色が出る。
+// 面の id の頭（handle-1-* は握りの区間、handle-end は柄尻）で塗り分ける。palette が無ければ店の斧の色。
+const palettes = new WeakMap();
+const rgb = hex => typeof hex === "string" && /^#[0-9a-f]{6}$/i.test(hex) ? [1, 3, 5].map(i => parseInt(hex.slice(i, i + 2), 16)) : null;
+/** equipment: { handle, grip, head } の16進色。足りない色は元の色のまま。 */
+export function axePalette(equipment) {
+  if (!equipment) return null;
+  return { handle: rgb(equipment.handle), grip: rgb(equipment.grip), head: rgb(equipment.head), blade: rgb(equipment.blade) };
+}
+function faceColor(f, palette) {
+  if (!palette) return f.color;
+  if (f.id.startsWith("handle-1-") || f.id === "handle-end") return palette.grip || f.color;
+  if (f.id.startsWith("handle")) return palette.handle || f.color;
+  if (f.id.startsWith("head")) return palette.head || f.color;
+  if (f.id.startsWith("blade")) return palette.blade || f.color;
+  return f.color;
+}
+export function projectedAxe(pose, palette = null) {
   const center = projectPoint(pose);
   const polygons = faces.map(f => {
     const world = f.vertices.map(p => worldPoint(pose,p));
@@ -35,15 +52,25 @@ export function projectedAxe(pose) {
     const n = normal(world), visible = n.x * -middle.x + n.y * -middle.y + n.z * (-CAMERA.focal - middle.z) > 0;
     const diffuse = Math.max(0, n.x * -.35 + n.y * -.6 + n.z * -.72);
     const light = .45 + .55 * diffuse;
-    return { id:f.id, visible, depth:middle.z, fill:"rgb(" + f.color.map(c=>Math.round(c*light)).join(",") + ")",
+    return { id:f.id, visible, depth:middle.z, fill:"rgb(" + faceColor(f, palette).map(c=>Math.round(c*light)).join(",") + ")",
       points:world.map(projectPoint).map(p=>({x:p.x-center.x,y:p.y-center.y})) };
   }).filter(p=>p.visible).sort((a,b)=>b.depth-a.depth);
   const blade = projectAxePoint(pose, AXE.blade);
   return { polygons, blade: {x:blade.x-center.x,y:blade.y-center.y} };
 }
-export function createAxe() { return svg("g", { "data-model": "first-person-3d" }); }
+export function createAxe(equipment = null) {
+  const node = svg("g", { "data-model": "first-person-3d" });
+  setAxePalette(node, equipment);
+  return node;
+}
+/** 飛ぶ斧は投げる人ごとに持ち替える（自分の斧／相手の店の斧） */
+export function setAxePalette(node, equipment) {
+  const palette = axePalette(equipment);
+  if (palette) palettes.set(node, palette); else palettes.delete(node);
+  if (equipment?.id) node.dataset.gear = equipment.id; else delete node.dataset.gear;
+}
 export function renderAxe(node, pose) {
-  const {polygons,blade} = projectedAxe(pose);
+  const {polygons,blade} = projectedAxe(pose, palettes.get(node) || null);
   node.setAttribute("transform", poseTransform(pose)); node.setAttribute("data-pitch", pose.pitch); node.setAttribute("data-depth", pose.z);
   node.replaceChildren(...polygons.map(p=>svg("polygon", { "data-face":p.id,
     points:p.points.map(v=>v.x+","+v.y).join(" "), fill:p.fill, stroke:"#15171b", "stroke-width":1.1, "stroke-linejoin":"round" })),

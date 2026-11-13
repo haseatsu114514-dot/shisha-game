@@ -219,16 +219,20 @@ await suite("lover-milestones", async check => {
 
     await check(`${mode}-legacy-high-level-all-common-routes`, async page => {
       await setup(page);
-      const records = await page.evaluate(async () => {
+      const routes = Object.fromEntries(["tsumugi", "minto", "rio", "ageha", "mashiro"].map(id =>
+        [id, [1, 2, 3, 4, 5].map(n => `lover_${id}_lv${n}`)]));
+      // 同じLvの追加場面も、Lv5までの途中で読み・保存する（順序は実装から取得しない）。
+      routes.ageha.splice(2, 0, "lover_ageha_lv2_b");
+      const records = await page.evaluate(async routes => {
         const records = [];
-        for (const id of ["tsumugi", "minto", "rio", "ageha", "mashiro"]) {
+        for (const id of Object.keys(routes)) {
           const s = M.fresh(id); s.schema = 5; s.loveLevel[id] = 5; s.lovePts[id] = 72;
           s.loveCarry[id] = .5; s.guilt = 3;
           s.inbox.push({ id: "preserved", msg: { sender: id, type: "chat", messages: ["記録"] }, read: true, done: true, log: [] });
           M.core.save(); M.core.load();
           const before = M.snap(), due = [], reads = [], counts = [];
           M.events.length = 0;
-          for (let n = 1; n <= 5; n++) {
+          for (let n = 0; n < routes[id].length; n++) {
             due.push(M.romance.loverMilestoneDue(id));
             reads.push(await M.romance.playLoverMilestone(id));
             M.core.load(); counts.push(M.core.state.loverEventsSeen.length);
@@ -237,11 +241,11 @@ await suite("lover-milestones", async check => {
           records.push({ id, before, after, due, reads, counts, again, events: M.events.slice(), privateAfter: M.stats.bond.private });
         }
         return records;
-      });
+      }, routes);
       for (const r of records) {
-        const expected = [1, 2, 3, 4, 5].map(n => `lover_${r.id}_lv${n}`);
+        const expected = routes[r.id];
         assert.deepEqual(r.due, expected); assert.deepEqual(r.events, expected);
-        assert.deepEqual(r.counts, [1, 2, 3, 4, 5]); assert(r.reads.every(Boolean));
+        assert.deepEqual(r.counts, expected.map((_, n) => n + 1)); assert(r.reads.every(Boolean));
         assert.deepEqual(r.after.loverEventsSeen, expected); assert(!r.again && !r.privateAfter);
         assert.equal(r.after.lovePts[r.id], 72); assert.equal(r.after.loveCarry[r.id], .5);
         assert.deepEqual(r.after.stats, r.before.stats); assert.deepEqual(r.after.inbox, r.before.inbox);
