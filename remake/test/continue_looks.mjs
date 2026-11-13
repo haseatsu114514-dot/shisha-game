@@ -1,7 +1,7 @@
-// CONTINUE の見た目の候補 A 熾火（ember）・C 漫画の大ゴマ（manga）（CV58・#2524）。
+// CONTINUE の見た目 C 漫画の大ゴマ（manga・本編の既定）と A 熾火（ember・保留）（CV58〜CV61・#2524）。
 // 本編のプレビュー（continue-preview.html）で、2択・台詞・「進む」が実寸44px以上で画面内に収まり、
 // 再挑戦と時間切れが最後まで進み、飾りが当たることを PC とスマホ横持ちで確かめる。
-// 本編の切り替え（?continueLook=…・端末に覚える・既定は neon）も確かめる。
+// 本編の切り替え（?continueLook=…・端末に覚える・既定は manga・neon は前の版）も確かめる。
 // サーバーを8123で起動後: node remake/test/continue_looks.mjs
 import assert from "node:assert/strict";
 import { createRequire } from "node:module";
@@ -97,7 +97,7 @@ try {
     await page.close();
   }
 
-  // 本編の切り替え: 既定は neon。?continueLook= で端末に覚え、neon で戻す。知らない値は無視する。
+  // 本編の切り替え: 既定は manga。?continueLook= で端末に覚え（ember・前の版の neon）、manga で既定に戻す。知らない値は無視する。
   {
     const page = await browser.newPage({ viewport: VIEWPORTS[0] });
     page.on("pageerror", error => errors.push(`switch: ${error.message}`));
@@ -112,16 +112,17 @@ try {
       const result = { fresh: at(""), freshBuilt: built() };
       result.manga = at("continueLook=manga"); result.remembered = at(""); result.mangaBuilt = built();
       result.unknown = at("continueLook=sign"); result.ember = at("continueLook=ember");
-      result.back = at("continueLook=neon"); result.backBuilt = built();
+      result.neon = at("continueLook=neon"); result.neonBuilt = built();
+      result.back = at("continueLook=manga"); result.backBuilt = built();
       localStorage.removeItem("suien_continue_look");
       return result;
     });
-    assert.deepEqual(seen, { fresh: "neon", freshBuilt: "neon", manga: "manga", remembered: "manga", mangaBuilt: "manga",
-      unknown: "manga", ember: "ember", back: "neon", backBuilt: "neon" }, "本編の切り替え");
+    assert.deepEqual(seen, { fresh: "manga", freshBuilt: "manga", manga: "manga", remembered: "manga", mangaBuilt: "manga",
+      unknown: "manga", ember: "ember", neon: "neon", neonBuilt: "neon", back: "manga", backBuilt: "manga" }, "本編の切り替え");
     await page.close();
   }
   assert.deepEqual(errors, [], "ページエラーなし");
-  console.log("continue_looks: ok（A 熾火・C 漫画 × PC/スマホ横、再挑戦・時間切れ・本編の切り替え）");
+  console.log("continue_looks: ok（C 漫画・A 熾火 × PC/スマホ横、再挑戦・時間切れ・本編の切り替え（既定 manga））");
 } finally {
   await browser.close();
 }

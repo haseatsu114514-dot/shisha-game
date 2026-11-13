@@ -1,4 +1,4 @@
-/* CONTINUE の見た目の候補 C 漫画の大ゴマ（data-layout="manga"・CV58）。共通の土台は continue-looks.css。
+/* CONTINUE の見た目 C 漫画の大ゴマ（data-layout="manga"）。2026-11-13 オーナー決定で本編の既定（CV61）。共通の土台は continue-looks.css。
    紙の白と黒。人物は集中線の大ゴマ、台詞は吹き出し、残り秒数はギザギザ、2択は2つのコマ（選ぶと黒く反転）。
    人物だけ色つきで、スミさんの掛け合いや恋人の一言を漫画の1ページとして見せる。時間切れは黒いページ。 */
 .end-screen.gameover[data-layout="manga"] { background: #f3eee1; --go-ink: #111; color: #111; }
@@ -48,6 +48,9 @@
 .end-screen.gameover[data-layout="manga"] .go-clock::after { position: absolute; z-index: 1; font: 900 34px / 1 var(--font); color: #111; -webkit-text-stroke: 5px #fff; paint-order: stroke fill; }
 .end-screen.gameover[data-layout="manga"] .go-clock::before { content: "あと"; left: -30px; top: 22px; transform: rotate(-9deg); }
 .end-screen.gameover[data-layout="manga"] .go-clock::after { content: "秒"; right: 0; bottom: 12px; transform: rotate(-6deg); }
+/* 初回（時間制限なし）で「∞」になったら「あと」「秒」は付けない。 */
+.end-screen.gameover[data-layout="manga"] .go-clock.go-count-endless::before,
+.end-screen.gameover[data-layout="manga"] .go-clock.go-count-endless::after { content: none; }
 .end-screen.gameover[data-layout="manga"] .go-limit-note {
   top: 192px; left: 832px; right: auto; width: 190px; padding: 0; border: 0; background: none; color: #111;
   font-size: max(16px, calc(12.5px / var(--k, 1))); font-weight: 700; line-height: 1.35; text-align: left; text-wrap: balance;

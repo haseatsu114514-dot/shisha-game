@@ -1,13 +1,13 @@
-# ゲームオーバー画面の見た目 4案（2026-11-12・CV57・CV58）
+# ゲームオーバー画面の見た目 4案（2026-11-12〜13・CV57〜CV61）
 
 オーナー「ゲームオーバー画面をいくつかの案を出して見た目を考えて　今のも悪くはないんだけどもっといいの作れたら嬉しいから」への案出し。
 
-**2026-11-12 オーナー決定「AとCを両方作りたい　実際のできを見て決める」（CV58）**: A 熾火と C 漫画の大ゴマを本編の配置（`layout: "ember"` / `"manga"`）として入れた。B・D は作らない。
-既定は neon のまま。どちらかに決まったら既定を替え、選ばなかった方を消す。
+**2026-11-13 オーナー決定「Cでゲームに実装して　Aは一旦保留」（CV61）**: 本編の既定は **C 漫画の大ゴマ**（`layout: "manga"`）。A 熾火（`layout: "ember"`）は保留として残す。B・D は作らない。
+経緯: 2026-11-12「AとCを両方作りたい　実際のできを見て決める」（CV58）で両方を本編の配置にし、見た目の指摘（CV59: A の視認性・C の数字の位置、CV60: A の圧迫感とセリフの読みづらさ）を直してから決まった。
 
-- プレビュー: `http://127.0.0.1:8123/remake/continue-preview.html?layout=ember` / `?layout=manga`
-- 本編のゲーム: URL に `?continueLook=ember` / `?continueLook=manga`（端末に覚える。`?continueLook=neon` で戻す）
-- 作り: `remake/js/chapters/continue-looks.js`（飾りの部品と切り替え）、`remake/css/continue-looks.css`（共通）・`continue-ember.css`・`continue-manga.css`。検査は `remake/test/continue_looks.mjs`
+- 本編のゲーム: 既定で C。URL に `?continueLook=ember`（A）/ `?continueLook=neon`（前の版の筆文字・円形HUD）を付けると切り替わる（端末に覚える）。`?continueLook=manga` で既定に戻す
+- プレビュー: `http://127.0.0.1:8123/remake/continue-preview.html?layout=manga` / `?layout=ember` / `?layout=neon`
+- 作り: `remake/js/chapters/continue-looks.js`（飾りの部品・既定・切り替え）、`remake/css/continue-looks.css`（共通）・`continue-manga.css`・`continue-ember.css`。検査は `remake/test/continue_looks.mjs`
 
 以下は案出しの時点の記録（見比べページ `continue-concepts-demo.html` は CV58 で本編の配置に置き換えて削除した）。
 
@@ -30,8 +30,7 @@
 
 推し: **B**（人物・残り秒数・2択・台詞が重ならず、スマホ横持ちでも読みやすい）。A の炭火の色と火の粉を B に足す組み合わせもできる。
 
-## 決めたあと
+## この先
 
-- 選んだ案を既定にする（`gameover.js` の `continueLayoutSetting()` の既定値）。選ばなかった方の CSS・飾り・分岐を消す。
-- neon の検査（`continue_neon.mjs` など）を新しい既定に合わせる。
+- A を使わないと決まったら、`continue-ember.css` と `continue-looks.js` の ember の飾り・切り替えの選択肢を消す。前の版の neon を消すときも同じ（neon の検査 `continue_neon.mjs` などは `layout: "neon"` を指定している）。
 - 絵を足すなら: A は炭と火の粉、C は紙の質感と効果線。どちらも今は図形で描いているので、Codex へ依頼すれば質感を上げられる。

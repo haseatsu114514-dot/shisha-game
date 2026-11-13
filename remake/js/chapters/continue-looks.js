@@ -1,21 +1,23 @@
-// CONTINUE の見た目の候補「A 熾火（ember）」「C 漫画の大ゴマ（manga）」（#2524・CV58）。
-// 2026-11-12 オーナー「AとCを両方作りたい　実際のできを見て決める」。本編の既定は neon のまま。
-// どちらも neon と同じ部品（筆文字・時計・2択・台詞・反応）を使い、飾りの部品を足して見た目だけを替える。
-// 台詞・20秒の時計・2択・遷移・保存には触れない。見た目は css/continue-looks.css・continue-ember.css・continue-manga.css。
-// 本編で比べるときは URL に ?continueLook=ember / ?continueLook=manga（端末に覚える）、?continueLook=neon で戻す。
+// CONTINUE の見た目「C 漫画の大ゴマ（manga）」と「A 熾火（ember）」（#2524・CV58〜CV61）。
+// 2026-11-13 オーナー決定「Cでゲームに実装して　Aは一旦保留」: 本編の既定は C（manga）。A は保留として残す。
+// 前の版（neon）も残す。どれも同じ部品（筆文字・時計・2択・台詞・反応）を使い、飾りの部品を足して見た目だけを替える。
+// 台詞・20秒の時計・2択・遷移・保存には触れない。見た目は css/continue-looks.css・continue-manga.css・continue-ember.css。
+// 本編で見比べるときは URL に ?continueLook=ember（A）/ ?continueLook=neon（前の版）を付ける（端末に覚える）。?continueLook=manga で既定に戻す。
 import { el } from "../core/util.js";
 
 export const CONTINUE_LOOKS = ["ember", "manga"];
+export const DEFAULT_CONTINUE_LAYOUT = "manga";
+const CHOICES = [...CONTINUE_LOOKS, "neon"];
 const KEY = "suien_continue_look";
 
-/** 本編で使う配置。URL の continueLook を端末に覚え、覚えた候補を返す（既定・不明・保存できない端末は neon）。 */
+/** 本編で使う配置。URL の continueLook を端末に覚え、覚えた配置を返す（未設定・不明・保存できない端末は既定の manga）。 */
 export function continueLayoutSetting() {
   try {
     const q = new URLSearchParams(location.search).get("continueLook");
-    if (q === "neon" || CONTINUE_LOOKS.includes(q)) localStorage.setItem(KEY, q);
+    if (CHOICES.includes(q)) localStorage.setItem(KEY, q);
     const saved = localStorage.getItem(KEY);
-    return CONTINUE_LOOKS.includes(saved) ? saved : "neon";
-  } catch { return "neon"; }
+    return CHOICES.includes(saved) ? saved : DEFAULT_CONTINUE_LAYOUT;
+  } catch { return DEFAULT_CONTINUE_LAYOUT; }
 }
 
 // 火の粉の位置は決まった数列から作る（毎回同じ見え方にする）。

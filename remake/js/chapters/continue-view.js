@@ -1,5 +1,6 @@
 // CONTINUEの描画。台本・抽選・遷移から独立させ、1行のテロップを文字ごとに出す。
-// 2026-11-07 オーナー決定（#2524）: 本編の既定は前バージョンの neon（筆文字・円形HUD・鋭角ボタン）。立ち絵は continuePortraitStyle で新バージョン。
+// 2026-11-13 オーナー決定（#2524・CV61）: 本編の既定は C 漫画の大ゴマ（layout:"manga"・continue-looks.js）。
+// 前の版の neon（筆文字・円形HUD・鋭角ボタン）と保留中の A 熾火（ember）も残す。立ち絵は continuePortraitStyle で新バージョン。
 import { el } from "../core/util.js";
 import { createNeonClock, createNeonAtmosphere } from "./continue-neon.js";
 import { CONTINUE_LOOKS, decorateContinueLook } from "./continue-looks.js";
@@ -32,7 +33,7 @@ const NEON_FACE_PX = 524.8;
 const NEON_FACE_CENTER_Y = 273;
 
 export function createContinueView({ script, speaker, character, lover = speaker !== "sumi", layout = "neon", background = "stage", onType = null }) {
-  // 見た目の候補 A 熾火（ember）・C 漫画（manga）（CV58）。部品の組み方は neon と同じで、飾りと CSS だけが違う。
+  // C 漫画（manga・本編の既定）と A 熾火（ember・保留）（CV58〜CV61）。部品の組み方は neon と同じで、飾りと CSS だけが違う。
   const look = CONTINUE_LOOKS.includes(layout) ? layout : null;
   const neon = layout === "neon" || !!look;
   // #2524 「記憶の暗室」（layout:"inner"）。2026-11-06 に一度既定（#2713）にしたが、2026-11-07 オーナー決定で neon に戻し、比較用に残す。
@@ -128,6 +129,8 @@ export function createContinueView({ script, speaker, character, lover = speaker
     const text = String(remaining);
     if (count.textContent !== text) {
       count.textContent = text;
+      // 初回の時間制限なしで「∞」になったとき（C 漫画は「あと」「秒」を消す）。
+      clock.classList.toggle("go-count-endless", text === "∞");
       if (neon) {
         count.classList.remove("go-count-tick");
         void count.offsetWidth;

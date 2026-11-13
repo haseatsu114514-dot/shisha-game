@@ -1,5 +1,5 @@
-/* CONTINUE の見た目の候補（CV58・#2524）の共通の土台。A 熾火＝continue-ember.css、C 漫画の大ゴマ＝continue-manga.css。
-   2026-11-12 オーナー「AとCを両方作りたい　実際のできを見て決める」。本編の既定は neon のまま（continue-neon.css）。
+/* CONTINUE の見た目 C 漫画の大ゴマ（continue-manga.css・本編の既定）と A 熾火（continue-ember.css・保留）の共通の土台（#2524・CV58〜CV61）。
+   2026-11-13 オーナー決定「Cでゲームに実装して　Aは一旦保留」。前の版の neon（continue-neon.css）も残す。
    部品は neon と同じ（continue-view.js が組み、continue-looks.js が飾りを足す）。data-layout が ember / manga なので neon の規則は当たらず、
    continue.css の土台の規則（.gameover …）の上に書く。continue.css より先に読み込まれるため、同じ強さの土台の規則に負けないよう
    .end-screen.gameover から書き始める。座標は 1280×720 のステージ基準。 */
