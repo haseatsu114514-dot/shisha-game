@@ -4,7 +4,15 @@
 // 2026-11-02 オーナー「もっとスピード感・ゲーム性を」: 空中トリック（大ジャンプ中に ← → で回転）、ブースト（ゲージ満タンで超加速・岩を砕く）、
 // ヌールとの競走（同じコースを自動で滑るヌールより先にゴールすれば勝ち）を足した。
 
-export const COURSE = Object.freeze({ length: 1700, practiceLength: 640, laneHalf: 1 });
+export const COURSE = Object.freeze({ length: 1700, practiceLength: 800, laneHalf: 1 });
+// コースの山と平地（2026-11-13 オーナー「手応えレビューの内容を実装して、より面白く」。docs/spec/desert_ride.md「山と平地」）:
+// firstBump: 最初の要素は岩の無い起伏（走り出して約5秒で最初の「跳ぶ」）。start: 乱数の配置が始まる距離。
+// gapFrom→gapTo: 要素の間隔（進むほど詰まる）。
+// chainFrom: この進み具合を過ぎた最初の所に、岩の無い起伏を chainCount 個・chainGap m おきに並べる（稼ぎ場＝平地）。
+// chainGap は「大ジャンプの飛距離（通常の最高速で約50m）＋次を押す間（約0.6秒）」。landing は起伏の先の、岩を置かない距離。
+// 連続起伏の先（置けない短いコースでは lastStretch から先）は終盤の山: 間隔は gapLast、岩の無い起伏だけが出る割合を bumpOnly → bumpOnlyLast に下げて岩を増やす。
+export const LAYOUT = Object.freeze({ firstBump: 90, start: 160, gapFrom: 60, gapTo: 38, gapLast: 34, lastStretch: 0.88, chainFrom: 0.45, chainCount: 3, chainGap: 72, landing: 52,
+  bumpOnly: 0.34, bumpOnlyLast: 0.12 });
 export const PLAYER = Object.freeze({ half: 0.1 });
 export const EDGE = 0.86;
 export const SPEED = Object.freeze({ start: 15, min: 8, max: 34, boost: 46, boostAccel: 26, overDecay: 12, accel: 1.5, fallFactor: 0.42, edgeDrag: 7, landingBoost: 3.5, plainLanding: 0.94, bounceLoss: 0.9 });
@@ -27,8 +35,12 @@ export const STEER = Object.freeze({ accel: 4.6, damping: 4.0, curveDrift: 1 });
 // カービング: カーブ（|c| >= minCurve）の地上で、曲がる向きへ切り込んでいる間だけブーストのゲージが貯まり、tickSec ごとに少し得点。
 // 端の深い砂・空中・転倒中は貯まらない。押し込みの強さ（スティックの倒し量）に比例する。
 export const CARVE = Object.freeze({ minCurve: 0.4, gaugePerSec: 0.1, tickSec: 0.8, points: 30 });
-export const SCORE = Object.freeze({ finish: 1200, timePar: 72, timeBonusPerSec: 30, perfect: 250, good: 120, nearMiss: 60, comboStep: 0.15, comboMax: 3,
+export const SCORE = Object.freeze({ finish: 1200, timePar: 72, timeBonusPerSec: 30, perfect: 250, good: 120, comboStep: 0.15, comboMax: 3,
   smash: 100, raceWin: 600, raceWinNaru: 1500 });
+// かすめ（2026-11-13 段階制に。それまでは幅の中ならどこでも 60点・ゲージ 0.12 で、2つ岩の真ん中＝いちばん安全な線で2回もらえた）:
+// 岩の当たり判定のすぐ外側 width（レーン）の帯。当たる寸前ほど大きく、帯の外寄りほど小さい（closeness 1→0 で max→min）。
+// 2つ岩の真ん中（余白 0.15）は 1つ 約49点・ゲージ 約0.07。跳び越えた岩は横の危険を取っていないので真ん中の値（airCloseness）。
+export const NEAR = Object.freeze({ width: 0.22, minPoints: 30, maxPoints: 90, minGauge: 0.04, maxGauge: 0.14, airCloseness: 0.5 });
 // 競走の相手。ヌールは着地が少し遅い滑り（ブーストは使う）。なる（裏の相手・ヌールに勝った後）は 360 を決めて着地も完璧、ブーストも使う。
 // startSpeed: スタートの速さ。ヌールは砂丘のガイドなので、出だしが少しだけうまい（同じ滑りでは並べない）。
 export const RIVALS = Object.freeze({
@@ -48,7 +60,11 @@ export const SPIN = Object.freeze({ rate: 1.7, finishRate: 3.2, tolerance: 0.1, 
 // 0 になるまで返す（終盤に相手がバテて引き離せる。勝ちは腕前のまま奪わない）。手加減は lag 秒まで、終盤（lastStretch）から keep 秒まで戻す（大きく離された時だけ少し勝ちやすい）。
 // 上限を超えた分は settle 秒/秒までの速さで戻す。
 export const RUBBER = Object.freeze({ gap: 20, span: 50, catchUp: 1.25, easeOff: 0.75, lead: 3, lag: 3, keep: 0.5, holdUntil: 0.6, settleAt: 0.95, lastStretch: 0.3, settle: 0.3, ease: 6 });
-export const BOOST = Object.freeze({ duration: 3, near: 0.12, land: 0.05, perfect: 0.22, good: 0.1, trickPerHalf: 0.1, fallLoss: 0.3, recoverWindow: 0.45 });
+// ブーストの代償（2026-11-13。それまでは純粋な得で、突っ込むほど良かった）: 岩を砕くたびに残り時間が smashCost 秒減る
+// （smashFloor 秒までは残す＝砕いた直後に切れて次の岩で転ばない）。端の深い砂（|x|>EDGE）に入ると、その場でブーストが切れる。
+// practiceRecoverWindow: 練習の立て直しの猶予（初めてでも間に合う長さ）。
+export const BOOST = Object.freeze({ duration: 3, land: 0.05, perfect: 0.22, good: 0.1, trickPerHalf: 0.1, fallLoss: 0.3, recoverWindow: 0.45, practiceRecoverWindow: 0.9,
+  smashCost: 0.35, smashFloor: 0.2 });
 // 評価の境目は DEFAULT_SEED（コース「稜線」）で合わせた: 空中で回って着地も決める＝S、回らないが着地を決めてブーストも使う＝A、
 // 着地が「良い」止まり＝B、ジャンプを使わず避けるだけ＝C（remake/test/desert_ride.mjs のボットで照合）。
 // 本番は COURSE_PACKS から1本を選ぶ（同じ長さ・難易度帯で、カーブと配置だけが違う）。
@@ -93,19 +109,30 @@ const bump = z => ({ kind: "bump", z, x: 0, w: 1 });
  */
 export function generateCourse(seed = 1, { length = COURSE.length } = {}) {
   const random = rng(seed);
-  const features = [];
-  let z = 160; // 最初の数秒はまっすぐ滑るだけ
-  const minGap = progress => 60 - 22 * progress; // 進むほど密に（60 → 38）
+  const L = LAYOUT;
+  const features = [bump(L.firstBump)]; // 最初の体験は「跳ぶ」。岩は start から
+  let z = L.start, chained = false;
+  // 進むほど密に（60 → 38）。終盤の山は、もう一段詰める
+  const mountain = progress => chained || progress > L.lastStretch;
+  const minGap = progress => mountain(progress) ? L.gapLast : L.gapFrom - (L.gapFrom - L.gapTo) * progress;
   while (z < length - 140) {
     const progress = Math.min(1, z / length);
+    const chainSpan = L.chainGap * (L.chainCount - 1);
+    if (!chained && progress >= L.chainFrom && z + chainSpan + L.landing < length - 140) {
+      // 連続起伏: 岩の無い稼ぎ場（回転とコンボ）。この先の密な区間が山になる
+      for (let i = 0; i < L.chainCount; i++) features.push(bump(z + L.chainGap * i));
+      z += chainSpan + L.landing + minGap(progress) + random() * 26;
+      chained = true;
+      continue;
+    }
     const roll = random();
     const side = () => (random() < 0.5 ? -1 : 1) * (0.25 + random() * 0.55);
-    if (roll < 0.34) {
+    if (roll < (mountain(progress) ? L.bumpOnlyLast : L.bumpOnly)) {
       // 起伏: ジャンプの見せ場。着地帯（52m）に岩を置かない
       features.push(bump(z));
-      z += 52;
+      z += L.landing;
     } else if (roll < 0.52) {
-      features.push(rock(z, side()));
+      features.push(rock(z, side())); // 終盤の山では、起伏だけの分もここ（岩1つ）になる
     } else if (roll < 0.66) {
       // 2つの岩の間を抜ける。間隔は必ず板の幅の3倍以上
       const center = (random() - 0.5) * 0.7;
@@ -134,10 +161,16 @@ export function generateCourse(seed = 1, { length = COURSE.length } = {}) {
   return decorateCourse({ seed, length, features, curves, practice: false, id: packId(seed), name: packName(seed) });
 }
 
-/** 練習コース: まっすぐ → 岩1つ → 起伏（跳ぶ・着地）→ 岩 → 起伏（空中で回る）→ 岩2つ（ブーストで砕く）。説明の順番が固定なので乱数は使わない。 */
+/**
+ * 練習コース: まっすぐ → 岩1つ → 起伏（跳ぶ・着地）→ 岩 → 起伏（空中で回る）→ 岩2つ（ブーストで砕く）→ 岩の壁（わざと当たって立て直す）。
+ * 説明の順番が固定なので乱数は使わない。最後の壁（PRACTICE_WALL）は4つ並びで、コースの中（端の深い砂の内側）ではよけられない（立て直しを一度やってみる所）。
+ */
+export const PRACTICE_WALL = 720;
+const PRACTICE_WALL_X = Object.freeze([-0.66, -0.22, 0.22, 0.66]);
 export function practiceCourse() {
   const length = COURSE.practiceLength;
-  const features = [rock(150, 0.35), bump(240), rock(330, -0.3), bump(410), rock(540, 0), rock(590, 0.05)];
+  const features = [rock(150, 0.35), bump(240), rock(330, -0.3), bump(410), rock(540, 0), rock(590, 0.05),
+    ...PRACTICE_WALL_X.map(x => rock(PRACTICE_WALL, x))];
   const curves = [{ z: 0, c: 0 }, { z: length + 400, c: 0 }];
   return decorateCourse({ seed: 0, length, features, curves, practice: true, id: "practice", name: "練習" });
 }
@@ -245,9 +278,15 @@ export function createGame(course, { rival = null } = {}) {
     fallT: 0, fallAt: -9, fallReason: null, preFallSpeed: SPEED.start, preFallCombo: 0, preFallGauge: 0,
     falls: 0, combo: 0, maxCombo: 0, score: 0,
     stats: { bigJumps: 0, hops: 0, perfect: 0, good: 0, plain: 0, nearMiss: 0, edgeTime: 0, bounces: 0, airTime: 0,
-      tricks: 0, bestTrick: 0, spinFalls: 0, boosts: 0, smashed: 0, recoveries: 0, carves: 0, carveTime: 0 },
+      tricks: 0, bestTrick: 0, spinFalls: 0, boosts: 0, boostsLost: 0, smashed: 0, recoveries: 0, carves: 0, carveTime: 0 },
     passed: new Set(), smashedRocks: new Set(), lastBump: null, finished: false, finishTime: null, race: null, events: [], landedAt: null,
   };
+}
+
+/** かすめの見返り。closeness は 1（当たる寸前）〜 0（帯の外の縁）。 */
+export function nearReward(closeness) {
+  const k = Math.max(0, Math.min(1, closeness));
+  return { points: Math.round(NEAR.minPoints + (NEAR.maxPoints - NEAR.minPoints) * k), gauge: NEAR.minGauge + (NEAR.maxGauge - NEAR.minGauge) * k };
 }
 
 export const comboMultiplier = combo => Math.min(SCORE.comboMax, 1 + SCORE.comboStep * combo);
@@ -269,10 +308,12 @@ export function chargeBoost(game, amount) {
   return game.gauge;
 }
 
+/** 立て直しの猶予（秒）。練習では長い。 */
+export const recoverWindow = game => game.course?.practice ? BOOST.practiceRecoverWindow : BOOST.recoverWindow;
 /** 転倒からブーストで立て直せるか（岩に当たった直後の短い間だけで、ゲージが必要）。 */
 export function canRecover(game) {
   return !game.finished && (game.preFallGauge ?? 0) > 0 && game.fallT > 0 && game.fallReason === "rock"
-    && game.t - game.fallAt <= BOOST.recoverWindow + 1e-9;
+    && game.t - game.fallAt <= recoverWindow(game) + 1e-9;
 }
 
 /** ブースト（↓ ／ BOOST ボタン）。残量を使い切り、その割合だけ加速時間を得る。転倒直後なら立て直す。 */
@@ -463,6 +504,8 @@ export function step(game, input, dt) {
   if (Math.abs(game.x) > EDGE && (game.air <= 0 || game.airKind === "hop")) {
     game.speed = Math.max(SPEED.min, game.speed - SPEED.edgeDrag * dt);
     game.stats.edgeTime += dt;
+    // 深い砂に入るとブーストが切れる（速いほどカーブで外へ流される＝ブースト中こそ切り込む）
+    if (game.boostT > 0) { game.boostT = 0; game.stats.boostsLost += 1; game.events.push({ kind: "boostEnd", t: game.t, reason: "edge" }); }
   }
   // 横移動: 入力で加速、砂の抵抗で減衰。空中は効きが弱い。カーブでは外へ流れる。
   // タッチスティックは倒し量をそのまま使う。鍵盤・ボタン・ボットの二値入力も従来どおり受ける。
@@ -528,16 +571,22 @@ export function step(game, input, dt) {
         // ブースト中（と、その勢いが残る間）は岩を砕いて進む
         game.stats.smashed += 1;
         game.smashedRocks.add(feature);
-        award(game, "smash", SCORE.smash, { at: { x: feature.x, size: feature.size } });
+        // 砕くたびにブーストの残りが減る（よけて進むほど長く速い）。残り smashFloor 秒までは削らない
+        const boostBefore = game.boostT;
+        if (boostBefore > 0) game.boostT = Math.max(Math.min(boostBefore, BOOST.smashFloor), boostBefore - BOOST.smashCost);
+        award(game, "smash", SCORE.smash, { at: { x: feature.x, size: feature.size, boostLost: boostBefore - game.boostT } });
         continue;
       }
       if (!falling) fall(game, feature);
       continue;
     }
-    if (dx < feature.w + PLAYER.half + 0.22 && !falling) {
+    const margin = dx - (feature.w + PLAYER.half); // 当たり判定からの余白（跳び越えた時は負になりうる）
+    if (margin < NEAR.width && !falling) {
+      const closeness = cleared ? NEAR.airCloseness : 1 - Math.max(0, margin) / NEAR.width;
+      const near = nearReward(closeness);
       game.stats.nearMiss += 1;
-      award(game, "near", SCORE.nearMiss, { at: { dx } });
-      chargeBoost(game, BOOST.near);
+      award(game, "near", near.points, { at: { dx, closeness } });
+      chargeBoost(game, near.gauge);
     }
   }
   if (game.rival) stepRival(game, dt);
