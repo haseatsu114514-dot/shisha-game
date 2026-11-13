@@ -16,10 +16,20 @@ class Node {
   get offsetWidth() { return 0; }
   get classList() { const n = this; n._cls ??= new Set(); return { add: c => n._cls.add(c), remove: c => n._cls.delete(c), contains: c => n._cls.has(c) }; }
   setAttribute(k, v) { this.attrs = { ...this.attrs, [k]: v }; }
-  querySelector(sel) { return sel.includes(".fx-layer") ? this.children.find(c => c.cls === "fx-layer") || null : null; }
-  closest(sel) { let n = this; while (n) { if (sel === ".bench" && n.cls === "bench") return n; n = n.parent; } return null; }
+  querySelector(sel) {
+    if (sel.includes(".fx-layer")) return this.children.find(c => c.cls === "fx-layer") || null;
+    // 作業風景の、見えている工程の絵（口の位置つき）
+    return null;
+  }
+  // 作業風景の、見えている工程の絵
+  querySelectorAll(sel) {
+    if (!sel.includes(".worker-action")) return [];
+    const out = [], walk = n => { if (n.cls === "worker-action" && !n.hidden) out.push(n); n.children.forEach(walk); };
+    walk(this); return out;
+  }
+  closest(sel) { let n = this; while (n) { if (sel === `.${n.cls}`) return n; n = n.parent; } return null; }
   animate() { this.anims++; return { finished: new Promise(() => {}) }; }
-  getBoundingClientRect() { return { left: 0, top: 0, width: 100, height: 100 }; }
+  getBoundingClientRect() { const [left, top, width, height] = this.rect || [0, 0, 100, 100]; return { left, top, width, height, right: left + width, bottom: top + height }; }
 }
 
 async function load({ dom = true, reduced = false, calm = false, auto = null, turbo = false } = {}) {
@@ -30,7 +40,7 @@ async function load({ dom = true, reduced = false, calm = false, auto = null, tu
   };
   if (dom) Object.assign(g, {
     matchMedia: () => ({ matches: reduced }),
-    getComputedStyle: () => ({ position: "relative" }),
+    getComputedStyle: () => ({ position: "relative", objectPosition: "50% 75%" }),
     requestAnimationFrame: () => 1, cancelAnimationFrame: () => {},
     document: {
       body: { classList: { contains: c => calm && c === "reduce-shake" } },
@@ -66,7 +76,12 @@ async function load({ dom = true, reduced = false, calm = false, auto = null, tu
   await mod.evaluate(); await record.evaluate();
   const bench = new Node("bench"), host = new Node("plane"), zoom = new Node("disc");
   bench.append(host, zoom);
-  return { fx: mod.namespace, rig: record.namespace, bench, host, zoom, tick: ms => { now += ms; } };
+  // 作業風景の窓（作業台 1280×720 の左側）と、はじめの吸い出しの絵（横長 3:2。口の位置は fx.js が絵に対する割合で持つ）
+  const stage = new Node("bench-worker-stage"), actor = new Node("worker-action");
+  bench.rect = [0, 0, 1280, 720]; stage.rect = [0, 80, 400, 600]; actor.rect = [0, 110, 330, 570];
+  Object.assign(actor, { naturalWidth: 1280, naturalHeight: 853 }); actor.dataset.scene = "pull";
+  stage.append(actor);
+  return { fx: mod.namespace, rig: record.namespace, bench, host, zoom, stage, actor, worker: () => bench.append(stage), tick: ms => { now += ms; } };
 }
 
 const layer = host => host.children.find(c => c.cls === "fx-layer");
@@ -125,33 +140,51 @@ for (const opts of [{ auto: "good" }, { turbo: true }, { dom: false }]) {
   assert.equal(h.fx.fxHolding(h.host), false);
 }
 
-// 吸い出しの山場: 通常は切り抜きの層に煙の canvas を1枚載せ（出来と輪の印を持つ）、止めだけの設定・自動操作ではすぐ返す
+// 吸い出しの山場: はじめの口元から吐く。煙の canvas は作業風景の窓の中に1枚（計器や結果の札の上には載せない）。
+// 止めだけの設定・自動操作・はじめの絵が出ていないときは、何も出さずにすぐ返す
 {
+  const smokeIn = n => n.children.filter(c => c.cls === "smoke-layer");
   const h = await load();
-  h.fx.exhale(h.host, { color: "rgb(12,200,255)" });
-  const own = n => n.children.find(c => c.cls === "fx-exhale");
-  assert.deepEqual(own(h.host).children.map(c => c.cls), ["smoke-layer"], "one smoke canvas in its own clipped layer");
-  assert.equal(own(h.host).style.overflow, "hidden");
-  assert.equal(own(h.host).dataset.quality, "good");
-  assert.equal(own(h.host).dataset.ring, undefined);
+  // 口の位置: 絵は枠（幅330・高さ570）に全体が収まる大きさ（幅330・高さ約220）で、縦は 75% の位置に置かれる
+  h.worker();
+  const mouth = h.fx.workerMouth(h.bench);
+  const drawn = 853 * (330 / 1280), top = 110 + (570 - drawn) * .75;
+  assert.ok(Math.abs(mouth.x - 330 * .457 / 1280) < 1e-6 && Math.abs(mouth.y - (top + drawn * .39) / 720) < 1e-6, `mouth sits on the drawn picture (${mouth.x}, ${mouth.y})`);
+  assert.equal(mouth.stage, h.stage);
+  h.fx.exhale(h.bench, { color: "rgb(12,200,255)" });
+  assert.equal(smokeIn(h.stage).length, 1, "one smoke canvas inside the worker window");
+  assert.equal(smokeIn(h.bench).length, 0, "nothing is laid over the gauges or the result card");
+  const canvas = smokeIn(h.stage)[0];
+  // canvas は窓の中に置くが、作業台と同じ枠（＝同じ細かさの升目）に合わせる
+  assert.deepEqual([canvas.style.left, canvas.style.top, canvas.style.width, canvas.style.height], ["0.000%", "-13.333%", "320.000%", "120.000%"]);
+  assert.equal(canvas.dataset.quality, "good");
+  assert.equal(canvas.dataset.ring, "");
   for (const quality of ["thin", "harsh"]) {
-    const q = await load();
-    q.fx.exhale(q.host, { quality });
-    assert.equal(own(q.host).dataset.quality, quality, "the smoke shows how the heat went");
+    const q = await load(); q.worker();
+    q.fx.exhale(q.bench, { quality });
+    assert.equal(smokeIn(q.stage)[0].dataset.quality, quality, "the smoke shows how the heat went");
   }
-  const g = await load();
-  g.fx.exhale(g.host, { grand: true });
-  assert.equal(own(g.host).dataset.quality, "best");
-  assert.equal(own(g.host).dataset.ring, "1", "grand adds a smoke ring");
-  // 煙の輪: 作業台の上の目印の位置から描く。出せない設定では false（呼び出し側が線の輪を見せる）
+  const g = await load(); g.worker();
+  g.fx.exhale(g.bench, { grand: true });
+  assert.equal(smokeIn(g.stage)[0].dataset.quality, "best");
+  assert.equal(smokeIn(g.stage)[0].dataset.ring, "1", "grand adds a smoke ring");
+  // 煙の輪: はじめの口元から吹く（吐く煙と同じ層）。出せない設定では false（呼び出し側が線の輪を見せる）
   assert.equal(g.fx.smokeRing(g.host), true);
-  assert.ok(g.bench.children.some(c => c.cls === "smoke-layer"));
+  assert.equal(smokeIn(g.stage).length, 1, "the ring shares the worker's smoke layer");
+  assert.equal(smokeIn(g.bench).length, 0);
   for (const opts of [{ reduced: true }, { auto: "good" }]) {
-    const q = await load(opts);
-    assert.equal(await q.fx.exhale(q.host), false);
-    assert.equal(q.host.children.length, 0);
+    const q = await load(opts); q.worker();
+    assert.equal(await q.fx.exhale(q.bench), false);
     assert.equal(q.fx.smokeRing(q.host), false);
-    assert.equal(q.bench.children.some(c => c.cls === "smoke-layer"), false);
+    assert.equal(smokeIn(q.stage).length + smokeIn(q.bench).length, 0);
+  }
+  // 吸い出しのはじめの絵が出ていない（窓が無い・絵が隠れている・別の工程の絵・口が窓の外）ときは、煙を出さない
+  for (const setup of [q => {}, q => { q.worker(); q.actor.hidden = true; }, q => { q.worker(); q.actor.dataset.scene = "heat"; }, q => { q.worker(); q.actor.rect = [0, 900, 330, 570]; }]) {
+    const q = await load(); setup(q);
+    assert.equal(q.fx.workerMouth(q.bench), null);
+    assert.equal(await q.fx.exhale(q.bench), false);
+    assert.equal(q.fx.smokeRing(q.host), false);
+    assert.equal(smokeIn(q.stage).length + smokeIn(q.bench).length, 0);
   }
   assert.deepEqual(["rgb(12,200,255)", "#abc", "#a1b2c3", "red"].map(h.fx.hex6), ["#0cc8ff", "#aabbcc", "#a1b2c3", "#d9d2e6"]);
 }
