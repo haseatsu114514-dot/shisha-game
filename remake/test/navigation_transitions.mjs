@@ -112,13 +112,15 @@ await suite("navigation-transitions", async (check) => {
       });
       await page.locator(`[data-test="pin-${spot}"]`).click();
       await page.waitForFunction(() => !document.querySelector(".scene-curtain"));
-      const selector = spot === "rest" ? "#vn.active .vn-text" : spot === "tonari" ? '[data-test="tonari-customer"]' : ".shop-tabs";
+      // 2026-11-12（a389db22f）から、Dr.fookah では入口の前に凛想の店頭の応対（daily/shop-greeting.js）を読む。
+      // 地図から寄る移動は、その応対の場面に入る時に使われる（入口の「店に入る」の後には幕が出ない）。
+      // そのため店は、休む時と同じく「寄る移動が終わってから応対の会話が出る」ことを確かめる。
+      const selector = spot === "tonari" ? '[data-test="tonari-customer"]' : "#vn.active .vn-text";
       await arm(page, selector);
       await page.locator('[data-test="map-go"]').click();
-      if (spot === "shop") await page.locator('[data-test="shop-enter"]').click();
       await page.locator(".scene-curtain").waitFor();
       await page.keyboard.press("Enter");
-      if (spot === "rest") assert.equal(await page.locator(".vn-text").textContent(), "");
+      if (spot !== "tonari") assert.equal(await page.locator(".vn-text").textContent(), "");
       const audit = await verify(page, selector, spot === "rest" ? "move-lights" : "move-zoom");
       assert.equal(audit.purple, false, "The move drew purple shapes");
       assert.equal(audit.zoomed, true, "The map itself did not zoom toward the pin");
@@ -184,4 +186,5 @@ await suite("navigation-transitions", async (check) => {
     const audit = await verify(page, "#vn.active .vn-text");
     assert.deepEqual(audit.types, ["fade"], "Reduced motion played the full move instead of a fade");
   }, { reducedMotion: "reduce" });
-});
+// 店頭の応対は、寄る移動の終わりを確かめるために自分で止めておく（読み飛ばし役を入れない）。
+}, { readShopGreeting: false });
