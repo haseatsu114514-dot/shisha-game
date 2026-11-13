@@ -16,12 +16,11 @@ async function init(page) {
 
 await suite("craft-readiness", async check => {
   await check("unrelated-art-and-cached-reopen", async page => {
-    // main.warmUp() ends with this image. Do not attribute its background
-    // stove_coil request to the bench that this case has not opened yet.
-    // (The tournament stage bg is idle-deferred by warmUp and may arrive later;
-    // it is part of the allowed bench set below, so it is never held here.)
+    // main.warmUp() ends with the chapter-one home background (#3500 no longer
+    // warms bench art at the title). Wait for it so the title's background
+    // requests are not attributed to the bench that this case has not opened yet.
     await page.waitForFunction(() => performance.getEntriesByType("resource")
-      .some(entry => /\/ui\/making\/hookah_base\.(png|webp)(\?|$)/.test(entry.name)));
+      .some(entry => /\/backgrounds\/bg_home(?:_[a-z]+)?_day\.(png|webp)(\?|$)/.test(entry.name)), null, { timeout: 30000 });
     await init(page);
     const scope = await page.evaluate(() => {
       const { DB, img, makingUrl, faceIconUrl, portraitInfo, bgUrl } = T.data;

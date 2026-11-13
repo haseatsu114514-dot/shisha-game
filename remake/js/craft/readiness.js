@@ -41,5 +41,5 @@ export function craftAssetUrls(mode = "tournament", { step = "setup", cs = null,
   ].filter(Boolean))];
 }
 export function warmCraftAssets(mode, options) {
-  return Promise.all(craftAssetUrls(mode, options).map(url => imageReady(url, 15000, { keep: true })));
+  return Promise.all(craftAssetUrls(mode, options).map(url => imageReady(url, 15000, { keep: true, pin: true })));
 }
