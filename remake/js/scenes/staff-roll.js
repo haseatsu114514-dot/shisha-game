@@ -70,6 +70,8 @@ export const STAFF_SOUND_CREDIT = "効果音：ポケットサウンド – http
 export const STAFF_SOUND_MAIN = Object.freeze([
   "効果音（本編UI・場面転換）：Kenney – Interface Sounds / Music Jingles（CC0） – https://kenney.nl/",
   "効果音（本編）：OpenGameArt – eXpl0it3r「Applause in a large hall or church」/ Spring Spring「Purchasing Sound Effect」「Pleasing Bell Sound Effect」/ syncopika「coin sounds」/ Till Behrend「Glass Break」/ themightyglider「Camera」/ Kerzoven「Cat Purr & Meow」/ IgnasD「Meow」/ AntumDeluge「Fire Crackling」（CC0） – https://opengameart.org/",
+  // 3行目は第2弾（2026-11-13。同じ台帳）。
+  "効果音（本編）：OpenGameArt – Iwan Gabovitch「Door open, door close」/ Brandon Morris「Completion sound.」/ isaiah658「Ambient Bird Sounds」（CC0） – https://opengameart.org/",
 ]);
 export const STAFF_ROLL_CLOSING = "Thank you for playing";
 // 斧投げの効果音（CC0・asset_sources/music/minigame-se/）。オーナー「クレジットは載せる」2026-11-10。

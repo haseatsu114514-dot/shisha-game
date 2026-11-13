@@ -17,7 +17,7 @@ import { playChapterPoem } from "../scenes/chapter-poem.js";
 import { chapterGrowthChart } from "../daily/status.js";
 import { paidAction } from "../core/stats.js";
 import { awardChapterClearExp, awardSceneExp, presentNight, consultLessons } from "../core/growth.js";
-import { stopBgm, playBgm } from "../core/audio.js";
+import { stopBgm, playBgm, SE } from "../core/audio.js";
 import { CHAPTER_TITLE_ART } from "../core/chapter-title-art.js";
 import { CH4_PROLOGUE, CH4_RESOLUTION, CH4_SCENE_BG, CH4_SCENE_BGM, CH4_DEFAULT_BGM, CH4_SCENE_FILES, CH4_TOURNAMENT_SCENES,
   CH4_VISITOR_SCENE_FILES, canAdvanceToChapterFour, advanceToChapterFour, chapterFourProgress, completeChapterFourScene,
@@ -512,6 +512,8 @@ async function showChapterFourCommittedResult(result) {
     ...(result.failure ? [] : [`総合 ${result.total.toFixed(1)} ／ ${parts}`]),
     ...craftReviewLines(match?.craft)];
   const { chapterFourStandingsView } = await import("./ch4-standings.js");
+  // 結果発表: 会場の拍手（1位はファンファーレも）。制作を完了できなかった時は鳴らさない。
+  if (!result.failure) { SE.crowd?.(2.4); if (result.rank === 1) SE.fanfare?.(); }
   await modal({ title: result.failure ? "制作を完了できなかった" : `世界大会 ${result.rank}位`,
     body: match?.votes ? chapterFourStandingsView({ ...match, votes: result.votes || match.votes }, { rows: result.rows, notes, test: "ch4-result", final: true })
       : notes.join("\n"),

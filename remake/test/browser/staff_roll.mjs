@@ -301,7 +301,8 @@ await suite("staff-roll", async check => {
     assert.equal(await page.locator(".staff-roll-sound").textContent(), "効果音：ポケットサウンド – https://pocket-se.info/");
     assert.deepEqual(await page.locator(".staff-roll-sound-main p").allTextContents(),
       ["効果音（本編UI・場面転換）：Kenney – Interface Sounds / Music Jingles（CC0） – https://kenney.nl/",
-        "効果音（本編）：OpenGameArt – eXpl0it3r「Applause in a large hall or church」/ Spring Spring「Purchasing Sound Effect」「Pleasing Bell Sound Effect」/ syncopika「coin sounds」/ Till Behrend「Glass Break」/ themightyglider「Camera」/ Kerzoven「Cat Purr & Meow」/ IgnasD「Meow」/ AntumDeluge「Fire Crackling」（CC0） – https://opengameart.org/"]);
+        "効果音（本編）：OpenGameArt – eXpl0it3r「Applause in a large hall or church」/ Spring Spring「Purchasing Sound Effect」「Pleasing Bell Sound Effect」/ syncopika「coin sounds」/ Till Behrend「Glass Break」/ themightyglider「Camera」/ Kerzoven「Cat Purr & Meow」/ IgnasD「Meow」/ AntumDeluge「Fire Crackling」（CC0） – https://opengameart.org/",
+        "効果音（本編）：OpenGameArt – Iwan Gabovitch「Door open, door close」/ Brandon Morris「Completion sound.」/ isaiah658「Ambient Bird Sounds」（CC0） – https://opengameart.org/"]);
     assert.deepEqual((await page.locator(".staff-roll-sound-axe p").allTextContents()).map(t => t.split("：")[1].split(" – ")[0]),
       ["Kenney", "Freesound"]);
     for (const name of ["Jofae", "craigsmith", "qubodup", "plasterbrain", "IndyArts"]) assert(text.includes(name), name + " is credited");

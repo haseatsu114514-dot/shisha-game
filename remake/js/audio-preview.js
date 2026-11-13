@@ -23,6 +23,17 @@ export const AUDIO_PREVIEW_ROWS = [
     now: () => SE.affinityUp(), before: null },
   { name: "セーブ完了", where: "セーブした時", src: "Kenney「Interface Sounds」",
     now: () => SE.save(), before: () => SYNTH_SE.money(), beforeLabel: "前の音（コインの合成音）" },
+  // 第2弾（2026-11-13）
+  { name: "店の扉", where: "地図から店へ入る時（店のロゴが出る時）", src: "Iwan Gabovitch「Door open, door close」",
+    now: () => SE.door(), before: null },
+  { name: "手に入れた", where: "限定フレーバー・くじ券をもらった通知", src: "Brandon Morris「Completion sound.」",
+    now: () => SE.get(), before: null },
+  { name: "朝の小鳥", where: "寝て朝になった時（晴れの日だけ）", src: "isaiah658「Ambient Bird Sounds」",
+    now: () => SE.birds(), before: null },
+  { name: "ページ", where: "レシピ帳に書き加えた・配合や話のメモをした通知", src: "Kenney「RPG Audio」（TRPGのページめくりと同じ録音・押すたびに交互）",
+    now: () => SE.page(), before: null },
+  { name: "結果発表の拍手とファンファーレ", where: "第2〜4章の大会の最終結果（1位の時。2位以下は拍手だけ。第1章は前からこの組み合わせ）", src: "拍手は上と同じ録音、ファンファーレは今までの合成音",
+    now: () => { SE.crowd(2.4); SE.fanfare(); }, before: null },
 ];
 
 // BGM: 新しく当てた曲と、比べるための今までの曲。ファイルをそのまま再生する（ゲームの音量設定は使わない）。

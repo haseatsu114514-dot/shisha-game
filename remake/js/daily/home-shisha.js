@@ -334,8 +334,8 @@ export async function runHomeShisha({ eve = false } = {}) {
   // 消費・実施済み印・成長を、会話や再読み込みを挟む前に一括で保存する。
   if (!result) return false;
   save();
-  if (result.found) toast(`📖 レシピ帳に書き加えた「${result.found.name}」`, { kind: "good" });
-  if (result.info.golden === "hit") toast(`✨ 黄金比！ ${result.info.recipe.name}は ${goldenLabel(result.info.recipe)}`, { kind: "good" });
+  if (result.found) toast(`📖 レシピ帳に書き加えた「${result.found.name}」`, { kind: "good", se: "page" });
+  if (result.info.golden === "hit") toast(`✨ 黄金比！ ${result.info.recipe.name}は ${goldenLabel(result.info.recipe)}`, { kind: "good", se: "twinkle" });
   await play(homeShishaDialogue(result, rig, Math.random, { distant: tasteDistant() }));
   if (state !== owner) return true;
   notifyMastery(result.masteryGains);

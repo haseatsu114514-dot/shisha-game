@@ -1,4 +1,4 @@
-# 本編の効果音 第1弾（2026-11-11）
+# 本編の効果音 第1弾（2026-11-11）・第2弾（2026-11-13）
 
 オーナー依頼「ゲーム全体で効果音やBGMを足りないところがあったり変えた方が良さそうなのがあれば変えていきたい。フリー素材で探して」（[要望台帳](../../../docs/owner_requests.md) の OTO）で入れた録音の出典。
 
@@ -15,6 +15,17 @@
 | `affinity`・`affinityUp` ベル | `heart_bell.wav` | Spring Spring「Pleasing Bell Sound Effect」 | 好感度の通知（段階アップ・恋人は高さを変えて2回） |
 | `save` | `ui_save.wav` | Kenney「Interface Sounds」confirmation_002 | セーブ完了 |
 
+第2弾（2026-11-13。sources.json では `"round": 2`）:
+
+| ゲームでの音（`SE.◯◯`） | ファイル（`assets/audio/se/`） | 原音 | 鳴る場面 |
+|---|---|---|---|
+| `door` 店の扉 | `door_open.wav` | Iwan Gabovitch「Door open, door close」door-06 | 地図から店へ入る時（店のロゴが出る時。`core/store-arrival.js`） |
+| `get` 手に入れた | `item_get.wav` | Brandon Morris「Completion sound.」 | 限定フレーバー・くじ券をもらった通知 |
+| `birds` 朝の小鳥 | `morning_birds.mp3` | isaiah658「Ambient Bird Sounds」 | 寝て朝になる時（晴れの日だけ。`core/transitions.js`） |
+| `page` ページ | `trpg/page_flip_01.wav`・`_02.wav`（既存） | Kenney「RPG Audio」（台帳は [trpg-audio](../trpg-audio/README.md)） | レシピ帳に書き加えた・配合や話のメモをした通知 |
+
+第2弾では録音を足さずに既存の音をつないだ所もある: 第2〜4章の大会の結果発表（拍手 `crowd`、1位は合成のファンファーレも。途中の持ち点は `stamp`）、黄金比の通知（`twinkle`）、店めぐり帳の判子（`stamp`）、地図に新しい店が出た時（`pon`）、占いの札を置く音（`card`）。
+
 配布ページ・取得URL・原音の SHA-256・切り出し区間は [sources.json](sources.json)、ゲーム用ファイルの SHA-256 と長さは [game_files.json](game_files.json)。Kenney の原ライセンス文は [main-placeholder-audio/Kenney_Interface_Sounds_License.txt](../main-placeholder-audio/Kenney_Interface_Sounds_License.txt)（同じパック）。
 
 ## 選び方と、まだ確かめていないこと
@@ -26,12 +37,12 @@
 
 ## 再生成
 
-原音はリポジトリに置かない（拍手の原音だけで約7MB）。次のコマンドが sources.json の URL から取得し、SHA-256 を照合して作り直す（`ffmpeg` が必要。同じ入力からは同じファイルができる）。
+原音はリポジトリに置かない（拍手の原音だけで約7MB）。次のコマンドが sources.json の URL から取得し、SHA-256 を照合して作り直す（`ffmpeg` と、扉の 7z を開く `py7zr`（`pip install py7zr`）が必要。同じ入力からは同じファイルができる）。
 
 ```
 python3 asset_sources/music/main-se-20261111/prepare.py
 ```
 
-音量は、切り出したあとの最大値を dBFS で合わせている（拍手・コイン −9、ガラス −10、シャッター・セーブ −14、鳴き声・ベル −15、炭 −16）。ゲーム側の倍率（`gain`）はすべて 1。
+音量は、切り出したあとの最大値を dBFS で合わせている（拍手・コイン −9、ガラス −10、扉 −12、シャッター・セーブ・入手・小鳥 −14、鳴き声・ベル −15、炭 −16）。ゲーム側の倍率（`gain`）はすべて 1。
 
 確認: `node --experimental-vm-modules remake/test/main_se_20261111.mjs`（台帳とファイルの一致・クレジット・録音で鳴ること・録音が無い時の合成音）。

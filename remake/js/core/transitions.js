@@ -490,7 +490,8 @@ export async function nightToMorning(host, mid) {
     SE.tick();
     await Promise.all([flip(dayFlip), info.sick || !leftFlip ? null : sleep(90).then(() => flip(leftFlip))]);
     await sleep(info.sick ? 650 : 160);
-    // 4. 窓から朝が広がる。天気は窓の光・青み・窓の雨で
+    // 4. 窓から朝が広がる。天気は窓の光・青み・窓の雨で。晴れた朝は小鳥の声（雨・曇り・寝込んだ朝は鳴らさない）
+    if (weather === "sun") SE.birds?.();
     await dawnReveal(node, day, grade, { weather, home, slow: weather && weather !== "sun" ? 1.2 : 1 });
     // 5. 日付が抜けて朝の場面へ（写しは #bg と同じ絵なので、上の画面だけが戻ってくる）
     move(card, [{ opacity: 1, transform: "none" }, { opacity: 0, transform: "translateY(-12px)" }], 340, { easing: EASE.in });

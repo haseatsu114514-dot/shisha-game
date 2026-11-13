@@ -622,7 +622,7 @@ async function maybeCafeIdea(spot, visit) {
   await play(ideaDialogue(pick), { bg: bgRef(spot.bg), growthScene: true });
   if (state !== owner) return;
   const combo = markCafeIdea(state, pick, DB.flavors || []);
-  toast(`📝 試したい配合をメモした ──「${combo}」（配合の画面でひらめきに出る）`, { kind: "good" });
+  toast(`📝 試したい配合をメモした ──「${combo}」（配合の画面でひらめきに出る）`, { kind: "good", se: "page" });
 }
 
 export async function restAtHome(spot, { fullDay = false } = {}) {

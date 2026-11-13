@@ -496,7 +496,7 @@ export async function visitRio() {
     state.flags._rio_sample_received = true;
     if (!received) {
       addFlavorStock("nightside_earlgrey", FLAVOR_BOX_GRAMS);
-      toast("限定フレーバー「NS アールグレイ（試作）」を手に入れた", { kind: "good" });
+      toast("限定フレーバー「NS アールグレイ（試作）」を手に入れた", { kind: "good", se: "get" });
     }
   }
   return true;

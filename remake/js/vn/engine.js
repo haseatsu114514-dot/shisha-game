@@ -703,7 +703,7 @@ function applyLine(line) {
 
 function onNote(line) {
   state.flags[`_note_${line.note_id}`] = true;
-  toast(`📝 メモした ──「${line.label || "話の要点"}」`, { kind: "good" });
+  toast(`📝 メモした ──「${line.label || "話の要点"}」`, { kind: "good", se: "page" });
 }
 
 function runFx(line) {
