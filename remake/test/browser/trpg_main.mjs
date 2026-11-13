@@ -550,5 +550,71 @@ await suite("trpg-main", async check => {
     assert(await button(page, "trpg-play-shark-last-order").isDisabled());
     assert.deepEqual(await storageSnapshot(page), before);
   });
+  // 試遊は本編から起動する（TRF21）: ?trial=trpg で、本編と同じ店の画面・同じ本棚を、使い捨ての状態で開く。
+  // 本編のセーブは読み書きしない。始め方を選び直せて、「タイトルへ戻る」でふだんのタイトルへ。スマホ横で収まることも見る。
+  await check("trial-opens-from-the-main-game", async page => {
+    await prepare(page); const before = await storageSnapshot(page);
+    await page.goto(new URL("index.html?trial=trpg", baseURL).href);
+    await button(page, "trpg-campaign-notice").waitFor({ timeout: 30000 });
+    await page.locator("#boot").waitFor({ state: "detached" });
+    assert.equal(await page.evaluate(() => document.body.dataset.screen), "trpg", "The real cafe screen, not a separate page");
+    assert.equal(await button(page, "trpg-tryout").count(), 1);
+    const trial = () => page.evaluate(() => __trpgTrial.snapshot());
+    // 既定は「夜・部員がそろっている」: 部員の本は買ってあり、すぐ遊べる。最後の一冊は、部員の物語を遊んでから。
+    const ready = await trial();
+    assert.deepEqual([ready.chapter, ready.phase, ready.slot], [2, "daily", 1]);
+    assert.deepEqual(Object.keys(ready.trpg.club.members).sort(), ["adam", "ageha", "hiyori", "rei", "samechan", "tsumugi"]);
+    assert.deepEqual(ready.trpg.owned, ready.trpg.stock); assert(!ready.trpg.stock.includes("mist-kingdom"));
+    assert(await button(page, "trpg-play-ordinary-cup").isEnabled());
+    assert.equal(await button(page, "trpg-campaign-close").textContent(), "試遊の設定へ");
+    assert.equal(await page.locator('[data-test^="trpg-demo-meet-"]').count(), 0, "Everyone has joined: nobody left to invite");
+    // 6人の部員は、横持ちスマホでも切れずに並ぶ（3人ずつ2段）。
+    await assertFits(page, ".trpg-campaign-person");
+    await assertShelfControls(page);
+    // 卓は本編と同じもの: 始めて、しおりを挟んで本棚へ戻れる。
+    await hit(page, "trpg-play-ordinary-cup");
+    await button(page, "trpg-tutorial-panel").waitFor(); await lines(page);
+    await hit(page, "trpg-start"); await lines(page); await roll(page);
+    await hit(page, "trpg-exit"); await hit(page, "trpg-exit-confirm"); await button(page, "trpg-play-ordinary-cup").waitFor();
+    assert.equal((await trial()).trpg.bookmark?.id, "ordinary-cup");
+    // 始め方を選び直す。
+    await hit(page, "trpg-campaign-close"); await button(page, "trpg-tryout-setup").waitFor();
+    assert.deepEqual(await page.locator(".trpg-tryout-preset strong").allTextContents(),
+      ["夜 · 部員がそろっている", "夜 · 部を作ったばかり", "夜 · 部員の物語を遊び終えた", "昼 · 本選びと店長の試遊"]);
+    await assertFits(page, ".trpg-tryout-preset, .trpg-tryout-actions .trpg-button");
+    await hit(page, "trpg-tryout-fresh"); await button(page, "trpg-campaign-notice").waitFor();
+    const fresh = await trial();
+    assert.deepEqual(fresh.trpg.club.members, {}); assert.deepEqual(fresh.trpg.stock.slice().sort(), ["regular-harbor", "regular-mail"]);
+    assert.equal(fresh.trpg.bookmark, undefined, "A new start is a new state");
+    assert(await button(page, "trpg-demo-meet-hiyori").count(), "People can be invited from the shelf");
+    await hit(page, "trpg-campaign-close"); await hit(page, "trpg-tryout-finale"); await button(page, "trpg-campaign-notice").waitFor();
+    assert((await trial()).trpg.owned.includes("mist-kingdom"), "The last book is on the shelf");
+    await hit(page, "trpg-campaign-close"); await hit(page, "trpg-tryout-noon"); await button(page, "trpg-campaign-notice").waitFor();
+    assert.equal((await trial()).slot, 0); assert(await button(page, "trpg-trial-open").count(), "The daytime dice game is there");
+    // 出口: ふだんのタイトルへ。本編のセーブ・設定は、試遊の前と1文字も変わらない。
+    await hit(page, "trpg-campaign-close"); await hit(page, "trpg-tryout-exit");
+    await page.waitForFunction(() => document.body.dataset.screen === "title");
+    await button(page, "title-load").waitFor();
+    assert.deepEqual(await storageSnapshot(page), before);
+  }, { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true });
+  // 古い試遊ページ（物語だけ・本棚だけ）は、人が開くと本編の試遊へ送られる。自動検査と ?harness=1 は、そのページのまま。
+  await check("old-trial-pages-lead-to-the-main-game", async page => {
+    for (const file of ["trpg-preview.html", "trpg-campaign-preview.html"]) {
+      await page.goto(new URL(file, baseURL).href);
+      await page.locator("#trpg-app [data-test]").first().waitFor();
+      assert(new URL(page.url()).pathname.endsWith("/" + file), "The checks keep using the page itself");
+    }
+    // 人のブラウザ（自動操作の印が無い）として開き直す。
+    await page.addInitScript(() => Object.defineProperty(Navigator.prototype, "webdriver", { get: () => false }));
+    for (const file of ["trpg-preview.html?scenario=ordinary-cup", "trpg-campaign-preview.html"]) {
+      await page.goto(new URL(file, baseURL).href);
+      await page.waitForURL(url => url.pathname.endsWith("/index.html") && url.searchParams.get("trial") === "trpg");
+      await button(page, "trpg-campaign-notice").waitFor({ timeout: 30000 });
+      assert.equal(await page.evaluate(() => document.body.dataset.screen), "trpg");
+    }
+    await page.goto(new URL("trpg-campaign-preview.html?harness=1", baseURL).href);
+    await page.locator("#trpg-app [data-test]").first().waitFor();
+    assert(new URL(page.url()).pathname.endsWith("/trpg-campaign-preview.html"), "?harness=1 opens the page directly");
+  });
 });
 

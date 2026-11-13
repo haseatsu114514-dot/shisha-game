@@ -1,4 +1,5 @@
 // Disposable chapter-2 table, without opening or writing the player's saves.
+import "./trial-redirect.js"; // 人が開いた時は本編の試遊へ送る（TRF21）。検査と ?harness=1 はこのページのまま
 import { newState } from "../core/state.js";
 import { el } from "../core/util.js";
 import { fitStage } from "../core/stage-fit.js";
