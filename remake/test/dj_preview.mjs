@@ -1,8 +1,10 @@
-// DJ set contracts (2026-11-01 redesign, DJS17 gameplay): quantized ▶, guide-line fader follow, 選曲, automatic EQ, floor meter, set flow.
+// DJ set contracts (2026-11-01 redesign, DJS17 gameplay; 2026-11-13 DJF feel: 4-bar entry lines, feel table, sound effects): quantized ▶, guide-line fader follow, 選曲, automatic EQ, floor meter, set flow.
 // Actual modules + controlled WebAudio; no real browser/listening claim.
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {createSet,makeDeck,detuneFactorFor,playDeck,pauseMix,resumeMix,beatAt,setTempo,setPitch,pitchOf,bpmRange,phaseError,gains,updateSet,syncIncoming,quality,floorStep,scoreTransition,scoreFromErr,scoreFromRatio,rankFromScore,scoreSet,lowCutDb,LOW_CUT_DB,LOCK_PCT,PHRASE,LEAD,GRACE,FOLLOW_BAND,toward,gradeOf,dancerPose,guideAt,keyMatch,energyMatch,pickRating,chooseTrack,REQUESTS,PICK_FLOOR,GRADE_FLOOR,RANK_FLOOR,FOLLOW_FLOOR,FLOOR_WARM,FOLLOW_SWEET,MOODS,moodOf,followHint} from '../previews/dj/model.mjs';
+import {createSet,makeDeck,detuneFactorFor,playDeck,pauseMix,resumeMix,beatAt,setTempo,setPitch,pitchOf,bpmRange,phaseError,gains,updateSet,syncIncoming,quality,floorStep,scoreTransition,scoreFromErr,scoreFromRatio,rankFromScore,scoreSet,lowCutDb,LOW_CUT_DB,LOCK_PCT,PHRASE,LEAD,GRACE,FOLLOW_BAND,toward,gradeOf,dancerPose,guideAt,keyMatch,energyMatch,pickRating,chooseTrack,REQUESTS,PICK_FLOOR,GRADE_FLOOR,RANK_FLOOR,FOLLOW_FLOOR,FLOOR_WARM,FOLLOW_SWEET,MOODS,moodOf,followHint,QUICK_GRID,quickEntry,RANK_LINES} from '../previews/dj/model.mjs';
+import {FEEL,applyFeelOverrides} from '../previews/dj/feel.mjs';
+import {DJSfx} from '../previews/dj/sfx.mjs';
 import {renderTrack,peakAt} from '../previews/dj/synth.mjs';
 import {DJAudio} from '../previews/dj/audio.mjs';
 import {TRACKS,SETS,buildTrackData,peakAt as fullPeakAt} from '../previews/dj/tracks.mjs';
@@ -162,6 +164,37 @@ await check('▶ is judged against the nearest phrase head (DJS20): a little bef
  // the guide line starts from the head that was judged
  updateSet(m,sec(a,64+16));near(updateSet(m,sec(a,64+16)).progress,.5,1e-6);
 });
+// ── 2026-11-13 DJF: shorter waits (4-bar entry lines), feel numbers, sound effects ──
+await check('entry lines every 4 bars (DJF03): the game waits 2〜6 bars in SET 1 and 4〜8 bars in SET 2・3; the default grid is unchanged',()=>{
+ assert.equal(QUICK_GRID,16);assert.deepEqual(quickEntry(S1),{grid:16,lead:8});assert.deepEqual(quickEntry(S2),{grid:16,lead:LEAD});assert.deepEqual(quickEntry(SETS[2]),{grid:16,lead:LEAD});
+ const d=createSet(S1);assert.deepEqual([d.grid,d.lead],[PHRASE,LEAD],'createSet without options keeps the 8-bar phrase heads');
+ const m=createSet(S1,()=>1,()=>0,quickEntry(S1));playDeck(m,0,0);const a=m.decks[0];assert.deepEqual([m.cue.start,m.cue.end],[16,48],'SET 1: the first entry is 4 bars in (8 s at 120 BPM), the mix is still 8 bars');
+ const m2=createSet(S2,()=>1.02,()=>0,quickEntry(S2));playDeck(m2,0,0);assert.equal(m2.cue.start,32,'SET 2: 4 bars to match the tempo, then the next line');
+ // every wait is between lead and lead+grid beats, wherever the track is when the cue opens
+ for(let b=0;b<200;b+=.37)for(const set of SETS){const q=quickEntry(set),x=createSet(set,()=>1,()=>0,q);x.decks[0].beat=b;playDeck(x,0,0);const wait=x.cue.start-b;assert(wait>q.lead-1e-9&&wait<=q.lead+q.grid+1e-9,`${set.name} from ${b}: ${wait}`);assert.equal(x.cue.start%16,0);}
+ // a line that goes by rolls to the next one 4 bars on (view.rolled tells the screen once); ▶ past the middle aims at the next line
+ let v=updateSet(m,sec(a,15));assert(!v.rolled&&!v.open);v=updateSet(m,sec(a,20));assert(v.open&&!v.rolled,'just past the line: still playable (late)');
+ v=updateSet(m,sec(a,32.1));assert(v.rolled);assert.deepEqual([m.cue.start,m.cue.end,m.cue.missed],[32,64,1]);assert.equal(updateSet(m,sec(a,33)).rolled,false);
+ const l=createSet(S1,()=>1,()=>0,quickEntry(S1));playDeck(l,0,0);let t=sec(a,16+7);updateSet(l,t);playDeck(l,1,t);assert.equal(l.cue.start,16);assert.equal(l.lastPlay.grade,'LATE');
+ const n=createSet(S1,()=>1,()=>0,quickEntry(S1));playDeck(n,0,0);t=sec(a,32)-.02;updateSet(n,sec(a,25));playDeck(n,1,t);assert.equal(n.cue.start,32,'past the middle: judged against the next line');assert.equal(n.lastPlay.grade,'PERFECT');near(n.lastPlay.errorMs,-20,1e-6);
+ // the whole set scores exactly as on the 8-bar grid, and takes fewer beats
+ const beats=(opts)=>{const x=createSet(S1,()=>1,()=>0,opts);playDeck(x,0,0);let r=ride(x);chooseTrack(x,0,r.now+3);r=ride(x);assert(r.v.finished);return {result:x.result,sec:r.now};};
+ const quick=beats(quickEntry(S1)),slow=beats({});assert.deepEqual(quick.result,slow.result,'scoring does not depend on the grid');assert.equal(quick.result.rank,'S');
+ near(slow.sec,64.001,1e-6);near(quick.sec,48.001,1e-6);// picking 3 s after the first transition: 64 s → 48 sassert(quick.sec<50,`SET 1 in under 50 s: ${quick.sec}`);
+});
+await check('rank lines (DJF07) are the thresholds rankFromScore uses',()=>{
+ assert.deepEqual({...RANK_LINES},{S:90,A:75,B:55});for(const [rank,line] of Object.entries(RANK_LINES)){assert.equal(rankFromScore(line),rank);assert.notEqual(rankFromScore(line-1),rank);}
+});
+await check('feel numbers (DJF11): one table, overridable by name; unknown names and non-numbers are ignored; bigger moments are held longer and sound louder',()=>{
+ assert(!Object.isFrozen(FEEL));const before=JSON.stringify(FEEL);
+ assert.deepEqual(applyFeelOverrides('hold.PERFECT:140, afterglow.ms:0,nope.x:1,hold.nope:3,holdDim:abc,sfx.cheer.S:.1,shake.S:1,hold.GOOD:'),['hold.PERFECT','afterglow.ms','sfx.cheer.S']);
+ assert.deepEqual([FEEL.hold.PERFECT,FEEL.afterglow.ms,FEEL.sfx.cheer.S,FEEL.shake.S,FEEL.hold.GOOD],[140,0,.1,'big',60]);assert.deepEqual(applyFeelOverrides(null),[]);
+ Object.assign(FEEL,JSON.parse(before));assert.equal(JSON.stringify(FEEL),before);
+ assert(FEEL.hold.PERFECT>FEEL.hold.GOOD&&FEEL.hold.GOOD>FEEL.hold.OK&&FEEL.hold.EARLY===0&&FEEL.hold.LATE===0,'only a good entry is held');assert(FEEL.hold.S>FEEL.hold.A&&FEEL.hold.finish>=FEEL.hold.S);
+ assert(Math.max(...Object.values(FEEL.hold))<=150,'a hold is a blink: the music never stops');
+ const c=FEEL.sfx.cheer;assert(c.PERFECT>c.GOOD&&c.S>c.A&&c.finishS>c.finishA&&c.finishA>c.finishB&&c.combo32>c.combo24&&c.combo24>c.combo16);assert(FEEL.sfx.tick<FEEL.sfx.impactSmall&&FEEL.sfx.impactSmall<FEEL.sfx.impact,'guidance is quieter than a result');
+ assert(new Set(Object.values(FEEL.shake)).size>=4,'four shake types');assert.notEqual(FEEL.shake.PERFECT,FEEL.shake.LATE);assert.notEqual(FEEL.shake.S,FEEL.shake.A);
+});
 await check('選曲 (DJS22): the guests never ask for something neither candidate can answer',()=>{
  for(let seed=1;seed<=200;seed++){
   let x=seed;const rng=()=>{x=(Math.imul(x,1664525)+1013904223)>>>0;return x/4294967296;};
@@ -207,6 +240,25 @@ class Context{
 const loads=[];
 const loadTrack=async(c,key)=>{loads.push(key);const cfg=TRACKS[key];return {...renderTrack(Object.keys(TRACKS).indexOf(key)%2,c.sampleRate),nativeBpm:cfg.bpm,firstBeat:cfg.firstBeat,beats:32,trimDb:cfg.trimDb};};
 const live=c=>c.sources.filter(s=>!s.stopped);
+await check('sound effects (DJF02): silent without oscillators (no throw); with them, every event builds nodes on its own bus that follows the game volume and mute',async()=>{
+ const plain=new DJAudio(Context,{setIndex:0,loadTrack});const quiet=new DJSfx(plain);assert.equal(quiet.play('entry',{grade:'PERFECT'}),false,'no audio context yet');await plain.play(0);assert.equal(quiet.play('entry',{grade:'PERFECT'}),false,'a context without oscillators');assert.equal(quiet.count,0);await plain.dispose();
+ const made=[];class P extends Param{exponentialRampToValueAtTime(v,t){this.value=v;this.calls.push([v,t]);}}
+ class N{constructor(kind){this.kind=kind;this.gain=new P();this.frequency=new P();this.Q=new P();this.playbackRate=new P(1);this.to=[];made.push(this);}connect(n){this.to.push(n);}disconnect(){}start(t){this.started=t;}stop(t){this.stopped=t;}}
+ class Rich extends Context{createGain(){return new N('gain');}createOscillator(){return new N('osc');}createBiquadFilter(){return new N('filter');}createBufferSource(){const n=new N('source');this.sources.push(n);return n;}
+  createBuffer(_,length,sampleRate){return {duration:length/sampleRate,getChannelData:()=>new Float32Array(length),copyToChannel(){}};}async decodeAudioData(){return {duration:1};}}
+ const fetched=[],realFetch=globalThis.fetch;globalThis.fetch=async url=>{fetched.push(String(url));return {ok:true,arrayBuffer:async()=>new ArrayBuffer(8)};};
+ try{
+  const a=new DJAudio(Rich,{setIndex:0,loadTrack});await a.play(0);const c=a.context,s=new DJSfx(a),own=made.length;c.currentTime=5;
+  for(const [name,arg] of [['tick',{at:5.05,last:true}],['entry',{grade:'PERFECT'}],['entry',{grade:'GOOD'}],['entry',{grade:'OK'}],['entry',{grade:'LATE'}],['combo',{combo:8}],['combo',{combo:32}],['broken',{}],['transition',{rank:'S'}],['transition',{rank:'C'}],['pick',{rating:'◎'}],['pick',{rating:'△'}],['finish',{rank:'A'}],['stamp',{}]]){
+   const n=made.length;assert.equal(s.play(name,arg),true,name);assert(made.length>n,`${name} builds nodes`);assert.equal(s.last,name);}
+  assert.equal(s.count,14);assert.equal(s.play('nope'),false);assert.equal(s.count,14);
+  assert.deepEqual(fetched.map(u=>u.split('/assets/audio/se/')[1]).sort(),['crowd_applause_01.mp3','minigame/axe_cheer.wav'],'the two recorded crowds, fetched once');
+  const fxNodes=made.slice(own),osc=fxNodes.filter(n=>n.kind==='osc');assert(osc.every(o=>o.started>=5&&o.stopped>o.started),'every tone is scheduled now or later and stops');assert(osc.some(o=>Math.abs(o.started-5.05)<1e-9),'the count-in click lands on its beat time');
+  assert(fxNodes.length>20&&!fxNodes.some(n=>n.to.includes(a.output)||n.to.includes(a.analyser)),'effects never go through the music output (the meters stay the music)');assert(s.bus.to.includes(c.destination));
+  near(s.bus.gain.value,.42*FEEL.sfx.master);a.volume=.36;s.play('stamp');near(s.bus.gain.value,.84*FEEL.sfx.master);a.muted=true;s.play('stamp');assert.equal(s.bus.gain.value,0,'the game mute silences the effects');
+  await new Promise(r=>setTimeout(r,0));await a.dispose();
+ }finally{globalThis.fetch=realFetch;}
+});
 await check('audio: first ▶ loads the two deck tracks and starts exactly one source at native rate',async()=>{
  loads.length=0;const a=new DJAudio(Context,{setIndex:0,loadTrack});assert.equal(a.context,null);assert(await a.play(0));
  assert.deepEqual(loads,['danceMonster','digitalLemonade']);assert.equal(a.context.sources.length,1);assert.deepEqual(a.mix.decks.map(d=>d.playing),[true,false]);near(a.voices[0].source.playbackRate.value,1);near(a.voices[0].source.started.offset,.006);near(a.voices[0].source.loopStart,.006);
@@ -257,9 +309,9 @@ await check('track metadata and real audio files (quick CI has no images: artwor
 });
 await check('entry: ▶×2, crossfader, SYNC, decorative EQ, credits; no sync-by-default, storage or network in the modules',()=>{
  const dir=new URL('../previews/dj/',import.meta.url);
- for(const name of ['app.mjs','audio.mjs','model.mjs','tracks.mjs']){const s=fs.readFileSync(new URL(name,dir),'utf8');assert(!/localStorage|sessionStorage|core\/state|daily\/|https?:\/\//.test(s),name);}
+ for(const name of ['app.mjs','audio.mjs','model.mjs','tracks.mjs','feel.mjs','sfx.mjs']){const s=fs.readFileSync(new URL(name,dir),'utf8');assert(!/localStorage|sessionStorage|core\/state|daily\/|https?:\/\//.test(s),name);}
  const html=fs.readFileSync(new URL('index.html',dir),'utf8');
- for(const id of ['play-a','play-b','crossfader','sync','pitch-a','pitch-b','wave-a','wave-b','crowd','floor-fill','restart','guide','combo','pick','request','pick-cards','drop'])assert(html.includes(`id="${id}"`),id);
+ for(const id of ['play-a','play-b','crossfader','sync','pitch-a','pitch-b','wave-a','wave-b','crowd','floor-fill','restart','guide','combo','pick','request','pick-cards','drop','burst-a','burst-b'])assert(html.includes(`id="${id}"`),id);
  assert(!/id="eq-[^"]*"[^>]*type=|<input[^>]*eq/i.test(html),'EQ knobs are decorative, not inputs');assert(!/data-nudge|id="assist"|id="tap"|id="judge-btn"|stage-btn/.test(html));assert(html.includes('CC BY 4.0'));
  assert.equal(LEAD,16);assert.equal(GRACE,32);assert.equal(LOCK_PCT,.15);
 });

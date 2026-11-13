@@ -1,5 +1,7 @@
 import { DJAudio } from './audio.mjs';
-import { beatAt, lowCutDb, LOCK_PCT, PHRASE, FOLLOW_BAND, REQUESTS, phaseError, bpmDiffPct, pitchOf, mod, gains, toward, keyMatch, energyMatch, quality, followHint, moodOf, MOODS, GRADE_FLOOR, RANK_FLOOR, PICK_FLOOR } from './model.mjs';
+import { beatAt, lowCutDb, LOCK_PCT, PHRASE, FOLLOW_BAND, REQUESTS, phaseError, bpmDiffPct, pitchOf, mod, gains, toward, keyMatch, energyMatch, quality, followHint, moodOf, MOODS, GRADE_FLOOR, RANK_FLOOR, PICK_FLOOR, RANK_LINES, quickEntry } from './model.mjs';
+import { FEEL, applyFeelOverrides } from './feel.mjs';
+import { DJSfx } from './sfx.mjs';
 import { TRACKS, SETS } from './tracks.mjs';
 // View of the DJ set (2026-11-11 renewal, DJS20〜). Three things the screen always answers:
 //   1. いま何をするか — the navi line + the gold arrow on the control to touch (▶ / PITCH / SYNC / 横フェーダー).
@@ -18,6 +20,10 @@ if (params.get('phone') === '1') document.documentElement.dataset.density = 'pho
 const gameVolume = Number(params.get('vol')), gameMuted = params.get('mute') === '1';
 // ?phones=1: the player's own monitor headphones (main game VOL07). Every ▶ timing window is 10 ms wider; shown in the set info.
 const phones = params.get('phones') === '1', ALLOWANCE_MS = phones ? 10 : 0;
+// ?best=0..100: the player's best total for this set so far (main game). The result card says how far the new total is from it.
+const bestParam = Number(params.get('best'));
+let best = params.has('best') && Number.isFinite(bestParam) && bestParam >= 0 && bestParam <= 100 ? Math.round(bestParam) : null;
+applyFeelOverrides(params.get('feel')); // ?feel=hold.PERFECT:140,… (feel.mjs)
 const tell = message => { try { if (embedded) window.parent.postMessage(message, location.origin); } catch { /* host optional */ } };
 const reduced = matchMedia('(prefers-reduced-motion: reduce)'), coarse = matchMedia('(pointer: coarse)');
 const THUMB = document.documentElement.dataset.density === 'phone' ? 72 : 54; // crossfader cap width (style.css)
@@ -25,8 +31,13 @@ const sideOf = id => id ? '右' : '左', deckOf = id => id ? 'B' : 'A';
 const pickOne = list => list[Math.floor(Math.random() * list.length)];
 let audio, disposed = false, frame = 0, view = { mode: 'idle' }, message = '', subMessage = '', toastUntil = 0, judgeUntil = 0, shownPlay = null, lastCount = '', shownTracks = [null, null], shownSelect = null;
 let moodShown = null, helpManual = null, missStreak = 0, awaySince = 0, awaySaid = false, clashSince = 0, clashSaid = false, comboSaid = 0, shown = {}, particles = [];
+const SHAKES = ['shake-drop', 'shake-sway', 'shake-big', 'shake-stumble'];
 const STRIPS = 7, STRIP_OVERLAP = 3; // the guests' band: 7 strips, each overlapping its neighbours by 3 % of the width (see buildBand)
-let strips = [], flash = 0;
+let strips = [], flash = 0, sfx = null;
+// 手応え（2026-11-13 DJF）: 止め・跳ね・揺れ・余韻のいまの状態。数値は feel.mjs の FEEL。コンソールの __dj.feel / __dj.fx で読み書きできる。
+const fx = { pending: null, holdUntil: 0, holdBeat: 0, holds: 0, burst: 1, burstBeat: 0, shakes: 0, lastShake: '', ticks: new Set(), tickCount: 0, combo: 0, brokenUntil: 0, result: null, count: null, played: false };
+globalThis.__dj = { feel: FEEL, fx };
+const buzz = pattern => { if (pattern && coarse.matches && navigator.vibrate) try { navigator.vibrate(pattern); } catch { /* unsupported */ } };
 const status = text => { $('status').textContent = text; };
 /** Write text only when it changes (the render loop runs every frame; an unchanged write would still dirty the layout). */
 const put = (id, text) => { const el = $(id); if (el.textContent !== text) el.textContent = text; };
@@ -45,7 +56,7 @@ function measure(t) {
 }
 addEventListener('resize', () => { geo.at = -1e9; });
 function create() {
-  audio = new DJAudio(undefined, { setIndex, allowance: ALLOWANCE_MS });
+  audio = new DJAudio(undefined, { setIndex, allowance: ALLOWANCE_MS, entry: quickEntry(SETS[setIndex]) }); sfx = new DJSfx(audio);
   if (embedded) { audio.muted = gameMuted; if (Number.isFinite(gameVolume)) audio.volume = Math.max(0, Math.min(.36, .18 * gameVolume / .5)); }
   audio.onInterrupted = () => status('音声が中断されました。▶で再開します。');
   shownTracks = [undefined, undefined]; shownSelect = null; $('pick').hidden = true;
@@ -53,7 +64,10 @@ function create() {
   // SET 1 arrives already in tempo: PITCH and SYNC are dimmed so the eye goes to ▶ and the crossfader.
   $('dj-stage').dataset.pitch = SETS[setIndex].detune === 'match' ? 'off' : 'on';
   $('voices').replaceChildren(); $('heat-delta').className = 'heat-delta'; $('crossfader').value = '0';
-  view = { mode: 'idle' }; shownPlay = null; judgeUntil = 0; toastUntil = 0; moodShown = null; helpManual = null; missStreak = 0; awaySince = 0; awaySaid = false; clashSince = 0; clashSaid = false; comboSaid = 0; particles = []; flash = 0;
+  view = { mode: 'idle' }; shownPlay = null; judgeUntil = 0; toastUntil = 0; moodShown = null; missStreak = 0; awaySince = 0; awaySaid = false; clashSince = 0; clashSaid = false; comboSaid = 0; particles = []; flash = 0;
+  helpManual = fx.played ? false : null; // DJF08: the how-to board only before the very first set; a retry goes straight back to the decks
+  Object.assign(fx, { pending: null, holdUntil: 0, burst: 1, combo: 0, brokenUntil: 0, result: null, count: null }); fx.ticks.clear();
+  $('floor-art').classList.remove('hold', ...SHAKES); $('drop').className = 'drop'; $('drop').textContent = ''; $('combo').classList.remove('broken', 'pop');
   shown = {}; message = ''; subMessage = ''; lastCount = ''; $('count').textContent = '';
   showDecks();
 }
@@ -80,19 +94,22 @@ export function snapshot() {
     transitions: m.transitions.map(t => ({ to: t.to, grade: t.grade, parts: t.parts, total: t.total, rank: t.rank, pick: t.pick, combo: t.combo, follow: t.follow })), result: m.result,
     allowance: m.allowance, voices: audio.voices.filter(Boolean).length, rms: audio.level(), reduced: reduced.matches, embedded, muted: audio.muted, volume: audio.volume, remaining: view.remaining, progress: view.progress,
     // what the screen is telling the player (DJS20): crowd mood, step lamp, navi lines, gold arrows, fader hint
+    grid: m.grid, best, fx: { holds: fx.holds, held: !!fx.pending, shakes: fx.shakes, lastShake: fx.lastShake, ticks: fx.tickCount, sfx: sfx.count, lastSfx: sfx.last, afterglow: !!fx.result && !fx.result.shown, counting: !!fx.count, result: !!fx.result?.shown },
     mood: moodOf(m.floor), step: shown.step, navi: message, sub: subMessage, points: shown.points, hint: shown.hint, away: shown.away, arrows: !$('fader-arrows').hidden };
 }
 async function pause() { try { await audio.pause(); status('停止中。▶で再開します。'); } catch (e) { status(`停止処理: ${e.message}`); } }
 for (const id of [0, 1]) {
   const key = id ? 'b' : 'a';
   $('pitch-' + key).addEventListener('input', e => audio.pitch(id, Number(e.target.value)));
-  $('play-' + key).addEventListener('click', async () => {
-    if (audio.mix.decks[id].playing) return; // ▶ only starts: a deck leaves the air when its transition ends
-    // after an interruption (tab hidden, audio session lost) any ▶ brings back every deck that was playing, in step
-    const m = audio.mix, resume = !m.running && m.phase !== 'idle' && m.resumeDecks.length > 0;
-    try { if (await (resume ? audio.start() : audio.play(id))) { helpManual = null; if (document.hidden) { await pause(); return; } status(resume ? '再開' : `${key.toUpperCase()} ON AIR`); } }
-    catch (e) { status(`${e.message}。▶から再試行できます。`); }
-  });
+  $('play-' + key).addEventListener('click', () => startDeck(id));
+}
+async function startDeck(id) {
+  const key = id ? 'b' : 'a';
+  if (audio.mix.decks[id].playing) return; // ▶ only starts: a deck leaves the air when its transition ends
+  // after an interruption (tab hidden, audio session lost) any ▶ brings back every deck that was playing, in step
+  const m = audio.mix, resume = !m.running && m.phase !== 'idle' && m.resumeDecks.length > 0;
+  try { if (await (resume ? audio.start() : audio.play(id))) { helpManual = null; fx.played = true; if (document.hidden) { await pause(); return; } status(resume ? '再開' : `${key.toUpperCase()} ON AIR`); } }
+  catch (e) { status(`${e.message}。▶から再試行できます。`); }
 }
 $('sync').addEventListener('click', () => { if (audio.sync()) status('SYNC：次の曲のBPMを合わせました'); });
 // ── お客さんの反応: 声の吹き出し・熱の増減の札・気分の言葉 ──────────────────────────────
@@ -103,7 +120,7 @@ const VOICES = {
   clash: ['音がごちゃついてる…', 'なんか、ぶつかってない？'], quiet: ['音、小さくない？', 'あれ、止まった？'],
   S: ['最高のつなぎ！', 'フゥー！！'], A: ['いいね！', 'ノれる！'], B: ['まあまあかな'], C: ['うーん…', '踊りづらい…'],
   '◎': ['これ待ってた！', 'わかってる！'], '○': ['お、いいじゃん'], '△': ['今それじゃない…', 'えー…'],
-  cold: ['なんか冷めてきた…', '帰ろっかな…'], peak: ['最高潮！！'],
+  cold: ['なんか冷めてきた…', '帰ろっかな…'], peak: ['最高潮！！'], skip: ['あれ、まだかな？', '次の曲、まだ？'],
 };
 const COLD = new Set(['EARLY', 'LATE', 'clash', 'quiet', 'C', '△', 'cold']);
 let voiceSlot = 0;
@@ -144,7 +161,7 @@ function renderPick(select) {
       $('pick').hidden = true; shownSelect = null; showDecks();
       const tone = picked.rating === '◎' ? 'great' : picked.rating === '○' ? 'good' : 'bad';
       toast(`<span class="medal pick-${tone}">${picked.rating}</span><span><span class="toast-label">${{ '◎': 'フロアが沸いた！', '○': '悪くない選曲', '△': 'フロアが少し冷めた…' }[picked.rating]}</span><span class="toast-parts">${TRACKS[picked.key].title}</span></span>`, 2200);
-      say(picked.rating); bump(PICK_FLOOR[picked.rating], { '◎': '待ってた曲！', '○': '悪くない選曲', '△': '今ほしい曲と違う' }[picked.rating]);
+      say(picked.rating); sfx.play('pick', { rating: picked.rating }); buzz(picked.rating === '◎' ? FEEL.buzz.GOOD : null); bump(PICK_FLOOR[picked.rating], { '◎': '待ってた曲！', '○': '悪くない選曲', '△': '今ほしい曲と違う' }[picked.rating]);
       status(`選曲：${TRACKS[picked.key].title}（${picked.rating}）`);
     });
     return button;
@@ -201,12 +218,13 @@ function wave(canvas, id, now) {
     if (xe > xs) { c.fillStyle = m.phase === 'mix' ? '#ffc85724' : '#ffc85712'; c.fillRect(xs, 0, xe - xs, h); }
   }
   // the grid: a line on every bar with its number in the 8-bar phrase (1 = the phrase head, where tracks come in), small ticks on the beats
+  const origin = cue ? cue.start : 0; // DJF03: bar 1 is the entry line (entries open every 4 bars, so it is not always a multiple of 8 bars)
   const perPx = clock.bpm / 60 / scale, from = Math.floor(cb - x0 * perPx) - 1, to = Math.ceil(cb + (w - x0) * perPx) + 1;
   c.font = `800 ${PHONE ? 40 : 24}px sans-serif`; c.textBaseline = 'top'; // 12px on the 1280 stage; 20px in the phone density (#2729)
   for (let n = from; n <= to; n++) {
     const x = Math.round(xOf(n));
     if (mod(n, 4)) { const tick = Math.round(h * .1); c.fillStyle = '#ffffff38'; c.fillRect(x, 0, 2, tick); c.fillRect(x, h - tick, 2, tick); continue; }
-    const head = mod(n, PHRASE) === 0, bar = Math.floor(mod(n, PHRASE) / 4) + 1;
+    const head = mod(n - origin, PHRASE) === 0, bar = Math.floor(mod(n - origin, PHRASE) / 4) + 1;
     c.fillStyle = head ? '#ffffffb0' : '#ffffff5c'; c.fillRect(x - (head ? 1 : 0), 0, head ? 4 : 2, h);
     c.fillStyle = head ? '#ffffff' : '#ffffffb8'; c.fillText(String(bar), x + 6, 4);
   }
@@ -247,21 +265,48 @@ function buildBand() {
   });
   strips.push({ el: band.querySelector('.base'), phase: 0, gain: .55, y: null, x: null });
 }
-function moveCrowd(beat, mood, still) {
+function moveCrowd(beat, mood, still, held) {
   // amp: how high they bounce (px); every: bounce on every beat (1) or every second beat (2); sway: sideways drift (px)
-  const [amp, every, sway] = still ? [0, 1, 0] : [[0, 1, 0], [0, 1, 0], [2.5, 2, 2], [8, 1, 3], [15, 1, 4]][mood];
+  let [amp, every, sway] = still ? [0, 1, 0] : [[0, 1, 0], [0, 1, 0], [2.5, 2, 2], [8, 1, 3], [15, 1, 4]][mood];
+  // DJF01: after a hit lands the room jumps higher for a moment (even a cold room answers a great entry); while the picture is held they crouch
+  const lift = still || fx.burst <= 1 ? 0 : Math.max(0, 1 - (beat - fx.burstBeat) / Math.max(.25, FEEL.burst.beats));
+  if (lift > 0) { amp = Math.max(amp, 5) * (1 + (fx.burst - 1) * lift); every = 1; } else if (fx.burst > 1 && !held) fx.burst = 1;
   for (const [k, strip] of strips.entries()) {
-    const t = beat / every + strip.phase, y = amp ? -Math.round(Math.abs(Math.sin(t * Math.PI)) ** .7 * amp * strip.gain * 2) / 2 : 0;
+    const t = beat / every + strip.phase, y = held && !still ? Math.round(3 * strip.gain * 2) / 2 : amp ? -Math.round(Math.abs(Math.sin(t * Math.PI)) ** .7 * amp * strip.gain * 2) / 2 : 0;
     const x = sway ? Math.round(Math.sin((beat / 8 + k * .13) * Math.PI * 2) * sway * 2) / 2 : 0;
     if (y !== strip.y || x !== strip.x) { strip.y = y; strip.x = x; strip.el.style.transform = x || y ? `translate(${x}px,${y}px)` : ''; }
   }
 }
-/** The whole floor jolts once (a good entry lands, the fader locks in for 8 beats). */
-function shake() { if (reduced.matches) return; const art = $('floor-art'); art.classList.remove('shake'); void art.offsetWidth; art.classList.add('shake'); flash = 1; }
-function drawFloor(beat, floor, running) {
+/** The whole floor jolts once. The type says what happened (FEEL.shake): drop = an entry lands, sway = the fader locked in, big = an S transition / the set, stumble = a miss. */
+function shake(type = 'drop') { fx.shakes++; fx.lastShake = type; if (reduced.matches) return; const art = $('floor-art'); art.classList.remove(...SHAKES); void art.offsetWidth; art.classList.add(`shake-${type}`); }
+/** 決まった瞬間の手応え（DJF01）: フロアの絵だけを一瞬止めて暗く落とし、明けた瞬間に揺れ・閃光・客の跳ね・音符。曲は止めない（拍が狂う）。 */
+function impact(kind, beat) {
+  if (fx.pending) release(fx.pending, beat);
+  const ms = reduced.matches ? 0 : FEEL.hold[kind] || 0;
+  if (ms <= 0) { release(kind, beat); return; }
+  fx.pending = kind; fx.holdUntil = performance.now() + ms; fx.holdBeat = beat; fx.holds++;
+  const art = $('floor-art'); art.style.setProperty('--hold-dim', String(FEEL.holdDim)); art.classList.add('hold');
+}
+function release(kind, beat) {
+  fx.pending = null; $('floor-art').classList.remove('hold');
+  const group = kind.startsWith('combo') ? 'combo' : kind, type = FEEL.shake[kind];
+  if (type) shake(type);
+  if (kind === 'PERFECT' || kind === 'GOOD') dropText('big', 'DROP!');
+  if (reduced.matches) return;
+  flash = Math.max(flash, FEEL.flash[group] || 0);
+  if (FEEL.burst[group] > 1) { fx.burst = FEEL.burst[group]; fx.burstBeat = beat; }
+  for (let i = FEEL.notes[group] || 0; i > 0; i--) note();
+}
+function dropText(kind, text) { const drop = $('drop'); drop.className = 'drop'; void drop.offsetWidth; drop.className = `drop ${kind}`; drop.textContent = text; }
+/** ▶ を押したその場所に返す反応（DJF10）: ボタンから判定の色の輪が広がり、皿が一度だけ弾む。 */
+function pressBurst(id, grade) {
+  const key = id ? 'b' : 'a', ring = $('burst-' + key), jog = $('platter-' + key);
+  ring.className = 'burst'; jog.classList.remove('kick'); void ring.offsetWidth; ring.className = `burst go ${grade.toLowerCase()}`; if (grade === 'PERFECT' || grade === 'GOOD') jog.classList.add('kick');
+}
+function drawFloor(beat, floor, running, held = false) {
   // The light layer is drawn at half resolution (it is all soft light) and not redrawn while nothing on it moves (DJS33).
   const canvas = $('crowd'), W = geo.stageW, H = 288, still = reduced.matches || !running, mood = moodOf(floor), kick = still ? 0 : (1 - mod(beat, 1)) ** 2;
-  moveCrowd(beat, mood, still);
+  moveCrowd(beat, mood, still, held);
   const idle = still && !particles.length && flash <= .02 ? `${W}|${floor.toFixed(3)}` : null;
   if (idle && idle === shown.floorKey) return;
   shown.floorKey = idle;
@@ -315,7 +360,10 @@ function faderGuide(m, away) {
     if (view.follow) {
       band.classList.remove('hit', 'miss'); void band.offsetWidth; band.classList.add(view.follow.hit ? 'hit' : 'miss');
       if (view.follow.hit && view.follow.combo >= 4) { note(); if (view.follow.combo >= 16) note(); }
-      if (view.follow.hit && view.follow.combo >= 8) { if (view.follow.combo % 8 === 0) shake(); else flash = Math.max(flash, .35); }
+      if (view.follow.hit && view.follow.combo >= 8) { // DJF04: every 8 beats in a row is a bigger moment than the last (sway → drop → the whole room)
+        if (view.follow.combo % 8 === 0) { const c = Math.min(32, view.follow.combo); impact(`combo${c}`, beatAt(m.decks[m.master], audio.now)); buzz(FEEL.buzz.combo); sfx.play('combo', { combo: c }); }
+        else flash = Math.max(flash, FEEL.flash.combo);
+      }
     }
     const on = m.cue.to === 1 ? '右' : '左', back = m.cue.to === 1 ? '左' : '右', done = toward(m) >= .9 && view.guide >= .9;
     if (side === 0 || done) { hint = done ? 'そのまま！' : 'いい感じ、そのまま'; ok = true; }
@@ -330,15 +378,30 @@ function faderGuide(m, away) {
   }
   const label = $('fader-hint'); if (label.textContent !== hint) label.textContent = hint; label.classList.toggle('ok', ok);
   $('xfade').classList.toggle('go', !!mixing || away);
-  if (!mixing) { if (comboShown !== -1) { $('combo').textContent = ''; comboShown = -1; } }
-  else if (m.fader.combo !== comboShown) { comboShown = m.fader.combo; $('combo').textContent = comboShown > 1 ? `COMBO ${comboShown}` : ''; $('combo').classList.toggle('hot', comboShown >= 8); }
+  // DJF04: the counter pops on every beat that lands, grows at 8 / 16 / 24, and a broken run of 4 or more falls away instead of just vanishing
+  const counter = $('combo'), perf = performance.now();
+  if (fx.brokenUntil && perf > fx.brokenUntil) { fx.brokenUntil = 0; counter.classList.remove('broken'); if (comboShown <= 1) counter.textContent = ''; }
+  if (!mixing) { if (comboShown !== -1) { if (!fx.brokenUntil) counter.textContent = ''; comboShown = -1; } }
+  else if (m.fader.combo !== comboShown) {
+    const before = comboShown; comboShown = m.fader.combo;
+    if (comboShown > 1) {
+      const tier = Math.min(3, Math.floor(comboShown / 8)); fx.brokenUntil = 0;
+      counter.textContent = `COMBO ${comboShown}`; counter.dataset.tier = String(tier); counter.style.fontSize = `${PHONE ? 20 + tier : FEEL.comboSize[tier]}px`;
+      counter.classList.remove('broken', 'pop'); void counter.offsetWidth; counter.classList.add('pop');
+    } else if (before >= 4) { counter.textContent = `COMBO ${before}`; counter.classList.remove('pop'); counter.classList.add('broken'); fx.brokenUntil = perf + 520; }
+    else if (!fx.brokenUntil) counter.textContent = '';
+    counter.classList.toggle('hot', comboShown >= 8);
+  }
   return hint;
 }
 function toast(html, ms = 2600) { $('toast').innerHTML = html; toastUntil = performance.now() + ms; }
 const RANK_LABEL = { S: 'かんぺきなつなぎ！', A: 'いいつなぎ！', B: 'まずまずのつなぎ', C: 'つなぎが荒れた…' };
-function showTransition(t) {
-  toast(`<span class="medal r-${t.rank}">${t.rank}</span><span><span class="toast-label">${RANK_LABEL[t.rank]}</span><span class="toast-parts">テンポ <b>${t.parts[0]}</b>・入り <b>${t.parts[1]}</b>・フェーダー <b>${t.parts[2]}</b><span class="best">（最大 ${t.combo} コンボ）</span></span></span>`);
-  say(t.rank, { big: t.rank === 'S' }); bump(RANK_FLOOR[t.rank], RANK_LABEL[t.rank].replace(/[！…]/g, ''));
+function showTransition(t, last = false) {
+  // DJF05: the moment the track changes over. The medal is stamped on, the room answers by rank (the last one is answered by the set's own finish)
+  if (!last) { impact(t.rank, beatAt(audio.mix.decks[audio.mix.master], audio.now)); buzz(FEEL.buzz[t.rank]); sfx.play('transition', { rank: t.rank }); }
+  if (!last) toast(`<span class="medal stamp r-${t.rank}">${t.rank}</span><span><span class="toast-label">${RANK_LABEL[t.rank]}</span><span class="toast-parts">テンポ <b>${t.parts[0]}</b>・入り <b>${t.parts[1]}</b>・フェーダー <b>${t.parts[2]}</b><span class="best">（最大 ${t.combo} コンボ）</span></span></span>`);
+  if (!last) say(t.rank, { big: t.rank === 'S' });
+  bump(RANK_FLOOR[t.rank], RANK_LABEL[t.rank].replace(/[！…]/g, ''));
 }
 /** One line on what to work on next: the weakest of the three parts across the set. */
 function advice(r) {
@@ -346,15 +409,62 @@ function advice(r) {
   if (avg[weak] >= 85) return { S: 'フロアが沸いた。完璧なセット！', A: 'いいセット。フロアはずっと踊っていた', B: 'あと少し。入りとフェーダーをていねいに', C: '金色の矢印を追えば、次はもっとつながる' }[r.rank];
   return ['次はテンポ合わせ：PITCH を動かして LOCK を点けるか、SYNC を押そう', '次は入りのタイミング：カウントが 0 になる瞬間に ▶', '次は横フェーダー：光る枠から離れないよう、ゆっくり動かそう'][weak];
 }
-function showResult(r) {
+const NEXT_RANK = { C: 'B', B: 'A', A: 'S' };
+/** DJF07: what to aim for next: the points to the next rank, and how far the player's own best is. */
+function goalLine(r, previous) {
+  const next = NEXT_RANK[r.rank], rank = next ? `次のランク ${next} まで あと <b>${RANK_LINES[next] - r.total}</b>点` : '最高ランク S に届いた！';
+  const mine = previous == null ? '' : r.total > previous ? `自己ベスト更新！（これまで ${previous}点）` : r.total === previous ? `自己ベストに並んだ（${previous}点）` : `自己ベスト ${previous}点 まで あと <b>${previous - r.total}</b>点`;
+  return mine ? `${rank}<i>・</i>${mine}` : rank;
+}
+/** DJF06: the last track is on. The record is fixed right now (leaving during the afterglow keeps it); the result card waits while the room cheers. */
+function finishSet(r) {
+  const previous = best, perf = performance.now(); if (best == null || r.total > best) best = r.total;
+  tell({ type: 'dj-result', set: setIndex + 1, rank: r.rank, total: r.total, floor: r.floor });
+  fx.result = { r, previous, at: perf, until: perf + Math.max(0, reduced.matches ? FEEL.afterglow.reducedMs : FEEL.afterglow.ms), shown: false };
+  impact('finish', beatAt(audio.mix.decks[audio.mix.master], audio.now)); buzz(FEEL.buzz.finish); sfx.play('finish', { rank: r.rank });
+  $('voices').replaceChildren(); dropText('finish', 'SET COMPLETE!'); // the banner has the floor to itself (the cheer is the sound)
+}
+function showResult() {
+  const state = fx.result, r = state.r; state.shown = true; $('drop').className = 'drop'; $('drop').textContent = '';
   const rows = r.transitions.map((t, i) => `<tr><th>${i + 1}</th><td>${TRACKS[t.from].title} → ${TRACKS[t.to].title}</td><td>${t.pick || '—'}</td><td>${t.grade}</td><td>${t.parts.join(' / ')}</td><td>${t.combo}</td><td class="rank r-${t.rank}">${t.rank}</td></tr>`).join('');
   const mood = MOODS[moodOf(r.floor / 100)];
-  $('score-result').innerHTML = `<div class="result-card"><div class="result-head"><span class="medal r-${r.rank}">${r.rank}</span><div><small>${r.set} RESULT</small><div class="result-total">${r.total}点</div><div class="result-mood">フロアの熱 ${r.floor}：${mood}${r.bonus ? `（${r.bonus > 0 ? 'ボーナス +' : ''}${r.bonus}点）` : ''}</div></div></div>`
+  $('score-result').innerHTML = `<div class="result-card" id="result-card"><div class="result-head"><span class="medal wait r-${r.rank}" id="result-medal">${r.rank}</span><div><small>${r.set} RESULT</small><div class="result-total"><b id="result-num">0</b>点</div><div class="result-mood">フロアの熱 ${r.floor}：${mood}${r.bonus ? `（${r.bonus > 0 ? 'ボーナス +' : ''}${r.bonus}点）` : ''}</div><div class="result-goal" id="result-goal">${goalLine(r, state.previous)}</div></div></div>`
     + `<table><thead><tr><th>#</th><th>つなぎ</th><th>選曲</th><th>入り</th><th>テンポ / 入り / フェーダー</th><th>コンボ</th><th></th></tr></thead><tbody>${rows}</tbody></table>`
     + `<p class="advice">${advice(r)}</p><div class="result-actions"><button id="again" type="button" class="gold">もう一度</button>${embedded ? '<button id="leave" type="button">戻る</button>' : ''}</div></div>`;
-  $('again').addEventListener('click', () => $('restart').click());
+  // DJF08: 「もう一度」 puts the first track straight back on (no how-to board, no extra ▶)
+  $('again').addEventListener('click', () => { $('restart').click(); startDeck(0); });
   $('leave')?.addEventListener('click', () => $('exit').click());
-  tell({ type: 'dj-result', set: setIndex + 1, rank: r.rank, total: r.total, floor: r.floor });
+  // the total counts up, then the rank is stamped on; the buttons work from the start (a tap anywhere else settles it at once)
+  if (reduced.matches || !(FEEL.afterglow.countUp > 0)) settleResult(); else fx.count = { at: performance.now(), total: r.total, value: 0 };
+}
+function settleResult() {
+  const state = fx.result; fx.count = null; if (!state?.shown || !$('result-card')) return;
+  $('result-num').textContent = String(state.r.total); $('result-medal').classList.replace('wait', 'stamp'); $('result-card').classList.add('settled');
+  sfx.play('stamp'); buzz(FEEL.buzz.GOOD);
+}
+function countUp(perf) {
+  const c = fx.count; if (!c) return;
+  const t = (perf - c.at) / FEEL.afterglow.countUp;
+  if (!(t < 1)) { settleResult(); return; }
+  const value = Math.round(c.total * (1 - (1 - Math.max(0, t)) ** 3)); if (value !== c.value) { c.value = value; $('result-num').textContent = String(value); }
+}
+// The afterglow and the count-up never hold the player: a tap / click, Enter, Space or Esc moves on (not in the first 0.3 s, so the hand still on the fader does not skip it).
+function skipAhead(event) {
+  const state = fx.result; if (!state) return;
+  if (!state.shown) { if (performance.now() - state.at > 300) state.until = 0; }
+  else if (fx.count && !event.target?.closest?.('button')) fx.count.at = -1e9;
+}
+addEventListener('pointerdown', skipAhead);
+addEventListener('keydown', event => { if (event.key === 'Enter' || event.key === ' ' || event.key === 'Escape') skipAhead(event); });
+/** DJF02: the count-in. A small click on each of the last beats before the entry, scheduled on the audio clock (the last one a little higher). */
+function countTicks(m, now) {
+  const c = m.cue, n = Math.min(4, Math.floor(FEEL.countTicks) || 0);
+  if (!n || !c || c.pressed || m.phase !== 'cue' || !m.running) return;
+  const from = m.decks[c.from];
+  for (let k = n; k >= 1; k--) {
+    const at = from.at + (c.start - k - from.beat) * 60 / from.bpm, key = `${c.start}:${k}`;
+    if (at - now < .1 && at - now > -.03 && !fx.ticks.has(key)) { fx.ticks.add(key); if (sfx.play('tick', { at, last: k === 1 })) fx.tickCount++; }
+  }
 }
 /** What to do now: step lamp (1 かける / 2 入れる / 3 つなぐ / 4 えらぶ), the two navi lines and the controls the gold arrows point at. */
 function navi(m, now, away) {
@@ -374,7 +484,7 @@ function navi(m, now, away) {
   }
   // cue: waiting for the phrase head, then ▶ on the incoming deck
   const to = cue.to, key = to ? 'b' : 'a', from = m.decks[cue.from], inc = m.decks[to], late = beatAt(from, now) - cue.start;
-  const untilHead = late <= 0 ? -late : cue.end - beatAt(from, now), bars = Math.ceil(untilHead / 4), count = untilHead <= 4 && untilHead > 0 ? String(Math.ceil(untilHead)) : '';
+  const untilHead = late <= 0 ? -late : cue.start + m.grid - beatAt(from, now), bars = Math.ceil(untilHead / 4), count = untilHead <= 4 && untilHead > 0 ? String(Math.ceil(untilHead)) : '';
   // 「いま！」 only while a press still lands inside the OK window (120 ms + headphones); after that the navi sends the player to the next head
   if (late > 0 && late * 60 / from.bpm * 1000 <= 120 + (m.allowance || 0)) return { ...out, step: 2, untilHead: 0, count: '▶', main: `いま！ ${sideOf(to)}の ▶`, sub: '0 の瞬間に近いほど、フロアが沸く', points: [`play-${key}`] };
   if (bpmDiffPct(from, inc) > LOCK_PCT && untilHead > 4) {
@@ -405,8 +515,12 @@ function showNavi(n, m) {
 function render() {
   if (disposed) return; measure(performance.now()); const now = audio.now, m = audio.mix; // measure first: the layout is still clean at the top of the frame
   view = audio.update();
-  if (view.transition) { showTransition(view.transition); missStreak = 0; comboSaid = 0; clashSaid = false; }
-  if (view.finished) showResult(view.finished);
+  if (fx.pending && performance.now() >= fx.holdUntil) release(fx.pending, beatAt(m.decks[m.master], now)); // the held picture lets go
+  if (view.transition) { showTransition(view.transition, !!view.finished); missStreak = 0; comboSaid = 0; clashSaid = false; }
+  if (view.finished) finishSet(view.finished);
+  if (fx.result && !fx.result.shown && performance.now() >= fx.result.until) showResult();
+  countUp(performance.now());
+  if (view.rolled) say('skip'); // the entry line went by without a ▶: the next one is 4 bars on
   showDecks();
   if (m.phase === 'select' && m.select && shownSelect !== m.select) renderPick(m.select);
   if (m.phase !== 'select' && !$('pick').hidden) { $('pick').hidden = true; shownSelect = null; }
@@ -414,19 +528,22 @@ function render() {
     shownPlay = m.lastPlay; const grade = shownPlay.grade; judgeUntil = performance.now() + 1800;
     $('judge').textContent = grade; $('judge').dataset.grade = grade; $('judge').classList.remove('pop'); void $('judge').offsetWidth; $('judge').classList.add('pop');
     $('judge-sub').textContent = { PERFECT: 'ぴったり！', GOOD: 'いい入り！', OK: 'まずまず', EARLY: '早すぎた…', LATE: '遅れた…' }[grade];
-    // DROP: the incoming track hits the floor (flash on PERFECT/GOOD, a small one on OK, a stumble on EARLY/LATE)
-    const drop = $('drop'); drop.className = 'drop'; void drop.offsetWidth;
-    drop.className = `drop ${grade === 'PERFECT' || grade === 'GOOD' ? 'big' : grade === 'OK' ? 'small' : 'miss'}`;
-    drop.textContent = grade === 'PERFECT' || grade === 'GOOD' ? 'DROP!' : '';
-    if (grade === 'PERFECT' || grade === 'GOOD') shake();
+    // DJF01/02/10: the press answers at once where it was made (ring on the button, sound, vibration, the word). On PERFECT / GOOD the floor is held
+    // for a moment and then lets go with DROP! (flash, the room jumps); OK is a small pulse, EARLY / LATE a stumble.
+    if (grade !== 'PERFECT' && grade !== 'GOOD') dropText(grade === 'OK' ? 'small' : 'miss', '');
+    pressBurst(shownPlay.id, grade); buzz(FEEL.buzz[grade]); sfx.play('entry', { grade }); impact(grade, beatAt(m.decks[m.master], now));
     say(grade, { big: grade === 'PERFECT' }); bump(GRADE_FLOOR[grade], { PERFECT: 'ぴったり入った', GOOD: 'いい入り', EARLY: '入りが早かった', LATE: '入りが遅れた' }[grade] || '');
   }
   if (judgeUntil && performance.now() > judgeUntil) { $('judge').textContent = ''; $('judge-sub').textContent = ''; judgeUntil = 0; }
   if (toastUntil && performance.now() > toastUntil) { $('toast').innerHTML = ''; toastUntil = 0; }
   // the guests react to the fader beat by beat: a voice at 8 / 16 / 24 / 32 in a row, a complaint after four misses in a row
   if (view.follow) {
-    if (view.follow.hit) { missStreak = 0; const c = view.follow.combo; if (c % 8 === 0 && c > comboSaid && c <= 32) { comboSaid = c; say(`combo${c}`); } }
-    else if (++missStreak === 4) { say('clash'); bump(-.03, 'フェーダーが枠から外れている'); }
+    if (view.follow.hit) { missStreak = 0; const c = view.follow.combo; if (c % 8 === 0 && c > comboSaid && c <= 32 && !fx.result) { comboSaid = c; say(`combo${c}`); } }
+    else {
+      if (fx.combo >= 8) { sfx.play('broken'); buzz(FEEL.buzz.broken); } // a long run breaks: a dull thud (a short one just ends)
+      if (++missStreak === 4) { say('clash'); bump(-.03, 'フェーダーが枠から外れている'); }
+    }
+    fx.combo = view.follow.combo;
   }
   const cue = m.cue, master = m.decks[m.master], perf = performance.now();
   // the fader left the playing deck's side although nothing is being mixed: the sound is fading out
@@ -454,7 +571,7 @@ function render() {
     setAttr($('deck-' + key), 'data-playing', String(d.playing));
     setAttr($('deck-' + key), 'data-role', !d.track ? 'empty' : d.playing && m.master === id ? 'master' : d.playing ? 'incoming' : 'next');
     put('indicator-' + key, !d.track ? 'EMPTY' : d.playing ? 'ON AIR' : 'STANDBY');
-    setVar($('platter-' + key), '--rotation', `${reduced.matches || !d.playing ? 0 : (mod(beatAt(d, now), 4) * 90).toFixed(1)}deg`);
+    if (!fx.pending) setVar($('platter-' + key), '--rotation', `${reduced.matches || !d.playing ? 0 : (mod(beatAt(d, now), 4) * 90).toFixed(1)}deg`); // held with the floor (DJF01)
     if ($('platter-' + key).getAttribute('aria-valuenow') !== d.bpm.toFixed(2)) $('platter-' + key).setAttribute('aria-valuenow', d.bpm.toFixed(2));
     $('side-' + key).classList.toggle('goal', !!cue && cue.to === id && m.running);
     wave($('wave-' + key), id, now);
@@ -468,10 +585,11 @@ function render() {
   put('set-next', cue ? `NEXT ▶ ${cue.to ? 'B' : 'A'}` : m.phase === 'select' ? '選曲' : m.phase === 'done' ? 'LAST TRACK' : '');
   shown.hint = faderGuide(m, away); shown.away = away;
   showNavi(n, m);
+  countTicks(m, now);
   const help = helpManual ?? (m.phase === 'idle');
   if ($('howto').hidden === help) { $('howto').hidden = !help; $('help').setAttribute('aria-pressed', String(help)); }
   controllerLeds();
-  drawFloor(beatAt(master, now), m.floor, m.running);
+  drawFloor(fx.pending ? fx.holdBeat : beatAt(master, now), m.floor, m.running, !!fx.pending);
   frame = requestAnimationFrame(render);
 }
 render();

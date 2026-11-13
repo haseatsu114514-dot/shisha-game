@@ -9,6 +9,10 @@
 import { TRACKS } from './tracks.mjs';
 export const PHRASE = 32;      // 8 bars of 4/4
 export const LEAD = 16;        // the next entry cue is at least 4 bars away
+// 2026-11-13 DJF03 (待ち時間): the game opens entries on every 4-bar line instead of every 8-bar phrase head, so the wait before a ▶ is
+// 2〜6 bars (SET 1) / 4〜8 bars (SET 2・3, time to match the tempo) instead of 4〜12. createSet's defaults keep the 8-bar grid.
+export const QUICK_GRID = 16;
+export const quickEntry = set => ({ grid: QUICK_GRID, lead: set?.detune === 'match' ? 8 : LEAD });
 export const GRACE = 32;       // after the 8 bars the outgoing deck keeps playing up to 8 more bars if the fader has not crossed
 export const PITCH_RANGE = 8;  // PITCH fader ±8 % like a CDJ
 export const LOCK_PCT = .15;   // BPM within this % counts as locked (LOCK LED, quantize phase snap)
@@ -78,8 +82,8 @@ function incomingDeck(m, key, index, now) {
   return d;
 }
 /** allowance: extra ms added to every ▶ timing window (the main game's monitor headphones, VOL07: 10). 0 = the club's house setup. */
-export function createSet(set, detune = () => 1, rng = Math.random, { allowance = 0 } = {}) {
-  const m = { set, count: set.count, allowance: Number.isFinite(allowance) && allowance > 0 ? Math.min(30, allowance) : 0, played: [set.tracks[0], set.tracks[1]], detune, rng,
+export function createSet(set, detune = () => 1, rng = Math.random, { allowance = 0, grid = PHRASE, lead = LEAD } = {}) {
+  const m = { set, count: set.count, grid: grid > 0 ? grid : PHRASE, lead: lead >= 0 ? lead : LEAD, allowance: Number.isFinite(allowance) && allowance > 0 ? Math.min(30, allowance) : 0, played: [set.tracks[0], set.tracks[1]], detune, rng,
     decks: [makeDeck(set.tracks[0]), makeDeck(set.tracks[1], detune(1))],
     running: false, resumeDecks: [], mix: 0, master: 0, phase: 'idle', cue: null, select: null, transitions: [], floor: .5,
     lastPlay: null, lastUpdate: null, fader: null, result: null, pendingPick: null };
@@ -87,7 +91,7 @@ export function createSet(set, detune = () => 1, rng = Math.random, { allowance 
   return m;
 }
 function nextCue(m, from, now) {
-  const beat = beatAt(m.decks[from], now), start = (Math.floor((beat + LEAD) / PHRASE) + 1) * PHRASE;
+  const beat = beatAt(m.decks[from], now), start = (Math.floor((beat + m.lead) / m.grid) + 1) * m.grid; // the next entry line at least `lead` beats away
   m.cue = { from, to: 1 - from, start, end: start + PHRASE, pressed: null, synced: false, missed: 0 };
   m.phase = 'cue'; m.fader = null;
 }
@@ -107,8 +111,8 @@ export function playDeck(m, id, now) {
   const c = m.cue;
   if (c && c.to === id && m.decks[c.from].playing && !c.pressed) {
     const from = m.decks[c.from], fb = beatAt(from, now), n = Math.round(fb);
-    // Judge against the nearest phrase head: past the middle of the 8 bars the player is aiming at the next head (a little early there is EARLY, not a huge LATE).
-    if (fb - c.start > PHRASE / 2) { c.start += PHRASE; c.end += PHRASE; c.missed++; }
+    // Judge against the nearest entry line: past the middle of the gap the player is aiming at the next one (a little early there is EARLY, not a huge LATE).
+    if (fb - c.start > m.grid / 2) { c.start += m.grid; c.end += m.grid; c.missed++; }
     const errorMs = (fb - c.start) * 60 / from.bpm * 1000, grade = gradeOf(errorMs, m.allowance || 0);
     d.beat = 0; d.at = from.at + (n - from.beat) * 60 / from.bpm; // beat 0 on the master's nearest beat (may be a few ms ahead)
     c.pressed = { errorMs, grade, beat: n, at: now }; m.lastPlay = { id, errorMs, grade };
@@ -186,7 +190,9 @@ export const FOLLOW_SWEET = FOLLOW_BAND / 2;
 export function followHint(m, guide) { const d = guide - toward(m); return Math.abs(d) <= FOLLOW_SWEET ? 0 : d > 0 ? 1 : -1; }
 export const scoreFromErr = (v, s, a, b) => v <= s + 1e-10 ? 100 : v <= a + 1e-10 ? 85 : v <= b + 1e-10 ? 60 : 30;
 export const scoreFromRatio = r => r >= .9 - 1e-10 ? 100 : r >= .75 - 1e-10 ? 85 : r >= .5 - 1e-10 ? 60 : 30;
-export const rankFromScore = total => total >= 90 ? 'S' : total >= 75 ? 'A' : total >= 55 ? 'B' : 'C';
+/** The lowest total of each rank (the result card says how many points the next one is away, DJF07). */
+export const RANK_LINES = Object.freeze({ S: 90, A: 75, B: 55 });
+export const rankFromScore = total => total >= RANK_LINES.S ? 'S' : total >= RANK_LINES.A ? 'A' : total >= RANK_LINES.B ? 'B' : 'C';
 /** Fader: how much of the 8 bars rode the guide line; never reaching the incoming deck caps it at 30, reaching it late at 60. */
 export function scoreTransition({ pitchErrPct, synced, playMs, reached, follow, allowance = 0 }) {
   const pitch = Math.min(scoreFromErr(pitchErrPct, LOCK_PCT, .3, .6), synced ? 85 : 100);
@@ -223,13 +229,13 @@ function finishTransition(m, now, view) {
 /** Advance the set to `now`. Returns what the host must apply to audio (snapped / stopped / select) and the view state. */
 export function updateSet(m, now) {
   const dt = m.lastUpdate == null ? 0 : Math.max(0, now - m.lastUpdate); m.lastUpdate = now;
-  const view = { mode: m.phase, progress: 0, remaining: 0, open: false, snapped: null, stopped: null, select: null, transition: null, finished: null, follow: null, guide: null };
+  const view = { mode: m.phase, progress: 0, remaining: 0, open: false, snapped: null, stopped: null, select: null, transition: null, finished: null, follow: null, guide: null, rolled: false };
   if (!m.running) { view.mode = 'idle'; return view; }
   const c = m.cue;
   if (c) {
     const from = m.decks[c.from], to = m.decks[c.to], fb = beatAt(from, now);
     if (m.phase === 'cue') {
-      while (fb >= c.end) { c.start += PHRASE; c.end += PHRASE; c.missed++; }
+      while (fb >= c.start + m.grid) { c.start += m.grid; c.end += m.grid; c.missed++; view.rolled = true; }
       view.remaining = c.start - fb; view.open = fb >= c.start;
     } else if (m.phase === 'mix') {
       const progress = (fb - c.start) / PHRASE; view.progress = clamp(progress, 0, 1); view.remaining = c.end - fb;

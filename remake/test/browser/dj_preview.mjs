@@ -82,9 +82,9 @@ try{
     await jog.focus();for(let n=0;n<5;n++)await jog.press('ArrowLeft');near((await snap(page)).bpms[deck],before.bpms[deck],.000001);
    }
   }
-  // ▶ A starts the set: A on air, B cued at the next phrase head (beat 32), B's waveform stays still.
+  // ▶ A starts the set: A on air, B cued at the next 4-bar line (beat 16 in SET 1: 8 s, DJF03), B's waveform stays still.
   await press('play-a');await until(page,'audio',s=>s.running&&s.rms>1e-5,errors);
-  let started=await snap(page);assert.deepEqual(started.playing,[true,false]);assert.equal(started.phase,'cue');assert.deepEqual([started.cue.from,started.cue.to,started.cue.start],[0,1,32]);
+  let started=await snap(page);assert.deepEqual(started.playing,[true,false]);assert.equal(started.phase,'cue');assert.deepEqual([started.cue.from,started.cue.to,started.cue.start],[0,1,16]);assert.equal(started.grid,16);
   await until(page,'deck A DOM',()=>true,errors);
   assert.equal(await page.locator('#indicator-a').textContent(),'ON AIR');assert.equal(await page.locator('#deck-a').getAttribute('data-playing'),'true');
   assert(await page.locator('#play-a').isDisabled(),'▶ only starts: a deck on air cannot be stopped by ▶');
@@ -107,7 +107,7 @@ try{
    const paused=await until(page,'paused',s=>!s.running&&s.state==='suspended',errors);assert.equal(paused.phase,'cue');assert.deepEqual(paused.playing,[false,false]);
    await until(page,'paused navi',s=>/一時停止中。左の ▶ で続きから/.test(s.navi),errors);assert(await page.locator('#point-play-a').isVisible());assert.deepEqual((await snap(page)).points,['play-a']);
    await page.evaluate(()=>{delete document.hidden;});
-   await press('play-a');const resumed=await until(page,'resumed',s=>s.running,errors);assert.deepEqual(resumed.playing,[true,false]);assert.equal(resumed.cue.start,32);
+   await press('play-a');const resumed=await until(page,'resumed',s=>s.running,errors);assert.deepEqual(resumed.playing,[true,false]);assert.equal(resumed.cue.start,16);
    assert(resumed.beats[0]>=paused.beats[0]-.01&&resumed.beats[0]<paused.beats[0]+2,'the track continues from where it stopped');
   }
   // The light on the floor moves while playing, and is static with reduced motion.
@@ -132,7 +132,17 @@ try{
   await until(page,'head',s=>s.phase==='cue'&&s.remaining<=.12,errors,4000,5);
   await press('play-b');
   const entered=await until(page,'entry',s=>s.phase==='mix',errors);
-  assert.deepEqual(entered.playing,[true,true]);assert(entered.lastPlay&&['PERFECT','GOOD','OK'].includes(entered.lastPlay.grade),JSON.stringify(entered.lastPlay));assert.equal(entered.cue.pressed.beat,32,'quantized onto the phrase head');
+  assert.deepEqual(entered.playing,[true,true]);assert(entered.lastPlay&&['PERFECT','GOOD','OK'].includes(entered.lastPlay.grade),JSON.stringify(entered.lastPlay));assert.equal(entered.cue.pressed.beat,16,'quantized onto the entry line');
+  // DJF01/02/10: the press answers at once where it was made (a ring in the grade's colour on the button, a sound), the count-in clicked on the beats before it,
+  // and a good entry holds the floor for a blink and then drops it (no hold, no shake animation with reduced motion).
+  {const g=entered.lastPlay.grade,good=g==='PERFECT'||g==='GOOD';
+   assert(await page.locator('#burst-b').evaluate((e,c)=>e.classList.contains('go')&&e.classList.contains(c),g.toLowerCase()),'ring on ▶ B in the grade colour');assert(await page.locator('#burst-a').evaluate(e=>!e.classList.contains('go')));
+   assert(entered.fx.ticks>=1&&entered.fx.ticks<=4,`count-in clicks: ${entered.fx.ticks}`);assert(entered.fx.sfx>entered.fx.ticks,'the entry has its own sound');
+   const landed=await until(page,'entry feel',s=>!s.fx.held,errors);
+   if(good){assert.equal(landed.fx.lastShake,'drop');assert.equal(landed.fx.holds,kind==='reduced'?0:1,'a good entry is held once (never with reduced motion)');assert.equal(await page.locator('#drop').textContent(),'DROP!');
+    assert.equal(await page.locator('#floor-art').evaluate(e=>e.classList.contains('shake-drop')),kind!=='reduced');}
+   else{assert.equal(landed.fx.holds,0,'OK is not held');assert.equal(landed.fx.shakes,0);}
+   assert(await page.locator('#floor-art').evaluate(e=>!e.classList.contains('hold')),'the hold is over');}
   await until(page,'B audible',s=>s.beats[1]>=0,errors);near((await snap(page)).phase_error,0,.02);
   assert.equal(await page.locator('#judge').textContent(),entered.lastPlay.grade);
   // The guests answer the entry: a voice in a bubble, and the heat meter says why it moved.
@@ -166,7 +176,7 @@ try{
   const done=await until(page,'transition',s=>s.transitions.length>=1,errors,20000,100);
   const t=done.transitions[0];assert.equal(t.to,'digitalLemonade');assert.equal(t.parts[0],100,'BPM matched');assert(t.parts[2]>=85,`fader ${t.parts[2]} follow ${t.follow}`);assert(t.combo>=16,`combo ${t.combo}`);assert(['S','A'].includes(t.rank),t.rank);
   assert.deepEqual(done.playing,[false,true]);assert.equal(done.master,1);assert.equal(done.cue,null);assert.equal(done.phase,'select');assert.equal(done.tracks[0],null);assert(done.floor>.5);
-  assert.equal(await page.locator('#toast').evaluate(e=>e.textContent.length>0),true,'transition toast');
+  assert.equal(await page.locator('#toast').evaluate(e=>e.textContent.length>0),true,'transition toast');assert.equal(await page.locator('#toast .medal.stamp').count(),1,'the rank is stamped on (DJF05)');assert.equal(done.fx.lastSfx,'transition');
   assert.equal(await page.locator('#indicator-a').textContent(),'EMPTY');assert.equal(await page.locator('#track-a').textContent(),'— 選曲中 —');assert.equal(await page.locator('#set-progress').textContent(),'2 / 3');
   assert(await page.locator('#guide').isHidden(),'no guide band outside the mix');
   await page.locator('#pick').waitFor();assert.equal(await page.locator('#pick').getAttribute('data-side'),'a');assert.equal(await page.locator('.pick-card').count(),2);
@@ -183,9 +193,44 @@ try{
   assert.equal(await page.locator('#score-result').evaluate(e=>e.children.length),0,'set result only after the last transition');
   // Restart rebuilds a fresh set without a page reload.
   await press('restart');const fresh=await until(page,'restart',s=>!s.running&&s.transitions.length===0,errors);assert.deepEqual(fresh.playing,[false,false]);assert.equal(fresh.voices,0);near(fresh.floor,.5);
+  assert(await page.locator('#howto').isHidden(),'DJF08: the how-to board does not come back on a retry');assert.match(await page.locator('#coaching').textContent(),/左の ▶ を押して/);
   assert.deepEqual(errors,[]);
   await page.screenshot({path:path.join(out,`visual-${kind}.png`),fullPage:true});
   results.push({kind,ready,started,entered,mixed,done,picked,passed:true,limits:'Real WebAudio/UI only; physical listening/capture excluded'});await context.close();
+ }
+ // DJF06〜08: one whole SET 1 to the end (PC; the fader is driven by script here, native input is covered above). The afterglow, the result card
+ // that counts up and is stamped, the next goal, and 「もう一度」 putting the first track straight back on.
+ {
+  const context=await browser.newContext({viewport:{width:1280,height:720}}),page=await context.newPage(),errors=[];page.on('pageerror',e=>errors.push(e.message));
+  await page.addInitScript(()=>{window.__djTestFrames=0;const count=()=>{window.__djTestFrames++;requestAnimationFrame(count);};requestAnimationFrame(count);});
+  await page.goto(url+'&best=70&feel=afterglow.ms:6000,afterglow.countUp:500');await page.locator('#play-a').click();
+  let s;const deadline=Date.now()+110000;
+  for(;;){
+   s=await snap(page);assert(Date.now()<deadline,`the set did not finish: ${JSON.stringify({phase:s.phase,transitions:s.transitions.length})}`);
+   if(s.phase==='done')break;
+   if(s.phase==='cue'&&s.cue&&!s.cue.pressed&&s.remaining<=.05)await page.locator('#play-'+(s.cue.to?'b':'a')).click();
+   else if(s.phase==='mix'){const g=s.progress>=.97?1:s.guide??0;await page.evaluate(v=>{const f=document.getElementById('crossfader');f.value=String(v);f.dispatchEvent(new Event('input',{bubbles:true}));},s.cue.to===1?g:1-g);}
+   else if(s.phase==='select'){await page.waitForTimeout(300);await page.locator('#pick-0').click();}
+   await page.waitForTimeout(15);
+  }
+  // the record is fixed the moment the set ends; the card waits while the room cheers
+  assert(s.result&&s.result.transitions.length===2);assert.equal(s.fx.afterglow,true);assert.equal(s.fx.lastSfx,'finish');assert.equal(await page.locator('#result-card').count(),0,'no result card during the afterglow');
+  assert.equal(await page.locator('#drop').textContent(),'SET COMPLETE!');assert(await page.locator('#drop').evaluate(e=>e.classList.contains('finish')));assert.equal(await page.locator('#toast').textContent(),'','the last transition is answered by the finish, not a toast');
+  assert.equal(s.best,Math.max(70,s.result.total));
+  // …and never holds the player: a click moves on (6 s of afterglow were asked for)
+  await page.waitForTimeout(450);assert.equal(await page.locator('#result-card').count(),0);await page.locator('#floor').click({position:{x:640,y:200}});
+  await page.locator('#result-card').waitFor({timeout:1500});assert(await page.locator('#again').isVisible(),'the buttons work from the start');
+  await page.locator('#result-card.settled').waitFor({timeout:3000});const total=String(s.result.total);
+  assert.equal(await page.locator('#result-num').textContent(),total);assert(await page.locator('#result-medal').evaluate(e=>e.classList.contains('stamp')&&!e.classList.contains('wait')));
+  const goal=await page.locator('#result-goal').textContent();assert.match(goal,s.result.rank==='S'?/最高ランク S に届いた/:/次のランク [SAB] まで あと \d+点/);
+  assert.match(goal,s.result.total>70?/自己ベスト更新！（これまで 70点）/:s.result.total===70?/自己ベストに並んだ/:/自己ベスト 70点 まで あと \d+点/);
+  assert.equal((await snap(page)).fx.lastSfx,'stamp');
+  await page.screenshot({path:path.join(out,'visual-result.png')});
+  // 「もう一度」: the first track is back on at once, no how-to board, the best carries over
+  await page.locator('#again').click();const again=await until(page,'again',x=>x.running&&x.phase==='cue',errors);
+  assert.deepEqual(again.playing,[true,false]);assert.equal(again.transitions.length,0);assert.equal(again.cue.start,16);assert.equal(again.best,Math.max(70,s.result.total));near(again.floor,.5);
+  assert(await page.locator('#howto').isHidden());assert.equal(await page.locator('#score-result').evaluate(e=>e.children.length),0);
+  assert.deepEqual(errors,[]);results.push({kind:'whole-set',result:s.result,goal,passed:true});await context.close();
  }
  fs.writeFileSync(path.join(out,'result.json'),JSON.stringify({url,results},null,2));console.log('DJ set PC/touch/reduced WebAudio/UI PASS; no physical listening/video claim');
 }catch(error){
