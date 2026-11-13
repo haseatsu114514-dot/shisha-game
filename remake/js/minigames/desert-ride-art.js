@@ -27,7 +27,7 @@ export const DESERT_ART = Object.freeze({
   noorRiderJump: Object.freeze({ file: "ui/desert_ride/rider_noor_jump.webp", size: Object.freeze([537, 670]), anchor: Object.freeze({ x: 0.5761, y: 0.8388 }) }),
   noorRiderBrace: Object.freeze({ file: "ui/desert_ride/rider_noor_brace.webp", size: Object.freeze([561, 644]), anchor: Object.freeze({ x: 0.558, y: 0.8198 }) }),
   noorRiderFall: Object.freeze({ file: "ui/desert_ride/rider_noor_fall.webp", size: Object.freeze([554, 655]), anchor: Object.freeze({ x: 0.5256, y: 0.9569 }) }),
-  // なる（裏ボス）の背面6ポーズ（Issue #3222・Codex。2026-11-11 新バージョンの服装に描き直し #3306・PR #3309）。主人公の背面と同じ縮尺に作り直し、基準点は板の中心（転倒は主人公と同じ位置関係）。
+  // なる（好敵手）の背面6ポーズ（Issue #3222・Codex。2026-11-11 新バージョンの服装に描き直し #3306・PR #3309）。主人公の背面と同じ縮尺に作り直し、基準点は板の中心（転倒は主人公と同じ位置関係）。
   // 寸法・基準点は asset_sources/desert-ride-naru-3222/adoption.json（build.py が書き出す）と同じ値。身長の差は描く時に掛ける（desert-ride.js の RIVAL_ART_SCALE）
   naruRider: Object.freeze({ file: "ui/desert_ride/rider_naru_ride.webp", size: Object.freeze([503, 774]), anchor: Object.freeze({ x: 0.5692, y: 0.8226 }) }),
   naruRiderLeft: Object.freeze({ file: "ui/desert_ride/rider_naru_lean_left.webp", size: Object.freeze([544, 725]), anchor: Object.freeze({ x: 0.5868, y: 0.8137 }) }),

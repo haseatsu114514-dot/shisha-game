@@ -15,6 +15,7 @@ import { axeBarDiscovered, axeBarSightingDue } from "../core/axe-bar-discovery.j
 import { playAxeBarSighting } from "./axe-bar-discovery.js";
 import { playBgm, currentBgm } from "../core/audio.js";
 import { gearOffer } from "../core/hobby-gear.js";
+import { arrivalsOff, arrivalGreeted, markArrival, leaveArrivalNote, readyArrivals, playArrival, playVenueTurn } from "./venue-arrivals.js";
 
 import { HOUSE_AXE, PERSONAL_AXES, bestOwnedAxe, ownsAxe, axeEffect } from "../minigames/axe-equipment.js";
 
@@ -28,7 +29,11 @@ function addCareer(records, result) {
 }
 export const careerLine = career => !career?.throws ? "" : `通算 ${career.games}ゲーム · 平均 ${(career.points / career.throws).toFixed(2)}点/投 · ブル率 ${Math.round(career.bulls / career.throws * 100)}% · キル ${career.kills}/${career.calls} · 落下 ${career.drops}`;
 
-/** 入店・記録閲覧・中断は無料。完走時だけ消費し、行動と保存はcalendarが確定する。 */
+/**
+ * 入店・記録閲覧・中断は無料。完走時だけ消費し、行動と保存はcalendarが確定する。
+ * メニューの前に、店主マキとのやり取りを読む（VAR01。daily/venue-arrivals.js）: 初めての来店は名乗るまで → 登場カットイン →
+ * 決まりと案内、二度目からは来店のたびに一本（同じ夜に入り直した時は読まない）。投げ終えた後は、結果に合った締めの会話。
+ */
 export async function visitAxeBar({ staminaGuard = async () => true, signal } = {}) {
   if (active || !state || !axeBarDiscovered(state) || state.chapter < 1 || state.phase !== "daily" || state.slot !== 1 || signal?.aborted) return false;
   active = true;
@@ -55,13 +60,27 @@ export async function visitAxeBar({ staminaGuard = async () => true, signal } = 
     if (axeBarSightingDue(owner)) {
       if (!await playAxeBarSighting({ signal: abort.signal }) || !current()) return false;
     }
+    const { play } = await import("../vn/engine.js");
+    await readyArrivals();
+    if (!current()) return false;
+    // 会話は正常に読み終えた時だけ true。中断・LOAD は false（呼び出し側が current() で止まる）。
+    const read = async scene => {
+      const result = await play(scene, { signal: abort.signal });
+      return current() && !!result && !result.cancelled;
+    };
     if (!owner.flags._intro_maki) {
       const { playIntro } = await import("../vn/intro.js");
       if (!current()) return false;
-      const { play } = await import("../vn/engine.js");
-      const greeting = await play({ lines: [{ speaker: "hajime", text: "あの、ここで投げてみたくて" }] }, { signal: abort.signal });
-      if (greeting?.cancelled || !current()) return false;
+      // 台本を読めなかった時は、これまでどおり一言だけで紹介へ進む
+      const first = DB.dialogues.axe_bar_first_visit?.lines?.length ? "axe_bar_first_visit"
+        : { lines: [{ speaker: "hajime", text: "あの、ここで投げてみたくて" }] };
+      if (!await read(first)) return false;
       await playIntro("maki");
+      if (!current()) return false;
+      if (DB.dialogues.axe_bar_first_visit_after?.lines?.length && !await read("axe_bar_first_visit_after")) return false;
+      markArrival("axe_bar", owner);
+    } else {
+      await playArrival("axe_bar", { read, save: owner, ctx: { idle: !available() } });
       if (!current()) return false;
     }
     const mode = await new Promise(resolve => {
@@ -70,7 +89,10 @@ export async function visitAxeBar({ staminaGuard = async () => true, signal } = 
       const pick = value => { if (!lessonOpen && !gearOpen && !picked) { picked = true; resolve(value); } };
       abort.signal.addEventListener("abort", () => { picked = true; resolve(null); }, { once: true });
       const records = owner.flags._axe_bar_records || {};
-      const welcome = Object.keys(records).length ? "venue_maki_return" : "venue_maki_greet";
+      // さっき話したばかりの夜は、挨拶を繰り返さずにメニューを渡す一言にする
+      const played = Object.keys(records).length > 0;
+      const menuLine = played ? "venue_maki_menu" : "venue_maki_menu_first";
+      const welcome = arrivalGreeted("axe_bar", owner) && DB.dialogues[menuLine] ? menuLine : played ? "venue_maki_return" : "venue_maki_greet";
       const status = owner.visitedDay.axe_bar === day ? "今日はもう投げ終えた。記録を見ていこう。"
         : owner.money < AXE_BAR.playCost ? "プレイには3,000円必要。記録を見るだけなら無料。"
         : owner.stamina <= 0 ? "今日は体を休めよう。記録を見るだけなら無料。"
@@ -178,9 +200,20 @@ export async function visitAxeBar({ staminaGuard = async () => true, signal } = 
       best: newBest ? entry : previous.best };
     recordPlayMastery(owner, "axe", result, `${owner.cycle || 1}:${chapter}:${day}:${mode}:${records[mode].plays}`);
     addMoney(-AXE_BAR.playCost); addStamina(AXE_BAR.stamina); earnStat("guts", 1);
-    const reply = result.total === 0 ? "venue_maki_miss" : previous && newBest ? "venue_maki_record" : "venue_maki_finish";
+    const outcome = result.total === 0 ? "miss" : previous && newBest ? "record" : "finish";
     const goals = (result.challenges || []).filter(goal => goal.state === "done").length;
-    toast(`斧崎マキ「${DB.dialogues[reply]?.lines?.[0]?.text || ""}」` + (result.rank ? ` RANK ${result.rank}・平均 ${result.stats.average.toFixed(2)}・チャレンジ ${goals}/${result.challenges.length}` : ""), { kind: "good" });
+    const summary = result.rank ? `RANK ${result.rank}・平均 ${result.stats.average.toFixed(2)}・チャレンジ ${goals}/${result.challenges.length}` : "";
+    // 締めの会話（VAR01）。記録と精算は済んでいるので、読み切れなくても行動は使ったまま。
+    const closing = { miss: "axe_finish_miss", record: "axe_finish_record" }[outcome];
+    if (!arrivalsOff() && DB.dialogues.axe_finish_a?.lines?.length) {
+      if (summary) toast(summary, { kind: "good" });
+      // 次の来店で、マキがこの日の結果に触れる（自己ベスト・一本も刺さらなかった日だけ）
+      leaveArrivalNote("axe_bar", outcome === "finish" ? null : outcome, owner);
+      if (closing && DB.dialogues[closing]?.lines?.length) await read(closing);
+      else await playVenueTurn("axe_bar_finish", { read, save: owner });
+      return state === owner;
+    }
+    toast(`斧崎マキ「${DB.dialogues[`venue_maki_${outcome}`]?.lines?.[0]?.text || ""}」` + (summary ? ` ${summary}` : ""), { kind: "good" });
     return true;
   } finally {
     observer.disconnect(); unsubscribe(); window.removeEventListener("pagehide", cancel);

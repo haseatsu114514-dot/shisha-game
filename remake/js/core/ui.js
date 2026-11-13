@@ -71,21 +71,28 @@ let activeCurtain = null;
 let weatherBg = "";
 let weatherTint = "";
 let weatherKey = "";
-const bgReady = new Map(); // url -> { promise, image, keep, pin }（一度読んだ絵は即座に出す）
+const bgReady = new Map(); // url -> { promise, image, keep }（一度読んだ絵は即座に出す）
 // Retain only a bounded decoded working set. CSS/DOM own visible images separately.
-// pin は作業台（シーシャ作り）の素材。1工程だけで約100MBあり上限を超えるので、上限の外に置く
-// （上限に入れると同じ作業台の中で追い出し合い、大会の再挑戦などで開き直すたびに読み直していた）。
 const IMAGE_CACHE_ENTRIES = 128, KEPT_IMAGE_BYTES = 48 * 1024 * 1024;
+// pin（制作画面の素材。craft/readiness.js）は、この上限にも件数の上限にも数えず、手放さない。
+// 制作画面を開き直すたびに素材を取り直すと準備の幕が出てしまうため（test/browser/craft_readiness.mjs）。
+// 数は工程ごとの素材（高々百枚ほど）に限られる。ほかの絵は今までどおり上限の中で保つ。
 function trimImages() {
-  let bytes = [...bgReady.values()].reduce((n, e) => n + (e.pin ? 0 : e.bytes || 0), 0);
+  let bytes = 0, count = 0;
+  for (const entry of bgReady.values()) {
+    if (entry.pin) continue;
+    bytes += entry.bytes || 0;
+    count++;
+  }
   for (const [url, entry] of bgReady) {
-    if (!entry.done || entry.pin) continue; // never evict shared in-flight requests or pinned bench art
+    if (!entry.done || entry.pin) continue; // never evict shared in-flight requests
     if (entry.image && bytes > KEPT_IMAGE_BYTES) {
       bytes -= entry.bytes || 0;
       entry.image = null; entry.bytes = 0;
     }
-    if (bgReady.size > IMAGE_CACHE_ENTRIES) {
+    if (count > IMAGE_CACHE_ENTRIES) {
       bytes -= entry.bytes || 0;
+      count--;
       bgReady.delete(url);
     }
   }
@@ -95,7 +102,6 @@ const expiredImageWaits = new WeakMap(); // 同じ通信に対し、使い切っ
 /** 画像を読み込み＋デコードし終えるまで待つ（最大 ms）。成功時 true、失敗・時間切れは false。 */
 export function imageReady(url, ms = 1500, { keep = false, pin = false } = {}) {
   if (!url) return Promise.resolve(false);
-  keep ||= pin;
   let entry = bgReady.get(url);
   if (entry) { bgReady.delete(url); bgReady.set(url, entry); }
   // 通常の場面で読んだ後に固定UIの先読みへ昇格する場合も、Image 自体を保持する。
@@ -115,7 +121,10 @@ export function imageReady(url, ms = 1500, { keep = false, pin = false } = {}) {
       i.onerror = () => { bgReady.delete(url); entry.image = null; resolve(false); };
       i.src = url;
     });
-  } else if (keep) { entry.keep = true; if (pin) entry.pin = true; }
+  } else {
+    if (keep) entry.keep = true;
+    if (pin) entry.pin = true;
+  }
   const p = entry.promise;
   if (expiredImageWaits.has(p) && expiredImageWaits.get(p) >= ms) return Promise.resolve(false);
   return new Promise((resolve) => {
