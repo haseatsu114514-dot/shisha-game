@@ -172,7 +172,7 @@
     {
       "dialogue_id": "ch5_tokyo_volk",
       "lines": [
-        { "speaker": "", "face": "", "text": "鉄の煙。計器の並ぶカウンターで、ヴォルクが手帳に何かを書いていた。" },
+        { "speaker": "", "face": "", "text": "鉄の煙。温度計の立つカウンターで、ヴォルクが手帳に何かを書いていた。" },
         { "speaker": "volk", "face": "normal", "text": "……来たか。座れ" },
         { "speaker": "volk", "face": "serious", "text": "今日は湿度が高い。炭の減りが、いつもより遅い" },
         { "speaker": "hajime", "face": "normal", "text": "測ってから、決めるんですね" },
@@ -198,7 +198,7 @@
       "lines": [
         { "speaker": "", "face": "", "text": "帰り際、ヴォルクが紅茶のカップを置いた。小皿に、ジャムが添えてある。" },
         { "speaker": "volk", "face": "normal", "text": "祖母のやり方だ。量は測らない" },
-        { "speaker": "hajime", "face": "smile", "text": "計器だらけの店なのに" },
+        { "speaker": "hajime", "face": "smile", "text": "何でも測る店なのに" },
         { "speaker": "volk", "face": "smile", "text": "ここだけは、数字を持たない。……飲め。冷める" },
         { "speaker": "hajime", "face": "normal", "text": "甘さは、どのくらいが正解ですか" },
         { "speaker": "volk", "face": "normal", "text": "正解はない。祖母は、俺の顔を見て足した。それだけのことだ" },
@@ -208,7 +208,7 @@
     },
     {
       "dialogue_id": "ch5_volk_bond_finale",
-      "comment": "ヴォルクの好感度の締めくくり（第5章の東京版・友情のみ）。2026-11-07 オーナー指示「ヴォルク♥5エンディングも第5章東京『鉄の煙』で出す（スティーブと揃える）」。第3章の ch3_volk_bond_finale と同じ節目で、第3章で見逃した人が鉄の煙で受け取る（daily/bonds.js の BOND_FINALES.volk.tokyoDialogue）。第3章で見た人は finales.volk で二度は出ない。必須の初来店（ch3_volk_first の紅茶とジャム・卸した先を見る仕事）だけを前提にし、第3章の再訪・LIME交換・大会後の寄り道は前提にしない。刻みの「数えるな」は、素焼きを持つと届く友人LIMEの三通目（remake/data/friends.json の「だから、数えるなと言った」）の前提なので外さない。第3章でLIMEを交換していない人とは、記録を「書いたら、送れ」と頼まれたその場で交換する（contact の分岐 lime_exchange。2026-11-07 オーナー判断「ヴォルクの第5章♥5エンディングでの LIME 即時交換は付与する」。ch5_steve_bond_finale と同じ形で、第3章の ch3_volk_lime と同じ set_flag。交換後は友人のLIME remake/data/friends.json が届く）。交換済みの人は分岐を通らず、本文は連絡を前提にしないまま店にまた来る約束で着地する。世界大会の後・博士との勝負の前にだけ読む。昼にも夜にも読めるので時間帯を言わない。精度は捨てない（温度の隣に、客が何口目で休んだかを書く。ヴォルク自身の「温度の隣に客の時間」「何口目で休む」の言い方で、スティーブの「顔」とは重ねない）。はじめの「先に頷いて」は、専用ハガルの贈り物の理由「頷く手に」（data/equipment.json）を第3章の任意の場面を読んでいない人にも通じさせるために置く。専用ハガルと葉は playFinale が渡す。",
+      "comment": "ヴォルクの好感度の締めくくり（第5章の東京版・友情のみ）。2026-11-07 オーナー指示「ヴォルク♥5エンディングも第5章東京『鉄の煙』で出す（スティーブと揃える）」。第3章の ch3_volk_bond_finale と同じ節目で、第3章で見逃した人が鉄の煙で受け取る（daily/bonds.js の BOND_FINALES.volk.tokyoDialogue）。第3章で見た人は finales.volk で二度は出ない。必須の初来店（ch3_volk_first の紅茶とジャム・卸した先を見る仕事）だけを前提にし、第3章の再訪・LIME交換・大会後の寄り道は前提にしない。刻みの「数えるな」は、素焼きを持つと届く友人LIMEの三通目（remake/data/friends.json の「だから、数えるなと言った」）の前提なので外さない。第3章でLIMEを交換していない人とは、記録を「書いたら、送れ」と頼まれたその場で交換する（contact の分岐 lime_exchange。2026-11-07 オーナー判断「ヴォルクの第5章♥5エンディングでの LIME 即時交換は付与する」。ch5_steve_bond_finale と同じ形で、第3章の ch3_volk_lime と同じ set_flag。交換後は友人のLIME remake/data/friends.json が届く）。交換済みの人は分岐を通らず、本文は連絡を前提にしないまま店にまた来る約束で着地する。世界大会の後・博士との勝負の前にだけ読む。昼にも夜にも読めるので時間帯を言わない。精度は捨てない（温度の隣に、客がいつ休んだかを書く。ヴォルク自身の「温度の隣に客の時間」「いつ休んだか」の言い方で（2026-11-13 オーナー訂正「計測を盛りすぎない」で口数は数えない）、スティーブの「顔」とは重ねない）。はじめの「先に頷いて」は、専用ハガルの贈り物の理由「頷く手に」（data/equipment.json）を第3章の任意の場面を読んでいない人にも通じさせるために置く。専用ハガルと葉は playFinale が渡す。",
       "metadata": { "bond_finale": "volk" },
       "lines": [
         { "speaker": "", "text": "鉄の煙。ヴォルクは手帳を閉じると、カウンターの下から木箱を出した。" },
@@ -231,7 +231,7 @@
         { "speaker": "hajime", "face": "surprise", "text": "そんな大事な記録を、俺が？" },
         { "speaker": "volk", "face": "normal", "text": "俺の手元では、線はもう増えない。お前の手でなら、増える" },
         { "speaker": "", "text": "ヴォルクはナイトサイドの黒い袋を一つ、木箱の隣に置いた。ブラストミントだ。" },
-        { "speaker": "volk", "face": "serious", "text": "強い冷たさは、火の乱れを隠す。客が何口目で休んだかを、温度の隣に書け" },
+        { "speaker": "volk", "face": "serious", "text": "強い冷たさは、火の乱れを隠す。客がいつ休んだかを、温度の隣に書け" },
         { "speaker": "hajime", "face": "smile", "text": "はい。俺は先にお客さんに頷いて、それから書きます" },
         { "speaker": "volk", "face": "normal", "text": "……順番は違っても、両方を書くなら構わない" },
         { "type": "condition", "condition_type": "contact", "char_id": "volk", "next_false": "lime_exchange" },

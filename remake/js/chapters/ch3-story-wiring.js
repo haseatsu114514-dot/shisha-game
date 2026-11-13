@@ -94,7 +94,7 @@ export const CH3_OPTIONAL_SCENES = Object.freeze({
     met: ["tsumugi"], away: ["tsumugi"] },
   // ヴォルクの再訪（#2026）。初来店（DAY12夜）の後は自由時間の枠が無いので、寄り道として一度ずつ順に読む。
   ch3_volk_second: { file: "ch3_volk", label: "鉄の煙の二度目", location: "鉄の煙", bg: "bg_volk_shop", met: ["volk"] },
-  ch3_volk_third: { file: "ch3_volk", label: "七年分の記録", location: "鉄の煙", bg: "bg_volk_shop", met: ["volk"] },
+  ch3_volk_third: { file: "ch3_volk", label: "七冊の記録", location: "鉄の煙", bg: "bg_volk_shop", met: ["volk"] },
   ch3_volk_fourth: { file: "ch3_volk", label: "頷く順番", location: "鉄の煙", bg: "bg_volk_shop", met: ["volk"] },
   // ヴォルクとLIMEを交換する（#2028）。四度目の来店の後（routes の seen）、♥2で。締めくくり（daily/bonds.js）の条件。
   // 版3の日常ループでは大会までに読む枠が無いので、実際は大会後の寄り道（ch3-aftermath-progress.js）から読む。
