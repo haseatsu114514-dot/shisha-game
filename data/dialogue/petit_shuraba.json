@@ -582,8 +582,8 @@
           "type": "choice",
           "id": "petit_naru_warning_answer",
           "choices": [
-            { "text": "「どっちも友達だ」と言う", "next": "friends" },
-            { "text": "「見間違いだろ」と言う", "next": "mistake" },
+            { "text": "「どっちも友達」と言う", "next": "friends" },
+            { "text": "見間違いだと言う", "next": "mistake" },
             { "text": "何も言わない", "next": "silent" }
           ]
         },
@@ -593,11 +593,11 @@
       ],
       "branches": {
         "friends": [
-          { "speaker": "hajime", "face": "normal", "text": "……どっちも、友達だよ" },
+          { "speaker": "hajime", "face": "normal", "text": "……どっちも、友達で" },
           { "speaker": "naru", "face": "serious", "text": "友達と歩く時の顔じゃなかったぞ、両方とも" }
         ],
         "mistake": [
-          { "speaker": "hajime", "face": "normal", "text": "見間違いだろ。帽子のやつなんて、いくらでもいる" },
+          { "speaker": "hajime", "face": "normal", "text": "……帽子の人なんて、いくらでも" },
           { "speaker": "naru", "face": "normal", "text": "その帽子で、お前を見間違えるかよ" }
         ],
         "silent": [

@@ -398,7 +398,7 @@
         {
           "speaker": "sumi",
           "face": "normal",
-          "text": "軽くして、熱を抑えた。客の顔を見て作った一台だ"
+          "text": "軽くして、熱を抑えた。……今日は、これが吸いたかった"
         },
         {
           "speaker": "",
@@ -504,9 +504,11 @@
           "tournament_chapter": 1
         },
         {
-          "speaker": "hajime",
-          "face": "smile",
-          "text": "すみません。また吸いたくなって"
+          "type": "condition",
+          "condition_type": "tournament_finished",
+          "next_true": "reconciled_again",
+          "next_false": "keigo_again",
+          "tournament_chapter": 3
         },
         {
           "speaker": "naru",
@@ -549,10 +551,11 @@
           "text": "勘違いすんなよ。弟子に譲るんじゃねえ"
         },
         {
-          "speaker": "naru",
-          "face": "serious",
-          "duck": true,
-          "text": "教える側と教わる側は、今日でおしまいだ"
+          "type": "condition",
+          "condition_type": "tournament_finished",
+          "next_true": "reconciled_equal",
+          "next_false": "keigo_equal",
+          "tournament_chapter": 3
         },
         {
           "speaker": "naru",
@@ -560,9 +563,11 @@
           "text": "次はお前の煙を吸わせろ。こいつで作った、お前の一台をな"
         },
         {
-          "speaker": "hajime",
-          "face": "serious",
-          "text": "……はい。なるさんの煙も、また確かめに来ます"
+          "type": "condition",
+          "condition_type": "tournament_finished",
+          "next_true": "reconciled_promise",
+          "next_false": "keigo_promise",
+          "tournament_chapter": 3
         },
         {
           "speaker": "naru",
@@ -580,9 +585,11 @@
           "text": "あ、手入れは水洗いだけな。洗剤使ったら、二度と口きかねえから"
         },
         {
-          "speaker": "hajime",
-          "face": "smile",
-          "text": "それ、冗談ですよね"
+          "type": "condition",
+          "condition_type": "tournament_finished",
+          "next_true": "reconciled_joke",
+          "next_false": "keigo_joke",
+          "tournament_chapter": 3
         },
         {
           "speaker": "naru",
@@ -609,6 +616,64 @@
             "speaker": "naru",
             "face": "smile",
             "text": "お、来たな。……また一服したくなったか？"
+          }
+        ],
+        "keigo_again": [
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "すみません。また吸いたくなって"
+          }
+        ],
+        "reconciled_again": [
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "悪い。また吸いたくなって"
+          }
+        ],
+        "keigo_equal": [
+          {
+            "speaker": "naru",
+            "face": "serious",
+            "duck": true,
+            "text": "教える側と教わる側は、今日でおしまいだ"
+          }
+        ],
+        "reconciled_equal": [
+          {
+            "speaker": "naru",
+            "face": "serious",
+            "duck": true,
+            "text": "さん付けは、とっくにやめさせたろ。これは、その続きだ"
+          }
+        ],
+        "keigo_promise": [
+          {
+            "speaker": "hajime",
+            "face": "serious",
+            "text": "……はい。なるさんの煙も、また確かめに来ます"
+          }
+        ],
+        "reconciled_promise": [
+          {
+            "speaker": "hajime",
+            "face": "serious",
+            "text": "……うん。なるの煙も、また確かめに来る"
+          }
+        ],
+        "keigo_joke": [
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "それ、冗談ですよね"
+          }
+        ],
+        "reconciled_joke": [
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "それ、冗談だよな"
           }
         ]
       }
