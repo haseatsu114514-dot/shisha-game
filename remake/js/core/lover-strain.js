@@ -23,8 +23,8 @@ export const STRAIN_CAUSES = Object.freeze(["decline", "unread", "suspect"]);
 export const STRAIN_GAIN = Object.freeze({ decline: 2, expired: 1, unreadPerDay: 0.5, petit: 1 });
 export const STRAIN_EASE = Object.freeze({ date: 4, reply: 1, visit: 1 });
 export const STRAIN_UNREAD_DAYS = 2;  // 届いてからこの日数、開かれないLIMEを「放ってある」と数える
-export const STRAIN_TALK_GAP = 5;     // 別れ話どうしの間隔（誰とでも）
-export const STRAIN_TALK_REST = 10;   // 同じ相手との別れ話の間隔
+export const STRAIN_TALK_GAP = 7;     // 別れ話どうしの間隔（誰とでも。多くても週に一度）
+export const STRAIN_TALK_REST = 14;   // 同じ相手との別れ話の間隔
 export const STRAIN_KEEP_VALUE = 1;   // 向き合うと約束して引き止めた後の値
 export const STRAIN_EXCUSE_VALUE = 5; // 言い訳で引き止めた後の値（予兆①のまま。次は早い）
 

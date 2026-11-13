@@ -80,7 +80,7 @@ await suite("lover-strain", async check => {
       out.sameNight = await H.talk(0);
       // 何日か後に、また溜まれば、また起きる（引き止めに上限は無い）
       const s = H.core.state;
-      s.day = 31; s.loverStrain.by.minto.v = 10; s.loverStrain.by.minto.why = { unread: 10 };
+      s.day = 34; s.loverStrain.by.minto.v = 10; s.loverStrain.by.minto.why = { unread: 10 };
       out.again = await H.talk(0);
       out.againRead = H.read();
       out.final = H.snap();
