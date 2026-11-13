@@ -27,6 +27,8 @@ assert.match(names.hiyori, /^ひより\(.+\)/, "Hiyori uses a kaomoji, not an em
 assert.ok(!names.hiyori.includes("白昼夢"), "The old self-styled name is retired");
 assert.match(names.ageha, /[ぁ-ぉ]/, "Ageha writes in gyaru-moji (small kana)");
 assert.match(names.ageha, /[｡-ﾟ]/, "…with half-width kana pieces");
+assert.ok(!names.ageha.includes("(ょ"), "…but readable: は is not written as (ょ (owner 2026-11-13)");
+assert.ok(names.ageha.includes("ﾊ"), "は is a half-width ﾊ");
 // フルネームの人もいる（本名を隠していない人だけ）
 for (const id of ["naru", "tsumugi", "mukai_master"]) {
   const real = String(DB.characters[id].name).replace(/（.*?）/g, "").split(" / ").at(-1).replace(/\s/g, "");
