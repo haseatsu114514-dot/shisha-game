@@ -312,7 +312,7 @@ async function day1Errands() {
       f._errand_shop_told = true;
       save();
     }
-    await chooseSpot({ guide: { pin: "shop", text: "スミさんに頼まれた仕入れへ。Dr.fookah をタップ！" } });
+    await chooseSpot({ guide: { pin: "shop", text: "スミさんに頼まれた仕入れへ。Dr.fookah をタップ。もう一度タップで入る！" } });
     await openShop({ errand: "lemon", expense: true, expenseFlag: "_errand_lemon_expensed" });
     f._errand_shop_done = true;
     save();
@@ -331,7 +331,7 @@ async function day1Errands() {
     f._errand_scout_told = true;
     save();
   }
-  if (!f._errand_naru_visited) await chooseSpot({ guide: { pin: "naru", text: "KEMURIKUSAへ偵察に。KEMURIKUSA をタップ！" } });
+  if (!f._errand_naru_visited) await chooseSpot({ guide: { pin: "naru", text: "KEMURIKUSAへ偵察に。KEMURIKUSA をタップ。もう一度タップで入る！" } });
   if (!f._errand_naru_visited) {
     await visitRival(naru);
     state.visitedDay.naru = state.day;
@@ -347,7 +347,7 @@ async function registerTournament() {
   const venue = spotById("c_station");
   // 偵察を見送った旧保存などでは、未解放/休業の受付へ案内して進行を止めない。
   if (!venue || !isUnlocked(venue) || isClosed(venue) || state.flags._c_station_registered) return;
-  await chooseSpot({ guide: { pin: "c_station", text: "まずは大会の参加登録へ。C.STATION の受付をタップ！", free: "参加登録（代金なし）" } });
+  await chooseSpot({ guide: { pin: "c_station", text: "まずは大会の参加登録へ。C.STATION の受付をタップ。もう一度タップで入る！", free: "参加登録（代金なし）" } });
   await visitSpot({ ...venue, cost: 0, stamina: 0 });
   if (state.flags._c_station_registered && !state.flags._ch1_rules_read) {
     await (await import("../scenes/rule-sheet.js")).openRuleSheet();
@@ -366,8 +366,8 @@ async function registerTournament() {
  * 自分で先に行った旧セーブの店は飛ばし、DAY2 を過ぎた旧セーブには割り込まない
  */
 const DELIVERIES = [
-  { charId: "minto", scene: "remake_delivery_minto", text: "帰り道に、まとめ買いのミントを PEPPERMINT へ。PEPPERMINT をタップ！" },
-  { charId: "adam", scene: "remake_delivery_eden", text: "次は古いダブルアップルを EDEN へ。EDEN をタップ！" },
+  { charId: "minto", scene: "remake_delivery_minto", text: "帰り道に、まとめ買いのミントを PEPPERMINT へ。PEPPERMINT をタップ。もう一度タップで入る！" },
+  { charId: "adam", scene: "remake_delivery_eden", text: "次は古いダブルアップルを EDEN へ。EDEN をタップ。もう一度タップで入る！" },
 ];
 const DELIVERY_LAST_DAY = 2;
 const DELIVERY_PAY = 2000;

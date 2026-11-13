@@ -3,11 +3,13 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import vm from "node:vm";
 import { scheduleChapterTwoTrpgNight } from "../js/chapters/ch2-progress.js";
+import { reiStickerDue } from "../js/core/ryuji-visit.js";
 
 const root = new URL("../../", import.meta.url);
 const preparation = JSON.parse(fs.readFileSync(new URL("data/dialogue/ch2_preparation.json", root)));
 const stories = ["ch2_kumicho", "ch2_rei", "venue_hours"].flatMap(name => JSON.parse(fs.readFileSync(new URL(`data/dialogue/${name}.json`, root))).dialogues);
-const all = Object.fromEntries([...preparation.dialogues, ...stories].map(d => [d.dialogue_id, d]));
+const stickerScene = JSON.parse(fs.readFileSync(new URL("data/dialogue/ch2_deliveries.json", root))).dialogues.filter(d => d.dialogue_id === "remake_ch2_rei_purikura_after");
+const all = Object.fromEntries([...preparation.dialogues, ...stories, ...stickerScene].map(d => [d.dialogue_id, d]));
 const stagesSource = fs.readFileSync(new URL("remake/js/core/affinity-stages.js", root), "utf8");
 const { CH2_VISIT_STORIES, ch2VisitDone } = await import(new URL("remake/js/core/affinity-stages.js", root));
 const context = vm.createContext({ console, AbortController, setTimeout, clearTimeout });
@@ -56,6 +58,8 @@ const mocks = {
   "../daily/trpg.js": { trpgSpot: () => null, maybeRecruitTrpgMember: async () => false },
   "../daily/shop.js": { openShop: async () => null },
   "./ch2-purikura.js": { offerAgehaPurikura: async () => true },
+  // MELTY PUFFでのレヰの挨拶回の後日（#3468 A案）。判定は実物を使う
+  "../core/ryuji-visit.js": { reiStickerDue },
   // あげはの♥3の質問（#1988）は affinity_stages.mjs で確認する。ここでは質問が無い通常訪問だけを見る
   // 締めくくりの記録・贈り物は bonds.mjs / affinity_stages.mjs が確認する。ここでは訪問の分岐と精算だけを見る（#2027）
   "../daily/bonds.js": { BOND_QUESTIONS: { ageha: { host: "remake_ch2_ageha_newcomer", dialogue: "ch2_ageha_bond_question" } },
@@ -187,6 +191,22 @@ for (const id of ids) {
   assert.deepEqual(old, oldBefore); assert.deepEqual(state, fresh(9), "LOAD target must receive no old action effects");
 }
 
+// #3468 A案: MELTY PUFFでの挨拶回の翌日以降、零の小会話を一度だけシールの後日に置き換える。代金・好感度・能力は小会話と同じ。
+{
+  await setup(1); await visit("rei"); heartLevel = 0;
+  state.day = 20; state.flags._rei_melty_greeting = 20;
+  await visit("rei"); assert(isRepeat("rei", played.at(-1)), "not on the greeting day");
+  state.day = 21; mode = "cancel"; const before = JSON.stringify(state);
+  assert.equal((await visit("rei")).used, false); assert.equal(JSON.stringify(state), before, "cancel leaves the after scene unread");
+  mode = "ok"; const money = state.money; state.affinity = []; state.growth = [];
+  assert.equal((await visit("rei")).used, true); assert.equal(played.at(-1), "remake_ch2_rei_purikura_after");
+  assert.equal(state.flags._rei_purikura_after, true); assert.equal(state.money, money - 3000);
+  assert.deepEqual(state.affinity, [["rei", 8]]); assert.deepEqual(state.growth, [["charm", 4]]);
+  await visit("rei"); assert(isRepeat("rei", played.at(-1)), "after scene is read once");
+  await setup(1); await visit("rei"); heartLevel = 0; state.day = 21; state.flags._rei_melty_greeting = 20;
+  await visit("ageha"); assert.notEqual(played.at(-1), "remake_ch2_rei_purikura_after", "only at ZERO");
+}
+
 // ♥0の再訪はrepeatで正規報酬を得る。♥1になった時だけ既存followupへ。
 for (const id of ids) {
   await setup(1); heartLevel = 0;
@@ -302,7 +322,8 @@ fixture = preparation; await loader.namespace.loadPreparationDialogues();
 // 31 本 + あげはの♥3の質問（#1988）＋あげは♥5の締めくくり（#2023）+ 神崎・レヰの小会話6本と締めくくり2本（#2027）
 // + 今回の日常3本（#3097）+ レヰのライブの夜（RVE07）
 // + あげはの小会話3本と地元の第2章の会話7本、tonariの大会準備9本（VOL13）＋中間の確認4本（#2032）
-assert.equal(Object.keys(loaderDB.dialogues).length, 68 +Object.values(CH2_VISIT_STORIES).flat().filter(entry => entry.file).length);
+// + レヰのMELTY PUFFの挨拶回とシールの後日2本（#3468 A案）
+assert.equal(Object.keys(loaderDB.dialogues).length, 70 +Object.values(CH2_VISIT_STORIES).flat().filter(entry => entry.file).length);
 for (const suffix of ["b", "c", "d"]) assert(loaderDB.dialogues[`remake_ch2_ageha_repeat_${suffix}`], `ageha small talk ${suffix}`);
 for (const id of ["cafe_ch2_commute", "cafe_ch2_taste", "kannon_ch2_wish", "choizap_ch2_numbers", "cs_ch2_haze", "ch2_rio_taste", "ch2_rio_strawberry"]) assert(loaderDB.dialogues[id], id);
 for (const id of ["ch2_prep_basics_intro", "ch2_prep_basics_end", "ch2_prep_basics_failed", "ch2_prep_rehearsal_intro",

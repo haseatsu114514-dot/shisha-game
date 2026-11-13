@@ -57,3 +57,31 @@ test("circleFaceStyle fills the parent with the crop and keeps the face centered
   // Samechan's shark hood must not be the crop: the face crop is tighter than 400px.
   assert.ok(side < 400, `samechan crop side ${side}`);
 });
+
+// オーナー 2026-11-13「キャラの拡大率とかなんか統一感がまだない。アイコンにした時とか並べた時に」（TRF26）
+test("costume busts: one character keeps nearly one zoom across costumes, and every cast member lands on the shared frame", async () => {
+  const { BUST, bustTypicalWidths, bustCheekWidth } = await import("../js/trpg/face-crops.js");
+  const keyed = Object.fromEntries(frames.map(f => [`${f.scenario}/${f.character}/${f.role_id}`, { face: f.face }]));
+  const typical = bustTypicalWidths(keyed);
+  assert.deepEqual(Object.keys(typical).sort(), [...new Set(frames.map(f => f.character))].sort());
+  const zooms = {}, raw = {};
+  for (const f of frames) {
+    const cheek = bustCheekWidth(f.face, f.character, typical[f.character]);
+    assert.ok(cheek > 0 && Number.isFinite(cheek), f.file);
+    // The zoom is how many times the art is enlarged so the cheeks fill BUST.face of the card.
+    (zooms[f.character] ||= []).push(BUST.face * f.src[0] / cheek);
+    (raw[f.character] ||= []).push(BUST.face * f.src[0] / f.face.w);
+  }
+  for (const [id, list] of Object.entries(zooms)) {
+    const spread = Math.max(...list) / Math.min(...list), before = Math.max(...raw[id]) / Math.min(...raw[id]);
+    assert.ok(spread <= 1.18, `${id}: the same character is drawn at ${spread.toFixed(2)}x different sizes across costume cards`);
+    assert.ok(spread <= before + 1e-9, `${id}: the damping never widens the spread`);
+  }
+  // 測った頬の幅だけで決めていた時は、はじめの札は 1.4 倍以上ばらついていた。
+  assert.ok(Math.max(...raw.hajime) / Math.min(...raw.hajime) > 1.4);
+  // A character with a single measured costume, or one missing from the table, falls back to its own measurement.
+  assert.equal(bustCheekWidth({ w: 90 }, "nobody", undefined), 90);
+  assert.equal(bustCheekWidth({ w: 90 }, "nobody", 90), 90);
+  // The eye line leaves room for the hair above it: the top of the head is not cut off for an ordinary haircut.
+  assert.ok(BUST.eye >= 0.38 && BUST.eye <= 0.45 && BUST.face > 0.2 && BUST.face < 0.3 && BUST.damp > 0 && BUST.damp < 1);
+});
