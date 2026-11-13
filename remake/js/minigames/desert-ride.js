@@ -6,16 +6,15 @@
 // 着地の輪・得点の浮き出し・トリックのスロー・ブーストの残像。動き軽減ではカメラの動き・揺れ・スロー・閃光・速度線を止める。
 // 本番はスタートの合図のあと、ヌール（rivalRun）が横で滑る。
 import { el } from "../core/util.js";
-import { SE, unlockAudio, createDesertRideSe, desertZapGap, currentBgm, playBgm, preloadBgm, setBgmPlaybackRate, resetBgmTempo, bgmPlaybackRate } from "../core/audio.js";
+import { SE, unlockAudio, createDesertRideSe, desertZapGap, currentBgm, playBgm, preloadBgm, resetBgmTempo } from "../core/audio.js";
 import { EDGE, SPEED, COURSE_PACKS, generateCourse, practiceCourse, pickCourse, buildCourse, createGame, step, press, boost, chargeBoost, canRecover, summary, curveAt, headingAt, lateralAt, botControl,
   rivalRun, rivalAt, RULES_VERSION, jumpHeight, DISPLAY, toKmh, toMeters, JUMP } from "./desert-ride-model.js";
 import { DESERT_ART, DESERT_CONTROL_ART, loadDesertArt, riderPose } from "./desert-ride-art.js";
 import { imgFileUrl } from "../core/img-file.js";
 import { withMinigameLoading } from "./minigame-loading.js";
 
-// ブーストは人物を包む炎のオーラ・砂煙・周辺の速度線と、曲のテンポで伝える（2026-11-11 オーナー「ブースト中は曲を早く、オーラを出す」）。
+// ブーストは人物を包む炎のオーラ・砂煙・周辺の速度線と効果音で伝える。曲のテンポは変えない。
 const BOT_STEP = 1 / 60; // 自動操縦の判断と物理の刻み（モデルの検査と同じ）
-const BOOST_BGM_RATE = 1.18;     // ブースト中の曲の速さ（音程は保つ）
 // オーラの色（内側・外側・火の粉）。主人公は炎、ヌールは砂丘の夕日の金、なるは冷たい銀紫
 const AURAS = Object.freeze({
   player: Object.freeze({ core: [255, 250, 190], mid: [255, 176, 48], rim: [255, 92, 20] }),
@@ -187,7 +186,7 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
   const restoreBgm = () => { if (rideBgm && currentBgm() === rideBgm) playBgm(bgmBefore); };
   // メニューで選んでいる間にパック曲の取得・復号を済ませる。
   for (const key of Object.values(RIDE_BGM)) void preloadBgm(key);
-  const art = loadDesertArt();
+  const art = loadDesertArt({ rivals: [] });
   const promise = new Promise(resolve => {
     const rideSe = createDesertRideSe();
     const results = [];
@@ -370,8 +369,9 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       if (preparing) return;
       preparing = true;
       try {
-        if (art.pending() || !rideSe.isReady()) {
-          await withMinigameLoading(() => Promise.all([art.whenReady(), rideSe.ready()]), { host, label: "砂丘へ向かっています…" }).catch(() => {});
+        const runArt = loadDesertArt({ rivals: kind === "practice" ? [] : [who] });
+        if (runArt.pending() || !rideSe.isReady()) {
+          await withMinigameLoading(() => Promise.all([runArt.whenReady(), rideSe.ready()]), { host, label: "砂丘へ向かっています…" }).catch(() => {});
         }
         prewarmTints();
         if (!done) startRun(kind, who);
@@ -776,10 +776,6 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
         zapClock -= real;
         if (zapClock <= 0) { rideSe.zap(charge); zapBurstT = 0.14; zapClock = desertZapGap(charge); }
       } else zapClock = 0.35; // 溜まり始めたら少しして最初の1発
-      // ブースト中は曲が速くなる（音程は保ち、約0.2秒で滑らかに切り替わる）
-      // ブーストの始まりと終わりに一度だけ切り替える（少しずつ変えると iPhone で曲が止まる。2026-11-11）
-      const bgmRate = game.boostT > 0 && !game.finished ? BOOST_BGM_RATE : 1;
-      if (bgmPlaybackRate() !== bgmRate) setBgmPlaybackRate(bgmRate, { immediate: true });
       updateCurveTip(real);
       updateTutorial(events);
       updateHud();

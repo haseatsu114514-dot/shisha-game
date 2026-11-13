@@ -405,6 +405,7 @@
 @keyframes hole-feedback-in { 0% { opacity: 0; transform: translate(-50%, -40%); } 15%, 80% { opacity: 1; transform: translate(-50%, -50%); } 100% { opacity: 0; transform: translate(-50%, -60%); } }
 .hr-punch { width: 100%; align-items: center; padding: 18px; font-size: 22px; }
 .hr-row { display: flex; gap: 8px; }
+.hr-depth-hint { margin: 0; font-size: 22px; line-height: 1.4; color: var(--text); order: 7; }
 .hr-plan { color: var(--text); font-size: 14px; line-height: 1.6; min-height: 3.2em; }
 .hr-row .btn { flex: 1; }
 .hr-row .btn:disabled, .hr-punch:disabled { opacity: 0.45; cursor: default; }

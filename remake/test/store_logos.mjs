@@ -1,6 +1,7 @@
 // 採用ロゴの看板・入店表示と、未解放／SKIP／読込失敗の境界を実画面で確認する。
 import assert from "node:assert/strict";
 import fs from "node:fs";
+import { installShopGreetingReader } from "./browser/shop_greeting_reader.mjs";
 import { createRequire } from "node:module";
 const { chromium } = createRequire(import.meta.url)("playwright");
 const shots = process.env.SHOTS;
@@ -14,6 +15,7 @@ try {
   page.on("pageerror", e => errors.push(e.message));
   await page.goto(process.env.BASE_URL || "http://127.0.0.1:8123/remake/");
   await page.waitForSelector('[data-test="title-new"]');
+  await installShopGreetingReader(page);
   await page.evaluate(async () => {
     const core = await import("./js/core/state.js"), ui = await import("./js/core/ui.js");
     const map = await import("./js/daily/map.js"), spots = await import("./js/daily/spots.js");
@@ -95,8 +97,9 @@ try {
       });
     },id);
     await page.locator(`[data-test="pin-${id}"]`).click(); await page.locator('[data-test="map-go"]').click();
-    if (id === "shop") await page.locator('[data-test="shop-enter"]').click();
+    // Dr.fookahの最初の入店ロゴは接客VNの前。応対を読んでから売り場を選ぶ。
     await page.locator(`[data-test="store-arrival"][data-store="${id}"]`).waitFor();
+    if (id === "shop") await page.locator('[data-test="shop-enter"]').click();
     await page.locator(id==="tonari"?'[data-test="sub-back"]':'.shop-tabs').waitFor();
     assert.equal(await page.locator('.store-arrival').count(),0); checks++;
   }
@@ -161,6 +164,7 @@ try {
   await page.route('**/assets/ui/store_logos/tonari.webp',r=>r.abort());
   await page.goto(process.env.BASE_URL || "http://127.0.0.1:8123/remake/");
   await page.waitForSelector('[data-test="title-new"]');
+  await installShopGreetingReader(page);
   await page.evaluate(async()=>{
     const logos=await import('./js/core/store-logos.js');
     document.querySelector('#screen').append(logos.storeLogo('tonari'));

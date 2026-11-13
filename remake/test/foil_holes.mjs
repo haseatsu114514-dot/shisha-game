@@ -125,7 +125,7 @@ assert.equal(visualHoles.length, 2); assert.equal(visualHoles.at(-1).dots.length
 assert.deepEqual(visualHoles.at(-1).target, visualHoles.at(-1).dots.at(-1));
 assert.equal(visualHoles.at(-1).cs, probe.cs); assert.equal(probe.cs.holes, null);
 // 外周24穴: 選択前は時計が動かず、未完成ではクリック・Enterの全経路を拒否。
-let active = await start(); assert(find("hole-done").disabled); assert(find("hole-next").disabled);
+let active = await start(); assert.match(find("hole-depth-hint").text, /押す長さで深さが変わる/); assert(find("hole-done").disabled); assert(find("hole-next").disabled);
 fire("hole-done"); fire("hole-next"); keymap.Enter(); await settle(); assert.equal(active.cs.holes, null); assert.equal(results.length, 0);
 await punchCircle(24); assert(!find("hole-done").disabled); assert(find("hole-next").disabled); assert(find("hole-punch").disabled);
 assert.equal(visualHoles.length, 24); assert.equal(visualHoles.at(-1).dots.length, 24);

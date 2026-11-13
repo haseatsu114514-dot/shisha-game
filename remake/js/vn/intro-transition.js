@@ -250,6 +250,8 @@ function morph(ctx) {
       target.src = ctx.host.querySelector(".ci-portrait").src;
       const ready = sleep(16).then(() => target.decode()).then(() => prepareShapeMorph(
         { img: rect.img, ...alignedRect(rect, p, ctx.frame, ctx.id) }, { img: target, ...ctx.frame }, ctx.colors,
+        // 横持ちスマホは実表示の倍率に合わせ、距離場と毎フレームの全画素走査を減らす。
+        { scale: Math.min(.75, Math.max(.3, stageBox(ctx.fx).k * .75)) },
       )).catch(() => null);
 
       // ① 世界の色が抜け、本人の足元から色が満ちて影になる（0〜320ms）

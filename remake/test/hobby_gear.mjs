@@ -20,8 +20,8 @@ const { buildCarryPackage } = await import("../js/core/carry.js");
 
 // 1. 品目: どの店で・何章から・いくら・何が変わるか。
 const { HOBBY_GEAR } = gear;
-assert.deepEqual(Object.keys(HOBBY_GEAR).sort(), ["gear_dice", "gear_hatchet", "gear_headphones"]);
-const expect = { gear_hatchet: ["axe_bar", 1, 15000], gear_dice: ["trpg_bar", 2, 3800], gear_headphones: ["club", 3, 22000] };
+assert.deepEqual(Object.keys(HOBBY_GEAR).sort(), ["gear_dice", "gear_hatchet", "gear_hatchet_balanced", "gear_hatchet_precision", "gear_headphones"]);
+const expect = { gear_hatchet: ["axe_bar", 1, 5000], gear_hatchet_balanced: ["axe_bar", 1, 9000], gear_hatchet_precision: ["axe_bar", 1, 15000], gear_dice: ["trpg_bar", 2, 3800], gear_headphones: ["club", 3, 22000] };
 for (const [id, [venue, chapter, price]] of Object.entries(expect)) {
   const g = HOBBY_GEAR[id];
   assert.deepEqual([g.venue, g.chapterMin, g.price], [venue, chapter, price], id);
@@ -36,9 +36,9 @@ Object.assign(s, { chapter: 1, money: 20000 });
 assert.equal(gear.gearStatus(s, "gear_dice").reason, "chapter", "ダイスは第2章のボドゲカフェから");
 assert.equal(gear.buyGear(s, "gear_dice"), false);
 assert.equal(gear.buyGear(s, "gear_hatchet"), true);
-assert.equal(s.money, 5000);
+assert.equal(s.money, 15000);
 assert.equal(gear.buyGear(s, "gear_hatchet"), false, "二度目は買えない");
-assert.equal(s.money, 5000, "二度目でお金は減らない");
+assert.equal(s.money, 15000, "二度目でお金は減らない");
 assert.equal(gear.gearStatus(s, "gear_hatchet").reason, "owned");
 core.save(); s = core.load(); core.setState(s);
 assert.equal(s.owned.filter(id => id === "gear_hatchet").length, 1);
@@ -54,6 +54,23 @@ assert.equal(s.money, 200);
 // 機材ではないので、Dr.fookah の機材一覧や制作の選択肢には出ない（DB.equipById に無い）。周回では購入品として引き継ぐ。
 const carried = buildCarryPackage(s);
 assert(carried.owned.includes("gear_dice"), "周回でも購入品として残る");
+
+// 上位斧も同じ購入処理・SAVE/LOAD・周回の購入品経路。旧マイ斧は交換・返金しない。
+for (const id of ["gear_hatchet_balanced", "gear_hatchet_precision"]) {
+  s = core.newGame();
+  Object.assign(s, { chapter: 1, money: HOBBY_GEAR[id].price - 1 });
+  s.owned.push("gear_hatchet");
+  assert.equal(gear.buyGear(s, id), false, "不足時は購入しない");
+  s.money++;
+  assert.equal(gear.buyGear(s, id), true);
+  assert.equal(s.money, 0);
+  assert(s.owned.includes("gear_hatchet"), "旧購入品は交換しない");
+  core.save(); s = core.load(); core.setState(s);
+  assert.equal(s.owned.filter(item => item === id).length, 1);
+  assert.equal(gear.buyGear(s, id), false);
+  assert.equal(s.money, 0, "旧購入者への未承認の返金をしない");
+  assert(buildCarryPackage(s).owned.includes(id));
+}
 
 // 3. 斧: 構えの揺れだけを×0.9。点の付け方・刺さる力の帯は変えない。
 assert.equal(gear.AXE_STEADY, 0.9);

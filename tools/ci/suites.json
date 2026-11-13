@@ -1044,6 +1044,7 @@
         "node remake/test/chapter_feature_gates_2035.mjs",
         "node remake/test/tournament_entrance.mjs",
         "node --experimental-vm-modules remake/test/rio_sample.mjs",
+        "node --experimental-vm-modules remake/test/shop_greeting.mjs",
         "node --experimental-vm-modules remake/test/invites_781.mjs",
         "node --experimental-vm-modules remake/test/stamina_condition.mjs",
         "node --experimental-vm-modules remake/test/lime_consistency.mjs",
@@ -1055,7 +1056,7 @@
         "node --experimental-vm-modules remake/test/hiyori_showroom_806.mjs",
         "node --experimental-vm-modules remake/test/first_meeting_affinity.mjs",
         "node --experimental-vm-modules remake/test/samechan_story.mjs",
-        "node --test remake/test/axe_throw.mjs remake/test/axe_match.mjs remake/test/axe_presentation.mjs remake/test/axe_challenges.mjs",
+        "node --test remake/test/axe_throw.mjs remake/test/axe_match.mjs remake/test/axe_presentation.mjs remake/test/axe_challenges.mjs remake/test/axe_pull.mjs remake/test/axe_pull_dom.mjs remake/test/axe_equipment.mjs remake/test/axe_pull_input.mjs",
         "node remake/test/axe_bar_discovery.mjs",
         "node remake/test/mix_recognition.mjs",
         "node --experimental-vm-modules remake/test/foil_holes.mjs",
@@ -1218,6 +1219,7 @@
         "remake/test/axe_throw.mjs",
         "remake/test/axe_match.mjs",
         "remake/test/axe_presentation.mjs",
+        "remake/test/browser/axe_tap_pull.mjs",
         "remake/test/browser/axe_throw.mjs",
         "remake/test/browser/axe_versus.mjs",
         "remake/test/browser/axe_polish.mjs",
@@ -1233,6 +1235,7 @@
         "assets/audio/se/axe_throw/**"
       ],
       "run": [
+        "COMPARISON_DIR=.codex/artifacts/remake-browser/axe-tap-pull node remake/test/browser/axe_tap_pull.mjs",
         "COMPARISON_DIR=.codex/artifacts/remake-browser/axe-poses node remake/test/browser/axe_throw.mjs",
         "COMPARISON_DIR=.codex/artifacts/remake-browser/axe-versus-poses node remake/test/browser/axe_versus.mjs",
         "COMPARISON_DIR=.codex/artifacts/remake-browser/axe-polish-poses node remake/test/browser/axe_polish.mjs",
@@ -3395,6 +3398,7 @@
         "remake/test/axe_throw.mjs",
         "remake/test/axe_match.mjs",
         "remake/test/axe_presentation.mjs",
+        "remake/test/browser/axe_tap_pull.mjs",
         "remake/test/browser/axe_throw.mjs",
         "remake/test/browser/axe_versus.mjs",
         "remake/test/browser/axe_polish.mjs",
@@ -4226,6 +4230,15 @@
       "run": ["node remake/test/browser/stage_fit.mjs"]
     },
     {
+      "id": "mobile-craft-layout",
+      "title": "Mobile packing regions and foil/stove impact scale regression",
+      "kind": "browser",
+      "weight": 1,
+      "timeout": 5,
+      "paths": ["remake/css/craft-stage.css", "remake/css/phone-layout.css", "remake/js/craft/fx.js", "remake/test/browser/mobile_craft_layout.mjs"],
+      "run": ["node remake/test/browser/mobile_craft_layout.mjs"]
+    },
+    {
       "id": "side-area",
       "title": "左右の余白（YHK）: 煙と縁・縦書きの帯・親指ボタン（会話の AUTO／SKIP／LOG／次へ、地図の LIME／MENU）。主流のスマホの置き場所、モーダルの下では効かないこと、狭い画面・PC・DS風・設定「ぼかしだけ」・自動操作の既定は今までどおり",
       "kind": "browser",
@@ -4386,11 +4399,17 @@
       "timeout": 5,
       "paths": [
         "remake/js/daily/shop.js",
+        "remake/js/daily/shop-greeting.js",
+        "remake/js/chapters/departure-prep.js",
+        "data/dialogue/ch1_rio.json",
+        "remake/test/browser/rio_shop_entry.mjs",
+        "remake/test/browser/shop_greeting_reader.mjs",
         "remake/js/daily/calendar.js",
         "remake/test/browser/shopping_tutorial.mjs"
       ],
       "run": [
-        "node remake/test/browser/shopping_tutorial.mjs"
+        "node remake/test/browser/shopping_tutorial.mjs",
+        "node remake/test/browser/rio_shop_entry.mjs"
       ]
     },
     {
@@ -4861,9 +4880,36 @@
       "run": [
         "node remake/test/browser/look_retro.mjs"
       ]
+    },
+    {
+      "id": "romance-hesitation",
+      "title": "New romance hesitation model and VN controller: eight heroines, cancel, apology, LOAD and duplicate clicks",
+      "kind": "quick",
+      "run": [
+        "node remake/test/romance_hesitation.mjs",
+        "node remake/test/romance_hesitation_engine.mjs"
+      ]
+    },
+    {
+      "id": "romance-hesitation-browser",
+      "title": "Eight confession transitions, real lover memory portraits, two-step return and SAVE/LOAD",
+      "kind": "browser",
+      "weight": 2,
+      "timeout": 8,
+      "paths": [
+        "remake/js/core/romance-hesitation.js",
+        "remake/js/vn/engine.js",
+        "remake/js/daily/romance.js",
+        "remake/js/chapters/ch4-desert.js",
+        "remake/test/browser/romance_hesitation.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/romance_hesitation.mjs"
+      ]
     }
   ]
 }
+
 
 
 

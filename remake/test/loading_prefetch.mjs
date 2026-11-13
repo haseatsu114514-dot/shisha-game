@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { createPrefetchQueue, prepareImage } from '../js/core/loading-prefetch.js';
+import { createPrefetchQueue, prepareImage, warmInBackground } from '../js/core/loading-prefetch.js';
 
 const queue = createPrefetchQueue({ concurrency: 1, capacity: 2 });
 let release, starts = 0;
@@ -58,3 +58,53 @@ try {
   else globalThis.Image = originalImage;
 }
 console.log('image preparation: PASS (abort, timeout, queued load, decoded retention)');
+
+
+// A slow background job cannot start the next job; each boundary yields and
+// rechecks ownership/visibility. Failures must not become unhandled rejections.
+{
+  const starts = [], yields = [];
+  let finish, current = true;
+  const run = warmInBackground([
+    () => { starts.push(1); return new Promise(r => { finish = r; }); },
+    () => starts.push(2),
+  ], { isCurrent: () => current, yieldTask: () => new Promise(r => yields.push(r)) });
+  assert.equal(starts.length, 0);
+  yields.shift()();
+  await Promise.resolve();
+  assert.deepEqual(starts, [1]);
+  assert.equal(yields.length, 0, 'second job waits for first');
+  current = false; finish(); await run;
+  assert.deepEqual(starts, [1], 'new scene cancels remaining speculation');
+  for (const flag of ['isHidden', 'saveData']) {
+    await warmInBackground([() => assert.fail(flag)], { [flag]: () => true, yieldTask: async () => {} });
+  }
+  await warmInBackground([() => { throw Error('offline'); }, () => starts.push(3)], { yieldTask: async () => {} });
+  assert.deepEqual(starts, [1, 3], 'optional failure does not stop later tasks');
+}
+console.log('background preparation: PASS (yield, serial, stale, hidden, save-data, failure)');
+
+// The actual race loader used by module warm-up, tutorial and START must share
+// optional art as well as the core art. Previously each call decoded it again.
+{
+  const { readFile } = await import('node:fs/promises');
+  const { runInNewContext } = await import('node:vm');
+  const source = await readFile(new URL('../js/minigames/camel-race.js', import.meta.url), 'utf8');
+  const body = source.slice(source.indexOf('export function loadCamelArt()'), source.indexOf('if (typeof Image !== "undefined" && typeof document'));
+  const files = { camel: ['camel'], jockey: 'jockey', suv: 'suv', wheel: 'wheel', track: 'track',
+    balloon: 'balloon', dust: ['dust'], words: { start: 'start' }, pole: 'pole', sand: 'sand',
+    posts: { start: 'post' }, rivalSuvs: ['rival'], marker: 'marker', road: 'road' };
+  let requests = 0;
+  class Image { set src(value) { requests++; } decode() { return Promise.resolve(); } }
+  const loader = runInNewContext(`let artTask = null; ${body.replace('export ', '')}; loadCamelArt`, {
+    Image, ART_FILES: files, imgFileUrl: s => s, groundTiles: () => ({}), camelSkins: () => ({}),
+  });
+  const first = loader(), count = requests;
+  assert(count > 10, 'fixture includes optional artwork');
+  assert.equal(loader(), first, 'same promise while preparing');
+  const value = await first;
+  assert(value.camel, 'core art prepared');
+  assert.equal(await loader(), value, 'same decoded art after completion');
+  assert.equal(requests, count, 'no repeated optional image requests/decodes');
+}
+console.log('camel preparation: PASS (optional/core art share one preparation)');

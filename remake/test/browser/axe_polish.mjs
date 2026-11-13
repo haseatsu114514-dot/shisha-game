@@ -18,13 +18,13 @@ async function capture(page, name) {
   await page.screenshot({ path: `${output}/polish-${name}.png` });
 }
 async function start(page, options = {}) {
-  await page.goto(new URL("axe-throw.html", page.url()).href);
+  await page.goto(new URL("axe-throw.html?input=gauges", page.url()).href);
   await page.evaluate(async options => {
     // This context is disposable. No game save is created or edited by the fixture.
     localStorage.setItem("axe-polish-fixture", "unchanged");
     sessionStorage.setItem("axe-polish-fixture", "unchanged");
     const { runAxeThrow } = await import("./js/minigames/axe.js");
-    window.axePolishPromise = runAxeThrow({ host: document.getElementById("axe-app"), ...options });
+    window.axePolishPromise = runAxeThrow({ inputMode: "gauges",  host: document.getElementById("axe-app"), ...options });
   }, options);
   await phase(page, "choice");
   await page.clock.install();
@@ -466,7 +466,7 @@ await suite("axe-polish", async check => {
   }, context);
 await check("touch-portrait-rotate-hint", async page => {
     // 縦持ちスマホは本編と同じく横向き案内で止める（2026-11-09 オーナー決定・#3035／試遊ページ共通化 #3076）
-    await page.goto(new URL("axe-throw.html", page.url()).href);
+    await page.goto(new URL("axe-throw.html?input=gauges", page.url()).href);
     await page.locator(".axe-menu").waitFor();
     assert.equal(await page.locator("#rotate-hint").isVisible(), true);
   }, { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });

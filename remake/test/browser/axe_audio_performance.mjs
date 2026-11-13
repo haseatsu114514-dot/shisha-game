@@ -43,7 +43,7 @@ try {
       };
     }
   });
-  await page.goto(new URL("axe-throw.html", baseURL).href, { waitUntil: "load" });
+  await page.goto(new URL("axe-throw.html?input=gauges", baseURL).href, { waitUntil: "load" });
   await page.locator('[data-test="axe-start"]').click();
   await phase(page, "choice");
   await page.waitForFunction(() => window.axeAudioProbe.media.some(a =>

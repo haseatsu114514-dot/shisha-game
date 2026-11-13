@@ -136,10 +136,9 @@ async function pullGame(cs, mode) {
   const tutorial = cs.mode === "tutorial";
   if (mode.store === "pull" && !cs.pullDone) startNaruFinish(cs, growthLesson(state, "M-W3"));
   const context=craftContext(cs);
-  // 提供ボタンの実ラベル。吸い出しでも「提供」画面でないとき（チュートリアル・試し吸い等）は「吸い出しをする」。
-  // 以前は「確かめる」→「温度を決める」。どちらも言葉として合わないので「吸い出しをする」に（2026-11-11 オーナー・CSL17）。
+  // 吸い出しを終える操作は、練習・チュートリアルでも「提供する」（2026-11-12 オーナー）。
   // 吸い切りの案内文も必ずこの実ラベルを指すよう、ボタンと同じ値から文言を作る。
-  const serveBtnLabel = mode.store === "pull" && context.title !== "提供" ? "吸い出しをする" : mode.serveLabel;
+  const serveBtnLabel = mode.serveLabel;
   // 葉が傷むと適温帯が細くなるので、ダメージのたびに bands/ideal を取り直す。中心は動かないので一度だけ。
   let bands = temperatureBands(cs), ideal = bands.ideal;
   const center = bands.center;

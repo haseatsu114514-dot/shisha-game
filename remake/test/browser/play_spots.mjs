@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import { suite, assertFits } from "./support.mjs";
 import { travelToCity as travel } from "./station_helpers.mjs";
+import { flickFromHandle } from "./axe_flick_input.mjs";
 const shots = process.env.COMPARISON_DIR;
 if (shots) fs.mkdirSync(shots, { recursive: true });
 const capture = async (page, name) => { if (shots) await page.screenshot({ path: `${shots}/${name}.png` }); };
@@ -65,16 +66,28 @@ async function go(page, id) {
   await page.locator(t(id === "axe_bar" ? "axe-bar-practice" : "trpg-campaign-notice")).waitFor();
 }
 async function phase(page, phase) { await page.waitForFunction(p => document.querySelector('[data-test="axe-game"]')?.dataset.phase === p, phase); }
+// Drive the new default with real board taps and a real mouse/touch drag; never inject scores.
+async function aimAxe(page, touch = false) {
+  assert.equal(await page.locator('[data-test="axe-game"]').getAttribute('data-input-mode'), 'tap-pull');
+  const point = await page.locator('[data-test="axe-target"]').evaluate(node => {
+    const p = new DOMPoint(330, 245).matrixTransform(node.getScreenCTM());
+    return { x: p.x, y: p.y };
+  });
+  if (touch) await page.touchscreen.tap(point.x, point.y); else await page.mouse.click(point.x, point.y);
+  await page.waitForFunction(() => document.querySelector('[data-test="axe-game"]')?.dataset.phase === 'power');
+}
+async function pullAxe(page, touch = false, power = .62) {
+  // 2026-11-12: 投げ方は「上へ弾く」。右の取っ手から、power になる速さで弾く（axe_flick_input.mjs）。
+  await flickFromHandle(page, { touch, power });
+  await page.waitForFunction(() => document.querySelector('[data-test="axe-game"]')?.dataset.phase === 'result');
+  const actual = Number(await page.locator('[data-test="axe-game"]').getAttribute('data-power'));
+  assert(Math.abs(actual - power) < .06, `actual flick power ${actual} must match the gesture ${power}`);
+}
 async function finishAxe(page, count, confirm = true, aimed = false) {
-  for (let i = 0; i < count; i++) for (const p of ["choice", "horizontal", "vertical", "power", "result"]) {
-    await phase(page, p);
-    if (aimed && ["horizontal", "vertical", "power"].includes(p)) {
-      // 既存axe_throw.mjsと同じ、画面に描かれている針を読んで止める操作。
-      await page.waitForFunction(target => {
-        const root = document.querySelector('[data-test="axe-game"]'), n = Number(root.dataset.timing);
-        return !root.querySelector('[data-test="axe-action"]').disabled && n >= target - .02 && n <= target + .005;
-      }, p === "power" ? .62 : .5);
-    }
+  const touch = await page.evaluate(() => navigator.maxTouchPoints > 0);
+  for (let i = 0; i < count; i++) {
+    await phase(page, "choice"); await aimAxe(page, touch);
+    await pullAxe(page, touch, aimed ? .62 : .3);
     await hit(page, "axe-action");
   }
   await phase(page, "summary");
@@ -137,6 +150,9 @@ await suite("play-spots", async runCheck => {
     // ピンの装飾はボタン枠から出るため、文字そのものの収まりを検査する。
     await assertFits(page, ".spot-pin .sub-label");
     await go(page, "axe_bar"); await assertFits(page, ".axe-bar-menu button");
+    await hit(page, "axe-bar-gear-open"); await assertFits(page, ".axe-bar-menu button");
+    await capture(page, label + "-axe-shop");
+    await hit(page, "axe-bar-gear-back"); await assertFits(page, ".axe-bar-menu button");
     await page.locator('[data-test="venue-host-maki"] img').evaluate(img => img.decode());
     await capture(page, label + "-axe-entry");
     assert.deepEqual(await value(page), before);
@@ -171,6 +187,9 @@ await suite("play-spots", async runCheck => {
     await page.evaluate(async () => { window.spotCore = await import("./js/core/state.js"); });
     assert.deepEqual(await value(page), nextNight);
     await go(page, "axe_bar"); await assertFits(page, ".axe-bar-menu button");
+    await hit(page, "axe-bar-gear-open"); await assertFits(page, ".axe-bar-menu button");
+    await capture(page, label + "-axe-shop");
+    await hit(page, "axe-bar-gear-back"); await assertFits(page, ".axe-bar-menu button");
   }, options);
 
   await check("first-play-owner-lesson-then-paid-game", async page => {
@@ -234,7 +253,7 @@ await suite("play-spots", async runCheck => {
     assert.equal(await page.evaluate(() => spotCore.state.flags._intro_maki), true, "Completed introduction is read in the live state");
     assert.equal(await page.evaluate(() => localStorage.getItem("suien_remake_save")), before, "The introduction itself does not settle the venue action");
     await hit(page, "axe-bar-practice");
-    await phase(page, "choice"); await hit(page, "axe-action"); await phase(page, "horizontal");
+    await phase(page, "choice"); await aimAxe(page);
     await page.reload(); await page.locator(t("title-new")).waitFor();
     assert.deepEqual(JSON.parse(await page.evaluate(() => localStorage.getItem("suien_remake_save"))), introduced,
       "Cancellation saves only the completed introduction, without committing the unfinished throws");
@@ -415,3 +434,4 @@ await suite("play-spots", async runCheck => {
     assert.equal((await value(page)).trpg.club.founded, null);
   });
 });
+
