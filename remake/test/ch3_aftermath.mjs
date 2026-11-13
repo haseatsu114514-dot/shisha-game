@@ -456,7 +456,7 @@ console.log("PASS: Mukai and Yoru's opening playlist opens once at mukai after t
   assert(!JSON.stringify(finale.lines).match(/大会|本番|明日/), "the shared lines assume no tournament result");
   // 第5章（ch5_tokyo_volk「測る。それから、客に聞く。順番は変えない」）と同じ順番。大会後も計器を先に見る
   assert(!JSON.stringify(finale).match(/計器より先/), "Volk never puts the customer before the gauges (characters.json, ch5)");
-  assert.match(JSON.stringify(finale.branches.after_tournament), /計器は、今も先に見る/);
+  assert.match(JSON.stringify(finale.branches.after_tournament), /温度計は、今も先に見る/);
   assert.deepEqual(entry.after, ["ch3_volk_after_ch3"], "after the first post-tournament visit to Iron Smoke");
   const window = winningSave(), open = value => availableAftermathFinales(value, who => who === "volk").map(item => item.who);
   beginChapterThreeAftermath(window);

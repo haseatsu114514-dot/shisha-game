@@ -6,7 +6,7 @@ import { createChapterActions } from "../core/chapter-actions.js";
 import { storeLogo } from "../core/store-logos.js";
 import { state, save, requestResumeOnBoot } from "../core/state.js";
 import { chapterDay } from "../core/chapter-clock.js";
-import { layers, showScreen, setBg, enterScene, imageReady, chapterTitle, toast, withScenePreparation, loadingNotice } from "../core/ui.js";
+import { layers, showScreen, setBg, enterScene, imageReady, chapterTitle, toast, withScenePreparation, loadingNotice, withSceneLoading } from "../core/ui.js";
 import { chapterTitleEntry } from "../core/chapter-title-art.js";
 import { withLoadingNotice } from "../core/module-loading.js";
 import { showHud } from "../daily/hud.js";
@@ -80,7 +80,8 @@ async function openChapter(advance) {
     if (!advance && state.chapter === 2 && (chapterDay(state) >= 14 || state.flags._ch2_tournament)) {
       await tournament(); return;
     }
-    await loadChapterTwoDialogues();
+    // 文字だけの画面の待ち。プレイヤーの既定では、長いと漫画のロード画面にする（core/ui.js の withSceneLoading）。
+    await withSceneLoading(loadChapterTwoDialogues(), "街の台本を準備しています…");
     if (!current(owner)) return;
     // 必要台本を読み込めた後で初めて保存を次章へ進める。通信失敗でクリア記録を失わない。
     if (advance) {

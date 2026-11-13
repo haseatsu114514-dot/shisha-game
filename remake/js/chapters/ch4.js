@@ -8,7 +8,7 @@ import { createChapterCard } from "../core/chapter-card.js";
 import { createChapterMenu } from "../core/chapter-menu.js";
 import { chapterGrowthNight } from "../core/chapter-growth.js";
 import { state, save } from "../core/state.js";
-import { layers, showScreen, setBg, enterScene, chapterTitle, modal, toast } from "../core/ui.js";
+import { layers, showScreen, setBg, enterScene, chapterTitle, modal, toast, withChapterLoading, withSceneLoading } from "../core/ui.js";
 import { saveFlow } from "../scenes/saves.js";
 import { planeRide } from "../core/scene-motions.js";
 import { defeatFade } from "../core/transitions.js";
@@ -99,8 +99,8 @@ async function openChapter(advance) {
   ]));
   window.addEventListener("pagehide", () => { owner.active = false; owner.controller?.abort(); }, { once: true });
   await perform(owner, async () => {
-    // 台本不足のまま第3章のクリアセーブを進めない。
-    await loadDialogues();
+    // 台本不足のまま第3章のクリアセーブを進めない。文字だけの画面の待ちは、長いと漫画のロード画面にする（core/ui.js）。
+    await withSceneLoading(loadDialogues(), "ドバイの場面を準備しています…");
     if (!current(owner)) return;
     if (advance) {
       if (!advanceToChapterFour(state)) return;
@@ -610,7 +610,7 @@ function chapterFourRecap(value) {
 function renderComplete(owner) {
   // 第4章側の第5章への接続点はここ1か所（状態遷移は ch5-progress.js の advanceToChapterFive）。
   const next = button(owner, "第5章へ進む", "chapter-five", async () => {
-    const mod = await import("./ch5.js");
+    const mod = await withChapterLoading(() => import("./ch5.js"), "第5章へ向かっています…");
     await mod.beginChapterFive();
   }, true);
   card(owner, "complete", "第四章・完", chapterFourRecap(state), [

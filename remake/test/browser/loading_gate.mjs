@@ -223,54 +223,58 @@ await suite("loading-gate", async check => {
     await page.getByText('準備完了。次の場面を開始できます。', { exact: true }).waitFor();
     assert.equal(await page.locator('.loading-gate').count(), 0);
   });
-  await check("scene-notice-comic-lifecycle", async page => {
-    await page.addStyleTag({ url: new URL('css/vn.css', baseURL).href });
-    const setup = await page.evaluate(async () => {
-      const { withLoadingNotice } = await import('./js/core/module-loading.js');
-      const { attachLoadingComic } = await import('./js/core/loading-comic-notice.js');
+  // Short waits inside a scene (core/ui.js loadingNotice, the conversation's art) open soft gates: the same
+  // loading screen, never competing with another gate. Right after a comic was read, a gate that still has
+  // to show goes on with that comic (one continuous screen), without a second hold.
+  await check("soft-gates-and-continuing-screen", async page => {
+    const result = await page.evaluate(async () => {
+      const { withLoading } = await import('./js/core/loading.js');
+      localStorage.setItem('suien_loading_comics', 'always');
+      const host = document.querySelector('#loading-demo');
       const src = 'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" width="300" height="200"/>';
-      const comic = { id: 'scene-test', title: 'Scene comic', minChapter: 1, contexts: ['scene'],
-        cast: ['sumi'], panels: [{ src, alt: 'first' }, { src, alt: 'second' }] };
-      const run = (duration, comics = [comic], chapter = 1) => {
-        const notice = document.createElement('div');
-        notice.className = 'vn-loading';
-        notice.textContent = '場面を準備しています…';
-        let hide;
-        return withLoadingNotice(new Promise(resolve => setTimeout(resolve, duration)), {
-          delayMs: 500,
-          onShow() { document.body.append(notice); hide = attachLoadingComic(notice, {
-            comics, chapter, isMet: id => id === 'sumi',
-          }); },
-          onHide() { hide?.(); },
-        });
-      };
-      const seen = [];
-      new MutationObserver(records => { for (const record of records) for (const node of record.addedNodes) {
-        if (node.matches?.('.vn-loading')) seen.push('notice');
-        if (node.matches?.('.vn-loading-comic')) seen.push('comic');
-      } }).observe(document.body, { subtree: true, childList: true });
-      await run(50);
-      const fast = seen.length === 0;
-      window.__finishSceneNotice = run(2000);
-      return { fast, seen };
+      const comic = id => ({ id, title: id, minChapter: 1, panels: [{ src, alt: 'one' }, { src, alt: 'two' }] });
+      const ready = () => new Promise(resolve => { const poll = () => host.querySelector('.loading-gate.is-ready') ? resolve() : setTimeout(poll, 20); poll(); });
+      const tap = () => host.querySelector('.loading-gate').dispatchEvent(new PointerEvent('pointerdown', { bubbles: true }));
+      // A soft wait while a gate is open only waits for its own work.
+      let release;
+      const outer = withLoading(() => new Promise(resolve => { release = resolve; }), { host, delayMs: 0, comics: [comic('outer')] });
+      const inner = await withLoading(async () => 'inner-done', { host, delayMs: 0, soft: true, comics: [comic('inner')] });
+      await new Promise(resolve => { const poll = () => release ? resolve() : setTimeout(poll, 10); poll(); });
+      const again = await withLoading(async () => 'again', { host, delayMs: 0, soft: true, comics: [comic('inner')] });
+      const gates = again === 'again' ? host.querySelectorAll('.loading-gate').length : -1;
+      release();
+      await ready(); tap(); await outer;
+      // Right after that read, a gate that shows carries the same comic and closes with its work.
+      const titles = [];
+      const observer = new MutationObserver(() => { const t = host.querySelector('.loading-comic-title')?.textContent; if (t && titles.at(-1) !== t) titles.push(t); });
+      observer.observe(host, { subtree: true, childList: true, characterData: true });
+      let readyDuringContinue = false;
+      const readyWatch = new MutationObserver(() => { if (host.querySelector('.loading-gate.is-ready')) readyDuringContinue = true; });
+      readyWatch.observe(host, { subtree: true, attributes: true, attributeFilter: ['class'] });
+      const reads = [];
+      await withLoading(() => new Promise(resolve => setTimeout(resolve, 500)), { host, delayMs: 0, comics: [comic('next')], onRead: c => reads.push(c.id) });
+      readyWatch.disconnect(); observer.disconnect();
+      // A gate that needs the screen waits for an open soft gate instead of failing.
+      let releaseSoft;
+      const soft = withLoading(() => new Promise(resolve => { releaseSoft = resolve; }), { host, delayMs: 0, soft: true, comics: [] });
+      let hardStarted = false;
+      const hard = withLoading(async () => { hardStarted = true; return 'hard-done'; }, { host, delayMs: 0, comics: [] });
+      await new Promise(resolve => setTimeout(resolve, 100));
+      const waited = !hardStarted;
+      await new Promise(resolve => { const poll = () => releaseSoft ? resolve() : setTimeout(poll, 10); poll(); });
+      releaseSoft();
+      await soft;
+      const hardValue = await hard;
+      // Two gates that both need the screen are still refused.
+      let pending;
+      const first = withLoading(() => new Promise(resolve => { pending = resolve; }), { host, delayMs: 0, comics: [] });
+      const refused = await withLoading(async () => {}, { host, comics: [] }).then(() => false, () => true);
+      await new Promise(resolve => { const poll = () => pending ? resolve() : setTimeout(poll, 10); poll(); });
+      pending(); await first;
+      return { inner, gates, titles, readyDuringContinue, reads: reads.length, waited, hardValue, refused };
     });
-    assert.equal(setup.fast, true, 'A short wait must not show a notice or comic');
-    await page.locator('.vn-loading-comic-panels img').first().waitFor();
-    assert.equal(await page.locator('.vn-loading-comic-panels img').count(), 2);
-    await page.evaluate(() => window.__finishSceneNotice);
-    assert.equal(await page.locator('.vn-loading').count(), 0, 'The comic closes as soon as preparation ends');
-    const fallback = await page.evaluate(async () => {
-      const { attachLoadingComic } = await import('./js/core/loading-comic-notice.js');
-      const { LOADING_COMICS } = await import('./js/core/loading-comics.js');
-      const notice = document.createElement('div');
-      document.body.append(notice);
-      const hide = attachLoadingComic(notice, { comics: LOADING_COMICS, context: 'scene', chapter: 1 });
-      await new Promise(resolve => setTimeout(resolve, 50));
-      const plain = notice.isConnected && !notice.querySelector('.vn-loading-comic');
-      hide();
-      return plain;
-    });
-    assert.equal(fallback, true, 'A context without registered comics keeps the plain notice');
+    assert.deepEqual(result, { inner: 'inner-done', gates: 1, titles: ['outer'], readyDuringContinue: false, reads: 0,
+      waited: true, hardValue: 'hard-done', refused: true });
   });
   await check("unread-first-and-read-record", async page => {
     const result = await page.evaluate(async () => {

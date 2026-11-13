@@ -5,7 +5,7 @@ import { createChapterActions } from "../core/chapter-actions.js";
 import { chapterGrowthNight } from "../core/chapter-growth.js";
 import { awardSceneExp, consultLessons, readyLessons } from "../core/growth.js";
 import { state, save, loadFromSlot, requestResumeOnBoot, timeOfDay } from "../core/state.js";
-import { layers, showScreen, setBg, enterScene, chapterTitle, modal, withScenePreparation, loadingNotice } from "../core/ui.js";
+import { layers, showScreen, setBg, enterScene, chapterTitle, modal, withScenePreparation, loadingNotice, withSceneLoading } from "../core/ui.js";
 import { chapterTitleEntry } from "../core/chapter-title-art.js";
 import { withLoadingNotice } from "../core/module-loading.js";
 import { saveFlow, loadFlow } from "../scenes/saves.js";
@@ -208,7 +208,8 @@ async function openChapter(advance) {
   window.addEventListener("pagehide", () => { owner.active = false; owner.controller?.abort(); owner.rollbackMeeting?.(); }, { once: true });
   await perform(owner, async () => {
     // 台本不足のまま第2章のクリアセーブを進めない。
-    await loadIntroDialogues();
+    // 文字だけの画面の待ち。プレイヤーの既定では、長いと漫画のロード画面にする（core/ui.js の withSceneLoading）。
+    await withSceneLoading(loadIntroDialogues(), "東京の場面を準備しています…");
     if (!current(owner)) return;
     if (advance) {
       if (!advanceToChapterThree(state)) return;

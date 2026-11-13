@@ -291,7 +291,7 @@ await suite('hiyori-hagal', async allCheck => {
       });
       assert.match(shown.bowlArt, /bowl_empty_hiyori\.webp/);
       assert.match(shown.setArt, /character_intros\/graphic\/bg_hiyori\.webp/, 'The stage is the giver\'s intro art');
-      assert.equal(shown.name, 'ひよりのハガル「素顔でひと休み」');
+      assert.equal(shown.name, 'ひよりのハガル「本日、休演」');
       assert(shown.apart, 'The gift name band must not overlap the bowl');
       assert(shown.nameOnScreen, 'The gift name must fit on screen');
       await assertFits(page, '.mo-gift-bowl,.mo-gift-tag .t');

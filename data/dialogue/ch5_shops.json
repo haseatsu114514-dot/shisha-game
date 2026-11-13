@@ -95,14 +95,14 @@
     {
       "dialogue_id": "ch5_minto_shop_b",
       "lines": [
-        { "speaker": "", "face": "", "text": "PEPPERMINTのカウンター。みんとが、新しいメニュー表を差し出した。" },
-        { "speaker": "minto", "face": "smile", "text": "じゃーん。人気No.1キャストの新作、試してくれる？" },
-        { "speaker": "hajime", "face": "smile", "text": "キャスト、ずっと一人だよね" },
-        { "speaker": "minto", "face": "wink", "text": "だから、ずっとNo.1なの" },
-        { "speaker": "", "face": "", "text": "ミントの奥に、ほんのり柑橘が立つ一台だった。" },
-        { "speaker": "hajime", "face": "normal", "text": "ミントが先で、あとから柑橘が来る。二口目がやわらかい" },
-        { "speaker": "minto", "face": "smile", "text": "でしょ？　辛口のお客さまにも、帰りは笑ってほしくて" },
-        { "speaker": "minto", "face": "normal", "text": "感想、正直にね。世界一の舌でしょ？" }
+        { "speaker": "", "face": "", "text": "PEPPERMINT。メニュー表のいちばん下に、手書きの一行が増えていた。" },
+        { "speaker": "minto", "face": "wink", "text": "じゃーん。人気No.1キャストの新作、『チョコミント』でーすっ♡" },
+        { "speaker": "hajime", "face": "surprise", "text": "……載せたんだ、これ" },
+        { "speaker": "minto", "face": "smile", "text": "載せたの。お手本は昔の喫茶店のパフェ。まだ届いてないけどね" },
+        { "speaker": "minto", "face": "normal", "text": "届くまで出さないの、やめたんだ。お客さんと直すほうが、早いもん" },
+        { "speaker": "", "face": "", "text": "一口目はチョコで、三口目でもミントは尖らない。奥に、少しだけ苦みが残った。" },
+        { "speaker": "hajime", "face": "normal", "text": "三口目まで、ちゃんとチョコが前にいる" },
+        { "speaker": "minto", "face": "smile", "text": "でしょ？　苦いとこは宿題♡　感想、正直にね。世界一の舌でしょ？" }
       ]
     },
     {
@@ -121,12 +121,12 @@
     {
       "dialogue_id": "ch5_samechan_shop",
       "lines": [
-        { "speaker": "", "face": "", "text": "SHISHARK。水槽の青い光の中で、サメちゃんがグラスを磨いていた。" },
+        { "speaker": "", "face": "", "text": "SHISHARK。海の色の灯りの下で、サメちゃんがグラスを磨いていた。" },
         { "speaker": "samechan", "face": "smile", "text": "おお、お主。世界から戻ったのじゃな" },
         { "speaker": "hajime", "face": "smile", "text": "戻りました。しばらくは、こっちにいます" },
         { "speaker": "samechan", "face": "normal", "text": "世界一の席の座り心地は、どうじゃ" },
         { "speaker": "hajime", "face": "normal", "text": "まだ実感がないです。朝になると、いつもの店の掃除をしているので" },
-        { "speaker": "samechan", "face": "ventriloquism", "text": "側近も、土産話を待っていたのである" },
+        { "speaker": "samechan", "face": "ventriloquism", "text": "側近も、土産話を待っていたのである", "voice": "korochan" },
         { "speaker": "samechan", "face": "smile", "text": "座るがよい。今日は、海の一台を出そう" }
       ]
     },
@@ -139,19 +139,19 @@
         { "speaker": "samechan", "face": "smile", "text": "当然じゃ。一本目で泣いて、二本目で笑うのが通の見方よ" },
         { "speaker": "hajime", "face": "normal", "text": "二本目は、どんなサメなんですか。笑うほうだと聞きましたけど" },
         { "speaker": "samechan", "face": "excited", "text": "空を飛ぶのじゃ。理屈は考えてはならぬ、心で観るものよ" },
-        { "speaker": "samechan", "face": "ventriloquism", "text": "側近は、一本目で寝るのである" }
+        { "speaker": "samechan", "face": "ventriloquism", "text": "側近は、一本目で寝るのである", "voice": "korochan" }
       ]
     },
     {
       "dialogue_id": "ch5_samechan_shop_c",
       "lines": [
-        { "speaker": "", "face": "", "text": "客の引いたSHISHARK。サメちゃんが、水槽の前でゆっくり煙を吐いていた。" },
+        { "speaker": "", "face": "", "text": "客の引いたSHISHARK。サメちゃんが、奥の席に座って、ゆっくり煙を吐いていた。" },
         { "speaker": "samechan", "face": "normal", "text": "……世界一になっても、お主は変わらぬのう" },
         { "speaker": "hajime", "face": "normal", "text": "そうですか？" },
         { "speaker": "samechan", "face": "normal", "text": "ここの客は、肩書きでは座らぬ。お主は、初めて来た日の顔のままじゃ" },
-        { "speaker": "hajime", "face": "smile", "text": "ここの水槽を見ると、落ち着くので" },
-        { "speaker": "samechan", "face": "smile", "text": "魚も毎日同じ水を泳ぐが、飽きぬ。水が澄んでおるからじゃ" },
-        { "speaker": "samechan", "face": "smile", "text": "変わらぬのが、よい。この店も、変わらぬように続けるつもりじゃ" }
+        { "speaker": "hajime", "face": "smile", "text": "この店も、変わらないですね。座ると落ち着きます" },
+        { "speaker": "samechan", "face": "smile", "text": "変えておるぞ。椅子も灯りも、毎日ほんの少しずつな" },
+        { "speaker": "samechan", "face": "smile", "text": "変わらぬように見えるなら、うまく直せておるということじゃ" }
       ]
     },
     {
@@ -163,7 +163,8 @@
         { "speaker": "ageha", "face": "smile", "text": "するでしょ。ギャル友にも全員送ったし" },
         { "speaker": "hajime", "face": "normal", "text": "全員って、何人に送ったの" },
         { "speaker": "ageha", "face": "smile", "text": "二十人くらい。「もう見た」って返ってくるたびに、うちが誇らしくなった" },
-        { "speaker": "ageha", "face": "normal", "text": "……で、今日はうちの一台、吸ってく？" }
+        { "speaker": "ageha", "face": "serious", "text": "……あと、悔しいも、もっかい言っとく。おめでとより回数少ないから" },
+        { "speaker": "ageha", "face": "normal", "text": "で、今日はうちの一台、吸ってく？ 世界一の舌、うならせたいんだけど" }
       ]
     },
     {
@@ -263,7 +264,7 @@
         {"speaker": "", "face": "", "text": "夜の2階。凛想さんは、窓際の椅子で目を閉じて座っていた。"},
         {"speaker": "rio", "face": "normal", "text": "……あ。寝てないよ。鼻を休ませてたの"},
         {"speaker": "hajime", "face": "surprise", "text": "鼻を、休ませる？"},
-        {"speaker": "rio", "face": "normal", "text": "一日に嗅げる香りには、上限があるの。超えると、全部同じ匂いに聞こえる"},
+        {"speaker": "rio", "face": "normal", "text": "一日に嗅げる香りには、上限があるの。超えると、全部同じ匂いになる"},
         {"speaker": "hajime", "face": "normal", "text": "今度の相手は、上限がないかもしれません。機械なので"},
         {"speaker": "rio", "face": "serious", "text": "ふうん。……なら、上限のあるほうの強さを持っていけばいい"},
         {"speaker": "rio", "face": "normal", "text": "休ませた鼻は、一口目をちゃんと覚えてる。疲れた鼻には、それができないの"},

@@ -136,7 +136,7 @@
         {
           "speaker": "hajime",
           "face": "smile",
-          "text": "来てくれて、ありがとうございます。荷物、持ちますよ"
+          "text": "来てくれて、ありがとう。荷物、持つよ"
         },
         {
           "speaker": "minto",
@@ -146,7 +146,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "休みの札を書くの、久しぶりじゃないですか"
+          "text": "休みの札を書くの、久しぶりじゃない？"
         },
         {
           "speaker": "minto",
@@ -161,7 +161,12 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "まずは、宿までの道を確かめましょう"
+          "text": "まずは、宿までの道を確かめよう。地図は俺が見る"
+        },
+        {
+          "speaker": "minto",
+          "face": "ura_smug",
+          "text": "……お願い。私が見ると、反対側に着いちゃうから"
         },
         {
           "speaker": "",
@@ -189,7 +194,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "休みの日でも、見るところは店主ですね"
+          "text": "休みの日でも、見るところは店主だね"
         },
         {
           "speaker": "minto",
@@ -199,7 +204,7 @@
         {
           "speaker": "hajime",
           "face": "smile",
-          "text": "いえ。今日は、栞さんが気になった方へ行きましょう"
+          "text": "ううん。今日は、栞さんが気になった方へ行こう"
         },
         {
           "speaker": "",
@@ -273,6 +278,36 @@
           "speaker": "rio",
           "face": "smile",
           "text": "……これは、検品じゃないよ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "腕に置かれた手の袖口から、煙じゃない匂いがした。日なたに干した洗濯物みたいな、明るい匂いだ。"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……凛想さん、袖から、お日さまの匂いがします"
+        },
+        {
+          "speaker": "rio",
+          "face": "smug",
+          "text": "気づくの、早いね。連休だけの柔軟剤。袖から抜けるのに、二日かかるから"
+        },
+        {
+          "speaker": "rio",
+          "face": "smile",
+          "text": "休暇の申請理由、「洗濯」で通ったよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "……試香、させてもらえますか"
+        },
+        {
+          "speaker": "rio",
+          "face": "smile",
+          "text": "宿に着いてからね。ここ、改札の前だよ"
         },
         {
           "speaker": "",
@@ -362,14 +397,19 @@
         },
         {
           "speaker": "samechan",
+          "face": "normal",
+          "text": "……と言いたいが、先に白状する。三度、別人に手を振った"
+        },
+        {
+          "speaker": "samechan",
           "face": "ventriloquism",
-          "text": "側近は三度、別人に手を振った",
+          "text": "それは余の台詞である",
           "voice": "korochan"
         },
         {
           "speaker": "samechan",
-          "face": "surprise",
-          "text": "コロちゃん！　それは言わぬ約束じゃ！"
+          "face": "smile",
+          "text": "言われる前に言えば、恥は半分じゃ"
         },
         {
           "speaker": "hajime",

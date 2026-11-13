@@ -4,18 +4,22 @@
 
 /**
  * task を待つ間、delayMs を超えて未完了なら onShow() を一度だけ呼ぶ。
- * 解決・失敗のどちらでも、表示していれば onHide() を呼んで必ず片付ける。
+ * 解決・失敗のどちらでも、表示していれば onHide({ failed }) を呼んで必ず片付ける。onHide が Promise を返したら
+ * （漫画のロード画面の読み終わり。core/ui.js の loadingNotice）、それを待ってから返す。
  * task の結果を返し、失敗はそのまま投げ直す（呼び出し側が復帰導線を出す）。
  * 速い読み込みではスピナーを一瞬も出さない（固定待ちは足さない）。
  */
 export async function withLoadingNotice(task, { delayMs = 500, onShow, onHide } = {}) {
-  let shown = false;
+  let shown = false, failed = false;
   const timer = setTimeout(() => { shown = true; onShow?.(); }, delayMs);
   try {
     return await task;
+  } catch (error) {
+    failed = true;
+    throw error;
   } finally {
     clearTimeout(timer);
-    if (shown) onHide?.();
+    if (shown) await onHide?.({ failed });
   }
 }
 

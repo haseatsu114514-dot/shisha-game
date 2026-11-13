@@ -36,7 +36,7 @@ export const CUES = [
   { id: "2c", kind: "2c", dialogue: "ch1_tsumugi_third", speaker: "tsumugi", face: "surprise", text: "……急に、そんな顔しないでください" },
   { id: "5", kind: "5", dialogue: "samechan_bond_finale", speaker: "hajime", face: "smile", text: "大事に使います。ありがとうございます" },
   { id: "5b", kind: "5", dialogue: "ch1_sumi_bond_finale", speaker: "hajime", face: "smile", text: "……ありがとうございます。大事に使います" },
-  { id: "5", kind: "5", dialogue: "ch1_adam_bond_finale", speaker: "hajime", face: "smile", text: "……大事に育てます。アダムさん、ありがとうございます" },
+  { id: "5", kind: "5", dialogue: "ch1_adam_bond_finale", speaker: "hajime", face: "smile", text: "……大事に詰めます。アダムさん、ありがとうございます" },
   { id: "4", kind: "4", dialogue: "ch4_defeat", speaker: "hajime", face: "sad", text: "……届かなかった。悔しいな" },
   { id: "4", kind: "4", dialogue: "ch1_tournament_defeat", speaker: "hajime", face: "sad", text: "（……そうか。届かなかった）" },
   { id: "4m", kind: "4", dialogue: "ch2_abyss_baito", speaker: "hajime", face: "sad", text: "……俺、シーシャ、向いてないのかな" },
