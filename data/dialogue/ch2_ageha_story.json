@@ -466,7 +466,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（見た目で決めない。誰が来ても同じ笑顔で迎える。だから、人が集まる）"
+          "text": "（説明のあいだ、あげはさんは台を見なかった。ずっと、あの人の手を見ていた）"
         },
         {
           "speaker": "ageha",
@@ -706,7 +706,7 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（職人として見てほしい。……その気持ち、少しだけ分かる気がした）"
+          "text": "（雑誌の表紙と同じ笑顔なのに、目だけは、もうお客さんの手を見ていた）"
         },
         {
           "speaker": "ageha",
@@ -727,13 +727,23 @@
         "hit": [
           {
             "speaker": "ageha",
-            "face": "surprise",
-            "text": "……顔を見て、調子と気分を読んでる……あ、それ、うちだ"
+            "face": "normal",
+            "text": "顔を見て、調子と気分を……んー、合ってる。合ってるけど"
           },
           {
             "speaker": "ageha",
-            "face": "smile",
-            "text": "「なんか」じゃなくて、うち、ちゃんと見てたんだ"
+            "face": "serious",
+            "text": "それ、ハジメっちの言葉じゃん。記者さんにバレる"
+          },
+          {
+            "speaker": "ageha",
+            "face": "normal",
+            "text": "入ってきた時の顔で、最初の一口が、ふわって決まる、……みたいな"
+          },
+          {
+            "speaker": "ageha",
+            "face": "surprise",
+            "text": "……あ。今の、うちの口から出た"
           },
           {
             "type": "set_flag",
@@ -834,17 +844,17 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "（寂しそう、か。白はやわらかい甘さだから、輪郭がぼやけやすいんだ）"
-        },
-        {
-          "speaker": "hajime",
-          "face": "normal",
           "text": "赤の酸っぱさで、白の甘さに輪郭をつけてる。……そういうことですか"
         },
         {
           "speaker": "ageha",
-          "face": "surprise",
-          "text": "……それ！ うちが言いたかったの、たぶん、それだ"
+          "face": "serious",
+          "text": "……ちょっと。今の、うちの口まで来てたのに"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "先に言うの、禁止、……合ってるけど"
         },
         {
           "speaker": "ageha",
@@ -854,12 +864,17 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "だから炭を端に寄せて、ゆっくり温めてあげるんですね"
+          "text": "（今度は、続きを待った）"
         },
         {
           "speaker": "ageha",
           "face": "smile",
-          "text": "そそ。白はびっくりさせないのが大事。赤は、もうちょい強気でも平気"
+          "text": "だから端っこ。白はびっくりさせないのが大事。赤は、もうちょい強気でも平気"
+        },
+        {
+          "speaker": "ageha",
+          "face": "surprise",
+          "text": "……なに、その顔。にやにやしないで"
         },
         {
           "speaker": "",
@@ -1002,19 +1017,39 @@
         },
         {
           "speaker": "ageha",
-          "face": "normal",
-          "beat": 500,
-          "text": "新しいの、もう育て始めてるし。……これは、ハジメっちに持っててほしくて"
+          "face": "serious",
+          "text": "待って。今のハジメっちの顔、うちが当てる"
+        },
+        {
+          "speaker": "ageha",
+          "face": "serious",
+          "text": "うれしいけど、もらっていいのか分かんない"
         },
         {
           "speaker": "ageha",
           "face": "normal",
-          "text": "だって、うちの「なんか」。ハジメっちが、少しずつ言葉にしてくれたじゃん"
+          "text": "……どう？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "……当たりです。一字も違いません"
         },
         {
           "speaker": "ageha",
           "face": "smile",
-          "text": "だから、お礼。……っていうか、答え合わせ係の、正式な支給品かな"
+          "text": "っしゃ！ うち、言葉で当てたの、初めてかも"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "beat": 500,
+          "text": "新しいの、もう育て始めてるから平気。これは、ハジメっちに持っててほしいの"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "答え合わせ係の、正式な支給品ね。お礼とも言う"
         },
         {
           "speaker": "hajime",
@@ -1030,14 +1065,14 @@
           "type": "condition",
           "condition_type": "flag",
           "flag": "_ch2_ageha_secret",
-          "next_true": "secret"
+          "next_true": "secret_check"
         },
         {
           "type": "condition",
           "condition_type": "romance_open",
           "char_id": "ageha",
           "next_true": "romance",
-          "next_false": "friend"
+          "next_false": "not_romance"
         },
         {
           "type": "apply",
@@ -1059,6 +1094,40 @@
             "speaker": "ageha",
             "face": "smile",
             "text": "ハジメっち！ 大会終わったのに、また来てくれた"
+          }
+        ],
+        "secret_check": [
+          {
+            "type": "condition",
+            "condition_type": "lover",
+            "char_id": "ageha",
+            "next_false": "secret"
+          }
+        ],
+        "not_romance": [
+          {
+            "type": "condition",
+            "condition_type": "lover",
+            "char_id": "ageha",
+            "next_true": "lover",
+            "next_false": "friend"
+          }
+        ],
+        "lover": [
+          {
+            "speaker": "ageha",
+            "face": "smile",
+            "text": "彼氏に支給品って、変？ ……ま、いいや。うちの相棒だし"
+          },
+          {
+            "speaker": "hajime",
+            "face": "smile",
+            "text": "大事に使う。あげはがこれで作ってきた分も"
+          },
+          {
+            "speaker": "ageha",
+            "face": "smile",
+            "text": "……もー。そういうとこ"
           }
         ],
         "secret": [
@@ -1209,7 +1278,7 @@
         {
           "speaker": "ageha",
           "face": "normal",
-          "text": "これ食べると、ちょっと落ち着くの。……なんでかは、また今度ね"
+          "text": "これ食べると、ちょっと落ち着くの。……なんでかは、うちも知らない"
         },
         {
           "speaker": "ageha",
@@ -1230,8 +1299,58 @@
           },
           {
             "speaker": "ageha",
+            "face": "normal",
+            "text": "……じゃ、お願い。白、多めで"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "言われた通りに葉をほぐす。あげはは横で、俺の手元をじっと見ていた。"
+          },
+          {
+            "speaker": "ageha",
+            "face": "serious",
+            "text": "あ、違う。もうちょい……こう、なんか……"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "膝の下から出かけた手が、途中で止まった。指で見せる代わりの言葉が、出てこない。"
+          },
+          {
+            "speaker": "ageha",
+            "face": "sad",
+            "text": "……やば。うち、手が使えないと、教えらんないんだ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "じゃあ、選んでください。ふわっと置くか、軽く押さえるか"
+          },
+          {
+            "speaker": "ageha",
+            "face": "normal",
+            "text": "……ふわっと。押さえたら、白が苦しそう"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "炭は、真ん中と端、どっちですか"
+          },
+          {
+            "speaker": "ageha",
+            "face": "surprise",
+            "text": "端。……あ、選ぶのは、できる"
+          },
+          {
+            "speaker": "",
+            "face": "",
+            "text": "二択を五つ重ねて、一台が組み上がった。あげはが一口吸って、小さくうなずく。"
+          },
+          {
+            "speaker": "ageha",
             "face": "smile",
-            "text": "……ハジメっち、ずるい。そういう言い方、断れないじゃん"
+            "text": "……うちの味だ。ハジメっちの手なのに"
           }
         ],
         "rest": [
@@ -1243,7 +1362,17 @@
           {
             "speaker": "ageha",
             "face": "normal",
-            "text": "……ううん、開ける。待っててくれる子がいるから、……でも、ありがと"
+            "text": "……ううん、開ける。待っててくれる子がいるから"
+          },
+          {
+            "speaker": "ageha",
+            "face": "sad",
+            "text": "調子いい日は、手が勝手に正解いくの。今日は、どこが違うかも分かんない"
+          },
+          {
+            "speaker": "ageha",
+            "face": "normal",
+            "text": "……でも開ける。席だけは、うちが作れるから"
           }
         ]
       }
@@ -1994,7 +2123,12 @@
           {
             "speaker": "ageha",
             "face": "serious",
-            "text": "うちが毎朝、指を確かめるみたいにさ。ハジメっちも、何か確かめてるでしょ"
+            "text": "うちさ、毎朝、起きたら指がちゃんと動くか確かめんの"
+          },
+          {
+            "speaker": "ageha",
+            "face": "serious",
+            "text": "ハジメっちも今、何か確かめてるでしょ。一口ごとに"
           },
           {
             "speaker": "hajime",

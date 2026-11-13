@@ -163,7 +163,8 @@
         { "speaker": "ageha", "face": "smile", "text": "するでしょ。ギャル友にも全員送ったし" },
         { "speaker": "hajime", "face": "normal", "text": "全員って、何人に送ったの" },
         { "speaker": "ageha", "face": "smile", "text": "二十人くらい。「もう見た」って返ってくるたびに、うちが誇らしくなった" },
-        { "speaker": "ageha", "face": "normal", "text": "……で、今日はうちの一台、吸ってく？" }
+        { "speaker": "ageha", "face": "serious", "text": "……あと、悔しいも、もっかい言っとく。おめでとより回数少ないから" },
+        { "speaker": "ageha", "face": "normal", "text": "で、今日はうちの一台、吸ってく？ 世界一の舌、うならせたいんだけど" }
       ]
     },
     {

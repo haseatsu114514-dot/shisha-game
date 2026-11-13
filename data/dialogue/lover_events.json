@@ -1257,6 +1257,11 @@
         },
         {
           "speaker": "ageha",
+          "face": "surprise",
+          "text": "じゃ、うちも『っち』取る。……はじめ。……むり！ ハジメっちはハジメっち"
+        },
+        {
+          "speaker": "ageha",
           "face": "smile",
           "text": "でも、腕組みたいのはガチ。……もうちょい、くっついていい？"
         },
@@ -1415,22 +1420,32 @@
         {
           "speaker": "",
           "face": "",
-          "text": "夜。あげはが、めずらしくトーンを落として話し始めた。"
+          "text": "夜。あげはが、グミの袋を開けずに、手の中で転がしていた。"
         },
         {
           "speaker": "ageha",
           "face": "normal",
-          "text": "……うちさ。バイブスで戦うとか言ってるけど。ほんとは、たまにこわいんだよね"
+          "text": "こないだ思い出した。白いクマ、病院の帰りだった"
         },
         {
           "speaker": "ageha",
           "face": "sad",
-          "text": "手が震える日は、店閉めたくなる。……お客さんの前じゃ笑ってるけど"
+          "text": "ママが会計してる間に、売店で一袋。あれ食べたら、今日はおしまい、って"
+        },
+        {
+          "speaker": "hajime",
+          "face": "serious",
+          "text": "だから、震える日に食べるんだ"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "たぶんね。うける、二十二にもなって、……でも、効くんだよ"
         },
         {
           "speaker": "ageha",
           "face": "normal",
-          "text": "……だから、練習。震える日に『一緒にいて』って、言っていい？"
+          "text": "で、練習。震える日に『一緒にいて』って、言っていい？"
         },
         {
           "speaker": "hajime",
@@ -1443,11 +1458,6 @@
           "text": "……そっか。無理な日は、無理って言ってよ。そしたら、待てるし"
         },
         {
-          "speaker": "ageha",
-          "face": "smile",
-          "text": "来てほしいって言える相手いるの、……やっぱ、うれしいわ"
-        },
-        {
           "speaker": "",
           "face": "",
           "text": "数日後、LIMEに「今日ちょい震える日。夜、会える？」と届いた。"
@@ -1457,44 +1467,84 @@
     {
       "dialogue_id": "lover_ageha_lv4",
       "metadata": {
-        "bg": "res://assets/backgrounds/bg_street_day.png",
+        "bg": "res://assets/backgrounds/bg_ch2_ageha_closed_night.png",
         "private_scene": true
       },
       "lines": [
         {
           "speaker": "",
           "face": "",
-          "text": "あげはが、スマホで自分の煙の動画を見せてきた。ホワイトグミベアの一台だという。"
-        },
-        {
-          "speaker": "ageha",
-          "face": "smile",
-          "text": "見て！ この煙のうねり！ うちの『好き』を、ぜんぶ詰めた一台！"
-        },
-        {
-          "speaker": "hajime",
-          "face": "smile",
-          "text": "……すごい。あげはにしか作れない煙だ"
+          "text": "閉店後のMELTY PUFF。作業台に、台が二つ並んでいた。"
         },
         {
           "speaker": "ageha",
           "face": "normal",
-          "text": "でしょ？ ……ハジメっちの煙とは全然ちがう。でもさ、それでいいんだよね"
+          "text": "県大会の時さ、同じ舞台だったのに、ハジメっちの手、一回も見れなかった"
         },
         {
           "speaker": "ageha",
           "face": "smile",
-          "text": "違うから、並べると楽しい。……いつか、隣の台で一緒に作ろ？"
+          "text": "だから今日。同じ白で、せーので作ろ。うち、ずっとこれやりたかったの"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "同じ葉を、同じだけ。あげはは指でほぐして落とし、俺は量ってから詰めた。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "出た、はかり。……うちの、たぶんハジメっちのより多いよ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "surprise",
+          "text": "量ってないのに、分かるんだ"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "分かんない。なんか、多い気がするだけ"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "吸い口を替えて、台を交換した。あげはの白は、甘さが先に走って、あとから丸くなる。"
         },
         {
           "speaker": "hajime",
           "face": "smile",
-          "text": "作ってるところ、動画にしよう。あげはが俺を撮って、俺があげはを撮る"
+          "text": "……なんか、好き。どこがって言われると、出てこないけど"
+        },
+        {
+          "speaker": "ageha",
+          "face": "surprise",
+          "text": "ちょ、それ、うちの台詞！ ハジメっちが「なんか」って言った！"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "あげはは笑いながら俺の一台を吸って、少し黙った。"
+        },
+        {
+          "speaker": "ageha",
+          "face": "serious",
+          "text": "……悔しいけど、こっちは最後までおんなじ味。うち、これはできない"
         },
         {
           "speaker": "ageha",
           "face": "smile",
-          "text": "いいね！ ……でも、カメラ目線したら、うちが照れるかも。笑うなよ？"
+          "text": "でも、並べたら楽しい。次は、動画まわそ。うちがハジメっちを撮るから"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "じゃあ、俺はあげはを撮る"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "……カメラ目線したら、うちが照れるかも。笑うなよ？"
         }
       ]
     },
@@ -1513,22 +1563,7 @@
         {
           "speaker": "ageha",
           "face": "normal",
-          "text": "……ハジメっちといると、さ"
-        },
-        {
-          "speaker": "ageha",
-          "face": "normal",
-          "text": "うちがしてほしいこと、前より口に出せるようになった"
-        },
-        {
-          "speaker": "ageha",
-          "face": "smile",
-          "text": "言ったあと、やっぱ恥ずい！ってなるけど。そこも、うちだし"
-        },
-        {
-          "speaker": "ageha",
-          "face": "smile",
-          "text": "……今日も一個、言っていい？"
+          "text": "……今日も一個、言っていい？ いつものより、でかいやつ"
         },
         {
           "speaker": "hajime",
@@ -1537,13 +1572,38 @@
         },
         {
           "speaker": "ageha",
-          "face": "smile",
-          "text": "……そうやって待ってくれんの、好き。ガチで"
+          "face": "serious",
+          "text": "朝さ。布団の中で、指、確かめるじゃん。うち"
+        },
+        {
+          "speaker": "ageha",
+          "face": "sad",
+          "text": "あれ、ずっと一人でやってきたの。誰にも見せたくなくて"
         },
         {
           "speaker": "ageha",
           "face": "normal",
-          "text": "……あとさ。今日、ちょい疲れてる日なの、……肩、貸して"
+          "text": "……明日の朝、確かめる前に、電話していい？"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "いいよ。出る。寝ぼけてても出る"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "ある日でも、ない日でも、最初に言うの、ハジメっちにしたい"
+        },
+        {
+          "speaker": "ageha",
+          "face": "smile",
+          "text": "……はー、言った。心臓うるさ"
+        },
+        {
+          "speaker": "ageha",
+          "face": "normal",
+          "text": "あと、今日はちょい疲れてる日、……肩、貸して"
         },
         {
           "speaker": "hajime",
