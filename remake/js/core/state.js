@@ -4,7 +4,7 @@
 
 import { setPortraitStyleSource } from "./portrait-style.js";
 import { MAX_MONEY, TOURNAMENT_DAY, KUJI_TICKET_MAX } from "./rules.js";
-import { MASTERY_THRESHOLDS, learnFlavorStory } from "./flavor-mastery.js";
+import { MASTERY_THRESHOLDS, RENAMED_MASTERY_KEYS, learnFlavorStory } from "./flavor-mastery.js";
 import { emit } from "./bus.js";
 import { recordGalleryProgress } from "./gallery-progress.js";
 import { STARTER_HIDANE, STARTER_FLAG } from "./growth-starter.js";
@@ -467,6 +467,13 @@ function migrate(s) {
   s.flavorMastery = Object.fromEntries(Object.entries(record(s.flavorMastery))
     .filter(([id, xp]) => /^[a-z0-9_]+$/.test(id) && Number.isFinite(xp) && xp >= 0)
     .map(([id, xp]) => [id, Math.min(MASTERY_THRESHOLDS.at(-1), xp)]));
+  // あとから同じ系統にまとめた味（RENAMED_MASTERY_KEYS）の旧キーは、今の系統のキーへ移す。
+  // 両方に経験値があれば大きい方を残す（足すと、別々に積んだ分が二重に数えられる）。
+  for (const [from, to] of Object.entries(RENAMED_MASTERY_KEYS)) {
+    if (!(from in s.flavorMastery)) continue;
+    s.flavorMastery[to] = Math.max(s.flavorMastery[to] || 0, s.flavorMastery[from]);
+    delete s.flavorMastery[from];
+  }
   s.flavorLessons = Array.isArray(s.flavorLessons) ? [...new Set(s.flavorLessons.filter(x => typeof x === "string"))] : [];
   // アダムのダブルアップルの話は第3回から第4回へ移した（#1466）。第3回で受け取った旧セーブに第4回で二重付与しない。
   if (s.flavorLessons.includes("ch1_adam_third") && !s.flavorLessons.includes("ch1_adam_fourth")) s.flavorLessons.push("ch1_adam_fourth");

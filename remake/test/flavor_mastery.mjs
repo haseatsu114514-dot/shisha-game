@@ -62,6 +62,21 @@ gainFlavorExperience(s,{lemon:12},7.5,DB.flavorById);assert.equal(masteryLevel(s
  s=core.newGame();
 }
 {
+ // #3509: dark_earlgrey は他のアールグレイと同じ系統（earlgrey）になった。旧セーブの dark_earlgrey の経験値は
+ // 読み込み時に earlgrey へ移り、星が下がらない。両方にあれば大きい方を残す（二重に数えない）。
+ assert.equal(DB.flavorById.dark_earlgrey.family,'earlgrey');
+ let old=core.newGame();old.flavorMastery={dark_earlgrey:36,lemon:6};core.save();old=core.load();
+ assert.deepEqual(old.flavorMastery,{earlgrey:36,lemon:6});
+ assert.equal(masteryLevel(old,'dark_earlgrey',DB.flavorById),4);
+ assert.equal(masteryLevel(old,'absal_earlgrey',DB.flavorById),4,'the shared family keeps the stars for other earl greys too');
+ let both=core.newGame();both.flavorMastery={dark_earlgrey:18,earlgrey:40};core.save();both=core.load();
+ assert.deepEqual(both.flavorMastery,{earlgrey:40});
+ both=core.newGame();both.flavorMastery={dark_earlgrey:60,earlgrey:6};core.save();both=core.load();
+ assert.deepEqual(both.flavorMastery,{earlgrey:60});
+ core.save();both=core.load();assert.deepEqual(both.flavorMastery,{earlgrey:60},'migration is stable across re-saves');
+ s=core.newGame();
+}
+{
  // 第4回へ集約しても、既読の旧回で得た経験値を二重に受け取らず、未取得分は失わない。
  const naru=JSON.parse(fs.readFileSync(new URL('../../data/dialogue/ch1_naru.json',import.meta.url))).dialogues;
  const first=naru.find(d=>d.dialogue_id==='ch1_naru_first');

@@ -4,6 +4,9 @@ export const masteryHooks = { multiplier: () => 1 };
 export const MASTERY_THRESHOLDS = [0, 6, 18, 36, 60];
 const MASTERY_MAX_XP = MASTERY_THRESHOLDS.at(-1);
 export const flavorFamily = (id, flavors = {}) => flavors[id]?.family || id;
+// あとから family を付けた味の旧キー → 今の系統のキー。旧セーブの経験値を読み込み時に移す（state.js）。
+// dark_earlgrey は #3509（2026-11-12）で他のアールグレイと同じ系統になった。
+export const RENAMED_MASTERY_KEYS = Object.freeze({ dark_earlgrey: "earlgrey" });
 export const masteryXp = (s, id, flavors = {}) => Math.min(MASTERY_MAX_XP, Math.max(0, Number(s?.flavorMastery?.[flavorFamily(id, flavors)]) || 0));
 export const masteryLevel = (s, id, flavors = {}) => MASTERY_THRESHOLDS.filter(x => masteryXp(s, id, flavors) >= x).length;
 export function masteryLabel(s, id, flavors = {}) {
