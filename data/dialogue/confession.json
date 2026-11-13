@@ -337,22 +337,37 @@
         {
           "speaker": "tsumugi",
           "face": "sad",
-          "text": "[shiver]……私も……ずっと、ずっと……[/shiver]はじめさんのことが……"
+          "text": "[shiver]……私も、です[/shiver]"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "つむぎは顔を上げられないまま、俺の服の裾を小さくつまんだ。"
+          "text": "俺の服の裾を、指が小さくつまんだ。つまんだまま、つむぎはゆっくり顔を上げた。"
         },
         {
           "speaker": "tsumugi",
-          "face": "smile",
-          "text": "……言えなくて、ごめんなさい。でも……嬉しい、です。すごく……"
+          "face": "normal",
+          "text": "……先に、言われました。今日、言うつもりで、ついてきたのに"
         },
         {
           "speaker": "hajime",
           "face": "smile",
-          "text": "謝らなくていいよ。……俺も、つむぎちゃんが好きだ"
+          "text": "家と逆のほうまで？"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "smile",
+          "text": "……逆のほうまで、です"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "じゃあ、聞かせて。俺は、もう言ったから"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "smile",
+          "text": "……好きです。はじめさんが"
         },
         {
           "speaker": "",
@@ -440,27 +455,32 @@
         {
           "speaker": "tsumugi",
           "face": "normal",
-          "text": "……そう、ですか"
-        },
-        {
-          "speaker": "tsumugi",
-          "face": "normal",
-          "text": "……言いかけたこと、聞いてくれて、ありがとうございます"
+          "text": "……はい。また、明日"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "つむぎはタブレットの端を握り、少しだけうつむいた。"
+          "text": "つむぎは開きかけた口を閉じて、タブレットの端を握った。"
         },
         {
           "speaker": "",
           "face": "",
-          "text": "しばらくして、つむぎは小さく息を吐き、俺の方を見た。"
+          "text": "しばらくして、小さく息を吐き、俺の方を見た。"
         },
         {
           "speaker": "tsumugi",
           "face": "normal",
-          "text": "……少しだけ、時間をください。絵の話は、また、したいです"
+          "text": "……言いかけたことは、絵のほうに入れておきます"
+        },
+        {
+          "speaker": "tsumugi",
+          "face": "normal",
+          "text": "絵の話は、また、したいです。いつもの席で"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "小さく頭を下げて、つむぎは来た道を戻っていった。家は、やっぱり逆のほうだった。"
         }
       ]
     },
