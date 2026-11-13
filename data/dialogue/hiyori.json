@@ -974,11 +974,12 @@
         },
         {
           "speaker": "hiyori",
-          "text": "……うん",
+          "text": "[shiver]……うん[/shiver]",
           "face": "tears"
         },
         {
           "speaker": "",
+          "duck": true,
           "text": "頬を、一粒の涙が伝う。スミさんは何も聞かなかった。"
         },
         {
@@ -2587,7 +2588,7 @@
         },
         {
           "speaker": "hiyori",
-          "text": "三つめ。……次の約束、今ここで決めたい。帰ってからLIMEで聞くんじゃなくて",
+          "text": "三つめ。[pause]……次の約束、今ここで決めたい。帰ってからLIMEで聞くんじゃなくて",
           "face": "love_blush"
         },
         {

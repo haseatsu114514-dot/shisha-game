@@ -1,6 +1,6 @@
 // 第5章の出張シーシャの依頼（DLV・chapters/ch5-catering.js）を、実際の朝のLIME・地図・場面で確かめる。
 // 1. 依頼のLIMEが届く → 「引き受けます」→ その日は地図に出ない → 翌日、決まった時間帯に「出張シーシャ」→ 葉の組み合わせを選ぶ
-//    → ぴったりならくじ券+2、合うなら+1（お金は動かない・行動1回・体力を使う）。
+//    → ぴったりならくじ券+2、合うなら+1（手取り入金・行動1回・体力を使う）。
 // 2. 「今回は見送ります」→ 何も減らず、地図にも出ない。次の依頼は数日後。
 // 3. 期限: 引き受けたまま日が過ぎたら、スミさんの「気にすんな」が届いて地図から消える。返事をしないまま締め切られた依頼は、返事のボタンが出ない。
 import assert from "node:assert/strict";
@@ -23,7 +23,7 @@ const model = page => page.evaluate(async () => {
 
 const START = 49; // 第5章の1日目。51日目＝第5章の3日目の朝に、最初の依頼が届く
 /** 第5章の自由行動の保存を作って LOAD する（朝の LIME は LOAD の後に届く）。 */
-async function seed(page, { day = 51, slot = 0, seedValue = 0, flags = {}, inbox = [], met = {} } = {}) {
+async function seed(page, { day = 51, slot = 0, seedValue = 0, flags = {}, inbox = [], met = {}, turbo = true } = {}) {
   page.setDefaultTimeout(30000);
   await page.evaluate(async ({ day, slot, seedValue, flags, inbox, met, START }) => {
     const core = await import("./js/core/state.js");
@@ -45,15 +45,15 @@ async function seed(page, { day = 51, slot = 0, seedValue = 0, flags = {}, inbox
     value.flags._fortune_wander = { chapter: 5, shown: fortunePlan.map(() => null), used: fortunePlan.map(() => true) };
     core.saveConfig(); core.save();
   }, { day, slot, seedValue, flags, inbox, met, START });
-  await reopen(page);
+  await reopen(page, { turbo });
 }
-async function reopen(page) {
+async function reopen(page, { turbo = true } = {}) {
   await page.reload();
   await page.locator(dt("title-load")).click();
-  await page.evaluate(async () => {
+  await page.evaluate(async turbo => {
     const vn = await import("./js/vn/engine.js");
-    vn.vnTest.turbo = true; vn.vnTest.choose = () => 0;
-  });
+    vn.vnTest.turbo = turbo; vn.vnTest.choose = () => 0;
+  }, turbo);
   await page.locator(dt("slot-0")).click();
 }
 /** 今の保存を書き換えて保存し、LOAD し直す（日を進める等）。 */
@@ -78,6 +78,30 @@ async function replyToSumi(page, text, note) {
 const offerOf = state => state.flags._ch5_catering?.offer ?? null;
 
 await suite("ch5-catering", async check => {
+  await check("business-origin-skip-and-save-load-once", async page => {
+    await seed(page, { day: START, turbo: false });
+    await page.locator(".vn-text", { hasText: "申込用紙" }).waitFor();
+    await page.evaluate(async () => {
+      const core = await import("./js/core/state.js");
+      core.config.skipSeenOnly = false;
+    });
+    await page.locator(dt("vn-skip")).click();
+    await mapReady(page, { day: START, slot: 0 });
+    let value = await get(page);
+    assert.equal(value.flags._intro_ch5_catering_business, true, "SKIP完読も相談は一度だけ確定する");
+    assert.equal(value.money, 50000); assert.equal(value.stamina, 100); assert.equal(value.slot, 0);
+    assert.equal(value.flags._ch5_catering?.offers || 0, 0, "相談だけで依頼日を前倒ししない");
+    assert.match(await logText(page), /ちゃっかりしてますね/);
+    assert.match(await logText(page), /俺も乗ったんです/);
+    await clearLog(page);
+    await reopen(page);
+    await mapReady(page, { day: START, slot: 0 });
+    value = await get(page);
+    assert.equal(value.flags._intro_ch5_catering_business, true);
+    assert.doesNotMatch(await logText(page), /申込用紙|ちゃっかり|俺も乗った/);
+    assert.equal(value.money, 50000); assert.equal(value.stamina, 100); assert.equal(value.slot, 0);
+  });
+
   for (const fit of ["best", "ok"]) await check(`request-accept-then-serve-${fit}`, async page => {
     // 地元の店の行き先がそろった地図で、ピンの重なりも見る（昼の会・夜の会の両方）
     await seed(page, { seedValue: fit === "best" ? 0 : 3, met: { naru: true, adam: true, minto: true } });
@@ -115,6 +139,7 @@ await suite("ch5-catering", async check => {
     await clearLog(page);
     await pin.click();
     await page.locator(dt("map-go")).click();
+    await page.locator(dt("catering-go")).click();
     const index = entry.options.findIndex(o => o.fit === fit);
     await page.locator(dt(`catering-option-${index}`)).click();
     // 夜の会なら、そのまま夜が明けて翌日の昼の地図へ
@@ -123,16 +148,75 @@ await suite("ch5-catering", async check => {
     const text = await logText(page);
     assert.match(text, /道具を返しに、tonariへ寄った/, "back at tonari with Sumi after the job");
     assert.equal(state.kujiTickets, fit === "best" ? 2 : 1, `${fit} → tickets`);
-    assert.equal(state.money, before.money, "no money for the job");
+    assert.equal(state.money, before.money + entry.payout, "the contract take-home pay is credited once");
     assert.equal(offerOf(state), null, "the request is done");
     assert.equal(state.flags._ch5_catering.served[entry.id], 1);
-    assert.deepEqual(state.flags._ch5_catering.last, { id: entry.id, day: 52, fit, tickets: fit === "best" ? 2 : 1 });
+    assert.deepEqual(state.flags._ch5_catering.last, { id: entry.id, day: 52, performer: "hajime", fit, tickets: fit === "best" ? 2 : 1, payout: entry.payout, paid: entry.payout });
     assert.equal(state.visitedDay.ch5_catering, 52, "one action on the map");
     // 体力は mukai のシフトと同じだけ使う（盤の恩恵で少し軽くなることがある）。夜の会は、そのあと眠って戻る
     if (entry.slot === 0) assert(state.stamina < before.stamina && state.stamina >= before.stamina + stamina,
       `the job uses stamina like a shift (${before.stamina} → ${state.stamina})`);
     assert.equal(state.flags._ch5.part, "free", "the story does not move");
     assert.equal(await page.locator(dt("pin-ch5_catering")).count(), 0, "gone from the map");
+  });
+
+  await check("delegate-keeps-player-free-and-survives-load", async page => {
+    await seed(page, { seedValue: 3 }); // 昼の引っ越し祝い
+    await mapReady(page, { day: 51, slot: 0 });
+    const before = await get(page);
+    const { requests } = await model(page);
+    const entry = requests.find(r => r.id === offerOf(before).id);
+    await replyToSumi(page, "つむぎに任せます", "つむぎに任せた");
+    let value = await get(page);
+    assert.equal(offerOf(value).assigned, "tsumugi");
+    assert.equal(offerOf(value).jobDay, 52);
+    assert.deepEqual([value.money, value.stamina, value.slot], [before.money, before.stamina, 0]);
+    await rewrite(page, "s.day = 52; s.slot = 0; s.flags._morning_52 = true;");
+    await mapReady(page, { day: 52, slot: 0 });
+    assert.equal(await page.evaluate(async () => (await import("./js/daily/tsumugi-schedule.js")).tsumugiAtTonari(window.__remake.state)), false);
+    // 依頼のピンは担当の案内だけ。プレイヤーは家で休むなど別の行動を選べる。
+    const spot = await page.evaluate(async () => (await import("./js/chapters/ch5-catering.js")).chapterFiveCateringSpot());
+    assert.match(spot.unavailable, /つむぎ/);
+    // 行動済みの夜の保存から再開。朝処理に依存せず一度だけ入金・復帰する。
+    await rewrite(page, "s.slot = 1;");
+    await mapReady(page, { day: 52, slot: 1 });
+    value = await get(page);
+    assert.equal(value.money, before.money + entry.payout);
+    assert.equal(value.kujiTickets, 0);
+    assert.equal(offerOf(value), null);
+    assert.equal(value.flags._ch5_catering.last.performer, "tsumugi");
+    assert.equal(await page.evaluate(async () => (await import("./js/daily/tsumugi-schedule.js")).tsumugiAtTonari(window.__remake.state)), true);
+    await reopen(page);
+    await mapReady(page, { day: 52, slot: 1 });
+    assert.equal((await get(page)).money, before.money + entry.payout);
+  });
+
+  await check("completed-round-uses-short-repeat-scenes", async page => {
+    const { requests } = await model(page);
+    const served = Object.fromEntries(requests.map(entry => [entry.id, 1]));
+    await seed(page, { seedValue: 3, flags: { _ch5_catering: { next: 51, offers: 20, offer: null, served } } });
+    await mapReady(page, { day: 51, slot: 0 });
+    const before = await get(page), booking = offerOf(before);
+    assert.equal(booking.repeat, true);
+    const entry = requests.find(r => r.id === booking.id);
+    assert(before.inbox.find(i => i.id === booking.msg).msg.messages.some(t => /また出張の予約/.test(t)));
+    await replyToSumi(page, "引き受けます", "引き受けた");
+    await rewrite(page, `s.day = 52; s.slot = ${entry.slot}; s.flags._morning_52 = true;`);
+    await mapReady(page, { day: 52, slot: entry.slot });
+    await clearLog(page);
+    await page.locator(dt("pin-ch5_catering")).click();
+    await page.locator(dt("map-go")).click();
+    await page.locator(dt("catering-go")).click();
+    await page.locator(dt(`catering-option-${entry.options.findIndex(o => o.fit === "best")}`)).click();
+    await (entry.slot === 0 ? mapReady(page, { day: 52, slot: 1 }) : mapReady(page, { day: 53, slot: 0 }));
+    const after = await get(page), text = await logText(page);
+    assert.match(text, /予約ありがとうございます/);
+    assert.doesNotMatch(text, /道具を返しに、tonariへ寄った/, "リピートでは固有の帰還会話を繰り返さない");
+    assert.equal(after.money, before.money + entry.payout);
+    assert.equal(after.flags._ch5_catering.last.repeat, true);
+    await reopen(page);
+    await mapReady(page);
+    assert.equal((await get(page)).money, after.money, "リピートもLOADで二重入金しない");
   });
 
   await check("request-decline-changes-nothing", async page => {
@@ -187,3 +271,4 @@ await suite("ch5-catering", async check => {
     await page.locator(dt("phone-close")).click();
   });
 });
+

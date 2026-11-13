@@ -23,21 +23,40 @@ export function approachBase(scenario, kind, approachId = null, sheets = null) {
  * The look is not chosen (#3050, owner 2026-11-09): the player's own face plays the role, so the built sheet
  * carries no portrait and the seat shows the player's portrait. Old saves may still pass a look; it is ignored.
  */
-export function buildPc(scenario, choices = {}) {
+export function buildPc(scenario, choices = {}, growth = 0) {
   const builder = scenario.builder;
   if (!builder) return null;
   const archetype = builder.archetypes.find(a => a.id === (choices.archetype || builder.archetypes[0].id));
   if (!archetype) throw new Error("Unknown archetype");
-  const stats = Object.fromEntries(STATS.map(key => [key, choices.stats?.[key] ?? archetype.stats[key]]));
+  const earned = growthOf(growth);
+  // Chosen stats are taken as written (within the grown budget); an archetype left as it is grows on its own.
+  const base = choices.stats ? archetype.stats : grownStats(builder, archetype.stats, earned);
+  const stats = Object.fromEntries(STATS.map(key => [key, choices.stats?.[key] ?? base[key]]));
   for (const key of STATS) {
     if (!Number.isInteger(stats[key]) || stats[key] < builder.min || stats[key] > builder.max) throw new Error("Stat out of range: " + key);
   }
   const points = STATS.reduce((n, key) => n + stats[key], 0);
-  if (points > builder.points) throw new Error("Too many stat points");
+  if (points > builder.points + earned) throw new Error("Too many stat points");
   const name = String(choices.name ?? archetype.name).trim();
   if (!name || [...name].length > (builder.nameMax || 6)) throw new Error("Invalid character name");
   return { seat: builder.seat || PLAYER_SEAT, name, title: archetype.title, trait: archetype.trait, stats, points,
     archetype: archetype.id };
+}
+/**
+ * 成長点（TRF13）: the club's rank lets the player's own character start with one or two more stat points.
+ * It is a whole number from 0 to GROWTH_MAX; anything else counts as none, so an old caller changes nothing.
+ */
+export const GROWTH_MAX = 2;
+export const growthOf = value => Number.isInteger(value) ? Math.max(0, Math.min(GROWTH_MAX, value)) : 0;
+/** Where an archetype's growth goes when the player does not place it: its best stat first, never past the maximum. */
+export function grownStats(builder, stats, growth = 0) {
+  const grown = { ...stats };
+  for (let n = growthOf(growth); n > 0; n--) {
+    const key = STATS.filter(k => grown[k] < builder.max).sort((a, b) => grown[b] - grown[a])[0];
+    if (!key) break;
+    grown[key]++;
+  }
+  return grown;
 }
 /**
  * Companions make their own characters: each seat's player picks one authored option (likes, a joke, a parody),
@@ -58,7 +77,7 @@ export function pickCompanions(scenario, seed = 1, chosen = {}) {
   return picks;
 }
 /** A deterministic "leave it to the dice" character: archetype from the seed, with one point moved between stats. */
-export function randomPc(scenario, seed = Date.now()) {
+export function randomPc(scenario, seed = Date.now(), growth = 0) {
   const builder = scenario.builder;
   if (!builder) return null;
   let x = Number(seed) >>> 0 || 1;
@@ -69,7 +88,7 @@ export function randomPc(scenario, seed = Date.now()) {
   const stats = { ...archetype.stats };
   const from = STATS[next() % STATS.length], to = STATS[next() % STATS.length];
   if (from !== to && stats[from] > builder.min && stats[to] < builder.max) { stats[from]--; stats[to]++; }
-  return buildPc(scenario, { archetype: archetype.id, stats });
+  return buildPc(scenario, { archetype: archetype.id, stats: grownStats(builder, stats, growth) }, growth);
 }
 // Keep two dice and one-die rerolls; scale the old aids toward their original success rates.
 export const DICE = Object.freeze({ sides: 20, base: 3, support: 7, momentum: 4, hypothesis: 4, success: 30, mixed: 19 });
@@ -102,8 +121,12 @@ export const hintFieldsOf = (scenario, kind) => {
 /** The prize a check offers at this table: a scenario without an interview cannot offer one more question. */
 export const rewardKindOf = (scenario, kind) => REWARDS[kind] === "question" && !scenario.interview ? "cheer" : REWARDS[kind] || "cheer";
 const RATING_TITLES = ["にぎやかな卓", "よい卓", "名卓", "伝説の卓"];
-/** Table excitement. Each tier reached once gives one momentum: bonus +4 to the next roll (up to two). */
-export const HEAT = { max: 8, tiers: [3, 6, 8], momentumMax: 2,
+/**
+ * Table excitement. Each tier reached once gives one momentum: bonus +4 to the next roll (up to two).
+ * The first two tiers are within anyone's reach; the top (TRF12) takes a table where everyone had a turn and the
+ * cards were played: with the old top at 8, a practised table reached it every single night.
+ */
+export const HEAT = { max: 10, tiers: [3, 6, 10], momentumMax: 2,
   names: ["静かな卓", "あたたまってきた", "沸いてきた", "最高潮"],
   nights: ["静かな夜", "和やかな夜", "盛り上がった夜", "大盛況の夜"] };
 export const heatTier = value => HEAT.tiers.filter(t => value >= t).length;
@@ -113,12 +136,22 @@ export const phasesOf = scenario => ["listen", ...(scenario.interview ? ["interv
 /** Every roll a full session makes: listen, the optional twist, preparation and the finale. */
 export const checkKindsOf = scenario => ["listen", ...(scenario.flow?.twist ? ["twist"] : []), "prepare", "serve"];
 
+/** A number picked from the seed and a label by a hash that never touches the dice stream (the GM's hint, the closer look). */
+function seededPick(seed, label) {
+  let x = ((seed >>> 0) ^ [...label].reduce((n, ch) => Math.imul(n ^ ch.codePointAt(0), 16777619) >>> 0, 2166136261)) >>> 0;
+  x = Math.imul(x ^ (x >>> 16), 0x85ebca6b) >>> 0; x = Math.imul(x ^ (x >>> 13), 0xc2b2ae35) >>> 0;
+  return (x ^ (x >>> 16)) >>> 0;
+}
+/** じっくり調べる（TRF14）: how many wrong guesses each grade rules out. */
+export const SEARCH_RULED = Object.freeze({ success: 2, mixed: 1, trouble: 0 });
+
 export class TrpgSession {
-  constructor(scenario, { seed = Date.now(), profileId = null, pc = null, companions = {}, warmStart = false } = {}) {
+  constructor(scenario, { seed = Date.now(), profileId = null, pc = null, companions = {}, warmStart = false, growth = 0 } = {}) {
     if (!scenario?.profiles?.length || scenario.profiles.length < 1) throw new Error("Missing traveler profiles");
     this.scenario = scenario;
     // The player's own character replaces the authored default on that seat; each companion brings the character they made.
-    this.pc = scenario.builder ? buildPc(scenario, pc || {}) : null;
+    this.growth = growthOf(growth);
+    this.pc = scenario.builder ? buildPc(scenario, pc || {}, this.growth) : null;
     this.sheets = { ...sheetsOf(scenario) };
     this.companions = pickCompanions(scenario, seed, companions);
     for (const [seat, option] of Object.entries(this.companions)) {
@@ -149,7 +182,7 @@ export class TrpgSession {
       plan: Object.fromEntries(Object.values(this.flow).flat().map(field => [field, null])),
       pressure: this.rules.initialPressure, teamwork: 2, heat: 0, momentum: 0, heatLog: [], extraQuestions: 0, hints: {},
       used: Object.fromEntries(scenario.cast.filter(c => c.part !== "GM").map(c => [c.id, false])),
-      acted: {}, checks: [], pending: null, asked: [],
+      acted: {}, checks: [], pending: null, asked: [], search: null,
       pc: this.pc ? { name: this.pc.name, title: this.pc.title, archetype: this.pc.archetype, stats: { ...this.pc.stats } } : null,
       companions: Object.fromEntries(Object.entries(this.companions).map(([seat, o]) => [seat, o.id])),
     };
@@ -235,6 +268,31 @@ export class TrpgSession {
     this.cheer(1, "みんなで見立てを話した");
   }
 
+  /**
+   * じっくり調べる（目星・TRF14）: once per table, before the table settles on a guess, the player's own character
+   * looks closer with 観察 (2d20 + eye). ひと手間 rules out one wrong guess, 成功 rules out two (the truth is what is left),
+   * 思わぬ出来事 finds nothing. It never costs anything. The dice come from the seed by a separate hash, like the
+   * GM's hint, so the story's own checks roll the same numbers whether or not anyone searched.
+   */
+  searchBase() {
+    const seat = this.pc?.seat || PLAYER_SEAT, rating = this.sheets[seat]?.stats?.eye;
+    return { seat, stat: "eye", base: Number.isInteger(rating) ? rating : DICE.base };
+  }
+  search() {
+    this.require("explore");
+    if (this.state.search) throw new Error("Already searched");
+    if (this.state.clues.length < 3) throw new Error("Collect three clues before a closer look");
+    const { seat, stat, base } = this.searchBase();
+    const dice = ["search:a", "search:b"].map(label => seededPick(this.state.seed, label) % DICE.sides + 1);
+    const outcome = outcomeOf(dice, base);
+    const wrong = this.scenario.hypotheses.filter(h => h.id !== this.profile.id).map(h => h.id);
+    const first = wrong.length ? seededPick(this.state.seed, "search:ruled") % wrong.length : 0;
+    const ruled = wrong.map((_, i) => wrong[(first + i) % wrong.length]).slice(0, SEARCH_RULED[outcome.grade] || 0);
+    this.state.search = { seat, stat, dice, base, bonus: base, ...outcome, ruled };
+    if (outcome.grade === "success") this.cheer(1, "目星が冴えた");
+    return copy(this.state.search);
+  }
+
   plan(field, value) {
     const phase = Object.keys(this.flow).find(kind => this.flow[kind].includes(field));
     if (!phase) throw new Error("Unknown preparation field");
@@ -267,8 +325,9 @@ export class TrpgSession {
     if (chosen) {
       const first = !this.state.acted[chosen.actor];
       this.state.acted[chosen.actor] = (this.state.acted[chosen.actor] || 0) + 1;
-      // A companion stepping forward for the first time is a table moment; the GM playing an empty seat is not.
-      if (first && !chosen.npc && chosen.actor !== PLAYER_SEAT) this.cheer(1, (this.sheets[this.state.pending.sheet]?.name || "仲間") + "の見せ場");
+      // Anyone's character stepping forward for the first time is a table moment, the player's own included (TRF12):
+      // the character you made deserves its spotlight as much as a companion's. The GM playing an empty seat is not one.
+      if (first && !chosen.npc) this.cheer(1, (this.sheets[this.state.pending.sheet]?.name || "仲間") + "の見せ場");
     }
     if (support) this.cheer(1, "仲間の見せ場");
     return this.checkResult();
@@ -289,9 +348,7 @@ export class TrpgSession {
     if (!liked?.length) return null;
     const wrong = (this.scenario.options[field] || []).filter(option => !liked.includes(option.id));
     if (!wrong.length) return null;
-    let x = ((this.state.seed >>> 0) ^ [...field].reduce((n, ch) => Math.imul(n ^ ch.codePointAt(0), 16777619) >>> 0, 2166136261)) >>> 0;
-    x = Math.imul(x ^ (x >>> 16), 0x85ebca6b) >>> 0; x = Math.imul(x ^ (x >>> 13), 0xc2b2ae35) >>> 0; x = (x ^ (x >>> 16)) >>> 0;
-    return wrong[x % wrong.length].id;
+    return wrong[seededPick(this.state.seed, field) % wrong.length].id;
   }
   /** Pay out what a successful check was rolled for. Returns what the table actually received. */
   grant(kind) {
@@ -377,6 +434,7 @@ export class TrpgSession {
       plan: copy(plan), hypothesis: this.state.hypothesis,
       clues: copy(this.state.clues), asked: copy(this.state.asked), checks: copy(this.state.checks), acted: copy(this.state.acted), pc: copy(this.state.pc),
       hints: copy(this.state.hints), finale: this.state.checks.some(check => check.reward?.type === "finale"),
+      search: copy(this.state.search),
       companions: copy(this.state.companions),
       pressure: this.state.pressure, profileId: this.profile.id,
     };

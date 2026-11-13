@@ -388,5 +388,22 @@ await suite("ch4-camel-race-controls", async check => {
     await page.locator(dt("camel-close")).click();
     await page.locator(dt("camel-menu-quick")).waitFor();
   }, { ignoreFailedResource: failure => dustArt.test(failure) });
+  // 始める前のロード（2026-11-11 オーナー「加速すると処理重い。ゲーム開始前に漫画付きロードとか挟んでもいい」）:
+  // 絵の読み込みが遅いと、作業台と同じ漫画つきのロード画面が出て、読み終えて進むと（テストは自動で読む）絵がそろった状態で走り出す。
+  await check("slow-art-waits-behind-the-comic-loading-screen", async page => {
+    await page.addInitScript(() => {
+      window.__comicTitles = [];
+      new MutationObserver(() => {
+        for (const node of document.querySelectorAll(".loading-comic-title")) if (!window.__comicTitles.includes(node.textContent)) window.__comicTitles.push(node.textContent);
+      }).observe(document, { childList: true, subtree: true });
+    });
+    await page.route(url => /\/img\/ui\/camel_race\/.+\.webp/.test(url.href), async route => { await new Promise(resolve => setTimeout(resolve, 1500)); await route.continue(); });
+    await page.goto(new URL("camel-race.html?pilot=perfect", baseURL).href, { waitUntil: "domcontentloaded" });
+    await page.locator(dt("camel-menu-quick")).click();
+    await page.waitForFunction(() => document.querySelector('[data-test="camel-game"]')?.dataset.phase === "race", null, { timeout: 15000 });
+    assert.equal((await page.evaluate(() => window.__comicTitles)).length, 1, "one comic was shown while the art loaded");
+    assert.equal(await page.locator(".loading-gate").count(), 0, "the loading screen is gone");
+    assert.equal(await page.locator(dt("camel-game")).getAttribute("data-art"), "sprites", "the race starts with the art ready");
+  });
 }, { entry: new URL("camel-race.html", baseURL).href, readySelector: '[data-test="camel-menu-quick"]' });
 

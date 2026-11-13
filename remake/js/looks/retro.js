@@ -132,10 +132,11 @@ function start({ paint = "dot", mode = "retro" } = {}) {
   /** periodic: 定期の確認（1 秒に 9 回ほど）。DOM の変化を受けた臨時の確認では、外枠を引っ込める・つなぐ判断だけを行う。 */
   function evaluate(now, periodic) {
     setEngaged(engageState(mode));
-    const found = engaged === "on" ? detectState(own, { extended: hd }) : { kind: "none" };
-    // 新版の縦持ち: 一番上の層に開いた <dialog>（第3章の東京の地図など）は、自分の作りで縦にも並ぶので、
-    // 外枠を引っ込めて回転案内も出さず、そのまま見せる（案内は dialog の下に隠れて、音や制作の時計だけを止めてしまうため）
-    const dialogOpen = hd && engaged === "on" && found.kind === "none" && topDialogOpen();
+    const found = engaged === "on" ? detectState(own) : { kind: "none" };
+    // 一番上の層に開いた <dialog>（第3章の東京の地図など）は、自分の作りで縦にも並ぶので、外枠を引っ込めてそのまま見せる。
+    // 新版の縦持ちでは回転案内も出さない（案内は dialog の下に隠れて、音や制作の時計だけを止めてしまうため）。
+    // DS風では「横向きにすると…」の一言を出さない（dialog の下に隠れるうえ、縦のまま読めるため）
+    const dialogOpen = engaged === "on" && found.kind === "none" && topDialogOpen();
     if (found.kind !== "none" || engaged !== "on") noneSince = 0;
     if (found.kind === "scene" || found.kind === "none") coverBlocked = false;
     hold = false;

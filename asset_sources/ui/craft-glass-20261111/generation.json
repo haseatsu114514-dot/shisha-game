@@ -1,0 +1,3727 @@
+{
+  "source_ref": "bf79baa3d84b172753ff33e477c0c482ec7c118e",
+  "source_file": "asset_sources/ui/craft-glass-20261111/prompts.md",
+  "source_file_sha256": "c56fa33c0f258f6ce55ff2f768a45a301bebeff281e39d07acb352108a018f82",
+  "code_block_sha256": "508f7371030277415b951228c1fb9c4ce7a687bd30a3b4a398d7908df35a4e0e",
+  "generator": "image_gen.imagegen",
+  "prompt_policy": "Exact STYLE + two newlines + exact image paragraph including CHECK; no rewriting or additions. Same prompt on every retry.",
+  "raw_policy": "Unmodified original PNGs; no crop, resize, alpha cleanup or colour adjustment.",
+  "results": {
+    "selected_originals": 17,
+    "generation_calls": 47,
+    "pass": 2,
+    "fail": 15
+  },
+  "review_derivatives": "qa/*.jpg are resized/composited review aids only; not production assets.",
+  "references": [
+    {
+      "path": "asset_sources/ui/craft-texture-20261111/mock/pull-B.png",
+      "ref": "bf79baa3d84b172753ff33e477c0c482ec7c118e",
+      "git_blob_sha": "88c7e0bccc080e2b0fa3bfd973d727023c83524e",
+      "sha256": "c35a38909467b8ed8fc9b2bc9d8cc9d3360074359f6c5d64f6489339449e497e",
+      "bytes": 2515669
+    }
+  ],
+  "items": [
+    {
+      "number": 1,
+      "path": "asset_sources/ui/craft-glass-20261111/raw/tile.png",
+      "file": "tile.png",
+      "selected_attempt": 2,
+      "attempt_count": 3,
+      "overall_status": "FAIL",
+      "selected_original": {
+        "number": 1,
+        "file": "tile.png",
+        "attempt": 2,
+        "bytes": 1752366,
+        "sha256": "e78b0b1591c2baefe2cb0fd4edd630979895654882fefed33cea62dc1700c81c",
+        "pixels": [
+          2172,
+          724
+        ],
+        "expected_pixels": [
+          1536,
+          1024
+        ],
+        "requested_canvas_match": false,
+        "mode": "RGBA",
+        "alpha_range": [
+          0,
+          255
+        ],
+        "alpha16_bbox": [
+          83,
+          102,
+          2090,
+          625
+        ],
+        "alpha16_aspect": 3.8374760994263863,
+        "corners_alpha": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "qa_status": "FAIL",
+        "check_required": "one tile only / frame equal on four sides and corners identical / edges and glass face plain in the middle / transparent outside the tile / no glow, no text.",
+        "prompt_sha256": "d5eb5f910b11dc81d825d890e62a5ab3467dc60e56e94bbfe7419ed4b182fe09",
+        "qa_notes": [
+          "指定(1536, 1024)に対し原画(2172, 724)。未加工のため寸法は修正していない。",
+          "単一の札、無地、四隅の鋲、文字なし。実体の縦横比約3.84（指定約3）。四隅・縁幅に小さな差があり、九分割は要確認。"
+        ],
+        "visual_reviewed": true,
+        "references_in_order": [
+          {
+            "path": "asset_sources/ui/craft-texture-20261111/mock/pull-B.png",
+            "ref": "bf79baa3d84b172753ff33e477c0c482ec7c118e",
+            "git_blob_sha": "88c7e0bccc080e2b0fa3bfd973d727023c83524e",
+            "sha256": "c35a38909467b8ed8fc9b2bc9d8cc9d3360074359f6c5d64f6489339449e497e",
+            "bytes": 2515669,
+            "purpose": "materials_colours_finish_only_not_layout"
+          }
+        ],
+        "original_source_file": "exec-c28a3feb-1a0a-49db-9520-b8b4cd9eef87.png"
+      },
+      "attempts": [
+        {
+          "number": 1,
+          "file": "tile.png",
+          "attempt": 1,
+          "bytes": 1594604,
+          "sha256": "56044b6420f059861872d87474de2b7976e35e37e740475a9cb1ef705b4576d9",
+          "pixels": [
+            2172,
+            724
+          ],
+          "expected_pixels": [
+            1536,
+            1024
+          ],
+          "requested_canvas_match": false,
+          "mode": "RGBA",
+          "alpha_range": [
+            0,
+            255
+          ],
+          "alpha16_bbox": [
+            93,
+            128,
+            2079,
+            608
+          ],
+          "alpha16_aspect": 4.1375,
+          "corners_alpha": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "qa_status": "FAIL",
+          "check_required": "one tile only / frame equal on four sides and corners identical / edges and glass face plain in the middle / transparent outside the tile / no glow, no text.",
+          "prompt_sha256": "d5eb5f910b11dc81d825d890e62a5ab3467dc60e56e94bbfe7419ed4b182fe09",
+          "qa_notes": [
+            "指定キャンバス1536×1024に対し2172×724。部品も約4.14:1で、指定の約3:1より横長。"
+          ],
+          "visual_reviewed": true,
+          "references_in_order": [
+            {
+              "path": "asset_sources/ui/craft-texture-20261111/mock/pull-B.png",
+              "ref": "bf79baa3d84b172753ff33e477c0c482ec7c118e",
+              "git_blob_sha": "88c7e0bccc080e2b0fa3bfd973d727023c83524e",
+              "sha256": "c35a38909467b8ed8fc9b2bc9d8cc9d3360074359f6c5d64f6489339449e497e",
+              "bytes": 2515669,
+              "purpose": "materials_colours_finish_only_not_layout"
+            }
+          ],
+          "original_source_file": "exec-a423903e-8a25-401b-814d-697b92633a34.png"
+        },
+        {
+          "number": 1,
+          "file": "tile.png",
+          "attempt": 2,
+          "bytes": 1752366,
+          "sha256": "e78b0b1591c2baefe2cb0fd4edd630979895654882fefed33cea62dc1700c81c",
+          "pixels": [
+            2172,
+            724
+          ],
+          "expected_pixels": [
+            1536,
+            1024
+          ],
+          "requested_canvas_match": false,
+          "mode": "RGBA",
+          "alpha_range": [
+            0,
+            255
+          ],
+          "alpha16_bbox": [
+            83,
+            102,
+            2090,
+            625
+          ],
+          "alpha16_aspect": 3.8374760994263863,
+          "corners_alpha": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "qa_status": "FAIL",
+          "check_required": "one tile only / frame equal on four sides and corners identical / edges and glass face plain in the middle / transparent outside the tile / no glow, no text.",
+          "prompt_sha256": "d5eb5f910b11dc81d825d890e62a5ab3467dc60e56e94bbfe7419ed4b182fe09",
+          "qa_notes": [
+            "指定(1536, 1024)に対し原画(2172, 724)。未加工のため寸法は修正していない。",
+            "単一の札、無地、四隅の鋲、文字なし。実体の縦横比約3.84（指定約3）。四隅・縁幅に小さな差があり、九分割は要確認。"
+          ],
+          "visual_reviewed": true,
+          "references_in_order": [
+            {
+              "path": "asset_sources/ui/craft-texture-20261111/mock/pull-B.png",
+              "ref": "bf79baa3d84b172753ff33e477c0c482ec7c118e",
+              "git_blob_sha": "88c7e0bccc080e2b0fa3bfd973d727023c83524e",
+              "sha256": "c35a38909467b8ed8fc9b2bc9d8cc9d3360074359f6c5d64f6489339449e497e",
+              "bytes": 2515669,
+              "purpose": "materials_colours_finish_only_not_layout"
+            }
+          ],
+          "original_source_file": "exec-c28a3feb-1a0a-49db-9520-b8b4cd9eef87.png"
+        },
+        {
+          "number": 1,
+          "file": "tile.png",
+          "attempt": 3,
+          "bytes": 1710856,
+          "sha256": "7865f54a64329bf4b9fbd71869c726b1189c733dacb82d69f2600f335139cd73",
+          "pixels": [
+            2172,
+            724
+          ],
+          "expected_pixels": [
+            1536,
+            1024
+          ],
+          "requested_canvas_match": false,
+          "mode": "RGBA",
+          "alpha_range": [
+            0,
+            255
+          ],
+          "alpha16_bbox": [
+            111,
+            102,
+            2061,
+            611
+          ],
+          "alpha16_aspect": 3.831041257367387,
+          "corners_alpha": [
+            1,
+            0,
+            1,
+            0
+          ],
+          "qa_status": "FAIL",
+          "check_required": "one tile only / frame equal on four sides and corners identical / edges and glass face plain in the middle / transparent outside the tile / no glow, no text.",
+          "prompt_sha256": "d5eb5f910b11dc81d825d890e62a5ab3467dc60e56e94bbfe7419ed4b182fe09",
+          "qa_notes": [
+            "3回とも指定キャンバスにならず、3回目も2172×724。形も約3.83:1で横長。上部の反射と低alpha残りあり。上限3回に到達。"
+          ],
+          "visual_reviewed": true,
+          "references_in_order": [
+            {
+              "path": "asset_sources/ui/craft-texture-20261111/mock/pull-B.png",
+              "ref": "bf79baa3d84b172753ff33e477c0c482ec7c118e",
+              "git_blob_sha": "88c7e0bccc080e2b0fa3bfd973d727023c83524e",
+              "sha256": "c35a38909467b8ed8fc9b2bc9d8cc9d3360074359f6c5d64f6489339449e497e",
+              "bytes": 2515669,
+              "purpose": "materials_colours_finish_only_not_layout"
+            }
+          ],
+          "original_source_file": "exec-36cf7b0e-2fb5-4075-b28f-169b78f2570d.png"
+        }
+      ]
+    },
+    {
+      "number": 2,
+      "path": "asset_sources/ui/craft-glass-20261111/raw/tile-on.png",
+      "file": "tile-on.png",
+      "selected_attempt": 1,
+      "attempt_count": 3,
+      "overall_status": "FAIL",
+      "selected_original": {
+        "number": 2,
+        "file": "tile-on.png",
+        "attempt": 1,
+        "bytes": 1917923,
+        "sha256": "a5eaa7d523331ca9bd1bb1463aec81d42b81983be254b27299eaacb406883c94",
+        "pixels": [
+          2172,
+          724
+        ],
+        "expected_pixels": [
+          1536,
+          1024
+        ],
+        "requested_canvas_match": false,
+        "mode": "RGBA",
+        "alpha_range": [
+          0,
+          255
+        ],
+        "alpha16_bbox": [
+          58,
+          59,
+          2116,
+          633
+        ],
+        "alpha16_aspect": 3.5853658536585367,
+        "corners_alpha": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "qa_status": "FAIL",
+        "check_required": "overlays tile.png (same frame size and position) / the violet rim is even on four sides / the glow fades to alpha 0 before the image edge / no text.",
+        "prompt_sha256": "7a238758cae27335a56b634a96489c8e74fd882f54d948de6789278c48185041",
+        "qa_notes": [
+          "指定(1536, 1024)に対し原画(2172, 724)。未加工のため寸法は修正していない。",
+          "紫の選択光、無地、文字なし。tileとの枠・鋲の位置が微妙にずれ、ピクセル単位の一致は未達。"
+        ],
+        "visual_reviewed": true,
+        "references_in_order": [
+          {
+            "path": "asset_sources/ui/craft-glass-20261111/raw/tile.png",
+            "sha256": "e78b0b1591c2baefe2cb0fd4edd630979895654882fefed33cea62dc1700c81c",
+            "bytes": 1752366,
+            "purpose": "shape"
+          },
+          {
+            "path": "asset_sources/ui/craft-texture-20261111/mock/pull-B.png",
+            "ref": "bf79baa3d84b172753ff33e477c0c482ec7c118e",
+            "git_blob_sha": "88c7e0bccc080e2b0fa3bfd973d727023c83524e",
+            "sha256": "c35a38909467b8ed8fc9b2bc9d8cc9d3360074359f6c5d64f6489339449e497e",
+            "bytes": 2515669,
+            "purpose": "materials_colours_finish_only_not_layout"
+          }
+        ],
+        "original_source_file": "exec-0b5aa217-315f-4de4-b278-7f7ba796f793.png"
+      },
+      "attempts": [
+        {
+          "number": 2,
+          "file": "tile-on.png",
+          "attempt": 1,
+          "bytes": 1917923,
+          "sha256": "a5eaa7d523331ca9bd1bb1463aec81d42b81983be254b27299eaacb406883c94",
+          "pixels": [
+            2172,
+            724
+          ],
+          "expected_pixels": [
+            1536,
+            1024
+          ],
+          "requested_canvas_match": false,
+          "mode": "RGBA",
+          "alpha_range": [
+            0,
+            255
+          ],
+          "alpha16_bbox": [
+            58,
+            59,
+            2116,
+            633
+          ],
+          "alpha16_aspect": 3.5853658536585367,
+          "corners_alpha": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "qa_status": "FAIL",
+          "check_required": "overlays tile.png (same frame size and position) / the violet rim is even on four sides / the glow fades to alpha 0 before the image edge / no text.",
+          "prompt_sha256": "7a238758cae27335a56b634a96489c8e74fd882f54d948de6789278c48185041",
+          "qa_notes": [
+            "指定(1536, 1024)に対し原画(2172, 724)。未加工のため寸法は修正していない。",
+            "紫の選択光、無地、文字なし。tileとの枠・鋲の位置が微妙にずれ、ピクセル単位の一致は未達。"
+          ],
+          "visual_reviewed": true,
+          "references_in_order": [
+            {
+              "path": "asset_sources/ui/craft-glass-20261111/raw/tile.png",
+              "sha256": "e78b0b1591c2baefe2cb0fd4edd630979895654882fefed33cea62dc1700c81c",
+              "bytes": 1752366,
+              "purpose": "shape"
+            },
+            {
+              "path": "asset_sources/ui/craft-texture-20261111/mock/pull-B.png",
+              "ref": "bf79baa3d84b172753ff33e477c0c482ec7c118e",
+              "git_blob_sha": "88c7e0bccc080e2b0fa3bfd973d727023c83524e",
+              "sha256": "c35a38909467b8ed8fc9b2bc9d8cc9d3360074359f6c5d64f6489339449e497e",
+              "bytes": 2515669,
+              "purpose": "materials_colours_finish_only_not_layout"
+            }
+          ],
+          "original_source_file": "exec-0b5aa217-315f-4de4-b278-7f7ba796f793.png"
+        },
+        {
+          "number": 2,
+          "file": "tile-on.png",
+          "attempt": 2,
+          "bytes": 2005023,
+          "sha256": "09e58fb7b8cf94ed460fd1e8d24967cb736988b28c9fef745c103099a85233d8",
+          "pixels": [
+            2172,
+            724
+          ],
+          "expected_pixels": [
+            1536,
+            1024
+          ],
+          "requested_canvas_match": false,
+          "mode": "RGBA",
+          "alpha_range": [
+            0,
+            254
+          ],
+          "alpha16_bbox": [
+            49,
+            50,
+            2125,
+            650
+          ],
+          "alpha16_aspect": 3.46,
+          "corners_alpha": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "qa_status": "FAIL",
+          "check_required": "overlays tile.png (same frame size and position) / the violet rim is even on four sides / the glow fades to alpha 0 before the image edge / no text.",
+          "prompt_sha256": "7a238758cae27335a56b634a96489c8e74fd882f54d948de6789278c48185041",
+          "qa_notes": [
+            "指定キャンバス[1536, 1024]に対し実寸[2172, 724]で不一致。"
+          ],
+          "references_in_order": [
+            {
+              "path": "asset_sources/ui/craft-glass-20261111/raw/tile.png",
+              "sha256": "e78b0b1591c2baefe2cb0fd4edd630979895654882fefed33cea62dc1700c81c",
+              "bytes": 1752366,
+              "purpose": "shape"
+            },
+            {
+              "path": "asset_sources/ui/craft-texture-20261111/mock/pull-B.png",
+              "ref": "bf79baa3d84b172753ff33e477c0c482ec7c118e",
+              "git_blob_sha": "88c7e0bccc080e2b0fa3bfd973d727023c83524e",
+              "sha256": "c35a38909467b8ed8fc9b2bc9d8cc9d3360074359f6c5d64f6489339449e497e",
+              "bytes": 2515669,
+              "purpose": "materials_colours_finish_only_not_layout"
+            }
+          ],
+          "visual_reviewed": true,
+          "original_source_file": "exec-015e60a6-2395-4312-be69-f98a76291460.png"
+        },
+        {
+          "number": 2,
+          "file": "tile-on.png",
+          "attempt": 3,
+          "bytes": 1947988,
+          "sha256": "398c5760013529e3f64f46f4abde7ea656a2b7f42d62e00ebe5e17b351a81484",
+          "pixels": [
+            2172,
+            724
+          ],
+          "expected_pixels": [
+            1536,
+            1024
+          ],
+          "requested_canvas_match": false,
+          "mode": "RGBA",
+          "alpha_range": [
+            0,
+            254
+          ],
+          "alpha16_bbox": [
+            50,
+            57,
+            2123,
+            643
+          ],
+          "alpha16_aspect": 3.537542662116041,
+          "corners_alpha": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "qa_status": "FAIL",
+          "check_required": "overlays tile.png (same frame size and position) / the violet rim is even on four sides / the glow fades to alpha 0 before the image edge / no text.",
+          "prompt_sha256": "7a238758cae27335a56b634a96489c8e74fd882f54d948de6789278c48185041",
+          "qa_notes": [
+            "指定キャンバス[1536, 1024]に対し実寸[2172, 724]で不一致。"
+          ],
+          "references_in_order": [
+            {
+              "path": "asset_sources/ui/craft-glass-20261111/raw/tile.png",
+              "sha256": "e78b0b1591c2baefe2cb0fd4edd630979895654882fefed33cea62dc1700c81c",
+              "bytes": 1752366,
+              "purpose": "shape"
+            },
+            {
+              "path": "asset_sources/ui/craft-texture-20261111/mock/pull-B.png",
+              "ref": "bf79baa3d84b172753ff33e477c0c482ec7c118e",
+              "git_blob_sha": "88c7e0bccc080e2b0fa3bfd973d727023c83524e",
+              "sha256": "c35a38909467b8ed8fc9b2bc9d8cc9d3360074359f6c5d64f6489339449e497e",
+              "bytes": 2515669,
+              "purpose": "materials_colours_finish_only_not_layout"
+            }
+          ],
+          "visual_reviewed": true,
+          "original_source_file": "exec-23d658b3-841d-4c51-ae51-1909aa656586.png"
+        }
+      ]
+    },
+    {
+      "number": 3,
+      "path": "asset_sources/ui/craft-glass-20261111/raw/panel.png",
+      "file": "panel.png",
+      "selected_attempt": 1,
+      "attempt_count": 1,
+      "overall_status": "PASS",
+      "selected_original": {
+        "number": 3,
+        "file": "panel.png",
+        "attempt": 1,
+        "bytes": 2478722,
+        "sha256": "e2d622d0503bc14441d9327033d81a5dab6380d20f75fbfd104fcfe022cecb14",
+        "pixels": [
+          1536,
+          1024
+        ],
+        "expected_pixels": [
+          1536,
+          1024
+        ],
+        "requested_canvas_match": true,
+        "mode": "RGBA",
+        "alpha_range": [
+          0,
+          254
+        ],
+        "alpha16_bbox": [
+          32,
+          46,
+          1505,
+          990
+        ],
+        "alpha16_aspect": 1.5603813559322033,
+        "corners_alpha": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "qa_status": "PASS",
+        "check_required": "one panel only / edge band equal on four sides and corners identical / the centre is plain leather / transparent outside / no text.",
+        "prompt_sha256": "5f156a45b9d476f9738ce2cb3b959656e1793002361c4a479ed0b008a9f050c8",
+        "qa_notes": [
+          "単一の革パネル。縁・縫い目の幅と四隅を目視確認。中央は無地、外側透過、文字なし。"
+        ],
+        "visual_reviewed": true,
+        "references_in_order": [
+          {
+            "path": "asset_sources/ui/craft-texture-20261111/mock/pull-B.png",
+            "ref": "bf79baa3d84b172753ff33e477c0c482ec7c118e",
+            "git_blob_sha": "88c7e0bccc080e2b0fa3bfd973d727023c83524e",
+            "sha256": "c35a38909467b8ed8fc9b2bc9d8cc9d3360074359f6c5d64f6489339449e497e",
+            "bytes": 2515669,
+            "purpose": "materials_colours_finish_only_not_layout"
+          }
+        ],
+        "original_source_file": "exec-9dec10a4-ed2c-4bb5-a69e-9c10f5bcfcd1.png"
+      },
+      "attempts": [
+        {
+          "number": 3,
+          "file": "panel.png",
+          "attempt": 1,
+          "bytes": 2478722,
+          "sha256": "e2d622d0503bc14441d9327033d81a5dab6380d20f75fbfd104fcfe022cecb14",
+          "pixels": [
+            1536,
+            1024
+          ],
+          "expected_pixels": [
+            1536,
+            1024
+          ],
+          "requested_canvas_match": true,
+          "mode": "RGBA",
+          "alpha_range": [
+            0,
+            254
+          ],
+          "alpha16_bbox": [
+            32,
+            46,
+            1505,
+            990
+          ],
+          "alpha16_aspect": 1.5603813559322033,
+          "corners_alpha": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "qa_status": "PASS",
+          "check_required": "one panel only / edge band equal on four sides and corners identical / the centre is plain leather / transparent outside / no text.",
+          "prompt_sha256": "5f156a45b9d476f9738ce2cb3b959656e1793002361c4a479ed0b008a9f050c8",
+          "qa_notes": [
+            "単一の革パネル。縁・縫い目の幅と四隅を目視確認。中央は無地、外側透過、文字なし。"
+          ],
+          "visual_reviewed": true,
+          "references_in_order": [
+            {
+              "path": "asset_sources/ui/craft-texture-20261111/mock/pull-B.png",
+              "ref": "bf79baa3d84b172753ff33e477c0c482ec7c118e",
+              "git_blob_sha": "88c7e0bccc080e2b0fa3bfd973d727023c83524e",
+              "sha256": "c35a38909467b8ed8fc9b2bc9d8cc9d3360074359f6c5d64f6489339449e497e",
+              "bytes": 2515669,
+              "purpose": "materials_colours_finish_only_not_layout"
+            }
+          ],
+          "original_source_file": "exec-9dec10a4-ed2c-4bb5-a69e-9c10f5bcfcd1.png"
+        }
+      ]
+    },
+    {
+      "number": 4,
+      "path": "asset_sources/ui/craft-glass-20261111/raw/frame.png",
+      "file": "frame.png",
+      "selected_attempt": 1,
+      "attempt_count": 3,
+      "overall_status": "FAIL",
+      "selected_original": {
+        "number": 4,
+        "file": "frame.png",
+        "attempt": 1,
+        "bytes": 1050694,
+        "sha256": "670756bbdacb355928a816c8010b28b65ffc0b71d647f7bd8c93df6fb77219a0",
+        "pixels": [
+          1774,
+          887
+        ],
+        "expected_pixels": [
+          1536,
+          1024
+        ],
+        "requested_canvas_match": false,
+        "mode": "RGBA",
+        "alpha_range": [
+          0,
+          255
+        ],
+        "alpha16_bbox": [
+          40,
+          41,
+          1734,
+          844
+        ],
+        "alpha16_aspect": 2.1095890410958904,
+        "corners_alpha": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "qa_status": "FAIL",
+        "check_required": "the inside is real alpha 0 / the border is equal on four sides and corners identical / transparent outside / no text.",
+        "prompt_sha256": "bb547646cfd7c25e100d261b5191d5f8e4489ba61bad5f51364838d90f6f38e4",
+        "qa_notes": [
+          "指定(1536, 1024)に対し原画(1774, 887)。未加工のため寸法は修正していない。",
+          "中央はほぼ透明だが完全なalpha 0ではない。中央の測定矩形480,000画素のうち16,978画素がalpha 1。縁・角の細かな差も残る。"
+        ],
+        "visual_reviewed": true,
+        "references_in_order": [
+          {
+            "path": "asset_sources/ui/craft-texture-20261111/mock/pull-B.png",
+            "ref": "bf79baa3d84b172753ff33e477c0c482ec7c118e",
+            "git_blob_sha": "88c7e0bccc080e2b0fa3bfd973d727023c83524e",
+            "sha256": "c35a38909467b8ed8fc9b2bc9d8cc9d3360074359f6c5d64f6489339449e497e",
+            "bytes": 2515669,
+            "purpose": "materials_colours_finish_only_not_layout"
+          }
+        ],
+        "original_source_file": "exec-7129d145-e530-4268-90c7-150c779e5fe3.png"
+      },
+      "attempts": [
+        {
+          "number": 4,
+          "file": "frame.png",
+          "attempt": 1,
+          "bytes": 1050694,
+          "sha256": "670756bbdacb355928a816c8010b28b65ffc0b71d647f7bd8c93df6fb77219a0",
+          "pixels": [
+            1774,
+            887
+          ],
+          "expected_pixels": [
+            1536,
+            1024
+          ],
+          "requested_canvas_match": false,
+          "mode": "RGBA",
+          "alpha_range": [
+            0,
+            255
+          ],
+          "alpha16_bbox": [
+            40,
+            41,
+            1734,
+            844
+          ],
+          "alpha16_aspect": 2.1095890410958904,
+          "corners_alpha": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "qa_status": "FAIL",
+          "check_required": "the inside is real alpha 0 / the border is equal on four sides and corners identical / transparent outside / no text.",
+          "prompt_sha256": "bb547646cfd7c25e100d261b5191d5f8e4489ba61bad5f51364838d90f6f38e4",
+          "qa_notes": [
+            "指定(1536, 1024)に対し原画(1774, 887)。未加工のため寸法は修正していない。",
+            "中央はほぼ透明だが完全なalpha 0ではない。中央の測定矩形480,000画素のうち16,978画素がalpha 1。縁・角の細かな差も残る。"
+          ],
+          "visual_reviewed": true,
+          "references_in_order": [
+            {
+              "path": "asset_sources/ui/craft-texture-20261111/mock/pull-B.png",
+              "ref": "bf79baa3d84b172753ff33e477c0c482ec7c118e",
+              "git_blob_sha": "88c7e0bccc080e2b0fa3bfd973d727023c83524e",
+              "sha256": "c35a38909467b8ed8fc9b2bc9d8cc9d3360074359f6c5d64f6489339449e497e",
+              "bytes": 2515669,
+              "purpose": "materials_colours_finish_only_not_layout"
+            }
+          ],
+          "original_source_file": "exec-7129d145-e530-4268-90c7-150c779e5fe3.png"
+        },
+        {
+          "number": 4,
+          "file": "frame.png",
+          "attempt": 2,
+          "bytes": 958965,
+          "sha256": "a4117c7b633b1b1357ddaf70207cec13303c37cee0f5367ac5bf651b5c0436fa",
+          "pixels": [
+            1774,
+            887
+          ],
+          "expected_pixels": [
+            1536,
+            1024
+          ],
+          "requested_canvas_match": false,
+          "mode": "RGBA",
+          "alpha_range": [
+            0,
+            255
+          ],
+          "alpha16_bbox": [
+            22,
+            19,
+            1753,
+            868
+          ],
+          "alpha16_aspect": 2.03886925795053,
+          "corners_alpha": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "qa_status": "FAIL",
+          "check_required": "the inside is real alpha 0 / the border is equal on four sides and corners identical / transparent outside / no text.",
+          "prompt_sha256": "bb547646cfd7c25e100d261b5191d5f8e4489ba61bad5f51364838d90f6f38e4",
+          "qa_notes": [
+            "指定1536×1024に対し1774×887。内側の透明窓・四辺の素材・四隅は確認。"
+          ],
+          "visual_reviewed": true,
+          "references_in_order": [
+            {
+              "path": "asset_sources/ui/craft-texture-20261111/mock/pull-B.png",
+              "ref": "bf79baa3d84b172753ff33e477c0c482ec7c118e",
+              "git_blob_sha": "88c7e0bccc080e2b0fa3bfd973d727023c83524e",
+              "sha256": "c35a38909467b8ed8fc9b2bc9d8cc9d3360074359f6c5d64f6489339449e497e",
+              "bytes": 2515669,
+              "purpose": "materials_colours_finish_only_not_layout"
+            }
+          ],
+          "original_source_file": "exec-cc9f5b15-a133-419a-9466-6cc5a04a4a7f.png"
+        },
+        {
+          "number": 4,
+          "file": "frame.png",
+          "attempt": 3,
+          "bytes": 874823,
+          "sha256": "81857712edb97d7586fd6e8c5b183b2e6efa6195acd5a3e2372d8c54eb3157a5",
+          "pixels": [
+            1774,
+            887
+          ],
+          "expected_pixels": [
+            1536,
+            1024
+          ],
+          "requested_canvas_match": false,
+          "mode": "RGBA",
+          "alpha_range": [
+            0,
+            255
+          ],
+          "alpha16_bbox": [
+            34,
+            32,
+            1740,
+            855
+          ],
+          "alpha16_aspect": 2.0729040097205345,
+          "corners_alpha": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "qa_status": "FAIL",
+          "check_required": "the inside is real alpha 0 / the border is equal on four sides and corners identical / transparent outside / no text.",
+          "prompt_sha256": "bb547646cfd7c25e100d261b5191d5f8e4489ba61bad5f51364838d90f6f38e4",
+          "references_in_order": [
+            {
+              "path": "asset_sources/ui/craft-texture-20261111/mock/pull-B.png",
+              "ref": "bf79baa3d84b172753ff33e477c0c482ec7c118e",
+              "git_blob_sha": "88c7e0bccc080e2b0fa3bfd973d727023c83524e",
+              "sha256": "c35a38909467b8ed8fc9b2bc9d8cc9d3360074359f6c5d64f6489339449e497e",
+              "bytes": 2515669,
+              "purpose": "materials_colours_finish_only_not_layout"
+            }
+          ],
+          "qa_notes": [
+            "3回とも1774×887で指定1536×1024に不一致。3回目は角金具の形が左右でも変わる。中央の透過窓・文字なしは確認。"
+          ],
+          "visual_reviewed": true,
+          "original_source_file": "exec-04176c28-998f-4eff-a372-9084d7068958.png"
+        }
+      ]
+    },
+    {
+      "number": 5,
+      "path": "asset_sources/ui/craft-glass-20261111/raw/strip.png",
+      "file": "strip.png",
+      "selected_attempt": 2,
+      "attempt_count": 3,
+      "overall_status": "FAIL",
+      "selected_original": {
+        "number": 5,
+        "file": "strip.png",
+        "attempt": 2,
+        "bytes": 603294,
+        "sha256": "7f51bd1be9f2617c3de26e46cbf519606050e7830794e79e5e6785afbb34406d",
+        "pixels": [
+          2172,
+          724
+        ],
+        "expected_pixels": [
+          1536,
+          1024
+        ],
+        "requested_canvas_match": false,
+        "mode": "RGBA",
+        "alpha_range": [
+          0,
+          255
+        ],
+        "alpha16_bbox": [
+          63,
+          283,
+          2109,
+          446
+        ],
+        "alpha16_aspect": 12.552147239263803,
+        "corners_alpha": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "qa_status": "FAIL",
+        "check_required": "aspect about 12:1 / both end caps identical / the middle is uniform from left to right / transparent outside / no text.",
+        "prompt_sha256": "ddc4501529a22ccec7710ced2b94b67731e7bf50a9d934afb9f3361fc676522a",
+        "qa_notes": [
+          "指定(1536, 1024)に対し原画(2172, 724)。未加工のため寸法は修正していない。",
+          "実体の縦横比約12.55。左右の留め具、無地の中央、外側透過、文字なしを確認。"
+        ],
+        "references_in_order": [
+          {
+            "path": "asset_sources/ui/craft-texture-20261111/mock/pull-B.png",
+            "ref": "bf79baa3d84b172753ff33e477c0c482ec7c118e",
+            "git_blob_sha": "88c7e0bccc080e2b0fa3bfd973d727023c83524e",
+            "sha256": "c35a38909467b8ed8fc9b2bc9d8cc9d3360074359f6c5d64f6489339449e497e",
+            "bytes": 2515669,
+            "purpose": "materials_colours_finish_only_not_layout"
+          }
+        ],
+        "visual_reviewed": true,
+        "original_source_file": "exec-433152cb-abf7-4d59-885d-89ef3888674a.png"
+      },
+      "attempts": [
+        {
+          "number": 5,
+          "file": "strip.png",
+          "attempt": 1,
+          "bytes": 602476,
+          "sha256": "0c49a6660319186bab864f2a4430b0da996731f1b0bbf6cd766d6348b54827ea",
+          "pixels": [
+            2172,
+            724
+          ],
+          "expected_pixels": [
+            1536,
+            1024
+          ],
+          "requested_canvas_match": false,
+          "mode": "RGBA",
+          "alpha_range": [
+            0,
+            255
+          ],
+          "alpha16_bbox": [
+            37,
+            290,
+            2140,
+            452
+          ],
+          "alpha16_aspect": 12.981481481481481,
+          "corners_alpha": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "qa_status": "FAIL",
+          "check_required": "aspect about 12:1 / both end caps identical / the middle is uniform from left to right / transparent outside / no text.",
+          "prompt_sha256": "ddc4501529a22ccec7710ced2b94b67731e7bf50a9d934afb9f3361fc676522a",
+          "references_in_order": [
+            {
+              "path": "asset_sources/ui/craft-texture-20261111/mock/pull-B.png",
+              "ref": "bf79baa3d84b172753ff33e477c0c482ec7c118e",
+              "git_blob_sha": "88c7e0bccc080e2b0fa3bfd973d727023c83524e",
+              "sha256": "c35a38909467b8ed8fc9b2bc9d8cc9d3360074359f6c5d64f6489339449e497e",
+              "bytes": 2515669,
+              "purpose": "materials_colours_finish_only_not_layout"
+            }
+          ],
+          "qa_notes": [
+            "指定キャンバス[1536, 1024]に対し実寸[2172, 724]で不一致。",
+            "細い帯・無地の中央・左右の銅端・文字なしを確認。部品比率は約13:1。"
+          ],
+          "visual_reviewed": true,
+          "original_source_file": "exec-4b562b5e-ec14-48cb-8eed-2a34a4548498.png"
+        },
+        {
+          "number": 5,
+          "file": "strip.png",
+          "attempt": 2,
+          "bytes": 603294,
+          "sha256": "7f51bd1be9f2617c3de26e46cbf519606050e7830794e79e5e6785afbb34406d",
+          "pixels": [
+            2172,
+            724
+          ],
+          "expected_pixels": [
+            1536,
+            1024
+          ],
+          "requested_canvas_match": false,
+          "mode": "RGBA",
+          "alpha_range": [
+            0,
+            255
+          ],
+          "alpha16_bbox": [
+            63,
+            283,
+            2109,
+            446
+          ],
+          "alpha16_aspect": 12.552147239263803,
+          "corners_alpha": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "qa_status": "FAIL",
+          "check_required": "aspect about 12:1 / both end caps identical / the middle is uniform from left to right / transparent outside / no text.",
+          "prompt_sha256": "ddc4501529a22ccec7710ced2b94b67731e7bf50a9d934afb9f3361fc676522a",
+          "qa_notes": [
+            "指定(1536, 1024)に対し原画(2172, 724)。未加工のため寸法は修正していない。",
+            "実体の縦横比約12.55。左右の留め具、無地の中央、外側透過、文字なしを確認。"
+          ],
+          "references_in_order": [
+            {
+              "path": "asset_sources/ui/craft-texture-20261111/mock/pull-B.png",
+              "ref": "bf79baa3d84b172753ff33e477c0c482ec7c118e",
+              "git_blob_sha": "88c7e0bccc080e2b0fa3bfd973d727023c83524e",
+              "sha256": "c35a38909467b8ed8fc9b2bc9d8cc9d3360074359f6c5d64f6489339449e497e",
+              "bytes": 2515669,
+              "purpose": "materials_colours_finish_only_not_layout"
+            }
+          ],
+          "visual_reviewed": true,
+          "original_source_file": "exec-433152cb-abf7-4d59-885d-89ef3888674a.png"
+        },
+        {
+          "number": 5,
+          "file": "strip.png",
+          "attempt": 3,
+          "bytes": 566624,
+          "sha256": "90b8ba5612585c242d7fc6d11724999865d5f12b62edcd5a48a71fb722421daa",
+          "pixels": [
+            2172,
+            724
+          ],
+          "expected_pixels": [
+            1536,
+            1024
+          ],
+          "requested_canvas_match": false,
+          "mode": "RGBA",
+          "alpha_range": [
+            0,
+            255
+          ],
+          "alpha16_bbox": [
+            59,
+            299,
+            2114,
+            440
+          ],
+          "alpha16_aspect": 14.574468085106384,
+          "corners_alpha": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "qa_status": "FAIL",
+          "check_required": "aspect about 12:1 / both end caps identical / the middle is uniform from left to right / transparent outside / no text.",
+          "prompt_sha256": "ddc4501529a22ccec7710ced2b94b67731e7bf50a9d934afb9f3361fc676522a",
+          "qa_notes": [
+            "指定キャンバス[1536, 1024]に対し実寸[2172, 724]で不一致。"
+          ],
+          "references_in_order": [
+            {
+              "path": "asset_sources/ui/craft-texture-20261111/mock/pull-B.png",
+              "ref": "bf79baa3d84b172753ff33e477c0c482ec7c118e",
+              "git_blob_sha": "88c7e0bccc080e2b0fa3bfd973d727023c83524e",
+              "sha256": "c35a38909467b8ed8fc9b2bc9d8cc9d3360074359f6c5d64f6489339449e497e",
+              "bytes": 2515669,
+              "purpose": "materials_colours_finish_only_not_layout"
+            }
+          ],
+          "visual_reviewed": true,
+          "original_source_file": "exec-0129b43d-8abb-47bb-b7b0-6785590ddaaa.png"
+        }
+      ]
+    },
+    {
+      "number": 6,
+      "path": "asset_sources/ui/craft-glass-20261111/raw/plaque.png",
+      "file": "plaque.png",
+      "selected_attempt": 1,
+      "attempt_count": 3,
+      "overall_status": "FAIL",
+      "selected_original": {
+        "number": 6,
+        "file": "plaque.png",
+        "attempt": 1,
+        "bytes": 1472206,
+        "sha256": "57f5c86b02ee780b5bde472c77b37fd75a4f81f64ff9e5aadbd43eff2a1780a0",
+        "pixels": [
+          2172,
+          724
+        ],
+        "expected_pixels": [
+          1536,
+          1024
+        ],
+        "requested_canvas_match": false,
+        "mode": "RGBA",
+        "alpha_range": [
+          0,
+          255
+        ],
+        "alpha16_bbox": [
+          130,
+          130,
+          2035,
+          612
+        ],
+        "alpha16_aspect": 3.9522821576763487,
+        "corners_alpha": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "qa_status": "FAIL",
+        "check_required": "capsule with fully rounded ends / rim thickness even / the glass face is plain / transparent outside / no text.",
+        "prompt_sha256": "9d1a191bd3239f7a8c68344c25884357c1c2f9ff3183bd13fde35e192ca9f076",
+        "references_in_order": [
+          {
+            "path": "asset_sources/ui/craft-texture-20261111/mock/pull-B.png",
+            "ref": "bf79baa3d84b172753ff33e477c0c482ec7c118e",
+            "git_blob_sha": "88c7e0bccc080e2b0fa3bfd973d727023c83524e",
+            "sha256": "c35a38909467b8ed8fc9b2bc9d8cc9d3360074359f6c5d64f6489339449e497e",
+            "bytes": 2515669,
+            "purpose": "materials_colours_finish_only_not_layout"
+          }
+        ],
+        "qa_notes": [
+          "指定(1536, 1024)に対し原画(2172, 724)。未加工のため寸法は修正していない。",
+          "完全に丸い両端、ほぼ均一の縁、無地、文字なし。実体の縦横比約3.95（指定約3.2）。"
+        ],
+        "visual_reviewed": true,
+        "original_source_file": "exec-d4c98f1a-35ed-4e3a-a9f8-eb85b8d38936.png"
+      },
+      "attempts": [
+        {
+          "number": 6,
+          "file": "plaque.png",
+          "attempt": 1,
+          "bytes": 1472206,
+          "sha256": "57f5c86b02ee780b5bde472c77b37fd75a4f81f64ff9e5aadbd43eff2a1780a0",
+          "pixels": [
+            2172,
+            724
+          ],
+          "expected_pixels": [
+            1536,
+            1024
+          ],
+          "requested_canvas_match": false,
+          "mode": "RGBA",
+          "alpha_range": [
+            0,
+            255
+          ],
+          "alpha16_bbox": [
+            130,
+            130,
+            2035,
+            612
+          ],
+          "alpha16_aspect": 3.9522821576763487,
+          "corners_alpha": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "qa_status": "FAIL",
+          "check_required": "capsule with fully rounded ends / rim thickness even / the glass face is plain / transparent outside / no text.",
+          "prompt_sha256": "9d1a191bd3239f7a8c68344c25884357c1c2f9ff3183bd13fde35e192ca9f076",
+          "references_in_order": [
+            {
+              "path": "asset_sources/ui/craft-texture-20261111/mock/pull-B.png",
+              "ref": "bf79baa3d84b172753ff33e477c0c482ec7c118e",
+              "git_blob_sha": "88c7e0bccc080e2b0fa3bfd973d727023c83524e",
+              "sha256": "c35a38909467b8ed8fc9b2bc9d8cc9d3360074359f6c5d64f6489339449e497e",
+              "bytes": 2515669,
+              "purpose": "materials_colours_finish_only_not_layout"
+            }
+          ],
+          "qa_notes": [
+            "指定(1536, 1024)に対し原画(2172, 724)。未加工のため寸法は修正していない。",
+            "完全に丸い両端、ほぼ均一の縁、無地、文字なし。実体の縦横比約3.95（指定約3.2）。"
+          ],
+          "visual_reviewed": true,
+          "original_source_file": "exec-d4c98f1a-35ed-4e3a-a9f8-eb85b8d38936.png"
+        },
+        {
+          "number": 6,
+          "file": "plaque.png",
+          "attempt": 2,
+          "bytes": 1806482,
+          "sha256": "78991c61e289cfc422986c123a5c5d77a69adb3b145783be53f136801a4243ec",
+          "pixels": [
+            2172,
+            724
+          ],
+          "expected_pixels": [
+            1536,
+            1024
+          ],
+          "requested_canvas_match": false,
+          "mode": "RGBA",
+          "alpha_range": [
+            0,
+            255
+          ],
+          "alpha16_bbox": [
+            70,
+            113,
+            2099,
+            632
+          ],
+          "alpha16_aspect": 3.909441233140655,
+          "corners_alpha": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "qa_status": "FAIL",
+          "check_required": "capsule with fully rounded ends / rim thickness even / the glass face is plain / transparent outside / no text.",
+          "prompt_sha256": "9d1a191bd3239f7a8c68344c25884357c1c2f9ff3183bd13fde35e192ca9f076",
+          "qa_notes": [
+            "指定キャンバス[1536, 1024]に対し実寸[2172, 724]で不一致。"
+          ],
+          "references_in_order": [
+            {
+              "path": "asset_sources/ui/craft-texture-20261111/mock/pull-B.png",
+              "ref": "bf79baa3d84b172753ff33e477c0c482ec7c118e",
+              "git_blob_sha": "88c7e0bccc080e2b0fa3bfd973d727023c83524e",
+              "sha256": "c35a38909467b8ed8fc9b2bc9d8cc9d3360074359f6c5d64f6489339449e497e",
+              "bytes": 2515669,
+              "purpose": "materials_colours_finish_only_not_layout"
+            }
+          ],
+          "visual_reviewed": true,
+          "original_source_file": "exec-9a7cef6d-a608-4090-a4b0-fba3b85f56a6.png"
+        },
+        {
+          "number": 6,
+          "file": "plaque.png",
+          "attempt": 3,
+          "bytes": 1612389,
+          "sha256": "23a886a4a6a813aae51a8e2855f275871b93b819a7e6f3918e283438ddc92c53",
+          "pixels": [
+            2172,
+            724
+          ],
+          "expected_pixels": [
+            1536,
+            1024
+          ],
+          "requested_canvas_match": false,
+          "mode": "RGBA",
+          "alpha_range": [
+            0,
+            255
+          ],
+          "alpha16_bbox": [
+            104,
+            136,
+            2067,
+            627
+          ],
+          "alpha16_aspect": 3.9979633401221997,
+          "corners_alpha": [
+            1,
+            0,
+            0,
+            0
+          ],
+          "qa_status": "FAIL",
+          "check_required": "capsule with fully rounded ends / rim thickness even / the glass face is plain / transparent outside / no text.",
+          "prompt_sha256": "9d1a191bd3239f7a8c68344c25884357c1c2f9ff3183bd13fde35e192ca9f076",
+          "qa_notes": [
+            "指定キャンバス[1536, 1024]に対し実寸[2172, 724]で不一致。"
+          ],
+          "references_in_order": [
+            {
+              "path": "asset_sources/ui/craft-texture-20261111/mock/pull-B.png",
+              "ref": "bf79baa3d84b172753ff33e477c0c482ec7c118e",
+              "git_blob_sha": "88c7e0bccc080e2b0fa3bfd973d727023c83524e",
+              "sha256": "c35a38909467b8ed8fc9b2bc9d8cc9d3360074359f6c5d64f6489339449e497e",
+              "bytes": 2515669,
+              "purpose": "materials_colours_finish_only_not_layout"
+            }
+          ],
+          "visual_reviewed": true,
+          "original_source_file": "exec-68140c3d-4a0f-4a0b-914d-3872d0d8e752.png"
+        }
+      ]
+    },
+    {
+      "number": 7,
+      "path": "asset_sources/ui/craft-glass-20261111/raw/key.png",
+      "file": "key.png",
+      "selected_attempt": 3,
+      "attempt_count": 3,
+      "overall_status": "FAIL",
+      "selected_original": {
+        "number": 7,
+        "file": "key.png",
+        "attempt": 3,
+        "bytes": 2002213,
+        "sha256": "c7645a32f75d9ff26ed43fffc7d6f4875d655e74deccdda6ba15c8e7004bd373",
+        "pixels": [
+          2022,
+          778
+        ],
+        "expected_pixels": [
+          1536,
+          1024
+        ],
+        "requested_canvas_match": false,
+        "mode": "RGBA",
+        "alpha_range": [
+          0,
+          255
+        ],
+        "alpha16_bbox": [
+          101,
+          90,
+          1923,
+          703
+        ],
+        "alpha16_aspect": 2.972267536704731,
+        "corners_alpha": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "qa_status": "FAIL",
+        "check_required": "reads as a thick pressable key / frame equal on four sides and corners identical / the face is plain / transparent outside / no text.",
+        "prompt_sha256": "238c74017003ac1e243eb71f1561c01a6ff57e0c4241285dd37454a1a0f28eea",
+        "qa_notes": [
+          "指定(1536, 1024)に対し原画(2022, 778)。未加工のため寸法は修正していない。",
+          "押せる厚みと影、無地、文字なし。実体比約2.97（指定約2.6）。角金具・縁幅に差があり九分割は要確認。"
+        ],
+        "visual_reviewed": true,
+        "references_in_order": [
+          {
+            "path": "asset_sources/ui/craft-texture-20261111/mock/pull-B.png",
+            "ref": "bf79baa3d84b172753ff33e477c0c482ec7c118e",
+            "git_blob_sha": "88c7e0bccc080e2b0fa3bfd973d727023c83524e",
+            "sha256": "c35a38909467b8ed8fc9b2bc9d8cc9d3360074359f6c5d64f6489339449e497e",
+            "bytes": 2515669,
+            "purpose": "materials_colours_finish_only_not_layout"
+          }
+        ],
+        "original_source_file": "exec-85cc4c77-d7cd-4fe4-8b03-8d28434cce6a.png"
+      },
+      "attempts": [
+        {
+          "number": 7,
+          "file": "key.png",
+          "attempt": 1,
+          "bytes": 1742677,
+          "sha256": "c514862529e36f2ff1e0055e059b551cbe2bdc5fad6ac5d19daa897fac8edca6",
+          "pixels": [
+            2021,
+            778
+          ],
+          "expected_pixels": [
+            1536,
+            1024
+          ],
+          "requested_canvas_match": false,
+          "mode": "RGBA",
+          "alpha_range": [
+            0,
+            255
+          ],
+          "alpha16_bbox": [
+            94,
+            110,
+            1925,
+            681
+          ],
+          "alpha16_aspect": 3.2066549912434326,
+          "corners_alpha": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "qa_status": "FAIL",
+          "check_required": "reads as a thick pressable key / frame equal on four sides and corners identical / the face is plain / transparent outside / no text.",
+          "prompt_sha256": "238c74017003ac1e243eb71f1561c01a6ff57e0c4241285dd37454a1a0f28eea",
+          "qa_notes": [
+            "指定キャンバス1536×1024に対し2021×778。部品も約3.21:1で、指定の約2.6:1より横長。"
+          ],
+          "visual_reviewed": true,
+          "references_in_order": [
+            {
+              "path": "asset_sources/ui/craft-texture-20261111/mock/pull-B.png",
+              "ref": "bf79baa3d84b172753ff33e477c0c482ec7c118e",
+              "git_blob_sha": "88c7e0bccc080e2b0fa3bfd973d727023c83524e",
+              "sha256": "c35a38909467b8ed8fc9b2bc9d8cc9d3360074359f6c5d64f6489339449e497e",
+              "bytes": 2515669,
+              "purpose": "materials_colours_finish_only_not_layout"
+            }
+          ],
+          "original_source_file": "exec-dc2efc12-29bb-4476-b95c-f6047c87853d.png"
+        },
+        {
+          "number": 7,
+          "file": "key.png",
+          "attempt": 2,
+          "bytes": 1883739,
+          "sha256": "54fc53e26714146278262fbac998bf1646e3cda97fbbf6cc9d5d124468ff00df",
+          "pixels": [
+            2021,
+            778
+          ],
+          "expected_pixels": [
+            1536,
+            1024
+          ],
+          "requested_canvas_match": false,
+          "mode": "RGBA",
+          "alpha_range": [
+            0,
+            255
+          ],
+          "alpha16_bbox": [
+            94,
+            105,
+            1933,
+            694
+          ],
+          "alpha16_aspect": 3.122241086587436,
+          "corners_alpha": [
+            0,
+            0,
+            1,
+            0
+          ],
+          "qa_status": "FAIL",
+          "check_required": "reads as a thick pressable key / frame equal on four sides and corners identical / the face is plain / transparent outside / no text.",
+          "prompt_sha256": "238c74017003ac1e243eb71f1561c01a6ff57e0c4241285dd37454a1a0f28eea",
+          "qa_notes": [
+            "2021×778で指定1536×1024に不一致。部品は約3.12:1で指定2.6:1より横長。"
+          ],
+          "visual_reviewed": true,
+          "references_in_order": [
+            {
+              "path": "asset_sources/ui/craft-texture-20261111/mock/pull-B.png",
+              "ref": "bf79baa3d84b172753ff33e477c0c482ec7c118e",
+              "git_blob_sha": "88c7e0bccc080e2b0fa3bfd973d727023c83524e",
+              "sha256": "c35a38909467b8ed8fc9b2bc9d8cc9d3360074359f6c5d64f6489339449e497e",
+              "bytes": 2515669,
+              "purpose": "materials_colours_finish_only_not_layout"
+            }
+          ],
+          "original_source_file": "exec-23b827ea-6492-47f4-9901-88f3f3fabb73.png"
+        },
+        {
+          "number": 7,
+          "file": "key.png",
+          "attempt": 3,
+          "bytes": 2002213,
+          "sha256": "c7645a32f75d9ff26ed43fffc7d6f4875d655e74deccdda6ba15c8e7004bd373",
+          "pixels": [
+            2022,
+            778
+          ],
+          "expected_pixels": [
+            1536,
+            1024
+          ],
+          "requested_canvas_match": false,
+          "mode": "RGBA",
+          "alpha_range": [
+            0,
+            255
+          ],
+          "alpha16_bbox": [
+            101,
+            90,
+            1923,
+            703
+          ],
+          "alpha16_aspect": 2.972267536704731,
+          "corners_alpha": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "qa_status": "FAIL",
+          "check_required": "reads as a thick pressable key / frame equal on four sides and corners identical / the face is plain / transparent outside / no text.",
+          "prompt_sha256": "238c74017003ac1e243eb71f1561c01a6ff57e0c4241285dd37454a1a0f28eea",
+          "qa_notes": [
+            "指定(1536, 1024)に対し原画(2022, 778)。未加工のため寸法は修正していない。",
+            "押せる厚みと影、無地、文字なし。実体比約2.97（指定約2.6）。角金具・縁幅に差があり九分割は要確認。"
+          ],
+          "visual_reviewed": true,
+          "references_in_order": [
+            {
+              "path": "asset_sources/ui/craft-texture-20261111/mock/pull-B.png",
+              "ref": "bf79baa3d84b172753ff33e477c0c482ec7c118e",
+              "git_blob_sha": "88c7e0bccc080e2b0fa3bfd973d727023c83524e",
+              "sha256": "c35a38909467b8ed8fc9b2bc9d8cc9d3360074359f6c5d64f6489339449e497e",
+              "bytes": 2515669,
+              "purpose": "materials_colours_finish_only_not_layout"
+            }
+          ],
+          "original_source_file": "exec-85cc4c77-d7cd-4fe4-8b03-8d28434cce6a.png"
+        }
+      ]
+    },
+    {
+      "number": 8,
+      "path": "asset_sources/ui/craft-glass-20261111/raw/key-amber.png",
+      "file": "key-amber.png",
+      "selected_attempt": 1,
+      "attempt_count": 3,
+      "overall_status": "FAIL",
+      "selected_original": {
+        "number": 8,
+        "file": "key-amber.png",
+        "attempt": 1,
+        "bytes": 2105025,
+        "sha256": "540faaebbb98c436ae4e74fa5d7452a9bc0cf48216da234c149c613872a5b4b2",
+        "pixels": [
+          2022,
+          778
+        ],
+        "expected_pixels": [
+          1536,
+          1024
+        ],
+        "requested_canvas_match": false,
+        "mode": "RGBA",
+        "alpha_range": [
+          0,
+          255
+        ],
+        "alpha16_bbox": [
+          73,
+          55,
+          1954,
+          721
+        ],
+        "alpha16_aspect": 2.824324324324324,
+        "corners_alpha": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "qa_status": "FAIL",
+        "check_required": "overlays key.png (same frame size and position) / amber, clearly the main action / the glow fades to alpha 0 before the image edge / no text.",
+        "prompt_sha256": "1c7af9d1ac517682c2046de0b6900bf82e48a226f3fb75f52dc130f3af762af3",
+        "references_in_order": [
+          {
+            "path": "asset_sources/ui/craft-glass-20261111/raw/key.png",
+            "sha256": "c7645a32f75d9ff26ed43fffc7d6f4875d655e74deccdda6ba15c8e7004bd373",
+            "bytes": 2002213,
+            "purpose": "shape"
+          },
+          {
+            "path": "asset_sources/ui/craft-texture-20261111/mock/pull-B.png",
+            "ref": "bf79baa3d84b172753ff33e477c0c482ec7c118e",
+            "git_blob_sha": "88c7e0bccc080e2b0fa3bfd973d727023c83524e",
+            "sha256": "c35a38909467b8ed8fc9b2bc9d8cc9d3360074359f6c5d64f6489339449e497e",
+            "bytes": 2515669,
+            "purpose": "materials_colours_finish_only_not_layout"
+          }
+        ],
+        "qa_notes": [
+          "指定(1536, 1024)に対し原画(2022, 778)。未加工のため寸法は修正していない。",
+          "琥珀色の主ボタン、無地、文字なし。keyとの枠・鋲・輪郭が厳密には一致しない。"
+        ],
+        "visual_reviewed": true,
+        "original_source_file": "exec-42e937e1-0302-496f-873a-7b58722ed90b.png"
+      },
+      "attempts": [
+        {
+          "number": 8,
+          "file": "key-amber.png",
+          "attempt": 1,
+          "bytes": 2105025,
+          "sha256": "540faaebbb98c436ae4e74fa5d7452a9bc0cf48216da234c149c613872a5b4b2",
+          "pixels": [
+            2022,
+            778
+          ],
+          "expected_pixels": [
+            1536,
+            1024
+          ],
+          "requested_canvas_match": false,
+          "mode": "RGBA",
+          "alpha_range": [
+            0,
+            255
+          ],
+          "alpha16_bbox": [
+            73,
+            55,
+            1954,
+            721
+          ],
+          "alpha16_aspect": 2.824324324324324,
+          "corners_alpha": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "qa_status": "FAIL",
+          "check_required": "overlays key.png (same frame size and position) / amber, clearly the main action / the glow fades to alpha 0 before the image edge / no text.",
+          "prompt_sha256": "1c7af9d1ac517682c2046de0b6900bf82e48a226f3fb75f52dc130f3af762af3",
+          "references_in_order": [
+            {
+              "path": "asset_sources/ui/craft-glass-20261111/raw/key.png",
+              "sha256": "c7645a32f75d9ff26ed43fffc7d6f4875d655e74deccdda6ba15c8e7004bd373",
+              "bytes": 2002213,
+              "purpose": "shape"
+            },
+            {
+              "path": "asset_sources/ui/craft-texture-20261111/mock/pull-B.png",
+              "ref": "bf79baa3d84b172753ff33e477c0c482ec7c118e",
+              "git_blob_sha": "88c7e0bccc080e2b0fa3bfd973d727023c83524e",
+              "sha256": "c35a38909467b8ed8fc9b2bc9d8cc9d3360074359f6c5d64f6489339449e497e",
+              "bytes": 2515669,
+              "purpose": "materials_colours_finish_only_not_layout"
+            }
+          ],
+          "qa_notes": [
+            "指定(1536, 1024)に対し原画(2022, 778)。未加工のため寸法は修正していない。",
+            "琥珀色の主ボタン、無地、文字なし。keyとの枠・鋲・輪郭が厳密には一致しない。"
+          ],
+          "visual_reviewed": true,
+          "original_source_file": "exec-42e937e1-0302-496f-873a-7b58722ed90b.png"
+        },
+        {
+          "number": 8,
+          "file": "key-amber.png",
+          "attempt": 2,
+          "bytes": 2260631,
+          "sha256": "69657204d3732329168d9b6f64712cf61fd5d4c8ee3717b7e5d33044b947b94b",
+          "pixels": [
+            2022,
+            778
+          ],
+          "expected_pixels": [
+            1536,
+            1024
+          ],
+          "requested_canvas_match": false,
+          "mode": "RGBA",
+          "alpha_range": [
+            0,
+            254
+          ],
+          "alpha16_bbox": [
+            59,
+            44,
+            1966,
+            706
+          ],
+          "alpha16_aspect": 2.880664652567976,
+          "corners_alpha": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "qa_status": "FAIL",
+          "check_required": "overlays key.png (same frame size and position) / amber, clearly the main action / the glow fades to alpha 0 before the image edge / no text.",
+          "prompt_sha256": "1c7af9d1ac517682c2046de0b6900bf82e48a226f3fb75f52dc130f3af762af3",
+          "qa_notes": [
+            "指定キャンバス[1536, 1024]に対し実寸[2022, 778]で不一致。"
+          ],
+          "references_in_order": [
+            {
+              "path": "asset_sources/ui/craft-glass-20261111/raw/key.png",
+              "sha256": "c7645a32f75d9ff26ed43fffc7d6f4875d655e74deccdda6ba15c8e7004bd373",
+              "bytes": 2002213,
+              "purpose": "shape"
+            },
+            {
+              "path": "asset_sources/ui/craft-texture-20261111/mock/pull-B.png",
+              "ref": "bf79baa3d84b172753ff33e477c0c482ec7c118e",
+              "git_blob_sha": "88c7e0bccc080e2b0fa3bfd973d727023c83524e",
+              "sha256": "c35a38909467b8ed8fc9b2bc9d8cc9d3360074359f6c5d64f6489339449e497e",
+              "bytes": 2515669,
+              "purpose": "materials_colours_finish_only_not_layout"
+            }
+          ],
+          "visual_reviewed": true,
+          "original_source_file": "exec-dbe5af5e-a925-445a-a3f5-49f908c697cd.png"
+        },
+        {
+          "number": 8,
+          "file": "key-amber.png",
+          "attempt": 3,
+          "bytes": 2119124,
+          "sha256": "431136870177944a732d46f83f1fcb7c4060a2342de75517298c0caccc8764e7",
+          "pixels": [
+            2023,
+            777
+          ],
+          "expected_pixels": [
+            1536,
+            1024
+          ],
+          "requested_canvas_match": false,
+          "mode": "RGBA",
+          "alpha_range": [
+            0,
+            255
+          ],
+          "alpha16_bbox": [
+            71,
+            57,
+            1952,
+            705
+          ],
+          "alpha16_aspect": 2.9027777777777777,
+          "corners_alpha": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "qa_status": "FAIL",
+          "check_required": "overlays key.png (same frame size and position) / amber, clearly the main action / the glow fades to alpha 0 before the image edge / no text.",
+          "prompt_sha256": "1c7af9d1ac517682c2046de0b6900bf82e48a226f3fb75f52dc130f3af762af3",
+          "qa_notes": [
+            "指定キャンバス[1536, 1024]に対し実寸[2023, 777]で不一致。"
+          ],
+          "references_in_order": [
+            {
+              "path": "asset_sources/ui/craft-glass-20261111/raw/key.png",
+              "sha256": "c7645a32f75d9ff26ed43fffc7d6f4875d655e74deccdda6ba15c8e7004bd373",
+              "bytes": 2002213,
+              "purpose": "shape"
+            },
+            {
+              "path": "asset_sources/ui/craft-texture-20261111/mock/pull-B.png",
+              "ref": "bf79baa3d84b172753ff33e477c0c482ec7c118e",
+              "git_blob_sha": "88c7e0bccc080e2b0fa3bfd973d727023c83524e",
+              "sha256": "c35a38909467b8ed8fc9b2bc9d8cc9d3360074359f6c5d64f6489339449e497e",
+              "bytes": 2515669,
+              "purpose": "materials_colours_finish_only_not_layout"
+            }
+          ],
+          "visual_reviewed": true,
+          "original_source_file": "exec-35802c61-5b2a-4f06-b850-6299c1a02919.png"
+        }
+      ]
+    },
+    {
+      "number": 9,
+      "path": "asset_sources/ui/craft-glass-20261111/raw/bead.png",
+      "file": "bead.png",
+      "selected_attempt": 2,
+      "attempt_count": 3,
+      "overall_status": "FAIL",
+      "selected_original": {
+        "number": 9,
+        "file": "bead.png",
+        "attempt": 2,
+        "bytes": 959072,
+        "sha256": "b12e568be9a7a7e304bd8a6a21ef99d1618663f43b39baaf6a8568a0ed1c0421",
+        "pixels": [
+          1254,
+          1254
+        ],
+        "expected_pixels": [
+          1024,
+          1024
+        ],
+        "requested_canvas_match": false,
+        "mode": "RGBA",
+        "alpha_range": [
+          0,
+          255
+        ],
+        "alpha16_bbox": [
+          236,
+          235,
+          1010,
+          1045
+        ],
+        "alpha16_aspect": 0.9555555555555556,
+        "corners_alpha": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "qa_status": "FAIL",
+        "check_required": "one bead only, centred / ring diameter 55-65% of the width / the centre is plain / transparent background / no text.",
+        "prompt_sha256": "2476b8b57f6173e283433fff8c112142f7ea0171be8fd2b27d136ec8816598f5",
+        "qa_notes": [
+          "指定(1024, 1024)に対し原画(1254, 1254)。未加工のため寸法は修正していない。",
+          "単一の中央の玉。輪の直径は幅の約62%で55–65%内。中央無地、外側透過、文字なし。"
+        ],
+        "references_in_order": [
+          {
+            "path": "asset_sources/ui/craft-texture-20261111/mock/pull-B.png",
+            "ref": "bf79baa3d84b172753ff33e477c0c482ec7c118e",
+            "git_blob_sha": "88c7e0bccc080e2b0fa3bfd973d727023c83524e",
+            "sha256": "c35a38909467b8ed8fc9b2bc9d8cc9d3360074359f6c5d64f6489339449e497e",
+            "bytes": 2515669,
+            "purpose": "materials_colours_finish_only_not_layout"
+          }
+        ],
+        "visual_reviewed": true,
+        "original_source_file": "exec-061abdb1-4a52-4143-9efa-34aab24387f0.png"
+      },
+      "attempts": [
+        {
+          "number": 9,
+          "file": "bead.png",
+          "attempt": 1,
+          "bytes": 966331,
+          "sha256": "271ddc82136ea83633ed6029b743d5f8cc28bfd4ef8ce02f263bfb740346761a",
+          "pixels": [
+            1254,
+            1254
+          ],
+          "expected_pixels": [
+            1024,
+            1024
+          ],
+          "requested_canvas_match": false,
+          "mode": "RGBA",
+          "alpha_range": [
+            0,
+            255
+          ],
+          "alpha16_bbox": [
+            220,
+            219,
+            1018,
+            1058
+          ],
+          "alpha16_aspect": 0.9511323003575686,
+          "corners_alpha": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "qa_status": "FAIL",
+          "check_required": "one bead only, centred / ring diameter 55-65% of the width / the centre is plain / transparent background / no text.",
+          "prompt_sha256": "2476b8b57f6173e283433fff8c112142f7ea0171be8fd2b27d136ec8816598f5",
+          "qa_notes": [
+            "単一・中央・直径約64%・無地・透過は確認。指定1024×1024に対し1254×1254で寸法不一致。"
+          ],
+          "visual_reviewed": true,
+          "references_in_order": [
+            {
+              "path": "asset_sources/ui/craft-texture-20261111/mock/pull-B.png",
+              "ref": "bf79baa3d84b172753ff33e477c0c482ec7c118e",
+              "git_blob_sha": "88c7e0bccc080e2b0fa3bfd973d727023c83524e",
+              "sha256": "c35a38909467b8ed8fc9b2bc9d8cc9d3360074359f6c5d64f6489339449e497e",
+              "bytes": 2515669,
+              "purpose": "materials_colours_finish_only_not_layout"
+            }
+          ],
+          "original_source_file": "exec-09104607-a2cd-4edb-b0ed-11b0c2b9aeab.png"
+        },
+        {
+          "number": 9,
+          "file": "bead.png",
+          "attempt": 2,
+          "bytes": 959072,
+          "sha256": "b12e568be9a7a7e304bd8a6a21ef99d1618663f43b39baaf6a8568a0ed1c0421",
+          "pixels": [
+            1254,
+            1254
+          ],
+          "expected_pixels": [
+            1024,
+            1024
+          ],
+          "requested_canvas_match": false,
+          "mode": "RGBA",
+          "alpha_range": [
+            0,
+            255
+          ],
+          "alpha16_bbox": [
+            236,
+            235,
+            1010,
+            1045
+          ],
+          "alpha16_aspect": 0.9555555555555556,
+          "corners_alpha": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "qa_status": "FAIL",
+          "check_required": "one bead only, centred / ring diameter 55-65% of the width / the centre is plain / transparent background / no text.",
+          "prompt_sha256": "2476b8b57f6173e283433fff8c112142f7ea0171be8fd2b27d136ec8816598f5",
+          "qa_notes": [
+            "指定(1024, 1024)に対し原画(1254, 1254)。未加工のため寸法は修正していない。",
+            "単一の中央の玉。輪の直径は幅の約62%で55–65%内。中央無地、外側透過、文字なし。"
+          ],
+          "references_in_order": [
+            {
+              "path": "asset_sources/ui/craft-texture-20261111/mock/pull-B.png",
+              "ref": "bf79baa3d84b172753ff33e477c0c482ec7c118e",
+              "git_blob_sha": "88c7e0bccc080e2b0fa3bfd973d727023c83524e",
+              "sha256": "c35a38909467b8ed8fc9b2bc9d8cc9d3360074359f6c5d64f6489339449e497e",
+              "bytes": 2515669,
+              "purpose": "materials_colours_finish_only_not_layout"
+            }
+          ],
+          "visual_reviewed": true,
+          "original_source_file": "exec-061abdb1-4a52-4143-9efa-34aab24387f0.png"
+        },
+        {
+          "number": 9,
+          "file": "bead.png",
+          "attempt": 3,
+          "bytes": 1068543,
+          "sha256": "e37bf8da2f3d4ab8bd181d8c00caf442538ee39fae803ab5aabbb116b693a2d3",
+          "pixels": [
+            1254,
+            1254
+          ],
+          "expected_pixels": [
+            1024,
+            1024
+          ],
+          "requested_canvas_match": false,
+          "mode": "RGBA",
+          "alpha_range": [
+            0,
+            255
+          ],
+          "alpha16_bbox": [
+            201,
+            196,
+            1043,
+            1065
+          ],
+          "alpha16_aspect": 0.9689298043728424,
+          "corners_alpha": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "qa_status": "FAIL",
+          "check_required": "one bead only, centred / ring diameter 55-65% of the width / the centre is plain / transparent background / no text.",
+          "prompt_sha256": "2476b8b57f6173e283433fff8c112142f7ea0171be8fd2b27d136ec8816598f5",
+          "qa_notes": [
+            "指定キャンバス[1024, 1024]に対し実寸[1254, 1254]で不一致。"
+          ],
+          "references_in_order": [
+            {
+              "path": "asset_sources/ui/craft-texture-20261111/mock/pull-B.png",
+              "ref": "bf79baa3d84b172753ff33e477c0c482ec7c118e",
+              "git_blob_sha": "88c7e0bccc080e2b0fa3bfd973d727023c83524e",
+              "sha256": "c35a38909467b8ed8fc9b2bc9d8cc9d3360074359f6c5d64f6489339449e497e",
+              "bytes": 2515669,
+              "purpose": "materials_colours_finish_only_not_layout"
+            }
+          ],
+          "visual_reviewed": true,
+          "original_source_file": "exec-9c7454fd-7b97-4bfe-92a4-c00384807593.png"
+        }
+      ]
+    },
+    {
+      "number": 10,
+      "path": "asset_sources/ui/craft-glass-20261111/raw/rail-now.png",
+      "file": "rail-now.png",
+      "selected_attempt": 1,
+      "attempt_count": 3,
+      "overall_status": "FAIL",
+      "selected_original": {
+        "number": 10,
+        "file": "rail-now.png",
+        "attempt": 1,
+        "bytes": 2087792,
+        "sha256": "fe688acdef7117302b762be432b7d9196ce204617ae8b5824e43151e49655953",
+        "pixels": [
+          2172,
+          724
+        ],
+        "expected_pixels": [
+          1536,
+          1024
+        ],
+        "requested_canvas_match": false,
+        "mode": "RGBA",
+        "alpha_range": [
+          0,
+          254
+        ],
+        "alpha16_bbox": [
+          47,
+          78,
+          2123,
+          632
+        ],
+        "alpha16_aspect": 3.747292418772563,
+        "corners_alpha": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "qa_status": "FAIL",
+        "check_required": "the white disc is empty / the right 65% has no decoration / the glow fades to alpha 0 / transparent background / no text.",
+        "prompt_sha256": "89aab7199b6af13dd253c2db991322a65a21c330fbb485a5f279b0a403d56ab6",
+        "references_in_order": [
+          {
+            "path": "asset_sources/ui/craft-texture-20261111/mock/pull-B.png",
+            "ref": "bf79baa3d84b172753ff33e477c0c482ec7c118e",
+            "git_blob_sha": "88c7e0bccc080e2b0fa3bfd973d727023c83524e",
+            "sha256": "c35a38909467b8ed8fc9b2bc9d8cc9d3360074359f6c5d64f6489339449e497e",
+            "bytes": 2515669,
+            "purpose": "materials_colours_finish_only_not_layout"
+          }
+        ],
+        "qa_notes": [
+          "指定(1536, 1024)に対し原画(2172, 724)。未加工のため寸法は修正していない。",
+          "空の白い座、右側無地、文字なし。座は真円より少し横長。実体の縦横比も指定約3.4より長い。"
+        ],
+        "visual_reviewed": true,
+        "original_source_file": "exec-90b6218e-b086-4d14-ab82-d0dc6322da73.png"
+      },
+      "attempts": [
+        {
+          "number": 10,
+          "file": "rail-now.png",
+          "attempt": 1,
+          "bytes": 2087792,
+          "sha256": "fe688acdef7117302b762be432b7d9196ce204617ae8b5824e43151e49655953",
+          "pixels": [
+            2172,
+            724
+          ],
+          "expected_pixels": [
+            1536,
+            1024
+          ],
+          "requested_canvas_match": false,
+          "mode": "RGBA",
+          "alpha_range": [
+            0,
+            254
+          ],
+          "alpha16_bbox": [
+            47,
+            78,
+            2123,
+            632
+          ],
+          "alpha16_aspect": 3.747292418772563,
+          "corners_alpha": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "qa_status": "FAIL",
+          "check_required": "the white disc is empty / the right 65% has no decoration / the glow fades to alpha 0 / transparent background / no text.",
+          "prompt_sha256": "89aab7199b6af13dd253c2db991322a65a21c330fbb485a5f279b0a403d56ab6",
+          "references_in_order": [
+            {
+              "path": "asset_sources/ui/craft-texture-20261111/mock/pull-B.png",
+              "ref": "bf79baa3d84b172753ff33e477c0c482ec7c118e",
+              "git_blob_sha": "88c7e0bccc080e2b0fa3bfd973d727023c83524e",
+              "sha256": "c35a38909467b8ed8fc9b2bc9d8cc9d3360074359f6c5d64f6489339449e497e",
+              "bytes": 2515669,
+              "purpose": "materials_colours_finish_only_not_layout"
+            }
+          ],
+          "qa_notes": [
+            "指定(1536, 1024)に対し原画(2172, 724)。未加工のため寸法は修正していない。",
+            "空の白い座、右側無地、文字なし。座は真円より少し横長。実体の縦横比も指定約3.4より長い。"
+          ],
+          "visual_reviewed": true,
+          "original_source_file": "exec-90b6218e-b086-4d14-ab82-d0dc6322da73.png"
+        },
+        {
+          "number": 10,
+          "file": "rail-now.png",
+          "attempt": 2,
+          "bytes": 1764635,
+          "sha256": "1a31d1e795a77c0d8d2922e72035e817647a370c12417b4cdd6423e7c15dfa86",
+          "pixels": [
+            2172,
+            724
+          ],
+          "expected_pixels": [
+            1536,
+            1024
+          ],
+          "requested_canvas_match": false,
+          "mode": "RGBA",
+          "alpha_range": [
+            0,
+            254
+          ],
+          "alpha16_bbox": [
+            98,
+            103,
+            2074,
+            618
+          ],
+          "alpha16_aspect": 3.8368932038834953,
+          "corners_alpha": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "qa_status": "FAIL",
+          "check_required": "the white disc is empty / the right 65% has no decoration / the glow fades to alpha 0 / transparent background / no text.",
+          "prompt_sha256": "89aab7199b6af13dd253c2db991322a65a21c330fbb485a5f279b0a403d56ab6",
+          "qa_notes": [
+            "指定キャンバス[1536, 1024]に対し実寸[2172, 724]で不一致。"
+          ],
+          "references_in_order": [
+            {
+              "path": "asset_sources/ui/craft-texture-20261111/mock/pull-B.png",
+              "ref": "bf79baa3d84b172753ff33e477c0c482ec7c118e",
+              "git_blob_sha": "88c7e0bccc080e2b0fa3bfd973d727023c83524e",
+              "sha256": "c35a38909467b8ed8fc9b2bc9d8cc9d3360074359f6c5d64f6489339449e497e",
+              "bytes": 2515669,
+              "purpose": "materials_colours_finish_only_not_layout"
+            }
+          ],
+          "visual_reviewed": true,
+          "original_source_file": "exec-977e3fba-381c-4792-b359-888f83053d65.png"
+        },
+        {
+          "number": 10,
+          "file": "rail-now.png",
+          "attempt": 3,
+          "bytes": 1973433,
+          "sha256": "d1ab1d4b0b8383d59824cec9345f474d18f7365eea5f9372b1c0465614a962ca",
+          "pixels": [
+            2172,
+            724
+          ],
+          "expected_pixels": [
+            1536,
+            1024
+          ],
+          "requested_canvas_match": false,
+          "mode": "RGBA",
+          "alpha_range": [
+            0,
+            254
+          ],
+          "alpha16_bbox": [
+            55,
+            91,
+            2118,
+            629
+          ],
+          "alpha16_aspect": 3.8345724907063197,
+          "corners_alpha": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "qa_status": "FAIL",
+          "check_required": "the white disc is empty / the right 65% has no decoration / the glow fades to alpha 0 / transparent background / no text.",
+          "prompt_sha256": "89aab7199b6af13dd253c2db991322a65a21c330fbb485a5f279b0a403d56ab6",
+          "qa_notes": [
+            "指定キャンバス[1536, 1024]に対し実寸[2172, 724]で不一致。"
+          ],
+          "references_in_order": [
+            {
+              "path": "asset_sources/ui/craft-texture-20261111/mock/pull-B.png",
+              "ref": "bf79baa3d84b172753ff33e477c0c482ec7c118e",
+              "git_blob_sha": "88c7e0bccc080e2b0fa3bfd973d727023c83524e",
+              "sha256": "c35a38909467b8ed8fc9b2bc9d8cc9d3360074359f6c5d64f6489339449e497e",
+              "bytes": 2515669,
+              "purpose": "materials_colours_finish_only_not_layout"
+            }
+          ],
+          "visual_reviewed": true,
+          "original_source_file": "exec-009fccc3-1e81-422e-ad0a-03673b77e9f4.png"
+        }
+      ]
+    },
+    {
+      "number": 11,
+      "path": "asset_sources/ui/craft-glass-20261111/raw/badge.png",
+      "file": "badge.png",
+      "selected_attempt": 1,
+      "attempt_count": 3,
+      "overall_status": "FAIL",
+      "selected_original": {
+        "number": 11,
+        "file": "badge.png",
+        "attempt": 1,
+        "bytes": 1473765,
+        "sha256": "cf715c06a57758db6a179f6f4a19a5144b1f5f9f58179ed76cd7d8f607dd85e5",
+        "pixels": [
+          1254,
+          1254
+        ],
+        "expected_pixels": [
+          1024,
+          1024
+        ],
+        "requested_canvas_match": false,
+        "mode": "RGBA",
+        "alpha_range": [
+          0,
+          255
+        ],
+        "alpha16_bbox": [
+          138,
+          125,
+          1103,
+          1133
+        ],
+        "alpha16_aspect": 0.9573412698412699,
+        "corners_alpha": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "qa_status": "FAIL",
+        "check_required": "one badge only, centred / the ring is even all the way round / the centre is plain / transparent background / no text or question mark.",
+        "prompt_sha256": "794f5a9bffe8adde9a197fc9612f1860023aabaa33ff410fb4d8d91c53f6a6cf",
+        "references_in_order": [
+          {
+            "path": "asset_sources/ui/craft-texture-20261111/mock/pull-B.png",
+            "ref": "bf79baa3d84b172753ff33e477c0c482ec7c118e",
+            "git_blob_sha": "88c7e0bccc080e2b0fa3bfd973d727023c83524e",
+            "sha256": "c35a38909467b8ed8fc9b2bc9d8cc9d3360074359f6c5d64f6489339449e497e",
+            "bytes": 2515669,
+            "purpose": "materials_colours_finish_only_not_layout"
+          }
+        ],
+        "qa_notes": [
+          "指定(1024, 1024)に対し原画(1254, 1254)。未加工のため寸法は修正していない。",
+          "単一の丸い札、四方の鋲、ほぼ均一の輪、中央無地、文字・疑問符なし。輪径約77%（指定約70%）。"
+        ],
+        "visual_reviewed": true,
+        "original_source_file": "exec-0d65fca9-9ab2-4ef3-b51f-188425eb6454.png"
+      },
+      "attempts": [
+        {
+          "number": 11,
+          "file": "badge.png",
+          "attempt": 1,
+          "bytes": 1473765,
+          "sha256": "cf715c06a57758db6a179f6f4a19a5144b1f5f9f58179ed76cd7d8f607dd85e5",
+          "pixels": [
+            1254,
+            1254
+          ],
+          "expected_pixels": [
+            1024,
+            1024
+          ],
+          "requested_canvas_match": false,
+          "mode": "RGBA",
+          "alpha_range": [
+            0,
+            255
+          ],
+          "alpha16_bbox": [
+            138,
+            125,
+            1103,
+            1133
+          ],
+          "alpha16_aspect": 0.9573412698412699,
+          "corners_alpha": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "qa_status": "FAIL",
+          "check_required": "one badge only, centred / the ring is even all the way round / the centre is plain / transparent background / no text or question mark.",
+          "prompt_sha256": "794f5a9bffe8adde9a197fc9612f1860023aabaa33ff410fb4d8d91c53f6a6cf",
+          "references_in_order": [
+            {
+              "path": "asset_sources/ui/craft-texture-20261111/mock/pull-B.png",
+              "ref": "bf79baa3d84b172753ff33e477c0c482ec7c118e",
+              "git_blob_sha": "88c7e0bccc080e2b0fa3bfd973d727023c83524e",
+              "sha256": "c35a38909467b8ed8fc9b2bc9d8cc9d3360074359f6c5d64f6489339449e497e",
+              "bytes": 2515669,
+              "purpose": "materials_colours_finish_only_not_layout"
+            }
+          ],
+          "qa_notes": [
+            "指定(1024, 1024)に対し原画(1254, 1254)。未加工のため寸法は修正していない。",
+            "単一の丸い札、四方の鋲、ほぼ均一の輪、中央無地、文字・疑問符なし。輪径約77%（指定約70%）。"
+          ],
+          "visual_reviewed": true,
+          "original_source_file": "exec-0d65fca9-9ab2-4ef3-b51f-188425eb6454.png"
+        },
+        {
+          "number": 11,
+          "file": "badge.png",
+          "attempt": 2,
+          "bytes": 1479573,
+          "sha256": "8483d46cf0f17dc837bc6d8d4999396ed426ffd7e8f988c97079a8fdf8bf83ad",
+          "pixels": [
+            1254,
+            1254
+          ],
+          "expected_pixels": [
+            1024,
+            1024
+          ],
+          "requested_canvas_match": false,
+          "mode": "RGBA",
+          "alpha_range": [
+            0,
+            255
+          ],
+          "alpha16_bbox": [
+            139,
+            131,
+            1096,
+            1135
+          ],
+          "alpha16_aspect": 0.953187250996016,
+          "corners_alpha": [
+            0,
+            0,
+            1,
+            0
+          ],
+          "qa_status": "FAIL",
+          "check_required": "one badge only, centred / the ring is even all the way round / the centre is plain / transparent background / no text or question mark.",
+          "prompt_sha256": "794f5a9bffe8adde9a197fc9612f1860023aabaa33ff410fb4d8d91c53f6a6cf",
+          "qa_notes": [
+            "指定キャンバス[1024, 1024]に対し実寸[1254, 1254]で不一致。"
+          ],
+          "references_in_order": [
+            {
+              "path": "asset_sources/ui/craft-texture-20261111/mock/pull-B.png",
+              "ref": "bf79baa3d84b172753ff33e477c0c482ec7c118e",
+              "git_blob_sha": "88c7e0bccc080e2b0fa3bfd973d727023c83524e",
+              "sha256": "c35a38909467b8ed8fc9b2bc9d8cc9d3360074359f6c5d64f6489339449e497e",
+              "bytes": 2515669,
+              "purpose": "materials_colours_finish_only_not_layout"
+            }
+          ],
+          "visual_reviewed": true,
+          "original_source_file": "exec-31ceabdc-2b72-4337-956f-be6f98a500ab.png"
+        },
+        {
+          "number": 11,
+          "file": "badge.png",
+          "attempt": 3,
+          "bytes": 1699030,
+          "sha256": "e4f0769030532e7e8403c2e6e90a8edfd342fd9010854eecd2daa87e870abfd9",
+          "pixels": [
+            1254,
+            1254
+          ],
+          "expected_pixels": [
+            1024,
+            1024
+          ],
+          "requested_canvas_match": false,
+          "mode": "RGBA",
+          "alpha_range": [
+            0,
+            255
+          ],
+          "alpha16_bbox": [
+            116,
+            97,
+            1123,
+            1134
+          ],
+          "alpha16_aspect": 0.9710703953712633,
+          "corners_alpha": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "qa_status": "FAIL",
+          "check_required": "one badge only, centred / the ring is even all the way round / the centre is plain / transparent background / no text or question mark.",
+          "prompt_sha256": "794f5a9bffe8adde9a197fc9612f1860023aabaa33ff410fb4d8d91c53f6a6cf",
+          "qa_notes": [
+            "指定キャンバス[1024, 1024]に対し実寸[1254, 1254]で不一致。"
+          ],
+          "references_in_order": [
+            {
+              "path": "asset_sources/ui/craft-texture-20261111/mock/pull-B.png",
+              "ref": "bf79baa3d84b172753ff33e477c0c482ec7c118e",
+              "git_blob_sha": "88c7e0bccc080e2b0fa3bfd973d727023c83524e",
+              "sha256": "c35a38909467b8ed8fc9b2bc9d8cc9d3360074359f6c5d64f6489339449e497e",
+              "bytes": 2515669,
+              "purpose": "materials_colours_finish_only_not_layout"
+            }
+          ],
+          "visual_reviewed": true,
+          "original_source_file": "exec-e13946f0-5ac6-4832-ab39-0f1d080b09b7.png"
+        }
+      ]
+    },
+    {
+      "number": 12,
+      "path": "asset_sources/ui/craft-glass-20261111/raw/spine-housing.png",
+      "file": "spine-housing.png",
+      "selected_attempt": 3,
+      "attempt_count": 3,
+      "overall_status": "FAIL",
+      "selected_original": {
+        "number": 12,
+        "file": "spine-housing.png",
+        "attempt": 3,
+        "bytes": 1236847,
+        "sha256": "0f7737929cf8e441f03623215c0dfd07f55e9091f6c60bc2dbe5378a3bd6e2a1",
+        "pixels": [
+          1024,
+          1536
+        ],
+        "expected_pixels": [
+          1024,
+          1536
+        ],
+        "requested_canvas_match": true,
+        "mode": "RGBA",
+        "alpha_range": [
+          0,
+          254
+        ],
+        "alpha16_bbox": [
+          389,
+          59,
+          637,
+          1479
+        ],
+        "alpha16_aspect": 0.17464788732394365,
+        "corners_alpha": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "qa_status": "FAIL",
+        "check_required": "background and window are real alpha 0 / shaft is uniform top to bottom / cap, shaft and foot are all present / nothing drawn inside the window / no text or marks.",
+        "prompt_sha256": "029ec41c0c997ce1df6633f9d2d3001dc9d5ef35bc3c1e02746d67954ae28fb6",
+        "references_in_order": [
+          {
+            "path": "asset_sources/ui/craft-texture-20261111/mock/pull-B.png",
+            "ref": "bf79baa3d84b172753ff33e477c0c482ec7c118e",
+            "git_blob_sha": "88c7e0bccc080e2b0fa3bfd973d727023c83524e",
+            "sha256": "c35a38909467b8ed8fc9b2bc9d8cc9d3360074359f6c5d64f6489339449e497e",
+            "bytes": 2515669,
+            "purpose": "materials_colours_finish_only_not_layout"
+          }
+        ],
+        "window_probe": {
+          "box": [
+            485,
+            230,
+            540,
+            1270
+          ],
+          "min": 0,
+          "max": 1,
+          "nonzero": 1207,
+          "pixels": 57200
+        },
+        "visual_reviewed": true,
+        "qa_notes": [
+          "キャップ・平行な軸・足、文字・目盛り・液体なし。窓内の測定矩形57,200画素のうち1,207画素がalpha 1で完全なalpha 0は未達。"
+        ],
+        "original_source_file": "exec-bc9b9100-d136-4231-a68d-d863b89a7155.png"
+      },
+      "attempts": [
+        {
+          "number": 12,
+          "file": "spine-housing.png",
+          "attempt": 1,
+          "bytes": 1250955,
+          "sha256": "f46e08e5e84f9205c8b8b45aa640fe26a0d024a1a485d6c03987853cfb17a786",
+          "pixels": [
+            1024,
+            1536
+          ],
+          "expected_pixels": [
+            1024,
+            1536
+          ],
+          "requested_canvas_match": true,
+          "mode": "RGBA",
+          "alpha_range": [
+            0,
+            254
+          ],
+          "alpha16_bbox": [
+            387,
+            42,
+            638,
+            1499
+          ],
+          "alpha16_aspect": 0.17227179135209333,
+          "corners_alpha": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "qa_status": "FAIL",
+          "check_required": "background and window are real alpha 0 / shaft is uniform top to bottom / cap, shaft and foot are all present / nothing drawn inside the window / no text or marks.",
+          "prompt_sha256": "029ec41c0c997ce1df6633f9d2d3001dc9d5ef35bc3c1e02746d67954ae28fb6",
+          "references_in_order": [
+            {
+              "path": "asset_sources/ui/craft-texture-20261111/mock/pull-B.png",
+              "ref": "bf79baa3d84b172753ff33e477c0c482ec7c118e",
+              "git_blob_sha": "88c7e0bccc080e2b0fa3bfd973d727023c83524e",
+              "sha256": "c35a38909467b8ed8fc9b2bc9d8cc9d3360074359f6c5d64f6489339449e497e",
+              "bytes": 2515669,
+              "purpose": "materials_colours_finish_only_not_layout"
+            }
+          ],
+          "visual_reviewed": true,
+          "qa_notes": [
+            "指定寸法・空の窓・文字や目盛りなしは確認。窓の十分内側にもalpha=1の微小画素が残り、厳密な全域alpha=0は未達。"
+          ],
+          "window_probe": {
+            "box": [
+              485,
+              230,
+              540,
+              1270
+            ],
+            "min": 0,
+            "max": 1,
+            "nonzero": 8693,
+            "pixels": 57200
+          },
+          "original_source_file": "exec-5c36cdab-ce67-4029-baa6-2811b83c8f9a.png"
+        },
+        {
+          "number": 12,
+          "file": "spine-housing.png",
+          "attempt": 2,
+          "bytes": 1205543,
+          "sha256": "5066abfea71bed3438254145e39f9d5a9dd5109a66b5cbea9bd10c5515a1ae9d",
+          "pixels": [
+            1024,
+            1536
+          ],
+          "expected_pixels": [
+            1024,
+            1536
+          ],
+          "requested_canvas_match": true,
+          "mode": "RGBA",
+          "alpha_range": [
+            0,
+            254
+          ],
+          "alpha16_bbox": [
+            394,
+            48,
+            631,
+            1493
+          ],
+          "alpha16_aspect": 0.16401384083044981,
+          "corners_alpha": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "qa_status": "FAIL",
+          "check_required": "background and window are real alpha 0 / shaft is uniform top to bottom / cap, shaft and foot are all present / nothing drawn inside the window / no text or marks.",
+          "prompt_sha256": "029ec41c0c997ce1df6633f9d2d3001dc9d5ef35bc3c1e02746d67954ae28fb6",
+          "references_in_order": [
+            {
+              "path": "asset_sources/ui/craft-texture-20261111/mock/pull-B.png",
+              "ref": "bf79baa3d84b172753ff33e477c0c482ec7c118e",
+              "git_blob_sha": "88c7e0bccc080e2b0fa3bfd973d727023c83524e",
+              "sha256": "c35a38909467b8ed8fc9b2bc9d8cc9d3360074359f6c5d64f6489339449e497e",
+              "bytes": 2515669,
+              "purpose": "materials_colours_finish_only_not_layout"
+            }
+          ],
+          "window_probe": {
+            "box": [
+              485,
+              230,
+              540,
+              1270
+            ],
+            "min": 0,
+            "max": 2,
+            "nonzero": 11712,
+            "pixels": 57200
+          },
+          "qa_notes": [
+            "窓の内側にalpha=1の微小画素が残り、厳密な全域alpha=0は未達。"
+          ],
+          "visual_reviewed": true,
+          "original_source_file": "exec-73ed202a-0a9b-410f-a4fd-abf8536e27d9.png"
+        },
+        {
+          "number": 12,
+          "file": "spine-housing.png",
+          "attempt": 3,
+          "bytes": 1236847,
+          "sha256": "0f7737929cf8e441f03623215c0dfd07f55e9091f6c60bc2dbe5378a3bd6e2a1",
+          "pixels": [
+            1024,
+            1536
+          ],
+          "expected_pixels": [
+            1024,
+            1536
+          ],
+          "requested_canvas_match": true,
+          "mode": "RGBA",
+          "alpha_range": [
+            0,
+            254
+          ],
+          "alpha16_bbox": [
+            389,
+            59,
+            637,
+            1479
+          ],
+          "alpha16_aspect": 0.17464788732394365,
+          "corners_alpha": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "qa_status": "FAIL",
+          "check_required": "background and window are real alpha 0 / shaft is uniform top to bottom / cap, shaft and foot are all present / nothing drawn inside the window / no text or marks.",
+          "prompt_sha256": "029ec41c0c997ce1df6633f9d2d3001dc9d5ef35bc3c1e02746d67954ae28fb6",
+          "references_in_order": [
+            {
+              "path": "asset_sources/ui/craft-texture-20261111/mock/pull-B.png",
+              "ref": "bf79baa3d84b172753ff33e477c0c482ec7c118e",
+              "git_blob_sha": "88c7e0bccc080e2b0fa3bfd973d727023c83524e",
+              "sha256": "c35a38909467b8ed8fc9b2bc9d8cc9d3360074359f6c5d64f6489339449e497e",
+              "bytes": 2515669,
+              "purpose": "materials_colours_finish_only_not_layout"
+            }
+          ],
+          "window_probe": {
+            "box": [
+              485,
+              230,
+              540,
+              1270
+            ],
+            "min": 0,
+            "max": 1,
+            "nonzero": 1207,
+            "pixels": 57200
+          },
+          "visual_reviewed": true,
+          "qa_notes": [
+            "キャップ・平行な軸・足、文字・目盛り・液体なし。窓内の測定矩形57,200画素のうち1,207画素がalpha 1で完全なalpha 0は未達。"
+          ],
+          "original_source_file": "exec-bc9b9100-d136-4231-a68d-d863b89a7155.png"
+        }
+      ]
+    },
+    {
+      "number": 13,
+      "path": "asset_sources/ui/craft-glass-20261111/raw/dial-bezel.png",
+      "file": "dial-bezel.png",
+      "selected_attempt": 1,
+      "attempt_count": 3,
+      "overall_status": "FAIL",
+      "selected_original": {
+        "number": 13,
+        "file": "dial-bezel.png",
+        "attempt": 1,
+        "bytes": 2027179,
+        "sha256": "a8ccd237bdc85e0cc27c54d82fe04bfe5d258329344ecfd18386d4cda6cd5859",
+        "pixels": [
+          1536,
+          1024
+        ],
+        "expected_pixels": [
+          1536,
+          1024
+        ],
+        "requested_canvas_match": true,
+        "mode": "RGBA",
+        "alpha_range": [
+          0,
+          254
+        ],
+        "alpha16_bbox": [
+          38,
+          72,
+          1497,
+          877
+        ],
+        "alpha16_aspect": 1.8124223602484473,
+        "corners_alpha": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "qa_status": "FAIL",
+        "check_required": "the arc window is real alpha 0 and has the same width all the way round / no ticks, numbers or needle / flat edge is horizontal / symmetric left and right.",
+        "prompt_sha256": "ff4aee8025c31f66cd00ac3cf2f3a2a43334937f3b330d8e57fa4340c4b59408",
+        "references_in_order": [
+          {
+            "path": "asset_sources/ui/craft-texture-20261111/mock/pull-B.png",
+            "ref": "bf79baa3d84b172753ff33e477c0c482ec7c118e",
+            "git_blob_sha": "88c7e0bccc080e2b0fa3bfd973d727023c83524e",
+            "sha256": "c35a38909467b8ed8fc9b2bc9d8cc9d3360074359f6c5d64f6489339449e497e",
+            "bytes": 2515669,
+            "purpose": "materials_colours_finish_only_not_layout"
+          }
+        ],
+        "visual_reviewed": true,
+        "qa_notes": [
+          "水平な底辺、半円の窓、左右ほぼ対称、針・目盛り・文字なし。窓内の測定矩形20,000画素のうち111画素がalpha 1。窓幅と半径も厳密な指定幾何との一致は未達。"
+        ],
+        "window_probe": {
+          "box": [
+            650,
+            200,
+            850,
+            300
+          ],
+          "min": 0,
+          "max": 1,
+          "nonzero": 111,
+          "pixels": 20000
+        },
+        "original_source_file": "exec-52655c7c-6f3f-405b-a5df-db1611bb21c4.png"
+      },
+      "attempts": [
+        {
+          "number": 13,
+          "file": "dial-bezel.png",
+          "attempt": 1,
+          "bytes": 2027179,
+          "sha256": "a8ccd237bdc85e0cc27c54d82fe04bfe5d258329344ecfd18386d4cda6cd5859",
+          "pixels": [
+            1536,
+            1024
+          ],
+          "expected_pixels": [
+            1536,
+            1024
+          ],
+          "requested_canvas_match": true,
+          "mode": "RGBA",
+          "alpha_range": [
+            0,
+            254
+          ],
+          "alpha16_bbox": [
+            38,
+            72,
+            1497,
+            877
+          ],
+          "alpha16_aspect": 1.8124223602484473,
+          "corners_alpha": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "qa_status": "FAIL",
+          "check_required": "the arc window is real alpha 0 and has the same width all the way round / no ticks, numbers or needle / flat edge is horizontal / symmetric left and right.",
+          "prompt_sha256": "ff4aee8025c31f66cd00ac3cf2f3a2a43334937f3b330d8e57fa4340c4b59408",
+          "references_in_order": [
+            {
+              "path": "asset_sources/ui/craft-texture-20261111/mock/pull-B.png",
+              "ref": "bf79baa3d84b172753ff33e477c0c482ec7c118e",
+              "git_blob_sha": "88c7e0bccc080e2b0fa3bfd973d727023c83524e",
+              "sha256": "c35a38909467b8ed8fc9b2bc9d8cc9d3360074359f6c5d64f6489339449e497e",
+              "bytes": 2515669,
+              "purpose": "materials_colours_finish_only_not_layout"
+            }
+          ],
+          "visual_reviewed": true,
+          "qa_notes": [
+            "水平な底辺、半円の窓、左右ほぼ対称、針・目盛り・文字なし。窓内の測定矩形20,000画素のうち111画素がalpha 1。窓幅と半径も厳密な指定幾何との一致は未達。"
+          ],
+          "window_probe": {
+            "box": [
+              650,
+              200,
+              850,
+              300
+            ],
+            "min": 0,
+            "max": 1,
+            "nonzero": 111,
+            "pixels": 20000
+          },
+          "original_source_file": "exec-52655c7c-6f3f-405b-a5df-db1611bb21c4.png"
+        },
+        {
+          "number": 13,
+          "file": "dial-bezel.png",
+          "attempt": 2,
+          "bytes": 2035196,
+          "sha256": "ed9f27839059cada122999d7bcb6130b5f16e94bb6b881ecfebab85ba5569cdd",
+          "pixels": [
+            1536,
+            1024
+          ],
+          "expected_pixels": [
+            1536,
+            1024
+          ],
+          "requested_canvas_match": true,
+          "mode": "RGBA",
+          "alpha_range": [
+            0,
+            254
+          ],
+          "alpha16_bbox": [
+            41,
+            105,
+            1492,
+            892
+          ],
+          "alpha16_aspect": 1.843710292249047,
+          "corners_alpha": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "qa_status": "FAIL",
+          "check_required": "the arc window is real alpha 0 and has the same width all the way round / no ticks, numbers or needle / flat edge is horizontal / symmetric left and right.",
+          "prompt_sha256": "ff4aee8025c31f66cd00ac3cf2f3a2a43334937f3b330d8e57fa4340c4b59408",
+          "references_in_order": [
+            {
+              "path": "asset_sources/ui/craft-texture-20261111/mock/pull-B.png",
+              "ref": "bf79baa3d84b172753ff33e477c0c482ec7c118e",
+              "git_blob_sha": "88c7e0bccc080e2b0fa3bfd973d727023c83524e",
+              "sha256": "c35a38909467b8ed8fc9b2bc9d8cc9d3360074359f6c5d64f6489339449e497e",
+              "bytes": 2515669,
+              "purpose": "materials_colours_finish_only_not_layout"
+            }
+          ],
+          "window_probe": {
+            "box": [
+              650,
+              200,
+              850,
+              300
+            ],
+            "min": 0,
+            "max": 1,
+            "nonzero": 205,
+            "pixels": 20000
+          },
+          "qa_notes": [
+            "窓の内側にalpha=1の微小画素が残り、厳密な全域alpha=0は未達。"
+          ],
+          "visual_reviewed": true,
+          "original_source_file": "exec-953a6299-a199-48a8-aad6-58925d9e2e84.png"
+        },
+        {
+          "number": 13,
+          "file": "dial-bezel.png",
+          "attempt": 3,
+          "bytes": 2049159,
+          "sha256": "24d87c830070e8d928a736d27a5a9b7811c270c54fe3dbb38fbd9dd55950c841",
+          "pixels": [
+            1536,
+            1024
+          ],
+          "expected_pixels": [
+            1536,
+            1024
+          ],
+          "requested_canvas_match": true,
+          "mode": "RGBA",
+          "alpha_range": [
+            0,
+            254
+          ],
+          "alpha16_bbox": [
+            27,
+            58,
+            1506,
+            892
+          ],
+          "alpha16_aspect": 1.7733812949640289,
+          "corners_alpha": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "qa_status": "FAIL",
+          "check_required": "the arc window is real alpha 0 and has the same width all the way round / no ticks, numbers or needle / flat edge is horizontal / symmetric left and right.",
+          "prompt_sha256": "ff4aee8025c31f66cd00ac3cf2f3a2a43334937f3b330d8e57fa4340c4b59408",
+          "references_in_order": [
+            {
+              "path": "asset_sources/ui/craft-texture-20261111/mock/pull-B.png",
+              "ref": "bf79baa3d84b172753ff33e477c0c482ec7c118e",
+              "git_blob_sha": "88c7e0bccc080e2b0fa3bfd973d727023c83524e",
+              "sha256": "c35a38909467b8ed8fc9b2bc9d8cc9d3360074359f6c5d64f6489339449e497e",
+              "bytes": 2515669,
+              "purpose": "materials_colours_finish_only_not_layout"
+            }
+          ],
+          "window_probe": {
+            "box": [
+              650,
+              200,
+              850,
+              300
+            ],
+            "min": 0,
+            "max": 1,
+            "nonzero": 374,
+            "pixels": 20000
+          },
+          "visual_reviewed": true,
+          "qa_notes": [
+            "3回目。指定寸法・部品の形・目盛りや文字なしを確認。窓内部の微小な非ゼロalphaが残り、厳密な全域alpha=0は未達。"
+          ],
+          "original_source_file": "exec-ebd4c109-dd35-47e0-9a70-a92daa71f0ac.png"
+        }
+      ]
+    },
+    {
+      "number": 14,
+      "path": "asset_sources/ui/craft-glass-20261111/raw/voice-plate.png",
+      "file": "voice-plate.png",
+      "selected_attempt": 2,
+      "attempt_count": 3,
+      "overall_status": "FAIL",
+      "selected_original": {
+        "number": 14,
+        "file": "voice-plate.png",
+        "attempt": 2,
+        "bytes": 1973200,
+        "sha256": "424e3f083e9d5c969bbe95fdb8f21361f0e50d543383d9989a1e5822a428ebad",
+        "pixels": [
+          2172,
+          724
+        ],
+        "expected_pixels": [
+          1536,
+          1024
+        ],
+        "requested_canvas_match": false,
+        "mode": "RGBA",
+        "alpha_range": [
+          0,
+          255
+        ],
+        "alpha16_bbox": [
+          70,
+          121,
+          2102,
+          596
+        ],
+        "alpha16_aspect": 4.277894736842105,
+        "corners_alpha": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "qa_status": "FAIL",
+        "check_required": "transparent background / bottom-left corner is the square one / the seat is empty / the right 70% has no decoration.",
+        "prompt_sha256": "71c509e319ac358b0f70f9ec44ade76e22134c0cd094598ebbb294da2e631208",
+        "qa_notes": [
+          "指定(1536, 1024)に対し原画(2172, 724)。未加工のため寸法は修正していない。",
+          "左下だけほぼ角、空の顔の座、右側無地、文字なし。実体の縦横比約4.28（指定約4）、顔の座は指定より大きめ。"
+        ],
+        "references_in_order": [
+          {
+            "path": "asset_sources/ui/craft-texture-20261111/mock/pull-B.png",
+            "ref": "bf79baa3d84b172753ff33e477c0c482ec7c118e",
+            "git_blob_sha": "88c7e0bccc080e2b0fa3bfd973d727023c83524e",
+            "sha256": "c35a38909467b8ed8fc9b2bc9d8cc9d3360074359f6c5d64f6489339449e497e",
+            "bytes": 2515669,
+            "purpose": "materials_colours_finish_only_not_layout"
+          }
+        ],
+        "visual_reviewed": true,
+        "original_source_file": "exec-21e6b585-4fd2-47ff-bdb1-abdb94fdcfbd.png"
+      },
+      "attempts": [
+        {
+          "number": 14,
+          "file": "voice-plate.png",
+          "attempt": 1,
+          "bytes": 1920060,
+          "sha256": "2de5096bc76b7da34b47dcc383356d4c5a01b4c2e7e012190a13006cdb02f54b",
+          "pixels": [
+            2172,
+            724
+          ],
+          "expected_pixels": [
+            1536,
+            1024
+          ],
+          "requested_canvas_match": false,
+          "mode": "RGBA",
+          "alpha_range": [
+            0,
+            255
+          ],
+          "alpha16_bbox": [
+            53,
+            138,
+            2122,
+            599
+          ],
+          "alpha16_aspect": 4.488069414316703,
+          "corners_alpha": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "qa_status": "FAIL",
+          "check_required": "transparent background / bottom-left corner is the square one / the seat is empty / the right 70% has no decoration.",
+          "prompt_sha256": "71c509e319ac358b0f70f9ec44ade76e22134c0cd094598ebbb294da2e631208",
+          "references_in_order": [
+            {
+              "path": "asset_sources/ui/craft-texture-20261111/mock/pull-B.png",
+              "ref": "bf79baa3d84b172753ff33e477c0c482ec7c118e",
+              "git_blob_sha": "88c7e0bccc080e2b0fa3bfd973d727023c83524e",
+              "sha256": "c35a38909467b8ed8fc9b2bc9d8cc9d3360074359f6c5d64f6489339449e497e",
+              "bytes": 2515669,
+              "purpose": "materials_colours_finish_only_not_layout"
+            }
+          ],
+          "qa_notes": [
+            "指定キャンバス[1536, 1024]に対し実寸[2172, 724]で不一致。",
+            "左下がほぼ角、空の顔の座、右側が無地、文字なしを確認。"
+          ],
+          "visual_reviewed": true,
+          "original_source_file": "exec-53810b3c-4445-485b-84fc-ca18ae5eb2dd.png"
+        },
+        {
+          "number": 14,
+          "file": "voice-plate.png",
+          "attempt": 2,
+          "bytes": 1973200,
+          "sha256": "424e3f083e9d5c969bbe95fdb8f21361f0e50d543383d9989a1e5822a428ebad",
+          "pixels": [
+            2172,
+            724
+          ],
+          "expected_pixels": [
+            1536,
+            1024
+          ],
+          "requested_canvas_match": false,
+          "mode": "RGBA",
+          "alpha_range": [
+            0,
+            255
+          ],
+          "alpha16_bbox": [
+            70,
+            121,
+            2102,
+            596
+          ],
+          "alpha16_aspect": 4.277894736842105,
+          "corners_alpha": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "qa_status": "FAIL",
+          "check_required": "transparent background / bottom-left corner is the square one / the seat is empty / the right 70% has no decoration.",
+          "prompt_sha256": "71c509e319ac358b0f70f9ec44ade76e22134c0cd094598ebbb294da2e631208",
+          "qa_notes": [
+            "指定(1536, 1024)に対し原画(2172, 724)。未加工のため寸法は修正していない。",
+            "左下だけほぼ角、空の顔の座、右側無地、文字なし。実体の縦横比約4.28（指定約4）、顔の座は指定より大きめ。"
+          ],
+          "references_in_order": [
+            {
+              "path": "asset_sources/ui/craft-texture-20261111/mock/pull-B.png",
+              "ref": "bf79baa3d84b172753ff33e477c0c482ec7c118e",
+              "git_blob_sha": "88c7e0bccc080e2b0fa3bfd973d727023c83524e",
+              "sha256": "c35a38909467b8ed8fc9b2bc9d8cc9d3360074359f6c5d64f6489339449e497e",
+              "bytes": 2515669,
+              "purpose": "materials_colours_finish_only_not_layout"
+            }
+          ],
+          "visual_reviewed": true,
+          "original_source_file": "exec-21e6b585-4fd2-47ff-bdb1-abdb94fdcfbd.png"
+        },
+        {
+          "number": 14,
+          "file": "voice-plate.png",
+          "attempt": 3,
+          "bytes": 1814238,
+          "sha256": "e91b5a61cc27eea881706e4118e281ba5b0fd9dcd51c97a3bc5e93de3bbc2cfd",
+          "pixels": [
+            2172,
+            724
+          ],
+          "expected_pixels": [
+            1536,
+            1024
+          ],
+          "requested_canvas_match": false,
+          "mode": "RGBA",
+          "alpha_range": [
+            0,
+            255
+          ],
+          "alpha16_bbox": [
+            29,
+            135,
+            2145,
+            589
+          ],
+          "alpha16_aspect": 4.6607929515418505,
+          "corners_alpha": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "qa_status": "FAIL",
+          "check_required": "transparent background / bottom-left corner is the square one / the seat is empty / the right 70% has no decoration.",
+          "prompt_sha256": "71c509e319ac358b0f70f9ec44ade76e22134c0cd094598ebbb294da2e631208",
+          "qa_notes": [
+            "指定キャンバス[1536, 1024]に対し実寸[2172, 724]で不一致。"
+          ],
+          "references_in_order": [
+            {
+              "path": "asset_sources/ui/craft-texture-20261111/mock/pull-B.png",
+              "ref": "bf79baa3d84b172753ff33e477c0c482ec7c118e",
+              "git_blob_sha": "88c7e0bccc080e2b0fa3bfd973d727023c83524e",
+              "sha256": "c35a38909467b8ed8fc9b2bc9d8cc9d3360074359f6c5d64f6489339449e497e",
+              "bytes": 2515669,
+              "purpose": "materials_colours_finish_only_not_layout"
+            }
+          ],
+          "visual_reviewed": true,
+          "original_source_file": "exec-d8a05159-27ff-4e26-84e2-b88e6c02b73c.png"
+        }
+      ]
+    },
+    {
+      "number": 15,
+      "path": "asset_sources/ui/craft-glass-20261111/raw/tile-off.png",
+      "file": "tile-off.png",
+      "selected_attempt": 2,
+      "attempt_count": 3,
+      "overall_status": "FAIL",
+      "selected_original": {
+        "number": 15,
+        "file": "tile-off.png",
+        "attempt": 2,
+        "bytes": 1463998,
+        "sha256": "3a46f157195e41c61904975f07a4e24326a2ca8cc1bb68d2316dc5aaae39826f",
+        "pixels": [
+          2172,
+          724
+        ],
+        "expected_pixels": [
+          1536,
+          1024
+        ],
+        "requested_canvas_match": false,
+        "mode": "RGBA",
+        "alpha_range": [
+          0,
+          255
+        ],
+        "alpha16_bbox": [
+          74,
+          97,
+          2100,
+          625
+        ],
+        "alpha16_aspect": 3.837121212121212,
+        "corners_alpha": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "qa_status": "FAIL",
+        "check_required": "overlays tile.png / clearly darker and duller than tile.png / no glow / no text or symbol.",
+        "prompt_sha256": "5ea7aef859aef0b80b3b29bd2a0ad07d134a648f3a7740d2d4f9d88730015f0a",
+        "qa_notes": [
+          "指定(1536, 1024)に対し原画(2172, 724)。未加工のため寸法は修正していない。",
+          "tileより暗く鈍い銅色、文字・鍵印・発光なし。枠・鋲の完全な重なりは未達。上端に弱いハイライトも残る。"
+        ],
+        "references_in_order": [
+          {
+            "path": "asset_sources/ui/craft-glass-20261111/raw/tile.png",
+            "sha256": "e78b0b1591c2baefe2cb0fd4edd630979895654882fefed33cea62dc1700c81c",
+            "bytes": 1752366,
+            "purpose": "shape"
+          },
+          {
+            "path": "asset_sources/ui/craft-texture-20261111/mock/pull-B.png",
+            "ref": "bf79baa3d84b172753ff33e477c0c482ec7c118e",
+            "git_blob_sha": "88c7e0bccc080e2b0fa3bfd973d727023c83524e",
+            "sha256": "c35a38909467b8ed8fc9b2bc9d8cc9d3360074359f6c5d64f6489339449e497e",
+            "bytes": 2515669,
+            "purpose": "materials_colours_finish_only_not_layout"
+          }
+        ],
+        "visual_reviewed": true,
+        "original_source_file": "exec-c33b91aa-513d-4bc3-8afd-09154efd72e6.png"
+      },
+      "attempts": [
+        {
+          "number": 15,
+          "file": "tile-off.png",
+          "attempt": 1,
+          "bytes": 1453428,
+          "sha256": "fb98cf49c6a3ba70b8c4f8a0ce5bcaa25e55b0d9dcf328dbd365ced950d1d651",
+          "pixels": [
+            2172,
+            724
+          ],
+          "expected_pixels": [
+            1536,
+            1024
+          ],
+          "requested_canvas_match": false,
+          "mode": "RGBA",
+          "alpha_range": [
+            0,
+            255
+          ],
+          "alpha16_bbox": [
+            84,
+            99,
+            2090,
+            611
+          ],
+          "alpha16_aspect": 3.91796875,
+          "corners_alpha": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "qa_status": "FAIL",
+          "check_required": "overlays tile.png / clearly darker and duller than tile.png / no glow / no text or symbol.",
+          "prompt_sha256": "5ea7aef859aef0b80b3b29bd2a0ad07d134a648f3a7740d2d4f9d88730015f0a",
+          "references_in_order": [
+            {
+              "path": "asset_sources/ui/craft-glass-20261111/raw/tile.png",
+              "sha256": "e78b0b1591c2baefe2cb0fd4edd630979895654882fefed33cea62dc1700c81c",
+              "bytes": 1752366,
+              "purpose": "shape"
+            },
+            {
+              "path": "asset_sources/ui/craft-texture-20261111/mock/pull-B.png",
+              "ref": "bf79baa3d84b172753ff33e477c0c482ec7c118e",
+              "git_blob_sha": "88c7e0bccc080e2b0fa3bfd973d727023c83524e",
+              "sha256": "c35a38909467b8ed8fc9b2bc9d8cc9d3360074359f6c5d64f6489339449e497e",
+              "bytes": 2515669,
+              "purpose": "materials_colours_finish_only_not_layout"
+            }
+          ],
+          "qa_notes": [
+            "2172×724で指定1536×1024に不一致。灰色で暗い状態・文字や鍵の記号なしを確認。元tileとの完全な重なりは未達。"
+          ],
+          "visual_reviewed": true,
+          "original_source_file": "exec-7e584c1e-1eab-497e-b446-2543cfea2506.png"
+        },
+        {
+          "number": 15,
+          "file": "tile-off.png",
+          "attempt": 2,
+          "bytes": 1463998,
+          "sha256": "3a46f157195e41c61904975f07a4e24326a2ca8cc1bb68d2316dc5aaae39826f",
+          "pixels": [
+            2172,
+            724
+          ],
+          "expected_pixels": [
+            1536,
+            1024
+          ],
+          "requested_canvas_match": false,
+          "mode": "RGBA",
+          "alpha_range": [
+            0,
+            255
+          ],
+          "alpha16_bbox": [
+            74,
+            97,
+            2100,
+            625
+          ],
+          "alpha16_aspect": 3.837121212121212,
+          "corners_alpha": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "qa_status": "FAIL",
+          "check_required": "overlays tile.png / clearly darker and duller than tile.png / no glow / no text or symbol.",
+          "prompt_sha256": "5ea7aef859aef0b80b3b29bd2a0ad07d134a648f3a7740d2d4f9d88730015f0a",
+          "qa_notes": [
+            "指定(1536, 1024)に対し原画(2172, 724)。未加工のため寸法は修正していない。",
+            "tileより暗く鈍い銅色、文字・鍵印・発光なし。枠・鋲の完全な重なりは未達。上端に弱いハイライトも残る。"
+          ],
+          "references_in_order": [
+            {
+              "path": "asset_sources/ui/craft-glass-20261111/raw/tile.png",
+              "sha256": "e78b0b1591c2baefe2cb0fd4edd630979895654882fefed33cea62dc1700c81c",
+              "bytes": 1752366,
+              "purpose": "shape"
+            },
+            {
+              "path": "asset_sources/ui/craft-texture-20261111/mock/pull-B.png",
+              "ref": "bf79baa3d84b172753ff33e477c0c482ec7c118e",
+              "git_blob_sha": "88c7e0bccc080e2b0fa3bfd973d727023c83524e",
+              "sha256": "c35a38909467b8ed8fc9b2bc9d8cc9d3360074359f6c5d64f6489339449e497e",
+              "bytes": 2515669,
+              "purpose": "materials_colours_finish_only_not_layout"
+            }
+          ],
+          "visual_reviewed": true,
+          "original_source_file": "exec-c33b91aa-513d-4bc3-8afd-09154efd72e6.png"
+        },
+        {
+          "number": 15,
+          "file": "tile-off.png",
+          "attempt": 3,
+          "bytes": 1477669,
+          "sha256": "5110aa978554079d09ff4688192fc4aab21236859fe1a1c13a3e65c855458f57",
+          "pixels": [
+            2172,
+            724
+          ],
+          "expected_pixels": [
+            1536,
+            1024
+          ],
+          "requested_canvas_match": false,
+          "mode": "RGBA",
+          "alpha_range": [
+            0,
+            255
+          ],
+          "alpha16_bbox": [
+            82,
+            98,
+            2094,
+            617
+          ],
+          "alpha16_aspect": 3.876685934489403,
+          "corners_alpha": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "qa_status": "FAIL",
+          "check_required": "overlays tile.png / clearly darker and duller than tile.png / no glow / no text or symbol.",
+          "prompt_sha256": "5ea7aef859aef0b80b3b29bd2a0ad07d134a648f3a7740d2d4f9d88730015f0a",
+          "qa_notes": [
+            "指定キャンバス[1536, 1024]に対し実寸[2172, 724]で不一致。"
+          ],
+          "references_in_order": [
+            {
+              "path": "asset_sources/ui/craft-glass-20261111/raw/tile.png",
+              "sha256": "e78b0b1591c2baefe2cb0fd4edd630979895654882fefed33cea62dc1700c81c",
+              "bytes": 1752366,
+              "purpose": "shape"
+            },
+            {
+              "path": "asset_sources/ui/craft-texture-20261111/mock/pull-B.png",
+              "ref": "bf79baa3d84b172753ff33e477c0c482ec7c118e",
+              "git_blob_sha": "88c7e0bccc080e2b0fa3bfd973d727023c83524e",
+              "sha256": "c35a38909467b8ed8fc9b2bc9d8cc9d3360074359f6c5d64f6489339449e497e",
+              "bytes": 2515669,
+              "purpose": "materials_colours_finish_only_not_layout"
+            }
+          ],
+          "visual_reviewed": true,
+          "original_source_file": "exec-48db842c-4d54-49a6-a423-29808815c92e.png"
+        }
+      ]
+    },
+    {
+      "number": 16,
+      "path": "asset_sources/ui/craft-glass-20261111/raw/dial-glass.png",
+      "file": "dial-glass.png",
+      "selected_attempt": 2,
+      "attempt_count": 3,
+      "overall_status": "FAIL",
+      "selected_original": {
+        "number": 16,
+        "file": "dial-glass.png",
+        "attempt": 2,
+        "bytes": 1428196,
+        "sha256": "71eb31e744fb569cecc6e1b0495bfb05a5f94b9ed230ebd72c98b61a354f8ecb",
+        "pixels": [
+          1536,
+          1024
+        ],
+        "expected_pixels": [
+          1536,
+          1024
+        ],
+        "requested_canvas_match": true,
+        "mode": "RGBA",
+        "alpha_range": [
+          0,
+          253
+        ],
+        "alpha16_bbox": [
+          91,
+          114,
+          1412,
+          800
+        ],
+        "alpha16_aspect": 1.9256559766763848,
+        "corners_alpha": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "qa_status": "FAIL",
+        "check_required": "overlays the arc window of dial-bezel.png exactly / mostly transparent with only highlights / alpha 0 outside the arc / no colours, lines or text.",
+        "prompt_sha256": "32b3ac79133b6631a01916f3ec78c5abbf9b57a314173efd045d2e0946b88178",
+        "qa_notes": [
+          "透明な半円ガラス、色帯・針・文字なし。dial-bezelの窓の内外径と一致せず、窓外にも微小alphaが残る。面のalphaは試点25–44（約10–17%）、一部は指定15%を超える。"
+        ],
+        "references_in_order": [
+          {
+            "path": "asset_sources/ui/craft-glass-20261111/raw/dial-bezel.png",
+            "sha256": "a8ccd237bdc85e0cc27c54d82fe04bfe5d258329344ecfd18386d4cda6cd5859",
+            "bytes": 2027179,
+            "purpose": "shape"
+          },
+          {
+            "path": "asset_sources/ui/craft-texture-20261111/mock/pull-B.png",
+            "ref": "bf79baa3d84b172753ff33e477c0c482ec7c118e",
+            "git_blob_sha": "88c7e0bccc080e2b0fa3bfd973d727023c83524e",
+            "sha256": "c35a38909467b8ed8fc9b2bc9d8cc9d3360074359f6c5d64f6489339449e497e",
+            "bytes": 2515669,
+            "purpose": "materials_colours_finish_only_not_layout"
+          }
+        ],
+        "visual_reviewed": true,
+        "original_source_file": "exec-ad1b269d-7bf2-43c4-a9af-06668dc4f65e.png"
+      },
+      "attempts": [
+        {
+          "number": 16,
+          "file": "dial-glass.png",
+          "attempt": 1,
+          "bytes": 1327474,
+          "sha256": "b2fd74c2fa777e5ad958d6c47f09d330821fc275e772e6e51061aef09dbfd604",
+          "pixels": [
+            1536,
+            1024
+          ],
+          "expected_pixels": [
+            1536,
+            1024
+          ],
+          "requested_canvas_match": true,
+          "mode": "RGBA",
+          "alpha_range": [
+            0,
+            245
+          ],
+          "alpha16_bbox": [
+            114,
+            138,
+            1406,
+            810
+          ],
+          "alpha16_aspect": 1.9226190476190477,
+          "corners_alpha": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "qa_status": "FAIL",
+          "check_required": "overlays the arc window of dial-bezel.png exactly / mostly transparent with only highlights / alpha 0 outside the arc / no colours, lines or text.",
+          "prompt_sha256": "32b3ac79133b6631a01916f3ec78c5abbf9b57a314173efd045d2e0946b88178",
+          "references_in_order": [
+            {
+              "path": "asset_sources/ui/craft-glass-20261111/raw/dial-bezel.png",
+              "sha256": "a8ccd237bdc85e0cc27c54d82fe04bfe5d258329344ecfd18386d4cda6cd5859",
+              "bytes": 2027179,
+              "purpose": "shape"
+            },
+            {
+              "path": "asset_sources/ui/craft-texture-20261111/mock/pull-B.png",
+              "ref": "bf79baa3d84b172753ff33e477c0c482ec7c118e",
+              "git_blob_sha": "88c7e0bccc080e2b0fa3bfd973d727023c83524e",
+              "sha256": "c35a38909467b8ed8fc9b2bc9d8cc9d3360074359f6c5d64f6489339449e497e",
+              "bytes": 2515669,
+              "purpose": "materials_colours_finish_only_not_layout"
+            }
+          ],
+          "qa_notes": [
+            "1536×1024。ガラスの半円のみで文字・針なしは確認。台座の窓と内外径がずれ、厳密な重なり未達。窓外にも微小alphaが残る。"
+          ],
+          "visual_reviewed": true,
+          "original_source_file": "exec-88b38278-52d9-4873-ab61-75364d656851.png"
+        },
+        {
+          "number": 16,
+          "file": "dial-glass.png",
+          "attempt": 2,
+          "bytes": 1428196,
+          "sha256": "71eb31e744fb569cecc6e1b0495bfb05a5f94b9ed230ebd72c98b61a354f8ecb",
+          "pixels": [
+            1536,
+            1024
+          ],
+          "expected_pixels": [
+            1536,
+            1024
+          ],
+          "requested_canvas_match": true,
+          "mode": "RGBA",
+          "alpha_range": [
+            0,
+            253
+          ],
+          "alpha16_bbox": [
+            91,
+            114,
+            1412,
+            800
+          ],
+          "alpha16_aspect": 1.9256559766763848,
+          "corners_alpha": [
+            0,
+            0,
+            0,
+            0
+          ],
+          "qa_status": "FAIL",
+          "check_required": "overlays the arc window of dial-bezel.png exactly / mostly transparent with only highlights / alpha 0 outside the arc / no colours, lines or text.",
+          "prompt_sha256": "32b3ac79133b6631a01916f3ec78c5abbf9b57a314173efd045d2e0946b88178",
+          "qa_notes": [
+            "透明な半円ガラス、色帯・針・文字なし。dial-bezelの窓の内外径と一致せず、窓外にも微小alphaが残る。面のalphaは試点25–44（約10–17%）、一部は指定15%を超える。"
+          ],
+          "references_in_order": [
+            {
+              "path": "asset_sources/ui/craft-glass-20261111/raw/dial-bezel.png",
+              "sha256": "a8ccd237bdc85e0cc27c54d82fe04bfe5d258329344ecfd18386d4cda6cd5859",
+              "bytes": 2027179,
+              "purpose": "shape"
+            },
+            {
+              "path": "asset_sources/ui/craft-texture-20261111/mock/pull-B.png",
+              "ref": "bf79baa3d84b172753ff33e477c0c482ec7c118e",
+              "git_blob_sha": "88c7e0bccc080e2b0fa3bfd973d727023c83524e",
+              "sha256": "c35a38909467b8ed8fc9b2bc9d8cc9d3360074359f6c5d64f6489339449e497e",
+              "bytes": 2515669,
+              "purpose": "materials_colours_finish_only_not_layout"
+            }
+          ],
+          "visual_reviewed": true,
+          "original_source_file": "exec-ad1b269d-7bf2-43c4-a9af-06668dc4f65e.png"
+        },
+        {
+          "number": 16,
+          "file": "dial-glass.png",
+          "attempt": 3,
+          "bytes": 1448306,
+          "sha256": "c675d9eb18e91f7a9b2889fe46bc7f3e728469861263e5e2882b6dbe6b76eb57",
+          "pixels": [
+            1536,
+            1024
+          ],
+          "expected_pixels": [
+            1536,
+            1024
+          ],
+          "requested_canvas_match": true,
+          "mode": "RGBA",
+          "alpha_range": [
+            0,
+            250
+          ],
+          "alpha16_bbox": [
+            106,
+            153,
+            1401,
+            814
+          ],
+          "alpha16_aspect": 1.9591527987897126,
+          "corners_alpha": [
+            0,
+            0,
+            0,
+            1
+          ],
+          "qa_status": "FAIL",
+          "check_required": "overlays the arc window of dial-bezel.png exactly / mostly transparent with only highlights / alpha 0 outside the arc / no colours, lines or text.",
+          "prompt_sha256": "32b3ac79133b6631a01916f3ec78c5abbf9b57a314173efd045d2e0946b88178",
+          "qa_notes": [
+            "原寸目視でCHECK未達。窓の幾何・透明度・範囲の一致に問題が残る。"
+          ],
+          "references_in_order": [
+            {
+              "path": "asset_sources/ui/craft-glass-20261111/raw/dial-bezel.png",
+              "sha256": "a8ccd237bdc85e0cc27c54d82fe04bfe5d258329344ecfd18386d4cda6cd5859",
+              "bytes": 2027179,
+              "purpose": "shape"
+            },
+            {
+              "path": "asset_sources/ui/craft-texture-20261111/mock/pull-B.png",
+              "ref": "bf79baa3d84b172753ff33e477c0c482ec7c118e",
+              "git_blob_sha": "88c7e0bccc080e2b0fa3bfd973d727023c83524e",
+              "sha256": "c35a38909467b8ed8fc9b2bc9d8cc9d3360074359f6c5d64f6489339449e497e",
+              "bytes": 2515669,
+              "purpose": "materials_colours_finish_only_not_layout"
+            }
+          ],
+          "visual_reviewed": true,
+          "original_source_file": "exec-9adecda6-fb1a-435c-b60b-67bd00ef88b2.png"
+        }
+      ]
+    },
+    {
+      "number": 17,
+      "path": "asset_sources/ui/craft-glass-20261111/raw/stage-leather.png",
+      "file": "stage-leather.png",
+      "selected_attempt": 1,
+      "attempt_count": 1,
+      "overall_status": "PASS",
+      "selected_original": {
+        "number": 17,
+        "file": "stage-leather.png",
+        "attempt": 1,
+        "bytes": 2462257,
+        "sha256": "b9cb2400cdcc0d1dd3f42afd8909d65211a143485f052d557dad379768f5ca4c",
+        "pixels": [
+          1536,
+          1024
+        ],
+        "expected_pixels": [
+          1536,
+          1024
+        ],
+        "requested_canvas_match": true,
+        "mode": "RGB",
+        "alpha_range": null,
+        "alpha16_bbox": [
+          0,
+          0,
+          1536,
+          1024
+        ],
+        "alpha16_aspect": 1.5,
+        "corners_alpha": null,
+        "qa_status": "PASS",
+        "check_required": "opaque and fills the image / stitching at an even inset / the emboss is faint and even / no objects or text.",
+        "prompt_sha256": "5b26394d7d5784734c98987b2ba889c10add8f5541037fb24b30c8db9fa6cbdc",
+        "references_in_order": [
+          {
+            "path": "asset_sources/ui/craft-texture-20261111/mock/pull-B.png",
+            "ref": "bf79baa3d84b172753ff33e477c0c482ec7c118e",
+            "git_blob_sha": "88c7e0bccc080e2b0fa3bfd973d727023c83524e",
+            "sha256": "c35a38909467b8ed8fc9b2bc9d8cc9d3360074359f6c5d64f6489339449e497e",
+            "bytes": 2515669,
+            "purpose": "materials_colours_finish_only_not_layout"
+          }
+        ],
+        "qa_notes": [
+          "RGBで全面不透過。薄い四角の型押し、均一な縫い目、無地の中央、物・文字なしを確認。"
+        ],
+        "visual_reviewed": true,
+        "original_source_file": "exec-fb932cdb-09c0-4dc6-b480-73de5cbafbdd.png"
+      },
+      "attempts": [
+        {
+          "number": 17,
+          "file": "stage-leather.png",
+          "attempt": 1,
+          "bytes": 2462257,
+          "sha256": "b9cb2400cdcc0d1dd3f42afd8909d65211a143485f052d557dad379768f5ca4c",
+          "pixels": [
+            1536,
+            1024
+          ],
+          "expected_pixels": [
+            1536,
+            1024
+          ],
+          "requested_canvas_match": true,
+          "mode": "RGB",
+          "alpha_range": null,
+          "alpha16_bbox": [
+            0,
+            0,
+            1536,
+            1024
+          ],
+          "alpha16_aspect": 1.5,
+          "corners_alpha": null,
+          "qa_status": "PASS",
+          "check_required": "opaque and fills the image / stitching at an even inset / the emboss is faint and even / no objects or text.",
+          "prompt_sha256": "5b26394d7d5784734c98987b2ba889c10add8f5541037fb24b30c8db9fa6cbdc",
+          "references_in_order": [
+            {
+              "path": "asset_sources/ui/craft-texture-20261111/mock/pull-B.png",
+              "ref": "bf79baa3d84b172753ff33e477c0c482ec7c118e",
+              "git_blob_sha": "88c7e0bccc080e2b0fa3bfd973d727023c83524e",
+              "sha256": "c35a38909467b8ed8fc9b2bc9d8cc9d3360074359f6c5d64f6489339449e497e",
+              "bytes": 2515669,
+              "purpose": "materials_colours_finish_only_not_layout"
+            }
+          ],
+          "qa_notes": [
+            "RGBで全面不透過。薄い四角の型押し、均一な縫い目、無地の中央、物・文字なしを確認。"
+          ],
+          "visual_reviewed": true,
+          "original_source_file": "exec-fb932cdb-09c0-4dc6-b480-73de5cbafbdd.png"
+        }
+      ]
+    }
+  ]
+}

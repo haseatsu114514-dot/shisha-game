@@ -10,6 +10,12 @@
   ],
   "suites": [
     {
+      "id": "play-mastery",
+      "title": "Mini-game mastery, cumulative progress, save/NG+ rewards and chapter-five paid growth",
+      "kind": "quick",
+      "run": ["node remake/test/play_mastery.mjs"]
+    },
+    {
       "id": "promo-site",
       "title": "公式プロモーションサイト（promo/）の参照切れ・ページ内リンク・人物と店の対応・使っていない絵",
       "kind": "quick",
@@ -26,6 +32,14 @@
       "title": "左右の余白（YHK）: 余白の幅の段・縦書きの帯に出す言葉・画面の当て直しの通知",
       "kind": "quick",
       "run": ["node remake/test/side_area.mjs"]
+    },
+    {
+      "id": "neo-ambient",
+      "title": "新版の場所の光（BGU01）: 背景の色から立ち絵へ重ねる色を決める規則（明るい場所は変えない・暗さと色かぶりの下限・夜の色調補正）",
+      "kind": "quick",
+      "run": [
+        "node remake/test/neo_ambient.mjs"
+      ]
     },
     {
       "id": "chapter-poems",
@@ -283,6 +297,12 @@
       "title": "Starter fire accounting, cap, legacy saves, full board and NG+ (#3118)",
       "kind": "quick",
       "run": ["node remake/test/growth_starter_accounting.mjs"]
+    },
+    {
+      "id": "smoke-field",
+      "title": "Breath smoke and shop haze (KMR11・KMR21): palette, breath styles, quality tiers, ring, cover, haze amount, which backgrounds",
+      "kind": "quick",
+      "run": ["node remake/test/smoke_field.mjs"]
     },
     {
       "id": "vent-lid",
@@ -616,8 +636,17 @@
       "kind": "browser",
       "weight": 1,
       "timeout": 5,
-      "paths": ["remake/js/minigames/ichidai*.js", "remake/js/daily/ichidai-table.js", "remake/js/ichidai-page.js", "remake/ichidai.html", "remake/css/ichidai.css", "remake/js/daily/tonari.js", "remake/test/browser/ichidai.mjs"],
+      "paths": ["remake/js/minigames/ichidai*.js", "remake/js/daily/ichidai-table.js", "remake/js/ichidai-page.js", "remake/ichidai.html", "remake/css/ichidai.css", "remake/css/ichidai-lines.css", "remake/js/daily/tonari.js", "remake/test/browser/ichidai.mjs", "remake/test/browser/ichidai_support.mjs"],
       "run": ["node remake/test/browser/ichidai.mjs"]
+    },
+    {
+      "id": "ichidai-modes",
+      "title": "Card game Ichidai Shobu: the guide (turn flow, goal, next-step hints, automatic cooling, burn-out marks, prep tray captions) and the four-player table (rival faces, lines, target choice, this round's judge card, ranking) (ICG52-57)",
+      "kind": "browser",
+      "weight": 1,
+      "timeout": 5,
+      "paths": ["remake/js/minigames/ichidai*.js", "remake/js/ichidai-page.js", "remake/ichidai.html", "remake/css/ichidai.css", "remake/css/ichidai-lines.css", "data/dialogue/ichidai_lines.json", "remake/test/browser/ichidai_modes.mjs", "remake/test/browser/ichidai_support.mjs"],
+      "run": ["node remake/test/browser/ichidai_modes.mjs"]
     },
     {
       "id": "dj-club",
@@ -645,6 +674,7 @@
         "remake/js/minigames/desert-ride.js",
         "remake/js/minigames/desert-ride-model.js",
         "remake/js/minigames/desert-ride-art.js",
+        "remake/js/minigames/minigame-loading.js",
         "remake/img/ui/desert_ride/**",
         "remake/js/chapters/ch4-desert.js",
         "remake/js/chapters/ch4-desert-progress.js",
@@ -760,7 +790,7 @@
     },
     {
       "id": "resume-loading-a01",
-      "title": "Resume into a later chapter recovers from a failed module fetch (#1081 A01)",
+      "title": "Resume recovers from failed module fetches and removed deployment JS (#1081 A01, #3463)",
       "kind": "browser",
       "weight": 0.5,
       "timeout": 3,
@@ -769,6 +799,8 @@
         "remake/js/core/ui.js",
         "remake/js/chapters/ch1.js",
         "remake/js/chapters/ch2-tournament.js",
+        "remake/js/chapters/ch3-aftermath.js",
+        "remake/js/chapters/ch4.js",
         "remake/test/browser/resume_loading_a01.mjs"
       ],
       "run": ["node remake/test/browser/resume_loading_a01.mjs"]
@@ -889,6 +921,7 @@
         "node --experimental-vm-modules remake/test/ch5_progress.mjs",
         "node remake/test/ch5_sumi_trial.mjs",
         "node remake/test/ch5_party.mjs",
+        "node remake/test/petit_shuraba.mjs",
         "node remake/test/ch5_travel.mjs",
         "node --experimental-vm-modules remake/test/ch3_activities.mjs",
         "node remake/test/ch3_trials.mjs",
@@ -1005,6 +1038,7 @@
         "node remake/test/chapter_feature_gates_2035.mjs",
         "node remake/test/tournament_entrance.mjs",
         "node --experimental-vm-modules remake/test/rio_sample.mjs",
+        "node --experimental-vm-modules remake/test/shop_greeting.mjs",
         "node --experimental-vm-modules remake/test/invites_781.mjs",
         "node --experimental-vm-modules remake/test/stamina_condition.mjs",
         "node --experimental-vm-modules remake/test/lime_consistency.mjs",
@@ -1012,10 +1046,11 @@
         "node --experimental-vm-modules remake/test/hiyori_frequency.mjs",
         "node --experimental-vm-modules remake/test/hiyori_quiet_visit.mjs",
         "node remake/test/spot_encounter_doctor.mjs",
+        "node remake/test/town_ties.mjs",
         "node --experimental-vm-modules remake/test/hiyori_showroom_806.mjs",
         "node --experimental-vm-modules remake/test/first_meeting_affinity.mjs",
         "node --experimental-vm-modules remake/test/samechan_story.mjs",
-        "node --test remake/test/axe_throw.mjs remake/test/axe_match.mjs remake/test/axe_presentation.mjs remake/test/axe_challenges.mjs",
+        "node --test remake/test/axe_throw.mjs remake/test/axe_match.mjs remake/test/axe_presentation.mjs remake/test/axe_challenges.mjs remake/test/axe_pull.mjs remake/test/axe_pull_dom.mjs remake/test/axe_equipment.mjs remake/test/axe_pull_input.mjs",
         "node remake/test/axe_bar_discovery.mjs",
         "node remake/test/mix_recognition.mjs",
         "node --experimental-vm-modules remake/test/foil_holes.mjs",
@@ -1090,6 +1125,7 @@
       "kind": "quick",
       "run": [
         "node --experimental-vm-modules remake/test/recorded_se.mjs",
+        "node --experimental-vm-modules remake/test/main_se_20261111.mjs",
         "node --experimental-vm-modules remake/test/minigame_se.mjs", "node --experimental-vm-modules remake/test/desert_ride_sfx.mjs",
         "node --experimental-vm-modules remake/test/story_audio.mjs",
         "node --experimental-vm-modules remake/test/entry_phone_audio.mjs",
@@ -1107,7 +1143,8 @@
         "node --experimental-vm-modules remake/test/lime_fit_774.mjs",
         "node --experimental-vm-modules remake/test/lime_save_774.mjs",
         "node --experimental-vm-modules remake/test/purikura_motion.mjs",
-        "node remake/test/text_wrap.mjs --fixed-only",
+        "node remake/test/text_wrap.mjs",
+        "node remake/test/css_wrap_guard.mjs",
         "node remake/test/natural_wrap.mjs",
         "node remake/test/conversation_effects_marks.mjs",
         "node remake/test/conversation_cutin.mjs"
@@ -1176,6 +1213,7 @@
         "remake/test/axe_throw.mjs",
         "remake/test/axe_match.mjs",
         "remake/test/axe_presentation.mjs",
+        "remake/test/browser/axe_tap_pull.mjs",
         "remake/test/browser/axe_throw.mjs",
         "remake/test/browser/axe_versus.mjs",
         "remake/test/browser/axe_polish.mjs",
@@ -1187,9 +1225,11 @@
         "remake/img/ui/axe_throw/**",
         "remake/img/backgrounds/bg_axe_lounge_night.webp",
         "remake/test/browser/axe_bgm_788.mjs",
-        "remake/test/browser/axe_audio_performance.mjs"
+        "remake/test/browser/axe_audio_performance.mjs",
+        "assets/audio/se/axe_throw/**"
       ],
       "run": [
+        "COMPARISON_DIR=.codex/artifacts/remake-browser/axe-tap-pull node remake/test/browser/axe_tap_pull.mjs",
         "COMPARISON_DIR=.codex/artifacts/remake-browser/axe-poses node remake/test/browser/axe_throw.mjs",
         "COMPARISON_DIR=.codex/artifacts/remake-browser/axe-versus-poses node remake/test/browser/axe_versus.mjs",
         "COMPARISON_DIR=.codex/artifacts/remake-browser/axe-polish-poses node remake/test/browser/axe_polish.mjs",
@@ -1692,6 +1732,7 @@
         "remake/js/core/stage-fit.js",
         "remake/js/minigames/camel-race.js",
         "remake/js/minigames/camel-race-model.js",
+        "remake/js/minigames/minigame-loading.js",
         "remake/js/chapters/ch4-camel-race.js",
         "remake/js/chapters/ch4-camel-progress.js",
         "remake/js/chapters/ch4-dubai-daily.js",
@@ -1773,6 +1814,7 @@
         "data/dialogue/ch4_main.json",
         "data/dialogue/ch4_visitors.json",
         "data/dialogue/ch4_*_dubai.json",
+        "data/dialogue/ch4_arrival_daily.json",
         "data/dialogue/tournament_dates.json",
         "remake/test/browser/ch4_dubai_daily.mjs"
       ],
@@ -1794,6 +1836,7 @@
         "data/dialogue/ch4_spots.json",
         "data/dialogue/ch4_visitors.json",
         "data/dialogue/ch4_*_dubai.json",
+        "data/dialogue/ch4_arrival_daily.json",
         "remake/test/browser/ch4_full_flow.mjs"
       ],
       "run": [
@@ -1846,6 +1889,30 @@
         "remake/test/browser/ch5_sumi_trial.mjs"
       ],
       "run": ["node remake/test/browser/ch5_sumi_trial.mjs"]
+    },
+    {
+      "id": "petit-shuraba",
+      "title": "Petit shuraba: one scene after a date or a visit while two lovers are hidden, the LIME misfire, the short stare cut-in, and the recall at the final shuraba",
+      "kind": "browser",
+      "weight": 0.3,
+      "timeout": 8,
+      "paths": [
+        "remake/js/core/petit-shuraba.js",
+        "remake/js/daily/petit-shuraba.js",
+        "data/dialogue/petit_shuraba.json",
+        "remake/data/lover.json",
+        "remake/js/daily/romance.js",
+        "remake/js/daily/samechan-date.js",
+        "remake/js/daily/phone.js",
+        "remake/js/motions/gaze.js",
+        "remake/css/motions/gaze.css",
+        "data/dialogue/ch5_party.json",
+        "data/dialogue/relationship_conflicts.json",
+        "remake/test/browser/petit_shuraba.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/petit_shuraba.mjs"
+      ]
     },
     {
       "id": "staff-roll",
@@ -2421,6 +2488,23 @@
         "node remake/test/browser/smoke_dissolve.mjs"
       ],
       "chrome": "playwright"
+    },
+    {
+      "id": "visual-continuity-3203",
+      "title": "#3203 店の入口の写真を待ってから出す（遅い時は上限・下地）／背景の取得に失敗しても前の背景を残す",
+      "kind": "browser",
+      "weight": 0.4,
+      "timeout": 5,
+      "paths": [
+        "remake/js/core/ui.js",
+        "remake/js/core/scene-art.js",
+        "remake/js/daily/shop.js",
+        "remake/css/shop.css",
+        "remake/test/browser/visual_continuity_3203.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/visual_continuity_3203.mjs"
+      ]
     },
     {
       "id": "steam-forecast",
@@ -3308,6 +3392,7 @@
         "remake/test/axe_throw.mjs",
         "remake/test/axe_match.mjs",
         "remake/test/axe_presentation.mjs",
+        "remake/test/browser/axe_tap_pull.mjs",
         "remake/test/browser/axe_throw.mjs",
         "remake/test/browser/axe_versus.mjs",
         "remake/test/browser/axe_polish.mjs",
@@ -3810,10 +3895,12 @@
         "remake/js/daily/spot-encounters.js",
         "remake/js/vn/**",
         "remake/js/core/state.js",
-        "remake/test/browser/spot_encounters.mjs"
+        "remake/test/browser/spot_encounters.mjs",
+        "remake/test/browser/town_ties.mjs"
       ],
       "run": [
-        "node remake/test/browser/spot_encounters.mjs"
+        "node remake/test/browser/spot_encounters.mjs",
+        "node remake/test/browser/town_ties.mjs"
       ],
       "env": {
         "ARTIFACT_DIR": ".codex/artifacts/remake-browser/spot-encounters"
@@ -4137,6 +4224,15 @@
       "run": ["node remake/test/browser/stage_fit.mjs"]
     },
     {
+      "id": "mobile-craft-layout",
+      "title": "Mobile packing regions and foil/stove impact scale regression",
+      "kind": "browser",
+      "weight": 1,
+      "timeout": 5,
+      "paths": ["remake/css/craft-stage.css", "remake/css/phone-layout.css", "remake/js/craft/fx.js", "remake/test/browser/mobile_craft_layout.mjs"],
+      "run": ["node remake/test/browser/mobile_craft_layout.mjs"]
+    },
+    {
       "id": "side-area",
       "title": "左右の余白（YHK）: 煙と縁・縦書きの帯・親指ボタン（会話の AUTO／SKIP／LOG／次へ、地図の LIME／MENU）。主流のスマホの置き場所、モーダルの下では効かないこと、狭い画面・PC・DS風・設定「ぼかしだけ」・自動操作の既定は今までどおり",
       "kind": "browser",
@@ -4211,7 +4307,7 @@
     },
     {
       "id": "conversation-effects-demo",
-      "title": "Conversation effects demo (#2732): 12 candidates, ON/OFF, one at a time",
+      "title": "Conversation effects demo (#2732): 12 candidates and 6 new faces (#3417), ON/OFF, one at a time",
       "kind": "browser",
       "weight": 1.5,
       "timeout": 5,
@@ -4235,10 +4331,19 @@
       "run": ["node remake/test/browser/conversation_effects_2828.mjs"]
     },
     {
-      "id": "conversation-cutin",
-      "title": "Conversation cut-ins in the main VN engine (#2990): adopted placements, enter/leave, SKIP/LOG",
+      "id": "smoke-breath",
+      "title": "Breath smoke and shop haze in the game (KMR11・KMR21): VN exhale, craft exhale tiers, result cover, faint haze in shisha shops",
       "kind": "browser",
-      "weight": 0.5,
+      "weight": 1,
+      "timeout": 5,
+      "paths": ["remake/js/core/smoke.js", "remake/js/core/shop-haze.js", "remake/js/core/ui.js", "remake/js/vn/breath.js", "remake/js/vn/engine.js", "remake/js/craft/fx.js", "remake/js/craft/result.js", "remake/test/browser/smoke_breath.mjs"],
+      "run": ["node remake/test/browser/smoke_breath.mjs"]
+    },
+    {
+      "id": "conversation-cutin",
+      "title": "Conversation cut-ins in the main VN engine (#2990, #3417): every placement plays, enter/leave, SKIP/LOG",
+      "kind": "browser",
+      "weight": 1.2,
       "timeout": 4,
       "paths": ["remake/js/vn/engine.js", "remake/js/vn/conversation-cutin.js", "remake/css/vn/conversation-cutin.css", "remake/test/browser/conversation_cutin_2990.mjs"],
       "run": ["node remake/test/browser/conversation_cutin_2990.mjs"]
@@ -4288,11 +4393,17 @@
       "timeout": 5,
       "paths": [
         "remake/js/daily/shop.js",
+        "remake/js/daily/shop-greeting.js",
+        "remake/js/chapters/departure-prep.js",
+        "data/dialogue/ch1_rio.json",
+        "remake/test/browser/rio_shop_entry.mjs",
+        "remake/test/browser/shop_greeting_reader.mjs",
         "remake/js/daily/calendar.js",
         "remake/test/browser/shopping_tutorial.mjs"
       ],
       "run": [
-        "node remake/test/browser/shopping_tutorial.mjs"
+        "node remake/test/browser/shopping_tutorial.mjs",
+        "node remake/test/browser/rio_shop_entry.mjs"
       ]
     },
     {
@@ -4598,7 +4709,7 @@
     },
     {
       "id": "look",
-      "title": "見た目の様式（新版／旧版／DS風）の既定・章による制限・起動時の移行",
+      "title": "見た目の様式（新版／旧版／DS風）の既定・全章で効くこと・起動時の移行",
       "kind": "quick",
       "run": ["node remake/test/look.mjs"]
     },
@@ -4729,6 +4840,7 @@
         "remake/js/chapters/ch5-daily.js",
         "remake/js/scenes/title.js",
         "remake/js/core/ui.js",
+        "remake/test/browser/look_chapter_seeds.mjs",
         "remake/test/browser/look_neo_portrait.mjs"
       ],
       "run": [
@@ -4737,10 +4849,10 @@
     },
     {
       "id": "look-retro",
-      "title": "DS風: 縦持ちの2画面・ドット絵の上画面・会話と地図の中継・場面転換と登場カットイン・未対応の場面と他章では現行のまま",
+      "title": "DS風: 縦持ちの2画面・ドット絵の上画面・会話と地図の中継・場面転換と登場カットイン・第2〜5章の会話と地図とカードと小窓・未対応の場面では現行のまま",
       "kind": "browser",
-      "weight": 1.8,
-      "timeout": 6,
+      "weight": 2.8,
+      "timeout": 8,
       "paths": [
         "remake/css/look-retro.css",
         "remake/js/looks/**",
@@ -4751,14 +4863,47 @@
         "remake/js/scenes/title.js",
         "remake/js/core/ui.js",
         "remake/css/daily.css",
+        "remake/js/daily/station-travel.js",
+        "remake/js/core/chapter-card.js",
+        "remake/js/chapters/ch2.js",
+        "remake/js/chapters/ch3-scenes.js",
+        "remake/js/chapters/ch5-daily.js",
+        "remake/test/browser/look_chapter_seeds.mjs",
         "remake/test/browser/look_retro.mjs"
       ],
       "run": [
         "node remake/test/browser/look_retro.mjs"
       ]
+    },
+    {
+      "id": "romance-hesitation",
+      "title": "New romance hesitation model and VN controller: eight heroines, cancel, apology, LOAD and duplicate clicks",
+      "kind": "quick",
+      "run": [
+        "node remake/test/romance_hesitation.mjs",
+        "node remake/test/romance_hesitation_engine.mjs"
+      ]
+    },
+    {
+      "id": "romance-hesitation-browser",
+      "title": "Eight confession transitions, real lover memory portraits, two-step return and SAVE/LOAD",
+      "kind": "browser",
+      "weight": 2,
+      "timeout": 8,
+      "paths": [
+        "remake/js/core/romance-hesitation.js",
+        "remake/js/vn/engine.js",
+        "remake/js/daily/romance.js",
+        "remake/js/chapters/ch4-desert.js",
+        "remake/test/browser/romance_hesitation.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/romance_hesitation.mjs"
+      ]
     }
   ]
 }
+
 
 
 

@@ -3,10 +3,11 @@
 //   2. 組み済みの一式が40枚・同名3枚まで（フラット炭とキューブ炭を除く）・人物1枚まで
 //   3. 採点（帯・加点・焦げ）と、炭の動き（着火・冷める・火持ち）が規則どおり
 //   4. CPUどうしの対戦が、規則違反の入力なしで最後まで進む（カードは1ラウンドに1枚まで）
+//   5. 3人・4人の対戦（1:1:1:1）: 手番は席の順・一票はいちばん高い1人・相手を1人ねらうカードは相手を選ぶ
 import assert from "node:assert/strict";
 import { createRequire } from "node:module";
 import { FLAVORS, FLAVOR, CARDS, CARD, BOWLS, HMDS, JUDGES, PUFFS, TOURNAMENTS, KITS, TYPE_LABEL, WHEN_LABEL, RARITIES, SERIES_SIZE, numberOf, rarityOf, expandDeck } from "../js/minigames/ichidai-data.js";
-import { RULES, createGame, act, heatOf, coalHeat, coalMaxOf, leavesOf, firepower, coolStepsOf, slotsOf, scorePuff, judgedHeat, roundsOf, canPlay, impressionOf } from "../js/minigames/ichidai-rules.js";
+import { RULES, createGame, act, heatOf, coalHeat, coalMaxOf, leavesOf, firepower, coolStepsOf, slotsOf, scorePuff, judgedHeat, roundsOf, canPlay, impressionOf, rivalsOf, targetsOf, targetOf, pileOf } from "../js/minigames/ichidai-rules.js";
 import { aiAct } from "../js/minigames/ichidai-ai.js";
 
 const DOC = createRequire(import.meta.url)("../../docs/design/card_game/cards.js");
@@ -73,12 +74,17 @@ const fake = (over = {}) => ({ bowl: { mango: 6, vanilla: 3 }, main: "mango", bo
   assert.equal(scorePuff(fake({ usedLotus: false }), 4, q).zone, "band", "ロートスHMD: ズレを適温に");
   assert.equal(scorePuff(fake({ bowlId: "silicone" }), 7, q).zone, "off", "シリコンボウル: 焦げを取り消す");
   assert.equal(scorePuff(fake({ bowl: { rose: 6, mint: 2 }, main: "rose" }), 5, q).zone, "off", "ミントの【クッション】で焦げラインが6に");
-  assert.equal(scorePuff(fake({ bowl: { double_apple: 12 }, main: "double_apple", bowlId: "clay", person: "adam" }), 7, q).pts, 8, "単品: 素焼き＋アダム＋濃厚");
+  // ダブルアップル（第0.5版）: ジャストは熱7だけ。単品なら【原点】で毎口+1
+  const da = (over = {}) => fake({ bowl: { double_apple: 12 }, main: "double_apple", bowlId: "clay", person: "adam", ...over });
+  assert.deepEqual([6, 7, 8, 9, 10].map((h) => scorePuff(da(), h, q).zone), ["band", "just", "band", "off", "scorch"], "ダブルアップルのジャストは7だけ");
+  assert.equal(scorePuff(da(), 7, q).pts, 9, "単品: 味値3＋ジャスト2＋濃厚1＋素焼き1＋アダム1＋原点1");
+  assert.equal(scorePuff(da(), 6, q).pts, 7, "適温でも【原点】は付く");
+  assert.equal(scorePuff(da({ bowl: { double_apple: 10, mint: 2 }, bowlId: "funnel", person: null }), 7, q).parts.some((x) => x.label === "原点"), false, "ほかの葉が混ざると【原点】は付かない");
   assert.equal(judgedHeat(fake({ hmd: "amaburst", zone: [{ id: "x", up: false }], pend: 1, sessMod: 1 }), PUFFS.long, -1), 1 + 1 + 1 + 1 + 1 - 1);
   assert.equal(judgedHeat(fake({ bowl: { lavender: 8 }, main: "lavender", zone: [], pend: 2 }), PUFFS.normal), 0, "ラベンダーの【鎮静】");
 }
 {
-  // 着火: フラットは1ターン、キューブは2ターン。冷める: 炭を2つ選んで火を1ずつ下げる（同じ炭は1ターンに1段階まで）
+  // 着火: フラットは1ターン、キューブは2ターン。冷める: 1ターンに炭1つの火が1下がる（第0.5版）
   const G = createGame({ seed: 7, tournament: "practice", first: 0, players: [{ kit: "a" }, { kit: "b" }] });
   const [p, o] = G.P;
   const ok = (a) => { const r = act(G, a); assert.ok(r.ok, `${a.type}: ${r.reason}`); };
@@ -121,15 +127,17 @@ const fake = (over = {}) => ({ bowl: { mango: 6, vanilla: 3 }, main: "mango", bo
   assert.equal(G.phase, "serve");
   // 提供の最初のターン: キューブが焼けている
   if (G.wait.player !== 0) while (G.wait.player === 1) ok(aiAct(G, 1));
-  assert.equal(G.wait.type, "cool"); assert.equal(G.wait.left, 2, "2段階冷める");
+  assert.equal(G.wait.type, "cool"); assert.equal(G.wait.left, 1, "冷めるのは1段階（炭1つの火が1下がる）");
   const fi = p.zone.findIndex((c) => c.up);
   ok({ type: "cool", zone: fi });
-  assert.deepEqual([heatOf(p), coalHeat(p.zone[fi]), p.zone[fi].up], [4, 1, true], "フラット炭の火が2→1に下がる（裏返らない。炭は残る）");
-  no({ type: "cool", zone: fi }, "同じ炭は1ターンに1段階まで");
-  ok({ type: "cool", zone: 0 });
-  assert.deepEqual([heatOf(p), p.zone.length, G.wait.type, p.hand.length], [3, 3, "main", 8], "火1の種火は灰になる。冷めたあと、普通のドローで1枚引く");
+  assert.deepEqual([heatOf(p), coalHeat(p.zone[fi]), p.zone[fi].up, p.zone.length, G.wait.type, p.hand.length], [4, 1, true, 4, "main", 8],
+    "フラット炭の火が2→1に下がる（裏返らない。炭は残る）。冷めたあと、普通のドローで1枚引く");
+  no({ type: "cool", zone: 0 }, "冷めるのは1ターンに1段階だけ");
+  no({ type: "puton", stove: 0 }, "炭が4つあると、のせられない");
+  ok({ type: "ash", zone: p.zone.findIndex((c) => !c.up) }); // 種火を1つ外して枠を空ける（灰にするのは1ターンに1回）
+  assert.deepEqual([heatOf(p), p.zone.length], [3, 3], "種火を外して熱−1");
   ok({ type: "puton", stove: 0 });
-  assert.deepEqual([heatOf(p), firepower(p), p.zone.length, coolStepsOf(p)], [6, 6, 4, 2], "キューブ炭は火3。熱＝炭の火の合計（炭の数ではない）。冷めるのは炭2つぶん");
+  assert.deepEqual([heatOf(p), firepower(p), p.zone.length, coolStepsOf(p)], [6, 6, 4, 1], "キューブ炭は火3。熱＝炭の火の合計（炭の数ではない）。冷めるのは1ターンに1段階");
   assert.equal(coolStepsOf({ zone: [p.zone[0]] }), 1, "炭が1つなら、冷めるのは1段階だけ");
   // 第0.3版: 必要火力に届けば払わずに使える。一口のカードは提供の自分のターンに仕込む。1ラウンドに1枚
   p.hand.push("heat_in", "encore");
@@ -141,10 +149,7 @@ const fake = (over = {}) => ({ bowl: { mango: 6, vanilla: 3 }, main: "mango", bo
   assert.equal(p.puff.tk, 1, "この一口に仕込まれた");
   assert.deepEqual(canPlay(G, p, "breath"), { ok: false, reason: "カードはこのラウンドもう使った" });
   no({ type: "charge", hand: 0 }, "炭が4つあると、チャージできない");
-  ok({ type: "ash", zone: p.zone.findIndex((c) => !c.up) }); no({ type: "ash", zone: 0 }, "灰にするのは1ターンに1回");
-  assert.equal(heatOf(p), before[0] - 1, "種火を外して熱−1");
-  ok({ type: "charge", hand: 0 }); assert.equal(heatOf(p), before[0], "空いた枠には、カードを使ったあとでもチャージできる");
-  no({ type: "charge", hand: 0 }, "枠が埋まったら、もうチャージできない");
+  no({ type: "ash", zone: 0 }, "灰にするのは1ターンに1回");
   ok({ type: "end" });
   if (G.wait.type === "discard") ok({ type: "discard", picks: Array.from({ length: p.hand.length - RULES.handMax }, (_, i) => i) });
   const round = G.round;
@@ -237,7 +242,7 @@ const fake = (over = {}) => ({ bowl: { mango: 6, vanilla: 3 }, main: "mango", bo
   assert.ok(act(G, { type: "end" }).ok);
   if (G.wait.type === "discard") assert.ok(act(G, { type: "discard", picks: Array.from({ length: p.hand.length - RULES.handMax }, (_, i) => i) }).ok);
   for (let n = 0; n < 400 && !G.over && !(G.wait.player === 0 && G.round > r2); n++) assert.ok(act(G, aiAct(G, G.wait.player)).ok);
-  if (!G.over) assert.deepEqual([G.wait.type, G.wait.left], ["cool", 2], "炭が2つあれば、ふつうに冷める");
+  if (!G.over) assert.deepEqual([G.wait.type, G.wait.left], ["cool", 1], "炭が2つあれば、ふつうに冷める（1ターンに1段階）");
 }
 // 熱を入れる吸い（帯に入れば印象+1）・内寄せ（このセッションの印象+1）・ブロー（焦げを適温として採点）
 {
@@ -327,4 +332,152 @@ function autoplay(cfg) {
   }
   assert.ok(strong / n > 0.6, `つよいCPUが、やさしいCPUに勝ち越す（${strong}/${n}）`);
   console.log(`ichidai_rules PASS: ${games}+${n} 対戦。` + Object.entries(stats).map(([k, v]) => `${k} 平均${(v.score / v.n).toFixed(0)}点・勝率${Math.round(100 * v.win / v.n)}%`).join(" / ") + ` / つよい対やさしい ${strong}/${n}`);
+}
+
+// ── 4a. 第0.5版: 審査カードはラウンドのはじめにめくる。「吸い方を読む」は次のラウンドの分を見る ──
+{
+  const G = createGame({ seed: 9, tournament: "open_cloud", first: 0, players: [{ kit: "c", ai: true, level: 2 }, { kit: "a", ai: true, level: 2 }] });
+  const ok = (a) => { const r = act(G, a); assert.ok(r.ok, `${a.type}: ${r.reason}`); };
+  assert.equal(RULES.revealFirst, true);
+  while (G.phase !== "serve") ok(aiAct(G, G.wait.player));
+  // 提供に入った時点で、このラウンドの審査カードがもうめくられている（だれの手番よりも前）
+  assert.ok(G.judge && G.judge.judge, "ラウンドのはじめに審査カードがめくられている");
+  assert.deepEqual([G.round, G.shown.length, G.pile.length], [0, 1, 11]);
+  const evs = G.events.map((e) => e.t), ri = evs.lastIndexOf("round");
+  assert.equal(evs[ri + 1], "reveal", "ラウンドの知らせのすぐあとに、めくる");
+  // 自分の番まで進めて「吸い方を読む」: 山のいちばん上＝次のラウンドの審査カードを、自分だけ見る
+  while (!(G.wait.type === "main")) ok(aiAct(G, G.wait.player));
+  const p = G.P[G.wait.player], now = G.judge;
+  p.cardsUsed = 0; p.hand = ["read"];
+  ok({ type: "play", hand: 0 });
+  assert.equal(p.peek, G.pile[0], "読んだのは、次のラウンドの分");
+  assert.notEqual(p.peek, now);
+  const peeked = p.peek, r0 = G.round;
+  while (!G.over && G.round === r0) ok(aiAct(G, G.wait.player));
+  const sc = G.events.findLast((e) => e.t === "score");
+  assert.equal(sc.puff, now, "審査は、ラウンドのはじめにめくったカードで行う");
+  assert.equal(G.judge, peeked, "次のラウンドでは、読んだカードがめくられる");
+  assert.equal(p.peek, null, "めくられたら、読んだ印は消える");
+  // 最後のラウンドは、読む先が無い
+  while (!G.over && G.round < roundsOf(G) - 1) ok(aiAct(G, G.wait.player));
+  while (!G.over && G.wait.type !== "main") ok(aiAct(G, G.wait.player));
+  if (!G.over) { const q = G.P[G.wait.player]; q.cardsUsed = 0; q.hand = ["read"]; assert.equal(canPlay(G, q, "read").reason, "次のラウンドがない"); }
+  // めくる時を「全員のターンのあと」に戻す規則（第0.4版）でも動く
+  const H = createGame({ seed: 9, tournament: "open_cloud", rules: { revealFirst: false }, players: [{ kit: "c", ai: true, level: 2 }, { kit: "a", ai: true, level: 2 }] });
+  while (H.phase !== "serve") assert.ok(act(H, aiAct(H, H.wait.player)).ok);
+  assert.equal(H.judge, null, "第0.4版の規則では、ターンのあいだは審査カードが伏せてある");
+  while (!H.over) assert.ok(act(H, aiAct(H, H.wait.player)).ok);
+  assert.equal(H.shown.length, roundsOf(H));
+}
+
+// ── 4b. 炭が消えるときは、どの炭がなぜ消えたかを出来事と記録に残す（画面が合図を出すため。2026-11-11 オーナー「急に消えたり」） ──
+{
+  const G = createGame({ seed: 4, tournament: "practice", first: 0, players: [{ kit: "a" }, { kit: "b", ai: true }] });
+  const ok = (a) => { const r = act(G, a); assert.ok(r.ok, `${a.type}: ${r.reason}`); };
+  while (!(G.phase === "serve" && G.wait.type === "cool" && G.wait.player === 0)) ok(aiAct(G, G.wait.player));
+  const p = G.P[0];
+  p.zone = [{ id: "cube", up: true, f: 3 }, { id: "flat", up: false, f: 1 }, { id: "flat", up: false, f: 1 }]; p.wind = 0; p.tools = p.tools.filter((x) => x !== "windguard");
+  G.wait = { type: "cool", player: 0, left: 2, steps: 2, h0: heatOf(p) }; G.events.length = 0;
+  ok({ type: "cool", zone: 1 });
+  assert.deepEqual(G.events.filter((e) => e.t === "ash").map((e) => [e.p, e.zi, e.up, e.why]), [[0, 1, false, "cool"]], "灰になった炭の位置と理由が出来事に入る");
+  ok({ type: "cool", zone: 0 });
+  assert.deepEqual(G.events.filter((e) => e.t === "flip").map((e) => [e.zi, e.f, e.why]), [[0, 2, "cool"]], "火が下がった炭も同じ");
+  assert.deepEqual(G.events.filter((e) => e.t === "cooled").map((e) => [e.from, e.to, e.burnt]), [[5, 3, 1]]);
+  assert.ok(G.log.some((l) => l.who === 0 && l.text === "冷めた：熱5→3（炭1つが灰になった）"), "どう冷めたかを記録に残す");
+  assert.equal(G.wait.type, "main");
+  // 火力を落として発動: 落ちた炭も1段ずつ出来事になる
+  p.zone = [{ id: "cube", up: true, f: 3 }, { id: "flat", up: false, f: 1 }]; p.hand = ["all_in"]; p.cardsUsed = 0; G.events.length = 0;
+  if (CARD.all_in.pay?.fire && canPlay(G, p, "all_in").ok) {
+    ok({ type: "play", hand: 0 });
+    assert.equal(G.events.filter((e) => (e.t === "ash" || e.t === "flip") && e.why === "pay").length, CARD.all_in.pay.fire, "落とした火のぶんだけ出来事が出る");
+  }
+  // 器具は3つまで: 4つ目を出すと、いちばん古い器具が灰になる。それも記録に残す
+  const tools = CARDS.filter((c) => c.type === "tool").map((c) => c.id);
+  p.tools = tools.slice(0, 3); p.wind = p.tools.includes("windguard") ? 2 : 0; p.hand = [tools[3]]; p.cardsUsed = 0; p.zone = [{ id: "cube", up: true, f: 3 }, { id: "cube", up: true, f: 3 }, { id: "cube", up: true, f: 3 }];
+  if (canPlay(G, p, tools[3]).ok) {
+    ok({ type: "play", hand: 0 });
+    assert.ok(G.log.at(-1).text.startsWith("器具は3つまで。") || G.log.slice(-2).some((l) => l.text.startsWith("器具は3つまで。")), "押し出された器具を記録に残す");
+    assert.equal(p.tools.length, 3);
+  }
+}
+
+// ── 5. 3人・4人の対戦（2026-11-11 オーナー「1:1:1:1の4人のやつ」「5もいる」） ──
+{
+  const four = (over = {}) => createGame({ seed: 77, tournament: "open_cloud", first: 2, players: ["a", "b", "c", "d"].map((kit, i) => ({ name: `P${i}`, kit, ai: true, level: 2 })), ...over });
+  const G = four();
+  const ok = (a) => { const r = act(G, a); assert.ok(r.ok, `${a.type}: ${r.reason}`); };
+  assert.equal(G.P.length, 4);
+  assert.deepEqual([pileOf(G), G.supply[G.market[0]]], [24, 24], "場の葉の山は、4人なら1種24枚（2人で12枚・1人6枚ぶん）");
+  assert.equal(pileOf(createGame({ seed: 1, tournament: "open_cloud", players: [{ kit: "a" }, { kit: "b" }] })), 12, "2人なら12枚のまま");
+  assert.deepEqual(rivalsOf(G, G.P[2]).map((p) => p.index), [3, 0, 1], "相手は、自分の次の席から順");
+  // 最初の火: 先手（席2）から席の順に、4人とも選ぶ
+  const seen = [];
+  while (G.wait.type === "embers") { seen.push(G.wait.player); ok(aiAct(G, G.wait.player)); }
+  assert.deepEqual(seen, [2, 3, 0, 1], "最初の火は先手から席の順");
+  // 準備: 先手から席の順に1人ずつ、6ターンずつ（4人で24手番）
+  const prep = [];
+  while (G.phase === "prep") { if (G.wait.type === "prep" && prep[prep.length - 1]?.[0] !== `${G.wait.player}:${G.wait.n}`) prep.push([`${G.wait.player}:${G.wait.n}`]); ok(aiAct(G, G.wait.player)); }
+  assert.deepEqual(prep.slice(0, 5).map((x) => x[0]), ["2:1", "3:1", "0:1", "1:1", "2:2"], "準備の手番は席の順に回る");
+  assert.equal(prep.length, RULES.prepTurns * 4, "準備は1人6ターン");
+  // 提供: 先手から席の順。ラウンドごとに先手が次の席へ回る
+  assert.deepEqual([G.round, G.order], [0, [2, 3, 0, 1]]);
+  const turns = [];
+  while (!G.over && G.round === 0) { const w = G.wait; if (w.type === "main" && turns[turns.length - 1] !== w.player) turns.push(w.player); ok(aiAct(G, w.player)); }
+  assert.deepEqual(turns, [2, 3, 0, 1], "提供の手番は4人とも1回ずつ");
+  assert.equal(G.lastResult.res.length, 4, "審査は4人ぶん");
+  assert.deepEqual(G.order, [3, 0, 1, 2], "次のラウンドの先手は、次の席");
+  // 一票: 印象がいちばん高い1人だけ。いちばん上が並んだら入らない
+  const imps = G.lastResult.res.map((r) => r.imp), top = Math.max(...imps);
+  assert.equal(G.lastResult.voter, imps.filter((x) => x === top).length === 1 ? imps.indexOf(top) : null, "一票は、いちばん高い1人");
+  assert.equal(G.P.reduce((a, p) => a + p.votes, 0), G.lastResult.voter == null ? 0 : 1, "一票は1ラウンドに1つまで");
+
+  // 相手を1人ねらうカード: 相手を選べる（選ばなければ、点がいちばん高い相手）
+  while (!(G.wait.type === "main" && G.phase === "serve")) ok(aiAct(G, G.wait.player));
+  const me = G.P[G.wait.player], rs = rivalsOf(G, me);
+  me.cardsUsed = 0; me.hand = ["hype", "draft", "hype"]; me.zone = [{ id: "cube", up: true, f: 3 }, { id: "cube", up: true, f: 3 }];
+  for (const o of rs) { o.bowl = { lemon: 6 }; o.main = "lemon"; o.tools = []; o.pend = 0; o.zone = [{ id: "flat", up: true, f: 2 }]; }
+  rs[0].score = 10; rs[1].score = 30; rs[2].score = 20;
+  assert.deepEqual(targetsOf(G, me, "hype"), rs.map((o) => o.index), "煽りは、どの相手にも使える");
+  assert.equal(targetOf(G, me, "hype").index, rs[1].index, "選ばなければ、点がいちばん高い相手");
+  rs[2].zone = [];
+  assert.deepEqual(targetsOf(G, me, "draft"), [rs[0].index, rs[1].index], "すきま風は、炭のある相手だけ");
+  assert.equal(act(G, { type: "play", hand: 1, target: rs[2].index }).reason, "その相手には使えない");
+  assert.equal(act(G, { type: "play", hand: 0, target: me.index }).reason, "その相手には使えない", "自分はねらえない");
+  ok({ type: "play", hand: 0, target: rs[0].index });
+  assert.deepEqual(rs.map((o) => o.pend), [1, 0, 0], "選んだ相手の判定熱だけ+1");
+  me.cardsUsed = 0;
+  ok({ type: "play", hand: 1 }); // 手札は [すきま風, 煽り]。相手を選ばずに煽りを使う
+  assert.deepEqual(rs.map((o) => o.pend), [1, 1, 0], "選ばなければ、点がいちばん高い相手");
+  me.cardsUsed = 0;
+  ok({ type: "play", hand: 0, target: rs[0].index });
+  assert.deepEqual([G.wait.type, G.wait.player, G.wait.by], ["weaken", rs[0].index, me.index], "すきま風は、ねらわれた相手が弱める炭を選ぶ");
+  ok({ type: "weaken", zone: 0 });
+  assert.deepEqual([coalHeat(rs[0].zone[0]), coalHeat(rs[1].zone[0]), G.wait.type, G.wait.player], [1, 2, "main", me.index], "選んだ相手の炭だけ火が1下がり、手番に戻る");
+
+  // 後の先: 使った人が、次のラウンドのいちばん後になる
+  const H = four({ seed: 5 });
+  while (!(H.phase === "serve" && H.wait.type === "main")) assert.ok(act(H, aiAct(H, H.wait.player)).ok);
+  const user = H.P[H.wait.player];
+  user.cardsUsed = 0; user.hand = ["go_second"]; user.zone = [{ id: "cube", up: true, f: 3 }, { id: "cube", up: true, f: 3 }];
+  assert.ok(act(H, { type: "play", hand: 0 }).ok);
+  const r0 = H.round;
+  while (!H.over && H.round === r0) assert.ok(act(H, aiAct(H, H.wait.player)).ok);
+  assert.equal(H.order[3], user.index, "後の先を使った人が最後");
+
+  // CPUどうしの3人・4人: 規則違反の入力なしで最後まで進み、順位が付く
+  let games = 0; const firsts = {};
+  for (const tour of TOURNAMENTS) for (const kits of [["a", "b", "c", "d"], ["d", "c", "b", "a"], ["b", "a", "c"], ["c", "c", "d", "a"]]) for (let sd = 1; sd <= 2; sd++) {
+    const K = autoplay({ seed: sd * 6007 + games, tournament: tour.id, players: kits.map((kit, i) => ({ kit, ai: true, level: (i + sd) % 3 })) });
+    games++;
+    const n = kits.length, res = K.result;
+    assert.deepEqual([res.scores.length, res.votes.length, res.ranks.slice().sort().join()], [n, n, kits.map((_, i) => i).join()], "点・一票・順位が人数ぶん");
+    assert.deepEqual(res.scores, K.P.map((p) => p.score));
+    for (let i = 1; i < n; i++) assert.ok(K.P[res.ranks[i - 1]].score >= K.P[res.ranks[i]].score, "順位は点の高い順");
+    assert.ok(res.winner === null || res.winner === res.ranks[0], "1位が勝者");
+    assert.ok(res.votes.reduce((a, b) => a + b, 0) <= roundsOf(K), "一票は1ラウンドに1つまで");
+    for (const b of res.bonus) assert.equal(b.pts.length, n, "審査員のボーナスも人数ぶん");
+    for (const p of K.P) assert.equal(p.deck.length + p.hand.length + p.ash.length + p.zone.length + p.stove.length + p.tools.length + (p.person ? 1 : 0), 40, "カードが40枚のまま");
+    if (res.winner != null) firsts[n] = (firsts[n] || 0) + 1;
+  }
+  console.log(`ichidai_rules PASS: 3〜4人 ${games} 対戦（1位が決まった局: ${Object.entries(firsts).map(([n, v]) => `${n}人 ${v}`).join("・")}）`);
 }

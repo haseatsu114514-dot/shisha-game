@@ -123,6 +123,10 @@ body.vn-lift-props #bg .scene-prop[data-home-rig] {
 #vn.flashback .vn-portraits, #vn.flashback .vn-cg,
 body.in-vn:has(#vn.flashback) #bg { filter: grayscale(1) contrast(.92); }
 #vn.flashback::after { content: "回想"; position: absolute; top: 36px; left: 50%; transform: translateX(-50%); padding: 8px 24px; color: #eee; background: #19151bd9; border: 1px solid #aaa; font-size: 24px; letter-spacing: .25em; pointer-events: none; }
+/* 修羅場の空気（core/scene-mood.js の "dread"）。会話をまたいで背景の色を落とし、四隅を沈める。立ち絵と台詞欄は変えない */
+body[data-scene-mood="dread"] #bg { filter: saturate(.4) brightness(.62) contrast(1.06); transition: filter .5s ease; }
+body[data-scene-mood="dread"] #bg::after { content: ""; position: absolute; inset: 0; z-index: 3; pointer-events: none;
+  background: radial-gradient(ellipse at 50% 40%, #0b081400 30%, #05030ad1 100%); }
 
 .vn-portraits { position: absolute; inset: 0; z-index: 2; overflow: hidden; pointer-events: none; }
 .portrait {
@@ -140,7 +144,7 @@ body.in-vn:has(#vn.flashback) #bg { filter: grayscale(1) contrast(.92); }
 .portrait[data-pos="left"] { left: 30%; }
 .portrait[data-pos="right"] { left: 70%; }
 .portrait.enter { opacity: 0; translate: 0 24px; }
-.vn-skip .portrait { transition-duration: .12s; }
+.vn-skip .portrait { transition: none; }
 
 .vn-scent {
   position: absolute;
@@ -302,7 +306,7 @@ body:is(.reduce-shake, .vn-skip) .tx-shiver { animation: none; }
 }
 .vn-choices.show { display: flex; }
 /* 2択は質問・操作札から離して上へ寄せる。 */
-.vn-choices:has(> .vn-choice:nth-child(2):last-child) { bottom: 338px; }
+.vn-choices:has(> .vn-choice:nth-child(2):last-child) { bottom: 386px; }
 /* 6択以上は画面上端と操作欄の間でスクロールさせる。短い選択肢の配置は維持する。 */
 body:not(:root) .vn-choices:has(> .vn-choice:nth-child(6)) {
   top: 16px;

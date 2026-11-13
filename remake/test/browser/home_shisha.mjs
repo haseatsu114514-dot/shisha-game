@@ -27,7 +27,7 @@ async function offer(page) {
 
 await suite("home-shisha", async check => {
   await check("all-discovered-recipe-details", async page => {
-    assert.equal(recipes.length, 13, "Current regular recipe catalog has 13 entries");
+    assert.equal(recipes.length, 19, "Current regular recipe catalog has 19 entries, including the six later discoveries");
     await page.evaluate(async () => {
       const core = await import("./js/core/state.js");
       const { DB } = await import("./js/core/data.js");

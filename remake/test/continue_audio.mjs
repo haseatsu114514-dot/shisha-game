@@ -75,6 +75,9 @@ assert(Math.abs(media[0].volume - .6 * .68 * .5) < 1e-9, "reaction ducks the act
 config.bgmVolume = .2; audio.applyVolumes();
 assert(Math.abs(media[0].volume - .2 * .68 * .5) < 1e-9, "settings must retain the reaction duck");
 session.pause(); assert.equal(media[0].paused, true);
+media[0].readyState = 3;
+audio.unlockAudio(); await Promise.resolve();
+assert.equal(media[0].paused, true, "次の操作でCONTINUEの意図した一時停止を解除しない");
 const pausedSources = sources.length;
 session.tick(); session.count(3); session.voice("sumi"); session.title();
 assert.equal(sources.length, pausedSources, "rotation/menu pause also prevents new SE while document is visible");

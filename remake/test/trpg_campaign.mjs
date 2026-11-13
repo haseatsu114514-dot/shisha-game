@@ -49,7 +49,7 @@ function finish(scenario) {
   return session.result();
 }
 
-test("zero-member tables with Sumi and regulars finish and save both stories", () => {
+test("zero-member tables with Sai and his regulars finish and save both stories", () => {
   const s = state();
   assert(rules.foundTrpgClub(s, catalog));
   assert.deepEqual(s.trpg.club.members, {});
@@ -58,7 +58,7 @@ test("zero-member tables with Sumi and regulars finish and save both stories", (
     assert(rules.buyTrpgBook(s, catalog, story.id));
     const cast = rules.castTrpgTable(s, catalog, story);
     assert(cast.ok, cast.reason);
-    assert.deepEqual(new Set(cast.participants), new Set(["sumi", "hajime", "tsumugi", "salaryman"]));
+    assert.deepEqual(new Set(cast.participants), new Set(["sai", "hajime", "regulara", "regularb"]));
     const table = rules.materializeTrpgCast(story, cast.assignments);
     const ticket = { ...cast, chapter: s.chapter, day: s.day, slot: s.slot };
     const result = finish(table);
@@ -67,6 +67,71 @@ test("zero-member tables with Sumi and regulars finish and save both stories", (
     s.slot = 1; s.day++;
   }
   assert.deepEqual(s.trpg.club.members, {});
+});
+
+test("the shelf has one story per member, two generic books and Sai's finale", () => {
+  assert.equal(catalog.scenarios.length, 9);
+  const members = catalog.scenarios.filter(b => b.member);
+  assert.deepEqual(members.map(b => b.member).sort(), catalog.participants.map(p => p.id).sort());
+  assert.deepEqual(catalog.scenarios.filter(b => !b.stockRequires.length && !b.finale).map(b => b.id), regulars.map(s => s.id));
+  const finale = catalog.scenarios.filter(b => b.finale);
+  assert.equal(finale.length, 1);
+  assert.deepEqual(finale[0].clearRequires.slice().sort(), members.map(b => b.id).sort());
+});
+
+test("Sai's finale waits for all six members' stories, including on older saves", async () => {
+  const book = catalog.scenarios.find(b => b.finale);
+  const story = await json("../../data/" + book.file);
+  const s = friends(state());
+  rules.syncTrpgStock(s, catalog);
+  assert(!s.trpg.stock.includes(book.id));
+  for (const id of book.clearRequires.slice(0, -1)) s.trpg.cleared[id] = { ending: "memory" };
+  rules.syncTrpgStock(s, catalog);
+  assert(!rules.buyTrpgBook(s, catalog, book.id));
+  // This title used to be a Hiyori book: owning the old edition must not bypass the finale.
+  s.trpg.stock.push(book.id); s.trpg.owned.push(book.id);
+  assert(!rules.castTrpgTable(s, catalog, story).ok);
+  const before = structuredClone(s.trpg);
+  s.trpg.cleared[book.clearRequires.at(-1)] = { ending: "memory" };
+  const cast = rules.castTrpgTable(s, catalog, story);
+  assert(cast.ok, cast.reason); assert.equal(cast.gm, "sai");
+  const table = rules.materializeTrpgCast(story, cast.assignments);
+  assert.equal(finish(table).scenarioId, story.id);
+  assert.deepEqual(s.trpg.owned, before.owned);
+});
+
+test("a member's own book needs that member; only companion seats use Sai's regulars", async () => {
+  for (const book of catalog.scenarios.filter(b => b.member)) {
+    const story = await json("../../data/" + book.file);
+    const s = own(friends(state(), [book.member]), book.id);
+    const cast = rules.castTrpgTable(s, catalog, story);
+    assert(cast.ok, book.id + ": " + cast.reason);
+    assert(cast.participants.includes(book.member));
+    assert(cast.participants.some(id => catalog.regulars.includes(id)), book.id);
+    assert(!cast.participants.some(id => ["sumi", "salaryman", "naru"].includes(id)));
+    assert.equal(finish(rules.materializeTrpgCast(story, cast.assignments)).scenarioId, story.id);
+    s.trpg.shifts = [{ id: book.member, chapter: s.chapter, day: s.day, slot: s.slot, busy: true }];
+    assert(!rules.castTrpgTable(s, catalog, story).ok, book.id + " never replaces its required member");
+  }
+});
+
+test("retired books keep saved records but cannot start a table; Salaryman cannot enter a forged guest list", async () => {
+  const s = friends(state());
+  s.trpg.stock.push("shark-island"); s.trpg.owned.push("shark-island");
+  s.trpg.cleared["shark-island"] = { ending: "old-ending", stars: 3 };
+  const record = structuredClone(s.trpg.cleared);
+  const points = rules.clubRecord(s, catalog).points;
+  assert.equal(points, 6, "the retired book's earned club progress is kept");
+  assert(!rules.castTrpgTable(s, catalog, { id: "shark-island" }).ok);
+  rules.syncTrpgStock(s, catalog);
+  assert.deepEqual(s.trpg.cleared, record);
+  assert.equal(rules.clubRecord(s, catalog).points, points);
+  assert(s.trpg.owned.includes("shark-island"));
+  const forged = structuredClone(regulars[0]);
+  forged.zeroMemberCast.push("salaryman");
+  const assignments = Object.fromEntries(forged.campaign.seats.map(seat => [seat.actor, seat.candidates[0]]));
+  assignments.regulara = "salaryman";
+  assert.throws(() => rules.materializeTrpgCast(forged, assignments), /Excluded TRPG participant/);
 });
 
 test("each candidate needs their own club talk, regardless of affinity", () => {
@@ -150,7 +215,7 @@ test("hearing the club topic permits low-affinity recruitment without automatic 
   assert(rules.syncTrpgStock(s, catalog)); assert.deepEqual(s.trpg.stock, ["regular-harbor", "regular-mail"]);
   assert(rules.joinTrpgClub(s, catalog, "hiyori")); assert(!rules.joinTrpgClub(s, catalog, "hiyori"));
   // A book is stocked once its GM has joined: each GM brings their own shelf of stories.
-  const stockedBy = members => catalog.scenarios.filter(b => b.stockRequires.every(id => members.includes(id))).map(b => b.id);
+  const stockedBy = members => catalog.scenarios.filter(b => !b.finale && b.stockRequires.every(id => members.includes(id))).map(b => b.id);
   assert(rules.syncTrpgStock(s, catalog)); assert.deepEqual(s.trpg.stock, stockedBy(["hiyori"]));
   assert(s.trpg.stock.includes(ordinary.id)); assert(!s.trpg.stock.includes(shark.id));
   s.met.samechan = true; s.flags._trpg_topic_samechan = true; s.affinity.samechan = 0;
@@ -241,10 +306,11 @@ test("レヰ and Ageha join from their own chapter-two shop visits and never tak
   assert.match(source, /await maybeRecruitTrpgMember\(id\);\n  return \{ used: true, exerted: true \};/);
 });
 
-test("Sumi/Naru never join; unrecruited companions are not invited", () => {
-  const s = own(friends(state(), ["hiyori", "sumi", "naru"]), ordinary.id);
+test("Sumi/Naru/Salaryman never join; Sai’s regulars fill unrecruited seats", () => {
+  const s = own(friends(state(), ["hiyori", "sumi", "naru", "salaryman"]), ordinary.id);
   const result = rules.castTrpgTable(s, catalog, ordinary);
-  assert.deepEqual(result.participants, ["hiyori", "hajime"]);
+  assert.deepEqual(result.participants, ["hiyori", "hajime", "regulara", "regularb"]);
+  assert(!rules.participantStatus(s, { id: "salaryman" }).ok);
   assert(!rules.participantStatus(s, { id: "sumi" }).ok);
 });
 test("a required shark GM cannot be replaced, while Adam fills Hiyori's optional seat with authored lines", () => {
@@ -316,6 +382,56 @@ test("replaying a finished book uses the night, keeps the better memory and coun
   assert(rules.completeTrpgTable(s, catalog, ordinary, ticket, { ...result, ending: other, rating: { stars: 2 }, heat: { value: 6, night: "沸いた夜" } }));
   assert.equal(s.trpg.cleared[ordinary.id].ending, other); assert.equal(s.trpg.cleared[ordinary.id].heat, 6);
   assert.equal(s.trpg.cleared[ordinary.id].day, 5); assert.equal(s.trpg.cleared[ordinary.id].plays, 3);
+});
+
+test("the club's rank is counted from the shelf: finished books, endings seen and stars; it grows the player's character (TRF13)", () => {
+  const s = own(friends(state()), ordinary.id);
+  assert.deepEqual(rules.clubRecord(s, catalog), { points: 0, rank: 1, ranks: rules.CLUB_RANKS.length, name: rules.CLUB_RANKS[0].name, growth: 0, floor: 0,
+    next: { rank: 2, name: rules.CLUB_RANKS[1].name, at: rules.CLUB_RANKS[1].at, need: rules.CLUB_RANKS[1].at, growth: 1 } });
+  assert.equal(rules.bookPoints(null), 0); assert.equal(rules.bookPoints({}), 0, "a record without an ending is no record");
+  assert.equal(rules.bookPoints({ ending: "rain" }), 3, "an old record without stars: finished +2, one ending +1");
+  assert.equal(rules.bookPoints({ ending: "rain", stars: 3, endingsSeen: ["rain", "home", "company", "discovery"] }), 9);
+  assert.equal(rules.bookPoints({ ending: "rain", stars: 9, endingsSeen: ["rain", "rain", "a", "b", "c", "d", "e"] }), 9, "stars and endings are capped; a repeated ending counts once");
+  // One table: finished +2, the ending +1, two stars +2.
+  const night = () => { const cast = rules.castTrpgTable(s, catalog, ordinary); return { ...cast, chapter: s.chapter, day: s.day, slot: s.slot }; };
+  const result = finish(rules.materializeTrpgCast(ordinary, night().assignments));
+  const before = rules.clubRecord(s, catalog);
+  assert(rules.completeTrpgTable(s, catalog, ordinary, night(), { ...result, rating: { stars: 2 }, heat: { value: 3, night: "和やかな夜" } }));
+  const after = rules.clubRecord(s, catalog);
+  assert.equal(after.points, 5); assert.equal(after.rank, 1); assert.equal(after.next.need, rules.CLUB_RANKS[1].at - 5);
+  assert.deepEqual(rules.clubGain(before, after), { gained: 5, points: 5, rank: 1, name: after.name, growth: 0, rankUp: false, growthUp: 0, next: after.next });
+  // The same ending again adds nothing; a new ending adds one and reaches rank 2, which grows the player's character.
+  s.day = 4; s.slot = 1;
+  assert(rules.completeTrpgTable(s, catalog, ordinary, night(), { ...result, rating: { stars: 1 }, heat: { value: 2, night: "静かな夜" } }));
+  assert.equal(rules.clubRecord(s, catalog).points, 5, "replaying into the same ending earns nothing");
+  s.day = 5; s.slot = 1;
+  const other = Object.keys(ordinary.endings).find(id => id !== result.ending), mid = rules.clubRecord(s, catalog);
+  assert(rules.completeTrpgTable(s, catalog, ordinary, night(), { ...result, ending: other, rating: { stars: 1 }, heat: { value: 2, night: "静かな夜" } }));
+  const grown = rules.clubRecord(s, catalog), gain = rules.clubGain(mid, grown);
+  assert.equal(grown.points, 6); assert.equal(grown.rank, 2); assert.equal(grown.growth, 1); assert.equal(grown.floor, rules.CLUB_RANKS[1].at);
+  assert.equal(gain.gained, 1); assert.equal(gain.rankUp, true); assert.equal(gain.growthUp, 1);
+  // Ranks only rise with the points, growth never passes two, and books outside the catalog are not counted.
+  for (let i = 1; i < rules.CLUB_RANKS.length; i++) {
+    assert(rules.CLUB_RANKS[i].at > rules.CLUB_RANKS[i - 1].at); assert(rules.CLUB_RANKS[i].growth >= rules.CLUB_RANKS[i - 1].growth);
+    assert(rules.CLUB_RANKS[i].growth <= 2);
+  }
+  const full = state();
+  for (const book of catalog.scenarios) full.trpg.cleared[book.id] = { ending: "x", stars: 3, endingsSeen: ["a", "b", "c", "d"] };
+  full.trpg.cleared["not-a-book"] = { ending: "x", stars: 3 };
+  const top = rules.clubRecord(full, catalog);
+  assert.equal(top.points, catalog.scenarios.length * 9); assert.equal(top.rank, rules.CLUB_RANKS.length); assert.equal(top.next, null); assert.equal(top.growth, 2);
+  assert.equal(rules.clubRecord({}, catalog).rank, 1, "a save without TRPG progress is rank one");
+  // The save gains no field: the rank is read from the records that were already there.
+  assert.deepEqual(Object.keys(s.trpg).sort(), Object.keys(own(friends(state()), ordinary.id).trpg).sort());
+});
+
+test("a bookmark remembers the growth it was started with (TRF13)", () => {
+  const s = own(friends(state()), ordinary.id), cast = rules.castTrpgTable(s, catalog, ordinary);
+  const ticket = { ...cast, chapter: s.chapter, day: s.day, slot: s.slot, seed: 7 };
+  assert(rules.keepTrpgBookmark(s, ordinary, { ...ticket, growth: 1 }, { actions: [["start"]], pc: null, phase: "listen", title: "" }));
+  assert.equal(s.trpg.bookmark.growth, 1);
+  assert(rules.keepTrpgBookmark(s, ordinary, ticket, { actions: [["start"]], pc: null, phase: "listen", title: "" }));
+  assert.equal("growth" in s.trpg.bookmark, false, "no growth, no field: older bookmarks keep their shape");
 });
 
 test("a bookmark continues only the same story with tonight's same seats, and finishing clears it (TMX13)", () => {

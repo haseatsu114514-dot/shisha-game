@@ -6,15 +6,15 @@
 // 着地の輪・得点の浮き出し・トリックのスロー・ブーストの残像。動き軽減ではカメラの動き・揺れ・スロー・閃光・速度線を止める。
 // 本番はスタートの合図のあと、ヌール（rivalRun）が横で滑る。
 import { el } from "../core/util.js";
-import { SE, unlockAudio, createDesertRideSe, desertZapGap, currentBgm, playBgm, preloadBgm, setBgmPlaybackRate, resetBgmTempo, bgmPlaybackRate } from "../core/audio.js";
+import { SE, unlockAudio, createDesertRideSe, desertZapGap, currentBgm, playBgm, preloadBgm, resetBgmTempo } from "../core/audio.js";
 import { EDGE, SPEED, COURSE_PACKS, generateCourse, practiceCourse, pickCourse, buildCourse, createGame, step, press, boost, chargeBoost, canRecover, summary, curveAt, headingAt, lateralAt, botControl,
   rivalRun, rivalAt, RULES_VERSION, jumpHeight, DISPLAY, toKmh, toMeters, JUMP } from "./desert-ride-model.js";
 import { DESERT_ART, DESERT_CONTROL_ART, loadDesertArt, riderPose } from "./desert-ride-art.js";
 import { imgFileUrl } from "../core/img-file.js";
+import { withMinigameLoading } from "./minigame-loading.js";
 
-// ブーストは人物を包む炎のオーラ・砂煙・周辺の速度線と、曲のテンポで伝える（2026-11-11 オーナー「ブースト中は曲を早く、オーラを出す」）。
+// ブーストは人物を包む炎のオーラ・砂煙・周辺の速度線と効果音で伝える。曲のテンポは変えない。
 const BOT_STEP = 1 / 60; // 自動操縦の判断と物理の刻み（モデルの検査と同じ）
-const BOOST_BGM_RATE = 1.18;     // ブースト中の曲の速さ（音程は保つ）
 // オーラの色（内側・外側・火の粉）。主人公は炎、ヌールは砂丘の夕日の金、なるは冷たい銀紫
 const AURAS = Object.freeze({
   player: Object.freeze({ core: [255, 250, 190], mid: [255, 176, 48], rim: [255, 92, 20] }),
@@ -186,7 +186,7 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
   const restoreBgm = () => { if (rideBgm && currentBgm() === rideBgm) playBgm(bgmBefore); };
   // メニューで選んでいる間にパック曲の取得・復号を済ませる。
   for (const key of Object.values(RIDE_BGM)) void preloadBgm(key);
-  const art = loadDesertArt();
+  const art = loadDesertArt({ rivals: [] });
   const promise = new Promise(resolve => {
     const rideSe = createDesertRideSe();
     const results = [];
@@ -317,9 +317,9 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       controls.hidden = true; quit.hidden = true; caption.textContent = ""; delete caption.dataset.kind; hud.replaceChildren();
       startPop.classList.remove("show"); versus.classList.remove("show");
       setPhase("menu");
-      const start = el("button.btn.primary.dr-button", { type: "button", text: results.length ? "もう一度滑る" : "滑る", dataset: { test: "desert-start" }, onclick: () => startRun("run", "noor") });
-      const naruButton = rivals.includes("naru") ? el("button.btn.dr-button", { type: "button", text: "★ なると勝負（裏）", dataset: { test: "desert-start-naru" }, onclick: () => startRun("run", "naru") }) : null;
-      const practice = el("button.btn.ghost.dr-button", { type: "button", text: practiced || results.length ? "練習をもう一度" : "練習から始める", dataset: { test: "desert-practice" }, onclick: () => startRun("practice") });
+      const start = el("button.btn.primary.dr-button", { type: "button", text: results.length ? "もう一度滑る" : "滑る", dataset: { test: "desert-start" }, onclick: () => prepareAndStart("run", "noor") });
+      const naruButton = rivals.includes("naru") ? el("button.btn.dr-button", { type: "button", text: "★ なると勝負（裏）", dataset: { test: "desert-start-naru" }, onclick: () => prepareAndStart("run", "naru") }) : null;
+      const practice = el("button.btn.ghost.dr-button", { type: "button", text: practiced || results.length ? "練習をもう一度" : "練習から始める", dataset: { test: "desert-practice" }, onclick: () => prepareAndStart("practice") });
       const leave = el("button.btn.ghost.dr-button", { type: "button", text: "砂丘を下りる", dataset: { test: "desert-leave" }, onclick: finish });
       // 遊び方は「？」を開いた時だけ（#2838・ミニゲーム共通の方針）。練習は「練習から始める」が説明を兼ねる。
       const help = el("div.dr-help", { hidden: true, role: "dialog", "aria-label": "遊び方", dataset: { test: "desert-help-panel" } }, [
@@ -358,6 +358,24 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
         rings.push({ age: 0, life: 0.62, power: 1.2, burst: true });
         if (!reducedMotion) { shakeT = 0.1; view.kick = 0.7; }
       }
+    }
+    /**
+     * 走る前の準備（2026-11-11 オーナー「加速すると処理重い。ゲーム開始前に漫画付きロードとか挟んでもいい」）:
+     * 絵・効果音を読み終えるまで待ち、ブーストの残像に使う色付きの絵を先に作っておく（走っている途中に作ると引っかかる）。
+     * 読み終わっていれば待たずに始める。時間がかかる時（0.22秒より長い）だけ、本編と同じ漫画つきのロード画面を出す。
+     */
+    let preparing = false;
+    async function prepareAndStart(kind, who = raceWith) {
+      if (preparing) return;
+      preparing = true;
+      try {
+        const runArt = loadDesertArt({ rivals: kind === "practice" ? [] : [who] });
+        if (runArt.pending() || !rideSe.isReady()) {
+          await withMinigameLoading(() => Promise.all([runArt.whenReady(), rideSe.ready()]), { host, label: "砂丘へ向かっています…" }).catch(() => {});
+        }
+        prewarmTints();
+        if (!done) startRun(kind, who);
+      } finally { preparing = false; }
     }
     function startRun(kind, who = raceWith) {
       const thisRun = ++runId;
@@ -442,13 +460,12 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       const svg = document.createElementNS(ns, "svg");
       svg.setAttribute("class", cls); svg.setAttribute("viewBox", viewBox); svg.setAttribute("aria-hidden", "true");
       if (cls.includes("gauge")) svg.setAttribute("preserveAspectRatio", "none");
-      const paths = Array.from({ length: ZAP_SLOTS }, () => {
-        const path = document.createElementNS(ns, "path");
-        path.setAttribute("fill", "none"); path.setAttribute("vector-effect", "non-scaling-stroke");
-        svg.append(path);
-        return path;
-      });
-      return { svg, paths };
+      // 光は CSS の drop-shadow（描き直すたびにぼかし直す・重い）ではなく、同じ形の太く薄い線（glow）を下に敷いて出す
+      const line = cls => { const path = document.createElementNS(ns, "path"); path.setAttribute("class", cls); path.setAttribute("fill", "none"); path.setAttribute("vector-effect", "non-scaling-stroke"); return path; };
+      const glows = Array.from({ length: ZAP_SLOTS }, () => line("glow"));
+      const paths = Array.from({ length: ZAP_SLOTS }, () => line("core"));
+      svg.append(...glows, ...paths);
+      return { svg, paths, glows };
     }
     /** ぎざぎざの稲妻（x0,y0 → x1,y1 を parts 個に折り、横へ最大 jitter ずらす）の SVG の path。 */
     function zapBolt(x0, y0, x1, y1, parts, jitter) {
@@ -461,7 +478,17 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       return `${d} L${x1.toFixed(1)} ${y1.toFixed(1)}`;
     }
     /** 溜まり具合 charge（0〜1）に応じて、ボタンとゲージの稲妻を描き直す。 */
+    /** 稲妻の光の線（glow）を、芯の線（core）と同じ形にそろえる。 */
+    function syncZapGlows(zap) {
+      if (!zap) return;
+      zap.paths.forEach((path, i) => { const d = path.getAttribute("d"); if (d) zap.glows[i].setAttribute("d", d); else zap.glows[i].removeAttribute("d"); });
+    }
     function updateZaps(charge, gaugeZap) {
+      const before = zapAt;
+      drawZaps(charge, gaugeZap);
+      if (zapAt !== before) { syncZapGlows(buttonZap); syncZapGlows(gaugeZap); }
+    }
+    function drawZaps(charge, gaugeZap) {
       const now = performance.now() / 1000;
       const burst = zapBurstT > 0 && !reducedMotion;
       root.dataset.zap = burst ? "burst" : "";
@@ -749,10 +776,6 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
         zapClock -= real;
         if (zapClock <= 0) { rideSe.zap(charge); zapBurstT = 0.14; zapClock = desertZapGap(charge); }
       } else zapClock = 0.35; // 溜まり始めたら少しして最初の1発
-      // ブースト中は曲が速くなる（音程は保ち、約0.2秒で滑らかに切り替わる）
-      // ブーストの始まりと終わりに一度だけ切り替える（少しずつ変えると iPhone で曲が止まる。2026-11-11）
-      const bgmRate = game.boostT > 0 && !game.finished ? BOOST_BGM_RATE : 1;
-      if (bgmPlaybackRate() !== bgmRate) setBgmPlaybackRate(bgmRate, { immediate: true });
       updateCurveTip(real);
       updateTutorial(events);
       updateHud();
@@ -812,8 +835,8 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
           el("h2.dr-title", { text: "練習おわり" }),
           el("p.dr-lead", { text: guide ? `${guide}「もう一度練習してもいいし、本番へ進んでもいいよ」` : "もう一度練習するか、本番へ進もう。操作は「？」でも確認できる。" }),
           el("div.dr-actions", [
-            el("button.btn.primary.dr-button", { type: "button", text: "本番を滑る", dataset: { test: "desert-start" }, onclick: () => startRun("run", "noor") }),
-            el("button.btn.ghost.dr-button", { type: "button", text: "もう一度練習", dataset: { test: "desert-practice" }, onclick: () => startRun("practice") }),
+            el("button.btn.primary.dr-button", { type: "button", text: "本番を滑る", dataset: { test: "desert-start" }, onclick: () => prepareAndStart("run", "noor") }),
+            el("button.btn.ghost.dr-button", { type: "button", text: "もう一度練習", dataset: { test: "desert-practice" }, onclick: () => prepareAndStart("practice") }),
             el("button.btn.ghost.dr-button", { type: "button", text: "砂丘を下りる", dataset: { test: "desert-leave" }, onclick: finish }),
           ]),
         ]));
@@ -852,9 +875,9 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
         ]),
         el("p.dr-best", { text: newBest ? "自己ベスト更新！" : `自己ベスト ${currentBest.score.toLocaleString("ja-JP")}点 ／ ${currentBest.rank}`, dataset: { test: "desert-best" } }),
         el("div.dr-actions", [
-          el("button.btn.primary.dr-button", { type: "button", text: "もう一度滑る", dataset: { test: "desert-retry" }, onclick: () => startRun("run", raceWith) }),
+          el("button.btn.primary.dr-button", { type: "button", text: "もう一度滑る", dataset: { test: "desert-retry" }, onclick: () => prepareAndStart("run", raceWith) }),
           rivals.includes("naru") ? el("button.btn.dr-button", { type: "button", text: raceWith === "naru" ? "ヌールと競走" : "なると勝負",
-            dataset: { test: raceWith === "naru" ? "desert-start-noor" : "desert-start-naru" }, onclick: () => startRun("run", raceWith === "naru" ? "noor" : "naru") }) : null,
+            dataset: { test: raceWith === "naru" ? "desert-start-noor" : "desert-start-naru" }, onclick: () => prepareAndStart("run", raceWith === "naru" ? "noor" : "naru") }) : null,
           el("button.btn.ghost.dr-button", { type: "button", text: "砂丘を下りる", dataset: { test: "desert-leave" }, onclick: finish }),
         ]),
       ]));
@@ -1439,6 +1462,13 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
     }
     // 炎色の残像に使う、人物の絵を一色に塗った小さな複製（絵と色ごとに一度だけ作る）
     const tintCache = new WeakMap();
+    /** ブーストの残像に使う色付きの絵を、走る前に作っておく（主人公の姿勢5つ×2色）。 */
+    function prewarmTints() {
+      for (const pose of ["rider", "riderLeft", "riderRight", "riderJump", "riderBrace"]) {
+        const image = art.get(pose);
+        if (image) for (const color of [AURAS.player.mid, AURAS.player.rim]) tintedArt(image, color);
+      }
+    }
     function tintedArt(image, color) {
       let byColor = tintCache.get(image);
       if (!byColor) tintCache.set(image, byColor = new Map());
@@ -1513,8 +1543,8 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
         const pts = [[x0, y0]];
         for (let k = 1; k < parts; k++) { const off = (rand() * 2 - 1) * unit * 0.09; pts.push([x0 + dx * k / parts - dy / len * off, y0 + dy * k / parts + dx / len * off]); }
         pts.push([x1, y1]);
-        ctx.shadowColor = "rgba(70,180,255,0.95)"; ctx.shadowBlur = Math.max(4, unit * 0.12);
-        for (const [width, color] of [[Math.max(2.5, unit * 0.045), "rgba(50,150,255,0.9)"], [Math.max(1, unit * 0.016), "#f2fdff"]]) {
+        // 光はぼかし（shadowBlur・重い）ではなく、太く薄い線を下に重ねて出す
+        for (const [width, color] of [[Math.max(6, unit * 0.11), "rgba(70,180,255,0.28)"], [Math.max(2.5, unit * 0.045), "rgba(50,150,255,0.9)"], [Math.max(1, unit * 0.016), "#f2fdff"]]) {
           ctx.lineWidth = width; ctx.strokeStyle = color;
           ctx.beginPath(); pts.forEach(([x, y], k) => (k ? ctx.lineTo(x, y) : ctx.moveTo(x, y))); ctx.stroke();
         }
@@ -1881,7 +1911,7 @@ export function runDesertRide({ host = document.getElementById("stage"), signal 
       soundLevels() { return rideSe.loopLevels(); },
     };
     showMenu();
-    if (tutorial) startRun("practice");
+    if (tutorial) prepareAndStart("practice");
   });
   active.set(host, promise);
   promise.finally(() => active.delete(host));

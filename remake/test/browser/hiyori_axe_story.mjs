@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import { suite, assertFits } from "./support.mjs";
+import { flickFromHandle } from "./axe_flick_input.mjs";
 const required=["_hiyori_cracks_done","_hiyori_tonari_return_done","_hiyori_tonari_followup_done","_hiyori_tonari_afterwork_done"];
 async function setup(page) {
   await page.evaluate(async required=>{
@@ -24,8 +25,25 @@ async function action(page,touch=false) {
   const button=page.locator('[data-test="axe-action"]:not([disabled])');await button.waitFor();
   if(touch)await button.tap();else await button.click();
 }
+// Drive the new default with real board taps and a real mouse/touch drag; never inject scores.
+async function aimAxe(page, touch = false) {
+  assert.equal(await page.locator('[data-test="axe-game"]').getAttribute('data-input-mode'), 'tap-pull');
+  const point = await page.locator('[data-test="axe-target"]').evaluate(node => {
+    const p = new DOMPoint(330, 245).matrixTransform(node.getScreenCTM());
+    return { x: p.x, y: p.y };
+  });
+  if (touch) await page.touchscreen.tap(point.x, point.y); else await page.mouse.click(point.x, point.y);
+  await page.waitForFunction(() => document.querySelector('[data-test="axe-game"]')?.dataset.phase === 'power');
+}
+async function pullAxe(page, touch = false, power = .62) {
+  // 2026-11-12: 投げ方は「上へ弾く」。右の取っ手から、power になる速さで弾く（axe_flick_input.mjs）。
+  await flickFromHandle(page, { touch, power });
+  await page.waitForFunction(() => document.querySelector('[data-test="axe-game"]')?.dataset.phase === 'result');
+  const actual = Number(await page.locator('[data-test="axe-game"]').getAttribute('data-power'));
+  assert(Math.abs(actual - power) < .06, `actual flick power ${actual} must match the gesture ${power}`);
+}
 async function finish(page,touch=false) {
-  for(let n=0;n<3;n++) for(const p of ["choice","horizontal","vertical","power","result"]){await phase(page,p);await action(page,touch);}
+  for(let n=0;n<3;n++){await phase(page,"choice");await aimAxe(page,touch);await pullAxe(page,touch);await action(page,touch);}
   await phase(page,"summary");await action(page,touch);
 }
 async function start(page){await page.evaluate(()=>{S.started=S.before();S.run=S.daily.playHiyoriEvent("axe_reveal");});await phase(page,"choice");}
@@ -158,3 +176,4 @@ await suite("hiyori-axe-story",async check=>{
     assert.equal(result.snapshot.money,90000);assert.equal(result.snapshot.stamina,80);assert.equal(result.snapshot.slot,1);assert(!result.snapshot.known&&!result.visited);
   });
 });
+

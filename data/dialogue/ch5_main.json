@@ -59,6 +59,7 @@
         {
           "speaker": "dr_kemuri",
           "face": "evil",
+          "duck": true,
           "text": "ええ。そして、君の作り方を終わらせる装置でもあります"
         },
         {
@@ -716,6 +717,7 @@
         {
           "speaker": "dr_kemuri",
           "face": "serious",
+          "beat": 800,
           "text": "……二本の合計は、君です。おめでとうございます"
         },
         {
@@ -737,6 +739,7 @@
         {
           "speaker": "",
           "face": "",
+          "beat": 800,
           "text": "二本の挙手を合わせても、今日は勝ち切れなかった。"
         },
         {
@@ -1224,8 +1227,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "世界大会から帰って、しばらくたった。予約の帳面が、少しだけ厚くなった。",
-          "comment": "※仮置き"
+          "text": "世界大会から帰って、しばらくたった。予約の帳面が、少しだけ厚くなった。"
         },
         {
           "speaker": "salaryman",
@@ -1245,8 +1247,7 @@
         {
           "speaker": "salaryman",
           "face": "smile",
-          "text": "遅くていいんですよ。……いつもの置き方です",
-          "comment": "※仮置き（優勝前提の一行）"
+          "text": "遅くていいんですよ。……いつもの置き方です"
         },
         {
           "speaker": "hajime",
@@ -1276,6 +1277,7 @@
         {
           "speaker": "hajime",
           "face": "serious",
+          "duck": true,
           "text": "『燃やす』んじゃない。『蒸らす』んだ"
         },
         {
@@ -1305,6 +1307,41 @@
         },
         {
           "speaker": "sumi",
+          "face": "normal",
+          "text": "優勝した奴の店ってだけで、ずいぶん声が掛かるようになったな"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "会長ともまたつながったし、俺も外の用事が増えてきた"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "店はお前に任せる。もう、店長なんだからな"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "俺が出かける日も、ありますけど"
+        },
+        {
+          "speaker": "sumi",
+          "face": "smile",
+          "text": "手が足りなきゃ俺が立つ。つむぎが出張に行く日もな"
+        },
+        {
+          "speaker": "sumi",
+          "face": "normal",
+          "text": "店を任せるのと、お前を閉じ込めるのは別だ"
+        },
+        {
+          "speaker": "hajime",
+          "face": "smile",
+          "text": "……じゃあ、頼らせてもらいます"
+        },
+        {
+          "speaker": "sumi",
           "face": "thinking",
           "text": "帰ってきてから、ずっと落ち着かねえ顔してんな"
         },
@@ -1316,11 +1353,10 @@
         {
           "speaker": "sumi",
           "face": "smile",
-          "text": "勝ったあとってのは、そういうもんだ。そのうち、次の注文が来る",
-          "comment": "※仮置き（優勝前提の一行）"
+          "text": "勝ったあとってのは、そういうもんだ。そのうち、次の注文が来る"
         }
       ],
-      "comment": "出典: NEW-TEXT.md §1。接続済み（ch5-progress.js CH5_PROLOGUE）。場面全体が※仮置き（第4章優勝前提、Q5・Q19判断待ち）。ch4_ending／ch4_sumi_return後、翌週の二つの店がその後なら同場面後からch5_openingへ、という挿入位置も※仮置き。背景tonari夕方、通常BGM、閉店後への時間経過、暗転は演出想定。予約帳面の地の文も※仮置き。salarymanは既存話者IDを確認済みだが、素材で未確認だった口調は※仮置き。大会動画をch5_openingへの前振りとする。"
+      "comment": "出典: NEW-TEXT.md §1。接続済み（ch5-progress.js CH5_PROLOGUE）。第4章の勝利後の本線を終え、ch5_opening の前に読む。Q5・Q19は勝つまで再挑戦と決定済みなので、帰国後の優勝に触れる本文と矛盾しない。大会動画は ch5_opening への前振り。salaryman は既存話者ID。現在の背景は CH5_SCENE_BG のtonari夜で、夕方から閉店後への時間経過・暗転などの演出想定は仮置きのまま。"
     },
     {
       "dialogue_id": "ch5_free_tonari_practice",
@@ -1376,7 +1412,7 @@
           "text": "缶の蓋を開ける。ダブルアップルとは違う、甘い匂いがした。"
         }
       ],
-      "comment": "出典: NEW-TEXT.md §2。接続済み（ch5-progress.js CH5_FREE_SCENES／ch5-daily.js）。背景tonari閉店後は※仮置き。日程決定前（_ch5_match_scheduled未成立）にtonari選択で1回、という条件・自動発生か選択肢か・博士への連絡との並べ方はすべて※仮置き。フラグはcomment上の想定のみ。日数・行動回数消費は①待ち（Q11）。"
+      "comment": "出典: NEW-TEXT.md §2。接続済み（ch5-progress.js CH5_FREE_SCENES／ch5-daily.js dueTonariScene）。日程決定前の自由行動で、ましろの訪問→初めての客を読んだ後、夜のtonari訪問時に一度読む。読了後は runPrep で試作の会話へ続く。訪問は日常ループの1行動を使う（Q11は決定・実装済み）。背景は現在tonari夜を使用し、閉店後の演出想定は仮置きとして保持。"
     },
     {
       "dialogue_id": "ch5_free_mashiro_visit",
@@ -1442,7 +1478,7 @@
           "text": "お茶の袋だけ置いて、ましろちゃんは手を振って帰っていった。"
         }
       ],
-      "comment": "出典: NEW-TEXT.md §3。接続済み（ch5-progress.js CH5_FREE_SCENES／ch5-daily.js）。背景tonari昼は※仮置き、入口の鈴はSE想定。日程決定前のtonari来客として1回という再生条件は※仮置き。ch5_unrecorded_day前後どちらでも読める想定。関係状態を確定せず、関係フラグは参照しない。素材で呼び方未確認のため呼びかけなし。一人称は僕。日数・行動回数消費は①待ち（Q11）。博士と9000に関するましろの知識を決めず、作らない日の椅子を言語化しない。"
+      "comment": "出典: NEW-TEXT.md §3。接続済み（ch5-progress.js CH5_FREE_SCENES／ch5-daily.js dueTonariScene）。日程決定前の自由行動で、tonariの並びの最初に、昼の訪問時に一度読む。訪問は日常ループの1行動を使う（Q11）。本文に博士と9000の知識を足さず、ましろの一人称は僕。恋人の場合の末尾の続きは chapterFiveLoverEcho、未読の節目は ch5-daily.js 側で扱う（#2024 A2）。背景は現在tonari昼。入口の鈴などの演出想定は仮置きとして保持。"
     },
     {
       "dialogue_id": "ch5_free_mashiro_visit_lover",
@@ -1507,8 +1543,7 @@
         {
           "speaker": "customer",
           "face": "normal",
-          "text": "あの、ここって……世界大会の",
-          "comment": "※仮置き（優勝前提の一行）"
+          "text": "あの、ここって……世界大会の"
         },
         {
           "speaker": "hajime",
@@ -1551,7 +1586,7 @@
           "text": "今日は、あれより一つ遅く置く。"
         }
       ],
-      "comment": "出典: NEW-TEXT.md §4。接続済み（ch5-progress.js CH5_FREE_SCENES／ch5-daily.js）。場面全体・背景tonari夕方・橋渡し後の日程決定前にtonariで1回という条件は※仮置き。選択肢か自動発生かは未定。世界大会の一言は素材上の優勝前提として①待ち（Q5・Q19）。素材の仮ID first_visitor は採用せず既存の汎用話者customerに合わせた。対決の酸っぱい顔の客とは別人で、対決客席へは接続しない（Q14）。決勝で使った葉の名は未確認のため出さない。日数・行動回数消費は①待ち（Q11）。"
+      "comment": "出典: NEW-TEXT.md §4。接続済み（ch5-progress.js CH5_FREE_SCENES／ch5-daily.js dueTonariScene）。日程決定前の自由行動で、ましろの訪問を読んだ後、次のtonari訪問時に一度読む。昼・夜の両枠で発生でき、訪問は日常ループの1行動を使う（Q11）。世界大会の優勝後に進む本線と一致（Q5・Q19は決定済み）。話者は既存の customer。対決の酸っぱい顔の客とは別人で、客席へ接続しない。決勝で使った葉の名は出さない。背景tonari夕方の演出想定は仮置きとして保持。"
     },
     {
       "dialogue_id": "ch5_free_eden_adam",
@@ -1640,8 +1675,7 @@
         {
           "speaker": "",
           "face": "",
-          "text": "客席から、短い拍手が起きた。",
-          "comment": "※仮置き【①待ち（Q14）】（客の人数と出どころに触れない最小の一行）"
+          "text": "客席から、短い拍手が起きた。"
         },
         {
           "speaker": "",
@@ -1704,7 +1738,7 @@
           "text": "博士は、記録の画面から目を上げなかった。"
         }
       ],
-      "comment": "出典: NEW-TEXT.md §5。接続済み（ch5-progress.js CH5_MATCH_SCENES.afterglow）。勝利ルート専用でch5_second_cup_defeat後には置かない想定。勝利時だけ、ch5_second_cup_result の後・後日談 ch5_doctor_after_match の前に1回再生し、確定で後日談へ進む（ch5-progress.js の completeChapterFiveScene と CH5_AFTERMATH。2026-11-06 #2662 で照合）。拍手の行は①待ち（Q14）の最小仮置き。customerは既存の酸っぱい顔の人。会場（Q13）・勝利フラグ・到達条件（Q20）は決めない。関節の音の描写は優先3件§6に合わせた※仮置きで、同節改稿時には要照合。"
+      "comment": "出典: NEW-TEXT.md §5。接続済み（ch5-progress.js CH5_MATCH_SCENES.afterglow）。勝利時だけ ch5_second_cup_result の後に一度読み、読了で CH5_AFTERMATH の後日談へ進む。敗北・引き分け時には読まない。Q13の会場はSMOKE LAB、Q14の客はtonariの常連と博士が募った一般客で決定済み。拍手の行に人数は出さず、customer は既存の酸っぱい顔の人。9000の小さな関節音は ch5_match_day_arrival の同じ描写を受ける。"
     },
     {
       "dialogue_id": "ch5_dream_in",
@@ -1936,7 +1970,7 @@
           }
         ]
       },
-      "comment": "出典: CH5-PRIORITY3-TEXT.md §5。接続済み（ch5-daily.js／ch5-progress.js）。既存ch4_strategy等と同じchoice/choices/text/nextとbranches形式でAをdecide、Bをdeferに収録。入口は自宅の電話の「博士に連絡する」で、ch5_unrecorded_day が未読なら先にそれを読んでから本場面へ（ch5-daily.js contactDoctor。2026-11-06 #2662 で照合）。背景tonari夕方・客なし、通常BGM、通話発信音・終了音、電話で博士は立ち絵なし名前のみ（LIMEへの変更含む）は演出想定・※仮置き。Aの博士「そのとおりです。足すことも、引くこともありません」の直後、博士「当日まで、私も調整を続けます」の直前に会場の行（Q13）と客の行（Q14）が入る（①待ち・空欄）。空欄2行は本文に未収録。会場の用意者、公平性や酸っぱい顔の客がいる理由も判断待ち。Q18が同一人物ならAの挨拶後に面識の一言を足す余地のみ。実装: Aで _ch5_match_scheduled が立ち、勝負は翌日（店の休業日。progress.matchDay）。日程が決まると「勝負の日程が決まった」カード（会場へ行く／日程を取り消す）になる（ch5-progress.js completeChapterFiveScene、ch5.js renderScheduled）。Bは発信後 ch5_timeout を読み、自由行動へ戻って同フラグを立てない（chapterFiveTimeoutPending）。B追加台詞とtimeout冒頭は同文でないため保持したが、既存の連絡済み地の文による意味の反復は接続時に要確認。会場入り前の「日程を取り消す」は ch5_timeout を流用して自由行動へ戻る（実装済み）。"
+      "comment": "出典: CH5-PRIORITY3-TEXT.md §5。接続済み（ch5-daily.js contactDoctor／ch5-progress.js）。自宅の電話の「博士に連絡する」から、ch5_unrecorded_day が未読なら先に読んで本場面へ。choice は decide（日を決める）と defer（まだ決めない）。decide で _ch5_match_scheduled が立ち、翌日が勝負の日（progress.matchDay）になる。当日の残りの枠は準備に使い、翌朝「会場へ行く／日程を取り消す」のカードへ。defer は ch5_timeout を続けて読み、日程を立てず自由行動へ戻る。取り消しも ch5_timeout を読んで日程を解除する。Q13・Q14は決定済みで、会場SMOKE LABと常連・博士が募った客の説明は ch5_match_day_arrival 本文にある。本場面には説明用の空欄を置かない。Q18の博士は第3章の審査員と同一人物。背景・通話音・電話中の見せ方などの演出想定は仮置きとして保持。"
     },
     {
       "dialogue_id": "ch5_match_day_arrival",
@@ -2173,7 +2207,7 @@
           "text": "……はい"
         }
       ],
-      "comment": "出典: CH5-PRIORITY3-TEXT.md §6。接続済み（ch5-progress.js CH5_MATCH_SCENES.arrival）。§5後からch5_copy_first_cup冒頭「一本目。同じダブルアップル12グラムを、二つのボウルへ詰めた。」へつなぐ想定。背景tonari朝・シャッターが下りた状態、BGMなし環境音、会場への暗転は演出想定。実装: 日程が決まった後のカードの「会場へ行く」で、確認「この先、勝負の終わりまで自由行動に戻れません。会場へ向かいますか」（向かう／まだ行かない）を出す（台本の choice にはしない）。「向かう」で _ch5_match_started が立って本場面へ進む（ch5-progress.js beginChapterFiveMatch）。「まだ行かない」はカードに留まるだけで、日程の取り消しは別の「日程を取り消す」（ch5_timeout を流用し、_ch5_match_scheduled を解除して自由行動へ）（ch5.js renderScheduled。2026-11-06 #2662 で照合）。会場はSMOKE LAB（Q13）、客の出どころは常連と博士が募った客（Q14）を本文に入れた（2026-11-02 DXM02）。人数は台詞に出さない。背景はtonariの仮置きのまま（#2222）。酸っぱい顔の客の先出しはQ17待ちで追加せず、同行者の客席描写は#516の範囲として未記入。SHISHA-9000一枚絵またはスチルは※仮置き。博士の挨拶は挑戦を受けた相手への礼（Q18 同一人物）。9000の照合と博士の「誤差」は、記録と今日の違い・票の割れ（doctor_after_match）への前振り（DXM01）。検品札の中身と職人の話はdoctor_after_matchへ、上着の匂いはreturn_to_tonariへ残し、判定ルールや作らない日の椅子を繰り返さない。第4章優勝前提の追加はしていない。"
+      "comment": "出典: CH5-PRIORITY3-TEXT.md §6。接続済み（ch5-progress.js CH5_MATCH_SCENES.arrival）。日程決定後の「会場へ行く」で、確認「この先、勝負の終わりまで自由行動に戻れません。会場へ向かいますか」を出す（Q15の現行実装は ch5.js renderScheduled）。「向かう」で _ch5_match_started を立て、本場面→ch5_copy_first_cup へ進む。「まだ行かない」は日程を維持してカードに留まり、取り消しは別操作。会場SMOKE LAB（Q13）と常連・博士が募った客（Q14）は本文に記載済み。Q18の博士は同一人物。9000の照合と博士の「誤差」は、記録と今日の違い・票の割れへの前振り（DXM01）。つむぎ・千須の客席描写も本文にある。背景は店を出る冒頭に合わせてtonari昼のままで、会場への背景切替（#2222）と9000のスチルなどの演出は仮置きとして保持。検品札と職人の話は doctor_after_match、上着の匂いは return_to_tonari で扱う。"
     },
     {
       "dialogue_id": "ch5_reflection_placeholder",
@@ -3092,7 +3126,7 @@
         {
           "speaker": "tsumugi",
           "face": "baito_smile",
-          "text": "……じゃあ、私で三人目ですね"
+          "text": "……じゃあ、[pause]私で三人目ですね"
         },
         {
           "speaker": "",

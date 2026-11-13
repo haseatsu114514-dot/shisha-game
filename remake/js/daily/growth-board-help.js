@@ -21,6 +21,8 @@ const fire = (kind) => el(`span.gh-fire.k-${kind}`, { "aria-hidden": "true" }, [
 const row = (art, title, text) => el("li.gh-row", [el("span.gh-art", [].concat(art)), el("div.gh-text", [el("b", { text: title }), text ? el("span", { text }) : null])]);
 const gain = (label, fires) => el("li.gh-gain", [el("span.gh-gain-label", { text: label }), el("span.gh-gain-fires", fires)]);
 const n = (kind, count) => el("span.gh-count", [fire(kind), el("b", { text: `×${count}` })]);
+/** 「ながれ」の手順（GB05・SBD124）: 丸い台に手順の絵（flow_1〜4.webp）。番号は台の右下の小さな札。絵が読めない時は今までの番号の丸だけ */
+const step = (i) => el("span.gh-step", [pic(`flow_${i}.webp`, ".gh-step-pic"), el("i.gh-step-no", { text: String(i) })]);
 
 /** 能力のアイコンの意味（盤の右の横棒・能力のマスの絵）。数字は盤の右に出るので、ここは何が伸びるかだけ */
 export const PERK_HELP = Object.freeze({
@@ -32,10 +34,10 @@ export const PERK_HELP = Object.freeze({
 /** ページ（題・絵つきの行）。id は開く場所の指定に使う */
 export const HELP_PAGES = Object.freeze([
   { id: "flow", title: "ながれ", build: () => el("ol.gh-flow", [
-    el("li", [el("span.gh-step", { text: "1" }), el("div", [el("b", { text: "経験値をためる" }), el("span", { text: "人と会う・出かける・作る・大会" })])]),
-    el("li", [el("span.gh-step", { text: "2" }), el("div", [el("b", { text: "たまると、その場でレベルアップ" }), el("span.gh-inline", [n("any", HIDANE_PER_LEVEL), el("span", { text: "火種が手持ちに入る" })])])]),
-    el("li", [el("span.gh-step", { text: "3" }), el("div", [el("b", { text: "観音堂などで振り返る" }), el("span", { text: "手持ちの火種を盤に灯す（時間は進まない）" })])]),
-    el("li", [el("span.gh-step", { text: "4" }), el("div", [el("b", { text: "灯したマスの分だけ、力が伸びる" }), el("span", { text: "メニューの盤は見るだけ（目標は付けられる）" })])]),
+    el("li", [step(1), el("div", [el("b", { text: "経験値をためる" }), el("span", { text: "人と会う・出かける・作る・大会" })])]),
+    el("li", [step(2), el("div", [el("b", { text: "たまると、その場でレベルアップ" }), el("span.gh-inline", [n("any", HIDANE_PER_LEVEL), el("span", { text: "火種が手持ちに入る" })])])]),
+    el("li", [step(3), el("div", [el("b", { text: "観音堂などで振り返る" }), el("span", { text: "手持ちの火種を盤に灯す（時間は進まない）" })])]),
+    el("li", [step(4), el("div", [el("b", { text: "灯したマスの分だけ、力が伸びる" }), el("span", { text: "メニューの盤は見るだけ（目標は付けられる）" })])]),
   ]) },
   { id: "fire", title: "火種", build: () => el("div", [
     el("ul.gh-list", [

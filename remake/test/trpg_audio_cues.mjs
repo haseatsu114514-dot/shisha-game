@@ -1,7 +1,7 @@
 // TRPG の音の割り当てが実在するファイルを指し、出典・CC0 の記録と一致することを確かめる。
 // node remake/test/trpg_audio_cues.mjs
 import assert from "node:assert/strict";
-import { readFile, stat } from "node:fs/promises";
+import { readFile, readdir, stat } from "node:fs/promises";
 import { createHash } from "node:crypto";
 import { TRPG_SE, TRPG_THEME_BGM, TRPG_SHELF_BGM } from "../js/trpg/audio-cues.js";
 
@@ -16,12 +16,17 @@ const recorded = new Map(games.map(row => [row.file, row]));
 
 // 1) どのシナリオのテーマにも BGM があり、その曲が manifest（= bgmUrl で引ける）にある。
 const themes = new Set();
-for (const entry of catalog.scenarios) {
-  const scenario = await json("data/" + entry.file);
+const activeStories = await Promise.all(catalog.scenarios.map(entry => json("data/" + entry.file)));
+// Retired stories keep their assets and source records for saved memories and later editing.
+const archivedStories = (await Promise.all((await readdir(new URL("data/dialogue/", root)))
+  .filter(file => /^trpg_.*\.json$/.test(file)).map(file => json("data/dialogue/" + file))))
+  .filter(scenario => catalog.retiredScenarios?.includes(scenario.id));
+assert.deepEqual(archivedStories.map(s => s.id).sort(), catalog.retiredScenarios.slice().sort());
+for (const scenario of [...activeStories, ...archivedStories]) {
   const theme = scenario.presentation?.theme;
-  assert.ok(theme, entry.id + " にテーマが無い");
+  assert.ok(theme, scenario.id + " にテーマが無い");
   themes.add(theme);
-  assert.ok(TRPG_THEME_BGM[theme], entry.id + "（" + theme + "）の BGM が未割り当て");
+  assert.ok(TRPG_THEME_BGM[theme], scenario.id + "（" + theme + "）の BGM が未割り当て");
 }
 assert.deepEqual([...themes].sort(), Object.keys(TRPG_THEME_BGM).sort(), "使われていないテーマの割り当てを残さない");
 for (const key of new Set([...Object.values(TRPG_THEME_BGM), TRPG_SHELF_BGM])) {

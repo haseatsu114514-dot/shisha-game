@@ -84,6 +84,9 @@ body.reduce-shake .side-smoke { animation: none; }
 .side-pad { position: absolute; display: none; gap: 12px; }
 :root[data-side-pad="on"] .side-pad { display: grid; }
 .side-pad.top { top: 22px; }
+/* 会話と地図の操作は同じ二席を使う。非表示ボタンの空席を下へ積まない。 */
+.side-pad.top [data-pad="glossary"], .side-pad.top [data-pad="lime"] { grid-area: 1 / 1; }
+.side-pad.top [data-pad="config"], .side-pad.top [data-pad="menu"] { grid-area: 2 / 1; }
 .side-pad.bottom { bottom: 22px; }
 /* 余白の幅の真ん中に置く。広い端末ではステージ寄り（端から 26px）で止め、外側を空ける */
 .side[data-side="l"] .side-pad { right: clamp(14px, calc((var(--side-g, 0px) - 88px) / 2), 26px); }
@@ -119,10 +122,11 @@ body.reduce-shake .side-smoke { animation: none; }
 .side-badge.fire { color: #2a1206; background: linear-gradient(180deg, #ffd27a, #ff9b3d); }
 .side-dot { position: absolute !important; left: 2px; top: 2px; width: 16px; height: 16px; border-radius: 50%; background: #e3bd6e; box-shadow: 0 0 0 2px #1e1330, 0 0 10px #e3bd6e; }
 
-/* 余白へ出している間は、ステージの中の元のボタンを隠す（用語・設定は中に残る）。
+/* 余白へ出している間は、ステージの中の元のボタンを隠す（用語・設定も右上へ）。
    HUD のボタンは場所を残して見えなくするだけ（MENU を起点にする演出が元の位置を測るため）。
    side-probe は、押せるかどうかを確かめる一瞬だけ付く（js/core/side-area.js の hitsHidden）。 */
-:root[data-side-pad="on"] #vn .vn-controls > .vn-ctl:is([data-test="vn-auto"], [data-test="vn-skip"], [data-test="vn-log"]) { display: none !important; }
+:root[data-side-pad="on"] #vn .vn-controls > .vn-ctl { visibility: hidden !important; }
+:root[data-side-pad="on"].side-probe #vn .vn-controls > .vn-ctl { visibility: inherit !important; }
 /* 隠した LOG の次に並ぶ「用語」の左の区切り線は要らない（旧版・紙のテーマで線だけ残るため） */
 :root[data-side-pad="on"] #vn .vn-controls > .vn-ctl[data-test="vn-glossary"]::before { content: none !important; }
 :root[data-side-pad="on"] #hud .hud-right > :is(.hud-lime, .hud-menu) { visibility: hidden !important; }

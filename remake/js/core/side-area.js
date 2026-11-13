@@ -3,7 +3,7 @@
 // ここでは、ぼかしの上・ステージの外に層を2枚（左・右）足すだけで、ステージの中の配置は動かさない。
 //   A 煙と縁    … 余白が少しでもあれば出す。
 //   B 縦書きの帯 … 章・街・日付と時間帯を、ステージの端に沿った1列で。余白がステージ上 60px 以上。
-//   C 親指ボタン … 会話の AUTO／SKIP／LOG／「次へ」、地図の LIME／MENU。余白 118px 以上のタッチ端末だけ。
+//   C 親指ボタン … 会話の AUTO／SKIP／LOG／用語／設定／「次へ」、地図の LIME／MENU。余白 118px 以上のタッチ端末だけ。
 // 寸法は主流のスマホ（19:9〜20:9。余白はステージ上で片側 120〜160px）に合わせてある。余白が足りない端末・PC・
 // 16:9 の画面では C を出さず、ステージの中のボタンを今までどおり使う。
 //
@@ -88,6 +88,8 @@ function build(viewport) {
   ]));
   r.inner.append(
     el("div.side-pad.top", [
+      button("glossary", "用語", [el("span", { text: "用語" })]),
+      button("config", "設定", [el("span", { text: "設定" })]),
       button("lime", "LIME", [el("span.side-lime", { text: "LIME" }), el("em.side-badge", { hidden: true })]),
       button("menu", "MENU", [el("i.side-bars"), el("span", { text: "MENU" }), el("em.side-badge.fire", { hidden: true }), el("i.side-dot", { hidden: true })]),
     ]),
@@ -166,8 +168,9 @@ function hitsHidden(nodes) {
 }
 const vnButton = (id) => document.querySelector(`#vn .vn-ctl[data-test="vn-${id}"]`);
 const hudButton = (id) => document.querySelector(`#hud .hud-right > .hud-${id}`);
-/** 会話の操作が押せるか。余白へ出していない「設定」の札（同じ行・同じ重なり）で確かめる。 */
-const vnLive = () => !!document.getElementById("vn")?.classList.contains("active") && hits(vnButton("config"));
+/** 元の設定ボタンを一瞬戻し、モーダル・カットインに遮られていないか確かめる。 */
+const vnLive = () => !!document.getElementById("vn")?.classList.contains("active")
+  && !document.querySelector("#vn .vn-log.show") && hitsHidden([vnButton("config")])[0];
 
 function setAttr(node, name, value) { if (node.getAttribute(name) !== value) node.setAttribute(name, value); }
 function setBadge(node, text) {
@@ -177,10 +180,10 @@ function setBadge(node, text) {
 function syncPads() {
   const { pads } = dom;
   const active = html().dataset.sidePad === "on";
-  const live = { lime: false, menu: false, auto: false, skip: false, log: false, next: false };
+  const live = { lime: false, menu: false, auto: false, skip: false, log: false, glossary: false, config: false, next: false };
   if (active) {
     if (vnLive()) {
-      live.auto = live.skip = live.log = true;
+      live.auto = live.skip = live.log = live.glossary = live.config = true;
       live.next = !document.querySelector("#vn .vn-choices")?.childElementCount;
       for (const id of ["auto", "skip"]) setAttr(pads[id], "aria-pressed", vnButton(id)?.getAttribute("aria-pressed") === "true" ? "true" : "false");
     }

@@ -1,6 +1,6 @@
 {
   "id": "moonflower-encore",
-  "version": 1,
+  "version": 2,
   "title": "月光花の古城と、終わらないアンコール",
   "subtitle": "ノクターン、夜明け前の最終公演",
   "author": "千夜カナデ",
@@ -90,6 +90,12 @@
         },
         "trait": "ノクターンを追って、城まで来たファン。うちわもペンライトも自作",
         "likes": "プリクラと、白と赤のグミベア"
+      },
+      "alternatives": {
+        "regulara": {
+          "role": "{pc:ageha}／追っかけのファン",
+          "color": "#bb9c72"
+        }
       }
     },
     {
@@ -111,6 +117,12 @@
         },
         "trait": "吸血鬼を狩りに来た……が、実は平和主義。武器は林檎と名言",
         "likes": "ダブルアップルと、舞台の仕掛け"
+      },
+      "alternatives": {
+        "regularb": {
+          "role": "{pc:adam}／林檎の紋章のハンター",
+          "color": "#8faeaa"
+        }
       }
     }
   ],
@@ -528,13 +540,27 @@
           "speaker": "ageha",
           "role": "PL／卓の会話",
           "face": "surprise",
-          "text": "吸血鬼のバンド！？ やば、絶対ビジュ強いじゃん"
+          "text": "吸血鬼のバンド！？ やば、絶対ビジュ強いじゃん",
+          "variants": {
+            "regulara": {
+              "text": "吸血鬼のバンド！？ やば、絶対ビジュ強いじゃん",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "古城のライブか。舞台装置の血が騒ぐな"
+          "text": "古城のライブか。舞台装置の血が騒ぐな",
+          "variants": {
+            "regularb": {
+              "text": "古城のライブか。舞台装置の血が騒ぐな",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "rei",
@@ -612,7 +638,14 @@
           "speaker": "ageha",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "全然いい！ GMさんの語り、ライブのMCみたいでアガる"
+          "text": "全然いい！ GMさんの語り、ライブのMCみたいでアガる",
+          "variants": {
+            "regulara": {
+              "text": "全然いい！ GMさんの語り、ライブのMCみたいでアガる",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -675,7 +708,14 @@
           "speaker": "ageha",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "ヘドバンじゃん！ わかる、うちも振る"
+          "text": "ヘドバンじゃん！ わかる、うちも振る",
+          "variants": {
+            "regulara": {
+              "text": "ヘドバンじゃん！ わかる、うちも振る",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -715,7 +755,14 @@
           "speaker": "ageha",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "やば、超エモい。この景色、プリに残したい"
+          "text": "やば、超エモい。この景色、プリに残したい",
+          "variants": {
+            "regulara": {
+              "text": "やば、超エモい。この景色、プリに残したい",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -732,7 +779,14 @@
           "speaker": "ageha",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "直したからセーフ！ 盛りは、ちょい崩れてもかわいいの"
+          "text": "直したからセーフ！ 盛りは、ちょい崩れてもかわいいの",
+          "variants": {
+            "regulara": {
+              "text": "直したからセーフ！ 盛りは、ちょい崩れてもかわいいの",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -749,7 +803,14 @@
           "speaker": "ageha",
           "role": "PL／卓の会話",
           "face": "surprise",
-          "text": "ちょ、それ売り物じゃないって！ 返してー！"
+          "text": "ちょ、それ売り物じゃないって！ 返してー！",
+          "variants": {
+            "regulara": {
+              "text": "ちょ、それ売り物じゃないって！ 返してー！",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "rei",
@@ -772,7 +833,14 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "名演の前には、必ず静けさがある。覚えておくといい"
+          "text": "名演の前には、必ず静けさがある。覚えておくといい",
+          "variants": {
+            "regularb": {
+              "text": "名演の前には、必ず静けさがある。覚えておくといい",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "rei",
@@ -818,7 +886,14 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "案ずるな。弦が一本減っても、音楽は止まらん"
+          "text": "案ずるな。弦が一本減っても、音楽は止まらん",
+          "variants": {
+            "regularb": {
+              "text": "案ずるな。弦が一本減っても、音楽は止まらん",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "rei",
@@ -835,13 +910,27 @@
           "speaker": "ageha",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "四か所しか見れないの、ムズくない？ 推しの現場は全部回りたい派なんだけど"
+          "text": "四か所しか見れないの、ムズくない？ 推しの現場は全部回りたい派なんだけど",
+          "variants": {
+            "regulara": {
+              "text": "四か所しか見れないの、ムズくない？ 推しの現場は全部回りたい派なんだけど",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "ageha",
           "role": "PL／卓の会話",
           "face": "serious",
-          "text": "てかアンコールって、まだ何か足りないときに起きるんだよね"
+          "text": "てかアンコールって、まだ何か足りないときに起きるんだよね",
+          "variants": {
+            "regulara": {
+              "text": "てかアンコールって、まだ何か足りないときに起きるんだよね",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "rei",
@@ -858,13 +947,27 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "serious",
-          "text": "舞台の謎は、裏から見ると仕掛けが分かる。譜面台か、鍵束だな"
+          "text": "舞台の謎は、裏から見ると仕掛けが分かる。譜面台か、鍵束だな",
+          "variants": {
+            "regularb": {
+              "text": "舞台の謎は、裏から見ると仕掛けが分かる。譜面台か、鍵束だな",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "客席の名札も気になる。客の顔を知るのは、演者の基本だ"
+          "text": "客席の名札も気になる。客の顔を知るのは、演者の基本だ",
+          "variants": {
+            "regularb": {
+              "text": "客席の名札も気になる。客の顔を知るのは、演者の基本だ",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "rei",
@@ -893,13 +996,27 @@
           "speaker": "ageha",
           "role": "{pc:ageha}／物語",
           "face": "surprise",
-          "text": "推しから直接一台とか、一生自慢するんだけど……！"
+          "text": "推しから直接一台とか、一生自慢するんだけど……！",
+          "variants": {
+            "regulara": {
+              "text": "推しから直接一台とか、一生自慢するんだけど……！",
+              "face": "normal",
+              "role": "{pc:ageha}／物語"
+            }
+          }
         },
         {
           "speaker": "ageha",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "……てか、うち役に入りすぎ？ 楽しすぎるんだけど"
+          "text": "……てか、うち役に入りすぎ？ 楽しすぎるんだけど",
+          "variants": {
+            "regulara": {
+              "text": "……てか、うち役に入りすぎ？ 楽しすぎるんだけど",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "rei",
@@ -917,7 +1034,14 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "香りは舞台の半分だ。林檎が無いのだけは惜しいがな"
+          "text": "香りは舞台の半分だ。林檎が無いのだけは惜しいがな",
+          "variants": {
+            "regularb": {
+              "text": "香りは舞台の半分だ。林檎が無いのだけは惜しいがな",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -975,13 +1099,27 @@
           "speaker": "ageha",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "GMさん、それがいいんじゃん！ うち途中から、ガチでファンの気持ちだった"
+          "text": "GMさん、それがいいんじゃん！ うち途中から、ガチでファンの気持ちだった",
+          "variants": {
+            "regulara": {
+              "text": "GMさん、それがいいんじゃん！ うち途中から、ガチでファンの気持ちだった",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "終わらない夜より、終わる夜の方が美しい。今夜の名言だ"
+          "text": "終わらない夜より、終わる夜の方が美しい。今夜の名言だ",
+          "variants": {
+            "regularb": {
+              "text": "終わらない夜より、終わる夜の方が美しい。今夜の名言だ",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "rei",
@@ -1005,7 +1143,14 @@
           "speaker": "ageha",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "うちも行く！ 自作のうちわ、持ってくね"
+          "text": "うちも行く！ 自作のうちわ、持ってくね",
+          "variants": {
+            "regulara": {
+              "text": "うちも行く！ 自作のうちわ、持ってくね",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -1022,7 +1167,14 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "serious",
-          "text": "一番大事な曲ほど、最後に回したくなるものだ"
+          "text": "一番大事な曲ほど、最後に回したくなるものだ",
+          "variants": {
+            "regularb": {
+              "text": "一番大事な曲ほど、最後に回したくなるものだ",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "hajime",
@@ -1045,7 +1197,14 @@
           "speaker": "ageha",
           "role": "PL／卓の会話",
           "face": "surprise",
-          "text": "百年皆勤！？ ガチ勢の中のガチ勢じゃん"
+          "text": "百年皆勤！？ ガチ勢の中のガチ勢じゃん",
+          "variants": {
+            "regulara": {
+              "text": "百年皆勤！？ ガチ勢の中のガチ勢じゃん",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "hajime",
@@ -1068,7 +1227,14 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "書き直しの数は、迷いの数だ。だが、捨ててはいない"
+          "text": "書き直しの数は、迷いの数だ。だが、捨ててはいない",
+          "variants": {
+            "regularb": {
+              "text": "書き直しの数は、迷いの数だ。だが、捨ててはいない",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "hajime",
@@ -1091,7 +1257,14 @@
           "speaker": "ageha",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "また聴かせて、って……ファンレターじゃん、これ"
+          "text": "また聴かせて、って……ファンレターじゃん、これ",
+          "variants": {
+            "regulara": {
+              "text": "また聴かせて、って……ファンレターじゃん、これ",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "hajime",
@@ -1114,7 +1287,14 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "intense",
-          "text": "最初の客は、演者にとって一生の客だ。顔は、何年たっても忘れない"
+          "text": "最初の客は、演者にとって一生の客だ。顔は、何年たっても忘れない",
+          "variants": {
+            "regularb": {
+              "text": "最初の客は、演者にとって一生の客だ。顔は、何年たっても忘れない",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "hajime",
@@ -1160,7 +1340,14 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "花びらの雨か。昔の伯爵は、客席との距離が近かったのだな"
+          "text": "花びらの雨か。昔の伯爵は、客席との距離が近かったのだな",
+          "variants": {
+            "regularb": {
+              "text": "花びらの雨か。昔の伯爵は、客席との距離が近かったのだな",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "hajime",
@@ -1183,7 +1370,14 @@
           "speaker": "ageha",
           "role": "PL／卓の会話",
           "face": "surprise",
-          "text": "え、待って。これ、推しに名前呼ばれる準備じゃん！"
+          "text": "え、待って。これ、推しに名前呼ばれる準備じゃん！",
+          "variants": {
+            "regulara": {
+              "text": "え、待って。これ、推しに名前呼ばれる準備じゃん！",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "hajime",
@@ -1206,7 +1400,14 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "演目の締めに、客の名前か。粋な幕切れだ"
+          "text": "演目の締めに、客の名前か。粋な幕切れだ",
+          "variants": {
+            "regularb": {
+              "text": "演目の締めに、客の名前か。粋な幕切れだ",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "hajime",
@@ -1235,7 +1436,14 @@
           "speaker": "ageha",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "毎晩遠征とか、愛が重い……。わかるけど"
+          "text": "毎晩遠征とか、愛が重い……。わかるけど",
+          "variants": {
+            "regulara": {
+              "text": "毎晩遠征とか、愛が重い……。わかるけど",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -1252,7 +1460,14 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "演者が客の顔と名を覚えていた時代か。いい絵だ"
+          "text": "演者が客の顔と名を覚えていた時代か。いい絵だ",
+          "variants": {
+            "regularb": {
+              "text": "演者が客の顔と名を覚えていた時代か。いい絵だ",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "hajime",
@@ -1304,7 +1519,14 @@
           "speaker": "ageha",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "うちも咲く！ てか、みんな花が開くの待ってる感じしない？"
+          "text": "うちも咲く！ てか、みんな花が開くの待ってる感じしない？",
+          "variants": {
+            "regulara": {
+              "text": "うちも咲く！ てか、みんな花が開くの待ってる感じしない？",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -1321,7 +1543,14 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "一年に一夜の記念日か。客席は、今夜を待っていたのだな"
+          "text": "一年に一夜の記念日か。客席は、今夜を待っていたのだな",
+          "variants": {
+            "regularb": {
+              "text": "一年に一夜の記念日か。客席は、今夜を待っていたのだな",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "hajime",
@@ -1350,7 +1579,14 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "serious",
-          "text": "譜面どおりに弾いている。つまり、まだ花が開いていないのだ"
+          "text": "譜面どおりに弾いている。つまり、まだ花が開いていないのだ",
+          "variants": {
+            "regularb": {
+              "text": "譜面どおりに弾いている。つまり、まだ花が開いていないのだ",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -1373,7 +1609,14 @@
           "speaker": "ageha",
           "role": "PL／卓の会話",
           "face": "surprise",
-          "text": "咲く前の匂いで、もうこれ？ 咲いたら絶対やばいじゃん"
+          "text": "咲く前の匂いで、もうこれ？ 咲いたら絶対やばいじゃん",
+          "variants": {
+            "regulara": {
+              "text": "咲く前の匂いで、もうこれ？ 咲いたら絶対やばいじゃん",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -1390,7 +1633,14 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "野外の舞台か。この楽団、本当は外が好きなのかもしれん"
+          "text": "野外の舞台か。この楽団、本当は外が好きなのかもしれん",
+          "variants": {
+            "regularb": {
+              "text": "野外の舞台か。この楽団、本当は外が好きなのかもしれん",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "hajime",
@@ -1430,7 +1680,14 @@
           "speaker": "ageha",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "花びら降らせるの、ライブの特効っぽくて好き！"
+          "text": "花びら降らせるの、ライブの特効っぽくて好き！",
+          "variants": {
+            "regulara": {
+              "text": "花びら降らせるの、ライブの特効っぽくて好き！",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -1441,7 +1698,14 @@
           "speaker": "ageha",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "蝋燭の灯り、ちょい暗めがエモいんだよね。わかる"
+          "text": "蝋燭の灯り、ちょい暗めがエモいんだよね。わかる",
+          "variants": {
+            "regulara": {
+              "text": "蝋燭の灯り、ちょい暗めがエモいんだよね。わかる",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -1452,7 +1716,14 @@
           "speaker": "ageha",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "スモークもくもく、絶対ビジュ盛れるやつじゃん！"
+          "text": "スモークもくもく、絶対ビジュ盛れるやつじゃん！",
+          "variants": {
+            "regulara": {
+              "text": "スモークもくもく、絶対ビジュ盛れるやつじゃん！",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -1463,7 +1734,14 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "夜に開く花の香りか。城の名にふさわしい"
+          "text": "夜に開く花の香りか。城の名にふさわしい",
+          "variants": {
+            "regularb": {
+              "text": "夜に開く花の香りか。城の名にふさ私い",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -1474,7 +1752,14 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "薔薇と紅茶。気品のある香りは、客席の背筋を伸ばす"
+          "text": "薔薇と紅茶。気品のある香りは、客席の背筋を伸ばす",
+          "variants": {
+            "regularb": {
+              "text": "薔薇と紅茶。気品のある香りは、客席の背筋を伸ばす",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -1485,7 +1770,14 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "serious",
-          "text": "夜の森の香りは深い。夜明け前の空気によく似合う"
+          "text": "夜の森の香りは深い。夜明け前の空気によく似合う",
+          "variants": {
+            "regularb": {
+              "text": "夜の森の香りは深い。夜明け前の空気によく似合う",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -1553,7 +1845,14 @@
           "speaker": "ageha",
           "role": "{pc:ageha}／物語",
           "face": "smile",
-          "text": "百年待って、ちゃんと届いたじゃん……。よかったね、ロゼさん"
+          "text": "百年待って、ちゃんと届いたじゃん……。よかったね、ロゼさん",
+          "variants": {
+            "regulara": {
+              "text": "百年待って、ちゃんと届いたじゃん……。よかったね、ロゼさん",
+              "face": "normal",
+              "role": "{pc:ageha}／物語"
+            }
+          }
         },
         {
           "speaker": "hajime",
@@ -1594,13 +1893,27 @@
           "speaker": "ageha",
           "role": "{pc:ageha}／物語",
           "face": "surprise",
-          "text": "伯爵、うちの名前も呼んで！ ……え、ほんとに呼んでくれた！"
+          "text": "伯爵、うちの名前も呼んで！ ……え、ほんとに呼んでくれた！",
+          "variants": {
+            "regulara": {
+              "text": "伯爵、うちの名前も呼んで！ ……え、ほんとに呼んでくれた！",
+              "face": "normal",
+              "role": "{pc:ageha}／物語"
+            }
+          }
         },
         {
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "名を呼ぶ。それだけで、百年分の拍手になる"
+          "text": "名を呼ぶ。それだけで、百年分の拍手になる",
+          "variants": {
+            "regularb": {
+              "text": "名を呼ぶ。それだけで、百年分の拍手になる",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "hajime",
@@ -1647,7 +1960,14 @@
           "speaker": "ageha",
           "role": "{pc:ageha}／物語",
           "face": "smile",
-          "text": "きれー……。これ、プリでも盛れないやつじゃん"
+          "text": "きれー……。これ、プリでも盛れないやつじゃん",
+          "variants": {
+            "regulara": {
+              "text": "きれー……。これ、プリでも盛れないやつじゃん",
+              "face": "normal",
+              "role": "{pc:ageha}／物語"
+            }
+          }
         },
         {
           "speaker": "hajime",
@@ -1688,7 +2008,14 @@
           "speaker": "ageha",
           "role": "{pc:ageha}／物語",
           "face": "smile",
-          "text": "うちも歌う！ 歌詞わかんないけど、ノリでいける！"
+          "text": "うちも歌う！ 歌詞わかんないけど、ノリでいける！",
+          "variants": {
+            "regulara": {
+              "text": "うちも歌う！ 歌詞わかんないけど、ノリでいける！",
+              "face": "normal",
+              "role": "{pc:ageha}／物語"
+            }
+          }
         },
         {
           "speaker": "rei",
@@ -1734,7 +2061,14 @@
           "speaker": "ageha",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "それな！ 熱い現場ほど、いい思い出になるんだって"
+          "text": "それな！ 熱い現場ほど、いい思い出になるんだって",
+          "variants": {
+            "regulara": {
+              "text": "それな！ 熱い現場ほど、いい思い出になるんだって",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -1768,7 +2102,14 @@
           "speaker": "ageha",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "{pc:ageha}、最前列に突撃！ 隣の幽霊ちゃんと推し語りする"
+          "text": "{pc:ageha}、最前列に突撃！ 隣の幽霊ちゃんと推し語りする",
+          "variants": {
+            "regulara": {
+              "text": "{pc:ageha}、最前列に突撃！ 隣の幽霊ちゃんと推し語りする",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "rei",
@@ -1788,7 +2129,14 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "{pc:adam}は柱の陰から、客席の熱の出どころを探ろう"
+          "text": "{pc:adam}は柱の陰から、客席の熱の出どころを探ろう",
+          "variants": {
+            "regularb": {
+              "text": "{pc:adam}は柱の陰から、客席の熱の出どころを探ろう",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "rei",
@@ -1828,7 +2176,14 @@
           "speaker": "ageha",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "{pc:ageha}、手持ちの灯り全部配る！ 暗いのは任せて"
+          "text": "{pc:ageha}、手持ちの灯り全部配る！ 暗いのは任せて",
+          "variants": {
+            "regulara": {
+              "text": "{pc:ageha}、手持ちの灯り全部配る！ 暗いのは任せて",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "rei",
@@ -1848,7 +2203,14 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "intense",
-          "text": "{pc:adam}が両手を広げ、群れの前に立ちはだかる"
+          "text": "{pc:adam}が両手を広げ、群れの前に立ちはだかる",
+          "variants": {
+            "regularb": {
+              "text": "{pc:adam}が両手を広げ、群れの前に立ちはだかる",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "rei",
@@ -1888,7 +2250,14 @@
           "speaker": "ageha",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "{pc:ageha}が盛るね。こういうの、秒で仕上げるから"
+          "text": "{pc:ageha}が盛るね。こういうの、秒で仕上げるから",
+          "variants": {
+            "regulara": {
+              "text": "{pc:ageha}が盛るね。こういうの、秒で仕上げるから",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "rei",
@@ -1908,7 +2277,14 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "{pc:adam}が仕掛けの図面を描いて、段取りを決めよう"
+          "text": "{pc:adam}が仕掛けの図面を描いて、段取りを決めよう",
+          "variants": {
+            "regularb": {
+              "text": "{pc:adam}が仕掛けの図面を描いて、段取りを決めよう",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "rei",
@@ -1948,7 +2324,14 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "intense",
-          "text": "{pc:adam}が告げよう。夜は、終わるからこそ美しいと"
+          "text": "{pc:adam}が告げよう。夜は、終わるからこそ美しいと",
+          "variants": {
+            "regularb": {
+              "text": "{pc:adam}が告げよう。夜は、終わるからこそ美しいと",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "rei",
@@ -1968,7 +2351,14 @@
           "speaker": "ageha",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "{pc:ageha}、最前列から全力で叫ぶ！ 推しの最後は、うちが支える"
+          "text": "{pc:ageha}、最前列から全力で叫ぶ！ 推しの最後は、うちが支える",
+          "variants": {
+            "regulara": {
+              "text": "{pc:ageha}、最前列から全力で叫ぶ！ 推しの最後は、うちが支える",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "rei",
@@ -2190,7 +2580,14 @@
           "speaker": "ageha",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "客一人から始まったバンドとか、エモすぎ……"
+          "text": "客一人から始まったバンドとか、エモすぎ……",
+          "variants": {
+            "regulara": {
+              "text": "客一人から始まったバンドとか、エモすぎ……",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -2250,7 +2647,14 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "薔薇と紅茶と、夜の花。香りの記憶は、百年でも色あせん"
+          "text": "薔薇と紅茶と、夜の花。香りの記憶は、百年でも色あせん",
+          "variants": {
+            "regularb": {
+              "text": "薔薇と紅茶と、夜の花。香りの記憶は、百年でも色あせん",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -2270,7 +2674,14 @@
           "speaker": "ageha",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "推しが名前覚えてくれるとか、神対応すぎ"
+          "text": "推しが名前覚えてくれるとか、神対応すぎ",
+          "variants": {
+            "regulara": {
+              "text": "推しが名前覚えてくれるとか、神対応すぎ",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -2330,7 +2741,14 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "花にまで名札か。この城は、名前を大切にしてきたのだな"
+          "text": "花にまで名札か。この城は、名前を大切にしてきたのだな",
+          "variants": {
+            "regularb": {
+              "text": "花にまで名札か。この城は、名前を大切にしてきたのだな",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -2350,7 +2768,14 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "intense",
-          "text": "始まりは庭か。最初の舞台は、いつまでも残るものだ"
+          "text": "始まりは庭か。最初の舞台は、いつまでも残るものだ",
+          "variants": {
+            "regularb": {
+              "text": "始まりは庭か。最初の舞台は、いつまでも残るものだ",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -2390,7 +2815,14 @@
           "speaker": "ageha",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "推しより窓見るとか、よっぽどのことじゃん"
+          "text": "推しより窓見るとか、よっぽどのことじゃん",
+          "variants": {
+            "regulara": {
+              "text": "推しより窓見るとか、よっぽどのことじゃん",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -2410,7 +2842,14 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "一度きりの開演か。見逃せない舞台だな"
+          "text": "一度きりの開演か。見逃せない舞台だな",
+          "variants": {
+            "regularb": {
+              "text": "一度きりの開演か。見逃せない舞台だな",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -2424,13 +2863,27 @@
           "speaker": "ageha",
           "role": "PL／卓の会話",
           "face": "normal",
-          "text": "約束の曲、ずっと弾けてないの？ 推しとしては、聴きたすぎるんだけど"
+          "text": "約束の曲、ずっと弾けてないの？ 推しとしては、聴きたすぎるんだけど",
+          "variants": {
+            "regulara": {
+              "text": "約束の曲、ずっと弾けてないの？ 推しとしては、聴きたすぎるんだけど",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "serious",
-          "text": "百年分の約束か。重いが、だからこそ響く"
+          "text": "百年分の約束か。重いが、だからこそ響く",
+          "variants": {
+            "regularb": {
+              "text": "百年分の約束か。重いが、だからこそ響く",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "rei",
@@ -2450,13 +2903,27 @@
           "speaker": "ageha",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "わかる！ 推しに名前呼ばれたら、うち一生覚えてる自信ある"
+          "text": "わかる！ 推しに名前呼ばれたら、うち一生覚えてる自信ある",
+          "variants": {
+            "regulara": {
+              "text": "わかる！ 推しに名前呼ばれたら、うち一生覚えてる自信ある",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "名を呼ぶ。それは演者から客席への、最高の拍手だ"
+          "text": "名を呼ぶ。それは演者から客席への、最高の拍手だ",
+          "variants": {
+            "regularb": {
+              "text": "名を呼ぶ。それは演者から客席への、最高の拍手だ",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "rei",
@@ -2476,13 +2943,27 @@
           "speaker": "ageha",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "年に一回しか咲かない花とか、みんなで見たいに決まってんじゃん"
+          "text": "年に一回しか咲かない花とか、みんなで見たいに決まってんじゃん",
+          "variants": {
+            "regulara": {
+              "text": "年に一回しか咲かない花とか、みんなで見たいに決まってんじゃん",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "intense",
-          "text": "舞台の外にも舞台はある。庭は、最高の野外ステージだ"
+          "text": "舞台の外にも舞台はある。庭は、最高の野外ステージだ",
+          "variants": {
+            "regularb": {
+              "text": "舞台の外にも舞台はある。庭は、最高の野外ステージだ",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         },
         {
           "speaker": "rei",
@@ -2546,7 +3027,14 @@
           "speaker": "ageha",
           "role": "{pc:ageha}／物語",
           "face": "smile",
-          "text": "はい、せーの！ みんな、うちに合わせてー！"
+          "text": "はい、せーの！ みんな、うちに合わせてー！",
+          "variants": {
+            "regulara": {
+              "text": "はい、せーの！ みんな、うちに合わせてー！",
+              "face": "normal",
+              "role": "{pc:ageha}／物語"
+            }
+          }
         }
       ]
     },
@@ -2586,7 +3074,14 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "歌はコウモリにも通じる。宇宙の真理だな"
+          "text": "歌はコウモリにも通じる。宇宙の真理だな",
+          "variants": {
+            "regularb": {
+              "text": "歌はコウモリにも通じる。宇宙の真理だな",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -2606,7 +3101,14 @@
           "speaker": "adam",
           "role": "PL／卓の会話",
           "face": "smile",
-          "text": "混乱を拍手に変える。それこそ舞台の魔法だ"
+          "text": "混乱を拍手に変える。それこそ舞台の魔法だ",
+          "variants": {
+            "regularb": {
+              "text": "混乱を拍手に変える。それこそ舞台の魔法だ",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -2626,7 +3128,14 @@
           "speaker": "ageha",
           "role": "PL／卓の会話",
           "face": "surprise",
-          "text": "みんなテンション上がっちゃってる！ でも気持ち、超わかる"
+          "text": "みんなテンション上がっちゃってる！ でも気持ち、超わかる",
+          "variants": {
+            "regulara": {
+              "text": "みんなテンション上がっちゃってる！ でも気持ち、超わかる",
+              "face": "normal",
+              "role": "PL／卓の会話"
+            }
+          }
         }
       ]
     },
@@ -2655,6 +3164,86 @@
           "text": "……アンコールは二つ高まる。誰も、けがはない"
         }
       ]
+    },
+    {
+      "dialogue_id": "trpg_moonflower_encore_make_ageha_ageha_kirara_regulara",
+      "metadata": {
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "regulara",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "今回はキララ。追っかけのファンを演じます"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "では、その役で始めましょう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_moonflower_encore_make_ageha_ageha_moka_regulara",
+      "metadata": {
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "regulara",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "今回はモカ。物販担当のコウモリ娘を演じます"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "では、その役で始めましょう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_moonflower_encore_make_adam_adam_leon_regularb",
+      "metadata": {
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "regularb",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "今回はレオン。林檎の紋章のハンターを演じます"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "では、その役で始めましょう"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_moonflower_encore_make_adam_adam_ziek_regularb",
+      "metadata": {
+        "making": true
+      },
+      "lines": [
+        {
+          "speaker": "regularb",
+          "role": "PL／卓の会話",
+          "face": "normal",
+          "text": "今回はジーク。舞台袖のギター係を演じます"
+        },
+        {
+          "speaker": "rei",
+          "role": "GM／卓の会話",
+          "face": "normal",
+          "text": "では、その役で始めましょう"
+        }
+      ]
     }
   ],
   "_comment": "作中の短編をキャラが遊ぶTRPG。campaignは配役枠。GMのレヰが家令・伯爵・幽霊の客席の声も兼ねる。",
@@ -2664,7 +3253,17 @@
     "genre": "ゴシック幻想 / 音楽",
     "tagline": "アンコールは鳴りやまない。夜明けまでに、最後の一曲を。",
     "image": "../../img/backgrounds/trpg_moonflower-encore_room.webp",
-    "choiceArt": {"src": "../../img/ui/trpg/choices-moonflower-encore.webp", "rowCount": 5, "rows": {"stage": 0, "scent": 1, "finale": 2, "tactic": 3, "hypotheses": 4}},
+    "choiceArt": {
+      "src": "../../img/ui/trpg/choices-moonflower-encore.webp",
+      "rowCount": 5,
+      "rows": {
+        "stage": 0,
+        "scent": 1,
+        "finale": 2,
+        "tactic": 3,
+        "hypotheses": 4
+      }
+    },
     "sceneAlt": "月夜の古城の大広間。大広間の舞台、客席の名札、楽屋の譜面台、庭の月光花、回廊の肖像画、家令の鍵束。客席には青白い幽霊たち。",
     "location": "月の丘 / 月光花城",
     "atmosphere": "燭台の灯り。白い花の香り。鳴りやまない、アンコール。",
@@ -2933,14 +3532,16 @@
       {
         "actor": "ageha",
         "candidates": [
-          "ageha"
+          "ageha",
+          "regulara"
         ],
         "required": false
       },
       {
         "actor": "adam",
         "candidates": [
-          "adam"
+          "adam",
+          "regularb"
         ],
         "required": false
       }
@@ -3031,6 +3632,36 @@
           },
           "making": "trpg_moonflower_encore_make_ageha_ageha_moka"
         }
+      ],
+      "regulara": [
+        {
+          "id": "kirara",
+          "name": "キララ",
+          "title": "追っかけのファン",
+          "trait": "ノクターンを追って、城まで来たファン。うちわもペンライトも自作",
+          "likes": "プリクラと、白と赤のグミベア",
+          "stats": {
+            "eye": 2,
+            "hand": 4,
+            "talk": 3,
+            "nerve": 2
+          },
+          "making": "trpg_moonflower_encore_make_ageha_ageha_kirara_regulara"
+        },
+        {
+          "id": "moka",
+          "name": "モカ",
+          "title": "物販担当のコウモリ娘",
+          "trait": "城の物販を仕切るコウモリ娘。グッズの並べ方は、とにかく盛る",
+          "likes": "トロピカルな香りと、プリ帳",
+          "stats": {
+            "eye": 3,
+            "hand": 4,
+            "talk": 3,
+            "nerve": 1
+          },
+          "making": "trpg_moonflower_encore_make_ageha_ageha_moka_regulara"
+        }
       ]
     },
     "adam": {
@@ -3064,6 +3695,36 @@
           "making": "trpg_moonflower_encore_make_adam_adam_ziek",
           "aside": "trpg_moonflower_encore_aside_adam_adam_ziek",
           "after": "trpg_moonflower_encore_after_adam_adam_ziek"
+        }
+      ],
+      "regularb": [
+        {
+          "id": "leon",
+          "name": "レオン",
+          "title": "林檎の紋章のハンター",
+          "trait": "吸血鬼を狩りに来た……が、実は平和主義。武器は林檎と名言",
+          "likes": "ダブルアップルと、舞台の仕掛け",
+          "stats": {
+            "eye": 3,
+            "hand": 2,
+            "talk": 4,
+            "nerve": 2
+          },
+          "making": "trpg_moonflower_encore_make_adam_adam_leon_regularb"
+        },
+        {
+          "id": "ziek",
+          "name": "ジーク",
+          "title": "舞台袖のギター係",
+          "trait": "人前では弾かない。他人の弦を張り替えるのは、誰より速い",
+          "likes": "開演前の舞台袖。チューニングの音",
+          "stats": {
+            "eye": 2,
+            "hand": 3,
+            "talk": 4,
+            "nerve": 2
+          },
+          "making": "trpg_moonflower_encore_make_adam_adam_ziek_regularb"
         }
       ]
     }

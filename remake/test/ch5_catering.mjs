@@ -1,5 +1,5 @@
 // 第5章の出張シーシャの依頼（DLV・chapters/ch5-catering-model.js）の決まりを、ブラウザ無しで確かめる。
-// 届く日（第5章の自由行動・地元だけ・一度に一つ）・返事と作りに行ける期限・合い方とくじ券の枚数・お金を動かさないこと・
+// 届く日（第5章の自由行動・地元だけ・一度に一つ）・返事と作りに行ける期限・合い方とくじ券の枚数・手取り・委託予約と不在・
 // 周回で持ち越さないこと・#2455（火種・心得の盤・大会・エンディング・進行の条件につながない）。
 // 実際の LIME・地図・場面は remake/test/browser/ch5_catering.mjs。
 // node remake/test/ch5_catering.mjs
@@ -19,7 +19,7 @@ const M = await import("../js/chapters/ch5-catering-model.js");
 const { grantKujiTickets } = await import("../js/daily/kuji-tickets.js");
 const { KUJI_TICKET_MAX } = await import("../js/core/rules.js");
 const carry = await import("../js/core/carry.js");
-const { newGame } = await import("../js/core/state.js");
+const { newGame, load, SAVE_KEY } = await import("../js/core/state.js");
 
 const START = 40;
 /** 第5章の自由行動の保存（地元・昼）。 */
@@ -29,6 +29,7 @@ const save = (fields = {}) => {
   return Object.assign(value, fields, { flags: { ...value.flags, ...(fields.flags || {}) } });
 };
 const grantTo = value => n => grantKujiTickets(n, "delivery", value);
+const payTo = value => n => { value.money += n; return n; };
 
 // ---------------------------------------------------------------- 1. 依頼のデータ
 const flavors = new Set(readJson("data/flavors.json").flavors.map(f => f.id));
@@ -36,11 +37,12 @@ const scenes = new Map(readJson("data/dialogue/ch5_catering.json").dialogues.map
 // quick CI の sparse checkout では背景画像の実体を取得しない。追跡ファイル名を検証する。
 const backgrounds = new Set(execFileSync("git", ["ls-files", "--cached", "--", "assets/backgrounds/"],
   { cwd: root, encoding: "utf8" }).trim().split("\n").map(path => path.slice("assets/backgrounds/".length)));
-assert(M.CATERING_REQUESTS.length >= 6 && M.CATERING_REQUESTS.length <= 8, "依頼は6〜8種");
+assert.equal(M.CATERING_REQUESTS.length, 20, "固有の依頼は20種");
 assert.equal(new Set(M.CATERING_REQUESTS.map(r => r.id)).size, M.CATERING_REQUESTS.length, "ID が重ならない");
 const fullWidth = text => [...text].reduce((n, ch) => n + (ch.codePointAt(0) <= 0xff ? 0.5 : 1), 0);
 for (const r of M.CATERING_REQUESTS) {
   assert([0, 1].includes(r.slot), `${r.id}: 昼の会か夜の会`);
+  assert(Number.isInteger(r.payout) && r.payout >= 15000, `${r.id}: 手取り15,000円から`);
   assert(r.title && r.client && r.place, `${r.id}: 題・依頼主・場所`);
   assert(r.lime.length >= 1 && r.lime.every(t => typeof t === "string" && t && fullWidth(t) <= 40), `${r.id}: LIMEの本文`);
   assert.equal(r.conditions.length, 3, `${r.id}: 手がかりは3つ`);
@@ -63,7 +65,7 @@ for (const r of M.CATERING_REQUESTS) {
 }
 // ぴったりの組み合わせの位置は依頼ごとにばらす（いつも同じ場所を押せば当たる、にしない）
 assert.equal(new Set(M.CATERING_REQUESTS.map(r => r.options.findIndex(o => o.fit === "best"))).size, 3, "ぴったりの位置が散らばる");
-assert.equal(M.CATERING_SCENE_IDS.length, M.CATERING_REQUESTS.length * 4 + 6);
+assert.equal(M.CATERING_SCENE_IDS.length, M.CATERING_REQUESTS.length * 4 + 4 + 6);
 for (const id of M.CATERING_SCENE_IDS) assert(scenes.get(id)?.lines?.length, `台本 ${id}`);
 assert.deepEqual([...scenes.keys()].sort(), [...M.CATERING_SCENE_IDS].sort(), "台本の過不足なし");
 // 台詞に報酬・お金を書かない（コードが付ける）。チップ・現金の受け渡しを描かない
@@ -176,7 +178,7 @@ for (const [id, scene] of scenes) for (const line of scene.lines) {
   }
 }
 
-// ---------------------------------------------------------------- 4. 合い方 → くじ券（お金は動かさない）
+// ---------------------------------------------------------------- 4. 合い方 → くじ券＋契約の手取り
 const jobSave = (fit, fields = {}) => {
   const v = save({ day: START + 2, ...fields });
   const entry = M.cateringRequestDue(v);
@@ -189,30 +191,30 @@ const jobSave = (fit, fields = {}) => {
 for (const [fit, want] of Object.entries({ best: 2, ok: 1, off: 0 })) {
   const { v, entry, index } = jobSave(fit);
   let calls = 0;
-  const result = M.settleCatering(v, index, n => { calls += 1; return grantKujiTickets(n, "delivery", v); });
-  assert.deepEqual(result, { fit, tickets: want }, `${fit} → くじ券${want}枚`);
+  const result = M.settleCatering(v, index, n => { calls += 1; return grantKujiTickets(n, "delivery", v); }, payTo(v));
+  assert.deepEqual(result, { fit, tickets: want, payout: entry.payout, paid: entry.payout }, `${fit} → くじ券${want}枚`);
   assert.equal(M.CATERING_TICKETS[fit], want);
   assert.equal(calls, want ? 1 : 0, "0枚の時はくじ券を渡す処理を呼ばない");
   assert.equal(v.kujiTickets, want);
-  assert.equal(v.money, 12345, "お金は動かない");
+  assert.equal(v.money, 12345 + entry.payout, "契約の手取りだけ増える");
   const record = M.cateringState(v);
   assert.equal(record.offer, null, "作り終えた依頼は消える");
   assert.equal(record.served[entry.id], 1);
-  assert.deepEqual(record.last, { id: entry.id, day: v.day, fit, tickets: want });
+  assert.deepEqual(record.last, { id: entry.id, day: v.day, performer: "hajime", fit, tickets: want, payout: entry.payout, paid: entry.payout });
   assert.equal(record.next, v.day + M.REQUEST_GAP_DAYS);
   assert.equal(M.cateringJob(v), null);
   assert.equal(M.settleCatering(v, index, grantTo(v)), null, "二度は確定しない");
   assert.equal(v.kujiTickets, want);
 }
 {
-  const { v, index } = jobSave("best");
+  const { v, entry, index } = jobSave("best");
   for (const bad of [-1, 3, 1.5, null, undefined, "0"]) assert.equal(M.settleCatering(v, bad, grantTo(v)), null, `範囲外の選択 ${bad}`);
   assert.equal(v.kujiTickets, 0);
   v.day -= 1;
   assert.equal(M.settleCatering(v, index, grantTo(v)), null, "引き受けた日は作れない");
   v.day += 1;
   v.kujiTickets = KUJI_TICKET_MAX - 1;
-  assert.deepEqual(M.settleCatering(v, index, grantTo(v)), { fit: "best", tickets: 1 }, "上限を超える分は渡さず、実際の枚数を記録する");
+  assert.deepEqual(M.settleCatering(v, index, grantTo(v), payTo(v)), { fit: "best", tickets: 1, payout: entry.payout, paid: entry.payout }, "上限を超える分は渡さず、実際の枚数を記録する");
   assert.equal(v.kujiTickets, KUJI_TICKET_MAX);
 }
 assert.equal(M.cateringServedTotal(save({ flags: { [M.CATERING_FLAG]: { served: { a: 2, b: 1, c: "x" } } } })), 3);
@@ -236,11 +238,15 @@ assert.equal(M.cateringServedTotal(save({ flags: { [M.CATERING_FLAG]: { served: 
   const code = file => readText(file).replace(/\/\*[\s\S]*?\*\//g, "").replace(/(^|[^:])\/\/.*$/gm, "$1");
   for (const file of ["remake/js/chapters/ch5-catering.js", "remake/js/chapters/ch5-catering-model.js"]) {
     const src = code(file);
-    assert.doesNotMatch(src, /addMoney|spendableMoney|\.money\b/, `${file}: お金を動かさない`);
     assert.doesNotMatch(src, /growth|hidane|火種|giveColored|PLAY_REWARDS|claimPlayRewards|award\w*Exp|earnSceneCompletion/,
       `${file}: 火種・特別な経験値を付けない（経験値は日常ループの普通の行動と同じ）`);
     assert.doesNotMatch(src, /gainAffinity|affinity\[|lovers|romance/, `${file}: 好感度・恋愛を動かさない`);
-    assert.doesNotMatch(src, /tournament|ending|chapterFiveProgress|completeChapterFiveScene/, `${file}: 大会・エンディング・進行を動かさない`);
+    // pendingInvite は既存の約束を読むだけ。「ending」の部分一致とEDへの依存を混同しない。
+    const progression = /(?:\b|_)tournament\w*|(?:\b|_)ending\w*|chapterFiveProgress|completeChapterFiveScene/;
+    for (const forbidden of ["tournamentState", "endingId", "_ch5_ending", "state.ending", "chapterFiveProgress", "completeChapterFiveScene"])
+      assert(progression.test(forbidden), `進行依存の禁止検査が働く: ${forbidden}`);
+    assert(!progression.test("pendingInvite"));
+    assert.doesNotMatch(src, progression, `${file}: 大会・エンディング・進行を動かさない`);
   }
   // 依頼の記録・場面を参照してよいのは、依頼の仕組みと第5章の日常ループ・周回の分類だけ
   const walk = (dir, out = []) => {
@@ -253,9 +259,53 @@ assert.equal(M.cateringServedTotal(save({ flags: { [M.CATERING_FLAG]: { served: 
   };
   const files = [...walk("remake/js/"), ...walk("remake/data/"), ...walk("data/")];
   const allowed = ["remake/js/chapters/ch5-catering.js", "remake/js/chapters/ch5-catering-model.js", "remake/js/chapters/ch5-daily.js",
-    "remake/js/core/carry.js", "data/dialogue/ch5_catering.json"];
+    "remake/js/core/carry.js", "remake/js/daily/tsumugi-schedule.js", "data/dialogue/ch5_catering.json",
+    "remake/js/chapters/ch5-catering-origin.js", "data/dialogue/ch5_catering_origin.json"];
   const hits = files.filter(f => /ch5[-_]catering|CATERING_|Catering/.test(readText(f)));
   assert.deepEqual(hits.filter(f => !allowed.includes(f)), [], "ほかの仕組み（心得の盤・大会・エンディング・進行）から参照しない");
 }
 
-console.log("[ch5 catering] PASS: data, schedule (ch5 free days, home, one at a time), reply/job expiry, fit → tickets (2/1/0, no money), NG+ reset, #2455");
+console.log("[ch5 catering] PASS: data, schedule (ch5 free days, home, one at a time), reply/job expiry, fit → tickets (2/1/0) + payout, NG+ reset, #2455");
+
+
+await import("./ch5_catering_delegation.mjs");
+
+// 実際のセーブ移行も委託由来の予定マーカーを保つ（TRPGの既存予定を破壊しない）。
+{
+  const s = newGame();
+  s.chapter = 5;
+  s.day = START + 2;
+  s.slot = 0;
+  s.flags._ch5 = { startDay: START, part: "free" };
+  s.flags._ch2_region = "home";
+  const existing = { id: "tsumugi", chapter: 5, day: s.day + 1, slot: 1, busy: false, reason: "休み" };
+  s.trpg.shifts = [existing];
+  assert(M.recordCateringOffer(s, "wedding_party", "migration-request"));
+  assert(M.delegateCatering(s, "migration-request", { day: s.day + 1 }));
+  localStorage.setItem(SAVE_KEY, JSON.stringify(s));
+  const loaded = load();
+  assert(loaded, "委託予約を持つセーブをロードできる");
+  assert.equal(loaded.trpg.shifts[0].cateringMsg, "migration-request", "移行は委託の出所を残す");
+  assert.equal(loaded.trpg.shifts[0].busy, true);
+  assert.deepEqual(loaded.trpg.shifts[1], existing, "移行後も元の予定を保持する");
+  const { tsumugiAtTonari } = await import("../js/daily/tsumugi-schedule.js");
+  loaded.day++; loaded.slot = 1;
+  assert.equal(tsumugiAtTonari(loaded), false, "実LOAD後も委託枠は在店しない");
+  assert(M.closeCatering(loaded));
+  assert.deepEqual(loaded.trpg.shifts, [existing], "移行後の取消も委託由来だけを除く");
+  assert.equal(tsumugiAtTonari(loaded), true, "取消後は元の在店へ戻る");
+}
+
+// 事業の相談は同じ周回だけ既読。既存の導入flag familyを使い、NG+へ持ち越さない。
+assert.equal(carry.classifyFlag("_intro_ch5_catering_business"), "progression");
+assert.equal(carry.flagVerdict("_intro_ch5_catering_business"), "reset");
+{
+  const s = newGame();
+  s.flags._intro_ch5_catering_business = true;
+  assert.equal(carry.buildCarryPackage(s).flags._intro_ch5_catering_business, undefined);
+}
+
+// Rendering adapters are stubbed, but the actual chapter and catering modules execute.
+for (const file of ["ch5_catering_integration.mjs", "ch5_tonari_manager.mjs", "ch5_catering_origin.mjs"]) {
+  execFileSync(process.execPath, ["--experimental-vm-modules", new URL(file, import.meta.url).pathname], { stdio: "inherit" });
+}

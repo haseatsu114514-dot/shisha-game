@@ -4,7 +4,7 @@ import { spendableMoney } from "../core/travel-budget.js";
 // 2階のショールーム（凛想）へ上がると1行動使う。
 import { CITY_BACKGROUNDS } from "../core/city-locations.js";
 import { WIDEHANGA_FLAVORS, WIDEHANGA_SHOP_NAME, TOKYO_FLAVORS, TOKYO_SHOP_NAME, DUBAI_SHOP_NAME, tokyoShopFlavors } from "./shop-catalogs.js";
-import { el, yen } from "../core/util.js";
+import { el, yen, sleep } from "../core/util.js";
 import { shopText, shopProductName, groupShopFlavors } from "./shop-display.js";
 import { DB, bgUrl } from "../core/data.js";
 import { showScreen, setBg, toast, modal, retire } from "../core/ui.js";
@@ -29,6 +29,7 @@ import { SHOP_EQUIPMENT_ART } from "./shop-equipment-art.js";
 import { flavorThermalGuide } from "../craft/temperature-model.js";
 import { flavorFeatureCard, flavorTags, equipmentUse, equipmentGuide } from "../craft/flavor-guide.js";
 import { homeRig } from "./home-rig.js";
+import { greetHomeShop } from "./shop-greeting.js";
 
 // 店頭に並ぶフレーバー（ch1）。定番＋レシピ帳のヒントで出てくる組み合わせの材料
 export const SHOP_FLAVORS = [
@@ -142,6 +143,7 @@ function shopHeader(sub, money, name = "Dr.fookah", branded = false) {
   return el("header.shop-head", [branded ? el("h2.shop-brand", [storeLogo("shop", { width: 100, height: 44 }), el("span", { text: name })]) : el("h2", { text: name }), el("span.shop-sub", { text: sub }), money]);
 }
 const rioUnavailable = () => rioVisitReason(state);
+const homeShopInFlight = new WeakSet();
 
 /** 入店前に行き先を選ぶ。買い出し・大会準備の案内では、そのまま1Fへ進む。戻り値は従来どおり。 */
 export async function openShop(opts = {}) {
@@ -161,17 +163,30 @@ export async function openShop(opts = {}) {
     if (state.chapter < 2) return null;
     return openCounter({ flavorIds: WIDEHANGA_FLAVORS, stockChapter: 2, shopName: WIDEHANGA_SHOP_NAME, background: CITY_BACKGROUNDS.shop, kujiShop: "widehanga" });
   }
-  if (!opts.errand && !opts.direct) {
-    const destination = await chooseShopFloor();
-    if (destination !== "shop") return destination;
-  }
-  refreshPlaceCue("shop");
-  return openCounter(opts);
+  const owner = state;
+  if (homeShopInFlight.has(owner)) return null;
+  homeShopInFlight.add(owner);
+  try {
+    const greeted = await greetHomeShop(opts);
+    // LOAD・タイトルで捨てた買い出しの呼出し元を再開しない。旧counter/入口と同じ境界。
+    if (state !== owner) return new Promise(() => {});
+    if (!greeted) return null;
+    if (!opts.errand && !opts.direct) {
+      const destination = await chooseShopFloor();
+      if (destination !== "shop") return destination;
+    }
+    refreshPlaceCue("shop");
+    return await openCounter(opts);
+  } finally { homeShopInFlight.delete(owner); }
 }
+// 入口の写真は、入口を出す前に読み込みとデコードを待つ（#3203: 地図から入った直後のフレームで写真の枠が空白だった）。
+// 通信が遅くても入口は上限で出し、写真が届くまでは枠に下地を見せる（届いたら外す）。
+const FLOOR_PHOTO_WAIT_MS = 1500;
 function chooseShopFloor() {
   return new Promise((resolve) => {
     const session = state;
     let finished = false;
+    const photos = [];
     const finish = (destination) => {
       if (finished || state !== session || !root.isConnected) return;
       if (destination === "rio" && rioUnavailable()) return;
@@ -182,13 +197,20 @@ function chooseShopFloor() {
       retire(root); resolve(destination);
     };
     const unavailable = rioUnavailable();
-    const card = (floor, title, desc, bg, destination, disabled = false, label = "") => el(`button.shop-floor${floor === "2F" ? ".showroom" : ""}`, {
-      disabled, ...(label ? { "aria-label": `${title}・${label}` } : {}), dataset: { test: destination === "rio" ? "shop-upstairs" : "shop-enter" }, onclick: () => finish(destination),
-    }, [
-      el("span.shop-floor-picture", [el("img", { src: bgUrl(bg), alt: "", decoding: "async" }), el("span.shop-floor-number", { text: floor })]),
-      el("span.shop-floor-caption", [el("b", { text: title }), el("small.shop-badge", { text: desc }), el("span.shop-floor-arrow", { text: "↗", "aria-hidden": "true" })]),
-    ]);
-    const root = showScreen("shop-entry", el("section.shop-paper.shop-entry", { "aria-label": "Dr.fookahの行き先" }, [
+    const card = (floor, title, desc, bg, destination, disabled = false, label = "") => {
+      const photo = el("img", { src: bgUrl(bg), alt: "", decoding: "async" });
+      const picture = el("span.shop-floor-picture", { dataset: { loading: "true" } }, [photo, el("span.shop-floor-number", { text: floor })]);
+      const shown = () => { delete picture.dataset.loading; };
+      // 読めなかった写真は下地のまま残す（空白の枠にしない）。
+      photos.push(photo.decode().then(shown, () => { if (photo.complete && photo.naturalWidth) shown(); }));
+      return el(`button.shop-floor${floor === "2F" ? ".showroom" : ""}`, {
+        disabled, ...(label ? { "aria-label": `${title}・${label}` } : {}), dataset: { test: destination === "rio" ? "shop-upstairs" : "shop-enter" }, onclick: () => finish(destination),
+      }, [
+        picture,
+        el("span.shop-floor-caption", [el("b", { text: title }), el("small.shop-badge", { text: desc }), el("span.shop-floor-arrow", { text: "↗", "aria-hidden": "true" })]),
+      ]);
+    };
+    const root = el("section.shop-paper.shop-entry", { "aria-label": "Dr.fookahの行き先" }, [
       // 入口では HUD の札を隠すので、所持金はヘッダーに出す（#2958）。
       shopHeader("卸直営店", el("div.shop-money", [el("small", { text: "所持金" }), el("span", { text: priceText(state.money) })])),
       el("h3", { text: "今日は、どちらへ？" }),
@@ -197,7 +219,11 @@ function chooseShopFloor() {
         card("2F", "夜のショールーム", unavailable === "2階の相談は夜から" ? "🌙 夜" : unavailable || "相談受付中・1行動消費", "bg_fookah_showroom", "rio", !!unavailable, unavailable === "2階の相談は夜から" ? unavailable : ""),
       ]),
       el("footer.shop-entry-foot", [el("button.shop-back", { text: "← 街に戻る", dataset: { test: "shop-entry-back" }, onclick: () => finish(null) })]),
-    ]));
+    ]);
+    // 待っている間に別のセーブ・タイトルへ移ったら、古い入口は出さない（finish と同じく解決もしない）。
+    Promise.race([Promise.all(photos), sleep(FLOOR_PHOTO_WAIT_MS)]).then(() => {
+      if (state === session) showScreen("shop-entry", root);
+    });
   });
 }
 

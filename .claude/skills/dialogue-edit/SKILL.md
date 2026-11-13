@@ -52,6 +52,7 @@ description: 台詞・会話イベント・dialogue JSON（data/dialogue/*.json�
 ```bash
 python3 tools/lint_dialogue.py <触ったファイル名の一部>   # ERROR=0 必須。WARNも新規では出さない
 python3 -m json.tool data/dialogue/<触ったファイル> >/dev/null
+node .claude/skills/text-style/check_wrap.mjs            # 足した・変えた台詞の折れ方。「要確認」0件にする（2行目だけ短い等。text-style スキル）
 # 現行版はJSONを直接読むため、保存後にブラウザを再読み込みすれば反映
 ```
 

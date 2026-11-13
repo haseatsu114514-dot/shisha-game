@@ -193,4 +193,29 @@ function recoveryHarness() {
   assert.equal(nodes.size, 0, 'False timeout result must remove the notice');
 }
 
+
+
+// 第3章後日談のimport失敗は、同じ文書で再試行せず保存済みcheckpointから復帰する。
+{
+  const source = readFileSync(new URL('../js/chapters/ch3-aftermath.js', import.meta.url), 'utf8');
+  const events = [], actions = [];
+  const owner = { active: true, state: {}, controller: { abort: () => events.push('abort') } };
+  const context = vm.createContext({
+    requestResumeOnBoot: () => events.push('resume-on-boot'),
+    location: { reload: () => events.push('reload') },
+    save: () => assert.fail('Do not save partially completed state'),
+    runChapterThreeAftermath: () => assert.fail('Do not retry a failed import in the same document'),
+    card: (_owner, _name, _title, _description, buttons) => actions.push(...buttons),
+    button: (o, _label, _name, action) => () => { if (o.active) return action(); },
+  });
+  vm.runInContext(source.slice(source.indexOf('function renderError(owner)')), context);
+  context.renderError(owner);
+  assert.equal(actions.length, 1);
+  await actions[0]();
+  assert.deepEqual(events, ['abort', 'resume-on-boot', 'reload']);
+  assert.equal(owner.active, false);
+  await actions[0]();
+  assert.equal(events.filter(e => e === 'reload').length, 1);
+}
+
 console.log('module loading: PASS (delay suppress/show/hide, failure cleanup, retry, single-flight, resume recovery navigation)');

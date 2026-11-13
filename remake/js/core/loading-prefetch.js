@@ -52,21 +52,53 @@ export function createPrefetchQueue({ concurrency = 2, capacity = 24 } = {}) {
 export function prepareImage(src, { timeoutMs = 8000, signal } = {}) {
   return new Promise((resolve, reject) => {
     const img = new Image();
-    let timer;
+    let timer, settled = false;
     const finish = (error) => {
+      if (settled) return;
+      settled = true;
       clearTimeout(timer);
       img.onload = img.onerror = null;
       signal?.removeEventListener("abort", abort);
-      if (error) reject(error); else resolve(img);
+      if (error) {
+        // Closing a loading gate must also stop its unused image request. In particular,
+        // slow comic art must not compete with the next scene after timeout/abort.
+        img.removeAttribute("src");
+        reject(error);
+      } else resolve(img);
     };
     const abort = () => finish(signal.reason || new DOMException("Aborted", "AbortError"));
     if (signal?.aborted) { abort(); return; }
     signal?.addEventListener("abort", abort, { once: true });
     timer = setTimeout(() => finish(new Error(`Image preparation timed out: ${src}`)), timeoutMs);
     img.onerror = () => finish(new Error(`Image preparation failed: ${src}`));
-    img.onload = () => Promise.resolve().then(() => img.decode?.()).then(() => finish(), finish);
+    img.onload = () => Promise.resolve().then(() => {
+      if (!settled) return img.decode?.();
+    }).then(() => finish(), finish);
     img.src = src;
   });
 }
 
 export const loadingPrefetch = createPrefetchQueue();
+
+
+/** Best-effort, one-at-a-time speculative preparation. Never blocks scene entry.
+ * Recheck ownership after yielding: a new save/chapter must not inherit old work.
+ * Returning false drops the remaining jobs, but does not abort shared in-flight assets.
+ */
+export async function warmInBackground(tasks, {
+  isCurrent = () => true,
+  yieldTask = () => new Promise(resolve => {
+    if (typeof requestIdleCallback === "function") requestIdleCallback(resolve, { timeout: 1000 });
+    else setTimeout(resolve, 100);
+  }),
+  isHidden = () => globalThis.document?.hidden === true,
+  saveData = () => globalThis.navigator?.connection?.saveData === true,
+} = {}) {
+  for (const task of tasks) {
+    if (!isCurrent() || saveData()) return;
+    await yieldTask();
+    // Hidden pages do not need speculative work; foreground entry still loads on demand.
+    if (!isCurrent() || isHidden() || saveData()) return;
+    try { await task(); } catch { /* Foreground loaders own errors and retries. */ }
+  }
+}

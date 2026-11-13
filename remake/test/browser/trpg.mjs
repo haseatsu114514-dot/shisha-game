@@ -293,15 +293,165 @@ try {
       await marked.tap();
       assert.equal((await snap()).plan.aroma, hints.aroma);
     });
+  // じっくり調べる（目星・TRF14）: seed 9 は、自分の役（観察3）の出目が 14＋13＋3＝30 で成功。違う見立て2つに付箋が付き、本命だけが残る。
+  // PCとスマホ横持ちで、札・出目の帯・付箋が卓に収まることも一緒に見る。
+  for (const [label, options] of [["closer-look-pc", {}], ["closer-look-touch", { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true }]]) {
+    await run(label, { seed: "9" }, options, async page => {
+      const snap = () => page.evaluate(() => __trpg.snapshot());
+      const inStage = async selector => page.locator(selector).first().evaluate(n => {
+        const stage = document.getElementById("stage").getBoundingClientRect(), r = n.getBoundingClientRect();
+        return r.width > 0 && r.top >= stage.top - 1 && r.bottom <= stage.bottom + 1 && r.left >= stage.left - 1 && r.right <= stage.right + 1;
+      });
+      await begin(page);
+      for (const id of ["menu", "window", "bag"]) { await hit(page, '[data-test="trpg-spot-' + id + '"]'); await nextLines(page); }
+      const heat = (await snap()).heat;
+      await hit(page, '[data-test="trpg-interpret"]');
+      const look = page.locator('[data-test="trpg-search"]');
+      assert.equal(await look.textContent(), "じっくり調べる観察 ＋3 · 1回", "The card shows the stat and the limit; the rule is in the help");
+      assert.match(await look.getAttribute("aria-label"), /フィンの観察で判定。一度だけ。成功 約\d+%で違う見立てが2つ、ひと手間 約\d+%で1つ分かる/);
+      assert(await inStage('[data-test="trpg-search"]'), "The card stays on the stage");
+      await hit(page, '[data-test="trpg-search"]');
+      const found = (await snap()).search;
+      assert.deepEqual(found.dice, [14, 13]); assert.equal(found.total, 30); assert.equal(found.grade, "success");
+      assert.deepEqual(found.ruled.slice().sort(), ["company", "home"]);
+      assert.equal((await snap()).heat, heat + 1, "A successful look lifts the table by one");
+      assert.equal(await look.count(), 0, "One look per table");
+      const strip = page.locator('[data-test="trpg-search-result"]');
+      assert.equal(await strip.getAttribute("data-grade"), "success");
+      assert.equal(await strip.textContent(), "1413＋3 ＝ 30成功！✕ 2つ");
+      assert.match(await strip.getAttribute("aria-label"), /合計 30。成功！。違いそうな見立てが2つ分かった/);
+      for (const id of found.ruled) {
+        const card = page.locator('[data-test="trpg-hypothesis-' + id + '"]');
+        assert.equal(await card.getAttribute("data-ruled"), "true");
+        assert.match(await card.getAttribute("aria-label"), /じっくり調べた結果：違いそう/);
+        assert.equal(await card.locator(".trpg-hint-mark").textContent(), "✕ 違いそう");
+      }
+      assert.equal(await page.locator('[data-test="trpg-hypothesis-quiet"]').getAttribute("data-ruled"), "false", "The truth is what is left");
+      // 出目が止まり、付箋が出そろってから、卓に収まっていることを見る。
+      await page.waitForFunction(() => [document.querySelector('[data-test="trpg-search-result"]'), ...document.querySelectorAll(".trpg-hypothesis-stage .trpg-hint-mark")]
+        .every(n => n.getAnimations({ subtree: true }).every(a => a.playState === "finished")));
+      assert(await inStage('[data-test="trpg-search-result"]'), "The result strip stays on the stage");
+      for (const id of found.ruled) assert(await inStage('[data-test="trpg-ruled-' + id + '"]'), "The tag stays on the stage");
+      const [back, result] = await Promise.all(['[data-test="trpg-hypothesis-back"]', '[data-test="trpg-search-result"]'].map(sel =>
+        page.locator(sel).evaluate(n => { const r = n.getBoundingClientRect(); return { left: r.left, right: r.right, top: r.top, bottom: r.bottom }; })));
+      assert(back.right <= result.left + 1 && Math.abs((back.top + back.bottom) - (result.top + result.bottom)) < 4, "The two sit side by side under the cards");
+      await page.screenshot({ path: path.join(artifacts, label + ".png") });
+      // 開き直しても同じ結果。出目は転がし直さない。
+      await hit(page, '[data-test="trpg-hypothesis-back"]'); await hit(page, '[data-test="trpg-interpret"]');
+      assert.equal(await strip.getAttribute("data-fresh"), "false");
+      assert.equal(await page.locator(".trpg-hypothesis-stage .trpg-hint-mark").count(), 2);
+      // 残った見立てを選ぶと的中。決まりは「？」に書いてある。
+      await hit(page, '[data-test="trpg-hypothesis-quiet"]'); await nextLines(page);
+      assert.equal((await snap()).hypothesis, "quiet"); assert.equal((await snap()).profileId, "quiet");
+      await hit(page, '[data-test="trpg-help"]');
+      assert.match(await page.locator(".trpg-help-glossary").nth(1).textContent(), /じっくり調べる.*自分の役の観察で判定。成功で2つ、ひと手間で1つ/);
+    });
+  }
   await run("discovery-small-touch", { seed: "12", traveler: "quiet" },
     { viewport: { width: 667, height: 375 }, isMobile: true, hasTouch: true }, async page => {
       await begin(page); await explore(page);
       await finish(page, { aroma: "spice", seat: "counter", approach: "company" });
       assert.equal(await page.locator('[data-test="trpg-ending-title"]').textContent(), "一緒に見つけた一台");
     });
+  // 演出（TRF08〜10）: 転生・物語の層と卓の層・判定の帯とカットイン・場面の題の札・手がかりの札。
+  // どれも見た目だけで、操作を塞がない。seed 54 は最初の判定がクリティカル。
+  // 演出は数秒で自分から消えるので、出た瞬間の中身をページの中で記録して、あとから確かめる（実行の速さに左右されない）。
+  await run("staging-incarnation-layers-and-cutin", { seed: "54" }, {}, async page => {
+    const root = page.locator(".trpg-root"), next = page.locator('[data-test="trpg-next"]');
+    await page.evaluate(() => {
+      const text = (node, selector) => node.querySelector(selector)?.textContent ?? null;
+      window.__staged = [];
+      new MutationObserver(records => { for (const record of records) for (const node of record.addedNodes) {
+        if (node.nodeType !== 1 || !node.matches(".trpg-incarnate, .trpg-cutin, .trpg-scene-card, .trpg-clue-card")) continue;
+        const stage = document.querySelector(".trpg-root");
+        window.__staged.push({ kind: node.className, small: text(node, "small"), strong: text(node, "strong"), tone: node.dataset.tone || "",
+          special: node.dataset.special || "", calm: node.dataset.calm || "", hidden: node.getAttribute("aria-hidden"),
+          pointer: getComputedStyle(node.closest(".trpg-fx-layer")).pointerEvents, clip: getComputedStyle(node.closest(".trpg-fx-layer")).overflowX,
+          scroll: [stage.scrollWidth - stage.clientWidth, stage.scrollLeft],
+          cards: [...node.querySelectorAll(".trpg-incarnate-card")].map(card => ({ front: text(card, ".front strong"), back: text(card, ".back strong"),
+            title: text(card, ".back small"), art: card.querySelector(".back .trpg-costume i")?.getAttribute("style") || "" })) });
+      } }).observe(document.querySelector(".trpg-root"), { childList: true, subtree: true });
+    });
+    const staged = kind => page.evaluate(k => window.__staged.filter(entry => entry.kind.includes(k)), kind);
+    await page.locator('[data-test="trpg-start"]').click();
+    // キャラ作りの時間は卓の会話: 座席の帯が出ていて、だれも役の姿ではない。
+    assert.equal(await root.getAttribute("data-layer"), "table");
+    assert(await page.locator(".trpg-table").evaluate(n => n.checkVisibility({ visibilityProperty: true, opacityProperty: true })));
+    // 転生が出るまで送る。出た瞬間の1押しは、ページの中でまとめて行う: 演出を閉じるだけで、下の最初の一行は読み飛ばさない。
+    let closed = null;
+    for (let presses = 0; !closed; presses++) {
+      assert(presses < 40, "The story begins after the character talk");
+      closed = await page.evaluate(() => {
+        const button = document.querySelector('[data-test="trpg-next"]'), line = () => document.querySelector(".trpg-speech p").textContent;
+        if (!document.querySelector(".trpg-incarnate")) { button.click(); return null; }
+        const before = line(); button.click();
+        return { before, after: line(), gone: !document.querySelector(".trpg-incarnate"), kind: document.querySelector(".trpg-root").dataset.kind,
+          who: document.querySelector(".trpg-speaker-label strong").textContent, art: getComputedStyle(document.querySelector(".trpg-speaker-art")).display };
+      });
+    }
+    assert.equal(closed.after, closed.before, "The first press only puts the cards away");
+    assert(closed.gone);
+    // 転生: 卓にいるPLの数だけ札があり、表は本人、裏は役。
+    const pc = (await page.evaluate(() => __trpg.snapshot())).pc, [incarnation] = await staged("trpg-incarnate");
+    assert.equal(incarnation.cards.length, 3);
+    assert.equal(incarnation.cards[0].front, "はじめ"); assert.equal(incarnation.cards[0].back, pc.name); assert.equal(incarnation.cards[0].title, pc.title);
+    assert.match(incarnation.cards[0].art, /costumes\/ordinary-cup\/hajime_/, "The role side wears the costume art");
+    assert.equal(incarnation.hidden, "true"); assert.equal(incarnation.pointer, "none", "The staging never blocks the table");
+    // 物語の中: 語りは立ち絵なしで「語り」、座席の帯は隠れる。
+    assert.equal(closed.kind, "narration"); assert.equal(closed.who, "語り"); assert.equal(closed.art, "none");
+    await page.waitForFunction(() => !document.querySelector(".trpg-table").checkVisibility({ visibilityProperty: true, opacityProperty: true }));
+    const seen = {};
+    for (let n = 0; n < 60 && await next.isVisible(); n++) {
+      const line = await page.evaluate(() => ({ kind: document.querySelector(".trpg-root").dataset.kind, who: document.querySelector(".trpg-speaker-label strong").textContent,
+        aside: document.querySelector(".trpg-speaker-label span").textContent, art: document.querySelector(".trpg-speaker-art").innerHTML }));
+      seen[line.kind] ||= line;
+      await next.click();
+    }
+    assert.equal(seen.npc.who, "旅人オル"); assert.equal(seen.npc.aside, "GM ひより");
+    assert.match(seen.npc.art, /trpg-npc-figure/); assert.match(seen.npc.art, /trpg-npc-gm/, "The GM's face stays beside the character they voice");
+    assert.equal(seen.pc.who, pc.name, "A player in role is named by the character"); assert.equal(seen.pc.aside, "はじめ");
+    assert.match(seen.pc.art, /costumes\/ordinary-cup\/hajime_/, "and wears the role costume");
+    assert(seen.table, "Table talk returns between the story's lines");
+    // 判定: 目標までの帯と、結果のカットイン。
+    await page.locator('[data-test^="trpg-approach-"]').first().click();
+    await nextLines(page);
+    await page.locator('[data-test="trpg-roll"]').click();
+    await page.locator('[data-test="trpg-settle"]').waitFor();
+    assert((await page.evaluate(() => __trpg.snapshot())).pending.dice.includes(20), "Seed 54 opens with a 20");
+    const gauge = page.locator(".trpg-roll-gauge");
+    assert.equal(await gauge.getAttribute("data-grade"), "success"); assert.equal(await gauge.getAttribute("data-special"), "critical");
+    assert.equal(await gauge.locator(".trpg-roll-gauge-goal").textContent(), "30");
+    const marks = await gauge.evaluate(n => ["--mixed-at", "--success-at", "--mark-at"].map(k => parseFloat(n.style.getPropertyValue(k))));
+    assert(marks[0] < marks[1] && marks[1] < marks[2] && marks[2] <= 100, "The mark stops on the success side: " + marks);
+    await page.locator('[data-test="trpg-settle"]').click();
+    await nextLines(page);
+    const [cut] = await staged("trpg-cutin");
+    assert.equal(cut.special, "critical"); assert.equal(cut.strong, "クリティカル！");
+    assert.match(cut.small, new RegExp("^" + pc.name + " · ")); assert.equal(cut.pointer, "none");
+    // 帯や札が舞台の外へはみ出しても、舞台の横スクロール幅を増やさない（増えると、押した拍子に舞台ごと横へずれる）。
+    assert.equal(cut.clip, "hidden"); assert.deepEqual(cut.scroll, [0, 0], "The staging layer clips what leaves the stage");
+    assert.deepEqual(await root.evaluate(n => [n.scrollWidth - n.clientWidth, n.scrollLeft]), [0, 0]);
+    // 場面の題の札と、聞いた話の札。先へ進むと、場面の札は片付く。
+    const scenes = await staged("trpg-scene-card");
+    assert.deepEqual(scenes.map(card => [card.small, card.strong]), [["場面 2 / 7", "旅人と話す"]]);
+    const cleared = await page.evaluate(() => { document.querySelector('[data-test^="trpg-topic-"]').click();
+      return { scene: document.querySelectorAll(".trpg-scene-card").length, clue: document.querySelector(".trpg-clue-card small")?.textContent ?? null }; });
+    assert.deepEqual(cleared, { scene: 0, clue: "聞いた話" }, "The scene card leaves when the player moves on");
+    await nextLines(page);
+    assert.equal(await root.getAttribute("data-layer"), "idle");
+  });
   await run("reroll-cancel-and-low-motion", { seed: "8", traveler: "quiet" },
     { reducedMotion: "reduce" }, async page => {
       await page.locator('[data-test="trpg-start"]').click();
+      // 動きを減らす設定: 転生は役の札を動かさずに短く見せるだけ（裏返しも光もない）。
+      let calm = null;
+      for (let presses = 0; !calm; presses++) {
+        assert(presses < 40);
+        calm = await page.evaluate(() => { const node = document.querySelector(".trpg-incarnate");
+          if (!node) { document.querySelector('[data-test="trpg-next"]').click(); return null; }
+          return { calm: node.dataset.calm, side: node.querySelector(".trpg-incarnate-card").dataset.side }; });
+      }
+      assert.deepEqual(calm, { calm: "true", side: "back" });
       await nextLines(page);
       await checkRoll(page, { reroll: true });
       assert.equal((await page.evaluate(() => __trpg.snapshot())).teamwork, 1);

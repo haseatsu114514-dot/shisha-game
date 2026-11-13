@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { LOADING_COMICS, eligibleLoadingComics } from '../js/core/loading-comics.js';
 import { hasMetCharacter } from '../js/core/title-art-unlock.js';
+import { minigameLoadingOptions } from '../js/minigames/minigame-loading.js';
 
 // Registration guard: every comic offered to the loading screen must fit the fixed
 // display frame (3:2, css/loading.css --loading-panel-ratio; authoring spec:
@@ -92,7 +93,7 @@ assert.equal(new Set(LOADING_COMICS.map(c => c.id)).size, LOADING_COMICS.length,
 // which offers the bench comics too (core/loading-comic-notice.js NOTICE_COMIC_CONTEXTS) and any comic
 // registered for "scene" only. contexts is required: a comic without it would also be offered at
 // boot, where no comic may add its own image downloads to the start-up.
-const CONTEXTS = ['craft', 'scene'];
+const CONTEXTS = ['craft', 'scene', 'minigame'];
 const SCENE_WAIT = ['scene', 'craft'];
 for (const comic of LOADING_COMICS) {
   assert(Array.isArray(comic.contexts) && comic.contexts.length > 0, `${comic.id}: contexts is required (["craft"])`);
@@ -120,6 +121,14 @@ assert(freshIds.every(id => LOADING_COMICS.find(c => c.id === id).cast.every(x =
 const metNaru = craft(1, { ...fresh, met: { naru: true } });
 assert(metNaru.some(id => LOADING_COMICS.find(c => c.id === id).cast.includes('naru')), 'meeting naru unlocks naru comics');
 assert(metNaru.every(id => LOADING_COMICS.find(c => c.id === id).cast.every(x => x === 'sumi' || x === 'naru')), 'no comic of an unmet character');
+// 鉄仮面さん（salaryman）は名乗りの met が付かない。第1章冒頭の tonari を読み終えた記録か、常連の話の記録で会った扱いになる。
+const salarymanComics = LOADING_COMICS.filter(c => c.cast.includes('salaryman')).map(c => c.id);
+assert(salarymanComics.length > 0, 'salaryman comics are registered');
+assert(!craft(1, { ...fresh, flags: { _ch1_opening: {} } }).some(id => salarymanComics.includes(id)), 'salaryman comics wait until the opening at tonari is read');
+for (const flags of [{ _ch1_opening: { introDone: true } }, { _ev_salaryman: true }]) {
+  const ids = craft(1, { ...fresh, flags });
+  assert(salarymanComics.every(id => ids.includes(id)), `salaryman comics unlock with ${JSON.stringify(flags)}`);
+}
 // A comic with two characters needs both; a spoiler comic also waits for its chapter.
 const multi = LOADING_COMICS.filter(c => c.cast.length > 1);
 for (const comic of multi) {
@@ -174,4 +183,19 @@ assert.deepEqual(scene(9, everyone), craft(9, everyone), 'scene waits follow the
   delete globalThis.localStorage;
 }
 
-console.log(`loading comics spec: PASS (${LOADING_COMICS.length} comics fit the 3:2 frame band; cast-based unlock: fresh game ${freshIds.length})`);
+// Before a minigame starts (sandboard, camel race; 2026-11-11 owner "ゲーム開始前に漫画付きロードとか挟んでもいい"),
+// the same loading screen picks comics by the same rules: in the game, the save's chapter and the people met;
+// on a standalone trial page (no save) like the bench preview, the cast is not checked and spoilers stay hidden.
+const minigame = save => eligibleLoadingComics(LOADING_COMICS, minigameLoadingOptions(save)).map(c => c.id);
+assert.deepEqual(minigame({ ...fresh, chapter: 1 }), freshIds, 'in the game, a minigame shows the same comics as the bench');
+for (const chapter of [1, 2, 3, 4, 5]) {
+  for (const [label, save] of [['fresh', fresh], ['met naru', { ...fresh, met: { naru: true } }], ['everyone met', everyone]]) {
+    assert.deepEqual(minigame({ ...save, chapter }), craft(chapter, save), `chapter ${chapter} ${label}: same as the bench`);
+  }
+}
+const trial = minigame(null);
+assert.deepEqual(trial, eligibleLoadingComics(LOADING_COMICS, { context: 'craft', chapter: 1 }).map(c => c.id), 'a standalone trial uses the bench preview pool');
+assert(trial.length > freshIds.length, 'a trial page has comics to show');
+assert(trial.every(id => LOADING_COMICS.find(c => c.id === id).minChapter === 1), 'a trial page never shows a spoiler comic');
+
+console.log(`loading comics spec: PASS (${LOADING_COMICS.length} comics fit the 3:2 frame band; cast-based unlock: fresh game ${freshIds.length}; minigame trial ${trial.length})`);
