@@ -8,8 +8,7 @@ import { DB, bgUrl, displayName, faceIconUrl, portraitInfo, CHAPTER_DIALOGUE_FIL
 import { el, yen } from "../core/util.js";
 import { createChapterActions } from "../core/chapter-actions.js";
 import { state, save, markMet, loadFromSlot, requestResumeOnBoot } from "../core/state.js";
-import { layers, showScreen, setBg, enterScene, modal, imageReady, loadingNotice } from "../core/ui.js";
-import { withLoadingNotice } from "../core/module-loading.js";
+import { layers, showScreen, setBg, enterScene, modal, imageReady, withChapterLoading } from "../core/ui.js";
 import { saveFlow, loadFlow } from "../scenes/saves.js";
 import { maxStamina } from "../core/stats.js";
 import { awardTournamentExp, awardChapterClearExp } from "../core/growth.js";
@@ -273,7 +272,7 @@ async function renderDefeat(owner, variant = null) {
 }
 function renderComplete(owner) {
   const next = button(owner, "第三章・東京へ", "chapter-three", async () => {
-    const mod = await withLoadingNotice(import("./ch3.js"), loadingNotice("第3章の東京へ向かっています…"));
+    const mod = await withChapterLoading(() => import("./ch3.js"), "第3章の東京へ向かっています…");
     await mod.beginChapterThree();
   }, true);
   card(owner, "complete", "第二章・完", "優勝トロフィーと、東京行きの切符。味のしない舌は、そのままだった。", [

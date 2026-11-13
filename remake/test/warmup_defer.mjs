@@ -91,6 +91,8 @@ async function loadUi({ loadImage = image => image.onload?.(), imageSize = 0, no
     "chapter-title-art.js": { chapterTitleArt: () => "img/ui/chapter_title_ch1.webp" },
     "ui-theme.js": { uiThemeFrame: () => "img/ui/frame.webp" },
     "module-loading.js": { withLoadingNotice: (p) => p },
+    "loading.js": { withLoading: (prepare) => Promise.resolve().then(() => prepare({})), comicLoadingRequired: () => false },
+    "loading-context.js": { gameLoadingOptions: () => ({}) },
     "stage-fit.js": { syncBackdrop: () => {} },
     "loading-prefetch.js": {
       prepareImage: (url) => new Promise((resolve) => {

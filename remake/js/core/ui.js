@@ -17,6 +17,8 @@ import { allStoreLogoUrls } from "./store-logos.js";
 import { chapterTitleArt } from "./chapter-title-art.js";
 import { uiThemeFrame } from "./ui-theme.js";
 import { withLoadingNotice } from "./module-loading.js";
+import { withLoading, comicLoadingRequired } from "./loading.js";
+import { gameLoadingOptions } from "./loading-context.js";
 import { loadingPrefetch, prepareImage } from "./loading-prefetch.js";
 
 export const layers = {};
@@ -401,19 +403,53 @@ export function toast(text, { ms = 2600, kind = "", se = "" } = {}) {
 }
 
 /**
- * 動的 import など、画面が無反応になりがちな待ちに添える軽量ロード表示。
- * 会話中の .vn-loading と同じ見た目。show / hide を withLoadingNotice に渡して、
- * 500ms超で出し、完了・失敗のどちらでも消す（速い読み込みでは出さない）。
+ * 動的 import など、画面が無反応になりがちな待ちのロード表示。show / hide を withLoadingNotice に渡して、
+ * 500ms超で出し、完了・失敗のどちらでも閉じる（速い読み込みでは出さない）。
+ * プレイヤーの既定では、作業台と同じ漫画つきのロード画面（core/loading.js）を出し、読み終えてタップで進む
+ * （2026-11-12 オーナー「ロード画面に統一感ない。漫画はマストで出して欲しい」。onHide がその読み終わりを返す）。
+ * 自動操作のブラウザ（既存の検査）と inline: true（ギャラリーの絵など、場面の切り替えではない待ち）は、従来の小さな表示。
  */
-export function loadingNotice(label = "読み込んでいます…") {
+export function loadingNotice(label = "読み込んでいます…", { inline = false } = {}) {
+  if (!inline && comicLoadingRequired()) return comicLoadingNotice(label);
   const notice = el("div.vn-loading", { role: "status", "aria-live": "polite", text: label, dataset: { test: "module-loading" } });
-  let hideComic, closed = false;
-  return { onShow: () => {
-    layers.fx.append(notice);
-    if (typeof window !== "undefined") void import("./loading-comic-notice.js").then(({ attachLoadingComic }) => {
-      if (!closed && notice.isConnected) hideComic = attachLoadingComic(notice);
-    }).catch(() => { /* The plain notice remains available if the comic module fails. */ });
-  }, onHide: () => { closed = true; hideComic?.(); notice.remove(); } };
+  return { onShow: () => { layers.fx.append(notice); }, onHide: () => { notice.remove(); } };
+}
+
+// The wait is already over 500 ms when onShow runs, so the gate opens at once. It never competes with
+// another gate (soft). A failed wait closes it without holding the reader.
+function comicLoadingNotice(label) {
+  let release, gate, controller;
+  return {
+    onShow: () => {
+      controller = new AbortController();
+      const done = new Promise(resolve => { release = resolve; });
+      gate = withLoading(() => done, { label, delayMs: 0, soft: true, signal: controller.signal, ...gameLoadingOptions(state) })
+        .catch(() => { /* A closed or failed loading screen leaves the scene as it is. */ });
+    },
+    onHide: ({ failed = false } = {}) => {
+      if (failed) controller?.abort();
+      release?.();
+      return gate;
+    },
+  };
+}
+
+/**
+ * 章の始め・セーブからの再開（決まった場面）。プレイヤーの既定では、待ちがなくても漫画のロード画面を出す
+ * （2026-11-12 オーナー「決まった場面は毎回出す」）。load の結果（章のモジュールなど）を返し、失敗はそのまま投げる。
+ * 自動操作のブラウザでは従来どおり、0.5秒を超えたときだけ小さな表示を出す。
+ */
+export function withChapterLoading(load, label) {
+  if (!comicLoadingRequired()) return withLoadingNotice(load(), loadingNotice(label));
+  return withLoading(() => load(), { label, fixed: true, ...gameLoadingOptions(state) });
+}
+
+/**
+ * これまで文字だけの画面（「東京の場面を準備しています…」など）で待っていた、章の始めの台本の読み込み。
+ * プレイヤーの既定では、0.5秒を超えたら漫画のロード画面にする（直前の漫画を読んだばかりなら、その続きの画面で閉じる）。
+ */
+export function withSceneLoading(task, label) {
+  return comicLoadingRequired() ? withLoadingNotice(task, loadingNotice(label)) : task;
 }
 
 /** VN開始前などの画像待ちにだけ添える通知。play()自体は包まない。 */

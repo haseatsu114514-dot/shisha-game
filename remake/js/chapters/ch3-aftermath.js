@@ -3,8 +3,7 @@ import { DB, bgUrl, displayName } from "../core/data.js";
 import { el } from "../core/util.js";
 import { state, save, loadFromSlot, requestResumeOnBoot } from "../core/state.js";
 import { chapterDay } from "../core/chapter-clock.js";
-import { layers, showScreen, setBg, enterScene, modal, loadingNotice } from "../core/ui.js";
-import { withLoadingNotice } from "../core/module-loading.js";
+import { layers, showScreen, setBg, enterScene, modal, withChapterLoading, withSceneLoading } from "../core/ui.js";
 import { saveFlow, loadFlow } from "../scenes/saves.js";
 import { glossaryPanel } from "../vn/glossary.js";
 import { playBgm } from "../core/audio.js";
@@ -124,13 +123,13 @@ export async function runChapterThreeAftermath() {
   return perform(owner, async () => {
     if (!state.flags._ch3_cleared) {
       // 欠損台本で後日談の日付やstageを進めない。全場面を揃えてから公開する。
-      const dialogues = await readDialogues("ch3_main", IDS);
+      const dialogues = await withSceneLoading(readDialogues("ch3_main", IDS), "帰り道の場面を準備しています…");
       if (!live(owner)) return;
       Object.assign(DB.dialogues, Object.fromEntries(IDS.map(id => [id, dialogues[id]])));
     }
     if (!state.flags._ch3_cleared || agehaConfessionDue(state)) {
       // 再会の後の帰り際（#1930）。返事の場面まで揃えてから入口を出す。
-      const confession = await readDialogues("confession", AGEHA_CONFESSION_SCENES);
+      const confession = await withSceneLoading(readDialogues("confession", AGEHA_CONFESSION_SCENES), "帰り道の場面を準備しています…");
       if (!live(owner)) return;
       Object.assign(DB.dialogues, Object.fromEntries(AGEHA_CONFESSION_SCENES.map(id => [id, confession[id]])));
     }
@@ -332,7 +331,7 @@ async function renderStage(owner) {
     if (agehaConfessionDue(state)) { renderAgehaConfession(owner); return; }
     // 第3章側の第4章への接続点はここ1か所（状態遷移は ch4-progress.js の advanceToChapterFour）。
     const next = button(owner, "第4章へ進む", "chapter-four", async () => {
-      const mod = await withLoadingNotice(import("./ch4.js"), loadingNotice("第4章のドバイへ向かっています…"));
+      const mod = await withChapterLoading(() => import("./ch4.js"), "第4章のドバイへ向かっています…");
       await mod.beginChapterFour();
     }, true);
     card(owner, "complete", "第三章・完", "全国大会を終え、帰る場所にも新しい約束ができた。", [
