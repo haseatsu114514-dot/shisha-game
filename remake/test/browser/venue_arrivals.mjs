@@ -2,6 +2,7 @@
 // 既定のブラウザテストは来店のやり取りを止めている（suien_roamers=off）ので、ここだけ "suien_venue_arrivals"="on" で外す。
 import assert from "node:assert/strict";
 import { suite } from "./support.mjs";
+import { flickFromHandle } from "./axe_flick_input.mjs";
 const t = id => `[data-test="${id}"]`;
 const touch = { viewport: { width: 844, height: 390 }, isMobile: true, hasTouch: true };
 
@@ -127,10 +128,18 @@ await suite("venue-arrivals", async check => {
     });
     await readScene(page);
     await page.locator(t("axe-bar-practice")).click();
-    // 3投。狙わずに決定だけ押す（点は問わない）
+    // 3投。的を押して狙い、取っ手から上へ弾く（play_spots.mjs と同じ操作。点は問わない）
     const phase = name => page.waitForFunction(p => document.querySelector('[data-test="axe-game"]')?.dataset.phase === p, name, { timeout: 30000 });
-    for (let i = 0; i < 3; i++) for (const name of ["choice", "horizontal", "vertical", "power", "result"]) {
-      await phase(name); await page.locator(t("axe-action")).click();
+    for (let i = 0; i < 3; i++) {
+      await phase("choice");
+      const point = await page.locator(t("axe-target")).evaluate(node => {
+        const p = new DOMPoint(330, 245).matrixTransform(node.getScreenCTM());
+        return { x: p.x, y: p.y };
+      });
+      await page.mouse.click(point.x, point.y);
+      await phase("power");
+      await flickFromHandle(page, { touch: false, power: .3 });
+      await phase("result"); await page.locator(t("axe-action")).click();
     }
     await phase("summary");
     await page.evaluate(() => { V.lines.length = 0; });
