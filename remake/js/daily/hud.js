@@ -87,7 +87,12 @@ function installMenuKey() {
   });
 }
 
+// initHud は日常の周回ごとに呼ばれる。前回の購読を外してから結び直し、ハンドラーを積み増さない（#3556）
+let busOffs = [];
+
 export function initHud(h) {
+  for (const off of busOffs) off();
+  busOffs = [];
   clearTimeout(recoveryTimer);
   pendingRecovery = null;
   handlers = { ...handlers, ...h };
@@ -125,8 +130,8 @@ export function initHud(h) {
   recoveryObserver?.disconnect();
   recoveryObserver = new MutationObserver(scheduleRecovery);
   recoveryObserver.observe(document.body, { subtree: true, childList: true, attributes: true, attributeFilter: ["class", "data-screen"] });
-  on("hud", updateHud);
-  on("money", ({ delta }) => {
+  busOffs.push(on("hud", updateHud));
+  busOffs.push(on("money", ({ delta }) => {
     if (!delta) return;
     // 所持金が動いたらコインの音（バイト代・手当・賞金・買い物・運賃など全部ここを通る）。
     // 続けて動く時や、店の売り買いが自分でも SE.money を呼ぶ時は、音の側（audio.js の minGap）が1回にまとめる。
@@ -135,10 +140,10 @@ export function initHud(h) {
     const pop = el(`div.money-pop${delta < 0 ? ".minus" : ""}`, { text: `${delta > 0 ? "+" : "−"}${yen(Math.abs(delta))}` });
     dom.moneyRow.append(pop);
     setTimeout(() => pop.remove(), 1400);
-  });
-  on("exp-gain", showExpChip);
-  on("level-up", (info) => announceGrowth("level", info));
-  on("hidane-gift", (gift) => announceGrowth("gift", gift));
+  }));
+  busOffs.push(on("exp-gain", showExpChip));
+  busOffs.push(on("level-up", (info) => announceGrowth("level", info)));
+  busOffs.push(on("hidane-gift", (gift) => announceGrowth("gift", gift)));
   installMenuKey();
 }
 
@@ -251,7 +256,8 @@ export function updateHud() {
   dom.slot.title = slotName;
   dom.slot.setAttribute("aria-label", slotName);
   dom.slot.dataset.slot = night ? "night" : "day";
-  dom.money.textContent = yen(state.money);
+  // 画面の「¥」の印（CSS）と二重にならないよう、「円」は読み上げ用の語に残して隠す（#3555）
+  dom.money.replaceChildren(Math.round(state.money).toLocaleString("ja-JP"), el("span.dc-unit", { text: "円" }));
   // 残り日数の行: 大会まで（tournament）は出さない（#3033）。出発まで・勝負の日までは出す。
   const goal = departurePrep(state) ? "departure" : state.chapter === 5 ? "final" : "tournament";
   if (goal === "tournament") {

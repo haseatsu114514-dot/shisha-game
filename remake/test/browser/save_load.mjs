@@ -238,7 +238,9 @@ await suite("save-load", async check => {
     assert.equal(await retiredSlotHidden(), 0);
     await assertGrowthFits();
     await assertFits(page, ".save-slot, [data-test='slot-cancel']");
-    await page.locator('[data-test="slot-cancel"]').click();
+    // Esc でも「やめる」と同じく閉じる（#3556）
+    await page.keyboard.press("Escape");
+    await page.locator('#modal.show [data-test="slot-0"]').waitFor({ state: "detached" });
     assert.deepEqual(await page.evaluate(() => [QA.core.SAVE_KEY, QA.core.SAVE_SLOTS[1].key, "suien_remake_slot2"].map(key => localStorage.getItem(key))), originals);
 
     // タイトルから AUTO を読み、ゲーム中の SAVE と LOAD でも同じ枠表示を見る。

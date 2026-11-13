@@ -104,7 +104,17 @@ function slotBody(data) {
  */
 function pickSlot(mode) {
   return new Promise((resolve) => {
-    const close = (v) => { layers.modal.classList.remove("show"); layers.modal.replaceChildren(); resolve(v); };
+    const close = (v) => {
+      window.removeEventListener("keydown", onKey, true);
+      layers.modal.classList.remove("show"); layers.modal.replaceChildren(); resolve(v);
+    };
+    // Esc で閉じて元の画面へ戻る（「やめる」と同じ・#3556）
+    const onKey = (e) => {
+      if (e.key !== "Escape" || e.repeat) return;
+      e.preventDefault(); e.stopImmediatePropagation();
+      SE.cancel(); close(null);
+    };
+    window.addEventListener("keydown", onKey, true);
     const rows = SAVE_SLOTS.map((s, i) => {
       const data = readSlot(s.key);
       const future = isFutureSave(data);

@@ -855,10 +855,10 @@ function phoneShell({ time, title }) {
     overlay.classList.remove("show");
     await sleep(300);
     // LIMEからの誘いは閉じる間に次の行動へ進む。新しい注文画面などは消さない。
-    if (overlay.parentNode === layers.modal) {
-      layers.modal.classList.remove("show");
-      overlay.remove();
-    }
+    if (overlay.parentNode === layers.modal) layers.modal.classList.remove("show");
+    // 画面の持ち主が変わっていても、スマホの DOM は必ず外す（開閉のたびに残らないように・#3556）
+    overlay.remove();
+    header.replaceChildren(); chat.replaceChildren(); actions.replaceChildren();
   };
   return ui;
 }

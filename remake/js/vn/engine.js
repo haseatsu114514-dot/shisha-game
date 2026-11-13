@@ -145,6 +145,15 @@ function buildDom() {
     if (autoMode || skipMode) { setAuto(false); setSkip(false); }
     advance();
   });
+  // 選択肢が出た直後の Enter／Space（会話を送る連打の続き）で先頭が決まらないようにする（#3556）。
+  // 先頭のボタンにはフォーカスが入るので、自前の処理より前にブラウザ本来のボタン操作も止める。
+  const choiceKeyGuard = (e) => {
+    if (e.key !== "Enter" && e.key !== " ") return;
+    if (!running?.waitingChoice || !dom.choices.contains(e.target) && e.target !== document.body) return;
+    if (e.repeat || performance.now() < running.choiceLockUntil) { e.preventDefault(); e.stopImmediatePropagation(); }
+  };
+  window.addEventListener("keydown", choiceKeyGuard, true);
+  window.addEventListener("keyup", choiceKeyGuard, true);
   window.addEventListener("keydown", (e) => {
     if (!running || !layers.vn.classList.contains("active")) return;
     if (layers.modal.classList.contains("show")) return;
@@ -1100,10 +1109,13 @@ function layoutPortraits() {
 
 // ---------------------------------------------------------------- 選択肢
 
+const CHOICE_KEY_LOCK_MS = 500; // 選択肢が出てから、Enter／Space を受け付けない間
+
 function showChoices(line) {
   const r = running;
   r.waitingChoice = true;
   r.choiceLine = line;
+  r.choiceLockUntil = performance.now() + CHOICE_KEY_LOCK_MS;
   // 実回答の記録はpickChoiceのフックへ。占いは対象/期限/台詞照合済みの2択だけ示す。
   const fortuneHint = fortuneChoiceIndex(state, r.id, line, DB.fortuneHints);
   const growthHint = growthChoiceIndex(state, r.currentId || r.id, line, DB.fortuneHints, r.growthScene);

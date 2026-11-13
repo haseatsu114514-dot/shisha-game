@@ -783,7 +783,8 @@ body[data-screen="bench"] .gain-card.out { animation-name: gain-out-l; }
 .boot-subtitle { font-size: 20px; font-weight: 500; letter-spacing: 0.3em; color: var(--text-dim); }
 .boot-bar { width: 360px; height: 3px; background: rgba(255, 255, 255, 0.12); border-radius: 2px; overflow: hidden; }
 .boot-bar i { display: block; height: 100%; width: 0; background: var(--gold); transition: width 0.2s; }
-.boot-msg { max-width: 900px; font-size: 15px; color: var(--text-dim); letter-spacing: 0.04em; text-align: center; line-height: 1.8; }
+/* 失敗時の案内文。#stage が縮む（--k）スマホ横持ちでも実寸 11.5px 以上にする（8.1px だった・#3556） */
+.boot-msg { max-width: 900px; font-size: max(15px, calc(11.5px / var(--k, 1))); color: var(--text-dim); letter-spacing: 0.04em; text-align: center; line-height: 1.8; }
 .boot-retry[hidden] { display: none; }
 
 /* 遊んでいる途中に新しい版が公開されたときの知らせ（index.html の起動スクリプトが出す） */
