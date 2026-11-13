@@ -19,7 +19,7 @@ function menu(result = null) {
     buttons.forEach(button => { button.disabled = true; });
     try {
       const outcome = await runCamelRace({ host, tutorial, pilot: pilot || params.get("pilot") || null,
-        timeScale: Number(params.get("speed")) || 1, best });
+        timeScale: Number(params.get("speed")) || 1, best, debugTools: true }); // 確認用の道具は試遊ページだけ（__camelRace.debug）
       if (outcome.best && (!best || outcome.best.total > best.total)) best = outcome.best;
       menu(outcome);
     } catch (error) { console.error(error); menu(null); }

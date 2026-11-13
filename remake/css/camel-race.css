@@ -651,3 +651,18 @@ html:root[data-density="phone"] .camel-game .camel-cup strong { font-size: max(2
   .camel-game.cr-remote .camel-voice[data-cue="on"] .camel-control-icon { animation: none; box-shadow: 0 0 0 calc(var(--rh) * 11 / 240) rgba(255,215,122,.9); }
   .camel-game.cr-remote .camel-signal[data-stamina="spent"] { animation: none; --remote-edge: rgba(255,142,122,.85); }
 }
+
+/* ---- 2026-11-13 桜井スキルでの添削（CRF13〜） ---- */
+/* 一時停止のボタン: 「やめる」と同じ板で、その左隣。走っている間と合図の間だけ出る */
+.camel-pause { right: calc(1.6cqw + 3em + 48px); display: grid; place-items: center; min-width: 2.8em; padding-inline: 8px; }
+.camel-pause svg { width: 1.25em; height: 1.25em; display: block; }
+.camel-pause[hidden] { display: none; }
+.camel-game[data-paused="true"] .camel-controls, .camel-game[data-paused="true"] .camel-close { visibility: hidden; }
+.camel-pause-card { width: min(660px, 100%); text-align: center; }
+/* 最初の1本でムチを教える間、ムチのボタンを声の輪の時と同じ金の光で示す */
+.camel-signal[data-coach="on"] { --remote-edge: #ffd77a; border-color: #ffd77a; box-shadow: inset 0 0 0 2px #120b06, 0 0 0 2px rgba(255,215,122,.4), 0 0 20px rgba(255,215,122,.4); }
+.camel-game.cr-remote .camel-signal[data-coach="on"] .camel-control-icon { animation: camel-remote-ring 1.25s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) { .camel-game.cr-remote .camel-signal[data-coach="on"] .camel-control-icon { animation: none; } }
+/* 結果の「次の目標」に足した行: ほめる言葉（金）・最下位が続いた時の一行 */
+.camel-next-praise b { margin-right: 14px; }
+.camel-next-ease { opacity: .9; }

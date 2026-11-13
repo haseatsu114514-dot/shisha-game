@@ -30,8 +30,9 @@ export function camelStaminaReadout(race) {
  * 結果のカードの「次の目標」（2026-11-13・CRF10。表示専用。採点・認定の条件は camel-race-model.js のまま）。
  * grade: 次の評価までの点。tip: 今回いちばん点を落とした所の直し方を1つだけ（満点なら null）。
  * cup: 大会の条件のうち、今回届いたもの・届かなかったもの（もう達成済み・今回達成・条件の無い練習は null）。
+ * record: 自己ベスト（best）までの点。praise: ほめる言葉。ease: 最下位が続いた（struggling 回）時の一行（CRF21〜23）。
  */
-export function camelNextGoal(run, { mastered = false } = {}) {
+export function camelNextGoal(run, { mastered = false, best = null, struggling = 0, canChooseCup = true } = {}) {
   const { parts, stats } = run;
   const higher = GRADES.filter(([, min]) => min > run.total).at(-1);
   const grade = higher ? `次の評価 ${higher[0]} まで あと ${higher[1] - run.total}点` : "評価 S ── いちばん上の評価";
@@ -69,5 +70,13 @@ export function camelNextGoal(run, { mastered = false } = {}) {
     else if (run.cup === "expert" && !camelExpert(run)) cup = { label: "称号まで", items: [
       { text: "1位", ok: run.rank === 1 }, { text: `S評価（${run.total}／85点）`, ok: run.total >= 85 }, { text: "連打なし", ok: stats.spam === 0 }] };
   }
-  return { grade, tip, cup };
+  // 自己ベストに届かなかった時は、そこまでの点（目標を手の届く所に見せる）。
+  const record = Number.isFinite(best) && run.total < best ? `自己ベスト ${Math.round(best)}点まで あと ${Math.round(best) - run.total}点` : null;
+  // ほめる: できた事を言葉にする（全部 PERFECT・競り合い全勝）。
+  const praise = [];
+  if (stats.judged > 0 && stats.perfect === stats.judged && stats.miss === 0) praise.push("声は全部 PERFECT！");
+  if (stats.duels >= 2 && stats.duelsWon === stats.duels) praise.push(`競り合い ${stats.duels}戦 全勝！`);
+  // 最下位が続いた時は、相手のゆっくりな大会を勧める（#211「クリアできないよりマシ」。押しつけず、一行だけ）。
+  const ease = struggling >= 2 && canChooseCup && run.cup !== "rookie" ? "入門大会は相手がゆっくり走る。声の間合いをつかむのに向いている" : null;
+  return { grade, tip, cup, record, praise, ease };
 }

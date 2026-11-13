@@ -93,6 +93,8 @@ await suite("camel-judge-feedback", async check => {
     const before = await fx(page);
     assert(before.stretch.player, "PERFECT で自分のラクダが伸びる");
     assert(before.glow > 0, "PERFECT で騎手のまわりが光る");
+    assert(before.marks >= 1, "PERFECT で星形のヒットマークが出る");
+    assert(before.tremble.player > 0, "止めの間、声を受けた自分のラクダが震える");
     assert.equal(before.whipHeld, false);
     // 止めの間もムチは押せる。
     await page.evaluate(() => document.querySelector('[data-test="camel-signal"]').dispatchEvent(new PointerEvent("pointerdown", { bubbles: true, pointerId: 7, pointerType: "mouse" })));
@@ -116,7 +118,7 @@ await suite("camel-judge-feedback", async check => {
     await page.waitForTimeout(300);
     assert.equal((await fx(page)).phase, "goal", "余韻の出だしは飛ばせない");
     await page.evaluate(() => { window.__camelRace.feel.goalSkipAfter = 0; });
-    await page.keyboard.press("Space");
+    await page.keyboard.press("Enter"); // 声・ムチ・Enter のどれでも飛ばせる
     await page.waitForFunction(() => window.__camelRace.fx.phase === "result", null, { timeout: 3000 });
     assert.equal((await fx(page)).runs, 1, "結果を開いても記録は1件のまま");
     const next = await page.locator('[data-test="camel-next"]').innerText();
@@ -143,6 +145,83 @@ await suite("camel-judge-feedback", async check => {
     assert.equal(state.whipping, false, "ムチが止まった瞬間に暗く沈む");
     assert.equal(await page.locator('[data-test="camel-signal"]').getAttribute("data-hit"), "miss", "ムチのボタンが赤く光る");
     await page.waitForFunction(() => document.querySelector('[data-test="camel-signal"]').dataset.hit === "boost", null, { timeout: 30000 });
+  });
+
+  // ---- 桜井スキルでの添削（2026-11-13・CRF13〜） ----
+  await check("pause-freezes-and-resumes-with-a-lead", async page => {
+    await open(page, "pilot=perfect");
+    await page.waitForFunction(() => window.__camelRace.fx.phase === "race" && window.__camelRace.fx.t > 1);
+    await page.locator('[data-test="camel-pause"]').click();
+    await page.locator('[data-test="camel-paused"]').waitFor();
+    const held = await fx(page);
+    assert.equal(held.paused, true);
+    await page.waitForTimeout(300);
+    assert.equal((await fx(page)).t, held.t, "一時停止の間はレースの時計が進まない");
+    // Esc で戻る。3・2・1 を数える間は止まったまま、そのあと同じ所から走り出す。
+    await page.evaluate(() => { window.__camelRace.feel.pauseLead = 1.2; });
+    await page.keyboard.press("Escape");
+    await page.waitForFunction(() => window.__camelRace.fx.paused === false);
+    const lead = await fx(page);
+    assert(lead.resumeLead > 0, "戻る合図が始まる");
+    assert.equal(lead.t, held.t, "合図の間も止まったまま");
+    assert.equal(await page.locator('[data-test="camel-paused"]').count(), 0);
+    await page.waitForFunction(t => window.__camelRace.fx.resumeLead <= 0 && window.__camelRace.fx.t > t, held.t, { timeout: 5000 });
+    // Esc でも止まる。「最初からやり直す」は記録を残さず、短い合図からもう一度。
+    await page.keyboard.press("Escape");
+    await page.locator('[data-test="camel-restart"]').click();
+    await page.waitForFunction(() => window.__camelRace.fx.phase === "countdown" && window.__camelRace.fx.paused === false);
+    const again = await fx(page);
+    assert.equal(again.runs, 0, "やり直しは記録に入らない");
+    assert.equal(again.countdownTotal, 1.5, "やり直しの合図は短い");
+    // カードの「やめる」で閉じる。
+    await page.keyboard.press("p");
+    await page.locator('[data-test="camel-pause-quit"]').click();
+    await page.locator(quick).waitFor();
+  });
+
+  await check("first-run-coach-teaches-while-racing", async page => {
+    // すぐ走る（遊び方なし）では教えない。
+    await open(page, "pilot=perfect");
+    assert.equal((await fx(page)).coach, null);
+    // 遊び方から入った最初の1本: 最初の輪はゆっくり → 当てたらムチ → 入れたら離し時、の順に進む。
+    await page.goto(new URL("camel-race.html?pilot=perfect", baseURL).href);
+    await page.locator('[data-test="camel-menu-start"]').click();
+    await page.locator('[data-test="camel-tutorial-skip"]').click();
+    await page.waitForFunction(() => window.__camelRace?.fx.phase === "race", null, { timeout: 15000 });
+    assert.equal((await fx(page)).coach, "voice");
+    await page.waitForFunction(() => document.querySelector('[data-test="camel-voice"]').dataset.cue === "on");
+    const slow = await page.evaluate(async () => {
+      const from = window.__camelRace.fx.t, at = performance.now();
+      await new Promise(resolve => setTimeout(resolve, 200));
+      return { race: window.__camelRace.fx.t - from, real: (performance.now() - at) / 1000, coach: window.__camelRace.fx.coach };
+    });
+    if (slow.coach === "voice") assert(slow.race <= slow.real * 0.75, `最初の輪の間はレース全体がゆっくり（${slow.race.toFixed(3)} / ${slow.real.toFixed(3)}）`);
+    await page.waitForFunction(() => window.__camelRace.fx.coach === "whip", null, { timeout: 10000 });
+    await page.waitForFunction(() => document.querySelector('[data-test="camel-signal"]').dataset.coach === "on", null, { timeout: 10000 });
+    assert.match(await page.locator('[data-test="camel-call"]').innerText(), /次はムチだ/);
+    await page.evaluate(() => { window.__camelRace.debug.warp(0.3); window.__camelRace.debug.stamina(100); });
+    await page.waitForFunction(() => ["release", "done"].includes(window.__camelRace.fx.coach), null, { timeout: 20000 });
+    assert.equal(await page.locator('[data-test="camel-signal"]').getAttribute("data-coach"), "off", "ムチを入れたら光は消える");
+  });
+
+  await check("target-ahead-feel-override-and-debug-tools", async page => {
+    // URL からの上書き（数の所に数だけ。知らない名前は無視）。
+    await open(page, "pilot=none&feel=stopPerfect:0.3,shake.goal.0:21,nothing:9,se.hoof.gain:0.2");
+    const feel = await page.evaluate(() => ({ stop: window.__camelRace.feel.stopPerfect, goal: window.__camelRace.feel.shake.goal[0], hoof: window.__camelRace.feel.se.hoof.gain, nothing: "nothing" in window.__camelRace.feel }));
+    assert.deepEqual(feel, { stop: 0.3, goal: 21, hoof: 0.2, nothing: false });
+    // 何もしないと後ろへ下がる: すぐ前の相手が「目の前の目標」になる。
+    await page.waitForFunction(() => window.__camelRace.fx.t > 4 && ["front", "closer", "steady"].includes(window.__camelRace.fx.target), null, { timeout: 30000 });
+    // 確認用の道具（試遊ページだけ）: 息の指定・コースの好きな所へ移動・画面の静止。
+    assert.equal(await page.evaluate(() => window.__camelRace.debug.stamina(12)), true);
+    await page.waitForFunction(() => document.querySelector('[data-test="camel-signal"] .camel-stamina').dataset.state !== "ok");
+    await page.evaluate(() => window.__camelRace.debug.warp(0.9));
+    await page.waitForFunction(() => document.querySelector('[data-test="camel-signal"]').dataset.state === "spurt" || document.querySelector(".camel-banner.show") !== null, null, { timeout: 5000 });
+    await page.evaluate(() => window.__camelRace.debug.freeze(true));
+    const stopped = (await fx(page)).t;
+    await page.waitForTimeout(250);
+    assert.equal((await fx(page)).t, stopped, "静止の間は進まない");
+    await page.evaluate(() => window.__camelRace.debug.freeze(false));
+    await page.waitForFunction(t => window.__camelRace.fx.t > t, stopped, { timeout: 5000 });
   });
 
   await check("reduced-motion-has-no-stop", async page => {

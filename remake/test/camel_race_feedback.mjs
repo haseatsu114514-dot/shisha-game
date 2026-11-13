@@ -60,5 +60,18 @@ for (let seed = 1; seed <= 20; seed++) {
   assert.equal(expert.label, '称号まで'); assert.deepEqual(expert.items.map(item => item.ok), [true, false, false]);
   assert.deepEqual(camelNextGoal({ ...missed, cup: 'rookie', rank: 4 }).cup, { label: '標準大会まで', items: [{ text: '3位以内', ok: false }] });
   assert.equal(camelNextGoal({ ...missed, cup: 'rookie', rank: 3 }).cup, null, '入門で3位以内なら条件は出さない');
+  // CRF21〜23: 自己ベストまでの点・ほめる言葉・最下位が続いた時の一行。
+  assert.equal(camelNextGoal(good, { best: good.total + 6 }).record, `自己ベスト ${good.total + 6}点まで あと 6点`);
+  assert.equal(camelNextGoal(good, { best: good.total }).record, null, '並んだ・越えた時は出さない');
+  assert.equal(camelNextGoal(good).record, null, '記録が無ければ出さない');
+  assert.deepEqual(best.praise.slice(0, 1), ['声は全部 PERFECT！'], '全部 PERFECT をほめる');
+  assert.ok(!camelNextGoal(good).praise.includes('声は全部 PERFECT！'), 'GOOD が混じればほめ言葉は出さない');
+  assert.deepEqual(camelNextGoal({ ...top, stats: { ...top.stats, duels: 3, duelsWon: 3 } }).praise, ['声は全部 PERFECT！', '競り合い 3戦 全勝！']);
+  assert.ok(!camelNextGoal({ ...top, stats: { ...top.stats, duels: 3, duelsWon: 2 } }).praise.some(text => text.includes('全勝')));
+  const last = run('none', 'practice');
+  assert.equal(camelNextGoal(last, { struggling: 1 }).ease, null, '最下位1回では勧めない');
+  assert.match(camelNextGoal(last, { struggling: 2 }).ease, /入門大会/);
+  assert.equal(camelNextGoal(last, { struggling: 2, canChooseCup: false }).ease, null, '大会を選べない時は勧めない');
+  assert.equal(camelNextGoal({ ...last, cup: 'rookie' }, { struggling: 3 }).ease, null, '入門大会そのものでは勧めない');
 }
 console.log('[camel race feedback] PASS');
