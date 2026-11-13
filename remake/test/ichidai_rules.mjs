@@ -4,10 +4,11 @@
 //   3. 採点（帯・加点・焦げ）と、炭の動き（着火・冷める・火持ち）が規則どおり
 //   4. CPUどうしの対戦が、規則違反の入力なしで最後まで進む（カードは1ラウンドに1枚まで）
 //   5. 3人・4人の対戦（1:1:1:1）: 手番は席の順・一票はいちばん高い1人・相手を1人ねらうカードは相手を選ぶ
+//   6. 第0.6版の先行分: 一票の点は立場で変わる（負けている人3点）・上園の決め手は伸びしろ・パッキーは相手の一票で引く
 import assert from "node:assert/strict";
 import { createRequire } from "node:module";
 import { FLAVORS, FLAVOR, CARDS, CARD, BOWLS, HMDS, JUDGES, PUFFS, TOURNAMENTS, KITS, TYPE_LABEL, WHEN_LABEL, RARITIES, SERIES_SIZE, numberOf, rarityOf, expandDeck } from "../js/minigames/ichidai-data.js";
-import { RULES, createGame, act, heatOf, coalHeat, coalMaxOf, leavesOf, firepower, coolStepsOf, slotsOf, scorePuff, judgedHeat, roundsOf, canPlay, impressionOf, rivalsOf, targetsOf, targetOf, pileOf } from "../js/minigames/ichidai-rules.js";
+import { RULES, createGame, act, heatOf, coalHeat, coalMaxOf, leavesOf, firepower, coolStepsOf, slotsOf, scorePuff, judgedHeat, roundsOf, canPlay, impressionOf, rivalsOf, targetsOf, targetOf, pileOf, votePtsOf, growthOf } from "../js/minigames/ichidai-rules.js";
 import { aiAct } from "../js/minigames/ichidai-ai.js";
 
 const DOC = createRequire(import.meta.url)("../../docs/design/card_game/cards.js");
@@ -480,4 +481,55 @@ function autoplay(cfg) {
     if (res.winner != null) firsts[n] = (firsts[n] || 0) + 1;
   }
   console.log(`ichidai_rules PASS: 3〜4人 ${games} 対戦（1位が決まった局: ${Object.entries(firsts).map(([n, v]) => `${n}人 ${v}`).join("・")}）`);
+}
+
+// ── 6. 第0.6版の先行分（2026-11-13 オーナー。ICG59〜61）: 立場で変わる一票・上園の伸びしろ・パッキー ──
+{
+  const two = (seed, tournament = "open_cloud") => createGame({ seed, tournament, first: seed % 2, players: [{ name: "A", kit: "a", ai: true, level: 2 }, { name: "B", kit: "b", ai: true, level: 2 }] });
+  // 一票の点: 審査の前の合計点で、負けている人が取れば3点・勝っている人と並んでいる人は2点
+  {
+    const G = two(9), [A, B] = G.P;
+    A.score = 10; B.score = 12;
+    assert.deepEqual([votePtsOf(G, A), votePtsOf(G, B)], [3, 2], "負けている人は3点・勝っている人は2点");
+    B.score = 10; assert.deepEqual([votePtsOf(G, A), votePtsOf(G, B)], [2, 2], "並んでいれば2点");
+    assert.equal(votePtsOf(G, { ...A, score: 4 }), 3, "写し（CPUの見込み）でも、自分を除いて比べる");
+    const F = createGame({ seed: 3, tournament: "open_cloud", players: ["a", "b", "c", "d"].map((kit) => ({ kit, ai: true, level: 1 })) });
+    [10, 30, 20, 30].forEach((n, i) => { F.P[i].score = n; });
+    assert.deepEqual(F.P.map((p) => votePtsOf(F, p)), [3, 2, 3, 2], "4人: 自分以外でいちばん点の高い人と比べる");
+  }
+  // CPUどうしの対戦: 一票の点はいつも「審査の前の点」で決まり、上園の決め手は伸び（最後のセッション−第1セッション）がいちばんの人へ
+  let packyChecked = 0, kamizonoChecked = 0;
+  for (let g = 0; g < 12; g++) {
+    const G = two(300 + g, g % 3 === 2 ? "national" : g % 2 ? "crown" : "open_cloud"), B = G.P[1];
+    const sess = [[], []];
+    let steps = 0;
+    while (!G.over) {
+      if (G.phase === "serve" && !B.person) B.person = "packy"; // パッキーを出したことにする（相手の一票で引くかを見る）
+      const prior = G.P.map((p) => p.score), packy = B.person === "packy", logs = G.log.length, evs = G.events.length;
+      const r = act(G, aiAct(G, G.wait.player)); assert.ok(r.ok, r.reason);
+      assert.ok(++steps < 8000, "終わらない");
+      for (const ev of G.events.slice(evs)) {
+        if (ev.t !== "score") continue;
+        const k = Math.floor(ev.round / 3);
+        ev.res.forEach((x, i) => { sess[i][k] = (sess[i][k] || 0) + x.pts + (x.vote || 0); });
+        if (ev.voter == null) { assert.ok(ev.res.every((x) => !x.vote), "票なしなら一票の点は無い"); continue; }
+        const v = ev.voter, behind = prior[v] < prior[1 - v];
+        assert.equal(ev.res[v].vote, (behind ? 3 : 2) + 3 * (ev.res[v].duel || 0), `一票の点（${prior.join("対")}で${v}が取った）`);
+        if (packy) {
+          const drew = G.log.slice(logs).some((l) => l.who === 1 && l.text.startsWith("パッキー："));
+          assert.equal(drew, ev.voter === 0, "パッキーは、相手が一票を取ったときだけ引く");
+          packyChecked++;
+        }
+      }
+    }
+    assert.deepEqual(G.P.map((p) => p.sessPts), sess, "セッションごとの点（一口＋一票）");
+    const kb = G.result.bonus.find((b) => b.judge === "kamizono");
+    if (!G.tour.judges.includes("kamizono")) { assert.equal(kb, undefined); continue; }
+    const grow = G.P.map(growthOf), top = Math.max(...grow), solo = grow.filter((x) => x === top).length === 1;
+    assert.deepEqual(grow, sess.map((x) => x[x.length - 1] - x[0]), "伸び＝最後のセッション−第1セッション");
+    assert.deepEqual(kb.pts, grow.map((x) => (x === top ? (solo ? 4 : 2) : 0)), "上園の決め手は、伸びがいちばんの人に+4（並んだら2ずつ）");
+    kamizonoChecked++;
+  }
+  assert.ok(packyChecked >= 20 && kamizonoChecked >= 4, `確かめた数が少ない（一票 ${packyChecked}・上園 ${kamizonoChecked}）`);
+  console.log(`ichidai_rules PASS: 第0.6版の先行分（一票とパッキー ${packyChecked} 回・上園 ${kamizonoChecked} 局）`);
 }

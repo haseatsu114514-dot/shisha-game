@@ -94,7 +94,7 @@ export const CARDS = Object.freeze([
   { id: "minto", name: "みんと", type: "person", need: 2, when: "any", tx: "【ひとりの時間】清涼の葉が2枚以上あれば、焦げても葉を失わない。" },
   { id: "mashiro", name: "ましろ", type: "person", need: 2, when: "any", tx: "【消さない量】脇役が2種類以上あれば、毎口+1。" },
   { id: "tsumugi", name: "つむぎ", type: "person", need: 2, when: "any", tx: "【預けた器】主役がフローラルなら、下側のズレを適温として扱う。" },
-  { id: "packy", name: "パッキー", type: "person", need: 2, when: "any", tx: "【実況】自分が一票を取るたび、カードを1枚引く。" },
+  { id: "packy", name: "パッキー", type: "person", need: 2, when: "any", tx: "【実況】相手が一票を取るたび、カードを1枚引く。" },
 ]);
 
 export const TYPE_LABEL = Object.freeze({ coal: "炭", tech: "技", tool: "器具", person: "人物", event: "イベント" });
@@ -113,7 +113,7 @@ export const PUFFS = Object.freeze({
 
 // 審査員。puffs=審査カード4枚（[吸い方, 枚数]）。bonus=ゲームの終わりの「決め手」
 export const JUDGES = Object.freeze([
-  { id: "kamizono", name: "上園 文太郎", motto: "おいしいねえ", puffs: [["normal", 2], ["happy", 1], ["slow", 1]], bonus: "第1セッションが終わった時点の点が高い作り手に+4。同点なら全員+2。" },
+  { id: "kamizono", name: "上園 文太郎", motto: "おいしいねえ", puffs: [["normal", 2], ["happy", 1], ["slow", 1]], bonus: "伸び（最後のセッションの点−第1セッションの点）が大きい作り手に+4。同点なら全員+2。" },
   { id: "hakase", name: "チャコール博士", motto: "熱の記録", puffs: [["normal", 1], ["measure", 2], ["long", 1]], bonus: "焦げの回数が少ない作り手に+4（同数なら全員+2）。0回の作り手はさらに+2。" },
   { id: "sensu", name: "千須 豪", motto: "最後の一口", puffs: [["normal", 2], ["long", 2]], bonus: "最終ラウンドの一口の点が高い作り手に+5。同点なら全員+2。" },
   { id: "emir", name: "エミル・ユルマズ", motto: "受け継いだ手順", puffs: [["normal", 2], ["slow", 2]], bonus: "ゲーム終了時、ボウルに残った葉が多い作り手に+4。同数なら全員+2。" },

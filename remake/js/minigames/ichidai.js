@@ -38,7 +38,7 @@ import { SE, unlockAudio } from "../core/audio.js";
 import { KINDS, FLAVOR, CARD, BOWL, HMD, JUDGE, PUFFS, TOURNAMENTS, KITS, KIT, TYPE_LABEL, WHEN_LABEL, RARITIES, SERIES_SIZE, numberOf, rarityOf } from "./ichidai-data.js";
 import { RULES, ZONE_LABEL, createGame, act, heatOf, leavesOf, firepower, sidesOf, slotsOf, roundsOf, sessionOf,
   judgedHeat, rawZone, scorchLineOf, scorePuff, impressionOf, puffPreview, unseenPuffs, packLimit,
-  canPlay, canCharge, canPlace, canPutOn, canAsh, canPack, canSteam, coalHeat, coalRoom, coalMaxOf, coolStepsOf, isTargeted, targetsOf } from "./ichidai-rules.js";
+  canPlay, canCharge, canPlace, canPutOn, canAsh, canPack, canSteam, coalHeat, coalRoom, coalMaxOf, coolStepsOf, isTargeted, targetsOf, votePtsOf } from "./ichidai-rules.js";
 import { aiAct } from "./ichidai-ai.js";
 import { artUrl, flavorArt, cardArt, faceUrl, bowlArt, hmdArt, JUDGE_FACE } from "./ichidai-art.js";
 import { HELP_PAGES } from "./ichidai-help.js";
@@ -773,6 +773,22 @@ export function runIchidai({ host = document.getElementById("stage"), signal = n
       el(`li${p.index === ME ? ".is-me" : ""}`, [el("small", { text: String(k + 1) }), faceNode(info[p.index]?.id, p.name), el("b", { text: String(p.score) })]))));
   }
 
+  /** 負けている人の印: 一票を取れば +3（ふつうは +2。第0.6版の先行分）。提供のあいだだけ */
+  function chaseChip(p) {
+    if (G.phase !== "serve" || G.over) return null;
+    const n = votePtsOf(G, p);
+    return n > G.R.vote ? el("i.ichi-chase", { dataset: { test: `ichi-chase-${p.index}` }, text: `一票+${n}`, title: `負けているあいだは、一票を取ると+${n}点（ふつうは+${G.R.vote}点）` }) : null;
+  }
+  /** 一票の点の書き添え: 「（+3・追い上げ）」。勝負の一服の+3を除いて、ふつうの点より多ければ負けていたぶん */
+  const voteNote = (r) => (r?.vote ? `（+${r.vote}${r.vote - 3 * (r.duel || 0) > G.R.vote ? "・追い上げ" : ""}）` : "");
+  /** HUD 左上の時計の1行: いまの点差（2人なら相手と、3〜4人なら自分以外のいちばん上と） */
+  function standing() {
+    if (G.phase !== "serve" || G.over) return null;
+    const rivals = rivalIds().map((i) => G.P[i]), best = rivals.reduce((a, b) => (b.score > a.score ? b : a)), gap = G.P[ME].score - best.score, many = multi();
+    const text = gap > 0 ? (many ? `あなたが${gap}点差で1位` : `あなたが${gap}点リード`) : gap < 0 ? (many ? `1位まで${-gap}点` : `${best.name}が${-gap}点リード`) : many ? "1位と同点" : "同点";
+    return el(`span.ichi-standing${gap > 0 ? ".is-ahead" : gap < 0 ? ".is-behind" : ""}`, { dataset: { test: "ichi-standing", gap: String(gap) },
+      title: `一票は+${G.R.vote}点。負けている人が取れば+${G.R.voteBehind}点` }, text);
+  }
   /** 顔・名前・点・票。タップでその人の一台（葉・セッティング・出しているカード）を開く */
   function leader(p, who) {
     const mine = who === "me";
@@ -783,6 +799,7 @@ export function runIchidai({ host = document.getElementById("stage"), signal = n
         el("span.ichi-leader-name", { text: mine ? "あなた" : p.name }),
         el("span.ichi-leader-score", [el("b", { text: String(p.score) }), el("small", { text: "点" })]),
         el("span.ichi-leader-votes", [el("i.ichi-medal"), el("b", { text: `票 ${p.votes}` })]),
+        chaseChip(p),
       ]),
     ]);
   }
@@ -897,6 +914,7 @@ export function runIchidai({ host = document.getElementById("stage"), signal = n
     return el("div.ichi-clock", [
       el("b", { text: phaseName, dataset: { test: "ichi-phase" } }), pips,
       el("small", { text: serve ? `${G.order?.[0] === ME ? "あなた" : G.P[G.order?.[0] ?? CPU].name}が先手` : G.tour.name }),
+      standing(),
       // 審査員の顔: 提供では卓の「審査の山」の横に出す。準備のあいだはここに出す
       !serve && judges.length ? el("span.ichi-judges", judges.map((id) => faceNode(JUDGE_FACE[id], JUDGE[id].name, ".is-judge"))) : null,
       nowJudge, peek,
@@ -1149,9 +1167,12 @@ export function runIchidai({ host = document.getElementById("stage"), signal = n
   }
   function impressionView(me) {
     if (G.phase !== "serve" || !me.main) return null;
-    const a = impressionNow(me), b = Math.max(...rivalIds().map((i) => impressionNow(G.P[i]))); // 相手のうち、いちばん高い印象
-    return el(`span.ichi-imp${a > b ? ".is-ahead" : a < b ? ".is-behind" : ""}`, { dataset: { test: "ichi-impression", me: String(a), foe: String(b) }, title: "印象＝味値＋帯（ジャスト・適温+1／ズレ−1）＋濃厚＋カード。高い方に一票" },
-      [el("small", { text: "印象の見込み" }), el("b", { text: String(a) }), el("span", { text: `対 ${b}` }), el("small", { text: a > b ? "一票" : a < b ? "相手に一票" : "並び" })]);
+    const imps = rivalIds().map((i) => [i, impressionNow(G.P[i])]), b = Math.max(...imps.map((x) => x[1])), a = impressionNow(me); // 相手のうち、いちばん高い印象
+    // 一票の点は、そのときの点で変わる（負けている人が取れば+3・ふつうは+2。第0.6版の先行分）。取れたら何点かも見せる
+    const top = imps.find((x) => x[1] === b)?.[0], pts = a > b ? votePtsOf(G, me) : a < b && top != null ? votePtsOf(G, G.P[top]) : null;
+    return el(`span.ichi-imp${a > b ? ".is-ahead" : a < b ? ".is-behind" : ""}`, { dataset: { test: "ichi-impression", me: String(a), foe: String(b), vote: pts == null ? "" : String(pts) },
+      title: `印象＝味値＋帯（ジャスト・適温+1／ズレ−1）＋濃厚＋カード。高い方に一票。一票は+${G.R.vote}点、負けている人が取れば+${G.R.voteBehind}点` },
+      [el("small", { text: "印象の見込み" }), el("b", { text: String(a) }), el("span", { text: `対 ${b}` }), el("small", { text: a > b ? `一票+${pts}` : a < b ? "相手に一票" : "並び" })]);
   }
   /** HUD 左: 自分の熱（＝火力）と、ふつうに吸われたときの判定熱、カードをあと何枚使えるか、葉の体力、寄せ・煽りの印 */
   function heatRead(me) {
@@ -1486,8 +1507,8 @@ export function runIchidai({ host = document.getElementById("stage"), signal = n
         el("header", [el("small", { text: `ラウンド ${ev.round + 1}` }), puffCard(ev.puff)]),
         row(ME, "あなた"), ...rivalIds().map((i) => row(i, G.P[i].name)),
         el("p.ichi-result-vote", { text: multi()
-          ? (ev.voter == null ? `いちばん高い印象（${Math.max(...ev.res.map((r) => r.imp))}）が並んだので、票は入らない` : `印象がいちばん高い${ev.voter === ME ? "あなた" : G.P[ev.voter].name}（${ev.res[ev.voter].imp}）に一票`)
-          : ev.voter == null ? `印象が同じ（${ev.res[ME].imp}）なので、票は入らない` : `印象 ${ev.res[ME].imp} 対 ${ev.res[CPU].imp}。${ev.voter === ME ? "あなた" : G.P[CPU].name}に一票` }),
+          ? (ev.voter == null ? `いちばん高い印象（${Math.max(...ev.res.map((r) => r.imp))}）が並んだので、票は入らない` : `印象がいちばん高い${ev.voter === ME ? "あなた" : G.P[ev.voter].name}（${ev.res[ev.voter].imp}）に一票${voteNote(ev.res[ev.voter])}`)
+          : ev.voter == null ? `印象が同じ（${ev.res[ME].imp}）なので、票は入らない` : `印象 ${ev.res[ME].imp} 対 ${ev.res[CPU].imp}。${ev.voter === ME ? "あなた" : G.P[CPU].name}に一票${voteNote(ev.res[ev.voter])}` }),
         el("button.ichi-btn.is-primary", { type: "button", text: "次へ", dataset: { test: "ichi-next" }, onclick: () => { sfx("select"); done(); } }),
       ]));
       sheet.querySelector("button")?.focus({ preventScroll: true });

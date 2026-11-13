@@ -331,6 +331,16 @@ await suite("ichidai", async (check) => {
         chargedViaSlot = true;
         // 印象の見込み（自分と相手）
         assert.match(await page.locator(t("ichi-impression")).getAttribute("data-me"), /^-?\d+$/);
+        // 点差と一票の点（第0.6版の先行分・ICG59/62）: 左上に点差。負けている人の顔の横に「一票+3」。一票の見込みには取れたら何点か
+        {
+          const [mine, foe] = await Promise.all(["me", "foe"].map(async (w) => Number(await page.locator(t(`ichi-score-${w}`)).getAttribute("data-score"))));
+          const st = page.locator(t("ichi-standing")), gap = mine - foe;
+          assert.equal(Number(await st.getAttribute("data-gap")), gap);
+          assert.match(await st.innerText(), gap > 0 ? new RegExp(`あなたが${gap}点リード`) : gap < 0 ? new RegExp(`${-gap}点リード`) : /^同点$/);
+          assert.deepEqual([await page.locator(t("ichi-chase-0")).count(), await page.locator(t("ichi-chase-1")).count()], [gap < 0 ? 1 : 0, gap > 0 ? 1 : 0], "負けている人にだけ「一票+3」");
+          const imp = page.locator(t("ichi-impression")), [a, b] = [Number(await imp.getAttribute("data-me")), Number(await imp.getAttribute("data-foe"))];
+          assert.equal(await imp.getAttribute("data-vote"), a > b ? (gap < 0 ? "3" : "2") : a < b ? (gap > 0 ? "3" : "2") : "", "一票の見込みに、取れたら何点か");
+        }
         // カードは1ラウンドに1枚。一口のカードがあれば仕込み、なければ使えるカードを1枚使う
         assert.equal(await page.locator(t("ichi-card-left")).getAttribute("data-left"), "1");
         // 枠を返すカード（ひと息・追い炭・トングさばき・仕切り直し）は、使ってもまだ1枚使えるので、ここでは選ばない
@@ -358,7 +368,7 @@ await suite("ichidai", async (check) => {
       assert.match(await row.getAttribute("data-zone"), /^(just|band|off|cold|scorch)$/);
       assert.match(await row.innerText(), /判定熱 -?\d+[\s\S]*印象 -?\d+[\s\S]*\d+点/);
     }
-    assert.match(await page.locator(".ichi-result-vote").innerText(), /印象[\s\S]*(一票|票は入らない)/);
+    assert.match(await page.locator(".ichi-result-vote").innerText(), /印象[\s\S]*(一票（\+\d+(・追い上げ)?）|票は入らない)/);
     assert.deepEqual(await overflowed(page), [], "審査の結果で、文字が枠からはみ出していない");
     const myZone = await page.locator(t("ichi-result-me")).getAttribute("data-zone");
     await page.locator(t("ichi-next")).click();

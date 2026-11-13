@@ -9,14 +9,16 @@
 // 含めた期待点で決める。rules.reactAfterReveal のときは、めくったあとに一口のカードを選ぶ（取っておく値打ちと比べる）。
 import { CARD, FLAVOR, FLAVORS, BOWL, JUDGE, PUFFS } from "./ichidai-data.js";
 import { RANK, heatOf, coalHeat, coalRoom, coalMaxOf, leavesOf, coolStepsOf, judgedHeat, scorePuff, impressionOf, unseenPuffs,
-  canPlay, canCharge, canPlace, canAsh, canPack, canSteam, packLimit, roundsOf, isLastSession, isLastOfSession, puffPreview, rivalsOf } from "./ichidai-rules.js";
+  canPlay, canCharge, canPlace, canAsh, canPack, canSteam, packLimit, roundsOf, isLastSession, isLastOfSession, puffPreview, rivalsOf, votePtsOf } from "./ichidai-rules.js";
 
 const cnt = (p, id) => p.hand.filter((x) => x === id).length;
 const idx = (p, id) => p.hand.indexOf(id);
 const isCoal = (id) => CARD[id].type === "coal";
 const slotFree = (G, p) => (p.cardsUsed || 0) < G.R.cardsPerRound;
 const REACT = ["heat_in", "heat_out", "blow", "all_in", "show_smoke", "duel", "encore"];
-const IMP_W = 0.45; // 先読みでの印象1点の値打ち（一票に届く見込み）
+const IMP_W = 0.45; // 先読みでの印象1点の値打ち（一票に届く見込み）。一票が2点のときの値
+/** 印象1点の値打ち。第0.6版の先行分では一票の点が立場で変わる（負けていれば3点・ふつうは2点）ので、それに比例させる */
+const impW = (G, p) => (IMP_W * votePtsOf(G, p)) / 2;
 const CARDV = 0.6; // 手札1枚の値打ち（点。チャージすれば熱1になる）
 
 // 手元での値打ち（低いものから種火にする・捨てる）
@@ -70,7 +72,7 @@ function reactionValue(G, p, heat, q, id, opp) {
   let pts = s.pts + (id === "heat_out" && good ? 1 : 0) + (id === "all_in" && s.zone === "just" ? 3 : 0);
   if (id === "encore") pts *= 2;
   const imp = impressionOf(p, s, (id === "show_smoke" ? 4 : 0) + (id === "all_in" && s.zone === "just" ? 2 : 0) + (id === "heat_in" && good ? 1 : 0) + (p.sessImp || 0), G.R.impress);
-  const vote = opp == null ? IMP_W * imp + (id === "duel" ? 0.8 : 0) : (imp > opp ? G.R.vote + (id === "duel" ? 3 : 0) : 0);
+  const vote = opp == null ? impW(G, p) * imp + (id === "duel" ? 0.8 : 0) : (imp > opp ? votePtsOf(G, p) + (id === "duel" ? 3 : 0) : 0);
   const v = pts + vote - (s.zone === "scorch" ? 4 : 0) - (s.usedSilicone ? 2.5 : 0) - (s.usedLotus ? 0.8 : 0)
     - (id ? 0.5 : 0) - (id === "show_smoke" ? 0.6 : 0) - (blow && !s.saved ? 1 : 0) - 0.35 * paid;
   return { v, id, s, pts, imp };
@@ -313,7 +315,7 @@ function turnCard(G, p) {
     const sessLeft = 3 - (G.round % 3);
     const bestE = (pp) => { let b = -Infinity; for (let h = 0; h <= G.R.heatMax; h++) b = Math.max(b, expected(G, pp, h, guess0, true)); return b; };
     // 内寄せ: このセッションの残りの一口すべての印象+1（一票に届く見込み）
-    if (sessLeft >= 2 || !lastOfSession) add("inner", IMP_W * 1.6 * sessLeft);
+    if (sessLeft >= 2 || !lastOfSession) add("inner", impW(G, p) * 1.6 * sessLeft);
     for (const [id, d] of [["outer", -1]]) {
       if (sessLeft <= 1 || !cnt(p, id)) continue;
       const view = { ...p, sessMod: p.sessMod + d };

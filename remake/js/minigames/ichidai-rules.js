@@ -1,4 +1,10 @@
-// カードゲーム「一台勝負」の規則（第0.5版）。DOM・保存・音に触れない純粋な状態機械。
+// カードゲーム「一台勝負」の規則（第0.5版＋第0.6版の先行分）。DOM・保存・音に触れない純粋な状態機械。
+// 第0.6版の先行分（2026-11-13 オーナー。改変案「ICHIDAI-REDESIGN」のパターン1。先行逃げ切りを和らげる）:
+//   ・一票の点は立場で変わる。審査の前の合計点で負けている人が取れば3点（勝っている人・並んでいる人は今までどおり2点。1-B）。
+//     改変案は「勝っている人は1点」だったが、CPU同士で計ると腕の差が縮みすぎたので、オーナーが3点／2点を選んだ（ICG59）。
+//   ・上園の決め手は「伸びしろ」: 最後のセッションの点が、第1セッションの点よりいちばん伸びた人に+4（1-D。第1セッション首位への加点をやめる）。
+//   ・パッキー【実況】は、相手が一票を取るたびに1枚引く（自分が取ったときではない）。
+//   計りと理由は docs/design/card_game/v0.3_design.md の「8. 第0.6版（先行分）」。
 // 第0.5版（2026-11-11 オーナー「初心者でも遊べるか・上級者でも深さがあるか・シーシャ作りの再現度」の見立てを受けて「それら全てお願い」）:
 //   ・冷めるのは1ターンに炭1つ・火1だけ（第0.4版は2つ）。炭を替える忙しさを実際のシーシャに寄せ、炭を保てない人が0点になるのを和らげる。
 //   ・審査カードは、ラウンドのはじめにめくる（全員が見てから、その吸い方に熱を合わせる）。運だった「吸い方」を、合わせる腕の勝負にする。
@@ -27,7 +33,10 @@ export const RULES = Object.freeze({
   // チャージしないなら普通に1ドロー」「ターン1。バディファイトと同じ。引かないと置けない」）: 自分のターンに1枚引く（普通のドロー）。
   // チャージは「チャージ＆ドロー」で、手札を1枚裏向きで置いて1枚引く。1ターンに1回。置かずに引くことも、引かずに置くこともできない。
   // 引く枚数が減るぶん、準備の「蒸らす」で引くのを2枚にして手札の量を保つ（steamDraw。計算は docs/design/card_game/v0.3_design.md）
-  draw: 1, chargeDraw: 1, cool: 1, slots: 4, heatMax: 10, handMax: 7, pile: 12, vote: 2, wear: 2, rich: 10, toolMax: 3,
+  draw: 1, chargeDraw: 1, cool: 1, slots: 4, heatMax: 10, handMax: 7, pile: 12, wear: 2, rich: 10, toolMax: 3,
+  // 一票の点（第0.6版の先行分・1-B）: 審査の前の合計点で、負けている人が取れば voteBehind・勝っている人が取れば voteAhead・
+  // 並んでいれば vote。3人・4人では「自分以外でいちばん点の高い人」と比べる（その人より低ければ負けている）
+  vote: 2, voteBehind: 3, voteAhead: 2,
   // 第0.3版: カードは必要火力を満たせば使える（払わない）。使えるのは1ラウンドに1枚（準備は1ターンに1枚）。
   // チャージと、炭を置く・のせるは何回でも。灰にするのは1ターンに1回。決めた理由は docs/design/card_game/v0.3_design.md
   cardsPerRound: 1, chargePerTurn: 1, ashPerTurn: 1,
@@ -69,6 +78,14 @@ export const roundsOf = (G) => G.tour.sessions * 3;
 export const sessionOf = (G) => Math.floor(G.round / 3);
 export const isLastSession = (G) => G.round >= roundsOf(G) - 3;
 export const isLastOfSession = (G) => G.round % 3 === 2;
+/**
+ * p が一票を取ったときの点（勝負の一服の+3は別）。審査の前の合計点で比べる: 相手のいちばん高い点より低ければ voteBehind（3）、
+ * 高ければ voteAhead（2）、同じなら vote（2）。審査が終わるまで点は動かないので、ターンのあいだずっと同じ値になる
+ */
+export function votePtsOf(G, p) {
+  const top = Math.max(...G.P.filter((o) => o.index !== p.index).map((o) => o.score)); // p は写し（CPUの見込み）でもよい
+  return p.score < top ? G.R.voteBehind : p.score > top ? G.R.voteAhead : G.R.vote;
+}
 /** まだめくられていない審査カード（順は分からない）。練習試合は「ふつうに吸う」だけ */
 export const unseenPuffs = (G) => (G.pile.length ? G.pile : [PUFFS.normal]);
 
@@ -152,7 +169,7 @@ function newPlayer(G, i, pc) {
     bowlId: pc.bowl || kit.bowl, hmd: pc.hmd || kit.hmd, plan: pc.plan || (kit ? kit.plan : []),
     deck: shuffle(G, expandDeck(pc.cards || kit.cards)), hand: [], ash: [], zone: [], stove: [],
     bowl: {}, main: null, tools: [], person: null, wind: 0,
-    score: 0, votes: 0, justCount: 0, scorchCount: 0, s1: null, lastPuff: 0,
+    score: 0, votes: 0, justCount: 0, scorchCount: 0, sessPts: [], sessStart: 0, lastPuff: 0,
     cardsUsed: 0, pend: 0, sessMod: 0, sessImp: 0, noCool: false, keepLeaves: false, usedSilicone: false, usedLotus: false, peek: null,
     steamed: false, packedOnce: false, turn: null, puff: null,
   };
@@ -664,8 +681,9 @@ function resolveJudge(G) {
   const top = Math.max(...res.map((r) => r.imp)); let voter = null;
   if (res.filter((r) => r.imp === top).length === 1) {
     voter = res.findIndex((r) => r.imp === top); const w = G.P[voter];
-    w.votes++; res[voter].vote = G.R.vote + 3 * res[voter].duel;
-    if (w.person === "packy") { drawCards(G, w, 1); }
+    w.votes++; res[voter].vote = votePtsOf(G, w) + 3 * res[voter].duel; // 点を足す前（審査の前の合計点）で比べる
+    // パッキー【実況】: 相手が一票を取るたび、1枚引く（第0.6版の先行分。追う側の手を増やす）
+    for (const o of G.P) if (o !== w && o.person === "packy") { drawCards(G, o, 1); say(G, "パッキー：相手の一票を実況して、1枚引いた。", o.index); }
   }
   for (const p of G.P) {
     const i = p.index, r = res[i];
@@ -679,8 +697,9 @@ function resolveJudge(G) {
   G.lead = (G.lead + 1) % G.P.length;
   if (G.forceSecond != null) { G.lead = (G.forceSecond + 1) % G.P.length; G.forceSecond = null; }
   const endOfSession = isLastOfSession(G), last = G.round === roundsOf(G) - 1;
-  if (G.round === 2) for (const p of G.P) p.s1 = p.score;
   if (endOfSession) {
+    // セッションごとの点（一口＋一票）。上園の決め手（伸びしろ）で、最後のセッションと第1セッションを比べる
+    for (const p of G.P) { p.sessPts.push(p.score - p.sessStart); p.sessStart = p.score; }
     for (const p of G.P) { p.sessMod = 0; p.sessImp = 0; p.usedLotus = false; }
     if (!last) { G.wearQueue = [...G.order]; nextWear(G); return; }
   }
@@ -697,6 +716,8 @@ function nextWear(G) {
   }
   G.round++; say(G, `セッション${sessionOf(G) + 1}。`); startRound(G);
 }
+/** 伸びしろ（上園の決め手）: 最後のセッションの点 − 第1セッションの点 */
+export const growthOf = (p) => (p.sessPts.length ? p.sessPts[p.sessPts.length - 1] - p.sessPts[0] : 0);
 function finish(G) {
   const bonus = [];
   // 審査員のボーナス: いちばんの1人に n 点。いちばんが並んだら、並んだ人に tie 点ずつ
@@ -706,7 +727,7 @@ function finish(G) {
     bonus.push({ judge: jid, pts: got }); G.P.forEach((p, i) => { p.score += got[i]; });
   };
   for (const jid of G.tour.judges) {
-    if (jid === "kamizono") give(jid, (p) => p.s1 ?? 0, 4, 2);
+    if (jid === "kamizono") give(jid, growthOf, 4, 2);
     if (jid === "hakase") { give(jid, (p) => -p.scorchCount, 4, 2); const extra = G.P.map((p) => (p.scorchCount ? 0 : 2)); bonus.push({ judge: jid, pts: extra, note: "焦げ0回" }); G.P.forEach((p, i) => { p.score += extra[i]; }); }
     if (jid === "sensu") give(jid, (p) => p.lastPuff, 5, 2);
     if (jid === "emir") give(jid, (p) => leavesOf(p), 4, 2);
