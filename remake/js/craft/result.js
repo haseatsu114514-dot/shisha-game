@@ -100,7 +100,7 @@ export async function showStandings(round, mine, cs = null, attempt = null) {
     : round === 2
       ? ["チャコール博士、アダムに3点投入！", "千須審査員長、10点まるまる温存"]
       : [`${displayName("maezono", state)}・チャコール博士は、残りの配点を見極めている`, "千須審査員長、依然10点を温存"];
-  const sakurai = isSakuraiVotes(attempt?.voteAttempt) ? sakuraiBoard(attempt.voteAttempt, round - 1) : null;
+  const sakurai = attempt?.voteAttempt && isSakuraiVotes(attempt.voteAttempt) ? sakuraiBoard(attempt.voteAttempt, round - 1) : null;
   const review = evaluationOf(mine);
   const recognition = craftRecognition(cs, { careRounds: Math.max(0, round - 2) });
   const next = el("button.btn.primary", { type: "button", dataset: { test: "standings-next" },
