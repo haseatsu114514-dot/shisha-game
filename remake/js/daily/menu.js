@@ -482,6 +482,14 @@ const SYSTEM = [
   { id: "title", label: "タイトルへ戻る" },
 ];
 
+/** 全画面ボタンはタイトルの部品（.btn.xfer-btn）なので、MENUのほかの操作と同じ札の見た目にそろえる（#3555）。 */
+function systemFullscreenButton() {
+  const button = fullscreenButton();
+  if (!button) return [];
+  button.className = "dm-btn dm-sys";
+  return [button];
+}
+
 function systemTab(choose, saveOk) {
   return [
     ...tabHeading("システム", ["行動のたびに自動でセーブされている。", SAVE_RULE, "タイトルへ戻ると、行動前のオートセーブから再開する。"], "system"),
@@ -489,7 +497,7 @@ function systemTab(choose, saveOk) {
       type: "button", text: s.label, dataset: { test: `menu-${s.id}` },
       disabled: s.id === "save" && !saveOk,
       onclick: () => choose(s.id),
-    })).concat(fullscreenButton() || [])),
+    })).concat(systemFullscreenButton())),
     // セーブできない時だけ理由を出す（いつも自動で保存されている説明は「?」へ）
     saveOk ? null : el("p.dm-note", { dataset: { test: "menu-save-note" }, text: `今はセーブできない。${SAVE_RULE}` }),
   ];

@@ -67,7 +67,7 @@ export const SPOTS = [
     desc: "甘い香りの人気店。凄腕がいるらしい。", stamina: -16 },
   { id: "adam", kind: "rival", charId: "adam", label: "EDEN", area: "下町", x: 46, y: 48, theme: "rival", glyph: "煙", face: "adam", cost: VISIT_COST, closedOn: 5,
     desc: "アニスが香る店。いつもダブルアップル。", stamina: -16 },
-  { id: "minto", kind: "rival", charId: "minto", label: "PEPPERMINT", area: "繁華街", x: 28, y: 62, theme: "rival", glyph: "煙", face: "minto", cost: VISIT_COST, closedOn: 6,
+  { id: "minto", kind: "rival", charId: "minto", label: "PEPPERMINT", area: "繁華街", x: 32, y: 59, theme: "rival", glyph: "煙", face: "minto", cost: VISIT_COST, closedOn: 6,
     desc: "SNSで人気の、コンカフェ風の店。", stamina: -16 },
   { id: "shop", kind: "shop", label: "Dr.fookah", area: "問屋街", x: 36, y: 30, theme: "shop", glyph: "卸",
     desc: "1階で買い物。夜は2階で相談できる。" },

@@ -1137,6 +1137,11 @@ button.ichi-leaf.can:hover { border-color: #fff; }
 .ichi-zone-box:is(.is-setting, .is-deck, .is-ash) > .ichi-zone-tab { display: none; }
 .ichi-market .ichi-card-line { display: none; }
 
+/* 試遊ページのメニュー: ボタンの文字を真ん中に（「すぐ対戦する」が左に寄って見えていた・#3557） */
+.ichi-menu .btn { align-items: center; justify-content: center; text-align: center; }
+/* 終局（勝ち負けの札）では次の手の案内が無いので、右上の案内の枠ごと出さない（中身の無い暗い四角が残っていた・#3557） */
+.ichi-game[data-phase="end"] .ichi-guide:not(:has(:is(b, span, li, p):not(:empty))) { display: none; }
+
 /* ── 第0.8版（2026-11-13）: 熱と火力を分けた。炭の高さ＝火力、目盛りの明るいところまで＝熱。熱はターンの終わりに火力へ1段近づく ── */
 .ichi-fire-gauge i { position: relative; }
 /* 火力の印: 炭の積んである高さの段に、炭の側から小さな三角 */
