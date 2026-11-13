@@ -4,8 +4,8 @@
     {
       "dialogue_id": "axe_bar_first_visit",
       "lines": [
-        { "speaker": "", "face": "", "text": "店の中は、思ったより静かだった。" },
-        { "speaker": "", "face": "", "text": "金網の向こうで、斧が板に刺さる乾いた音。赤いソファの席には、誰もいない。" },
+        { "speaker": "", "face": "", "text": "入口の脇に、使い込まれた斧が何本も掛けてある。" },
+        { "speaker": "", "face": "", "text": "金網の向こうから、斧が板に刺さる乾いた音が響いてくる。" },
         { "speaker": "hajime", "face": "normal", "text": "（……どこで声をかければいいんだろう）" },
         { "speaker": "maki", "face": "normal", "text": "いらっしゃい！　そこ、突っ立ってないで入んな" },
         { "speaker": "", "face": "", "text": "革のエプロンの女の人が、布で斧の柄を拭きながら歩いてきた。" },
@@ -535,7 +535,7 @@
       "lines": [
         { "speaker": "", "face": "", "text": "カウンターの端で、ヨルさんが紙コップを二つ並べていた。" },
         { "speaker": "yoru", "face": "smile", "text": "いいところに来た。開店前にムカイと飲んだ残り、はじめくんの分もあるよ" },
-        { "speaker": "hajime", "face": "smile", "text": "ありがとうございます。いつものフルーツティーですね" },
+        { "speaker": "hajime", "face": "smile", "text": "ありがとうございます。ムカイさんと飲む、甘いお茶ですね" },
         { "speaker": "yoru", "face": "normal", "text": "回す前は、温かいのを一杯。手が落ち着くから" },
         { "speaker": "", "face": "", "text": "受け取った紙コップは、手のひらに熱かった。" },
         { "speaker": "yoru", "face": "normal", "text": "持ったまま、ブースへおいで。今夜のフロアは、まだこれからだよ" }
