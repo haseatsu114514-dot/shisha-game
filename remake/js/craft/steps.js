@@ -626,16 +626,36 @@ export async function stepPack(cs) {
   refreshBench();
 }
 
+const VENT_HOLES = [0, 60, 120, 180, 240, 300].map(a => [120 + 52 * Math.cos(a * Math.PI / 180), 96 + 22 * Math.sin(a * Math.PI / 180)]);
+const ventLidSvg = (open) => `<svg viewBox="0 0 240 190" aria-hidden="true">
+  <ellipse cx="120" cy="104" rx="104" ry="44" fill="#2a1a22"/><ellipse cx="120" cy="96" rx="104" ry="44" fill="#8a5a3a" stroke="#d6a56a" stroke-width="3"/>
+  <ellipse cx="120" cy="96" rx="30" ry="12" fill="#5a3a28" stroke="#d6a56a" stroke-width="2"/>
+  ${VENT_HOLES.map(([x, y]) => `<ellipse cx="${x}" cy="${y}" rx="9" ry="4" fill="${open ? "#0d0817" : "#6a4630"}" stroke="#d6a56a" stroke-width="${open ? 1.5 : 3}"/>`).join("")}
+  ${open ? VENT_HOLES.filter((_, i) => i % 2 === 0).map(([x, y]) => `<path d="M${x} ${y - 6}c-8-14 8-22 0-36" fill="none" stroke="#f0e6ff" stroke-width="4" stroke-linecap="round" opacity=".7"/>`).join("")
+    : `<path d="M62 88c20-16 96-16 116 0M70 104c26 14 74 14 100 0" fill="none" stroke="#ff8a2a" stroke-width="5" stroke-linecap="round" opacity=".85"/>`}
+</svg>`;
+
 export async function stepVent(cs) {
   await waitBenchReady(cs, "holes");
   const first = ["rehearsal", "practice", "tournament"].includes(cs.mode) && !state.flags._lotos_vent_hint;
   const hint = first ? "スミ「迷ったら通気は開けとけ。閉じれば熱がこもって、待ちも一口も強くなる」" : "";
   const panel = stepPanel("holes", "蓋の通気", hint, { brief: "蓋の通気を選ぶ" });
   if (first) state.flags._lotos_vent_hint = true;
-  cs.vent = await choose(panel, [
+  // 作業面には蓋そのものを出す。ボタンへ触れる・フォーカスするたびに、通気の開け閉めの絵を切り替える。
+  const preview = el("div.vent-preview", { role: "img", dataset: { test: "vent-preview" } });
+  const drawVent = (value) => {
+    const open = value !== "closed";
+    preview.dataset.vent = open ? "open" : "closed";
+    preview.setAttribute("aria-label", open ? "蓋の通気：開けた状態。熱が外へ逃げる" : "蓋の通気：閉じた状態。熱がこもる");
+    preview.innerHTML = ventLidSvg(open) + `<p><b>${open ? "通気を開ける" : "通気を閉じる"}</b><span>${open ? "熱が外へ逃げる（標準）" : "熱がこもる"}</span></p>`;
+  };
+  drawVent(cs.vent);
+  const picked = choose(panel, [
     { value: "open", label: "通気を開ける（標準）", auto: true },
     { value: "closed", label: "通気を閉じる（熱がこもる）" },
-  ]);
+  ], { onPreview: drawVent });
+  panel.append(preview); // 選択ボタンの下の作業面
+  cs.vent = await picked;
 }
 
 export async function stepPlace(cs) {

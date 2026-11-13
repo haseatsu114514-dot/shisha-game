@@ -1113,3 +1113,26 @@ button.ichi-leaf.can:hover { border-color: #fff; }
 .ichi-game:not([data-skin]) .ichi-puff-card.is-up strong { color: #a8321a; }
 .ichi-game:not([data-skin]) .ichi-puff-card.is-down strong { color: #17546e; }
 @media (prefers-reduced-motion: reduce) { .ichi-game:not([data-skin]) .ichi-card.r-R::after, .ichi-game:not([data-skin]) .ichi-card.r-SR::after { animation: none; transform: none; } }
+
+/* ── 文字を減らす（2026-11-13 オーナー「まだ画面に文字が多すぎてみてて疲れる」。ICG73） ──
+   出すのは、数と、いま要る言葉だけ。くわしい言い方は title と読み上げ（aria-label）に残す */
+/* カードの残りは、足す・外すと同じ灯にそろえる */
+.ichi-card-left { padding: 0 6px; border: 0; border-radius: 8px; line-height: 18px; background: linear-gradient(180deg, #ffe2a6, #e3bd6e); }
+.ichi-card-left i { font-style: normal; font-size: 12px; font-weight: 800; white-space: nowrap; color: #2a1606; }
+.ichi-card-left.is-used { background: rgba(255, 255, 255, 0.08); border: 0; }
+.ichi-card-left.is-used i { font-weight: 700; color: var(--ichi-dim); }
+.ichi-coal-help { min-width: 24px; padding: 1px 0; border-radius: 50%; text-align: center; }
+/* 流れ: 名前を出すのは、いまの段だけ */
+.ichi-steps span:not(.is-now) { padding: 1px 3px; }
+/* 審査員の声: 前の口は1行 */
+.ichi-post.is-old { padding: 2px 8px; background: rgba(246, 241, 250, 0.04); }
+.ichi-post.is-old > p.is-me { align-items: center; }
+.ichi-post.is-old > p.is-me > b:first-child { font-family: inherit; font-size: 12px; font-weight: 800; color: #cbb8dc; }
+.ichi-post.is-old > p.is-me > .ichi-zone-chip { margin-top: 0; align-self: center; }
+.ichi-post.is-old > p.is-me > small { margin-left: auto; white-space: nowrap; }
+.ichi-post.is-intro > header { flex-wrap: wrap; }
+.ichi-post.is-intro > header span { white-space: normal; }
+/* 手札: 札の下の行は「使える時」だけ（種類は枠の色で分かる）。卓: 見れば分かる置き場の名札は出さない */
+.ichi-hand .ichi-line-type { display: none; }
+.ichi-zone-box:is(.is-setting, .is-deck, .is-ash) > .ichi-zone-tab { display: none; }
+.ichi-market .ichi-card-line { display: none; }
