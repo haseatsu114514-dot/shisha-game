@@ -95,10 +95,42 @@ assert.equal(DB.equipById.lotos_hagal.name, "ロートスHMD");
 assert.equal(DB.equipById.winkwink_hagal.name, "ビッグタヌキッシュリッド");
 assert.equal(DB.equipById.harry_the_moon.name, "ハリーザムーン");
 assert.equal(DB.characters.maezono.name, "上園 文太郎");
+// #1947 R9 / #1984: guard only the withdrawn descriptions on retired pipes.
+const withdrawnPipeDescriptions = {
+  pipe_middle: "少し値が張るが、気密性が高く味と煙が安定する。大会では専門評価に少し補正が入る。",
+  pipe_high: "美しさと実用性を兼ね備えた名機。味の輪郭と見栄えに補正が入る。",
+  pipe_highest: "限られた職人しか作れない特注品。味、煙、プレゼンすべてに高い補正が入る。",
+};
+const withdrawnPipeClaims = {
+  pipe_middle: "大会では専門評価に少し補正が入る",
+  pipe_high: "味の輪郭と見栄えに補正が入る",
+  pipe_highest: "味、煙、プレゼンすべてに高い補正が入る",
+};
+function revivesWithdrawnPipeCopy({ id, description }) {
+  if (!Object.hasOwn(withdrawnPipeClaims, id)) return false;
+  const unquoted = String(description || "").replace(/「[^」]*」|『[^』]*』|“[^”]*”|‘[^’]*’|"[^"]*"|'[^']*'/g, "引用");
+  const claim = withdrawnPipeClaims[id];
+  for (let at = unquoted.indexOf(claim); at >= 0; at = unquoted.indexOf(claim, at + claim.length)) {
+    if (!/^(?:。)?(?:わけではない|ことはない|とは限らない|とは言えない|とは断定できない|という説明は誤り)/.test(unquoted.slice(at + claim.length))) return true;
+  }
+  return false;
+}
 for (const pid of ["pipe_middle", "pipe_high", "pipe_highest"]) {
   assert.equal(DB.equipById[pid].deprecated, true);
   assert.equal(DB.equipById[pid].not_for_sale, true);
+  const oldCopy = withdrawnPipeDescriptions[pid];
+  assert(revivesWithdrawnPipeCopy({ id: pid, description: oldCopy }));
+  assert(revivesWithdrawnPipeCopy({ id: pid, description: `${DB.equipById[pid].description} ${withdrawnPipeClaims[pid]}。` }));
+  assert(!revivesWithdrawnPipeCopy(DB.equipById[pid]), `${pid} must not restore its old scoring claim`);
+  assert(!revivesWithdrawnPipeCopy({ id: pid, description: `「${oldCopy}」は旧説明` }));
+  assert(!revivesWithdrawnPipeCopy({ id: pid, description: `「${withdrawnPipeClaims[pid]}」は旧説明` }));
+  assert(!revivesWithdrawnPipeCopy({ id: pid, description: `"${withdrawnPipeClaims[pid]}" は旧説明` }));
+  assert(!revivesWithdrawnPipeCopy({ id: pid, description: `${withdrawnPipeClaims[pid]}わけではない` }));
+  assert(!revivesWithdrawnPipeCopy({ id: pid, description: `${withdrawnPipeClaims[pid]}ことはない。` }));
+  assert(revivesWithdrawnPipeCopy({ id: pid, description: `${withdrawnPipeClaims[pid]}わけではない。だが、${withdrawnPipeClaims[pid]}。` }));
+  assert(!revivesWithdrawnPipeCopy({ id: "harry_the_moon", description: oldCopy }));
 }
+assert(!revivesWithdrawnPipeCopy(DB.equipById.hagal_80beat));
 
 // 2. メーカー6社・加算天井（単社時は主要4社が +2.50、初心者安定枠のドバジが +0.80）
 const sampleByMaker = {

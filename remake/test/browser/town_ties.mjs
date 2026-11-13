@@ -107,6 +107,7 @@ await suite("town-ties", async check => {
   });
 
   // REL06: 第5章の Dr.fookah の2階。最初の通いの小会話の次の来店で、いつもの会話の代わりに一度だけ。巡回の順番は進めない
+  // #3468 E案: お茶の後、通いの小会話をもう1本読んだ次の来店で、仕入れ相談（ch5_rio_naru_order）も一度だけ
   for (const lover of [false, true]) {
     await check(`ch5-showroom-tea-once-after-the-first-talk${lover ? "-lover" : ""}`, async page => {
       const r = await page.evaluate(async lover => {
@@ -127,7 +128,7 @@ await suite("town-ties", async check => {
         vn.hooks.onEnter = (id, dlg) => { enter?.(id, dlg); trace.push(id); };
         const rows = [];
         try {
-          for (let n = 0; n < 3; n++) {
+          for (let n = 0; n < 5; n++) {
             vn.clearLog(); trace.length = 0;
             const before = s.affinity.rio;
             const visit = await shops.performChapterFiveShop(shops.chapterFiveShowroom(s), { staminaGuard: async () => true });
@@ -135,20 +136,29 @@ await suite("town-ties", async check => {
             s.day += 1;
           }
         } finally { vn.hooks.onEnter = enter; }
-        return { rows, seen: !!s.flags._talk_seen_ch5_rio_naru_tea, talks: s.flags._ch5_shop_talks?.ch5_rio_showroom };
+        return { rows, seen: !!s.flags._talk_seen_ch5_rio_naru_tea, ordered: !!s.flags._talk_seen_ch5_rio_naru_order,
+          talks: s.flags._ch5_shop_talks?.ch5_rio_showroom };
       }, lover);
-      assert.deepEqual(r.rows.map(row => row.scene), ["ch5_rio_shop", "ch5_rio_naru_tea", "ch5_rio_shop_b"], "the tea comes once, then the usual rotation resumes");
+      assert.deepEqual(r.rows.map(row => row.scene), ["ch5_rio_shop", "ch5_rio_naru_tea", "ch5_rio_shop_b", "ch5_rio_naru_order", "ch5_rio_shop_c"],
+        "the tea comes once, then the usual rotation resumes; the order comes once after one more usual talk");
       for (const row of r.rows) assert.deepEqual(row.visit, { used: true, exerted: true });
       // いつもの小会話と同じ +5（恋人の好感度は店では深まらないので、恋人は両方とも 0）
       assert.equal(r.rows[1].gained, r.rows[0].gained, "the same visit affinity as the usual talk");
       assert.equal(r.rows[0].gained > 0, !lover);
-      assert(r.seen); assert.equal(r.talks, 2, "the rotation count only counts the usual talks");
+      // 好感度が上がるにつれて伸びは変わるので、いつもの来店と同じく「友人なら上がる・恋人は動かない」だけを見る
+      assert.equal(r.rows[3].gained > 0, !lover, "the order is paid like the usual talk too");
+      assert(r.seen && r.ordered); assert.equal(r.talks, 3, "the rotation count only counts the usual talks");
       const tea = r.rows[1].lines;
       assert(tea.some(t => t.includes("円頓寺さん")) && tea.some(t => t.includes("六分もった")));
       assert(tea.some(t => t.includes("三分で帰る")), "the earlier chapter-one remark is remembered when it was heard");
       assert.equal(tea.some(t => t.includes("大事にしろよ")), lover);
       assert.equal(tea.some(t => t.includes("数えてないけどね")), lover);
       assert.equal(tea.some(t => t.includes("十分を目指して")), !lover);
+      const order = r.rows[3].lines;
+      assert(order.some(t => t.includes("ケムリクサさん")) && order.some(t => t.includes("条件を先に")) && order.some(t => t.includes("丁寧な字で三行")));
+      assert.equal(order.some(t => t.includes("仕事、ちゃんと見とけよ")), lover);
+      assert.equal(order.some(t => t.includes("いい取引先だよ")), !lover);
+      assert.equal(order.some(t => t.includes("読みがいがある")), lover);
     });
   }
 
