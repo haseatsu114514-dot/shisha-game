@@ -665,6 +665,7 @@ export const FLAG_FAMILY_RULES = [
   ["_petit_seen_*", "progression"], // プチ修羅場の読んだ場面（core/petit-shuraba.js の petitSeenFlag）
   ["_roam_seen_*", "person"],
   ["_trpg_topic_*", "person"], // 部活の話は周回ごとに対面し直す
+  ["_venue_arrival_*", "progression"], // 遊び場の来店のやり取り（daily/venue-arrivals.js）。巡回・一度きりの回は周回ごとに読み直す
   ["_date_inv_*", "person"],
   ["_delivery_*", "progression"],
   ["_fortune_*", "progression"],

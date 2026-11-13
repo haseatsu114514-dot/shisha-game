@@ -183,6 +183,22 @@
       ]
     },
     {
+      "id": "craft-phone-detail-links-browser",
+      "title": "Landscape phone detail links tap target",
+      "kind": "browser",
+      "weight": 1,
+      "timeout": 5,
+      "paths": [
+        "remake/css/wide-craft.css",
+        "remake/js/craft/common.js",
+        "remake/test/browser/craft_phone_detail_links.mjs"
+      ],
+      "run": [
+        "node remake/test/browser/craft_phone_detail_links.mjs"
+      ],
+      "chrome": "playwright"
+    },
+    {
       "id": "craft-rank-wire-browser",
       "title": "Craft rank during real sessions and cleanup",
       "kind": "browser",
@@ -227,6 +243,18 @@
         "remake/test/browser/ch1_victory_resume_2190.mjs"
       ],
       "run": ["node remake/test/browser/ch1_victory_resume_2190.mjs"]
+    },
+    {
+      "id": "resume-modal-title-cleared-3514",
+      "title": "LOAD直後に最初のモーダルが出る再開でも、タイトル画面が背後に残らない",
+      "kind": "browser",
+      "weight": 1,
+      "timeout": 5,
+      "paths": [
+        "remake/js/chapters/ch1.js",
+        "remake/test/browser/resume_modal_title_cleared.mjs"
+      ],
+      "run": ["node remake/test/browser/resume_modal_title_cleared.mjs"]
     },
     {
       "id": "vn-speaker-atomic-2190",
@@ -300,7 +328,7 @@
     },
     {
       "id": "smoke-field",
-      "title": "Breath smoke and shop haze (KMR11・KMR21): palette, breath styles, quality tiers, ring, cover, haze amount, which backgrounds",
+      "title": "Breath smoke and shop haze (KMR11・KMR21・KMR23): palette, breath styles that keep the face clear, worker breath tiers inside the worker window, rings, haze amount, which backgrounds, exhale lines name a visible person",
       "kind": "quick",
       "run": ["node remake/test/smoke_field.mjs"]
     },
@@ -656,6 +684,21 @@
       "timeout": 3,
       "paths": ["remake/js/minigames/dj.js", "remake/js/daily/dj-club.js", "remake/js/chapters/ch3.js", "remake/js/chapters/ch3-map-model.js", "remake/previews/dj/**", "data/dialogue/ch3_club.json", "remake/test/browser/dj_club.mjs"],
       "run": ["node remake/test/browser/dj_club.mjs"]
+    },
+    {
+      "id": "venue-arrivals-rules",
+      "title": "遊び場の来店のやり取り（VAR）: 台本の照合・巡回・一度きり・メモ・遊べない来店・周回の扱い",
+      "kind": "quick",
+      "run": ["node remake/test/venue_arrivals.mjs"]
+    },
+    {
+      "id": "venue-arrivals",
+      "title": "遊び場の来店のやり取り（VAR）: 斧投げBar・クラブSEAM・ボドゲカフェ・ラクダレース場で、会話を読んでからメニューやゲームへ",
+      "kind": "browser",
+      "weight": 1,
+      "timeout": 6,
+      "paths": ["remake/js/daily/venue-arrivals.js", "data/dialogue/venue_arrivals.json", "remake/js/daily/axe-bar.js", "remake/js/daily/dj-club.js", "remake/js/daily/trpg.js", "remake/js/trpg/campaign-view.js", "remake/js/trpg/campaign.js", "remake/js/chapters/ch4-camel-race.js", "remake/js/chapters/ch4-camel-progress.js", "data/dialogue/trpg_club.json", "data/dialogue/ch3_club.json", "data/dialogue/ch4_camel_race.json", "remake/test/browser/venue_arrivals.mjs"],
+      "run": ["node remake/test/browser/venue_arrivals.mjs"]
     },
     {
       "id": "desert-ride-rules",
@@ -4350,11 +4393,11 @@
     },
     {
       "id": "smoke-breath",
-      "title": "Breath smoke and shop haze in the game (KMR11・KMR21): VN exhale, craft exhale tiers, result cover, faint haze in shisha shops",
+      "title": "Breath smoke and shop haze in the game (KMR11・KMR21・KMR23): VN exhale that keeps the face clear, craft exhale and rings from the worker's mouth, faint haze in shisha shops",
       "kind": "browser",
       "weight": 1,
       "timeout": 5,
-      "paths": ["remake/js/core/smoke.js", "remake/js/core/shop-haze.js", "remake/js/core/ui.js", "remake/js/vn/breath.js", "remake/js/vn/engine.js", "remake/js/craft/fx.js", "remake/js/craft/result.js", "remake/test/browser/smoke_breath.mjs"],
+      "paths": ["remake/js/core/smoke.js", "remake/js/core/shop-haze.js", "remake/js/core/ui.js", "remake/js/vn/breath.js", "remake/js/vn/engine.js", "remake/js/craft/fx.js", "remake/js/craft/worker-scenes.js", "remake/css/worker-scenes.css", "remake/img/ui/making/hajime_craft_pull*", "remake/test/browser/smoke_breath.mjs"],
       "run": ["node remake/test/browser/smoke_breath.mjs"]
     },
     {
