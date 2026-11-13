@@ -7,7 +7,7 @@ export const COMPANIONS = {
   // focus: face center per expression, in the 896x1200 sprite. The poses lean, so one crop would jump.
   hiyori: { name: "ひより", portraitKey: "hiyori", faces: ["axe_normal", "axe_laugh", "axe_shout"],
     focus: { axe_normal: [432, 322], axe_laugh: [372, 322], axe_shout: [380, 322] },
-    before: ["……横、縦、回転の順。焦らず止めてみて", "青い小さな的、狙ってみる？ 宣言してからね", "……次、どう狙う？ 見てるね",
+    before: ["……狙いを決めたら、ひと息で。焦らなくていいよ", "青い小さな的、狙ってみる？ 宣言してからね", "……次、どう狙う？ 見てるね",
       "……肩の力、抜いて。斧に任せるくらいでいいの", "……白い刃先、揺れてるね。止まった瞬間がチャンス"],
     call: ["……キルショット。小さいけど、当たれば大きいね", "……青を宣言。見てるこっちまで息が止まりそう"],
     bull: ["……真ん中。うん、今のきれいだった", "……ど真ん中。木が、斧を待ってたみたい", "えっ、すごっ！ ……こほん。……見事ね"],
@@ -15,7 +15,10 @@ export const COMPANIONS = {
     killshot: ["よっしゃ！ ……こほん。今の、すごかったね", "うおっ、青に命中！ ……失礼。……鮮やかね"],
     "killshot-miss": ["……惜しい。宣言した投は青い的だけが得点なんだね", "……青、遠かったね。でも宣言した勇気は好き"],
     miss: ["……もう少しだったね。次の一投、いこう", "……的の外。狙いは、ほんの少しだけ内側へ"],
-    drop: ["……回転の加減かな。強すぎると、回りすぎちゃうね", "……落ちちゃった。緑の帯、焦らず待ってみて"],
+    // 落下の一言は落ちた理由で選ぶ（柄から＝勢いが足りない／回りすぎ＝勢いが余った）。操作の種類（弾く・ゲージ）に依らない言葉で（2026-11-13 指摘5）
+    drop: ["……落ちちゃった。回転の加減、むずかしいね", "……斧、落ちちゃったね。次はきっと刺さるよ"],
+    dropWeak: ["……柄から当たっちゃった。もう少し勢い、つけていいよ", "……回転が足りなかったみたい。思い切って、もうひと押し"],
+    dropSpin: ["……回りすぎちゃった。強すぎると、刃が逃げるね", "……勢い、余っちゃったね。もうひと呼吸、やわらかく"],
     streak: ["……連続で高得点。今、流れが来てるよ", "ちょっ、止まらないじゃん！ ……こほん。……続けて"],
     last: ["……最後の一投。深呼吸して、好きに投げて", "……ラスト。ここで決めたら、かっこいいよ"],
     switch: ["……後半。的を交代だね。板の木目、さっきと違う", "……折り返し。閉じてた赤も、また開くよ"],
@@ -34,7 +37,9 @@ export const COMPANIONS = {
     killshot: ["あの小さい的に当てたのか！ すごいのじゃ！", "見事じゃ！ コロちゃんも拍手しておるぞ"],
     "killshot-miss": ["惜しいのう。青い的だけが得点になるのじゃな", "むむ、青は小さいのう。じゃが狙いは悪くないぞ"],
     miss: ["むう、惜しかったのじゃ。もう一度やってみようぞ", "的の外じゃ。少し内側へ寄せてみるのじゃ"],
-    drop: ["力任せではいかんのじゃな。次は帯に合わせてみるのじゃ", "落ちてしもうた。緑の帯で止めるのじゃぞ"],
+    drop: ["落ちてしもうた。回転の加減が肝心じゃな", "むむ、落ちたのう。次はきっと刺さるのじゃ"],
+    dropWeak: ["柄から当たってしもうたのう。もう少し勢いをつけるのじゃ", "回転が足りぬのじゃな。思い切りが大事じゃぞ"],
+    dropSpin: ["回りすぎじゃ。力任せではいかんのじゃな", "勢い余って落ちてしもうた。もう少し優しくじゃ"],
     streak: ["連続じゃ！ お主、今は波に乗っておるのう", "止まらんのう！ サメの群れのような勢いじゃ"],
     last: ["最後の一投じゃ。お主の好きに投げるがよい", "ラストじゃな。わしはここで見届けるぞ"],
     switch: ["後半じゃ！ 的を交代するのじゃな", "折り返しじゃ。赤もまた開くぞ、気を楽にな"],
@@ -61,6 +66,7 @@ export function reaction(id, phase, shots, called, context = {}) {
   const closed = outcome === "miss" && last?.zone?.kind === "closed";
   const bonus = outcome === "drop" && context.bonus;
   const text = streak ? pick(companion.streak, n - 1) : closed ? pick(companion.closed, n - 1) : bonus ? pick(companion.bonus, n - 1)
+    : outcome === "drop" ? pick(companion[last.dropReason === "weak" ? "dropWeak" : last.dropReason === "rotation" ? "dropSpin" : "drop"] || companion.drop, n - 1)
     : outcome ? pick(companion[outcome], n - 1)
     : called ? pick(companion.call, n) : context.switching ? pick(companion.switch, n) : context.last ? pick(companion.last, n) : pick(companion.before, n);
   const face = outcome === "killshot" || streak ? companion.faces[2]

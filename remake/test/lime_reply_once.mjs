@@ -44,6 +44,9 @@ async function fixture({ lover = false, reply = response, invitation = false, co
     'bonds.js': { bondInvites: noop, friendMessages: noop },
     'story-knowledge.js': { syncMintoKnowledge: noop }, 'hiyori-route.js': { hiyoriEventStatus: noop },
     'story-contact.js': { storyThreadStatus: () => null },
+    // 朝の配分（LM08）。この試験は1件のやりとりだけを見るので、配分は使わない
+    'lime-pacing.js': { LIME_PACING: { softCap: 2, hardCap: 3, backlog: 3, quietDays: 2 }, isWorkInvite: m => ['__sumi_baito__', '__mukai_baito__'].includes(m?.accept_event),
+      storyPaceClass: () => 'must', pacingHistory: () => ({ lastBySender: new Map(), lastAny: -Infinity, yesterday: 0, unread: 0 }), overdue: () => 1.5, urgency: () => 1, dayCap: () => 2, bondInvitation: () => false },
     'invitations.js': { invitationCost: () => cost, storeInvitationSpot: noop, visitReminderSpot: noop, invitationVisitSpot: noop, immediateInvitation: () => false, missedInvitationNote: () => null },
   };
   const context = vm.createContext({ console, setTimeout: (fn, ms) => { const id = {}; timers.set(id, { fn, ms }); return id; }, clearTimeout: id => timers.delete(id), requestAnimationFrame: noop, document: {}, Math, Date, Set, Promise });

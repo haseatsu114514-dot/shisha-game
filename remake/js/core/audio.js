@@ -81,11 +81,34 @@ function loadSeBuffer(file) {
   return seLoads.get(file);
 }
 
-/** 最初の操作で先読み。ゲーム進行は待たせず、最初の未読込SEは合成で補う。 */
+const allSeFiles = () => [...new Set([...Object.values(RECORDED_SE).flatMap(s => s.files), WATER_LOOP, WATER_END])];
+// 最初の操作の直後に要る画面操作の音（タイトル・メニュー・保存）。残りは1本ずつ読む（#3500 D-1）。
+const FIRST_SE = ["click", "select", "cancel", "whoosh", "jingle", "card", "save"];
+let seWarm = null;
+
+/** 録音SEを全部、今すぐ読む（音の確認ページ・検査用）。全部読めたら true。 */
 export function preloadSe() {
   if (!audioUnlocked) return Promise.resolve(false);
-  const files = new Set([...Object.values(RECORDED_SE).flatMap(s => s.files), WATER_LOOP, WATER_END]);
-  return Promise.all([...files].map(loadSeBuffer)).then(buffers => buffers.every(Boolean));
+  return Promise.all(allSeFiles().map(loadSeBuffer)).then(buffers => buffers.every(Boolean));
+}
+
+/**
+ * 最初の操作で先読み。ゲーム進行は待たせず、最初の未読込SEは合成で補う。
+ * 29本を一度に取りに行くと、同じ時に始まる BGM・場面の素材と回線とデコードを取り合う（遅い回線では5秒の打ち切りで半分ほどが落ちていた）。
+ * 画面操作の数本を先に読み、残りは手の空いた時に1本ずつ読む。読み終わる前に鳴らした音は、今までどおりその場で読みに行く。
+ */
+function warmSe() {
+  if (!audioUnlocked || seWarm) return;
+  const first = FIRST_SE.flatMap(id => RECORDED_SE[id].files);
+  const rest = allSeFiles().filter(file => !first.includes(file));
+  const idle = () => typeof requestIdleCallback === "function" ? new Promise(resolve => requestIdleCallback(resolve, { timeout: 1000 })) : null;
+  seWarm = Promise.all(first.map(loadSeBuffer)).then(async () => {
+    for (const file of rest) {
+      if (seBuffers.has(file)) continue;
+      await idle();
+      await loadSeBuffer(file);
+    }
+  }).finally(() => { seWarm = null; });
 }
 
 function recordedVoice(file, { gain = 1, rate = 1, loop = false, delay = 0 } = {}) {
@@ -145,6 +168,7 @@ const DESERT_SE = Object.freeze({
   zap1: "zap_1.wav", zap2: "zap_2.wav", zap3: "zap_3.wav",
 });
 const DESERT_ZAPS = Object.freeze(["zap1", "zap2", "zap3"]);
+const DESERT_CUES = Object.freeze(["spin", "overtake", "overtaken"]);
 /**
  * 放電の「ビリッ」の次までの秒数。ゲージが1割を超えると鳴り始め、溜まるほど間隔が詰まる（1割で約1.6秒、満タンで約0.35秒）。
  * 毎回少しずらす（rand は 0〜1）。1割に満たない間は鳴らさない（Infinity）。
@@ -173,10 +197,30 @@ export function createDesertRideSe() {
   const isReady = () => !ctx || Object.keys(DESERT_SE).every(id => seBuffers.has(file(id)));
   let levels = desertLoopLevels();
   let zaps = 0, lastZap = "";
-  function play(id, gain = 0.65) {
+  const cues = [];
+  /** rate: 再生の速さ（高さも変わる）。再挑戦の短い合図、かすめの近さ（近いほど高い）に使う。 */
+  function play(id, gain = 0.65, rate = 1) {
     if (!alive || !DESERT_SE[id]) return;
     const name = file(id);
-    if (seBuffers.has(name)) recordedVoice(name, { gain });
+    if (seBuffers.has(name)) recordedVoice(name, { gain, rate });
+  }
+  /**
+   * 録音の無い短い合図（合成）。ほかの出来事と同じ音を使い回さない（2026-11-13。それまで、かすめ・半回転・抜いた が同じ音だった）。
+   * spin: 空中の半回転の区切り（n 回目ほど高い＝180・360・540 を耳で数えられる）／overtake: 相手を抜いた（上がる2音）／overtaken: 抜かれた（下がる2音）。
+   */
+  function cue(kind, { n = 1, gain = 0.3 } = {}) {
+    if (!alive || !DESERT_CUES.includes(kind)) return;
+    cues.push(kind); if (cues.length > 32) cues.shift();
+    if (!seEnabled()) return;
+    const vol = Math.max(0, Math.min(1, gain)) * 0.5;
+    if (kind === "spin") {
+      const freq = 640 * (1 + 0.12 * Math.max(1, n));
+      tone({ freq, to: freq * 1.3, type: "triangle", dur: 0.07, vol });
+    } else if (kind === "overtake") {
+      tone({ freq: 660, type: "triangle", dur: 0.09, vol }); tone({ freq: 990, type: "triangle", dur: 0.16, vol: vol * 0.9, delay: 0.08 });
+    } else {
+      tone({ freq: 520, type: "sine", dur: 0.11, vol }); tone({ freq: 390, type: "sine", dur: 0.2, vol: vol * 0.9, delay: 0.1 });
+    }
   }
   function loop(id, gain, rate = 1) {
     const voice = loops.get(id);
@@ -208,8 +252,8 @@ export function createDesertRideSe() {
     if (seBuffers.has(file(id))) recordedVoice(file(id), { gain: 0.22 + 0.33 * Math.max(0, Math.min(1, charge)), rate: 0.94 + 0.12 * Math.random() });
   }
   /** 今のループの音量と、鳴らした「ビリッ」の数（検査用。音が出せない環境でも、鳴らすつもりの音が分かる）。 */
-  const loopLevels = () => ({ ...Object.fromEntries(Object.entries(levels).map(([id, { gain }]) => [id, gain])), zaps });
-  return { ready, isReady, play, motion, zap, stop, dispose, loopLevels };
+  const loopLevels = () => ({ ...Object.fromEntries(Object.entries(levels).map(([id, { gain }]) => [id, gain])), zaps, cues: [...cues] });
+  return { ready, isReady, play, cue, motion, zap, stop, dispose, loopLevels };
 }
 
 // ---------------------------------------------------------------- ミニゲームの仮SE
@@ -341,7 +385,7 @@ export function unlockAudio() {
   };
   if (c && (c.state === "suspended" || c.state === "interrupted")) c.resume().then(ready, () => {});
   else ready();
-  preloadSe();
+  warmSe();
 }
 
 export function applyVolumes() {
@@ -654,7 +698,8 @@ export function preloadAxeSe() {
 }
 /** 検査用: 鳴らした音の数（id → { recorded, synth }）。音が出せない環境でも、鳴らすつもりの音が分かる。 */
 export const axeSePlayed = () => JSON.parse(JSON.stringify(axePlayed));
-export function playAxeSe(id, { scored = true } = {}) {
+// rate: 録音の再生の速さ（斧ごとの刺さり音の高さ。2026-11-13 斧投げ手応えレビュー指摘11）。合成音では使わない。
+export function playAxeSe(id, { scored = true, rate = 1 } = {}) {
   if (!seEnabled()) return;
   const cue = AXE_SE[id], weight = id === "stick" && !scored ? .75 : 1;
   const ready = cue?.files.filter(file => seBuffers.has(file)) || [];
@@ -665,7 +710,7 @@ export function playAxeSe(id, { scored = true } = {}) {
       const choices = ready.filter(file => file !== lastVariant.get("axe:" + id));
       const file = (choices.length ? choices : ready)[Math.floor(Math.random() * (choices.length || ready.length))];
       lastVariant.set("axe:" + id, file);
-      recordedVoice(file, { gain: cue.gain * weight });
+      recordedVoice(file, { gain: cue.gain * weight, rate: Number.isFinite(rate) && rate > 0 ? rate : 1 });
     }
     count.recorded++;
     return;

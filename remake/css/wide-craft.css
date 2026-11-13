@@ -37,7 +37,7 @@ html:root[data-density="phone"] body #stage {
 }
 /* 作業台の上の帯・左のカード */
 html:root[data-density="phone"] body #stage .bench :is(
-  .bench-mode, .bench-mode small, .craft-rank-status, .bench-phase-copy b, .bench-phase:not(.seen) .bench-phase-copy small,
+  .bench-mode, .bench-mode small, .craft-rank-status, .bench-phase-copy b, .bench-phase:not(.seen) .bench-phase-copy small, .bench-phase-step,
   .worker-scene-tag, .audience-name, .rival-name, .bench-guide summary
 ) { font-size: var(--wide-small); }
 html:root[data-density="phone"] body #stage .bench .audience-note { font-size: var(--wide-text); line-height: 1.45; }
@@ -144,3 +144,8 @@ html:root[data-density="phone"] body #stage .entrance .ent-note { font-size: var
 /* 844×340（Safari のバーあり）で 11px を割る見出し・通知 */
 html:root[data-density="phone"] body #stage .bench :is(.ht-title, .pull-current-zone b) { font-size: max(var(--wide-small), 1em); }
 html:root[data-density="phone"] body #stage #toasts .toast { font-size: var(--wide-text); }
+
+/* 「詳しく見る」「お手本を見る」は採点の根拠・手本を開く入口。横持ちスマホでは実寸の高さ 32px 以上の押せる箱にする（#3518） */
+html:root[data-density="phone"] body #stage .bench :is(.rc-details > summary, .bench-demo-link) {
+  display: inline-flex; align-items: center; min-height: calc(32px / var(--k, 1)); padding-inline: calc(8px / var(--k, 1));
+}

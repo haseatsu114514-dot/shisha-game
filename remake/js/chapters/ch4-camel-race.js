@@ -4,7 +4,8 @@ import { state, save } from "../core/state.js";
 import { paidAction } from "../core/stats.js";
 import { toast } from "../core/ui.js";
 import { growthEnabled } from "../core/growth.js";
-import { runCamelRace } from "../minigames/camel-race.js";
+import { runCamelRace, loadCamelArt } from "../minigames/camel-race.js";
+import { playArrival } from "../daily/venue-arrivals.js";
 import { CAMEL_SCENES, CAMEL_STAGES, camelRaceRecord, camelRaceDestination, recordCamelRaceResult, consumeCamelRaceDaytime,
   advanceCamelRaceStage, resultSceneFor, availableCamelCups } from "./ch4-camel-progress.js";
 export * from "./ch4-camel-progress.js";
@@ -13,6 +14,8 @@ export * from "./ch4-camel-progress.js";
  * 地図からの訪問。段階に応じて会話→レース→結果の会話を進め、確定ごとに保存する。
  * @param read 会話を再生して読了なら true を返す関数（ch4.js の readScene）
  * @param replayIntro 第5章の未読の再会だけをレース前に読む（通常の再訪では false）
+ * 通いの朝（二度目からの練習レース）は、レースの前にファーリスとハリールとのやり取りを一本読む
+ * （VAR04。daily/venue-arrivals.js の camel_track。ch4_camel_replay もその束の一本。同じ昼に入り直した時は読まない）。
  * @param beforeRace レースを開く直前に呼ぶ（呼び出し側が中断用の controller を立てる）
  * 戻り値: { used, exerted, slotsUsed }（performSpot と同じ形。used は昼の行動を使ったか）。
  * 昼の枠はここで進めて記録と一緒に保存するので、日常ループには slotsUsed: 0 を返す（二重に進めない）。
@@ -28,6 +31,8 @@ export async function visitCamelRace({ read, signal = null, isCurrent = () => tr
     if (advanceCamelRaceStage(value, id)) save();
     return { used: false, exerted: false };
   }
+  // ここからはレースへ進む訪問。レースの絵は、前の会話を読んでいる間に読み始める（#3500 E-2）。
+  void loadCamelArt();
   const first = camel.stage === CAMEL_STAGES.invited;
   if (first) {
     // 本番を見る場面は一度だけ。途中で中断・LOADしても、読み終えていれば次はレースから。
@@ -36,8 +41,11 @@ export async function visitCamelRace({ read, signal = null, isCurrent = () => tr
       if (advanceCamelRaceStage(value, CAMEL_SCENES.watch)) save();
     }
   } else if (replayIntro) {
-    // 第5章で初めて会い直す時だけ、呼び出し側の再会場面を読む。通常の再訪は直接レースへ。
+    // 第5章で初めて会い直す時だけ、呼び出し側の再会場面を読む。
     if (!await read(CAMEL_SCENES.replay) || !isCurrent() || state !== value) return { used: false, exerted: false };
+  } else if (!signal?.aborted && isCurrent() && state === value) {
+    // 通いの朝のやり取り。読んでも読まなくても、続きは下の判定で決める（会話は時間を使わない）。
+    await playArrival("camel_track", { read, save: value });
   }
   if (signal?.aborted || !isCurrent() || state !== value) return { used: false, exerted: false };
   beforeRace();

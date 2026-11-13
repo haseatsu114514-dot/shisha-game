@@ -12,7 +12,7 @@ async function setup(page) {
   await page.evaluate(async () => {
     window.A = { core: await import("./js/core/state.js"), audio: await import("./js/core/audio.js"),
       bar: await import("./js/daily/axe-bar.js"), daily: await import("./js/daily/hiyori.js") };
-    // #2605: 初回の斧投げBARは、マキの登場カットインの前にはじめの呼びかけ1行が入る。曲の検査なので会話は早送りで読む。
+    // 初回の斧投げBARは、マキが名乗るまでの会話 → 登場カットイン → 決まりと案内を読む（#2605・VAR01）。曲の検査なので会話は早送りで読む。
     (await import("./js/vn/engine.js")).vnTest.turbo = true;
     A.audio.unlockAudio();
     await new Promise(r => setTimeout(r, 100));

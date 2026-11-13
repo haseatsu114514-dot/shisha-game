@@ -522,12 +522,12 @@
    "time": "",
    "weather": "",
    "size": [
-    1280,
-    720
+    1672,
+    941
    ],
-   "luma": 59,
-   "blob": "a5ada00ce45aa7eafd247bde1dcf1f371542c57d",
-   "accepted": "2026-11-02 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
+   "luma": 71,
+   "blob": "ce2ed7b692c887479df32b67d7e3ba2aa8a0face",
+   "accepted": "2026-11-13 オーナー「推奨で」でa案を採用（#3446）。Codex の内蔵生成の上限 1672x941 の原寸で使う"
   },
   "bg_fookah_showroom.png": {
    "place": "fookah_showroom",
