@@ -1,0 +1,697 @@
+{
+  "comment": "遊び場へ入った時の、店の人とのやり取り（VAR・2026-11-12）。メニューやゲームの画面を開く前に一本読む。選び方・既読の記録は remake/js/daily/venue-arrivals.js。料金・体力・行動・好感度は変えない。大会の予告・結果、味の調子には触れない（どの章のいつ読んでも成り立つ文にする）。",
+  "dialogues": [
+    {
+      "dialogue_id": "axe_bar_first_visit",
+      "lines": [
+        { "speaker": "", "face": "", "text": "入口の脇に、使い込まれた斧が何本も掛けてある。" },
+        { "speaker": "", "face": "", "text": "金網の向こうから、斧が板に刺さる乾いた音が響いてくる。" },
+        { "speaker": "hajime", "face": "normal", "text": "（……どこで声をかければいいんだろう）" },
+        { "speaker": "maki", "face": "normal", "text": "いらっしゃい！　そこ、突っ立ってないで入んな" },
+        { "speaker": "", "face": "", "text": "革のエプロンの女の人が、布で斧の柄を拭きながら歩いてきた。" },
+        { "type": "condition", "condition_type": "flag", "flag": "_hiyori_real_self_known", "next_true": "came_before", "next_false": "brand_new" }
+      ],
+      "branches": {
+        "brand_new": [
+          { "speaker": "hajime", "face": "normal", "text": "あの、ここで投げてみたくて。斧は初めてなんです" },
+          { "speaker": "maki", "face": "smile", "text": "初めて、いいねえ。最初の一投がいちばん面白いんだ" },
+          { "speaker": "maki", "face": "normal", "text": "斧崎マキ。ここの店主だよ" }
+        ],
+        "came_before": [
+          { "speaker": "hajime", "face": "normal", "text": "あの、ここで投げてみたくて。前に一度、連れと来たんです" },
+          { "speaker": "maki", "face": "smile", "text": "おっ、二度目かい。じゃあ今日は、自分の間で投げていきな" },
+          { "speaker": "maki", "face": "normal", "text": "斧崎マキ。ここの店主だよ" }
+        ]
+      }
+    },
+    {
+      "dialogue_id": "axe_bar_first_visit_after",
+      "lines": [
+        { "speaker": "hajime", "face": "normal", "text": "逢縁はじめです。よろしくお願いします" },
+        { "speaker": "maki", "face": "normal", "text": "はじめ、ね。決まりは三つだけ、先に覚えな" },
+        { "speaker": "maki", "face": "serious", "text": "一つ、線より前に出ない。二つ、斧を取りに行くのは投げ終わってから" },
+        { "speaker": "maki", "face": "serious", "text": "三つ、刃は人に向けない。冗談でもだ" },
+        { "speaker": "hajime", "face": "normal", "text": "はい。三つ、覚えました" },
+        { "speaker": "maki", "face": "smile", "text": "いい返事。あとは肩の力を抜くだけ" },
+        { "speaker": "", "face": "", "text": "マキさんが金網の扉を開けた。奥の板に、丸い的が描いてある。" },
+        { "speaker": "maki", "face": "normal", "text": "3投の練習と、10投のゲームがある。記録は、あたしがつけとくよ" },
+        { "speaker": "maki", "face": "smile", "text": "迷ったら、タダで一投教える。はい、これがうちのメニュー" }
+      ]
+    },
+    {
+      "dialogue_id": "axe_arrival_whetstone",
+      "lines": [
+        { "speaker": "", "face": "", "text": "扉を開けると、砥石をこする音がしていた。" },
+        { "speaker": "maki", "face": "normal", "text": "おっ、いらっしゃい。ちょっと待ってな、いま一本仕上げてる" },
+        { "speaker": "hajime", "face": "normal", "text": "刃、毎日研ぐんですか？" },
+        { "speaker": "maki", "face": "smile", "text": "研ぎすぎもだめさ。刺さりさえすれば、あとは斧が仕事をする" },
+        { "speaker": "hajime", "face": "normal", "text": "（葉も同じだ。熱を入れすぎたら、もう戻せない）" },
+        { "speaker": "maki", "face": "normal", "text": "よし、できた。で、今日はどっちで投げる？" }
+      ]
+    },
+    {
+      "dialogue_id": "axe_arrival_board",
+      "lines": [
+        { "speaker": "", "face": "", "text": "レーンの奥で、マキさんが的の板を外していた。" },
+        { "speaker": "", "face": "", "text": "刺さった跡だらけの板が、壁に何枚も立てかけてある。" },
+        { "speaker": "hajime", "face": "normal", "text": "こんばんは。その板、もう使わないんですか？" },
+        { "speaker": "maki", "face": "normal", "text": "真ん中がささくれてきたからね。割れる前に替えるのが、店の仕事" },
+        { "speaker": "maki", "face": "smile", "text": "古いのも捨てないよ。みんなが投げた跡だ、薪にするのも惜しくてさ" },
+        { "speaker": "hajime", "face": "normal", "text": "（跡が残るのは、ちゃんと刺さった分だけか）" },
+        { "speaker": "maki", "face": "normal", "text": "新しい板は、いい音がするよ。投げていきな" }
+      ]
+    },
+    {
+      "dialogue_id": "axe_arrival_regulars",
+      "lines": [
+        { "speaker": "", "face": "", "text": "店に入ると、奥のレーンで歓声が上がった。仕事帰りらしい三人組だ。" },
+        { "speaker": "maki", "face": "smile", "text": "いらっしゃい！　今ね、あそこの一人が初めて真ん中に刺したとこ" },
+        { "speaker": "hajime", "face": "normal", "text": "それで、あんなに喜んでるんですね" },
+        { "speaker": "maki", "face": "smile", "text": "一本刺さると、みんな同じ顔になる。歳も肩書きも関係なくね" },
+        { "speaker": "hajime", "face": "smile", "text": "（いい顔だ。うちの店で、最初の一口を吸った人みたいだ）" },
+        { "speaker": "maki", "face": "normal", "text": "隣のレーン、空いてるよ。あんたも刺していきな" }
+      ]
+    },
+    {
+      "dialogue_id": "axe_arrival_chalk",
+      "lines": [
+        { "speaker": "", "face": "", "text": "カウンターの横の黒板に、常連の名前と点数が並んでいる。" },
+        { "speaker": "maki", "face": "normal", "text": "来たね。あんたの名前も、そこに書いてあるよ" },
+        { "speaker": "hajime", "face": "surprise", "text": "本当だ。……前より、字が大きくなってませんか" },
+        { "speaker": "maki", "face": "smile", "text": "通ってくれる人の名前は、だんだん大きく書くのさ" },
+        { "speaker": "hajime", "face": "smile", "text": "点数の順じゃないんですね" },
+        { "speaker": "maki", "face": "normal", "text": "点は斧が決める。あたしが見てるのは、投げ方のほう" },
+        { "speaker": "maki", "face": "normal", "text": "さ、今日の分を書かせてくれるかい？" }
+      ]
+    },
+    {
+      "dialogue_id": "axe_arrival_grip",
+      "lines": [
+        { "speaker": "", "face": "", "text": "入口で頭を下げると、マキさんが自分の手のひらを見せてきた。" },
+        { "speaker": "maki", "face": "normal", "text": "いらっしゃい。あんた、今日は手、荒れてないかい" },
+        { "speaker": "hajime", "face": "normal", "text": "手、ですか？　仕事で洗ってばかりなので、少し" },
+        { "speaker": "maki", "face": "normal", "text": "乾いた手は滑る。投げる前に、そこの粉を少しだけつけな" },
+        { "speaker": "hajime", "face": "normal", "text": "粉の量でも、変わるんですね" },
+        { "speaker": "maki", "face": "smile", "text": "つけすぎると今度は離れない。何でも、ちょうどがあるのさ" },
+        { "speaker": "maki", "face": "normal", "text": "じゃ、握りを確かめたら始めよう" }
+      ]
+    },
+    {
+      "dialogue_id": "axe_arrival_quiet",
+      "lines": [
+        { "speaker": "", "face": "", "text": "今夜は客が少ない。金網の向こうのレーンは、全部空いていた。" },
+        { "speaker": "maki", "face": "normal", "text": "いらっしゃい。今日は貸し切りみたいなもんだよ" },
+        { "speaker": "hajime", "face": "normal", "text": "静かですね。斧の音がしないと、別の店みたいだ" },
+        { "speaker": "maki", "face": "smile", "text": "こういう夜は、自分の音がよく聞こえる。刺さった時も、落とした時もね" },
+        { "speaker": "hajime", "face": "normal", "text": "（落とした音まで、か。ごまかせないな）" },
+        { "speaker": "maki", "face": "normal", "text": "好きなレーンを選びな。今日はどっちで投げる？" }
+      ]
+    },
+    {
+      "dialogue_id": "axe_arrival_shoulders",
+      "lines": [
+        { "speaker": "", "face": "", "text": "店に入るなり、マキさんに肩をつかまれた。" },
+        { "speaker": "maki", "face": "serious", "text": "はい、止まって。肩、上がってるよ" },
+        { "speaker": "hajime", "face": "surprise", "text": "え、そうですか？" },
+        { "speaker": "maki", "face": "normal", "text": "仕事終わりの人は、みんなここまで肩を連れてくる。一回、落としな" },
+        { "speaker": "", "face": "", "text": "言われたとおりに、息を吐いて肩を落とす。首の後ろが、少し軽くなった。" },
+        { "speaker": "maki", "face": "smile", "text": "そう、それ。その肩で投げるんだ" },
+        { "speaker": "hajime", "face": "smile", "text": "投げる前から、教わってばかりです" },
+        { "speaker": "maki", "face": "normal", "text": "それも店の仕事さ。さ、今日は何投いく？" }
+      ]
+    },
+    {
+      "dialogue_id": "axe_arrival_first_timers",
+      "lines": [
+        { "speaker": "", "face": "", "text": "レーンの前で、マキさんが二人連れに持ち方を教えていた。" },
+        { "speaker": "maki", "face": "normal", "text": "……そう、両手で。振りかぶったら、あとは前に置いてくるだけ" },
+        { "speaker": "", "face": "", "text": "一投目は板に当たって落ちた。二人が顔を見合わせて笑う。" },
+        { "speaker": "maki", "face": "smile", "text": "惜しい！　今のでいいんだよ、次は刺さる" },
+        { "speaker": "", "face": "", "text": "こちらに気づいたマキさんが、片手を上げた。" },
+        { "speaker": "maki", "face": "normal", "text": "いらっしゃい。あんたは説明なしでいいね。どっちで投げる？" }
+      ]
+    },
+    {
+      "dialogue_id": "axe_regular_a",
+      "lines": [
+        { "speaker": "maki", "face": "smile", "text": "いらっしゃい！　いつものレーン、空けてあるよ" },
+        { "speaker": "hajime", "face": "smile", "text": "ありがとうございます。今日もお願いします" }
+      ]
+    },
+    {
+      "dialogue_id": "axe_regular_b",
+      "lines": [
+        { "speaker": "maki", "face": "normal", "text": "来たね。肩は、ちゃんと置いてきたかい" },
+        { "speaker": "hajime", "face": "smile", "text": "来る途中で、落としてきました" },
+        { "speaker": "maki", "face": "smile", "text": "言うようになったねえ。さ、どっちで投げる？" }
+      ]
+    },
+    {
+      "dialogue_id": "axe_regular_c",
+      "lines": [
+        { "speaker": "", "face": "", "text": "扉を開ける前から、斧の音で今夜の混み具合が分かるようになってきた。" },
+        { "speaker": "maki", "face": "normal", "text": "いらっしゃい。今日は一本、空いてるよ" },
+        { "speaker": "hajime", "face": "normal", "text": "じゃあ、そこでお願いします" }
+      ]
+    },
+    {
+      "dialogue_id": "axe_arrival_rain",
+      "lines": [
+        { "speaker": "", "face": "", "text": "雨の夜。扉の前で傘をたたむと、中から斧の音が聞こえてきた。" },
+        { "speaker": "maki", "face": "normal", "text": "いらっしゃい。濡れたろ、そこのタオル使いな" },
+        { "speaker": "hajime", "face": "normal", "text": "ありがとうございます。雨の日も、お客さん来るんですね" },
+        { "speaker": "maki", "face": "smile", "text": "雨の日ほど来るよ。外で発散できない分、ここで投げてくのさ" },
+        { "speaker": "maki", "face": "normal", "text": "靴の裏だけ拭いときな。踏み込みで滑ると危ないからね" },
+        { "speaker": "hajime", "face": "normal", "text": "はい、……拭きました" },
+        { "speaker": "maki", "face": "normal", "text": "よし。じゃ、今日はどっちで投げる？" }
+      ]
+    },
+    {
+      "dialogue_id": "axe_arrival_own_axe",
+      "lines": [
+        { "speaker": "", "face": "", "text": "カウンターの奥の棚に、名札のついた斧が並んでいる。その一本が、自分のだ。" },
+        { "speaker": "maki", "face": "smile", "text": "来たね。あんたの相棒、ちゃんと研いどいたよ" },
+        { "speaker": "hajime", "face": "normal", "text": "ありがとうございます。預けっぱなしで、すみません" },
+        { "speaker": "maki", "face": "normal", "text": "持って歩くもんじゃないからね。うちで預かるのが決まりさ" },
+        { "speaker": "", "face": "", "text": "受け取ると、柄が手のひらに収まった。店の斧より、少しだけ軽く感じる。" },
+        { "speaker": "maki", "face": "smile", "text": "自分の斧は、手が先に覚える。今日はそいつに仕事をさせな" }
+      ]
+    },
+    {
+      "dialogue_id": "axe_arrival_champion",
+      "lines": [
+        { "speaker": "", "face": "", "text": "店に入ると、マキさんがカウンターから身を乗り出した。" },
+        { "speaker": "maki", "face": "excited", "text": "来た来た！　聞いたよ、大会で優勝したんだって？" },
+        { "speaker": "hajime", "face": "surprise", "text": "え、どこで聞いたんですか" },
+        { "speaker": "maki", "face": "smile", "text": "うちの客が教えてくれたのさ。この辺の店の子が勝ったって" },
+        { "speaker": "hajime", "face": "smile", "text": "ありがとうございます。……なんだか照れますね" },
+        { "speaker": "maki", "face": "normal", "text": "照れることないよ。で、チャンピオンは今日、何投いくんだい？" }
+      ]
+    },
+    {
+      "dialogue_id": "axe_arrival_after_record",
+      "lines": [
+        { "speaker": "", "face": "", "text": "カウンターの横の黒板に、この前の点数が残っていた。" },
+        { "speaker": "maki", "face": "smile", "text": "いらっしゃい。この前の自己ベスト、消さずに残してあるよ" },
+        { "speaker": "hajime", "face": "smile", "text": "自分でも、なんで刺さったのか分かってないんですけど" },
+        { "speaker": "maki", "face": "normal", "text": "分からないうちは、まぐれ。もう一回出せたら、あんたの腕だ" },
+        { "speaker": "hajime", "face": "normal", "text": "じゃあ、今日はそれを確かめに来ました" },
+        { "speaker": "maki", "face": "smile", "text": "いいねえ。さ、どっちで確かめる？" }
+      ]
+    },
+    {
+      "dialogue_id": "axe_arrival_after_record_b",
+      "lines": [
+        { "speaker": "maki", "face": "smile", "text": "来たね。この前の自己ベスト、常連に自慢しといたよ" },
+        { "speaker": "hajime", "face": "surprise", "text": "え、自慢って、マキさんがですか" },
+        { "speaker": "maki", "face": "normal", "text": "そりゃするさ。うちで伸びた人は、うちの自慢だからね" },
+        { "speaker": "hajime", "face": "smile", "text": "……じゃあ、今日は恥をかかせないようにします" },
+        { "speaker": "maki", "face": "smile", "text": "気負わなくていいよ。いつもの肩でいきな。さ、どっちで投げる？" }
+      ]
+    },
+    {
+      "dialogue_id": "axe_arrival_after_miss",
+      "lines": [
+        { "speaker": "maki", "face": "normal", "text": "いらっしゃい。……この前は、一本も刺さらなかったね" },
+        { "speaker": "hajime", "face": "normal", "text": "覚えてるんですか" },
+        { "speaker": "maki", "face": "smile", "text": "覚えてるさ。刺さらなかった日にまた来る人は、伸びるんだ" },
+        { "speaker": "maki", "face": "normal", "text": "今日は点を見なくていい。力を抜いて、音だけ聞いてな" },
+        { "speaker": "hajime", "face": "normal", "text": "音、ですね。やってみます" },
+        { "speaker": "maki", "face": "normal", "text": "よし。まずは3投で、肩を思い出そうか" }
+      ]
+    },
+    {
+      "dialogue_id": "axe_arrival_look",
+      "lines": [
+        { "speaker": "", "face": "", "text": "今夜は、投げるだけの余裕がない。それでも、足が店に向いていた。" },
+        { "speaker": "maki", "face": "normal", "text": "いらっしゃい。……今日は、投げない顔だね" },
+        { "speaker": "hajime", "face": "normal", "text": "分かりますか。記録だけ、見ていってもいいですか" },
+        { "speaker": "maki", "face": "smile", "text": "もちろん。見るのはタダだよ。座ってきな" }
+      ]
+    },
+    {
+      "dialogue_id": "axe_finish_record",
+      "lines": [
+        { "speaker": "maki", "face": "excited", "text": "おっ、自己ベスト！　いい仕事したねえ、あんたも斧も！" },
+        { "speaker": "hajime", "face": "smile", "text": "ありがとうございます。最後の一投、手が勝手に動きました" },
+        { "speaker": "maki", "face": "smile", "text": "それが「斧に仕事をさせる」ってことさ。黒板、書き換えとくよ" },
+        { "speaker": "", "face": "", "text": "店を出ても、刺さった時の手応えが、しばらく手のひらに残っていた。" }
+      ]
+    },
+    {
+      "dialogue_id": "axe_finish_miss",
+      "lines": [
+        { "speaker": "maki", "face": "normal", "text": "今日は刺さらなかったか。力を抜いて、斧に仕事をさせな" },
+        { "speaker": "hajime", "face": "normal", "text": "力を抜くって、難しいですね" },
+        { "speaker": "maki", "face": "smile", "text": "難しいさ。だからみんな、また投げに来るんだ" },
+        { "speaker": "", "face": "", "text": "帰り道、何も持っていない手で、振りかぶる形だけなぞってみた。" }
+      ]
+    },
+    {
+      "dialogue_id": "axe_finish_a",
+      "lines": [
+        { "speaker": "maki", "face": "smile", "text": "お疲れ！　刺さった時の手応え、次も覚えときなよ" },
+        { "speaker": "hajime", "face": "smile", "text": "はい。肩が軽くなりました" },
+        { "speaker": "maki", "face": "normal", "text": "それで十分。またおいで" },
+        { "speaker": "", "face": "", "text": "扉を閉めると、斧の音が遠くなった。夜風が、汗をかいた首に気持ちいい。" }
+      ]
+    },
+    {
+      "dialogue_id": "axe_finish_b",
+      "lines": [
+        { "speaker": "maki", "face": "normal", "text": "お疲れ。今日は途中から、いい顔になってたよ" },
+        { "speaker": "hajime", "face": "normal", "text": "顔、見てたんですか" },
+        { "speaker": "maki", "face": "smile", "text": "的より先に、投げる人を見るのがあたしの仕事さ" },
+        { "speaker": "", "face": "", "text": "礼を言って店を出る。来た時より、足が軽い。" }
+      ]
+    },
+    {
+      "dialogue_id": "axe_finish_c",
+      "lines": [
+        { "speaker": "maki", "face": "smile", "text": "はい、お疲れ！　今日の分、ちゃんと書いといたからね" },
+        { "speaker": "hajime", "face": "smile", "text": "次は、もう少し真ん中に寄せます" },
+        { "speaker": "maki", "face": "normal", "text": "欲張ると肩に出るよ。ま、その欲も嫌いじゃないけどね" },
+        { "speaker": "", "face": "", "text": "裏通りを抜けると、商店街の灯りはもう半分消えていた。" }
+      ]
+    },
+    {
+      "dialogue_id": "venue_maki_menu_first",
+      "lines": [
+        { "speaker": "maki", "face": "normal", "text": "ここの的は逃げないよ。まずは肩の力、抜きな！" }
+      ]
+    },
+    {
+      "dialogue_id": "venue_maki_menu",
+      "lines": [
+        { "speaker": "maki", "face": "normal", "text": "決まったら声かけな。記録は、あたしがつけとくよ" }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_cafe_first_visit_day",
+      "lines": [
+        { "speaker": "", "face": "", "text": "駅の北側。教わった道を行くと、窓にボードゲームの箱が並ぶ店があった。" },
+        { "speaker": "", "face": "", "text": "扉を開けると、壁いっぱいの棚。奥の席で、サイコロの転がる音がした。" },
+        { "speaker": "hajime", "face": "normal", "text": "（ボードゲームって、こんなに種類があるのか……）" },
+        { "speaker": "sai", "face": "normal", "text": "いらっしゃいませ。お一人ですか" },
+        { "speaker": "hajime", "face": "normal", "text": "はい。知り合いに、ここを教えてもらって" },
+        { "speaker": "sai", "face": "smile", "text": "それは嬉しいですね。どうぞ、お好きな席へ" },
+        { "speaker": "sai", "face": "normal", "text": "店長の六角サイです。分からないことは、何でも聞いてください" }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_cafe_first_visit_night",
+      "lines": [
+        { "speaker": "", "face": "", "text": "夜の柚ヶ谷。教わった店の窓には、まだ灯りがついていた。" },
+        { "speaker": "", "face": "", "text": "扉を開けると、壁いっぱいの棚。大きなテーブルの上に、地図と駒が並んでいる。" },
+        { "speaker": "hajime", "face": "normal", "text": "こんばんは。遊べる卓を探していて" },
+        { "speaker": "sai", "face": "normal", "text": "いらっしゃいませ。ちょうど、夜の席を整えていたところです" },
+        { "speaker": "hajime", "face": "normal", "text": "知り合いに、ここを教えてもらったんです" },
+        { "speaker": "sai", "face": "smile", "text": "それは嬉しいですね。どうぞ、奥へ" },
+        { "speaker": "sai", "face": "normal", "text": "店長の六角サイです。分からないことは、何でも聞いてください" }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_cafe_first_visit_after",
+      "lines": [
+        { "speaker": "hajime", "face": "normal", "text": "逢縁はじめです。TRPGって、名前しか知らなくて" },
+        { "speaker": "sai", "face": "smile", "text": "大丈夫ですよ。みなさん、最初は名前だけ知って来られます" },
+        { "speaker": "sai", "face": "normal", "text": "昼はボードゲームと、短い試遊。夜は、物語を囲む卓です" },
+        { "speaker": "", "face": "", "text": "サイさんが棚から、薄い本を一冊抜いて見せてくれた。" },
+        { "speaker": "sai", "face": "normal", "text": "本を一冊選んで、仲間と役を演じます。サイコロが、話の行き先を少し変えます" }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_cafe_first_visit_lead",
+      "lines": [
+        { "speaker": "hajime", "face": "normal", "text": "仲間、ですか。一人で来ちゃいましたけど" },
+        { "speaker": "sai", "face": "smile", "text": "ええ。ですから、ひとつご提案が" }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_day_shelf",
+      "lines": [
+        { "speaker": "", "face": "", "text": "昼のボドゲカフェ。サイさんが、棚の箱を一つずつ拭いていた。" },
+        { "speaker": "sai", "face": "smile", "text": "いらっしゃいませ、部長。今日は明るいうちに" },
+        { "speaker": "hajime", "face": "normal", "text": "少し時間が空いたので。その箱、全部遊んだことあるんですか？" },
+        { "speaker": "sai", "face": "normal", "text": "ええ。置く前に、必ず一度は。説明できないものは、お出しできませんから" },
+        { "speaker": "hajime", "face": "normal", "text": "（出す前に、自分で確かめる。うちの店と同じだ）" },
+        { "speaker": "sai", "face": "normal", "text": "昼は短い試遊と、本選びをどうぞ。棚はこちらです" }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_day_dice",
+      "lines": [
+        { "speaker": "", "face": "", "text": "カウンターの上に、色とりどりのサイコロ。サイさんが一つずつ転がしている。" },
+        { "speaker": "hajime", "face": "normal", "text": "こんにちは。それ、何を調べてるんですか？" },
+        { "speaker": "sai", "face": "normal", "text": "偏りです。同じ目ばかり出るものは、卓に出せませんので" },
+        { "speaker": "", "face": "", "text": "二十面のサイコロが止まる。サイさんは目を読んで、手帳に小さく印をつけた。" },
+        { "speaker": "hajime", "face": "surprise", "text": "一個ずつ、全部やるんですか" },
+        { "speaker": "sai", "face": "smile", "text": "ええ。運は公平でないと、負けた時に笑えませんから" },
+        { "speaker": "sai", "face": "normal", "text": "お待たせしました。試遊でしたら、いつでもお相手しますよ" }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_day_family",
+      "lines": [
+        { "speaker": "", "face": "", "text": "昼の店は、夜と顔が違う。窓際で、親子がカードを並べて遊んでいた。" },
+        { "speaker": "", "face": "", "text": "負けた子が、もう一回、と声を上げる。サイさんは黙って山札を切り直した。" },
+        { "speaker": "sai", "face": "smile", "text": "いらっしゃいませ。にぎやかで、すみません" },
+        { "speaker": "hajime", "face": "smile", "text": "いえ。いい声ですね、もう一回って" },
+        { "speaker": "sai", "face": "normal", "text": "ええ。あの一言のために、店を開けているんです" },
+        { "speaker": "sai", "face": "normal", "text": "部長も一つ、いかがですか。短い遊びなら、すぐにご用意できます" }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_day_bands",
+      "lines": [
+        { "speaker": "", "face": "", "text": "カウンターで、サイさんが本に細い紙の帯を巻いていた。" },
+        { "speaker": "sai", "face": "normal", "text": "いらっしゃいませ。ちょうど、帯を巻き直していたところです" },
+        { "speaker": "hajime", "face": "normal", "text": "帯まで、店で作るんですか" },
+        { "speaker": "sai", "face": "smile", "text": "ええ。どんな夜に合う本か、一言だけ添えるんです" },
+        { "speaker": "hajime", "face": "normal", "text": "（おすすめの一言、か。メニューの横に書くやつだ）" },
+        { "speaker": "sai", "face": "normal", "text": "棚はあちらです。気になる表紙があれば、お声がけください" }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_night_lamp",
+      "lines": [
+        { "speaker": "", "face": "", "text": "夜のボドゲカフェ。大きなテーブルの上だけ、灯りが一段明るい。" },
+        { "speaker": "sai", "face": "smile", "text": "お待ちしていました、部長。今夜の席は、整えてあります" },
+        { "speaker": "hajime", "face": "normal", "text": "いつも、先に準備してくれてるんですね" },
+        { "speaker": "sai", "face": "normal", "text": "座った時に、もう物語が始まっている。そういう卓が好きなんです" },
+        { "speaker": "", "face": "", "text": "椅子は、きちんと引いてあった。鉛筆も紙も、角がそろっている。" },
+        { "speaker": "sai", "face": "normal", "text": "では、今夜の一冊と、ご一緒する方を選びましょう" }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_night_map",
+      "lines": [
+        { "speaker": "", "face": "", "text": "テーブルいっぱいに、古い地図が広げてあった。四隅を、サイコロが押さえている。" },
+        { "speaker": "hajime", "face": "normal", "text": "こんばんは。これ、今夜の卓の地図ですか？" },
+        { "speaker": "sai", "face": "smile", "text": "いいえ、これはただの飾りです。どこの国でもありません" },
+        { "speaker": "hajime", "face": "surprise", "text": "飾りなんですか。すごく、それっぽいのに" },
+        { "speaker": "sai", "face": "normal", "text": "どこでもない地図があると、皆さん、行き先を自分で決めたくなるようで" },
+        { "speaker": "hajime", "face": "normal", "text": "（……確かに。もう指でなぞってた）" },
+        { "speaker": "sai", "face": "smile", "text": "続きも気になりますね。さあ、今夜の本を選びましょう" }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_night_tea",
+      "lines": [
+        { "speaker": "", "face": "", "text": "夜の店に入ると、サイさんがポットを傾けていた。湯気の向こうで、糸目が笑う。" },
+        { "speaker": "sai", "face": "normal", "text": "いらっしゃいませ。卓の前に、一杯どうぞ。長い夜になりますから" },
+        { "speaker": "hajime", "face": "normal", "text": "ありがとうございます。……あれ、俺、まだ頼んでないですよね" },
+        { "speaker": "sai", "face": "smile", "text": "ええ。でも、もうカップを持っていらっしゃる" },
+        { "speaker": "hajime", "face": "surprise", "text": "（本当だ。いつの間に……）" },
+        { "speaker": "sai", "face": "normal", "text": "では、その選択で。お席は、あちらです" }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_night_chairs",
+      "lines": [
+        { "speaker": "", "face": "", "text": "店を閉めた人たちが、一人、また一人と通りを歩いてくる時間だ。" },
+        { "speaker": "sai", "face": "normal", "text": "こんばんは、部長。皆さんの店も、そろそろ片づく頃ですね" },
+        { "speaker": "hajime", "face": "normal", "text": "はい。今夜は、誰が来られるか分かりませんけど" },
+        { "speaker": "sai", "face": "smile", "text": "来られる方で囲むのが、この部活です。欠けた席は、次の夜の楽しみに" },
+        { "speaker": "hajime", "face": "smile", "text": "そう言ってもらえると、誘う側も気が楽です" },
+        { "speaker": "sai", "face": "normal", "text": "では、今夜の顔ぶれを見てみましょう" }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_night_sheet",
+      "lines": [
+        { "speaker": "", "face": "", "text": "カウンターの端に、紙の束が留めてあった。誰かの役の、名前と得意なこと。" },
+        { "speaker": "hajime", "face": "normal", "text": "これ、前の卓のキャラクターシートですか？" },
+        { "speaker": "sai", "face": "normal", "text": "ええ、お預かりしているんです。役は、次に呼ばれるまでここで休んでいます" },
+        { "speaker": "hajime", "face": "smile", "text": "休んでる、か。いい言い方ですね" },
+        { "speaker": "sai", "face": "smile", "text": "続きを待つ間も、物語のうちですから" },
+        { "speaker": "sai", "face": "normal", "text": "さて。今夜は、どの物語を開きましょうか" }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_night_other_table",
+      "lines": [
+        { "speaker": "", "face": "", "text": "奥の席で、知らない四人組が卓を囲んでいた。サイコロを振る前の、長い沈黙。" },
+        { "speaker": "", "face": "", "text": "転がる音。次の瞬間、四人がいっせいに声を上げた。" },
+        { "speaker": "hajime", "face": "smile", "text": "すごい声。何が起きたんですか" },
+        { "speaker": "sai", "face": "smile", "text": "二十の目が出たんです。あの声だけは、何度聞いても飽きません" },
+        { "speaker": "hajime", "face": "normal", "text": "サイさんも、卓に入りたくなりませんか" },
+        { "speaker": "sai", "face": "normal", "text": "私は、見ているのが好きなんです。さあ、部長の卓もご用意しますね" }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_day_regular_a",
+      "lines": [
+        { "speaker": "sai", "face": "smile", "text": "いらっしゃいませ、部長。いつもの席、空いていますよ" },
+        { "speaker": "hajime", "face": "normal", "text": "ありがとうございます。少しだけ、棚を見せてください" }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_day_regular_b",
+      "lines": [
+        { "speaker": "", "face": "", "text": "昼のボドゲカフェ。扉を開けると、サイさんが顔を上げた。" },
+        { "speaker": "sai", "face": "normal", "text": "いらっしゃいませ。今日は試遊と本選び、どちらから" },
+        { "speaker": "hajime", "face": "smile", "text": "見ながら決めます" }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_night_regular_a",
+      "lines": [
+        { "speaker": "sai", "face": "smile", "text": "お待ちしていました、部長。今夜も、席はあちらです" },
+        { "speaker": "hajime", "face": "normal", "text": "いつも、ありがとうございます" }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_night_regular_b",
+      "lines": [
+        { "speaker": "", "face": "", "text": "夜の店の灯りが見えると、足が少し速くなる。" },
+        { "speaker": "sai", "face": "normal", "text": "こんばんは、部長。今夜は、どんな物語にしましょう" },
+        { "speaker": "hajime", "face": "smile", "text": "棚を見て、決めます" }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_night_regular_c",
+      "lines": [
+        { "speaker": "sai", "face": "normal", "text": "いらっしゃいませ。鉛筆は、削っておきました" },
+        { "speaker": "hajime", "face": "smile", "text": "さすがです。じゃあ、今夜の本を選びますね" }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_night_idle",
+      "lines": [
+        { "speaker": "", "face": "", "text": "夜のボドゲカフェ。大きなテーブルには、今夜は何も並んでいない。" },
+        { "speaker": "sai", "face": "normal", "text": "いらっしゃいませ、部長。今夜は、卓を囲むのは難しそうですね" },
+        { "speaker": "hajime", "face": "normal", "text": "ですね。今日は、棚だけ見ていってもいいですか" },
+        { "speaker": "sai", "face": "smile", "text": "もちろんです。本は逃げません。顔ぶれがそろう夜を、楽しみに待ちましょう" }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_arrival_rain",
+      "lines": [
+        { "speaker": "", "face": "", "text": "雨の柚ヶ谷。店の入口に、傘立てが二つに増えていた。" },
+        { "speaker": "sai", "face": "normal", "text": "いらっしゃいませ。足元、お気をつけて。今日は床を多めに拭いています" },
+        { "speaker": "hajime", "face": "normal", "text": "箱や本が、湿気ますもんね" },
+        { "speaker": "sai", "face": "smile", "text": "ええ、紙は正直ですから。その代わり、雨の日は長居の方が増えます" },
+        { "speaker": "hajime", "face": "normal", "text": "（雨の日に長居が増えるのは、どこの店も同じか）" },
+        { "speaker": "sai", "face": "normal", "text": "部長も、どうぞごゆっくり" }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_arrival_own_dice",
+      "lines": [
+        { "speaker": "", "face": "", "text": "かばんの中で、買ったばかりのサイコロが鳴った。" },
+        { "speaker": "sai", "face": "smile", "text": "いらっしゃいませ。……いい音ですね。ご自分のダイス、連れてこられましたか" },
+        { "speaker": "hajime", "face": "surprise", "text": "音で分かるんですか" },
+        { "speaker": "sai", "face": "normal", "text": "ええ。持ち主のいるサイコロは、少しだけ急いで鳴るんです" },
+        { "speaker": "hajime", "face": "normal", "text": "（また不思議なことを……。でも、ちょっと嬉しい）" },
+        { "speaker": "sai", "face": "normal", "text": "卓に並べてあげてください。出る目は変わりませんが、場はあたたまりますよ" }
+      ]
+    },
+    {
+      "dialogue_id": "trpg_arrival_first_member",
+      "lines": [
+        { "speaker": "", "face": "", "text": "入口の掲示板に、小さな紙が増えていた。「煙とサイコロ部　部員名簿」。" },
+        { "speaker": "sai", "face": "smile", "text": "いらっしゃいませ、部長。部員が増えましたね" },
+        { "speaker": "hajime", "face": "normal", "text": "はい。誘ったら、思ったよりあっさり" },
+        { "speaker": "sai", "face": "normal", "text": "部長のお人柄でしょう。名簿は、私の方で書いておきました" },
+        { "speaker": "hajime", "face": "normal", "text": "（頼んでないのに。……字がものすごくきれいだ）" },
+        { "speaker": "sai", "face": "normal", "text": "席も一つ、増やしてあります。どうぞ" }
+      ]
+    },
+    {
+      "dialogue_id": "club_arrival_stairs",
+      "lines": [
+        { "speaker": "", "face": "", "text": "細い階段を下りる。一段ごとに、足の裏から低い音が上がってくる。" },
+        { "speaker": "", "face": "", "text": "重い扉を押すと、紫の光の中で、ヨルさんがケーブルを巻いていた。" },
+        { "speaker": "yoru", "face": "smile", "text": "おかえり、はじめくん。今夜もオープンデッキだよ" },
+        { "speaker": "hajime", "face": "normal", "text": "こんばんは。階段の途中から、もう音が聞こえました" },
+        { "speaker": "yoru", "face": "normal", "text": "外まで漏れるのは低い音だけ。上の音は、ここまで来た人のもの" },
+        { "speaker": "hajime", "face": "normal", "text": "（下りてきた人にだけ、全部が聞こえるのか）" },
+        { "speaker": "yoru", "face": "normal", "text": "デッキ、空いてるよ。次の頭で入れよう" }
+      ]
+    },
+    {
+      "dialogue_id": "club_arrival_tea",
+      "lines": [
+        { "speaker": "", "face": "", "text": "カウンターの端で、ヨルさんが紙コップを二つ並べていた。" },
+        { "speaker": "yoru", "face": "smile", "text": "いいところに来た。開店前にムカイと飲んだ残り、はじめくんの分もあるよ" },
+        { "speaker": "hajime", "face": "smile", "text": "ありがとうございます。ムカイさんと飲む、甘いお茶ですね" },
+        { "speaker": "yoru", "face": "normal", "text": "回す前は、温かいのを一杯。手が落ち着くから" },
+        { "speaker": "", "face": "", "text": "受け取った紙コップは、手のひらに熱かった。" },
+        { "speaker": "yoru", "face": "normal", "text": "持ったまま、ブースへおいで。今夜のフロアは、まだこれからだよ" }
+      ]
+    },
+    {
+      "dialogue_id": "club_arrival_first_dancer",
+      "lines": [
+        { "speaker": "", "face": "", "text": "フロアはまだ半分も埋まっていない。真ん中で、一人だけが目を閉じて揺れていた。" },
+        { "speaker": "hajime", "face": "normal", "text": "こんばんは。あの人、一人で踊ってますね" },
+        { "speaker": "yoru", "face": "smile", "text": "毎週、最初に踊る人。あの人が動くと、ほかの人も楽になる" },
+        { "speaker": "hajime", "face": "normal", "text": "最初の一人って、勇気がいりますよね" },
+        { "speaker": "yoru", "face": "normal", "text": "本人は勇気だと思ってないよ。音が来たから、動いてるだけ" },
+        { "speaker": "hajime", "face": "normal", "text": "（最初に感想を言ってくれるお客さんみたいだ）" },
+        { "speaker": "yoru", "face": "normal", "text": "はじめくんも、最初の一曲を置いてみる？　デッキは空いてる" }
+      ]
+    },
+    {
+      "dialogue_id": "club_arrival_records",
+      "lines": [
+        { "speaker": "", "face": "", "text": "ブースの裏で、ヨルさんが木箱からレコードを抜いては戻していた。" },
+        { "speaker": "hajime", "face": "normal", "text": "こんばんは。今夜の曲、選んでるんですか？" },
+        { "speaker": "yoru", "face": "normal", "text": "逆。今夜かけない曲を、先に決めてるの" },
+        { "speaker": "hajime", "face": "surprise", "text": "かけない曲を？" },
+        { "speaker": "yoru", "face": "smile", "text": "好きな曲を全部かけると、夜が散らかるから。置いていく方が難しいの" },
+        { "speaker": "hajime", "face": "normal", "text": "（配合と同じだ。入れない葉を決めた時に、形が決まる）" },
+        { "speaker": "yoru", "face": "normal", "text": "はじめくんの分は、機材に入れてあるよ。どのセットにする？" }
+      ]
+    },
+    {
+      "dialogue_id": "club_arrival_soundcheck",
+      "lines": [
+        { "speaker": "", "face": "", "text": "扉を開けると、音が止まっていた。ヨルさんが、フロアの真ん中に立っている。" },
+        { "speaker": "yoru", "face": "normal", "text": "……しっ。そこで、一回止まって" },
+        { "speaker": "", "face": "", "text": "天井の空調の音。冷蔵庫の低いうなり。上の道を、誰かが歩いていく。" },
+        { "speaker": "yoru", "face": "smile", "text": "うん、今夜はこの静けさから始める。来てくれてちょうどよかった" },
+        { "speaker": "hajime", "face": "normal", "text": "何を聞いてたんですか？" },
+        { "speaker": "yoru", "face": "normal", "text": "店の地の音。これより小さい音は、今夜は誰にも届かないってこと" },
+        { "speaker": "yoru", "face": "normal", "text": "じゃ、音を戻すよ。デッキ、使っていって" }
+      ]
+    },
+    {
+      "dialogue_id": "club_arrival_request",
+      "lines": [
+        { "speaker": "", "face": "", "text": "カウンターで、常連らしい人がヨルさんに何か耳打ちしていた。" },
+        { "speaker": "", "face": "", "text": "ヨルさんは笑って首を横に振り、それからこちらに手を上げた。" },
+        { "speaker": "yoru", "face": "smile", "text": "おかえり。今ね、曲のリクエストを断ったとこ" },
+        { "speaker": "hajime", "face": "surprise", "text": "断るんですか。お客さんなのに" },
+        { "speaker": "yoru", "face": "normal", "text": "今かけたら、あの人が一番がっかりするから。聴きたい曲には、聴きたい時間があるの" },
+        { "speaker": "hajime", "face": "normal", "text": "（頼まれた通りに出すのが、いつも正解じゃないのか。耳が痛いな）" },
+        { "speaker": "yoru", "face": "normal", "text": "三曲あとに、ちゃんとかけるよ。それまで、はじめくんが温めておいて" }
+      ]
+    },
+    {
+      "dialogue_id": "club_regular_a",
+      "lines": [
+        { "speaker": "yoru", "face": "smile", "text": "おかえり、はじめくん。デッキ、空けてあるよ" },
+        { "speaker": "hajime", "face": "smile", "text": "ただいま、でいいんですかね" },
+        { "speaker": "yoru", "face": "normal", "text": "いいよ。ここは、そういう店" }
+      ]
+    },
+    {
+      "dialogue_id": "club_regular_b",
+      "lines": [
+        { "speaker": "", "face": "", "text": "階段を下りる足が、もう拍を取っている。" },
+        { "speaker": "yoru", "face": "normal", "text": "来たね。今夜のフロア、いい顔してるよ" },
+        { "speaker": "hajime", "face": "normal", "text": "じゃあ、崩さないように入ります" }
+      ]
+    },
+    {
+      "dialogue_id": "club_regular_c",
+      "lines": [
+        { "speaker": "yoru", "face": "smile", "text": "おかえり。次の頭、空いてるよ" },
+        { "speaker": "hajime", "face": "smile", "text": "はい。入れます" }
+      ]
+    },
+    {
+      "dialogue_id": "club_arrival_rain",
+      "lines": [
+        { "speaker": "", "face": "", "text": "雨の路地。地下への階段は、端だけ濡れて光っていた。" },
+        { "speaker": "", "face": "", "text": "扉の内側に、タオルが積んである。その横に、ヨルさんの字で「どうぞ」。" },
+        { "speaker": "yoru", "face": "normal", "text": "おかえり。雨の夜に来るのは、音が好きな人だけ" },
+        { "speaker": "hajime", "face": "normal", "text": "空いてますね、今夜は" },
+        { "speaker": "yoru", "face": "smile", "text": "うん。だから今夜は、一人ひとりの顔を見て選べる。こういう夜、嫌いじゃないの" },
+        { "speaker": "hajime", "face": "normal", "text": "（空いてる日ほど、一台を丁寧に出せる。あれと同じだ）" },
+        { "speaker": "yoru", "face": "normal", "text": "はじめくんも、ゆっくり回していきなよ。デッキは空いてる" }
+      ]
+    },
+    {
+      "dialogue_id": "club_arrival_headphones",
+      "lines": [
+        { "speaker": "", "face": "", "text": "首にかけたヘッドホンが、まだ少し重い。" },
+        { "speaker": "yoru", "face": "smile", "text": "お、買ったやつ、ちゃんとかけてきたね。似合うよ" },
+        { "speaker": "hajime", "face": "smile", "text": "鏡の前で、かけ方を三回やり直しました" },
+        { "speaker": "yoru", "face": "normal", "text": "片耳で次の曲、もう片耳でフロア。両方聞こえてれば、かけ方は何でもいい" },
+        { "speaker": "hajime", "face": "normal", "text": "片耳ずつ、ですね" },
+        { "speaker": "yoru", "face": "smile", "text": "そう。自分の中だけで鳴らさないこと。じゃ、次の頭で入れよう" }
+      ]
+    },
+    {
+      "dialogue_id": "venue_yoru_menu",
+      "lines": [
+        { "speaker": "yoru", "face": "normal", "text": "デッキ、空いてるよ。どのセットにする？" }
+      ]
+    },
+    {
+      "dialogue_id": "camel_arrival_water",
+      "lines": [
+        { "speaker": "", "face": "", "text": "朝のレース場。柵の内側で、ハリールがバケツの水を替えていた。" },
+        { "speaker": "faris", "face": "smile", "text": "ハジメ、おはよう！　今日のハビーバ、朝ごはん全部食べたって" },
+        { "speaker": "hajime", "face": "smile", "text": "おはようございます。じゃあ、機嫌はいいんですね" },
+        { "speaker": "khalil", "face": "normal", "text": "腹が満ちた日は、前半に行きたがる。お前が抑えろ" },
+        { "speaker": "hajime", "face": "normal", "text": "声を、遅らせるんですか？" },
+        { "speaker": "khalil", "face": "normal", "text": "遅らせるな。少なくしろ。同じではない" },
+        { "speaker": "hajime", "face": "normal", "text": "（減らすのと、遅らせるのは違う。覚えておこう）" },
+        { "speaker": "faris", "face": "normal", "text": "リモコン、はい。叔父さんの車、もう温まってるよ" }
+      ]
+    },
+    {
+      "dialogue_id": "camel_arrival_sand",
+      "lines": [
+        { "speaker": "", "face": "", "text": "砂のコースに、整地の跡がまっすぐ残っている。朝日で、柵の影が長い。" },
+        { "speaker": "faris", "face": "smile", "text": "来た来た。ハジメ、今日の砂を見て。昨日より固い" },
+        { "speaker": "hajime", "face": "normal", "text": "固いと、どうなるんですか" },
+        { "speaker": "faris", "face": "normal", "text": "足が沈まないから、みんな速い。そのぶん、息が切れるのも早い" },
+        { "speaker": "khalil", "face": "normal", "text": "速い日ほど、ムチは我慢だ。行ける時に行かせると、ゴールの前で止まる" },
+        { "speaker": "hajime", "face": "normal", "text": "（調子のいい日ほど、手を出しすぎない。身に覚えがある）" },
+        { "speaker": "khalil", "face": "normal", "text": "乗りなさい。始まるぞ" }
+      ]
+    },
+    {
+      "dialogue_id": "camel_arrival_ears",
+      "lines": [
+        { "speaker": "", "face": "", "text": "柵のそばで、ハビーバがこちらを見ていた。耳が、片方だけ前を向く。" },
+        { "speaker": "faris", "face": "excited", "text": "ほら！　ハジメの足音、もう覚えてるんだよ" },
+        { "speaker": "hajime", "face": "smile", "text": "本当かな。おはよう、ハビーバ" },
+        { "speaker": "", "face": "", "text": "名前を呼ぶと、ハビーバは鼻を一度鳴らして、ゆっくり首を戻した。" },
+        { "speaker": "khalil", "face": "normal", "text": "返事をした。今日は、お前の声を聞く気がある" },
+        { "speaker": "faris", "face": "smile", "text": "叔父さんの通訳、当たるんだよ。さ、車に乗って" }
+      ]
+    },
+    {
+      "dialogue_id": "camel_regular_a",
+      "lines": [
+        { "speaker": "faris", "face": "smile", "text": "ハジメ、おはよう！　ハビーバ、もう柵の前で待ってる" },
+        { "speaker": "hajime", "face": "smile", "text": "おはようございます。今日もお願いします" },
+        { "speaker": "khalil", "face": "normal", "text": "乗りなさい" }
+      ]
+    },
+    {
+      "dialogue_id": "camel_regular_b",
+      "lines": [
+        { "speaker": "", "face": "", "text": "朝のレース場。白い車のエンジンは、もうかかっていた。" },
+        { "speaker": "khalil", "face": "normal", "text": "来たか。声は少なく、間を外すな" },
+        { "speaker": "hajime", "face": "normal", "text": "はい。いつもどおりに" }
+      ]
+    }
+  ]
+}

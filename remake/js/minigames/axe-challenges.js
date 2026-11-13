@@ -68,6 +68,14 @@ export function rankOf(total, max) {
   const ratio = max > 0 ? total / max : 0;
   return RANKS.find(([, min]) => ratio >= min)[0];
 }
+/** Ranks above the current total, nearest first, with the points still needed: [{ rank: "A", need: 4 }, { rank: "S", need: 10 }].
+ *  Shown while playing so the next goal is always in front of the player (2026-11-13 手応えレビュー指摘12・桜井 #023). */
+export function rankTargets(total, max) {
+  if (!(max > 0) || !Number.isFinite(total)) return [];
+  const current = rankOf(total, max);
+  return RANKS.slice(0, RANKS.findIndex(([rank]) => rank === current)).reverse()
+    .map(([rank, min]) => ({ rank, need: Math.max(1, Math.ceil(min * max - 1e-9) - total) }));
+}
 
 /** A short title that names what the session was good at, not only the number. */
 export function titleOf(shots, max) {

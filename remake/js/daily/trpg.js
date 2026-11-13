@@ -44,7 +44,11 @@ export async function maybeRecruitTrpgMember(personId) {
   } finally { observer?.disconnect(); unsubscribe(); window.removeEventListener("pagehide", cancel); abort.abort(); recruiting = false; }
 }
 
-/** The table saves its completion and night action atomically; calendar must not advance twice. */
+/**
+ * The table saves its completion and night action atomically; calendar must not advance twice.
+ * 本棚の画面の前に、店長サイとのやり取りを読む（VAR02。daily/venue-arrivals.js）: 初めての来店は名乗るまで → 登場カットイン →
+ * 店の案内（部活がまだ無ければ、そのままサイの提案へ）。二度目からは来店のたびに一本（昼と夜で別の束。同じ時間帯に入り直した時は読まない）。
+ */
 export async function openTrpgBar({ nightBusy = () => false } = {}) {
   const owner = state;
   const visitStamp = owner && `${owner.chapter}:${owner.day}:${owner.slot}`;
@@ -71,18 +75,39 @@ export async function openTrpgBar({ nightBusy = () => false } = {}) {
     if (!currentVisit() || abort.signal.aborted) return { completed: false };
     showScreen("trpg", host); playBgm("bgm_trpg"); // #788 採用曲。倍率は既定1.0（asset_sources/music/adopted-minigame-bgm-20261020.md）
     observer.observe(layers.screen, { childList: true });
-    if (!owner.flags._intro_sai) {
+    const [{ play }, { DB }, arrivals] = await Promise.all([
+      import("../vn/engine.js"), import("../core/data.js"), import("./venue-arrivals.js"),
+    ]);
+    const alive = () => currentVisit() && !abort.signal.aborted && host.isConnected;
+    // 会話は正常に読み終えた時だけ true。中断・LOAD は false。
+    const read = async scene => {
+      const result = await play(scene, { signal: abort.signal });
+      return alive() && !!result && !result.cancelled;
+    };
+    const venue = owner.slot === 0 ? "trpg_day" : "trpg_night";
+    let library = null;
+    await arrivals.readyArrivals();
+    if (!alive()) return { completed: false };
+    const introduced = !!owner.flags._intro_sai;
+    if (!introduced) {
       const { playIntro } = await import("../vn/intro.js");
-      if (!currentVisit() || abort.signal.aborted || !host.isConnected) return { completed: false };
-      const { play } = await import("../vn/engine.js");
-      const greeting = await play({ lines: [{ speaker: "hajime", text: "こんばんは。遊べる卓を探していて" }] }, { signal: abort.signal });
-      if (greeting?.cancelled || !currentVisit() || abort.signal.aborted || !host.isConnected) return { completed: false };
+      if (!alive()) return { completed: false };
+      const scene = id => DB.dialogues[id]?.lines?.length ? DB.dialogues[id] : null;
+      // 台本を読めなかった時は、これまでどおり一言だけで紹介へ進む
+      const first = scene(owner.slot === 0 ? "trpg_cafe_first_visit_day" : "trpg_cafe_first_visit_night")
+        || { lines: [{ speaker: "hajime", text: "こんばんは。遊べる卓を探していて" }] };
+      if (!await read(first)) return { completed: false };
       await playIntro("sai");
-      if (!currentVisit() || abort.signal.aborted || !host.isConnected) return { completed: false };
+      if (!alive()) return { completed: false };
+      const after = scene("trpg_cafe_first_visit_after");
+      // 部活がまだ無い時だけ、サイの提案へつなぐ二行を足す
+      const lead = !owner.trpg?.club?.founded ? scene("trpg_cafe_first_visit_lead") : null;
+      if (after && !await read({ ...after, lines: [...after.lines, ...(lead?.lines || [])] })) return { completed: false };
+      arrivals.markArrival(venue, owner);
     }
     if (!owner.trpg?.club?.founded) {
-      const [{ loadTrpgClubResources }, { playTrpgClubFounding }, { play }] = await Promise.all([
-        import("../trpg/index.js"), import("../trpg/club-event.js"), import("../vn/engine.js"),
+      const [{ loadTrpgClubResources }, { playTrpgClubFounding }] = await Promise.all([
+        import("../trpg/index.js"), import("../trpg/club-event.js"),
       ]);
       let resources;
       try { resources = await loadTrpgClubResources({ signal: abort.signal }); }
@@ -93,9 +118,26 @@ export async function openTrpgBar({ nightBusy = () => false } = {}) {
       const ready = await playTrpgClubFounding({ getState: () => state, ...resources, play, save,
         signal: abort.signal, isCurrent: () => currentVisit() && host.isConnected });
       if (!ready) return { completed: false };
+    } else if (introduced && !arrivals.arrivalsOff() && !arrivals.arrivalGreeted(venue, owner)) {
+      // 夜は、今夜そのまま卓を囲める時だけ席へ案内する（予定がある・顔ぶれや本が足りない夜は、その話にする）。
+      // 本棚の資料はここで読み、そのまま本棚の画面へ渡す（二度読まない）。読めなければ本棚の画面が読み直す。
+      let idle = false;
+      if (venue === "trpg_night") {
+        try {
+          const [{ loadTrpgLibrary }, { syncTrpgStock, tablePlayableTonight }] = await Promise.all([import("../trpg/index.js"), import("../trpg/campaign.js")]);
+          library = await loadTrpgLibrary({ signal: abort.signal, preloadAssets: false });
+          if (!alive()) return { completed: false };
+          // 入荷は本棚の画面と同じ確定（部員が増えた後の最初の来店）。先に済ませて、今夜の本があるかを正しく見る
+          if (syncTrpgStock(owner, library.catalog)) save();
+          idle = !tablePlayableTonight(owner, library.catalog, library.scenarios, { nightBusy: nightBusy() });
+        } catch { library = null; }
+        if (!alive()) return { completed: false };
+      }
+      await arrivals.playArrival(venue, { read, save: owner, ctx: { idle } });
     }
     if (abort.signal.aborted || !currentVisit() || !host.isConnected) return { completed: false };
-    controller = mountTrpgCampaign(host, { getState: () => state, save, nightBusy, signal: abort.signal });
+    controller = mountTrpgCampaign(host, { getState: () => state, save, nightBusy, signal: abort.signal, resources: library,
+      greeted: arrivals.arrivalGreeted(venue, owner) });
     return await controller.finished;
   } finally {
     observer.disconnect(); unsubscribe(); window.removeEventListener("pagehide", cancel); cancel();
