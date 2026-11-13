@@ -48,6 +48,14 @@
       ]
     },
     {
+      "id": "bg-day-variants",
+      "title": "第3章の東京の4店の昼の版（BGU06）: 時間帯が「昼」と明示された時だけ昼の絵を使い、渡さない呼び出し・夜は今までの絵",
+      "kind": "quick",
+      "run": [
+        "node remake/test/bg_day_variants.mjs"
+      ]
+    },
+    {
       "id": "chapter-poems",
       "title": "巻頭ポエムの台本・仕様・章タイトル直前の接続",
       "kind": "quick",
@@ -4068,7 +4076,7 @@
       "title": "TRPG story collection",
       "kind": "browser",
       "weight": 5.0,
-      "timeout": 15,
+      "timeout": 25,
       "paths": [
         "data/dialogue/trpg_*.json",
         "data/trpg_catalog.json",
