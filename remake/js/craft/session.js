@@ -206,7 +206,7 @@ export function openBench(cs, { steps = [], entryAssets = null } = {}) {
   // A missing entryAssets is an already completed fourth step in the loading count.
   const preparationSteps = [background.assetsReady, warmCraftAssets(cs.mode, { cs, step: "setup" }), worker.ready, entryAssets];
   const assets = Promise.all(preparationSteps);
-  bench.ready = prepareBenchEntry(waitForBenchAssets(bench, Promise.all([background, assets]), assets, false), cs.chapter, preparationSteps);
+  bench.ready = prepareBenchEntry(waitForBenchAssets(bench, Promise.all([background, assets]), assets, false), cs.chapter, preparationSteps, { preview: !!cs.preview });
   // ライバルの顔は飾り。作業台の準備が済んでから少し間を置いて読む（工程の開始に要る画像と通信を取り合わない）
   if (bench.rivals) {
     const rivals = bench.rivals, later = () => setTimeout(() => rivals.showFaces(), RIVAL_FACE_DELAY_MS);
@@ -320,7 +320,9 @@ export async function explainStepOnce(cs, id, panelId = id) {
   const seen = state.flags.seenStepIntro ||= {};
   if (seen[id]) return true;
   if (b.pendingIntro?.id === id) return (await b.pendingIntro.promise) && current();
-  const text = cs.lessonHelp?.[id]?.detail || TUTORIAL_STEP_HELP[id]?.detail || b.guide.note.textContent;
+  // 大会の配合は練習用の固定文（ダブルアップル9g…）ではなく、当日の課題・在庫に合う本日の条件文を読む。
+  const tournamentMix = id === "mix" && cs.mode === "tournament" && !cs.lessonHelp?.[id]?.detail;
+  const text = cs.lessonHelp?.[id]?.detail || (tournamentMix ? "" : TUTORIAL_STEP_HELP[id]?.detail) || b.guide.note.textContent;
   if (!text) { seen[id] = true; return true; }
   const pending = waitGuideRead(b, current, panelId, text);
   b.pendingIntro = { id, promise: pending };

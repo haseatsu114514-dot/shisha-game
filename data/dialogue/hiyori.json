@@ -1535,6 +1535,88 @@
       ]
     },
     {
+      "dialogue_id": "hiyori_shop_minto",
+      "metadata": {
+        "private_scene": false,
+        "setting": "ひより×みんと（REL07）。ぺぱーみんとの相席で、いつもの相席の代わりに一度だけ（daily/hiyori.js）。演じる人同士。みんとは気づくが、本人には言わない。みんとの店なので営業の名前のまま。"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "face": "",
+          "text": "窓際の席で、ひよりが頬杖をついていた。目は、ガラスの向こうの遠くを見ている。"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "sad",
+          "text": "……ミントって、溶けて消える感じがするよね。私みたいに",
+          "inner": "初めての店で、この入り方。攻めすぎた？"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "わかる〜♡ じゃあ今日は、すーっと消えちゃうミントにしとくね"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "みんとは聞き返しもせず、棚から缶を一つ選んだ。"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "surprise",
+          "text": "……分かってくれるの？",
+          "inner": "通じた。この子、話が早い"
+        },
+        {
+          "speaker": "minto",
+          "face": "wink",
+          "text": "もちろん♡ その日の気分に似合う一台を出すのが、みんとのお仕事だから"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "届いた一台は、軽くて甘い。吸い終わる前に、香りがふっとほどけていく。"
+        },
+        {
+          "speaker": "hiyori",
+          "face": "smile",
+          "text": "……本当に、消えていく。ここ、いい店ね",
+          "inner": "演出まで合わせてくる。この子、プロだ"
+        },
+        {
+          "speaker": "minto",
+          "face": "smile",
+          "text": "えへへ、また消えに来てね♡"
+        },
+        {
+          "speaker": "",
+          "face": "",
+          "text": "ひよりが帰ったあと、みんとはグラスを拭きながら、ドアのほうを見ていた。"
+        },
+        {
+          "speaker": "minto",
+          "face": "normal",
+          "text": "好きな自分で来てくれるお客さん、みんと、大好き"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "……今の、分かってて合わせたの？"
+        },
+        {
+          "speaker": "minto",
+          "face": "wink",
+          "text": "なにがー？ みんと、二十歳だから難しいことわかんない♡"
+        },
+        {
+          "speaker": "hajime",
+          "face": "normal",
+          "text": "（みんとは、それ以上は何も言わなかった）"
+        }
+      ]
+    },
+    {
       "dialogue_id": "hiyori_tonari_afterwork",
       "metadata": {
         "private_scene": true,

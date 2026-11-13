@@ -431,8 +431,18 @@
             "text": "気に入ったら、また訪ねてくるのじゃぞ"
           },
           {
+            "speaker": "samechan",
+            "face": "excited",
+            "text": "そうじゃ、LIMEも交換せんか。新しい香りが入ったら、真っ先に報せるのじゃ"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "ぜひ。また一服しに来ます"
+          },
+          {
             "speaker": "",
-            "text": "一服を終えて、店のお知らせ用のLIMEを交換した。"
+            "text": "連絡先を交換すると、アカウント名には『サメちゃん』とだけ出ていた。"
           },
           {
             "type": "set_flag",
