@@ -7,7 +7,9 @@
 // ?versus=4 で、対戦前の「VS」演出だけを人数を変えて見る（2〜4人。?versus=hajime,sumi,naru,adam のようにキャラIDでも指定できる）。
 import { el } from "./core/util.js";
 import { initStageFit } from "./core/stage-fit.js";
+import { initSideArea } from "./core/side-area.js";
 initStageFit(document.getElementById("stage"));
+initSideArea({ stage: document.getElementById("stage"), standalone: true }); // 左右の余白の煙と縁（YHK）
 import { runIchidai, ICHIDAI_TITLE } from "./minigames/ichidai.js";
 import { SE, unlockAudio } from "./core/audio.js";
 window.addEventListener("pointerdown", unlockAudio);

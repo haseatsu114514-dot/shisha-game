@@ -56,6 +56,8 @@ const FOLLOWUPS = {
     { source: "choizap_minto", id: "choizap_minto_followup", flag: "_minto_identity_revealed" },
     // サメちゃんの店で開店祝いの鉢植えの話を聞いた後（REL03。source は daily/samechan.js の来店の話）
     { source: "samechan_shop_minto_gift", id: "samechan_minto_followup", done: "_spot_follow_minto_samechan" },
+    // ひよりの相席で奥の席を勧めた夜の後（#3468 B案。source は daily/hiyori.js の相席）。ひよりが自分から同じ席にいる
+    { source: "hiyori_shop_minto_seat", id: "hiyori_minto_seat_followup", done: "_spot_follow_minto_hiyori" },
   ],
   rio: [
     { source: "cafe_naru_rio", id: "cafe_naru_rio_followup_rio", done: "_spot_follow_rio_naru" },

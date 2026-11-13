@@ -84,6 +84,11 @@ export async function boot() {
       Promise.all(["500", "700", "900"].map((w) => document.fonts.load(`${w} 20px "Suien Gothic"`, "水煙前線あA7"))),
       new Promise((r) => setTimeout(r, 4000)),
     ]).catch(() => {});
+    // ロゴと枠絵は DB に依存しないので、データ・書体と同時に取り始める（#3500 A-19）。ここでは待たない。
+    // 下の imageReady が同じ読み込みを共有し、待つ上限は従来どおりデータの後の3秒。
+    // 起動の見張り（index.html の30秒）より先に時間切れの印を付けないよう、こちらの待ちは30秒にする。
+    imageReady(imgFileUrl("ui/ui_title_logo_rich.webp"), 30000);
+    for (const u of FRAME_ART) imageReady(u, 30000, { keep: true });
     await Promise.all([loadAll((p) => {
       // ゲージはデータ読込の実績（済んだ割合）にだけ追従させる。表示の進捗で起動を止めない。
       try { report(Math.round(p * 100), 100); } catch { /* 表示だけの進捗で起動を止めない */ }

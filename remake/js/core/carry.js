@@ -69,6 +69,7 @@ export const STATE_KEY_RULES = {
   lastDate: { verdict: "reset", note: "§2.4" },
   loverEventsSeen: { verdict: "reset", note: "§2.4" },
   guilt: { verdict: "reset", note: "§2.4" },
+  loverStrain: { verdict: "reset", note: "§2.4。恋人ごとのすれ違い（core/lover-strain.js）" },
   romance: { verdict: "reset", note: "§2.4" },
   romanceChoices: { verdict: "reset", note: "§2.4" },
   finales: { verdict: "reset", note: "§2.4" },
@@ -307,6 +308,10 @@ export const FLAG_EXACT_RULES = [
   ["_cold_pending", "pending"],
   ["_confession_due", "pending"],
   ["_confession_go", "person"],
+  ["_strain_keep", "person"], // 別れ話で選んだ答え（core/lover-strain.js の STRAIN_OUTCOME_FLAGS）。再生の前後で消す
+  ["_strain_excuse", "person"],
+  ["_strain_end", "person"],
+  ["_strain_reunion_go", "person"], // やり直しを申し込むかの答え（core/lover-strain.js の STRAIN_REUNION_FLAG）。再生の前後で消す
   ["_confession_wait", "pending"],
   ["_craft_practice_runs", "progression"],
   ["_day1_shift_ended", "progression"],
@@ -381,6 +386,7 @@ export const FLAG_EXACT_RULES = [
   ["_hiyori_meeting_done", "person"],
   ["_hiyori_meeting_shop", "person"],
   ["_hiyori_message_delivered", "person"],
+  ["_hiyori_minto_seat_done", "person"], // ぺぱーみんとの相席で一度だけ（REL07・daily/hiyori.js）
   ["_hiyori_peach_talk_done", "person"],
   ["_hiyori_promise_done", "person"],
   ["_hiyori_real_self_known", "person"],
@@ -525,6 +531,7 @@ export const FLAG_EXACT_RULES = [
   ["_spot_follow_adam", "person"],
   ["_spot_follow_adam_lunch", "person"], // 街の人同士のつながりの続き（REL01〜03・daily/spot-encounters.js の FOLLOWUPS）
   ["_spot_follow_minto", "person"],
+  ["_spot_follow_minto_hiyori", "person"], // ひより×みんとの後日の一言（#3468 B案・daily/spot-encounters.js の FOLLOWUPS）
   ["_spot_follow_minto_samechan", "person"],
   ["_spot_follow_naru", "person"],
   ["_spot_follow_naru_rio", "person"],
@@ -542,6 +549,7 @@ export const FLAG_EXACT_RULES = [
   ["_spot_seen_choizap_oldman", "progression"],
   ["_spot_seen_cs_ch2_haze", "progression"],
   ["_spot_seen_cs_kemuri_sample", "person"],
+  ["_spot_seen_hiyori_shop_minto_seat", "person"], // ぺぱーみんとの夜の相席で一度だけ（#3468 B案・daily/hiyori.js）
   ["_spot_seen_kannon_adam", "person"],
   ["_spot_seen_kannon_adam_lunch", "person"],
   ["_spot_seen_kannon_adam_pakki", "person"],

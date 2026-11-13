@@ -73,7 +73,8 @@ function reactionValue(G, p, heat, q, id, opp) {
   if (id === "encore") pts *= 2;
   const imp = voteScore(G, p, s, pts, (id === "show_smoke" ? 4 : 0) + (id === "all_in" && s.zone === "just" ? 2 : 0) + (id === "heat_in" && good ? 1 : 0) + (p.sessImp || 0));
   const vote = opp == null ? impW(G, p) * Math.max(-3, imp) + (id === "duel" && G.R.useVote ? 0.8 : 0) : (G.R.useVote && imp > opp ? votePtsOf(G, p) + (id === "duel" ? 3 : 0) : 0);
-  const v = pts + vote - (s.zone === "scorch" ? 4 : 0) - (s.usedSilicone ? 2.5 : 0) - (s.usedLotus ? 0.8 : 0)
+  // 焦げの重さ: 0点になるうえ、主役の葉を失う（1枚ぶんを2点と見る。失う枚数は規則の scorchLoss）
+  const v = pts + vote - (s.zone === "scorch" ? 2 + 2 * G.R.scorchLoss : 0) - (s.usedSilicone ? 2.5 : 0) - (s.usedLotus ? 0.8 : 0)
     - (id ? 0.5 : 0) - (id === "show_smoke" ? 0.6 : 0) - (blow && !s.saved ? 1 : 0) - 0.35 * paid;
   return { v, id, s, pts, imp };
 }

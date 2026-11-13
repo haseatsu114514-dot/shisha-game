@@ -71,6 +71,19 @@ export async function playHiyoriEvent(id, options = {}) {
   }
 }
 
+// ぺぱーみんとの相席で一度だけ（REL07）。いつもの相席の代わりに、店主のみんとが儚い女の注文に乗る。
+// 相席の繰り返しの順番は進めない。相関の正本は brand/character_profiles.md「キャラ同士のつながり」。
+const MINTO_SEAT = "hiyori_shop_minto";
+export const hiyoriMintoSeatDue = spot => spot?.id === "minto" && !!state.met?.minto
+  && !state.flags._hiyori_minto_seat_done && !!DB.dialogues[MINTO_SEAT]?.lines?.length;
+// その後の夜（退勤後）のぺぱーみんとの相席で一度だけ（#3468 B案）。儚く見える窓際と、本当に休める奥の席。
+// 既読の旗は、次のぺぱーみんとの来店での後日の一言（daily/spot-encounters.js の FOLLOWUPS）が source として読む。
+const MINTO_REST_SEAT = "hiyori_shop_minto_seat";
+const MINTO_REST_SEAT_SEEN = `_spot_seen_${MINTO_REST_SEAT}`;
+export const hiyoriMintoRestSeatDue = spot => spot?.id === "minto" && state.slot >= 1
+  && !!state.flags._hiyori_minto_seat_done && !state.flags[MINTO_REST_SEAT_SEEN]
+  && !!DB.dialogues[MINTO_REST_SEAT]?.lines?.length;
+
 /** 買い物だけでは会わない。実際に一服できる他店を滞在候補にする（ショールームは除外）。 */
 export const hiyoriShopEligible = (spot) => !!spot && (spot.kind === "rival" || spot.kind === "samechan"
   || spot.id === "c_station");
@@ -135,6 +148,22 @@ export async function visitHiyoriAtShop(spot, { bg, scheduledSpot = hiyoriShopLo
     } else if (hiyoriEventStatus("shop_charm") === "ready") {
       // 再会のあと他店で一度だけ。相席の繰り返しには数えない（#3081）。
       if (!await playHiyoriEvent("shop_charm", options)) return false;
+    } else if (hiyoriMintoSeatDue(spot)) {
+      active = true;
+      try {
+        const result = await play(MINTO_SEAT, options);
+        if (state !== owner || signal?.aborted || !result || result.cancelled) return false;
+        state.flags._hiyori_minto_seat_done = true;
+        gainAffinity("hiyori", 10); // いつもの相席と同じ
+      } finally { active = false; }
+    } else if (hiyoriMintoRestSeatDue(spot)) {
+      active = true;
+      try {
+        const result = await play(MINTO_REST_SEAT, options);
+        if (state !== owner || signal?.aborted || !result || result.cancelled) return false;
+        state.flags[MINTO_REST_SEAT_SEEN] = true;
+        gainAffinity("hiyori", 10); // いつもの相席と同じ
+      } finally { active = false; }
     } else {
       const n = Number(state.flags._hiyori_repeat_count || 0);
       const id = `hiyori_shop_repeat_${n % 4}`;
