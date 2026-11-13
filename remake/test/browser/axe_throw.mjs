@@ -120,12 +120,13 @@ await suite("axe-throw", async run => {
     // 2026-11-13 手応えレビュー指摘1: 板に届いた瞬間は接触の姿で止める（ヒットストップ）。刺さった斧（impact）は止めが明けてから
     for(const [label,ms] of [['release',0],['quarter',180],['half',160],['three-quarter',140],['impact',300]]){
       if(ms===300){
-        await page.clock.runFor(140);
+        // 飛ぶ時計は最初のフレームの分（約20ms）遅れて始まるので、届いた直後（約0.62秒）を見る
+        await page.clock.runFor(160);
         assert.equal(await game(page).getAttribute('data-phase'),'flight','the contact frame is held before the result');
         assert.equal(await game(page).getAttribute('data-hitstop'),'true');
         assert.equal(await page.locator('.axe-flight-trail').getAttribute('opacity'),'0','no trail while held');
         if(shotsPath)await page.locator('.axe-target').screenshot({path:shotsPath+'/front-contact-hold.png'});
-        await page.clock.runFor(160);
+        await page.clock.runFor(140);
       } else if(ms)await page.clock.runFor(ms);
       const shape=page.locator(label==='impact'?'.axe-impacts>g':'.axe-flight');
       frames.push(await shape.evaluate(n=>({pitch:Number(n.dataset.pitch),depth:Number(n.dataset.depth),

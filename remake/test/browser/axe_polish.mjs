@@ -289,8 +289,8 @@ await suite("axe-polish", async check => {
     await boardStop(page, .62, 2400, "flight", false);
     assert.equal(await root(page).getAttribute("data-slow-motion"), "true");
     await page.clock.runFor(700); assert.equal(await root(page).getAttribute("data-phase"), "flight", "slow motion stretches the approach");
-    // 板に届くのは0.84秒。結果はそこから接触の止め（0点で刺されば50ms）の後
-    await page.clock.runFor(160); assert.equal(await root(page).getAttribute("data-hitstop"), "true", "the slow throw meets the board within 0.9s");
+    // 板に届くのは0.84秒（飛ぶ時計は最初のフレームの分だけ遅れて始まる）。結果はそこから接触の止め（0点で刺されば50ms）の後
+    await page.clock.runFor(180); assert.equal(await root(page).getAttribute("data-hitstop"), "true", "the slow throw meets the board within 0.9s");
     await page.clock.runFor(100); await phase(page, "result");
     const result = await cancel(page, before);
     assert.equal(result.throws.length, 2); assert.equal(result.throws[0].score, 6); assert.equal(result.throws[1].called, "upper-left");
