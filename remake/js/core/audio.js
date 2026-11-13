@@ -81,11 +81,34 @@ function loadSeBuffer(file) {
   return seLoads.get(file);
 }
 
-/** 最初の操作で先読み。ゲーム進行は待たせず、最初の未読込SEは合成で補う。 */
+const allSeFiles = () => [...new Set([...Object.values(RECORDED_SE).flatMap(s => s.files), WATER_LOOP, WATER_END])];
+// 最初の操作の直後に要る画面操作の音（タイトル・メニュー・保存）。残りは1本ずつ読む（#3500 D-1）。
+const FIRST_SE = ["click", "select", "cancel", "whoosh", "jingle", "card", "save"];
+let seWarm = null;
+
+/** 録音SEを全部、今すぐ読む（音の確認ページ・検査用）。全部読めたら true。 */
 export function preloadSe() {
   if (!audioUnlocked) return Promise.resolve(false);
-  const files = new Set([...Object.values(RECORDED_SE).flatMap(s => s.files), WATER_LOOP, WATER_END]);
-  return Promise.all([...files].map(loadSeBuffer)).then(buffers => buffers.every(Boolean));
+  return Promise.all(allSeFiles().map(loadSeBuffer)).then(buffers => buffers.every(Boolean));
+}
+
+/**
+ * 最初の操作で先読み。ゲーム進行は待たせず、最初の未読込SEは合成で補う。
+ * 29本を一度に取りに行くと、同じ時に始まる BGM・場面の素材と回線とデコードを取り合う（遅い回線では5秒の打ち切りで半分ほどが落ちていた）。
+ * 画面操作の数本を先に読み、残りは手の空いた時に1本ずつ読む。読み終わる前に鳴らした音は、今までどおりその場で読みに行く。
+ */
+function warmSe() {
+  if (!audioUnlocked || seWarm) return;
+  const first = FIRST_SE.flatMap(id => RECORDED_SE[id].files);
+  const rest = allSeFiles().filter(file => !first.includes(file));
+  const idle = () => typeof requestIdleCallback === "function" ? new Promise(resolve => requestIdleCallback(resolve, { timeout: 1000 })) : null;
+  seWarm = Promise.all(first.map(loadSeBuffer)).then(async () => {
+    for (const file of rest) {
+      if (seBuffers.has(file)) continue;
+      await idle();
+      await loadSeBuffer(file);
+    }
+  }).finally(() => { seWarm = null; });
 }
 
 function recordedVoice(file, { gain = 1, rate = 1, loop = false, delay = 0 } = {}) {
@@ -288,7 +311,9 @@ export function preloadCamelRaceSe() {
   const files = Object.values(CAMEL_RACE_SE).flatMap(cue => cue.files);
   return Promise.all(files.map(loadSeBuffer)).then(buffers => buffers.every(Boolean));
 }
-export function playCamelRaceSe(id) {
+// gain・rate: 同じ録音を出来事ごとに鳴らし分ける倍率（音量と再生の速さ。2026-11-13 ラクダレース手応え CRF07）。合成の代用音では使わない。
+// cut: 鳴らし始めてからこの秒数で音を切る（長い録音の頭だけを使う。0 は切らない。2026-11-13 CRF24）。
+export function playCamelRaceSe(id, { gain = 1, rate = 1, cut = 0 } = {}) {
   const cue = CAMEL_RACE_SE[id];
   if (!cue || !seEnabled()) return;
   const ready = cue.files.filter(file => seBuffers.has(file));
@@ -296,7 +321,8 @@ export function playCamelRaceSe(id) {
   const choices = ready.filter(file => file !== lastVariant.get("camel:" + id));
   const file = (choices.length ? choices : ready)[Math.floor(Math.random() * (choices.length || ready.length))];
   lastVariant.set("camel:" + id, file);
-  recordedVoice(file, { gain: cue.gain });
+  const voice = recordedVoice(file, { gain: cue.gain * (Number.isFinite(gain) && gain >= 0 ? gain : 1), rate: Number.isFinite(rate) && rate > 0 ? rate : 1 });
+  if (voice && Number.isFinite(cut) && cut > 0) setTimeout(() => voice.stop(0.12), cut * 1000);
 }
 
 function syncPulls() { activePulls.forEach(pull => pull.sync()); }
@@ -362,7 +388,7 @@ export function unlockAudio() {
   };
   if (c && (c.state === "suspended" || c.state === "interrupted")) c.resume().then(ready, () => {});
   else ready();
-  preloadSe();
+  warmSe();
 }
 
 export function applyVolumes() {

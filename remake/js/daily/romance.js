@@ -17,6 +17,7 @@ import { dateScene, dateVenue, relationshipDayTotal } from "./date-scene.js";
 import { playSamechanDate, samechanDateGap, samechanDateReady } from "./samechan-date.js";
 import { questionDoneKey } from "../core/affinity-stages.js";
 import { petitAfterDate } from "./petit-shuraba.js";
+import { strainOf, STRAIN_SIGN2 } from "../core/lover-strain.js";
 import { recordRouteLover, recordRouteEvent } from "../core/gallery-progress.js";
 
 // 告白は「帰り道」の場面。背景を持たない台本は通りの絵で（前の場面の背景を引き継がない）
@@ -76,6 +77,17 @@ function becomeLovers(id) {
   try { recordRouteLover(id); } catch { /* 記録の失敗で交際の成立を妨げない */ }
   emit("lovers", { id });
   save();
+}
+
+/**
+ * 友達に戻った相手と、もう一度付き合う（すれ違いの別れ話の後のやり直し。daily/lover-strain.js・台帳 STR11）。
+ * 絆の段・記念日の起点・読んだ場面は前のまま。「友達のまま」の印を外して、付き合う処理をもう一度通す
+ */
+export function rejoinLover(id) {
+  if (isLover(id) || !state.flags[`_friend_${id}`]) return false;
+  delete state.flags[`_friend_${id}`];
+  becomeLovers(id);
+  return true;
 }
 
 /** 会話に入るたびに呼ばれる（engine の hooks.onEnter）。告白の返事は分岐先の dialogue_id で決まる */
@@ -297,7 +309,8 @@ export const hometownDateOpen = (id, value = state) => !awayFromHome(value)
   && !(TOKYO_LOVERS.includes(id) && (value?.chapter || 1) >= 3) && !DUBAI_LOVERS.includes(id);
 
 // 恋人の連絡の塩梅（2026-10-31 オーナー「恋人とかはたまに連絡きて欲しい」「ストレスになるレベルで連絡きてる」LM01〜03）
-// - 朝のひとことは3日おき・返事なし（読むだけ）。恋人が何人いても朝に1通まで（長く届いていない恋人から）
+// - 朝のひとことは3日おき・返事なし（読むだけ）。恋人が何人いても朝に1通まで（長く届いていない恋人から）。
+//   日常の朝は、朝の枠が埋まって届かなかったら次の朝へ回る（LM09。全体の配分は lime-pacing.js）
 // - デートの誘いは恋人全員あわせて LOVER_INVITE_GAP 日に1回まで（長く会っていない恋人から）
 // - 朝のひとことの2回に1回は、短い一言とスタンプ（lover.json の morningStamp）
 export const LOVER_MORNING_GAP = 3;
@@ -323,11 +336,12 @@ function apartFrom(id, home, value = state) {
  * @param opts.invitations デートの誘いを出すか（約束の仕組みが無い場面カード式の章は false）
  * @param opts.away 大会当日、会場の街にいない恋人（配信で見る側の文面 gameday_away を使う。第3章の東京・IR19）
  * @param opts.exclude 今いっしょにいて、LIMEを送ってこない恋人（第4章のドバイの同行者・IR17）
+ * @param opts.carryMorning 朝のひとことを、決まった日に届けられなかったら次の朝へ回すか（日常の朝の配分・LM09）
  * @param opts.home はじめが地元にいるか。離れた街（東京・ドバイ）にいる朝は、地元で会う前提の文面を送ってこない
  *   （朝のひとことの hometown を除き、記念日は anniversary_away・#2024）。省略時は現在地（flags._ch2_region）から。
  *   場面カードの章は帰郷・帰国の後も印が東京・ドバイのままなので、呼び出し側が渡す（chapters/lover-entry.js）
  */
-export function loverMessages({ tournamentDay = false, fixedNight = () => false, invitations = true, away = [], exclude = [], home = !awayFromHome() } = {}) {
+export function loverMessages({ tournamentDay = false, fixedNight = () => false, invitations = true, away = [], exclude = [], home = !awayFromHome(), carryMorning = false } = {}) {
   const out = [];
   // 修羅場が未解決のあいだは、恋人の誰からも連絡が来ない（朝のひとこと・記念日・誘いのどれも。2026-11-11 オーナー
   // 「やってしまった感を出せるように」）。打ち上げの後、スマホが鳴らなくなる。一人ずつの話し直しが済めば、元どおり届く
@@ -397,11 +411,15 @@ export function loverMessages({ tournamentDay = false, fixedNight = () => false,
     const pool = [...((L().morning || {})[id] || []).filter((v) => home || !v.hometown),
       ...(apartFrom(id, home) ? (L().morning_away || {})[id] || [] : [])];
     const msgId = `_lover_morning_${id}${chapterKey}_d${state.day}`;
-    if (pool?.length && turn % LOVER_MORNING_GAP === 0 && !read(msgId)) {
+    const lastMorning = lastInboxDay((i) => String(i.id).startsWith(`_lover_morning_${id}`));
+    // 日常の朝（carryMorning）は、前のひとことから3日あいていれば届けられる。ほかの連絡で朝の枠が埋まった日は
+    // 次の朝へ回り、3日後まで待たされない（LM09）。場面カードの章の入口は、従来どおり3日ごとの決まった日だけ
+    const due = carryMorning ? state.day - lastMorning >= LOVER_MORNING_GAP : turn % LOVER_MORNING_GAP === 0;
+    // すれ違いが「話したい」の段まで溜まった恋人からは、いつもの朝のひとことが来なくなる（core/lover-strain.js。誘いは届く）
+    if (pool?.length && due && !read(msgId) && strainOf(state, id) < STRAIN_SIGN2) {
       const k = Math.floor(turn / LOVER_MORNING_GAP);
       const stamp = (L().morningStamp || {})[id];
       const v = stamp && k % 2 === 1 ? { m: [stamp.text, { sender: id, stamp: stamp.stamp }] } : { m: pool[Math.floor(k / (stamp ? 2 : 1)) % pool.length].m };
-      const lastMorning = lastInboxDay((i) => String(i.id).startsWith(`_lover_morning_${id}`));
       mornings.push({ id, last: lastMorning, msg: chat(id, msgId, v) }); // v に r が無いので返事なし
     }
   }

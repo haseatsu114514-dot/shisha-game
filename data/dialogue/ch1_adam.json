@@ -250,12 +250,22 @@
           {
             "speaker": "adam",
             "face": "normal",
-            "text": "煙の求道者よ。リンゴの導きで出会った縁だ。LIME、交換しておこう"
+            "text": "……お前は、リンゴの話を最後まで聞いた。そういう者は、多くない"
+          },
+          {
+            "speaker": "adam",
+            "face": "intense",
+            "text": "真理（リンゴ）の啓示は、時を選ばず降りてくる。LIME、交換しておこう"
           },
           {
             "speaker": "hajime",
             "face": "normal",
             "text": "あ、はい……"
+          },
+          {
+            "speaker": "hajime",
+            "face": "normal",
+            "text": "（啓示って……たぶん、ふつうの連絡のことだよな）"
           },
           {
             "speaker": "adam",

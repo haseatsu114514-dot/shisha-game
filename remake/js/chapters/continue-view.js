@@ -1,7 +1,9 @@
 // CONTINUEの描画。台本・抽選・遷移から独立させ、1行のテロップを文字ごとに出す。
-// 2026-11-07 オーナー決定（#2524）: 本編の既定は前バージョンの neon（筆文字・円形HUD・鋭角ボタン）。立ち絵は continuePortraitStyle で新バージョン。
+// 2026-11-13 オーナー決定（#2524・CV61）: 本編の既定は C 漫画の大ゴマ（layout:"manga"・continue-looks.js）。
+// 前の版の neon（筆文字・円形HUD・鋭角ボタン）と保留中の A 熾火（ember）も残す。立ち絵は continuePortraitStyle で新バージョン。
 import { el } from "../core/util.js";
 import { createNeonClock, createNeonAtmosphere } from "./continue-neon.js";
+import { CONTINUE_LOOKS, decorateContinueLook } from "./continue-looks.js";
 import { DB, img, portraitInfo } from "../core/data.js";
 
 /**
@@ -31,7 +33,9 @@ const NEON_FACE_PX = 524.8;
 const NEON_FACE_CENTER_Y = 273;
 
 export function createContinueView({ script, speaker, character, lover = speaker !== "sumi", layout = "neon", background = "stage", onType = null }) {
-  const neon = layout === "neon";
+  // C 漫画（manga・本編の既定）と A 熾火（ember・保留）（CV58〜CV61）。部品の組み方は neon と同じで、飾りと CSS だけが違う。
+  const look = CONTINUE_LOOKS.includes(layout) ? layout : null;
+  const neon = layout === "neon" || !!look;
   // #2524 「記憶の暗室」（layout:"inner"）。2026-11-06 に一度既定（#2713）にしたが、2026-11-07 オーナー決定で neon に戻し、比較用に残す。
   // 筆文字・円形HUD・鋭角ボタンを使わず、細い活字・上端の時計バー・文字だけの2択で構成する。
   // 顔の大きさと中心（524.8px・Y273）は採用Cを共有し、中心Xだけ左（400）へ寄せる。
@@ -99,10 +103,10 @@ export function createContinueView({ script, speaker, character, lover = speaker
   const title = el("h1.go-title", { "aria-label": heading }, [...(subLabel ? [subLabel] : []), titleLabel, ...(titleImage ? [titleImage] : []), finalImage]);
   const root = el("div.end-screen.gameover", { role: "region", "aria-label": "大会のコンティニュー",
     dataset: { test: "game-over", variant: script.id, speaker, lover: String(lover), portraitStyle: portrait?.style || "classic",
-      layout: neon ? "neon" : inner ? "inner" : classicBack ? "bottom-back-count" : backCount ? "back-count" : topActions ? "top" : "bottom",
+      layout: look || (neon ? "neon" : inner ? "inner" : classicBack ? "bottom-back-count" : backCount ? "back-count" : topActions ? "top" : "bottom"),
       background: background === "stage" ? "stage" : "purple", phase: "speaking" } }, [
     el("div.go-veil", { "aria-hidden": "true" }),
-    ...(neon || inner ? createNeonAtmosphere() : []),
+    ...((neon && !look) || inner ? createNeonAtmosphere() : []),
     ...(bar ? [bar] : []),
     ...(echoLayer ? [echoLayer] : []),
     el("header.go-heading", [title, clock, ...(topActions ? [actions] : [])]),
@@ -118,12 +122,15 @@ export function createContinueView({ script, speaker, character, lover = speaker
       el("i.go-wave"), el("i.go-stars", { text: "✧　·　✦" })]),
     el("div.go-exit", { "aria-hidden": "true" }),
   ]);
+  if (look) decorateContinueLook(root, look, { character });
   // CSS変数内の相対URLは使用するCSSファイル基準になるため、ページ基準で解決する。
   root.style.setProperty("--go-backdrop", `url("${new URL(art(background === "stage" ? "backdrop_stage" : "backdrop"), document.baseURI).href}")`);
   function setCount(remaining, progress = 0) {
     const text = String(remaining);
     if (count.textContent !== text) {
       count.textContent = text;
+      // 初回の時間制限なしで「∞」になったとき（C 漫画は「あと」「秒」を消す）。
+      clock.classList.toggle("go-count-endless", text === "∞");
       if (neon) {
         count.classList.remove("go-count-tick");
         void count.offsetWidth;

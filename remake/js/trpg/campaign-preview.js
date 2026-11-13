@@ -1,7 +1,9 @@
 // Disposable chapter-2 table, without opening or writing the player's saves.
+import "./trial-redirect.js"; // 人が開いた時は本編の試遊へ送る（TRF21）。検査と ?harness=1 はこのページのまま
 import { newState } from "../core/state.js";
 import { el } from "../core/util.js";
 import { fitStage } from "../core/stage-fit.js";
+import { initSideArea } from "../core/side-area.js";
 import { mountTrpgCampaign } from "./campaign-view.js";
 import { mountTrpgRecruitment } from "./club-view.js";
 const host = document.getElementById("trpg-app"), stage = document.getElementById("stage");
@@ -12,7 +14,8 @@ for (const id of ["hiyori", "samechan", "tsumugi", "adam"]) {
 }
 let controller, saves = 0, nightBusy = false;
 function fit() { fitStage(stage); } // 本編と同じ画面当て（スマホ横持ちの文字拡大も同じ）
-fit(); window.addEventListener("resize", fit);
+fit(); initSideArea({ stage, standalone: true, readSettings: false }); // 左右の余白の煙と縁（YHK）。この試遊ページは保存領域に触れない決まりなので設定は読まない
+window.addEventListener("resize", fit);
 function mount() {
   controller?.destroy();
   controller = mountTrpgCampaign(host, { getState: () => state, save: () => { saves++; }, nightBusy: () => nightBusy,

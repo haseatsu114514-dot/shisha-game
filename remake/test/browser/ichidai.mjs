@@ -1,4 +1,4 @@
-// カードゲーム「一台勝負」（ICG）: 試遊ページ（設定→最初の火→準備→提供→審査→結果・一台と審査員の札・遊び方・やめる・横持ちタッチ・
+// カードゲーム「一台勝負」（ICG）: 試遊ページ（設定→はじめの炭→準備→提供→審査→結果・一台と審査員の札・遊び方・やめる・横持ちタッチ・
 // 対面の卓＝相手の席と奥行きのある卓・対称のマット・縦に積む火力ゾーンと判定のゲージ、札が飛んで置かれる動き、VS演出、相手の一言）と、
 // 本編の入口（既定では tonari に出ない／?ichidai=1 で出る／最後まで打つと state.ichidai に残って保存される・時間は進まない）。
 import assert from "node:assert/strict";
@@ -14,7 +14,10 @@ const waitMine = (page) => page.waitForFunction(() => {
   return g && (g.dataset.turn === "me" || g.dataset.phase === "end" || !document.querySelector(".ichi-sheet").hidden);
 }, null, { timeout: 30000 });
 const COAL = ["flat", "cube", "dense_flat"].map((id) => `${t("ichi-hand")} button[data-card="${id}"]`).join(", ");
+// 第0.8版: 熱（一台の温度）と火力（炭の火の合計）は別の数。熱は、ターンの終わりに火力へ1近づく
 const heat = async (page) => Number(await page.locator(t("ichi-pillar")).getAttribute("data-heat"));
+const firePower = async (page) => Number(await page.locator(t("ichi-pillar")).getAttribute("data-fire"));
+/** HUD の熱の札: left＝火力、total＝熱 */
 const fire = async (page) => { const c = page.locator(t("ichi-firepower")); return { left: Number(await c.getAttribute("data-left")), total: Number(await c.getAttribute("data-total")) }; };
 let placedViaSlot = false;
 /** 手札の炭カードを炭焼き場に置けるだけ置く。炭カードを選ぶと炭焼き場の空き枠が「ここに置く」になるので、1回目はそこを押し、あとは詳しい札のボタンで置く */
@@ -38,35 +41,47 @@ async function stepMine(page, plan, got) {
   const wait = await data(page, "wait"), turn = await data(page, "turn");
   if (turn !== "me") { await page.waitForTimeout(120); return false; }
   if (wait === "embers") {
-    // 立ち上げ: 1〜4枚を裏向きで置く（ふつうは3枚）。0枚と5枚では始められない
-    assert.equal(await has(page, "ichi-embers"), false, "1枚も選ばないと立ち上げられない");
+    // はじめの炭: 手札から3枚ちょうどを裏向きで置く（熱は0から）。3枚そろうまで置けない。4枚目を選ぶと、先に選んだ札が外れる
+    assert.equal(await has(page, "ichi-embers"), false, "1枚も選ばないと置けない");
     await page.locator(t("ichi-hand-0")).click();
-    assert.equal(await has(page, "ichi-embers"), true, "1枚でも立ち上げられる");
-    for (const i of [1, 2, 3, 4]) await page.locator(t(`ichi-hand-${i}`)).click();
-    assert.equal(await has(page, "ichi-embers"), false, "5枚は置けない（炭は4つまで）");
-    for (const i of [3, 4]) await page.locator(t(`ichi-hand-${i}`)).click();
-    assert.match(await page.locator(t("ichi-embers")).innerText(), /3枚・熱3/);
+    assert.equal(await has(page, "ichi-embers"), false, "1枚では置けない（3枚ちょうど）");
+    for (const i of [1, 2]) await page.locator(t(`ichi-hand-${i}`)).click();
+    assert.equal(await has(page, "ichi-embers"), true, "3枚そろうと置ける");
+    await page.locator(t("ichi-hand-3")).click();
+    assert.deepEqual(await page.locator(`${t("ichi-hand")} .ichi-hand-card.is-sel`).evaluateAll((list) => list.map((n) => n.dataset.test)), ["ichi-hand-1", "ichi-hand-2", "ichi-hand-3"], "4枚目を選ぶと、先に選んだ札が外れる");
+    assert.match(await page.locator(t("ichi-embers")).innerText(), /炭を置く（3\/3枚）/);
     await page.locator(t("ichi-embers")).click();
   } else if (wait === "prep") {
+    // 準備（第0.8版）: 同じターンに、葉を詰めて、炭にも触れる（詰めるか蒸らすかの二択は無い）
     let packed = 0;
-    if (await has(page, "ichi-steam") || await page.locator(`${t("ichi-market")} .ichi-pile-main:not([disabled])`).count()) {
+    assert.equal(await page.locator(t("ichi-steam")).count(), 0, "「蒸らす」のボタンは無い");
+    if (await page.locator(`${t("ichi-market")} .ichi-pile-main:not([disabled])`).count()) {
       for (const [id, n] of plan) {
-        while ((got[id] || 0) < n) {
+        while ((got[id] || 0) < n && packed < 4) {
           const pile = page.locator(`${t(`ichi-market-${id}`)} .ichi-pile-main:not([disabled])`);
           if (!(await pile.count())) break;
           await pile.click(); got[id] = (got[id] || 0) + 1; packed++;
         }
       }
     }
-    if (packed && await has(page, "ichi-pack")) await page.locator(t("ichi-pack")).click();
-    else if (await has(page, "ichi-steam")) {
-      await page.locator(t("ichi-steam")).click();
-      await placeCoals(page);
-      for (let k = 0; k < 5 && await page.locator(`${t("ichi-stove")} button.can`).count(); k++) await page.locator(`${t("ichi-stove")} button.can`).first().click();
+    if (packed) {
+      await page.locator(t("ichi-pack")).click();
+      await page.locator(t("ichi-market")).waitFor({ state: "detached" }); // 詰めたら、盆は下がる（卓を炭のために空ける）
+    } else if (await page.locator(t("ichi-market-close")).count()) {
+      // もう詰めないターン: 盆をしまって、炭を触る。「葉の盆をひらく」で、また出せる
+      await page.locator(t("ichi-market-close")).click();
+      assert.deepEqual([await page.locator(t("ichi-market")).count(), await has(page, "ichi-market-open")], [0, true], "盆をしまうと、ひらくボタンが出る");
+      got.closed = (got.closed || 0) + 1;
     }
+    await placeCoals(page);
+    for (let k = 0; k < 5 && await page.locator(`${t("ichi-stove")} button.can`).count(); k++) await page.locator(`${t("ichi-stove")} button.can`).first().click();
+    const h0 = await heat(page), f0 = await firePower(page);
     await page.locator(t("ichi-end")).click();
-  } else if (wait === "cool" || wait === "weaken") {
-    await page.locator(`${t("ichi-zone")} .ichi-coal-btn.can`).first().click();
+    // 蒸らし: ターンを終えると、熱が火力へ1近づく
+    await page.waitForFunction(([h, f]) => Number(document.querySelector('[data-test="ichi-pillar"]').dataset.heat) === h + Math.sign(f - h), [h0, f0]);
+    got.steamed = (got.steamed || 0) + (f0 !== h0 ? 1 : 0);
+  } else if (wait === "cool" || wait === "weaken" || wait === "wear") {
+    await page.waitForTimeout(150); // 炭が弱る・すきま風は、自動で進む（ガイドを切っていても）
   } else if (wait === "main") {
     await placeCoals(page);
     for (let k = 0; k < 5 && await page.locator(`${t("ichi-stove")} button.can`).count(); k++) await page.locator(`${t("ichi-stove")} button.can`).first().click();
@@ -76,9 +91,6 @@ async function stepMine(page, plan, got) {
     await page.locator(t("ichi-discard")).click();
   } else if (wait === "react") {
     await page.locator(t("ichi-pass")).click();
-  } else if (wait === "wear") {
-    for (let k = 0; k < 4 && !(await has(page, "ichi-wear")); k++) await page.locator(`${t("ichi-wear-picker")} button.ichi-leaf.can`).first().click();
-    await page.locator(t("ichi-wear")).click();
   } else await page.waitForTimeout(120);
   return false;
 }
@@ -101,6 +113,10 @@ await suite("ichidai", async (check) => {
   await check("human-plays-setup-to-first-judge", async (page) => {
     await page.locator(t("ichi-menu-quick")).click();
     // 設定の画面: 一式・大会・強さ
+    // 一式の棚: はじめは「基本」（入門の一局と、基本の一式2つ）。「上級」に替えると、人物やイベントの入った4つ
+    assert.deepEqual([await page.locator(t("ichi-tier-basic")).getAttribute("aria-pressed"), await page.locator(t("ichi-kit-s1")).getAttribute("aria-pressed"), await page.locator(t("ichi-intro-start")).count(), await page.locator(t("ichi-kit-a")).count()], ["true", "true", 1, 0]);
+    await page.locator(t("ichi-tier-advanced")).click();
+    assert.deepEqual([await page.locator(t("ichi-intro-start")).count(), await page.locator(".ichi-setup .ichi-kit").count()], [0, 4]);
     await page.locator(t("ichi-kit-a")).click();
     await page.locator(t("ichi-tour-crown")).click();
     await page.locator(t("ichi-level-0")).click();
@@ -165,7 +181,7 @@ await suite("ichidai", async (check) => {
     await page.locator(t("ichi-help-next")).click();
     await page.locator(t("ichi-help-close")).click();
     assert.equal(await page.locator(t("ichi-help-sheet")).count(), 0);
-    // 最初の火 → 準備（課題のレモン3枚から。ブルーベリーとミントを詰める）→ 提供 → 最初の審査
+    // はじめの炭 → 準備（課題のレモン3枚から。ブルーベリーとミントを詰める）→ 提供 → 最初の審査
     const got = {}; let seenPrep = false, seenServe = false, chargedViaSlot = false, usedCard = null;
     for (let guard = 0; guard < 400; guard++) {
       await waitMine(page);
@@ -173,45 +189,50 @@ await suite("ichidai", async (check) => {
       if (phase === "prep" && !seenPrep) {
         seenPrep = true;
         assert.match(await page.locator(t("ichi-bowl")).getAttribute("data-leaves"), /^lemon:3$/, "課題の葉を受け取っている");
-        assert.equal(await heat(page), 3, "種火3枚で熱3");
+        assert.deepEqual([await heat(page), await firePower(page)], [0, 3], "種火3枚で火力3。熱は0から");
         assert.equal(await page.locator(`${t("ichi-stove")} .ichi-row.is-stove > *`).count(), 4, "炭焼き場は、マットの枠に4つ");
         // プレイマットの上のカードゲームとして見せる: ボウル（ハガル）もHMDも札。コンロやボウルの現物の絵は置かない
         assert.equal(await page.locator(`${t("ichi-bowl")} .ichi-card.t-bowl`).count(), 1, "ボウルは札");
         assert.equal(await page.locator(`${t("ichi-bowl")} .ichi-card.t-hmd`).count(), 1, "HMDは札");
         assert.equal(await page.locator(".ichi-stove-art, .ichi-rig").count(), 0, "現物の絵は置かない");
         assert.equal(await page.locator(`${t("ichi-zone")} .ichi-on`).count(), 3, "種火3枚は火力ゾーンの札");
-        assert.deepEqual(await fire(page), { left: 3, total: 3 }, "種火3つ（火1ずつ）で、火力3（＝熱）");
+        assert.deepEqual(await fire(page), { left: 3, total: 0 }, "種火3つ（火1ずつ）で、火力3・熱0");
+        // 熱の向かう先（蒸らし）: このターンを終えると、熱が火力へ1近づく。HUD に ▲1、火力は別に出る
+        const trend = page.locator(t("ichi-trend"));
+        assert.deepEqual([await trend.getAttribute("data-dir"), await trend.getAttribute("data-next"), await trend.innerText(), await page.locator(t("ichi-fire")).innerText()], ["up", "1", "▲1", "火力 3"]);
         assert.equal(await page.locator(t("ichi-coal-count")).getAttribute("data-n"), "3", "炭は3つ（4つまで）");
         assert.deepEqual(await page.locator(`${t("ichi-zone")} .ichi-coal-btn`).evaluateAll((list) => list.map((n) => n.dataset.fire)), ["1", "1", "1"], "種火は火1");
-        // 火力ゾーンは卓の端に縦に積む柱で、すぐ外側に判定のゲージ（10段）が並ぶ。積んだ高さ＝熱
+        // 火力ゾーンは卓の端に縦に積む柱で、すぐ外側に熱の目盛り（10段）が並ぶ。積んだ高さ＝火力、明るいところまで＝熱
         const column = await page.evaluate(() => {
           const box = (n) => { const b = n.getBoundingClientRect(); return { l: b.left, r: b.right, t: b.top, b: b.bottom, cx: (b.left + b.right) / 2, cy: (b.top + b.bottom) / 2 }; };
           const side = (sel) => {
             const z = document.querySelector(sel), cells = [...z.querySelectorAll(".ichi-fire-gauge i")], cards = [...z.querySelectorAll(".ichi-fire-stack .ichi-coal-btn")];
-            return { zone: box(z), cells: cells.map(box), lit: cells.filter((c) => c.classList.contains("is-lit")).length, now: cells.findIndex((c) => c.classList.contains("is-now")) + 1,
+            const at = (cls) => cells.findIndex((c) => c.classList.contains(cls)) + 1;
+            return { zone: box(z), cells: cells.map(box), lit: cells.filter((c) => c.classList.contains("is-lit")).length, now: at("is-now"), next: at("is-next"), fireAt: at("is-fire"),
               cards: cards.map(box), gauge: box(z.querySelector(".ichi-fire-gauge")), stack: box(z.querySelector(".ichi-fire-stack")) };
           };
           return { me: side('[data-test="ichi-zone"]'), foe: side('[data-test="ichi-foe-zone"]'), stove: box(document.querySelector('[data-test="ichi-stove"]')), foeStove: box(document.querySelector('[data-test="ichi-foe-stove"]')),
             board: box(document.querySelector('[data-test="ichi-board"]')), flow: document.querySelectorAll('[data-test="ichi-stove"] .ichi-flow, [data-test="ichi-foe-stove"] .ichi-flow').length };
         });
-        assert.equal(column.me.cells.length, 10, "判定のゲージは10段");
-        assert.deepEqual([column.me.lit, column.me.now], [3, 3], "積んだ3枚ぶん、ゲージが3段目まで灯る");
+        assert.equal(column.me.cells.length, 10, "熱の目盛りは10段");
+        assert.deepEqual([column.me.lit, column.me.now, column.me.next, column.me.fireAt], [0, 0, 1, 3], "熱0（まだ灯らない）・次は1段目へ・火力の印は、積んだ3枚ぶんの3段目");
         assert.ok(column.me.cards[0].cy > column.me.cards[1].cy && column.me.cards[1].cy > column.me.cards[2].cy, "自分の札は手前から奥へ積み上がる");
-        assert.ok(Math.abs(column.me.cards[2].cy - column.me.cells[2].cy) < 12, "3枚目の札は、ゲージの3段目の横");
-        assert.ok(column.me.gauge.cx < column.me.stack.cx && column.me.stack.cx < column.stove.cx, "左から 判定のゲージ・積んだ札・炭焼き場（となり合う）");
+        assert.ok(Math.abs(column.me.cards[2].cy - column.me.cells[2].cy) < 12, "3枚目の札は、目盛りの3段目の横");
+        assert.ok(column.me.gauge.cx < column.me.stack.cx && column.me.stack.cx < column.stove.cx, "左から 熱の目盛り・積んだ札・炭焼き場（となり合う）");
         assert.equal(column.flow, 2, "炭焼き場から火力ゾーンへの矢印（自分と相手）");
         // 相手のマットも同じ作り（卓のまんなかで点対称）: 相手の柱は右端で、奥から手前へ積む
         assert.equal(await page.locator(`${t("ichi-foe-zone")} .ichi-on`).count(), Number(await page.locator(t("ichi-foe-zone")).getAttribute("data-count")), "相手の火力ゾーンの札も積んである");
-        assert.deepEqual([column.foe.cells.length, column.foe.lit, column.foe.cards.length], [10, 3, 3], "相手のゲージ10段・種火3枚");
+        assert.deepEqual([column.foe.cells.length, column.foe.cards.length, column.foe.fireAt], [10, 3, 3], "相手の目盛り10段・種火3枚（火力3）");
+        assert.ok(column.foe.lit <= 1, "相手の熱も0から（先に1ターン終えていれば1）");
         assert.ok(column.foe.cards[0].cy < column.foe.cards[1].cy && column.foe.cards[1].cy < column.foe.cards[2].cy, "相手の札は奥から手前へ積み上がる");
-        assert.ok(column.foe.gauge.cx > column.foe.stack.cx && column.foe.stack.cx > column.foeStove.cx, "相手は右から 判定のゲージ・積んだ札・炭焼き場");
+        assert.ok(column.foe.gauge.cx > column.foe.stack.cx && column.foe.stack.cx > column.foeStove.cx, "相手は右から 熱の目盛り・積んだ札・炭焼き場");
         assert.ok(column.me.zone.cx < column.board.cx && column.foe.zone.cx > column.board.cx, "自分の柱は左端、相手の柱は右端");
         const order = (sel) => page.locator(`${sel} > *`).evaluateAll((list) => list.map((n) => (n.matches(".is-stove") ? "炭焼き場" : n.matches(".is-setting") ? "ボウル" : n.matches(".is-perms") ? "器具" : "山札")));
         assert.deepEqual(await order(".ichi-mine"), ["炭焼き場", "ボウル", "器具", "山札"]);
         assert.deepEqual(await order(t("ichi-foe")), ["山札", "器具", "ボウル", "炭焼き場"], "相手は同じ並びの逆順（向かい合わせ）");
         assert.equal(await page.locator(`${t("ichi-foe")} .s-mini, ${t("ichi-foe")} .s-mid`).count() > 0 && await page.locator(`${t("ichi-foe")} .ichi-zone-box`).count(), await page.locator(".ichi-mine .ichi-zone-box").count(), "枠の数も同じ");
         const foeFire = page.locator(t("ichi-foe-fire"));
-        assert.equal(await foeFire.getAttribute("data-heat"), "3", "相手の熱は HUD でも読める");
+        assert.match(await foeFire.getAttribute("data-heat"), /^[01]$/, "相手の熱は HUD でも読める");
         // 対面の卓: 奥行きを付けて傾けた卓の向こうに相手が座り、手札の裏を持っている
         const scene = await page.evaluate(() => {
           const q = (sel) => document.querySelector(sel), w = (sel) => q(sel).getBoundingClientRect();
@@ -227,12 +248,12 @@ await suite("ichidai", async (check) => {
         assert.equal(scene.foeCard, "180deg", "相手の札は向こう向き");
         assert.ok(await page.locator(`${t("ichi-hand")} .ichi-card.s-hand`).count() >= 3, "手札はトレカの札");
         assert.equal(await page.locator(`${t("ichi-market")} .ichi-card.t-flavor`).count(), 10, "場の葉も札");
-        // 右下は審査員の声の掲示板。まだ審査が無いあいだは、審査員の紹介（決め手）が貼ってある
-        assert.equal(await page.locator(`${t("ichi-forecast")} ${t("ichi-post-intro")}`).count(), 3, "審査員3人の紹介");
+        // 右下は審査員の声の掲示板。まだ審査が無いあいだは、審査員3人の顔だけ（文字を減らした。決め手は審査の山を押すと見られる）
+        assert.deepEqual([await page.locator(`${t("ichi-forecast")} ${t("ichi-post-intro")}`).count(), await page.locator(`${t("ichi-forecast")} ${t("ichi-post-intro")} .ichi-face`).count()], [1, 3], "審査員3人の顔");
         assert.match(await page.locator(t("ichi-forecast")).innerText(), /審査員の声[\s\S]*決め手/);
-        assert.match(await page.locator(t("ichi-tips")).innerText(), /いまの熱3。レモンの適温は\d+〜\d+/, "案内に、いまの熱と葉の適温が出る");
+        assert.match(await page.locator(t("ichi-tips")).innerText(), /熱0▲1（火力3）。適温は熱\d+〜\d+/, "案内に、熱の向かう先と葉の適温が出る");
         assert.deepEqual(await overflowed(page), [], "準備の画面で、文字が枠からはみ出していない");
-        // 葉の盆: 10種の札がすべて盆の中に収まり、右のボタン（詰める・蒸らす）に重ならない
+        // 葉の盆: 10種の札がすべて盆の中に収まり、右のボタン（詰める・ターンを終える）に重ならない
         const tray = await page.evaluate(() => {
           const b = (n) => n.getBoundingClientRect(), m = b(document.querySelector('[data-test="ichi-market"]'));
           const piles = [...document.querySelectorAll('[data-test="ichi-market"] .ichi-pile-card')].map(b), btns = [...document.querySelectorAll(".ichi-actions .ichi-btn")].map(b);
@@ -248,7 +269,7 @@ await suite("ichidai", async (check) => {
         // 「炭の使い方」から、遊び方の炭のページが開く
         await page.locator(t("ichi-coal-help")).click();
         assert.match(await page.locator(`${t("ichi-help-sheet")} h2`).innerText(), /炭の活用法/);
-        assert.match(await page.locator(t("ichi-help-sheet")).innerText(), /立ち上げ[\s\S]*保つ[\s\S]*上げる[\s\S]*下げる/);
+        assert.match(await page.locator(t("ichi-help-sheet")).innerText(), /上げる：火力を熱より上[\s\S]*保つ：火力を熱と同じ[\s\S]*下げる：火力を熱より下/);
         await page.locator(t("ichi-help-close")).click();
         // 詰めた葉は、ボウルの横に葉の札の束で置く（種類ごとに1束・帯に枚数）。体力（葉の枚数）は HUD 左
         const bundles = page.locator(`${t("ichi-bundles")} ${t("ichi-bundle")}`);
@@ -258,11 +279,11 @@ await suite("ichidai", async (check) => {
         assert.match(await bundles.first().locator(".ichi-bundle-band").innerText(), /×3/, "帯に枚数");
         assert.equal(await page.locator(t("ichi-hp")).getAttribute("data-hp"), "3", "体力＝葉の枚数");
         assert.equal(await page.locator(".ichi-mine .ichi-mix").count(), 0, "卓の上に文字の帯は出さない");
-        // カードの左上は必要火力。届かない札は暗い
+        // カードの左上は必要な熱。届かない札は暗い
         for (const card of await page.locator(`${t("ichi-hand")} .ichi-hand-card`).all()) {
           const id = await card.getAttribute("data-card"); if (["flat", "cube", "dense_flat"].includes(id)) continue;
           const need = Number(await card.locator(".ichi-gem b").innerText());
-          assert.equal(await card.getAttribute("data-locked") === "1", need > 3, `${id}: 必要火力${need}と熱3で、暗くするかが決まる`);
+          assert.equal(await card.getAttribute("data-locked") === "1", need > 0, `${id}: 必要な熱${need}と熱0で、暗くするかが決まる`);
         }
       }
       if (phase === "serve" && !seenServe) {
@@ -270,17 +291,22 @@ await suite("ichidai", async (check) => {
         // 第0.5版: 提供に入ると、まずこのラウンドの審査カードがめくられる（札が出ているあいだは卓を押せない）。閉じるまで待つ
         // （data-input="1"＝進行が人の入力を待っている。めくる演出のあいだは "0"）
         await page.waitForFunction(() => { const g = document.querySelector('[data-test="ichi-game"]'); return document.querySelector(".ichi-sheet").hidden && g.dataset.turn === "me" && g.dataset.input === "1"; }, null, { timeout: 20000 });
-        assert.ok(await heat(page) >= 3, "提供に入るとき、炭が載っている");
-        // 熱＝炭の火の合計（炭の数ではない）。炭は4つまでで、火の段数ぶんの高さで積む
+        assert.ok(await heat(page) >= 3 && await heat(page) <= 4, "準備の4ターンで、熱は3〜4まで上がっている");
+        // 火力＝炭の火の合計（炭の数ではない）。炭は4つまでで、火の段数ぶんの高さで積む
         const coals = await page.locator(`${t("ichi-zone")} .ichi-coal-btn`).evaluateAll((list) => list.map((n) => ({ fire: Number(n.dataset.fire), up: n.dataset.up, h: n.offsetHeight, label: n.querySelector(".ichi-coal-fire")?.textContent })));
-        assert.equal(coals.reduce((a, c) => a + c.fire, 0), await heat(page), `熱は炭の火の合計: ${JSON.stringify(coals)}`);
+        assert.equal(coals.reduce((a, c) => a + c.fire, 0), await firePower(page), `火力は炭の火の合計: ${JSON.stringify(coals)}`);
+        // 炭の焼け具合は、札の上の炭の絵で分かる（新品の火＝hot・弱った＝warm・火1＝ember。種火は札の裏のまま）
+        const looks = await page.locator(`${t("ichi-zone")} .ichi-coal-btn`).evaluateAll((list) => list.map((n) => ({ up: n.dataset.up, state: n.dataset.state, fire: Number(n.dataset.fire), art: n.querySelector(".ichi-coal-sprite")?.getAttribute("src")?.split("/").pop() || null })));
+        assert.ok(looks.every((c) => (c.up === "1" ? /^coal(_flat)?_(just|red|white)\.webp/.test(c.art) && (c.fire === 1 ? c.state === "ember" : ["hot", "warm"].includes(c.state)) : c.state === "seed" && c.art === null)), `炭の絵: ${JSON.stringify(looks)}`);
+        assert.ok(got.steamed >= 3 && got.closed >= 1, `準備で熱が上がり（${got.steamed}回）、盆をしまって炭を触った（${got.closed}回）`);
         assert.ok(coals.length <= 4 && coals.length === Number(await page.locator(t("ichi-coal-count")).getAttribute("data-n")), "炭は4つまで");
         assert.ok(coals.every((c) => c.label === String(c.fire) && (c.up === "1" ? c.fire >= 1 && c.fire <= 3 : c.fire === 1)), "札の横に、いまの火が出る（種火は1）");
         const unit = Math.min(...coals.map((c) => c.h / c.fire));
         assert.ok(coals.every((c) => Math.abs(c.h - unit * c.fire) < 3), "炭は火の段数ぶんの高さ");
         // 第0.5版: 審査カードはラウンドのはじめに1枚めくってある（山は11枚）。今回の吸い方は左上に出る
         assert.equal(await page.locator(t("ichi-pile")).getAttribute("data-left"), "11");
-        assert.match(await page.locator(t("ichi-now-judge")).innerText(), /今回の審査/);
+        assert.match(await page.locator(t("ichi-now-judge")).getAttribute("aria-label"), /^今回の審査 /, "見出しは出さず、読み上げに残す");
+        assert.match((await page.locator(t("ichi-now-judge")).innerText()).replace(/\s+/g, ""), /^.+[±+−]\d$/);
         // 提供に入ったら場は出さない。葉の札の束と体力は出し続ける（相手の束も卓の奥に。HUD の相手の札には主役と体力）
         assert.equal(await page.locator(t("ichi-market")).count(), 0);
         const bowl = (await page.locator(t("ichi-bowl")).getAttribute("data-leaves")).split(",").map((x) => x.split(":")), leaves = bowl.reduce((a, [, n]) => a + Number(n), 0);
@@ -300,7 +326,7 @@ await suite("ichidai", async (check) => {
         await page.locator(t("ichi-info-close")).click();
         assert.equal(await rig.count(), 0);
       }
-      // 提供の最初の自分のターン: 手札を選ぶと火力ゾーンに「裏向きで置く」が出て、押すとチャージ（熱+1・火力+1）
+      // 提供の最初の自分のターン: 手札を選ぶと火力ゾーンに「裏向きで置く」が出て、押すとチャージ（火力+1）
       if (phase === "serve" && !chargedViaSlot && await data(page, "wait") === "main" && await data(page, "turn") === "me") {
         const before = await fire(page);
         // 卓の上を飛ぶ札（.ichi-fly）が出たかを数える（すぐ消えるので、足された瞬間を見張る）
@@ -309,29 +335,42 @@ await suite("ichidai", async (check) => {
           new MutationObserver((list) => { for (const m of list) for (const n of m.addedNodes) if (n.classList?.contains("ichi-fly")) window.__ichiFly++; })
             .observe(document.querySelector('[data-test="ichi-game"]'), { childList: true });
         });
-        // 炭の手引き: いまの熱が帯のどこか・炭の手・次のターン、が案内に出る
+        // 炭の手引き: 熱の向かう先（と火力）・炭の手・次のターン、が案内に出る
         const tips = await page.locator(`${t("ichi-tips")} small`).allInnerTexts();
-        assert.ok(tips.length >= 2 && /熱\d+は/.test(tips[0]) && tips.some((x) => /次のターンは冷めて熱−\d/.test(x)), `炭の手引き: ${JSON.stringify(tips)}`);
+        assert.ok(tips.length >= 2 && /熱\d+(のまま|[▲▼]\d+)（火力\d+）/.test(tips[0]) && tips.some((x) => /次のターンは炭が弱って火力−\d/.test(x)), `炭の手引き: ${JSON.stringify(tips)}`);
         assert.deepEqual(await overflowed(page), [], "提供の画面で、文字が枠からはみ出していない");
-        // チャージ＆ドロー: 手札を1枚置いて1枚引く（手札の枚数は変わらない）。1ターンに1回
+        // チャージ＆ドロー: 手札を1枚置いて1枚引く（手札の枚数は変わらない）。炭を足す手は1ターンに1つ（第0.7版）
+        const left = page.locator(t("ichi-coal-left"));
+        assert.deepEqual([await left.getAttribute("data-add"), await left.getAttribute("data-ash"), await left.locator("i").allInnerTexts()], ["1", "1", ["足す", "外す"]], "このターン、炭を1つ足せて、1つ外せる");
         const handCount = () => page.locator(`${t("ichi-hand")} .ichi-hand-card`).count(), hand0 = await handCount();
         await page.locator(t("ichi-hand-0")).click();
         assert.match(await page.locator(t("ichi-charge-slot")).innerText(), /置いて1枚引く/);
         assert.match(await page.locator(t("ichi-do-charge")).innerText(), /チャージ＆ドロー/);
         await page.locator(t("ichi-charge-slot")).click();
-        await page.waitForFunction((n) => Number(document.querySelector('[data-test="ichi-pillar"]').dataset.heat) === n, before.total + 1);
-        assert.deepEqual(await fire(page), { left: before.left + 1, total: before.total + 1 }, "裏向きで置いた札が火力ゾーンに加わる");
+        await page.waitForFunction((n) => Number(document.querySelector('[data-test="ichi-pillar"]').dataset.fire) === n, before.left + 1);
+        assert.deepEqual(await fire(page), { left: before.left + 1, total: before.total }, "裏向きで置いた札が火力ゾーンに加わる（火力+1。熱は、ターンの終わりまで動かない）");
         await page.waitForFunction((n) => document.querySelectorAll('[data-test="ichi-hand"] .ichi-hand-card').length === n, hand0);
         assert.equal(await handCount(), hand0, "1枚置いて1枚引くので、手札の枚数は変わらない");
         await page.locator(t("ichi-hand-0")).click();
-        assert.equal(await page.locator(t("ichi-charge-slot")).count(), 0, "チャージ＆ドローは1ターンに1回（2枚目の置き場は出ない）");
+        assert.equal(await page.locator(t("ichi-charge-slot")).count(), 0, "炭を足すのは1ターンに1つ（2枚目の置き場は出ない）");
         assert.equal(await page.locator(t("ichi-do-charge")).isDisabled(), true);
-        assert.match(await page.locator(t("ichi-do-charge")).getAttribute("title"), /1ターンに1回/);
+        assert.match(await page.locator(t("ichi-do-charge")).getAttribute("title"), /炭を足すのは1ターンに1つ/);
+        assert.deepEqual([await left.getAttribute("data-add"), await left.locator("i").first().innerText()], ["0", "足す済"], "足したので、灯が消える");
         await page.locator(t("ichi-hand-0")).click();
         chargedViaSlot = true;
         // 印象の見込み（自分と相手）
         assert.match(await page.locator(t("ichi-impression")).getAttribute("data-me"), /^-?\d+$/);
-        // カードは1ラウンドに1枚。一口のカードがあれば仕込み、なければ使えるカードを1枚使う
+        // 点差と一票の点（第0.6版の先行分・ICG59/62）: 左上に点差。負けている人の顔の横に「一票+3」。一票の見込みには取れたら何点か
+        {
+          const [mine, foe] = await Promise.all(["me", "foe"].map(async (w) => Number(await page.locator(t(`ichi-score-${w}`)).getAttribute("data-score"))));
+          const st = page.locator(t("ichi-standing")), gap = mine - foe;
+          assert.equal(Number(await st.getAttribute("data-gap")), gap);
+          assert.match(await st.innerText(), gap > 0 ? new RegExp(`あなたが${gap}点リード`) : gap < 0 ? new RegExp(`${-gap}点リード`) : /^同点$/);
+          assert.deepEqual([await page.locator(t("ichi-chase-0")).count(), await page.locator(t("ichi-chase-1")).count()], [gap < 0 ? 1 : 0, gap > 0 ? 1 : 0], "負けている人にだけ「一票+3」");
+          const imp = page.locator(t("ichi-impression")), [a, b] = [Number(await imp.getAttribute("data-me")), Number(await imp.getAttribute("data-foe"))];
+          assert.equal(await imp.getAttribute("data-vote"), a > b ? (gap < 0 ? "3" : "2") : a < b ? (gap > 0 ? "3" : "2") : "", "一票の見込みに、取れたら何点か");
+        }
+        // カードは自分のターンに1枚。一口のカードがあれば仕込み、なければ使えるカードを1枚使う
         assert.equal(await page.locator(t("ichi-card-left")).getAttribute("data-left"), "1");
         // 枠を返すカード（ひと息・追い炭・トングさばき・仕切り直し）は、使ってもまだ1枚使えるので、ここでは選ばない
         const usable = `${t("ichi-hand")} .ichi-hand-card.can` + ["flat", "cube", "dense_flat", "breath", "add_coal", "tongs", "reset"].map((id) => `:not([data-card="${id}"])`).join("");
@@ -343,7 +382,7 @@ await suite("ichidai", async (check) => {
         await page.locator(t("ichi-do-play")).click();
         await page.locator(`${t("ichi-card-left")}[data-left="0"]`).waitFor();
         assert.equal(await page.locator(usable).count(), 0, "1枚使ったら、ほかのカードは使えない");
-        assert.ok(await heat(page) >= before.total + 1 || id === "reset" || id === "tongs", "払わないので熱は下がらない");
+        assert.ok(await heat(page) === before.total || ["reset", "tongs", "all_in"].includes(id), "払わないので熱は動かない");
         if (["heat_in", "heat_out", "blow", "duel", "all_in", "show_smoke"].includes(id)) assert.equal(await page.locator(`${t("ichi-puff-me")} ${t("ichi-set-card")}[data-card="${id}"]`).count(), 1, "仕込んだ一口のカードが、卓の「自分の一口」に置かれる");
         assert.ok(await page.evaluate(() => window.__ichiFly) >= 2, "チャージした札と使った札が、手札から卓へ飛ぶ");
         usedCard = id;
@@ -358,7 +397,9 @@ await suite("ichidai", async (check) => {
       assert.match(await row.getAttribute("data-zone"), /^(just|band|off|cold|scorch)$/);
       assert.match(await row.innerText(), /判定熱 -?\d+[\s\S]*印象 -?\d+[\s\S]*\d+点/);
     }
-    assert.match(await page.locator(".ichi-result-vote").innerText(), /印象[\s\S]*(一票|票は入らない)/);
+    assert.match(await page.locator(".ichi-result-vote").innerText(), /印象[\s\S]*(一票（\+\d+(・追い上げ)?）|票は入らない)/);
+    // 葉は一口ごとに1枚減る（一式aの雲窯ファンネルは、各セッション最初の一口では減らない。相手の一式bは減る）
+    assert.deepEqual([await page.locator(`${t("ichi-result-me")} ${t("ichi-result-wear")}`).count(), await page.locator(`${t("ichi-result-foe")} ${t("ichi-result-wear")}`).getAttribute("data-n")], [0, "1"], "一口で減った葉が、審査の札に出る");
     assert.deepEqual(await overflowed(page), [], "審査の結果で、文字が枠からはみ出していない");
     const myZone = await page.locator(t("ichi-result-me")).getAttribute("data-zone");
     await page.locator(t("ichi-next")).click();
@@ -366,7 +407,9 @@ await suite("ichidai", async (check) => {
     const post = page.locator(`${t("ichi-forecast")} ${t("ichi-post")}`);
     await post.first().waitFor();
     assert.deepEqual([await post.count(), await post.first().getAttribute("data-round"), await post.first().getAttribute("data-zone")], [1, "1", myZone]);
-    assert.match(await post.first().innerText(), /1口目[\s\S]*吸う[\s\S]*「[^」]+」[\s\S]*\+\d+[\s\S]*(一票は|票なし)/);
+    // 文字を減らした書き込み: 何口目・吸い方／自分の帯と点（直すところがあれば一言）／相手の帯と点（一票が入れば、だれに）
+    assert.match(await post.first().innerText(), /1口目[\s\S]*吸う[\s\S]*(ジャスト|適温|ズレ|外れ|焦げ)[\s\S]*\+\d+[\s\S]*スミさん (ジャスト|適温|ズレ|外れ|焦げ) \+\d+/);
+    assert.ok((await page.locator(t("ichi-forecast")).innerText()).replace(/\s+/g, "").length < 90, "審査員の声は短い");
     assert.equal(await page.locator(`${t("ichi-forecast")} ${t("ichi-post-intro")}`).count(), 0, "書き込みが入ったら、紹介は外す");
     // 相手は、手を動かすとき（炭を置く・のせる・チャージ・カードを使う・番のはじめ）と、審査の結果に反応して動く
     await page.waitForFunction(() => ["joy", "shock", "down", "nod"].some((k) => window.__ichiMotion.has(k)), null, { timeout: 5000 });
@@ -385,10 +428,11 @@ await suite("ichidai", async (check) => {
     await page.locator(t("ichi-close")).click();
     await page.locator(t("ichi-quit-yes")).click();
     assert.match(await page.locator(t("ichi-menu-result")).innerText(), /まだ対戦していません/);
-  }, page1("seed=11&foe=b&assist=0")); // 相手の一式は b に決め打ち（炭4つまでの一式で、相手の火力ゾーンの並びを確かめるため）。ガイドは切る（冷ます炭を自分で選ぶ流れを確かめる）
+  }, page1("seed=11&foe=b&assist=0")); // 相手の一式は b に決め打ち（炭4つまでの一式で、相手の火力ゾーンの並びを確かめるため）。ガイドは切る（炭の手引きが出る）
 
   await check("touch-landscape-fits-and-buttons-are-tappable", async (page) => {
     await page.locator(t("ichi-menu-quick")).tap();
+    await page.locator(t("ichi-tier-advanced")).tap();
     await page.locator(t("ichi-kit-c")).tap();
     await page.locator(t("ichi-start")).tap();
     // VS演出はタップで飛ばせる

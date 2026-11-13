@@ -279,6 +279,42 @@ await suite("side-area", async check => {
     await page.locator("#vn .vn-log.show").waitFor();
     await idle(page, "next").waitFor({ state: "attached" });
   }, { ...PHONE, pageEntry: `${baseURL}?look=neo` });
+
+  // 選択肢の高さ（オーナー「2択が上すぎる」「もう少し上」2026-11-13・YHK14）: 会話欄の上 3択以上は 62px、2択は 94px（舞台上の px）。
+  // 余白へ操作を出していても、出していなくても同じ高さ。2択だけを高くしすぎない（#3499 の 142px は高すぎた）。
+  for (const [label, options, pads] of [["phone-with-pads", PHONE, true], ["pc", {}, false]]) {
+    await check(`choices-height-${label}`, async page => {
+      const gaps = {};
+      for (const count of [2, 3]) {
+        await page.evaluate(async (count) => {
+          const core = await import("./js/core/state.js");
+          core.newGame(); Object.assign(core.state, { phase: "daily", chapter: 1, day: 5, slot: 1 }); core.state.met.sumi = true; core.config.textSpeed = 4;
+          (await import("./js/core/ui.js")).clearScreen();
+          const choices = ["出ます", "……ちなみに、相手は？", "少し考えさせてください"].slice(0, count).map((text) => ({ text, next: "end" }));
+          void (await import("./js/vn/engine.js")).play({ dialogue_id: `qa_choices_${count}`, lines: [{ speaker: "sumi", face: "normal", text: "で、どうする。" }, { type: "choice", choices }], branches: { end: [] } },
+            { bg: "res://assets/backgrounds/bg_tonari_inside_night.png" });
+        }, count);
+        await page.locator(".vn-next.show").waitFor();
+        await page.waitForTimeout(400);
+        await page.evaluate(async () => (await import("./js/vn/engine.js")).tapAdvance());
+        await page.locator(".vn-choices.show").waitFor();
+        await page.waitForTimeout(500);
+        gaps[count] = await page.evaluate(() => {
+          const k = document.getElementById("stage").getBoundingClientRect().height / 720;
+          const box = document.querySelector(".vn-box").getBoundingClientRect(), name = document.querySelector(".vn-name.show")?.getBoundingClientRect();
+          const choices = [...document.querySelectorAll(".vn-choice")].map((n) => n.getBoundingClientRect());
+          const bottom = Math.max(...choices.map((r) => r.bottom));
+          return { pads: document.documentElement.dataset.sidePad, aboveBox: (box.top - bottom) / k, aboveName: name ? (name.top - bottom) / k : null };
+        });
+      }
+      assert.equal(gaps[2].pads, pads ? "on" : "off");
+      // 余白は ±8px（文字の組みの端数）まで許す
+      assert(Math.abs(gaps[3].aboveBox - 62) <= 8, `3択は会話欄の上 62px: ${JSON.stringify(gaps)}`);
+      assert(Math.abs(gaps[2].aboveBox - 94) <= 8, `2択は会話欄の上 94px: ${JSON.stringify(gaps)}`);
+      assert(gaps[2].aboveBox - gaps[3].aboveBox >= 20 && gaps[2].aboveBox - gaps[3].aboveBox <= 44, `2択は3択より少しだけ上: ${JSON.stringify(gaps)}`);
+      assert(gaps[2].aboveName >= 16, `2択は名前札から離れている: ${JSON.stringify(gaps)}`);
+    }, options);
+  }
 }, { initScript: padOn });
 
 // 自動操作のブラウザの既定: 親指ボタンは出さず、ステージの中のボタンのまま（既存の検査の前提）。煙と縁・帯は出る。
@@ -292,4 +328,84 @@ await suite("side-area-default", async check => {
     await page.locator(t("hud-menu")).tap();
     await page.locator("#modal .dmenu").waitFor();
   }, PHONE);
+});
+
+// 試遊ページ（共通の画面当て core/stage-fit.js を使う単体ページ）: 本編と同じく、余白に煙と縁が出る。
+// ゲームの状態・会話・HUD が無いので、縦書きの帯と親指ボタンは出さない。設定「左右の余白」「揺れ・閃光を減らす」は端末の保存を読む。
+const TRIAL_PAGES = ["camel-race.html", "axe-throw.html", "desert-ride.html", "ichidai.html", "trpg-preview.html", "trpg-campaign-preview.html", "craft-preview.html"];
+const trialEntry = (file) => ({ pageEntry: `${baseURL}${file}`, pageReadySelector: "#stage" });
+async function trialState(page) {
+  await page.locator(".side").first().waitFor({ state: "attached" });
+  return page.evaluate(() => {
+    const box = (n) => { const r = n.getBoundingClientRect(); return { left: r.left, right: r.right, top: r.top, bottom: r.bottom, width: r.width, height: r.height }; };
+    const stage = document.getElementById("stage");
+    const frame = box(stage.parentElement);
+    const strip = document.querySelector(".side-strip");
+    return {
+      side: document.documentElement.dataset.side, pad: document.documentElement.dataset.sidePad, calm: document.documentElement.dataset.sideCalm,
+      stage: box(stage), frame,
+      layers: [...document.querySelectorAll(".side")].map((n) => ({ side: n.dataset.side, display: getComputedStyle(n).display, ...box(n) })),
+      strip: !strip.hidden && getComputedStyle(strip).display !== "none",
+      live: document.querySelectorAll('.side-btn[data-live="true"]').length,
+      smoke: getComputedStyle(document.querySelector(".side-smoke")).animationName,
+    };
+  });
+}
+
+await suite("side-area-trial-pages", async check => {
+  for (const file of TRIAL_PAGES) {
+    await check(`${file}-phone`, async page => {
+      const s = await trialState(page);
+      assert.equal(s.side, "wide", file);
+      assert.equal(s.pad, "off", `${file}: 試遊ページに親指ボタンは出さない`);
+      const [l, r] = s.layers;
+      assert.deepEqual([l.display, r.display], ["block", "block"]);
+      // 層は余白ちょうど（ステージの左右の外）に重なる。ステージの寸法は変わらない
+      assert(Math.abs(l.left - s.frame.left) < 0.5 && Math.abs(l.right - s.stage.left) < 0.5, `${file}: ${JSON.stringify(l)}`);
+      assert(Math.abs(r.left - s.stage.right) < 0.5 && Math.abs(r.right - s.frame.right) < 0.5, `${file}: ${JSON.stringify(r)}`);
+      assert(l.width > 30 && r.width > 30, `${file}: 余白が見えない幅 ${l.width}`);
+      assert.equal(s.strip, false, `${file}: 帯は出さない`);
+      assert.equal(s.live, 0, `${file}: ボタンは出さない`);
+      assert.equal(s.smoke, "side-drift", file);
+      // TRPG の試遊ページは、保存領域に一切触れない決まり（trpg.mjs）。余白の部品も設定を読まない
+      if (file.startsWith("trpg-")) assert.deepEqual(await page.evaluate(() => window.__storageTouches), [], `${file}: 保存領域に触れた`);
+    }, { ...PHONE, ...trialEntry(file) });
+
+    await check(`${file}-desktop-16x9`, async page => {
+      await page.locator(".side").first().waitFor({ state: "attached" });
+      // 1280×720 の窓は 16:9 ちょうどで余白が無い。ただし制作の試遊ページは上のナビ（52px）のぶん舞台が縮み、左右に約46pxの余白ができる
+      const narrow = file === "craft-preview.html";
+      assert.equal(await page.evaluate(() => document.documentElement.dataset.side), narrow ? "narrow" : "off");
+      assert.deepEqual(await page.evaluate(() => [...document.querySelectorAll(".side")].map((n) => getComputedStyle(n).display)), narrow ? ["block", "block"] : ["none", "none"]);
+    }, trialEntry(file));
+  }
+
+  await check("setting-plain-is-read", async page => {
+    // 本編の設定「ぼかしだけ」は、試遊ページにも効く（保存して読み直す）
+    await page.evaluate(() => localStorage.setItem("suien_remake_config", JSON.stringify({ sideArea: "plain" })));
+    await page.reload({ waitUntil: "load" });
+    const s = await trialState(page);
+    assert.equal(s.side, "off");
+    assert.deepEqual(s.layers.map((n) => n.display), ["none", "none"]);
+  }, { ...PHONE, ...trialEntry("camel-race.html") });
+
+  await check("reduce-shake-stops-smoke", async page => {
+    // 「揺れ・閃光を減らす」では煙を流さない（止まった絵として残る）
+    await page.evaluate(() => localStorage.setItem("suien_remake_config", JSON.stringify({ reduceShake: true })));
+    await page.reload({ waitUntil: "load" });
+    const s = await trialState(page);
+    assert.equal(s.side, "wide");
+    assert.equal(s.calm, "on");
+    assert.equal(s.smoke, "none");
+  }, { ...PHONE, ...trialEntry("camel-race.html") });
+}, {
+  readLoadingComics: false,
+  // 保存領域への接触を記録する（support.mjs の準備が済んだ後に入れる）
+  initScript: () => {
+    window.__storageTouches = [];
+    for (const key of ["getItem", "setItem", "removeItem", "clear"]) {
+      const original = Storage.prototype[key];
+      Storage.prototype[key] = function (...args) { window.__storageTouches.push([key, ...args]); return original.apply(this, args); };
+    }
+  },
 });

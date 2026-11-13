@@ -1,4 +1,4 @@
-// rulebook.html の図と一覧を cards.js から組み立てる（第0.5版）。
+// rulebook.html の図と一覧を cards.js から組み立てる（第0.7版）。
 (function () {
   const byId = Object.fromEntries(FLAVORS.map((f) => [f.id, f]));
   const supByName = Object.fromEntries(SUPPORT.map((s) => [s.n, s]));
@@ -20,13 +20,13 @@
     return h + '</div>';
   }
   const kind = (k) => `<span class="kind ${k}">${KIND[k].k}</span>`;
-  // 必要火力（自分の火力がこの数以上なら使える。払わない）
-  const needHtml = (n) => (n === '—' ? '—' : `<span class="nw" style="display:inline-flex;align-items:center;gap:.5mm"><span class="fire" style="vertical-align:0" title="火力${n}以上で使える">${n}</span><span class="small">以上</span></span>`);
-  // 発動するために落とすもの（火力を落とす／葉を減らす）と「もう1枚使える」の札。ゲームの画面と同じ「火力−1」「葉−1」
-  const payShort = (s) => (s.pay?.fire ? `火力−${s.pay.fire}` : s.pay?.leaf ? `葉−${s.pay.leaf}` : '');
-  const payLong = (s) => (s.pay?.fire ? `火力を${s.pay.fire}落として発動` : s.pay?.leaf ? `葉を${s.pay.leaf}枚減らして発動` : '');
+  // 必要な熱（自分の熱がこの数以上なら使える。払わない）
+  const needHtml = (n) => (n === '—' ? '—' : `<span class="nw" style="display:inline-flex;align-items:center;gap:.5mm"><span class="fire" style="vertical-align:0" title="熱${n}以上で使える">${n}</span><span class="small">以上</span></span>`);
+  // 使うために落とすもの（熱を落とす／葉を減らす）と「もう1枚使える」の札。ゲームの画面と同じ「熱−1」「葉−1」
+  const payShort = (s) => (s.pay?.fire ? `熱−${s.pay.fire}` : s.pay?.leaf ? `葉−${s.pay.leaf}` : '');
+  const payLong = (s) => (s.pay?.fire ? `熱を${s.pay.fire}落として使う` : s.pay?.leaf ? `葉を${s.pay.leaf}枚減らして使う` : '');
   const payTag = (s) => (payShort(s) ? `<span class="paytag" title="${payLong(s)}">${payShort(s)}</span>` : '');
-  const extraTag = (s) => (s.extra ? '<span class="extratag" title="このラウンド、カードをもう1枚使える">もう1枚</span>' : '');
+  const extraTag = (s) => (s.extra ? '<span class="extratag" title="このターン、カードをもう1枚使える">もう1枚</span>' : '');
   const whenTag = (w) => `<span class="when w-${w === '一口' ? 'puff' : w === '準備' ? 'prep' : w === 'いつでも' ? 'any' : 'turn'}">${w}</span>`;
 
   function flavorCard(f) {
@@ -49,7 +49,7 @@
   function supCard(s) {
     if (s.type === '炭') return coalCard(s);
     return `<div class="card sup${s.when === '一口' ? ' puff' : ''}">
-      <div class="top"><div class="cost" title="必要火力${s.need}">${s.need}</div><div class="nm" style="${s.n.length > 7 ? 'font-size:8pt' : ''}">${s.n}</div></div>
+      <div class="top"><div class="cost" title="必要な熱${s.need}">${s.need}</div><div class="nm" style="${s.n.length > 7 ? 'font-size:8pt' : ''}">${s.n}</div></div>
       <div class="art"><span class="glyph" style="font-size:20pt;color:rgba(243,154,60,.85)">${s.type}</span></div>
       <div class="body"><div style="margin-top:.6mm"><span class="type">${s.type}</span>${whenTag(s.when)}${payTag(s)}${extraTag(s)}</div>
         <div class="txt" style="margin-top:1.4mm">${s.tx}</div></div></div>`;
@@ -101,7 +101,7 @@
   add('tbl-judges', JUDGES.map((j) => `<tr><td class="nw"><b>${j.n}</b><br><span class="small">${j.t}</span></td>
     <td>${j.puffs.map((q) => `<span class="pchip ${q.dh > 0 ? 'up' : q.dh < 0 ? 'down' : ''}"><b>${q.style}</b>×${q.c}</span>`).join(' ')}</td><td>${j.tx}</td></tr>`));
   add('tbl-puffs', Object.values(PUFF).map((q) => `<tr><td class="nw"><b>${q.style}</b></td><td class="c"><span class="pchip ${q.dh > 0 ? 'up' : q.dh < 0 ? 'down' : ''}"><b>${dhMark(q)}</b></span></td><td>${q.stx}</td></tr>`));
-  add('tbl-tours', TOURNAMENTS.map((t) => `<tr><td class="nw"><b>${t.n}</b></td><td class="c">${t.s}</td><td class="c">${t.s * 3}回</td><td class="c">${(t.s - 1) * 2}枚</td><td class="c">${t.min}分</td>
+  add('tbl-tours', TOURNAMENTS.map((t) => `<tr><td class="nw"><b>${t.n}</b></td><td class="c">${t.s}</td><td class="c">${t.s * 3}回</td><td class="c">${t.s * 3}枚</td><td class="c">${t.min}分</td>
     <td>${t.judges.length ? t.judges.map((id) => judgeById[id].n.split(' ')[0].replace('ダ・シルヴァ太陽', '太陽').replace('エミル・ユルマズ', 'エミル')).join('・') : 'なし（審査カードを使わない）'}</td><td>${t.task ? byId[t.task].n : 'なし'}</td></tr>`));
   const deck = (id, d) => { const u = document.getElementById(id); if (u) u.innerHTML = d.map(([n, c]) => `<li${supByName[n].type === '炭' ? ' class="coal"' : ''}>${n}<span>×${c}</span></li>`).join(''); };
   deck('deck-a', DECK_A); deck('deck-b', DECK_B);
@@ -109,8 +109,8 @@
   // 熱の動き（適温4〜6の葉の例）。線=蓄えた熱、丸=判定熱
   const hf = document.getElementById('heatfig');
   if (hf) {
-    const prep = [3, 3, 3, 3, 6, 6];                    // 立ち上げは種火3つ。5ターン目に焼けたフラット炭2つ（1つは種火と入れ替え）
-    const heat = [5, 5, 6, 5, 5, 5, 6, 5, 5];           // 自分のターンを終えたときの熱
+    const prep = [1, 2, 3, 4];                          // 第0.8版: 熱は0から。準備の4ターンで、火力へ向かって1ずつ上がる
+    const heat = [5, 4, 5, 5, 6, 5, 5, 4, 5];           // 自分のターンを終えたときの熱（動くのは1ターンに1）
     const dh = [0, 1, 0, 0, -1, 0, 0, 1, 0];            // 審査カードの変化
     const seq = [...prep, ...heat], n = seq.length;
     const W = 680, H = 118, L = 34, R = 8, T = 6, B = 26;
@@ -119,7 +119,7 @@
     s += `<rect x="${L}" y="${y(6.5)}" width="${W - L - R}" height="${y(3.5) - y(6.5)}" fill="#7fbd66" opacity=".35"/>`;
     s += `<rect x="${L}" y="${T}" width="${W - L - R}" height="${y(7.5) - T}" fill="#b5302a" opacity=".16"/>`;
     for (const v of [0, 2, 4, 6, 8, 10]) s += `<line x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}" stroke="#cdbda2" stroke-width=".6"/><text x="${L - 6}" y="${y(v) + 3.5}" font-size="9.5" text-anchor="end" fill="#5d5148">${v}</text>`;
-    const seg = [[0, 6, '準備（6ターン）', '#a8802f'], [6, 9, 'セッション 1', '#e2591f'], [9, 12, 'セッション 2', '#c94a17'], [12, 15, 'セッション 3', '#e2591f']];
+    const seg = [[0, 4, '準備（4ターン）', '#a8802f'], [4, 7, 'セッション 1', '#e2591f'], [7, 10, 'セッション 2', '#c94a17'], [10, 13, 'セッション 3', '#e2591f']];
     for (const [a, b, t, c] of seg) { const xa = L + (W - L - R) * a / n, xb = L + (W - L - R) * b / n;
       s += `<rect x="${xa + 1}" y="${H - 20}" width="${xb - xa - 2}" height="14" rx="3" fill="${c}"/><text x="${(xa + xb) / 2}" y="${H - 9.5}" font-size="9" font-weight="700" text-anchor="middle" fill="#fff">${t}</text>`; }
     s += `<polyline fill="none" stroke="#1f1b19" stroke-width="2.2" stroke-linejoin="round" points="${seq.map((v, i) => `${x(i)},${y(v)}`).join(' ')}"/>`;

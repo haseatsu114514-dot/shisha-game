@@ -40,6 +40,17 @@
 - 余白のボタンは、ステージの中の元のボタン（`.vn-ctl`・`.hud-lime`・`.hud-menu`）を代わりに押すだけ。処理は元のボタンのものをそのまま使う。「次へ」だけは `vn/engine.js` の `tapAdvance`（会話の面を押した時と同じ送り）。
 - 元のボタンが押せない間（モーダル・LOG・LIME・演出が上に重なっている、会話中で HUD が止まっている等）は、余白のボタンを下げる。押す瞬間にも同じ当たり判定（`elementFromPoint`）で確かめ、押せない時は何もしない。
 - 未読の数（LIME）・未使用の火種の数と増えた物の合図（MENU）・AUTO／SKIP の入り切りは、元のボタンから写す。
+- 余白へ出している間は、会話欄の上へ伸びる操作札（`--phone-tap`）の分を空けず、選択肢を PC と同じ高さ（3択以上は会話欄の上 62px、2択は 94px）へ下げる（YHK14。新版は帯のすぐ上に自分で置く）。
+
+## 試遊ページ（2026-11-13 の点検で追加）
+
+共通の画面当て（`core/stage-fit.js`）を使う単体ページには、本編と同じ A 煙と縁を出す（`initSideArea({ stage, standalone: true })`）。ゲームの状態・会話・HUD が無いので、B 縦書きの帯と C 親指ボタンは出さない。
+
+- 対象（7ページ）: `camel-race.html`・`axe-throw.html`・`desert-ride.html`・`ichidai.html`・`trpg-preview.html`・`trpg-campaign-preview.html`・`craft-preview.html`。各ページが `css/side-area.css` を読み、起動スクリプトから呼ぶ。
+- 本編の設定を読む: 本編の起動（`main.js`）を通らないので、端末に保存した「左右の余白」（ぼかしだけ）と「揺れ・閃光を減らす」（煙を止める）を `localStorage` から直接読む。
+  ただし TRPG の試遊ページ2つ（`trpg-preview.html`・`trpg-campaign-preview.html`）は、保存領域に一切触れない決まり（`test/browser/trpg.mjs`・`trpg_experience.mjs` が接触を検査する）なので、`readSettings: false` で呼び、設定は読まず既定の見た目で出す。
+- 制作の試遊ページ（`craft-preview.html`）は舞台が上のナビの下の `#viewport` に収まる。余白はその枠の左右に取る（1280×720 の窓でも、ナビのぶん舞台が縮み、左右に約46pxの余白ができて A が出る）。
+- 対象外: 画面当てが別実装の開発用プレビュー（`conversation-preview.html`・`chapter2-preview.html`・`opening-preview.html` など。余白のぼかしも無い）。
 
 ## 切り替え
 
@@ -52,3 +63,4 @@
 - 実機での確認（持っているだけで触れる誤タップ、切り欠きの側の押しやすさ、Android の端からのスワイプとの相性）。合わなければ設定で「ぼかしだけ」に戻せる。
 - 余白のどこを押しても「次へ」にする案、思い出の壁・着せ替え枠・黒と細い線（YHK04）は入れていない。
 - 会話と地図以外の画面（ショップ・シーシャ作り・ミニゲーム）のボタンは余白へ出していない。
+- DS風（`data-look="retro"`）では余白の層を出さない（自前の操作の面を持つため）。この環境では DS風の画像が足りず見た目を確かめられていない。

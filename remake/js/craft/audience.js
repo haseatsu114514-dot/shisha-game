@@ -113,7 +113,7 @@ export function buildAudience(cs) {
       fallbackName.textContent = label;
     }
   };
-  audienceAssetUrls(cs).forEach(url => imageReady(url, 15000, { keep: true }));
+  audienceAssetUrls(cs).forEach(url => imageReady(url, 15000, { keep: true, pin: true }));
   showPerson(active, "watch");
   return {
     root,

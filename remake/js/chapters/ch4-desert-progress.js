@@ -7,6 +7,7 @@ import { recordPlayMastery, syncPlayMastery, masteryLine } from "../core/play-ma
 import { readResult, rankAtLeast, RANK_ORDER, RULES_VERSION } from "../minigames/desert-ride-model.js";
 import { spendableMoney } from "../core/travel-budget.js";
 import { questionDoneKey } from "../core/affinity-stages.js";
+import { camelRaceRecord, CAMEL_STAGES } from "./ch4-camel-progress.js";
 
 export const DESERT_FLAG = "_ch4_desert";
 export const DESERT_GUIDE = "noor";
@@ -113,6 +114,29 @@ export function noorStoryDue(value) {
 export function completeNoorStory(value, id) {
   if (!value?.flags || noorStoryDue(value) !== id) return false;
   value.flags[noorStoryFlag(id)] = true;
+  return true;
+}
+
+// #3468 D案。ヌール×ファーリス「客の席が決まらない」と後日の一言。カフェ・オアシスの一台の後に一度ずつ（ch4-desert.js の visitDesert）。
+// はじめが二人と面識を得た後だけ: ヌールは名乗りを読んだ来店の次から、ファーリスは店先で知り合った後（第4章のラクダレースの段階か、
+// 第5章の店先の場面 _met_faris）。後日の一言は本場面を読んだ日より後の来店。好感度・段階・大会結果は動かさない。
+// 既読は _noor_story_* に置く（周回へ持ち越さない。core/carry.js）。本場面は読んだ日を値にする。
+export const NOOR_FARIS_SCENES = Object.freeze({ seat: "ch4_noor_faris_seat", again: "ch4_noor_faris_seat_again" });
+export const NOOR_FARIS_FLAGS = Object.freeze({ seat: "_noor_story_faris_seat", again: "_noor_story_faris_seat_again" });
+export const farisMet = value => camelRaceRecord(value).stage >= CAMEL_STAGES.met || !!value?.flags?._met_faris;
+/** 今日の来店の後に読める二人の場面（本場面→後日の一言）。来店の前に呼ぶ（名乗りの来店では出さない）。無ければ null。 */
+export function noorFarisDue(value, day) {
+  const flags = value?.flags;
+  if (!flags || desertProgress(value).talks < 1 || !farisMet(value)) return null;
+  const seat = flags[NOOR_FARIS_FLAGS.seat];
+  if (!seat) return NOOR_FARIS_SCENES.seat;
+  if (flags[NOOR_FARIS_FLAGS.again] || Number.isInteger(seat) && Number.isInteger(day) && seat >= day) return null;
+  return NOOR_FARIS_SCENES.again;
+}
+export function completeNoorFaris(value, id, day) {
+  if (!value?.flags || noorFarisDue(value, day) !== id) return false;
+  const key = id === NOOR_FARIS_SCENES.seat ? "seat" : "again";
+  value.flags[NOOR_FARIS_FLAGS[key]] = key === "seat" && Number.isInteger(day) ? day : true;
   return true;
 }
 

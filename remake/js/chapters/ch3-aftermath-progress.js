@@ -20,6 +20,7 @@ const V3_SCENE_IDS = Object.freeze(["ch3_abyss_hotel", "ch3_mashiro_recovery", "
  * 大会後の寄り道（#2028 残件3・#1658 ⑥）。優勝の翌日から煙幕の片づけまで、東京にいる間の場面カードから一度ずつ読める。
  * 読んでも stage・日時は進めない。既読は大会前の寄り道と同じ _ch3_read_<id>（ch3-story-wiring.js の optionalReadFlag）。
  * file=台詞ファイル、met=面識がある人物だけ、after=この寄り道を読んでから（順に読む）。
+ * to=CH3_AFTERMATH_SCENES の場面id。その場面を読む前の間だけ開く（省略時は片づけの朝まで）。
  */
 export const CH3_AFTERMATH_DETOURS = Object.freeze([
   { id: "ch3_mukai_after_tournament", file: "ch3_mukai", label: "閉店前のカウンター", location: "mukai", bg: "bg_mukai_shop" },
@@ -41,6 +42,12 @@ export const CH3_AFTERMATH_DETOURS = Object.freeze([
     after: ["ch3_volk_lime"], heart: { volk: 4 } },
   { id: "ch3_volk_revisit", file: "ch3_volk", label: "残した一項", location: "鉄の煙", bg: "bg_volk_shop", met: ["volk"],
     after: ["ch3_volk_fifth"], heart: { volk: 4 } },
+  // #3468 F案。ヴォルク×スティーブの挨拶と、Smoke & Glory での後日の一言。大会前の寄り道と同じ既読で、読めなかった分を順に。
+  // 台本は大会に触れない。好感度は動かさない。
+  { id: "ch3_rival_volk_steve_greeting", file: "ch3_volk", label: "長い別れ際", location: "鉄の煙", bg: "bg_volk_shop",
+    met: ["volk", "steve"] },
+  { id: "ch3_rival_volk_steve_seat", file: "ch3_volk", label: "先に座る客", location: "Smoke & Glory", bg: "bg_steve_shop",
+    met: ["volk", "steve"], after: ["ch3_rival_volk_steve_greeting"] },
   // 好感度補充。大会前に読めなかった煙幕・Smoke & Glory の段階を、帰郷前に順に読める。
   { id: "ch3_saku_missed", file: "ch3_rivals", label: "外れた予想", location: "煙幕", bg: "bg_yohaku_shop",
     after: ["ch3_saku_lime"], heart: { saku: 2 } },
@@ -58,6 +65,15 @@ export const CH3_AFTERMATH_DETOURS = Object.freeze([
     met: ["steve"], after: ["ch3_steve_empty_seat"], heart: { steve: 4 } },
   { id: "ch3_steve_watch", file: "ch3_rivals", label: "伏せたタイマー", location: "Smoke & Glory", bg: "bg_steve_shop",
     met: ["steve"], after: ["ch3_steve_tongs"], heart: { steve: 4 } },
+  // #3468 C案。スティーブが煙幕へピザを差し入れる短い別訪問。綾取の帰り支度が始まった頃（片づけの朝の前日）だけ。
+  // 窓の終わりは綾取の授業・締めくくりと同じなるへの報告まで（to）。好感度は動かさない。後日の一言は第4章のLIME。
+  { id: "ch3_saku_steve_notes", file: "ch3_rivals", label: "読めない記号", location: "煙幕", bg: "bg_yohaku_shop",
+    met: ["saku", "steve"], to: "ch3_naru_reconcile" },
+  // #3468 H案。ましろ×ムカイさんの棚整理と、札が残る後日の一言。大会前に読めなかった分を同じ既読で順に。
+  // 台本は大会に触れない。好感度は動かさない。
+  { id: "ch3_mashiro_mukai_syrup_shelf", file: "ch3_mashiro", label: "店用の瓶", location: "mukai", bg: "bg_mukai_shop" },
+  { id: "ch3_mashiro_mukai_shelf_tags", file: "ch3_mashiro", label: "棚の札", location: "mukai", bg: "bg_mukai_shop",
+    after: ["ch3_mashiro_mukai_syrup_shelf"] },
   // #3081。大会前に読めなかったましろの段階の続き。台本は大会に触れないので、前後どちらの読了でも同じ。
   // 既読は大会前の寄り道と同じ _ch3_read_<id>。続く2本は glass_cloth の次へつなぐ。
   { id: "ch3_mashiro_timer_side", file: "ch3_mashiro", label: "タイマーの隣", location: "mukai", bg: "bg_mukai_shop",
@@ -71,6 +87,8 @@ export const CH3_AFTERMATH_DETOURS = Object.freeze([
     after: ["ch3_mashiro_glass_cloth"] },
   { id: "ch3_mashiro_bench_tea", file: "ch3_mashiro", label: "裏口のベンチ", location: "mukai", bg: "bg_mukai_shop",
     after: ["ch3_mashiro_leaf_rest"] },
+  // #3468 G案。ムカイさん×ヨルの開店前の曲順。大会前に読めなかった時だけ、同じ既読で。台本は大会に触れない。好感度は動かさない。
+  { id: "ch3_mukai_yoru_playlist", file: "ch3_mukai", label: "昼の曲順", location: "mukai", bg: "bg_mukai_shop", met: ["yoru"] },
 ]);
 /**
  * 好感度の段階（♥）の下限。core/stats.js の AFFINITY_RANK_PTS の写し（vm で読む試験の依存を増やさない。ch3_aftermath.mjs で照合）。
@@ -87,6 +105,7 @@ export function availableAftermathDetours(value) {
   const stage = value.flags._ch3_aftermath?.stage;
   if (!Number.isInteger(stage) || stage < DETOUR_FIRST || stage > DETOUR_LAST) return [];
   return CH3_AFTERMATH_DETOURS.filter(scene => !value.flags[detourReadFlag(scene.id)]
+    && (!scene.to || stage <= sceneIndex(scene.to))
     && (scene.met || []).every(who => value.met?.[who])
     && (scene.after || []).every(id => value.flags[detourReadFlag(id)])
     && Object.entries(scene.heart || {}).every(([who, level]) => (value.affinity?.[who] || 0) >= AFTERMATH_HEART_PTS[level]));

@@ -37,8 +37,12 @@ export const CH5_SHOPS = Object.freeze([
 // Dr.fookah の2階（凛想・夜だけ・BLC08）。地図のピンは1階の店のままで、来店の時に階を選ぶ（ch5-daily.js）。
 // 第1・2章の物語の続き（段階の会話・試作）は流さず、ほかのヒロインの店と同じ通いの小会話にする。代金はかからない。
 const SHOWROOM_ID = "ch5_rio_showroom";
+// extras: 通いの小会話の代わりに一度だけ読む、街の人同士の話（REL06）。after は先に読む通いの小会話の数、met は居合わせる人、
+// seen は先に読んでおく extras（#3468 E案の仕入れ相談は、お茶の場面の続き）。相関の正本は brand/character_profiles.md「キャラ同士のつながり」。
 const showroom = () => shop(homeBase("shop"), { id: SHOWROOM_ID, talkWith: "rio", stat: CHAR_STAT.rio, bg: VISIT_BG.rio, affinity: 5,
-  needsMet: true, stamina: -14, talks: talksOf("rio_shop"), desc: "Dr.fookah の2階。夜は、凛想さんがショールームにいる。" });
+  needsMet: true, stamina: -14, talks: talksOf("rio_shop"), desc: "Dr.fookah の2階。夜は、凛想さんがショールームにいる。",
+  extras: Object.freeze([Object.freeze({ scene: "ch5_rio_naru_tea", after: 1, met: "naru" }),
+    Object.freeze({ scene: "ch5_rio_naru_order", after: 2, met: "naru", seen: "ch5_rio_naru_tea" })]) });
 /** 今、Dr.fookah の2階へ上がれるか（凛想に会ったことがあり、夜）。上がれるならその通い店、無ければ null。 */
 export function chapterFiveShowroom(value = state) {
   const entry = showroom();
@@ -59,6 +63,14 @@ export const chapterFiveShops = (value = state) => [...CH5_SHOPS, samechanShop()
 /** 第5章の柚ヶ谷の地図に出す通い店（あげはの店）。 */
 export const chapterFiveCityShops = (value = state) => [agehaShop()].filter(entry => known(value, entry));
 const allShops = () => [...CH5_SHOPS, samechanShop(), agehaShop(), showroom()].filter(Boolean);
+const extraSeenFlag = scene => `_talk_seen_${scene}`;
+/** 通いの小会話の代わりに一度だけ読む話（extras）。読めるものが無ければ null。既読は来店の精算と一緒に付ける。 */
+export function chapterFiveShopExtraDue(entry, value = state) {
+  const talks = value?.flags?.[TALKS_FLAG]?.[entry?.id] || 0;
+  return (entry?.extras || []).find(extra => talks >= (extra.after || 0) && !value.flags?.[extraSeenFlag(extra.scene)]
+    && (!extra.met || !!value.met?.[extra.met]) && (!extra.seen || !!value.flags?.[extraSeenFlag(extra.seen)])
+    && !!DB.dialogues[extra.scene]?.lines?.length)?.scene || null;
+}
 /** spotById 用（地図の外から id で引く）。 */
 export const chapterFiveShopById = id => allShops().find(entry => entry.id === id) || null;
 
@@ -86,7 +98,7 @@ function loadScenes(file, scenes) {
 }
 async function loadShopScenes(entry) {
   const firstTalks = Object.values(CH5_FIRST_TALKS);
-  await loadScenes("ch5_shops", [...allShops().flatMap(shop => shop.talks),
+  await loadScenes("ch5_shops", [...allShops().flatMap(shop => [...shop.talks, ...(shop.extras || []).map(extra => extra.scene)]),
     ...firstTalks.filter(talk => talk.file === "ch5_shops").map(talk => talk.scene)]);
   const talk = entry.firstTalk;
   if (talk && talk.file !== "ch5_shops") await loadScenes(talk.file, [talk.scene]);
@@ -124,7 +136,8 @@ export async function performChapterFiveShop(spot, { staminaGuard } = {}) {
   }
   if (staminaGuard && !(await staminaGuard(entry.stamina))) return unused;
   const talks = state.flags[TALKS_FLAG] ||= {};
-  const scene = entry.firstTalk ? entry.firstTalk.scene : entry.talks[(talks[entry.id] || 0) % entry.talks.length];
+  const extra = entry.firstTalk ? null : chapterFiveShopExtraDue(entry, state);
+  const scene = entry.firstTalk ? entry.firstTalk.scene : extra || entry.talks[(talks[entry.id] || 0) % entry.talks.length];
   if (entry.bgUrl) await setBg(entry.bgUrl);
   else {
     const { url, tint } = sceneBg(entry.bg, timeOfDay());
@@ -136,6 +149,7 @@ export async function performChapterFiveShop(spot, { staminaGuard } = {}) {
   if (entry.cost) addMoney(-entry.cost);
   addStamina(entry.stamina || -16);
   if (entry.firstTalk) recordFirstTalk(entry);
+  else if (extra) state.flags[extraSeenFlag(extra)] = true; // 通いの小会話の巡回は進めない（次はいつもの続きから）
   else talks[entry.id] = (talks[entry.id] || 0) + 1;
   if (entry.talkWith) { gainAffinity(entry.talkWith, entry.affinity || 5); markMet(entry.talkWith); }
   if (entry.stat) earnStat(entry.stat, 4);

@@ -545,12 +545,12 @@
    "time": "",
    "weather": "",
    "size": [
-    1280,
-    720
+    1672,
+    941
    ],
-   "luma": 92,
-   "blob": "0484e2fc350bc66839aadc2cbd162146c4019c88",
-   "accepted": "2026-11-02 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
+   "luma": 64,
+   "blob": "952f4b9c79362cbaaac18044614b52a4bee50e9e",
+   "accepted": "2026-11-11 オーナー全採用（#3282）。Codex の内蔵生成の上限 1672x941 の原寸で使う。台は描かれておらず、ゲームが scene-art.js の SCENE_PROPS で重ねる（2026-11-13）"
   },
   "bg_home.png": {
    "place": "home",
@@ -714,6 +714,18 @@
    "luma": 73,
    "blob": "9127a2b2dbb17878b21c5051ed86e012e70df483",
    "accepted": "2026-11-02 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
+  },
+  "bg_mukai_shop_day.png": {
+   "place": "mukai_shop",
+   "time": "day",
+   "weather": "",
+   "size": [
+    1672,
+    941
+   ],
+   "luma": 116,
+   "blob": "d081977c026941f23ee5e1fb35137d1dc2d67bf2",
+   "accepted": "2026-11-11 オーナー全採用（#3282）。Codex の内蔵生成の上限 1672x941 の原寸で使う。昼の版: ゲームは時間帯が「昼」と明示された時だけ使う（2026-11-13）"
   },
   "bg_osu_map_day.png": {
    "place": "osu_map",
@@ -904,6 +916,18 @@
    "luma": 68,
    "blob": "a9afd31c928f959cafee79eb8288de42a70b100a",
    "accepted": "2026-11-02 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
+  },
+  "bg_steve_shop_day.png": {
+   "place": "steve_shop",
+   "time": "day",
+   "weather": "",
+   "size": [
+    1672,
+    941
+   ],
+   "luma": 107,
+   "blob": "722f6afc49773d4b61e10e4ba8a8a712239513b7",
+   "accepted": "2026-11-11 オーナー全採用（#3282）。Codex の内蔵生成の上限 1672x941 の原寸で使う。昼の版: ゲームは時間帯が「昼」と明示された時だけ使う（2026-11-13）"
   },
   "bg_street_day.png": {
    "place": "street",
@@ -1106,11 +1130,12 @@
    "time": "",
    "weather": "",
    "size": [
-    1920,
-    1080
+    1672,
+    941
    ],
-   "luma": 42,
-   "blob": "19fa1ee9a44e5bfc5e31abfc70c71ac55b24a35b"
+   "luma": 61,
+   "blob": "9115bd165d68ad0eb3a8966bbef6ef42c9ded0ed",
+   "accepted": "2026-11-11 オーナー全採用（#3282）。Codex の内蔵生成の上限 1672x941 の原寸で使う。台は描かれておらず、ゲームが scene-art.js の SCENE_PROPS で重ねる（2026-11-13）"
   },
   "bg_volk_shop.png": {
    "place": "volk_shop",
@@ -1123,6 +1148,18 @@
    "luma": 55,
    "blob": "79af39e9665136907ebb943b33a734851f0a32f0",
    "accepted": "2026-11-02 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
+  },
+  "bg_volk_shop_day.png": {
+   "place": "volk_shop",
+   "time": "day",
+   "weather": "",
+   "size": [
+    1672,
+    941
+   ],
+   "luma": 87,
+   "blob": "f4b5f177fa7d74c0419a43dbcddcb043ee724bbe",
+   "accepted": "2026-11-11 オーナー全採用（#3282）。Codex の内蔵生成の上限 1672x941 の原寸で使う。昼の版: ゲームは時間帯が「昼」と明示された時だけ使う（2026-11-13）"
   },
   "bg_widehanga_map_day.webp": {
    "place": "widehanga_map",
@@ -1171,6 +1208,18 @@
    "luma": 64,
    "blob": "a83dc31f6e5f57e90a1599c0564d09735cc034c8",
    "accepted": "2026-11-02 規格制定前の既存絵（描き直すときに 1920x1080 へ）"
+  },
+  "bg_yohaku_shop_day.png": {
+   "place": "yohaku_shop",
+   "time": "day",
+   "weather": "",
+   "size": [
+    1672,
+    941
+   ],
+   "luma": 88,
+   "blob": "a8720d7c78779a9fee45ebc27bcd4e861b2ae3b2",
+   "accepted": "2026-11-11 オーナー全採用（#3282）。Codex の内蔵生成の上限 1672x941 の原寸で使う。昼の版: ゲームは時間帯が「昼」と明示された時だけ使う（2026-11-13）"
   },
   "bg_yuzugaya_aquarium.webp": {
    "place": "yuzugaya_aquarium",

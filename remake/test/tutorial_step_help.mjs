@@ -219,6 +219,17 @@ test("step intro prefers the session lesson override over the generic text (#318
   assert.equal(h.statePort.state.flags.seenStepIntro.mix, true);
 });
 
+test("tournament mix intro shows today's condition, not the practice recipe (#3553)", async () => {
+  const h = await harness("tournament");
+  h.b.guide.note.textContent = "課題フレーバー「レモン」を2g以上（大会支給）が今日の課題。合計12g以上で決める";
+  const done = h.mod.namespace.explainStepOnce(h.cs, "mix", "steam");
+  assert.equal(h.guide.open, true);
+  assert.match(h.b.guide.note.textContent, /レモン」を2g以上/);
+  assert.doesNotMatch(h.b.guide.note.textContent, /ダブルアップル/);
+  h.close();
+  assert.equal(await done, true);
+});
+
 test("step intro is skipped when the save already saw it (#3028)", async () => {
   const h = await harness("tournament");
   h.statePort.state.flags.seenStepIntro = { mix: true };

@@ -1,6 +1,6 @@
 {
  "_comment": "自動生成。編集しない。再生成: python3 remake/tools/build_manifest.py",
- "generated": "2026-11-13 04:46 UTC",
+ "generated": "2026-11-13 04:58 UTC",
  "portraits": {
   "adam": {
    "faces": [
@@ -529,6 +529,7 @@
   "bg_mukai_backdoor_day.png",
   "bg_mukai_backdoor_night.png",
   "bg_mukai_shop.png",
+  "bg_mukai_shop_day.png",
   "bg_osu_map_day.png",
   "bg_osu_map_finale.png",
   "bg_osu_map_finale_day.png",
@@ -547,6 +548,7 @@
   "bg_smoke_lab.png",
   "bg_station_walk_night.png",
   "bg_steve_shop.png",
+  "bg_steve_shop_day.png",
   "bg_street_day.png",
   "bg_street_night.png",
   "bg_street_overcast_day.png",
@@ -566,7 +568,9 @@
   "bg_toosu_park_day.png",
   "bg_tournament_stage.png",
   "bg_volk_shop.png",
+  "bg_volk_shop_day.png",
   "bg_yohaku_shop.png",
+  "bg_yohaku_shop_day.png",
   "bg_yuzugaya_aquarium.webp",
   "bg_yuzugaya_c_station.webp",
   "bg_yuzugaya_c_station_night.webp",
@@ -741,10 +745,12 @@
   "ui_temperature_frame.png"
  ],
  "sceneProps": [
+  "shisha_c_station.png",
+  "shisha_hideaway.png",
   "shisha_home_pro.png",
-  "shisha_home_tabletop.png",
+  "shisha_home_stand_custom.png",
   "shisha_home_stand_walnut.png",
-  "shisha_home_stand_custom.png"
+  "shisha_home_tabletop.png"
  ],
  "continueUI": [
   "approval_stamp.png",
@@ -2835,6 +2841,7 @@
   "backgrounds/bg_mukai_backdoor_day.png",
   "backgrounds/bg_mukai_backdoor_night.png",
   "backgrounds/bg_mukai_shop.png",
+  "backgrounds/bg_mukai_shop_day.png",
   "backgrounds/bg_osu_map_day.png",
   "backgrounds/bg_osu_map_finale.png",
   "backgrounds/bg_osu_map_finale_day.png",
@@ -2853,6 +2860,7 @@
   "backgrounds/bg_smoke_lab.png",
   "backgrounds/bg_station_walk_night.png",
   "backgrounds/bg_steve_shop.png",
+  "backgrounds/bg_steve_shop_day.png",
   "backgrounds/bg_street_day.png",
   "backgrounds/bg_street_night.png",
   "backgrounds/bg_street_overcast_day.png",
@@ -2872,7 +2880,9 @@
   "backgrounds/bg_toosu_park_day.png",
   "backgrounds/bg_tournament_stage.png",
   "backgrounds/bg_volk_shop.png",
+  "backgrounds/bg_volk_shop_day.png",
   "backgrounds/bg_yohaku_shop.png",
+  "backgrounds/bg_yohaku_shop_day.png",
   "backgrounds/eden.png",
   "backgrounds/kemurikusa.png",
   "backgrounds/peppermint.png",
@@ -3662,6 +3672,8 @@
   "ui/making/ui_mockup_inhale_button.png",
   "ui/making/ui_refresh_button.png",
   "ui/making/ui_temperature_frame.png",
+  "ui/scene_props/shisha_c_station.png",
+  "ui/scene_props/shisha_hideaway.png",
   "ui/scene_props/shisha_home_pro.png",
   "ui/scene_props/shisha_home_stand_custom.png",
   "ui/scene_props/shisha_home_stand_walnut.png",
