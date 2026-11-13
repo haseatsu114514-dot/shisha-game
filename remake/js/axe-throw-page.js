@@ -1,6 +1,8 @@
 import { el } from "./core/util.js";
 import { initStageFit } from "./core/stage-fit.js";
+import { initSideArea } from "./core/side-area.js";
 initStageFit(document.getElementById("stage")); // 画面の当て方は本編と同じ共通部品（#3076）
+initSideArea({ stage: document.getElementById("stage"), standalone: true }); // 左右の余白の煙と縁（YHK）
 import { runAxeThrow } from "./minigames/axe.js";
 import { DIFFICULTIES } from "./minigames/axe-match.js";
 import { DIVISIONS } from "./minigames/axe-model.js";
