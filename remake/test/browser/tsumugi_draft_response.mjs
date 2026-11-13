@@ -209,7 +209,8 @@ await suite("tsumugi-draft-response", async check => {
       }
       // #2534 EMO04: the completed-art scene gains three lines after "応募完了"
       // (reopening the screen, Sumi keeping the sign on, Tsumugi sitting back down).
-      assert.deepEqual(counts.current, { ...counts.baseline, artClicks: counts.baseline.artClicks + 3 },
+      // HDP03 (#3474): and five lines before the form, where Tsumugi keeps the back view she chose.
+      assert.deepEqual(counts.current, { ...counts.baseline, artClicks: counts.baseline.artClicks + 3 + 5 },
         "Dialogue click count changed");
       console.log(`${label}/${answer ?? "legacy"} clicks: ${JSON.stringify(counts)}`);
 
