@@ -19,10 +19,11 @@ import { state, markMet, STAT_EN, timeOfDay, config } from "../core/state.js";
 import { applyStats, gainAffinity, addMoney, affinityLevel, earnSceneCompletion } from "../core/stats.js";
 import { setBg, layers, toast, flash, shake, modal, dropRetired, imageReady } from "../core/ui.js";
 import { SE, playSe, playBgm, preloadBgm, currentBgm, duckBgm } from "../core/audio.js";
-import { formatHtml, sliceHtml, visibleLength, stripTags, pausePoints } from "./text.js";
+import { formatHtml, visibleLength, stripTags, pausePoints } from "./text.js";
 import { playerInner } from "./inner.js";
 import { dialoguePages } from "./layout.js";
 import { glossaryPanel } from "./glossary.js";
+import { createTypedHtml } from "./typed-html.js";
 import { rememberRelationship, relationshipReflectionLines } from "../core/relationships.js";
 import { needsIntro, playIntro, markIntroSeen, introSeenKey } from "./intro.js";
 import { buyKeepsake } from "../core/keepsakes.js";
@@ -77,22 +78,52 @@ let autoFxGap = 0;
 let sequenceDepth = 0;
 let sequenceMetBefore = null;
 const SEEN_LINES_KEY = "suien_remake_seen_dialogue_lines";
+const SEEN_LINES_LIMIT = 20000;
+// 既読の保存は1行ごとには書かない（全件の JSON 化と同期書き込みが、既読が増えるほど1行送りを重くするため。#3500 C-1）。
+// 最後の書き込みから10秒たつか、会話の終わり・タブを隠した時・ページを離れる時にまとめて書く。
+// 強制終了で失うのは、最後の10秒ほどに初めて読んだ行の既読印だけ（既読SKIPの対象から漏れるだけで、進行は失わない）。
+const SEEN_LINES_FLUSH_MS = 10000;
 let seenLines;
+let seenLinesDirty = false;
+let seenLinesTimer = 0;
 function readSeenLines() {
   if (seenLines) return seenLines;
   try { seenLines = new Set(JSON.parse(localStorage.getItem(SEEN_LINES_KEY) || "[]")); }
   catch { seenLines = new Set(); }
+  trimSeenLines();
   return seenLines;
+}
+/** 保存と同じ上限（新しい方から2万件）を、手元の記録にも当てる。古い方から捨てる。 */
+function trimSeenLines() {
+  for (const key of seenLines) {
+    if (seenLines.size <= SEEN_LINES_LIMIT) break;
+    seenLines.delete(key);
+  }
 }
 // 既読の記録を端末へ書くのは本編（index.html → main.js）だけ。会話UI・第2章などの試遊ページは本編の保存を変えない。
 let seenLinePersistence = false;
-export function enableSeenLinePersistence() { seenLinePersistence = true; }
+export function enableSeenLinePersistence() {
+  if (seenLinePersistence) return;
+  seenLinePersistence = true;
+  globalThis.addEventListener?.("pagehide", flushSeenLines);
+  globalThis.document?.addEventListener?.("visibilitychange", () => { if (document.hidden) flushSeenLines(); });
+}
+/** 読んだ行の既読印を今すぐ保存する（ふだんは10秒ごと・会話の終わり・タブを隠した時にまとめて書く）。保存の中身を比べる検査からも呼ぶ。 */
+export function flushSeenLines() {
+  clearTimeout(seenLinesTimer);
+  seenLinesTimer = 0;
+  if (!seenLinesDirty || !seenLinePersistence) return;
+  seenLinesDirty = false;
+  try { localStorage.setItem(SEEN_LINES_KEY, JSON.stringify([...seenLines])); }
+  catch { /* 端末の容量制限時も会話は続ける */ }
+}
 function markSeenLine(key) {
   if (!key || readSeenLines().has(key)) return;
   seenLines.add(key);
+  if (seenLines.size > SEEN_LINES_LIMIT) trimSeenLines();
   if (!seenLinePersistence) return;
-  try { localStorage.setItem(SEEN_LINES_KEY, JSON.stringify([...seenLines].slice(-20000))); }
-  catch { /* 端末の容量制限時も会話は続ける */ }
+  seenLinesDirty = true;
+  if (!seenLinesTimer) seenLinesTimer = setTimeout(flushSeenLines, SEEN_LINES_FLUSH_MS);
 }
 function queuedLines(id, lines, branch = "main") {
   return (lines || []).map((line, index) => ({ ...line, _seenKey: id ? JSON.stringify([id, branch, index]) : null }));
@@ -422,22 +453,35 @@ function sceneSetBg(ref, ready = []) {
   return url ? setBg(url, { tint, ready }) : Promise.resolve();
 }
 
+const PREFETCH_FIRST = 16; // 会話の入口（開始・jump）で先に読む枚数
+const PREFETCH_AHEAD = 16; // 送りに合わせて、この先の何行ぶんを先に読むか（#3500 C-8）
+function collectArt(lines, urls) {
+  for (const l of lines || []) {
+    const character = l.portrait === false ? null : l.portrait || l.speaker;
+    if (character && canShowPortrait(character, !!l.portrait)) {
+      const p = portraitInfo(character, l.portrait_face || l.face);
+      if (p) urls.add(p.src);
+    }
+    if (l.type === "show_cg") urls.add(cgUrl(l.cg_id));
+  }
+  return urls;
+}
+/** 同じ会話の中で一度頼んだ絵は頼み直さない（jump のたびの再発行もしない）。 */
+function requestArt(urls, r = running) {
+  const asked = r ? (r.prefetched ??= new Set()) : new Set();
+  const fresh = [...urls].filter((u) => u && !asked.has(u));
+  fresh.forEach((u) => asked.add(u));
+  if (fresh.length) preload(fresh, 0);
+}
 function prefetch(dlg) {
   if (!dlg) return;
-  const urls = new Set();
-  const collect = (lines) => {
-    for (const l of lines || []) {
-      const character = l.portrait === false ? null : l.portrait || l.speaker;
-      if (character && canShowPortrait(character, !!l.portrait)) {
-        const p = portraitInfo(character, l.portrait_face || l.face);
-        if (p) urls.add(p.src);
-      }
-      if (l.type === "show_cg") urls.add(cgUrl(l.cg_id));
-    }
-  };
-  collect(dlg.lines);
-  Object.values(dlg.branches || {}).forEach(collect);
-  preload([...urls].slice(0, 16), 0);
+  const urls = collectArt(dlg.lines, new Set());
+  Object.values(dlg.branches || {}).forEach((lines) => collectArt(lines, urls));
+  requestArt([...urls].slice(0, PREFETCH_FIRST));
+}
+/** 入口の16枚より後ろの表情・CGも、読み進めるのに合わせて先の行のぶんを頼む（分岐は選ばれて差し込まれた時点で入る）。 */
+function prefetchAhead(r) {
+  requestArt(collectArt(r.queue.slice(0, PREFETCH_AHEAD), new Set()), r);
 }
 
 // 仕様（#1362）: 報酬（metadata / growth_stats）と解決値の id は開始台本（running.id / running.dlg）に属し、
@@ -469,8 +513,9 @@ function finish(cancelled = false) {
   const r = running;
   running = null;
   clearTimeout(autoTimer);
-  clearInterval(r.typeTimer); clearTimeout(r.typeTimer);
+  stopTyping(r);
   r.removeAbort?.();
+  flushSeenLines(); // 会話の終わりに、この会話で初めて読んだ行の既読印をまとめて保存する
   const meta = r.dlg.metadata || {};
   // metadata / growth_stats の報酬（会話の最後にまとめて付く）
   if (!cancelled && meta.add_stat) applyStats(meta.add_stat);
@@ -482,6 +527,7 @@ function finish(cancelled = false) {
   layers.vn.classList.remove("active");
   document.body.classList.remove("in-vn", "vn-open", "vn-lift-props");
   dom.cg.classList.remove("show");
+  releaseCg();
   dom.portraits.replaceChildren();
   cutin?.clear();
   hideShishaDiagram(); // 会話終了（SKIP/キャンセル含む）で図解を片付ける（#1128）
@@ -511,6 +557,7 @@ function next() {
   if (!skipMode && !vnTest.turbo) markSeenLine(r.activeSeenKey);
   r.activeSeenKey = null;
   cutin?.leave({ still: reducedMotion() });
+  if (!skipMode && !vnTest.turbo) prefetchAhead(r);
   // BGMの息継ぎは、その行を読み終えて次へ進むところで戻す。すぐ次の台詞行も duck なら下げたまま渡す（戻して下げ直すと音量が波打つ）。
   if (!r.queue[0]?.duck || r.queue[0].type) releaseDuck(r);
   // 読み終えた行の合図を、次の行の画像待ち・制御行へ持ち越さない。
@@ -600,7 +647,7 @@ function next() {
     if (type === "hide_cg") {
       r.ready = false;
       dom.cg.classList.remove("show", "cg-focus-window", "cg-focus-sketch-cat", "cg-focus-sketch-blank");
-      visualSettled(dom.cg).then(() => { if (running === r) { r.ready = true; next(); } });
+      visualSettled(dom.cg).then(() => { releaseCg(); if (running === r) { r.ready = true; next(); } });
       return;
     }
     if (type === "apply") { applyLine(line); continue; }
@@ -756,6 +803,17 @@ async function showCg(id, effect = "") {
   if (!vnTest.turbo) await visualSettled(dom.cg);
   if (running !== r) return;
   if (hooks.onCg) hooks.onCg(id);
+}
+
+/**
+ * 退場し終えたCGの絵を手放す（#3500 C-12）。消えた後も background-image が残ると、会話が終わっても
+ * 最後のCGのデコード済みの絵を抱えたままになりうるため。退場の途中で外すとフェードが切れるので、動きが終わってから外す。
+ * その間に次のCGが出ていれば（show が付いていれば）触らない。
+ */
+function releaseCg() {
+  const cg = dom.cg;
+  if (!cg || cg.classList.contains("show")) return;
+  visualSettled(cg).then(() => { if (!cg.classList.contains("show")) cg.style.backgroundImage = ""; }, () => {});
 }
 
 /** CSSの表示・退場が終わるまで待つ。SKIPでも途中の透明な絵を次の行で消さない。 */
@@ -968,8 +1026,7 @@ function renderPage() {
   r.totalLength = total;
   // 文中ポーズ（#2828 採用3）: [pause] の位置で文字送りを止める。続きのページは発言を出し終えた所から始まる。
   r.pauses = page.continuation ? [] : pausePoints(raw).filter((at) => at > 0 && at < r.spokenLength);
-  clearInterval(r.typeTimer);
-  clearTimeout(r.typeTimer);
+  stopTyping(r);
   dom.next.classList.remove("show");
   const speed = vnTest.turbo ? 4 : config.textSpeed;
   if (speed >= 4 || skipMode) {
@@ -990,10 +1047,22 @@ function renderPage() {
   kickAuto();
 }
 
-function startTypingInterval(r = running) {
-  if (!r || !r.typing) return;
+// 文字送りは描画のフレームに合わせて進める（#3500 C-22）。速度1〜3は従来どおり「46／26／12ms ごとに step 文字」で、
+// その送りの回数を経過時間から数え、そのフレームまでに来た送りをまとめて当てて、描画は1フレームに1回にする。
+// 1秒あたりの文字数・[pause] の位置と長さ（0.4秒）・送り音の間隔は従来と同じ。負荷で間隔が乱れても文字数が時間に追いつく。
+const nextTypeFrame = (fn) => typeof requestAnimationFrame === "function" ? requestAnimationFrame(fn) : setTimeout(fn, 16);
+const cancelTypeFrame = (id) => typeof cancelAnimationFrame === "function" ? cancelAnimationFrame(id) : clearTimeout(id);
+function stopTyping(r) {
+  if (!r) return;
   clearInterval(r.typeTimer);
   clearTimeout(r.typeTimer);
+  if (r.typeFrame) cancelTypeFrame(r.typeFrame);
+  r.typeFrame = 0;
+}
+
+function startTypingInterval(r = running) {
+  if (!r || !r.typing) return;
+  stopTyping(r);
   const speed = vnTest.turbo ? 4 : config.textSpeed;
   if (speed >= 4 || skipMode) {
     completeTyping();
@@ -1002,34 +1071,57 @@ function startTypingInterval(r = running) {
   const interval = { 1: 46, 2: 26, 3: 12 }[speed] || 26;
   const total = r.totalLength ?? (r.spokenLength + visibleLength(r.fullInnerHtml));
   const step = Math.max(1, Math.round(total / 90));
-  r.typeTimer = setInterval(() => {
-    const from = r.shown || 0;
-    const pause = r.pauses?.find((at) => at > from && at <= from + step);
-    r.shown = pause ?? from + step;
-    renderTyped(r.shown);
-    if (r.shown <= r.spokenLength && r.shown % 3 < step && !r.innerVoice) SE.blip(r.speaker);
+  const started = performance.now();
+  let ticks = 0;
+  const frame = () => {
+    r.typeFrame = 0;
+    if (running !== r || !r.typing) return;
+    // フレームの時刻ではなく今の時刻で数える（重い時はフレームが遅れて呼ばれるため）
+    const due = Math.floor((performance.now() - started) / interval);
+    const before = r.shown;
+    let pause, blip = false;
+    while (ticks < due) {
+      ticks++;
+      const from = r.shown || 0;
+      pause = r.pauses?.find((at) => at > from && at <= from + step);
+      r.shown = pause ?? from + step;
+      if (r.shown <= r.spokenLength && r.shown % 3 < step && !r.innerVoice) blip = true;
+      if (r.shown >= total || pause !== undefined) break;
+    }
+    if (r.shown !== before) renderTyped(r.shown);
+    if (blip) SE.blip(r.speaker);
     if (r.shown >= total) return completeTyping();
     // ▼は出さずに一拍止まり、続きを送る。止まっている間のクリックは本文を最後まで出す（typing のまま）。
     if (pause !== undefined) {
-      clearInterval(r.typeTimer);
       r.typeTimer = setTimeout(() => startTypingInterval(r), PAUSE_MS);
+      return;
     }
-  }, interval);
+    r.typeFrame = nextTypeFrame(frame);
+  };
+  r.typeFrame = nextTypeFrame(frame);
+}
+
+// 本文・心の声は、前回の続きから増えた文字だけを足す（#3500 C-21。作られる DOM は sliceHtml を innerHTML に入れた時と同じ）。
+const typedWriters = new WeakMap();
+function typedInto(node) {
+  let write = typedWriters.get(node);
+  if (!write) typedWriters.set(node, write = createTypedHtml(node));
+  return write;
 }
 
 function renderTyped(shown) {
   const r = running;
-  dom.text.innerHTML = sliceHtml(r.fullHtml, Math.min(shown, r.spokenLength));
+  typedInto(dom.text)(r.fullHtml, Math.min(shown, r.spokenLength));
   const innerShown = Math.max(0, shown - r.spokenLength);
-  dom.inner.hidden = !r.fullInnerHtml || innerShown === 0;
-  dom.inner.innerHTML = innerShown ? sliceHtml(r.fullInnerHtml, innerShown) : "";
+  const hideInner = !r.fullInnerHtml || innerShown === 0;
+  if (dom.inner.hidden !== hideInner) dom.inner.hidden = hideInner;
+  typedInto(dom.inner)(r.fullInnerHtml, innerShown);
 }
 
 function completeTyping() {
   const r = running;
   if (!r) return;
-  clearInterval(r.typeTimer);
-  clearTimeout(r.typeTimer);
+  stopTyping(r);
   r.typing = false;
   const total = r.totalLength ?? (r.spokenLength + visibleLength(r.fullInnerHtml));
   r.shown = total;
@@ -1278,8 +1370,7 @@ async function openSettings() {
   SE.select();
   clearTimeout(autoTimer);
   if (running?.typing) {
-    clearInterval(running.typeTimer);
-    clearTimeout(running.typeTimer);
+    stopTyping(running);
   }
   vnModalOpen++;
   try {

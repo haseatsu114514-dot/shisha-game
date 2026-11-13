@@ -280,6 +280,15 @@
       "run": ["node remake/test/browser/vn_speaker_atomic_2190.mjs"]
     },
     {
+      "id": "vn-typed-html",
+      "title": "Typewriter draws only added characters (same DOM as sliceHtml) and keeps the per-second rate (#3500)",
+      "kind": "browser",
+      "weight": 0.5,
+      "timeout": 4,
+      "paths": ["remake/js/vn/engine.js", "remake/js/vn/text.js", "remake/js/vn/typed-html.js", "remake/test/browser/vn_typed_html.mjs"],
+      "run": ["node remake/test/browser/vn_typed_html.mjs"]
+    },
+    {
       "id": "craft-layout-2190",
       "title": "Horizontal mix recipe, status explanation and full result details (#2190)",
       "kind": "browser",
