@@ -375,6 +375,11 @@
 :root[data-look="neo"] body.in-vn:not(.game-ds)[data-weather="outdoor"][data-weather-sky="day"] #stage:has(#vn .vn-portraits > img) #bg .bg-img.show:not([data-tint]) {
   filter: blur(1.5px) saturate(.68) brightness(.74) contrast(1.03);
 }
+/* 冒頭の tonari の背景（.tonari-opening）には、薄い煙（.to-smoke・不透明度 7.5%）が別の層として入っている。ぼかした背景の中に
+   別の層があると、立ち絵の呼吸や送りの印が動くたびに全面のぼかしを掛け直すので、会話中ずっと重かった
+   （PC のソフト描画で静止 p95 50ms・行送りで 50ms 超の処理が約20回 → 煙を出さないと p95 17ms・60fps。#3513）。
+   人物がいて背景をぼかしている間だけ煙を出さない（ぼけた 7.5% の煙で、見た目はほぼ変わらない）。止めるだけでは層が残って効かない。 */
+:root[data-look="neo"] body.in-vn:not(.game-ds) #stage:has(#vn .vn-portraits > img) #bg .tonari-opening .to-smoke { display: none; }
 /* 「揺れ・閃光を減らす」と端末の「動きを減らす」では、ぼかしの出入りをゆっくり動かさない。 */
 :root[data-look="neo"] body.in-vn.reduce-shake:not(.game-ds) #stage #bg .bg-img { transition: opacity .6s ease; }
 @media (prefers-reduced-motion: reduce) {
