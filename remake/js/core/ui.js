@@ -702,12 +702,17 @@ function paintedBox(node) {
 }
 
 /** 選択肢つきのモーダル。options: [{label, value, primary, test}] */
+// ブラウザの文節の判定が「上｜書き」の間で折ることがある（「このデータで上／書きされます」。TXW07）。
+// 確認の文を表示する時だけ、語の中に改行しない印（U+2060）を入れる。渡された文字列そのものは変えない。
+const KEEP_WORDS = ["上書き"];
+const keepWords = (html) => KEEP_WORDS.reduce((s, word) => s.replaceAll(word, [...word].join("\u2060")), html);
+
 export function modal({ title = "", body = "", options = [{ label: "OK", value: true, primary: true }], className = "" }) {
   return new Promise((resolve) => {
     const previousFocus = document.activeElement;
     const box = el(`div.modal-box${className ? "." + className : ""}`, [
       title ? el("h3", { text: title }) : null,
-      typeof body === "string" ? el("div.modal-body", { html: body }) : el("div.modal-body", [body]),
+      typeof body === "string" ? el("div.modal-body", { html: keepWords(body) }) : el("div.modal-body", [body]),
       el("div.modal-actions", options.map((o) =>
         el(`button.btn${o.primary ? ".primary" : ""}`, {
           text: o.label,
