@@ -12,7 +12,19 @@ storage.set("suien_growth_preview", "0");
 const core = await import("../js/core/state.js");
 const { DB } = await import("../js/core/data.js");
 const coal = await import("../js/craft/coals.js");
-const { coalJustSeconds, evaluateCoalTiming, phaseOf, summarizeCoalTimings } = await import("../js/craft/heat_logic.js");
+const { coalJustSeconds, evaluateCoalTiming, phaseOf, summarizeCoalTimings, spaceReadyTimes, HEAT_TUNING } = await import("../js/craft/heat_logic.js");
+// CRN09: 取り頃の開き始めは、隣り合う炭どうしが窓＋余白だけ離れる。並びはランダムのまま、早くはしない。
+{
+  const gap = HEAT_TUNING.readyGap;
+  // 実プレイで見た 5.49・5.55・6.23 秒の重なり → 5.49・6.24・6.99 秒に（後ろの炭が順にずれる）
+  assert.deepEqual(spaceReadyTimes([5.49, 6.23, 5.55], gap).map(t => +t.toFixed(2)), [5.49, 6.99, 6.24]);
+  for (let n = 0; n < 2000; n++) {
+    const raw = Array.from({ length: 2 + (n % 3) }, () => HEAT_TUNING.readyRange[0] + Math.random() * (HEAT_TUNING.readyRange[1] - HEAT_TUNING.readyRange[0]));
+    const spaced = spaceReadyTimes(raw, gap), sorted = spaced.slice().sort((a, b) => a - b);
+    for (let i = 1; i < sorted.length; i++) assert(sorted[i] - sorted[i - 1] >= gap - 1e-9, `coals ${JSON.stringify(spaced)}`);
+    spaced.forEach((t, i) => assert(t >= raw[i] - 1e-12, "a ready time never moves earlier"));
+  }
+}
 const { newSession } = await import("../js/craft/session.js");
 const { stepSetup, stepPlace } = await import("../js/craft/steps.js");
 const lesson = await import("../js/daily/coal-lesson.js");

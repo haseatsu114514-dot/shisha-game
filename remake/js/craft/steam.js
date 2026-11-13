@@ -13,7 +13,7 @@ import { stepPanel, refreshBench, reactAudience, setPlayerMental, setBenchTemper
 import { steamSecondsOf, steamPlaySeconds, steamTimeLabel, SHORT_DODGE_SECONDS } from "./steam-time.js";
 import { buildDigitalClock } from "./digital-clock.js";
 import { autoSkill, resultCard, keys, popStamp } from "./common.js";
-import { craftConditions, temperatureAfterSteam } from "./conditions.js";
+import { craftConditions, temperatureAfterSteam, steamFocusNote } from "./conditions.js";
 import { buildSteamTemperature } from "./steam-forecast.js";
 import { steamClimate } from "./steam-climate.js";
 import { buildSteamWorld, HEART_ART, BULLET_ART } from "./steam-art.js";
@@ -456,10 +456,13 @@ export async function runSteamDodge(cs) {
   scoreStep(cs, "steam", cs.steam.score, "蒸らし");
   refreshBench();
   popStamp(panel, hits === 0 ? "無心" : hits <= 2 ? "持ちこたえた" : "雑念まみれ", hits === 0 ? "just" : hits <= 2 ? "good" : "bad", "50%", "40%");
-  await sleep(400);
+  await sleep(120);
   if (!isCurrent()) return;
+  // CRN10: 雑念よけの出来が、次の吸い出しの針と芯にどう効くかを、ボタンを押す前に読めるようにする
+  const focusNote = steamFocusNote(cs);
   await resultCard(panel, {
     title: "蒸らし 結果",
+    summary: [hits === 0 ? "雑念に一度もつかまらなかった" : `雑念に${hits}回つかまった`, focusNote?.line].filter(Boolean),
     lines: [
       rainy ? "雨の日は熱の立ち上がりが少し遅い。吸い出しで温度を確かめよう" : "",
       `${steamTimeLabel(seconds)}蒸らした。${hits === 0 ? "最後まで一度も揺れなかった" : `雑念に${hits}回つかまった`}`,

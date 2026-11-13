@@ -22,7 +22,7 @@ import { gradeOf, autoSkill, skill, resultCard, keys } from "./common.js";
 import { HEAT_GRADES } from "./heat.js";
 import { replacementCoals } from "./heat_logic.js";
 
-import { craftConditions, heatDelta, pullResult, isIdealTemperature, isRainbowTemperature, temperatureBands, visualTemperature, temperatureAfterSteam, pullFocusFromSteam, isBurnt, isColdOut, DANGER_TEMP, COLD_OUT } from "./conditions.js";
+import { craftConditions, heatDelta, pullResult, isIdealTemperature, isRainbowTemperature, temperatureBands, visualTemperature, temperatureAfterSteam, pullFocusFromSteam, steamFocusNote, isBurnt, isColdOut, DANGER_TEMP, COLD_OUT } from "./conditions.js";
 import { buildThermometer } from "./thermometer.js";
 import { DRAW_MS, animateDraw } from "./pull-draw.js";
 import { impact, exhale, smokeRing } from "./fx.js";
@@ -82,6 +82,12 @@ const dialSector = (p0, p1, r0 = DIAL.r0, r1 = DIAL.r1) =>
   `M${dialPoint(p0, r1)}A${r1} ${r1} 0 0 1 ${dialPoint(p1, r1)}L${dialPoint(p1, r0)}A${r0} ${r0} 0 0 0 ${dialPoint(p0, r0)}Z`;
 let dials = 0;
 export { LEAF_MAX } from "./flavor-life.js";
+/**
+ * 吸い出しの手触りの調整値（CRN・P8）。試遊ページの ?tune=pull.period:1.2 で差し替えて試せる。
+ * period: 針が端から端まで動く秒（腕前・集中で伸び縮みする前）／keepSlope: キープ帯の左右の傾き
+ * sideBias: 上げ・下げの吸いに一律で足す熱（少し温まりやすく）／harshAt: これより熱い一口で疲れる（緑上端〜危険帯の相対位置）
+ */
+export const PULL_TUNING = { period: 1.5, keepSlope: .18, sideBias: .015, harshAt: .76 };
 /** TH94・TH95: 吸い出し・熱管理とも一度に吸えるのは5回まで。左の赤い葉の持ちの右に、回数を5つの点で並べる。 */
 export const MAX_PULLS = 5;
 
@@ -145,7 +151,7 @@ async function pullGame(cs, mode) {
   const maker = makerMixProfile(cs);
   const safeLimit = mode.safe + (maker.safePullsBonus || 0);
   // 熱すぎる吸引のペナルティも、緑上端〜危険帯の中の同じ相対位置で始める。
-  const harshTemp = visualTemperature(.76, bands);
+  const harshTemp = visualTemperature(PULL_TUNING.harshAt, bands);
   const panel = stepPanel(mode.store, mode.title, tutorial
     ? mode.drift ? "温度を戻すのは炭。交換する数と置き方で決まる。そのあとの吸いは味の確かめで、温度は少ししか動かない。1〜2口で整え終えよう"
     : "中央のキープは左寄りで微減、右寄りで微増。右の熱を入れる吸いは温度を上げ、左の熱を逃がす吸いは温度を下げる。雨の日は熱を入れる吸いを増やそう。吸い終わってから次の針を止める"
@@ -193,6 +199,7 @@ async function pullGame(cs, mode) {
     ${[ZONES[0].to, ZONES[1].to].map((p) => `<path class="pg-divider" d="M${dialPoint(p, DIAL.r0 - 4)}L${dialPoint(p, DIAL.r1 + 2)}"/>`).join("")}
     ${ZONES.map((z) => `<g class="pg-zone z-${z.id}"><path class="pg-sense-extra"/><path class="pg-just"/></g>`).join("")}
     <path class="dial-rim" d="${dialSector(0, 1)}"/>
+    <path class="pg-draw-arc" pathLength="1" d="M${dialPoint(0, DIAL.r1 + 12)}A${DIAL.r1 + 12} ${DIAL.r1 + 12} 0 0 1 ${dialPoint(1, DIAL.r1 + 12)}"/>
     <g class="pg-needle" data-test="pull-needle">
       <path class="needle-trail" d="M${DIAL.cx} ${DIAL.cy - 9}V${DIAL.cy - DIAL.r1 + 7}"/>
       <path class="needle-body" d="M${DIAL.cx - 3} ${DIAL.cy}L${DIAL.cx - 1.5} ${DIAL.cy - DIAL.r1 + 5}L${DIAL.cx + 1.5} ${DIAL.cy - DIAL.r1 + 5}L${DIAL.cx + 3} ${DIAL.cy}Z"/>
@@ -209,8 +216,10 @@ async function pullGame(cs, mode) {
   if (effectVisible("sense")) dial.append(effectBadge("sense", "感"));
   if (effectVisible("technique")) dial.append(effectBadge("technique", "技"));
   const currentZoneLabel = el("b", { text: "熱を逃がす吸い" });
+  // CRN06: 止めたらどこへ行くかを、針のそばでも読めるように（温度計の点線と同じ予告）
+  const destination = el("span.pull-destination", { dataset: { test: "pull-destination" } });
   const currentZone = el("div.pull-current-zone", { dataset: { test: "pull-current-zone" } }, [
-    el("small", { text: "針の現在位置" }), currentZoneLabel,
+    el("small", { text: "針の現在位置" }), currentZoneLabel, destination,
   ]);
   const dialRow = el("div.pull-dial-row", [dial, labels, currentZone]);
   const needle = dial.querySelector(".pg-needle");
@@ -269,26 +278,34 @@ async function pullGame(cs, mode) {
   thermometer.root.append(readout);
   dockBenchLeaf(cs, lifeLeaves);
 
+  // 温度を短い一語と色にする（温度計の札・行き先の予告で共通）
+  const temperatureWord = (temp) => {
+    const inZone = isIdealTemperature(temp, bands), expressive = bands.expressionWeight >= .999;
+    const optimal = isRainbowTemperature(temp, bands);
+    const position = (temp - ideal[0]) / (ideal[1] - ideal[0]);
+    const goodLabel = expressive ? position < .35 ? "適温・低" : position > .65 ? "適温・高" : "適温" : "適温";
+    return optimal ? [expressive ? goodLabel : "最適温", "optimal"] : inZone ? [goodLabel, "ok"] : temp >= DANGER_TEMP ? ["焦げる寸前！", "danger"]
+      : temp > ideal[1] ? ["熱い", "hot"] : mode.drift && temp <= COLD_OUT + 0.08 ? ["冷え切りそう！", "cold"] : ["ぬるい", "cool"];
+  };
+  const focusNote = mode.store === "pull" ? steamFocusNote(cs) : null;
   const render = () => {
     thermometer.update(T);
     setBenchTemperature(cs, T);
     const predicted = clamp(T + pullHeat(actionAt(pos).delta),0,1);
     thermometer.preview(running && !drawing && !finished ? predicted : null);
+    const showDestination = running && !drawing && !finished && !choosing;
+    const [destWord, destTone] = temperatureWord(predicted);
+    destination.textContent = showDestination ? `止めると → ${destWord}` : "";
+    destination.dataset.tone = showDestination ? destTone : "";
     if (omen) omen.textContent = !running || drawing || finished ? "" : isBurnt(predicted) ? "次の一口で焦げそうだ"
       : mode.drift && predicted <= COLD_OUT + .04 ? "冷え切る前に熱を戻したい"
       : predicted >= harshTemp ? "次の一口は熱が強すぎそうだ"
       : pulls + 1 > safeLimit && cs.leaf.hp <= 1 ? "これ以上吸うと、最後の葉が抜けそうだ"
       : pulls + 1 > safeLimit ? "次の一口から葉を傷めそうだ" : "";
     if (choosing) return;
-    const inZone = isIdealTemperature(T, bands);
-    const expressive = bands.expressionWeight >= .999;
     // 表示の虹（どの配合にもある。作り分ける葉だけの配合はおいしく作れる範囲全体）。採点の最適温とは別。
-    const optimal = isRainbowTemperature(T, bands);
-    const position = (T - ideal[0]) / (ideal[1] - ideal[0]);
-    const goodLabel = expressive ? position < .35 ? "適温・低" : position > .65 ? "適温・高" : "適温" : "適温";
     // 今の温度を短い一語で。温度計の印と同じ色にする。
-    const [state, tone] = optimal ? [expressive ? goodLabel : "最適温", "optimal"] : inZone ? [goodLabel, "ok"] : T >= DANGER_TEMP ? ["焦げる寸前！", "danger"]
-      : T > ideal[1] ? ["熱い", "hot"] : mode.drift && T <= COLD_OUT + 0.08 ? ["冷え切りそう！", "cold"] : ["ぬるい", "cool"];
+    const [state, tone] = temperatureWord(T);
     readout.dataset.tone = tone;
     readout.replaceChildren(el("b.pull-state", { text: state }), mode.drift && running && !drawing ? el("span.pull-drift", { text: "↓", title: "炭が燃え進んで、熱が落ちていく" }) : "");
     tags.replaceChildren(...[
@@ -296,6 +313,8 @@ async function pullGame(cs, mode) {
       conditions.sparsity && el("span.pull-tag", { text: "少穴", title: "吸い方による温度変化が大きい" }),
       cs.vent === "closed" && el("span.pull-tag", { text: "蓋：閉" }),
       conditions.rainy && el("span.pull-tag", { text: "雨", title: "熱が入りづらい" }),
+      // CRN10: 蒸らしの集中が、この吸い出しの針と芯に効いていることを見せる
+      focusNote?.tag && el("span.pull-tag.focus", { text: focusNote.tag.text, title: focusNote.line, dataset: { tone: focusNote.tag.tone, test: "pull-focus" } }),
     ].filter(Boolean));
     pips.forEach((pip, i) => pip.classList.toggle("on", i < pulls));
     pullCount.textContent = `${pulls}/${MAX_PULLS}`;
@@ -323,7 +342,7 @@ async function pullGame(cs, mode) {
   // 針（左→右→左の往復）。熱管理では同じ時間で炭の熱も動く。
   let pos = 0, dir = 1, raf = 0, last = 0, running = false, choosing = false, drawing = false, finished = false, abandoned = false;
   let stopBubbles = () => {};
-  let period = 1.5 * slowNow();
+  let period = PULL_TUNING.period * slowNow();
   const loop = (now) => {
     if (!running || drawing || finished) return;
     if (state!==owner || !play.isConnected) { abandoned = true; running = false; serve(); return; }
@@ -350,7 +369,7 @@ async function pullGame(cs, mode) {
     const jw = (z.just[1] - z.just[0]) * widen;
     const isJust = at >= z.just[0] && at <= z.just[0] + jw;
     // キープ中央は維持。半円の色に合わせ、左寄りは微減、右寄りは微増。
-    const raw = z.id === "keep" ? (at - .5) * .18 : (isJust ? z.justDelta : z.delta) + .015;
+    const raw = z.id === "keep" ? (at - .5) * PULL_TUNING.keepSlope : (isJust ? z.justDelta : z.delta) + PULL_TUNING.sideBias;
     // 熱管理の吸いは確かめの一口。熱を入れる吸いで冷えた一台を戻すことはできない（E06 案A）。
     const delta = mode.drift ? raw * CARE_PULL_SCALE : raw;
     return { z, isJust, delta, critical: isJust && growthCritical(state, at - (z.just[0] + jw / 2), jw, { tutorial }) };
@@ -368,7 +387,7 @@ async function pullGame(cs, mode) {
   // 吸いすぎ・過熱の吸い出しで、はじめが疲れる。針と成功帯にすぐ反映する（TH29）。
   const strain = () => {
     if (!strainBench(cs)) return;
-    period = 1.5 * slowNow(); widen = widenNow(); placeJusts();
+    period = PULL_TUNING.period * slowNow(); widen = widenNow(); placeJusts();
     if (T >= harshTemp) SE.miss();
   };
   const doPull = async (at = pos, deep = false) => {
@@ -381,6 +400,11 @@ async function pullGame(cs, mode) {
     drawing = true;
     cancelAnimationFrame(raf);
     moveNeedle(landed);
+    // CRN06: 押した瞬間に返す。針先と止めた帯が光り、芯ならその帯の芯が強く光る（判定の文字は出さない・TH36）
+    delete play.dataset.stopped; void play.offsetWidth;
+    play.dataset.stopped = isJust ? "just" : "plain";
+    play.dataset.stopZone = z.id;
+    SE.click?.();
     pulls++;
     const duration = autoSkill() ? 120 : DRAW_MS[z.id] * (deep ? 1.5 : 1);
     const heat = pullHeat(delta);
@@ -433,8 +457,17 @@ async function pullGame(cs, mode) {
         }
       }
       if (critical) { criticals++; drawStatus.textContent = "会心の一服"; }
-      // 狙いどおりの一吸い（芯）に手応え。会心は大きく
-      if (isJust) impact(play, critical ? "big" : "perfect", { at: dial, color: "#b48cff" });
+      // CRN06: 吸い終わりの手応えは「温度が良くなった」一口に付ける。最適温（虹）へ入った・会心は大きく、
+      // 適温へ入った一口は中くらい、中心へ近づいた一口は火の粉だけ。離れた一口には何も出さない。
+      {
+        const pointer = thermometer.root.querySelector(".thermo-pointer") || dial;
+        const host = panel.querySelector(":scope > .pull") || play;
+        const rainbowNow = isRainbowTemperature(T, bands), idealNow = isIdealTemperature(T, bands);
+        const closer = Math.abs(T - center) < Math.abs(before - center) - .004;
+        const kind = critical || (rainbowNow && !isRainbowTemperature(before, bands)) ? "big"
+          : idealNow && !isIdealTemperature(before, bands) ? "perfect" : closer ? "good" : null;
+        if (kind) impact(host, kind, { at: pointer, zoomNode: thermometer.root, color: rainbowNow ? "#f6dcaf" : "#b48cff" });
+      }
       if (isJust && mode.store === "pull" && !tutorial && growthSkill(state,"K21")) {
         smokeRings++;
         const ring = el("i", { "aria-hidden": "true", dataset: { test: "pull-smoke-ring" }, style: {
@@ -623,6 +656,8 @@ async function pullGame(cs, mode) {
   stopBubbles();
   setBenchDraw(cs, null);
   render();
+  // 針が止まった後の札は、結果カード（下端に重なる）の裏に半分隠れるだけなので畳む。
+  currentZone.hidden = true;
   unkey();
   if (abandoned) return false;
   if (failed) {
@@ -655,9 +690,12 @@ async function pullGame(cs, mode) {
     // 適温はまとまった煙、最適温・会心はたっぷり長く残って煙の輪もひとつ。ぬるいと薄く小さく、熱すぎるとむせてちぎれる。
     // 煙は作業風景の窓の中だけで、計器や結果の札には掛けない。待たない（結果の確認を遅らせない）
     exhale(panel.closest?.(".bench") || panel, { color: mixColor(cs.mix), grand: inZone && (optimal || criticals > 0), quality: inZone ? "good" : T > ideal[1] ? "harsh" : "thin" });
+    // CRN08・CRN03: ボタンを押す前に、出来（温度の一語）と、この温度がこの後どう効くかを読めるようにする
+    const [servedWord] = temperatureWord(T);
+    const careFollows = !!panel.closest?.(".bench")?.querySelector?.('.bench-phase[data-step^="care"]');
     await resultCard(panel, {
       title: context.title,
-      summary: [context.summary],
+      summary: [context.summary, `${servedWord}（${pulls}回吸った）${careFollows ? "。この温度から調整が始まる" : ""}`],
       lines: [
         ...(naruFinished ? ["焼き際を見極めた。仕上げの評価に小さな手応え"] : []),
         inZone && bands.expressionWeight >= .999 ? "適温で、味の表情を整えられた" : optimal ? "最適温に合わせられた" : inZone ? "適温に整えられた" : T > ideal[1] ? "少し熱いままだった" : "まだぬるかった",
@@ -669,8 +707,10 @@ async function pullGame(cs, mode) {
     return true;
   }
   tickerSay(inZone ? "パッキー「最後の一口まで崩れない！ 守り切ったーッ！」" : "パッキー「おっと、熱がぶれているか〜！？」");
+  const [keptWord] = temperatureWord(T);
   await resultCard(panel, {
     title: `${mode.title} 結果`,
+    summary: [`${keptWord}で整え終えた（${coals ? `炭×${coals}` : "炭そのまま"}・${pulls}回吸った）`],
     lines: [
       inZone ? `適温に整えて、${context.returned}` : T > ideal[1] ? cs.mode==="tournament"?"熱いまま審査員に任せてしまった":"まだ熱い。次は炭を減らすか、外寄りに置こう" : cs.mode==="tournament"?"冷めたまま審査員に任せてしまった":"まだぬるい。次は炭を多めに替えるか、内寄りに寄せよう",
       tasteCard,

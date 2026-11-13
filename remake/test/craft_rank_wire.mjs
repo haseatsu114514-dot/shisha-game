@@ -65,6 +65,33 @@ test('live average includes only completed items and never mutates the session',
   assert.equal(score.provisionalCraftScore({ holes: { score: NaN }, heat: { score: Infinity } }), null);
 });
 
+test('climbing rank starts at D and opens one grade per finished step (CRN01)', () => {
+  const steps = ['setup', 'mix', 'pack', 'holes', 'place', 'heat', 'steam', 'pull', 'care1', 'care2'];
+  const grade = cs => snapshot(score.climbingCraftScore(cs, steps)).grade;
+  assert.equal(score.climbingCraftScore({}, steps), 0);
+  assert.equal(grade({}), 'D');
+  // 全部満点の一台は、工程ごとに D→C→B→A→S→SSS と1段ずつ上がる
+  const cs = {};
+  const seen = [grade(cs)];
+  cs.holes = { score: 100 }; seen.push(grade(cs));
+  cs.heat = { score: 100 }; seen.push(grade(cs));
+  cs.stats = { craftQuality: 100 }; cs.pullDone = true; seen.push(grade(cs));
+  const before = JSON.stringify(cs);
+  cs.careHistory = [{ score: 100 }]; seen.push(grade(cs));
+  assert.equal(JSON.stringify({ ...cs, careHistory: undefined }), JSON.stringify({ ...JSON.parse(before), careHistory: undefined }));
+  cs.careHistory.push({ score: 100 }); seen.push(grade(cs));
+  assert.deepEqual(seen, ['D', 'C', 'B', 'A', 'S', 'SSS']);
+  // 出来が平均70の一台は、Bで止まる（上限ではなく平均で抑えられる）
+  assert.equal(grade({ holes: { score: 70 }, heat: { score: 70 }, pullDone: true, stats: { craftQuality: 70 } }), 'B');
+  // 全工程を終えたら、最終の総合（ボーナス前）と一致する
+  const full = { holes: { score: 90 }, heat: { score: 80 }, pullDone: true, stats: { craftQuality: 100 }, careHistory: [{ score: 70 }, { score: 60 }] };
+  assert.equal(score.climbingCraftScore(full, steps), score.finalize(structuredClone({ ...full, chapter: 2, mode: 'rehearsal' })).total);
+  // 調整なしの台は、提供で全工程が終わる
+  const noCare = steps.filter(id => !id.startsWith('care'));
+  assert.equal(score.climbingCraftScore({ holes: { score: 90 }, heat: { score: 90 }, pullDone: true, stats: { craftQuality: 90 } }, noCare), 90);
+  assert.equal(score.climbingCraftScore({ heat: { score: NaN } }, steps), 0);
+});
+
 test('final totals, parts, bonus and D–S ranks match the unchanged scoring formula', () => {
   for (const chapter of [1, 2]) for (const mode of ['tournament', 'rehearsal']) for (const skipped of [false, true]) for (const n of [0, 49.9, 65, 90, 95, 98, 100]) {
     const cs = { chapter, mode, holes: { score: n, skipped }, heat: { score: 80 }, stats: { craftQuality: 96 }, careHistory: [{ score: 70 }, { score: 100 }] };

@@ -14,7 +14,7 @@ import { createCraftClock } from "./clock.js";
 import { impact, fxHolding } from "./fx.js";
 import { state } from "../core/state.js";
 import { growthCritical, settleGrowthPhase, SKILL_TUNING } from "../core/growth-effects.js";
-import { coalJustSeconds } from "./heat_logic.js";
+import { coalJustSeconds, spaceReadyTimes } from "./heat_logic.js";
 import { effectVisible, effectBadge, senseBand, effectTier } from "./effect-visual.js";
 
 export async function runHeat(cs) {
@@ -26,7 +26,7 @@ export async function runHeat(cs) {
   cs.heat = res;
   scoreStep(cs, "heat", res.score, "炭焼き");
   refreshBench();
-  await sleep(350);
+  await sleep(120);
   const bonuses = [
     ...(res.heatStability >= 70 ? ["HEAT STABLE"] : []),
     ...(res.aromaRetention >= 68 ? ["AROMA KEEP"] : []),
@@ -72,8 +72,9 @@ export async function burnCoals(cs, panel, { count = 3, compact = false, onPick 
   const { info, feedback } = view;
   if (effectVisible("sense")) info.prepend(senseBand(plainBase, 90, justSec - baseJustSec));
   if (effectVisible("insight")) view.root.classList.add("insight-visible");
-  const coals = view.coals.map(c => ({ ...c,
-    tj: rand(4.2, 7.4) * (tutorial ? 1.25 : 1),
+  const ready = spaceReadyTimes(view.coals.map(() => rand(...HEAT_TUNING.readyRange) * (tutorial ? 1.25 : 1)), HEAT_TUNING.readyGap);
+  const coals = view.coals.map((c, i) => ({ ...c,
+    tj: ready[i],
     picked: null, timing: null, p: 0,
   }));
   panel.append(view.root);
@@ -139,9 +140,11 @@ export async function burnCoals(cs, panel, { count = 3, compact = false, onPick 
       // 洞察★: ジャスト直前にかすかな揺らぎ（読みやすさ）
       n.classList.toggle("soon", clarity > 0 && ph === "pre" && c.p > 1 - 0.1 * clarity);
       if (effectVisible("insight") && n.classList.contains("soon") && !n.querySelector(".effect-badge")) n.append(effectBadge("insight", "察"));
-      if (ph === "just" && !n.classList.contains("pikan")) { n.classList.add("pikan"); SE.tick(); }
+      // CRN09: 窓が開く少し前に、枠を一度だけ瞬かせる（構え）。洞察の「soon」はこれより長く、はっきり出る
+      if (!c.cued && c.tj - t <= HEAT_TUNING.readyCue && c.tj - t > 0) { c.cued = true; n.classList.add("ready-cue"); }
+      if (ph === "just" && !n.classList.contains("pikan")) { n.classList.add("pikan"); n.classList.remove("ready-cue"); SE.tick(); }
       if (ph !== "just") n.classList.remove("pikan");
-      if (c.p > 1.75) pick(c, t, true); // 放っておくと灰になって勝手に落ちる
+      if (c.p > HEAT_TUNING.autoDrop) pick(c, t, true); // 放っておくと灰になって勝手に落ちる
     }
     if (!finished) raf = requestAnimationFrame(loop);
   };

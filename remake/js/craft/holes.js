@@ -13,7 +13,7 @@ import { craftCondition } from "../core/condition.js";
 import { state as gameState } from "../core/state.js";
 import { growthSkill, settleGrowthPhase, SKILL_TUNING } from "../core/growth-effects.js";
 import { artImg } from "./art.js";
-import { sparks } from "./fx.js";
+import { sparks, burstFlash, shockRing, fxMode } from "./fx.js";
 
 import { RINGS, circularAngleDistance, templateComplete, evaluateFoil, usesFoil, skippedFoilResult,
   NEEDLE, needleHalfArc, needleOffset, referenceDegrees, HOLE_SIZES, pressDepth, pressLimit } from "./holes_logic.js";
@@ -21,6 +21,8 @@ import { HOLE_TEMPLATES, DEFAULT_HOLE_TEMPLATE, availableHoleTemplates, ringsFor
 import { stepVent } from "./steps.js";
 export { RINGS } from "./holes_logic.js";
 const TIME_LIMIT = 32;
+// リングが埋まってから次のリング（最後なら結果）へ自動で進むまで（CRN02）。完成の演出を見せる間。
+const RING_ADVANCE_MS = 600;
 const DEG = Math.PI / 180;
 const foilSurface = () => artImg("foil_interactive_top.png", 430, "foil-surface", { h: 430 });
 
@@ -97,7 +99,7 @@ export async function runHoles(cs) {
   const panel = stepPanel("holes", "アルミ穴あけ", "配置図を見てテンプレートを選ぶ。開始すると、光る目印の近くを針が動く", { brief: "穴の配置を選んでから、穴あけを始める" });
   await showStepDemo(cs, "holes");
   const template = await chooseTemplate(panel, cs);
-  stepPanel("holes", "アルミ穴あけ", "光る目印に針が重なったら押し、少し押し込んでから離す（Space長押しでも可）。リングが完成したら「次のリングへ」");
+  stepPanel("holes", "アルミ穴あけ", "光る目印に針が重なったら押し、少し押し込んでから離す（Space長押しでも可）。リングが埋まると次のリングへ進む");
   const rings = ringsForTemplate(template);
   const slow = skill.slow(cs) * (tutorial ? 1.3 : 1);
   const perfWin = 4.2 * skill.window(cs, "holes") * (tutorial ? 1.5 : 1);
@@ -133,19 +135,24 @@ export async function runHoles(cs) {
     feedback.replaceChildren();
     popStamp(feedback, text, kind, "50%", "50%");
   };
+  // 一刺しの判定は、目が向いている穴のすぐ外側に出す（CRN05。右の札まで目を動かさない）
+  const calloutAt = (text, kind, a, r) => {
+    reactAudience(cs, kind);
+    const [x, y] = posOf(a, Math.min(1.02, r + 0.17));
+    plane.querySelectorAll?.(":scope > .stamp").forEach((old, i, all) => { if (i < all.length - 1) old.remove(); });
+    // 長い文字（浅い穴…）でも盤の外へ切れないよう、横は内側へ寄せる
+    const keep = (v, edge) => Math.max(edge, Math.min(100 - edge, v));
+    popStamp(plane, text, kind, `${keep(50 + x * 50, text.length > 9 ? 26 : 16)}%`, `${keep(50 + y * 50, 6)}%`);
+  };
   const plan = el("div.hr-plan", { dataset: { test: "hole-plan" } });
   const punchBtn = el("button.btn.primary.hr-punch", { dataset: { test: "hole-punch" } }, [el("span.btn-label", { text: "穴を開ける" })]);
-  const nextBtn = el("button.btn.small", { text: "次のリングへ", dataset: { test: "hole-next" } });
-  const doneBtn = el("button.btn.small.ghost", { text: "穴あけを終えて結果へ", dataset: { test: "hole-done" } });
-  panel.append(el("div.holes", [
-    el("div.hr-stage", [disc]),
-    el("div.hr-side", [el("small.ht-current", { text: template.label }), ringLabel,
+  const side = el("div.hr-side", [el("small.ht-current", { text: template.label }), ringLabel,
       effectVisible("technique") ? effectBadge("technique", "技") : null,
       senseBand(basePerfWin, 12), effectLine("technique", "技", "技術で針がゆっくり"),
       el("div.hr-time", [el("span", { text: "TIME" }), timeBar]), feedback, plan,
       el("p.hr-depth-hint", { dataset: { test: "hole-depth-hint" }, text: "押す長さで深さが変わる。短すぎると浅く、長いほど大きい穴に。" }),
-      punchBtn, el("div.hr-row", [nextBtn, doneBtn])]),
-  ]));
+      punchBtn]);
+  panel.append(el("div.holes", [el("div.hr-stage", [disc]), side]));
 
   // ---- 状態
   const state = rings.map((rg) => ({
@@ -235,12 +242,10 @@ export async function runHoles(cs) {
   const hud = () => {
     const ready = complete();
     punchBtn.disabled = finished || ringComplete();
-    nextBtn.disabled = finished || !ringComplete() || ri === state.length - 1;
-    doneBtn.disabled = finished || !ready;
     // 初めの一行は操作の案内（新しい配置では常設しない・CSL15）。完成などの知らせは出す。
     plan.dataset.tone = ready || ringComplete() || elapsed >= limit ? "notice" : "hint";
-    plan.textContent = ready ? "選んだ配置が完成。結果を確認しよう"
-      : ringComplete() ? "リング完成。「次のリングへ」で残りの目印を開けよう"
+    plan.textContent = ready ? "選んだ配置が完成。結果へ"
+      : ringComplete() ? "リング完成。次のリングへ"
       : elapsed >= limit ? "時間評価は終了。穴あけは続けられます"
       : "光る目印に針が重なったら、押し込んで刺す";
   };
@@ -296,14 +301,14 @@ export async function runHoles(cs) {
     ring.holes.push({ a, d: dRef, size });
     if (depth === "shallow") {
       tally.shallow++;
-      report("浅い穴。大きく減点", "rough");
+      calloutAt("浅い穴。大きく減点", "rough", a, ring.r);
     } else if (kind === "perfect" || kind === "good") {
       tally[kind]++;
-      report(`${kind === "perfect" ? "EXCELLENT" : "GOOD"}${sizeNote}`, kind);
+      calloutAt(`${kind === "perfect" ? "EXCELLENT" : "GOOD"}${sizeNote}`, kind, a, ring.r);
     } else {
       ring.extra++;
-      if (kind === "close") { tally.tooClose++; report(`近すぎたけど開いた${sizeNote}`, "rough"); }
-      else { tally.rough++; report(`ズレたけど開いた${sizeNote}`, "rough"); }
+      if (kind === "close") { tally.tooClose++; calloutAt(`近すぎたけど開いた${sizeNote}`, "rough", a, ring.r); }
+      else { tally.rough++; calloutAt(`ズレたけど開いた${sizeNote}`, "rough", a, ring.r); }
       if (ring.id === "inner") tally.tooMany++;
     }
     ring.aim = nextAim(ring, k + 1);
@@ -311,8 +316,14 @@ export async function runHoles(cs) {
     sweepStart = t;
     addHoleDot(a, ring.r, depth === "shallow" ? "rough" : kind, depth);
     if (depth !== "shallow" && (kind === "perfect" || kind === "good")) {
-      const [hx, hy] = posOf(a, ring.r);
-      sparks(plane, { x: `${50 + hx * 50}%`, y: `${50 + hy * 50}%`, n: 5, spread: 55 });
+      // 針も盤も止めない（#3499）。刺した点に、小さな閃光・輪・火の粉を重ねる（CRN05）
+      const [hx, hy] = posOf(a, ring.r), at = { x: `${50 + hx * 50}%`, y: `${50 + hy * 50}%` };
+      if (kind === "perfect") {
+        burstFlash(plane, { ...at, size: 64, color: "#ffc94a" });
+        shockRing(plane, { ...at, size: 84, color: "#ffc94a" });
+      }
+      sparks(plane, { ...at, n: kind === "perfect" ? 9 : 6, spread: kind === "perfect" ? 70 : 55 });
+      if (fxMode() === "full") globalThis.navigator?.vibrate?.(kind === "perfect" ? 12 : 6);
     }
     setBenchHoleAction(cs, {
       dots: state.flatMap(rg => rg.holes.map(hole => posOf(hole.a, rg.r))), target: posOf(a, ring.r),
@@ -321,10 +332,19 @@ export async function runHoles(cs) {
     if (ring.taken.every(Boolean)) {
       const clean = ring.holes.every((hole) => hole.d <= perfWin && hole.size === HOLE_SIZES.small) && ring.extra === 0;
       report(clean ? "BEAUTIFUL RING" : "RING COMPLETE", "just");
-      sparks(plane, { color: clean ? "#ffc21a" : undefined, n: 8, spread: 90 });
+      // リング全体が鳴る: 中心から大きな輪と、リングの円周に沿った火の粉（盤は止めない）
+      const size = Math.round(ring.r * D * 1.05), gold = clean ? "#ffc21a" : undefined;
+      shockRing(plane, { size, color: gold || "#ffd27a" });
+      for (let k = 0; k < 6; k++) {
+        const [rx, ry] = posOf(k * Math.PI / 3 + ring.phase, ring.r);
+        sparks(plane, { x: `${50 + rx * 50}%`, y: `${50 + ry * 50}%`, color: gold, n: 3, spread: 50 });
+      }
       SE.perfect();
       tickerSay(clean ? "パッキー「きれいに揃ったーッ！ 見てくださいこの輪！」" : "パッキー「リング完成！ 手が止まりませんね〜♪」");
-      // 自動送りはしない。完成したリングは入力を止め、次のリングか仕上げを選んでもらう。
+      // 完成の演出を見せてから、次のリング（最後なら結果）へ自動で進む（CRN02）。完成したリングは入力を止める。
+      // 自動操作（テスト）は simulate が自分で進める。
+      const at = ri;
+      if (!autoSkill()) setTimeout(() => { if (!finished && ri === at) advanceRing(); }, RING_ADVANCE_MS);
     }
     drawMarkers();
     if (complete()) {
@@ -385,9 +405,7 @@ export async function runHoles(cs) {
   globalThis.window?.addEventListener("pointerup", pointerEnd);
   globalThis.window?.addEventListener("pointercancel", pointerEnd);
   globalThis.window?.addEventListener("keyup", keyEnd);
-  nextBtn.addEventListener("click", advanceRing);
-  doneBtn.addEventListener("click", finish);
-  const unkey = keys({ " ": keyStart, Space: keyStart, Enter: finish });
+  const unkey = keys({ " ": keyStart, Space: keyStart });
 
   drawMarkers();
   hud();
@@ -409,12 +427,20 @@ export async function runHoles(cs) {
   cs.holes = res;
   scoreStep(cs, "holes", res.score, "穴あけ");
   refreshBench();
-  await sleep(300);
-  panel.replaceChildren(); // 結果を出す前に穴あけ操作を片付け、完了ボタンとの重なりを防ぐ。
+  await sleep(120);
+  // 開けたアルミは舞台に残し、操作の札と目印だけ片付ける（CRN08。作ったものと評価を並べて見せる）。
+  side.remove?.();
+  markers.replaceChildren(); cursor.hidden = true;
+  disc.classList.add("finished");
+  const marked = res.tally.perfect + res.tally.good + (res.tally.rough || 0) + res.tally.tooClose + res.tally.shallow;
   await resultCard(panel, {
     title: "穴あけ 結果",
     button: "確認して次の工程へ",
     grade: res.grade,
+    summary: [
+      `EXCELLENT ${res.tally.perfect}・GOOD ${res.tally.good}・ズレ ${(res.tally.rough || 0) + res.tally.tooClose}・浅い ${res.tally.shallow}（${marked}穴）`,
+      res.evenness > 0.8 ? "穴の間隔が揃い、熱が回りやすそうだ" : "穴の間隔にばらつきがある。次は目印をよく見よう",
+    ],
     lines: [
       `テンプレート：${template.label}`,
       res.evenness > 0.8 ? "穴の間隔が揃い、熱が回りやすそうだ" : "穴の間隔にばらつきがある。次は目印をよく見よう",

@@ -91,9 +91,12 @@ async function heat(ratio, delay, mode = "tournament") {
   now = 1000; frames.clear();
   const cs = { mode, condition: conditionForRatio(ratio), equip: {} };
   const running = heatModule.namespace.runHeat(cs); await settle();
-  // 全炭を同じ速度で焼き、全面が赤くなり始めてから同じ秒数だけ待って取る。
-  await frame(1000 + 5800 * (mode === "tutorial" ? 1.25 : 1) + delay * 1000);
-  for (let i = 0; i < 3; i++) for (const fn of find(`coal-${i}`).listeners.pointerdown) fn({ preventDefault() {} });
+  // 全炭を同じ速度で焼き、それぞれ全面が赤くなり始めてから同じ秒数だけ待って取る。
+  // CRN09: 同じ秒に抽選された炭も、取り頃の開き始めは HEAT_TUNING.readyGap ずつ後ろへずれる。
+  for (let i = 0; i < 3; i++) {
+    await frame(1000 + (5.8 * (mode === "tutorial" ? 1.25 : 1) + i * heatLogic.HEAT_TUNING.readyGap + delay) * 1000);
+    for (const fn of find(`coal-${i}`).listeners.pointerdown) fn({ preventDefault() {} });
+  }
   await settle(); nextButton().onclick(); await running; return cs.heat;
 }
 const yellow = await heat(.5, .4), red = await heat(.25, .4);
@@ -123,7 +126,8 @@ assert.equal(find("coal-0").dataset.phase, "pre");
 const justWidth = .5 * conditionForRatio(1).window, ideal = 5.8 + justWidth / 2;
 const delays = [-.08, .35, -.35];
 for (let i = 0; i < 3; i++) {
-  now = 1000 + (ideal + delays[i]) * 1000; // RAFを挟まず入力時刻だけ変える。
+  // RAFを挟まず入力時刻だけ変える。CRN09: 炭 i の取り頃は readyGap×i 秒あとに開く。
+  now = 1000 + (ideal + i * heatLogic.HEAT_TUNING.readyGap + delays[i]) * 1000;
   for (const fn of find(`coal-${i}`).listeners.pointerdown) fn({ preventDefault() {} });
   assert.match(find(`coal-timing-${i}`).children[1].text, /\d+\.\d{2}秒/);
 }
@@ -143,7 +147,8 @@ nextButton().onclick(); await timingRun;
 // 灰になった炭の自動取り出しにも、遅れ・MISS・最終集計を残す。
 now = 1000; frames.clear();
 const expiredCs = { mode: "tournament", equip: {} };
-const expiredRun = heatModule.namespace.runHeat(expiredCs); await settle(); await frame(13000); await settle();
+// CRN09: 最後の炭の取り頃は 5.8＋readyGap×2 秒。その1.75倍を過ぎると灰になって落ちる。
+const expiredRun = heatModule.namespace.runHeat(expiredCs); await settle(); await frame(1000 + 1.8 * (5.8 + 2 * heatLogic.HEAT_TUNING.readyGap) * 1000); await settle();
 assert.equal(expiredCs.heat.over, 3);
 assert(expiredCs.heat.timings.every((timing) => timing.automatic && timing.errorSeconds > 0 && timing.rating === "MISS"));
 assert.equal(expiredCs.heat.timingAccuracy, 68);

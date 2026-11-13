@@ -155,13 +155,17 @@ await suite("craft-readiness", async check => {
     assert.match(shapes[0].image, /heat_cube_cold/);
     assert.match(shapes[1].image, /heat_flat_cold/);
     assert(shapes[0].height > shapes[1].height, "キューブにフラットと同じ厚みを使った");
+    // CRN09: 同じ秒に抽選された炭も、取り頃の開き始めは決まった間隔ずつ後ろへずれる（0→5.8秒、1→5.8+間隔、2→5.8+間隔×2）
+    const gap = await page.evaluate(async () => (await import("./js/craft/heat_logic.js")).HEAT_TUNING.readyGap);
     await page.evaluate(() => { coalClock = 1000 + (5.8 + .5 * T.common.skill.window(cs) / 2) * 1000; });
     await page.locator('[data-test="coal-0"]').focus(); await page.keyboard.press("Space");
+    await page.evaluate(gap => { coalClock = 1000 + (5.8 + gap + .5 * T.common.skill.window(cs) / 2) * 1000; }, gap);
     await page.locator('[data-test="coal-1"]').focus(); await page.keyboard.press("Enter");
     assert.equal(await page.locator('[data-test="coal-count"]').textContent(), "2 / 3");
     assert.match(await page.locator('[data-test="stored-coal-0"] .c-cold').getAttribute("style"), /heat_cube_cold/);
     assert.match(await page.locator('[data-test="stored-coal-1"] .c-cold').getAttribute("style"), /heat_flat_cold/);
-    await page.evaluate(() => { coalClock = 11500; });
+    // 3個目は放っておくと灰になって落ちる（取り頃の1.75倍）
+    await page.evaluate(gap => { coalClock = 1000 + (5.8 + 2 * gap) * 1.8 * 1000; }, gap);
     await page.locator('[data-test="step-summary"]').waitFor();
     assert.deepEqual(await page.evaluate(() => ({ phases: cs.heat.picks, score: cs.heat.score, automatic: cs.heat.timings.map(t => t.automatic) })),
       { phases: ["just", "just", "over"], score: 89, automatic: [false, false, true] });

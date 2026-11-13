@@ -10,7 +10,25 @@ export const HEAT_TUNING = {
   superiorTongBonus: 0.05,  // 上物トング（くじ景品）所持で窓へ加える秒。「取り頃が少し長くなる」効果
   earlyPenalty: { raw: 15, early: 45 }, // 早取りの得点（黒い面が残る＝重め）
   latePenalty: { hot: 80, over: 68 },   // 遅取りの得点（炭が減る・熱が落ちるだけ＝軽め）
+  readyRange: [4.2, 7.4],   // 取り頃が始まるまでの秒（炭ごとに抽選。チュートリアルは1.25倍）
+  readyGap: 0.75,           // CRN09: 隣り合う炭の取り頃の開き始めを、この秒だけは離す（同時に開いて腕前で取れない、を無くす。基準の窓0.5秒＋0.25秒）
+  readyCue: 0.3,            // 取り頃の窓が開く何秒前に、炭の枠を一度だけ瞬かせるか（洞察が無くても出す最小の構え）
+  autoDrop: 1.75,           // 取り頃の何倍の時間で、灰になって勝手に落ちるか
 };
+
+/**
+ * CRN09: 炭ごとの取り頃（開き始めの秒）を、隣り合う差が gap 以上になるようにずらす。
+ * 炭の並び（どれが先に焼けるか）はランダムのまま。遅い方を後ろへずらすだけで、早くはしない。
+ */
+export function spaceReadyTimes(times, gap) {
+  const order = times.map((t, i) => [t, i]).sort((a, b) => a[0] - b[0]);
+  const spaced = times.slice();
+  for (let k = 1; k < order.length; k++) {
+    const prev = spaced[order[k - 1][1]], i = order[k][1];
+    if (spaced[i] - prev < gap) spaced[i] = prev + gap;
+  }
+  return spaced;
+}
 
 export const HEAT_GRADES = {
   raw: { label: "生焼け", stamp: "黒い面だらけ", kind: "bad", score: HEAT_TUNING.earlyPenalty.raw, hp: -35, hs: -20, su: -30, br: -15, ar: 0 },

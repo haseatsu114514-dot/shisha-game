@@ -672,23 +672,46 @@ export function modal({ title = "", body = "", options = [{ label: "OK", value: 
 // ---------------------------------------------------------------- 演出パーツ
 
 /** タイミング系ミニゲームの前に必ず挟む 3・2・1（CLAUDE.md の約束） */
-export async function countdown(host = layers.fx) {
+/**
+ * 3-2-1-GO! のカウントダウン（制作のミニゲーム）。
+ * CRN07: 同じ作業台で2回目以降（レッスンを除く）は「GO!」だけにする。short で明示もできる。
+ * カウント中のタップ・キーで残りを飛ばして、すぐ GO! へ進める。
+ */
+export async function countdown(host = layers.fx, { short } = {}) {
+  const bench = globalThis.document?.querySelector?.(".bench:not(.done)");
+  const seen = Number(bench?.dataset.countdowns || 0);
+  if (bench) bench.dataset.countdowns = String(seen + 1);
+  const quick = short ?? (!!bench && bench.dataset.mode !== "tutorial" && seen > 0);
   const c = el("div.countdown");
   host.append(c);
-  for (const n of ["3", "2", "1"]) {
-    c.textContent = n;
-    c.classList.remove("pop");
-    void c.offsetWidth;
-    c.classList.add("pop");
-    SE.tick();
-    await sleep(560);
+  let skip;
+  const skipped = new Promise((resolve) => { skip = resolve; });
+  const onSkip = () => skip();
+  const opts = { capture: true, once: true };
+  globalThis.window?.addEventListener?.("pointerdown", onSkip, opts);
+  globalThis.window?.addEventListener?.("keydown", onSkip, opts);
+  let cut = false;
+  skipped.then(() => { cut = true; });
+  try {
+    for (const n of quick ? [] : ["3", "2", "1"]) {
+      if (cut) break;
+      c.textContent = n;
+      c.classList.remove("pop");
+      void c.offsetWidth;
+      c.classList.add("pop");
+      SE.tick();
+      await Promise.race([sleep(560), skipped]);
+    }
+  } finally {
+    globalThis.window?.removeEventListener?.("pointerdown", onSkip, opts);
+    globalThis.window?.removeEventListener?.("keydown", onSkip, opts);
   }
   c.textContent = "GO!";
   c.classList.remove("pop");
   void c.offsetWidth;
   c.classList.add("pop", "go");
   SE.select();
-  await sleep(380);
+  await sleep(quick || cut ? 300 : 380);
   c.remove();
 }
 

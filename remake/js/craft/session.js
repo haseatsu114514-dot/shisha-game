@@ -37,7 +37,7 @@ import { applyCoalTraining } from "./coals.js";
 import { attachBenchAppearance } from "../appearance/bench.js";
 import { mountCraftRank, craftRankProgress } from "./rank-hud.js";
 import { CRAFT_RANK_THRESHOLDS } from "./common.js";
-import { provisionalCraftScore } from "./score.js";
+import { climbingCraftScore } from "./score.js";
 import { buildRigRecord } from "./rig-record.js";
 import { buildRivalWindows } from "./rival-windows.js";
 import { demoFor, openDemoSheet } from "./demo.js";
@@ -260,6 +260,7 @@ function waitGuideRead(b, current, panelId, text) {
   return new Promise(resolve => {
     const finish = ok => {
       guide.removeEventListener("toggle", closed);
+      b.root.removeEventListener?.("pointerdown", tapAway, true);
       observer.disconnect();
       styles.forEach(({ node, previous }) => Object.assign(node.style, previous));
       if (current() || note.textContent === text) note.textContent = fullNote;
@@ -273,6 +274,13 @@ function waitGuideRead(b, current, panelId, text) {
     const closed = () => { if (!guide.open) finish(current()); };
     const observer = new MutationObserver(() => { if (!current()) finish(false); });
     guide.addEventListener("toggle", closed);
+    // CRN07: 説明は、閉じるボタンだけでなく画面のどこを押しても閉じる（説明の中の「お手本を見る」などはそのまま押せる）
+    const tapAway = (event) => {
+      if (guide.contains(event.target)) return;
+      event.preventDefault(); event.stopPropagation();
+      guide.open = false;
+    };
+    b.root.addEventListener?.("pointerdown", tapAway, true);
     observer.observe(b.root.ownerDocument.body, { childList: true, subtree: true, attributes: true, attributeFilter: ["class", "data-step"] });
     guide.open = true;
     // toggleの配送を待たず、この描画から操作を止める。
@@ -551,12 +559,15 @@ function updateBenchRank() {
   if (!bench?.rankHud) return;
   const cs = bench.cs;
   const final = !!cs.parts && Number.isFinite(cs.total);
-  const score = final ? cs.total : provisionalCraftScore(cs);
+  // 制作中は最初がDで、工程を終えるたびに1段ずつ上がっていく（CRN01）。最後は最終の総合へ届く。
+  const score = final ? cs.total : climbingCraftScore(cs, bench.sequence, CRAFT_RANK_THRESHOLDS);
   const progress = score === null ? null : craftRankProgress(score, CRAFT_RANK_THRESHOLDS);
   const before = bench.rankGrade ?? null;
   bench.rankHud.update(progress && { ...progress, artwork: { wide: rankArt(progress.grade), compact: rankArt(progress.grade) } });
   bench.rankGrade = progress?.grade ?? null;
-  if (progress?.grade && progress.grade !== before) burstRank(bench, progress.grade);
+  // 大きく出すのは上がった時だけ。開いた時のDは帯に置くだけにする。
+  const order = ["D", "C", "B", "A", "S", "SS", "SSS"]; // rank-hud.js の CRAFT_GRADES と同じ並び
+  if (progress?.grade && before && order.indexOf(progress.grade) > order.indexOf(before)) burstRank(bench, progress.grade);
   bench.rankHud.root.dataset.provisional = String(!final);
   bench.rankHud.root.setAttribute("aria-label", final ? "制作ランク" : "制作ランク（暫定）");
   bench.rankHud.root.querySelector(".craft-rank-caption").textContent = final ? "RANK" : "RANK（暫定）";

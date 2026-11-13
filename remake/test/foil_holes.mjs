@@ -119,39 +119,43 @@ async function pierce(hold = 250, approach = 400) {
 // 針が動き出した直後（手前の端）にそのまま押す
 function jab(hold = 250) { fire("hole-punch", "pointerdown"); now += hold; fire("hole-punch", "pointerup"); }
 async function punchCircle(targets) { for (let k = 0; k < targets; k++) await pierce(); }
+// CRN02: リングが埋まると、少し間を置いて次のリング（最後なら結果）へ自動で進む。その間を1つ進める。
+async function advance() { const fn = delayed.shift(); assert(fn, "ring advance must be scheduled"); fn(); await settle(); }
 // 押し直しも実穴として残る。ズレた穴を演出側が勝手に消さない。
 let probe = await start(); jab(); jab();
 assert.equal(visualHoles.length, 2); assert.equal(visualHoles.at(-1).dots.length, 2);
 assert.deepEqual(visualHoles.at(-1).target, visualHoles.at(-1).dots.at(-1));
 assert.equal(visualHoles.at(-1).cs, probe.cs); assert.equal(probe.cs.holes, null);
 // 外周24穴: 選択前は時計が動かず、未完成ではクリック・Enterの全経路を拒否。
-let active = await start(); assert.match(find("hole-depth-hint").text, /押す長さで深さが変わる/); assert(find("hole-done").disabled); assert(find("hole-next").disabled);
-fire("hole-done"); fire("hole-next"); keymap.Enter(); await settle(); assert.equal(active.cs.holes, null); assert.equal(results.length, 0);
-await punchCircle(24); assert(!find("hole-done").disabled); assert(find("hole-next").disabled); assert(find("hole-punch").disabled);
+let active = await start(); assert.match(find("hole-depth-hint").text, /押す長さで深さが変わる/);
+// CRN02: 「次のリングへ」「穴あけを終えて結果へ」のボタンと Enter の終了は無い
+assert.equal(find("hole-done"), undefined); assert.equal(find("hole-next"), undefined); assert.equal(keymap.Enter, undefined);
+await settle(); assert.equal(active.cs.holes, null); assert.equal(results.length, 0); assert.equal(delayed.length, 0);
+await punchCircle(24); assert(find("hole-punch").disabled); assert.equal(delayed.length, 1, "the finished foil schedules one step to the result");
 assert.equal(visualHoles.length, 24); assert.equal(visualHoles.at(-1).dots.length, 24);
 assert.equal(seCalls.filter(id => id === "foilPunch").length, 24, "each real hole has one quiet material sound");
 assert.equal(seCalls.filter(id => id === "perfect").length, 1, "a ring gets one closing sound");
 assert(!seCalls.includes("good") && !seCalls.includes("miss"), "per-hole judgement sounds do not cover the material sound");
 assert(Math.abs(visualHoles[0].target[0] - .8) < 1e-9); assert(Math.abs(visualHoles[0].target[1]) < 1e-9);
 // 完成後の連打で余分な穴や自動送りを増やさない。
-const stampCount = stamps.length; for (let i = 0; i < 5; i++) fire("hole-punch", "pointerdown"); assert.equal(stamps.length, stampCount); assert.equal(delayed.length, 0);
+const stampCount = stamps.length; for (let i = 0; i < 5; i++) fire("hole-punch", "pointerdown"); assert.equal(stamps.length, stampCount); assert.equal(delayed.length, 1);
 assert.equal(visualHoles.length, 24, "Disabled input added a visual hole");
 const completedTime = panel.querySelector("b").style.width;
 await frame(now + 60000);
 assert.equal(panel.querySelector("b").style.width, completedTime, "completed foil timer kept running");
 assert.equal(active.cs.holes, null); assert.equal(results.length, 0);
-keymap.Enter(); await active.running;
+await advance(); await active.running;
 assert.equal(active.cs.holes.templateId, "outer24"); assert.equal(active.cs.holes.outer, 24);
 assert.equal(active.cs.holes.middle, 0); assert.equal(active.cs.holes.inner, 0); assert.equal(active.cs.holes.total, 24); assert(active.cs.holes.minimumComplete); assert.equal(active.cs.holes.densityProfile.sparse, 0);
 assert(stamps.some((stamp) => stamp.text === "EXCELLENT"));
-// 外周12＋中周12: 外周だけでは終了できず、リングを明示的に切り替えて完成する。
+// 外周12＋中周12: 外周だけでは終わらず、リングが埋まると中周へ自動で進む（CRN02）。
 active = await start(null, "outer12-middle12"); await punchCircle(12);
-assert(find("hole-done").disabled); assert(!find("hole-next").disabled);
-fire("hole-done"); keymap.Enter(); assert.equal(active.cs.holes, null);
-fire("hole-next"); await punchCircle(12);
+assert(find("hole-punch").disabled, "a finished ring takes no more punches");
+await advance(); assert.equal(active.cs.holes, null); assert(!find("hole-punch").disabled);
+await punchCircle(12);
 const mixedTime = panel.querySelector("b").style.width;
 await frame(now + 60000); assert.equal(panel.querySelector("b").style.width, mixedTime);
-assert.equal(active.cs.holes, null); fire("hole-done"); await active.running;
+assert.equal(active.cs.holes, null); await advance(); await active.running;
 assert.equal(active.cs.holes.templateId, "outer12-middle12"); assert.equal(active.cs.holes.outer, 12);
 assert.equal(active.cs.holes.middle, 12); assert.equal(active.cs.holes.inner, 0); assert.equal(active.cs.holes.grade, "S");
 // #3023: 弧の手前の端で刺してもミス（無効）にはならない。その目印の穴として成立し、
@@ -159,13 +163,12 @@ assert.equal(active.cs.holes.middle, 12); assert.equal(active.cs.holes.inner, 0)
 active = await start(null, "outer12-middle12");
 for (let n = 0; n < 12; n++) jab();
 assert(stamps.some((stamp) => stamp.text === "ズレたけど開いた"));
-assert(!find("hole-next").disabled, "ズレた穴だけでもリングは完成する");
-fire("hole-next");
+assert.equal(delayed.length, 1, "ズレた穴だけでもリングは完成する");
+await advance();
 for (let n = 0; n < 12; n++) jab();
 assert.equal(visualHoles.length, 24);
 assert.equal(visualHoles.at(-1).dots.length, 24);
-assert(!find("hole-done").disabled);
-fire("hole-done"); await active.running;
+await advance(); await active.running;
 const roughResult = active.cs.holes;
 assert.equal(roughResult.tally.perfect + roughResult.tally.good, 0);
 assert.equal(roughResult.tally.rough, 24);
@@ -186,34 +189,34 @@ await pierce(250, 800); // 弧の奥の端で刺す（ズレた穴）
 jab(); // 次の目印の手前の端＝直前の穴と同じ位置
 assert.equal(stamps.at(-1).text, "近すぎたけど開いた");
 await punchCircle(22);
-fire("hole-done"); await active.running;
+await advance(); await active.running;
 const closeResult = active.cs.holes;
 assert.equal(closeResult.tally.rough, 1); assert.equal(closeResult.tally.tooClose, 1);
 assert.equal(closeResult.tally.miss, 0); assert.equal(closeResult.total, 24);
 // 時間0の12+12: 案内は、その時点で有効な次操作に一致する。
 active = await start(null, "outer12-middle12"); await frame(35000);
 assert(find("hole-plan").textContent.includes("穴あけは続けられます"));
-assert(!find("hole-punch").disabled); assert(find("hole-next").disabled); assert(find("hole-done").disabled);
+assert(!find("hole-punch").disabled);
 await punchCircle(12);
 assert(find("hole-plan").textContent.includes("次のリングへ"));
 assert(!find("hole-plan").textContent.includes("続けられます"));
-assert(find("hole-punch").disabled); assert(!find("hole-next").disabled); assert(find("hole-done").disabled);
-fire("hole-next");
+assert(find("hole-punch").disabled);
+await advance();
 assert(find("hole-plan").textContent.includes("穴あけは続けられます"));
-assert(!find("hole-punch").disabled); assert(find("hole-done").disabled);
+assert(!find("hole-punch").disabled);
 await punchCircle(12);
-assert(find("hole-plan").textContent.includes("結果を確認しよう"));
+assert(find("hole-plan").textContent.includes("結果へ"));
 assert(!find("hole-plan").textContent.includes("続けられます"));
-assert(find("hole-punch").disabled); assert(find("hole-next").disabled); assert(!find("hole-done").disabled);
-assert.equal(active.cs.holes, null); fire("hole-done"); await active.running;
+assert(find("hole-punch").disabled);
+assert.equal(active.cs.holes, null); await advance(); await active.running;
 assert.equal(active.cs.holes.timeRatio, 0); assert.equal(results.at(-1).button, "確認して次の工程へ");
 // 時間が0になってもテンプレート未完成では終えない。完成後は時間評価0で終了。
 active = await start(); await frame(35000); assert.equal(active.cs.holes, null); assert(find("hole-plan").textContent.includes("時間評価は終了。穴あけは続けられます"));
-fire("hole-done"); fire("hole-next"); keymap.Enter(); assert.equal(active.cs.holes, null);
+assert.equal(delayed.length, 0, "timeout must not schedule the result before the foil is complete");
 await punchCircle(24); await frame(now + 1);
-assert.equal(active.cs.holes, null, "timeout must not bypass the explicit finish");
+assert.equal(active.cs.holes, null, "timeout must not bypass the completion");
 assert(!find("hole-plan").textContent.includes("続けられます"), "Completed foil must guide to the result instead of further punching");
-fire("hole-done"); await active.running;
+await advance(); await active.running;
 assert.equal(results.at(-1).button, "確認して次の工程へ");
 assert(active.cs.holes.minimumComplete); assert.equal(active.cs.holes.total, 24); assert.equal(active.cs.holes.timeRatio, 0);
 assert.equal(active.cs.holes.score, sparse.score - 5);
@@ -231,7 +234,7 @@ growthSkills.add("K01");
 active=await start();await frame(35000);
 assert(!find("hole-plan").textContent.includes("時間評価は終了"),"段取り八分は32秒を過ぎても時間評価を残す");
 await frame(40000);assert(find("hole-plan").textContent.includes("時間評価は終了"));
-await punchCircle(24);fire("hole-done");await active.running;
+await punchCircle(24);await advance();await active.running;
 growthSkills.clear();
 // #2937 案1: 針は狙う目印の近くの短い弧だけ。弧の半幅は目印の間隔の半分（上限15°）。
 const DEG = Math.PI / 180;
@@ -272,7 +275,7 @@ assert.equal(visualHoles.length, 6);
 await frame(now + 400); keymap[" "]({}); keymap[" "]({ repeat: true }); now += 250; winFire("keyup", { key: " " }); await settle();
 assert.equal(visualHoles.length, 7); assert.equal(stamps.at(-1).text, "EXCELLENT");
 for (let k = 0; k < 17; k++) await pierce();
-fire("hole-done"); await active.running;
+await advance(); await active.running;
 const sizedResult = active.cs.holes;
 assert.equal(sizedResult.total, 24); assert.equal(sizedResult.tally.shallow, 1);
 assert.deepEqual({ ...sizedResult.holeSizes }, { small: 21, wide: 1, large: 1, shallow: 1 });
