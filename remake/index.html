@@ -7,6 +7,39 @@
 <!-- 版の名札。公開時に remake/tools/stamp_deploy.py がコミットの短いハッシュと公開日時を書く（手元は dev） -->
 <meta name="suien-build" content="dev" data-built="">
 <title>水煙前線 -EN:CODE-</title>
+<!-- 起動画面の漫画（2026-11-13 オーナー「ロード画面でも漫画が出ない時がたまにある。必ず出るようにしたい」）。
+     ゲームの本体を読み込む間（遅い回線では数十秒）も、ロード画面に漫画を出す。ここに書くのは、新しいゲームの開始時に
+     会っている人（スミさん・つむぎ）だけが出る第1章の話（ネタバレなし・誰にでも出せる）。js/core/loading-comics.js の
+     登録と同じ中身で、test/loading_comics_spec.mjs が一致を確かめる。本体のロード画面（js/core/loading.js）は同じ話を続ける。 -->
+<script type="application/json" id="boot-comics">
+[
+{"id": "sumi-cold-tea", "title": "冷めた紅茶", "caption": "シーシャの話になると、時間を忘れる二人。", "panels": [{"src": "loading/sumi-cold-tea-1.webp", "alt": "左: はじめが冷めた紅茶を見て「お茶、冷めました。」。右のスミさんは頬杖で「話しすぎたな。」。"}, {"src": "loading/sumi-cold-tea-2.webp", "alt": "スミさんが指を立てて楽しそうに話を続け、はじめはノートを開く。はじめ「話はまだ熱い。」。"}]},
+{"id": "sumi-cloth-fold", "title": "畳みの極意", "caption": "掃除のあと、ふきんを畳む練習をしていたら。", "panels": [{"src": "loading/sumi-cloth-fold-1.webp", "alt": "左: はじめが清潔な白いふきんを持ち「畳み方は？」。スミさんが「角をそろえろ。」。"}, {"src": "loading/sumi-cloth-fold-2.webp", "alt": "はじめが折り紙の鶴そっくりに畳んだ白ふきんを手にして困惑「鶴になった。」。スミさんは無言で眼鏡をずらし驚く。布の鶴は飛ばない。"}]},
+{"id": "restored-17", "title": "似顔絵", "caption": "つむぎの絵には、いつも少し遊び心があります。", "panels": [{"src": "loading/restored-17-1.webp", "alt": "タブレットで絵を描くつむぎに、はじめが身を乗り出して「俺も描いて。」。"}, {"src": "loading/restored-17-2.webp", "alt": "つむぎが見せた絵は、はじめの帽子とパーカーの猫。はじめ「猫になった。」。つむぎ「似てます。」。"}]},
+{"id": "tsumugi-route-map", "title": "道順の地図", "caption": "つむぎは、葉っぱの耳の猫を描く芸大生です。", "panels": [{"src": "loading/tsumugi-route-map-1.webp", "alt": "店のソファ席で、はじめがメモ帳を差し出して「道順、描いてくれる？」。タブレットを抱えたつむぎが「……はい。」。"}, {"src": "loading/tsumugi-route-map-2.webp", "alt": "はじめが広げた道順は、山・川・森と葉っぱの耳の猫まで描き込まれた冒険の地図のような大作。はじめ「地図が壮大だ。」。"}]}
+]
+</script>
+<script>
+// 漫画を先に決め、2コマの絵をいちばん先に取りに行く（本体のプログラムより先に届くように）。表示は #boot の後ろのスクリプト。
+(() => {
+  let mode = null, read = [], list = [];
+  try { mode = localStorage.getItem("suien_loading_comics"); } catch (_) { /* 保存を読めない環境はプレイヤーの既定 */ }
+  // 漫画を毎回出すのはプレイヤーの既定。自動操作のブラウザ（既存の検査）は従来どおり出さない（js/core/loading.js の comicLoadingRequired と同じ）。
+  if (!(mode === "always" || (mode !== "wait" && navigator.webdriver !== true))) return;
+  try { list = JSON.parse(document.getElementById("boot-comics").textContent); } catch (_) { return; }
+  try { read = JSON.parse(localStorage.getItem("suien_remake_loading_comics_read") || "[]"); } catch (_) { read = []; }
+  const unread = list.filter((comic) => !(Array.isArray(read) && read.includes(comic.id)));
+  const pool = unread.length ? unread : list;
+  if (!pool.length) return;
+  const comic = pool[crypto.getRandomValues(new Uint32Array(1))[0] % pool.length];
+  window.SUIEN_BOOT_COMIC = comic;
+  for (const panel of comic.panels) {
+    const link = document.createElement("link");
+    link.rel = "preload"; link.as = "image"; link.href = "img/" + panel.src; link.setAttribute("fetchpriority", "high");
+    document.head.appendChild(link);
+  }
+})();
+</script>
 <link rel="icon" href="../icon.svg">
 <!-- ホーム画面に追加すると全画面で遊べる（iPhone の Safari は Fullscreen API 非対応のため唯一の道）。横画面前提 -->
 <link rel="manifest" href="manifest.webmanifest">
@@ -97,6 +130,21 @@
    ゲージの色も共通ロード画面の --loading-bar-gradient に合わせる。 */
 #boot { background: linear-gradient(rgba(7, 5, 12, 0.62), rgba(7, 5, 12, 0.62)), url("img/ui/loading/loading_bg.webp") center / cover no-repeat, #07050c; }
 .boot-bar i { background: linear-gradient(90deg, #ff5fa8 0%, #b45cf0 50%, #3fd0e8 100%); }
+/* 起動画面の漫画（#boot-comics）。本体のロード画面（css/loading.css）と同じ紙面・2コマ・一行解説。 */
+.boot-comic { display: flex; flex-direction: column; gap: 10px; width: 940px; box-sizing: border-box; padding: 14px 20px 12px;
+  background: #f1e6cf; border-radius: 4px; box-shadow: 0 18px 44px rgba(0, 0, 0, 0.55); color: #2a1d2e; }
+.boot-comic[hidden] { display: none; }
+.boot-comic-title { font-size: 24px; font-weight: 700; letter-spacing: 0.06em; padding: 0 0 6px 12px;
+  border-left: 5px solid #5a3f6b; border-bottom: 2px solid #4b3a52; }
+.boot-comic-panels { display: flex; gap: 12px; }
+.boot-comic-panels span { flex: 1; aspect-ratio: 3 / 2; border: 3px solid #2a1d2e; background: #eee3cf; overflow: hidden; }
+.boot-comic-panels img { display: block; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 0.3s ease; }
+.boot-comic.is-ready .boot-comic-panels img { opacity: 1; }
+@media (prefers-reduced-motion: reduce) { .boot-comic-panels img { transition: none; } }
+.boot-comic-caption { margin: 0; font-size: 17px; letter-spacing: 0.04em; }
+#boot.has-comic { gap: 14px; }
+#boot.has-comic .boot-logo { font-size: 40px; }
+#boot.has-comic .boot-subtitle { display: none; }
 </style>
 </head>
 <body data-screen="boot">
@@ -117,12 +165,51 @@
         <div class="boot-logo">水煙前線</div>
         <div class="boot-subtitle">-EN:CODE-</div>
       </div>
+      <div class="boot-comic" hidden>
+        <div class="boot-comic-title"></div>
+        <div class="boot-comic-panels"><span><img alt="" decoding="async"></span><span><img alt="" decoding="async"></span></div>
+        <p class="boot-comic-caption"></p>
+      </div>
       <div class="boot-bar"><i></i></div>
       <div class="boot-msg">読み込み中……</div>
       <button class="btn boot-retry" type="button" hidden>もう一度読み込む</button>
     </div>
   </div>
 </div>
+<script>
+// 起動画面の漫画を出す（選んだ話と絵の取得は <head> のスクリプト）。紙面はすぐ、絵は2コマとも描けてから出す。
+(() => {
+  const comic = window.SUIEN_BOOT_COMIC;
+  const boot = document.getElementById("boot");
+  if (!comic || !boot) return;
+  // 本体が読み込まれるまでは、ステージ（1280×720）を画面に収める倍率がまだ入っていない（js/core/stage-fit.js の fitStage と同じ計算）。
+  // スマホでも漫画の紙面が画面に収まるよう、ここで先に入れる。本体が読み込まれたら fitStage が同じ値で置き直す。
+  const stage = document.getElementById("stage");
+  const fit = () => {
+    const view = window.visualViewport;
+    const w = view && view.width > 0 ? view.width : window.innerWidth, h = view && view.height > 0 ? view.height : window.innerHeight;
+    if (w > 0 && h > 0 && !boot.classList.contains("done")) stage.style.setProperty("--k", String(Math.min(w / 1280, h / 720)));
+  };
+  fit();
+  window.addEventListener("resize", fit);
+  const sheet = boot.querySelector(".boot-comic");
+  const images = [...sheet.querySelectorAll("img")];
+  sheet.querySelector(".boot-comic-title").textContent = comic.title;
+  sheet.querySelector(".boot-comic-caption").textContent = comic.caption;
+  boot.dataset.comic = comic.id;
+  images.forEach((image, i) => { image.alt = comic.panels[i].alt; image.setAttribute("fetchpriority", "high"); image.src = "img/" + comic.panels[i].src; });
+  // 紙面（題・一行解説・2コマの枠）は最初から出す。絵は2コマとも描けてから一緒に出す（半分だけの絵を見せない）。
+  sheet.hidden = false;
+  boot.classList.add("has-comic");
+  Promise.all(images.map((image) => image.decode())).then(() => {
+    sheet.classList.add("is-ready");
+  }, () => {
+    // 絵が届かないとき（通信が切れた等）は、空の紙面を残さず従来の起動画面に戻す。
+    sheet.hidden = true;
+    boot.classList.remove("has-comic");
+  });
+})();
+</script>
 <div id="rotate-hint"><div>📱 スマホは横向きでお楽しみください</div></div>
 <noscript>このゲームは JavaScript が必要です。</noscript>
 <script>

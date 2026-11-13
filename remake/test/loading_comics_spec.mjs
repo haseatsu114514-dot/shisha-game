@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { readFileSync, existsSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { LOADING_COMICS, eligibleLoadingComics } from '../js/core/loading-comics.js';
 import { hasMetCharacter } from '../js/core/title-art-unlock.js';
@@ -141,6 +141,25 @@ assert(game(null).length > 0, 'a first boot has a comic to show');
 assert.deepEqual(game({ ...everyone, chapter: 3 }), craft(3, everyone), 'a save uses its own chapter and the people met');
 assert.deepEqual(game({ ...everyone, chapter: 3 }, 5), craft(5, everyone), 'the bench passes its own chapter');
 assert.equal(gameLoadingOptions(fresh, { record: false }).onRead, null, 'preview pages never write the reading record');
+
+// The static boot screen (index.html #boot-comics) shows a comic while the game itself loads. Its list must
+// be exactly the comics a new game can show (cast met at the start, chapter 1), with the same text and art,
+// so the loading screen that follows can go on with the same episode and never spoil anyone.
+{
+  const html = readFileSync(root + 'remake/index.html', 'utf8');
+  const json = /<script type="application\/json" id="boot-comics">([\s\S]*?)<\/script>/.exec(html)?.[1];
+  assert(json, 'index.html carries the boot comic list (#boot-comics)');
+  const boot = JSON.parse(json);
+  const expected = LOADING_COMICS
+    .filter(comic => comic.minChapter === 1 && comic.contexts.includes('craft') && comic.cast.every(id => KNOWN_AT_START.includes(id)))
+    .map(comic => ({ id: comic.id, title: comic.title, caption: comic.caption || '',
+      panels: comic.panels.map(panel => ({ src: panel.src.split('/img/')[1], alt: panel.alt })) }));
+  assert(expected.length > 0, 'a new game has comics for the boot screen');
+  assert.deepEqual(boot, expected, 'index.html #boot-comics must list exactly the new-game comics of loading-comics.js (same order and text)');
+  for (const comic of boot) for (const panel of comic.panels) {
+    assert(existsSync(root + 'remake/img/' + panel.src), `${comic.id}: ${panel.src} exists`);
+  }
+}
 
 // Reading record (core/loading-comic-log.js): ids in reading order, outside the save slots.
 {

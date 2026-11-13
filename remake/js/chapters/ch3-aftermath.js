@@ -134,7 +134,7 @@ export async function runChapterThreeAftermath() {
       Object.assign(DB.dialogues, Object.fromEntries(AGEHA_CONFESSION_SCENES.map(id => [id, confession[id]])));
     }
     if (!live(owner)) return;
-    if (!state.flags._ch3_cleared) await loadDetours(owner);
+    if (!state.flags._ch3_cleared) await withSceneLoading(loadDetours(owner), "帰り道の場面を準備しています…");
     if (!live(owner)) return;
     if (!state.flags._ch3_aftermath) {
       beginChapterThreeAftermath(state);

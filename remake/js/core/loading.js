@@ -12,7 +12,9 @@ const READ_GUARD_SHOWN_MS = 700, READ_GUARD_READY_MS = 250;
 // a gate that shows carries the comic just read, without a second hold.
 const FIXED_GAP_MS = 2000;
 // Comic art is given this long. Missing or slower art leaves the plain gate, which never holds.
-const COMIC_ART_TIMEOUT_MS = 4000;
+// For players the comic is a must (comicLoadingRequired): a slow line gets much longer, and a comic whose
+// art cannot be fetched gives way to the comic read last (its art is already in the browser's cache).
+const COMIC_ART_TIMEOUT_MS = 4000, REQUIRED_ART_TIMEOUT_MS = 15000;
 const LOADING_COMICS_MODE_KEY = "suien_loading_comics";
 // The next comic's art is fetched this long after a gate closes, behind the scene that just opened.
 const WARM_DELAY_MS = 1500;
@@ -71,6 +73,27 @@ export function selectLoadingComic(comics, options = {}) {
   upcomingComic = null;
   if (chosen) previousComic = chosen.id;
   return chosen;
+}
+
+/** 次のロード画面で、出せる話ならこの話を出す（起動直後の画面に先に出した漫画を、同じ話のまま続ける。index.html）。 */
+export function preferLoadingComic(id) {
+  upcomingComic = typeof id === "string" && id ? id : upcomingComic;
+}
+
+// carriedArt: the comic last painted and its decoded <img>s. A gate showing that same comic again (continuing,
+// or the read-last fallback) moves them in instead of fetching: the art never blinks between gates.
+let primedArt = null, carriedArt = null;
+/**
+ * その話の2コマに、もう読み込んだ画像（起動画面の <img>）をそのまま使う。取り直さないので、遅い回線でも
+ * 起動画面と同じ漫画がすぐ出る（ロード画面が開いた時点で届いていなければ、その読み込みを待つ）。
+ */
+export function primeLoadingArt(id, images) {
+  primedArt = typeof id === "string" && id && Array.isArray(images) && images.length === 2 ? { id, images } : null;
+}
+
+/** 漫画を読んだすぐ後で、次のロード画面がその続き（同じ漫画のまま・読む待ちなし）になるか。 */
+export function loadingContinues() {
+  return comicLoadingRequired() && !!lastComic && performance.now() - lastReadAt <= FIXED_GAP_MS;
 }
 
 /**
@@ -181,20 +204,35 @@ export async function withLoading(prepare, {
       if (awaitingProceed && type === "pointerdown") proceedNow();
     });
   }
-  const comic = continuing ? lastComic : selectLoadingComic(comics, { context, chapter, isMet, isRead });
+  let comic = continuing ? lastComic : selectLoadingComic(comics, { context, chapter, isMet, isRead });
   // The sheet (title, two 3:2 frames, note) is laid out as soon as a comic is chosen and kept hidden
   // (.is-waiting) until the art is decoded: the logo and gauge then never jump when the panels arrive.
-  const frames = comic ? comic.panels.map(() => el("div.loading-panel-art")) : [];
-  if (comic) {
+  let frames = [];
+  const layout = shown => {
+    frames = shown.panels.map(() => el("div.loading-panel-art"));
     card.classList.add("is-waiting");
     content.setAttribute("role", "group");
-    content.setAttribute("aria-label", comic.title);
-    content.append(el("h2.loading-comic-title", { text: comic.title }), el("div.loading-panels", frames.map(art => el("figure", [art]))));
-    if (comic.caption) content.append(el("p.loading-comic-caption", { text: comic.caption }));
-  }
-  const comicReady = comic ? Promise.all(comic.panels.map(panel => prepareImage(panel.src, {
-    timeoutMs: COMIC_ART_TIMEOUT_MS, signal: controller.signal,
-  }))).then(images => {
+    content.setAttribute("aria-label", shown.title);
+    content.replaceChildren(el("h2.loading-comic-title", { text: shown.title }), el("div.loading-panels", frames.map(art => el("figure", [art]))));
+    if (shown.caption) content.append(el("p.loading-comic-caption", { text: shown.caption }));
+  };
+  const artTimeout = required ? REQUIRED_ART_TIMEOUT_MS : COMIC_ART_TIMEOUT_MS;
+  const loadArt = shown => {
+    let images = null;
+    if (carriedArt?.comic === shown) images = carriedArt.images;
+    else if (primedArt?.id === shown.id && primedArt.images.length === shown.panels.length) { images = primedArt.images; primedArt = null; }
+    if (images) return Promise.all(images.map(img => (img.complete && img.naturalWidth > 0 ? Promise.resolve() : img.decode()).then(() => img)));
+    return Promise.all(shown.panels.map(panel => prepareImage(panel.src, { timeoutMs: artTimeout, signal: controller.signal })));
+  };
+  if (comic) layout(comic);
+  const comicReady = comic ? loadArt(comic).catch(error => {
+    // A comic is a must for players: when this one's art cannot be fetched, show the comic read last.
+    const backup = required && lastComic && lastComic !== comic && !settled && !controller.signal.aborted ? lastComic : null;
+    if (!backup) throw error;
+    comic = backup;
+    layout(backup);
+    return loadArt(backup);
+  }).then(images => {
     if (settled || controller.signal.aborted) return;
     images.forEach((img, i) => {
       const panel = comic.panels[i], region = panel.region, art = frames[i];
@@ -225,6 +263,8 @@ export async function withLoading(prepare, {
     });
     card.classList.remove("is-waiting");
     comicShown = true; comicShownAt = performance.now();
+    // A gate that goes on with this comic (continuing) moves these decoded images in: the art never blinks.
+    carriedArt = { comic, images };
   }).catch(() => {
     // Missing art: fall back to the plain gate (no sheet, no reading hold).
     card.classList.remove("is-waiting");
@@ -276,7 +316,8 @@ export async function withLoading(prepare, {
     ]);
     host.setAttribute("aria-busy", "false");
     // A shown gate always carries its comic: when preparation ends before the art arrives, wait for it
-    // (at most COMIC_ART_TIMEOUT_MS from the start; missing art leaves the plain gate, which never holds).
+    // (players: at most REQUIRED_ART_TIMEOUT_MS, then the comic read last; with no art at all the plain gate
+    // closes without holding).
     if (required && overlay.isConnected && !controller.signal.aborted) await Promise.race([comicReady, aborted]);
     // Only when a comic is actually on screen, hold for the reader: advance on tap/click/key.
     // No comic / failure / instant task returns immediately, exactly like before.

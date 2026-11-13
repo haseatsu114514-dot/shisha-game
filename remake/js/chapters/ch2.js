@@ -391,8 +391,11 @@ async function continuePreparation() {
   let runChapterTwoPreparation;
   try {
     owner.scene = "preparation-loading";
-    await loadPreparationDialogues();
-    ({ runChapterTwoPreparation } = await import("./ch2-preparation.js"));
+    // 文字だけの画面の待ち。プレイヤーの既定では、長いと漫画のロード画面にする（core/ui.js の withSceneLoading）。
+    await withSceneLoading((async () => {
+      await loadPreparationDialogues();
+      ({ runChapterTwoPreparation } = await import("./ch2-preparation.js"));
+    })(), "街の台本を準備しています…");
   } catch (error) {
     if (current(owner)) { console.error("[ch2 preparation]", error); renderError(continuePreparation); }
     return;

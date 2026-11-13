@@ -18,7 +18,7 @@ import { allStoreLogoUrls } from "./store-logos.js";
 import { chapterTitleArt } from "./chapter-title-art.js";
 import { uiThemeFrame } from "./ui-theme.js";
 import { withLoadingNotice } from "./module-loading.js";
-import { withLoading, comicLoadingRequired } from "./loading.js";
+import { withLoading, comicLoadingRequired, loadingContinues } from "./loading.js";
 import { gameLoadingOptions } from "./loading-context.js";
 import { loadingPrefetch, prepareImage } from "./loading-prefetch.js";
 
@@ -483,7 +483,9 @@ export function withChapterLoading(load, label) {
  * プレイヤーの既定では、0.5秒を超えたら漫画のロード画面にする（直前の漫画を読んだばかりなら、その続きの画面で閉じる）。
  */
 export function withSceneLoading(task, label) {
-  return comicLoadingRequired() ? withLoadingNotice(task, loadingNotice(label)) : task;
+  if (!comicLoadingRequired()) return task;
+  // 漫画を読んだすぐ後（章のプログラムの直後など）は、文字だけの画面を挟まず、同じ漫画の画面をすぐ続ける。
+  return withLoadingNotice(task, { ...loadingNotice(label), delayMs: loadingContinues() ? 0 : 500 });
 }
 
 /** VN開始前などの画像待ちにだけ添える通知。play()自体は包まない。 */
