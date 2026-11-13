@@ -349,6 +349,9 @@ try {
       assert.equal((await snap()).hypothesis, "quiet"); assert.equal((await snap()).profileId, "quiet");
       await hit(page, '[data-test="trpg-help"]');
       assert.match(await page.locator(".trpg-help-glossary").nth(1).textContent(), /じっくり調べる.*自分の役の観察で判定。成功で2つ、ひと手間で1つ/);
+      // 「？」を閉じて卓に戻してから終える（押した直後のボタンは、名前の札が一瞬だけ下に出る）。
+      await hit(page, '[data-test="trpg-help-close"]');
+      await page.evaluate(() => document.activeElement?.blur());
     });
   }
   await run("discovery-small-touch", { seed: "12", traveler: "quiet" },
@@ -370,6 +373,9 @@ try {
         const stage = document.querySelector(".trpg-root");
         window.__staged.push({ kind: node.className, small: text(node, "small"), strong: text(node, "strong"), tone: node.dataset.tone || "",
           special: node.dataset.special || "", calm: node.dataset.calm || "", hidden: node.getAttribute("aria-hidden"),
+          place: text(node, ".trpg-incarnate-place span"), cutout: node.querySelector(".trpg-cutin-figure")?.dataset.cutout ?? null,
+          figure: (figure => figure ? { art: figure.querySelector(".trpg-costume i")?.getAttribute("style") || "", border: getComputedStyle(figure).borderTopWidth,
+            back: getComputedStyle(figure).backgroundColor, inner: getComputedStyle(figure.querySelector(".trpg-costume")).backgroundColor } : null)(node.querySelector(".trpg-cutin-figure")),
           pointer: getComputedStyle(node.closest(".trpg-fx-layer")).pointerEvents, clip: getComputedStyle(node.closest(".trpg-fx-layer")).overflowX,
           scroll: [stage.scrollWidth - stage.clientWidth, stage.scrollLeft],
           cards: [...node.querySelectorAll(".trpg-incarnate-card")].map(card => ({ front: text(card, ".front strong"), back: text(card, ".back strong"),
@@ -381,6 +387,17 @@ try {
     // キャラ作りの時間は卓の会話: 座席の帯が出ていて、だれも役の姿ではない。
     assert.equal(await root.getAttribute("data-layer"), "table");
     assert(await page.locator(".trpg-table").evaluate(n => n.checkVisibility({ visibilityProperty: true, opacityProperty: true })));
+    // ゲームマスターは顔を出さない（TRF20）: 最初の一行から、印と「ゲームマスター（ひより）」。座席の丸も「GM」の印で、PLは顔のまま。
+    const opening = await page.evaluate(() => ({ gm: document.querySelector(".trpg-dock").dataset.gm, who: document.querySelector(".trpg-speaker-label strong").textContent,
+      aside: document.querySelector(".trpg-speaker-label span").textContent, open: getComputedStyle(document.querySelector(".trpg-speaker-label span"), "::before").content,
+      faces: document.querySelectorAll(".trpg-speaker-art img").length, mark: document.querySelectorAll(".trpg-speaker-art .trpg-gm-mark svg").length,
+      seats: [...document.querySelectorAll(".trpg-table-person")].map(seat => [seat.dataset.part, seat.querySelectorAll(".trpg-seat-face img").length,
+        seat.querySelector(".trpg-seat-face .trpg-gm-mark b")?.textContent ?? null, seat.querySelector(".trpg-seat-name").textContent]) }));
+    assert.deepEqual([opening.gm, opening.who, opening.aside, opening.open, opening.faces, opening.mark], ["true", "ゲームマスター", "ひより", '"（"', 0, 1]);
+    assert.deepEqual(opening.seats, [["gm", 0, "GM", "ひより"], ["pl", 1, null, "はじめ"], ["pl", 1, null, "アダム"], ["pl", 1, null, "つむぎ"]]);
+    assert(await page.locator(".trpg-speaker-art .trpg-gm-mark, [data-test='trpg-seat-gm']").evaluateAll(nodes => { const stage = document.getElementById("stage").getBoundingClientRect();
+      return nodes.length === 2 && nodes.every(n => { const r = n.getBoundingClientRect(); return r.width > 0 && r.left >= stage.left && r.right <= stage.right && r.top >= stage.top && r.bottom <= stage.bottom; }); }),
+      "The game master's marks sit on the stage");
     // 転生が出るまで送る。出た瞬間の1押しは、ページの中でまとめて行う: 演出を閉じるだけで、下の最初の一行は読み飛ばさない。
     let closed = null;
     for (let presses = 0; !closed; presses++) {
@@ -401,20 +418,34 @@ try {
     assert.equal(incarnation.cards[0].front, "はじめ"); assert.equal(incarnation.cards[0].back, pc.name); assert.equal(incarnation.cards[0].title, pc.title);
     assert.match(incarnation.cards[0].art, /costumes\/ordinary-cup\/hajime_/, "The role side wears the costume art");
     assert.equal(incarnation.hidden, "true"); assert.equal(incarnation.pointer, "none", "The staging never blocks the table");
-    // 物語の中: 語りは立ち絵なしで「語り」、座席の帯は隠れる。
-    assert.equal(closed.kind, "narration"); assert.equal(closed.who, "語り"); assert.equal(closed.art, "none");
+    assert.equal(incarnation.place, "ゲームマスター ひより", "The story is told by the game master");
+    // 物語の中: 語りは立ち絵も印もなく「ゲームマスター」、座席の帯は隠れる。
+    assert.equal(closed.kind, "narration"); assert.equal(closed.who, "ゲームマスター"); assert.equal(closed.art, "none");
     await page.waitForFunction(() => !document.querySelector(".trpg-table").checkVisibility({ visibilityProperty: true, opacityProperty: true }));
     const seen = {};
     for (let n = 0; n < 60 && await next.isVisible(); n++) {
       const line = await page.evaluate(() => ({ kind: document.querySelector(".trpg-root").dataset.kind, who: document.querySelector(".trpg-speaker-label strong").textContent,
-        aside: document.querySelector(".trpg-speaker-label span").textContent, art: document.querySelector(".trpg-speaker-art").innerHTML }));
+        aside: document.querySelector(".trpg-speaker-label span").textContent, art: document.querySelector(".trpg-speaker-art").innerHTML,
+        frame: (style => [style.borderTopWidth, style.backgroundColor])(getComputedStyle(document.querySelector(".trpg-speaker-art"))) }));
       seen[line.kind] ||= line;
       await next.click();
     }
-    assert.equal(seen.npc.who, "旅人オル"); assert.equal(seen.npc.aside, "GM ひより");
-    assert.match(seen.npc.art, /trpg-npc-figure/); assert.match(seen.npc.art, /trpg-npc-gm/, "The GM's face stays beside the character they voice");
+    // GMが演じる人物は人影の札だけ（GMの顔は添えない）。名札に「ゲームマスター ひより」。
+    assert.equal(seen.npc.who, "旅人オル"); assert.equal(seen.npc.aside, "ゲームマスター ひより");
+    assert.match(seen.npc.art, /trpg-npc-figure/); assert.doesNotMatch(seen.npc.art, /<img|trpg-npc-gm/, "No face of the GM beside the character they voice");
     assert.equal(seen.pc.who, pc.name, "A player in role is named by the character"); assert.equal(seen.pc.aside, "はじめ");
     assert.match(seen.pc.art, /costumes\/ordinary-cup\/hajime_/, "and wears the role costume");
+    // 役の姿は札ではなく人物（TRF19）: 台紙の色も縁も無い。絵そのものも台紙を抜いてある（四隅は透明、体は不透明）。
+    assert.deepEqual(seen.pc.frame, ["0px", "rgba(0, 0, 0, 0)"], "No card behind the character in role");
+    const cutout = await page.evaluate(async src => {
+      const image = new Image(); image.src = src; await image.decode();
+      const canvas = Object.assign(document.createElement("canvas"), { width: image.naturalWidth, height: image.naturalHeight }), pen = canvas.getContext("2d");
+      pen.drawImage(image, 0, 0);
+      const alpha = (x, y) => pen.getImageData(x, y, 1, 1).data[3];
+      return { size: [canvas.width, canvas.height], corners: [alpha(0, 0), alpha(canvas.width - 1, 0), alpha(0, canvas.height - 1), alpha(canvas.width - 1, canvas.height - 1)],
+        body: alpha(Math.round(canvas.width / 2), Math.round(canvas.height * .45)) };
+    }, /src="([^"]+)"/.exec(seen.pc.art)[1].replaceAll("&amp;", "&"));
+    assert.deepEqual(cutout, { size: [896, 1200], corners: [0, 0, 0, 0], body: 255 }, "The costume art has no backing paper");
     assert(seen.table, "Table talk returns between the story's lines");
     // 判定: 目標までの帯と、結果のカットイン。
     await page.locator('[data-test^="trpg-approach-"]').first().click();
@@ -432,6 +463,9 @@ try {
     const [cut] = await staged("trpg-cutin");
     assert.equal(cut.special, "critical"); assert.equal(cut.strong, "クリティカル！");
     assert.match(cut.small, new RegExp("^" + pc.name + " · ")); assert.equal(cut.pointer, "none");
+    // カットインの人物は、証明写真のような札ではなく、台紙の無い人物（TRF19）。
+    assert.equal(cut.cutout, "true"); assert.match(cut.figure.art, /costumes\/ordinary-cup\/hajime_/);
+    assert.deepEqual([cut.figure.border, cut.figure.back, cut.figure.inner], ["0px", "rgba(0, 0, 0, 0)", "rgba(0, 0, 0, 0)"]);
     // 帯や札が舞台の外へはみ出しても、舞台の横スクロール幅を増やさない（増えると、押した拍子に舞台ごと横へずれる）。
     assert.equal(cut.clip, "hidden"); assert.deepEqual(cut.scroll, [0, 0], "The staging layer clips what leaves the stage");
     assert.deepEqual(await root.evaluate(n => [n.scrollWidth - n.clientWidth, n.scrollLeft]), [0, 0]);

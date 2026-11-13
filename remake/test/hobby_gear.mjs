@@ -91,14 +91,14 @@ assert.equal(dj.gradeOf(35, 10), "PERFECT");
 assert.equal(dj.gradeOf(-125), "EARLY");
 assert.equal(dj.gradeOf(-125, 10), "OK");
 assert.equal(dj.gradeOf(200, 10), "LATE");
-const base = { pitchErrPct: .1, synced: false, playMs: 65, reached: 4, follow: .8 };
+const base = { playMs: 65, reached: 4, follow: .8 };
 const plain = dj.scoreTransition(base), phones = dj.scoreTransition({ ...base, allowance: 10 });
 assert.deepEqual([plain.parts[0], plain.parts[2]], [phones.parts[0], phones.parts[2]], "音程・フェーダーの点は同じ");
 assert.deepEqual([plain.parts[1], phones.parts[1]], [60, 85], "65msの入りが GOOD 相当に");
 assert.equal(dj.scoreTransition({ ...base, playMs: 20 }).total, dj.scoreTransition({ ...base, playMs: 20, allowance: 10 }).total, "ぴったりの入りは同じ点");
 assert.equal(dj.createSet(SETS[0]).allowance, 0);
-assert.equal(dj.createSet(SETS[0], () => 1, Math.random, { allowance: 10 }).allowance, 10);
-assert.equal(dj.createSet(SETS[0], () => 1, Math.random, { allowance: 999 }).allowance, 30, "上限30ms");
+assert.equal(dj.createSet(SETS[0], Math.random, { allowance: 10 }).allowance, 10);
+assert.equal(dj.createSet(SETS[0], Math.random, { allowance: 999 }).allowance, 30, "上限30ms");
 assert.equal(new URL(djUrl(1, { phones: true })).searchParams.get("phones"), "1");
 assert.equal(new URL(djUrl(1)).searchParams.get("phones"), null, "持っていなければ付けない");
 

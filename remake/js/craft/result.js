@@ -369,11 +369,12 @@ export function resultTable(cs, rank, attempt = null) {
         .filter(([k]) => !(k === "穴あけ" && cs.foilSkipped)).map(([k, v]) =>
         el("div.rt-part", [el("span", { text: k }), evaluation(v), el("small", { text: evaluationOf(v || 0).label })])),
       el("div.rt-part.total", [el("span", { text: "総合" }), evaluation(cs.total), el("b", { text: craftRankProgress(cs.total, CRAFT_RANK_THRESHOLDS).grade, dataset: { test: "craft-final-rank" }, "aria-label": "制作ランク" })]),
-      el("small.rt-judge-comment", { text: `上園「${judgeComment(cs)}」` }),
-      el("div.rt-deductions", JUDGES.map(judge => el("small.rt-judge-deduction", { text: `${judgeName(judge.id)}：${judgeDeductionReason(cs, judge.id).text}`, dataset: { judge: judge.id } }))),
-      cs.bonusNotes?.length ? el("small", { text: `効いたもの: ${cs.bonusNotes.join("・")}` }) : null,
+      // 学びに当たる項目（次に変える一つ・今回よかったこと）は審査員の講評より先に置き、枠が収まらなくても最初から見える（#3554）。
       goodPointOf(cs) ? el("small.rt-good-point", { text: goodPointOf(cs), dataset: { test: "result-good-point" } }) : null,
       el("small.rt-next-tip", { text: improvementOf(cs) }),
+      cs.bonusNotes?.length ? el("small", { text: `効いたもの: ${cs.bonusNotes.join("・")}` }) : null,
+      el("small.rt-judge-comment", { text: `上園「${judgeComment(cs)}」` }),
+      el("div.rt-deductions", JUDGES.map(judge => el("small.rt-judge-deduction", { text: `${judgeName(judge.id)}：${judgeDeductionReason(cs, judge.id).text}`, dataset: { judge: judge.id } }))),
       resultSaveButton(cs),
     ])]);
     const btn = el("button.btn.primary", { dataset: { test: "result-next" }, onclick: () => { SE.select(); retireScreen(); resolve(); } }, [

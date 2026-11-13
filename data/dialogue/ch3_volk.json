@@ -1605,6 +1605,250 @@
           }
         }
       ]
+    },
+    {
+      "dialogue_id": "ch3_rival_volk_steve_greeting",
+      "comment": "#3468 F案。ヴォルク×スティーブ。新しく開いた店への挨拶にスティーブが鉄の煙へ寄り、帰りかけて二度話が再開する。仕事上の顔見知りの入口まで（親友・昔からの付き合い・仕入れ先の固有名は足さない）。技術の講義にせず、ヴォルクの計測は湿気・外気（気候の変数）の範囲。客への配慮はそのまま。タイマー・ジャム・ピザは出さない。好感度・大会結果は動かさず、大会の前後を前提にしない。はじめは居合わせるだけ。",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_volk_shop.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "text": "鉄の煙の扉を開けると、入口の脇に柄シャツの大きな背中があった。"
+        },
+        {
+          "speaker": "steve",
+          "text": "ヘイ、ハジメ。ちょうど今、帰るところだ",
+          "face": "smile"
+        },
+        {
+          "speaker": "hajime",
+          "text": "スティーブさん。ここに来てたんですね",
+          "face": "normal"
+        },
+        {
+          "speaker": "steve",
+          "text": "新しい店ができたら、一度は顔を出す。近所の店主の挨拶だ",
+          "face": "normal"
+        },
+        {
+          "speaker": "volk",
+          "text": "菓子をもらった。礼は言った",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "カウンターには、小さな紙袋が一つ。奥の席では、客がゆっくりホースを口へ運んでいる。"
+        },
+        {
+          "speaker": "",
+          "text": "二人の声は、その席まで届かない大きさだった。"
+        },
+        {
+          "speaker": "steve",
+          "text": "じゃあ、俺はこれで、……あ、一つだけ",
+          "face": "normal"
+        },
+        {
+          "speaker": "steve",
+          "text": "炭が切れたら、駅の裏の問屋が近い。この辺の店は、みんなあそこで買ってる",
+          "face": "normal"
+        },
+        {
+          "speaker": "volk",
+          "text": "そこの炭は、湿気を吸っているか",
+          "face": "normal"
+        },
+        {
+          "speaker": "steve",
+          "text": "……雨の週は、少しな。だから俺は、買ったら棚の上で一晩寝かせてから使う",
+          "face": "surprise"
+        },
+        {
+          "speaker": "volk",
+          "text": "一晩、……この街の湿気は、向こうと逆だ",
+          "face": "normal"
+        },
+        {
+          "speaker": "volk",
+          "text": "向こうは乾きすぎて、炭が早く燃え尽きる",
+          "face": "normal"
+        },
+        {
+          "speaker": "steve",
+          "text": "オーケー、覚えといてくれ。それじゃ、営業中に悪かったな",
+          "face": "smile"
+        },
+        {
+          "speaker": "",
+          "text": "スティーブは扉の取っ手に手をかけた。そこで、壁の計器を振り返った。"
+        },
+        {
+          "speaker": "steve",
+          "text": "……ヘイ。あの計器だけ、色が違うのは何だ",
+          "face": "normal"
+        },
+        {
+          "speaker": "volk",
+          "text": "外気だ。店の中だけ測っても、客は外から入ってくる",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "話の途中で、ヴォルクの目が一度だけ奥の席へ動いた。客がホースを置き、グラスへ手を伸ばす。"
+        },
+        {
+          "speaker": "",
+          "text": "ヴォルクは小さくうなずいて、目を戻した。"
+        },
+        {
+          "speaker": "volk",
+          "text": "冷えた体で来た客は、最初の一口を急ぐ。向こうの冬で覚えた",
+          "face": "normal"
+        },
+        {
+          "speaker": "steve",
+          "text": "外の温度か。……俺は寒い日、入口から一番遠い席を勧めてた。理由は、何となくだった",
+          "face": "normal"
+        },
+        {
+          "speaker": "volk",
+          "text": "何となくで、合っている。……その席は、何番目に埋まる",
+          "face": "normal"
+        },
+        {
+          "speaker": "steve",
+          "text": "最後だな。いや、待て。雨の日は――",
+          "face": "normal"
+        },
+        {
+          "speaker": "hajime",
+          "text": "（……さっきから二人とも、扉の前から一歩も動いてない）",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "取っ手を握ったままのスティーブと、見送りの位置に立ったままのヴォルク。"
+        },
+        {
+          "speaker": "",
+          "text": "二人同時に、それに気づいた顔をした。"
+        },
+        {
+          "speaker": "steve",
+          "text": "……ヘイ。俺たち、さっきから帰りの挨拶しかしてないな",
+          "face": "surprise"
+        },
+        {
+          "speaker": "volk",
+          "text": "二回だ。三回目は、まだ聞いていない",
+          "face": "normal"
+        },
+        {
+          "speaker": "steve",
+          "text": "数えてたのか。ハハ",
+          "face": "smile"
+        },
+        {
+          "speaker": "steve",
+          "text": "続きは、うちで聞く。Smoke & Gloryだ。来たら、俺の棚も見せる",
+          "face": "smile"
+        },
+        {
+          "speaker": "volk",
+          "text": "行く。……今度こそ、気をつけて帰れ",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "扉が閉まった。ヴォルクはカウンターへ戻り、モニターに短く打ち込んだ。"
+        },
+        {
+          "speaker": "",
+          "text": "のぞくと、温度の列の隣に「棚の上で一晩」と一行だけ増えていた。"
+        },
+        {
+          "speaker": "volk",
+          "text": "待たせた。座れ",
+          "face": "normal"
+        }
+      ]
+    },
+    {
+      "dialogue_id": "ch3_rival_volk_steve_seat",
+      "comment": "#3468 F案の後日の一言。鉄の煙での挨拶（ch3_rival_volk_steve_greeting）の後、Smoke & Glory で。ヴォルクが入口で立ち話を始めず、先に客席へ座っている。続きの話（棚）を少しだけ。タイマーは出さない。好感度・大会結果は動かさず、大会の前後を前提にしない。",
+      "metadata": {
+        "bg": "res://assets/backgrounds/bg_steve_shop.png"
+      },
+      "lines": [
+        {
+          "speaker": "",
+          "text": "Smoke & Gloryの扉を開けた。"
+        },
+        {
+          "speaker": "",
+          "text": "カウンターの端の席に、黒いタートルネックの背中がある。"
+        },
+        {
+          "speaker": "hajime",
+          "text": "ヴォルクさん",
+          "face": "surprise"
+        },
+        {
+          "speaker": "volk",
+          "text": "来たか",
+          "face": "normal"
+        },
+        {
+          "speaker": "steve",
+          "text": "ヘイ、ハジメ。見ろ、今日は入口で止まらなかった。入ってすぐ座ったんだ",
+          "face": "smile"
+        },
+        {
+          "speaker": "volk",
+          "text": "入口で話すと、帰れなくなる。前回で分かった",
+          "face": "normal"
+        },
+        {
+          "speaker": "steve",
+          "text": "座ったら座ったで、なかなか帰らないけどな",
+          "face": "smile"
+        },
+        {
+          "speaker": "steve",
+          "text": "ほら、約束の棚だ。上から二段目",
+          "face": "normal"
+        },
+        {
+          "speaker": "",
+          "text": "スティーブが指した棚の上で、炭の箱が一つだけ、他より奥へずらしてあった。"
+        },
+        {
+          "speaker": "volk",
+          "text": "……奥へずらしてあるのが、寝かせている箱か",
+          "face": "normal"
+        },
+        {
+          "speaker": "steve",
+          "text": "イエス。この街は、いつ降るか分からないからな",
+          "face": "smile"
+        },
+        {
+          "speaker": "",
+          "text": "二人の声は、客席の端まで届かない大きさのままだった。俺は空いている隣の席に座った。"
+        },
+        {
+          "speaker": "steve",
+          "text": "ハジメの分も作る。ヴォルクは、三回目のさよならまでに吸い終わる予定だ",
+          "face": "smile"
+        },
+        {
+          "speaker": "volk",
+          "text": "その予定は、記録していない",
+          "face": "normal"
+        }
+      ]
     }
   ]
 }

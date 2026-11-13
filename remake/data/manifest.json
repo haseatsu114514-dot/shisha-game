@@ -741,10 +741,12 @@
   "ui_temperature_frame.png"
  ],
  "sceneProps": [
+  "shisha_c_station.png",
+  "shisha_hideaway.png",
   "shisha_home_pro.png",
-  "shisha_home_tabletop.png",
+  "shisha_home_stand_custom.png",
   "shisha_home_stand_walnut.png",
-  "shisha_home_stand_custom.png"
+  "shisha_home_tabletop.png"
  ],
  "continueUI": [
   "approval_stamp.png",
@@ -3663,6 +3665,8 @@
   "ui/making/ui_mockup_inhale_button.png",
   "ui/making/ui_refresh_button.png",
   "ui/making/ui_temperature_frame.png",
+  "ui/scene_props/shisha_c_station.png",
+  "ui/scene_props/shisha_hideaway.png",
   "ui/scene_props/shisha_home_pro.png",
   "ui/scene_props/shisha_home_stand_custom.png",
   "ui/scene_props/shisha_home_stand_walnut.png",
