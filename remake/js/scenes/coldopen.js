@@ -15,6 +15,7 @@ export function mountColdOpen() {
     el("div.co-ember"), el("div.co-vignette"),
   ]);
   layers.bg.append(scene);
+  delete layers.bg.dataset.tone; // 開幕の絵には時間帯の色を付けない（以前の #bg の最後の絵で判定していた時と同じ）
   const ready = Promise.all([smoke, hand].filter(Boolean).map(url => imageReady(url, 15000, { keep: true })));
   SE.crowd(3.2);
   const previous = hooks.onLine;

@@ -239,7 +239,7 @@ async function pullGame(cs, mode) {
     needle.setAttribute("transform", `rotate(${((at - 0.5) * 180).toFixed(2)} ${DIAL.cx} ${DIAL.cy})`);
     needle.dataset.pos = (at * 100).toFixed(2);
     const zone = ZONES.find(z => at >= z.from && at <= z.to) || ZONES[1];
-    currentZone.dataset.zone = zone.id;
+    if (currentZone.dataset.zone !== zone.id) currentZone.dataset.zone = zone.id;
     const label = zone.id === "keep" ? at < .5 ? "キープ左・微減" : "キープ右・微増" : zone.label;
     if (currentZoneLabel.textContent !== label) currentZoneLabel.textContent = label;
   };
@@ -288,6 +288,11 @@ async function pullGame(cs, mode) {
       : temp > ideal[1] ? ["熱い", "hot"] : mode.drift && temp <= COLD_OUT + 0.08 ? ["冷え切りそう！", "cold"] : ["ぬるい", "cool"];
   };
   const focusNote = mode.store === "pull" ? steamFocusNote(cs) : null;
+  // 毎フレームの描画は、値が変わった時だけ DOM に書く（同じ値でも書くとページ全体の再計算が毎フレーム走って重い・CRN）
+  const putText = (node, text) => { if (node.textContent !== text) node.textContent = text; };
+  const putData = (node, key, value) => { if (node.dataset[key] !== value) node.dataset[key] = value; };
+  const putProp = (node, key, value) => { if (node[key] !== value) node[key] = value; };
+  let readoutKey = "", tagsKey = "";
   const render = () => {
     thermometer.update(T);
     setBenchTemperature(cs, T);
@@ -295,20 +300,26 @@ async function pullGame(cs, mode) {
     thermometer.preview(running && !drawing && !finished ? predicted : null);
     const showDestination = running && !drawing && !finished && !choosing;
     const [destWord, destTone] = temperatureWord(predicted);
-    destination.textContent = showDestination ? `止めると → ${destWord}` : "";
-    destination.dataset.tone = showDestination ? destTone : "";
-    if (omen) omen.textContent = !running || drawing || finished ? "" : isBurnt(predicted) ? "次の一口で焦げそうだ"
+    putText(destination, showDestination ? `止めると → ${destWord}` : "");
+    putData(destination, "tone", showDestination ? destTone : "");
+    if (omen) putText(omen, !running || drawing || finished ? "" : isBurnt(predicted) ? "次の一口で焦げそうだ"
       : mode.drift && predicted <= COLD_OUT + .04 ? "冷え切る前に熱を戻したい"
       : predicted >= harshTemp ? "次の一口は熱が強すぎそうだ"
       : pulls + 1 > safeLimit && cs.leaf.hp <= 1 ? "これ以上吸うと、最後の葉が抜けそうだ"
-      : pulls + 1 > safeLimit ? "次の一口から葉を傷めそうだ" : "";
+      : pulls + 1 > safeLimit ? "次の一口から葉を傷めそうだ" : "");
     if (choosing) return;
     // 表示の虹（どの配合にもある。作り分ける葉だけの配合はおいしく作れる範囲全体）。採点の最適温とは別。
     // 今の温度を短い一語で。温度計の印と同じ色にする。
     const [state, tone] = temperatureWord(T);
-    readout.dataset.tone = tone;
-    readout.replaceChildren(el("b.pull-state", { text: state }), mode.drift && running && !drawing ? el("span.pull-drift", { text: "↓", title: "炭が燃え進んで、熱が落ちていく" }) : "");
-    tags.replaceChildren(...[
+    putData(readout, "tone", tone);
+    const drift = mode.drift && running && !drawing;
+    const nextReadout = `${state}|${drift}`;
+    if (nextReadout !== readoutKey) {
+      readoutKey = nextReadout;
+      readout.replaceChildren(el("b.pull-state", { text: state }), drift ? el("span.pull-drift", { text: "↓", title: "炭が燃え進んで、熱が落ちていく" }) : "");
+    }
+    const nextTags = `${coals}|${conditions.sparsity}|${cs.vent}|${conditions.rainy}|${focusNote?.tag?.text || ""}`;
+    if (nextTags !== tagsKey) tagsKey = nextTags, tags.replaceChildren(...[
       coals != null && el("span.pull-tag", { text: coals ? `炭×${coals}` : "炭そのまま", title: coals ? `消耗した炭を${coals}個交換した` : "炭は交換していない" }),
       conditions.sparsity && el("span.pull-tag", { text: "少穴", title: "吸い方による温度変化が大きい" }),
       cs.vent === "closed" && el("span.pull-tag", { text: "蓋：閉" }),
@@ -316,13 +327,13 @@ async function pullGame(cs, mode) {
       // CRN10: 蒸らしの集中が、この吸い出しの針と芯に効いていることを見せる
       focusNote?.tag && el("span.pull-tag.focus", { text: focusNote.tag.text, title: focusNote.line, dataset: { tone: focusNote.tag.tone, test: "pull-focus" } }),
     ].filter(Boolean));
-    pips.forEach((pip, i) => pip.classList.toggle("on", i < pulls));
-    pullCount.textContent = `${pulls}/${MAX_PULLS}`;
-    counter.dataset.pulls = String(pulls);
-    counter.setAttribute("aria-label", `吸った回数 ${pulls}/${MAX_PULLS}回`);
-    serveBtn.disabled = !running || drawing || finished || pulls < mode.min || !!failed;
-    pullBtn.disabled = !running || drawing || finished || !!failed || pulls >= MAX_PULLS;
-    if (deepBtn) deepBtn.disabled = pullBtn.disabled;
+    pips.forEach((pip, i) => { if (pip.classList.contains?.("on") !== i < pulls) pip.classList.toggle("on", i < pulls); });
+    putText(pullCount, `${pulls}/${MAX_PULLS}`);
+    putData(counter, "pulls", String(pulls));
+    if (counter.getAttribute?.("aria-label") !== `吸った回数 ${pulls}/${MAX_PULLS}回`) counter.setAttribute("aria-label", `吸った回数 ${pulls}/${MAX_PULLS}回`);
+    putProp(serveBtn, "disabled", !running || drawing || finished || pulls < mode.min || !!failed);
+    putProp(pullBtn, "disabled", !running || drawing || finished || !!failed || pulls >= MAX_PULLS);
+    if (deepBtn) putProp(deepBtn, "disabled", pullBtn.disabled);
   };
 
   // その一台がダメになったら、すぐに止めて結果へ進む。

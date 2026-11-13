@@ -370,10 +370,10 @@
 .foil-hole::after { content: ""; position: absolute; top: calc(50% - 1px); left: -7px; width: 22px; height: 1px; background: linear-gradient(90deg, transparent, #4e465ccc 30%, transparent 46%, #fff5dacc 70%, transparent); transform: rotate(var(--scratch-angle, -28deg)); pointer-events: none; }
 .foil-hole.close, .foil-hole.miss, .foil-hole.rough { border-radius: 24% 52% 32% 60%; }
 .foil-hole.close::after, .foil-hole.miss::after, .foil-hole.rough::after { width: 27px; height: 2px; }
-@keyframes hole-pop { from { transform: scale(2.4); filter: brightness(2.2); } 60% { transform: scale(.92); } }
-.foil-hole.perfect { box-shadow: 0 0 0 2px #fff1c4, 0 0 0 3.5px #8a5a10cc, 0 0 8px 3px #ffc94a99, -1px 2px 4px 2px #0000004d; animation: hole-pop .24s var(--ease-out), hole-glow 1.4s ease-out; }
+/* 穴の出方は transform だけ（filter は毎フレーム描き直しになって重い） */
+@keyframes hole-pop { from { transform: scale(2.4); } 60% { transform: scale(.92); } }
+.foil-hole.perfect { box-shadow: 0 0 0 2px #fff1c4, 0 0 0 3.5px #8a5a10cc, 0 0 8px 3px #ffc94a99, -1px 2px 4px 2px #0000004d; }
 .foil-hole.good { box-shadow: 0 0 0 2px #e8fbff, 0 0 0 3.5px #1f4a5acc, -1px 2px 4px 2px #0000004d; }
-@keyframes hole-glow { from { filter: drop-shadow(0 0 10px #ffd46a); } }
 /* 一刺しの判定は穴のすぐ外側に、小さく短く出す（CRN05）。右の札の大きな文字は使わない */
 .foil-target-plane > .stamp { font-size: 22px; -webkit-text-stroke: 1px #00000099; letter-spacing: .02em; transform: translate(-50%, -50%); animation: hole-callout .75s var(--ease-out) forwards; z-index: 31; }
 .foil-target-plane > .stamp.perfect { font-size: 26px; }

@@ -82,6 +82,10 @@ export function renderSceneArt(host, url, { homeRigs = true } = {}) {
     host.dataset.homeRigs = propsFor(url).map((p) => p.owned).join(",");
   }
   host.style.backgroundImage = url ? `url("${url}")` : "none";
+  // 絵の名前はいつも data-scene-bg にも書く。時間帯の色（css/look-neo.css）はこの名前で判定する。
+  // inline の style を :has() で見ると、ページ内のどの style の書き換えでもページ全体の見た目を計算し直すことになり、
+  // 針や炭が動くたびに毎フレーム重くなる（CRN・穴あけの重さ）。
+  if (url) host.dataset.sceneBg = sceneFile(url);
   const props = propsFor(url, { homeRigs });
   if (!props.length) return;
   const file = sceneFile(url);

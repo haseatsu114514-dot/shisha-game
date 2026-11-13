@@ -39,15 +39,16 @@ const snapshot = n => rank.namespace.craftRankProgress(n, floors);
 const oldGrade = s => s >= 90 ? 'S' : s >= 80 ? 'A' : s >= 65 ? 'B' : s >= 50 ? 'C' : 'D';
 
 test('seven provisional floors preserve all legacy grade boundaries', () => {
-  assert.deepEqual(Array.from(floors), [0, 50, 65, 80, 90, 95, 98]);
+  // CRN12: D〜S の境目は従来どおり。SS・SSS は表示だけの上の段で、ほぼ完璧な一台なら届く 93・96
+  assert.deepEqual(Array.from(floors), [0, 50, 65, 80, 90, 93, 96]);
   assert(Object.isFrozen(floors));
   for (let i = 1; i < floors.length; i++) assert(floors[i] > floors[i - 1]);
-  for (const n of [NaN, -Infinity, Infinity, ...Array.from({ length: 12001 }, (_, i) => i / 100 - 10), 49.9, 50, 64.9, 65, 79.9, 80, 89.9, 90, 94.9, 95, 97.9, 98, 100]) {
+  for (const n of [NaN, -Infinity, Infinity, ...Array.from({ length: 12001 }, (_, i) => i / 100 - 10), 49.9, 50, 64.9, 65, 79.9, 80, 89.9, 90, 92.9, 93, 95.9, 96, 100]) {
     assert.equal(gradeOf(n), oldGrade(n), String(n));
     if (Number.isFinite(n)) assert.equal(snapshot(n).grade.replace(/^SS+$/, 'S'), gradeOf(n));
   }
-  assert.equal(snapshot(92.5).progress, .5);
-  assert.equal(snapshot(98).progress, 1);
+  assert.equal(snapshot(91.5).progress, .5);
+  assert.equal(snapshot(96).progress, 1);
 });
 
 test('live average includes only completed items and never mutates the session', () => {
@@ -65,30 +66,36 @@ test('live average includes only completed items and never mutates the session',
   assert.equal(score.provisionalCraftScore({ holes: { score: NaN }, heat: { score: Infinity } }), null);
 });
 
-test('climbing rank starts at D and opens one grade per finished step (CRN01)', () => {
+test('climbing rank starts at D and opens one grade per finished step, with steam unhit time in between (CRN01・CRN12)', () => {
   const steps = ['setup', 'mix', 'pack', 'holes', 'place', 'heat', 'steam', 'pull', 'care1', 'care2'];
   const grade = cs => snapshot(score.climbingCraftScore(cs, steps)).grade;
   assert.equal(score.climbingCraftScore({}, steps), 0);
   assert.equal(grade({}), 'D');
-  // 全部満点の一台は、工程ごとに D→C→B→A→S→SSS と1段ずつ上がる
+  // 全部満点の一台は、工程ごとに D→C→B→A→S→SS→SSS と1段ずつ上がる（蒸らしも1段に数える）
   const cs = {};
   const seen = [grade(cs)];
   cs.holes = { score: 100 }; seen.push(grade(cs));
   cs.heat = { score: 100 }; seen.push(grade(cs));
+  // 蒸らしの最中は、当たっていない時間の分だけ上限がじわじわ上がる
+  const during = [0, .25, .5, .75, .99].map(progress => score.climbingCraftScore({ ...cs, steamLive: { progress } }, steps));
+  for (let i = 1; i < during.length; i++) assert(during[i] > during[i - 1], `steam progress must raise the climb ${JSON.stringify(during)}`);
+  cs.steam = { score: 100 }; seen.push(grade(cs));
   cs.stats = { craftQuality: 100 }; cs.pullDone = true; seen.push(grade(cs));
-  const before = JSON.stringify(cs);
   cs.careHistory = [{ score: 100 }]; seen.push(grade(cs));
-  assert.equal(JSON.stringify({ ...cs, careHistory: undefined }), JSON.stringify({ ...JSON.parse(before), careHistory: undefined }));
+  const before = JSON.stringify(cs);
   cs.careHistory.push({ score: 100 }); seen.push(grade(cs));
-  assert.deepEqual(seen, ['D', 'C', 'B', 'A', 'S', 'SSS']);
-  // 出来が平均70の一台は、Bで止まる（上限ではなく平均で抑えられる）
-  assert.equal(grade({ holes: { score: 70 }, heat: { score: 70 }, pullDone: true, stats: { craftQuality: 70 } }), 'B');
-  // 全工程を終えたら、最終の総合（ボーナス前）と一致する
-  const full = { holes: { score: 90 }, heat: { score: 80 }, pullDone: true, stats: { craftQuality: 100 }, careHistory: [{ score: 70 }, { score: 60 }] };
+  assert.deepEqual(seen, ['D', 'C', 'B', 'A', 'S', 'SS', 'SSS']);
+  assert.notEqual(JSON.stringify(cs), before);
+  // 出来が平均70の一台は、Bで止まる（上限ではなく平均で抑えられる）。蒸らしで当たらなくても平均より上には行かない
+  const middling = { holes: { score: 70 }, heat: { score: 70 } };
+  assert.equal(grade({ ...middling, steamLive: { progress: 1 } }), 'B');
+  assert.equal(score.climbingCraftScore({ ...middling, steamLive: { progress: 1 } }, steps), 70);
+  // 全工程を終えたら、最終の総合（ボーナス前）と一致する（蒸らしは採点の平均には入らない）
+  const full = { holes: { score: 90 }, heat: { score: 80 }, steam: { score: 30 }, pullDone: true, stats: { craftQuality: 100 }, careHistory: [{ score: 70 }, { score: 60 }] };
   assert.equal(score.climbingCraftScore(full, steps), score.finalize(structuredClone({ ...full, chapter: 2, mode: 'rehearsal' })).total);
   // 調整なしの台は、提供で全工程が終わる
   const noCare = steps.filter(id => !id.startsWith('care'));
-  assert.equal(score.climbingCraftScore({ holes: { score: 90 }, heat: { score: 90 }, pullDone: true, stats: { craftQuality: 90 } }, noCare), 90);
+  assert.equal(score.climbingCraftScore({ holes: { score: 90 }, heat: { score: 90 }, steam: {}, pullDone: true, stats: { craftQuality: 90 } }, noCare), 90);
   assert.equal(score.climbingCraftScore({ heat: { score: NaN } }, steps), 0);
 });
 

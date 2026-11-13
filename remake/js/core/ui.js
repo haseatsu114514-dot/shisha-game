@@ -263,6 +263,9 @@ export function setBg(url, { instant = false, tint = null, fast = false, brief =
       if (fast) next.classList.add("fast");
       if (tint) next.dataset.tint = tint;
       host.append(next);
+      // 時間帯の色（css/look-neo.css の #bg[data-tone] ~ #vn）。いま出した絵の名前と色調から決める
+      const tone = sceneTone(next.dataset.sceneBg, tint);
+      if (tone) host.dataset.tone = tone; else delete host.dataset.tone;
       syncBackdrop(url, tint, instant);
     }
     // 場面はここで確定する。絵が読めず前の背景を残したときも、入店の合図は落とさない（進行は止めない）。
@@ -725,6 +728,19 @@ export async function countdown(host = layers.fx, { short } = {}) {
   SE.select();
   await sleep(quick || cut ? 300 : 380);
   c.remove();
+}
+
+/**
+ * 背景の絵の名前（data-scene-bg）と夜の色調から、時間帯の色の種類を決める（css/look-neo.css の #bg[data-tone]）。
+ * 判定の順は以前の CSS と同じ（後ろほど優先: 昼 < 曇りの昼 < 夕方 < 夜）。
+ */
+export function sceneTone(file = "", tint = "") {
+  const name = String(file || "");
+  if (tint === "night" || /_night\./.test(name)) return "night";
+  if (/_(dusk|evening|sunset)\./.test(name)) return "dusk";
+  if (/_overcast_day\./.test(name)) return "overcast";
+  if (/_(day|morning)\./.test(name)) return "day";
+  return "";
 }
 
 /** 判定スタンプ（PERFECT / JUST IGNITION!! など）。host の中央に一瞬出す */

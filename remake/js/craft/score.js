@@ -182,12 +182,14 @@ export function provisionalCraftScore(cs) {
 }
 
 /**
- * 制作中のランク（CRN01）。作業台を開いた時はDで、工程を終えるたびに1段ずつ上がっていく。
- * 表示の点 = min(終えた工程の平均, 進み具合の上限)。上限は進み具合に合わせて D→C→B→A→S と1段ずつ開き、
- * 全工程を終えると上限は外れて最終の総合（ボーナス前）と一致する。出来の悪い工程があれば平均の方で抑えられる。
+ * 制作中のランク（CRN01・CRN12）。作業台を開いた時はDで、工程を終えるたびに1段ずつ上がっていく。
+ * 表示の点 = min(採点に入る工程の平均, 進み具合の上限)。進み具合は 穴・炭・蒸らし・提供・調整1・調整2 の6つ（その台で行う分だけ）。
+ * 上限は進み具合に合わせて D→C→B→A→S→SS と1段ずつ開き、全部終えると外れて最終の総合（ボーナス前）と一致する（最後に SSS へ届く）。
+ * 蒸らし（雑念よけ）は採点の平均には入らないが、進み具合には入る。蒸らしの最中は、雑念に当たっていない時間の分だけ
+ * 進み具合がじわじわ増える（cs.steamLive.progress、0〜1）。出来の悪い工程があれば平均の方で抑えられる。
  * steps はその作業台で行う工程（openBench の steps の id）。調整なしの台は、その分を数えない。
  */
-export function climbingCraftScore(cs, steps = null, thresholds = [0, 50, 65, 80, 90, 95, 98]) {
+export function climbingCraftScore(cs, steps = null, thresholds = [0, 50, 65, 80, 90, 93, 96]) {
   const parts = {
     holes: cs.holes?.skipped ? undefined : cs.holes?.score,
     heat: cs.heat?.score,
@@ -198,12 +200,15 @@ export function climbingCraftScore(cs, steps = null, thresholds = [0, 50, 65, 80
   const planned = Array.isArray(steps) && steps.length ? new Set(steps) : null;
   const stepOf = { holes: "holes", heat: "heat", shisha: "pull", care1: "care1", care2: "care2" };
   const entries = Object.entries(scoreWeights(cs)).filter(([key]) => !planned || planned.has(stepOf[key]));
+  const steamPlanned = !planned || planned.has("steam");
+  const units = entries.length + (steamPlanned ? 1 : 0);
   if (!entries.length) return null;
   const done = entries.filter(([key]) => Number.isFinite(parts[key]));
+  const steamDone = !steamPlanned ? 0 : cs.steam ? 1 : clamp(Number(cs.steamLive?.progress) || 0, 0, 1);
   if (!done.length) return 0;
   const weight = done.reduce((sum, [, w]) => sum + w, 0);
   const average = clamp(done.reduce((sum, [key, w]) => sum + parts[key] * (w / weight), 0), 0, 100);
-  const fraction = done.length / entries.length;
+  const fraction = (done.length + steamDone) / units;
   if (fraction >= 1) return average;
   // 進み具合 → 上限の点。ランクの境目の間を、進み具合に比例して1段ずつ開ける
   const top = thresholds.length - 1, g = fraction * top, i = Math.floor(g);

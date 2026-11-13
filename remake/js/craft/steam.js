@@ -140,7 +140,7 @@ export async function runSteamDodge(cs) {
   heart.style.setProperty("--heart-size", `${HEART_SIZE}px`);
   heart.style.setProperty("--hit-diameter", `${hitR * 2}px`);
   const spawnEvery = pace.spawnEvery * (1 + 0.25 * tier01("insight")) * focus;
-  let hx = W / 2, hy = H / 2, hits = 0, inv = 0, refreshes = stock;
+  let hx = W / 2, hy = H / 2, hits = 0, inv = 0, refreshes = stock, unhitTime = 0, rankTick = -1;
   let refreshesUsed = 0, refreshReadyAt = 0, slashesUsed = 0, slashReadyAt = 0;
   let wordsCut = 0, totalWordsCut = 0, maxCombo = 0, slashCooldown = SLASH_RECHARGE_SECONDS;
   let afterglowUntil = 0, afterglows = 0, sharkPulses = 0;
@@ -205,41 +205,44 @@ export async function runSteamDodge(cs) {
     return cleared;
   };
   const clearBullets = (radius = Infinity) => removeBullets(b => Math.hypot(hx - clamp(hx, b.x, b.x + b.w), hy - clamp(hy, b.y, b.y + b.h)) <= radius);
-  const rechargeLabel = (button, caption, remaining, duration, label) => {
+  // ボタンの表示は毎フレーム呼ばれる。値が変わった時だけ DOM に書く（同じ値でも書くとページ全体の再計算が走って重い・CRN）
+  const setD = (node, key, value) => { if (node.dataset[key] !== value) node.dataset[key] = value; };
+  const setT = (node, text) => { if (node.textContent !== text) node.textContent = text; };
+  const setA = (node, name, value) => { if (node.getAttribute?.(name) !== value) node.setAttribute(name, value); };
+  const setP = (node, key, value) => { if (node[key] !== value) node[key] = value; };
+  const setV = (node, name, value) => { if (node.style.getPropertyValue?.(name) !== value) node.style.setProperty(name, value); };
+  const rechargeLabel = (button, caption, remaining, duration, label, locked = false) => {
     const rounded = Math.ceil(remaining * 10) / 10;
-    button.dataset.cooldown = rounded.toFixed(1);
-    button.dataset.cooling = String(running && remaining > 0);
-    button.style.setProperty("--recharge", String(1 - remaining / duration));
-    caption.textContent = running && rounded > 0 ? `${rounded.toFixed(1)}秒` : "";
-    button.setAttribute("aria-label", `${label}。${!running ? "操作停止中" : remaining > 0 ? `再使用まで${rounded.toFixed(1)}秒` : "使用可能"}`);
-    button.disabled = !running || remaining > 0;
+    setD(button, "cooldown", rounded.toFixed(1));
+    setD(button, "cooling", String(running && remaining > 0));
+    setV(button, "--recharge", String(1 - remaining / duration));
+    setT(caption, running && rounded > 0 ? `${rounded.toFixed(1)}秒` : "");
+    // 使えない（未習得の）ボタンは、ここで一度に「使用不可」と書く（いったん使用可能と書いてから戻すと毎フレーム2回書き換わる）
+    setA(button, "aria-label", locked ? "アタック。使用不可" : `${label}。${!running ? "操作停止中" : remaining > 0 ? `再使用まで${rounded.toFixed(1)}秒` : "使用可能"}`);
+    setP(button, "disabled", locked || !running || remaining > 0);
   };
   const refreshLabel = () => {
-    refreshBtn.dataset.remaining = String(refreshes);
-    refreshCopy.textContent = stock > 1 ? `リフレッシュ ×${refreshes}` : "リフレッシュ";
+    setD(refreshBtn, "remaining", String(refreshes));
+    setT(refreshCopy, stock > 1 ? `リフレッシュ ×${refreshes}` : "リフレッシュ");
     rechargeLabel(refreshBtn, refreshCharge, refreshes > 0 ? 0 : Math.max(0, refreshReadyAt - time), REFRESH_RECHARGE_SECONDS,
       `リフレッシュ。${effect.label}の雑念を消す${halfLastRefresh(stock) && refreshes === 1 ? `。${stock === 2 ? "2回目" : "最後の1回"}は半分の範囲` : ""}`);
   };
   const slashLabel = () => {
     const profile = slashProfile(wordsCut), remaining = Math.max(0, slashReadyAt - time);
-    rechargeLabel(slashBtn, slashCharge, remaining, slashCooldown,
-      `アタック。上側の前方の雑念を斬る。移動中も方向は固定。Zキーでも使用。コンボ${wordsCut}。射程${profile.reach}px、リチャージ${profile.recharge}秒`);
     const learned = hasAttackTraining(state.flags);
-    slashBtn.dataset.locked = String(!learned);
-    slashLock.hidden = learned;
-    slashBtn.title = learned ? "Z／ボタン／標準ゲームパッド下ボタンでアタック" : "アタック：使用不可";
-    if (!learned) {
-      slashBtn.disabled = true;
-      slashBtn.setAttribute("aria-label", "アタック。使用不可");
-    }
-    slashBtn.dataset.cutWords = String(wordsCut);
-    slashBtn.dataset.totalWordsCut = String(totalWordsCut);
-    slashBtn.dataset.maxCombo = String(maxCombo);
-    slashBtn.dataset.reach = String(profile.reach);
-    slashBtn.dataset.recharge = String(profile.recharge);
-    slashBtn.dataset.tier = String(profile.tier);
-    slashCount.textContent = `×${wordsCut}`;
-    slashCharge.textContent = running && remaining > 0 ? (Math.ceil(remaining * 10) / 10).toFixed(1) : "";
+    rechargeLabel(slashBtn, slashCharge, remaining, slashCooldown,
+      `アタック。上側の前方の雑念を斬る。移動中も方向は固定。Zキーでも使用。コンボ${wordsCut}。射程${profile.reach}px、リチャージ${profile.recharge}秒`, !learned);
+    setD(slashBtn, "locked", String(!learned));
+    setP(slashLock, "hidden", learned);
+    setP(slashBtn, "title", learned ? "Z／ボタン／標準ゲームパッド下ボタンでアタック" : "アタック：使用不可");
+    setD(slashBtn, "cutWords", String(wordsCut));
+    setD(slashBtn, "totalWordsCut", String(totalWordsCut));
+    setD(slashBtn, "maxCombo", String(maxCombo));
+    setD(slashBtn, "reach", String(profile.reach));
+    setD(slashBtn, "recharge", String(profile.recharge));
+    setD(slashBtn, "tier", String(profile.tier));
+    setT(slashCount, `×${wordsCut}`);
+    setT(slashCharge, running && remaining > 0 ? (Math.ceil(remaining * 10) / 10).toFixed(1) : "");
   };
   const refresh = () => {
     if (!running || refreshes === 0) return;
@@ -398,11 +401,14 @@ export async function runSteamDodge(cs) {
           nextWave = time + pace.waveEvery;
         }
         if (warning && time >= warning.due) { launchWave(warning); warning = null; }
-        inv = Math.max(0, inv - dt); heart.classList.toggle("shield", inv > 0);
+        inv = Math.max(0, inv - dt); if (heart.classList.contains?.("shield") !== inv > 0) heart.classList.toggle("shield", inv > 0);
+        // CRN12: 雑念に当たっていない時間の分だけ、制作中のランクがじわじわ上がる（毎フレームではなく 0.25 秒ごとに知らせる）
+        if (!inv) unhitTime += dt;
+        if (time - rankTick >= .25) { rankTick = time; cs.steamLive = { progress: Math.min(1, unhitTime / dur) }; refreshBench(); }
         const afterglow = time < afterglowUntil;
-        box.dataset.afterglow = String(afterglow);
-        box.classList.toggle("afterglow",afterglow);
-        box.dataset.bulletSpeed = String(afterglow ? SKILL_TUNING.afterglowSpeed : 1);
+        setD(box, "afterglow", String(afterglow));
+        if (box.classList.contains?.("afterglow") !== afterglow) box.classList.toggle("afterglow",afterglow);
+        setD(box, "bulletSpeed", String(afterglow ? SKILL_TUNING.afterglowSpeed : 1));
         const bulletDt = dt * (afterglow ? SKILL_TUNING.afterglowSpeed : 1);
         for (let i = bullets.length - 1; i >= 0; i--) {
           const b = bullets[i]; b.x += b.vx * bulletDt; b.y += b.vy * bulletDt;
@@ -422,7 +428,7 @@ export async function runSteamDodge(cs) {
         }
         clock.update(Math.max(0, Math.ceil((dur - time) * seconds / dur)));
         const level = mental.update(time, hits);
-        setPlayerMental(cs, level); box.dataset.mental = level;
+        setPlayerMental(cs, level); setD(box, "mental", level);
         if (MIND_LEVELS.indexOf(level) > MIND_LEVELS.indexOf(peakMind)) peakMind = level;
         if (level === "clear") clearSeconds += dt;
         world.draw(time, hx, hy, bullets, warning, level);
@@ -435,7 +441,8 @@ export async function runSteamDodge(cs) {
       raf = requestAnimationFrame(loop);
     });
   } finally {
-    running = false; precisionBtn.disabled = true; cancelAnimationFrame(raf); unkey(); input.abort(); resetPad(); clearBullets(); refreshLabel(); slashLabel();
+    running = false; precisionBtn.disabled = true; cancelAnimationFrame(raf);
+    if (!cs.steam) delete cs.steamLive; /* 途中で抜けた時は、じわじわ上がった分を残さない */ unkey(); input.abort(); resetPad(); clearBullets(); refreshLabel(); slashLabel();
     transients.forEach(({ node }) => node.remove());
     world.draw(time + 1, hx, hy);
     heart.classList.remove("shield"); box.classList.remove("warning");
@@ -451,6 +458,7 @@ export async function runSteamDodge(cs) {
   const temp = temperatureAfterSteam(cs, seconds, heatJitter);
   renderTemperature(temp);
   // 舞台・難度表・心の経過はこの実行のローカル値だけ。保存される制作結果には加えない。
+  delete cs.steamLive; // 終えた蒸らしは進み具合の1つ分として数える（score.js の climbingCraftScore）
   cs.steam = { min, seconds, temp, hits, score, refreshesUsed, slashesUsed, wordsCut: totalWordsCut, combo: wordsCut, maxCombo, afterglows, sharkPulses, warmingFactor: steamClimate(cs.environment).transfer };
   settleGrowthPhase(state, cs, "steam", cs.steam, hits === 0);
   scoreStep(cs, "steam", cs.steam.score, "蒸らし");

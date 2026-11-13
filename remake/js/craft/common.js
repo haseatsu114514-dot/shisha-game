@@ -8,7 +8,9 @@ import { state } from "../core/state.js";
 import { growthPerks } from "../core/growth-effects.js";
 
 // #2533 オーナー承認「ランクは仮置きでそのポイントでいい」。仮置きの閾値で、調整可能。
-export const CRAFT_RANK_THRESHOLDS = Object.freeze([0, 50, 65, 80, 90, 95, 98]);
+// D〜S の境目は従来どおり（gradeOf と同じ）。SS・SSS は表示だけの上の段で、完成品の点の現実的な上限（約86）でも
+// ほぼ完璧な一台なら SSS に届くよう 93・96 に置く（以前の 95・98 は、全工程満点でも総合が約97で届かなかった・CRN12）。
+export const CRAFT_RANK_THRESHOLDS = Object.freeze([0, 50, 65, 80, 90, 93, 96]);
 export const gradeOf = (s) => (s >= CRAFT_RANK_THRESHOLDS[4] ? "S" : s >= CRAFT_RANK_THRESHOLDS[3] ? "A" : s >= CRAFT_RANK_THRESHOLDS[2] ? "B" : s >= CRAFT_RANK_THRESHOLDS[1] ? "C" : "D");
 export const autoSkill = () => craftTest.auto; // "good" | "bad" | null
 

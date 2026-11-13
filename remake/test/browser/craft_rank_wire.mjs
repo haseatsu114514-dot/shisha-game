@@ -75,7 +75,7 @@ await suite('craft-rank-wire', async check => {
     await page.evaluate(() => window.heatRun);
     assert.notEqual(await page.locator('.craft-rank').getAttribute('data-grade'), 'unavailable');
     // Use the actual session fields and refresh path; no production score override hook.
-    for (const [grade, score, progress] of [['B', 70, '33'], ['S', 92.5, '50'], ['SS', 96, '33'], ['SSS', 99, '100'], ['B', 70, '33']]) {
+    for (const [grade, score, progress] of [['B', 70, '33'], ['S', 91.5, '50'], ['SS', 94, '33'], ['SSS', 99, '100'], ['B', 70, '33']]) {
       await page.evaluate(score => {
         // 積み上げ（CRN01）なので、全工程に同じ点を置いてその点のランクを見る
         T.cs.heat.score = score;
@@ -83,6 +83,7 @@ await suite('craft-rank-wire', async check => {
         T.cs.pullDone = true;
         T.cs.stats = { craftQuality: score };
         T.cs.careHistory = [{ score }, { score }];
+        T.cs.steam = { score };
         T.session.refreshBench();
       }, score);
       assert.equal(await page.locator('.craft-rank').getAttribute('data-grade'), grade);

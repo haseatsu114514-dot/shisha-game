@@ -86,6 +86,13 @@ async function chooseTemplate(panel, cs) {
   return selected;
 }
 
+// 毎フレーム動く部分は、値が変わった時だけ書く。同じ値でも DOM へ書くと、ページ全体の見た目の再計算が毎フレーム走って重くなる（CRN・穴あけの重さ）
+const putText = (node, text) => { if (node.textContent !== text) node.textContent = text; };
+const putData = (node, key, value) => { if (node.dataset[key] !== value) node.dataset[key] = value; };
+const putStyle = (node, key, value) => { if (node.style[key] !== value) node.style[key] = value; };
+const putProp = (node, key, value) => { if (node[key] !== value) node[key] = value; };
+const putClass = (node, name, on) => { if (node.classList.contains?.(name) !== on) node.classList.toggle(name, on); };
+
 export async function runHoles(cs) {
   // ロートスHMDはアルミなし。穴あけ工程を飛ばし、中立な穴あけ相当値だけ残して次の工程へ。
   if (!usesFoil(cs)) {
@@ -205,16 +212,17 @@ export async function runHoles(cs) {
       next?.classList.add("next");
       highlighted = next;
     }
-    cursor.hidden = ringComplete();
+    putProp(cursor, "hidden", ringComplete());
   };
   const drawNeedle = (t) => {
     const ring = state[ri], { resting } = needle(t);
     place(cursor, needleAngle(t), ring.r);
-    cursor.classList.toggle("resting", resting);
+    putClass(cursor, "resting", resting);
     const held = press ? Math.max(0, t - press.start) : 0;
-    cursor.classList.toggle("pressing", !!press);
-    cursor.style.setProperty("--press", press ? clamp(held / pressLimit(slow), 0, 1).toFixed(3) : "0");
-    cursor.dataset.depth = press ? pressDepth(held, slow) : "";
+    putClass(cursor, "pressing", !!press);
+    const pressed = press ? clamp(held / pressLimit(slow), 0, 1).toFixed(3) : "0";
+    if (cursor.style.getPropertyValue?.("--press") !== pressed) cursor.style.setProperty("--press", pressed);
+    putData(cursor, "depth", press ? pressDepth(held, slow) : "");
   };
   const drawMarkers = () => {
     markers.replaceChildren();
@@ -233,6 +241,17 @@ export async function runHoles(cs) {
     ringLabel.textContent = `${state[ri].label}（${state[ri].taken.filter(Boolean).length}/${state[ri].targets}）`;
     highlightNext();
   };
+  // 一刺しごとには目印を作り直さず、開けた目印だけを外す（毎回20個ほど作り直すと重い・CRN）
+  const takeMarker = (k) => {
+    const entry = currentMarkers.find(item => item.k === k);
+    if (entry) {
+      entry.node.remove?.();
+      currentMarkers = currentMarkers.filter(item => item !== entry);
+      if (highlighted === entry.node) highlighted = null;
+    }
+    putText(ringLabel, `${state[ri].label}（${state[ri].taken.filter(Boolean).length}/${state[ri].targets}）`);
+    highlightNext();
+  };
   const addHoleDot = (a, r, kind, depth) => {
     const h = el(`i.foil-hole.${kind}.${depth}`);
     h.style.setProperty("--scratch-angle", `${(holesLayer.childElementCount * 137) % 180 - 90}deg`);
@@ -241,13 +260,13 @@ export async function runHoles(cs) {
   };
   const hud = () => {
     const ready = complete();
-    punchBtn.disabled = finished || ringComplete();
+    putProp(punchBtn, "disabled", finished || ringComplete());
     // 初めの一行は操作の案内（新しい配置では常設しない・CSL15）。完成などの知らせは出す。
-    plan.dataset.tone = ready || ringComplete() || elapsed >= limit ? "notice" : "hint";
-    plan.textContent = ready ? "選んだ配置が完成。結果へ"
+    putData(plan, "tone", ready || ringComplete() || elapsed >= limit ? "notice" : "hint");
+    putText(plan, ready ? "選んだ配置が完成。結果へ"
       : ringComplete() ? "リング完成。次のリングへ"
       : elapsed >= limit ? "時間評価は終了。穴あけは続けられます"
-      : "光る目印に針が重なったら、押し込んで刺す";
+      : "光る目印に針が重なったら、押し込んで刺す");
   };
 
   const closeRing = (ring) => {
@@ -322,7 +341,7 @@ export async function runHoles(cs) {
         burstFlash(plane, { ...at, size: 64, color: "#ffc94a" });
         shockRing(plane, { ...at, size: 84, color: "#ffc94a" });
       }
-      sparks(plane, { ...at, n: kind === "perfect" ? 9 : 6, spread: kind === "perfect" ? 70 : 55 });
+      sparks(plane, { ...at, n: kind === "perfect" ? 7 : 4, spread: kind === "perfect" ? 70 : 55 });
       if (fxMode() === "full") globalThis.navigator?.vibrate?.(kind === "perfect" ? 12 : 6);
     }
     setBenchHoleAction(cs, {
@@ -346,7 +365,7 @@ export async function runHoles(cs) {
       const at = ri;
       if (!autoSkill()) setTimeout(() => { if (!finished && ri === at) advanceRing(); }, RING_ADVANCE_MS);
     }
-    drawMarkers();
+    takeMarker(k);
     if (complete()) {
       // Freeze at the final real punch, including the time score. Finishing and
       // the result confirmation remain explicit even after the time limit.
@@ -358,7 +377,8 @@ export async function runHoles(cs) {
   };
 
   const drawTime = () => {
-    timeBar.querySelector("b").style.width = `${clamp(100 - (elapsed / limit) * 100, 0, 100)}%`;
+    // 時間の帯は 0.5% 刻みで書く（毎フレームの細かな書き換えを減らす。見た目は変わらない）
+    putStyle(timeBar.querySelector("b"), "width", `${Math.round(clamp(100 - (elapsed / limit) * 100, 0, 100) * 2) / 2}%`);
   };
   const loop = () => {
     if (finished || complete()) return;

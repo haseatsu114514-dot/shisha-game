@@ -119,9 +119,10 @@ export async function burnCoals(cs, panel, { count = 3, compact = false, onPick 
   const paint = (c, progress) => {
     // かなり焼けた状態から始める：赤い面は startBurn から始まり、全面が赤くなる取り頃（progress=1）で 1.0 に届く。
     const b = HEAT_TUNING.startBurn;
-    c.node.style.setProperty("--red", clamp(b + (1 - b) * progress, 0, 1).toFixed(3));
-    c.node.style.setProperty("--hot", clamp((progress - .85) / .3, 0, 1).toFixed(3));
-    c.node.style.setProperty("--ash", clamp((progress - .9) / .5, 0, 1).toFixed(3));
+    const put = (name, value) => { if (c.node.style.getPropertyValue?.(name) !== value) c.node.style.setProperty(name, value); };
+    put("--red", clamp(b + (1 - b) * progress, 0, 1).toFixed(3));
+    put("--hot", clamp((progress - .85) / .3, 0, 1).toFixed(3));
+    put("--ash", clamp((progress - .9) / .5, 0, 1).toFixed(3));
   };
 
   const loop = (now) => {
@@ -136,14 +137,16 @@ export async function burnCoals(cs, panel, { count = 3, compact = false, onPick 
       const n = c.node;
       // ヒットストップ中は焼け色の絵だけ止める（焼け具合と判定の時間は進む）
       if (!fxHolding(view.root)) paint(c, c.p);
-      n.dataset.phase = ph;
+      // 値が変わった時だけ書く（同じ値でも毎フレーム書くと、ページ全体の見た目の再計算が走って重い・CRN）
+      if (n.dataset.phase !== ph) n.dataset.phase = ph;
       // 洞察★: ジャスト直前にかすかな揺らぎ（読みやすさ）
-      n.classList.toggle("soon", clarity > 0 && ph === "pre" && c.p > 1 - 0.1 * clarity);
+      const soon = clarity > 0 && ph === "pre" && c.p > 1 - 0.1 * clarity;
+      if (n.classList.contains?.("soon") !== soon) n.classList.toggle("soon", soon);
       if (effectVisible("insight") && n.classList.contains("soon") && !n.querySelector(".effect-badge")) n.append(effectBadge("insight", "察"));
       // CRN09: 窓が開く少し前に、枠を一度だけ瞬かせる（構え）。洞察の「soon」はこれより長く、はっきり出る
       if (!c.cued && c.tj - t <= HEAT_TUNING.readyCue && c.tj - t > 0) { c.cued = true; n.classList.add("ready-cue"); }
       if (ph === "just" && !n.classList.contains("pikan")) { n.classList.add("pikan"); n.classList.remove("ready-cue"); SE.tick(); }
-      if (ph !== "just") n.classList.remove("pikan");
+      if (ph !== "just" && n.classList.contains?.("pikan") !== false) n.classList.remove("pikan");
       if (c.p > HEAT_TUNING.autoDrop) pick(c, t, true); // 放っておくと灰になって勝手に落ちる
     }
     if (!finished) raf = requestAnimationFrame(loop);

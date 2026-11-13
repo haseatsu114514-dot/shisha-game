@@ -2041,7 +2041,7 @@ body:not(:root) #hud .hud-card .hud-stamina {
 }
 body:not(:root) #hud .dc-row { justify-content: space-between; }
 body:not(:root) #hud .dc-meta > :last-child:not([hidden]),
-body:not(:root) #hud .dc-meta > .hud-stamina:has(+ [hidden]) { border-bottom: 0; }
+body:not(:root) #hud .dc-meta > .hud-stamina:has(+ .hud-exp[hidden]) { border-bottom: 0; }
 body:not(:root) #hud .dc-row span,
 body:not(:root) #hud .hud-card .hud-stamina > span:first-child { flex: none; width: auto; font-size: 12px; font-weight: 700; letter-spacing: .02em; }
 body:not(:root) #hud .dc-row.money b { font-size: 20px; line-height: 1; }

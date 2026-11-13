@@ -567,7 +567,9 @@ function updateBenchRank() {
   bench.rankGrade = progress?.grade ?? null;
   // 大きく出すのは上がった時だけ。開いた時のDは帯に置くだけにする。
   const order = ["D", "C", "B", "A", "S", "SS", "SSS"]; // rank-hud.js の CRAFT_GRADES と同じ並び
-  if (progress?.grade && before && order.indexOf(progress.grade) > order.indexOf(before)) burstRank(bench, progress.grade);
+  // 雑念よけの最中は大きく出さない（雑念の場を隠すと避けられない）。帯の札だけが上がる（CRN12）
+  const dodging = !!cs.steamLive && !cs.steam;
+  if (progress?.grade && before && !dodging && order.indexOf(progress.grade) > order.indexOf(before)) burstRank(bench, progress.grade);
   bench.rankHud.root.dataset.provisional = String(!final);
   bench.rankHud.root.setAttribute("aria-label", final ? "制作ランク" : "制作ランク（暫定）");
   bench.rankHud.root.querySelector(".craft-rank-caption").textContent = final ? "RANK" : "RANK（暫定）";

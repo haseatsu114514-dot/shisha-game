@@ -382,7 +382,7 @@ export function buildThermalAtmosphere(host, worker, cs) {
     update(value) {
       bands = temperatureBands(cs);
       temp = clamp(Number.isFinite(value) ? value : 0, 0, 1);
-      canvas.dataset.temperature = temp.toFixed(4);
+      const shown = temp.toFixed(4); if (canvas.dataset.temperature !== shown) canvas.dataset.temperature = shown; // 同じ値は書かない（毎フレームの再計算を避ける）
       if (!active || ruined) return;
       const band = thermalBand(temp, bands);
       if (phase !== band.id) paint(band);
