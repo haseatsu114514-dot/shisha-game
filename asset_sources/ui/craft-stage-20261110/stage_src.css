@@ -40,6 +40,8 @@
   background: linear-gradient(180deg, #4a2f6b, #2e1d45); color: #f6f1fa; box-shadow: 0 0 18px #c9a7e655;
 }
 & .bench-phase.now .bench-phase-copy b { font-size: 23px; font-weight: 800; letter-spacing: .06em; }
+/* 今の工程の名前は長さが工程ごとに違う（炭焼き／パッキング）。いちばん長い名前の幅を取っておき、右の灯・ランクが工程ごとに横へずれないようにする */
+& .bench-phase.now .bench-phase-copy b { display: inline-block; min-width: 5.3em; }
 /* 工程の灯（一台の記録）とライバルの小窓は、レールに並べる */
 & .bench-top > .rig-record { position: static; flex: none; gap: 6px; margin-left: 4px; }
 & .bench-top > .rig-record .rig-lamp { width: 30px; height: 30px; }
@@ -50,8 +52,9 @@
 & .bench-top > .rival-windows ~ .craft-rank, & .bench-top > .craft-rank ~ .rival-windows { margin-left: 0; }
 & .bench-top > .craft-rank { order: 8; }
 & .bench-top > .rival-windows { order: 7; }
-/* 「外観を選ぶ」は機材を選ぶ工程だけ */
-& .bench-top > .bench-appearance-button { order: 9; }
+/* 「外観を選ぶ」は機材を選ぶ工程だけ。ランクの左に出して、出入りでランクが横へずれないようにする（CRN・位置ずれ） */
+& .bench-top > .bench-appearance-button { order: 7; margin-left: auto; }
+&[data-step="setup"] .bench-top > .craft-rank { margin-left: 12px; }
 &:not([data-step="setup"]) .bench-top > .bench-appearance-button { display: none !important; }
 /* 機材を選ぶ工程は工程の灯もライバルの灯もまだ1つも点かない。大会ではライバル・ランクで行が溢れ、「外観を選ぶ」が
    「?」の裏・画面外へ押し出されるので、この工程だけ灯と小窓を隠して場所を空ける（#3516）。 */
@@ -90,8 +93,14 @@
 & .bench-audience .audience-person figcaption { display: none; }
 & .bench-audience .audience-speech { flex: 1; min-width: 0; height: auto !important; display: block !important; }
 & .bench-audience .audience-heading { display: flex !important; min-height: 0 !important; padding: 0 !important; margin: 0 0 2px !important; gap: 8px; align-items: baseline; }
+/* 評価の印（◎○△）は名前の後ろへ。印が出入りしても名前と一言の頭がずれない */
+& .bench-audience .audience-heading > .audience-name { order: 1; }
+& .bench-audience .audience-heading > :not(.audience-name):not(.audience-rating) { order: 2; }
+& .bench-audience .audience-heading > .audience-rating { order: 3; }
 & .bench-audience .audience-name { font-size: 20px !important; font-weight: 800; color: #c9a7e6; }
 & .bench-audience .audience-note { margin: 0; font-size: 20px !important; line-height: 1.34 !important; font-weight: 600; max-height: none !important; overflow: visible !important; }
+/* 一言は1行のことも2行のこともある。2行ぶんの高さを取っておき、言葉が変わるたびに名前の行が上下しないようにする */
+& .bench-audience .audience-note { min-height: 2.68em; }
 
 /* ---------- 舞台: 枠なしで右側いっぱい ---------- */
 & .bench-right {
@@ -147,7 +156,8 @@
 /* 状態の札（ぬるい・適温…）: 吸い出し・提供・調整だけ。柱のいちばん上に置く */
 & .pull > .thermo .pull-read {
   position: absolute !important; left: 50% !important; right: auto !important; top: -52px !important; transform: translateX(-50%);
-  min-width: 124px; height: 42px; min-height: 0 !important; padding: 0 14px; justify-content: center; border-radius: 21px !important;
+  /* 「ぬるい」「適温・低」の幅の差で札が伸び縮みしないよう、よく出る言葉が収まる幅を取っておく */
+  min-width: 152px; height: 42px; min-height: 0 !important; padding: 0 14px; justify-content: center; border-radius: 21px !important;
   flex-wrap: nowrap; gap: 4px; /* 余熱の矢印（↓）を札の中の同じ行に置く */
   background: #1b112af2 !important; border-width: 1.5px !important; box-shadow: 0 4px 10px #0009;
 }
@@ -214,11 +224,25 @@
 & .bench-top > .rival-windows .rival-face { grid-row: 1; width: 34px; height: 34px; }
 
 /* ---------- 操作の案内文は常設しない（「？」と初回の説明で読む・CSL15） ---------- */
-& :is(.mix-list-caption, .mix-life-note, .mix-taste .flavor-guide-note, .care-coals-calm, .hr-plan[data-tone="hint"]) { display: none !important; }
+& :is(.mix-list-caption, .mix-life-note, .mix-taste .flavor-guide-note, .care-coals-calm) { display: none !important; }
+/* 穴あけの知らせ（リング完成・時間評価の終了）は、出ていない間も場所を取っておく。出た時に上の札が持ち上がらない */
+& .hr-plan { min-height: 52px; }
+& .hr-plan[data-tone="hint"] { visibility: hidden !important; }
 
 /* ---------- 吸い出し・調整: 炭を選ぶ間はダイヤルを隠す（[hidden] を上書きしない） ---------- */
 & .pull-play[hidden] { display: none !important; }
-& .care-coals { flex: 1; justify-content: center; }
+& .care-coals { flex: 1; justify-content: center; gap: 22px; }
+/* 炭の交換の選択は、舞台の中で小さく浮かないよう大きく見せる（上下の空きを詰める） */
+& .care-coals .care-coals-lead { font-size: 20px; }
+& .care-coals .care-places .btn.care-place { min-height: 84px; font-size: 19px; }
+& .care-coals .care-coals-ask { font-size: 30px; }
+& .care-coals .care-coal-btns { gap: 14px; }
+& .care-coals .btn.care-coal { min-height: 250px; font-size: 24px; }
+/* 炭の絵（craft-paper.css の ::before）も箱に合わせて大きく。2個・3個の絵は背景の大きさが別指定なので、同じ割合で拡大する */
+& .care-coals .btn.care-coal::before { transform: scale(1.45); transform-origin: center 70%; }
+/* 水入れは舞台の真ん中に、大きく（上に小さく寄って下が空くのを避ける） */
+& .bench-panel:has(> .craft-water) { display: grid !important; place-items: center; }
+& .bench-panel > .craft-water { transform: scale(1.32); transform-origin: center; }
 
 /* ---------- 配合: 葉の行に商品パッケージを大きく、4種が一度に見える ---------- */
 & .mix { height: 100% !important; display: grid !important; grid-template-columns: 250px minmax(0, 1fr) !important; grid-template-rows: minmax(0, 1fr) 100px !important; gap: 10px 16px !important; }
