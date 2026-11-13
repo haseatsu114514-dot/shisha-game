@@ -60,7 +60,7 @@ mukaiで行動を使った帰りの裏口では、ふれあいの画面「てつ
 中央のボウルで3種類の詰め方を見比べ、「この詰め方で決める」で穴配置へ進む。
 `?step=holes` で穴あけから開始できる。二重のひし形が次の目標、水色の輪が針先、黒い小さな凹みが開いた穴。針は光る目印の近くの短い弧だけを動き、押し始めで位置が決まり、押していた長さで穴の大きさが変わる（#2937）。
 タップ／Spaceで穴を開け、リングが埋まると次のリング（最後なら結果）へ自動で進む。本番と同じ工程を呼び、本編セーブは読み書きしない。
-`?step=steam|pull|care` で蒸らし・吸い出し・調整を単体で、`?step=full` で機材選びから調整2回目までの通しの一台を遊べる（`&mode=tournament` で大会の見え方、`&tune=heat.readyGap:1,pull.period:1.2` でこの試遊の間だけ手触りの値を差し替え）。リニューアルの計画と実装状況は [docs/design/craft-renewal-plan.md](../docs/design/craft-renewal-plan.md)。
+`?step=steam|pull|care` で蒸らし・吸い出し・調整を単体で、`?step=full` で機材選びから調整2回目までの通しの一台を遊べる（`&mode=tournament` で大会の見え方、`&tune=heat.readyGap:1,pull.period:1.2,holes.goodDeg:14,steam.hitPenalty:10` でこの試遊の間だけ手触りの値を差し替え）。リニューアルの計画と実装状況は [docs/design/craft-renewal-plan.md](../docs/design/craft-renewal-plan.md)。
 回帰テストは `node remake/test/browser/craft_materials.mjs`（PC／横持ちタッチ）と `node --experimental-vm-modules remake/test/foil_holes.mjs`。
 シーシャ作りのレイアウト「一枚の舞台」（2026-11-10 採用・本編へ組み込み中）の見本（静止モック）は `http://127.0.0.1:8123/remake/previews/craft-stage-layout/`。本編の工程は呼ばず、絵を新しい配置に並べただけ（[設計の要点](../docs/design/craft-stage-layout.md)）。
 

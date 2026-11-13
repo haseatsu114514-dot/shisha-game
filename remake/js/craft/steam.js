@@ -38,6 +38,11 @@ const OBJECTS = ["coal", "orb", "orb", "smoke"];
 
 // SF63: 一度に1回分を持ち、使用後8秒でリチャージ。根性は範囲と回復に効く。
 export const REFRESH_RECHARGE_SECONDS = 8;
+/**
+ * 雑念よけの手触りの調整値（CRN・P8）。試遊ページの ?tune=steam.hitPenalty:10 で差し替えて試せる。
+ * hitPenalty: 1回当たるごとに下がる点／invulnerable: 当たった後に無敵になる秒／speed・preciseSpeed: 心の移動の速さ（px/秒）
+ */
+export const STEAM_TUNING = { hitPenalty: 14, invulnerable: 0.9, speed: 290, preciseSpeed: 120 };
 // dodge枠は784×414px。根性1段の半径90pxから10段の画面全体まで広がる。
 // SB01: 基本1回。根性★4（内部値61〜・7段）と★5（81〜・9段）で1回ずつ増え、盤のK06の1回と合算する。
 // 第1章は根性の上限48なので★では増えない。回数が多すぎればバランス再測定で調整する（オーナー仮判断・合算案）。
@@ -390,7 +395,7 @@ export async function runSteamDodge(cs) {
         let y = axisY + (keysDown.has("d") ? 1 : 0) - (keysDown.has("u") ? 1 : 0);
         const length = Math.max(1, Math.hypot(x, y));
         if (padPointer === null) knob.style.transform = x || y ? `translate(${x / length * 26}px, ${y / length * 26}px)` : "";
-        const speed = precise ? 120 : 290;
+        const speed = precise ? STEAM_TUNING.preciseSpeed : STEAM_TUNING.speed;
         moveTo(hx + x / length * speed * dt, hy + y / length * speed * dt);
         if (time >= nextSpawn && time < dur - 0.8) { spawn(); nextSpawn = time + spawnEvery * rand(0.8, 1.15) * (1 - 0.2 * time / dur); }
         if (time >= nextWave && time < dur - 2) {
@@ -414,7 +419,7 @@ export async function runSteamDodge(cs) {
           const b = bullets[i]; b.x += b.vx * bulletDt; b.y += b.vy * bulletDt;
           b.node.style.transform = `translate(${b.x}px, ${b.y}px)`;
           if (!inv && heartTouchesBullet(b, hx, hy, hitR)) {
-            hits++; inv = 0.9;
+            hits++; inv = STEAM_TUNING.invulnerable;
             wordsCut = 0;
             slashFeedback.textContent = "被弾。コンボが途切れた";
             slashLabel();
@@ -453,7 +458,7 @@ export async function runSteamDodge(cs) {
     }
   }
   if (!isCurrent()) return;
-  const score = clamp(100 - hits * 14, 0, 100);
+  const score = clamp(100 - hits * STEAM_TUNING.hitPenalty, 0, 100);
   clock.update(0);
   const temp = temperatureAfterSteam(cs, seconds, heatJitter);
   renderTemperature(temp);

@@ -20,7 +20,12 @@ import { RINGS, circularAngleDistance, templateComplete, evaluateFoil, usesFoil,
 import { HOLE_TEMPLATES, DEFAULT_HOLE_TEMPLATE, availableHoleTemplates, ringsForTemplate, templateCountsLabel } from "./holes_templates.js";
 import { stepVent } from "./steps.js";
 export { RINGS } from "./holes_logic.js";
-const TIME_LIMIT = 32;
+/**
+ * 穴あけの手触りの調整値（CRN・P8）。試遊ページの ?tune=holes.timeLimit:40 で差し替えて試せる。
+ * timeLimit: 時間評価の秒（レッスンは lessonTimeLimit）／perfectDeg・goodDeg: EXCELLENT・GOOD の判定幅（基準角の度）
+ * lessonSlow・lessonPerfect・lessonGood: レッスンで針をゆっくり・幅を広くする倍率
+ */
+export const HOLES_TUNING = { timeLimit: 32, lessonTimeLimit: 48, perfectDeg: 4.2, goodDeg: 11, lessonSlow: 1.3, lessonPerfect: 1.5, lessonGood: 1.3 };
 // リングが埋まってから次のリング（最後なら結果）へ自動で進むまで（CRN02）。完成の演出を見せる間。
 const RING_ADVANCE_MS = 600;
 const DEG = Math.PI / 180;
@@ -108,11 +113,11 @@ export async function runHoles(cs) {
   const template = await chooseTemplate(panel, cs);
   stepPanel("holes", "アルミ穴あけ", "光る目印に針が重なったら押し、少し押し込んでから離す（Space長押しでも可）。リングが埋まると次のリングへ進む");
   const rings = ringsForTemplate(template);
-  const slow = skill.slow(cs) * (tutorial ? 1.3 : 1);
-  const perfWin = 4.2 * skill.window(cs, "holes") * (tutorial ? 1.5 : 1);
+  const slow = skill.slow(cs) * (tutorial ? HOLES_TUNING.lessonSlow : 1);
+  const perfWin = HOLES_TUNING.perfectDeg * skill.window(cs, "holes") * (tutorial ? HOLES_TUNING.lessonPerfect : 1);
   const basePerfWin = perfWin / (1 + 0.45 * effectTier("sense"));
-  const goodWin = 11 * craftCondition(cs).window * (tutorial ? 1.3 : 1) * (cs.retryAssist ? 1.35 : 1);
-  const limit = tutorial ? 48 : TIME_LIMIT + (growthSkill(gameState, "K01") ? SKILL_TUNING.holesSeconds : 0);
+  const goodWin = HOLES_TUNING.goodDeg * craftCondition(cs).window * (tutorial ? HOLES_TUNING.lessonGood : 1) * (cs.retryAssist ? 1.35 : 1);
+  const limit = tutorial ? HOLES_TUNING.lessonTimeLimit : HOLES_TUNING.timeLimit + (growthSkill(gameState, "K01") ? SKILL_TUNING.holesSeconds : 0);
   // 操作の詳しい説明・凡例・採点は「?」へ。基本画面には置かない（ミニゲームUI共通の方針）。
   benchRoot(cs)?.querySelector(".bench-guide-tip > p")?.after(el("div.bench-guide-extra", { dataset: { test: "hole-guide" } }, [
     el("ul", [

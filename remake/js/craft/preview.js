@@ -11,9 +11,9 @@ import { el } from "../core/util.js";
 import { newSession, openBench, stepPanel } from "./session.js";
 import { stepSetup, stepMix, stepPack, stepPlace, stepSteamTime } from "./steps.js";
 import { stepWater } from "./water-view.js";
-import { runHoles } from "./holes.js";
+import { runHoles, HOLES_TUNING } from "./holes.js";
 import { runHeat } from "./heat.js";
-import { runSteamDodge } from "./steam.js";
+import { runSteamDodge, STEAM_TUNING } from "./steam.js";
 import { runPull, runCare, PULL_TUNING } from "./pull.js";
 import { HEAT_TUNING } from "./heat_logic.js";
 import { finalize } from "./score.js";
@@ -44,8 +44,8 @@ function endCard(title, links, grade = null) {
   ]));
 }
 
-// ?tune=heat.readyGapExtra:0.4,pull.period:1.2 で、この試遊の間だけ手触りの値を差し替える（本編は読まない）
-const TUNING = { heat: HEAT_TUNING, pull: PULL_TUNING };
+// ?tune=heat.readyGap:1,pull.period:1.2,holes.goodDeg:14,steam.hitPenalty:10 で、この試遊の間だけ手触りの値を差し替える（本編は読まない）
+const TUNING = { heat: HEAT_TUNING, pull: PULL_TUNING, holes: HOLES_TUNING, steam: STEAM_TUNING };
 function applyTune(text) {
   const applied = [];
   for (const pair of String(text || "").split(",")) {
@@ -70,7 +70,7 @@ export async function boot() {
   applyTune(query.get("tune"));
   const step = STEPS.includes(query.get("step")) ? query.get("step") : "pack";
   const late = ["steam", "pull", "care", "full"].includes(step);
-  const mode = ["rehearsal", "tournament"].includes(query.get("mode")) ? query.get("mode") : late ? "rehearsal" : "tutorial";
+  const mode = ["rehearsal", "tournament", "tutorial"].includes(query.get("mode")) ? query.get("mode") : late ? "rehearsal" : "tutorial";
   // 通しの一台は持ち込みの葉を用意しておく（ショップを通らないため）
   state.flavorStock = { double_apple: 50, mint: 50, blueberry: 50, lemon: 50 };
   state.flavors = ["double_apple", "mint", "blueberry", "lemon"];
