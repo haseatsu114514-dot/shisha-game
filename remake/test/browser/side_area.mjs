@@ -279,6 +279,42 @@ await suite("side-area", async check => {
     await page.locator("#vn .vn-log.show").waitFor();
     await idle(page, "next").waitFor({ state: "attached" });
   }, { ...PHONE, pageEntry: `${baseURL}?look=neo` });
+
+  // 選択肢の高さ（オーナー「2択が上すぎる」「もう少し上」2026-11-13・YHK14）: 会話欄の上 3択以上は 62px、2択は 94px（舞台上の px）。
+  // 余白へ操作を出していても、出していなくても同じ高さ。2択だけを高くしすぎない（#3499 の 142px は高すぎた）。
+  for (const [label, options, pads] of [["phone-with-pads", PHONE, true], ["pc", {}, false]]) {
+    await check(`choices-height-${label}`, async page => {
+      const gaps = {};
+      for (const count of [2, 3]) {
+        await page.evaluate(async (count) => {
+          const core = await import("./js/core/state.js");
+          core.newGame(); Object.assign(core.state, { phase: "daily", chapter: 1, day: 5, slot: 1 }); core.state.met.sumi = true; core.config.textSpeed = 4;
+          (await import("./js/core/ui.js")).clearScreen();
+          const choices = ["出ます", "……ちなみに、相手は？", "少し考えさせてください"].slice(0, count).map((text) => ({ text, next: "end" }));
+          void (await import("./js/vn/engine.js")).play({ dialogue_id: `qa_choices_${count}`, lines: [{ speaker: "sumi", face: "normal", text: "で、どうする。" }, { type: "choice", choices }], branches: { end: [] } },
+            { bg: "res://assets/backgrounds/bg_tonari_inside_night.png" });
+        }, count);
+        await page.locator(".vn-next.show").waitFor();
+        await page.waitForTimeout(400);
+        await page.evaluate(async () => (await import("./js/vn/engine.js")).tapAdvance());
+        await page.locator(".vn-choices.show").waitFor();
+        await page.waitForTimeout(500);
+        gaps[count] = await page.evaluate(() => {
+          const k = document.getElementById("stage").getBoundingClientRect().height / 720;
+          const box = document.querySelector(".vn-box").getBoundingClientRect(), name = document.querySelector(".vn-name.show")?.getBoundingClientRect();
+          const choices = [...document.querySelectorAll(".vn-choice")].map((n) => n.getBoundingClientRect());
+          const bottom = Math.max(...choices.map((r) => r.bottom));
+          return { pads: document.documentElement.dataset.sidePad, aboveBox: (box.top - bottom) / k, aboveName: name ? (name.top - bottom) / k : null };
+        });
+      }
+      assert.equal(gaps[2].pads, pads ? "on" : "off");
+      // 余白は ±8px（文字の組みの端数）まで許す
+      assert(Math.abs(gaps[3].aboveBox - 62) <= 8, `3択は会話欄の上 62px: ${JSON.stringify(gaps)}`);
+      assert(Math.abs(gaps[2].aboveBox - 94) <= 8, `2択は会話欄の上 94px: ${JSON.stringify(gaps)}`);
+      assert(gaps[2].aboveBox - gaps[3].aboveBox >= 20 && gaps[2].aboveBox - gaps[3].aboveBox <= 44, `2択は3択より少しだけ上: ${JSON.stringify(gaps)}`);
+      assert(gaps[2].aboveName >= 16, `2択は名前札から離れている: ${JSON.stringify(gaps)}`);
+    }, options);
+  }
 }, { initScript: padOn });
 
 // 自動操作のブラウザの既定: 親指ボタンは出さず、ステージの中のボタンのまま（既存の検査の前提）。煙と縁・帯は出る。
