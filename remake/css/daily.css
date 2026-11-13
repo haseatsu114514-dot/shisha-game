@@ -2196,3 +2196,13 @@ body:not(:root) .map .map-notice { font-size: max(14px, var(--mui-text)); }
 .xfer-text { width: 100%; box-sizing: border-box; min-height: 120px; padding: 10px; font-size: 20px; line-height: 1.4; word-break: break-all; background: var(--ink-2); color: var(--text); border: 1px solid var(--panel-edge); border-radius: 4px; resize: none; }
 .xfer-help p { margin: 0 0 12px; font-size: 24px; line-height: 1.6; }
 .xfer-slots { margin: 8px 0 0; font-size: 24px; font-family: inherit; white-space: pre-wrap; }
+
+/* 地図のプレビュー: 料金・使う体力・入れない理由の小さな札（#3555）。説明文は増やさず（#2853）、写真の下端に重ねる */
+body:not(:root) .map .mi-tags { display: flex; flex-wrap: wrap; gap: 4px; margin: 0 0 6px; }
+body:not(:root) .map .map-info:has(> .mi-preview) > .mi-tags { grid-row: 1; align-self: end; z-index: 1; margin: 6px; }
+body:not(:root) .map .mi-tag {
+  padding: 2px 9px; border-radius: 999px; background: rgba(20, 14, 30, 0.84); color: #fff;
+  font-size: max(13px, var(--mui-text)); font-weight: 700; line-height: 1.4; white-space: nowrap;
+}
+body:not(:root) .map .mi-tag.mi-why { background: #a8343a; }
+html:root[data-density="phone"] body:not(:root) .map .mi-tag { font-size: var(--phone-sub); }
