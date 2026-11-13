@@ -7,6 +7,7 @@ import assert from "node:assert/strict";
 import { suite } from "./support.mjs";
 
 const FLOOR_PHOTOS = /\/img\/backgrounds\/bg_(?:shop|fookah_showroom)\.webp(?:[?#]|$)/;
+const SHOWROOM_PHOTO = /\/img\/backgrounds\/bg_fookah_showroom\.webp(?:[?#]|$)/;
 const FAILING_BG = /\/img\/backgrounds\/bg_eden_shop\.webp(?:[?#]|$)/; // 起動時の先読みに入っていない背景
 
 async function setup(page, values = {}) {
@@ -20,11 +21,11 @@ async function setup(page, values = {}) {
 }
 
 /** 写真の通信を止めておき、release() で流す。止めた通信のURLは seen に残る。 */
-async function holdFloorPhotos(page) {
+async function holdFloorPhotos(page, photos = FLOOR_PHOTOS) {
   let release;
   const held = new Promise(resolve => { release = resolve; });
   const seen = [];
-  await page.route(FLOOR_PHOTOS, async route => {
+  await page.route(photos, async route => {
     seen.push(route.request().url());
     await held;
     await route.continue().catch(() => {});
@@ -102,9 +103,20 @@ await suite("visual-continuity-3203", async check => {
 
   await check("slow-photo-entry-not-blank", async page => {
     await setup(page);
-    const photos = await holdFloorPhotos(page);
+    // #3491: 入口の前に店頭の応対（背景は1階の bg_shop）を読むので、入口を出す時には1Fの写真は届いている。
+    // まだ読んでいない2Fの写真だけを止め、入口の待ちは応対を読み終えた時から数える。
+    const photos = await holdFloorPhotos(page, SHOWROOM_PHOTO);
     await watchEntry(page);
-    await page.evaluate(() => { S.openedAt = performance.now(); S.result = "pending"; S.shop.openShop().then(r => { S.result = r; }); });
+    await page.evaluate(() => {
+      S.result = "pending";
+      const observer = new MutationObserver(() => {
+        if (document.body.classList.contains("vn-open")) S.greeting = true;
+        else if (S.greeting) { S.openedAt = performance.now(); observer.disconnect(); }
+      });
+      observer.observe(document.body, { attributes: true, attributeFilter: ["class"] });
+      S.shop.openShop().then(r => { S.result = r; });
+    });
+    await page.waitForFunction(() => S.openedAt != null, null, { timeout: 30000 });
     // 調査の再現と同じ 3000ms の遅れ。入口は上限で出て、写真が届くまでは枠に下地が見える。
     setTimeout(photos.release, 3000);
     const entry = await firstEntry(page);
