@@ -9,9 +9,31 @@
           "text": "できた一台を、客席へ運んだ。"
         },
         {
+          "speaker": "",
+          "text": "客は食後のコーヒーを脇へ置いて、ホースの先をそっと手に取った"
+        },
+        {
+          "speaker": "",
+          "text": "最初の一息は、細く長く"
+        },
+        {
           "speaker": "customer",
           "face": "smile",
           "text": "コーヒーの続きみたいだ。香ばしいのに、口が重くならない"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "食後の一杯の香りが、そのまま煙に移ったみたいで悪くない"
+        },
+        {
+          "speaker": "",
+          "text": "もう一口、今度は少し深く吸って、背もたれに体を預ける"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "重くなりそうなのに、ならないんだな。もう一口、いきたくなる"
         },
         {
           "speaker": "hajime",
@@ -28,9 +50,27 @@
           "text": "できた一台を、客席へ運んだ。"
         },
         {
+          "speaker": "",
+          "text": "客は一口吸って、ホースを持つ手を止めた"
+        },
+        {
           "speaker": "customer",
           "face": "normal",
           "text": "紅茶か。……うん、口の中がさっぱりした"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "食後だっていうのに、口の中が軽い。コーヒーの後は、もっと残るものだと思ってた"
+        },
+        {
+          "speaker": "",
+          "text": "客は肩の力を抜いて、ソファに深くもたれた"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "紅茶みたいに軽いのに、ちゃんと食後の一台だ。ここでゆっくりできるな"
         },
         {
           "speaker": "hajime",
