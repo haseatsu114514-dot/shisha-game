@@ -8,6 +8,7 @@
         { "speaker": "", "face": "", "text": "別れぎわ、凛想さんが俺の上着の襟に、少しだけ顔を寄せた。" },
         { "speaker": "rio", "face": "normal", "text": "……よその店の香りがする。うちの棚には無い葉だね", "beat": 400 },
         { "speaker": "hajime", "face": "surprise", "text": "（……昼に寄った店の煙だ。襟に、残ってた）" },
+        { "speaker": "hajime", "face": "sad", "text": "（凛想さんは、何の匂いも付けない。これは、俺が持ち込んだ匂いだ）" },
         { "speaker": "rio", "face": "serious", "text": "仕事柄、鼻は確かなの。どこの店か、当ててあげようか" },
         {
           "type": "choice",

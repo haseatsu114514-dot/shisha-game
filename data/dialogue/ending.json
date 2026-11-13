@@ -408,22 +408,27 @@
         {
           "speaker": "hajime",
           "face": "normal",
-          "text": "今日も同意書ですか"
+          "text": "試香紙にしては、数字が書いてありますね"
         },
         {
           "speaker": "rio",
           "face": "normal",
-          "text": "違う。指輪のサイズ、測ってきた"
+          "text": "指輪のサイズ。測ってきた"
         },
         {
           "speaker": "hajime",
-          "face": "normal",
-          "text": "……俺、何て返せばいいんだろう"
+          "face": "surprise",
+          "text": "……先に、測ったんですか"
         },
         {
           "speaker": "rio",
-          "face": "normal",
-          "text": "今決めなくていい。渡したかっただけ"
+          "face": "smug",
+          "text": "先に私が確かめる。いつもどおりでしょ"
+        },
+        {
+          "speaker": "rio",
+          "face": "smile",
+          "text": "返事は今じゃなくていい。渡したかっただけ"
         },
         {
           "speaker": "hajime",

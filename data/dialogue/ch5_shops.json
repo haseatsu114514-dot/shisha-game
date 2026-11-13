@@ -263,7 +263,7 @@
         {"speaker": "", "face": "", "text": "夜の2階。凛想さんは、窓際の椅子で目を閉じて座っていた。"},
         {"speaker": "rio", "face": "normal", "text": "……あ。寝てないよ。鼻を休ませてたの"},
         {"speaker": "hajime", "face": "surprise", "text": "鼻を、休ませる？"},
-        {"speaker": "rio", "face": "normal", "text": "一日に嗅げる香りには、上限があるの。超えると、全部同じ匂いに聞こえる"},
+        {"speaker": "rio", "face": "normal", "text": "一日に嗅げる香りには、上限があるの。超えると、全部同じ匂いになる"},
         {"speaker": "hajime", "face": "normal", "text": "今度の相手は、上限がないかもしれません。機械なので"},
         {"speaker": "rio", "face": "serious", "text": "ふうん。……なら、上限のあるほうの強さを持っていけばいい"},
         {"speaker": "rio", "face": "normal", "text": "休ませた鼻は、一口目をちゃんと覚えてる。疲れた鼻には、それができないの"},
