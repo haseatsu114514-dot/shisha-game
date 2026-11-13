@@ -165,7 +165,7 @@ const title = await load(await read("../js/scenes/title.js"), {
   el, bgUrl: () => "title-bg", layers: { hud: { classList: { remove: k => hudClasses.delete(k) } } },
   showScreen: name => { body.dataset.screen = name; renders++; }, peekSave: () => ({}), anySlotSaved: () => true,
   playBgm: k => events.push(k), stopBgm: fade => events.push(`stop:${fade}`),
-  SE: { select() {} }, smokeWipe: fn => fn(),
+  SE: { select() {} }, smokeWipe: fn => fn(), toast: () => {},
   modal: options => options.title === "設定" ? new Promise(resolve => configCloses.push(resolve)) : Promise.resolve(confirm),
   loadWithRecovery: async () => !!selectedSlot,
   wipeSave: () => wipes++,

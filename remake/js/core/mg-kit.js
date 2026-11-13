@@ -1,7 +1,7 @@
 // モーショングラフィックスの部品（CI108）。アフターエフェクツのシェイプレイヤーのように、
 // 線を描いて引っ込める放射線・広がる輪・図形の紙吹雪・1文字ずつ出る文字・強い緩急をまとめる。
-// 配色は「紫1色（mono）」と「場面ごとの色（free）」の2系統。?mopal=free か __remake.dev.motionPalette("free") で切り替える。
-// 動きは場面ごとに a／b の2パターン（?movar=b）。
+// a／b（10月の型）の配色は「紫1色（mono）」と「場面ごとの色（free）」の2系統。?mopal=free か __remake.dev.motionPalette("free") で切り替える。
+// 動きは場面ごとに a／b の2パターン（?movar=b）と、作り直した c（2026-11-11〜・ゲームの絵で作る。紫1色にしない・remake/README.md の5つの決まり）。
 import { el } from "./util.js";
 import { svg, move } from "./transition-kit.js";
 

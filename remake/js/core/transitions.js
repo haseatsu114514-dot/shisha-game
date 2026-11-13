@@ -108,19 +108,24 @@ const MASK = (pos) => ({ maskPosition: pos, webkitMaskPosition: pos });
 
 /**
  * 場面の切り替え（smokeCurtain）と同じ煙のにじみで、node を下から上へほどいて消す（TMG58〜）。
- * 煙の絵がまだ読めない・使えない環境では薄くするだけ。消し終えても node は残す（片付けは呼び出し側）。
+ * reverse: 逆向きに送って、消えている node を煙の形で現す（上から下りてくる。下から昇らせたい時は node を上下反転して使う）。
+ * 煙の絵がまだ読めない・使えない環境と、動きを減らす設定では薄くするだけ。終えても node は残す（片付けは呼び出し側）。
  */
-export async function smokeOut(node, ms = 780) {
-  const ready = await Promise.race([Promise.resolve(warmSmoke()), sleep(300).then(() => false)]);
-  if (ready !== true) return move(node, [{ opacity: 1 }, { opacity: 0 }], Math.round(ms * 0.6), { easing: "ease" });
+export async function smokeOut(node, ms = 780, { reverse = false } = {}) {
+  const ready = reducedMotion() ? false : await Promise.race([Promise.resolve(warmSmoke()), sleep(300).then(() => false)]);
+  const fade = reverse ? [{ opacity: 0 }, { opacity: 1 }] : [{ opacity: 1 }, { opacity: 0 }];
+  if (ready !== true) return move(node, fade, Math.round(ms * 0.6), { easing: "ease" });
   const art = smokeArt();
   const mask = `url("${art.a}"), url("${art.b}")`;
   Object.assign(node.style, {
     maskImage: mask, webkitMaskImage: mask, maskSize: "100% 300%", webkitMaskSize: "100% 300%",
     maskRepeat: "no-repeat", webkitMaskRepeat: "no-repeat", maskComposite: "intersect", webkitMaskComposite: "source-in",
   });
-  return move(node, [MASK("50% 0%, 50% 0%"), { ...MASK("50% 46%, 50% 56%"), offset: 0.5 }, MASK("50% 100%, 50% 100%")], ms, { easing: "cubic-bezier(.45,0,.55,1)", fill: "forwards" });
+  const frames = [MASK("50% 0%, 50% 0%"), { ...MASK("50% 46%, 50% 56%"), offset: 0.5 }, MASK("50% 100%, 50% 100%")];
+  return move(node, reverse ? frames.reverse() : frames, ms, { easing: "cubic-bezier(.45,0,.55,1)", fill: "forwards" });
 }
+/** smokeOut の逆。消えている node を煙の形で現す */
+export const smokeIn = (node, ms = 780) => smokeOut(node, ms, { reverse: true });
 
 /**
  * 煙のにじみの幕。覆わないので covered はすぐ解決し、ui.setBg が次の背景を前の背景の下に置いて dissolve() で前の背景を渡す。
@@ -402,7 +407,7 @@ async function flip(span) {
 
 /** いま見えている背景（#bg のいちばん上の絵）の写し。夜明けの幕の中で、眠る前と朝の場面として使う。
  *  無い時と DS風の2画面（背景は上画面だけ・幕は両画面）では null（暗い面だけで明ける） */
-function bgSnapshot() {
+export function bgSnapshot() {
   const host = typeof document !== "undefined" && !document.body?.classList?.contains("game-ds") ? document.getElementById?.("bg") : null;
   const top = host ? [...host.children].filter((n) => n.classList?.contains("bg-img")).at(-1) : null;
   if (!top?.cloneNode) return null;

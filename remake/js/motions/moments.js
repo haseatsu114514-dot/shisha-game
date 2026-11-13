@@ -1,8 +1,9 @@
-// 章の要所の一度きりのモーショングラフィックス（#2688 A3・A5・A6・A8）。紫とラベンダーの面と線、画像は使わない。顔は描かない。
+// 章の要所の一度きりのモーショングラフィックス（#2688 A3・A5・A6・A8）。顔は描かない。
+// 回想（A3）と混ざる煙（A8）は作り直した（TMG60）: 紫の図形をやめ、場面の絵と煙の絵（smoke/）で作る。
 // どれも見せるだけで、保存・進行・票には触れない。動きを減らす設定・テストの高速送りでは何もしない（mid() だけ行う）。
 import { el, sleep, nextFrame } from "../core/util.js";
 import { W, H, COLOR, EASE, svg, stageSvg, move, reducedMotion } from "../core/transition-kit.js";
-import { holdCover } from "../core/transitions.js";
+import { holdCover, bgSnapshot, smokeArt, smokeOut } from "../core/transitions.js";
 
 const fx = () => document.getElementById("fx");
 const skip = () => reducedMotion() || !!(window.__remake?.vnTest?.turbo || window.__remake?.craftTest?.auto);
@@ -17,41 +18,42 @@ async function covering(node, body) {
   try { return await body(node); } finally { node.remove(); unhold(); }
 }
 
-// ---------------------------------------------------------------- A3 落ち葉の波（第3章の公園の回想 → 現在）
+// ---------------------------------------------------------------- A3 回想 → 現在（第3章の公園の回想。作り直し TMG60）
 
-function leafPath(scale = 1) {
-  const s = scale;
-  return `M 0 ${-60 * s} C ${46 * s} ${-36 * s}, ${46 * s} ${36 * s}, 0 ${60 * s} C ${-46 * s} ${36 * s}, ${-46 * s} ${-36 * s}, 0 ${-60 * s} Z`;
+/** 煙のにじみの境目について昇る煙（smokeCurtain の haze と同じ動き） */
+function hazeRise(node, ms) {
+  const haze = el("i.mo-haze", { style: { backgroundImage: `url("${smokeArt().haze}")` } });
+  node.append(haze);
+  haze.animate([{ top: "125%", opacity: 0 }, { top: "23%", opacity: 0.6, offset: 0.5 }, { top: "-75%", opacity: 0 }], { duration: ms, easing: "cubic-bezier(.45,0,.55,1)", fill: "forwards" });
 }
 
-/** 色の抜けた回想の上を、葉の形の紫の面が数枚ゆっくり横へ流れて覆い、流れ去ると色のついた現在（約1.6秒）。mid() は覆っている間に背景を替える */
+/**
+ * 回想（セピアのCG。読み終えると画面は暗い）から現在へ。暗いまま裏で現在の場面へ替え、その場面が回想と同じセピアで浮かび、
+ * 煙のにじみで下から本当の色が戻る（約2.3秒。見本1の仕組み）。紫の葉の形の面はやめた。
+ * mid() は暗い間に背景を替える。名前は呼び出し元に合わせて leafWave のまま。
+ */
 export async function leafWave(mid) {
   if (skip() || !fx()) { await mid?.(); return; }
-  const node = layer("mo-leaves", "leaves");
-  const leaves = [];
-  const fills = [COLOR.deep, COLOR.purple, "#4b3690", COLOR.lav];
-  for (let i = 0; i < 9; i++) {
-    const g = svg("g", { transform: `translate(${-260 - (i % 3) * 120} ${60 + i * 78}) rotate(${-30 + i * 11})` }, [
-      svg("path", { d: leafPath(5.4 + (i % 3) * 0.8), fill: fills[i % fills.length] }),
-    ]);
-    leaves.push(g);
-  }
-  const art = stageSvg(leaves);
-  node.append(art);
+  const node = layer("mo-recall", "recall");
   await covering(node, async () => {
-    const runs = leaves.map((g, i) => move(g, [{ transform: "translateX(0) rotate(0deg)" }, { transform: `translateX(${W + 260}px) rotate(${i % 2 ? 24 : -24}deg)` }],
-      780, { easing: EASE.in, delay: i * 30 }));
-    await Promise.all(runs);
-    const cover = el("div.mo-leaves-cover");
-    node.append(cover);
+    const veil = el("div.mo-recall-veil");
+    node.append(veil);
+    await move(veil, [{ opacity: 0 }, { opacity: 1 }], 360, { easing: "ease" });
     await mid?.();
     await nextFrame(); await nextFrame();
-    art.remove();
-    const out = stageSvg(leaves.map((g) => { g.style.transform = ""; return g; }));
-    node.append(out);
-    move(cover, [{ opacity: 1 }, { opacity: 0 }], 600, { easing: "ease-out", delay: 120 });
-    await Promise.all(leaves.map((g, i) => move(g, [{ transform: `translateX(${W + 260}px)` }, { transform: `translateX(${2 * W + 700}px) rotate(${i % 2 ? 50 : -50}deg)` }],
-      720, { easing: EASE.out, delay: i * 25 })));
+    const now = bgSnapshot();
+    if (!now) { await move(veil, [{ opacity: 1 }, { opacity: 0 }], 520, { easing: "ease" }); return; }
+    // 1. 現在の場面が、回想と同じセピア（#vn.sepia と同じ色）で浮かぶ
+    now.className = "mo-recall-past";
+    const base = now.style.filter && now.style.filter !== "none" ? `${now.style.filter} ` : "";
+    now.style.filter = `${base}sepia(.75) contrast(.95) brightness(.92)`;
+    node.append(now);
+    await move(now, [{ opacity: 0 }, { opacity: 1 }], 520, { easing: "ease-out" });
+    veil.remove();
+    await sleep(180);
+    // 2. 煙のにじみで下から本当の色が戻る
+    hazeRise(node, 1350);
+    await smokeOut(now, 1350);
   });
 }
 
@@ -106,26 +108,44 @@ export async function scanGlitch({ from = "", to = "???" } = {}) {
   });
 }
 
-// ---------------------------------------------------------------- A8 混ざる煙（第5章のフィナーレ → スタッフロール）
+// ---------------------------------------------------------------- A8 混ざる煙（第5章のフィナーレ → スタッフロール。作り直し TMG60）
 
-/** 出会った人の色の細い煙が下から立ちのぼり、途中で絡んで一本の紫になって上へ抜ける（約2.5秒）。暗い面のまま終わる */
+/**
+ * 出会った人の色をした煙（煙の絵を色で塗ったもの）が下から立ちのぼり、真ん中へ寄りながら重なって色が混ざり、
+ * 混ざった白い煙が上へ抜ける（約3秒。細い線の図形はやめた）。暗い面のまま終わる（スタッフロールへ渡す）。
+ */
 export async function mixedSmoke(colors = []) {
   if (skip() || !fx()) return;
   const list = (colors.length ? colors : [COLOR.lav, COLOR.pink, "#f6dcaf", "#9fb8ff"]).slice(0, 8);
   const node = layer("mo-mixed", "finale");
+  // 煙の絵は横長の帯で、左右の端が切れている。縦に立てるので、帯の両端を溶かすグラデーションを重ねる
+  const haze = `url("${smokeArt().haze}"), linear-gradient(to right, transparent, #000 28%, #000 72%, transparent)`;
   const n = list.length;
-  const strands = list.map((c, i) => {
-    const x0 = 220 + (840 / Math.max(1, n - 1)) * i;
-    const d = `M ${x0} 760 C ${x0} 600, ${640 + (x0 - 640) * 0.5} 520, ${640 + (x0 - 640) * 0.15} 380 S 640 220, 640 -20`;
-    return svg("path", { d, fill: "none", stroke: c, "stroke-width": 5, "stroke-linecap": "round", "stroke-dasharray": 1100, "stroke-dashoffset": 1100, opacity: 0.9 });
-  });
-  const one = svg("path", { d: "M 640 400 C 620 300, 660 200, 640 -20", fill: "none", stroke: COLOR.purple, "stroke-width": 14, "stroke-linecap": "round", "stroke-dasharray": 500, "stroke-dashoffset": 500 });
-  node.append(el("div.mo-mixed-dark"), stageSvg([...strands, one]));
+  const plume = (color, cls = "") => el(`i.mo-mixed-plume${cls}`, { style: { backgroundColor: color, maskImage: haze, webkitMaskImage: haze, maskComposite: "intersect", webkitMaskComposite: "source-in" } });
+  const plumes = list.map((c, i) => ({ el: plume(c), x0: 200 + (880 / Math.max(1, n - 1)) * (n === 1 ? 0.5 : i), i }));
+  const one = plume("#f7f2ff", ".one");
+  const dark = el("div.mo-mixed-dark");
+  node.append(dark, ...plumes.map((p) => p.el), one);
   await covering(node, async () => {
-    await move(node.firstChild, [{ opacity: 0 }, { opacity: 1 }], 500, { easing: "ease-in" });
-    await Promise.all(strands.map((p, i) => move(p, [{ strokeDashoffset: 1100 }, { strokeDashoffset: 0 }], 1300, { easing: EASE.inOut, delay: i * 70 })));
-    await move(one, [{ strokeDashoffset: 500, opacity: 0 }, { strokeDashoffset: 0, opacity: 1 }], 500, { easing: EASE.out });
-    strands.forEach((p) => move(p, [{ opacity: 0.9 }, { opacity: 0 }], 400));
-    await move(one, [{ opacity: 1, strokeWidth: 14 }, { opacity: 0, strokeWidth: 2 }], 600, { easing: "ease-in" });
+    await move(dark, [{ opacity: 0 }, { opacity: 1 }], 500, { easing: "ease-in" });
+    // 1. それぞれの色の煙が下から昇り、真ん中へ寄って重なる（重なった所は色が足されて明るく混ざる）
+    const RISE = 1900;
+    const runs = plumes.map(({ el: p, x0, i }) => {
+      const x1 = 640 + (x0 - 640) * 0.12, tilt = (x0 < 640 ? 1 : -1) * 8;
+      return move(p, [
+        { opacity: 0, transform: `translate(${x0 - 640}px, 300px) rotate(-90deg) scale(.55, .7)` },
+        { opacity: 0.95, offset: 0.35, transform: `translate(${(x0 + (x1 - x0) * 0.35) - 640}px, 120px) rotate(${-90 + tilt * 0.5}deg) scale(.8, .9)` },
+        { opacity: 0.8, transform: `translate(${x1 - 640}px, -140px) rotate(${-90 + tilt}deg) scale(1.25, 1.2)` },
+      ], RISE, { easing: "cubic-bezier(.3,.1,.3,1)", delay: i * 80 });
+    });
+    // 2. 混ざった白い煙が真ん中から上へ抜ける
+    const merged = move(one, [
+      { opacity: 0, transform: "translate(0, 60px) rotate(-90deg) scale(.7, .9)" },
+      { opacity: 0.9, offset: 0.45, transform: "translate(0, -60px) rotate(-90deg) scale(1.1, 1.2)" },
+      { opacity: 0, transform: "translate(0, -380px) rotate(-90deg) scale(1.6, 1.5)" },
+    ], 1500, { easing: "ease-out", delay: RISE - 700 });
+    await Promise.all(runs);
+    plumes.forEach(({ el: p }) => move(p, [{ opacity: 0.8 }, { opacity: 0 }], 600, { easing: "ease-in" }));
+    await merged;
   });
 }
