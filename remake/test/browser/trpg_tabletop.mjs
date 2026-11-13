@@ -199,45 +199,16 @@ try{
   const lead=scenarioData.checks.prepare.approaches[0],leadBase=scenarioData.cast.find(c=>c.id===lead.actor).sheet.stats[lead.stat];
   assert(await ctl(p,'trpg-support-'+helper).isEnabled());
   assert.match(await p.locator('.trpg-aid-art img').getAttribute('src'),new RegExp(helper));
-  // #3199: the chance of success is always in view (no need to open the details) and already includes what applies now:
-  // the stat, the momentum, and the support card only while it is ticked. A pending guess shows as a range.
-  const potential=(scenarioData.rules?.hypothesisBonus||0)*4;
-  const strip=()=>ctl(p,'trpg-roll-odds').evaluate(n=>{const r=n.getBoundingClientRect();return {shown:r.width>0&&r.height>0&&r.top>=0&&r.bottom<=innerHeight+1&&r.left>=0&&r.right<=innerWidth+1,
-    bonus:Number(n.dataset.bonus),success:n.querySelector('[data-test=trpg-roll-odds-success]').textContent,parts:[...n.querySelectorAll('i')].map(i=>i.dataset.part),label:n.getAttribute('aria-label')};});
-  const want=bonus=>p.evaluate(async([b,extra])=>{const {rollOdds}=await import(new URL('js/trpg/feedback.js',document.baseURI).href);
-    return '成功 約'+rollOdds(b).success+(extra?'〜'+rollOdds(b+extra).success:'')+'%';},[bonus,potential]);
-  // #3199: at the sizes the game is played in (PC and a phone held sideways) the roll table never needs scrolling:
-  // before the roll, with the details opened, and at the result.
-  const noScroll=async label=>{const box=await p.locator('.trpg-roll-stage .trpg-modal-body').evaluate(n=>({client:n.clientHeight,scroll:n.scrollHeight}));
-    assert(box.scroll<=box.client+1,'The roll table needs no scrolling: '+label+' '+JSON.stringify(box));};
   for(const [width,height] of [[1280,720],[800,600],[390,844],[844,390]]){
-    const played=(width===1280&&height===720)||(width===844&&height===390);
     await p.setViewportSize({width,height});await fit(p,`${scenario}-aid-${width}x${height}`);
-    if(played)await noScroll(`${scenario} ${width}x${height}`);
-    const momentum=(await p.evaluate(()=>__trpg.snapshot())).momentum; // table excitement adds to the shown bonus
-    const plain=await strip();
-    assert(plain.shown,'The odds are in view before the details are opened '+width+'x'+height+' '+JSON.stringify(plain));
-    assert.equal(plain.bonus,leadBase+momentum*4);assert.equal(plain.success,await want(leadBase+momentum*4));
-    assert(!plain.parts.includes('support'),'An unticked support card is not counted');
-    assert.equal(plain.parts.includes('momentum'),momentum>0);assert.equal(plain.parts.includes('hypothesis'),potential>0);
-    await ctl(p,'trpg-details-toggle').press('Enter');await fit(p,`${scenario}-aid-${width}x${height}-details`);
-    if(played){await noScroll(`${scenario} ${width}x${height} details`);
-      const panel=await ctl(p,'trpg-forecast').evaluate(n=>{const r=n.getBoundingClientRect(),t=n.closest('.trpg-modal-body').querySelector('.trpg-roll-scene').getBoundingClientRect(),
-        m=n.closest('.trpg-modal-body').getBoundingClientRect();return {over:Math.abs(r.top-t.top)<2&&Math.abs(r.left-t.left)<2,inside:r.bottom<=m.bottom+1,text:n.textContent};});
-      assert(panel.over&&panel.inside,'The opened details sit on the dice tray, inside the table '+JSON.stringify(panel));assert.match(panel.text,/約\d+(〜\d+)?%/);}
-    await ctl(p,'trpg-details-toggle').press('Space');
+    await ctl(p,'trpg-details-toggle').press('Enter');await fit(p,`${scenario}-aid-${width}x${height}-details`);await ctl(p,'trpg-details-toggle').press('Space');
     await ctl(p,'trpg-support-'+helper).press('Space');assert(await ctl(p,'trpg-support-'+helper).isChecked());
-    assert.equal(await ctl(p,'trpg-bonus').textContent(),'＋'+(leadBase+7+momentum*4));
-    const aided=await strip();
-    assert(aided.shown&&aided.parts.includes('support'),'Ticking the support card shows it in the odds '+JSON.stringify(aided));
-    assert.equal(aided.bonus,leadBase+7+momentum*4);assert.equal(aided.success,await want(leadBase+7+momentum*4));
-    assert.match(aided.label,/補正込み.*助力 ＋7/);
-    await ctl(p,'trpg-support-'+helper).press('Space');
-    assert.deepEqual(await strip(),plain,'Unticking the card takes it out of the odds again');
+    const momentum=(await p.evaluate(()=>__trpg.snapshot())).momentum; // table excitement adds to the shown bonus
+    assert.equal(await ctl(p,'trpg-bonus').textContent(),'＋'+(leadBase+7+momentum*4));await ctl(p,'trpg-support-'+helper).press('Space');
   }
   await ctl(p,'trpg-support-'+helper).check();await ctl(p,'trpg-roll').click();await ctl(p,'trpg-settle').waitFor();
   assert((await p.evaluate(()=>__trpg.snapshot())).used[helper]);assert.equal(await ctl(p,'trpg-reroll-0').count(),0,'Spent teamwork and used reroll cannot offer another reroll');
-  await fit(p,scenario+'-help-used-result');await noScroll(scenario+' result 844x390');
+  await fit(p,scenario+'-help-used-result');
   await ctl(p,'trpg-settle').click();await lines(p);
   for(const field of scenarioData.flow?.serve||['approach'])await ctl(p,'trpg-plan-'+field+'-'+scenarioData.options[field][0].id).click();
   await ctl(p,'trpg-serve-open').click();await declare(p);assert.equal(await p.locator('.trpg-aid input').count(),0,'No teamwork means helper unavailable');

@@ -962,13 +962,11 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     const cards = approaches.map(approach => {
       const pc = sheets[approach.sheet || approach.actor];
       const { base } = approachBase(scenario, kind, approach.id, sheets);
-      const predicted = checkForecast(scenario, state, kind, { approach: approach.id, sheets }), odds = predicted.odds;
-      // 見立ての加点（当たっている時だけ）がある判定は、札の見込みも幅で出す。判定の卓の数字と同じ。
-      const successText = odds.success + (predicted.potentialBonus ? "〜" + predicted.bestOdds.success : "") + "%";
+      const odds = checkForecast(scenario, state, kind, { approach: approach.id, sheets }).odds;
       const first = !state.acted[approach.actor] && !approach.npc;
       return el("button.trpg-button.trpg-approach", { type: "button", dataset: { test: "trpg-approach-" + approach.id, actor: approach.actor, best: String(approach.id === bestId) },
         title: pcText(approach.detail),
-        "aria-label": pcText(approach.label) + "。" + pcText(approach.detail) + "。" + (approach.npc ? "GMが演じる" : name(approach.actor) + "の") + (pc?.name || "") + "、" + statLabel(approach.stat) + "＋" + base + (state.momentum ? "、勢い＋" + state.momentum * DICE.momentum : "") + "。成功 約" + successText + "、ひと手間 約" + odds.mixed + "%"
+        "aria-label": pcText(approach.label) + "。" + pcText(approach.detail) + "。" + (approach.npc ? "GMが演じる" : name(approach.actor) + "の") + (pc?.name || "") + "、" + statLabel(approach.stat) + "＋" + base + "。成功 約" + odds.success + "%、ひと手間 約" + odds.mixed + "%"
           + (approach.id === bestId ? "。おすすめ" : "") + (first ? "。この役の初めての見せ場で盛り上がり＋1" : ""),
         onclick: () => {
           if (!pop || busy) return;
@@ -985,17 +983,14 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
           el("b", { text: statLabel(approach.stat) + " ＋" + base, dataset: { stat: approach.stat } }),
           // 見込みは帯で見せる（金＝成功・緑＝ひと手間・残り＝思わぬ出来事）。数字は成功だけ。
           el("span.trpg-odds-bar", { "aria-hidden": "true", dataset: { test: "trpg-approach-odds" }, style: { "--success": odds.success + "%", "--mixed": odds.mixed + "%" } }),
-          el("small", { text: "成功 " + successText, dataset: { test: "trpg-approach-success" } }),
+          el("small", { text: "成功 " + odds.success + "%" }),
           approach.id === bestId ? el("i.trpg-approach-best", { text: "おすすめ", title: "いちばん成功しやすい", dataset: { test: "trpg-approach-best" } }) : null,
           first ? el("i.trpg-approach-first", { text: "見せ場 ＋1", title: "この役が初めて前に出る。盛り上がり＋1" }) : null,
         ].filter(Boolean)),
       ]);
     });
     pop = modal(presentation.declareTitle || "どうする？", el("div.trpg-declare-board", [
-      el("div.trpg-declare-prompt", [el("strong", { text: check.title }), stakeLine(kind),
-        state.momentum ? el("span.trpg-declare-momentum", { dataset: { test: "trpg-declare-momentum" }, title: "盛り上がりの勢い。次の判定に加わる。札の見込みに込み",
-          text: "勢い ＋" + state.momentum * DICE.momentum + " 込み" }) : null,
-        helpToggle("宣言のしかた", "trpg-declare-help", [
+      el("div.trpg-declare-prompt", [el("strong", { text: check.title }), stakeLine(kind), helpToggle("宣言のしかた", "trpg-declare-help", [
         el("span", { text: presentation.declareHint || "" }),
         el("span.trpg-declare-rule", { text: presentation.target || ("目標値" + DICE.success) }),
         el("span.trpg-declare-rule", { text: "20の目が出たらクリティカル。必ず成功" }),
@@ -1009,31 +1004,12 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     if (busy || overlay || session.snapshot().pending) return;
     const check = scenario.checks[kind], helper = check.helper || null;
     const declared = approachBase(scenario, kind, approachId, sheets).approach;
-    // 成功の見込みは、いま実際に効く補正（能力・選んだ切り札・勢い）を込みで、いつも見える所に出す（#3199・TRF23）。
-    // 見立ての加点は当たっている時だけ効き、正誤は振るまで分からないので「約A〜B%」の幅で出す。
-    const live = el("div.trpg-roll-odds", { dataset: { test: "trpg-roll-odds" }, role: "status" });
     const body = el("div", [el("p.trpg-roll-instruction", { text: DICE.success + "以上で成功" }), stakeLine(kind), actorPanel(declared), el("div.trpg-roll-scene",
-      el("div.trpg-dice-row", [die(1), die(1), el("span.trpg-dice-bonus", { text: "＋" + DICE.base, dataset: { test: "trpg-bonus" } })])), live].filter(Boolean));
+      el("div.trpg-dice-row", [die(1), die(1), el("span.trpg-dice-bonus", { text: "＋" + DICE.base, dataset: { test: "trpg-bonus" } })]))].filter(Boolean));
     const forecast = el("div.trpg-forecast", { dataset: { test: "trpg-forecast" }, "aria-live": "polite" });
     function updateForecast() {
       const predicted = checkForecast(scenario, session.snapshot(), kind, { support: !!support?.checked, approach: declared?.id || null, sheets });
       body.querySelector(".trpg-dice-bonus").textContent = "＋" + predicted.baseBonus;
-      const span = grade => "約" + Math.min(predicted.odds[grade], predicted.bestOdds[grade])
-        + (predicted.potentialBonus ? "〜" + Math.max(predicted.odds[grade], predicted.bestOdds[grade]) : "") + "%";
-      const parts = [
-        [declared ? declared.stat : "base", (declared ? statLabel(declared.stat) : "基本") + " ＋" + predicted.base],
-        support?.checked ? ["support", "助力 ＋" + DICE.support] : null,
-        predicted.momentum ? ["momentum", "勢い ＋" + predicted.momentum * DICE.momentum] : null,
-        predicted.potentialBonus ? ["hypothesis", "見立てが合えば ＋" + predicted.potentialBonus] : null,
-      ].filter(Boolean);
-      live.dataset.bonus = String(predicted.baseBonus);
-      live.setAttribute("aria-label", "成功の見込み " + span("success") + "、ひと手間 " + span("mixed") + "。補正込み: " + parts.map(part => part[1]).join("、"));
-      live.replaceChildren(
-        el("span.trpg-odds-bar", { "aria-hidden": "true", style: { "--success": predicted.odds.success + "%", "--mixed": predicted.odds.mixed + "%" } }),
-        el("strong", { text: "成功 " + span("success"), dataset: { test: "trpg-roll-odds-success" } }),
-        el("span", { text: "ひと手間 " + span("mixed"), dataset: { test: "trpg-roll-odds-mixed" } }),
-        el("small", { "aria-hidden": "true" }, [el("b", { text: "補正込み" }), ...parts.map(([part, text]) => el("i", { text, dataset: { part } }))]),
-      );
       forecast.replaceChildren(el("div.trpg-forecast-head", [
         el("strong", { text: "この判定の見通し" }), el("small", { text: "2d20 ＋ " + (declared ? statLabel(declared.stat) : "基本") + predicted.base + (support?.checked ? " ＋ 助力" + DICE.support : "") + (predicted.momentum ? " ＋ 勢い" + predicted.momentum * DICE.momentum : "") }),
       ]), el("div.trpg-odds", [
@@ -1046,7 +1022,6 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
       ]))), el("p", { text: predicted.potentialBonus
         ? "見立てが合っていれば、さらに＋" + predicted.potentialBonus + "。正誤は振ったあとに分かります。"
         : "20の目が出たら必ず成功（クリティカル）。どの出目でも物語は続きます。" }));
-      if (check.hint) forecast.prepend(el("p.trpg-forecast-hint", { text: check.hint }));
     }
     const support = helper && !session.snapshot().used[helper] && session.snapshot().teamwork > 0
       ? el("input", { type: "checkbox", dataset: { test: "trpg-support-" + helper } }) : null;
@@ -1057,28 +1032,10 @@ export function mountTrpg(host, { scenario, characters, manifest, tableTalk = nu
     ])]));
     if (support) support.addEventListener("change", () => { if (support.checked) audio.play("card"); updateForecast(); });
     if (helper && !support) body.append(el("p.trpg-aid-spent", { text: name(helper) + "の切り札は使えない" }));
-    // 「判定の詳細」を開いた内訳は、ダイストレイの位置に重ねて出す（下へ伸ばすと「サイコロを振る」の下へ切れて、
-    // スクロールしないと読めなかった・#3199）。位置と大きさはトレイを測って渡すので、PCでもスマホでも、札が増えても合う。
-    const details = el("details.trpg-roll-details", { dataset: { test: "trpg-roll-details" } }, [
-      el("summary", { text: "判定の詳細", dataset: { test: "trpg-details-toggle" } }), forecast,
-    ]);
-    const placeForecast = () => {
-      const tray = body.querySelector(".trpg-roll-scene");
-      if (!tray || !Number.isFinite(tray.offsetTop) || !tray.offsetHeight) return;
-      for (const [key, value] of [["top", tray.offsetTop - details.offsetTop], ["left", tray.offsetLeft - details.offsetLeft], ["width", tray.offsetWidth], ["height", tray.offsetHeight]]) {
-        details.style.setProperty("--tray-" + key, value + "px");
-      }
-      // 内訳が覆ってよいのは、トレイと見込みの行（同じ数字）まで。切り札の札や見出しには被せない。
-      // 文まで入れると収まらない大きさの画面では、数字だけにする。
-      const room = live.offsetTop + live.offsetHeight - tray.offsetTop;
-      details.style.setProperty("--tray-room", room + "px");
-      details.dataset.placed = "true";
-      details.dataset.tight = "false";
-      if (details.open) details.dataset.tight = String(forecast.scrollHeight > room);
-    };
-    details.addEventListener("toggle", placeForecast);
-    if (typeof ResizeObserver === "function") new ResizeObserver(placeForecast).observe(body);
-    body.append(details); updateForecast();
+    body.append(el("details.trpg-roll-details", { dataset: { test: "trpg-roll-details" } }, [
+      el("summary", { text: "判定の詳細", dataset: { test: "trpg-details-toggle" } }),
+      el("p", { text: check.hint }), forecast,
+    ])); updateForecast();
     let pop;
     const roll = button("サイコロを振る", "trpg-roll", () => {
       if (session.snapshot().pending) return;
