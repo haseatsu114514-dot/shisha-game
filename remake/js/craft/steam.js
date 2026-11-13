@@ -207,12 +207,13 @@ export async function runSteamDodge(cs) {
   };
   const clearBullets = (radius = Infinity) => removeBullets(b => Math.hypot(hx - clamp(hx, b.x, b.x + b.w), hy - clamp(hy, b.y, b.y + b.h)) <= radius);
   // ボタンの表示は毎フレーム組み立てるが、DOM へは値が変わった所だけ書く（#3500 F-4）。
+  const shownRecharge = new WeakMap(); // ボタンごとに、最後に書いた --recharge
   const rechargeLabel = (button, caption, remaining, duration, label) => {
     const rounded = Math.ceil(remaining * 10) / 10;
     setData(button, "cooldown", rounded.toFixed(1));
     setData(button, "cooling", running && remaining > 0);
     const recharge = String(1 - remaining / duration);
-    if (button.style.getPropertyValue("--recharge") !== recharge) button.style.setProperty("--recharge", recharge);
+    if (shownRecharge.get(button) !== recharge) { shownRecharge.set(button, recharge); button.style.setProperty("--recharge", recharge); }
     setText(caption, running && rounded > 0 ? `${rounded.toFixed(1)}秒` : "");
     setAttr(button, "aria-label", `${label}。${!running ? "操作停止中" : remaining > 0 ? `再使用まで${rounded.toFixed(1)}秒` : "使用可能"}`);
     setFlag(button, "disabled", !running || remaining > 0);
