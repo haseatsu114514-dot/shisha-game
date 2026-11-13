@@ -81,11 +81,34 @@ function loadSeBuffer(file) {
   return seLoads.get(file);
 }
 
-/** 最初の操作で先読み。ゲーム進行は待たせず、最初の未読込SEは合成で補う。 */
+const allSeFiles = () => [...new Set([...Object.values(RECORDED_SE).flatMap(s => s.files), WATER_LOOP, WATER_END])];
+// 最初の操作の直後に要る画面操作の音（タイトル・メニュー・保存）。残りは1本ずつ読む（#3500 D-1）。
+const FIRST_SE = ["click", "select", "cancel", "whoosh", "jingle", "card", "save"];
+let seWarm = null;
+
+/** 録音SEを全部、今すぐ読む（音の確認ページ・検査用）。全部読めたら true。 */
 export function preloadSe() {
   if (!audioUnlocked) return Promise.resolve(false);
-  const files = new Set([...Object.values(RECORDED_SE).flatMap(s => s.files), WATER_LOOP, WATER_END]);
-  return Promise.all([...files].map(loadSeBuffer)).then(buffers => buffers.every(Boolean));
+  return Promise.all(allSeFiles().map(loadSeBuffer)).then(buffers => buffers.every(Boolean));
+}
+
+/**
+ * 最初の操作で先読み。ゲーム進行は待たせず、最初の未読込SEは合成で補う。
+ * 29本を一度に取りに行くと、同じ時に始まる BGM・場面の素材と回線とデコードを取り合う（遅い回線では5秒の打ち切りで半分ほどが落ちていた）。
+ * 画面操作の数本を先に読み、残りは手の空いた時に1本ずつ読む。読み終わる前に鳴らした音は、今までどおりその場で読みに行く。
+ */
+function warmSe() {
+  if (!audioUnlocked || seWarm) return;
+  const first = FIRST_SE.flatMap(id => RECORDED_SE[id].files);
+  const rest = allSeFiles().filter(file => !first.includes(file));
+  const idle = () => typeof requestIdleCallback === "function" ? new Promise(resolve => requestIdleCallback(resolve, { timeout: 1000 })) : null;
+  seWarm = Promise.all(first.map(loadSeBuffer)).then(async () => {
+    for (const file of rest) {
+      if (seBuffers.has(file)) continue;
+      await idle();
+      await loadSeBuffer(file);
+    }
+  }).finally(() => { seWarm = null; });
 }
 
 function recordedVoice(file, { gain = 1, rate = 1, loop = false, delay = 0 } = {}) {
@@ -362,7 +385,7 @@ export function unlockAudio() {
   };
   if (c && (c.state === "suspended" || c.state === "interrupted")) c.resume().then(ready, () => {});
   else ready();
-  preloadSe();
+  warmSe();
 }
 
 export function applyVolumes() {

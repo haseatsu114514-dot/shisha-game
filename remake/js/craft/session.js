@@ -320,7 +320,9 @@ export async function explainStepOnce(cs, id, panelId = id) {
   const seen = state.flags.seenStepIntro ||= {};
   if (seen[id]) return true;
   if (b.pendingIntro?.id === id) return (await b.pendingIntro.promise) && current();
-  const text = cs.lessonHelp?.[id]?.detail || TUTORIAL_STEP_HELP[id]?.detail || b.guide.note.textContent;
+  // 大会の配合は練習用の固定文（ダブルアップル9g…）ではなく、当日の課題・在庫に合う本日の条件文を読む。
+  const tournamentMix = id === "mix" && cs.mode === "tournament" && !cs.lessonHelp?.[id]?.detail;
+  const text = cs.lessonHelp?.[id]?.detail || (tournamentMix ? "" : TUTORIAL_STEP_HELP[id]?.detail) || b.guide.note.textContent;
   if (!text) { seen[id] = true; return true; }
   const pending = waitGuideRead(b, current, panelId, text);
   b.pendingIntro = { id, promise: pending };
