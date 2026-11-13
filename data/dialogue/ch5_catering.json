@@ -189,6 +189,10 @@
           "text": "桃の甘さに、ミントを少しだけ重ねた。"
         },
         {
+          "speaker": "",
+          "text": "ストローを回すと、グラスの氷が小さく鳴った。"
+        },
+        {
           "speaker": "customer",
           "face": "smile",
           "text": "甘いのに、頭がすっと冷える。どっちの派も黙ったな"
@@ -197,6 +201,21 @@
           "speaker": "customer",
           "face": "normal",
           "text": "締め切り明けの頭に、ちょうどいいです"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "さっぱり派の俺が言うのもなんだけど、これは甘いのも悪くない"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "甘い派の子も、おかわりしたそうな顔してます"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "もう一杯、あっちの席にも持っていってもらえますか"
         },
         {
           "speaker": "hajime",
@@ -213,6 +232,10 @@
           "text": "レモンとミントで、すっきりにまとめた。"
         },
         {
+          "speaker": "",
+          "text": "氷の音が、静かなラウンジにやけによく響いた。"
+        },
+        {
           "speaker": "customer",
           "face": "smile",
           "text": "目が覚める。……これは、さっぱり派の勝ちだな"
@@ -221,6 +244,21 @@
           "speaker": "customer",
           "face": "normal",
           "text": "甘いのも、ちょっと欲しかったかも。でも、うまいです"
+        },
+        {
+          "speaker": "customer",
+          "face": "smile",
+          "text": "甘い派の子には、あとで私から一口分けときます"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "そっちの方が、揉めずに済みそうだし"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "次の打ち上げでは、甘いのも一本入れてくださいよ"
         },
         {
           "speaker": "hajime",
@@ -237,6 +275,10 @@
           "text": "エスプレッソとダークチョコの、深い一台にした。"
         },
         {
+          "speaker": "",
+          "text": "ひと口ごとに、みんなの肩が少しずつ上がっていく。"
+        },
+        {
           "speaker": "customer",
           "face": "normal",
           "text": "……うん、大人の味。今日はちょっと、重いかな"
@@ -245,6 +287,15 @@
           "speaker": "customer",
           "face": "smile",
           "text": "でも、話のネタにはなりました。来てくれてよかった"
+        },
+        {
+          "speaker": "customer",
+          "face": "normal",
+          "text": "正直、苦いのは今日はもういいって思ってたんです。言い方が足りなかったかも"
+        },
+        {
+          "speaker": "",
+          "text": "隅のほうで、誰かが小さく水を頼む声がした。"
         },
         {
           "speaker": "hajime",
