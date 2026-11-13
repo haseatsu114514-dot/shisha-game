@@ -244,7 +244,7 @@ function openCounter({ errand = null, expense = false, minStock = 1, expenseFlag
     if (typeof errand !== "string") errand = null;
     const firstErrand = ["mint", "lemon"].includes(errand) && expense && ["_errand_mint_expensed", "_errand_lemon_expensed"].includes(expenseFlag) && !session.flags._errand_shop_done;
     setBg(background || bgUrl("bg_shop"), { fast: true, ready: [FLAVOR_ART, ...Object.values(SHOP_ART).map(art => art.url), ...new Set(Object.values(CHARACTER_FLAVOR_ART).map(art => art.url))] });
-    playBgm("kansetsu_shomei_to_black_coffee");
+    playBgm(stockChapter === 2 ? "bgm_yuzugaya" : "kansetsu_shomei_to_black_coffee"); // 柚ヶ谷店は柚ヶ谷の街の曲、ほかは日常の曲（story-audio.js の cityBgm と同じ）
     const body = el("div.shop-body", { tabindex: "0", "aria-label": "商品一覧" });
     const tabs = el("div.shop-tabs", { "aria-label": "売り場" });
     const filters = el("div.shop-filters", { "aria-label": "フレーバーの種類" });

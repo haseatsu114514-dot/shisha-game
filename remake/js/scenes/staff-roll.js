@@ -56,10 +56,12 @@ export const STAFF_MUSIC = Object.freeze([
   { title: "Tension Theme", composer: "Umplix", source: "OpenGameArt・CC0" },
   { title: "Daisy", composer: "Kistol", source: "OpenGameArt・CC0" },
   { title: "Cool City", composer: "MintoDog", source: "OpenGameArt・CC0" },
-  { title: "Desert Travel (Loop)", composer: "DJ CrisP", source: "OpenGameArt・CC0" },
+  { title: "Desert theme", composer: "yd", source: "OpenGameArt・CC0" },
   { title: "Dare The Bustloro Way", composer: "Spring Spring", source: "OpenGameArt・CC0" },
   { title: "Dark Horse", composer: "Centurion_of_war", source: "OpenGameArt・CC0" },
   { title: "The Rush", composer: "tebruno99", source: "OpenGameArt・CC0" },
+  // 第2章の街・柚ヶ谷の仮BGM（2026-11-12。J04 の曲ができたら差し替える）
+  { title: "Mocha Frapp", composer: "Pro Sensory", source: "OpenGameArt・CC0" },
 ].map(song => Object.freeze(song)));
 // TRPGの卓の効果音（CC0・asset_sources/music/trpg-audio/）。
 export const STAFF_SOUND_TRPG = Object.freeze(["効果音（TRPG）：Kenney – Casino Audio / RPG Audio / Music Jingles（CC0） – https://kenney.nl/"]);

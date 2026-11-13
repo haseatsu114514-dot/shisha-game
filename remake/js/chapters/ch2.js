@@ -33,8 +33,8 @@ let watchingHistory = false;
 const current = owner => !!owner && session === owner && owner.active && state === owner.state;
 const test = name => `ch2-main-${name}`;
 const progress = () => dayOneProgress(state);
-// 通常の日常・買物と同じ既存曲。J04の街用新曲選定とは分ける。
-const CITY_BGM = "kansetsu_shomei_to_black_coffee";
+// 柚ヶ谷の街の曲（J04。今は CC0 の仮曲。core/story-audio.js の STORY_BGM.yuzugaya と同じキー）。
+const CITY_BGM = "bgm_yuzugaya";
 
 function focus(name) { requestAnimationFrame(() => layers.screen.querySelector(`[data-test="${test(name)}"]`)?.focus()); }
 function setBusy(owner, value) {

@@ -296,7 +296,7 @@ await suite("staff-roll", async check => {
         "作曲 魔王魂（魔王魂）", "作曲 魔王魂（魔王魂）", "作曲 魔王魂（魔王魂）", "作曲 魔王魂（魔王魂）", "作曲 甘茶（甘茶の音楽工房）",
         "作曲 Kevin MacLeod（incompetech.com・CC BY 4.0）",
         ...["Eldritch Grim", "Aureolus_Omicron", "congusbongus", "TAD", "controllerhead", "yd", "Kistol", "northivanastan", "Bobjt", "Aureolus_Omicron",
-            "omfgdude", "Umplix", "Kistol", "MintoDog", "DJ CrisP", "Spring Spring", "Centurion_of_war", "tebruno99"]
+            "omfgdude", "Umplix", "Kistol", "MintoDog", "yd", "Spring Spring", "Centurion_of_war", "tebruno99", "Pro Sensory"]
           .map(name => `作曲 ${name}（OpenGameArt・CC0）`)]);
     assert.equal(await page.locator(".staff-roll-sound").textContent(), "効果音：ポケットサウンド – https://pocket-se.info/");
     assert.deepEqual(await page.locator(".staff-roll-sound-main p").allTextContents(),
